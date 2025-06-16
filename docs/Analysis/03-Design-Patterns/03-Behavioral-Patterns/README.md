@@ -2,16 +2,36 @@
 
 ## 目录
 
-1. [概述](#概述)
-2. [形式化定义](#形式化定义)
-3. [责任链模式 (Chain of Responsibility)](#责任链模式-chain-of-responsibility)
-4. [命令模式 (Command)](#命令模式-command)
-5. [观察者模式 (Observer)](#观察者模式-observer)
-6. [策略模式 (Strategy)](#策略模式-strategy)
-7. [状态模式 (State)](#状态模式-state)
-8. [模板方法模式 (Template Method)](#模板方法模式-template-method)
-9. [性能分析与优化](#性能分析与优化)
-10. [最佳实践](#最佳实践)
+- [Golang 行为型设计模式分析](#golang-行为型设计模式分析)
+  - [目录](#目录)
+  - [概述](#概述)
+    - [核心概念](#核心概念)
+  - [责任链模式 (Chain of Responsibility)](#责任链模式-chain-of-responsibility)
+    - [形式化定义](#形式化定义)
+    - [Golang 实现](#golang-实现)
+  - [命令模式 (Command)](#命令模式-command)
+    - [形式化定义](#形式化定义-1)
+    - [Golang 实现](#golang-实现-1)
+  - [观察者模式 (Observer)](#观察者模式-observer)
+    - [形式化定义](#形式化定义-2)
+    - [Golang 实现](#golang-实现-2)
+  - [策略模式 (Strategy)](#策略模式-strategy)
+    - [形式化定义](#形式化定义-3)
+    - [Golang 实现](#golang-实现-3)
+  - [状态模式 (State)](#状态模式-state)
+    - [形式化定义](#形式化定义-4)
+    - [Golang 实现](#golang-实现-4)
+  - [模板方法模式 (Template Method)](#模板方法模式-template-method)
+    - [形式化定义](#形式化定义-5)
+    - [Golang 实现](#golang-实现-5)
+  - [性能分析与优化](#性能分析与优化)
+    - [性能对比](#性能对比)
+    - [优化建议](#优化建议)
+  - [最佳实践](#最佳实践)
+    - [1. 选择原则](#1-选择原则)
+    - [2. 实现规范](#2-实现规范)
+    - [3. 测试策略](#3-测试策略)
+  - [参考资料](#参考资料)
 
 ## 概述
 
@@ -22,6 +42,7 @@
 **定义 1.1** (行为型模式): 行为型模式是一类设计模式，其核心目的是定义对象间的通信方式，实现对象间的松耦合交互。
 
 **定理 1.1** (行为型模式的优势): 使用行为型模式可以：
+
 1. 降低对象间的耦合度
 2. 提高系统的可扩展性
 3. 支持动态行为变化
@@ -529,10 +550,10 @@ func TestStrategy(t *testing.T) {
 ## 参考资料
 
 1. **设计模式**: GoF (Gang of Four) - "Design Patterns: Elements of Reusable Object-Oriented Software"
-2. **Golang 官方文档**: https://golang.org/doc/
+2. **Golang 官方文档**: <https://golang.org/doc/>
 3. **并发编程**: "Concurrency in Go" by Katherine Cox-Buday
 4. **性能优化**: "High Performance Go" by Teiva Harsanyi
 
 ---
 
-*本文档遵循学术规范，包含形式化定义、数学证明和完整的代码示例。所有内容都与 Golang 相关，并符合最新的软件架构和设计模式最佳实践。* 
+*本文档遵循学术规范，包含形式化定义、数学证明和完整的代码示例。所有内容都与 Golang 相关，并符合最新的软件架构和设计模式最佳实践。*
