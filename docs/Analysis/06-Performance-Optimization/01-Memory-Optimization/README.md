@@ -14,14 +14,17 @@
 ## 1. 概念定义
 
 ### 定义 1.1 (内存优化)
+
 内存优化是提高内存使用效率的过程：
 $$\mathcal{O}_{Memory} = \frac{Performance_{System}}{Memory_{Usage}}$$
 
 ### 定义 1.2 (内存效率)
+
 内存效率定义为：
 $$Memory_{Efficiency} = \frac{Useful_{Memory}}{Total_{Memory}}$$
 
 ### 定义 1.3 (内存碎片)
+
 内存碎片率：
 $$Fragmentation_{Rate} = \frac{Fragmented_{Memory}}{Total_{Memory}}$$
 
@@ -30,14 +33,17 @@ $$Fragmentation_{Rate} = \frac{Fragmented_{Memory}}{Total_{Memory}}$$
 ### 2.1 Golang内存模型
 
 #### 定义 2.1 (Golang内存)
+
 Golang内存分为三个区域：
 $$\mathcal{M}_{Go} = \{Stack, Heap, GC\}$$
 
 #### 定义 2.2 (内存分配)
+
 内存分配函数：
 $$Allocate: Size \rightarrow Memory_{Block}$$
 
 #### Golang实现
+
 ```go
 type MemoryManager struct {
     stats    *MemoryStats
@@ -94,10 +100,12 @@ func (mm *MemoryManager) AnalyzeMemoryUsage() {
 ### 2.2 内存分配策略
 
 #### 定义 2.3 (分配策略)
+
 内存分配策略：
 $$Allocation_{Strategy} = \{Tiny, Small, Large\}$$
 
 #### Golang实现
+
 ```go
 type Allocator struct {
     tinyAllocator   *TinyAllocator
@@ -188,14 +196,17 @@ func (sa *SmallAllocator) getPool(sizeClass int) *sync.Pool {
 ### 3.1 零拷贝原理
 
 #### 定义 3.1 (零拷贝)
+
 零拷贝技术避免CPU在内存间复制数据：
 $$ZeroCopy = \neg \exists Copy_{Operation}$$
 
 #### 定义 3.2 (拷贝成本)
+
 拷贝操作的成本：
 $$Copy_{Cost} = Data_{Size} \times CPU_{Cycles}$$
 
 #### Golang实现
+
 ```go
 type ZeroCopyBuffer struct {
     data []byte
@@ -277,10 +288,12 @@ func (zcfr *ZeroCopyFileReader) Close() error {
 ### 3.2 内存映射
 
 #### 定义 3.3 (内存映射)
+
 内存映射函数：
 $$MemoryMap: File \rightarrow Memory_{Region}$$
 
 #### Golang实现
+
 ```go
 type MemoryMappedFile struct {
     file    *os.File
@@ -368,10 +381,12 @@ func (mmf *MemoryMappedFile) Close() error {
 ### 4.1 对象池
 
 #### 定义 4.1 (对象池)
+
 对象池管理可重用对象：
 $$ObjectPool = (Pool, Get, Put, Size)$$
 
 #### Golang实现
+
 ```go
 type ObjectPool[T any] struct {
     pool    chan T
@@ -493,10 +508,12 @@ func (cp *ConnectionPool) isValid(conn net.Conn) bool {
 ### 4.2 内存块池
 
 #### 定义 4.2 (内存块池)
+
 内存块池管理固定大小的内存块：
 $$MemoryBlockPool = (BlockSize, Pool, Allocate, Free)$$
 
 #### Golang实现
+
 ```go
 type MemoryBlockPool struct {
     blockSize int
@@ -596,14 +613,17 @@ func (mlp *MultiLevelPool) Free(block []byte) {
 ### 5.1 GC调优
 
 #### 定义 5.1 (GC效率)
+
 GC效率定义为：
 $$GC_{Efficiency} = \frac{Reclaimed_{Memory}}{GC_{Time}}$$
 
 #### 定义 5.2 (GC压力)
+
 GC压力：
 $$GC_{Pressure} = \frac{Allocation_{Rate}}{GC_{Frequency}}$$
 
 #### Golang实现
+
 ```go
 type GCOptimizer struct {
     targetHeapSize uint64
@@ -731,10 +751,12 @@ type GCPressureReport struct {
 ### 5.2 内存预分配
 
 #### 定义 5.3 (预分配)
+
 内存预分配函数：
 $$PreAllocate: ExpectedSize \rightarrow Memory_{Block}$$
 
 #### Golang实现
+
 ```go
 type PreAllocator struct {
     pools map[int]*sync.Pool
@@ -803,10 +825,12 @@ func (sbp *StringBuilderPool) Put(builder *strings.Builder) {
 ### 6.1 结构体优化
 
 #### 定义 6.1 (内存对齐)
+
 内存对齐要求：
 $$Alignment_{Requirement} = \max(Field_{Alignment})$$
 
 #### Golang实现
+
 ```go
 // 未优化的结构体
 type UnoptimizedStruct struct {
@@ -868,10 +892,12 @@ func (aa *AlignmentAnalyzer) AnalyzeStruct(v interface{}) {
 ### 6.2 数组和切片优化
 
 #### 定义 6.2 (内存局部性)
+
 内存局部性定义为：
 $$Locality_{Memory} = \frac{Cache_{Hits}}{Memory_{Accesses}}$$
 
 #### Golang实现
+
 ```go
 // 内存局部性优化
 type MemoryLocalityOptimizer struct{}
@@ -942,10 +968,12 @@ func (os *ObjectSlice[T]) Slice() []T {
 ### 7.1 泄漏检测器
 
 #### 定义 7.1 (内存泄漏)
+
 内存泄漏定义为：
 $$MemoryLeak = \exists Object : \neg Reachable(Object) \land \neg Freed(Object)$$
 
 #### Golang实现
+
 ```go
 type MemoryLeakDetector struct {
     snapshots []MemorySnapshot
@@ -1257,4 +1285,4 @@ func BenchmarkStructAlignment(b *testing.B) {
 ---
 
 *最后更新时间: 2024-01-XX*
-*版本: 1.0.0* 
+*版本: 1.0.0*
