@@ -28,10 +28,12 @@
 ### 2.1 游戏状态模型
 
 #### 定义 2.1.1 (游戏状态)
+
 游戏状态 $S$ 是一个五元组：
 $$S = (P, E, W, T, C)$$
 
 其中：
+
 - $P = \{p_1, p_2, ..., p_n\}$ 是玩家集合
 - $E = \{e_1, e_2, ..., e_m\}$ 是实体集合
 - $W$ 是世界状态
@@ -39,6 +41,7 @@ $$S = (P, E, W, T, C)$$
 - $C$ 是配置参数
 
 #### 定义 2.1.2 (状态转换函数)
+
 状态转换函数 $f$ 定义为：
 $$f: S \times A \rightarrow S'$$
 
@@ -47,22 +50,26 @@ $$f: S \times A \rightarrow S'$$
 ### 2.2 游戏循环模型
 
 #### 定义 2.2.1 (游戏循环)
+
 游戏循环是一个无限循环过程：
 $$\text{GameLoop} = \text{while}(true) \{\text{Input} \rightarrow \text{Update} \rightarrow \text{Render}\}$$
 
 #### 定理 2.2.1 (帧率稳定性)
+
 对于目标帧率 $FPS_{target}$，每帧时间 $T_{frame}$ 应满足：
 $$T_{frame} \leq \frac{1}{FPS_{target}}$$
 
 ### 2.3 网络同步模型
 
 #### 定义 2.3.1 (网络延迟)
+
 网络延迟 $L$ 定义为：
 $$L = T_{receive} - T_{send}$$
 
 其中 $T_{send}$ 是发送时间，$T_{receive}$ 是接收时间。
 
 #### 定义 2.3.2 (状态插值)
+
 对于时间 $t$ 的状态插值：
 $$S(t) = S_1 + (S_2 - S_1) \cdot \frac{t - t_1}{t_2 - t_1}$$
 
@@ -768,5 +775,3 @@ func (gr *GameRoom) Broadcast(data []byte) error {
 ---
 
 *本文档提供了游戏开发领域的完整架构分析，包含形式化定义、Golang实现和最佳实践。所有代码示例都经过验证，可直接在Golang环境中运行。*
-
-
