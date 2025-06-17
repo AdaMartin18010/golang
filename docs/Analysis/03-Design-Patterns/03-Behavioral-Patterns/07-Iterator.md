@@ -696,6 +696,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为元素数量。
 
 **证明**：
+
 - 需要访问所有元素
 - 每个元素的访问时间为常数
 - 总时间复杂度为 $O(n)$
@@ -709,6 +710,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为元素数量。
 
 **证明**：
+
 - 需要检查所有元素
 - 每个元素的过滤检查时间为常数
 - 总时间复杂度为 $O(n)$
@@ -722,6 +724,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为元素数量。
 
 **证明**：
+
 - 异步遍历不改变时间复杂度
 - 只是改变了执行方式
 - 总时间复杂度仍为 $O(n)$
@@ -737,6 +740,7 @@ $$S(n) = O(1)$$
 其中 $n$ 为元素数量。
 
 **分析**：
+
 - 迭代器本身占用常数空间
 - 不复制集合数据
 - 只存储索引和引用
@@ -750,6 +754,7 @@ $$S(n) = O(b)$$
 其中 $b$ 为缓冲区大小。
 
 **分析**：
+
 - 需要缓冲区存储元素
 - 缓冲区大小通常为常数
 - 空间复杂度为 $O(b)$
@@ -1271,6 +1276,6 @@ func FileProcessingSystemExample() {
 **参考文献**：
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
-2. Go Language Specification. https://golang.org/ref/spec
-3. Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
-4. Effective Go. https://golang.org/doc/effective_go.html 
+2. Go Language Specification. <https://golang.org/ref/spec>
+3. Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+4. Effective Go. <https://golang.org/doc/effective_go.html>
