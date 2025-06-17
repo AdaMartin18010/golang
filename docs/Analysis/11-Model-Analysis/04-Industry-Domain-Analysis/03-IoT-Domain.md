@@ -1,1360 +1,795 @@
-# 物联网领域分析
+# IoT行业领域分析
 
 ## 目录
 
 1. [概述](#概述)
-2. [核心概念](#核心概念)
-3. [IoT架构设计](#iot架构设计)
-4. [设备管理系统](#设备管理系统)
-5. [数据采集与处理](#数据采集与处理)
-6. [边缘计算](#边缘计算)
-7. [通信协议](#通信协议)
-8. [安全机制](#安全机制)
-9. [性能优化](#性能优化)
-10. [最佳实践](#最佳实践)
+2. [IoT系统形式化定义](#iot系统形式化定义)
+3. [核心架构模式](#核心架构模式)
+4. [Golang实现](#golang实现)
+5. [性能优化](#性能优化)
+6. [最佳实践](#最佳实践)
 
 ## 概述
 
-物联网(IoT)是连接物理世界和数字世界的桥梁，涉及传感器、网络通信、数据处理、智能控制等多个技术领域。Golang的高并发、低延迟和跨平台特性使其在IoT应用中具有显著优势。
+物联网(IoT)系统需要处理大规模设备连接、实时数据采集、边缘计算和云端协同。Golang的并发模型、内存管理和网络编程特性使其成为IoT系统的理想选择。
 
 ### 核心挑战
 
-- **设备管理**: 大量异构设备的管理和监控
-- **数据处理**: 海量传感器数据的实时处理
-- **网络通信**: 多种通信协议的适配和优化
-- **边缘计算**: 本地数据处理和智能决策
-- **安全可靠**: 设备安全和数据隐私保护
+- **设备管理**: 大规模设备连接和管理
+- **数据采集**: 实时数据流处理和存储
+- **边缘计算**: 本地数据处理和决策
+- **网络通信**: 多种协议支持(MQTT, CoAP, HTTP)
+- **资源约束**: 低功耗、低内存设备
+- **安全性**: 设备认证、数据加密、安全更新
 
-## 核心概念
+## IoT系统形式化定义
 
-### 1. IoT系统基础
+### 1. IoT系统代数
 
-**定义 1.1 (IoT设备)** IoT设备是具备感知、通信和计算能力的物理实体：
+定义IoT系统为五元组：
 
-$$IoTDevice = (ID, Type, Sensors, Actuators, Communication, Processing)$$
+$$\mathcal{I} = (D, S, P, C, E)$$
 
-**定义 1.2 (IoT网络)** IoT网络是连接设备和云平台的通信基础设施：
+其中：
+- $D = \{d_1, d_2, ..., d_n\}$ 为设备集合
+- $S = \{s_1, s_2, ..., s_m\}$ 为传感器集合
+- $P = \{p_1, p_2, ..., p_k\}$ 为协议集合
+- $C = \{c_1, c_2, ..., c_l\}$ 为计算节点集合
+- $E = \{e_1, e_2, ..., e_o\}$ 为事件集合
 
-$$IoTNetwork = (Protocols, Topology, Routing, Security)$$
+### 2. 设备状态机
 
-**定义 1.3 (IoT数据流)** IoT数据流是设备产生的时序数据：
+设备状态转换函数：
 
-$$DataStream = (DeviceID, Timestamp, Values, Quality, Metadata)$$
+$$\delta: D \times \Sigma \rightarrow D \times \Gamma$$
 
-### 2. 业务领域模型
+其中：
+- $\Sigma$ 为输入事件集合
+- $\Gamma$ 为输出动作集合
 
-```go
-// 核心IoT模型
-type IoTDevice struct {
-    ID          string
-    Name        string
-    Type        DeviceType
-    Location    Location
-    Status      DeviceStatus
-    Sensors     []Sensor
-    Actuators   []Actuator
-    Gateway     *Gateway
-    LastSeen    time.Time
-}
+### 3. 数据流模型
 
-type Sensor struct {
-    ID          string
-    Type        SensorType
-    Unit        string
-    Range       ValueRange
-    Accuracy    float64
-    SamplingRate float64
-}
+数据流定义为：
 
-type Actuator struct {
-    ID          string
-    Type        ActuatorType
-    Range       ValueRange
-    Status      ActuatorStatus
-    LastAction  time.Time
-}
+$$F: D \times T \rightarrow \mathbb{R}^n$$
 
-type Gateway struct {
-    ID          string
-    Location    Location
-    Devices     map[string]*IoTDevice
-    Protocols   []Protocol
-    Processing  *EdgeProcessor
-}
+其中 $T$ 为时间域，$\mathbb{R}^n$ 为n维数据空间。
 
-type Location struct {
-    Latitude    float64
-    Longitude   float64
-    Altitude    float64
-    Address     string
-}
-```
-
-## IoT架构设计
+## 核心架构模式
 
 ### 1. 分层架构
 
 ```go
-// IoT分层架构
-type IoTSystem struct {
-    DeviceLayer     *DeviceLayer
-    NetworkLayer    *NetworkLayer
-    EdgeLayer       *EdgeLayer
-    CloudLayer      *CloudLayer
-    ApplicationLayer *ApplicationLayer
-}
-
-type DeviceLayer struct {
-    Devices     map[string]*IoTDevice
-    Sensors     map[string]*Sensor
-    Actuators   map[string]*Actuator
-    Protocols   []DeviceProtocol
-}
-
-type NetworkLayer struct {
-    Gateways    map[string]*Gateway
-    Protocols   []NetworkProtocol
-    Routing     *RoutingEngine
-    Security    *SecurityManager
-}
-
-type EdgeLayer struct {
-    Processors  map[string]*EdgeProcessor
-    Storage     *EdgeStorage
-    Analytics   *EdgeAnalytics
-    Rules       []EdgeRule
-}
-
-type CloudLayer struct {
-    Platform    *CloudPlatform
-    Storage     *CloudStorage
-    Analytics   *CloudAnalytics
-    Services    map[string]*CloudService
-}
-
+// 应用层
 type ApplicationLayer struct {
-    Dashboards  []Dashboard
-    APIs        []API
-    Workflows   []Workflow
-    Integrations []Integration
+    DeviceManager    *DeviceManager
+    DataProcessor    *DataProcessor
+    RuleEngine       *RuleEngine
+}
+
+// 服务层
+type ServiceLayer struct {
+    CommunicationService *CommunicationService
+    StorageService       *StorageService
+    SecurityService      *SecurityService
+}
+
+// 协议层
+type ProtocolLayer struct {
+    MQTTClient *MQTTClient
+    CoAPClient *CoAPClient
+    HTTPClient *HTTPClient
+}
+
+// 硬件层
+type HardwareLayer struct {
+    Sensors     []Sensor
+    Actuators   []Actuator
+    CommModules []CommModule
 }
 ```
 
-### 2. 微服务架构
+### 2. 边缘计算架构
 
 ```go
-// IoT微服务架构
-type IoTServices struct {
-    DeviceService      *DeviceService
-    DataService        *DataService
-    AnalyticsService   *AnalyticsService
-    AlertService       *AlertService
-    WorkflowService    *WorkflowService
-    SecurityService    *SecurityService
+// 边缘节点
+type EdgeNode struct {
+    DeviceManager       *DeviceManager
+    DataProcessor       *DataProcessor
+    RuleEngine          *RuleEngine
+    CommunicationMgr    *CommunicationManager
+    LocalStorage        *LocalStorage
+    mu                  sync.RWMutex
 }
 
-type DeviceService struct {
-    devices    map[string]*IoTDevice
-    registry   *DeviceRegistry
-    discovery  *DeviceDiscovery
-    monitoring *DeviceMonitoring
+func (e *EdgeNode) Run(ctx context.Context) error {
+    ticker := time.NewTicker(time.Second)
+    defer ticker.Stop()
+    
+    for {
+        select {
+        case <-ctx.Done():
+            return ctx.Err()
+        case <-ticker.C:
+            if err := e.processCycle(); err != nil {
+                log.Printf("Processing cycle error: %v", err)
+            }
+        }
+    }
 }
 
-type DataService struct {
-    collectors map[string]*DataCollector
-    processors map[string]*DataProcessor
-    storage    *DataStorage
-    pipeline   *DataPipeline
-}
-
-type AnalyticsService struct {
-    realtime   *RealtimeAnalytics
-    batch      *BatchAnalytics
-    ml         *MachineLearning
-    rules      *RuleEngine
-}
-
-type AlertService struct {
-    rules      []AlertRule
-    channels   []AlertChannel
-    escalations []EscalationPolicy
-    history    *AlertHistory
+func (e *EdgeNode) processCycle() error {
+    // 1. 收集设备数据
+    deviceData, err := e.DeviceManager.CollectData()
+    if err != nil {
+        return fmt.Errorf("collect data: %w", err)
+    }
+    
+    // 2. 本地数据处理
+    processedData, err := e.DataProcessor.Process(deviceData)
+    if err != nil {
+        return fmt.Errorf("process data: %w", err)
+    }
+    
+    // 3. 规则引擎执行
+    actions, err := e.RuleEngine.Evaluate(processedData)
+    if err != nil {
+        return fmt.Errorf("evaluate rules: %w", err)
+    }
+    
+    // 4. 执行本地动作
+    if err := e.executeActions(actions); err != nil {
+        return fmt.Errorf("execute actions: %w", err)
+    }
+    
+    // 5. 上传重要数据到云端
+    if err := e.uploadToCloud(processedData); err != nil {
+        return fmt.Errorf("upload to cloud: %w", err)
+    }
+    
+    return nil
 }
 ```
 
 ### 3. 事件驱动架构
 
 ```go
-// IoT事件系统
-type IoTEvents struct {
-    EventBus   *EventBus
-    Handlers   map[string][]EventHandler
-    Filters    []EventFilter
-    Routing    *EventRouting
-}
-
+// 事件定义
 type IoTEvent interface {
-    EventID() string
     EventType() string
-    DeviceID() string
     Timestamp() time.Time
-    Data() interface{}
+    Source() string
 }
 
 type DeviceConnectedEvent struct {
-    ID          string
-    DeviceID    string
-    GatewayID   string
-    Timestamp   time.Time
-    Metadata    map[string]interface{}
+    DeviceID  string    `json:"device_id"`
+    Timestamp time.Time `json:"timestamp"`
+    Location  Location  `json:"location"`
 }
+
+func (e DeviceConnectedEvent) EventType() string { return "device_connected" }
+func (e DeviceConnectedEvent) Timestamp() time.Time { return e.Timestamp }
+func (e DeviceConnectedEvent) Source() string { return e.DeviceID }
 
 type SensorDataEvent struct {
-    ID          string
-    DeviceID    string
-    SensorID    string
-    Value       float64
-    Unit        string
-    Timestamp   time.Time
-    Quality     DataQuality
+    DeviceID   string    `json:"device_id"`
+    SensorType string    `json:"sensor_type"`
+    Value      float64   `json:"value"`
+    Unit       string    `json:"unit"`
+    Timestamp  time.Time `json:"timestamp"`
 }
 
-type AlertEvent struct {
-    ID          string
-    DeviceID    string
-    AlertType   AlertType
-    Severity    AlertSeverity
-    Message     string
-    Timestamp   time.Time
-}
+func (e SensorDataEvent) EventType() string { return "sensor_data" }
+func (e SensorDataEvent) Timestamp() time.Time { return e.Timestamp }
+func (e SensorDataEvent) Source() string { return e.DeviceID }
 
+// 事件处理器
 type EventHandler interface {
-    Handle(event IoTEvent) error
+    Handle(ctx context.Context, event IoTEvent) error
 }
 
-type DeviceEventHandler struct {
-    deviceService *DeviceService
-    dataService   *DataService
+// 事件总线
+type EventBus struct {
+    handlers map[string][]EventHandler
+    mu       sync.RWMutex
 }
 
-func (deh *DeviceEventHandler) Handle(event IoTEvent) error {
-    switch e := event.(type) {
-    case *DeviceConnectedEvent:
-        return deh.handleDeviceConnected(e)
-    case *SensorDataEvent:
-        return deh.handleSensorData(e)
-    case *AlertEvent:
-        return deh.handleAlert(e)
-    default:
-        return errors.New("unknown event type")
+func NewEventBus() *EventBus {
+    return &EventBus{
+        handlers: make(map[string][]EventHandler),
     }
 }
-```
 
-## 设备管理系统
-
-### 1. 设备注册与发现
-
-```go
-// 设备注册系统
-type DeviceRegistry struct {
-    devices    map[string]*IoTDevice
-    gateways   map[string]*Gateway
-    mutex      sync.RWMutex
-    discovery  *DeviceDiscovery
-}
-
-type DeviceDiscovery struct {
-    protocols  []DiscoveryProtocol
-    scanners   map[string]*DeviceScanner
-    listeners  []DiscoveryListener
-}
-
-type DiscoveryProtocol interface {
-    Name() string
-    Scan() ([]*IoTDevice, error)
-    Listen() (<-chan *IoTDevice, error)
-}
-
-type MQTTScanner struct {
-    broker     string
-    topics     []string
-    client     *mqtt.Client
-}
-
-func (ms *MQTTScanner) Name() string {
-    return "MQTT"
-}
-
-func (ms *MQTTScanner) Scan() ([]*IoTDevice, error) {
-    devices := make([]*IoTDevice, 0)
+func (eb *EventBus) Subscribe(eventType string, handler EventHandler) {
+    eb.mu.Lock()
+    defer eb.mu.Unlock()
     
-    // 扫描MQTT设备
-    for _, topic := range ms.topics {
-        if device := ms.scanTopic(topic); device != nil {
-            devices = append(devices, device)
-        }
+    eb.handlers[eventType] = append(eb.handlers[eventType], handler)
+}
+
+func (eb *EventBus) Publish(ctx context.Context, event IoTEvent) error {
+    eb.mu.RLock()
+    handlers := eb.handlers[event.EventType()]
+    eb.mu.RUnlock()
+    
+    var wg sync.WaitGroup
+    errChan := make(chan error, len(handlers))
+    
+    for _, handler := range handlers {
+        wg.Add(1)
+        go func(h EventHandler) {
+            defer wg.Done()
+            if err := h.Handle(ctx, event); err != nil {
+                errChan <- err
+            }
+        }(handler)
     }
     
-    return devices, nil
-}
-
-func (ms *MQTTScanner) Listen() (<-chan *IoTDevice, error) {
-    deviceChan := make(chan *IoTDevice, 100)
+    wg.Wait()
+    close(errChan)
     
-    // 订阅设备发现主题
-    ms.client.Subscribe("device/+/discovery", 0, func(client mqtt.Client, msg mqtt.Message) {
-        device := ms.parseDeviceMessage(msg)
-        if device != nil {
-            deviceChan <- device
-        }
-    })
-    
-    return deviceChan, nil
-}
-
-func (dr *DeviceRegistry) RegisterDevice(device *IoTDevice) error {
-    dr.mutex.Lock()
-    defer dr.mutex.Unlock()
-    
-    // 验证设备
-    if err := dr.validateDevice(device); err != nil {
-        return err
+    // 收集错误
+    var errors []error
+    for err := range errChan {
+        errors = append(errors, err)
     }
     
-    // 注册设备
-    dr.devices[device.ID] = device
-    
-    // 发布注册事件
-    event := &DeviceRegisteredEvent{
-        ID:        generateID(),
-        DeviceID:  device.ID,
-        Timestamp: time.Now(),
+    if len(errors) > 0 {
+        return fmt.Errorf("event handling errors: %v", errors)
     }
-    dr.publishEvent(event)
     
     return nil
 }
+```
 
-func (dr *DeviceRegistry) GetDevice(deviceID string) (*IoTDevice, error) {
-    dr.mutex.RLock()
-    defer dr.mutex.RUnlock()
+## Golang实现
+
+### 1. 设备管理
+
+```go
+// 设备聚合根
+type Device struct {
+    ID           string                 `json:"id"`
+    Name         string                 `json:"name"`
+    DeviceType   DeviceType             `json:"device_type"`
+    Location     Location               `json:"location"`
+    Status       DeviceStatus           `json:"status"`
+    Capabilities []Capability           `json:"capabilities"`
+    Config       DeviceConfiguration    `json:"config"`
+    LastSeen     time.Time              `json:"last_seen"`
+    mu           sync.RWMutex           `json:"-"`
+}
+
+type DeviceConfiguration struct {
+    SamplingRate        time.Duration         `json:"sampling_rate"`
+    ThresholdValues     map[string]float64    `json:"threshold_values"`
+    CommunicationInterval time.Duration       `json:"communication_interval"`
+    PowerMode           PowerMode             `json:"power_mode"`
+    SecuritySettings    SecuritySettings      `json:"security_settings"`
+}
+
+func (d *Device) IsOnline() bool {
+    d.mu.RLock()
+    defer d.mu.RUnlock()
     
-    device, exists := dr.devices[deviceID]
+    return d.Status == DeviceStatusOnline &&
+           time.Since(d.LastSeen) < 5*time.Minute
+}
+
+func (d *Device) UpdateStatus(status DeviceStatus) {
+    d.mu.Lock()
+    defer d.mu.Unlock()
+    
+    d.Status = status
+    if status == DeviceStatusOnline {
+        d.LastSeen = time.Now()
+    }
+}
+
+func (d *Device) CheckThreshold(sensorType string, value float64) *ThresholdAlert {
+    d.mu.RLock()
+    defer d.mu.RUnlock()
+    
+    if threshold, exists := d.Config.ThresholdValues[sensorType]; exists {
+        if value > threshold {
+            return &ThresholdAlert{
+                DeviceID:   d.ID,
+                SensorType: sensorType,
+                Value:      value,
+                Threshold:  threshold,
+                Timestamp:  time.Now(),
+            }
+        }
+    }
+    return nil
+}
+
+// 设备管理器
+type DeviceManager struct {
+    devices map[string]*Device
+    mu      sync.RWMutex
+}
+
+func NewDeviceManager() *DeviceManager {
+    return &DeviceManager{
+        devices: make(map[string]*Device),
+    }
+}
+
+func (dm *DeviceManager) RegisterDevice(device *Device) error {
+    dm.mu.Lock()
+    defer dm.mu.Unlock()
+    
+    if _, exists := dm.devices[device.ID]; exists {
+        return fmt.Errorf("device %s already registered", device.ID)
+    }
+    
+    dm.devices[device.ID] = device
+    return nil
+}
+
+func (dm *DeviceManager) GetDevice(id string) (*Device, error) {
+    dm.mu.RLock()
+    defer dm.mu.RUnlock()
+    
+    device, exists := dm.devices[id]
     if !exists {
-        return nil, errors.New("device not found")
+        return nil, fmt.Errorf("device %s not found", id)
     }
     
     return device, nil
 }
-```
 
-### 2. 设备监控
-
-```go
-// 设备监控系统
-type DeviceMonitoring struct {
-    devices    map[string]*DeviceMonitor
-    metrics    *MetricsCollector
-    alerts     *AlertManager
-    health     *HealthChecker
-}
-
-type DeviceMonitor struct {
-    DeviceID   string
-    Status     DeviceStatus
-    Metrics    map[string]*Metric
-    LastUpdate time.Time
-    Health     HealthStatus
-}
-
-type Metric struct {
-    Name        string
-    Value       float64
-    Unit        string
-    Timestamp   time.Time
-    Threshold   *Threshold
-}
-
-type Threshold struct {
-    Min         *float64
-    Max         *float64
-    Alert       bool
-}
-
-type HealthChecker struct {
-    checks     []HealthCheck
-    interval   time.Duration
-    timeout    time.Duration
-}
-
-type HealthCheck interface {
-    Name() string
-    Check(device *IoTDevice) (HealthStatus, error)
-}
-
-type ConnectivityCheck struct{}
-
-func (cc *ConnectivityCheck) Name() string {
-    return "connectivity"
-}
-
-func (cc *ConnectivityCheck) Check(device *IoTDevice) (HealthStatus, error) {
-    // 检查设备连接性
-    if time.Since(device.LastSeen) > 5*time.Minute {
-        return HealthStatusUnhealthy, errors.New("device not responding")
+func (dm *DeviceManager) CollectData() ([]SensorData, error) {
+    dm.mu.RLock()
+    devices := make([]*Device, 0, len(dm.devices))
+    for _, device := range dm.devices {
+        devices = append(devices, device)
     }
+    dm.mu.RUnlock()
     
-    return HealthStatusHealthy, nil
-}
-
-func (dm *DeviceMonitoring) MonitorDevice(deviceID string) {
-    monitor := &DeviceMonitor{
-        DeviceID: deviceID,
-        Status:   DeviceStatusOnline,
-        Metrics:  make(map[string]*Metric),
-    }
+    var allData []SensorData
+    var wg sync.WaitGroup
+    dataChan := make(chan []SensorData, len(devices))
+    errChan := make(chan error, len(devices))
     
-    dm.devices[deviceID] = monitor
-    
-    // 启动监控协程
-    go dm.monitorLoop(monitor)
-}
-
-func (dm *DeviceMonitoring) monitorLoop(monitor *DeviceMonitor) {
-    ticker := time.NewTicker(30 * time.Second)
-    defer ticker.Stop()
-    
-    for range ticker.C {
-        // 执行健康检查
-        for _, check := range dm.health.checks {
-            status, err := check.Check(dm.getDevice(monitor.DeviceID))
-            if err != nil {
-                monitor.Health = HealthStatusUnhealthy
-                dm.alerts.RaiseAlert(monitor.DeviceID, check.Name(), err.Error())
+    for _, device := range devices {
+        wg.Add(1)
+        go func(d *Device) {
+            defer wg.Done()
+            
+            if data, err := d.collectSensorData(); err != nil {
+                errChan <- err
             } else {
-                monitor.Health = status
+                dataChan <- data
             }
-        }
-        
-        // 更新监控指标
-        dm.updateMetrics(monitor)
-        
-        monitor.LastUpdate = time.Now()
+        }(device)
     }
+    
+    wg.Wait()
+    close(dataChan)
+    close(errChan)
+    
+    // 收集数据
+    for data := range dataChan {
+        allData = append(allData, data...)
+    }
+    
+    // 检查错误
+    for err := range errChan {
+        log.Printf("Device data collection error: %v", err)
+    }
+    
+    return allData, nil
 }
 ```
 
-## 数据采集与处理
-
-### 1. 数据采集
+### 2. 数据处理
 
 ```go
-// 数据采集系统
-type DataCollector struct {
-    collectors map[string]*Collector
-    protocols  map[string]Protocol
-    storage    *DataStorage
-    pipeline   *DataPipeline
-}
-
-type Collector struct {
-    ID          string
-    DeviceID    string
-    Protocol    Protocol
-    Config      *CollectorConfig
-    Running     bool
-    DataChan    chan *SensorData
-}
-
-type CollectorConfig struct {
-    Interval    time.Duration
-    BatchSize   int
-    RetryCount  int
-    Timeout     time.Duration
-}
-
+// 传感器数据
 type SensorData struct {
-    ID          string
-    DeviceID    string
-    SensorID    string
-    Value       float64
-    Unit        string
-    Timestamp   time.Time
-    Quality     DataQuality
-    Metadata    map[string]interface{}
+    ID         string            `json:"id"`
+    DeviceID   string            `json:"device_id"`
+    SensorType string            `json:"sensor_type"`
+    Value      float64           `json:"value"`
+    Unit       string            `json:"unit"`
+    Timestamp  time.Time         `json:"timestamp"`
+    Quality    DataQuality       `json:"quality"`
+    Metadata   SensorMetadata    `json:"metadata"`
 }
 
-type Protocol interface {
-    Name() string
-    Connect(config *ConnectionConfig) error
-    Read() ([]byte, error)
-    Write(data []byte) error
-    Close() error
+type SensorMetadata struct {
+    Accuracy              float64            `json:"accuracy"`
+    Precision             float64            `json:"precision"`
+    CalibrationDate       *time.Time         `json:"calibration_date,omitempty"`
+    EnvironmentalConditions map[string]float64 `json:"environmental_conditions"`
 }
 
-type MQTTProtocol struct {
-    client      *mqtt.Client
-    topics      []string
-    qos         int
+func (sd *SensorData) IsValid() bool {
+    return sd.Quality == DataQualityGood &&
+           !math.IsNaN(sd.Value) &&
+           !math.IsInf(sd.Value, 0)
 }
 
-func (mp *MQTTProtocol) Name() string {
-    return "MQTT"
-}
-
-func (mp *MQTTProtocol) Connect(config *ConnectionConfig) error {
-    opts := mqtt.NewClientOptions()
-    opts.AddBroker(config.Broker)
-    opts.SetClientID(config.ClientID)
-    opts.SetUsername(config.Username)
-    opts.SetPassword(config.Password)
-    
-    mp.client = mqtt.NewClient(opts)
-    return mp.client.Connect()
-}
-
-func (mp *MQTTProtocol) Read() ([]byte, error) {
-    // MQTT读取逻辑
-    return nil, nil
-}
-
-func (dc *DataCollector) StartCollector(deviceID string, config *CollectorConfig) error {
-    collector := &Collector{
-        ID:       generateID(),
-        DeviceID: deviceID,
-        Config:   config,
-        DataChan: make(chan *SensorData, 1000),
+func (sd *SensorData) IsOutlier(historicalData []SensorData) bool {
+    if len(historicalData) < 10 {
+        return false
     }
     
-    dc.collectors[collector.ID] = collector
-    
-    // 启动采集协程
-    go dc.collectLoop(collector)
-    
-    return nil
-}
-
-func (dc *DataCollector) collectLoop(collector *Collector) {
-    ticker := time.NewTicker(collector.Config.Interval)
-    defer ticker.Stop()
-    
-    batch := make([]*SensorData, 0, collector.Config.BatchSize)
-    
-    for range ticker.C {
-        // 采集数据
-        data := dc.collectData(collector)
-        if data != nil {
-            batch = append(batch, data)
-        }
-        
-        // 批量处理
-        if len(batch) >= collector.Config.BatchSize {
-            dc.processBatch(batch)
-            batch = batch[:0]
-        }
+    values := make([]float64, len(historicalData))
+    for i, data := range historicalData {
+        values[i] = data.Value
     }
+    
+    mean := calculateMean(values)
+    stdDev := calculateStdDev(values, mean)
+    
+    return math.Abs(sd.Value-mean) > 3.0*stdDev
 }
 
-func (dc *DataCollector) collectData(collector *Collector) *SensorData {
-    // 实际数据采集逻辑
-    return &SensorData{
-        ID:        generateID(),
-        DeviceID:  collector.DeviceID,
-        SensorID:  "temperature",
-        Value:     rand.Float64() * 100,
-        Unit:      "°C",
-        Timestamp: time.Now(),
-        Quality:   DataQualityGood,
-    }
-}
-```
-
-### 2. 数据处理管道
-
-```go
-// 数据处理管道
-type DataPipeline struct {
-    stages     []PipelineStage
+// 数据处理器
+type DataProcessor struct {
     filters    []DataFilter
     transformers []DataTransformer
     aggregators []DataAggregator
 }
 
-type PipelineStage interface {
-    Name() string
-    Process(data []*SensorData) ([]*SensorData, error)
-}
-
-type DataFilter struct {
-    Name        string
-    Condition   string
-    Enabled     bool
-}
-
-type DataTransformer struct {
-    Name        string
-    Function    TransformFunction
-    Parameters  map[string]interface{}
-}
-
-type DataAggregator struct {
-    Name        string
-    Window      time.Duration
-    Function    AggregationFunction
-    GroupBy     []string
-}
-
-type TransformFunction func(data *SensorData, params map[string]interface{}) (*SensorData, error)
-
-type AggregationFunction func(data []*SensorData) (*SensorData, error)
-
-func (dp *DataPipeline) Process(data []*SensorData) ([]*SensorData, error) {
-    result := data
+func (dp *DataProcessor) Process(data []SensorData) ([]ProcessedData, error) {
+    // 1. 数据过滤
+    filteredData := dp.filter(data)
     
-    // 应用过滤器
-    for _, filter := range dp.filters {
-        if filter.Enabled {
-            filtered := make([]*SensorData, 0)
-            for _, item := range result {
-                if dp.evaluateFilter(filter, item) {
-                    filtered = append(filtered, item)
-                }
-            }
-            result = filtered
-        }
-    }
+    // 2. 数据转换
+    transformedData := dp.transform(filteredData)
     
-    // 应用转换器
-    for _, transformer := range dp.transformers {
-        transformed := make([]*SensorData, 0)
-        for _, item := range result {
-            if transformedItem, err := transformer.Function(item, transformer.Parameters); err == nil {
-                transformed = append(transformed, transformedItem)
+    // 3. 数据聚合
+    aggregatedData := dp.aggregate(transformedData)
+    
+    return aggregatedData, nil
+}
+
+func (dp *DataProcessor) filter(data []SensorData) []SensorData {
+    var filtered []SensorData
+    
+    for _, item := range data {
+        valid := true
+        for _, filter := range dp.filters {
+            if !filter.Apply(item) {
+                valid = false
+                break
             }
         }
-        result = transformed
-    }
-    
-    // 应用聚合器
-    for _, aggregator := range dp.aggregators {
-        if aggregated, err := dp.aggregate(aggregator, result); err == nil {
-            result = []*SensorData{aggregated}
-        }
-    }
-    
-    return result, nil
-}
-
-func (dp *DataPipeline) evaluateFilter(filter *DataFilter, data *SensorData) bool {
-    // 简单的过滤条件评估
-    switch filter.Condition {
-    case "value_gt_50":
-        return data.Value > 50
-    case "quality_good":
-        return data.Quality == DataQualityGood
-    default:
-        return true
-    }
-}
-
-func (dp *DataPipeline) aggregate(aggregator *DataAggregator, data []*SensorData) (*SensorData, error) {
-    // 数据聚合逻辑
-    if len(data) == 0 {
-        return nil, errors.New("no data to aggregate")
-    }
-    
-    var sum float64
-    for _, item := range data {
-        sum += item.Value
-    }
-    
-    avg := sum / float64(len(data))
-    
-    return &SensorData{
-        ID:        generateID(),
-        DeviceID:  data[0].DeviceID,
-        SensorID:  data[0].SensorID,
-        Value:     avg,
-        Unit:      data[0].Unit,
-        Timestamp: time.Now(),
-        Quality:   DataQualityGood,
-    }, nil
-}
-```
-
-## 边缘计算
-
-### 1. 边缘处理器
-
-```go
-// 边缘计算系统
-type EdgeProcessor struct {
-    ID          string
-    Location    Location
-    Capacity    *ProcessingCapacity
-    Tasks       map[string]*ProcessingTask
-    Storage     *EdgeStorage
-    Analytics   *EdgeAnalytics
-}
-
-type ProcessingCapacity struct {
-    CPU         float64
-    Memory      int64
-    Storage     int64
-    Network     float64
-}
-
-type ProcessingTask struct {
-    ID          string
-    Type        TaskType
-    Status      TaskStatus
-    Priority    int
-    Data        interface{}
-    Result      interface{}
-    CreatedAt   time.Time
-    StartedAt   *time.Time
-    CompletedAt *time.Time
-}
-
-type EdgeStorage struct {
-    Local       *LocalStorage
-    Cache       *Cache
-    Sync        *SyncManager
-}
-
-type EdgeAnalytics struct {
-    Rules       []AnalyticsRule
-    Models      map[string]*MLModel
-    Predictions map[string]*Prediction
-}
-
-func (ep *EdgeProcessor) ProcessTask(task *ProcessingTask) error {
-    task.Status = TaskStatusRunning
-    now := time.Now()
-    task.StartedAt = &now
-    
-    defer func() {
-        completed := time.Now()
-        task.CompletedAt = &completed
-        task.Status = TaskStatusCompleted
-    }()
-    
-    switch task.Type {
-    case TaskTypeDataFilter:
-        return ep.processDataFilter(task)
-    case TaskTypeDataAggregation:
-        return ep.processDataAggregation(task)
-    case TaskTypeMLInference:
-        return ep.processMLInference(task)
-    case TaskTypeRuleEvaluation:
-        return ep.processRuleEvaluation(task)
-    default:
-        return errors.New("unknown task type")
-    }
-}
-
-func (ep *EdgeProcessor) processDataFilter(task *ProcessingTask) error {
-    data := task.Data.([]*SensorData)
-    filter := task.Data.(*DataFilter)
-    
-    filtered := make([]*SensorData, 0)
-    for _, item := range data {
-        if ep.evaluateFilter(filter, item) {
+        if valid {
             filtered = append(filtered, item)
         }
     }
     
-    task.Result = filtered
-    return nil
-}
-
-func (ep *EdgeProcessor) processMLInference(task *ProcessingTask) error {
-    modelID := task.Data.(string)
-    input := task.Data.([]float64)
-    
-    model, exists := ep.Analytics.Models[modelID]
-    if !exists {
-        return errors.New("model not found")
-    }
-    
-    prediction := model.Predict(input)
-    task.Result = prediction
-    
-    return nil
+    return filtered
 }
 ```
 
-### 2. 本地决策
+### 3. 规则引擎
 
 ```go
-// 本地决策系统
-type LocalDecisionEngine struct {
-    rules       []DecisionRule
-    conditions  map[string]*Condition
-    actions     map[string]*Action
-    history     *DecisionHistory
+// 规则定义
+type Rule struct {
+    ID          string      `json:"id"`
+    Name        string      `json:"name"`
+    Description string      `json:"description"`
+    Conditions  []Condition `json:"conditions"`
+    Actions     []Action    `json:"actions"`
+    Priority    int         `json:"priority"`
+    Enabled     bool        `json:"enabled"`
+    CreatedAt   time.Time   `json:"created_at"`
+    UpdatedAt   time.Time   `json:"updated_at"`
 }
 
-type DecisionRule struct {
-    ID          string
-    Name        string
-    Condition   string
-    Actions     []string
-    Priority    int
-    Enabled     bool
+type Condition interface {
+    Evaluate(ctx context.Context, data interface{}) (bool, error)
 }
 
-type Condition struct {
-    ID          string
-    Type        ConditionType
-    Parameters  map[string]interface{}
-    Evaluator   ConditionEvaluator
+type ThresholdCondition struct {
+    DeviceID   string  `json:"device_id"`
+    SensorType string  `json:"sensor_type"`
+    Operator   string  `json:"operator"`
+    Value      float64 `json:"value"`
 }
 
-type Action struct {
-    ID          string
-    Type        ActionType
-    Parameters  map[string]interface{}
-    Executor    ActionExecutor
-}
-
-type ConditionEvaluator func(data *SensorData, params map[string]interface{}) bool
-
-type ActionExecutor func(device *IoTDevice, params map[string]interface{}) error
-
-func (lde *LocalDecisionEngine) Evaluate(data *SensorData) ([]*Action, error) {
-    var actions []*Action
+func (tc *ThresholdCondition) Evaluate(ctx context.Context, data interface{}) (bool, error) {
+    sensorData, ok := data.(SensorData)
+    if !ok {
+        return false, fmt.Errorf("invalid data type for threshold condition")
+    }
     
-    for _, rule := range lde.rules {
+    if sensorData.DeviceID != tc.DeviceID || sensorData.SensorType != tc.SensorType {
+        return false, nil
+    }
+    
+    switch tc.Operator {
+    case ">":
+        return sensorData.Value > tc.Value, nil
+    case "<":
+        return sensorData.Value < tc.Value, nil
+    case ">=":
+        return sensorData.Value >= tc.Value, nil
+    case "<=":
+        return sensorData.Value <= tc.Value, nil
+    case "==":
+        return sensorData.Value == tc.Value, nil
+    default:
+        return false, fmt.Errorf("unsupported operator: %s", tc.Operator)
+    }
+}
+
+type Action interface {
+    Execute(ctx context.Context, data interface{}) error
+}
+
+type SendAlertAction struct {
+    AlertType   string   `json:"alert_type"`
+    Recipients  []string `json:"recipients"`
+    MessageTemplate string `json:"message_template"`
+}
+
+func (sa *SendAlertAction) Execute(ctx context.Context, data interface{}) error {
+    // 实现告警发送逻辑
+    return nil
+}
+
+// 规则引擎
+type RuleEngine struct {
+    rules []*Rule
+    mu    sync.RWMutex
+}
+
+func (re *RuleEngine) AddRule(rule *Rule) {
+    re.mu.Lock()
+    defer re.mu.Unlock()
+    
+    re.rules = append(re.rules, rule)
+    
+    // 按优先级排序
+    sort.Slice(re.rules, func(i, j int) bool {
+        return re.rules[i].Priority > re.rules[j].Priority
+    })
+}
+
+func (re *RuleEngine) Evaluate(data []SensorData) ([]Action, error) {
+    re.mu.RLock()
+    rules := make([]*Rule, len(re.rules))
+    copy(rules, re.rules)
+    re.mu.RUnlock()
+    
+    var actions []Action
+    
+    for _, rule := range rules {
         if !rule.Enabled {
             continue
         }
         
-        if lde.evaluateCondition(rule.Condition, data) {
-            for _, actionID := range rule.Actions {
-                if action, exists := lde.actions[actionID]; exists {
-                    actions = append(actions, action)
-                }
-            }
+        matched, err := re.evaluateRule(rule, data)
+        if err != nil {
+            return nil, fmt.Errorf("evaluate rule %s: %w", rule.ID, err)
+        }
+        
+        if matched {
+            actions = append(actions, rule.Actions...)
         }
     }
-    
-    // 按优先级排序
-    sort.Slice(actions, func(i, j int) bool {
-        return actions[i].Priority > actions[j].Priority
-    })
     
     return actions, nil
 }
 
-func (lde *LocalDecisionEngine) ExecuteActions(device *IoTDevice, actions []*Action) error {
-    for _, action := range actions {
-        if err := action.Executor(device, action.Parameters); err != nil {
-            lde.history.Record(device.ID, action.ID, DecisionStatusFailed, err.Error())
-            return err
+func (re *RuleEngine) evaluateRule(rule *Rule, data []SensorData) (bool, error) {
+    for _, condition := range rule.Conditions {
+        matched := false
+        
+        for _, sensorData := range data {
+            if result, err := condition.Evaluate(context.Background(), sensorData); err != nil {
+                return false, err
+            } else if result {
+                matched = true
+                break
+            }
         }
         
-        lde.history.Record(device.ID, action.ID, DecisionStatusSuccess, "")
-    }
-    
-    return nil
-}
-```
-
-## 通信协议
-
-### 1. 协议适配器
-
-```go
-// 通信协议适配器
-type ProtocolAdapter struct {
-    protocols  map[string]Protocol
-    converters map[string]*DataConverter
-    handlers   map[string]MessageHandler
-}
-
-type Protocol interface {
-    Name() string
-    Connect(config *ConnectionConfig) error
-    Send(message *Message) error
-    Receive() (<-chan *Message, error)
-    Close() error
-}
-
-type Message struct {
-    ID          string
-    Type        MessageType
-    Data        []byte
-    Timestamp   time.Time
-    Source      string
-    Destination string
-}
-
-type DataConverter struct {
-    FromFormat  DataFormat
-    ToFormat    DataFormat
-    Converter   ConversionFunction
-}
-
-type ConversionFunction func(data []byte, from, to DataFormat) ([]byte, error)
-
-// MQTT协议实现
-type MQTTProtocol struct {
-    client      *mqtt.Client
-    topics      map[string]byte
-    messageChan chan *Message
-}
-
-func (mp *MQTTProtocol) Name() string {
-    return "MQTT"
-}
-
-func (mp *MQTTProtocol) Connect(config *ConnectionConfig) error {
-    opts := mqtt.NewClientOptions()
-    opts.AddBroker(config.Broker)
-    opts.SetClientID(config.ClientID)
-    opts.SetUsername(config.Username)
-    opts.SetPassword(config.Password)
-    
-    mp.client = mqtt.NewClient(opts)
-    return mp.client.Connect()
-}
-
-func (mp *MQTTProtocol) Send(message *Message) error {
-    topic := fmt.Sprintf("device/%s/%s", message.Destination, message.Type)
-    return mp.client.Publish(topic, 0, false, message.Data)
-}
-
-func (mp *MQTTProtocol) Receive() (<-chan *Message, error) {
-    mp.messageChan = make(chan *Message, 100)
-    
-    for topic, qos := range mp.topics {
-        mp.client.Subscribe(topic, qos, func(client mqtt.Client, msg mqtt.Message) {
-            message := &Message{
-                ID:          generateID(),
-                Type:        mp.parseMessageType(msg.Topic()),
-                Data:        msg.Payload(),
-                Timestamp:   time.Now(),
-                Source:      mp.parseSource(msg.Topic()),
-                Destination: mp.parseDestination(msg.Topic()),
-            }
-            mp.messageChan <- message
-        })
-    }
-    
-    return mp.messageChan, nil
-}
-
-// CoAP协议实现
-type CoAPProtocol struct {
-    server      *coap.Server
-    clients     map[string]*coap.Client
-    messageChan chan *Message
-}
-
-func (cp *CoAPProtocol) Name() string {
-    return "CoAP"
-}
-
-func (cp *CoAPProtocol) Connect(config *ConnectionConfig) error {
-    cp.server = coap.NewServer()
-    cp.clients = make(map[string]*coap.Client)
-    cp.messageChan = make(chan *Message, 100)
-    
-    // 设置消息处理器
-    cp.server.HandleFunc("/", cp.handleMessage)
-    
-    return cp.server.ListenAndServe(config.Address)
-}
-
-func (cp *CoAPProtocol) handleMessage(w coap.ResponseWriter, r *coap.Request) {
-    message := &Message{
-        ID:          generateID(),
-        Type:        cp.parseMessageType(r.URL.Path),
-        Data:        r.Payload,
-        Timestamp:   time.Now(),
-        Source:      r.RemoteAddr,
-        Destination: cp.parseDestination(r.URL.Path),
-    }
-    
-    cp.messageChan <- message
-}
-```
-
-### 2. 消息路由
-
-```go
-// 消息路由系统
-type MessageRouter struct {
-    routes      map[string]*Route
-    handlers    map[string]MessageHandler
-    middleware  []MessageMiddleware
-}
-
-type Route struct {
-    Pattern     string
-    Handler     string
-    Methods     []string
-    Middleware  []string
-}
-
-type MessageHandler func(message *Message) (*Message, error)
-
-type MessageMiddleware func(next MessageHandler) MessageHandler
-
-func (mr *MessageRouter) Route(message *Message) (*Message, error) {
-    // 查找匹配的路由
-    route := mr.findRoute(message)
-    if route == nil {
-        return nil, errors.New("no route found")
-    }
-    
-    // 获取处理器
-    handler, exists := mr.handlers[route.Handler]
-    if !exists {
-        return nil, errors.New("handler not found")
-    }
-    
-    // 应用中间件
-    finalHandler := mr.applyMiddleware(handler, route.Middleware)
-    
-    // 执行处理器
-    return finalHandler(message)
-}
-
-func (mr *MessageRouter) findRoute(message *Message) *Route {
-    for pattern, route := range mr.routes {
-        if mr.matchPattern(pattern, message.Type) {
-            return route
-        }
-    }
-    return nil
-}
-
-func (mr *MessageRouter) applyMiddleware(handler MessageHandler, middlewareNames []string) MessageHandler {
-    finalHandler := handler
-    
-    for i := len(middlewareNames) - 1; i >= 0; i-- {
-        if middleware, exists := mr.middleware[middlewareNames[i]]; exists {
-            finalHandler = middleware(finalHandler)
+        if !matched {
+            return false, nil
         }
     }
     
-    return finalHandler
-}
-```
-
-## 安全机制
-
-### 1. 设备认证
-
-```go
-// 设备认证系统
-type DeviceAuthentication struct {
-    devices    map[string]*DeviceCredential
-    tokens     map[string]*AuthToken
-    policies   []AuthPolicy
-}
-
-type DeviceCredential struct {
-    DeviceID    string
-    PublicKey   []byte
-    Certificate *x509.Certificate
-    Permissions []string
-}
-
-type AuthToken struct {
-    Token       string
-    DeviceID    string
-    Permissions []string
-    ExpiresAt   time.Time
-    IssuedAt    time.Time
-}
-
-type AuthPolicy struct {
-    ID          string
-    Name        string
-    Rules       []AuthRule
-    Enabled     bool
-}
-
-func (da *DeviceAuthentication) AuthenticateDevice(deviceID string, credentials []byte) (*AuthToken, error) {
-    // 验证设备凭证
-    credential, exists := da.devices[deviceID]
-    if !exists {
-        return nil, errors.New("device not found")
-    }
-    
-    if !da.validateCredentials(credential, credentials) {
-        return nil, errors.New("invalid credentials")
-    }
-    
-    // 检查认证策略
-    if !da.checkPolicies(deviceID) {
-        return nil, errors.New("authentication policy violation")
-    }
-    
-    // 生成认证令牌
-    token := &AuthToken{
-        Token:       generateToken(),
-        DeviceID:    deviceID,
-        Permissions: credential.Permissions,
-        ExpiresAt:   time.Now().Add(24 * time.Hour),
-        IssuedAt:    time.Now(),
-    }
-    
-    da.tokens[token.Token] = token
-    return token, nil
-}
-
-func (da *DeviceAuthentication) ValidateToken(tokenString string) (*AuthToken, error) {
-    token, exists := da.tokens[tokenString]
-    if !exists {
-        return nil, errors.New("token not found")
-    }
-    
-    if time.Now().After(token.ExpiresAt) {
-        delete(da.tokens, tokenString)
-        return nil, errors.New("token expired")
-    }
-    
-    return token, nil
-}
-```
-
-### 2. 数据加密
-
-```go
-// 数据加密系统
-type DataEncryption struct {
-    algorithms  map[string]EncryptionAlgorithm
-    keys        map[string]*EncryptionKey
-    policies    []EncryptionPolicy
-}
-
-type EncryptionAlgorithm interface {
-    Name() string
-    Encrypt(data []byte, key []byte) ([]byte, error)
-    Decrypt(data []byte, key []byte) ([]byte, error)
-}
-
-type EncryptionKey struct {
-    ID          string
-    Algorithm   string
-    Key         []byte
-    CreatedAt   time.Time
-    ExpiresAt   *time.Time
-}
-
-type EncryptionPolicy struct {
-    ID          string
-    Name        string
-    Algorithm   string
-    KeyRotation time.Duration
-    Enabled     bool
-}
-
-// AES加密算法
-type AESAlgorithm struct {
-    keySize int
-}
-
-func (aa *AESAlgorithm) Name() string {
-    return "AES-256"
-}
-
-func (aa *AESAlgorithm) Encrypt(data []byte, key []byte) ([]byte, error) {
-    block, err := aes.NewCipher(key)
-    if err != nil {
-        return nil, err
-    }
-    
-    gcm, err := cipher.NewGCM(block)
-    if err != nil {
-        return nil, err
-    }
-    
-    nonce := make([]byte, gcm.NonceSize())
-    if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-        return nil, err
-    }
-    
-    return gcm.Seal(nonce, nonce, data, nil), nil
-}
-
-func (aa *AESAlgorithm) Decrypt(data []byte, key []byte) ([]byte, error) {
-    block, err := aes.NewCipher(key)
-    if err != nil {
-        return nil, err
-    }
-    
-    gcm, err := cipher.NewGCM(block)
-    if err != nil {
-        return nil, err
-    }
-    
-    nonceSize := gcm.NonceSize()
-    if len(data) < nonceSize {
-        return nil, errors.New("ciphertext too short")
-    }
-    
-    nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-    return gcm.Open(nil, nonce, ciphertext, nil)
-}
-
-func (de *DataEncryption) EncryptData(data []byte, deviceID string) ([]byte, error) {
-    // 获取设备加密密钥
-    key, err := de.getDeviceKey(deviceID)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 获取加密算法
-    algorithm, exists := de.algorithms[key.Algorithm]
-    if !exists {
-        return nil, errors.New("encryption algorithm not found")
-    }
-    
-    // 加密数据
-    return algorithm.Encrypt(data, key.Key)
+    return true, nil
 }
 ```
 
 ## 性能优化
 
-### 1. 数据缓存
+### 1. 并发优化
 
 ```go
-// 数据缓存系统
-type DataCache struct {
-    memory      *MemoryCache
-    disk        *DiskCache
-    policy      *CachePolicy
-    statistics  *CacheStatistics
-}
-
-type MemoryCache struct {
-    data        map[string]*CacheEntry
-    maxSize     int
-    mutex       sync.RWMutex
-}
-
-type CacheEntry struct {
-    Key         string
-    Value       interface{}
-    ExpiresAt   time.Time
-    AccessCount int
-    LastAccess  time.Time
-}
-
-type CachePolicy struct {
-    MaxMemory   int64
-    MaxDisk     int64
-    TTL         time.Duration
-    Eviction    EvictionPolicy
-}
-
-type EvictionPolicy interface {
-    Evict(cache *MemoryCache) []string
-}
-
-type LRUEviction struct{}
-
-func (lru *LRUEviction) Evict(cache *MemoryCache) []string {
-    var keys []string
-    var oldestTime time.Time
-    
-    cache.mutex.RLock()
-    for key, entry := range cache.data {
-        if oldestTime.IsZero() || entry.LastAccess.Before(oldestTime) {
-            oldestTime = entry.LastAccess
-            keys = []string{key}
-        }
+// 并发数据收集
+func (dm *DeviceManager) CollectDataConcurrent() ([]SensorData, error) {
+    dm.mu.RLock()
+    devices := make([]*Device, 0, len(dm.devices))
+    for _, device := range dm.devices {
+        devices = append(devices, device)
     }
-    cache.mutex.RUnlock()
+    dm.mu.RUnlock()
     
-    return keys
-}
-
-func (dc *DataCache) Get(key string) (interface{}, bool) {
-    // 先查内存缓存
-    if value, exists := dc.memory.Get(key); exists {
-        return value, true
+    // 使用工作池限制并发数
+    workerCount := runtime.NumCPU()
+    if workerCount > len(devices) {
+        workerCount = len(devices)
     }
     
-    // 查磁盘缓存
-    if value, exists := dc.disk.Get(key); exists {
-        // 回填内存缓存
-        dc.memory.Set(key, value, dc.policy.TTL)
-        return value, true
+    deviceChan := make(chan *Device, len(devices))
+    resultChan := make(chan []SensorData, len(devices))
+    errorChan := make(chan error, len(devices))
+    
+    // 启动工作协程
+    var wg sync.WaitGroup
+    for i := 0; i < workerCount; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            for device := range deviceChan {
+                if data, err := device.collectSensorData(); err != nil {
+                    errorChan <- err
+                } else {
+                    resultChan <- data
+                }
+            }
+        }()
     }
     
-    return nil, false
-}
-
-func (dc *DataCache) Set(key string, value interface{}, ttl time.Duration) {
-    // 设置内存缓存
-    dc.memory.Set(key, value, ttl)
+    // 发送设备到工作池
+    for _, device := range devices {
+        deviceChan <- device
+    }
+    close(deviceChan)
     
-    // 设置磁盘缓存
-    dc.disk.Set(key, value, ttl)
+    // 等待所有工作完成
+    wg.Wait()
+    close(resultChan)
+    close(errorChan)
+    
+    // 收集结果
+    var allData []SensorData
+    for data := range resultChan {
+        allData = append(allData, data...)
+    }
+    
+    // 检查错误
+    for err := range errorChan {
+        log.Printf("Device data collection error: %v", err)
+    }
+    
+    return allData, nil
 }
 ```
 
-### 2. 连接池
+### 2. 内存优化
 
 ```go
-// 连接池管理
-type ConnectionPool struct {
-    connections map[string]*PooledConnection
-    maxConnections int
-    mutex       sync.Mutex
+// 对象池
+var sensorDataPool = sync.Pool{
+    New: func() interface{} {
+        return &SensorData{}
+    },
 }
 
-type PooledConnection struct {
-    ID          string
-    Connection  interface{}
-    InUse       bool
-    CreatedAt   time.Time
-    LastUsed    time.Time
-}
-
-func (cp *ConnectionPool) GetConnection(deviceID string) (*PooledConnection, error) {
-    cp.mutex.Lock()
-    defer cp.mutex.Unlock()
+func (dm *DeviceManager) collectSensorDataWithPool() ([]SensorData, error) {
+    data := sensorDataPool.Get().(*SensorData)
+    defer sensorDataPool.Put(data)
     
-    // 查找可用连接
-    for _, conn := range cp.connections {
-        if !conn.InUse && conn.Connection != nil {
-            conn.InUse = true
-            conn.LastUsed = time.Now()
-            return conn, nil
-        }
+    // 使用对象池中的数据对象
+    // ...
+    
+    return []SensorData{*data}, nil
+}
+
+// 内存映射文件
+type MemoryMappedStorage struct {
+    file    *os.File
+    data    []byte
+    mapping []SensorData
+}
+
+func NewMemoryMappedStorage(filename string) (*MemoryMappedStorage, error) {
+    file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
+    if err != nil {
+        return nil, err
     }
     
-    // 创建新连接
-    if len(cp.connections) < cp.maxConnections {
-        conn := &PooledConnection{
-            ID:        generateID(),
-            InUse:     true,
-            CreatedAt: time.Now(),
-            LastUsed:  time.Now(),
+    // 获取文件大小
+    stat, err := file.Stat()
+    if err != nil {
+        file.Close()
+        return nil, err
+    }
+    
+    // 内存映射
+    data, err := syscall.Mmap(int(file.Fd()), 0, int(stat.Size()), 
+                             syscall.PROT_READ|syscall.PROT_WRITE, 
+                             syscall.MAP_SHARED)
+    if err != nil {
+        file.Close()
+        return nil, err
+    }
+    
+    return &MemoryMappedStorage{
+        file: file,
+        data: data,
+    }, nil
+}
+```
+
+### 3. 网络优化
+
+```go
+// 连接池
+type ConnectionPool struct {
+    connections chan net.Conn
+    factory     func() (net.Conn, error)
+    mu          sync.Mutex
+    closed      bool
+}
+
+func NewConnectionPool(factory func() (net.Conn, error), maxConnections int) *ConnectionPool {
+    return &ConnectionPool{
+        connections: make(chan net.Conn, maxConnections),
+        factory:     factory,
+    }
+}
+
+func (cp *ConnectionPool) Get() (net.Conn, error) {
+    select {
+    case conn := <-cp.connections:
+        if conn == nil {
+            return cp.factory()
+        }
+        return conn, nil
+    default:
+        return cp.factory()
+    }
+}
+
+func (cp *ConnectionPool) Put(conn net.Conn) {
+    cp.mu.Lock()
+    defer cp.mu.Unlock()
+    
+    if cp.closed {
+        conn.Close()
+        return
+    }
+    
+    select {
+    case cp.connections <- conn:
+    default:
+        conn.Close()
+    }
+}
+
+// 批量操作
+type BatchProcessor struct {
+    batchSize int
+    timeout   time.Duration
+    processor func([]SensorData) error
+}
+
+func (bp *BatchProcessor) Process(data []SensorData) error {
+    for i := 0; i < len(data); i += bp.batchSize {
+        end := i + bp.batchSize
+        if end > len(data) {
+            end = len(data)
         }
         
-        cp.connections[conn.ID] = conn
-        return conn, nil
+        batch := data[i:end]
+        if err := bp.processor(batch); err != nil {
+            return err
+        }
     }
-    
-    return nil, errors.New("connection pool exhausted")
-}
-
-func (cp *ConnectionPool) ReleaseConnection(conn *PooledConnection) {
-    cp.mutex.Lock()
-    defer cp.mutex.Unlock()
-    
-    conn.InUse = false
-    conn.LastUsed = time.Now()
+    return nil
 }
 ```
 
@@ -1363,170 +798,189 @@ func (cp *ConnectionPool) ReleaseConnection(conn *PooledConnection) {
 ### 1. 错误处理
 
 ```go
-// IoT错误处理
+// 定义错误类型
 type IoTError struct {
-    Code        string
-    Message     string
-    DeviceID    string
-    Timestamp   time.Time
-    Stack       string
+    Code    string `json:"code"`
+    Message string `json:"message"`
+    Details string `json:"details,omitempty"`
 }
 
-func (ie *IoTError) Error() string {
-    return fmt.Sprintf("[%s] %s (Device: %s)", ie.Code, ie.Message, ie.DeviceID)
+func (e IoTError) Error() string {
+    return fmt.Sprintf("[%s] %s", e.Code, e.Message)
 }
 
 var (
-    ErrDeviceNotFound = &IoTError{
-        Code:    "DEVICE_NOT_FOUND",
-        Message: "Device not found",
-    }
-    
-    ErrConnectionFailed = &IoTError{
-        Code:    "CONNECTION_FAILED",
-        Message: "Failed to connect to device",
-    }
-    
-    ErrDataInvalid = &IoTError{
-        Code:    "DATA_INVALID",
-        Message: "Invalid sensor data",
-    }
+    ErrDeviceNotFound = IoTError{Code: "DEVICE_NOT_FOUND", Message: "Device not found"}
+    ErrInvalidData    = IoTError{Code: "INVALID_DATA", Message: "Invalid sensor data"}
+    ErrTimeout        = IoTError{Code: "TIMEOUT", Message: "Operation timeout"}
 )
 
-func RecoverIoTError() {
-    if r := recover(); r != nil {
-        err := &IoTError{
-            Code:      "PANIC",
-            Message:   fmt.Sprintf("%v", r),
-            Timestamp: time.Now(),
-            Stack:     string(debug.Stack()),
-        }
-        
-        log.Printf("IoT panic: %v", err)
+// 错误包装
+func (dm *DeviceManager) GetDevice(id string) (*Device, error) {
+    device, exists := dm.devices[id]
+    if !exists {
+        return nil, fmt.Errorf("get device %s: %w", id, ErrDeviceNotFound)
     }
+    return device, nil
 }
 ```
 
-### 2. 配置管理
+### 2. 监控和指标
 
 ```go
-// IoT配置管理
-type IoTConfig struct {
-    Devices     DeviceConfig
-    Network     NetworkConfig
-    Security    SecurityConfig
-    Storage     StorageConfig
-    Analytics   AnalyticsConfig
+// 指标收集
+type Metrics struct {
+    DeviceCount      prometheus.Gauge
+    DataProcessed    prometheus.Counter
+    ProcessingTime   prometheus.Histogram
+    ErrorCount       prometheus.Counter
 }
 
-type DeviceConfig struct {
-    DiscoveryInterval time.Duration
-    HeartbeatInterval time.Duration
-    Timeout           time.Duration
-    RetryCount        int
+func NewMetrics() *Metrics {
+    return &Metrics{
+        DeviceCount: prometheus.NewGauge(prometheus.GaugeOpts{
+            Name: "iot_devices_total",
+            Help: "Total number of IoT devices",
+        }),
+        DataProcessed: prometheus.NewCounter(prometheus.CounterOpts{
+            Name: "iot_data_processed_total",
+            Help: "Total number of data points processed",
+        }),
+        ProcessingTime: prometheus.NewHistogram(prometheus.HistogramOpts{
+            Name:    "iot_processing_duration_seconds",
+            Help:    "Time spent processing data",
+            Buckets: prometheus.DefBuckets,
+        }),
+        ErrorCount: prometheus.NewCounter(prometheus.CounterOpts{
+            Name: "iot_errors_total",
+            Help: "Total number of errors",
+        }),
+    }
 }
 
-type NetworkConfig struct {
-    Protocols         []string
-    MQTTBroker        string
-    CoAPAddress       string
-    HTTPPort          int
-    MaxConnections    int
-}
-
-type SecurityConfig struct {
-    EncryptionEnabled bool
-    AuthRequired      bool
-    CertPath          string
-    KeyPath           string
-    TokenExpiry       time.Duration
-}
-
-func LoadIoTConfig() (*IoTConfig, error) {
-    viper.SetConfigName("iot")
-    viper.SetConfigType("yaml")
-    viper.AddConfigPath(".")
+// 在数据处理中使用指标
+func (dp *DataProcessor) Process(data []SensorData) ([]ProcessedData, error) {
+    timer := prometheus.NewTimer(dp.metrics.ProcessingTime)
+    defer timer.ObserveDuration()
     
-    if err := viper.ReadInConfig(); err != nil {
+    dp.metrics.DataProcessed.Add(float64(len(data)))
+    
+    // 处理逻辑...
+    
+    return processedData, nil
+}
+```
+
+### 3. 配置管理
+
+```go
+// 配置结构
+type Config struct {
+    Server   ServerConfig   `yaml:"server"`
+    Database DatabaseConfig `yaml:"database"`
+    MQTT     MQTTConfig     `yaml:"mqtt"`
+    Security SecurityConfig `yaml:"security"`
+}
+
+type ServerConfig struct {
+    Port         int           `yaml:"port"`
+    ReadTimeout  time.Duration `yaml:"read_timeout"`
+    WriteTimeout time.Duration `yaml:"write_timeout"`
+}
+
+// 配置加载
+func LoadConfig(filename string) (*Config, error) {
+    data, err := os.ReadFile(filename)
+    if err != nil {
         return nil, err
     }
     
-    var config IoTConfig
-    if err := viper.Unmarshal(&config); err != nil {
+    var config Config
+    if err := yaml.Unmarshal(data, &config); err != nil {
         return nil, err
     }
     
     return &config, nil
 }
+
+// 环境变量覆盖
+func (c *Config) LoadFromEnv() {
+    if port := os.Getenv("SERVER_PORT"); port != "" {
+        if p, err := strconv.Atoi(port); err == nil {
+            c.Server.Port = p
+        }
+    }
+}
 ```
 
-### 3. 监控指标
+### 4. 测试策略
 
 ```go
-// IoT监控指标
-type IoTMetrics struct {
-    deviceCounter      prometheus.Counter
-    dataCounter        prometheus.Counter
-    connectionGauge    prometheus.Gauge
-    latencyHistogram   prometheus.Histogram
-    errorCounter       prometheus.Counter
-}
-
-func NewIoTMetrics() *IoTMetrics {
-    return &IoTMetrics{
-        deviceCounter: prometheus.NewCounter(prometheus.CounterOpts{
-            Name: "iot_devices_total",
-            Help: "Total number of IoT devices",
-        }),
-        dataCounter: prometheus.NewCounter(prometheus.CounterOpts{
-            Name: "iot_data_points_total",
-            Help: "Total number of data points collected",
-        }),
-        connectionGauge: prometheus.NewGauge(prometheus.GaugeOpts{
-            Name: "iot_active_connections",
-            Help: "Number of active device connections",
-        }),
-        latencyHistogram: prometheus.NewHistogram(prometheus.HistogramOpts{
-            Name: "iot_data_latency_seconds",
-            Help: "Data processing latency in seconds",
-        }),
-        errorCounter: prometheus.NewCounter(prometheus.CounterOpts{
-            Name: "iot_errors_total",
-            Help: "Total number of IoT errors",
-        }),
+// 单元测试
+func TestDevice_IsOnline(t *testing.T) {
+    tests := []struct {
+        name     string
+        device   *Device
+        expected bool
+    }{
+        {
+            name: "online device",
+            device: &Device{
+                Status:   DeviceStatusOnline,
+                LastSeen: time.Now(),
+            },
+            expected: true,
+        },
+        {
+            name: "offline device",
+            device: &Device{
+                Status:   DeviceStatusOffline,
+                LastSeen: time.Now(),
+            },
+            expected: false,
+        },
+    }
+    
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            if got := tt.device.IsOnline(); got != tt.expected {
+                t.Errorf("Device.IsOnline() = %v, want %v", got, tt.expected)
+            }
+        })
     }
 }
 
-func (im *IoTMetrics) RecordDeviceConnected() {
-    im.deviceCounter.Inc()
-    im.connectionGauge.Inc()
-}
-
-func (im *IoTMetrics) RecordDataPoint() {
-    im.dataCounter.Inc()
-}
-
-func (im *IoTMetrics) RecordLatency(duration time.Duration) {
-    im.latencyHistogram.Observe(duration.Seconds())
-}
-
-func (im *IoTMetrics) RecordError() {
-    im.errorCounter.Inc()
+// 集成测试
+func TestDeviceManager_Integration(t *testing.T) {
+    dm := NewDeviceManager()
+    
+    device := &Device{
+        ID:   "test-device",
+        Name: "Test Device",
+    }
+    
+    if err := dm.RegisterDevice(device); err != nil {
+        t.Fatalf("Failed to register device: %v", err)
+    }
+    
+    retrieved, err := dm.GetDevice("test-device")
+    if err != nil {
+        t.Fatalf("Failed to get device: %v", err)
+    }
+    
+    if retrieved.ID != device.ID {
+        t.Errorf("Device ID mismatch: got %s, want %s", retrieved.ID, device.ID)
+    }
 }
 ```
 
 ## 总结
 
-物联网是一个复杂的生态系统，涉及设备管理、数据采集、边缘计算、通信协议、安全机制等多个方面。Golang凭借其高性能、并发特性和跨平台能力，在IoT应用中具有显著优势。
+IoT行业领域分析展示了如何使用Golang构建高性能、可扩展的物联网系统。通过形式化定义、并发架构、性能优化和最佳实践，可以构建出符合现代IoT需求的系统架构。
 
 关键要点：
-
-1. **架构设计**: 采用分层架构、微服务、事件驱动等模式
-2. **设备管理**: 实现设备注册、发现、监控、认证等功能
-3. **数据处理**: 构建数据采集、过滤、转换、聚合管道
-4. **边缘计算**: 支持本地决策、ML推理、规则引擎
-5. **通信协议**: 适配MQTT、CoAP、HTTP等多种协议
-6. **安全机制**: 实现设备认证、数据加密、访问控制
-7. **性能优化**: 使用缓存、连接池、异步处理等技术
-
-通过合理的设计和实现，可以构建出高性能、高可靠、高安全的IoT系统。 
+1. **形式化建模**: 使用数学定义描述IoT系统结构
+2. **并发设计**: 利用Golang的goroutine和channel实现高并发
+3. **性能优化**: 通过对象池、内存映射、连接池等技术优化性能
+4. **最佳实践**: 错误处理、监控指标、配置管理、测试策略
+5. **架构模式**: 分层架构、边缘计算、事件驱动架构

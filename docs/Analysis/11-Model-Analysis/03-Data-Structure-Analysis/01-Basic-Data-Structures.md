@@ -13,7 +13,8 @@
 
 ## 概述
 
-基础数据结构是构建复杂系统的基础，它们提供了最基本的数据组织和操作方式。在Golang中，这些数据结构通常作为更复杂数据结构的基础组件。
+基础数据结构是构建复杂系统的基础，它们提供了最基本的数据组织和操作方式。
+在Golang中，这些数据结构通常作为更复杂数据结构的基础组件。
 
 ### 核心特征
 
@@ -560,18 +561,21 @@ func (dll *DoublyLinkedList[T]) Get(index int) (T, error) {
 $$Stack = (D, O, A)$$
 
 其中：
+
 - $D = \{s | s \text{ 是元素序列}\}$
 - $O = \{push, pop, top, empty, size\}$
 - $A$ 包含以下公理：
 
-$$\begin{align}
+$$
+\begin{align}
 empty(new()) &= true \\
 empty(push(s, x)) &= false \\
 top(push(s, x)) &= x \\
 pop(push(s, x)) &= s \\
 size(new()) &= 0 \\
 size(push(s, x)) &= size(s) + 1
-\end{align}$$
+\end{align}
+$$
 
 ### 2. Golang实现
 
@@ -597,14 +601,14 @@ func NewArrayStack[T any](capacity int) *ArrayStack[T] {
 func (as *ArrayStack[T]) Push(element T) error {
     as.mutex.Lock()
     defer as.mutex.Unlock()
-    
+
     if as.top >= len(as.elements)-1 {
         // 扩容
         newElements := make([]T, len(as.elements)*2)
         copy(newElements, as.elements)
         as.elements = newElements
     }
-    
+
     as.top++
     as.elements[as.top] = element
     return nil
@@ -614,12 +618,12 @@ func (as *ArrayStack[T]) Push(element T) error {
 func (as *ArrayStack[T]) Pop() (T, error) {
     as.mutex.Lock()
     defer as.mutex.Unlock()
-    
+
     var zero T
     if as.IsEmpty() {
         return zero, errors.New("stack is empty")
     }
-    
+
     element := as.elements[as.top]
     as.top--
     return element, nil
@@ -629,12 +633,12 @@ func (as *ArrayStack[T]) Pop() (T, error) {
 func (as *ArrayStack[T]) Top() (T, error) {
     as.mutex.RLock()
     defer as.mutex.RUnlock()
-    
+
     var zero T
     if as.IsEmpty() {
         return zero, errors.New("stack is empty")
     }
-    
+
     return as.elements[as.top], nil
 }
 
@@ -677,7 +681,7 @@ func NewLinkedStack[T any]() *LinkedStack[T] {
 func (ls *LinkedStack[T]) Push(element T) {
     ls.mutex.Lock()
     defer ls.mutex.Unlock()
-    
+
     newNode := &Node[T]{
         Data: element,
         Next: ls.head,
@@ -690,12 +694,12 @@ func (ls *LinkedStack[T]) Push(element T) {
 func (ls *LinkedStack[T]) Pop() (T, error) {
     ls.mutex.Lock()
     defer ls.mutex.Unlock()
-    
+
     var zero T
     if ls.IsEmpty() {
         return zero, errors.New("stack is empty")
     }
-    
+
     element := ls.head.Data
     ls.head = ls.head.Next
     ls.size--
@@ -706,12 +710,12 @@ func (ls *LinkedStack[T]) Pop() (T, error) {
 func (ls *LinkedStack[T]) Top() (T, error) {
     ls.mutex.RLock()
     defer ls.mutex.RUnlock()
-    
+
     var zero T
     if ls.IsEmpty() {
         return zero, errors.New("stack is empty")
     }
-    
+
     return ls.head.Data, nil
 }
 
@@ -773,9 +777,9 @@ func (cs *CallStack) Top() *CallFrame {
 func EvaluateInfixExpression(expression string) (float64, error) {
     stack := NewArrayStack[float64](100)
     operatorStack := NewArrayStack[string](100)
-    
+
     tokens := strings.Fields(expression)
-    
+
     for _, token := range tokens {
         switch token {
         case "+", "-", "*", "/":
@@ -813,7 +817,7 @@ func EvaluateInfixExpression(expression string) (float64, error) {
             }
         }
     }
-    
+
     for !operatorStack.IsEmpty() {
         op, _ := operatorStack.Pop()
         b, _ := stack.Pop()
@@ -821,7 +825,7 @@ func EvaluateInfixExpression(expression string) (float64, error) {
         result := applyOperator(a, b, op)
         stack.Push(result)
     }
-    
+
     result, _ := stack.Pop()
     return result, nil
 }
@@ -862,22 +866,25 @@ func applyOperator(a, b float64, operator string) float64 {
 $$Queue = (D, O, A)$$
 
 其中：
+
 - $D = \{q | q \text{ 是元素序列}\}$
 - $O = \{enqueue, dequeue, front, empty, size\}$
 - $A$ 包含以下公理：
 
-$$\begin{align}
+$$
+\begin{align}
 empty(new()) &= true \\
 empty(enqueue(q, x)) &= false \\
-front(enqueue(q, x)) &= \begin{cases} 
+front(enqueue(q, x)) &= \begin{cases}
 x & \text{if } empty(q) \\
 front(q) & \text{otherwise}
 \end{cases} \\
-dequeue(enqueue(q, x)) &= \begin{cases} 
+dequeue(enqueue(q, x)) &= \begin{cases}
 new() & \text{if } empty(q) \\
 enqueue(dequeue(q), x) & \text{otherwise}
 \end{cases}
-\end{align}$$
+\end{align}
+$$
 
 ### 2. Golang实现
 
@@ -909,11 +916,11 @@ func NewArrayQueue[T any](capacity int) *ArrayQueue[T] {
 func (aq *ArrayQueue[T]) Enqueue(element T) error {
     aq.mutex.Lock()
     defer aq.mutex.Unlock()
-    
+
     if aq.IsFull() {
         return errors.New("queue is full")
     }
-    
+
     aq.rear = (aq.rear + 1) % aq.capacity
     aq.elements[aq.rear] = element
     aq.size++
@@ -924,12 +931,12 @@ func (aq *ArrayQueue[T]) Enqueue(element T) error {
 func (aq *ArrayQueue[T]) Dequeue() (T, error) {
     aq.mutex.Lock()
     defer aq.mutex.Unlock()
-    
+
     var zero T
     if aq.IsEmpty() {
         return zero, errors.New("queue is empty")
     }
-    
+
     element := aq.elements[aq.front]
     aq.front = (aq.front + 1) % aq.capacity
     aq.size--
@@ -940,12 +947,12 @@ func (aq *ArrayQueue[T]) Dequeue() (T, error) {
 func (aq *ArrayQueue[T]) Front() (T, error) {
     aq.mutex.RLock()
     defer aq.mutex.RUnlock()
-    
+
     var zero T
     if aq.IsEmpty() {
         return zero, errors.New("queue is empty")
     }
-    
+
     return aq.elements[aq.front], nil
 }
 
@@ -987,9 +994,9 @@ func NewLinkedQueue[T any]() *LinkedQueue[T] {
 func (lq *LinkedQueue[T]) Enqueue(element T) {
     lq.mutex.Lock()
     defer lq.mutex.Unlock()
-    
+
     newNode := &Node[T]{Data: element}
-    
+
     if lq.IsEmpty() {
         lq.head = newNode
         lq.tail = newNode
@@ -997,7 +1004,7 @@ func (lq *LinkedQueue[T]) Enqueue(element T) {
         lq.tail.Next = newNode
         lq.tail = newNode
     }
-    
+
     lq.size++
 }
 
@@ -1005,19 +1012,19 @@ func (lq *LinkedQueue[T]) Enqueue(element T) {
 func (lq *LinkedQueue[T]) Dequeue() (T, error) {
     lq.mutex.Lock()
     defer lq.mutex.Unlock()
-    
+
     var zero T
     if lq.IsEmpty() {
         return zero, errors.New("queue is empty")
     }
-    
+
     element := lq.head.Data
     lq.head = lq.head.Next
-    
+
     if lq.head == nil {
         lq.tail = nil
     }
-    
+
     lq.size--
     return element, nil
 }
@@ -1026,12 +1033,12 @@ func (lq *LinkedQueue[T]) Dequeue() (T, error) {
 func (lq *LinkedQueue[T]) Front() (T, error) {
     lq.mutex.RLock()
     defer lq.mutex.RUnlock()
-    
+
     var zero T
     if lq.IsEmpty() {
         return zero, errors.New("queue is empty")
     }
-    
+
     return lq.head.Data, nil
 }
 
@@ -1081,7 +1088,7 @@ func (ts *TaskScheduler) ProcessNextTask() error {
     if err != nil {
         return err
     }
-    
+
     return task.Handler(task.Data)
 }
 
@@ -1157,7 +1164,7 @@ func BenchmarkArrayAccess(b *testing.B) {
     for i := 0; i < 1000; i++ {
         arr[i] = i
     }
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         _ = arr[i%1000]
@@ -1169,7 +1176,7 @@ func BenchmarkLinkedListAccess(b *testing.B) {
     for i := 0; i < 1000; i++ {
         list.InsertAt(i, i)
     }
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         list.Get(i % 1000)
@@ -1220,7 +1227,7 @@ func RandomAccessExample() {
     for i := 0; i < 1000; i++ {
         data[i] = i
     }
-    
+
     // 随机访问
     for i := 0; i < 1000; i++ {
         idx := rand.Intn(1000)
@@ -1231,7 +1238,7 @@ func RandomAccessExample() {
 // 频繁插入删除 - 选择链表
 func FrequentInsertDeleteExample() {
     list := NewLinkedList[int]()
-    
+
     // 频繁插入删除
     for i := 0; i < 1000; i++ {
         list.InsertAt(0, i)
@@ -1313,7 +1320,7 @@ type OptimizedStack[T any] struct {
 func (os *OptimizedStack[T]) Top() (T, error) {
     os.mutex.RLock() // 读锁
     defer os.mutex.RUnlock()
-    
+
     var zero T
     if os.top == -1 {
         return zero, errors.New("stack is empty")
@@ -1353,10 +1360,10 @@ func (lfs *LockFreeStack[T]) Pop() (T, bool) {
             var zero T
             return zero, false
         }
-        
+
         headNode := (*node[T])(oldHead)
         newHead := headNode.next
-        
+
         if atomic.CompareAndSwapPointer(&lfs.head, oldHead, newHead) {
             return headNode.value, true
         }
@@ -1374,9 +1381,10 @@ func (lfs *LockFreeStack[T]) Pop() (T, bool) {
 4. **队列**: 先进先出，适合任务调度、消息队列
 
 选择合适的数据结构需要考虑：
+
 - 访问模式（随机 vs 顺序）
 - 操作频率（插入、删除、访问）
 - 内存要求（连续 vs 分散）
 - 并发需求（单线程 vs 多线程）
 
-通过合理选择和优化，可以构建高效、可靠的基础数据结构，为更复杂的系统提供坚实的基础。 
+通过合理选择和优化，可以构建高效、可靠的基础数据结构，为更复杂的系统提供坚实的基础。

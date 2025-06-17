@@ -177,14 +177,16 @@ $$Stack = (D, O, A)$$
 - $O = \{push, pop, top, empty, size\}$
 - $A$ 包含以下公理：
 
-$$\begin{align}
+$$
+\begin{align}
 empty(new()) &= true \\
 empty(push(s, x)) &= false \\
 top(push(s, x)) &= x \\
 pop(push(s, x)) &= s \\
 size(new()) &= 0 \\
 size(push(s, x)) &= size(s) + 1
-\end{align}$$
+\end{align}
+$$
 
 ### 2. 队列的形式化定义
 
@@ -193,11 +195,13 @@ size(push(s, x)) &= size(s) + 1
 $$Queue = (D, O, A)$$
 
 其中：
+
 - $D = \{q | q \text{ 是元素序列}\}$
 - $O = \{enqueue, dequeue, front, empty, size\}$
 - $A$ 包含以下公理：
 
-$$\begin{align}
+$$
+\begin{align}
 empty(new()) &= true \\
 empty(enqueue(q, x)) &= false \\
 front(enqueue(q, x)) &= \begin{cases}
@@ -208,7 +212,8 @@ dequeue(enqueue(q, x)) &= \begin{cases}
 new() & \text{if } empty(q) \\
 enqueue(dequeue(q), x) & \text{otherwise}
 \end{cases}
-\end{align}$$
+\end{align}
+$$
 
 ### 3. 二叉搜索树的形式化定义
 
@@ -217,6 +222,7 @@ enqueue(dequeue(q), x) & \text{otherwise}
 $$BST = (D, O, A)$$
 
 其中：
+
 - $D = \{t | t \text{ 是满足BST性质的二叉树}\}$
 - $O = \{insert, delete, search, min, max\}$
 - BST性质：对于每个节点 $v$，$left(v) < v < right(v)$
