@@ -1603,4 +1603,4 @@ graph TD
 2. [CSP模型论文](https://www.cs.cmu.edu/~crary/819-f09/Hoare78.pdf)
 3. [并发编程模式](https://en.wikipedia.org/wiki/Concurrent_programming)
 4. [Go内存模型](https://golang.org/ref/mem)
-5. [并发数据结构](https://en.wikipedia.org/wiki/Concurrent_data_structure) 
+5. [并发数据结构](https://en.wikipedia.org/wiki/Concurrent_data_structure)
