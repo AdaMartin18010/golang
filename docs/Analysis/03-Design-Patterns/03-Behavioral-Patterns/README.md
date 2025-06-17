@@ -414,6 +414,6 @@ $$L(n) = t_{queue} + t_{process} + t_{network}$$
 **参考文献**：
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
-2. Go Language Specification. https://golang.org/ref/spec
-3. Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
-4. Effective Go. https://golang.org/doc/effective_go.html
+2. Go Language Specification. <https://golang.org/ref/spec>
+3. Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+4. Effective Go. <https://golang.org/doc/effective_go.html>

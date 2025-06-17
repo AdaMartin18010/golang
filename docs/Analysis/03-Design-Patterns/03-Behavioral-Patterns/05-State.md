@@ -786,6 +786,7 @@ $$T(n) = O(1)$$
 其中 $n$ 为状态数量。
 
 **证明**：
+
 - 状态转换主要涉及查找和设置操作
 - 使用映射表进行状态查找，时间复杂度为 $O(1)$
 - 状态设置操作为常数时间
@@ -799,6 +800,7 @@ $$T(n) = O(f(n))$$
 其中 $f(n)$ 为具体动作的处理复杂度。
 
 **证明**：
+
 - 动作处理时间取决于具体实现
 - 不同动作可能有不同的复杂度
 - 总时间复杂度为 $O(f(n))$
@@ -815,6 +817,7 @@ $$T(n, m) = O(n \cdot m)$$
 - $m$ 为动作数量
 
 **证明**：
+
 - 需要验证所有状态和动作的组合
 - 每个组合的验证时间为常数
 - 总时间复杂度为 $O(n \cdot m)$
@@ -830,6 +833,7 @@ $$S(n) = O(n)$$
 其中 $n$ 为状态数量。
 
 **分析**：
+
 - 每个状态占用常数空间
 - 状态存储占用 $O(n)$ 空间
 - 转换表占用 $O(n \cdot m)$ 空间，其中 $m$ 为动作数量
@@ -1420,6 +1424,6 @@ func StatePersistenceExample() {
 **参考文献**：
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
-2. Go Language Specification. https://golang.org/ref/spec
-3. Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
-4. Effective Go. https://golang.org/doc/effective_go.html 
+2. Go Language Specification. <https://golang.org/ref/spec>
+3. Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+4. Effective Go. <https://golang.org/doc/effective_go.html>

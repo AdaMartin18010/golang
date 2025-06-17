@@ -624,6 +624,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为步骤数量。
 
 **证明**：
+
 - 需要执行所有步骤
 - 每个步骤的执行时间为常数
 - 总时间复杂度为 $O(n)$
@@ -637,6 +638,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为步骤数量。
 
 **证明**：
+
 - 需要检查每个步骤的适用性
 - 每个检查的时间为常数
 - 总时间复杂度为 $O(n)$
@@ -653,6 +655,7 @@ $$T(n, m) = O(n + m)$$
 - $m$ 为钩子数量
 
 **证明**：
+
 - 步骤执行时间为 $O(n)$
 - 钩子检查时间为 $O(m)$
 - 总时间复杂度为 $O(n + m)$
@@ -668,6 +671,7 @@ $$S(n) = O(n)$$
 其中 $n$ 为步骤数量。
 
 **分析**：
+
 - 每个步骤占用常数空间
 - 步骤存储占用 $O(n)$ 空间
 - 钩子存储占用 $O(m)$ 空间，其中 $m$ 为钩子数量
@@ -1117,6 +1121,6 @@ func BuildSystemExample() {
 **参考文献**：
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
-2. Go Language Specification. https://golang.org/ref/spec
-3. Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
-4. Effective Go. https://golang.org/doc/effective_go.html 
+2. Go Language Specification. <https://golang.org/ref/spec>
+3. Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+4. Effective Go. <https://golang.org/doc/effective_go.html>

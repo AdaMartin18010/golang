@@ -515,6 +515,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为处理者数量。
 
 **证明**：
+
 - 最坏情况下，请求需要遍历所有处理者
 - 每个处理者的处理时间为常数 $O(1)$
 - 总时间复杂度为 $O(n)$
@@ -528,6 +529,7 @@ $$T(n) = O(\log n)$$
 其中 $n$ 为处理者数量。
 
 **证明**：
+
 - 平衡树的高度为 $\log n$
 - 每个节点的处理时间为常数 $O(1)$
 - 总时间复杂度为 $O(\log n)$
@@ -543,6 +545,7 @@ $$S(n) = O(n)$$
 其中 $n$ 为处理者数量。
 
 **分析**：
+
 - 每个处理者占用常数空间
 - 链关系占用 $O(n)$ 空间
 - 总空间复杂度为 $O(n)$
@@ -846,6 +849,6 @@ func DataValidationSystem() {
 **参考文献**：
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
-2. Go Language Specification. https://golang.org/ref/spec
-3. Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
-4. Effective Go. https://golang.org/doc/effective_go.html 
+2. Go Language Specification. <https://golang.org/ref/spec>
+3. Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+4. Effective Go. <https://golang.org/doc/effective_go.html>

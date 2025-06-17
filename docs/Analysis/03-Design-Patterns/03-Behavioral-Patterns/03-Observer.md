@@ -795,6 +795,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为当前订阅者数量。
 
 **证明**：
+
 - 需要检查是否已订阅
 - 最坏情况下需要遍历所有订阅者
 - 时间复杂度为 $O(n)$
@@ -808,6 +809,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为订阅者数量。
 
 **证明**：
+
 - 需要通知所有订阅者
 - 每个订阅者的处理时间为常数
 - 总时间复杂度为 $O(n)$
@@ -824,6 +826,7 @@ $$T(n, m) = O(\frac{n}{m})$$
 - $m$ 为并发度
 
 **证明**：
+
 - 使用goroutine并发处理
 - 每个goroutine处理 $\frac{n}{m}$ 个订阅者
 - 时间复杂度为 $O(\frac{n}{m})$
@@ -839,6 +842,7 @@ $$S(n) = O(n)$$
 其中 $n$ 为订阅者数量。
 
 **分析**：
+
 - 每个订阅者占用常数空间
 - 订阅关系占用 $O(n)$ 空间
 - 事件队列占用 $O(e)$ 空间，其中 $e$ 为事件数量
@@ -1433,6 +1437,6 @@ func (s *AuditService) GetObserver() Observer {
 **参考文献**：
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
-2. Go Language Specification. https://golang.org/ref/spec
-3. Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
-4. Effective Go. https://golang.org/doc/effective_go.html 
+2. Go Language Specification. <https://golang.org/ref/spec>
+3. Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+4. Effective Go. <https://golang.org/doc/effective_go.html>

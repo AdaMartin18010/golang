@@ -675,6 +675,7 @@ $$T(n) = O(1)$$
 其中 $n$ 为命令参数数量。
 
 **证明**：
+
 - 命令执行主要涉及参数传递和接收者调用
 - 参数数量通常为常数
 - 接收者操作复杂度为 $O(1)$
@@ -688,6 +689,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为队列中的命令数量。
 
 **证明**：
+
 - 需要遍历所有命令
 - 每个命令执行时间为 $O(1)$
 - 总时间复杂度为 $O(n)$
@@ -701,6 +703,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为复合命令中的子命令数量。
 
 **证明**：
+
 - 需要执行所有子命令
 - 每个子命令执行时间为 $O(1)$
 - 总时间复杂度为 $O(n)$
@@ -716,6 +719,7 @@ $$S(n) = O(n)$$
 其中 $n$ 为命令数量。
 
 **分析**：
+
 - 每个命令占用常数空间
 - 命令队列占用 $O(n)$ 空间
 - 历史记录占用 $O(n)$ 空间
@@ -1135,6 +1139,6 @@ func FileManagerExample() {
 **参考文献**：
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
-2. Go Language Specification. https://golang.org/ref/spec
-3. Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
-4. Effective Go. https://golang.org/doc/effective_go.html 
+2. Go Language Specification. <https://golang.org/ref/spec>
+3. Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+4. Effective Go. <https://golang.org/doc/effective_go.html>

@@ -729,6 +729,7 @@ $$T(n) = O(n)$$
 其中 $n$ 为策略数量。
 
 **证明**：
+
 - 需要遍历所有策略
 - 每个策略的适用性检查为常数时间
 - 总时间复杂度为 $O(n)$
@@ -742,6 +743,7 @@ $$T(n) = O(f(n))$$
 其中 $f(n)$ 为具体策略的算法复杂度。
 
 **证明**：
+
 - 策略执行时间取决于具体算法
 - 不同策略可能有不同的复杂度
 - 总时间复杂度为 $O(f(n))$
@@ -759,6 +761,7 @@ $$T(n, m) = O(m \cdot f(n))$$
 - $f(n)$ 为单个策略的复杂度
 
 **证明**：
+
 - 需要执行所有策略
 - 每个策略的复杂度为 $O(f(n))$
 - 总时间复杂度为 $O(m \cdot f(n))$
@@ -774,6 +777,7 @@ $$S(n) = O(n)$$
 其中 $n$ 为策略数量。
 
 **分析**：
+
 - 每个策略占用常数空间
 - 策略存储占用 $O(n)$ 空间
 - 上下文状态占用常数空间
@@ -1369,6 +1373,6 @@ func RoutingExample() {
 **参考文献**：
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
-2. Go Language Specification. https://golang.org/ref/spec
-3. Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
-4. Effective Go. https://golang.org/doc/effective_go.html 
+2. Go Language Specification. <https://golang.org/ref/spec>
+3. Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+4. Effective Go. <https://golang.org/doc/effective_go.html>
