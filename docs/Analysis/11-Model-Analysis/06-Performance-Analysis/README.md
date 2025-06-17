@@ -30,6 +30,7 @@
 $$\mathcal{P} = (S, M, T, R, O, C, E)$$
 
 其中：
+
 - $S$ 是系统状态集合
 - $M$ 是性能指标集合
 - $T$ 是时间域
@@ -45,6 +46,7 @@ $$\mathcal{P} = (S, M, T, R, O, C, E)$$
 $$m: S \times T \rightarrow \mathbb{R}^+$$
 
 常见的性能指标包括：
+
 - **吞吐量**: $\text{Throughput}(s, t) = \frac{\text{processed\_items}(s, t)}{t}$
 - **延迟**: $\text{Latency}(s, t) = \text{response\_time}(s, t)$
 - **资源利用率**: $\text{Utilization}(s, t) = \frac{\text{used\_resources}(s, t)}{\text{total\_resources}(s, t)}$
@@ -64,6 +66,7 @@ $$\min_{s \in S} C(s) \quad \text{s.t.} \quad m_i(s) \geq \text{threshold}_i, \f
 $$\mathcal{M} = (A, D, G, F)$$
 
 其中：
+
 - $A$ 是分配函数集合
 - $D$ 是释放函数集合
 - $G$ 是垃圾回收策略
@@ -80,6 +83,7 @@ $$\min_{a \in A} \sum_{i=1}^{n} \text{cost}(a_i) + \text{fragmentation}(F)$$
 $$\mathcal{C} = (P, S, L, D, E)$$
 
 其中：
+
 - $P$ 是进程/线程集合
 - $S$ 是同步原语集合
 - $L$ 是锁机制集合
@@ -97,6 +101,7 @@ $$\max_{p \in P} \text{throughput}(p) \quad \text{s.t.} \quad \text{deadlock\_fr
 $$\mathcal{A} = (I, C, B)$$
 
 其中：
+
 - $I$ 是输入空间
 - $C$ 是复杂度函数
 - $B$ 是边界条件
