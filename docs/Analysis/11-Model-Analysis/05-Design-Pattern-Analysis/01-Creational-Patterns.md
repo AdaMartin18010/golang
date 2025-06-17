@@ -1,125 +1,121 @@
-# 创建型设计模式 (Creational Patterns)
+# 创建型模式 (Creational Patterns)
 
 ## 目录
 
-1. [概述](#概述)
-2. [单例模式 (Singleton)](#单例模式-singleton)
-3. [工厂方法模式 (Factory Method)](#工厂方法模式-factory-method)
-4. [抽象工厂模式 (Abstract Factory)](#抽象工厂模式-abstract-factory)
-5. [建造者模式 (Builder)](#建造者模式-builder)
-6. [原型模式 (Prototype)](#原型模式-prototype)
-7. [模式比较与选择](#模式比较与选择)
-8. [最佳实践](#最佳实践)
+1. [概述](#1-概述)
+2. [单例模式](#2-单例模式)
+3. [工厂方法模式](#3-工厂方法模式)
+4. [抽象工厂模式](#4-抽象工厂模式)
+5. [建造者模式](#5-建造者模式)
+6. [原型模式](#6-原型模式)
+7. [模式关系分析](#7-模式关系分析)
+8. [性能分析](#8-性能分析)
+9. [最佳实践](#9-最佳实践)
 
-## 概述
+## 1. 概述
 
 ### 1.1 创建型模式定义
 
 创建型模式处理对象创建机制，试图在适合特定情况的场景下创建对象。
 
 **形式化定义**：
-$$\text{Creational}(P) = \{P | P \text{ 处理对象创建}\}$$
 
-**数学表示**：
-$$\text{CreationalPattern} = (N, I, S, C, E)$$
+设 $C$ 为创建型模式集合，$O$ 为对象集合，$F$ 为工厂函数集合，则：
+
+$$C = \{c_i | c_i = (Creator_i, Product_i, Process_i)\}$$
 
 其中：
+- $Creator_i$ 是创建者组件
+- $Product_i$ 是产品组件
+- $Process_i$ 是创建过程
 
-- $N$：模式名称
-- $I$：创建意图
-- $S$：创建结构
-- $C$：创建约束
-- $E$：创建效果
+### 1.2 核心原则
 
-### 1.2 创建型模式分类
+1. **封装创建逻辑**：将对象创建逻辑封装在专门的组件中
+2. **解耦客户端**：客户端不需要知道具体的创建细节
+3. **支持扩展**：易于添加新的产品类型
+4. **控制实例化**：控制对象的创建时机和方式
 
-```go
-// 创建型模式接口
-type CreationalPattern interface {
-    CreateObject() interface{}
-    ValidateCreation() error
-    GetCreationCost() CreationCost
-}
+### 1.3 分类体系
 
-// 创建成本
-type CreationCost struct {
-    TimeComplexity   string
-    SpaceComplexity  string
-    MemoryAllocation int64
-}
+```
+创建型模式
+├── 单例模式 (Singleton)
+│   └── 确保类只有一个实例
+├── 工厂方法模式 (Factory Method)
+│   └── 延迟实例化到子类
+├── 抽象工厂模式 (Abstract Factory)
+│   └── 创建相关对象族
+├── 建造者模式 (Builder)
+│   └── 分步构建复杂对象
+└── 原型模式 (Prototype)
+    └── 通过克隆创建对象
 ```
 
-## 单例模式 (Singleton)
+## 2. 单例模式 (Singleton)
 
-### 2.1 概念定义
+### 2.1 形式化定义
 
-**定义**：保证一个类仅有一个实例，并提供一个访问它的全局访问点。
+**定义**：确保一个类只有一个实例，并提供一个全局访问点。
 
-**形式化定义**：
-$$\text{Singleton} = \{\text{instance} | \text{instance} \text{ 唯一}\}$$
+**数学定义**：
 
-**数学表示**：
-$$\text{Singleton}(C) = \{c \in C | \forall c' \in C, c = c'\}$$
+设 $S$ 为单例类，$I$ 为实例集合，则：
 
-### 2.2 结构模型
+$$\forall s_1, s_2 \in S : s_1 = s_2$$
 
-```mermaid
-classDiagram
-    class Singleton {
-        -instance: Singleton
-        -Singleton()
-        +GetInstance(): Singleton
-        +Operation(): void
-    }
-```
+**形式化证明**：
 
-### 2.3 Golang实现
+**定理**：单例模式保证全局唯一性
 
-#### 2.3.1 线程安全单例
+**证明**：
+1. 假设存在两个实例 $s_1, s_2 \in S$
+2. 根据单例模式实现，$s_1 = GetInstance()$ 且 $s_2 = GetInstance()$
+3. 由于 $GetInstance()$ 总是返回同一个实例
+4. 因此 $s_1 = s_2$
+5. 矛盾，故假设不成立
+
+### 2.2 Golang实现
+
+#### 2.2.1 线程安全实现
 
 ```go
 package singleton
 
 import (
     "sync"
-    "time"
+    "sync/atomic"
 )
 
 // Singleton 单例结构体
 type Singleton struct {
-    ID        string
-    CreatedAt time.Time
-    Data      map[string]interface{}
+    data string
 }
 
 var (
     instance *Singleton
     once     sync.Once
-    mu       sync.RWMutex
+    mu       sync.Mutex
 )
 
-// GetInstance 获取单例实例
+// GetInstance 获取单例实例（推荐方式）
 func GetInstance() *Singleton {
     once.Do(func() {
         instance = &Singleton{
-            ID:        generateID(),
-            CreatedAt: time.Now(),
-            Data:      make(map[string]interface{}),
+            data: "initialized",
         }
     })
     return instance
 }
 
-// GetInstanceThreadSafe 线程安全获取实例
-func GetInstanceThreadSafe() *Singleton {
+// GetInstanceMutex 使用互斥锁的实现
+func GetInstanceMutex() *Singleton {
     if instance == nil {
         mu.Lock()
         defer mu.Unlock()
         if instance == nil {
             instance = &Singleton{
-                ID:        generateID(),
-                CreatedAt: time.Now(),
-                Data:      make(map[string]interface{}),
+                data: "initialized",
             }
         }
     }
@@ -127,176 +123,129 @@ func GetInstanceThreadSafe() *Singleton {
 }
 
 // SetData 设置数据
-func (s *Singleton) SetData(key string, value interface{}) {
-    mu.Lock()
-    defer mu.Unlock()
-    s.Data[key] = value
+func (s *Singleton) SetData(data string) {
+    s.data = data
 }
 
 // GetData 获取数据
-func (s *Singleton) GetData(key string) (interface{}, bool) {
-    mu.RLock()
-    defer mu.RUnlock()
-    value, exists := s.Data[key]
-    return value, exists
-}
-
-// GetInfo 获取实例信息
-func (s *Singleton) GetInfo() map[string]interface{} {
-    return map[string]interface{}{
-        "id":         s.ID,
-        "created_at": s.CreatedAt,
-        "data_count": len(s.Data),
-    }
-}
-
-func generateID() string {
-    return time.Now().Format("20060102150405")
+func (s *Singleton) GetData() string {
+    return s.data
 }
 ```
 
-#### 2.3.2 配置管理单例
+#### 2.2.2 测试验证
 
 ```go
-package config
+package singleton
 
 import (
-    "encoding/json"
-    "os"
     "sync"
+    "testing"
 )
 
-// Config 配置结构体
-type Config struct {
-    Database DatabaseConfig `json:"database"`
-    Server   ServerConfig   `json:"server"`
-    Cache    CacheConfig    `json:"cache"`
-}
-
-type DatabaseConfig struct {
-    Host     string `json:"host"`
-    Port     int    `json:"port"`
-    Username string `json:"username"`
-    Password string `json:"password"`
-    Database string `json:"database"`
-}
-
-type ServerConfig struct {
-    Port    int    `json:"port"`
-    Host    string `json:"host"`
-    Timeout int    `json:"timeout"`
-}
-
-type CacheConfig struct {
-    RedisURL string `json:"redis_url"`
-    TTL      int    `json:"ttl"`
-}
-
-var (
-    config *Config
-    once   sync.Once
-)
-
-// LoadConfig 加载配置
-func LoadConfig(configPath string) *Config {
-    once.Do(func() {
-        config = &Config{}
-        file, err := os.Open(configPath)
-        if err != nil {
-            panic(err)
-        }
-        defer file.Close()
-        
-        decoder := json.NewDecoder(file)
-        err = decoder.Decode(config)
-        if err != nil {
-            panic(err)
-        }
-    })
-    return config
-}
-
-// GetConfig 获取配置实例
-func GetConfig() *Config {
-    if config == nil {
-        return LoadConfig("config.json")
+func TestSingleton(t *testing.T) {
+    // 测试基本功能
+    instance1 := GetInstance()
+    instance2 := GetInstance()
+    
+    if instance1 != instance2 {
+        t.Error("Singleton instances are not the same")
     }
-    return config
+    
+    // 测试数据一致性
+    instance1.SetData("test data")
+    if instance2.GetData() != "test data" {
+        t.Error("Data is not shared between instances")
+    }
+}
+
+func TestSingletonConcurrency(t *testing.T) {
+    const numGoroutines = 1000
+    var wg sync.WaitGroup
+    instances := make([]*Singleton, numGoroutines)
+    
+    // 并发获取实例
+    for i := 0; i < numGoroutines; i++ {
+        wg.Add(1)
+        go func(index int) {
+            defer wg.Done()
+            instances[index] = GetInstance()
+        }(i)
+    }
+    
+    wg.Wait()
+    
+    // 验证所有实例都是同一个
+    firstInstance := instances[0]
+    for i := 1; i < numGoroutines; i++ {
+        if instances[i] != firstInstance {
+            t.Errorf("Instance %d is not the same as first instance", i)
+        }
+    }
 }
 ```
 
-### 2.4 性能分析
+### 2.3 性能分析
 
-**时间复杂度**：$O(1)$
-**空间复杂度**：$O(1)$
-**线程安全**：使用 `sync.Once` 或双重检查锁定
+#### 2.3.1 时间复杂度
 
-### 2.5 使用场景
+- **获取实例**：$O(1)$
+- **初始化**：$O(1)$
 
-- 全局配置管理
-- 日志记录器
-- 数据库连接池
-- 缓存管理器
+#### 2.3.2 空间复杂度
 
-## 工厂方法模式 (Factory Method)
+- **内存占用**：$O(1)$
+- **实例存储**：$O(1)$
 
-### 3.1 概念定义
+#### 2.3.3 并发性能
+
+```go
+// 性能基准测试
+func BenchmarkSingletonConcurrent(b *testing.B) {
+    b.RunParallel(func(pb *testing.PB) {
+        for pb.Next() {
+            GetInstance()
+        }
+    })
+}
+```
+
+## 3. 工厂方法模式 (Factory Method)
+
+### 3.1 形式化定义
 
 **定义**：定义一个用于创建对象的接口，让子类决定实例化哪一个类。
 
-**形式化定义**：
-$$\text{FactoryMethod} = \{\text{creator} \rightarrow \text{product}\}$$
+**数学定义**：
 
-**数学表示**：
-$$\text{FactoryMethod}(C, P) = \{f: C \rightarrow P | f \text{ 是创建函数}\}$$
+设 $F$ 为工厂接口，$P$ 为产品接口，$C$ 为具体创建者，则：
 
-### 3.2 结构模型
+$$F = \{f | f : Context \rightarrow P\}$$
 
-```mermaid
-classDiagram
-    class Creator {
-        <<interface>>
-        +factoryMethod(): Product
-        +someOperation(): string
-    }
-    class ConcreteCreatorA {
-        +factoryMethod(): Product
-    }
-    class ConcreteCreatorB {
-        +factoryMethod(): Product
-    }
-    class Product {
-        <<interface>>
-        +operation(): string
-    }
-    class ConcreteProductA {
-        +operation(): string
-    }
-    class ConcreteProductB {
-        +operation(): string
-    }
-    
-    Creator <|-- ConcreteCreatorA
-    Creator <|-- ConcreteCreatorB
-    Creator ..> Product
-    Product <|-- ConcreteProductA
-    Product <|-- ConcreteProductB
-```
+**形式化证明**：
 
-### 3.3 Golang实现
+**定理**：工厂方法模式支持开闭原则
+
+**证明**：
+1. 设现有工厂 $F_1$ 创建产品 $P_1$
+2. 新增产品 $P_2$ 需要新工厂 $F_2$
+3. $F_1$ 和 $F_2$ 都实现相同的工厂接口
+4. 客户端代码无需修改
+5. 因此满足开闭原则
+
+### 3.2 Golang实现
+
+#### 3.2.1 基础实现
 
 ```go
 package factory
 
-import (
-    "fmt"
-    "time"
-)
+import "fmt"
 
 // Product 产品接口
 type Product interface {
     Operation() string
-    GetInfo() map[string]interface{}
+    GetName() string
 }
 
 // Creator 创建者接口
@@ -307,53 +256,35 @@ type Creator interface {
 
 // ConcreteProductA 具体产品A
 type ConcreteProductA struct {
-    ID        string
-    CreatedAt time.Time
-    Type      string
+    name string
 }
 
 func (p *ConcreteProductA) Operation() string {
-    return fmt.Sprintf("ConcreteProductA operation: %s", p.ID)
+    return "Result of ConcreteProductA"
 }
 
-func (p *ConcreteProductA) GetInfo() map[string]interface{} {
-    return map[string]interface{}{
-        "id":         p.ID,
-        "type":       p.Type,
-        "created_at": p.CreatedAt,
-    }
+func (p *ConcreteProductA) GetName() string {
+    return p.name
 }
 
 // ConcreteProductB 具体产品B
 type ConcreteProductB struct {
-    ID        string
-    CreatedAt time.Time
-    Type      string
-    Metadata  map[string]interface{}
+    name string
 }
 
 func (p *ConcreteProductB) Operation() string {
-    return fmt.Sprintf("ConcreteProductB operation: %s", p.ID)
+    return "Result of ConcreteProductB"
 }
 
-func (p *ConcreteProductB) GetInfo() map[string]interface{} {
-    return map[string]interface{}{
-        "id":         p.ID,
-        "type":       p.Type,
-        "created_at": p.CreatedAt,
-        "metadata":   p.Metadata,
-    }
+func (p *ConcreteProductB) GetName() string {
+    return p.name
 }
 
 // ConcreteCreatorA 具体创建者A
 type ConcreteCreatorA struct{}
 
 func (c *ConcreteCreatorA) FactoryMethod() Product {
-    return &ConcreteProductA{
-        ID:        generateID("A"),
-        CreatedAt: time.Now(),
-        Type:      "ProductA",
-    }
+    return &ConcreteProductA{name: "ProductA"}
 }
 
 func (c *ConcreteCreatorA) SomeOperation() string {
@@ -365,12 +296,7 @@ func (c *ConcreteCreatorA) SomeOperation() string {
 type ConcreteCreatorB struct{}
 
 func (c *ConcreteCreatorB) FactoryMethod() Product {
-    return &ConcreteProductB{
-        ID:        generateID("B"),
-        CreatedAt: time.Now(),
-        Type:      "ProductB",
-        Metadata:  make(map[string]interface{}),
-    }
+    return &ConcreteProductB{name: "ProductB"}
 }
 
 func (c *ConcreteCreatorB) SomeOperation() string {
@@ -381,140 +307,181 @@ func (c *ConcreteCreatorB) SomeOperation() string {
 // ClientCode 客户端代码
 func ClientCode(creator Creator) {
     fmt.Println(creator.SomeOperation())
-    
-    product := creator.FactoryMethod()
-    fmt.Printf("Product info: %+v\n", product.GetInfo())
-}
-
-func generateID(prefix string) string {
-    return fmt.Sprintf("%s_%d", prefix, time.Now().UnixNano())
 }
 ```
 
-### 3.4 性能分析
+#### 3.2.2 泛型实现
 
-**时间复杂度**：$O(1)$
-**空间复杂度**：$O(1)$
-**扩展性**：高，易于添加新产品类型
+```go
+package factory
 
-### 3.5 使用场景
+import "fmt"
 
-- 数据库连接工厂
-- 日志记录器工厂
-- 缓存策略工厂
-- 支付方式工厂
+// GenericProduct 泛型产品接口
+type GenericProduct[T any] interface {
+    Operation() T
+    GetName() string
+}
 
-## 抽象工厂模式 (Abstract Factory)
+// GenericCreator 泛型创建者接口
+type GenericCreator[T any] interface {
+    FactoryMethod() GenericProduct[T]
+    SomeOperation() T
+}
 
-### 4.1 概念定义
+// StringProduct 字符串产品
+type StringProduct struct {
+    name string
+}
+
+func (p *StringProduct) Operation() string {
+    return "String operation result"
+}
+
+func (p *StringProduct) GetName() string {
+    return p.name
+}
+
+// IntProduct 整数产品
+type IntProduct struct {
+    name string
+}
+
+func (p *IntProduct) Operation() int {
+    return 42
+}
+
+func (p *IntProduct) GetName() string {
+    return p.name
+}
+
+// GenericStringCreator 泛型字符串创建者
+type GenericStringCreator struct{}
+
+func (c *GenericStringCreator) FactoryMethod() GenericProduct[string] {
+    return &StringProduct{name: "StringProduct"}
+}
+
+func (c *GenericStringCreator) SomeOperation() string {
+    product := c.FactoryMethod()
+    return fmt.Sprintf("Creator: %s", product.Operation())
+}
+
+// GenericIntCreator 泛型整数创建者
+type GenericIntCreator struct{}
+
+func (c *GenericIntCreator) FactoryMethod() GenericProduct[int] {
+    return &IntProduct{name: "IntProduct"}
+}
+
+func (c *GenericIntCreator) SomeOperation() int {
+    product := c.FactoryMethod()
+    return product.Operation()
+}
+```
+
+### 3.3 测试验证
+
+```go
+package factory
+
+import (
+    "testing"
+)
+
+func TestFactoryMethod(t *testing.T) {
+    // 测试创建者A
+    creatorA := &ConcreteCreatorA{}
+    productA := creatorA.FactoryMethod()
+    
+    if productA.GetName() != "ProductA" {
+        t.Errorf("Expected ProductA, got %s", productA.GetName())
+    }
+    
+    // 测试创建者B
+    creatorB := &ConcreteCreatorB{}
+    productB := creatorB.FactoryMethod()
+    
+    if productB.GetName() != "ProductB" {
+        t.Errorf("Expected ProductB, got %s", productB.GetName())
+    }
+}
+
+func TestGenericFactoryMethod(t *testing.T) {
+    // 测试泛型字符串创建者
+    stringCreator := &GenericStringCreator{}
+    stringResult := stringCreator.SomeOperation()
+    
+    if stringResult == "" {
+        t.Error("String operation should not be empty")
+    }
+    
+    // 测试泛型整数创建者
+    intCreator := &GenericIntCreator{}
+    intResult := intCreator.SomeOperation()
+    
+    if intResult != 42 {
+        t.Errorf("Expected 42, got %d", intResult)
+    }
+}
+```
+
+## 4. 抽象工厂模式 (Abstract Factory)
+
+### 4.1 形式化定义
 
 **定义**：提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类。
 
-**形式化定义**：
-$$\text{AbstractFactory} = \{\text{family} \rightarrow \text{products}\}$$
+**数学定义**：
 
-**数学表示**：
-$$\text{AbstractFactory}(F, P) = \{f: F \rightarrow P^n | f \text{ 创建产品族}\}$$
+设 $AF$ 为抽象工厂，$P_A, P_B$ 为产品族，则：
 
-### 4.2 结构模型
+$$AF = \{af | af : Context \rightarrow (P_A \times P_B)\}$$
 
-```mermaid
-classDiagram
-    class AbstractFactory {
-        <<interface>>
-        +createProductA(): AbstractProductA
-        +createProductB(): AbstractProductB
-    }
-    class ConcreteFactory1 {
-        +createProductA(): AbstractProductA
-        +createProductB(): AbstractProductB
-    }
-    class ConcreteFactory2 {
-        +createProductA(): AbstractProductA
-        +createProductB(): AbstractProductB
-    }
-    class AbstractProductA {
-        <<interface>>
-        +usefulFunctionA(): string
-    }
-    class AbstractProductB {
-        <<interface>>
-        +usefulFunctionB(): string
-        +anotherUsefulFunctionB(collaborator): string
-    }
-    
-    AbstractFactory <|-- ConcreteFactory1
-    AbstractFactory <|-- ConcreteFactory2
-    AbstractFactory ..> AbstractProductA
-    AbstractFactory ..> AbstractProductB
-    AbstractProductA <|-- ConcreteProductA1
-    AbstractProductA <|-- ConcreteProductA2
-    AbstractProductB <|-- ConcreteProductB1
-    AbstractProductB <|-- ConcreteProductB2
-```
+**形式化证明**：
 
-### 4.3 Golang实现
+**定理**：抽象工厂模式确保产品族一致性
+
+**证明**：
+1. 设工厂 $F_1$ 创建产品族 $(P_{A1}, P_{B1})$
+2. 设工厂 $F_2$ 创建产品族 $(P_{A2}, P_{B2})$
+3. 每个工厂内部的产品都是兼容的
+4. 因此保证了产品族的一致性
+
+### 4.2 Golang实现
 
 ```go
 package abstractfactory
 
-import (
-    "fmt"
-    "time"
-)
+import "fmt"
 
-// AbstractProductA 抽象产品A接口
+// AbstractProductA 抽象产品A
 type AbstractProductA interface {
     UsefulFunctionA() string
-    GetType() string
 }
 
-// AbstractProductB 抽象产品B接口
+// AbstractProductB 抽象产品B
 type AbstractProductB interface {
     UsefulFunctionB() string
     AnotherUsefulFunctionB(collaborator AbstractProductA) string
-    GetType() string
-}
-
-// AbstractFactory 抽象工厂接口
-type AbstractFactory interface {
-    CreateProductA() AbstractProductA
-    CreateProductB() AbstractProductB
 }
 
 // ConcreteProductA1 具体产品A1
-type ConcreteProductA1 struct {
-    ID        string
-    CreatedAt time.Time
-}
+type ConcreteProductA1 struct{}
 
 func (p *ConcreteProductA1) UsefulFunctionA() string {
     return "The result of the product A1."
 }
 
-func (p *ConcreteProductA1) GetType() string {
-    return "ProductA1"
-}
-
 // ConcreteProductA2 具体产品A2
-type ConcreteProductA2 struct {
-    ID        string
-    CreatedAt time.Time
-}
+type ConcreteProductA2 struct{}
 
 func (p *ConcreteProductA2) UsefulFunctionA() string {
     return "The result of the product A2."
 }
 
-func (p *ConcreteProductA2) GetType() string {
-    return "ProductA2"
-}
-
 // ConcreteProductB1 具体产品B1
-type ConcreteProductB1 struct {
-    ID        string
-    CreatedAt time.Time
-}
+type ConcreteProductB1 struct{}
 
 func (p *ConcreteProductB1) UsefulFunctionB() string {
     return "The result of the product B1."
@@ -525,15 +492,8 @@ func (p *ConcreteProductB1) AnotherUsefulFunctionB(collaborator AbstractProductA
     return fmt.Sprintf("The result of the B1 collaborating with the (%s)", result)
 }
 
-func (p *ConcreteProductB1) GetType() string {
-    return "ProductB1"
-}
-
 // ConcreteProductB2 具体产品B2
-type ConcreteProductB2 struct {
-    ID        string
-    CreatedAt time.Time
-}
+type ConcreteProductB2 struct{}
 
 func (p *ConcreteProductB2) UsefulFunctionB() string {
     return "The result of the product B2."
@@ -544,120 +504,68 @@ func (p *ConcreteProductB2) AnotherUsefulFunctionB(collaborator AbstractProductA
     return fmt.Sprintf("The result of the B2 collaborating with the (%s)", result)
 }
 
-func (p *ConcreteProductB2) GetType() string {
-    return "ProductB2"
+// AbstractFactory 抽象工厂接口
+type AbstractFactory interface {
+    CreateProductA() AbstractProductA
+    CreateProductB() AbstractProductB
 }
 
 // ConcreteFactory1 具体工厂1
 type ConcreteFactory1 struct{}
 
 func (f *ConcreteFactory1) CreateProductA() AbstractProductA {
-    return &ConcreteProductA1{
-        ID:        generateID("A1"),
-        CreatedAt: time.Now(),
-    }
+    return &ConcreteProductA1{}
 }
 
 func (f *ConcreteFactory1) CreateProductB() AbstractProductB {
-    return &ConcreteProductB1{
-        ID:        generateID("B1"),
-        CreatedAt: time.Now(),
-    }
+    return &ConcreteProductB1{}
 }
 
 // ConcreteFactory2 具体工厂2
 type ConcreteFactory2 struct{}
 
 func (f *ConcreteFactory2) CreateProductA() AbstractProductA {
-    return &ConcreteProductA2{
-        ID:        generateID("A2"),
-        CreatedAt: time.Now(),
-    }
+    return &ConcreteProductA2{}
 }
 
 func (f *ConcreteFactory2) CreateProductB() AbstractProductB {
-    return &ConcreteProductB2{
-        ID:        generateID("B2"),
-        CreatedAt: time.Now(),
-    }
+    return &ConcreteProductB2{}
 }
 
 // ClientCode 客户端代码
 func ClientCode(factory AbstractFactory) {
     productA := factory.CreateProductA()
     productB := factory.CreateProductB()
-
-    fmt.Printf("Product A: %s\n", productA.UsefulFunctionA())
-    fmt.Printf("Product B: %s\n", productB.UsefulFunctionB())
-    fmt.Printf("Collaboration: %s\n", productB.AnotherUsefulFunctionB(productA))
-}
-
-func generateID(prefix string) string {
-    return fmt.Sprintf("%s_%d", prefix, time.Now().UnixNano())
+    
+    fmt.Println(productB.UsefulFunctionB())
+    fmt.Println(productB.AnotherUsefulFunctionB(productA))
 }
 ```
 
-### 4.4 性能分析
+## 5. 建造者模式 (Builder)
 
-**时间复杂度**：$O(1)$
-**空间复杂度**：$O(n)$ (n为产品数量)
-**扩展性**：中等，需要修改工厂接口
-
-### 4.5 使用场景
-
-- UI组件工厂
-- 数据库连接工厂
-- 操作系统API工厂
-- 游戏引擎工厂
-
-## 建造者模式 (Builder)
-
-### 5.1 概念定义
+### 5.1 形式化定义
 
 **定义**：将一个复杂对象的构建与其表示分离，使得同样的构建过程可以创建不同的表示。
 
-**形式化定义**：
-$$\text{Builder} = \{\text{construction} \rightarrow \text{representation}\}$$
+**数学定义**：
 
-**数学表示**：
-$$\text{Builder}(C, R) = \{b: C \rightarrow R | b \text{ 是构建函数}\}$$
+设 $B$ 为建造者，$P$ 为产品，$S$ 为构建步骤，则：
 
-### 5.2 结构模型
+$$B = \{b | b : S_1 \times S_2 \times ... \times S_n \rightarrow P\}$$
 
-```mermaid
-classDiagram
-    class Product {
-        -partA: string
-        -partB: string
-        -partC: int
-        +getParts(): string
-    }
-    class Builder {
-        <<interface>>
-        +buildPartA(): Builder
-        +buildPartB(): Builder
-        +buildPartC(): Builder
-        +getResult(): Product
-    }
-    class ConcreteBuilder {
-        -product: Product
-        +buildPartA(): Builder
-        +buildPartB(): Builder
-        +buildPartC(): Builder
-        +getResult(): Product
-    }
-    class Director {
-        -builder: Builder
-        +setBuilder(builder: Builder)
-        +construct(): Product
-    }
-    
-    Builder <|-- ConcreteBuilder
-    Director ..> Builder
-    ConcreteBuilder ..> Product
-```
+**形式化证明**：
 
-### 5.3 Golang实现
+**定理**：建造者模式支持分步构建
+
+**证明**：
+1. 设产品 $P$ 由 $n$ 个部分组成
+2. 建造者 $B$ 提供 $n$ 个构建方法
+3. 每个方法对应一个构建步骤
+4. 最终调用 $Build()$ 方法完成构建
+5. 因此支持分步构建
+
+### 5.2 Golang实现
 
 ```go
 package builder
@@ -665,39 +573,28 @@ package builder
 import (
     "fmt"
     "strings"
-    "time"
 )
 
-// Product 产品结构体
+// Product 产品
 type Product struct {
     PartA string
     PartB string
     PartC int
-    PartD map[string]interface{}
+    PartD []string
 }
 
-func (p *Product) GetParts() string {
-    parts := []string{
-        fmt.Sprintf("PartA: %s", p.PartA),
-        fmt.Sprintf("PartB: %s", p.PartB),
-        fmt.Sprintf("PartC: %d", p.PartC),
-    }
-    
-    if len(p.PartD) > 0 {
-        parts = append(parts, fmt.Sprintf("PartD: %+v", p.PartD))
-    }
-    
-    return strings.Join(parts, ", ")
+func (p *Product) String() string {
+    return fmt.Sprintf("Product{PartA: %s, PartB: %s, PartC: %d, PartD: %v}",
+        p.PartA, p.PartB, p.PartC, p.PartD)
 }
 
 // Builder 建造者接口
 type Builder interface {
-    BuildPartA(value string) Builder
-    BuildPartB(value string) Builder
-    BuildPartC(value int) Builder
-    BuildPartD(key string, value interface{}) Builder
-    GetResult() *Product
-    Reset() Builder
+    SetPartA(value string) Builder
+    SetPartB(value string) Builder
+    SetPartC(value int) Builder
+    SetPartD(values []string) Builder
+    Build() *Product
 }
 
 // ConcreteBuilder 具体建造者
@@ -707,41 +604,32 @@ type ConcreteBuilder struct {
 
 func NewConcreteBuilder() *ConcreteBuilder {
     return &ConcreteBuilder{
-        product: &Product{
-            PartD: make(map[string]interface{}),
-        },
+        product: &Product{},
     }
 }
 
-func (b *ConcreteBuilder) BuildPartA(value string) Builder {
+func (b *ConcreteBuilder) SetPartA(value string) Builder {
     b.product.PartA = value
     return b
 }
 
-func (b *ConcreteBuilder) BuildPartB(value string) Builder {
+func (b *ConcreteBuilder) SetPartB(value string) Builder {
     b.product.PartB = value
     return b
 }
 
-func (b *ConcreteBuilder) BuildPartC(value int) Builder {
+func (b *ConcreteBuilder) SetPartC(value int) Builder {
     b.product.PartC = value
     return b
 }
 
-func (b *ConcreteBuilder) BuildPartD(key string, value interface{}) Builder {
-    b.product.PartD[key] = value
+func (b *ConcreteBuilder) SetPartD(values []string) Builder {
+    b.product.PartD = append([]string{}, values...)
     return b
 }
 
-func (b *ConcreteBuilder) GetResult() *Product {
+func (b *ConcreteBuilder) Build() *Product {
     return b.product
-}
-
-func (b *ConcreteBuilder) Reset() Builder {
-    b.product = &Product{
-        PartD: make(map[string]interface{}),
-    }
-    return b
 }
 
 // Director 指导者
@@ -753,97 +641,79 @@ func NewDirector(builder Builder) *Director {
     return &Director{builder: builder}
 }
 
-func (d *Director) SetBuilder(builder Builder) {
-    d.builder = builder
+func (d *Director) ConstructMinimal() *Product {
+    return d.builder.SetPartA("DefaultA").Build()
 }
 
-func (d *Director) Construct() *Product {
+func (d *Director) ConstructFull() *Product {
     return d.builder.
-        BuildPartA("DefaultA").
-        BuildPartB("DefaultB").
-        BuildPartC(100).
-        GetResult()
+        SetPartA("FullA").
+        SetPartB("FullB").
+        SetPartC(100).
+        SetPartD([]string{"item1", "item2", "item3"}).
+        Build()
 }
 
-func (d *Director) ConstructCustom(partA, partB string, partC int) *Product {
-    return d.builder.
-        BuildPartA(partA).
-        BuildPartB(partB).
-        BuildPartC(partC).
-        GetResult()
+// FluentBuilder 流式建造者
+type FluentBuilder struct {
+    product *Product
 }
 
-// 使用示例
-func ExampleUsage() {
-    // 使用建造者模式
-    builder := NewConcreteBuilder()
-    product1 := builder.
-        BuildPartA("CustomA").
-        BuildPartB("CustomB").
-        BuildPartC(200).
-        BuildPartD("timestamp", time.Now()).
-        GetResult()
-    
-    fmt.Printf("Product 1: %s\n", product1.GetParts())
-    
-    // 使用指导者
-    director := NewDirector(NewConcreteBuilder())
-    product2 := director.Construct()
-    fmt.Printf("Product 2: %s\n", product2.GetParts())
-    
-    product3 := director.ConstructCustom("SpecialA", "SpecialB", 300)
-    fmt.Printf("Product 3: %s\n", product3.GetParts())
+func NewFluentBuilder() *FluentBuilder {
+    return &FluentBuilder{
+        product: &Product{},
+    }
+}
+
+func (b *FluentBuilder) WithPartA(value string) *FluentBuilder {
+    b.product.PartA = value
+    return b
+}
+
+func (b *FluentBuilder) WithPartB(value string) *FluentBuilder {
+    b.product.PartB = value
+    return b
+}
+
+func (b *FluentBuilder) WithPartC(value int) *FluentBuilder {
+    b.product.PartC = value
+    return b
+}
+
+func (b *FluentBuilder) WithPartD(values ...string) *FluentBuilder {
+    b.product.PartD = append([]string{}, values...)
+    return b
+}
+
+func (b *FluentBuilder) Build() *Product {
+    return b.product
 }
 ```
 
-### 5.4 性能分析
+## 6. 原型模式 (Prototype)
 
-**时间复杂度**：$O(n)$ (n为构建步骤数)
-**空间复杂度**：$O(1)$
-**灵活性**：高，支持链式调用
-
-### 5.5 使用场景
-
-- 配置对象构建
-- 查询构建器
-- 报告生成器
-- 复杂对象创建
-
-## 原型模式 (Prototype)
-
-### 6.1 概念定义
+### 6.1 形式化定义
 
 **定义**：用原型实例指定创建对象的种类，并且通过拷贝这些原型创建新的对象。
 
-**形式化定义**：
-$$\text{Prototype} = \{\text{clone} \rightarrow \text{instance}\}$$
+**数学定义**：
 
-**数学表示**：
-$$\text{Prototype}(I) = \{c: I \rightarrow I | c \text{ 是克隆函数}\}$$
+设 $P$ 为原型，$C$ 为克隆函数，则：
 
-### 6.2 结构模型
+$$C : P \rightarrow P' \text{ where } P' \text{ is a copy of } P$$
 
-```mermaid
-classDiagram
-    class Prototype {
-        <<interface>>
-        +clone(): Prototype
-    }
-    class ConcretePrototype {
-        -field: string
-        +clone(): Prototype
-        +setField(field: string)
-        +getField(): string
-    }
-    class Client {
-        +operation(prototype: Prototype)
-    }
-    
-    Prototype <|-- ConcretePrototype
-    Client ..> Prototype
-```
+**形式化证明**：
 
-### 6.3 Golang实现
+**定理**：原型模式支持对象克隆
+
+**证明**：
+1. 设原型对象 $P$ 包含状态 $S$
+2. 克隆函数 $C$ 创建新对象 $P'$
+3. $P'$ 包含相同的状态 $S$
+4. $P$ 和 $P'$ 是独立的对象
+5. 因此支持对象克隆
+
+### 6.2 Golang实现
 
 ```go
 package prototype
@@ -856,60 +726,53 @@ import (
 // Prototype 原型接口
 type Prototype interface {
     Clone() Prototype
-    GetInfo() map[string]interface{}
+    GetInfo() string
 }
 
 // ConcretePrototype 具体原型
 type ConcretePrototype struct {
-    ID        string
-    Name      string
-    Data      map[string]interface{}
-    CreatedAt time.Time
-    Children  []*ConcretePrototype
+    Name     string
+    Age      int
+    Created  time.Time
+    Settings map[string]interface{}
+}
+
+func NewConcretePrototype(name string, age int) *ConcretePrototype {
+    return &ConcretePrototype{
+        Name:     name,
+        Age:      age,
+        Created:  time.Now(),
+        Settings: make(map[string]interface{}),
+    }
 }
 
 func (p *ConcretePrototype) Clone() Prototype {
     // 深拷贝
     clone := &ConcretePrototype{
-        ID:        generateID(),
-        Name:      p.Name + "_clone",
-        Data:      make(map[string]interface{}),
-        CreatedAt: time.Now(),
-        Children:  make([]*ConcretePrototype, len(p.Children)),
+        Name:    p.Name,
+        Age:     p.Age,
+        Created: p.Created,
     }
     
-    // 拷贝数据
-    for k, v := range p.Data {
-        clone.Data[k] = v
-    }
-    
-    // 拷贝子对象
-    for i, child := range p.Children {
-        if child != nil {
-            clonedChild := child.Clone().(*ConcretePrototype)
-            clone.Children[i] = clonedChild
-        }
+    // 拷贝map
+    clone.Settings = make(map[string]interface{})
+    for k, v := range p.Settings {
+        clone.Settings[k] = v
     }
     
     return clone
 }
 
-func (p *ConcretePrototype) GetInfo() map[string]interface{} {
-    return map[string]interface{}{
-        "id":         p.ID,
-        "name":       p.Name,
-        "data_count": len(p.Data),
-        "children":   len(p.Children),
-        "created_at": p.CreatedAt,
-    }
+func (p *ConcretePrototype) GetInfo() string {
+    return fmt.Sprintf("Name: %s, Age: %d, Created: %v", p.Name, p.Age, p.Created)
 }
 
-func (p *ConcretePrototype) SetData(key string, value interface{}) {
-    p.Data[key] = value
+func (p *ConcretePrototype) SetSetting(key string, value interface{}) {
+    p.Settings[key] = value
 }
 
-func (p *ConcretePrototype) AddChild(child *ConcretePrototype) {
-    p.Children = append(p.Children, child)
+func (p *ConcretePrototype) GetSetting(key string) interface{} {
+    return p.Settings[key]
 }
 
 // PrototypeRegistry 原型注册表
@@ -923,13 +786,8 @@ func NewPrototypeRegistry() *PrototypeRegistry {
     }
 }
 
-func (r *PrototypeRegistry) Add(name string, prototype Prototype) {
+func (r *PrototypeRegistry) Register(name string, prototype Prototype) {
     r.prototypes[name] = prototype
-}
-
-func (r *PrototypeRegistry) Get(name string) (Prototype, bool) {
-    prototype, exists := r.prototypes[name]
-    return prototype, exists
 }
 
 func (r *PrototypeRegistry) Clone(name string) (Prototype, error) {
@@ -940,207 +798,93 @@ func (r *PrototypeRegistry) Clone(name string) (Prototype, error) {
     return prototype.Clone(), nil
 }
 
-func generateID() string {
-    return fmt.Sprintf("proto_%d", time.Now().UnixNano())
-}
-
-// 使用示例
-func ExampleUsage() {
-    // 创建原型
-    original := &ConcretePrototype{
-        ID:        generateID(),
-        Name:      "Original",
-        Data:      map[string]interface{}{"key": "value"},
-        CreatedAt: time.Now(),
+func (r *PrototypeRegistry) List() []string {
+    names := make([]string, 0, len(r.prototypes))
+    for name := range r.prototypes {
+        names = append(names, name)
     }
-    
-    // 克隆原型
-    clone := original.Clone().(*ConcretePrototype)
-    fmt.Printf("Original: %+v\n", original.GetInfo())
-    fmt.Printf("Clone: %+v\n", clone.GetInfo())
-    
-    // 使用注册表
-    registry := NewPrototypeRegistry()
-    registry.Add("default", original)
-    
-    if cloned, err := registry.Clone("default"); err == nil {
-        fmt.Printf("Registry Clone: %+v\n", cloned.GetInfo())
-    }
+    return names
 }
 ```
 
-### 6.4 性能分析
+## 7. 模式关系分析
 
-**时间复杂度**：$O(n)$ (n为对象复杂度)
-**空间复杂度**：$O(n)$
-**内存效率**：中等，需要深拷贝
+### 7.1 模式组合关系
 
-### 6.5 使用场景
-
-- 对象复制
-- 配置模板
-- 游戏对象克隆
-- 文档模板
-
-## 模式比较与选择
-
-### 7.1 模式对比表
-
-| 模式 | 复杂度 | 灵活性 | 性能 | 适用场景 |
-|------|--------|--------|------|----------|
-| 单例 | 低 | 低 | 高 | 全局资源管理 |
-| 工厂方法 | 中 | 高 | 中 | 对象创建策略 |
-| 抽象工厂 | 高 | 中 | 中 | 产品族创建 |
-| 建造者 | 中 | 高 | 中 | 复杂对象构建 |
-| 原型 | 中 | 中 | 低 | 对象复制 |
-
-### 7.2 选择指南
-
-**选择单例模式当**：
-
-- 需要全局唯一实例
-- 资源管理（配置、日志、数据库连接）
-
-**选择工厂方法当**：
-
-- 需要延迟对象创建
-- 子类决定创建对象类型
-
-**选择抽象工厂当**：
-
-- 需要创建相关对象族
-- 系统独立于产品创建
-
-**选择建造者当**：
-
-- 需要构建复杂对象
-- 需要分步构建过程
-
-**选择原型当**：
-
-- 需要对象复制
-- 避免重复初始化
-
-## 最佳实践
-
-### 8.1 设计原则
-
-1. **单一职责原则**：每个创建者只负责一种对象的创建
-2. **开闭原则**：对扩展开放，对修改关闭
-3. **依赖倒置原则**：依赖抽象而非具体实现
-
-### 8.2 性能优化
-
-```go
-// 对象池模式结合单例
-type ObjectPool struct {
-    pool chan interface{}
-    new  func() interface{}
-}
-
-func NewObjectPool(size int, new func() interface{}) *ObjectPool {
-    pool := &ObjectPool{
-        pool: make(chan interface{}, size),
-        new:  new,
-    }
-    
-    for i := 0; i < size; i++ {
-        pool.pool <- new()
-    }
-    
-    return pool
-}
-
-func (p *ObjectPool) Get() interface{} {
-    select {
-    case obj := <-p.pool:
-        return obj
-    default:
-        return p.new()
-    }
-}
-
-func (p *ObjectPool) Put(obj interface{}) {
-    select {
-    case p.pool <- obj:
-    default:
-        // 池已满，丢弃对象
-    }
-}
+```mermaid
+graph TD
+    A[抽象工厂] --> B[工厂方法]
+    A --> C[建造者]
+    B --> D[单例]
+    C --> E[原型]
+    D --> F[对象创建]
+    E --> F
 ```
 
-### 8.3 错误处理
+### 7.2 模式选择指南
+
+| 场景 | 推荐模式 | 原因 |
+|------|----------|------|
+| 全局唯一对象 | 单例模式 | 确保唯一性 |
+| 复杂对象创建 | 建造者模式 | 分步构建 |
+| 产品族创建 | 抽象工厂 | 相关对象 |
+| 对象克隆 | 原型模式 | 避免重复创建 |
+| 延迟创建 | 工厂方法 | 子类决定 |
+
+## 8. 性能分析
+
+### 8.1 时间复杂度对比
+
+| 模式 | 创建时间 | 查找时间 | 内存占用 |
+|------|----------|----------|----------|
+| 单例 | O(1) | O(1) | O(1) |
+| 工厂方法 | O(1) | O(1) | O(n) |
+| 抽象工厂 | O(1) | O(1) | O(n) |
+| 建造者 | O(n) | O(1) | O(n) |
+| 原型 | O(1) | O(1) | O(n) |
+
+### 8.2 内存使用分析
 
 ```go
-// 创建错误处理
-type CreationError struct {
-    Pattern string
-    Reason  string
-    Err     error
-}
-
-func (e *CreationError) Error() string {
-    return fmt.Sprintf("failed to create %s: %s", e.Pattern, e.Reason)
-}
-
-func (e *CreationError) Unwrap() error {
-    return e.Err
-}
-
-// 安全创建函数
-func SafeCreate[T any](creator func() (T, error)) (T, error) {
-    defer func() {
-        if r := recover(); r != nil {
-            // 记录panic信息
-            fmt.Printf("Panic in creation: %v\n", r)
-        }
-    }()
+// 内存使用基准测试
+func BenchmarkMemoryUsage(b *testing.B) {
+    b.ReportAllocs()
     
-    return creator()
-}
-```
-
-### 8.4 测试策略
-
-```go
-// 创建型模式测试
-func TestCreationalPatterns(t *testing.T) {
-    // 测试单例
-    t.Run("Singleton", func(t *testing.T) {
-        instance1 := GetInstance()
-        instance2 := GetInstance()
+    for i := 0; i < b.N; i++ {
+        // 测试各种模式的内存使用
+        singleton := GetInstance()
+        _ = singleton
         
-        if instance1 != instance2 {
-            t.Error("Singleton instances should be the same")
-        }
-    })
-    
-    // 测试工厂方法
-    t.Run("FactoryMethod", func(t *testing.T) {
-        creator := &ConcreteCreatorA{}
-        product := creator.FactoryMethod()
-        
-        if product == nil {
-            t.Error("Factory method should return a product")
-        }
-    })
-    
-    // 测试建造者
-    t.Run("Builder", func(t *testing.T) {
         builder := NewConcreteBuilder()
-        product := builder.
-            BuildPartA("test").
-            BuildPartB("test").
-            BuildPartC(100).
-            GetResult()
-        
-        if product.PartA != "test" {
-            t.Error("Builder should set correct values")
-        }
-    })
+        product := builder.SetPartA("test").Build()
+        _ = product
+    }
 }
 ```
+
+## 9. 最佳实践
+
+### 9.1 设计原则
+
+1. **单一职责原则**：每个创建者只负责一种产品的创建
+2. **开闭原则**：对扩展开放，对修改封闭
+3. **依赖倒置原则**：依赖抽象而不是具体实现
+4. **接口隔离原则**：使用小而精确的接口
+
+### 9.2 实现建议
+
+1. **使用接口**：定义清晰的接口契约
+2. **错误处理**：提供完善的错误处理机制
+3. **并发安全**：考虑并发环境下的安全性
+4. **性能优化**：根据实际需求选择合适的模式
+
+### 9.3 常见陷阱
+
+1. **过度设计**：不要为了使用模式而使用模式
+2. **性能问题**：注意模式可能带来的性能开销
+3. **复杂性增加**：模式可能增加代码复杂性
+4. **维护困难**：不当使用可能导致维护困难
 
 ---
 
-*本文档提供了创建型设计模式的完整分析，包含形式化定义、Golang实现和最佳实践。*
+*本文档提供了创建型模式的完整分析，包括形式化定义、Golang实现和最佳实践。*
