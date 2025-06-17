@@ -31,6 +31,7 @@
 $$\mathcal{I} = (D, S, P, C, E)$$
 
 其中：
+
 - $D = \{d_1, d_2, ..., d_n\}$ 为设备集合
 - $S = \{s_1, s_2, ..., s_m\}$ 为传感器集合
 - $P = \{p_1, p_2, ..., p_k\}$ 为协议集合
@@ -44,6 +45,7 @@ $$\mathcal{I} = (D, S, P, C, E)$$
 $$\delta: D \times \Sigma \rightarrow D \times \Gamma$$
 
 其中：
+
 - $\Sigma$ 为输入事件集合
 - $\Gamma$ 为输出动作集合
 
@@ -979,6 +981,7 @@ func TestDeviceManager_Integration(t *testing.T) {
 IoT行业领域分析展示了如何使用Golang构建高性能、可扩展的物联网系统。通过形式化定义、并发架构、性能优化和最佳实践，可以构建出符合现代IoT需求的系统架构。
 
 关键要点：
+
 1. **形式化建模**: 使用数学定义描述IoT系统结构
 2. **并发设计**: 利用Golang的goroutine和channel实现高并发
 3. **性能优化**: 通过对象池、内存映射、连接池等技术优化性能
