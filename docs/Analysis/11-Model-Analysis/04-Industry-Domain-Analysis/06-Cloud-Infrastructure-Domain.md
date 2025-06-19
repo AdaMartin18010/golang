@@ -1,1226 +1,1290 @@
-# 云计算/基础设施领域分析
+# 云基础设施领域分析
 
-## 1. 概述
+## 目录
 
-云计算和基础设施领域是Golang的重要应用场景，特别是在高性能、高并发和云原生应用开发中。本分析涵盖云原生架构、容器编排、服务网格、分布式存储等核心领域。
+1. [概述](#概述)
+2. [形式化定义](#形式化定义)
+3. [云架构](#云架构)
+4. [容器编排](#容器编排)
+5. [服务网格](#服务网格)
+6. [最佳实践](#最佳实践)
 
-## 2. 形式化定义
+## 概述
 
-### 2.1 云计算系统形式化定义
+云基础设施是现代软件系统的基础支撑，涉及虚拟化、容器化、服务编排等多个技术领域。本文档从云架构、容器编排、服务网格等维度深入分析云基础设施领域的Golang实现方案。
 
-**定义 2.1.1 (云计算系统)** 云计算系统是一个七元组 $C = (R, S, N, D, P, M, F)$，其中：
+### 核心特征
 
-- $R = \{r_1, r_2, ..., r_n\}$ 是资源集合，每个资源 $r_i = (id_i, type_i, status_i, capacity_i)$
-- $S = \{s_1, s_2, ..., s_m\}$ 是服务集合，每个服务 $s_j = (id_j, name_j, version_j, endpoints_j)$
-- $N = \{n_1, n_2, ..., n_k\}$ 是网络集合，每个网络 $n_l = (id_l, cidr_l, type_l, security_groups_l)$
-- $D = \{d_1, d_2, ..., d_p\}$ 是数据集合，每个数据 $d_q = (id_q, type_q, size_q, location_q)$
-- $P = \{p_1, p_2, ..., p_r\}$ 是策略集合，每个策略 $p_s = (id_s, type_s, rules_s, priority_s)$
-- $M = \{m_1, m_2, ..., m_t\}$ 是监控集合，每个监控 $m_u = (id_u, metric_u, threshold_u, alert_u)$
-- $F = \{f_1, f_2, ..., f_v\}$ 是函数集合，每个函数 $f_w = (id_w, name_w, runtime_w, handler_w)$
+- **虚拟化**: 资源抽象和管理
+- **容器化**: 应用隔离和部署
+- **编排**: 服务调度和管理
+- **弹性**: 自动扩缩容
+- **高可用**: 故障恢复和容错
 
-**定义 2.1.2 (资源分配函数)** 资源分配函数 $A: R \times S \rightarrow [0,1]$ 定义为：
+## 形式化定义
 
-$$A(r_i, s_j) = \frac{\text{allocated\_capacity}(r_i, s_j)}{\text{total\_capacity}(r_i)}$$
+### 云基础设施系统定义
 
-**定义 2.1.3 (服务发现函数)** 服务发现函数 $D: S \times Q \rightarrow S^*$ 定义为：
+**定义 10.1** (云基础设施系统)
+云基础设施系统是一个八元组 $\mathcal{CIS} = (N, C, S, V, O, M, L, S)$，其中：
 
-$$D(s_j, q) = \{s_k \in S | \text{match}(s_k, q) \land \text{healthy}(s_k)\}$$
+- $N$ 是节点集合 (Nodes)
+- $C$ 是容器集合 (Containers)
+- $S$ 是服务集合 (Services)
+- $V$ 是虚拟化层 (Virtualization)
+- $O$ 是编排系统 (Orchestration)
+- $M$ 是监控系统 (Monitoring)
+- $L$ 是负载均衡 (Load Balancing)
+- $S$ 是存储系统 (Storage)
 
-其中 $Q$ 是查询条件集合，$\text{match}$ 是匹配函数，$\text{healthy}$ 是健康检查函数。
+**定义 10.2** (容器定义)
+容器是一个五元组 $\mathcal{Container} = (I, R, E, N, S)$，其中：
 
-### 2.2 容器编排系统形式化定义
+- $I$ 是镜像 (Image)
+- $R$ 是资源限制 (Resource Limits)
+- $E$ 是环境变量 (Environment)
+- $N$ 是网络配置 (Network)
+- $S$ 是存储挂载 (Storage)
 
-**定义 2.2.1 (容器编排系统)** 容器编排系统是一个五元组 $O = (C, N, S, P, E)$，其中：
+### 编排系统定义
 
-- $C = \{c_1, c_2, ..., c_n\}$ 是容器集合，每个容器 $c_i = (id_i, image_i, resources_i, status_i)$
-- $N = \{n_1, n_2, ..., n_m\}$ 是节点集合，每个节点 $n_j = (id_j, capacity_j, status_j, labels_j)$
-- $S = \{s_1, s_2, ..., s_k\}$ 是服务集合，每个服务 $s_l = (id_l, replicas_l, selector_l, ports_l)$
-- $P = \{p_1, p_2, ..., p_r\}$ 是策略集合，每个策略 $p_s = (id_s, type_s, rules_s)$
-- $E = \{e_1, e_2, ..., e_t\}$ 是事件集合，每个事件 $e_u = (id_u, type_u, timestamp_u, data_u)$
+**定义 10.3** (编排系统)
+编排系统是一个四元组 $\mathcal{OS} = (S, N, P, F)$，其中：
 
-**定义 2.2.2 (调度函数)** 调度函数 $S: C \times N \rightarrow N$ 定义为：
+- $S$ 是调度器 (Scheduler)
+- $N$ 是节点管理器 (Node Manager)
+- $P$ 是策略引擎 (Policy Engine)
+- $F$ 是故障恢复 (Fault Recovery)
 
-$$S(c_i, N) = \arg\max_{n_j \in N} \text{score}(c_i, n_j)$$
+**性质 10.1** (资源约束)
+对于任意容器 $c$ 和节点 $n$，必须满足：
+$\forall r \in R: \text{resource}(c, r) \leq \text{available}(n, r)$
 
-其中 $\text{score}$ 是调度评分函数。
+## 云架构
 
-## 3. 核心架构模式
-
-### 3.1 微服务架构
+### 节点管理
 
 ```go
-// 微服务架构核心组件
-package microservice
-
-import (
-    "context"
-    "encoding/json"
-    "net/http"
-    "time"
-    
-    "github.com/gorilla/mux"
-    "go.uber.org/zap"
-    "google.golang.org/grpc"
-)
-
-// ServiceRegistry 服务注册中心
-type ServiceRegistry struct {
-    services map[string]*ServiceInstance
-    mutex    sync.RWMutex
+// 节点
+type Node struct {
+    ID          string
+    Name        string
+    IP          string
+    Status      NodeStatus
+    Resources   *Resources
+    Containers  map[string]*Container
+    Labels      map[string]string
+    mu          sync.RWMutex
 }
 
-// ServiceInstance 服务实例
-type ServiceInstance struct {
-    ID          string            `json:"id"`
-    Name        string            `json:"name"`
-    Host        string            `json:"host"`
-    Port        int               `json:"port"`
-    Status      ServiceStatus     `json:"status"`
-    Metadata    map[string]string `json:"metadata"`
-    LastSeen    time.Time         `json:"last_seen"`
-}
-
-// ServiceStatus 服务状态
-type ServiceStatus string
+// 节点状态
+type NodeStatus string
 
 const (
-    StatusHealthy   ServiceStatus = "healthy"
-    StatusUnhealthy ServiceStatus = "unhealthy"
-    StatusUnknown   ServiceStatus = "unknown"
+    NodeStatusReady    NodeStatus = "ready"
+    NodeStatusNotReady NodeStatus = "not_ready"
+    NodeStatusUnknown  NodeStatus = "unknown"
 )
 
-// RegisterService 注册服务
-func (sr *ServiceRegistry) RegisterService(instance *ServiceInstance) error {
-    sr.mutex.Lock()
-    defer sr.mutex.Unlock()
-    
-    instance.LastSeen = time.Now()
-    sr.services[instance.ID] = instance
-    
-    return nil
+// 资源
+type Resources struct {
+    CPU    float64
+    Memory uint64
+    Disk   uint64
+    Network uint64
 }
 
-// DiscoverService 发现服务
-func (sr *ServiceRegistry) DiscoverService(name string) ([]*ServiceInstance, error) {
-    sr.mutex.RLock()
-    defer sr.mutex.RUnlock()
-    
-    var instances []*ServiceInstance
-    for _, instance := range sr.services {
-        if instance.Name == name && instance.Status == StatusHealthy {
-            instances = append(instances, instance)
-        }
-    }
-    
-    return instances, nil
-}
-```
-
-### 3.2 事件驱动架构
-
-```go
-// 事件驱动架构核心组件
-package eventdriven
-
-import (
-    "context"
-    "encoding/json"
-    "time"
-    
-    "github.com/google/uuid"
-)
-
-// Event 事件定义
-type Event struct {
-    ID          string                 `json:"id"`
-    Type        string                 `json:"type"`
-    Source      string                 `json:"source"`
-    Data        map[string]interface{} `json:"data"`
-    Timestamp   time.Time              `json:"timestamp"`
-    Version     string                 `json:"version"`
-}
-
-// EventBus 事件总线
-type EventBus struct {
-    publishers  map[string]chan Event
-    subscribers map[string][]chan Event
-    mutex       sync.RWMutex
-}
-
-// NewEventBus 创建事件总线
-func NewEventBus() *EventBus {
-    return &EventBus{
-        publishers:  make(map[string]chan Event),
-        subscribers: make(map[string][]chan Event),
-    }
-}
-
-// Publish 发布事件
-func (eb *EventBus) Publish(ctx context.Context, event Event) error {
-    event.ID = uuid.New().String()
-    event.Timestamp = time.Now()
-    
-    eb.mutex.RLock()
-    defer eb.mutex.RUnlock()
-    
-    if ch, exists := eb.publishers[event.Type]; exists {
-        select {
-        case ch <- event:
-            return nil
-        case <-ctx.Done():
-            return ctx.Err()
-        }
-    }
-    
-    return nil
-}
-
-// Subscribe 订阅事件
-func (eb *EventBus) Subscribe(eventType string) (<-chan Event, error) {
-    eb.mutex.Lock()
-    defer eb.mutex.Unlock()
-    
-    ch := make(chan Event, 100)
-    eb.subscribers[eventType] = append(eb.subscribers[eventType], ch)
-    
-    return ch, nil
-}
-```
-
-### 3.3 API网关架构
-
-```go
-// API网关核心组件
-package gateway
-
-import (
-    "context"
-    "net/http"
-    "time"
-    
-    "github.com/gin-gonic/gin"
-    "golang.org/x/time/rate"
-)
-
-// APIGateway API网关
-type APIGateway struct {
-    router       *gin.Engine
-    rateLimiter  *RateLimiter
-    authService  *AuthService
-    loadBalancer *LoadBalancer
-    logger       *zap.Logger
-}
-
-// RateLimiter 速率限制器
-type RateLimiter struct {
-    limiters map[string]*rate.Limiter
-    mutex    sync.RWMutex
-}
-
-// NewRateLimiter 创建速率限制器
-func NewRateLimiter() *RateLimiter {
-    return &RateLimiter{
-        limiters: make(map[string]*rate.Limiter),
-    }
-}
-
-// CheckLimit 检查限制
-func (rl *RateLimiter) CheckLimit(key string, limit rate.Limit) bool {
-    rl.mutex.Lock()
-    defer rl.mutex.Unlock()
-    
-    limiter, exists := rl.limiters[key]
-    if !exists {
-        limiter = rate.NewLimiter(limit, int(limit))
-        rl.limiters[key] = limiter
-    }
-    
-    return limiter.Allow()
-}
-
-// LoadBalancer 负载均衡器
-type LoadBalancer struct {
-    strategy LoadBalancingStrategy
-    services map[string][]string
-    mutex    sync.RWMutex
-}
-
-// LoadBalancingStrategy 负载均衡策略
-type LoadBalancingStrategy interface {
-    Select(services []string) string
-}
-
-// RoundRobinStrategy 轮询策略
-type RoundRobinStrategy struct {
-    current int
-    mutex   sync.Mutex
-}
-
-// Select 选择服务
-func (rr *RoundRobinStrategy) Select(services []string) string {
-    rr.mutex.Lock()
-    defer rr.mutex.Unlock()
-    
-    if len(services) == 0 {
-        return ""
-    }
-    
-    service := services[rr.current]
-    rr.current = (rr.current + 1) % len(services)
-    
-    return service
-}
-```
-
-## 4. 核心组件实现
-
-### 4.1 容器运行时
-
-```go
-// 容器运行时核心组件
-package container
-
-import (
-    "context"
-    "encoding/json"
-    "os/exec"
-    "time"
-)
-
-// Container 容器定义
+// 容器
 type Container struct {
-    ID          string            `json:"id"`
-    Name        string            `json:"name"`
-    Image       string            `json:"image"`
-    Status      ContainerStatus   `json:"status"`
-    Resources   ResourceLimits    `json:"resources"`
-    Ports       []PortMapping     `json:"ports"`
-    Volumes     []VolumeMount     `json:"volumes"`
-    CreatedAt   time.Time         `json:"created_at"`
-    StartedAt   *time.Time        `json:"started_at,omitempty"`
+    ID          string
+    Name        string
+    Image       string
+    Status      ContainerStatus
+    Resources   *Resources
+    Ports       []Port
+    Volumes     []Volume
+    Environment map[string]string
+    Command     []string
+    Args        []string
+    mu          sync.RWMutex
 }
 
-// ContainerStatus 容器状态
+// 容器状态
 type ContainerStatus string
 
 const (
-    StatusCreated    ContainerStatus = "created"
-    StatusRunning    ContainerStatus = "running"
-    StatusPaused     ContainerStatus = "paused"
-    StatusStopped    ContainerStatus = "stopped"
-    StatusRemoving   ContainerStatus = "removing"
+    ContainerStatusCreated  ContainerStatus = "created"
+    ContainerStatusRunning  ContainerStatus = "running"
+    ContainerStatusStopped  ContainerStatus = "stopped"
+    ContainerStatusFailed   ContainerStatus = "failed"
 )
 
-// ResourceLimits 资源限制
-type ResourceLimits struct {
-    CPU    string `json:"cpu"`
-    Memory string `json:"memory"`
-    Disk   string `json:"disk"`
+// 端口映射
+type Port struct {
+    ContainerPort int
+    HostPort      int
+    Protocol      string
 }
 
-// ContainerRuntime 容器运行时
-type ContainerRuntime struct {
-    containers map[string]*Container
-    mutex      sync.RWMutex
+// 存储卷
+type Volume struct {
+    Name      string
+    Source    string
+    Target    string
+    ReadOnly  bool
 }
 
-// CreateContainer 创建容器
-func (cr *ContainerRuntime) CreateContainer(ctx context.Context, config *ContainerConfig) (*Container, error) {
-    container := &Container{
-        ID:        generateID(),
-        Name:      config.Name,
-        Image:     config.Image,
-        Status:    StatusCreated,
-        Resources: config.Resources,
-        Ports:     config.Ports,
-        Volumes:   config.Volumes,
-        CreatedAt: time.Now(),
-    }
-    
-    cr.mutex.Lock()
-    cr.containers[container.ID] = container
-    cr.mutex.Unlock()
-    
-    return container, nil
+// 节点管理器
+type NodeManager struct {
+    nodes    map[string]*Node
+    scheduler *Scheduler
+    mu       sync.RWMutex
 }
 
-// StartContainer 启动容器
-func (cr *ContainerRuntime) StartContainer(ctx context.Context, id string) error {
-    cr.mutex.Lock()
-    defer cr.mutex.Unlock()
+// 注册节点
+func (nm *NodeManager) RegisterNode(node *Node) error {
+    nm.mu.Lock()
+    defer nm.mu.Unlock()
     
-    container, exists := cr.containers[id]
-    if !exists {
-        return fmt.Errorf("container not found: %s", id)
+    if _, exists := nm.nodes[node.ID]; exists {
+        return fmt.Errorf("node %s already registered", node.ID)
     }
     
-    // 执行容器启动命令
-    cmd := exec.CommandContext(ctx, "docker", "start", id)
-    if err := cmd.Run(); err != nil {
-        return err
+    // 验证节点
+    if err := nm.validateNode(node); err != nil {
+        return fmt.Errorf("node validation failed: %w", err)
     }
     
-    now := time.Now()
-    container.Status = StatusRunning
-    container.StartedAt = &now
+    // 设置节点状态
+    node.Status = NodeStatusReady
+    
+    // 注册节点
+    nm.nodes[node.ID] = node
+    
+    // 通知调度器
+    nm.scheduler.AddNode(node)
     
     return nil
 }
+
+// 验证节点
+func (nm *NodeManager) validateNode(node *Node) error {
+    if node.ID == "" {
+        return fmt.Errorf("node ID is required")
+    }
+    
+    if node.Name == "" {
+        return fmt.Errorf("node name is required")
+    }
+    
+    if node.IP == "" {
+        return fmt.Errorf("node IP is required")
+    }
+    
+    if node.Resources == nil {
+        return fmt.Errorf("node resources are required")
+    }
+    
+    return nil
+}
+
+// 获取节点
+func (nm *NodeManager) GetNode(id string) (*Node, error) {
+    nm.mu.RLock()
+    defer nm.mu.RUnlock()
+    
+    node, exists := nm.nodes[id]
+    if !exists {
+        return nil, fmt.Errorf("node %s not found", id)
+    }
+    
+    return node, nil
+}
+
+// 更新节点状态
+func (nm *NodeManager) UpdateNodeStatus(id string, status NodeStatus) error {
+    node, err := nm.GetNode(id)
+    if err != nil {
+        return err
+    }
+    
+    node.mu.Lock()
+    node.Status = status
+    node.mu.Unlock()
+    
+    // 通知调度器
+    nm.scheduler.UpdateNode(node)
+    
+    return nil
+}
+
+// 获取可用节点
+func (nm *NodeManager) GetAvailableNodes() []*Node {
+    nm.mu.RLock()
+    defer nm.mu.RUnlock()
+    
+    var availableNodes []*Node
+    for _, node := range nm.nodes {
+        node.mu.RLock()
+        if node.Status == NodeStatusReady {
+            availableNodes = append(availableNodes, node)
+        }
+        node.mu.RUnlock()
+    }
+    
+    return availableNodes
+}
 ```
 
-### 4.2 服务网格代理
+### 调度器
 
 ```go
-// 服务网格代理核心组件
-package mesh
-
-import (
-    "context"
-    "net"
-    "net/http"
-    "time"
-)
-
-// ServiceMeshProxy 服务网格代理
-type ServiceMeshProxy struct {
-    listener      net.Listener
-    routingTable  *RoutingTable
-    circuitBreaker *CircuitBreaker
-    rateLimiter   *RateLimiter
-    logger        *zap.Logger
+// 调度器
+type Scheduler struct {
+    nodes    map[string]*Node
+    policies []SchedulingPolicy
+    mu       sync.RWMutex
 }
 
-// RoutingTable 路由表
-type RoutingTable struct {
-    routes map[string]string
-    mutex  sync.RWMutex
+// 调度策略接口
+type SchedulingPolicy interface {
+    Name() string
+    Score(node *Node, container *Container) float64
+    Filter(node *Node, container *Container) bool
 }
 
-// AddRoute 添加路由
-func (rt *RoutingTable) AddRoute(service, target string) {
-    rt.mutex.Lock()
-    defer rt.mutex.Unlock()
-    rt.routes[service] = target
+// 资源策略
+type ResourcePolicy struct{}
+
+func (rp *ResourcePolicy) Name() string {
+    return "resource_policy"
 }
 
-// GetRoute 获取路由
-func (rt *RoutingTable) GetRoute(service string) (string, bool) {
-    rt.mutex.RLock()
-    defer rt.mutex.RUnlock()
-    target, exists := rt.routes[service]
-    return target, exists
-}
-
-// CircuitBreaker 熔断器
-type CircuitBreaker struct {
-    failures    map[string]int
-    lastFailure map[string]time.Time
-    state       map[string]CircuitState
-    mutex       sync.RWMutex
-    threshold   int
-    timeout     time.Duration
-}
-
-// CircuitState 熔断器状态
-type CircuitState string
-
-const (
-    StateClosed   CircuitState = "closed"
-    StateOpen     CircuitState = "open"
-    StateHalfOpen CircuitState = "half-open"
-)
-
-// IsOpen 检查是否开启
-func (cb *CircuitBreaker) IsOpen(service string) bool {
-    cb.mutex.RLock()
-    defer cb.mutex.RUnlock()
+func (rp *ResourcePolicy) Filter(node *Node, container *Container) bool {
+    node.mu.RLock()
+    defer node.mu.RUnlock()
     
-    state := cb.state[service]
-    if state == StateOpen {
-        if time.Since(cb.lastFailure[service]) > cb.timeout {
-            cb.state[service] = StateHalfOpen
+    // 检查CPU资源
+    if container.Resources.CPU > node.Resources.CPU {
+        return false
+    }
+    
+    // 检查内存资源
+    if container.Resources.Memory > node.Resources.Memory {
+        return false
+    }
+    
+    return true
+}
+
+func (rp *ResourcePolicy) Score(node *Node, container *Container) float64 {
+    node.mu.RLock()
+    defer node.mu.RUnlock()
+    
+    // 计算资源利用率
+    cpuUtilization := container.Resources.CPU / node.Resources.CPU
+    memoryUtilization := float64(container.Resources.Memory) / float64(node.Resources.Memory)
+    
+    // 返回资源利用率较低的分数（越高越好）
+    return 1.0 - (cpuUtilization+memoryUtilization)/2.0
+}
+
+// 亲和性策略
+type AffinityPolicy struct {
+    requiredLabels map[string]string
+    preferredLabels map[string]string
+}
+
+func (ap *AffinityPolicy) Name() string {
+    return "affinity_policy"
+}
+
+func (ap *AffinityPolicy) Filter(node *Node, container *Container) bool {
+    node.mu.RLock()
+    defer node.mu.RUnlock()
+    
+    // 检查必需标签
+    for key, value := range ap.requiredLabels {
+        if nodeValue, exists := node.Labels[key]; !exists || nodeValue != value {
             return false
         }
-        return true
     }
     
-    return false
+    return true
 }
 
-// RecordFailure 记录失败
-func (cb *CircuitBreaker) RecordFailure(service string) {
-    cb.mutex.Lock()
-    defer cb.mutex.Unlock()
+func (ap *AffinityPolicy) Score(node *Node, container *Container) float64 {
+    node.mu.RLock()
+    defer node.mu.RUnlock()
     
-    cb.failures[service]++
-    cb.lastFailure[service] = time.Now()
+    score := 0.0
+    matchCount := 0
     
-    if cb.failures[service] >= cb.threshold {
-        cb.state[service] = StateOpen
+    // 计算偏好标签匹配度
+    for key, value := range ap.preferredLabels {
+        if nodeValue, exists := node.Labels[key]; exists && nodeValue == value {
+            score += 1.0
+            matchCount++
+        }
     }
+    
+    if len(ap.preferredLabels) > 0 {
+        return score / float64(len(ap.preferredLabels))
+    }
+    
+    return 0.0
+}
+
+// 调度容器
+func (s *Scheduler) Schedule(container *Container) (*Node, error) {
+    s.mu.RLock()
+    nodes := make(map[string]*Node)
+    for id, node := range s.nodes {
+        nodes[id] = node
+    }
+    s.mu.RUnlock()
+    
+    var candidates []*Node
+    
+    // 应用过滤策略
+    for _, node := range nodes {
+        node.mu.RLock()
+        if node.Status != NodeStatusReady {
+            node.mu.RUnlock()
+            continue
+        }
+        node.mu.RUnlock()
+        
+        candidate := true
+        for _, policy := range s.policies {
+            if !policy.Filter(node, container) {
+                candidate = false
+                break
+            }
+        }
+        
+        if candidate {
+            candidates = append(candidates, node)
+        }
+    }
+    
+    if len(candidates) == 0 {
+        return nil, fmt.Errorf("no suitable nodes found")
+    }
+    
+    // 应用评分策略
+    var bestNode *Node
+    bestScore := -1.0
+    
+    for _, node := range candidates {
+        score := 0.0
+        for _, policy := range s.policies {
+            score += policy.Score(node, container)
+        }
+        
+        if score > bestScore {
+            bestScore = score
+            bestNode = node
+        }
+    }
+    
+    return bestNode, nil
+}
+
+// 添加节点
+func (s *Scheduler) AddNode(node *Node) {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    s.nodes[node.ID] = node
+}
+
+// 更新节点
+func (s *Scheduler) UpdateNode(node *Node) {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    s.nodes[node.ID] = node
 }
 ```
 
-### 4.3 分布式存储
+## 容器编排
+
+### 服务定义
 
 ```go
-// 分布式存储核心组件
-package storage
+// 服务
+type Service struct {
+    ID          string
+    Name        string
+    Replicas    int
+    Containers  []*Container
+    Selector    map[string]string
+    Ports       []ServicePort
+    Type        ServiceType
+    Status      ServiceStatus
+    mu          sync.RWMutex
+}
 
-import (
-    "context"
-    "encoding/json"
-    "time"
+// 服务端口
+type ServicePort struct {
+    Name       string
+    Port       int
+    TargetPort int
+    Protocol   string
+}
+
+// 服务类型
+type ServiceType string
+
+const (
+    ServiceTypeClusterIP    ServiceType = "ClusterIP"
+    ServiceTypeNodePort     ServiceType = "NodePort"
+    ServiceTypeLoadBalancer ServiceType = "LoadBalancer"
 )
 
-// DistributedKVStore 分布式键值存储
-type DistributedKVStore struct {
-    nodes    []string
-    replicas int
-    client   *http.Client
-    logger   *zap.Logger
+// 服务状态
+type ServiceStatus string
+
+const (
+    ServiceStatusPending   ServiceStatus = "pending"
+    ServiceStatusRunning   ServiceStatus = "running"
+    ServiceStatusFailed    ServiceStatus = "failed"
+    ServiceStatusStopped   ServiceStatus = "stopped"
+)
+
+// 服务管理器
+type ServiceManager struct {
+    services  map[string]*Service
+    scheduler *Scheduler
+    nodeManager *NodeManager
+    mu        sync.RWMutex
 }
 
-// KVEntry 键值条目
-type KVEntry struct {
-    Key       string    `json:"key"`
-    Value     []byte    `json:"value"`
-    Version   int64     `json:"version"`
-    Timestamp time.Time `json:"timestamp"`
-}
-
-// Put 存储值
-func (dks *DistributedKVStore) Put(ctx context.Context, key string, value []byte) error {
-    entry := &KVEntry{
-        Key:       key,
-        Value:     value,
-        Version:   time.Now().UnixNano(),
-        Timestamp: time.Now(),
+// 创建服务
+func (sm *ServiceManager) CreateService(service *Service) error {
+    sm.mu.Lock()
+    defer sm.mu.Unlock()
+    
+    if _, exists := sm.services[service.ID]; exists {
+        return fmt.Errorf("service %s already exists", service.ID)
     }
     
-    // 计算一致性哈希
-    nodes := dks.getNodesForKey(key)
+    // 验证服务
+    if err := sm.validateService(service); err != nil {
+        return fmt.Errorf("service validation failed: %w", err)
+    }
     
-    // 并行写入多个节点
-    var wg sync.WaitGroup
-    errors := make(chan error, len(nodes))
+    // 设置服务状态
+    service.Status = ServiceStatusPending
     
-    for _, node := range nodes {
-        wg.Add(1)
-        go func(node string) {
-            defer wg.Done()
-            if err := dks.putToNode(ctx, node, entry); err != nil {
-                errors <- err
+    // 创建服务
+    sm.services[service.ID] = service
+    
+    // 启动服务
+    go sm.startService(service)
+    
+    return nil
+}
+
+// 验证服务
+func (sm *ServiceManager) validateService(service *Service) error {
+    if service.ID == "" {
+        return fmt.Errorf("service ID is required")
+    }
+    
+    if service.Name == "" {
+        return fmt.Errorf("service name is required")
+    }
+    
+    if service.Replicas <= 0 {
+        return fmt.Errorf("service replicas must be positive")
+    }
+    
+    if len(service.Containers) == 0 {
+        return fmt.Errorf("service must have at least one container")
+    }
+    
+    return nil
+}
+
+// 启动服务
+func (sm *ServiceManager) startService(service *Service) error {
+    service.mu.Lock()
+    service.Status = ServiceStatusRunning
+    service.mu.Unlock()
+    
+    // 创建副本
+    for i := 0; i < service.Replicas; i++ {
+        go func(replicaIndex int) {
+            if err := sm.createReplica(service, replicaIndex); err != nil {
+                log.Printf("Failed to create replica %d for service %s: %v", replicaIndex, service.ID, err)
             }
-        }(node)
+        }(i)
     }
     
-    wg.Wait()
-    close(errors)
-    
-    // 检查错误
-    for err := range errors {
+    return nil
+}
+
+// 创建副本
+func (sm *ServiceManager) createReplica(service *Service, replicaIndex int) error {
+    // 为每个容器创建副本
+    for _, containerTemplate := range service.Containers {
+        container := &Container{
+            ID:          fmt.Sprintf("%s-%d-%s", service.ID, replicaIndex, containerTemplate.Name),
+            Name:        containerTemplate.Name,
+            Image:       containerTemplate.Image,
+            Resources:   containerTemplate.Resources,
+            Ports:       containerTemplate.Ports,
+            Volumes:     containerTemplate.Volumes,
+            Environment: containerTemplate.Environment,
+            Command:     containerTemplate.Command,
+            Args:        containerTemplate.Args,
+        }
+        
+        // 调度容器
+        node, err := sm.scheduler.Schedule(container)
         if err != nil {
-            return err
+            return fmt.Errorf("failed to schedule container: %w", err)
+        }
+        
+        // 在节点上创建容器
+        if err := sm.createContainerOnNode(node, container); err != nil {
+            return fmt.Errorf("failed to create container on node: %w", err)
         }
     }
     
     return nil
 }
 
-// Get 获取值
-func (dks *DistributedKVStore) Get(ctx context.Context, key string) (*KVEntry, error) {
-    nodes := dks.getNodesForKey(key)
+// 在节点上创建容器
+func (sm *ServiceManager) createContainerOnNode(node *Node, container *Container) error {
+    node.mu.Lock()
+    defer node.mu.Unlock()
     
-    // 从多个节点读取
-    var wg sync.WaitGroup
-    results := make(chan *KVEntry, len(nodes))
-    errors := make(chan error, len(nodes))
-    
-    for _, node := range nodes {
-        wg.Add(1)
-        go func(node string) {
-            defer wg.Done()
-            if entry, err := dks.getFromNode(ctx, node, key); err != nil {
-                errors <- err
-            } else {
-                results <- entry
-            }
-        }(node)
+    // 检查资源
+    if !sm.checkResources(node, container) {
+        return fmt.Errorf("insufficient resources on node %s", node.ID)
     }
     
-    wg.Wait()
-    close(results)
-    close(errors)
+    // 分配资源
+    sm.allocateResources(node, container)
     
-    // 选择最新版本
-    var latestEntry *KVEntry
-    for entry := range results {
-        if latestEntry == nil || entry.Version > latestEntry.Version {
-            latestEntry = entry
-        }
-    }
+    // 添加容器到节点
+    node.Containers[container.ID] = container
     
-    return latestEntry, nil
-}
-```
-
-## 5. 监控和可观测性
-
-### 5.1 指标收集
-
-```go
-// 指标收集核心组件
-package metrics
-
-import (
-    "context"
-    "time"
+    // 启动容器
+    go sm.startContainer(container)
     
-    "github.com/prometheus/client_golang/prometheus"
-    "github.com/prometheus/client_golang/prometheus/promauto"
-)
-
-// MetricsCollector 指标收集器
-type MetricsCollector struct {
-    requestCounter   prometheus.Counter
-    responseTime     prometheus.Histogram
-    errorCounter     prometheus.Counter
-    activeConnections prometheus.Gauge
-    registry         *prometheus.Registry
+    return nil
 }
 
-// NewMetricsCollector 创建指标收集器
-func NewMetricsCollector() *MetricsCollector {
-    registry := prometheus.NewRegistry()
+// 检查资源
+func (sm *ServiceManager) checkResources(node *Node, container *Container) bool {
+    return container.Resources.CPU <= node.Resources.CPU &&
+           container.Resources.Memory <= node.Resources.Memory
+}
+
+// 分配资源
+func (sm *ServiceManager) allocateResources(node *Node, container *Container) {
+    node.Resources.CPU -= container.Resources.CPU
+    node.Resources.Memory -= container.Resources.Memory
+}
+
+// 启动容器
+func (sm *ServiceManager) startContainer(container *Container) {
+    container.mu.Lock()
+    container.Status = ContainerStatusRunning
+    container.mu.Unlock()
     
-    requestCounter := promauto.NewCounter(prometheus.CounterOpts{
-        Name: "http_requests_total",
-        Help: "Total number of HTTP requests",
-    })
+    // 这里应该实现实际的容器启动逻辑
+    // 比如调用Docker API或containerd API
     
-    responseTime := promauto.NewHistogram(prometheus.HistogramOpts{
-        Name:    "http_request_duration_seconds",
-        Help:    "HTTP request duration in seconds",
-        Buckets: prometheus.DefBuckets,
-    })
+    log.Printf("Container %s started", container.ID)
+}
+
+// 获取服务
+func (sm *ServiceManager) GetService(id string) (*Service, error) {
+    sm.mu.RLock()
+    defer sm.mu.RUnlock()
     
-    errorCounter := promauto.NewCounter(prometheus.CounterOpts{
-        Name: "http_errors_total",
-        Help: "Total number of HTTP errors",
-    })
-    
-    activeConnections := promauto.NewGauge(prometheus.GaugeOpts{
-        Name: "active_connections",
-        Help: "Number of active connections",
-    })
-    
-    registry.MustRegister(requestCounter, responseTime, errorCounter, activeConnections)
-    
-    return &MetricsCollector{
-        requestCounter:    requestCounter,
-        responseTime:      responseTime,
-        errorCounter:      errorCounter,
-        activeConnections: activeConnections,
-        registry:          registry,
-    }
-}
-
-// RecordRequest 记录请求
-func (mc *MetricsCollector) RecordRequest() {
-    mc.requestCounter.Inc()
-}
-
-// RecordResponseTime 记录响应时间
-func (mc *MetricsCollector) RecordResponseTime(duration time.Duration) {
-    mc.responseTime.Observe(duration.Seconds())
-}
-
-// RecordError 记录错误
-func (mc *MetricsCollector) RecordError() {
-    mc.errorCounter.Inc()
-}
-
-// SetActiveConnections 设置活跃连接数
-func (mc *MetricsCollector) SetActiveConnections(count int) {
-    mc.activeConnections.Set(float64(count))
-}
-```
-
-### 5.2 分布式追踪
-
-```go
-// 分布式追踪核心组件
-package tracing
-
-import (
-    "context"
-    "time"
-    
-    "go.opentelemetry.io/otel"
-    "go.opentelemetry.io/otel/trace"
-)
-
-// TraceContext 追踪上下文
-type TraceContext struct {
-    TraceID    string            `json:"trace_id"`
-    SpanID     string            `json:"span_id"`
-    ParentID   string            `json:"parent_id,omitempty"`
-    Service    string            `json:"service"`
-    Operation  string            `json:"operation"`
-    StartTime  time.Time         `json:"start_time"`
-    EndTime    *time.Time        `json:"end_time,omitempty"`
-    Attributes map[string]string `json:"attributes"`
-    Events     []TraceEvent      `json:"events"`
-}
-
-// TraceEvent 追踪事件
-type TraceEvent struct {
-    Name       string            `json:"name"`
-    Timestamp  time.Time         `json:"timestamp"`
-    Attributes map[string]string `json:"attributes"`
-}
-
-// Tracer 追踪器
-type Tracer struct {
-    tracer trace.Tracer
-}
-
-// NewTracer 创建追踪器
-func NewTracer(serviceName string) *Tracer {
-    tracer := otel.Tracer(serviceName)
-    return &Tracer{tracer: tracer}
-}
-
-// StartSpan 开始追踪
-func (t *Tracer) StartSpan(ctx context.Context, operation string) (context.Context, trace.Span) {
-    return t.tracer.Start(ctx, operation)
-}
-
-// AddEvent 添加事件
-func (t *Tracer) AddEvent(span trace.Span, name string, attributes map[string]string) {
-    span.AddEvent(name, trace.WithAttributes(
-        trace.StringAttribute("event", name),
-    ))
-}
-
-// SetAttributes 设置属性
-func (t *Tracer) SetAttributes(span trace.Span, attributes map[string]string) {
-    for key, value := range attributes {
-        span.SetAttributes(trace.StringAttribute(key, value))
-    }
-}
-```
-
-## 6. 性能优化
-
-### 6.1 内存优化
-
-```go
-// 内存优化核心组件
-package memory
-
-import (
-    "sync"
-    "unsafe"
-)
-
-// ObjectPool 对象池
-type ObjectPool struct {
-    pool sync.Pool
-    new  func() interface{}
-}
-
-// NewObjectPool 创建对象池
-func NewObjectPool(new func() interface{}) *ObjectPool {
-    return &ObjectPool{
-        pool: sync.Pool{
-            New: new,
-        },
-        new: new,
-    }
-}
-
-// Get 获取对象
-func (op *ObjectPool) Get() interface{} {
-    return op.pool.Get()
-}
-
-// Put 归还对象
-func (op *ObjectPool) Put(obj interface{}) {
-    op.pool.Put(obj)
-}
-
-// MemoryPool 内存池
-type MemoryPool struct {
-    pools map[int]*sync.Pool
-    mutex sync.RWMutex
-}
-
-// NewMemoryPool 创建内存池
-func NewMemoryPool() *MemoryPool {
-    return &MemoryPool{
-        pools: make(map[int]*sync.Pool),
-    }
-}
-
-// GetBuffer 获取缓冲区
-func (mp *MemoryPool) GetBuffer(size int) []byte {
-    mp.mutex.RLock()
-    pool, exists := mp.pools[size]
-    mp.mutex.RUnlock()
-    
+    service, exists := sm.services[id]
     if !exists {
-        mp.mutex.Lock()
-        pool = &sync.Pool{
-            New: func() interface{} {
-                return make([]byte, size)
-            },
-        }
-        mp.pools[size] = pool
-        mp.mutex.Unlock()
+        return nil, fmt.Errorf("service %s not found", id)
     }
     
-    return pool.Get().([]byte)
+    return service, nil
 }
 
-// PutBuffer 归还缓冲区
-func (mp *MemoryPool) PutBuffer(buf []byte) {
-    size := cap(buf)
-    mp.mutex.RLock()
-    pool, exists := mp.pools[size]
-    mp.mutex.RUnlock()
-    
-    if exists {
-        pool.Put(buf[:0])
-    }
-}
-```
-
-### 6.2 并发优化
-
-```go
-// 并发优化核心组件
-package concurrency
-
-import (
-    "context"
-    "sync"
-    "time"
-)
-
-// WorkerPool 工作池
-type WorkerPool struct {
-    workers    int
-    jobQueue   chan Job
-    resultChan chan Result
-    wg         sync.WaitGroup
-    ctx        context.Context
-    cancel     context.CancelFunc
-}
-
-// Job 任务定义
-type Job struct {
-    ID       string
-    Data     interface{}
-    Handler  func(interface{}) (interface{}, error)
-}
-
-// Result 结果定义
-type Result struct {
-    JobID  string
-    Data   interface{}
-    Error  error
-}
-
-// NewWorkerPool 创建工作池
-func NewWorkerPool(workers int) *WorkerPool {
-    ctx, cancel := context.WithCancel(context.Background())
-    
-    return &WorkerPool{
-        workers:    workers,
-        jobQueue:   make(chan Job, workers*2),
-        resultChan: make(chan Result, workers*2),
-        ctx:        ctx,
-        cancel:     cancel,
-    }
-}
-
-// Start 启动工作池
-func (wp *WorkerPool) Start() {
-    for i := 0; i < wp.workers; i++ {
-        wp.wg.Add(1)
-        go wp.worker()
-    }
-}
-
-// Submit 提交任务
-func (wp *WorkerPool) Submit(job Job) error {
-    select {
-    case wp.jobQueue <- job:
-        return nil
-    case <-wp.ctx.Done():
-        return wp.ctx.Err()
-    }
-}
-
-// worker 工作协程
-func (wp *WorkerPool) worker() {
-    defer wp.wg.Done()
-    
-    for {
-        select {
-        case job := <-wp.jobQueue:
-            result, err := job.Handler(job.Data)
-            wp.resultChan <- Result{
-                JobID: job.ID,
-                Data:  result,
-                Error: err,
-            }
-        case <-wp.ctx.Done():
-            return
-        }
-    }
-}
-```
-
-## 7. 安全最佳实践
-
-### 7.1 密钥管理
-
-```go
-// 密钥管理核心组件
-package security
-
-import (
-    "crypto/aes"
-    "crypto/cipher"
-    "crypto/rand"
-    "encoding/base64"
-    "fmt"
-)
-
-// SecretManager 密钥管理器
-type SecretManager struct {
-    masterKey []byte
-    cipher    cipher.AEAD
-}
-
-// NewSecretManager 创建密钥管理器
-func NewSecretManager(masterKey []byte) (*SecretManager, error) {
-    block, err := aes.NewCipher(masterKey)
+// 更新服务
+func (sm *ServiceManager) UpdateService(id string, replicas int) error {
+    service, err := sm.GetService(id)
     if err != nil {
-        return nil, err
-    }
-    
-    gcm, err := cipher.NewGCM(block)
-    if err != nil {
-        return nil, err
-    }
-    
-    return &SecretManager{
-        masterKey: masterKey,
-        cipher:    gcm,
-    }, nil
-}
-
-// Encrypt 加密
-func (sm *SecretManager) Encrypt(plaintext []byte) (string, error) {
-    nonce := make([]byte, sm.cipher.NonceSize())
-    if _, err := rand.Read(nonce); err != nil {
-        return "", err
-    }
-    
-    ciphertext := sm.cipher.Seal(nonce, nonce, plaintext, nil)
-    return base64.StdEncoding.EncodeToString(ciphertext), nil
-}
-
-// Decrypt 解密
-func (sm *SecretManager) Decrypt(encryptedText string) ([]byte, error) {
-    ciphertext, err := base64.StdEncoding.DecodeString(encryptedText)
-    if err != nil {
-        return nil, err
-    }
-    
-    nonceSize := sm.cipher.NonceSize()
-    if len(ciphertext) < nonceSize {
-        return nil, fmt.Errorf("ciphertext too short")
-    }
-    
-    nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
-    plaintext, err := sm.cipher.Open(nil, nonce, ciphertext, nil)
-    if err != nil {
-        return nil, err
-    }
-    
-    return plaintext, nil
-}
-```
-
-### 7.2 认证授权
-
-```go
-// 认证授权核心组件
-package auth
-
-import (
-    "context"
-    "crypto/rsa"
-    "time"
-    
-    "github.com/golang-jwt/jwt/v4"
-)
-
-// AuthService 认证服务
-type AuthService struct {
-    privateKey *rsa.PrivateKey
-    publicKey  *rsa.PublicKey
-    issuer     string
-    audience   string
-}
-
-// Claims JWT声明
-type Claims struct {
-    UserID   string            `json:"user_id"`
-    Username string            `json:"username"`
-    Roles    []string          `json:"roles"`
-    Metadata map[string]string `json:"metadata"`
-    jwt.RegisteredClaims
-}
-
-// GenerateToken 生成令牌
-func (as *AuthService) GenerateToken(userID, username string, roles []string) (string, error) {
-    claims := &Claims{
-        UserID:   userID,
-        Username: username,
-        Roles:    roles,
-        RegisteredClaims: jwt.RegisteredClaims{
-            ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-            IssuedAt:  jwt.NewNumericDate(time.Now()),
-            NotBefore: jwt.NewNumericDate(time.Now()),
-            Issuer:    as.issuer,
-            Audience:  []string{as.audience},
-        },
-    }
-    
-    token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-    return token.SignedString(as.privateKey)
-}
-
-// ValidateToken 验证令牌
-func (as *AuthService) ValidateToken(tokenString string) (*Claims, error) {
-    token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-        return as.publicKey, nil
-    })
-    
-    if err != nil {
-        return nil, err
-    }
-    
-    if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-        return claims, nil
-    }
-    
-    return nil, fmt.Errorf("invalid token")
-}
-```
-
-## 8. 部署和运维
-
-### 8.1 容器化部署
-
-```go
-// 容器化部署核心组件
-package deployment
-
-import (
-    "context"
-    "encoding/json"
-    "fmt"
-    "time"
-)
-
-// DeploymentConfig 部署配置
-type DeploymentConfig struct {
-    Name        string            `json:"name"`
-    Image       string            `json:"image"`
-    Replicas    int               `json:"replicas"`
-    Ports       []PortConfig      `json:"ports"`
-    Environment map[string]string `json:"environment"`
-    Resources   ResourceConfig    `json:"resources"`
-    HealthCheck HealthCheckConfig `json:"health_check"`
-}
-
-// PortConfig 端口配置
-type PortConfig struct {
-    ContainerPort int    `json:"container_port"`
-    ServicePort   int    `json:"service_port"`
-    Protocol      string `json:"protocol"`
-}
-
-// ResourceConfig 资源配置
-type ResourceConfig struct {
-    CPU    string `json:"cpu"`
-    Memory string `json:"memory"`
-}
-
-// HealthCheckConfig 健康检查配置
-type HealthCheckConfig struct {
-    Path                string        `json:"path"`
-    InitialDelaySeconds int           `json:"initial_delay_seconds"`
-    PeriodSeconds       int           `json:"period_seconds"`
-    TimeoutSeconds      int           `json:"timeout_seconds"`
-    FailureThreshold    int           `json:"failure_threshold"`
-}
-
-// DeploymentManager 部署管理器
-type DeploymentManager struct {
-    kubernetesClient *KubernetesClient
-    registryClient   *RegistryClient
-    logger           *zap.Logger
-}
-
-// Deploy 部署服务
-func (dm *DeploymentManager) Deploy(ctx context.Context, config *DeploymentConfig) error {
-    // 1. 验证配置
-    if err := dm.validateConfig(config); err != nil {
-        return fmt.Errorf("invalid config: %w", err)
-    }
-    
-    // 2. 构建镜像
-    image, err := dm.buildImage(ctx, config)
-    if err != nil {
-        return fmt.Errorf("failed to build image: %w", err)
-    }
-    
-    // 3. 推送镜像
-    if err := dm.pushImage(ctx, image); err != nil {
-        return fmt.Errorf("failed to push image: %w", err)
-    }
-    
-    // 4. 创建Kubernetes资源
-    if err := dm.createKubernetesResources(ctx, config, image); err != nil {
-        return fmt.Errorf("failed to create kubernetes resources: %w", err)
-    }
-    
-    // 5. 等待部署完成
-    if err := dm.waitForDeployment(ctx, config.Name); err != nil {
-        return fmt.Errorf("deployment failed: %w", err)
-    }
-    
-    return nil
-}
-```
-
-### 8.2 配置管理
-
-```go
-// 配置管理核心组件
-package config
-
-import (
-    "context"
-    "encoding/json"
-    "time"
-)
-
-// Configuration 配置定义
-type Configuration struct {
-    Key         string            `json:"key"`
-    Value       string            `json:"value"`
-    Environment string            `json:"environment"`
-    Version     int64             `json:"version"`
-    Metadata    map[string]string `json:"metadata"`
-    CreatedAt   time.Time         `json:"created_at"`
-    UpdatedAt   time.Time         `json:"updated_at"`
-}
-
-// ConfigManager 配置管理器
-type ConfigManager struct {
-    store ConfigStore
-    cache ConfigCache
-}
-
-// ConfigStore 配置存储接口
-type ConfigStore interface {
-    Get(ctx context.Context, key, environment string) (*Configuration, error)
-    Set(ctx context.Context, config *Configuration) error
-    List(ctx context.Context, environment string) ([]*Configuration, error)
-}
-
-// ConfigCache 配置缓存接口
-type ConfigCache interface {
-    Get(key string) (*Configuration, bool)
-    Set(key string, config *Configuration)
-    Delete(key string)
-}
-
-// GetConfig 获取配置
-func (cm *ConfigManager) GetConfig(ctx context.Context, key, environment string) (*Configuration, error) {
-    cacheKey := fmt.Sprintf("%s:%s", key, environment)
-    
-    // 先从缓存获取
-    if config, exists := cm.cache.Get(cacheKey); exists {
-        return config, nil
-    }
-    
-    // 从存储获取
-    config, err := cm.store.Get(ctx, key, environment)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 更新缓存
-    cm.cache.Set(cacheKey, config)
-    
-    return config, nil
-}
-
-// SetConfig 设置配置
-func (cm *ConfigManager) SetConfig(ctx context.Context, config *Configuration) error {
-    config.Version++
-    config.UpdatedAt = time.Now()
-    
-    // 保存到存储
-    if err := cm.store.Set(ctx, config); err != nil {
         return err
     }
     
-    // 更新缓存
-    cacheKey := fmt.Sprintf("%s:%s", config.Key, config.Environment)
-    cm.cache.Set(cacheKey, config)
+    service.mu.Lock()
+    oldReplicas := service.Replicas
+    service.Replicas = replicas
+    service.mu.Unlock()
+    
+    if replicas > oldReplicas {
+        // 增加副本
+        for i := oldReplicas; i < replicas; i++ {
+            go func(replicaIndex int) {
+                if err := sm.createReplica(service, replicaIndex); err != nil {
+                    log.Printf("Failed to create replica %d for service %s: %v", replicaIndex, service.ID, err)
+                }
+            }(i)
+        }
+    } else if replicas < oldReplicas {
+        // 减少副本
+        // 这里应该实现优雅关闭逻辑
+        log.Printf("Scaling down service %s from %d to %d replicas", service.ID, oldReplicas, replicas)
+    }
     
     return nil
 }
 ```
 
-## 9. 总结
+### 负载均衡
 
-云计算和基础设施领域的Golang应用需要重点关注：
+```go
+// 负载均衡器
+type LoadBalancer struct {
+    services map[string]*Service
+    backends map[string][]*Backend
+    mu       sync.RWMutex
+}
 
-### 9.1 核心特性
+// 后端
+type Backend struct {
+    ID       string
+    Address  string
+    Port     int
+    Weight   int
+    Healthy  bool
+    mu       sync.RWMutex
+}
 
-1. **高性能**: 利用Golang的并发特性和内存管理
-2. **高可靠性**: 完善的错误处理和熔断机制
-3. **可观测性**: 全面的监控、日志和追踪
-4. **安全性**: 密钥管理、认证授权、网络安全
-5. **可扩展性**: 微服务架构、容器化、云原生
+// 负载均衡算法
+type LoadBalancingAlgorithm interface {
+    Name() string
+    Select(backends []*Backend) (*Backend, error)
+}
 
-### 9.2 最佳实践
+// 轮询算法
+type RoundRobinAlgorithm struct {
+    current int
+    mu      sync.Mutex
+}
 
-1. **架构设计**: 采用微服务、事件驱动、API网关等模式
-2. **性能优化**: 使用对象池、内存池、并发优化
-3. **监控运维**: 实现指标收集、分布式追踪、配置管理
-4. **安全防护**: 实施密钥管理、认证授权、网络安全
-5. **部署运维**: 容器化部署、Kubernetes编排、CI/CD流水线
+func (rr *RoundRobinAlgorithm) Name() string {
+    return "round_robin"
+}
 
-### 9.3 技术栈
+func (rr *RoundRobinAlgorithm) Select(backends []*Backend) (*Backend, error) {
+    if len(backends) == 0 {
+        return nil, fmt.Errorf("no backends available")
+    }
+    
+    rr.mu.Lock()
+    defer rr.mu.Unlock()
+    
+    // 过滤健康的后端
+    healthyBackends := make([]*Backend, 0)
+    for _, backend := range backends {
+        backend.mu.RLock()
+        if backend.Healthy {
+            healthyBackends = append(healthyBackends, backend)
+        }
+        backend.mu.RUnlock()
+    }
+    
+    if len(healthyBackends) == 0 {
+        return nil, fmt.Errorf("no healthy backends available")
+    }
+    
+    // 轮询选择
+    backend := healthyBackends[rr.current%len(healthyBackends)]
+    rr.current++
+    
+    return backend, nil
+}
 
-- **容器编排**: Kubernetes、Docker
-- **服务网格**: Istio、Linkerd
-- **监控**: Prometheus、Grafana、Jaeger
-- **存储**: etcd、Redis、PostgreSQL
-- **消息队列**: Kafka、RabbitMQ
-- **API网关**: Kong、Envoy
+// 加权轮询算法
+type WeightedRoundRobinAlgorithm struct {
+    current int
+    mu      sync.Mutex
+}
 
-通过合理运用Golang的并发特性和生态系统，可以构建高性能、高可靠的云基础设施组件，为现代云原生应用提供强有力的支撑。
+func (wrr *WeightedRoundRobinAlgorithm) Name() string {
+    return "weighted_round_robin"
+}
+
+func (wrr *WeightedRoundRobinAlgorithm) Select(backends []*Backend) (*Backend, error) {
+    if len(backends) == 0 {
+        return nil, fmt.Errorf("no backends available")
+    }
+    
+    wrr.mu.Lock()
+    defer wrr.mu.Unlock()
+    
+    // 过滤健康的后端
+    healthyBackends := make([]*Backend, 0)
+    for _, backend := range backends {
+        backend.mu.RLock()
+        if backend.Healthy {
+            healthyBackends = append(healthyBackends, backend)
+        }
+        backend.mu.RUnlock()
+    }
+    
+    if len(healthyBackends) == 0 {
+        return nil, fmt.Errorf("no healthy backends available")
+    }
+    
+    // 计算总权重
+    totalWeight := 0
+    for _, backend := range healthyBackends {
+        backend.mu.RLock()
+        totalWeight += backend.Weight
+        backend.mu.RUnlock()
+    }
+    
+    if totalWeight == 0 {
+        return nil, fmt.Errorf("no valid weights")
+    }
+    
+    // 加权轮询选择
+    current := wrr.current % totalWeight
+    for _, backend := range healthyBackends {
+        backend.mu.RLock()
+        if current < backend.Weight {
+            backend.mu.RUnlock()
+            wrr.current++
+            return backend, nil
+        }
+        current -= backend.Weight
+        backend.mu.RUnlock()
+    }
+    
+    return nil, fmt.Errorf("failed to select backend")
+}
+
+// 添加服务
+func (lb *LoadBalancer) AddService(service *Service) error {
+    lb.mu.Lock()
+    defer lb.mu.Unlock()
+    
+    lb.services[service.ID] = service
+    
+    // 创建后端列表
+    backends := make([]*Backend, 0)
+    for _, container := range service.Containers {
+        backend := &Backend{
+            ID:      container.ID,
+            Address: container.ID, // 这里应该是实际的IP地址
+            Port:    service.Ports[0].Port,
+            Weight:  1,
+            Healthy: true,
+        }
+        backends = append(backends, backend)
+    }
+    
+    lb.backends[service.ID] = backends
+    
+    return nil
+}
+
+// 路由请求
+func (lb *LoadBalancer) Route(serviceID string, algorithm LoadBalancingAlgorithm) (*Backend, error) {
+    lb.mu.RLock()
+    backends, exists := lb.backends[serviceID]
+    lb.mu.RUnlock()
+    
+    if !exists {
+        return nil, fmt.Errorf("service %s not found", serviceID)
+    }
+    
+    return algorithm.Select(backends)
+}
+```
+
+## 服务网格
+
+### 代理管理
+
+```go
+// 代理
+type Proxy struct {
+    ID          string
+    NodeID      string
+    Services    map[string]*ProxyService
+    Routes      map[string]*Route
+    mu          sync.RWMutex
+}
+
+// 代理服务
+type ProxyService struct {
+    Name        string
+    Endpoints   []*Endpoint
+    Routes      []*Route
+}
+
+// 端点
+type Endpoint struct {
+    ID       string
+    Address  string
+    Port     int
+    Healthy  bool
+    Weight   int
+}
+
+// 路由
+type Route struct {
+    ID          string
+    Service     string
+    Path        string
+    Methods     []string
+    Headers     map[string]string
+    Destination string
+    Weight      int
+}
+
+// 代理管理器
+type ProxyManager struct {
+    proxies map[string]*Proxy
+    mu      sync.RWMutex
+}
+
+// 创建代理
+func (pm *ProxyManager) CreateProxy(nodeID string) (*Proxy, error) {
+    proxy := &Proxy{
+        ID:       uuid.New().String(),
+        NodeID:   nodeID,
+        Services: make(map[string]*ProxyService),
+        Routes:   make(map[string]*Route),
+    }
+    
+    pm.mu.Lock()
+    pm.proxies[proxy.ID] = proxy
+    pm.mu.Unlock()
+    
+    return proxy, nil
+}
+
+// 添加服务到代理
+func (pm *ProxyManager) AddService(proxyID, serviceName string, endpoints []*Endpoint) error {
+    pm.mu.RLock()
+    proxy, exists := pm.proxies[proxyID]
+    pm.mu.RUnlock()
+    
+    if !exists {
+        return fmt.Errorf("proxy %s not found", proxyID)
+    }
+    
+    proxy.mu.Lock()
+    proxy.Services[serviceName] = &ProxyService{
+        Name:      serviceName,
+        Endpoints: endpoints,
+    }
+    proxy.mu.Unlock()
+    
+    return nil
+}
+
+// 添加路由
+func (pm *ProxyManager) AddRoute(proxyID string, route *Route) error {
+    pm.mu.RLock()
+    proxy, exists := pm.proxies[proxyID]
+    pm.mu.RUnlock()
+    
+    if !exists {
+        return fmt.Errorf("proxy %s not found", proxyID)
+    }
+    
+    proxy.mu.Lock()
+    proxy.Routes[route.ID] = route
+    proxy.mu.Unlock()
+    
+    return nil
+}
+
+// 路由请求
+func (pm *ProxyManager) RouteRequest(proxyID, path, method string, headers map[string]string) (*Endpoint, error) {
+    pm.mu.RLock()
+    proxy, exists := pm.proxies[proxyID]
+    pm.mu.RUnlock()
+    
+    if !exists {
+        return nil, fmt.Errorf("proxy %s not found", proxyID)
+    }
+    
+    proxy.mu.RLock()
+    defer proxy.mu.RUnlock()
+    
+    // 查找匹配的路由
+    for _, route := range proxy.Routes {
+        if pm.matchRoute(route, path, method, headers) {
+            // 查找服务
+            service, exists := proxy.Services[route.Service]
+            if !exists {
+                return nil, fmt.Errorf("service %s not found", route.Service)
+            }
+            
+            // 选择端点
+            return pm.selectEndpoint(service.Endpoints)
+        }
+    }
+    
+    return nil, fmt.Errorf("no matching route found")
+}
+
+// 匹配路由
+func (pm *ProxyManager) matchRoute(route *Route, path, method string, headers map[string]string) bool {
+    // 匹配路径
+    if route.Path != "" && !strings.HasPrefix(path, route.Path) {
+        return false
+    }
+    
+    // 匹配方法
+    if len(route.Methods) > 0 {
+        methodMatch := false
+        for _, m := range route.Methods {
+            if m == method {
+                methodMatch = true
+                break
+            }
+        }
+        if !methodMatch {
+            return false
+        }
+    }
+    
+    // 匹配头部
+    for key, value := range route.Headers {
+        if headerValue, exists := headers[key]; !exists || headerValue != value {
+            return false
+        }
+    }
+    
+    return true
+}
+
+// 选择端点
+func (pm *ProxyManager) selectEndpoint(endpoints []*Endpoint) (*Endpoint, error) {
+    if len(endpoints) == 0 {
+        return nil, fmt.Errorf("no endpoints available")
+    }
+    
+    // 过滤健康的端点
+    healthyEndpoints := make([]*Endpoint, 0)
+    for _, endpoint := range endpoints {
+        if endpoint.Healthy {
+            healthyEndpoints = append(healthyEndpoints, endpoint)
+        }
+    }
+    
+    if len(healthyEndpoints) == 0 {
+        return nil, fmt.Errorf("no healthy endpoints available")
+    }
+    
+    // 使用加权轮询选择端点
+    totalWeight := 0
+    for _, endpoint := range healthyEndpoints {
+        totalWeight += endpoint.Weight
+    }
+    
+    if totalWeight == 0 {
+        return healthyEndpoints[0], nil
+    }
+    
+    // 随机选择
+    rand.Seed(time.Now().UnixNano())
+    random := rand.Intn(totalWeight)
+    
+    current := 0
+    for _, endpoint := range healthyEndpoints {
+        current += endpoint.Weight
+        if random < current {
+            return endpoint, nil
+        }
+    }
+    
+    return healthyEndpoints[0], nil
+}
+```
+
+## 最佳实践
+
+### 1. 错误处理
+
+```go
+// 云基础设施错误类型
+type CloudInfrastructureError struct {
+    Code    string `json:"code"`
+    Message string `json:"message"`
+    NodeID  string `json:"node_id,omitempty"`
+    ServiceID string `json:"service_id,omitempty"`
+    Details string `json:"details,omitempty"`
+}
+
+func (e *CloudInfrastructureError) Error() string {
+    return fmt.Sprintf("[%s] %s", e.Code, e.Message)
+}
+
+// 错误码常量
+const (
+    ErrCodeNodeNotFound     = "NODE_NOT_FOUND"
+    ErrCodeServiceNotFound  = "SERVICE_NOT_FOUND"
+    ErrCodeInsufficientResources = "INSUFFICIENT_RESOURCES"
+    ErrCodeSchedulingFailed = "SCHEDULING_FAILED"
+    ErrCodeContainerFailed  = "CONTAINER_FAILED"
+)
+
+// 统一错误处理
+func HandleCloudInfrastructureError(err error, nodeID, serviceID string) *CloudInfrastructureError {
+    switch {
+    case errors.Is(err, ErrNodeNotFound):
+        return &CloudInfrastructureError{
+            Code:     ErrCodeNodeNotFound,
+            Message:  "Node not found",
+            NodeID:   nodeID,
+        }
+    case errors.Is(err, ErrServiceNotFound):
+        return &CloudInfrastructureError{
+            Code:      ErrCodeServiceNotFound,
+            Message:   "Service not found",
+            ServiceID: serviceID,
+        }
+    default:
+        return &CloudInfrastructureError{
+            Code: ErrCodeSchedulingFailed,
+            Message: "Scheduling failed",
+        }
+    }
+}
+```
+
+### 2. 监控和日志
+
+```go
+// 云基础设施指标
+type CloudInfrastructureMetrics struct {
+    nodeCount       prometheus.Gauge
+    serviceCount    prometheus.Gauge
+    containerCount  prometheus.Gauge
+    resourceUsage   prometheus.GaugeVec
+    errorCount      prometheus.Counter
+}
+
+func NewCloudInfrastructureMetrics() *CloudInfrastructureMetrics {
+    return &CloudInfrastructureMetrics{
+        nodeCount: prometheus.NewGauge(prometheus.GaugeOpts{
+            Name: "cloud_nodes_total",
+            Help: "Total number of nodes",
+        }),
+        serviceCount: prometheus.NewGauge(prometheus.GaugeOpts{
+            Name: "cloud_services_total",
+            Help: "Total number of services",
+        }),
+        containerCount: prometheus.NewGauge(prometheus.GaugeOpts{
+            Name: "cloud_containers_total",
+            Help: "Total number of containers",
+        }),
+        resourceUsage: *prometheus.NewGaugeVec(prometheus.GaugeOpts{
+            Name: "cloud_resource_usage",
+            Help: "Resource usage by node",
+        }, []string{"node_id", "resource_type"}),
+        errorCount: prometheus.NewCounter(prometheus.CounterOpts{
+            Name: "cloud_errors_total",
+            Help: "Total number of cloud infrastructure errors",
+        }),
+    }
+}
+
+// 云基础设施日志
+type CloudInfrastructureLogger struct {
+    logger *zap.Logger
+}
+
+func (l *CloudInfrastructureLogger) LogNodeRegistered(node *Node) {
+    l.logger.Info("node registered",
+        zap.String("node_id", node.ID),
+        zap.String("node_name", node.Name),
+        zap.String("node_ip", node.IP),
+        zap.String("status", string(node.Status)),
+    )
+}
+
+func (l *CloudInfrastructureLogger) LogServiceCreated(service *Service) {
+    l.logger.Info("service created",
+        zap.String("service_id", service.ID),
+        zap.String("service_name", service.Name),
+        zap.Int("replicas", service.Replicas),
+        zap.String("type", string(service.Type)),
+    )
+}
+
+func (l *CloudInfrastructureLogger) LogContainerScheduled(container *Container, node *Node) {
+    l.logger.Info("container scheduled",
+        zap.String("container_id", container.ID),
+        zap.String("container_name", container.Name),
+        zap.String("node_id", node.ID),
+        zap.String("node_name", node.Name),
+    )
+}
+```
+
+### 3. 测试策略
+
+```go
+// 单元测试
+func TestNodeManager_RegisterNode(t *testing.T) {
+    manager := &NodeManager{
+        nodes: make(map[string]*Node),
+    }
+    
+    node := &Node{
+        ID:   "node1",
+        Name: "Test Node",
+        IP:   "192.168.1.100",
+        Resources: &Resources{
+            CPU:    4.0,
+            Memory: 8192,
+            Disk:   100000,
+        },
+    }
+    
+    // 测试注册节点
+    err := manager.RegisterNode(node)
+    if err != nil {
+        t.Errorf("Failed to register node: %v", err)
+    }
+    
+    if len(manager.nodes) != 1 {
+        t.Errorf("Expected 1 node, got %d", len(manager.nodes))
+    }
+    
+    if manager.nodes[node.ID] != node {
+        t.Error("Node not found in manager")
+    }
+}
+
+// 集成测试
+func TestServiceManager_CreateService(t *testing.T) {
+    // 创建服务管理器
+    scheduler := &Scheduler{
+        nodes: make(map[string]*Node),
+    }
+    nodeManager := &NodeManager{
+        nodes: make(map[string]*Node),
+    }
+    serviceManager := &ServiceManager{
+        services:    make(map[string]*Service),
+        scheduler:   scheduler,
+        nodeManager: nodeManager,
+    }
+    
+    // 创建节点
+    node := &Node{
+        ID:   "node1",
+        Name: "Test Node",
+        IP:   "192.168.1.100",
+        Status: NodeStatusReady,
+        Resources: &Resources{
+            CPU:    4.0,
+            Memory: 8192,
+            Disk:   100000,
+        },
+        Containers: make(map[string]*Container),
+    }
+    nodeManager.RegisterNode(node)
+    scheduler.AddNode(node)
+    
+    // 创建服务
+    service := &Service{
+        ID:       "service1",
+        Name:     "Test Service",
+        Replicas: 2,
+        Containers: []*Container{
+            {
+                Name: "app",
+                Image: "nginx:latest",
+                Resources: &Resources{
+                    CPU:    0.5,
+                    Memory: 512,
+                },
+            },
+        },
+    }
+    
+    // 测试创建服务
+    err := serviceManager.CreateService(service)
+    if err != nil {
+        t.Errorf("Failed to create service: %v", err)
+    }
+    
+    if len(serviceManager.services) != 1 {
+        t.Errorf("Expected 1 service, got %d", len(serviceManager.services))
+    }
+}
+
+// 性能测试
+func BenchmarkScheduler_Schedule(b *testing.B) {
+    scheduler := &Scheduler{
+        nodes: make(map[string]*Node),
+    }
+    
+    // 创建测试节点
+    for i := 0; i < 10; i++ {
+        node := &Node{
+            ID:     fmt.Sprintf("node%d", i),
+            Name:   fmt.Sprintf("Test Node %d", i),
+            Status: NodeStatusReady,
+            Resources: &Resources{
+                CPU:    4.0,
+                Memory: 8192,
+            },
+        }
+        scheduler.AddNode(node)
+    }
+    
+    // 创建测试容器
+    container := &Container{
+        Name: "test-container",
+        Image: "nginx:latest",
+        Resources: &Resources{
+            CPU:    0.5,
+            Memory: 512,
+        },
+    }
+    
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        _, err := scheduler.Schedule(container)
+        if err != nil {
+            b.Fatalf("Scheduling failed: %v", err)
+        }
+    }
+}
+```
+
+---
+
+## 总结
+
+本文档深入分析了云基础设施领域的核心概念、技术架构和实现方案，包括：
+
+1. **形式化定义**: 云基础设施系统、容器、编排系统的数学建模
+2. **云架构**: 节点管理、调度器的设计
+3. **容器编排**: 服务定义、负载均衡的实现
+4. **服务网格**: 代理管理、路由系统的设计
+5. **最佳实践**: 错误处理、监控、测试策略
+
+云基础设施系统需要在资源管理、服务编排、高可用性等多个方面找到平衡，通过合理的架构设计和实现方案，可以构建出高效、可扩展、高可用的云基础设施系统。
+
+---
+
+**最后更新**: 2024-12-19  
+**当前状态**: ✅ 云基础设施领域分析完成  
+**下一步**: 大数据领域分析
