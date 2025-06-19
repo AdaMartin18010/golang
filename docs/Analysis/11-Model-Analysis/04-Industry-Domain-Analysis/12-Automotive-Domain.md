@@ -11,6 +11,7 @@
 $$\mathcal{A} = (S, P, C, V, T, M)$$
 
 其中：
+
 - $S$ 表示传感器系统（摄像头、雷达、激光雷达、超声波）
 - $P$ 表示感知系统（环境感知、目标检测、场景理解）
 - $C$ 表示控制系统（路径规划、车辆控制、安全系统）
@@ -1449,12 +1450,14 @@ func (ac *AccessControl) CheckAccess(userID, resource, action string) bool {
 ### 8.1 自动驾驶汽车
 
 **架构特点**：
+
 - 多传感器融合：摄像头、激光雷达、雷达、超声波
 - 实时处理：50Hz控制循环、毫秒级响应
 - 安全冗余：多重传感器、备份系统
 - 高精度定位：GPS+IMU+地图匹配
 
 **技术栈**：
+
 - 传感器：Velodyne激光雷达、Mobileye摄像头、Continental雷达
 - 计算平台：NVIDIA DRIVE、Intel Mobileye
 - 软件：ROS、Apollo、Autoware
@@ -1463,12 +1466,14 @@ func (ac *AccessControl) CheckAccess(userID, resource, action string) bool {
 ### 8.2 智能网联汽车
 
 **架构特点**：
+
 - V2X通信：车对车、车对基础设施
 - 云端连接：OTA更新、远程诊断
 - 边缘计算：本地处理、实时响应
 - 数据安全：加密传输、隐私保护
 
 **技术栈**：
+
 - 通信：DSRC、C-V2X、5G、WiFi
 - 云端：AWS IoT、Azure IoT、Google Cloud
 - 安全：HSM、TPM、加密算法
@@ -1479,6 +1484,7 @@ func (ac *AccessControl) CheckAccess(userID, resource, action string) bool {
 汽车领域是Golang的重要应用场景，通过系统性的架构设计、传感器融合、控制系统和通信系统，可以构建安全、可靠、高性能的汽车软件系统。
 
 **关键成功因素**：
+
 1. **系统架构**：模块化、实时性、安全性
 2. **传感器融合**：多传感器、时间同步、数据融合
 3. **控制系统**：路径规划、车辆控制、安全系统
@@ -1486,6 +1492,7 @@ func (ac *AccessControl) CheckAccess(userID, resource, action string) bool {
 5. **诊断系统**：OBD、UDS、故障检测
 
 **未来发展趋势**：
+
 1. **自动驾驶**：L4/L5级别、完全自动化
 2. **车联网**：5G、边缘计算、智能交通
 3. **电动化**：电池管理、充电网络、能源优化
@@ -1507,4 +1514,4 @@ func (ac *AccessControl) CheckAccess(userID, resource, action string) bool {
 - [ISO 26262标准](https://www.iso.org/standard/43464.html)
 - [SAE J3016自动驾驶分级](https://www.sae.org/standards/content/j3016_202104/)
 - [5GAA车联网联盟](https://5gaa.org/)
-- [NHTSA自动驾驶政策](https://www.nhtsa.gov/technology-innovation/automated-vehicles) 
+- [NHTSA自动驾驶政策](https://www.nhtsa.gov/technology-innovation/automated-vehicles)

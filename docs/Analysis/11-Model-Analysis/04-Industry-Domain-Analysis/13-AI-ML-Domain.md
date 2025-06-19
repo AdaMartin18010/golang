@@ -11,6 +11,7 @@
 $$\mathcal{M} = (D, F, M, I, S, O)$$
 
 其中：
+
 - $D$ 表示数据系统（数据采集、存储、处理）
 - $F$ 表示特征系统（特征工程、特征存储、特征服务）
 - $M$ 表示模型系统（模型训练、评估、部署）
@@ -1443,12 +1444,14 @@ func (dl *DataLineage) TrackLineage(operation *DataOperation) error {
 ### 8.1 推荐系统
 
 **架构特点**：
+
 - 实时推荐：毫秒级响应、个性化推荐
 - 离线训练：大规模数据、分布式训练
 - 在线学习：增量更新、实时反馈
 - 多目标优化：点击率、转化率、收入
 
 **技术栈**：
+
 - 特征工程：Spark、Flink、Kafka
 - 模型训练：TensorFlow、PyTorch、XGBoost
 - 推理服务：TensorRT、ONNX、自定义推理引擎
@@ -1457,12 +1460,14 @@ func (dl *DataLineage) TrackLineage(operation *DataOperation) error {
 ### 8.2 计算机视觉
 
 **架构特点**：
+
 - 图像处理：预处理、增强、标准化
 - 模型推理：GPU加速、批处理、实时处理
 - 后处理：NMS、后处理、结果融合
 - 部署优化：模型压缩、量化、剪枝
 
 **技术栈**：
+
 - 框架：OpenCV、Pillow、Albumentations
 - 模型：ResNet、YOLO、EfficientNet
 - 推理：TensorRT、OpenVINO、ONNX Runtime
@@ -1473,6 +1478,7 @@ func (dl *DataLineage) TrackLineage(operation *DataOperation) error {
 AI/ML领域是Golang的重要应用场景，通过系统性的架构设计、分布式训练、推理服务和监控系统，可以构建高性能、可扩展的AI/ML平台。
 
 **关键成功因素**：
+
 1. **数据管理**：数据质量、特征工程、数据血缘
 2. **模型管理**：训练、评估、部署、版本控制
 3. **推理服务**：低延迟、高吞吐、负载均衡
@@ -1480,6 +1486,7 @@ AI/ML领域是Golang的重要应用场景，通过系统性的架构设计、分
 5. **资源管理**：GPU调度、内存优化、成本控制
 
 **未来发展趋势**：
+
 1. **自动化ML**：AutoML、神经架构搜索、超参数优化
 2. **联邦学习**：隐私保护、分布式训练、协作学习
 3. **边缘AI**：边缘计算、模型压缩、实时推理
@@ -1501,4 +1508,4 @@ AI/ML领域是Golang的重要应用场景，通过系统性的架构设计、分
 - [Kubeflow文档](https://www.kubeflow.org/docs/)
 - [TensorFlow Serving](https://www.tensorflow.org/tfx/guide/serving)
 - [PyTorch Serve](https://pytorch.org/serve/)
-- [ONNX Runtime](https://onnxruntime.ai/) 
+- [ONNX Runtime](https://onnxruntime.ai/)

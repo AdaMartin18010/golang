@@ -11,6 +11,7 @@
 $$\mathcal{E} = (U, P, O, T, I, R, A)$$
 
 其中：
+
 - $U$ 表示用户集合（买家、卖家、管理员）
 - $P$ 表示商品集合（产品、服务、库存）
 - $O$ 表示订单集合（购物车、订单、交易）
@@ -1365,12 +1366,14 @@ func (pm *PrivacyManager) ApplyPrivacyPolicy(data map[string]interface{}, policy
 ### 8.1 大型电商平台
 
 **架构特点**：
+
 - 微服务架构：用户、商品、订单、支付、库存、推荐
 - 事件驱动：订单状态变更、库存更新、价格变化
 - 高并发：支持百万级用户同时访问
 - 实时性：库存实时更新、价格实时变化
 
 **技术栈**：
+
 - 前端：React、Vue.js、Angular
 - 后端：Golang、Java、Python
 - 数据库：PostgreSQL、MongoDB、Redis
@@ -1380,12 +1383,14 @@ func (pm *PrivacyManager) ApplyPrivacyPolicy(data map[string]interface{}, policy
 ### 8.2 跨境电商平台
 
 **架构特点**：
+
 - 多语言支持：国际化、本地化
 - 多货币支持：汇率转换、多币种支付
 - 物流集成：国际物流、清关服务
 - 合规性：各国法规、税务处理
 
 **技术栈**：
+
 - 支付：Stripe、PayPal、支付宝
 - 物流：FedEx、DHL、UPS API
 - 汇率：实时汇率API
@@ -1396,6 +1401,7 @@ func (pm *PrivacyManager) ApplyPrivacyPolicy(data map[string]interface{}, policy
 电子商务领域是Golang的重要应用场景，通过系统性的架构设计、核心组件实现、推荐系统和性能优化，可以构建高性能、可扩展的电商平台。
 
 **关键成功因素**：
+
 1. **系统架构**：微服务、事件驱动、高可用
 2. **核心组件**：订单管理、支付系统、库存管理
 3. **推荐系统**：协同过滤、内容推荐、个性化
@@ -1403,6 +1409,7 @@ func (pm *PrivacyManager) ApplyPrivacyPolicy(data map[string]interface{}, policy
 5. **性能优化**：缓存策略、CDN、负载均衡
 
 **未来发展趋势**：
+
 1. **AI/ML集成**：智能推荐、预测分析、自动化客服
 2. **移动优先**：移动应用、PWA、小程序
 3. **社交电商**：社交分享、直播带货、社区营销
@@ -1424,4 +1431,4 @@ func (pm *PrivacyManager) ApplyPrivacyPolicy(data map[string]interface{}, policy
 - [PayPal开发者文档](https://developer.paypal.com/)
 - [Shopify API](https://shopify.dev/api)
 - [WooCommerce文档](https://woocommerce.com/documentation/)
-- [Magento开发者文档](https://developer.adobe.com/commerce/) 
+- [Magento开发者文档](https://developer.adobe.com/commerce/)

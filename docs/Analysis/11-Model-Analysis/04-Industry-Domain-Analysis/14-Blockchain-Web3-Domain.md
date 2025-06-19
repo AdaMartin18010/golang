@@ -11,6 +11,7 @@
 $$\mathcal{B} = (N, C, T, S, P, W)$$
 
 其中：
+
 - $N$ 表示网络层（P2P网络、节点通信、消息传播）
 - $C$ 表示共识层（共识算法、区块验证、状态同步）
 - $T$ 表示交易层（交易池、交易验证、交易执行）
@@ -1187,12 +1188,14 @@ func (cm *ComplianceManager) CheckCompliance(tx *Transaction) error {
 ### 8.1 去中心化金融(DeFi)
 
 **架构特点**：
+
 - 智能合约：自动执行、不可篡改、透明
 - 流动性池：自动做市商、收益农场、借贷
 - 治理代币：DAO治理、投票机制、提案系统
 - 跨链桥：资产跨链、流动性聚合、收益优化
 
 **技术栈**：
+
 - 区块链：Ethereum、BSC、Polygon
 - 智能合约：Solidity、Vyper、Rust
 - 前端：Web3.js、Ethers.js、React
@@ -1201,12 +1204,14 @@ func (cm *ComplianceManager) CheckCompliance(tx *Transaction) error {
 ### 8.2 非同质化代币(NFT)
 
 **架构特点**：
+
 - 元数据存储：IPFS、Arweave、中心化存储
 - 铸造机制：批量铸造、懒铸造、动态NFT
 - 交易市场：拍卖、固定价格、版税分成
 - 游戏集成：游戏资产、可组合性、跨游戏
 
 **技术栈**：
+
 - 标准：ERC-721、ERC-1155、ERC-4907
 - 存储：IPFS、Arweave、AWS S3
 - 市场：OpenSea、Rarible、LooksRare
@@ -1217,6 +1222,7 @@ func (cm *ComplianceManager) CheckCompliance(tx *Transaction) error {
 区块链/Web3领域是Golang的重要应用场景，通过系统性的架构设计、智能合约、共识机制和跨链通信，可以构建安全、可扩展的去中心化应用。
 
 **关键成功因素**：
+
 1. **共识机制**：PoW、PoS、DPoS、BFT
 2. **智能合约**：虚拟机、执行引擎、安全审计
 3. **网络通信**：P2P网络、消息传播、节点发现
@@ -1224,6 +1230,7 @@ func (cm *ComplianceManager) CheckCompliance(tx *Transaction) error {
 5. **钱包系统**：密钥管理、签名验证、用户界面
 
 **未来发展趋势**：
+
 1. **Layer2扩展**：Rollups、状态通道、侧链
 2. **跨链互操作**：IBC、Polkadot、Cosmos
 3. **隐私保护**：零知识证明、同态加密、环签名
@@ -1245,4 +1252,4 @@ func (cm *ComplianceManager) CheckCompliance(tx *Transaction) error {
 - [Bitcoin开发者文档](https://developer.bitcoin.org/)
 - [Polkadot文档](https://docs.polkadot.network/)
 - [Cosmos文档](https://docs.cosmos.network/)
-- [IPFS文档](https://docs.ipfs.io/) 
+- [IPFS文档](https://docs.ipfs.io/)

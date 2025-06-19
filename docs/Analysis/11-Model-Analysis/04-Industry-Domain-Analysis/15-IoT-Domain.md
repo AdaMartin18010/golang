@@ -11,6 +11,7 @@
 $$\mathcal{I} = (D, S, E, C, A, N)$$
 
 其中：
+
 - $D$ 表示设备层（传感器、执行器、网关）
 - $S$ 表示传感器层（数据采集、信号处理、数据转换）
 - $E$ 表示边缘层（边缘计算、本地处理、决策执行）
@@ -1526,12 +1527,14 @@ func (dr *DataRetention) ApplyRetentionPolicy(dataID string, policy *RetentionPo
 ### 9.1 智能家居系统
 
 **架构特点**：
+
 - 设备连接：WiFi、蓝牙、Zigbee
 - 本地处理：边缘计算、规则引擎
 - 云端协同：数据分析、远程控制
 - 用户界面：移动应用、语音控制
 
 **技术栈**：
+
 - 设备：ESP32、Raspberry Pi、Arduino
 - 协议：MQTT、CoAP、HTTP
 - 云端：AWS IoT、Azure IoT、Google Cloud IoT
@@ -1540,12 +1543,14 @@ func (dr *DataRetention) ApplyRetentionPolicy(dataID string, policy *RetentionPo
 ### 9.2 工业物联网(IIoT)
 
 **架构特点**：
+
 - 设备监控：传感器、PLC、SCADA
 - 实时处理：流处理、边缘计算
 - 预测维护：机器学习、异常检测
 - 安全控制：访问控制、数据加密
 
 **技术栈**：
+
 - 设备：工业网关、传感器、控制器
 - 协议：OPC UA、Modbus、Ethernet/IP
 - 平台：PTC ThingWorx、Siemens Mindsphere、GE Predix
@@ -1556,6 +1561,7 @@ func (dr *DataRetention) ApplyRetentionPolicy(dataID string, policy *RetentionPo
 物联网领域是Golang的重要应用场景，通过系统性的架构设计、设备管理、数据处理和安全系统，可以构建高效、可靠的IoT平台。
 
 **关键成功因素**：
+
 1. **设备管理**：设备注册、状态监控、远程控制
 2. **数据处理**：实时处理、边缘计算、数据聚合
 3. **通信协议**：MQTT、CoAP、HTTP、WebSocket
@@ -1563,6 +1569,7 @@ func (dr *DataRetention) ApplyRetentionPolicy(dataID string, policy *RetentionPo
 5. **性能优化**：缓存策略、数据压缩、批处理
 
 **未来发展趋势**：
+
 1. **5G集成**：低延迟、高带宽、大规模连接
 2. **AI/ML集成**：智能分析、预测维护、自动化决策
 3. **边缘计算**：本地处理、减少延迟、降低成本
@@ -1584,4 +1591,4 @@ func (dr *DataRetention) ApplyRetentionPolicy(dataID string, policy *RetentionPo
 - [Azure IoT文档](https://docs.microsoft.com/azure/iot-hub/)
 - [Google Cloud IoT文档](https://cloud.google.com/iot/docs)
 - [MQTT协议规范](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html)
-- [CoAP协议规范](https://tools.ietf.org/html/rfc7252) 
+- [CoAP协议规范](https://tools.ietf.org/html/rfc7252)

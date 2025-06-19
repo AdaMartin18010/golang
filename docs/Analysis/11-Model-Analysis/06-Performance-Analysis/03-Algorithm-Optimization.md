@@ -1141,6 +1141,7 @@ func BenchmarkHashMap(b *testing.B) {
 ### 1. 算法选择原则
 
 **原则 1.1** (算法选择原则)
+
 - 根据数据规模选择合适的算法
 - 考虑时间复杂度和空间复杂度的权衡
 - 优先使用缓存友好的算法
@@ -1165,6 +1166,7 @@ func SmartAlgorithmChoice(data []int, size int) []int {
 ### 2. 缓存优化原则
 
 **原则 2.1** (缓存优化原则)
+
 - 提高空间局部性
 - 提高时间局部性
 - 减少缓存未命中
@@ -1211,6 +1213,7 @@ func processBlock(arr [][]int, startI, startJ, blockSize int) {
 ### 3. 并行化原则
 
 **原则 3.1** (并行化原则)
+
 - 识别可并行化的任务
 - 合理分配工作负载
 - 减少同步开销
