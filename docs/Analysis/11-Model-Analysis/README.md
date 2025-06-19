@@ -263,7 +263,7 @@ func (dd *DuplicateDetector) DetectDuplicates(contents []Content) []DuplicateGro
 
 #### 3.2.1 文档结构
 
-```
+```text
 /docs/Analysis/11-Model-Analysis/
 ├── README.md                           # 主框架文档
 ├── 01-Architecture-Analysis/           # 架构分析

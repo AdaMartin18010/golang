@@ -4,7 +4,8 @@
 
 ### 1. 基准测试方法论
 
-**基准测试框架**
+**基准测试框架**:
+
 ```go
 type BenchmarkFramework struct {
     tests    map[string]*BenchmarkTest
@@ -34,6 +35,7 @@ func (bf *BenchmarkFramework) RunBenchmark(test *BenchmarkTest, iterations int) 
 ```
 
 **性能指标收集**
+
 ```go
 type MetricsCollector struct {
     metrics map[string]*Metric
@@ -59,7 +61,8 @@ func (m *Metric) Record(value float64) {
 
 ### 2. 性能分析技术
 
-**CPU性能分析**
+**CPU性能分析**:
+
 ```go
 type CPUProfiler struct {
     enabled bool
@@ -77,6 +80,7 @@ func (cp *CPUProfiler) Stop() {
 ```
 
 **内存性能分析**
+
 ```go
 type MemoryProfiler struct {
     enabled bool
@@ -91,6 +95,7 @@ func (mp *MemoryProfiler) WriteHeapProfile() error {
 ### 3. 内存管理优化
 
 **对象池**
+
 ```go
 type ObjectPool[T any] struct {
     pool chan T
@@ -121,6 +126,7 @@ func (op *ObjectPool[T]) Put(obj T) {
 ```
 
 **内存预分配**
+
 ```go
 type PreAllocator struct {
     buffers map[int]*BufferPool
@@ -149,6 +155,7 @@ func (pa *PreAllocator) GetBuffer(size int) []byte {
 ### 4. CPU优化策略
 
 **算法优化**
+
 ```go
 type LoopOptimizer struct{}
 
@@ -171,6 +178,7 @@ func (lo *LoopOptimizer) OptimizeLoop(data []int) int {
 ```
 
 **并发优化**
+
 ```go
 type ParallelProcessor struct {
     workers int
@@ -208,6 +216,7 @@ func (pp *ParallelProcessor) ProcessParallel(data []interface{}, processor func(
 ### 5. 网络性能优化
 
 **连接池**
+
 ```go
 type ConnectionPool struct {
     connections chan net.Conn
@@ -234,6 +243,7 @@ func (cp *ConnectionPool) Put(conn net.Conn) {
 ```
 
 **批量请求处理**
+
 ```go
 type BatchRequestProcessor struct {
     batchSize int
@@ -268,6 +278,7 @@ func (brp *BatchRequestProcessor) ProcessBatch(requests []Request) []Response {
 ### 6. 数据库性能优化
 
 **查询缓存**
+
 ```go
 type QueryCache struct {
     cache map[string]*CachedQuery
@@ -294,6 +305,7 @@ func (qc *QueryCache) Get(query string) (interface{}, bool) {
 ```
 
 **批量查询优化**
+
 ```go
 type BatchQueryOptimizer struct {
     batchSize int
@@ -328,6 +340,7 @@ func (bqo *BatchQueryOptimizer) ExecuteBatch(queries []string) [][]interface{} {
 ## 性能监控
 
 **实时监控**
+
 ```go
 type PerformanceMonitor struct {
     metrics map[string]*Metric
@@ -386,4 +399,4 @@ func (pm *PerformanceMonitor) MonitorMetric(name string, value float64, threshol
 - **瓶颈识别**: 找到真正的性能瓶颈
 - **渐进优化**: 逐步优化，验证效果
 - **权衡考虑**: 在性能和复杂度间平衡
-- **持续监控**: 建立长期性能监控体系 
+- **持续监控**: 建立长期性能监控体系

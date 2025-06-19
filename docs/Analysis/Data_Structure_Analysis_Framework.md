@@ -13,7 +13,7 @@ An Abstract Data Type is a mathematical model for data types where a data type i
 
 **Formal Definition:**
 
-```
+```text
 ADT = (V, O, A)
 where:
 - V = set of possible values
@@ -56,7 +56,7 @@ The space complexity of an algorithm is a function describing the amount of memo
 
 **Formal Notation:**
 
-```
+```text
 T(n) = O(f(n)) if ∃c > 0, n₀ > 0 : ∀n ≥ n₀, T(n) ≤ c·f(n)
 S(n) = O(f(n)) if ∃c > 0, n₀ > 0 : ∀n ≥ n₀, S(n) ≤ c·f(n)
 ```
@@ -70,7 +70,7 @@ An array is a collection of elements identified by array index or key.
 
 **Mathematical Definition:**
 
-```
+```text
 Array[n] = {a₀, a₁, ..., a_{n-1}} where aᵢ ∈ T for all i ∈ [0, n-1]
 ```
 
@@ -123,7 +123,7 @@ A singly linked list is a linear data structure where each element points to the
 
 **Mathematical Definition:**
 
-```
+```text
 LinkedList = (head, nodes)
 where nodes = {node₁, node₂, ..., nodeₙ}
 and nodeᵢ = (dataᵢ, nextᵢ) where nextᵢ points to node_{i+1}
@@ -232,7 +232,7 @@ A stack is a linear data structure that follows the Last-In-First-Out (LIFO) pri
 
 **Mathematical Definition:**
 
-```
+```text
 Stack = (elements, top)
 where elements = [e₁, e₂, ..., eₙ] and top = n
 Operations:
@@ -310,7 +310,7 @@ A queue is a linear data structure that follows the First-In-First-Out (FIFO) pr
 
 **Mathematical Definition:**
 
-```
+```text
 Queue = (elements, front, rear)
 where elements = [e₁, e₂, ..., eₙ]
 Operations:
@@ -392,7 +392,7 @@ A binary tree is a tree data structure in which each node has at most two childr
 
 **Mathematical Definition:**
 
-```
+```text
 BinaryTree = (root, nodes)
 where nodes = {node₁, node₂, ..., nodeₙ}
 and nodeᵢ = (dataᵢ, leftᵢ, rightᵢ)
@@ -520,7 +520,7 @@ A binary search tree is a binary tree where for each node, all elements in the l
 
 **Mathematical Definition:**
 
-```
+```text
 BST = (root, nodes) where ∀nodeᵢ ∈ nodes:
 - ∀nodeⱼ in left subtree of nodeᵢ: dataⱼ < dataᵢ
 - ∀nodeⱼ in right subtree of nodeᵢ: dataⱼ > dataᵢ
@@ -646,7 +646,7 @@ A hash table is a data structure that implements an associative array abstract d
 
 **Mathematical Definition:**
 
-```
+```text
 HashTable = (array, hash_function, size)
 where array[i] = (keyᵢ, valueᵢ) or nil
 and hash_function: key → [0, size-1]
@@ -776,7 +776,7 @@ A graph is a data structure consisting of a finite set of vertices (nodes) toget
 
 **Mathematical Definition:**
 
-```
+```text
 Graph = (V, E)
 where V = {v₁, v₂, ..., vₙ} is the set of vertices
 and E = {(vᵢ, vⱼ) | vᵢ, vⱼ ∈ V} is the set of edges
@@ -1160,7 +1160,7 @@ For any stack S and operations Push(e) followed by Pop(), the Pop() operation re
 
 **Proof:**
 
-```
+```text
 Let S be a stack with elements [e₁, e₂, ..., eₙ] where eₙ is the top element.
 After Push(e), the stack becomes [e₁, e₂, ..., eₙ, e].
 After Pop(), the stack becomes [e₁, e₂, ..., eₙ] and e is returned.
@@ -1172,7 +1172,7 @@ For any queue Q and operations Enqueue(e₁) followed by Enqueue(e₂) followed 
 
 **Proof:**
 
-```
+```text
 Let Q be a queue with elements [e₁, e₂, ..., eₙ] where e₁ is the front element.
 After Enqueue(e₁), the queue becomes [e₁, e₂, ..., eₙ, e₁].
 After Enqueue(e₂), the queue becomes [e₁, e₂, ..., eₙ, e₁, e₂].
@@ -1187,7 +1187,7 @@ For a hash table with n elements and m buckets, the average case time complexity
 
 **Proof:**
 
-```
+```text
 Let α = n/m be the load factor.
 The probability of collision is approximately α.
 Using linear probing, the expected number of probes for an unsuccessful search is:
@@ -1204,7 +1204,7 @@ The height of a binary search tree with n nodes is at least ⌊log₂(n+1)⌋ an
 
 **Proof:**
 
-```
+```text
 Lower bound: A complete binary tree with n nodes has height ⌊log₂(n+1)⌋.
 Since any binary search tree can be no shorter than a complete tree with the same number of nodes,
 the minimum height is ⌊log₂(n+1)⌋.

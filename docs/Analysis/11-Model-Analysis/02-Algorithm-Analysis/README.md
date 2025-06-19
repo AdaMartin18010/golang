@@ -912,7 +912,7 @@ func (ch *ConsistentHash) hash(key string) uint32 {
 #### 5.1.2 图的表示
 
 **邻接矩阵**:
-\[ A[i][j] = \begin{cases}
+\[ `A[i][j]` = \begin{cases}
 1 & \text{if } (i, j) \in E \\
 0 & \text{otherwise}
 \end{cases} \]

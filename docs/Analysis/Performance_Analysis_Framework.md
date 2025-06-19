@@ -13,7 +13,7 @@
 
 **数学模型:**
 
-```
+```text
 Benchmark = (Function, Input, Metrics, Environment)
 其中:
 - Function: 被测试的函数
@@ -201,16 +201,15 @@ func (cm *CPUMonitor) Stop() float64 {
     endTime := time.Now()
     endCPU := getCPUTime()
     
-    cpuTime := endCPU - cm.startCPU
     wallTime := endTime.Sub(cm.startTime)
+    cpuTime := endCPU - cm.startCPU
     
-    return float64(cpuTime) / float64(wallTime)
+    return float64(cpuTime) / float64(wallTime) * 100
 }
 
 func getCPUTime() time.Duration {
     var rusage syscall.Rusage
     syscall.Getrusage(syscall.RUSAGE_SELF, &rusage)
-    
     return time.Duration(rusage.Utime.Nano()) + time.Duration(rusage.Stime.Nano())
 }
 
@@ -1401,69 +1400,90 @@ func (pm *PerformanceMonitor) calculateSeverity(value, threshold float64) AlertS
 
 // 性能报告生成器
 type PerformanceReporter struct {
-    monitor *PerformanceMonitor
+    benchmarks []*BenchmarkResult
+    metrics    *MetricsCollector
+    memory     *MemoryAnalysis
+    cpu        float64
 }
 
 func (pr *PerformanceReporter) GenerateReport() *PerformanceReport {
-    pr.monitor.mutex.RLock()
-    defer pr.monitor.mutex.RUnlock()
-    
     report := &PerformanceReport{
-        Timestamp: time.Now(),
-        Metrics:   make(map[string]*MetricSummary),
-        Alerts:    pr.monitor.alerts,
+        Timestamp:   time.Now(),
+        Benchmarks:  pr.benchmarks,
+        MemoryUsage: pr.memory,
+        CPUUsage:    pr.cpu,
     }
     
-    for name, metric := range pr.monitor.metrics {
-        report.Metrics[name] = &MetricSummary{
-            Name:      name,
-            Average:   metric.Average,
-            Min:       metric.Min,
-            Max:       metric.Max,
-            Count:     metric.Count,
-        }
+    // 计算总体统计
+    var totalTime time.Duration
+    var totalMemory int64
+    
+    for _, benchmark := range pr.benchmarks {
+        totalTime += benchmark.AverageTime
+        totalMemory += benchmark.MemoryAllocated
     }
+    
+    report.TotalTime = totalTime
+    report.TotalMemory = totalMemory
+    report.AverageTime = totalTime / time.Duration(len(pr.benchmarks))
+    report.AverageMemory = totalMemory / int64(len(pr.benchmarks))
     
     return report
 }
 
 type PerformanceReport struct {
-    Timestamp time.Time
-    Metrics   map[string]*MetricSummary
-    Alerts    []*Alert
+    Timestamp     time.Time
+    Benchmarks    []*BenchmarkResult
+    MemoryUsage   *MemoryAnalysis
+    CPUUsage      float64
+    TotalTime     time.Duration
+    TotalMemory   int64
+    AverageTime   time.Duration
+    AverageMemory int64
+    Recommendations []string
 }
 
-type MetricSummary struct {
-    Name    string
-    Average float64
-    Min     float64
-    Max     float64
-    Count   int64
+// 使用示例
+func Example() {
+    // 创建基准测试框架
+    framework := &BenchmarkFramework{
+        tests:   make(map[string]*BenchmarkTest),
+        metrics: &MetricsCollector{metrics: make(map[string]*Metric)},
+    }
+    
+    // 定义基准测试
+    test := &BenchmarkTest{
+        Name: "String Concatenation",
+        Function: func() {
+            result := ""
+            for i := 0; i < 1000; i++ {
+                result += "test"
+            }
+        },
+    }
+    
+    // 运行基准测试
+    result := framework.RunBenchmark(test, 1000)
+    
+    // 内存分析
+    memoryAnalyzer := NewMemoryAnalyzer()
+    memoryAnalysis := memoryAnalyzer.Stop()
+    
+    // CPU监控
+    cpuMonitor := NewCPUMonitor()
+    cpuUsage := cpuMonitor.Stop()
+    
+    // 生成报告
+    reporter := &PerformanceReporter{
+        benchmarks: []*BenchmarkResult{result},
+        memory:     memoryAnalysis,
+        cpu:        cpuUsage,
+    }
+    
+    report := reporter.GenerateReport()
+    
+    fmt.Printf("Performance Report:\n")
+    fmt.Printf("Average Time: %v\n", report.AverageTime)
+    fmt.Printf("Memory Allocated: %d bytes\n", report.TotalMemory)
+    fmt.Printf("CPU Usage: %.2f%%\n", report.CPUUsage)
 }
-```
-
-## 8. 结论
-
-本性能分析框架提供了全面的性能优化工具：
-
-1. **基准测试方法**: 标准化的性能测量和比较
-2. **性能分析技术**: CPU和内存性能分析工具
-3. **内存管理优化**: 对象池、预分配、GC优化
-4. **CPU优化策略**: 算法优化、并发优化、无锁数据结构
-5. **网络性能优化**: 连接池、批量处理、零拷贝
-6. **数据库优化**: 查询缓存、批量查询、连接池
-7. **实时监控**: 性能指标跟踪和告警系统
-
-框架强调：
-
-- **精确测量**: 详细的性能指标收集
-- **系统优化**: 多层次的性能优化策略
-- **实时监控**: 持续的性能跟踪和告警
-- **最佳实践**: 经过验证的优化技术
-
-## 参考文献
-
-1. Go Performance: <https://golang.org/doc/effective_go.html#performance>
-2. Go Profiling: <https://golang.org/pkg/runtime/pprof/>
-3. Go Memory Management: <https://golang.org/doc/gc-guide.html>
-4. Performance Analysis: <https://golang.org/doc/diagnostics.html>

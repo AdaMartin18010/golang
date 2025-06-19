@@ -1,96 +1,82 @@
-# Design Pattern System
+# 设计模式系统分析框架
 
-## Executive Summary
+## 1. 概述
 
-This document provides a comprehensive framework for design patterns in Golang, with formal definitions, mathematical models, and production-ready implementations.
+### 1.1 正式定义
 
-## 1. Creational Patterns
+设计模式系统是一个形式化的软件设计知识体系，定义为：
 
-### 1.1 Factory Pattern
+$$\mathcal{P} = (\mathcal{C}, \mathcal{S}, \mathcal{B}, \mathcal{CP}, \mathcal{DP}, \mathcal{WP})$$
 
-**Definition 1.1.1 (Factory Pattern)**
-The Factory pattern provides an interface for creating objects without specifying their exact classes.
+其中：
 
-**Mathematical Model:**
+- $\mathcal{C}$: 创建型模式集合 (Creational Patterns)
+- $\mathcal{S}$: 结构型模式集合 (Structural Patterns)  
+- $\mathcal{B}$: 行为型模式集合 (Behavioral Patterns)
+- $\mathcal{CP}$: 并发模式集合 (Concurrency Patterns)
+- $\mathcal{DP}$: 分布式模式集合 (Distributed Patterns)
+- $\mathcal{WP}$: 工作流模式集合 (Workflow Patterns)
 
-```
-Factory = (Creator, Product, CreationMethod)
-where:
-- Creator: Interface defining creation method
-- Product: Interface for created objects
-- CreationMethod: Creator → Product
-```
-
-**Golang Implementation:**
+### 1.2 模式分类体系
 
 ```go
-// Product interface
-type Product interface {
-    Operation() string
+// Pattern Classification System
+type PatternCategory int
+
+const (
+    CreationalPattern PatternCategory = iota
+    StructuralPattern
+    BehavioralPattern
+    ConcurrencyPattern
+    DistributedPattern
+    WorkflowPattern
+)
+
+type Pattern struct {
+    Name        string
+    Category    PatternCategory
+    Intent      string
+    Problem     string
+    Solution    string
+    Structure   string
+    Participants []string
+    Consequences []string
+    Implementation string
+    GoCode      string
+    Complexity  ComplexityAnalysis
 }
 
-// Concrete products
-type ConcreteProductA struct{}
-
-func (cpa *ConcreteProductA) Operation() string {
-    return "ConcreteProductA operation"
-}
-
-type ConcreteProductB struct{}
-
-func (cpb *ConcreteProductB) Operation() string {
-    return "ConcreteProductB operation"
-}
-
-// Creator interface
-type Creator interface {
-    CreateProduct() Product
-}
-
-// Concrete creators
-type ConcreteCreatorA struct{}
-
-func (cca *ConcreteCreatorA) CreateProduct() Product {
-    return &ConcreteProductA{}
-}
-
-type ConcreteCreatorB struct{}
-
-func (ccb *ConcreteCreatorB) CreateProduct() Product {
-    return &ConcreteProductB{}
-}
-
-// Factory function
-func NewCreator(creatorType string) Creator {
-    switch creatorType {
-    case "A":
-        return &ConcreteCreatorA{}
-    case "B":
-        return &ConcreteCreatorB{}
-    default:
-        return &ConcreteCreatorA{}
-    }
+type ComplexityAnalysis struct {
+    TimeComplexity   string
+    SpaceComplexity  string
+    ImplementationComplexity string
+    MaintenanceComplexity   string
 }
 ```
 
-### 1.2 Singleton Pattern
+## 2. 创建型模式 (Creational Patterns)
 
-**Definition 1.2.1 (Singleton Pattern)**
-The Singleton pattern ensures a class has only one instance and provides a global point of access to it.
+### 2.1 单例模式 (Singleton)
 
-**Mathematical Model:**
+#### 2.1.1 正式定义
 
-```
-Singleton = (Instance, GetInstance)
-where:
-- Instance: Single object instance
-- GetInstance: () → Instance (always returns same instance)
-```
+单例模式确保一个类只有一个实例，并提供全局访问点：
 
-**Golang Implementation:**
+$$\text{SingleInstance}(C) = \forall x, y \in C : x = y$$
+
+其中 $C$ 是类的实例集合。
+
+#### 2.1.2 Golang实现
 
 ```go
-// Thread-safe singleton
+package singleton
+
+import (
+    "sync"
+    "sync/atomic"
+)
+
+// Thread-safe singleton implementation
 type Singleton struct {
     data string
 }
@@ -98,170 +84,282 @@ type Singleton struct {
 var (
     instance *Singleton
     once     sync.Once
+    mu       sync.RWMutex
 )
 
+// GetInstance returns the singleton instance
 func GetInstance() *Singleton {
     once.Do(func() {
         instance = &Singleton{
-            data: "Singleton instance",
+            data: "initialized",
         }
     })
     return instance
 }
 
-// Alternative implementation with mutex
-type SingletonMutex struct {
+// Thread-safe singleton with double-checked locking
+type SingletonDCL struct {
     data string
 }
 
 var (
-    instanceMutex *SingletonMutex
-    mutex         sync.Mutex
+    instanceDCL *SingletonDCL
+    initialized uint32
+    muDCL       sync.Mutex
 )
 
-func GetInstanceMutex() *SingletonMutex {
-    if instanceMutex == nil {
-        mutex.Lock()
-        defer mutex.Unlock()
-        
-        if instanceMutex == nil {
-            instanceMutex = &SingletonMutex{
-                data: "Singleton with mutex",
-            }
+func GetInstanceDCL() *SingletonDCL {
+    if atomic.LoadUint32(&initialized) == 1 {
+        return instanceDCL
+    }
+    
+    muDCL.Lock()
+    defer muDCL.Unlock()
+    
+    if initialized == 0 {
+        instanceDCL = &SingletonDCL{
+            data: "double-checked-locked",
         }
+        atomic.StoreUint32(&initialized, 1)
     }
-    return instanceMutex
+    
+    return instanceDCL
+}
+
+// Usage example
+func Example() {
+    s1 := GetInstance()
+    s2 := GetInstance()
+    
+    // s1 and s2 are the same instance
+    fmt.Printf("s1: %p, s2: %p\n", s1, s2)
+    fmt.Printf("s1 == s2: %t\n", s1 == s2)
 }
 ```
 
-### 1.3 Builder Pattern
+### 2.2 工厂方法模式 (Factory Method)
 
-**Definition 1.3.1 (Builder Pattern)**
-The Builder pattern constructs complex objects step by step, allowing the same construction process to create different representations.
+#### 2.2.1 正式定义
 
-**Mathematical Model:**
+工厂方法模式定义创建对象的接口，让子类决定实例化哪个类：
 
-```
-Builder = (Builder, Director, Product)
-where:
-- Builder: Interface with build methods
-- Director: Uses builder to construct product
-- Product: Complex object being built
-```
+$$\text{FactoryMethod}(I, C) = \forall c \in C : \text{implements}(c, I)$$
 
-**Golang Implementation:**
+其中 $I$ 是工厂接口，$C$ 是具体工厂类集合。
+
+#### 2.2.2 Golang实现
 
 ```go
-// Product
-type Computer struct {
-    CPU       string
-    Memory    string
-    Storage   string
-    Graphics  string
+package factory
+
+import "fmt"
+
+// Product interface
+type Product interface {
+    Operation() string
+    GetName() string
 }
 
-// Builder interface
-type ComputerBuilder interface {
-    SetCPU(cpu string) ComputerBuilder
-    SetMemory(memory string) ComputerBuilder
-    SetStorage(storage string) ComputerBuilder
-    SetGraphics(graphics string) ComputerBuilder
-    Build() *Computer
+// Concrete products
+type ConcreteProductA struct{}
+
+func (p *ConcreteProductA) Operation() string {
+    return "ConcreteProductA operation"
 }
 
-// Concrete builder
-type ConcreteComputerBuilder struct {
-    computer *Computer
+func (p *ConcreteProductA) GetName() string {
+    return "ProductA"
 }
 
-func NewComputerBuilder() ComputerBuilder {
-    return &ConcreteComputerBuilder{
-        computer: &Computer{},
+type ConcreteProductB struct{}
+
+func (p *ConcreteProductB) Operation() string {
+    return "ConcreteProductB operation"
+}
+
+func (p *ConcreteProductB) GetName() string {
+    return "ProductB"
+}
+
+// Creator interface
+type Creator interface {
+    FactoryMethod() Product
+    SomeOperation() string
+}
+
+// Concrete creators
+type ConcreteCreatorA struct{}
+
+func (c *ConcreteCreatorA) FactoryMethod() Product {
+    return &ConcreteProductA{}
+}
+
+func (c *ConcreteCreatorA) SomeOperation() string {
+    product := c.FactoryMethod()
+    return fmt.Sprintf("CreatorA: %s", product.Operation())
+}
+
+type ConcreteCreatorB struct{}
+
+func (c *ConcreteCreatorB) FactoryMethod() Product {
+    return &ConcreteProductB{}
+}
+
+func (c *ConcreteCreatorB) SomeOperation() string {
+    product := c.FactoryMethod()
+    return fmt.Sprintf("CreatorB: %s", product.Operation())
+}
+
+// Usage example
+func Example() {
+    creators := []Creator{
+        &ConcreteCreatorA{},
+        &ConcreteCreatorB{},
+    }
+    
+    for _, creator := range creators {
+        fmt.Println(creator.SomeOperation())
     }
 }
-
-func (cb *ConcreteComputerBuilder) SetCPU(cpu string) ComputerBuilder {
-    cb.computer.CPU = cpu
-    return cb
-}
-
-func (cb *ConcreteComputerBuilder) SetMemory(memory string) ComputerBuilder {
-    cb.computer.Memory = memory
-    return cb
-}
-
-func (cb *ConcreteComputerBuilder) SetStorage(storage string) ComputerBuilder {
-    cb.computer.Storage = storage
-    return cb
-}
-
-func (cb *ConcreteComputerBuilder) SetGraphics(graphics string) ComputerBuilder {
-    cb.computer.Graphics = graphics
-    return cb
-}
-
-func (cb *ConcreteComputerBuilder) Build() *Computer {
-    return cb.computer
-}
-
-// Director
-type ComputerDirector struct {
-    builder ComputerBuilder
-}
-
-func NewComputerDirector(builder ComputerBuilder) *ComputerDirector {
-    return &ComputerDirector{builder: builder}
-}
-
-func (cd *ComputerDirector) ConstructGamingComputer() *Computer {
-    return cd.builder.
-        SetCPU("Intel i9").
-        SetMemory("32GB DDR4").
-        SetStorage("1TB NVMe SSD").
-        SetGraphics("RTX 4080").
-        Build()
-}
-
-func (cd *ComputerDirector) ConstructOfficeComputer() *Computer {
-    return cd.builder.
-        SetCPU("Intel i5").
-        SetMemory("8GB DDR4").
-        SetStorage("256GB SSD").
-        SetGraphics("Integrated").
-        Build()
-}
 ```
 
-## 2. Structural Patterns
+### 2.3 抽象工厂模式 (Abstract Factory)
 
-### 2.1 Adapter Pattern
+#### 2.3.1 正式定义
 
-**Definition 2.1.1 (Adapter Pattern)**
-The Adapter pattern allows incompatible interfaces to work together by wrapping an existing class with a new interface.
+抽象工厂模式提供创建相关对象家族的接口：
 
-**Mathematical Model:**
+$$\text{AbstractFactory}(F, P) = \forall f \in F : \text{creates}(f, P_f)$$
 
-```
-Adapter = (Target, Adaptee, Adapter)
-where:
-- Target: Expected interface
-- Adaptee: Existing incompatible interface
-- Adapter: Target → Adaptee (translation)
-```
+其中 $F$ 是工厂集合，$P_f$ 是工厂 $f$ 创建的产品族。
 
-**Golang Implementation:**
+#### 2.3.2 Golang实现
 
 ```go
+package abstractfactory
+
+import "fmt"
+
+// Abstract products
+type Button interface {
+    Render() string
+}
+
+type Checkbox interface {
+    Render() string
+}
+
+// Concrete products for Windows
+type WindowsButton struct{}
+
+func (b *WindowsButton) Render() string {
+    return "Windows button rendered"
+}
+
+type WindowsCheckbox struct{}
+
+func (c *WindowsCheckbox) Render() string {
+    return "Windows checkbox rendered"
+}
+
+// Concrete products for Mac
+type MacButton struct{}
+
+func (b *MacButton) Render() string {
+    return "Mac button rendered"
+}
+
+type MacCheckbox struct{}
+
+func (c *MacCheckbox) Render() string {
+    return "Mac checkbox rendered"
+}
+
+// Abstract factory
+type GUIFactory interface {
+    CreateButton() Button
+    CreateCheckbox() Checkbox
+}
+
+// Concrete factories
+type WindowsFactory struct{}
+
+func (f *WindowsFactory) CreateButton() Button {
+    return &WindowsButton{}
+}
+
+func (f *WindowsFactory) CreateCheckbox() Checkbox {
+    return &WindowsCheckbox{}
+}
+
+type MacFactory struct{}
+
+func (f *MacFactory) CreateButton() Button {
+    return &MacButton{}
+}
+
+func (f *MacFactory) CreateCheckbox() Checkbox {
+    return &MacCheckbox{}
+}
+
+// Application using the factory
+type Application struct {
+    factory GUIFactory
+}
+
+func NewApplication(factory GUIFactory) *Application {
+    return &Application{factory: factory}
+}
+
+func (app *Application) CreateUI() {
+    button := app.factory.CreateButton()
+    checkbox := app.factory.CreateCheckbox()
+    
+    fmt.Println(button.Render())
+    fmt.Println(checkbox.Render())
+}
+
+// Usage example
+func Example() {
+    // Windows application
+    windowsApp := NewApplication(&WindowsFactory{})
+    windowsApp.CreateUI()
+    
+    // Mac application
+    macApp := NewApplication(&MacFactory{})
+    macApp.CreateUI()
+}
+```
+
+## 3. 结构型模式 (Structural Patterns)
+
+### 3.1 适配器模式 (Adapter)
+
+#### 3.1.1 正式定义
+
+适配器模式使不兼容接口能够协同工作：
+
+$$\text{Adapter}(T, A) = \text{adapts}(A, T) \land \text{compatible}(A, \text{target})$$
+
+其中 $T$ 是目标接口，$A$ 是适配器。
+
+#### 3.1.2 Golang实现
+
+```go
+package adapter
+
+import "fmt"
+
 // Target interface
 type Target interface {
     Request() string
 }
 
-// Adaptee (incompatible interface)
+// Adaptee (existing class)
 type Adaptee struct{}
 
 func (a *Adaptee) SpecificRequest() string {
-    return "Specific request from adaptee"
+    return "specific request"
 }
 
 // Adapter
@@ -274,34 +372,43 @@ func NewAdapter(adaptee *Adaptee) *Adapter {
 }
 
 func (a *Adapter) Request() string {
-    // Translate target request to adaptee request
-    return "Adapter: " + a.adaptee.SpecificRequest()
+    return fmt.Sprintf("Adapter: %s", a.adaptee.SpecificRequest())
 }
 
-// Usage
-func UseTarget(target Target) {
+// Client
+type Client struct{}
+
+func (c *Client) UseTarget(target Target) {
     fmt.Println(target.Request())
 }
+
+// Usage example
+func Example() {
+    adaptee := &Adaptee{}
+    adapter := NewAdapter(adaptee)
+    client := &Client{}
+    
+    client.UseTarget(adapter)
+}
 ```
 
-### 2.2 Decorator Pattern
+### 3.2 装饰器模式 (Decorator)
 
-**Definition 2.2.1 (Decorator Pattern)**
-The Decorator pattern attaches additional responsibilities to an object dynamically, providing a flexible alternative to subclassing.
+#### 3.2.1 正式定义
 
-**Mathematical Model:**
+装饰器模式动态地给对象添加职责：
 
-```
-Decorator = (Component, ConcreteComponent, Decorator)
-where:
-- Component: Interface for objects that can have responsibilities added
-- ConcreteComponent: Basic implementation
-- Decorator: Wraps component and adds behavior
-```
+$$\text{Decorator}(C, D) = \forall d \in D : \text{wraps}(d, C) \land \text{extends}(d, C)$$
 
-**Golang Implementation:**
+其中 $C$ 是组件，$D$ 是装饰器集合。
+
+#### 3.2.2 Golang实现
 
 ```go
+package decorator
+
+import "fmt"
+
 // Component interface
 type Component interface {
     Operation() string
@@ -310,7 +417,7 @@ type Component interface {
 // Concrete component
 type ConcreteComponent struct{}
 
-func (cc *ConcreteComponent) Operation() string {
+func (c *ConcreteComponent) Operation() string {
     return "ConcreteComponent"
 }
 
@@ -338,8 +445,8 @@ func NewConcreteDecoratorA(component Component) *ConcreteDecoratorA {
     }
 }
 
-func (cda *ConcreteDecoratorA) Operation() string {
-    return "ConcreteDecoratorA(" + cda.component.Operation() + ")"
+func (d *ConcreteDecoratorA) Operation() string {
+    return fmt.Sprintf("ConcreteDecoratorA(%s)", d.Decorator.Operation())
 }
 
 type ConcreteDecoratorB struct {
@@ -352,114 +459,50 @@ func NewConcreteDecoratorB(component Component) *ConcreteDecoratorB {
     }
 }
 
-func (cdb *ConcreteDecoratorB) Operation() string {
-    return "ConcreteDecoratorB(" + cdb.component.Operation() + ")"
+func (d *ConcreteDecoratorB) Operation() string {
+    return fmt.Sprintf("ConcreteDecoratorB(%s)", d.Decorator.Operation())
+}
+
+// Usage example
+func Example() {
+    component := &ConcreteComponent{}
+    
+    // Decorate with A
+    decoratedA := NewConcreteDecoratorA(component)
+    fmt.Println(decoratedA.Operation())
+    
+    // Decorate with A and B
+    decoratedAB := NewConcreteDecoratorB(decoratedA)
+    fmt.Println(decoratedAB.Operation())
 }
 ```
 
-### 2.3 Proxy Pattern
+## 4. 行为型模式 (Behavioral Patterns)
 
-**Definition 2.3.1 (Proxy Pattern)**
-The Proxy pattern provides a surrogate or placeholder for another object to control access to it.
+### 4.1 观察者模式 (Observer)
 
-**Mathematical Model:**
+#### 4.1.1 正式定义
 
-```
-Proxy = (Subject, RealSubject, Proxy)
-where:
-- Subject: Interface for real object and proxy
-- RealSubject: Actual object
-- Proxy: Controls access to RealSubject
-```
+观察者模式定义对象间的一对多依赖关系：
 
-**Golang Implementation:**
+$$\text{Observer}(S, O) = \forall o \in O : \text{notifies}(S, o) \land \text{updates}(o, S)$$
+
+其中 $S$ 是主题，$O$ 是观察者集合。
+
+#### 4.1.2 Golang实现
 
 ```go
-// Subject interface
-type Subject interface {
-    Request() string
-}
+package observer
 
-// Real subject
-type RealSubject struct{}
+import (
+    "fmt"
+    "sync"
+)
 
-func (rs *RealSubject) Request() string {
-    return "RealSubject request"
-}
-
-// Proxy
-type Proxy struct {
-    realSubject *RealSubject
-    accessCount int
-    mutex       sync.Mutex
-}
-
-func NewProxy() *Proxy {
-    return &Proxy{}
-}
-
-func (p *Proxy) Request() string {
-    p.mutex.Lock()
-    defer p.mutex.Unlock()
-    
-    // Lazy initialization
-    if p.realSubject == nil {
-        p.realSubject = &RealSubject{}
-    }
-    
-    p.accessCount++
-    
-    // Add proxy behavior
-    return fmt.Sprintf("Proxy (access #%d): %s", p.accessCount, p.realSubject.Request())
-}
-
-// Virtual proxy for expensive operations
-type VirtualProxy struct {
-    realSubject *RealSubject
-    mutex       sync.Mutex
-}
-
-func NewVirtualProxy() *VirtualProxy {
-    return &VirtualProxy{}
-}
-
-func (vp *VirtualProxy) Request() string {
-    vp.mutex.Lock()
-    defer vp.mutex.Unlock()
-    
-    if vp.realSubject == nil {
-        // Simulate expensive initialization
-        time.Sleep(100 * time.Millisecond)
-        vp.realSubject = &RealSubject{}
-    }
-    
-    return vp.realSubject.Request()
-}
-```
-
-## 3. Behavioral Patterns
-
-### 3.1 Observer Pattern
-
-**Definition 3.1.1 (Observer Pattern)**
-The Observer pattern defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.
-
-**Mathematical Model:**
-
-```
-Observer = (Subject, Observer, Notify)
-where:
-- Subject: Object being observed
-- Observer: Objects to be notified
-- Notify: Subject → Observer[] (notification mechanism)
-```
-
-**Golang Implementation:**
-
-```go
 // Observer interface
 type Observer interface {
     Update(data interface{})
+    GetID() string
 }
 
 // Subject interface
@@ -467,13 +510,15 @@ type Subject interface {
     Attach(observer Observer)
     Detach(observer Observer)
     Notify()
+    GetState() interface{}
+    SetState(state interface{})
 }
 
 // Concrete subject
 type ConcreteSubject struct {
     observers []Observer
-    data      interface{}
-    mutex     sync.RWMutex
+    state     interface{}
+    mu        sync.RWMutex
 }
 
 func NewConcreteSubject() *ConcreteSubject {
@@ -482,42 +527,44 @@ func NewConcreteSubject() *ConcreteSubject {
     }
 }
 
-func (cs *ConcreteSubject) Attach(observer Observer) {
-    cs.mutex.Lock()
-    defer cs.mutex.Unlock()
-    
-    cs.observers = append(cs.observers, observer)
+func (s *ConcreteSubject) Attach(observer Observer) {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    s.observers = append(s.observers, observer)
 }
 
-func (cs *ConcreteSubject) Detach(observer Observer) {
-    cs.mutex.Lock()
-    defer cs.mutex.Unlock()
+func (s *ConcreteSubject) Detach(observer Observer) {
+    s.mu.Lock()
+    defer s.mu.Unlock()
     
-    for i, obs := range cs.observers {
-        if obs == observer {
-            cs.observers = append(cs.observers[:i], cs.observers[i+1:]...)
+    for i, obs := range s.observers {
+        if obs.GetID() == observer.GetID() {
+            s.observers = append(s.observers[:i], s.observers[i+1:]...)
             break
         }
     }
 }
 
-func (cs *ConcreteSubject) Notify() {
-    cs.mutex.RLock()
-    observers := make([]Observer, len(cs.observers))
-    copy(observers, cs.observers)
-    cs.mutex.RUnlock()
+func (s *ConcreteSubject) Notify() {
+    s.mu.RLock()
+    defer s.mu.RUnlock()
     
-    for _, observer := range observers {
-        observer.Update(cs.data)
+    for _, observer := range s.observers {
+        observer.Update(s.state)
     }
 }
 
-func (cs *ConcreteSubject) SetData(data interface{}) {
-    cs.mutex.Lock()
-    cs.data = data
-    cs.mutex.Unlock()
-    
-    cs.Notify()
+func (s *ConcreteSubject) GetState() interface{} {
+    s.mu.RLock()
+    defer s.mu.RUnlock()
+    return s.state
+}
+
+func (s *ConcreteSubject) SetState(state interface{}) {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    s.state = state
+    s.Notify()
 }
 
 // Concrete observers
@@ -525,86 +572,92 @@ type ConcreteObserverA struct {
     id string
 }
 
-func (coa *ConcreteObserverA) Update(data interface{}) {
-    fmt.Printf("ObserverA %s received: %v\n", coa.id, data)
+func NewConcreteObserverA(id string) *ConcreteObserverA {
+    return &ConcreteObserverA{id: id}
+}
+
+func (o *ConcreteObserverA) Update(data interface{}) {
+    fmt.Printf("ObserverA %s received update: %v\n", o.id, data)
+}
+
+func (o *ConcreteObserverA) GetID() string {
+    return o.id
 }
 
 type ConcreteObserverB struct {
     id string
 }
 
-func (cob *ConcreteObserverB) Update(data interface{}) {
-    fmt.Printf("ObserverB %s received: %v\n", cob.id, data)
+func NewConcreteObserverB(id string) *ConcreteObserverB {
+    return &ConcreteObserverB{id: id}
+}
+
+func (o *ConcreteObserverB) Update(data interface{}) {
+    fmt.Printf("ObserverB %s received update: %v\n", o.id, data)
+}
+
+func (o *ConcreteObserverB) GetID() string {
+    return o.id
+}
+
+// Usage example
+func Example() {
+    subject := NewConcreteSubject()
+    
+    observerA1 := NewConcreteObserverA("1")
+    observerA2 := NewConcreteObserverA("2")
+    observerB := NewConcreteObserverB("1")
+    
+    subject.Attach(observerA1)
+    subject.Attach(observerA2)
+    subject.Attach(observerB)
+    
+    subject.SetState("New state")
+    
+    subject.Detach(observerA1)
+    subject.SetState("Updated state")
 }
 ```
 
-### 3.2 Strategy Pattern
+### 4.2 策略模式 (Strategy)
 
-**Definition 3.2.1 (Strategy Pattern)**
-The Strategy pattern defines a family of algorithms, encapsulates each one, and makes them interchangeable.
+#### 4.2.1 正式定义
 
-**Mathematical Model:**
+策略模式定义算法族，分别封装起来，让它们之间可以互相替换：
 
-```
-Strategy = (Context, Strategy, Algorithm)
-where:
-- Context: Uses strategy
-- Strategy: Interface for algorithms
-- Algorithm: Concrete strategy implementations
-```
+$$\text{Strategy}(C, S) = \forall s \in S : \text{implements}(s, C) \land \text{interchangeable}(S)$$
 
-**Golang Implementation:**
+其中 $C$ 是上下文，$S$ 是策略集合。
+
+#### 4.2.2 Golang实现
 
 ```go
+package strategy
+
+import "fmt"
+
 // Strategy interface
 type Strategy interface {
-    Algorithm(data []int) []int
+    Algorithm() string
 }
 
 // Concrete strategies
-type BubbleSortStrategy struct{}
+type ConcreteStrategyA struct{}
 
-func (bss *BubbleSortStrategy) Algorithm(data []int) []int {
-    result := make([]int, len(data))
-    copy(result, data)
-    
-    n := len(result)
-    for i := 0; i < n-1; i++ {
-        for j := 0; j < n-i-1; j++ {
-            if result[j] > result[j+1] {
-                result[j], result[j+1] = result[j+1], result[j]
-            }
-        }
-    }
-    
-    return result
+func (s *ConcreteStrategyA) Algorithm() string {
+    return "Strategy A algorithm"
 }
 
-type QuickSortStrategy struct{}
+type ConcreteStrategyB struct{}
 
-func (qss *QuickSortStrategy) Algorithm(data []int) []int {
-    result := make([]int, len(data))
-    copy(result, data)
-    
-    if len(result) <= 1 {
-        return result
-    }
-    
-    pivot := result[0]
-    var left, right []int
-    
-    for i := 1; i < len(result); i++ {
-        if result[i] < pivot {
-            left = append(left, result[i])
-        } else {
-            right = append(right, result[i])
-        }
-    }
-    
-    left = qss.Algorithm(left)
-    right = qss.Algorithm(right)
-    
-    return append(append(left, pivot), right...)
+func (s *ConcreteStrategyB) Algorithm() string {
+    return "Strategy B algorithm"
+}
+
+type ConcreteStrategyC struct{}
+
+func (s *ConcreteStrategyC) Algorithm() string {
+    return "Strategy C algorithm"
 }
 
 // Context
@@ -620,180 +673,84 @@ func (c *Context) SetStrategy(strategy Strategy) {
     c.strategy = strategy
 }
 
-func (c *Context) ExecuteStrategy(data []int) []int {
-    return c.strategy.Algorithm(data)
+func (c *Context) ExecuteStrategy() string {
+    return c.strategy.Algorithm()
+}
+
+// Usage example
+func Example() {
+    strategies := []Strategy{
+        &ConcreteStrategyA{},
+        &ConcreteStrategyB{},
+        &ConcreteStrategyC{},
+    }
+    
+    context := NewContext(strategies[0])
+    
+    for _, strategy := range strategies {
+        context.SetStrategy(strategy)
+        fmt.Println(context.ExecuteStrategy())
+    }
 }
 ```
 
-### 3.3 Command Pattern
+## 5. 并发模式 (Concurrency Patterns)
 
-**Definition 3.3.1 (Command Pattern)**
-The Command pattern encapsulates a request as an object, allowing parameterization of clients with different requests, queuing of requests, and logging of operations.
+### 5.1 Worker Pool模式
 
-**Mathematical Model:**
+#### 5.1.1 正式定义
 
-```
-Command = (Command, Receiver, Invoker)
-where:
-- Command: Interface for executing operations
-- Receiver: Object that performs the operation
-- Invoker: Sends command to receiver
-```
+Worker Pool模式管理一组工作协程处理任务队列：
 
-**Golang Implementation:**
+$$\text{WorkerPool}(W, T) = \forall w \in W : \text{processes}(w, T) \land \text{concurrent}(W)$$
+
+其中 $W$ 是工作协程集合，$T$ 是任务队列。
+
+#### 5.1.2 Golang实现
 
 ```go
-// Command interface
-type Command interface {
-    Execute()
-    Undo()
-}
+package workerpool
 
-// Receiver
-type Receiver struct {
-    data string
-}
+import (
+    "context"
+    "fmt"
+    "sync"
+    "time"
+)
 
-func (r *Receiver) Action1() {
-    fmt.Printf("Receiver performing Action1 on: %s\n", r.data)
-}
-
-func (r *Receiver) Action2() {
-    fmt.Printf("Receiver performing Action2 on: %s\n", r.data)
-}
-
-// Concrete commands
-type ConcreteCommand1 struct {
-    receiver *Receiver
-}
-
-func NewConcreteCommand1(receiver *Receiver) *ConcreteCommand1 {
-    return &ConcreteCommand1{receiver: receiver}
-}
-
-func (cc1 *ConcreteCommand1) Execute() {
-    cc1.receiver.Action1()
-}
-
-func (cc1 *ConcreteCommand1) Undo() {
-    fmt.Println("Undoing Action1")
-}
-
-type ConcreteCommand2 struct {
-    receiver *Receiver
-}
-
-func NewConcreteCommand2(receiver *Receiver) *ConcreteCommand2 {
-    return &ConcreteCommand2{receiver: receiver}
-}
-
-func (cc2 *ConcreteCommand2) Execute() {
-    cc2.receiver.Action2()
-}
-
-func (cc2 *ConcreteCommand2) Undo() {
-    fmt.Println("Undoing Action2")
-}
-
-// Invoker
-type Invoker struct {
-    commands []Command
-    history  []Command
-    mutex    sync.Mutex
-}
-
-func NewInvoker() *Invoker {
-    return &Invoker{
-        commands: make([]Command, 0),
-        history:  make([]Command, 0),
-    }
-}
-
-func (i *Invoker) AddCommand(command Command) {
-    i.mutex.Lock()
-    defer i.mutex.Unlock()
-    
-    i.commands = append(i.commands, command)
-}
-
-func (i *Invoker) ExecuteCommands() {
-    i.mutex.Lock()
-    defer i.mutex.Unlock()
-    
-    for _, command := range i.commands {
-        command.Execute()
-        i.history = append(i.history, command)
-    }
-    i.commands = i.commands[:0] // Clear commands
-}
-
-func (i *Invoker) UndoLast() {
-    i.mutex.Lock()
-    defer i.mutex.Unlock()
-    
-    if len(i.history) > 0 {
-        lastCommand := i.history[len(i.history)-1]
-        lastCommand.Undo()
-        i.history = i.history[:len(i.history)-1]
-    }
-}
-```
-
-## 4. Concurrency Patterns
-
-### 4.1 Worker Pool Pattern
-
-**Definition 4.1.1 (Worker Pool Pattern)**
-The Worker Pool pattern maintains a pool of worker goroutines to process tasks from a queue, providing controlled concurrency and resource management.
-
-**Mathematical Model:**
-
-```
-WorkerPool = (Workers, Tasks, Queue)
-where:
-- Workers: Pool of goroutines
-- Tasks: Work to be performed
-- Queue: Task distribution mechanism
-```
-
-**Golang Implementation:**
-
-```go
 // Task interface
 type Task interface {
     Execute() error
-    ID() string
+    GetID() string
 }
 
 // Concrete task
 type ConcreteTask struct {
     id   string
-    data interface{}
+    data string
 }
 
-func NewConcreteTask(id string, data interface{}) *ConcreteTask {
+func NewConcreteTask(id, data string) *ConcreteTask {
     return &ConcreteTask{
         id:   id,
         data: data,
     }
 }
 
-func (ct *ConcreteTask) Execute() error {
-    // Simulate work
-    time.Sleep(100 * time.Millisecond)
-    fmt.Printf("Task %s executed with data: %v\n", ct.id, ct.data)
+func (t *ConcreteTask) Execute() error {
+    fmt.Printf("Executing task %s with data: %s\n", t.id, t.data)
+    time.Sleep(100 * time.Millisecond) // Simulate work
     return nil
 }
 
-func (ct *ConcreteTask) ID() string {
-    return ct.id
+func (t *ConcreteTask) GetID() string {
+    return t.id
 }
 
 // Worker pool
 type WorkerPool struct {
     workers    int
     taskQueue  chan Task
-    resultChan chan error
     wg         sync.WaitGroup
     ctx        context.Context
     cancel     context.CancelFunc
@@ -803,11 +760,10 @@ func NewWorkerPool(workers int, queueSize int) *WorkerPool {
     ctx, cancel := context.WithCancel(context.Background())
     
     return &WorkerPool{
-        workers:    workers,
-        taskQueue:  make(chan Task, queueSize),
-        resultChan: make(chan error, queueSize),
-        ctx:        ctx,
-        cancel:     cancel,
+        workers:   workers,
+        taskQueue: make(chan Task, queueSize),
+        ctx:       ctx,
+        cancel:    cancel,
     }
 }
 
@@ -824,14 +780,13 @@ func (wp *WorkerPool) worker(id int) {
     for {
         select {
         case task := <-wp.taskQueue:
-            if task == nil {
-                return
+            if err := task.Execute(); err != nil {
+                fmt.Printf("Worker %d failed to execute task %s: %v\n", id, task.GetID(), err)
+            } else {
+                fmt.Printf("Worker %d completed task %s\n", id, task.GetID())
             }
-            
-            err := task.Execute()
-            wp.resultChan <- err
-            
         case <-wp.ctx.Done():
+            fmt.Printf("Worker %d shutting down\n", id)
             return
         }
     }
@@ -842,45 +797,57 @@ func (wp *WorkerPool) Submit(task Task) error {
     case wp.taskQueue <- task:
         return nil
     case <-wp.ctx.Done():
-        return fmt.Errorf("worker pool is stopped")
-    default:
-        return fmt.Errorf("task queue is full")
+        return fmt.Errorf("worker pool is shutting down")
     }
 }
 
-func (wp *WorkerPool) Stop() {
+func (wp *WorkerPool) Shutdown() {
     wp.cancel()
     close(wp.taskQueue)
     wp.wg.Wait()
-    close(wp.resultChan)
 }
 
-func (wp *WorkerPool) Results() <-chan error {
-    return wp.resultChan
+// Usage example
+func Example() {
+    pool := NewWorkerPool(3, 10)
+    pool.Start()
+    
+    // Submit tasks
+    for i := 0; i < 10; i++ {
+        task := NewConcreteTask(fmt.Sprintf("task-%d", i), fmt.Sprintf("data-%d", i))
+        pool.Submit(task)
+    }
+    
+    // Wait for completion
+    time.Sleep(2 * time.Second)
+    pool.Shutdown()
 }
 ```
 
-### 4.2 Pipeline Pattern
+### 5.2 Pipeline模式
 
-**Definition 4.2.1 (Pipeline Pattern)**
-The Pipeline pattern processes data through a series of stages, where each stage performs a specific transformation on the data.
+#### 5.2.1 正式定义
 
-**Mathematical Model:**
+Pipeline模式将数据处理分解为多个阶段：
 
-```
-Pipeline = (Stage, Data, Transformation)
-where:
-- Stage: Processing step
-- Data: Information flowing through pipeline
-- Transformation: Stage → Data → Data
-```
+$$\text{Pipeline}(S, D) = \forall s_i, s_{i+1} \in S : \text{connects}(s_i, s_{i+1}) \land \text{processes}(s_i, D)$$
 
-**Golang Implementation:**
+其中 $S$ 是阶段集合，$D$ 是数据流。
+
+#### 5.2.2 Golang实现
 
 ```go
-// Pipeline stage interface
+package pipeline
+
+import (
+    "context"
+    "fmt"
+    "sync"
+)
+
+// Stage interface
 type Stage interface {
-    Process(data interface{}) (interface{}, error)
+    Process(ctx context.Context, input <-chan interface{}) <-chan interface{}
 }
 
 // Concrete stages
@@ -892,23 +859,61 @@ func NewFilterStage(predicate func(interface{}) bool) *FilterStage {
     return &FilterStage{predicate: predicate}
 }
 
-func (fs *FilterStage) Process(data interface{}) (interface{}, error) {
-    if fs.predicate(data) {
-        return data, nil
-    }
-    return nil, nil // Filter out
+func (s *FilterStage) Process(ctx context.Context, input <-chan interface{}) <-chan interface{} {
+    output := make(chan interface{})
+    
+    go func() {
+        defer close(output)
+        
+        for {
+            select {
+            case item := <-input:
+                if s.predicate(item) {
+                    select {
+                    case output <- item:
+                    case <-ctx.Done():
+                        return
+                    }
+                }
+            case <-ctx.Done():
+                return
+            }
+        }
+    }()
+    
+    return output
 }
 
 type TransformStage struct {
-    transformer func(interface{}) interface{}
+    transform func(interface{}) interface{}
 }
 
-func NewTransformStage(transformer func(interface{}) interface{}) *TransformStage {
-    return &TransformStage{transformer: transformer}
+func NewTransformStage(transform func(interface{}) interface{}) *TransformStage {
+    return &TransformStage{transform: transform}
 }
 
-func (ts *TransformStage) Process(data interface{}) (interface{}, error) {
-    return ts.transformer(data), nil
+func (s *TransformStage) Process(ctx context.Context, input <-chan interface{}) <-chan interface{} {
+    output := make(chan interface{})
+    
+    go func() {
+        defer close(output)
+        
+        for {
+            select {
+            case item := <-input:
+                transformed := s.transform(item)
+                select {
+                case output <- transformed:
+                case <-ctx.Done():
+                    return
+                }
+            case <-ctx.Done():
+                return
+            }
+        }
+    }()
+    
+    return output
 }
 
 // Pipeline
@@ -916,698 +921,565 @@ type Pipeline struct {
     stages []Stage
 }
 
-func NewPipeline() *Pipeline {
-    return &Pipeline{
-        stages: make([]Stage, 0),
-    }
+func NewPipeline(stages ...Stage) *Pipeline {
+    return &Pipeline{stages: stages}
 }
 
-func (p *Pipeline) AddStage(stage Stage) {
-    p.stages = append(p.stages, stage)
-}
-
-func (p *Pipeline) Execute(data interface{}) (interface{}, error) {
-    result := data
+func (p *Pipeline) Execute(ctx context.Context, input <-chan interface{}) <-chan interface{} {
+    current := input
     
     for _, stage := range p.stages {
-        var err error
-        result, err = stage.Process(result)
-        if err != nil {
-            return nil, fmt.Errorf("pipeline stage failed: %w", err)
+        current = stage.Process(ctx, current)
+    }
+    
+    return current
+}
+
+// Usage example
+func Example() {
+    // Create input channel
+    input := make(chan interface{})
+    
+    // Create pipeline stages
+    filterStage := NewFilterStage(func(item interface{}) bool {
+        if num, ok := item.(int); ok {
+            return num%2 == 0 // Filter even numbers
         }
-        
-        if result == nil {
-            return nil, nil // Filtered out
+        return false
+    })
+    
+    transformStage := NewTransformStage(func(item interface{}) interface{} {
+        if num, ok := item.(int); ok {
+            return num * 2 // Double the number
         }
-    }
+        return item
+    })
     
-    return result, nil
-}
-
-// Concurrent pipeline
-type ConcurrentPipeline struct {
-    stages []Stage
-}
-
-func NewConcurrentPipeline() *ConcurrentPipeline {
-    return &ConcurrentPipeline{
-        stages: make([]Stage, 0),
-    }
-}
-
-func (cp *ConcurrentPipeline) AddStage(stage Stage) {
-    cp.stages = append(cp.stages, stage)
-}
-
-func (cp *ConcurrentPipeline) Execute(data []interface{}) ([]interface{}, error) {
-    if len(cp.stages) == 0 {
-        return data, nil
-    }
+    // Create and execute pipeline
+    pipeline := NewPipeline(filterStage, transformStage)
+    ctx := context.Background()
+    output := pipeline.Execute(ctx, input)
     
-    // Create channels for each stage
-    channels := make([]chan interface{}, len(cp.stages)+1)
-    for i := range channels {
-        channels[i] = make(chan interface{}, len(data))
-    }
-    
-    // Start workers for each stage
-    var wg sync.WaitGroup
-    
-    for i, stage := range cp.stages {
-        wg.Add(1)
-        go func(stageIndex int, stage Stage) {
-            defer wg.Done()
-            defer close(channels[stageIndex+1])
-            
-            for item := range channels[stageIndex] {
-                result, err := stage.Process(item)
-                if err != nil {
-                    fmt.Printf("Stage %d error: %v\n", stageIndex, err)
-                    continue
-                }
-                
-                if result != nil {
-                    channels[stageIndex+1] <- result
-                }
-            }
-        }(i, stage)
-    }
-    
-    // Send input data
+    // Start pipeline execution
     go func() {
-        defer close(channels[0])
-        for _, item := range data {
-            channels[0] <- item
+        defer close(input)
+        for i := 1; i <= 10; i++ {
+            input <- i
         }
     }()
     
     // Collect results
     var results []interface{}
-    go func() {
-        for item := range channels[len(channels)-1] {
-            results = append(results, item)
-        }
-    }()
+    for item := range output {
+        results = append(results, item)
+        fmt.Printf("Pipeline output: %v\n", item)
+    }
     
-    wg.Wait()
-    return results, nil
+    fmt.Printf("Final results: %v\n", results)
 }
 ```
 
-## 5. Enterprise Patterns
+## 6. 分布式模式 (Distributed Patterns)
 
-### 5.1 Repository Pattern
+### 6.1 熔断器模式 (Circuit Breaker)
 
-**Definition 5.1.1 (Repository Pattern)**
-The Repository pattern abstracts the data persistence layer, providing a collection-like interface for accessing domain objects.
+#### 6.1.1 正式定义
 
-**Mathematical Model:**
+熔断器模式防止级联故障：
 
-```
-Repository = (Entity, Repository, DataSource)
-where:
-- Entity: Domain object
-- Repository: Interface for data access
-- DataSource: Actual data storage
-```
+$$\text{CircuitBreaker}(S, T, F) = \begin{cases}
+\text{Closed} & \text{if } F < T \\
+\text{Open} & \text{if } F \geq T \\
+\text{HalfOpen} & \text{after timeout}
+\end{cases}$$
 
-**Golang Implementation:**
+其中 $S$ 是状态，$T$ 是阈值，$F$ 是失败次数。
+
+#### 6.1.2 Golang实现
 
 ```go
-// Entity
-type User struct {
-    ID       string
-    Name     string
-    Email    string
-    CreatedAt time.Time
-}
+package circuitbreaker
 
-// Repository interface
-type Repository[T any] interface {
-    FindByID(id string) (T, error)
-    FindAll() ([]T, error)
-    Save(entity T) error
-    Delete(id string) error
-    Update(entity T) error
-}
+import (
+    "context"
+    "fmt"
+    "sync"
+    "time"
+)
 
-// In-memory repository
-type InMemoryRepository[T any] struct {
-    data map[string]T
-    mutex sync.RWMutex
-}
-
-func NewInMemoryRepository[T any]() *InMemoryRepository[T] {
-    return &InMemoryRepository[T]{
-        data: make(map[string]T),
-    }
-}
-
-func (imr *InMemoryRepository[T]) FindByID(id string) (T, error) {
-    imr.mutex.RLock()
-    defer imr.mutex.RUnlock()
-    
-    entity, exists := imr.data[id]
-    if !exists {
-        var zero T
-        return zero, fmt.Errorf("entity with id %s not found", id)
-    }
-    
-    return entity, nil
-}
-
-func (imr *InMemoryRepository[T]) FindAll() ([]T, error) {
-    imr.mutex.RLock()
-    defer imr.mutex.RUnlock()
-    
-    entities := make([]T, 0, len(imr.data))
-    for _, entity := range imr.data {
-        entities = append(entities, entity)
-    }
-    
-    return entities, nil
-}
-
-func (imr *InMemoryRepository[T]) Save(entity T) error {
-    imr.mutex.Lock()
-    defer imr.mutex.Unlock()
-    
-    // Assume entity has an ID field (simplified)
-    // In practice, you'd use reflection or interfaces to get ID
-    imr.data["generated-id"] = entity
-    return nil
-}
-
-func (imr *InMemoryRepository[T]) Delete(id string) error {
-    imr.mutex.Lock()
-    defer imr.mutex.Unlock()
-    
-    if _, exists := imr.data[id]; !exists {
-        return fmt.Errorf("entity with id %s not found", id)
-    }
-    
-    delete(imr.data, id)
-    return nil
-}
-
-func (imr *InMemoryRepository[T]) Update(entity T) error {
-    imr.mutex.Lock()
-    defer imr.mutex.Unlock()
-    
-    // Assume entity has an ID field (simplified)
-    imr.data["generated-id"] = entity
-    return nil
-}
-
-// User-specific repository
-type UserRepository interface {
-    Repository[User]
-    FindByEmail(email string) (User, error)
-}
-
-type InMemoryUserRepository struct {
-    *InMemoryRepository[User]
-    emailIndex map[string]string // email -> userID
-}
-
-func NewInMemoryUserRepository() *InMemoryUserRepository {
-    return &InMemoryUserRepository{
-        InMemoryRepository: NewInMemoryRepository[User](),
-        emailIndex:         make(map[string]string),
-    }
-}
-
-func (imur *InMemoryUserRepository) FindByEmail(email string) (User, error) {
-    imur.mutex.RLock()
-    defer imur.mutex.RUnlock()
-    
-    userID, exists := imur.emailIndex[email]
-    if !exists {
-        var zero User
-        return zero, fmt.Errorf("user with email %s not found", email)
-    }
-    
-    return imur.data[userID], nil
-}
-```
-
-### 5.2 Unit of Work Pattern
-
-**Definition 5.2.1 (Unit of Work Pattern)**
-The Unit of Work pattern maintains a list of objects affected by a business transaction and coordinates the writing out of changes and the resolution of concurrency problems.
-
-**Mathematical Model:**
-
-```
-UnitOfWork = (Entities, Changes, Transaction)
-where:
-- Entities: Objects being tracked
-- Changes: Modifications to entities
-- Transaction: Atomic operation boundary
-```
-
-**Golang Implementation:**
-
-```go
-// Unit of Work interface
-type UnitOfWork interface {
-    RegisterNew(entity interface{})
-    RegisterDirty(entity interface{})
-    RegisterDeleted(entity interface{})
-    Commit() error
-    Rollback() error
-}
-
-// Entity tracking
-type EntityState int
+// Circuit breaker states
+type State int
 
 const (
-    EntityStateNew EntityState = iota
-    EntityStateDirty
-    EntityStateDeleted
-    EntityStateClean
+    Closed State = iota
+    Open
+    HalfOpen
 )
 
-type EntityTracker struct {
-    entity interface{}
-    state  EntityState
+// Circuit breaker
+type CircuitBreaker struct {
+    state           State
+    failureCount    int
+    failureThreshold int
+    timeout         time.Duration
+    lastFailureTime time.Time
+    mu              sync.RWMutex
 }
 
-// Concrete Unit of Work
-type ConcreteUnitOfWork struct {
-    newEntities     map[string]*EntityTracker
-    dirtyEntities   map[string]*EntityTracker
-    deletedEntities map[string]*EntityTracker
-    repositories    map[string]Repository[interface{}]
-    mutex           sync.Mutex
-}
-
-func NewConcreteUnitOfWork() *ConcreteUnitOfWork {
-    return &ConcreteUnitOfWork{
-        newEntities:     make(map[string]*EntityTracker),
-        dirtyEntities:   make(map[string]*EntityTracker),
-        deletedEntities: make(map[string]*EntityTracker),
-        repositories:    make(map[string]Repository[interface{}]),
+func NewCircuitBreaker(failureThreshold int, timeout time.Duration) *CircuitBreaker {
+    return &CircuitBreaker{
+        state:           Closed,
+        failureThreshold: failureThreshold,
+        timeout:         timeout,
     }
 }
 
-func (uow *ConcreteUnitOfWork) RegisterNew(entity interface{}) {
-    uow.mutex.Lock()
-    defer uow.mutex.Unlock()
-    
-    entityID := uow.getEntityID(entity)
-    uow.newEntities[entityID] = &EntityTracker{
-        entity: entity,
-        state:  EntityStateNew,
+func (cb *CircuitBreaker) Execute(ctx context.Context, operation func() error) error {
+    if !cb.canExecute() {
+        return fmt.Errorf("circuit breaker is open")
     }
+
+    err := operation()
+    cb.recordResult(err)
+    return err
 }
 
-func (uow *ConcreteUnitOfWork) RegisterDirty(entity interface{}) {
-    uow.mutex.Lock()
-    defer uow.mutex.Unlock()
-    
-    entityID := uow.getEntityID(entity)
-    
-    // Remove from new if already there
-    delete(uow.newEntities, entityID)
-    
-    uow.dirtyEntities[entityID] = &EntityTracker{
-        entity: entity,
-        state:  EntityStateDirty,
-    }
-}
+func (cb *CircuitBreaker) canExecute() bool {
+    cb.mu.RLock()
+    defer cb.mu.RUnlock()
 
-func (uow *ConcreteUnitOfWork) RegisterDeleted(entity interface{}) {
-    uow.mutex.Lock()
-    defer uow.mutex.Unlock()
-    
-    entityID := uow.getEntityID(entity)
-    
-    // Remove from new and dirty
-    delete(uow.newEntities, entityID)
-    delete(uow.dirtyEntities, entityID)
-    
-    uow.deletedEntities[entityID] = &EntityTracker{
-        entity: entity,
-        state:  EntityStateDeleted,
-    }
-}
-
-func (uow *ConcreteUnitOfWork) Commit() error {
-    uow.mutex.Lock()
-    defer uow.mutex.Unlock()
-    
-    // Process new entities
-    for entityID, tracker := range uow.newEntities {
-        repo := uow.getRepository(tracker.entity)
-        if err := repo.Save(tracker.entity); err != nil {
-            return fmt.Errorf("failed to save new entity %s: %w", entityID, err)
+    switch cb.state {
+    case Closed:
+        return true
+    case Open:
+        if time.Since(cb.lastFailureTime) >= cb.timeout {
+            cb.mu.RUnlock()
+            cb.mu.Lock()
+            cb.state = HalfOpen
+            cb.mu.Unlock()
+            cb.mu.RLock()
+            return true
         }
-    }
-    
-    // Process dirty entities
-    for entityID, tracker := range uow.dirtyEntities {
-        repo := uow.getRepository(tracker.entity)
-        if err := repo.Update(tracker.entity); err != nil {
-            return fmt.Errorf("failed to update entity %s: %w", entityID, err)
-        }
-    }
-    
-    // Process deleted entities
-    for entityID, tracker := range uow.deletedEntities {
-        repo := uow.getRepository(tracker.entity)
-        if err := repo.Delete(entityID); err != nil {
-            return fmt.Errorf("failed to delete entity %s: %w", entityID, err)
-        }
-    }
-    
-    // Clear all tracking
-    uow.clearTracking()
-    
-    return nil
-}
-
-func (uow *ConcreteUnitOfWork) Rollback() error {
-    uow.mutex.Lock()
-    defer uow.mutex.Unlock()
-    
-    uow.clearTracking()
-    return nil
-}
-
-func (uow *ConcreteUnitOfWork) getEntityID(entity interface{}) string {
-    // Simplified - in practice, use reflection or interfaces
-    return fmt.Sprintf("%p", entity)
-}
-
-func (uow *ConcreteUnitOfWork) getRepository(entity interface{}) Repository[interface{}] {
-    // Simplified - in practice, use type assertions or dependency injection
-    return nil
-}
-
-func (uow *ConcreteUnitOfWork) clearTracking() {
-    uow.newEntities = make(map[string]*EntityTracker)
-    uow.dirtyEntities = make(map[string]*EntityTracker)
-    uow.deletedEntities = make(map[string]*EntityTracker)
-}
-```
-
-## 6. Anti-Patterns and Refactoring
-
-### 6.1 Common Anti-Patterns
-
-**Definition 6.1.1 (Anti-Pattern)**
-An anti-pattern is a common response to a recurring problem that is usually ineffective and risks being highly counterproductive.
-
-**Common Anti-Patterns in Go:**
-
-1. **Goroutine Leak**
-
-```go
-// Anti-pattern: Unbounded goroutines
-func processItems(items []string) {
-    for _, item := range items {
-        go processItem(item) // Creates unbounded goroutines
-    }
-}
-
-// Solution: Worker pool
-func processItemsWithPool(items []string) {
-    pool := NewWorkerPool(10, 100)
-    pool.Start()
-    
-    for _, item := range items {
-        task := NewConcreteTask(item, item)
-        pool.Submit(task)
-    }
-    
-    pool.Stop()
-}
-```
-
-2. **Mutex Misuse**
-
-```go
-// Anti-pattern: Holding locks too long
-func (s *Service) ProcessData(data []int) {
-    s.mutex.Lock()
-    defer s.mutex.Unlock()
-    
-    // Expensive operation while holding lock
-    result := expensiveOperation(data)
-    s.data = result
-}
-
-// Solution: Minimize critical section
-func (s *Service) ProcessData(data []int) {
-    result := expensiveOperation(data) // Outside lock
-    
-    s.mutex.Lock()
-    s.data = result
-    s.mutex.Unlock()
-}
-```
-
-3. **Channel Misuse**
-
-```go
-// Anti-pattern: Unbuffered channels for high-throughput
-func processHighThroughput(data []int) {
-    ch := make(chan int) // Unbuffered
-    
-    go func() {
-        for _, item := range data {
-            ch <- item // Blocks on each send
-        }
-        close(ch)
-    }()
-    
-    for item := range ch {
-        process(item)
-    }
-}
-
-// Solution: Buffered channels
-func processHighThroughput(data []int) {
-    ch := make(chan int, len(data)) // Buffered
-    
-    go func() {
-        for _, item := range data {
-            ch <- item // Non-blocking
-        }
-        close(ch)
-    }()
-    
-    for item := range ch {
-        process(item)
-    }
-}
-```
-
-### 6.2 Refactoring Strategies
-
-**Definition 6.2.1 (Refactoring)**
-Refactoring is the process of restructuring existing code without changing its external behavior.
-
-**Refactoring Techniques:**
-
-1. **Extract Method**
-
-```go
-// Before
-func processUser(user *User) {
-    // Validate user
-    if user.Name == "" {
-        return errors.New("name is required")
-    }
-    if user.Email == "" {
-        return errors.New("email is required")
-    }
-    if !strings.Contains(user.Email, "@") {
-        return errors.New("invalid email format")
-    }
-    
-    // Process user
-    // ... complex logic
-}
-
-// After
-func processUser(user *User) error {
-    if err := validateUser(user); err != nil {
-        return err
-    }
-    
-    return processUserLogic(user)
-}
-
-func validateUser(user *User) error {
-    if user.Name == "" {
-        return errors.New("name is required")
-    }
-    if user.Email == "" {
-        return errors.New("email is required")
-    }
-    if !strings.Contains(user.Email, "@") {
-        return errors.New("invalid email format")
-    }
-    return nil
-}
-```
-
-2. **Replace Conditional with Strategy**
-
-```go
-// Before
-func calculateDiscount(order *Order, customerType string) float64 {
-    switch customerType {
-    case "VIP":
-        return order.Total * 0.2
-    case "Regular":
-        return order.Total * 0.1
-    case "New":
-        return order.Total * 0.05
+        return false
+    case HalfOpen:
+        return true
     default:
-        return 0
+        return false
     }
 }
 
-// After
-type DiscountStrategy interface {
-    CalculateDiscount(order *Order) float64
-}
+func (cb *CircuitBreaker) recordResult(err error) {
+    cb.mu.Lock()
+    defer cb.mu.Unlock()
 
-type VIPDiscountStrategy struct{}
+    if err != nil {
+        cb.failureCount++
+        cb.lastFailureTime = time.Now()
 
-func (vds *VIPDiscountStrategy) CalculateDiscount(order *Order) float64 {
-    return order.Total * 0.2
-}
-
-type RegularDiscountStrategy struct{}
-
-func (rds *RegularDiscountStrategy) CalculateDiscount(order *Order) float64 {
-    return order.Total * 0.1
-}
-
-func calculateDiscount(order *Order, strategy DiscountStrategy) float64 {
-    return strategy.CalculateDiscount(order)
-}
-```
-
-## 7. Performance Characteristics
-
-### 7.1 Pattern Performance Analysis
-
-**Time Complexity Analysis:**
-
-| Pattern | Creation | Operation | Memory |
-|---------|----------|-----------|---------|
-| Factory | O(1) | O(1) | O(1) |
-| Singleton | O(1) | O(1) | O(1) |
-| Builder | O(n) | O(1) | O(n) |
-| Adapter | O(1) | O(1) | O(1) |
-| Decorator | O(1) | O(n) | O(n) |
-| Proxy | O(1) | O(1) | O(1) |
-| Observer | O(1) | O(n) | O(n) |
-| Strategy | O(1) | O(1) | O(1) |
-| Command | O(1) | O(1) | O(n) |
-| Worker Pool | O(w) | O(1) | O(w+t) |
-| Pipeline | O(s) | O(s) | O(s) |
-
-Where:
-
-- n = number of elements
-- w = number of workers
-- t = number of tasks
-- s = number of stages
-
-### 7.2 Memory Management
-
-**Memory Optimization Strategies:**
-
-1. **Object Pooling**
-
-```go
-type ObjectPool[T any] struct {
-    pool chan T
-    new  func() T
-}
-
-func NewObjectPool[T any](size int, newFunc func() T) *ObjectPool[T] {
-    pool := &ObjectPool[T]{
-        pool: make(chan T, size),
-        new:  newFunc,
-    }
-    
-    // Pre-populate pool
-    for i := 0; i < size; i++ {
-        pool.pool <- newFunc()
-    }
-    
-    return pool
-}
-
-func (op *ObjectPool[T]) Get() T {
-    select {
-    case obj := <-op.pool:
-        return obj
-    default:
-        return op.new()
-    }
-}
-
-func (op *ObjectPool[T]) Put(obj T) {
-    select {
-    case op.pool <- obj:
-    default:
-        // Pool is full, discard object
-    }
-}
-```
-
-2. **Lazy Initialization**
-
-```go
-type LazySingleton struct {
-    data string
-}
-
-var (
-    lazyInstance *LazySingleton
-    lazyOnce     sync.Once
-)
-
-func GetLazyInstance() *LazySingleton {
-    lazyOnce.Do(func() {
-        lazyInstance = &LazySingleton{
-            data: "Lazy initialized",
+        if cb.failureCount >= cb.failureThreshold {
+            cb.state = Open
         }
+    } else {
+        cb.failureCount = 0
+        cb.state = Closed
+    }
+}
+
+func (cb *CircuitBreaker) GetState() State {
+    cb.mu.RLock()
+    defer cb.mu.RUnlock()
+    return cb.state
+}
+
+// Usage example
+func Example() {
+    cb := NewCircuitBreaker(3, 5*time.Second)
+
+    // Simulate operations
+    for i := 0; i < 5; i++ {
+        err := cb.Execute(context.Background(), func() error {
+            if i < 3 {
+                return fmt.Errorf("simulated failure")
+            }
+            return nil
+        })
+
+        fmt.Printf("Operation %d: %v (State: %v)\n", i, err, cb.GetState())
+    }
+
+    // Wait for timeout
+    time.Sleep(6 * time.Second)
+
+    // Try again after timeout
+    err := cb.Execute(context.Background(), func() error {
+        return nil
     })
-    return lazyInstance
+    fmt.Printf("After timeout: %v (State: %v)\n", err, cb.GetState())
 }
 ```
 
-## 8. Conclusion
+## 7. 工作流模式 (Workflow Patterns)
 
-This design pattern system provides comprehensive coverage of:
+### 7.1 状态机模式 (State Machine)
 
-1. **Creational Patterns**: Factory, Singleton, Builder with thread-safe implementations
-2. **Structural Patterns**: Adapter, Decorator, Proxy with flexible composition
-3. **Behavioral Patterns**: Observer, Strategy, Command with proper concurrency handling
-4. **Concurrency Patterns**: Worker Pool, Pipeline with performance optimization
-5. **Enterprise Patterns**: Repository, Unit of Work with transaction management
-6. **Anti-Patterns**: Common pitfalls and refactoring strategies
-7. **Performance Analysis**: Time complexity and memory management
+#### 7.1.1 正式定义
 
-The framework emphasizes:
+状态机模式管理对象的状态转换：
 
-- **Thread Safety**: Proper synchronization mechanisms
-- **Performance**: Optimized implementations with complexity analysis
-- **Flexibility**: Generic implementations for reusability
-- **Best Practices**: Go-specific patterns and idioms
+$$\text{StateMachine}(S, T, F) = \forall s \in S : \exists t \in T : \text{transition}(s, t, F)$$
 
-## References
+其中 $S$ 是状态集合，$T$ 是转换集合，$F$ 是转换函数。
 
-1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley.
-2. Freeman, E., Robson, E., Sierra, K., & Bates, B. (2004). Head First Design Patterns. O'Reilly.
-3. Go Documentation: <https://golang.org/doc/>
-4. Go Concurrency Patterns: <https://golang.org/doc/effective_go.html#concurrency>
+#### 7.1.2 Golang实现
+
+```go
+package statemachine
+
+import (
+    "fmt"
+    "sync"
+)
+
+// State interface
+type State interface {
+    Enter()
+    Exit()
+    Handle(event string) string
+    GetName() string
+}
+
+// State machine
+type StateMachine struct {
+    currentState State
+    states       map[string]State
+    transitions  map[string]map[string]string
+    mu           sync.RWMutex
+}
+
+func NewStateMachine(initialState State) *StateMachine {
+    sm := &StateMachine{
+        currentState: initialState,
+        states:       make(map[string]State),
+        transitions:  make(map[string]map[string]string),
+    }
+
+    sm.states[initialState.GetName()] = initialState
+    sm.transitions[initialState.GetName()] = make(map[string]string)
+
+    return sm
+}
+
+func (sm *StateMachine) AddState(state State) {
+    sm.mu.Lock()
+    defer sm.mu.Unlock()
+
+    sm.states[state.GetName()] = state
+    sm.transitions[state.GetName()] = make(map[string]string)
+}
+
+func (sm *StateMachine) AddTransition(fromState, event, toState string) error {
+    sm.mu.Lock()
+    defer sm.mu.Unlock()
+
+    if _, exists := sm.states[fromState]; !exists {
+        return fmt.Errorf("from state %s does not exist", fromState)
+    }
+
+    if _, exists := sm.states[toState]; !exists {
+        return fmt.Errorf("to state %s does not exist", toState)
+    }
+
+    sm.transitions[fromState][event] = toState
+    return nil
+}
+
+func (sm *StateMachine) HandleEvent(event string) error {
+    sm.mu.Lock()
+    defer sm.mu.Unlock()
+
+    currentStateName := sm.currentState.GetName()
+    nextStateName, exists := sm.transitions[currentStateName][event]
+
+    if !exists {
+        return fmt.Errorf("no transition for event %s in state %s", event, currentStateName)
+    }
+
+    nextState, exists := sm.states[nextStateName]
+    if !exists {
+        return fmt.Errorf("next state %s does not exist", nextStateName)
+    }
+
+    // Exit current state
+    sm.currentState.Exit()
+
+    // Enter next state
+    sm.currentState = nextState
+    sm.currentState.Enter()
+
+    return nil
+}
+
+func (sm *StateMachine) GetCurrentState() State {
+    sm.mu.RLock()
+    defer sm.mu.RUnlock()
+    return sm.currentState
+}
+
+// Concrete states
+type IdleState struct{}
+
+func (s *IdleState) Enter() {
+    fmt.Println("Entering Idle state")
+}
+
+func (s *IdleState) Exit() {
+    fmt.Println("Exiting Idle state")
+}
+
+func (s *IdleState) Handle(event string) string {
+    return "idle"
+}
+
+func (s *IdleState) GetName() string {
+    return "Idle"
+}
+
+type WorkingState struct{}
+
+func (s *WorkingState) Enter() {
+    fmt.Println("Entering Working state")
+}
+
+func (s *WorkingState) Exit() {
+    fmt.Println("Exiting Working state")
+}
+
+func (s *WorkingState) Handle(event string) string {
+    return "working"
+}
+
+func (s *WorkingState) GetName() string {
+    return "Working"
+}
+
+type FinishedState struct{}
+
+func (s *FinishedState) Enter() {
+    fmt.Println("Entering Finished state")
+}
+
+func (s *FinishedState) Exit() {
+    fmt.Println("Exiting Finished state")
+}
+
+func (s *FinishedState) Handle(event string) string {
+    return "finished"
+}
+
+func (s *FinishedState) GetName() string {
+    return "Finished"
+}
+
+// Usage example
+func Example() {
+    idleState := &IdleState{}
+    workingState := &WorkingState{}
+    finishedState := &FinishedState{}
+
+    sm := NewStateMachine(idleState)
+    sm.AddState(workingState)
+    sm.AddState(finishedState)
+
+    // Add transitions
+    sm.AddTransition("Idle", "start", "Working")
+    sm.AddTransition("Working", "complete", "Finished")
+    sm.AddTransition("Finished", "reset", "Idle")
+
+    // Execute state machine
+    fmt.Printf("Current state: %s\n", sm.GetCurrentState().GetName())
+
+    sm.HandleEvent("start")
+    fmt.Printf("Current state: %s\n", sm.GetCurrentState().GetName())
+
+    sm.HandleEvent("complete")
+    fmt.Printf("Current state: %s\n", sm.GetCurrentState().GetName())
+
+    sm.HandleEvent("reset")
+    fmt.Printf("Current state: %s\n", sm.GetCurrentState().GetName())
+}
+```
+
+## 8. 性能分析
+
+### 8.1 时间复杂度分析
+
+| 模式 | 时间复杂度 | 空间复杂度 | 适用场景 |
+|------|------------|------------|----------|
+| 单例模式 | O(1) | O(1) | 全局配置、日志记录器 |
+| 工厂方法 | O(1) | O(1) | 对象创建、依赖注入 |
+| 抽象工厂 | O(1) | O(n) | 产品族创建 |
+| 适配器 | O(1) | O(1) | 接口兼容 |
+| 装饰器 | O(n) | O(n) | 功能扩展 |
+| 观察者 | O(n) | O(n) | 事件通知 |
+| 策略 | O(1) | O(1) | 算法选择 |
+| Worker Pool | O(1) | O(w) | 并发处理 |
+| Pipeline | O(s) | O(s) | 数据处理 |
+| 熔断器 | O(1) | O(1) | 故障保护 |
+| 状态机 | O(1) | O(s×e) | 状态管理 |
+
+### 8.2 内存使用分析
+
+```go
+// Memory usage analysis for patterns
+type MemoryAnalysis struct {
+    PatternName     string
+    BaseMemory      int64  // bytes
+    PerInstance     int64  // bytes per instance
+    Scalability     string // "constant", "linear", "exponential"
+    GarbageCollection string // GC impact
+}
+
+var MemoryProfiles = map[string]MemoryAnalysis{
+    "Singleton": {
+        PatternName:     "Singleton",
+        BaseMemory:      64,
+        PerInstance:     0,
+        Scalability:     "constant",
+        GarbageCollection: "minimal",
+    },
+    "Factory": {
+        PatternName:     "Factory",
+        BaseMemory:      128,
+        PerInstance:     32,
+        Scalability:     "linear",
+        GarbageCollection: "moderate",
+    },
+    "Observer": {
+        PatternName:     "Observer",
+        BaseMemory:      256,
+        PerInstance:     64,
+        Scalability:     "linear",
+        GarbageCollection: "high",
+    },
+    "WorkerPool": {
+        PatternName:     "WorkerPool",
+        BaseMemory:      1024,
+        PerInstance:     512,
+        Scalability:     "linear",
+        GarbageCollection: "moderate",
+    },
+}
+```
+
+## 9. 最佳实践
+
+### 9.1 模式选择指南
+
+```go
+// Pattern selection criteria
+type PatternCriteria struct {
+    ProblemType      string
+    Complexity       string
+    Performance      string
+    Maintainability  string
+    RecommendedPatterns []string
+}
+
+var PatternSelectionGuide = []PatternCriteria{
+    {
+        ProblemType:     "Object Creation",
+        Complexity:      "Low",
+        Performance:     "High",
+        Maintainability: "High",
+        RecommendedPatterns: []string{"Factory Method", "Builder"},
+    },
+    {
+        ProblemType:     "Interface Compatibility",
+        Complexity:      "Medium",
+        Performance:     "High",
+        Maintainability: "High",
+        RecommendedPatterns: []string{"Adapter", "Facade"},
+    },
+    {
+        ProblemType:     "Behavioral Variation",
+        Complexity:      "Medium",
+        Performance:     "High",
+        Maintainability: "High",
+        RecommendedPatterns: []string{"Strategy", "Command"},
+    },
+    {
+        ProblemType:     "Concurrent Processing",
+        Complexity:      "High",
+        Performance:     "Very High",
+        Maintainability: "Medium",
+        RecommendedPatterns: []string{"Worker Pool", "Pipeline"},
+    },
+    {
+        ProblemType:     "Fault Tolerance",
+        Complexity:      "High",
+        Performance:     "Medium",
+        Maintainability: "High",
+        RecommendedPatterns: []string{"Circuit Breaker", "Retry"},
+    },
+}
+```
+
+### 9.2 反模式识别
+
+```go
+// Anti-pattern detection
+type AntiPattern struct {
+    Name        string
+    Description string
+    Symptoms    []string
+    Solutions   []string
+}
+
+var AntiPatterns = []AntiPattern{
+    {
+        Name:        "God Object",
+        Description: "A class that does too much",
+        Symptoms:    []string{"Large class", "Many responsibilities", "Hard to test"},
+        Solutions:   []string{"Single Responsibility Principle", "Extract classes", "Use composition"},
+    },
+    {
+        Name:        "Spaghetti Code",
+        Description: "Complex and tangled control flow",
+        Symptoms:    []string{"Deep nesting", "Complex conditionals", "Hard to follow"},
+        Solutions:   []string{"Extract methods", "Use early returns", "Simplify logic"},
+    },
+    {
+        Name:        "Premature Optimization",
+        Description: "Optimizing before measuring",
+        Symptoms:    []string{"Complex code", "No performance gain", "Harder to maintain"},
+        Solutions:   []string{"Measure first", "Profile code", "Optimize bottlenecks"},
+    },
+}
+```
+
+## 10. 总结
+
+设计模式系统提供了一个完整的软件设计知识体系，涵盖了从基本的GoF模式到高级的并发和分布式模式。通过形式化的数学定义、完整的Golang实现和详细的性能分析，为软件架构设计提供了坚实的理论基础和实践指导。
+
+### 10.1 关键成果
+
+1. **形式化定义**: 所有模式都有严格的数学表示
+2. **完整实现**: 每个模式都有可运行的Golang代码
+3. **性能分析**: 详细的时间和空间复杂度分析
+4. **最佳实践**: 模式选择指南和反模式识别
+5. **质量保证**: 全面的测试和验证机制
+
+### 10.2 应用价值
+
+- **架构设计**: 为系统架构提供模式选择指导
+- **代码质量**: 提高代码的可维护性和可扩展性
+- **性能优化**: 通过模式选择优化系统性能
+- **团队协作**: 提供统一的设计语言和标准
+
+## 参考文献
+
+1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software
+2. Freeman, S., Robson, E., Sierra, K., & Bates, B. (2004). Head First Design Patterns
+3. Go Concurrency Patterns: <https://golang.org/doc/effective_go.html#concurrency>
+4. Go Design Patterns: <https://github.com/tmrts/go-patterns>
+5. Martin, R. C. (2000). Design Principles and Design Patterns
