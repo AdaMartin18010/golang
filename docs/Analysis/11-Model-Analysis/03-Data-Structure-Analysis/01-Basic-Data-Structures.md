@@ -7,218 +7,141 @@
 3. [链表 (Linked List)](#链表-linked-list)
 4. [栈 (Stack)](#栈-stack)
 5. [队列 (Queue)](#队列-queue)
-6. [性能对比](#性能对比)
-7. [应用场景](#应用场景)
+6. [双端队列 (Deque)](#双端队列-deque)
+7. [性能对比分析](#性能对比分析)
 8. [最佳实践](#最佳实践)
 
 ## 概述
 
-基础数据结构是构建复杂系统的基础，它们提供了最基本的数据组织和操作方式。
-在Golang中，这些数据结构通常作为更复杂数据结构的基础组件。
+基础数据结构是计算机科学的核心基础，为高级数据结构和算法提供基础支撑。本文档对五种基础数据结构进行深入分析，包含形式化定义、Golang实现和性能分析。
 
-### 核心特征
+### 核心特性
 
-- **简单性**: 概念清晰，实现简单
-- **高效性**: 特定操作具有最优性能
-- **通用性**: 广泛应用于各种场景
-- **可组合性**: 可以组合构建复杂结构
+- **形式化定义**: 严格的数学描述和证明
+- **Golang实现**: 完整的代码示例和测试
+- **性能分析**: 时间复杂度和空间复杂度分析
+- **最佳实践**: 实际应用中的最佳实践总结
 
 ## 数组 (Array)
 
-### 1.1 形式化定义
+### 形式化定义
 
-#### 1.1.1 数学定义
+**定义 2.1** (数组)
+数组是一个四元组 $\mathcal{A} = (E, I, V, A_f)$，其中：
 
-数组可以形式化定义为四元组：
+- $E$ 是元素类型集合
+- $I = \{0, 1, \ldots, n-1\}$ 是索引集合
+- $V: I \rightarrow E$ 是值函数
+- $A_f: I \rightarrow E$ 是访问函数，$A_f(i) = V(i)$
 
-$$\mathcal{A} = \langle \mathcal{E}, \mathcal{I}, \mathcal{V}, \mathcal{A}_f \rangle$$
+**性质 2.1** (数组连续性)
+对于数组 $\mathcal{A}$，任意两个相邻索引 $i, i+1 \in I$，其对应的内存地址满足：
+$\text{addr}(i+1) = \text{addr}(i) + \text{sizeof}(E)$
 
-其中：
-- $\mathcal{E}$：元素类型集合
-- $\mathcal{I}$：索引集合 $\{0, 1, \ldots, n-1\}$
-- $\mathcal{V}$：值函数 $\mathcal{V}: \mathcal{I} \rightarrow \mathcal{E} \cup \{\text{nil}\}$
-- $\mathcal{A}_f$：访问函数 $\mathcal{A}_f(i) = \mathcal{V}(i)$
+**性质 2.2** (数组随机访问)
+对于任意索引 $i \in I$，访问操作的时间复杂度为 $O(1)$：
+$T_{\text{access}}(i) = O(1)$
 
-#### 1.1.2 操作语义
-
-**访问操作**：
-$$\text{Access}(\mathcal{A}, i) = \mathcal{A}_f(i)$$
-
-**更新操作**：
-$$\text{Update}(\mathcal{A}, i, e) = \mathcal{A}' \text{ where } \mathcal{V}'(j) = \begin{cases} 
-e & \text{if } j = i \\
-\mathcal{V}(j) & \text{otherwise}
-\end{cases}$$
-
-### 1.2 Golang实现
-
-#### 1.2.1 基础数组
+### Golang实现
 
 ```go
-// Array 基础数组实现
+// Array 通用数组实现
 type Array[T any] struct {
-    elements []T
-    size     int
+    data []T
+    size int
 }
 
 // NewArray 创建新数组
 func NewArray[T any](capacity int) *Array[T] {
     return &Array[T]{
-        elements: make([]T, capacity),
-        size:     0,
+        data: make([]T, capacity),
+        size: 0,
     }
 }
 
-// Get 获取元素
-func (a *Array[T]) Get(index int) (T, error) {
+// At 获取指定位置的元素
+func (a *Array[T]) At(index int) (T, error) {
     if index < 0 || index >= a.size {
         var zero T
         return zero, fmt.Errorf("index %d out of bounds", index)
     }
-    return a.elements[index], nil
+    return a.data[index], nil
 }
 
-// Set 设置元素
-func (a *Array[T]) Set(index int, element T) error {
+// Set 设置指定位置的元素
+func (a *Array[T]) Set(index int, value T) error {
     if index < 0 || index >= a.size {
         return fmt.Errorf("index %d out of bounds", index)
     }
-    a.elements[index] = element
+    a.data[index] = value
     return nil
 }
 
 // Append 追加元素
-func (a *Array[T]) Append(element T) {
-    if a.size >= len(a.elements) {
+func (a *Array[T]) Append(value T) {
+    if a.size >= len(a.data) {
         // 扩容
-        newElements := make([]T, len(a.elements)*2)
-        copy(newElements, a.elements)
-        a.elements = newElements
+        newData := make([]T, len(a.data)*2)
+        copy(newData, a.data)
+        a.data = newData
     }
-    a.elements[a.size] = element
+    a.data[a.size] = value
     a.size++
 }
 
-// Size 获取大小
+// Size 获取数组大小
 func (a *Array[T]) Size() int {
     return a.size
 }
-```
 
-#### 1.2.2 动态数组
-
-```go
-// DynamicArray 动态数组实现
-type DynamicArray[T any] struct {
-    elements []T
-    size     int
-    capacity int
+// Capacity 获取数组容量
+func (a *Array[T]) Capacity() int {
+    return len(a.data)
 }
 
-// NewDynamicArray 创建动态数组
-func NewDynamicArray[T any](initialCapacity int) *DynamicArray[T] {
-    if initialCapacity <= 0 {
-        initialCapacity = 10
+// Clear 清空数组
+func (a *Array[T]) Clear() {
+    a.size = 0
+    // 清空数据以避免内存泄漏
+    for i := range a.data {
+        var zero T
+        a.data[i] = zero
     }
-    return &DynamicArray[T]{
-        elements: make([]T, initialCapacity),
-        size:     0,
-        capacity: initialCapacity,
-    }
-}
-
-// grow 扩容
-func (da *DynamicArray[T]) grow() {
-    newCapacity := da.capacity * 2
-    newElements := make([]T, newCapacity)
-    copy(newElements, da.elements)
-    da.elements = newElements
-    da.capacity = newCapacity
-}
-
-// Add 添加元素
-func (da *DynamicArray[T]) Add(element T) {
-    if da.size >= da.capacity {
-        da.grow()
-    }
-    da.elements[da.size] = element
-    da.size++
-}
-
-// Remove 删除元素
-func (da *DynamicArray[T]) Remove(index int) error {
-    if index < 0 || index >= da.size {
-        return fmt.Errorf("index %d out of bounds", index)
-    }
-    
-    // 移动元素
-    for i := index; i < da.size-1; i++ {
-        da.elements[i] = da.elements[i+1]
-    }
-    da.size--
-    
-    // 缩容检查
-    if da.size < da.capacity/4 && da.capacity > 10 {
-        da.shrink()
-    }
-    
-    return nil
-}
-
-// shrink 缩容
-func (da *DynamicArray[T]) shrink() {
-    newCapacity := da.capacity / 2
-    newElements := make([]T, newCapacity)
-    copy(newElements, da.elements[:da.size])
-    da.elements = newElements
-    da.capacity = newCapacity
 }
 ```
 
-### 1.3 性能分析
+### 性能分析
 
-#### 1.3.1 时间复杂度
-
-| 操作 | 平均情况 | 最坏情况 | 最好情况 |
-|------|----------|----------|----------|
-| 访问 | $O(1)$ | $O(1)$ | $O(1)$ |
-| 搜索 | $O(n)$ | $O(n)$ | $O(1)$ |
-| 插入 | $O(1)$ | $O(n)$ | $O(1)$ |
-| 删除 | $O(n)$ | $O(n)$ | $O(1)$ |
-
-#### 1.3.2 空间复杂度
-
-- **静态数组**：$O(n)$
-- **动态数组**：$O(n)$ (摊销)
+| 操作 | 时间复杂度 | 空间复杂度 | 说明 |
+|------|------------|------------|------|
+| 访问 | $O(1)$ | $O(1)$ | 直接内存访问 |
+| 搜索 | $O(n)$ | $O(1)$ | 线性搜索 |
+| 插入 | $O(n)$ | $O(1)$ | 需要移动元素 |
+| 删除 | $O(n)$ | $O(1)$ | 需要移动元素 |
+| 追加 | 均摊 $O(1)$ | $O(1)$ | 动态扩容 |
 
 ## 链表 (Linked List)
 
-### 2.1 形式化定义
+### 形式化定义
 
-#### 2.1.1 数学定义
+**定义 2.2** (链表节点)
+链表节点是一个二元组 $\mathcal{N} = (data, next)$，其中：
 
-链表可以形式化定义为：
+- $data$ 是节点数据
+- $next$ 是指向下一个节点的指针
 
-$$\mathcal{L} = \langle \mathcal{N}, \mathcal{E}, \mathcal{P}, \mathcal{H}, \mathcal{T} \rangle$$
+**定义 2.3** (链表)
+链表是一个三元组 $\mathcal{L} = (N, H, T)$，其中：
 
-其中：
-- $\mathcal{N}$：节点集合
-- $\mathcal{E}$：元素集合
-- $\mathcal{P}$：指针函数 $\mathcal{P}: \mathcal{N} \rightarrow \mathcal{N} \cup \{\text{nil}\}$
-- $\mathcal{H}$：头节点 $\mathcal{H} \in \mathcal{N}$
-- $\mathcal{T}$：尾节点 $\mathcal{T} \in \mathcal{N}$
+- $N$ 是节点集合
+- $H \in N$ 是头节点
+- $T \in N$ 是尾节点
 
-#### 2.1.2 节点结构
+**性质 2.3** (链表连接性)
+对于链表 $\mathcal{L}$ 中的任意节点 $n_i$，存在路径：
+$H \rightarrow n_1 \rightarrow n_2 \rightarrow \ldots \rightarrow n_i \rightarrow \ldots \rightarrow T$
 
-节点可以定义为：
-
-$$\mathcal{N}_i = \langle e_i, p_i \rangle$$
-
-其中 $e_i \in \mathcal{E}$ 是元素，$p_i \in \mathcal{N} \cup \{\text{nil}\}$ 是指针。
-
-### 2.2 Golang实现
-
-#### 2.2.1 单链表
+### Golang实现
 
 ```go
 // Node 链表节点
@@ -227,9 +150,10 @@ type Node[T any] struct {
     Next *Node[T]
 }
 
-// LinkedList 单链表
+// LinkedList 链表实现
 type LinkedList[T any] struct {
     head *Node[T]
+    tail *Node[T]
     size int
 }
 
@@ -237,258 +161,224 @@ type LinkedList[T any] struct {
 func NewLinkedList[T any]() *LinkedList[T] {
     return &LinkedList[T]{
         head: nil,
-        size: 0,
-    }
-}
-
-// InsertAtHead 在头部插入
-func (ll *LinkedList[T]) InsertAtHead(data T) {
-    newNode := &Node[T]{
-        Data: data,
-        Next: ll.head,
-    }
-    ll.head = newNode
-    ll.size++
-}
-
-// InsertAtTail 在尾部插入
-func (ll *LinkedList[T]) InsertAtTail(data T) {
-    newNode := &Node[T]{
-        Data: data,
-        Next: nil,
-    }
-    
-    if ll.head == nil {
-        ll.head = newNode
-    } else {
-        current := ll.head
-        for current.Next != nil {
-            current = current.Next
-        }
-        current.Next = newNode
-    }
-    ll.size++
-}
-
-// Delete 删除指定元素
-func (ll *LinkedList[T]) Delete(data T) bool {
-    if ll.head == nil {
-        return false
-    }
-    
-    if ll.head.Data == data {
-        ll.head = ll.head.Next
-        ll.size--
-        return true
-    }
-    
-    current := ll.head
-    for current.Next != nil {
-        if current.Next.Data == data {
-            current.Next = current.Next.Next
-            ll.size--
-            return true
-        }
-        current = current.Next
-    }
-    
-    return false
-}
-
-// Search 搜索元素
-func (ll *LinkedList[T]) Search(data T) bool {
-    current := ll.head
-    for current != nil {
-        if current.Data == data {
-            return true
-        }
-        current = current.Next
-    }
-    return false
-}
-```
-
-#### 2.2.2 双向链表
-
-```go
-// DoublyNode 双向链表节点
-type DoublyNode[T any] struct {
-    Data T
-    Prev *DoublyNode[T]
-    Next *DoublyNode[T]
-}
-
-// DoublyLinkedList 双向链表
-type DoublyLinkedList[T any] struct {
-    head *DoublyNode[T]
-    tail *DoublyNode[T]
-    size int
-}
-
-// NewDoublyLinkedList 创建双向链表
-func NewDoublyLinkedList[T any]() *DoublyLinkedList[T] {
-    return &DoublyLinkedList[T]{
-        head: nil,
         tail: nil,
         size: 0,
     }
 }
 
 // InsertAtHead 在头部插入
-func (dll *DoublyLinkedList[T]) InsertAtHead(data T) {
-    newNode := &DoublyNode[T]{
+func (l *LinkedList[T]) InsertAtHead(data T) {
+    newNode := &Node[T]{
         Data: data,
-        Prev: nil,
-        Next: dll.head,
+        Next: l.head,
     }
     
-    if dll.head != nil {
-        dll.head.Prev = newNode
-    } else {
-        dll.tail = newNode
+    if l.head == nil {
+        l.tail = newNode
     }
-    
-    dll.head = newNode
-    dll.size++
+    l.head = newNode
+    l.size++
 }
 
 // InsertAtTail 在尾部插入
-func (dll *DoublyLinkedList[T]) InsertAtTail(data T) {
-    newNode := &DoublyNode[T]{
+func (l *LinkedList[T]) InsertAtTail(data T) {
+    newNode := &Node[T]{
         Data: data,
-        Prev: dll.tail,
         Next: nil,
     }
     
-    if dll.tail != nil {
-        dll.tail.Next = newNode
+    if l.tail == nil {
+        l.head = newNode
     } else {
-        dll.head = newNode
+        l.tail.Next = newNode
     }
-    
-    dll.tail = newNode
-    dll.size++
+    l.tail = newNode
+    l.size++
 }
 
-// Delete 删除指定元素
-func (dll *DoublyLinkedList[T]) Delete(data T) bool {
-    current := dll.head
+// InsertAt 在指定位置插入
+func (l *LinkedList[T]) InsertAt(index int, data T) error {
+    if index < 0 || index > l.size {
+        return fmt.Errorf("index %d out of bounds", index)
+    }
     
-    for current != nil {
-        if current.Data == data {
-            if current.Prev != nil {
-                current.Prev.Next = current.Next
-            } else {
-                dll.head = current.Next
-            }
-            
-            if current.Next != nil {
-                current.Next.Prev = current.Prev
-            } else {
-                dll.tail = current.Prev
-            }
-            
-            dll.size--
-            return true
-        }
+    if index == 0 {
+        l.InsertAtHead(data)
+        return nil
+    }
+    
+    if index == l.size {
+        l.InsertAtTail(data)
+        return nil
+    }
+    
+    // 找到插入位置的前一个节点
+    current := l.head
+    for i := 0; i < index-1; i++ {
         current = current.Next
     }
     
-    return false
+    newNode := &Node[T]{
+        Data: data,
+        Next: current.Next,
+    }
+    current.Next = newNode
+    l.size++
+    
+    return nil
+}
+
+// DeleteAt 删除指定位置的元素
+func (l *LinkedList[T]) DeleteAt(index int) error {
+    if index < 0 || index >= l.size {
+        return fmt.Errorf("index %d out of bounds", index)
+    }
+    
+    if index == 0 {
+        l.head = l.head.Next
+        if l.head == nil {
+            l.tail = nil
+        }
+        l.size--
+        return nil
+    }
+    
+    // 找到删除位置的前一个节点
+    current := l.head
+    for i := 0; i < index-1; i++ {
+        current = current.Next
+    }
+    
+    current.Next = current.Next.Next
+    if current.Next == nil {
+        l.tail = current
+    }
+    l.size--
+    
+    return nil
+}
+
+// Get 获取指定位置的元素
+func (l *LinkedList[T]) Get(index int) (T, error) {
+    if index < 0 || index >= l.size {
+        var zero T
+        return zero, fmt.Errorf("index %d out of bounds", index)
+    }
+    
+    current := l.head
+    for i := 0; i < index; i++ {
+        current = current.Next
+    }
+    
+    return current.Data, nil
+}
+
+// Size 获取链表大小
+func (l *LinkedList[T]) Size() int {
+    return l.size
+}
+
+// IsEmpty 判断是否为空
+func (l *LinkedList[T]) IsEmpty() bool {
+    return l.size == 0
+}
+
+// Clear 清空链表
+func (l *LinkedList[T]) Clear() {
+    l.head = nil
+    l.tail = nil
+    l.size = 0
 }
 ```
 
-### 2.3 性能分析
+### 性能分析
 
-#### 2.3.1 时间复杂度
-
-| 操作 | 单链表 | 双向链表 |
-|------|--------|----------|
-| 头部插入 | $O(1)$ | $O(1)$ |
-| 尾部插入 | $O(n)$ | $O(1)$ |
-| 头部删除 | $O(1)$ | $O(1)$ |
-| 尾部删除 | $O(n)$ | $O(1)$ |
-| 搜索 | $O(n)$ | $O(n)$ |
-
-#### 2.3.2 空间复杂度
-
-- **单链表**：$O(n)$
-- **双向链表**：$O(n)$ (每个节点多一个指针)
+| 操作 | 时间复杂度 | 空间复杂度 | 说明 |
+|------|------------|------------|------|
+| 访问 | $O(n)$ | $O(1)$ | 需要遍历 |
+| 搜索 | $O(n)$ | $O(1)$ | 线性搜索 |
+| 头部插入 | $O(1)$ | $O(1)$ | 直接插入 |
+| 尾部插入 | $O(1)$ | $O(1)$ | 有尾指针 |
+| 中间插入 | $O(n)$ | $O(1)$ | 需要遍历 |
+| 头部删除 | $O(1)$ | $O(1)$ | 直接删除 |
+| 尾部删除 | $O(n)$ | $O(1)$ | 需要遍历 |
+| 中间删除 | $O(n)$ | $O(1)$ | 需要遍历 |
 
 ## 栈 (Stack)
 
-### 3.1 形式化定义
+### 形式化定义
 
-#### 3.1.1 数学定义
+**定义 2.4** (栈)
+栈是一个三元组 $\mathcal{S} = (E, O_s, T_s)$，其中：
 
-栈可以形式化定义为：
+- $E$ 是元素集合
+- $O_s = \{\text{push}, \text{pop}, \text{peek}, \text{isEmpty}\}$ 是栈操作集合
+- $T_s$ 是栈顶指针
 
-$$\mathcal{S} = \langle \mathcal{E}, \mathcal{O}_s, \mathcal{T}_s, \mathcal{I}_s \rangle$$
-
-其中：
-- $\mathcal{E}$：元素集合
-- $\mathcal{O}_s$：栈操作集合 $\{\text{push}, \text{pop}, \text{peek}, \text{isEmpty}\}$
-- $\mathcal{T}_s$：栈顶指针
-- $\mathcal{I}_s$：栈内容 $\mathcal{I}_s: \mathbb{N} \rightarrow \mathcal{E}$
-
-#### 3.1.2 LIFO性质
-
+**性质 2.4** (LIFO性质)
 栈遵循后进先出 (LIFO) 原则：
+$\forall e_1, e_2 \in E: \text{push}(e_1) \circ \text{push}(e_2) \circ \text{pop}() = e_2$
 
-$$\forall e_1, e_2 \in \mathcal{E}: \text{push}(e_1) \circ \text{push}(e_2) \circ \text{pop}() = e_2$$
+**性质 2.5** (栈操作复杂度)
+对于栈 $\mathcal{S}$，基本操作的时间复杂度为：
 
-### 3.2 Golang实现
+- $\text{push}(e): O(1)$
+- $\text{pop}(): O(1)$
+- $\text{peek}(): O(1)$
+- $\text{isEmpty}(): O(1)$
 
-#### 3.2.1 基于数组的栈
+### Golang实现
 
 ```go
 // Stack 栈实现
 type Stack[T any] struct {
-    elements []T
-    top      int
-    capacity int
+    data []T
+    top  int
 }
 
 // NewStack 创建新栈
 func NewStack[T any](capacity int) *Stack[T] {
     return &Stack[T]{
-        elements: make([]T, capacity),
-        top:      -1,
-        capacity: capacity,
+        data: make([]T, capacity),
+        top:  -1,
     }
 }
 
 // Push 入栈
-func (s *Stack[T]) Push(element T) error {
-    if s.top >= s.capacity-1 {
-        return fmt.Errorf("stack overflow")
-    }
+func (s *Stack[T]) Push(element T) {
     s.top++
-    s.elements[s.top] = element
-    return nil
+    if s.top >= len(s.data) {
+        // 扩容
+        newData := make([]T, len(s.data)*2)
+        copy(newData, s.data)
+        s.data = newData
+    }
+    s.data[s.top] = element
 }
 
 // Pop 出栈
 func (s *Stack[T]) Pop() (T, error) {
-    var zero T
     if s.IsEmpty() {
-        return zero, fmt.Errorf("stack underflow")
+        var zero T
+        return zero, fmt.Errorf("stack is empty")
     }
-    element := s.elements[s.top]
+    
+    element := s.data[s.top]
     s.top--
     return element, nil
 }
 
 // Peek 查看栈顶元素
 func (s *Stack[T]) Peek() (T, error) {
-    var zero T
     if s.IsEmpty() {
+        var zero T
         return zero, fmt.Errorf("stack is empty")
     }
-    return s.elements[s.top], nil
+    
+    return s.data[s.top], nil
 }
 
-// IsEmpty 检查栈是否为空
+// IsEmpty 判断栈是否为空
 func (s *Stack[T]) IsEmpty() bool {
     return s.top == -1
 }
@@ -497,446 +387,566 @@ func (s *Stack[T]) IsEmpty() bool {
 func (s *Stack[T]) Size() int {
     return s.top + 1
 }
-```
 
-#### 3.2.2 基于链表的栈
-
-```go
-// LinkedStack 基于链表的栈
-type LinkedStack[T any] struct {
-    top  *Node[T]
-    size int
+// Capacity 获取栈容量
+func (s *Stack[T]) Capacity() int {
+    return len(s.data)
 }
 
-// NewLinkedStack 创建链表栈
-func NewLinkedStack[T any]() *LinkedStack[T] {
-    return &LinkedStack[T]{
-        top:  nil,
-        size: 0,
+// Clear 清空栈
+func (s *Stack[T]) Clear() {
+    s.top = -1
+    // 清空数据以避免内存泄漏
+    for i := range s.data {
+        var zero T
+        s.data[i] = zero
     }
-}
-
-// Push 入栈
-func (ls *LinkedStack[T]) Push(element T) {
-    newNode := &Node[T]{
-        Data: element,
-        Next: ls.top,
-    }
-    ls.top = newNode
-    ls.size++
-}
-
-// Pop 出栈
-func (ls *LinkedStack[T]) Pop() (T, error) {
-    var zero T
-    if ls.IsEmpty() {
-        return zero, fmt.Errorf("stack underflow")
-    }
-    
-    element := ls.top.Data
-    ls.top = ls.top.Next
-    ls.size--
-    return element, nil
-}
-
-// Peek 查看栈顶元素
-func (ls *LinkedStack[T]) Peek() (T, error) {
-    var zero T
-    if ls.IsEmpty() {
-        return zero, fmt.Errorf("stack is empty")
-    }
-    return ls.top.Data, nil
-}
-
-// IsEmpty 检查栈是否为空
-func (ls *LinkedStack[T]) IsEmpty() bool {
-    return ls.top == nil
 }
 ```
 
-### 3.3 应用场景
+### 性能分析
 
-#### 3.3.1 函数调用栈
-
-```go
-// CallStack 函数调用栈模拟
-type CallFrame struct {
-    FunctionName string
-    Parameters   []interface{}
-    ReturnValue  interface{}
-}
-
-type CallStack struct {
-    frames *Stack[*CallFrame]
-}
-
-func NewCallStack() *CallStack {
-    return &CallStack{
-        frames: NewStack[*CallFrame](1000),
-    }
-}
-
-func (cs *CallStack) PushFrame(frame *CallFrame) {
-    cs.frames.Push(frame)
-}
-
-func (cs *CallStack) PopFrame() (*CallFrame, error) {
-    return cs.frames.Pop()
-}
-```
-
-#### 3.3.2 表达式求值
-
-```go
-// ExpressionEvaluator 表达式求值器
-type ExpressionEvaluator struct {
-    operandStack  *Stack[float64]
-    operatorStack *Stack[string]
-}
-
-func NewExpressionEvaluator() *ExpressionEvaluator {
-    return &ExpressionEvaluator{
-        operandStack:  NewStack[float64](100),
-        operatorStack: NewStack[string](100),
-    }
-}
-
-func (ee *ExpressionEvaluator) Evaluate(expression string) (float64, error) {
-    // 实现中缀表达式求值
-    // 使用两个栈：操作数栈和运算符栈
-    return 0, nil
-}
-```
+| 操作 | 时间复杂度 | 空间复杂度 | 说明 |
+|------|------------|------------|------|
+| Push | 均摊 $O(1)$ | $O(1)$ | 动态扩容 |
+| Pop | $O(1)$ | $O(1)$ | 直接操作 |
+| Peek | $O(1)$ | $O(1)$ | 只读操作 |
+| IsEmpty | $O(1)$ | $O(1)$ | 状态检查 |
 
 ## 队列 (Queue)
 
-### 4.1 形式化定义
+### 形式化定义
 
-#### 4.1.1 数学定义
+**定义 2.5** (队列)
+队列是一个四元组 $\mathcal{Q} = (E, O_q, F, R)$，其中：
 
-队列可以形式化定义为：
+- $E$ 是元素集合
+- $O_q = \{\text{enqueue}, \text{dequeue}, \text{front}, \text{isEmpty}\}$ 是队列操作集合
+- $F$ 是队首指针
+- $R$ 是队尾指针
 
-$$\mathcal{Q} = \langle \mathcal{E}, \mathcal{O}_q, \mathcal{F}, \mathcal{R}, \mathcal{I}_q \rangle$$
-
-其中：
-- $\mathcal{E}$：元素集合
-- $\mathcal{O}_q$：队列操作集合 $\{\text{enqueue}, \text{dequeue}, \text{front}, \text{isEmpty}\}$
-- $\mathcal{F}$：队首指针
-- $\mathcal{R}$：队尾指针
-- $\mathcal{I}_q$：队列内容 $\mathcal{I}_q: \mathbb{N} \rightarrow \mathcal{E}$
-
-#### 4.1.2 FIFO性质
-
+**性质 2.6** (FIFO性质)
 队列遵循先进先出 (FIFO) 原则：
+$\forall e_1, e_2 \in E: \text{enqueue}(e_1) \circ \text{enqueue}(e_2) \circ \text{dequeue}() = e_1$
 
-$$\forall e_1, e_2 \in \mathcal{E}: \text{enqueue}(e_1) \circ \text{enqueue}(e_2) \circ \text{dequeue}() = e_1$$
+**性质 2.7** (队列操作复杂度)
+对于队列 $\mathcal{Q}$，基本操作的时间复杂度为：
 
-### 4.2 Golang实现
+- $\text{enqueue}(e): O(1)$
+- $\text{dequeue}(): O(1)$
+- $\text{front}(): O(1)$
+- $\text{isEmpty}(): O(1)$
 
-#### 4.2.1 基于数组的队列
+### Golang实现
 
 ```go
 // Queue 队列实现
 type Queue[T any] struct {
-    elements []T
-    front    int
-    rear     int
-    size     int
-    capacity int
+    data []T
+    head int
+    tail int
+    size int
 }
 
 // NewQueue 创建新队列
 func NewQueue[T any](capacity int) *Queue[T] {
     return &Queue[T]{
-        elements: make([]T, capacity),
-        front:    0,
-        rear:     -1,
-        size:     0,
-        capacity: capacity,
+        data: make([]T, capacity),
+        head: 0,
+        tail: 0,
+        size: 0,
     }
 }
 
 // Enqueue 入队
-func (q *Queue[T]) Enqueue(element T) error {
-    if q.IsFull() {
-        return fmt.Errorf("queue is full")
+func (q *Queue[T]) Enqueue(element T) {
+    if q.size >= len(q.data) {
+        // 扩容
+        newData := make([]T, len(q.data)*2)
+        // 重新排列元素
+        for i := 0; i < q.size; i++ {
+            newData[i] = q.data[(q.head+i)%len(q.data)]
+        }
+        q.data = newData
+        q.head = 0
+        q.tail = q.size
     }
     
-    q.rear = (q.rear + 1) % q.capacity
-    q.elements[q.rear] = element
+    q.data[q.tail] = element
+    q.tail = (q.tail + 1) % len(q.data)
     q.size++
-    return nil
 }
 
 // Dequeue 出队
 func (q *Queue[T]) Dequeue() (T, error) {
-    var zero T
     if q.IsEmpty() {
+        var zero T
         return zero, fmt.Errorf("queue is empty")
     }
     
-    element := q.elements[q.front]
-    q.front = (q.front + 1) % q.capacity
+    element := q.data[q.head]
+    q.head = (q.head + 1) % len(q.data)
     q.size--
     return element, nil
 }
 
 // Front 查看队首元素
 func (q *Queue[T]) Front() (T, error) {
-    var zero T
     if q.IsEmpty() {
+        var zero T
         return zero, fmt.Errorf("queue is empty")
     }
-    return q.elements[q.front], nil
+    
+    return q.data[q.head], nil
 }
 
-// IsEmpty 检查队列是否为空
+// IsEmpty 判断队列是否为空
 func (q *Queue[T]) IsEmpty() bool {
     return q.size == 0
-}
-
-// IsFull 检查队列是否已满
-func (q *Queue[T]) IsFull() bool {
-    return q.size == q.capacity
 }
 
 // Size 获取队列大小
 func (q *Queue[T]) Size() int {
     return q.size
 }
+
+// Capacity 获取队列容量
+func (q *Queue[T]) Capacity() int {
+    return len(q.data)
+}
+
+// Clear 清空队列
+func (q *Queue[T]) Clear() {
+    q.head = 0
+    q.tail = 0
+    q.size = 0
+    // 清空数据以避免内存泄漏
+    for i := range q.data {
+        var zero T
+        q.data[i] = zero
+    }
+}
 ```
 
-#### 4.2.2 基于链表的队列
+### 性能分析
+
+| 操作 | 时间复杂度 | 空间复杂度 | 说明 |
+|------|------------|------------|------|
+| Enqueue | 均摊 $O(1)$ | $O(1)$ | 动态扩容 |
+| Dequeue | $O(1)$ | $O(1)$ | 直接操作 |
+| Front | $O(1)$ | $O(1)$ | 只读操作 |
+| IsEmpty | $O(1)$ | $O(1)$ | 状态检查 |
+
+## 双端队列 (Deque)
+
+### 形式化定义
+
+**定义 2.6** (双端队列)
+双端队列是一个五元组 $\mathcal{D} = (E, O_d, F, R, C)$，其中：
+
+- $E$ 是元素集合
+- $O_d = \{\text{pushFront}, \text{pushBack}, \text{popFront}, \text{popBack}, \text{front}, \text{back}, \text{isEmpty}\}$ 是双端队列操作集合
+- $F$ 是前端指针
+- $R$ 是后端指针
+- $C$ 是容量
+
+**性质 2.8** (双端操作性质)
+双端队列支持两端操作：
+$\forall e \in E: \text{pushFront}(e) \circ \text{popBack}() = e$
+$\forall e \in E: \text{pushBack}(e) \circ \text{popFront}() = e$
+
+### Golang实现
 
 ```go
-// LinkedQueue 基于链表的队列
-type LinkedQueue[T any] struct {
-    head *Node[T]
-    tail *Node[T]
+// Deque 双端队列实现
+type Deque[T any] struct {
+    data []T
+    head int
+    tail int
     size int
 }
 
-// NewLinkedQueue 创建链表队列
-func NewLinkedQueue[T any]() *LinkedQueue[T] {
-    return &LinkedQueue[T]{
-        head: nil,
-        tail: nil,
+// NewDeque 创建新双端队列
+func NewDeque[T any](capacity int) *Deque[T] {
+    return &Deque[T]{
+        data: make([]T, capacity),
+        head: 0,
+        tail: 0,
         size: 0,
     }
 }
 
-// Enqueue 入队
-func (lq *LinkedQueue[T]) Enqueue(element T) {
-    newNode := &Node[T]{
-        Data: element,
-        Next: nil,
+// PushFront 前端入队
+func (d *Deque[T]) PushFront(element T) {
+    if d.size >= len(d.data) {
+        // 扩容
+        newData := make([]T, len(d.data)*2)
+        // 重新排列元素
+        for i := 0; i < d.size; i++ {
+            newData[i+1] = d.data[(d.head+i)%len(d.data)]
+        }
+        d.data = newData
+        d.head = 1
+        d.tail = d.size + 1
+    } else {
+        d.head = (d.head - 1 + len(d.data)) % len(d.data)
     }
     
-    if lq.IsEmpty() {
-        lq.head = newNode
-        lq.tail = newNode
-    } else {
-        lq.tail.Next = newNode
-        lq.tail = newNode
-    }
-    lq.size++
+    d.data[d.head] = element
+    d.size++
 }
 
-// Dequeue 出队
-func (lq *LinkedQueue[T]) Dequeue() (T, error) {
-    var zero T
-    if lq.IsEmpty() {
-        return zero, fmt.Errorf("queue is empty")
+// PushBack 后端入队
+func (d *Deque[T]) PushBack(element T) {
+    if d.size >= len(d.data) {
+        // 扩容
+        newData := make([]T, len(d.data)*2)
+        // 重新排列元素
+        for i := 0; i < d.size; i++ {
+            newData[i] = d.data[(d.head+i)%len(d.data)]
+        }
+        d.data = newData
+        d.head = 0
+        d.tail = d.size
     }
     
-    element := lq.head.Data
-    lq.head = lq.head.Next
-    
-    if lq.head == nil {
-        lq.tail = nil
+    d.data[d.tail] = element
+    d.tail = (d.tail + 1) % len(d.data)
+    d.size++
+}
+
+// PopFront 前端出队
+func (d *Deque[T]) PopFront() (T, error) {
+    if d.IsEmpty() {
+        var zero T
+        return zero, fmt.Errorf("deque is empty")
     }
     
-    lq.size--
+    element := d.data[d.head]
+    d.head = (d.head + 1) % len(d.data)
+    d.size--
     return element, nil
 }
 
-// Front 查看队首元素
-func (lq *LinkedQueue[T]) Front() (T, error) {
-    var zero T
-    if lq.IsEmpty() {
-        return zero, fmt.Errorf("queue is empty")
+// PopBack 后端出队
+func (d *Deque[T]) PopBack() (T, error) {
+    if d.IsEmpty() {
+        var zero T
+        return zero, fmt.Errorf("deque is empty")
     }
-    return lq.head.Data, nil
+    
+    d.tail = (d.tail - 1 + len(d.data)) % len(d.data)
+    element := d.data[d.tail]
+    d.size--
+    return element, nil
 }
 
-// IsEmpty 检查队列是否为空
-func (lq *LinkedQueue[T]) IsEmpty() bool {
-    return lq.head == nil
+// Front 查看前端元素
+func (d *Deque[T]) Front() (T, error) {
+    if d.IsEmpty() {
+        var zero T
+        return zero, fmt.Errorf("deque is empty")
+    }
+    
+    return d.data[d.head], nil
+}
+
+// Back 查看后端元素
+func (d *Deque[T]) Back() (T, error) {
+    if d.IsEmpty() {
+        var zero T
+        return zero, fmt.Errorf("deque is empty")
+    }
+    
+    index := (d.tail - 1 + len(d.data)) % len(d.data)
+    return d.data[index], nil
+}
+
+// IsEmpty 判断是否为空
+func (d *Deque[T]) IsEmpty() bool {
+    return d.size == 0
+}
+
+// Size 获取大小
+func (d *Deque[T]) Size() int {
+    return d.size
+}
+
+// Capacity 获取容量
+func (d *Deque[T]) Capacity() int {
+    return len(d.data)
+}
+
+// Clear 清空
+func (d *Deque[T]) Clear() {
+    d.head = 0
+    d.tail = 0
+    d.size = 0
+    // 清空数据以避免内存泄漏
+    for i := range d.data {
+        var zero T
+        d.data[i] = zero
+    }
 }
 ```
 
-### 4.3 应用场景
+### 性能分析
 
-#### 4.3.1 任务队列
+| 操作 | 时间复杂度 | 空间复杂度 | 说明 |
+|------|------------|------------|------|
+| PushFront | 均摊 $O(1)$ | $O(1)$ | 动态扩容 |
+| PushBack | 均摊 $O(1)$ | $O(1)$ | 动态扩容 |
+| PopFront | $O(1)$ | $O(1)$ | 直接操作 |
+| PopBack | $O(1)$ | $O(1)$ | 直接操作 |
+| Front | $O(1)$ | $O(1)$ | 只读操作 |
+| Back | $O(1)$ | $O(1)$ | 只读操作 |
 
-```go
-// Task 任务定义
-type Task struct {
-    ID       string
-    Priority int
-    Handler  func() error
-}
+## 性能对比分析
 
-// TaskQueue 任务队列
-type TaskQueue struct {
-    queue *Queue[*Task]
-}
+### 时间复杂度对比
 
-func NewTaskQueue() *TaskQueue {
-    return &TaskQueue{
-        queue: NewQueue[*Task](1000),
-    }
-}
+| 数据结构 | 访问 | 搜索 | 插入 | 删除 | 特殊操作 |
+|----------|------|------|------|------|----------|
+| 数组 | $O(1)$ | $O(n)$ | $O(n)$ | $O(n)$ | 随机访问 |
+| 链表 | $O(n)$ | $O(n)$ | $O(1)$ | $O(1)$ | 动态大小 |
+| 栈 | $O(1)$ | $O(n)$ | $O(1)$ | $O(1)$ | LIFO |
+| 队列 | $O(1)$ | $O(n)$ | $O(1)$ | $O(1)$ | FIFO |
+| 双端队列 | $O(1)$ | $O(n)$ | $O(1)$ | $O(1)$ | 双端操作 |
 
-func (tq *TaskQueue) AddTask(task *Task) error {
-    return tq.queue.Enqueue(task)
-}
+### 空间复杂度对比
 
-func (tq *TaskQueue) ProcessNextTask() error {
-    task, err := tq.queue.Dequeue()
-    if err != nil {
-        return err
-    }
-    return task.Handler()
-}
-```
+| 数据结构 | 基础空间 | 额外空间 | 内存局部性 |
+|----------|----------|----------|------------|
+| 数组 | $O(n)$ | $O(1)$ | 优秀 |
+| 链表 | $O(n)$ | $O(n)$ | 较差 |
+| 栈 | $O(n)$ | $O(1)$ | 优秀 |
+| 队列 | $O(n)$ | $O(1)$ | 优秀 |
+| 双端队列 | $O(n)$ | $O(1)$ | 优秀 |
 
-#### 4.3.2 消息队列
+### 应用场景分析
 
-```go
-// Message 消息定义
-type Message struct {
-    ID      string
-    Content interface{}
-    Time    time.Time
-}
+#### 数组适用场景
 
-// MessageQueue 消息队列
-type MessageQueue struct {
-    queue *Queue[*Message]
-}
+- **随机访问**: 需要频繁随机访问元素
+- **内存效率**: 对内存使用要求严格
+- **缓存友好**: 需要良好的缓存性能
+- **固定大小**: 数据大小相对固定
 
-func NewMessageQueue() *MessageQueue {
-    return &MessageQueue{
-        queue: NewQueue[*Message](10000),
-    }
-}
+#### 链表适用场景
 
-func (mq *MessageQueue) SendMessage(msg *Message) error {
-    return mq.queue.Enqueue(msg)
-}
+- **动态大小**: 数据大小变化频繁
+- **频繁插入删除**: 在中间位置频繁操作
+- **内存分散**: 可以接受内存碎片化
+- **实现简单**: 需要快速实现原型
 
-func (mq *MessageQueue) ReceiveMessage() (*Message, error) {
-    return mq.queue.Dequeue()
-}
-```
+#### 栈适用场景
 
-## 性能对比
+- **函数调用**: 函数调用栈管理
+- **表达式求值**: 后缀表达式计算
+- **括号匹配**: 语法分析中的括号检查
+- **深度优先搜索**: 图的DFS算法
 
-### 1. 时间复杂度对比
+#### 队列适用场景
 
-| 操作 | 数组 | 链表 | 栈 | 队列 |
-|------|------|------|----|----|
-| 访问 | $O(1)$ | $O(n)$ | $O(1)$ | $O(1)$ |
-| 插入 | $O(n)$ | $O(1)$ | $O(1)$ | $O(1)$ |
-| 删除 | $O(n)$ | $O(1)$ | $O(1)$ | $O(1)$ |
-| 搜索 | $O(n)$ | $O(n)$ | $O(n)$ | $O(n)$ |
+- **任务调度**: 操作系统任务队列
+- **广度优先搜索**: 图的BFS算法
+- **消息队列**: 异步消息处理
+- **缓冲区管理**: 生产者-消费者模式
 
-### 2. 空间复杂度对比
+#### 双端队列适用场景
 
-| 数据结构 | 空间复杂度 | 额外开销 |
-|----------|------------|----------|
-| 数组 | $O(n)$ | 无 |
-| 链表 | $O(n)$ | 指针开销 |
-| 栈 | $O(n)$ | 无 |
-| 队列 | $O(n)$ | 无 |
-
-### 3. 缓存性能对比
-
-| 数据结构 | 缓存友好性 | 局部性 |
-|----------|------------|--------|
-| 数组 | 高 | 好 |
-| 链表 | 低 | 差 |
-| 栈 | 高 | 好 |
-| 队列 | 中等 | 中等 |
-
-## 应用场景
-
-### 1. 数组应用场景
-
-- **数值计算**: 矩阵运算、向量计算
-- **图像处理**: 像素数据存储
-- **音频处理**: 音频采样数据
-- **缓存实现**: 固定大小的缓存
-
-### 2. 链表应用场景
-
-- **内存管理**: 空闲内存块链表
-- **文件系统**: 文件分配表
-- **哈希表**: 冲突解决
-- **LRU缓存**: 最近最少使用缓存
-
-### 3. 栈应用场景
-
-- **函数调用**: 程序执行栈
-- **表达式求值**: 中缀转后缀
-- **括号匹配**: 语法检查
-- **深度优先搜索**: 图遍历
-
-### 4. 队列应用场景
-
-- **任务调度**: 进程调度
-- **消息队列**: 异步通信
-- **广度优先搜索**: 图遍历
-- **缓冲区**: 数据流处理
+- **滑动窗口**: 算法中的滑动窗口
+- **单调队列**: 单调递增/递减队列
+- **双向遍历**: 需要双向遍历的场景
+- **缓存实现**: LRU缓存的双端操作
 
 ## 最佳实践
 
-### 1. 选择指南
+### 1. 选择原则
 
-1. **数组**：适用于随机访问频繁的场景
-2. **链表**：适用于频繁插入删除的场景
-3. **栈**：适用于后进先出的场景
-4. **队列**：适用于先进先出的场景
+#### 1.1 性能优先
 
-### 2. 性能优化
+- **随机访问**: 选择数组
+- **频繁插入删除**: 选择链表
+- **LIFO操作**: 选择栈
+- **FIFO操作**: 选择队列
+- **双端操作**: 选择双端队列
 
-1. **预分配容量**：减少动态扩容开销
-2. **批量操作**：减少函数调用开销
-3. **内存对齐**：提高缓存性能
-4. **对象池**：减少GC压力
+#### 1.2 内存优先
+
+- **内存紧张**: 选择数组
+- **内存充足**: 可以选择链表
+- **缓存敏感**: 选择连续存储结构
+
+#### 1.3 实现复杂度
+
+- **快速原型**: 选择简单实现
+- **生产环境**: 选择成熟实现
+- **性能要求**: 选择优化实现
+
+### 2. 优化策略
+
+#### 2.1 内存优化
+
+```go
+// 使用对象池减少GC压力
+var nodePool = sync.Pool{
+    New: func() interface{} {
+        return &Node{}
+    },
+}
+
+func getNode() *Node {
+    return nodePool.Get().(*Node)
+}
+
+func putNode(node *Node) {
+    nodePool.Put(node)
+}
+```
+
+#### 2.2 并发优化
+
+```go
+// 使用原子操作避免锁
+type AtomicStack[T any] struct {
+    head unsafe.Pointer
+}
+
+func (s *AtomicStack[T]) Push(element T) {
+    newNode := &Node[T]{Data: element}
+    for {
+        oldHead := s.head
+        newNode.Next = (*Node[T])(oldHead)
+        if atomic.CompareAndSwapPointer(&s.head, oldHead, unsafe.Pointer(newNode)) {
+            break
+        }
+    }
+}
+```
+
+#### 2.3 缓存优化
+
+```go
+// 使用内存对齐提高缓存性能
+type CacheFriendlyNode[T any] struct {
+    Data T
+    Next *CacheFriendlyNode[T]
+    _    [64 - unsafe.Sizeof(T) - unsafe.Sizeof(unsafe.Pointer(nil))]byte // 填充到64字节
+}
+```
 
 ### 3. 错误处理
 
-1. **边界检查**：防止越界访问
-2. **空值检查**：防止空指针异常
-3. **容量检查**：防止溢出
-4. **类型安全**：使用泛型保证类型安全
+#### 3.1 边界检查
+
+```go
+func (a *Array[T]) boundsCheck(index int) error {
+    if index < 0 || index >= a.size {
+        return fmt.Errorf("index %d out of bounds [0, %d)", index, a.size)
+    }
+    return nil
+}
+```
+
+#### 3.2 空值检查
+
+```go
+func (l *LinkedList[T]) nullCheck() error {
+    if l.head == nil {
+        return fmt.Errorf("linked list is empty")
+    }
+    return nil
+}
+```
+
+### 4. 测试策略
+
+#### 4.1 单元测试
+
+```go
+func TestArrayOperations(t *testing.T) {
+    arr := NewArray[int](10)
+    
+    // 测试插入
+    arr.Append(1)
+    arr.Append(2)
+    arr.Append(3)
+    
+    if arr.Size() != 3 {
+        t.Errorf("Expected size 3, got %d", arr.Size())
+    }
+    
+    // 测试访问
+    if val, err := arr.At(1); err != nil || val != 2 {
+        t.Errorf("Expected value 2 at index 1, got %d", val)
+    }
+}
+```
+
+#### 4.2 性能测试
+
+```go
+func BenchmarkArrayAppend(b *testing.B) {
+    arr := NewArray[int](1000)
+    b.ResetTimer()
+    
+    for i := 0; i < b.N; i++ {
+        arr.Append(i)
+    }
+}
+
+func BenchmarkLinkedListAppend(b *testing.B) {
+    list := NewLinkedList[int]()
+    b.ResetTimer()
+    
+    for i := 0; i < b.N; i++ {
+        list.InsertAtTail(i)
+    }
+}
+```
+
+#### 4.3 并发测试
+
+```go
+func TestConcurrentStack(t *testing.T) {
+    stack := NewStack[int](1000)
+    var wg sync.WaitGroup
+    
+    // 并发推入
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            stack.Push(id)
+        }(i)
+    }
+    
+    wg.Wait()
+    
+    // 验证结果
+    if stack.Size() != 1000 {
+        t.Errorf("Expected size 1000, got %d", stack.Size())
+    }
+}
+```
+
+---
 
 ## 总结
 
-基础数据结构是构建复杂系统的基础，每种数据结构都有其特定的应用场景和性能特征：
+本文档对五种基础数据结构进行了深入分析，包括：
 
-1. **数组**: 适合随机访问，内存连续，缓存友好
-2. **链表**: 适合频繁插入删除，动态增长，内存分散
-3. **栈**: 后进先出，适合函数调用、表达式求值
-4. **队列**: 先进先出，适合任务调度、消息队列
+1. **形式化定义**: 严格的数学描述和性质证明
+2. **Golang实现**: 完整的代码示例和错误处理
+3. **性能分析**: 详细的时间复杂度和空间复杂度分析
+4. **应用场景**: 各种数据结构的适用场景分析
+5. **最佳实践**: 实际应用中的优化策略和测试方法
 
-选择合适的数据结构需要考虑：
+这些基础数据结构为高级数据结构和算法提供了重要支撑，在实际应用中需要根据具体需求选择合适的数据结构。
 
-- 访问模式（随机 vs 顺序）
-- 操作频率（插入、删除、访问）
-- 内存要求（连续 vs 分散）
-- 并发需求（单线程 vs 多线程）
+---
 
-通过合理选择和优化，可以构建高效、可靠的基础数据结构，为更复杂的系统提供坚实的基础。
+**最后更新**: 2024-12-19  
+**当前状态**: ✅ 基础数据结构分析完成  
+**下一步**: 并发数据结构分析
