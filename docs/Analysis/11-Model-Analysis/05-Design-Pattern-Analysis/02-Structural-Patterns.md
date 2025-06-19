@@ -578,25 +578,25 @@ import "fmt"
 type SubsystemA struct{}
 
 func (s *SubsystemA) OperationA1() string {
-    return "SubsystemA: Ready!"
+    return "SubsystemA.OperationA1"
 }
 
 func (s *SubsystemA) OperationA2() string {
-    return "SubsystemA: Go!"
+    return "SubsystemA.OperationA2"
 }
 
 // SubsystemB 子系统B
 type SubsystemB struct{}
 
 func (s *SubsystemB) OperationB1() string {
-    return "SubsystemB: Fire!"
+    return "SubsystemB.OperationB1"
 }
 
 // SubsystemC 子系统C
 type SubsystemC struct{}
 
 func (s *SubsystemC) OperationC1() string {
-    return "SubsystemC: Preparing!"
+    return "SubsystemC.OperationC1"
 }
 
 // Facade 外观
@@ -615,15 +615,17 @@ func NewFacade() *Facade {
 }
 
 func (f *Facade) Operation1() string {
-    result := f.subsystemA.OperationA1() + "\n"
-    result += f.subsystemB.OperationB1() + "\n"
-    return result
+    return fmt.Sprintf("%s\n%s\n%s",
+        f.subsystemA.OperationA1(),
+        f.subsystemB.OperationB1(),
+        f.subsystemC.OperationC1())
 }
 
 func (f *Facade) Operation2() string {
-    result := f.subsystemC.OperationC1() + "\n"
-    result += f.subsystemA.OperationA2() + "\n"
-    return result
+    return fmt.Sprintf("%s\n%s\n%s",
+        f.subsystemA.OperationA2(),
+        f.subsystemB.OperationB2(),
+        f.subsystemC.OperationC2())
 }
 ```
 
@@ -758,75 +760,140 @@ type Subject interface {
 }
 
 // RealSubject 真实主题
-type RealSubject struct{}
+type RealSubject struct {
+    name string
+}
 
-func (r *RealSubject) Request() string {
-    return "RealSubject: Handling request"
+func NewRealSubject(name string) *RealSubject {
+    return &RealSubject{name: name}
+}
+
+func (rs *RealSubject) Request() string {
+    return fmt.Sprintf("RealSubject: %s", rs.name)
 }
 
 // Proxy 代理
 type Proxy struct {
     realSubject *RealSubject
+    access      string
 }
 
-func NewProxy() *Proxy {
-    return &Proxy{}
+func NewProxy(realSubject *RealSubject, access string) *Proxy {
+    return &Proxy{
+        realSubject: realSubject,
+        access:      access,
+    }
 }
 
 func (p *Proxy) Request() string {
-    if p.realSubject == nil {
-        p.realSubject = &RealSubject{}
+    if p.checkAccess() {
+        return p.realSubject.Request()
     }
-    
-    // 前置处理
-    fmt.Println("Proxy: Checking access prior to firing a real request")
-    
-    // 调用真实主题
-    result := p.realSubject.Request()
-    
-    // 后置处理
-    fmt.Println("Proxy: Logging the time of request")
-    
-    return result
+    return "Access denied"
+}
+
+func (p *Proxy) checkAccess() bool {
+    return p.access == "authorized"
 }
 
 // VirtualProxy 虚拟代理
 type VirtualProxy struct {
     realSubject *RealSubject
+    mu          sync.Mutex
 }
 
 func NewVirtualProxy() *VirtualProxy {
     return &VirtualProxy{}
 }
 
-func (v *VirtualProxy) Request() string {
-    if v.realSubject == nil {
-        fmt.Println("VirtualProxy: Creating RealSubject")
-        v.realSubject = &RealSubject{}
+func (vp *VirtualProxy) Request() string {
+    vp.mu.Lock()
+    defer vp.mu.Unlock()
+    
+    if vp.realSubject == nil {
+        vp.realSubject = NewRealSubject("Virtual Subject")
     }
-    return v.realSubject.Request()
+    
+    return vp.realSubject.Request()
 }
 
 // ProtectionProxy 保护代理
 type ProtectionProxy struct {
     realSubject *RealSubject
-    accessLevel string
+    user        string
 }
 
-func NewProtectionProxy(accessLevel string) *ProtectionProxy {
-    return &ProtectionProxy{accessLevel: accessLevel}
+func NewProtectionProxy(realSubject *RealSubject, user string) *ProtectionProxy {
+    return &ProtectionProxy{
+        realSubject: realSubject,
+        user:        user,
+    }
 }
 
-func (p *ProtectionProxy) Request() string {
-    if p.accessLevel != "admin" {
-        return "ProtectionProxy: Access denied"
+func (pp *ProtectionProxy) Request() string {
+    if pp.isAuthorized() {
+        return pp.realSubject.Request()
+    }
+    return "Access denied for user: " + pp.user
+}
+
+func (pp *ProtectionProxy) isAuthorized() bool {
+    return pp.user == "admin"
+}
+
+// RemoteProxy 远程代理
+type RemoteProxy struct {
+    realSubject *RealSubject
+    host        string
+    port        int
+}
+
+func NewRemoteProxy(host string, port int) *RemoteProxy {
+    return &RemoteProxy{
+        host: host,
+        port: port,
+    }
+}
+
+func (rp *RemoteProxy) Request() string {
+    // 模拟远程调用
+    return fmt.Sprintf("Remote call to %s:%d - %s", 
+        rp.host, rp.port, "Remote Subject Response")
+}
+
+// CacheProxy 缓存代理
+type CacheProxy struct {
+    realSubject *RealSubject
+    cache       map[string]string
+    mu          sync.RWMutex
+}
+
+func NewCacheProxy(realSubject *RealSubject) *CacheProxy {
+    return &CacheProxy{
+        realSubject: realSubject,
+        cache:       make(map[string]string),
+    }
+}
+
+func (cp *CacheProxy) Request() string {
+    cp.mu.RLock()
+    if result, exists := cp.cache["request"]; exists {
+        cp.mu.RUnlock()
+        return result
+    }
+    cp.mu.RUnlock()
+    
+    cp.mu.Lock()
+    defer cp.mu.Unlock()
+    
+    // 双重检查
+    if result, exists := cp.cache["request"]; exists {
+        return result
     }
     
-    if p.realSubject == nil {
-        p.realSubject = &RealSubject{}
-    }
-    
-    return p.realSubject.Request()
+    result := cp.realSubject.Request()
+    cp.cache["request"] = result
+    return result
 }
 ```
 
