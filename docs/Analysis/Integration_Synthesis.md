@@ -510,4 +510,4 @@ type ValidationReport struct {
 2. Fowler, M. (2018). Refactoring: Improving the Design of Existing Code
 3. Go Concurrency Patterns: <https://golang.org/doc/effective_go.html#concurrency>
 4. Go Performance: <https://golang.org/doc/effective_go.html#performance>
-5. Martin, R. C. (2000). Design Principles and Design Patterns 
+5. Martin, R. C. (2000). Design Principles and Design Patterns
