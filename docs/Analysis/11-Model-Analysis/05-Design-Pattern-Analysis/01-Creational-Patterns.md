@@ -1,1046 +1,645 @@
-# 创建型模式详细分析
+# 创建型设计模式分析
 
 ## 目录
 
-1. [概述](#概述)
-2. [工厂模式](#工厂模式)
-3. [抽象工厂模式](#抽象工厂模式)
-4. [单例模式](#单例模式)
-5. [建造者模式](#建造者模式)
-6. [原型模式](#原型模式)
-7. [最佳实践](#最佳实践)
+1. [概述](#1-概述)
+2. [创建型模式形式化定义](#2-创建型模式形式化定义)
+3. [单例模式 (Singleton)](#3-单例模式-singleton)
+4. [工厂方法模式 (Factory Method)](#4-工厂方法模式-factory-method)
+5. [抽象工厂模式 (Abstract Factory)](#5-抽象工厂模式-abstract-factory)
+6. [建造者模式 (Builder)](#6-建造者模式-builder)
+7. [原型模式 (Prototype)](#7-原型模式-prototype)
+8. [对象池模式 (Object Pool)](#8-对象池模式-object-pool)
+9. [性能分析与最佳实践](#9-性能分析与最佳实践)
+10. [参考文献](#10-参考文献)
 
-## 概述
+---
 
-创建型模式专注于对象的创建机制，通过将对象的创建与使用分离，提高系统的灵活性和可维护性。本文档深入分析五种主要的创建型模式在Golang中的实现方案。
+## 1. 概述
 
-### 核心特征
+创建型模式关注对象的创建过程，提供灵活的创建机制，支持对象复用和缓存。在Golang中，创建型模式通过接口、结构体和函数实现，充分利用Go语言的简洁性和并发特性。
 
-- **封装创建逻辑**: 隐藏对象创建的复杂性
-- **提高灵活性**: 支持不同的创建策略
-- **降低耦合度**: 客户端与具体产品解耦
-- **支持扩展**: 易于添加新的产品类型
-- **控制实例**: 管理对象的生命周期
+### 1.1 创建型模式分类
 
-## 工厂模式
+创建型模式集合可以形式化定义为：
 
-### 形式化定义
+$$C_{cre} = \{Singleton, FactoryMethod, AbstractFactory, Builder, Prototype, ObjectPool\}$$
 
-**定义 18.1** (工厂模式)
-工厂模式是一个五元组 $\mathcal{FP} = (F, P, C, I, R)$，其中：
+### 1.2 核心特征
 
-- $F$ 是工厂 (Factory)
-- $P$ 是产品集合 (Products)
-- $C$ 是创建条件 (Creation Conditions)
-- $I$ 是接口 (Interface)
-- $R$ 是创建规则 (Creation Rules)
+- **封装创建逻辑**: 将对象创建逻辑封装在专门的组件中
+- **提供灵活性**: 支持运行时选择创建策略
+- **支持复用**: 通过对象池等模式支持对象复用
+- **控制实例**: 控制对象的创建数量和生命周期
 
-### 简单工厂模式
+---
+
+## 2. 创建型模式形式化定义
+
+### 2.1 创建型模式系统定义
+
+创建型模式系统可以定义为五元组：
+
+$$\mathcal{CP} = (P_{cre}, I_{cre}, F_{cre}, E_{cre}, Q_{cre})$$
+
+其中：
+
+- **$P_{cre}$** - 创建型模式集合
+- **$I_{cre}$** - 创建接口集合
+- **$F_{cre}$** - 工厂函数集合
+- **$E_{cre}$** - 评估指标集合
+- **$Q_{cre}$** - 质量保证集合
+
+### 2.2 创建过程形式化定义
+
+创建过程可以定义为状态转换系统：
+
+$$\mathcal{C} = (S, \Sigma, \delta, s_0, F)$$
+
+其中：
+
+- **$S$** - 状态集合：$\{Initial, Creating, Validating, Finalizing, Ready\}$
+- **$\Sigma$** - 输入字母表：$\{create, validate, finalize, error\}$
+- **$\delta$** - 状态转换函数
+- **$s_0$** - 初始状态：$Initial$
+- **$F$** - 接受状态：$\{Ready\}$
+
+---
+
+## 3. 单例模式 (Singleton)
+
+### 3.1 形式化定义
+
+单例模式确保一个类只有一个实例，并提供全局访问点。
+
+**数学定义**:
+$$\forall x, y \in Instance(Singleton) : x = y$$
+
+**状态机定义**:
+```mermaid
+stateDiagram-v2
+    [*] --> Uninitialized
+    Uninitialized --> Initialized : create()
+    Initialized --> Initialized : create()
+    Initialized --> [*] : destroy()
+```
+
+### 3.2 Golang实现
+
+#### 3.2.1 线程安全单例
 
 ```go
-// 产品接口
-type Product interface {
-    Use() string
-    GetName() string
+package singleton
+
+import (
+    "sync"
+    "time"
+)
+
+// Logger 单例接口
+type Logger interface {
+    Log(level, message string)
+    SetLevel(level string)
+    GetLevel() string
 }
 
-// 具体产品A
-type ConcreteProductA struct {
-    name string
+// ConcreteLogger 具体日志实现
+type ConcreteLogger struct {
+    level string
+    mu    sync.RWMutex
 }
 
-func (cpa *ConcreteProductA) Use() string {
-    return "Using ConcreteProductA"
+var (
+    instance *ConcreteLogger
+    once     sync.Once
+)
+
+// GetInstance 获取单例实例
+func GetInstance() Logger {
+    once.Do(func() {
+        instance = &ConcreteLogger{
+            level: "INFO",
+        }
+    })
+    return instance
 }
 
-func (cpa *ConcreteProductA) GetName() string {
-    return cpa.name
-}
-
-// 具体产品B
-type ConcreteProductB struct {
-    name string
-}
-
-func (cpb *ConcreteProductB) Use() string {
-    return "Using ConcreteProductB"
-}
-
-func (cpb *ConcreteProductB) GetName() string {
-    return cpb.name
-}
-
-// 简单工厂
-type SimpleFactory struct{}
-
-func (sf *SimpleFactory) CreateProduct(productType string) (Product, error) {
-    switch productType {
-    case "A":
-        return &ConcreteProductA{name: "ProductA"}, nil
-    case "B":
-        return &ConcreteProductB{name: "ProductB"}, nil
-    default:
-        return nil, fmt.Errorf("unknown product type: %s", productType)
-    }
-}
-
-// 工厂方法模式
-type FactoryMethod interface {
-    CreateProduct() Product
-}
-
-// 具体工厂A
-type ConcreteFactoryA struct{}
-
-func (cfa *ConcreteFactoryA) CreateProduct() Product {
-    return &ConcreteProductA{name: "ProductA"}
-}
-
-// 具体工厂B
-type ConcreteFactoryB struct{}
-
-func (cfb *ConcreteFactoryB) CreateProduct() Product {
-    return &ConcreteProductB{name: "ProductB"}
-}
-
-// 工厂管理器
-type FactoryManager struct {
-    factories map[string]FactoryMethod
-    mu        sync.RWMutex
-}
-
-func NewFactoryManager() *FactoryManager {
-    return &FactoryManager{
-        factories: make(map[string]FactoryMethod),
-    }
-}
-
-func (fm *FactoryManager) RegisterFactory(name string, factory FactoryMethod) {
-    fm.mu.Lock()
-    defer fm.mu.Unlock()
-    fm.factories[name] = factory
-}
-
-func (fm *FactoryManager) CreateProduct(factoryName string) (Product, error) {
-    fm.mu.RLock()
-    defer fm.mu.RUnlock()
+// Log 记录日志
+func (l *ConcreteLogger) Log(level, message string) {
+    l.mu.RLock()
+    defer l.mu.RUnlock()
     
-    factory, exists := fm.factories[factoryName]
-    if !exists {
-        return nil, fmt.Errorf("factory %s not found", factoryName)
-    }
-    
-    return factory.CreateProduct(), nil
+    timestamp := time.Now().Format("2006-01-02 15:04:05")
+    fmt.Printf("[%s] [%s] %s: %s\n", timestamp, l.level, level, message)
+}
+
+// SetLevel 设置日志级别
+func (l *ConcreteLogger) SetLevel(level string) {
+    l.mu.Lock()
+    defer l.mu.Unlock()
+    l.level = level
+}
+
+// GetLevel 获取日志级别
+func (l *ConcreteLogger) GetLevel() string {
+    l.mu.RLock()
+    defer l.mu.RUnlock()
+    return l.level
 }
 ```
 
-### 高级工厂模式
+#### 3.2.2 延迟初始化单例
 
 ```go
-// 产品族接口
-type ProductFamily interface {
-    CreateChair() Chair
-    CreateTable() Table
-    CreateSofa() Sofa
-}
+package singleton
 
-// 家具接口
-type Chair interface {
-    Sit() string
-}
+import (
+    "sync"
+    "sync/atomic"
+)
 
-type Table interface {
-    Put() string
-}
-
-type Sofa interface {
-    Lie() string
-}
-
-// 现代风格产品族
-type ModernChair struct{}
-
-func (mc *ModernChair) Sit() string {
-    return "Sitting on modern chair"
-}
-
-type ModernTable struct{}
-
-func (mt *ModernTable) Put() string {
-    return "Putting on modern table"
-}
-
-type ModernSofa struct{}
-
-func (ms *ModernSofa) Lie() string {
-    return "Lying on modern sofa"
-}
-
-type ModernProductFamily struct{}
-
-func (mpf *ModernProductFamily) CreateChair() Chair {
-    return &ModernChair{}
-}
-
-func (mpf *ModernProductFamily) CreateTable() Table {
-    return &ModernTable{}
-}
-
-func (mpf *ModernProductFamily) CreateSofa() Sofa {
-    return &ModernSofa{}
-}
-
-// 古典风格产品族
-type ClassicChair struct{}
-
-func (cc *ClassicChair) Sit() string {
-    return "Sitting on classic chair"
-}
-
-type ClassicTable struct{}
-
-func (ct *ClassicTable) Put() string {
-    return "Putting on classic table"
-}
-
-type ClassicSofa struct{}
-
-func (cs *ClassicSofa) Lie() string {
-    return "Lying on classic sofa"
-}
-
-type ClassicProductFamily struct{}
-
-func (cpf *ClassicProductFamily) CreateChair() Chair {
-    return &ClassicChair{}
-}
-
-func (cpf *ClassicProductFamily) CreateTable() Table {
-    return &ClassicTable{}
-}
-
-func (cpf *ClassicProductFamily) CreateSofa() Sofa {
-    return &ClassicSofa{}
-}
-
-// 产品族工厂
-type ProductFamilyFactory struct {
-    families map[string]ProductFamily
-    mu       sync.RWMutex
-}
-
-func NewProductFamilyFactory() *ProductFamilyFactory {
-    factory := &ProductFamilyFactory{
-        families: make(map[string]ProductFamily),
-    }
-    
-    // 注册默认产品族
-    factory.RegisterFamily("modern", &ModernProductFamily{})
-    factory.RegisterFamily("classic", &ClassicProductFamily{})
-    
-    return factory
-}
-
-func (pff *ProductFamilyFactory) RegisterFamily(name string, family ProductFamily) {
-    pff.mu.Lock()
-    defer pff.mu.Unlock()
-    pff.families[name] = family
-}
-
-func (pff *ProductFamilyFactory) GetFamily(name string) (ProductFamily, error) {
-    pff.mu.RLock()
-    defer pff.mu.RUnlock()
-    
-    family, exists := pff.families[name]
-    if !exists {
-        return nil, fmt.Errorf("product family %s not found", name)
-    }
-    
-    return family, nil
-}
-```
-
-## 抽象工厂模式
-
-### 形式化定义
-
-**定义 18.2** (抽象工厂模式)
-抽象工厂模式是一个六元组 $\mathcal{AFP} = (AF, PF, CF, I, R, C)$，其中：
-
-- $AF$ 是抽象工厂 (Abstract Factory)
-- $PF$ 是产品族 (Product Families)
-- $CF$ 是具体工厂 (Concrete Factories)
-- $I$ 是接口集合 (Interface Set)
-- $R$ 是创建规则 (Creation Rules)
-- $C$ 是约束条件 (Constraints)
-
-### 实现示例
-
-```go
-// 抽象工厂接口
-type AbstractFactory interface {
-    CreateDatabase() Database
-    CreateCache() Cache
-    CreateQueue() Queue
-}
-
-// 数据存储接口
-type Database interface {
-    Connect() error
-    Query(sql string) ([]map[string]interface{}, error)
-    Close() error
-}
-
-type Cache interface {
-    Set(key string, value interface{}) error
-    Get(key string) (interface{}, error)
-    Delete(key string) error
-}
-
-type Queue interface {
-    Push(message interface{}) error
-    Pop() (interface{}, error)
-    Size() int
-}
-
-// MySQL产品族
-type MySQLDatabase struct {
-    connectionString string
-}
-
-func (md *MySQLDatabase) Connect() error {
-    log.Printf("Connecting to MySQL: %s", md.connectionString)
-    return nil
-}
-
-func (md *MySQLDatabase) Query(sql string) ([]map[string]interface{}, error) {
-    log.Printf("Executing MySQL query: %s", sql)
-    return []map[string]interface{}{{"result": "mysql_data"}}, nil
-}
-
-func (md *MySQLDatabase) Close() error {
-    log.Printf("Closing MySQL connection")
-    return nil
-}
-
-type RedisCache struct {
-    address string
-}
-
-func (rc *RedisCache) Set(key string, value interface{}) error {
-    log.Printf("Setting Redis key %s: %v", key, value)
-    return nil
-}
-
-func (rc *RedisCache) Get(key string) (interface{}, error) {
-    log.Printf("Getting Redis key %s", key)
-    return "redis_value", nil
-}
-
-func (rc *RedisCache) Delete(key string) error {
-    log.Printf("Deleting Redis key %s", key)
-    return nil
-}
-
-type RabbitMQQueue struct {
-    url string
-}
-
-func (rmq *RabbitMQQueue) Push(message interface{}) error {
-    log.Printf("Pushing message to RabbitMQ: %v", message)
-    return nil
-}
-
-func (rmq *RabbitMQQueue) Pop() (interface{}, error) {
-    log.Printf("Popping message from RabbitMQ")
-    return "rabbitmq_message", nil
-}
-
-func (rmq *RabbitMQQueue) Size() int {
-    return 10
-}
-
-type MySQLFactory struct {
-    config map[string]string
-}
-
-func NewMySQLFactory(config map[string]string) *MySQLFactory {
-    return &MySQLFactory{config: config}
-}
-
-func (mf *MySQLFactory) CreateDatabase() Database {
-    return &MySQLDatabase{
-        connectionString: mf.config["mysql_connection"],
-    }
-}
-
-func (mf *MySQLFactory) CreateCache() Cache {
-    return &RedisCache{
-        address: mf.config["redis_address"],
-    }
-}
-
-func (mf *MySQLFactory) CreateQueue() Queue {
-    return &RabbitMQQueue{
-        url: mf.config["rabbitmq_url"],
-    }
-}
-
-// PostgreSQL产品族
-type PostgreSQLDatabase struct {
-    connectionString string
-}
-
-func (pd *PostgreSQLDatabase) Connect() error {
-    log.Printf("Connecting to PostgreSQL: %s", pd.connectionString)
-    return nil
-}
-
-func (pd *PostgreSQLDatabase) Query(sql string) ([]map[string]interface{}, error) {
-    log.Printf("Executing PostgreSQL query: %s", sql)
-    return []map[string]interface{}{{"result": "postgresql_data"}}, nil
-}
-
-func (pd *PostgreSQLDatabase) Close() error {
-    log.Printf("Closing PostgreSQL connection")
-    return nil
-}
-
-type MemcachedCache struct {
-    servers []string
-}
-
-func (mc *MemcachedCache) Set(key string, value interface{}) error {
-    log.Printf("Setting Memcached key %s: %v", key, value)
-    return nil
-}
-
-func (mc *MemcachedCache) Get(key string) (interface{}, error) {
-    log.Printf("Getting Memcached key %s", key)
-    return "memcached_value", nil
-}
-
-func (mc *MemcachedCache) Delete(key string) error {
-    log.Printf("Deleting Memcached key %s", key)
-    return nil
-}
-
-type KafkaQueue struct {
-    brokers []string
-}
-
-func (kq *KafkaQueue) Push(message interface{}) error {
-    log.Printf("Pushing message to Kafka: %v", message)
-    return nil
-}
-
-func (kq *KafkaQueue) Pop() (interface{}, error) {
-    log.Printf("Popping message from Kafka")
-    return "kafka_message", nil
-}
-
-func (kq *KafkaQueue) Size() int {
-    return 20
-}
-
-type PostgreSQLFactory struct {
-    config map[string]string
-}
-
-func NewPostgreSQLFactory(config map[string]string) *PostgreSQLFactory {
-    return &PostgreSQLFactory{config: config}
-}
-
-func (pf *PostgreSQLFactory) CreateDatabase() Database {
-    return &PostgreSQLDatabase{
-        connectionString: pf.config["postgresql_connection"],
-    }
-}
-
-func (pf *PostgreSQLFactory) CreateCache() Cache {
-    return &MemcachedCache{
-        servers: strings.Split(pf.config["memcached_servers"], ","),
-    }
-}
-
-func (pf *PostgreSQLFactory) CreateQueue() Queue {
-    return &KafkaQueue{
-        brokers: strings.Split(pf.config["kafka_brokers"], ","),
-    }
-}
-
-// 抽象工厂管理器
-type AbstractFactoryManager struct {
-    factories map[string]AbstractFactory
-    mu        sync.RWMutex
-}
-
-func NewAbstractFactoryManager() *AbstractFactoryManager {
-    return &AbstractFactoryManager{
-        factories: make(map[string]AbstractFactory),
-    }
-}
-
-func (afm *AbstractFactoryManager) RegisterFactory(name string, factory AbstractFactory) {
-    afm.mu.Lock()
-    defer afm.mu.Unlock()
-    afm.factories[name] = factory
-}
-
-func (afm *AbstractFactoryManager) GetFactory(name string) (AbstractFactory, error) {
-    afm.mu.RLock()
-    defer afm.mu.RUnlock()
-    
-    factory, exists := afm.factories[name]
-    if !exists {
-        return nil, fmt.Errorf("factory %s not found", name)
-    }
-    
-    return factory, nil
-}
-
-func (afm *AbstractFactoryManager) CreateProductFamily(factoryName string) (*ProductFamily, error) {
-    factory, err := afm.GetFactory(factoryName)
-    if err != nil {
-        return nil, err
-    }
-    
-    return &ProductFamily{
-        Database: factory.CreateDatabase(),
-        Cache:    factory.CreateCache(),
-        Queue:    factory.CreateQueue(),
-    }, nil
-}
-
-// 产品族
-type ProductFamily struct {
-    Database Database
-    Cache    Cache
-    Queue    Queue
-}
-```
-
-## 单例模式
-
-### 形式化定义
-
-**定义 18.3** (单例模式)
-单例模式是一个四元组 $\mathcal{SP} = (I, C, L, T)$，其中：
-
-- $I$ 是实例 (Instance)
-- $C$ 是创建条件 (Creation Condition)
-- $L$ 是生命周期 (Lifecycle)
-- $T$ 是线程安全 (Thread Safety)
-
-### 实现示例
-
-```go
-// 基础单例
-type Singleton struct {
-    data string
-    mu   sync.RWMutex
-}
-
-func (s *Singleton) GetData() string {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    return s.data
-}
-
-func (s *Singleton) SetData(data string) {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    s.data = data
-}
-
-// 饿汉式单例
-type EagerSingleton struct {
-    data string
-}
-
-var eagerInstance = &EagerSingleton{
-    data: "Eager Singleton Data",
-}
-
-func GetEagerSingleton() *EagerSingleton {
-    return eagerInstance
-}
-
-// 懒汉式单例
+// LazySingleton 延迟初始化单例
 type LazySingleton struct {
-    data string
+    data map[string]interface{}
+    mu   sync.RWMutex
 }
 
 var (
     lazyInstance *LazySingleton
     lazyOnce     sync.Once
+    initialized  int32
 )
 
-func GetLazySingleton() *LazySingleton {
-    lazyOnce.Do(func() {
-        lazyInstance = &LazySingleton{
-            data: "Lazy Singleton Data",
-        }
-    })
+// GetLazyInstance 获取延迟初始化单例
+func GetLazyInstance() *LazySingleton {
+    if atomic.LoadInt32(&initialized) == 0 {
+        lazyOnce.Do(func() {
+            lazyInstance = &LazySingleton{
+                data: make(map[string]interface{}),
+            }
+            atomic.StoreInt32(&initialized, 1)
+        })
+    }
     return lazyInstance
 }
 
-// 双重检查锁定单例
-type DoubleCheckSingleton struct {
-    data string
+// Set 设置数据
+func (l *LazySingleton) Set(key string, value interface{}) {
+    l.mu.Lock()
+    defer l.mu.Unlock()
+    l.data[key] = value
 }
 
-var (
-    doubleCheckInstance *DoubleCheckSingleton
-    doubleCheckMu       sync.Mutex
-)
-
-func GetDoubleCheckSingleton() *DoubleCheckSingleton {
-    if doubleCheckInstance == nil {
-        doubleCheckMu.Lock()
-        defer doubleCheckMu.Unlock()
-        
-        if doubleCheckInstance == nil {
-            doubleCheckInstance = &DoubleCheckSingleton{
-                data: "Double Check Singleton Data",
-            }
-        }
-    }
-    return doubleCheckInstance
-}
-
-// 单例管理器
-type SingletonManager struct {
-    singletons map[string]interface{}
-    mu         sync.RWMutex
-}
-
-func NewSingletonManager() *SingletonManager {
-    return &SingletonManager{
-        singletons: make(map[string]interface{}),
-    }
-}
-
-func (sm *SingletonManager) GetSingleton(name string, creator func() interface{}) interface{} {
-    sm.mu.RLock()
-    if instance, exists := sm.singletons[name]; exists {
-        sm.mu.RUnlock()
-        return instance
-    }
-    sm.mu.RUnlock()
-    
-    sm.mu.Lock()
-    defer sm.mu.Unlock()
-    
-    // 双重检查
-    if instance, exists := sm.singletons[name]; exists {
-        return instance
-    }
-    
-    instance := creator()
-    sm.singletons[name] = instance
-    return instance
-}
-
-// 配置单例
-type Config struct {
-    DatabaseURL string
-    RedisURL    string
-    Port        int
-    mu          sync.RWMutex
-}
-
-func (c *Config) GetDatabaseURL() string {
-    c.mu.RLock()
-    defer c.mu.RUnlock()
-    return c.DatabaseURL
-}
-
-func (c *Config) SetDatabaseURL(url string) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    c.DatabaseURL = url
-}
-
-func (c *Config) GetRedisURL() string {
-    c.mu.RLock()
-    defer c.mu.RUnlock()
-    return c.RedisURL
-}
-
-func (c *Config) SetRedisURL(url string) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    c.RedisURL = url
-}
-
-func (c *Config) GetPort() int {
-    c.mu.RLock()
-    defer c.mu.RUnlock()
-    return c.Port
-}
-
-func (c *Config) SetPort(port int) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    c.Port = port
-}
-
-var (
-    configInstance *Config
-    configOnce     sync.Once
-)
-
-func GetConfig() *Config {
-    configOnce.Do(func() {
-        configInstance = &Config{
-            DatabaseURL: "localhost:5432",
-            RedisURL:    "localhost:6379",
-            Port:        8080,
-        }
-    })
-    return configInstance
+// Get 获取数据
+func (l *LazySingleton) Get(key string) (interface{}, bool) {
+    l.mu.RLock()
+    defer l.mu.RUnlock()
+    value, exists := l.data[key]
+    return value, exists
 }
 ```
 
-## 建造者模式
+### 3.3 性能分析
 
-### 形式化定义
+**时间复杂度**: $O(1)$ - 获取实例的时间复杂度为常数
+**空间复杂度**: $O(1)$ - 只占用一个实例的内存空间
+**线程安全**: 使用 `sync.Once` 保证线程安全
+**内存使用**: 最小化内存占用，避免重复创建
 
-**定义 18.4** (建造者模式)
-建造者模式是一个五元组 $\mathcal{BP} = (B, D, P, S, R)$，其中：
+---
 
-- $B$ 是建造者 (Builder)
-- $D$ 是导演 (Director)
-- $P$ 是产品 (Product)
-- $S$ 是步骤 (Steps)
-- $R$ 是结果 (Result)
+## 4. 工厂方法模式 (Factory Method)
 
-### 实现示例
+### 4.1 形式化定义
 
-```go
-// 产品
-type Computer struct {
-    CPU       string
-    Memory    string
-    Storage   string
-    Graphics  string
-    Network   string
-    Power     string
-    Case      string
-}
+工厂方法模式定义一个用于创建对象的接口，让子类决定实例化哪一个类。
 
-func (c *Computer) String() string {
-    return fmt.Sprintf("Computer{CPU: %s, Memory: %s, Storage: %s, Graphics: %s, Network: %s, Power: %s, Case: %s}",
-        c.CPU, c.Memory, c.Storage, c.Graphics, c.Network, c.Power, c.Case)
-}
+**数学定义**:
+$$FactoryMethod : ProductType \rightarrow Product$$
 
-// 抽象建造者
-type ComputerBuilder interface {
-    SetCPU(cpu string) ComputerBuilder
-    SetMemory(memory string) ComputerBuilder
-    SetStorage(storage string) ComputerBuilder
-    SetGraphics(graphics string) ComputerBuilder
-    SetNetwork(network string) ComputerBuilder
-    SetPower(power string) ComputerBuilder
-    SetCase(caseType string) ComputerBuilder
-    Build() *Computer
-}
-
-// 具体建造者
-type GamingComputerBuilder struct {
-    computer *Computer
-}
-
-func NewGamingComputerBuilder() *GamingComputerBuilder {
-    return &GamingComputerBuilder{
-        computer: &Computer{},
-    }
-}
-
-func (gcb *GamingComputerBuilder) SetCPU(cpu string) ComputerBuilder {
-    gcb.computer.CPU = cpu
-    return gcb
-}
-
-func (gcb *GamingComputerBuilder) SetMemory(memory string) ComputerBuilder {
-    gcb.computer.Memory = memory
-    return gcb
-}
-
-func (gcb *GamingComputerBuilder) SetStorage(storage string) ComputerBuilder {
-    gcb.computer.Storage = storage
-    return gcb
-}
-
-func (gcb *GamingComputerBuilder) SetGraphics(graphics string) ComputerBuilder {
-    gcb.computer.Graphics = graphics
-    return gcb
-}
-
-func (gcb *GamingComputerBuilder) SetNetwork(network string) ComputerBuilder {
-    gcb.computer.Network = network
-    return gcb
-}
-
-func (gcb *GamingComputerBuilder) SetPower(power string) ComputerBuilder {
-    gcb.computer.Power = power
-    return gcb
-}
-
-func (gcb *GamingComputerBuilder) SetCase(caseType string) ComputerBuilder {
-    gcb.computer.Case = caseType
-    return gcb
-}
-
-func (gcb *GamingComputerBuilder) Build() *Computer {
-    return gcb.computer
-}
-
-// 办公电脑建造者
-type OfficeComputerBuilder struct {
-    computer *Computer
-}
-
-func NewOfficeComputerBuilder() *OfficeComputerBuilder {
-    return &OfficeComputerBuilder{
-        computer: &Computer{},
-    }
-}
-
-func (ocb *OfficeComputerBuilder) SetCPU(cpu string) ComputerBuilder {
-    ocb.computer.CPU = cpu
-    return ocb
-}
-
-func (ocb *OfficeComputerBuilder) SetMemory(memory string) ComputerBuilder {
-    ocb.computer.Memory = memory
-    return ocb
-}
-
-func (ocb *OfficeComputerBuilder) SetStorage(storage string) ComputerBuilder {
-    ocb.computer.Storage = storage
-    return ocb
-}
-
-func (ocb *OfficeComputerBuilder) SetGraphics(graphics string) ComputerBuilder {
-    ocb.computer.Graphics = graphics
-    return ocb
-}
-
-func (ocb *OfficeComputerBuilder) SetNetwork(network string) ComputerBuilder {
-    ocb.computer.Network = network
-    return ocb
-}
-
-func (ocb *OfficeComputerBuilder) SetPower(power string) ComputerBuilder {
-    ocb.computer.Power = power
-    return ocb
-}
-
-func (ocb *OfficeComputerBuilder) SetCase(caseType string) ComputerBuilder {
-    ocb.computer.Case = caseType
-    return ocb
-}
-
-func (ocb *OfficeComputerBuilder) Build() *Computer {
-    return ocb.computer
-}
-
-// 导演
-type ComputerDirector struct {
-    builder ComputerBuilder
-}
-
-func NewComputerDirector(builder ComputerBuilder) *ComputerDirector {
-    return &ComputerDirector{builder: builder}
-}
-
-func (cd *ComputerDirector) SetBuilder(builder ComputerBuilder) {
-    cd.builder = builder
-}
-
-func (cd *ComputerDirector) BuildGamingComputer() *Computer {
-    return cd.builder.
-        SetCPU("Intel i9-12900K").
-        SetMemory("32GB DDR5").
-        SetStorage("2TB NVMe SSD").
-        SetGraphics("RTX 4090").
-        SetNetwork("WiFi 6E").
-        SetPower("850W Gold").
-        SetCase("ATX Gaming Case").
-        Build()
-}
-
-func (cd *ComputerDirector) BuildOfficeComputer() *Computer {
-    return cd.builder.
-        SetCPU("Intel i5-12400").
-        SetMemory("16GB DDR4").
-        SetStorage("512GB SSD").
-        SetGraphics("Integrated").
-        SetNetwork("Ethernet").
-        SetPower("450W Bronze").
-        SetCase("Micro ATX Case").
-        Build()
-}
-
-// 建造者管理器
-type BuilderManager struct {
-    builders map[string]ComputerBuilder
-    director *ComputerDirector
-    mu       sync.RWMutex
-}
-
-func NewBuilderManager() *BuilderManager {
-    return &BuilderManager{
-        builders: make(map[string]ComputerBuilder),
-        director: NewComputerDirector(nil),
-    }
-}
-
-func (bm *BuilderManager) RegisterBuilder(name string, builder ComputerBuilder) {
-    bm.mu.Lock()
-    defer bm.mu.Unlock()
-    bm.builders[name] = builder
-}
-
-func (bm *BuilderManager) GetBuilder(name string) (ComputerBuilder, error) {
-    bm.mu.RLock()
-    defer bm.mu.RUnlock()
-    
-    builder, exists := bm.builders[name]
-    if !exists {
-        return nil, fmt.Errorf("builder %s not found", name)
-    }
-    
-    return builder, nil
-}
-
-func (bm *BuilderManager) BuildComputer(builderName, computerType string) (*Computer, error) {
-    builder, err := bm.GetBuilder(builderName)
-    if err != nil {
-        return nil, err
-    }
-    
-    bm.director.SetBuilder(builder)
-    
-    switch computerType {
-    case "gaming":
-        return bm.director.BuildGamingComputer(), nil
-    case "office":
-        return bm.director.BuildOfficeComputer(), nil
-    default:
-        return nil, fmt.Errorf("unknown computer type: %s", computerType)
-    }
-}
+**类图关系**:
+```mermaid
+classDiagram
+    Creator <|-- ConcreteCreator
+    Product <|-- ConcreteProduct
+    Creator --> Product : creates
+    ConcreteCreator --> ConcreteProduct : creates
 ```
 
-## 原型模式
-
-### 形式化定义
-
-**定义 18.5** (原型模式)
-原型模式是一个四元组 $\mathcal{PP} = (P, C, R, M)$，其中：
-
-- $P$ 是原型 (Prototype)
-- $C$ 是克隆方法 (Clone Method)
-- $R$ 是注册表 (Registry)
-- $M$ 是管理器 (Manager)
-
-### 实现示例
+### 4.2 Golang实现
 
 ```go
-// 原型接口
-type Prototype interface {
-    Clone() Prototype
+package factory_method
+
+import (
+    "fmt"
+    "time"
+)
+
+// Product 产品接口
+type Product interface {
+    Use() string
     GetName() string
 }
 
-// 具体原型
-type Document struct {
-    title    string
-    content  string
-    author   string
-    created  time.Time
-    modified time.Time
+// Creator 创建者接口
+type Creator interface {
+    CreateProduct() Product
+    SomeOperation() string
 }
 
-func (d *Document) Clone() Prototype {
-    return &Document{
-        title:    d.title,
-        content:  d.content,
-        author:   d.author,
-        created:  d.created,
-        modified: time.Now(),
+// ConcreteProductA 具体产品A
+type ConcreteProductA struct {
+    name string
+}
+
+func (p *ConcreteProductA) Use() string {
+    return fmt.Sprintf("Using %s", p.name)
+}
+
+func (p *ConcreteProductA) GetName() string {
+    return p.name
+}
+
+// ConcreteProductB 具体产品B
+type ConcreteProductB struct {
+    name string
+}
+
+func (p *ConcreteProductB) Use() string {
+    return fmt.Sprintf("Using %s", p.name)
+}
+
+func (p *ConcreteProductB) GetName() string {
+    return p.name
+}
+
+// ConcreteCreatorA 具体创建者A
+type ConcreteCreatorA struct{}
+
+func (c *ConcreteCreatorA) CreateProduct() Product {
+    return &ConcreteProductA{
+        name: "Product A",
     }
 }
 
-func (d *Document) GetName() string {
-    return d.title
+func (c *ConcreteCreatorA) SomeOperation() string {
+    product := c.CreateProduct()
+    return fmt.Sprintf("Creator A: %s", product.Use())
 }
 
-func (d *Document) SetTitle(title string) {
-    d.title = title
-    d.modified = time.Now()
+// ConcreteCreatorB 具体创建者B
+type ConcreteCreatorB struct{}
+
+func (c *ConcreteCreatorB) CreateProduct() Product {
+    return &ConcreteProductB{
+        name: "Product B",
+    }
 }
 
-func (d *Document) SetContent(content string) {
-    d.content = content
-    d.modified = time.Now()
+func (c *ConcreteCreatorB) SomeOperation() string {
+    product := c.CreateProduct()
+    return fmt.Sprintf("Creator B: %s", product.Use())
 }
 
-func (d *Document) String() string {
-    return fmt.Sprintf("Document{Title: %s, Author: %s, Created: %s, Modified: %s}",
-        d.title, d.author, d.created.Format("2006-01-02 15:04:05"), d.modified.Format("2006-01-02 15:04:05"))
+// FactoryMethod 工厂方法函数
+func FactoryMethod(productType string) Creator {
+    switch productType {
+    case "A":
+        return &ConcreteCreatorA{}
+    case "B":
+        return &ConcreteCreatorB{}
+    default:
+        return &ConcreteCreatorA{}
+    }
+}
+```
+
+### 4.3 性能分析
+
+**时间复杂度**: $O(1)$ - 创建产品的时间复杂度为常数
+**空间复杂度**: $O(1)$ - 每个产品实例占用固定空间
+**扩展性**: 易于添加新的产品类型
+**耦合度**: 降低创建者和产品的耦合
+
+---
+
+## 5. 抽象工厂模式 (Abstract Factory)
+
+### 5.1 形式化定义
+
+抽象工厂模式创建一个相关或依赖对象的家族，而不需指定具体类。
+
+**数学定义**:
+$$AbstractFactory : FamilyType \rightarrow ProductFamily$$
+
+其中 $ProductFamily = \{Product_1, Product_2, ..., Product_n\}$
+
+### 5.2 Golang实现
+
+```go
+package abstract_factory
+
+import (
+    "fmt"
+)
+
+// AbstractProductA 抽象产品A
+type AbstractProductA interface {
+    UseA() string
 }
 
-// 深度克隆
-type DeepCloneable interface {
-    DeepClone() DeepCloneable
+// AbstractProductB 抽象产品B
+type AbstractProductB interface {
+    UseB() string
+    InteractWithA(a AbstractProductA) string
 }
 
-type ComplexObject struct {
-    ID       string
-    Data     map[string]interface{}
-    Children []*ComplexObject
-    mu       sync.RWMutex
+// AbstractFactory 抽象工厂
+type AbstractFactory interface {
+    CreateProductA() AbstractProductA
+    CreateProductB() AbstractProductB
 }
 
-func (co *ComplexObject) DeepClone() DeepCloneable {
-    co.mu.RLock()
-    defer co.mu.RUnlock()
+// ConcreteProductA1 具体产品A1
+type ConcreteProductA1 struct{}
+
+func (p *ConcreteProductA1) UseA() string {
+    return "Product A1"
+}
+
+// ConcreteProductB1 具体产品B1
+type ConcreteProductB1 struct{}
+
+func (p *ConcreteProductB1) UseB() string {
+    return "Product B1"
+}
+
+func (p *ConcreteProductB1) InteractWithA(a AbstractProductA) string {
+    return fmt.Sprintf("B1 interacts with %s", a.UseA())
+}
+
+// ConcreteProductA2 具体产品A2
+type ConcreteProductA2 struct{}
+
+func (p *ConcreteProductA2) UseA() string {
+    return "Product A2"
+}
+
+// ConcreteProductB2 具体产品B2
+type ConcreteProductB2 struct{}
+
+func (p *ConcreteProductB2) UseB() string {
+    return "Product B2"
+}
+
+func (p *ConcreteProductB2) InteractWithA(a AbstractProductA) string {
+    return fmt.Sprintf("B2 interacts with %s", a.UseA())
+}
+
+// ConcreteFactory1 具体工厂1
+type ConcreteFactory1 struct{}
+
+func (f *ConcreteFactory1) CreateProductA() AbstractProductA {
+    return &ConcreteProductA1{}
+}
+
+func (f *ConcreteFactory1) CreateProductB() AbstractProductB {
+    return &ConcreteProductB1{}
+}
+
+// ConcreteFactory2 具体工厂2
+type ConcreteFactory2 struct{}
+
+func (f *ConcreteFactory2) CreateProductA() AbstractProductA {
+    return &ConcreteProductA2{}
+}
+
+func (f *ConcreteFactory2) CreateProductB() AbstractProductB {
+    return &ConcreteProductB2{}
+}
+
+// Client 客户端
+type Client struct {
+    factory AbstractFactory
+}
+
+func NewClient(factory AbstractFactory) *Client {
+    return &Client{factory: factory}
+}
+
+func (c *Client) Run() string {
+    productA := c.factory.CreateProductA()
+    productB := c.factory.CreateProductB()
     
-    cloned := &ComplexObject{
-        ID:   co.ID,
-        Data: make(map[string]interface{}),
+    return fmt.Sprintf("%s, %s", 
+        productA.UseA(), 
+        productB.InteractWithA(productA))
+}
+```
+
+### 5.3 性能分析
+
+**时间复杂度**: $O(1)$ - 创建产品家族的时间复杂度为常数
+**空间复杂度**: $O(n)$ - n为产品家族中的产品数量
+**一致性**: 确保产品家族的一致性
+**扩展性**: 支持添加新的产品家族
+
+---
+
+## 6. 建造者模式 (Builder)
+
+### 6.1 形式化定义
+
+建造者模式将一个复杂对象的构建与其表示分离，允许使用相同的构建过程创建不同的表示。
+
+**数学定义**:
+$$Builder : Configuration \rightarrow ComplexObject$$
+
+其中 $Configuration = \{param_1, param_2, ..., param_n\}$
+
+### 6.2 Golang实现
+
+```go
+package builder
+
+import (
+    "fmt"
+    "strings"
+)
+
+// Product 复杂产品
+type Product struct {
+    partA string
+    partB string
+    partC string
+}
+
+func (p *Product) String() string {
+    return fmt.Sprintf("Product: %s, %s, %s", p.partA, p.partB, p.partC)
+}
+
+// Builder 建造者接口
+type Builder interface {
+    BuildPartA()
+    BuildPartB()
+    BuildPartC()
+    GetResult() *Product
+}
+
+// ConcreteBuilder 具体建造者
+type ConcreteBuilder struct {
+    product *Product
+}
+
+func NewConcreteBuilder() *ConcreteBuilder {
+    return &ConcreteBuilder{
+        product: &Product{},
+    }
+}
+
+func (b *ConcreteBuilder) BuildPartA() {
+    b.product.partA = "Part A"
+}
+
+func (b *ConcreteBuilder) BuildPartB() {
+    b.product.partB = "Part B"
+}
+
+func (b *ConcreteBuilder) BuildPartC() {
+    b.product.partC = "Part C"
+}
+
+func (b *ConcreteBuilder) GetResult() *Product {
+    return b.product
+}
+
+// Director 指导者
+type Director struct {
+    builder Builder
+}
+
+func NewDirector(builder Builder) *Director {
+    return &Director{builder: builder}
+}
+
+func (d *Director) Construct() *Product {
+    d.builder.BuildPartA()
+    d.builder.BuildPartB()
+    d.builder.BuildPartC()
+    return d.builder.GetResult()
+}
+
+// 函数式建造者
+type FunctionalBuilder struct {
+    product *Product
+}
+
+func NewFunctionalBuilder() *FunctionalBuilder {
+    return &FunctionalBuilder{
+        product: &Product{},
+    }
+}
+
+func (b *FunctionalBuilder) WithPartA(partA string) *FunctionalBuilder {
+    b.product.partA = partA
+    return b
+}
+
+func (b *FunctionalBuilder) WithPartB(partB string) *FunctionalBuilder {
+    b.product.partB = partB
+    return b
+}
+
+func (b *FunctionalBuilder) WithPartC(partC string) *FunctionalBuilder {
+    b.product.partC = partC
+    return b
+}
+
+func (b *FunctionalBuilder) Build() *Product {
+    return b.product
+}
+```
+
+### 6.3 性能分析
+
+**时间复杂度**: $O(n)$ - n为构建步骤的数量
+**空间复杂度**: $O(1)$ - 只占用一个产品实例的空间
+**灵活性**: 支持不同的构建顺序和配置
+**可读性**: 函数式建造者提供更清晰的API
+
+---
+
+## 7. 原型模式 (Prototype)
+
+### 7.1 形式化定义
+
+原型模式通过复制现有的实例创建新的实例，而不是通过新建。
+
+**数学定义**:
+$$Prototype : Original \rightarrow Clone$$
+
+其中 $Clone \approx Original$ (近似相等)
+
+### 7.2 Golang实现
+
+```go
+package prototype
+
+import (
+    "fmt"
+    "time"
+)
+
+// Prototype 原型接口
+type Prototype interface {
+    Clone() Prototype
+    GetInfo() string
+}
+
+// ConcretePrototype 具体原型
+type ConcretePrototype struct {
+    name     string
+    data     map[string]interface{}
+    createAt time.Time
+}
+
+func NewConcretePrototype(name string) *ConcretePrototype {
+    return &ConcretePrototype{
+        name:     name,
+        data:     make(map[string]interface{}),
+        createAt: time.Now(),
+    }
+}
+
+func (p *ConcretePrototype) Clone() Prototype {
+    // 深拷贝
+    cloned := &ConcretePrototype{
+        name:     p.name + "_clone",
+        createAt: time.Now(),
+        data:     make(map[string]interface{}),
     }
     
-    // 深度复制数据
-    for key, value := range co.Data {
-        if mapValue, ok := value.(map[string]interface{}); ok {
-            clonedMap := make(map[string]interface{})
-            for k, v := range mapValue {
-                clonedMap[k] = v
-            }
-            cloned.Data[key] = clonedMap
-        } else {
-            cloned.Data[key] = value
-        }
-    }
-    
-    // 深度复制子对象
-    for _, child := range co.Children {
-        clonedChild := child.DeepClone().(*ComplexObject)
-        cloned.Children = append(cloned.Children, clonedChild)
+    // 复制数据
+    for k, v := range p.data {
+        cloned.data[k] = v
     }
     
     return cloned
 }
 
-// 原型注册表
+func (p *ConcretePrototype) GetInfo() string {
+    return fmt.Sprintf("Name: %s, Created: %s, Data: %v", 
+        p.name, p.createAt.Format("15:04:05"), p.data)
+}
+
+func (p *ConcretePrototype) SetData(key string, value interface{}) {
+    p.data[key] = value
+}
+
+// PrototypeRegistry 原型注册表
 type PrototypeRegistry struct {
     prototypes map[string]Prototype
-    mu         sync.RWMutex
 }
 
 func NewPrototypeRegistry() *PrototypeRegistry {
@@ -1049,320 +648,247 @@ func NewPrototypeRegistry() *PrototypeRegistry {
     }
 }
 
-func (pr *PrototypeRegistry) Register(name string, prototype Prototype) {
-    pr.mu.Lock()
-    defer pr.mu.Unlock()
-    pr.prototypes[name] = prototype
+func (r *PrototypeRegistry) Register(name string, prototype Prototype) {
+    r.prototypes[name] = prototype
 }
 
-func (pr *PrototypeRegistry) Get(name string) (Prototype, error) {
-    pr.mu.RLock()
-    defer pr.mu.RUnlock()
-    
-    prototype, exists := pr.prototypes[name]
-    if !exists {
-        return nil, fmt.Errorf("prototype %s not found", name)
+func (r *PrototypeRegistry) Clone(name string) (Prototype, error) {
+    if prototype, exists := r.prototypes[name]; exists {
+        return prototype.Clone(), nil
     }
-    
-    return prototype.Clone(), nil
-}
-
-func (pr *PrototypeRegistry) List() []string {
-    pr.mu.RLock()
-    defer pr.mu.RUnlock()
-    
-    names := make([]string, 0, len(pr.prototypes))
-    for name := range pr.prototypes {
-        names = append(names, name)
-    }
-    
-    return names
-}
-
-// 原型管理器
-type PrototypeManager struct {
-    registry *PrototypeRegistry
-}
-
-func NewPrototypeManager() *PrototypeManager {
-    return &PrototypeManager{
-        registry: NewPrototypeRegistry(),
-    }
-}
-
-func (pm *PrototypeManager) InitializePrototypes() {
-    // 注册默认原型
-    defaultDoc := &Document{
-        title:    "Default Document",
-        content:  "This is a default document template.",
-        author:   "System",
-        created:  time.Now(),
-        modified: time.Now(),
-    }
-    pm.registry.Register("default", defaultDoc)
-    
-    // 注册报告原型
-    reportDoc := &Document{
-        title:    "Report Template",
-        content:  "This is a report template with predefined structure.",
-        author:   "System",
-        created:  time.Now(),
-        modified: time.Now(),
-    }
-    pm.registry.Register("report", reportDoc)
-    
-    // 注册信件原型
-    letterDoc := &Document{
-        title:    "Letter Template",
-        content:  "This is a letter template with formal structure.",
-        author:   "System",
-        created:  time.Now(),
-        modified: time.Now(),
-    }
-    pm.registry.Register("letter", letterDoc)
-}
-
-func (pm *PrototypeManager) CreateDocument(templateName string) (*Document, error) {
-    prototype, err := pm.registry.Get(templateName)
-    if err != nil {
-        return nil, err
-    }
-    
-    if doc, ok := prototype.(*Document); ok {
-        return doc, nil
-    }
-    
-    return nil, fmt.Errorf("prototype is not a document")
-}
-
-func (pm *PrototypeManager) CreateCustomDocument(templateName, title, content, author string) (*Document, error) {
-    doc, err := pm.CreateDocument(templateName)
-    if err != nil {
-        return nil, err
-    }
-    
-    doc.SetTitle(title)
-    doc.SetContent(content)
-    doc.author = author
-    
-    return doc, nil
+    return nil, fmt.Errorf("prototype %s not found", name)
 }
 ```
 
-## 最佳实践
+### 7.3 性能分析
 
-### 1. 错误处理
-
-```go
-// 创建型模式错误类型
-type CreationalPatternError struct {
-    Code    string `json:"code"`
-    Message string `json:"message"`
-    Pattern string `json:"pattern,omitempty"`
-    Details string `json:"details,omitempty"`
-}
-
-func (e *CreationalPatternError) Error() string {
-    return fmt.Sprintf("[%s] %s", e.Code, e.Message)
-}
-
-// 错误码常量
-const (
-    ErrCodeFactoryNotFound = "FACTORY_NOT_FOUND"
-    ErrCodeProductNotFound = "PRODUCT_NOT_FOUND"
-    ErrCodeSingletonError  = "SINGLETON_ERROR"
-    ErrCodeBuilderError    = "BUILDER_ERROR"
-    ErrCodePrototypeError  = "PROTOTYPE_ERROR"
-)
-
-// 统一错误处理
-func HandleCreationalPatternError(err error, pattern string) *CreationalPatternError {
-    switch {
-    case errors.Is(err, ErrFactoryNotFound):
-        return &CreationalPatternError{
-            Code:    ErrCodeFactoryNotFound,
-            Message: "Factory not found",
-            Pattern: pattern,
-        }
-    case errors.Is(err, ErrSingletonError):
-        return &CreationalPatternError{
-            Code:    ErrCodeSingletonError,
-            Message: "Singleton error",
-            Pattern: pattern,
-        }
-    default:
-        return &CreationalPatternError{
-            Code: ErrCodeProductNotFound,
-            Message: "Product not found",
-        }
-    }
-}
-```
-
-### 2. 监控和日志
-
-```go
-// 创建型模式指标
-type CreationalPatternMetrics struct {
-    factoryUsage    prometheus.CounterVec
-    singletonUsage  prometheus.CounterVec
-    builderUsage    prometheus.CounterVec
-    prototypeUsage  prometheus.CounterVec
-    patternErrors   prometheus.CounterVec
-}
-
-func NewCreationalPatternMetrics() *CreationalPatternMetrics {
-    return &CreationalPatternMetrics{
-        factoryUsage: *prometheus.NewCounterVec(prometheus.CounterOpts{
-            Name: "creational_factory_usage_total",
-            Help: "Total number of factory pattern usage",
-        }, []string{"factory_type", "product_type"}),
-        singletonUsage: *prometheus.NewCounterVec(prometheus.CounterOpts{
-            Name: "creational_singleton_usage_total",
-            Help: "Total number of singleton pattern usage",
-        }, []string{"singleton_type"}),
-        builderUsage: *prometheus.NewCounterVec(prometheus.CounterOpts{
-            Name: "creational_builder_usage_total",
-            Help: "Total number of builder pattern usage",
-        }, []string{"builder_type", "product_type"}),
-        prototypeUsage: *prometheus.NewCounterVec(prometheus.CounterOpts{
-            Name: "creational_prototype_usage_total",
-            Help: "Total number of prototype pattern usage",
-        }, []string{"prototype_type"}),
-        patternErrors: *prometheus.NewCounterVec(prometheus.CounterOpts{
-            Name: "creational_pattern_errors_total",
-            Help: "Total number of creational pattern errors",
-        }, []string{"pattern_type", "error_type"}),
-    }
-}
-
-// 创建型模式日志
-type CreationalPatternLogger struct {
-    logger *zap.Logger
-}
-
-func (l *CreationalPatternLogger) LogFactoryUsage(factoryType, productType string) {
-    l.logger.Info("factory usage",
-        zap.String("factory_type", factoryType),
-        zap.String("product_type", productType),
-    )
-}
-
-func (l *CreationalPatternLogger) LogSingletonUsage(singletonType string) {
-    l.logger.Info("singleton usage",
-        zap.String("singleton_type", singletonType),
-    )
-}
-
-func (l *CreationalPatternLogger) LogBuilderUsage(builderType, productType string) {
-    l.logger.Info("builder usage",
-        zap.String("builder_type", builderType),
-        zap.String("product_type", productType),
-    )
-}
-```
-
-### 3. 测试策略
-
-```go
-// 单元测试
-func TestFactoryPattern_CreateProduct(t *testing.T) {
-    factory := &SimpleFactory{}
-    
-    // 测试创建产品A
-    productA, err := factory.CreateProduct("A")
-    if err != nil {
-        t.Errorf("Failed to create product A: %v", err)
-    }
-    
-    if productA.GetName() != "ProductA" {
-        t.Errorf("Expected ProductA, got %s", productA.GetName())
-    }
-    
-    // 测试创建产品B
-    productB, err := factory.CreateProduct("B")
-    if err != nil {
-        t.Errorf("Failed to create product B: %v", err)
-    }
-    
-    if productB.GetName() != "ProductB" {
-        t.Errorf("Expected ProductB, got %s", productB.GetName())
-    }
-    
-    // 测试未知产品类型
-    _, err = factory.CreateProduct("C")
-    if err == nil {
-        t.Error("Expected error for unknown product type")
-    }
-}
-
-// 集成测试
-func TestAbstractFactory_CreateProductFamily(t *testing.T) {
-    // 创建工厂管理器
-    manager := NewAbstractFactoryManager()
-    
-    // 注册MySQL工厂
-    mysqlConfig := map[string]string{
-        "mysql_connection": "localhost:5432",
-        "redis_address":    "localhost:6379",
-        "rabbitmq_url":     "localhost:5672",
-    }
-    manager.RegisterFactory("mysql", NewMySQLFactory(mysqlConfig))
-    
-    // 创建产品族
-    family, err := manager.CreateProductFamily("mysql")
-    if err != nil {
-        t.Errorf("Failed to create product family: %v", err)
-    }
-    
-    if family.Database == nil {
-        t.Error("Expected database to be created")
-    }
-    
-    if family.Cache == nil {
-        t.Error("Expected cache to be created")
-    }
-    
-    if family.Queue == nil {
-        t.Error("Expected queue to be created")
-    }
-}
-
-// 性能测试
-func BenchmarkSingleton_GetInstance(b *testing.B) {
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        _ = GetLazySingleton()
-    }
-}
-
-func BenchmarkBuilder_BuildComputer(b *testing.B) {
-    builder := NewGamingComputerBuilder()
-    director := NewComputerDirector(builder)
-    
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        _ = director.BuildGamingComputer()
-    }
-}
-```
+**时间复杂度**: $O(n)$ - n为原型数据的复杂度
+**空间复杂度**: $O(n)$ - 需要复制所有数据
+**内存效率**: 避免重复创建相同对象
+**初始化成本**: 降低对象初始化的成本
 
 ---
 
-## 总结
+## 8. 对象池模式 (Object Pool)
 
-本文档深入分析了五种主要的创建型模式：
+### 8.1 形式化定义
 
-1. **工厂模式**: 封装对象创建逻辑，支持不同的创建策略
-2. **抽象工厂模式**: 创建相关产品族，确保产品兼容性
-3. **单例模式**: 确保类只有一个实例，提供全局访问点
-4. **建造者模式**: 分步骤构建复杂对象，支持链式调用
-5. **原型模式**: 通过克隆创建对象，避免重复初始化
+对象池模式预先创建一组对象，需要时从池中获取对象，使用完毕后归还对象。
 
-每种模式都包含形式化定义、Golang实现、高级用法和最佳实践，为实际项目开发提供了完整的参考方案。
+**数学定义**:
+$$ObjectPool = (Pool, Acquire, Release, Validate)$$
+
+其中：
+- $Pool = \{obj_1, obj_2, ..., obj_n\}$
+- $Acquire : Pool \rightarrow (obj, Pool')$
+- $Release : (obj, Pool) \rightarrow Pool'$
+- $Validate : obj \rightarrow bool$
+
+### 8.2 Golang实现
+
+```go
+package object_pool
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+// PoolObject 池对象接口
+type PoolObject interface {
+    Reset()
+    IsValid() bool
+    GetID() string
+}
+
+// DatabaseConnection 数据库连接
+type DatabaseConnection struct {
+    id        string
+    isActive  bool
+    lastUsed  time.Time
+    mu        sync.RWMutex
+}
+
+func NewDatabaseConnection(id string) *DatabaseConnection {
+    return &DatabaseConnection{
+        id:       id,
+        isActive: true,
+        lastUsed: time.Now(),
+    }
+}
+
+func (d *DatabaseConnection) Reset() {
+    d.mu.Lock()
+    defer d.mu.Unlock()
+    d.isActive = true
+    d.lastUsed = time.Now()
+}
+
+func (d *DatabaseConnection) IsValid() bool {
+    d.mu.RLock()
+    defer d.mu.RUnlock()
+    return d.isActive && time.Since(d.lastUsed) < 5*time.Minute
+}
+
+func (d *DatabaseConnection) GetID() string {
+    return d.id
+}
+
+func (d *DatabaseConnection) Close() {
+    d.mu.Lock()
+    defer d.mu.Unlock()
+    d.isActive = false
+}
+
+// ObjectPool 对象池
+type ObjectPool struct {
+    objects chan PoolObject
+    factory func() PoolObject
+    maxSize int
+    mu      sync.RWMutex
+}
+
+func NewObjectPool(factory func() PoolObject, maxSize int) *ObjectPool {
+    pool := &ObjectPool{
+        objects: make(chan PoolObject, maxSize),
+        factory: factory,
+        maxSize: maxSize,
+    }
+    
+    // 预创建对象
+    for i := 0; i < maxSize; i++ {
+        pool.objects <- factory()
+    }
+    
+    return pool
+}
+
+func (p *ObjectPool) Acquire() (PoolObject, error) {
+    select {
+    case obj := <-p.objects:
+        if obj.IsValid() {
+            return obj, nil
+        }
+        // 对象无效，创建新的
+        return p.factory(), nil
+    case <-time.After(5 * time.Second):
+        return nil, fmt.Errorf("timeout waiting for object")
+    }
+}
+
+func (p *ObjectPool) Release(obj PoolObject) {
+    obj.Reset()
+    
+    select {
+    case p.objects <- obj:
+        // 成功放回池中
+    default:
+        // 池已满，丢弃对象
+    }
+}
+
+func (p *ObjectPool) Close() {
+    close(p.objects)
+    for obj := range p.objects {
+        if closer, ok := obj.(interface{ Close() }); ok {
+            closer.Close()
+        }
+    }
+}
+```
+
+### 8.3 性能分析
+
+**时间复杂度**: $O(1)$ - 获取和释放对象的时间复杂度为常数
+**空间复杂度**: $O(n)$ - n为池的大小
+**内存效率**: 避免频繁的对象创建和销毁
+**并发性能**: 支持高并发访问
+
+---
+
+## 9. 性能分析与最佳实践
+
+### 9.1 性能对比
+
+| 模式 | 创建时间 | 内存使用 | 线程安全 | 适用场景 |
+|------|----------|----------|----------|----------|
+| 单例 | O(1) | O(1) | 高 | 全局状态管理 |
+| 工厂方法 | O(1) | O(1) | 中 | 对象创建封装 |
+| 抽象工厂 | O(1) | O(n) | 中 | 产品家族创建 |
+| 建造者 | O(n) | O(1) | 中 | 复杂对象构建 |
+| 原型 | O(n) | O(n) | 中 | 对象复制 |
+| 对象池 | O(1) | O(n) | 高 | 对象复用 |
+
+### 9.2 最佳实践
+
+#### 9.2.1 线程安全
+
+```go
+// 使用sync.Once保证单例线程安全
+var (
+    instance *Singleton
+    once     sync.Once
+)
+
+func GetInstance() *Singleton {
+    once.Do(func() {
+        instance = &Singleton{}
+    })
+    return instance
+}
+```
+
+#### 9.2.2 错误处理
+
+```go
+// 工厂方法中的错误处理
+func CreateProduct(productType string) (Product, error) {
+    switch productType {
+    case "A":
+        return &ProductA{}, nil
+    case "B":
+        return &ProductB{}, nil
+    default:
+        return nil, fmt.Errorf("unknown product type: %s", productType)
+    }
+}
+```
+
+#### 9.2.3 资源管理
+
+```go
+// 对象池的资源管理
+func (p *ObjectPool) AcquireWithContext(ctx context.Context) (PoolObject, error) {
+    select {
+    case obj := <-p.objects:
+        return obj, nil
+    case <-ctx.Done():
+        return nil, ctx.Err()
+    }
+}
+```
+
+### 9.3 性能优化建议
+
+1. **使用对象池**: 对于创建成本高的对象，使用对象池模式
+2. **延迟初始化**: 对于不常用的单例，使用延迟初始化
+3. **缓存结果**: 在工厂方法中缓存创建的对象
+4. **并发控制**: 使用适当的同步机制保证线程安全
+5. **资源清理**: 及时释放不需要的资源
+
+---
+
+## 10. 参考文献
+
+1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley.
+2. Freeman, E., Robson, E., Sierra, K., & Bates, B. (2004). Head First Design Patterns. O'Reilly Media.
+3. Go Team. (2023). The Go Programming Language Specification. https://golang.org/ref/spec
+4. Go Team. (2023). Effective Go. https://golang.org/doc/effective_go.html
+5. Go Team. (2023). Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
 
 ---
 
 **最后更新**: 2024-12-19  
-**当前状态**: ✅ 创建型模式分析完成  
-**下一步**: 结构型模式详细分析
+**版本**: 1.0.0  
+**状态**: 创建型模式分析完成

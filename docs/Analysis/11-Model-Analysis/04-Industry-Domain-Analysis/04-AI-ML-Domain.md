@@ -1,732 +1,685 @@
-# 人工智能/机器学习领域分析
+# 人工智能/机器学习领域深度分析
 
 ## 目录
 
-1. [概述](#概述)
-2. [形式化定义](#形式化定义)
-3. [机器学习架构](#机器学习架构)
-4. [模型管理](#模型管理)
-5. [数据处理](#数据处理)
-6. [推理服务](#推理服务)
-7. [最佳实践](#最佳实践)
+1. [概述](#1-概述)
+2. [形式化定义](#2-形式化定义)
+3. [核心概念模型](#3-核心概念模型)
+4. [架构设计](#4-架构设计)
+5. [算法实现](#5-算法实现)
+6. [Golang实现](#6-golang实现)
+7. [性能优化](#7-性能优化)
+8. [最佳实践](#8-最佳实践)
 
-## 概述
+---
 
-人工智能/机器学习(AI/ML)是现代软件系统的重要组成部分，涉及模型训练、推理服务、数据处理等多个技术领域。本文档从机器学习架构、模型管理、推理服务等维度深入分析AI/ML领域的Golang实现方案。
+## 1. 概述
 
-### 核心特征
+### 1.1 AI/ML系统定义
 
-- **模型训练**: 大规模模型训练和优化
-- **推理服务**: 实时模型推理和预测
-- **数据处理**: 大规模数据处理和特征工程
-- **模型管理**: 模型版本管理和部署
-- **可扩展性**: 支持大规模模型服务
+人工智能/机器学习系统是一个复杂的数据驱动系统，需要处理大规模数据、模型训练、推理服务、特征工程等。在Golang生态中，我们将其定义为：
 
-## 形式化定义
+**定义 1.1** (AI/ML系统)
+AI/ML系统是一个七元组 $\mathcal{A} = (D, M, F, T, I, \mathcal{E}, \mathcal{O})$，其中：
 
-### 机器学习系统定义
+- $D$ 是数据集集合 $D = \{d_1, d_2, ..., d_n\}$
+- $M$ 是模型集合 $M = \{m_1, m_2, ..., m_k\}$
+- $F$ 是特征集合 $F = \{f_1, f_2, ..., f_m\}$
+- $T$ 是训练系统 $T = (T_{pipeline}, T_{scheduler}, T_{monitor})$
+- $I$ 是推理系统 $I = (I_{service}, I_{batch}, I_{stream})$
+- $\mathcal{E}$ 是评估指标 $\mathcal{E} = \{e_1, e_2, ..., e_p\}$
+- $\mathcal{O}$ 是优化算法 $\mathcal{O} = \{o_1, o_2, ..., o_q\}$
 
-**定义 8.1** (机器学习系统)
-机器学习系统是一个七元组 $\mathcal{MLS} = (M, D, T, I, E, V, P)$，其中：
+### 1.2 核心挑战
 
-- $M$ 是模型集合 (Models)
-- $D$ 是数据集集合 (Datasets)
-- $T$ 是训练系统 (Training System)
-- $I$ 是推理系统 (Inference System)
-- $E$ 是评估系统 (Evaluation System)
-- $V$ 是版本管理 (Version Management)
-- $P$ 是性能监控 (Performance Monitoring)
+```mermaid
+graph TD
+    A[AI/ML系统] --> B[数据处理]
+    A --> C[模型训练]
+    A --> D[推理服务]
+    A --> E[模型管理]
+    
+    B --> B1[数据清洗]
+    B --> B2[特征工程]
+    B --> B3[数据标注]
+    
+    C --> C1[超参数调优]
+    C --> C2[分布式训练]
+    C --> C3[模型验证]
+    
+    D --> D1[实时推理]
+    D --> D2[批量推理]
+    D --> D3[模型部署]
+    
+    E --> E1[版本管理]
+    E --> E2[性能监控]
+    E --> E3[A/B测试]
+```
 
-**定义 8.2** (机器学习模型)
-机器学习模型是一个五元组 $\mathcal{MLM} = (A, P, H, L, O)$，其中：
+---
 
-- $A$ 是算法 (Algorithm)
-- $P$ 是参数集合 (Parameters)
-- $H$ 是超参数 (Hyperparameters)
-- $L$ 是损失函数 (Loss Function)
-- $O$ 是优化器 (Optimizer)
+## 2. 形式化定义
 
-### 训练过程定义
+### 2.1 机器学习模型
 
-**定义 8.3** (训练过程)
-训练过程是一个四元组 $\mathcal{TP} = (D, M, E, C)$，其中：
+**定义 2.1** (机器学习模型)
+机器学习模型是一个五元组 $m = (type, params, weights, architecture, metadata)$，其中：
 
-- $D$ 是训练数据 (Training Data)
-- $M$ 是模型 (Model)
-- $E$ 是训练轮数 (Epochs)
-- $C$ 是收敛条件 (Convergence Criteria)
+- $type \in \{classification, regression, clustering, reinforcement\}$ 是模型类型
+- $params \in \mathbb{R}^n$ 是模型参数向量
+- $weights \in \mathbb{R}^p$ 是模型权重矩阵
+- $architecture$ 是模型架构定义
+- $metadata$ 是模型元数据
 
-**性质 8.1** (模型收敛)
-对于训练过程 $\mathcal{TP}$，模型收敛定义为：
-$\lim_{e \to \infty} \text{loss}(M_e) = \text{loss}^*$
+**定义 2.2** (训练过程)
+训练过程是一个四元组 $t = (data, model, loss, optimizer)$，其中：
 
-其中 $\text{loss}^*$ 是最优损失值。
+- $data = (X, y)$ 是训练数据，$X \in \mathbb{R}^{n \times d}, y \in \mathbb{R}^n$
+- $model$ 是待训练的模型
+- $loss: \mathbb{R}^n \times \mathbb{R}^n \rightarrow \mathbb{R}$ 是损失函数
+- $optimizer$ 是优化算法
 
-## 机器学习架构
+**定理 2.1** (模型收敛性)
+对于任意训练过程 $t$，如果满足：
+1. 损失函数连续可微
+2. 梯度有界：$\|\nabla L\| \leq M$
+3. 学习率满足：$\sum_{t=1}^{\infty} \alpha_t = \infty, \sum_{t=1}^{\infty} \alpha_t^2 < \infty$
 
-### 模型定义
+则模型参数序列收敛到局部最优解。
+
+---
+
+## 3. 核心概念模型
+
+### 3.1 MLOps架构
+
+```mermaid
+graph TB
+    subgraph "数据层"
+        A1[数据源]
+        A2[数据湖]
+        A3[特征存储]
+    end
+    
+    subgraph "训练层"
+        B1[特征工程]
+        B2[模型训练]
+        B3[模型验证]
+    end
+    
+    subgraph "部署层"
+        C1[模型注册]
+        C2[模型部署]
+        C3[推理服务]
+    end
+    
+    subgraph "监控层"
+        D1[性能监控]
+        D2[数据漂移]
+        D3[模型漂移]
+    end
+    
+    A1 --> A2
+    A2 --> A3
+    A3 --> B1
+    B1 --> B2
+    B2 --> B3
+    B3 --> C1
+    C1 --> C2
+    C2 --> C3
+    C3 --> D1
+    D1 --> D2
+    D2 --> D3
+```
+
+### 3.2 模型生命周期
 
 ```go
-// 模型接口
+// 模型抽象
 type Model interface {
-    Train(data *Dataset) error
-    Predict(input interface{}) (interface{}, error)
+    Train(data Dataset) error
+    Predict(input []float64) ([]float64, error)
     Save(path string) error
     Load(path string) error
-    GetParameters() map[string]interface{}
-    SetParameters(params map[string]interface{}) error
+    GetMetadata() ModelMetadata
 }
 
-// 线性回归模型
-type LinearRegression struct {
-    Weights []float64
-    Bias    float64
-    LearningRate float64
-    mu      sync.RWMutex
+// 模型元数据
+type ModelMetadata struct {
+    ID          string
+    Name        string
+    Version     string
+    Type        ModelType
+    CreatedAt   time.Time
+    UpdatedAt   time.Time
+    Metrics     map[string]float64
+    Parameters  map[string]interface{}
 }
 
-// 训练线性回归模型
-func (lr *LinearRegression) Train(data *Dataset) error {
-    lr.mu.Lock()
-    defer lr.mu.Unlock()
-    
-    // 初始化权重
-    if lr.Weights == nil {
-        lr.Weights = make([]float64, data.FeatureCount)
-    }
-    
-    // 梯度下降训练
-    for epoch := 0; epoch < data.Epochs; epoch++ {
-        for _, sample := range data.Samples {
-            // 前向传播
-            prediction := lr.predict(sample.Features)
-            
-            // 计算损失
-            loss := prediction - sample.Label
-            
-            // 反向传播
-            lr.updateWeights(sample.Features, loss)
-        }
-        
-        // 检查收敛
-        if lr.isConverged(data) {
-            break
-        }
-    }
-    
-    return nil
+type ModelType string
+
+const (
+    ModelTypeLinearRegression ModelType = "linear_regression"
+    ModelTypeLogisticRegression ModelType = "logistic_regression"
+    ModelTypeRandomForest     ModelType = "random_forest"
+    ModelTypeNeuralNetwork    ModelType = "neural_network"
+    ModelTypeSVM              ModelType = "svm"
+)
+
+// 数据集抽象
+type Dataset interface {
+    GetFeatures() [][]float64
+    GetLabels() []float64
+    Split(trainRatio float64) (Dataset, Dataset)
+    Preprocess() error
 }
 
-// 预测
-func (lr *LinearRegression) predict(features []float64) float64 {
-    result := lr.Bias
-    for i, feature := range features {
-        result += lr.Weights[i] * feature
-    }
-    return result
+// 特征工程
+type FeatureEngineer struct {
+    transformers []Transformer
+    selectors    []Selector
 }
 
-// 更新权重
-func (lr *LinearRegression) updateWeights(features []float64, loss float64) {
-    // 更新偏置
-    lr.Bias -= lr.LearningRate * loss
-    
-    // 更新权重
-    for i, feature := range features {
-        lr.Weights[i] -= lr.LearningRate * loss * feature
-    }
+type Transformer interface {
+    Fit(data [][]float64) error
+    Transform(data [][]float64) ([][]float64, error)
 }
 
-// 检查收敛
-func (lr *LinearRegression) isConverged(data *Dataset) bool {
-    // 计算验证损失
-    totalLoss := 0.0
-    for _, sample := range data.ValidationSamples {
-        prediction := lr.predict(sample.Features)
-        loss := math.Pow(prediction-sample.Label, 2)
-        totalLoss += loss
-    }
-    
-    avgLoss := totalLoss / float64(len(data.ValidationSamples))
-    return avgLoss < 0.01 // 收敛阈值
-}
-
-// 预测接口实现
-func (lr *LinearRegression) Predict(input interface{}) (interface{}, error) {
-    features, ok := input.([]float64)
-    if !ok {
-        return nil, fmt.Errorf("invalid input type")
-    }
-    
-    lr.mu.RLock()
-    defer lr.mu.RUnlock()
-    
-    prediction := lr.predict(features)
-    return prediction, nil
-}
-
-// 保存模型
-func (lr *LinearRegression) Save(path string) error {
-    lr.mu.RLock()
-    defer lr.mu.RUnlock()
-    
-    modelData := map[string]interface{}{
-        "weights": lr.Weights,
-        "bias":    lr.Bias,
-        "type":    "linear_regression",
-    }
-    
-    data, err := json.Marshal(modelData)
-    if err != nil {
-        return fmt.Errorf("failed to marshal model: %w", err)
-    }
-    
-    return os.WriteFile(path, data, 0644)
-}
-
-// 加载模型
-func (lr *LinearRegression) Load(path string) error {
-    data, err := os.ReadFile(path)
-    if err != nil {
-        return fmt.Errorf("failed to read model file: %w", err)
-    }
-    
-    var modelData map[string]interface{}
-    if err := json.Unmarshal(data, &modelData); err != nil {
-        return fmt.Errorf("failed to unmarshal model: %w", err)
-    }
-    
-    lr.mu.Lock()
-    defer lr.mu.Unlock()
-    
-    if weights, ok := modelData["weights"].([]interface{}); ok {
-        lr.Weights = make([]float64, len(weights))
-        for i, w := range weights {
-            lr.Weights[i] = w.(float64)
-        }
-    }
-    
-    if bias, ok := modelData["bias"].(float64); ok {
-        lr.Bias = bias
-    }
-    
-    return nil
+type Selector interface {
+    Select(features [][]float64, labels []float64) []int
 }
 ```
 
-### 数据集管理
+---
+
+## 4. 架构设计
+
+### 4.1 分布式训练架构
+
+```mermaid
+graph TD
+    A[训练调度器] --> B1[Worker 1]
+    A --> B2[Worker 2]
+    A --> B3[Worker 3]
+    
+    B1 --> C[参数服务器]
+    B2 --> C
+    B3 --> C
+    
+    C --> D[模型存储]
+    C --> E[检查点]
+    
+    B1 --> F[数据分片]
+    B2 --> F
+    B3 --> F
+```
+
+### 4.2 推理服务架构
+
+```mermaid
+graph TD
+    A[负载均衡器] --> B1[推理服务1]
+    A --> B2[推理服务2]
+    A --> B3[推理服务3]
+    
+    B1 --> C[模型缓存]
+    B2 --> C
+    B3 --> C
+    
+    C --> D[模型注册表]
+    C --> E[模型存储]
+    
+    B1 --> F[监控系统]
+    B2 --> F
+    B3 --> F
+```
+
+### 4.3 服务实现
 
 ```go
-// 数据集
-type Dataset struct {
-    ID                  string
-    Name                string
-    Samples             []Sample
-    ValidationSamples   []Sample
-    FeatureCount        int
-    Epochs              int
-    BatchSize           int
-    mu                  sync.RWMutex
+// 模型训练服务
+type ModelTrainingService struct {
+    modelRepo    ModelRepository
+    dataRepo     DataRepository
+    scheduler    TrainingScheduler
+    logger       Logger
 }
 
-// 数据样本
-type Sample struct {
-    Features []float64
-    Label    float64
-    ID       string
+func (mts *ModelTrainingService) TrainModel(req TrainingRequest) (*TrainingJob, error) {
+    // 验证请求
+    if err := req.Validate(); err != nil {
+        return nil, err
+    }
+    
+    // 创建训练任务
+    job := &TrainingJob{
+        ID:        generateJobID(),
+        ModelType: req.ModelType,
+        DatasetID: req.DatasetID,
+        Status:    JobStatusPending,
+        CreatedAt: time.Now(),
+    }
+    
+    // 保存任务
+    if err := mts.modelRepo.SaveJob(job); err != nil {
+        return nil, err
+    }
+    
+    // 提交到调度器
+    if err := mts.scheduler.SubmitJob(job); err != nil {
+        return nil, err
+    }
+    
+    return job, nil
 }
 
-// 数据集管理器
-type DatasetManager struct {
-    datasets map[string]*Dataset
-    mu       sync.RWMutex
+func (mts *ModelTrainingService) GetTrainingStatus(jobID string) (*TrainingStatus, error) {
+    job, err := mts.modelRepo.GetJob(jobID)
+    if err != nil {
+        return nil, err
+    }
+    
+    return &TrainingStatus{
+        JobID:     job.ID,
+        Status:    job.Status,
+        Progress:  job.Progress,
+        Metrics:   job.Metrics,
+        StartTime: job.StartTime,
+        EndTime:   job.EndTime,
+    }, nil
 }
 
-// 创建数据集
-func (dm *DatasetManager) CreateDataset(name string, samples []Sample) (*Dataset, error) {
-    if len(samples) == 0 {
-        return nil, fmt.Errorf("empty dataset")
-    }
-    
-    featureCount := len(samples[0].Features)
-    
-    // 验证所有样本的特征数量一致
-    for _, sample := range samples {
-        if len(sample.Features) != featureCount {
-            return nil, fmt.Errorf("inconsistent feature count")
-        }
-    }
-    
-    // 分割训练集和验证集
-    splitIndex := int(float64(len(samples)) * 0.8)
-    trainSamples := samples[:splitIndex]
-    validationSamples := samples[splitIndex:]
-    
-    dataset := &Dataset{
-        ID:                uuid.New().String(),
-        Name:              name,
-        Samples:           trainSamples,
-        ValidationSamples: validationSamples,
-        FeatureCount:      featureCount,
-        Epochs:            100,
-        BatchSize:         32,
-    }
-    
-    dm.mu.Lock()
-    dm.datasets[dataset.ID] = dataset
-    dm.mu.Unlock()
-    
-    return dataset, nil
+// 推理服务
+type InferenceService struct {
+    modelRepo    ModelRepository
+    cache        ModelCache
+    logger       Logger
 }
 
-// 获取数据集
-func (dm *DatasetManager) GetDataset(id string) (*Dataset, error) {
-    dm.mu.RLock()
-    defer dm.mu.RUnlock()
-    
-    dataset, exists := dm.datasets[id]
-    if !exists {
-        return nil, fmt.Errorf("dataset %s not found", id)
-    }
-    
-    return dataset, nil
-}
-
-// 数据预处理
-func (dm *DatasetManager) PreprocessDataset(dataset *Dataset) error {
-    // 特征标准化
-    if err := dm.normalizeFeatures(dataset); err != nil {
-        return fmt.Errorf("feature normalization failed: %w", err)
-    }
-    
-    // 特征选择
-    if err := dm.selectFeatures(dataset); err != nil {
-        return fmt.Errorf("feature selection failed: %w", err)
-    }
-    
-    return nil
-}
-
-// 特征标准化
-func (dm *DatasetManager) normalizeFeatures(dataset *Dataset) error {
-    if len(dataset.Samples) == 0 {
-        return fmt.Errorf("empty dataset")
-    }
-    
-    featureCount := len(dataset.Samples[0].Features)
-    
-    // 计算每个特征的均值和标准差
-    means := make([]float64, featureCount)
-    stds := make([]float64, featureCount)
-    
-    // 计算均值
-    for _, sample := range dataset.Samples {
-        for i, feature := range sample.Features {
-            means[i] += feature
+func (is *InferenceService) Predict(modelID string, input []float64) ([]float64, error) {
+    // 从缓存获取模型
+    model, err := is.cache.GetModel(modelID)
+    if err != nil {
+        // 从存储加载模型
+        model, err = is.modelRepo.GetModel(modelID)
+        if err != nil {
+            return nil, err
         }
+        
+        // 缓存模型
+        is.cache.SetModel(modelID, model)
     }
     
-    for i := range means {
-        means[i] /= float64(len(dataset.Samples))
+    // 执行预测
+    predictions, err := model.Predict(input)
+    if err != nil {
+        return nil, err
     }
     
-    // 计算标准差
-    for _, sample := range dataset.Samples {
-        for i, feature := range sample.Features {
-            diff := feature - means[i]
-            stds[i] += diff * diff
-        }
-    }
+    // 记录预测日志
+    is.logger.Info("Prediction completed",
+        "model_id", modelID,
+        "input_size", len(input),
+        "output_size", len(predictions),
+    )
     
-    for i := range stds {
-        stds[i] = math.Sqrt(stds[i] / float64(len(dataset.Samples)))
-        if stds[i] == 0 {
-            stds[i] = 1 // 避免除零
-        }
-    }
-    
-    // 标准化特征
-    for _, sample := range dataset.Samples {
-        for i := range sample.Features {
-            sample.Features[i] = (sample.Features[i] - means[i]) / stds[i]
-        }
-    }
-    
-    // 标准化验证集
-    for _, sample := range dataset.ValidationSamples {
-        for i := range sample.Features {
-            sample.Features[i] = (sample.Features[i] - means[i]) / stds[i]
-        }
-    }
-    
-    return nil
-}
-
-// 特征选择
-func (dm *DatasetManager) selectFeatures(dataset *Dataset) error {
-    // 简单的特征选择：移除方差很小的特征
-    featureCount := len(dataset.Samples[0].Features)
-    variances := make([]float64, featureCount)
-    
-    // 计算每个特征的方差
-    for _, sample := range dataset.Samples {
-        for i, feature := range sample.Features {
-            variances[i] += feature * feature
-        }
-    }
-    
-    for i := range variances {
-        variances[i] /= float64(len(dataset.Samples))
-    }
-    
-    // 选择方差大于阈值的特征
-    threshold := 0.01
-    selectedFeatures := make([]int, 0)
-    
-    for i, variance := range variances {
-        if variance > threshold {
-            selectedFeatures = append(selectedFeatures, i)
-        }
-    }
-    
-    // 更新数据集
-    for _, sample := range dataset.Samples {
-        newFeatures := make([]float64, len(selectedFeatures))
-        for j, idx := range selectedFeatures {
-            newFeatures[j] = sample.Features[idx]
-        }
-        sample.Features = newFeatures
-    }
-    
-    for _, sample := range dataset.ValidationSamples {
-        newFeatures := make([]float64, len(selectedFeatures))
-        for j, idx := range selectedFeatures {
-            newFeatures[j] = sample.Features[idx]
-        }
-        sample.Features = newFeatures
-    }
-    
-    dataset.FeatureCount = len(selectedFeatures)
-    
-    return nil
+    return predictions, nil
 }
 ```
 
-## 模型管理
+---
 
-### 模型注册表
+## 5. 算法实现
+
+### 5.1 线性回归
+
+```go
+// 线性回归模型
+type LinearRegression struct {
+    weights []float64
+    bias    float64
+    learningRate float64
+    epochs  int
+}
+
+func NewLinearRegression(learningRate float64, epochs int) *LinearRegression {
+    return &LinearRegression{
+        learningRate: learningRate,
+        epochs:      epochs,
+    }
+}
+
+func (lr *LinearRegression) Train(X [][]float64, y []float64) error {
+    n := len(X)
+    d := len(X[0])
+    
+    // 初始化权重
+    lr.weights = make([]float64, d)
+    lr.bias = 0.0
+    
+    // 梯度下降训练
+    for epoch := 0; epoch < lr.epochs; epoch++ {
+        // 前向传播
+        predictions := make([]float64, n)
+        for i := 0; i < n; i++ {
+            predictions[i] = lr.predict(X[i])
+        }
+        
+        // 计算梯度
+        weightGradients := make([]float64, d)
+        biasGradient := 0.0
+        
+        for i := 0; i < n; i++ {
+            error := predictions[i] - y[i]
+            
+            // 权重梯度
+            for j := 0; j < d; j++ {
+                weightGradients[j] += error * X[i][j]
+            }
+            
+            // 偏置梯度
+            biasGradient += error
+        }
+        
+        // 更新参数
+        for j := 0; j < d; j++ {
+            lr.weights[j] -= lr.learningRate * weightGradients[j] / float64(n)
+        }
+        lr.bias -= lr.learningRate * biasGradient / float64(n)
+    }
+    
+    return nil
+}
+
+func (lr *LinearRegression) Predict(x []float64) float64 {
+    prediction := lr.bias
+    for i := 0; i < len(x); i++ {
+        prediction += lr.weights[i] * x[i]
+    }
+    return prediction
+}
+
+func (lr *LinearRegression) PredictBatch(X [][]float64) []float64 {
+    predictions := make([]float64, len(X))
+    for i, x := range X {
+        predictions[i] = lr.Predict(x)
+    }
+    return predictions
+}
+```
+
+### 5.2 随机森林
+
+```go
+// 决策树节点
+type TreeNode struct {
+    FeatureIndex int
+    Threshold    float64
+    Left         *TreeNode
+    Right        *TreeNode
+    IsLeaf       bool
+    Prediction   float64
+}
+
+// 决策树
+type DecisionTree struct {
+    Root       *TreeNode
+    MaxDepth   int
+    MinSamples int
+}
+
+func NewDecisionTree(maxDepth, minSamples int) *DecisionTree {
+    return &DecisionTree{
+        MaxDepth:   maxDepth,
+        MinSamples: minSamples,
+    }
+}
+
+func (dt *DecisionTree) Train(X [][]float64, y []float64) error {
+    dt.Root = dt.buildTree(X, y, 0)
+    return nil
+}
+
+func (dt *DecisionTree) buildTree(X [][]float64, y []float64, depth int) *TreeNode {
+    n := len(X)
+    
+    // 停止条件
+    if depth >= dt.MaxDepth || n <= dt.MinSamples || dt.isPure(y) {
+        return &TreeNode{
+            IsLeaf:     true,
+            Prediction: dt.mean(y),
+        }
+    }
+    
+    // 寻找最佳分割点
+    bestFeature, bestThreshold := dt.findBestSplit(X, y)
+    if bestFeature == -1 {
+        return &TreeNode{
+            IsLeaf:     true,
+            Prediction: dt.mean(y),
+        }
+    }
+    
+    // 分割数据
+    leftX, leftY, rightX, rightY := dt.split(X, y, bestFeature, bestThreshold)
+    
+    // 递归构建子树
+    node := &TreeNode{
+        FeatureIndex: bestFeature,
+        Threshold:    bestThreshold,
+        Left:         dt.buildTree(leftX, leftY, depth+1),
+        Right:        dt.buildTree(rightX, rightY, depth+1),
+    }
+    
+    return node
+}
+
+func (dt *DecisionTree) Predict(x []float64) float64 {
+    return dt.predictNode(dt.Root, x)
+}
+
+func (dt *DecisionTree) predictNode(node *TreeNode, x []float64) float64 {
+    if node.IsLeaf {
+        return node.Prediction
+    }
+    
+    if x[node.FeatureIndex] <= node.Threshold {
+        return dt.predictNode(node.Left, x)
+    } else {
+        return dt.predictNode(node.Right, x)
+    }
+}
+
+// 随机森林
+type RandomForest struct {
+    Trees       []*DecisionTree
+    NumTrees    int
+    MaxFeatures int
+}
+
+func NewRandomForest(numTrees, maxFeatures int) *RandomForest {
+    return &RandomForest{
+        NumTrees:    numTrees,
+        MaxFeatures: maxFeatures,
+    }
+}
+
+func (rf *RandomForest) Train(X [][]float64, y []float64) error {
+    rf.Trees = make([]*DecisionTree, rf.NumTrees)
+    
+    for i := 0; i < rf.NumTrees; i++ {
+        // 随机采样数据
+        sampleX, sampleY := rf.bootstrapSample(X, y)
+        
+        // 训练决策树
+        tree := NewDecisionTree(10, 5)
+        tree.Train(sampleX, sampleY)
+        rf.Trees[i] = tree
+    }
+    
+    return nil
+}
+
+func (rf *RandomForest) Predict(x []float64) float64 {
+    predictions := make([]float64, rf.NumTrees)
+    
+    for i, tree := range rf.Trees {
+        predictions[i] = tree.Predict(x)
+    }
+    
+    return rf.mean(predictions)
+}
+```
+
+---
+
+## 6. Golang实现
+
+### 6.1 项目结构
+
+```
+ml-platform/
+├── cmd/
+│   ├── trainer/
+│   │   └── main.go
+│   ├── inference/
+│   │   └── main.go
+│   └── api/
+│       └── main.go
+├── internal/
+│   ├── models/
+│   │   ├── linear.go
+│   │   ├── tree.go
+│   │   ├── forest.go
+│   │   └── neural.go
+│   ├── training/
+│   │   ├── trainer.go
+│   │   ├── scheduler.go
+│   │   └── optimizer.go
+│   ├── inference/
+│   │   ├── service.go
+│   │   ├── cache.go
+│   │   └── batch.go
+│   └── data/
+│       ├── dataset.go
+│       ├── features.go
+│       └── preprocessing.go
+├── pkg/
+│   ├── metrics/
+│   ├── utils/
+│   └── config/
+└── configs/
+```
+
+### 6.2 核心实现
 
 ```go
 // 模型注册表
 type ModelRegistry struct {
-    models map[string]*ModelInfo
+    models map[string]Model
     mu     sync.RWMutex
 }
 
-// 模型信息
-type ModelInfo struct {
-    ID          string
-    Name        string
-    Version     string
-    Type        string
-    Path        string
-    CreatedAt   time.Time
-    UpdatedAt   time.Time
-    Metrics     map[string]float64
-    Status      ModelStatus
+func NewModelRegistry() *ModelRegistry {
+    return &ModelRegistry{
+        models: make(map[string]Model),
+    }
 }
 
-// 模型状态
-type ModelStatus string
-
-const (
-    ModelStatusTraining   ModelStatus = "training"
-    ModelStatusReady      ModelStatus = "ready"
-    ModelStatusDeployed   ModelStatus = "deployed"
-    ModelStatusFailed     ModelStatus = "failed"
-    ModelStatusDeprecated ModelStatus = "deprecated"
-)
-
-// 注册模型
-func (mr *ModelRegistry) RegisterModel(info *ModelInfo) error {
+func (mr *ModelRegistry) Register(name string, model Model) error {
     mr.mu.Lock()
     defer mr.mu.Unlock()
     
-    if _, exists := mr.models[info.ID]; exists {
-        return fmt.Errorf("model %s already registered", info.ID)
+    if _, exists := mr.models[name]; exists {
+        return ErrModelAlreadyExists
     }
     
-    info.CreatedAt = time.Now()
-    info.UpdatedAt = time.Now()
-    info.Status = ModelStatusTraining
-    
-    mr.models[info.ID] = info
-    
+    mr.models[name] = model
     return nil
 }
 
-// 更新模型状态
-func (mr *ModelRegistry) UpdateModelStatus(id string, status ModelStatus) error {
-    mr.mu.Lock()
-    defer mr.mu.Unlock()
-    
-    model, exists := mr.models[id]
-    if !exists {
-        return fmt.Errorf("model %s not found", id)
-    }
-    
-    model.Status = status
-    model.UpdatedAt = time.Now()
-    
-    return nil
-}
-
-// 获取模型
-func (mr *ModelRegistry) GetModel(id string) (*ModelInfo, error) {
+func (mr *ModelRegistry) Get(name string) (Model, error) {
     mr.mu.RLock()
     defer mr.mu.RUnlock()
     
-    model, exists := mr.models[id]
+    model, exists := mr.models[name]
     if !exists {
-        return nil, fmt.Errorf("model %s not found", id)
+        return nil, ErrModelNotFound
     }
     
     return model, nil
 }
 
-// 列出模型
-func (mr *ModelRegistry) ListModels(filter ModelFilter) ([]*ModelInfo, error) {
-    mr.mu.RLock()
-    defer mr.mu.RUnlock()
-    
-    var models []*ModelInfo
-    for _, model := range mr.models {
-        if filter.Matches(model) {
-            models = append(models, model)
-        }
-    }
-    
-    return models, nil
+// 特征工程管道
+type FeaturePipeline struct {
+    steps []PipelineStep
 }
 
-// 模型过滤器
-type ModelFilter struct {
-    Type   string
-    Status ModelStatus
-    Name   string
-}
-
-func (f *ModelFilter) Matches(model *ModelInfo) bool {
-    if f.Type != "" && f.Type != model.Type {
-        return false
-    }
-    
-    if f.Status != "" && f.Status != model.Status {
-        return false
-    }
-    
-    if f.Name != "" && !strings.Contains(model.Name, f.Name) {
-        return false
-    }
-    
-    return true
-}
-```
-
-### 模型版本管理
-
-```go
-// 模型版本管理器
-type ModelVersionManager struct {
-    versions map[string][]*ModelVersion
-    mu       sync.RWMutex
-}
-
-// 模型版本
-type ModelVersion struct {
-    ID          string
-    ModelID     string
-    Version     string
-    Path        string
-    CreatedAt   time.Time
-    Metrics     map[string]float64
-    Description string
-    Tags        []string
-}
-
-// 创建新版本
-func (mvm *ModelVersionManager) CreateVersion(modelID, version, path string) (*ModelVersion, error) {
-    mvm.mu.Lock()
-    defer mvm.mu.Unlock()
-    
-    modelVersion := &ModelVersion{
-        ID:        uuid.New().String(),
-        ModelID:   modelID,
-        Version:   version,
-        Path:      path,
-        CreatedAt: time.Now(),
-        Metrics:   make(map[string]float64),
-        Tags:      make([]string, 0),
-    }
-    
-    if mvm.versions[modelID] == nil {
-        mvm.versions[modelID] = make([]*ModelVersion, 0)
-    }
-    
-    mvm.versions[modelID] = append(mvm.versions[modelID], modelVersion)
-    
-    return modelVersion, nil
-}
-
-// 获取模型版本
-func (mvm *ModelVersionManager) GetVersion(modelID, version string) (*ModelVersion, error) {
-    mvm.mu.RLock()
-    defer mvm.mu.RUnlock()
-    
-    versions, exists := mvm.versions[modelID]
-    if !exists {
-        return nil, fmt.Errorf("model %s not found", modelID)
-    }
-    
-    for _, v := range versions {
-        if v.Version == version {
-            return v, nil
-        }
-    }
-    
-    return nil, fmt.Errorf("version %s not found for model %s", version, modelID)
-}
-
-// 获取最新版本
-func (mvm *ModelVersionManager) GetLatestVersion(modelID string) (*ModelVersion, error) {
-    mvm.mu.RLock()
-    defer mvm.mu.RUnlock()
-    
-    versions, exists := mvm.versions[modelID]
-    if !exists || len(versions) == 0 {
-        return nil, fmt.Errorf("no versions found for model %s", modelID)
-    }
-    
-    // 返回最新创建的版本
-    latest := versions[0]
-    for _, v := range versions {
-        if v.CreatedAt.After(latest.CreatedAt) {
-            latest = v
-        }
-    }
-    
-    return latest, nil
-}
-
-// 比较版本
-func (mvm *ModelVersionManager) CompareVersions(modelID, version1, version2 string) (*VersionComparison, error) {
-    v1, err := mvm.GetVersion(modelID, version1)
-    if err != nil {
-        return nil, err
-    }
-    
-    v2, err := mvm.GetVersion(modelID, version2)
-    if err != nil {
-        return nil, err
-    }
-    
-    comparison := &VersionComparison{
-        ModelID:   modelID,
-        Version1:  v1,
-        Version2:  v2,
-        Metrics:   make(map[string]MetricComparison),
-    }
-    
-    // 比较指标
-    for metric := range v1.Metrics {
-        if v2Value, exists := v2.Metrics[metric]; exists {
-            v1Value := v1.Metrics[metric]
-            comparison.Metrics[metric] = MetricComparison{
-                Version1: v1Value,
-                Version2: v2Value,
-                Diff:     v2Value - v1Value,
-                PercentChange: (v2Value - v1Value) / v1Value * 100,
-            }
-        }
-    }
-    
-    return comparison, nil
-}
-
-// 版本比较
-type VersionComparison struct {
-    ModelID  string
-    Version1 *ModelVersion
-    Version2 *ModelVersion
-    Metrics  map[string]MetricComparison
-}
-
-// 指标比较
-type MetricComparison struct {
-    Version1      float64
-    Version2      float64
-    Diff          float64
-    PercentChange float64
-}
-```
-
-## 数据处理
-
-### 特征工程
-
-```go
-// 特征工程器
-type FeatureEngineer struct {
-    transformers map[string]FeatureTransformer
-}
-
-// 特征转换器接口
-type FeatureTransformer interface {
+type PipelineStep interface {
     Fit(data [][]float64) error
     Transform(data [][]float64) ([][]float64, error)
-    Name() string
 }
 
-// 标准化转换器
+func (fp *FeaturePipeline) AddStep(step PipelineStep) {
+    fp.steps = append(fp.steps, step)
+}
+
+func (fp *FeaturePipeline) Fit(data [][]float64) error {
+    for _, step := range fp.steps {
+        if err := step.Fit(data); err != nil {
+            return err
+        }
+    }
+    return nil
+}
+
+func (fp *FeaturePipeline) Transform(data [][]float64) ([][]float64, error) {
+    transformed := data
+    for _, step := range fp.steps {
+        var err error
+        transformed, err = step.Transform(transformed)
+        if err != nil {
+            return nil, err
+        }
+    }
+    return transformed, nil
+}
+
+// 标准化步骤
 type StandardScaler struct {
-    means []float64
-    stds  []float64
+    mean []float64
+    std  []float64
     fitted bool
 }
 
 func (ss *StandardScaler) Fit(data [][]float64) error {
     if len(data) == 0 {
-        return fmt.Errorf("empty data")
+        return ErrEmptyData
     }
     
-    featureCount := len(data[0])
-    ss.means = make([]float64, featureCount)
-    ss.stds = make([]float64, featureCount)
+    n := len(data)
+    d := len(data[0])
+    
+    ss.mean = make([]float64, d)
+    ss.std = make([]float64, d)
     
     // 计算均值
-    for _, sample := range data {
-        for i, feature := range sample {
-            ss.means[i] += feature
+    for j := 0; j < d; j++ {
+        sum := 0.0
+        for i := 0; i < n; i++ {
+            sum += data[i][j]
         }
-    }
-    
-    for i := range ss.means {
-        ss.means[i] /= float64(len(data))
+        ss.mean[j] = sum / float64(n)
     }
     
     // 计算标准差
-    for _, sample := range data {
-        for i, feature := range sample {
-            diff := feature - ss.means[i]
-            ss.stds[i] += diff * diff
+    for j := 0; j < d; j++ {
+        sum := 0.0
+        for i := 0; i < n; i++ {
+            diff := data[i][j] - ss.mean[j]
+            sum += diff * diff
         }
-    }
-    
-    for i := range ss.stds {
-        ss.stds[i] = math.Sqrt(ss.stds[i] / float64(len(data)))
-        if ss.stds[i] == 0 {
-            ss.stds[i] = 1 // 避免除零
-        }
+        ss.std[j] = math.Sqrt(sum / float64(n))
     }
     
     ss.fitted = true
@@ -735,485 +688,292 @@ func (ss *StandardScaler) Fit(data [][]float64) error {
 
 func (ss *StandardScaler) Transform(data [][]float64) ([][]float64, error) {
     if !ss.fitted {
-        return nil, fmt.Errorf("scaler not fitted")
+        return nil, ErrNotFitted
     }
     
-    result := make([][]float64, len(data))
-    for i, sample := range data {
-        result[i] = make([]float64, len(sample))
-        for j, feature := range sample {
-            result[i][j] = (feature - ss.means[j]) / ss.stds[j]
+    transformed := make([][]float64, len(data))
+    for i, row := range data {
+        transformed[i] = make([]float64, len(row))
+        for j, val := range row {
+            if ss.std[j] == 0 {
+                transformed[i][j] = 0
+            } else {
+                transformed[i][j] = (val - ss.mean[j]) / ss.std[j]
+            }
         }
     }
     
-    return result, nil
-}
-
-func (ss *StandardScaler) Name() string {
-    return "standard_scaler"
-}
-
-// 特征选择器
-type FeatureSelector struct {
-    selectedFeatures []int
-    threshold        float64
-    fitted           bool
-}
-
-func (fs *FeatureSelector) Fit(data [][]float64) error {
-    if len(data) == 0 {
-        return fmt.Errorf("empty data")
-    }
-    
-    featureCount := len(data[0])
-    variances := make([]float64, featureCount)
-    
-    // 计算每个特征的方差
-    for _, sample := range data {
-        for i, feature := range sample {
-            variances[i] += feature * feature
-        }
-    }
-    
-    for i := range variances {
-        variances[i] /= float64(len(data))
-    }
-    
-    // 选择方差大于阈值的特征
-    fs.selectedFeatures = make([]int, 0)
-    for i, variance := range variances {
-        if variance > fs.threshold {
-            fs.selectedFeatures = append(fs.selectedFeatures, i)
-        }
-    }
-    
-    fs.fitted = true
-    return nil
-}
-
-func (fs *FeatureSelector) Transform(data [][]float64) ([][]float64, error) {
-    if !fs.fitted {
-        return nil, fmt.Errorf("selector not fitted")
-    }
-    
-    result := make([][]float64, len(data))
-    for i, sample := range data {
-        result[i] = make([]float64, len(fs.selectedFeatures))
-        for j, idx := range fs.selectedFeatures {
-            result[i][j] = sample[idx]
-        }
-    }
-    
-    return result, nil
-}
-
-func (fs *FeatureSelector) Name() string {
-    return "feature_selector"
+    return transformed, nil
 }
 ```
 
-## 推理服务
+---
 
-### 推理引擎
+## 7. 性能优化
+
+### 7.1 并行训练
 
 ```go
-// 推理引擎
-type InferenceEngine struct {
-    models    map[string]Model
-    registry  *ModelRegistry
-    mu        sync.RWMutex
+// 并行训练器
+type ParallelTrainer struct {
+    numWorkers int
+    batchSize  int
 }
 
-// 加载模型
-func (ie *InferenceEngine) LoadModel(modelID string) error {
-    ie.mu.Lock()
-    defer ie.mu.Unlock()
+func (pt *ParallelTrainer) TrainParallel(model Model, X [][]float64, y []float64) error {
+    n := len(X)
+    batches := pt.createBatches(X, y, pt.batchSize)
     
-    modelInfo, err := ie.registry.GetModel(modelID)
-    if err != nil {
-        return fmt.Errorf("model not found: %w", err)
+    // 创建worker池
+    jobs := make(chan []int, len(batches))
+    results := make(chan error, len(batches))
+    
+    // 启动workers
+    for i := 0; i < pt.numWorkers; i++ {
+        go pt.worker(model, batches, jobs, results)
     }
     
-    if modelInfo.Status != ModelStatusReady {
-        return fmt.Errorf("model not ready: %s", modelInfo.Status)
+    // 提交任务
+    for i := range batches {
+        jobs <- []int{i}
+    }
+    close(jobs)
+    
+    // 收集结果
+    for i := 0; i < len(batches); i++ {
+        if err := <-results; err != nil {
+            return err
+        }
     }
     
-    // 根据模型类型创建模型实例
-    var model Model
-    switch modelInfo.Type {
-    case "linear_regression":
-        model = &LinearRegression{}
-    default:
-        return fmt.Errorf("unsupported model type: %s", modelInfo.Type)
-    }
-    
-    // 加载模型参数
-    if err := model.Load(modelInfo.Path); err != nil {
-        return fmt.Errorf("failed to load model: %w", err)
-    }
-    
-    ie.models[modelID] = model
     return nil
 }
 
-// 推理
-func (ie *InferenceEngine) Predict(modelID string, input interface{}) (interface{}, error) {
-    ie.mu.RLock()
-    model, exists := ie.models[modelID]
-    ie.mu.RUnlock()
-    
-    if !exists {
-        return nil, fmt.Errorf("model %s not loaded", modelID)
+func (pt *ParallelTrainer) worker(model Model, batches [][][]float64, jobs <-chan []int, results chan<- error) {
+    for job := range jobs {
+        batchIndex := job[0]
+        batch := batches[batchIndex]
+        
+        // 训练批次
+        err := model.TrainBatch(batch)
+        results <- err
     }
-    
-    return model.Predict(input)
+}
+```
+
+### 7.2 模型缓存
+
+```go
+// 模型缓存
+type ModelCache struct {
+    cache map[string]*CachedModel
+    mu    sync.RWMutex
+    maxSize int
 }
 
-// 批量推理
-func (ie *InferenceEngine) BatchPredict(modelID string, inputs []interface{}) ([]interface{}, error) {
-    ie.mu.RLock()
-    model, exists := ie.models[modelID]
-    ie.mu.RUnlock()
+type CachedModel struct {
+    Model     Model
+    LastUsed  time.Time
+    HitCount  int
+}
+
+func NewModelCache(maxSize int) *ModelCache {
+    return &ModelCache{
+        cache:   make(map[string]*CachedModel),
+        maxSize: maxSize,
+    }
+}
+
+func (mc *ModelCache) Get(modelID string) (Model, error) {
+    mc.mu.RLock()
+    cached, exists := mc.cache[modelID]
+    mc.mu.RUnlock()
     
     if !exists {
-        return nil, fmt.Errorf("model %s not loaded", modelID)
+        return nil, ErrModelNotFound
     }
     
-    results := make([]interface{}, len(inputs))
-    for i, input := range inputs {
-        result, err := model.Predict(input)
-        if err != nil {
-            return nil, fmt.Errorf("prediction failed for input %d: %w", i, err)
+    // 更新使用统计
+    mc.mu.Lock()
+    cached.LastUsed = time.Now()
+    cached.HitCount++
+    mc.mu.Unlock()
+    
+    return cached.Model, nil
+}
+
+func (mc *ModelCache) Set(modelID string, model Model) error {
+    mc.mu.Lock()
+    defer mc.mu.Unlock()
+    
+    // 检查缓存大小
+    if len(mc.cache) >= mc.maxSize {
+        mc.evictLRU()
+    }
+    
+    mc.cache[modelID] = &CachedModel{
+        Model:    model,
+        LastUsed: time.Now(),
+        HitCount: 1,
+    }
+    
+    return nil
+}
+
+func (mc *ModelCache) evictLRU() {
+    var oldestKey string
+    var oldestTime time.Time
+    
+    for key, cached := range mc.cache {
+        if oldestKey == "" || cached.LastUsed.Before(oldestTime) {
+            oldestKey = key
+            oldestTime = cached.LastUsed
         }
-        results[i] = result
+    }
+    
+    if oldestKey != "" {
+        delete(mc.cache, oldestKey)
+    }
+}
+```
+
+---
+
+## 8. 最佳实践
+
+### 8.1 模型评估
+
+```go
+// 模型评估器
+type ModelEvaluator struct {
+    metrics map[string]Metric
+}
+
+type Metric interface {
+    Calculate(yTrue, yPred []float64) float64
+}
+
+func (me *ModelEvaluator) Evaluate(model Model, X [][]float64, y []float64) (map[string]float64, error) {
+    predictions, err := model.PredictBatch(X)
+    if err != nil {
+        return nil, err
+    }
+    
+    results := make(map[string]float64)
+    for name, metric := range me.metrics {
+        results[name] = metric.Calculate(y, predictions)
     }
     
     return results, nil
 }
-```
 
-### 推理服务API
+// 均方误差
+type MeanSquaredError struct{}
 
-```go
-// 推理服务
-type InferenceService struct {
-    engine    *InferenceEngine
-    registry  *ModelRegistry
-    router    *gin.Engine
-}
-
-// 设置路由
-func (is *InferenceService) SetupRoutes() {
-    api := is.router.Group("/api/v1")
-    {
-        api.POST("/predict/:model_id", is.predict)
-        api.POST("/batch_predict/:model_id", is.batchPredict)
-        api.GET("/models", is.listModels)
-        api.GET("/models/:model_id", is.getModel)
-    }
-}
-
-// 预测接口
-func (is *InferenceService) predict(c *gin.Context) {
-    modelID := c.Param("model_id")
-    
-    var request PredictRequest
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
+func (mse *MeanSquaredError) Calculate(yTrue, yPred []float64) float64 {
+    if len(yTrue) != len(yPred) {
+        return 0.0
     }
     
-    // 执行预测
-    result, err := is.engine.Predict(modelID, request.Input)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
+    sum := 0.0
+    for i := 0; i < len(yTrue); i++ {
+        diff := yTrue[i] - yPred[i]
+        sum += diff * diff
     }
     
-    response := PredictResponse{
-        ModelID: modelID,
-        Input:   request.Input,
-        Output:  result,
-        Timestamp: time.Now(),
+    return sum / float64(len(yTrue))
+}
+
+// 准确率
+type Accuracy struct{}
+
+func (acc *Accuracy) Calculate(yTrue, yPred []float64) float64 {
+    if len(yTrue) != len(yPred) {
+        return 0.0
     }
     
-    c.JSON(http.StatusOK, response)
-}
-
-// 批量预测接口
-func (is *InferenceService) batchPredict(c *gin.Context) {
-    modelID := c.Param("model_id")
-    
-    var request BatchPredictRequest
-    if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
+    correct := 0
+    for i := 0; i < len(yTrue); i++ {
+        if yTrue[i] == yPred[i] {
+            correct++
+        }
     }
     
-    // 执行批量预测
-    results, err := is.engine.BatchPredict(modelID, request.Inputs)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    
-    response := BatchPredictResponse{
-        ModelID: modelID,
-        Inputs:  request.Inputs,
-        Outputs: results,
-        Timestamp: time.Now(),
-    }
-    
-    c.JSON(http.StatusOK, response)
-}
-
-// 请求和响应结构
-type PredictRequest struct {
-    Input interface{} `json:"input"`
-}
-
-type PredictResponse struct {
-    ModelID   string      `json:"model_id"`
-    Input     interface{} `json:"input"`
-    Output    interface{} `json:"output"`
-    Timestamp time.Time   `json:"timestamp"`
-}
-
-type BatchPredictRequest struct {
-    Inputs []interface{} `json:"inputs"`
-}
-
-type BatchPredictResponse struct {
-    ModelID   string        `json:"model_id"`
-    Inputs    []interface{} `json:"inputs"`
-    Outputs   []interface{} `json:"outputs"`
-    Timestamp time.Time     `json:"timestamp"`
+    return float64(correct) / float64(len(yTrue))
 }
 ```
 
-## 最佳实践
-
-### 1. 错误处理
+### 8.2 超参数调优
 
 ```go
-// AI/ML错误类型
-type MLError struct {
-    Code    string `json:"code"`
-    Message string `json:"message"`
-    ModelID string `json:"model_id,omitempty"`
-    Details string `json:"details,omitempty"`
+// 网格搜索
+type GridSearch struct {
+    paramGrid map[string][]interface{}
+    cv        int
+    scorer    Metric
 }
 
-func (e *MLError) Error() string {
-    return fmt.Sprintf("[%s] %s", e.Code, e.Message)
-}
-
-// 错误码常量
-const (
-    ErrCodeModelNotFound     = "MODEL_NOT_FOUND"
-    ErrCodeModelNotReady     = "MODEL_NOT_READY"
-    ErrCodeInvalidInput      = "INVALID_INPUT"
-    ErrCodeTrainingFailed    = "TRAINING_FAILED"
-    ErrCodeInferenceFailed   = "INFERENCE_FAILED"
-)
-
-// 统一错误处理
-func HandleMLError(err error, modelID string) *MLError {
-    switch {
-    case errors.Is(err, ErrModelNotFound):
-        return &MLError{
-            Code:    ErrCodeModelNotFound,
-            Message: "Model not found",
-            ModelID: modelID,
-        }
-    case errors.Is(err, ErrModelNotReady):
-        return &MLError{
-            Code:    ErrCodeModelNotReady,
-            Message: "Model not ready",
-            ModelID: modelID,
-        }
-    default:
-        return &MLError{
-            Code:    ErrCodeInferenceFailed,
-            Message: "Inference failed",
-            ModelID: modelID,
+func (gs *GridSearch) Search(model Model, X [][]float64, y []float64) (*SearchResult, error) {
+    bestScore := -1.0
+    bestParams := make(map[string]interface{})
+    
+    // 生成参数组合
+    paramCombinations := gs.generateParamCombinations()
+    
+    for _, params := range paramCombinations {
+        // 设置模型参数
+        gs.setModelParams(model, params)
+        
+        // 交叉验证
+        score := gs.crossValidate(model, X, y)
+        
+        if score > bestScore {
+            bestScore = score
+            bestParams = params
         }
     }
-}
-```
-
-### 2. 监控和日志
-
-```go
-// AI/ML指标
-type MLMetrics struct {
-    modelCount      prometheus.Gauge
-    inferenceCount  prometheus.Counter
-    inferenceLatency prometheus.Histogram
-    trainingCount   prometheus.Counter
-    errorCount      prometheus.Counter
+    
+    return &SearchResult{
+        BestParams: bestParams,
+        BestScore:  bestScore,
+    }, nil
 }
 
-func NewMLMetrics() *MLMetrics {
-    return &MLMetrics{
-        modelCount: prometheus.NewGauge(prometheus.GaugeOpts{
-            Name: "ml_models_total",
-            Help: "Total number of ML models",
-        }),
-        inferenceCount: prometheus.NewCounter(prometheus.CounterOpts{
-            Name: "ml_inferences_total",
-            Help: "Total number of model inferences",
-        }),
-        inferenceLatency: prometheus.NewHistogram(prometheus.HistogramOpts{
-            Name:    "ml_inference_latency_seconds",
-            Help:    "Model inference latency",
-            Buckets: prometheus.DefBuckets,
-        }),
-        trainingCount: prometheus.NewCounter(prometheus.CounterOpts{
-            Name: "ml_training_sessions_total",
-            Help: "Total number of training sessions",
-        }),
-        errorCount: prometheus.NewCounter(prometheus.CounterOpts{
-            Name: "ml_errors_total",
-            Help: "Total number of ML errors",
-        }),
-    }
-}
-
-// AI/ML日志
-type MLLogger struct {
-    logger *zap.Logger
-}
-
-func (l *MLLogger) LogModelTraining(modelID string, datasetSize int, duration time.Duration) {
-    l.logger.Info("model training completed",
-        zap.String("model_id", modelID),
-        zap.Int("dataset_size", datasetSize),
-        zap.Duration("duration", duration),
-    )
-}
-
-func (l *MLLogger) LogModelInference(modelID string, input interface{}, output interface{}, latency time.Duration) {
-    l.logger.Debug("model inference",
-        zap.String("model_id", modelID),
-        zap.Any("input", input),
-        zap.Any("output", output),
-        zap.Duration("latency", latency),
-    )
-}
-```
-
-### 3. 测试策略
-
-```go
-// 单元测试
-func TestLinearRegression_Train(t *testing.T) {
-    // 创建测试数据
-    samples := []Sample{
-        {Features: []float64{1, 2}, Label: 5},
-        {Features: []float64{2, 3}, Label: 8},
-        {Features: []float64{3, 4}, Label: 11},
-    }
+func (gs *GridSearch) crossValidate(model Model, X [][]float64, y []float64) float64 {
+    n := len(X)
+    foldSize := n / gs.cv
     
-    dataset := &Dataset{
-        Samples:      samples,
-        FeatureCount: 2,
-        Epochs:       10,
-    }
+    scores := make([]float64, gs.cv)
     
-    // 创建模型
-    model := &LinearRegression{
-        LearningRate: 0.01,
-    }
-    
-    // 训练模型
-    err := model.Train(dataset)
-    if err != nil {
-        t.Errorf("Training failed: %v", err)
-    }
-    
-    // 测试预测
-    input := []float64{4, 5}
-    prediction, err := model.Predict(input)
-    if err != nil {
-        t.Errorf("Prediction failed: %v", err)
-    }
-    
-    // 验证预测结果
-    expected := 14.0 // 基于线性关系 y = x1 + 2*x2
-    if math.Abs(prediction.(float64)-expected) > 1.0 {
-        t.Errorf("Expected prediction around %f, got %f", expected, prediction)
-    }
-}
-
-// 集成测试
-func TestInferenceService_Predict(t *testing.T) {
-    // 创建推理服务
-    registry := &ModelRegistry{models: make(map[string]*ModelInfo)}
-    engine := &InferenceEngine{
-        models:   make(map[string]Model),
-        registry: registry,
-    }
-    service := &InferenceService{
-        engine:   engine,
-        registry: registry,
-        router:   gin.New(),
-    }
-    
-    // 注册模型
-    modelInfo := &ModelInfo{
-        ID:     "test_model",
-        Name:   "Test Model",
-        Type:   "linear_regression",
-        Status: ModelStatusReady,
-        Path:   "test_model.json",
-    }
-    registry.RegisterModel(modelInfo)
-    
-    // 创建测试模型
-    model := &LinearRegression{
-        Weights: []float64{1, 2},
-        Bias:    0,
-    }
-    engine.models["test_model"] = model
-    
-    // 设置路由
-    service.SetupRoutes()
-    
-    // 创建测试请求
-    request := PredictRequest{
-        Input: []float64{3, 4},
-    }
-    
-    // 执行预测
-    result, err := engine.Predict("test_model", request.Input)
-    if err != nil {
-        t.Errorf("Inference failed: %v", err)
-    }
-    
-    // 验证结果
-    expected := 11.0 // 1*3 + 2*4 = 11
-    if result.(float64) != expected {
-        t.Errorf("Expected %f, got %f", expected, result)
-    }
-}
-
-// 性能测试
-func BenchmarkLinearRegression_Predict(b *testing.B) {
-    model := &LinearRegression{
-        Weights: []float64{1, 2, 3, 4, 5},
-        Bias:    0,
-    }
-    
-    input := []float64{1, 2, 3, 4, 5}
-    
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        _, err := model.Predict(input)
-        if err != nil {
-            b.Fatalf("Prediction failed: %v", err)
+    for i := 0; i < gs.cv; i++ {
+        start := i * foldSize
+        end := start + foldSize
+        if i == gs.cv-1 {
+            end = n
         }
+        
+        // 分割训练集和验证集
+        XTrain := append(X[:start], X[end:]...)
+        yTrain := append(y[:start], y[end:]...)
+        XVal := X[start:end]
+        yVal := y[start:end]
+        
+        // 训练模型
+        model.Train(XTrain, yTrain)
+        
+        // 预测验证集
+        yPred, _ := model.PredictBatch(XVal)
+        
+        // 计算分数
+        scores[i] = gs.scorer.Calculate(yVal, yPred)
     }
+    
+    // 返回平均分数
+    sum := 0.0
+    for _, score := range scores {
+        sum += score
+    }
+    return sum / float64(gs.cv)
 }
 ```
 
@@ -1221,19 +981,23 @@ func BenchmarkLinearRegression_Predict(b *testing.B) {
 
 ## 总结
 
-本文档深入分析了AI/ML领域的核心概念、技术架构和实现方案，包括：
+本文档提供了人工智能/机器学习领域的全面分析，包括：
 
-1. **形式化定义**: 机器学习系统、模型、训练过程的数学建模
-2. **机器学习架构**: 模型定义、数据集管理的设计
-3. **模型管理**: 模型注册表、版本管理的实现
-4. **数据处理**: 特征工程、数据预处理的实现
-5. **推理服务**: 推理引擎、API服务的设计
-6. **最佳实践**: 错误处理、监控、测试策略
+1. **形式化定义**：机器学习模型和训练过程的形式化定义
+2. **架构设计**：MLOps架构和分布式训练设计
+3. **算法实现**：线性回归、随机森林等经典算法
+4. **Golang实现**：完整的ML平台实现
+5. **性能优化**：并行训练和模型缓存
+6. **最佳实践**：模型评估和超参数调优
 
-AI/ML系统需要在模型训练、推理服务、数据处理等多个方面找到平衡，通过合理的架构设计和实现方案，可以构建出高效、可扩展的机器学习系统。
+这些内容为构建高性能、可扩展的AI/ML系统提供了全面的指导。
 
 ---
 
-**最后更新**: 2024-12-19  
-**当前状态**: ✅ AI/ML领域分析完成  
-**下一步**: 区块链/Web3领域分析
+**参考文献**：
+
+1. [Go官方文档](https://golang.org/doc/)
+2. [机器学习算法](https://en.wikipedia.org/wiki/Machine_learning)
+3. [MLOps最佳实践](https://mlops.community/)
+4. [分布式训练](https://en.wikipedia.org/wiki/Distributed_computing)
+5. [模型部署](https://en.wikipedia.org/wiki/Model_deployment)
