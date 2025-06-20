@@ -97,6 +97,7 @@ $$(O, S, \oplus, \otimes, \odot)$$
 3. **历史一致性**: $\square(Save(o_1, t_1) \wedge (t_1 < t_2) \wedge Save(o_2, t_2) \rightarrow CanRestore(o_1, t_1))$
 
 其中：
+
 - $\square$ 表示"总是"
 - $\exists$ 表示"存在"
 - $Save$ 和 $Restore$ 是操作
@@ -281,166 +282,166 @@ flowchart TD
 package memento
 
 import (
-	"fmt"
-	"time"
+ "fmt"
+ "time"
 )
 
 // Memento 备忘录对象，存储发起人的状态
 type Memento struct {
-	state     string
-	timestamp time.Time
-	metadata  map[string]interface{}
+ state     string
+ timestamp time.Time
+ metadata  map[string]interface{}
 }
 
 // GetState 获取状态（窄接口）
 func (m *Memento) GetState() string {
-	return m.state
+ return m.state
 }
 
 // GetTimestamp 获取时间戳（窄接口）
 func (m *Memento) GetTimestamp() time.Time {
-	return m.timestamp
+ return m.timestamp
 }
 
 // Originator 发起人对象
 type Originator struct {
-	state    string
-	metadata map[string]interface{}
+ state    string
+ metadata map[string]interface{}
 }
 
 // NewOriginator 创建发起人
 func NewOriginator(state string) *Originator {
-	return &Originator{
-		state:    state,
-		metadata: make(map[string]interface{}),
-	}
+ return &Originator{
+  state:    state,
+  metadata: make(map[string]interface{}),
+ }
 }
 
 // SetState 设置状态
 func (o *Originator) SetState(state string) {
-	fmt.Printf("设置状态为: %s\n", state)
-	o.state = state
+ fmt.Printf("设置状态为: %s\n", state)
+ o.state = state
 }
 
 // SetMetadata 设置元数据
 func (o *Originator) SetMetadata(key string, value interface{}) {
-	o.metadata[key] = value
+ o.metadata[key] = value
 }
 
 // GetState 获取状态
 func (o *Originator) GetState() string {
-	return o.state
+ return o.state
 }
 
 // SaveToMemento 保存到备忘录
 func (o *Originator) SaveToMemento() *Memento {
-	fmt.Printf("保存当前状态: %s\n", o.state)
-	
-	// 复制元数据以避免共享引用
-	metadataCopy := make(map[string]interface{})
-	for k, v := range o.metadata {
-		metadataCopy[k] = v
-	}
-	
-	return &Memento{
-		state:     o.state,
-		timestamp: time.Now(),
-		metadata:  metadataCopy,
-	}
+ fmt.Printf("保存当前状态: %s\n", o.state)
+ 
+ // 复制元数据以避免共享引用
+ metadataCopy := make(map[string]interface{})
+ for k, v := range o.metadata {
+  metadataCopy[k] = v
+ }
+ 
+ return &Memento{
+  state:     o.state,
+  timestamp: time.Now(),
+  metadata:  metadataCopy,
+ }
 }
 
 // RestoreFromMemento 从备忘录恢复
 func (o *Originator) RestoreFromMemento(m *Memento) {
-	o.state = m.state
-	
-	// 清除当前元数据
-	o.metadata = make(map[string]interface{})
-	
-	// 复制备忘录中的元数据
-	for k, v := range m.metadata {
-		o.metadata[k] = v
-	}
-	
-	fmt.Printf("恢复到之前的状态: %s (从 %v)\n", 
-		o.state, m.timestamp.Format("15:04:05"))
+ o.state = m.state
+ 
+ // 清除当前元数据
+ o.metadata = make(map[string]interface{})
+ 
+ // 复制备忘录中的元数据
+ for k, v := range m.metadata {
+  o.metadata[k] = v
+ }
+ 
+ fmt.Printf("恢复到之前的状态: %s (从 %v)\n", 
+  o.state, m.timestamp.Format("15:04:05"))
 }
 
 // Caretaker 管理者对象
 type Caretaker struct {
-	mementos []*Memento
-	current  int
+ mementos []*Memento
+ current  int
 }
 
 // NewCaretaker 创建管理者
 func NewCaretaker() *Caretaker {
-	return &Caretaker{
-		mementos: make([]*Memento, 0),
-		current:  -1,
-	}
+ return &Caretaker{
+  mementos: make([]*Memento, 0),
+  current:  -1,
+ }
 }
 
 // Save 保存状态
 func (c *Caretaker) Save(o *Originator) {
-	// 如果当前不在最新状态，移除当前之后的所有状态
-	if c.current < len(c.mementos)-1 {
-		c.mementos = c.mementos[:c.current+1]
-	}
-	
-	// 添加新备忘录
-	c.mementos = append(c.mementos, o.SaveToMemento())
-	c.current = len(c.mementos) - 1
-	
-	fmt.Printf("管理者: 已保存状态 #%d\n", c.current)
+ // 如果当前不在最新状态，移除当前之后的所有状态
+ if c.current < len(c.mementos)-1 {
+  c.mementos = c.mementos[:c.current+1]
+ }
+ 
+ // 添加新备忘录
+ c.mementos = append(c.mementos, o.SaveToMemento())
+ c.current = len(c.mementos) - 1
+ 
+ fmt.Printf("管理者: 已保存状态 #%d\n", c.current)
 }
 
 // Undo 撤销操作
 func (c *Caretaker) Undo(o *Originator) bool {
-	if c.current <= 0 {
-		fmt.Println("无法撤销: 已经到达最初状态")
-		return false
-	}
-	
-	c.current--
-	o.RestoreFromMemento(c.mementos[c.current])
-	fmt.Printf("管理者: 已撤销到状态 #%d\n", c.current)
-	return true
+ if c.current <= 0 {
+  fmt.Println("无法撤销: 已经到达最初状态")
+  return false
+ }
+ 
+ c.current--
+ o.RestoreFromMemento(c.mementos[c.current])
+ fmt.Printf("管理者: 已撤销到状态 #%d\n", c.current)
+ return true
 }
 
 // Redo 重做操作
 func (c *Caretaker) Redo(o *Originator) bool {
-	if c.current >= len(c.mementos)-1 {
-		fmt.Println("无法重做: 已经到达最新状态")
-		return false
-	}
-	
-	c.current++
-	o.RestoreFromMemento(c.mementos[c.current])
-	fmt.Printf("管理者: 已重做到状态 #%d\n", c.current)
-	return true
+ if c.current >= len(c.mementos)-1 {
+  fmt.Println("无法重做: 已经到达最新状态")
+  return false
+ }
+ 
+ c.current++
+ o.RestoreFromMemento(c.mementos[c.current])
+ fmt.Printf("管理者: 已重做到状态 #%d\n", c.current)
+ return true
 }
 
 // Count 获取历史记录数
 func (c *Caretaker) Count() int {
-	return len(c.mementos)
+ return len(c.mementos)
 }
 
 // CurrentIndex 获取当前索引
 func (c *Caretaker) CurrentIndex() int {
-	return c.current
+ return c.current
 }
 
 // GetHistory 获取历史记录
 func (c *Caretaker) GetHistory() []string {
-	result := make([]string, 0, len(c.mementos))
-	for i, m := range c.mementos {
-		marker := " "
-		if i == c.current {
-			marker = "*"
-		}
-		result = append(result, fmt.Sprintf("%s %d: %s (%v)", 
-			marker, i, m.state, m.timestamp.Format("15:04:05")))
-	}
-	return result
+ result := make([]string, 0, len(c.mementos))
+ for i, m := range c.mementos {
+  marker := " "
+  if i == c.current {
+   marker = "*"
+  }
+  result = append(result, fmt.Sprintf("%s %d: %s (%v)", 
+   marker, i, m.state, m.timestamp.Format("15:04:05")))
+ }
+ return result
 }
 ```
 
@@ -450,69 +451,70 @@ func (c *Caretaker) GetHistory() []string {
 package main
 
 import (
-	"fmt"
-	"memento"
-	"time"
+ "fmt"
+ "memento"
+ "time"
 )
 
 func main() {
-	// 创建发起人和管理者
-	originator := memento.NewOriginator("初始状态")
-	caretaker := memento.NewCaretaker()
-	
-	// 保存初始状态
-	caretaker.Save(originator)
-	
-	// 修改并保存状态
-	originator.SetState("状态 1")
-	originator.SetMetadata("version", 1)
-	caretaker.Save(originator)
-	
-	time.Sleep(1 * time.Second)
-	
-	originator.SetState("状态 2")
-	originator.SetMetadata("version", 2)
-	caretaker.Save(originator)
-	
-	time.Sleep(1 * time.Second)
-	
-	originator.SetState("状态 3")
-	originator.SetMetadata("version", 3)
-	caretaker.Save(originator)
-	
-	// 显示历史记录
-	fmt.Println("\n历史记录:")
-	for _, h := range caretaker.GetHistory() {
-		fmt.Println(h)
-	}
-	
-	// 执行撤销和重做操作
-	fmt.Println("\n执行撤销:")
-	caretaker.Undo(originator)
-	fmt.Printf("当前状态: %s\n", originator.GetState())
-	
-	caretaker.Undo(originator)
-	fmt.Printf("当前状态: %s\n", originator.GetState())
-	
-	fmt.Println("\n执行重做:")
-	caretaker.Redo(originator)
-	fmt.Printf("当前状态: %s\n", originator.GetState())
-	
-	// 修改当前状态后保存
-	fmt.Println("\n从中间状态修改:")
-	originator.SetState("状态 2 (修改)")
-	caretaker.Save(originator)
-	
-	// 查看更新后的历史记录
-	fmt.Println("\n更新后的历史记录:")
-	for _, h := range caretaker.GetHistory() {
-		fmt.Println(h)
-	}
+ // 创建发起人和管理者
+ originator := memento.NewOriginator("初始状态")
+ caretaker := memento.NewCaretaker()
+ 
+ // 保存初始状态
+ caretaker.Save(originator)
+ 
+ // 修改并保存状态
+ originator.SetState("状态 1")
+ originator.SetMetadata("version", 1)
+ caretaker.Save(originator)
+ 
+ time.Sleep(1 * time.Second)
+ 
+ originator.SetState("状态 2")
+ originator.SetMetadata("version", 2)
+ caretaker.Save(originator)
+ 
+ time.Sleep(1 * time.Second)
+ 
+ originator.SetState("状态 3")
+ originator.SetMetadata("version", 3)
+ caretaker.Save(originator)
+ 
+ // 显示历史记录
+ fmt.Println("\n历史记录:")
+ for _, h := range caretaker.GetHistory() {
+  fmt.Println(h)
+ }
+ 
+ // 执行撤销和重做操作
+ fmt.Println("\n执行撤销:")
+ caretaker.Undo(originator)
+ fmt.Printf("当前状态: %s\n", originator.GetState())
+ 
+ caretaker.Undo(originator)
+ fmt.Printf("当前状态: %s\n", originator.GetState())
+ 
+ fmt.Println("\n执行重做:")
+ caretaker.Redo(originator)
+ fmt.Printf("当前状态: %s\n", originator.GetState())
+ 
+ // 修改当前状态后保存
+ fmt.Println("\n从中间状态修改:")
+ originator.SetState("状态 2 (修改)")
+ caretaker.Save(originator)
+ 
+ // 查看更新后的历史记录
+ fmt.Println("\n更新后的历史记录:")
+ for _, h := range caretaker.GetHistory() {
+  fmt.Println(h)
+ }
 }
 ```
 
 执行结果：
-```
+
+```text
 设置状态为: 初始状态
 保存当前状态: 初始状态
 管理者: 已保存状态 #0
@@ -565,149 +567,149 @@ func main() {
 package memento
 
 import (
-	"fmt"
-	"time"
+ "fmt"
+ "time"
 )
 
 // OriginatorWithInnerMemento 使用闭包模拟内部类的发起人
 type OriginatorWithInnerMemento struct {
-	state    string
-	metadata map[string]interface{}
-	
-	// 提供创建和访问备忘录的方法
-	createMemento func() interface{}
-	setMemento    func(m interface{})
+ state    string
+ metadata map[string]interface{}
+ 
+ // 提供创建和访问备忘录的方法
+ createMemento func() interface{}
+ setMemento    func(m interface{})
 }
 
 // NewOriginatorWithInnerMemento 创建带有内部备忘录的发起人
 func NewOriginatorWithInnerMemento(initialState string) *OriginatorWithInnerMemento {
-	// 创建发起人
-	o := &OriginatorWithInnerMemento{
-		state:    initialState,
-		metadata: make(map[string]interface{}),
-	}
-	
-	// 内部备忘录的结构定义
-	type innerMemento struct {
-		state     string
-		timestamp time.Time
-		metadata  map[string]interface{}
-	}
-	
-	// 设置创建备忘录的闭包方法
-	o.createMemento = func() interface{} {
-		fmt.Printf("保存当前状态: %s\n", o.state)
-		
-		// 深拷贝元数据
-		metadataCopy := make(map[string]interface{})
-		for k, v := range o.metadata {
-			metadataCopy[k] = v
-		}
-		
-		return &innerMemento{
-			state:     o.state,
-			timestamp: time.Now(),
-			metadata:  metadataCopy,
-		}
-	}
-	
-	// 设置从备忘录恢复的闭包方法
-	o.setMemento = func(m interface{}) {
-		if memo, ok := m.(*innerMemento); ok {
-			o.state = memo.state
-			
-			// 清除并恢复元数据
-			o.metadata = make(map[string]interface{})
-			for k, v := range memo.metadata {
-				o.metadata[k] = v
-			}
-			
-			fmt.Printf("恢复到之前的状态: %s (从 %v)\n", 
-				o.state, memo.timestamp.Format("15:04:05"))
-		}
-	}
-	
-	return o
+ // 创建发起人
+ o := &OriginatorWithInnerMemento{
+  state:    initialState,
+  metadata: make(map[string]interface{}),
+ }
+ 
+ // 内部备忘录的结构定义
+ type innerMemento struct {
+  state     string
+  timestamp time.Time
+  metadata  map[string]interface{}
+ }
+ 
+ // 设置创建备忘录的闭包方法
+ o.createMemento = func() interface{} {
+  fmt.Printf("保存当前状态: %s\n", o.state)
+  
+  // 深拷贝元数据
+  metadataCopy := make(map[string]interface{})
+  for k, v := range o.metadata {
+   metadataCopy[k] = v
+  }
+  
+  return &innerMemento{
+   state:     o.state,
+   timestamp: time.Now(),
+   metadata:  metadataCopy,
+  }
+ }
+ 
+ // 设置从备忘录恢复的闭包方法
+ o.setMemento = func(m interface{}) {
+  if memo, ok := m.(*innerMemento); ok {
+   o.state = memo.state
+   
+   // 清除并恢复元数据
+   o.metadata = make(map[string]interface{})
+   for k, v := range memo.metadata {
+    o.metadata[k] = v
+   }
+   
+   fmt.Printf("恢复到之前的状态: %s (从 %v)\n", 
+    o.state, memo.timestamp.Format("15:04:05"))
+  }
+ }
+ 
+ return o
 }
 
 // SetState 设置状态
 func (o *OriginatorWithInnerMemento) SetState(state string) {
-	fmt.Printf("设置状态为: %s\n", state)
-	o.state = state
+ fmt.Printf("设置状态为: %s\n", state)
+ o.state = state
 }
 
 // GetState 获取状态
 func (o *OriginatorWithInnerMemento) GetState() string {
-	return o.state
+ return o.state
 }
 
 // SetMetadata 设置元数据
 func (o *OriginatorWithInnerMemento) SetMetadata(key string, value interface{}) {
-	o.metadata[key] = value
+ o.metadata[key] = value
 }
 
 // SaveToMemento 保存到备忘录
 func (o *OriginatorWithInnerMemento) SaveToMemento() interface{} {
-	return o.createMemento()
+ return o.createMemento()
 }
 
 // RestoreFromMemento 从备忘录恢复
 func (o *OriginatorWithInnerMemento) RestoreFromMemento(m interface{}) {
-	o.setMemento(m)
+ o.setMemento(m)
 }
 
 // CaretakerForInner 内部备忘录的管理者
 type CaretakerForInner struct {
-	mementos []interface{}
-	current  int
+ mementos []interface{}
+ current  int
 }
 
 // NewCaretakerForInner 创建内部备忘录的管理者
 func NewCaretakerForInner() *CaretakerForInner {
-	return &CaretakerForInner{
-		mementos: make([]interface{}, 0),
-		current:  -1,
-	}
+ return &CaretakerForInner{
+  mementos: make([]interface{}, 0),
+  current:  -1,
+ }
 }
 
 // Save 保存状态
 func (c *CaretakerForInner) Save(o *OriginatorWithInnerMemento) {
-	// 如果当前不在最新状态，移除当前之后的所有状态
-	if c.current < len(c.mementos)-1 {
-		c.mementos = c.mementos[:c.current+1]
-	}
-	
-	// 添加新备忘录
-	c.mementos = append(c.mementos, o.SaveToMemento())
-	c.current = len(c.mementos) - 1
-	
-	fmt.Printf("管理者: 已保存状态 #%d\n", c.current)
+ // 如果当前不在最新状态，移除当前之后的所有状态
+ if c.current < len(c.mementos)-1 {
+  c.mementos = c.mementos[:c.current+1]
+ }
+ 
+ // 添加新备忘录
+ c.mementos = append(c.mementos, o.SaveToMemento())
+ c.current = len(c.mementos) - 1
+ 
+ fmt.Printf("管理者: 已保存状态 #%d\n", c.current)
 }
 
 // Undo 撤销操作
 func (c *CaretakerForInner) Undo(o *OriginatorWithInnerMemento) bool {
-	if c.current <= 0 {
-		fmt.Println("无法撤销: 已经到达最初状态")
-		return false
-	}
-	
-	c.current--
-	o.RestoreFromMemento(c.mementos[c.current])
-	fmt.Printf("管理者: 已撤销到状态 #%d\n", c.current)
-	return true
+ if c.current <= 0 {
+  fmt.Println("无法撤销: 已经到达最初状态")
+  return false
+ }
+ 
+ c.current--
+ o.RestoreFromMemento(c.mementos[c.current])
+ fmt.Printf("管理者: 已撤销到状态 #%d\n", c.current)
+ return true
 }
 
 // Redo 重做操作
 func (c *CaretakerForInner) Redo(o *OriginatorWithInnerMemento) bool {
-	if c.current >= len(c.mementos)-1 {
-		fmt.Println("无法重做: 已经到达最新状态")
-		return false
-	}
-	
-	c.current++
-	o.RestoreFromMemento(c.mementos[c.current])
-	fmt.Printf("管理者: 已重做到状态 #%d\n", c.current)
-	return true
+ if c.current >= len(c.mementos)-1 {
+  fmt.Println("无法重做: 已经到达最新状态")
+  return false
+ }
+ 
+ c.current++
+ o.RestoreFromMemento(c.mementos[c.current])
+ fmt.Printf("管理者: 已重做到状态 #%d\n", c.current)
+ return true
 }
 ```
 
@@ -719,192 +721,192 @@ func (c *CaretakerForInner) Redo(o *OriginatorWithInnerMemento) bool {
 package memento
 
 import (
-	"bytes"
-	"encoding/gob"
-	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"time"
+ "bytes"
+ "encoding/gob"
+ "fmt"
+ "io/ioutil"
+ "os"
+ "path/filepath"
+ "time"
 )
 
 // SerializableOriginator 可序列化的发起人
 type SerializableOriginator struct {
-	State    string
-	Metadata map[string]interface{}
+ State    string
+ Metadata map[string]interface{}
 }
 
 // NewSerializableOriginator 创建可序列化的发起人
 func NewSerializableOriginator(state string) *SerializableOriginator {
-	return &SerializableOriginator{
-		State:    state,
-		Metadata: make(map[string]interface{}),
-	}
+ return &SerializableOriginator{
+  State:    state,
+  Metadata: make(map[string]interface{}),
+ }
 }
 
 // SetState 设置状态
 func (o *SerializableOriginator) SetState(state string) {
-	fmt.Printf("设置状态为: %s\n", state)
-	o.State = state
+ fmt.Printf("设置状态为: %s\n", state)
+ o.State = state
 }
 
 // GetState 获取状态
 func (o *SerializableOriginator) GetState() string {
-	return o.State
+ return o.State
 }
 
 // SetMetadata 设置元数据
 func (o *SerializableOriginator) SetMetadata(key string, value interface{}) {
-	o.Metadata[key] = value
+ o.Metadata[key] = value
 }
 
 // CreateMemento 创建备忘录（已序列化）
 func (o *SerializableOriginator) CreateMemento() ([]byte, error) {
-	fmt.Printf("序列化当前状态: %s\n", o.State)
-	
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	
-	if err := enc.Encode(o); err != nil {
-		return nil, fmt.Errorf("序列化失败: %v", err)
-	}
-	
-	return buf.Bytes(), nil
+ fmt.Printf("序列化当前状态: %s\n", o.State)
+ 
+ var buf bytes.Buffer
+ enc := gob.NewEncoder(&buf)
+ 
+ if err := enc.Encode(o); err != nil {
+  return nil, fmt.Errorf("序列化失败: %v", err)
+ }
+ 
+ return buf.Bytes(), nil
 }
 
 // RestoreFromMemento 从备忘录恢复
 func (o *SerializableOriginator) RestoreFromMemento(data []byte) error {
-	buf := bytes.NewBuffer(data)
-	dec := gob.NewDecoder(buf)
-	
-	tempOrig := &SerializableOriginator{}
-	if err := dec.Decode(tempOrig); err != nil {
-		return fmt.Errorf("反序列化失败: %v", err)
-	}
-	
-	o.State = tempOrig.State
-	o.Metadata = tempOrig.Metadata
-	
-	fmt.Printf("恢复到状态: %s\n", o.State)
-	return nil
+ buf := bytes.NewBuffer(data)
+ dec := gob.NewDecoder(buf)
+ 
+ tempOrig := &SerializableOriginator{}
+ if err := dec.Decode(tempOrig); err != nil {
+  return fmt.Errorf("反序列化失败: %v", err)
+ }
+ 
+ o.State = tempOrig.State
+ o.Metadata = tempOrig.Metadata
+ 
+ fmt.Printf("恢复到状态: %s\n", o.State)
+ return nil
 }
 
 // SerializableCaretaker 管理序列化备忘录的管理者
 type SerializableCaretaker struct {
-	savePath  string
-	mementoIDs []string
-	current   int
+ savePath  string
+ mementoIDs []string
+ current   int
 }
 
 // NewSerializableCaretaker 创建序列化备忘录的管理者
 func NewSerializableCaretaker(savePath string) (*SerializableCaretaker, error) {
-	// 确保保存目录存在
-	if err := os.MkdirAll(savePath, 0755); err != nil {
-		return nil, fmt.Errorf("创建保存目录失败: %v", err)
-	}
-	
-	caretaker := &SerializableCaretaker{
-		savePath:  savePath,
-		mementoIDs: []string{},
-		current:   -1,
-	}
-	
-	// 加载现有备忘录列表
-	files, err := ioutil.ReadDir(savePath)
-	if err != nil {
-		return nil, fmt.Errorf("读取保存目录失败: %v", err)
-	}
-	
-	// 过滤并排序备忘录文件
-	for _, file := range files {
-		if !file.IsDir() && filepath.Ext(file.Name()) == ".memento" {
-			caretaker.mementoIDs = append(caretaker.mementoIDs, file.Name())
-		}
-	}
-	
-	caretaker.current = len(caretaker.mementoIDs) - 1
-	return caretaker, nil
+ // 确保保存目录存在
+ if err := os.MkdirAll(savePath, 0755); err != nil {
+  return nil, fmt.Errorf("创建保存目录失败: %v", err)
+ }
+ 
+ caretaker := &SerializableCaretaker{
+  savePath:  savePath,
+  mementoIDs: []string{},
+  current:   -1,
+ }
+ 
+ // 加载现有备忘录列表
+ files, err := ioutil.ReadDir(savePath)
+ if err != nil {
+  return nil, fmt.Errorf("读取保存目录失败: %v", err)
+ }
+ 
+ // 过滤并排序备忘录文件
+ for _, file := range files {
+  if !file.IsDir() && filepath.Ext(file.Name()) == ".memento" {
+   caretaker.mementoIDs = append(caretaker.mementoIDs, file.Name())
+  }
+ }
+ 
+ caretaker.current = len(caretaker.mementoIDs) - 1
+ return caretaker, nil
 }
 
 // Save 保存状态
 func (c *SerializableCaretaker) Save(o *SerializableOriginator) error {
-	// 如果当前不在最新状态，移除当前之后的所有状态
-	if c.current < len(c.mementoIDs)-1 {
-		// 从文件系统中删除未来状态
-		for i := c.current + 1; i < len(c.mementoIDs); i++ {
-			path := filepath.Join(c.savePath, c.mementoIDs[i])
-			os.Remove(path)
-		}
-		
-		// 更新内存中的数组
-		c.mementoIDs = c.mementoIDs[:c.current+1]
-	}
-	
-	// 创建新的备忘录
-	data, err := o.CreateMemento()
-	if err != nil {
-		return err
-	}
-	
-	// 使用时间戳创建唯一文件名
-	filename := fmt.Sprintf("%d.memento", time.Now().UnixNano())
-	path := filepath.Join(c.savePath, filename)
-	
-	// 写入文件
-	if err := ioutil.WriteFile(path, data, 0644); err != nil {
-		return fmt.Errorf("写入备忘录文件失败: %v", err)
-	}
-	
-	// 更新内存中的数组和当前索引
-	c.mementoIDs = append(c.mementoIDs, filename)
-	c.current = len(c.mementoIDs) - 1
-	
-	fmt.Printf("管理者: 已保存状态到文件 #%d (%s)\n", c.current, filename)
-	return nil
+ // 如果当前不在最新状态，移除当前之后的所有状态
+ if c.current < len(c.mementoIDs)-1 {
+  // 从文件系统中删除未来状态
+  for i := c.current + 1; i < len(c.mementoIDs); i++ {
+   path := filepath.Join(c.savePath, c.mementoIDs[i])
+   os.Remove(path)
+  }
+  
+  // 更新内存中的数组
+  c.mementoIDs = c.mementoIDs[:c.current+1]
+ }
+ 
+ // 创建新的备忘录
+ data, err := o.CreateMemento()
+ if err != nil {
+  return err
+ }
+ 
+ // 使用时间戳创建唯一文件名
+ filename := fmt.Sprintf("%d.memento", time.Now().UnixNano())
+ path := filepath.Join(c.savePath, filename)
+ 
+ // 写入文件
+ if err := ioutil.WriteFile(path, data, 0644); err != nil {
+  return fmt.Errorf("写入备忘录文件失败: %v", err)
+ }
+ 
+ // 更新内存中的数组和当前索引
+ c.mementoIDs = append(c.mementoIDs, filename)
+ c.current = len(c.mementoIDs) - 1
+ 
+ fmt.Printf("管理者: 已保存状态到文件 #%d (%s)\n", c.current, filename)
+ return nil
 }
 
 // Undo 撤销操作
 func (c *SerializableCaretaker) Undo(o *SerializableOriginator) error {
-	if c.current <= 0 {
-		fmt.Println("无法撤销: 已经到达最初状态")
-		return nil
-	}
-	
-	c.current--
-	return c.loadMemento(c.current, o)
+ if c.current <= 0 {
+  fmt.Println("无法撤销: 已经到达最初状态")
+  return nil
+ }
+ 
+ c.current--
+ return c.loadMemento(c.current, o)
 }
 
 // Redo 重做操作
 func (c *SerializableCaretaker) Redo(o *SerializableOriginator) error {
-	if c.current >= len(c.mementoIDs)-1 {
-		fmt.Println("无法重做: 已经到达最新状态")
-		return nil
-	}
-	
-	c.current++
-	return c.loadMemento(c.current, o)
+ if c.current >= len(c.mementoIDs)-1 {
+  fmt.Println("无法重做: 已经到达最新状态")
+  return nil
+ }
+ 
+ c.current++
+ return c.loadMemento(c.current, o)
 }
 
 // loadMemento 从文件加载备忘录
 func (c *SerializableCaretaker) loadMemento(index int, o *SerializableOriginator) error {
-	if index < 0 || index >= len(c.mementoIDs) {
-		return fmt.Errorf("无效的备忘录索引: %d", index)
-	}
-	
-	filename := c.mementoIDs[index]
-	path := filepath.Join(c.savePath, filename)
-	
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return fmt.Errorf("读取备忘录文件失败: %v", err)
-	}
-	
-	if err := o.RestoreFromMemento(data); err != nil {
-		return err
-	}
-	
-	fmt.Printf("管理者: 已从文件加载状态 #%d (%s)\n", index, filename)
-	return nil
+ if index < 0 || index >= len(c.mementoIDs) {
+  return fmt.Errorf("无效的备忘录索引: %d", index)
+ }
+ 
+ filename := c.mementoIDs[index]
+ path := filepath.Join(c.savePath, filename)
+ 
+ data, err := ioutil.ReadFile(path)
+ if err != nil {
+  return fmt.Errorf("读取备忘录文件失败: %v", err)
+ }
+ 
+ if err := o.RestoreFromMemento(data); err != nil {
+  return err
+ }
+ 
+ fmt.Printf("管理者: 已从文件加载状态 #%d (%s)\n", index, filename)
+ return nil
 }
 ```
 
@@ -1506,6 +1508,7 @@ func (e *RequestExecutor) processResponse(resp *http.Response) error {
 ### 7.2 Golang实现建议
 
 1. **使用接口隔离**
+
    ```go
    // 提供给管理者的窄接口
    type MementoInterface interface {
@@ -1521,6 +1524,7 @@ func (e *RequestExecutor) processResponse(resp *http.Response) error {
    ```
 
 2. **利用闭包保护状态**
+
    ```go
    func NewOriginator() *Originator {
        o := &Originator{/* 初始化 */}
@@ -1536,6 +1540,7 @@ func (e *RequestExecutor) processResponse(resp *http.Response) error {
    ```
 
 3. **序列化状态**
+
    ```go
    // 使用Golang的gob、json或其他序列化机制
    func (o *Originator) SerializeState() ([]byte, error) {
@@ -1547,6 +1552,7 @@ func (e *RequestExecutor) processResponse(resp *http.Response) error {
    ```
 
 4. **使用类型断言增强安全性**
+
    ```go
    func (o *Originator) RestoreFromMemento(m interface{}) error {
        memento, ok := m.(*Memento)
