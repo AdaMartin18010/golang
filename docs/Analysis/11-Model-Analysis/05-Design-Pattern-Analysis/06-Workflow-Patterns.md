@@ -94,6 +94,7 @@ Petri网是一种强大的工作流形式化工具，可用于验证工作流的
 3. 存在一个库所 $p$ 使得 $(t_1, p) \in F$ 且 $(p, t_2) \in F$
 
 **定理 3.1**: 序列模式满足以下属性：
+
 - 可靠性：如果 $a_1$ 和 $a_2$ 都能终止，则序列可靠
 - 可终止性：如果 $a_1$ 和 $a_2$ 都是可终止的，则序列可终止
 - 无死锁：如果 $a_1$ 能完成，序列模式不会引入新的死锁
@@ -105,99 +106,99 @@ package workflow
 
 // Task 表示工作流中的任务
 type Task[I any, O any] interface {
-	Execute(input I) (O, error)
-	Name() string
+ Execute(input I) (O, error)
+ Name() string
 }
 
 // SequentialTask 表示序列模式中的任务
 type SequentialTask[I any, M any, O any] struct {
-	name      string
-	firstTask Task[I, M]
-	lastTask  Task[M, O]
+ name      string
+ firstTask Task[I, M]
+ lastTask  Task[M, O]
 }
 
 // 创建新的序列任务
 func NewSequentialTask[I any, M any, O any](
-	name string,
-	firstTask Task[I, M],
-	lastTask Task[M, O],
+ name string,
+ firstTask Task[I, M],
+ lastTask Task[M, O],
 ) *SequentialTask[I, M, O] {
-	return &SequentialTask[I, M, O]{
-		name:      name,
-		firstTask: firstTask,
-		lastTask:  lastTask,
-	}
+ return &SequentialTask[I, M, O]{
+  name:      name,
+  firstTask: firstTask,
+  lastTask:  lastTask,
+ }
 }
 
 // Execute 执行序列任务
 func (t *SequentialTask[I, M, O]) Execute(input I) (O, error) {
-	var zero O
-	
-	// 执行第一个任务
-	intermediate, err := t.firstTask.Execute(input)
-	if err != nil {
-		return zero, fmt.Errorf("error executing first task '%s': %w", t.firstTask.Name(), err)
-	}
-	
-	// 执行第二个任务
-	output, err := t.lastTask.Execute(intermediate)
-	if err != nil {
-		return zero, fmt.Errorf("error executing last task '%s': %w", t.lastTask.Name(), err)
-	}
-	
-	return output, nil
+ var zero O
+ 
+ // 执行第一个任务
+ intermediate, err := t.firstTask.Execute(input)
+ if err != nil {
+  return zero, fmt.Errorf("error executing first task '%s': %w", t.firstTask.Name(), err)
+ }
+ 
+ // 执行第二个任务
+ output, err := t.lastTask.Execute(intermediate)
+ if err != nil {
+  return zero, fmt.Errorf("error executing last task '%s': %w", t.lastTask.Name(), err)
+ }
+ 
+ return output, nil
 }
 
 // Name 返回序列任务名称
 func (t *SequentialTask[I, M, O]) Name() string {
-	return t.name
+ return t.name
 }
 
 // 可以组合多个任务构建复杂序列
 func BuildSequence[I any, O any](name string, tasks []Task[I, O]) Task[I, O] {
-	if len(tasks) == 0 {
-		panic("cannot build sequence with empty tasks")
-	}
-	
-	if len(tasks) == 1 {
-		return tasks[0]
-	}
-	
-	// 通过递归组合构建序列
-	// 注意：这里需要一个更复杂的实现来处理不同类型的任务序列
-	// 此处为简化示例
-	return tasks[0]
+ if len(tasks) == 0 {
+  panic("cannot build sequence with empty tasks")
+ }
+ 
+ if len(tasks) == 1 {
+  return tasks[0]
+ }
+ 
+ // 通过递归组合构建序列
+ // 注意：这里需要一个更复杂的实现来处理不同类型的任务序列
+ // 此处为简化示例
+ return tasks[0]
 }
 
 // 使用示例
 func SequenceExample() {
-	task1 := &ConcreteTask[int, string]{
-		name: "IntToString",
-		execute: func(input int) (string, error) {
-			return strconv.Itoa(input), nil
-		},
-	}
-	
-	task2 := &ConcreteTask[string, int]{
-		name: "StringLength",
-		execute: func(input string) (int, error) {
-			return len(input), nil
-		},
-	}
-	
-	sequence := NewSequentialTask[int, string, int](
-		"IntToLengthSequence", 
-		task1, 
-		task2,
-	)
-	
-	result, err := sequence.Execute(42)
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-	
-	fmt.Printf("Result: %v\n", result) // 输出: Result: 2
+ task1 := &ConcreteTask[int, string]{
+  name: "IntToString",
+  execute: func(input int) (string, error) {
+   return strconv.Itoa(input), nil
+  },
+ }
+ 
+ task2 := &ConcreteTask[string, int]{
+  name: "StringLength",
+  execute: func(input string) (int, error) {
+   return len(input), nil
+  },
+ }
+ 
+ sequence := NewSequentialTask[int, string, int](
+  "IntToLengthSequence", 
+  task1, 
+  task2,
+ )
+ 
+ result, err := sequence.Execute(42)
+ if err != nil {
+  fmt.Printf("Error: %v\n", err)
+  return
+ }
+ 
+ fmt.Printf("Result: %v\n", result) // 输出: Result: 2
 }
 ```
 
@@ -212,6 +213,7 @@ func SequenceExample() {
 3. 存在库所 $p$ 使得 $(t_0, p) \in F$ 且对于所有 $i (1 \leq i \leq n)$，$(p, t_i) \in F$
 
 **定理 3.2**: 并行拆分模式满足以下属性：
+
 - 并发性：所有 $a_i$ 可以并发执行，无需相互等待
 - 无数据竞争：如果 $a_i$ 操作的数据集合互不相交，则不存在数据竞争
 - 有界性：如果所有 $a_i$ 都是有界的，则并行拆分是有界的
@@ -222,154 +224,154 @@ func SequenceExample() {
 package workflow
 
 import (
-	"fmt"
-	"sync"
-	"context"
+ "fmt"
+ "sync"
+ "context"
 )
 
 // ParallelTask 表示并行拆分模式中的任务组
 type ParallelTask[I any, O any] struct {
-	name  string
-	tasks []Task[I, O]
+ name  string
+ tasks []Task[I, O]
 }
 
 // 创建新的并行任务组
 func NewParallelTask[I any, O any](name string, tasks []Task[I, O]) *ParallelTask[I, O] {
-	return &ParallelTask[I, O]{
-		name:  name,
-		tasks: tasks,
-	}
+ return &ParallelTask[I, O]{
+  name:  name,
+  tasks: tasks,
+ }
 }
 
 // Execute 并行执行所有任务
 func (t *ParallelTask[I, O]) Execute(input I) ([]O, error) {
-	var wg sync.WaitGroup
-	results := make([]O, len(t.tasks))
-	errors := make([]error, len(t.tasks))
-	
-	// 为每个任务启动一个goroutine
-	for i, task := range t.tasks {
-		wg.Add(1)
-		go func(idx int, tsk Task[I, O]) {
-			defer wg.Done()
-			result, err := tsk.Execute(input)
-			results[idx] = result
-			errors[idx] = err
-		}(i, task)
-	}
-	
-	// 等待所有任务完成
-	wg.Wait()
-	
-	// 检查错误
-	for i, err := range errors {
-		if err != nil {
-			return nil, fmt.Errorf("task '%s' failed: %w", t.tasks[i].Name(), err)
-		}
-	}
-	
-	return results, nil
+ var wg sync.WaitGroup
+ results := make([]O, len(t.tasks))
+ errors := make([]error, len(t.tasks))
+ 
+ // 为每个任务启动一个goroutine
+ for i, task := range t.tasks {
+  wg.Add(1)
+  go func(idx int, tsk Task[I, O]) {
+   defer wg.Done()
+   result, err := tsk.Execute(input)
+   results[idx] = result
+   errors[idx] = err
+  }(i, task)
+ }
+ 
+ // 等待所有任务完成
+ wg.Wait()
+ 
+ // 检查错误
+ for i, err := range errors {
+  if err != nil {
+   return nil, fmt.Errorf("task '%s' failed: %w", t.tasks[i].Name(), err)
+  }
+ }
+ 
+ return results, nil
 }
 
 // Name 返回并行任务组名称
 func (t *ParallelTask[I, O]) Name() string {
-	return t.name
+ return t.name
 }
 
 // 支持取消的并行任务执行
 func (t *ParallelTask[I, O]) ExecuteWithContext(ctx context.Context, input I) ([]O, error) {
-	var wg sync.WaitGroup
-	results := make([]O, len(t.tasks))
-	errors := make([]error, len(t.tasks))
-	
-	// 创建用于传递取消信号的channel
-	done := make(chan struct{})
-	defer close(done)
-	
-	// 为每个任务启动一个goroutine
-	for i, task := range t.tasks {
-		wg.Add(1)
-		go func(idx int, tsk Task[I, O]) {
-			defer wg.Done()
-			
-			// 使用带有上下文的任务执行
-			if ctxTask, ok := tsk.(ContextTask[I, O]); ok {
-				result, err := ctxTask.ExecuteWithContext(ctx, input)
-				results[idx] = result
-				errors[idx] = err
-			} else {
-				// 回退到普通执行，但检查上下文取消
-				select {
-				case <-ctx.Done():
-					errors[idx] = ctx.Err()
-				default:
-					result, err := tsk.Execute(input)
-					results[idx] = result
-					errors[idx] = err
-				}
-			}
-		}(i, task)
-	}
-	
-	// 等待所有任务完成或上下文取消
-	go func() {
-		wg.Wait()
-		close(done)
-	}()
-	
-	select {
-	case <-done:
-		// 所有任务已完成
-	case <-ctx.Done():
-		// 上下文已取消
-		return nil, ctx.Err()
-	}
-	
-	// 检查错误
-	for i, err := range errors {
-		if err != nil {
-			return nil, fmt.Errorf("task '%s' failed: %w", t.tasks[i].Name(), err)
-		}
-	}
-	
-	return results, nil
+ var wg sync.WaitGroup
+ results := make([]O, len(t.tasks))
+ errors := make([]error, len(t.tasks))
+ 
+ // 创建用于传递取消信号的channel
+ done := make(chan struct{})
+ defer close(done)
+ 
+ // 为每个任务启动一个goroutine
+ for i, task := range t.tasks {
+  wg.Add(1)
+  go func(idx int, tsk Task[I, O]) {
+   defer wg.Done()
+   
+   // 使用带有上下文的任务执行
+   if ctxTask, ok := tsk.(ContextTask[I, O]); ok {
+    result, err := ctxTask.ExecuteWithContext(ctx, input)
+    results[idx] = result
+    errors[idx] = err
+   } else {
+    // 回退到普通执行，但检查上下文取消
+    select {
+    case <-ctx.Done():
+     errors[idx] = ctx.Err()
+    default:
+     result, err := tsk.Execute(input)
+     results[idx] = result
+     errors[idx] = err
+    }
+   }
+  }(i, task)
+ }
+ 
+ // 等待所有任务完成或上下文取消
+ go func() {
+  wg.Wait()
+  close(done)
+ }()
+ 
+ select {
+ case <-done:
+  // 所有任务已完成
+ case <-ctx.Done():
+  // 上下文已取消
+  return nil, ctx.Err()
+ }
+ 
+ // 检查错误
+ for i, err := range errors {
+  if err != nil {
+   return nil, fmt.Errorf("task '%s' failed: %w", t.tasks[i].Name(), err)
+  }
+ }
+ 
+ return results, nil
 }
 
 // 使用示例
 func ParallelExample() {
-	task1 := &ConcreteTask[int, int]{
-		name: "Double",
-		execute: func(input int) (int, error) {
-			return input * 2, nil
-		},
-	}
-	
-	task2 := &ConcreteTask[int, int]{
-		name: "Triple",
-		execute: func(input int) (int, error) {
-			return input * 3, nil
-		},
-	}
-	
-	task3 := &ConcreteTask[int, int]{
-		name: "Square",
-		execute: func(input int) (int, error) {
-			return input * input, nil
-		},
-	}
-	
-	parallel := NewParallelTask[int, int](
-		"ParallelComputation", 
-		[]Task[int, int]{task1, task2, task3},
-	)
-	
-	results, err := parallel.Execute(5)
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-	
-	fmt.Printf("Results: %v\n", results) // 输出: Results: [10 15 25]
+ task1 := &ConcreteTask[int, int]{
+  name: "Double",
+  execute: func(input int) (int, error) {
+   return input * 2, nil
+  },
+ }
+ 
+ task2 := &ConcreteTask[int, int]{
+  name: "Triple",
+  execute: func(input int) (int, error) {
+   return input * 3, nil
+  },
+ }
+ 
+ task3 := &ConcreteTask[int, int]{
+  name: "Square",
+  execute: func(input int) (int, error) {
+   return input * input, nil
+  },
+ }
+ 
+ parallel := NewParallelTask[int, int](
+  "ParallelComputation", 
+  []Task[int, int]{task1, task2, task3},
+ )
+ 
+ results, err := parallel.Execute(5)
+ if err != nil {
+  fmt.Printf("Error: %v\n", err)
+  return
+ }
+ 
+ fmt.Printf("Results: %v\n", results) // 输出: Results: [10 15 25]
 }
 ```
 
@@ -386,6 +388,7 @@ func ParallelExample() {
 5. $W(p, t_{n+1}) = n$
 
 **定理 3.3**: 同步模式满足以下属性：
+
 - 同步保证：$a_{n+1}$ 只有在所有 $a_i$ 完成后才会启动
 - 无死锁：如果所有 $a_i$ 最终都能完成，则不会发生死锁
 - 合成性：同步模式可以与其他模式组合，形成复杂的工作流
@@ -396,166 +399,166 @@ func ParallelExample() {
 package workflow
 
 import (
-	"fmt"
-	"sync"
+ "fmt"
+ "sync"
 )
 
 // SyncTask 表示同步模式中的任务
 type SyncTask[I any, M any, O any] struct {
-	name       string
-	tasks      []Task[I, M]
-	finalTask  Task[[]M, O]
+ name       string
+ tasks      []Task[I, M]
+ finalTask  Task[[]M, O]
 }
 
 // 创建新的同步任务
 func NewSyncTask[I any, M any, O any](
-	name string,
-	tasks []Task[I, M],
-	finalTask Task[[]M, O],
+ name string,
+ tasks []Task[I, M],
+ finalTask Task[[]M, O],
 ) *SyncTask[I, M, O] {
-	return &SyncTask[I, M, O]{
-		name:       name,
-		tasks:      tasks,
-		finalTask:  finalTask,
-	}
+ return &SyncTask[I, M, O]{
+  name:       name,
+  tasks:      tasks,
+  finalTask:  finalTask,
+ }
 }
 
 // Execute 执行同步任务
 func (t *SyncTask[I, M, O]) Execute(input I) (O, error) {
-	var zero O
-	var wg sync.WaitGroup
-	results := make([]M, len(t.tasks))
-	errors := make([]error, len(t.tasks))
-	
-	// 并行执行所有前置任务
-	for i, task := range t.tasks {
-		wg.Add(1)
-		go func(idx int, tsk Task[I, M]) {
-			defer wg.Done()
-			result, err := tsk.Execute(input)
-			results[idx] = result
-			errors[idx] = err
-		}(i, task)
-	}
-	
-	// 等待所有前置任务完成
-	wg.Wait()
-	
-	// 检查前置任务错误
-	for i, err := range errors {
-		if err != nil {
-			return zero, fmt.Errorf("task '%s' failed: %w", t.tasks[i].Name(), err)
-		}
-	}
-	
-	// 所有前置任务成功后，执行最终任务
-	output, err := t.finalTask.Execute(results)
-	if err != nil {
-		return zero, fmt.Errorf("final task '%s' failed: %w", t.finalTask.Name(), err)
-	}
-	
-	return output, nil
+ var zero O
+ var wg sync.WaitGroup
+ results := make([]M, len(t.tasks))
+ errors := make([]error, len(t.tasks))
+ 
+ // 并行执行所有前置任务
+ for i, task := range t.tasks {
+  wg.Add(1)
+  go func(idx int, tsk Task[I, M]) {
+   defer wg.Done()
+   result, err := tsk.Execute(input)
+   results[idx] = result
+   errors[idx] = err
+  }(i, task)
+ }
+ 
+ // 等待所有前置任务完成
+ wg.Wait()
+ 
+ // 检查前置任务错误
+ for i, err := range errors {
+  if err != nil {
+   return zero, fmt.Errorf("task '%s' failed: %w", t.tasks[i].Name(), err)
+  }
+ }
+ 
+ // 所有前置任务成功后，执行最终任务
+ output, err := t.finalTask.Execute(results)
+ if err != nil {
+  return zero, fmt.Errorf("final task '%s' failed: %w", t.finalTask.Name(), err)
+ }
+ 
+ return output, nil
 }
 
 // Name 返回同步任务名称
 func (t *SyncTask[I, M, O]) Name() string {
-	return t.name
+ return t.name
 }
 
 // 使用示例
 func SynchronizationExample() {
-	// 前置任务：计算不同的统计数据
-	task1 := &ConcreteTask[[]int, float64]{
-		name: "CalculateAverage",
-		execute: func(input []int) (float64, error) {
-			sum := 0
-			for _, v := range input {
-				sum += v
-			}
-			return float64(sum) / float64(len(input)), nil
-		},
-	}
-	
-	task2 := &ConcreteTask[[]int, int]{
-		name: "FindMaximum",
-		execute: func(input []int) (int, error) {
-			max := input[0]
-			for _, v := range input[1:] {
-				if v > max {
-					max = v
-				}
-			}
-			return max, nil
-		},
-	}
-	
-	task3 := &ConcreteTask[[]int, int]{
-		name: "FindMinimum",
-		execute: func(input []int) (int, error) {
-			min := input[0]
-			for _, v := range input[1:] {
-				if v < min {
-					min = v
-				}
-			}
-			return min, nil
-		},
-	}
-	
-	// 最终任务：生成报告
-	finalTask := &ConcreteTask[[]interface{}, string]{
-		name: "GenerateReport",
-		execute: func(input []interface{}) (string, error) {
-			avg := input[0].(float64)
-			max := input[1].(int)
-			min := input[2].(int)
-			return fmt.Sprintf("Report - Avg: %.2f, Max: %d, Min: %d", avg, max, min), nil
-		},
-	}
-	
-	// 创建同步任务
-	syncTask := NewSyncTask[[]int, interface{}, string](
-		"DataAnalysisSync",
-		[]Task[[]int, interface{}]{
-			WrapTask[[]int, float64, interface{}](task1),
-			WrapTask[[]int, int, interface{}](task2),
-			WrapTask[[]int, int, interface{}](task3),
-		},
-		finalTask,
-	)
-	
-	data := []int{5, 2, 9, 1, 7, 3}
-	report, err := syncTask.Execute(data)
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-	
-	fmt.Println(report) // 输出: Report - Avg: 4.50, Max: 9, Min: 1
+ // 前置任务：计算不同的统计数据
+ task1 := &ConcreteTask[[]int, float64]{
+  name: "CalculateAverage",
+  execute: func(input []int) (float64, error) {
+   sum := 0
+   for _, v := range input {
+    sum += v
+   }
+   return float64(sum) / float64(len(input)), nil
+  },
+ }
+ 
+ task2 := &ConcreteTask[[]int, int]{
+  name: "FindMaximum",
+  execute: func(input []int) (int, error) {
+   max := input[0]
+   for _, v := range input[1:] {
+    if v > max {
+     max = v
+    }
+   }
+   return max, nil
+  },
+ }
+ 
+ task3 := &ConcreteTask[[]int, int]{
+  name: "FindMinimum",
+  execute: func(input []int) (int, error) {
+   min := input[0]
+   for _, v := range input[1:] {
+    if v < min {
+     min = v
+    }
+   }
+   return min, nil
+  },
+ }
+ 
+ // 最终任务：生成报告
+ finalTask := &ConcreteTask[[]interface{}, string]{
+  name: "GenerateReport",
+  execute: func(input []interface{}) (string, error) {
+   avg := input[0].(float64)
+   max := input[1].(int)
+   min := input[2].(int)
+   return fmt.Sprintf("Report - Avg: %.2f, Max: %d, Min: %d", avg, max, min), nil
+  },
+ }
+ 
+ // 创建同步任务
+ syncTask := NewSyncTask[[]int, interface{}, string](
+  "DataAnalysisSync",
+  []Task[[]int, interface{}]{
+   WrapTask[[]int, float64, interface{}](task1),
+   WrapTask[[]int, int, interface{}](task2),
+   WrapTask[[]int, int, interface{}](task3),
+  },
+  finalTask,
+ )
+ 
+ data := []int{5, 2, 9, 1, 7, 3}
+ report, err := syncTask.Execute(data)
+ if err != nil {
+  fmt.Printf("Error: %v\n", err)
+  return
+ }
+ 
+ fmt.Println(report) // 输出: Report - Avg: 4.50, Max: 9, Min: 1
 }
 
 // 辅助函数，用于类型转换
 func WrapTask[I any, O any, R any](task Task[I, O]) Task[I, R] {
-	return &wrappedTask[I, O, R]{task: task}
+ return &wrappedTask[I, O, R]{task: task}
 }
 
 type wrappedTask[I any, O any, R any] struct {
-	task Task[I, O]
+ task Task[I, O]
 }
 
 func (t *wrappedTask[I, O, R]) Execute(input I) (R, error) {
-	result, err := t.task.Execute(input)
-	if err != nil {
-		var zero R
-		return zero, err
-	}
-	
-	// 类型转换
-	return interface{}(result).(R), nil
+ result, err := t.task.Execute(input)
+ if err != nil {
+  var zero R
+  return zero, err
+ }
+ 
+ // 类型转换
+ return interface{}(result).(R), nil
 }
 
 func (t *wrappedTask[I, O, R]) Name() string {
-	return t.task.Name()
+ return t.task.Name()
 }
 ```
 
