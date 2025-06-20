@@ -538,7 +538,7 @@ func (rf *RandomForest) Predict(x []float64) float64 {
 
 ### 6.1 项目结构
 
-```
+```text
 ml-platform/
 ├── cmd/
 │   ├── trainer/

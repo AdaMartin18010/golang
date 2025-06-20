@@ -585,6 +585,8 @@ $$Prototype : Original \rightarrow Clone$$
 
 ### 7.2 Golang实现
 
+#### 7.2.1 基本实现
+
 ```go
 package prototype
 
@@ -662,12 +664,212 @@ func (r *PrototypeRegistry) Clone(name string) (Prototype, error) {
 }
 ```
 
+#### 7.2.2 深拷贝与浅拷贝
+
+```go
+package prototype
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+// DeepCopyable 支持深拷贝的接口
+type DeepCopyable interface {
+    DeepCopy() interface{}
+}
+
+// ComplexObject 包含嵌套结构的复杂对象
+type ComplexObject struct {
+    ID       int
+    Name     string
+    Children []*ComplexObject
+    Data     map[string]interface{}
+    parent   *ComplexObject // 不导出字段，不会被JSON序列化
+}
+
+// 使用序列化实现深拷贝
+func (c *ComplexObject) DeepCopy() interface{} {
+    // 方法1: 通过JSON序列化实现深拷贝
+    bytes, err := json.Marshal(c)
+    if err != nil {
+        return nil
+    }
+    
+    var clone ComplexObject
+    if err := json.Unmarshal(bytes, &clone); err != nil {
+        return nil
+    }
+    
+    return &clone
+}
+
+// 手动实现深拷贝
+func (c *ComplexObject) ManualDeepCopy() *ComplexObject {
+    if c == nil {
+        return nil
+    }
+    
+    clone := &ComplexObject{
+        ID:       c.ID,
+        Name:     c.Name,
+        Children: make([]*ComplexObject, len(c.Children)),
+        Data:     make(map[string]interface{}),
+    }
+    
+    // 复制子对象
+    for i, child := range c.Children {
+        clone.Children[i] = child.ManualDeepCopy()
+    }
+    
+    // 复制map
+    for k, v := range c.Data {
+        // 如果值是DeepCopyable接口，则调用DeepCopy
+        if copyable, ok := v.(DeepCopyable); ok {
+            clone.Data[k] = copyable.DeepCopy()
+        } else {
+            clone.Data[k] = v // 简单类型直接赋值
+        }
+    }
+    
+    return clone
+}
+```
+
+#### 7.2.3 原型工厂
+
+```go
+package prototype
+
+// PrototypeFactory 原型工厂
+type PrototypeFactory struct {
+    prototypes map[string]Prototype
+}
+
+func NewPrototypeFactory() *PrototypeFactory {
+    factory := &PrototypeFactory{
+        prototypes: make(map[string]Prototype),
+    }
+    
+    // 注册默认原型
+    factory.prototypes["default"] = NewConcretePrototype("default")
+    
+    return factory
+}
+
+func (f *PrototypeFactory) RegisterPrototype(name string, prototype Prototype) {
+    f.prototypes[name] = prototype
+}
+
+func (f *PrototypeFactory) CreatePrototype(name string) (Prototype, error) {
+    prototype, exists := f.prototypes[name]
+    if !exists {
+        return nil, fmt.Errorf("prototype %s not found", name)
+    }
+    return prototype.Clone(), nil
+}
+
+// 函数式原型工厂
+type CloneFunc func() interface{}
+
+type FunctionalPrototypeFactory struct {
+    prototypes map[string]CloneFunc
+}
+
+func NewFunctionalPrototypeFactory() *FunctionalPrototypeFactory {
+    return &FunctionalPrototypeFactory{
+        prototypes: make(map[string]CloneFunc),
+    }
+}
+
+func (f *FunctionalPrototypeFactory) Register(name string, cloneFunc CloneFunc) {
+    f.prototypes[name] = cloneFunc
+}
+
+func (f *FunctionalPrototypeFactory) Create(name string) (interface{}, error) {
+    cloneFunc, exists := f.prototypes[name]
+    if !exists {
+        return nil, fmt.Errorf("prototype %s not found", name)
+    }
+    return cloneFunc(), nil
+}
+```
+
 ### 7.3 性能分析
 
-**时间复杂度**: $O(n)$ - n为原型数据的复杂度
+**时间复杂度**:
+
+- 浅拷贝: $O(1)$
+- 深拷贝: $O(n)$ - n为对象的复杂度
+- JSON序列化: $O(n)$ - 但常数因子较大
+
 **空间复杂度**: $O(n)$ - 需要复制所有数据
-**内存效率**: 避免重复创建相同对象
-**初始化成本**: 降低对象初始化的成本
+
+**内存效率**:
+
+- 避免重复创建结构相似的对象
+- 减少复杂对象初始化的成本
+- 适用于对象创建成本高的场景
+
+**拷贝策略对比**:
+
+| 拷贝方式 | 优点 | 缺点 | 适用场景 |
+|---------|------|------|---------|
+| 手动深拷贝 | 性能最佳 | 实现复杂 | 高性能要求 |
+| JSON序列化 | 实现简单 | 性能较差，不支持非导出字段 | 快速实现，简单对象 |
+| 浅拷贝 | 性能最佳 | 可能导致共享状态 | 不可变对象 |
+
+### 7.4 Golang最佳实践
+
+1. **利用接口**:
+   - 定义清晰的Clone()接口
+   - 返回接口而非具体类型，支持多态
+
+2. **处理复杂结构**:
+   - 对于简单类型，直接赋值
+   - 对于复合类型，需递归拷贝
+   - 对于指针，需特别注意避免循环引用
+
+3. **注意深浅拷贝**:
+   - 默认优先实现深拷贝，避免状态共享
+   - 针对特定性能要求场景，可选择浅拷贝
+
+4. **Golang特有优化**:
+
+   ```go
+   // 使用reflect进行通用深拷贝
+   func DeepCopy(v interface{}) interface{} {
+       if v == nil {
+           return nil
+       }
+       
+       original := reflect.ValueOf(v)
+       if !original.IsValid() {
+           return nil
+       }
+       
+       // 处理指针
+       if original.Kind() == reflect.Ptr {
+           original = original.Elem()
+       }
+       
+       // 创建新实例
+       copied := reflect.New(original.Type())
+       copyRecursive(original, copied.Elem())
+       
+       return copied.Interface()
+   }
+   
+   // 递归复制
+   func copyRecursive(original, copied reflect.Value) {
+       // ... 实现根据类型的复制逻辑
+   }
+   ```
+
+5. **克隆注册表模式**:
+   - 维护原型注册表
+   - 支持动态注册和获取原型
+   - 结合工厂模式使用
 
 ---
 
@@ -688,6 +890,8 @@ $$ObjectPool = (Pool, Acquire, Release, Validate)$$
 - $Validate : obj \rightarrow bool$
 
 ### 8.2 Golang实现
+
+#### 8.2.1 基本实现
 
 ```go
 package object_pool
@@ -801,12 +1005,331 @@ func (p *ObjectPool) Close() {
 }
 ```
 
+#### 8.2.2 同步对象池
+
+```go
+package object_pool
+
+import (
+    "sync"
+)
+
+// SyncPool封装
+type SyncObjectPool struct {
+    pool *sync.Pool
+}
+
+func NewSyncObjectPool(factory func() interface{}) *SyncObjectPool {
+    return &SyncObjectPool{
+        pool: &sync.Pool{
+            New: factory,
+        },
+    }
+}
+
+func (p *SyncObjectPool) Get() interface{} {
+    return p.pool.Get()
+}
+
+func (p *SyncObjectPool) Put(obj interface{}) {
+    p.pool.Put(obj)
+}
+
+// 带资源清理的对象池
+type ResourcePool struct {
+    pool      *sync.Pool
+    resources int64
+    maxRes    int64
+    mu        sync.Mutex
+}
+
+func NewResourcePool(factory func() interface{}, maxResources int64) *ResourcePool {
+    return &ResourcePool{
+        pool: &sync.Pool{
+            New: func() interface{} {
+                return factory()
+            },
+        },
+        maxRes: maxResources,
+    }
+}
+
+func (p *ResourcePool) Acquire() interface{} {
+    p.mu.Lock()
+    defer p.mu.Unlock()
+    
+    if p.resources >= p.maxRes {
+        // 等待资源释放
+        return nil
+    }
+    
+    p.resources++
+    return p.pool.Get()
+}
+
+func (p *ResourcePool) Release(res interface{}) {
+    if res == nil {
+        return
+    }
+    
+    p.mu.Lock()
+    defer p.mu.Unlock()
+    
+    p.resources--
+    p.pool.Put(res)
+}
+```
+
+#### 8.2.3 带监控的池
+
+```go
+package object_pool
+
+import (
+    "fmt"
+    "sync"
+    "sync/atomic"
+    "time"
+)
+
+// MetricsObjectPool 带监控的对象池
+type MetricsObjectPool struct {
+    resources     chan interface{}
+    factory       func() interface{}
+    destroyFunc   func(interface{})
+    
+    // 指标
+    created       int64
+    acquired      int64
+    released      int64
+    destroyed     int64
+    acquireErrors int64
+    
+    // 计时器
+    acquireTime   int64
+    releaseTime   int64
+    
+    mu            sync.RWMutex
+}
+
+func NewMetricsObjectPool(factory func() interface{}, destroyFunc func(interface{}), size int) *MetricsObjectPool {
+    pool := &MetricsObjectPool{
+        resources:   make(chan interface{}, size),
+        factory:     factory,
+        destroyFunc: destroyFunc,
+    }
+    
+    // 预创建对象
+    for i := 0; i < size; i++ {
+        obj := factory()
+        atomic.AddInt64(&pool.created, 1)
+        pool.resources <- obj
+    }
+    
+    // 启动监控
+    go pool.monitor()
+    
+    return pool
+}
+
+func (p *MetricsObjectPool) Acquire() (interface{}, error) {
+    start := time.Now()
+    
+    select {
+    case obj := <-p.resources:
+        atomic.AddInt64(&p.acquired, 1)
+        atomic.AddInt64(&p.acquireTime, time.Since(start).Nanoseconds())
+        return obj, nil
+    case <-time.After(5 * time.Second):
+        atomic.AddInt64(&p.acquireErrors, 1)
+        return nil, fmt.Errorf("pool exhausted")
+    }
+}
+
+func (p *MetricsObjectPool) Release(obj interface{}) {
+    if obj == nil {
+        return
+    }
+    
+    start := time.Now()
+    
+    select {
+    case p.resources <- obj:
+        atomic.AddInt64(&p.released, 1)
+        atomic.AddInt64(&p.releaseTime, time.Since(start).Nanoseconds())
+    default:
+        // 池已满，销毁对象
+        if p.destroyFunc != nil {
+            p.destroyFunc(obj)
+            atomic.AddInt64(&p.destroyed, 1)
+        }
+    }
+}
+
+func (p *MetricsObjectPool) GetMetrics() map[string]int64 {
+    p.mu.RLock()
+    defer p.mu.RUnlock()
+    
+    return map[string]int64{
+        "created":       atomic.LoadInt64(&p.created),
+        "acquired":      atomic.LoadInt64(&p.acquired),
+        "released":      atomic.LoadInt64(&p.released),
+        "destroyed":     atomic.LoadInt64(&p.destroyed),
+        "acquireErrors": atomic.LoadInt64(&p.acquireErrors),
+        "availableNow":  int64(len(p.resources)),
+    }
+}
+
+func (p *MetricsObjectPool) GetLatencies() (acquireMs, releaseMs float64) {
+    acquired := atomic.LoadInt64(&p.acquired)
+    released := atomic.LoadInt64(&p.released)
+    
+    if acquired > 0 {
+        acquireMs = float64(atomic.LoadInt64(&p.acquireTime)) / float64(acquired) / float64(time.Millisecond)
+    }
+    
+    if released > 0 {
+        releaseMs = float64(atomic.LoadInt64(&p.releaseTime)) / float64(released) / float64(time.Millisecond)
+    }
+    
+    return
+}
+
+func (p *MetricsObjectPool) monitor() {
+    ticker := time.NewTicker(1 * time.Minute)
+    defer ticker.Stop()
+    
+    for range ticker.C {
+        metrics := p.GetMetrics()
+        acquireMs, releaseMs := p.GetLatencies()
+        
+        fmt.Printf("Pool Metrics: %+v, Acquire: %.2fms, Release: %.2fms\n", 
+                  metrics, acquireMs, releaseMs)
+    }
+}
+```
+
 ### 8.3 性能分析
 
-**时间复杂度**: $O(1)$ - 获取和释放对象的时间复杂度为常数
+**时间复杂度**:
+
+- 获取对象: 最佳情况 $O(1)$，池为空时需创建新对象
+- 释放对象: $O(1)$
+
 **空间复杂度**: $O(n)$ - n为池的大小
-**内存效率**: 避免频繁的对象创建和销毁
-**并发性能**: 支持高并发访问
+
+**并发性能**:
+
+- 通过通道实现线程安全
+- sync.Pool适合短生命周期对象
+- 自定义池适合长生命周期对象
+
+**资源管理**:
+
+- 减少频繁创建销毁的开销
+- 限制资源使用量，避免过度分配
+- 支持对象状态重置和验证
+
+**池策略对比**:
+
+| 池实现 | 优点 | 缺点 | 适用场景 |
+|-------|------|-----|----------|
+| sync.Pool | GC友好，内置实现 | 无法限制大小，不保证对象可用 | 临时对象，如JSON缓冲区 |
+| 通道池 | 精确控制大小，FIFO行为 | 实现复杂，需手动管理 | 数据库连接，HTTP客户端 |
+| 自定义池 | 完全控制，支持监控 | 需维护更多代码 | 关键资源，如GPU上下文 |
+
+### 8.4 Golang最佳实践
+
+1. **选择合适的池类型**:
+   - 短生命周期、临时对象: 优先使用`sync.Pool`
+   - 资源管理、连接池: 使用通道实现的自定义池
+   - 需要监控和指标: 使用带指标的池实现
+
+2. **资源清理和超时管理**:
+
+   ```go
+   func (p *Pool) CleanupLoop() {
+       ticker := time.NewTicker(p.cleanupInterval)
+       defer ticker.Stop()
+       
+       for range ticker.C {
+           p.removeStaleItems()
+       }
+   }
+   
+   func (p *Pool) removeStaleItems() {
+       // 移除过期连接
+       var valid []PoolObject
+       
+       p.mu.Lock()
+       defer p.mu.Unlock()
+       
+       for _, obj := range p.availableObjects {
+           if obj.IsValid() {
+               valid = append(valid, obj)
+           } else {
+               p.closeResource(obj)
+           }
+       }
+       
+       p.availableObjects = valid
+   }
+   ```
+
+3. **健康检查和验证**:
+
+   ```go
+   // 使用前验证对象健康状态
+   func (p *Pool) Acquire() (PoolObject, error) {
+       obj := <-p.objects
+       
+       // 验证对象
+       if !obj.IsValid() {
+           // 创建新对象替代
+           obj = p.factory()
+       }
+       
+       return obj, nil
+   }
+   ```
+
+4. **优雅关闭和资源回收**:
+
+   ```go
+   func (p *Pool) Close() error {
+       p.mu.Lock()
+       defer p.mu.Unlock()
+       
+       // 标记为关闭
+       p.closed = true
+       
+       // 关闭所有资源
+       for _, obj := range p.availableObjects {
+           p.closeResource(obj)
+       }
+       
+       return nil
+   }
+   ```
+
+5. **结合上下文使用**:
+
+   ```go
+   // 支持上下文控制的获取
+   func (p *Pool) AcquireWithContext(ctx context.Context) (PoolObject, error) {
+       select {
+       case obj := <-p.resources:
+           return obj, nil
+       case <-ctx.Done():
+           return nil, ctx.Err()
+       }
+   }
+   ```
+
+6. **Golang生态集成**:
+   - 数据库连接: `sql.DB`内部使用连接池
+   - HTTP客户端: `http.Client`内部使用传输池
+   - Redis客户端: 如`go-redis`提供连接池配置
 
 ---
 
@@ -864,7 +1387,7 @@ func CreateProduct(productType string) (Product, error) {
 // 对象池的资源管理
 func (p *ObjectPool) AcquireWithContext(ctx context.Context) (PoolObject, error) {
     select {
-    case obj := <-p.objects:
+    case obj := <-p.resources:
         return obj, nil
     case <-ctx.Done():
         return nil, ctx.Err()

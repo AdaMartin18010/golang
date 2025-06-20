@@ -687,14 +687,39 @@ func (c *ConfigFacade) ExecuteOperation(operation string) string {
 
 ### 8.1 形式化定义
 
-享元模式通过共享技术有效地支持大量细粒度对象的复用。
+享元模式通过共享技术有效地支持大量细粒度的对象，从而减少内存使用。
 
 **数学定义**:
-$$Flyweight : (IntrinsicState, ExtrinsicState) \rightarrow SharedObject$$
+$$Flyweight = (I, E, \phi)$$
 
-其中 $IntrinsicState$ 是共享状态，$ExtrinsicState$ 是外部状态
+其中：
+
+- $I$ - 内部状态（可共享）
+- $E$ - 外部状态（不可共享）
+- $\phi : I \times E \rightarrow Result$ - 操作函数
+
+**状态分离可以形式化为**:
+$$\mathcal{O} = \{o_1, o_2, ..., o_n\} \implies \mathcal{I} \times \mathcal{E} = \{(i_1, e_1), (i_2, e_2), ..., (i_n, e_n)\}$$
+
+其中 $|\mathcal{I}| \ll |\mathcal{O}|$（内部状态的数量远小于对象的数量）
+
+**空间复杂度优化**:
+$$Space_{without\_flyweight} = O(|\mathcal{O}|) = O(n)$$
+$$Space_{with\_flyweight} = O(|\mathcal{I}| + |\mathcal{E}|) \approx O(|\mathcal{I}|) \ll O(n)$$
+
+**类图关系**:
+
+```mermaid
+classDiagram
+    Client --> FlyweightFactory
+    FlyweightFactory --> Flyweight
+    Flyweight <|-- ConcreteFlyweight
+    Flyweight <|-- UnsharedConcreteFlyweight
+```
 
 ### 8.2 Golang实现
+
+#### 8.2.1 基本实现
 
 ```go
 package flyweight
@@ -821,12 +846,273 @@ func (f *StringFlyweightFactory) GetString(content string) *StringFlyweight {
 }
 ```
 
+#### 8.2.2 图形渲染系统实例
+
+```go
+package flyweight
+
+import (
+    "fmt"
+    "image/color"
+    "sync"
+)
+
+// 内部状态
+type ShapeType struct {
+    Name       string
+    Complexity int
+    Vertices   []Vertex
+}
+
+type Vertex struct {
+    X, Y float64
+}
+
+// 享元对象
+type Shape interface {
+    Draw(x, y float64, c color.RGBA, scale float64)
+    GetType() string
+}
+
+// 具体享元
+type Circle struct {
+    shapeType *ShapeType
+}
+
+func NewCircle() *Circle {
+    return &Circle{
+        shapeType: &ShapeType{
+            Name:       "Circle",
+            Complexity: 1,
+            Vertices: []Vertex{
+                {0, 0}, // 中心点
+            },
+        },
+    }
+}
+
+func (c *Circle) Draw(x, y float64, clr color.RGBA, scale float64) {
+    fmt.Printf("Drawing %s at (%.1f,%.1f) with color RGB(%d,%d,%d) and scale %.1f\n",
+        c.shapeType.Name, x, y, clr.R, clr.G, clr.B, scale)
+}
+
+func (c *Circle) GetType() string {
+    return c.shapeType.Name
+}
+
+// 具体享元
+type Rectangle struct {
+    shapeType *ShapeType
+}
+
+func NewRectangle() *Rectangle {
+    return &Rectangle{
+        shapeType: &ShapeType{
+            Name:       "Rectangle",
+            Complexity: 2,
+            Vertices: []Vertex{
+                {0, 0}, {1, 0}, {1, 1}, {0, 1},
+            },
+        },
+    }
+}
+
+func (r *Rectangle) Draw(x, y float64, clr color.RGBA, scale float64) {
+    fmt.Printf("Drawing %s at (%.1f,%.1f) with color RGB(%d,%d,%d) and scale %.1f\n",
+        r.shapeType.Name, x, y, clr.R, clr.G, clr.B, scale)
+}
+
+func (r *Rectangle) GetType() string {
+    return r.shapeType.Name
+}
+
+// 享元工厂
+type ShapeFactory struct {
+    shapes map[string]Shape
+    mu     sync.RWMutex
+}
+
+func NewShapeFactory() *ShapeFactory {
+    return &ShapeFactory{
+        shapes: make(map[string]Shape),
+    }
+}
+
+func (f *ShapeFactory) GetShape(shapeType string) Shape {
+    f.mu.RLock()
+    if shape, exists := f.shapes[shapeType]; exists {
+        f.mu.RUnlock()
+        return shape
+    }
+    f.mu.RUnlock()
+    
+    f.mu.Lock()
+    defer f.mu.Unlock()
+    
+    if shape, exists := f.shapes[shapeType]; exists {
+        return shape
+    }
+    
+    var shape Shape
+    switch shapeType {
+    case "circle":
+        shape = NewCircle()
+    case "rectangle":
+        shape = NewRectangle()
+    default:
+        return nil
+    }
+    
+    f.shapes[shapeType] = shape
+    return shape
+}
+```
+
+#### 8.2.3 字符串池（Golang内置享元）
+
+```go
+package main
+
+import (
+    "fmt"
+    "unsafe"
+)
+
+func main() {
+    // Go字符串字面量自动享元模式
+    s1 := "hello"
+    s2 := "hello"
+    
+    // 指向同一内存区域
+    fmt.Println(&s1, &s2)               // 不同（变量地址）
+    fmt.Println(unsafe.Pointer(unsafe.StringData(s1)))   // 相同（内容地址）
+    fmt.Println(unsafe.Pointer(unsafe.StringData(s2)))   // 相同（内容地址）
+    
+    // 使用+操作符创建字符串时，编译器可能无法优化
+    s3 := "hel" + "lo"
+    fmt.Println(unsafe.Pointer(unsafe.StringData(s3)))   // 可能相同，取决于编译器
+    
+    // 运行时创建的字符串不会自动享元
+    s4 := fmt.Sprintf("hello")
+    fmt.Println(unsafe.Pointer(unsafe.StringData(s4)))   // 通常不同
+    
+    // 使用sync.Pool作为显式享元
+    pool := sync.Pool{
+        New: func() interface{} {
+            return make([]byte, 1024)
+        },
+    }
+    
+    // 获取享元对象
+    buffer := pool.Get().([]byte)
+    // 使用后归还
+    defer pool.Put(buffer)
+    
+    // 使用buffer
+    copy(buffer, []byte("data"))
+}
+```
+
 ### 8.3 性能分析
 
-**时间复杂度**: $O(1)$ - 获取享元的时间复杂度为常数
-**空间复杂度**: $O(n)$ - n为不同享元的数量
-**内存效率**: 显著减少内存使用
-**共享性**: 支持大量对象共享
+**时间复杂度**:
+
+- 创建/获取享元: $O(1)$ - 使用哈希表查找
+- 操作执行: 取决于具体操作
+
+**空间复杂度**: $O(k)$ - k为唯一内部状态的数量，通常 $k \ll n$（n为对象数量）
+
+**内存优化**:
+
+- 数量级优化：从 $O(n)$ 到 $O(k)$，其中 $k \ll n$
+- 适用于内部状态有限但对象实例很多的场景
+- 内部状态存储一次，外部状态按需传入
+
+**适用场景**:
+
+- 大量相似对象，如文本编辑器中的字符渲染
+- 图形渲染系统中的共享纹理
+- 游戏开发中的物品实例
+- Web服务中的响应缓存
+
+**内存使用对比**:
+
+| 场景 | 不使用享元 | 使用享元 | 节省比率 |
+|------|-----------|---------|---------|
+| 10,000个文本字符 | 10,000对象 | ~100对象 | ~99% |
+| 游戏物品系统 | 每个实例一个对象 | 每种类型一个对象 | 80-95% |
+| 网络连接池 | 每个连接独立配置 | 共享配置参数 | 30-50% |
+
+### 8.4 Golang最佳实践
+
+1. **内部状态与外部状态分离**:
+   - 明确区分可共享和不可共享的状态
+   - 内部状态：不可变、可共享
+   - 外部状态：可变、不可共享
+
+2. **并发安全的享元工厂**:
+
+   ```go
+   // 线程安全的享元获取
+   func (f *FlyweightFactory) GetFlyweight(key string) Flyweight {
+       f.mu.RLock()
+       if fw, exists := f.flyweights[key]; exists {
+           f.mu.RUnlock()
+           return fw
+       }
+       f.mu.RUnlock()
+       
+       // 写锁
+       f.mu.Lock()
+       defer f.mu.Unlock()
+       
+       // 双重检查，避免重复创建
+       if fw, exists := f.flyweights[key]; exists {
+           return fw
+       }
+       
+       fw := NewConcreteFlyweight(key)
+       f.flyweights[key] = fw
+       return fw
+   }
+   ```
+
+3. **使用sync.Map优化**:
+
+   ```go
+   type FlyweightFactory struct {
+       flyweights sync.Map
+   }
+   
+   func (f *FlyweightFactory) GetFlyweight(key string) Flyweight {
+       if value, exists := f.flyweights.Load(key); exists {
+           return value.(Flyweight)
+       }
+       
+       fw := NewConcreteFlyweight(key)
+       actual, _ := f.flyweights.LoadOrStore(key, fw)
+       return actual.(Flyweight)
+   }
+   ```
+
+4. **内置享元模式**:
+   - 字符串字面量：Go自动对相同字符串字面量共享内存
+   - `sync.Pool`：临时对象池，内部使用享元思想
+   - 正则表达式：`regexp.MustCompile`缓存已编译正则
+
+5. **享元对象不可变性**:
+
+   ```go
+   type ImmutableFlyweight struct {
+       // 不可变，创建后不能修改
+       intrinsicState string
+   }
+   
+   // 无setter方法，只有getter
+   func (f *ImmutableFlyweight) GetIntrinsicState() string {
+       return f.intrinsicState
+   }
+   ```
 
 ---
 
@@ -837,11 +1123,31 @@ func (f *StringFlyweightFactory) GetString(content string) *StringFlyweight {
 代理模式为其他对象提供一种代理以控制对这个对象的访问。
 
 **数学定义**:
-$$Proxy : Client \rightarrow Subject$$
+$$Proxy : Client \times Request \rightarrow Subject \times Response$$
 
-其中代理控制对Subject的访问
+**代理类型可以形式化为**:
+$$P = \{VirtualProxy, ProtectionProxy, RemoteProxy, LoggingProxy, CachingProxy, ...\}$$
+
+**访问控制过程**:
+$$access : Client \times Request \times Rules \rightarrow \{Allow, Deny\}$$
+
+**类图关系**:
+
+```mermaid
+classDiagram
+    Client --> Subject
+    Subject <|-- RealSubject
+    Subject <|-- Proxy
+    Proxy --> RealSubject
+    class Subject {
+        <<interface>>
+        +Request()
+    }
+```
 
 ### 9.2 Golang实现
+
+#### 9.2.1 基本实现
 
 ```go
 package proxy
@@ -890,6 +1196,7 @@ func (p *Proxy) Request() string {
     p.mu.RLock()
     if result, exists := p.cache["request"]; exists {
         p.mu.RUnlock()
+        fmt.Println("Returning cached result")
         return result
     }
     p.mu.RUnlock()
@@ -902,110 +1209,347 @@ func (p *Proxy) Request() string {
         return result
     }
     
+    // 调用真实主题
     result := p.realSubject.Request()
     p.cache["request"] = result
     return result
 }
+```
 
-// VirtualProxy 虚拟代理
+#### 9.2.2 各种代理类型实现
+
+```go
+package proxy
+
+import (
+    "errors"
+    "fmt"
+    "log"
+    "sync"
+    "time"
+)
+
+// 虚拟代理 - 延迟加载
 type VirtualProxy struct {
     realSubject Subject
-    mu          sync.Mutex
-    initialized bool
+    once        sync.Once
+    factory     func() Subject
 }
 
-func NewVirtualProxy() *VirtualProxy {
-    return &VirtualProxy{}
-}
-
-func (v *VirtualProxy) Request() string {
-    v.mu.Lock()
-    defer v.mu.Unlock()
-    
-    if !v.initialized {
-        v.realSubject = NewRealSubject("Virtual")
-        v.initialized = true
+func NewVirtualProxy(factory func() Subject) *VirtualProxy {
+    return &VirtualProxy{
+        factory: factory,
     }
-    
-    return v.realSubject.Request()
 }
 
-// ProtectionProxy 保护代理
+func (p *VirtualProxy) Request() string {
+    p.once.Do(func() {
+        fmt.Println("Creating real subject...")
+        p.realSubject = p.factory()
+    })
+    return p.realSubject.Request()
+}
+
+// 保护代理 - 访问控制
 type ProtectionProxy struct {
     realSubject Subject
-    accessLevel string
+    user        string
+    role        string
 }
 
-func NewProtectionProxy(realSubject Subject, accessLevel string) *ProtectionProxy {
+func NewProtectionProxy(realSubject Subject, user, role string) *ProtectionProxy {
     return &ProtectionProxy{
         realSubject: realSubject,
-        accessLevel: accessLevel,
+        user:        user,
+        role:        role,
     }
 }
 
 func (p *ProtectionProxy) Request() string {
-    if p.accessLevel == "admin" {
-        return p.realSubject.Request()
+    if p.role != "admin" {
+        return "Access denied"
     }
-    return "Access denied"
+    return p.realSubject.Request()
 }
 
-// RemoteProxy 远程代理
+// 远程代理 - 网络请求
 type RemoteProxy struct {
-    realSubject Subject
-    network     string
+    serviceURL string
+    client     HTTPClient
 }
 
-func NewRemoteProxy(network string) *RemoteProxy {
-    return &RemoteProxy{network: network}
+type HTTPClient interface {
+    Get(url string) (string, error)
 }
 
-func (r *RemoteProxy) Request() string {
-    // 模拟网络请求
-    fmt.Printf("Sending request over %s network\n", r.network)
-    time.Sleep(50 * time.Millisecond)
-    return fmt.Sprintf("Remote response from %s", r.network)
-}
-
-// 智能引用代理
-type SmartReferenceProxy struct {
-    realSubject Subject
-    referenceCount int
-    mu            sync.Mutex
-}
-
-func NewSmartReferenceProxy(realSubject Subject) *SmartReferenceProxy {
-    return &SmartReferenceProxy{
-        realSubject: realSubject,
-        referenceCount: 1,
+func NewRemoteProxy(serviceURL string, client HTTPClient) *RemoteProxy {
+    return &RemoteProxy{
+        serviceURL: serviceURL,
+        client:     client,
     }
 }
 
-func (s *SmartReferenceProxy) Request() string {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    
-    s.referenceCount++
-    return s.realSubject.Request()
+func (p *RemoteProxy) Request() string {
+    result, err := p.client.Get(p.serviceURL)
+    if err != nil {
+        return fmt.Sprintf("Error: %v", err)
+    }
+    return result
 }
 
-func (s *SmartReferenceProxy) Release() {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    
-    s.referenceCount--
-    if s.referenceCount == 0 {
-        fmt.Println("RealSubject will be garbage collected")
+// 日志代理 - 记录访问
+type LoggingProxy struct {
+    realSubject Subject
+    logger      Logger
+}
+
+type Logger interface {
+    Log(message string)
+}
+
+func NewLoggingProxy(realSubject Subject, logger Logger) *LoggingProxy {
+    return &LoggingProxy{
+        realSubject: realSubject,
+        logger:      logger,
+    }
+}
+
+func (p *LoggingProxy) Request() string {
+    p.logger.Log("Request started")
+    start := time.Now()
+    result := p.realSubject.Request()
+    elapsed := time.Since(start)
+    p.logger.Log(fmt.Sprintf("Request completed in %s", elapsed))
+    return result
+}
+```
+
+#### 9.2.3 代理组合与装饰器模式结合
+
+```go
+package proxy
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+// 用于测量性能的代理
+type MetricsProxy struct {
+    realSubject Subject
+    metrics     *Metrics
+}
+
+type Metrics struct {
+    calls      int64
+    totalTime  time.Duration
+    mu         sync.Mutex
+}
+
+func (m *Metrics) Record(duration time.Duration) {
+    m.mu.Lock()
+    defer m.mu.Unlock()
+    m.calls++
+    m.totalTime += duration
+}
+
+func (m *Metrics) Average() time.Duration {
+    m.mu.Lock()
+    defer m.mu.Unlock()
+    if m.calls == 0 {
+        return 0
+    }
+    return m.totalTime / time.Duration(m.calls)
+}
+
+func (m *Metrics) Calls() int64 {
+    m.mu.Lock()
+    defer m.mu.Unlock()
+    return m.calls
+}
+
+func NewMetricsProxy(subject Subject) *MetricsProxy {
+    return &MetricsProxy{
+        realSubject: subject,
+        metrics:     &Metrics{},
+    }
+}
+
+func (p *MetricsProxy) Request() string {
+    start := time.Now()
+    result := p.realSubject.Request()
+    elapsed := time.Since(start)
+    p.metrics.Record(elapsed)
+    return result
+}
+
+func (p *MetricsProxy) GetMetrics() (calls int64, avgTime time.Duration) {
+    return p.metrics.Calls(), p.metrics.Average()
+}
+
+// 代理链模式
+type ProxyChain struct {
+    head Subject
+}
+
+func NewProxyChain(subject Subject, proxies ...func(Subject) Subject) *ProxyChain {
+    current := subject
+    for i := len(proxies) - 1; i >= 0; i-- {
+        current = proxies[i](current)
+    }
+    return &ProxyChain{head: current}
+}
+
+func (c *ProxyChain) Request() string {
+    return c.head.Request()
+}
+
+// 使用示例
+func WithCache(subject Subject) Subject {
+    return NewProxy(subject)
+}
+
+func WithLogging(logger Logger) func(Subject) Subject {
+    return func(subject Subject) Subject {
+        return NewLoggingProxy(subject, logger)
+    }
+}
+
+func WithMetrics(subject Subject) Subject {
+    return NewMetricsProxy(subject)
+}
+
+func WithAccess(user, role string) func(Subject) Subject {
+    return func(subject Subject) Subject {
+        return NewProtectionProxy(subject, user, role)
     }
 }
 ```
 
 ### 9.3 性能分析
 
-**时间复杂度**: $O(1)$ - 代理操作的时间复杂度为常数
-**空间复杂度**: $O(1)$ - 代理只占用额外控制空间
-**访问控制**: 提供灵活的访问控制机制
-**缓存效果**: 支持结果缓存和延迟加载
+**时间复杂度**:
+
+- 无缓存: $O(n)$ - n为真实主题的操作复杂度
+- 有缓存: 第一次 $O(n)$，后续 $O(1)$
+
+**空间复杂度**: $O(m)$ - m为代理存储的数据量（如缓存大小）
+
+**延迟开销**:
+
+- 无缓存代理: 轻微增加，主要是方法调用开销
+- 缓存代理: 可显著减少平均延迟
+- 远程代理: 包含网络延迟
+
+**代理对比**:
+
+| 代理类型 | 优点 | 缺点 | 适用场景 |
+|---------|------|------|----------|
+| 虚拟代理 | 延迟初始化，节省资源 | 第一次请求慢 | 重资源对象 |
+| 缓存代理 | 提高重复请求性能 | 缓存一致性问题 | 读多写少场景 |
+| 保护代理 | 增强安全性 | 增加复杂度 | 访问控制需求 |
+| 日志代理 | 透明添加日志 | 轻微性能影响 | 调试和监控 |
+| 远程代理 | 隐藏分布式细节 | 网络依赖 | 分布式系统 |
+
+### 9.4 Golang最佳实践
+
+1. **利用接口**:
+   - 代理和真实主题实现相同接口
+   - 客户端代码依赖接口而非具体类型
+
+2. **透明性**:
+
+   ```go
+   // 客户端代码不需要修改
+   func ClientCode(subject Subject) {
+       result := subject.Request()
+       fmt.Println(result)
+   }
+   
+   // 可以传入真实主题或代理
+   realSubject := NewRealSubject("example")
+   proxy := NewProxy(realSubject)
+   
+   ClientCode(realSubject) // 使用真实主题
+   ClientCode(proxy)       // 使用代理
+   ```
+
+3. **功能组合**:
+
+   ```go
+   // 组合多个代理功能
+   subject := NewRealSubject("data")
+   
+   // 自底向上叠加代理功能
+   chain := NewProxyChain(
+       subject,
+       WithCache,                // 缓存层
+       WithLogging(stdLogger),   // 日志层
+       WithMetrics,              // 指标层
+       WithAccess("user", "admin"), // 访问控制层
+   )
+   
+   result := chain.Request()
+   ```
+
+4. **上下文传递**:
+
+   ```go
+   // 带上下文的代理
+   type ContextAwareProxy struct {
+       realSubject Subject
+   }
+   
+   func (p *ContextAwareProxy) RequestWithContext(ctx context.Context) (string, error) {
+       // 检查上下文是否已取消
+       select {
+       case <-ctx.Done():
+           return "", ctx.Err()
+       default:
+           // 继续处理
+       }
+       
+       return p.realSubject.Request(), nil
+   }
+   ```
+
+5. **反射代理**:
+
+   ```go
+   // 动态代理
+   func CreateProxy(realObject interface{}) interface{} {
+       typ := reflect.TypeOf(realObject)
+       if typ.Kind() != reflect.Ptr {
+           panic("Expected pointer type")
+       }
+       
+       proxyType := reflect.StructOf([]reflect.StructField{
+           {
+               Name: "RealObject",
+               Type: typ,
+               Tag:  `json:"-"`,
+           },
+       })
+       
+       proxy := reflect.New(proxyType).Elem()
+       proxy.Field(0).Set(reflect.ValueOf(realObject))
+       
+       return proxy.Addr().Interface()
+   }
+   ```
+
+6. **应用场景**:
+   - HTTP中间件: 认证、日志、限流代理
+   - 数据库连接池: 连接管理代理
+   - 缓存系统: 透明缓存代理
+   - 服务发现: 远程服务代理
+
+### 9.5 与其他模式的关系
+
+- **装饰器模式**: 代理控制对象访问，装饰器添加职责
+- **适配器模式**: 代理接口相同，适配器接口不同
+- **外观模式**: 代理代表单个对象，外观代表整个子系统
 
 ---
 
