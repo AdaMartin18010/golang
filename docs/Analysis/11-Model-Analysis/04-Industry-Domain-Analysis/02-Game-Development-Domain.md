@@ -79,6 +79,7 @@ graph TD
 
 **定理 2.1** (游戏状态一致性)
 对于任意游戏状态序列 $S = [s_1, s_2, ..., s_n]$，如果满足：
+
 1. 时间单调递增：$\forall i < j, t_i < t_j$
 2. 状态转换有效：$\forall i, \delta(s_i, e_i) = s_{i+1}$
 3. 玩家状态一致：$\forall i, j, p_i \cap p_j \neq \emptyset$

@@ -76,6 +76,7 @@ $$\mathcal{C} = (S, \Sigma, \delta, s_0, F)$$
 $$\forall x, y \in Instance(Singleton) : x = y$$
 
 **状态机定义**:
+
 ```mermaid
 stateDiagram-v2
     [*] --> Uninitialized
@@ -218,6 +219,7 @@ func (l *LazySingleton) Get(key string) (interface{}, bool) {
 $$FactoryMethod : ProductType \rightarrow Product$$
 
 **类图关系**:
+
 ```mermaid
 classDiagram
     Creator <|-- ConcreteCreator
@@ -679,6 +681,7 @@ func (r *PrototypeRegistry) Clone(name string) (Prototype, error) {
 $$ObjectPool = (Pool, Acquire, Release, Validate)$$
 
 其中：
+
 - $Pool = \{obj_1, obj_2, ..., obj_n\}$
 - $Acquire : Pool \rightarrow (obj, Pool')$
 - $Release : (obj, Pool) \rightarrow Pool'$
@@ -883,9 +886,9 @@ func (p *ObjectPool) AcquireWithContext(ctx context.Context) (PoolObject, error)
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley.
 2. Freeman, E., Robson, E., Sierra, K., & Bates, B. (2004). Head First Design Patterns. O'Reilly Media.
-3. Go Team. (2023). The Go Programming Language Specification. https://golang.org/ref/spec
-4. Go Team. (2023). Effective Go. https://golang.org/doc/effective_go.html
-5. Go Team. (2023). Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
+3. Go Team. (2023). The Go Programming Language Specification. <https://golang.org/ref/spec>
+4. Go Team. (2023). Effective Go. <https://golang.org/doc/effective_go.html>
+5. Go Team. (2023). Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
 
 ---
 

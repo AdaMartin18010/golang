@@ -1,360 +1,295 @@
-# 结构型模式 (Structural Patterns)
+# 结构型设计模式分析
 
 ## 目录
 
 1. [概述](#1-概述)
-2. [适配器模式](#2-适配器模式)
-3. [桥接模式](#3-桥接模式)
-4. [组合模式](#4-组合模式)
-5. [装饰器模式](#5-装饰器模式)
-6. [外观模式](#6-外观模式)
-7. [享元模式](#7-享元模式)
-8. [代理模式](#8-代理模式)
-9. [模式关系分析](#9-模式关系分析)
-10. [性能分析](#10-性能分析)
-11. [最佳实践](#11-最佳实践)
+2. [结构型模式形式化定义](#2-结构型模式形式化定义)
+3. [适配器模式 (Adapter)](#3-适配器模式-adapter)
+4. [桥接模式 (Bridge)](#4-桥接模式-bridge)
+5. [组合模式 (Composite)](#5-组合模式-composite)
+6. [装饰器模式 (Decorator)](#6-装饰器模式-decorator)
+7. [外观模式 (Facade)](#7-外观模式-facade)
+8. [享元模式 (Flyweight)](#8-享元模式-flyweight)
+9. [代理模式 (Proxy)](#9-代理模式-proxy)
+10. [性能分析与最佳实践](#10-性能分析与最佳实践)
+11. [参考文献](#11-参考文献)
+
+---
 
 ## 1. 概述
 
-### 1.1 结构型模式定义
+结构型模式关注类和对象的组合，通过继承和组合获得新功能。在Golang中，结构型模式通过接口、嵌入和组合实现，充分利用Go语言的简洁性和灵活性。
 
-结构型模式处理类和对象的组合，通过继承和组合获得新功能。
+### 1.1 结构型模式分类
 
-**形式化定义**：
+结构型模式集合可以形式化定义为：
 
-设 $S$ 为结构型模式集合，$C$ 为类集合，$O$ 为对象集合，则：
+$$C_{str} = \{Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy\}$$
 
-$$S = \{s_i | s_i = (Structure_i, Composition_i, Interface_i)\}$$
+### 1.2 核心特征
+
+- **对象组合**: 通过组合实现功能扩展
+- **接口适配**: 提供统一的接口适配不同实现
+- **结构优化**: 优化对象结构和内存使用
+- **访问控制**: 控制对对象的访问和操作
+
+---
+
+## 2. 结构型模式形式化定义
+
+### 2.1 结构型模式系统定义
+
+结构型模式系统可以定义为五元组：
+
+$$\mathcal{SP} = (P_{str}, I_{str}, C_{str}, E_{str}, Q_{str})$$
 
 其中：
 
-- $Structure_i$ 是结构组件
-- $Composition_i$ 是组合关系
-- $Interface_i$ 是接口定义
+- **$P_{str}$** - 结构型模式集合
+- **$I_{str}$** - 接口集合
+- **$C_{str}$** - 组合关系集合
+- **$E_{str}$** - 评估指标集合
+- **$Q_{str}$** - 质量保证集合
 
-### 1.2 核心原则
+### 2.2 结构关系形式化定义
 
-1. **组合优于继承**：优先使用组合而不是继承
-2. **接口隔离**：定义小而精确的接口
-3. **结构灵活性**：支持动态结构变化
-4. **功能扩展**：在不修改现有代码的情况下扩展功能
+结构关系可以定义为图论模型：
 
-### 1.3 分类体系
+$$\mathcal{G} = (V, E, \phi)$$
 
-```text
-结构型模式
-├── 适配器模式 (Adapter)
-│   └── 接口转换和兼容
-├── 桥接模式 (Bridge)
-│   └── 抽象与实现分离
-├── 组合模式 (Composite)
-│   └── 树形结构处理
-├── 装饰器模式 (Decorator)
-│   └── 动态功能扩展
-├── 外观模式 (Facade)
-│   └── 子系统简化接口
-├── 享元模式 (Flyweight)
-│   └── 对象共享和复用
-└── 代理模式 (Proxy)
-    └── 访问控制和延迟加载
+其中：
+
+- **$V$** - 顶点集合（对象）
+- **$E$** - 边集合（关系）
+- **$\phi$** - 边到顶点对的映射函数
+
+---
+
+## 3. 适配器模式 (Adapter)
+
+### 3.1 形式化定义
+
+适配器模式将一个类的接口转换成客户希望的另一个接口，使不兼容的接口可以一起工作。
+
+**数学定义**:
+$$Adapter : IncompatibleInterface \rightarrow CompatibleInterface$$
+
+**类图关系**:
+
+```mermaid
+classDiagram
+    Client --> Target
+    Target <|-- Adapter
+    Adapter --> Adaptee
+    Adaptee <|-- ConcreteAdaptee
 ```
 
-## 2. 适配器模式 (Adapter)
-
-### 2.1 形式化定义
-
-**定义**：将一个类的接口转换成客户希望的另外一个接口。
-
-**数学定义**：
-
-设 $A$ 为适配器，$T$ 为目标接口，$S$ 为源接口，则：
-
-$$A : S \rightarrow T$$
-
-**形式化证明**：
-
-**定理**：适配器模式保证接口兼容性
-
-**证明**：
-
-1. 设源接口 $S$ 有方法 $m_s$
-2. 设目标接口 $T$ 需要方法 $m_t$
-3. 适配器 $A$ 将 $m_s$ 转换为 $m_t$
-4. 客户端可以调用 $m_t$ 而无需知道 $m_s$
-5. 因此实现了接口兼容
-
-### 2.2 Golang实现
-
-#### 2.2.1 对象适配器
+### 3.2 Golang实现
 
 ```go
 package adapter
 
-import "fmt"
+import (
+    "fmt"
+    "strconv"
+)
 
 // Target 目标接口
 type Target interface {
     Request() string
 }
 
-// Adaptee 需要适配的类
-type Adaptee struct {
-    specialData string
+// Adaptee 被适配的接口
+type Adaptee interface {
+    SpecificRequest() int
 }
 
-func (a *Adaptee) SpecificRequest() string {
-    // 反转字符串
-    runes := []rune(a.specialData)
-    for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-        runes[i], runes[j] = runes[j], runes[i]
-    }
-    return fmt.Sprintf("Adaptee's specific request: %s", string(runes))
+// ConcreteAdaptee 具体被适配类
+type ConcreteAdaptee struct {
+    value int
+}
+
+func NewConcreteAdaptee(value int) *ConcreteAdaptee {
+    return &ConcreteAdaptee{value: value}
+}
+
+func (a *ConcreteAdaptee) SpecificRequest() int {
+    return a.value
 }
 
 // Adapter 适配器
 type Adapter struct {
-    adaptee *Adaptee
+    adaptee Adaptee
 }
 
-func NewAdapter(adaptee *Adaptee) *Adapter {
+func NewAdapter(adaptee Adaptee) *Adapter {
     return &Adapter{adaptee: adaptee}
 }
 
 func (a *Adapter) Request() string {
-    return a.adaptee.SpecificRequest()
+    value := a.adaptee.SpecificRequest()
+    return fmt.Sprintf("Adapted: %s", strconv.Itoa(value))
 }
 
-// ClientCode 客户端代码
-func ClientCode(target Target) {
-    fmt.Println(target.Request())
-}
-```
-
-#### 2.2.2 类适配器（通过接口组合）
-
-```go
-package adapter
-
-// LegacySystem 遗留系统接口
-type LegacySystem interface {
-    OldMethod() string
+// 函数式适配器
+type FunctionalAdapter struct {
+    adapteeFunc func() int
 }
 
-// ModernSystem 现代系统接口
-type ModernSystem interface {
-    NewMethod() string
+func NewFunctionalAdapter(adapteeFunc func() int) *FunctionalAdapter {
+    return &FunctionalAdapter{adapteeFunc: adapteeFunc}
 }
 
-// LegacyImplementation 遗留系统实现
-type LegacyImplementation struct {
-    data string
+func (f *FunctionalAdapter) Request() string {
+    value := f.adapteeFunc()
+    return fmt.Sprintf("Functional Adapted: %s", strconv.Itoa(value))
 }
 
-func (l *LegacyImplementation) OldMethod() string {
-    return fmt.Sprintf("Legacy: %s", l.data)
+// Client 客户端
+type Client struct {
+    target Target
 }
 
-// SystemAdapter 系统适配器
-type SystemAdapter struct {
-    LegacySystem // 嵌入遗留系统接口
+func NewClient(target Target) *Client {
+    return &Client{target: target}
 }
 
-func NewSystemAdapter(legacy LegacySystem) *SystemAdapter {
-    return &SystemAdapter{LegacySystem: legacy}
-}
-
-func (s *SystemAdapter) NewMethod() string {
-    // 调用遗留方法并转换
-    oldResult := s.OldMethod()
-    return fmt.Sprintf("Modern: %s", oldResult)
+func (c *Client) UseTarget() string {
+    return c.target.Request()
 }
 ```
 
-### 2.3 测试验证
+### 3.3 性能分析
 
-```go
-package adapter
+**时间复杂度**: $O(1)$ - 适配操作的时间复杂度为常数
+**空间复杂度**: $O(1)$ - 只占用适配器的内存空间
+**兼容性**: 提供接口兼容性
+**灵活性**: 支持多种适配策略
 
-import "testing"
+---
 
-func TestAdapter(t *testing.T) {
-    // 测试对象适配器
-    adaptee := &Adaptee{specialData: "Hello World"}
-    adapter := NewAdapter(adaptee)
-    
-    result := adapter.Request()
-    expected := "Adaptee's specific request: dlroW olleH"
-    
-    if result != expected {
-        t.Errorf("Expected %s, got %s", expected, result)
-    }
-}
-
-func TestSystemAdapter(t *testing.T) {
-    // 测试系统适配器
-    legacy := &LegacyImplementation{data: "test data"}
-    adapter := NewSystemAdapter(legacy)
-    
-    result := adapter.NewMethod()
-    expected := "Modern: Legacy: test data"
-    
-    if result != expected {
-        t.Errorf("Expected %s, got %s", expected, result)
-    }
-}
-```
-
-## 3. 桥接模式 (Bridge)
-
-### 3.1 形式化定义
-
-**定义**：将抽象部分与它的实现部分分离，使它们都可以独立地变化。
-
-**数学定义**：
-
-设 $B$ 为桥接，$A$ 为抽象，$I$ 为实现，则：
-
-$$B = (A, I) \text{ where } A \text{ and } I \text{ are independent}$$
-
-**形式化证明**：
-
-**定理**：桥接模式支持独立变化
-
-**证明**：
-
-1. 设抽象 $A$ 有变体 $A_1, A_2$
-2. 设实现 $I$ 有变体 $I_1, I_2$
-3. 桥接 $B$ 可以组合任意 $A_i$ 和 $I_j$
-4. 因此 $A$ 和 $I$ 可以独立变化
-
-### 3.2 Golang实现
-
-```go
-package bridge
-
-import "fmt"
-
-// DrawingAPI 实现部分接口
-type DrawingAPI interface {
-    DrawCircle(x, y, radius float64)
-    DrawRectangle(x, y, width, height float64)
-}
-
-// DrawingAPI1 具体实现1
-type DrawingAPI1 struct{}
-
-func (d *DrawingAPI1) DrawCircle(x, y, radius float64) {
-    fmt.Printf("API1.circle at (%.1f,%.1f) radius %.1f\n", x, y, radius)
-}
-
-func (d *DrawingAPI1) DrawRectangle(x, y, width, height float64) {
-    fmt.Printf("API1.rectangle at (%.1f,%.1f) size %.1f x %.1f\n", x, y, width, height)
-}
-
-// DrawingAPI2 具体实现2
-type DrawingAPI2 struct{}
-
-func (d *DrawingAPI2) DrawCircle(x, y, radius float64) {
-    fmt.Printf("API2.circle at (%.1f,%.1f) radius %.1f\n", x, y, radius)
-}
-
-func (d *DrawingAPI2) DrawRectangle(x, y, width, height float64) {
-    fmt.Printf("API2.rectangle at (%.1f,%.1f) size %.1f x %.1f\n", x, y, width, height)
-}
-
-// Shape 抽象部分接口
-type Shape interface {
-    Draw()
-    Resize(percent float64)
-}
-
-// CircleShape 具体抽象 - 圆形
-type CircleShape struct {
-    x, y, radius float64
-    drawingAPI   DrawingAPI
-}
-
-func NewCircleShape(x, y, radius float64, api DrawingAPI) *CircleShape {
-    return &CircleShape{
-        x:          x,
-        y:          y,
-        radius:     radius,
-        drawingAPI: api,
-    }
-}
-
-func (c *CircleShape) Draw() {
-    c.drawingAPI.DrawCircle(c.x, c.y, c.radius)
-}
-
-func (c *CircleShape) Resize(percent float64) {
-    c.radius *= percent
-}
-
-// RectangleShape 具体抽象 - 矩形
-type RectangleShape struct {
-    x, y, width, height float64
-    drawingAPI          DrawingAPI
-}
-
-func NewRectangleShape(x, y, width, height float64, api DrawingAPI) *RectangleShape {
-    return &RectangleShape{
-        x:          x,
-        y:          y,
-        width:      width,
-        height:     height,
-        drawingAPI: api,
-    }
-}
-
-func (r *RectangleShape) Draw() {
-    r.drawingAPI.DrawRectangle(r.x, r.y, r.width, r.height)
-}
-
-func (r *RectangleShape) Resize(percent float64) {
-    r.width *= percent
-    r.height *= percent
-}
-```
-
-## 4. 组合模式 (Composite)
+## 4. 桥接模式 (Bridge)
 
 ### 4.1 形式化定义
 
-**定义**：将对象组合成树形结构以表示"部分-整体"的层次结构。
+桥接模式将抽象部分与实现部分分离，使它们都可以独立地变化。
 
-**数学定义**：
+**数学定义**:
+$$Bridge : (Abstraction, Implementation) \rightarrow Abstraction \times Implementation$$
 
-设 $C$ 为组合，$N$ 为节点，$E$ 为边，则：
+**类图关系**:
 
-$$C = (N, E) \text{ where } N = N_{leaf} \cup N_{composite}$$
-
-**形式化证明**：
-
-**定理**：组合模式支持统一处理
-
-**证明**：
-
-1. 设叶子节点 $L$ 和组合节点 $C$ 都实现接口 $I$
-2. 客户端可以统一调用 $I$ 的方法
-3. 叶子节点直接处理
-4. 组合节点委托给子节点
-5. 因此支持统一处理
+```mermaid
+classDiagram
+    Abstraction --> Implementation
+    RefinedAbstraction --|> Abstraction
+    ConcreteImplementation --|> Implementation
+```
 
 ### 4.2 Golang实现
 
 ```go
+package bridge
+
+import (
+    "fmt"
+)
+
+// Implementation 实现接口
+type Implementation interface {
+    OperationImpl() string
+}
+
+// ConcreteImplementationA 具体实现A
+type ConcreteImplementationA struct{}
+
+func (i *ConcreteImplementationA) OperationImpl() string {
+    return "Implementation A"
+}
+
+// ConcreteImplementationB 具体实现B
+type ConcreteImplementationB struct{}
+
+func (i *ConcreteImplementationB) OperationImpl() string {
+    return "Implementation B"
+}
+
+// Abstraction 抽象接口
+type Abstraction interface {
+    Operation() string
+    SetImplementation(impl Implementation)
+}
+
+// RefinedAbstraction 精确抽象
+type RefinedAbstraction struct {
+    implementation Implementation
+}
+
+func NewRefinedAbstraction(impl Implementation) *RefinedAbstraction {
+    return &RefinedAbstraction{implementation: impl}
+}
+
+func (a *RefinedAbstraction) Operation() string {
+    return fmt.Sprintf("Refined: %s", a.implementation.OperationImpl())
+}
+
+func (a *RefinedAbstraction) SetImplementation(impl Implementation) {
+    a.implementation = impl
+}
+
+// ExtendedAbstraction 扩展抽象
+type ExtendedAbstraction struct {
+    RefinedAbstraction
+}
+
+func NewExtendedAbstraction(impl Implementation) *ExtendedAbstraction {
+    return &ExtendedAbstraction{
+        RefinedAbstraction: *NewRefinedAbstraction(impl),
+    }
+}
+
+func (e *ExtendedAbstraction) Operation() string {
+    return fmt.Sprintf("Extended: %s", e.implementation.OperationImpl())
+}
+```
+
+### 4.3 性能分析
+
+**时间复杂度**: $O(1)$ - 桥接操作的时间复杂度为常数
+**空间复杂度**: $O(1)$ - 只占用抽象和实现的内存空间
+**解耦性**: 抽象和实现完全解耦
+**扩展性**: 支持独立扩展抽象和实现
+
+---
+
+## 5. 组合模式 (Composite)
+
+### 5.1 形式化定义
+
+组合模式将对象组合成树形结构以表示"部分-整体"的层次结构，使客户端对单个对象和组合对象具有一致的访问性。
+
+**数学定义**:
+$$Composite : Component \rightarrow Tree(Component)$$
+
+其中 $Tree(Component)$ 表示组件树结构
+
+### 5.2 Golang实现
+
+```go
 package composite
 
-import "fmt"
+import (
+    "fmt"
+    "strings"
+)
 
 // Component 组件接口
 type Component interface {
+    Add(component Component)
+    Remove(component Component)
+    GetChild(index int) Component
     Operation() string
-    Add(component Component) error
-    Remove(index int) (Component, error)
-    GetChild(index int) (Component, error)
-    IsComposite() bool
+    GetName() string
 }
 
 // Leaf 叶子节点
@@ -366,24 +301,24 @@ func NewLeaf(name string) *Leaf {
     return &Leaf{name: name}
 }
 
+func (l *Leaf) Add(component Component) {
+    // 叶子节点不支持添加子组件
+}
+
+func (l *Leaf) Remove(component Component) {
+    // 叶子节点不支持移除子组件
+}
+
+func (l *Leaf) GetChild(index int) Component {
+    return nil
+}
+
 func (l *Leaf) Operation() string {
     return fmt.Sprintf("Leaf: %s", l.name)
 }
 
-func (l *Leaf) Add(component Component) error {
-    return fmt.Errorf("cannot add to leaf")
-}
-
-func (l *Leaf) Remove(index int) (Component, error) {
-    return nil, fmt.Errorf("cannot remove from leaf")
-}
-
-func (l *Leaf) GetChild(index int) (Component, error) {
-    return nil, fmt.Errorf("leaf has no children")
-}
-
-func (l *Leaf) IsComposite() bool {
-    return false
+func (l *Leaf) GetName() string {
+    return l.name
 }
 
 // Composite 组合节点
@@ -399,75 +334,117 @@ func NewComposite(name string) *Composite {
     }
 }
 
-func (c *Composite) Operation() string {
-    result := fmt.Sprintf("Composite: %s", c.name)
-    for _, child := range c.children {
-        result += "\n  " + child.Operation()
-    }
-    return result
+func (c *Composite) Add(component Component) {
+    c.children = append(c.children, component)
 }
 
-func (c *Composite) Add(component Component) error {
-    c.children = append(c.children, component)
+func (c *Composite) Remove(component Component) {
+    for i, child := range c.children {
+        if child == component {
+            c.children = append(c.children[:i], c.children[i+1:]...)
+            break
+        }
+    }
+}
+
+func (c *Composite) GetChild(index int) Component {
+    if index >= 0 && index < len(c.children) {
+        return c.children[index]
+    }
     return nil
 }
 
-func (c *Composite) Remove(index int) (Component, error) {
-    if index < 0 || index >= len(c.children) {
-        return nil, fmt.Errorf("index out of bounds")
+func (c *Composite) Operation() string {
+    var results []string
+    results = append(results, fmt.Sprintf("Composite: %s", c.name))
+    
+    for _, child := range c.children {
+        results = append(results, "  "+child.Operation())
     }
-    child := c.children[index]
-    c.children = append(c.children[:index], c.children[index+1:]...)
-    return child, nil
+    
+    return strings.Join(results, "\n")
 }
 
-func (c *Composite) GetChild(index int) (Component, error) {
-    if index < 0 || index >= len(c.children) {
-        return nil, fmt.Errorf("index out of bounds")
-    }
-    return c.children[index], nil
+func (c *Composite) GetName() string {
+    return c.name
 }
 
-func (c *Composite) IsComposite() bool {
-    return true
+// 安全组合模式
+type SafeComponent interface {
+    Operation() string
+    GetName() string
+}
+
+type SafeLeaf struct {
+    name string
+}
+
+func (l *SafeLeaf) Operation() string {
+    return fmt.Sprintf("Safe Leaf: %s", l.name)
+}
+
+func (l *SafeLeaf) GetName() string {
+    return l.name
+}
+
+type SafeComposite struct {
+    name     string
+    children []SafeComponent
+}
+
+func (c *SafeComposite) Operation() string {
+    var results []string
+    results = append(results, fmt.Sprintf("Safe Composite: %s", c.name))
+    
+    for _, child := range c.children {
+        results = append(results, "  "+child.Operation())
+    }
+    
+    return strings.Join(results, "\n")
+}
+
+func (c *SafeComposite) GetName() string {
+    return c.name
+}
+
+func (c *SafeComposite) AddChild(child SafeComponent) {
+    c.children = append(c.children, child)
 }
 ```
 
-## 5. 装饰器模式 (Decorator)
+### 5.3 性能分析
 
-### 5.1 形式化定义
+**时间复杂度**: $O(n)$ - n为树中节点的数量
+**空间复杂度**: $O(n)$ - 需要存储所有节点
+**遍历效率**: 支持深度优先和广度优先遍历
+**内存使用**: 树结构的内存使用与节点数量成正比
 
-**定义**：动态地给一个对象添加一些额外的职责。
+---
 
-**数学定义**：
+## 6. 装饰器模式 (Decorator)
 
-设 $D$ 为装饰器，$C$ 为组件，$F$ 为功能，则：
+### 6.1 形式化定义
 
-$$D(C) = C \oplus F$$
+装饰器模式动态地给对象添加额外的职责，而不改变其接口。
 
-**形式化证明**：
+**数学定义**:
+$$Decorator : Component \rightarrow DecoratedComponent$$
 
-**定理**：装饰器模式支持功能组合
+其中 $DecoratedComponent \supset Component$ (包含原组件功能)
 
-**证明**：
-
-1. 设组件 $C$ 有功能 $f_c$
-2. 装饰器 $D$ 添加功能 $f_d$
-3. 装饰后的组件 $D(C)$ 有功能 $f_c \oplus f_d$
-4. 可以链式装饰：$D_2(D_1(C))$
-5. 因此支持功能组合
-
-### 5.2 Golang实现
+### 6.2 Golang实现
 
 ```go
 package decorator
 
-import "fmt"
+import (
+    "fmt"
+    "strings"
+)
 
 // Component 组件接口
 type Component interface {
     Operation() string
-    Cost() float64
 }
 
 // ConcreteComponent 具体组件
@@ -480,11 +457,7 @@ func NewConcreteComponent(name string) *ConcreteComponent {
 }
 
 func (c *ConcreteComponent) Operation() string {
-    return fmt.Sprintf("Basic operation: %s", c.name)
-}
-
-func (c *ConcreteComponent) Cost() float64 {
-    return 10.0
+    return fmt.Sprintf("ConcreteComponent: %s", c.name)
 }
 
 // Decorator 装饰器基类
@@ -500,10 +473,6 @@ func (d *Decorator) Operation() string {
     return d.component.Operation()
 }
 
-func (d *Decorator) Cost() float64 {
-    return d.component.Cost()
-}
-
 // ConcreteDecoratorA 具体装饰器A
 type ConcreteDecoratorA struct {
     Decorator
@@ -516,11 +485,7 @@ func NewConcreteDecoratorA(component Component) *ConcreteDecoratorA {
 }
 
 func (d *ConcreteDecoratorA) Operation() string {
-    return fmt.Sprintf("%s + DecoratorA", d.component.Operation())
-}
-
-func (d *ConcreteDecoratorA) Cost() float64 {
-    return d.component.Cost() + 5.0
+    return fmt.Sprintf("DecoratorA(%s)", d.component.Operation())
 }
 
 // ConcreteDecoratorB 具体装饰器B
@@ -535,68 +500,98 @@ func NewConcreteDecoratorB(component Component) *ConcreteDecoratorB {
 }
 
 func (d *ConcreteDecoratorB) Operation() string {
-    return fmt.Sprintf("%s + DecoratorB", d.component.Operation())
+    return fmt.Sprintf("DecoratorB(%s)", d.component.Operation())
 }
 
-func (d *ConcreteDecoratorB) Cost() float64 {
-    return d.component.Cost() + 3.0
+// 函数式装饰器
+type FunctionalDecorator func(Component) Component
+
+func LoggingDecorator(component Component) Component {
+    return &LoggingComponent{component: component}
+}
+
+type LoggingComponent struct {
+    component Component
+}
+
+func (l *LoggingComponent) Operation() string {
+    result := l.component.Operation()
+    fmt.Printf("Logging: %s\n", result)
+    return result
+}
+
+func CachingDecorator(component Component) Component {
+    return &CachingComponent{component: component}
+}
+
+type CachingComponent struct {
+    component Component
+    cache     map[string]string
+}
+
+func (c *CachingComponent) Operation() string {
+    if c.cache == nil {
+        c.cache = make(map[string]string)
+    }
+    
+    key := "operation"
+    if result, exists := c.cache[key]; exists {
+        return result
+    }
+    
+    result := c.component.Operation()
+    c.cache[key] = result
+    return result
 }
 ```
 
-## 6. 外观模式 (Facade)
+### 6.3 性能分析
 
-### 6.1 形式化定义
+**时间复杂度**: $O(n)$ - n为装饰器的数量
+**空间复杂度**: $O(n)$ - 每个装饰器占用额外空间
+**灵活性**: 支持动态组合装饰器
+**可扩展性**: 易于添加新的装饰器
 
-**定义**：为子系统中的一组接口提供一个一致的界面。
+---
 
-**数学定义**：
+## 7. 外观模式 (Facade)
 
-设 $F$ 为外观，$S$ 为子系统，$I$ 为接口，则：
+### 7.1 形式化定义
 
-$$F : S_1 \times S_2 \times ... \times S_n \rightarrow I$$
+外观模式为子系统中的一组接口提供一个一致的界面，定义了一个高层接口，使子系统更加容易使用。
 
-**形式化证明**：
+**数学定义**:
+$$Facade : \{Subsystem_1, Subsystem_2, ..., Subsystem_n\} \rightarrow UnifiedInterface$$
 
-**定理**：外观模式简化子系统访问
-
-**证明**：
-
-1. 设子系统有 $n$ 个组件 $S_1, S_2, ..., S_n$
-2. 每个组件有复杂接口
-3. 外观 $F$ 提供统一接口 $I$
-4. 客户端只需调用 $I$ 的方法
-5. 因此简化了子系统访问
-
-### 6.2 Golang实现
+### 7.2 Golang实现
 
 ```go
 package facade
 
-import "fmt"
+import (
+    "fmt"
+    "time"
+)
 
 // SubsystemA 子系统A
 type SubsystemA struct{}
 
-func (s *SubsystemA) OperationA1() string {
-    return "SubsystemA.OperationA1"
-}
-
-func (s *SubsystemA) OperationA2() string {
-    return "SubsystemA.OperationA2"
+func (a *SubsystemA) OperationA() string {
+    return "SubsystemA operation"
 }
 
 // SubsystemB 子系统B
 type SubsystemB struct{}
 
-func (s *SubsystemB) OperationB1() string {
-    return "SubsystemB.OperationB1"
+func (b *SubsystemB) OperationB() string {
+    return "SubsystemB operation"
 }
 
 // SubsystemC 子系统C
 type SubsystemC struct{}
 
-func (s *SubsystemC) OperationC1() string {
-    return "SubsystemC.OperationC1"
+func (c *SubsystemC) OperationC() string {
+    return "SubsystemC operation"
 }
 
 // Facade 外观
@@ -615,44 +610,91 @@ func NewFacade() *Facade {
 }
 
 func (f *Facade) Operation1() string {
-    return fmt.Sprintf("%s\n%s\n%s",
-        f.subsystemA.OperationA1(),
-        f.subsystemB.OperationB1(),
-        f.subsystemC.OperationC1())
+    resultA := f.subsystemA.OperationA()
+    resultB := f.subsystemB.OperationB()
+    return fmt.Sprintf("Operation1: %s, %s", resultA, resultB)
 }
 
 func (f *Facade) Operation2() string {
-    return fmt.Sprintf("%s\n%s\n%s",
-        f.subsystemA.OperationA2(),
-        f.subsystemB.OperationB2(),
-        f.subsystemC.OperationC2())
+    resultB := f.subsystemB.OperationB()
+    resultC := f.subsystemC.OperationC()
+    return fmt.Sprintf("Operation2: %s, %s", resultB, resultC)
+}
+
+// 复杂外观模式
+type ComplexFacade struct {
+    facade *Facade
+}
+
+func NewComplexFacade() *ComplexFacade {
+    return &ComplexFacade{
+        facade: NewFacade(),
+    }
+}
+
+func (c *ComplexFacade) ComplexOperation() string {
+    result1 := c.facade.Operation1()
+    time.Sleep(100 * time.Millisecond) // 模拟复杂操作
+    result2 := c.facade.Operation2()
+    return fmt.Sprintf("Complex: %s; %s", result1, result2)
+}
+
+// 配置外观模式
+type ConfigFacade struct {
+    subsystems map[string]interface{}
+}
+
+func NewConfigFacade() *ConfigFacade {
+    return &ConfigFacade{
+        subsystems: make(map[string]interface{}),
+    }
+}
+
+func (c *ConfigFacade) RegisterSubsystem(name string, subsystem interface{}) {
+    c.subsystems[name] = subsystem
+}
+
+func (c *ConfigFacade) ExecuteOperation(operation string) string {
+    // 根据操作类型调用相应的子系统
+    switch operation {
+    case "A":
+        if subsystem, exists := c.subsystems["A"]; exists {
+            if a, ok := subsystem.(*SubsystemA); ok {
+                return a.OperationA()
+            }
+        }
+    case "B":
+        if subsystem, exists := c.subsystems["B"]; exists {
+            if b, ok := subsystem.(*SubsystemB); ok {
+                return b.OperationB()
+            }
+        }
+    }
+    return "Unknown operation"
 }
 ```
 
-## 7. 享元模式 (Flyweight)
+### 7.3 性能分析
 
-### 7.1 形式化定义
+**时间复杂度**: $O(n)$ - n为子系统的数量
+**空间复杂度**: $O(n)$ - 需要存储所有子系统
+**简化性**: 简化客户端与子系统的交互
+**封装性**: 隐藏子系统的复杂性
 
-**定义**：运用共享技术有效地支持大量细粒度对象的复用。
+---
 
-**数学定义**：
+## 8. 享元模式 (Flyweight)
 
-设 $F$ 为享元，$S$ 为共享状态，$U$ 为唯一状态，则：
+### 8.1 形式化定义
 
-$$F = (S, U) \text{ where } S \text{ is shared}$$
+享元模式通过共享技术有效地支持大量细粒度对象的复用。
 
-**形式化证明**：
+**数学定义**:
+$$Flyweight : (IntrinsicState, ExtrinsicState) \rightarrow SharedObject$$
 
-**定理**：享元模式减少内存使用
+其中 $IntrinsicState$ 是共享状态，$ExtrinsicState$ 是外部状态
 
-**证明**：
-
-1. 设对象 $O$ 有共享状态 $S$ 和唯一状态 $U$
-2. 多个对象可以共享 $S$
-3. 每个对象只需要存储 $U$
-4. 因此减少了内存使用
-
-### 7.2 Golang实现
+### 8.2 Golang实现
 
 ```go
 package flyweight
@@ -664,7 +706,7 @@ import (
 
 // Flyweight 享元接口
 type Flyweight interface {
-    Operation(extrinsicState string)
+    Operation(extrinsicState string) string
 }
 
 // ConcreteFlyweight 具体享元
@@ -672,12 +714,12 @@ type ConcreteFlyweight struct {
     intrinsicState string
 }
 
-func NewConcreteFlyweight(state string) *ConcreteFlyweight {
-    return &ConcreteFlyweight{intrinsicState: state}
+func NewConcreteFlyweight(intrinsicState string) *ConcreteFlyweight {
+    return &ConcreteFlyweight{intrinsicState: intrinsicState}
 }
 
-func (f *ConcreteFlyweight) Operation(extrinsicState string) {
-    fmt.Printf("ConcreteFlyweight: intrinsic=%s, extrinsic=%s\n", 
+func (f *ConcreteFlyweight) Operation(extrinsicState string) string {
+    return fmt.Sprintf("Flyweight[%s] with extrinsic state: %s", 
         f.intrinsicState, extrinsicState)
 }
 
@@ -719,38 +761,94 @@ func (f *FlyweightFactory) GetFlyweightCount() int {
     defer f.mu.RUnlock()
     return len(f.flyweights)
 }
+
+// UnsharedConcreteFlyweight 非共享具体享元
+type UnsharedConcreteFlyweight struct {
+    allState string
+}
+
+func NewUnsharedConcreteFlyweight(allState string) *UnsharedConcreteFlyweight {
+    return &UnsharedConcreteFlyweight{allState: allState}
+}
+
+func (u *UnsharedConcreteFlyweight) Operation(extrinsicState string) string {
+    return fmt.Sprintf("Unshared Flyweight[%s] with extrinsic state: %s", 
+        u.allState, extrinsicState)
+}
+
+// 字符串享元示例
+type StringFlyweight struct {
+    content string
+}
+
+func NewStringFlyweight(content string) *StringFlyweight {
+    return &StringFlyweight{content: content}
+}
+
+func (s *StringFlyweight) GetContent() string {
+    return s.content
+}
+
+type StringFlyweightFactory struct {
+    strings map[string]*StringFlyweight
+    mu      sync.RWMutex
+}
+
+func NewStringFlyweightFactory() *StringFlyweightFactory {
+    return &StringFlyweightFactory{
+        strings: make(map[string]*StringFlyweight),
+    }
+}
+
+func (f *StringFlyweightFactory) GetString(content string) *StringFlyweight {
+    f.mu.RLock()
+    if str, exists := f.strings[content]; exists {
+        f.mu.RUnlock()
+        return str
+    }
+    f.mu.RUnlock()
+    
+    f.mu.Lock()
+    defer f.mu.Unlock()
+    
+    if str, exists := f.strings[content]; exists {
+        return str
+    }
+    
+    str := NewStringFlyweight(content)
+    f.strings[content] = str
+    return str
+}
 ```
 
-## 8. 代理模式 (Proxy)
+### 8.3 性能分析
 
-### 8.1 形式化定义
+**时间复杂度**: $O(1)$ - 获取享元的时间复杂度为常数
+**空间复杂度**: $O(n)$ - n为不同享元的数量
+**内存效率**: 显著减少内存使用
+**共享性**: 支持大量对象共享
 
-**定义**：为其他对象提供一种代理以控制对这个对象的访问。
+---
 
-**数学定义**：
+## 9. 代理模式 (Proxy)
 
-设 $P$ 为代理，$S$ 为主题，$C$ 为客户端，则：
+### 9.1 形式化定义
 
-$$P : C \rightarrow S$$
+代理模式为其他对象提供一种代理以控制对这个对象的访问。
 
-**形式化证明**：
+**数学定义**:
+$$Proxy : Client \rightarrow Subject$$
 
-**定理**：代理模式控制对象访问
+其中代理控制对Subject的访问
 
-**证明**：
-
-1. 客户端 $C$ 不能直接访问主题 $S$
-2. 代理 $P$ 控制对 $S$ 的访问
-3. $P$ 可以在访问前后添加逻辑
-4. 因此实现了访问控制
-
-### 8.2 Golang实现
+### 9.2 Golang实现
 
 ```go
 package proxy
 
 import (
     "fmt"
+    "sync"
     "time"
 )
 
@@ -768,220 +866,241 @@ func NewRealSubject(name string) *RealSubject {
     return &RealSubject{name: name}
 }
 
-func (rs *RealSubject) Request() string {
-    return fmt.Sprintf("RealSubject: %s", rs.name)
+func (r *RealSubject) Request() string {
+    // 模拟耗时操作
+    time.Sleep(100 * time.Millisecond)
+    return fmt.Sprintf("RealSubject[%s] response", r.name)
 }
 
 // Proxy 代理
 type Proxy struct {
-    realSubject *RealSubject
-    access      string
+    realSubject Subject
+    mu          sync.RWMutex
+    cache       map[string]string
 }
 
-func NewProxy(realSubject *RealSubject, access string) *Proxy {
+func NewProxy(realSubject Subject) *Proxy {
     return &Proxy{
         realSubject: realSubject,
-        access:      access,
+        cache:       make(map[string]string),
     }
 }
 
 func (p *Proxy) Request() string {
-    if p.checkAccess() {
-        return p.realSubject.Request()
+    p.mu.RLock()
+    if result, exists := p.cache["request"]; exists {
+        p.mu.RUnlock()
+        return result
     }
-    return "Access denied"
-}
-
-func (p *Proxy) checkAccess() bool {
-    return p.access == "authorized"
+    p.mu.RUnlock()
+    
+    p.mu.Lock()
+    defer p.mu.Unlock()
+    
+    // 双重检查
+    if result, exists := p.cache["request"]; exists {
+        return result
+    }
+    
+    result := p.realSubject.Request()
+    p.cache["request"] = result
+    return result
 }
 
 // VirtualProxy 虚拟代理
 type VirtualProxy struct {
-    realSubject *RealSubject
+    realSubject Subject
     mu          sync.Mutex
+    initialized bool
 }
 
 func NewVirtualProxy() *VirtualProxy {
     return &VirtualProxy{}
 }
 
-func (vp *VirtualProxy) Request() string {
-    vp.mu.Lock()
-    defer vp.mu.Unlock()
+func (v *VirtualProxy) Request() string {
+    v.mu.Lock()
+    defer v.mu.Unlock()
     
-    if vp.realSubject == nil {
-        vp.realSubject = NewRealSubject("Virtual Subject")
+    if !v.initialized {
+        v.realSubject = NewRealSubject("Virtual")
+        v.initialized = true
     }
     
-    return vp.realSubject.Request()
+    return v.realSubject.Request()
 }
 
 // ProtectionProxy 保护代理
 type ProtectionProxy struct {
-    realSubject *RealSubject
-    user        string
+    realSubject Subject
+    accessLevel string
 }
 
-func NewProtectionProxy(realSubject *RealSubject, user string) *ProtectionProxy {
+func NewProtectionProxy(realSubject Subject, accessLevel string) *ProtectionProxy {
     return &ProtectionProxy{
         realSubject: realSubject,
-        user:        user,
+        accessLevel: accessLevel,
     }
 }
 
-func (pp *ProtectionProxy) Request() string {
-    if pp.isAuthorized() {
-        return pp.realSubject.Request()
+func (p *ProtectionProxy) Request() string {
+    if p.accessLevel == "admin" {
+        return p.realSubject.Request()
     }
-    return "Access denied for user: " + pp.user
-}
-
-func (pp *ProtectionProxy) isAuthorized() bool {
-    return pp.user == "admin"
+    return "Access denied"
 }
 
 // RemoteProxy 远程代理
 type RemoteProxy struct {
-    realSubject *RealSubject
-    host        string
-    port        int
+    realSubject Subject
+    network     string
 }
 
-func NewRemoteProxy(host string, port int) *RemoteProxy {
-    return &RemoteProxy{
-        host: host,
-        port: port,
-    }
+func NewRemoteProxy(network string) *RemoteProxy {
+    return &RemoteProxy{network: network}
 }
 
-func (rp *RemoteProxy) Request() string {
-    // 模拟远程调用
-    return fmt.Sprintf("Remote call to %s:%d - %s", 
-        rp.host, rp.port, "Remote Subject Response")
+func (r *RemoteProxy) Request() string {
+    // 模拟网络请求
+    fmt.Printf("Sending request over %s network\n", r.network)
+    time.Sleep(50 * time.Millisecond)
+    return fmt.Sprintf("Remote response from %s", r.network)
 }
 
-// CacheProxy 缓存代理
-type CacheProxy struct {
-    realSubject *RealSubject
-    cache       map[string]string
-    mu          sync.RWMutex
+// 智能引用代理
+type SmartReferenceProxy struct {
+    realSubject Subject
+    referenceCount int
+    mu            sync.Mutex
 }
 
-func NewCacheProxy(realSubject *RealSubject) *CacheProxy {
-    return &CacheProxy{
+func NewSmartReferenceProxy(realSubject Subject) *SmartReferenceProxy {
+    return &SmartReferenceProxy{
         realSubject: realSubject,
-        cache:       make(map[string]string),
+        referenceCount: 1,
     }
 }
 
-func (cp *CacheProxy) Request() string {
-    cp.mu.RLock()
-    if result, exists := cp.cache["request"]; exists {
-        cp.mu.RUnlock()
+func (s *SmartReferenceProxy) Request() string {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    
+    s.referenceCount++
+    return s.realSubject.Request()
+}
+
+func (s *SmartReferenceProxy) Release() {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    
+    s.referenceCount--
+    if s.referenceCount == 0 {
+        fmt.Println("RealSubject will be garbage collected")
+    }
+}
+```
+
+### 9.3 性能分析
+
+**时间复杂度**: $O(1)$ - 代理操作的时间复杂度为常数
+**空间复杂度**: $O(1)$ - 代理只占用额外控制空间
+**访问控制**: 提供灵活的访问控制机制
+**缓存效果**: 支持结果缓存和延迟加载
+
+---
+
+## 10. 性能分析与最佳实践
+
+### 10.1 性能对比
+
+| 模式 | 时间复杂度 | 空间复杂度 | 适用场景 | 优势 |
+|------|------------|------------|----------|------|
+| 适配器 | O(1) | O(1) | 接口兼容 | 接口适配 |
+| 桥接 | O(1) | O(1) | 抽象实现分离 | 解耦设计 |
+| 组合 | O(n) | O(n) | 树形结构 | 统一接口 |
+| 装饰器 | O(n) | O(n) | 动态扩展 | 功能组合 |
+| 外观 | O(n) | O(n) | 子系统封装 | 简化接口 |
+| 享元 | O(1) | O(n) | 对象复用 | 内存优化 |
+| 代理 | O(1) | O(1) | 访问控制 | 控制访问 |
+
+### 10.2 最佳实践
+
+#### 10.2.1 接口设计
+
+```go
+// 使用接口定义契约
+type Component interface {
+    Operation() string
+}
+
+// 提供默认实现
+type BaseComponent struct{}
+
+func (b *BaseComponent) Operation() string {
+    return "Base operation"
+}
+```
+
+#### 10.2.2 组合优于继承
+
+```go
+// 使用组合而不是继承
+type Decorator struct {
+    component Component
+}
+
+func (d *Decorator) Operation() string {
+    return d.component.Operation()
+}
+```
+
+#### 10.2.3 线程安全
+
+```go
+// 使用适当的同步机制
+type ThreadSafeProxy struct {
+    realSubject Subject
+    mu          sync.RWMutex
+    cache       map[string]string
+}
+
+func (p *ThreadSafeProxy) Request() string {
+    p.mu.RLock()
+    if result, exists := p.cache["request"]; exists {
+        p.mu.RUnlock()
         return result
     }
-    cp.mu.RUnlock()
+    p.mu.RUnlock()
     
-    cp.mu.Lock()
-    defer cp.mu.Unlock()
+    p.mu.Lock()
+    defer p.mu.Unlock()
     
-    // 双重检查
-    if result, exists := cp.cache["request"]; exists {
-        return result
-    }
-    
-    result := cp.realSubject.Request()
-    cp.cache["request"] = result
+    result := p.realSubject.Request()
+    p.cache["request"] = result
     return result
 }
 ```
 
-## 9. 模式关系分析
+### 10.3 性能优化建议
 
-### 9.1 模式组合关系
-
-```mermaid
-graph TD
-    A[适配器] --> B[接口转换]
-    C[桥接] --> D[抽象分离]
-    E[组合] --> F[树形结构]
-    G[装饰器] --> H[功能扩展]
-    I[外观] --> J[接口简化]
-    K[享元] --> L[对象共享]
-    M[代理] --> N[访问控制]
-```
-
-### 9.2 模式选择指南
-
-| 场景 | 推荐模式 | 原因 |
-|------|----------|------|
-| 接口不兼容 | 适配器模式 | 接口转换 |
-| 抽象与实现分离 | 桥接模式 | 独立变化 |
-| 树形结构 | 组合模式 | 统一处理 |
-| 动态功能扩展 | 装饰器模式 | 功能组合 |
-| 子系统简化 | 外观模式 | 接口统一 |
-| 大量对象共享 | 享元模式 | 内存优化 |
-| 访问控制 | 代理模式 | 安全控制 |
-
-## 10. 性能分析
-
-### 10.1 时间复杂度对比
-
-| 模式 | 创建时间 | 访问时间 | 内存占用 |
-|------|----------|----------|----------|
-| 适配器 | O(1) | O(1) | O(1) |
-| 桥接 | O(1) | O(1) | O(n) |
-| 组合 | O(1) | O(n) | O(n) |
-| 装饰器 | O(1) | O(n) | O(n) |
-| 外观 | O(1) | O(1) | O(1) |
-| 享元 | O(1) | O(1) | O(1) |
-| 代理 | O(1) | O(1) | O(1) |
-
-### 10.2 内存使用分析
-
-```go
-// 内存使用基准测试
-func BenchmarkMemoryUsage(b *testing.B) {
-    b.ReportAllocs()
-    
-    for i := 0; i < b.N; i++ {
-        // 测试各种模式的内存使用
-        adapter := NewAdapter(&Adaptee{specialData: "test"})
-        _ = adapter
-        
-        composite := NewComposite("root")
-        _ = composite
-        
-        decorator := NewConcreteDecoratorA(NewConcreteComponent("test"))
-        _ = decorator
-    }
-}
-```
-
-## 11. 最佳实践
-
-### 11.1 设计原则
-
-1. **组合优于继承**：优先使用组合而不是继承
-2. **接口隔离**：定义小而精确的接口
-3. **单一职责**：每个类只负责一个职责
-4. **开闭原则**：对扩展开放，对修改封闭
-
-### 11.2 实现建议
-
-1. **使用接口**：定义清晰的接口契约
-2. **错误处理**：提供完善的错误处理机制
-3. **并发安全**：考虑并发环境下的安全性
-4. **性能优化**：根据实际需求选择合适的模式
-
-### 11.3 常见陷阱
-
-1. **过度设计**：不要为了使用模式而使用模式
-2. **性能问题**：注意模式可能带来的性能开销
-3. **复杂性增加**：模式可能增加代码复杂性
-4. **维护困难**：不当使用可能导致维护困难
+1. **使用享元模式**: 对于大量相似对象，使用享元模式减少内存使用
+2. **缓存结果**: 在代理和装饰器中缓存计算结果
+3. **延迟加载**: 使用虚拟代理实现延迟加载
+4. **对象池**: 对于创建成本高的对象，使用对象池
+5. **接口优化**: 设计简洁的接口，减少方法调用开销
 
 ---
 
-*本文档提供了结构型模式的完整分析，包括形式化定义、Golang实现和最佳实践。*
+## 11. 参考文献
+
+1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley.
+2. Freeman, E., Robson, E., Sierra, K., & Bates, B. (2004). Head First Design Patterns. O'Reilly Media.
+3. Go Team. (2023). The Go Programming Language Specification. <https://golang.org/ref/spec>
+4. Go Team. (2023). Effective Go. <https://golang.org/doc/effective_go.html>
+5. Go Team. (2023). Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
+
+---
+
+**最后更新**: 2024-12-19  
+**版本**: 1.0.0  
+**状态**: 结构型模式分析完成

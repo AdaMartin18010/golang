@@ -126,15 +126,15 @@ func (c *TinyGoWASMCompiler) Compile(source []byte, target Target) ([]byte, erro
     // Implementation using TinyGo compiler
     cmd := exec.Command("tinygo", "build", "-o", "-", "-target", "wasm", "-")
     cmd.Stdin = bytes.NewReader(source)
-    
+
     var output bytes.Buffer
     cmd.Stdout = &output
     cmd.Stderr = &output
-    
+
     if err := cmd.Run(); err != nil {
         return nil, fmt.Errorf("compilation failed: %w, output: %s", err, output.String())
     }
-    
+
     return output.Bytes(), nil
 }
 ```
@@ -168,7 +168,7 @@ func (i *WASMInstance) CallFunction(name string, args ...interface{}) ([]interfa
     if hostFn, exists := i.Host.Functions[name]; exists {
         return hostFn.Call(args)
     }
-    
+
     // Call WASM function
     return i.Runtime.CallFunction(i, name, args...)
 }
@@ -176,7 +176,7 @@ func (i *WASMInstance) CallFunction(name string, args ...interface{}) ([]interfa
 // Memory Access with Bounds Checking
 func (i *WASMInstance) ReadMemory(offset uint32, size uint32) ([]byte, error) {
     if offset+size > uint32(len(i.Memory.Data)) {
-        return nil, fmt.Errorf("memory access out of bounds: offset=%d, size=%d, memory_size=%d", 
+        return nil, fmt.Errorf("memory access out of bounds: offset=%d, size=%d, memory_size=%d",
             offset, size, len(i.Memory.Data))
     }
     return i.Memory.Data[offset : offset+size], nil
@@ -184,7 +184,7 @@ func (i *WASMInstance) ReadMemory(offset uint32, size uint32) ([]byte, error) {
 
 func (i *WASMInstance) WriteMemory(offset uint32, data []byte) error {
     if offset+uint32(len(data)) > uint32(len(i.Memory.Data)) {
-        return fmt.Errorf("memory write out of bounds: offset=%d, data_size=%d, memory_size=%d", 
+        return fmt.Errorf("memory write out of bounds: offset=%d, data_size=%d, memory_size=%d",
             offset, len(data), len(i.Memory.Data))
     }
     copy(i.Memory.Data[offset:], data)
@@ -213,7 +213,7 @@ func (mp *MemoryPool) Get(size int) []byte {
     mp.mu.RLock()
     pool, exists := mp.pools[size]
     mp.mu.RUnlock()
-    
+
     if !exists {
         mp.mu.Lock()
         pool = &sync.Pool{
@@ -224,7 +224,7 @@ func (mp *MemoryPool) Get(size int) []byte {
         mp.pools[size] = pool
         mp.mu.Unlock()
     }
-    
+
     return pool.Get().([]byte)
 }
 
@@ -233,7 +233,7 @@ func (mp *MemoryPool) Put(buf []byte) {
     mp.mu.RLock()
     pool, exists := mp.pools[size]
     mp.mu.RUnlock()
-    
+
     if exists {
         pool.Put(buf)
     }
@@ -286,12 +286,12 @@ func (fc *FunctionCache) Set(name string, fn *CachedFunction) {
 // Optimized Function Call
 func (oi *OptimizedWASMInstance) CallFunctionOptimized(name string, args ...interface{}) ([]interface{}, error) {
     start := time.Now()
-    
+
     // Check cache first
     if cached, exists := oi.functionCache.Get(name); exists {
         cached.CallCount++
         cached.LastCalled = time.Now()
-        
+
         result, err := cached.Function.Call(args...)
         if err == nil {
             // Update average time
@@ -299,7 +299,7 @@ func (oi *OptimizedWASMInstance) CallFunctionOptimized(name string, args ...inte
         }
         return result, err
     }
-    
+
     // Regular call
     result, err := oi.CallFunction(name, args...)
     if err == nil {
@@ -312,7 +312,7 @@ func (oi *OptimizedWASMInstance) CallFunctionOptimized(name string, args ...inte
         }
         oi.functionCache.Set(name, cached)
     }
-    
+
     return result, err
 }
 ```
@@ -341,11 +341,11 @@ func (ms *MemorySandbox) Read(offset uint32, size uint32) ([]byte, error) {
     if ms.readOnly {
         return nil, fmt.Errorf("memory is read-only")
     }
-    
+
     if offset+size > ms.maxSize {
         return nil, fmt.Errorf("memory access exceeds sandbox limits")
     }
-    
+
     data, err := ms.memory.Read(offset, size)
     if err == nil {
         ms.accessLog = append(ms.accessLog, MemoryAccess{
@@ -355,7 +355,7 @@ func (ms *MemorySandbox) Read(offset uint32, size uint32) ([]byte, error) {
             Timestamp: time.Now(),
         })
     }
-    
+
     return data, err
 }
 
@@ -363,11 +363,11 @@ func (ms *MemorySandbox) Write(offset uint32, data []byte) error {
     if ms.readOnly {
         return fmt.Errorf("memory is read-only")
     }
-    
+
     if offset+uint32(len(data)) > ms.maxSize {
         return fmt.Errorf("memory write exceeds sandbox limits")
     }
-    
+
     err := ms.memory.Write(offset, data)
     if err == nil {
         ms.accessLog = append(ms.accessLog, MemoryAccess{
@@ -377,7 +377,7 @@ func (ms *MemorySandbox) Write(offset uint32, data []byte) error {
             Timestamp: time.Now(),
         })
     }
-    
+
     return err
 }
 ```
@@ -407,25 +407,25 @@ func (si *SecureWASMInstance) CallFunction(name string, args ...interface{}) ([]
     if time.Since(si.startTime) > si.policy.MaxExecutionTime {
         return nil, fmt.Errorf("execution time limit exceeded")
     }
-    
+
     // Check function permission
     if !si.policy.AllowedFunctions[name] {
         return nil, fmt.Errorf("function %s not allowed by security policy", name)
     }
-    
+
     // Check call depth
     if si.callDepth >= si.policy.MaxCallDepth {
         return nil, fmt.Errorf("maximum call depth exceeded")
     }
-    
+
     // Check memory usage
     if si.memoryUsed > si.policy.MaxMemoryUsage {
         return nil, fmt.Errorf("memory usage limit exceeded")
     }
-    
+
     si.callDepth++
     defer func() { si.callDepth-- }()
-    
+
     return si.WASMInstance.CallFunction(name, args...)
 }
 ```
@@ -443,30 +443,30 @@ type WASMHandler struct {
 
 func (wh *WASMHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     instanceID := r.Header.Get("X-WASM-Instance")
-    
+
     wh.mu.RLock()
     instance, exists := wh.instances[instanceID]
     wh.mu.RUnlock()
-    
+
     if !exists {
         http.Error(w, "WASM instance not found", http.StatusNotFound)
         return
     }
-    
+
     // Parse request body
     body, err := io.ReadAll(r.Body)
     if err != nil {
         http.Error(w, "Failed to read request body", http.StatusBadRequest)
         return
     }
-    
+
     // Call WASM function
     result, err := instance.CallFunction("handleRequest", string(body))
     if err != nil {
         http.Error(w, fmt.Sprintf("WASM execution error: %v", err), http.StatusInternalServerError)
         return
     }
-    
+
     // Return result
     if len(result) > 0 {
         if response, ok := result[0].(string); ok {
@@ -484,7 +484,7 @@ func WASMMiddleware(handler *WASMHandler) func(http.Handler) http.Handler {
                 handler.ServeHTTP(w, r)
                 return
             }
-            
+
             // Continue with normal handler
             next.ServeHTTP(w, r)
         })
@@ -513,7 +513,7 @@ func (wdd *WASMDatabaseDriver) Query(query string, args ...interface{}) (*sql.Ro
     if err != nil {
         return nil, fmt.Errorf("WASM query execution failed: %w", err)
     }
-    
+
     // Convert result to sql.Rows
     // Implementation depends on specific database driver
     return wdd.convertToRows(result)
@@ -524,7 +524,7 @@ func (wdd *WASMDatabaseDriver) Exec(query string, args ...interface{}) (sql.Resu
     if err != nil {
         return nil, fmt.Errorf("WASM command execution failed: %w", err)
     }
-    
+
     return wdd.convertToResult(result)
 }
 ```
@@ -549,22 +549,22 @@ type Test struct {
 
 func (wts *WASMTestSuite) RunTests() []TestResult {
     var results []TestResult
-    
+
     for _, test := range wts.tests {
         result := wts.runTest(test)
         results = append(results, result)
     }
-    
+
     return results
 }
 
 func (wts *WASMTestSuite) runTest(test Test) TestResult {
     start := time.Now()
-    
+
     actual, err := wts.instance.CallFunction(test.Function, test.Input...)
-    
+
     duration := time.Since(start)
-    
+
     return TestResult{
         Test:     test,
         Actual:   actual,
@@ -586,13 +586,13 @@ func (wts *WASMTestSuite) compareResults(expected, actual []interface{}) bool {
     if len(expected) != len(actual) {
         return false
     }
-    
+
     for i, exp := range expected {
         if !reflect.DeepEqual(exp, actual[i]) {
             return false
         }
     }
-    
+
     return true
 }
 ```
@@ -615,12 +615,12 @@ type Benchmark struct {
 
 func (wbs *WASMBenchmarkSuite) RunBenchmarks() []BenchmarkResult {
     var results []BenchmarkResult
-    
+
     for _, benchmark := range wbs.benchmarks {
         result := wbs.runBenchmark(benchmark)
         results = append(results, result)
     }
-    
+
     return results
 }
 
@@ -628,10 +628,10 @@ func (wbs *WASMBenchmarkSuite) runBenchmark(benchmark Benchmark) BenchmarkResult
     var totalTime time.Duration
     var minTime time.Duration = time.Hour
     var maxTime time.Duration
-    
+
     for i := 0; i < benchmark.Iterations; i++ {
         start := time.Now()
-        
+
         _, err := wbs.instance.CallFunction(benchmark.Function, benchmark.Input...)
         if err != nil {
             return BenchmarkResult{
@@ -639,10 +639,10 @@ func (wbs *WASMBenchmarkSuite) runBenchmark(benchmark Benchmark) BenchmarkResult
                 Error:     err,
             }
         }
-        
+
         duration := time.Since(start)
         totalTime += duration
-        
+
         if duration < minTime {
             minTime = duration
         }
@@ -650,9 +650,9 @@ func (wbs *WASMBenchmarkSuite) runBenchmark(benchmark Benchmark) BenchmarkResult
             maxTime = duration
         }
     }
-    
+
     avgTime := totalTime / time.Duration(benchmark.Iterations)
-    
+
     return BenchmarkResult{
         Benchmark: benchmark,
         MinTime:   minTime,
@@ -690,4 +690,4 @@ The integration of WebAssembly with Golang provides a powerful platform for:
 - Edge computing applications
 - Real-time data processing
 
-This foundation enables developers to leverage WebAssembly's performance characteristics while maintaining the safety and productivity benefits of the Go ecosystem. 
+This foundation enables developers to leverage WebAssembly's performance characteristics while maintaining the safety and productivity benefits of the Go ecosystem.

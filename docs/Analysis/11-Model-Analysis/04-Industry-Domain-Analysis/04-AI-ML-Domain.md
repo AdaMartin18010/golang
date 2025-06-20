@@ -81,6 +81,7 @@ graph TD
 
 **定理 2.1** (模型收敛性)
 对于任意训练过程 $t$，如果满足：
+
 1. 损失函数连续可微
 2. 梯度有界：$\|\nabla L\| \leq M$
 3. 学习率满足：$\sum_{t=1}^{\infty} \alpha_t = \infty, \sum_{t=1}^{\infty} \alpha_t^2 < \infty$

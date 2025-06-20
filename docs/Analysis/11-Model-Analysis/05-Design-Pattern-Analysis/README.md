@@ -88,6 +88,7 @@ $$p_i = (name_i, intent_i, applicability_i, structure_i, participants_i, collabo
 $$C_{cre} = \{Singleton, FactoryMethod, AbstractFactory, Builder, Prototype, ObjectPool\}$$
 
 **核心特征**:
+
 - 封装对象创建逻辑
 - 提供灵活的创建机制
 - 支持对象复用和缓存
@@ -100,6 +101,7 @@ $$C_{cre} = \{Singleton, FactoryMethod, AbstractFactory, Builder, Prototype, Obj
 $$C_{str} = \{Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy\}$$
 
 **核心特征**:
+
 - 关注对象组合和接口适配
 - 提供结构化的解决方案
 - 支持功能扩展和适配
@@ -112,6 +114,7 @@ $$C_{str} = \{Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy\}$
 $$C_{beh} = \{ChainOfResponsibility, Command, Interpreter, Iterator, Mediator, Memento, Observer, State, Strategy, TemplateMethod, Visitor\}$$
 
 **核心特征**:
+
 - 定义对象间通信机制
 - 支持算法和策略封装
 - 提供状态管理和事件处理
@@ -124,6 +127,7 @@ $$C_{beh} = \{ChainOfResponsibility, Command, Interpreter, Iterator, Mediator, M
 $$C_{con} = \{WorkerPool, Pipeline, FanOutFanIn, ProducerConsumer, ReadersWriters, DiningPhilosophers, ActiveObject, Monitor, FuturePromise, Actor\}$$
 
 **核心特征**:
+
 - 基于CSP模型和Golang并发原语
 - 提供无锁和锁基解决方案
 - 支持高并发和高性能
@@ -136,6 +140,7 @@ $$C_{con} = \{WorkerPool, Pipeline, FanOutFanIn, ProducerConsumer, ReadersWriter
 $$C_{dis} = \{ServiceDiscovery, CircuitBreaker, APIGateway, Saga, LeaderElection, Sharding, Replication, MessageQueue, EventSourcing, CQRS\}$$
 
 **核心特征**:
+
 - 支持服务间通信和协调
 - 提供容错和一致性保证
 - 支持水平扩展和负载均衡
@@ -148,6 +153,7 @@ $$C_{dis} = \{ServiceDiscovery, CircuitBreaker, APIGateway, Saga, LeaderElection
 $$C_{wor} = \{Sequential, Parallel, MultiChoice, Loop, MultiInstance, DeferredChoice, Interleaved, Milestone, CancelActivity, CancelCase\}$$
 
 **核心特征**:
+
 - 支持复杂业务流程建模
 - 提供状态管理和事件处理
 - 支持条件分支和循环控制
@@ -160,6 +166,7 @@ $$C_{wor} = \{Sequential, Parallel, MultiChoice, Loop, MultiInstance, DeferredCh
 $$C_{fun} = \{HigherOrderFunction, FunctionComposition, ImmutableData, LazyEvaluation, Functor, Monad, Applicative, Monoid\}$$
 
 **核心特征**:
+
 - 基于纯函数和不可变数据
 - 支持函数组合和高阶函数
 - 提供类型安全和代数结构
@@ -171,16 +178,19 @@ $$C_{fun} = \{HigherOrderFunction, FunctionComposition, ImmutableData, LazyEvalu
 ### 4.1 模式识别方法
 
 **步骤1**: 问题分析
+
 - 识别设计问题的本质
 - 分析问题的约束条件
 - 确定问题的适用场景
 
 **步骤2**: 模式匹配
+
 - 在模式库中查找匹配的模式
 - 评估模式的适用性
 - 选择最优的模式组合
 
 **步骤3**: 模式应用
+
 - 根据具体场景调整模式
 - 实现模式的Golang代码
 - 验证模式的正确性
@@ -188,16 +198,19 @@ $$C_{fun} = \{HigherOrderFunction, FunctionComposition, ImmutableData, LazyEvalu
 ### 4.2 性能分析方法
 
 **时间复杂度分析**:
+
 - 分析模式实现的时间复杂度
 - 评估不同场景下的性能表现
 - 提供性能优化建议
 
 **空间复杂度分析**:
+
 - 分析模式实现的内存使用
 - 评估内存泄漏风险
 - 提供内存优化策略
 
 **并发性能分析**:
+
 - 分析并发模式的可扩展性
 - 评估锁竞争和瓶颈
 - 提供并发优化方案
@@ -205,16 +218,19 @@ $$C_{fun} = \{HigherOrderFunction, FunctionComposition, ImmutableData, LazyEvalu
 ### 4.3 质量评估方法
 
 **可维护性评估**:
+
 - 代码复杂度和可读性
 - 模块化和解耦程度
 - 文档和注释质量
 
 **可扩展性评估**:
+
 - 对新需求的适应能力
 - 模块的独立性和可替换性
 - 系统的演进能力
 
 **可测试性评估**:
+
 - 单元测试的覆盖率
 - 集成测试的完整性
 - 测试的自动化程度
@@ -271,6 +287,7 @@ func TestPatternName(t *testing.T) {
 ### 5.2 并发安全规范
 
 **互斥锁使用**:
+
 ```go
 type ThreadSafeStruct struct {
     mu    sync.RWMutex
@@ -285,6 +302,7 @@ func (t *ThreadSafeStruct) Get(key string) (interface{}, bool) {
 ```
 
 **通道使用**:
+
 ```go
 type ChannelBasedStruct struct {
     input  chan interface{}
@@ -302,6 +320,7 @@ func (c *ChannelBasedStruct) Process() {
 ### 5.3 错误处理规范
 
 **错误定义**:
+
 ```go
 type PatternError struct {
     Code    string
@@ -315,6 +334,7 @@ func (e *PatternError) Error() string {
 ```
 
 **错误处理**:
+
 ```go
 func (c *ConcreteImplementation) MethodName() error {
     if err := validateInput(); err != nil {
@@ -369,9 +389,9 @@ func (c *ConcreteImplementation) MethodName() error {
 3. Goetz, B. (2006). Java Concurrency in Practice. Addison-Wesley.
 4. Hohpe, G., & Woolf, B. (2003). Enterprise Integration Patterns. Addison-Wesley.
 5. van der Aalst, W. M. P., ter Hofstede, A. H. M., Kiepuszewski, B., & Barros, A. P. (2003). Workflow Patterns. Distributed and Parallel Databases, 14(1), 5-51.
-6. Go Team. (2023). The Go Programming Language Specification. https://golang.org/ref/spec
-7. Go Team. (2023). Effective Go. https://golang.org/doc/effective_go.html
-8. Go Team. (2023). Go Concurrency Patterns. https://golang.org/doc/effective_go.html#concurrency
+6. Go Team. (2023). The Go Programming Language Specification. <https://golang.org/ref/spec>
+7. Go Team. (2023). Effective Go. <https://golang.org/doc/effective_go.html>
+8. Go Team. (2023). Go Concurrency Patterns. <https://golang.org/doc/effective_go.html#concurrency>
 
 ---
 
