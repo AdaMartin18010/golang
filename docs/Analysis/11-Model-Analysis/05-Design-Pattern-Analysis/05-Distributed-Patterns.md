@@ -299,215 +299,215 @@ func generateID() string {
 package consensus
 
 import (
-	"context"
-	"fmt"
-	"math/rand"
-	"sync"
-	"time"
+ "context"
+ "fmt"
+ "math/rand"
+ "sync"
+ "time"
 )
 
 const (
-	StateFollower  = "follower"
-	StateCandidate = "candidate"
-	StateLeader    = "leader"
+ StateFollower  = "follower"
+ StateCandidate = "candidate"
+ StateLeader    = "leader"
 )
 
 // LogEntry 表示一个日志条目
 type LogEntry struct {
-	Term    int         `json:"term"`
-	Index   int         `json:"index"`
-	Command interface{} `json:"command"`
+ Term    int         `json:"term"`
+ Index   int         `json:"index"`
+ Command interface{} `json:"command"`
 }
 
 // RaftNode 表示Raft算法中的一个节点
 type RaftNode struct {
-	ID               string
-	State            string
-	CurrentTerm      int
-	VotedFor         string
-	Log              []LogEntry
-	CommitIndex      int
-	LastApplied      int
-	NextIndex        map[string]int
-	MatchIndex       map[string]int
-	Peers            []string
-	ElectionTimeout  time.Duration
-	HeartbeatTimeout time.Duration
-	
-	stateMu          sync.RWMutex
-	logMu            sync.RWMutex
-	
-	commitCh         chan LogEntry
-	stopCh           chan struct{}
+ ID               string
+ State            string
+ CurrentTerm      int
+ VotedFor         string
+ Log              []LogEntry
+ CommitIndex      int
+ LastApplied      int
+ NextIndex        map[string]int
+ MatchIndex       map[string]int
+ Peers            []string
+ ElectionTimeout  time.Duration
+ HeartbeatTimeout time.Duration
+ 
+ stateMu          sync.RWMutex
+ logMu            sync.RWMutex
+ 
+ commitCh         chan LogEntry
+ stopCh           chan struct{}
 }
 
 // NewRaftNode 创建一个新的Raft节点
 func NewRaftNode(id string, peers []string) *RaftNode {
-	node := &RaftNode{
-		ID:               id,
-		State:            StateFollower,
-		CurrentTerm:      0,
-		VotedFor:         "",
-		Log:              make([]LogEntry, 0),
-		CommitIndex:      0,
-		LastApplied:      0,
-		NextIndex:        make(map[string]int),
-		MatchIndex:       make(map[string]int),
-		Peers:            peers,
-		ElectionTimeout:  randomTimeout(300, 600),
-		HeartbeatTimeout: 150 * time.Millisecond,
-		commitCh:         make(chan LogEntry, 1000),
-		stopCh:           make(chan struct{}),
-	}
-	
-	return node
+ node := &RaftNode{
+  ID:               id,
+  State:            StateFollower,
+  CurrentTerm:      0,
+  VotedFor:         "",
+  Log:              make([]LogEntry, 0),
+  CommitIndex:      0,
+  LastApplied:      0,
+  NextIndex:        make(map[string]int),
+  MatchIndex:       make(map[string]int),
+  Peers:            peers,
+  ElectionTimeout:  randomTimeout(300, 600),
+  HeartbeatTimeout: 150 * time.Millisecond,
+  commitCh:         make(chan LogEntry, 1000),
+  stopCh:           make(chan struct{}),
+ }
+ 
+ return node
 }
 
 // randomTimeout 生成一个随机的选举超时
 func randomTimeout(min, max int) time.Duration {
-	return time.Duration(min+rand.Intn(max-min)) * time.Millisecond
+ return time.Duration(min+rand.Intn(max-min)) * time.Millisecond
 }
 
 // Start 启动Raft节点
 func (rn *RaftNode) Start() {
-	go rn.run()
+ go rn.run()
 }
 
 // run 运行节点的主循环
 func (rn *RaftNode) run() {
-	for {
-		select {
-		case <-rn.stopCh:
-			return
-		default:
-		}
-		
-		rn.stateMu.RLock()
-		state := rn.State
-		rn.stateMu.RUnlock()
-		
-		switch state {
-		case StateFollower:
-			rn.runFollower()
-		case StateCandidate:
-			rn.runCandidate()
-		case StateLeader:
-			rn.runLeader()
-		}
-	}
+ for {
+  select {
+  case <-rn.stopCh:
+   return
+  default:
+  }
+  
+  rn.stateMu.RLock()
+  state := rn.State
+  rn.stateMu.RUnlock()
+  
+  switch state {
+  case StateFollower:
+   rn.runFollower()
+  case StateCandidate:
+   rn.runCandidate()
+  case StateLeader:
+   rn.runLeader()
+  }
+ }
 }
 
 // runFollower 作为跟随者运行
 func (rn *RaftNode) runFollower() {
-	timer := time.NewTimer(rn.ElectionTimeout)
-	defer timer.Stop()
-	
-	for {
-		select {
-		case <-rn.stopCh:
-			return
-		case <-timer.C:
-			// 选举超时，变为候选者
-			rn.stateMu.Lock()
-			rn.State = StateCandidate
-			rn.stateMu.Unlock()
-			return
-		// 在这里处理接收到的RPC
-		}
-	}
+ timer := time.NewTimer(rn.ElectionTimeout)
+ defer timer.Stop()
+ 
+ for {
+  select {
+  case <-rn.stopCh:
+   return
+  case <-timer.C:
+   // 选举超时，变为候选者
+   rn.stateMu.Lock()
+   rn.State = StateCandidate
+   rn.stateMu.Unlock()
+   return
+  // 在这里处理接收到的RPC
+  }
+ }
 }
 
 // runCandidate 作为候选者运行
 func (rn *RaftNode) runCandidate() {
-	rn.startElection()
-	
-	timer := time.NewTimer(rn.ElectionTimeout)
-	defer timer.Stop()
-	
-	for {
-		select {
-		case <-rn.stopCh:
-			return
-		case <-timer.C:
-			// 选举超时，开始新一轮选举
-			rn.stateMu.Lock()
-			rn.startElection()
-			rn.stateMu.Unlock()
-		// 在这里处理选举结果
-		}
-	}
+ rn.startElection()
+ 
+ timer := time.NewTimer(rn.ElectionTimeout)
+ defer timer.Stop()
+ 
+ for {
+  select {
+  case <-rn.stopCh:
+   return
+  case <-timer.C:
+   // 选举超时，开始新一轮选举
+   rn.stateMu.Lock()
+   rn.startElection()
+   rn.stateMu.Unlock()
+  // 在这里处理选举结果
+  }
+ }
 }
 
 // runLeader 作为领导者运行
 func (rn *RaftNode) runLeader() {
-	// 初始化NextIndex和MatchIndex
-	for _, peer := range rn.Peers {
-		if peer == rn.ID {
-			continue
-		}
-		rn.NextIndex[peer] = len(rn.Log) + 1
-		rn.MatchIndex[peer] = 0
-	}
-	
-	ticker := time.NewTicker(rn.HeartbeatTimeout)
-	defer ticker.Stop()
-	
-	// 立即发送一次心跳
-	rn.sendHeartbeats()
-	
-	for {
-		select {
-		case <-rn.stopCh:
-			return
-		case <-ticker.C:
-			rn.sendHeartbeats()
-		// 在这里处理客户端请求和同步日志
-		}
-	}
+ // 初始化NextIndex和MatchIndex
+ for _, peer := range rn.Peers {
+  if peer == rn.ID {
+   continue
+  }
+  rn.NextIndex[peer] = len(rn.Log) + 1
+  rn.MatchIndex[peer] = 0
+ }
+ 
+ ticker := time.NewTicker(rn.HeartbeatTimeout)
+ defer ticker.Stop()
+ 
+ // 立即发送一次心跳
+ rn.sendHeartbeats()
+ 
+ for {
+  select {
+  case <-rn.stopCh:
+   return
+  case <-ticker.C:
+   rn.sendHeartbeats()
+  // 在这里处理客户端请求和同步日志
+  }
+ }
 }
 
 // startElection 开始一轮选举
 func (rn *RaftNode) startElection() {
-	rn.CurrentTerm++
-	rn.VotedFor = rn.ID
-	rn.State = StateCandidate
-	
-	// 实现请求投票RPC逻辑
+ rn.CurrentTerm++
+ rn.VotedFor = rn.ID
+ rn.State = StateCandidate
+ 
+ // 实现请求投票RPC逻辑
 }
 
 // sendHeartbeats 发送心跳
 func (rn *RaftNode) sendHeartbeats() {
-	// 实现AppendEntries RPC逻辑
+ // 实现AppendEntries RPC逻辑
 }
 
 // ProposeCommand 提议一个命令
 func (rn *RaftNode) ProposeCommand(cmd interface{}) error {
-	rn.stateMu.RLock()
-	isLeader := rn.State == StateLeader
-	rn.stateMu.RUnlock()
-	
-	if !isLeader {
-		return fmt.Errorf("not leader")
-	}
-	
-	entry := LogEntry{
-		Term:    rn.CurrentTerm,
-		Index:   len(rn.Log) + 1,
-		Command: cmd,
-	}
-	
-	rn.logMu.Lock()
-	rn.Log = append(rn.Log, entry)
-	rn.logMu.Unlock()
-	
-	// 实现复制日志逻辑
-	
-	return nil
+ rn.stateMu.RLock()
+ isLeader := rn.State == StateLeader
+ rn.stateMu.RUnlock()
+ 
+ if !isLeader {
+  return fmt.Errorf("not leader")
+ }
+ 
+ entry := LogEntry{
+  Term:    rn.CurrentTerm,
+  Index:   len(rn.Log) + 1,
+  Command: cmd,
+ }
+ 
+ rn.logMu.Lock()
+ rn.Log = append(rn.Log, entry)
+ rn.logMu.Unlock()
+ 
+ // 实现复制日志逻辑
+ 
+ return nil
 }
 
 // Stop 停止Raft节点
 func (rn *RaftNode) Stop() {
-	close(rn.stopCh)
+ close(rn.stopCh)
 }
 
 ### 4.2 无冲突复制数据类型 (CRDT)
@@ -535,262 +535,262 @@ $m$ 满足以下性质:
 package crdt
 
 import (
-	"encoding/json"
-	"sync"
-	"time"
+ "encoding/json"
+ "sync"
+ "time"
 )
 
 // GCounter 增长计数器（G-Counter）
 type GCounter struct {
-	Counters map[string]int `json:"counters"`
-	mu       sync.RWMutex
+ Counters map[string]int `json:"counters"`
+ mu       sync.RWMutex
 }
 
 // NewGCounter 创建新的增长计数器
 func NewGCounter() *GCounter {
-	return &GCounter{
-		Counters: make(map[string]int),
-	}
+ return &GCounter{
+  Counters: make(map[string]int),
+ }
 }
 
 // Increment 增加计数器值
 func (g *GCounter) Increment(nodeID string, delta int) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
-	
-	if delta < 0 {
-		return // G-Counter只能增加
-	}
-	
-	g.Counters[nodeID] += delta
+ g.mu.Lock()
+ defer g.mu.Unlock()
+ 
+ if delta < 0 {
+  return // G-Counter只能增加
+ }
+ 
+ g.Counters[nodeID] += delta
 }
 
 // Value 获取计数器总值
 func (g *GCounter) Value() int {
-	g.mu.RLock()
-	defer g.mu.RUnlock()
-	
-	sum := 0
-	for _, val := range g.Counters {
-		sum += val
-	}
-	
-	return sum
+ g.mu.RLock()
+ defer g.mu.RUnlock()
+ 
+ sum := 0
+ for _, val := range g.Counters {
+  sum += val
+ }
+ 
+ return sum
 }
 
 // Merge 合并另一个G-Counter
 func (g *GCounter) Merge(other *GCounter) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
-	
-	for nodeID, count := range other.Counters {
-		if g.Counters[nodeID] < count {
-			g.Counters[nodeID] = count
-		}
-	}
+ g.mu.Lock()
+ defer g.mu.Unlock()
+ 
+ for nodeID, count := range other.Counters {
+  if g.Counters[nodeID] < count {
+   g.Counters[nodeID] = count
+  }
+ }
 }
 
 // PNCounter 正负计数器（PN-Counter）
 type PNCounter struct {
-	Increments *GCounter `json:"increments"`
-	Decrements *GCounter `json:"decrements"`
-	mu         sync.RWMutex
+ Increments *GCounter `json:"increments"`
+ Decrements *GCounter `json:"decrements"`
+ mu         sync.RWMutex
 }
 
 // NewPNCounter 创建新的正负计数器
 func NewPNCounter() *PNCounter {
-	return &PNCounter{
-		Increments: NewGCounter(),
-		Decrements: NewGCounter(),
-	}
+ return &PNCounter{
+  Increments: NewGCounter(),
+  Decrements: NewGCounter(),
+ }
 }
 
 // Increment 增加计数器值
 func (p *PNCounter) Increment(nodeID string, delta int) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	
-	if delta < 0 {
-		return
-	}
-	
-	p.Increments.Increment(nodeID, delta)
+ p.mu.Lock()
+ defer p.mu.Unlock()
+ 
+ if delta < 0 {
+  return
+ }
+ 
+ p.Increments.Increment(nodeID, delta)
 }
 
 // Decrement 减少计数器值
 func (p *PNCounter) Decrement(nodeID string, delta int) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	
-	if delta < 0 {
-		return
-	}
-	
-	p.Decrements.Increment(nodeID, delta)
+ p.mu.Lock()
+ defer p.mu.Unlock()
+ 
+ if delta < 0 {
+  return
+ }
+ 
+ p.Decrements.Increment(nodeID, delta)
 }
 
 // Value 获取计数器总值
 func (p *PNCounter) Value() int {
-	p.mu.RLock()
-	defer p.mu.RUnlock()
-	
-	return p.Increments.Value() - p.Decrements.Value()
+ p.mu.RLock()
+ defer p.mu.RUnlock()
+ 
+ return p.Increments.Value() - p.Decrements.Value()
 }
 
 // Merge 合并另一个PN-Counter
 func (p *PNCounter) Merge(other *PNCounter) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	
-	p.Increments.Merge(other.Increments)
-	p.Decrements.Merge(other.Decrements)
+ p.mu.Lock()
+ defer p.mu.Unlock()
+ 
+ p.Increments.Merge(other.Increments)
+ p.Decrements.Merge(other.Decrements)
 }
 
 // LWWRegister 最后写入胜利寄存器（Last-Write-Wins Register）
 type LWWRegister struct {
-	Value     interface{} `json:"value"`
-	Timestamp int64       `json:"timestamp"`
-	mu        sync.RWMutex
+ Value     interface{} `json:"value"`
+ Timestamp int64       `json:"timestamp"`
+ mu        sync.RWMutex
 }
 
 // NewLWWRegister 创建新的LWW寄存器
 func NewLWWRegister(initialValue interface{}) *LWWRegister {
-	return &LWWRegister{
-		Value:     initialValue,
-		Timestamp: time.Now().UnixNano(),
-	}
+ return &LWWRegister{
+  Value:     initialValue,
+  Timestamp: time.Now().UnixNano(),
+ }
 }
 
 // Set 设置寄存器值
 func (l *LWWRegister) Set(value interface{}, timestamp int64) bool {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	
-	if timestamp > l.Timestamp {
-		l.Value = value
-		l.Timestamp = timestamp
-		return true
-	}
-	
-	return false
+ l.mu.Lock()
+ defer l.mu.Unlock()
+ 
+ if timestamp > l.Timestamp {
+  l.Value = value
+  l.Timestamp = timestamp
+  return true
+ }
+ 
+ return false
 }
 
 // Get 获取寄存器值
 func (l *LWWRegister) Get() interface{} {
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	
-	return l.Value
+ l.mu.RLock()
+ defer l.mu.RUnlock()
+ 
+ return l.Value
 }
 
 // Merge 合并另一个LWW寄存器
 func (l *LWWRegister) Merge(other *LWWRegister) bool {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	
-	if other.Timestamp > l.Timestamp {
-		l.Value = other.Value
-		l.Timestamp = other.Timestamp
-		return true
-	}
-	
-	return false
+ l.mu.Lock()
+ defer l.mu.Unlock()
+ 
+ if other.Timestamp > l.Timestamp {
+  l.Value = other.Value
+  l.Timestamp = other.Timestamp
+  return true
+ }
+ 
+ return false
 }
 
 // ORSet 观察-移除集合（Observed-Remove Set）
 type ORSet struct {
-	Additions map[string]map[string]bool `json:"additions"`
-	Removals  map[string]map[string]bool `json:"removals"`
-	mu        sync.RWMutex
+ Additions map[string]map[string]bool `json:"additions"`
+ Removals  map[string]map[string]bool `json:"removals"`
+ mu        sync.RWMutex
 }
 
 // NewORSet 创建新的OR-Set
 func NewORSet() *ORSet {
-	return &ORSet{
-		Additions: make(map[string]map[string]bool),
-		Removals:  make(map[string]map[string]bool),
-	}
+ return &ORSet{
+  Additions: make(map[string]map[string]bool),
+  Removals:  make(map[string]map[string]bool),
+ }
 }
 
 // Add 添加元素
 func (o *ORSet) Add(element string, tagID string) {
-	o.mu.Lock()
-	defer o.mu.Unlock()
-	
-	if _, exists := o.Additions[element]; !exists {
-		o.Additions[element] = make(map[string]bool)
-	}
-	
-	o.Additions[element][tagID] = true
+ o.mu.Lock()
+ defer o.mu.Unlock()
+ 
+ if _, exists := o.Additions[element]; !exists {
+  o.Additions[element] = make(map[string]bool)
+ }
+ 
+ o.Additions[element][tagID] = true
 }
 
 // Remove 移除元素
 func (o *ORSet) Remove(element string) {
-	o.mu.Lock()
-	defer o.mu.Unlock()
-	
-	if tags, exists := o.Additions[element]; exists {
-		if _, exists := o.Removals[element]; !exists {
-			o.Removals[element] = make(map[string]bool)
-		}
-		
-		for tag := range tags {
-			o.Removals[element][tag] = true
-		}
-	}
+ o.mu.Lock()
+ defer o.mu.Unlock()
+ 
+ if tags, exists := o.Additions[element]; exists {
+  if _, exists := o.Removals[element]; !exists {
+   o.Removals[element] = make(map[string]bool)
+  }
+  
+  for tag := range tags {
+   o.Removals[element][tag] = true
+  }
+ }
 }
 
 // Contains 检查元素是否在集合中
 func (o *ORSet) Contains(element string) bool {
-	o.mu.RLock()
-	defer o.mu.RUnlock()
-	
-	addTags, addExists := o.Additions[element]
-	if !addExists {
-		return false
-	}
-	
-	removeTags, removeExists := o.Removals[element]
-	if !removeExists {
-		return len(addTags) > 0
-	}
-	
-	// 检查是否有任何添加标签不在删除标签中
-	for tag := range addTags {
-		if !removeTags[tag] {
-			return true
-		}
-	}
-	
-	return false
+ o.mu.RLock()
+ defer o.mu.RUnlock()
+ 
+ addTags, addExists := o.Additions[element]
+ if !addExists {
+  return false
+ }
+ 
+ removeTags, removeExists := o.Removals[element]
+ if !removeExists {
+  return len(addTags) > 0
+ }
+ 
+ // 检查是否有任何添加标签不在删除标签中
+ for tag := range addTags {
+  if !removeTags[tag] {
+   return true
+  }
+ }
+ 
+ return false
 }
 
 // Merge 合并另一个OR-Set
 func (o *ORSet) Merge(other *ORSet) {
-	o.mu.Lock()
-	defer o.mu.Unlock()
-	
-	// 合并添加集
-	for element, tags := range other.Additions {
-		if _, exists := o.Additions[element]; !exists {
-			o.Additions[element] = make(map[string]bool)
-		}
-		
-		for tag := range tags {
-			o.Additions[element][tag] = true
-		}
-	}
-	
-	// 合并删除集
-	for element, tags := range other.Removals {
-		if _, exists := o.Removals[element]; !exists {
-			o.Removals[element] = make(map[string]bool)
-		}
-		
-		for tag := range tags {
-			o.Removals[element][tag] = true
-		}
-	}
+ o.mu.Lock()
+ defer o.mu.Unlock()
+ 
+ // 合并添加集
+ for element, tags := range other.Additions {
+  if _, exists := o.Additions[element]; !exists {
+   o.Additions[element] = make(map[string]bool)
+  }
+  
+  for tag := range tags {
+   o.Additions[element][tag] = true
+  }
+ }
+ 
+ // 合并删除集
+ for element, tags := range other.Removals {
+  if _, exists := o.Removals[element]; !exists {
+   o.Removals[element] = make(map[string]bool)
+  }
+  
+  for tag := range tags {
+   o.Removals[element][tag] = true
+  }
+ }
 }
 ```
 
