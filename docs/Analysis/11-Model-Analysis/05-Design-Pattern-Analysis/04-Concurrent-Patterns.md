@@ -953,6 +953,7 @@ func ExampleDiningPhilosophers() {
 $$LockFree = (S, T, O, \Phi)$$
 
 其中:
+
 - $S$ 表示所有可能的系统状态
 - $T$ 表示所有并发线程
 - $O$ 表示所有可能的操作
@@ -972,75 +973,75 @@ $$\forall t \in T, \exists o \in O, \exists s \in S | \Phi(s, t, o) \neq s$$
 package lockfree
 
 import (
-	"sync/atomic"
-	"unsafe"
+ "sync/atomic"
+ "unsafe"
 )
 
 // LockFreeStack 无锁栈实现
 type LockFreeStack[T any] struct {
-	head unsafe.Pointer // *Node[T]
+ head unsafe.Pointer // *Node[T]
 }
 
 // Node 栈节点
 type Node[T any] struct {
-	value T
-	next  unsafe.Pointer // *Node[T]
+ value T
+ next  unsafe.Pointer // *Node[T]
 }
 
 // NewLockFreeStack 创建无锁栈
 func NewLockFreeStack[T any]() *LockFreeStack[T] {
-	return &LockFreeStack[T]{head: nil}
+ return &LockFreeStack[T]{head: nil}
 }
 
 // Push 入栈操作
 func (s *LockFreeStack[T]) Push(value T) {
-	node := &Node[T]{value: value}
-	
-	for {
-		// 获取当前头节点
-		oldHead := atomic.LoadPointer(&s.head)
-		
-		// 将新节点的next指向当前头节点
-		node.next = oldHead
-		
-		// 尝试原子地将head更新为新节点
-		if atomic.CompareAndSwapPointer(&s.head, oldHead, unsafe.Pointer(node)) {
-			return
-		}
-		
-		// 如果CAS失败，则重试
-	}
+ node := &Node[T]{value: value}
+ 
+ for {
+  // 获取当前头节点
+  oldHead := atomic.LoadPointer(&s.head)
+  
+  // 将新节点的next指向当前头节点
+  node.next = oldHead
+  
+  // 尝试原子地将head更新为新节点
+  if atomic.CompareAndSwapPointer(&s.head, oldHead, unsafe.Pointer(node)) {
+   return
+  }
+  
+  // 如果CAS失败，则重试
+ }
 }
 
 // Pop 出栈操作
 func (s *LockFreeStack[T]) Pop() (T, bool) {
-	var zero T
-	
-	for {
-		// 获取当前头节点
-		oldHead := atomic.LoadPointer(&s.head)
-		if oldHead == nil {
-			// 栈空
-			return zero, false
-		}
-		
-		// 获取头节点的值和下一个节点
-		headNode := (*Node[T])(oldHead)
-		next := headNode.next
-		
-		// 尝试原子地将head更新为next
-		if atomic.CompareAndSwapPointer(&s.head, oldHead, next) {
-			// 成功弹出元素
-			return headNode.value, true
-		}
-		
-		// 如果CAS失败，则重试
-	}
+ var zero T
+ 
+ for {
+  // 获取当前头节点
+  oldHead := atomic.LoadPointer(&s.head)
+  if oldHead == nil {
+   // 栈空
+   return zero, false
+  }
+  
+  // 获取头节点的值和下一个节点
+  headNode := (*Node[T])(oldHead)
+  next := headNode.next
+  
+  // 尝试原子地将head更新为next
+  if atomic.CompareAndSwapPointer(&s.head, oldHead, next) {
+   // 成功弹出元素
+   return headNode.value, true
+  }
+  
+  // 如果CAS失败，则重试
+ }
 }
 
 // IsEmpty 检查栈是否为空
 func (s *LockFreeStack[T]) IsEmpty() bool {
-	return atomic.LoadPointer(&s.head) == nil
+ return atomic.LoadPointer(&s.head) == nil
 }
 ```
 
@@ -1050,104 +1051,104 @@ func (s *LockFreeStack[T]) IsEmpty() bool {
 package lockfree
 
 import (
-	"sync/atomic"
-	"unsafe"
+ "sync/atomic"
+ "unsafe"
 )
 
 // LockFreeQueue 无锁队列实现
 type LockFreeQueue[T any] struct {
-	head unsafe.Pointer // *Node[T]
-	tail unsafe.Pointer // *Node[T]
+ head unsafe.Pointer // *Node[T]
+ tail unsafe.Pointer // *Node[T]
 }
 
 // NewLockFreeQueue 创建无锁队列
 func NewLockFreeQueue[T any]() *LockFreeQueue[T] {
-	// 创建哨兵节点
-	sentinel := &Node[T]{}
-	ptr := unsafe.Pointer(sentinel)
-	
-	return &LockFreeQueue[T]{
-		head: ptr,
-		tail: ptr,
-	}
+ // 创建哨兵节点
+ sentinel := &Node[T]{}
+ ptr := unsafe.Pointer(sentinel)
+ 
+ return &LockFreeQueue[T]{
+  head: ptr,
+  tail: ptr,
+ }
 }
 
 // Enqueue 入队操作
 func (q *LockFreeQueue[T]) Enqueue(value T) {
-	// 创建新节点
-	node := &Node[T]{value: value}
-	nodePtr := unsafe.Pointer(node)
-	
-	for {
-		// 获取当前尾节点
-		oldTail := atomic.LoadPointer(&q.tail)
-		tailNode := (*Node[T])(oldTail)
-		oldNext := atomic.LoadPointer(&tailNode.next)
-		
-		// 检查尾节点是否仍然有效
-		if oldTail == atomic.LoadPointer(&q.tail) {
-			if oldNext == nil {
-				// 尾节点没有变化且没有下一个节点，尝试附加新节点
-				if atomic.CompareAndSwapPointer(&tailNode.next, nil, nodePtr) {
-					// 成功附加，更新尾指针
-					atomic.CompareAndSwapPointer(&q.tail, oldTail, nodePtr)
-					return
-				}
-			} else {
-				// 尾节点有下一个节点，帮助更新尾指针
-				atomic.CompareAndSwapPointer(&q.tail, oldTail, oldNext)
-			}
-		}
-		// 如果失败，则重试
-	}
+ // 创建新节点
+ node := &Node[T]{value: value}
+ nodePtr := unsafe.Pointer(node)
+ 
+ for {
+  // 获取当前尾节点
+  oldTail := atomic.LoadPointer(&q.tail)
+  tailNode := (*Node[T])(oldTail)
+  oldNext := atomic.LoadPointer(&tailNode.next)
+  
+  // 检查尾节点是否仍然有效
+  if oldTail == atomic.LoadPointer(&q.tail) {
+   if oldNext == nil {
+    // 尾节点没有变化且没有下一个节点，尝试附加新节点
+    if atomic.CompareAndSwapPointer(&tailNode.next, nil, nodePtr) {
+     // 成功附加，更新尾指针
+     atomic.CompareAndSwapPointer(&q.tail, oldTail, nodePtr)
+     return
+    }
+   } else {
+    // 尾节点有下一个节点，帮助更新尾指针
+    atomic.CompareAndSwapPointer(&q.tail, oldTail, oldNext)
+   }
+  }
+  // 如果失败，则重试
+ }
 }
 
 // Dequeue 出队操作
 func (q *LockFreeQueue[T]) Dequeue() (T, bool) {
-	var zero T
-	
-	for {
-		// 获取当前头节点和尾节点
-		oldHead := atomic.LoadPointer(&q.head)
-		oldTail := atomic.LoadPointer(&q.tail)
-		headNode := (*Node[T])(oldHead)
-		oldNext := atomic.LoadPointer(&headNode.next)
-		
-		// 检查头节点是否仍然有效
-		if oldHead == atomic.LoadPointer(&q.head) {
-			// 队列为空或只有一个哨兵节点
-			if oldHead == oldTail {
-				if oldNext == nil {
-					// 队列为空
-					return zero, false
-				}
-				// 尾指针滞后，帮助更新
-				atomic.CompareAndSwapPointer(&q.tail, oldTail, oldNext)
-			} else {
-				// 获取值并尝试更新头指针
-				nextNode := (*Node[T])(oldNext)
-				value := nextNode.value
-				
-				if atomic.CompareAndSwapPointer(&q.head, oldHead, oldNext) {
-					return value, true
-				}
-			}
-		}
-		// 如果失败，则重试
-	}
+ var zero T
+ 
+ for {
+  // 获取当前头节点和尾节点
+  oldHead := atomic.LoadPointer(&q.head)
+  oldTail := atomic.LoadPointer(&q.tail)
+  headNode := (*Node[T])(oldHead)
+  oldNext := atomic.LoadPointer(&headNode.next)
+  
+  // 检查头节点是否仍然有效
+  if oldHead == atomic.LoadPointer(&q.head) {
+   // 队列为空或只有一个哨兵节点
+   if oldHead == oldTail {
+    if oldNext == nil {
+     // 队列为空
+     return zero, false
+    }
+    // 尾指针滞后，帮助更新
+    atomic.CompareAndSwapPointer(&q.tail, oldTail, oldNext)
+   } else {
+    // 获取值并尝试更新头指针
+    nextNode := (*Node[T])(oldNext)
+    value := nextNode.value
+    
+    if atomic.CompareAndSwapPointer(&q.head, oldHead, oldNext) {
+     return value, true
+    }
+   }
+  }
+  // 如果失败，则重试
+ }
 }
 
 // IsEmpty 检查队列是否为空
 func (q *LockFreeQueue[T]) IsEmpty() bool {
-	for {
-		head := atomic.LoadPointer(&q.head)
-		tail := atomic.LoadPointer(&q.tail)
-		next := atomic.LoadPointer(&((*Node[T])(head)).next)
-		
-		if head == atomic.LoadPointer(&q.head) {
-			return head == tail && next == nil
-		}
-	}
+ for {
+  head := atomic.LoadPointer(&q.head)
+  tail := atomic.LoadPointer(&q.tail)
+  next := atomic.LoadPointer(&((*Node[T])(head)).next)
+  
+  if head == atomic.LoadPointer(&q.head) {
+   return head == tail && next == nil
+  }
+ }
 }
 ```
 
@@ -1190,6 +1191,7 @@ $$\exists t \in T_a | t \text{ completes operation }$$
 $$ActorSystem = (A, M, S, Behavior, Mailbox, Context)$$
 
 其中：
+
 - $A$ 表示所有Actor
 - $M$ 表示所有可能的消息
 - $S$ 表示所有可能的状态
@@ -1204,181 +1206,181 @@ $$ActorSystem = (A, M, S, Behavior, Mailbox, Context)$$
 package actor
 
 import (
-	"fmt"
-	"sync"
+ "fmt"
+ "sync"
 )
 
 // Message 消息接口
 type Message interface {
-	MessageType() string
+ MessageType() string
 }
 
 // Actor 定义
 type Actor struct {
-	mailbox    chan Message
-	behavior   func(Message, *Context)
-	name       string
-	ctx        *Context
-	processing sync.WaitGroup
-	stopped    bool
-	mutex      sync.RWMutex
+ mailbox    chan Message
+ behavior   func(Message, *Context)
+ name       string
+ ctx        *Context
+ processing sync.WaitGroup
+ stopped    bool
+ mutex      sync.RWMutex
 }
 
 // Context Actor上下文
 type Context struct {
-	system *ActorSystem
-	self   *Actor
+ system *ActorSystem
+ self   *Actor
 }
 
 // ActorSystem Actor系统
 type ActorSystem struct {
-	actors map[string]*Actor
-	mutex  sync.RWMutex
+ actors map[string]*Actor
+ mutex  sync.RWMutex
 }
 
 // NewActorSystem 创建Actor系统
 func NewActorSystem() *ActorSystem {
-	return &ActorSystem{
-		actors: make(map[string]*Actor),
-	}
+ return &ActorSystem{
+  actors: make(map[string]*Actor),
+ }
 }
 
 // NewActor 创建Actor
 func (sys *ActorSystem) NewActor(name string, behavior func(Message, *Context), mailboxSize int) *Actor {
-	sys.mutex.Lock()
-	defer sys.mutex.Unlock()
-	
-	if _, exists := sys.actors[name]; exists {
-		panic(fmt.Sprintf("Actor %s already exists", name))
-	}
-	
-	actor := &Actor{
-		mailbox:  make(chan Message, mailboxSize),
-		behavior: behavior,
-		name:     name,
-		stopped:  false,
-	}
-	
-	ctx := &Context{
-		system: sys,
-		self:   actor,
-	}
-	
-	actor.ctx = ctx
-	sys.actors[name] = actor
-	
-	// 启动Actor
-	actor.processing.Add(1)
-	go actor.process()
-	
-	return actor
+ sys.mutex.Lock()
+ defer sys.mutex.Unlock()
+ 
+ if _, exists := sys.actors[name]; exists {
+  panic(fmt.Sprintf("Actor %s already exists", name))
+ }
+ 
+ actor := &Actor{
+  mailbox:  make(chan Message, mailboxSize),
+  behavior: behavior,
+  name:     name,
+  stopped:  false,
+ }
+ 
+ ctx := &Context{
+  system: sys,
+  self:   actor,
+ }
+ 
+ actor.ctx = ctx
+ sys.actors[name] = actor
+ 
+ // 启动Actor
+ actor.processing.Add(1)
+ go actor.process()
+ 
+ return actor
 }
 
 // 处理消息
 func (a *Actor) process() {
-	defer a.processing.Done()
-	
-	for {
-		a.mutex.RLock()
-		stopped := a.stopped
-		a.mutex.RUnlock()
-		
-		if stopped {
-			return
-		}
-		
-		select {
-		case msg, ok := <-a.mailbox:
-			if !ok {
-				// 邮箱已关闭
-				return
-			}
-			
-			// 处理消息
-			a.behavior(msg, a.ctx)
-		}
-	}
+ defer a.processing.Done()
+ 
+ for {
+  a.mutex.RLock()
+  stopped := a.stopped
+  a.mutex.RUnlock()
+  
+  if stopped {
+   return
+  }
+  
+  select {
+  case msg, ok := <-a.mailbox:
+   if !ok {
+    // 邮箱已关闭
+    return
+   }
+   
+   // 处理消息
+   a.behavior(msg, a.ctx)
+  }
+ }
 }
 
 // Send 发送消息给Actor
 func (a *Actor) Send(msg Message) {
-	a.mutex.RLock()
-	defer a.mutex.RUnlock()
-	
-	if a.stopped {
-		return
-	}
-	
-	a.mailbox <- msg
+ a.mutex.RLock()
+ defer a.mutex.RUnlock()
+ 
+ if a.stopped {
+  return
+ }
+ 
+ a.mailbox <- msg
 }
 
 // GetActor 根据名称获取Actor
 func (sys *ActorSystem) GetActor(name string) (*Actor, bool) {
-	sys.mutex.RLock()
-	defer sys.mutex.RUnlock()
-	
-	actor, exists := sys.actors[name]
-	return actor, exists
+ sys.mutex.RLock()
+ defer sys.mutex.RUnlock()
+ 
+ actor, exists := sys.actors[name]
+ return actor, exists
 }
 
 // Stop 停止Actor
 func (a *Actor) Stop() {
-	a.mutex.Lock()
-	
-	if !a.stopped {
-		a.stopped = true
-		close(a.mailbox)
-	}
-	
-	a.mutex.Unlock()
-	
-	// 等待处理完成
-	a.processing.Wait()
+ a.mutex.Lock()
+ 
+ if !a.stopped {
+  a.stopped = true
+  close(a.mailbox)
+ }
+ 
+ a.mutex.Unlock()
+ 
+ // 等待处理完成
+ a.processing.Wait()
 }
 
 // Become 改变Actor行为
 func (a *Actor) Become(behavior func(Message, *Context)) {
-	a.mutex.Lock()
-	defer a.mutex.Unlock()
-	
-	a.behavior = behavior
+ a.mutex.Lock()
+ defer a.mutex.Unlock()
+ 
+ a.behavior = behavior
 }
 
 // 示例消息类型
 type StringMessage struct {
-	Content string
+ Content string
 }
 
 func (m StringMessage) MessageType() string {
-	return "StringMessage"
+ return "StringMessage"
 }
 
 // 示例使用
 func ExampleActorSystem() {
-	system := NewActorSystem()
-	
-	// 创建打印Actor
-	printActor := system.NewActor("printer", func(msg Message, ctx *Context) {
-		if strMsg, ok := msg.(StringMessage); ok {
-			fmt.Println("Received:", strMsg.Content)
-		}
-	}, 10)
-	
-	// 发送消息
-	printActor.Send(StringMessage{Content: "Hello, Actor!"})
-	
-	// 改变行为
-	printActor.Become(func(msg Message, ctx *Context) {
-		if strMsg, ok := msg.(StringMessage); ok {
-			fmt.Println("NEW BEHAVIOR Received:", strMsg.Content)
-		}
-	})
-	
-	// 发送消息给新行为
-	printActor.Send(StringMessage{Content: "Hello with new behavior!"})
-	
-	// 停止Actor
-	printActor.Stop()
+ system := NewActorSystem()
+ 
+ // 创建打印Actor
+ printActor := system.NewActor("printer", func(msg Message, ctx *Context) {
+  if strMsg, ok := msg.(StringMessage); ok {
+   fmt.Println("Received:", strMsg.Content)
+  }
+ }, 10)
+ 
+ // 发送消息
+ printActor.Send(StringMessage{Content: "Hello, Actor!"})
+ 
+ // 改变行为
+ printActor.Become(func(msg Message, ctx *Context) {
+  if strMsg, ok := msg.(StringMessage); ok {
+   fmt.Println("NEW BEHAVIOR Received:", strMsg.Content)
+  }
+ })
+ 
+ // 发送消息给新行为
+ printActor.Send(StringMessage{Content: "Hello with new behavior!"})
+ 
+ // 停止Actor
+ printActor.Stop()
 }
 ```
 

@@ -275,207 +275,540 @@ func generateID() string {
 
 ## 4. 一致性与复制模式
 
-### 4.1 分布式共识 (Raft)
+### 4.1 共识算法 - Raft算法
 
-**定义 4.1** (Raft共识): Raft是一个三元组 $R = (S, L, T)$，其中：
+**定义 4.1** (Raft共识算法): Raft是一种分布式共识算法，通过选举Leader和复制日志来实现一致性。
 
-- $S$ 是服务器状态集合 $\{Follower, Candidate, Leader\}$
-- $L$ 是日志条目集合
-- $T$ 是任期集合
+**形式化定义**:
+
+令 $R = (N, S, L, T, A)$ 为Raft系统，其中:
+
+- $N = \{n_1, n_2, ..., n_k\}$ 是节点集合
+- $S = \{Follower, Candidate, Leader\}$ 是节点状态集合
+- $L = \{l_1, l_2, ..., l_m\}$ 是日志条目集合
+- $T$ 是任期计数器
+- $A: N \times S \times T \times L \rightarrow N \times S \times T \times L$ 是状态转换函数
+
+**重要性质**:
+
+1. **选举安全性**: 任何一个任期内最多只有一个领导人
+2. **Leader日志完整性**: 如果日志条目在某个任期内被提交，则该条目将存在于所有更高任期的领导人中
+3. **日志匹配性**: 如果两个日志在相同索引处有相同任期的条目，则这些日志在该索引之前是相同的
 
 ```go
-// Raft共识算法实现
-package distributed
+package consensus
 
 import (
-    "context"
-    "fmt"
-    "sync"
-    "time"
+	"context"
+	"fmt"
+	"math/rand"
+	"sync"
+	"time"
 )
-
-// RaftState Raft状态
-type RaftState int
 
 const (
-    Follower RaftState = iota
-    Candidate
-    Leader
+	StateFollower  = "follower"
+	StateCandidate = "candidate"
+	StateLeader    = "leader"
 )
 
-// LogEntry 日志条目
+// LogEntry 表示一个日志条目
 type LogEntry struct {
-    Term    int         `json:"term"`
-    Index   int         `json:"index"`
-    Command interface{} `json:"command"`
+	Term    int         `json:"term"`
+	Index   int         `json:"index"`
+	Command interface{} `json:"command"`
 }
 
-// RaftNode Raft节点
+// RaftNode 表示Raft算法中的一个节点
 type RaftNode struct {
-    id        string
-    state     RaftState
-    term      int
-    votedFor  string
-    log       []LogEntry
-    commitIndex int
-    lastApplied int
-    mu        sync.RWMutex
-    
-    // Leader特有字段
-    nextIndex  map[string]int
-    matchIndex map[string]int
-    
-    // 选举相关
-    electionTimeout time.Duration
-    heartbeatInterval time.Duration
+	ID               string
+	State            string
+	CurrentTerm      int
+	VotedFor         string
+	Log              []LogEntry
+	CommitIndex      int
+	LastApplied      int
+	NextIndex        map[string]int
+	MatchIndex       map[string]int
+	Peers            []string
+	ElectionTimeout  time.Duration
+	HeartbeatTimeout time.Duration
+	
+	stateMu          sync.RWMutex
+	logMu            sync.RWMutex
+	
+	commitCh         chan LogEntry
+	stopCh           chan struct{}
 }
 
-// NewRaftNode 创建新的Raft节点
-func NewRaftNode(id string) *RaftNode {
-    return &RaftNode{
-        id:               id,
-        state:            Follower,
-        term:             0,
-        votedFor:         "",
-        log:              make([]LogEntry, 0),
-        commitIndex:      0,
-        lastApplied:      0,
-        nextIndex:        make(map[string]int),
-        matchIndex:       make(map[string]int),
-        electionTimeout:  150 * time.Millisecond,
-        heartbeatInterval: 50 * time.Millisecond,
-    }
+// NewRaftNode 创建一个新的Raft节点
+func NewRaftNode(id string, peers []string) *RaftNode {
+	node := &RaftNode{
+		ID:               id,
+		State:            StateFollower,
+		CurrentTerm:      0,
+		VotedFor:         "",
+		Log:              make([]LogEntry, 0),
+		CommitIndex:      0,
+		LastApplied:      0,
+		NextIndex:        make(map[string]int),
+		MatchIndex:       make(map[string]int),
+		Peers:            peers,
+		ElectionTimeout:  randomTimeout(300, 600),
+		HeartbeatTimeout: 150 * time.Millisecond,
+		commitCh:         make(chan LogEntry, 1000),
+		stopCh:           make(chan struct{}),
+	}
+	
+	return node
 }
 
-// StartElection 开始选举
-func (n *RaftNode) StartElection() {
-    n.mu.Lock()
-    n.state = Candidate
-    n.term++
-    n.votedFor = n.id
-    currentTerm := n.term
-    n.mu.Unlock()
-    
-    // 发送投票请求
-    // 实现投票逻辑
+// randomTimeout 生成一个随机的选举超时
+func randomTimeout(min, max int) time.Duration {
+	return time.Duration(min+rand.Intn(max-min)) * time.Millisecond
 }
 
-// AppendEntries 追加日志条目
-func (n *RaftNode) AppendEntries(term int, leaderID string, prevLogIndex int, prevLogTerm int, entries []LogEntry, leaderCommit int) bool {
-    n.mu.Lock()
-    defer n.mu.Unlock()
-    
-    if term < n.term {
-        return false
-    }
-    
-    if term > n.term {
-        n.term = term
-        n.state = Follower
-        n.votedFor = ""
-    }
-    
-    // 检查日志一致性
-    if prevLogIndex > 0 {
-        if prevLogIndex > len(n.log) || n.log[prevLogIndex-1].Term != prevLogTerm {
-            return false
-        }
-    }
-    
-    // 追加新条目
-    for i, entry := range entries {
-        index := prevLogIndex + i + 1
-        if index <= len(n.log) {
-            if n.log[index-1].Term != entry.Term {
-                // 截断日志
-                n.log = n.log[:index-1]
-            }
-        }
-        if index > len(n.log) {
-            n.log = append(n.log, entry)
-        }
-    }
-    
-    // 更新提交索引
-    if leaderCommit > n.commitIndex {
-        n.commitIndex = min(leaderCommit, len(n.log))
-    }
-    
-    return true
+// Start 启动Raft节点
+func (rn *RaftNode) Start() {
+	go rn.run()
 }
 
-func min(a, b int) int {
-    if a < b {
-        return a
-    }
-    return b
+// run 运行节点的主循环
+func (rn *RaftNode) run() {
+	for {
+		select {
+		case <-rn.stopCh:
+			return
+		default:
+		}
+		
+		rn.stateMu.RLock()
+		state := rn.State
+		rn.stateMu.RUnlock()
+		
+		switch state {
+		case StateFollower:
+			rn.runFollower()
+		case StateCandidate:
+			rn.runCandidate()
+		case StateLeader:
+			rn.runLeader()
+		}
+	}
 }
-```
 
-### 4.2 CRDT (无冲突复制数据类型)
+// runFollower 作为跟随者运行
+func (rn *RaftNode) runFollower() {
+	timer := time.NewTimer(rn.ElectionTimeout)
+	defer timer.Stop()
+	
+	for {
+		select {
+		case <-rn.stopCh:
+			return
+		case <-timer.C:
+			// 选举超时，变为候选者
+			rn.stateMu.Lock()
+			rn.State = StateCandidate
+			rn.stateMu.Unlock()
+			return
+		// 在这里处理接收到的RPC
+		}
+	}
+}
 
-**定义 4.2** (CRDT): CRDT是一个四元组 $C = (S, O, M, \sqcup)$，其中：
+// runCandidate 作为候选者运行
+func (rn *RaftNode) runCandidate() {
+	rn.startElection()
+	
+	timer := time.NewTimer(rn.ElectionTimeout)
+	defer timer.Stop()
+	
+	for {
+		select {
+		case <-rn.stopCh:
+			return
+		case <-timer.C:
+			// 选举超时，开始新一轮选举
+			rn.stateMu.Lock()
+			rn.startElection()
+			rn.stateMu.Unlock()
+		// 在这里处理选举结果
+		}
+	}
+}
+
+// runLeader 作为领导者运行
+func (rn *RaftNode) runLeader() {
+	// 初始化NextIndex和MatchIndex
+	for _, peer := range rn.Peers {
+		if peer == rn.ID {
+			continue
+		}
+		rn.NextIndex[peer] = len(rn.Log) + 1
+		rn.MatchIndex[peer] = 0
+	}
+	
+	ticker := time.NewTicker(rn.HeartbeatTimeout)
+	defer ticker.Stop()
+	
+	// 立即发送一次心跳
+	rn.sendHeartbeats()
+	
+	for {
+		select {
+		case <-rn.stopCh:
+			return
+		case <-ticker.C:
+			rn.sendHeartbeats()
+		// 在这里处理客户端请求和同步日志
+		}
+	}
+}
+
+// startElection 开始一轮选举
+func (rn *RaftNode) startElection() {
+	rn.CurrentTerm++
+	rn.VotedFor = rn.ID
+	rn.State = StateCandidate
+	
+	// 实现请求投票RPC逻辑
+}
+
+// sendHeartbeats 发送心跳
+func (rn *RaftNode) sendHeartbeats() {
+	// 实现AppendEntries RPC逻辑
+}
+
+// ProposeCommand 提议一个命令
+func (rn *RaftNode) ProposeCommand(cmd interface{}) error {
+	rn.stateMu.RLock()
+	isLeader := rn.State == StateLeader
+	rn.stateMu.RUnlock()
+	
+	if !isLeader {
+		return fmt.Errorf("not leader")
+	}
+	
+	entry := LogEntry{
+		Term:    rn.CurrentTerm,
+		Index:   len(rn.Log) + 1,
+		Command: cmd,
+	}
+	
+	rn.logMu.Lock()
+	rn.Log = append(rn.Log, entry)
+	rn.logMu.Unlock()
+	
+	// 实现复制日志逻辑
+	
+	return nil
+}
+
+// Stop 停止Raft节点
+func (rn *RaftNode) Stop() {
+	close(rn.stopCh)
+}
+
+### 4.2 无冲突复制数据类型 (CRDT)
+
+**定义 4.2** (CRDT): CRDT是一类特殊的数据结构，它们可以在分布式系统中独立更新，并且能够自动解决冲突。
+
+**形式化定义**:
+
+令 $CRDT = (S, M, q, u, m)$ 是一个CRDT，其中:
 
 - $S$ 是状态集合
-- $O$ 是操作集合
-- $M: S \times O \rightarrow S$ 是状态转换函数
-- $\sqcup: S \times S \rightarrow S$ 是合并函数
+- $M$ 是操作（或更新）集合
+- $q: S \rightarrow Q$ 是查询函数，$Q$ 是查询结果集合
+- $u: S \times M \rightarrow S$ 是更新函数
+- $m: S \times S \rightarrow S$ 是合并函数
+
+**重要性质**:
+
+$m$ 满足以下性质:
+1. **交换律**: $m(x, y) = m(y, x)$
+2. **结合律**: $m(x, m(y, z)) = m(m(x, y), z)$
+3. **幂等性**: $m(x, x) = x$
 
 ```go
-// CRDT实现示例 (G-Counter)
-package distributed
+package crdt
 
 import (
-    "sync"
+	"encoding/json"
+	"sync"
+	"time"
 )
 
-// GCounter 增长计数器CRDT
+// GCounter 增长计数器（G-Counter）
 type GCounter struct {
-    counters map[string]int
-    mu       sync.RWMutex
+	Counters map[string]int `json:"counters"`
+	mu       sync.RWMutex
 }
 
-// NewGCounter 创建新的G-Counter
+// NewGCounter 创建新的增长计数器
 func NewGCounter() *GCounter {
-    return &GCounter{
-        counters: make(map[string]int),
-    }
+	return &GCounter{
+		Counters: make(map[string]int),
+	}
 }
 
-// Increment 增加计数
+// Increment 增加计数器值
 func (g *GCounter) Increment(nodeID string, delta int) {
-    g.mu.Lock()
-    defer g.mu.Unlock()
-    
-    g.counters[nodeID] += delta
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	
+	if delta < 0 {
+		return // G-Counter只能增加
+	}
+	
+	g.Counters[nodeID] += delta
 }
 
-// Value 获取总计数
+// Value 获取计数器总值
 func (g *GCounter) Value() int {
-    g.mu.RLock()
-    defer g.mu.RUnlock()
-    
-    total := 0
-    for _, count := range g.counters {
-        total += count
-    }
-    return total
+	g.mu.RLock()
+	defer g.mu.RUnlock()
+	
+	sum := 0
+	for _, val := range g.Counters {
+		sum += val
+	}
+	
+	return sum
 }
 
 // Merge 合并另一个G-Counter
 func (g *GCounter) Merge(other *GCounter) {
-    g.mu.Lock()
-    defer g.mu.Unlock()
-    other.mu.RLock()
-    defer other.mu.RUnlock()
-    
-    for nodeID, count := range other.counters {
-        if g.counters[nodeID] < count {
-            g.counters[nodeID] = count
-        }
-    }
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	
+	for nodeID, count := range other.Counters {
+		if g.Counters[nodeID] < count {
+			g.Counters[nodeID] = count
+		}
+	}
+}
+
+// PNCounter 正负计数器（PN-Counter）
+type PNCounter struct {
+	Increments *GCounter `json:"increments"`
+	Decrements *GCounter `json:"decrements"`
+	mu         sync.RWMutex
+}
+
+// NewPNCounter 创建新的正负计数器
+func NewPNCounter() *PNCounter {
+	return &PNCounter{
+		Increments: NewGCounter(),
+		Decrements: NewGCounter(),
+	}
+}
+
+// Increment 增加计数器值
+func (p *PNCounter) Increment(nodeID string, delta int) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	
+	if delta < 0 {
+		return
+	}
+	
+	p.Increments.Increment(nodeID, delta)
+}
+
+// Decrement 减少计数器值
+func (p *PNCounter) Decrement(nodeID string, delta int) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	
+	if delta < 0 {
+		return
+	}
+	
+	p.Decrements.Increment(nodeID, delta)
+}
+
+// Value 获取计数器总值
+func (p *PNCounter) Value() int {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	
+	return p.Increments.Value() - p.Decrements.Value()
+}
+
+// Merge 合并另一个PN-Counter
+func (p *PNCounter) Merge(other *PNCounter) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	
+	p.Increments.Merge(other.Increments)
+	p.Decrements.Merge(other.Decrements)
+}
+
+// LWWRegister 最后写入胜利寄存器（Last-Write-Wins Register）
+type LWWRegister struct {
+	Value     interface{} `json:"value"`
+	Timestamp int64       `json:"timestamp"`
+	mu        sync.RWMutex
+}
+
+// NewLWWRegister 创建新的LWW寄存器
+func NewLWWRegister(initialValue interface{}) *LWWRegister {
+	return &LWWRegister{
+		Value:     initialValue,
+		Timestamp: time.Now().UnixNano(),
+	}
+}
+
+// Set 设置寄存器值
+func (l *LWWRegister) Set(value interface{}, timestamp int64) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	
+	if timestamp > l.Timestamp {
+		l.Value = value
+		l.Timestamp = timestamp
+		return true
+	}
+	
+	return false
+}
+
+// Get 获取寄存器值
+func (l *LWWRegister) Get() interface{} {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	
+	return l.Value
+}
+
+// Merge 合并另一个LWW寄存器
+func (l *LWWRegister) Merge(other *LWWRegister) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	
+	if other.Timestamp > l.Timestamp {
+		l.Value = other.Value
+		l.Timestamp = other.Timestamp
+		return true
+	}
+	
+	return false
+}
+
+// ORSet 观察-移除集合（Observed-Remove Set）
+type ORSet struct {
+	Additions map[string]map[string]bool `json:"additions"`
+	Removals  map[string]map[string]bool `json:"removals"`
+	mu        sync.RWMutex
+}
+
+// NewORSet 创建新的OR-Set
+func NewORSet() *ORSet {
+	return &ORSet{
+		Additions: make(map[string]map[string]bool),
+		Removals:  make(map[string]map[string]bool),
+	}
+}
+
+// Add 添加元素
+func (o *ORSet) Add(element string, tagID string) {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	
+	if _, exists := o.Additions[element]; !exists {
+		o.Additions[element] = make(map[string]bool)
+	}
+	
+	o.Additions[element][tagID] = true
+}
+
+// Remove 移除元素
+func (o *ORSet) Remove(element string) {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	
+	if tags, exists := o.Additions[element]; exists {
+		if _, exists := o.Removals[element]; !exists {
+			o.Removals[element] = make(map[string]bool)
+		}
+		
+		for tag := range tags {
+			o.Removals[element][tag] = true
+		}
+	}
+}
+
+// Contains 检查元素是否在集合中
+func (o *ORSet) Contains(element string) bool {
+	o.mu.RLock()
+	defer o.mu.RUnlock()
+	
+	addTags, addExists := o.Additions[element]
+	if !addExists {
+		return false
+	}
+	
+	removeTags, removeExists := o.Removals[element]
+	if !removeExists {
+		return len(addTags) > 0
+	}
+	
+	// 检查是否有任何添加标签不在删除标签中
+	for tag := range addTags {
+		if !removeTags[tag] {
+			return true
+		}
+	}
+	
+	return false
+}
+
+// Merge 合并另一个OR-Set
+func (o *ORSet) Merge(other *ORSet) {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	
+	// 合并添加集
+	for element, tags := range other.Additions {
+		if _, exists := o.Additions[element]; !exists {
+			o.Additions[element] = make(map[string]bool)
+		}
+		
+		for tag := range tags {
+			o.Additions[element][tag] = true
+		}
+	}
+	
+	// 合并删除集
+	for element, tags := range other.Removals {
+		if _, exists := o.Removals[element]; !exists {
+			o.Removals[element] = make(map[string]bool)
+		}
+		
+		for tag := range tags {
+			o.Removals[element][tag] = true
+		}
+	}
 }
 ```
+
+**理论证明**:
+
+对于GCounter的交换律证明:
+
+给定两个GCounter $g_1$ 和 $g_2$:
+
+$g_1.merge(g_2)$ 会产生一个新的GCounter $g'$，其中:
+$g'.counters[i] = max(g_1.counters[i], g_2.counters[i])$ 对所有节点 $i$
+
+$g_2.merge(g_1)$ 会产生一个新的GCounter $g''$，其中:
+$g''.counters[i] = max(g_2.counters[i], g_1.counters[i])$ 对所有节点 $i$
+
+由于 $max(a,b) = max(b,a)$，因此 $g'.counters[i] = g''.counters[i]$ 对所有节点 $i$
+
+所以 $g_1.merge(g_2) = g_2.merge(g_1)$ ，交换律成立。
 
 ## 5. 容错模式
 
