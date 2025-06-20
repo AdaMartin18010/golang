@@ -197,7 +197,7 @@
 - **Academic Rigor**: 95%
 - **Code Completeness**: 85%
 - **Cross-Referencing**: 80%
-- **Visual Representation**: 70% 
+- **Visual Representation**: 70%
 
 ## 💡 Recent Innovations
 
