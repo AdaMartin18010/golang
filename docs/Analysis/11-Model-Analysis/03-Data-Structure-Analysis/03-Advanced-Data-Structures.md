@@ -2,45 +2,81 @@
 
 ## 目录
 
-1. [概述](#概述)
-2. [形式化定义](#形式化定义)
-3. [树形结构](#树形结构)
-   - [3.1 二叉树](#31-二叉树)
-   - [3.2 平衡树](#32-平衡树)
-   - [3.3 B树和B+树](#33-b树和b树)
-   - [3.4 红黑树](#34-红黑树)
-   - [3.5 前缀树(Trie)](#35-前缀树trie)
-4. [图结构](#图结构)
-   - [4.1 图的表示](#41-图的表示)
-   - [4.2 图遍历算法](#42-图遍历算法)
-   - [4.3 最短路径算法](#43-最短路径算法)
-   - [4.4 最小生成树算法](#44-最小生成树算法)
-   - [4.5 拓扑排序](#45-拓扑排序)
-5. [高级散列表](#高级散列表)
-   - [5.1 开放寻址法](#51-开放寻址法)
-   - [5.2 链式散列](#52-链式散列)
-   - [5.3 一致性哈希](#53-一致性哈希)
-   - [5.4 完美哈希](#54-完美哈希)
-   - [5.5 布谷鸟哈希](#55-布谷鸟哈希)
-6. [特殊数据结构](#特殊数据结构)
-   - [6.1 布隆过滤器](#61-布隆过滤器)
-   - [6.2 跳表](#62-跳表)
-   - [6.3 字典树变体](#63-字典树变体)
-   - [6.4 前缀和与区间树](#64-前缀和与区间树)
-   - [6.5 稀疏表与RMQ](#65-稀疏表与rmq)
-7. [空间效率数据结构](#空间效率数据结构)
-   - [7.1 位图](#71-位图)
-   - [7.2 基数树](#72-基数树)
-   - [7.3 压缩前缀树](#73-压缩前缀树)
-8. [概率数据结构](#概率数据结构)
-   - [8.1 Count-Min Sketch](#81-count-min-sketch)
-   - [8.2 HyperLogLog](#82-hyperloglog)
-   - [8.3 跳表变体](#83-跳表变体)
-9. [Golang实现](#golang实现)
-10. [性能分析与对比](#性能分析与对比)
-11. [最佳实践](#最佳实践)
-12. [案例研究](#案例研究)
-13. [总结](#总结)
+- [高级数据结构分析](#高级数据结构分析)
+  - [目录](#目录)
+  - [概述](#概述)
+    - [核心目标](#核心目标)
+    - [应用领域](#应用领域)
+  - [形式化定义](#形式化定义)
+    - [高级数据结构形式化定义](#高级数据结构形式化定义)
+    - [高级数据结构分类体系](#高级数据结构分类体系)
+    - [高级数据结构评价指标](#高级数据结构评价指标)
+  - [树形结构](#树形结构)
+    - [3.1 二叉树](#31-二叉树)
+      - [3.1.1 形式化定义](#311-形式化定义)
+      - [3.1.2 Golang实现](#312-golang实现)
+      - [3.1.3 复杂度分析](#313-复杂度分析)
+    - [3.2 平衡树](#32-平衡树)
+      - [3.2.1 AVL树](#321-avl树)
+        - [Golang实现](#golang实现)
+        - [复杂度分析](#复杂度分析)
+      - [3.2.2 其他平衡树](#322-其他平衡树)
+    - [3.3 B树和B+树](#33-b树和b树)
+      - [3.3.1 B树](#331-b树)
+        - [Golang实现](#golang实现-1)
+      - [3.3.2 B+树](#332-b树)
+        - [Golang实现](#golang实现-2)
+      - [3.3.3 复杂度分析与应用场景](#333-复杂度分析与应用场景)
+    - [3.4 红黑树](#34-红黑树)
+      - [3.4.1 定义与性质](#341-定义与性质)
+      - [3.4.2 Golang实现](#342-golang实现)
+      - [3.4.3 复杂度分析](#343-复杂度分析)
+      - [3.4.4 应用场景](#344-应用场景)
+  - [图结构](#图结构)
+    - [4.1 图的表示](#41-图的表示)
+      - [4.1.1 形式化定义](#411-形式化定义)
+      - [4.1.2 图的表示方法](#412-图的表示方法)
+        - [邻接矩阵](#邻接矩阵)
+        - [邻接表](#邻接表)
+      - [4.1.3 综合比较](#413-综合比较)
+    - [4.2 图遍历算法](#42-图遍历算法)
+      - [4.2.1 深度优先搜索 (DFS)](#421-深度优先搜索-dfs)
+      - [4.2.2 广度优先搜索 (BFS)](#422-广度优先搜索-bfs)
+      - [4.2.3 连通分量](#423-连通分量)
+      - [4.2.4 强连通分量](#424-强连通分量)
+    - [4.3 最短路径算法](#43-最短路径算法)
+      - [4.3.1 Dijkstra算法](#431-dijkstra算法)
+      - [4.3.2 Bellman-Ford算法](#432-bellman-ford算法)
+      - [4.3.3 Floyd-Warshall算法](#433-floyd-warshall算法)
+    - [4.4 最小生成树算法](#44-最小生成树算法)
+      - [4.4.1 Prim算法](#441-prim算法)
+      - [4.4.2 Kruskal算法](#442-kruskal算法)
+    - [4.5 拓扑排序](#45-拓扑排序)
+  - [高级散列表](#高级散列表)
+    - [5.1 开放寻址法](#51-开放寻址法)
+    - [5.2 链式散列](#52-链式散列)
+    - [5.3 一致性哈希](#53-一致性哈希)
+    - [5.4 完美哈希](#54-完美哈希)
+    - [5.5 布谷鸟哈希](#55-布谷鸟哈希)
+  - [特殊数据结构](#特殊数据结构)
+    - [6.1 布隆过滤器](#61-布隆过滤器)
+    - [6.2 跳表](#62-跳表)
+    - [6.3 字典树变体](#63-字典树变体)
+    - [6.4 前缀和与区间树](#64-前缀和与区间树)
+    - [6.5 稀疏表与RMQ](#65-稀疏表与rmq)
+  - [空间效率数据结构](#空间效率数据结构)
+    - [7.1 位图](#71-位图)
+    - [7.2 基数树](#72-基数树)
+    - [7.3 压缩前缀树](#73-压缩前缀树)
+  - [概率数据结构](#概率数据结构)
+    - [8.1 Count-Min Sketch](#81-count-min-sketch)
+    - [8.2 HyperLogLog](#82-hyperloglog)
+    - [8.3 跳表变体](#83-跳表变体)
+  - [Golang实现](#golang实现-3)
+  - [性能分析与对比](#性能分析与对比)
+  - [最佳实践](#最佳实践)
+  - [案例研究](#案例研究)
+  - [总结](#总结)
 
 ## 概述
 
@@ -134,7 +170,7 @@ $$\mathcal{MI} = (E, F, S, C, M, A)$$
 - $S$ 是空间利用率
 - $C$ 是并发能力
 - $M$ 是可维护性
-- $A$ 是适应性 
+- $A$ 是适应性
 
 ## 树形结构
 
@@ -724,10 +760,12 @@ func (t *BPlusTree) RangeQuery(start, end int) []int {
 | B+树     | $O(\log_m n)$ | $O(\log_m n)$ | $O(\log_m n)$ | $O(\log_m n + k)$ | $O(n)$ |
 
 **B树应用场景**:
+
 - 文件系统和数据库索引
 - 多级索引
 
 **B+树应用场景**:
+
 - 关系型数据库索引 (如MySQL的InnoDB)
 - 需要高效范围查询的场景
 - 文件系统
@@ -961,16 +999,20 @@ func (t *RedBlackTree) Insert(value int) {
 **定义 4.1.2** (邻接矩阵)
 对于 $n$ 个顶点的图 $G = (V, E)$，其邻接矩阵 $A$ 是一个 $n \times n$ 的矩阵，定义为：
 
-$$A[i][j] = \begin{cases} 
+$$
+A[i][j] = \begin{cases}
 1 & \text{若} (i, j) \in E \\
 0 & \text{否则}
-\end{cases}$$
+\end{cases}
+$$
 
 对于有权图：
-$$A[i][j] = \begin{cases} 
+$$
+A[i][j] = \begin{cases}
 w(i, j) & \text{若} (i, j) \in E \\
 \infty & \text{否则}
-\end{cases}$$
+\end{cases}
+$$
 
 ```go
 // 基于邻接矩阵的图
@@ -987,7 +1029,7 @@ func NewAdjMatrixGraph(v int, directed bool) *AdjMatrixGraph {
     for i := range matrix {
         matrix[i] = make([]int, v)
     }
-    
+
     return &AdjMatrixGraph{
         V:        v,
         E:        0,
@@ -1001,14 +1043,14 @@ func (g *AdjMatrixGraph) AddEdge(v, w int, weight int) {
     if v < 0 || v >= g.V || w < 0 || w >= g.V {
         panic("顶点超出范围")
     }
-    
+
     // 检查边是否已存在
     if g.Matrix[v][w] == 0 {
         g.E++
     }
-    
+
     g.Matrix[v][w] = weight
-    
+
     if !g.Directed {
         g.Matrix[w][v] = weight
     }
@@ -1027,14 +1069,14 @@ func (g *AdjMatrixGraph) Adj(v int) []int {
     if v < 0 || v >= g.V {
         panic("顶点超出范围")
     }
-    
+
     var adj []int
     for i := 0; i < g.V; i++ {
         if g.Matrix[v][i] != 0 {
             adj = append(adj, i)
         }
     }
-    
+
     return adj
 }
 ```
@@ -1078,12 +1120,12 @@ func (g *AdjListGraph) AddEdge(v, w int, weight int) {
     if v < 0 || v >= g.V || w < 0 || w >= g.V {
         panic("顶点超出范围")
     }
-    
+
     // 添加 v->w 的边
     newEdge := &Edge{To: w, Weight: weight, Next: g.Adj[v]}
     g.Adj[v] = newEdge
     g.E++
-    
+
     // 如果是无向图，添加 w->v 的边
     if !g.Directed {
         newEdge = &Edge{To: v, Weight: weight, Next: g.Adj[w]}
@@ -1096,12 +1138,12 @@ func (g *AdjListGraph) GetAdjVertices(v int) []int {
     if v < 0 || v >= g.V {
         panic("顶点超出范围")
     }
-    
+
     var vertices []int
     for e := g.Adj[v]; e != nil; e = e.Next {
         vertices = append(vertices, e.To)
     }
-    
+
     return vertices
 }
 ```
@@ -1127,20 +1169,20 @@ func (g *AdjListGraph) GetAdjVertices(v int) []int {
 func (g *AdjListGraph) DFS(start int) []int {
     visited := make([]bool, g.V)
     var result []int
-    
+
     // 递归DFS函数
     var dfsRecursive func(v int)
     dfsRecursive = func(v int) {
         visited[v] = true
         result = append(result, v)
-        
+
         for e := g.Adj[v]; e != nil; e = e.Next {
             if !visited[e.To] {
                 dfsRecursive(e.To)
             }
         }
     }
-    
+
     dfsRecursive(start)
     return result
 }
@@ -1149,19 +1191,19 @@ func (g *AdjListGraph) DFS(start int) []int {
 func (g *AdjListGraph) IterativeDFS(start int) []int {
     visited := make([]bool, g.V)
     var result []int
-    
+
     // 使用栈来模拟递归
     stack := []int{start}
-    
+
     for len(stack) > 0 {
         // 弹出栈顶元素
         v := stack[len(stack)-1]
         stack = stack[:len(stack)-1]
-        
+
         if !visited[v] {
             visited[v] = true
             result = append(result, v)
-            
+
             // 将邻居入栈 (注意：为保持与递归DFS相同的访问顺序，我们需要逆序入栈)
             neighbors := g.GetAdjVertices(v)
             for i := len(neighbors) - 1; i >= 0; i-- {
@@ -1171,7 +1213,7 @@ func (g *AdjListGraph) IterativeDFS(start int) []int {
             }
         }
     }
-    
+
     return result
 }
 ```
@@ -1189,17 +1231,17 @@ func (g *AdjListGraph) IterativeDFS(start int) []int {
 func (g *AdjListGraph) BFS(start int) []int {
     visited := make([]bool, g.V)
     var result []int
-    
+
     // 使用队列进行BFS
     queue := []int{start}
     visited[start] = true
-    
+
     for len(queue) > 0 {
         // 出队
         v := queue[0]
         queue = queue[1:]
         result = append(result, v)
-        
+
         // 将所有未访问的邻居入队
         for e := g.Adj[v]; e != nil; e = e.Next {
             if !visited[e.To] {
@@ -1208,7 +1250,7 @@ func (g *AdjListGraph) BFS(start int) []int {
             }
         }
     }
-    
+
     return result
 }
 ```
@@ -1226,29 +1268,29 @@ func (g *AdjListGraph) BFS(start int) []int {
 func (g *AdjListGraph) ConnectedComponents() [][]int {
     visited := make([]bool, g.V)
     var components [][]int
-    
+
     for i := 0; i < g.V; i++ {
         if !visited[i] {
             // 对每个未访问的顶点开始DFS
             var component []int
-            
+
             var dfs func(v int)
             dfs = func(v int) {
                 visited[v] = true
                 component = append(component, v)
-                
+
                 for e := g.Adj[v]; e != nil; e = e.Next {
                     if !visited[e.To] {
                         dfs(e.To)
                     }
                 }
             }
-            
+
             dfs(i)
             components = append(components, component)
         }
     }
-    
+
     return components
 }
 ```
@@ -1261,7 +1303,7 @@ func (g *AdjListGraph) ConnectedComponents() [][]int {
 **定义 4.5** (强连通分量)
 在有向图中，强连通分量是极大强连通子图，即子图中任意两点都是互相可达的，且不能再添加任何顶点使其保持强连通性。
 
-**Kosaraju算法**
+**Kosaraju算法**:
 
 ```go
 // 使用Kosaraju算法查找强连通分量
@@ -1269,30 +1311,30 @@ func (g *AdjListGraph) StronglyConnectedComponents() [][]int {
     if !g.Directed {
         return g.ConnectedComponents()
     }
-    
+
     // 第一次DFS，填充结束时间栈
     visited := make([]bool, g.V)
     var finishOrder []int
-    
+
     var dfs1 func(v int)
     dfs1 = func(v int) {
         visited[v] = true
-        
+
         for e := g.Adj[v]; e != nil; e = e.Next {
             if !visited[e.To] {
                 dfs1(e.To)
             }
         }
-        
+
         finishOrder = append(finishOrder, v)
     }
-    
+
     for i := 0; i < g.V; i++ {
         if !visited[i] {
             dfs1(i)
         }
     }
-    
+
     // 创建图的转置
     transpose := NewAdjListGraph(g.V, true)
     for v := 0; v < g.V; v++ {
@@ -1300,36 +1342,36 @@ func (g *AdjListGraph) StronglyConnectedComponents() [][]int {
             transpose.AddEdge(e.To, v, e.Weight)
         }
     }
-    
+
     // 第二次DFS，按照完成时间的逆序访问顶点
     for i := range visited {
         visited[i] = false
     }
-    
+
     var components [][]int
-    
+
     for i := len(finishOrder) - 1; i >= 0; i-- {
         v := finishOrder[i]
         if !visited[v] {
             var component []int
-            
+
             var dfs2 func(v int)
             dfs2 = func(v int) {
                 visited[v] = true
                 component = append(component, v)
-                
+
                 for e := transpose.Adj[v]; e != nil; e = e.Next {
                     if !visited[e.To] {
                         dfs2(e.To)
                     }
                 }
             }
-            
+
             dfs2(v)
             components = append(components, component)
         }
     }
-    
+
     return components
 }
 ```
@@ -1353,29 +1395,29 @@ func (g *AdjListGraph) Dijkstra(start int) ([]int, []int) {
     prev := make([]int, g.V)
     // 标记是否已确定最短路径
     visited := make([]bool, g.V)
-    
+
     // 初始化
     for i := range dist {
         dist[i] = math.MaxInt32
         prev[i] = -1
     }
     dist[start] = 0
-    
+
     // 使用优先队列优化
     pq := &PriorityQueue{}
     heap.Init(pq)
     heap.Push(pq, &Item{value: start, priority: 0})
-    
+
     for pq.Len() > 0 {
         // 获取当前最小距离的顶点
         item := heap.Pop(pq).(*Item)
         u := item.value
-        
+
         if visited[u] {
             continue
         }
         visited[u] = true
-        
+
         // 更新所有邻居的距离
         for e := g.Adj[u]; e != nil; e = e.Next {
             v := e.To
@@ -1386,7 +1428,7 @@ func (g *AdjListGraph) Dijkstra(start int) ([]int, []int) {
             }
         }
     }
-    
+
     return dist, prev
 }
 
@@ -1433,12 +1475,12 @@ func ReconstructPath(start, end int, prev []int) []int {
     if prev[end] == -1 {
         return nil // 路径不存在
     }
-    
+
     path := []int{end}
     for curr := end; curr != start; curr = prev[curr] {
         path = append([]int{prev[curr]}, path...)
     }
-    
+
     return path
 }
 ```
@@ -1458,14 +1500,14 @@ func (g *AdjListGraph) BellmanFord(start int) ([]int, []int, bool) {
     dist := make([]int, g.V)
     // prev[i]表示从start到i的最短路径上i的前驱节点
     prev := make([]int, g.V)
-    
+
     // 初始化
     for i := range dist {
         dist[i] = math.MaxInt32
         prev[i] = -1
     }
     dist[start] = 0
-    
+
     // 松弛操作，最多V-1次
     for i := 0; i < g.V-1; i++ {
         for v := 0; v < g.V; v++ {
@@ -1473,7 +1515,7 @@ func (g *AdjListGraph) BellmanFord(start int) ([]int, []int, bool) {
                 u := v
                 v := e.To
                 w := e.Weight
-                
+
                 if dist[u] != math.MaxInt32 && dist[u]+w < dist[v] {
                     dist[v] = dist[u] + w
                     prev[v] = u
@@ -1481,20 +1523,20 @@ func (g *AdjListGraph) BellmanFord(start int) ([]int, []int, bool) {
             }
         }
     }
-    
+
     // 检测负权回路
     for v := 0; v < g.V; v++ {
         for e := g.Adj[v]; e != nil; e = e.Next {
             u := v
             v := e.To
             w := e.Weight
-            
+
             if dist[u] != math.MaxInt32 && dist[u]+w < dist[v] {
                 return nil, nil, true // 存在负权回路
             }
         }
     }
-    
+
     return dist, prev, false
 }
 ```
@@ -1524,7 +1566,7 @@ func (g *AdjMatrixGraph) FloydWarshall() [][]int {
             }
         }
     }
-    
+
     // 动态规划核心
     for k := 0; k < g.V; k++ {
         for i := 0; i < g.V; i++ {
@@ -1536,7 +1578,7 @@ func (g *AdjMatrixGraph) FloydWarshall() [][]int {
             }
         }
     }
-    
+
     return dist
 }
 ```
@@ -1560,41 +1602,41 @@ func (g *AdjListGraph) Prim(start int) ([]int, int) {
     if g.Directed {
         panic("Prim算法仅适用于无向图")
     }
-    
+
     // 标记顶点是否已加入MST
     inMST := make([]bool, g.V)
     // 记录各顶点加入MST的边的权重
     key := make([]int, g.V)
     // 记录各顶点的父节点
     parent := make([]int, g.V)
-    
+
     // 初始化
     for i := range key {
         key[i] = math.MaxInt32
         parent[i] = -1
     }
     key[start] = 0
-    
+
     // 使用优先队列优化
     pq := &PriorityQueue{}
     heap.Init(pq)
     heap.Push(pq, &Item{value: start, priority: 0})
-    
+
     for pq.Len() > 0 {
         // 获取当前权重最小的顶点
         item := heap.Pop(pq).(*Item)
         u := item.value
-        
+
         if inMST[u] {
             continue
         }
         inMST[u] = true
-        
+
         // 更新所有邻居的权重
         for e := g.Adj[u]; e != nil; e = e.Next {
             v := e.To
             w := e.Weight
-            
+
             if !inMST[v] && w < key[v] {
                 key[v] = w
                 parent[v] = u
@@ -1602,7 +1644,7 @@ func (g *AdjListGraph) Prim(start int) ([]int, int) {
             }
         }
     }
-    
+
     // 计算MST的总权重
     mstWeight := 0
     for i := 0; i < g.V; i++ {
@@ -1610,7 +1652,7 @@ func (g *AdjListGraph) Prim(start int) ([]int, int) {
             mstWeight += key[i]
         }
     }
-    
+
     return parent, mstWeight
 }
 ```
@@ -1634,11 +1676,11 @@ type DisjointSet struct {
 func NewDisjointSet(n int) *DisjointSet {
     parent := make([]int, n)
     rank := make([]int, n)
-    
+
     for i := range parent {
         parent[i] = i
     }
-    
+
     return &DisjointSet{
         Parent: parent,
         Rank:   rank,
@@ -1657,11 +1699,11 @@ func (ds *DisjointSet) Find(x int) int {
 func (ds *DisjointSet) Union(x, y int) {
     rootX := ds.Find(x)
     rootY := ds.Find(y)
-    
+
     if rootX == rootY {
         return
     }
-    
+
     // 按秩合并
     if ds.Rank[rootX] < ds.Rank[rootY] {
         ds.Parent[rootX] = rootY
@@ -1685,7 +1727,7 @@ func (g *AdjListGraph) Kruskal() ([]KruskalEdge, int) {
     if g.Directed {
         panic("Kruskal算法仅适用于无向图")
     }
-    
+
     // 收集所有边
     var edges []KruskalEdge
     for u := 0; u < g.V; u++ {
@@ -1697,33 +1739,33 @@ func (g *AdjListGraph) Kruskal() ([]KruskalEdge, int) {
             }
         }
     }
-    
+
     // 按权重排序边
     sort.Slice(edges, func(i, j int) bool {
         return edges[i].Weight < edges[j].Weight
     })
-    
+
     // 初始化并查集
     ds := NewDisjointSet(g.V)
-    
+
     // 存储MST的边和总权重
     var mstEdges []KruskalEdge
     mstWeight := 0
-    
+
     // 贪心选择边
     for _, edge := range edges {
         if ds.Find(edge.From) != ds.Find(edge.To) {
             mstEdges = append(mstEdges, edge)
             mstWeight += edge.Weight
             ds.Union(edge.From, edge.To)
-            
+
             // 当MST有V-1条边时结束
             if len(mstEdges) == g.V-1 {
                 break
             }
         }
     }
-    
+
     return mstEdges, mstWeight
 }
 ```
@@ -1742,7 +1784,7 @@ func (g *AdjListGraph) TopologicalSort() ([]int, bool) {
     if !g.Directed {
         panic("拓扑排序仅适用于有向图")
     }
-    
+
     // 计算每个顶点的入度
     inDegree := make([]int, g.V)
     for u := 0; u < g.V; u++ {
@@ -1750,7 +1792,7 @@ func (g *AdjListGraph) TopologicalSort() ([]int, bool) {
             inDegree[e.To]++
         }
     }
-    
+
     // 将所有入度为0的顶点加入队列
     var queue []int
     for i := 0; i < g.V; i++ {
@@ -1758,16 +1800,16 @@ func (g *AdjListGraph) TopologicalSort() ([]int, bool) {
             queue = append(queue, i)
         }
     }
-    
+
     // 存储拓扑排序结果
     var result []int
-    
+
     // BFS遍历
     for len(queue) > 0 {
         u := queue[0]
         queue = queue[1:]
         result = append(result, u)
-        
+
         // 减少所有邻居的入度
         for e := g.Adj[u]; e != nil; e = e.Next {
             inDegree[e.To]--
@@ -1776,12 +1818,12 @@ func (g *AdjListGraph) TopologicalSort() ([]int, bool) {
             }
         }
     }
-    
+
     // 如果结果中的顶点数小于图的顶点数，说明图中有环
     if len(result) != g.V {
         return nil, false
     }
-    
+
     return result, true
 }
 
@@ -1790,11 +1832,11 @@ func (g *AdjListGraph) TopologicalSortDFS() ([]int, bool) {
     if !g.Directed {
         panic("拓扑排序仅适用于有向图")
     }
-    
+
     visited := make([]bool, g.V)
     temp := make([]bool, g.V)  // 用于检测环
     var order []int
-    
+
     // DFS函数
     var hasCycle bool
     var dfs func(v int)
@@ -1803,33 +1845,33 @@ func (g *AdjListGraph) TopologicalSortDFS() ([]int, bool) {
             hasCycle = true
             return
         }
-        
+
         if visited[v] || hasCycle {
             return
         }
-        
+
         temp[v] = true
-        
+
         for e := g.Adj[v]; e != nil; e = e.Next {
             dfs(e.To)
         }
-        
+
         temp[v] = false
         visited[v] = true
         order = append([]int{v}, order...) // 前插入
     }
-    
+
     // 对每个顶点调用DFS
     for i := 0; i < g.V; i++ {
         if !visited[i] {
             dfs(i)
         }
     }
-    
+
     if hasCycle {
         return nil, false
     }
-    
+
     return order, true
 }
 ```
@@ -1885,4 +1927,4 @@ func (g *AdjListGraph) TopologicalSortDFS() ([]int, bool) {
 
 ## 案例研究
 
-## 总结 
+## 总结
