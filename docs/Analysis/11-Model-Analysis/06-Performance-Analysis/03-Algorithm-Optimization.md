@@ -747,41 +747,49 @@ $$\mathcal{PS} = (P, T, S, M)$$
 
 ```go
 // 并行快速排序
-func ParallelQuickSort(arr []int, numWorkers int) []int {
+func ParallelQuickSort(arr []int) []int {
+    // 小数组串行处理
     if len(arr) <= 1 {
         return arr
     }
     
-    if numWorkers <= 1 {
-        return OptimizedQuickSort(arr)
+    // 小数组使用插入排序
+    if len(arr) <= 10 {
+        return insertionSort(arr)
     }
     
     // 选择pivot
-    pivot := arr[len(arr)/2]
+    pivot := medianOfThree(arr, 0, len(arr)/2, len(arr)-1)
     
     // 分区
-    left, right := partitionParallel(arr, pivot)
+    left, right := partitionForParallel(arr, pivot)
     
-    // 并行排序
+    // 并行处理子数组
     var wg sync.WaitGroup
     var leftSorted, rightSorted []int
     
-    wg.Add(2)
-    
-    go func() {
-        defer wg.Done()
-        leftSorted = ParallelQuickSort(left, numWorkers/2)
-    }()
-    
-    go func() {
-        defer wg.Done()
-        rightSorted = ParallelQuickSort(right, numWorkers/2)
-    }()
-    
-    wg.Wait()
+    // 根据数组大小决定是否并行处理
+    if len(left) > 1000 && len(right) > 1000 {
+        wg.Add(2)
+        
+        go func() {
+            defer wg.Done()
+            leftSorted = ParallelQuickSort(left)
+        }()
+        
+        go func() {
+            defer wg.Done()
+            rightSorted = ParallelQuickSort(right)
+        }()
+        
+        wg.Wait()
+    } else {
+        leftSorted = ParallelQuickSort(left)
+        rightSorted = ParallelQuickSort(right)
+    }
     
     // 合并结果
-    result := make([]int, 0, len(arr))
+    result := make([]int, 0, len(leftSorted)+1+len(rightSorted))
     result = append(result, leftSorted...)
     result = append(result, pivot)
     result = append(result, rightSorted...)
@@ -789,57 +797,16 @@ func ParallelQuickSort(arr []int, numWorkers int) []int {
     return result
 }
 
-// 并行分区
-func partitionParallel(arr []int, pivot int) ([]int, []int) {
+// 用于并行排序的分区函数
+func partitionForParallel(arr []int, pivot int) ([]int, []int) {
     var left, right []int
-    
-    // 使用goroutine并行分区
-    numWorkers := runtime.NumCPU()
-    chunkSize := len(arr) / numWorkers
-    
-    var wg sync.WaitGroup
-    leftCh := make(chan []int, numWorkers)
-    rightCh := make(chan []int, numWorkers)
-    
-    for i := 0; i < numWorkers; i++ {
-        wg.Add(1)
-        go func(start int) {
-            defer wg.Done()
-            
-            end := start + chunkSize
-            if start == (numWorkers-1)*chunkSize {
-                end = len(arr)
-            }
-            
-            var localLeft, localRight []int
-            for j := start; j < end; j++ {
-                if arr[j] < pivot {
-                    localLeft = append(localLeft, arr[j])
-                } else if arr[j] > pivot {
-                    localRight = append(localRight, arr[j])
-                }
-            }
-            
-            leftCh <- localLeft
-            rightCh <- localRight
-        }(i * chunkSize)
+    for _, v := range arr {
+        if v < pivot {
+            left = append(left, v)
+        } else if v > pivot {
+            right = append(right, v)
+        }
     }
-    
-    go func() {
-        wg.Wait()
-        close(leftCh)
-        close(rightCh)
-    }()
-    
-    // 收集结果
-    for localLeft := range leftCh {
-        left = append(left, localLeft...)
-    }
-    
-    for localRight := range rightCh {
-        right = append(right, localRight...)
-    }
-    
     return left, right
 }
 
@@ -928,6 +895,115 @@ func parallelMerge(left, right []int) []int {
     
     wg.Wait()
     
+    return result
+}
+```
+
+### 并行矩阵算法
+
+**定义 6.2** (并行矩阵算法)
+并行矩阵算法是一个五元组：
+$$\mathcal{PM} = (D, P, T, S, R)$$
+
+其中：
+
+- $D$ 是数据分区策略
+- $P$ 是处理器分配
+- $T$ 是任务负载均衡
+- $S$ 是同步机制
+- $R$ 是结果组合策略
+
+```go
+// 并行矩阵乘法
+func ParallelMatrixMultiply(a, b [][]int) [][]int {
+    n := len(a)
+    result := make([][]int, n)
+    for i := range result {
+        result[i] = make([]int, n)
+    }
+    
+    numCPU := runtime.NumCPU()
+    var wg sync.WaitGroup
+    
+    // 按行分配任务
+    rowsPerGoroutine := max(1, n/numCPU)
+    
+    for startRow := 0; startRow < n; startRow += rowsPerGoroutine {
+        endRow := min(startRow+rowsPerGoroutine, n)
+        wg.Add(1)
+        
+        go func(start, end int) {
+            defer wg.Done()
+            
+            // 每个goroutine处理部分行
+            for i := start; i < end; i++ {
+                for j := 0; j < n; j++ {
+                    for k := 0; k < n; k++ {
+                        result[i][j] += a[i][k] * b[k][j]
+                    }
+                }
+            }
+        }(startRow, endRow)
+    }
+    
+    wg.Wait()
+    return result
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+// 并行前缀和
+func ParallelPrefixSum(arr []int) []int {
+    n := len(arr)
+    if n <= 1 {
+        return arr
+    }
+    
+    result := make([]int, n)
+    copy(result, arr)
+    
+    // 计算工作总量
+    workLoad := n - 1
+    
+    // 确定使用的goroutine数量
+    numCPU := runtime.NumCPU()
+    goroutines := min(numCPU, workLoad)
+    
+    // 如果工作量太小，直接串行计算
+    if workLoad < 1000 {
+        for i := 1; i < n; i++ {
+            result[i] = result[i-1] + result[i]
+        }
+        return result
+    }
+    
+    var wg sync.WaitGroup
+    elemPerGoroutine := workLoad / goroutines
+    
+    // 第一个元素不变，并行计算前缀和
+    for g := 0; g < goroutines; g++ {
+        start := g*elemPerGoroutine + 1 // 从1开始，0位置不变
+        end := min((g+1)*elemPerGoroutine+1, n)
+        
+        if start >= n {
+            break
+        }
+        
+        wg.Add(1)
+        go func(s, e int) {
+            defer wg.Done()
+            for i := s; i < e; i++ {
+                result[i] = result[i-1] + result[i]
+            }
+        }(start, end)
+    }
+    
+    wg.Wait()
     return result
 }
 ```
@@ -1072,7 +1148,7 @@ func BenchmarkSortAlgorithms(b *testing.B) {
         for i := 0; i < b.N; i++ {
             arr := make([]int, len(data))
             copy(arr, data)
-            ParallelQuickSort(arr, runtime.NumCPU())
+            ParallelQuickSort(arr)
         }
     })
     
@@ -1158,7 +1234,7 @@ func SmartAlgorithmChoice(data []int, size int) []int {
     case size <= 1000:
         return mergeSort(data)
     default:
-        return ParallelQuickSort(data, runtime.NumCPU())
+        return ParallelQuickSort(data)
     }
 }
 ```

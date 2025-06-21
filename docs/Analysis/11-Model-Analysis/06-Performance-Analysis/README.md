@@ -39,6 +39,19 @@ $$\mathcal{P} = (S, M, T, R, O, C, E)$$
 - $C$ 是成本函数
 - $E$ 是评估函数
 
+**定义 1.1.1** (系统状态)
+系统状态 $s \in S$ 是系统在特定时间点的快照，可以表示为：
+$$s = (m_s, r_s, p_s)$$
+
+其中：
+
+- $m_s$ 是内存状态
+- $r_s$ 是资源状态
+- $p_s$ 是进程状态
+
+**定义 1.1.2** (状态转换)
+状态转换函数 $\delta: S \times A \rightarrow S$ 描述了系统在执行操作后的状态变化，其中 $A$ 是操作集合。
+
 ### 性能指标定义
 
 **定义 1.2** (性能指标)
@@ -51,11 +64,26 @@ $$m: S \times T \rightarrow \mathbb{R}^+$$
 - **延迟**: $\text{Latency}(s, t) = \text{response\_time}(s, t)$
 - **资源利用率**: $\text{Utilization}(s, t) = \frac{\text{used\_resources}(s, t)}{\text{total\_resources}(s, t)}$
 
+**定义 1.2.1** (复合指标)
+复合指标是由多个基本指标组合而成：
+$$m_{comp}(s, t) = f(m_1(s, t), m_2(s, t), ..., m_n(s, t))$$
+
+其中 $f$ 是组合函数，常见的组合函数包括加权和、几何平均等。
+
+**定义 1.2.2** (指标阈值)
+指标阈值 $\theta_m$ 是指标 $m$ 的可接受最小/最大值，定义了系统的性能约束。
+
 ### 优化问题定义
 
 **定义 1.3** (性能优化问题)
 给定性能系统 $\mathcal{P}$，优化问题是：
 $$\min_{s \in S} C(s) \quad \text{s.t.} \quad m_i(s) \geq \text{threshold}_i, \forall i \in M$$
+
+**定理 1.1** (优化可行性)
+如果存在状态 $s^* \in S$ 使得所有指标约束 $m_i(s^*) \geq \text{threshold}_i$ 都满足，则优化问题是可行的。
+
+**定理 1.2** (帕累托最优)
+状态 $s^*$ 是帕累托最优的，当且仅当不存在状态 $s' \in S$ 使得对所有 $i$，$m_i(s') \geq m_i(s^*)$ 且至少存在一个 $j$ 使得 $m_j(s') > m_j(s^*)$。
 
 ## 性能分析模型
 
@@ -72,9 +100,19 @@ $$\mathcal{M} = (A, D, G, F)$$
 - $G$ 是垃圾回收策略
 - $F$ 是内存碎片化函数
 
+**定义 2.1.1** (分配函数)
+分配函数 $a \in A$ 是一个映射 $a: \mathbb{N} \rightarrow 2^{Addr}$，将请求的内存大小映射到地址空间子集。
+
+**定义 2.1.2** (垃圾回收效率)
+垃圾回收效率 $\eta_G$ 定义为：
+$$\eta_G = \frac{\text{reclaimed\_memory}}{\text{gc\_pause\_time}}$$
+
 **定理 2.1** (内存优化定理)
 对于内存模型 $\mathcal{M}$，最优内存使用策略满足：
 $$\min_{a \in A} \sum_{i=1}^{n} \text{cost}(a_i) + \text{fragmentation}(F)$$
+
+**引理 2.1.1** (内存局部性原理)
+访问具有高时间和空间局部性的内存模式可以提高缓存命中率，从而减少平均内存访问时间。
 
 ### 并发性能模型
 
@@ -90,9 +128,21 @@ $$\mathcal{C} = (P, S, L, D, E)$$
 - $D$ 是死锁检测函数
 - $E$ 是效率评估函数
 
+**定义 2.2.1** (并发度)
+系统的并发度 $\text{CD}$ 定义为：
+$$\text{CD} = \frac{\text{active\_threads}}{\text{total\_threads}}$$
+
+**定义 2.2.2** (竞争比)
+竞争比 $\text{CR}$ 定义为：
+$$\text{CR} = \frac{\text{contention\_time}}{\text{execution\_time}}$$
+
 **定理 2.2** (并发优化定理)
 对于并发模型 $\mathcal{C}$，最优并发策略满足：
 $$\max_{p \in P} \text{throughput}(p) \quad \text{s.t.} \quad \text{deadlock\_free}(L)$$
+
+**引理 2.2.1** (阿姆达尔定律)
+如果程序中的并行部分占比为 $p$，并行处理的加速比为 $s$，则总体加速比 $S$ 满足：
+$$S = \frac{1}{(1-p) + \frac{p}{s}}$$
 
 ### 算法性能模型
 
@@ -106,9 +156,44 @@ $$\mathcal{A} = (I, C, B)$$
 - $C$ 是复杂度函数
 - $B$ 是边界条件
 
+**定义 2.3.1** (渐近时间复杂度)
+算法 $a$ 的渐近时间复杂度 $T(n)$ 是描述算法运行时间随输入规模 $n$ 增长的函数。
+
+**定义 2.3.2** (渐近空间复杂度)
+算法 $a$ 的渐近空间复杂度 $S(n)$ 是描述算法内存使用量随输入规模 $n$ 增长的函数。
+
 **定理 2.3** (算法优化定理)
 对于算法模型 $\mathcal{A}$，最优算法满足：
 $$\min_{a \in A} C(a, n) \quad \text{s.t.} \quad \text{correctness}(a)$$
+
+**引理 2.3.1** (时空权衡)
+在许多情况下，算法的时间复杂度与空间复杂度存在权衡关系，表示为：
+$$T(n) \cdot S(n) \geq f(n)$$
+其中 $f(n)$ 是问题固有的复杂度下界。
+
+### 网络性能模型
+
+**定义 2.4** (网络性能模型)
+网络性能模型是一个四元组：
+$$\mathcal{N} = (T, B, L, P)$$
+
+其中：
+
+- $T$ 是传输机制集合
+- $B$ 是带宽函数
+- $L$ 是延迟函数
+- $P$ 是协议集合
+
+**定义 2.4.1** (网络吞吐量)
+网络吞吐量 $\text{NT}$ 定义为单位时间内传输的数据量：
+$$\text{NT} = \frac{\text{data\_size}}{\text{transmission\_time}}$$
+
+**定义 2.4.2** (往返时间)
+往返时间 $\text{RTT}$ 是从发送请求到接收响应所需的时间。
+
+**定理 2.4** (网络优化定理)
+对于网络模型 $\mathcal{N}$，最优网络策略满足：
+$$\max_{t \in T} \text{throughput}(t) \quad \text{s.t.} \quad \text{latency}(t) \leq \text{threshold}$$
 
 ## 分析方法论
 
