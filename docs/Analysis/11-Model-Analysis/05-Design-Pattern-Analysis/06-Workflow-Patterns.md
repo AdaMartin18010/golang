@@ -10,9 +10,11 @@
 6. [多实例模式](#6-多实例模式)
 7. [状态基础模式](#7-状态基础模式)
 8. [取消模式](#8-取消模式)
-9. [Petri网建模分析](#9-petri网建模分析)
-10. [工作流引擎实现](#10-工作流引擎实现)
-11. [模式集成案例](#11-模式集成案例)
+9. [资源模式](#9-资源模式)
+10. [数据流模式](#10-数据流模式)
+11. [Petri网建模分析](#11-petri网建模分析)
+12. [工作流引擎实现](#12-工作流引擎实现)
+13. [模式集成案例](#13-模式集成案例)
 
 ## 1. 概述
 
@@ -1094,18 +1096,16 @@ func (be *BaseEvent) Trigger(ctx context.Context) bool {
 }
 ```
 
-## 8. 取消模式
+### 7.2 里程碑模式
 
-### 8.1 取消活动模式
+**定义 7.2** (里程碑模式): 里程碑模式是一个三元组 $M = (P, E, \Phi)$，其中：
 
-**定义 8.1** (取消活动模式): 取消活动模式是一个三元组 $CA = (A, C, \gamma)$，其中：
-
-- $A$ 是活动集合
-- $C$ 是取消条件集合
-- $\gamma: C \times A \rightarrow bool$ 是取消函数
+- $P$ 是前置条件集合
+- $E$ 是里程碑事件集合
+- $\Phi: P \rightarrow E$ 是里程碑触发函数
 
 ```go
-// 取消活动模式实现
+// 里程碑模式实现
 package workflow
 
 import (
@@ -1114,68 +1114,534 @@ import (
     "sync"
 )
 
-// CancelCondition 取消条件接口
-type CancelCondition interface {
-    ShouldCancel(ctx context.Context, data interface{}) bool
+// Milestone 里程碑接口
+type Milestone interface {
+    ID() string
+    IsReached(ctx context.Context, data interface{}) bool
+    OnReached(ctx context.Context, data interface{}) error
 }
 
-// CancellableActivity 可取消活动
-type CancellableActivity struct {
-    activity Activity
-    condition CancelCondition
-    mu        sync.RWMutex
+// MilestoneWorkflow 里程碑工作流
+type MilestoneWorkflow struct {
+    milestones []Milestone
+    activities map[string]Activity
+    mu         sync.RWMutex
 }
 
-// NewCancellableActivity 创建新的可取消活动
-func NewCancellableActivity(activity Activity, condition CancelCondition) *CancellableActivity {
-    return &CancellableActivity{
-        activity:  activity,
-        condition: condition,
+// NewMilestoneWorkflow 创建新的里程碑工作流
+func NewMilestoneWorkflow() *MilestoneWorkflow {
+    return &MilestoneWorkflow{
+        milestones: make([]Milestone, 0),
+        activities: make(map[string]Activity),
     }
 }
 
-// Execute 执行可取消活动
-func (ca *CancellableActivity) Execute(ctx context.Context, data interface{}) (interface{}, error) {
-    ca.mu.Lock()
-    defer ca.mu.Unlock()
+// AddMilestone 添加里程碑
+func (mw *MilestoneWorkflow) AddMilestone(milestone Milestone, activity Activity) {
+    mw.mu.Lock()
+    defer mw.mu.Unlock()
     
-    // 检查是否应该取消
-    if ca.condition.ShouldCancel(ctx, data) {
-        return nil, fmt.Errorf("activity cancelled")
+    mw.milestones = append(mw.milestones, milestone)
+    mw.activities[milestone.ID()] = activity
+}
+
+// Execute 执行里程碑工作流
+func (mw *MilestoneWorkflow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
+    mw.mu.RLock()
+    defer mw.mu.RUnlock()
+    
+    result := data
+    
+    for _, milestone := range mw.milestones {
+        select {
+        case <-ctx.Done():
+            return nil, ctx.Err()
+        default:
+            if milestone.IsReached(ctx, result) {
+                if err := milestone.OnReached(ctx, result); err != nil {
+                    return nil, err
+                }
+                
+                if activity, exists := mw.activities[milestone.ID()]; exists {
+                    var err error
+                    result, err = activity.Execute(ctx, result)
+                    if err != nil {
+                        return nil, fmt.Errorf("activity at milestone %s failed: %w", milestone.ID(), err)
+                    }
+                }
+            }
+        }
     }
     
-    // 执行活动
-    return ca.activity.Execute(ctx, data)
-}
-
-// ID 获取活动ID
-func (ca *CancellableActivity) ID() string {
-    return ca.activity.ID()
-}
-
-// BaseCancelCondition 基础取消条件
-type BaseCancelCondition struct {
-    evaluator func(ctx context.Context, data interface{}) bool
-}
-
-// NewBaseCancelCondition 创建新的基础取消条件
-func NewBaseCancelCondition(evaluator func(ctx context.Context, data interface{}) bool) *BaseCancelCondition {
-    return &BaseCancelCondition{
-        evaluator: evaluator,
-    }
-}
-
-// ShouldCancel 检查是否应该取消
-func (bcc *BaseCancelCondition) ShouldCancel(ctx context.Context, data interface{}) bool {
-    return bcc.evaluator(ctx, data)
+    return result, nil
 }
 ```
 
-## 9. Petri网建模分析
+## 8. 资源模式
 
-### 9.1 形式化定义
+资源模式关注工作流执行过程中的资源分配、角色授权和任务委派等问题。这些模式确保工作流系统能够有效地管理和利用可用资源。
 
-**定义 9.1** (Petri网): Petri网是一个五元组 $PN = (P, T, F, W, M_0)$，其中：
+### 8.1 直接分配模式
+
+**定义 8.1** (直接分配模式): 直接分配模式是一个三元组 $DA = (A, R, \alpha)$，其中：
+
+- $A$ 是活动集合
+- $R$ 是资源集合
+- $\alpha: A \rightarrow R$ 是分配函数
+
+```go
+// 直接分配模式实现
+package workflow
+
+import (
+    "context"
+    "fmt"
+)
+
+// Resource 资源接口
+type Resource interface {
+    ID() string
+    IsAvailable(ctx context.Context) bool
+    Acquire(ctx context.Context) error
+    Release(ctx context.Context) error
+}
+
+// DirectAllocationWorkflow 直接分配工作流
+type DirectAllocationWorkflow struct {
+    activity Activity
+    resource Resource
+}
+
+// NewDirectAllocationWorkflow 创建新的直接分配工作流
+func NewDirectAllocationWorkflow(activity Activity, resource Resource) *DirectAllocationWorkflow {
+    return &DirectAllocationWorkflow{
+        activity: activity,
+        resource: resource,
+    }
+}
+
+// Execute 执行直接分配工作流
+func (daw *DirectAllocationWorkflow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
+    if !daw.resource.IsAvailable(ctx) {
+        return nil, fmt.Errorf("resource %s is not available", daw.resource.ID())
+    }
+    
+    if err := daw.resource.Acquire(ctx); err != nil {
+        return nil, fmt.Errorf("failed to acquire resource: %w", err)
+    }
+    
+    defer daw.resource.Release(ctx)
+    
+    return daw.activity.Execute(ctx, data)
+}
+```
+
+### 8.2 基于角色分配模式
+
+**定义 8.2** (基于角色分配模式): 基于角色分配模式是一个四元组 $RA = (A, R, L, \beta)$，其中：
+
+- $A$ 是活动集合
+- $R$ 是资源集合
+- $L$ 是角色集合
+- $\beta: A \times L \rightarrow 2^R$ 是角色映射函数
+
+```go
+// 基于角色分配模式实现
+package workflow
+
+import (
+    "context"
+    "fmt"
+    "sync"
+)
+
+// Role 角色接口
+type Role interface {
+    ID() string
+    GetResources(ctx context.Context) []Resource
+}
+
+// RoleBasedWorkflow 基于角色的工作流
+type RoleBasedWorkflow struct {
+    activity Activity
+    role     Role
+    mu       sync.Mutex
+}
+
+// NewRoleBasedWorkflow 创建新的基于角色的工作流
+func NewRoleBasedWorkflow(activity Activity, role Role) *RoleBasedWorkflow {
+    return &RoleBasedWorkflow{
+        activity: activity,
+        role:     role,
+    }
+}
+
+// Execute 执行基于角色的工作流
+func (rbw *RoleBasedWorkflow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
+    rbw.mu.Lock()
+    defer rbw.mu.Unlock()
+    
+    resources := rbw.role.GetResources(ctx)
+    if len(resources) == 0 {
+        return nil, fmt.Errorf("no resources available for role %s", rbw.role.ID())
+    }
+    
+    // 选择第一个可用的资源
+    var selectedResource Resource
+    for _, resource := range resources {
+        if resource.IsAvailable(ctx) {
+            selectedResource = resource
+            break
+        }
+    }
+    
+    if selectedResource == nil {
+        return nil, fmt.Errorf("no available resources found for role %s", rbw.role.ID())
+    }
+    
+    if err := selectedResource.Acquire(ctx); err != nil {
+        return nil, fmt.Errorf("failed to acquire resource: %w", err)
+    }
+    
+    defer selectedResource.Release(ctx)
+    
+    return rbw.activity.Execute(ctx, data)
+}
+```
+
+### 8.3 授权模式
+
+**定义 8.3** (授权模式): 授权模式是一个四元组 $AU = (A, R, P, \gamma)$，其中：
+
+- $A$ 是活动集合
+- $R$ 是资源集合
+- $P$ 是权限集合
+- $\gamma: A \times R \rightarrow 2^P$ 是授权函数
+
+```go
+// 授权模式实现
+package workflow
+
+import (
+    "context"
+    "fmt"
+)
+
+// Permission 权限接口
+type Permission interface {
+    ID() string
+    Check(ctx context.Context, resource Resource) bool
+}
+
+// AuthorizationWorkflow 授权工作流
+type AuthorizationWorkflow struct {
+    activity    Activity
+    resource    Resource
+    permissions []Permission
+}
+
+// NewAuthorizationWorkflow 创建新的授权工作流
+func NewAuthorizationWorkflow(activity Activity, resource Resource, permissions []Permission) *AuthorizationWorkflow {
+    return &AuthorizationWorkflow{
+        activity:    activity,
+        resource:    resource,
+        permissions: permissions,
+    }
+}
+
+// Execute 执行授权工作流
+func (aw *AuthorizationWorkflow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
+    // 检查权限
+    for _, permission := range aw.permissions {
+        if !permission.Check(ctx, aw.resource) {
+            return nil, fmt.Errorf("permission %s not granted for resource %s", permission.ID(), aw.resource.ID())
+        }
+    }
+    
+    // 获取资源
+    if err := aw.resource.Acquire(ctx); err != nil {
+        return nil, fmt.Errorf("failed to acquire resource: %w", err)
+    }
+    
+    defer aw.resource.Release(ctx)
+    
+    // 执行活动
+    return aw.activity.Execute(ctx, data)
+}
+```
+
+## 9. 数据流模式
+
+数据流模式关注工作流执行过程中的数据转换、传递和处理等问题，确保数据在工作流各个环节的正确流动和处理。
+
+### 9.1 数据传递模式
+
+**定义 9.1** (数据传递模式): 数据传递模式是一个四元组 $DP = (A, D, \Phi, \Psi)$，其中：
+
+- $A = \{a_1, a_2, ..., a_n\}$ 是活动集合
+- $D = \{d_1, d_2, ..., d_m\}$ 是数据对象集合
+- $\Phi: A \rightarrow 2^D$ 是输入映射函数
+- $\Psi: A \rightarrow 2^D$ 是输出映射函数
+
+```go
+// 数据传递模式实现
+package workflow
+
+import (
+    "context"
+    "fmt"
+)
+
+// DataObject 数据对象接口
+type DataObject interface {
+    ID() string
+    GetValue() interface{}
+    SetValue(value interface{}) error
+}
+
+// DataPassingWorkflow 数据传递工作流
+type DataPassingWorkflow struct {
+    activities       []Activity
+    inputMapping     map[string][]string
+    outputMapping    map[string][]string
+}
+
+// NewDataPassingWorkflow 创建新的数据传递工作流
+func NewDataPassingWorkflow() *DataPassingWorkflow {
+    return &DataPassingWorkflow{
+        activities:    make([]Activity, 0),
+        inputMapping:  make(map[string][]string),
+        outputMapping: make(map[string][]string),
+    }
+}
+
+// AddActivity 添加活动和数据映射
+func (dpw *DataPassingWorkflow) AddActivity(activity Activity, inputs []string, outputs []string) {
+    dpw.activities = append(dpw.activities, activity)
+    dpw.inputMapping[activity.ID()] = inputs
+    dpw.outputMapping[activity.ID()] = outputs
+}
+
+// Execute 执行数据传递工作流
+func (dpw *DataPassingWorkflow) Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error) {
+    result := make(map[string]interface{})
+    for k, v := range data {
+        result[k] = v
+    }
+    
+    for _, activity := range dpw.activities {
+        // 准备活动输入数据
+        activityInput := make(map[string]interface{})
+        for _, inputID := range dpw.inputMapping[activity.ID()] {
+            if value, exists := result[inputID]; exists {
+                activityInput[inputID] = value
+            }
+        }
+        
+        // 执行活动
+        activityOutput, err := activity.Execute(ctx, activityInput)
+        if err != nil {
+            return nil, fmt.Errorf("activity %s execution failed: %w", activity.ID(), err)
+        }
+        
+        // 处理活动输出数据
+        outputMap, ok := activityOutput.(map[string]interface{})
+        if !ok {
+            return nil, fmt.Errorf("activity %s output is not a map", activity.ID())
+        }
+        
+        // 更新数据存储
+        for _, outputID := range dpw.outputMapping[activity.ID()] {
+            if value, exists := outputMap[outputID]; exists {
+                result[outputID] = value
+            }
+        }
+    }
+    
+    return result, nil
+}
+```
+
+### 9.2 数据转换模式
+
+**定义 9.2** (数据转换模式): 数据转换模式是一个四元组 $DT = (D_{in}, D_{out}, T, \xi)$，其中：
+
+- $D_{in}$ 是输入数据类型
+- $D_{out}$ 是输出数据类型
+- $T$ 是转换规则集合
+- $\xi: D_{in} \times T \rightarrow D_{out}$ 是转换函数
+
+```go
+// 数据转换模式实现
+package workflow
+
+import (
+    "context"
+    "fmt"
+)
+
+// TransformationRule 转换规则接口
+type TransformationRule interface {
+    ID() string
+    Apply(input interface{}) (interface{}, error)
+}
+
+// DataTransformationWorkflow 数据转换工作流
+type DataTransformationWorkflow struct {
+    rules []TransformationRule
+}
+
+// NewDataTransformationWorkflow 创建新的数据转换工作流
+func NewDataTransformationWorkflow(rules []TransformationRule) *DataTransformationWorkflow {
+    return &DataTransformationWorkflow{
+        rules: rules,
+    }
+}
+
+// Execute 执行数据转换工作流
+func (dtw *DataTransformationWorkflow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
+    result := data
+    
+    for _, rule := range dtw.rules {
+        select {
+        case <-ctx.Done():
+            return nil, ctx.Err()
+        default:
+            var err error
+            result, err = rule.Apply(result)
+            if err != nil {
+                return nil, fmt.Errorf("transformation rule %s failed: %w", rule.ID(), err)
+            }
+        }
+    }
+    
+    return result, nil
+}
+
+// 基础转换规则
+type BaseTransformationRule struct {
+    id        string
+    transform func(input interface{}) (interface{}, error)
+}
+
+// NewBaseTransformationRule 创建新的基础转换规则
+func NewBaseTransformationRule(id string, transform func(input interface{}) (interface{}, error)) *BaseTransformationRule {
+    return &BaseTransformationRule{
+        id:        id,
+        transform: transform,
+    }
+}
+
+// ID 获取规则ID
+func (btr *BaseTransformationRule) ID() string {
+    return btr.id
+}
+
+// Apply 应用转换规则
+func (btr *BaseTransformationRule) Apply(input interface{}) (interface{}, error) {
+    return btr.transform(input)
+}
+```
+
+### 9.3 数据路由模式
+
+**定义 9.3** (数据路由模式): 数据路由模式是一个四元组 $DR = (D, R, C, \lambda)$，其中：
+
+- $D$ 是数据对象
+- $R = \{r_1, r_2, ..., r_n\}$ 是路由目标集合
+- $C = \{c_1, c_2, ..., c_n\}$ 是路由条件集合
+- $\lambda: D \times C \rightarrow R$ 是路由函数
+
+```go
+// 数据路由模式实现
+package workflow
+
+import (
+    "context"
+    "fmt"
+)
+
+// RoutingRule 路由规则接口
+type RoutingRule interface {
+    ID() string
+    Matches(ctx context.Context, data interface{}) bool
+    GetTargetActivity() Activity
+}
+
+// DataRoutingWorkflow 数据路由工作流
+type DataRoutingWorkflow struct {
+    rules           []RoutingRule
+    defaultActivity Activity
+}
+
+// NewDataRoutingWorkflow 创建新的数据路由工作流
+func NewDataRoutingWorkflow(defaultActivity Activity) *DataRoutingWorkflow {
+    return &DataRoutingWorkflow{
+        rules:           make([]RoutingRule, 0),
+        defaultActivity: defaultActivity,
+    }
+}
+
+// AddRule 添加路由规则
+func (drw *DataRoutingWorkflow) AddRule(rule RoutingRule) {
+    drw.rules = append(drw.rules, rule)
+}
+
+// Execute 执行数据路由工作流
+func (drw *DataRoutingWorkflow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
+    // 查找匹配的路由规则
+    for _, rule := range drw.rules {
+        if rule.Matches(ctx, data) {
+            activity := rule.GetTargetActivity()
+            return activity.Execute(ctx, data)
+        }
+    }
+    
+    // 使用默认活动
+    if drw.defaultActivity != nil {
+        return drw.defaultActivity.Execute(ctx, data)
+    }
+    
+    return nil, fmt.Errorf("no matching routing rule found")
+}
+
+// 基础路由规则
+type BaseRoutingRule struct {
+    id       string
+    predicate func(ctx context.Context, data interface{}) bool
+    activity  Activity
+}
+
+// NewBaseRoutingRule 创建新的基础路由规则
+func NewBaseRoutingRule(id string, predicate func(ctx context.Context, data interface{}) bool, activity Activity) *BaseRoutingRule {
+    return &BaseRoutingRule{
+        id:        id,
+        predicate: predicate,
+        activity:  activity,
+    }
+}
+
+// ID 获取规则ID
+func (brr *BaseRoutingRule) ID() string {
+    return brr.id
+}
+
+// Matches 检查数据是否匹配规则
+func (brr *BaseRoutingRule) Matches(ctx context.Context, data interface{}) bool {
+    return brr.predicate(ctx, data)
+}
+
+// GetTargetActivity 获取目标活动
+func (brr *BaseRoutingRule) GetTargetActivity() Activity {
+    return brr.activity
+}
+```
+
+## 10. Petri网建模分析
+
+### 10.1 形式化定义
+
+**定义 10.1** (Petri网): Petri网是一个五元组 $PN = (P, T, F, W, M_0)$，其中：
 
 - $P$ 是库所(Place)集合，表示状态或条件
 - $T$ 是变迁(Transition)集合，表示活动或事件
@@ -1185,9 +1651,9 @@ func (bcc *BaseCancelCondition) ShouldCancel(ctx context.Context, data interface
 
 工作流模式可以映射到相应的Petri网结构，从而利用Petri网理论进行形式化分析。
 
-## 10. 工作流引擎实现
+## 11. 工作流引擎实现
 
-### 10.1 工作流引擎架构
+### 11.1 工作流引擎架构
 
 ```go
 // 工作流引擎实现
@@ -1313,9 +1779,9 @@ func (we *WorkflowExecutor) worker() {
 }
 ```
 
-## 11. 模式集成案例
+## 12. 模式集成案例
 
-### 11.1 订单处理工作流
+### 12.1 订单处理工作流
 
 ```go
 // 订单处理工作流示例
@@ -1393,7 +1859,7 @@ func (opw *OrderProcessingWorkflow) ID() string {
 }
 ```
 
-### 11.2 审批工作流
+### 12.2 审批工作流
 
 ```go
 // 审批工作流示例
@@ -1479,3 +1945,4 @@ func (aw *ApprovalWorkflow) ID() string {
 ---
 
 **总结**: 本文档提供了工作流设计模式的完整分析，包括形式化定义、Golang实现和最佳实践。这些模式为构建复杂业务流程提供了重要的理论基础和实践指导，支持各种业务场景的需求。
+

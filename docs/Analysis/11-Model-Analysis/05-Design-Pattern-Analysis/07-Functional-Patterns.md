@@ -904,12 +904,12 @@ func OptionExample() {
 
 ### 7.2 单子模式
 
-**定义 7.2** (单子): 单子是一个四元组 $Monad = (M, return, bind, laws)$，其中：
+**定义 7.2** (单子): 单子是一个四元组 $Monad = (F, map, bind, unit)$，其中：
 
-- $M$ 是类型构造器
-- $return: A \rightarrow M[A]$ 是单位函数
-- $bind: M[A] \rightarrow (A \rightarrow M[B]) \rightarrow M[B]$ 是绑定函数
-- $laws$ 是单子定律
+- $F$ 是类型构造器
+- $map: (A \rightarrow B) \rightarrow F[A] \rightarrow F[B]$ 是映射函数
+- $bind: F[A] \times (A \rightarrow F[B]) \rightarrow F[B]$ 是绑定函数
+- $unit: A \rightarrow F[A]$ 是单位函数
 
 ```go
 // 单子模式实现
@@ -917,100 +917,237 @@ package functional
 
 // Monad 单子接口
 type Monad[T any] interface {
-    Return(value T) Monad[T]
+    Functor[T]
     Bind[U any](fn func(T) Monad[U]) Monad[U]
 }
 
 // Result 结果类型（单子）
 type Result[T any] struct {
     value T
-    error error
+    err   error
 }
 
 // Ok 创建成功结果
 func Ok[T any](value T) Result[T] {
     return Result[T]{
         value: value,
-        error: nil,
+        err:   nil,
     }
 }
 
 // Err 创建错误结果
 func Err[T any](err error) Result[T] {
     return Result[T]{
-        error: err,
+        err: err,
     }
 }
 
 // IsOk 检查是否成功
 func (r Result[T]) IsOk() bool {
-    return r.error == nil
+    return r.err == nil
 }
 
-// IsErr 检查是否错误
+// IsErr 检查是否出错
 func (r Result[T]) IsErr() bool {
-    return r.error != nil
+    return r.err != nil
 }
 
 // Unwrap 获取值（不安全）
 func (r Result[T]) Unwrap() T {
-    if r.error != nil {
-        panic(r.error)
+    if r.err != nil {
+        panic(r.err)
     }
     return r.value
 }
 
 // UnwrapOr 获取值或默认值
 func (r Result[T]) UnwrapOr(defaultValue T) T {
-    if r.error != nil {
-        return defaultValue
+    if r.IsOk() {
+        return r.value
     }
-    return r.value
+    return defaultValue
 }
 
-// Map 映射成功值
+// Error 获取错误
+func (r Result[T]) Error() error {
+    return r.err
+}
+
+// Map 函子映射
 func (r Result[T]) Map[U any](fn func(T) U) Result[U] {
-    if r.error != nil {
-        return Err[U](r.error)
+    if r.IsOk() {
+        return Ok(fn(r.value))
     }
-    return Ok(fn(r.value))
+    return Err[U](r.err)
 }
 
 // Bind 单子绑定
 func (r Result[T]) Bind[U any](fn func(T) Result[U]) Result[U] {
-    if r.error != nil {
-        return Err[U](r.error)
+    if r.IsOk() {
+        return fn(r.value)
     }
-    return fn(r.value)
+    return Err[U](r.err)
 }
 
 // 使用示例
 func ResultExample() {
     // 基本操作
-    success := Ok(42)
-    failure := Err[int](fmt.Errorf("something went wrong"))
+    divide := func(a, b int) Result[int] {
+        if b == 0 {
+            return Err[int](errors.New("division by zero"))
+        }
+        return Ok(a / b)
+    }
     
-    fmt.Println("Success is ok:", success.IsOk()) // true
-    fmt.Println("Failure is err:", failure.IsErr()) // true
+    // 成功案例
+    result1 := divide(10, 2)
+    if result1.IsOk() {
+        fmt.Println("Result1:", result1.Unwrap()) // 5
+    }
     
-    // 映射操作
-    doubled := success.Map(func(x int) int {
-        return x * 2
-    })
-    fmt.Println("Doubled:", doubled.Unwrap()) // 84
+    // 失败案例
+    result2 := divide(10, 0)
+    if result2.IsErr() {
+        fmt.Println("Error:", result2.Error()) // "division by zero"
+    }
     
-    // 绑定操作
-    result := success.
-        Map(func(x int) int { return x + 10 }).
-        Bind(func(x int) Result[string] {
-            if x > 50 {
-                return Ok(fmt.Sprintf("Large: %d", x))
-            }
-            return Err[string](fmt.Errorf("value too small"))
+    // 链式操作
+    result3 := divide(20, 4).
+        Bind(func(n int) Result[int] {
+            return divide(100, n)
+        }).
+        Map(func(n int) string {
+            return fmt.Sprintf("Final result: %d", n)
         })
     
-    if result.IsOk() {
-        fmt.Println("Result:", result.Unwrap()) // "Large: 52"
+    if result3.IsOk() {
+        fmt.Println(result3.Unwrap()) // "Final result: 20"
+    }
+}
+```
+
+### 7.3 applicative函子
+
+**定义 7.3** (applicative函子): applicative函子是一个四元组 $Applicative = (F, map, pure, ap)$，其中：
+
+- $F$ 是类型构造器
+- $map: (A \rightarrow B) \rightarrow F[A] \rightarrow F[B]$ 是映射函数
+- $pure: A \rightarrow F[A]$ 是纯函数
+- $ap: F[A \rightarrow B] \times F[A] \rightarrow F[B]$ 是应用函数
+
+```go
+// Applicative函子实现
+package functional
+
+// Applicative applicative函子接口
+type Applicative[T any] interface {
+    Functor[T]
+    Apply[U any](fn Applicative[func(T) U]) Applicative[U]
+}
+
+// ZipWith 合并两个Applicative
+func ZipWith[A, B, C any](a Applicative[A], b Applicative[B], fn func(A, B) C) Applicative[C] {
+    return a.Map(func(x A) func(B) C {
+        return func(y B) C {
+            return fn(x, y)
+        }
+    }).(Applicative[func(B) C]).Apply(b.(Applicative[B]))
+}
+
+// Validation 验证类型
+type Validation[T any] struct {
+    value  T
+    errors []error
+}
+
+// Success 创建成功验证
+func Success[T any](value T) Validation[T] {
+    return Validation[T]{
+        value:  value,
+        errors: []error{},
+    }
+}
+
+// Failure 创建失败验证
+func Failure[T any](errs ...error) Validation[T] {
+    return Validation[T]{
+        errors: errs,
+    }
+}
+
+// IsValid 检查是否有效
+func (v Validation[T]) IsValid() bool {
+    return len(v.errors) == 0
+}
+
+// Errors 获取所有错误
+func (v Validation[T]) Errors() []error {
+    return v.errors
+}
+
+// Map 函子映射
+func (v Validation[T]) Map[U any](fn func(T) U) Validation[U] {
+    if v.IsValid() {
+        return Success(fn(v.value))
+    }
+    return Failure[U](v.errors...)
+}
+
+// Apply applicative应用
+func (v Validation[T]) Apply[U any](fn Validation[func(T) U]) Validation[U] {
+    if v.IsValid() && fn.IsValid() {
+        return Success(fn.value(v.value))
+    }
+    
+    errors := append([]error{}, v.errors...)
+    errors = append(errors, fn.errors...)
+    return Failure[U](errors...)
+}
+
+// 使用示例
+func ValidationExample() {
+    // 验证函数
+    validateName := func(name string) Validation[string] {
+        if len(name) == 0 {
+            return Failure[string](errors.New("name cannot be empty"))
+        }
+        return Success(name)
+    }
+    
+    validateAge := func(age int) Validation[int] {
+        if age < 0 || age > 120 {
+            return Failure[int](errors.New("age must be between 0 and 120"))
+        }
+        return Success(age)
+    }
+    
+    // 组合验证
+    createPerson := func(name string, age int) string {
+        return fmt.Sprintf("%s (%d)", name, age)
+    }
+    
+    // 有效数据
+    valid := validateName("John").Map(func(name string) func(int) string {
+        return func(age int) string {
+            return createPerson(name, age)
+        }
+    }).(Validation[func(int) string]).Apply(validateAge(30))
+    
+    if valid.IsValid() {
+        fmt.Println("Valid person:", valid.value) // "John (30)"
+    }
+    
+    // 无效数据
+    invalid := validateName("").Map(func(name string) func(int) string {
+        return func(age int) string {
+            return createPerson(name, age)
+        }
+    }).(Validation[func(int) string]).Apply(validateAge(150))
+    
+    if !invalid.IsValid() {
+        for _, err := range invalid.Errors() {
+            fmt.Println("Error:", err)
+        }
     }
 }
 ```
