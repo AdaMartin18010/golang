@@ -4319,10 +4319,10 @@ func murmurHash(data []byte) uint64 {
 
 其中，$m$ 是寄存器的数量。
 
-**空间复杂度**: $O(m)$
+**空间复杂度**: $O(m)$ 字节，通常为 $O(2^p)$，其中 $p$ 是精度参数。
 
 **定理 8.2** (HyperLogLog的误差保证)
-使用 $m = 2^p$ 个寄存器的HyperLogLog算法，其标准误差约为 $1.04/\sqrt{m}$。
+对于精度参数 $p$，HyperLogLog 的标准误差约为 $1.04/\sqrt{2^p}$。
 
 **应用场景**:
 
@@ -4336,13 +4336,13 @@ func murmurHash(data []byte) uint64 {
 #### 8.3.1 确定性跳表
 
 **定义 8.3.1** (确定性跳表)
-确定性跳表是跳表的一种变体，其层级结构不是随机生成的，而是按照确定性规则构建，通常基于元素的位置或值。
+确定性跳表是跳表的一种变体，其中节点的层级是确定性的，而不是随机的，通常基于节点的位置或值。
 
 ```go
 // 确定性跳表节点
 type DeterministicSkipListNode struct {
-    Value    int
-    Forward  []*DeterministicSkipListNode
+    Value   int
+    Forward []*DeterministicSkipListNode
 }
 
 // 确定性跳表
@@ -4361,12 +4361,12 @@ func NewDeterministicSkipList(maxLevel int) *DeterministicSkipList {
     }
 }
 
-// 计算元素的层级
-func (dsl *DeterministicSkipList) levelOf(index int) int {
+// 计算节点的层级
+func (dsl *DeterministicSkipList) levelForPosition(position int) int {
     level := 0
-    for (index & 1) == 0 && level < dsl.MaxLevel-1 {
-        index >>= 1
+    for position&1 == 0 && level < dsl.MaxLevel-1 {
         level++
+        position >>= 1
     }
     return level
 }
@@ -4390,8 +4390,10 @@ func (dsl *DeterministicSkipList) Insert(value int) {
         return
     }
     
+    // 计算新节点的层级
+    level := dsl.levelForPosition(dsl.Size + 1)
+    
     // 创建新节点
-    level := dsl.levelOf(dsl.Size)
     newNode := &DeterministicSkipListNode{
         Value:   value,
         Forward: make([]*DeterministicSkipListNode, level+1),
@@ -4560,52 +4562,6 @@ func (bsl *BiasedSkipList) promoteNode(node *BiasedSkipListNode) {
         node.Forward[newLevel] = update[newLevel].Forward[newLevel]
         update[newLevel].Forward[newLevel] = node
     }
-}
-
-// 插入元素
-func (bsl *BiasedSkipList) Insert(value int) {
-    // 保存每一层的前驱节点
-    update := make([]*BiasedSkipListNode, bsl.MaxLevel)
-    current := bsl.Head
-    
-    // 从最高层开始向下查找插入位置
-    for i := bsl.Level; i >= 0; i-- {
-        for current.Forward[i] != nil && current.Forward[i].Value < value {
-            current = current.Forward[i]
-        }
-        update[i] = current
-    }
-    
-    // 检查是否已存在
-    if current.Forward[0] != nil && current.Forward[0].Value == value {
-        return
-    }
-    
-    // 获取随机层级
-    level := bsl.randomLevel()
-    
-    // 更新跳表的最大层级
-    if level > bsl.Level {
-        for i := bsl.Level + 1; i <= level; i++ {
-            update[i] = bsl.Head
-        }
-        bsl.Level = level
-    }
-    
-    // 创建新节点
-    newNode := &BiasedSkipListNode{
-        Value:      value,
-        Forward:    make([]*BiasedSkipListNode, level+1),
-        AccessCount: 0,
-    }
-    
-    // 更新指针
-    for i := 0; i <= level; i++ {
-        newNode.Forward[i] = update[i].Forward[i]
-        update[i].Forward[i] = newNode
-    }
-    
-    bsl.Size++
 }
 ```
 
