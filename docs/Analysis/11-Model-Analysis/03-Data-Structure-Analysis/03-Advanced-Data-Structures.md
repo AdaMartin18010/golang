@@ -54,6 +54,11 @@
     - [4.5 拓扑排序](#45-拓扑排序)
   - [高级散列表](#高级散列表)
     - [5.1 开放寻址法](#51-开放寻址法)
+      - [定义 5.1](#定义-51)
+      - [定义 5.1.1](#定义-511)
+      - [定义 5.1.2](#定义-512)
+      - [定义 5.1.3](#定义-513)
+      - [Golang实现](#golang实现-4)
     - [5.2 链式散列](#52-链式散列)
     - [5.3 一致性哈希](#53-一致性哈希)
     - [5.4 完美哈希](#54-完美哈希)
@@ -201,107 +206,162 @@ $$\mathcal{MI} = (E, F, S, C, M, A)$$
 ```go
 // 二叉树节点
 type BinaryTreeNode struct {
-    Value       int
+    Value       interface{}
     Left, Right *BinaryTreeNode
+}
+
+// 创建新节点
+func NewBinaryTreeNode(value interface{}) *BinaryTreeNode {
+    return &BinaryTreeNode{
+        Value: value,
+        Left:  nil,
+        Right: nil,
+    }
 }
 
 // 二叉树
 type BinaryTree struct {
     Root *BinaryTreeNode
+    Size int
 }
 
 // 创建新二叉树
 func NewBinaryTree() *BinaryTree {
-    return &BinaryTree{}
+    return &BinaryTree{
+        Root: nil,
+        Size: 0,
+    }
 }
 
-// 插入节点（简单实现，不保证平衡）
-func (t *BinaryTree) Insert(value int) {
-    newNode := &BinaryTreeNode{Value: value}
+// 插入值（构建二叉搜索树）
+func (t *BinaryTree) Insert(value interface{}) {
+    // 使用类型断言确保可比较
+    var compareValue interface{} = value
+    
+    newNode := NewBinaryTreeNode(value)
+    t.Size++
     
     if t.Root == nil {
         t.Root = newNode
         return
     }
     
-    insertNode(t.Root, newNode)
-}
-
-// 递归插入节点
-func insertNode(node, newNode *BinaryTreeNode) {
-    if newNode.Value < node.Value {
-        if node.Left == nil {
-            node.Left = newNode
+    var insertNode func(node *BinaryTreeNode)
+    insertNode = func(node *BinaryTreeNode) {
+        // 使用类型断言进行比较
+        if compare(compareValue, node.Value) < 0 {
+            if node.Left == nil {
+                node.Left = newNode
+            } else {
+                insertNode(node.Left)
+            }
         } else {
-            insertNode(node.Left, newNode)
+            if node.Right == nil {
+                node.Right = newNode
+            } else {
+                insertNode(node.Right)
+            }
         }
-    } else {
-        if node.Right == nil {
-            node.Right = newNode
-        } else {
-            insertNode(node.Right, newNode)
-        }
-    }
-}
-
-// 中序遍历
-func (t *BinaryTree) InOrderTraversal() []int {
-    result := []int{}
-    inOrder(t.Root, &result)
-    return result
-}
-
-func inOrder(node *BinaryTreeNode, result *[]int) {
-    if node == nil {
-        return
     }
     
-    inOrder(node.Left, result)
-    *result = append(*result, node.Value)
-    inOrder(node.Right, result)
+    insertNode(t.Root)
+}
+
+// 比较函数
+func compare(a, b interface{}) int {
+    switch va := a.(type) {
+    case int:
+        if vb, ok := b.(int); ok {
+            return va - vb
+        }
+    case string:
+        if vb, ok := b.(string); ok {
+            if va < vb {
+                return -1
+            } else if va > vb {
+                return 1
+            }
+            return 0
+        }
+    case float64:
+        if vb, ok := b.(float64); ok {
+            if va < vb {
+                return -1
+            } else if va > vb {
+                return 1
+            }
+            return 0
+        }
+    }
+    
+    // 默认情况，比较指针地址
+    return 0
 }
 
 // 前序遍历
-func (t *BinaryTree) PreOrderTraversal() []int {
-    result := []int{}
-    preOrder(t.Root, &result)
+func (t *BinaryTree) PreOrderTraversal() []interface{} {
+    result := make([]interface{}, 0, t.Size)
+    
+    var traverse func(node *BinaryTreeNode)
+    traverse = func(node *BinaryTreeNode) {
+        if node == nil {
+            return
+        }
+        
+        result = append(result, node.Value)
+        traverse(node.Left)
+        traverse(node.Right)
+    }
+    
+    traverse(t.Root)
     return result
 }
 
-func preOrder(node *BinaryTreeNode, result *[]int) {
-    if node == nil {
-        return
+// 中序遍历
+func (t *BinaryTree) InOrderTraversal() []interface{} {
+    result := make([]interface{}, 0, t.Size)
+    
+    var traverse func(node *BinaryTreeNode)
+    traverse = func(node *BinaryTreeNode) {
+        if node == nil {
+            return
+        }
+        
+        traverse(node.Left)
+        result = append(result, node.Value)
+        traverse(node.Right)
     }
     
-    *result = append(*result, node.Value)
-    preOrder(node.Left, result)
-    preOrder(node.Right, result)
+    traverse(t.Root)
+    return result
 }
 
 // 后序遍历
-func (t *BinaryTree) PostOrderTraversal() []int {
-    result := []int{}
-    postOrder(t.Root, &result)
+func (t *BinaryTree) PostOrderTraversal() []interface{} {
+    result := make([]interface{}, 0, t.Size)
+    
+    var traverse func(node *BinaryTreeNode)
+    traverse = func(node *BinaryTreeNode) {
+        if node == nil {
+            return
+        }
+        
+        traverse(node.Left)
+        traverse(node.Right)
+        result = append(result, node.Value)
+    }
+    
+    traverse(t.Root)
     return result
 }
 
-func postOrder(node *BinaryTreeNode, result *[]int) {
-    if node == nil {
-        return
-    }
-    
-    postOrder(node.Left, result)
-    postOrder(node.Right, result)
-    *result = append(*result, node.Value)
-}
-
-// 层序遍历（广度优先）
-func (t *BinaryTree) LevelOrderTraversal() []int {
+// 层序遍历
+func (t *BinaryTree) LevelOrderTraversal() []interface{} {
     if t.Root == nil {
-        return nil
+        return []interface{}{}
     }
     
-    result := []int{}
+    result := make([]interface{}, 0, t.Size)
     queue := []*BinaryTreeNode{t.Root}
     
     for len(queue) > 0 {
@@ -321,48 +381,170 @@ func (t *BinaryTree) LevelOrderTraversal() []int {
     
     return result
 }
+
+// 查找值
+func (t *BinaryTree) Search(value interface{}) bool {
+    var searchNode func(node *BinaryTreeNode) bool
+    searchNode = func(node *BinaryTreeNode) bool {
+        if node == nil {
+            return false
+        }
+        
+        cmp := compare(value, node.Value)
+        if cmp == 0 {
+            return true
+        } else if cmp < 0 {
+            return searchNode(node.Left)
+        } else {
+            return searchNode(node.Right)
+        }
+    }
+    
+    return searchNode(t.Root)
+}
+
+// 获取高度
+func (t *BinaryTree) Height() int {
+    var height func(node *BinaryTreeNode) int
+    height = func(node *BinaryTreeNode) int {
+        if node == nil {
+            return 0
+        }
+        
+        leftHeight := height(node.Left)
+        rightHeight := height(node.Right)
+        
+        if leftHeight > rightHeight {
+            return leftHeight + 1
+        }
+        return rightHeight + 1
+    }
+    
+    return height(t.Root)
+}
+
+// 判断是否为完全二叉树
+func (t *BinaryTree) IsComplete() bool {
+    if t.Root == nil {
+        return true
+    }
+    
+    queue := []*BinaryTreeNode{t.Root}
+    var endFlag bool
+    
+    for len(queue) > 0 {
+        node := queue[0]
+        queue = queue[1:]
+        
+        if node == nil {
+            endFlag = true
+        } else {
+            if endFlag {
+                return false
+            }
+            
+            queue = append(queue, node.Left)
+            queue = append(queue, node.Right)
+        }
+    }
+    
+    return true
+}
+
+// 判断是否为满二叉树
+func (t *BinaryTree) IsFull() bool {
+    height := t.Height()
+    nodeCount := t.Size
+    
+    // 满二叉树节点数 = 2^h - 1
+    return nodeCount == (1<<height) - 1
+}
 ```
 
 #### 3.1.3 复杂度分析
 
-| 操作 | 平均时间复杂度 | 最坏时间复杂度 | 空间复杂度 |
-|------|----------------|----------------|------------|
-| 访问 | $O(\log n)$    | $O(n)$         | $O(1)$     |
-| 搜索 | $O(\log n)$    | $O(n)$         | $O(1)$     |
-| 插入 | $O(\log n)$    | $O(n)$         | $O(1)$     |
-| 删除 | $O(\log n)$    | $O(n)$         | $O(1)$     |
+**时间复杂度**:
+
+| 操作 | 平均情况 | 最坏情况 |
+|------|----------|----------|
+| 插入 | $O(\log n)$ | $O(n)$ |
+| 查找 | $O(\log n)$ | $O(n)$ |
+| 删除 | $O(\log n)$ | $O(n)$ |
+| 遍历 | $O(n)$ | $O(n)$ |
+
+**空间复杂度**:
+
+- 存储: $O(n)$
+- 递归遍历: $O(h)$ 其中 $h$ 是树的高度
+
+**定理 3.2** (二叉搜索树高度)
+对于包含 $n$ 个节点的随机构建的二叉搜索树，其期望高度为 $O(\log n)$。
+
+**证明**:
+随机插入 $n$ 个不同的键，生成的二叉搜索树的期望高度为 $O(\log n)$。这是因为每个节点被放置在树中的位置是随机的，使得树保持相对平衡。
+
+**定理 3.3** (二叉树遍历复杂度)
+任何二叉树的前序、中序、后序和层序遍历的时间复杂度均为 $O(n)$，其中 $n$ 是节点数。
+
+**证明**:
+在任何遍历算法中，每个节点都被访问一次且仅一次，因此时间复杂度为 $O(n)$。
+
+**注意**:
+- 在最坏情况下（如链状树），二叉搜索树的高度可达 $O(n)$，此时查找、插入和删除操作的时间复杂度退化为 $O(n)$。
+- 为了避免这种情况，可以使用自平衡二叉树，如AVL树或红黑树。
 
 ### 3.2 平衡树
 
 #### 3.2.1 AVL树
 
-**定义 3.2** (AVL树)
-AVL树是一种自平衡的二叉搜索树，满足以下性质：
+**定义 3.2.1** (AVL树)
+AVL树是一种自平衡二叉搜索树，其中每个节点的左右子树高度差不超过1。
 
-1. 是一个二叉搜索树
-2. 对于任意节点，其左右子树高度差不超过1
-3. 每个节点都有一个平衡因子(左子树高度减右子树高度)，取值为 $\{-1, 0, 1\}$
+**定义 3.2.2** (平衡因子)
+节点的平衡因子定义为其左子树高度减去右子树高度。在AVL树中，每个节点的平衡因子必须是 -1、0 或 1。
 
-**定理 3.2** (AVL树高度)
-包含 $n$ 个节点的AVL树高度 $h = O(\log n)$。
+**定理 3.4** (AVL树高度)
+包含 $n$ 个节点的AVL树高度不超过 $1.44 \log_2(n+2) - 1.328$。
+
+**证明**:
+设 $N(h)$ 是高度为 $h$ 的AVL树的最少节点数。可以证明 $N(h) = N(h-1) + N(h-2) + 1$，这与斐波那契数列类似。解此递归关系，得到 $N(h) \approx \frac{\phi^h}{\sqrt{5}}$，其中 $\phi = \frac{1+\sqrt{5}}{2}$ 是黄金比例。因此，$h \leq 1.44 \log_2(n+2) - 1.328$。
 
 ##### Golang实现
 
 ```go
 // AVL树节点
 type AVLNode struct {
-    Value       int
+    Value       interface{}
     Left, Right *AVLNode
     Height      int
+}
+
+// 创建新节点
+func NewAVLNode(value interface{}) *AVLNode {
+    return &AVLNode{
+        Value:  value,
+        Left:   nil,
+        Right:  nil,
+        Height: 1, // 新节点高度为1
+    }
 }
 
 // AVL树
 type AVLTree struct {
     Root *AVLNode
+    Size int
+}
+
+// 创建新AVL树
+func NewAVLTree() *AVLTree {
+    return &AVLTree{
+        Root: nil,
+        Size: 0,
+    }
 }
 
 // 获取节点高度
-func height(node *AVLNode) int {
+func getHeight(node *AVLNode) int {
     if node == nil {
         return 0
     }
@@ -370,24 +552,35 @@ func height(node *AVLNode) int {
 }
 
 // 获取平衡因子
-func balanceFactor(node *AVLNode) int {
+func getBalanceFactor(node *AVLNode) int {
     if node == nil {
         return 0
     }
-    return height(node.Left) - height(node.Right)
+    return getHeight(node.Left) - getHeight(node.Right)
 }
 
 // 更新节点高度
 func updateHeight(node *AVLNode) {
-    node.Height = max(height(node.Left), height(node.Right)) + 1
+    if node == nil {
+        return
+    }
+    
+    leftHeight := getHeight(node.Left)
+    rightHeight := getHeight(node.Right)
+    
+    if leftHeight > rightHeight {
+        node.Height = leftHeight + 1
+    } else {
+        node.Height = rightHeight + 1
+    }
 }
 
-// 右旋
+// 右旋转
 func rightRotate(y *AVLNode) *AVLNode {
     x := y.Left
     T2 := x.Right
     
-    // 旋转
+    // 执行旋转
     x.Right = y
     y.Left = T2
     
@@ -398,12 +591,12 @@ func rightRotate(y *AVLNode) *AVLNode {
     return x
 }
 
-// 左旋
+// 左旋转
 func leftRotate(x *AVLNode) *AVLNode {
     y := x.Right
     T2 := y.Left
     
-    // 旋转
+    // 执行旋转
     y.Left = x
     x.Right = T2
     
@@ -415,49 +608,53 @@ func leftRotate(x *AVLNode) *AVLNode {
 }
 
 // 插入节点
-func (t *AVLTree) Insert(value int) {
-    t.Root = insertAVL(t.Root, value)
+func (t *AVLTree) Insert(value interface{}) {
+    t.Root = t.insertNode(t.Root, value)
+    t.Size++
 }
 
-func insertAVL(node *AVLNode, value int) *AVLNode {
+// 递归插入节点
+func (t *AVLTree) insertNode(node *AVLNode, value interface{}) *AVLNode {
     // 标准BST插入
     if node == nil {
-        return &AVLNode{Value: value, Height: 1}
+        return NewAVLNode(value)
     }
     
-    if value < node.Value {
-        node.Left = insertAVL(node.Left, value)
-    } else if value > node.Value {
-        node.Right = insertAVL(node.Right, value)
+    cmp := compare(value, node.Value)
+    if cmp < 0 {
+        node.Left = t.insertNode(node.Left, value)
+    } else if cmp > 0 {
+        node.Right = t.insertNode(node.Right, value)
     } else {
-        // 值已存在，不做任何操作
+        // 值已存在，不做改变
+        t.Size-- // 抵消外部的Size++
         return node
     }
     
-    // 更新高度
+    // 更新当前节点高度
     updateHeight(node)
     
     // 获取平衡因子
-    balance := balanceFactor(node)
+    balance := getBalanceFactor(node)
     
     // 左左情况
-    if balance > 1 && value < node.Left.Value {
+    if balance > 1 && compare(value, node.Left.Value) < 0 {
         return rightRotate(node)
     }
     
     // 右右情况
-    if balance < -1 && value > node.Right.Value {
+    if balance < -1 && compare(value, node.Right.Value) > 0 {
         return leftRotate(node)
     }
     
     // 左右情况
-    if balance > 1 && value > node.Left.Value {
+    if balance > 1 && compare(value, node.Left.Value) > 0 {
         node.Left = leftRotate(node.Left)
         return rightRotate(node)
     }
     
     // 右左情况
-    if balance < -1 && value < node.Right.Value {
+    if balance < -1 && compare(value, node.Right.Value) < 0 {
         node.Right = rightRotate(node.Right)
         return leftRotate(node)
     }
@@ -465,198 +662,183 @@ func insertAVL(node *AVLNode, value int) *AVLNode {
     return node
 }
 
-func max(a, b int) int {
-    if a > b {
-        return a
+// 查找最小值节点
+func findMinNode(node *AVLNode) *AVLNode {
+    current := node
+    for current != nil && current.Left != nil {
+        current = current.Left
     }
-    return b
+    return current
+}
+
+// 删除节点
+func (t *AVLTree) Delete(value interface{}) {
+    t.Root = t.deleteNode(t.Root, value)
+}
+
+// 递归删除节点
+func (t *AVLTree) deleteNode(node *AVLNode, value interface{}) *AVLNode {
+    if node == nil {
+        return nil
+    }
+    
+    cmp := compare(value, node.Value)
+    if cmp < 0 {
+        node.Left = t.deleteNode(node.Left, value)
+    } else if cmp > 0 {
+        node.Right = t.deleteNode(node.Right, value)
+    } else {
+        // 找到要删除的节点
+        t.Size--
+        
+        // 节点有0或1个子节点
+        if node.Left == nil {
+            return node.Right
+        } else if node.Right == nil {
+            return node.Left
+        }
+        
+        // 节点有2个子节点，找到中序后继
+        successor := findMinNode(node.Right)
+        
+        // 用后继节点的值替换当前节点
+        node.Value = successor.Value
+        
+        // 删除后继节点
+        node.Right = t.deleteNode(node.Right, successor.Value)
+        t.Size++ // 抵消上面的Size--，因为实际只删除一个节点
+    }
+    
+    // 更新高度
+    updateHeight(node)
+    
+    // 检查平衡因子
+    balance := getBalanceFactor(node)
+    
+    // 左左情况
+    if balance > 1 && getBalanceFactor(node.Left) >= 0 {
+        return rightRotate(node)
+    }
+    
+    // 左右情况
+    if balance > 1 && getBalanceFactor(node.Left) < 0 {
+        node.Left = leftRotate(node.Left)
+        return rightRotate(node)
+    }
+    
+    // 右右情况
+    if balance < -1 && getBalanceFactor(node.Right) <= 0 {
+        return leftRotate(node)
+    }
+    
+    // 右左情况
+    if balance < -1 && getBalanceFactor(node.Right) > 0 {
+        node.Right = rightRotate(node.Right)
+        return leftRotate(node)
+    }
+    
+    return node
+}
+
+// 搜索
+func (t *AVLTree) Search(value interface{}) bool {
+    return t.searchNode(t.Root, value)
+}
+
+// 递归搜索节点
+func (t *AVLTree) searchNode(node *AVLNode, value interface{}) bool {
+    if node == nil {
+        return false
+    }
+    
+    cmp := compare(value, node.Value)
+    if cmp == 0 {
+        return true
+    } else if cmp < 0 {
+        return t.searchNode(node.Left, value)
+    } else {
+        return t.searchNode(node.Right, value)
+    }
+}
+
+// 中序遍历
+func (t *AVLTree) InOrderTraversal() []interface{} {
+    result := make([]interface{}, 0, t.Size)
+    
+    var traverse func(node *AVLNode)
+    traverse = func(node *AVLNode) {
+        if node == nil {
+            return
+        }
+        
+        traverse(node.Left)
+        result = append(result, node.Value)
+        traverse(node.Right)
+    }
+    
+    traverse(t.Root)
+    return result
 }
 ```
 
 ##### 复杂度分析
 
-| 操作 | 平均时间复杂度 | 最坏时间复杂度 | 空间复杂度 |
-|------|----------------|----------------|------------|
-| 搜索 | $O(\log n)$    | $O(\log n)$    | $O(1)$     |
-| 插入 | $O(\log n)$    | $O(\log n)$    | $O(1)$     |
-| 删除 | $O(\log n)$    | $O(\log n)$    | $O(1)$     |
+**时间复杂度**:
+
+| 操作 | 平均情况 | 最坏情况 |
+|------|----------|----------|
+| 插入 | $O(\log n)$ | $O(\log n)$ |
+| 查找 | $O(\log n)$ | $O(\log n)$ |
+| 删除 | $O(\log n)$ | $O(\log n)$ |
+| 遍历 | $O(n)$ | $O(n)$ |
+
+**空间复杂度**:
+
+- 存储: $O(n)$
+- 递归调用栈: $O(\log n)$
+
+**定理 3.5** (AVL树操作复杂度)
+在AVL树中，插入、删除和查找操作的时间复杂度均为 $O(\log n)$。
+
+**证明**:
+由于AVL树的高度被限制在 $O(\log n)$，所有基于树高的操作复杂度都是 $O(\log n)$。插入和删除操作可能需要旋转来维持平衡，但每次插入或删除最多需要 $O(\log n)$ 次旋转。
+
+**定理 3.6** (AVL树旋转次数)
+在AVL树中，每次插入操作最多需要1次单旋转或1次双旋转（2次单旋转）；每次删除操作最多需要 $O(\log n)$ 次旋转。
+
+**证明**:
+插入操作只会改变插入路径上节点的平衡因子，而且最多只有一个节点会变得不平衡，因此最多需要1次单旋转或1次双旋转。
+删除操作可能会导致从删除点到根节点的路径上的多个节点变得不平衡，因此可能需要 $O(\log n)$ 次旋转。
 
 #### 3.2.2 其他平衡树
 
-**伸展树 (Splay Tree)**：通过旋转操作将最近访问的节点移至根部的自平衡二叉搜索树，适用于频繁访问相同元素的场景。
+除了AVL树，还有其他几种常见的平衡树结构：
 
-**Treap**：将二叉搜索树与堆相结合的数据结构，每个节点同时具有键值和随机优先级，用于维持树的平衡性。
+1. **红黑树**: 通过着色机制和旋转操作保持平衡，插入和删除操作的旋转次数比AVL树少。
+2. **伸展树**: 不严格保持平衡，但通过将访问过的节点移到根部来提高常用节点的访问效率。
+3. **树堆(Treap)**: 结合了二叉搜索树和堆的特性，每个节点有一个随机优先级。
+4. **替罪羊树**: 允许树暂时不平衡，但当不平衡度超过阈值时进行重建。
 
-**替罪羊树 (Scapegoat Tree)**：一种高度平衡的二叉搜索树，通过定期全局重构而不是旋转来保持平衡。
+这些平衡树各有优缺点，适用于不同的应用场景。例如，红黑树在插入和删除频繁的场景中比AVL树更高效，而AVL树在查询频繁的场景中表现更好。
 
 ### 3.3 B树和B+树
 
 #### 3.3.1 B树
 
-**定义 3.3** (B树)
-B树是一种自平衡的多路搜索树，满足以下条件：
+**定义 3.3.1** (B树)
+B树是一种自平衡的搜索树，具有以下特性：
 
-1. 每个节点至多有 $m$ 个子节点（$m$ 阶B树）
-2. 除根节点外，每个非叶节点至少有 $\lceil m/2 \rceil$ 个子节点
-3. 根节点至少有2个子节点（除非整树只有一个节点）
+1. 每个节点最多有m个子节点
+2. 每个内部节点（除根节点外）至少有⌈m/2⌉个子节点
+3. 根节点至少有2个子节点（除非树只有一个节点）
 4. 所有叶节点都在同一层
-5. 包含 $n$ 个关键字的节点有 $n+1$ 个子节点
+5. 每个非叶节点包含n个键和n+1个指针，其中⌈m/2⌉-1 ≤ n ≤ m-1
 
-**定理 3.3** (B树高度)
-包含 $n$ 个关键字的 $m$ 阶B树的高度为 $h = O(\log_m n)$。
-
-##### Golang实现
-
-```go
-// B树节点
-type BTreeNode struct {
-    Keys     []int
-    Children []*BTreeNode
-    IsLeaf   bool
-    Degree   int // 最小度数，B树的阶为 2*t
-}
-
-// B树
-type BTree struct {
-    Root   *BTreeNode
-    Degree int
-}
-
-// 创建B树
-func NewBTree(degree int) *BTree {
-    if degree < 2 {
-        panic("B树的最小度数必须至少为2")
-    }
-    
-    return &BTree{
-        Root: &BTreeNode{
-            Keys:     []int{},
-            Children: []*BTreeNode{},
-            IsLeaf:   true,
-            Degree:   degree,
-        },
-        Degree: degree,
-    }
-}
-
-// 搜索关键字
-func (t *BTree) Search(key int) bool {
-    return searchKey(t.Root, key)
-}
-
-func searchKey(node *BTreeNode, key int) bool {
-    i := 0
-    for i < len(node.Keys) && key > node.Keys[i] {
-        i++
-    }
-    
-    if i < len(node.Keys) && key == node.Keys[i] {
-        return true
-    }
-    
-    if node.IsLeaf {
-        return false
-    }
-    
-    return searchKey(node.Children[i], key)
-}
-
-// 插入关键字
-func (t *BTree) Insert(key int) {
-    root := t.Root
-    
-    // 如果根节点已满，分裂根节点
-    if len(root.Keys) == 2*t.Degree - 1 {
-        newRoot := &BTreeNode{
-            Keys:     []int{},
-            Children: []*BTreeNode{root},
-            IsLeaf:   false,
-            Degree:   t.Degree,
-        }
-        
-        t.Root = newRoot
-        splitChild(newRoot, 0)
-        insertNonFull(newRoot, key)
-    } else {
-        insertNonFull(root, key)
-    }
-}
-
-// 分裂子节点
-func splitChild(node *BTreeNode, index int) {
-    t := node.Degree
-    y := node.Children[index]
-    z := &BTreeNode{
-        Keys:     make([]int, t-1),
-        IsLeaf:   y.IsLeaf,
-        Degree:   y.Degree,
-    }
-    
-    // 将y的后半部分关键字复制到z
-    for j := 0; j < t-1; j++ {
-        z.Keys[j] = y.Keys[j+t]
-    }
-    
-    // 如果不是叶节点，复制子节点
-    if !y.IsLeaf {
-        z.Children = make([]*BTreeNode, t)
-        for j := 0; j < t; j++ {
-            z.Children[j] = y.Children[j+t]
-        }
-    }
-    
-    // 截断y的关键字和子节点
-    y.Keys = y.Keys[:t-1]
-    if !y.IsLeaf {
-        y.Children = y.Children[:t]
-    }
-    
-    // 将中间关键字插入父节点
-    node.Keys = append(node.Keys, 0)
-    copy(node.Keys[index+1:], node.Keys[index:])
-    node.Keys[index] = y.Keys[t-1]
-    
-    // 在父节点中添加z的引用
-    node.Children = append(node.Children, nil)
-    copy(node.Children[index+2:], node.Children[index+1:])
-    node.Children[index+1] = z
-}
-
-// 在非满节点中插入
-func insertNonFull(node *BTreeNode, key int) {
-    i := len(node.Keys) - 1
-    
-    if node.IsLeaf {
-        // 在叶节点中插入
-        node.Keys = append(node.Keys, 0)
-        for i >= 0 && key < node.Keys[i] {
-            node.Keys[i+1] = node.Keys[i]
-            i--
-        }
-        node.Keys[i+1] = key
-    } else {
-        // 找到插入的子节点
-        for i >= 0 && key < node.Keys[i] {
-            i--
-        }
-        i++
-        
-        // 如果子节点已满，先分裂
-        if len(node.Children[i].Keys) == 2*node.Degree - 1 {
-            splitChild(node, i)
-            if key > node.Keys[i] {
-                i++
-            }
-        }
-        
-        insertNonFull(node.Children[i], key)
-    }
-}
-```
+B树广泛应用于数据库和文件系统中，因为它能有效减少磁盘I/O操作。
 
 #### 3.3.2 B+树
 
-**定义 3.4** (B+树)
+**定义 3.3.2** (B+树)
 B+树是B树的变种，满足以下附加条件：
 
 1. 只有叶节点存储数据，内部节点仅用于索引
@@ -1883,25 +2065,1464 @@ func (g *AdjListGraph) TopologicalSortDFS() ([]int, bool) {
 
 ### 5.1 开放寻址法
 
+**定义 5.1** (开放寻址法)
+开放寻址法是一种解决哈希冲突的方法，当发生冲突时，通过某种探测序列查找下一个可用的位置。
+
+**定义 5.1.1** (线性探测)
+线性探测是开放寻址法的一种，当位置 $h(k)$ 被占用时，尝试 $h(k)+1$, $h(k)+2$, ... 直到找到空位。
+
+**定义 5.1.2** (二次探测)
+二次探测是开放寻址法的一种，当位置 $h(k)$ 被占用时，尝试 $h(k)+1^2$, $h(k)+2^2$, $h(k)-1^2$, $h(k)-2^2$, ... 直到找到空位。
+
+**定义 5.1.3** (双重哈希)
+双重哈希是开放寻址法的一种，使用两个哈希函数 $h_1(k)$ 和 $h_2(k)$，探测序列为 $h_1(k)$, $h_1(k)+h_2(k)$, $h_1(k)+2h_2(k)$, ... 直到找到空位。
+
+```go
+// 使用开放寻址法的哈希表
+type OpenAddressingHashTable struct {
+    size     int
+    capacity int
+    table    []*KeyValue
+    deleted  []bool
+}
+
+// 键值对
+type KeyValue struct {
+    Key   interface{}
+    Value interface{}
+}
+
+// 创建哈希表
+func NewOpenAddressingHashTable(capacity int) *OpenAddressingHashTable {
+    return &OpenAddressingHashTable{
+        size:     0,
+        capacity: capacity,
+        table:    make([]*KeyValue, capacity),
+        deleted:  make([]bool, capacity),
+    }
+}
+
+// 哈希函数
+func (h *OpenAddressingHashTable) hash(key interface{}) int {
+    switch v := key.(type) {
+    case int:
+        return v % h.capacity
+    case string:
+        hash := 0
+        for i := 0; i < len(v); i++ {
+            hash = (hash*31 + int(v[i])) % h.capacity
+        }
+        return hash
+    default:
+        return 0
+    }
+}
+
+// 二次探测
+func (h *OpenAddressingHashTable) quadraticProbe(key interface{}) int {
+    hash := h.hash(key)
+    i := 0
+    pos := hash
+    
+    for h.table[pos] != nil && !h.keyEquals(h.table[pos].Key, key) && !h.deleted[pos] {
+        i++
+        pos = (hash + i*i) % h.capacity
+    }
+    
+    return pos
+}
+
+// 键比较
+func (h *OpenAddressingHashTable) keyEquals(k1, k2 interface{}) bool {
+    return k1 == k2
+}
+
+// 插入键值对
+func (h *OpenAddressingHashTable) Put(key, value interface{}) bool {
+    // 检查负载因子
+    if float64(h.size)/float64(h.capacity) > 0.7 {
+        h.resize(h.capacity * 2)
+    }
+    
+    pos := h.quadraticProbe(key)
+    
+    if h.table[pos] != nil && h.keyEquals(h.table[pos].Key, key) {
+        h.table[pos].Value = value
+        return true
+    }
+    
+    h.table[pos] = &KeyValue{Key: key, Value: value}
+    h.deleted[pos] = false
+    h.size++
+    return true
+}
+
+// 获取值
+func (h *OpenAddressingHashTable) Get(key interface{}) (interface{}, bool) {
+    pos := h.quadraticProbe(key)
+    
+    if h.table[pos] != nil && h.keyEquals(h.table[pos].Key, key) && !h.deleted[pos] {
+        return h.table[pos].Value, true
+    }
+    
+    return nil, false
+}
+
+// 删除键值对
+func (h *OpenAddressingHashTable) Remove(key interface{}) bool {
+    pos := h.quadraticProbe(key)
+    
+    if h.table[pos] != nil && h.keyEquals(h.table[pos].Key, key) && !h.deleted[pos] {
+        h.deleted[pos] = true
+        h.size--
+        return true
+    }
+    
+    return false
+}
+
+// 重新调整大小
+func (h *OpenAddressingHashTable) resize(newCapacity int) {
+    oldTable := h.table
+    oldDeleted := h.deleted
+    
+    h.table = make([]*KeyValue, newCapacity)
+    h.deleted = make([]bool, newCapacity)
+    h.capacity = newCapacity
+    h.size = 0
+    
+    for i, kv := range oldTable {
+        if kv != nil && !oldDeleted[i] {
+            h.Put(kv.Key, kv.Value)
+        }
+    }
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 平均情况 | 最坏情况 |
+|------|----------|----------|
+| 插入 | $O(1)$ | $O(n)$ |
+| 查找 | $O(1)$ | $O(n)$ |
+| 删除 | $O(1)$ | $O(n)$ |
+
+**空间复杂度**: $O(n)$
+
+**定理 5.1** (开放寻址法的性能)
+当负载因子 $\alpha = n/m < 1$ 时，使用线性探测的开放寻址法中，成功查找的平均探测次数约为 $\frac{1}{2}(1+\frac{1}{1-\alpha})$，不成功查找的平均探测次数约为 $\frac{1}{2}(1+(\frac{1}{1-\alpha})^2)$。
+
 ### 5.2 链式散列
+
+**定义 5.2** (链式散列)
+链式散列是一种解决哈希冲突的方法，将具有相同哈希值的元素存储在一个链表中。
+
+```go
+// 链表节点
+type ChainNode struct {
+    Key   interface{}
+    Value interface{}
+    Next  *ChainNode
+}
+
+// 链式哈希表
+type ChainHashTable struct {
+    size     int
+    capacity int
+    table    []*ChainNode
+}
+
+// 创建链式哈希表
+func NewChainHashTable(capacity int) *ChainHashTable {
+    return &ChainHashTable{
+        size:     0,
+        capacity: capacity,
+        table:    make([]*ChainNode, capacity),
+    }
+}
+
+// 哈希函数
+func (h *ChainHashTable) hash(key interface{}) int {
+    switch v := key.(type) {
+    case int:
+        return v % h.capacity
+    case string:
+        hash := 0
+        for i := 0; i < len(v); i++ {
+            hash = (hash*31 + int(v[i])) % h.capacity
+        }
+        return hash
+    default:
+        return 0
+    }
+}
+
+// 键比较
+func (h *ChainHashTable) keyEquals(k1, k2 interface{}) bool {
+    return k1 == k2
+}
+
+// 插入键值对
+func (h *ChainHashTable) Put(key, value interface{}) {
+    // 检查负载因子
+    if float64(h.size)/float64(h.capacity) > 0.75 {
+        h.resize(h.capacity * 2)
+    }
+    
+    hash := h.hash(key)
+    node := h.table[hash]
+    
+    // 检查键是否已存在
+    for node != nil {
+        if h.keyEquals(node.Key, key) {
+            node.Value = value
+            return
+        }
+        node = node.Next
+    }
+    
+    // 创建新节点并插入链表头部
+    newNode := &ChainNode{Key: key, Value: value, Next: h.table[hash]}
+    h.table[hash] = newNode
+    h.size++
+}
+
+// 获取值
+func (h *ChainHashTable) Get(key interface{}) (interface{}, bool) {
+    hash := h.hash(key)
+    node := h.table[hash]
+    
+    for node != nil {
+        if h.keyEquals(node.Key, key) {
+            return node.Value, true
+        }
+        node = node.Next
+    }
+    
+    return nil, false
+}
+
+// 删除键值对
+func (h *ChainHashTable) Remove(key interface{}) bool {
+    hash := h.hash(key)
+    
+    if h.table[hash] == nil {
+        return false
+    }
+    
+    // 如果是头节点
+    if h.keyEquals(h.table[hash].Key, key) {
+        h.table[hash] = h.table[hash].Next
+        h.size--
+        return true
+    }
+    
+    // 查找前一个节点
+    prev := h.table[hash]
+    for prev.Next != nil && !h.keyEquals(prev.Next.Key, key) {
+        prev = prev.Next
+    }
+    
+    if prev.Next != nil {
+        prev.Next = prev.Next.Next
+        h.size--
+        return true
+    }
+    
+    return false
+}
+
+// 重新调整大小
+func (h *ChainHashTable) resize(newCapacity int) {
+    oldTable := h.table
+    
+    h.table = make([]*ChainNode, newCapacity)
+    h.capacity = newCapacity
+    h.size = 0
+    
+    // 重新插入所有键值对
+    for _, node := range oldTable {
+        for node != nil {
+            h.Put(node.Key, node.Value)
+            node = node.Next
+        }
+    }
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 平均情况 | 最坏情况 |
+|------|----------|----------|
+| 插入 | $O(1)$ | $O(n)$ |
+| 查找 | $O(1)$ | $O(n)$ |
+| 删除 | $O(1)$ | $O(n)$ |
+
+**空间复杂度**: $O(n)$
+
+**定理 5.2** (链式散列的性能)
+当负载因子 $\alpha = n/m$ 时，链式散列中，成功查找的平均时间复杂度为 $O(1+\alpha)$。
 
 ### 5.3 一致性哈希
 
+**定义 5.3** (一致性哈希)
+一致性哈希是一种特殊的哈希算法，用于分布式系统中，可以在节点增加或删除时，最小化键的重新映射。
+
+**定理 5.3** (一致性哈希的重新映射)
+在一致性哈希中，当添加或删除一个节点时，平均只有 $\frac{K}{n}$ 个键需要重新映射，其中 $K$ 是键的总数，$n$ 是节点数。
+
+```go
+// 一致性哈希
+type ConsistentHash struct {
+    replicas  int           // 每个节点的虚拟节点数
+    hashRing  []int         // 有序哈希环
+    nodeMap   map[int]string // 哈希值到节点的映射
+    hashFunc  func(data []byte) uint32 // 哈希函数
+}
+
+// 创建一致性哈希
+func NewConsistentHash(replicas int, fn func(data []byte) uint32) *ConsistentHash {
+    ch := &ConsistentHash{
+        replicas: replicas,
+        hashRing: []int{},
+        nodeMap:  make(map[int]string),
+        hashFunc: fn,
+    }
+    
+    if ch.hashFunc == nil {
+        ch.hashFunc = crc32.ChecksumIEEE
+    }
+    
+    return ch
+}
+
+// 添加节点
+func (ch *ConsistentHash) Add(nodes ...string) {
+    for _, node := range nodes {
+        // 为每个节点创建多个虚拟节点
+        for i := 0; i < ch.replicas; i++ {
+            hash := int(ch.hashFunc([]byte(fmt.Sprintf("%s-%d", node, i))))
+            ch.hashRing = append(ch.hashRing, hash)
+            ch.nodeMap[hash] = node
+        }
+    }
+    
+    // 排序哈希环
+    sort.Ints(ch.hashRing)
+}
+
+// 删除节点
+func (ch *ConsistentHash) Remove(node string) {
+    for i := 0; i < ch.replicas; i++ {
+        hash := int(ch.hashFunc([]byte(fmt.Sprintf("%s-%d", node, i))))
+        
+        // 删除哈希环中的虚拟节点
+        idx := sort.SearchInts(ch.hashRing, hash)
+        if idx < len(ch.hashRing) && ch.hashRing[idx] == hash {
+            ch.hashRing = append(ch.hashRing[:idx], ch.hashRing[idx+1:]...)
+        }
+        
+        delete(ch.nodeMap, hash)
+    }
+}
+
+// 获取键对应的节点
+func (ch *ConsistentHash) Get(key string) string {
+    if len(ch.hashRing) == 0 {
+        return ""
+    }
+    
+    hash := int(ch.hashFunc([]byte(key)))
+    
+    // 二分查找，找到第一个大于等于hash的位置
+    idx := sort.Search(len(ch.hashRing), func(i int) bool {
+        return ch.hashRing[i] >= hash
+    })
+    
+    // 如果没有找到，则使用第一个节点
+    if idx == len(ch.hashRing) {
+        idx = 0
+    }
+    
+    return ch.nodeMap[ch.hashRing[idx]]
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 添加节点 | $O(r \log n)$ |
+| 删除节点 | $O(r \log n)$ |
+| 查找节点 | $O(\log n)$ |
+
+其中，$r$ 是每个节点的虚拟节点数，$n$ 是节点总数。
+
 ### 5.4 完美哈希
 
+**定义 5.4** (完美哈希)
+完美哈希是一种特殊的哈希函数，对于一组已知的键集合，它能够无冲突地将每个键映射到不同的位置。
+
+**定义 5.4.1** (最小完美哈希)
+最小完美哈希是一种完美哈希，它将 $n$ 个键映射到 $[0, n-1]$ 的范围内，且每个位置恰好有一个键。
+
+```go
+// 完美哈希表的第一级哈希函数
+type PerfectHashTable struct {
+    size     int
+    g        []int      // 第一级哈希函数的参数
+    secondLevel []*SecondLevelTable // 第二级哈希表
+    keys     []string   // 存储的键集合
+}
+
+// 第二级哈希表
+type SecondLevelTable struct {
+    size int
+    g    []int    // 第二级哈希函数的参数
+    table []string // 存储的键
+}
+
+// 创建完美哈希表
+func NewPerfectHashTable(keys []string) *PerfectHashTable {
+    n := len(keys)
+    m := nextPrime(n) // 选择一个合适的素数作为表大小
+    
+    pht := &PerfectHashTable{
+        size:       m,
+        g:          make([]int, m),
+        secondLevel: make([]*SecondLevelTable, m),
+        keys:       keys,
+    }
+    
+    // 构建第一级哈希表
+    buckets := make([][]string, m)
+    for _, key := range keys {
+        h := pht.firstHash(key, 0) % m
+        buckets[h] = append(buckets[h], key)
+    }
+    
+    // 为每个桶构建第二级哈希表
+    for i, bucket := range buckets {
+        if len(bucket) > 0 {
+            // 尝试不同的g值，直到找到一个完美哈希
+            for g := 1; ; g++ {
+                if pht.trySecondLevel(i, bucket, g) {
+                    break
+                }
+            }
+        }
+    }
+    
+    return pht
+}
+
+// 尝试为桶构建第二级哈希表
+func (pht *PerfectHashTable) trySecondLevel(bucketIndex int, bucket []string, g int) bool {
+    m := nextPrime(len(bucket) * len(bucket)) // 第二级表大小
+    
+    occupied := make([]bool, m)
+    pht.g[bucketIndex] = g
+    
+    for _, key := range bucket {
+        h := pht.secondHash(key, g) % m
+        if occupied[h] {
+            return false // 发生冲突，尝试下一个g值
+        }
+        occupied[h] = true
+    }
+    
+    // 创建第二级表
+    secondTable := &SecondLevelTable{
+        size:  m,
+        g:     []int{g},
+        table: make([]string, m),
+    }
+    
+    // 填充第二级表
+    for _, key := range bucket {
+        h := pht.secondHash(key, g) % m
+        secondTable.table[h] = key
+    }
+    
+    pht.secondLevel[bucketIndex] = secondTable
+    return true
+}
+
+// 第一级哈希函数
+func (pht *PerfectHashTable) firstHash(key string, g int) int {
+    hash := 0
+    for i := 0; i < len(key); i++ {
+        hash = (hash*33 + int(key[i])) % pht.size
+    }
+    return (hash + g) % pht.size
+}
+
+// 第二级哈希函数
+func (pht *PerfectHashTable) secondHash(key string, g int) int {
+    hash := 0
+    for i := 0; i < len(key); i++ {
+        hash = (hash*37 + int(key[i])) % 1000000007
+    }
+    return (hash + g) % 1000000007
+}
+
+// 查找键
+func (pht *PerfectHashTable) Contains(key string) bool {
+    h1 := pht.firstHash(key, 0) % pht.size
+    
+    if pht.secondLevel[h1] == nil {
+        return false
+    }
+    
+    secondTable := pht.secondLevel[h1]
+    h2 := pht.secondHash(key, pht.g[h1]) % secondTable.size
+    
+    return secondTable.table[h2] == key
+}
+
+// 获取下一个素数
+func nextPrime(n int) int {
+    if n <= 2 {
+        return 2
+    }
+    
+    prime := n
+    if prime%2 == 0 {
+        prime++
+    }
+    
+    for {
+        if isPrime(prime) {
+            return prime
+        }
+        prime += 2
+    }
+}
+
+// 判断是否为素数
+func isPrime(n int) bool {
+    if n <= 1 {
+        return false
+    }
+    if n <= 3 {
+        return true
+    }
+    if n%2 == 0 || n%3 == 0 {
+        return false
+    }
+    
+    i := 5
+    for i*i <= n {
+        if n%i == 0 || n%(i+2) == 0 {
+            return false
+        }
+        i += 6
+    }
+    
+    return true
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 构建 | $O(n)$ (期望) |
+| 查找 | $O(1)$ (最坏情况) |
+
+**空间复杂度**: $O(n)$
+
+**定理 5.4** (完美哈希的空间效率)
+对于 $n$ 个键，最小完美哈希函数的理论下界空间复杂度为 $\Omega(n)$ 比特。
+
 ### 5.5 布谷鸟哈希
+
+**定义 5.5** (布谷鸟哈希)
+布谷鸟哈希是一种解决冲突的方法，使用两个或多个哈希函数，当发生冲突时，将已有元素踢出，并重新插入到另一个位置。
+
+```go
+// 布谷鸟哈希表
+type CuckooHashTable struct {
+    size     int
+    table1   []*KeyValue
+    table2   []*KeyValue
+    hashFunc1 func(interface{}) int
+    hashFunc2 func(interface{}) int
+    maxLoop  int // 最大重试次数
+}
+
+// 创建布谷鸟哈希表
+func NewCuckooHashTable(size int) *CuckooHashTable {
+    return &CuckooHashTable{
+        size:     size,
+        table1:   make([]*KeyValue, size),
+        table2:   make([]*KeyValue, size),
+        hashFunc1: func(key interface{}) int {
+            h := 0
+            switch v := key.(type) {
+            case int:
+                h = v
+            case string:
+                for i := 0; i < len(v); i++ {
+                    h = (h*31 + int(v[i])) % size
+                }
+            }
+            return h % size
+        },
+        hashFunc2: func(key interface{}) int {
+            h := 0
+            switch v := key.(type) {
+            case int:
+                h = v*16777619
+            case string:
+                for i := 0; i < len(v); i++ {
+                    h = (h*37 + int(v[i])) % size
+                }
+            }
+            return h % size
+        },
+        maxLoop:  100,
+    }
+}
+
+// 插入键值对
+func (h *CuckooHashTable) Put(key, value interface{}) bool {
+    // 检查键是否已存在
+    if kv, found := h.Get(key); found {
+        kv.Value = value
+        return true
+    }
+    
+    kv := &KeyValue{Key: key, Value: value}
+    
+    // 尝试插入
+    for i := 0; i < h.maxLoop; i++ {
+        pos1 := h.hashFunc1(key)
+        
+        // 尝试插入表1
+        if h.table1[pos1] == nil {
+            h.table1[pos1] = kv
+            return true
+        }
+        
+        // 交换并尝试插入表2
+        h.table1[pos1], kv = kv, h.table1[pos1]
+        
+        pos2 := h.hashFunc2(kv.Key)
+        if h.table2[pos2] == nil {
+            h.table2[pos2] = kv
+            return true
+        }
+        
+        // 交换并继续尝试表1
+        h.table2[pos2], kv = kv, h.table2[pos2]
+    }
+    
+    // 达到最大重试次数，需要重新哈希
+    h.rehash()
+    return h.Put(key, value)
+}
+
+// 获取值
+func (h *CuckooHashTable) Get(key interface{}) (*KeyValue, bool) {
+    pos1 := h.hashFunc1(key)
+    if h.table1[pos1] != nil && h.keyEquals(h.table1[pos1].Key, key) {
+        return h.table1[pos1], true
+    }
+    
+    pos2 := h.hashFunc2(key)
+    if h.table2[pos2] != nil && h.keyEquals(h.table2[pos2].Key, key) {
+        return h.table2[pos2], true
+    }
+    
+    return nil, false
+}
+
+// 删除键值对
+func (h *CuckooHashTable) Remove(key interface{}) bool {
+    pos1 := h.hashFunc1(key)
+    if h.table1[pos1] != nil && h.keyEquals(h.table1[pos1].Key, key) {
+        h.table1[pos1] = nil
+        return true
+    }
+    
+    pos2 := h.hashFunc2(key)
+    if h.table2[pos2] != nil && h.keyEquals(h.table2[pos2].Key, key) {
+        h.table2[pos2] = nil
+        return true
+    }
+    
+    return false
+}
+
+// 键比较
+func (h *CuckooHashTable) keyEquals(k1, k2 interface{}) bool {
+    return k1 == k2
+}
+
+// 重新哈希
+func (h *CuckooHashTable) rehash() {
+    oldTable1 := h.table1
+    oldTable2 := h.table2
+    newSize := h.size * 2
+    
+    h.size = newSize
+    h.table1 = make([]*KeyValue, newSize)
+    h.table2 = make([]*KeyValue, newSize)
+    
+    // 重新插入所有键值对
+    for _, kv := range oldTable1 {
+        if kv != nil {
+            h.Put(kv.Key, kv.Value)
+        }
+    }
+    
+    for _, kv := range oldTable2 {
+        if kv != nil {
+            h.Put(kv.Key, kv.Value)
+        }
+    }
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 平均情况 | 最坏情况 |
+|------|----------|----------|
+| 插入 | $O(1)$ | $O(n)$ (需要重哈希) |
+| 查找 | $O(1)$ | $O(1)$ |
+| 删除 | $O(1)$ | $O(1)$ |
+
+**空间复杂度**: $O(n)$
+
+**定理 5.5** (布谷鸟哈希的负载因子)
+当使用两个哈希函数时，布谷鸟哈希的最大负载因子约为 50%。使用三个或更多哈希函数可以提高负载因子。
 
 ## 特殊数据结构
 
 ### 6.1 布隆过滤器
 
+**定义 6.1** (布隆过滤器)
+布隆过滤器是一种空间效率很高的概率性数据结构，用于判断一个元素是否在集合中。它可能会产生误判（假阳性），但不会漏判（假阴性）。
+
+**定理 6.1** (布隆过滤器的误判率)
+对于使用 $k$ 个哈希函数和 $m$ 比特的布隆过滤器，当存储 $n$ 个元素时，其误判率约为 $p = (1-e^{-kn/m})^k$。
+
+```go
+// 布隆过滤器
+type BloomFilter struct {
+    bitset    []bool
+    size      int
+    hashFuncs []func(string) int
+}
+
+// 创建布隆过滤器
+func NewBloomFilter(size int, numHashes int) *BloomFilter {
+    bf := &BloomFilter{
+        bitset:    make([]bool, size),
+        size:      size,
+        hashFuncs: make([]func(string) int, numHashes),
+    }
+    
+    // 创建不同的哈希函数
+    for i := 0; i < numHashes; i++ {
+        seed := i + 1
+        bf.hashFuncs[i] = func(s string) int {
+            hash := 0
+            for j := 0; j < len(s); j++ {
+                hash = (hash*seed + int(s[j])) % size
+            }
+            return hash
+        }
+    }
+    
+    return bf
+}
+
+// 添加元素
+func (bf *BloomFilter) Add(s string) {
+    for _, hashFunc := range bf.hashFuncs {
+        position := hashFunc(s)
+        bf.bitset[position] = true
+    }
+}
+
+// 检查元素是否可能存在
+func (bf *BloomFilter) Contains(s string) bool {
+    for _, hashFunc := range bf.hashFuncs {
+        position := hashFunc(s)
+        if !bf.bitset[position] {
+            return false // 肯定不存在
+        }
+    }
+    return true // 可能存在
+}
+
+// 计算最佳哈希函数数量
+func OptimalNumHashes(n, m int) int {
+    // n是预期元素数量，m是比特数组大小
+    return int(math.Ceil(float64(m) / float64(n) * math.Log(2)))
+}
+
+// 计算给定误判率所需的比特数组大小
+func OptimalSize(n int, p float64) int {
+    // n是预期元素数量，p是期望的误判率
+    return int(math.Ceil(-float64(n) * math.Log(p) / math.Pow(math.Log(2), 2)))
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 添加 | $O(k)$ |
+| 查询 | $O(k)$ |
+
+其中，$k$ 是哈希函数的数量。
+
+**空间复杂度**: $O(m)$，其中 $m$ 是比特数组的大小。
+
+**应用场景**:
+- 网络爬虫的URL去重
+- 垃圾邮件过滤
+- 缓存穿透防止
+- 大规模集合的快速查询
+
 ### 6.2 跳表
+
+**定义 6.2** (跳表)
+跳表是一种随机化的数据结构，基于并联的有序链表，其效率可比拟于平衡树，但实现更为简单。
+
+**定理 6.2** (跳表的高度)
+包含 $n$ 个元素的跳表的期望高度为 $O(\log n)$。
+
+```go
+// 跳表节点
+type SkipListNode struct {
+    Value    int
+    Forward  []*SkipListNode // 不同层级的前向指针
+}
+
+// 跳表
+type SkipList struct {
+    Head     *SkipListNode
+    MaxLevel int
+    Level    int
+    P        float64 // 层级提升概率
+}
+
+// 创建跳表
+func NewSkipList(maxLevel int) *SkipList {
+    return &SkipList{
+        Head:     &SkipListNode{Forward: make([]*SkipListNode, maxLevel)},
+        MaxLevel: maxLevel,
+        Level:    0,
+        P:        0.5,
+    }
+}
+
+// 随机生成层级
+func (sl *SkipList) randomLevel() int {
+    level := 0
+    for rand.Float64() < sl.P && level < sl.MaxLevel-1 {
+        level++
+    }
+    return level
+}
+
+// 搜索元素
+func (sl *SkipList) Search(value int) bool {
+    current := sl.Head
+    
+    // 从最高层开始向下搜索
+    for i := sl.Level; i >= 0; i-- {
+        // 在当前层向前移动，直到找到大于等于目标值的节点
+        for current.Forward[i] != nil && current.Forward[i].Value < value {
+            current = current.Forward[i]
+        }
+    }
+    
+    // 现在current.Forward[0]是第一个大于等于value的节点
+    current = current.Forward[0]
+    
+    return current != nil && current.Value == value
+}
+
+// 插入元素
+func (sl *SkipList) Insert(value int) {
+    // 保存每一层的前驱节点
+    update := make([]*SkipListNode, sl.MaxLevel)
+    current := sl.Head
+    
+    // 从最高层开始向下查找插入位置
+    for i := sl.Level; i >= 0; i-- {
+        for current.Forward[i] != nil && current.Forward[i].Value < value {
+            current = current.Forward[i]
+        }
+        update[i] = current
+    }
+    
+    // 获取随机层级
+    level := sl.randomLevel()
+    
+    // 更新跳表的最大层级
+    if level > sl.Level {
+        for i := sl.Level + 1; i <= level; i++ {
+            update[i] = sl.Head
+        }
+        sl.Level = level
+    }
+    
+    // 创建新节点
+    newNode := &SkipListNode{
+        Value:   value,
+        Forward: make([]*SkipListNode, level+1),
+    }
+    
+    // 更新指针
+    for i := 0; i <= level; i++ {
+        newNode.Forward[i] = update[i].Forward[i]
+        update[i].Forward[i] = newNode
+    }
+}
+
+// 删除元素
+func (sl *SkipList) Delete(value int) bool {
+    // 保存每一层的前驱节点
+    update := make([]*SkipListNode, sl.MaxLevel)
+    current := sl.Head
+    
+    // 从最高层开始向下查找删除位置
+    for i := sl.Level; i >= 0; i-- {
+        for current.Forward[i] != nil && current.Forward[i].Value < value {
+            current = current.Forward[i]
+        }
+        update[i] = current
+    }
+    
+    // 找到要删除的节点
+    current = current.Forward[0]
+    
+    // 如果节点存在且值匹配
+    if current != nil && current.Value == value {
+        // 从最底层开始向上删除
+        for i := 0; i <= sl.Level; i++ {
+            if update[i].Forward[i] != current {
+                break
+            }
+            update[i].Forward[i] = current.Forward[i]
+        }
+        
+        // 更新跳表的最大层级
+        for sl.Level > 0 && sl.Head.Forward[sl.Level] == nil {
+            sl.Level--
+        }
+        
+        return true
+    }
+    
+    return false
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 平均情况 | 最坏情况 |
+|------|----------|----------|
+| 搜索 | $O(\log n)$ | $O(n)$ |
+| 插入 | $O(\log n)$ | $O(n)$ |
+| 删除 | $O(\log n)$ | $O(n)$ |
+
+**空间复杂度**: $O(n)$
+
+**应用场景**:
+- Redis中的有序集合
+- 高效的范围查询
+- 作为平衡树的替代
 
 ### 6.3 字典树变体
 
+#### 6.3.1 基本字典树
+
+**定义 6.3** (字典树)
+字典树，又称前缀树或Trie树，是一种树形数据结构，用于高效地存储和检索字符串数据集中的键。
+
+```go
+// 字典树节点
+type TrieNode struct {
+    Children map[rune]*TrieNode
+    IsEnd    bool
+}
+
+// 字典树
+type Trie struct {
+    Root *TrieNode
+}
+
+// 创建字典树
+func NewTrie() *Trie {
+    return &Trie{
+        Root: &TrieNode{
+            Children: make(map[rune]*TrieNode),
+            IsEnd:    false,
+        },
+    }
+}
+
+// 插入单词
+func (t *Trie) Insert(word string) {
+    node := t.Root
+    
+    for _, ch := range word {
+        if _, exists := node.Children[ch]; !exists {
+            node.Children[ch] = &TrieNode{
+                Children: make(map[rune]*TrieNode),
+                IsEnd:    false,
+            }
+        }
+        node = node.Children[ch]
+    }
+    
+    node.IsEnd = true
+}
+
+// 搜索单词
+func (t *Trie) Search(word string) bool {
+    node := t.Root
+    
+    for _, ch := range word {
+        if _, exists := node.Children[ch]; !exists {
+            return false
+        }
+        node = node.Children[ch]
+    }
+    
+    return node.IsEnd
+}
+
+// 检查前缀
+func (t *Trie) StartsWith(prefix string) bool {
+    node := t.Root
+    
+    for _, ch := range prefix {
+        if _, exists := node.Children[ch]; !exists {
+            return false
+        }
+        node = node.Children[ch]
+    }
+    
+    return true
+}
+```
+
+#### 6.3.2 压缩前缀树
+
+**定义 6.3.2** (压缩前缀树)
+压缩前缀树是字典树的一种优化变体，通过合并只有一个子节点的节点来减少内存使用。
+
+```go
+// 压缩前缀树节点
+type CompressedTrieNode struct {
+    Prefix   string
+    Children map[rune]*CompressedTrieNode
+    IsEnd    bool
+}
+
+// 压缩前缀树
+type CompressedTrie struct {
+    Root *CompressedTrieNode
+}
+
+// 创建压缩前缀树
+func NewCompressedTrie() *CompressedTrie {
+    return &CompressedTrie{
+        Root: &CompressedTrieNode{
+            Prefix:   "",
+            Children: make(map[rune]*CompressedTrieNode),
+            IsEnd:    false,
+        },
+    }
+}
+
+// 插入单词
+func (t *CompressedTrie) Insert(word string) {
+    t.insertRecursive(t.Root, word)
+}
+
+// 递归插入
+func (t *CompressedTrie) insertRecursive(node *CompressedTrieNode, word string) {
+    // 如果单词为空，标记当前节点为单词结束
+    if len(word) == 0 {
+        node.IsEnd = true
+        return
+    }
+    
+    // 获取第一个字符
+    firstChar := rune(word[0])
+    
+    // 如果存在以该字符开头的子节点
+    if child, exists := node.Children[firstChar]; exists {
+        i := 0
+        prefixLen := min(len(word), len(child.Prefix))
+        
+        // 找到共同前缀的长度
+        for i < prefixLen && word[i] == child.Prefix[i] {
+            i++
+        }
+        
+        // 如果共同前缀长度小于子节点的前缀长度，需要拆分子节点
+        if i < len(child.Prefix) {
+            // 创建新的中间节点
+            newNode := &CompressedTrieNode{
+                Prefix:   child.Prefix[:i],
+                Children: make(map[rune]*CompressedTrieNode),
+                IsEnd:    false,
+            }
+            
+            // 更新原子节点
+            child.Prefix = child.Prefix[i:]
+            newNode.Children[rune(child.Prefix[0])] = child
+            
+            // 更新父节点指向新节点
+            node.Children[firstChar] = newNode
+            
+            // 如果还有剩余单词，继续插入
+            if i < len(word) {
+                t.insertRecursive(newNode, word[i:])
+            } else {
+                newNode.IsEnd = true
+            }
+        } else {
+            // 共同前缀等于子节点前缀，继续在子节点中插入剩余部分
+            if i < len(word) {
+                t.insertRecursive(child, word[i:])
+            } else {
+                child.IsEnd = true
+            }
+        }
+    } else {
+        // 创建新节点
+        node.Children[firstChar] = &CompressedTrieNode{
+            Prefix:   word,
+            Children: make(map[rune]*CompressedTrieNode),
+            IsEnd:    true,
+        }
+    }
+}
+
+// 搜索单词
+func (t *CompressedTrie) Search(word string) bool {
+    return t.searchPrefix(word, true)
+}
+
+// 检查前缀
+func (t *CompressedTrie) StartsWith(prefix string) bool {
+    return t.searchPrefix(prefix, false)
+}
+
+// 搜索前缀
+func (t *CompressedTrie) searchPrefix(prefix string, isWord bool) bool {
+    node := t.Root
+    
+    for len(prefix) > 0 {
+        firstChar := rune(prefix[0])
+        
+        if child, exists := node.Children[firstChar]; exists {
+            if strings.HasPrefix(prefix, child.Prefix) {
+                // 前缀匹配，继续搜索
+                prefix = prefix[len(child.Prefix):]
+                node = child
+            } else {
+                // 前缀不匹配
+                return false
+            }
+        } else {
+            // 没有匹配的子节点
+            return false
+        }
+    }
+    
+    // 如果是搜索单词，检查是否是单词结束
+    if isWord {
+        return node.IsEnd
+    }
+    
+    return true
+}
+
+// 辅助函数
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+```
+
+#### 6.3.3 后缀树
+
+**定义 6.3.3** (后缀树)
+后缀树是一种特殊的压缩前缀树，包含给定字符串的所有后缀。
+
+**应用场景**:
+- 字符串匹配
+- 自动补全
+- 拼写检查
+- 文本压缩
+- 生物信息学中的DNA序列匹配
+
 ### 6.4 前缀和与区间树
 
+#### 6.4.1 前缀和数组
+
+**定义 6.4.1** (前缀和)
+前缀和是一种预处理技术，用于快速计算数组的区间和。
+
+```go
+// 构建前缀和数组
+func BuildPrefixSum(arr []int) []int {
+    n := len(arr)
+    prefixSum := make([]int, n+1)
+    
+    for i := 0; i < n; i++ {
+        prefixSum[i+1] = prefixSum[i] + arr[i]
+    }
+    
+    return prefixSum
+}
+
+// 查询区间和 [left, right]
+func QueryRange(prefixSum []int, left, right int) int {
+    return prefixSum[right+1] - prefixSum[left]
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 构建 | $O(n)$ |
+| 查询 | $O(1)$ |
+
+#### 6.4.2 线段树
+
+**定义 6.4.2** (线段树)
+线段树是一种用于解决区间查询问题的树形数据结构，每个节点代表一个区间。
+
+```go
+// 线段树节点
+type SegmentTreeNode struct {
+    Start, End int
+    Sum        int
+    Left, Right *SegmentTreeNode
+}
+
+// 构建线段树
+func BuildSegmentTree(arr []int, start, end int) *SegmentTreeNode {
+    if start > end {
+        return nil
+    }
+    
+    root := &SegmentTreeNode{
+        Start: start,
+        End:   end,
+    }
+    
+    if start == end {
+        root.Sum = arr[start]
+    } else {
+        mid := start + (end-start)/2
+        root.Left = BuildSegmentTree(arr, start, mid)
+        root.Right = BuildSegmentTree(arr, mid+1, end)
+        root.Sum = root.Left.Sum + root.Right.Sum
+    }
+    
+    return root
+}
+
+// 查询区间和 [start, end]
+func (root *SegmentTreeNode) Query(start, end int) int {
+    // 区间不重叠
+    if root.End < start || root.Start > end {
+        return 0
+    }
+    
+    // 当前节点区间被查询区间包含
+    if start <= root.Start && end >= root.End {
+        return root.Sum
+    }
+    
+    // 查询区间与当前节点区间部分重叠，递归查询
+    return root.Left.Query(start, end) + root.Right.Query(start, end)
+}
+
+// 更新单个元素
+func (root *SegmentTreeNode) Update(index, val int) {
+    if root.Start == root.End {
+        root.Sum = val
+        return
+    }
+    
+    mid := root.Start + (root.End-root.Start)/2
+    if index <= mid {
+        root.Left.Update(index, val)
+    } else {
+        root.Right.Update(index, val)
+    }
+    
+    root.Sum = root.Left.Sum + root.Right.Sum
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 构建 | $O(n)$ |
+| 查询 | $O(\log n)$ |
+| 更新 | $O(\log n)$ |
+
+#### 6.4.3 树状数组
+
+**定义 6.4.3** (树状数组)
+树状数组，又称Binary Indexed Tree或Fenwick Tree，是一种支持高效更新和查询前缀和的数据结构。
+
+```go
+// 树状数组
+type BinaryIndexedTree struct {
+    Tree []int
+    Size int
+}
+
+// 创建树状数组
+func NewBinaryIndexedTree(size int) *BinaryIndexedTree {
+    return &BinaryIndexedTree{
+        Tree: make([]int, size+1),
+        Size: size,
+    }
+}
+
+// 更新操作
+func (bit *BinaryIndexedTree) Update(index, val int) {
+    index++ // 转为1-indexed
+    for index <= bit.Size {
+        bit.Tree[index] += val
+        index += index & -index // 加上最低位的1
+    }
+}
+
+// 查询前缀和 [1, index]
+func (bit *BinaryIndexedTree) Query(index int) int {
+    index++ // 转为1-indexed
+    sum := 0
+    for index > 0 {
+        sum += bit.Tree[index]
+        index -= index & -index // 减去最低位的1
+    }
+    return sum
+}
+
+// 查询区间和 [left, right]
+func (bit *BinaryIndexedTree) QueryRange(left, right int) int {
+    return bit.Query(right) - bit.Query(left-1)
+}
+
+// 从数组构建
+func (bit *BinaryIndexedTree) BuildFromArray(arr []int) {
+    for i, val := range arr {
+        bit.Update(i, val)
+    }
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 构建 | $O(n \log n)$ |
+| 查询 | $O(\log n)$ |
+| 更新 | $O(\log n)$ |
+
+**应用场景**:
+- 区间求和
+- 区间最大/最小值查询
+- 动态更新的区间查询问题
+
 ### 6.5 稀疏表与RMQ
+
+**定义 6.5** (稀疏表)
+稀疏表是一种用于解决静态区间查询问题的数据结构，特别适用于区间最大值、最小值查询(RMQ)。
+
+```go
+// 稀疏表
+type SparseTable struct {
+    ST    [][]int // ST[i][j]表示从i开始，长度为2^j的区间的最小值
+    Log   []int   // Log[i]表示log2(i)的向下取整
+    Arr   []int   // 原始数组
+}
+
+// 创建稀疏表
+func NewSparseTable(arr []int) *SparseTable {
+    n := len(arr)
+    logN := int(math.Log2(float64(n))) + 1
+    
+    // 初始化稀疏表
+    st := make([][]int, n)
+    for i := range st {
+        st[i] = make([]int, logN)
+    }
+    
+    // 初始化对数表
+    log := make([]int, n+1)
+    for i := 2; i <= n; i++ {
+        log[i] = log[i/2] + 1
+    }
+    
+    // 填充稀疏表
+    for i := 0; i < n; i++ {
+        st[i][0] = arr[i]
+    }
+    
+    for j := 1; (1 << j) <= n; j++ {
+        for i := 0; i + (1 << j) - 1 < n; i++ {
+            st[i][j] = min(st[i][j-1], st[i+(1<<(j-1))][j-1])
+        }
+    }
+    
+    return &SparseTable{
+        ST:  st,
+        Log: log,
+        Arr: arr,
+    }
+}
+
+// 查询区间最小值 [l, r]
+func (st *SparseTable) Query(l, r int) int {
+    length := r - l + 1
+    j := st.Log[length]
+    return min(st.ST[l][j], st.ST[r-(1<<j)+1][j])
+}
+
+// 最小值
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 构建 | $O(n \log n)$ |
+| 查询 | $O(1)$ |
+
+**应用场景**:
+- 区间最值查询
+- 静态数据的快速查询
+- 最近公共祖先(LCA)问题
 
 ## 空间效率数据结构
 
