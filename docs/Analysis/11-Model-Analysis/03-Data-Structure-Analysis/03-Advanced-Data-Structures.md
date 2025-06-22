@@ -71,8 +71,14 @@
     - [6.5 稀疏表与RMQ](#65-稀疏表与rmq)
   - [空间效率数据结构](#空间效率数据结构)
     - [7.1 位图](#71-位图)
+      - [定义 7.1](#定义-71)
+      - [Golang实现](#golang实现-5)
     - [7.2 基数树](#72-基数树)
+      - [定义 7.2](#定义-72)
+      - [Golang实现](#golang实现-6)
     - [7.3 压缩前缀树](#73-压缩前缀树)
+      - [定义 7.3](#定义-73)
+      - [Golang实现](#golang实现-7)
   - [概率数据结构](#概率数据结构)
     - [8.1 Count-Min Sketch](#81-count-min-sketch)
     - [8.2 HyperLogLog](#82-hyperloglog)
@@ -3528,17 +3534,1089 @@ func min(a, b int) int {
 
 ### 7.1 位图
 
+**定义 7.1** (位图)
+位图是一种使用位来表示集合的数据结构，每个元素使用一个位来表示其是否存在，非常适合表示稠密集合。
+
+```go
+// 位图
+type BitMap struct {
+    bits []uint64
+    size int
+}
+
+// 创建位图
+func NewBitMap(size int) *BitMap {
+    return &BitMap{
+        bits: make([]uint64, (size+63)/64), // 向上取整到64的倍数
+        size: size,
+    }
+}
+
+// 设置位
+func (b *BitMap) Set(pos int) {
+    if pos < 0 || pos >= b.size {
+        return
+    }
+    b.bits[pos/64] |= 1 << (pos % 64)
+}
+
+// 清除位
+func (b *BitMap) Clear(pos int) {
+    if pos < 0 || pos >= b.size {
+        return
+    }
+    b.bits[pos/64] &= ^(1 << (pos % 64))
+}
+
+// 测试位
+func (b *BitMap) Test(pos int) bool {
+    if pos < 0 || pos >= b.size {
+        return false
+    }
+    return (b.bits[pos/64] & (1 << (pos % 64))) != 0
+}
+
+// 翻转位
+func (b *BitMap) Flip(pos int) {
+    if pos < 0 || pos >= b.size {
+        return
+    }
+    b.bits[pos/64] ^= 1 << (pos % 64)
+}
+
+// 计算设置的位数
+func (b *BitMap) Count() int {
+    count := 0
+    for _, word := range b.bits {
+        // 使用位操作计算一个64位整数中1的个数
+        v := word
+        v = v - ((v >> 1) & 0x5555555555555555)
+        v = (v & 0x3333333333333333) + ((v >> 2) & 0x3333333333333333)
+        count += int((((v + (v >> 4)) & 0xF0F0F0F0F0F0F0F) * 0x101010101010101) >> 56)
+    }
+    return count
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 设置/清除/测试/翻转 | $O(1)$ |
+| 计数 | $O(n/64)$ |
+
+**空间复杂度**: $O(n/64)$ 字节，其中 $n$ 是元素数量。
+
+**应用场景**:
+- 表示稠密集合
+- 布隆过滤器的底层实现
+- 位向量
+- 存储大量布尔值
+
 ### 7.2 基数树
 
+**定义 7.2** (基数树)
+基数树是一种特殊的前缀树，用于存储整数或字符串，其中每个节点代表一个位或字符。
+
+```go
+// 基数树节点
+type RadixTreeNode struct {
+    Children map[byte]*RadixTreeNode
+    IsEnd    bool
+    Value    interface{}
+}
+
+// 基数树
+type RadixTree struct {
+    Root *RadixTreeNode
+}
+
+// 创建基数树
+func NewRadixTree() *RadixTree {
+    return &RadixTree{
+        Root: &RadixTreeNode{
+            Children: make(map[byte]*RadixTreeNode),
+            IsEnd:    false,
+        },
+    }
+}
+
+// 插入键值对
+func (rt *RadixTree) Insert(key string, value interface{}) {
+    node := rt.Root
+    
+    // 查找公共前缀
+    i := 0
+    for i < len(key) {
+        if child, exists := node.Children[key[i]]; exists {
+            node = child
+            i++
+        } else {
+            break
+        }
+    }
+    
+    // 插入剩余的键
+    for i < len(key) {
+        newNode := &RadixTreeNode{
+            Children: make(map[byte]*RadixTreeNode),
+            IsEnd:    false,
+        }
+        node.Children[key[i]] = newNode
+        node = newNode
+        i++
+    }
+    
+    node.IsEnd = true
+    node.Value = value
+}
+
+// 搜索键
+func (rt *RadixTree) Search(key string) (interface{}, bool) {
+    node := rt.Root
+    
+    for i := 0; i < len(key); i++ {
+        if child, exists := node.Children[key[i]]; exists {
+            node = child
+        } else {
+            return nil, false
+        }
+    }
+    
+    if node.IsEnd {
+        return node.Value, true
+    }
+    
+    return nil, false
+}
+
+// 前缀搜索
+func (rt *RadixTree) SearchPrefix(prefix string) []string {
+    node := rt.Root
+    
+    // 查找前缀节点
+    for i := 0; i < len(prefix); i++ {
+        if child, exists := node.Children[prefix[i]]; exists {
+            node = child
+        } else {
+            return nil
+        }
+    }
+    
+    // 收集所有以该前缀开头的键
+    var result []string
+    rt.collectKeys(node, prefix, &result)
+    return result
+}
+
+// 收集键
+func (rt *RadixTree) collectKeys(node *RadixTreeNode, prefix string, result *[]string) {
+    if node.IsEnd {
+        *result = append(*result, prefix)
+    }
+    
+    for ch, child := range node.Children {
+        rt.collectKeys(child, prefix+string(ch), result)
+    }
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 插入 | $O(k)$ |
+| 查找 | $O(k)$ |
+| 前缀搜索 | $O(n)$ |
+
+其中，$k$ 是键的长度，$n$ 是匹配前缀的键的数量。
+
+**空间复杂度**: $O(n \cdot k)$，其中 $n$ 是键的数量，$k$ 是平均键长度。
+
 ### 7.3 压缩前缀树
+
+**定义 7.3** (压缩前缀树)
+压缩前缀树是一种优化的前缀树，通过合并只有一个子节点的节点来减少空间使用。
+
+```go
+// 压缩前缀树节点
+type CompactPrefixTreeNode struct {
+    Prefix   string
+    Children map[byte]*CompactPrefixTreeNode
+    IsEnd    bool
+    Value    interface{}
+}
+
+// 压缩前缀树
+type CompactPrefixTree struct {
+    Root *CompactPrefixTreeNode
+}
+
+// 创建压缩前缀树
+func NewCompactPrefixTree() *CompactPrefixTree {
+    return &CompactPrefixTree{
+        Root: &CompactPrefixTreeNode{
+            Prefix:   "",
+            Children: make(map[byte]*CompactPrefixTreeNode),
+            IsEnd:    false,
+        },
+    }
+}
+
+// 查找公共前缀长度
+func findCommonPrefixLength(a, b string) int {
+    minLen := min(len(a), len(b))
+    for i := 0; i < minLen; i++ {
+        if a[i] != b[i] {
+            return i
+        }
+    }
+    return minLen
+}
+
+// 插入键值对
+func (cpt *CompactPrefixTree) Insert(key string, value interface{}) {
+    if len(key) == 0 {
+        cpt.Root.IsEnd = true
+        cpt.Root.Value = value
+        return
+    }
+    
+    node := cpt.Root
+    
+    for {
+        // 查找匹配的子节点
+        var matchingChild *CompactPrefixTreeNode
+        var firstChar byte
+        
+        if len(key) > 0 {
+            firstChar = key[0]
+            if child, exists := node.Children[firstChar]; exists {
+                matchingChild = child
+            }
+        }
+        
+        if matchingChild == nil {
+            // 没有匹配的子节点，创建新节点
+            newNode := &CompactPrefixTreeNode{
+                Prefix:   key,
+                Children: make(map[byte]*CompactPrefixTreeNode),
+                IsEnd:    true,
+                Value:    value,
+            }
+            node.Children[firstChar] = newNode
+            return
+        }
+        
+        // 找到匹配的子节点，计算公共前缀长度
+        prefixLen := findCommonPrefixLength(key, matchingChild.Prefix)
+        
+        if prefixLen == len(matchingChild.Prefix) {
+            // 子节点的前缀是键的前缀
+            if prefixLen == len(key) {
+                // 键与子节点前缀完全匹配
+                matchingChild.IsEnd = true
+                matchingChild.Value = value
+                return
+            }
+            
+            // 继续在子节点中查找
+            node = matchingChild
+            key = key[prefixLen:]
+            continue
+        }
+        
+        // 需要分割子节点
+        splitNode := &CompactPrefixTreeNode{
+            Prefix:   matchingChild.Prefix[:prefixLen],
+            Children: make(map[byte]*CompactPrefixTreeNode),
+            IsEnd:    prefixLen == len(key),
+        }
+        
+        if splitNode.IsEnd {
+            splitNode.Value = value
+        }
+        
+        // 更新原子节点
+        matchingChild.Prefix = matchingChild.Prefix[prefixLen:]
+        splitNode.Children[matchingChild.Prefix[0]] = matchingChild
+        
+        // 添加新键的剩余部分
+        if prefixLen < len(key) {
+            newNode := &CompactPrefixTreeNode{
+                Prefix:   key[prefixLen:],
+                Children: make(map[byte]*CompactPrefixTreeNode),
+                IsEnd:    true,
+                Value:    value,
+            }
+            splitNode.Children[key[prefixLen]] = newNode
+        }
+        
+        // 更新父节点
+        node.Children[firstChar] = splitNode
+        return
+    }
+}
+
+// 搜索键
+func (cpt *CompactPrefixTree) Search(key string) (interface{}, bool) {
+    node := cpt.Root
+    
+    if len(key) == 0 {
+        return node.Value, node.IsEnd
+    }
+    
+    for len(key) > 0 {
+        firstChar := key[0]
+        child, exists := node.Children[firstChar]
+        
+        if !exists {
+            return nil, false
+        }
+        
+        if len(key) < len(child.Prefix) {
+            return nil, false
+        }
+        
+        if key[:len(child.Prefix)] != child.Prefix {
+            return nil, false
+        }
+        
+        key = key[len(child.Prefix):]
+        node = child
+        
+        if len(key) == 0 && node.IsEnd {
+            return node.Value, true
+        }
+    }
+    
+    return nil, false
+}
+
+// 前缀搜索
+func (cpt *CompactPrefixTree) SearchPrefix(prefix string) []string {
+    node := cpt.Root
+    currentPrefix := ""
+    
+    // 查找前缀节点
+    for len(prefix) > 0 {
+        firstChar := prefix[0]
+        child, exists := node.Children[firstChar]
+        
+        if !exists {
+            return nil
+        }
+        
+        if len(prefix) < len(child.Prefix) {
+            if prefix == child.Prefix[:len(prefix)] {
+                // 前缀是子节点前缀的前缀
+                currentPrefix += child.Prefix
+                node = child
+                prefix = ""
+                break
+            }
+            return nil
+        }
+        
+        if prefix[:len(child.Prefix)] != child.Prefix {
+            return nil
+        }
+        
+        currentPrefix += child.Prefix
+        prefix = prefix[len(child.Prefix):]
+        node = child
+    }
+    
+    // 收集所有以该前缀开头的键
+    var result []string
+    if node.IsEnd {
+        result = append(result, currentPrefix)
+    }
+    
+    cpt.collectKeys(node, currentPrefix, &result)
+    return result
+}
+
+// 收集键
+func (cpt *CompactPrefixTree) collectKeys(node *CompactPrefixTreeNode, prefix string, result *[]string) {
+    for _, child := range node.Children {
+        newPrefix := prefix + child.Prefix
+        
+        if child.IsEnd {
+            *result = append(*result, newPrefix)
+        }
+        
+        cpt.collectKeys(child, newPrefix, result)
+    }
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 插入 | $O(k)$ |
+| 查找 | $O(k)$ |
+| 前缀搜索 | $O(n)$ |
+
+其中，$k$ 是键的长度，$n$ 是匹配前缀的键的数量。
+
+**空间复杂度**: 最坏情况下为 $O(n \cdot k)$，但通常比标准前缀树小得多。
+
+**应用场景**:
+- IP路由表
+- 电话号码查找
+- 字典实现
+- 自动补全系统
+- 拼写检查
 
 ## 概率数据结构
 
 ### 8.1 Count-Min Sketch
 
+**定义 8.1** (Count-Min Sketch)
+Count-Min Sketch是一种概率数据结构，用于估计数据流中元素的频率，使用多个哈希函数和计数器数组来减少内存使用。
+
+```go
+// Count-Min Sketch
+type CountMinSketch struct {
+    depth     int       // 哈希函数数量
+    width     int       // 每个哈希函数的计数器数量
+    counts    [][]int   // 计数器数组
+    hashFuncs []func(string) int // 哈希函数
+}
+
+// 创建Count-Min Sketch
+func NewCountMinSketch(depth, width int) *CountMinSketch {
+    cms := &CountMinSketch{
+        depth:  depth,
+        width:  width,
+        counts: make([][]int, depth),
+    }
+    
+    // 初始化计数器数组
+    for i := range cms.counts {
+        cms.counts[i] = make([]int, width)
+    }
+    
+    // 创建哈希函数
+    cms.hashFuncs = make([]func(string) int, depth)
+    for i := range cms.hashFuncs {
+        seed := i + 1
+        cms.hashFuncs[i] = func(s string) int {
+            hash := 0
+            for j := 0; j < len(s); j++ {
+                hash = (hash*seed + int(s[j])) % width
+            }
+            return hash
+        }
+    }
+    
+    return cms
+}
+
+// 增加元素计数
+func (cms *CountMinSketch) Add(item string, count int) {
+    for i := 0; i < cms.depth; i++ {
+        position := cms.hashFuncs[i](item)
+        cms.counts[i][position] += count
+    }
+}
+
+// 估计元素频率
+func (cms *CountMinSketch) Estimate(item string) int {
+    min := math.MaxInt32
+    
+    for i := 0; i < cms.depth; i++ {
+        position := cms.hashFuncs[i](item)
+        if cms.counts[i][position] < min {
+            min = cms.counts[i][position]
+        }
+    }
+    
+    return min
+}
+
+// 合并两个Count-Min Sketch
+func (cms *CountMinSketch) Merge(other *CountMinSketch) error {
+    if cms.depth != other.depth || cms.width != other.width {
+        return errors.New("无法合并不同维度的Count-Min Sketch")
+    }
+    
+    for i := 0; i < cms.depth; i++ {
+        for j := 0; j < cms.width; j++ {
+            cms.counts[i][j] += other.counts[i][j]
+        }
+    }
+    
+    return nil
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 添加 | $O(d)$ |
+| 估计 | $O(d)$ |
+| 合并 | $O(d \cdot w)$ |
+
+其中，$d$ 是哈希函数的数量，$w$ 是每个哈希函数的计数器数量。
+
+**空间复杂度**: $O(d \cdot w)$
+
+**定理 8.1** (Count-Min Sketch的误差保证)
+使用 $d = \lceil \ln(1/\delta) \rceil$ 个哈希函数和 $w = \lceil e/\epsilon \rceil$ 个计数器，Count-Min Sketch可以以 $1-\delta$ 的概率保证估计误差不超过 $\epsilon \cdot ||f||_1$，其中 $||f||_1$ 是所有计数的总和。
+
+**应用场景**:
+- 网络流量监控
+- 数据库查询优化
+- 频繁项集挖掘
+- 异常检测
+
 ### 8.2 HyperLogLog
 
+**定义 8.2** (HyperLogLog)
+HyperLogLog是一种用于估计集合基数（不同元素数量）的概率算法，使用极少的内存就能估计非常大的集合。
+
+```go
+// HyperLogLog
+type HyperLogLog struct {
+    registers []byte   // 寄存器数组
+    m         int      // 寄存器数量
+    p         uint8    // 精度参数
+    alpha     float64  // 修正因子
+}
+
+// 创建HyperLogLog
+func NewHyperLogLog(precision uint8) *HyperLogLog {
+    if precision < 4 || precision > 16 {
+        precision = 10 // 默认精度
+    }
+    
+    m := 1 << precision
+    
+    // 计算修正因子
+    var alpha float64
+    switch m {
+    case 16:
+        alpha = 0.673
+    case 32:
+        alpha = 0.697
+    case 64:
+        alpha = 0.709
+    default:
+        alpha = 0.7213 / (1.0 + 1.079/float64(m))
+    }
+    
+    return &HyperLogLog{
+        registers: make([]byte, m),
+        m:         m,
+        p:         precision,
+        alpha:     alpha,
+    }
+}
+
+// 添加元素
+func (hll *HyperLogLog) Add(item string) {
+    // 计算哈希值
+    hash := murmurHash([]byte(item))
+    
+    // 使用前p位确定寄存器索引
+    idx := hash & ((1 << hll.p) - 1)
+    
+    // 计算前导零的位置（从p+1位开始）
+    hash = hash >> hll.p
+    rank := uint8(leadingZeros(hash) + 1)
+    
+    // 更新寄存器
+    if rank > hll.registers[idx] {
+        hll.registers[idx] = rank
+    }
+}
+
+// 估计基数
+func (hll *HyperLogLog) Estimate() float64 {
+    sum := 0.0
+    m := float64(hll.m)
+    
+    // 计算调和平均数
+    for _, val := range hll.registers {
+        sum += math.Pow(2.0, -float64(val))
+    }
+    
+    // 应用修正因子
+    estimate := hll.alpha * m * m / sum
+    
+    // 小值修正
+    if estimate <= 2.5*m {
+        // 计算零寄存器的数量
+        zeros := 0
+        for _, val := range hll.registers {
+            if val == 0 {
+                zeros++
+            }
+        }
+        
+        if zeros > 0 {
+            return m * math.Log(m/float64(zeros))
+        }
+    }
+    
+    // 大值修正
+    if estimate > math.Pow(2.0, 32)/30.0 {
+        return -math.Pow(2.0, 32) * math.Log(1.0-estimate/math.Pow(2.0, 32))
+    }
+    
+    return estimate
+}
+
+// 合并两个HyperLogLog
+func (hll *HyperLogLog) Merge(other *HyperLogLog) error {
+    if hll.p != other.p {
+        return errors.New("无法合并不同精度的HyperLogLog")
+    }
+    
+    for i := 0; i < hll.m; i++ {
+        if other.registers[i] > hll.registers[i] {
+            hll.registers[i] = other.registers[i]
+        }
+    }
+    
+    return nil
+}
+
+// 计算前导零数量
+func leadingZeros(x uint64) int {
+    if x == 0 {
+        return 64
+    }
+    
+    n := 0
+    if x <= 0x00000000FFFFFFFF {
+        n += 32
+        x <<= 32
+    }
+    if x <= 0x0000FFFFFFFFFFFF {
+        n += 16
+        x <<= 16
+    }
+    if x <= 0x00FFFFFFFFFFFFFF {
+        n += 8
+        x <<= 8
+    }
+    if x <= 0x0FFFFFFFFFFFFFFF {
+        n += 4
+        x <<= 4
+    }
+    if x <= 0x3FFFFFFFFFFFFFFF {
+        n += 2
+        x <<= 2
+    }
+    if x <= 0x7FFFFFFFFFFFFFFF {
+        n += 1
+    }
+    
+    return n
+}
+
+// MurmurHash实现
+func murmurHash(data []byte) uint64 {
+    const (
+        c1 = uint64(0x87c37b91114253d5)
+        c2 = uint64(0x4cf5ad432745937f)
+        r1 = 31
+        r2 = 27
+        m  = uint64(5)
+        n  = uint64(0x52dce729)
+    )
+    
+    h1 := uint64(0x9747b28c)
+    h2 := uint64(0x5493a0e0)
+    
+    // 处理完整的块
+    for len(data) >= 16 {
+        k1 := binary.LittleEndian.Uint64(data[:8])
+        k2 := binary.LittleEndian.Uint64(data[8:16])
+        
+        k1 *= c1
+        k1 = (k1 << r1) | (k1 >> (64 - r1))
+        k1 *= c2
+        h1 ^= k1
+        
+        h1 = (h1 << r2) | (h1 >> (64 - r2))
+        h1 = h1*m + n
+        
+        k2 *= c2
+        k2 = (k2 << r1) | (k2 >> (64 - r1))
+        k2 *= c1
+        h2 ^= k2
+        
+        h2 = (h2 << r2) | (h2 >> (64 - r2))
+        h2 = h2*m + n
+        
+        data = data[16:]
+    }
+    
+    // 处理剩余字节
+    if len(data) > 0 {
+        var k1, k2 uint64
+        
+        for i := 0; i < len(data) && i < 8; i++ {
+            k1 |= uint64(data[i]) << uint(i*8)
+        }
+        
+        for i := 8; i < len(data); i++ {
+            k2 |= uint64(data[i]) << uint((i-8)*8)
+        }
+        
+        k1 *= c1
+        k1 = (k1 << r1) | (k1 >> (64 - r1))
+        k1 *= c2
+        h1 ^= k1
+        
+        k2 *= c2
+        k2 = (k2 << r1) | (k2 >> (64 - r1))
+        k2 *= c1
+        h2 ^= k2
+    }
+    
+    // 最终混合
+    h1 ^= uint64(len(data))
+    h2 ^= uint64(len(data))
+    
+    h1 += h2
+    h2 += h1
+    
+    h1 ^= h1 >> 33
+    h1 *= 0xff51afd7ed558ccd
+    h1 ^= h1 >> 33
+    h1 *= 0xc4ceb9fe1a85ec53
+    h1 ^= h1 >> 33
+    
+    h2 ^= h2 >> 33
+    h2 *= 0xff51afd7ed558ccd
+    h2 ^= h2 >> 33
+    h2 *= 0xc4ceb9fe1a85ec53
+    h2 ^= h2 >> 33
+    
+    return h1 ^ h2
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 复杂度 |
+|------|--------|
+| 添加 | $O(1)$ |
+| 估计 | $O(m)$ |
+| 合并 | $O(m)$ |
+
+其中，$m$ 是寄存器的数量。
+
+**空间复杂度**: $O(m)$
+
+**定理 8.2** (HyperLogLog的误差保证)
+使用 $m = 2^p$ 个寄存器的HyperLogLog算法，其标准误差约为 $1.04/\sqrt{m}$。
+
+**应用场景**:
+- 大数据集的去重统计
+- 网络流量分析
+- 数据库查询优化
+- 用户行为分析
+
 ### 8.3 跳表变体
+
+#### 8.3.1 确定性跳表
+
+**定义 8.3.1** (确定性跳表)
+确定性跳表是跳表的一种变体，其层级结构不是随机生成的，而是按照确定性规则构建，通常基于元素的位置或值。
+
+```go
+// 确定性跳表节点
+type DeterministicSkipListNode struct {
+    Value    int
+    Forward  []*DeterministicSkipListNode
+}
+
+// 确定性跳表
+type DeterministicSkipList struct {
+    Head     *DeterministicSkipListNode
+    MaxLevel int
+    Size     int
+}
+
+// 创建确定性跳表
+func NewDeterministicSkipList(maxLevel int) *DeterministicSkipList {
+    return &DeterministicSkipList{
+        Head:     &DeterministicSkipListNode{Forward: make([]*DeterministicSkipListNode, maxLevel)},
+        MaxLevel: maxLevel,
+        Size:     0,
+    }
+}
+
+// 计算元素的层级
+func (dsl *DeterministicSkipList) levelOf(index int) int {
+    level := 0
+    for (index & 1) == 0 && level < dsl.MaxLevel-1 {
+        index >>= 1
+        level++
+    }
+    return level
+}
+
+// 插入元素
+func (dsl *DeterministicSkipList) Insert(value int) {
+    // 保存每一层的前驱节点
+    update := make([]*DeterministicSkipListNode, dsl.MaxLevel)
+    current := dsl.Head
+    
+    // 从最高层开始向下查找插入位置
+    for i := dsl.MaxLevel - 1; i >= 0; i-- {
+        for current.Forward[i] != nil && current.Forward[i].Value < value {
+            current = current.Forward[i]
+        }
+        update[i] = current
+    }
+    
+    // 检查是否已存在
+    if current.Forward[0] != nil && current.Forward[0].Value == value {
+        return
+    }
+    
+    // 创建新节点
+    level := dsl.levelOf(dsl.Size)
+    newNode := &DeterministicSkipListNode{
+        Value:   value,
+        Forward: make([]*DeterministicSkipListNode, level+1),
+    }
+    
+    // 更新指针
+    for i := 0; i <= level; i++ {
+        newNode.Forward[i] = update[i].Forward[i]
+        update[i].Forward[i] = newNode
+    }
+    
+    dsl.Size++
+    
+    // 重建跳表以保持确定性结构
+    if dsl.Size > 1 && (dsl.Size & (dsl.Size - 1)) == 0 {
+        dsl.rebuild()
+    }
+}
+
+// 重建跳表
+func (dsl *DeterministicSkipList) rebuild() {
+    // 收集所有元素
+    var elements []int
+    current := dsl.Head.Forward[0]
+    for current != nil {
+        elements = append(elements, current.Value)
+        current = current.Forward[0]
+    }
+    
+    // 创建新的头节点
+    dsl.Head = &DeterministicSkipListNode{Forward: make([]*DeterministicSkipListNode, dsl.MaxLevel)}
+    dsl.Size = 0
+    
+    // 重新插入所有元素
+    for _, value := range elements {
+        dsl.Insert(value)
+    }
+}
+
+// 搜索元素
+func (dsl *DeterministicSkipList) Search(value int) bool {
+    current := dsl.Head
+    
+    // 从最高层开始向下搜索
+    for i := dsl.MaxLevel - 1; i >= 0; i-- {
+        for current.Forward[i] != nil && current.Forward[i].Value < value {
+            current = current.Forward[i]
+        }
+    }
+    
+    current = current.Forward[0]
+    return current != nil && current.Value == value
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 平均情况 | 最坏情况 |
+|------|----------|----------|
+| 搜索 | $O(\log n)$ | $O(\log n)$ |
+| 插入 | $O(\log n)$ | $O(n)$ (重建时) |
+| 删除 | $O(\log n)$ | $O(\log n)$ |
+
+**空间复杂度**: $O(n \log n)$
+
+#### 8.3.2 跳表变种：Biased Skip List
+
+**定义 8.3.2** (偏向跳表)
+偏向跳表是跳表的一种变体，其中某些频繁访问的元素被提升到更高的层级，以加速访问。
+
+```go
+// 偏向跳表节点
+type BiasedSkipListNode struct {
+    Value      int
+    Forward    []*BiasedSkipListNode
+    AccessCount int
+}
+
+// 偏向跳表
+type BiasedSkipList struct {
+    Head       *BiasedSkipListNode
+    MaxLevel   int
+    Level      int
+    Size       int
+    Threshold  int  // 访问计数阈值
+}
+
+// 创建偏向跳表
+func NewBiasedSkipList(maxLevel, threshold int) *BiasedSkipList {
+    return &BiasedSkipList{
+        Head:      &BiasedSkipListNode{Forward: make([]*BiasedSkipListNode, maxLevel)},
+        MaxLevel:  maxLevel,
+        Level:     0,
+        Size:      0,
+        Threshold: threshold,
+    }
+}
+
+// 随机生成层级
+func (bsl *BiasedSkipList) randomLevel() int {
+    level := 0
+    for rand.Float64() < 0.5 && level < bsl.MaxLevel-1 {
+        level++
+    }
+    return level
+}
+
+// 搜索元素
+func (bsl *BiasedSkipList) Search(value int) bool {
+    current := bsl.Head
+    
+    // 从最高层开始向下搜索
+    for i := bsl.Level; i >= 0; i-- {
+        for current.Forward[i] != nil && current.Forward[i].Value < value {
+            current = current.Forward[i]
+        }
+    }
+    
+    current = current.Forward[0]
+    
+    if current != nil && current.Value == value {
+        // 增加访问计数
+        current.AccessCount++
+        
+        // 如果访问次数超过阈值，提升层级
+        if current.AccessCount >= bsl.Threshold {
+            bsl.promoteNode(current)
+            current.AccessCount = 0
+        }
+        
+        return true
+    }
+    
+    return false
+}
+
+// 提升节点层级
+func (bsl *BiasedSkipList) promoteNode(node *BiasedSkipListNode) {
+    if len(node.Forward) >= bsl.MaxLevel {
+        return
+    }
+    
+    // 保存每一层的前驱节点
+    update := make([]*BiasedSkipListNode, bsl.MaxLevel)
+    current := bsl.Head
+    
+    // 查找节点的前驱
+    for i := bsl.Level; i >= 0; i-- {
+        for current.Forward[i] != nil && current.Forward[i].Value < node.Value {
+            current = current.Forward[i]
+        }
+        update[i] = current
+    }
+    
+    // 增加一层
+    newLevel := len(node.Forward)
+    if newLevel < bsl.MaxLevel {
+        node.Forward = append(node.Forward, make([]*BiasedSkipListNode, 1)...)
+        
+        // 更新最大层级
+        if newLevel > bsl.Level {
+            bsl.Level = newLevel
+        }
+        
+        // 更新指针
+        node.Forward[newLevel] = update[newLevel].Forward[newLevel]
+        update[newLevel].Forward[newLevel] = node
+    }
+}
+
+// 插入元素
+func (bsl *BiasedSkipList) Insert(value int) {
+    // 保存每一层的前驱节点
+    update := make([]*BiasedSkipListNode, bsl.MaxLevel)
+    current := bsl.Head
+    
+    // 从最高层开始向下查找插入位置
+    for i := bsl.Level; i >= 0; i-- {
+        for current.Forward[i] != nil && current.Forward[i].Value < value {
+            current = current.Forward[i]
+        }
+        update[i] = current
+    }
+    
+    // 检查是否已存在
+    if current.Forward[0] != nil && current.Forward[0].Value == value {
+        return
+    }
+    
+    // 获取随机层级
+    level := bsl.randomLevel()
+    
+    // 更新跳表的最大层级
+    if level > bsl.Level {
+        for i := bsl.Level + 1; i <= level; i++ {
+            update[i] = bsl.Head
+        }
+        bsl.Level = level
+    }
+    
+    // 创建新节点
+    newNode := &BiasedSkipListNode{
+        Value:      value,
+        Forward:    make([]*BiasedSkipListNode, level+1),
+        AccessCount: 0,
+    }
+    
+    // 更新指针
+    for i := 0; i <= level; i++ {
+        newNode.Forward[i] = update[i].Forward[i]
+        update[i].Forward[i] = newNode
+    }
+    
+    bsl.Size++
+}
+```
+
+**时间复杂度**:
+
+| 操作 | 平均情况 | 最坏情况 |
+|------|----------|----------|
+| 搜索 | $O(\log n)$ | $O(n)$ |
+| 插入 | $O(\log n)$ | $O(n)$ |
+| 删除 | $O(\log n)$ | $O(n)$ |
+
+**空间复杂度**: $O(n \log n)$
+
+**应用场景**:
+- 缓存实现
+- 频繁访问元素的快速查找
+- 自适应数据结构
 
 ## Golang实现
 
