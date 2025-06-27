@@ -702,6 +702,85 @@ go tool pprof ./main.test cpu.prof
 - 文档与API规范齐全。
 - 关注社区最佳实践，持续优化。
 
+## 9. 常见FAQ与工程问题解决方案
+
+### 1. 开发与部署
+
+- Q: 如何本地快速启动项目？
+  A: 配置好数据库/Redis，go run cmd/server/main.go 或 docker-compose up。
+- Q: 如何配置多环境变量？
+  A: 使用Viper加载不同配置文件，结合环境变量覆盖。
+- Q: 如何优雅关闭服务？
+  A: 使用context+信号监听，优雅释放资源。
+
+### 2. 测试与CI/CD
+
+- Q: 如何做单元与集成测试？
+  A: go test ./...，分层mock依赖，集成测试用docker-compose。
+- Q: 如何保证接口测试覆盖率？
+  A: go test -cover，结合Postman/Newman自动化。
+- Q: 如何实现CI/CD自动化？
+  A: 用GitHub Actions/GitLab CI，集成构建、测试、部署、回滚。
+
+### 3. 性能与安全
+
+- Q: 如何定位性能瓶颈？
+  A: pprof/trace分析，关注慢SQL、Goroutine泄漏、I/O阻塞。
+- Q: 如何防止SQL注入和XSS？
+  A: ORM参数绑定、输入校验、HTML转义。
+- Q: 如何实现接口限流与防刷？
+  A: Gin中间件+令牌桶/滑动窗口算法。
+
+### 4. 工程最佳实践
+
+- 统一错误处理与日志
+- 配置分离与环境隔离
+- 自动化测试与回归
+- 持续集成与自动化部署
+- 关注安全与性能基线
+
+### 5. 参考资料
+
+- Go官方文档：<https://golang.org/doc/>
+- Gin文档：<https://gin-gonic.com/docs/>
+- GORM文档：<https://gorm.io/zh_CN/docs/>
+- Go夜读项目实战：<https://github.com/developer-learning/night-reading-go>
+
+## 8. CRUD项目实践知识体系图谱
+
+```mermaid
+flowchart TD
+  A[本地开发与环境搭建] --> B[项目结构与核心代码]
+  B --> C[接口安全与认证]
+  C --> D[单元测试与集成测试]
+  D --> E[性能优化与监控]
+  E --> F[CI/CD自动化]
+  F --> G[容器化与Docker]
+  G --> H[Kubernetes与云原生部署]
+  H --> I[多环境配置与服务治理]
+  I --> J[自动化回滚与韧性测试]
+  J --> K[服务网格与混沌工程]
+  K --> L[最佳实践与常见陷阱]
+  L --> M[开源项目案例]
+  M --> N[FAQ与进阶专题]
+  N --> O[学习路线与社区资源]
+  style A fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style B fill:#fff,stroke:#333,stroke-width:2px
+  style C fill:#fff,stroke:#333,stroke-width:2px
+  style D fill:#fff,stroke:#333,stroke-width:2px
+  style E fill:#fff,stroke:#333,stroke-width:2px
+  style F fill:#fff,stroke:#333,stroke-width:2px
+  style G fill:#fff,stroke:#333,stroke-width:2px
+  style H fill:#fff,stroke:#333,stroke-width:2px
+  style I fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style J fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style K fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style L fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style M fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style N fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style O fill:#e0f7fa,stroke:#333,stroke-width:2px
+```
+
 ---
 
 **项目维护者**: AI Assistant  

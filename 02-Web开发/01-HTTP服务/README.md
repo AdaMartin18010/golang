@@ -241,6 +241,83 @@ func main() {
 - 输出编码
 - 敏感数据保护
 
+## 8. HTTP服务开发知识体系图谱
+
+```mermaid
+flowchart TD
+  A[HTTP协议基础] --> B[net/http包]
+  B --> C[主流Web框架]
+  C --> D[中间件与路由设计]
+  D --> E[参数处理与静态文件]
+  E --> F[文件上传与WebSocket]
+  F --> G[HTTP2与高级特性]
+  G --> H[安全实践]
+  H --> I[性能优化]
+  I --> J[监控与日志]
+  J --> K[最佳实践与常见陷阱]
+  K --> L[开源项目案例]
+  L --> M[FAQ与进阶专题]
+  M --> N[学习路线与社区资源]
+  style A fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style B fill:#fff,stroke:#333,stroke-width:2px
+  style C fill:#fff,stroke:#333,stroke-width:2px
+  style D fill:#fff,stroke:#333,stroke-width:2px
+  style E fill:#fff,stroke:#333,stroke-width:2px
+  style F fill:#fff,stroke:#333,stroke-width:2px
+  style G fill:#fff,stroke:#333,stroke-width:2px
+  style H fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style I fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style J fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style K fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style L fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style M fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style N fill:#e0f7fa,stroke:#333,stroke-width:2px
+```
+
+## 9. 常见FAQ与工程问题解决方案
+
+### 1. 开发与部署
+
+- Q: 如何本地快速启动HTTP服务？
+  A: go run main.go 或 docker-compose up，确保端口和依赖服务可用。
+- Q: 如何配置多环境变量？
+  A: 使用Viper等库加载不同配置文件，结合环境变量覆盖。
+- Q: 如何优雅关闭HTTP服务？
+  A: 使用context+信号监听，优雅释放资源。
+
+### 2. 测试与CI/CD
+
+- Q: 如何做单元与集成测试？
+  A: go test ./...，mock依赖，集成测试用docker-compose。
+- Q: 如何保证接口测试覆盖率？
+  A: go test -cover，结合Postman/Newman自动化。
+- Q: 如何实现CI/CD自动化？
+  A: 用GitHub Actions/GitLab CI，集成构建、测试、部署、回滚。
+
+### 3. 性能与安全
+
+- Q: 如何定位Web服务性能瓶颈？
+  A: pprof/trace分析，关注慢SQL、Goroutine泄漏、I/O阻塞。
+- Q: 如何防止SQL注入和XSS？
+  A: ORM参数绑定、输入校验、HTML转义。
+- Q: 如何实现接口限流与防刷？
+  A: Gin/Echo中间件+令牌桶/滑动窗口算法。
+
+### 4. 工程最佳实践
+
+- 统一错误处理与日志
+- 配置分离与环境隔离
+- 自动化测试与回归
+- 持续集成与自动化部署
+- 关注安全与性能基线
+
+### 5. 参考资料
+
+- Go官方文档：<https://golang.org/doc/>
+- Gin文档：<https://gin-gonic.com/docs/>
+- Echo文档：<https://echo.labstack.com/docs/>
+- Go夜读项目实战：<https://github.com/developer-learning/night-reading-go>
+
 ---
 
 **模块维护者**: AI Assistant  

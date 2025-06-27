@@ -38,6 +38,54 @@
 - Go夜读性能优化专栏：<https://github.com/developer-learning/night-reading-go>
 - Go开源项目导航：<https://github.com/avelino/awesome-go>
 
+## 6. 进阶专题与学习路线
+
+- 云原生与分布式场景下的性能优化
+- 服务网格与可观测性优化
+- 自动化性能基线与回归测试
+- 推荐书籍：《Go性能优化实战》《Go语言高级编程》《深入理解计算机系统》
+- 推荐社区：Go夜读、Awesome Go、Go官方论坛
+- 实战项目：Gin、etcd、Go kit、grpc-go、prometheus等
+- 建议结合开源项目源码与实际业务场景，持续实践与总结
+
+## 7. 性能优化知识体系图谱
+
+```mermaid
+flowchart TD
+  A[性能分析与pprof] --> B[内存优化]
+  B --> C[并发优化]
+  C --> D[网络与I/O优化]
+  D --> E[GC调优]
+  E --> F[性能基准测试]
+  F --> G[常见陷阱与FAQ]
+  G --> H[开源项目案例]
+  H --> I[进阶专题与学习路线]
+  subgraph 工程闭环
+    J[压测-定位-优化-回归]
+  end
+  A -.-> J
+  B -.-> J
+  C -.-> J
+  D -.-> J
+  E -.-> J
+  F -.-> J
+  G -.-> J
+  H -.-> J
+  I -.-> J
+  J -.-> A
+  J -.-> H
+  style J fill:#fff,stroke:#333,stroke-width:2px
+  style I fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style H fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style G fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style F fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style E fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style D fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style C fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style B fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style A fill:#e0f7fa,stroke:#333,stroke-width:2px
+```
+
 ---
 
 **模块维护者**: AI Assistant  

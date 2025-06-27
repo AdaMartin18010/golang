@@ -52,3 +52,37 @@ $$
 - GoF《设计模式》、Head First Design Patterns
 - Go设计模式实战：<https://github.com/senghoo/golang-design-pattern>
 - Go开源项目导航：<https://github.com/avelino/awesome-go>
+
+## 7. 设计模式知识体系图谱
+
+```mermaid
+flowchart TD
+  A[理论基础与形式化] --> B[创建型模式]
+  A --> C[结构型模式]
+  A --> D[行为型模式]
+  A --> E[并发型模式]
+  A --> F[分布式型模式]
+  A --> G[工作流型模式]
+  B --> H[Go实现与工程分析]
+  C --> H
+  D --> H
+  E --> H
+  F --> H
+  G --> H
+  H --> I[最佳实践与常见陷阱]
+  I --> J[开源项目案例]
+  J --> K[FAQ与进阶专题]
+  K --> L[学习路线与社区资源]
+  style A fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style B fill:#fff,stroke:#333,stroke-width:2px
+  style C fill:#fff,stroke:#333,stroke-width:2px
+  style D fill:#fff,stroke:#333,stroke-width:2px
+  style E fill:#fff,stroke:#333,stroke-width:2px
+  style F fill:#fff,stroke:#333,stroke-width:2px
+  style G fill:#fff,stroke:#333,stroke-width:2px
+  style H fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style I fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style J fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style K fill:#e0f7fa,stroke:#333,stroke-width:2px
+  style L fill:#e0f7fa,stroke:#333,stroke-width:2px
+```
