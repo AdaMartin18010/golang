@@ -15,6 +15,7 @@ Go的sync包提供了多种并发原语，保障多Goroutine环境下的数据�
 ## 2. 典型用法
 
 ### 互斥锁Mutex
+
 ```go
 var mu sync.Mutex
 mu.Lock()
@@ -23,6 +24,7 @@ mu.Unlock()
 ```
 
 ### 读写锁RWMutex
+
 ```go
 var rw sync.RWMutex
 rw.RLock()
@@ -34,6 +36,7 @@ rw.Unlock()
 ```
 
 ### WaitGroup
+
 ```go
 var wg sync.WaitGroup
 wg.Add(2)
@@ -49,6 +52,7 @@ wg.Wait()
 ```
 
 ### Once
+
 ```go
 var once sync.Once
 once.Do(func() {
@@ -86,6 +90,7 @@ once.Do(func() {
 ---
 
 ## 6. 参考文献
-- Go官方文档：https://golang.org/pkg/sync/
-- Go Blog: https://blog.golang.org/share-memory-by-communicating
-- 《Go语言高级编程》 
+
+- Go官方文档：<https://golang.org/pkg/sync/>
+- Go Blog: <https://blog.golang.org/share-memory-by-communicating>
+- 《Go语言高级编程》
