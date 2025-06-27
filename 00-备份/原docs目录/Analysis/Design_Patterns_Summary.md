@@ -4,7 +4,7 @@
 
 ### 1. Creational Patterns
 
-**Factory Pattern**
+**Factory Pattern**:
 
 ```go
 type Product interface {
@@ -27,7 +27,7 @@ func NewCreator(creatorType string) Creator {
 }
 ```
 
-**Singleton Pattern**
+**Singleton Pattern**:
 
 ```go
 var (
@@ -43,7 +43,7 @@ func GetInstance() *Singleton {
 }
 ```
 
-**Builder Pattern**
+**Builder Pattern**:
 
 ```go
 type ComputerBuilder interface {
@@ -61,7 +61,7 @@ func (cb *ConcreteComputerBuilder) SetCPU(cpu string) ComputerBuilder {
 
 ### 2. Structural Patterns
 
-**Adapter Pattern**
+**Adapter Pattern**:
 
 ```go
 type Target interface {
@@ -77,7 +77,7 @@ func (a *Adapter) Request() string {
 }
 ```
 
-**Decorator Pattern**
+**Decorator Pattern**:
 
 ```go
 type Component interface {
@@ -97,7 +97,7 @@ func (cda *ConcreteDecoratorA) Operation() string {
 }
 ```
 
-**Proxy Pattern**
+**Proxy Pattern**:
 
 ```go
 type Proxy struct {
@@ -121,7 +121,7 @@ func (p *Proxy) Request() string {
 
 ### 3. Behavioral Patterns
 
-**Observer Pattern**
+**Observer Pattern**:
 
 ```go
 type Observer interface {
@@ -146,7 +146,7 @@ func (cs *ConcreteSubject) Notify() {
 }
 ```
 
-**Strategy Pattern**
+**Strategy Pattern**:
 
 ```go
 type Strategy interface {
@@ -162,7 +162,7 @@ func (c *Context) ExecuteStrategy(data []int) []int {
 }
 ```
 
-**Command Pattern**
+**Command Pattern**:
 
 ```go
 type Command interface {
@@ -190,7 +190,7 @@ func (i *Invoker) ExecuteCommands() {
 
 ### 4. Concurrency Patterns
 
-**Worker Pool Pattern**
+**Worker Pool Pattern**:
 
 ```go
 type WorkerPool struct {
@@ -220,7 +220,7 @@ func (wp *WorkerPool) worker(id int) {
 }
 ```
 
-**Pipeline Pattern**
+**Pipeline Pattern**:
 
 ```go
 type Pipeline struct {
@@ -248,7 +248,7 @@ func (p *Pipeline) Execute(data interface{}) (interface{}, error) {
 
 ### 5. Enterprise Patterns
 
-**Repository Pattern**
+**Repository Pattern**:
 
 ```go
 type Repository[T any] interface {
@@ -278,7 +278,7 @@ func (imr *InMemoryRepository[T]) FindByID(id string) (T, error) {
 }
 ```
 
-**Unit of Work Pattern**
+**Unit of Work Pattern**:
 
 ```go
 type UnitOfWork interface {

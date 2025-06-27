@@ -1,84 +1,87 @@
-# 性能分析与pprof
+# Go性能分析与pprof
 
-## 📚 **理论分析**
+## 1. 理论基础
 
-### **性能分析原理**
+性能优化的核心流程：
 
-- 性能分析（Profiling）用于定位CPU、内存、阻塞、Goroutine等瓶颈。
-- Go内置pprof工具，支持采集和可视化多种性能数据。
-- 常见分析类型：CPU、内存（Heap）、阻塞（Block）、互斥锁（Mutex）、Goroutine等。
+- 明确目标 → 性能度量 → 数据采集 → 问题定位 → 优化验证
+- 强调"度量驱动优化"，避免盲目优化
 
-### **pprof工具简介**
+## 2. pprof工具原理与用法
 
-- pprof可生成SVG、PDF、文本等多种报告
-- 支持本地分析与Web可视化
-- 可与go test、go tool pprof、net/http/pprof集成
+pprof是Go官方性能分析工具，支持CPU、内存、阻塞、Goroutine等多种profile。
 
-## 💻 **代码示例**
+### 2.1 常用Profile类型
 
-### **集成pprof到服务**
+- CPU Profile：采样CPU热点
+- Memory Profile：采样内存分配与泄漏
+- Block Profile：采样阻塞点
+- Mutex Profile：采样锁竞争
+- Goroutine Profile：采样Goroutine状态
+
+### 2.2 采集与分析流程
+
+**1. 导入pprof包**:
 
 ```go
-package main
-import (
-    _ "net/http/pprof"
-    "net/http"
-    "log"
-)
-func main() {
-    go func() {
-        log.Println(http.ListenAndServe(":6060", nil)) // 访问http://localhost:6060/debug/pprof/
-    }()
-    select{} // 模拟服务运行
-}
+import _ "net/http/pprof"
 ```
 
-### **采集CPU/内存分析数据**
+**2. 启动pprof服务**:
 
-```bash
-# 运行服务后，采集30秒CPU分析
+```go
+import "net/http"
+go func() { http.ListenAndServe(":6060", nil) }()
+```
+
+**3. 运行程序并采集Profile**:
+
+```sh
+# 采集30秒CPU profile
 go tool pprof http://localhost:6060/debug/pprof/profile?seconds=30
-# 采集内存分析
+# 采集内存profile
 go tool pprof http://localhost:6060/debug/pprof/heap
 ```
 
-### **分析与可视化**
+**4. 分析Profile数据**:
 
-```bash
-# 进入pprof交互模式
-(pprof) top         # 查看热点函数
-(pprof) list main   # 查看main函数明细
-(pprof) web         # 生成SVG火焰图
+```sh
+(pprof) top
+(pprof) list <func>
+(pprof) web  # 生成火焰图
 ```
 
-### **测试代码集成pprof**
+### 2.3 常用分析命令
 
-```go
-// go test -bench . -cpuprofile cpu.out -memprofile mem.out
-// go tool pprof cpu.out
-```
+- top：显示热点函数
+- `list<func>`：查看函数源码级消耗
+- web/graph：生成可视化图谱
+- `peek<symbol>`：查找特定函数
 
-## 🎯 **最佳实践**
+## 3. 工程案例
 
-- 生产环境建议采样分析，避免全量影响性能
-- 分析前后对比，量化优化效果
-- 结合火焰图、调用图定位瓶颈
-- 定期分析，持续优化
+### 案例：定位CPU瓶颈
 
-## 🔍 **常见问题**
+- 现象：QPS低，CPU利用率高
+- 步骤：采集CPU profile → top分析热点 → list定位慢函数 → 优化算法/并发 → 验证效果
 
-- Q: pprof会影响性能吗？
-  A: 有少量开销，建议采样分析
-- Q: 如何分析Goroutine泄漏？
-  A: 查看pprof goroutine报告
-- Q: 如何分析阻塞/锁竞争？
-  A: 采集block/mutex profile
+### 案例：内存泄漏排查
 
-## 📚 **扩展阅读**
+- 现象：内存持续增长
+- 步骤：采集heap profile → top分析分配热点 → diff对比快照 → 定位未释放对象 → 优化回收
 
-- [Go官方pprof文档](https://golang.org/pkg/net/http/pprof/)
-- [Go性能分析实战](https://geektutu.com/post/hpg-golang.html)
-- [Uber Go性能指南](https://github.com/uber-go/guide/blob/master/style.md#performance)
+## 4. 最佳实践与常见陷阱
+
+- 只优化有数据支撑的热点，避免"拍脑袋"优化
+- 采集profile时注意线上/线下环境差异，避免影响生产
+- 结合trace、metrics、日志等多维度分析
+- 持续集成pprof分析，监控性能回归
+
+## 5. 参考文献
+
+- Go官方pprof文档：<https://github.com/google/pprof>
+- Go性能优化实战：<https://github.com/dominikh/go-tools>
+- Go夜读性能优化专栏：<https://github.com/developer-learning/night-reading-go>
 
 ---
 
