@@ -290,6 +290,165 @@ CMD ["./main"]
 - SQL注入防护
 - XSS攻击防护
 
+## 6. 关键代码骨架
+
+### main.go
+
+```go
+package main
+
+import (
+    "github.com/gin-gonic/gin"
+    "crud-app/internal/handler"
+)
+
+func main() {
+    r := gin.Default()
+    handler.RegisterRoutes(r)
+    r.Run(":8080")
+}
+```
+
+### internal/handler/user.go
+
+```go
+package handler
+
+import (
+    "github.com/gin-gonic/gin"
+    "crud-app/internal/service"
+    "crud-app/internal/model"
+)
+
+func RegisterRoutes(r *gin.Engine) {
+    r.POST("/users", CreateUser)
+    r.GET("/users/:id", GetUser)
+}
+
+func CreateUser(c *gin.Context) {
+    var u model.User
+    if err := c.ShouldBindJSON(&u); err != nil {
+        c.JSON(400, gin.H{"error": err.Error()})
+        return
+    }
+    if err := service.CreateUser(&u); err != nil {
+        c.JSON(500, gin.H{"error": err.Error()})
+        return
+    }
+    c.JSON(200, gin.H{"user": u})
+}
+
+func GetUser(c *gin.Context) {
+    id := c.Param("id")
+    user, err := service.GetUserByID(id)
+    if err != nil {
+        c.JSON(404, gin.H{"error": "not found"})
+        return
+    }
+    c.JSON(200, gin.H{"user": user})
+}
+```
+
+### internal/service/user.go
+
+```go
+package service
+
+import "crud-app/internal/model"
+
+func CreateUser(u *model.User) error {
+    // 业务校验、调用repo保存
+    return nil
+}
+
+func GetUserByID(id string) (*model.User, error) {
+    // 调用repo查询
+    return &model.User{}, nil
+}
+```
+
+### internal/model/user.go
+
+```go
+package model
+
+type User struct {
+    ID   string `json:"id"`
+    Name string `json:"name"`
+}
+```
+
+### internal/repo/user.go
+
+```go
+package repo
+
+import "crud-app/internal/model"
+
+func SaveUser(u *model.User) error {
+    // 持久化到数据库
+    return nil
+}
+
+func FindUserByID(id string) (*model.User, error) {
+    // 从数据库查询
+    return &model.User{}, nil
+}
+```
+
+## 7. 工程规范与可测试性
+
+- 各层解耦，便于单元测试与Mock。
+- 推荐使用table-driven测试法。
+- 业务逻辑与HTTP解耦，便于扩展。
+
+## 8. 单元测试与Mock示例
+
+### internal/service/user_test.go
+```go
+package service
+
+import (
+    "testing"
+    "crud-app/internal/model"
+)
+
+func TestCreateUser(t *testing.T) {
+    u := &model.User{ID: "1", Name: "Tom"}
+    err := CreateUser(u)
+    if err != nil {
+        t.Errorf("CreateUser failed: %v", err)
+    }
+}
+```
+
+### Mock实现建议
+- 可用GoMock、Testify等库对repo层进行Mock，隔离外部依赖。
+- 推荐接口抽象+依赖注入，便于测试。
+
+## 9. 数据库迁移与API文档自动生成
+- 使用GORM的AutoMigrate实现表结构自动迁移。
+- 推荐用Swagger（swaggo/gin-swagger）自动生成API文档。
+
+### 代码片段
+```go
+// main.go
+import (
+    "github.com/swaggo/gin-swagger"
+    "github.com/swaggo/files"
+)
+// ...
+r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+// 数据库迁移
+db.AutoMigrate(&model.User{})
+```
+
+## 10. 工程细节与最佳实践
+- 持续集成：推荐GitHub Actions等自动化测试与部署。
+- 配置管理：使用.env或Viper等库管理配置。
+- 日志与监控：集成zap、prometheus等。
+
 ---
 
 **项目维护者**: AI Assistant  
