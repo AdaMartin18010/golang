@@ -1,6 +1,7 @@
 # 绿色计算架构 - Golang实现指南
 
 ## 目录
+
 - [1. 概述](#1-概述)
 - [2. 绿色计算基础](#2-绿色计算基础)
 - [3. 国际标准与主流框架](#3-国际标准与主流框架)
@@ -19,6 +20,7 @@
 绿色计算（Green Computing）是一种以减少环境影响为目标的计算范式，通过优化硬件设计、软件算法、系统架构和运维管理，实现计算资源的高效利用和能源消耗的最小化。
 
 **发展历程：**
+
 - 1992年：EPA推出Energy Star计划
 - 2007年：Google提出数据中心能效优化
 - 2010年：云计算推动绿色IT发展
@@ -61,12 +63,14 @@ graph TB
 ### 2.1 核心指标
 
 **能效指标：**
+
 - PUE（Power Usage Effectiveness）：数据中心能效比
 - DCIE（Data Center Infrastructure Efficiency）：数据中心基础设施效率
 - CUE（Carbon Usage Effectiveness）：碳使用效率
 - WUE（Water Usage Effectiveness）：水使用效率
 
 **性能指标：**
+
 - 每瓦特性能（Performance per Watt）
 - 每焦耳计算量（Computations per Joule）
 - 能源效率比（Energy Efficiency Ratio）
@@ -74,18 +78,21 @@ graph TB
 ### 2.2 技术领域
 
 **硬件层面：**
+
 - 低功耗处理器设计
 - 高效散热系统
 - 可再生能源供电
 - 硬件虚拟化
 
 **软件层面：**
+
 - 算法优化
 - 代码效率提升
 - 资源调度优化
 - 动态功耗管理
 
 **系统层面：**
+
 - 负载均衡
 - 资源池化
 - 自动化运维
@@ -94,18 +101,21 @@ graph TB
 ### 2.3 应用场景
 
 **数据中心：**
+
 - 服务器能效优化
 - 存储系统节能
 - 网络设备管理
 - 制冷系统优化
 
 **边缘计算：**
+
 - 移动设备优化
 - IoT设备节能
 - 边缘节点管理
 - 本地计算优化
 
 **云计算：**
+
 - 虚拟机调度
 - 容器编排
 - 弹性伸缩
@@ -116,18 +126,21 @@ graph TB
 ### 3.1 国际标准
 
 **能效标准：**
+
 - ENERGY STAR：设备能效认证
 - 80 PLUS：电源能效认证
 - TCO Certified：可持续IT认证
 - EPEAT：电子产品环境影响评估
 
 **数据中心标准：**
+
 - ASHRAE TC 9.9：数据中心环境标准
 - TIA-942：数据中心基础设施标准
 - ISO/IEC 30134：数据中心能效指标
 - LEED：绿色建筑认证
 
 **软件标准：**
+
 - Green Software Foundation：绿色软件标准
 - Carbon Aware Computing：碳感知计算
 - Sustainable Software Engineering：可持续软件工程
@@ -135,18 +148,21 @@ graph TB
 ### 3.2 主流开源框架
 
 **监控工具：**
+
 - Prometheus：监控系统
 - Grafana：可视化平台
 - InfluxDB：时序数据库
 - Telegraf：数据收集器
 
 **调度框架：**
+
 - Kubernetes：容器编排
 - Apache Mesos：资源管理
 - Docker Swarm：容器集群
 - Nomad：工作负载调度
 
 **优化工具：**
+
 - PowerTOP：功耗分析
 - Intel PCM：性能监控
 - RAPL：运行时平均功耗限制
@@ -155,12 +171,14 @@ graph TB
 ### 3.3 商业解决方案
 
 **云服务商：**
+
 - AWS：碳足迹工具
 - Google Cloud：碳智能计算
 - Microsoft Azure：可持续发展计算
 - Alibaba Cloud：绿色数据中心
 
 **硬件厂商：**
+
 - Intel：低功耗处理器
 - AMD：能效优化
 - ARM：节能架构
@@ -237,21 +255,25 @@ graph TB
 ## 5. 分布式挑战
 
 ### 5.1 能源管理复杂性
+
 - 多节点能源消耗监控
 - 动态负载分布优化
 - 可再生能源集成管理
 
 ### 5.2 性能与能效平衡
+
 - 服务质量保证
 - 能效优化策略
 - 资源利用率最大化
 
 ### 5.3 异构环境适配
+
 - 不同硬件架构
 - 多样化能源来源
 - 环境条件变化
 
 ### 5.4 实时性要求
+
 - 能源监控实时性
 - 负载调整响应时间
 - 故障检测与恢复
@@ -269,16 +291,19 @@ graph TD
 ```
 
 ### 6.2 智能调度策略
+
 - 基于负载的调度
 - 能源感知调度
 - 预测性调度
 
 ### 6.3 动态功耗管理
+
 - CPU频率调节
 - 内存功耗控制
 - 存储节能策略
 
 ### 6.4 可再生能源集成
+
 - 太阳能、风能接入
 - 能源存储管理
 - 混合能源调度
@@ -544,17 +569,20 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 ## 8. 形式化建模
 
 ### 8.1 能源系统形式化
+
 - 节点集合 N = {n1, n2, ..., nn}
 - 任务集合 T = {t1, t2, ..., tm}
 - 能源约束 E(n, t)
 - 调度函数 S: T → N
 
 ### 8.2 能效优化模型
+
 - 目标函数：min Σ E(n) × P(n)
 - 约束条件：C(n) ≥ R(t)
 - 能效比：η = P(n) / E(n)
 
 ### 8.3 可再生能源集成
+
 - 能源平衡：Σ E_renewable + Σ E_storage = Σ E_demand
 - 存储效率：E_stored = η × E_input
 - 调度策略：S = f(E_available, E_demand, η)
@@ -562,21 +590,25 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 ## 9. 最佳实践
 
 ### 9.1 架构设计原则
+
 - 能源感知设计
 - 分层优化策略
 - 自适应调整机制
 
 ### 9.2 监控与优化
+
 - 实时能源监控
 - 预测性维护
 - 自动化优化
 
 ### 9.3 可持续发展
+
 - 可再生能源使用
 - 碳足迹跟踪
 - 循环经济原则
 
 ### 9.4 性能保证
+
 - 服务质量保证
 - 故障恢复机制
 - 容量规划
@@ -584,24 +616,28 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 ## 10. 参考资源
 
 ### 10.1 标准与规范
+
 - ENERGY STAR: <https://www.energystar.gov/>
 - 80 PLUS: <https://80plus.org/>
 - ASHRAE TC 9.9: <https://tc0909.ashraetcs.org/>
 
 ### 10.2 开源项目
+
 - Prometheus: <https://prometheus.io/>
 - Grafana: <https://grafana.com/>
 - Kubernetes: <https://kubernetes.io/>
 
 ### 10.3 研究机构
+
 - Green Software Foundation: <https://greensoftware.foundation/>
 - Carbon Aware Computing: <https://carbon-aware-computing.com/>
 - Sustainable Software Engineering: <https://sustainable-software-engineering.com/>
 
 ### 10.4 书籍与论文
+
 - Green Computing: A Comprehensive Guide (Springer)
 - Energy-Efficient Computing and Networking (IEEE)
 
 ---
 
-*本文档为绿色计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。* 
+*本文档为绿色计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*
