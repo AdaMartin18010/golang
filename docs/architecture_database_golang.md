@@ -42,9 +42,40 @@
 
 ---
 
-## 2. 核心架构模式
+## 2. 核心架构模式与设计原则
 
-### 2.1 数据库连接池管理
+### 2.1 数据库选型: SQL vs. NoSQL
+
+| 特性 | SQL (如 PostgreSQL) | NoSQL (如 MongoDB, Redis) |
+| --- | --- | --- |
+| **数据模型** | 结构化，基于表和关系 (Schema-on-Write) | 多样化 (文档、键值、列、图)，动态Schema (Schema-on-Read) |
+| **一致性** | 强一致性 (ACID) | 最终一致性 (BASE)，可调 |
+| **扩展性** | 垂直扩展为主，水平扩展较复杂 | 水平扩展（分片）是原生设计 |
+| **事务** | 强大的多行、多表事务支持 | 事务支持有限（通常在单个文档或实体级别） |
+| **适用场景** | 金融系统、ERP、需要复杂查询和事务完整性的业务 | 大数据、高并发社交网络、物联网、实时分析、缓存 |
+
+### 2.2 CAP理论与权衡
+
+CAP理论指出，任何分布式数据存储最多只能同时满足以下三项中的两项：
+
+- **一致性 (Consistency)**: 所有节点在同一时间看到相同的数据。
+- **可用性 (Availability)**: 每个请求都会收到一个（非错误）响应，但不保证它包含最新的数据。
+- **分区容错性 (Partition Tolerance)**: 即使节点间的网络通信发生故障，系统仍能继续运行。
+
+在现代分布式系统中，网络分区（P）是必须容忍的，因此架构选择通常是在 **CP（一致性与分区容错性）** 和 **AP（可用性与分区容错性）** 之间做权衡。
+
+- **CP**: (如 CockroachDB, etcd) 保证强一致性，但在网络分区时可能会牺牲可用性。
+- **AP**: (如 Cassandra, DynamoDB) 保证高可用性，但在网络分区时可能会返回旧数据，实现最终一致性。
+
+### 2.3 CQRS (命令查询职责分离)
+
+CQRS是一种将读操作（查询）模型与写操作（命令）模型分离的模式。
+
+- **命令 (Commands)**: 改变系统状态的操作（如Create, Update, Delete），不返回值。
+- **查询 (Queries)**: 读取系统状态的操作，不改变状态，返回DTO。
+**优势**: 可以针对读、写负载分别进行优化和扩展。写模型可以采用规范化的关系型数据库保证一致性，读模型可以采用反规范化的NoSQL数据库或搜索引擎提升查询性能。
+
+### 2.4 数据库连接池管理
 
 ```go
 type DatabaseManager struct {
@@ -121,7 +152,7 @@ func (dm *DatabaseManager) reconnectPool(pool *ConnectionPool) error {
 }
 ```
 
-### 2.2 事务管理
+### 2.5 事务管理
 
 ```go
 type TransactionManager struct {
@@ -492,880 +523,177 @@ func (im *IndexManager) RecommendIndexes(queries []string) []*IndexRecommendatio
 }
 ```
 
-## 5. 缓存策略与实现
+## 5. Golang主流实现与代码示例
 
-### 5.1 多级缓存架构
+### 5.1 database/sql 库最佳实践
 
-```go
-type CacheManager struct {
-    // 缓存层级
-    L1Cache *L1Cache  // 内存缓存
-    L2Cache *L2Cache  // Redis缓存
-    L3Cache *L3Cache  // 分布式缓存
-    
-    // 缓存策略
-    Strategy *CacheStrategy
-    
-    // 缓存同步
-    Synchronizer *CacheSynchronizer
-    
-    // 缓存监控
-    Monitor *CacheMonitor
-}
-
-type L1Cache struct {
-    store    map[string]*CacheEntry
-    capacity int
-    policy   EvictionPolicy
-    stats    *CacheStats
-}
-
-type CacheEntry struct {
-    Key       string
-    Value     interface{}
-    ExpiresAt time.Time
-    AccessCount int
-    LastAccess time.Time
-}
-
-type EvictionPolicy interface {
-    Evict(cache *L1Cache) []string
-}
-
-type LRUEvictionPolicy struct{}
-
-func (lru *LRUEvictionPolicy) Evict(cache *L1Cache) []string {
-    var evicted []string
-    var oldest time.Time
-    
-    // 找到最久未访问的条目
-    for key, entry := range cache.store {
-        if oldest.IsZero() || entry.LastAccess.Before(oldest) {
-            oldest = entry.LastAccess
-            evicted = []string{key}
-        }
-    }
-    
-    return evicted
-}
-
-func (cm *CacheManager) Get(key string) (interface{}, error) {
-    // 1. 检查L1缓存
-    if value, exists := cm.L1Cache.Get(key); exists {
-        return value, nil
-    }
-    
-    // 2. 检查L2缓存
-    if value, exists := cm.L2Cache.Get(key); exists {
-        // 回填L1缓存
-        cm.L1Cache.Set(key, value)
-        return value, nil
-    }
-    
-    // 3. 检查L3缓存
-    if value, exists := cm.L3Cache.Get(key); exists {
-        // 回填L2和L1缓存
-        cm.L2Cache.Set(key, value)
-        cm.L1Cache.Set(key, value)
-        return value, nil
-    }
-    
-    return nil, errors.New("key not found")
-}
-```
-
-### 5.2 缓存一致性
+标准库 `database/sql` 提供了一套通用的SQL接口，但使用时需要注意一些关键实践。
 
 ```go
-type CacheConsistencyManager struct {
-    // 一致性协议
-    Protocol ConsistencyProtocol
-    
-    // 版本管理
-    VersionManager *VersionManager
-    
-    // 冲突解决
-    ConflictResolver *ConflictResolver
-    
-    // 同步机制
-    Synchronizer *CacheSynchronizer
-}
+package main
 
-type CacheVersion struct {
-    Key       string
-    Version   int64
-    Timestamp time.Time
-    NodeID    string
-}
+import (
+ "database/sql"
+ "fmt"
+ "time"
 
-func (ccm *CacheConsistencyManager) Update(key string, value interface{}) error {
-    // 1. 获取当前版本
-    currentVersion := ccm.VersionManager.GetVersion(key)
-    
-    // 2. 创建新版本
-    newVersion := &CacheVersion{
-        Key:       key,
-        Version:   currentVersion.Version + 1,
-        Timestamp: time.Now(),
-        NodeID:    ccm.getNodeID(),
-    }
-    
-    // 3. 检查冲突
-    if conflict := ccm.checkConflict(key, newVersion); conflict != nil {
-        return ccm.resolveConflict(conflict)
-    }
-    
-    // 4. 更新缓存
-    if err := ccm.updateCache(key, value, newVersion); err != nil {
-        return err
-    }
-    
-    // 5. 同步到其他节点
-    return ccm.synchronize(key, value, newVersion)
-}
-
-func (ccm *CacheConsistencyManager) synchronize(key string, value interface{}, version *CacheVersion) error {
-    // 使用Gossip协议同步
-    return ccm.Protocol.Broadcast(&CacheUpdate{
-        Key:     key,
-        Value:   value,
-        Version: version,
-    })
-}
-```
-
-## 6. 数据迁移与备份
-
-### 6.1 数据迁移引擎
-
-```go
-type DataMigrationEngine struct {
-    // 源数据库
-    SourceDB *Database
-    
-    // 目标数据库
-    TargetDB *Database
-    
-    // 迁移策略
-    Strategy MigrationStrategy
-    
-    // 数据验证
-    Validator *DataValidator
-    
-    // 进度跟踪
-    ProgressTracker *ProgressTracker
-}
-
-type MigrationStrategy interface {
-    Migrate(ctx context.Context, source, target *Database) error
-}
-
-type FullMigrationStrategy struct {
-    batchSize int
-    workers   int
-}
-
-func (fms *FullMigrationStrategy) Migrate(ctx context.Context, source, target *Database) error {
-    // 1. 获取表列表
-    tables, err := source.GetTables()
-    if err != nil {
-        return err
-    }
-    
-    // 2. 并行迁移表
-    var wg sync.WaitGroup
-    errors := make(chan error, len(tables))
-    
-    for _, table := range tables {
-        wg.Add(1)
-        go func(tableName string) {
-            defer wg.Done()
-            if err := fms.migrateTable(ctx, source, target, tableName); err != nil {
-                errors <- err
-            }
-        }(table)
-    }
-    
-    wg.Wait()
-    close(errors)
-    
-    // 检查错误
-    for err := range errors {
-        if err != nil {
-            return err
-        }
-    }
-    
-    return nil
-}
-
-func (fms *FullMigrationStrategy) migrateTable(ctx context.Context, source, target *Database, tableName string) error {
-    // 1. 创建目标表
-    schema, err := source.GetTableSchema(tableName)
-    if err != nil {
-        return err
-    }
-    
-    if err := target.CreateTable(tableName, schema); err != nil {
-        return err
-    }
-    
-    // 2. 分批迁移数据
-    offset := 0
-    for {
-        rows, err := source.QueryWithLimit(tableName, fms.batchSize, offset)
-        if err != nil {
-            return err
-        }
-        
-        if len(rows) == 0 {
-            break
-        }
-        
-        if err := target.BatchInsert(tableName, rows); err != nil {
-            return err
-        }
-        
-        offset += len(rows)
-    }
-    
-    return nil
-}
-```
-
-### 6.2 备份与恢复
-
-```go
-type BackupManager struct {
-    // 备份策略
-    Strategy *BackupStrategy
-    
-    // 存储管理
-    Storage *BackupStorage
-    
-    // 压缩加密
-    Processor *BackupProcessor
-    
-    // 恢复管理
-    RestoreManager *RestoreManager
-}
-
-type BackupStrategy struct {
-    Type        BackupType
-    Schedule    string
-    Retention   time.Duration
-    Compression bool
-    Encryption  bool
-}
-
-type BackupType string
-
-const (
-    FullBackup    BackupType = "Full"
-    IncrementalBackup BackupType = "Incremental"
-    DifferentialBackup BackupType = "Differential"
+ _ "github.com/go-sql-driver/mysql" // 导入驱动，但匿名使用
 )
 
-func (bm *BackupManager) CreateBackup(ctx context.Context, strategy *BackupStrategy) (*Backup, error) {
-    // 1. 创建备份
-    backup, err := bm.createBackup(ctx, strategy)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 2. 压缩
-    if strategy.Compression {
-        backup, err = bm.Processor.Compress(backup)
-        if err != nil {
-            return nil, err
-        }
-    }
-    
-    // 3. 加密
-    if strategy.Encryption {
-        backup, err = bm.Processor.Encrypt(backup)
-        if err != nil {
-            return nil, err
-        }
-    }
-    
-    // 4. 存储
-    if err := bm.Storage.Store(backup); err != nil {
-        return nil, err
-    }
-    
-    // 5. 清理旧备份
-    return backup, bm.cleanupOldBackups(strategy.Retention)
+// User 模型
+type User struct {
+ ID    int64
+ Name  string
+ Email sql.NullString // 使用sql.NullString处理可能为NULL的列
 }
 
-func (bm *BackupManager) Restore(ctx context.Context, backupID string, target *Database) error {
-    // 1. 获取备份
-    backup, err := bm.Storage.Get(backupID)
-    if err != nil {
-        return err
-    }
-    
-    // 2. 解密
-    if backup.Encrypted {
-        backup, err = bm.Processor.Decrypt(backup)
-        if err != nil {
-            return err
-        }
-    }
-    
-    // 3. 解压
-    if backup.Compressed {
-        backup, err = bm.Processor.Decompress(backup)
-        if err != nil {
-            return err
-        }
-    }
-    
-    // 4. 恢复
-    return bm.RestoreManager.Restore(ctx, backup, target)
+func main() {
+ // DSN (Data Source Name) 中包含parseTime=true来自动解析DATETIME
+ db, err := sql.Open("mysql", "user:password@tcp(127.0.0.1:3306)/dbname?parseTime=true")
+ if err != nil {
+  panic(err)
+ }
+ defer db.Close() // 确保数据库连接被关闭
+
+ // 1. 配置高效的连接池
+ db.SetMaxOpenConns(25)
+ db.SetMaxIdleConns(25)
+ db.SetConnMaxLifetime(5 * time.Minute)
+
+ // 2. 检查连接是否成功
+ if err := db.Ping(); err != nil {
+  panic(err)
+ }
+
+ // 3. 使用预编译语句 (Prepared Statements) 防止SQL注入
+ stmt, err := db.Prepare("SELECT id, name, email FROM users WHERE id = ?")
+ if err != nil {
+  panic(err)
+ }
+ defer stmt.Close()
+
+ rows, err := stmt.Query(1) // 使用具体值执行
+ if err != nil {
+  panic(err)
+ }
+ defer rows.Close()
+
+ // 4. 正确迭代和扫描结果，处理NULL值
+ for rows.Next() {
+  var user User
+  // Scan时需要为每个列提供一个指针
+  if err := rows.Scan(&user.ID, &user.Name, &user.Email); err != nil {
+   panic(err)
+  }
+
+  fmt.Printf("ID: %d, Name: %s, ", user.ID, user.Name)
+  if user.Email.Valid {
+   fmt.Printf("Email: %s\n", user.Email.String)
+  } else {
+   fmt.Println("Email: NULL")
+  }
+ }
+ // 检查迭代过程中的错误
+ if err := rows.Err(); err != nil {
+  panic(err)
+ }
 }
 ```
 
-## 7. 监控与维护
+## 6. 分布式挑战与主流解决方案
 
-### 7.1 数据库监控系统
+### 6.1 分布式事务
+
+在微服务架构中，单个业务操作可能跨越多个数据库，需要分布式事务来保证数据一致性。
+
+#### Saga模式
+
+Saga是一种通过**异步消息**来协调一系列本地事务的设计模式。每个本地事务完成後会发布一个事件，触发下一个本地事务。如果任何一个事务失败，Saga会执行一系列**补偿事务（Compensating Transactions）**来撤销已经完成的操作。
+
+```mermaid
+graph TD
+    A[Start Order] --> B(Create Order - Pending);
+    B -- OrderCreated Event --> C(Reserve Inventory);
+    C -- InventoryReserved Event --> D(Process Payment);
+    D -- PaymentProcessed Event --> E(Mark Order - Completed);
+    
+    C -- Inventory Not Available --> F(Cancel Order - Failed);
+    D -- Payment Failed --> G(Release Inventory);
+    G --> F;
+```
+
+**优点**: 高可用性，松耦合，无锁，扩展性好。
+**缺点**: 实现复杂，需要保证补偿事务的幂等性，不提供隔离性。
+
+### 6.2 数据库高可用性
+
+#### 读写分离 (Read/Write Splitting)
+
+通过主从复制（Primary-Replica）的模式，将写操作路由到主数据库，将读操作路由到多个从数据库，从而分摊负载，提高读取性能。
 
 ```go
-type DatabaseMonitor struct {
-    // 性能监控
-    PerformanceMonitor *PerformanceMonitor
-    
-    // 健康检查
-    HealthChecker *HealthChecker
-    
-    // 告警管理
-    AlertManager *AlertManager
-    
-    // 指标收集
-    MetricsCollector *MetricsCollector
-    
-    // 日志分析
-    LogAnalyzer *LogAnalyzer
+type ReadWriteRouter struct {
+ Primary *sql.DB   // 主库连接
+ Replicas []*sql.DB // 从库连接池
 }
 
-type DatabaseMetrics struct {
-    // 连接指标
-    ActiveConnections    int
-    IdleConnections      int
-    MaxConnections       int
-    ConnectionErrors     int
-    
-    // 查询指标
-    QueriesPerSecond     float64
-    SlowQueries          int
-    QueryErrors          int
-    AverageQueryTime     time.Duration
-    
-    // 存储指标
-    DatabaseSize         int64
-    TableSizes           map[string]int64
-    IndexSizes           map[string]int64
-    FreeSpace            int64
-    
-    // 缓存指标
-    CacheHitRatio        float64
-    CacheSize            int64
-    CacheEvictions       int
-    
-    // 事务指标
-    ActiveTransactions   int
-    CommittedTransactions int
-    RollbackTransactions int
-    Deadlocks            int
+func (r *ReadWriteRouter) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+ // 随机选择一个从库执行读操作
+ replica := r.selectReplica()
+ return replica.QueryContext(ctx, query, args...)
 }
 
-func (dm *DatabaseMonitor) CollectMetrics(ctx context.Context) (*DatabaseMetrics, error) {
-    metrics := &DatabaseMetrics{}
-    
-    // 1. 收集连接指标
-    connMetrics, err := dm.collectConnectionMetrics(ctx)
-    if err != nil {
-        return nil, err
-    }
-    metrics.ActiveConnections = connMetrics.Active
-    metrics.IdleConnections = connMetrics.Idle
-    metrics.MaxConnections = connMetrics.Max
-    metrics.ConnectionErrors = connMetrics.Errors
-    
-    // 2. 收集查询指标
-    queryMetrics, err := dm.collectQueryMetrics(ctx)
-    if err != nil {
-        return nil, err
-    }
-    metrics.QueriesPerSecond = queryMetrics.QPS
-    metrics.SlowQueries = queryMetrics.Slow
-    metrics.QueryErrors = queryMetrics.Errors
-    metrics.AverageQueryTime = queryMetrics.AvgTime
-    
-    // 3. 收集存储指标
-    storageMetrics, err := dm.collectStorageMetrics(ctx)
-    if err != nil {
-        return nil, err
-    }
-    metrics.DatabaseSize = storageMetrics.DatabaseSize
-    metrics.TableSizes = storageMetrics.TableSizes
-    metrics.IndexSizes = storageMetrics.IndexSizes
-    metrics.FreeSpace = storageMetrics.FreeSpace
-    
-    // 4. 收集缓存指标
-    cacheMetrics, err := dm.collectCacheMetrics(ctx)
-    if err != nil {
-        return nil, err
-    }
-    metrics.CacheHitRatio = cacheMetrics.HitRatio
-    metrics.CacheSize = cacheMetrics.Size
-    metrics.CacheEvictions = cacheMetrics.Evictions
-    
-    // 5. 收集事务指标
-    txnMetrics, err := dm.collectTransactionMetrics(ctx)
-    if err != nil {
-        return nil, err
-    }
-    metrics.ActiveTransactions = txnMetrics.Active
-    metrics.CommittedTransactions = txnMetrics.Committed
-    metrics.RollbackTransactions = txnMetrics.Rollback
-    metrics.Deadlocks = txnMetrics.Deadlocks
-    
-    return metrics, nil
+func (r *ReadWriteRouter) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+ // 所有写操作都在主库上执行
+ return r.Primary.ExecContext(ctx, query, args...)
 }
 
-func (dm *DatabaseMonitor) CheckHealth(ctx context.Context) (*HealthStatus, error) {
-    status := &HealthStatus{
-        Timestamp: time.Now(),
-        Checks:    make(map[string]*HealthCheck),
-    }
-    
-    // 1. 连接健康检查
-    connHealth := dm.HealthChecker.CheckConnection(ctx)
-    status.Checks["connection"] = connHealth
-    
-    // 2. 查询健康检查
-    queryHealth := dm.HealthChecker.CheckQueryPerformance(ctx)
-    status.Checks["query_performance"] = queryHealth
-    
-    // 3. 存储健康检查
-    storageHealth := dm.HealthChecker.CheckStorage(ctx)
-    status.Checks["storage"] = storageHealth
-    
-    // 4. 缓存健康检查
-    cacheHealth := dm.HealthChecker.CheckCache(ctx)
-    status.Checks["cache"] = cacheHealth
-    
-    // 5. 计算整体健康状态
-    status.OverallStatus = dm.calculateOverallHealth(status.Checks)
-    
-    return status, nil
+func (r *ReadWriteRouter) selectReplica() *sql.DB {
+ // 实现负载均衡策略，如随机或轮询
+ return r.Replicas[0]
 }
 ```
 
-### 7.2 自动维护任务
+#### 数据库故障转移 (Database Failover)
 
-```go
-type MaintenanceManager struct {
-    // 维护任务
-    Tasks map[string]*MaintenanceTask
-    
-    // 调度器
-    Scheduler *TaskScheduler
-    
-    // 执行器
-    Executor *TaskExecutor
-    
-    // 监控
-    Monitor *MaintenanceMonitor
-}
+当主数据库发生故障时，自动或手动将一个从数据库提升为新的主数据库，以保证服务的持续可用性。这通常需要一个外部的协调器或集群管理工具（如 Patroni for PostgreSQL）来实现。
 
-type MaintenanceTask struct {
-    ID          string
-    Name        string
-    Type        TaskType
-    Schedule    string
-    Enabled     bool
-    Parameters  map[string]interface{}
-    LastRun     time.Time
-    NextRun     time.Time
-    Status      TaskStatus
-}
+## 7. 工程结构与CI/CD实践
 
-type TaskType string
+## 8. 形式化建模与数学表达
 
-const (
-    VacuumTask      TaskType = "Vacuum"
-    AnalyzeTask     TaskType = "Analyze"
-    ReindexTask     TaskType = "Reindex"
-    BackupTask      TaskType = "Backup"
-    CleanupTask     TaskType = "Cleanup"
-)
+## 9. 国际权威资源与开源组件引用
 
-func (mm *MaintenanceManager) ScheduleTask(task *MaintenanceTask) error {
-    // 1. 验证任务
-    if err := mm.validateTask(task); err != nil {
-        return err
-    }
-    
-    // 2. 计算下次运行时间
-    nextRun, err := mm.Scheduler.CalculateNextRun(task.Schedule)
-    if err != nil {
-        return err
-    }
-    task.NextRun = nextRun
-    
-    // 3. 注册任务
-    mm.Tasks[task.ID] = task
-    
-    // 4. 启动调度器
-    go mm.runScheduler()
-    
-    return nil
-}
-
-func (mm *MaintenanceManager) runScheduler() {
-    ticker := time.NewTicker(1 * time.Minute)
-    defer ticker.Stop()
-    
-    for {
-        select {
-        case <-ticker.C:
-            mm.checkAndExecuteTasks()
-        }
-    }
-}
-
-func (mm *MaintenanceManager) checkAndExecuteTasks() {
-    now := time.Now()
-    
-    for _, task := range mm.Tasks {
-        if !task.Enabled {
-            continue
-        }
-        
-        if now.After(task.NextRun) {
-            go mm.executeTask(task)
-        }
-    }
-}
-
-func (mm *MaintenanceManager) executeTask(task *MaintenanceTask) {
-    task.Status = TaskStatusRunning
-    task.LastRun = time.Now()
-    
-    // 执行任务
-    err := mm.Executor.Execute(task)
-    
-    if err != nil {
-        task.Status = TaskStatusFailed
-        mm.Monitor.RecordTaskFailure(task, err)
-    } else {
-        task.Status = TaskStatusCompleted
-        mm.Monitor.RecordTaskSuccess(task)
-    }
-    
-    // 计算下次运行时间
-    nextRun, _ := mm.Scheduler.CalculateNextRun(task.Schedule)
-    task.NextRun = nextRun
-}
-```
-
-## 8. 安全与合规
-
-### 8.1 数据库安全
-
-```go
-type DatabaseSecurityManager struct {
-    // 访问控制
-    AccessControl *AccessControl
-    
-    // 加密管理
-    EncryptionManager *EncryptionManager
-    
-    // 审计日志
-    AuditLogger *AuditLogger
-    
-    // 漏洞扫描
-    VulnerabilityScanner *VulnerabilityScanner
-    
-    // 合规检查
-    ComplianceChecker *ComplianceChecker
-}
-
-type AccessControl struct {
-    // 用户管理
-    UserManager *UserManager
-    
-    // 角色管理
-    RoleManager *RoleManager
-    
-    // 权限管理
-    PermissionManager *PermissionManager
-    
-    // 会话管理
-    SessionManager *SessionManager
-}
-
-func (ac *AccessControl) CheckPermission(ctx context.Context, userID, resource, action string) (bool, error) {
-    // 1. 获取用户信息
-    user, err := ac.UserManager.GetUser(userID)
-    if err != nil {
-        return false, err
-    }
-    
-    // 2. 获取用户角色
-    roles, err := ac.RoleManager.GetUserRoles(userID)
-    if err != nil {
-        return false, err
-    }
-    
-    // 3. 检查权限
-    for _, role := range roles {
-        permissions, err := ac.PermissionManager.GetRolePermissions(role.ID)
-        if err != nil {
-            continue
-        }
-        
-        for _, permission := range permissions {
-            if permission.Resource == resource && permission.Action == action {
-                return true, nil
-            }
-        }
-    }
-    
-    return false, nil
-}
-
-func (ac *AccessControl) AuditAccess(ctx context.Context, userID, resource, action string, granted bool) error {
-    return ac.AuditLogger.LogAccess(&AccessLog{
-        UserID:    userID,
-        Resource:  resource,
-        Action:    action,
-        Granted:   granted,
-        Timestamp: time.Now(),
-        IPAddress: extractIPAddress(ctx),
-    })
-}
-```
-
-### 8.2 数据加密
-
-```go
-type EncryptionManager struct {
-    // 加密算法
-    Algorithms map[string]EncryptionAlgorithm
-    
-    // 密钥管理
-    KeyManager *KeyManager
-    
-    // 加密策略
-    Policies map[string]*EncryptionPolicy
-}
-
-type EncryptionPolicy struct {
-    ID          string
-    Name        string
-    Algorithm   string
-    KeyID       string
-    Scope       EncryptionScope
-    Enabled     bool
-}
-
-type EncryptionScope struct {
-    Tables      []string
-    Columns     []string
-    Databases   []string
-}
-
-func (em *EncryptionManager) EncryptData(data []byte, policyID string) ([]byte, error) {
-    policy, exists := em.Policies[policyID]
-    if !exists || !policy.Enabled {
-        return data, nil
-    }
-    
-    algorithm, exists := em.Algorithms[policy.Algorithm]
-    if !exists {
-        return nil, fmt.Errorf("encryption algorithm not found: %s", policy.Algorithm)
-    }
-    
-    key, err := em.KeyManager.GetKey(policy.KeyID)
-    if err != nil {
-        return nil, err
-    }
-    
-    return algorithm.Encrypt(data, key)
-}
-
-func (em *EncryptionManager) DecryptData(encryptedData []byte, policyID string) ([]byte, error) {
-    policy, exists := em.Policies[policyID]
-    if !exists || !policy.Enabled {
-        return encryptedData, nil
-    }
-    
-    algorithm, exists := em.Algorithms[policy.Algorithm]
-    if !exists {
-        return nil, fmt.Errorf("encryption algorithm not found: %s", policy.Algorithm)
-    }
-    
-    key, err := em.KeyManager.GetKey(policy.KeyID)
-    if err != nil {
-        return nil, err
-    }
-    
-    return algorithm.Decrypt(encryptedData, key)
-}
-```
-
-## 9. 实际案例分析
-
-### 9.1 高并发电商数据库
-
-**场景**: 支持百万级并发的电商数据库架构
-
-```go
-type ECommerceDatabase struct {
-    // 主数据库（写操作）
-    MasterDB *Database
-    
-    // 从数据库（读操作）
-    SlaveDBs []*Database
-    
-    // 缓存层
-    Cache *CacheManager
-    
-    // 分片管理
-    ShardManager *ShardManager
-    
-    // 读写分离
-    ReadWriteSplitter *ReadWriteSplitter
-}
-
-type ReadWriteSplitter struct {
-    master *Database
-    slaves []*Database
-    loadBalancer *LoadBalancer
-}
-
-func (rws *ReadWriteSplitter) RouteQuery(query *Query) (*Database, error) {
-    if query.IsWrite() {
-        return rws.master, nil
-    }
-    
-    // 负载均衡选择从库
-    return rws.loadBalancer.Select(rws.slaves), nil
-}
-
-func (rws *ReadWriteSplitter) ExecuteQuery(ctx context.Context, query *Query) (*QueryResult, error) {
-    db, err := rws.RouteQuery(query)
-    if err != nil {
-        return nil, err
-    }
-    
-    return db.Execute(ctx, query)
-}
-```
-
-### 9.2 时序数据库应用
-
-**场景**: IoT设备数据存储与分析
-
-```go
-type TimeSeriesDatabase struct {
-    // 数据存储
-    Storage *TimeSeriesStorage
-    
-    // 查询引擎
-    QueryEngine *TimeSeriesQueryEngine
-    
-    // 压缩算法
-    Compressor *TimeSeriesCompressor
-    
-    // 聚合计算
-    Aggregator *TimeSeriesAggregator
-}
-
-type TimeSeriesStorage struct {
-    // 内存存储（热数据）
-    MemoryStore *MemoryStore
-    
-    // 磁盘存储（冷数据）
-    DiskStore *DiskStore
-    
-    // 压缩存储（归档数据）
-    CompressedStore *CompressedStore
-}
-
-func (tsdb *TimeSeriesDatabase) Write(ctx context.Context, points []*DataPoint) error {
-    // 1. 写入内存存储
-    if err := tsdb.Storage.MemoryStore.Write(points); err != nil {
-        return err
-    }
-    
-    // 2. 异步写入磁盘
-    go func() {
-        tsdb.Storage.DiskStore.Write(points)
-    }()
-    
-    return nil
-}
-
-func (tsdb *TimeSeriesDatabase) Query(ctx context.Context, query *TimeSeriesQuery) (*QueryResult, error) {
-    // 1. 解析查询
-    parsedQuery := tsdb.QueryEngine.Parse(query)
-    
-    // 2. 确定数据源
-    dataSources := tsdb.determineDataSources(parsedQuery)
-    
-    // 3. 并行查询
-    results := make(chan *QueryResult, len(dataSources))
-    for _, source := range dataSources {
-        go func(s DataSource) {
-            result, _ := s.Query(parsedQuery)
-            results <- result
-        }(source)
-    }
-    
-    // 4. 合并结果
-    return tsdb.mergeResults(results, len(dataSources))
-}
-```
-
-## 10. 未来趋势与国际前沿
-
-- **云原生数据库服务**
-- **AI/ML驱动的数据库优化**
-- **边缘数据库与分布式存储**
-- **量子数据库与新型存储介质**
-- **数据库即服务（DBaaS）**
-- **多模态数据库支持**
-
-## 11. 国际权威资源与开源组件引用
-
-### 11.1 关系型数据库
+### 9.1 关系型数据库
 
 - [PostgreSQL](https://www.postgresql.org/) - 最先进的开源关系型数据库
 - [MySQL](https://www.mysql.com/) - 最流行的开源数据库
 - [SQLite](https://www.sqlite.org/) - 轻量级嵌入式数据库
 
-### 11.2 NoSQL数据库
+### 9.2 NoSQL数据库
 
 - [MongoDB](https://www.mongodb.com/) - 文档数据库
 - [Redis](https://redis.io/) - 内存数据库
 - [Cassandra](https://cassandra.apache.org/) - 分布式NoSQL数据库
 
-### 11.3 时序数据库
+### 9.3 时序数据库
 
 - [InfluxDB](https://www.influxdata.com/) - 时序数据库
 - [TimescaleDB](https://www.timescale.com/) - 基于PostgreSQL的时序数据库
 - [Prometheus](https://prometheus.io/) - 监控时序数据库
 
-### 11.4 图数据库
+### 9.4 图数据库
 
 - [Neo4j](https://neo4j.com/) - 图数据库
 - [ArangoDB](https://www.arangodb.com/) - 多模型数据库
 
-## 12. 扩展阅读与参考文献
+## 10. 相关架构主题
+
+- [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 每个微服务通常拥有自己的数据库，这引发了对分布式事务和数据一致性的挑战。
+- [**事件驱动架构 (Event-Driven Architecture)**](./architecture_event_driven_golang.md): 常用于实现Saga等分布式事务模式，并通过事件溯源来维护数据状态。
+- [**安全架构 (Security Architecture)**](./architecture_security_golang.md): 保护数据库免受SQL注入、未授权访问等威胁。
+
+## 11. 扩展阅读与参考文献
 
 1. "Database Design for Mere Mortals" - Michael J. Hernandez
 2. "SQL Performance Explained" - Markus Winand

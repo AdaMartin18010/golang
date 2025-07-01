@@ -9,11 +9,13 @@
 5. Golang主流实现与代码示例
 6. 持续集成与持续交付（CI/CD）
 7. 基础设施即代码（IaC）
-8. 监控与可观测性
-9. 自动化运维与自愈
-10. 形式化建模与数学表达
-11. 国际权威资源与开源组件引用
-12. 扩展阅读与参考文献
+8. 可观测性与监控 (Observability & Monitoring)
+9. 混沌工程 (Chaos Engineering)
+10. 自动化运维与自愈
+11. 形式化建模与数学表达
+12. 国际权威资源与开源组件引用
+13. 相关架构主题
+14. 扩展阅读与参考文献
 
 ---
 
@@ -448,206 +450,85 @@ func (p *GCPProvider) CreateResource(ctx context.Context, resource *ResourceDefi
 }
 ```
 
-## 7. 监控与可观测性架构
+## 7. 可观测性与监控 (Observability & Monitoring)
 
-### 7.1 全链路监控系统
+### 7.1 三大支柱 (Three Pillars)
 
-```go
-type ObservabilityPlatform struct {
-    // 数据收集
-    MetricsCollector  *MetricsCollector
-    LogCollector      *LogCollector
-    TraceCollector    *TraceCollector
-    
-    // 数据处理
-    DataProcessor     *DataProcessor
-    Aggregator        *DataAggregator
-    
-    // 存储
-    TimeSeriesDB      *TimeSeriesDB
-    LogStore          *LogStore
-    TraceStore        *TraceStore
-    
-    // 查询与分析
-    QueryEngine       *QueryEngine
-    AlertManager      *AlertManager
-    
-    // 可视化
-    DashboardManager  *DashboardManager
-}
+- **日志 (Logs)**: 记录离散的、带有时间戳的事件。用于问题排查和事后审计。
+- **指标 (Metrics)**: 可聚合的、带有属性的数值型数据。用于趋势分析、性能监控和告警。
+- **追踪 (Traces)**: 记录单个请求在分布式系统中所经过的完整路径。用于理解系统延迟、定位瓶颈。
 
-type MetricsCollector struct {
-    // 系统指标
-    SystemMetrics     *SystemMetricsCollector
-    // 应用指标
-    AppMetrics        *AppMetricsCollector
-    // 业务指标
-    BusinessMetrics   *BusinessMetricsCollector
-    // 自定义指标
-    CustomMetrics     *CustomMetricsCollector
-}
+### 7.2 Golang应用可观测性技术栈
 
-type SystemMetricsCollector struct {
-    collectors map[string]MetricCollector
-    interval   time.Duration
-}
+```mermaid
+graph TD
+    subgraph Go Application
+        A[Handler/Service] -->|Records| B(Metrics - Prometheus Client);
+        A -->|Writes| C(Logs - zap/logrus);
+        A -->|Creates Spans| D(Tracing - OpenTelemetry);
+    end
 
-func (smc *SystemMetricsCollector) Collect() []Metric {
-    var metrics []Metric
-    
-    for name, collector := range smc.collectors {
-        collected := collector.Collect()
-        for _, metric := range collected {
-            metric.Labels["collector"] = name
-            metrics = append(metrics, metric)
-        }
-    }
-    
-    return metrics
-}
+    subgraph Collection & Storage
+        B --> E(Prometheus Server);
+        C --> F(Fluentd/Loki);
+        D --> G(Jaeger/Tempo);
+    end
 
-type Metric struct {
-    Name      string
-    Value     float64
-    Type      MetricType
-    Labels    map[string]string
-    Timestamp time.Time
-}
-
-// 应用性能监控（APM）
-type APMCollector struct {
-    // 请求追踪
-    RequestTracer *RequestTracer
-    // 错误监控
-    ErrorMonitor  *ErrorMonitor
-    // 性能分析
-    Profiler      *Profiler
-}
-
-type RequestTracer struct {
-    sampler     Sampler
-    propagator  Propagator
-    exporter    Exporter
-}
-
-func (rt *RequestTracer) TraceRequest(ctx context.Context, req *http.Request) (context.Context, func()) {
-    // 1. 采样决策
-    if !rt.sampler.ShouldSample(ctx, req) {
-        return ctx, func() {}
-    }
-    
-    // 2. 创建Span
-    span := rt.createSpan(ctx, req)
-    ctx = context.WithValue(ctx, "span", span)
-    
-    // 3. 注入追踪上下文
-    rt.propagator.Inject(ctx, req.Header)
-    
-    return ctx, func() {
-        span.End()
-        rt.exporter.Export(span)
-    }
-}
+    subgraph Visualization & Alerting
+        E --> H(Grafana);
+        F --> H;
+        G --> H;
+        E --> I(Alertmanager);
+    end
 ```
 
-### 7.2 智能告警系统
+**实现概览**:
 
-```go
-type AlertManager struct {
-    // 规则引擎
-    RuleEngine     *AlertRuleEngine
-    
-    // 告警聚合
-    Aggregator     *AlertAggregator
-    
-    // 通知管理
-    Notifier       *Notifier
-    
-    // 静默管理
-    Silencer       *Silencer
-    
-    // 升级策略
-    Escalation     *EscalationManager
-}
+1. **日志 (Logging)**: 使用高性能的结构化日志库如`uber-go/zap`或`sirupsen/logrus`，将日志输出为JSON格式。通过`Fluentd`或`Promtail`收集日志，并发送到`Loki`或`Elasticsearch`进行存储和查询。
+2. **指标 (Metrics)**: 在Go应用中引入`prometheus/client_golang`库，通过HTTP暴露`/metrics`端点。Prometheus Server定期抓取这些指标，并使用Grafana进行可视化，使用Alertmanager进行告警。
+3. **追踪 (Tracing)**: 使用`OpenTelemetry`的Go SDK。在请求入口处创建父Span，并通过`context`在函数调用链中传递，在关键节点创建子Span。将追踪数据导出到`Jaeger`或`Tempo`进行分析。
 
-type AlertRule struct {
-    ID          string
-    Name        string
-    Query       string
-    Condition   string
-    Duration    time.Duration
-    Severity    string
-    Labels      map[string]string
-    Annotations map[string]string
-}
+## 8. 混沌工程 (Chaos Engineering)
 
-type Alert struct {
-    ID          string
-    RuleID      string
-    Severity    string
-    Status      AlertStatus
-    Labels      map[string]string
-    Annotations map[string]string
-    StartTime   time.Time
-    EndTime     time.Time
-    Value       float64
-}
+### 8.1 核心原则
 
-func (am *AlertManager) EvaluateRules(ctx context.Context) error {
-    rules, err := am.RuleEngine.GetActiveRules()
-    if err != nil {
-        return err
-    }
-    
-    for _, rule := range rules {
-        // 执行查询
-        result, err := am.QueryEngine.Execute(rule.Query)
-        if err != nil {
-            continue
-        }
-        
-        // 评估条件
-        if am.evaluateCondition(result, rule.Condition) {
-            // 创建告警
-            alert := &Alert{
-                ID:        uuid.New().String(),
-                RuleID:    rule.ID,
-                Severity:  rule.Severity,
-                Status:    AlertStatusFiring,
-                Labels:    rule.Labels,
-                Annotations: rule.Annotations,
-                StartTime: time.Now(),
-                Value:     result.Value,
-            }
-            
-            // 处理告警
-            am.handleAlert(ctx, alert)
-        }
-    }
-    
-    return nil
-}
+- 建立一个关于稳定状态行为的假说。
+- 在实验组和控制组中改变真实世界的事件，如服务器崩溃、网络延迟等。
+- 尝试反驳该假说。
 
-func (am *AlertManager) handleAlert(ctx context.Context, alert *Alert) {
-    // 1. 检查静默
-    if am.Silencer.IsSilenced(alert) {
-        return
-    }
-    
-    // 2. 聚合告警
-    aggregated := am.Aggregator.Aggregate(alert)
-    
-    // 3. 发送通知
-    am.Notifier.SendNotification(ctx, aggregated)
-    
-    // 4. 检查升级
-    am.Escalation.CheckEscalation(ctx, aggregated)
-}
+### 8.2 混沌实验示例 (Chaos Mesh)
+
+Chaos Mesh是一个云原生的混沌工程平台，可以在Kubernetes环境中方便地注入各种故障。
+
+**Pod Kill实验**: 模拟随机杀死一个Pod的场景，以验证应用的自愈能力（如Deployment是否能自动拉起新Pod）。
+
+```yaml
+# pod-kill-chaos.yaml
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-example
+  namespace: my-app-ns
+spec:
+  # 动作：杀死Pod
+  action: pod-kill
+  mode: one # 每次只杀死一个Pod
+  selector:
+    namespaces:
+      - my-app-ns
+    labelSelectors:
+      "app": "my-golang-app" # 选择要注入故障的应用
+  # 实验持续时间和调度规则
+  duration: '10m'
+  scheduler:
+    cron: '@every 1m' # 每分钟执行一次
 ```
 
-## 8. 自动化运维与自愈
+通过`kubectl apply -f pod-kill-chaos.yaml`应用后，Chaos Mesh会每分钟随机杀死一个带有`app: my-golang-app`标签的Pod，持续10分钟。运维团队可以借此观察应用的响应时间、错误率以及恢复速度。
 
-### 8.1 自愈系统架构
+## 9. 自动化运维与自愈
+
+### 9.1 自愈系统架构
 
 ```go
 type SelfHealingSystem struct {
@@ -749,7 +630,7 @@ func (shs *SelfHealingSystem) executeHealingPolicy(ctx context.Context, policy *
 }
 ```
 
-### 8.2 配置管理与自动化
+### 9.2 配置管理与自动化
 
 ```go
 type ConfigurationManager struct {
@@ -820,9 +701,9 @@ func (cm *ConfigurationManager) RollbackConfig(ctx context.Context, configID str
 }
 ```
 
-## 9. 安全合规与治理
+## 10. 安全合规与治理
 
-### 9.1 安全扫描与合规检查
+### 10.1 安全扫描与合规检查
 
 ```go
 type SecurityComplianceManager struct {
@@ -913,7 +794,7 @@ func (scm *SecurityComplianceManager) CheckCompliance(ctx context.Context, frame
 }
 ```
 
-### 9.2 访问控制与审计
+### 10.2 访问控制与审计
 
 ```go
 type AccessControlManager struct {
@@ -976,9 +857,9 @@ func (acm *AccessControlManager) CheckAccess(ctx context.Context, req *AccessReq
 }
 ```
 
-## 10. 性能优化与资源管理
+## 11. 性能优化与资源管理
 
-### 10.1 资源优化器
+### 11.1 资源优化器
 
 ```go
 type ResourceOptimizer struct {
@@ -1036,7 +917,7 @@ func (ro *ResourceOptimizer) AnalyzeAndOptimize(ctx context.Context) error {
 }
 ```
 
-### 10.2 容量规划
+### 11.2 容量规划
 
 ```go
 type CapacityPlanner struct {
@@ -1087,9 +968,9 @@ func (cp *CapacityPlanner) ForecastCapacity(ctx context.Context, resource string
 }
 ```
 
-## 11. 实际案例分析
+## 12. 实际案例分析
 
-### 11.1 大规模微服务运维
+### 12.1 大规模微服务运维
 
 **场景**: 电商平台的微服务运维自动化
 
@@ -1158,7 +1039,7 @@ func (sm *ServiceManager) scaleUp(ctx context.Context, service *Service, targetR
 }
 ```
 
-### 11.2 云原生DevOps实践
+### 12.2 云原生DevOps实践
 
 **场景**: 基于Kubernetes的云原生应用运维
 
@@ -1210,38 +1091,12 @@ func (gw *GitOpsWorkflow) SyncInfrastructure(ctx context.Context) error {
 }
 ```
 
-## 12. 未来趋势与国际前沿
+## 13. 相关架构主题
 
-- **AIOps与智能运维**
-- **GitOps与声明式运维**
-- **边缘计算运维**
-- **多云/混合云统一运维**
-- **DevSecOps与安全左移**
-- **可观测性驱动运维**
-
-## 13. 国际权威资源与开源组件引用
-
-### 13.1 DevOps工具链
-
-- [Jenkins](https://www.jenkins.io/) - 持续集成服务器
-- [GitLab CI/CD](https://docs.gitlab.com/ee/ci/) - GitLab持续集成
-- [GitHub Actions](https://github.com/features/actions) - GitHub自动化
-- [ArgoCD](https://argoproj.github.io/argo-cd/) - GitOps持续部署
-- [Tekton](https://tekton.dev/) - 云原生CI/CD
-
-### 13.2 基础设施即代码
-
-- [Terraform](https://www.terraform.io/) - 基础设施编排
-- [Ansible](https://www.ansible.com/) - 配置管理
-- [Pulumi](https://www.pulumi.com/) - 现代基础设施即代码
-- [CloudFormation](https://aws.amazon.com/cloudformation/) - AWS基础设施
-
-### 13.3 监控与可观测性
-
-- [Prometheus](https://prometheus.io/) - 监控系统
-- [Grafana](https://grafana.com/) - 可视化平台
-- [Jaeger](https://www.jaegertracing.io/) - 分布式追踪
-- [ELK Stack](https://www.elastic.co/elk-stack) - 日志分析
+- [**容器化与编排架构 (Containerization & Orchestration Architecture)**](./architecture_containerization_orchestration_golang.md): DevOps实践的基石，CI/CD的目标平台。
+- [**安全架构 (Security Architecture)**](./architecture_security_golang.md): "DevSecOps"将安全实践无缝集成到DevOps流水线中。
+- [**服务网格架构 (Service Mesh Architecture)**](./architecture_service_mesh_golang.md): 提供了渐进式交付（如金丝雀发布）和高级可观测性的能力。
+- [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): DevOps是有效管理和部署大量微服务的关键。
 
 ## 14. 扩展阅读与参考文献
 

@@ -13,6 +13,9 @@
 5. Golang国际主流实现范例
 6. 形式化建模与证明
 7. 参考与外部链接
+8. 国际权威资源与开源组件引用
+9. 相关架构主题
+10. 扩展阅读与参考文献
 
 ---
 
@@ -567,3 +570,20 @@ jobs:
 - [Prometheus](https://prometheus.io/)
 - [OpenAPI 规范](https://swagger.io/specification/)
 - [Domain-Driven Design Reference](https://domainlanguage.com/ddd/)
+
+## 8. 国际权威资源与开源组件引用
+
+## 9. 相关架构主题
+
+- [**API网关架构 (API Gateway Architecture)**](./architecture_api_gateway_golang.md): 作为微服务的统一入口，处理路由、认证和监控。
+- [**服务网格架构 (Service Mesh Architecture)**](./architecture_service_mesh_golang.md): 提供服务间的可靠通信、安全性和可观测性。
+- [**事件驱动架构 (Event-Driven Architecture)**](./architecture_event_driven_golang.md): 实现服务间的异步解耦。
+- [**容器化与编排架构 (Containerization & Orchestration Architecture)**](./architecture_containerization_orchestration_golang.md): 微服务部署和管理的基石。
+- [**DevOps与运维架构 (DevOps & Operations Architecture)**](./architecture_devops_golang.md): 支持微服务的持续集成、部署和自动化运维。
+
+## 10. 扩展阅读与参考文献
+
+1. "Building Microservices" - Sam Newman
+2. ... (existing content) ...
+
+*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

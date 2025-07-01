@@ -11,7 +11,8 @@
 7. 工程结构与CI/CD实践
 8. 形式化建模与数学表达
 9. 国际权威资源与开源组件引用
-10. 扩展阅读与参考文献
+10. 相关架构主题
+11. 扩展阅读与参考文献
 
 ---
 
@@ -1221,7 +1222,14 @@ func (gg *GraphQLGateway) executeQuery(ctx context.Context, query *ParsedQuery, 
 - [GraphQL](https://graphql.org/) - 查询语言
 - [gRPC](https://grpc.io/) - 高性能RPC框架
 
-## 9. 扩展阅读与参考文献
+## 9. 相关架构主题
+
+- [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): API网关是微服务架构中的关键入口组件。
+- [**服务网格架构 (Service Mesh Architecture)**](./architecture_service_mesh_golang.md): API网关（特别是边缘网关/Ingress Gateway）常与服务网格协同工作，处理南北向流量。
+- [**安全架构 (Security Architecture)**](./architecture_security_golang.md): API网关是实现认证、授权和速率限制等安全策略的核心防线。
+- [**无服务器架构 (Serverless Architecture)**](./architecture_serverless_golang.md): API网关是触发FaaS（如AWS Lambda）函数的主要方式。
+
+## 10. 扩展阅读与参考文献
 
 1. "Building Microservices" - Sam Newman
 2. "API Design Patterns" - JJ Geewax

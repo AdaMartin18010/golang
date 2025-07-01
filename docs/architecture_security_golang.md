@@ -40,9 +40,16 @@
 - [OWASP](https://owasp.org/)
 - [Cloud Native Security](https://www.cncf.io/projects/cloud-native-security/)
 
-## 2. 核心安全模型
+## 2. 核心安全模型与设计原则
 
-### 2.1 零信任安全模型
+### 2.1 核心原则
+
+- **深度防御 (Defense in Depth)**: 采用多层、冗余的安全措施。即使一层防御被攻破，其他层次的防御依然能够提供保护。
+- **最小权限原则 (Principle of Least Privilege)**: 任何用户、程序或进程只应拥有其执行授权功能所必需的最小权限。
+- **零信任架构 (Zero Trust Architecture)**: 从不信任，始终验证。默认网络内部和外部的所有流量都不可信，要求对所有访问请求进行严格的身份验证和授权。
+- **安全左移 (Shift-Left Security)**: 在软件开发生命周期（SDLC）的早期阶段就集成安全实践，而不是在部署后才考虑安全问题。
+
+### 2.2 零信任安全模型
 
 ```go
 type ZeroTrustEngine struct {
@@ -100,18 +107,6 @@ func (zt *ZeroTrustEngine) EvaluateAccess(ctx context.Context, request AccessReq
     
     return decision, nil
 }
-```
-
-### 2.2 威胁建模
-
-```mermaid
-graph TD
-    A[资产识别] --> B[威胁分析]
-    B --> C[漏洞评估]
-    C --> D[风险评级]
-    D --> E[缓解措施]
-    E --> F[持续监控]
-    F --> B
 ```
 
 ### 2.3 安全策略引擎
@@ -447,176 +442,123 @@ func (km *KeyManager) CreateKey(ctx context.Context, req *CreateKeyRequest) (*Ke
 }
 ```
 
-## 5. 应用安全架构
+## 5. Golang主流实现与代码示例
 
-### 5.1 安全中间件链
+### 5.1 安全的HTTP响应头
+
+在Web应用中设置安全的HTTP头是防止点击劫持、XSS等攻击的第一道防线。
 
 ```go
-type SecurityMiddlewareChain struct {
-    middlewares []SecurityMiddleware
+func SecureHeadersMiddleware(next http.Handler) http.Handler {
+ return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+  // 防止内容被嵌入到<frame>、<iframe>、<embed>或<object>中
+  w.Header().Set("X-Frame-Options", "DENY")
+  // 防止MIME类型混淆攻击
+  w.Header().Set("X-Content-Type-Options", "nosniff")
+  // 启用内置的XSS过滤器 (主要用于旧版浏览器)
+  w.Header().Set("X-XSS-Protection", "1; mode=block")
+  // 严格限制页面可以加载的资源
+  // "default-src 'self'" 表示只允许从同源加载资源
+  w.Header().Set("Content-Security-Policy", "default-src 'self'")
+  // 强制使用HTTPS
+  w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+  
+  next.ServeHTTP(w, r)
+ })
 }
 
-type SecurityMiddleware interface {
-    Process(ctx context.Context, req interface{}) (context.Context, error)
-}
+// 使用中间件
+// router.Use(SecureHeadersMiddleware)
+```
 
-type SecurityContext struct {
-    UserID      string
-    Roles       []string
-    Permissions []string
-    AuthLevel   int
-    RequestID   string
-    Timestamp   time.Time
-}
+### 5.2 输入验证与输出编码 (OWASP Top 10)
 
-// 中间件实现
-type RateLimiterMiddleware struct {
-    limiter *rate.Limiter
-}
+#### 跨站脚本 (XSS) 防护
 
-func (m *RateLimiterMiddleware) Process(ctx context.Context, req interface{}) (context.Context, error) {
-    if !m.limiter.Allow() {
-        return ctx, errors.New("rate limit exceeded")
-    }
-    return ctx, nil
-}
+对所有用户输入进行清理，对所有输出到HTML的动态内容进行编码。
 
-type CSRFMiddleware struct {
-    tokenStore TokenStore
-}
+```go
+import "html/template"
 
-func (m *CSRFMiddleware) Process(ctx context.Context, req interface{}) (context.Context, error) {
-    httpReq := req.(*http.Request)
-    token := httpReq.Header.Get("X-CSRF-Token")
-    
-    if token == "" {
-        return ctx, errors.New("missing CSRF token")
-    }
-    
-    valid, err := m.tokenStore.ValidateCSRFToken(token)
-    if err != nil || !valid {
-        return ctx, errors.New("invalid CSRF token")
+func renderTemplate(w http.ResponseWriter, data interface{}) {
+    // 使用html/template包可以自动对内容进行上下文感知的HTML编码
+    // 这是防止XSS的核心手段
+    t, err := template.New("webpage").Parse(`<h1>Hello, {{.}}</h1>`)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
     }
     
-    return ctx, nil
-}
-
-// 使用中间件链
-func NewSecurityMiddlewareChain() *SecurityMiddlewareChain {
-    return &SecurityMiddlewareChain{
-        middlewares: []SecurityMiddleware{
-            &RateLimiterMiddleware{limiter: rate.NewLimiter(rate.Limit(100), 100)},
-            &CSRFMiddleware{tokenStore: NewInMemoryTokenStore()},
-            &JWTAuthMiddleware{secret: []byte("your-secret-key")},
-            &ContentSecurityMiddleware{},
-        },
+    // 假设userInput来自一个不可信的源
+    userInput := "<script>alert('xss')</script>"
+    
+    // {{.}} 会被安全地转义为 "<h1>Hello, &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;</h1>"
+    err = t.Execute(w, userInput)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
     }
-}
-
-func (c *SecurityMiddlewareChain) Process(ctx context.Context, req interface{}) (context.Context, error) {
-    var err error
-    for _, middleware := range c.middlewares {
-        ctx, err = middleware.Process(ctx, req)
-        if err != nil {
-            return ctx, err
-        }
-    }
-    return ctx, nil
 }
 ```
 
-### 5.2 输入验证与清洗
+#### SQL注入防护
+
+始终使用参数化查询（Prepared Statements），绝不手动拼接SQL字符串。
 
 ```go
-type InputValidator struct {
-    validators map[string]ValidatorFunc
-    sanitizers map[string]SanitizerFunc
-}
+import "database/sql"
 
-type ValidatorFunc func(value interface{}) error
-type SanitizerFunc func(value interface{}) interface{}
+func queryUser(db *sql.DB, username string) (*User, error) {
+    // 使用 ? 作为占位符，而不是fmt.Sprintf拼接字符串
+    // 这是防止SQL注入的核心手段
+    row := db.QueryRow("SELECT id, name, email FROM users WHERE username = ?", username)
 
-func NewInputValidator() *InputValidator {
-    return &InputValidator{
-        validators: make(map[string]ValidatorFunc),
-        sanitizers: make(map[string]SanitizerFunc),
+    var user User
+    if err := row.Scan(&user.ID, &user.Name, &user.Email); err != nil {
+        return nil, err
     }
+    return &user, nil
 }
+```
 
-func (v *InputValidator) RegisterValidator(name string, fn ValidatorFunc) {
-    v.validators[name] = fn
-}
+### 5.3 密钥管理 (Secrets Management)
 
-func (v *InputValidator) RegisterSanitizer(name string, fn SanitizerFunc) {
-    v.sanitizers[name] = fn
-}
+使用专业的密钥管理工具（如HashiCorp Vault）来管理数据库密码、API密钥等敏感信息，而不是硬编码在代码或配置文件中。
 
-func (v *InputValidator) Validate(schema map[string][]string, data map[string]interface{}) error {
-    for field, validations := range schema {
-        value, exists := data[field]
-        if !exists {
-            continue
-        }
-        
-        for _, validation := range validations {
-            validator, exists := v.validators[validation]
-            if !exists {
-                continue
-            }
-            
-            if err := validator(value); err != nil {
-                return fmt.Errorf("validation failed for field %s: %w", field, err)
-            }
-        }
-    }
-    return nil
-}
+```go
+import "github.com/hashicorp/vault/api"
 
-func (v *InputValidator) Sanitize(schema map[string][]string, data map[string]interface{}) map[string]interface{} {
-    result := make(map[string]interface{})
-    
-    for field, value := range data {
-        sanitized := value
-        
-        if sanitizations, exists := schema[field]; exists {
-            for _, sanitization := range sanitizations {
-                if sanitizer, exists := v.sanitizers[sanitization]; exists {
-                    sanitized = sanitizer(sanitized)
-                }
-            }
-        }
-        
-        result[field] = sanitized
-    }
-    
-    return result
-}
+func getDatabasePasswordFromVault() (string, error) {
+ config := &api.Config{
+  Address: "http://127.0.0.1:8200", // Vault服务器地址
+ }
+ client, err := api.NewClient(config)
+ if err != nil {
+  return "", err
+ }
+    // 从环境变量或安全文件中读取Vault token
+ client.SetToken("YOUR_VAULT_TOKEN")
 
-// 预定义验证器
-func EmailValidator(value interface{}) error {
-    email, ok := value.(string)
-    if !ok {
-        return errors.New("value is not a string")
-    }
-    
-    // 简单的邮箱验证
-    if !regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(email) {
-        return errors.New("invalid email format")
-    }
-    
-    return nil
-}
+ // 从Vault的KV引擎读取密钥
+ secret, err := client.Logical().Read("secret/data/database/config")
+ if err != nil {
+  return "", err
+ }
 
-// 预定义清洗器
-func HTMLSanitizer(value interface{}) interface{} {
-    str, ok := value.(string)
-    if !ok {
-        return value
-    }
-    
-    // 使用bluemonday进行HTML清洗
-    p := bluemonday.UGCPolicy()
-    return p.Sanitize(str)
+ if secret == nil || secret.Data["data"] == nil {
+  return "", fmt.Errorf("secret not found or empty")
+ }
+
+ data, ok := secret.Data["data"].(map[string]interface{})
+ if !ok {
+  return "", fmt.Errorf("invalid secret data format")
+ }
+
+ password, ok := data["password"].(string)
+ if !ok {
+  return "", fmt.Errorf("password not found in secret")
+ }
+
+ return password, nil
 }
 ```
 
@@ -816,9 +758,38 @@ func (rsm *RuntimeSecurityMonitor) handleSecurityEvent(ctx context.Context, even
 }
 ```
 
-## 7. 安全监控与响应
+## 7. 工程结构与CI/CD实践
 
-### 7.1 安全事件监控与告警
+### 7.1 CI/CD 安全流水线 (DevSecOps)
+
+在CI/CD流程中嵌入自动化安全检查。
+
+```mermaid
+graph TD
+    A[Code Commit] --> B{CI Pipeline};
+    subgraph B
+        C[Build] --> D[Unit & Integration Tests];
+        D --> E[SAST - Static Analysis];
+        E --> F[SCA - Dependency Scan];
+        F --> G[Build Docker Image];
+        G --> H[DAST - Dynamic Analysis];
+        H --> I[Push to Registry];
+    end
+    I --> J{CD Pipeline};
+    subgraph J
+        K[Deploy to Staging] --> L[Security & Pen Tests];
+        L --> M[Deploy to Production];
+    end
+```
+
+- **SAST (Static Application Security Testing)**: 静态分析源代码，查找潜在漏洞。工具: `gosec`, SonarQube.
+- **SCA (Software Composition Analysis)**: 分析项目依赖，查找已知漏洞（CVE）。工具: `govulncheck`, Snyk, Trivy.
+- **DAST (Dynamic Application Security Testing)**: 在应用运行时进行黑盒测试，模拟攻击。工具: OWASP ZAP.
+- **Container Scanning**: 扫描Docker镜像，查找操作系统和应用依赖中的漏洞。工具: Trivy, Clair.
+
+### 7.2 安全监控与响应
+
+#### 7.2.1 安全事件监控与告警
 
 ```go
 type SecurityEventMonitor struct {
@@ -847,7 +818,7 @@ func (sem *SecurityEventMonitor) ProcessEvent(event SecurityEvent) {
 }
 ```
 
-### 7.2 自动化响应与SOAR
+#### 7.2.2 自动化响应与SOAR
 
 ```go
 type SOAREngine struct {
@@ -877,7 +848,7 @@ func (se *SOAREngine) ExecutePlaybook(playbookID string, event SecurityEvent) er
 }
 ```
 
-### 7.3 威胁情报集成
+#### 7.2.3 威胁情报集成
 
 - **IOC（Indicator of Compromise）自动拉取与匹配**
 - **与国际主流威胁情报平台（如MISP、AlienVault OTX、VirusTotal）对接**
@@ -961,7 +932,13 @@ type AuditEvent struct {
 - [Kubernetes Security](https://kubernetes.io/docs/concepts/security/)
 - [Istio Security](https://istio.io/latest/docs/concepts/security/)
 
-## 11. 扩展阅读与参考文献
+## 11. 相关架构主题
+
+- [**API网关架构 (API Gateway Architecture)**](./architecture_api_gateway_golang.md): API网关是实现外部访问控制、认证和速率限制的第一道防线。
+- [**服务网格架构 (Service Mesh Architecture)**](./architecture_service_mesh_golang.md): 通过mTLS提供服务间的零信任通信，并实施细粒度的授权策略。
+- [**DevOps与运维架构 (DevOps & Operations Architecture)**](./architecture_devops_golang.md): DevSecOps将安全实践深度集成到CI/CD流水线中。
+
+## 12. 扩展阅读与参考文献
 
 1. "The Phoenix Project" - Gene Kim, Kevin Behr, George Spafford
 2. "Building Secure and Reliable Systems" - Google
