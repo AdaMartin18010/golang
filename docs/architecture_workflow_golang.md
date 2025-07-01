@@ -440,12 +440,264 @@ jobs:
 
 ---
 
-## 7. 参考与外部链接
+## 7. 分布式挑战与主流解决方案
 
-- [Temporal 官方文档](https://docs.temporal.io/)
-- [Cadence 官方文档](https://cadenceworkflow.io/docs/)
-- [Argo Workflows](https://argoproj.github.io/)
-- [Apache Airflow](https://airflow.apache.org/)
-- [Kafka 官方](https://kafka.apache.org/)
-- [Prometheus](https://prometheus.io/)
-- [OpenTelemetry](https://opentelemetry.io/)
+### 7.1 长时间运行工作流的状态管理
+
+```go
+// StateManager 分布式状态管理器
+type StateManager struct {
+    storage StateStorage
+    cache   StateCache
+    mutex   sync.RWMutex
+}
+
+type WorkflowState struct {
+    WorkflowID    string                 `json:"workflow_id"`
+    Status        WorkflowStatus         `json:"status"`
+    CurrentStep   int                    `json:"current_step"`
+    Variables     map[string]interface{} `json:"variables"`
+    History       []StateEvent           `json:"history"`
+    Checkpoints   []StateCheckpoint      `json:"checkpoints"`
+    LastUpdated   time.Time             `json:"last_updated"`
+}
+
+type StateEvent struct {
+    EventID   string      `json:"event_id"`
+    Type      string      `json:"type"`
+    Data      interface{} `json:"data"`
+    Timestamp time.Time   `json:"timestamp"`
+}
+
+func (sm *StateManager) SaveCheckpoint(ctx context.Context, workflowID string, state *WorkflowState) error {
+    checkpoint := StateCheckpoint{
+        ID:        fmt.Sprintf("%s_%d", workflowID, time.Now().Unix()),
+        State:     state,
+        Timestamp: time.Now(),
+    }
+    
+    // 保存到持久化存储
+    if err := sm.storage.SaveCheckpoint(ctx, checkpoint); err != nil {
+        return fmt.Errorf("failed to save checkpoint: %w", err)
+    }
+    
+    // 更新缓存
+    sm.cache.Set(workflowID, state)
+    
+    return nil
+}
+
+func (sm *StateManager) RestoreFromCheckpoint(ctx context.Context, workflowID string) (*WorkflowState, error) {
+    // 先从缓存查找
+    if state, found := sm.cache.Get(workflowID); found {
+        return state, nil
+    }
+    
+    // 从持久化存储恢复
+    checkpoint, err := sm.storage.GetLatestCheckpoint(ctx, workflowID)
+    if err != nil {
+        return nil, fmt.Errorf("failed to restore checkpoint: %w", err)
+    }
+    
+    return checkpoint.State, nil
+}
+```
+
+### 7.2 工作流编排与任务调度
+
+现代工作流系统需要支持复杂的任务依赖、并行执行和动态调度。
+
+```go
+// WorkflowEngine 工作流引擎
+type WorkflowEngine struct {
+    scheduler     TaskScheduler
+    executor      TaskExecutor
+    stateManager  *StateManager
+    eventBus      EventBus
+    monitor       WorkflowMonitor
+}
+
+type TaskScheduler interface {
+    Schedule(ctx context.Context, task *Task) error
+    GetNextTasks(workflowID string, currentStep int) ([]*Task, error)
+}
+
+type DAGScheduler struct {
+    dependency map[string][]string // 任务依赖关系
+    completed  map[string]bool     // 任务完成状态
+    mutex      sync.RWMutex
+}
+
+func (ds *DAGScheduler) GetNextTasks(workflowID string, currentStep int) ([]*Task, error) {
+    ds.mutex.RLock()
+    defer ds.mutex.RUnlock()
+    
+    var readyTasks []*Task
+    
+    // 检查所有任务，找出可执行的任务（依赖已满足）
+    for taskID, dependencies := range ds.dependency {
+        if ds.completed[taskID] {
+            continue // 任务已完成
+        }
+        
+        // 检查所有依赖是否已完成
+        allDependenciesComplete := true
+        for _, depID := range dependencies {
+            if !ds.completed[depID] {
+                allDependenciesComplete = false
+                break
+            }
+        }
+        
+        if allDependenciesComplete {
+            task := &Task{
+                ID:         taskID,
+                WorkflowID: workflowID,
+                Type:       "business_task",
+                Status:     TaskStatusPending,
+            }
+            readyTasks = append(readyTasks, task)
+        }
+    }
+    
+    return readyTasks, nil
+}
+
+func (we *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflow *Workflow) error {
+    // 1. 初始化工作流状态
+    state := &WorkflowState{
+        WorkflowID:  workflow.ID,
+        Status:      WorkflowStatusRunning,
+        CurrentStep: 0,
+        Variables:   workflow.InitialVariables,
+        History:     make([]StateEvent, 0),
+        LastUpdated: time.Now(),
+    }
+    
+    // 2. 保存初始状态
+    if err := we.stateManager.SaveCheckpoint(ctx, workflow.ID, state); err != nil {
+        return err
+    }
+    
+    // 3. 开始任务调度循环
+    for {
+        // 获取下一批可执行任务
+        nextTasks, err := we.scheduler.GetNextTasks(workflow.ID, state.CurrentStep)
+        if err != nil {
+            return err
+        }
+        
+        if len(nextTasks) == 0 {
+            // 没有更多任务，工作流完成
+            state.Status = WorkflowStatusCompleted
+            we.stateManager.SaveCheckpoint(ctx, workflow.ID, state)
+            break
+        }
+        
+        // 4. 并行执行任务
+        var wg sync.WaitGroup
+        for _, task := range nextTasks {
+            wg.Add(1)
+            go func(t *Task) {
+                defer wg.Done()
+                we.executeTask(ctx, t, state)
+            }(task)
+        }
+        
+        wg.Wait()
+        
+        // 5. 更新工作流状态
+        state.CurrentStep++
+        state.LastUpdated = time.Now()
+        we.stateManager.SaveCheckpoint(ctx, workflow.ID, state)
+    }
+    
+    return nil
+}
+```
+
+### 7.3 故障恢复与补偿机制
+
+在分布式环境中，任务可能因各种原因失败，需要实现智能的重试和补偿机制。
+
+```go
+// CompensationManager 补偿事务管理器
+type CompensationManager struct {
+    storage CompensationStorage
+    retry   RetryPolicy
+}
+
+type CompensationAction struct {
+    TaskID           string                 `json:"task_id"`
+    CompensationType string                 `json:"compensation_type"`
+    CompensationData map[string]interface{} `json:"compensation_data"`
+    MaxRetries       int                    `json:"max_retries"`
+    RetryCount       int                    `json:"retry_count"`
+    CreatedAt        time.Time             `json:"created_at"`
+}
+
+func (cm *CompensationManager) RegisterCompensation(taskID string, compensationFunc func() error) error {
+    action := &CompensationAction{
+        TaskID:           taskID,
+        CompensationType: "function",
+        MaxRetries:       3,
+        RetryCount:       0,
+        CreatedAt:        time.Now(),
+    }
+    
+    return cm.storage.SaveCompensation(action)
+}
+
+func (cm *CompensationManager) ExecuteCompensation(ctx context.Context, workflowID string) error {
+    // 获取需要补偿的操作
+    actions, err := cm.storage.GetPendingCompensations(workflowID)
+    if err != nil {
+        return err
+    }
+    
+    // 按相反顺序执行补偿操作（LIFO）
+    for i := len(actions) - 1; i >= 0; i-- {
+        action := actions[i]
+        
+        if err := cm.executeCompensationAction(ctx, action); err != nil {
+            log.Printf("Compensation failed for task %s: %v", action.TaskID, err)
+            
+            // 重试逻辑
+            if action.RetryCount < action.MaxRetries {
+                action.RetryCount++
+                cm.storage.UpdateCompensation(action)
+                
+                // 使用指数退避重试
+                backoff := time.Duration(math.Pow(2, float64(action.RetryCount))) * time.Second
+                time.Sleep(backoff)
+                
+                // 递归重试
+                return cm.ExecuteCompensation(ctx, workflowID)
+            }
+            
+            return fmt.Errorf("compensation exhausted retries for task %s", action.TaskID)
+        }
+    }
+    
+    return nil
+}
+```
+
+## 8. 相关架构主题
+
+-   [**事件驱动架构 (Event-Driven Architecture)**](./architecture_event_driven_golang.md): 工作流系统通常基于事件驱动模式，任务完成触发下一步执行。
+-   [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 工作流引擎常用于编排微服务间的复杂业务流程。
+-   [**消息队列架构 (Message Queue Architecture)**](./architecture_message_queue_golang.md): 任务分发和状态通知依赖可靠的消息队列基础设施。
+-   [**DevOps与运维架构 (DevOps & Operations Architecture)**](./architecture_devops_golang.md): CI/CD流水线是工作流系统的典型应用场景。
+
+## 9. 扩展阅读与参考文献
+
+1. "Workflow Patterns" - Nick Russell, Arthur ter Hofstede, Wil M.P. van der Aalst
+2. "Building Event-Driven Microservices" - Adam Bellemare  
+3. "Temporal Documentation" - [https://docs.temporal.io/](https://docs.temporal.io/)
+4. "Cadence Documentation" - [https://cadenceworkflow.io/docs/](https://cadenceworkflow.io/docs/)
+5. "Apache Airflow Documentation" - [https://airflow.apache.org/](https://airflow.apache.org/)
+
+---
+
+*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
