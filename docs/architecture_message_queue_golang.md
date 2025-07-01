@@ -18,6 +18,7 @@
 ## 1. 国际标准与发展历程
 
 ### 1.1 主流消息队列系统
+
 - **Apache Kafka**: 分布式流处理平台
 - **RabbitMQ**: 企业级消息代理
 - **Apache Pulsar**: 云原生消息流平台
@@ -26,6 +27,7 @@
 - **Google Cloud Pub/Sub**: 实时消息服务
 
 ### 1.2 发展历程
+
 - **1980s**: 早期消息队列系统（IBM MQ）
 - **2000s**: JMS标准、ActiveMQ兴起
 - **2010s**: RabbitMQ、Kafka普及
@@ -33,6 +35,7 @@
 - **2020s**: 实时流处理、事件驱动架构
 
 ### 1.3 国际权威链接
+
 - [Apache Kafka](https://kafka.apache.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [Apache Pulsar](https://pulsar.apache.org/)
@@ -988,18 +991,21 @@ func (lc *LogCollector) processLogFile(ctx context.Context, filepath string, sou
 ## 8. 国际权威资源与开源组件引用
 
 ### 8.1 消息队列系统
+
 - [Apache Kafka](https://kafka.apache.org/) - 分布式流处理平台
 - [RabbitMQ](https://www.rabbitmq.com/) - 企业级消息代理
 - [Apache Pulsar](https://pulsar.apache.org/) - 云原生消息流平台
 - [Redis Streams](https://redis.io/topics/streams-intro) - 内存消息流
 
 ### 8.2 云原生消息服务
+
 - [Amazon SQS](https://aws.amazon.com/sqs/) - 简单队列服务
 - [Amazon SNS](https://aws.amazon.com/sns/) - 简单通知服务
 - [Google Cloud Pub/Sub](https://cloud.google.com/pubsub) - 实时消息服务
 - [Azure Service Bus](https://azure.microsoft.com/services/service-bus/) - 企业消息服务
 
 ### 8.3 消息处理框架
+
 - [Apache Storm](https://storm.apache.org/) - 实时流处理
 - [Apache Flink](https://flink.apache.org/) - 流处理引擎
 - [Apache Spark Streaming](https://spark.apache.org/streaming/) - 微批处理
@@ -1014,4 +1020,4 @@ func (lc *LogCollector) processLogFile(ctx context.Context, filepath string, sou
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。* 
+*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
