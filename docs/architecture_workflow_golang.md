@@ -685,10 +685,10 @@ func (cm *CompensationManager) ExecuteCompensation(ctx context.Context, workflow
 
 ## 8. 相关架构主题
 
--   [**事件驱动架构 (Event-Driven Architecture)**](./architecture_event_driven_golang.md): 工作流系统通常基于事件驱动模式，任务完成触发下一步执行。
--   [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 工作流引擎常用于编排微服务间的复杂业务流程。
--   [**消息队列架构 (Message Queue Architecture)**](./architecture_message_queue_golang.md): 任务分发和状态通知依赖可靠的消息队列基础设施。
--   [**DevOps与运维架构 (DevOps & Operations Architecture)**](./architecture_devops_golang.md): CI/CD流水线是工作流系统的典型应用场景。
+- [**事件驱动架构 (Event-Driven Architecture)**](./architecture_event_driven_golang.md): 工作流系统通常基于事件驱动模式，任务完成触发下一步执行。
+- [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 工作流引擎常用于编排微服务间的复杂业务流程。
+- [**消息队列架构 (Message Queue Architecture)**](./architecture_message_queue_golang.md): 任务分发和状态通知依赖可靠的消息队列基础设施。
+- [**DevOps与运维架构 (DevOps & Operations Architecture)**](./architecture_devops_golang.md): CI/CD流水线是工作流系统的典型应用场景。
 
 ## 9. 扩展阅读与参考文献
 
