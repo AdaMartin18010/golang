@@ -23,6 +23,7 @@
 $$Adapter = (Target, Adaptee, Adapter, Client, InterfaceMapping)$$
 
 其中：
+
 - $Target$ 是目标接口
 - $Adaptee$ 是适配者类
 - $Adapter$ 是适配器类
@@ -43,6 +44,7 @@ $$Adapter = (Target, Adaptee, Adapter, Client, InterfaceMapping)$$
 **定义 2.1** (适配器模式): 适配器模式是一个五元组 $A = (T, A, M, R, V)$
 
 其中：
+
 - $T$ 是目标接口集合
 - $A$ 是适配者集合
 - $M$ 是映射函数，$M: A \rightarrow T$
@@ -643,4 +645,4 @@ func (s *StructuredLoggerAdapter) Warn(message string) {
 
 ---
 
-**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md)

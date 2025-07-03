@@ -23,6 +23,7 @@
 $$Singleton = (Instance, GetInstance, Constructor, State)$$
 
 其中：
+
 - $Instance$ 是唯一实例
 - $GetInstance()$ 是获取实例的方法
 - $Constructor$ 是私有构造函数
@@ -42,6 +43,7 @@ $$Singleton = (Instance, GetInstance, Constructor, State)$$
 **定义 2.1** (单例模式): 单例模式是一个四元组 $S = (C, I, M, V)$
 
 其中：
+
 - $C$ 是类定义
 - $I$ 是实例集合，$|I| = 1$
 - $M$ 是方法集合
@@ -473,4 +475,4 @@ func (cm *CacheManager) Get(key string) (interface{}, bool) {
 
 ---
 
-**相关文档**: [创建型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [创建型模式总览](./README.md) | [设计模式总览](../README.md)
