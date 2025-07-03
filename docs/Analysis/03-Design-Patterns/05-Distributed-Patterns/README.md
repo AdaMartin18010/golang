@@ -152,11 +152,13 @@ func (h *RequestResponseHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 #### 优缺点分析
 
 **优点**：
+
 - 简单直观，易于实现和理解
 - 适合请求-响应类型的交互
 - 可以集成重试、超时等机制
 
 **缺点**：
+
 - 紧耦合：客户端必须等待响应
 - 可能导致阻塞
 - 难以扩展到复杂的交互模式
@@ -315,11 +317,13 @@ func (s *SimpleSubscriber) OnMessage(msg Message) {
 #### 优缺点分析
 
 **优点**：
+
 - 松耦合：发布者和订阅者互不依赖
 - 可扩展：易于添加新的发布者和订阅者
 - 异步通信：提高系统响应性
 
 **缺点**：
+
 - 消息可能丢失
 - 难以保证消息顺序
 - 调试和测试复杂
@@ -482,11 +486,13 @@ func (c *Consumer) Stop() {
 #### 优缺点分析
 
 **优点**：
+
 - 异步处理：提高系统响应性
 - 削峰填谷：处理流量波动
 - 解耦：生产者和消费者独立
 
 **缺点**：
+
 - 增加系统复杂性
 - 消息可能重复或丢失
 - 需要处理死信队列
@@ -685,11 +691,13 @@ func (s *SlaveNode) Replicate(entry LogEntry) error {
 #### 优缺点分析
 
 **优点**：
+
 - 读写分离：提高读性能
 - 高可用：主节点故障时可切换
 - 简单易实现
 
 **缺点**：
+
 - 单点故障：主节点故障影响写操作
 - 数据一致性：主从延迟可能导致数据不一致
 - 扩展性限制：写操作仍受主节点限制
@@ -725,6 +733,7 @@ graph TD
 $$\text{Raft} = \{\text{LeaderElection}, \text{LogReplication}, \text{Safety}\}$$
 
 其中：
+
 - $\text{LeaderElection}: N \rightarrow N \times T$
 - $\text{LogReplication}: L \times N \rightarrow L$
 - $\text{Safety}: \forall i, j \in N, \text{Log}_i = \text{Log}_j$
@@ -970,11 +979,13 @@ func min(a, b int64) int64 {
 #### 优缺点分析
 
 **优点**：
+
 - 易于理解：比Paxos更简单
 - 工程实现成熟：etcd、Consul等广泛使用
 - 强一致性保证
 
 **缺点**：
+
 - 对网络分区敏感
 - 领导者选举可能产生脑裂
 - 性能受领导者限制
@@ -1002,6 +1013,7 @@ stateDiagram-v2
 ### 9.1 分布式系统形式化模型
 
 **定义**：分布式系统是一个五元组 $(N, S, M, T, \delta)$，其中：
+
 - $N$ 是节点集合
 - $S$ 是状态集合
 - $M$ 是消息集合
@@ -1009,6 +1021,7 @@ stateDiagram-v2
 - $\delta: N \times S \times M \rightarrow S$ 是状态转换函数
 
 **定理**：在异步网络中，不可能同时满足以下三个属性：
+
 1. 终止性（Termination）
 2. 一致性（Agreement）
 3. 有效性（Validity）
@@ -1026,6 +1039,7 @@ $$\forall i, j \in N, \lim_{t \to \infty} S_i(t) = S_j(t)$$
 ### 9.3 CAP定理形式化
 
 **定理**：分布式系统最多只能同时满足CAP中的两个属性：
+
 - 一致性（Consistency）
 - 可用性（Availability）
 - 分区容错性（Partition tolerance）
@@ -1038,9 +1052,11 @@ $$\text{Consistency} \land \text{Availability} \land \text{Partition Tolerance} 
 ### 10.1 核心开源组件
 
 #### etcd
+
 - **用途**：分布式键值存储，服务发现
 - **特点**：基于Raft算法，强一致性
 - **Golang集成**：
+
 ```go
 import "go.etcd.io/etcd/client/v3"
 
@@ -1053,9 +1069,11 @@ func connectEtcd() (*clientv3.Client, error) {
 ```
 
 #### Consul
+
 - **用途**：服务发现、配置管理、健康检查
 - **特点**：支持多数据中心
 - **Golang集成**：
+
 ```go
 import "github.com/hashicorp/consul/api"
 
@@ -1067,9 +1085,11 @@ func connectConsul() (*api.Client, error) {
 ```
 
 #### gRPC
+
 - **用途**：高性能RPC框架
 - **特点**：基于HTTP/2，支持流式传输
 - **Golang集成**：
+
 ```go
 import (
     "google.golang.org/grpc"
@@ -1086,6 +1106,7 @@ func createGRPCServer() *grpc.Server {
 ### 10.2 性能优化最佳实践
 
 #### 连接池管理
+
 ```go
 type ConnectionPool struct {
     connections chan net.Conn
@@ -1113,6 +1134,7 @@ func (p *ConnectionPool) Put(conn net.Conn) {
 ```
 
 #### 负载均衡
+
 ```go
 type LoadBalancer struct {
     servers []string
@@ -1135,16 +1157,19 @@ func (lb *LoadBalancer) Next() string {
 ### 11.1 性能指标
 
 #### 延迟（Latency）
+
 - **定义**：请求从发送到接收响应的时间
 - **测量**：使用histogram统计分布
 - **优化**：连接复用、异步处理、缓存
 
 #### 吞吐量（Throughput）
+
 - **定义**：单位时间内处理的请求数量
 - **测量**：QPS（Queries Per Second）
 - **优化**：并发处理、负载均衡、资源池化
 
 #### 可用性（Availability）
+
 - **定义**：系统正常运行时间的比例
 - **测量**：$A = \frac{MTBF}{MTBF + MTTR}$
 - **优化**：冗余设计、故障转移、监控告警
@@ -1152,6 +1177,7 @@ func (lb *LoadBalancer) Next() string {
 ### 11.2 监控与可观测性
 
 #### 指标收集
+
 ```go
 import "github.com/prometheus/client_golang/prometheus"
 
@@ -1175,6 +1201,7 @@ var (
 ```
 
 #### 分布式追踪
+
 ```go
 import "go.opentelemetry.io/otel/trace"
 
@@ -1190,6 +1217,7 @@ func tracedHandler(ctx context.Context, req Request) (Response, error) {
 ### 11.3 错误处理策略
 
 #### 重试机制
+
 ```go
 func retryWithBackoff(operation func() error, maxRetries int) error {
     for i := 0; i < maxRetries; i++ {
@@ -1206,6 +1234,7 @@ func retryWithBackoff(operation func() error, maxRetries int) error {
 ```
 
 #### 熔断器模式
+
 ```go
 type CircuitBreaker struct {
     state       State
@@ -1261,26 +1290,30 @@ func (cb *CircuitBreaker) Execute(operation func() error) error {
 ## 12. 参考文献与外部链接
 
 ### 12.1 学术论文
+
 - [Raft论文](https://raft.github.io/raft.pdf)
 - [Paxos论文](https://lamport.azurewebsites.net/pubs/paxos-simple.pdf)
 - [CAP定理论文](https://www.glassbeam.com/sites/all/themes/glassbeam/images/blog/10.1.1.67.6951.pdf)
 
 ### 12.2 开源项目
+
 - [etcd](https://github.com/etcd-io/etcd)
 - [Consul](https://github.com/hashicorp/consul)
 - [gRPC](https://github.com/grpc/grpc-go)
 - [NATS](https://github.com/nats-io/nats.go)
 
 ### 12.3 技术文档
+
 - [Go官方文档](https://golang.org/doc/)
 - [Kubernetes文档](https://kubernetes.io/docs/)
 - [Docker文档](https://docs.docker.com/)
 
 ### 12.4 最佳实践指南
+
 - [Google SRE](https://sre.google/)
 - [Netflix Chaos Engineering](https://netflixtechblog.com/tagged/chaos-engineering)
 - [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
 
 ---
 
-*本文档持续更新，反映分布式系统设计模式的最新发展和Golang生态系统的最佳实践。* 
+*本文档持续更新，反映分布式系统设计模式的最新发展和Golang生态系统的最佳实践。*
