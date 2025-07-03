@@ -23,6 +23,7 @@
 $$Composite = (Component, Leaf, Composite, Client, TreeStructure)$$
 
 其中：
+
 - $Component$ 是组件接口
 - $Leaf$ 是叶子节点
 - $Composite$ 是组合节点
@@ -43,6 +44,7 @@ $$Composite = (Component, Leaf, Composite, Client, TreeStructure)$$
 **定义 2.1** (组合模式): 组合模式是一个六元组 $C = (V, E, L, N, F, T)$
 
 其中：
+
 - $V$ 是节点集合
 - $E$ 是边集合
 - $L$ 是叶子节点集合，$L \subseteq V$
@@ -1452,4 +1454,4 @@ func sqrt(x float64) float64 {
 
 ---
 
-**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md)

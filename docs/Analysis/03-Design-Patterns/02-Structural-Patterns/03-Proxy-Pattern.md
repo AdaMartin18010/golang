@@ -23,6 +23,7 @@
 $$Proxy = (Subject, RealSubject, Proxy, Client, AccessControl)$$
 
 其中：
+
 - $Subject$ 是主题接口
 - $RealSubject$ 是真实主题
 - $Proxy$ 是代理类
@@ -43,6 +44,7 @@ $$Proxy = (Subject, RealSubject, Proxy, Client, AccessControl)$$
 **定义 2.1** (代理模式): 代理模式是一个六元组 $P = (S, R, P, A, C, V)$
 
 其中：
+
 - $S$ 是主题集合
 - $R$ 是真实主题集合
 - $P$ 是代理集合
@@ -1040,4 +1042,4 @@ func (r *ResourceProxy) Release() {
 
 ---
 
-**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md)

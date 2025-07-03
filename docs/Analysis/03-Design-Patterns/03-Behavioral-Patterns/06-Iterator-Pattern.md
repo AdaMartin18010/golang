@@ -23,6 +23,7 @@
 $$Iterator = (Aggregate, Iterator, ConcreteAggregate, ConcreteIterator)$$
 
 其中：
+
 - $Aggregate$ 是聚合接口
 - $Iterator$ 是迭代器接口
 - $ConcreteAggregate$ 是具体聚合
@@ -42,6 +43,7 @@ $$Iterator = (Aggregate, Iterator, ConcreteAggregate, ConcreteIterator)$$
 **定义 2.1** (迭代器模式): 迭代器模式是一个四元组 $I = (A, It, N, H)$
 
 其中：
+
 - $A$ 是聚合集合
 - $It$ 是迭代器集合
 - $N$ 是下一个函数，$N: It \rightarrow Element$
@@ -837,4 +839,4 @@ func (q *QueryExecutor) ExecuteQuery(query string, args ...interface{}) (RowIter
 
 ---
 
-**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md)

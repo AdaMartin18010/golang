@@ -23,6 +23,7 @@
 $$Command = (Command, ConcreteCommand, Invoker, Receiver, Client)$$
 
 其中：
+
 - $Command$ 是命令接口
 - $ConcreteCommand$ 是具体命令
 - $Invoker$ 是调用者
@@ -43,6 +44,7 @@ $$Command = (Command, ConcreteCommand, Invoker, Receiver, Client)$$
 **定义 2.1** (命令模式): 命令模式是一个五元组 $C = (Cmd, Inv, Rec, Exe, Undo)$
 
 其中：
+
 - $Cmd$ 是命令集合
 - $Inv$ 是调用者集合
 - $Rec$ 是接收者集合
@@ -857,4 +859,4 @@ func (t *Transaction) rollback() {
 
 ---
 
-**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md)

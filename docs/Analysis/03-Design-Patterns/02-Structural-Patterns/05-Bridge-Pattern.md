@@ -23,6 +23,7 @@
 $$Bridge = (Abstraction, Implementor, RefinedAbstraction, ConcreteImplementor, Bridge)$$
 
 其中：
+
 - $Abstraction$ 是抽象类
 - $Implementor$ 是实现者接口
 - $RefinedAbstraction$ 是修正抽象类
@@ -43,6 +44,7 @@ $$Bridge = (Abstraction, Implementor, RefinedAbstraction, ConcreteImplementor, B
 **定义 2.1** (桥接模式): 桥接模式是一个六元组 $B = (A, I, R, C, F, V)$
 
 其中：
+
 - $A$ 是抽象集合
 - $I$ 是实现者集合
 - $R$ 是修正抽象集合
@@ -1054,4 +1056,4 @@ func (a *AsyncLogger) Close() error {
 
 ---
 
-**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md)

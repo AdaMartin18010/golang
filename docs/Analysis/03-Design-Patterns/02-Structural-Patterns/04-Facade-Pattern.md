@@ -23,6 +23,7 @@
 $$Facade = (Subsystem, Facade, Client, Interface, Orchestration)$$
 
 其中：
+
 - $Subsystem$ 是子系统集合
 - $Facade$ 是外观类
 - $Client$ 是客户端
@@ -43,6 +44,7 @@ $$Facade = (Subsystem, Facade, Client, Interface, Orchestration)$$
 **定义 2.1** (外观模式): 外观模式是一个五元组 $F = (S, F, I, O, C)$
 
 其中：
+
 - $S$ 是子系统集合，$S = \{s_1, s_2, ..., s_n\}$
 - $F$ 是外观函数，$F: S \rightarrow I$
 - $I$ 是接口集合
@@ -1015,4 +1017,4 @@ func (d *DatabaseFacade) Close() error {
 
 ---
 
-**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md)

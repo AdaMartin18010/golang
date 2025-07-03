@@ -23,6 +23,7 @@
 $$Visitor = (Element, Visitor, ConcreteElement, ConcreteVisitor)$$
 
 其中：
+
 - $Element$ 是元素接口
 - $Visitor$ 是访问者接口
 - $ConcreteElement$ 是具体元素
@@ -42,6 +43,7 @@ $$Visitor = (Element, Visitor, ConcreteElement, ConcreteVisitor)$$
 **定义 2.1** (访问者模式): 访问者模式是一个四元组 $V = (E, V, A, D)$
 
 其中：
+
 - $E$ 是元素集合
 - $V$ 是访问者集合
 - $A$ 是接受函数，$A: E \times V \rightarrow Result$
@@ -1194,4 +1196,4 @@ func (c *Canvas) GetShapeCount() int {
 
 ---
 
-**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md)

@@ -23,6 +23,7 @@
 $$State = (Context, State, ConcreteState_1, ConcreteState_2, ..., ConcreteState_n)$$
 
 其中：
+
 - $Context$ 是上下文类
 - $State$ 是状态接口
 - $ConcreteState_i$ 是具体状态实现
@@ -41,6 +42,7 @@ $$State = (Context, State, ConcreteState_1, ConcreteState_2, ..., ConcreteState_
 **定义 2.1** (状态模式): 状态模式是一个四元组 $S = (C, \Sigma, T, B)$
 
 其中：
+
 - $C$ 是上下文集合
 - $\Sigma$ 是状态集合
 - $T$ 是状态转换函数，$T: C \times \Sigma \times Event \rightarrow \Sigma$
@@ -761,4 +763,4 @@ func (c *ConnectedState) GetName() string {
 
 ---
 
-**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md)

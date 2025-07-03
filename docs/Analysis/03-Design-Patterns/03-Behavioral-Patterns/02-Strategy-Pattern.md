@@ -23,6 +23,7 @@
 $$Strategy = (Context, Strategy, ConcreteStrategy_1, ConcreteStrategy_2, ..., ConcreteStrategy_n)$$
 
 其中：
+
 - $Context$ 是上下文类
 - $Strategy$ 是策略接口
 - $ConcreteStrategy_i$ 是具体策略实现
@@ -41,6 +42,7 @@ $$Strategy = (Context, Strategy, ConcreteStrategy_1, ConcreteStrategy_2, ..., Co
 **定义 2.1** (策略模式): 策略模式是一个四元组 $S = (C, \Sigma, A, E)$
 
 其中：
+
 - $C$ 是上下文集合
 - $\Sigma$ 是策略集合
 - $A$ 是算法函数，$A: C \times \Sigma \rightarrow Result$
@@ -1133,4 +1135,4 @@ func (r *RoutingContext) GetStrategyDescription() string {
 
 ---
 
-**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md)

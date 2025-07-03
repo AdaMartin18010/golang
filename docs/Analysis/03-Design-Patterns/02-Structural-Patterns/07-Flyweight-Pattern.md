@@ -23,6 +23,7 @@
 $$Flyweight = (Flyweight, ConcreteFlyweight, FlyweightFactory, Client, IntrinsicState, ExtrinsicState)$$
 
 其中：
+
 - $Flyweight$ 是享元接口
 - $ConcreteFlyweight$ 是具体享元
 - $FlyweightFactory$ 是享元工厂
@@ -44,6 +45,7 @@ $$Flyweight = (Flyweight, ConcreteFlyweight, FlyweightFactory, Client, Intrinsic
 **定义 2.1** (享元模式): 享元模式是一个七元组 $F = (I, E, P, F, C, M, V)$
 
 其中：
+
 - $I$ 是内部状态集合
 - $E$ 是外部状态集合
 - $P$ 是享元池
@@ -1049,4 +1051,4 @@ func (f *CacheFactory) ListCaches() []string {
 
 ---
 
-**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [结构型模式总览](./README.md) | [设计模式总览](../README.md)

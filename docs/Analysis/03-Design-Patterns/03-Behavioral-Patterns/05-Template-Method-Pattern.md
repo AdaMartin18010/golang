@@ -23,6 +23,7 @@
 $$TemplateMethod = (AbstractClass, ConcreteClass_1, ConcreteClass_2, ..., ConcreteClass_n)$$
 
 其中：
+
 - $AbstractClass$ 是抽象类
 - $ConcreteClass_i$ 是具体实现类
 
@@ -40,6 +41,7 @@ $$TemplateMethod = (AbstractClass, ConcreteClass_1, ConcreteClass_2, ..., Concre
 **定义 2.1** (模板方法模式): 模板方法模式是一个三元组 $T = (A, S, I)$
 
 其中：
+
 - $A$ 是算法骨架
 - $S$ 是步骤集合
 - $I$ 是实现函数，$I: S \times ConcreteClass \rightarrow Result$
@@ -736,4 +738,4 @@ func (a *AdminRequestProcessor) ProcessRequest() interface{} {
 
 ---
 
-**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md)

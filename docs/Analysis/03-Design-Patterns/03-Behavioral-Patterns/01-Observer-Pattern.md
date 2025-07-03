@@ -23,6 +23,7 @@
 $$Observer = (Subject, Observer, ConcreteSubject, ConcreteObserver, Notification)$$
 
 其中：
+
 - $Subject$ 是主题接口
 - $Observer$ 是观察者接口
 - $ConcreteSubject$ 是具体主题
@@ -43,6 +44,7 @@ $$Observer = (Subject, Observer, ConcreteSubject, ConcreteObserver, Notification
 **定义 2.1** (观察者模式): 观察者模式是一个六元组 $O = (S, O, N, A, F, V)$
 
 其中：
+
 - $S$ 是主题集合
 - $O$ 是观察者集合
 - $N$ 是通知函数，$N: S \times O \rightarrow Notification$
@@ -1301,4 +1303,4 @@ func (s *SecurityObserver) GetName() string {
 
 ---
 
-**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [行为型模式总览](./README.md) | [设计模式总览](../README.md)
