@@ -23,6 +23,7 @@
 $$Factory = (Creator, Product, ConcreteCreator, ConcreteProduct, FactoryMethod)$$
 
 其中：
+
 - $Creator$ 是创建者接口
 - $Product$ 是产品接口
 - $ConcreteCreator$ 是具体创建者
@@ -43,6 +44,7 @@ $$Factory = (Creator, Product, ConcreteCreator, ConcreteProduct, FactoryMethod)$
 **定义 2.1** (工厂模式): 工厂模式是一个五元组 $F = (C, P, M, R, V)$
 
 其中：
+
 - $C$ 是创建者集合
 - $P$ 是产品集合
 - $M$ 是工厂方法映射，$M: C \rightarrow P$
@@ -567,4 +569,4 @@ func (f *LoggerFactory) CreateLogger(loggerType, filename string) (Logger, error
 
 ---
 
-**相关文档**: [创建型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [创建型模式总览](./README.md) | [设计模式总览](../README.md)

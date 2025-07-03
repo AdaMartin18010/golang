@@ -23,6 +23,7 @@
 $$Builder = (Director, Builder, Product, ConcreteBuilder, BuildSteps)$$
 
 其中：
+
 - $Director$ 是指导者，控制构建过程
 - $Builder$ 是建造者接口
 - $Product$ 是产品
@@ -43,6 +44,7 @@ $$Builder = (Director, Builder, Product, ConcreteBuilder, BuildSteps)$$
 **定义 2.1** (建造者模式): 建造者模式是一个六元组 $B = (D, B, P, S, M, V)$
 
 其中：
+
 - $D$ 是指导者集合
 - $B$ 是建造者集合
 - $P$ 是产品集合
@@ -581,4 +583,4 @@ func (b *QueryBuilder) Build() *Query {
 
 ---
 
-**相关文档**: [创建型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [创建型模式总览](./README.md) | [设计模式总览](../README.md)

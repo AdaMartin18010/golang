@@ -23,6 +23,7 @@
 $$Prototype = (Prototype, Clone, ConcretePrototype, Registry, CloneMethod)$$
 
 其中：
+
 - $Prototype$ 是原型接口
 - $Clone$ 是克隆方法
 - $ConcretePrototype$ 是具体原型
@@ -43,6 +44,7 @@ $$Prototype = (Prototype, Clone, ConcretePrototype, Registry, CloneMethod)$$
 **定义 2.1** (原型模式): 原型模式是一个五元组 $P = (P, C, R, M, V)$
 
 其中：
+
 - $P$ 是原型集合
 - $C$ 是克隆方法集合
 - $R$ 是注册表
@@ -672,4 +674,4 @@ func Example() {
 
 ---
 
-**相关文档**: [创建型模式总览](./README.md) | [设计模式总览](../README.md) 
+**相关文档**: [创建型模式总览](./README.md) | [设计模式总览](../README.md)
