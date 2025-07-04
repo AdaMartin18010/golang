@@ -1222,6 +1222,107 @@ func copyVectorClock(vc VectorClock) VectorClock {
 
 ## 4. 容错与弹性模式
 
+### 4.1 熔断器模式
+
+#### 概念定义
+
+**定义**：当依赖的服务出现故障时，快速失败而不是等待超时，防止故障传播。
+
+**形式化定义**：
+设 $S$ 为服务状态集合，$T$ 为阈值集合，$F$ 为故障集合，则熔断器模式可表示为：
+
+$$\text{CircuitBreaker}: S \times F \times T \rightarrow S$$
+
+**Golang实现**：
+
+```go
+package circuitbreaker
+
+import (
+    "context"
+    "sync"
+    "time"
+)
+
+// State 熔断器状态
+type State int
+
+const (
+    Closed State = iota
+    Open
+    HalfOpen
+)
+
+// CircuitBreaker 熔断器
+type CircuitBreaker struct {
+    state         State
+    failureCount  int
+    threshold     int
+    timeout       time.Duration
+    lastFailure   time.Time
+    mutex         sync.RWMutex
+}
+
+func NewCircuitBreaker(threshold int, timeout time.Duration) *CircuitBreaker {
+    return &CircuitBreaker{
+        state:     Closed,
+        threshold: threshold,
+        timeout:   timeout,
+    }
+}
+
+func (cb *CircuitBreaker) Execute(operation func() error) error {
+    cb.mutex.Lock()
+    defer cb.mutex.Unlock()
+    
+    switch cb.state {
+    case Open:
+        if time.Since(cb.lastFailure) > cb.timeout {
+            cb.state = HalfOpen
+        } else {
+            return fmt.Errorf("circuit breaker is open")
+        }
+    case HalfOpen:
+        // 允许一个请求通过
+    case Closed:
+        // 正常状态
+    }
+    
+    if err := operation(); err != nil {
+        cb.failureCount++
+        cb.lastFailure = time.Now()
+        
+        if cb.failureCount >= cb.threshold {
+            cb.state = Open
+        }
+        return err
+    }
+    
+    // 成功，重置状态
+    cb.failureCount = 0
+    cb.state = Closed
+    return nil
+}
+
+func (cb *CircuitBreaker) GetState() State {
+    cb.mutex.RLock()
+    defer cb.mutex.RUnlock()
+    return cb.state
+}
+```
+
+#### 优缺点分析
+
+**优点**：
+- 快速失败，避免资源浪费
+- 防止故障传播
+- 自动恢复机制
+
+**缺点**：
+- 增加系统复杂性
+- 可能影响用户体验
+- 需要合理配置阈值
+
 ### 4.2 舱壁模式
 
 #### 概念定义
@@ -1250,6 +1351,1111 @@ type Bulkhead struct {
     maxWorkers int
     queue      chan struct{}
     mutex      sync.RWMutex
+}
+
+func NewBulkhead(name string, maxWorkers int) *Bulkhead {
+    return &Bulkhead{
+        name:       name,
+        maxWorkers: maxWorkers,
+        queue:      make(chan struct{}, maxWorkers),
+    }
+}
+
+func (b *Bulkhead) Execute(ctx context.Context, operation func() error) error {
+    // 尝试获取工作槽位
+    select {
+    case b.queue <- struct{}{}:
+        defer func() { <-b.queue }()
+    case <-ctx.Done():
+        return ctx.Err()
+    default:
+        return fmt.Errorf("bulkhead %s is full", b.name)
+    }
+    
+    return operation()
+}
+
+// BulkheadPool 舱壁池
+type BulkheadPool struct {
+    bulkheads map[string]*Bulkhead
+    mutex     sync.RWMutex
+}
+
+func NewBulkheadPool() *BulkheadPool {
+    return &BulkheadPool{
+        bulkheads: make(map[string]*Bulkhead),
+    }
+}
+
+func (bp *BulkheadPool) GetBulkhead(name string, maxWorkers int) *Bulkhead {
+    bp.mutex.Lock()
+    defer bp.mutex.Unlock()
+    
+    if bulkhead, exists := bp.bulkheads[name]; exists {
+        return bulkhead
+    }
+    
+    bulkhead := NewBulkhead(name, maxWorkers)
+    bp.bulkheads[name] = bulkhead
+    return bulkhead
+}
+
+// 示例：数据库连接舱壁
+type DatabaseBulkhead struct {
+    readBulkhead  *Bulkhead
+    writeBulkhead *Bulkhead
+}
+
+func NewDatabaseBulkhead() *DatabaseBulkhead {
+    return &DatabaseBulkhead{
+        readBulkhead:  NewBulkhead("db-read", 10),
+        writeBulkhead: NewBulkhead("db-write", 5),
+    }
+}
+
+func (db *DatabaseBulkhead) Read(ctx context.Context, query string) (interface{}, error) {
+    var result interface{}
+    err := db.readBulkhead.Execute(ctx, func() error {
+        // 执行读操作
+        result = executeQuery(query)
+        return nil
+    })
+    
+    return result, err
+}
+
+func (db *DatabaseBulkhead) Write(ctx context.Context, query string) error {
+    return db.writeBulkhead.Execute(ctx, func() error {
+        // 执行写操作
+        return executeQuery(query)
+    })
+}
+
+func executeQuery(query string) error {
+    // 模拟数据库操作
+    time.Sleep(100 * time.Millisecond)
+    return nil
+}
+```
+
+#### 优缺点分析
+
+**优点**：
+- 资源隔离，防止故障传播
+- 可配置不同的资源限制
+- 提高系统稳定性
+
+**缺点**：
+- 增加系统复杂性
+- 可能造成资源浪费
+- 需要合理配置资源分配
+
+### 4.3 超时与重试
+
+#### 概念定义
+
+**定义**：为操作设置超时时间，失败时进行重试，提高系统可靠性。
+
+**形式化定义**：
+设 $T$ 为超时时间，$R$ 为重试次数，$O$ 为操作集合，则超时重试模式可表示为：
+
+$$\text{TimeoutRetry}: O \times T \times R \rightarrow \text{Success} \lor \text{Failure}$$
+
+**Golang实现**：
+
+```go
+package timeoutretry
+
+import (
+    "context"
+    "time"
+)
+
+// RetryConfig 重试配置
+type RetryConfig struct {
+    MaxRetries  int
+    InitialDelay time.Duration
+    MaxDelay     time.Duration
+    BackoffFactor float64
+}
+
+func NewRetryConfig(maxRetries int, initialDelay, maxDelay time.Duration) *RetryConfig {
+    return &RetryConfig{
+        MaxRetries:   maxRetries,
+        InitialDelay: initialDelay,
+        MaxDelay:     maxDelay,
+        BackoffFactor: 2.0,
+    }
+}
+
+// RetryWithBackoff 指数退避重试
+func RetryWithBackoff(ctx context.Context, config *RetryConfig, operation func() error) error {
+    var lastErr error
+    delay := config.InitialDelay
+    
+    for attempt := 0; attempt <= config.MaxRetries; attempt++ {
+        select {
+        case <-ctx.Done():
+            return ctx.Err()
+        default:
+        }
+        
+        if err := operation(); err == nil {
+            return nil
+        } else {
+            lastErr = err
+        }
+        
+        if attempt < config.MaxRetries {
+            time.Sleep(delay)
+            delay = time.Duration(float64(delay) * config.BackoffFactor)
+            if delay > config.MaxDelay {
+                delay = config.MaxDelay
+            }
+        }
+    }
+    
+    return fmt.Errorf("operation failed after %d retries: %v", config.MaxRetries, lastErr)
+}
+
+// TimeoutWrapper 超时包装器
+func TimeoutWrapper(timeout time.Duration, operation func() error) error {
+    ctx, cancel := context.WithTimeout(context.Background(), timeout)
+    defer cancel()
+    
+    done := make(chan error, 1)
+    go func() {
+        done <- operation()
+    }()
+    
+    select {
+    case err := <-done:
+        return err
+    case <-ctx.Done():
+        return fmt.Errorf("operation timed out after %v", timeout)
+    }
+}
+```
+
+### 4.4 背压模式
+
+#### 概念定义
+
+**定义**：当下游处理速度跟不上上游生产速度时，通过背压机制控制数据流。
+
+**形式化定义**：
+设 $P$ 为生产者，$C$ 为消费者，$B$ 为缓冲区，则背压模式可表示为：
+
+$$\text{Backpressure}: \text{Buffer}(B) \rightarrow \text{Throttle}(P) \text{ 当 } \text{Rate}(C) < \text{Rate}(P)$$
+
+**Golang实现**：
+
+```go
+package backpressure
+
+import (
+    "context"
+    "sync"
+    "time"
+)
+
+// BackpressureController 背压控制器
+type BackpressureController struct {
+    buffer     chan interface{}
+    maxSize    int
+    mutex      sync.RWMutex
+    stats      BackpressureStats
+}
+
+type BackpressureStats struct {
+    Produced   int64
+    Consumed   int64
+    Dropped    int64
+    BufferSize int
+}
+
+func NewBackpressureController(maxSize int) *BackpressureController {
+    return &BackpressureController{
+        buffer:  make(chan interface{}, maxSize),
+        maxSize: maxSize,
+    }
+}
+
+func (bc *BackpressureController) Produce(ctx context.Context, item interface{}) error {
+    select {
+    case bc.buffer <- item:
+        bc.mutex.Lock()
+        bc.stats.Produced++
+        bc.stats.BufferSize = len(bc.buffer)
+        bc.mutex.Unlock()
+        return nil
+    case <-ctx.Done():
+        return ctx.Err()
+    default:
+        // 缓冲区满，丢弃数据
+        bc.mutex.Lock()
+        bc.stats.Dropped++
+        bc.mutex.Unlock()
+        return fmt.Errorf("buffer full, item dropped")
+    }
+}
+
+func (bc *BackpressureController) Consume(ctx context.Context) (interface{}, error) {
+    select {
+    case item := <-bc.buffer:
+        bc.mutex.Lock()
+        bc.stats.Consumed++
+        bc.stats.BufferSize = len(bc.buffer)
+        bc.mutex.Unlock()
+        return item, nil
+    case <-ctx.Done():
+        return nil, ctx.Err()
+    }
+}
+
+func (bc *BackpressureController) GetStats() BackpressureStats {
+    bc.mutex.RLock()
+    defer bc.mutex.RUnlock()
+    
+    return bc.stats
+}
+
+// 自适应背压
+type AdaptiveBackpressure struct {
+    controller *BackpressureController
+    threshold  float64
+    mutex      sync.RWMutex
+}
+
+func NewAdaptiveBackpressure(initialSize int, threshold float64) *AdaptiveBackpressure {
+    return &AdaptiveBackpressure{
+        controller: NewBackpressureController(initialSize),
+        threshold:  threshold,
+    }
+}
+
+func (ab *AdaptiveBackpressure) Produce(ctx context.Context, item interface{}) error {
+    // 检查是否需要调整缓冲区大小
+    ab.adjustBufferSize()
+    
+    return ab.controller.Produce(ctx, item)
+}
+
+func (ab *AdaptiveBackpressure) adjustBufferSize() {
+    stats := ab.controller.GetStats()
+    
+    if stats.Produced > 0 {
+        dropRate := float64(stats.Dropped) / float64(stats.Produced)
+        
+        if dropRate > ab.threshold {
+            // 增加缓冲区大小
+            ab.mutex.Lock()
+            newSize := len(ab.controller.buffer) * 2
+            ab.controller = NewBackpressureController(newSize)
+            ab.mutex.Unlock()
+        }
+    }
+}
+```
+
+## 5. 事务与一致性模式
+
+### 5.1 两阶段提交
+
+#### 概念定义
+
+**定义**：分布式事务协议，通过准备阶段和提交阶段确保所有参与者要么全部提交，要么全部回滚。
+
+**形式化定义**：
+设 $C$ 为协调者，$P$ 为参与者集合，则2PC可表示为：
+
+$$\text{2PC} = \text{Prepare}(C, P) \land \text{Commit}(C, P) \lor \text{Abort}(C, P)$$
+
+**Golang实现**：
+
+```go
+package twophasecommit
+
+import (
+    "context"
+    "fmt"
+    "sync"
+    "time"
+)
+
+// Coordinator 协调者
+type Coordinator struct {
+    participants map[string]*Participant
+    mutex        sync.RWMutex
+}
+
+func NewCoordinator() *Coordinator {
+    return &Coordinator{
+        participants: make(map[string]*Participant),
+    }
+}
+
+func (c *Coordinator) AddParticipant(id string, participant *Participant) {
+    c.mutex.Lock()
+    defer c.mutex.Unlock()
+    
+    c.participants[id] = participant
+}
+
+func (c *Coordinator) ExecuteTransaction(ctx context.Context, operations map[string]interface{}) error {
+    // 阶段1：准备阶段
+    prepared := make([]string, 0)
+    
+    for id, participant := range c.participants {
+        if operation, exists := operations[id]; exists {
+            if err := participant.Prepare(ctx, operation); err != nil {
+                // 准备失败，回滚所有已准备的参与者
+                c.abort(ctx, prepared)
+                return fmt.Errorf("participant %s prepare failed: %v", id, err)
+            }
+            prepared = append(prepared, id)
+        }
+    }
+    
+    // 阶段2：提交阶段
+    return c.commit(ctx, prepared)
+}
+
+func (c *Coordinator) commit(ctx context.Context, participants []string) error {
+    for _, id := range participants {
+        participant := c.participants[id]
+        if err := participant.Commit(ctx); err != nil {
+            // 提交失败，尝试回滚
+            c.abort(ctx, participants)
+            return fmt.Errorf("participant %s commit failed: %v", id, err)
+        }
+    }
+    return nil
+}
+
+func (c *Coordinator) abort(ctx context.Context, participants []string) {
+    for _, id := range participants {
+        participant := c.participants[id]
+        participant.Abort(ctx)
+    }
+}
+
+// Participant 参与者
+type Participant struct {
+    id       string
+    state    ParticipantState
+    mutex    sync.RWMutex
+    data     interface{}
+}
+
+type ParticipantState int
+
+const (
+    Initial ParticipantState = iota
+    Prepared
+    Committed
+    Aborted
+)
+
+func NewParticipant(id string) *Participant {
+    return &Participant{
+        id:    id,
+        state: Initial,
+    }
+}
+
+func (p *Participant) Prepare(ctx context.Context, operation interface{}) error {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    if p.state != Initial {
+        return fmt.Errorf("invalid state for prepare: %v", p.state)
+    }
+    
+    // 执行准备操作
+    if err := p.executeOperation(operation); err != nil {
+        return err
+    }
+    
+    p.state = Prepared
+    return nil
+}
+
+func (p *Participant) Commit(ctx context.Context) error {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    if p.state != Prepared {
+        return fmt.Errorf("invalid state for commit: %v", p.state)
+    }
+    
+    p.state = Committed
+    return nil
+}
+
+func (p *Participant) Abort(ctx context.Context) error {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    if p.state == Committed {
+        return fmt.Errorf("cannot abort committed transaction")
+    }
+    
+    // 回滚操作
+    p.rollback()
+    p.state = Aborted
+    return nil
+}
+
+func (p *Participant) executeOperation(operation interface{}) error {
+    // 模拟执行操作
+    time.Sleep(100 * time.Millisecond)
+    p.data = operation
+    return nil
+}
+
+func (p *Participant) rollback() {
+    // 模拟回滚操作
+    p.data = nil
+}
+```
+
+#### 优缺点分析
+
+**优点**：
+- 强一致性保证
+- 原子性操作
+- 故障恢复机制
+
+**缺点**：
+- 性能开销大
+- 阻塞时间长
+- 单点故障风险
+
+### 5.2 三阶段提交
+
+#### 概念定义
+
+**定义**：2PC的改进版本，增加了预提交阶段，减少阻塞时间。
+
+**形式化定义**：
+设 $C$ 为协调者，$P$ 为参与者集合，则3PC可表示为：
+
+$$\text{3PC} = \text{Prepare}(C, P) \land \text{PreCommit}(C, P) \land \text{Commit}(C, P)$$
+
+**Golang实现**：
+
+```go
+package threephasecommit
+
+import (
+    "context"
+    "fmt"
+    "sync"
+    "time"
+)
+
+// ThreePhaseCoordinator 三阶段提交协调者
+type ThreePhaseCoordinator struct {
+    participants map[string]*ThreePhaseParticipant
+    mutex        sync.RWMutex
+}
+
+func NewThreePhaseCoordinator() *ThreePhaseCoordinator {
+    return &ThreePhaseCoordinator{
+        participants: make(map[string]*ThreePhaseParticipant),
+    }
+}
+
+func (c *ThreePhaseCoordinator) ExecuteTransaction(ctx context.Context, operations map[string]interface{}) error {
+    // 阶段1：准备阶段
+    prepared := make([]string, 0)
+    
+    for id, participant := range c.participants {
+        if operation, exists := operations[id]; exists {
+            if err := participant.Prepare(ctx, operation); err != nil {
+                c.abort(ctx, prepared)
+                return fmt.Errorf("participant %s prepare failed: %v", id, err)
+            }
+            prepared = append(prepared, id)
+        }
+    }
+    
+    // 阶段2：预提交阶段
+    if err := c.preCommit(ctx, prepared); err != nil {
+        c.abort(ctx, prepared)
+        return err
+    }
+    
+    // 阶段3：提交阶段
+    return c.commit(ctx, prepared)
+}
+
+func (c *ThreePhaseCoordinator) preCommit(ctx context.Context, participants []string) error {
+    for _, id := range participants {
+        participant := c.participants[id]
+        if err := participant.PreCommit(ctx); err != nil {
+            return fmt.Errorf("participant %s pre-commit failed: %v", id, err)
+        }
+    }
+    return nil
+}
+
+func (c *ThreePhaseCoordinator) commit(ctx context.Context, participants []string) error {
+    for _, id := range participants {
+        participant := c.participants[id]
+        if err := participant.Commit(ctx); err != nil {
+            return fmt.Errorf("participant %s commit failed: %v", id, err)
+        }
+    }
+    return nil
+}
+
+func (c *ThreePhaseCoordinator) abort(ctx context.Context, participants []string) {
+    for _, id := range participants {
+        participant := c.participants[id]
+        participant.Abort(ctx)
+    }
+}
+
+// ThreePhaseParticipant 三阶段提交参与者
+type ThreePhaseParticipant struct {
+    id       string
+    state    ThreePhaseState
+    mutex    sync.RWMutex
+    data     interface{}
+}
+
+type ThreePhaseState int
+
+const (
+    TPCInitial ThreePhaseState = iota
+    TPCPrepared
+    TPCPreCommitted
+    TPCCommitted
+    TPCAborted
+)
+
+func NewThreePhaseParticipant(id string) *ThreePhaseParticipant {
+    return &ThreePhaseParticipant{
+        id:    id,
+        state: TPCInitial,
+    }
+}
+
+func (p *ThreePhaseParticipant) Prepare(ctx context.Context, operation interface{}) error {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    if p.state != TPCInitial {
+        return fmt.Errorf("invalid state for prepare: %v", p.state)
+    }
+    
+    if err := p.executeOperation(operation); err != nil {
+        return err
+    }
+    
+    p.state = TPCPrepared
+    return nil
+}
+
+func (p *ThreePhaseParticipant) PreCommit(ctx context.Context) error {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    if p.state != TPCPrepared {
+        return fmt.Errorf("invalid state for pre-commit: %v", p.state)
+    }
+    
+    p.state = TPCPreCommitted
+    return nil
+}
+
+func (p *ThreePhaseParticipant) Commit(ctx context.Context) error {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    if p.state != TPCPreCommitted {
+        return fmt.Errorf("invalid state for commit: %v", p.state)
+    }
+    
+    p.state = TPCCommitted
+    return nil
+}
+
+func (p *ThreePhaseParticipant) Abort(ctx context.Context) error {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    if p.state == TPCCommitted {
+        return fmt.Errorf("cannot abort committed transaction")
+    }
+    
+    p.rollback()
+    p.state = TPCAborted
+    return nil
+}
+
+func (p *ThreePhaseParticipant) executeOperation(operation interface{}) error {
+    time.Sleep(100 * time.Millisecond)
+    p.data = operation
+    return nil
+}
+
+func (p *ThreePhaseParticipant) rollback() {
+    p.data = nil
+}
+```
+
+### 5.3 SAGA模式
+
+#### 概念定义
+
+**定义**：SAGA是一种分布式事务模式，通过一系列本地事务和补偿操作来维护数据一致性。
+
+**形式化定义**：
+设 $T$ 为事务集合，$C$ 为补偿操作集合，则SAGA可表示为：
+
+$$\text{SAGA} = \{(t_1, c_1), (t_2, c_2), ..., (t_n, c_n) | t_i \in T, c_i \in C\}$$
+
+**Golang实现**：
+
+```go
+package saga
+
+import (
+    "context"
+    "fmt"
+    "sync"
+)
+
+// Step SAGA步骤
+type Step struct {
+    ID           string
+    Execute      func(ctx context.Context) error
+    Compensate   func(ctx context.Context) error
+    Dependencies []string
+}
+
+// Saga SAGA事务
+type Saga struct {
+    ID    string
+    Steps []*Step
+    state map[string]StepState
+    mutex sync.RWMutex
+}
+
+type StepState int
+
+const (
+    Pending StepState = iota
+    Executing
+    Completed
+    Failed
+    Compensating
+    Compensated
+)
+
+func NewSaga(id string) *Saga {
+    return &Saga{
+        ID:    id,
+        Steps: make([]*Step, 0),
+        state: make(map[string]StepState),
+    }
+}
+
+func (s *Saga) AddStep(step *Step) {
+    s.Steps = append(s.Steps, step)
+    s.state[step.ID] = Pending
+}
+
+func (s *Saga) Execute(ctx context.Context) error {
+    s.mutex.Lock()
+    defer s.mutex.Unlock()
+    
+    // 按依赖顺序执行步骤
+    for _, step := range s.Steps {
+        if err := s.executeStep(ctx, step); err != nil {
+            // 执行失败，开始补偿
+            return s.compensate(ctx, step)
+        }
+    }
+    
+    return nil
+}
+
+func (s *Saga) executeStep(ctx context.Context, step *Step) error {
+    // 检查依赖
+    for _, dep := range step.Dependencies {
+        if s.state[dep] != Completed {
+            return fmt.Errorf("dependency %s not completed", dep)
+        }
+    }
+    
+    s.state[step.ID] = Executing
+    
+    if err := step.Execute(ctx); err != nil {
+        s.state[step.ID] = Failed
+        return err
+    }
+    
+    s.state[step.ID] = Completed
+    return nil
+}
+
+func (s *Saga) compensate(ctx context.Context, failedStep *Step) error {
+    // 从失败步骤开始，反向执行补偿操作
+    for i := len(s.Steps) - 1; i >= 0; i-- {
+        step := s.Steps[i]
+        
+        if s.state[step.ID] == Completed {
+            s.state[step.ID] = Compensating
+            
+            if err := step.Compensate(ctx); err != nil {
+                s.state[step.ID] = Failed
+                return fmt.Errorf("compensation failed for step %s: %v", step.ID, err)
+            }
+            
+            s.state[step.ID] = Compensated
+        }
+    }
+    
+    return fmt.Errorf("saga execution failed at step %s", failedStep.ID)
+}
+
+// 示例：订单处理SAGA
+func createOrderSaga() *Saga {
+    saga := NewSaga("order-processing")
+    
+    // 步骤1：创建订单
+    saga.AddStep(&Step{
+        ID: "create-order",
+        Execute: func(ctx context.Context) error {
+            fmt.Println("Creating order...")
+            return nil
+        },
+        Compensate: func(ctx context.Context) error {
+            fmt.Println("Canceling order...")
+            return nil
+        },
+    })
+    
+    // 步骤2：扣减库存
+    saga.AddStep(&Step{
+        ID: "reduce-inventory",
+        Dependencies: []string{"create-order"},
+        Execute: func(ctx context.Context) error {
+            fmt.Println("Reducing inventory...")
+            return nil
+        },
+        Compensate: func(ctx context.Context) error {
+            fmt.Println("Restoring inventory...")
+            return nil
+        },
+    })
+    
+    // 步骤3：扣减余额
+    saga.AddStep(&Step{
+        ID: "deduct-balance",
+        Dependencies: []string{"create-order"},
+        Execute: func(ctx context.Context) error {
+            fmt.Println("Deducting balance...")
+            return nil
+        },
+        Compensate: func(ctx context.Context) error {
+            fmt.Println("Refunding balance...")
+            return nil
+        },
+    })
+    
+    return saga
+}
+```
+
+### 5.4 TCC模式
+
+#### 概念定义
+
+**定义**：Try-Confirm-Cancel模式，通过预留资源、确认和取消三个步骤实现分布式事务。
+
+**形式化定义**：
+设 $T$ 为Try操作，$C$ 为Confirm操作，$X$ 为Cancel操作，则TCC可表示为：
+
+$$\text{TCC} = T \rightarrow (C \lor X)$$
+
+**Golang实现**：
+
+```go
+package tcc
+
+import (
+    "context"
+    "fmt"
+    "sync"
+)
+
+// TCCTransaction TCC事务
+type TCCTransaction struct {
+    id          string
+    services    map[string]TCCService
+    state       TCCState
+    mutex       sync.RWMutex
+}
+
+type TCCState int
+
+const (
+    TCCInitial TCCState = iota
+    TCCTrying
+    TCCConfirmed
+    TCCCancelled
+)
+
+type TCCService interface {
+    Try(ctx context.Context, params interface{}) error
+    Confirm(ctx context.Context, params interface{}) error
+    Cancel(ctx context.Context, params interface{}) error
+}
+
+func NewTCCTransaction(id string) *TCCTransaction {
+    return &TCCTransaction{
+        id:       id,
+        services: make(map[string]TCCService),
+        state:    TCCInitial,
+    }
+}
+
+func (t *TCCTransaction) AddService(name string, service TCCService) {
+    t.mutex.Lock()
+    defer t.mutex.Unlock()
+    
+    t.services[name] = service
+}
+
+func (t *TCCTransaction) Execute(ctx context.Context, params map[string]interface{}) error {
+    // 阶段1：Try
+    if err := t.try(ctx, params); err != nil {
+        t.cancel(ctx, params)
+        return err
+    }
+    
+    // 阶段2：Confirm
+    return t.confirm(ctx, params)
+}
+
+func (t *TCCTransaction) try(ctx context.Context, params map[string]interface{}) error {
+    t.mutex.Lock()
+    t.state = TCCTrying
+    t.mutex.Unlock()
+    
+    for name, service := range t.services {
+        if param, exists := params[name]; exists {
+            if err := service.Try(ctx, param); err != nil {
+                return fmt.Errorf("service %s try failed: %v", name, err)
+            }
+        }
+    }
+    
+    return nil
+}
+
+func (t *TCCTransaction) confirm(ctx context.Context, params map[string]interface{}) error {
+    t.mutex.Lock()
+    t.state = TCCConfirmed
+    t.mutex.Unlock()
+    
+    for name, service := range t.services {
+        if param, exists := params[name]; exists {
+            if err := service.Confirm(ctx, param); err != nil {
+                return fmt.Errorf("service %s confirm failed: %v", name, err)
+            }
+        }
+    }
+    
+    return nil
+}
+
+func (t *TCCTransaction) cancel(ctx context.Context, params map[string]interface{}) error {
+    t.mutex.Lock()
+    t.state = TCCCancelled
+    t.mutex.Unlock()
+    
+    for name, service := range t.services {
+        if param, exists := params[name]; exists {
+            service.Cancel(ctx, param)
+        }
+    }
+    
+    return nil
+}
+
+// 示例：库存服务
+type InventoryService struct {
+    inventory map[string]int
+    reserved  map[string]int
+    mutex     sync.RWMutex
+}
+
+func NewInventoryService() *InventoryService {
+    return &InventoryService{
+        inventory: make(map[string]int),
+        reserved:  make(map[string]int),
+    }
+}
+
+func (i *InventoryService) Try(ctx context.Context, params interface{}) error {
+    p := params.(map[string]interface{})
+    productID := p["product_id"].(string)
+    quantity := p["quantity"].(int)
+    
+    i.mutex.Lock()
+    defer i.mutex.Unlock()
+    
+    available := i.inventory[productID] - i.reserved[productID]
+    if available < quantity {
+        return fmt.Errorf("insufficient inventory for product %s", productID)
+    }
+    
+    // 预留库存
+    i.reserved[productID] += quantity
+    return nil
+}
+
+func (i *InventoryService) Confirm(ctx context.Context, params interface{}) error {
+    p := params.(map[string]interface{})
+    productID := p["product_id"].(string)
+    quantity := p["quantity"].(int)
+    
+    i.mutex.Lock()
+    defer i.mutex.Unlock()
+    
+    // 确认扣减库存
+    i.inventory[productID] -= quantity
+    i.reserved[productID] -= quantity
+    return nil
+}
+
+func (i *InventoryService) Cancel(ctx context.Context, params interface{}) error {
+    p := params.(map[string]interface{})
+    productID := p["product_id"].(string)
+    quantity := p["quantity"].(int)
+    
+    i.mutex.Lock()
+    defer i.mutex.Unlock()
+    
+    // 释放预留库存
+    i.reserved[productID] -= quantity
+    return nil
+}
+```
+
+**Golang实现**：
+
+```go
+package backpressure
+
+import (
+    "context"
+    "sync"
+    "time"
+)
+
+// BackpressureController 背压控制器
+type BackpressureController struct {
+    buffer     chan interface{}
+    maxSize    int
+    mutex      sync.RWMutex
+    stats      BackpressureStats
+}
+
+type BackpressureStats struct {
+    Produced   int64
+    Consumed   int64
+    Dropped    int64
+    BufferSize int
+}
+
+func NewBackpressureController(maxSize int) *BackpressureController {
+    return &BackpressureController{
+        buffer:  make(chan interface{}, maxSize),
+        maxSize: maxSize,
+    }
+}
+
+func (bc *BackpressureController) Produce(ctx context.Context, item interface{}) error {
+    select {
+    case bc.buffer <- item:
+        bc.mutex.Lock()
+        bc.stats.Produced++
+        bc.stats.BufferSize = len(bc.buffer)
+        bc.mutex.Unlock()
+        return nil
+    case <-ctx.Done():
+        return ctx.Err()
+    default:
+        // 缓冲区满，丢弃数据
+        bc.mutex.Lock()
+        bc.stats.Dropped++
+        bc.mutex.Unlock()
+        return fmt.Errorf("buffer full, item dropped")
+    }
+}
+
+func (bc *BackpressureController) Consume(ctx context.Context) (interface{}, error) {
+    select {
+    case item := <-bc.buffer:
+        bc.mutex.Lock()
+        bc.stats.Consumed++
+        bc.stats.BufferSize = len(bc.buffer)
+        bc.mutex.Unlock()
+        return item, nil
+    case <-ctx.Done():
+        return nil, ctx.Err()
+    }
+}
+
+func (bc *BackpressureController) GetStats() BackpressureStats {
+    bc.mutex.RLock()
+    defer bc.mutex.RUnlock()
+    
+    return bc.stats
+}
+
+// 自适应背压
+type AdaptiveBackpressure struct {
+    controller *BackpressureController
+    threshold  float64
+    mutex      sync.RWMutex
+}
+
+func NewAdaptiveBackpressure(initialSize int, threshold float64) *AdaptiveBackpressure {
+    return &AdaptiveBackpressure{
+        controller: NewBackpressureController(initialSize),
+        threshold:  threshold,
+    }
+}
+
+func (ab *AdaptiveBackpressure) Produce(ctx context.Context, item interface{}) error {
+    // 检查是否需要调整缓冲区大小
+    ab.adjustBufferSize()
+    
+    return ab.controller.Produce(ctx, item)
+}
+
+func (ab *AdaptiveBackpressure) adjustBufferSize() {
+    stats := ab.controller.GetStats()
+    
+    if stats.Produced > 0 {
+        dropRate := float64(stats.Dropped) / float64(stats.Produced)
+        
+        if dropRate > ab.threshold {
+            // 增加缓冲区大小
+            ab.mutex.Lock()
+            newSize := len(ab.controller.buffer) * 2
+            ab.controller = NewBackpressureController(newSize)
+            ab.mutex.Unlock()
+        }
+    }
 }
 
 func NewBulkhead(name string, maxWorkers int) *Bulkhead {
