@@ -1,0 +1,65 @@
+# Go语言现代化 - 完整测试体系 .dockerignore
+
+# Git相关
+.git
+.gitignore
+.gitattributes
+
+# 构建输出
+build/
+bin/
+dist/
+
+# 测试结果
+test-results/
+performance-results/
+profiles/
+coverage.out
+coverage.html
+
+# 依赖缓存
+vendor/
+go.sum
+
+# IDE和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 文档
+README.md
+docs/
+*.md
+
+# Makefile
+Makefile
+
+# Docker相关
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+
+# 配置文件
+.env
+.env.local
+.env.*.local
+config.local.*
+
+# 其他
+*.bak
+*.backup
