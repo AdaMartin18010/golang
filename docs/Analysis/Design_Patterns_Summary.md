@@ -1,8 +1,37 @@
-# Design Pattern System Summary
+# 1 1 1 1 1 1 1 Design Pattern System Summary
 
-## Core Pattern Categories
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Design Pattern System Summary](#1-1-1-1-1-1-1-design-pattern-system-summary)
+  - [1.1 Core Pattern Categories](#core-pattern-categories)
+    - [1.1.1 1. Creational Patterns](#1-creational-patterns)
+    - [1.1.2 2. Structural Patterns](#2-structural-patterns)
+    - [1.1.3 3. Behavioral Patterns](#3-behavioral-patterns)
+    - [1.1.4 4. Concurrency Patterns](#4-concurrency-patterns)
+    - [1.1.5 5. Enterprise Patterns](#5-enterprise-patterns)
+  - [1.2 Performance Characteristics](#performance-characteristics)
+  - [1.3 Anti-Patterns and Solutions](#anti-patterns-and-solutions)
+    - [1.3.1 Goroutine Leak](#goroutine-leak)
+    - [1.3.2 Mutex Misuse](#mutex-misuse)
+  - [1.4 Best Practices](#best-practices)
+  - [1.5 Key Principles](#key-principles)
+<!-- TOC END -->
 
-### 1. Creational Patterns
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 Core Pattern Categories
+
+### 1.1.1 1. Creational Patterns
 
 **Factory Pattern**
 
@@ -59,7 +88,7 @@ func (cb *ConcreteComputerBuilder) SetCPU(cpu string) ComputerBuilder {
 }
 ```
 
-### 2. Structural Patterns
+### 1.1.2 2. Structural Patterns
 
 **Adapter Pattern**
 
@@ -119,7 +148,7 @@ func (p *Proxy) Request() string {
 }
 ```
 
-### 3. Behavioral Patterns
+### 1.1.3 3. Behavioral Patterns
 
 **Observer Pattern**
 
@@ -188,7 +217,7 @@ func (i *Invoker) ExecuteCommands() {
 }
 ```
 
-### 4. Concurrency Patterns
+### 1.1.4 4. Concurrency Patterns
 
 **Worker Pool Pattern**
 
@@ -246,7 +275,7 @@ func (p *Pipeline) Execute(data interface{}) (interface{}, error) {
 }
 ```
 
-### 5. Enterprise Patterns
+### 1.1.5 5. Enterprise Patterns
 
 **Repository Pattern**
 
@@ -307,7 +336,7 @@ func (uow *ConcreteUnitOfWork) Commit() error {
 }
 ```
 
-## Performance Characteristics
+## 1.2 Performance Characteristics
 
 | Pattern | Creation | Operation | Memory | Thread Safety |
 |---------|----------|-----------|---------|---------------|
@@ -323,9 +352,9 @@ func (uow *ConcreteUnitOfWork) Commit() error {
 | Worker Pool | O(w) | O(1) | O(w+t) | ✅ |
 | Pipeline | O(s) | O(s) | O(s) | ✅ |
 
-## Anti-Patterns and Solutions
+## 1.3 Anti-Patterns and Solutions
 
-### Goroutine Leak
+### 1.3.1 Goroutine Leak
 
 ```go
 // Anti-pattern
@@ -349,7 +378,7 @@ func processItemsWithPool(items []string) {
 }
 ```
 
-### Mutex Misuse
+### 1.3.2 Mutex Misuse
 
 ```go
 // Anti-pattern
@@ -371,7 +400,7 @@ func (s *Service) ProcessData(data []int) {
 }
 ```
 
-## Best Practices
+## 1.4 Best Practices
 
 1. **Thread Safety**: Use sync.Once for singletons, mutexes for shared state
 2. **Memory Management**: Implement object pooling for high-frequency objects
@@ -380,7 +409,7 @@ func (s *Service) ProcessData(data []int) {
 5. **Testing**: Unit tests for each pattern implementation
 6. **Documentation**: Clear interfaces and usage examples
 
-## Key Principles
+## 1.5 Key Principles
 
 - **Composition over Inheritance**: Use interfaces and embedding
 - **Dependency Inversion**: Depend on abstractions, not concretions

@@ -1,4 +1,25 @@
-# Marker Trait 与 Auto Trait
+# 1 1 1 1 1 1 1 Marker Trait 与 Auto Trait
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Marker Trait 与 Auto Trait](#1-1-1-1-1-1-1-marker-trait-与-auto-trait)
+  - [1.1 1. Marker Trait 定义与 Auto Trait](#1-marker-trait-定义与-auto-trait)
+  - [1.2 2. 自动实现 Auto Trait 的机制](#2-自动实现-auto-trait-的机制)
+  - [1.3 3. 编译器内部检查流程与源码解析](#3-编译器内部检查流程与源码解析)
+  - [1.4 小结](#小结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下面给出一个基于 Rust 源代码分析、梳理和解释 `Sized` 类型如何自动实现 `Send` 和 `Sync` 特性的说明。这里主要涉及以下几个方面：
 
@@ -10,7 +31,7 @@
 
 ---
 
-## 1. Marker Trait 定义与 Auto Trait
+## 1.1 1. Marker Trait 定义与 Auto Trait
 
 在 Rust 源代码中（通常位于 [`src/libcore/marker.rs`](https://github.com/rust-lang/rust/blob/master/library/core/src/marker.rs)），我们可以看到对 `Sized`、`Send` 与 `Sync` 的定义。  
 例如：
@@ -42,7 +63,7 @@ pub unsafe auto trait Sync { }
 
 ---
 
-## 2. 自动实现 Auto Trait 的机制
+## 1.2 2. 自动实现 Auto Trait 的机制
 
 Rust 编译器有专门的部分负责“自动实现”（auto trait impl）的计算。这一机制主要包括以下几个步骤或原则：
 
@@ -73,7 +94,7 @@ Rust 编译器有专门的部分负责“自动实现”（auto trait impl）的
 
 ---
 
-## 3. 编译器内部检查流程与源码解析
+## 1.3 3. 编译器内部检查流程与源码解析
 
 在编译器内部（如 rustc 的 trait selection 部分），自动 trait 的实现有专门的逻辑进行处理。大体流程如下：
 
@@ -99,7 +120,7 @@ Rust 编译器有专门的部分负责“自动实现”（auto trait impl）的
 
 ---
 
-## 小结
+## 1.4 小结
 
 - **定义层面：**  
   在 `core/marker.rs` 中，`Sized` 被明确定义为普通 trait，而 `Send` 和 `Sync` 定义为 `unsafe auto trait`，由编译器自动推导。

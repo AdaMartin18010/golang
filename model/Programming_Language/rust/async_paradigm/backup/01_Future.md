@@ -1,10 +1,32 @@
-# rust Future
+# 1 1 1 1 1 1 1 rust Future
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 rust Future](#1-1-1-1-1-1-1-rust-future)
+  - [1.1 `Future` Trait 定义](#future-trait-定义)
+    - [1.1.1 `Context` 和 `Poll`](#context-和-poll)
+    - [1.1.2 使用 `Future`](#使用-future)
+      - [1.1.2.1 示例：实现一个简单的 `Future`](#示例：实现一个简单的-future)
+    - [1.1.3 解释](#解释)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 在 Rust 中，`Future` 是一个核心的异步编程概念。
 它代表了一个可能尚未完成的异步操作，但最终会返回一个结果。
 `Future` trait 定义了 `Future` 类型必须实现的方法，使得它们可以被异步运行时管理和调度。
 
-## `Future` Trait 定义
+## 1.1 `Future` Trait 定义
 
 `Future` trait 定义在 Rust 的标准库中，主要包含以下内容：
 
@@ -23,21 +45,21 @@ trait Future {
 - **`type Output`**：这是一个关联类型，定义了 `Future` 完成时返回的结果类型。
 - **`fn poll`**：这个方法是异步运行时调用的，用来检查 `Future` 是否已经完成。它接受一个 `Context` 对象和一个 `Pin` 包装的 `self` 引用。
 
-### `Context` 和 `Poll`
+### 1.1.1 `Context` 和 `Poll`
 
 - **`Context`**：这是一个由异步运行时提供的上下文对象，用于传递 `Waker`。`Waker` 是一个用于唤醒当前任务的句柄。
 - **`Poll`**：这是一个枚举类型，表示 `Future` 的当前状态：
   - `Poll::Ready(T)`：表示 `Future` 已经完成，返回结果 `T`。
   - `Poll::Pending`：表示 `Future` 尚未完成，需要继续等待。
 
-### 使用 `Future`
+### 1.1.2 使用 `Future`
 
 要使用 `Future`，你需要：
 
 1. 实现 `Future` trait。
 2. 使用 `.await` 来等待 `Future` 完成。
 
-#### 示例：实现一个简单的 `Future`
+#### 1.1.2.1 示例：实现一个简单的 `Future`
 
 ```rust
 use std::future::Future;
@@ -69,7 +91,7 @@ fn main() {
 - `poll` 方法返回 `Poll::Ready(self.value)`，表示 `Future` 立即完成并返回值 `42`。
 - 在 `main` 函数中，使用 `.await` 等待 `MyFuture` 完成，并打印结果。
 
-### 解释
+### 1.1.3 解释
 
 - **`Pin`**：`Pin` 是一个包装器，用于确保 `Future` 在其生命周期内不会被移动。这是必要的，因为异步运行时可能会多次调用 `poll` 方法，而 `Future` 需要保持在同一个内存位置。
 - **`Waker`**：`Waker` 是 `Context` 中的一个字段，用于通知异步运行时当前任务需要被唤醒。当 `Future` 需要继续执行时，它会通过 `Waker` 来通知运行时。

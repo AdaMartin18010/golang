@@ -1,6 +1,59 @@
-# Temporal 与 Cadence 的多维对比分析
+# 1 1 1 1 1 1 1 Temporal 与 Cadence 的多维对比分析
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Temporal 与 Cadence 的多维对比分析](#1-1-1-1-1-1-1-temporal-与-cadence-的多维对比分析)
+  - [1.1 目录](#目录)
+  - [1.2 1. 工作流模型与组合](#1-工作流模型与组合)
+    - [1.2.1 工作流基础模型对比](#工作流基础模型对比)
+    - [1.2.2 工作流组合能力](#工作流组合能力)
+    - [1.2.3 工作流状态管理](#工作流状态管理)
+    - [1.2.4 工作流管理与编排](#工作流管理与编排)
+  - [1.3 2. 数据流与执行模型](#2-数据流与执行模型)
+    - [1.3.1 数据流设计](#数据流设计)
+    - [1.3.2 执行流控制](#执行流控制)
+    - [1.3.3 容错机制](#容错机制)
+    - [1.3.4 一致性保证](#一致性保证)
+    - [1.3.5 分布式运行时架构](#分布式运行时架构)
+  - [1.4 3. 开发模型与语言支持](#3-开发模型与语言支持)
+    - [1.4.1 Go与Rust SDK对比](#go与rust-sdk对比)
+    - [1.4.2 协议设计与演化](#协议设计与演化)
+    - [1.4.3 开发体验与测试框架](#开发体验与测试框架)
+- [2 2 2 2 2 2 2 Temporal本地开发服务器启动](#2-2-2-2-2-2-2-temporal本地开发服务器启动)
+- [3 3 3 3 3 3 3 启动特定服务](#3-3-3-3-3-3-3-启动特定服务)
+- [4 4 4 4 4 4 4 Cadence本地开发通常需要Docker Compose](#4-4-4-4-4-4-4-cadence本地开发通常需要docker-compose)
+- [5 5 5 5 5 5 5 Temporal CLI示例](#5-5-5-5-5-5-5-temporal-cli示例)
+- [6 6 6 6 6 6 6 获取工作流状态](#6-6-6-6-6-6-6-获取工作流状态)
+- [7 7 7 7 7 7 7 查询工作流](#7-7-7-7-7-7-7-查询工作流)
+    - [7 7 7 7 7 7 7 部署模型与运维考量](#7-7-7-7-7-7-7-部署模型与运维考量)
+- [8 8 8 8 8 8 8 Temporal服务发现配置示例](#8-8-8-8-8-8-8-temporal服务发现配置示例)
+- [9 9 9 9 9 9 9 Temporal多集群配置示例](#9-9-9-9-9-9-9-temporal多集群配置示例)
+- [10 10 10 10 10 10 10 Temporal Kubernetes HPA配置示例](#10-10-10-10-10-10-10-temporal-kubernetes-hpa配置示例)
+- [11 11 11 11 11 11 11 Temporal Prometheus配置示例](#11-11-11-11-11-11-11-temporal-prometheus配置示例)
+  - [11.1 4. 生态系统与实际应用](#4-生态系统与实际应用)
+    - [11.1.1 生态系统成熟度](#生态系统成熟度)
+- [12 12 12 12 12 12 12 Temporal示例项目](#12-12-12-12-12-12-12-temporal示例项目)
+    - [12 12 12 12 12 12 12 应用场景契合度](#12-12-12-12-12-12-12-应用场景契合度)
+    - [12 12 12 12 12 12 12 社区活跃度与支持](#12-12-12-12-12-12-12-社区活跃度与支持)
+  - [12.1 5. 总结与展望](#5-总结与展望)
+    - [12.1.1 核心优劣势总结](#核心优劣势总结)
+    - [12.1.2 选择决策框架](#选择决策框架)
+    - [12.1.3 未来发展趋势](#未来发展趋势)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [Temporal 与 Cadence 的多维对比分析](#temporal-与-cadence-的多维对比分析)
   - [目录](#目录)
@@ -29,9 +82,9 @@
     - [5.2 选择决策框架](#52-选择决策框架)
     - [5.3 未来发展趋势](#53-未来发展趋势)
 
-## 1. 工作流模型与组合
+## 1.2 1. 工作流模型与组合
 
-### 1.1 工作流基础模型对比
+### 1.2.1 工作流基础模型对比
 
 -**基础概念映射**
 
@@ -84,7 +137,7 @@
 
 Temporal和Cadence的基础工作流模型高度相似，这不足为奇，因为Temporal是从Cadence分支而来。两者都采用了事件溯源结合确定性重放的状态管理方式，都实现了相似的工作流和活动分离模型。主要不同体现在术语变化（如Task Queue vs Task List）和一些高级功能的实现上。
 
-### 1.2 工作流组合能力
+### 1.2.2 工作流组合能力
 
 -**子工作流模式**
 
@@ -186,7 +239,7 @@ impl OrderWorkflow {
 
 Cadence和Temporal都支持状态机风格的工作流实现，但Temporal的Rust SDK提供了更好的类型安全保证。
 
-### 1.3 工作流状态管理
+### 1.2.3 工作流状态管理
 
 -**持久化机制**
 
@@ -224,7 +277,7 @@ func MyWorkflow(ctx workflow.Context, param string) error {
 
 继续执行模式允许工作流保持概念上的连续性，同时避免历史记录无限增长。两个系统的实现几乎相同，只有API细节差异。
 
-### 1.4 工作流管理与编排
+### 1.2.4 工作流管理与编排
 
 -**工作流查询与可见性**
 
@@ -275,9 +328,9 @@ response, err := client.BatchOperation(ctx, request)
 
 而Cadence需要客户端逐个操作工作流。
 
-## 2. 数据流与执行模型
+## 1.3 2. 数据流与执行模型
 
-### 2.1 数据流设计
+### 1.3.1 数据流设计
 
 -**工作流输入/输出模型**
 
@@ -344,7 +397,7 @@ client, err := client.NewClient(client.Options{
 
 Cadence依赖gogo/protobuf，而Temporal默认使用JSON但支持多种数据转换器。
 
-### 2.2 执行流控制
+### 1.3.2 执行流控制
 
 -**执行控制模型**
 
@@ -412,7 +465,7 @@ _, err := client.CreateSchedule(ctx, scheduleID, schedule)
 
 这是Cadence不具备的原生功能。
 
-### 2.3 容错机制
+### 1.3.3 容错机制
 
 -**重试策略设计**
 
@@ -496,7 +549,7 @@ func SagaWorkflow(ctx workflow.Context, input SagaInput) error {
 
 Temporal和Cadence都支持Saga模式，但Temporal提供了更成熟的辅助库。
 
-### 2.4 一致性保证
+### 1.3.4 一致性保证
 
 -**事件一致性模型**
 
@@ -553,7 +606,7 @@ persistenceConfig := &config.Persistence{
 }
 ```
 
-### 2.5 分布式运行时架构
+### 1.3.5 分布式运行时架构
 
 -**服务组件架构**
 
@@ -613,9 +666,9 @@ request := &workflowservice.RegisterNamespaceRequest{
 
 Temporal的命名空间提供了更强的资源隔离能力，而Cadence的域(domain)隔离相对较弱。
 
-## 3. 开发模型与语言支持
+## 1.4 3. 开发模型与语言支持
 
-### 3.1 Go与Rust SDK对比
+### 1.4.1 Go与Rust SDK对比
 
 -**Go SDK比较**
 
@@ -706,7 +759,7 @@ Temporal的Rust SDK提供了额外优势：
 - 借助Rust所有权模型的内存安全性
 - 类型驱动的状态机模式支持
 
-### 3.2 协议设计与演化
+### 1.4.2 协议设计与演化
 
 -**API设计哲学**
 
@@ -788,7 +841,7 @@ client, err := client.NewClient(client.Options{
 })
 ```
 
-### 3.3 开发体验与测试框架
+### 1.4.3 开发体验与测试框架
 
 -**开发工具链**
 
@@ -797,10 +850,10 @@ client, err := client.NewClient(client.Options{
 Temporal提供了更完善的本地开发体验：
 
 ```bash
-# Temporal本地开发服务器启动
+# 2 2 2 2 2 2 2 Temporal本地开发服务器启动
 temporal server start-dev
 
-# 启动特定服务
+# 3 3 3 3 3 3 3 启动特定服务
 temporal server start \
   --namespace default \
   --db-filename sqlite.db \
@@ -810,7 +863,7 @@ temporal server start \
 Cadence本地开发相对复杂：
 
 ```bash
-# Cadence本地开发通常需要Docker Compose
+# 4 4 4 4 4 4 4 Cadence本地开发通常需要Docker Compose
 docker-compose -f docker/docker-compose.yml up
 ```
 
@@ -819,16 +872,16 @@ docker-compose -f docker/docker-compose.yml up
 Temporal的CLI工具更强大且用户友好：
 
 ```bash
-# Temporal CLI示例
+# 5 5 5 5 5 5 5 Temporal CLI示例
 temporal workflow start \
   --task-queue "order-processing" \
   --type "OrderWorkflow" \
   --input '{"orderId":"12345","items":[{"id":"item1","quantity":2}]}'
 
-# 获取工作流状态
+# 6 6 6 6 6 6 6 获取工作流状态
 temporal workflow show --workflow-id "order-12345"
 
-# 查询工作流
+# 7 7 7 7 7 7 7 查询工作流
 temporal workflow query --workflow-id "order-12345" --query-type "getStatus"
 ```
 
@@ -973,7 +1026,7 @@ Temporal的Web UI提供了更现代化的可视化界面，包括：
 - 更完善的历史事件分析
 - 更友好的用户界面
 
-### 3.4 部署模型与运维考量
+### 7 7 7 7 7 7 7 部署模型与运维考量
 
 -**部署架构对比**
 
@@ -982,7 +1035,7 @@ Temporal的Web UI提供了更现代化的可视化界面，包括：
 Temporal支持多种服务发现模式：
 
 ```yaml
-# Temporal服务发现配置示例
+# 8 8 8 8 8 8 8 Temporal服务发现配置示例
 services:
   frontend:
     rpc:
@@ -1015,7 +1068,7 @@ services:
 Temporal提供了更成熟的多集群部署支持：
 
 ```yaml
-# Temporal多集群配置示例
+# 9 9 9 9 9 9 9 Temporal多集群配置示例
 clusterMetadata:
   enableGlobalNamespace: true
   replicationConsumer:
@@ -1041,7 +1094,7 @@ clusterMetadata:
 Temporal提供了更好的自动扩展指南：
 
 ```yaml
-# Temporal Kubernetes HPA配置示例
+# 10 10 10 10 10 10 10 Temporal Kubernetes HPA配置示例
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -1087,7 +1140,7 @@ request := &workflowservice.UpdateNamespaceRequest{
 Temporal提供了更全面的监控指标：
 
 ```yaml
-# Temporal Prometheus配置示例
+# 11 11 11 11 11 11 11 Temporal Prometheus配置示例
 metrics:
   prometheus:
     timerType: "histogram"
@@ -1111,9 +1164,9 @@ Temporal提供了更完善的版本管理策略：
 - 提供兼容性测试工具
 - 维护详细的变更日志和升级指南
 
-## 4. 生态系统与实际应用
+## 11.1 4. 生态系统与实际应用
 
-### 4.1 生态系统成熟度
+### 11.1.1 生态系统成熟度
 
 -**工具集与集成**
 
@@ -1174,11 +1227,11 @@ Temporal的文档更全面且现代化：
 Temporal提供了更多现成的模板和示例：
 
 ```bash
-# Temporal示例项目
+# 12 12 12 12 12 12 12 Temporal示例项目
 git clone https://github.com/temporalio/samples-go.git
 ```
 
-### 4.2 应用场景契合度
+### 12 12 12 12 12 12 12 应用场景契合度
 
 -**场景适配性分析**
 
@@ -1364,7 +1417,7 @@ pub async fn device_management_workflow(
 }
 ```
 
-### 4.3 社区活跃度与支持
+### 12 12 12 12 12 12 12 社区活跃度与支持
 
 -**社区指标对比**
 
@@ -1394,9 +1447,9 @@ Temporal Cloud提供更完善的SLA承诺：
 - 全球区域部署选项
 - 企业级安全合规认证
 
-## 5. 总结与展望
+## 12.1 5. 总结与展望
 
-### 5.1 核心优劣势总结
+### 12.1.1 核心优劣势总结
 
 **Temporal优势**：
 
@@ -1429,7 +1482,7 @@ Temporal Cloud提供更完善的SLA承诺：
 2. **熟悉度**：
    - 对于早期采用者，迁移成本较低
 
-### 5.2 选择决策框架
+### 12.1.2 选择决策框架
 
 为项目选择工作流引擎的决策框架：
 
@@ -1463,7 +1516,7 @@ Temporal Cloud提供更完善的SLA承诺：
         └── 偏前沿 → Temporal发展更快
 ```
 
-### 5.3 未来发展趋势
+### 12.1.3 未来发展趋势
 
 **预期演化方向**：
 

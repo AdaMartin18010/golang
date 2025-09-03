@@ -1,12 +1,55 @@
-# Rust安全指南
+# 1 1 1 1 1 1 1 Rust安全指南
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust安全指南](#1-1-1-1-1-1-1-rust安全指南)
+  - [1.1 概述](#概述)
+  - [1.2 1. 内存安全](#1-内存安全)
+    - [1.2.1 避免不安全代码](#避免不安全代码)
+    - [1.2.2 边界检查](#边界检查)
+  - [1.3 2. 密码学安全](#2-密码学安全)
+    - [1.3.1 加密实现](#加密实现)
+    - [1.3.2 哈希和签名](#哈希和签名)
+  - [1.4 3. 输入验证](#3-输入验证)
+    - [1.4.1 数据验证](#数据验证)
+    - [1.4.2 SQL注入防护](#sql注入防护)
+  - [1.5 4. 认证和授权](#4-认证和授权)
+    - [1.5.1 JWT认证](#jwt认证)
+    - [1.5.2 基于角色的访问控制](#基于角色的访问控制)
+  - [1.6 5. 网络安全](#5-网络安全)
+    - [1.6.1 HTTPS配置](#https配置)
+    - [1.6.2 请求限流](#请求限流)
+  - [1.7 6. 安全配置](#6-安全配置)
+    - [1.7.1 环境变量管理](#环境变量管理)
+    - [1.7.2 安全中间件](#安全中间件)
+  - [1.8 7. 安全测试](#7-安全测试)
+    - [1.8.1 单元测试](#单元测试)
+    - [1.8.2 集成测试](#集成测试)
+  - [1.9 8. 安全监控](#8-安全监控)
+    - [1.9.1 安全日志](#安全日志)
+    - [1.9.2 异常检测](#异常检测)
+  - [1.10 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 本文档提供了Rust应用程序的安全最佳实践和防护策略，适用于各个软件行业领域。
 
-## 1. 内存安全
+## 1.2 1. 内存安全
 
-### 避免不安全代码
+### 1.2.1 避免不安全代码
 
 ```rust
 // 不安全的代码 - 避免使用
@@ -40,7 +83,7 @@ impl SafeData {
 }
 ```
 
-### 边界检查
+### 1.2.2 边界检查
 
 ```rust
 // 安全的数组访问
@@ -63,9 +106,9 @@ pub fn safe_conversion(value: i64) -> Option<i32> {
 }
 ```
 
-## 2. 密码学安全
+## 1.3 2. 密码学安全
 
-### 加密实现
+### 1.3.1 加密实现
 
 ```rust
 use ring::aead;
@@ -129,7 +172,7 @@ impl CryptoService {
 }
 ```
 
-### 哈希和签名
+### 1.3.2 哈希和签名
 
 ```rust
 use ring::digest;
@@ -173,9 +216,9 @@ pub fn secure_hash(data: &[u8]) -> Vec<u8> {
 }
 ```
 
-## 3. 输入验证
+## 1.4 3. 输入验证
 
-### 数据验证
+### 1.4.1 数据验证
 
 ```rust
 use validator::{Validate, ValidationError};
@@ -214,7 +257,7 @@ impl UserInput {
 }
 ```
 
-### SQL注入防护
+### 1.4.2 SQL注入防护
 
 ```rust
 use sqlx::{PgPool, Row};
@@ -253,9 +296,9 @@ impl UserRepository {
 }
 ```
 
-## 4. 认证和授权
+## 1.5 4. 认证和授权
 
-### JWT认证
+### 1.5.1 JWT认证
 
 ```rust
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
@@ -311,7 +354,7 @@ impl AuthService {
 }
 ```
 
-### 基于角色的访问控制
+### 1.5.2 基于角色的访问控制
 
 ```rust
 use std::collections::HashMap;
@@ -366,9 +409,9 @@ impl RBACService {
 }
 ```
 
-## 5. 网络安全
+## 1.6 5. 网络安全
 
-### HTTPS配置
+### 1.6.1 HTTPS配置
 
 ```rust
 use tokio_rustls::TlsAcceptor;
@@ -426,7 +469,7 @@ impl SecureServer {
 }
 ```
 
-### 请求限流
+### 1.6.2 请求限流
 
 ```rust
 use std::collections::HashMap;
@@ -471,9 +514,9 @@ impl RateLimiter {
 }
 ```
 
-## 6. 安全配置
+## 1.7 6. 安全配置
 
-### 环境变量管理
+### 1.7.1 环境变量管理
 
 ```rust
 use config::{Config, ConfigError, Environment, File};
@@ -505,7 +548,7 @@ impl SecurityConfig {
 }
 ```
 
-### 安全中间件
+### 1.7.2 安全中间件
 
 ```rust
 use actix_web::{middleware, web, App, HttpServer};
@@ -540,9 +583,9 @@ pub fn create_secure_app() -> App<()> {
 }
 ```
 
-## 7. 安全测试
+## 1.8 7. 安全测试
 
-### 单元测试
+### 1.8.1 单元测试
 
 ```rust
 #[cfg(test)]
@@ -589,7 +632,7 @@ fn sanitize_input(input: &str) -> String {
 }
 ```
 
-### 集成测试
+### 1.8.2 集成测试
 
 ```rust
 #[cfg(test)]
@@ -620,9 +663,9 @@ mod integration_tests {
 }
 ```
 
-## 8. 安全监控
+## 1.9 8. 安全监控
 
-### 安全日志
+### 1.9.1 安全日志
 
 ```rust
 use tracing::{info, warn, error, instrument};
@@ -671,7 +714,7 @@ impl SecurityLogger {
 }
 ```
 
-### 异常检测
+### 1.9.2 异常检测
 
 ```rust
 use std::collections::HashMap;
@@ -721,7 +764,7 @@ impl AnomalyDetector {
 }
 ```
 
-## 总结
+## 1.10 总结
 
 安全是一个持续的过程，需要：
 

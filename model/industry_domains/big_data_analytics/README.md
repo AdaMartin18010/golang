@@ -1,37 +1,89 @@
-# 大数据/数据分析 - Rust架构指南
+# 1 1 1 1 1 1 1 大数据/数据分析 - Rust架构指南
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 大数据/数据分析 - Rust架构指南](#1-1-1-1-1-1-1-大数据数据分析-rust架构指南)
+  - [1.1 概述](#概述)
+  - [1.2 Rust架构选型](#rust架构选型)
+    - [1.2.1 核心技术栈](#核心技术栈)
+      - [1.2.1.1 数据处理框架](#数据处理框架)
+      - [1.2.1.2 机器学习集成](#机器学习集成)
+      - [1.2.1.3 数据存储](#数据存储)
+    - [1.2.2 架构模式](#架构模式)
+      - [1.2.2.1 Lambda架构](#lambda架构)
+      - [1.2.2.2 Kappa架构](#kappa架构)
+  - [1.3 业务领域概念建模](#业务领域概念建模)
+    - [1.3.1 核心领域模型](#核心领域模型)
+      - [1.3.1.1 数据管道](#数据管道)
+      - [1.3.1.2 数据质量](#数据质量)
+      - [1.3.1.3 数据血缘](#数据血缘)
+  - [1.4 数据建模](#数据建模)
+    - [1.4.1 数据存储策略](#数据存储策略)
+      - [1.4.1.1 列式存储引擎](#列式存储引擎)
+      - [1.4.1.2 流式数据处理](#流式数据处理)
+      - [1.4.1.3 数据湖存储](#数据湖存储)
+  - [1.5 流程建模](#流程建模)
+    - [1.5.1 数据处理流程](#数据处理流程)
+      - [1.5.1.1 ETL管道](#etl管道)
+      - [1.5.1.2 实时数据处理](#实时数据处理)
+  - [1.6 组件建模](#组件建模)
+    - [1.6.1 核心组件架构](#核心组件架构)
+      - [1.6.1.1 数据查询引擎](#数据查询引擎)
+      - [1.6.1.2 数据可视化服务](#数据可视化服务)
+  - [1.7 运维运营](#运维运营)
+    - [1.7.1 监控和可观测性](#监控和可观测性)
+      - [1.7.1.1 数据处理监控](#数据处理监控)
+      - [1.7.1.2 数据质量监控](#数据质量监控)
+    - [1.7.2 性能优化](#性能优化)
+      - [1.7.2.1 内存优化](#内存优化)
+      - [1.7.2.2 并行处理优化](#并行处理优化)
+  - [1.8 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 大数据和数据分析领域对性能、内存效率和并发处理有极高要求，这正是Rust的优势所在。本指南涵盖数据仓库、流处理、数据湖、实时分析等核心领域。
 
-## Rust架构选型
+## 1.2 Rust架构选型
 
-### 核心技术栈
+### 1.2.1 核心技术栈
 
-#### 数据处理框架
+#### 1.2.1.1 数据处理框架
 
 - **DataFrames**: `polars`, `arrow-rs`, `datafusion`
 - **流处理**: `kafka-rust`, `flink-rust`, `spark-rust`
 - **数据仓库**: `clickhouse-rust`, `druid-rust`
 - **时序数据库**: `influxdb-rust`, `timescaledb-rust`
 
-#### 机器学习集成
+#### 1.2.1.2 机器学习集成
 
 - **数值计算**: `ndarray`, `nalgebra`, `rust-bert`
 - **深度学习**: `tch-rs`, `burn`, `candle`
 - **特征工程**: `feather-rs`, `petgraph`
 - **模型服务**: `mlflow-rust`, `tensorflow-serving-rust`
 
-#### 数据存储
+#### 1.2.1.3 数据存储
 
 - **列式存储**: `parquet-rs`, `orc-rust`
 - **对象存储**: `s3-rust`, `minio-rust`
 - **缓存**: `redis-rs`, `memcached-rs`
 - **搜索引擎**: `elasticsearch-rs`, `opensearch-rust`
 
-### 架构模式
+### 1.2.2 架构模式
 
-#### Lambda架构
+#### 1.2.2.1 Lambda架构
 
 ```rust
 use tokio::sync::mpsc;
@@ -72,7 +124,7 @@ impl LambdaArchitecture {
 }
 ```
 
-#### Kappa架构
+#### 1.2.2.2 Kappa架构
 
 ```rust
 pub struct KappaArchitecture {
@@ -108,11 +160,11 @@ impl KappaArchitecture {
 }
 ```
 
-## 业务领域概念建模
+## 1.3 业务领域概念建模
 
-### 核心领域模型
+### 1.3.1 核心领域模型
 
-#### 数据管道
+#### 1.3.1.1 数据管道
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -156,7 +208,7 @@ pub enum PipelineStatus {
 }
 ```
 
-#### 数据质量
+#### 1.3.1.2 数据质量
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -198,7 +250,7 @@ pub struct QualityCheckResult {
 }
 ```
 
-#### 数据血缘
+#### 1.3.1.3 数据血缘
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -225,11 +277,11 @@ pub struct Dataset {
 }
 ```
 
-## 数据建模
+## 1.4 数据建模
 
-### 数据存储策略
+### 1.4.1 数据存储策略
 
-#### 列式存储引擎
+#### 1.4.1.1 列式存储引擎
 
 ```rust
 use arrow::array::{ArrayRef, StringArray, Int64Array};
@@ -282,7 +334,7 @@ impl ColumnarStorage {
 }
 ```
 
-#### 流式数据处理
+#### 1.4.1.2 流式数据处理
 
 ```rust
 use tokio::sync::mpsc;
@@ -338,7 +390,7 @@ impl StreamProcessor {
 }
 ```
 
-#### 数据湖存储
+#### 1.4.1.3 数据湖存储
 
 ```rust
 use object_store::{ObjectStore, path::Path};
@@ -403,11 +455,11 @@ impl DataLake {
 }
 ```
 
-## 流程建模
+## 1.5 流程建模
 
-### 数据处理流程
+### 1.5.1 数据处理流程
 
-#### ETL管道
+#### 1.5.1.1 ETL管道
 
 ```rust
 pub struct ETLPipeline {
@@ -456,7 +508,7 @@ impl ETLPipeline {
 }
 ```
 
-#### 实时数据处理
+#### 1.5.1.2 实时数据处理
 
 ```rust
 use tokio::sync::broadcast;
@@ -506,11 +558,11 @@ impl RealTimeProcessor {
 }
 ```
 
-## 组件建模
+## 1.6 组件建模
 
-### 核心组件架构
+### 1.6.1 核心组件架构
 
-#### 数据查询引擎
+#### 1.6.1.1 数据查询引擎
 
 ```rust
 use sqlparser::ast::{Statement, Query};
@@ -555,7 +607,7 @@ impl QueryEngine {
 }
 ```
 
-#### 数据可视化服务
+#### 1.6.1.2 数据可视化服务
 
 ```rust
 use axum::{
@@ -617,11 +669,11 @@ impl VisualizationService {
 }
 ```
 
-## 运维运营
+## 1.7 运维运营
 
-### 监控和可观测性
+### 1.7.1 监控和可观测性
 
-#### 数据处理监控
+#### 1.7.1.1 数据处理监控
 
 ```rust
 use prometheus::{Counter, Histogram, Gauge};
@@ -691,7 +743,7 @@ impl DataProcessingMetrics {
 }
 ```
 
-#### 数据质量监控
+#### 1.7.1.2 数据质量监控
 
 ```rust
 pub struct DataQualityMonitor {
@@ -737,9 +789,9 @@ impl DataQualityMonitor {
 }
 ```
 
-### 性能优化
+### 1.7.2 性能优化
 
-#### 内存优化
+#### 1.7.2.1 内存优化
 
 ```rust
 use std::sync::Arc;
@@ -783,7 +835,7 @@ impl MemoryManager {
 }
 ```
 
-#### 并行处理优化
+#### 1.7.2.2 并行处理优化
 
 ```rust
 use rayon::prelude::*;
@@ -824,7 +876,7 @@ impl ParallelProcessor {
 }
 ```
 
-## 总结
+## 1.8 总结
 
 大数据和数据分析领域的Rust应用需要重点关注：
 

@@ -1,8 +1,33 @@
-# rust无锁结构
+# 1 1 1 1 1 1 1 rust无锁结构
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 rust无锁结构](#1-1-1-1-1-1-1-rust无锁结构)
+  - [1.1 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.1.1 2. 无锁队列实现](#2-无锁队列实现)
+    - [1.1.2 3. 无锁栈实现](#3-无锁栈实现)
+    - [1.1.3 4. 无锁哈希表实现](#4-无锁哈希表实现)
+    - [1.1.4 5. 无锁跳表实现](#5-无锁跳表实现)
+    - [1.1.5 6. 无锁环形缓冲区实现](#6-无锁环形缓冲区实现)
+    - [1.1.6 7. 无锁计数器和标志位实现](#7-无锁计数器和标志位实现)
+    - [1.1.7 8. 使用示例](#8-使用示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个完整的 Rust 2024 无锁编程模式和算法实现。
 
-## 1. 项目依赖配置
+## 1.1 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -16,7 +41,7 @@ crossbeam-epoch = "0.9"
 crossbeam-queue = "0.3"
 ```
 
-### 2. 无锁队列实现
+### 1.1.1 2. 无锁队列实现
 
 ```rust
 use crossbeam_epoch::{self as epoch, Atomic, Owned, Shared};
@@ -115,7 +140,7 @@ impl<T> LockFreeQueue<T> {
 }
 ```
 
-### 3. 无锁栈实现
+### 1.1.2 3. 无锁栈实现
 
 ```rust
 use std::sync::atomic::{AtomicPtr, Ordering};
@@ -192,7 +217,7 @@ impl<T> LockFreeStack<T> {
 }
 ```
 
-### 4. 无锁哈希表实现
+### 1.1.3 4. 无锁哈希表实现
 
 ```rust
 use crossbeam_epoch::{self as epoch, Atomic, Owned, Shared};
@@ -311,7 +336,7 @@ impl<K: Eq + Hash, V> LockFreeHashMap<K, V> {
 }
 ```
 
-### 5. 无锁跳表实现
+### 1.1.4 5. 无锁跳表实现
 
 ```rust
 use crossbeam_epoch::{self as epoch, Atomic, Owned, Shared};
@@ -452,7 +477,7 @@ impl<K: Ord, V> LockFreeSkipList<K, V> {
 }
 ```
 
-### 6. 无锁环形缓冲区实现
+### 1.1.5 6. 无锁环形缓冲区实现
 
 ```rust
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -529,7 +554,7 @@ impl<T> LockFreeRingBuffer<T> {
 }
 ```
 
-### 7. 无锁计数器和标志位实现
+### 1.1.6 7. 无锁计数器和标志位实现
 
 ```rust
 use std::sync::atomic::{AtomicUsize, AtomicBool, Ordering};
@@ -583,7 +608,7 @@ impl LockFreeFlag {
 }
 ```
 
-### 8. 使用示例
+### 1.1.7 8. 使用示例
 
 ```rust
 #[tokio::main]

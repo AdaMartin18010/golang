@@ -1,6 +1,58 @@
-# 消息队列架构（Message Queue Architecture）
+# 1 1 1 1 1 1 1 消息队列架构（Message Queue Architecture）
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 消息队列架构（Message Queue Architecture）](#1-1-1-1-1-1-1-消息队列架构（message-queue-architecture）)
+  - [1.1 目录](#目录)
+  - [1.2 1. 国际标准与发展历程](#1-国际标准与发展历程)
+    - [1.2.1 主流消息队列系统](#主流消息队列系统)
+    - [1.2.2 发展历程](#发展历程)
+    - [1.2.3 国际权威链接](#国际权威链接)
+  - [1.3 2. 核心架构模式与设计原则](#2-核心架构模式与设计原则)
+    - [1.3.1 消息队列基础架构模式](#消息队列基础架构模式)
+    - [1.3.2 消息交付保证 (Message Delivery Guarantees)](#消息交付保证-message-delivery-guarantees)
+      - [1.3.2.1 At-most-once (最多一次)](#at-most-once-最多一次)
+      - [1.3.2.2 At-least-once (至少一次)](#at-least-once-至少一次)
+      - [1.3.2.3 Exactly-once (精确一次)](#exactly-once-精确一次)
+    - [1.3.3 分区与并行处理](#分区与并行处理)
+  - [1.4 3. 可靠性保证](#3-可靠性保证)
+    - [1.4.1 消息持久化](#消息持久化)
+    - [1.4.2 消息确认机制](#消息确认机制)
+  - [1.5 4. 性能优化](#4-性能优化)
+    - [1.5.1 批量处理](#批量处理)
+    - [1.5.2 消息压缩](#消息压缩)
+  - [1.6 5. 监控与可观测性](#5-监控与可观测性)
+    - [1.6.1 消息队列监控](#消息队列监控)
+  - [1.7 6. 分布式挑战与主流解决方案](#6-分布式挑战与主流解决方案)
+    - [1.7.1 消息重试与退避策略](#消息重试与退避策略)
+    - [1.7.2 消息去重与重复检测](#消息去重与重复检测)
+    - [1.7.3 背压控制 (Backpressure Control)](#背压控制-backpressure-control)
+    - [1.7.4 消息序列化与压缩](#消息序列化与压缩)
+  - [1.8 7. 实际案例分析](#7-实际案例分析)
+    - [1.8.1 高并发电商消息系统](#高并发电商消息系统)
+    - [1.8.2 实时日志处理系统](#实时日志处理系统)
+  - [1.9 8. 未来趋势与国际前沿](#8-未来趋势与国际前沿)
+  - [1.10 9. 国际权威资源与开源组件引用](#9-国际权威资源与开源组件引用)
+    - [1.10.1 消息队列系统](#消息队列系统)
+    - [1.10.2 云原生消息服务](#云原生消息服务)
+    - [1.10.3 消息处理框架](#消息处理框架)
+  - [1.11 10. 相关架构主题](#10-相关架构主题)
+  - [1.12 11. 扩展阅读与参考文献](#11-扩展阅读与参考文献)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 1. 国际标准与发展历程
 2. 典型应用场景与需求分析
@@ -15,9 +67,9 @@
 
 ---
 
-## 1. 国际标准与发展历程
+## 1.2 1. 国际标准与发展历程
 
-### 1.1 主流消息队列系统
+### 1.2.1 主流消息队列系统
 
 - **Apache Kafka**: 分布式流处理平台
 - **RabbitMQ**: 企业级消息代理
@@ -26,7 +78,7 @@
 - **Amazon SQS/SNS**: 云原生消息服务
 - **Google Cloud Pub/Sub**: 实时消息服务
 
-### 1.2 发展历程
+### 1.2.2 发展历程
 
 - **1980s**: 早期消息队列系统（IBM MQ）
 - **2000s**: JMS标准、ActiveMQ兴起
@@ -34,7 +86,7 @@
 - **2015s**: 云原生消息服务
 - **2020s**: 实时流处理、事件驱动架构
 
-### 1.3 国际权威链接
+### 1.2.3 国际权威链接
 
 - [Apache Kafka](https://kafka.apache.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
@@ -43,9 +95,9 @@
 
 ---
 
-## 2. 核心架构模式与设计原则
+## 1.3 2. 核心架构模式与设计原则
 
-### 2.1 消息队列基础架构模式
+### 1.3.1 消息队列基础架构模式
 
 消息队列采用**生产者-消费者**模式，通过中间的消息代理（Message Broker）实现异步通信和解耦。
 
@@ -95,19 +147,19 @@ graph LR
     style DLQ fill:#ffebee
 ```
 
-### 2.2 消息交付保证 (Message Delivery Guarantees)
+### 1.3.2 消息交付保证 (Message Delivery Guarantees)
 
 不同的消息队列系统提供不同级别的可靠性保证：
 
-#### At-most-once (最多一次)
+#### 1.3.2.1 At-most-once (最多一次)
 
 消息可能会丢失，但绝不会重复。适用于对数据丢失容忍、但不能接受重复处理的场景（如日志记录）。
 
-#### At-least-once (至少一次)
+#### 1.3.2.2 At-least-once (至少一次)
 
 消息绝不会丢失，但可能会重复。这是最常见的保证级别。需要消费者实现**幂等性**处理。
 
-#### Exactly-once (精确一次)
+#### 1.3.2.3 Exactly-once (精确一次)
 
 消息既不会丢失也不会重复。实现成本最高，通常需要分布式事务支持。
 
@@ -153,7 +205,7 @@ func (ic *IdempotentConsumer) hasProcessed(messageID string) bool {
 }
 ```
 
-### 2.3 分区与并行处理
+### 1.3.3 分区与并行处理
 
 为了处理大规模消息流，现代消息队列采用**分区 (Partitioning)** 策略，允许并行处理。
 
@@ -183,9 +235,9 @@ graph TD
     style C2 fill:#fff8e1
 ```
 
-## 3. 可靠性保证
+## 1.4 3. 可靠性保证
 
-### 3.1 消息持久化
+### 1.4.1 消息持久化
 
 ```go
 type MessageStorage struct {
@@ -269,7 +321,7 @@ func (ms *MessageStorage) Fetch(topic string, partition int, offset int64) (*Mes
 }
 ```
 
-### 3.2 消息确认机制
+### 1.4.2 消息确认机制
 
 ```go
 type MessageAcknowledgment struct {
@@ -341,9 +393,9 @@ func (ma *MessageAcknowledgment) HandleFailure(ctx context.Context, messageID st
 }
 ```
 
-## 4. 性能优化
+## 1.5 4. 性能优化
 
-### 4.1 批量处理
+### 1.5.1 批量处理
 
 ```go
 type BatchProcessor struct {
@@ -432,7 +484,7 @@ func (bp *BatchProcessor) processBatchParallel(ctx context.Context, batch *Batch
 }
 ```
 
-### 4.2 消息压缩
+### 1.5.2 消息压缩
 
 ```go
 type MessageCompressor struct {
@@ -530,9 +582,9 @@ func (mc *MessageCompressor) CompressMessage(message *Message) error {
 }
 ```
 
-## 5. 监控与可观测性
+## 1.6 5. 监控与可观测性
 
-### 5.1 消息队列监控
+### 1.6.1 消息队列监控
 
 ```go
 type QueueMonitor struct {
@@ -648,9 +700,9 @@ func (qm *QueueMonitor) checkAlerts(metrics *QueueMetrics) {
 }
 ```
 
-## 6. 分布式挑战与主流解决方案
+## 1.7 6. 分布式挑战与主流解决方案
 
-### 6.1 消息重试与退避策略
+### 1.7.1 消息重试与退避策略
 
 当消息处理失败时，需要智能的重试机制来提高系统的韧性。
 
@@ -718,7 +770,7 @@ func (rp *RetryProcessor) calculateBackoff(attempt int) time.Duration {
 }
 ```
 
-### 6.2 消息去重与重复检测
+### 1.7.2 消息去重与重复检测
 
 在分布式系统中，网络故障可能导致消息重复。需要实现消息去重机制。
 
@@ -770,7 +822,7 @@ func (dm *DeduplicationManager) calculateHash(msg *Message) string {
 }
 ```
 
-### 6.3 背压控制 (Backpressure Control)
+### 1.7.3 背压控制 (Backpressure Control)
 
 当消费者处理速度跟不上生产者时，需要背压机制来保护系统。
 
@@ -812,7 +864,7 @@ func (bpc *BackpressureController) MessageProcessed() {
 }
 ```
 
-### 6.4 消息序列化与压缩
+### 1.7.4 消息序列化与压缩
 
 在高吞吐量场景下，消息序列化和压缩对性能至关重要。
 
@@ -873,9 +925,9 @@ func (ms *MessageSerializer) compress(data []byte) ([]byte, error) {
 }
 ```
 
-## 7. 实际案例分析
+## 1.8 7. 实际案例分析
 
-### 7.1 高并发电商消息系统
+### 1.8.1 高并发电商消息系统
 
 **场景**: 支持百万级消息处理的电商订单系统
 
@@ -956,7 +1008,7 @@ func (op *OrderProcessor) ProcessOrder(ctx context.Context, order *Order) error 
 }
 ```
 
-### 7.2 实时日志处理系统
+### 1.8.2 实时日志处理系统
 
 **场景**: 大规模分布式系统的日志收集与分析
 
@@ -1077,7 +1129,7 @@ func (lc *LogCollector) processLogFile(ctx context.Context, filepath string, sou
 }
 ```
 
-## 8. 未来趋势与国际前沿
+## 1.9 8. 未来趋势与国际前沿
 
 - **云原生消息服务**
 - **事件流处理与CEP**
@@ -1086,36 +1138,36 @@ func (lc *LogCollector) processLogFile(ctx context.Context, filepath string, sou
 - **量子消息队列**
 - **多模态消息支持**
 
-## 9. 国际权威资源与开源组件引用
+## 1.10 9. 国际权威资源与开源组件引用
 
-### 9.1 消息队列系统
+### 1.10.1 消息队列系统
 
 - [Apache Kafka](https://kafka.apache.org/) - 分布式流处理平台
 - [RabbitMQ](https://www.rabbitmq.com/) - 企业级消息代理
 - [Apache Pulsar](https://pulsar.apache.org/) - 云原生消息流平台
 - [Redis Streams](https://redis.io/topics/streams-intro) - 内存消息流
 
-### 9.2 云原生消息服务
+### 1.10.2 云原生消息服务
 
 - [Amazon SQS](https://aws.amazon.com/sqs/) - 简单队列服务
 - [Amazon SNS](https://aws.amazon.com/sns/) - 简单通知服务
 - [Google Cloud Pub/Sub](https://cloud.google.com/pubsub) - 实时消息服务
 - [Azure Service Bus](https://azure.microsoft.com/services/service-bus/) - 企业消息服务
 
-### 9.3 消息处理框架
+### 1.10.3 消息处理框架
 
 - [Apache Storm](https://storm.apache.org/) - 实时流处理
 - [Apache Flink](https://flink.apache.org/) - 流处理引擎
 - [Apache Spark Streaming](https://spark.apache.org/streaming/) - 微批处理
 
-## 10. 相关架构主题
+## 1.11 10. 相关架构主题
 
 - [**事件驱动架构 (Event-Driven Architecture)**](./architecture_event_driven_golang.md): 消息队列是实现事件驱动架构的核心基础设施。
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 消息队列为微服务间的异步通信提供了可靠的解耦机制。
 - [**数据流架构 (Dataflow Architecture)**](./architecture_dataflow_golang.md): 消息队列是构建实时数据处理管道的关键组件。
 - [**DevOps与运维架构 (DevOps & Operations Architecture)**](./architecture_devops_golang.md): 消息队列的监控、告警和自动运维是DevOps实践的重要组成部分。
 
-## 11. 扩展阅读与参考文献
+## 1.12 11. 扩展阅读与参考文献
 
 1. "Kafka: The Definitive Guide" - Neha Narkhede, Gwen Shapira, Todd Palino
 2. "Designing Data-Intensive Applications" - Martin Kleppmann

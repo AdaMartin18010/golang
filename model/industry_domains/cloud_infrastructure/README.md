@@ -1,37 +1,95 @@
-# 云计算/基础设施 - Rust架构指南
+# 1 1 1 1 1 1 1 云计算/基础设施 - Rust架构指南
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 云计算/基础设施 - Rust架构指南](#1-1-1-1-1-1-1-云计算基础设施-rust架构指南)
+  - [1.1 概述](#概述)
+  - [1.2 Rust架构选型](#rust架构选型)
+    - [1.2.1 核心技术栈](#核心技术栈)
+      - [1.2.1.1 容器和编排](#容器和编排)
+      - [1.2.1.2 云原生框架](#云原生框架)
+      - [1.2.1.3 存储和数据库](#存储和数据库)
+    - [1.2.2 架构模式](#架构模式)
+      - [1.2.2.1 微服务架构](#微服务架构)
+      - [1.2.2.2 事件驱动架构](#事件驱动架构)
+  - [1.3 业务领域概念建模](#业务领域概念建模)
+    - [1.3.1 核心领域模型](#核心领域模型)
+      - [1.3.1.1 资源管理](#资源管理)
+      - [1.3.1.2 服务发现](#服务发现)
+      - [1.3.1.3 配置管理](#配置管理)
+  - [1.4 数据建模](#数据建模)
+    - [1.4.1 数据存储策略](#数据存储策略)
+      - [1.4.1.1 分布式键值存储](#分布式键值存储)
+      - [1.4.1.2 配置数据库](#配置数据库)
+  - [1.5 流程建模](#流程建模)
+    - [1.5.1 服务生命周期管理](#服务生命周期管理)
+      - [1.5.1.1 服务部署流程](#服务部署流程)
+      - [1.5.1.2 自动扩缩容流程](#自动扩缩容流程)
+  - [1.6 组件建模](#组件建模)
+    - [1.6.1 核心组件架构](#核心组件架构)
+      - [1.6.1.1 API网关](#api网关)
+      - [1.6.1.2 服务网格代理](#服务网格代理)
+  - [1.7 运维运营](#运维运营)
+    - [1.7.1 监控和可观测性](#监控和可观测性)
+      - [1.7.1.1 指标收集](#指标收集)
+      - [1.7.1.2 日志聚合](#日志聚合)
+    - [1.7.2 部署和CI/CD](#部署和cicd)
+      - [1.7.2.1 容器化部署](#容器化部署)
+- [2 2 2 2 2 2 2 Dockerfile for Rust cloud service](#2-2-2-2-2-2-2-dockerfile-for-rust-cloud-service)
+      - [2 2 2 2 2 2 2 Kubernetes部署配置](#2-2-2-2-2-2-2-kubernetes部署配置)
+- [3 3 3 3 3 3 3 deployment.yaml](#3-3-3-3-3-3-3-deploymentyaml)
+    - [3 3 3 3 3 3 3 安全最佳实践](#3-3-3-3-3-3-3-安全最佳实践)
+      - [3 3 3 3 3 3 3 密钥管理](#3-3-3-3-3-3-3-密钥管理)
+  - [3.1 性能优化](#性能优化)
+    - [3.1.1 内存优化](#内存优化)
+    - [3.1.2 并发优化](#并发优化)
+  - [3.2 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 云计算和基础设施领域是Rust的重要应用场景，特别是在性能敏感、资源受限和高并发场景下。本指南涵盖云原生应用、容器编排、服务网格、存储系统等核心领域。
 
-## Rust架构选型
+## 1.2 Rust架构选型
 
-### 核心技术栈
+### 1.2.1 核心技术栈
 
-#### 容器和编排
+#### 1.2.1.1 容器和编排
 
 - **Docker替代**: `containerd-rust`, `runc-rust`
 - **Kubernetes**: `kube-rs`, `k8s-openapi`
 - **服务网格**: `linkerd2-proxy`, `istio-rust`
 - **容器运行时**: `youki`, `crun`
 
-#### 云原生框架
+#### 1.2.1.2 云原生框架
 
 - **WebAssembly**: `wasmtime`, `wasmer`
 - **Serverless**: `aws-lambda-rust-runtime`, `vercel-rust`
 - **微服务**: `tonic`, `actix-web`, `axum`
 - **API网关**: `kong-rust`, `nginx-rust`
 
-#### 存储和数据库
+#### 1.2.1.3 存储和数据库
 
 - **分布式存储**: `tikv`, `etcd-rust`
 - **对象存储**: `s3-rust`, `minio-rust`
 - **缓存**: `redis-rs`, `memcached-rs`
 - **消息队列**: `kafka-rust`, `rabbitmq-rs`
 
-### 架构模式
+### 1.2.2 架构模式
 
-#### 微服务架构
+#### 1.2.2.1 微服务架构
 
 ```rust
 // 服务注册与发现
@@ -53,7 +111,7 @@ impl ServiceApi for MicroService {
 }
 ```
 
-#### 事件驱动架构
+#### 1.2.2.2 事件驱动架构
 
 ```rust
 use tokio::sync::mpsc;
@@ -86,11 +144,11 @@ impl EventBus {
 }
 ```
 
-## 业务领域概念建模
+## 1.3 业务领域概念建模
 
-### 核心领域模型
+### 1.3.1 核心领域模型
 
-#### 资源管理
+#### 1.3.1.1 资源管理
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -123,7 +181,7 @@ pub enum ResourceStatus {
 }
 ```
 
-#### 服务发现
+#### 1.3.1.2 服务发现
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -145,7 +203,7 @@ pub enum HealthStatus {
 }
 ```
 
-#### 配置管理
+#### 1.3.1.3 配置管理
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -160,11 +218,11 @@ pub struct Configuration {
 }
 ```
 
-## 数据建模
+## 1.4 数据建模
 
-### 数据存储策略
+### 1.4.1 数据存储策略
 
-#### 分布式键值存储
+#### 1.4.1.1 分布式键值存储
 
 ```rust
 use tokio::sync::RwLock;
@@ -193,7 +251,7 @@ impl DistributedKVStore {
 }
 ```
 
-#### 配置数据库
+#### 1.4.1.2 配置数据库
 
 ```rust
 use sqlx::{PgPool, Row};
@@ -240,11 +298,11 @@ impl ConfigDatabase {
 }
 ```
 
-## 流程建模
+## 1.5 流程建模
 
-### 服务生命周期管理
+### 1.5.1 服务生命周期管理
 
-#### 服务部署流程
+#### 1.5.1.1 服务部署流程
 
 ```rust
 #[derive(Debug)]
@@ -289,7 +347,7 @@ impl DeploymentManager {
 }
 ```
 
-#### 自动扩缩容流程
+#### 1.5.1.2 自动扩缩容流程
 
 ```rust
 pub struct AutoScaler {
@@ -324,11 +382,11 @@ impl AutoScaler {
 }
 ```
 
-## 组件建模
+## 1.6 组件建模
 
-### 核心组件架构
+### 1.6.1 核心组件架构
 
-#### API网关
+#### 1.6.1.1 API网关
 
 ```rust
 use axum::{
@@ -382,7 +440,7 @@ impl ApiGateway {
 }
 ```
 
-#### 服务网格代理
+#### 1.6.1.2 服务网格代理
 
 ```rust
 use tokio::net::TcpListener;
@@ -442,11 +500,11 @@ impl ServiceMeshProxy {
 }
 ```
 
-## 运维运营
+## 1.7 运维运营
 
-### 监控和可观测性
+### 1.7.1 监控和可观测性
 
-#### 指标收集
+#### 1.7.1.1 指标收集
 
 ```rust
 use prometheus::{Counter, Histogram, Registry};
@@ -493,7 +551,7 @@ impl MetricsCollector {
 }
 ```
 
-#### 日志聚合
+#### 1.7.1.2 日志聚合
 
 ```rust
 use tracing::{info, error, warn};
@@ -525,12 +583,12 @@ pub struct LogEntry {
 }
 ```
 
-### 部署和CI/CD
+### 1.7.2 部署和CI/CD
 
-#### 容器化部署
+#### 1.7.2.1 容器化部署
 
 ```dockerfile
-# Dockerfile for Rust cloud service
+# 2 2 2 2 2 2 2 Dockerfile for Rust cloud service
 FROM rust:1.75 as builder
 WORKDIR /usr/src/app
 COPY . .
@@ -543,10 +601,10 @@ EXPOSE 8080
 CMD ["cloud-service"]
 ```
 
-#### Kubernetes部署配置
+#### 2 2 2 2 2 2 2 Kubernetes部署配置
 
 ```yaml
-# deployment.yaml
+# 3 3 3 3 3 3 3 deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -593,9 +651,9 @@ spec:
           periodSeconds: 5
 ```
 
-### 安全最佳实践
+### 3 3 3 3 3 3 3 安全最佳实践
 
-#### 密钥管理
+#### 3 3 3 3 3 3 3 密钥管理
 
 ```rust
 use aws_sdk_kms::Client as KmsClient;
@@ -631,9 +689,9 @@ impl SecretManager {
 }
 ```
 
-## 性能优化
+## 3.1 性能优化
 
-### 内存优化
+### 3.1.1 内存优化
 
 ```rust
 // 使用内存池减少分配
@@ -673,7 +731,7 @@ impl MemoryPool {
 }
 ```
 
-### 并发优化
+### 3.1.2 并发优化
 
 ```rust
 use tokio::sync::Semaphore;
@@ -711,7 +769,7 @@ impl ConnectionPool {
 }
 ```
 
-## 总结
+## 3.2 总结
 
 云计算和基础设施领域的Rust应用需要重点关注：
 

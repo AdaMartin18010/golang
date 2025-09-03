@@ -1,8 +1,37 @@
-# rust实现mqtt
+# 1 1 1 1 1 1 1 rust实现mqtt
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 rust实现mqtt](#1-1-1-1-1-1-1-rust实现mqtt)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.2.1 2. 设备配置和状态定义](#2-设备配置和状态定义)
+    - [1.2.2 3. Modbus 设备管理器实现](#3-modbus-设备管理器实现)
+    - [1.2.3 4. MQTT 消息处理器实现](#4-mqtt-消息处理器实现)
+    - [1.2.4 5. 数据存储实现](#5-数据存储实现)
+    - [1.2.5 6. 设备管理器实现](#6-设备管理器实现)
+    - [1.2.6 7. 主程序实现](#7-主程序实现)
+    - [1.2.7 8. HTTP API 实现](#8-http-api-实现)
+    - [1.2.8 9. 配置文件示例](#9-配置文件示例)
+- [2 2 2 2 2 2 2 config.yaml](#2-2-2-2-2-2-2-configyaml)
+    - [2 2 2 2 2 2 2 10. 测试实现](#2-2-2-2-2-2-2-10-测试实现)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个使用 Rust 2024 + Tokio + MQTT + Modbus 实现的 IoT 项目示例。这个项目将包含设备管理、数据采集、消息处理等功能。
 
-## 目录
+## 1.1 目录
 
 - [rust实现mqtt](#rust实现mqtt)
   - [目录](#目录)
@@ -17,7 +46,7 @@
     - [9. 配置文件示例](#9-配置文件示例)
     - [10. 测试实现](#10-测试实现)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -36,7 +65,7 @@ sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres", "c
 config = "0.13"
 ```
 
-### 2. 设备配置和状态定义
+### 1.2.1 2. 设备配置和状态定义
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -96,7 +125,7 @@ pub struct MqttConfig {
 }
 ```
 
-### 3. Modbus 设备管理器实现
+### 1.2.2 3. Modbus 设备管理器实现
 
 ```rust
 pub struct ModbusManager {
@@ -187,7 +216,7 @@ impl ModbusManager {
 }
 ```
 
-### 4. MQTT 消息处理器实现
+### 1.2.3 4. MQTT 消息处理器实现
 
 ```rust
 pub struct MqttHandler {
@@ -299,7 +328,7 @@ impl MqttHandler {
 }
 ```
 
-### 5. 数据存储实现
+### 1.2.4 5. 数据存储实现
 
 ```rust
 pub struct DataStorage {
@@ -371,7 +400,7 @@ impl DataStorage {
 }
 ```
 
-### 6. 设备管理器实现
+### 1.2.5 6. 设备管理器实现
 
 ```rust
 pub struct DeviceManager {
@@ -441,7 +470,7 @@ impl DeviceManager {
 }
 ```
 
-### 7. 主程序实现
+### 1.2.6 7. 主程序实现
 
 ```rust
 #[tokio::main]
@@ -483,7 +512,7 @@ fn load_config() -> anyhow::Result<AppConfig> {
 }
 ```
 
-### 8. HTTP API 实现
+### 1.2.7 8. HTTP API 实现
 
 ```rust
 use warp::{Filter, Reply};
@@ -552,10 +581,10 @@ async fn handle_device_data(
 }
 ```
 
-### 9. 配置文件示例
+### 1.2.8 9. 配置文件示例
 
 ```yaml
-# config.yaml
+# 2 2 2 2 2 2 2 config.yaml
 database_url: "postgres://user:password@localhost/iot_db"
 
 devices:
@@ -604,7 +633,7 @@ devices:
     polling_interval: 1000
 ```
 
-### 10. 测试实现
+### 2 2 2 2 2 2 2 10. 测试实现
 
 ```rust
 #[cfg(test)]

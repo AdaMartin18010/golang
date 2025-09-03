@@ -1,8 +1,36 @@
-# Rust实现HTTP
+# 1 1 1 1 1 1 1 Rust实现HTTP
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust实现HTTP](#1-1-1-1-1-1-1-rust实现http)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+  - [1.3 2. HTTP 客户端实现](#2-http-客户端实现)
+  - [1.4 3. HTTP 服务端实现](#3-http-服务端实现)
+  - [1.5 4. 中间件实现](#4-中间件实现)
+  - [1.6 5. 任务管理器实现](#5-任务管理器实现)
+  - [1.7 6. 示例处理器实现](#6-示例处理器实现)
+  - [1.8 7. 错误处理实现](#7-错误处理实现)
+  - [1.9 8. 指标收集实现](#8-指标收集实现)
+  - [1.10 9. 主程序实现](#9-主程序实现)
+  - [1.11 10. 测试实现](#10-测试实现)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个使用 Rust 2024 + Hyper 实现的完整 HTTP 客户端和服务端项目，包含各种高级特性。
 
-## 目录
+## 1.1 目录
 
 - [Rust实现HTTP](#rust实现http)
   - [目录](#目录)
@@ -17,7 +45,7 @@
   - [9. 主程序实现](#9-主程序实现)
   - [10. 测试实现](#10-测试实现)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -40,7 +68,7 @@ metrics = "0.21"
 metrics-exporter-prometheus = "0.12"
 ```
 
-## 2. HTTP 客户端实现
+## 1.3 2. HTTP 客户端实现
 
 ```rust
 use std::time::Duration;
@@ -160,7 +188,7 @@ impl HttpClient {
 }
 ```
 
-## 3. HTTP 服务端实现
+## 1.4 3. HTTP 服务端实现
 
 ```rust
 use std::convert::Infallible;
@@ -280,7 +308,7 @@ impl tower::Service<Request<hyper::body::Incoming>> for Router {
 }
 ```
 
-## 4. 中间件实现
+## 1.5 4. 中间件实现
 
 ```rust
 pub struct TimeoutMiddleware<S> {
@@ -372,7 +400,7 @@ where
 }
 ```
 
-## 5. 任务管理器实现
+## 1.6 5. 任务管理器实现
 
 ```rust
 pub struct TaskManager {
@@ -453,7 +481,7 @@ impl TaskManager {
 }
 ```
 
-## 6. 示例处理器实现
+## 1.7 6. 示例处理器实现
 
 ```rust
 #[derive(Clone)]
@@ -505,7 +533,7 @@ impl UserHandler {
 }
 ```
 
-## 7. 错误处理实现
+## 1.8 7. 错误处理实现
 
 ```rust
 #[derive(Debug, thiserror::Error)]
@@ -552,7 +580,7 @@ impl From<Error> for Response<Bytes> {
 }
 ```
 
-## 8. 指标收集实现
+## 1.9 8. 指标收集实现
 
 ```rust
 pub struct Metrics {
@@ -611,7 +639,7 @@ impl Metrics {
 }
 ```
 
-## 9. 主程序实现
+## 1.10 9. 主程序实现
 
 ```rust
 #[tokio::main]
@@ -651,7 +679,7 @@ async fn main() -> Result<(), Error> {
 }
 ```
 
-## 10. 测试实现
+## 1.11 10. 测试实现
 
 ```rust
 #[cfg(test)]

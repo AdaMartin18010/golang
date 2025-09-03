@@ -1,11 +1,38 @@
-# Borrow_ToOwned
+# 1 1 1 1 1 1 1 Borrow_ToOwned
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Borrow_ToOwned](#1-1-1-1-1-1-1-borrow_toowned)
+  - [1.1 1. Deref Trait](#1-deref-trait)
+    - [1.1.1 Borrow Trait](#borrow-trait)
+    - [1.1.2 ToOwned Trait](#toowned-trait)
+    - [1.1.3 解释和联系](#解释和联系)
+  - [1.2 Deref Trait](#deref-trait)
+    - [1.2.1 DerefMut Trait](#derefmut-trait)
+    - [1.2.2 Drop Trait](#drop-trait)
+    - [1.2.3 CovariantType Trait](#covarianttype-trait)
+    - [1.2.4 智能指针特定的 trait](#智能指针特定的-trait)
+    - [1.2.5 解释和联系](#解释和联系)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 在 Rust 中，借用（Borrowing）是所有权系统的一个重要部分，它允许在不转移所有权的情况下使用值。
 与借用直接相关的 trait 主要有 `Deref` 和 `Borrow`。
 
 以下是这些 trait 的定义、应用和解释：
 
-## 1. Deref Trait
+## 1.1 1. Deref Trait
 
 **定义**：
 
@@ -23,7 +50,7 @@ pub trait Deref {
 - 智能指针（如 `Box<T>`, `Rc<T>`, `Arc<T>`）实现 `Deref` 来提供对内部数据的透明访问。
 - 允许编译器在需要时自动调用 `deref` 方法，实现自动解引用。
 
-### 1.1 Borrow Trait
+### 1.1.1 Borrow Trait
 
 **定义**：
 
@@ -40,7 +67,7 @@ pub trait Borrow<Borrowed: ?Sized>: Sized {
 - 通常与 `ToOwned` trait 一起使用，允许类型创建自己的可变和不可变引用。
 - 用于实现类型之间的借用关系，例如，从 `Cow<'a, T>`（拥有或借用的类型）到 `T` 的借用。
 
-### 1.2 ToOwned Trait
+### 1.1.2 ToOwned Trait
 
 **定义**：
 
@@ -57,7 +84,7 @@ pub trait ToOwned {
 
 - 用于从借用类型创建拥有类型，例如 `Cow<'a, str>`（可变字符串的借用或拥有）可以转换成 `String`（拥有的字符串）。
 
-### 1.3 解释和联系
+### 1.1.3 解释和联系
 
 - **不可变借用**：当一个值被不可变借用时，你可以读取它但不能修改它。不可变借用遵循 Rust 的借用规则，确保在借用期间值不会被修改或移动。
 - **可变借用**：与不可变借用相对，可变借用允许修改借用的值，但同一时间只能有一个可变借用。
@@ -72,7 +99,7 @@ Rust 的借用机制是其内存安全保证的关键部分，它允许开发者
 在 Rust 中，智能指针是实现了特定 trait 的类型，这些 trait 允许智能指针表现得像常规指针，同时提供自动内存管理、线程安全和其他高级功能。
 以下是 Rust 中智能指针相关的 trait 分类、定义、解释和应用：
 
-## Deref Trait
+## 1.2 Deref Trait
 
 **定义**：
 
@@ -90,7 +117,7 @@ pub trait Deref {
 - 智能指针如 `Box<T>`, `Rc<T>`, `Arc<T>` 实现 `Deref` 来提供对内部数据的透明访问。
 - 编译器使用自动解引用特性，在需要时自动调用 `deref` 方法。
 
-### DerefMut Trait
+### 1.2.1 DerefMut Trait
 
 **定义**：
 
@@ -106,7 +133,7 @@ pub trait DerefMut: Deref {
 
 - 允许开发者通过智能指针修改其内部数据。
 
-### Drop Trait
+### 1.2.2 Drop Trait
 
 **定义**：
 
@@ -122,7 +149,7 @@ pub trait Drop {
 
 - 自动清理资源，如内存释放或其他必要的清理工作。
 
-### CovariantType Trait
+### 1.2.3 CovariantType Trait
 
 Rust 的智能指针通常也遵循与 `CovariantType` 类似的规则，尽管这不是一个显式的 trait。
 这意味着如果 `T` 是 `U` 的超类型，则 `Box<T>` 也是 `Box<U>` 的超类型。
@@ -131,14 +158,14 @@ Rust 的智能指针通常也遵循与 `CovariantType` 类似的规则，尽管�
 
 - 允许智能指针在子类型化时保持类型安全。
 
-### 智能指针特定的 trait
+### 1.2.4 智能指针特定的 trait
 
 Rust 标准库中的智能指针通常实现以下 trait：
 
 - `AsRef` 和 `AsMut`：允许智能指针转换为对内部数据的引用。
 - `Borrow` 和 `BorrowMut`：允许智能指针创建对内部数据的借用。
 
-### 解释和联系
+### 1.2.5 解释和联系
 
 - **自动内存管理**：通过 `Deref` 和 `Drop` trait，智能指针自动管理内存，无需手动释放。
 - **类型安全**：智能指针保持类型安全，不会引入悬挂指针或内存泄漏。

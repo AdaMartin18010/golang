@@ -1,10 +1,96 @@
-# 复杂分布式系统架构设计与实现方案
+# 1 1 1 1 1 1 1 复杂分布式系统架构设计与实现方案
 
-## 一、整体架构设计
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 复杂分布式系统架构设计与实现方案](#1-1-1-1-1-1-1-复杂分布式系统架构设计与实现方案)
+  - [1.1 一、整体架构设计](#一、整体架构设计)
+    - [1.1.1 1. 系统架构概览](#1-系统架构概览)
+    - [1.1.2 2. 核心层次与组件](#2-核心层次与组件)
+      - [1.1.2.1 应用层](#应用层)
+      - [1.1.2.2 领域层](#领域层)
+      - [1.1.2.3 基础设施层](#基础设施层)
+  - [1.2 二、子系统详细设计](#二、子系统详细设计)
+    - [1.2.1 1. 命令处理子系统](#1-命令处理子系统)
+      - [1.2.1.1 命令处理流程](#命令处理流程)
+      - [1.2.1.2 代表性命令处理器实现](#代表性命令处理器实现)
+    - [1.2.2 2. 事件处理子系统](#2-事件处理子系统)
+      - [1.2.2.1 事件总线实现](#事件总线实现)
+      - [1.2.2.2 订单创建事件处理](#订单创建事件处理)
+    - [1.2.3 3. 工作流子系统](#3-工作流子系统)
+      - [1.2.3.1 Temporal工作流集成](#temporal工作流集成)
+      - [1.2.3.2 工作流活动实现](#工作流活动实现)
+    - [1.2.4 4. 外部系统集成子系统](#4-外部系统集成子系统)
+      - [1.2.4.1 抽象服务客户端](#抽象服务客户端)
+- [2 2 2 2 2 2 2 复杂分布式系统架构设计与实现方案（续）](#2-2-2-2-2-2-2-复杂分布式系统架构设计与实现方案（续）)
+    - [2 2 2 2 2 2 2 4. 外部系统集成子系统（续）](#2-2-2-2-2-2-2-4-外部系统集成子系统（续）)
+      - [2 2 2 2 2 2 2 抽象服务客户端（续）](#2-2-2-2-2-2-2-抽象服务客户端（续）)
+      - [2 2 2 2 2 2 2 外部系统适配器工厂](#2-2-2-2-2-2-2-外部系统适配器工厂)
+    - [2 2 2 2 2 2 2 5. 查询服务子系统](#2-2-2-2-2-2-2-5-查询服务子系统)
+      - [2 2 2 2 2 2 2 CQRS查询层](#2-2-2-2-2-2-2-cqrs查询层)
+      - [2 2 2 2 2 2 2 API端点](#2-2-2-2-2-2-2-api端点)
+    - [2 2 2 2 2 2 2 6. 监控与可观测性子系统](#2-2-2-2-2-2-2-6-监控与可观测性子系统)
+      - [2 2 2 2 2 2 2 分布式追踪集成](#2-2-2-2-2-2-2-分布式追踪集成)
+      - [2 2 2 2 2 2 2 指标监控实现](#2-2-2-2-2-2-2-指标监控实现)
+- [3 3 3 3 3 3 3 复杂分布式系统架构设计与实现方案（续）](#3-3-3-3-3-3-3-复杂分布式系统架构设计与实现方案（续）)
+    - [3 3 3 3 3 3 3 6. 监控与可观测性子系统（续）](#3-3-3-3-3-3-3-6-监控与可观测性子系统（续）)
+      - [3 3 3 3 3 3 3 指标监控实现（续）](#3-3-3-3-3-3-3-指标监控实现（续）)
+    - [3 3 3 3 3 3 3 7. 配置与服务发现子系统](#3-3-3-3-3-3-3-7-配置与服务发现子系统)
+      - [3 3 3 3 3 3 3 动态配置管理](#3-3-3-3-3-3-3-动态配置管理)
+      - [3 3 3 3 3 3 3 服务注册与发现](#3-3-3-3-3-3-3-服务注册与发现)
+  - [3.1 三、数据模型设计](#三、数据模型设计)
+    - [3.1.1 1. 事件存储表结构](#1-事件存储表结构)
+    - [3.1.2 2. 读模型表结构](#2-读模型表结构)
+  - [3.2 四、部署架构](#四、部署架构)
+    - [3.2.1 1. 容器化与服务编排](#1-容器化与服务编排)
+- [4 4 4 4 4 4 4 复杂分布式系统架构设计与实现方案（续）](#4-4-4-4-4-4-4-复杂分布式系统架构设计与实现方案（续）)
+  - [4.1 四、部署架构（续）](#四、部署架构（续）)
+    - [4.1.1 1. 容器化与服务编排（续）](#1-容器化与服务编排（续）)
+    - [4.1.2 2. Prometheus配置](#2-prometheus配置)
+- [5 5 5 5 5 5 5 prometheus.yml](#5-5-5-5-5-5-5-prometheusyml)
+    - [5 5 5 5 5 5 5 3. Kubernetes部署配置](#5-5-5-5-5-5-5-3-kubernetes部署配置)
+- [6 6 6 6 6 6 6 order-service-deployment.yaml](#6-6-6-6-6-6-6-order-service-deploymentyaml)
+- [7 7 7 7 7 7 7 order-service-service.yaml](#7-7-7-7-7-7-7-order-service-serviceyaml)
+- [8 8 8 8 8 8 8 order-service-hpa.yaml](#8-8-8-8-8-8-8-order-service-hpayaml)
+  - [8.1 五、系统启动与集成](#五、系统启动与集成)
+    - [8.1.1 1. 应用启动序列](#1-应用启动序列)
+    - [8.1.2 2. Dockerfile](#2-dockerfile)
+- [9 9 9 9 9 9 9 创建新的空项目](#9-9-9-9-9-9-9-创建新的空项目)
+- [10 10 10 10 10 10 10 复制项目清单](#10-10-10-10-10-10-10-复制项目清单)
+- [11 11 11 11 11 11 11 构建依赖项](#11-11-11-11-11-11-11-构建依赖项)
+- [12 12 12 12 12 12 12 复制源代码](#12-12-12-12-12-12-12-复制源代码)
+- [13 13 13 13 13 13 13 构建应用](#13-13-13-13-13-13-13-构建应用)
+- [14 14 14 14 14 14 14 运行阶段](#14-14-14-14-14-14-14-运行阶段)
+- [15 15 15 15 15 15 15 安装依赖](#15-15-15-15-15-15-15-安装依赖)
+- [16 16 16 16 16 16 16 设置用户](#16-16-16-16-16-16-16-设置用户)
+- [17 17 17 17 17 17 17 创建工作目录](#17-17-17-17-17-17-17-创建工作目录)
+- [18 18 18 18 18 18 18 复制二进制文件和配置](#18-18-18-18-18-18-18-复制二进制文件和配置)
+- [19 19 19 19 19 19 19 设置权限](#19-19-19-19-19-19-19-设置权限)
+- [20 20 20 20 20 20 20 暴露端口](#20-20-20-20-20-20-20-暴露端口)
+- [21 21 21 21 21 21 21 启动命令](#21-21-21-21-21-21-21-启动命令)
+  - [21.1 六、总结与最佳实践](#六、总结与最佳实践)
+    - [21.1.1 1. 架构设计关键点](#1-架构设计关键点)
+    - [21.1.2 2. Rust实现优势](#2-rust实现优势)
+    - [21.1.3 3. 集成开源库最佳实践](#3-集成开源库最佳实践)
+    - [21.1.4 4. 最终架构特点](#4-最终架构特点)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 一、整体架构设计
 
 基于前面的分析,我们设计一个可满足您需求的分布式系统架构,采用领域驱动设计和微服务架构,结合事件驱动和CQRS模式。
 
-### 1. 系统架构概览
+### 1.1.1 1. 系统架构概览
 
 ![系统架构图](架构设计)
 
@@ -38,34 +124,34 @@
 +---------------+ +---------------+ +---------------+
 ```
 
-### 2. 核心层次与组件
+### 1.1.2 2. 核心层次与组件
 
-#### 2.1 应用层
+#### 1.1.2.1 应用层
 
 - **API网关**: 使用actix-web实现,处理认证、授权、路由、限流
 - **命令服务**: 处理写操作,验证、转换命令为领域事件
 - **查询服务**: 处理读操作,从优化的读模型中获取数据
 - **集成服务**: 管理与外部系统的交互
 
-#### 2.2 领域层
+#### 1.1.2.2 领域层
 
 - **聚合根**: 业务实体和规则的封装
 - **领域事件**: 系统中发生的重要变化
 - **工作流引擎**: 管理长时间运行的业务流程
 - **领域服务**: 跨聚合根的业务逻辑
 
-#### 2.3 基础设施层
+#### 1.1.2.3 基础设施层
 
 - **事件总线**: 使用rdkafka实现的发布/订阅机制
 - **事件存储**: 使用PostgreSQL存储领域事件
 - **读模型存储**: 使用MongoDB存储优化的读模型
 - **集成存储**: 使用Redis缓存集成数据
 
-## 二、子系统详细设计
+## 1.2 二、子系统详细设计
 
-### 1. 命令处理子系统
+### 1.2.1 1. 命令处理子系统
 
-#### 1.1 命令处理流程
+#### 1.2.1.1 命令处理流程
 
 ```rust
 use tokio::sync::mpsc;
@@ -146,7 +232,7 @@ impl CommandBus {
 }
 ```
 
-#### 1.2 代表性命令处理器实现
+#### 1.2.1.2 代表性命令处理器实现
 
 ```rust
 use sqlx::{PgPool, postgres::PgQueryResult};
@@ -230,9 +316,9 @@ impl CommandHandler<CreateOrderCommand> for CreateOrderHandler {
 }
 ```
 
-### 2. 事件处理子系统
+### 1.2.2 2. 事件处理子系统
 
-#### 2.1 事件总线实现
+#### 1.2.2.1 事件总线实现
 
 ```rust
 use rdkafka::producer::{FutureProducer, FutureRecord};
@@ -392,7 +478,7 @@ impl EventConsumer {
 }
 ```
 
-#### 2.2 订单创建事件处理
+#### 1.2.2.2 订单创建事件处理
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -526,9 +612,9 @@ impl EventHandler<OrderCreatedEvent> for InventoryReserver {
 }
 ```
 
-### 3. 工作流子系统
+### 1.2.3 3. 工作流子系统
 
-#### 3.1 Temporal工作流集成
+#### 1.2.3.1 Temporal工作流集成
 
 ```rust
 use temporal_sdk::{WfContext, WfExitValue, WorkflowResult, ActivityOptions};
@@ -628,7 +714,7 @@ pub async fn order_processing_workflow(ctx: WfContext, input: OrderProcessingWor
 }
 ```
 
-#### 3.2 工作流活动实现
+#### 1.2.3.2 工作流活动实现
 
 ```rust
 use temporal_sdk::{ActivityContext, ActivityResult};
@@ -766,9 +852,9 @@ pub async fn process_payment(ctx: ActivityContext, input: ProcessPaymentInput) -
 }
 ```
 
-### 4. 外部系统集成子系统
+### 1.2.4 4. 外部系统集成子系统
 
-#### 4.1 抽象服务客户端
+#### 1.2.4.1 抽象服务客户端
 
 ```rust
 use async_trait::async_trait;
@@ -783,11 +869,11 @@ use resilient::{CircuitBreaker, CircuitBreakerConfig};
 pub trait InventoryService: Send + Sync + 'static {
     /// 检查库存可用性
     async fn check_availability(&self, items: &
-# 复杂分布式系统架构设计与实现方案（续）
+# 2 2 2 2 2 2 2 复杂分布式系统架构设计与实现方案（续）
 
-### 4. 外部系统集成子系统（续）
+### 2 2 2 2 2 2 2 4. 外部系统集成子系统（续）
 
-#### 4.1 抽象服务客户端（续）
+#### 2 2 2 2 2 2 2 抽象服务客户端（续）
 
 ```rust
 use async_trait::async_trait;
@@ -951,7 +1037,7 @@ impl InventoryService for GrpcInventoryServiceClient {
 }
 ```
 
-#### 4.2 外部系统适配器工厂
+#### 2 2 2 2 2 2 2 外部系统适配器工厂
 
 ```rust
 use std::sync::Arc;
@@ -1037,9 +1123,9 @@ impl ExternalServiceFactory {
 }
 ```
 
-### 5. 查询服务子系统
+### 2 2 2 2 2 2 2 5. 查询服务子系统
 
-#### 5.1 CQRS查询层
+#### 2 2 2 2 2 2 2 CQRS查询层
 
 ```rust
 use actix_web::{web, HttpResponse, Responder};
@@ -1286,7 +1372,7 @@ impl OrderQueryService {
 }
 ```
 
-#### 5.2 API端点
+#### 2 2 2 2 2 2 2 API端点
 
 ```rust
 use actix_web::{web, HttpResponse, Responder, get, post};
@@ -1407,9 +1493,9 @@ async fn get_order(
 }
 ```
 
-### 6. 监控与可观测性子系统
+### 2 2 2 2 2 2 2 6. 监控与可观测性子系统
 
-#### 6.1 分布式追踪集成
+#### 2 2 2 2 2 2 2 分布式追踪集成
 
 ```rust
 use opentelemetry::{global, sdk::propagation::TraceContextPropagator};
@@ -1499,7 +1585,7 @@ impl<'a> Extractor for RequestHeaderCarrier<'a> {
 }
 ```
 
-#### 6.2 指标监控实现
+#### 2 2 2 2 2 2 2 指标监控实现
 
 ```rust
 use metrics::{counter, gauge, histogram};
@@ -1550,11 +1636,11 @@ impl Metrics {
     }
     
     /// 记录直方图数据
-# 复杂分布式系统架构设计与实现方案（续）
+# 3 3 3 3 3 3 3 复杂分布式系统架构设计与实现方案（续）
 
-### 6. 监控与可观测性子系统（续）
+### 3 3 3 3 3 3 3 6. 监控与可观测性子系统（续）
 
-#### 6.2 指标监控实现（续）
+#### 3 3 3 3 3 3 3 指标监控实现（续）
 
 ```rust
 use metrics::{counter, gauge, histogram};
@@ -1789,9 +1875,9 @@ struct ComponentHealth {
 }
 ```
 
-### 7. 配置与服务发现子系统
+### 3 3 3 3 3 3 3 7. 配置与服务发现子系统
 
-#### 7.1 动态配置管理
+#### 3 3 3 3 3 3 3 动态配置管理
 
 ```rust
 use config::{Config, ConfigError, Environment, File};
@@ -2009,7 +2095,7 @@ impl ConfigSource for ConsulConfigSource {
 }
 ```
 
-#### 7.2 服务注册与发现
+#### 3 3 3 3 3 3 3 服务注册与发现
 
 ```rust
 use consul_rs::{Client, Config, RegisterServiceRequest, ServiceEntry};
@@ -2260,9 +2346,9 @@ pub enum ServiceDiscoveryError {
 }
 ```
 
-## 三、数据模型设计
+## 3.1 三、数据模型设计
 
-### 1. 事件存储表结构
+### 3.1.1 1. 事件存储表结构
 
 ```sql
 -- 事件存储表
@@ -2296,7 +2382,7 @@ CREATE TABLE aggregate_snapshots (
 );
 ```
 
-### 2. 读模型表结构
+### 3.1.2 2. 读模型表结构
 
 ```sql
 -- 订单视图表
@@ -2353,9 +2439,9 @@ CREATE INDEX idx_order_payment_status ON order_payment(status);
 CREATE INDEX idx_order_shipment_status ON order_shipment(status);
 ```
 
-## 四、部署架构
+## 3.2 四、部署架构
 
-### 1. 容器化与服务编排
+### 3.2.1 1. 容器化与服务编排
 
 以下是使用Docker Compose定义的服务部署配置:
 
@@ -2415,11 +2501,11 @@ services:
     image: redis:6-alpine
     ports:
       
-# 复杂分布式系统架构设计与实现方案（续）
+# 4 4 4 4 4 4 4 复杂分布式系统架构设计与实现方案（续）
 
-## 四、部署架构（续）
+## 4.1 四、部署架构（续）
 
-### 1. 容器化与服务编排（续）
+### 4.1.1 1. 容器化与服务编排（续）
 
 ```yaml
 version: '3.8'
@@ -2581,10 +2667,10 @@ volumes:
   grafana-data:
 ```
 
-### 2. Prometheus配置
+### 4.1.2 2. Prometheus配置
 
 ```yaml
-# prometheus.yml
+# 5 5 5 5 5 5 5 prometheus.yml
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -2609,10 +2695,10 @@ scrape_configs:
       - targets: ['localhost:9090']
 ```
 
-### 3. Kubernetes部署配置
+### 5 5 5 5 5 5 5 3. Kubernetes部署配置
 
 ```yaml
-# order-service-deployment.yaml
+# 6 6 6 6 6 6 6 order-service-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -2691,7 +2777,7 @@ spec:
       terminationGracePeriodSeconds: 60
 
 ---
-# order-service-service.yaml
+# 7 7 7 7 7 7 7 order-service-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -2708,7 +2794,7 @@ spec:
   type: ClusterIP
 
 ---
-# order-service-hpa.yaml
+# 8 8 8 8 8 8 8 order-service-hpa.yaml
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -2735,9 +2821,9 @@ spec:
         averageUtilization: 80
 ```
 
-## 五、系统启动与集成
+## 8.1 五、系统启动与集成
 
-### 1. 应用启动序列
+### 8.1.1 1. 应用启动序列
 
 ```rust
 use std::sync::Arc;
@@ -2964,62 +3050,62 @@ async fn metrics_handler(
 }
 ```
 
-### 2. Dockerfile
+### 8.1.2 2. Dockerfile
 
 ```dockerfile
 FROM rust:1.62 as builder
 
-# 创建新的空项目
+# 9 9 9 9 9 9 9 创建新的空项目
 WORKDIR /usr/src/app
 RUN USER=root cargo new --bin order-service
 WORKDIR /usr/src/app/order-service
 
-# 复制项目清单
+# 10 10 10 10 10 10 10 复制项目清单
 COPY Cargo.toml Cargo.lock ./
 
-# 构建依赖项
+# 11 11 11 11 11 11 11 构建依赖项
 RUN cargo build --release
 RUN rm src/*.rs
 
-# 复制源代码
+# 12 12 12 12 12 12 12 复制源代码
 COPY src ./src
 COPY migrations ./migrations
 COPY config ./config
 
-# 构建应用
+# 13 13 13 13 13 13 13 构建应用
 RUN cargo build --release
 
-# 运行阶段
+# 14 14 14 14 14 14 14 运行阶段
 FROM debian:bullseye-slim
 
-# 安装依赖
+# 15 15 15 15 15 15 15 安装依赖
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
-# 设置用户
+# 16 16 16 16 16 16 16 设置用户
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# 创建工作目录
+# 17 17 17 17 17 17 17 创建工作目录
 WORKDIR /app
 
-# 复制二进制文件和配置
+# 18 18 18 18 18 18 18 复制二进制文件和配置
 COPY --from=builder /usr/src/app/order-service/target/release/order-service /app/
 COPY --from=builder /usr/src/app/order-service/config /app/config
 COPY --from=builder /usr/src/app/order-service/migrations /app/migrations
 
-# 设置权限
+# 19 19 19 19 19 19 19 设置权限
 RUN chown -R appuser:appuser /app
 USER appuser
 
-# 暴露端口
+# 20 20 20 20 20 20 20 暴露端口
 EXPOSE 8080
 
-# 启动命令
+# 21 21 21 21 21 21 21 启动命令
 CMD ["/app/order-service"]
 ```
 
-## 六、总结与最佳实践
+## 21.1 六、总结与最佳实践
 
-### 1. 架构设计关键点
+### 21.1.1 1. 架构设计关键点
 
 1. **领域驱动设计(DDD)**: 通过明确的限界上下文分离业务关注点,聚合根确保业务规则完整性
 
@@ -3033,7 +3119,7 @@ CMD ["/app/order-service"]
 
 6. **工作流引擎**: 使用Temporal管理长时间运行的业务流程,提供持久性和故障恢复
 
-### 2. Rust实现优势
+### 21.1.2 2. Rust实现优势
 
 1. **类型系统安全**: 利用Rust类型系统在编译时捕获错误,增强系统可靠性
 
@@ -3045,7 +3131,7 @@ CMD ["/app/order-service"]
 
 5. **高效资源利用**: 低内存占用和CPU使用率,支持高吞吐量处理
 
-### 3. 集成开源库最佳实践
+### 21.1.3 3. 集成开源库最佳实践
 
 1. **分层抽象**: 使用抽象层封装第三方库,降低耦合并简化替换
 
@@ -3131,7 +3217,7 @@ CMD ["/app/order-service"]
    }
    ```
 
-### 4. 最终架构特点
+### 21.1.4 4. 最终架构特点
 
 1. **高可靠性**: 通过断路器、重试、降级等弹性模式应对故障
 

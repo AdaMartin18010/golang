@@ -1,8 +1,34 @@
-# Rust实现分布式工作流
+# 1 1 1 1 1 1 1 Rust实现分布式工作流
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust实现分布式工作流](#1-1-1-1-1-1-1-rust实现分布式工作流)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+  - [1.3 2. 基础工作流模式定义](#2-基础工作流模式定义)
+  - [1.4 3. 高级工作流模式实现](#3-高级工作流模式实现)
+  - [1.5 4. 工作流状态和上下文管理](#4-工作流状态和上下文管理)
+  - [1.6 5. 工作流模式组合示例](#5-工作流模式组合示例)
+  - [1.7 6. 工作流执行引擎](#6-工作流执行引擎)
+  - [1.8 7. 工作流监控和指标收集](#7-工作流监控和指标收集)
+  - [1.9 8. 主程序实现](#8-主程序实现)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个基于 Rust 2024 + Tokio 的分布式工作流系统，实现各种工作流模式。
 
-## 目录
+## 1.1 目录
 
 - [Rust实现分布式工作流](#rust实现分布式工作流)
   - [目录](#目录)
@@ -15,7 +41,7 @@
   - [7. 工作流监控和指标收集](#7-工作流监控和指标收集)
   - [8. 主程序实现](#8-主程序实现)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -33,7 +59,7 @@ sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-native-tls"] }
 redis = { version = "0.23", features = ["tokio-comp"] }
 ```
 
-## 2. 基础工作流模式定义
+## 1.3 2. 基础工作流模式定义
 
 ```rust
 #[async_trait]
@@ -106,7 +132,7 @@ impl WorkflowPattern for ParallelPattern {
 }
 ```
 
-## 3. 高级工作流模式实现
+## 1.4 3. 高级工作流模式实现
 
 ```rust
 // 选择模式
@@ -195,7 +221,7 @@ impl WorkflowPattern for DiscriminatorPattern {
 }
 ```
 
-## 4. 工作流状态和上下文管理
+## 1.5 4. 工作流状态和上下文管理
 
 ```rust
 #[derive(Clone)]
@@ -268,7 +294,7 @@ impl WorkflowStorage {
 }
 ```
 
-## 5. 工作流模式组合示例
+## 1.6 5. 工作流模式组合示例
 
 ```rust
 // 复杂订单处理工作流
@@ -364,7 +390,7 @@ pub fn create_document_approval_workflow() -> Box<dyn WorkflowPattern> {
 }
 ```
 
-## 6. 工作流执行引擎
+## 1.7 6. 工作流执行引擎
 
 ```rust
 pub struct WorkflowEngine {
@@ -449,7 +475,7 @@ impl WorkflowExecutor {
 }
 ```
 
-## 7. 工作流监控和指标收集
+## 1.8 7. 工作流监控和指标收集
 
 ```rust
 pub struct WorkflowMetrics {
@@ -492,7 +518,7 @@ impl WorkflowMetrics {
 }
 ```
 
-## 8. 主程序实现
+## 1.9 8. 主程序实现
 
 ```rust
 #[tokio::main]

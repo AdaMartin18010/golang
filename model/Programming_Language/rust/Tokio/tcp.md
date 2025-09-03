@@ -1,8 +1,36 @@
-# rust Tcp IM
+# 1 1 1 1 1 1 1 rust Tcp IM
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 rust Tcp IM](#1-1-1-1-1-1-1-rust-tcp-im)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+  - [1.3 2. 消息协议定义](#2-消息协议定义)
+  - [1.4 3. TCP 服务端实现](#3-tcp-服务端实现)
+  - [1.5 4. TCP 客户端实现](#4-tcp-客户端实现)
+  - [1.6 5. UDP 消息广播实现](#5-udp-消息广播实现)
+  - [1.7 6. 消息存储实现](#6-消息存储实现)
+  - [1.8 7. 错误处理实现](#7-错误处理实现)
+  - [1.9 8. 指标收集实现](#8-指标收集实现)
+  - [1.10 9. 主程序实现](#9-主程序实现)
+  - [1.11 10. 测试实现](#10-测试实现)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个使用 Rust 2024 实现的完整 IM (即时通讯) 系统，包含 TCP/UDP 服务端和客户端。
 
-## 目录
+## 1.1 目录
 
 - [rust Tcp IM](#rust-tcp-im)
   - [目录](#目录)
@@ -17,7 +45,7 @@
   - [9. 主程序实现](#9-主程序实现)
   - [10. 测试实现](#10-测试实现)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -40,7 +68,7 @@ backoff = { version = "0.4", features = ["tokio"] }
 metrics = "0.21"
 ```
 
-## 2. 消息协议定义
+## 1.3 2. 消息协议定义
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -127,7 +155,7 @@ impl Decoder for MessageCodec {
 }
 ```
 
-## 3. TCP 服务端实现
+## 1.4 3. TCP 服务端实现
 
 ```rust
 pub struct ImServer {
@@ -281,7 +309,7 @@ impl ImServer {
 }
 ```
 
-## 4. TCP 客户端实现
+## 1.5 4. TCP 客户端实现
 
 ```rust
 pub struct ImClient {
@@ -438,7 +466,7 @@ impl ImClient {
 }
 ```
 
-## 5. UDP 消息广播实现
+## 1.6 5. UDP 消息广播实现
 
 ```rust
 pub struct BroadcastServer {
@@ -518,7 +546,7 @@ impl BroadcastClient {
 }
 ```
 
-## 6. 消息存储实现
+## 1.7 6. 消息存储实现
 
 ```rust
 pub struct MessageStore {
@@ -558,7 +586,7 @@ impl MessageStore {
 }
 ```
 
-## 7. 错误处理实现
+## 1.8 7. 错误处理实现
 
 ```rust
 #[derive(Debug, thiserror::Error)]
@@ -592,7 +620,7 @@ impl From<ImError> for backoff::Error<ImError> {
 }
 ```
 
-## 8. 指标收集实现
+## 1.9 8. 指标收集实现
 
 ```rust
 pub struct ImMetrics {
@@ -634,7 +662,7 @@ impl ImMetrics {
 }
 ```
 
-## 9. 主程序实现
+## 1.10 9. 主程序实现
 
 ```rust
 #[tokio::main]
@@ -676,7 +704,7 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-## 10. 测试实现
+## 1.11 10. 测试实现
 
 ```rust
 #[cfg(test)]

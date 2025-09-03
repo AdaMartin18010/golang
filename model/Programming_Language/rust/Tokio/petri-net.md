@@ -1,8 +1,34 @@
-# rust petr-net的实现
+# 1 1 1 1 1 1 1 rust petr-net的实现
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 rust petr-net的实现](#1-1-1-1-1-1-1-rust-petr-net的实现)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.2.1 2. Petri 网模型实现](#2-petri-网模型实现)
+    - [1.2.2 3. 分布式工作流执行器](#3-分布式工作流执行器)
+    - [1.2.3 4. 分布式状态存储](#4-分布式状态存储)
+    - [1.2.4 5. 分布式锁实现](#5-分布式锁实现)
+    - [1.2.5 6. 分布式事件总线](#6-分布式事件总线)
+    - [1.2.6 7. 工作流定义示例](#7-工作流定义示例)
+    - [1.2.7 8. 主程序实现](#8-主程序实现)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个基于 Rust 2024 + Tokio + OpenTelemetry 实现的分布式工作流系统，使用 Petri 网模型进行工作流控制。
 
-## 目录
+## 1.1 目录
 
 - [rust petr-net的实现](#rust-petr-net的实现)
   - [目录](#目录)
@@ -15,7 +41,7 @@
     - [7. 工作流定义示例](#7-工作流定义示例)
     - [8. 主程序实现](#8-主程序实现)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -35,7 +61,7 @@ tracing = "0.1"
 tracing-opentelemetry = "0.22"
 ```
 
-### 2. Petri 网模型实现
+### 1.2.1 2. Petri 网模型实现
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -168,7 +194,7 @@ impl PetriNet {
 }
 ```
 
-### 3. 分布式工作流执行器
+### 1.2.2 3. 分布式工作流执行器
 
 ```rust
 pub struct WorkflowExecutor {
@@ -267,7 +293,7 @@ impl WorkflowExecutor {
 }
 ```
 
-### 4. 分布式状态存储
+### 1.2.3 4. 分布式状态存储
 
 ```rust
 pub struct StateStore {
@@ -362,7 +388,7 @@ impl StateStore {
 }
 ```
 
-### 5. 分布式锁实现
+### 1.2.4 5. 分布式锁实现
 
 ```rust
 pub struct DistributedLock {
@@ -450,7 +476,7 @@ impl Drop for LockGuard {
 }
 ```
 
-### 6. 分布式事件总线
+### 1.2.5 6. 分布式事件总线
 
 ```rust
 pub struct EventBus {
@@ -546,7 +572,7 @@ impl EventBus {
 }
 ```
 
-### 7. 工作流定义示例
+### 1.2.6 7. 工作流定义示例
 
 ```rust
 fn create_workflow() -> PetriNet {
@@ -600,7 +626,7 @@ fn create_workflow() -> PetriNet {
 }
 ```
 
-### 8. 主程序实现
+### 1.2.7 8. 主程序实现
 
 ```rust
 #[tokio::main]

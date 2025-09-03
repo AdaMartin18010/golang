@@ -1,8 +1,37 @@
-# Rust 2024 + Generator 实现的 AsyncAPI 与多消息队列集成项目
+# 1 1 1 1 1 1 1 Rust 2024 + Generator 实现的 AsyncAPI 与多消息队列集成项目
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust 2024 + Generator 实现的 AsyncAPI 与多消息队列集成项目](#1-1-1-1-1-1-1-rust-2024-+-generator-实现的-asyncapi-与多消息队列集成项目)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目配置](#1-项目配置)
+- [2 2 2 2 2 2 2 异步运行时](#2-2-2-2-2-2-2-异步运行时)
+- [3 3 3 3 3 3 3 消息队列客户端](#3-3-3-3-3-3-3-消息队列客户端)
+- [4 4 4 4 4 4 4 AsyncAPI 工具](#4-4-4-4-4-4-4-asyncapi-工具)
+- [5 5 5 5 5 5 5 工具库](#5-5-5-5-5-5-5-工具库)
+  - [5.1 2. AsyncAPI 规范解析器](#2-asyncapi-规范解析器)
+  - [5.2 3. 消息队列集成层](#3-消息队列集成层)
+  - [5.3 4. 消息处理器生成器](#4-消息处理器生成器)
+  - [5.4 5. 消息转换和验证](#5-消息转换和验证)
+  - [5.5 6. 错误处理和重试机制](#6-错误处理和重试机制)
+  - [5.6 7. 主程序实现](#7-主程序实现)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个基于 Rust 2024 + Generator 的 AsyncAPI 与多消息队列集成项目。
 
-## 目录
+## 1.1 目录
 
 - [Rust 2024 + Generator 实现的 AsyncAPI 与多消息队列集成项目](#rust-2024--generator-实现的-asyncapi-与多消息队列集成项目)
   - [目录](#目录)
@@ -14,31 +43,31 @@
   - [6. 错误处理和重试机制](#6-错误处理和重试机制)
   - [7. 主程序实现](#7-主程序实现)
 
-## 1. 项目配置
+## 1.2 1. 项目配置
 
 ```toml
 [dependencies]
-# 异步运行时
+# 2 2 2 2 2 2 2 异步运行时
 tokio = { version = "1.0", features = ["full"] }
 async-stream = "0.3"
 futures = "0.3"
 
-# 消息队列客户端
+# 3 3 3 3 3 3 3 消息队列客户端
 async-nats = "0.33"
 rdkafka = { version = "0.36", features = ["cmake-build"] }
 rumqttc = "0.24"
 
-# AsyncAPI 工具
+# 4 4 4 4 4 4 4 AsyncAPI 工具
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 async-trait = "0.1"
 
-# 工具库
+# 5 5 5 5 5 5 5 工具库
 tracing = "0.1"
 thiserror = "1.0"
 ```
 
-## 2. AsyncAPI 规范解析器
+## 5.1 2. AsyncAPI 规范解析器
 
 ```rust
 use serde::{Deserialize, Serialize};
@@ -112,7 +141,7 @@ impl AsyncApiGenerator {
 }
 ```
 
-## 3. 消息队列集成层
+## 5.2 3. 消息队列集成层
 
 ```rust
 /// 消息队列抽象特征
@@ -240,7 +269,7 @@ impl MessageQueue for MqttMessageQueue {
 }
 ```
 
-## 4. 消息处理器生成器
+## 5.3 4. 消息处理器生成器
 
 ```rust
 /// 消息处理器生成器
@@ -284,7 +313,7 @@ impl<T: MessageQueue> MessageHandlerGenerator<T> {
 }
 ```
 
-## 5. 消息转换和验证
+## 5.4 5. 消息转换和验证
 
 ```rust
 /// 消息转换生成器
@@ -338,7 +367,7 @@ impl MessageValidationGenerator {
 }
 ```
 
-## 6. 错误处理和重试机制
+## 5.5 6. 错误处理和重试机制
 
 ```rust
 /// 错误处理生成器
@@ -379,7 +408,7 @@ impl ErrorHandlingGenerator {
 }
 ```
 
-## 7. 主程序实现
+## 5.6 7. 主程序实现
 
 ```rust
 #[tokio::main]

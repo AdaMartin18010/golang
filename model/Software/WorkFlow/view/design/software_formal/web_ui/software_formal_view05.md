@@ -1,6 +1,120 @@
-# 现代软件架构分析：从前端到后端的全栈视角
+# 1 1 1 1 1 1 1 现代软件架构分析：从前端到后端的全栈视角
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 现代软件架构分析：从前端到后端的全栈视角](#1-1-1-1-1-1-1-现代软件架构分析：从前端到后端的全栈视角)
+  - [1.1 目录](#目录)
+  - [1.2 1. 引言](#1-引言)
+    - [1.2.1 分析背景与目标](#分析背景与目标)
+    - [1.2.2 技术生态现状概览](#技术生态现状概览)
+  - [1.3 2. 前端架构](#2-前端架构)
+    - [1.3.1 现代UI框架分析](#现代ui框架分析)
+    - [1.3.2 状态管理演进](#状态管理演进)
+    - [1.3.3 组件设计模式](#组件设计模式)
+    - [1.3.4 构建与优化系统](#构建与优化系统)
+  - [1.4 3. 后端架构](#3-后端架构)
+    - [1.4.1 服务器框架比较](#服务器框架比较)
+    - [1.4.2 API设计范式](#api设计范式)
+    - [1.4.3 微服务与单体架构](#微服务与单体架构)
+- [2 2 2 2 2 2 2 application.yml](#2-2-2-2-2-2-2-applicationyml)
+- [3 3 3 3 3 3 3 配置中心集成](#3-3-3-3-3-3-3-配置中心集成)
+- [4 4 4 4 4 4 4 分布式追踪](#4-4-4-4-4-4-4-分布式追踪)
+- [5 5 5 5 5 5 5 消息队列配置](#5-5-5-5-5-5-5-消息队列配置)
+    - [5 5 5 5 5 5 5 函数即服务(FaaS)](#5-5-5-5-5-5-5-函数即服务faas)
+- [6 6 6 6 6 6 6 serverless.yml](#6-6-6-6-6-6-6-serverlessyml)
+  - [6.1 4. 数据存储与处理](#4-数据存储与处理)
+    - [6.1.1 关系型数据库现状](#关系型数据库现状)
+    - [6.1.2 NoSQL解决方案](#nosql解决方案)
+- [7 7 7 7 7 7 7 Redis数据结构和命令示例](#7-7-7-7-7-7-7-redis数据结构和命令示例)
+- [8 8 8 8 8 8 8 字符串操作 - 计数器和缓存](#8-8-8-8-8-8-8-字符串操作-计数器和缓存)
+- [9 9 9 9 9 9 9 带过期时间的缓存](#9-9-9-9-9-9-9-带过期时间的缓存)
+- [10 10 10 10 10 10 10 哈希表 - 存储对象](#10-10-10-10-10-10-10-哈希表-存储对象)
+- [11 11 11 11 11 11 11 列表 - 最新动态、消息队列](#11-11-11-11-11-11-11-列表-最新动态、消息队列)
+- [12 12 12 12 12 12 12 任务队列](#12-12-12-12-12-12-12-任务队列)
+- [13 13 13 13 13 13 13 集合 - 唯一元素集合、标签系统](#13-13-13-13-13-13-13-集合-唯一元素集合、标签系统)
+- [14 14 14 14 14 14 14 用户在线状态](#14-14-14-14-14-14-14-用户在线状态)
+- [15 15 15 15 15 15 15 有序集合 - 排行榜、权重列表](#15-15-15-15-15-15-15-有序集合-排行榜、权重列表)
+- [16 16 16 16 16 16 16 位图操作 - 用户活跃统计](#16-16-16-16-16-16-16-位图操作-用户活跃统计)
+- [17 17 17 17 17 17 17 地理空间 - 位置服务](#17-17-17-17-17-17-17-地理空间-位置服务)
+- [18 18 18 18 18 18 18 流 - 事件处理、日志](#18-18-18-18-18-18-18-流-事件处理、日志)
+- [19 19 19 19 19 19 19 发布订阅](#19-19-19-19-19-19-19-发布订阅)
+- [20 20 20 20 20 20 20 Lua脚本 - 原子操作](#20-20-20-20-20-20-20-lua脚本-原子操作)
+    - [20 20 20 20 20 20 20 数据访问层模式](#20-20-20-20-20-20-20-数据访问层模式)
+- [21 21 21 21 21 21 21 SQLAlchemy数据映射器示例](#21-21-21-21-21-21-21-sqlalchemy数据映射器示例)
+- [22 22 22 22 22 22 22 创建数据库连接](#22-22-22-22-22-22-22-创建数据库连接)
+- [23 23 23 23 23 23 23 使用核心API定义表](#23-23-23-23-23-23-23-使用核心api定义表)
+- [24 24 24 24 24 24 24 创建表](#24-24-24-24-24-24-24-创建表)
+- [25 25 25 25 25 25 25 数据访问类](#25-25-25-25-25-25-25-数据访问类)
+- [26 26 26 26 26 26 26 使用示例](#26-26-26-26-26-26-26-使用示例)
+    - [26 26 26 26 26 26 26 缓存策略与实现](#26-26-26-26-26-26-26-缓存策略与实现)
+  - [26.1 5. 全栈架构模式](#5-全栈架构模式)
+    - [26.1.1 JAMStack架构](#jamstack架构)
+- [27 27 27 27 27 27 27 netlify.toml](#27-27-27-27-27-27-27-netlifytoml)
+- [28 28 28 28 28 28 28 增量静态重新生成处理](#28-28-28-28-28-28-28-增量静态重新生成处理)
+- [29 29 29 29 29 29 29 重定向和重写](#29-29-29-29-29-29-29-重定向和重写)
+- [30 30 30 30 30 30 30 缓存控制](#30-30-30-30-30-30-30-缓存控制)
+- [31 31 31 31 31 31 31 环境变量根据部署环境](#31-31-31-31-31-31-31-环境变量根据部署环境)
+    - [31 31 31 31 31 31 31 MERN/MEAN/PERN栈](#31-31-31-31-31-31-31-mernmeanpern栈)
+    - [31 31 31 31 31 31 31 云原生应用架构](#31-31-31-31-31-31-31-云原生应用架构)
+- [32 32 32 32 32 32 32 Kubernetes配置示例 - 电子商务微服务应用](#32-32-32-32-32-32-32-kubernetes配置示例-电子商务微服务应用)
+- [33 33 33 33 33 33 33 产品服务部署](#33-33-33-33-33-33-33-产品服务部署)
+- [34 34 34 34 34 34 34 产品服务 Service](#34-34-34-34-34-34-34-产品服务-service)
+- [35 35 35 35 35 35 35 API Gateway](#35-35-35-35-35-35-35-api-gateway)
+- [36 36 36 36 36 36 36 路由配置](#36-36-36-36-36-36-36-路由配置)
+- [37 37 37 37 37 37 37 服务网格策略 - 熔断](#37-37-37-37-37-37-37-服务网格策略-熔断)
+- [38 38 38 38 38 38 38 HorizontalPodAutoscaler](#38-38-38-38-38-38-38-horizontalpodautoscaler)
+- [39 39 39 39 39 39 39 存储配置 - PVC](#39-39-39-39-39-39-39-存储配置-pvc)
+- [40 40 40 40 40 40 40 定时任务 - 库存检查](#40-40-40-40-40-40-40-定时任务-库存检查)
+- [41 41 41 41 41 41 41 配置映射](#41-41-41-41-41-41-41-配置映射)
+- [42 42 42 42 42 42 42 密钥](#42-42-42-42-42-42-42-密钥)
+    - [42 42 42 42 42 42 42 服务网格与容器编排](#42-42-42-42-42-42-42-服务网格与容器编排)
+- [43 43 43 43 43 43 43 Istio服务网格配置示例](#43-43-43-43-43-43-43-istio服务网格配置示例)
+- [44 44 44 44 44 44 44 全局网络策略](#44-44-44-44-44-44-44-全局网络策略)
+- [45 45 45 45 45 45 45 互相TLS策略](#45-45-45-45-45-45-45-互相tls策略)
+- [46 46 46 46 46 46 46 流量管理 - 金丝雀发布](#46-46-46-46-46-46-46-流量管理-金丝雀发布)
+- [47 47 47 47 47 47 47 服务版本定义](#47-47-47-47-47-47-47-服务版本定义)
+- [48 48 48 48 48 48 48 请求路由 - 基于权重的流量分拆](#48-48-48-48-48-48-48-请求路由-基于权重的流量分拆)
+- [49 49 49 49 49 49 49 服务容错 - 熔断器](#49-49-49-49-49-49-49-服务容错-熔断器)
+- [50 50 50 50 50 50 50 超时配置](#50-50-50-50-50-50-50-超时配置)
+- [51 51 51 51 51 51 51 重试策略](#51-51-51-51-51-51-51-重试策略)
+- [52 52 52 52 52 52 52 故障注入 - 用于测试恢复能力](#52-52-52-52-52-52-52-故障注入-用于测试恢复能力)
+- [53 53 53 53 53 53 53 认证策略](#53-53-53-53-53-53-53-认证策略)
+- [54 54 54 54 54 54 54 授权策略](#54-54-54-54-54-54-54-授权策略)
+- [55 55 55 55 55 55 55 遥测配置](#55-55-55-55-55-55-55-遥测配置)
+- [56 56 56 56 56 56 56 Kubernetes高级配置示例](#56-56-56-56-56-56-56-kubernetes高级配置示例)
+- [57 57 57 57 57 57 57 StatefulSet示例 - 数据库](#57-57-57-57-57-57-57-statefulset示例-数据库)
+- [58 58 58 58 58 58 58 Network Policies - 零信任网络模型](#58-58-58-58-58-58-58-network-policies-零信任网络模型)
+- [59 59 59 59 59 59 59 Pod Security Context](#59-59-59-59-59-59-59-pod-security-context)
+- [60 60 60 60 60 60 60 Pod Disruption Budget - 确保高可用性](#60-60-60-60-60-60-60-pod-disruption-budget-确保高可用性)
+- [61 61 61 61 61 61 61 资源配额](#61-61-61-61-61-61-61-资源配额)
+- [62 62 62 62 62 62 62 自定义资源定义 - Redis集群操作符](#62-62-62-62-62-62-62-自定义资源定义-redis集群操作符)
+- [63 63 63 63 63 63 63 使用自定义资源](#63-63-63-63-63-63-63-使用自定义资源)
+  - [63.1 6. 热门开源项目架构分析](#6-热门开源项目架构分析)
+    - [63.1.1 VSCode架构解析](#vscode架构解析)
+    - [63.1.2 Next.js内部架构](#nextjs内部架构)
+    - [63.1.3 Redis核心设计](#redis核心设计)
+    - [63.1.4 Kubernetes架构原理](#kubernetes架构原理)
+  - [63.2 7. 新兴架构趋势](#7-新兴架构趋势)
+    - [63.2.1 AI驱动的软件架构](#ai驱动的软件架构)
+    - [63.2.2 WebAssembly应用架构](#webassembly应用架构)
+    - [63.2.3 边缘计算模式](#边缘计算模式)
+  - [63.3 8. 软件架构思维导图](#8-软件架构思维导图)
+  - [63.4 9. 总结](#9-总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [现代软件架构分析：从前端到后端的全栈视角](#现代软件架构分析从前端到后端的全栈视角)
   - [目录](#目录)
@@ -39,19 +153,19 @@
   - [8. 软件架构思维导图](#8-软件架构思维导图)
   - [9. 总结](#9-总结)
 
-## 1. 引言
+## 1.2 1. 引言
 
-### 1.1 分析背景与目标
+### 1.2.1 分析背景与目标
 
 现代软件架构正经历前所未有的快速变革。本分析旨在提供从前端到后端的全栈视角，深入剖析当前热门技术栈、框架及应用架构的优缺点，帮助开发者和架构师做出更明智的技术决策。
 
-### 1.2 技术生态现状概览
+### 1.2.2 技术生态现状概览
 
 当前技术生态呈现多元化与专业化并存的特点。前端领域已从简单的DOM操作发展为复杂的应用平台；后端架构从单体应用向微服务与无服务器架构转变；数据存储也从传统关系型数据库扩展到多样化的存储解决方案。这种多样性带来了空前的灵活性，同时也增加了技术选型的复杂性。
 
-## 2. 前端架构
+## 1.3 2. 前端架构
 
-### 2.1 现代UI框架分析
+### 1.3.1 现代UI框架分析
 
 -**React生态系统**
 
@@ -244,7 +358,7 @@ Svelte代表了向编译时优化转变的前端架构：
 |包体积|中|小|大|最小|
 |编译优化|部分(JSX)|部分|高(AOT)|最高|
 
-### 2.2 状态管理演进
+### 1.3.2 状态管理演进
 
 -**集中式状态管理**
 
@@ -433,7 +547,7 @@ function TodoApp() {
 |调试能力|很强|中等|中等|强|
 |适用场景|复杂状态|中等复杂性|组件共享状态|远程数据|
 
-### 2.3 组件设计模式
+### 1.3.3 组件设计模式
 
 -**组合模式**
 
@@ -625,7 +739,7 @@ export function ClientProfileActions({ userId }) {
 - 保持交互组件的客户端渲染
 - 无缝流式传输和渐进增强
 
-### 2.4 构建与优化系统
+### 1.3.4 构建与优化系统
 
 -**现代构建工具**
 
@@ -765,9 +879,9 @@ function App() {
 - 资源优化：图像压缩、字体优化、资源提示
 - 运行时优化：Web Workers、渲染队列、计算缓存
 
-## 3. 后端架构
+## 1.4 3. 后端架构
 
-### 3.1 服务器框架比较
+### 1.4.1 服务器框架比较
 
 -**Node.js生态系统**
 
@@ -1022,7 +1136,7 @@ func main() {
 |类型系统|可选|原生TypeScript|静态|静态|动态|
 |异步模型|回调/Promise/Async|Promise/Async|Goroutine|多线程|同步/异步|
 
-### 3.2 API设计范式
+### 1.4.2 API设计范式
 
 -**REST API设计**
 
@@ -1297,7 +1411,7 @@ enum ActivityType {
 |双向流|无|有限(订阅)|完全支持|
 |适用场景|通用Web API|灵活数据需求|微服务/内部服务|
 
-### 3.3 微服务与单体架构
+### 1.4.3 微服务与单体架构
 
 -**单体应用架构**
 
@@ -1471,7 +1585,7 @@ public class ProductServiceImpl implements ProductService {
 -**微服务配置 - 服务注册与发现**
 
 ```yaml
-# application.yml
+# 2 2 2 2 2 2 2 application.yml
 spring:
   application:
     name: product-service
@@ -1484,15 +1598,15 @@ spring:
         healthCheckPath: /actuator/health
         healthCheckInterval: 15s
 
-# 配置中心集成
+# 3 3 3 3 3 3 3 配置中心集成
   config:
     import: optional:configserver:http://config-server:8888
 
-# 分布式追踪
+# 4 4 4 4 4 4 4 分布式追踪
   zipkin:
     base-url: http://zipkin:9411
     
-# 消息队列配置
+# 5 5 5 5 5 5 5 消息队列配置
   kafka:
     bootstrap-servers: kafka:9092
     producer:
@@ -1523,7 +1637,7 @@ spring:
 |监控复杂性|低|高|
 |适用场景|小团队 / 初创|大型组织 / 复杂领域|
 
-### 3.4 函数即服务(FaaS)
+### 5 5 5 5 5 5 5 函数即服务(FaaS)
 
 -**AWS Lambda架构**
 
@@ -1664,7 +1778,7 @@ export class ItemsServiceStack extends cdk.Stack {
 -**无服务器框架 - Serverless Framework**
 
 ```yaml
-# serverless.yml
+# 6 6 6 6 6 6 6 serverless.yml
 service: items-service
 
 provider:
@@ -1732,9 +1846,9 @@ resources:
 |开发复杂性|低|中|高|
 |运维复杂性|低|高|中高|
 
-## 4. 数据存储与处理
+## 6.1 4. 数据存储与处理
 
-### 4.1 关系型数据库现状
+### 6.1.1 关系型数据库现状
 
 -**PostgreSQL高级特性**
 
@@ -2030,7 +2144,7 @@ CREATE SCHEDULE cleanup_expired_sessions
 |地理数据|PostGIS|有限|原生支持|
 |云原生|需适配|需适配|原生设计|
 
-### 4.2 NoSQL解决方案
+### 6.1.2 NoSQL解决方案
 
 -**文档数据库 - MongoDB**
 
@@ -2213,66 +2327,66 @@ try {
 Redis作为高性能键值存储和多功能数据结构服务器：
 
 ```bash
-# Redis数据结构和命令示例
+# 7 7 7 7 7 7 7 Redis数据结构和命令示例
 
-# 字符串操作 - 计数器和缓存
+# 8 8 8 8 8 8 8 字符串操作 - 计数器和缓存
 SET pageviews:homepage 1000
 INCR pageviews:homepage
 GET pageviews:homepage
 
-# 带过期时间的缓存
+# 9 9 9 9 9 9 9 带过期时间的缓存
 SET user:profile:1001 "{\"name\":\"John\",\"email\":\"john@example.com\"}" EX 3600
 GET user:profile:1001
 
-# 哈希表 - 存储对象
+# 10 10 10 10 10 10 10 哈希表 - 存储对象
 HSET product:10001 name "Smartphone X" price 699.99 category "electronics" stock 124
 HINCRBY product:10001 stock -1
 HGETALL product:10001
 
-# 列表 - 最新动态、消息队列
+# 11 11 11 11 11 11 11 列表 - 最新动态、消息队列
 LPUSH latest:news "{\"id\":1,\"title\":\"New Feature Launch\"}"
 LPUSH latest:news "{\"id\":2,\"title\":\"System Maintenance\"}"
 LRANGE latest:news 0 4
 
-# 任务队列
+# 12 12 12 12 12 12 12 任务队列
 RPUSH tasks:email "{\"type\":\"welcome\",\"user_id\":1001}"
 LPOP tasks:email
 
-# 集合 - 唯一元素集合、标签系统
+# 13 13 13 13 13 13 13 集合 - 唯一元素集合、标签系统
 SADD product:10001:tags "smartphone" "5g" "android"
 SADD product:10002:tags "smartphone" "5g" "ios"
 SINTER product:10001:tags product:10002:tags  # 共同标签
 
-# 用户在线状态
+# 14 14 14 14 14 14 14 用户在线状态
 SADD online:users 1001 1002 1003
 SISMEMBER online:users 1001  # 检查用户是否在线
 
-# 有序集合 - 排行榜、权重列表
+# 15 15 15 15 15 15 15 有序集合 - 排行榜、权重列表
 ZADD leaderboard:monthly 1220 "user:1001"
 ZADD leaderboard:monthly 940 "user:1002" 
 ZADD leaderboard:monthly 1500 "user:1003"
 ZREVRANGE leaderboard:monthly 0 9 WITHSCORES  # 前10名
 
-# 位图操作 - 用户活跃统计
+# 16 16 16 16 16 16 16 位图操作 - 用户活跃统计
 SETBIT user:1001:active:2023-08 0 1  # 8月1日活跃
 SETBIT user:1001:active:2023-08 5 1  # 8月6日活跃
 BITCOUNT user:1001:active:2023-08  # 活跃天数
 
-# 地理空间 - 位置服务
+# 17 17 17 17 17 17 17 地理空间 - 位置服务
 GEOADD locations 13.361389 38.115556 "store:1001" 15.087269 37.502669 "store:1002"
 GEODIST locations "store:1001" "store:1002" km
 GEORADIUS locations 15.0 37.0 50 km
 
-# 流 - 事件处理、日志
+# 18 18 18 18 18 18 18 流 - 事件处理、日志
 XADD events:purchases * product_id 10001 user_id 1001 quantity 2
 XADD events:purchases * product_id 10002 user_id 1002 quantity 1
 XREAD COUNT 10 STREAMS events:purchases 0-0
 
-# 发布订阅
+# 19 19 19 19 19 19 19 发布订阅
 SUBSCRIBE notifications:global
 PUBLISH notifications:global "{\"type\":\"alert\",\"message\":\"System update\"}"
 
-# Lua脚本 - 原子操作
+# 20 20 20 20 20 20 20 Lua脚本 - 原子操作
 EVAL "
 local current = tonumber(redis.call('get', KEYS[1])) or 0
 if current >= tonumber(ARGV[1]) then
@@ -2517,7 +2631,7 @@ stream
 |主要用途|通用/应用数据|缓存/实时数据|大规模分布式|指标/监控|
 |特殊功能|地理空间|数据结构|高写入容量|时序分析|
 
-### 4.3 数据访问层模式
+### 20 20 20 20 20 20 20 数据访问层模式
 
 -**ORM模式**
 
@@ -2749,7 +2863,7 @@ export class ProductService {
 SQLAlchemy核心API展示数据映射器模式：
 
 ```python
-# SQLAlchemy数据映射器示例
+# 21 21 21 21 21 21 21 SQLAlchemy数据映射器示例
 
 from sqlalchemy import (
     create_engine, MetaData, Table, Column, Integer, String, 
@@ -2758,11 +2872,11 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
-# 创建数据库连接
+# 22 22 22 22 22 22 22 创建数据库连接
 engine = create_engine('postgresql://user:password@localhost:5432/mydb')
 metadata = MetaData()
 
-# 使用核心API定义表
+# 23 23 23 23 23 23 23 使用核心API定义表
 users = Table(
     'users', metadata,
     Column('id', Integer, primary_key=True),
@@ -2800,10 +2914,10 @@ products = Table(
     Column('created_at', DateTime, default=datetime.utcnow)
 )
 
-# 创建表
+# 24 24 24 24 24 24 24 创建表
 metadata.create_all(engine)
 
-# 数据访问类
+# 25 25 25 25 25 25 25 数据访问类
 class UserRepository:
     def __init__(self, connection):
         self.connection = connection
@@ -2897,7 +3011,7 @@ class OrderRepository:
             # 返回完整订单
             return self.find_with_items(order_id)
 
-# 使用示例
+# 26 26 26 26 26 26 26 使用示例
 with engine.connect() as conn:
     user_repo = UserRepository(conn)
     order_repo = OrderRepository(conn)
@@ -3109,7 +3223,7 @@ public class ProductService {
 |学习曲线|陡峭|中等|平缓|
 |适用场景|中小应用|高性能需求|领域驱动设计|
 
-### 4.4 缓存策略与实现
+### 26 26 26 26 26 26 26 缓存策略与实现
 
 -**多级缓存架构**
 
@@ -3665,9 +3779,9 @@ class CacheAvoidAvalanche {
 |性能|极高|极高|最高|网络相关|
 |应用场景|多功能缓存|简单高速缓存|热点数据|静态资源|
 
-## 5. 全栈架构模式
+## 26.1 5. 全栈架构模式
 
-### 5.1 JAMStack架构
+### 26.1.1 JAMStack架构
 
 现代JAMStack架构采用静态生成与API组合：
 
@@ -3868,7 +3982,7 @@ export default async function handler(req, res) {
 -**JAMStack部署配置 - Netlify**
 
 ```toml
-# netlify.toml
+# 27 27 27 27 27 27 27 netlify.toml
 [build]
   command = "npm run build"
   publish = "out"
@@ -3878,17 +3992,17 @@ export default async function handler(req, res) {
   NODE_VERSION = "16"
   NPM_FLAGS = "--silent"
 
-# 增量静态重新生成处理
+# 28 28 28 28 28 28 28 增量静态重新生成处理
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# 重定向和重写
+# 29 29 29 29 29 29 29 重定向和重写
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
-# 缓存控制
+# 30 30 30 30 30 30 30 缓存控制
 [[headers]]
   for = "/_next/static/*"
   [headers.values]
@@ -3899,7 +4013,7 @@ export default async function handler(req, res) {
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
-# 环境变量根据部署环境
+# 31 31 31 31 31 31 31 环境变量根据部署环境
 [context.production.environment]
   NEXT_PUBLIC_API_URL = "https://api.example.com"
   
@@ -3916,7 +4030,7 @@ export default async function handler(req, res) {
 - 无服务器函数处理动态需求
 - 增量静态再生成平衡静态与动态
 
-### 5.2 MERN/MEAN/PERN栈
+### 31 31 31 31 31 31 31 MERN/MEAN/PERN栈
 
 -**MERN栈架构**
 
@@ -4949,14 +5063,14 @@ module.exports = router;
 - 触发器用于自动化操作
 - 与MERN架构类似的前端结构
 
-### 5.3 云原生应用架构
+### 31 31 31 31 31 31 31 云原生应用架构
 
 -**云原生电子商务应用架构**
 
 ```yaml
-# Kubernetes配置示例 - 电子商务微服务应用
+# 32 32 32 32 32 32 32 Kubernetes配置示例 - 电子商务微服务应用
 
-# 产品服务部署
+# 33 33 33 33 33 33 33 产品服务部署
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5029,7 +5143,7 @@ spec:
       imagePullSecrets:
       - name: registry-credentials
 
-# 产品服务 Service
+# 34 34 34 34 34 34 34 产品服务 Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -5043,7 +5157,7 @@ spec:
     targetPort: 8080
   type: ClusterIP
 
-# API Gateway
+# 35 35 35 35 35 35 35 API Gateway
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -5060,7 +5174,7 @@ spec:
     hosts:
     - "api.ecommerce.example.com"
     
-# 路由配置
+# 36 36 36 36 36 36 36 路由配置
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -5105,7 +5219,7 @@ spec:
         port:
           number: 80
 
-# 服务网格策略 - 熔断
+# 37 37 37 37 37 37 37 服务网格策略 - 熔断
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -5126,7 +5240,7 @@ spec:
       baseEjectionTime: 30s
       maxEjectionPercent: 100
 
-# HorizontalPodAutoscaler
+# 38 38 38 38 38 38 38 HorizontalPodAutoscaler
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -5160,7 +5274,7 @@ spec:
         value: 100
         periodSeconds: 15
 
-# 存储配置 - PVC
+# 39 39 39 39 39 39 39 存储配置 - PVC
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -5174,7 +5288,7 @@ spec:
       storage: 10Gi
   storageClassName: standard
 
-# 定时任务 - 库存检查
+# 40 40 40 40 40 40 40 定时任务 - 库存检查
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -5200,7 +5314,7 @@ spec:
               value: "http://notification-service"
           restartPolicy: OnFailure
 
-# 配置映射
+# 41 41 41 41 41 41 41 配置映射
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5213,7 +5327,7 @@ data:
   redis.host: "redis-master.cache"
   kafka.bootstrap.servers: "kafka-headless.messaging:9092"
 
-# 密钥
+# 42 42 42 42 42 42 42 密钥
 apiVersion: v1
 kind: Secret
 metadata:
@@ -5235,14 +5349,14 @@ data:
 - 配置与代码分离
 - 不可变基础设施简化运维
 
-### 5.4 服务网格与容器编排
+### 42 42 42 42 42 42 42 服务网格与容器编排
 
 -**服务网格架构 - Istio**
 
 ```yaml
-# Istio服务网格配置示例
+# 43 43 43 43 43 43 43 Istio服务网格配置示例
 
-# 全局网络策略
+# 44 44 44 44 44 44 44 全局网络策略
 apiVersion: networking.istio.io/v1beta1
 kind: Sidecar
 metadata:
@@ -5254,7 +5368,7 @@ spec:
     - "./*"
     - "istio-system/*"
 
-# 互相TLS策略
+# 45 45 45 45 45 45 45 互相TLS策略
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
@@ -5264,7 +5378,7 @@ spec:
   mtls:
     mode: STRICT
 
-# 流量管理 - 金丝雀发布
+# 46 46 46 46 46 46 46 流量管理 - 金丝雀发布
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -5289,7 +5403,7 @@ spec:
         host: product-service
         subset: v1
 
-# 服务版本定义
+# 47 47 47 47 47 47 47 服务版本定义
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -5305,7 +5419,7 @@ spec:
     labels:
       version: v2
 
-# 请求路由 - 基于权重的流量分拆
+# 48 48 48 48 48 48 48 请求路由 - 基于权重的流量分拆
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -5325,7 +5439,7 @@ spec:
         subset: v2
       weight: 10
 
-# 服务容错 - 熔断器
+# 49 49 49 49 49 49 49 服务容错 - 熔断器
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -5346,7 +5460,7 @@ spec:
       baseEjectionTime: 30s
       maxEjectionPercent: 100
 
-# 超时配置
+# 50 50 50 50 50 50 50 超时配置
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -5361,7 +5475,7 @@ spec:
         host: payment-service
     timeout: 3s
 
-# 重试策略
+# 51 51 51 51 51 51 51 重试策略
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -5380,7 +5494,7 @@ spec:
       perTryTimeout: 500ms
       retryOn: connect-failure,refused-stream,unavailable,cancelled,deadline-exceeded,5xx
 
-# 故障注入 - 用于测试恢复能力
+# 52 52 52 52 52 52 52 故障注入 - 用于测试恢复能力
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -5403,7 +5517,7 @@ spec:
     - destination:
         host: shipping-service
 
-# 认证策略
+# 53 53 53 53 53 53 53 认证策略
 apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
 metadata:
@@ -5414,7 +5528,7 @@ spec:
   - issuer: "https://auth.ecommerce.example.com"
     jwksUri: "https://auth.ecommerce.example.com/.well-known/jwks.json"
 
-# 授权策略
+# 54 54 54 54 54 54 54 授权策略
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -5440,7 +5554,7 @@ spec:
         methods: ["GET"]
         paths: ["/api/payments/*"]
 
-# 遥测配置
+# 55 55 55 55 55 55 55 遥测配置
 apiVersion: telemetry.istio.io/v1alpha1
 kind: Telemetry
 metadata:
@@ -5462,9 +5576,9 @@ spec:
 -**Kubernetes高级配置**
 
 ```yaml
-# Kubernetes高级配置示例
+# 56 56 56 56 56 56 56 Kubernetes高级配置示例
 
-# StatefulSet示例 - 数据库
+# 57 57 57 57 57 57 57 StatefulSet示例 - 数据库
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -5513,7 +5627,7 @@ spec:
         requests:
           storage: 100Gi
 
-# Network Policies - 零信任网络模型
+# 58 58 58 58 58 58 58 Network Policies - 零信任网络模型
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -5571,7 +5685,7 @@ spec:
     - protocol: TCP
       port: 9090
 
-# Pod Security Context
+# 59 59 59 59 59 59 59 Pod Security Context
 apiVersion: v1
 kind: Pod
 metadata:
@@ -5592,7 +5706,7 @@ spec:
         drop:
           - ALL
 
-# Pod Disruption Budget - 确保高可用性
+# 60 60 60 60 60 60 60 Pod Disruption Budget - 确保高可用性
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -5604,7 +5718,7 @@ spec:
     matchLabels:
       app: product-service
 
-# 资源配额
+# 61 61 61 61 61 61 61 资源配额
 apiVersion: v1
 kind: ResourceQuota
 metadata:
@@ -5620,7 +5734,7 @@ spec:
     services: "30"
     persistentvolumeclaims: "20"
 
-# 自定义资源定义 - Redis集群操作符
+# 62 62 62 62 62 62 62 自定义资源定义 - Redis集群操作符
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -5670,7 +5784,7 @@ spec:
                       cpu:
                         type: string
 
-# 使用自定义资源
+# 63 63 63 63 63 63 63 使用自定义资源
 apiVersion: cache.example.com/v1
 kind: RedisCluster
 metadata:
@@ -5699,9 +5813,9 @@ spec:
 - 自定义资源扩展平台能力
 - 细粒度资源控制与约束
 
-## 6. 热门开源项目架构分析
+## 63.1 6. 热门开源项目架构分析
 
-### 6.1 VSCode架构解析
+### 63.1.1 VSCode架构解析
 
 -**VSCode核心架构**
 
@@ -5950,7 +6064,7 @@ class MonacoEditorIntegration {
 - Monaco编辑器提供核心编辑体验
 - 事件驱动的响应式架构
 
-### 6.2 Next.js内部架构
+### 63.1.2 Next.js内部架构
 
 -**Next.js架构解析**
 
@@ -6372,7 +6486,7 @@ class ISRManager {
 - 优化的构建系统针对生产环境
 - 统一的APIs简化开发体验
 
-### 6.3 Redis核心设计
+### 63.1.3 Redis核心设计
 
 -**Redis架构解析**
 
@@ -6949,7 +7063,7 @@ int freeMemoryIfNeeded(void) {
 - 内存优化实现高效运行
 - 扩展命令通过模块系统实现
 
-### 6.4 Kubernetes架构原理
+### 63.1.4 Kubernetes架构原理
 
 -**Kubernetes架构解析**
 
@@ -7703,9 +7817,9 @@ func (c *CRDController) syncHandler(key string) error {
 - 插件架构支持扩展
 - 声明式配置管理
 
-## 7. 新兴架构趋势
+## 63.2 7. 新兴架构趋势
 
-### 7.1 AI驱动的软件架构
+### 63.2.1 AI驱动的软件架构
 
 -**基于LLM的软件架构**
 
@@ -8780,7 +8894,7 @@ async function handleCustomerQuery(query, sessionId, customerInfo = {}) {
 - 工作流引擎协调多步骤处理
 - 短期和长期记忆系统管理上下文
 
-### 7.2 WebAssembly应用架构
+### 63.2.2 WebAssembly应用架构
 
 -**WebAssembly应用架构**
 
@@ -10148,7 +10262,7 @@ document.addEventListener('DOMContentLoaded', initializeApplication);
 - 模块化组件设计促进代码复用
 - 跨语言编译支持多种源语言
 
-### 7.3 边缘计算模式
+### 63.2.3 边缘计算模式
 
 -**边缘计算架构**
 
@@ -11158,7 +11272,7 @@ process.on('SIGINT', async () => {
 - 智能决策在边缘完成
 - 分层架构实现数据分级处理
 
-## 8. 软件架构思维导图
+## 63.3 8. 软件架构思维导图
 
 ```text
 
@@ -11298,7 +11412,7 @@ process.on('SIGINT', async () => {
 
 ```
 
-## 9. 总结
+## 63.4 9. 总结
 
 现代软件架构已经发展成为一个复杂而多元的生态系统，融合了多种范式、技术栈和设计原则。
 本文从前端到后端的全栈视角，系统性地分析了当今软件架构的多个方面：

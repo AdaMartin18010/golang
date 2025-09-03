@@ -1,37 +1,87 @@
-# 网络安全 - Rust架构指南
+# 1 1 1 1 1 1 1 网络安全 - Rust架构指南
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 网络安全 - Rust架构指南](#1-1-1-1-1-1-1-网络安全-rust架构指南)
+  - [1.1 概述](#概述)
+  - [1.2 Rust架构选型](#rust架构选型)
+    - [1.2.1 核心技术栈](#核心技术栈)
+      - [1.2.1.1 安全框架](#安全框架)
+      - [1.2.1.2 安全工具](#安全工具)
+      - [1.2.1.3 身份认证](#身份认证)
+    - [1.2.2 架构模式](#架构模式)
+      - [1.2.2.1 零信任架构](#零信任架构)
+      - [1.2.2.2 深度防御架构](#深度防御架构)
+  - [1.3 业务领域概念建模](#业务领域概念建模)
+    - [1.3.1 核心领域模型](#核心领域模型)
+      - [1.3.1.1 威胁模型](#威胁模型)
+      - [1.3.1.2 安全事件](#安全事件)
+      - [1.3.1.3 安全策略](#安全策略)
+  - [1.4 数据建模](#数据建模)
+    - [1.4.1 安全数据存储](#安全数据存储)
+      - [1.4.1.1 加密存储引擎](#加密存储引擎)
+      - [1.4.1.2 威胁情报数据库](#威胁情报数据库)
+  - [1.5 流程建模](#流程建模)
+    - [1.5.1 安全事件响应流程](#安全事件响应流程)
+      - [1.5.1.1 事件响应引擎](#事件响应引擎)
+      - [1.5.1.2 威胁狩猎流程](#威胁狩猎流程)
+  - [1.6 组件建模](#组件建模)
+    - [1.6.1 核心安全组件](#核心安全组件)
+      - [1.6.1.1 入侵检测系统](#入侵检测系统)
+      - [1.6.1.2 漏洞扫描器](#漏洞扫描器)
+  - [1.7 运维运营](#运维运营)
+    - [1.7.1 安全监控](#安全监控)
+      - [1.7.1.1 安全指标监控](#安全指标监控)
+      - [1.7.1.2 安全日志聚合](#安全日志聚合)
+    - [1.7.2 安全配置管理](#安全配置管理)
+      - [1.7.2.1 配置验证器](#配置验证器)
+  - [1.8 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 网络安全领域对内存安全、性能和安全可靠性有极高要求，这正是Rust的核心优势。本指南涵盖安全扫描、入侵检测、加密服务、身份认证等核心领域。
 
-## Rust架构选型
+## 1.2 Rust架构选型
 
-### 核心技术栈
+### 1.2.1 核心技术栈
 
-#### 安全框架
+#### 1.2.1.1 安全框架
 
 - **加密**: `ring`, `rustls`, `openssl`, `crypto`
 - **网络**: `tokio`, `mio`, `netfilter`, `pcap`
 - **恶意软件分析**: `pe-rs`, `elf-rs`, `yara-rs`
 - **威胁情报**: `stix-rs`, `misp-rs`
 
-#### 安全工具
+#### 1.2.1.2 安全工具
 
 - **漏洞扫描**: `nmap-rs`, `masscan-rs`
 - **入侵检测**: `snort-rs`, `suricata-rs`
 - **防火墙**: `iptables-rs`, `nftables-rs`
 - **SIEM**: `elasticsearch-rs`, `splunk-rs`
 
-#### 身份认证
+#### 1.2.1.3 身份认证
 
 - **OAuth/OIDC**: `oauth2`, `openidconnect`
 - **多因子认证**: `totp`, `webauthn-rs`
 - **证书管理**: `rustls`, `x509-rs`
 - **密钥管理**: `aws-kms`, `vault-rs`
 
-### 架构模式
+### 1.2.2 架构模式
 
-#### 零信任架构
+#### 1.2.2.1 零信任架构
 
 ```rust
 use std::sync::Arc;
@@ -85,7 +135,7 @@ impl ZeroTrustArchitecture {
 }
 ```
 
-#### 深度防御架构
+#### 1.2.2.2 深度防御架构
 
 ```rust
 pub struct DefenseInDepth {
@@ -129,11 +179,11 @@ impl DefenseInDepth {
 }
 ```
 
-## 业务领域概念建模
+## 1.3 业务领域概念建模
 
-### 核心领域模型
+### 1.3.1 核心领域模型
 
-#### 威胁模型
+#### 1.3.1.1 威胁模型
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -186,7 +236,7 @@ pub struct Mitigation {
 }
 ```
 
-#### 安全事件
+#### 1.3.1.2 安全事件
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -251,7 +301,7 @@ pub enum IndicatorType {
 }
 ```
 
-#### 安全策略
+#### 1.3.1.3 安全策略
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -327,11 +377,11 @@ pub enum ActionType {
 }
 ```
 
-## 数据建模
+## 1.4 数据建模
 
-### 安全数据存储
+### 1.4.1 安全数据存储
 
-#### 加密存储引擎
+#### 1.4.1.1 加密存储引擎
 
 ```rust
 use ring::aead::{self, BoundKey, Nonce, OpeningKey, SealingKey, UnboundKey};
@@ -433,7 +483,7 @@ impl EncryptedStorage {
 }
 ```
 
-#### 威胁情报数据库
+#### 1.4.1.2 威胁情报数据库
 
 ```rust
 use sqlx::{PgPool, Row};
@@ -540,11 +590,11 @@ impl ThreatIntelligenceDB {
 }
 ```
 
-## 流程建模
+## 1.5 流程建模
 
-### 安全事件响应流程
+### 1.5.1 安全事件响应流程
 
-#### 事件响应引擎
+#### 1.5.1.1 事件响应引擎
 
 ```rust
 pub struct IncidentResponseEngine {
@@ -613,7 +663,7 @@ impl IncidentResponseEngine {
 }
 ```
 
-#### 威胁狩猎流程
+#### 1.5.1.2 威胁狩猎流程
 
 ```rust
 pub struct ThreatHuntingEngine {
@@ -684,11 +734,11 @@ impl ThreatHuntingEngine {
 }
 ```
 
-## 组件建模
+## 1.6 组件建模
 
-### 核心安全组件
+### 1.6.1 核心安全组件
 
-#### 入侵检测系统
+#### 1.6.1.1 入侵检测系统
 
 ```rust
 use tokio::net::TcpListener;
@@ -777,7 +827,7 @@ impl AnomalyDetector {
 }
 ```
 
-#### 漏洞扫描器
+#### 1.6.1.2 漏洞扫描器
 
 ```rust
 pub struct VulnerabilityScanner {
@@ -867,11 +917,11 @@ impl ScanEngine {
 }
 ```
 
-## 运维运营
+## 1.7 运维运营
 
-### 安全监控
+### 1.7.1 安全监控
 
-#### 安全指标监控
+#### 1.7.1.1 安全指标监控
 
 ```rust
 use prometheus::{Counter, Histogram, Gauge};
@@ -955,7 +1005,7 @@ impl SecurityMetrics {
 }
 ```
 
-#### 安全日志聚合
+#### 1.7.1.2 安全日志聚合
 
 ```rust
 use elasticsearch::{Elasticsearch, IndexParts};
@@ -1026,9 +1076,9 @@ impl SecurityLogAggregator {
 }
 ```
 
-### 安全配置管理
+### 1.7.2 安全配置管理
 
-#### 配置验证器
+#### 1.7.2.1 配置验证器
 
 ```rust
 pub struct SecurityConfigValidator {
@@ -1094,7 +1144,7 @@ pub struct PasswordPolicy {
 }
 ```
 
-## 总结
+## 1.8 总结
 
 网络安全领域的Rust应用需要重点关注：
 

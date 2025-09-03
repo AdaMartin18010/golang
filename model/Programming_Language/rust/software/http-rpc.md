@@ -1,13 +1,40 @@
-# HTTP/RPC API 自动生成
+# 1 1 1 1 1 1 1 HTTP/RPC API 自动生成
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 HTTP/RPC API 自动生成](#1-1-1-1-1-1-1-httprpc-api-自动生成)
+  - [1.1 1. 基于 OpenAPI/Swagger 的 REST API 自动生成](#1-基于-openapiswagger-的-rest-api-自动生成)
+    - [1.1.1 Paperclip](#paperclip)
+    - [1.1.2 utoipa](#utoipa)
+  - [1.2 2. gRPC API 自动生成](#2-grpc-api-自动生成)
+    - [1.2.1 Tonic](#tonic)
+    - [1.2.2 grpcio](#grpcio)
+  - [1.3 3. GraphQL API 自动生成](#3-graphql-api-自动生成)
+    - [1.3.1 async-graphql](#async-graphql)
+  - [1.4 4. 思维导图](#4-思维导图)
+  - [1.5 小结](#小结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下面介绍在 Rust 开源生态系统中，能够根据 API 规范自动生成代码的几种著名实现，
 它们主要分布在 REST API、gRPC 和 GraphQL 等领域，下面逐一说明。
 
 ---
 
-## 1. 基于 OpenAPI/Swagger 的 REST API 自动生成
+## 1.1 1. 基于 OpenAPI/Swagger 的 REST API 自动生成
 
-### 1.1 Paperclip
+### 1.1.1 Paperclip
 
 - **定义与解释**：  
   [Paperclip](https://github.com/wafflespeanut/paperclip) 是一个与
@@ -44,7 +71,7 @@
   
   运行后，就可以在 `http://127.0.0.1:8080/api/spec` 地址访问自动生成的 OpenAPI JSON 文档。
 
-### 1.2 utoipa
+### 1.1.2 utoipa
 
 - **定义与解释**：  
   [utoipa](https://github.com/johnthagen/utoipa) 是一个较新的轻量级库，通过 Rust 类型（结构体、枚举等）的派生宏（derive macros）自动生成 OpenAPI 文档。它的优点是使用方式简单、无需大量手写注解，适合希望快速生成 API 文档的项目。
@@ -67,9 +94,9 @@
 
 ---
 
-## 2. gRPC API 自动生成
+## 1.2 2. gRPC API 自动生成
 
-### 2.1 Tonic
+### 1.2.1 Tonic
 
 - **定义与解释**：  
   [Tonic](https://github.com/hyperium/tonic) 是目前 Rust 生态中非常受欢迎的 gRPC 实现。它基于 [Prost](https://github.com/danburkert/prost) 来编译 Protocol Buffers 文件（.proto），并通过 [tonic-build](https://docs.rs/tonic-build) 自动生成客户端和服务端代码。
@@ -86,16 +113,16 @@
 
   在定义好 `.proto` 文件后，编译时会自动生成 Rust 模块，然后在服务端和客户端代码中直接使用这些生成的代码实现业务逻辑和调用服务。
 
-### 2.2 grpcio
+### 1.2.2 grpcio
 
 - **定义与解释**：  
   [grpcio](https://github.com/pingcap/grpc-rs) 是另一种 gRPC 实现，提供了 C++ gRPC 的 Rust 封装，同样支持通过 `protoc` 插件自动生成代码。不过，由于 gRPC 生态的更新迭代，目前 Tonic 越来越受欢迎，因为其纯 Rust 实现更易于使用和维护。
 
 ---
 
-## 3. GraphQL API 自动生成
+## 1.3 3. GraphQL API 自动生成
 
-### 3.1 async-graphql
+### 1.3.1 async-graphql
 
 - **定义与解释**：  
   [async-graphql](https://github.com/async-graphql/async-graphql) 是目前 Rust 中功能较全面的 GraphQL 框架，它利用大量的 Rust 宏来生成 GraphQL Schema，减少了手写 Schema 描述的工作量，从而将 Rust 数据结构自动映射为 GraphQL 类型。
@@ -136,7 +163,7 @@
 
 ---
 
-## 4. 思维导图
+## 1.4 4. 思维导图
 
 下面使用 Mermaid 语法绘制一幅思维导图，总结上述 API 自动生成工具及其相关关系：
 
@@ -166,7 +193,7 @@ graph TD
 
 ---
 
-## 小结
+## 1.5 小结
 
 - **REST API 自动生成**：  
   - 通过 [Paperclip](https://github.com/wafflespeanut/paperclip) 可实现与 Actix-web 集成的自动 OpenAPI 生成；  

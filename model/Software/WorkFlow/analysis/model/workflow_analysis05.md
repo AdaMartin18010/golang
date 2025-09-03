@@ -1,8 +1,51 @@
-# Temporal 工作流引擎形式化分析
+# 1 1 1 1 1 1 1 Temporal 工作流引擎形式化分析
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Temporal 工作流引擎形式化分析](#1-1-1-1-1-1-1-temporal-工作流引擎形式化分析)
+  - [1.1 目录](#目录)
+  - [1.2 1. 核心概念映射](#1-核心概念映射)
+    - [1.2.1 基础概念对应关系](#基础概念对应关系)
+    - [1.2.2 三流模型映射](#三流模型映射)
+  - [1.3 2. 模型层次结构](#2-模型层次结构)
+    - [1.3.1 控制流模型 \(C\)](#控制流模型-c)
+      - [1.3.1.1 Temporal 实现特性](#temporal-实现特性)
+    - [1.3.2 执行流模型 \(E\)](#执行流模型-e)
+      - [1.3.2.1 Temporal 实现特性](#temporal-实现特性)
+    - [1.3.3 数据流模型 \(D\)](#数据流模型-d)
+  - [1.4 3. 时序特性分析](#3-时序特性分析)
+    - [1.4.1 工作流时序性质](#工作流时序性质)
+      - [1.4.1.1 Temporal 保证](#temporal-保证)
+    - [1.4.2 事件历史模型](#事件历史模型)
+  - [1.5 4. 状态转换模型](#4-状态转换模型)
+    - [1.5.1 工作流状态机](#工作流状态机)
+      - [1.5.1.1 Temporal 实现](#temporal-实现)
+    - [1.5.2 活动状态转换](#活动状态转换)
+  - [1.6 5. 一致性保证机制](#5-一致性保证机制)
+    - [1.6.1 事件一致性](#事件一致性)
+    - [1.6.2 状态一致性](#状态一致性)
+  - [1.7 6. 关键特性形式化](#6-关键特性形式化)
+    - [1.7.1 持久性执行历史](#持久性执行历史)
+    - [1.7.2 确定性重放](#确定性重放)
+    - [1.7.3 错误处理模型](#错误处理模型)
+  - [1.8 结论](#结论)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 让我基于之前的形式化模型框架，分析 Temporal 工作流引擎的设计模型。
 
-## 目录
+## 1.1 目录
 
 - [Temporal 工作流引擎形式化分析](#temporal-工作流引擎形式化分析)
   - [目录](#目录)
@@ -32,9 +75,9 @@
     - [6.3 错误处理模型](#63-错误处理模型)
   - [结论](#结论)
 
-## 1. 核心概念映射
+## 1.2 1. 核心概念映射
 
-### 1.1 基础概念对应关系
+### 1.2.1 基础概念对应关系
 
 \[ \text{Temporal Model} \rightarrow \mathcal{W} = (S, \Sigma, \rightarrow, L, AP) \]
 
@@ -46,7 +89,7 @@
 | Task Queue | \(Q \subseteq S\) | 状态子空间 |
 | Workflow State | \(s \in S\) | 状态点 |
 
-### 1.2 三流模型映射
+### 1.2.2 三流模型映射
 
 ```text
 Temporal 架构
@@ -64,9 +107,9 @@ Temporal 架构
     └── Event History
 ```
 
-## 2. 模型层次结构
+## 1.3 2. 模型层次结构
 
-### 2.1 控制流模型 \(C\)
+### 1.3.1 控制流模型 \(C\)
 
 \[ C = (WF, SM, DL) \]
 
@@ -76,7 +119,7 @@ Temporal 架构
 - \(SM\): State Machine
 - \(DL\): Decision Logic
 
-#### 2.1.1 Temporal 实现特性
+#### 1.3.1.1 Temporal 实现特性
 
 ```text
 控制流实现
@@ -91,7 +134,7 @@ Temporal 架构
     └── Repeatable
 ```
 
-### 2.2 执行流模型 \(E\)
+### 1.3.2 执行流模型 \(E\)
 
 \[ E = (W, A, S) \]
 
@@ -101,7 +144,7 @@ Temporal 架构
 - \(A\): Activity Execution
 - \(S\): Scheduling Logic
 
-#### 2.2.1 Temporal 实现特性
+#### 1.3.2.1 Temporal 实现特性
 
 ```text
 执行流实现
@@ -116,7 +159,7 @@ Temporal 架构
     └── Load Balancing
 ```
 
-### 2.3 数据流模型 \(D\)
+### 1.3.3 数据流模型 \(D\)
 
 \[ D = (P, H, E) \]
 
@@ -126,13 +169,13 @@ Temporal 架构
 - \(H\): History Events
 - \(E\): Event Chain
 
-## 3. 时序特性分析
+## 1.4 3. 时序特性分析
 
-### 3.1 工作流时序性质
+### 1.4.1 工作流时序性质
 
 \[ \phi_{temporal} = \square(\text{Deterministic} \land \text{Reliable} \land \text{Durable}) \]
 
-#### Temporal 保证
+#### 1.4.1.1 Temporal 保证
 
 1. **确定性执行**：
    \[ \forall e_1, e_2 \in E: \text{Input}(e_1) = \text{Input}(e_2) \Rightarrow \text{Output}(e_1) = \text{Output}(e_2) \]
@@ -143,7 +186,7 @@ Temporal 架构
 3. **持久性保证**：
    \[ \square(\text{State}(t) \rightarrow \text{History}(t)) \]
 
-### 3.2 事件历史模型
+### 1.4.2 事件历史模型
 
 ```text
 Event History
@@ -159,13 +202,13 @@ Event History
     └── Deterministic Replay
 ```
 
-## 4. 状态转换模型
+## 1.5 4. 状态转换模型
 
-### 4.1 工作流状态机
+### 1.5.1 工作流状态机
 
 \[ SM = (States, Events, Transitions) \]
 
-#### Temporal 实现
+#### 1.5.1.1 Temporal 实现
 
 ```text
 State Machine
@@ -182,17 +225,17 @@ State Machine
     └── History Based
 ```
 
-### 4.2 活动状态转换
+### 1.5.2 活动状态转换
 
 \[ A_{state} = \{Scheduled, Started, Completed, Failed, Retrying\} \]
 
-## 5. 一致性保证机制
+## 1.6 5. 一致性保证机制
 
-### 5.1 事件一致性
+### 1.6.1 事件一致性
 
 \[ \forall e \in Events: \text{Consistent}(e) \Leftrightarrow \text{Ordered}(e) \land \text{Persisted}(e) \]
 
-### 5.2 状态一致性
+### 1.6.2 状态一致性
 
 ```text
 Consistency Guarantees
@@ -207,17 +250,17 @@ Consistency Guarantees
     └── History
 ```
 
-## 6. 关键特性形式化
+## 1.7 6. 关键特性形式化
 
-### 6.1 持久性执行历史
+### 1.7.1 持久性执行历史
 
 \[ H = \{e_1, e_2, ..., e_n\} \text{ where } e_i \prec e_{i+1} \]
 
-### 6.2 确定性重放
+### 1.7.2 确定性重放
 
 \[ \forall h \in H: \text{Replay}(h) \rightarrow \text{State}(h) \]
 
-### 6.3 错误处理模型
+### 1.7.3 错误处理模型
 
 ```text
 Error Handling
@@ -232,7 +275,7 @@ Error Handling
     └── Workflow Level
 ```
 
-## 结论
+## 1.8 结论
 
 通过这个形式化分析，我们可以看到 Temporal 工作流引擎的几个关键特性：
 

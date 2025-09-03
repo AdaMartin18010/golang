@@ -1,8 +1,51 @@
-# DevOps运维分析（DevOps Operations Analysis）
+# 9.1 DevOps运维分析（DevOps Operations Analysis）
+
+<!-- TOC START -->
+- [9.1 DevOps运维分析（DevOps Operations Analysis）](#devops运维分析（devops-operations-analysis）)
+  - [9.1.1 目录](#目录)
+  - [9.1.2 1. DevOps基础理论](#1-devops基础理论)
+    - [9.1.2.1 定义](#定义)
+    - [9.1.2.2 核心原则](#核心原则)
+    - [9.1.2.3 价值流](#价值流)
+  - [9.1.3 2. 持续集成/持续部署（CI/CD）](#2-持续集成持续部署（cicd）)
+    - [9.1.3.1 CI/CD流水线](#cicd流水线)
+    - [9.1.3.2 GitHub Actions配置](#github-actions配置)
+- [9.2 .github/workflows/ci-cd.yml](#githubworkflowsci-cdyml)
+    - [9.2 Golang CI/CD实践](#golang-cicd实践)
+  - [9.2.1 3. 自动化运维与监控](#3-自动化运维与监控)
+    - [9.2.1.1 基础设施即代码（IaC）](#基础设施即代码（iac）)
+- [9.3 Terraform配置示例](#terraform配置示例)
+    - [9.3 监控和可观测性](#监控和可观测性)
+    - [9.3 Prometheus监控配置](#prometheus监控配置)
+- [9.4 prometheus.yml](#prometheusyml)
+    - [9.4 Golang监控实现](#golang监控实现)
+  - [9.4.1 4. Golang DevOps实践](#4-golang-devops实践)
+    - [9.4.1.1 配置管理](#配置管理)
+    - [9.4.1.2 健康检查和就绪检查](#健康检查和就绪检查)
+    - [9.4.1.3 日志管理](#日志管理)
+  - [9.4.2 5. 多表征内容](#5-多表征内容)
+    - [9.4.2.1 DevOps流水线图](#devops流水线图)
+    - [9.4.2.2 性能模型](#性能模型)
+    - [9.4.2.3 自动化程度评估](#自动化程度评估)
+  - [9.4.3 6. 交叉引用与目录导航](#6-交叉引用与目录导航)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---
 
-## 目录
+## 9.1.1 目录
 
 1. DevOps基础理论
 2. 持续集成/持续部署（CI/CD）
@@ -13,28 +56,28 @@
 
 ---
 
-## 1. DevOps基础理论
+## 9.1.2 1. DevOps基础理论
 
-### 1.1 定义
+### 9.1.2.1 定义
 
 > DevOps是一种将开发（Development）、运维（Operations）和质量保证（QA）整合在一起的文化、实践和工具集合。
 
-### 1.2 核心原则
+### 9.1.2.2 核心原则
 
 - **协作**: 开发与运维团队紧密协作
 - **自动化**: 自动化构建、测试、部署流程
 - **持续改进**: 持续监控、反馈和改进
 - **快速交付**: 快速、频繁、可靠的软件交付
 
-### 1.3 价值流
+### 9.1.2.3 价值流
 
 - 需求管理 → 开发 → 测试 → 部署 → 监控 → 反馈
 
 ---
 
-## 2. 持续集成/持续部署（CI/CD）
+## 9.1.3 2. 持续集成/持续部署（CI/CD）
 
-### 2.1 CI/CD流水线
+### 9.1.3.1 CI/CD流水线
 
 ```latex
 \textbf{定义 2.1} (CI/CD流水线): CI/CD流水线是一个自动化的软件交付流程，包括代码提交、构建、测试、部署等阶段。
@@ -49,10 +92,10 @@
 \end{itemize}
 ```
 
-### 2.2 GitHub Actions配置
+### 9.1.3.2 GitHub Actions配置
 
 ```yaml
-# .github/workflows/ci-cd.yml
+# 9.2 .github/workflows/ci-cd.yml
 name: CI/CD Pipeline
 
 on:
@@ -91,7 +134,7 @@ jobs:
       run: docker push myapp:${{ github.sha }}
 ```
 
-### 2.3 Golang CI/CD实践
+### 9.2 Golang CI/CD实践
 
 ```go
 // 构建脚本示例
@@ -143,12 +186,12 @@ func runSecurityScan() error {
 
 ---
 
-## 3. 自动化运维与监控
+## 9.2.1 3. 自动化运维与监控
 
-### 3.1 基础设施即代码（IaC）
+### 9.2.1.1 基础设施即代码（IaC）
 
 ```hcl
-# Terraform配置示例
+# 9.3 Terraform配置示例
 terraform {
   required_providers {
     aws = {
@@ -176,7 +219,7 @@ resource "aws_ecs_service" "app" {
 }
 ```
 
-### 3.2 监控和可观测性
+### 9.3 监控和可观测性
 
 ```latex
 \textbf{定义 3.1} (可观测性): 可观测性是系统内部状态的可推断性，通过外部输出来理解系统内部状态的能力。
@@ -189,10 +232,10 @@ resource "aws_ecs_service" "app" {
 \end{itemize}
 ```
 
-### 3.3 Prometheus监控配置
+### 9.3 Prometheus监控配置
 
 ```yaml
-# prometheus.yml
+# 9.4 prometheus.yml
 global:
   scrape_interval: 15s
 
@@ -204,7 +247,7 @@ scrape_configs:
     scrape_interval: 5s
 ```
 
-### 3.4 Golang监控实现
+### 9.4 Golang监控实现
 
 ```go
 // 监控指标定义
@@ -256,9 +299,9 @@ func metricsMiddleware(next http.Handler) http.Handler {
 
 ---
 
-## 4. Golang DevOps实践
+## 9.4.1 4. Golang DevOps实践
 
-### 4.1 配置管理
+### 9.4.1.1 配置管理
 
 ```go
 // 环境配置管理
@@ -287,7 +330,7 @@ func loadConfig() (*Config, error) {
 }
 ```
 
-### 4.2 健康检查和就绪检查
+### 9.4.1.2 健康检查和就绪检查
 
 ```go
 // 健康检查处理器
@@ -336,7 +379,7 @@ func checkDiskSpace() bool {
 }
 ```
 
-### 4.3 日志管理
+### 9.4.1.3 日志管理
 
 ```go
 // 结构化日志配置
@@ -385,9 +428,9 @@ func main() {
 
 ---
 
-## 5. 多表征内容
+## 9.4.2 5. 多表征内容
 
-### 5.1 DevOps流水线图
+### 9.4.2.1 DevOps流水线图
 
 ```mermaid
 graph LR;
@@ -401,7 +444,7 @@ graph LR;
     H --> A;
 ```
 
-### 5.2 性能模型
+### 9.4.2.2 性能模型
 
 ```latex
 \textbf{定理 5.1} (部署频率): 
@@ -417,7 +460,7 @@ DeploymentFrequency = \frac{1}{MTTR + BuildTime + TestTime + DeployTime}
 \end{itemize}
 ```
 
-### 5.3 自动化程度评估
+### 9.4.2.3 自动化程度评估
 
 ```latex
 \textbf{定义 5.2} (自动化程度): 
@@ -429,7 +472,7 @@ AutomationLevel = \frac{AutomatedSteps}{TotalSteps} \times 100\%
 
 ---
 
-## 6. 交叉引用与目录导航
+## 9.4.3 6. 交叉引用与目录导航
 
 - [架构分析](../01-Architecture-Design/README.md)
 - [云原生分析](../08-Cloud-Native/README.md)

@@ -1,6 +1,39 @@
-# Go 1.25 云原生架构深度分析
+# 1 1 1 1 1 1 1 Go 1.25 云原生架构深度分析
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Go 1.25 云原生架构深度分析](#1-1-1-1-1-1-1-go-125-云原生架构深度分析)
+  - [1.1 目录](#目录)
+  - [1.2 Kubernetes生态系统](#kubernetes生态系统)
+    - [1.2.1 Kubernetes Operator模式](#kubernetes-operator模式)
+      - [1.2.1.1 自定义资源定义](#自定义资源定义)
+      - [1.2.1.2 Operator控制器](#operator控制器)
+    - [1.2.2 Kubernetes客户端库](#kubernetes客户端库)
+      - [1.2.2.1 动态客户端](#动态客户端)
+      - [1.2.2.2 资源监控](#资源监控)
+  - [1.3 Service Mesh实现](#service-mesh实现)
+    - [1.3.1 Istio集成](#istio集成)
+      - [1.3.1.1 服务网格客户端](#服务网格客户端)
+      - [1.3.1.2 流量管理](#流量管理)
+    - [1.3.2 服务发现与负载均衡](#服务发现与负载均衡)
+      - [1.3.2.1 服务注册中心](#服务注册中心)
+      - [1.3.2.2 负载均衡器](#负载均衡器)
+  - [1.4 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [Go 1.25 云原生架构深度分析](#go-125-云原生架构深度分析)
   - [目录](#目录)
@@ -20,11 +53,11 @@
       - [2.2.2 负载均衡器](#222-负载均衡器)
   - [总结](#总结)
 
-## Kubernetes生态系统
+## 1.2 Kubernetes生态系统
 
-### 1.1 Kubernetes Operator模式
+### 1.2.1 Kubernetes Operator模式
 
-#### 1.1.1 自定义资源定义
+#### 1.2.1.1 自定义资源定义
 
 ```go
 // 自定义资源定义
@@ -107,7 +140,7 @@ type ApplicationList struct {
 }
 ```
 
-#### 1.1.2 Operator控制器
+#### 1.2.1.2 Operator控制器
 
 ```go
 // Application Controller
@@ -291,9 +324,9 @@ func (r *ApplicationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 ```
 
-### 1.2 Kubernetes客户端库
+### 1.2.2 Kubernetes客户端库
 
-#### 1.2.1 动态客户端
+#### 1.2.2.1 动态客户端
 
 ```go
 // 动态客户端实现
@@ -340,7 +373,7 @@ func (dkc *DynamicK8sClient) ListResources(gvr schema.GroupVersionResource, name
 }
 ```
 
-#### 1.2.2 资源监控
+#### 1.2.2.2 资源监控
 
 ```go
 // 资源监控器
@@ -408,11 +441,11 @@ func (rw *ResourceWatcher) handleEvent(event watch.Event) {
 }
 ```
 
-## Service Mesh实现
+## 1.3 Service Mesh实现
 
-### 2.1 Istio集成
+### 1.3.1 Istio集成
 
-#### 2.1.1 服务网格客户端
+#### 1.3.1.1 服务网格客户端
 
 ```go
 // Istio服务网格客户端
@@ -488,7 +521,7 @@ func (ic *IstioClient) CreateDestinationRule(name, host string, subsets []string
 }
 ```
 
-#### 2.1.2 流量管理
+#### 1.3.1.2 流量管理
 
 ```go
 // 流量管理器
@@ -563,9 +596,9 @@ func (tm *TrafficManager) CreateCircuitBreaker(serviceName string, maxConnection
 }
 ```
 
-### 2.2 服务发现与负载均衡
+### 1.3.2 服务发现与负载均衡
 
-#### 2.2.1 服务注册中心
+#### 1.3.2.1 服务注册中心
 
 ```go
 // 服务注册中心
@@ -673,7 +706,7 @@ func (sr *ServiceRegistry) notifyWatchers(service *ServiceInfo, event string) {
 }
 ```
 
-#### 2.2.2 负载均衡器
+#### 1.3.2.2 负载均衡器
 
 ```go
 // 负载均衡器
@@ -771,7 +804,7 @@ func (lb *LoadBalancer) SelectService(serviceName string) (*ServiceInfo, error) 
 }
 ```
 
-## 总结
+## 1.4 总结
 
 本文档深入分析了Go 1.25在云原生架构中的应用，包括：
 

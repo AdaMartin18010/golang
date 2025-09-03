@@ -1,6 +1,58 @@
-# DevOps与运维架构（DevOps & Operations Architecture）
+# 1 1 1 1 1 1 1 DevOps与运维架构（DevOps & Operations Architecture）
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 DevOps与运维架构（DevOps & Operations Architecture）](#1-1-1-1-1-1-1-devops与运维架构（devops-&-operations-architecture）)
+  - [1.1 目录](#目录)
+  - [1.2 1. 国际标准与发展历程](#1-国际标准与发展历程)
+    - [1.2.1 主流标准与组织](#主流标准与组织)
+    - [1.2.2 发展历程](#发展历程)
+    - [1.2.3 国际权威链接](#国际权威链接)
+  - [1.3 2. 典型应用场景与需求分析](#2-典型应用场景与需求分析)
+  - [1.4 3. 领域建模与UML类图](#3-领域建模与uml类图)
+  - [1.5 4. 架构模式与设计原则](#4-架构模式与设计原则)
+  - [1.6 5. CI/CD流水线架构](#5-cicd流水线架构)
+    - [1.6.1 流水线引擎设计](#流水线引擎设计)
+    - [1.6.2 多环境部署策略](#多环境部署策略)
+  - [1.7 6. 基础设施即代码（IaC）](#6-基础设施即代码（iac）)
+    - [1.7.1 资源定义与编排](#资源定义与编排)
+    - [1.7.2 多云资源管理](#多云资源管理)
+  - [1.8 7. 可观测性与监控 (Observability & Monitoring)](#7-可观测性与监控-observability-&-monitoring)
+    - [1.8.1 三大支柱 (Three Pillars)](#三大支柱-three-pillars)
+    - [1.8.2 Golang应用可观测性技术栈](#golang应用可观测性技术栈)
+  - [1.9 8. 混沌工程 (Chaos Engineering)](#8-混沌工程-chaos-engineering)
+    - [1.9.1 核心原则](#核心原则)
+    - [1.9.2 混沌实验示例 (Chaos Mesh)](#混沌实验示例-chaos-mesh)
+- [2 2 2 2 2 2 2 pod-kill-chaos.yaml](#2-2-2-2-2-2-2-pod-kill-chaosyaml)
+  - [2.1 9. 自动化运维与自愈](#9-自动化运维与自愈)
+    - [2.1.1 自愈系统架构](#自愈系统架构)
+    - [2.1.2 配置管理与自动化](#配置管理与自动化)
+  - [2.2 10. 安全合规与治理](#10-安全合规与治理)
+    - [2.2.1 安全扫描与合规检查](#安全扫描与合规检查)
+    - [2.2.2 访问控制与审计](#访问控制与审计)
+  - [2.3 11. 性能优化与资源管理](#11-性能优化与资源管理)
+    - [2.3.1 资源优化器](#资源优化器)
+    - [2.3.2 容量规划](#容量规划)
+  - [2.4 12. 实际案例分析](#12-实际案例分析)
+    - [2.4.1 大规模微服务运维](#大规模微服务运维)
+    - [2.4.2 云原生DevOps实践](#云原生devops实践)
+  - [2.5 13. 相关架构主题](#13-相关架构主题)
+  - [2.6 14. 扩展阅读与参考文献](#14-扩展阅读与参考文献)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 1. 国际标准与发展历程
 2. 典型应用场景与需求分析
@@ -19,9 +71,9 @@
 
 ---
 
-## 1. 国际标准与发展历程
+## 1.2 1. 国际标准与发展历程
 
-### 1.1 主流标准与组织
+### 1.2.1 主流标准与组织
 
 - **DevOps Research and Assessment (DORA)**
 - **The Phoenix Project / The DevOps Handbook**
@@ -30,14 +82,14 @@
 - **GitOps（CNCF）**
 - **Infrastructure as Code（IaC）**
 
-### 1.2 发展历程
+### 1.2.2 发展历程
 
 - **2009**：DevOps概念提出，强调开发与运维协作
 - **2013**：SRE理念普及，自动化与可靠性工程兴起
 - **2017**：GitOps、云原生CI/CD、IaC成为主流
 - **2020**：AIOps、自动化自愈、全链路可观测性
 
-### 1.3 国际权威链接
+### 1.2.3 国际权威链接
 
 - [DORA](https://dora.dev/)
 - [Google SRE](https://sre.google/)
@@ -47,7 +99,7 @@
 
 ---
 
-## 2. 典型应用场景与需求分析
+## 1.3 2. 典型应用场景与需求分析
 
 - **多云/混合云环境下的自动化部署与管理**
 - **微服务与容器化应用的持续交付**
@@ -57,7 +109,7 @@
 
 ---
 
-## 3. 领域建模与UML类图
+## 1.4 3. 领域建模与UML类图
 
 ```mermaid
 classDiagram
@@ -90,7 +142,7 @@ classDiagram
 
 ---
 
-## 4. 架构模式与设计原则
+## 1.5 4. 架构模式与设计原则
 
 - **流水线即代码（Pipeline as Code）**
 - **声明式基础设施（Declarative IaC）**
@@ -101,9 +153,9 @@ classDiagram
 
 ---
 
-## 5. CI/CD流水线架构
+## 1.6 5. CI/CD流水线架构
 
-### 5.1 流水线引擎设计
+### 1.6.1 流水线引擎设计
 
 ```go
 type PipelineEngine struct {
@@ -206,7 +258,7 @@ func (pe *PipelineEngine) ExecuteStage(ctx context.Context, execution *PipelineE
 }
 ```
 
-### 5.2 多环境部署策略
+### 1.6.2 多环境部署策略
 
 ```go
 type DeploymentStrategy interface {
@@ -289,9 +341,9 @@ func (cd *CanaryDeployment) Deploy(ctx context.Context, app *Application, target
 }
 ```
 
-## 6. 基础设施即代码（IaC）
+## 1.7 6. 基础设施即代码（IaC）
 
-### 6.1 资源定义与编排
+### 1.7.1 资源定义与编排
 
 ```go
 type InfrastructureManager struct {
@@ -388,7 +440,7 @@ func (im *InfrastructureManager) Apply(ctx context.Context, plan *Infrastructure
 }
 ```
 
-### 6.2 多云资源管理
+### 1.7.2 多云资源管理
 
 ```go
 type MultiCloudManager struct {
@@ -450,15 +502,15 @@ func (p *GCPProvider) CreateResource(ctx context.Context, resource *ResourceDefi
 }
 ```
 
-## 7. 可观测性与监控 (Observability & Monitoring)
+## 1.8 7. 可观测性与监控 (Observability & Monitoring)
 
-### 7.1 三大支柱 (Three Pillars)
+### 1.8.1 三大支柱 (Three Pillars)
 
 - **日志 (Logs)**: 记录离散的、带有时间戳的事件。用于问题排查和事后审计。
 - **指标 (Metrics)**: 可聚合的、带有属性的数值型数据。用于趋势分析、性能监控和告警。
 - **追踪 (Traces)**: 记录单个请求在分布式系统中所经过的完整路径。用于理解系统延迟、定位瓶颈。
 
-### 7.2 Golang应用可观测性技术栈
+### 1.8.2 Golang应用可观测性技术栈
 
 ```mermaid
 graph TD
@@ -488,22 +540,22 @@ graph TD
 2. **指标 (Metrics)**: 在Go应用中引入`prometheus/client_golang`库，通过HTTP暴露`/metrics`端点。Prometheus Server定期抓取这些指标，并使用Grafana进行可视化，使用Alertmanager进行告警。
 3. **追踪 (Tracing)**: 使用`OpenTelemetry`的Go SDK。在请求入口处创建父Span，并通过`context`在函数调用链中传递，在关键节点创建子Span。将追踪数据导出到`Jaeger`或`Tempo`进行分析。
 
-## 8. 混沌工程 (Chaos Engineering)
+## 1.9 8. 混沌工程 (Chaos Engineering)
 
-### 8.1 核心原则
+### 1.9.1 核心原则
 
 - 建立一个关于稳定状态行为的假说。
 - 在实验组和控制组中改变真实世界的事件，如服务器崩溃、网络延迟等。
 - 尝试反驳该假说。
 
-### 8.2 混沌实验示例 (Chaos Mesh)
+### 1.9.2 混沌实验示例 (Chaos Mesh)
 
 Chaos Mesh是一个云原生的混沌工程平台，可以在Kubernetes环境中方便地注入各种故障。
 
 **Pod Kill实验**: 模拟随机杀死一个Pod的场景，以验证应用的自愈能力（如Deployment是否能自动拉起新Pod）。
 
 ```yaml
-# pod-kill-chaos.yaml
+# 2 2 2 2 2 2 2 pod-kill-chaos.yaml
 apiVersion: chaos-mesh.org/v1alpha1
 kind: PodChaos
 metadata:
@@ -526,9 +578,9 @@ spec:
 
 通过`kubectl apply -f pod-kill-chaos.yaml`应用后，Chaos Mesh会每分钟随机杀死一个带有`app: my-golang-app`标签的Pod，持续10分钟。运维团队可以借此观察应用的响应时间、错误率以及恢复速度。
 
-## 9. 自动化运维与自愈
+## 2.1 9. 自动化运维与自愈
 
-### 9.1 自愈系统架构
+### 2.1.1 自愈系统架构
 
 ```go
 type SelfHealingSystem struct {
@@ -630,7 +682,7 @@ func (shs *SelfHealingSystem) executeHealingPolicy(ctx context.Context, policy *
 }
 ```
 
-### 9.2 配置管理与自动化
+### 2.1.2 配置管理与自动化
 
 ```go
 type ConfigurationManager struct {
@@ -701,9 +753,9 @@ func (cm *ConfigurationManager) RollbackConfig(ctx context.Context, configID str
 }
 ```
 
-## 10. 安全合规与治理
+## 2.2 10. 安全合规与治理
 
-### 10.1 安全扫描与合规检查
+### 2.2.1 安全扫描与合规检查
 
 ```go
 type SecurityComplianceManager struct {
@@ -794,7 +846,7 @@ func (scm *SecurityComplianceManager) CheckCompliance(ctx context.Context, frame
 }
 ```
 
-### 10.2 访问控制与审计
+### 2.2.2 访问控制与审计
 
 ```go
 type AccessControlManager struct {
@@ -857,9 +909,9 @@ func (acm *AccessControlManager) CheckAccess(ctx context.Context, req *AccessReq
 }
 ```
 
-## 11. 性能优化与资源管理
+## 2.3 11. 性能优化与资源管理
 
-### 11.1 资源优化器
+### 2.3.1 资源优化器
 
 ```go
 type ResourceOptimizer struct {
@@ -917,7 +969,7 @@ func (ro *ResourceOptimizer) AnalyzeAndOptimize(ctx context.Context) error {
 }
 ```
 
-### 11.2 容量规划
+### 2.3.2 容量规划
 
 ```go
 type CapacityPlanner struct {
@@ -968,9 +1020,9 @@ func (cp *CapacityPlanner) ForecastCapacity(ctx context.Context, resource string
 }
 ```
 
-## 12. 实际案例分析
+## 2.4 12. 实际案例分析
 
-### 12.1 大规模微服务运维
+### 2.4.1 大规模微服务运维
 
 **场景**: 电商平台的微服务运维自动化
 
@@ -1039,7 +1091,7 @@ func (sm *ServiceManager) scaleUp(ctx context.Context, service *Service, targetR
 }
 ```
 
-### 12.2 云原生DevOps实践
+### 2.4.2 云原生DevOps实践
 
 **场景**: 基于Kubernetes的云原生应用运维
 
@@ -1091,14 +1143,14 @@ func (gw *GitOpsWorkflow) SyncInfrastructure(ctx context.Context) error {
 }
 ```
 
-## 13. 相关架构主题
+## 2.5 13. 相关架构主题
 
 - [**容器化与编排架构 (Containerization & Orchestration Architecture)**](./architecture_containerization_orchestration_golang.md): DevOps实践的基石，CI/CD的目标平台。
 - [**安全架构 (Security Architecture)**](./architecture_security_golang.md): "DevSecOps"将安全实践无缝集成到DevOps流水线中。
 - [**服务网格架构 (Service Mesh Architecture)**](./architecture_service_mesh_golang.md): 提供了渐进式交付（如金丝雀发布）和高级可观测性的能力。
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): DevOps是有效管理和部署大量微服务的关键。
 
-## 14. 扩展阅读与参考文献
+## 2.6 14. 扩展阅读与参考文献
 
 1. "The Phoenix Project" - Gene Kim, Kevin Behr, George Spafford
 2. "The DevOps Handbook" - Gene Kim, Jez Humble, Patrick Debois

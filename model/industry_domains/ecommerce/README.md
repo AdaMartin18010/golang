@@ -1,37 +1,85 @@
-# 电子商务 - Rust架构指南
+# 1 1 1 1 1 1 1 电子商务 - Rust架构指南
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 电子商务 - Rust架构指南](#1-1-1-1-1-1-1-电子商务-rust架构指南)
+  - [1.1 概述](#概述)
+  - [1.2 Rust架构选型](#rust架构选型)
+    - [1.2.1 核心技术栈](#核心技术栈)
+      - [1.2.1.1 电商框架](#电商框架)
+      - [1.2.1.2 支付和金融](#支付和金融)
+      - [1.2.1.3 推荐和AI](#推荐和ai)
+    - [1.2.2 架构模式](#架构模式)
+      - [1.2.2.1 微服务电商架构](#微服务电商架构)
+      - [1.2.2.2 事件驱动电商架构](#事件驱动电商架构)
+  - [1.3 业务领域概念建模](#业务领域概念建模)
+    - [1.3.1 核心领域模型](#核心领域模型)
+      - [1.3.1.1 订单管理系统](#订单管理系统)
+      - [1.3.1.2 库存管理系统](#库存管理系统)
+      - [1.3.1.3 推荐系统](#推荐系统)
+  - [1.4 数据建模](#数据建模)
+    - [1.4.1 电商数据存储](#电商数据存储)
+      - [1.4.1.1 分布式缓存系统](#分布式缓存系统)
+      - [1.4.1.2 搜索引擎集成](#搜索引擎集成)
+  - [1.5 流程建模](#流程建模)
+    - [1.5.1 电商业务流程](#电商业务流程)
+      - [1.5.1.1 订单处理流程](#订单处理流程)
+      - [1.5.1.2 支付处理流程](#支付处理流程)
+  - [1.6 组件建模](#组件建模)
+    - [1.6.1 核心电商组件](#核心电商组件)
+      - [1.6.1.1 购物车系统](#购物车系统)
+      - [1.6.1.2 推荐引擎](#推荐引擎)
+  - [1.7 运维运营](#运维运营)
+    - [1.7.1 电商平台监控](#电商平台监控)
+      - [1.7.1.1 业务指标监控](#业务指标监控)
+      - [1.7.1.2 性能监控](#性能监控)
+  - [1.8 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 电子商务领域需要处理高并发交易、实时库存管理、个性化推荐、支付处理等复杂业务场景。Rust的高性能和内存安全特性使其成为构建电商平台的理想选择。本指南涵盖在线商城、支付系统、库存管理、推荐引擎等核心领域。
 
-## Rust架构选型
+## 1.2 Rust架构选型
 
-### 核心技术栈
+### 1.2.1 核心技术栈
 
-#### 电商框架
+#### 1.2.1.1 电商框架
 
 - **Web框架**: `actix-web`, `axum`, `rocket`, `warp`
 - **数据库**: `diesel`, `sqlx`, `seaorm`, `redis-rs`
 - **搜索引擎**: `elasticsearch-rs`, `meilisearch-rs`
 - **消息队列**: `kafka-rust`, `rabbitmq-rs`, `redis-streams`
 
-#### 支付和金融
+#### 1.2.1.2 支付和金融
 
 - **支付处理**: `stripe-rs`, `paypal-rs`, `alipay-rs`
 - **加密**: `ring`, `rustls`, `aes-gcm`
 - **合规**: `pci-dss-rs`, `gdpr-rs`
 - **风控**: `fraud-detection-rs`, `risk-assessment`
 
-#### 推荐和AI
+#### 1.2.1.3 推荐和AI
 
 - **推荐系统**: `collaborative-filtering`, `content-based-rs`
 - **机器学习**: `tch-rs`, `burn`, `candle`
 - **数据分析**: `polars`, `ndarray`, `statrs`
 - **实时处理**: `flink-rust`, `kafka-streams`
 
-### 架构模式
+### 1.2.2 架构模式
 
-#### 微服务电商架构
+#### 1.2.2.1 微服务电商架构
 
 ```rust
 use actix_web::{web, App, HttpServer, middleware};
@@ -140,7 +188,7 @@ pub struct Product {
 }
 ```
 
-#### 事件驱动电商架构
+#### 1.2.2.2 事件驱动电商架构
 
 ```rust
 use tokio::sync::broadcast;
@@ -218,11 +266,11 @@ impl EventDrivenECommerce {
 }
 ```
 
-## 业务领域概念建模
+## 1.3 业务领域概念建模
 
-### 核心领域模型
+### 1.3.1 核心领域模型
 
-#### 订单管理系统
+#### 1.3.1.1 订单管理系统
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -296,7 +344,7 @@ pub struct OrderTotals {
 }
 ```
 
-#### 库存管理系统
+#### 1.3.1.2 库存管理系统
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -357,7 +405,7 @@ pub struct WarehouseCapacity {
 }
 ```
 
-#### 推荐系统
+#### 1.3.1.3 推荐系统
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -428,11 +476,11 @@ pub enum BehaviorType {
 }
 ```
 
-## 数据建模
+## 1.4 数据建模
 
-### 电商数据存储
+### 1.4.1 电商数据存储
 
-#### 分布式缓存系统
+#### 1.4.1.1 分布式缓存系统
 
 ```rust
 use redis::AsyncCommands;
@@ -537,7 +585,7 @@ pub enum EvictionPolicy {
 }
 ```
 
-#### 搜索引擎集成
+#### 1.4.1.2 搜索引擎集成
 
 ```rust
 use elasticsearch::{Elasticsearch, SearchParts};
@@ -681,11 +729,11 @@ impl ProductSearchEngine {
 }
 ```
 
-## 流程建模
+## 1.5 流程建模
 
-### 电商业务流程
+### 1.5.1 电商业务流程
 
-#### 订单处理流程
+#### 1.5.1.1 订单处理流程
 
 ```rust
 pub struct OrderProcessingWorkflow {
@@ -750,7 +798,7 @@ impl OrderProcessingWorkflow {
 }
 ```
 
-#### 支付处理流程
+#### 1.5.1.2 支付处理流程
 
 ```rust
 pub struct PaymentProcessingWorkflow {
@@ -850,11 +898,11 @@ impl PaymentProcessingWorkflow {
 }
 ```
 
-## 组件建模
+## 1.6 组件建模
 
-### 核心电商组件
+### 1.6.1 核心电商组件
 
-#### 购物车系统
+#### 1.6.1.1 购物车系统
 
 ```rust
 use std::collections::HashMap;
@@ -985,7 +1033,7 @@ impl ShoppingCartSystem {
 }
 ```
 
-#### 推荐引擎
+#### 1.6.1.2 推荐引擎
 
 ```rust
 use std::collections::HashMap;
@@ -1082,11 +1130,11 @@ impl CollaborativeFilter {
 }
 ```
 
-## 运维运营
+## 1.7 运维运营
 
-### 电商平台监控
+### 1.7.1 电商平台监控
 
-#### 业务指标监控
+#### 1.7.1.1 业务指标监控
 
 ```rust
 use prometheus::{Counter, Histogram, Gauge};
@@ -1218,7 +1266,7 @@ impl ECommerceMetrics {
 }
 ```
 
-#### 性能监控
+#### 1.7.1.2 性能监控
 
 ```rust
 pub struct PerformanceMonitor {
@@ -1283,7 +1331,7 @@ impl PerformanceMonitor {
 }
 ```
 
-## 总结
+## 1.8 总结
 
 电子商务领域的Rust应用需要重点关注：
 

@@ -1,20 +1,47 @@
-# 并发模式分析
+# 3.4.1 并发模式分析
 
-## 目录
+<!-- TOC START -->
+- [3.4.1 并发模式分析](#341-并发模式分析)
+  - [3.4.1.1 目录](#3411-目录)
+  - [3.4.1.2 1. 并发基础](#3412-1-并发基础)
+    - [3.4.1.2.1 并发与并行](#34121-并发与并行)
+    - [3.4.1.2.2 并发模型](#34122-并发模型)
+  - [3.4.1.3 2. Golang并发原语](#3413-2-golang并发原语)
+    - [3.4.1.3.1 Goroutine](#34131-goroutine)
+    - [3.4.1.3.2 Channel](#34132-channel)
+    - [3.4.1.3.3 Select语句](#34133-select语句)
+  - [3.4.1.4 3. 并发设计模式](#3414-3-并发设计模式)
+    - [3.4.1.4.1 Worker Pool模式](#34141-worker-pool模式)
+    - [3.4.1.4.2 Pipeline模式](#34142-pipeline模式)
+    - [3.4.1.4.3 Fan-Out/Fan-In模式](#34143-fan-outfan-in模式)
+  - [3.4.1.5 4. 同步机制](#3415-4-同步机制)
+    - [3.4.1.5.1 Mutex](#34151-mutex)
+    - [3.4.1.5.2 WaitGroup](#34152-waitgroup)
+    - [3.4.1.5.3 Once](#34153-once)
+  - [3.4.1.6 5. 并发数据结构](#3416-5-并发数据结构)
+    - [3.4.1.6.1 并发Map](#34161-并发map)
+    - [3.4.1.6.2 并发队列](#34162-并发队列)
+  - [3.4.1.7 6. 性能优化](#3417-6-性能优化)
+    - [3.4.1.7.1 内存池](#34171-内存池)
+    - [3.4.1.7.2 工作窃取](#34172-工作窃取)
+  - [3.4.1.8 7. 错误处理](#3418-7-错误处理)
+    - [3.4.1.8.1 错误传播](#34181-错误传播)
+    - [3.4.1.8.2 超时控制](#34182-超时控制)
+  - [3.4.1.9 8. 最佳实践](#3419-8-最佳实践)
+    - [3.4.1.9.1 避免竞态条件](#34191-避免竞态条件)
+    - [3.4.1.9.2 避免死锁](#34192-避免死锁)
+    - [3.4.1.9.3 资源管理](#34193-资源管理)
+  - [3.4.1.10 9. 案例分析](#34110-9-案例分析)
+    - [3.4.1.10.1 Web服务器](#341101-web服务器)
+    - [3.4.1.10.2 数据处理管道](#341102-数据处理管道)
+  - [3.4.1.11 参考资料](#34111-参考资料)
+<!-- TOC END -->
 
-1. [并发基础](#1-并发基础)
-2. [Golang并发原语](#2-golang并发原语)
-3. [并发设计模式](#3-并发设计模式)
-4. [同步机制](#4-同步机制)
-5. [并发数据结构](#5-并发数据结构)
-6. [性能优化](#6-性能优化)
-7. [错误处理](#7-错误处理)
-8. [最佳实践](#8-最佳实践)
-9. [案例分析](#9-案例分析)
+## 3.4.1.1 目录
 
-## 1. 并发基础
+## 3.4.1.2 1. 并发基础
 
-### 1.1 并发与并行
+### 3.4.1.2.1 并发与并行
 
 **定义 1.1** (并发): 并发是指多个任务在时间上重叠执行的能力。
 **定义 1.2** (并行): 并行是指多个任务同时执行的能力。
@@ -25,7 +52,7 @@
 - **并发**: $\exists t_i, t_j \in T: S(t_i) \cap S(t_j) \neq \emptyset$
 - **并行**: $\forall t_i, t_j \in T: S(t_i) \cap S(t_j) \neq \emptyset$
 
-### 1.2 并发模型
+### 3.4.1.2.2 并发模型
 
 **CSP模型** (Communicating Sequential Processes):
 
@@ -53,9 +80,9 @@ func main() {
 }
 ```
 
-## 2. Golang并发原语
+## 3.4.1.3 2. Golang并发原语
 
-### 2.1 Goroutine
+### 3.4.1.3.1 Goroutine
 
 **定义 2.1** (Goroutine): Goroutine是Go语言的轻量级线程，由Go运行时管理。
 
@@ -95,7 +122,7 @@ func main() {
 }
 ```
 
-### 2.2 Channel
+### 3.4.1.3.2 Channel
 
 **定义 2.2** (Channel): Channel是Golang中用于Goroutine间通信的管道。
 
@@ -165,7 +192,7 @@ func (c *bufferedChannel[T]) Close() error {
 }
 ```
 
-### 2.3 Select语句
+### 3.4.1.3.3 Select语句
 
 **定义 2.3** (Select): Select语句用于在多个Channel操作中进行非阻塞选择。
 
@@ -210,9 +237,9 @@ func timeoutExample() {
 }
 ```
 
-## 3. 并发设计模式
+## 3.4.1.4 3. 并发设计模式
 
-### 3.1 Worker Pool模式
+### 3.4.1.4.1 Worker Pool模式
 
 **定义 3.1** (Worker Pool): Worker Pool模式使用固定数量的Goroutine处理任务队列。
 
@@ -311,7 +338,7 @@ func main() {
 }
 ```
 
-### 3.2 Pipeline模式
+### 3.4.1.4.2 Pipeline模式
 
 **定义 3.2** (Pipeline): Pipeline模式将复杂任务分解为多个阶段，每个阶段处理数据并传递给下一阶段。
 
@@ -388,7 +415,7 @@ func main() {
 }
 ```
 
-### 3.3 Fan-Out/Fan-In模式
+### 3.4.1.4.3 Fan-Out/Fan-In模式
 
 **定义 3.3** (Fan-Out): 将输入分发到多个Goroutine处理。
 **定义 3.4** (Fan-In): 将多个Goroutine的输出合并到一个Channel。
@@ -463,9 +490,9 @@ func main() {
 }
 ```
 
-## 4. 同步机制
+## 3.4.1.5 4. 同步机制
 
-### 4.1 Mutex
+### 3.4.1.5.1 Mutex
 
 **定义 4.1** (Mutex): 互斥锁用于保护共享资源，确保同一时间只有一个Goroutine访问。
 
@@ -513,7 +540,7 @@ func (oc *OptimizedCounter) GetValue() int {
 }
 ```
 
-### 4.2 WaitGroup
+### 3.4.1.5.2 WaitGroup
 
 **定义 4.2** (WaitGroup): WaitGroup用于等待一组Goroutine完成。
 
@@ -541,7 +568,7 @@ func processItem(item string) {
 }
 ```
 
-### 4.3 Once
+### 3.4.1.5.3 Once
 
 **定义 4.3** (Once): Once确保某个函数只执行一次。
 
@@ -566,9 +593,9 @@ func GetInstance() *Singleton {
 }
 ```
 
-## 5. 并发数据结构
+## 3.4.1.6 5. 并发数据结构
 
-### 5.1 并发Map
+### 3.4.1.6.1 并发Map
 
 ```go
 // ConcurrentMap 并发安全的Map
@@ -614,7 +641,7 @@ func (cm *ConcurrentMap[K, V]) Range(f func(K, V) bool) {
 }
 ```
 
-### 5.2 并发队列
+### 3.4.1.6.2 并发队列
 
 ```go
 // ConcurrentQueue 并发安全队列
@@ -658,9 +685,9 @@ func (cq *ConcurrentQueue[T]) Size() int {
 }
 ```
 
-## 6. 性能优化
+## 3.4.1.7 6. 性能优化
 
-### 6.1 内存池
+### 3.4.1.7.1 内存池
 
 ```go
 // ObjectPool 对象池
@@ -726,7 +753,7 @@ func main() {
 }
 ```
 
-### 6.2 工作窃取
+### 3.4.1.7.2 工作窃取
 
 ```go
 // WorkStealingScheduler 工作窃取调度器
@@ -779,9 +806,9 @@ func (d *Deque) PopBack() (interface{}, bool) {
 }
 ```
 
-## 7. 错误处理
+## 3.4.1.8 7. 错误处理
 
-### 7.1 错误传播
+### 3.4.1.8.1 错误传播
 
 ```go
 // ErrorGroup 错误组
@@ -809,7 +836,7 @@ func processItemWithError(item string) error {
 }
 ```
 
-### 7.2 超时控制
+### 3.4.1.8.2 超时控制
 
 ```go
 // TimeoutWrapper 超时包装器
@@ -848,9 +875,9 @@ func main() {
 }
 ```
 
-## 8. 最佳实践
+## 3.4.1.9 8. 最佳实践
 
-### 8.1 避免竞态条件
+### 3.4.1.9.1 避免竞态条件
 
 ```go
 // 错误示例：竞态条件
@@ -873,7 +900,7 @@ func (sc *SafeCounter) Increment() {
 }
 ```
 
-### 8.2 避免死锁
+### 3.4.1.9.2 避免死锁
 
 ```go
 // 死锁示例
@@ -919,7 +946,7 @@ func safeExample() {
 }
 ```
 
-### 8.3 资源管理
+### 3.4.1.9.3 资源管理
 
 ```go
 // 资源管理示例
@@ -960,9 +987,9 @@ func (rm *ResourceManager) Release(resource *Resource) {
 }
 ```
 
-## 9. 案例分析
+## 3.4.1.10 9. 案例分析
 
-### 9.1 Web服务器
+### 3.4.1.10.1 Web服务器
 
 ```go
 // ConcurrentWebServer 并发Web服务器
@@ -1035,7 +1062,7 @@ func (l *singleConnListener) Addr() net.Addr {
 }
 ```
 
-### 9.2 数据处理管道
+### 3.4.1.10.2 数据处理管道
 
 ```go
 // DataProcessingPipeline 数据处理管道
@@ -1120,7 +1147,7 @@ func TransformationStage(input <-chan Data) <-chan Data {
 
 ---
 
-## 参考资料
+## 3.4.1.11 参考资料
 
 1. [Go并发编程指南](https://golang.org/doc/effective_go.html#concurrency)
 2. [CSP模型论文](https://www.cs.cmu.edu/~crary/819-f09/Hoare78.pdf)

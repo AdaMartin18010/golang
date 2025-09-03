@@ -1,8 +1,36 @@
-# Rust实现异步交互式控制台
+# 1 1 1 1 1 1 1 Rust实现异步交互式控制台
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust实现异步交互式控制台](#1-1-1-1-1-1-1-rust实现异步交互式控制台)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+  - [1.3 2. 基础 UI 框架实现](#2-基础-ui-框架实现)
+  - [1.4 3. 指标状态管理](#3-指标状态管理)
+  - [1.5 4. UI 渲染实现](#4-ui-渲染实现)
+  - [1.6 5. 交互控制实现](#5-交互控制实现)
+  - [1.7 6. 帮助菜单实现](#6-帮助菜单实现)
+  - [1.8 7. 指标收集器实现](#7-指标收集器实现)
+  - [1.9 8. 主程序实现](#8-主程序实现)
+  - [1.10 9. 自定义图表实现](#9-自定义图表实现)
+  - [1.11 10. 配置文件支持](#10-配置文件支持)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下面是一个使用 Rust 2024 结合 ratatui (之前的 tui-rs) 实现的交互式控制台应用示例，用于展示程序的指标和状态。
 
-## 目录
+## 1.1 目录
 
 - [Rust实现异步交互式控制台](#rust实现异步交互式控制台)
   - [目录](#目录)
@@ -17,7 +45,7 @@
   - [9. 自定义图表实现](#9-自定义图表实现)
   - [10. 配置文件支持](#10-配置文件支持)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -35,7 +63,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 ```
 
-## 2. 基础 UI 框架实现
+## 1.3 2. 基础 UI 框架实现
 
 ```rust
 use ratatui::{
@@ -115,7 +143,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## 3. 指标状态管理
+## 1.4 3. 指标状态管理
 
 ```rust
 use std::collections::VecDeque;
@@ -167,7 +195,7 @@ impl MetricsState {
 }
 ```
 
-## 4. UI 渲染实现
+## 1.5 4. UI 渲染实现
 
 ```rust
 fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
@@ -260,7 +288,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
 }
 ```
 
-## 5. 交互控制实现
+## 1.6 5. 交互控制实现
 
 ```rust
 use crossterm::event::KeyModifiers;
@@ -306,7 +334,7 @@ impl InputHandler {
 }
 ```
 
-## 6. 帮助菜单实现
+## 1.7 6. 帮助菜单实现
 
 ```rust
 pub struct HelpMenu {
@@ -353,7 +381,7 @@ impl HelpMenu {
 }
 ```
 
-## 7. 指标收集器实现
+## 1.8 7. 指标收集器实现
 
 ```rust
 use metrics::{Counter, Gauge, Histogram};
@@ -416,7 +444,7 @@ impl MetricsCollector {
 }
 ```
 
-## 8. 主程序实现
+## 1.9 8. 主程序实现
 
 ```rust
 #[tokio::main]
@@ -487,7 +515,7 @@ async fn run_app(
 }
 ```
 
-## 9. 自定义图表实现
+## 1.10 9. 自定义图表实现
 
 ```rust
 pub struct CustomChart {
@@ -544,7 +572,7 @@ impl CustomChart {
 }
 ```
 
-## 10. 配置文件支持
+## 1.11 10. 配置文件支持
 
 ```rust
 use serde::Deserialize;

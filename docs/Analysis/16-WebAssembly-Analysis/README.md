@@ -1,8 +1,50 @@
-# WebAssembly分析（WebAssembly Analysis）
+# 16.1 WebAssembly分析（WebAssembly Analysis）
+
+<!-- TOC START -->
+- [16.1 WebAssembly分析（WebAssembly Analysis）](#webassembly分析（webassembly-analysis）)
+  - [16.1.1 目录](#目录)
+  - [16.1.2 1. WebAssembly基础理论](#1-webassembly基础理论)
+    - [16.1.2.1 定义](#定义)
+    - [16.1.2.2 核心特性](#核心特性)
+    - [16.1.2.3 技术栈](#技术栈)
+  - [16.1.3 2. Golang与WebAssembly集成](#2-golang与webassembly集成)
+    - [16.1.3.1 编译配置](#编译配置)
+    - [16.1.3.2 基础示例](#基础示例)
+    - [16.1.3.3 编译和运行](#编译和运行)
+- [16.2 编译Golang代码到WASM](#编译golang代码到wasm)
+- [16.3 复制JavaScript运行时](#复制javascript运行时)
+  - [16.3.1 3. 性能分析与优化](#3-性能分析与优化)
+    - [16.3.1.1 性能模型](#性能模型)
+    - [16.3.1.2 内存管理](#内存管理)
+    - [16.3.1.3 并发处理](#并发处理)
+  - [16.3.2 4. 应用场景与最佳实践](#4-应用场景与最佳实践)
+    - [16.3.2.1 应用场景](#应用场景)
+    - [16.3.2.2 图像处理示例](#图像处理示例)
+    - [16.3.2.3 最佳实践](#最佳实践)
+  - [16.3.3 5. 多表征内容](#5-多表征内容)
+    - [16.3.3.1 WASM架构图](#wasm架构图)
+    - [16.3.3.2 性能对比图](#性能对比图)
+    - [16.3.3.3 内存模型](#内存模型)
+    - [16.3.3.4 性能优化公式](#性能优化公式)
+  - [16.3.4 6. 交叉引用与目录导航](#6-交叉引用与目录导航)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---
 
-## 目录
+## 16.1.1 目录
 
 1. WebAssembly基础理论
 2. Golang与WebAssembly集成
@@ -13,20 +55,20 @@
 
 ---
 
-## 1. WebAssembly基础理论
+## 16.1.2 1. WebAssembly基础理论
 
-### 1.1 定义
+### 16.1.2.1 定义
 
 > WebAssembly (WASM) 是一种低级的类汇编语言，具有紧凑的二进制格式，可以在现代Web浏览器中运行，提供接近原生的性能。
 
-### 1.2 核心特性
+### 16.1.2.2 核心特性
 
 - **高性能**: 接近原生代码的执行速度
 - **安全性**: 沙盒执行环境
 - **可移植性**: 跨平台、跨语言
 - **标准化**: W3C标准，广泛支持
 
-### 1.3 技术栈
+### 16.1.2.3 技术栈
 
 - **编译目标**: 支持多种语言编译到WASM
 - **运行时**: 浏览器内置WASM引擎
@@ -35,9 +77,9 @@
 
 ---
 
-## 2. Golang与WebAssembly集成
+## 16.1.3 2. Golang与WebAssembly集成
 
-### 2.1 编译配置
+### 16.1.3.1 编译配置
 
 ```latex
 \textbf{定义 2.1} (Golang WASM编译): Golang代码可以通过特定的编译目标生成WebAssembly模块。
@@ -50,7 +92,7 @@
 \end{itemize}
 ```
 
-### 2.2 基础示例
+### 16.1.3.2 基础示例
 
 ```go
 // main.go - Golang WASM示例
@@ -87,13 +129,13 @@ func main() {
 }
 ```
 
-### 2.3 编译和运行
+### 16.1.3.3 编译和运行
 
 ```bash
-# 编译Golang代码到WASM
+# 16.2 编译Golang代码到WASM
 GOOS=js GOARCH=wasm go build -o main.wasm main.go
 
-# 复制JavaScript运行时
+# 16.3 复制JavaScript运行时
 cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
 ```
 
@@ -123,9 +165,9 @@ cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
 
 ---
 
-## 3. 性能分析与优化
+## 16.3.1 3. 性能分析与优化
 
-### 3.1 性能模型
+### 16.3.1.1 性能模型
 
 ```latex
 \textbf{定理 3.1} (WASM性能): 
@@ -140,7 +182,7 @@ P(wasm) = P(compilation) + P(execution) + P(interop)
 \end{itemize}
 ```
 
-### 3.2 内存管理
+### 16.3.1.2 内存管理
 
 ```go
 // 内存管理示例
@@ -189,7 +231,7 @@ func registerCallbacks() {
 }
 ```
 
-### 3.3 并发处理
+### 16.3.1.3 并发处理
 
 ```go
 // 并发处理示例
@@ -264,9 +306,9 @@ func worker(jobs <-chan int, results chan<- int, wg *sync.WaitGroup) {
 
 ---
 
-## 4. 应用场景与最佳实践
+## 16.3.2 4. 应用场景与最佳实践
 
-### 4.1 应用场景
+### 16.3.2.1 应用场景
 
 ```latex
 \textbf{定义 4.1} (WASM应用场景): WebAssembly适用于以下场景：
@@ -280,7 +322,7 @@ func worker(jobs <-chan int, results chan<- int, wg *sync.WaitGroup) {
 \end{itemize}
 ```
 
-### 4.2 图像处理示例
+### 16.3.2.2 图像处理示例
 
 ```go
 // 图像处理示例
@@ -367,7 +409,7 @@ func applyBlur(data js.Value, width, height int) {
 }
 ```
 
-### 4.3 最佳实践
+### 16.3.2.3 最佳实践
 
 ```go
 // 最佳实践示例
@@ -430,9 +472,9 @@ func safeCall(obj js.Value, method string, args ...interface{}) js.Value {
 
 ---
 
-## 5. 多表征内容
+## 16.3.3 5. 多表征内容
 
-### 5.1 WASM架构图
+### 16.3.3.1 WASM架构图
 
 ```mermaid
 graph TB;
@@ -448,7 +490,7 @@ graph TB;
     I --> E;
 ```
 
-### 5.2 性能对比图
+### 16.3.3.2 性能对比图
 
 ```mermaid
 graph LR;
@@ -461,7 +503,7 @@ graph LR;
     F --> I[开发效率: 低];
 ```
 
-### 5.3 内存模型
+### 16.3.3.3 内存模型
 
 ```latex
 \textbf{定义 5.1} (WASM内存模型): 
@@ -476,7 +518,7 @@ Memory = \{0, 1, 2, ..., 2^{32} - 1\}
 \end{itemize}
 ```
 
-### 5.4 性能优化公式
+### 16.3.3.4 性能优化公式
 
 ```latex
 \textbf{定理 5.2} (WASM优化): 
@@ -494,7 +536,7 @@ Performance = \frac{ComputationalComplexity}{MemoryAccess + InteropOverhead}
 
 ---
 
-## 6. 交叉引用与目录导航
+## 16.3.4 6. 交叉引用与目录导航
 
 - [架构分析](../01-Architecture-Design/README.md)
 - [性能优化](../06-Performance-Optimization/README.md)

@@ -1,4 +1,21 @@
-# to_owned
+# 1 1 1 1 1 1 1 to_owned
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 to_owned](#1-1-1-1-1-1-1-to_owned)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 在 Rust 中，`to_owned` 是一个方法，通常与 `Borrow` trait 配合使用。
 它用于创建某个值的 "拥有" 版本（owned version），即该值的独立副本，而不是引用。

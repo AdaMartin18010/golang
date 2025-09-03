@@ -1,6 +1,120 @@
-# Go 1.25 工程实践指南
+# 1 1 1 1 1 1 1 Go 1.25 工程实践指南
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Go 1.25 工程实践指南](#1-1-1-1-1-1-1-go-125-工程实践指南)
+  - [1.1 目录](#目录)
+  - [1.2 测试策略](#测试策略)
+    - [1.2.1 单元测试](#单元测试)
+      - [1.2.1.1 测试框架](#测试框架)
+      - [1.2.1.2 测试覆盖率](#测试覆盖率)
+    - [1.2.2 集成测试](#集成测试)
+      - [1.2.2.1 数据库测试](#数据库测试)
+      - [1.2.2.2 API测试](#api测试)
+    - [1.2.3 性能测试](#性能测试)
+      - [1.2.3.1 基准测试](#基准测试)
+      - [1.2.3.2 压力测试](#压力测试)
+  - [1.3 CI/CD流水线](#cicd流水线)
+    - [1.3.1 持续集成](#持续集成)
+      - [1.3.1.1 代码质量检查](#代码质量检查)
+- [2 2 2 2 2 2 2 .github/workflows/ci.yml](#2-2-2-2-2-2-2-githubworkflowsciyml)
+      - [2 2 2 2 2 2 2 自动化测试](#2-2-2-2-2-2-2-自动化测试)
+- [3 3 3 3 3 3 3 .github/workflows/test.yml](#3-3-3-3-3-3-3-githubworkflowstestyml)
+    - [3 3 3 3 3 3 3 持续部署](#3-3-3-3-3-3-3-持续部署)
+      - [3 3 3 3 3 3 3 容器化部署](#3-3-3-3-3-3-3-容器化部署)
+- [4 4 4 4 4 4 4 Dockerfile](#4-4-4-4-4-4-4-dockerfile)
+- [5 5 5 5 5 5 5 多阶段构建](#5-5-5-5-5-5-5-多阶段构建)
+- [6 6 6 6 6 6 6 安装构建依赖](#6-6-6-6-6-6-6-安装构建依赖)
+- [7 7 7 7 7 7 7 设置工作目录](#7-7-7-7-7-7-7-设置工作目录)
+- [8 8 8 8 8 8 8 复制go mod文件](#8-8-8-8-8-8-8-复制go-mod文件)
+- [9 9 9 9 9 9 9 下载依赖](#9-9-9-9-9-9-9-下载依赖)
+- [10 10 10 10 10 10 10 复制源代码](#10-10-10-10-10-10-10-复制源代码)
+- [11 11 11 11 11 11 11 构建应用](#11-11-11-11-11-11-11-构建应用)
+- [12 12 12 12 12 12 12 运行阶段](#12-12-12-12-12-12-12-运行阶段)
+- [13 13 13 13 13 13 13 安装运行时依赖](#13-13-13-13-13-13-13-安装运行时依赖)
+- [14 14 14 14 14 14 14 创建非root用户](#14-14-14-14-14-14-14-创建非root用户)
+- [15 15 15 15 15 15 15 从构建阶段复制二进制文件](#15-15-15-15-15-15-15-从构建阶段复制二进制文件)
+- [16 16 16 16 16 16 16 设置权限](#16-16-16-16-16-16-16-设置权限)
+- [17 17 17 17 17 17 17 切换到非root用户](#17-17-17-17-17-17-17-切换到非root用户)
+- [18 18 18 18 18 18 18 暴露端口](#18-18-18-18-18-18-18-暴露端口)
+- [19 19 19 19 19 19 19 健康检查](#19-19-19-19-19-19-19-健康检查)
+- [20 20 20 20 20 20 20 启动应用](#20-20-20-20-20-20-20-启动应用)
+      - [20 20 20 20 20 20 20 蓝绿部署](#20-20-20-20-20-20-20-蓝绿部署)
+- [21 21 21 21 21 21 21 k8s/blue-green-deployment.yaml](#21-21-21-21-21-21-21-k8sblue-green-deploymentyaml)
+- [22 22 22 22 22 22 22 blue-green-deploy.sh](#22-22-22-22-22-22-22-blue-green-deploysh)
+- [23 23 23 23 23 23 23 蓝绿部署脚本](#23-23-23-23-23-23-23-蓝绿部署脚本)
+- [24 24 24 24 24 24 24 获取当前活跃版本](#24-24-24-24-24-24-24-获取当前活跃版本)
+- [25 25 25 25 25 25 25 部署新版本](#25-25-25-25-25-25-25-部署新版本)
+- [26 26 26 26 26 26 26 等待新版本就绪](#26-26-26-26-26-26-26-等待新版本就绪)
+- [27 27 27 27 27 27 27 运行健康检查](#27-27-27-27-27-27-27-运行健康检查)
+- [28 28 28 28 28 28 28 切换流量到新版本](#28-28-28-28-28-28-28-切换流量到新版本)
+- [29 29 29 29 29 29 29 可选：清理旧版本](#29-29-29-29-29-29-29-可选：清理旧版本)
+- [30 30 30 30 30 30 30 kubectl delete deployment $DEPLOYMENT_NAME-$OLD_VERSION](#30-30-30-30-30-30-30-kubectl-delete-deployment-$deployment_name-$old_version)
+  - [30.1 代码质量保证](#代码质量保证)
+    - [30.1.1 代码规范](#代码规范)
+      - [30.1.1.1 静态分析](#静态分析)
+      - [30.1.1.2 代码格式化](#代码格式化)
+    - [30.1.2 代码审查](#代码审查)
+      - [30.1.2.1 审查流程](#审查流程)
+      - [30.1.2.2 自动化检查](#自动化检查)
+  - [30.2 部署策略](#部署策略)
+    - [30.2.1 容器化策略](#容器化策略)
+      - [30.2.1.1 Docker最佳实践](#docker最佳实践)
+- [31 31 31 31 31 31 31 优化的Dockerfile](#31-31-31-31-31-31-31-优化的dockerfile)
+- [32 32 32 32 32 32 32 使用多阶段构建和最佳实践](#32-32-32-32-32-32-32-使用多阶段构建和最佳实践)
+- [33 33 33 33 33 33 33 构建阶段](#33-33-33-33-33-33-33-构建阶段)
+- [34 34 34 34 34 34 34 设置环境变量](#34-34-34-34-34-34-34-设置环境变量)
+- [35 35 35 35 35 35 35 安装构建工具](#35-35-35-35-35-35-35-安装构建工具)
+- [36 36 36 36 36 36 36 设置工作目录](#36-36-36-36-36-36-36-设置工作目录)
+- [37 37 37 37 37 37 37 复制go mod文件](#37-37-37-37-37-37-37-复制go-mod文件)
+- [38 38 38 38 38 38 38 下载依赖（利用Docker缓存）](#38-38-38-38-38-38-38-下载依赖（利用docker缓存）)
+- [39 39 39 39 39 39 39 复制源代码](#39-39-39-39-39-39-39-复制源代码)
+- [40 40 40 40 40 40 40 运行测试](#40-40-40-40-40-40-40-运行测试)
+- [41 41 41 41 41 41 41 构建应用](#41-41-41-41-41-41-41-构建应用)
+- [42 42 42 42 42 42 42 运行阶段](#42-42-42-42-42-42-42-运行阶段)
+- [43 43 43 43 43 43 43 安装运行时依赖](#43-43-43-43-43-43-43-安装运行时依赖)
+- [44 44 44 44 44 44 44 创建非root用户](#44-44-44-44-44-44-44-创建非root用户)
+- [45 45 45 45 45 45 45 创建应用目录](#45-45-45-45-45-45-45-创建应用目录)
+- [46 46 46 46 46 46 46 从构建阶段复制二进制文件](#46-46-46-46-46-46-46-从构建阶段复制二进制文件)
+- [47 47 47 47 47 47 47 复制配置文件](#47-47-47-47-47-47-47-复制配置文件)
+- [48 48 48 48 48 48 48 设置权限](#48-48-48-48-48-48-48-设置权限)
+- [49 49 49 49 49 49 49 切换到非root用户](#49-49-49-49-49-49-49-切换到非root用户)
+- [50 50 50 50 50 50 50 暴露端口](#50-50-50-50-50-50-50-暴露端口)
+- [51 51 51 51 51 51 51 健康检查](#51-51-51-51-51-51-51-健康检查)
+- [52 52 52 52 52 52 52 设置标签](#52-52-52-52-52-52-52-设置标签)
+- [53 53 53 53 53 53 53 启动应用](#53-53-53-53-53-53-53-启动应用)
+      - [53 53 53 53 53 53 53 多阶段构建](#53-53-53-53-53-53-53-多阶段构建)
+- [54 54 54 54 54 54 54 多阶段构建示例](#54-54-54-54-54-54-54-多阶段构建示例)
+- [55 55 55 55 55 55 55 阶段1: 依赖下载](#55-55-55-55-55-55-55-阶段1-依赖下载)
+- [56 56 56 56 56 56 56 阶段2: 测试](#56-56-56-56-56-56-56-阶段2-测试)
+- [57 57 57 57 57 57 57 阶段3: 构建](#57-57-57-57-57-57-57-阶段3-构建)
+- [58 58 58 58 58 58 58 阶段4: 安全扫描](#58-58-58-58-58-58-58-阶段4-安全扫描)
+- [59 59 59 59 59 59 59 阶段5: 运行](#59-59-59-59-59-59-59-阶段5-运行)
+    - [59 59 59 59 59 59 59 云原生部署](#59-59-59-59-59-59-59-云原生部署)
+      - [59 59 59 59 59 59 59 Kubernetes部署](#59-59-59-59-59-59-59-kubernetes部署)
+- [60 60 60 60 60 60 60 k8s/deployment.yaml](#60-60-60-60-60-60-60-k8sdeploymentyaml)
+      - [60 60 60 60 60 60 60 服务网格集成](#60-60-60-60-60-60-60-服务网格集成)
+- [61 61 61 61 61 61 61 istio/virtual-service.yaml](#61-61-61-61-61-61-61-istiovirtual-serviceyaml)
+  - [61.1 总结](#总结)
+    - [61.1.1 1. 测试策略](#1-测试策略)
+    - [61.1.2 2. CI/CD流水线](#2-cicd流水线)
+    - [61.1.3 3. 代码质量保证](#3-代码质量保证)
+    - [61.1.4 4. 部署策略](#4-部署策略)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [Go 1.25 工程实践指南](#go-125-工程实践指南)
   - [目录](#目录)
@@ -41,11 +155,11 @@
     - [3. 代码质量保证](#3-代码质量保证)
     - [4. 部署策略](#4-部署策略)
 
-## 测试策略
+## 1.2 测试策略
 
-### 1.1 单元测试
+### 1.2.1 单元测试
 
-#### 1.1.1 测试框架
+#### 1.2.1.1 测试框架
 
 ```go
 // 基础测试框架
@@ -119,7 +233,7 @@ func BenchmarkUserService_CreateUser(b *testing.B) {
 }
 ```
 
-#### 1.1.2 测试覆盖率
+#### 1.2.1.2 测试覆盖率
 
 ```go
 // 测试覆盖率工具
@@ -161,9 +275,9 @@ func TestCoverageThreshold(t *testing.T) {
 }
 ```
 
-### 1.2 集成测试
+### 1.2.2 集成测试
 
-#### 1.2.1 数据库测试
+#### 1.2.2.1 数据库测试
 
 ```go
 // 数据库集成测试
@@ -262,7 +376,7 @@ func (suite *DatabaseTestSuite) TestUserCRUD() {
 }
 ```
 
-#### 1.2.2 API测试
+#### 1.2.2.2 API测试
 
 ```go
 // API集成测试
@@ -324,9 +438,9 @@ func (suite *APITestSuite) TestUserAPI() {
 }
 ```
 
-### 1.3 性能测试
+### 1.2.3 性能测试
 
-#### 1.3.1 基准测试
+#### 1.2.3.1 基准测试
 
 ```go
 // 性能基准测试
@@ -389,7 +503,7 @@ func BenchmarkCachePerformance(b *testing.B) {
 }
 ```
 
-#### 1.3.2 压力测试
+#### 1.2.3.2 压力测试
 
 ```go
 // 压力测试
@@ -466,14 +580,14 @@ func TestMemoryLeak(t *testing.T) {
 }
 ```
 
-## CI/CD流水线
+## 1.3 CI/CD流水线
 
-### 2.1 持续集成
+### 1.3.1 持续集成
 
-#### 2.1.1 代码质量检查
+#### 1.3.1.1 代码质量检查
 
 ```yaml
-# .github/workflows/ci.yml
+# 2 2 2 2 2 2 2 .github/workflows/ci.yml
 name: CI Pipeline
 
 on:
@@ -529,10 +643,10 @@ jobs:
         name: codecov-umbrella
 ```
 
-#### 2.1.2 自动化测试
+#### 2 2 2 2 2 2 2 自动化测试
 
 ```yaml
-# .github/workflows/test.yml
+# 3 3 3 3 3 3 3 .github/workflows/test.yml
 name: Automated Testing
 
 on:
@@ -598,69 +712,69 @@ jobs:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/testdb?sslmode=disable
 ```
 
-### 2.2 持续部署
+### 3 3 3 3 3 3 3 持续部署
 
-#### 2.2.1 容器化部署
+#### 3 3 3 3 3 3 3 容器化部署
 
 ```dockerfile
-# Dockerfile
-# 多阶段构建
+# 4 4 4 4 4 4 4 Dockerfile
+# 5 5 5 5 5 5 5 多阶段构建
 FROM golang:1.25-alpine AS builder
 
-# 安装构建依赖
+# 6 6 6 6 6 6 6 安装构建依赖
 RUN apk add --no-cache git ca-certificates tzdata
 
-# 设置工作目录
+# 7 7 7 7 7 7 7 设置工作目录
 WORKDIR /app
 
-# 复制go mod文件
+# 8 8 8 8 8 8 8 复制go mod文件
 COPY go.mod go.sum ./
 
-# 下载依赖
+# 9 9 9 9 9 9 9 下载依赖
 RUN go mod download
 
-# 复制源代码
+# 10 10 10 10 10 10 10 复制源代码
 COPY . .
 
-# 构建应用
+# 11 11 11 11 11 11 11 构建应用
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-# 运行阶段
+# 12 12 12 12 12 12 12 运行阶段
 FROM alpine:latest
 
-# 安装运行时依赖
+# 13 13 13 13 13 13 13 安装运行时依赖
 RUN apk --no-cache add ca-certificates tzdata
 
-# 创建非root用户
+# 14 14 14 14 14 14 14 创建非root用户
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
 WORKDIR /root/
 
-# 从构建阶段复制二进制文件
+# 15 15 15 15 15 15 15 从构建阶段复制二进制文件
 COPY --from=builder /app/main .
 
-# 设置权限
+# 16 16 16 16 16 16 16 设置权限
 RUN chown appuser:appgroup main
 
-# 切换到非root用户
+# 17 17 17 17 17 17 17 切换到非root用户
 USER appuser
 
-# 暴露端口
+# 18 18 18 18 18 18 18 暴露端口
 EXPOSE 8080
 
-# 健康检查
+# 19 19 19 19 19 19 19 健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
-# 启动应用
+# 20 20 20 20 20 20 20 启动应用
 CMD ["./main"]
 ```
 
-#### 2.2.2 蓝绿部署
+#### 20 20 20 20 20 20 20 蓝绿部署
 
 ```yaml
-# k8s/blue-green-deployment.yaml
+# 21 21 21 21 21 21 21 k8s/blue-green-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -722,15 +836,15 @@ spec:
 
 ```bash
 #!/bin/bash
-# blue-green-deploy.sh
+# 22 22 22 22 22 22 22 blue-green-deploy.sh
 
-# 蓝绿部署脚本
+# 23 23 23 23 23 23 23 蓝绿部署脚本
 DEPLOYMENT_NAME="app"
 BLUE_VERSION="blue"
 GREEN_VERSION="green"
 SERVICE_NAME="app-service"
 
-# 获取当前活跃版本
+# 24 24 24 24 24 24 24 获取当前活跃版本
 CURRENT_VERSION=$(kubectl get service $SERVICE_NAME -o jsonpath='{.spec.selector.version}')
 
 if [ "$CURRENT_VERSION" = "$BLUE_VERSION" ]; then
@@ -744,13 +858,13 @@ fi
 echo "Current version: $CURRENT_VERSION"
 echo "Deploying new version: $NEW_VERSION"
 
-# 部署新版本
+# 25 25 25 25 25 25 25 部署新版本
 kubectl set image deployment/$DEPLOYMENT_NAME-$NEW_VERSION app=myapp:$NEW_VERSION
 
-# 等待新版本就绪
+# 26 26 26 26 26 26 26 等待新版本就绪
 kubectl rollout status deployment/$DEPLOYMENT_NAME-$NEW_VERSION
 
-# 运行健康检查
+# 27 27 27 27 27 27 27 运行健康检查
 echo "Running health checks..."
 for i in {1..10}; do
     if curl -f http://localhost/health; then
@@ -761,20 +875,20 @@ for i in {1..10}; do
     sleep 5
 done
 
-# 切换流量到新版本
+# 28 28 28 28 28 28 28 切换流量到新版本
 kubectl patch service $SERVICE_NAME -p "{\"spec\":{\"selector\":{\"version\":\"$NEW_VERSION\"}}}"
 
 echo "Traffic switched to $NEW_VERSION"
 
-# 可选：清理旧版本
-# kubectl delete deployment $DEPLOYMENT_NAME-$OLD_VERSION
+# 29 29 29 29 29 29 29 可选：清理旧版本
+# 30 30 30 30 30 30 30 kubectl delete deployment $DEPLOYMENT_NAME-$OLD_VERSION
 ```
 
-## 代码质量保证
+## 30.1 代码质量保证
 
-### 3.1 代码规范
+### 30.1.1 代码规范
 
-#### 3.1.1 静态分析
+#### 30.1.1.1 静态分析
 
 ```go
 // 静态分析配置
@@ -838,7 +952,7 @@ issues:
         - gocyclo
 ```
 
-#### 3.1.2 代码格式化
+#### 30.1.1.2 代码格式化
 
 ```go
 // 代码格式化工具
@@ -924,9 +1038,9 @@ func (cf *CodeFormatter) FormatDirectory(dir string) error {
 }
 ```
 
-### 3.2 代码审查
+### 30.1.2 代码审查
 
-#### 3.2.1 审查流程
+#### 30.1.2.1 审查流程
 
 ```go
 // 代码审查工具
@@ -1093,7 +1207,7 @@ func (s *CodeReviewService) RejectReview(ctx context.Context, reviewID string, r
 }
 ```
 
-#### 3.2.2 自动化检查
+#### 30.1.2.2 自动化检查
 
 ```go
 // 自动化代码审查检查
@@ -1210,26 +1324,26 @@ type CheckResult struct {
 }
 ```
 
-## 部署策略
+## 30.2 部署策略
 
-### 4.1 容器化策略
+### 30.2.1 容器化策略
 
-#### 4.1.1 Docker最佳实践
+#### 30.2.1.1 Docker最佳实践
 
 ```dockerfile
-# 优化的Dockerfile
-# 使用多阶段构建和最佳实践
+# 31 31 31 31 31 31 31 优化的Dockerfile
+# 32 32 32 32 32 32 32 使用多阶段构建和最佳实践
 
-# 构建阶段
+# 33 33 33 33 33 33 33 构建阶段
 FROM golang:1.25-alpine AS builder
 
-# 设置环境变量
+# 34 34 34 34 34 34 34 设置环境变量
 ENV CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
     GO111MODULE=on
 
-# 安装构建工具
+# 35 35 35 35 35 35 35 安装构建工具
 RUN apk add --no-cache \
     git \
     ca-certificates \
@@ -1238,98 +1352,98 @@ RUN apk add --no-cache \
     gcc \
     musl-dev
 
-# 设置工作目录
+# 36 36 36 36 36 36 36 设置工作目录
 WORKDIR /build
 
-# 复制go mod文件
+# 37 37 37 37 37 37 37 复制go mod文件
 COPY go.mod go.sum ./
 
-# 下载依赖（利用Docker缓存）
+# 38 38 38 38 38 38 38 下载依赖（利用Docker缓存）
 RUN go mod download
 
-# 复制源代码
+# 39 39 39 39 39 39 39 复制源代码
 COPY . .
 
-# 运行测试
+# 40 40 40 40 40 40 40 运行测试
 RUN go test -v -race -coverprofile=coverage.out ./...
 
-# 构建应用
+# 41 41 41 41 41 41 41 构建应用
 RUN go build \
     -ldflags="-w -s -X main.Version=${VERSION:-dev} -X main.BuildTime=$(date -u '+%Y-%m-%d_%H:%M:%S')" \
     -o app .
 
-# 运行阶段
+# 42 42 42 42 42 42 42 运行阶段
 FROM alpine:3.18
 
-# 安装运行时依赖
+# 43 43 43 43 43 43 43 安装运行时依赖
 RUN apk add --no-cache \
     ca-certificates \
     tzdata \
     curl \
     && rm -rf /var/cache/apk/*
 
-# 创建非root用户
+# 44 44 44 44 44 44 44 创建非root用户
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
-# 创建应用目录
+# 45 45 45 45 45 45 45 创建应用目录
 WORKDIR /app
 
-# 从构建阶段复制二进制文件
+# 46 46 46 46 46 46 46 从构建阶段复制二进制文件
 COPY --from=builder /build/app .
 
-# 复制配置文件
+# 47 47 47 47 47 47 47 复制配置文件
 COPY --from=builder /build/configs/ ./configs/
 
-# 设置权限
+# 48 48 48 48 48 48 48 设置权限
 RUN chown -R appuser:appgroup /app
 
-# 切换到非root用户
+# 49 49 49 49 49 49 49 切换到非root用户
 USER appuser
 
-# 暴露端口
+# 50 50 50 50 50 50 50 暴露端口
 EXPOSE 8080
 
-# 健康检查
+# 51 51 51 51 51 51 51 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
-# 设置标签
+# 52 52 52 52 52 52 52 设置标签
 LABEL maintainer="team@example.com" \
       version="${VERSION:-dev}" \
       description="Go application"
 
-# 启动应用
+# 53 53 53 53 53 53 53 启动应用
 ENTRYPOINT ["./app"]
 ```
 
-#### 4.1.2 多阶段构建
+#### 53 53 53 53 53 53 53 多阶段构建
 
 ```dockerfile
-# 多阶段构建示例
-# 阶段1: 依赖下载
+# 54 54 54 54 54 54 54 多阶段构建示例
+# 55 55 55 55 55 55 55 阶段1: 依赖下载
 FROM golang:1.25-alpine AS deps
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-# 阶段2: 测试
+# 56 56 56 56 56 56 56 阶段2: 测试
 FROM deps AS test
 COPY . .
 RUN go test -v -race -coverprofile=coverage.out ./...
 
-# 阶段3: 构建
+# 57 57 57 57 57 57 57 阶段3: 构建
 FROM deps AS build
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-# 阶段4: 安全扫描
+# 58 58 58 58 58 58 58 阶段4: 安全扫描
 FROM build AS security-scan
 RUN apk add --no-cache curl
 RUN curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 RUN trivy fs --exit-code 1 --severity HIGH,CRITICAL .
 
-# 阶段5: 运行
+# 59 59 59 59 59 59 59 阶段5: 运行
 FROM alpine:latest AS runtime
 RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /root/
@@ -1338,12 +1452,12 @@ EXPOSE 8080
 CMD ["./main"]
 ```
 
-### 4.2 云原生部署
+### 59 59 59 59 59 59 59 云原生部署
 
-#### 4.2.1 Kubernetes部署
+#### 59 59 59 59 59 59 59 Kubernetes部署
 
 ```yaml
-# k8s/deployment.yaml
+# 60 60 60 60 60 60 60 k8s/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1501,10 +1615,10 @@ spec:
         periodSeconds: 60
 ```
 
-#### 4.2.2 服务网格集成
+#### 60 60 60 60 60 60 60 服务网格集成
 
 ```yaml
-# istio/virtual-service.yaml
+# 61 61 61 61 61 61 61 istio/virtual-service.yaml
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -1600,27 +1714,27 @@ spec:
         paths: ["/metrics"]
 ```
 
-## 总结
+## 61.1 总结
 
 本工程实践指南涵盖了Go 1.25项目开发中的关键工程实践：
 
-### 1. 测试策略
+### 61.1.1 1. 测试策略
 
 - **单元测试**: 使用testify框架，支持泛型测试和基准测试
 - **集成测试**: 使用testcontainers进行数据库和API测试
 - **性能测试**: 包括并发测试、内存泄漏检测和压力测试
 
-### 2. CI/CD流水线
+### 61.1.2 2. CI/CD流水线
 
 - **持续集成**: 自动化代码质量检查、静态分析和安全扫描
 - **持续部署**: 多阶段Docker构建、蓝绿部署策略
 
-### 3. 代码质量保证
+### 61.1.3 3. 代码质量保证
 
 - **代码规范**: 静态分析工具配置、自动化格式化
 - **代码审查**: 完整的审查流程和自动化检查
 
-### 4. 部署策略
+### 61.1.4 4. 部署策略
 
 - **容器化**: Docker最佳实践、多阶段构建
 - **云原生**: Kubernetes部署、服务网格集成

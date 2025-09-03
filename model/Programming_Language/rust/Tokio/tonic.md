@@ -1,8 +1,36 @@
-# Rust and Tonic 全特性实现分布式系统
+# 1 1 1 1 1 1 1 Rust and Tonic 全特性实现分布式系统
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust and Tonic 全特性实现分布式系统](#1-1-1-1-1-1-1-rust-and-tonic-全特性实现分布式系统)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.2.1 2. Proto 定义](#2-proto-定义)
+    - [1.2.2 3. 服务实现](#3-服务实现)
+    - [1.2.3 4. 集群管理器实现](#4-集群管理器实现)
+    - [1.2.4 5. 任务管理器实现](#5-任务管理器实现)
+    - [1.2.5 6. 文件管理器实现](#6-文件管理器实现)
+    - [1.2.6 7. 客户端实现](#7-客户端实现)
+    - [1.2.7 8. 服务器启动](#8-服务器启动)
+    - [1.2.8 9. 中间件实现](#9-中间件实现)
+    - [1.2.9 10. 使用示例](#10-使用示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下面是一个使用 Rust 2024 和 Tonic 全特性实现的分布式系统示例：
 
-## 目录
+## 1.1 目录
 
 - [Rust and Tonic 全特性实现分布式系统](#rust-and-tonic-全特性实现分布式系统)
   - [目录](#目录)
@@ -17,7 +45,7 @@
     - [9. 中间件实现](#9-中间件实现)
     - [10. 使用示例](#10-使用示例)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -38,7 +66,7 @@ anyhow = "1.0"
 tonic-build = { version = "0.10", features = ["prost"] }
 ```
 
-### 2. Proto 定义
+### 1.2.1 2. Proto 定义
 
 ```protobuf
 // distributed_system.proto
@@ -168,7 +196,7 @@ message Task {
 }
 ```
 
-### 3. 服务实现
+### 1.2.2 3. 服务实现
 
 ```rust
 use distributed::node_service_server::{NodeService, NodeServiceServer};
@@ -338,7 +366,7 @@ impl NodeService for DistributedNode {
 }
 ```
 
-### 4. 集群管理器实现
+### 1.2.3 4. 集群管理器实现
 
 ```rust
 pub struct ClusterManager {
@@ -397,7 +425,7 @@ impl ClusterManager {
 }
 ```
 
-### 5. 任务管理器实现
+### 1.2.4 5. 任务管理器实现
 
 ```rust
 pub struct TaskManager {
@@ -432,7 +460,7 @@ impl TaskManager {
 }
 ```
 
-### 6. 文件管理器实现
+### 1.2.5 6. 文件管理器实现
 
 ```rust
 pub struct FileManager {
@@ -463,7 +491,7 @@ impl FileManager {
 }
 ```
 
-### 7. 客户端实现
+### 1.2.6 7. 客户端实现
 
 ```rust
 pub struct DistributedClient {
@@ -558,7 +586,7 @@ impl DistributedClient {
 }
 ```
 
-### 8. 服务器启动
+### 1.2.7 8. 服务器启动
 
 ```rust
 #[tokio::main]
@@ -583,7 +611,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### 9. 中间件实现
+### 1.2.8 9. 中间件实现
 
 ```rust
 use tower::{Service, Layer};
@@ -644,7 +672,7 @@ where
 }
 ```
 
-### 10. 使用示例
+### 1.2.9 10. 使用示例
 
 ```rust
 async fn example() -> anyhow::Result<()> {

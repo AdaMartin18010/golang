@@ -1,6 +1,29 @@
-# Go调度器与G-P-M模型
+# 2.1 Go调度器与G-P-M模型
 
-## 1. 理论基础
+<!-- TOC START -->
+- [2.1 Go调度器与G-P-M模型](#go调度器与g-p-m模型)
+  - [2.1.1 1. 理论基础](#1-理论基础)
+    - [2.1.1.1 形式化描述](#形式化描述)
+  - [2.1.2 2. 源码分析（简要）](#2-源码分析（简要）)
+  - [2.1.3 3. 工程意义与最佳实践](#3-工程意义与最佳实践)
+  - [2.1.4 4. 图示](#4-图示)
+  - [2.1.5 5. 参考文献](#5-参考文献)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 2.1.1 1. 理论基础
 
 Go运行时采用协作式调度，核心是G（Goroutine）、P（Processor）、M（Machine/Thread）三元组模型。
 
@@ -10,7 +33,7 @@ Go运行时采用协作式调度，核心是G（Goroutine）、P（Processor）�
 
 调度流程：G被P调度，P绑定M，M负责执行G。P的数量由GOMAXPROCS控制。
 
-### 形式化描述
+### 2.1.1.1 形式化描述
 
 - $G = \{g_1, g_2, \ldots, g_n\}$
 - $M = \{m_1, m_2, \ldots, m_k\}$
@@ -19,7 +42,7 @@ Go运行时采用协作式调度，核心是G（Goroutine）、P（Processor）�
 
 ---
 
-## 2. 源码分析（简要）
+## 2.1.2 2. 源码分析（简要）
 
 Go源码（runtime/proc.go）核心结构体：
 
@@ -39,7 +62,7 @@ func schedule() {
 
 ---
 
-## 3. 工程意义与最佳实践
+## 2.1.3 3. 工程意义与最佳实践
 
 - 合理设置GOMAXPROCS，充分利用多核。
 - 避免Goroutine泄漏，及时回收。
@@ -48,7 +71,7 @@ func schedule() {
 
 ---
 
-## 4. 图示
+## 2.1.4 4. 图示
 
 ```mermaid
 graph TD
@@ -59,7 +82,7 @@ graph TD
 
 ---
 
-## 5. 参考文献
+## 2.1.5 5. 参考文献
 
 - Go runtime源码：<https://github.com/golang/go/tree/master/src/runtime>
 - Go官方博客：Go Scheduler: <https://blog.golang.org/scheduler>

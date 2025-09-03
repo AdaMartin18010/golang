@@ -1,8 +1,34 @@
-# Rust 2024 + Tokio + Generator 实现的异步算法和数据结构
+# 1 1 1 1 1 1 1 Rust 2024 + Tokio + Generator 实现的异步算法和数据结构
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust 2024 + Tokio + Generator 实现的异步算法和数据结构](#1-1-1-1-1-1-1-rust-2024-+-tokio-+-generator-实现的异步算法和数据结构)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目配置](#1-项目配置)
+  - [1.3 2. 异步迭代器和生成器基础实现](#2-异步迭代器和生成器基础实现)
+  - [1.4 3. 异步排序算法实现](#3-异步排序算法实现)
+  - [1.5 4. 异步树结构实现](#4-异步树结构实现)
+  - [1.6 5. 异步图算法实现](#5-异步图算法实现)
+  - [1.7 6. 异步查找算法实现](#6-异步查找算法实现)
+  - [1.8 7. 异步分治算法实现](#7-异步分治算法实现)
+  - [1.9 8. 使用示例](#8-使用示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个使用 Rust 2024 + Tokio + Generator 特性实现的完整数据结构和算法集合。
 
-## 目录
+## 1.1 目录
 
 - [Rust 2024 + Tokio + Generator 实现的异步算法和数据结构](#rust-2024--tokio--generator-实现的异步算法和数据结构)
   - [目录](#目录)
@@ -15,7 +41,7 @@
   - [7. 异步分治算法实现](#7-异步分治算法实现)
   - [8. 使用示例](#8-使用示例)
 
-## 1. 项目配置
+## 1.2 1. 项目配置
 
 ```toml
 [dependencies]
@@ -26,7 +52,7 @@ async-stream = "0.3"
 pin-project = "1.0"
 ```
 
-## 2. 异步迭代器和生成器基础实现
+## 1.3 2. 异步迭代器和生成器基础实现
 
 ```rust
 use async_stream::try_stream;
@@ -76,7 +102,7 @@ macro_rules! async_generator {
 }
 ```
 
-## 3. 异步排序算法实现
+## 1.4 3. 异步排序算法实现
 
 ```rust
 // 异步快速排序
@@ -174,7 +200,7 @@ pub async fn async_mergesort<T: Ord + Send + Clone>(arr: Vec<T>) -> Vec<T> {
 }
 ```
 
-## 4. 异步树结构实现
+## 1.5 4. 异步树结构实现
 
 ```rust
 #[derive(Debug)]
@@ -244,7 +270,7 @@ impl<T: Ord + Send + Clone> AsyncBinaryTree<T> {
 }
 ```
 
-## 5. 异步图算法实现
+## 1.6 5. 异步图算法实现
 
 ```rust
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -313,7 +339,7 @@ impl AsyncGraph {
 }
 ```
 
-## 6. 异步查找算法实现
+## 1.7 6. 异步查找算法实现
 
 ```rust
 // 异步二分查找
@@ -377,7 +403,7 @@ impl<T: Ord + Clone> AsyncSkipList<T> {
 }
 ```
 
-## 7. 异步分治算法实现
+## 1.8 7. 异步分治算法实现
 
 ```rust
 // 异步最大子数组和
@@ -425,7 +451,7 @@ pub async fn async_max_subarray(arr: &[i32]) -> i32 {
 }
 ```
 
-## 8. 使用示例
+## 1.9 8. 使用示例
 
 ```rust
 #[tokio::main]

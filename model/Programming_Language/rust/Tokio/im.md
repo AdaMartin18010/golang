@@ -1,8 +1,34 @@
-# Rust实现分布式IM
+# 1 1 1 1 1 1 1 Rust实现分布式IM
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust实现分布式IM](#1-1-1-1-1-1-1-rust实现分布式im)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.2.1 2. P2P 网络层实现](#2-p2p-网络层实现)
+    - [1.2.2 3. Raft 状态机实现](#3-raft-状态机实现)
+    - [1.2.3 4. IM 消息处理](#4-im-消息处理)
+    - [1.2.4 5. 消息处理器实现](#5-消息处理器实现)
+    - [1.2.5 6. 存储层实现](#6-存储层实现)
+    - [1.2.6 7. 主程序实现](#7-主程序实现)
+- [2 2 2 2 2 2 2 设置环境变量](#2-2-2-2-2-2-2-设置环境变量)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个基于 Rust 2024 + Tokio + Raft + P2P 的分布式 IM 系统实现。
 
-## 目录
+## 1.1 目录
 
 - [Rust实现分布式IM](#rust实现分布式im)
   - [目录](#目录)
@@ -14,7 +40,7 @@
     - [6. 存储层实现](#6-存储层实现)
     - [7. 主程序实现](#7-主程序实现)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -30,7 +56,7 @@ uuid = { version = "1.0", features = ["v4"] }
 tracing = "0.1"
 ```
 
-### 2. P2P 网络层实现
+### 1.2.1 2. P2P 网络层实现
 
 ```rust
 use libp2p::{
@@ -112,7 +138,7 @@ impl P2PNetwork {
 }
 ```
 
-### 3. Raft 状态机实现
+### 1.2.2 3. Raft 状态机实现
 
 ```rust
 use raft::{RaftState, Storage, StorageError};
@@ -195,7 +221,7 @@ impl RaftIMNode {
 }
 ```
 
-### 4. IM 消息处理
+### 1.2.3 4. IM 消息处理
 
 ```rust
 #[derive(Debug, Serialize, Deserialize)]
@@ -265,7 +291,7 @@ impl IMHandler {
 }
 ```
 
-### 5. 消息处理器实现
+### 1.2.4 5. 消息处理器实现
 
 ```rust
 pub struct MessageProcessor {
@@ -347,7 +373,7 @@ impl MessageProcessor {
 }
 ```
 
-### 6. 存储层实现
+### 1.2.5 6. 存储层实现
 
 ```rust
 pub struct MessageStorage {
@@ -414,7 +440,7 @@ impl MessageStorage {
 }
 ```
 
-### 7. 主程序实现
+### 1.2.6 7. 主程序实现
 
 ```rust
 #[tokio::main]
@@ -966,7 +992,7 @@ cargo run
 1. 配置节点：
 
 ```bash
-# 设置环境变量
+# 2 2 2 2 2 2 2 设置环境变量
 export P2P_PORT=8000
 export P2P_BOOTSTRAP_NODES="..."
 ```

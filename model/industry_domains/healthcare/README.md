@@ -1,37 +1,88 @@
-# 医疗健康 - Rust架构指南
+# 1 1 1 1 1 1 1 医疗健康 - Rust架构指南
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 医疗健康 - Rust架构指南](#1-1-1-1-1-1-1-医疗健康-rust架构指南)
+  - [1.1 概述](#概述)
+  - [1.2 Rust架构选型](#rust架构选型)
+    - [1.2.1 核心技术栈](#核心技术栈)
+      - [1.2.1.1 医疗框架](#医疗框架)
+      - [1.2.1.2 医疗设备集成](#医疗设备集成)
+      - [1.2.1.3 人工智能/机器学习](#人工智能机器学习)
+    - [1.2.2 架构模式](#架构模式)
+      - [1.2.2.1 医疗微服务架构](#医疗微服务架构)
+      - [1.2.2.2 事件驱动医疗架构](#事件驱动医疗架构)
+  - [1.3 业务领域概念建模](#业务领域概念建模)
+    - [1.3.1 核心领域模型](#核心领域模型)
+      - [1.3.1.1 患者管理](#患者管理)
+      - [1.3.1.2 临床数据](#临床数据)
+      - [1.3.1.3 药物管理](#药物管理)
+  - [1.4 数据建模](#数据建模)
+    - [1.4.1 医疗数据存储](#医疗数据存储)
+      - [1.4.1.1 加密患者数据存储](#加密患者数据存储)
+      - [1.4.1.2 HL7消息处理](#hl7消息处理)
+      - [1.4.1.3 DICOM影像处理](#dicom影像处理)
+  - [1.5 流程建模](#流程建模)
+    - [1.5.1 临床工作流程](#临床工作流程)
+      - [1.5.1.1 患者入院流程](#患者入院流程)
+      - [1.5.1.2 药物管理流程](#药物管理流程)
+  - [1.6 组件建模](#组件建模)
+    - [1.6.1 核心医疗组件](#核心医疗组件)
+      - [1.6.1.1 实时患者监控系统](#实时患者监控系统)
+      - [1.6.1.2 医疗影像分析系统](#医疗影像分析系统)
+  - [1.7 运维运营](#运维运营)
+    - [1.7.1 医疗系统监控](#医疗系统监控)
+      - [1.7.1.1 医疗指标监控](#医疗指标监控)
+      - [1.7.1.2 医疗数据备份和恢复](#医疗数据备份和恢复)
+    - [1.7.2 合规性管理](#合规性管理)
+      - [1.7.2.1 HIPAA合规检查](#hipaa合规检查)
+  - [1.8 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 医疗健康领域对数据安全、系统可靠性、实时性和合规性有极高要求。Rust的内存安全和性能特性使其成为构建医疗系统的理想选择。本指南涵盖医疗信息系统、健康监测、药物研发、医疗影像等核心领域。
 
-## Rust架构选型
+## 1.2 Rust架构选型
 
-### 核心技术栈
+### 1.2.1 核心技术栈
 
-#### 医疗框架
+#### 1.2.1.1 医疗框架
 
 - **医疗标准**: `hl7-rs`, `dicom-rs`, `fhir-rs`
 - **数据安全**: `ring`, `rustls`, `aes-gcm`
 - **实时处理**: `tokio`, `async-std`, `actix-web`
 - **数据库**: `diesel`, `sqlx`, `postgres`
 
-#### 医疗设备集成
+#### 1.2.1.2 医疗设备集成
 
 - **设备通信**: `modbus-rs`, `opc-ua-rs`, `mqtt`
 - **传感器**: `embedded-hal`, `i2c-rs`, `spi-rs`
 - **实时监控**: `influxdb-rust`, `timescaledb-rust`
 - **报警系统**: `alertmanager-rs`
 
-#### 人工智能/机器学习
+#### 1.2.1.3 人工智能/机器学习
 
 - **医学影像**: `opencv-rust`, `image-rs`, `tch-rs`
 - **自然语言处理**: `rust-bert`, `tokenizers`
 - **数据分析**: `polars`, `ndarray`, `statrs`
 - **模型服务**: `mlflow-rust`, `tensorflow-serving`
 
-### 架构模式
+### 1.2.2 架构模式
 
-#### 医疗微服务架构
+#### 1.2.2.1 医疗微服务架构
 
 ```rust
 use actix_web::{web, App, HttpServer, middleware};
@@ -102,7 +153,7 @@ pub enum Gender {
 }
 ```
 
-#### 事件驱动医疗架构
+#### 1.2.2.2 事件驱动医疗架构
 
 ```rust
 use tokio::sync::mpsc;
@@ -178,11 +229,11 @@ impl EventDrivenHealthcare {
 }
 ```
 
-## 业务领域概念建模
+## 1.3 业务领域概念建模
 
-### 核心领域模型
+### 1.3.1 核心领域模型
 
-#### 患者管理
+#### 1.3.1.1 患者管理
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -231,7 +282,7 @@ pub struct Insurance {
 }
 ```
 
-#### 临床数据
+#### 1.3.1.2 临床数据
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -299,7 +350,7 @@ pub enum AbnormalFlag {
 }
 ```
 
-#### 药物管理
+#### 1.3.1.3 药物管理
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -376,11 +427,11 @@ pub enum Route {
 }
 ```
 
-## 数据建模
+## 1.4 数据建模
 
-### 医疗数据存储
+### 1.4.1 医疗数据存储
 
-#### 加密患者数据存储
+#### 1.4.1.1 加密患者数据存储
 
 ```rust
 use ring::aead::{self, BoundKey, Nonce, OpeningKey, SealingKey, UnboundKey};
@@ -463,7 +514,7 @@ impl EncryptedPatientStorage {
 }
 ```
 
-#### HL7消息处理
+#### 1.4.1.2 HL7消息处理
 
 ```rust
 use hl7::Message;
@@ -524,7 +575,7 @@ impl HL7MessageProcessor {
 }
 ```
 
-#### DICOM影像处理
+#### 1.4.1.3 DICOM影像处理
 
 ```rust
 use dicom::object::File;
@@ -576,11 +627,11 @@ impl DICOMProcessor {
 }
 ```
 
-## 流程建模
+## 1.5 流程建模
 
-### 临床工作流程
+### 1.5.1 临床工作流程
 
-#### 患者入院流程
+#### 1.5.1.1 患者入院流程
 
 ```rust
 pub struct PatientAdmissionWorkflow {
@@ -629,7 +680,7 @@ impl PatientAdmissionWorkflow {
 }
 ```
 
-#### 药物管理流程
+#### 1.5.1.2 药物管理流程
 
 ```rust
 pub struct MedicationManagementWorkflow {
@@ -686,11 +737,11 @@ impl MedicationManagementWorkflow {
 }
 ```
 
-## 组件建模
+## 1.6 组件建模
 
-### 核心医疗组件
+### 1.6.1 核心医疗组件
 
-#### 实时患者监控系统
+#### 1.6.1.1 实时患者监控系统
 
 ```rust
 use tokio::sync::broadcast;
@@ -769,7 +820,7 @@ impl AlertEngine {
 }
 ```
 
-#### 医疗影像分析系统
+#### 1.6.1.2 医疗影像分析系统
 
 ```rust
 use image::{ImageBuffer, Rgb};
@@ -860,11 +911,11 @@ impl AIModel {
 }
 ```
 
-## 运维运营
+## 1.7 运维运营
 
-### 医疗系统监控
+### 1.7.1 医疗系统监控
 
-#### 医疗指标监控
+#### 1.7.1.1 医疗指标监控
 
 ```rust
 use prometheus::{Counter, Histogram, Gauge};
@@ -975,7 +1026,7 @@ impl HealthcareMetrics {
 }
 ```
 
-#### 医疗数据备份和恢复
+#### 1.7.1.2 医疗数据备份和恢复
 
 ```rust
 use aws_sdk_s3::Client as S3Client;
@@ -1053,9 +1104,9 @@ impl HealthcareDataBackup {
 }
 ```
 
-### 合规性管理
+### 1.7.2 合规性管理
 
-#### HIPAA合规检查
+#### 1.7.2.1 HIPAA合规检查
 
 ```rust
 pub struct HIPAAComplianceChecker {
@@ -1114,7 +1165,7 @@ impl HIPAAComplianceChecker {
 }
 ```
 
-## 总结
+## 1.8 总结
 
 医疗健康领域的Rust应用需要重点关注：
 

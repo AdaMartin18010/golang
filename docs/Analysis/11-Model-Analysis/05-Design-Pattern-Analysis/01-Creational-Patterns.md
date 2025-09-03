@@ -1,6 +1,72 @@
-# 创建型设计模式分析
+# 11.5.1 创建型设计模式分析
 
-## 目录
+<!-- TOC START -->
+- [11.5.1 创建型设计模式分析](#创建型设计模式分析)
+  - [11.5.1.1 目录](#目录)
+  - [11.5.1.2 1. 概述](#1-概述)
+    - [11.5.1.2.1 创建型模式分类](#创建型模式分类)
+    - [11.5.1.2.2 核心特征](#核心特征)
+  - [11.5.1.3 2. 创建型模式形式化定义](#2-创建型模式形式化定义)
+    - [11.5.1.3.1 创建型模式系统定义](#创建型模式系统定义)
+    - [11.5.1.3.2 创建过程形式化定义](#创建过程形式化定义)
+  - [11.5.1.4 3. 单例模式 (Singleton)](#3-单例模式-singleton)
+    - [11.5.1.4.1 形式化定义](#形式化定义)
+    - [11.5.1.4.2 Golang实现](#golang实现)
+      - [11.5.1.4.2.1 线程安全单例](#线程安全单例)
+      - [11.5.1.4.2.2 延迟初始化单例](#延迟初始化单例)
+    - [11.5.1.4.3 性能分析](#性能分析)
+  - [11.5.1.5 4. 工厂方法模式 (Factory Method)](#4-工厂方法模式-factory-method)
+    - [11.5.1.5.1 形式化定义](#形式化定义)
+    - [11.5.1.5.2 Golang实现](#golang实现)
+    - [11.5.1.5.3 性能分析](#性能分析)
+  - [11.5.1.6 5. 抽象工厂模式 (Abstract Factory)](#5-抽象工厂模式-abstract-factory)
+    - [11.5.1.6.1 形式化定义](#形式化定义)
+    - [11.5.1.6.2 Golang实现](#golang实现)
+    - [11.5.1.6.3 性能分析](#性能分析)
+  - [11.5.1.7 6. 建造者模式 (Builder)](#6-建造者模式-builder)
+    - [11.5.1.7.1 形式化定义](#形式化定义)
+    - [11.5.1.7.2 Golang实现](#golang实现)
+    - [11.5.1.7.3 性能分析](#性能分析)
+  - [11.5.1.8 7. 原型模式 (Prototype)](#7-原型模式-prototype)
+    - [11.5.1.8.1 形式化定义](#形式化定义)
+    - [11.5.1.8.2 Golang实现](#golang实现)
+      - [11.5.1.8.2.1 基本实现](#基本实现)
+      - [11.5.1.8.2.2 深拷贝与浅拷贝](#深拷贝与浅拷贝)
+      - [11.5.1.8.2.3 原型工厂](#原型工厂)
+    - [11.5.1.8.3 性能分析](#性能分析)
+    - [11.5.1.8.4 Golang最佳实践](#golang最佳实践)
+  - [11.5.1.9 8. 对象池模式 (Object Pool)](#8-对象池模式-object-pool)
+    - [11.5.1.9.1 形式化定义](#形式化定义)
+    - [11.5.1.9.2 Golang实现](#golang实现)
+      - [11.5.1.9.2.1 基本实现](#基本实现)
+      - [11.5.1.9.2.2 同步对象池](#同步对象池)
+      - [11.5.1.9.2.3 带监控的池](#带监控的池)
+    - [11.5.1.9.3 性能分析](#性能分析)
+    - [11.5.1.9.4 Golang最佳实践](#golang最佳实践)
+  - [11.5.1.10 9. 性能分析与最佳实践](#9-性能分析与最佳实践)
+    - [11.5.1.10.1 性能对比](#性能对比)
+    - [11.5.1.10.2 最佳实践](#最佳实践)
+      - [11.5.1.10.2.1 线程安全](#线程安全)
+      - [11.5.1.10.2.2 错误处理](#错误处理)
+      - [11.5.1.10.2.3 资源管理](#资源管理)
+    - [11.5.1.10.3 性能优化建议](#性能优化建议)
+  - [11.5.1.11 10. 参考文献](#10-参考文献)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 11.5.1.1 目录
 
 1. [概述](#1-概述)
 2. [创建型模式形式化定义](#2-创建型模式形式化定义)
@@ -15,17 +81,17 @@
 
 ---
 
-## 1. 概述
+## 11.5.1.2 1. 概述
 
 创建型模式关注对象的创建过程，提供灵活的创建机制，支持对象复用和缓存。在Golang中，创建型模式通过接口、结构体和函数实现，充分利用Go语言的简洁性和并发特性。
 
-### 1.1 创建型模式分类
+### 11.5.1.2.1 创建型模式分类
 
 创建型模式集合可以形式化定义为：
 
 $$C_{cre} = \{Singleton, FactoryMethod, AbstractFactory, Builder, Prototype, ObjectPool\}$$
 
-### 1.2 核心特征
+### 11.5.1.2.2 核心特征
 
 - **封装创建逻辑**: 将对象创建逻辑封装在专门的组件中
 - **提供灵活性**: 支持运行时选择创建策略
@@ -34,9 +100,9 @@ $$C_{cre} = \{Singleton, FactoryMethod, AbstractFactory, Builder, Prototype, Obj
 
 ---
 
-## 2. 创建型模式形式化定义
+## 11.5.1.3 2. 创建型模式形式化定义
 
-### 2.1 创建型模式系统定义
+### 11.5.1.3.1 创建型模式系统定义
 
 创建型模式系统可以定义为五元组：
 
@@ -50,7 +116,7 @@ $$\mathcal{CP} = (P_{cre}, I_{cre}, F_{cre}, E_{cre}, Q_{cre})$$
 - **$E_{cre}$** - 评估指标集合
 - **$Q_{cre}$** - 质量保证集合
 
-### 2.2 创建过程形式化定义
+### 11.5.1.3.2 创建过程形式化定义
 
 创建过程可以定义为状态转换系统：
 
@@ -66,9 +132,9 @@ $$\mathcal{C} = (S, \Sigma, \delta, s_0, F)$$
 
 ---
 
-## 3. 单例模式 (Singleton)
+## 11.5.1.4 3. 单例模式 (Singleton)
 
-### 3.1 形式化定义
+### 11.5.1.4.1 形式化定义
 
 单例模式确保一个类只有一个实例，并提供全局访问点。
 
@@ -85,9 +151,9 @@ stateDiagram-v2
     Initialized --> [*] : destroy()
 ```
 
-### 3.2 Golang实现
+### 11.5.1.4.2 Golang实现
 
-#### 3.2.1 线程安全单例
+#### 11.5.1.4.2.1 线程安全单例
 
 ```go
 package singleton
@@ -149,7 +215,7 @@ func (l *ConcreteLogger) GetLevel() string {
 }
 ```
 
-#### 3.2.2 延迟初始化单例
+#### 11.5.1.4.2.2 延迟初始化单例
 
 ```go
 package singleton
@@ -200,7 +266,7 @@ func (l *LazySingleton) Get(key string) (interface{}, bool) {
 }
 ```
 
-### 3.3 性能分析
+### 11.5.1.4.3 性能分析
 
 **时间复杂度**: $O(1)$ - 获取实例的时间复杂度为常数
 **空间复杂度**: $O(1)$ - 只占用一个实例的内存空间
@@ -209,9 +275,9 @@ func (l *LazySingleton) Get(key string) (interface{}, bool) {
 
 ---
 
-## 4. 工厂方法模式 (Factory Method)
+## 11.5.1.5 4. 工厂方法模式 (Factory Method)
 
-### 4.1 形式化定义
+### 11.5.1.5.1 形式化定义
 
 工厂方法模式定义一个用于创建对象的接口，让子类决定实例化哪一个类。
 
@@ -228,7 +294,7 @@ classDiagram
     ConcreteCreator --> ConcreteProduct : creates
 ```
 
-### 4.2 Golang实现
+### 11.5.1.5.2 Golang实现
 
 ```go
 package factory_method
@@ -317,7 +383,7 @@ func FactoryMethod(productType string) Creator {
 }
 ```
 
-### 4.3 性能分析
+### 11.5.1.5.3 性能分析
 
 **时间复杂度**: $O(1)$ - 创建产品的时间复杂度为常数
 **空间复杂度**: $O(1)$ - 每个产品实例占用固定空间
@@ -326,9 +392,9 @@ func FactoryMethod(productType string) Creator {
 
 ---
 
-## 5. 抽象工厂模式 (Abstract Factory)
+## 11.5.1.6 5. 抽象工厂模式 (Abstract Factory)
 
-### 5.1 形式化定义
+### 11.5.1.6.1 形式化定义
 
 抽象工厂模式创建一个相关或依赖对象的家族，而不需指定具体类。
 
@@ -337,7 +403,7 @@ $$AbstractFactory : FamilyType \rightarrow ProductFamily$$
 
 其中 $ProductFamily = \{Product_1, Product_2, ..., Product_n\}$
 
-### 5.2 Golang实现
+### 11.5.1.6.2 Golang实现
 
 ```go
 package abstract_factory
@@ -440,7 +506,7 @@ func (c *Client) Run() string {
 }
 ```
 
-### 5.3 性能分析
+### 11.5.1.6.3 性能分析
 
 **时间复杂度**: $O(1)$ - 创建产品家族的时间复杂度为常数
 **空间复杂度**: $O(n)$ - n为产品家族中的产品数量
@@ -449,9 +515,9 @@ func (c *Client) Run() string {
 
 ---
 
-## 6. 建造者模式 (Builder)
+## 11.5.1.7 6. 建造者模式 (Builder)
 
-### 6.1 形式化定义
+### 11.5.1.7.1 形式化定义
 
 建造者模式将一个复杂对象的构建与其表示分离，允许使用相同的构建过程创建不同的表示。
 
@@ -460,7 +526,7 @@ $$Builder : Configuration \rightarrow ComplexObject$$
 
 其中 $Configuration = \{param_1, param_2, ..., param_n\}$
 
-### 6.2 Golang实现
+### 11.5.1.7.2 Golang实现
 
 ```go
 package builder
@@ -563,7 +629,7 @@ func (b *FunctionalBuilder) Build() *Product {
 }
 ```
 
-### 6.3 性能分析
+### 11.5.1.7.3 性能分析
 
 **时间复杂度**: $O(n)$ - n为构建步骤的数量
 **空间复杂度**: $O(1)$ - 只占用一个产品实例的空间
@@ -572,9 +638,9 @@ func (b *FunctionalBuilder) Build() *Product {
 
 ---
 
-## 7. 原型模式 (Prototype)
+## 11.5.1.8 7. 原型模式 (Prototype)
 
-### 7.1 形式化定义
+### 11.5.1.8.1 形式化定义
 
 原型模式通过复制现有的实例创建新的实例，而不是通过新建。
 
@@ -583,9 +649,9 @@ $$Prototype : Original \rightarrow Clone$$
 
 其中 $Clone \approx Original$ (近似相等)
 
-### 7.2 Golang实现
+### 11.5.1.8.2 Golang实现
 
-#### 7.2.1 基本实现
+#### 11.5.1.8.2.1 基本实现
 
 ```go
 package prototype
@@ -664,7 +730,7 @@ func (r *PrototypeRegistry) Clone(name string) (Prototype, error) {
 }
 ```
 
-#### 7.2.2 深拷贝与浅拷贝
+#### 11.5.1.8.2.2 深拷贝与浅拷贝
 
 ```go
 package prototype
@@ -736,7 +802,7 @@ func (c *ComplexObject) ManualDeepCopy() *ComplexObject {
 }
 ```
 
-#### 7.2.3 原型工厂
+#### 11.5.1.8.2.3 原型工厂
 
 ```go
 package prototype
@@ -795,7 +861,7 @@ func (f *FunctionalPrototypeFactory) Create(name string) (interface{}, error) {
 }
 ```
 
-### 7.3 性能分析
+### 11.5.1.8.3 性能分析
 
 **时间复杂度**:
 
@@ -819,7 +885,7 @@ func (f *FunctionalPrototypeFactory) Create(name string) (interface{}, error) {
 | JSON序列化 | 实现简单 | 性能较差，不支持非导出字段 | 快速实现，简单对象 |
 | 浅拷贝 | 性能最佳 | 可能导致共享状态 | 不可变对象 |
 
-### 7.4 Golang最佳实践
+### 11.5.1.8.4 Golang最佳实践
 
 1. **利用接口**:
    - 定义清晰的Clone()接口
@@ -873,9 +939,9 @@ func (f *FunctionalPrototypeFactory) Create(name string) (interface{}, error) {
 
 ---
 
-## 8. 对象池模式 (Object Pool)
+## 11.5.1.9 8. 对象池模式 (Object Pool)
 
-### 8.1 形式化定义
+### 11.5.1.9.1 形式化定义
 
 对象池模式预先创建一组对象，需要时从池中获取对象，使用完毕后归还对象。
 
@@ -889,9 +955,9 @@ $$ObjectPool = (Pool, Acquire, Release, Validate)$$
 - $Release : (obj, Pool) \rightarrow Pool'$
 - $Validate : obj \rightarrow bool$
 
-### 8.2 Golang实现
+### 11.5.1.9.2 Golang实现
 
-#### 8.2.1 基本实现
+#### 11.5.1.9.2.1 基本实现
 
 ```go
 package object_pool
@@ -1005,7 +1071,7 @@ func (p *ObjectPool) Close() {
 }
 ```
 
-#### 8.2.2 同步对象池
+#### 11.5.1.9.2.2 同步对象池
 
 ```go
 package object_pool
@@ -1080,7 +1146,7 @@ func (p *ResourcePool) Release(res interface{}) {
 }
 ```
 
-#### 8.2.3 带监控的池
+#### 11.5.1.9.2.3 带监控的池
 
 ```go
 package object_pool
@@ -1209,7 +1275,7 @@ func (p *MetricsObjectPool) monitor() {
 }
 ```
 
-### 8.3 性能分析
+### 11.5.1.9.3 性能分析
 
 **时间复杂度**:
 
@@ -1238,7 +1304,7 @@ func (p *MetricsObjectPool) monitor() {
 | 通道池 | 精确控制大小，FIFO行为 | 实现复杂，需手动管理 | 数据库连接，HTTP客户端 |
 | 自定义池 | 完全控制，支持监控 | 需维护更多代码 | 关键资源，如GPU上下文 |
 
-### 8.4 Golang最佳实践
+### 11.5.1.9.4 Golang最佳实践
 
 1. **选择合适的池类型**:
    - 短生命周期、临时对象: 优先使用`sync.Pool`
@@ -1333,9 +1399,9 @@ func (p *MetricsObjectPool) monitor() {
 
 ---
 
-## 9. 性能分析与最佳实践
+## 11.5.1.10 9. 性能分析与最佳实践
 
-### 9.1 性能对比
+### 11.5.1.10.1 性能对比
 
 | 模式 | 创建时间 | 内存使用 | 线程安全 | 适用场景 |
 |------|----------|----------|----------|----------|
@@ -1346,9 +1412,9 @@ func (p *MetricsObjectPool) monitor() {
 | 原型 | O(n) | O(n) | 中 | 对象复制 |
 | 对象池 | O(1) | O(n) | 高 | 对象复用 |
 
-### 9.2 最佳实践
+### 11.5.1.10.2 最佳实践
 
-#### 9.2.1 线程安全
+#### 11.5.1.10.2.1 线程安全
 
 ```go
 // 使用sync.Once保证单例线程安全
@@ -1365,7 +1431,7 @@ func GetInstance() *Singleton {
 }
 ```
 
-#### 9.2.2 错误处理
+#### 11.5.1.10.2.2 错误处理
 
 ```go
 // 工厂方法中的错误处理
@@ -1381,7 +1447,7 @@ func CreateProduct(productType string) (Product, error) {
 }
 ```
 
-#### 9.2.3 资源管理
+#### 11.5.1.10.2.3 资源管理
 
 ```go
 // 对象池的资源管理
@@ -1395,7 +1461,7 @@ func (p *ObjectPool) AcquireWithContext(ctx context.Context) (PoolObject, error)
 }
 ```
 
-### 9.3 性能优化建议
+### 11.5.1.10.3 性能优化建议
 
 1. **使用对象池**: 对于创建成本高的对象，使用对象池模式
 2. **延迟初始化**: 对于不常用的单例，使用延迟初始化
@@ -1405,7 +1471,7 @@ func (p *ObjectPool) AcquireWithContext(ctx context.Context) (PoolObject, error)
 
 ---
 
-## 10. 参考文献
+## 11.5.1.11 10. 参考文献
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley.
 2. Freeman, E., Robson, E., Sierra, K., & Bates, B. (2004). Head First Design Patterns. O'Reilly Media.

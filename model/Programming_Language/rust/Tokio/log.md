@@ -1,4 +1,40 @@
-# Rust异步日志
+# 1 1 1 1 1 1 1 Rust异步日志
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust异步日志](#1-1-1-1-1-1-1-rust异步日志)
+  - [1.1 目录](#目录)
+  - [1.2 1. 初始化 OpenTelemetry](#1-初始化-opentelemetry)
+    - [1.2.1 2. 创建 Tracer](#2-创建-tracer)
+    - [1.2.2 3. 创建 Span](#3-创建-span)
+    - [1.2.3 4. 记录日志](#4-记录日志)
+    - [1.2.4 5. 导出跟踪数据](#5-导出跟踪数据)
+    - [1.2.5 6. 上下文传播](#6-上下文传播)
+    - [1.2.6 7. 错误处理](#7-错误处理)
+    - [1.2.7 总结](#总结)
+    - [1.2.8 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.2.9 2. 日志管理器实现](#2-日志管理器实现)
+    - [1.2.10 3. 跟踪器实现](#3-跟踪器实现)
+    - [1.2.11 4. 执行跟踪器实现](#4-执行跟踪器实现)
+    - [1.2.12 5. 异步任务跟踪器](#5-异步任务跟踪器)
+    - [1.2.13 6. 使用示例](#6-使用示例)
+    - [1.2.14 7. 错误处理和调试工具](#7-错误处理和调试工具)
+    - [1.2.15 8. 日志分析工具](#8-日志分析工具)
+    - [1.2.16 9. 配置示例](#9-配置示例)
+    - [1.2.17 10. 使用示例](#10-使用示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 要实现一个基于 Tokio 和异步日志的 OpenTelemetry 架构，您需要实现以下功能：
 
@@ -18,7 +54,7 @@
 
 以下是一个简单的示例，展示如何使用 Tokio、异步日志和 OpenTelemetry 实现这些功能。
 
-## 目录
+## 1.1 目录
 
 - [Rust异步日志](#rust异步日志)
   - [目录](#目录)
@@ -41,7 +77,7 @@
     - [9. 配置示例](#9-配置示例)
     - [10. 使用示例](#10-使用示例)
 
-## 1. 初始化 OpenTelemetry
+## 1.2 1. 初始化 OpenTelemetry
 
 首先，您需要在 `Cargo.toml` 中添加所需的依赖项：
 
@@ -54,7 +90,7 @@ log = "0.4"
 env_logger = "0.10"
 ```
 
-### 2. 创建 Tracer
+### 1.2.1 2. 创建 Tracer
 
 在应用程序的入口点，初始化 OpenTelemetry 和日志记录：
 
@@ -106,7 +142,7 @@ async fn init_tracer() -> Arc<dyn Tracer> {
 }
 ```
 
-### 3. 创建 Span
+### 1.2.2 3. 创建 Span
 
 在业务逻辑中创建 Span：
 
@@ -127,7 +163,7 @@ async fn perform_task(tracer: Arc<dyn Tracer>) {
 }
 ```
 
-### 4. 记录日志
+### 1.2.3 4. 记录日志
 
 在 Span 内部记录日志信息：
 
@@ -149,11 +185,11 @@ async fn another_task(tracer: Arc<dyn Tracer>) {
 }
 ```
 
-### 5. 导出跟踪数据
+### 1.2.4 5. 导出跟踪数据
 
 在 `init_tracer` 函数中，您已经设置了 Jaeger 导出器。确保 Jaeger 代理正在运行并监听指定的端口。
 
-### 6. 上下文传播
+### 1.2.5 6. 上下文传播
 
 在异步操作中，您可以使用 `opentelemetry::Context` 来传播上下文。以下是一个示例：
 
@@ -174,7 +210,7 @@ async fn context_propagation_example(tracer: Arc<dyn Tracer>) {
 }
 ```
 
-### 7. 错误处理
+### 1.2.6 7. 错误处理
 
 在跟踪和日志记录过程中，您可以使用 `Result` 类型来处理错误。例如：
 
@@ -203,14 +239,14 @@ async fn perform_risky_operation(tracer: Arc<dyn Tracer>) {
 }
 ```
 
-### 总结
+### 1.2.7 总结
 
 通过以上步骤，您可以使用 Tokio 和异步日志结合 OpenTelemetry 实现一个完整的监控架构。
 您可以根据需要扩展和修改这些示例，以适应您的具体应用场景。确保在生产环境中使用适当的错误处理和日志记录策略，以便更好地监控和调试应用程序。
 
 下面是一个详细的示例，展示如何使用 Tokio、tracing、tracing-subscriber 和 console 实现日志的滚动覆盖、压缩存储以及跟踪程序执行顺序的功能。
 
-### 1. 项目依赖配置
+### 1.2.8 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -225,7 +261,7 @@ rolling-file = "0.2"
 flate2 = "1.0"
 ```
 
-### 2. 日志管理器实现
+### 1.2.9 2. 日志管理器实现
 
 ```rust
 use std::path::PathBuf;
@@ -291,7 +327,7 @@ impl LogManager {
 }
 ```
 
-### 3. 跟踪器实现
+### 1.2.10 3. 跟踪器实现
 
 ```rust
 use tracing::{span, Level, Subscriber};
@@ -384,7 +420,7 @@ where
 }
 ```
 
-### 4. 执行跟踪器实现
+### 1.2.11 4. 执行跟踪器实现
 
 ```rust
 use std::time::Instant;
@@ -439,7 +475,7 @@ thread_local! {
 }
 ```
 
-### 5. 异步任务跟踪器
+### 1.2.12 5. 异步任务跟踪器
 
 ```rust
 use std::future::Future;
@@ -484,7 +520,7 @@ impl<F: Future> Future for AsyncTaskTracer<F> {
 }
 ```
 
-### 6. 使用示例
+### 1.2.13 6. 使用示例
 
 ```rust
 #[tokio::main]
@@ -528,7 +564,7 @@ async fn nested_task() {
 }
 ```
 
-### 7. 错误处理和调试工具
+### 1.2.14 7. 错误处理和调试工具
 
 ```rust
 pub struct DebugInfo {
@@ -569,7 +605,7 @@ pub fn setup_panic_hook() {
 }
 ```
 
-### 8. 日志分析工具
+### 1.2.15 8. 日志分析工具
 
 ```rust
 pub struct LogAnalyzer {
@@ -627,7 +663,7 @@ pub struct LogStats {
 }
 ```
 
-### 9. 配置示例
+### 1.2.16 9. 配置示例
 
 ```rust
 use serde::Deserialize;
@@ -649,7 +685,7 @@ impl LogConfig {
 }
 ```
 
-### 10. 使用示例
+### 1.2.17 10. 使用示例
 
 ```rust
 #[tokio::main]

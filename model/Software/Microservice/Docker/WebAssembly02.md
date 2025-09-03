@@ -1,7 +1,43 @@
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 WebAssembly与系统生态的形式化分析](#1-1-1-1-1-1-1-webassembly与系统生态的形式化分析)
+  - [1.1 目录](#目录)
+  - [1.2 1. WebAssembly基础形式化定义](#1-webassembly基础形式化定义)
+    - [1.2.1 形式系统表示](#形式系统表示)
+    - [1.2.2 类型系统与安全性证明](#类型系统与安全性证明)
+    - [1.2.3 执行语义形式化](#执行语义形式化)
+  - [1.3 2. WebAssembly与容器技术形式化对比](#2-webassembly与容器技术形式化对比)
+    - [1.3.1 执行模型对比](#执行模型对比)
+    - [1.3.2 隔离机制形式化](#隔离机制形式化)
+    - [1.3.3 资源管理模型](#资源管理模型)
+  - [1.4 3. WebAssembly与Linux系统集成](#3-webassembly与linux系统集成)
+    - [1.4.1 系统调用映射](#系统调用映射)
+    - [1.4.2 内核交互模型](#内核交互模型)
+    - [1.4.3 安全策略形式化](#安全策略形式化)
+  - [1.5 4. 编程语言到WebAssembly的形式化映射](#4-编程语言到webassembly的形式化映射)
+    - [1.5.1 类型系统映射](#类型系统映射)
+    - [1.5.2 内存模型转换](#内存模型转换)
+    - [1.5.3 控制流表示](#控制流表示)
+  - [1.6 5. 实际应用与代码示例](#5-实际应用与代码示例)
+    - [1.6.1 Rust与WebAssembly](#rust与webassembly)
+    - [1.6.2 Go与WebAssembly](#go与webassembly)
+    - [1.6.3 混合部署架构](#混合部署架构)
+  - [1.7 6. 未来发展的形式化模型](#6-未来发展的形式化模型)
+    - [1.7.1 组件模型形式化](#组件模型形式化)
+    - [1.7.2 分布式执行理论](#分布式执行理论)
+    - [1.7.3 形式化验证前景](#形式化验证前景)
+  - [1.8 7. 思维导图](#7-思维导图)
+<!-- TOC END -->
 
-# WebAssembly与系统生态的形式化分析
 
-## 目录
+
+
+
+
+
+
+# 1 1 1 1 1 1 1 WebAssembly与系统生态的形式化分析
+
+## 1.1 目录
 
 - [WebAssembly与系统生态的形式化分析](#webassembly与系统生态的形式化分析)
   - [目录](#目录)
@@ -31,9 +67,9 @@
     - [6.3 形式化验证前景](#63-形式化验证前景)
   - [7. 思维导图](#7-思维导图)
 
-## 1. WebAssembly基础形式化定义
+## 1.2 1. WebAssembly基础形式化定义
 
-### 1.1 形式系统表示
+### 1.2.1 形式系统表示
 
 WebAssembly可以形式化表示为一个完整的计算系统 $\mathcal{W} = (T, F, M, I, E, R)$，其中：
 
@@ -52,7 +88,7 @@ WebAssembly可以形式化表示为一个完整的计算系统 $\mathcal{W} = (T
 
 这两个定理共同保证WebAssembly程序的执行不会"卡住"，且类型在执行过程中保持一致。
 
-### 1.2 类型系统与安全性证明
+### 1.2.2 类型系统与安全性证明
 
 WebAssembly类型系统可以形式化为判断式 $\Gamma \vdash e : \tau$，表示在上下文 $\Gamma$ 中表达式 $e$ 具有类型 $\tau$。
 
@@ -76,7 +112,7 @@ WebAssembly类型系统可以形式化为判断式 $\Gamma \vdash e : \tau$，�
 
 证明：通过归纳法证明验证过程确保所有内存访问指令在执行前进行边界检查。
 
-### 1.3 执行语义形式化
+### 1.2.3 执行语义形式化
 
 WebAssembly执行语义可以形式化为小步操作语义：
 
@@ -103,9 +139,9 @@ $\frac{addr + n \leq |memory|}{S, v; (i32.store~n~addr)::instr \Rightarrow S[mem
 程序执行可以表示为状态转换序列：
 $S_0 \xrightarrow{i_1} S_1 \xrightarrow{i_2} \ldots \xrightarrow{i_n} S_n$
 
-## 2. WebAssembly与容器技术形式化对比
+## 1.3 2. WebAssembly与容器技术形式化对比
 
-### 2.1 执行模型对比
+### 1.3.1 执行模型对比
 
 WebAssembly和Docker容器执行模型可以通过形式化模型进行对比：
 
@@ -134,7 +170,7 @@ $\mathcal{E}_C = (OS, N, I, O, S, T)$，其中：
 2. 状态空间：$|S_W| \ll |S_C|$，WebAssembly状态空间显著小于容器
 3. 转换函数复杂度：$complexity(T_W) < complexity(T_C)$
 
-### 2.2 隔离机制形式化
+### 1.3.2 隔离机制形式化
 
 WebAssembly和容器技术使用不同的隔离机制：
 
@@ -173,7 +209,7 @@ pub fn safe_memory_access(ptr: u32, len: u32) -> Result<u32, String> {
 }
 ```
 
-### 2.3 资源管理模型
+### 1.3.3 资源管理模型
 
 WebAssembly和容器技术的资源管理模型形式化对比：
 
@@ -206,9 +242,9 @@ $R_C = (CPU, Mem, IO, Net, FS)$，其中：
 - $U(CPU, p_W) \approx U(CPU, p_C)$：CPU利用率类似
 - $startup(p_W) \ll startup(p_C)$：WebAssembly启动时间显著短于容器
 
-## 3. WebAssembly与Linux系统集成
+## 1.4 3. WebAssembly与Linux系统集成
 
-### 3.1 系统调用映射
+### 1.4.1 系统调用映射
 
 WebAssembly通过WASI (WebAssembly System Interface) 实现与操作系统的交互，可形式化为映射关系：
 
@@ -254,7 +290,7 @@ fn wasi_file_example() -> io::Result<()> {
 }
 ```
 
-### 3.2 内核交互模型
+### 1.4.2 内核交互模型
 
 WebAssembly与Linux内核交互模型的形式化表示：
 
@@ -279,7 +315,7 @@ WebAssembly程序与Linux内核交互：$W \xrightarrow{WASI} R \xrightarrow{sys
 
 $\forall s \in Syscalls, \forall a \in Args, W \xrightarrow{s,a} K \Rightarrow F(s,a) = allow$
 
-### 3.3 安全策略形式化
+### 1.4.3 安全策略形式化
 
 WebAssembly与Linux安全机制的形式化对比：
 
@@ -332,9 +368,9 @@ fn capability_example() {
 // 运行命令：wasmtime --dir=./authorized_dir capability_example.wasm
 ```
 
-## 4. 编程语言到WebAssembly的形式化映射
+## 1.5 4. 编程语言到WebAssembly的形式化映射
 
-### 4.1 类型系统映射
+### 1.5.1 类型系统映射
 
 不同编程语言类型系统到WebAssembly类型系统的形式化映射：
 
@@ -372,7 +408,7 @@ T_Go(interface{}) = (i32, i32) // 类型ID和数据指针对
 则在WebAssembly中 $T_\Gamma \vdash_W T_e : T_\tau$，
 其中 $T_\Gamma$, $T_e$, $T_\tau$ 分别是上下文、表达式和类型的映射。
 
-### 4.2 内存模型转换
+### 1.5.2 内存模型转换
 
 编程语言内存模型到WebAssembly线性内存的形式化转换：
 
@@ -445,7 +481,7 @@ func main() {
 // )
 ```
 
-### 4.3 控制流表示
+### 1.5.3 控制流表示
 
 编程语言控制流结构到WebAssembly控制指令的形式化映射：
 
@@ -502,9 +538,9 @@ C(try s1 catch(e) s2) =
   )
 ```
 
-## 5. 实际应用与代码示例
+## 1.6 5. 实际应用与代码示例
 
-### 5.1 Rust与WebAssembly
+### 1.6.1 Rust与WebAssembly
 
 Rust作为WebAssembly的首选语言之一，提供了优秀的编译支持和生态系统：
 
@@ -650,7 +686,7 @@ async function processImage() {
 }
 ```
 
-### 5.2 Go与WebAssembly
+### 1.6.2 Go与WebAssembly
 
 Go语言对WebAssembly的支持逐渐成熟，提供了不同于Rust的编程模型：
 
@@ -779,7 +815,7 @@ async function initGoWasm() {
 initGoWasm().catch(console.error);
 ```
 
-### 5.3 混合部署架构
+### 1.6.3 混合部署架构
 
 WebAssembly、Docker容器和传统服务的混合部署架构示例：
 
@@ -1177,9 +1213,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## 6. 未来发展的形式化模型
+## 1.7 6. 未来发展的形式化模型
 
-### 6.1 组件模型形式化
+### 1.7.1 组件模型形式化
 
 WebAssembly组件模型的形式化定义：
 
@@ -1288,7 +1324,7 @@ impl exports::text_analysis::Guest for TextAnalyzer {
 }
 ```
 
-### 6.2 分布式执行理论
+### 1.7.2 分布式执行理论
 
 WebAssembly分布式执行的形式化理论模型：
 
@@ -1461,7 +1497,7 @@ impl Node {
 }
 ```
 
-### 6.3 形式化验证前景
+### 1.7.3 形式化验证前景
 
 WebAssembly形式化验证的未来发展方向：
 
@@ -1542,7 +1578,7 @@ fn main() {
 }
 ```
 
-## 7. 思维导图
+## 1.8 7. 思维导图
 
 ```mermaid
 mindmap

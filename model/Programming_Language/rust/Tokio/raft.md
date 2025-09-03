@@ -1,8 +1,36 @@
-# rust 实现raft
+# 1 1 1 1 1 1 1 rust 实现raft
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 rust 实现raft](#1-1-1-1-1-1-1-rust-实现raft)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+  - [1.3 2. Proto 定义](#2-proto-定义)
+  - [1.4 3. Raft 节点实现](#3-raft-节点实现)
+  - [1.5 4. gRPC 服务实现](#4-grpc-服务实现)
+    - [1.5.1 5. 状态机实现](#5-状态机实现)
+    - [1.5.2 6. 存储实现](#6-存储实现)
+    - [1.5.3 7. 中间件实现](#7-中间件实现)
+    - [1.5.4 8. 客户端实现](#8-客户端实现)
+    - [1.5.5 9. 服务器启动](#9-服务器启动)
+    - [1.5.6 10. 使用示例](#10-使用示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下面是一个使用 Rust 2024 + Tonic + Tower + Raft 实现的完整分布式系统示例：
 
-## 目录
+## 1.1 目录
 
 - [rust 实现raft](#rust-实现raft)
   - [目录](#目录)
@@ -17,7 +45,7 @@
     - [9. 服务器启动](#9-服务器启动)
     - [10. 使用示例](#10-使用示例)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -38,7 +66,7 @@ dashmap = "5.5"
 tonic-build = "0.10"
 ```
 
-## 2. Proto 定义
+## 1.3 2. Proto 定义
 
 ```protobuf
 // raft_service.proto
@@ -124,7 +152,7 @@ message ClientResponse {
 // ... (其他消息定义)
 ```
 
-## 3. Raft 节点实现
+## 1.4 3. Raft 节点实现
 
 ```rust
 use raft::{
@@ -236,7 +264,7 @@ impl RaftServer {
 }
 ```
 
-## 4. gRPC 服务实现
+## 1.5 4. gRPC 服务实现
 
 ```rust
 #[derive(Debug)]
@@ -356,7 +384,7 @@ impl RaftNode for RaftService {
 }
 ```
 
-### 5. 状态机实现
+### 1.5.1 5. 状态机实现
 
 ```rust
 pub struct StateMachine {
@@ -407,7 +435,7 @@ impl StateMachine {
 }
 ```
 
-### 6. 存储实现
+### 1.5.2 6. 存储实现
 
 ```rust
 pub struct RaftStorage {
@@ -478,7 +506,7 @@ impl Storage for RaftStorage {
 }
 ```
 
-### 7. 中间件实现
+### 1.5.3 7. 中间件实现
 
 ```rust
 pub struct RaftMiddleware<S> {
@@ -531,7 +559,7 @@ where
 }
 ```
 
-### 8. 客户端实现
+### 1.5.4 8. 客户端实现
 
 ```rust
 pub struct RaftClient {
@@ -592,7 +620,7 @@ impl RaftClient {
 }
 ```
 
-### 9. 服务器启动
+### 1.5.5 9. 服务器启动
 
 ```rust
 #[tokio::main]
@@ -629,7 +657,7 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-### 10. 使用示例
+### 1.5.6 10. 使用示例
 
 ```rust
 async fn example() -> anyhow::Result<()> {

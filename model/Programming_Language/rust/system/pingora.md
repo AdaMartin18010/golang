@@ -1,4 +1,56 @@
-# 使用Pingora实现分布式HTTP集群服务 (Rust 2025)
+# 1 1 1 1 1 1 1 使用Pingora实现分布式HTTP集群服务 (Rust 2025)
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 使用Pingora实现分布式HTTP集群服务 (Rust 2025)](#1-1-1-1-1-1-1-使用pingora实现分布式http集群服务-rust-2025)
+  - [1.1 系统架构概览](#系统架构概览)
+  - [1.2 一、核心HTTP网关服务实现](#一、核心http网关服务实现)
+- [2 2 2 2 2 2 2 Pingora 2025版本核心组件](#2-2-2-2-2-2-2-pingora-2025版本核心组件)
+- [3 3 3 3 3 3 3 异步运行时](#3-3-3-3-3-3-3-异步运行时)
+- [4 4 4 4 4 4 4 观测和监控](#4-4-4-4-4-4-4-观测和监控)
+- [5 5 5 5 5 5 5 gRPC 和协议](#5-5-5-5-5-5-5-grpc-和协议)
+- [6 6 6 6 6 6 6 认证与会话](#6-6-6-6-6-6-6-认证与会话)
+- [7 7 7 7 7 7 7 消息队列](#7-7-7-7-7-7-7-消息队列)
+- [8 8 8 8 8 8 8 实用工具](#8-8-8-8-8-8-8-实用工具)
+    - [8 8 8 8 8 8 8 主应用服务器实现](#8-8-8-8-8-8-8-主应用服务器实现)
+  - [8.1 二、配置、监控和日志模块](#二、配置、监控和日志模块)
+  - [8.2 三、认证和授权中间件](#三、认证和授权中间件)
+  - [8.3 四、中间件实现](#四、中间件实现)
+  - [8.4 五、gRPC服务集成](#五、grpc服务集成)
+  - [8.5 六、消息队列集成和用户行为跟踪](#六、消息队列集成和用户行为跟踪)
+  - [8.6 七、配置文件示例](#七、配置文件示例)
+- [9 9 9 9 9 9 9 config/default.toml](#9-9-9-9-9-9-9-configdefaulttoml)
+- [10 10 10 10 10 10 10 上游服务配置](#10-10-10-10-10-10-10-上游服务配置)
+  - [10.1 八、部署与Docker配置](#八、部署与docker配置)
+- [11 11 11 11 11 11 11 Dockerfile](#11-11-11-11-11-11-11-dockerfile)
+- [12 12 12 12 12 12 12 安装构建依赖](#12-12-12-12-12-12-12-安装构建依赖)
+- [13 13 13 13 13 13 13 复制项目文件](#13-13-13-13-13-13-13-复制项目文件)
+- [14 14 14 14 14 14 14 构建应用](#14-14-14-14-14-14-14-构建应用)
+- [15 15 15 15 15 15 15 创建最终镜像](#15-15-15-15-15-15-15-创建最终镜像)
+- [16 16 16 16 16 16 16 安装运行时依赖](#16-16-16-16-16-16-16-安装运行时依赖)
+- [17 17 17 17 17 17 17 创建非root用户](#17-17-17-17-17-17-17-创建非root用户)
+- [18 18 18 18 18 18 18 从构建阶段复制二进制文件](#18-18-18-18-18-18-18-从构建阶段复制二进制文件)
+- [19 19 19 19 19 19 19 复制配置文件](#19-19-19-19-19-19-19-复制配置文件)
+- [20 20 20 20 20 20 20 设置权限](#20-20-20-20-20-20-20-设置权限)
+- [21 21 21 21 21 21 21 切换到非root用户](#21-21-21-21-21-21-21-切换到非root用户)
+- [22 22 22 22 22 22 22 设置环境变量](#22-22-22-22-22-22-22-设置环境变量)
+- [23 23 23 23 23 23 23 暴露端口](#23-23-23-23-23-23-23-暴露端口)
+- [24 24 24 24 24 24 24 启动应用](#24-24-24-24-24-24-24-启动应用)
+- [25 25 25 25 25 25 25 docker-compose.yml](#25-25-25-25-25-25-25-docker-composeyml)
+  - [25.1 九、总结与功能概览](#九、总结与功能概览)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```text
 Let me organize my thoughts on implementing a distributed HTTP cluster service using Pingora (Rust) in 2025. This is a comprehensive request covering several key aspects:
@@ -28,7 +80,7 @@ Let me organize my thoughts on implementing a distributed HTTP cluster service u
 For a 2025 version, I'll need to extrapolate current Rust ecosystem trends, especially for Pingora which is still evolving. I'll base this on realistic projections of where these technologies might be by 2025.
 ```
 
-## 系统架构概览
+## 1.1 系统架构概览
 
 ```text
 ┌───────────────────────────────────────────────────────────────┐
@@ -58,7 +110,7 @@ For a 2025 version, I'll need to extrapolate current Rust ecosystem trends, espe
 └───────────────────────────┘     └───────────────────────────┘
 ```
 
-## 一、核心HTTP网关服务实现
+## 1.2 一、核心HTTP网关服务实现
 
 首先，创建项目并添加依赖：
 
@@ -70,7 +122,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-# Pingora 2025版本核心组件
+# 2 2 2 2 2 2 2 Pingora 2025版本核心组件
 pingora = { version = "0.10", features = ["full"] }
 pingora-core = "0.10"
 pingora-http = "0.10"
@@ -82,10 +134,10 @@ pingora-tls = "0.10"
 pingora-quic = "0.10"
 pingora-grpc = "0.10"  # gRPC支持组件
 
-# 异步运行时
+# 3 3 3 3 3 3 3 异步运行时
 tokio = { version = "2.0", features = ["full", "tracing"] }
 
-# 观测和监控
+# 4 4 4 4 4 4 4 观测和监控
 opentelemetry = { version = "2.0", features = ["trace", "metrics"] }
 opentelemetry-otlp = { version = "1.0", features = ["trace", "metrics"] }
 tracing = "1.0"
@@ -94,22 +146,22 @@ tracing-opentelemetry = "1.0"
 metrics = "1.0"
 metrics-exporter-prometheus = "1.0"
 
-# gRPC 和协议
+# 5 5 5 5 5 5 5 gRPC 和协议
 tonic = "1.0"
 tonic-build = "1.0"
 prost = "1.0"
 prost-types = "1.0"
 
-# 认证与会话
+# 6 6 6 6 6 6 6 认证与会话
 jsonwebtoken = "10.0"
 session = "1.0"
 uuid = { version = "2.0", features = ["v4", "serde"] }
 
-# 消息队列
+# 7 7 7 7 7 7 7 消息队列
 rdkafka = { version = "1.0", features = ["ssl", "sasl", "dynamic-linking"] }
 async-nats = "1.0"
 
-# 实用工具
+# 8 8 8 8 8 8 8 实用工具
 serde = { version = "2.0", features = ["derive"] }
 serde_json = "2.0"
 futures = "1.0"
@@ -123,7 +175,7 @@ http = "1.0"
 bytes = "2.0"
 ```
 
-### 主应用服务器实现
+### 8 8 8 8 8 8 8 主应用服务器实现
 
 ```rust
 use anyhow::Result;
@@ -468,7 +520,7 @@ async fn main() -> Result<()> {
 }
 ```
 
-## 二、配置、监控和日志模块
+## 8.1 二、配置、监控和日志模块
 
 ```rust
 // src/config.rs
@@ -737,7 +789,7 @@ pub fn setup_metrics(config: &MetricsConfig) -> Result<PrometheusHandle> {
 }
 ```
 
-## 三、认证和授权中间件
+## 8.2 三、认证和授权中间件
 
 ```rust
 // src/auth.rs
@@ -1007,7 +1059,7 @@ Let me continue from where it left off, starting with completing the session aut
 }
 ```
 
-## 四、中间件实现
+## 8.3 四、中间件实现
 
 ```rust
 // src/middleware.rs
@@ -1464,7 +1516,7 @@ impl RequestMiddleware for SessionManager {
 }
 ```
 
-## 五、gRPC服务集成
+## 8.4 五、gRPC服务集成
 
 ```rust
 // src/grpc.rs
@@ -1833,7 +1885,7 @@ impl GrpcServiceManager {
 }
 ```
 
-## 六、消息队列集成和用户行为跟踪
+## 8.5 六、消息队列集成和用户行为跟踪
 
 ```rust
 // src/mq.rs
@@ -2334,10 +2386,10 @@ impl UserBehaviorTracker {
 }
 ```
 
-## 七、配置文件示例
+## 8.6 七、配置文件示例
 
 ```toml
-# config/default.toml
+# 9 9 9 9 9 9 9 config/default.toml
 [server]
 listen_addr = "0.0.0.0:8080"
 listen_addr_tls = "0.0.0.0:8443"
@@ -2437,7 +2489,7 @@ kafka_bootstrap_servers = "localhost:9092"
 use_nats = true
 nats_server_url = "nats://localhost:4222"
 
-# 上游服务配置
+# 10 10 10 10 10 10 10 上游服务配置
 [upstreams.api]
 servers = ["127.0.0.1:3000", "127.0.0.1:3001"]
 health_check_interval_secs = 5
@@ -2451,15 +2503,15 @@ servers = ["127.0.0.1:3020", "127.0.0.1:3021"]
 health_check_interval_secs = 10
 ```
 
-## 八、部署与Docker配置
+## 10.1 八、部署与Docker配置
 
 ```dockerfile
-# Dockerfile
+# 11 11 11 11 11 11 11 Dockerfile
 FROM rust:1.75 as builder
 
 WORKDIR /app
 
-# 安装构建依赖
+# 12 12 12 12 12 12 12 安装构建依赖
 RUN apt-get update && \
     apt-get install -y \
     protobuf-compiler \
@@ -2468,58 +2520,58 @@ RUN apt-get update && \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制项目文件
+# 13 13 13 13 13 13 13 复制项目文件
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src/
 COPY proto ./proto/
 COPY build.rs ./
 
-# 构建应用
+# 14 14 14 14 14 14 14 构建应用
 RUN cargo build --release
 
-# 创建最终镜像
+# 15 15 15 15 15 15 15 创建最终镜像
 FROM debian:bookworm-slim
 
-# 安装运行时依赖
+# 16 16 16 16 16 16 16 安装运行时依赖
 RUN apt-get update && \
     apt-get install -y \
     ca-certificates \
     libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-# 创建非root用户
+# 17 17 17 17 17 17 17 创建非root用户
 RUN groupadd -r pingora && useradd -r -g pingora pingora
 
 WORKDIR /app
 
-# 从构建阶段复制二进制文件
+# 18 18 18 18 18 18 18 从构建阶段复制二进制文件
 COPY --from=builder /app/target/release/pingora-gateway /app/pingora-gateway
 
-# 复制配置文件
+# 19 19 19 19 19 19 19 复制配置文件
 COPY config /app/config/
 COPY certs /app/certs/
 
-# 设置权限
+# 20 20 20 20 20 20 20 设置权限
 RUN chown -R pingora:pingora /app && \
     chmod -R 755 /app
 
-# 切换到非root用户
+# 21 21 21 21 21 21 21 切换到非root用户
 USER pingora
 
-# 设置环境变量
+# 22 22 22 22 22 22 22 设置环境变量
 ENV RUST_LOG=info
 
-# 暴露端口
+# 23 23 23 23 23 23 23 暴露端口
 EXPOSE 8080 8443 9090 9091
 
-# 启动应用
+# 24 24 24 24 24 24 24 启动应用
 CMD ["/app/pingora-gateway", "--config", "/app/config/default.toml"]
 ```
 
 使用Docker Compose进行部署：
 
 ```yaml
-# docker-compose.yml
+# 25 25 25 25 25 25 25 docker-compose.yml
 version: '3.8'
 
 services:
@@ -2629,7 +2681,7 @@ volumes:
   prometheus-data:
 ```
 
-## 九、总结与功能概览
+## 25.1 九、总结与功能概览
 
 使用Rust 2025版Pingora实现的分布式HTTP集群服务具有以下核心功能特性：
 

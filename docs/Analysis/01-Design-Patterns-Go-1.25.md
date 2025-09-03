@@ -1,6 +1,47 @@
-# Go 1.25 设计模式综合分析
+# 1 1 1 1 1 1 1 Go 1.25 设计模式综合分析
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Go 1.25 设计模式综合分析](#1-1-1-1-1-1-1-go-125-设计模式综合分析)
+  - [1.1 目录](#目录)
+  - [1.2 创建型模式](#创建型模式)
+    - [1.2.1 单例模式 (Singleton)](#单例模式-singleton)
+    - [1.2.2 工厂模式 (Factory)](#工厂模式-factory)
+    - [1.2.3 建造者模式 (Builder)](#建造者模式-builder)
+  - [1.3 结构型模式](#结构型模式)
+    - [1.3.1 适配器模式 (Adapter)](#适配器模式-adapter)
+    - [1.3.2 装饰器模式 (Decorator)](#装饰器模式-decorator)
+    - [1.3.3 代理模式 (Proxy)](#代理模式-proxy)
+  - [1.4 行为型模式](#行为型模式)
+    - [1.4.1 观察者模式 (Observer)](#观察者模式-observer)
+    - [1.4.2 策略模式 (Strategy)](#策略模式-strategy)
+    - [1.4.3 命令模式 (Command)](#命令模式-command)
+  - [1.5 并发型模式](#并发型模式)
+    - [1.5.1 工作池模式 (Worker Pool)](#工作池模式-worker-pool)
+    - [1.5.2 发布订阅模式 (Pub/Sub)](#发布订阅模式-pubsub)
+    - [1.5.3 管道模式 (Pipeline)](#管道模式-pipeline)
+  - [1.6 云原生模式](#云原生模式)
+    - [1.6.1 健康检查模式 (Health Check)](#健康检查模式-health-check)
+    - [1.6.2 配置管理模式 (Configuration Management)](#配置管理模式-configuration-management)
+  - [1.7 性能优化模式](#性能优化模式)
+    - [1.7.1 对象池模式 (Object Pool)](#对象池模式-object-pool)
+    - [1.7.2 缓存模式 (Cache)](#缓存模式-cache)
+  - [1.8 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 1. [创建型模式](#创建型模式)
 2. [结构型模式](#结构型模式)
@@ -9,9 +50,9 @@
 5. [云原生模式](#云原生模式)
 6. [性能优化模式](#性能优化模式)
 
-## 创建型模式
+## 1.2 创建型模式
 
-### 1.1 单例模式 (Singleton)
+### 1.2.1 单例模式 (Singleton)
 
 ```go
 // 线程安全的单例模式
@@ -65,7 +106,7 @@ func GetGenericInstance[T any](key string, factory func() T) T {
 }
 ```
 
-### 1.2 工厂模式 (Factory)
+### 1.2.2 工厂模式 (Factory)
 
 ```go
 // 抽象工厂模式
@@ -107,7 +148,7 @@ func NewGenericFactory[T Product](creator func() T) GenericFactory[T] {
 }
 ```
 
-### 1.3 建造者模式 (Builder)
+### 1.2.3 建造者模式 (Builder)
 
 ```go
 // 建造者模式
@@ -153,9 +194,9 @@ func (b *ComputerBuilder) Build() *Computer {
 }
 ```
 
-## 结构型模式
+## 1.3 结构型模式
 
-### 2.1 适配器模式 (Adapter)
+### 1.3.1 适配器模式 (Adapter)
 
 ```go
 // 适配器模式
@@ -188,7 +229,7 @@ func (a *Adapter) NewMethod() string {
 }
 ```
 
-### 2.2 装饰器模式 (Decorator)
+### 1.3.2 装饰器模式 (Decorator)
 
 ```go
 // 装饰器模式
@@ -226,7 +267,7 @@ func (l *LoggingDecorator) Operation() string {
 }
 ```
 
-### 2.3 代理模式 (Proxy)
+### 1.3.3 代理模式 (Proxy)
 
 ```go
 // 代理模式
@@ -265,9 +306,9 @@ func (p *Proxy) Request() string {
 }
 ```
 
-## 行为型模式
+## 1.4 行为型模式
 
-### 3.1 观察者模式 (Observer)
+### 1.4.1 观察者模式 (Observer)
 
 ```go
 // 观察者模式
@@ -322,7 +363,7 @@ func (s *ConcreteSubject) SetData(data interface{}) {
 }
 ```
 
-### 3.2 策略模式 (Strategy)
+### 1.4.2 策略模式 (Strategy)
 
 ```go
 // 策略模式
@@ -362,7 +403,7 @@ func (q *QuickSortStrategy) Execute(data interface{}) interface{} {
 }
 ```
 
-### 3.3 命令模式 (Command)
+### 1.4.3 命令模式 (Command)
 
 ```go
 // 命令模式
@@ -408,9 +449,9 @@ func (i *Invoker) ExecuteCommands() {
 }
 ```
 
-## 并发型模式
+## 1.5 并发型模式
 
-### 4.1 工作池模式 (Worker Pool)
+### 1.5.1 工作池模式 (Worker Pool)
 
 ```go
 // 工作池模式
@@ -475,7 +516,7 @@ func (wp *WorkerPool) Close() {
 }
 ```
 
-### 4.2 发布订阅模式 (Pub/Sub)
+### 1.5.2 发布订阅模式 (Pub/Sub)
 
 ```go
 // 发布订阅模式
@@ -527,7 +568,7 @@ func (l *LoggingSubscriber) OnEvent(event Event) {
 }
 ```
 
-### 4.3 管道模式 (Pipeline)
+### 1.5.3 管道模式 (Pipeline)
 
 ```go
 // 管道模式
@@ -594,9 +635,9 @@ func (cp *ConcurrentPipeline) Execute(input interface{}) interface{} {
 }
 ```
 
-## 云原生模式
+## 1.6 云原生模式
 
-### 5.1 健康检查模式 (Health Check)
+### 1.6.1 健康检查模式 (Health Check)
 
 ```go
 // 健康检查模式
@@ -665,7 +706,7 @@ func (dhc *DatabaseHealthChecker) Check() HealthStatus {
 }
 ```
 
-### 5.2 配置管理模式 (Configuration Management)
+### 1.6.2 配置管理模式 (Configuration Management)
 
 ```go
 // 配置管理模式
@@ -764,9 +805,9 @@ func (cw *ConfigWatcher) reloadConfig() {
 }
 ```
 
-## 性能优化模式
+## 1.7 性能优化模式
 
-### 6.1 对象池模式 (Object Pool)
+### 1.7.1 对象池模式 (Object Pool)
 
 ```go
 // 对象池模式
@@ -832,7 +873,7 @@ func (cp *ConnectionPool) Put(conn *Connection) {
 }
 ```
 
-### 6.2 缓存模式 (Cache)
+### 1.7.2 缓存模式 (Cache)
 
 ```go
 // LRU 缓存
@@ -925,7 +966,7 @@ func (lru *LRUCache[K, V]) removeLRU() {
 }
 ```
 
-## 总结
+## 1.8 总结
 
 本文档全面介绍了 Go 1.25 中的各种设计模式，包括：
 

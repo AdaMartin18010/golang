@@ -1,8 +1,34 @@
-# rust实现api
+# 1 1 1 1 1 1 1 rust实现api
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 rust实现api](#1-1-1-1-1-1-1-rust实现api)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.2.1 2. OpenAPI 解析和代码生成器](#2-openapi-解析和代码生成器)
+    - [1.2.2 3. 数据库集成生成器](#3-数据库集成生成器)
+    - [1.2.3 4. 消息中间件集成生成器](#4-消息中间件集成生成器)
+    - [1.2.4 5. API 路由生成器](#5-api-路由生成器)
+    - [1.2.5 6. 验证生成器](#6-验证生成器)
+    - [1.2.6 7. 集成测试生成器](#7-集成测试生成器)
+    - [1.2.7 8. 主程序实现](#8-主程序实现)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个基于 Rust 2024 的 OpenAPI/AsyncAPI 代码生成器实现。
 
-## 目录
+## 1.1 目录
 
 - [rust实现api](#rust实现api)
   - [目录](#目录)
@@ -15,7 +41,7 @@
     - [7. 集成测试生成器](#7-集成测试生成器)
     - [8. 主程序实现](#8-主程序实现)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -32,7 +58,7 @@ async-trait = "0.1"
 inflector = "0.11"
 ```
 
-### 2. OpenAPI 解析和代码生成器
+### 1.2.1 2. OpenAPI 解析和代码生成器
 
 ```rust
 use openapiv3::OpenAPI;
@@ -99,7 +125,7 @@ impl ApiCodeGenerator {
 }
 ```
 
-### 3. 数据库集成生成器
+### 1.2.2 3. 数据库集成生成器
 
 ```rust
 pub struct DatabaseIntegrationGenerator {
@@ -166,7 +192,7 @@ impl DatabaseIntegrationGenerator {
 }
 ```
 
-### 4. 消息中间件集成生成器
+### 1.2.3 4. 消息中间件集成生成器
 
 ```rust
 pub struct MessageBrokerGenerator {
@@ -223,7 +249,7 @@ impl MessageBrokerGenerator {
 }
 ```
 
-### 5. API 路由生成器
+### 1.2.4 5. API 路由生成器
 
 ```rust
 pub struct RouterGenerator {
@@ -269,7 +295,7 @@ impl RouterGenerator {
 }
 ```
 
-### 6. 验证生成器
+### 1.2.5 6. 验证生成器
 
 ```rust
 pub struct ValidationGenerator {
@@ -320,7 +346,7 @@ impl ValidationGenerator {
 }
 ```
 
-### 7. 集成测试生成器
+### 1.2.6 7. 集成测试生成器
 
 ```rust
 pub struct TestGenerator {
@@ -378,7 +404,7 @@ impl TestGenerator {
 }
 ```
 
-### 8. 主程序实现
+### 1.2.7 8. 主程序实现
 
 ```rust
 #[tokio::main]

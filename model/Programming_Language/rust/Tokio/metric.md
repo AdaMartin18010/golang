@@ -1,8 +1,40 @@
-# Rust实现异步的metric
+# 1 1 1 1 1 1 1 Rust实现异步的metric
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust实现异步的metric](#1-1-1-1-1-1-1-rust实现异步的metric)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.2.1 2. 度量收集器实现](#2-度量收集器实现)
+    - [1.2.2 3. 异步跟踪器实现](#3-异步跟踪器实现)
+    - [1.2.3 4. 请求上下文实现](#4-请求上下文实现)
+    - [1.2.4 5. 业务服务实现](#5-业务服务实现)
+    - [1.2.5 6. HTTP 服务器实现](#6-http-服务器实现)
+    - [1.2.6 7. 主程序入口](#7-主程序入口)
+    - [1.2.7 8. 使用示例](#8-使用示例)
+    - [1.2.8 9. Prometheus 查询示例](#9-prometheus-查询示例)
+- [2 2 2 2 2 2 2 请求总数](#2-2-2-2-2-2-2-请求总数)
+- [3 3 3 3 3 3 3 请求持续时间](#3-3-3-3-3-3-3-请求持续时间)
+- [4 4 4 4 4 4 4 活跃请求数](#4-4-4-4-4-4-4-活跃请求数)
+- [5 5 5 5 5 5 5 错误率](#5-5-5-5-5-5-5-错误率)
+    - [5 5 5 5 5 5 5 10. Grafana 仪表板配置](#5-5-5-5-5-5-5-10-grafana-仪表板配置)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下面是一个结合 Tokio、tracing、console 和 OpenTelemetry 实现完整的异步调用跟踪和度量的示例：
 
-## 目录
+## 1.1 目录
 
 - [Rust实现异步的metric](#rust实现异步的metric)
   - [目录](#目录)
@@ -17,7 +49,7 @@
     - [9. Prometheus 查询示例](#9-prometheus-查询示例)
     - [10. Grafana 仪表板配置](#10-grafana-仪表板配置)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -32,7 +64,7 @@ console = "0.15"
 chrono = "0.4"
 ```
 
-### 2. 度量收集器实现
+### 1.2.1 2. 度量收集器实现
 
 ```rust
 use prometheus::{
@@ -92,7 +124,7 @@ impl Metrics {
 }
 ```
 
-### 3. 异步跟踪器实现
+### 1.2.2 3. 异步跟踪器实现
 
 ```rust
 use std::time::Instant;
@@ -134,7 +166,7 @@ impl Drop for AsyncTracer {
 }
 ```
 
-### 4. 请求上下文实现
+### 1.2.3 4. 请求上下文实现
 
 ```rust
 use std::future::Future;
@@ -173,7 +205,7 @@ impl RequestContext {
 }
 ```
 
-### 5. 业务服务实现
+### 1.2.4 5. 业务服务实现
 
 ```rust
 pub struct UserService {
@@ -215,7 +247,7 @@ impl UserService {
 }
 ```
 
-### 6. HTTP 服务器实现
+### 1.2.5 6. HTTP 服务器实现
 
 ```rust
 use axum::{
@@ -264,7 +296,7 @@ async fn metrics_handler(
 }
 ```
 
-### 7. 主程序入口
+### 1.2.6 7. 主程序入口
 
 ```rust
 #[tokio::main]
@@ -320,7 +352,7 @@ fn init_tracing() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### 8. 使用示例
+### 1.2.7 8. 使用示例
 
 ```rust
 // 在任何异步函数中使用跟踪和度量
@@ -347,23 +379,23 @@ async fn example_operation(ctx: &RequestContext) -> Result<(), String> {
 }
 ```
 
-### 9. Prometheus 查询示例
+### 1.2.8 9. Prometheus 查询示例
 
 ```promql
-# 请求总数
+# 2 2 2 2 2 2 2 请求总数
 rate(request_total[5m])
 
-# 请求持续时间
+# 3 3 3 3 3 3 3 请求持续时间
 histogram_quantile(0.95, rate(request_duration_seconds_bucket[5m]))
 
-# 活跃请求数
+# 4 4 4 4 4 4 4 活跃请求数
 active_requests
 
-# 错误率
+# 5 5 5 5 5 5 5 错误率
 rate(errors_total[5m])
 ```
 
-### 10. Grafana 仪表板配置
+### 5 5 5 5 5 5 5 10. Grafana 仪表板配置
 
 ```json
 {

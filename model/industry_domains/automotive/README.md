@@ -1,14 +1,62 @@
-# 汽车/自动驾驶 - Rust架构指南
+# 1 1 1 1 1 1 1 汽车/自动驾驶 - Rust架构指南
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 汽车/自动驾驶 - Rust架构指南](#1-1-1-1-1-1-1-汽车自动驾驶-rust架构指南)
+  - [1.1 概述](#概述)
+  - [1.2 Rust架构选型](#rust架构选型)
+    - [1.2.1 核心技术栈](#核心技术栈)
+      - [1.2.1.1 自动驾驶框架](#自动驾驶框架)
+      - [1.2.1.2 车载系统](#车载系统)
+      - [1.2.1.3 通信协议](#通信协议)
+    - [1.2.2 架构模式](#架构模式)
+      - [1.2.2.1 自动驾驶系统架构](#自动驾驶系统架构)
+      - [1.2.2.2 传感器融合架构](#传感器融合架构)
+  - [1.3 业务领域概念建模](#业务领域概念建模)
+    - [1.3.1 核心领域模型](#核心领域模型)
+      - [1.3.1.1 车辆控制系统](#车辆控制系统)
+      - [1.3.1.2 交通管理系统](#交通管理系统)
+      - [1.3.1.3 车辆通信系统](#车辆通信系统)
+  - [1.4 数据建模](#数据建模)
+    - [1.4.1 车辆数据存储](#车辆数据存储)
+      - [1.4.1.1 实时数据流处理](#实时数据流处理)
+      - [1.4.1.2 车辆诊断数据](#车辆诊断数据)
+  - [1.5 流程建模](#流程建模)
+    - [1.5.1 自动驾驶流程](#自动驾驶流程)
+      - [1.5.1.1 感知-规划-控制循环](#感知-规划-控制循环)
+      - [1.5.1.2 紧急情况处理流程](#紧急情况处理流程)
+  - [1.6 组件建模](#组件建模)
+    - [1.6.1 核心汽车组件](#核心汽车组件)
+      - [1.6.1.1 传感器管理系统](#传感器管理系统)
+      - [1.6.1.2 车辆控制接口](#车辆控制接口)
+  - [1.7 运维运营](#运维运营)
+    - [1.7.1 车辆系统监控](#车辆系统监控)
+      - [1.7.1.1 车辆健康监控](#车辆健康监控)
+      - [1.7.1.2 预测性维护系统](#预测性维护系统)
+  - [1.8 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 汽车和自动驾驶领域对安全性、实时性、可靠性和性能有极高要求。Rust的内存安全和零成本抽象特性使其成为构建汽车软件的理想选择。本指南涵盖自动驾驶系统、车载软件、交通管理、车辆通信等核心领域。
 
-## Rust架构选型
+## 1.2 Rust架构选型
 
-### 核心技术栈
+### 1.2.1 核心技术栈
 
-#### 自动驾驶框架
+#### 1.2.1.1 自动驾驶框架
 
 - **传感器融合**: `sensor-fusion-rs`, `kalman-filter-rs`
 - **路径规划**: `path-planning-rs`, `a-star-rs`
@@ -16,7 +64,7 @@
 - **计算机视觉**: `opencv-rust`, `image-rs`, `tch-rs`
 - **实时系统**: `rt-tasks`, `embedded-hal`, `cortex-m-rtic`
 
-#### 车载系统
+#### 1.2.1.2 车载系统
 
 - **CAN总线**: `can-rs`, `socketcan-rs`
 - **以太网**: `tokio-net`, `pnet`
@@ -24,16 +72,16 @@
 - **OTA更新**: `ota-update-rs`, `firmware-update`
 - **安全模块**: `hsm-rs`, `secure-boot`
 
-#### 通信协议
+#### 1.2.1.3 通信协议
 
 - **V2X通信**: `v2x-rs`, `dsrc-rs`, `c-v2x`
 - **5G通信**: `5g-rs`, `nr-rs`
 - **蓝牙**: `bluetooth-rs`, `ble-rs`
 - **WiFi**: `wifi-rs`, `wpa-supplicant-rs`
 
-### 架构模式
+### 1.2.2 架构模式
 
-#### 自动驾驶系统架构
+#### 1.2.2.1 自动驾驶系统架构
 
 ```rust
 use std::sync::Arc;
@@ -119,7 +167,7 @@ pub struct PlannedPath {
 }
 ```
 
-#### 传感器融合架构
+#### 1.2.2.2 传感器融合架构
 
 ```rust
 use std::collections::HashMap;
@@ -229,11 +277,11 @@ impl ExtendedKalmanFilter {
 }
 ```
 
-## 业务领域概念建模
+## 1.3 业务领域概念建模
 
-### 核心领域模型
+### 1.3.1 核心领域模型
 
-#### 车辆控制系统
+#### 1.3.1.1 车辆控制系统
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -310,7 +358,7 @@ pub enum SteeringType {
 }
 ```
 
-#### 交通管理系统
+#### 1.3.1.2 交通管理系统
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -375,7 +423,7 @@ pub enum ConditionType {
 }
 ```
 
-#### 车辆通信系统
+#### 1.3.1.3 车辆通信系统
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -445,11 +493,11 @@ pub enum V2XMessageType {
 }
 ```
 
-## 数据建模
+## 1.4 数据建模
 
-### 车辆数据存储
+### 1.4.1 车辆数据存储
 
-#### 实时数据流处理
+#### 1.4.1.1 实时数据流处理
 
 ```rust
 use tokio::sync::mpsc;
@@ -527,7 +575,7 @@ impl VehicleDataStreamProcessor {
 }
 ```
 
-#### 车辆诊断数据
+#### 1.4.1.2 车辆诊断数据
 
 ```rust
 use sqlx::{PgPool, Row};
@@ -637,11 +685,11 @@ impl DiagnosticDatabase {
 }
 ```
 
-## 流程建模
+## 1.5 流程建模
 
-### 自动驾驶流程
+### 1.5.1 自动驾驶流程
 
-#### 感知-规划-控制循环
+#### 1.5.1.1 感知-规划-控制循环
 
 ```rust
 pub struct PerceptionPlanningControlLoop {
@@ -716,7 +764,7 @@ impl PerceptionPlanningControlLoop {
 }
 ```
 
-#### 紧急情况处理流程
+#### 1.5.1.2 紧急情况处理流程
 
 ```rust
 pub struct EmergencyHandlingSystem {
@@ -806,11 +854,11 @@ impl EmergencyHandlingSystem {
 }
 ```
 
-## 组件建模
+## 1.6 组件建模
 
-### 核心汽车组件
+### 1.6.1 核心汽车组件
 
-#### 传感器管理系统
+#### 1.6.1.1 传感器管理系统
 
 ```rust
 use std::collections::HashMap;
@@ -971,7 +1019,7 @@ impl Sensor for Camera {
 }
 ```
 
-#### 车辆控制接口
+#### 1.6.1.2 车辆控制接口
 
 ```rust
 pub struct VehicleControlInterface {
@@ -1100,11 +1148,11 @@ impl VehicleControlInterface {
 }
 ```
 
-## 运维运营
+## 1.7 运维运营
 
-### 车辆系统监控
+### 1.7.1 车辆系统监控
 
-#### 车辆健康监控
+#### 1.7.1.1 车辆健康监控
 
 ```rust
 use prometheus::{Counter, Histogram, Gauge};
@@ -1210,7 +1258,7 @@ impl VehicleHealthMetrics {
 }
 ```
 
-#### 预测性维护系统
+#### 1.7.1.2 预测性维护系统
 
 ```rust
 pub struct PredictiveMaintenanceSystem {
@@ -1324,7 +1372,7 @@ impl PredictiveMaintenanceSystem {
 }
 ```
 
-## 总结
+## 1.8 总结
 
 汽车和自动驾驶领域的Rust应用需要重点关注：
 

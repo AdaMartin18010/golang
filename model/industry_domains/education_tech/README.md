@@ -1,37 +1,85 @@
-# 教育科技 - Rust架构指南
+# 1 1 1 1 1 1 1 教育科技 - Rust架构指南
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 教育科技 - Rust架构指南](#1-1-1-1-1-1-1-教育科技-rust架构指南)
+  - [1.1 概述](#概述)
+  - [1.2 Rust架构选型](#rust架构选型)
+    - [1.2.1 核心技术栈](#核心技术栈)
+      - [1.2.1.1 教育框架](#教育框架)
+      - [1.2.1.2 学习分析](#学习分析)
+      - [1.2.1.3 内容管理](#内容管理)
+    - [1.2.2 架构模式](#架构模式)
+      - [1.2.2.1 微服务教育架构](#微服务教育架构)
+      - [1.2.2.2 实时学习架构](#实时学习架构)
+  - [1.3 业务领域概念建模](#业务领域概念建模)
+    - [1.3.1 核心领域模型](#核心领域模型)
+      - [1.3.1.1 学习管理系统](#学习管理系统)
+      - [1.3.1.2 个性化学习](#个性化学习)
+      - [1.3.1.3 智能评估系统](#智能评估系统)
+  - [1.4 数据建模](#数据建模)
+    - [1.4.1 学习数据存储](#学习数据存储)
+      - [1.4.1.1 学习分析数据仓库](#学习分析数据仓库)
+      - [1.4.1.2 内容管理系统](#内容管理系统)
+  - [1.5 流程建模](#流程建模)
+    - [1.5.1 学习流程](#学习流程)
+      - [1.5.1.1 自适应学习流程](#自适应学习流程)
+      - [1.5.1.2 协作学习流程](#协作学习流程)
+  - [1.6 组件建模](#组件建模)
+    - [1.6.1 核心教育组件](#核心教育组件)
+      - [1.6.1.1 实时协作平台](#实时协作平台)
+      - [1.6.1.2 智能推荐系统](#智能推荐系统)
+  - [1.7 运维运营](#运维运营)
+    - [1.7.1 教育平台监控](#教育平台监控)
+      - [1.7.1.1 学习分析监控](#学习分析监控)
+      - [1.7.1.2 学习效果分析](#学习效果分析)
+  - [1.8 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 教育科技领域需要处理大量并发用户、实时交互、个性化学习和数据分析。Rust的高性能和内存安全特性使其成为构建教育平台的理想选择。本指南涵盖在线学习、教育管理、智能评估、内容管理等核心领域。
 
-## Rust架构选型
+## 1.2 Rust架构选型
 
-### 核心技术栈
+### 1.2.1 核心技术栈
 
-#### 教育框架
+#### 1.2.1.1 教育框架
 
 - **Web框架**: `actix-web`, `axum`, `rocket`, `warp`
 - **实时通信**: `tokio-tungstenite`, `actix-web-socket`, `socketio-rs`
 - **数据库**: `diesel`, `sqlx`, `seaorm`, `redis-rs`
 - **搜索引擎**: `elasticsearch-rs`, `meilisearch-rs`
 
-#### 学习分析
+#### 1.2.1.2 学习分析
 
 - **数据分析**: `polars`, `ndarray`, `statrs`
 - **机器学习**: `tch-rs`, `burn`, `candle`, `rust-bert`
 - **可视化**: `plotters`, `egui`, `iced`
 - **推荐系统**: `recommend-rs`, `collaborative-filtering`
 
-#### 内容管理
+#### 1.2.1.3 内容管理
 
 - **文档处理**: `pandoc-rs`, `markdown-rs`, `latex-rs`
 - **媒体处理**: `image-rs`, `ffmpeg-rs`, `opencv-rust`
 - **存储**: `s3-rust`, `minio-rust`, `ipfs-rs`
 - **CDN**: `cloudflare-rs`, `aws-cloudfront`
 
-### 架构模式
+### 1.2.2 架构模式
 
-#### 微服务教育架构
+#### 1.2.2.1 微服务教育架构
 
 ```rust
 use actix_web::{web, App, HttpServer, middleware};
@@ -117,7 +165,7 @@ pub struct UserProfile {
 }
 ```
 
-#### 实时学习架构
+#### 1.2.2.2 实时学习架构
 
 ```rust
 use tokio::sync::broadcast;
@@ -185,11 +233,11 @@ impl RealTimeLearningSystem {
 }
 ```
 
-## 业务领域概念建模
+## 1.3 业务领域概念建模
 
-### 核心领域模型
+### 1.3.1 核心领域模型
 
-#### 学习管理系统
+#### 1.3.1.1 学习管理系统
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -273,7 +321,7 @@ pub enum AssessmentType {
 }
 ```
 
-#### 个性化学习
+#### 1.3.1.2 个性化学习
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -342,7 +390,7 @@ pub enum GoalStatus {
 }
 ```
 
-#### 智能评估系统
+#### 1.3.1.3 智能评估系统
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -464,11 +512,11 @@ impl IntelligentAssessmentEngine {
 }
 ```
 
-## 数据建模
+## 1.4 数据建模
 
-### 学习数据存储
+### 1.4.1 学习数据存储
 
-#### 学习分析数据仓库
+#### 1.4.1.1 学习分析数据仓库
 
 ```rust
 use sqlx::{PgPool, Row};
@@ -578,7 +626,7 @@ impl LearningAnalyticsDB {
 }
 ```
 
-#### 内容管理系统
+#### 1.4.1.2 内容管理系统
 
 ```rust
 use aws_sdk_s3::Client as S3Client;
@@ -671,11 +719,11 @@ impl ContentManagementSystem {
 }
 ```
 
-## 流程建模
+## 1.5 流程建模
 
-### 学习流程
+### 1.5.1 学习流程
 
-#### 自适应学习流程
+#### 1.5.1.1 自适应学习流程
 
 ```rust
 pub struct AdaptiveLearningWorkflow {
@@ -753,7 +801,7 @@ impl AdaptiveLearningWorkflow {
 }
 ```
 
-#### 协作学习流程
+#### 1.5.1.2 协作学习流程
 
 ```rust
 pub struct CollaborativeLearningWorkflow {
@@ -819,11 +867,11 @@ impl CollaborativeLearningWorkflow {
 }
 ```
 
-## 组件建模
+## 1.6 组件建模
 
-### 核心教育组件
+### 1.6.1 核心教育组件
 
-#### 实时协作平台
+#### 1.6.1.1 实时协作平台
 
 ```rust
 use tokio::sync::broadcast;
@@ -929,7 +977,7 @@ impl DocumentCollaborator {
 }
 ```
 
-#### 智能推荐系统
+#### 1.6.1.2 智能推荐系统
 
 ```rust
 use std::collections::HashMap;
@@ -1026,11 +1074,11 @@ impl CollaborativeFilter {
 }
 ```
 
-## 运维运营
+## 1.7 运维运营
 
-### 教育平台监控
+### 1.7.1 教育平台监控
 
-#### 学习分析监控
+#### 1.7.1.1 学习分析监控
 
 ```rust
 use prometheus::{Counter, Histogram, Gauge};
@@ -1136,7 +1184,7 @@ impl EdTechMetrics {
 }
 ```
 
-#### 学习效果分析
+#### 1.7.1.2 学习效果分析
 
 ```rust
 pub struct LearningEffectivenessAnalyzer {
@@ -1245,7 +1293,7 @@ impl LearningEffectivenessAnalyzer {
 }
 ```
 
-## 总结
+## 1.8 总结
 
 教育科技领域的Rust应用需要重点关注：
 

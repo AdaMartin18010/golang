@@ -1,6 +1,47 @@
-# 基于 Rust 2024 + Generator 的 GraphQL API 与多数据库集成项目
+# 1 1 1 1 1 1 1 基于 Rust 2024 + Generator 的 GraphQL API 与多数据库集成项目
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 基于 Rust 2024 + Generator 的 GraphQL API 与多数据库集成项目](#1-1-1-1-1-1-1-基于-rust-2024-+-generator-的-graphql-api-与多数据库集成项目)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目配置](#1-项目配置)
+- [2 2 2 2 2 2 2 GraphQL 依赖](#2-2-2-2-2-2-2-graphql-依赖)
+- [3 3 3 3 3 3 3 数据库驱动](#3-3-3-3-3-3-3-数据库驱动)
+- [4 4 4 4 4 4 4 异步运行时](#4-4-4-4-4-4-4-异步运行时)
+- [5 5 5 5 5 5 5 工具库](#5-5-5-5-5-5-5-工具库)
+  - [5.1 2. GraphQL Schema 生成器](#2-graphql-schema-生成器)
+  - [5.2 3. 数据库模型生成器](#3-数据库模型生成器)
+  - [5.3 4. 查询解析器生成器](#4-查询解析器生成器)
+  - [5.4 5. 数据库连接池管理器](#5-数据库连接池管理器)
+  - [5.5 6. 实体关系管理器](#6-实体关系管理器)
+  - [5.6 7. 使用示例](#7-使用示例)
+  - [5.7 1.  项目配置](#1-项目配置)
+- [6 6 6 6 6 6 6 GraphQL 相关](#6-6-6-6-6-6-6-graphql-相关)
+- [7 7 7 7 7 7 7 数据库驱动](#7-7-7-7-7-7-7-数据库驱动)
+- [8 8 8 8 8 8 8 序列化](#8-8-8-8-8-8-8-序列化)
+- [9 9 9 9 9 9 9 异步运行时](#9-9-9-9-9-9-9-异步运行时)
+- [10 10 10 10 10 10 10 工具库](#10-10-10-10-10-10-10-工具库)
+  - [10.1 2. 数据模型定义](#2-数据模型定义)
+  - [10.2 3. 数据库连接管理器](#3-数据库连接管理器)
+  - [10.3 4. GraphQL 查询解析器](#4-graphql-查询解析器)
+  - [10.4 5. GraphQL 变更解析器](#5-graphql-变更解析器)
+  - [10.5 6. 数据库迁移生成器](#6-数据库迁移生成器)
+  - [10.6 7.  使用示例](#7-使用示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [基于 Rust 2024 + Generator 的 GraphQL API 与多数据库集成项目](#基于-rust-2024--generator-的-graphql-api-与多数据库集成项目)
   - [目录](#目录)
@@ -19,28 +60,28 @@
   - [6. 数据库迁移生成器](#6-数据库迁移生成器)
   - [7.  使用示例](#7--使用示例)
 
-## 1. 项目配置
+## 1.2 1. 项目配置
 
 ```toml
 [dependencies]
-# GraphQL 依赖
+# 2 2 2 2 2 2 2 GraphQL 依赖
 async-graphql = "7.0"
 async-graphql-actix-web = "7.0"
 
-# 数据库驱动
+# 3 3 3 3 3 3 3 数据库驱动
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "mysql", "postgres", "sqlite", "json"] }
 
-# 异步运行时
+# 4 4 4 4 4 4 4 异步运行时
 tokio = { version = "1.0", features = ["full"] }
 async-stream = "0.3"
 
-# 工具库
+# 5 5 5 5 5 5 5 工具库
 serde = { version = "1.0", features = ["derive"] }
 tracing = "0.1"
 thiserror = "1.0"
 ```
 
-## 2. GraphQL Schema 生成器
+## 5.1 2. GraphQL Schema 生成器
 
 ```rust
 use async_graphql::*;
@@ -148,7 +189,7 @@ impl SchemaGenerator {
 }
 ```
 
-## 3. 数据库模型生成器
+## 5.2 3. 数据库模型生成器
 
 ```rust
 /// 数据库模型生成器
@@ -262,7 +303,7 @@ impl DatabaseModelGenerator {
 }
 ```
 
-## 4. 查询解析器生成器
+## 5.3 4. 查询解析器生成器
 
 ```rust
 /// 查询解析器生成器
@@ -341,7 +382,7 @@ impl<'a> QueryResolverGenerator<'a> {
 }
 ```
 
-## 5. 数据库连接池管理器
+## 5.4 5. 数据库连接池管理器
 
 ```rust
 /// 数据库连接池管理器
@@ -419,7 +460,7 @@ impl DatabasePoolManager {
 }
 ```
 
-## 6. 实体关系管理器
+## 5.5 6. 实体关系管理器
 
 ```rust
 /// 实体关系管理器
@@ -468,7 +509,7 @@ impl EntityRelationManager {
 }
 ```
 
-## 7. 使用示例
+## 5.6 7. 使用示例
 
 ```rust
 #[tokio::main]
@@ -618,33 +659,33 @@ async fn main() -> Result<()> {
 
 我将为您展示一个完整的 Rust 2024 GraphQL API 实现，支持关系型数据库的 JSON 类型和 NoSQL 数据库。
 
-## 1.  项目配置
+## 5.7 1.  项目配置
 
 ```toml
 [dependencies]
-# GraphQL 相关
+# 6 6 6 6 6 6 6 GraphQL 相关
 async-graphql = { version = "7.0", features = ["chrono", "json"] }
 async-graphql-actix-web = "7.0"
 
-# 数据库驱动
+# 7 7 7 7 7 7 7 数据库驱动
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "mysql", "postgres", "sqlite", "json", "chrono"] }
 mongodb = "2.8"
 redis = { version = "0.24", features = ["tokio-comp", "json"] }
 
-# 序列化
+# 8 8 8 8 8 8 8 序列化
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
-# 异步运行时
+# 9 9 9 9 9 9 9 异步运行时
 tokio = { version = "1.0", features = ["full"] }
 async-stream = "0.3"
 
-# 工具库
+# 10 10 10 10 10 10 10 工具库
 chrono = { version = "0.4", features = ["serde"] }
 tracing = "0.1"
 ```
 
-## 2. 数据模型定义
+## 10.1 2. 数据模型定义
 
 ```rust
 use serde::{Deserialize, Serialize};
@@ -693,7 +734,7 @@ pub enum PostStatus {
 }
 ```
 
-## 3. 数据库连接管理器
+## 10.2 3. 数据库连接管理器
 
 ```rust
 use std::sync::Arc;
@@ -782,7 +823,7 @@ impl DatabaseManager {
 }
 ```
 
-## 4. GraphQL 查询解析器
+## 10.3 4. GraphQL 查询解析器
 
 ```rust
 use async_graphql::*;
@@ -908,7 +949,7 @@ impl QueryRoot {
 }
 ```
 
-## 5. GraphQL 变更解析器
+## 10.4 5. GraphQL 变更解析器
 
 ```rust
 pub struct MutationRoot;
@@ -1031,7 +1072,7 @@ impl MutationRoot {
 }
 ```
 
-## 6. 数据库迁移生成器
+## 10.5 6. 数据库迁移生成器
 
 ```rust
 pub struct DatabaseMigrationGenerator {
@@ -1120,7 +1161,7 @@ impl DatabaseMigrationGenerator {
 }
 ```
 
-## 7.  使用示例
+## 10.6 7.  使用示例
 
 ```rust
 #[tokio::main]

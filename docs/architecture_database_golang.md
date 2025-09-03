@@ -1,6 +1,44 @@
-# 数据库架构（Database Architecture）
+# 1 1 1 1 1 1 1 数据库架构（Database Architecture）
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 数据库架构（Database Architecture）](#1-1-1-1-1-1-1-数据库架构database-architecture)
+  - [1.1 目录](#11-目录)
+  - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
+    - [1.2.1 主流数据库类型与标准](#121-主流数据库类型与标准)
+    - [1.2.2 发展历程](#122-发展历程)
+    - [1.2.3 国际权威链接](#123-国际权威链接)
+  - [1.3 2. 核心架构模式与设计原则](#13-2-核心架构模式与设计原则)
+    - [1.3.1 数据库选型: SQL vs. NoSQL](#131-数据库选型-sql-vs-nosql)
+    - [1.3.2 CAP理论与权衡](#132-cap理论与权衡)
+    - [1.3.3 CQRS (命令查询职责分离)](#133-cqrs-命令查询职责分离)
+    - [1.3.4 数据库连接池管理](#134-数据库连接池管理)
+    - [1.3.5 事务管理](#135-事务管理)
+  - [1.4 3. 分布式数据库架构](#14-3-分布式数据库架构)
+    - [1.4.1 分片与复制](#141-分片与复制)
+    - [1.4.2 一致性协议](#142-一致性协议)
+  - [1.5 4. 查询优化与性能调优](#15-4-查询优化与性能调优)
+    - [1.5.1 查询计划优化器](#151-查询计划优化器)
+    - [1.5.2 索引管理](#152-索引管理)
+  - [1.6 5. Golang主流实现与代码示例](#16-5-golang主流实现与代码示例)
+    - [1.6.1 database/sql 库最佳实践](#161-databasesql-库最佳实践)
+  - [1.7 6. 分布式挑战与主流解决方案](#17-6-分布式挑战与主流解决方案)
+    - [1.7.1 分布式事务](#171-分布式事务)
+      - [1.7.1.1 Saga模式](#1711-saga模式)
+    - [1.7.2 数据库高可用性](#172-数据库高可用性)
+      - [1.7.2.1 读写分离 (Read/Write Splitting)](#1721-读写分离-readwrite-splitting)
+      - [1.7.2.2 数据库故障转移 (Database Failover)](#1722-数据库故障转移-database-failover)
+  - [1.8 7. 工程结构与CI/CD实践](#18-7-工程结构与cicd实践)
+  - [1.9 8. 形式化建模与数学表达](#19-8-形式化建模与数学表达)
+  - [1.10 9. 国际权威资源与开源组件引用](#110-9-国际权威资源与开源组件引用)
+    - [1.10.1 关系型数据库](#1101-关系型数据库)
+    - [1.10.2 NoSQL数据库](#1102-nosql数据库)
+    - [1.10.3 时序数据库](#1103-时序数据库)
+    - [1.10.4 图数据库](#1104-图数据库)
+  - [1.11 10. 相关架构主题](#111-10-相关架构主题)
+  - [1.12 11. 扩展阅读与参考文献](#112-11-扩展阅读与参考文献)
+<!-- TOC END -->
+
+## 1.1 目录
 
 1. 国际标准与发展历程
 2. 典型应用场景与需求分析
@@ -15,9 +53,9 @@
 
 ---
 
-## 1. 国际标准与发展历程
+## 1.2 1. 国际标准与发展历程
 
-### 1.1 主流数据库类型与标准
+### 1.2.1 主流数据库类型与标准
 
 - **关系型数据库**: PostgreSQL, MySQL, Oracle, SQL Server
 - **NoSQL数据库**: MongoDB, Cassandra, Redis, DynamoDB
@@ -25,7 +63,7 @@
 - **图数据库**: Neo4j, ArangoDB, Amazon Neptune
 - **向量数据库**: Pinecone, Weaviate, Milvus
 
-### 1.2 发展历程
+### 1.2.2 发展历程
 
 - **1970s**: 关系型数据库理论（Codd）
 - **1980s**: ACID事务模型
@@ -33,7 +71,7 @@
 - **2010s**: 分布式数据库、NewSQL
 - **2020s**: 云原生数据库、AI/ML集成
 
-### 1.3 国际权威链接
+### 1.2.3 国际权威链接
 
 - [PostgreSQL](https://www.postgresql.org/)
 - [MongoDB](https://www.mongodb.com/)
@@ -42,9 +80,9 @@
 
 ---
 
-## 2. 核心架构模式与设计原则
+## 1.3 2. 核心架构模式与设计原则
 
-### 2.1 数据库选型: SQL vs. NoSQL
+### 1.3.1 数据库选型: SQL vs. NoSQL
 
 | 特性 | SQL (如 PostgreSQL) | NoSQL (如 MongoDB, Redis) |
 | --- | --- | --- |
@@ -54,7 +92,7 @@
 | **事务** | 强大的多行、多表事务支持 | 事务支持有限（通常在单个文档或实体级别） |
 | **适用场景** | 金融系统、ERP、需要复杂查询和事务完整性的业务 | 大数据、高并发社交网络、物联网、实时分析、缓存 |
 
-### 2.2 CAP理论与权衡
+### 1.3.2 CAP理论与权衡
 
 CAP理论指出，任何分布式数据存储最多只能同时满足以下三项中的两项：
 
@@ -67,7 +105,7 @@ CAP理论指出，任何分布式数据存储最多只能同时满足以下三�
 - **CP**: (如 CockroachDB, etcd) 保证强一致性，但在网络分区时可能会牺牲可用性。
 - **AP**: (如 Cassandra, DynamoDB) 保证高可用性，但在网络分区时可能会返回旧数据，实现最终一致性。
 
-### 2.3 CQRS (命令查询职责分离)
+### 1.3.3 CQRS (命令查询职责分离)
 
 CQRS是一种将读操作（查询）模型与写操作（命令）模型分离的模式。
 
@@ -75,7 +113,7 @@ CQRS是一种将读操作（查询）模型与写操作（命令）模型分离�
 - **查询 (Queries)**: 读取系统状态的操作，不改变状态，返回DTO。
 **优势**: 可以针对读、写负载分别进行优化和扩展。写模型可以采用规范化的关系型数据库保证一致性，读模型可以采用反规范化的NoSQL数据库或搜索引擎提升查询性能。
 
-### 2.4 数据库连接池管理
+### 1.3.4 数据库连接池管理
 
 ```go
 type DatabaseManager struct {
@@ -152,7 +190,7 @@ func (dm *DatabaseManager) reconnectPool(pool *ConnectionPool) error {
 }
 ```
 
-### 2.5 事务管理
+### 1.3.5 事务管理
 
 ```go
 type TransactionManager struct {
@@ -206,9 +244,9 @@ func (t *Transaction) executeQuery(query Query) error {
 
 ---
 
-## 3. 分布式数据库架构
+## 1.4 3. 分布式数据库架构
 
-### 3.1 分片与复制
+### 1.4.1 分片与复制
 
 ```go
 type DistributedDatabase struct {
@@ -270,7 +308,7 @@ func (rs *RangeSharding) GetShard(key interface{}) (*Shard, error) {
 }
 ```
 
-### 3.2 一致性协议
+### 1.4.2 一致性协议
 
 ```go
 type ConsistencyManager struct {
@@ -362,9 +400,9 @@ func (rp *RaftProtocol) replicateLog(entry *LogEntry) error {
 }
 ```
 
-## 4. 查询优化与性能调优
+## 1.5 4. 查询优化与性能调优
 
-### 4.1 查询计划优化器
+### 1.5.1 查询计划优化器
 
 ```go
 type QueryOptimizer struct {
@@ -449,7 +487,7 @@ func (qo *QueryOptimizer) generateCandidatePlans(ast *AST) []*ExecutionPlan {
 }
 ```
 
-### 4.2 索引管理
+### 1.5.2 索引管理
 
 ```go
 type IndexManager struct {
@@ -523,9 +561,9 @@ func (im *IndexManager) RecommendIndexes(queries []string) []*IndexRecommendatio
 }
 ```
 
-## 5. Golang主流实现与代码示例
+## 1.6 5. Golang主流实现与代码示例
 
-### 5.1 database/sql 库最佳实践
+### 1.6.1 database/sql 库最佳实践
 
 标准库 `database/sql` 提供了一套通用的SQL接口，但使用时需要注意一些关键实践。
 
@@ -600,13 +638,13 @@ func main() {
 }
 ```
 
-## 6. 分布式挑战与主流解决方案
+## 1.7 6. 分布式挑战与主流解决方案
 
-### 6.1 分布式事务
+### 1.7.1 分布式事务
 
 在微服务架构中，单个业务操作可能跨越多个数据库，需要分布式事务来保证数据一致性。
 
-#### Saga模式
+#### 1.7.1.1 Saga模式
 
 Saga是一种通过**异步消息**来协调一系列本地事务的设计模式。每个本地事务完成後会发布一个事件，触发下一个本地事务。如果任何一个事务失败，Saga会执行一系列**补偿事务（Compensating Transactions）**来撤销已经完成的操作。
 
@@ -625,9 +663,9 @@ graph TD
 **优点**: 高可用性，松耦合，无锁，扩展性好。
 **缺点**: 实现复杂，需要保证补偿事务的幂等性，不提供隔离性。
 
-### 6.2 数据库高可用性
+### 1.7.2 数据库高可用性
 
-#### 读写分离 (Read/Write Splitting)
+#### 1.7.2.1 读写分离 (Read/Write Splitting)
 
 通过主从复制（Primary-Replica）的模式，将写操作路由到主数据库，将读操作路由到多个从数据库，从而分摊负载，提高读取性能。
 
@@ -654,46 +692,46 @@ func (r *ReadWriteRouter) selectReplica() *sql.DB {
 }
 ```
 
-#### 数据库故障转移 (Database Failover)
+#### 1.7.2.2 数据库故障转移 (Database Failover)
 
 当主数据库发生故障时，自动或手动将一个从数据库提升为新的主数据库，以保证服务的持续可用性。这通常需要一个外部的协调器或集群管理工具（如 Patroni for PostgreSQL）来实现。
 
-## 7. 工程结构与CI/CD实践
+## 1.8 7. 工程结构与CI/CD实践
 
-## 8. 形式化建模与数学表达
+## 1.9 8. 形式化建模与数学表达
 
-## 9. 国际权威资源与开源组件引用
+## 1.10 9. 国际权威资源与开源组件引用
 
-### 9.1 关系型数据库
+### 1.10.1 关系型数据库
 
 - [PostgreSQL](https://www.postgresql.org/) - 最先进的开源关系型数据库
 - [MySQL](https://www.mysql.com/) - 最流行的开源数据库
 - [SQLite](https://www.sqlite.org/) - 轻量级嵌入式数据库
 
-### 9.2 NoSQL数据库
+### 1.10.2 NoSQL数据库
 
 - [MongoDB](https://www.mongodb.com/) - 文档数据库
 - [Redis](https://redis.io/) - 内存数据库
 - [Cassandra](https://cassandra.apache.org/) - 分布式NoSQL数据库
 
-### 9.3 时序数据库
+### 1.10.3 时序数据库
 
 - [InfluxDB](https://www.influxdata.com/) - 时序数据库
 - [TimescaleDB](https://www.timescale.com/) - 基于PostgreSQL的时序数据库
 - [Prometheus](https://prometheus.io/) - 监控时序数据库
 
-### 9.4 图数据库
+### 1.10.4 图数据库
 
 - [Neo4j](https://neo4j.com/) - 图数据库
 - [ArangoDB](https://www.arangodb.com/) - 多模型数据库
 
-## 10. 相关架构主题
+## 1.11 10. 相关架构主题
 
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 每个微服务通常拥有自己的数据库，这引发了对分布式事务和数据一致性的挑战。
 - [**事件驱动架构 (Event-Driven Architecture)**](./architecture_event_driven_golang.md): 常用于实现Saga等分布式事务模式，并通过事件溯源来维护数据状态。
 - [**安全架构 (Security Architecture)**](./architecture_security_golang.md): 保护数据库免受SQL注入、未授权访问等威胁。
 
-## 11. 扩展阅读与参考文献
+## 1.12 11. 扩展阅读与参考文献
 
 1. "Database Design for Mere Mortals" - Michael J. Hernandez
 2. "SQL Performance Explained" - Markus Winand

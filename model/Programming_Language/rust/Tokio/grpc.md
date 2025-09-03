@@ -1,8 +1,36 @@
-# Rust 2024 + Tokio + Tonic 实现的分布式 gRPC 组合模式示例
+# 1 1 1 1 1 1 1 Rust 2024 + Tokio + Tonic 实现的分布式 gRPC 组合模式示例
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust 2024 + Tokio + Tonic 实现的分布式 gRPC 组合模式示例](#1-1-1-1-1-1-1-rust-2024-+-tokio-+-tonic-实现的分布式-grpc-组合模式示例)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+  - [1.3 2. Proto 定义](#2-proto-定义)
+  - [1.4 3. 基础组件接口](#3-基础组件接口)
+  - [1.5 4. 分布式节点实现](#4-分布式节点实现)
+  - [1.6 5. gRPC 服务实现](#5-grpc-服务实现)
+  - [1.7 6. 服务发现实现](#6-服务发现实现)
+  - [1.8 7. 消息代理实现](#7-消息代理实现)
+  - [1.9 8. 任务调度器实现](#8-任务调度器实现)
+  - [1.10 9. 使用示例](#9-使用示例)
+  - [1.11 10. 客户端示例](#10-客户端示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下面是一个使用 Rust 2024 + Tokio + Tonic 实现的分布式 gRPC 组合模式示例：
 
-## 目录
+## 1.1 目录
 
 - [Rust 2024 + Tokio + Tonic 实现的分布式 gRPC 组合模式示例](#rust-2024--tokio--tonic-实现的分布式-grpc-组合模式示例)
   - [目录](#目录)
@@ -17,7 +45,7 @@
   - [9. 使用示例](#9-使用示例)
   - [10. 客户端示例](#10-客户端示例)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -38,7 +66,7 @@ tower = "0.4"
 tonic-build = "0.10"
 ```
 
-## 2. Proto 定义
+## 1.3 2. Proto 定义
 
 ```protobuf
 // service.proto
@@ -120,7 +148,7 @@ message TaskStatus {
 }
 ```
 
-## 3. 基础组件接口
+## 1.4 3. 基础组件接口
 
 ```rust
 use async_trait::async_trait;
@@ -152,7 +180,7 @@ pub trait TaskScheduler: Send + Sync {
 }
 ```
 
-## 4. 分布式节点实现
+## 1.5 4. 分布式节点实现
 
 ```rust
 pub struct DistributedNode {
@@ -230,7 +258,7 @@ impl DistributedNode {
 }
 ```
 
-## 5. gRPC 服务实现
+## 1.6 5. gRPC 服务实现
 
 ```rust
 pub struct DistributedServiceImpl {
@@ -366,7 +394,7 @@ impl DistributedService for DistributedServiceImpl {
 }
 ```
 
-## 6. 服务发现实现
+## 1.7 6. 服务发现实现
 
 ```rust
 pub struct EtcdServiceDiscovery {
@@ -415,7 +443,7 @@ impl ServiceDiscovery for EtcdServiceDiscovery {
 }
 ```
 
-## 7. 消息代理实现
+## 1.8 7. 消息代理实现
 
 ```rust
 pub struct RedisBroker {
@@ -475,7 +503,7 @@ impl MessageBroker for RedisBroker {
 }
 ```
 
-## 8. 任务调度器实现
+## 1.9 8. 任务调度器实现
 
 ```rust
 pub struct DistributedTaskScheduler {
@@ -541,7 +569,7 @@ impl TaskScheduler for DistributedTaskScheduler {
 }
 ```
 
-## 9. 使用示例
+## 1.10 9. 使用示例
 
 ```rust
 #[tokio::main]
@@ -587,7 +615,7 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-## 10. 客户端示例
+## 1.11 10. 客户端示例
 
 ```rust
 pub struct DistributedClient {

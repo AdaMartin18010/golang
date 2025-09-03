@@ -1,6 +1,59 @@
-# 使用Cadence解决实际问题的案例分析
+# 1 1 1 1 1 1 1 使用Cadence解决实际问题的案例分析
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 使用Cadence解决实际问题的案例分析](#1-1-1-1-1-1-1-使用cadence解决实际问题的案例分析)
+  - [1.1 目录](#目录)
+  - [1.2 1. Cadence应用范围概述](#1-cadence应用范围概述)
+  - [1.3 2. 案例一：订单处理系统](#2-案例一：订单处理系统)
+    - [1.3.1 业务需求](#业务需求)
+    - [1.3.2 实现细节](#实现细节)
+    - [1.3.3 实施难度](#实施难度)
+  - [1.4 3. 案例二：借贷审批流程](#3-案例二：借贷审批流程)
+    - [1.4.1 业务需求](#业务需求)
+    - [1.4.2 实现细节](#实现细节)
+    - [1.4.3 实施难度](#实施难度)
+  - [1.5 4. 案例三：数据ETL处理](#4-案例三：数据etl处理)
+    - [1.5.1 业务需求](#业务需求)
+    - [1.5.2 实现细节](#实现细节)
+    - [1.5.3 实施难度](#实施难度)
+  - [1.6 5. 案例四：微服务协调](#5-案例四：微服务协调)
+    - [1.6.1 业务需求](#业务需求)
+    - [1.6.2 实现细节](#实现细节)
+    - [1.6.3 实施难度](#实施难度)
+  - [1.7 6. 案例五：异步人工审批流程](#6-案例五：异步人工审批流程)
+    - [1.7.1 业务需求](#业务需求)
+    - [1.7.2 实现细节](#实现细节)
+    - [1.7.3 实施难度](#实施难度)
+  - [1.8 7. Cadence的实际执行难度分析](#7-cadence的实际执行难度分析)
+    - [1.8.1 技术复杂度](#技术复杂度)
+    - [1.8.2 常见陷阱和解决方案](#常见陷阱和解决方案)
+    - [1.8.3 运维考量](#运维考量)
+  - [1.9 8. 总结与最佳实践](#8-总结与最佳实践)
+    - [1.9.1 Cadence的适用场景](#cadence的适用场景)
+    - [1.9.2 实施最佳实践](#实施最佳实践)
+    - [1.9.3 总体评估](#总体评估)
+  - [1.10 附录：案例实施资源](#附录：案例实施资源)
+    - [1.10.1 代码模板库](#代码模板库)
+    - [1.10.2 Cadence与领域驱动设计(DDD)集成模式](#cadence与领域驱动设计ddd集成模式)
+    - [1.10.3 Cadence部署基础设施示例](#cadence部署基础设施示例)
+    - [1.10.4 性能监控与指标收集配置](#性能监控与指标收集配置)
+  - [1.11 参考文献与延伸阅读](#参考文献与延伸阅读)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [使用Cadence解决实际问题的案例分析](#使用cadence解决实际问题的案例分析)
   - [目录](#目录)
@@ -40,7 +93,7 @@
     - [性能监控与指标收集配置](#性能监控与指标收集配置)
   - [参考文献与延伸阅读](#参考文献与延伸阅读)
 
-## 1. Cadence应用范围概述
+## 1.2 1. Cadence应用范围概述
 
 Cadence工作流系统的应用范围非常广泛，主要适用于以下场景：
 
@@ -54,9 +107,9 @@ Cadence工作流系统的应用范围非常广泛，主要适用于以下场景�
 
 下面我们将通过具体案例，详细分析Cadence在不同场景中的应用方式、实现细节以及实施难度。
 
-## 2. 案例一：订单处理系统
+## 1.3 2. 案例一：订单处理系统
 
-### 2.1 业务需求
+### 1.3.1 业务需求
 
 某电子商务平台需要实现一个可靠的订单处理系统，业务流程包括：
 
@@ -75,7 +128,7 @@ Cadence工作流系统的应用范围非常广泛，主要适用于以下场景�
 - 订单完成可能需要数天时间
 - 系统需要支持高并发订单处理
 
-### 2.2 实现细节
+### 1.3.2 实现细节
 
 使用Cadence实现订单处理系统的核心代码示例：
 
@@ -244,7 +297,7 @@ func ReserveInventoryActivity(ctx context.Context, items []OrderItem) error {
 3. **长时间运行的步骤**：使用信号机制等待物流确认等可能需要长时间等待的步骤
 4. **状态管理**：通过活动更新订单状态
 
-### 2.3 实施难度
+### 1.3.3 实施难度
 
 -**中等难度**
 
@@ -299,9 +352,9 @@ func ReserveInventoryActivity(ctx context.Context, items []OrderItem) error {
 - 活动超时配置需要谨慎设置，避免过早超时
 - 应为每个补偿活动添加足够的日志记录，以便审计和问题排查
 
-## 3. 案例二：借贷审批流程
+## 1.4 3. 案例二：借贷审批流程
 
-### 3.1 业务需求
+### 1.4.1 业务需求
 
 某金融机构需要实现借贷审批流程，业务需求包括：
 
@@ -320,7 +373,7 @@ func ReserveInventoryActivity(ctx context.Context, items []OrderItem) error {
 - 高安全性和合规性要求
 - 需要完整的审计跟踪
 
-### 3.2 实现细节
+### 1.4.2 实现细节
 
 使用Cadence实现借贷审批流程的代码示例：
 
@@ -607,7 +660,7 @@ func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) 
 4. **定时器**：实现提醒和超时控制
 5. **状态跟踪**：详细记录每个阶段的状态变化，便于监控和审计
 
-### 3.3 实施难度
+### 1.4.3 实施难度
 
 - 实施难度：**高难度**
 
@@ -709,9 +762,9 @@ func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) 
 - 工作流代码应与业务逻辑严格分离，以便适应政策变化
 - 应实现定期健康检查，确保长期运行的贷款申请不会被遗忘
 
-## 4. 案例三：数据ETL处理
+## 1.5 4. 案例三：数据ETL处理
 
-### 4.1 业务需求
+### 1.5.1 业务需求
 
 某数据分析公司需要实现一个数据ETL(提取、转换、加载)处理系统，业务需求包括：
 
@@ -729,7 +782,7 @@ func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) 
 - 需要支持作业重试和恢复
 - 复杂的错误处理和数据质量检查需求
 
-### 4.2 实现细节
+### 1.5.2 实现细节
 
 使用Cadence实现ETL处理系统的代码示例：
 
@@ -1034,7 +1087,7 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
 4. **资源管理**：包含资源清理步骤，确保临时资源释放
 5. **详细的结果记录**：记录每个处理阶段的详细信息，便于后续分析
 
-### 4.3 实施难度
+### 1.5.3 实施难度
 
 -**中高难度**
 
@@ -1176,9 +1229,9 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
 - 设计容错的管道，允许部分失败并继续处理
 - 为长时间运行的活动实现心跳机制
 
-## 5. 案例四：微服务协调
+## 1.6 5. 案例四：微服务协调
 
-### 5.1 业务需求
+### 1.6.1 业务需求
 
 某在线零售平台需要在微服务架构中实现端到端业务流程，业务需求包括：
 
@@ -1195,7 +1248,7 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
 - 保持数据一致性
 - 处理分布式事务失败
 
-### 5.2 实现细节
+### 1.6.2 实现细节
 
 使用Cadence实现微服务协调的代码示例：
 
@@ -1469,7 +1522,7 @@ func handleServiceError(err error) error {
 4. **监控指标**：在工作流中发送监控指标，便于观察长期运行的工作流
 5. **服务接口适配**：将服务响应映射到工作流数据结构
 
-### 5.3 实施难度
+### 1.6.3 实施难度
 
 -**高难度**
 
@@ -1809,9 +1862,9 @@ func handleServiceError(err error) error {
 - 充分测试各种故障场景的补偿逻辑
 - 实现详细的监控和日志记录
 
-## 6. 案例五：异步人工审批流程
+## 1.7 6. 案例五：异步人工审批流程
 
-### 6.1 业务需求
+### 1.7.1 业务需求
 
 某金融机构需要实现复杂的贷款审批流程，其中包含自动化评估和人工审核步骤，业务需求包括：
 
@@ -1829,7 +1882,7 @@ func handleServiceError(err error) error {
 - 处理审批规则的变化
 - 提供审批状态的实时查询
 
-### 6.2 实现细节
+### 1.7.2 实现细节
 
 使用Cadence实现的人工审批工作流示例：
 
@@ -2203,7 +2256,7 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
 4. **业务规则分支**：根据风险评级实现不同的审批路径
 5. **子工作流**：使用子工作流处理额外信息收集流程
 
-### 6.3 实施难度
+### 1.7.3 实施难度
 
 -**高难度**
 
@@ -2591,9 +2644,9 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
 - 分离业务规则与工作流执行逻辑
 - 在发送通知时考虑不同的通知渠道和优先级
 
-## 7. Cadence的实际执行难度分析
+## 1.8 7. Cadence的实际执行难度分析
 
-### 7.1 技术复杂度
+### 1.8.1 技术复杂度
 
 Cadence实施的主要技术挑战包括：
 
@@ -2672,7 +2725,7 @@ func handleActivityError(ctx workflow.Context, err error, activityName string) (
 }
 ```
 
-### 7.2 常见陷阱和解决方案
+### 1.8.2 常见陷阱和解决方案
 
 1. **非确定性问题**：
    - 陷阱：在工作流中直接使用随机数、当前时间或非确定性API
@@ -2774,7 +2827,7 @@ func StoreAndProcessLargeDataActivity(ctx context.Context, inputData []byte) (Da
 }
 ```
 
-### 7.3 运维考量
+### 1.8.3 运维考量
 
 实际部署和运维Cadence系统的主要考量：
 
@@ -2848,9 +2901,9 @@ func OrderWorkflow(ctx workflow.Context, orderRequest OrderRequest) (OrderResult
 }
 ```
 
-## 8. 总结与最佳实践
+## 1.9 8. 总结与最佳实践
 
-### 8.1 Cadence的适用场景
+### 1.9.1 Cadence的适用场景
 
 Cadence在以下场景表现尤为出色：
 
@@ -2862,7 +2915,7 @@ Cadence在以下场景表现尤为出色：
 
 对于简单的后台作业或单一服务内的流程，传统的队列系统可能是更轻量的选择。
 
-### 8.2 实施最佳实践
+### 1.9.2 实施最佳实践
 
 成功实施Cadence的建议：
 
@@ -2890,7 +2943,7 @@ Cadence在以下场景表现尤为出色：
    - 记录结构化日志以便于排障
    - 使用Cadence UI进行工作流可视化
 
-### 8.3 总体评估
+### 1.9.3 总体评估
 
 基于案例分析，Cadence的总体评估如下：
 
@@ -2908,7 +2961,7 @@ Cadence在以下场景表现尤为出色：
 
 总体而言，Cadence是一个强大的工作流编排引擎，特别适合实现复杂的业务流程和微服务协调。虽然有一定的学习曲线，但其提供的持久性、可靠性和可视性带来的长期收益往往超过初始投入。
 
-## 附录：案例实施资源
+## 1.10 附录：案例实施资源
 
 下面是在案例实施过程中可能有用的一些资源链接和工具：
 
@@ -2917,7 +2970,7 @@ Cadence在以下场景表现尤为出色：
 3. Cadence Web UI：[https://github.com/uber/cadence-web](https://github.com/uber/cadence-web)
 4. Temporal（Cadence的兼容替代）：[https://temporal.io/](https://temporal.io/)
 
-### 代码模板库
+### 1.10.1 代码模板库
 
 以下是可用于Cadence实施的代码模板和辅助库：
 
@@ -3128,7 +3181,7 @@ func TestOrderWorkflowSuite(t *testing.T) {
 }
 ```
 
-### Cadence与领域驱动设计(DDD)集成模式
+### 1.10.2 Cadence与领域驱动设计(DDD)集成模式
 
 以下是将Cadence与领域驱动设计集成的常用模式：
 
@@ -3205,7 +3258,7 @@ func mapDomainError(err error) error {
 }
 ```
 
-### Cadence部署基础设施示例
+### 1.10.3 Cadence部署基础设施示例
 
 以下是一个使用Docker Compose的Cadence部署示例：
 
@@ -3259,7 +3312,7 @@ volumes:
   cassandra-data:
 ```
 
-### 性能监控与指标收集配置
+### 1.10.4 性能监控与指标收集配置
 
 prometheus.yml 配置示例：
 
@@ -3408,7 +3461,7 @@ Grafana 仪表盘示例：
 
 这些资源和模板可以帮助团队更快地采用和实施Cadence，并遵循行业最佳实践。通过正确使用这些工具和模式，可以充分发挥Cadence在解决复杂业务流程编排问题方面的优势。
 
-## 参考文献与延伸阅读
+## 1.11 参考文献与延伸阅读
 
 1. "Cadence: The Only Workflow Platform You'll Ever Need" - Maxim Fateev & Samar Abbas, Uber Engineering Blog
 2. "Building Resilient Workflows with Cadence" - Madhu Penna, InfoQ

@@ -1,8 +1,36 @@
-# Rust实现mqtt
+# 1 1 1 1 1 1 1 Rust实现mqtt
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust实现mqtt](#1-1-1-1-1-1-1-rust实现mqtt)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+    - [1.2.1 2. 组件接口定义](#2-组件接口定义)
+    - [1.2.2 3. 基础组件实现](#3-基础组件实现)
+    - [1.2.3 4. MQTT 组件实现](#4-mqtt-组件实现)
+    - [1.2.4 5. 命令处理器实现](#5-命令处理器实现)
+    - [1.2.5 6. 消息处理器实现](#6-消息处理器实现)
+    - [1.2.6 7. 组合组件实现](#7-组合组件实现)
+    - [1.2.7 8. 自定义消息处理器示例](#8-自定义消息处理器示例)
+    - [1.2.8 9. 自定义命令处理器示例](#9-自定义命令处理器示例)
+    - [1.2.9 10. 使用示例](#10-使用示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下面是一个使用 Tokio 实现的多线程组合模式组件示例，支持 MQTT 消息订阅和命令模式：
 
-## 目录
+## 1.1 目录
 
 - [Rust实现mqtt](#rust实现mqtt)
   - [目录](#目录)
@@ -17,7 +45,7 @@
     - [9. 自定义命令处理器示例](#9-自定义命令处理器示例)
     - [10. 使用示例](#10-使用示例)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -32,7 +60,7 @@ tracing = "0.1"
 uuid = { version = "1.0", features = ["v4"] }
 ```
 
-### 2. 组件接口定义
+### 1.2.1 2. 组件接口定义
 
 ```rust
 use async_trait::async_trait;
@@ -59,7 +87,7 @@ pub trait CommandHandler: Send + Sync {
 }
 ```
 
-### 3. 基础组件实现
+### 1.2.2 3. 基础组件实现
 
 ```rust
 pub struct BaseComponent {
@@ -125,7 +153,7 @@ impl Component for BaseComponent {
 }
 ```
 
-### 4. MQTT 组件实现
+### 1.2.3 4. MQTT 组件实现
 
 ```rust
 pub struct MqttComponent {
@@ -212,7 +240,7 @@ impl Component for MqttComponent {
 }
 ```
 
-### 5. 命令处理器实现
+### 1.2.4 5. 命令处理器实现
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -278,7 +306,7 @@ impl CommandProcessor {
 }
 ```
 
-### 6. 消息处理器实现
+### 1.2.5 6. 消息处理器实现
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -312,7 +340,7 @@ impl MessageProcessor {
 }
 ```
 
-### 7. 组合组件实现
+### 1.2.6 7. 组合组件实现
 
 ```rust
 pub struct CompositeComponent {
@@ -397,7 +425,7 @@ impl Component for CompositeComponent {
 }
 ```
 
-### 8. 自定义消息处理器示例
+### 1.2.7 8. 自定义消息处理器示例
 
 ```rust
 pub struct CustomMessageHandler {
@@ -414,7 +442,7 @@ impl MessageHandler for CustomMessageHandler {
 }
 ```
 
-### 9. 自定义命令处理器示例
+### 1.2.8 9. 自定义命令处理器示例
 
 ```rust
 pub struct CustomCommandHandler {
@@ -436,7 +464,7 @@ impl CommandHandler for CustomCommandHandler {
 }
 ```
 
-### 10. 使用示例
+### 1.2.9 10. 使用示例
 
 ```rust
 #[tokio::main]

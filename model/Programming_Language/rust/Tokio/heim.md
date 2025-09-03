@@ -1,8 +1,36 @@
-# Rust 2024 + Tokio + Heim + OpenTelemetry 实现的分布式监控系统
+# 1 1 1 1 1 1 1 Rust 2024 + Tokio + Heim + OpenTelemetry 实现的分布式监控系统
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust 2024 + Tokio + Heim + OpenTelemetry 实现的分布式监控系统](#1-1-1-1-1-1-1-rust-2024-+-tokio-+-heim-+-opentelemetry-实现的分布式监控系统)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+  - [1.3 2. 系统指标收集器实现](#2-系统指标收集器实现)
+  - [1.4 3. 分布式追踪实现](#3-分布式追踪实现)
+  - [1.5 4. 指标控制器实现](#4-指标控制器实现)
+  - [1.6 5. gRPC 服务实现](#5-grpc-服务实现)
+  - [1.7 6. 指标聚合器实现](#6-指标聚合器实现)
+  - [1.8 7. 告警系统实现](#7-告警系统实现)
+  - [1.9 8. 存储系统实现](#8-存储系统实现)
+  - [1.10 9. 主程序实现](#9-主程序实现)
+  - [1.11 10. 配置文件示例](#10-配置文件示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个使用 Rust 2024 + Tokio + Heim + OpenTelemetry 实现的分布式监控系统。
 
-## 目录
+## 1.1 目录
 
 - [Rust 2024 + Tokio + Heim + OpenTelemetry 实现的分布式监控系统](#rust-2024--tokio--heim--opentelemetry-实现的分布式监控系统)
   - [目录](#目录)
@@ -17,7 +45,7 @@
   - [9. 主程序实现](#9-主程序实现)
   - [10. 配置文件示例](#10-配置文件示例)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -39,7 +67,7 @@ metrics-exporter-prometheus = "0.12"
 chrono = { version = "0.4", features = ["serde"] }
 ```
 
-## 2. 系统指标收集器实现
+## 1.3 2. 系统指标收集器实现
 
 ```rust
 use heim::cpu::CpuTime;
@@ -179,7 +207,7 @@ impl MetricsCollector {
 }
 ```
 
-## 3. 分布式追踪实现
+## 1.4 3. 分布式追踪实现
 
 ```rust
 use opentelemetry::trace::{Tracer, TracerProvider};
@@ -235,7 +263,7 @@ impl DistributedTracer {
 }
 ```
 
-## 4. 指标控制器实现
+## 1.5 4. 指标控制器实现
 
 ```rust
 pub struct MetricsController {
@@ -299,7 +327,7 @@ impl MetricsController {
 }
 ```
 
-## 5. gRPC 服务实现
+## 1.6 5. gRPC 服务实现
 
 ```rust
 #[derive(Debug)]
@@ -369,7 +397,7 @@ impl metrics_service_server::MetricsService for MetricsService {
 }
 ```
 
-## 6. 指标聚合器实现
+## 1.7 6. 指标聚合器实现
 
 ```rust
 pub struct MetricsAggregator {
@@ -417,7 +445,7 @@ impl MetricsAggregator {
 }
 ```
 
-## 7. 告警系统实现
+## 1.8 7. 告警系统实现
 
 ```rust
 pub struct AlertSystem {
@@ -481,7 +509,7 @@ impl AlertRule {
 }
 ```
 
-## 8. 存储系统实现
+## 1.9 8. 存储系统实现
 
 ```rust
 pub struct MetricsStorage {
@@ -538,7 +566,7 @@ impl MetricsStorage {
 }
 ```
 
-## 9. 主程序实现
+## 1.10 9. 主程序实现
 
 ```rust
 #[tokio::main]
@@ -577,7 +605,7 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-## 10. 配置文件示例
+## 1.11 10. 配置文件示例
 
 ```yaml
 collectors:

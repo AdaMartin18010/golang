@@ -1,6 +1,51 @@
-# 前端 WebAssembly 架构深度分析与综合
+# 1 1 1 1 1 1 1 前端 WebAssembly 架构深度分析与综合
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 前端 WebAssembly 架构深度分析与综合](#1-1-1-1-1-1-1-前端-webassembly-架构深度分析与综合)
+  - [1.1 目录](#目录)
+  - [1.2 1. WebAssembly 核心概念与原理](#1-webassembly-核心概念与原理)
+    - [1.2.1 WebAssembly 基本原理](#webassembly-基本原理)
+    - [1.2.2 内存模型与限制](#内存模型与限制)
+  - [1.3 2. WebAssembly 在前端架构中的定位](#2-webassembly-在前端架构中的定位)
+    - [1.3.1 与 JavaScript 的协作模式](#与-javascript-的协作模式)
+    - [1.3.2 前端分层架构中的 WebAssembly](#前端分层架构中的-webassembly)
+  - [1.4 3. 前端 WebAssembly 架构模式](#3-前端-webassembly-架构模式)
+    - [1.4.1 独立模块模式](#独立模块模式)
+    - [1.4.2 核心库增强模式](#核心库增强模式)
+    - [1.4.3 全应用 WebAssembly 架构](#全应用-webassembly-架构)
+  - [1.5 4. 高级架构技术与优化](#4-高级架构技术与优化)
+    - [1.5.1 多线程 WebAssembly 架构](#多线程-webassembly-架构)
+    - [1.5.2 动态加载与代码分割](#动态加载与代码分割)
+  - [1.6 5. 前端框架与 WebAssembly 集成](#5-前端框架与-webassembly-集成)
+    - [1.6.1 React 集成架构](#react-集成架构)
+    - [1.6.2 Vue 集成架构](#vue-集成架构)
+  - [1.7 6. 案例分析：大规模前端 WebAssembly 应用](#6-案例分析：大规模前端-webassembly-应用)
+    - [1.7.1 AutoCAD Web 架构分析](#autocad-web-架构分析)
+    - [1.7.2 图像编辑器架构](#图像编辑器架构)
+  - [1.8 7. 前端 WebAssembly 架构挑战与解决方案](#7-前端-webassembly-架构挑战与解决方案)
+    - [1.8.1 内存管理挑战](#内存管理挑战)
+    - [1.8.2 加载优化与缓存策略](#加载优化与缓存策略)
+    - [1.8.3 调试和性能分析工具](#调试和性能分析工具)
+  - [1.9 8. 未来趋势与发展方向](#8-未来趋势与发展方向)
+    - [1.9.1 WebAssembly 组件模型](#webassembly-组件模型)
+    - [1.9.2 跨平台 WebAssembly 架构](#跨平台-webassembly-架构)
+  - [1.10 9. 总结与最佳实践](#9-总结与最佳实践)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [前端 WebAssembly 架构深度分析与综合](#前端-webassembly-架构深度分析与综合)
   - [目录](#目录)
@@ -32,9 +77,9 @@
     - [8.2 跨平台 WebAssembly 架构](#82-跨平台-webassembly-架构)
   - [9. 总结与最佳实践](#9-总结与最佳实践)
 
-## 1. WebAssembly 核心概念与原理
+## 1.2 1. WebAssembly 核心概念与原理
 
-### 1.1 WebAssembly 基本原理
+### 1.2.1 WebAssembly 基本原理
 
 WebAssembly (Wasm) 是一种低级的二进制指令格式，设计用于在现代 Web 浏览器中高效执行。它的核心特点包括：
 
@@ -56,7 +101,7 @@ pub fn fibonacci(n: i32) -> i32 {
 
 编译后的 WebAssembly 指令更接近机器语言，执行效率更高。
 
-### 1.2 内存模型与限制
+### 1.2.2 内存模型与限制
 
 WebAssembly 使用线性内存模型：
 
@@ -83,9 +128,9 @@ WebAssembly.instantiateStreaming(fetch('module.wasm'), importObject)
   });
 ```
 
-## 2. WebAssembly 在前端架构中的定位
+## 1.3 2. WebAssembly 在前端架构中的定位
 
-### 2.1 与 JavaScript 的协作模式
+### 1.3.1 与 JavaScript 的协作模式
 
 WebAssembly 并非替代 JavaScript，而是互补关系：
 
@@ -155,7 +200,7 @@ class ImageProcessor {
 }
 ```
 
-### 2.2 前端分层架构中的 WebAssembly
+### 1.3.2 前端分层架构中的 WebAssembly
 
 在现代前端分层架构中，WebAssembly 通常处于以下位置：
 
@@ -178,9 +223,9 @@ class ImageProcessor {
 
 这种架构实现了责任分离和性能优化的平衡。
 
-## 3. 前端 WebAssembly 架构模式
+## 1.4 3. 前端 WebAssembly 架构模式
 
-### 3.1 独立模块模式
+### 1.4.1 独立模块模式
 
 将独立功能封装为 WebAssembly 模块，通过明确的 API 与 JavaScript 交互：
 
@@ -252,7 +297,7 @@ async function processImage() {
 
 这种模式适用于计算密集型的独立功能，如图像处理、物理模拟等。
 
-### 3.2 核心库增强模式
+### 1.4.2 核心库增强模式
 
 使用 WebAssembly 实现核心库的性能关键部分，保持 JavaScript API：
 
@@ -313,7 +358,7 @@ class DataProcessor {
 
 这种模式保持了 API 一致性，同时提供了性能优化，适合渐进式引入 WebAssembly。
 
-### 3.3 全应用 WebAssembly 架构
+### 1.4.3 全应用 WebAssembly 架构
 
 某些应用可以将大部分逻辑编译为 WebAssembly，JavaScript 仅用于 DOM 操作：
 
@@ -364,9 +409,9 @@ fn main() {
 
 这种架构在性能要求极高或需要复用现有非 JavaScript 代码库的场景中适用。
 
-## 4. 高级架构技术与优化
+## 1.5 4. 高级架构技术与优化
 
-### 4.1 多线程 WebAssembly 架构
+### 1.5.1 多线程 WebAssembly 架构
 
 WebAssembly 可通过 Web Workers 实现并行计算：
 
@@ -453,7 +498,7 @@ function processDataWithWasm(data) {
 
 多线程架构适用于数据处理、模拟和渲染等场景，能充分利用多核心处理器。
 
-### 4.2 动态加载与代码分割
+### 1.5.2 动态加载与代码分割
 
 WebAssembly 模块也可以实现按需加载：
 
@@ -514,9 +559,9 @@ async function processUserRequest(requestType, data) {
 
 这种架构能减少初始加载时间，实现更好的资源利用。
 
-## 5. 前端框架与 WebAssembly 集成
+## 1.6 5. 前端框架与 WebAssembly 集成
 
-### 5.1 React 集成架构
+### 1.6.1 React 集成架构
 
 将 WebAssembly 与 React 集成的多种方式：
 
@@ -637,7 +682,7 @@ function App() {
 }
 ```
 
-### 5.2 Vue 集成架构
+### 1.6.2 Vue 集成架构
 
 Vue.js 中集成 WebAssembly 的模式：
 
@@ -716,9 +761,9 @@ export default defineComponent({
 });
 ```
 
-## 6. 案例分析：大规模前端 WebAssembly 应用
+## 1.7 6. 案例分析：大规模前端 WebAssembly 应用
 
-### 6.1 AutoCAD Web 架构分析
+### 1.7.1 AutoCAD Web 架构分析
 
 AutoCAD Web 版是 WebAssembly 在复杂前端应用中的典型案例：
 
@@ -751,7 +796,7 @@ AutoCAD Web 版是 WebAssembly 在复杂前端应用中的典型案例：
 - 采用大型内存模型处理复杂 CAD 文件
 - 增量加载策略处理大型绘图
 
-### 6.2 图像编辑器架构
+### 1.7.2 图像编辑器架构
 
 现代 Web 图像编辑器的 WebAssembly 架构：
 
@@ -864,9 +909,9 @@ class ImageEditor {
 }
 ```
 
-## 7. 前端 WebAssembly 架构挑战与解决方案
+## 1.8 7. 前端 WebAssembly 架构挑战与解决方案
 
-### 7.1 内存管理挑战
+### 1.8.1 内存管理挑战
 
 WebAssembly 中的内存管理是主要挑战之一：
 
@@ -1000,7 +1045,7 @@ class WasmMemoryManager {
 }
 ```
 
-### 7.2 加载优化与缓存策略
+### 1.8.2 加载优化与缓存策略
 
 优化 WebAssembly 模块加载体验：
 
@@ -1161,7 +1206,7 @@ class WasmLoader {
 }
 ```
 
-### 7.3 调试和性能分析工具
+### 1.8.3 调试和性能分析工具
 
 在前端架构中集成性能监测：
 
@@ -1410,9 +1455,9 @@ class WasmPerformancePanel {
 }
 ```
 
-## 8. 未来趋势与发展方向
+## 1.9 8. 未来趋势与发展方向
 
-### 8.1 WebAssembly 组件模型
+### 1.9.1 WebAssembly 组件模型
 
 WebAssembly 组件模型是下一代 WebAssembly 应用架构的基础：
 
@@ -1521,7 +1566,7 @@ async function initializeApp() {
 }
 ```
 
-### 8.2 跨平台 WebAssembly 架构
+### 1.9.2 跨平台 WebAssembly 架构
 
 基于 WebAssembly 的跨平台统一架构：
 
@@ -1718,7 +1763,7 @@ async function startApplication() {
 }
 ```
 
-## 9. 总结与最佳实践
+## 1.10 9. 总结与最佳实践
 
 前端 WebAssembly 架构已经从简单的计算辅助工具发展为复杂的应用架构基础。
 设计高效的 WebAssembly 前端架构需要考虑以下最佳实践：

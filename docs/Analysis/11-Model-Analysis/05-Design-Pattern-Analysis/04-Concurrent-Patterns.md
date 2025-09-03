@@ -1,6 +1,73 @@
-# 并发模式 (Concurrent Patterns)
+# 11.5.1 并发模式 (Concurrent Patterns)
 
-## 目录
+<!-- TOC START -->
+- [11.5.1 并发模式 (Concurrent Patterns)](#并发模式-concurrent-patterns)
+  - [11.5.1.1 目录](#目录)
+  - [11.5.1.2 1. 概述](#1-概述)
+    - [11.5.1.2.1 并发模式定义](#并发模式定义)
+    - [11.5.1.2.2 核心原则](#核心原则)
+    - [11.5.1.2.3 分类体系](#分类体系)
+  - [11.5.1.3 2. CSP模型与Golang并发原语](#2-csp模型与golang并发原语)
+    - [11.5.1.3.1 CSP模型](#csp模型)
+    - [11.5.1.3.2 Golang并发原语](#golang并发原语)
+  - [11.5.1.4 3. Worker Pool模式](#3-worker-pool模式)
+    - [11.5.1.4.1 形式化定义](#形式化定义)
+    - [11.5.1.4.2 Golang实现](#golang实现)
+  - [11.5.1.5 4. Pipeline模式](#4-pipeline模式)
+    - [11.5.1.5.1 形式化定义](#形式化定义)
+    - [11.5.1.5.2 Golang实现](#golang实现)
+  - [11.5.1.6 5. Fan-Out/Fan-In模式](#5-fan-outfan-in模式)
+    - [11.5.1.6.1 形式化定义](#形式化定义)
+    - [11.5.1.6.2 Golang实现](#golang实现)
+  - [11.5.1.7 6. 生产者-消费者模式](#6-生产者-消费者模式)
+    - [11.5.1.7.1 形式化定义](#形式化定义)
+    - [11.5.1.7.2 Golang实现](#golang实现)
+  - [11.5.1.8 7. 读者-写者模式](#7-读者-写者模式)
+    - [11.5.1.8.1 形式化定义](#形式化定义)
+    - [11.5.1.8.2 Golang实现](#golang实现)
+  - [11.5.1.9 8. 哲学家进餐问题](#8-哲学家进餐问题)
+    - [11.5.1.9.1 形式化定义](#形式化定义)
+    - [11.5.1.9.2 Golang实现](#golang实现)
+  - [11.5.1.10 9. 无锁算法](#9-无锁算法)
+    - [11.5.1.10.1 无锁算法形式化定义](#无锁算法形式化定义)
+    - [11.5.1.10.2 无锁栈的Golang实现](#无锁栈的golang实现)
+    - [11.5.1.10.3 无锁队列的Golang实现](#无锁队列的golang实现)
+    - [11.5.1.10.4 无锁算法的形式化性质](#无锁算法的形式化性质)
+  - [11.5.1.11 10. Actor模型](#10-actor模型)
+    - [11.5.1.11.1 Actor模型形式化定义](#actor模型形式化定义)
+    - [11.5.1.11.2 Golang实现](#golang实现)
+    - [11.5.1.11.3 Actor模型核心特性](#actor模型核心特性)
+  - [11.5.1.12 11. Future/Promise模式](#11-futurepromise模式)
+    - [11.5.1.12.1 形式化定义](#形式化定义)
+    - [11.5.1.12.2 Golang实现](#golang实现)
+  - [11.5.1.13 12. 模式关系分析](#12-模式关系分析)
+    - [11.5.1.13.1 模式组合关系](#模式组合关系)
+    - [11.5.1.13.2 模式选择指南](#模式选择指南)
+  - [11.5.1.14 13. 性能分析](#13-性能分析)
+    - [11.5.1.14.1 时间复杂度对比](#时间复杂度对比)
+    - [11.5.1.14.2 性能优化建议](#性能优化建议)
+  - [11.5.1.15 14. 最佳实践](#14-最佳实践)
+    - [11.5.1.15.1 设计原则](#设计原则)
+    - [11.5.1.15.2 实现建议](#实现建议)
+    - [11.5.1.15.3 常见陷阱](#常见陷阱)
+    - [11.5.1.15.4 调试技巧](#调试技巧)
+  - [11.5.1.16 参考资料](#参考资料)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 11.5.1.1 目录
 
 1. [概述](#1-概述)
 2. [CSP模型与Golang并发原语](#2-csp模型与golang并发原语)
@@ -17,9 +84,9 @@
 13. [性能分析](#13-性能分析)
 14. [最佳实践](#14-最佳实践)
 
-## 1. 概述
+## 11.5.1.2 1. 概述
 
-### 1.1 并发模式定义
+### 11.5.1.2.1 并发模式定义
 
 并发模式是处理多线程、多进程或分布式系统中并发执行的设计模式。
 
@@ -35,14 +102,14 @@ $$C = \{c_i | c_i = (Tasks_i, Resources_i, Synchronization_i)\}$$
 - $Resources_i$ 是共享资源集合
 - $Synchronization_i$ 是同步机制
 
-### 1.2 核心原则
+### 11.5.1.2.2 核心原则
 
 1. **CSP模型**：通过通信共享内存，而不是通过共享内存通信
 2. **无锁编程**：尽可能避免锁的使用
 3. **资源管理**：合理管理并发资源
 4. **错误处理**：妥善处理并发错误
 
-### 1.3 分类体系
+### 11.5.1.2.3 分类体系
 
 ```text
 并发模式
@@ -60,9 +127,9 @@ $$C = \{c_i | c_i = (Tasks_i, Resources_i, Synchronization_i)\}$$
 │   └── Future/Promise
 ```
 
-## 2. CSP模型与Golang并发原语
+## 11.5.1.3 2. CSP模型与Golang并发原语
 
-### 2.1 CSP模型
+### 11.5.1.3.1 CSP模型
 
 **定义**：Communicating Sequential Processes，通过消息传递进行进程间通信。
 
@@ -74,7 +141,7 @@ $$CSP = (P, C, M, \rightarrow)$$
 
 其中 $\rightarrow$ 表示通信关系。
 
-### 2.2 Golang并发原语
+### 11.5.1.3.2 Golang并发原语
 
 ```go
 package concurrent
@@ -182,9 +249,9 @@ func selectExample() {
 }
 ```
 
-## 3. Worker Pool模式
+## 11.5.1.4 3. Worker Pool模式
 
-### 3.1 形式化定义
+### 11.5.1.4.1 形式化定义
 
 **定义**：使用固定数量的工作线程处理任务队列。
 
@@ -196,7 +263,7 @@ $$WorkerPool = (W, T, Q, Process)$$
 
 其中 $Process: W \times T \rightarrow Result$
 
-### 3.2 Golang实现
+### 11.5.1.4.2 Golang实现
 
 ```go
 package workerpool
@@ -322,9 +389,9 @@ func (t *SimpleTask) GetID() string {
 }
 ```
 
-## 4. Pipeline模式
+## 11.5.1.5 4. Pipeline模式
 
-### 4.1 形式化定义
+### 11.5.1.5.1 形式化定义
 
 **定义**：将复杂任务分解为多个阶段，每个阶段处理数据并传递给下一阶段。
 
@@ -336,7 +403,7 @@ $$Pipeline = S_1 \circ S_2 \circ ... \circ S_n$$
 
 其中 $\circ$ 表示阶段组合。
 
-### 4.2 Golang实现
+### 11.5.1.5.2 Golang实现
 
 ```go
 package pipeline
@@ -461,9 +528,9 @@ func ExamplePipeline() {
 }
 ```
 
-## 5. Fan-Out/Fan-In模式
+## 11.5.1.6 5. Fan-Out/Fan-In模式
 
-### 5.1 形式化定义
+### 11.5.1.6.1 形式化定义
 
 **定义**：Fan-Out将输入分发到多个处理器，Fan-In将多个处理器的输出合并。
 
@@ -474,7 +541,7 @@ func ExamplePipeline() {
 $$FanOut: I \rightarrow P_1, P_2, ..., P_n$$
 $$FanIn: P_1, P_2, ..., P_n \rightarrow O$$
 
-### 5.2 Golang实现
+### 11.5.1.6.2 Golang实现
 
 ```go
 package fanout
@@ -587,9 +654,9 @@ func ExampleFanOutFanIn() {
 }
 ```
 
-## 6. 生产者-消费者模式
+## 11.5.1.7 6. 生产者-消费者模式
 
-### 6.1 形式化定义
+### 11.5.1.7.1 形式化定义
 
 **定义**：生产者生成数据，消费者处理数据，通过缓冲区解耦。
 
@@ -600,7 +667,7 @@ func ExampleFanOutFanIn() {
 $$Producer: \emptyset \rightarrow B$$
 $$Consumer: B \rightarrow \emptyset$$
 
-### 6.2 Golang实现
+### 11.5.1.7.2 Golang实现
 
 ```go
 package producerconsumer
@@ -709,9 +776,9 @@ func ExampleProducerConsumer() {
 }
 ```
 
-## 7. 读者-写者模式
+## 11.5.1.8 7. 读者-写者模式
 
-### 7.1 形式化定义
+### 11.5.1.8.1 形式化定义
 
 **定义**：允许多个读者同时读取，但写者必须独占访问。
 
@@ -722,7 +789,7 @@ func ExampleProducerConsumer() {
 $$Read: R_1, R_2, ..., R_n \rightarrow S$$
 $$Write: W \rightarrow S$$
 
-### 7.2 Golang实现
+### 11.5.1.8.2 Golang实现
 
 ```go
 package readerwriter
@@ -802,9 +869,9 @@ func ExampleReaderWriter() {
 }
 ```
 
-## 8. 哲学家进餐问题
+## 11.5.1.9 8. 哲学家进餐问题
 
-### 8.1 形式化定义
+### 11.5.1.9.1 形式化定义
 
 **定义**：经典同步问题，多个哲学家围坐在圆桌旁，需要两只筷子才能进餐。
 
@@ -814,7 +881,7 @@ func ExampleReaderWriter() {
 
 $$Dining = (P, F, \{(p_i, f_i, f_{i+1}) | i \in [0, n-1]\})$$
 
-### 8.2 Golang实现
+### 11.5.1.9.2 Golang实现
 
 ```go
 package diningphilosophers
@@ -940,9 +1007,9 @@ func ExampleDiningPhilosophers() {
 }
 ```
 
-## 9. 无锁算法
+## 11.5.1.10 9. 无锁算法
 
-### 9.1 无锁算法形式化定义
+### 11.5.1.10.1 无锁算法形式化定义
 
 **定义**：无锁算法是一种并发编程技术，允许多个线程访问共享资源，而无需使用互斥锁。
 
@@ -967,7 +1034,7 @@ $$\forall t \in T, \exists o \in O, \exists s \in S | \Phi(s, t, o) \neq s$$
 
 即：在任何系统状态下，总存在至少一个线程能够完成其操作并使系统状态前进。
 
-### 9.2 无锁栈的Golang实现
+### 11.5.1.10.2 无锁栈的Golang实现
 
 ```go
 package lockfree
@@ -1045,7 +1112,7 @@ func (s *LockFreeStack[T]) IsEmpty() bool {
 }
 ```
 
-### 9.3 无锁队列的Golang实现
+### 11.5.1.10.3 无锁队列的Golang实现
 
 ```go
 package lockfree
@@ -1152,7 +1219,7 @@ func (q *LockFreeQueue[T]) IsEmpty() bool {
 }
 ```
 
-### 9.4 无锁算法的形式化性质
+### 11.5.1.10.4 无锁算法的形式化性质
 
 **线性化性 (Linearizability)**：
 
@@ -1178,9 +1245,9 @@ $$\forall t \in T, \forall o \in O, steps(t, o) \leq k$$
 
 $$\exists t \in T_a | t \text{ completes operation }$$
 
-## 10. Actor模型
+## 11.5.1.11 10. Actor模型
 
-### 10.1 Actor模型形式化定义
+### 11.5.1.11.1 Actor模型形式化定义
 
 **定义**：Actor模型是一种并发计算模型，每个Actor是一个并发实体，拥有自己的状态，通过消息传递进行通信。
 
@@ -1200,7 +1267,7 @@ $$ActorSystem = (A, M, S, Behavior, Mailbox, Context)$$
 - $Context$ 包含引用和创建Actor的功能
 - $Actions = \{send(a, m) | a \in A, m \in M\} \cup \{create(behavior)\} \cup \{become(behavior')\}$
 
-### 10.2 Golang实现
+### 11.5.1.11.2 Golang实现
 
 ```go
 package actor
@@ -1384,7 +1451,7 @@ func ExampleActorSystem() {
 }
 ```
 
-### 10.3 Actor模型核心特性
+### 11.5.1.11.3 Actor模型核心特性
 
 1. **封装与隔离**：
    - 每个Actor封装自己的状态和行为
@@ -1409,9 +1476,9 @@ func ExampleActorSystem() {
    - Actor可以监督其他Actor的生命周期
    - 形式化表示：$supervise(a_i, a_j) \Rightarrow a_i \text{ monitors failures of } a_j$
 
-## 11. Future/Promise模式
+## 11.5.1.12 11. Future/Promise模式
 
-### 11.1 形式化定义
+### 11.5.1.12.1 形式化定义
 
 **定义**：Future表示异步计算的结果，Promise用于设置Future的值。
 
@@ -1422,7 +1489,7 @@ func ExampleActorSystem() {
 $$Future = (V, Status)$$
 $$Promise: V \rightarrow Future$$
 
-### 11.2 Golang实现
+### 11.5.1.12.2 Golang实现
 
 ```go
 package future
@@ -1631,9 +1698,9 @@ func ExampleFuturePromise() {
 }
 ```
 
-## 12. 模式关系分析
+## 11.5.1.13 12. 模式关系分析
 
-### 12.1 模式组合关系
+### 11.5.1.13.1 模式组合关系
 
 ```mermaid
 graph TD
@@ -1647,7 +1714,7 @@ graph TD
     O[Future/Promise] --> P[异步计算]
 ```
 
-### 12.2 模式选择指南
+### 11.5.1.13.2 模式选择指南
 
 | 场景 | 推荐模式 | 原因 |
 |------|----------|------|
@@ -1660,9 +1727,9 @@ graph TD
 | 消息传递 | Actor模型 | 封装状态 |
 | 异步计算 | Future/Promise | 结果封装 |
 
-## 13. 性能分析
+## 11.5.1.14 13. 性能分析
 
-### 13.1 时间复杂度对比
+### 11.5.1.14.1 时间复杂度对比
 
 | 模式 | 创建时间 | 执行时间 | 内存占用 | 适用场景 |
 |------|----------|----------|----------|----------|
@@ -1675,37 +1742,37 @@ graph TD
 | Actor模型 | O(1) | O(1) | O(a) | 消息传递 |
 | Future/Promise | O(1) | O(1) | O(1) | 异步计算 |
 
-### 13.2 性能优化建议
+### 11.5.1.14.2 性能优化建议
 
 1. **选择合适的模式**：根据具体场景选择最合适的并发模式
 2. **避免锁竞争**：优先使用无锁算法和Channel
 3. **合理设置缓冲区**：避免缓冲区过大或过小
 4. **监控性能指标**：关注吞吐量、延迟、资源使用率
 
-## 14. 最佳实践
+## 11.5.1.15 14. 最佳实践
 
-### 14.1 设计原则
+### 11.5.1.15.1 设计原则
 
 1. **CSP优先**：优先使用Channel而不是共享内存
 2. **避免竞态条件**：使用适当的同步机制
 3. **资源管理**：及时释放资源，避免泄漏
 4. **错误处理**：妥善处理并发错误
 
-### 14.2 实现建议
+### 11.5.1.15.2 实现建议
 
 1. **使用Context**：支持取消和超时控制
 2. **合理使用Goroutine**：避免创建过多Goroutine
 3. **内存管理**：注意内存分配和垃圾回收
 4. **测试并发**：编写并发测试用例
 
-### 14.3 常见陷阱
+### 11.5.1.15.3 常见陷阱
 
 1. **Goroutine泄漏**：确保Goroutine能够正确退出
 2. **Channel死锁**：避免Channel操作死锁
 3. **竞态条件**：使用适当的同步机制
 4. **性能问题**：避免过度同步和锁竞争
 
-### 14.4 调试技巧
+### 11.5.1.15.4 调试技巧
 
 1. **使用race detector**：检测竞态条件
 2. **性能分析**：使用pprof进行性能分析
@@ -1716,7 +1783,7 @@ graph TD
 
 *本文档提供了Golang并发模式的完整分析，包括形式化定义、实现示例和最佳实践。*
 
-## 参考资料
+## 11.5.1.16 参考资料
 
 1. [Go并发编程指南](https://golang.org/doc/effective_go.html#concurrency)
 2. [CSP模型论文](https://www.cs.cmu.edu/~crary/819-f09/Hoare78.pdf)

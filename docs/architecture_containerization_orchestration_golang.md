@@ -1,6 +1,26 @@
-# 容器化与编排架构（Containerization and Orchestration Architecture）
+# 1 1 1 1 1 1 1 容器化与编排架构（Containerization and Orchestration Architecture）
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 容器化与编排架构（Containerization and Orchestration Architecture）](#1-1-1-1-1-1-1-容器化与编排架构containerization-and-orchestration-architecture)
+  - [1.1 目录](#11-目录)
+  - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
+    - [1.2.1 主流技术与标准](#121-主流技术与标准)
+    - [1.2.2 发展历程](#122-发展历程)
+    - [1.2.3 国际权威链接](#123-国际权威链接)
+  - [1.3 2. 核心架构模式与设计原则](#13-2-核心架构模式与设计原则)
+    - [1.3.1 容器化架构 (Docker)](#131-容器化架构-docker)
+    - [16 16 16 16 16 16 16 容器编排架构 (Kubernetes)](#16-16-16-16-16-16-16-容器编排架构-kubernetes)
+  - [18.1 3. Golang与云原生生态](#181-3-golang与云原生生态)
+    - [18.1.1 使用Go开发Kubernetes原生应用](#1811-使用go开发kubernetes原生应用)
+    - [18.1.2 可观测性 (Observability)](#1812-可观测性-observability)
+  - [18.2 4. 分布式挑战与主流解决方案](#182-4-分布式挑战与主流解决方案)
+  - [18.3 5. 工程结构与CI/CD实践](#183-5-工程结构与cicd实践)
+    - [18.3.1 目录结构建议](#1831-目录结构建议)
+    - [18.3.2 CI/CD工作流 (GitHub Actions)](#1832-cicd工作流-github-actions)
+  - [19.1 6. 相关架构主题](#191-6-相关架构主题)
+<!-- TOC END -->
+
+## 1.1 目录
 
 1. 国际标准与发展历程
 2. 核心架构模式与设计原则
@@ -12,9 +32,9 @@
 
 ---
 
-## 1. 国际标准与发展历程
+## 1.2 1. 国际标准与发展历程
 
-### 1.1 主流技术与标准
+### 1.2.1 主流技术与标准
 
 - **Docker**: 领先的容器化平台。
 - **Kubernetes (K8s)**: 事实上的容器编排标准。
@@ -25,7 +45,7 @@
 - **Prometheus**: 云原生监控和告警系统。
 - **CNCF (Cloud Native Computing Foundation)**: 云原生计算基金会，托管了大量关键开源项目。
 
-### 1.2 发展历程
+### 1.2.2 发展历程
 
 - **2000s**: 虚拟化技术的成熟 (VMware, Xen)。
 - **2008**: LXC (Linux Containers) 发布，为现代容器技术奠定基础。
@@ -35,7 +55,7 @@
 - **2017**: Kubernetes赢得容器编排战争，成为主导平台。
 - **2020s**: Serverless容器 (Knative), Service Mesh (Istio, Linkerd), FinOps等云原生技术进一步发展。
 
-### 1.3 国际权威链接
+### 1.2.3 国际权威链接
 
 - [Docker](https://www.docker.com/)
 - [Kubernetes](https://kubernetes.io/)
@@ -46,56 +66,56 @@
 
 ---
 
-## 2. 核心架构模式与设计原则
+## 1.3 2. 核心架构模式与设计原则
 
-### 2.1 容器化架构 (Docker)
+### 1.3.1 容器化架构 (Docker)
 
 **Dockerfile 最佳实践**:
 
 ```dockerfile
-# 1. 使用官方、精简的基础镜像 (多阶段构建)
+# 2 2 2 2 2 2 2 1. 使用官方、精简的基础镜像 (多阶段构建)
 FROM golang:1.19-alpine AS builder
 
-# 2. 设置工作目录
+# 3 3 3 3 3 3 3 2. 设置工作目录
 WORKDIR /app
 
-# 3. 优化依赖缓存
+# 4 4 4 4 4 4 4 3. 优化依赖缓存
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-# 4. 拷贝源代码
+# 5 5 5 5 5 5 5 4. 拷贝源代码
 COPY . .
 
-# 5. 构建应用，使用静态编译以减少依赖
-# CGO_ENABLED=0 禁用CGO
-# GOOS=linux 指定目标操作系统
-# -a 强制重新构建
-# -ldflags "-w -s" 移除调试信息，减小体积
+# 6 6 6 6 6 6 6 5. 构建应用，使用静态编译以减少依赖
+# 7 7 7 7 7 7 7 CGO_ENABLED=0 禁用CGO
+# 8 8 8 8 8 8 8 GOOS=linux 指定目标操作系统
+# 9 9 9 9 9 9 9 -a 强制重新构建
+# 10 10 10 10 10 10 10 -ldflags "-w -s" 移除调试信息，减小体积
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-w -s" -o /app/main .
 
-# --- 创建一个最小化的生产镜像 ---
+# 11 11 11 11 11 11 11 --- 创建一个最小化的生产镜像 ---
 FROM alpine:latest
 
-# 6. 设置工作目录
+# 12 12 12 12 12 12 12 6. 设置工作目录
 WORKDIR /app
 
-# 7. 从构建阶段拷贝编译好的二进制文件
+# 13 13 13 13 13 13 13 7. 从构建阶段拷贝编译好的二进制文件
 COPY --from=builder /app/main .
 COPY --from=builder /app/config.yaml . # 拷贝配置文件
 
-# 8. （安全实践）添加非root用户
+# 14 14 14 14 14 14 14 8. （安全实践）添加非root用户
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
-# 9. 暴露端口
+# 15 15 15 15 15 15 15 9. 暴露端口
 EXPOSE 8080
 
-# 10. 定义启动命令
+# 16 16 16 16 16 16 16 10. 定义启动命令
 CMD ["./main"]
 ```
 
-### 2.2 容器编排架构 (Kubernetes)
+### 16 16 16 16 16 16 16 容器编排架构 (Kubernetes)
 
 **Kubernetes核心组件**:
 
@@ -112,7 +132,7 @@ CMD ["./main"]
 **典型应用部署 (Deployment + Service)**:
 
 ```yaml
-# deployment.yaml
+# 17 17 17 17 17 17 17 deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -154,7 +174,7 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
 ---
-# service.yaml
+# 18 18 18 18 18 18 18 service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -210,9 +230,9 @@ spec:
 
 ---
 
-## 3. Golang与云原生生态
+## 18.1 3. Golang与云原生生态
 
-### 3.1 使用Go开发Kubernetes原生应用
+### 18.1.1 使用Go开发Kubernetes原生应用
 
 - **Client-go**: 官方的Go客户端库，用于与Kubernetes API交互。
 - **Operator Framework & Kubebuilder**: 用于构建Kubernetes Operator的流行框架。Operator将人类的运维知识编码到软件中，实现自动化管理。
@@ -262,7 +282,7 @@ func main() {
 }
 ```
 
-### 3.2 可观测性 (Observability)
+### 18.1.2 可观测性 (Observability)
 
 - **Prometheus**: 用于指标收集和告警。Go应用可以通过[prometheus/client_golang](https://github.com/prometheus/client_golang)库暴露`/metrics`端点。
 - **Grafana**: 用于指标的可视化。
@@ -308,7 +328,7 @@ func main() {
 
 ---
 
-## 4. 分布式挑战与主流解决方案
+## 18.2 4. 分布式挑战与主流解决方案
 
 - **网络 (Networking)**:
   - **挑战**: 容器间通信、服务发现、网络策略和安全。
@@ -325,9 +345,9 @@ func main() {
 
 ---
 
-## 5. 工程结构与CI/CD实践
+## 18.3 5. 工程结构与CI/CD实践
 
-### 5.1 目录结构建议
+### 18.3.1 目录结构建议
 
 ```text
 .
@@ -355,10 +375,10 @@ func main() {
 └── go.sum
 ```
 
-### 5.2 CI/CD工作流 (GitHub Actions)
+### 18.3.2 CI/CD工作流 (GitHub Actions)
 
 ```yaml
-# .github/workflows/ci-cd.yml
+# 19 19 19 19 19 19 19 .github/workflows/ci-cd.yml
 name: Go CI/CD Pipeline
 
 on:
@@ -413,7 +433,7 @@ jobs:
         kubectl apply -k deployments/overlays/production
 ```
 
-## 6. 相关架构主题
+## 19.1 6. 相关架构主题
 
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 容器是部署和隔离微服务的理想选择。
 - [**服务网格架构 (Service Mesh Architecture)**](./architecture_service_mesh_golang.md): 服务网格运行在容器编排平台之上，通过Sidecar容器来管理服务间通信。

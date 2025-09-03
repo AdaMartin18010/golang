@@ -1,6 +1,55 @@
-# Temporal 与 Cadence 形式化对比分析
+# 1 1 1 1 1 1 1 Temporal 与 Cadence 形式化对比分析
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Temporal 与 Cadence 形式化对比分析](#1-1-1-1-1-1-1-temporal-与-cadence-形式化对比分析)
+  - [1.1 目录](#目录)
+  - [1.2 1. 概念模型对比](#1-概念模型对比)
+    - [1.2.1 核心概念映射](#核心概念映射)
+    - [1.2.2 概念模型形式化](#概念模型形式化)
+  - [1.3 2. 形式模型映射](#2-形式模型映射)
+    - [1.3.1 三流模型映射对比](#三流模型映射对比)
+    - [1.3.2 形式化时序特性](#形式化时序特性)
+  - [1.4 3. 架构设计对比](#3-架构设计对比)
+    - [1.4.1 组件架构形式化](#组件架构形式化)
+    - [1.4.2 架构差异形式化](#架构差异形式化)
+    - [1.4.3 架构不变量对比](#架构不变量对比)
+  - [1.5 4. 执行语义差异](#4-执行语义差异)
+    - [1.5.1 工作流执行模型](#工作流执行模型)
+    - [1.5.2 历史处理差异](#历史处理差异)
+    - [1.5.3 决策过程形式化](#决策过程形式化)
+  - [1.6 5. 状态管理比较](#5-状态管理比较)
+    - [1.6.1 状态转换模型](#状态转换模型)
+    - [1.6.2 状态持久化差异](#状态持久化差异)
+    - [1.6.3 状态一致性保证](#状态一致性保证)
+  - [1.7 6. 可靠性机制对比](#6-可靠性机制对比)
+    - [1.7.1 故障恢复模型](#故障恢复模型)
+    - [1.7.2 重试策略形式化](#重试策略形式化)
+    - [1.7.3 可靠性指标](#可靠性指标)
+  - [1.8 7. 扩展性与演化](#7-扩展性与演化)
+    - [1.8.1 API演化形式化](#api演化形式化)
+    - [1.8.2 扩展能力对比](#扩展能力对比)
+    - [1.8.3 形式化适应性](#形式化适应性)
+  - [1.9 8. 统一形式模型映射](#8-统一形式模型映射)
+    - [1.9.1 统一映射](#统一映射)
+    - [1.9.2 关键差异总结](#关键差异总结)
+    - [1.9.3 形式等价性证明](#形式等价性证明)
+  - [1.10 结论](#结论)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [Temporal 与 Cadence 形式化对比分析](#temporal-与-cadence-形式化对比分析)
   - [目录](#目录)
@@ -36,9 +85,9 @@
     - [8.3 形式等价性证明](#83-形式等价性证明)
   - [结论](#结论)
 
-## 1. 概念模型对比
+## 1.2 1. 概念模型对比
 
-### 1.1 核心概念映射
+### 1.2.1 核心概念映射
 
 | 概念维度 | Temporal | Cadence | 形式化差异 |
 |---------|---------|---------|-----------|
@@ -50,7 +99,7 @@
 | 历史记录 | Event History | Event History | \(H_{T} \sim H_{C}\) |
 | 查询机制 | Query | Query | \(Q_{T} \cong Q_{C}\) |
 
-### 1.2 概念模型形式化
+### 1.2.2 概念模型形式化
 
 \[ M_T = (W_T, A_T, S_T, Q_T, H_T) \]
 \[ M_C = (W_C, A_C, S_C, Q_C, H_C) \]
@@ -61,9 +110,9 @@
 差异性质：
 \[ \exists p \in Properties: p(M_T) \neq p(M_C) \]
 
-## 2. 形式模型映射
+## 1.3 2. 形式模型映射
 
-### 2.1 三流模型映射对比
+### 1.3.1 三流模型映射对比
 
 ```text
 控制流模型对比
@@ -101,7 +150,7 @@
     └── 状态传输：完整历史传输
 ```
 
-### 2.2 形式化时序特性
+### 1.3.2 形式化时序特性
 
 Temporal时序特性：
 \[ \phi_T = \square(\text{Durable} \land \text{Reliable} \land \text{Scalable} \land \text{SimpleAPI}) \]
@@ -113,9 +162,9 @@ Cadence时序特性：
 \[ \phi_T \setminus \phi_C = \{\text{SimpleAPI}, \text{OptimizedHistory}\} \]
 \[ \phi_C \setminus \phi_T = \{\text{CompleteHistory}, \text{ExplicitDecision}\} \]
 
-## 3. 架构设计对比
+## 1.4 3. 架构设计对比
 
-### 3.1 组件架构形式化
+### 1.4.1 组件架构形式化
 
 Temporal架构：
 \[ Arch_T = (FE_T, HM_T, MM_T, WE_T, V_T) \]
@@ -131,7 +180,7 @@ Cadence架构：
 - \(WE\): 工作引擎
 - \(V\): 可见性存储（Temporal特有）
 
-### 3.2 架构差异形式化
+### 1.4.2 架构差异形式化
 
 ```text
 架构差异
@@ -146,7 +195,7 @@ Cadence架构：
     └── Cadence：紧耦合组件
 ```
 
-### 3.3 架构不变量对比
+### 1.4.3 架构不变量对比
 
 Temporal不变量：
 \[ I_T = \{\text{EventConsistency}, \text{TaskDelivery}, \text{StateRecovery}, \text{ServiceIsolation}\} \]
@@ -157,9 +206,9 @@ Cadence不变量：
 差异：
 \[ I_T \setminus I_C = \{\text{ServiceIsolation}\} \]
 
-## 4. 执行语义差异
+## 1.5 4. 执行语义差异
 
-### 4.1 工作流执行模型
+### 1.5.1 工作流执行模型
 
 Temporal执行模型：
 \[ Exec_T(W) = Replay(H_T) \oplus NewEvents \]
@@ -167,7 +216,7 @@ Temporal执行模型：
 Cadence执行模型：
 \[ Exec_C(W) = Decide(H_C) \]
 
-### 4.2 历史处理差异
+### 1.5.2 历史处理差异
 
 ```text
 历史处理差异
@@ -184,7 +233,7 @@ Cadence执行模型：
 形式化表达：
 \[ Size(H_T) \leq Size(H_C) \text{ for equivalent workflows} \]
 
-### 4.3 决策过程形式化
+### 1.5.3 决策过程形式化
 
 Temporal决策流程：
 \[ D_T: Code(W) \times H_T \rightarrow Commands_T \]
@@ -192,9 +241,9 @@ Temporal决策流程：
 Cadence决策流程：
 \[ D_C: Code(W) \times H_C \rightarrow Commands_C \]
 
-## 5. 状态管理比较
+## 1.6 5. 状态管理比较
 
-### 5.1 状态转换模型
+### 1.6.1 状态转换模型
 
 Temporal状态转换：
 \[ S_{T,t+1} = f_T(S_{T,t}, e_{T,t+1}) \text{ where } e_{T,t+1} \in Events_T \]
@@ -202,7 +251,7 @@ Temporal状态转换：
 Cadence状态转换：
 \[ S_{C,t+1} = f_C(S_{C,t}, e_{C,t+1}) \text{ where } e_{C,t+1} \in Events_C \]
 
-### 5.2 状态持久化差异
+### 1.6.2 状态持久化差异
 
 ```text
 状态持久化差异
@@ -216,7 +265,7 @@ Cadence状态转换：
     └── 状态存储：历史服务存储
 ```
 
-### 5.3 状态一致性保证
+### 1.6.3 状态一致性保证
 
 Temporal一致性：
 \[ Consistency_T = \square(\text{EventOrder} \land \text{CausalConsistency} \land \text{DeterministicReplay}) \]
@@ -224,9 +273,9 @@ Temporal一致性：
 Cadence一致性：
 \[ Consistency_C = \square(\text{EventOrder} \land \text{CausalConsistency} \land \text{DeterministicDecision}) \]
 
-## 6. 可靠性机制对比
+## 1.7 6. 可靠性机制对比
 
-### 6.1 故障恢复模型
+### 1.7.1 故障恢复模型
 
 Temporal恢复模型：
 \[ Recovery_T = Replay(H_T) \rightarrow S_T \]
@@ -234,7 +283,7 @@ Temporal恢复模型：
 Cadence恢复模型：
 \[ Recovery_C = Replay(H_C) \rightarrow S_C \]
 
-### 6.2 重试策略形式化
+### 1.7.2 重试策略形式化
 
 ```text
 重试策略对比
@@ -248,7 +297,7 @@ Cadence恢复模型：
     └── 重试控制：决策任务中控制
 ```
 
-### 6.3 可靠性指标
+### 1.7.3 可靠性指标
 
 Temporal可靠性：
 \[ R_T = P(\text{Complete}|W_T) \]
@@ -256,9 +305,9 @@ Temporal可靠性：
 Cadence可靠性：
 \[ R_C = P(\text{Complete}|W_C) \]
 
-## 7. 扩展性与演化
+## 1.8 7. 扩展性与演化
 
-### 7.1 API演化形式化
+### 1.8.1 API演化形式化
 
 Temporal API演化：
 \[ API_{T,v+1} \supset API_{T,v} \]
@@ -266,7 +315,7 @@ Temporal API演化：
 Cadence API演化：
 \[ API_{C,v+1} \supset API_{C,v} \]
 
-### 7.2 扩展能力对比
+### 1.8.2 扩展能力对比
 
 ```text
 扩展能力对比
@@ -280,7 +329,7 @@ Cadence API演化：
     └── 跨语言支持：有限语言SDK
 ```
 
-### 7.3 形式化适应性
+### 1.8.3 形式化适应性
 
 Temporal适应性：
 \[ Adapt_T = \{Dynamic, Versioned, CrossLang, Cloud\} \]
@@ -288,15 +337,15 @@ Temporal适应性：
 Cadence适应性：
 \[ Adapt_C = \{Dynamic, Manual, LimitedLang\} \]
 
-## 8. 统一形式模型映射
+## 1.9 8. 统一形式模型映射
 
-### 8.1 统一映射
+### 1.9.1 统一映射
 
 \[ \Phi: (M_T, M_C) \rightarrow \mathcal{M}_{Unified} \]
 
 其中 \(\mathcal{M}_{Unified}\) 是通用工作流形式模型。
 
-### 8.2 关键差异总结
+### 1.9.2 关键差异总结
 
 ```text
 核心差异
@@ -314,12 +363,12 @@ Cadence适应性：
     └── Cadence：相对静态
 ```
 
-### 8.3 形式等价性证明
+### 1.9.3 形式等价性证明
 
 \[ \exists f: M_T \rightarrow M_C \text{ such that } \]
 \[ \forall w_T \in W_T, \exists w_C \in W_C: Behavior(f(w_T)) \cong Behavior(w_C) \]
 
-## 结论
+## 1.10 结论
 
 通过形式化对比分析，我们可以得出以下核心洞见：
 

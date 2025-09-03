@@ -1,17 +1,61 @@
-# Go 1.25 安全最佳实践
+# 1 1 1 1 1 1 1 Go 1.25 安全最佳实践
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Go 1.25 安全最佳实践](#1-1-1-1-1-1-1-go-125-安全最佳实践)
+  - [1.1 目录](#目录)
+  - [1.2 加密与认证](#加密与认证)
+    - [1.2.1 加密服务](#加密服务)
+      - [1.2.1.1 AES加密](#aes加密)
+      - [1.2.1.2 哈希函数](#哈希函数)
+    - [1.2.2 JWT认证](#jwt认证)
+      - [1.2.2.1 JWT服务](#jwt服务)
+      - [1.2.2.2 中间件](#中间件)
+  - [1.3 安全编码规范](#安全编码规范)
+    - [1.3.1 输入验证](#输入验证)
+      - [1.3.1.1 参数验证](#参数验证)
+      - [1.3.1.2 SQL注入防护](#sql注入防护)
+    - [1.3.2 XSS防护](#xss防护)
+      - [1.3.2.1 HTML转义](#html转义)
+  - [1.4 漏洞防护](#漏洞防护)
+    - [1.4.1 常见漏洞防护](#常见漏洞防护)
+      - [1.4.1.1 路径遍历防护](#路径遍历防护)
+      - [1.4.1.2 命令注入防护](#命令注入防护)
+    - [1.4.2 内存安全](#内存安全)
+      - [1.4.2.1 缓冲区溢出防护](#缓冲区溢出防护)
+  - [1.5 安全审计](#安全审计)
+    - [1.5.1 日志记录](#日志记录)
+      - [1.5.1.1 安全日志](#安全日志)
+      - [1.5.1.2 审计追踪](#审计追踪)
+    - [1.5.2 安全监控](#安全监控)
+      - [1.5.2.1 异常检测](#异常检测)
+  - [1.6 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 1. [加密与认证](#加密与认证)
 2. [安全编码规范](#安全编码规范)
 3. [漏洞防护](#漏洞防护)
 4. [安全审计](#安全审计)
 
-## 加密与认证
+## 1.2 加密与认证
 
-### 1.1 加密服务
+### 1.2.1 加密服务
 
-#### 1.1.1 AES加密
+#### 1.2.1.1 AES加密
 
 ```go
 // AES加密服务
@@ -63,7 +107,7 @@ func (cs *CryptoService) Decrypt(data []byte) ([]byte, error) {
 }
 ```
 
-#### 1.1.2 哈希函数
+#### 1.2.1.2 哈希函数
 
 ```go
 // 安全哈希函数
@@ -98,9 +142,9 @@ func VerifyPassword(password, hashedPassword string) bool {
 }
 ```
 
-### 1.2 JWT认证
+### 1.2.2 JWT认证
 
-#### 1.2.1 JWT服务
+#### 1.2.2.1 JWT服务
 
 ```go
 // JWT认证服务
@@ -160,7 +204,7 @@ func (jas *JWTAuthService) ValidateToken(tokenString string) (*Claims, error) {
 }
 ```
 
-#### 1.2.2 中间件
+#### 1.2.2.2 中间件
 
 ```go
 // JWT中间件
@@ -196,11 +240,11 @@ func (jas *JWTAuthService) AuthMiddleware() gin.HandlerFunc {
 }
 ```
 
-## 安全编码规范
+## 1.3 安全编码规范
 
-### 2.1 输入验证
+### 1.3.1 输入验证
 
-#### 2.1.1 参数验证
+#### 1.3.1.1 参数验证
 
 ```go
 // 输入验证器
@@ -250,7 +294,7 @@ func (v *Validator) ValidateUsername(username string) error {
 }
 ```
 
-#### 2.1.2 SQL注入防护
+#### 1.3.1.2 SQL注入防护
 
 ```go
 // 安全的数据库操作
@@ -302,9 +346,9 @@ func (sdb *SecureDB) SearchUsers(searchTerm string) ([]*User, error) {
 }
 ```
 
-### 2.2 XSS防护
+### 1.3.2 XSS防护
 
-#### 2.2.1 HTML转义
+#### 1.3.2.1 HTML转义
 
 ```go
 // XSS防护
@@ -335,11 +379,11 @@ func (xp *XSSProtector) ValidateURL(url string) error {
 }
 ```
 
-## 漏洞防护
+## 1.4 漏洞防护
 
-### 3.1 常见漏洞防护
+### 1.4.1 常见漏洞防护
 
-#### 3.1.1 路径遍历防护
+#### 1.4.1.1 路径遍历防护
 
 ```go
 // 路径遍历防护
@@ -375,7 +419,7 @@ func (ptp *PathTraversalProtector) SafeReadFile(path string) ([]byte, error) {
 }
 ```
 
-#### 3.1.2 命令注入防护
+#### 1.4.1.2 命令注入防护
 
 ```go
 // 命令注入防护
@@ -429,9 +473,9 @@ func (cip *CommandInjectionProtector) SafeExecuteCommand(command string) ([]byte
 }
 ```
 
-### 3.2 内存安全
+### 1.4.2 内存安全
 
-#### 3.2.1 缓冲区溢出防护
+#### 1.4.2.1 缓冲区溢出防护
 
 ```go
 // 缓冲区安全
@@ -463,11 +507,11 @@ func (bs *BufferSecurity) ValidateStringLength(s string, maxLength int) error {
 }
 ```
 
-## 安全审计
+## 1.5 安全审计
 
-### 4.1 日志记录
+### 1.5.1 日志记录
 
-#### 4.1.1 安全日志
+#### 1.5.1.1 安全日志
 
 ```go
 // 安全日志记录器
@@ -503,7 +547,7 @@ func (sl *SecurityLogger) LogDataAccess(userID, dataType, operation string) {
 }
 ```
 
-#### 4.1.2 审计追踪
+#### 1.5.1.2 审计追踪
 
 ```go
 // 审计追踪器
@@ -560,9 +604,9 @@ func (at *AuditTrail) GetUserEvents(userID string, limit int) ([]*AuditEvent, er
 }
 ```
 
-### 4.2 安全监控
+### 1.5.2 安全监控
 
-#### 4.2.1 异常检测
+#### 1.5.2.1 异常检测
 
 ```go
 // 异常检测器
@@ -617,7 +661,7 @@ func (ad *AnomalyDetector) IsAccountLocked(userID string) bool {
 }
 ```
 
-## 总结
+## 1.6 总结
 
 本文档介绍了Go 1.25的安全最佳实践，包括：
 

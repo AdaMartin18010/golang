@@ -1,11 +1,48 @@
-# rust生成器
+# 1 1 1 1 1 1 1 rust生成器
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 rust生成器](#1-1-1-1-1-1-1-rust生成器)
+  - [1.1 *1. 基础定义与语法](#*1-基础定义与语法)
+    - [1.1.1 *`gen` 关键字](#*gen-关键字)
+      - [1.1.1.1 *`yield` 关键字](#*yield-关键字)
+      - [1.1.1.2 *`next` 方法](#*next-方法)
+  - [1.2 *2. 高级特性组合](#*2-高级特性组合)
+    - [1.2.1 *与泛型结合](#*与泛型结合)
+      - [1.2.1.1 *与生命周期结合](#*与生命周期结合)
+      - [1.2.1.2 *与 trait bounds 结合](#*与-trait-bounds-结合)
+  - [1.3 *3. 异步编程模式](#*3-异步编程模式)
+    - [1.3.1 *异步流处理](#*异步流处理)
+    - [1.3.2 *并发控制](#*并发控制)
+  - [1.4 *4. 函数式编程模式](#*4-函数式编程模式)
+    - [1.4.1 *映射和过滤](#*映射和过滤)
+      - [1.4.1.1 *组合器模式](#*组合器模式)
+  - [1.5 *5. 错误处理模式](#*5-错误处理模式)
+    - [1.5.1 *Option 处理](#*option-处理)
+  - [1.6 *6. 资源管理模式](#*6-资源管理模式)
+    - [1.6.1 *RAII 模式](#*raii-模式)
+    - [1.6.2 *异步资源管理](#*异步资源管理)
+  - [1.7 *7. 最佳实践建议](#*7-最佳实践建议)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 在 Rust 2024 版本中，`gen`、`yield` 和 `next` 关键字为生成器和异步编程引入了新的特性。
 以下是对这些关键字的定义、解释和使用说明，以及它们与其他语言特性的组合方式和编程建议。
 
-## *1. 基础定义与语法
+## 1.1 *1. 基础定义与语法
 
-### *`gen` 关键字
+### 1.1.1 *`gen` 关键字
 
 - **定义**: `gen` 用于定义一个生成器，它可以在执行过程中多次暂停和恢复。
 - **用法**: 生成器可以是同步的，也可以是异步的。
@@ -26,7 +63,7 @@ let async_gen = gen async {
 };
 ```
 
-#### *`yield` 关键字
+#### 1.1.1.1 *`yield` 关键字
 
 - **定义**: `yield` 用于从生成器中返回一个值，并暂停生成器的执行。
 - **用法**: 在生成器体内使用，返回一个值给调用者。
@@ -39,7 +76,7 @@ let numbers = gen {
 };
 ```
 
-#### *`next` 方法
+#### 1.1.1.2 *`next` 方法
 
 - **定义**: `next` 是一个方法，用于从生成器中获取下一个值。
 - **用法**: 对于同步生成器，直接调用；对于异步生成器，使用 `.await`。
@@ -56,9 +93,9 @@ while let Some(value) = async_gen.next().await {
 }
 ```
 
-## *2. 高级特性组合
+## 1.2 *2. 高级特性组合
 
-### *与泛型结合
+### 1.2.1 *与泛型结合
 
 ```rust
 fn generic_generator<T>(items: Vec<T>) -> impl Iterator<Item = T> {
@@ -70,7 +107,7 @@ fn generic_generator<T>(items: Vec<T>) -> impl Iterator<Item = T> {
 }
 ```
 
-#### *与生命周期结合
+#### 1.2.1.1 *与生命周期结合
 
 ```rust
 fn borrowed_generator<'a>(data: &'a [i32]) -> impl Iterator<Item = &'a i32> {
@@ -82,7 +119,7 @@ fn borrowed_generator<'a>(data: &'a [i32]) -> impl Iterator<Item = &'a i32> {
 }
 ```
 
-#### *与 trait bounds 结合
+#### 1.2.1.2 *与 trait bounds 结合
 
 ```rust
 fn bounded_generator<T: Clone>(item: T) -> impl Iterator<Item = T> {
@@ -93,9 +130,9 @@ fn bounded_generator<T: Clone>(item: T) -> impl Iterator<Item = T> {
 }
 ```
 
-## *3. 异步编程模式
+## 1.3 *3. 异步编程模式
 
-### *异步流处理
+### 1.3.1 *异步流处理
 
 ```rust
 async fn process_stream<T: AsyncRead>(reader: T) -> impl Stream<Item = Result<Vec<u8>, io::Error>> {
@@ -112,7 +149,7 @@ async fn process_stream<T: AsyncRead>(reader: T) -> impl Stream<Item = Result<Ve
 }
 ```
 
-### *并发控制
+### 1.3.2 *并发控制
 
 ```rust
 async fn controlled_stream<T>(
@@ -134,9 +171,9 @@ async fn controlled_stream<T>(
 }
 ```
 
-## *4. 函数式编程模式
+## 1.4 *4. 函数式编程模式
 
-### *映射和过滤
+### 1.4.1 *映射和过滤
 
 ```rust
 fn transform_stream<T, U>(
@@ -153,7 +190,7 @@ fn transform_stream<T, U>(
 }
 ```
 
-#### *组合器模式
+#### 1.4.1.1 *组合器模式
 
 ```rust
 fn combine_streams<T>(
@@ -171,7 +208,7 @@ fn combine_streams<T>(
 }
 ```
 
-## *5. 错误处理模式
+## 1.5 *5. 错误处理模式
 
  *Result 处理
 
@@ -188,7 +225,7 @@ fn fallible_generator() -> impl Iterator<Item = Result<i32, Error>> {
 }
 ```
 
-### *Option 处理
+### 1.5.1 *Option 处理
 
 ```rust
 fn optional_generator() -> impl Iterator<Item = Option<i32>> {
@@ -204,9 +241,9 @@ fn optional_generator() -> impl Iterator<Item = Option<i32>> {
 }
 ```
 
-## *6. 资源管理模式
+## 1.6 *6. 资源管理模式
 
-### *RAII 模式
+### 1.6.1 *RAII 模式
 
 ```rust
 struct ManagedResource<T> {
@@ -223,7 +260,7 @@ impl<T> ManagedResource<T> {
 }
 ```
 
-### *异步资源管理
+### 1.6.2 *异步资源管理
 
 ```rust
 async fn managed_async_stream() -> impl Stream<Item = Result<Data, Error>> {
@@ -237,7 +274,7 @@ async fn managed_async_stream() -> impl Stream<Item = Result<Data, Error>> {
 }
 ```
 
-## *7. 最佳实践建议
+## 1.7 *7. 最佳实践建议
 
 1. **保持生成器函数简单且单一职责**：避免在生成器中持有过多状态。
 2. **适当使用类型注解提高代码可读性**：有助于理解生成器的输入和输出类型。

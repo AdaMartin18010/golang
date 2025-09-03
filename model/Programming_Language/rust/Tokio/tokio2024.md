@@ -1,8 +1,33 @@
-# Rust生成器与Tokio最新版本特性的完整组合实现
+# 1 1 1 1 1 1 1 Rust生成器与Tokio最新版本特性的完整组合实现
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust生成器与Tokio最新版本特性的完整组合实现](#1-1-1-1-1-1-1-rust生成器与tokio最新版本特性的完整组合实现)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目配置](#1-项目配置)
+  - [1.3 2. Tokio 运行时与生成器集成](#2-tokio-运行时与生成器集成)
+    - [1.3.1 3. Tokio 时间特性与生成器](#3-tokio-时间特性与生成器)
+    - [1.3.2 4. Tokio 同步原语与生成器](#4-tokio-同步原语与生成器)
+    - [1.3.3 5. Tokio 通道与生成器](#5-tokio-通道与生成器)
+    - [1.3.4 6. Tokio IO 与生成器](#6-tokio-io-与生成器)
+    - [1.3.5 7. 完整使用示例](#7-完整使用示例)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示 Rust 2024 生成器与 Tokio 最新版本特性的完整组合实现。
 
-## 目录
+## 1.1 目录
 
 - [Rust生成器与Tokio最新版本特性的完整组合实现](#rust生成器与tokio最新版本特性的完整组合实现)
   - [目录](#目录)
@@ -14,7 +39,7 @@
     - [6. Tokio IO 与生成器](#6-tokio-io-与生成器)
     - [7. 完整使用示例](#7-完整使用示例)
 
-## 1. 项目配置
+## 1.2 1. 项目配置
 
 ```toml
 [dependencies]
@@ -25,7 +50,7 @@ async-stream = "0.3"
 tracing = "0.1"
 ```
 
-## 2. Tokio 运行时与生成器集成
+## 1.3 2. Tokio 运行时与生成器集成
 
 ```rust
 use tokio::runtime::Runtime;
@@ -88,7 +113,7 @@ impl<F: Future> TaskGenerator<F> {
 }
 ```
 
-### 3. Tokio 时间特性与生成器
+### 1.3.1 3. Tokio 时间特性与生成器
 
 ```rust
 use tokio::time::{Duration, Instant, interval};
@@ -133,7 +158,7 @@ impl IntervalGenerator {
 }
 ```
 
-### 4. Tokio 同步原语与生成器
+### 1.3.2 4. Tokio 同步原语与生成器
 
 ```rust
 use tokio::sync::{mpsc, Mutex, RwLock, Semaphore};
@@ -203,7 +228,7 @@ impl SyncGenerator {
 }
 ```
 
-### 5. Tokio 通道与生成器
+### 1.3.3 5. Tokio 通道与生成器
 
 ```rust
 /// 通道生成器
@@ -246,7 +271,7 @@ impl<T: Send + 'static> ChannelGenerator<T> {
 }
 ```
 
-### 6. Tokio IO 与生成器
+### 1.3.4 6. Tokio IO 与生成器
 
 ```rust
 use tokio::io::{AsyncRead, AsyncWrite};
@@ -305,7 +330,7 @@ impl IoGenerator {
 }
 ```
 
-### 7. 完整使用示例
+### 1.3.5 7. 完整使用示例
 
 ```rust
 #[tokio::main]

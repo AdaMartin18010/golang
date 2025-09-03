@@ -1,8 +1,33 @@
-# Rust-Actor模式实现
+# 1 1 1 1 1 1 1 Rust-Actor模式实现
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Rust-Actor模式实现](#1-1-1-1-1-1-1-rust-actor模式实现)
+  - [1.1 目录](#目录)
+  - [1.2 1. 项目依赖配置](#1-项目依赖配置)
+  - [1.3 2. Actor 基础结构实现](#2-actor-基础结构实现)
+    - [1.3.1 3. 树结构 Actor 实现](#3-树结构-actor-实现)
+    - [1.3.2 4. 图结构 Actor 实现](#4-图结构-actor-实现)
+    - [1.3.3 5. 排序算法 Actor 实现](#5-排序算法-actor-实现)
+    - [1.3.4 6. 搜索算法 Actor 实现](#6-搜索算法-actor-实现)
+    - [1.3.5 7. 主程序实现](#7-主程序实现)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 我将为您展示一个基于 Rust 2024 + Actor 模式的算法和数据结构实现。
 
-## 目录
+## 1.1 目录
 
 - [Rust-Actor模式实现](#rust-actor模式实现)
   - [目录](#目录)
@@ -14,7 +39,7 @@
     - [6. 搜索算法 Actor 实现](#6-搜索算法-actor-实现)
     - [7. 主程序实现](#7-主程序实现)
 
-## 1. 项目依赖配置
+## 1.2 1. 项目依赖配置
 
 ```toml
 [dependencies]
@@ -27,7 +52,7 @@ parking_lot = "0.12"
 tracing = "0.1"
 ```
 
-## 2. Actor 基础结构实现
+## 1.3 2. Actor 基础结构实现
 
 ```rust
 use actix::{Actor, Context, Handler, Message};
@@ -91,7 +116,7 @@ pub trait DataStructureActor<T>: Actor {
 }
 ```
 
-### 3. 树结构 Actor 实现
+### 1.3.1 3. 树结构 Actor 实现
 
 ```rust
 /// 二叉树节点
@@ -194,7 +219,7 @@ impl<T: Ord> BinaryTreeActor<T> {
 }
 ```
 
-### 4. 图结构 Actor 实现
+### 1.3.2 4. 图结构 Actor 实现
 
 ```rust
 /// 图节点
@@ -301,7 +326,7 @@ impl<T: Eq> GraphActor<T> {
 }
 ```
 
-### 5. 排序算法 Actor 实现
+### 1.3.3 5. 排序算法 Actor 实现
 
 ```rust
 /// 排序 Actor
@@ -362,7 +387,7 @@ impl<T: Ord> SortingActor<T> {
 }
 ```
 
-### 6. 搜索算法 Actor 实现
+### 1.3.4 6. 搜索算法 Actor 实现
 
 ```rust
 /// 搜索 Actor
@@ -426,7 +451,7 @@ impl<T: Ord> SearchActor<T> {
 }
 ```
 
-### 7. 主程序实现
+### 1.3.5 7. 主程序实现
 
 ```rust
 #[tokio::main]

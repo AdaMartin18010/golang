@@ -1,8 +1,36 @@
-# 性能分析框架摘要
+# 1 1 1 1 1 1 1 性能分析框架摘要
 
-## 核心组件
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 性能分析框架摘要](#1-1-1-1-1-1-1-性能分析框架摘要)
+  - [1.1 核心组件](#核心组件)
+    - [1.1.1 1. 基准测试方法论](#1-基准测试方法论)
+    - [1.1.2 2. 性能分析技术](#2-性能分析技术)
+    - [1.1.3 3. 内存管理优化](#3-内存管理优化)
+    - [1.1.4 4. CPU优化策略](#4-cpu优化策略)
+    - [1.1.5 5. 网络性能优化](#5-网络性能优化)
+    - [1.1.6 6. 数据库性能优化](#6-数据库性能优化)
+  - [1.2 性能监控](#性能监控)
+  - [1.3 性能指标](#性能指标)
+  - [1.4 最佳实践](#最佳实践)
+  - [1.5 优化原则](#优化原则)
+<!-- TOC END -->
 
-### 1. 基准测试方法论
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 核心组件
+
+### 1.1.1 1. 基准测试方法论
 
 **基准测试框架**:
 
@@ -59,7 +87,7 @@ func (m *Metric) Record(value float64) {
 }
 ```
 
-### 2. 性能分析技术
+### 1.1.2 2. 性能分析技术
 
 **CPU性能分析**:
 
@@ -92,7 +120,7 @@ func (mp *MemoryProfiler) WriteHeapProfile() error {
 }
 ```
 
-### 3. 内存管理优化
+### 1.1.3 3. 内存管理优化
 
 **对象池**:
 
@@ -152,7 +180,7 @@ func (pa *PreAllocator) GetBuffer(size int) []byte {
 }
 ```
 
-### 4. CPU优化策略
+### 1.1.4 4. CPU优化策略
 
 **算法优化**:
 
@@ -213,7 +241,7 @@ func (pp *ParallelProcessor) ProcessParallel(data []interface{}, processor func(
 }
 ```
 
-### 5. 网络性能优化
+### 1.1.5 5. 网络性能优化
 
 **连接池**:
 
@@ -275,7 +303,7 @@ func (brp *BatchRequestProcessor) ProcessBatch(requests []Request) []Response {
 }
 ```
 
-### 6. 数据库性能优化
+### 1.1.6 6. 数据库性能优化
 
 **查询缓存**:
 
@@ -337,7 +365,7 @@ func (bqo *BatchQueryOptimizer) ExecuteBatch(queries []string) [][]interface{} {
 }
 ```
 
-## 性能监控
+## 1.2 性能监控
 
 **实时监控**:
 
@@ -373,7 +401,7 @@ func (pm *PerformanceMonitor) MonitorMetric(name string, value float64, threshol
 }
 ```
 
-## 性能指标
+## 1.3 性能指标
 
 | 优化类型 | 时间复杂度 | 空间复杂度 | 适用场景 |
 |---------|----------|-----------|---------|
@@ -384,7 +412,7 @@ func (pm *PerformanceMonitor) MonitorMetric(name string, value float64, threshol
 | 并行处理 | O(n/p) | O(n) | CPU密集型任务 |
 | 循环展开 | O(n/4) | O(1) | 简单循环优化 |
 
-## 最佳实践
+## 1.4 最佳实践
 
 1. **基准测试**: 始终进行基准测试验证优化效果
 2. **性能分析**: 使用pprof进行CPU和内存分析
@@ -393,7 +421,7 @@ func (pm *PerformanceMonitor) MonitorMetric(name string, value float64, threshol
 5. **缓存策略**: 实现多级缓存提升性能
 6. **监控告警**: 实时监控关键性能指标
 
-## 优化原则
+## 1.5 优化原则
 
 - **测量优先**: 先测量，再优化
 - **瓶颈识别**: 找到真正的性能瓶颈

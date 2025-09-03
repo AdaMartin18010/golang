@@ -1,4 +1,26 @@
-# 如何创建递归的 trait
+# 1 1 1 1 1 1 1 如何创建递归的 trait
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 如何创建递归的 trait](#1-1-1-1-1-1-1-如何创建递归的-trait)
+  - [1.1 Rust 中的 trait 有哪些相关的限制](#rust-中的-trait-有哪些相关的限制)
+  - [1.2 Trait 与 Struct 和 Enum 的对比](#trait-与-struct-和-enum-的对比)
+    - [1.2.1 Trait 与 Struct 的对比](#trait-与-struct-的对比)
+    - [1.2.2 Trait 与 Enum 的对比](#trait-与-enum-的对比)
+    - [1.2.3 **总结**](#**总结**)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 在 Rust 中，创建递归的 trait 通常涉及到定义一个 trait，其中的方法可以递归地调用自身或其他方法。
 以下是一个简单的例子，展示如何创建一个递归的 trait：
@@ -30,7 +52,7 @@ fn main() {
 
 在这个例子中，`Recursive` trait 定义了一个方法 `recursive_method`，它在 `Node` 结构体中被实现为递归调用自身的方法。
 
-## Rust 中的 trait 有哪些相关的限制
+## 1.1 Rust 中的 trait 有哪些相关的限制
 
 Rust 中的 trait 有一些限制，这些限制主要是为了保证类型安全和编译时的可预测性。以下是一些主要的限制：
 
@@ -68,9 +90,9 @@ Rust 中的 trait 有一些限制，这些限制主要是为了保证类型安�
 
 5. **实现限制**：一个类型不能同时实现同一个 trait 多次。例如，不能为同一个类型实现两次 `Deref` trait，因为 `Deref` trait 的 `Target` 类型必须是唯一的。
 
-## Trait 与 Struct 和 Enum 的对比
+## 1.2 Trait 与 Struct 和 Enum 的对比
 
-### Trait 与 Struct 的对比
+### 1.2.1 Trait 与 Struct 的对比
 
 - **定义方式**：
   - **Trait**：Trait 是一种抽象的定义，它定义了一组方法签名，但不提供具体的实现。例如：
@@ -120,7 +142,7 @@ Rust 中的 trait 有一些限制，这些限制主要是为了保证类型安�
     }
     ```
 
-### Trait 与 Enum 的对比
+### 1.2.2 Trait 与 Enum 的对比
 
 - **定义方式**：
   - **Trait**：Trait 是一种抽象的定义，它定义了一组方法签名。例如：
@@ -171,7 +193,7 @@ Rust 中的 trait 有一些限制，这些限制主要是为了保证类型安�
     }
     ```
 
-### **总结**
+### 1.2.3 **总结**
 
 - **Trait**：Trait 是一种抽象的定义，用于定义一组行为，可以被不同的类型实现。Trait 可以用于实现多态和代码复用。
 - **Struct**：Struct 是一种具体的数据结构，用于定义一组字段和方法。Struct 用于表示具体的数据和行为。

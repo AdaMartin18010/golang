@@ -1,6 +1,41 @@
-# Go 1.25 监控与可观测性深度分析
+# 1 1 1 1 1 1 1 Go 1.25 监控与可观测性深度分析
 
-## 目录
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Go 1.25 监控与可观测性深度分析](#1-1-1-1-1-1-1-go-125-监控与可观测性深度分析)
+  - [1.1 目录](#目录)
+  - [1.2 指标收集](#指标收集)
+    - [1.2.1 Prometheus指标](#prometheus指标)
+    - [1.2.2 性能指标](#性能指标)
+  - [1.3 日志管理](#日志管理)
+    - [1.3.1 结构化日志](#结构化日志)
+    - [1.3.2 日志聚合](#日志聚合)
+  - [1.4 分布式追踪](#分布式追踪)
+    - [1.4.1 OpenTelemetry集成](#opentelemetry集成)
+    - [1.4.2 Jaeger集成](#jaeger集成)
+  - [1.5 告警系统](#告警系统)
+    - [1.5.1 告警规则](#告警规则)
+    - [1.5.2 告警通知](#告警通知)
+  - [1.6 总结](#总结)
+    - [1.6.1 1. 指标收集](#1-指标收集)
+    - [1.6.2 2. 日志管理](#2-日志管理)
+    - [1.6.3 3. 分布式追踪](#3-分布式追踪)
+    - [1.6.4 4. 告警系统](#4-告警系统)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 目录
 
 - [Go 1.25 监控与可观测性深度分析](#go-125-监控与可观测性深度分析)
   - [目录](#目录)
@@ -22,9 +57,9 @@
     - [3. 分布式追踪](#3-分布式追踪)
     - [4. 告警系统](#4-告警系统)
 
-## 指标收集
+## 1.2 指标收集
 
-### 1.1 Prometheus指标
+### 1.2.1 Prometheus指标
 
 ```go
 // Prometheus指标收集
@@ -117,7 +152,7 @@ func (rw *responseWriter) WriteHeader(code int) {
 }
 ```
 
-### 1.2 性能指标
+### 1.2.2 性能指标
 
 ```go
 // 性能指标收集
@@ -185,9 +220,9 @@ func (smc *SystemMetricsCollector) Start() {
 }
 ```
 
-## 日志管理
+## 1.3 日志管理
 
-### 2.1 结构化日志
+### 1.3.1 结构化日志
 
 ```go
 // 结构化日志系统
@@ -268,7 +303,7 @@ func LoggingMiddleware(logger *StructuredLogger) func(http.Handler) http.Handler
 }
 ```
 
-### 2.2 日志聚合
+### 1.3.2 日志聚合
 
 ```go
 // 日志聚合系统
@@ -339,9 +374,9 @@ func (la *LogAggregator) SendBatch(entries []LogEntry) error {
 }
 ```
 
-## 分布式追踪
+## 1.4 分布式追踪
 
-### 3.1 OpenTelemetry集成
+### 1.4.1 OpenTelemetry集成
 
 ```go
 // OpenTelemetry集成
@@ -409,7 +444,7 @@ func TraceDatabaseQuery(ctx context.Context, operation, query string) (context.C
 }
 ```
 
-### 3.2 Jaeger集成
+### 1.4.2 Jaeger集成
 
 ```go
 // Jaeger配置
@@ -465,9 +500,9 @@ func JaegerMiddleware(next http.Handler) http.Handler {
 }
 ```
 
-## 告警系统
+## 1.5 告警系统
 
-### 4.1 告警规则
+### 1.5.1 告警规则
 
 ```go
 // 告警规则系统
@@ -536,7 +571,7 @@ type AlertNotifier interface {
 }
 ```
 
-### 4.2 告警通知
+### 1.5.2 告警通知
 
 ```go
 // 告警通知系统
@@ -630,26 +665,26 @@ func (en *EmailNotifier) SendAlert(ctx context.Context, alert Alert) error {
 }
 ```
 
-## 总结
+## 1.6 总结
 
 本监控与可观测性深度分析涵盖了Go 1.25应用的关键监控实践：
 
-### 1. 指标收集
+### 1.6.1 1. 指标收集
 
 - **Prometheus指标**: 自定义业务指标、HTTP请求指标、系统性能指标
 - **性能监控**: 内存使用、GC统计、goroutine数量
 
-### 2. 日志管理
+### 1.6.2 2. 日志管理
 
 - **结构化日志**: JSON格式日志、上下文传播、业务事件记录
 - **日志聚合**: 集中化日志收集、批量发送、多级别日志
 
-### 3. 分布式追踪
+### 1.6.3 3. 分布式追踪
 
 - **OpenTelemetry**: 标准化追踪、链路传播、Jaeger集成
 - **追踪中间件**: HTTP请求追踪、数据库操作追踪
 
-### 4. 告警系统
+### 1.6.4 4. 告警系统
 
 - **告警规则**: 自定义告警条件、多级别告警
 - **多渠道通知**: Slack、邮件、Webhook等多种通知方式

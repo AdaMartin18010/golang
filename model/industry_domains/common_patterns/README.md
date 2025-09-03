@@ -1,12 +1,56 @@
-# 通用架构模式 - Rust最佳实践
+# 1 1 1 1 1 1 1 通用架构模式 - Rust最佳实践
 
-## 概述
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 通用架构模式 - Rust最佳实践](#1-1-1-1-1-1-1-通用架构模式-rust最佳实践)
+  - [1.1 概述](#概述)
+  - [1.2 1. 微服务架构模式](#1-微服务架构模式)
+    - [1.2.1 服务发现](#服务发现)
+    - [1.2.2 负载均衡](#负载均衡)
+  - [1.3 2. 事件驱动架构模式](#2-事件驱动架构模式)
+    - [1.3.1 事件总线](#事件总线)
+    - [1.3.2 事件溯源](#事件溯源)
+  - [1.4 3. CQRS模式](#3-cqrs模式)
+    - [1.4.1 命令处理](#命令处理)
+    - [1.4.2 查询处理](#查询处理)
+  - [1.5 4. 仓储模式](#4-仓储模式)
+    - [1.5.1 通用仓储接口](#通用仓储接口)
+    - [1.5.2 缓存仓储](#缓存仓储)
+  - [1.6 5. 工厂模式](#5-工厂模式)
+    - [1.6.1 抽象工厂](#抽象工厂)
+    - [1.6.2 对象池](#对象池)
+  - [1.7 6. 观察者模式](#6-观察者模式)
+    - [1.7.1 事件观察者](#事件观察者)
+  - [1.8 7. 策略模式](#7-策略模式)
+    - [1.8.1 可插拔策略](#可插拔策略)
+  - [1.9 8. 装饰器模式](#8-装饰器模式)
+    - [1.9.1 功能装饰器](#功能装饰器)
+  - [1.10 9. 适配器模式](#9-适配器模式)
+    - [1.10.1 接口适配](#接口适配)
+  - [1.11 10. 模板方法模式](#10-模板方法模式)
+    - [1.11.1 算法模板](#算法模板)
+  - [1.12 总结](#总结)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.1 概述
 
 本文档提供了在Rust中实现常见架构模式的通用指南，这些模式可以应用于各个软件行业领域。
 
-## 1. 微服务架构模式
+## 1.2 1. 微服务架构模式
 
-### 服务发现
+### 1.2.1 服务发现
 
 ```rust
 pub trait ServiceRegistry {
@@ -53,7 +97,7 @@ impl ServiceRegistry for ConsulServiceRegistry {
 }
 ```
 
-### 负载均衡
+### 1.2.2 负载均衡
 
 ```rust
 pub trait LoadBalancer {
@@ -101,9 +145,9 @@ impl LoadBalancer for HealthCheckLoadBalancer {
 }
 ```
 
-## 2. 事件驱动架构模式
+## 1.3 2. 事件驱动架构模式
 
-### 事件总线
+### 1.3.1 事件总线
 
 ```rust
 pub struct EventBus {
@@ -167,7 +211,7 @@ impl EventBus {
 }
 ```
 
-### 事件溯源
+### 1.3.2 事件溯源
 
 ```rust
 pub trait EventStore {
@@ -218,9 +262,9 @@ impl<T: Aggregate> EventSourcedAggregate<T> {
 }
 ```
 
-## 3. CQRS模式
+## 1.4 3. CQRS模式
 
-### 命令处理
+### 1.4.1 命令处理
 
 ```rust
 pub trait CommandHandler<C: Command> {
@@ -255,7 +299,7 @@ impl CommandBus {
 }
 ```
 
-### 查询处理
+### 1.4.2 查询处理
 
 ```rust
 pub trait QueryHandler<Q: Query, R> {
@@ -292,9 +336,9 @@ impl QueryBus {
 }
 ```
 
-## 4. 仓储模式
+## 1.5 4. 仓储模式
 
-### 通用仓储接口
+### 1.5.1 通用仓储接口
 
 ```rust
 pub trait Repository<T: Aggregate> {
@@ -311,7 +355,7 @@ pub trait Aggregate {
 }
 ```
 
-### 缓存仓储
+### 1.5.2 缓存仓储
 
 ```rust
 pub struct CachedRepository<T: Aggregate> {
@@ -349,9 +393,9 @@ impl<T: Aggregate> Repository<T> for CachedRepository<T> {
 }
 ```
 
-## 5. 工厂模式
+## 1.6 5. 工厂模式
 
-### 抽象工厂
+### 1.6.1 抽象工厂
 
 ```rust
 pub trait AbstractFactory {
@@ -378,7 +422,7 @@ impl AbstractFactory for ConcreteFactory1 {
 }
 ```
 
-### 对象池
+### 1.6.2 对象池
 
 ```rust
 pub struct ObjectPool<T> {
@@ -418,9 +462,9 @@ impl<T> ObjectPool<T> {
 }
 ```
 
-## 6. 观察者模式
+## 1.7 6. 观察者模式
 
-### 事件观察者
+### 1.7.1 事件观察者
 
 ```rust
 pub trait Observer {
@@ -455,9 +499,9 @@ impl Subject {
 }
 ```
 
-## 7. 策略模式
+## 1.8 7. 策略模式
 
-### 可插拔策略
+### 1.8.1 可插拔策略
 
 ```rust
 pub trait Strategy {
@@ -487,9 +531,9 @@ impl Context {
 }
 ```
 
-## 8. 装饰器模式
+## 1.9 8. 装饰器模式
 
-### 功能装饰器
+### 1.9.1 功能装饰器
 
 ```rust
 pub trait Component {
@@ -524,9 +568,9 @@ impl Component for Decorator {
 }
 ```
 
-## 9. 适配器模式
+## 1.10 9. 适配器模式
 
-### 接口适配
+### 1.10.1 接口适配
 
 ```rust
 pub trait Target {
@@ -559,9 +603,9 @@ impl Target for Adapter {
 }
 ```
 
-## 10. 模板方法模式
+## 1.11 10. 模板方法模式
 
-### 算法模板
+### 1.11.1 算法模板
 
 ```rust
 pub trait AlgorithmTemplate {
@@ -596,7 +640,7 @@ impl AlgorithmTemplate for ConcreteAlgorithm {
 }
 ```
 
-## 总结
+## 1.12 总结
 
 这些通用架构模式为Rust项目提供了可复用的设计解决方案：
 

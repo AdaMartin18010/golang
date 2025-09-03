@@ -1,9 +1,30 @@
-# Trait 和 Trait Object
+# 1 1 1 1 1 1 1 Trait 和 Trait Object
+
+<!-- TOC START -->
+- [1 1 1 1 1 1 1 Trait 和 Trait Object](#1-1-1-1-1-1-1-trait-和-trait-object)
+  - [1.1 1. Trait 的定义与作用](#1-trait-的定义与作用)
+  - [1.2 2. Trait Object 的定义与作用](#2-trait-object-的定义与作用)
+  - [1.3 3. Trait 与 Trait Object 的区别](#3-trait-与-trait-object-的区别)
+  - [1.4 1. Trait 与 Trait Object 的联系](#1-trait-与-trait-object-的联系)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 在 Rust 中，Trait 和 Trait Object 是两个密切相关但用途不同的概念。
 以下是它们的定义、区别和联系：
 
-## 1. Trait 的定义与作用
+## 1.1 1. Trait 的定义与作用
 
 Trait 是 Rust 中用于定义共享行为的抽象机制，类似于其他语言中的接口。
 通过 Trait，可以指定一组方法签名，而具体的实现由实现了该 Trait 的类型提供。
@@ -17,7 +38,7 @@ trait Draw {
 
 在这个例子中，Draw Trait 定义了一个 draw 方法，任何实现了 Draw Trait 的类型都必须提供 draw 方法的具体实现。
 
-## 2. Trait Object 的定义与作用
+## 1.2 2. Trait Object 的定义与作用
 
 Trait Object 是一种特殊的类型，它允许将实现了特定 Trait 的不同具体类型抽象为一种通用类型。
 Trait Object 提供了动态分发的能力，即在运行时决定调用哪个具体类型的方法。
@@ -32,7 +53,7 @@ fn render(scene: &dyn Draw) {
 
 在这个例子中，render 函数接受一个实现了 Draw Trait 的 Trait Object，而具体的类型在运行时确定。
 
-## 3. Trait 与 Trait Object 的区别
+## 1.3 3. Trait 与 Trait Object 的区别
 
 静态分发 vs 动态分发：
     Trait：通常用于泛型编程，编译时确定具体类型，性能更高。
@@ -44,7 +65,7 @@ fn render(scene: &dyn Draw) {
     Trait：适用于编译时已知所有具体类型的场景。
     Trait Object：适用于运行时需要处理多种未知类型的场景。
 
-## 1. Trait 与 Trait Object 的联系
+## 1.4 1. Trait 与 Trait Object 的联系
 
 Trait 是 Trait Object 的基础。
 Trait 定义了行为规范，而 Trait Object 则是基于这些规范实现动态分发的机制。

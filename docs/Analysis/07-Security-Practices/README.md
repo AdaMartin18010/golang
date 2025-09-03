@@ -1,6 +1,55 @@
-# 安全实践分析框架
+# 7.1 安全实践分析框架
 
-## 目录
+<!-- TOC START -->
+- [7.1 安全实践分析框架](#安全实践分析框架)
+  - [7.1.1 目录](#目录)
+  - [7.1.2 1. 安全基础](#1-安全基础)
+    - [7.1.2.1 安全原则](#安全原则)
+    - [7.1.2.2 安全威胁分类](#安全威胁分类)
+  - [7.1.3 2. 安全模型](#2-安全模型)
+    - [7.1.3.1 Bell-LaPadula模型](#bell-lapadula模型)
+    - [7.1.3.2 Biba模型](#biba模型)
+  - [7.1.4 3. 威胁分析](#3-威胁分析)
+    - [7.1.4.1 威胁建模](#威胁建模)
+    - [7.1.4.2 攻击树分析](#攻击树分析)
+  - [7.1.5 4. 防护策略](#4-防护策略)
+    - [7.1.5.1 纵深防御](#纵深防御)
+    - [7.1.5.2 零信任模型](#零信任模型)
+  - [7.1.6 5. 加密技术](#5-加密技术)
+    - [7.1.6.1 对称加密](#对称加密)
+    - [7.1.6.2 非对称加密](#非对称加密)
+  - [7.1.7 6. 身份认证](#6-身份认证)
+    - [7.1.7.1 多因子认证](#多因子认证)
+    - [7.1.7.2 OAuth 2.0](#oauth-20)
+  - [7.1.8 7. 访问控制](#7-访问控制)
+    - [7.1.8.1 RBAC模型](#rbac模型)
+    - [7.1.8.2 ABAC模型](#abac模型)
+  - [7.1.9 8. 安全监控](#8-安全监控)
+    - [7.1.9.1 入侵检测](#入侵检测)
+    - [7.1.9.2 安全信息与事件管理](#安全信息与事件管理)
+  - [7.1.10 9. 最佳实践](#9-最佳实践)
+    - [7.1.10.1 安全编码](#安全编码)
+    - [7.1.10.2 安全配置](#安全配置)
+  - [7.1.11 10. 案例分析](#10-案例分析)
+    - [7.1.11.1 Web应用安全](#web应用安全)
+    - [7.1.11.2 API安全](#api安全)
+  - [7.1.12 参考资料](#参考资料)
+<!-- TOC END -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 7.1.1 目录
 
 1. [安全基础](#1-安全基础)
 2. [安全模型](#2-安全模型)
@@ -13,9 +62,9 @@
 9. [最佳实践](#9-最佳实践)
 10. [案例分析](#10-案例分析)
 
-## 1. 安全基础
+## 7.1.2 1. 安全基础
 
-### 1.1 安全原则
+### 7.1.2.1 安全原则
 
 **CIA三元组** (Confidentiality, Integrity, Availability):
 
@@ -30,7 +79,7 @@
 - **完整性**: $\forall r \in R: \text{Modify}(r) \Rightarrow \text{Authorized}(\text{Modifier}, r)$
 - **可用性**: $\forall r \in R, t \in T: \text{Available}(r, t) \Rightarrow \text{SystemUp}(t)$
 
-### 1.2 安全威胁分类
+### 7.1.2.2 安全威胁分类
 
 **STRIDE模型**：
 
@@ -41,9 +90,9 @@
 - **D**enial of Service (拒绝服务)
 - **E**levation of Privilege (权限提升)
 
-## 2. 安全模型
+## 7.1.3 2. 安全模型
 
-### 2.1 Bell-LaPadula模型
+### 7.1.3.1 Bell-LaPadula模型
 
 **定义 2.1** (安全级别): 安全级别 $L$ 是一个偏序集 $(S, \leq)$，其中 $S$ 是安全级别集合。
 
@@ -106,7 +155,7 @@ func (blp *BellLaPadulaModel) CanWrite(subjectID, objectID string) bool {
 }
 ```
 
-### 2.2 Biba模型
+### 7.1.3.2 Biba模型
 
 **完整性属性**：
 
@@ -155,9 +204,9 @@ func (biba *BibaModel) CanWrite(subjectID, objectID string) bool {
 }
 ```
 
-## 3. 威胁分析
+## 7.1.4 3. 威胁分析
 
-### 3.1 威胁建模
+### 7.1.4.1 威胁建模
 
 **定义 3.1** (威胁): 威胁 $T$ 是一个三元组：
 $$T = (A, V, I)$$
@@ -226,7 +275,7 @@ func (tm *ThreatModel) calculateRisk(threat *Threat) float64 {
 }
 ```
 
-### 3.2 攻击树分析
+### 7.1.4.2 攻击树分析
 
 ```go
 // 攻击树
@@ -289,9 +338,9 @@ func (at *AttackTree) CalculatePathRisk(path []*AttackNode) float64 {
 }
 ```
 
-## 4. 防护策略
+## 7.1.5 4. 防护策略
 
-### 4.1 纵深防御
+### 7.1.5.1 纵深防御
 
 **定义 4.1** (纵深防御): 纵深防御策略 $D$ 定义为：
 $$D = \{L_1, L_2, ..., L_n\}$$
@@ -364,7 +413,7 @@ func (did *DefenseInDepth) isControlEffective(control SecurityControl, attack *A
 }
 ```
 
-### 4.2 零信任模型
+### 7.1.5.2 零信任模型
 
 ```go
 // 零信任模型
@@ -442,9 +491,9 @@ func (ztm *ZeroTrustModel) logAccess(context *Context, allowed bool) {
 }
 ```
 
-## 5. 加密技术
+## 7.1.6 5. 加密技术
 
-### 5.1 对称加密
+### 7.1.6.1 对称加密
 
 ```go
 // AES加密实现
@@ -507,7 +556,7 @@ func (ae *AESEncryption) Decrypt(ciphertext []byte) ([]byte, error) {
 }
 ```
 
-### 5.2 非对称加密
+### 7.1.6.2 非对称加密
 
 ```go
 // RSA加密实现
@@ -571,9 +620,9 @@ func (re *RSAEncryption) Verify(data, signature []byte) error {
 }
 ```
 
-## 6. 身份认证
+## 7.1.7 6. 身份认证
 
-### 6.1 多因子认证
+### 7.1.7.1 多因子认证
 
 ```go
 // 多因子认证系统
@@ -668,7 +717,7 @@ func (mfa *MultiFactorAuth) verifyFactor(factor *AuthFactor, credential string) 
 }
 ```
 
-### 6.2 OAuth 2.0
+### 7.1.7.2 OAuth 2.0
 
 ```go
 // OAuth 2.0实现
@@ -763,9 +812,9 @@ func (oas *OAuth2Server) ExchangeCode(code, clientID, clientSecret string) (*Tok
 }
 ```
 
-## 7. 访问控制
+## 7.1.8 7. 访问控制
 
-### 7.1 RBAC模型
+### 7.1.8.1 RBAC模型
 
 ```go
 // RBAC模型实现
@@ -850,7 +899,7 @@ func (rbac *RBACModel) roleHasPermission(role *Role, resource, action string) bo
 }
 ```
 
-### 7.2 ABAC模型
+### 7.1.8.2 ABAC模型
 
 ```go
 // ABAC模型实现
@@ -943,9 +992,9 @@ func (abac *ABACModel) evaluateCondition(condition AttributeCondition, value int
 }
 ```
 
-## 8. 安全监控
+## 7.1.9 8. 安全监控
 
-### 8.1 入侵检测
+### 7.1.9.1 入侵检测
 
 ```go
 // 入侵检测系统
@@ -1046,7 +1095,7 @@ func (ids *IntrusionDetectionSystem) isAnomaly(entry *LogEntry) bool {
 }
 ```
 
-### 8.2 安全信息与事件管理
+### 7.1.9.2 安全信息与事件管理
 
 ```go
 // SIEM系统
@@ -1148,9 +1197,9 @@ func (siem *SIEMSystem) applyProcessor(processor LogProcessor, entry *LogEntry) 
 }
 ```
 
-## 9. 最佳实践
+## 7.1.10 9. 最佳实践
 
-### 9.1 安全编码
+### 7.1.10.1 安全编码
 
 ```go
 // 安全编码最佳实践
@@ -1196,7 +1245,7 @@ func securityBestPractices() {
 }
 ```
 
-### 9.2 安全配置
+### 7.1.10.2 安全配置
 
 ```go
 // 安全配置管理
@@ -1249,9 +1298,9 @@ func (sc *SecurityConfig) Validate() error {
 }
 ```
 
-## 10. 案例分析
+## 7.1.11 10. 案例分析
 
-### 10.1 Web应用安全
+### 7.1.11.1 Web应用安全
 
 ```go
 // Web应用安全框架
@@ -1339,7 +1388,7 @@ func (swa *SecureWebApp) authorizeUser(user *User, resource, action string) bool
 }
 ```
 
-### 10.2 API安全
+### 7.1.11.2 API安全
 
 ```go
 // API安全框架
@@ -1426,7 +1475,7 @@ func (sa *SecureAPI) encryptResponse(response []byte) []byte {
 
 ---
 
-## 参考资料
+## 7.1.12 参考资料
 
 1. [OWASP安全指南](https://owasp.org/)
 2. [NIST网络安全框架](https://www.nist.gov/cyberframework)
