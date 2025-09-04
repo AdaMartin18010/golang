@@ -2,24 +2,11 @@
 
 <!-- TOC START -->
 - [1 1 1 1 1 1 1 Trait 和 Trait Object](#1-1-1-1-1-1-1-trait-和-trait-object)
-  - [1.1 1. Trait 的定义与作用](#1-trait-的定义与作用)
-  - [1.2 2. Trait Object 的定义与作用](#2-trait-object-的定义与作用)
-  - [1.3 3. Trait 与 Trait Object 的区别](#3-trait-与-trait-object-的区别)
-  - [1.4 1. Trait 与 Trait Object 的联系](#1-trait-与-trait-object-的联系)
+  - [1.1 1. Trait 的定义与作用](#11-1-trait-的定义与作用)
+  - [1.2 2. Trait Object 的定义与作用](#12-2-trait-object-的定义与作用)
+  - [1.3 3. Trait 与 Trait Object 的区别](#13-3-trait-与-trait-object-的区别)
+  - [1.4 1. Trait 与 Trait Object 的联系](#14-1-trait-与-trait-object-的联系)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 在 Rust 中，Trait 和 Trait Object 是两个密切相关但用途不同的概念。
 以下是它们的定义、区别和联系：

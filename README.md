@@ -81,6 +81,8 @@
 
 ## 1.4 🗂️ **项目结构**
 
+> 工作流导航：[`WorkflowDomain 总索引`](model/Software/WorkflowDomain/README.md) | [`数据流视图索引`](model/Software/WorkFlow/view/design/data_flow/README.md)
+
 ```text
 golang/
 ├── 00-备份/                    # 原项目备份

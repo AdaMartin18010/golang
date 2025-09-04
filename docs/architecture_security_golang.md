@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 安全架构（Security Architecture）
+# 安全架构（Security Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 安全架构（Security Architecture）](#1-1-1-1-1-1-1-安全架构security-architecture)
+- [安全架构（Security Architecture）](#安全架构security-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流标准与框架](#121-主流标准与框架)

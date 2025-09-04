@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 事件驱动架构（Event-Driven Architecture）
+# 事件驱动架构（Event-Driven Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 事件驱动架构（Event-Driven Architecture）](#1-1-1-1-1-1-1-事件驱动架构event-driven-architecture)
+- [事件驱动架构（Event-Driven Architecture）](#事件驱动架构event-driven-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流事件驱动平台与标准](#121-主流事件驱动平台与标准)

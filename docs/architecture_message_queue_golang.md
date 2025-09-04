@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 消息队列架构（Message Queue Architecture）
+# 消息队列架构（Message Queue Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 消息队列架构（Message Queue Architecture）](#1-1-1-1-1-1-1-消息队列架构message-queue-architecture)
+- [消息队列架构（Message Queue Architecture）](#消息队列架构message-queue-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流消息队列系统](#121-主流消息队列系统)

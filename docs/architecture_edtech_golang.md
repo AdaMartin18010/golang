@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 教育科技架构（EdTech Architecture）
+# 教育科技架构（EdTech Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 教育科技架构（EdTech Architecture）](#1-1-1-1-1-1-1-教育科技架构edtech-architecture)
+- [教育科技架构（EdTech Architecture）](#教育科技架构edtech-architecture)
   - [1.1 国际标准定义与发展历程](#11-国际标准定义与发展历程)
   - [1.2 核心思想与典型应用场景](#12-核心思想与典型应用场景)
   - [1.3 与传统方案对比](#13-与传统方案对比)

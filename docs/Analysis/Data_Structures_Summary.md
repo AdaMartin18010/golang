@@ -1,40 +1,27 @@
-# 1 1 1 1 1 1 1 Data Structure Analysis Summary
+# Data Structure Analysis Summary
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Data Structure Analysis Summary](#1-1-1-1-1-1-1-data-structure-analysis-summary)
-  - [1.1 Core Framework](#core-framework)
-    - [1.1.1 Abstract Data Type (ADT)](#abstract-data-type-adt)
-    - [1.1.2 Complexity Analysis](#complexity-analysis)
-  - [1.2 Linear Data Structures](#linear-data-structures)
-    - [1.2.1 Array](#array)
-    - [1.2.2 Linked List](#linked-list)
-    - [1.2.3 Stack (LIFO)](#stack-lifo)
-    - [1.2.4 Queue (FIFO)](#queue-fifo)
-  - [1.3 Tree Data Structures](#tree-data-structures)
-    - [1.3.1 Binary Tree](#binary-tree)
-    - [1.3.2 Binary Search Tree](#binary-search-tree)
-  - [1.4 Hash Table](#hash-table)
-  - [1.5 Graph](#graph)
-  - [1.6 Key Theorems](#key-theorems)
-    - [1.6.1 Stack LIFO Property](#stack-lifo-property)
-    - [1.6.2 Queue FIFO Property](#queue-fifo-property)
-    - [1.6.3 Hash Table Complexity](#hash-table-complexity)
-  - [1.7 Best Practices](#best-practices)
-  - [1.8 Performance Metrics](#performance-metrics)
+- [Data Structure Analysis Summary](#data-structure-analysis-summary)
+  - [1.1 Core Framework](#11-core-framework)
+    - [1.1.1 Abstract Data Type (ADT)](#111-abstract-data-type-adt)
+    - [1.1.2 Complexity Analysis](#112-complexity-analysis)
+  - [1.2 Linear Data Structures](#12-linear-data-structures)
+    - [1.2.1 Array](#121-array)
+    - [1.2.2 Linked List](#122-linked-list)
+    - [1.2.3 Stack (LIFO)](#123-stack-lifo)
+    - [1.2.4 Queue (FIFO)](#124-queue-fifo)
+  - [1.3 Tree Data Structures](#13-tree-data-structures)
+    - [1.3.1 Binary Tree](#131-binary-tree)
+    - [1.3.2 Binary Search Tree](#132-binary-search-tree)
+  - [1.4 Hash Table](#14-hash-table)
+  - [1.5 Graph](#15-graph)
+  - [1.6 Key Theorems](#16-key-theorems)
+    - [1.6.1 Stack LIFO Property](#161-stack-lifo-property)
+    - [1.6.2 Queue FIFO Property](#162-queue-fifo-property)
+    - [1.6.3 Hash Table Complexity](#163-hash-table-complexity)
+  - [1.7 Best Practices](#17-best-practices)
+  - [1.8 Performance Metrics](#18-performance-metrics)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 1.1 Core Framework
 

@@ -1,4 +1,4 @@
-# 1 1 1 1 1 1 1 自动驾驶架构（Autonomous Driving Architecture）
+# 自动驾驶架构（Autonomous Driving Architecture）
 
 <!-- TOC START -->
 - [1 1 1 1 1 1 1 自动驾驶架构（Autonomous Driving Architecture）](#1-1-1-1-1-1-1-自动驾驶架构（autonomous-driving-architecture）)

@@ -2,36 +2,23 @@
 
 <!-- TOC START -->
 - [1 1 1 1 1 1 1 rust pointer](#1-1-1-1-1-1-1-rust-pointer)
-  - [1.1 目录](#目录)
-  - [1.2 1. 引用（References）](#1-引用（references）)
-  - [1.3 2. 原始指针（Raw Pointers）](#2-原始指针（raw-pointers）)
-  - [1.4 3. 智能指针（Smart Pointers）](#3-智能指针（smart-pointers）)
-  - [1.5 4. 其他指针类型](#4-其他指针类型)
-  - [1.6 总结](#总结)
+  - [1.1 目录](#11-目录)
+  - [1.2 1. 引用（References）](#12-1-引用references)
+  - [1.3 2. 原始指针（Raw Pointers）](#13-2-原始指针raw-pointers)
+  - [1.4 3. 智能指针（Smart Pointers）](#14-3-智能指针smart-pointers)
+  - [1.5 4. 其他指针类型](#15-4-其他指针类型)
+  - [1.6 总结](#16-总结)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 1.1 目录
 
-- [rust pointer](#rust-pointer)
-  - [目录](#目录)
-  - [1. 引用（References）](#1-引用references)
-  - [2. 原始指针（Raw Pointers）](#2-原始指针raw-pointers)
-  - [3. 智能指针（Smart Pointers）](#3-智能指针smart-pointers)
-  - [4. 其他指针类型](#4-其他指针类型)
-  - [总结](#总结)
+- [1 1 1 1 1 1 1 rust pointer](#1-1-1-1-1-1-1-rust-pointer)
+  - [1.1 目录](#11-目录)
+  - [1.2 1. 引用（References）](#12-1-引用references)
+  - [1.3 2. 原始指针（Raw Pointers）](#13-2-原始指针raw-pointers)
+  - [1.4 3. 智能指针（Smart Pointers）](#14-3-智能指针smart-pointers)
+  - [1.5 4. 其他指针类型](#15-4-其他指针类型)
+  - [1.6 总结](#16-总结)
 
 下面介绍一下 Rust 中不同种类的指针以及它们各自的特点和适用场景。
 Rust 的指针大体可以分为**安全指针**和**不安全指针**，

@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 DevOps与运维架构（DevOps & Operations Architecture）
+# DevOps与运维架构（DevOps & Operations Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 DevOps与运维架构（DevOps \& Operations Architecture）](#1-1-1-1-1-1-1-devops与运维架构devops--operations-architecture)
+- [DevOps与运维架构（DevOps \& Operations Architecture）](#devops与运维架构devops--operations-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流标准与组织](#121-主流标准与组织)

@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 数据流架构（Dataflow Architecture）
+# 数据流架构（Dataflow Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 数据流架构（Dataflow Architecture）](#1-1-1-1-1-1-1-数据流架构dataflow-architecture)
+- [数据流架构（Dataflow Architecture）](#数据流架构dataflow-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流数据流处理平台](#121-主流数据流处理平台)

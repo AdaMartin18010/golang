@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 医疗健康架构（Healthcare Architecture）
+# 医疗健康架构（Healthcare Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 医疗健康架构（Healthcare Architecture）](#1-1-1-1-1-1-1-医疗健康架构healthcare-architecture)
+- [医疗健康架构（Healthcare Architecture）](#医疗健康架构healthcare-architecture)
   - [1.1 国际标准定义与发展历程](#11-国际标准定义与发展历程)
   - [1.2 核心思想与典型应用场景](#12-核心思想与典型应用场景)
   - [1.3 与传统方案对比](#13-与传统方案对比)

@@ -1,4 +1,4 @@
-# 1 1 1 1 1 1 1 云原生架构（Cloud Native Architecture）
+# 云原生架构（Cloud Native Architecture）
 
 <!-- TOC START -->
 - [1 1 1 1 1 1 1 云原生架构（Cloud Native Architecture）](#1-1-1-1-1-1-1-云原生架构cloud-native-architecture)

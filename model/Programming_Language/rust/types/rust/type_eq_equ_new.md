@@ -2,33 +2,20 @@
 
 <!-- TOC START -->
 - [1 1 1 1 1 1 1 类型等价与类型相等](#1-1-1-1-1-1-1-类型等价与类型相等)
-  - [1.1 1. 类型等价与类型相等](#1-类型等价与类型相等)
-    - [1.1.1 **类型等价（Type Equivalence）**](#**类型等价（type-equivalence）**)
-    - [1.1.2 **类型相等**](#**类型相等**)
-  - [1.2 2. 新类型（Newtype Pattern）](#2-新类型（newtype-pattern）)
-  - [1.3 3. 类型转换](#3-类型转换)
-    - [1.3.1 **(1) 显式转换（Explicit Conversion）**](#**1-显式转换（explicit-conversion）**)
-    - [1.3.2 **(2) 利用 `From`/`Into` Trait**](#**2-利用-frominto-trait**)
-    - [1.3.3 **(3) 自动解引用转换（Deref Coercion）**](#**3-自动解引用转换（deref-coercion）**)
-  - [1.4 4. 类型上下转换（Coercion 与 Subtyping 转换）](#4-类型上下转换（coercion-与-subtyping-转换）)
-    - [1.4.1 **(1) 尺寸转换（Unsized Coercion）**](#**1-尺寸转换（unsized-coercion）**)
-    - [1.4.2 **(2) Trait 对象转换**](#**2-trait-对象转换**)
-    - [1.4.3 **(3) 生命周期转换**](#**3-生命周期转换**)
-  - [1.5 总结](#总结)
+  - [1.1 1. 类型等价与类型相等](#11-1-类型等价与类型相等)
+    - [1.1.1 **类型等价（Type Equivalence）**](#111-类型等价type-equivalence)
+    - [1.1.2 **类型相等**](#112-类型相等)
+  - [1.2 2. 新类型（Newtype Pattern）](#12-2-新类型newtype-pattern)
+  - [1.3 3. 类型转换](#13-3-类型转换)
+    - [1.3.1 **(1) 显式转换（Explicit Conversion）**](#131-1-显式转换explicit-conversion)
+    - [1.3.2 **(2) 利用 `From`/`Into` Trait**](#132-2-利用-frominto-trait)
+    - [1.3.3 **(3) 自动解引用转换（Deref Coercion）**](#133-3-自动解引用转换deref-coercion)
+  - [1.4 4. 类型上下转换（Coercion 与 Subtyping 转换）](#14-4-类型上下转换coercion-与-subtyping-转换)
+    - [1.4.1 **(1) 尺寸转换（Unsized Coercion）**](#141-1-尺寸转换unsized-coercion)
+    - [1.4.2 **(2) Trait 对象转换**](#142-2-trait-对象转换)
+    - [1.4.3 **(3) 生命周期转换**](#143-3-生命周期转换)
+  - [1.5 总结](#15-总结)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 下面给出关于 Rust 中“类型等价”、“新类型”、“类型相等”、“类型转换”以及“类型上下转换”这些概念的详细解释和它们之间的关系、使用场景。
 

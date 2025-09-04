@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 无服务器架构（Serverless Architecture）
+# 无服务器架构（Serverless Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 无服务器架构（Serverless Architecture）](#1-1-1-1-1-1-1-无服务器架构serverless-architecture)
+- [无服务器架构（Serverless Architecture）](#无服务器架构serverless-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流技术与平台](#121-主流技术与平台)

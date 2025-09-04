@@ -1,73 +1,60 @@
-# 1 1 1 1 1 1 1 设计模式系统分析框架
+# 设计模式系统分析框架
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 设计模式系统分析框架](#1-1-1-1-1-1-1-设计模式系统分析框架)
-  - [1.1 1. 概述](#1-概述)
-    - [1.1.1 正式定义](#正式定义)
-    - [1.1.2 模式分类体系](#模式分类体系)
-  - [1.2 2. 创建型模式 (Creational Patterns)](#2-创建型模式-creational-patterns)
-    - [1.2.1 单例模式 (Singleton)](#单例模式-singleton)
-      - [1.2.1.1 正式定义](#正式定义)
-      - [1.2.1.2 Golang实现](#golang实现)
-    - [1.2.2 工厂方法模式 (Factory Method)](#工厂方法模式-factory-method)
-      - [1.2.2.1 正式定义](#正式定义)
-      - [1.2.2.2 Golang实现](#golang实现)
-    - [1.2.3 抽象工厂模式 (Abstract Factory)](#抽象工厂模式-abstract-factory)
-      - [1.2.3.1 正式定义](#正式定义)
-      - [1.2.3.2 Golang实现](#golang实现)
-  - [1.3 3. 结构型模式 (Structural Patterns)](#3-结构型模式-structural-patterns)
-    - [1.3.1 适配器模式 (Adapter)](#适配器模式-adapter)
-      - [1.3.1.1 正式定义](#正式定义)
-      - [1.3.1.2 Golang实现](#golang实现)
-    - [1.3.2 装饰器模式 (Decorator)](#装饰器模式-decorator)
-      - [1.3.2.1 正式定义](#正式定义)
-      - [1.3.2.2 Golang实现](#golang实现)
-  - [1.4 4. 行为型模式 (Behavioral Patterns)](#4-行为型模式-behavioral-patterns)
-    - [1.4.1 观察者模式 (Observer)](#观察者模式-observer)
-      - [1.4.1.1 正式定义](#正式定义)
-      - [1.4.1.2 Golang实现](#golang实现)
-    - [1.4.2 策略模式 (Strategy)](#策略模式-strategy)
-      - [1.4.2.1 正式定义](#正式定义)
-      - [1.4.2.2 Golang实现](#golang实现)
-  - [1.5 5. 并发模式 (Concurrency Patterns)](#5-并发模式-concurrency-patterns)
-    - [1.5.1 Worker Pool模式](#worker-pool模式)
-      - [1.5.1.1 正式定义](#正式定义)
-      - [1.5.1.2 Golang实现](#golang实现)
-    - [1.5.2 Pipeline模式](#pipeline模式)
-      - [1.5.2.1 正式定义](#正式定义)
-      - [1.5.2.2 Golang实现](#golang实现)
-  - [1.6 6. 分布式模式 (Distributed Patterns)](#6-分布式模式-distributed-patterns)
-    - [1.6.1 熔断器模式 (Circuit Breaker)](#熔断器模式-circuit-breaker)
-      - [1.6.1.1 正式定义](#正式定义)
-      - [1.6.1.2 Golang实现](#golang实现)
-  - [1.7 7. 工作流模式 (Workflow Patterns)](#7-工作流模式-workflow-patterns)
-    - [1.7.1 状态机模式 (State Machine)](#状态机模式-state-machine)
-      - [1.7.1.1 正式定义](#正式定义)
-      - [1.7.1.2 Golang实现](#golang实现)
-  - [1.8 8. 性能分析](#8-性能分析)
-    - [1.8.1 时间复杂度分析](#时间复杂度分析)
-    - [1.8.2 内存使用分析](#内存使用分析)
-  - [1.9 9. 最佳实践](#9-最佳实践)
-    - [1.9.1 模式选择指南](#模式选择指南)
-    - [1.9.2 反模式识别](#反模式识别)
-  - [1.10 10. 总结](#10-总结)
-    - [1.10.1 关键成果](#关键成果)
-    - [1.10.2 应用价值](#应用价值)
-  - [1.11 参考文献](#参考文献)
+- [设计模式系统分析框架](#设计模式系统分析框架)
+  - [1.1 1. 概述](#11-1-概述)
+    - [1.1.1 正式定义](#111-正式定义)
+    - [1.1.2 模式分类体系](#112-模式分类体系)
+  - [1.2 2. 创建型模式 (Creational Patterns)](#12-2-创建型模式-creational-patterns)
+    - [1.2.1 单例模式 (Singleton)](#121-单例模式-singleton)
+      - [1.2.1.1 正式定义](#1211-正式定义)
+      - [1.2.1.2 Golang实现](#1212-golang实现)
+    - [1.2.2 工厂方法模式 (Factory Method)](#122-工厂方法模式-factory-method)
+      - [1.2.2.1 正式定义](#1221-正式定义)
+      - [1.2.2.2 Golang实现](#1222-golang实现)
+    - [1.2.3 抽象工厂模式 (Abstract Factory)](#123-抽象工厂模式-abstract-factory)
+      - [1.2.3.1 正式定义](#1231-正式定义)
+      - [1.2.3.2 Golang实现](#1232-golang实现)
+  - [1.3 3. 结构型模式 (Structural Patterns)](#13-3-结构型模式-structural-patterns)
+    - [1.3.1 适配器模式 (Adapter)](#131-适配器模式-adapter)
+      - [1.3.1.1 正式定义](#1311-正式定义)
+      - [1.3.1.2 Golang实现](#1312-golang实现)
+    - [1.3.2 装饰器模式 (Decorator)](#132-装饰器模式-decorator)
+      - [1.3.2.1 正式定义](#1321-正式定义)
+      - [1.3.2.2 Golang实现](#1322-golang实现)
+  - [1.4 4. 行为型模式 (Behavioral Patterns)](#14-4-行为型模式-behavioral-patterns)
+    - [1.4.1 观察者模式 (Observer)](#141-观察者模式-observer)
+      - [1.4.1.1 正式定义](#1411-正式定义)
+      - [1.4.1.2 Golang实现](#1412-golang实现)
+    - [1.4.2 策略模式 (Strategy)](#142-策略模式-strategy)
+      - [1.4.2.1 正式定义](#1421-正式定义)
+      - [1.4.2.2 Golang实现](#1422-golang实现)
+  - [1.5 5. 并发模式 (Concurrency Patterns)](#15-5-并发模式-concurrency-patterns)
+    - [1.5.1 Worker Pool模式](#151-worker-pool模式)
+      - [1.5.1.1 正式定义](#1511-正式定义)
+      - [1.5.1.2 Golang实现](#1512-golang实现)
+    - [1.5.2 Pipeline模式](#152-pipeline模式)
+      - [1.5.2.1 正式定义](#1521-正式定义)
+      - [1.5.2.2 Golang实现](#1522-golang实现)
+  - [1.6 6. 分布式模式 (Distributed Patterns)](#16-6-分布式模式-distributed-patterns)
+    - [1.6.1 熔断器模式 (Circuit Breaker)](#161-熔断器模式-circuit-breaker)
+      - [1.6.1.1 正式定义](#1611-正式定义)
+      - [1.6.1.2 Golang实现](#1612-golang实现)
+  - [1.7 7. 工作流模式 (Workflow Patterns)](#17-7-工作流模式-workflow-patterns)
+    - [1.7.1 状态机模式 (State Machine)](#171-状态机模式-state-machine)
+      - [1.7.1.1 正式定义](#1711-正式定义)
+      - [1.7.1.2 Golang实现](#1712-golang实现)
+  - [1.8 8. 性能分析](#18-8-性能分析)
+    - [1.8.1 时间复杂度分析](#181-时间复杂度分析)
+    - [1.8.2 内存使用分析](#182-内存使用分析)
+  - [1.9 9. 最佳实践](#19-9-最佳实践)
+    - [1.9.1 模式选择指南](#191-模式选择指南)
+    - [1.9.2 反模式识别](#192-反模式识别)
+  - [1.10 10. 总结](#110-10-总结)
+    - [1.10.1 关键成果](#1101-关键成果)
+    - [1.10.2 应用价值](#1102-应用价值)
+  - [1.11 参考文献](#111-参考文献)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 1.1 1. 概述
 
@@ -1056,11 +1043,13 @@ func Example() {
 
 熔断器模式防止级联故障：
 
-$$\text{CircuitBreaker}(S, T, F) = \begin{cases}
+$$
+\text{CircuitBreaker}(S, T, F) = \begin{cases}
 \text{Closed} & \text{if } F < T \\
 \text{Open} & \text{if } F \geq T \\
 \text{HalfOpen} & \text{after timeout}
-\end{cases}$$
+\end{cases}
+$$
 
 其中 $S$ 是状态，$T$ 是阈值，$F$ 是失败次数。
 

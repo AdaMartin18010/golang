@@ -1,39 +1,26 @@
-# 1 1 1 1 1 1 1 Design Pattern System Summary
+# Design Pattern System Summary
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Design Pattern System Summary](#1-1-1-1-1-1-1-design-pattern-system-summary)
-  - [1.1 Core Pattern Categories](#core-pattern-categories)
-    - [1.1.1 1. Creational Patterns](#1-creational-patterns)
-    - [1.1.2 2. Structural Patterns](#2-structural-patterns)
-    - [1.1.3 3. Behavioral Patterns](#3-behavioral-patterns)
-    - [1.1.4 4. Concurrency Patterns](#4-concurrency-patterns)
-    - [1.1.5 5. Enterprise Patterns](#5-enterprise-patterns)
-  - [1.2 Performance Characteristics](#performance-characteristics)
-  - [1.3 Anti-Patterns and Solutions](#anti-patterns-and-solutions)
-    - [1.3.1 Goroutine Leak](#goroutine-leak)
-    - [1.3.2 Mutex Misuse](#mutex-misuse)
-  - [1.4 Best Practices](#best-practices)
-  - [1.5 Key Principles](#key-principles)
+- [Design Pattern System Summary](#design-pattern-system-summary)
+  - [1.1 Core Pattern Categories](#11-core-pattern-categories)
+    - [1.1.1 1. Creational Patterns](#111-1-creational-patterns)
+    - [1.1.2 2. Structural Patterns](#112-2-structural-patterns)
+    - [1.1.3 3. Behavioral Patterns](#113-3-behavioral-patterns)
+    - [1.1.4 4. Concurrency Patterns](#114-4-concurrency-patterns)
+    - [1.1.5 5. Enterprise Patterns](#115-5-enterprise-patterns)
+  - [1.2 Performance Characteristics](#12-performance-characteristics)
+  - [1.3 Anti-Patterns and Solutions](#13-anti-patterns-and-solutions)
+    - [1.3.1 Goroutine Leak](#131-goroutine-leak)
+    - [1.3.2 Mutex Misuse](#132-mutex-misuse)
+  - [1.4 Best Practices](#14-best-practices)
+  - [1.5 Key Principles](#15-key-principles)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 1.1 Core Pattern Categories
 
 ### 1.1.1 1. Creational Patterns
 
-**Factory Pattern**
+**Factory Pattern**:
 
 ```go
 type Product interface {
@@ -56,7 +43,7 @@ func NewCreator(creatorType string) Creator {
 }
 ```
 
-**Singleton Pattern**
+**Singleton Pattern**:
 
 ```go
 var (
@@ -72,7 +59,7 @@ func GetInstance() *Singleton {
 }
 ```
 
-**Builder Pattern**
+**Builder Pattern**:
 
 ```go
 type ComputerBuilder interface {
@@ -90,7 +77,7 @@ func (cb *ConcreteComputerBuilder) SetCPU(cpu string) ComputerBuilder {
 
 ### 1.1.2 2. Structural Patterns
 
-**Adapter Pattern**
+**Adapter Pattern**:
 
 ```go
 type Target interface {
@@ -106,7 +93,7 @@ func (a *Adapter) Request() string {
 }
 ```
 
-**Decorator Pattern**
+**Decorator Pattern**:
 
 ```go
 type Component interface {
@@ -126,7 +113,7 @@ func (cda *ConcreteDecoratorA) Operation() string {
 }
 ```
 
-**Proxy Pattern**
+**Proxy Pattern**:
 
 ```go
 type Proxy struct {
@@ -150,7 +137,7 @@ func (p *Proxy) Request() string {
 
 ### 1.1.3 3. Behavioral Patterns
 
-**Observer Pattern**
+**Observer Pattern**:
 
 ```go
 type Observer interface {
@@ -175,7 +162,7 @@ func (cs *ConcreteSubject) Notify() {
 }
 ```
 
-**Strategy Pattern**
+**Strategy Pattern**:
 
 ```go
 type Strategy interface {
@@ -191,7 +178,7 @@ func (c *Context) ExecuteStrategy(data []int) []int {
 }
 ```
 
-**Command Pattern**
+**Command Pattern**:
 
 ```go
 type Command interface {
@@ -219,7 +206,7 @@ func (i *Invoker) ExecuteCommands() {
 
 ### 1.1.4 4. Concurrency Patterns
 
-**Worker Pool Pattern**
+**Worker Pool Pattern**:
 
 ```go
 type WorkerPool struct {
@@ -249,7 +236,7 @@ func (wp *WorkerPool) worker(id int) {
 }
 ```
 
-**Pipeline Pattern**
+**Pipeline Pattern**:
 
 ```go
 type Pipeline struct {
@@ -277,7 +264,7 @@ func (p *Pipeline) Execute(data interface{}) (interface{}, error) {
 
 ### 1.1.5 5. Enterprise Patterns
 
-**Repository Pattern**
+**Repository Pattern**:
 
 ```go
 type Repository[T any] interface {
@@ -307,7 +294,7 @@ func (imr *InMemoryRepository[T]) FindByID(id string) (T, error) {
 }
 ```
 
-**Unit of Work Pattern**
+**Unit of Work Pattern**:
 
 ```go
 type UnitOfWork interface {

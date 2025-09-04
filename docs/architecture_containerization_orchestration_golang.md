@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 容器化与编排架构（Containerization and Orchestration Architecture）
+# 容器化与编排架构（Containerization and Orchestration Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 容器化与编排架构（Containerization and Orchestration Architecture）](#1-1-1-1-1-1-1-容器化与编排架构containerization-and-orchestration-architecture)
+- [容器化与编排架构（Containerization and Orchestration Architecture）](#容器化与编排架构containerization-and-orchestration-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流技术与标准](#121-主流技术与标准)

@@ -2,24 +2,11 @@
 
 <!-- TOC START -->
 - [1 1 1 1 1 1 1 Marker Trait 与 Auto Trait](#1-1-1-1-1-1-1-marker-trait-与-auto-trait)
-  - [1.1 1. Marker Trait 定义与 Auto Trait](#1-marker-trait-定义与-auto-trait)
-  - [1.2 2. 自动实现 Auto Trait 的机制](#2-自动实现-auto-trait-的机制)
-  - [1.3 3. 编译器内部检查流程与源码解析](#3-编译器内部检查流程与源码解析)
-  - [1.4 小结](#小结)
+  - [1.1 1. Marker Trait 定义与 Auto Trait](#11-1-marker-trait-定义与-auto-trait)
+  - [1.2 2. 自动实现 Auto Trait 的机制](#12-2-自动实现-auto-trait-的机制)
+  - [1.3 3. 编译器内部检查流程与源码解析](#13-3-编译器内部检查流程与源码解析)
+  - [1.4 小结](#14-小结)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 下面给出一个基于 Rust 源代码分析、梳理和解释 `Sized` 类型如何自动实现 `Send` 和 `Sync` 特性的说明。这里主要涉及以下几个方面：
 

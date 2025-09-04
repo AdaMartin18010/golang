@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 服务网格架构（Service Mesh Architecture）
+# 服务网格架构（Service Mesh Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 服务网格架构（Service Mesh Architecture）](#1-1-1-1-1-1-1-服务网格架构service-mesh-architecture)
+- [服务网格架构（Service Mesh Architecture）](#服务网格架构service-mesh-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流服务网格平台与标准](#121-主流服务网格平台与标准)

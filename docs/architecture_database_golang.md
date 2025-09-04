@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 数据库架构（Database Architecture）
+# 数据库架构（Database Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 数据库架构（Database Architecture）](#1-1-1-1-1-1-1-数据库架构database-architecture)
+- [数据库架构（Database Architecture）](#数据库架构database-architecture)
   - [1.1 目录](#11-目录)
   - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
     - [1.2.1 主流数据库类型与标准](#121-主流数据库类型与标准)

@@ -2,20 +2,12 @@
 
 <!-- TOC START -->
 - [1 1 asref asmut](#1-1-asref-asmut)
-  - [1.1 1. AsRef](#1-asref)
-  - [1.2 2. AsMut](#2-asmut)
-  - [1.3 3. Borrow](#3-borrow)
-  - [1.4 它们之间的区别和联系](#它们之间的区别和联系)
-  - [1.5 总结](#总结)
+  - [1.1 1. AsRef](#11-1-asref)
+  - [1.2 2. AsMut](#12-2-asmut)
+  - [1.3 3. Borrow](#13-3-borrow)
+  - [1.4 它们之间的区别和联系](#14-它们之间的区别和联系)
+  - [1.5 总结](#15-总结)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
 
 下面是关于 Rust 中 `AsRef`、`AsMut` 和 `Borrow` 这三个 trait 的区别与联系的详细解释。
 
