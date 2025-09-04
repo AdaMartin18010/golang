@@ -1,58 +1,45 @@
 # 事件驱动架构（Event-Driven Architecture）
 
-<!-- TOC START -->
+## 1. 目录
+
 - [事件驱动架构（Event-Driven Architecture）](#事件驱动架构event-driven-architecture)
-  - [1.1 目录](#11-目录)
-  - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
-    - [1.2.1 主流事件驱动平台与标准](#121-主流事件驱动平台与标准)
-    - [1.2.2 发展历程](#122-发展历程)
-    - [1.2.3 国际权威链接](#123-国际权威链接)
-  - [1.3 2. 核心架构模式](#13-2-核心架构模式)
-    - [1.3.1 事件驱动基础架构](#131-事件驱动基础架构)
-    - [1.3.2 事件溯源模式](#132-事件溯源模式)
-    - [1.3.3 CQRS模式](#133-cqrs模式)
-    - [1.3.4 发布/订阅模式 (Publish/Subscribe)](#134-发布订阅模式-publishsubscribe)
-    - [1.3.5 事件溯源 (Event Sourcing) 与 CQRS 组合模式](#135-事件溯源-event-sourcing-与-cqrs-组合模式)
-  - [1.4 3. 实际案例分析](#14-3-实际案例分析)
-    - [1.4.1 电商订单系统](#141-电商订单系统)
-  - [1.5 4. 未来趋势与国际前沿](#15-4-未来趋势与国际前沿)
-  - [1.6 5. 国际权威资源与开源组件引用](#16-5-国际权威资源与开源组件引用)
-    - [1.6.1 事件流平台](#161-事件流平台)
-    - [1.6.2 云原生事件服务](#162-云原生事件服务)
-    - [1.6.3 事件标准](#163-事件标准)
-  - [1.7 6. 扩展阅读与参考文献](#17-6-扩展阅读与参考文献)
-    - [1.7.1 使用CloudEvents进行事件标准化](#171-使用cloudevents进行事件标准化)
-    - [1.7.2 Kafka 生产者与消费者示例 (使用 sarama)](#172-kafka-生产者与消费者示例-使用-sarama)
-  - [1.8 6. 分布式挑战与主流解决方案](#18-6-分布式挑战与主流解决方案)
-    - [1.8.1 消息交付保证](#181-消息交付保证)
-    - [1.8.2 死信队列 (Dead-Letter Queue)](#182-死信队列-dead-letter-queue)
-  - [1.9 7. 工程结构与CI/CD实践](#19-7-工程结构与cicd实践)
-    - [1.9.1 事件驱动系统工程结构](#191-事件驱动系统工程结构)
-    - [1.9.2 CI/CD实践](#192-cicd实践)
-  - [1.10 8. 形式化建模与数学表达](#110-8-形式化建模与数学表达)
-    - [1.10.1 事件驱动系统形式化建模](#1101-事件驱动系统形式化建模)
-    - [1.10.2 事件溯源模式数学表达](#1102-事件溯源模式数学表达)
-  - [1.11 9. 相关架构主题](#111-9-相关架构主题)
-<!-- TOC END -->
-
-## 1.1 目录
-
-1. 国际标准与发展历程
-2. 典型应用场景与需求分析
-3. 领域建模与UML类图
-4. 架构模式与设计原则
-5. Golang主流实现与代码示例
-6. 分布式挑战与主流解决方案
-7. 工程结构与CI/CD实践
-8. 形式化建模与数学表达
-9. 国际权威资源与开源组件引用
-10. 扩展阅读与参考文献
+  - [1. 目录](#1-目录)
+  - [2. 国际标准与发展历程](#2-国际标准与发展历程)
+    - [2.1 主流事件驱动平台与标准](#21-主流事件驱动平台与标准)
+    - [2.2 发展历程](#22-发展历程)
+    - [2.3 国际权威链接](#23-国际权威链接)
+  - [3. 核心架构模式](#3-核心架构模式)
+    - [3.1 事件驱动基础架构](#31-事件驱动基础架构)
+    - [3.2 事件溯源模式](#32-事件溯源模式)
+    - [3.3 CQRS模式](#33-cqrs模式)
+    - [3.4 发布/订阅模式 (Publish/Subscribe)](#34-发布订阅模式-publishsubscribe)
+    - [3.5 事件溯源 (Event Sourcing) 与 CQRS 组合模式](#35-事件溯源-event-sourcing-与-cqrs-组合模式)
+  - [4. 实际案例分析](#4-实际案例分析)
+    - [4.1 电商订单系统](#41-电商订单系统)
+  - [5. 未来趋势与国际前沿](#5-未来趋势与国际前沿)
+  - [6. 国际权威资源与开源组件引用](#6-国际权威资源与开源组件引用)
+    - [6.1 事件流平台](#61-事件流平台)
+    - [6.2 云原生事件服务](#62-云原生事件服务)
+    - [6.3 事件标准](#63-事件标准)
+  - [7. 扩展阅读与参考文献](#7-扩展阅读与参考文献)
+    - [7.1 使用CloudEvents进行事件标准化](#71-使用cloudevents进行事件标准化)
+    - [7.2 Kafka 生产者与消费者示例 (使用 sarama)](#72-kafka-生产者与消费者示例-使用-sarama)
+  - [8. 分布式挑战与主流解决方案](#8-分布式挑战与主流解决方案)
+    - [8.1 消息交付保证](#81-消息交付保证)
+    - [8.2 死信队列 (Dead-Letter Queue)](#82-死信队列-dead-letter-queue)
+  - [9. 工程结构与CI/CD实践](#9-工程结构与cicd实践)
+    - [9.1 事件驱动系统工程结构](#91-事件驱动系统工程结构)
+    - [9.2 CI/CD实践](#92-cicd实践)
+  - [10. 形式化建模与数学表达](#10-形式化建模与数学表达)
+    - [10.1 事件驱动系统形式化建模](#101-事件驱动系统形式化建模)
+    - [10.2 事件溯源模式数学表达](#102-事件溯源模式数学表达)
+  - [11. 相关架构主题](#11-相关架构主题)
 
 ---
 
-## 1.2 1. 国际标准与发展历程
+## 2. 国际标准与发展历程
 
-### 1.2.1 主流事件驱动平台与标准
+### 2.1 主流事件驱动平台与标准
 
 - **Apache Kafka**: 分布式流处理平台
 - **Apache Pulsar**: 云原生消息流平台
@@ -63,14 +50,14 @@
 - **CloudEvents**: 事件数据标准
 - **Event Sourcing**: 事件溯源模式
 
-### 1.2.2 发展历程
+### 2.2 发展历程
 
 - **2000s**: 消息队列、发布订阅模式
 - **2010s**: 事件溯源、CQRS模式兴起
 - **2015s**: 流处理、实时分析
 - **2020s**: 事件流平台、云原生事件架构
 
-### 1.2.3 国际权威链接
+### 2.3 国际权威链接
 
 - [Apache Kafka](https://kafka.apache.org/)
 - [Apache Pulsar](https://pulsar.apache.org/)
@@ -80,9 +67,9 @@
 
 ---
 
-## 1.3 2. 核心架构模式
+## 3. 核心架构模式
 
-### 1.3.1 事件驱动基础架构
+### 3.1 事件驱动基础架构
 
 ```go
 type EventDrivenSystem struct {
@@ -120,7 +107,7 @@ type EventHandler interface {
 }
 ```
 
-### 1.3.2 事件溯源模式
+### 3.2 事件溯源模式
 
 ```go
 type EventSourcedAggregate struct {
@@ -155,7 +142,7 @@ func (esa *EventSourcedAggregate) LoadFromHistory(events []*Event) {
 }
 ```
 
-### 1.3.3 CQRS模式
+### 3.3 CQRS模式
 
 ```go
 type CQRSSystem struct {
@@ -193,7 +180,7 @@ type QueryHandler interface {
 }
 ```
 
-### 1.3.4 发布/订阅模式 (Publish/Subscribe)
+### 3.4 发布/订阅模式 (Publish/Subscribe)
 
 发布/订阅是事件驱动架构最基础的模式。生产者（Publisher）发布事件到主题（Topic）或通道（Channel），而不直接发送给特定的接收者。消费者（Subscriber）订阅感兴趣的主题，并接收事件进行处理。生产者和消费者是解耦的。
 
@@ -224,7 +211,7 @@ graph TD
     style C3 fill:#d5e8d4,stroke:#82b366
 ```
 
-### 1.3.5 事件溯源 (Event Sourcing) 与 CQRS 组合模式
+### 3.5 事件溯源 (Event Sourcing) 与 CQRS 组合模式
 
 当事件溯源与CQRS结合时，系统的数据流变得非常清晰。所有状态的变更都以事件的形式被捕获并存储在事件存储中。这些事件流同时用于更新专门为查询优化的"读模型"（Read Model）。
 
@@ -255,9 +242,9 @@ graph LR
 
 ---
 
-## 1.4 3. 实际案例分析
+## 4. 实际案例分析
 
-### 1.4.1 电商订单系统
+### 4.1 电商订单系统
 
 **场景**: 高并发订单处理与库存管理
 
@@ -298,7 +285,7 @@ func NewOrderAggregate(id string) *OrderAggregate {
 
 ---
 
-## 1.5 4. 未来趋势与国际前沿
+## 5. 未来趋势与国际前沿
 
 - **实时事件流处理**
 - **事件驱动微服务**
@@ -307,28 +294,28 @@ func NewOrderAggregate(id string) *OrderAggregate {
 - **事件流分析**
 - **事件驱动AI/ML**
 
-## 1.6 5. 国际权威资源与开源组件引用
+## 6. 国际权威资源与开源组件引用
 
-### 1.6.1 事件流平台
+### 6.1 事件流平台
 
 - [Apache Kafka](https://kafka.apache.org/) - 分布式流处理平台
 - [Apache Pulsar](https://pulsar.apache.org/) - 云原生消息流平台
 - [EventStore](https://eventstore.com/) - 事件存储数据库
 - [NATS](https://nats.io/) - 云原生消息系统
 
-### 1.6.2 云原生事件服务
+### 6.2 云原生事件服务
 
 - [AWS EventBridge](https://aws.amazon.com/eventbridge/) - 事件总线服务
 - [Google Cloud Pub/Sub](https://cloud.google.com/pubsub) - 消息传递服务
 - [Azure Event Grid](https://azure.microsoft.com/services/event-grid/) - 事件路由服务
 
-### 1.6.3 事件标准
+### 6.3 事件标准
 
 - [CloudEvents](https://cloudevents.io/) - 事件数据标准
 - [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) - 事件溯源模式
 - [CQRS](https://martinfowler.com/bliki/CQRS.html) - 命令查询职责分离
 
-## 1.7 6. 扩展阅读与参考文献
+## 7. 扩展阅读与参考文献
 
 1. "Building Event-Driven Microservices" - Adam Bellemare
 2. "Event Sourcing and CQRS" - Greg Young
@@ -336,7 +323,7 @@ func NewOrderAggregate(id string) *OrderAggregate {
 4. "Kafka: The Definitive Guide" - Neha Narkhede, Gwen Shapira, Todd Palino
 5. "Event Streaming with Kafka" - Alexander Dean
 
-### 1.7.1 使用CloudEvents进行事件标准化
+### 7.1 使用CloudEvents进行事件标准化
 
 [CloudEvents](https://cloudevents.io/) 是一个CNCF规范，旨在以通用格式描述事件数据，增强系统的互操作性。
 
@@ -392,7 +379,7 @@ func main() {
 }
 ```
 
-### 1.7.2 Kafka 生产者与消费者示例 (使用 sarama)
+### 7.2 Kafka 生产者与消费者示例 (使用 sarama)
 
 ```go
 package main
@@ -473,9 +460,9 @@ func main() {
 
 ---
 
-## 1.8 6. 分布式挑战与主流解决方案
+## 8. 分布式挑战与主流解决方案
 
-### 1.8.1 消息交付保证
+### 8.1 消息交付保证
 
 - **最多一次 (At-most-once)**: 消息可能会丢失，但绝不会重复。适用于允许丢失数据的场景。
 - **至少一次 (At-least-once)**: 消息绝不会丢失，但可能会重复。这是最常见的保证级别。消费者必须设计成**幂等**的，即多次处理同一消息的结果与一次处理完全相同。
@@ -513,13 +500,13 @@ func (h *OrderEventHandler) HandleOrderCreated(event *Event) error {
 }
 ```
 
-### 1.8.2 死信队列 (Dead-Letter Queue)
+### 8.2 死信队列 (Dead-Letter Queue)
 
 当一个消息因为格式错误、包含无效数据或触发持续的业务逻辑错误而无法被消费者成功处理时，它会变成"毒丸消息"。为了防止它无限次地被重新投递，阻塞队列，可以将它发送到一个专门的**死信队列（DLQ）**。运维人员或专门的监控服务可以检查DLQ，对失败的消息进行分析、修复或手动处理。
 
-## 1.9 7. 工程结构与CI/CD实践
+## 9. 工程结构与CI/CD实践
 
-### 1.9.1 事件驱动系统工程结构
+### 9.1 事件驱动系统工程结构
 
 ```go
 type EventDrivenSystem struct {
@@ -557,15 +544,15 @@ type EventHandler interface {
 }
 ```
 
-### 1.9.2 CI/CD实践
+### 9.2 CI/CD实践
 
 - **持续集成**
 - **持续交付**
 - **持续部署**
 
-## 1.10 8. 形式化建模与数学表达
+## 10. 形式化建模与数学表达
 
-### 1.10.1 事件驱动系统形式化建模
+### 10.1 事件驱动系统形式化建模
 
 ```go
 type EventDrivenSystem struct {
@@ -603,7 +590,7 @@ type EventHandler interface {
 }
 ```
 
-### 1.10.2 事件溯源模式数学表达
+### 10.2 事件溯源模式数学表达
 
 ```go
 type EventSourcedAggregate struct {
@@ -638,7 +625,7 @@ func (esa *EventSourcedAggregate) LoadFromHistory(events []*Event) {
 }
 ```
 
-## 1.11 9. 相关架构主题
+## 11. 相关架构主题
 
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 事件驱动是实现微服务间松耦合通信的关键模式。
 - [**数据库架构 (Database Architecture)**](./architecture_database_golang.md): 事件溯源和CQRS对数据库提出了不同的要求，通常需要事件存储和为查询优化的读模型数据库。

@@ -1,57 +1,44 @@
 # 服务网格架构（Service Mesh Architecture）
 
-<!-- TOC START -->
+## 1. 目录
+
 - [服务网格架构（Service Mesh Architecture）](#服务网格架构service-mesh-architecture)
-  - [1.1 目录](#11-目录)
-  - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
-    - [1.2.1 主流服务网格平台与标准](#121-主流服务网格平台与标准)
-    - [1.2.2 发展历程](#122-发展历程)
-    - [1.2.3 国际权威链接](#123-国际权威链接)
-  - [1.3 2. 核心架构模式与设计原则](#13-2-核心架构模式与设计原则)
-    - [1.3.1 控制平面与数据平面](#131-控制平面与数据平面)
-    - [1.3.2 Sidecar代理模式](#132-sidecar代理模式)
-    - [1.3.3 服务发现与负载均衡](#133-服务发现与负载均衡)
-    - [1.3.4 流量管理与路由](#134-流量管理与路由)
-    - [1.3.5 安全与认证](#135-安全与认证)
-  - [1.4 3. 实际案例分析](#14-3-实际案例分析)
-    - [1.4.1 微服务通信](#141-微服务通信)
-    - [1.4.2 金丝雀发布](#142-金丝雀发布)
-  - [1.5 4. 未来趋势与国际前沿](#15-4-未来趋势与国际前沿)
-  - [1.6 5. 国际权威资源与开源组件引用](#16-5-国际权威资源与开源组件引用)
-    - [1.6.1 服务网格平台](#161-服务网格平台)
-    - [1.6.2 云原生服务网格](#162-云原生服务网格)
-    - [1.6.3 服务网格标准](#163-服务网格标准)
-  - [1.7 6. 扩展阅读与参考文献](#17-6-扩展阅读与参考文献)
-  - [1.8 7. Golang主流实现与代码示例](#18-7-golang主流实现与代码示例)
-    - [1.8.1 与服务网格集成的Go应用](#181-与服务网格集成的go应用)
-  - [1.9 8. 分布式挑战与主流解决方案](#19-8-分布式挑战与主流解决方案)
-    - [1.9.1 流量管理 (Traffic Management)](#191-流量管理-traffic-management)
-      - [1.9.1.1 金丝雀发布 (Canary Release)](#1911-金丝雀发布-canary-release)
-      - [1.9.1.2 流量镜像 (Traffic Mirroring)](#1912-流量镜像-traffic-mirroring)
-    - [1.9.2 安全 (Security)](#192-安全-security)
-      - [1.9.2.1 自动mTLS (Mutual TLS)](#1921-自动mtls-mutual-tls)
-  - [1.10 9. 相关架构主题](#110-9-相关架构主题)
-  - [1.11 10. 扩展阅读与参考文献](#111-10-扩展阅读与参考文献)
-<!-- TOC END -->
-
-## 1.1 目录
-
-1. 国际标准与发展历程
-2. 典型应用场景与需求分析
-3. 领域建模与UML类图
-4. 架构模式与设计原则
-5. Golang主流实现与代码示例
-6. 分布式挑战与主流解决方案
-7. 工程结构与CI/CD实践
-8. 形式化建模与数学表达
-9. 国际权威资源与开源组件引用
-10. 扩展阅读与参考文献
+  - [1. 目录](#1-目录)
+  - [2. 国际标准与发展历程](#2-国际标准与发展历程)
+    - [2.1 主流服务网格平台与标准](#21-主流服务网格平台与标准)
+    - [2.2 发展历程](#22-发展历程)
+    - [2.3 国际权威链接](#23-国际权威链接)
+  - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
+    - [3.1 控制平面与数据平面](#31-控制平面与数据平面)
+    - [3.2 Sidecar代理模式](#32-sidecar代理模式)
+    - [3.3 服务发现与负载均衡](#33-服务发现与负载均衡)
+    - [3.4 流量管理与路由](#34-流量管理与路由)
+    - [3.5 安全与认证](#35-安全与认证)
+  - [4. 实际案例分析](#4-实际案例分析)
+    - [4.1 微服务通信](#41-微服务通信)
+    - [4.2 金丝雀发布](#42-金丝雀发布)
+  - [5. 未来趋势与国际前沿](#5-未来趋势与国际前沿)
+  - [6. 国际权威资源与开源组件引用](#6-国际权威资源与开源组件引用)
+    - [6.1 服务网格平台](#61-服务网格平台)
+    - [6.2 云原生服务网格](#62-云原生服务网格)
+    - [6.3 服务网格标准](#63-服务网格标准)
+  - [7. 扩展阅读与参考文献](#7-扩展阅读与参考文献)
+  - [8. Golang主流实现与代码示例](#8-golang主流实现与代码示例)
+    - [8.1 与服务网格集成的Go应用](#81-与服务网格集成的go应用)
+  - [9. 分布式挑战与主流解决方案](#9-分布式挑战与主流解决方案)
+    - [9.1 流量管理 (Traffic Management)](#91-流量管理-traffic-management)
+      - [9.1.1 金丝雀发布 (Canary Release)](#911-金丝雀发布-canary-release)
+      - [9.1.2 流量镜像 (Traffic Mirroring)](#912-流量镜像-traffic-mirroring)
+    - [9.2 安全 (Security)](#92-安全-security)
+      - [9.2.1 自动mTLS (Mutual TLS)](#921-自动mtls-mutual-tls)
+  - [10. 相关架构主题](#10-相关架构主题)
+  - [11. 扩展阅读与参考文献](#11-扩展阅读与参考文献)
 
 ---
 
-## 1.2 1. 国际标准与发展历程
+## 2. 国际标准与发展历程
 
-### 1.2.1 主流服务网格平台与标准
+### 2.1 主流服务网格平台与标准
 
 - **Istio**: 开源服务网格平台
 - **Envoy**: 高性能代理
@@ -62,14 +49,14 @@
 - **Azure Service Fabric Mesh**: 托管服务网格
 - **Service Mesh Interface (SMI)**: 服务网格标准
 
-### 1.2.2 发展历程
+### 2.2 发展历程
 
 - **2010s**: 微服务架构兴起
 - **2015s**: 服务网格概念提出
 - **2017s**: Istio、Linkerd等平台发布
 - **2020s**: 云原生服务网格成熟
 
-### 1.2.3 国际权威链接
+### 2.3 国际权威链接
 
 - [Istio](https://istio.io/)
 - [Envoy](https://www.envoyproxy.io/)
@@ -79,9 +66,9 @@
 
 ---
 
-## 1.3 2. 核心架构模式与设计原则
+## 3. 核心架构模式与设计原则
 
-### 1.3.1 控制平面与数据平面
+### 3.1 控制平面与数据平面
 
 服务网格架构在逻辑上分为 **数据平面（Data Plane）** 和 **控制平面（Control Plane）**。
 
@@ -118,7 +105,7 @@ graph TD
     style ControlPlane fill:#fffbe6,stroke:#ffe680,stroke-width:2px
 ```
 
-### 1.3.2 Sidecar代理模式
+### 3.2 Sidecar代理模式
 
 Sidecar模式是服务网格实现的基础。一个专用的代理（Sidecar）与主应用程序容器一起部署在同一个Pod中。它们共享网络命名空间和生命周期。
 
@@ -128,7 +115,7 @@ Sidecar模式是服务网格实现的基础。一个专用的代理（Sidecar）
 - **语言无关**: 由于功能在代理层实现，因此可以用任何语言编写应用服务。
 - **平滑升级**: 可以独立于主应用程序升级Sidecar代理，实现网络功能的快速迭代。
 
-### 1.3.3 服务发现与负载均衡
+### 3.3 服务发现与负载均衡
 
 ```go
 type ServiceDiscovery struct {
@@ -340,7 +327,7 @@ func (lc *LeastConnectionsStrategy) DecrementConnections(endpointID string) {
 }
 ```
 
-### 1.3.4 流量管理与路由
+### 3.4 流量管理与路由
 
 ```go
 type TrafficManager struct {
@@ -723,7 +710,7 @@ func (tm *TrafficManager) calculateBackoffDelay(attempt int) time.Duration {
 }
 ```
 
-### 1.3.5 安全与认证
+### 3.5 安全与认证
 
 ```go
 type SecurityManager struct {
@@ -1080,9 +1067,9 @@ func (sm *SecurityManager) evaluateCondition(authResult *AuthResult, condition *
 }
 ```
 
-## 1.4 3. 实际案例分析
+## 4. 实际案例分析
 
-### 1.4.1 微服务通信
+### 4.1 微服务通信
 
 **场景**: 多服务间的可靠通信
 
@@ -1226,7 +1213,7 @@ func (sr *ServiceRegistry) updateEndpointStatus(endpoint *Endpoint, healthy bool
 }
 ```
 
-### 1.4.2 金丝雀发布
+### 4.2 金丝雀发布
 
 ```go
 type CanaryDeploymentManager struct {
@@ -1522,7 +1509,7 @@ func (cdm *CanaryDeploymentManager) rollbackCanary(config *DeploymentConfig) err
 }
 ```
 
-## 1.5 4. 未来趋势与国际前沿
+## 5. 未来趋势与国际前沿
 
 - **云原生服务网格**
 - **多集群服务网格**
@@ -1531,28 +1518,28 @@ func (cdm *CanaryDeploymentManager) rollbackCanary(config *DeploymentConfig) err
 - **零信任安全模型**
 - **服务网格可观测性**
 
-## 1.6 5. 国际权威资源与开源组件引用
+## 6. 国际权威资源与开源组件引用
 
-### 1.6.1 服务网格平台
+### 6.1 服务网格平台
 
 - [Istio](https://istio.io/) - 开源服务网格平台
 - [Envoy](https://www.envoyproxy.io/) - 高性能代理
 - [Linkerd](https://linkerd.io/) - 轻量级服务网格
 - [Consul](https://www.consul.io/) - 服务网格解决方案
 
-### 1.6.2 云原生服务网格
+### 6.2 云原生服务网格
 
 - [AWS App Mesh](https://aws.amazon.com/app-mesh/) - 云原生服务网格
 - [Google Cloud Traffic Director](https://cloud.google.com/traffic-director) - 服务网格管理
 - [Azure Service Fabric Mesh](https://azure.microsoft.com/services/service-fabric-mesh/) - 托管服务网格
 
-### 1.6.3 服务网格标准
+### 6.3 服务网格标准
 
 - [Service Mesh Interface](https://smi-spec.io/) - 服务网格标准
 - [Open Service Mesh](https://openservicemesh.io/) - 开源服务网格
 - [Kuma](https://kuma.io/) - 通用服务网格
 
-## 1.7 6. 扩展阅读与参考文献
+## 7. 扩展阅读与参考文献
 
 1. "Service Mesh Patterns" - Lee Calcote, Brian Gracely
 2. "Istio: Up and Running" - Lee Calcote, Zack Butcher
@@ -1560,9 +1547,9 @@ func (cdm *CanaryDeploymentManager) rollbackCanary(config *DeploymentConfig) err
 4. "The Service Mesh" - William Morgan
 5. "Service Mesh: A Complete Guide" - Christian Posta
 
-## 1.8 7. Golang主流实现与代码示例
+## 8. Golang主流实现与代码示例
 
-### 1.8.1 与服务网格集成的Go应用
+### 8.1 与服务网格集成的Go应用
 
 服务网格的一个核心优势是 **对应用的透明性**。理想情况下，Go应用代码不需要任何特殊库或修改就能在服务网格中运行。应用只需通过标准HTTP或gRPC协议进行通信即可。
 
@@ -1629,13 +1616,13 @@ func main() {
 - 应用通过环境变量或配置中心获取下游服务的地址，但只使用Kubernetes的服务名（如 `reviews-service`），Sidecar会负责解析和路由。
 - 应用代码中**没有**任何重试、超时或熔断逻辑。这些都由服务网格通过配置来注入。
 
-## 1.9 8. 分布式挑战与主流解决方案
+## 9. 分布式挑战与主流解决方案
 
 服务网格通过控制平面和数据平面提供了强大的流量管理和安全功能。
 
-### 1.9.1 流量管理 (Traffic Management)
+### 9.1 流量管理 (Traffic Management)
 
-#### 1.9.1.1 金丝雀发布 (Canary Release)
+#### 9.1.1 金丝雀发布 (Canary Release)
 
 金丝雀发布是一种渐进式发布策略，将一小部分用户流量（例如5%）引导到新版本，同时大部分流量仍访问稳定版本。如果新版本表现稳定，则逐步增加流量比例。
 
@@ -1661,7 +1648,7 @@ spec:
       weight: 5
 ```
 
-#### 1.9.1.2 流量镜像 (Traffic Mirroring)
+#### 9.1.2 流量镜像 (Traffic Mirroring)
 
 流量镜像（或称影子流量）将实时流量的一个副本发送到镜像服务，通常用于在生产环境中测试新版本，而不影响最终用户。镜像流量的响应会被丢弃。
 
@@ -1688,9 +1675,9 @@ spec:
       value: 100.0
 ```
 
-### 1.9.2 安全 (Security)
+### 9.2 安全 (Security)
 
-#### 1.9.2.1 自动mTLS (Mutual TLS)
+#### 9.2.1 自动mTLS (Mutual TLS)
 
 服务网格可以在服务之间自动实现双向TLS加密和身份验证（mTLS），无需修改任何应用代码。
 
@@ -1711,14 +1698,14 @@ spec:
     mode: STRICT
 ```
 
-## 1.10 9. 相关架构主题
+## 10. 相关架构主题
 
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 服务网格是管理复杂微服务通信的标准解决方案。
 - [**API网关 (API Gateway)**](./architecture_api_gateway_golang.md): 服务网格管理东西向流量（服务间），而API网关管理南北向流量（客户端到服务）。
 - [**容器化与编排 (Containerization & Orchestration)**](./architecture_containerization_orchestration_golang.md): 服务网格通常部署在Kubernetes等容器编排平台上。
 - [**DevOps与运维 (DevOps & Operations)**](./architecture_devops_golang.md): 服务网格为SRE和DevOps团队提供了实现高级部署策略和深度可观测性的强大工具。
 
-## 1.11 10. 扩展阅读与参考文献
+## 11. 扩展阅读与参考文献
 
 1. "Service Mesh Patterns" - Lee Calcote, Brian Gracely
 2. "Istio: Up and Running" - Lee Calcote, Zack Butcher

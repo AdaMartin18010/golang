@@ -1,40 +1,30 @@
 # 容器化与编排架构（Containerization and Orchestration Architecture）
 
-<!-- TOC START -->
+## 1. 目录
+
 - [容器化与编排架构（Containerization and Orchestration Architecture）](#容器化与编排架构containerization-and-orchestration-architecture)
-  - [1.1 目录](#11-目录)
-  - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
-    - [1.2.1 主流技术与标准](#121-主流技术与标准)
-    - [1.2.2 发展历程](#122-发展历程)
-    - [1.2.3 国际权威链接](#123-国际权威链接)
-  - [1.3 2. 核心架构模式与设计原则](#13-2-核心架构模式与设计原则)
-    - [1.3.1 容器化架构 (Docker)](#131-容器化架构-docker)
-    - [16 16 16 16 16 16 16 容器编排架构 (Kubernetes)](#16-16-16-16-16-16-16-容器编排架构-kubernetes)
-  - [18.1 3. Golang与云原生生态](#181-3-golang与云原生生态)
-    - [18.1.1 使用Go开发Kubernetes原生应用](#1811-使用go开发kubernetes原生应用)
-    - [18.1.2 可观测性 (Observability)](#1812-可观测性-observability)
-  - [18.2 4. 分布式挑战与主流解决方案](#182-4-分布式挑战与主流解决方案)
-  - [18.3 5. 工程结构与CI/CD实践](#183-5-工程结构与cicd实践)
-    - [18.3.1 目录结构建议](#1831-目录结构建议)
-    - [18.3.2 CI/CD工作流 (GitHub Actions)](#1832-cicd工作流-github-actions)
-  - [19.1 6. 相关架构主题](#191-6-相关架构主题)
-<!-- TOC END -->
-
-## 1.1 目录
-
-1. 国际标准与发展历程
-2. 核心架构模式与设计原则
-3. Golang与云原生生态
-4. 分布式挑战与主流解决方案
-5. 工程结构与CI/CD实践
-6. 国际权威资源与开源组件引用
-7. 扩展阅读与参考文献
+  - [1. 目录](#1-目录)
+  - [2. 国际标准与发展历程](#2-国际标准与发展历程)
+    - [2.1 主流技术与标准](#21-主流技术与标准)
+    - [2.2 发展历程](#22-发展历程)
+    - [2.3 国际权威链接](#23-国际权威链接)
+  - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
+    - [3.1 容器化架构 (Docker)](#31-容器化架构-docker)
+    - [3.2 容器编排架构 (Kubernetes)](#32-容器编排架构-kubernetes)
+  - [4. Golang与云原生生态](#4-golang与云原生生态)
+    - [4.1 使用Go开发Kubernetes原生应用](#41-使用go开发kubernetes原生应用)
+    - [4.2 可观测性 (Observability)](#42-可观测性-observability)
+  - [5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
+  - [6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
+    - [6.1 目录结构建议](#61-目录结构建议)
+    - [6.2 CI/CD工作流 (GitHub Actions)](#62-cicd工作流-github-actions)
+  - [7. 相关架构主题](#7-相关架构主题)
 
 ---
 
-## 1.2 1. 国际标准与发展历程
+## 2. 国际标准与发展历程
 
-### 1.2.1 主流技术与标准
+### 2.1 主流技术与标准
 
 - **Docker**: 领先的容器化平台。
 - **Kubernetes (K8s)**: 事实上的容器编排标准。
@@ -45,7 +35,7 @@
 - **Prometheus**: 云原生监控和告警系统。
 - **CNCF (Cloud Native Computing Foundation)**: 云原生计算基金会，托管了大量关键开源项目。
 
-### 1.2.2 发展历程
+### 2.2 发展历程
 
 - **2000s**: 虚拟化技术的成熟 (VMware, Xen)。
 - **2008**: LXC (Linux Containers) 发布，为现代容器技术奠定基础。
@@ -55,7 +45,7 @@
 - **2017**: Kubernetes赢得容器编排战争，成为主导平台。
 - **2020s**: Serverless容器 (Knative), Service Mesh (Istio, Linkerd), FinOps等云原生技术进一步发展。
 
-### 1.2.3 国际权威链接
+### 2.3 国际权威链接
 
 - [Docker](https://www.docker.com/)
 - [Kubernetes](https://kubernetes.io/)
@@ -66,9 +56,9 @@
 
 ---
 
-## 1.3 2. 核心架构模式与设计原则
+## 3. 核心架构模式与设计原则
 
-### 1.3.1 容器化架构 (Docker)
+### 3.1 容器化架构 (Docker)
 
 **Dockerfile 最佳实践**:
 
@@ -115,7 +105,7 @@ EXPOSE 8080
 CMD ["./main"]
 ```
 
-### 16 16 16 16 16 16 16 容器编排架构 (Kubernetes)
+### 3.2 容器编排架构 (Kubernetes)
 
 **Kubernetes核心组件**:
 
@@ -230,9 +220,9 @@ spec:
 
 ---
 
-## 18.1 3. Golang与云原生生态
+## 4. Golang与云原生生态
 
-### 18.1.1 使用Go开发Kubernetes原生应用
+### 4.1 使用Go开发Kubernetes原生应用
 
 - **Client-go**: 官方的Go客户端库，用于与Kubernetes API交互。
 - **Operator Framework & Kubebuilder**: 用于构建Kubernetes Operator的流行框架。Operator将人类的运维知识编码到软件中，实现自动化管理。
@@ -282,7 +272,7 @@ func main() {
 }
 ```
 
-### 18.1.2 可观测性 (Observability)
+### 4.2 可观测性 (Observability)
 
 - **Prometheus**: 用于指标收集和告警。Go应用可以通过[prometheus/client_golang](https://github.com/prometheus/client_golang)库暴露`/metrics`端点。
 - **Grafana**: 用于指标的可视化。
@@ -328,7 +318,7 @@ func main() {
 
 ---
 
-## 18.2 4. 分布式挑战与主流解决方案
+## 5. 分布式挑战与主流解决方案
 
 - **网络 (Networking)**:
   - **挑战**: 容器间通信、服务发现、网络策略和安全。
@@ -345,9 +335,9 @@ func main() {
 
 ---
 
-## 18.3 5. 工程结构与CI/CD实践
+## 6. 工程结构与CI/CD实践
 
-### 18.3.1 目录结构建议
+### 6.1 目录结构建议
 
 ```text
 .
@@ -375,7 +365,7 @@ func main() {
 └── go.sum
 ```
 
-### 18.3.2 CI/CD工作流 (GitHub Actions)
+### 6.2 CI/CD工作流 (GitHub Actions)
 
 ```yaml
 # 19 19 19 19 19 19 19 .github/workflows/ci-cd.yml
@@ -433,7 +423,7 @@ jobs:
         kubectl apply -k deployments/overlays/production
 ```
 
-## 19.1 6. 相关架构主题
+## 7. 相关架构主题
 
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): 容器是部署和隔离微服务的理想选择。
 - [**服务网格架构 (Service Mesh Architecture)**](./architecture_service_mesh_golang.md): 服务网格运行在容器编排平台之上，通过Sidecar容器来管理服务间通信。
