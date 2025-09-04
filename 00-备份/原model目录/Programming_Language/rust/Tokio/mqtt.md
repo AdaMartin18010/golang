@@ -30,6 +30,7 @@ serde_json = "1.0"
 anyhow = "1.0"
 tracing = "0.1"
 uuid = { version = "1.0", features = ["v4"] }
+
 ```
 
 ### 2. 组件接口定义
@@ -57,6 +58,7 @@ pub trait MessageHandler: Send + Sync {
 pub trait CommandHandler: Send + Sync {
     async fn execute(&self, command: Command) -> anyhow::Result<()>;
 }
+
 ```
 
 ### 3. 基础组件实现
@@ -123,6 +125,7 @@ impl Component for BaseComponent {
         &self.id
     }
 }
+
 ```
 
 ### 4. MQTT 组件实现
@@ -210,6 +213,7 @@ impl Component for MqttComponent {
 
     // ... other Component trait implementations
 }
+
 ```
 
 ### 5. 命令处理器实现
@@ -276,6 +280,7 @@ impl CommandProcessor {
         Ok(())
     }
 }
+
 ```
 
 ### 6. 消息处理器实现
@@ -310,6 +315,7 @@ impl MessageProcessor {
         Ok(())
     }
 }
+
 ```
 
 ### 7. 组合组件实现
@@ -395,6 +401,7 @@ impl Component for CompositeComponent {
 
     // ... other Component trait implementations
 }
+
 ```
 
 ### 8. 自定义消息处理器示例
@@ -412,6 +419,7 @@ impl MessageHandler for CustomMessageHandler {
         Ok(())
     }
 }
+
 ```
 
 ### 9. 自定义命令处理器示例
@@ -434,6 +442,7 @@ impl CommandHandler for CustomCommandHandler {
         }
     }
 }
+
 ```
 
 ### 10. 使用示例
@@ -490,6 +499,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个完整的示例展示了如何：

@@ -77,19 +77,6 @@
   - [1.8.19.4 🙏 致谢](#🙏-致谢)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.8.1.1 📋 概述
 
 本测试体系是Go语言现代化项目的重要组成部分，提供了企业级的测试解决方案，包括集成测试框架、性能回归测试、质量监控仪表板等完整功能。该体系旨在为Go开发者提供现代化、高效、可靠的测试工具和最佳实践。
@@ -117,6 +104,7 @@
 │ │ 结果统计     │ │ │ 性能分析     │ │ │   数据可视化            │ │
 │ └─────────────┘ │ └─────────────┘ │ └─────────────────────────┘ │
 └─────────────────┴─────────────────┴─────────────────────────────┘
+
 ```
 
 ### 1.8.1.2.2 核心组件
@@ -148,11 +136,15 @@
 ### 1.8.1.3.1 安装依赖
 
 ```bash
+
 # 1.8.2 下载依赖
+
 go mod download
 
 # 1.8.3 整理依赖
+
 go mod tidy
+
 ```
 
 ### 1.8.3 基本使用
@@ -211,6 +203,7 @@ func main() {
     fmt.Printf("测试完成: 总数=%d, 通过=%d, 失败=%d\n",
         summary.Total, summary.Passed, summary.Failed)
 }
+
 ```
 
 ## 1.8.3.1 📚 详细使用指南
@@ -237,6 +230,7 @@ suite.Teardown = func() error {
     // 清理测试环境
     return nil
 }
+
 ```
 
 #### 1.8.3.1.1.2 添加测试用例
@@ -269,6 +263,7 @@ suite.AddTest(testing_system.Test{
     Required: false,
     Tags:     []string{"performance", "concurrency"},
 })
+
 ```
 
 #### 1.8.3.1.1.3 测试环境管理
@@ -290,6 +285,7 @@ env.AddCleanup(func() error {
     // 清理数据库连接
     return nil
 })
+
 ```
 
 ### 1.8.3.1.2 性能回归测试
@@ -329,6 +325,7 @@ benchmark := testing_system.NewPerformanceBenchmark(
 // 注册并运行
 monitor.RegisterBenchmark(benchmark)
 result, err := monitor.RunBenchmark(ctx, "API响应时间测试")
+
 ```
 
 #### 1.8.3.1.2.2 性能回归检测
@@ -355,6 +352,7 @@ for _, alert := range alerts {
     fmt.Printf("性能回归: %s, 下降%.2f%%\n", 
         alert.BenchmarkName, alert.Degradation*100)
 }
+
 ```
 
 ### 1.8.3.1.3 质量监控仪表板
@@ -378,6 +376,7 @@ charts := dashboard.GetCharts()
 
 fmt.Printf("当前指标: %d, 告警: %d, 图表: %d\n",
     len(metrics), len(alerts), len(charts))
+
 ```
 
 #### 1.8.3.1.3.2 创建监控图表
@@ -399,6 +398,7 @@ chart := visualizer.CreateChart(
     testing_system.ChartTypePie,
     chartData,
 )
+
 ```
 
 ## 1.8.3.2 🔧 配置选项
@@ -414,6 +414,7 @@ type TestConfig struct {
     ReportFormat   string       // 报告格式
     OutputDir      string       // 输出目录
 }
+
 ```
 
 ### 1.8.3.2.2 性能测试配置
@@ -429,6 +430,7 @@ type PerformanceConfig struct {
     EnableProfiling       bool         // 是否启用性能分析
     ProfilingDir          string       // 性能分析目录
 }
+
 ```
 
 ### 1.8.3.2.3 仪表板配置
@@ -442,6 +444,7 @@ type DashboardConfig struct {
     EnableRealTime  bool         // 是否启用实时模式
     Theme           string       // 主题
 }
+
 ```
 
 ## 1.8.3.3 📊 测试报告
@@ -457,6 +460,7 @@ type TestSummary struct {
     Timeout  int           // 超时数
     Duration time.Duration // 总耗时
 }
+
 ```
 
 ### 1.8.3.3.2 性能报告
@@ -478,6 +482,7 @@ type BenchmarkResult struct {
     Timestamp   time.Time                // 时间戳
     Metadata    map[string]interface{}   // 元数据
 }
+
 ```
 
 ## 1.8.3.4 🛠️ 构建和部署
@@ -485,48 +490,65 @@ type BenchmarkResult struct {
 ### 1.8.3.4.1 使用Makefile
 
 ```bash
+
 # 1.8.4 显示帮助信息
+
 make help
 
 # 1.8.5 快速开始
+
 make quickstart
 
 # 1.8.6 构建项目
+
 make build
 
 # 1.8.7 运行测试
+
 make test
 
 # 1.8.8 运行基准测试
+
 make bench
 
 # 1.8.9 运行完整测试套件
+
 make test-all
 
 # 1.8.10 清理构建文件
+
 make clean
 
 # 1.8.11 交叉编译
+
 make build-all
 
 # 1.8.12 Docker构建
+
 make docker-build
 
 # 1.8.13 Docker运行
+
 make docker-run
+
 ```
 
 ### 1.8.13 使用Docker
 
 ```bash
+
 # 1.8.14 构建镜像
+
 docker build -t testing-system .
 
 # 1.8.15 运行容器
+
 docker run -p 8080:8080 testing-system
 
 # 1.8.16 运行演示
+
 docker run -p 8080:8080 testing-system --demo
+
 ```
 
 ## 1.8.16.1 📈 性能基准
@@ -585,30 +607,39 @@ docker run -p 8080:8080 testing-system --demo
 #### 1.8.16.3.1.1 1. 测试超时
 
 ```bash
+
 # 1.8.17 增加超时时间
+
 config := &testing_system.TestConfig{
     DefaultTimeout: 60 * time.Second,
 }
+
 ```
 
 #### 1.8.17 2. 内存泄漏
 
 ```bash
+
 # 1.8.18 启用内存分析
+
 perfConfig := &testing_system.PerformanceConfig{
     EnableProfiling: true,
     ProfilingDir:    "./profiles",
 }
+
 ```
 
 #### 1.8.18 3. 并发问题
 
 ```bash
+
 # 1.8.19 减少并发数
+
 config := &testing_system.TestConfig{
     MaxWorkers: 2,
     Parallel:   false,
 }
+
 ```
 
 ### 1.8.19 调试技巧
@@ -634,6 +665,7 @@ func (ct *CustomTest) Run(ctx context.Context) error {
     // 自定义测试逻辑
     return nil
 }
+
 ```
 
 ### 1.8.19.1.2 自定义指标收集器
@@ -648,6 +680,7 @@ type CustomMetricsCollector struct {
 func (cmc *CustomMetricsCollector) CollectCustomMetrics() {
     // 自定义指标收集逻辑
 }
+
 ```
 
 ### 1.8.19.1.3 自定义告警规则
@@ -662,6 +695,7 @@ rule := &testing_system.AlertRule{
     Severity:  testing_system.AlertSeverityCritical,
     Enabled:   true,
 }
+
 ```
 
 ## 1.8.19.2 🤝 贡献指南

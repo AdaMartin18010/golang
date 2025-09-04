@@ -56,6 +56,7 @@ graph TD
     E --> E1[设备认证]
     E --> E2[数据加密]
     E --> E3[隐私保护]
+
 ```
 
 ---
@@ -135,6 +136,7 @@ graph TB
     C1 --> D1
     C2 --> D2
     C3 --> D3
+
 ```
 
 ### 3.2 设备管理
@@ -189,6 +191,7 @@ const (
     ActuatorTypeValve     ActuatorType = "valve"
     ActuatorTypeDisplay   ActuatorType = "display"
 )
+
 ```
 
 ---
@@ -223,6 +226,7 @@ graph TD
     C1 --> D[(设备数据库)]
     C6 --> E[(时序数据库)]
     C9 --> F[(数据仓库)]
+
 ```
 
 ### 4.2 服务实现
@@ -324,6 +328,7 @@ func (dcs *DataCollectionService) CollectData(deviceID string) (*SensorData, err
     
     return sensorData, nil
 }
+
 ```
 
 ---
@@ -410,6 +415,7 @@ func maximum(values []float64) float64 {
     
     return max
 }
+
 ```
 
 ### 5.2 异常检测算法
@@ -459,6 +465,7 @@ func (ad *AnomalyDetector) DetectAnomaly(value float64) bool {
     
     return isAnomaly
 }
+
 ```
 
 ---
@@ -499,6 +506,7 @@ iot-platform/
 │   ├── security/
 │   └── utils/
 └── configs/
+
 ```
 
 ### 6.2 核心实现
@@ -585,6 +593,7 @@ func (dp *DataProcessor) ProcessData(data SensorData) (SensorData, error) {
     
     return data, nil
 }
+
 ```
 
 ---
@@ -632,6 +641,7 @@ func (dc *DataCompressor) Decompress(data []byte) ([]byte, error) {
         return data, nil
     }
 }
+
 ```
 
 ### 7.2 缓存策略
@@ -668,6 +678,7 @@ func (mlc *MultiLevelCache) Get(key string) (interface{}, error) {
     
     return value, nil
 }
+
 ```
 
 ---
@@ -720,6 +731,7 @@ func (da *DeviceAuthenticator) ValidateToken(token *DeviceToken) error {
     
     return nil
 }
+
 ```
 
 ### 8.2 数据加密
@@ -759,6 +771,7 @@ func (de *DataEncryptor) Decrypt(data []byte) ([]byte, error) {
         return data, nil
     }
 }
+
 ```
 
 ---
@@ -816,6 +829,7 @@ func (dms *DeviceManagementService) handleError(err error) {
         }
     }
 }
+
 ```
 
 ### 9.2 监控指标
@@ -874,6 +888,7 @@ func (dcs *DataCollectionService) CollectData(deviceID string) (*SensorData, err
     
     return data, nil
 }
+
 ```
 
 ---

@@ -68,6 +68,7 @@ enum OrderEvent {
     Reject(String),
     // ... 其他事件
 }
+
 ```
 
 - **类型状态模式(Typestate)**: 编译时强制状态转换合法性
@@ -96,6 +97,7 @@ impl Order<Created> {
         // ...
     }
 }
+
 ```
 
 - **特质(Trait)系统**: 抽象接口和行为
@@ -109,6 +111,7 @@ trait WorkflowStep {
     async fn execute(&self, input: Self::Input) -> Result<Self::Output, Self::Error>;
     async fn compensate(&self, input: Self::Input) -> Result<(), Self::Error>;
 }
+
 ```
 
 ### 2. 异步处理与Actor模式
@@ -132,6 +135,7 @@ impl Handler<ProcessOrder> for OrderProcessor {
         // 实现处理逻辑
     }
 }
+
 ```
 
 ### 3. 错误处理策略
@@ -153,6 +157,7 @@ enum OrderError {
     #[error("超时: {0}")]
     Timeout(String),
 }
+
 ```
 
 - **Result与Option组合**: 优雅处理错误和可选值
@@ -176,6 +181,7 @@ impl<E: Event> EventStore<E> {
         // 实现事件读取逻辑
     }
 }
+
 ```
 
 - **CQRS实现**: 读写分离模型
@@ -202,6 +208,7 @@ impl ErpSystem for SapErpAdapter {
         // SAP特定实现
     }
 }
+
 ```
 
 - **断路器实现**: 使用failsafe-rs库
@@ -253,6 +260,7 @@ impl<S: State, E: Event> WorkflowEngine<S, E> {
         Ok(new_state)
     }
 }
+
 ```
 
 ## 总结

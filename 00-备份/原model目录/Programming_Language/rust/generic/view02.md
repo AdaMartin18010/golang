@@ -94,6 +94,7 @@ impl<T, U> Pair<T, U> {
         Pair { first, second }
     }
 }
+
 ```
 
 Rust泛型相比其他语言的独特之处包括：
@@ -120,6 +121,7 @@ fn min<T: PartialOrd>(a: T, b: T) -> T {
 // 使用不同类型调用
 let i = min(5, 10);         // 使用i32
 let f = min(5.5, 3.2);      // 使用f64
+
 ```
 
 编译后，上述代码大致转换为：
@@ -137,6 +139,7 @@ fn min_f64(a: f64, b: f64) -> f64 {
 
 let i = min_i32(5, 10);
 let f = min_f64(5.5, 3.2);
+
 ```
 
 单态化机制的工作原理：
@@ -185,6 +188,7 @@ impl Drawable for Rectangle {
 fn render<T: Drawable>(shape: T) {
     shape.draw();
 }
+
 ```
 
 Ad-hoc多态的关键特性：
@@ -200,7 +204,7 @@ Rust的ad-hoc多态方式不仅保留了面向对象编程多态的灵活性，�
 
 Rust提供了多种实现多态的方式，每种方式都有不同的特点和适用场景。以下是主要多态表达方式的比较：
 
--**1. 基于泛型的静态多态**
+- **1. 基于泛型的静态多态**
 
 - **实现方式**：使用泛型参数和trait约束
 - **分发机制**：编译期单态化，静态分发
@@ -211,9 +215,10 @@ Rust提供了多种实现多态的方式，每种方式都有不同的特点和�
 fn process<T: Display>(item: T) {
     println!("{}", item);
 }
+
 ```
 
--**2. 基于trait对象的动态多态**
+- **2. 基于trait对象的动态多态**
 
 - **实现方式**：使用trait对象（`dyn Trait`）
 - **分发机制**：通过虚表（vtable）动态分发
@@ -224,9 +229,10 @@ fn process<T: Display>(item: T) {
 fn process(item: &dyn Display) {
     println!("{}", item);
 }
+
 ```
 
--**3. 基于枚举的标签联合多态**
+- **3. 基于枚举的标签联合多态**
 
 - **实现方式**：使用带有不同变体的枚举
 - **分发机制**：通过模式匹配，编译期确定
@@ -247,9 +253,10 @@ impl Shape {
         }
     }
 }
+
 ```
 
--**4. 静态与动态多态的混合使用**
+- **4. 静态与动态多态的混合使用**
 
 - **实现方式**：结合泛型和trait对象
 - **分发机制**：混合静态和动态分发
@@ -261,6 +268,7 @@ struct Handler<T: Debug> {
     data: T,
     processor: Box<dyn Fn(&T)>,
 }
+
 ```
 
 多态方式比较表：
@@ -292,6 +300,7 @@ where
 {
     // 函数体
 }
+
 ```
 
 **泛型方法的基本结构**：
@@ -305,6 +314,7 @@ impl<T, U> StructOrEnum<T, U> {
         // 方法体
     }
 }
+
 ```
 
 **实际应用示例**：
@@ -315,6 +325,7 @@ impl<T, U> StructOrEnum<T, U> {
 fn max<T: PartialOrd>(a: T, b: T) -> T {
     if a >= b { a } else { b }
 }
+
 ```
 
 1. **泛型迭代器适配器**：
@@ -330,6 +341,7 @@ where
              .filter(predicate)
              .collect()
 }
+
 ```
 
 1. **自引用泛型方法**：
@@ -346,6 +358,7 @@ impl<T> Container<T> {
         self.value.as_ref().unwrap()
     }
 }
+
 ```
 
 **泛型函数设计考量**：
@@ -395,6 +408,7 @@ struct Sortable<T: Ord> {
 struct Reference<'a, T> {
     reference: &'a T,
 }
+
 ```
 
 **实际应用案例**：
@@ -419,6 +433,7 @@ impl<T> Stack<T> {
         self.elements.pop()
     }
 }
+
 ```
 
 1. **类型状态模式**：
@@ -458,6 +473,7 @@ impl Connection<Initialized> {
         Ok(())
     }
 }
+
 ```
 
 1. **多类型聚合**：
@@ -484,6 +500,7 @@ impl<L, R> Either<L, R> {
         self.data.is_err()
     }
 }
+
 ```
 
 **泛型结构体设计考量**：
@@ -537,6 +554,7 @@ enum List<T> {
     Cons(T, Box<List<T>>),
     Nil,
 }
+
 ```
 
 **实际应用案例**：
@@ -557,6 +575,7 @@ match find_user(id) {
     Some(user) => println!("Found user: {}", user.name),
     None => println!("User not found"),
 }
+
 ```
 
 1. **错误处理**：
@@ -574,6 +593,7 @@ fn process_file(path: &str) -> Result<String, FileError> {
         Err(err) => Err(FileError::ReadError(err)),
     }
 }
+
 ```
 
 1. **状态机表示**：
@@ -590,6 +610,7 @@ struct Connection<D> {
     state: ConnectionState<D>,
     address: String,
 }
+
 ```
 
 1. **异构集合**：
@@ -612,6 +633,7 @@ fn process_commands(commands: Vec<Command>) {
         }
     }
 }
+
 ```
 
 **泛型枚举的特性与优势**：
@@ -686,6 +708,7 @@ impl<T> Collection<T> {
 
 // 扩展接口
 impl<T> Extend<T> for Collection<T>;  // 扩展集合
+
 ```
 
 **泛型约束在集合类型中的应用**：
@@ -715,6 +738,7 @@ impl<T> Vec<T> {
         // 需要元素可排序
     }
 }
+
 ```
 
 **泛型集合的高级用例**：
@@ -730,6 +754,7 @@ struct Cache<K, V> {
     storage: HashMap<K, (V, Instant)>,
     ttl: Duration,
 }
+
 ```
 
 1. **特化集合行为**：
@@ -743,6 +768,7 @@ impl StringVec {
         self.0.join(separator)
     }
 }
+
 ```
 
 1. **多类型容器**：
@@ -756,6 +782,7 @@ enum Value {
 }
 
 type Record = HashMap<String, Value>;
+
 ```
 
 集合类型展示了Rust泛型系统的实际应用，通过统一的泛型接口和trait边界，Rust提供了类型安全且高性能的数据结构，是标准库中最广泛使用泛型的部分，也是学习泛型实际应用的重要资源。
@@ -777,6 +804,7 @@ enum Void {}
 struct ZeroSized<T> {
     _marker: PhantomData<T>,
 }
+
 ```
 
 **标记类型的应用场景**：
@@ -818,6 +846,7 @@ impl Connection<Initialized> {
         self.socket.write_all(data)
     }
 }
+
 ```
 
 1. **所有权标记**：
@@ -839,7 +868,7 @@ impl<T> Container<T, Owned> {
     fn new(data: Vec<T>) -> Self {
         Container { data, _marker: PhantomData }
     }
-    
+  
     fn modify(&mut self, index: usize, value: T) -> bool {
         if index < self.data.len() {
             self.data[index] = value;
@@ -851,19 +880,20 @@ impl<T> Container<T, Owned> {
 }
 
 impl<T> Container<T, Borrowed> {
-    fn from_slice(slice: &[T]) -> Self 
+    fn from_slice(slice: &[T]) -> Self
     where T: Clone {
-        Container { 
-            data: slice.to_vec(), 
-            _marker: PhantomData 
+        Container {
+            data: slice.to_vec(),
+            _marker: PhantomData
         }
     }
-    
+  
     // 不允许修改操作
     fn get(&self, index: usize) -> Option<&T> {
         self.data.get(index)
     }
 }
+
 ```
 
 1. **类型级别约束**：
@@ -883,18 +913,19 @@ impl<T: Send> Send for GenericWrapper<T, ThreadSafe> {}
 
 // 工厂函数确保正确的标记
 fn create_thread_safe<T: Send>(value: T) -> GenericWrapper<T, ThreadSafe> {
-    GenericWrapper { 
-        value, 
-        _marker: PhantomData 
+    GenericWrapper {
+        value,
+        _marker: PhantomData
     }
 }
 
 fn create_not_thread_safe<T>(value: T) -> GenericWrapper<T, NotThreadSafe> {
-    GenericWrapper { 
-        value, 
-        _marker: PhantomData 
+    GenericWrapper {
+        value,
+        _marker: PhantomData
     }
 }
+
 ```
 
 **PhantomData的高级用法**：
@@ -922,6 +953,7 @@ struct OwnedPointer<T> {
 struct ComplexMarker<'a, T: 'a, U> {
     _marker: PhantomData<(&'a T, *const U)>,  // 持有T引用，拥有U指针
 }
+
 ```
 
 **零大小类型的优化**：
@@ -936,6 +968,7 @@ fn main() {
     println!("Vector length: {}", million_empties.len());
     // 编译器优化：Vec<Empty>只存储长度和容量，不分配实际存储空间
 }
+
 ```
 
 零大小类型和标记类型展示了Rust类型系统的强大表达能力，它们可以在不增加运行时开销的情况下，在编译期提供强大的类型约束和安全保证，是高级泛型编程的重要工具。
@@ -953,18 +986,18 @@ trait是Rust类型系统的核心抽象机制，它定义了类型可以实现�
 trait Display {
     // 必须实现的方法
     fn display(&self) -> String;
-    
+  
     // 带有默认实现的方法
     fn show(&self) {
         println!("{}", self.display());
     }
-    
+  
     // 关联常量
     const NAME: &'static str = "Displayable";
-    
+  
     // 关联类型
     type Output;
-    
+  
     // 关联函数（静态方法）
     fn create(data: &str) -> Self::Output;
 }
@@ -979,15 +1012,15 @@ impl Display for Person {
     fn display(&self) -> String {
         format!("Person(name={}, age={})", self.name, self.age)
     }
-    
+  
     // 覆盖默认实现
     fn show(&self) {
         println!("👤 {}", self.display());
     }
-    
+  
     // 指定关联类型
     type Output = Self;
-    
+  
     // 实现关联函数
     fn create(data: &str) -> Self {
         let parts: Vec<&str> = data.split(',').collect();
@@ -997,6 +1030,7 @@ impl Display for Person {
         }
     }
 }
+
 ```
 
 **trait的关键特性**：
@@ -1031,7 +1065,7 @@ struct Point {
 
 impl Add for Point {
     type Output = Self;
-    
+  
     fn add(self, other: Self) -> Self::Output {
         Point {
             x: self.x + other.x,
@@ -1041,6 +1075,7 @@ impl Add for Point {
 }
 
 // 使用：let sum = point1 + point2;
+
 ```
 
 1. **标准库trait利用**：
@@ -1054,7 +1089,7 @@ struct Counter {
 
 impl Iterator for Counter {
     type Item = usize;
-    
+  
     fn next(&mut self) -> Option<Self::Item> {
         if self.count < self.max {
             self.count += 1;
@@ -1066,6 +1101,7 @@ impl Iterator for Counter {
 }
 
 // 使用：for i in Counter { ... }
+
 ```
 
 1. **类型转换trait**：
@@ -1082,6 +1118,7 @@ impl From<&str> for Person {
 }
 
 // 使用：let person: Person = "John,30".into();
+
 ```
 
 **trait与其他语言接口机制对比**：
@@ -1132,6 +1169,7 @@ where
 {
     // 函数实现...
 }
+
 ```
 
 **高级约束模式**：
@@ -1148,18 +1186,20 @@ where
         write!(f, "Wrapper({:?})", self.0)
     }
 }
+
 ```
 
 1. **否定约束**（实验性）：
 
 ```rust
 // 泛型参数T不能是i32类型
-fn not_for_i32<T>() 
-where 
-    T: Not<i32>, 
+fn not_for_i32<T>()
+where
+    T: Not<i32>,
 {
     // 函数实现...
 }
+
 ```
 
 1. **生命周期约束**：
@@ -1169,6 +1209,7 @@ where
 fn process<'a, T: 'a>(value: &'a T) {
     // 函数实现...
 }
+
 ```
 
 1. **关联类型约束**：
@@ -1181,6 +1222,7 @@ where
 {
     iter.fold(I::Item::default(), |a, b| a + b)
 }
+
 ```
 
 **trait约束与静态分发**：
@@ -1200,6 +1242,7 @@ let b = double(3.14);   // T = f64
 // 编译器生成类似于：
 fn double_i32(x: i32) -> i32 { x + x }
 fn double_f64(x: f64) -> f64 { x + x }
+
 ```
 
 这种静态分发消除了运行时类型检查的开销，同时保持泛型代码的灵活性。
@@ -1252,6 +1295,7 @@ fn process_many(items: &[Box<dyn Display>]) {
         println!("{}", item);
     }
 }
+
 ```
 
 **trait对象的内部表示**：
@@ -1262,11 +1306,11 @@ trait对象在内存中由两个指针组成：
 2. **虚表指针**：指向包含实现方法指针的虚表（vtable）
 
 ```text
-+----------------+     +----------------+
++ ----------------+     +----------------+
 | 数据指针       | --> | 具体类型的数据 |
-+----------------+     +----------------+
++ ----------------+     +----------------+
 | 虚表指针       | --> +----------------+
-+----------------+     | 类型尺寸/对齐  |
++ ----------------+     | 类型尺寸/对齐  |
                        +----------------+
                        | drop 函数指针  |
                        +----------------+
@@ -1276,6 +1320,7 @@ trait对象在内存中由两个指针组成：
                        +----------------+
                        | ...            |
                        +----------------+
+
 ```
 
 **对象安全性**：
@@ -1301,6 +1346,7 @@ trait Unsafe {
     fn process<T>(&self, data: T);   // 泛型参数，不安全
     fn as_sized(self) where Self: Sized;  // 要求 Self: Sized，不安全
 }
+
 ```
 
 **动态分发的实际应用**：
@@ -1321,7 +1367,7 @@ impl PluginManager {
     fn register(&mut self, plugin: Box<dyn Plugin>) {
         self.plugins.insert(plugin.name().to_string(), plugin);
     }
-    
+  
     fn execute(&self, name: &str, data: &[u8]) -> Result<(), Error> {
         match self.plugins.get(name) {
             Some(plugin) => plugin.execute(data),
@@ -1329,6 +1375,7 @@ impl PluginManager {
         }
     }
 }
+
 ```
 
 1. **异构集合**：
@@ -1342,13 +1389,14 @@ impl UiElement {
     fn add_component(&mut self, component: Box<dyn Drawable>) {
         self.components.push(component);
     }
-    
+  
     fn draw(&self) {
         for component in &self.components {
             component.draw();
         }
     }
 }
+
 ```
 
 1. **策略模式**：
@@ -1381,11 +1429,12 @@ impl Sorter {
     fn new(strategy: Box<dyn SortStrategy>) -> Self {
         Sorter { strategy }
     }
-    
+  
     fn sort(&self, data: &mut [i32]) {
         self.strategy.sort(data);
     }
 }
+
 ```
 
 **静态vs动态分发的权衡**：
@@ -1412,7 +1461,7 @@ trait对象和动态分发补充了Rust的静态分发机制，提供了处理�
 trait Container {
     // 关联类型声明
     type Item;
-    
+  
     // 使用关联类型的方法
     fn get(&self, index: usize) -> Option<&Self::Item>;
     fn insert(&mut self, item: Self::Item);
@@ -1422,19 +1471,20 @@ trait Container {
 // 为 Vec<T> 实现 Container，指定关联类型
 impl<T> Container for Vec<T> {
     type Item = T;
-    
+  
     fn get(&self, index: usize) -> Option<&Self::Item> {
         self.get(index)
     }
-    
+  
     fn insert(&mut self, item: Self::Item) {
         self.push(item);
     }
-    
+  
     fn len(&self) -> usize {
         self.len()
     }
 }
+
 ```
 
 **关联类型vs泛型参数**：
@@ -1454,6 +1504,7 @@ trait AssocContainer {
     fn get(&self, index: usize) -> Option<&Self::Item>;
     fn insert(&mut self, item: Self::Item);
 }
+
 ```
 
 | 特性 | 泛型参数 | 关联类型 |
@@ -1475,7 +1526,7 @@ trait Iterator {
 // 实现示例
 impl Iterator for Counter {
     type Item = usize;
-    
+  
     fn next(&mut self) -> Option<Self::Item> {
         // 实现...
     }
@@ -1485,6 +1536,7 @@ impl Iterator for Counter {
 fn sum<I: Iterator<Item = i32>>(iterator: I) -> i32 {
     // 使用关联类型约束
 }
+
 ```
 
 **泛型关联类型(GAT)**：
@@ -1496,7 +1548,7 @@ fn sum<I: Iterator<Item = i32>>(iterator: I) -> i32 {
 trait Collection {
     // 关联类型带有生命周期参数
     type Iter<'a> where Self: 'a;
-    
+  
     // 使用泛型关联类型的方法
     fn iter<'a>(&'a self) -> Self::Iter<'a>;
 }
@@ -1504,11 +1556,12 @@ trait Collection {
 // 实现泛型关联类型
 impl<T> Collection for Vec<T> {
     type Iter<'a> where T: 'a = std::slice::Iter<'a, T>;
-    
+  
     fn iter<'a>(&'a self) -> Self::Iter<'a> {
         self.iter()
     }
 }
+
 ```
 
 **GAT的高级应用**：
@@ -1518,20 +1571,21 @@ impl<T> Collection for Vec<T> {
 ```rust
 trait IteratorExt {
     type Item;
-    
+  
     // 返回引用的迭代器
     type References<'a>: Iterator<Item = &'a Self::Item>
     where
         Self: 'a;
-        
+  
     // 返回可变引用的迭代器
     type ValuesMut<'a>: Iterator<Item = &'a mut Self::Item>
     where
         Self: 'a;
-    
+  
     fn references<'a>(&'a self) -> Self::References<'a>;
     fn values_mut<'a>(&'a mut self) -> Self::ValuesMut<'a>;
 }
+
 ```
 
 1. **创建自定义Futures**：
@@ -1540,13 +1594,14 @@ trait IteratorExt {
 trait AsyncGenerator {
     type Yield;
     type Return;
-    
+  
     type Future<'a>: Future<Output = Option<(Self::Yield, Self::Return)>>
     where
         Self: 'a;
-    
+  
     fn generate<'a>(&'a mut self) -> Self::Future<'a>;
 }
+
 ```
 
 关联类型和泛型关联类型是Rust trait系统的高级特性，它们简化了复杂API设计，提高了代码可读性，是大型Rust库和框架设计的重要工具。GAT的稳定化更是为异步编程和复杂集合类型设计提供了强大支持。
@@ -1566,7 +1621,7 @@ trait Printable {
 // 继承基础trait（supertrait）
 trait PrettyPrintable: Printable {
     fn pretty_print(&self);
-    
+  
     // 默认实现可以调用supertrait的方法
     fn print_with_border(&self) {
         println!("*************");
@@ -1593,6 +1648,7 @@ impl PrettyPrintable for Data {
         println!("└───────────┘");
     }
 }
+
 ```
 
 继承trait（supertrait）要求类型必须同时实现父trait，这确保了继承trait可以调用父trait中的方法。
@@ -1631,6 +1687,7 @@ impl B for MyStruct {
 impl C for MyStruct {
     // 可以使用默认实现或覆盖
 }
+
 ```
 
 **trait组合模式**：
@@ -1659,6 +1716,7 @@ impl<S: Service> Service for Logger<S> {
 }
 
 // 使用：let service = Logger { inner: MyService };
+
 ```
 
 1. **混入模式(Mixin)**：
@@ -1685,11 +1743,11 @@ impl<T> UIWidget<T> {
     fn new(inner: T) -> Self {
         UIWidget { inner, x: 0, y: 0 }
     }
-    
+  
     fn position(&self) -> (u32, u32) {
         (self.x, self.y)
     }
-    
+  
     fn move_to(&mut self, x: u32, y: u32) {
         self.x = x;
         self.y = y;
@@ -1709,6 +1767,7 @@ impl<T: Resizable> Resizable for UIWidget<T> {
         self.inner.resize(width, height);
     }
 }
+
 ```
 
 1. **静态多态组合**：
@@ -1722,11 +1781,12 @@ where
     let backup = value.clone();
     value.resize(100, 100);
     value.draw();
-    
+  
     if some_condition() {
         *value = backup;  // 恢复原状
     }
 }
+
 ```
 
 **trait继承的局限性**：
@@ -1756,6 +1816,7 @@ impl MyTrait for String {}  // 外部类型 (std::string::String)
 
 // 禁止：为外部类型实现外部trait
 // impl Serialize for String {}  // 编译错误！
+
 ```
 
 **孤儿规则的原理**：
@@ -1783,6 +1844,7 @@ impl Serialize for MyString {
 // 使用时需要包装和解包
 let my_string = MyString("hello".to_string());
 serialize(&my_string);
+
 ```
 
 1. **本地trait继承外部trait**：
@@ -1802,6 +1864,7 @@ impl MySerialize for String {
 fn process<T: MySerialize>(value: T) {
     // 可以使用Serialize的方法
 }
+
 ```
 
 1. **封装适配器**：
@@ -1816,6 +1879,7 @@ impl<T: AnotherTrait> ExternalTrait for Adapter<T> {
 }
 
 // 使用：let adapted = Adapter(my_value);
+
 ```
 
 **孤儿规则的影响与挑战**：
@@ -1871,6 +1935,7 @@ fn drive(distance: Kilometers) {
 
 // 正确：明确类型转换
 drive(Kilometers(50.0));
+
 ```
 
 **新类型模式的主要用途**：
@@ -1889,6 +1954,7 @@ fn pay_in_dollars(amount: Dollars) {
 // 使用时必须明确指定单位
 pay_in_dollars(Dollars(100.0));
 // pay_in_dollars(Euros(100.0));  // 编译错误
+
 ```
 
 1. **细化类型的语义**：
@@ -1923,6 +1989,7 @@ send_notification(valid_email, "Hello!");
 
 // 不能直接传递字符串
 // send_notification("invalid".to_string(), "Hello!");  // 编译错误
+
 ```
 
 1. **绕过孤儿规则**：
@@ -1939,6 +2006,7 @@ impl<T: Display> Serialize for MyVec<T> {
         // 序列化实现...
     }
 }
+
 ```
 
 1. **隐藏内部实现**：
@@ -1960,6 +2028,7 @@ impl PasswordHash {
     
     // 没有公开getter方法，防止直接访问哈希值
 }
+
 ```
 
 1. **提供不同的trait实现**：
@@ -1992,6 +2061,7 @@ impl PartialOrd for SortByAge {
         self.0.age.partial_cmp(&other.0.age)
     }
 }
+
 ```
 
 **新类型模式实现技巧**：
@@ -2015,6 +2085,7 @@ impl Deref for Inches {
 // 可以直接使用f64的方法
 let length = Inches(5.0);
 let double = *length * 2.0;
+
 ```
 
 1. **自定义运算符**：
@@ -2033,6 +2104,7 @@ impl Add for Meters {
 
 let sum = Meters(5.0) + Meters(10.0);
 assert_eq!(sum.0, 15.0);
+
 ```
 
 1. **选择性转发trait**：
@@ -2050,6 +2122,7 @@ impl<T: Display> Display for Wrapper<T> {
 
 // 但不自动实现其他trait
 // impl<T: PartialEq> PartialEq for Wrapper<T> { ... }
+
 ```
 
 **新类型模式的权衡**：
@@ -2089,6 +2162,7 @@ struct ProductId;
 
 type UserIdentifier = Identifier<UserId>;
 type ProductIdentifier = Identifier<ProductId>;
+
 ```
 
 **幻影类型的主要应用**：
@@ -2146,6 +2220,7 @@ impl Connection<Closed> {
         // 清理资源...
     }
 }
+
 ```
 
 1. **单位类型安全**：
@@ -2193,6 +2268,7 @@ fn feet(value: f64) -> Length<Feet> {
 let height = feet(6.0);
 let height_m = height.to_meters();
 // let wrong = height + height_m;  // 编译错误
+
 ```
 
 1. **泛型参数标记**：
@@ -2230,6 +2306,7 @@ impl<T> Drop for OwnedPointer<T> {
         }
     }
 }
+
 ```
 
 1. **类型级别访问控制**：
@@ -2271,6 +2348,7 @@ impl<T> DataStore<T, Readable> {
         }
     }
 }
+
 ```
 
 **PhantomData的不同用法**：
@@ -2303,6 +2381,7 @@ struct OwnedBox<T> {
 }
 
 // OwnedBox<T>会在删除时删除T
+
 ```
 
 **幻影类型的优缺点**：
@@ -2335,6 +2414,7 @@ struct ListNode {
     value: i32,
     next: Option<ListNode>,  // 编译错误：递归类型ListNode的大小无法在编译时确定
 }
+
 ```
 
 **使用`Box<T>`实现递归类型**：
@@ -2369,6 +2449,7 @@ fn main() {
     
     println!("Values: {}, {}, {}", node1.value, node2.value, node3.value);
 }
+
 ```
 
 **递归枚举定义**：
@@ -2410,6 +2491,7 @@ let expr = Expression::Add(
 );
 
 println!("Result: {}", evaluate(&expr));  // 输出: 8
+
 ```
 
 **递归类型的不同实现方式**：
@@ -2425,6 +2507,7 @@ struct BinaryTree<T> {
     left: Option<Box<BinaryTree<T>>>,
     right: Option<Box<BinaryTree<T>>>,
 }
+
 ```
 
 1. **`Rc<T>`：共享所有权**
@@ -2460,6 +2543,7 @@ fn create_graph() -> Rc<GraphNode<i32>> {
     
     node1
 }
+
 ```
 
 1. **`Rc<RefCell<T>>`：共享可变引用**
@@ -2495,6 +2579,7 @@ impl<T> TreeNode<T> {
         child
     }
 }
+
 ```
 
 1. **`Arc<T>`和`Arc<Mutex<T>>`：线程安全递归类型**
@@ -2525,6 +2610,7 @@ impl<T> ConcurrentTree<T> {
         child
     }
 }
+
 ```
 
 **递归类型的内存管理考量**：
@@ -2586,6 +2672,7 @@ impl Recursive for BinaryTree<i32> {
         self.value + left_value + right_value
     }
 }
+
 ```
 
 **递归visitor模式**：
@@ -2634,6 +2721,7 @@ let tree = create_tree();
 let mut visitor = SumVisitor { sum: 0 };
 tree.accept(&mut visitor);
 println!("Sum: {}", visitor.sum);
+
 ```
 
 **递归trait边界**：
@@ -2666,6 +2754,7 @@ impl RecursiveSerialize for Expression {
         }
     }
 }
+
 ```
 
 **递归trait对象**：
@@ -2710,6 +2799,7 @@ impl Component for TextElement {
         println!("Cannot add child to text element");
     }
 }
+
 ```
 
 **递归trait的挑战与解决方案**：
@@ -2738,6 +2828,7 @@ fn sum_tree_iterative(root: &BinaryTree<i32>) -> i32 {
     
     sum
 }
+
 ```
 
 1. **递归trait对象的所有权问题**：
@@ -2773,6 +2864,7 @@ enum BinaryTree<T> {
     Leaf,
     Node(T, Box<BinaryTree<T>>, Box<BinaryTree<T>>),
 }
+
 ```
 
 1. **`Rc<T>`：共享所有权**
@@ -2799,6 +2891,7 @@ struct ListNode<T> {
     value: T,
     next: SharedList<T>,
 }
+
 ```
 
 1. **`Arc<T>`：原子引用计数**
@@ -2824,6 +2917,7 @@ fn arc_example<T: Display + Clone + Send + Sync + 'static>(value: T) {
         thread.join().unwrap();
     }
 }
+
 ```
 
 1. **`RefCell<T>`：运行时可变性**
@@ -2848,6 +2942,7 @@ fn refcell_example<T: Display + Clone>(value: T) {
         println!("After mutation: {}", mut_borrowed);
     }
 }
+
 ```
 
 1. **`Mutex<T>`和`RwLock<T>`：同步原语**
@@ -2906,6 +3001,7 @@ fn rwlock_example<T: Display + Send + Sync + 'static>(value: T) {
     
     write_thread.join().unwrap();
 }
+
 ```
 
 **智能指针组合模式**：
@@ -2925,6 +3021,7 @@ struct Node<T> {
     children: Vec<Rc<RefCell<Node<T>>>>,
     parent: Option<Weak<RefCell<Node<T>>>>,
 }
+
 ```
 
 **自定义智能指针**：
@@ -2957,6 +3054,7 @@ impl<T> Drop for RcVec<T> {
                  Rc::strong_count(&self.inner) - 1);
     }
 }
+
 ```
 
 **智能指针与trait对象**：
@@ -2998,6 +3096,7 @@ fn animal_sounds(animals: &[Box<dyn Animal>]) {
         println!("Animal says: {}", animal.make_sound());
     }
 }
+
 ```
 
 **智能指针性能考量**：
@@ -3040,7 +3139,9 @@ struct HttpRequest {
 
 ```rust
 // 目标复杂对象
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 struct HttpRequest {
     url: String,
     method: String,
@@ -3051,7 +3152,9 @@ struct HttpRequest {
 }
 
 // 构建者
-#[derive(Default)]
+
+# [derive(Default)]
+
 struct HttpRequestBuilder {
     url: Option<String>,
     method: Option<String>,
@@ -3065,43 +3168,43 @@ impl HttpRequestBuilder {
     fn new() -> Self {
         HttpRequestBuilder::default()
     }
-    
+  
     // 流式设置方法
     fn url(mut self, url: impl Into<String>) -> Self {
         self.url = Some(url.into());
         self
     }
-    
+  
     fn method(mut self, method: impl Into<String>) -> Self {
         self.method = Some(method.into());
         self
     }
-    
+  
     fn header(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.headers.insert(key.into(), value.into());
         self
     }
-    
+  
     fn body(mut self, body: impl Into<Vec<u8>>) -> Self {
         self.body = Some(body.into());
         self
     }
-    
+  
     fn timeout(mut self, timeout: Duration) -> Self {
         self.timeout = Some(timeout);
         self
     }
-    
+  
     fn follow_redirects(mut self, follow: bool) -> Self {
         self.follow_redirects = Some(follow);
         self
     }
-    
+  
     // 构建方法
     fn build(self) -> Result<HttpRequest, &'static str> {
         let url = self.url.ok_or("URL is required")?;
         let method = self.method.unwrap_or_else(|| "GET".to_string());
-        
+  
         Ok(HttpRequest {
             url,
             method,
@@ -3123,10 +3226,11 @@ fn builder_example() -> Result<(), &'static str> {
         .body(r#"{"key": "value"}"#.as_bytes().to_vec())
         .timeout(Duration::from_secs(60))
         .build()?;
-    
+  
     println!("Request: {:?}", request);
     Ok(())
 }
+
 ```
 
 **泛型构建者模式**：
@@ -3156,7 +3260,7 @@ impl RequestBuilder<NoUrl> {
             _state: PhantomData,
         }
     }
-    
+  
     // 设置URL转换状态
     fn url(self, url: impl Into<String>) -> RequestBuilder<HasUrl> {
         RequestBuilder {
@@ -3174,7 +3278,7 @@ impl<State> RequestBuilder<State> {
         self.headers.insert(key.into(), value.into());
         self
     }
-    
+  
     fn method(mut self, method: impl Into<String>) -> Self {
         self.method = method.into();
         self
@@ -3201,6 +3305,7 @@ let request = RequestBuilder::new()
     .header("Content-Type", "application/json")
     .url("https://example.com")  // 必须设置URL
     .build();
+
 ```
 
 **派生宏构建者模式**：
@@ -3210,18 +3315,20 @@ let request = RequestBuilder::new()
 ```rust
 use derive_builder::Builder;
 
-#[derive(Builder, Debug)]
-#[builder(setter(into))]
+# [derive(Builder, Debug)]
+
+# [builder(setter(into))]
+
 struct Server {
     #[builder(default = "localhost")]
     host: String,
-    
+  
     #[builder(default = "8080")]
     port: u16,
-    
+  
     #[builder(default)]
     secure: bool,
-    
+  
     #[builder(default = "4")]
     workers: u32,
 }
@@ -3233,6 +3340,7 @@ let server = ServerBuilder::default()
     .secure(true)
     .build()
     .unwrap();
+
 ```
 
 **高级构建者模式变体**：
@@ -3268,7 +3376,7 @@ impl FormBuilder {
             buttons: Vec::new(),
         }
     }
-    
+  
     // 返回字段构建者
     fn add_field(&mut self) -> FieldBuilder {
         FieldBuilder {
@@ -3277,7 +3385,7 @@ impl FormBuilder {
             value: String::new(),
         }
     }
-    
+  
     // 返回按钮构建者
     fn add_button(&mut self) -> ButtonBuilder {
         ButtonBuilder {
@@ -3286,7 +3394,7 @@ impl FormBuilder {
             action: String::new(),
         }
     }
-    
+  
     fn build(self) -> Form {
         Form {
             fields: self.fields,
@@ -3306,12 +3414,12 @@ impl<'a> FieldBuilder<'a> {
         self.name = name.into();
         self
     }
-    
+  
     fn value(mut self, value: impl Into<String>) -> Self {
         self.value = value.into();
         self
     }
-    
+  
     // 完成并返回父构建者
     fn done(self) -> &'a mut FormBuilder {
         self.form_builder.fields.push(Field {
@@ -3339,6 +3447,7 @@ let form = FormBuilder::new()
         .action("/submit")
         .done()
     .build();
+
 ```
 
 1. **构建者特征**：
@@ -3347,7 +3456,7 @@ let form = FormBuilder::new()
 // 通用构建者特征
 trait Builder {
     type Product;
-    
+  
     fn build(self) -> Self::Product;
 }
 
@@ -3358,7 +3467,7 @@ struct ConfigBuilder {
 
 impl Builder for ConfigBuilder {
     type Product = Config;
-    
+  
     fn build(self) -> Config {
         // 构建配置...
         Config { /* ... */ }
@@ -3369,6 +3478,7 @@ impl Builder for ConfigBuilder {
 fn create_product<B: Builder>(builder: B) -> B::Product {
     builder.build()
 }
+
 ```
 
 **构建者模式的最佳实践**：
@@ -3421,13 +3531,16 @@ fn calculate(a: i32, b: i32) -> Result<i32, &'static str> {
     let division = divide(a, b)?;  // 错误会提前返回
     Ok(division * 2)
 }
+
 ```
 
 **自定义错误类型与转换**：
 
 ```rust
 // 定义应用特定错误类型
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 enum AppError {
     IoError(std::io::Error),
     ParseError(std::num::ParseIntError),
@@ -3451,13 +3564,14 @@ impl From<std::num::ParseIntError> for AppError {
 fn read_config() -> Result<Config, AppError> {
     let data = std::fs::read_to_string("config.txt")?;  // IoError自动转换为AppError
     let value = data.parse::<i32>()?;  // ParseIntError自动转换为AppError
-    
+  
     if value < 0 {
         return Err(AppError::ValidationError("Value cannot be negative".into()));
     }
-    
+  
     Ok(Config { value })
 }
+
 ```
 
 **错误处理泛型库**：
@@ -3468,17 +3582,19 @@ fn read_config() -> Result<Config, AppError> {
 use thiserror::Error;
 
 // 使用派生宏定义丰富的错误类型
-#[derive(Error, Debug)]
+
+# [derive(Error, Debug)]
+
 enum ServiceError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
-    
+  
     #[error("Failed to parse data: {0}")]
     Parse(#[from] std::num::ParseIntError),
-    
+  
     #[error("Validation failed: {message}")]
     Validation { message: String },
-    
+  
     #[error("Database error: {0}")]
     Database(#[from] DatabaseError),
 }
@@ -3489,18 +3605,19 @@ use anyhow::{Result, Context, bail, ensure};
 fn process_data() -> Result<()> {
     let file = std::fs::File::open("data.txt")
         .context("Failed to open data file")?;
-    
+  
     let data = read_data(file)
         .context("Failed to read data")?;
-    
+  
     ensure!(data.is_valid(), "Data validation failed");
-    
+  
     if !process_is_allowed() {
         bail!("Processing is not allowed");
     }
-    
+  
     Ok(())
 }
+
 ```
 
 **泛型错误处理服务**：
@@ -3522,8 +3639,8 @@ impl<E: std::fmt::Display> ErrorHandler<E> for LoggingHandler {
     }
 }
 
-impl<E> ErrorHandler<E> for MetricsHandler 
-where 
+impl<E> ErrorHandler<E> for MetricsHandler
+where
     E: std::any::Any + 'static
 {
     fn handle_error(&self, error: &E) {
@@ -3541,11 +3658,11 @@ impl<E> ErrorService<E> {
     fn new() -> Self {
         ErrorService { handlers: Vec::new() }
     }
-    
+  
     fn add_handler<H: ErrorHandler<E> + 'static>(&mut self, handler: H) {
         self.handlers.push(Box::new(handler));
     }
-    
+  
     fn handle(&self, error: &E) {
         for handler in &self.handlers {
             handler.handle_error(error);
@@ -3562,6 +3679,7 @@ service.add_handler(MetricsHandler);
 if let Err(e) = operation() {
     service.handle(&e);
 }
+
 ```
 
 **高级错误类型状态模式**：
@@ -3579,7 +3697,7 @@ impl<T, E, C> ContextualResult<T, E, C> {
     fn new(result: Result<T, E>, context: C) -> Self {
         ContextualResult { result, context }
     }
-    
+  
     fn map<U, F>(self, f: F) -> ContextualResult<U, E, C>
     where
         F: FnOnce(T) -> U,
@@ -3589,7 +3707,7 @@ impl<T, E, C> ContextualResult<T, E, C> {
             context: self.context,
         }
     }
-    
+  
     fn map_err<G, F>(self, f: F) -> ContextualResult<T, G, C>
     where
         F: FnOnce(E) -> G,
@@ -3599,7 +3717,7 @@ impl<T, E, C> ContextualResult<T, E, C> {
             context: self.context,
         }
     }
-    
+  
     // 针对特定错误类型的处理方法
     fn recover<F>(self, f: F) -> ContextualResult<T, E, C>
     where
@@ -3620,6 +3738,7 @@ impl<T, E, C> ContextualResult<T, E, C> {
         }
     }
 }
+
 ```
 
 **错误处理最佳实践**：
@@ -3657,22 +3776,22 @@ use std::sync::{Arc, Mutex};
 fn process_data<T: Send + Sync + Clone + 'static>(data: T) {
     // Arc<T>提供线程间共享所有权
     let shared_data = Arc::new(data);
-    
+  
     let mut handles = vec![];
-    
+  
     for i in 0..5 {
         // 克隆Arc以便在线程间共享
         let thread_data = Arc::clone(&shared_data);
-        
+  
         // 启动线程
         let handle = thread::spawn(move || {
             println!("Thread {}: processing {:?}", i, thread_data);
             // 处理数据...
         });
-        
+  
         handles.push(handle);
     }
-    
+  
     // 等待所有线程完成
     for handle in handles {
         handle.join().unwrap();
@@ -3681,17 +3800,18 @@ fn process_data<T: Send + Sync + Clone + 'static>(data: T) {
 
 // 线程安全的可变数据
 fn increment_counter<T: Send + 'static>(counter: &Arc<Mutex<T>>, increment: T)
-where 
+where
     T: std::ops::AddAssign + Copy
 {
     let counter_clone = Arc::clone(counter);
-    
+  
     thread::spawn(move || {
         // 互斥锁确保线程安全的修改
         let mut value = counter_clone.lock().unwrap();
         *value += increment;
     });
 }
+
 ```
 
 **泛型通道实现**：
@@ -3708,14 +3828,14 @@ where
     F: Fn(T) + Send + 'static,
 {
     let (sender, receiver) = mpsc::channel::<T>();
-    
+  
     thread::spawn(move || {
         // 接收并处理消息
         for item in receiver {
             processor(item);
         }
     });
-    
+  
     sender
 }
 
@@ -3733,7 +3853,7 @@ impl<T: Send + 'static> Worker<T> {
             sender: start_worker(processor),
         }
     }
-    
+  
     fn submit(&self, task: T) -> Result<(), mpsc::SendError<T>> {
         self.sender.send(task)
     }
@@ -3750,6 +3870,7 @@ let number_worker = Worker::new(|n: i32| {
 
 string_worker.submit("hello".to_string()).unwrap();
 number_worker.submit(42).unwrap();
+
 ```
 
 **泛型同步原语**：
@@ -3762,7 +3883,7 @@ use std::sync::{Mutex, RwLock, Barrier, Condvar};
 // 互斥锁：独占访问
 fn mutex_example<T: Send>(value: T) {
     let mutex = Mutex::new(value);
-    
+  
     // 在锁保护下修改值
     {
         let mut guard = mutex.lock().unwrap();
@@ -3773,13 +3894,13 @@ fn mutex_example<T: Send>(value: T) {
 // 读写锁：共享读/独占写
 fn rwlock_example<T: Send>(value: T) {
     let rwlock = RwLock::new(value);
-    
+  
     // 多个读取器
     {
         let read_guard = rwlock.read().unwrap();
         // 读取 *read_guard...
     }
-    
+  
     // 单个写入器
     {
         let mut write_guard = rwlock.write().unwrap();
@@ -3793,18 +3914,18 @@ where
     F: Fn(usize) + Send + Sync + 'static,
 {
     let barrier = Arc::new(Barrier::new(thread_count));
-    
+  
     for id in 0..thread_count {
         let barrier_clone = Arc::clone(&barrier);
         let thread_fn = thread_fn.clone();
-        
+  
         thread::spawn(move || {
             // 第一阶段工作
             println!("Thread {} performing phase 1", id);
-            
+  
             // 等待所有线程完成第一阶段
             barrier_clone.wait();
-            
+  
             // 第二阶段工作
             println!("Thread {} performing phase 2", id);
             thread_fn(id);
@@ -3816,20 +3937,20 @@ where
 fn condvar_example() {
     let pair = Arc::new((Mutex::new(false), Condvar::new()));
     let pair_clone = Arc::clone(&pair);
-    
+  
     // 消费者线程
     thread::spawn(move || {
         let (lock, cvar) = &*pair_clone;
         let mut ready = lock.lock().unwrap();
-        
+  
         // 等待条件为true
         while !*ready {
             ready = cvar.wait(ready).unwrap();
         }
-        
+  
         println!("Consumer: Condition met!");
     });
-    
+  
     // 生产者线程
     thread::sleep(Duration::from_secs(1));
     let (lock, cvar) = &*pair;
@@ -3838,6 +3959,7 @@ fn condvar_example() {
     cvar.notify_one();
     println!("Producer: Notified consumer");
 }
+
 ```
 
 **高级并发抽象**：
@@ -3859,19 +3981,19 @@ struct Worker {
 impl ThreadPool {
     fn new(size: usize) -> Self {
         assert!(size > 0);
-        
+  
         let (sender, receiver) = mpsc::channel();
         let receiver = Arc::new(Mutex::new(receiver));
-        
+  
         let mut workers = Vec::with_capacity(size);
-        
+  
         for id in 0..size {
             workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
-        
+  
         ThreadPool { workers, sender }
     }
-    
+  
     // 泛型执行方法
     fn execute<F>(&self, f: F)
     where
@@ -3891,13 +4013,14 @@ impl Worker {
                 job();
             }
         });
-        
+  
         Worker {
             id,
             thread: Some(thread),
         }
     }
 }
+
 ```
 
 **并发集合与数据结构**：
@@ -3923,22 +4046,23 @@ where
             data: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     fn get(&self, key: &K) -> Option<V> {
         let guard = self.data.read().unwrap();
         guard.get(key).cloned()
     }
-    
+  
     fn insert(&self, key: K, value: V) -> Option<V> {
         let mut guard = self.data.write().unwrap();
         guard.insert(key, value)
     }
-    
+  
     fn remove(&self, key: &K) -> Option<V> {
         let mut guard = self.data.write().unwrap();
         guard.remove(key)
     }
 }
+
 ```
 
 **类型状态的并发控制**：
@@ -3966,7 +4090,7 @@ impl Worker<Uninitialized> {
             _state: PhantomData,
         }
     }
-    
+  
     fn initialize(self, data: Vec<String>) -> Worker<Initialized> {
         Worker {
             data: Some(data),
@@ -3979,27 +4103,27 @@ impl Worker<Initialized> {
     fn start(self) -> (WorkerHandle, JoinHandle<Worker<Stopped>>) {
         let data = self.data.unwrap();
         let (tx, rx) = mpsc::channel();
-        
+  
         let handle = WorkerHandle { sender: tx };
-        
+  
         let join_handle = thread::spawn(move || {
             let mut worker = Worker::<Running> {
                 data: Some(data),
                 _state: PhantomData,
             };
-            
+  
             // 工作循环
             for command in rx {
                 // 处理命令...
             }
-            
+  
             // 转换为Stopped状态
             Worker {
                 data: worker.data,
                 _state: PhantomData,
             }
         });
-        
+  
         (handle, join_handle)
     }
 }
@@ -4019,6 +4143,7 @@ enum Command {
     Pause,
     Stop,
 }
+
 ```
 
 并发和同步原语是Rust泛型系统的重要应用领域，通过结合泛型、trait和所有权系统，
@@ -4039,7 +4164,7 @@ use std::task::{Context, Poll};
 // 泛型Future特质
 trait MyFuture {
     type Output;  // 关联类型表示Future完成时的结果类型
-    
+  
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
 
@@ -4048,7 +4173,7 @@ struct Ready<T>(Option<T>);
 
 impl<T> Future for Ready<T> {
     type Output = T;
-    
+  
     fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<T> {
         Poll::Ready(self.0.take().expect("Future already polled"))
     }
@@ -4059,6 +4184,7 @@ async fn process<T: AsRef<str>>(input: T) -> String {
     let s = input.as_ref();
     format!("Processed: {}", s)
 }
+
 ```
 
 **异步流水线和组合器**：
@@ -4103,15 +4229,16 @@ where
 {
     let processed = map_async(items, processor).await;
     let results = map_async(processed, validator).await;
-    
+  
     // 收集所有结果
     let mut output = Vec::new();
     for result in results {
         output.push(result?);
     }
-    
+  
     Ok(output)
 }
+
 ```
 
 **异步特质对象**：
@@ -4156,16 +4283,17 @@ async fn process_all(
     inputs: HashMap<String, String>,
 ) -> Result<HashMap<String, String>, Error> {
     let mut results = HashMap::new();
-    
+  
     for (name, input) in inputs {
         if let Some(processor) = processors.get(&name) {
             let result = processor.process(input).await?;
             results.insert(name, result);
         }
     }
-    
+  
     Ok(results)
 }
+
 ```
 
 **泛型异步适配器**：
@@ -4193,7 +4321,7 @@ where
                 if attempts > retries {
                     return Err(e);
                 }
-                println!("Attempt {} failed with {:?}, retrying after {:?}...", 
+                println!("Attempt {} failed with {:?}, retrying after {:?}...",
                          attempts, e, delay);
                 tokio::time::sleep(delay).await;
             }
@@ -4257,6 +4385,7 @@ impl CircuitBreaker {
         }
     }
 }
+
 ```
 
 **泛型关联类型在异步中的应用**：
@@ -4269,7 +4398,7 @@ trait AsyncService {
     type Future<'a>: Future<Output = Result<Self::Response, Error>> + 'a
     where
         Self: 'a;
-    
+  
     fn process<'a>(&'a self, request: Self::Request) -> Self::Future<'a>;
 }
 
@@ -4291,7 +4420,7 @@ impl AsyncService for UserService {
     type Request = GetUserRequest;
     type Response = User;
     type Future<'a> = Pin<Box<dyn Future<Output = Result<Self::Response, Error>> + 'a>>;
-    
+  
     fn process<'a>(&'a self, request: Self::Request) -> Self::Future<'a> {
         let db = &self.db;
         Box::pin(async move {
@@ -4311,6 +4440,7 @@ impl<S: AsyncService> ServiceClient<S> {
         self.service.process(request).await
     }
 }
+
 ```
 
 **异步资源管理**：
@@ -4333,14 +4463,14 @@ impl<R: 'static> ResourcePool<R> {
             let fut = factory();
             Box::pin(fut) as Pin<Box<dyn Future<Output = R>>>
         });
-        
+  
         ResourcePool {
             resources: Mutex::new(Vec::new()),
             max_size,
             factory: factory_boxed,
         }
     }
-    
+  
     async fn acquire(&self) -> ResourceGuard<R> {
         let resource = {
             let mut resources = self.resources.lock().unwrap();
@@ -4356,13 +4486,13 @@ impl<R: 'static> ResourcePool<R> {
                 return;
             }
         };
-        
+  
         ResourceGuard {
             resource: Some(resource),
             pool: self,
         }
     }
-    
+  
     fn release(&self, resource: R) {
         let mut resources = self.resources.lock().unwrap();
         resources.push(resource);
@@ -4384,7 +4514,7 @@ impl<'a, R> Drop for ResourceGuard<'a, R> {
 
 impl<'a, R> Deref for ResourceGuard<'a, R> {
     type Target = R;
-    
+  
     fn deref(&self) -> &Self::Target {
         self.resource.as_ref().unwrap()
     }
@@ -4395,6 +4525,7 @@ impl<'a, R> DerefMut for ResourceGuard<'a, R> {
         self.resource.as_mut().unwrap()
     }
 }
+
 ```
 
 **异步泛型策略模式**：
@@ -4421,16 +4552,16 @@ impl AsyncStrategy<String, String, Error> for ReliableStrategy {
     async fn execute(&self, input: String) -> Result<String, Error> {
         // 可靠但较慢的实现
         tokio::time::sleep(Duration::from_millis(100)).await;
-        
+  
         // 多次重试逻辑
         for attempt in 1..=3 {
             if attempt < 3 || rand::random::<f32>() < 0.9 {
                 return Ok(format!("Reliable result for: {}", input));
             }
-            
+  
             tokio::time::sleep(Duration::from_millis(50)).await;
         }
-        
+  
         Err(Error::new("Operation failed after retries"))
     }
 }
@@ -4444,7 +4575,7 @@ impl<I, O, E, S: AsyncStrategy<I, O, E>> Context<I, O, E, S> {
     fn new(strategy: S) -> Self {
         Context { strategy }
     }
-    
+  
     async fn execute(&self, input: I) -> Result<O, E> {
         self.strategy.execute(input).await
     }
@@ -4455,10 +4586,10 @@ async fn process_with_strategy() {
     // 选择策略
     let fast_context = Context::new(FastStrategy);
     let reliable_context = Context::new(ReliableStrategy);
-    
+  
     // 根据需要使用不同策略
     let input = "test data".to_string();
-    
+  
     if is_critical_operation() {
         match reliable_context.execute(input).await {
             Ok(result) => println!("Got reliable result: {}", result),
@@ -4471,13 +4602,16 @@ async fn process_with_strategy() {
         }
     }
 }
+
 ```
 
 **异步事件系统**：
 
 ```rust
 // 泛型事件系统
-#[async_trait]
+
+# [async_trait]
+
 trait EventHandler<E> {
     async fn handle(&self, event: E) -> Result<(), Error>;
 }
@@ -4492,7 +4626,7 @@ impl<E: Clone + Send + Sync + 'static> EventBus<E> {
             handlers: RwLock::new(Vec::new()),
         }
     }
-    
+  
     fn register<H>(&self, handler: H)
     where
         H: EventHandler<E> + Send + Sync + 'static,
@@ -4500,21 +4634,21 @@ impl<E: Clone + Send + Sync + 'static> EventBus<E> {
         let mut handlers = self.handlers.write().unwrap();
         handlers.push(Box::new(handler));
     }
-    
+  
     async fn publish(&self, event: E) -> Result<(), Vec<Error>> {
         let handlers = self.handlers.read().unwrap();
         let mut futures = Vec::with_capacity(handlers.len());
-        
+  
         for handler in handlers.iter() {
             let event_clone = event.clone();
             futures.push(handler.handle(event_clone));
         }
-        
+  
         let results = future::join_all(futures).await;
         let errors = results.into_iter()
                            .filter_map(|r| r.err())
                            .collect::<Vec<_>>();
-        
+  
         if errors.is_empty() {
             Ok(())
         } else {
@@ -4524,7 +4658,9 @@ impl<E: Clone + Send + Sync + 'static> EventBus<E> {
 }
 
 // 使用示例
-#[derive(Clone)]
+
+# [derive(Clone)]
+
 struct UserCreatedEvent {
     user_id: String,
     email: String,
@@ -4533,7 +4669,8 @@ struct UserCreatedEvent {
 struct EmailNotifier;
 struct AuditLogger;
 
-#[async_trait]
+# [async_trait]
+
 impl EventHandler<UserCreatedEvent> for EmailNotifier {
     async fn handle(&self, event: UserCreatedEvent) -> Result<(), Error> {
         println!("Sending welcome email to: {}", event.email);
@@ -4542,7 +4679,8 @@ impl EventHandler<UserCreatedEvent> for EmailNotifier {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl EventHandler<UserCreatedEvent> for AuditLogger {
     async fn handle(&self, event: UserCreatedEvent) -> Result<(), Error> {
         println!("Logging user creation: {}", event.user_id);
@@ -4553,21 +4691,22 @@ impl EventHandler<UserCreatedEvent> for AuditLogger {
 
 async fn user_registration_flow() {
     let event_bus = EventBus::<UserCreatedEvent>::new();
-    
+  
     // 注册事件处理器
     event_bus.register(EmailNotifier);
     event_bus.register(AuditLogger);
-    
+  
     // 创建并发布事件
     let event = UserCreatedEvent {
         user_id: "user123".to_string(),
         email: "user@example.com".to_string(),
     };
-    
+  
     if let Err(errors) = event_bus.publish(event).await {
         eprintln!("Errors while processing event: {:?}", errors);
     }
 }
+
 ```
 
 **异步编程最佳实践**：
@@ -4633,6 +4772,7 @@ Rust泛型与多态机制
     ├── Java/C#泛型与Rust泛型对比
     ├── Haskell类型类与Rust特质对比
     └── Go接口与Rust特质对比
+
 ```
 
 Rust泛型系统融合了多种编程范式的优点，创建了一个既有表达力又保持高性能的类型系统。

@@ -51,6 +51,7 @@
 我应该保持学术严谨性，同时提供实用的工程示例和代码片段。
 将使用中文回复，并保持内容的结构化和逻辑性。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -130,49 +131,49 @@
 
 从工作流视角看，微服务架构面临的问题可分为以下几类：
 
--**1. 工作流定义与协调问题**
+- **1. 工作流定义与协调问题**
 
 - 如何定义跨多个微服务的工作流
 - 协调机制选择：编排vs编舞
 - 工作流版本管理和演化
 - 工作流监控与可视化
 
--**2. 服务通信与交互问题**
+- **2. 服务通信与交互问题**
 
 - 同步通信vs异步通信选择
 - API设计与版本管理
 - 服务发现与注册
 - 跨服务调用的安全性和认证
 
--**3. 数据一致性与状态管理问题**
+- **3. 数据一致性与状态管理问题**
 
 - 分布式事务处理
 - 最终一致性实现
 - 状态传播与共享
 - 数据复制与同步
 
--**4. 故障处理与弹性问题**
+- **4. 故障处理与弹性问题**
 
 - 服务失败检测与恢复
 - 超时与重试策略
 - 断路器实现
 - 优雅降级与服务隔离
 
--**5. 系统性能与扩展问题**
+- **5. 系统性能与扩展问题**
 
 - 负载均衡与服务缩放
 - 缓存策略与缓存一致性
 - 查询优化与响应时间
 - 资源利用与限流控制
 
--**6. 系统可观测性问题**
+- **6. 系统可观测性问题**
 
 - 分布式追踪
 - 日志聚合与关联
 - 健康监测与告警
 - 性能分析与瓶颈识别
 
--**7. 演化与治理问题**
+- **7. 演化与治理问题**
 
 - 架构演进管理
 - 服务契约维护
@@ -199,7 +200,7 @@
 
 从工作流视角看，分布式微服务架构可以组织为以下多层模型：
 
--**1. 业务流程层**
+- **1. 业务流程层**
 
 - **职责**：定义端到端业务流程，封装业务规则和政策
 - **组件**：
@@ -209,7 +210,7 @@
   - **决策服务**：处理复杂业务规则和决策逻辑
 - **设计原则**：业务导向、领域一致性、流程可视化
 
--**2. 服务协调层**
+- **2. 服务协调层**
 
 - **职责**：连接和协调不同微服务之间的交互
 - **组件**：
@@ -219,7 +220,7 @@
   - **命令总线**：传递命令到相应服务
 - **设计原则**：低耦合、高内聚、协议一致性
 
--**3. 核心服务层**
+- **3. 核心服务层**
 
 - **职责**：提供业务领域的核心功能和能力
 - **组件**：
@@ -229,7 +230,7 @@
   - **集成适配器**：连接外部系统和旧系统
 - **设计原则**：领域驱动、单一职责、自治性
 
--**4. 技术支持层**
+- **4. 技术支持层**
 
 - **职责**：提供横切关注点的技术能力
 - **组件**：
@@ -239,7 +240,7 @@
   - **分布式追踪**：监控和诊断系统行为
 - **设计原则**：可靠性、可扩展性、可观测性
 
--**5. 数据持久层**
+- **5. 数据持久层**
 
 - **职责**：管理数据存储和访问
 - **组件**：
@@ -267,13 +268,14 @@
 服务协调层：发布"订单已支付"事件
   ↓
 业务流程层：工作流推进到下一步骤
+
 ```
 
 ### 1.4.2 服务拓扑与协调机制
 
 微服务的组织方式和协调机制直接影响系统的可维护性、可扩展性和弹性。从工作流视角，我们可以定义以下服务拓扑模式：
 
--**1. 编排式拓扑**
+- **1. 编排式拓扑**
 
 在编排式拓扑中，有一个中央协调器（通常是工作流引擎）明确定义服务之间的交互流程：
 
@@ -283,6 +285,7 @@
     ├─→ [服务A] ─→ [服务B]
     │      ↓
     └─→ [服务C] ─→ [服务D]
+
 ```
 
 **优势**：
@@ -335,9 +338,10 @@ public class OrderWorkflowController {
             order.getId(), "CREATED", payment.getId(), shipment.getTrackingNumber()));
     }
 }
+
 ```
 
--**2. 编舞式拓扑**
+- **2. 编舞式拓扑**
 
 在编舞式拓扑中，服务之间通过事件和消息进行松散协调，没有中央协调器：
 
@@ -347,6 +351,7 @@ public class OrderWorkflowController {
 事件Y
    ↓
 [服务C] ───事件Z──→ [服务D]
+
 ```
 
 **优势**：
@@ -420,9 +425,10 @@ public class PaymentService {
             new PaymentCompletedEvent(payment.getId(), event.getOrderId()));
     }
 }
+
 ```
 
--**3. 混合拓扑**
+- **3. 混合拓扑**
 
 在实际系统中，通常采用编排和编舞的混合策略，根据具体业务场景选择合适的协调方式：
 
@@ -432,6 +438,7 @@ public class PaymentService {
       ↓               事件X
       ↓                   ↓
 [服务B] ←───事件Y───── [服务C]
+
 ```
 
 **混合策略的选择原则**：
@@ -506,13 +513,14 @@ public class OrderProcessManager {
         }
     }
 }
+
 ```
 
 ### 1.4.3 工作流编排与协调模式
 
 在分布式微服务环境中，工作流编排与协调是确保业务流程正确执行的关键。以下是几种常用的工作流编排模式：
 
--**1. 集中式工作流引擎**
+- **1. 集中式工作流引擎**
 
 使用专用的工作流引擎（如Camunda、Flowable、Temporal）管理工作流定义和执行：
 
@@ -524,6 +532,7 @@ public class OrderProcessManager {
      ┌───────┬─────┴─┴────┬───────┐
      ↓       ↓            ↓       ↓
  [服务A]  [服务B]      [服务C]  [服务D]
+
 ```
 
 **优势**：
@@ -613,9 +622,10 @@ public class OrderWorkflowService {
         taskService.complete(taskId, variables);
     }
 }
+
 ```
 
--**2. 事件驱动状态机**
+- **2. 事件驱动状态机**
 
 使用事件和状态转换管理工作流，每个服务维护自己的状态机：
 
@@ -626,6 +636,7 @@ public class OrderWorkflowService {
 │  服务A    │    │  服务B    │    │  服务C    │
 │ 状态机    │←→│ 状态机    │←→│ 状态机    │
 └───────────┘    └───────────┘    └───────────┘
+
 ```
 
 **优势**：
@@ -754,9 +765,10 @@ public class OrderStateMachineService {
         }
     }
 }
+
 ```
 
--**3. Saga模式**
+- **3. Saga模式**
 
 通过一系列本地事务和补偿操作实现跨服务的业务流程：
 
@@ -769,6 +781,7 @@ public class OrderStateMachineService {
      ↑                                    │
      │                                    │
      └───←───补偿1───←───补偿2───←────┘
+
 ```
 
 **优势**：
@@ -861,9 +874,10 @@ public class OrderFulfillmentSaga {
         SagaLifecycle.end();
     }
 }
+
 ```
 
--**4. 流处理模式**
+- **4. 流处理模式**
 
 将工作流表示为数据流，通过流处理框架（如Kafka Streams、Apache Flink）实现：
 
@@ -872,6 +886,7 @@ public class OrderFulfillmentSaga {
           │            │           │
           ↓            ↓           ↓
         [状态存储1]   [状态存储2]  [状态存储3]
+
 ```
 
 **优势**：
@@ -1011,13 +1026,14 @@ public class OrderProcessingStreamConfig {
         // Getters and setters
     }
 }
+
 ```
 
 ### 1.4.4 边界上下文与领域建模
 
 微服务架构的有效性很大程度上取决于服务边界的合理划分。领域驱动设计（DDD）中的边界上下文概念提供了一种系统化方法来定义这些服务边界。
 
--**1. 边界上下文映射**
+- **1. 边界上下文映射**
 
 边界上下文之间的关系决定了服务之间的通信模式：
 
@@ -1035,6 +1051,7 @@ public class OrderProcessingStreamConfig {
 │                │◄──层──►│                │
 │                │        │                │
 └────────────────┘        └────────────────┘
+
 ```
 
 **上下文映射关系类型**：
@@ -1148,9 +1165,10 @@ public class PaymentService {
         );
     }
 }
+
 ```
 
--**2. 领域事件通信**
+- **2. 领域事件通信**
 
 领域事件是微服务之间进行松耦合通信的主要方式，代表领域中发生的重要变化：
 
@@ -1170,6 +1188,7 @@ public class PaymentService {
 │  库存服务      │── InventoryReserved ─►│  物流服务      │
 │                │                  │                │
 └────────────────┘                  └────────────────┘
+
 ```
 
 **领域事件实现示例**：
@@ -1250,9 +1269,10 @@ public class OrderCreatedEventHandler {
         );
     }
 }
+
 ```
 
--**3. 聚合根设计**
+- **3. 聚合根设计**
 
 聚合根是DDD中的核心概念，定义事务一致性边界，在微服务架构中通常成为服务边界的基础：
 
@@ -1267,6 +1287,7 @@ public class OrderCreatedEventHandler {
 ┌─────▼───┐ ┌───▼───┐ ┌───▼────┐
 │ 订单行  │ │ 折扣  │ │ 收货地址│
 └─────────┘ └───────┘ └────────┘
+
 ```
 
 **聚合根实现示例**：
@@ -1415,6 +1436,7 @@ public class Order {
     
     // Getters
 }
+
 ```
 
 ## 1.5 4. 技术挑战与解决策略
@@ -1423,7 +1445,7 @@ public class Order {
 
 分布式系统中的一致性问题是微服务架构面临的最大挑战之一。从工作流视角看，需要确保跨多个服务的业务操作能够保持数据一致性。
 
--**1. 分布式事务模式**
+- **1. 分布式事务模式**
 
 **挑战**：传统的ACID事务在微服务环境中难以实现，尤其是在跨数据库和异构数据源场景下。
 
@@ -1441,6 +1463,7 @@ public class Order {
    ├── 提交请求 ───────►│ 阶段2：提交
    │                    │
    │◄── 提交完成 ───────┤
+
 ```
 
 **代码示例**：
@@ -1523,6 +1546,7 @@ public class OrderProcessingService {
         // JTA事务会确保两个操作要么都成功，要么都失败
     }
 }
+
 ```
 
 **Saga模式**：
@@ -1547,6 +1571,7 @@ public class OrderProcessingService {
     │                 │  │  │                 │
     └─────────────────┼──┼──┼─────────────────┘
         Try           │  │  │      Try
+
 ```
 
 **代码示例**：
@@ -1712,9 +1737,10 @@ public class InventoryTccService {
         }
     }
 }
+
 ```
 
--**2. 事件溯源与CQRS**
+- **2. 事件溯源与CQRS**
 
 事件溯源和CQRS是处理分布式一致性的另一种方法，通过存储状态变化事件而不是当前状态来实现。
 
@@ -1739,6 +1765,7 @@ public class InventoryTccService {
                     │ 状态2         │
                     │ Status: SHIPPED│
                     └───────────────┘
+
 ```
 
 **CQRS原理**：
@@ -1765,6 +1792,7 @@ public class InventoryTccService {
                 │ 查询模型      │
                 │ OrderReadModel│
                 └───────────────┘
+
 ```
 
 **代码示例**：
@@ -1940,9 +1968,10 @@ public class OrderProjection {
         return dto;
     }
 }
+
 ```
 
--**3. 幂等性处理**
+- **3. 幂等性处理**
 
 在分布式系统中，网络和组件故障可能导致消息重复处理，幂等设计确保重复操作不会导致错误的结果。
 
@@ -1967,9 +1996,10 @@ public class InventoryService {
         repository.save(inventory);
     }
 }
+
 ```
 
--2. **唯一ID和去重表**：使用唯一标识符和请求去重表防止重复处理。
+- 2. **唯一ID和去重表**：使用唯一标识符和请求去重表防止重复处理。
 
 ```java
 @Service
@@ -2036,9 +2066,10 @@ public class PaymentService {
         );
     }
 }
+
 ```
 
--3. **条件更新**：基于状态/版本条件的更新确保只有在预期条件下操作才会生效。
+- 3. **条件更新**：基于状态/版本条件的更新确保只有在预期条件下操作才会生效。
 
 ```java
 @Service
@@ -2074,9 +2105,10 @@ public interface OrderRepository extends JpaRepository<Order, String> {
         @Param("paymentId") String paymentId
     );
 }
+
 ```
 
--4. **乐观锁**：使用版本控制确保并发安全的幂等操作。
+- 4. **乐观锁**：使用版本控制确保并发安全的幂等操作。
 
 ```java
 @Entity
@@ -2137,9 +2169,10 @@ public class InventoryService {
         // 实现...
     }
 }
+
 ```
 
--5. **幂等令牌模式**：为每个业务操作生成唯一令牌，确保重复请求只处理一次。
+- 5. **幂等令牌模式**：为每个业务操作生成唯一令牌，确保重复请求只处理一次。
 
 ```java
 @RestController
@@ -2242,13 +2275,14 @@ public class IdempotencyKeyService {
         return request;
     }
 }
+
 ```
 
 ### 1.5.2 服务弹性设计
 
 微服务架构中的服务弹性是指系统在面对故障、高负载和网络问题时保持可用性和性能的能力。从工作流视角看，服务弹性确保业务流程能够在不理想条件下继续执行。
 
--**1. 断路器模式**
+- **1. 断路器模式**
 
 断路器模式防止级联故障，在检测到目标服务故障时"断开"连接，避免持续无效调用。
 
@@ -2262,6 +2296,7 @@ public class IdempotencyKeyService {
      └────────────── 成功调用 ┘                        │
                                                        │
      ┌─────────────────────────────────────── 超时后 ─┘
+
 ```
 
 **代码示例**：
@@ -2333,9 +2368,10 @@ public class PaymentServiceClient {
         );
     }
 }
+
 ```
 
--**2. 重试策略**
+- **2. 重试策略**
 
 智能重试策略在临时故障时自动重试操作，同时避免系统过载。
 
@@ -2397,9 +2433,10 @@ public class InventoryServiceClient {
             .bodyToMono(InventoryResponse.class);
     }
 }
+
 ```
 
--**3. 舱壁模式**
+- **3. 舱壁模式**
 
 舱壁模式隔离系统不同部分，确保一个组件的故障不会影响整个系统。
 
@@ -2512,9 +2549,10 @@ public class OrderProcessingService {
         // 实现...
     }
 }
+
 ```
 
--**4. 超时控制**
+- **4. 超时控制**
 
 合理的超时设置防止资源耗尽，确保系统能够及时释放资源。
 
@@ -2576,9 +2614,10 @@ public class ExternalServiceClient {
         });
     }
 }
+
 ```
 
--**5. 服务降级**
+- **5. 服务降级**
 
 在资源不可用时提供替代功能，确保核心业务流程仍能继续。
 
@@ -2694,9 +2733,10 @@ public class PaymentGatewayService {
         // 实现异步重试逻辑...
     }
 }
+
 ```
 
--**6. 限流与背压**
+- **6. 限流与背压**
 
 限制系统接收的请求数量，防止过载，并在高负载情况下通知上游系统减缓发送速率。
 
@@ -2793,13 +2833,14 @@ public class OrderProcessor {
         });
     }
 }
+
 ```
 
 ### 1.5.3 性能优化策略
 
 在微服务架构中，性能优化需要考虑整个工作流路径，而不仅仅是单个服务的性能。
 
--**1. 缓存策略**
+- **1. 缓存策略**
 
 缓存在不同层次减少重复计算和网络调用，提高响应速度。
 
@@ -2932,9 +2973,10 @@ public class ProductService {
         return productRepository.save(product);
     }
 }
+
 ```
 
--**2. 批量处理与异步请求**
+- **2. 批量处理与异步请求**
 
 合并多个请求为批量操作，减少网络开销，并利用异步处理提高吞吐量。
 
@@ -3097,9 +3139,10 @@ public class OrderProcessingService {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
+
 ```
 
--**3. 连接池管理**
+- **3. 连接池管理**
 
 高效的连接池管理减少资源开销，提高服务间通信效率。
 
@@ -3137,20 +3180,21 @@ spring:
       pool-name: OrderServicePool
       max-lifetime: 1800000
       connection-test-query: SELECT 1
+
 ```
 
 ```java
 // 使用WebClient配置HTTP连接池
 @Configuration
 public class WebClientConfig {
-    
+  
     @Bean
     public ReactorResourceFactory reactorResourceFactory() {
         ReactorResourceFactory factory = new ReactorResourceFactory();
         factory.setUseGlobalResources(false);
         return factory;
     }
-    
+  
     @Bean
     public ConnectionProvider connectionProvider() {
         return ConnectionProvider.builder("http-pool")
@@ -3161,23 +3205,24 @@ public class WebClientConfig {
             .evictInBackground(Duration.ofSeconds(30))
             .build();
     }
-    
+  
     @Bean
     public WebClient webClient(ConnectionProvider connectionProvider) {
         HttpClient httpClient = HttpClient.create(connectionProvider)
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000)
             .responseTimeout(Duration.ofSeconds(5))
-            .doOnConnected(conn -> 
+            .doOnConnected(conn ->
                 conn.addHandlerLast(new ReadTimeoutHandler(5, TimeUnit.SECONDS))
                     .addHandlerLast(new WriteTimeoutHandler(5, TimeUnit.SECONDS))
             );
-        
+  
         return WebClient.builder()
             .clientConnector(new ReactorClientHttpConnector(httpClient))
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
     }
 }
+
 ```
 
 -**4. 负载感知与动态平衡**
@@ -3188,29 +3233,29 @@ public class WebClientConfig {
 // 负载感知的服务发现客户端
 @Configuration
 public class LoadAwareServiceDiscoveryConfig {
-    
+  
     @Bean
     public ServiceInstanceListSupplier loadAwareServiceInstanceListSupplier(
             ReactiveDiscoveryClient discoveryClient) {
-        
+  
         // 基础服务实例提供者
-        ServiceInstanceListSupplier discoveryClientSupplier = 
+        ServiceInstanceListSupplier discoveryClientSupplier =
             ServiceInstanceListSupplier.builder()
                 .withDiscoveryClient()
                 .build();
-        
+  
         // 添加健康检查过滤
-        ServiceInstanceListSupplier healthCheckSupplier = 
+        ServiceInstanceListSupplier healthCheckSupplier =
             ServiceInstanceListSupplier.builder()
                 .withHealthChecks(discoveryClientSupplier)
                 .build();
-        
+  
         // 使用加权响应时间策略
         return ServiceInstanceListSupplier.builder()
             .withWeightedResponseTime(healthCheckSupplier)
             .build();
     }
-    
+  
     @Bean
     public LoadBalancerProperties loadBalancerProperties() {
         LoadBalancerProperties properties = new LoadBalancerProperties();
@@ -3224,29 +3269,29 @@ public class LoadAwareServiceDiscoveryConfig {
 // 动态流量控制
 @Service
 public class DynamicLoadBalancingService {
-    
+  
     private final LoadStatisticsRepository statsRepository;
     private final LoadBalancerClient loadBalancerClient;
     private final DiscoveryClient discoveryClient;
-    
+  
     public DynamicLoadBalancingService(
             LoadStatisticsRepository statsRepository,
             LoadBalancerClient loadBalancerClient,
             DiscoveryClient discoveryClient) {
-        
+  
         this.statsRepository = statsRepository;
         this.loadBalancerClient = loadBalancerClient;
         this.discoveryClient = discoveryClient;
     }
-    
+  
     public ServiceInstance chooseServiceWithLoadAwareness(String serviceId) {
         // 获取服务实例列表
         List<ServiceInstance> instances = discoveryClient.getInstances(serviceId);
-        
+  
         if (instances.isEmpty()) {
             throw new ServiceUnavailableException("No instances available for service: " + serviceId);
         }
-        
+  
         // 获取负载统计
         Map<String, LoadStatistics> loadStats = instances.stream()
             .map(instance -> instance.getInstanceId())
@@ -3254,35 +3299,35 @@ public class DynamicLoadBalancingService {
                 Function.identity(),
                 id -> statsRepository.findById(id).orElse(new LoadStatistics(id, 0, 0))
             ));
-        
+  
         // 计算实例权重
         Map<ServiceInstance, Double> weights = calculateWeights(instances, loadStats);
-        
+  
         // 使用加权随机选择
         return weightedRandomSelection(weights);
     }
-    
+  
     private Map<ServiceInstance, Double> calculateWeights(
-            List<ServiceInstance> instances, 
+            List<ServiceInstance> instances,
             Map<String, LoadStatistics> loadStats) {
-        
+  
         Map<ServiceInstance, Double> weights = new HashMap<>();
-        
+  
         // 计算CPU和内存利用率的平均值和标准差
         DoubleSummaryStatistics cpuStats = loadStats.values().stream()
             .mapToDouble(LoadStatistics::getCpuUtilization)
             .summaryStatistics();
-        
+  
         double cpuMean = cpuStats.getAverage();
         double cpuStdDev = calculateStdDev(
             loadStats.values().stream().mapToDouble(LoadStatistics::getCpuUtilization).toArray(),
             cpuMean
         );
-        
+  
         // 计算每个实例的权重
         for (ServiceInstance instance : instances) {
             LoadStatistics stats = loadStats.get(instance.getInstanceId());
-            
+  
             // CPU负载权重因子 (低负载 = 高权重)
             double cpuFactor = 1.0;
             if (cpuStdDev > 0) {
@@ -3290,35 +3335,35 @@ public class DynamicLoadBalancingService {
                 double cpuZScore = (stats.getCpuUtilization() - cpuMean) / cpuStdDev;
                 cpuFactor = Math.max(0.1, 1.0 - cpuZScore * 0.2);
             }
-            
+  
             // 考虑错误率
             double errorFactor = Math.max(0.01, 1.0 - stats.getErrorRate() * 2);
-            
+  
             // 总权重
             double weight = cpuFactor * errorFactor;
             weights.put(instance, weight);
         }
-        
+  
         return weights;
     }
-    
+  
     private double calculateStdDev(double[] values, double mean) {
         if (values.length <= 1) {
             return 0;
         }
-        
+  
         double sum = 0;
         for (double value : values) {
             sum += Math.pow(value - mean, 2);
         }
-        
+  
         return Math.sqrt(sum / (values.length - 1));
     }
-    
+  
     private ServiceInstance weightedRandomSelection(Map<ServiceInstance, Double> weights) {
         double totalWeight = weights.values().stream().mapToDouble(Double::doubleValue).sum();
         double random = ThreadLocalRandom.current().nextDouble() * totalWeight;
-        
+  
         double cumulativeWeight = 0;
         for (Map.Entry<ServiceInstance, Double> entry : weights.entrySet()) {
             cumulativeWeight += entry.getValue();
@@ -3326,11 +3371,12 @@ public class DynamicLoadBalancingService {
                 return entry.getKey();
             }
         }
-        
+  
         // 出于安全考虑，返回第一个实例
         return weights.keySet().iterator().next();
     }
 }
+
 ```
 
 -**5. 查询优化与索引设计**
@@ -3341,18 +3387,18 @@ public class DynamicLoadBalancingService {
 // 使用Spring Data JPA查询优化
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
-    
+  
     // 避免N+1查询问题，使用JOIN FETCH预加载关联数据
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.categories c WHERE p.active = true")
     List<Product> findAllActiveProductsWithCategories();
-    
+  
     // 分页查询时限制返回字段
     @Query("SELECT new com.example.dto.ProductSummary(p.id, p.name, p.price) " +
            "FROM Product p WHERE p.active = true")
     Page<ProductSummary> findActiveProductSummaries(Pageable pageable);
-    
+  
     // 使用原生SQL进行复杂查询，利用特定数据库优化
-    @Query(value = 
+    @Query(value =
            "SELECT p.* FROM product p " +
            "JOIN product_inventory i ON p.id = i.product_id " +
            "WHERE i.quantity > 0 AND p.active = true " +
@@ -3383,9 +3429,10 @@ spring:
         physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         # 懒加载设置
         enable_lazy_load_no_trans: false
+
 ```
 
--**6. 配置感知与动态调整**
+- **6. 配置感知与动态调整**
 
 实现配置感知能力，根据环境和负载动态调整服务行为。
 
@@ -3511,13 +3558,14 @@ public class AdaptiveThreadPoolExecutor {
         executor.execute(task);
     }
 }
+
 ```
 
 ### 1.5.4 可观测性设计
 
 分布式微服务架构的复杂性使得全面的可观测性设计尤为重要。从工作流视角看，可观测性需要能够跟踪和监控跨多个服务的业务流程。
 
--**1. 分布式追踪**
+- **1. 分布式追踪**
 
 追踪跨服务的请求流，识别延迟和故障点。
 
@@ -3643,9 +3691,10 @@ public class InventoryService {
         }
     }
 }
+
 ```
 
--**2. 结构化日志与关联**
+- **2. 结构化日志与关联**
 
 设计有意义的、带有上下文信息的结构化日志，帮助理解和诊断问题。
 
@@ -3735,9 +3784,10 @@ public class OrderService {
         }
     }
 }
+
 ```
 
--**3. 健康检查与指标**
+- **3. 健康检查与指标**
 
 实施全面的健康检查和指标收集，了解系统运行状况和性能。
 
@@ -3856,9 +3906,10 @@ public class MetricsEnabledOrderService {
         }
     }
 }
+
 ```
 
--**4. 全链路监控**
+- **4. 全链路监控**
 
 提供端到端可视性，从用户请求到后端服务的全面监控。
 
@@ -3974,9 +4025,10 @@ public class BusinessMonitoringAspect {
         }
     }
 }
+
 ```
 
--**5. 告警与通知**
+- **5. 告警与通知**
 
 设计智能告警系统，及时发现和响应异常情况。
 
@@ -4216,6 +4268,7 @@ public class BusinessAlertingService {
         }
     }
 }
+
 ```
 
 ## 1.6 5. 范畴论视角：形式化分析
@@ -4318,6 +4371,7 @@ public class CategoryTheory {
         );
     }
 }
+
 ```
 
 **范畴的具体实例**：
@@ -4370,6 +4424,7 @@ public class MicroserviceCategory {
             orderWorkflow = ct.compose(processPayment, checkInventory);
     }
 }
+
 ```
 
 ### 1.6.2 同构关系：工作流与服务拓扑
@@ -4543,6 +4598,7 @@ public class WorkflowServiceIsomorphism {
         assert mappedStep.id.equals("step-svc-order");
     }
 }
+
 ```
 
 **实际应用**：
@@ -4639,6 +4695,7 @@ public class WorkflowMapper {
     
     // 类型映射辅助方法...
 }
+
 ```
 
 ### 1.6.3 等价关系：不同架构表示
@@ -4822,6 +4879,7 @@ public class ArchitectureEquivalence {
         return true;
     }
 }
+
 ```
 
 **应用示例**：
@@ -4935,6 +4993,7 @@ public class ArchitectureTransformationService {
         return new RestEndpoint();
     }
 }
+
 ```
 
 ### 1.6.4 组合关系：服务组合与管道
@@ -5014,6 +5073,7 @@ public class ServiceComposition {
         return original.equals(result1.block()) && original.equals(result2.block());
     }
 }
+
 ```
 
 **更实际的组合示例**：
@@ -5160,6 +5220,7 @@ public class OrderProcessingPipeline {
         return Mono.just(completedOrder);
     }
 }
+
 ```
 
 ### 1.6.5 聚合关系：分布式状态合并
@@ -5363,6 +5424,7 @@ public class DistributedStateMerger {
         System.out.println("预计交付: " + globalView.get("deliveryDate"));
     }
 }
+
 ```
 
 **实际应用示例**：
@@ -5488,6 +5550,7 @@ public class OrderAggregationService {
         );
     }
 }
+
 ```
 
 ## 1.7 6. 实际应用案例分析
@@ -5676,6 +5739,7 @@ public class OrderWorkflowResult {
     
     // Getters...
 }
+
 ```
 
 **技术挑战解决方案**：
@@ -5754,6 +5818,7 @@ public class OrderProcessingSaga {
         updateSagaState(event.getSagaId(), "COMPENSATING_INVENTORY");
     }
 }
+
 ```
 
 1. **服务弹性**：
@@ -5839,6 +5904,7 @@ public class PaymentServiceClient {
             "Payment service unavailable, will retry automatically"));
     }
 }
+
 ```
 
 1. **性能优化**：
@@ -5966,6 +6032,7 @@ public class ProductCacheService {
             });
     }
 }
+
 ```
 
 1. **可观测性**：
@@ -6075,6 +6142,7 @@ public class LoggingAspect {
         }
     }
 }
+
 ```
 
 **电子商务平台案例小结**：
@@ -6493,6 +6561,7 @@ public class TransactionWorkflowService {
         return new NotificationContent();
     }
 }
+
 ```
 
 **技术挑战解决方案**：
@@ -6586,6 +6655,7 @@ public class IdempotentTransactionService {
             });
     }
 }
+
 ```
 
 1. **合规与监管要求**：
@@ -6842,6 +6912,7 @@ public class ComplianceServiceImpl implements ComplianceService {
         return rates.getOrDefault(currency, BigDecimal.ONE);
     }
 }
+
 ```
 
 1. **高可用性和灾难恢复**：
@@ -7218,6 +7289,7 @@ public class DisasterRecoveryService {
         return operatorNotificationService.sendNotification(notification);
     }
 }
+
 ```
 
 1. **审计与监控解决方案**：
@@ -7426,6 +7498,7 @@ public class AuditServiceImpl implements AuditService {
             .subscribe();
     }
 }
+
 ```
 
 **金融交易处理系统案例小结**：

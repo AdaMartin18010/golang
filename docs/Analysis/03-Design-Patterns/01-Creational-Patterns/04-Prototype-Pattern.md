@@ -152,6 +152,7 @@ func (p *ConcretePrototype) DeepClone() Prototype {
     
     return &clone
 }
+
 ```
 
 ### 3.1.1.4.2 原型注册表模式
@@ -260,6 +261,7 @@ func (p *ConcretePrototypeB) Clone() Prototype {
 func (p *ConcretePrototypeB) GetName() string {
     return p.Name
 }
+
 ```
 
 ### 3.1.1.4.3 函数式原型模式
@@ -341,6 +343,7 @@ func (p *Product) DeepClone() *Product {
     
     return &clone
 }
+
 ```
 
 ## 3.1.1.5 4. 工程案例
@@ -465,6 +468,7 @@ func Example() {
     // 注册生产环境配置
     prototype.Register("prod", prodConfig)
 }
+
 ```
 
 ### 3.1.1.5.2 文档模板原型
@@ -586,6 +590,7 @@ func Example() {
     fmt.Printf("技术文档: %+v\n", techDoc)
     fmt.Printf("用户手册: %+v\n", userDoc)
 }
+
 ```
 
 ## 3.1.1.6 5. 批判性分析

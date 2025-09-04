@@ -44,19 +44,6 @@
     - [1.5.10 前端异常监控组件实现](#前端异常监控组件实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 ## 1.2 架构思维导图
@@ -148,6 +135,7 @@
         ├── 分布式身份验证
         ├── 工作流联邦
         └── 多方计算支持
+
 ```
 
 ## 1.3 1. 架构概述
@@ -217,6 +205,7 @@ impl WorkflowSystem {
     
     // 其他系统方法...
 }
+
 ```
 
 ## 1.4 2. 形式模型层
@@ -285,6 +274,7 @@ impl<T: Clone + Send + Sync + 'static> WorkflowOp<T> {
         WorkflowOp::WithErrorHandler(Box::new(self), Box::new(handler))
     }
 }
+
 ```
 
 #### 1.4.1.2 代数法则实现与验证
@@ -370,6 +360,7 @@ impl AlgebraicLawVerifier {
         }
     }
 }
+
 ```
 
 ### 1.4.2 资源模型
@@ -422,6 +413,7 @@ impl ResourceAllocation {
         self
     }
 }
+
 ```
 
 #### 1.4.2.2 所有权与借用模型
@@ -538,6 +530,7 @@ impl BorrowChecker {
         Ok(())
     }
 }
+
 ```
 
 ### 1.4.3 一致性规则
@@ -642,6 +635,7 @@ pub enum InvariantViolation {
     // 其他违反类型...
     Custom(String),
 }
+
 ```
 
 #### 1.4.3.2 形式化证明支持
@@ -734,10 +728,10 @@ impl FormalVerifier {
                 }
             }
         }
-        
+  
         None
     }
-    
+  
     /// 深度优先搜索检测循环
     fn dfs_cycle_detect(
         &self,
@@ -749,7 +743,7 @@ impl FormalVerifier {
     ) -> bool {
         visited.insert(node.to_string());
         path.insert(node.to_string());
-        
+  
         if let Some(neighbors) = graph.get(node) {
             for neighbor in neighbors {
                 if !visited.contains(neighbor) {
@@ -765,15 +759,15 @@ impl FormalVerifier {
                 }
             }
         }
-        
+  
         path.remove(node);
         false
     }
-    
+  
     /// 生成形式证明
     pub fn generate_proof(&self, workflow: &WorkflowDefinition) -> FormalProof {
         let mut proof = FormalProof::new(workflow.id.clone());
-        
+  
         // 添加无死锁证明
         match self.verify_deadlock_freedom(workflow) {
             Ok(result) => {
@@ -783,7 +777,7 @@ impl FormalVerifier {
                 proof.add_error("DeadlockFreedom".to_string(), e.to_string());
             }
         }
-        
+  
         // 添加终止性证明
         match self.verify_termination(workflow) {
             Ok(result) => {
@@ -793,7 +787,7 @@ impl FormalVerifier {
                 proof.add_error("Termination".to_string(), e.to_string());
             }
         }
-        
+  
         // 添加资源安全性证明
         match self.verify_resource_safety(workflow) {
             Ok(result) => {
@@ -803,13 +797,15 @@ impl FormalVerifier {
                 proof.add_error("ResourceSafety".to_string(), e.to_string());
             }
         }
-        
+  
         proof
     }
 }
 
 /// 证明结果
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub enum ProofResult {
     /// 属性成立
     True {
@@ -828,7 +824,9 @@ pub enum ProofResult {
 }
 
 /// 形式证明
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct FormalProof {
     workflow_id: String,
     property_results: HashMap<String, ProofResult>,
@@ -845,20 +843,21 @@ impl FormalProof {
             generated_at: Utc::now(),
         }
     }
-    
+  
     pub fn add_property_result(&mut self, property: String, result: ProofResult) {
         self.property_results.insert(property, result);
     }
-    
+  
     pub fn add_error(&mut self, property: String, error: String) {
         self.errors.insert(property, error);
     }
-    
+  
     pub fn is_fully_verified(&self) -> bool {
-        !self.property_results.is_empty() && 
+        !self.property_results.is_empty() &&
         self.property_results.values().all(|r| matches!(r, ProofResult::True { .. }))
     }
 }
+
 ```
 
 ## 1.5 3. 执行引擎层
@@ -873,33 +872,37 @@ impl FormalProof {
 
 ```rust
 /// 工作流事件
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub enum WorkflowEvent {
     // 工作流生命周期事件
     WorkflowCreated { workflow_id: WorkflowId, definition: WorkflowDefinition },
     WorkflowStarted { workflow_id: WorkflowId, start_time: DateTime<Utc> },
     WorkflowCompleted { workflow_id: WorkflowId, completion_time: DateTime<Utc> },
     WorkflowFailed { workflow_id: WorkflowId, error: WorkflowError, failure_time: DateTime<Utc> },
-    
+  
     // 任务事件
     TaskScheduled { task_id: TaskId, workflow_id: WorkflowId, task_def: TaskDefinition },
     TaskStarted { task_id: TaskId, start_time: DateTime<Utc> },
     TaskCompleted { task_id: TaskId, result: TaskResult, completion_time: DateTime<Utc> },
     TaskFailed { task_id: TaskId, error: TaskError, failure_time: DateTime<Utc> },
-    
+  
     // 资源事件
     ResourceAllocated { allocation: ResourceAllocation },
     ResourceReleased { allocation_id: AllocationId },
-    
+  
     // 状态事件
     WorkflowStateUpdated { workflow_id: WorkflowId, key: String, value: Value, timestamp: DateTime<Utc> },
-    
+  
     // 系统事件
     SnapshotCreated { snapshot_id: String, state_hash: String },
 }
 
 /// 事件存储接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait EventStore: Send + Sync + 'static {
     /// 追加事件
     async fn append_events(
@@ -908,7 +911,7 @@ pub trait EventStore: Send + Sync + 'static {
         events: Vec<WorkflowEvent>,
         expected_version: Option<u64>,
     ) -> Result<u64, EventStoreError>;
-    
+  
     /// 读取事件流
     async fn read_events(
         &self,
@@ -916,7 +919,7 @@ pub trait EventStore: Send + Sync + 'static {
         start_version: u64,
         max_count: usize,
     ) -> Result<Vec<(u64, WorkflowEvent)>, EventStoreError>;
-    
+  
     /// 创建快照
     async fn create_snapshot(
         &self,
@@ -924,13 +927,14 @@ pub trait EventStore: Send + Sync + 'static {
         state: &WorkflowState,
         version: u64,
     ) -> Result<(), EventStoreError>;
-    
+  
     /// 读取最新快照
     async fn read_latest_snapshot(
         &self,
         workflow_id: &WorkflowId,
     ) -> Result<Option<(WorkflowState, u64)>, EventStoreError>;
 }
+
 ```
 
 #### 1.5.1.2 状态管理器
@@ -953,44 +957,44 @@ impl<E: EventStore> WorkflowStateManager<E> {
                 return Ok(state.clone());
             }
         }
-        
+  
         // 尝试加载最新快照
         let (mut state, mut version) = match self.event_store.read_latest_snapshot(workflow_id).await {
             Ok(Some(snapshot)) => snapshot,
             _ => (WorkflowState::new(), 0),
         };
-        
+  
         // 读取后续事件并应用
         let mut current_version = version;
         loop {
             let events = self.event_store.read_events(
                 workflow_id, current_version, 100
             ).await?;
-            
+  
             if events.is_empty() {
                 break;
             }
-            
+  
             for (ev_version, event) in events {
                 state.apply_event(&event);
                 current_version = ev_version;
             }
         }
-        
+  
         // 如果读取了足够多的事件，创建新快照
         if current_version - version >= self.snapshot_frequency {
             self.event_store.create_snapshot(workflow_id, &state, current_version).await?;
         }
-        
+  
         // 更新缓存
         {
             let mut cache = self.state_cache.lock().await;
             cache.put(workflow_id.clone(), (state.clone(), current_version));
         }
-        
+  
         Ok(state)
     }
-    
+  
     /// 应用新事件并更新状态
     pub async fn apply_new_events(
         &self,
@@ -1002,7 +1006,7 @@ impl<E: EventStore> WorkflowStateManager<E> {
         let new_version = self.event_store.append_events(
             workflow_id, events.clone(), expected_version
         ).await?;
-        
+  
         // 检查缓存
         let mut state = {
             let mut cache = self.state_cache.lock().await;
@@ -1013,10 +1017,10 @@ impl<E: EventStore> WorkflowStateManager<E> {
                     for event in &events {
                         state.apply_event(event);
                     }
-                    
+  
                     // 更新缓存
                     cache.put(workflow_id.clone(), (state.clone(), new_version));
-                    
+  
                     state
                 } else {
                     // 缓存版本不匹配，需要完全重建
@@ -1029,17 +1033,20 @@ impl<E: EventStore> WorkflowStateManager<E> {
                 self.rebuild_state(workflow_id).await?
             }
         };
-        
+  
         Ok((state, new_version))
     }
 }
+
 ```
 
 #### 1.5.1.3 工作流状态实现
 
 ```rust
 /// 工作流状态
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct WorkflowState {
     /// 工作流ID
     pub workflow_id: WorkflowId,
@@ -1079,7 +1086,7 @@ impl WorkflowState {
             last_updated: Utc::now(),
         }
     }
-    
+  
     /// 应用事件更新状态
     pub fn apply_event(&mut self, event: &WorkflowEvent) {
         match event {
@@ -1132,7 +1139,7 @@ impl WorkflowState {
                     let mut completed_task = task;
                     completed_task.status = TaskStatus::Completed;
                     completed_task.completed_at = Some(*completion_time);
-                    
+  
                     self.completed_tasks.insert(task_id.clone(), result.clone());
                 }
                 self.last_updated = Utc::now();
@@ -1155,6 +1162,7 @@ impl WorkflowState {
         }
     }
 }
+
 ```
 
 ### 1.5.2 调度系统
@@ -1181,7 +1189,7 @@ impl WorkflowGraph {
             entry_points: Vec::new(),
             exit_points: Vec::new(),
         };
-        
+  
         // 构建节点
         for step in &workflow.steps {
             let node = TaskNode {
@@ -1196,23 +1204,23 @@ impl WorkflowGraph {
                 dependencies: Vec::new(),
                 dependents: Vec::new(),
             };
-            
+  
             graph.nodes.insert(node.id.clone(), node);
         }
-        
+  
         // 构建边
         for step in &workflow.steps {
             for next_step in &step.next_steps {
                 graph.add_edge(step.id.clone(), next_step.clone());
             }
         }
-        
+  
         // 识别入口和出口点
         graph.analyze_structure();
-        
+  
         graph
     }
-    
+  
     /// 添加依赖边
     pub fn add_edge(&mut self, from: TaskId, to: TaskId) {
         if let Some(edges) = self.edges.get_mut(&from) {
@@ -1220,63 +1228,63 @@ impl WorkflowGraph {
         } else {
             self.edges.insert(from.clone(), vec![to.clone()]);
         }
-        
+  
         if let Some(node) = self.nodes.get_mut(&to) {
             node.dependencies.push(from.clone());
         }
-        
+  
         if let Some(node) = self.nodes.get_mut(&from) {
             node.dependents.push(to);
         }
     }
-    
+  
     /// 分析图结构识别入口和出口点
     fn analyze_structure(&mut self) {
         self.entry_points.clear();
         self.exit_points.clear();
-        
+  
         for (id, node) in &self.nodes {
             if node.dependencies.is_empty() {
                 self.entry_points.push(id.clone());
             }
-            
+  
             if node.dependents.is_empty() {
                 self.exit_points.push(id.clone());
             }
         }
     }
-    
+  
     /// 查找可执行任务（所有依赖已完成）
     pub fn find_executable_tasks(&self, completed_tasks: &HashSet<TaskId>) -> Vec<TaskId> {
         let mut executable = Vec::new();
-        
+  
         for (id, node) in &self.nodes {
             // 跳过已完成的任务
             if completed_tasks.contains(id) {
                 continue;
             }
-            
+  
             // 检查所有依赖是否已完成
             let all_deps_completed = node.dependencies.iter()
                 .all(|dep| completed_tasks.contains(dep));
-                
+  
             if all_deps_completed {
                 executable.push(id.clone());
             }
         }
-        
+  
         executable
     }
-    
+  
     /// 计算关键路径
     pub fn compute_critical_path(&self) -> (Vec<TaskId>, f64) {
         // 拓扑排序任务
         let sorted_tasks = self.topological_sort();
-        
+  
         // 计算最早开始时间
         let mut earliest_start: HashMap<TaskId, f64> = HashMap::new();
         let mut earliest_finish: HashMap<TaskId, f64> = HashMap::new();
-        
+  
         // 初始化入口任务
         for entry in &self.entry_points {
             earliest_start.insert(entry.clone(), 0.0);
@@ -1285,35 +1293,35 @@ impl WorkflowGraph {
                 .unwrap_or(0.0);
             earliest_finish.insert(entry.clone(), duration);
         }
-        
+  
         // 计算所有任务的最早开始/完成时间
         for task_id in &sorted_tasks {
             let node = match self.nodes.get(task_id) {
                 Some(n) => n,
                 None => continue,
             };
-            
+  
             // 任务的最早开始时间是所有前置任务的最早完成时间的最大值
             let max_predecessor_finish = node.dependencies.iter()
                 .filter_map(|dep| earliest_finish.get(dep))
                 .fold(0.0, |max, &finish| max.max(finish));
-            
+  
             earliest_start.insert(task_id.clone(), max_predecessor_finish);
-            
+  
             // 计算最早完成时间
             let duration = node.task.estimated_duration.as_secs_f64();
             earliest_finish.insert(task_id.clone(), max_predecessor_finish + duration);
         }
-        
+  
         // 找到项目完成时间 (最后一个任务的最早完成时间)
         let project_finish = self.exit_points.iter()
             .filter_map(|exit| earliest_finish.get(exit))
             .fold(0.0, |max, &finish| max.max(finish));
-        
+  
         // 计算最晚开始时间和最晚完成时间
         let mut latest_start: HashMap<TaskId, f64> = HashMap::new();
         let mut latest_finish: HashMap<TaskId, f64> = HashMap::new();
-        
+  
         // 初始化出口任务
         for exit in &self.exit_points {
             latest_finish.insert(exit.clone(), project_finish);
@@ -1322,26 +1330,26 @@ impl WorkflowGraph {
                 .unwrap_or(0.0);
             latest_start.insert(exit.clone(), project_finish - duration);
         }
-        
+  
         // 反向计算所有任务的最晚开始/完成时间
         for task_id in sorted_tasks.iter().rev() {
             let node = match self.nodes.get(task_id) {
                 Some(n) => n,
                 None => continue,
             };
-            
+  
             // 任务的最晚完成时间是所有后续任务的最晚开始时间的最小值
             let min_successor_start = node.dependents.iter()
                 .filter_map(|succ| latest_start.get(succ))
                 .fold(project_finish, |min, &start| min.min(start));
-            
+  
             latest_finish.insert(task_id.clone(), min_successor_start);
-            
+  
             // 计算最晚开始时间
             let duration = node.task.estimated_duration.as_secs_f64();
             latest_start.insert(task_id.clone(), min_successor_start - duration);
         }
-        
+  
         // 计算每个任务的总浮动时间
         let mut float_time: HashMap<TaskId, f64> = HashMap::new();
         for task_id in &sorted_tasks {
@@ -1349,29 +1357,29 @@ impl WorkflowGraph {
                 float_time.insert(task_id.clone(), latest - earliest);
             }
         }
-        
+  
         // 关键路径是浮动时间为0的任务
         let critical_path: Vec<TaskId> = sorted_tasks.into_iter()
             .filter(|task_id| float_time.get(task_id).map_or(false, |&float| float < 1e-6))
             .collect();
-        
+  
         (critical_path, project_finish)
     }
-    
+  
     /// 执行拓扑排序
     fn topological_sort(&self) -> Vec<TaskId> {
         let mut result = Vec::new();
         let mut visited = HashSet::new();
         let mut temp_visited = HashSet::new();
-        
+  
         // 从所有入口节点开始DFS
         for entry in &self.entry_points {
             self.visit_node(entry, &mut visited, &mut temp_visited, &mut result);
         }
-        
+  
         result
     }
-    
+  
     /// 访问节点进行拓扑排序
     fn visit_node(
         &self,
@@ -1384,28 +1392,29 @@ impl WorkflowGraph {
         if visited.contains(node) {
             return;
         }
-        
+  
         // 检测循环 (理论上不应该有)
         if temp_visited.contains(node) {
             panic!("Cycle detected in task graph");
         }
-        
+  
         // 标记为临时访问
         temp_visited.insert(node.clone());
-        
+  
         // 访问所有依赖节点
         if let Some(edges) = self.edges.get(node) {
             for neighbor in edges {
                 self.visit_node(neighbor, visited, temp_visited, result);
             }
         }
-        
+  
         // 移除临时标记，添加到永久访问集合和结果
         temp_visited.remove(node);
         visited.insert(node.clone());
         result.push(node.clone());
     }
 }
+
 ```
 
 #### 1.5.2.2 资源感知调度器
@@ -1427,19 +1436,19 @@ impl<R: ResourceProvider> WorkflowScheduler<R> {
     pub async fn schedule_workflow(&mut self, workflow: WorkflowDefinition) -> Result<WorkflowId, SchedulerError> {
         let workflow_id = WorkflowId::new();
         let graph = WorkflowGraph::from_workflow(&workflow);
-        
+  
         // 计算关键路径和任务优先级
         let (critical_path, _) = graph.compute_critical_path();
         let priorities = self.calculate_priorities(&graph, &critical_path);
-        
+  
         // 更新任务优先级表
         for (task_id, priority) in priorities {
             self.task_priorities.insert(task_id, priority);
         }
-        
+  
         // 将依赖关系添加到跟踪器
         self.dependency_tracker.add_workflow_dependencies(&graph);
-        
+  
         // 找到入口任务并加入队列
         for task_id in graph.entry_points {
             if let Some(node) = graph.nodes.get(&task_id) {
@@ -1449,66 +1458,67 @@ impl<R: ResourceProvider> WorkflowScheduler<R> {
                     definition: node.task.clone(),
                     priority: *self.task_priorities.get(&task_id).unwrap_or(&0),
                 };
-                
+  
                 self.task_queue.push(pending_task);
             }
         }
-        
+  
         Ok(workflow_id)
     }
-    
+  
     /// 运行调度循环
     pub async fn run_scheduling_loop(&mut self) -> Result<(), SchedulerError> {
         loop {
             // 1. 检查资源可用性
             let available_resources = self.resource_provider.available_resources().await?;
-            
+  
             // 2. 调度可执行的任务
             let mut scheduled = false;
-            
+  
             // 优先考虑高优先级任务
             while let Some(task) = self.task_queue.peek() {
                 // 检查资源是否满足
                 if self.can_allocate_resources(&task.definition.resources, &available_resources) {
                     // 弹出任务并分配资源
                     let task = self.task_queue.pop().unwrap();
-                    
+  
                     // 分配资源
                     let allocation = self.resource_provider.allocate_resources(
                         &task.definition.resources
                     ).await?;
-                    
+  
                     // 开始执行任务
                     let running_task = self.start_task(task, allocation).await?;
-                    
+  
                     // 记录运行中的任务
                     self.running_tasks.insert(running_task.id.clone(), running_task);
-                    
+  
                     scheduled = true;
                 } else {
                     // 当前最高优先级任务无法调度，跳出循环
                     break;
                 }
             }
-            
+  
             // 3. 检查完成的任务
             let completed_tasks = self.check_completed_tasks().await?;
-            
+  
             for task_id in completed_tasks {
                 // 移除运行中任务记录
                 if let Some(task) = self.running_tasks.remove(&task_id) {
                     // 释放资源
                     self.resource_provider.release_resources(&task.allocation).await?;
-                    
+  
                     // 记录完成
                     self.completed_tasks.insert(task_id.clone());
-                    
+  
                     // 计算下一批可执行任务
                     self.schedule_dependent_tasks(&task_id).await?;
                 }
             }
-            
+  
             // 4. 调整调度
+
 ```rust
             // 4. 调整调度策略（基于资源利用率和执行情况）
             self.adjust_scheduling_strategy().await;
@@ -1900,6 +1910,7 @@ pub enum PriorityStrategy {
     MinimizeCpuUsage,
     MaximizeThroughput,
 }
+
 ```
 
 ### 1.5.3 错误处理
@@ -2060,6 +2071,7 @@ impl ErrorCondition {
         }
     }
 }
+
 ```
 
 #### 1.5.3.2 错误处理器
@@ -2231,6 +2243,7 @@ pub enum WorkflowHandlingAction {
     /// 标记工作流失败
     FailWorkflow(WorkflowError),
 }
+
 ```
 
 #### 1.5.3.3 补偿事务
@@ -2581,6 +2594,7 @@ pub enum ErrorSource {
     /// 未知来源
     Unknown,
 }
+
 ```
 
 ### 1.5.4 流程监控与分析
@@ -2890,6 +2904,7 @@ impl WorkflowMonitor {
         }
     }
 }
+
 ```
 
 #### 1.5.4.2 性能分析
@@ -3219,6 +3234,7 @@ impl PerformanceAnalyzer {
         })
     }
 }
+
 ```
 
 ### 1.5.5 智能调度与优化系统
@@ -3464,6 +3480,7 @@ impl IntelligentScheduler {
         Ok(execution_ids[0].clone())
     }
 }
+
 ```
 
 #### 1.5.5.2 自适应优化器
@@ -4002,6 +4019,7 @@ impl AdaptiveOptimizer {
         Ok(applied)
     }
 }
+
 ```
 
 #### 1.5.5.3 性能分析和优化工具
@@ -4432,6 +4450,7 @@ impl PerformanceOptimizationTool {
         hotspots
     }
 }
+
 ```
 
 ### 1.5.6 实现高可靠性和故障恢复机制
@@ -4847,6 +4866,7 @@ impl HasFaultId for WorkflowFault {
         self.fault_id.clone()
     }
 }
+
 ```
 
 #### 1.5.6.2 工作流快照和状态恢复
@@ -5086,6 +5106,7 @@ fn calculate_checksum(data: &[u8]) -> String {
     let result = hasher.finalize();
     format!("{:x}", result)
 }
+
 ```
 
 #### 1.5.6.3 任务幂等性和重复执行检测
@@ -5560,6 +5581,7 @@ pub enum EventSourcedError {
     #[error("聚合根不存在: {0}")]
     AggregateNotFound(String),
 }
+
 ```
 
 ### 1.5.8 分布式锁和协调机制
@@ -5805,6 +5827,7 @@ impl<'a> Drop for LockGuard<'a> {
         });
     }
 }
+
 ```
 
 ### 1.5.9 工作流重放和调试机制
@@ -6182,16 +6205,16 @@ impl WorkflowMonitor {
             monitor_handle: None,
         }
     }
-    
+  
     /// 启动监控系统
     pub fn start(&mut self) {
         if self.running.load(Ordering::SeqCst) {
             return;
         }
-        
+  
         // 设置运行标志
         self.running.store(true, Ordering::SeqCst);
-        
+  
         // 启动监控任务
         let event_store = self.event_store.clone();
         let stats_aggregator = self.stats_aggregator.clone();
@@ -6200,13 +6223,13 @@ impl WorkflowMonitor {
         let notification_publisher = self.notification_publisher.clone();
         let monitor_interval = self.monitor_interval;
         let running = self.running.clone();
-        
+  
         let handle = tokio::spawn(async move {
             let mut interval = tokio::time::interval(monitor_interval);
-            
+  
             while running.load(Ordering::SeqCst) {
                 interval.tick().await;
-                
+  
                 // 执行监控任务
                 if let Err(e) = Self::monitor_workflows(
                     &event_store,
@@ -6219,65 +6242,65 @@ impl WorkflowMonitor {
                 }
             }
         });
-        
+  
         self.monitor_handle = Some(handle);
-        
+  
         log::info!("工作流监控系统已启动");
     }
-    
+  
     /// 停止监控系统
     pub async fn stop(&mut self) {
         if !self.running.load(Ordering::SeqCst) {
             return;
         }
-        
+  
         // 设置运行标志
         self.running.store(false, Ordering::SeqCst);
-        
+  
         // 等待监控任务结束
         if let Some(handle) = self.monitor_handle.take() {
             handle.abort();
         }
-        
+  
         log::info!("工作流监控系统已停止");
     }
-    
+  
     /// 获取工作流状态统计
     pub async fn get_workflow_stats(&self) -> Result<WorkflowStats, MonitorError> {
         self.stats_aggregator.get_workflow_stats().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))
     }
-    
+  
     /// 获取任务执行统计
     pub async fn get_task_stats(&self) -> Result<TaskStats, MonitorError> {
         self.stats_aggregator.get_task_stats().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))
     }
-    
+  
     /// 获取资源使用统计
     pub async fn get_resource_stats(&self) -> Result<ResourceStats, MonitorError> {
         self.stats_aggregator.get_resource_stats().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))
     }
-    
+  
     /// 获取活跃工作流实例
     pub async fn get_active_workflows(&self) -> Result<Vec<WorkflowSummary>, MonitorError> {
         self.stats_aggregator.get_active_workflows().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))
     }
-    
+  
     /// 获取最近失败的工作流
     pub async fn get_failed_workflows(&self) -> Result<Vec<WorkflowSummary>, MonitorError> {
         self.stats_aggregator.get_failed_workflows().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))
     }
-    
+  
     /// 获取长时间运行的工作流
     pub async fn get_long_running_workflows(&self) -> Result<Vec<WorkflowSummary>, MonitorError> {
         self.stats_aggregator.get_long_running_workflows().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))
     }
-    
+  
     /// 获取工作流执行趋势
     pub async fn get_workflow_trends(
         &self,
@@ -6286,13 +6309,13 @@ impl WorkflowMonitor {
         self.stats_aggregator.get_workflow_trends(period).await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))
     }
-    
+  
     /// 获取系统健康状态
     pub async fn get_system_health(&self) -> Result<SystemHealth, MonitorError> {
         self.stats_aggregator.get_system_health().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))
     }
-    
+  
     /// 执行监控任务
     async fn monitor_workflows(
         event_store: &Arc<dyn EventStore<WorkflowInstance>>,
@@ -6304,32 +6327,32 @@ impl WorkflowMonitor {
         // 1. 更新工作流统计信息
         stats_aggregator.update_stats().await
             .map_err(|e| MonitorError::StatsUpdateFailed(e.to_string()))?;
-        
+  
         // 2. 获取需要检查的工作流实例
         let active_workflows = stats_aggregator.get_active_workflows().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))?;
-        
+  
         // 3. 检查工作流状态并生成告警
         for workflow in active_workflows {
             // 获取工作流实例
             let events = event_store.load_events(&workflow.id, 0, None).await
                 .map_err(|e| MonitorError::EventLoadFailed(e.to_string()))?;
-                
+  
             if events.is_empty() {
                 continue;
             }
-            
+  
             // 重建工作流状态
             let mut instance = WorkflowInstance::new(&workflow.id);
             for event in &events {
                 instance.apply(&event.event);
             }
-            
+  
             // 检查工作流是否已超时
             if let Some(started_at) = instance.started_at {
                 let now = Utc::now();
                 let duration = now.signed_duration_since(started_at);
-                
+  
                 if let Some(timeout) = instance.definition.as_ref().and_then(|d| d.timeout) {
                     if duration > timeout {
                         // 创建超时告警
@@ -6337,7 +6360,7 @@ impl WorkflowMonitor {
                             id: Uuid::new_v4().to_string(),
                             alert_type: AlertType::WorkflowTimeout,
                             workflow_id: instance.workflow_id.clone(),
-                            message: format!("工作流已运行 {} 秒，超过超时时间 {} 秒", 
+                            message: format!("工作流已运行 {} 秒，超过超时时间 {} 秒",
                                            duration.num_seconds(), timeout.num_seconds()),
                             severity: AlertSeverity::High,
                             timestamp: now,
@@ -6348,14 +6371,14 @@ impl WorkflowMonitor {
                                 "timeout": timeout.num_seconds(),
                             }),
                         };
-                        
+  
                         // 发送告警
                         alert_manager.trigger_alert(alert).await
                             .map_err(|e| MonitorError::AlertTriggerFailed(e.to_string()))?;
                     }
                 }
             }
-            
+  
             // 检查工作流步骤是否有异常
             if let Some(steps) = instance.steps.as_ref() {
                 for (step_id, step) in steps {
@@ -6375,14 +6398,14 @@ impl WorkflowMonitor {
                                 "last_error": step.last_error,
                             }),
                         };
-                        
+  
                         // 发送告警
                         alert_manager.trigger_alert(alert).await
                             .map_err(|e| MonitorError::AlertTriggerFailed(e.to_string()))?;
                     }
                 }
             }
-            
+  
             // 更新工作流指标
             metrics_registry.record_workflow_duration(
                 &instance.workflow_id,
@@ -6390,11 +6413,11 @@ impl WorkflowMonitor {
                 instance.started_at.map(|s| Utc::now().signed_duration_since(s).to_std().unwrap_or_default()),
             );
         }
-        
+  
         // 4. 检查长时间运行的工作流
         let long_running = stats_aggregator.get_long_running_workflows().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))?;
-            
+  
         if !long_running.is_empty() {
             // 发送长时间运行工作流通知
             let notification = Notification {
@@ -6408,15 +6431,15 @@ impl WorkflowMonitor {
                     "workflows": long_running,
                 }),
             };
-            
+  
             notification_publisher.publish(notification).await
                 .map_err(|e| MonitorError::NotificationPublishFailed(e.to_string()))?;
         }
-        
+  
         // 5. 检查系统健康状态
         let health = stats_aggregator.get_system_health().await
             .map_err(|e| MonitorError::StatsAggregationFailed(e.to_string()))?;
-            
+  
         if health.status != HealthStatus::Healthy {
             // 创建系统健康告警
             let alert = Alert {
@@ -6432,12 +6455,12 @@ impl WorkflowMonitor {
                     "message": health.message,
                 }),
             };
-            
+  
             // 发送告警
             alert_manager.trigger_alert(alert).await
                 .map_err(|e| MonitorError::AlertTriggerFailed(e.to_string()))?;
         }
-        
+  
         Ok(())
     }
 }
@@ -6470,63 +6493,63 @@ impl DashboardService {
             refresh_handle: None,
         }
     }
-    
+  
     /// 启动仪表盘服务
     pub fn start(&mut self) {
         if self.running.load(Ordering::SeqCst) {
             return;
         }
-        
+  
         // 设置运行标志
         self.running.store(true, Ordering::SeqCst);
-        
+  
         // 启动缓存刷新任务
         let monitor = self.monitor.clone();
         let cache = self.cache.clone();
         let refresh_interval = self.refresh_interval;
         let running = self.running.clone();
-        
+  
         let handle = tokio::spawn(async move {
             let mut interval = tokio::time::interval(refresh_interval);
-            
+  
             while running.load(Ordering::SeqCst) {
                 interval.tick().await;
-                
+  
                 // 刷新仪表盘数据
                 if let Err(e) = Self::refresh_dashboard_data(&monitor, &cache).await {
                     log::error!("刷新仪表盘数据时发生错误: {}", e);
                 }
             }
         });
-        
+  
         self.refresh_handle = Some(handle);
-        
+  
         log::info!("仪表盘服务已启动");
     }
-    
+  
     /// 停止仪表盘服务
     pub async fn stop(&mut self) {
         if !self.running.load(Ordering::SeqCst) {
             return;
         }
-        
+  
         // 设置运行标志
         self.running.store(false, Ordering::SeqCst);
-        
+  
         // 等待缓存刷新任务结束
         if let Some(handle) = self.refresh_handle.take() {
             handle.abort();
         }
-        
+  
         log::info!("仪表盘服务已停止");
     }
-    
+  
     /// 获取仪表盘概览数据
     pub async fn get_dashboard_overview(&self) -> Result<DashboardOverview, DashboardError> {
         let cache = self.cache.read().await;
         Ok(cache.overview.clone())
     }
-    
+  
     /// 获取工作流执行趋势
     pub async fn get_workflow_trends(
         &self,
@@ -6536,43 +6559,43 @@ impl DashboardService {
         self.monitor.get_workflow_trends(period).await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))
     }
-    
+  
     /// 获取活跃工作流列表
     pub async fn get_active_workflows(&self) -> Result<Vec<WorkflowSummary>, DashboardError> {
         let cache = self.cache.read().await;
         Ok(cache.active_workflows.clone())
     }
-    
+  
     /// 获取失败工作流列表
     pub async fn get_failed_workflows(&self) -> Result<Vec<WorkflowSummary>, DashboardError> {
         let cache = self.cache.read().await;
         Ok(cache.failed_workflows.clone())
     }
-    
+  
     /// 获取工作流类型分布
     pub async fn get_workflow_type_distribution(&self) -> Result<HashMap<String, usize>, DashboardError> {
         let cache = self.cache.read().await;
         Ok(cache.workflow_type_distribution.clone())
     }
-    
+  
     /// 获取任务执行时间分布
     pub async fn get_task_execution_time_distribution(&self) -> Result<HashMap<String, Vec<Duration>>, DashboardError> {
         let cache = self.cache.read().await;
         Ok(cache.task_execution_times.clone())
     }
-    
+  
     /// 获取系统资源使用情况
     pub async fn get_system_resource_usage(&self) -> Result<SystemResourceUsage, DashboardError> {
         let cache = self.cache.read().await;
         Ok(cache.resource_usage.clone())
     }
-    
+  
     /// 获取最近的告警
     pub async fn get_recent_alerts(&self) -> Result<Vec<Alert>, DashboardError> {
         let cache = self.cache.read().await;
         Ok(cache.recent_alerts.clone())
     }
-    
+  
     /// 获取工作流详情
     pub async fn get_workflow_details(
         &self,
@@ -6582,10 +6605,10 @@ impl DashboardService {
         // 这部分数据不缓存，每次实时获取
         let instance = self.monitor.event_store.load_aggregate(workflow_id).await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         let stats = self.monitor.stats_aggregator.get_workflow_details(workflow_id).await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         Ok(WorkflowDetails {
             workflow_id: workflow_id.to_string(),
             workflow_type: instance.definition
@@ -6600,7 +6623,7 @@ impl DashboardService {
             execution_stats: stats,
         })
     }
-    
+  
     /// 刷新仪表盘数据
     async fn refresh_dashboard_data(
         monitor: &Arc<WorkflowMonitor>,
@@ -6609,27 +6632,27 @@ impl DashboardService {
         // 获取工作流统计
         let workflow_stats = monitor.get_workflow_stats().await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         // 获取任务统计
         let task_stats = monitor.get_task_stats().await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         // 获取资源统计
         let resource_stats = monitor.get_resource_stats().await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         // 获取活跃工作流
         let active_workflows = monitor.get_active_workflows().await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         // 获取失败工作流
         let failed_workflows = monitor.get_failed_workflows().await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         // 获取系统健康状态
         let system_health = monitor.get_system_health().await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         // 构建工作流类型分布
         let mut workflow_type_distribution = HashMap::new();
         for workflow in &active_workflows {
@@ -6637,7 +6660,7 @@ impl DashboardService {
                 .entry(workflow.workflow_type.clone())
                 .or_insert(0) += 1;
         }
-        
+  
         // 更新仪表盘概览
         let overview = DashboardOverview {
             total_workflows: workflow_stats.total_workflows,
@@ -6652,7 +6675,7 @@ impl DashboardService {
             system_health: system_health.status,
             resource_utilization: resource_stats.average_utilization,
         };
-        
+  
         // 构建系统资源使用情况
         let resource_usage = SystemResourceUsage {
             cpu_usage: resource_stats.cpu_usage,
@@ -6660,11 +6683,11 @@ impl DashboardService {
             disk_usage: resource_stats.disk_usage,
             network_usage: resource_stats.network_usage,
         };
-        
+  
         // 获取最近的告警
         let recent_alerts = monitor.alert_manager.get_recent_alerts(10).await
             .map_err(|e| DashboardError::DataFetchFailed(e.to_string()))?;
-            
+  
         // 更新缓存
         let mut cache_writer = cache.write().await;
         cache_writer.overview = overview;
@@ -6675,7 +6698,7 @@ impl DashboardService {
         cache_writer.resource_usage = resource_usage;
         cache_writer.recent_alerts = recent_alerts;
         cache_writer.last_updated = Utc::now();
-        
+  
         Ok(())
     }
 }
@@ -6691,7 +6714,7 @@ impl WorkflowProjection {
     pub fn new(db_pool: Arc<PgPool>) -> Self {
         Self { db_pool }
     }
-    
+  
     /// 处理工作流创建事件
     pub async fn on_workflow_created(
         &self,
@@ -6701,9 +6724,9 @@ impl WorkflowProjection {
             // 插入工作流记录
             sqlx::query(r#"
                 INSERT INTO workflow_instances (
-                    workflow_id, 
-                    workflow_type, 
-                    status, 
+                    workflow_id,
+                    workflow_type,
+                    status,
                     created_at
                 ) VALUES ($1, $2, $3, $4)
                 ON CONFLICT (workflow_id) DO UPDATE SET
@@ -6718,13 +6741,13 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             log::debug!("投影: 工作流创建 workflow_id={}", workflow_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理工作流开始事件
     pub async fn on_workflow_started(
         &self,
@@ -6743,13 +6766,13 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             log::debug!("投影: 工作流开始 workflow_id={}", workflow_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理工作流完成事件
     pub async fn on_workflow_completed(
         &self,
@@ -6768,19 +6791,19 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             // 更新统计信息
             sqlx::query(r#"
                 INSERT INTO workflow_statistics (
-                    date, 
-                    workflow_type, 
-                    status, 
+                    date,
+                    workflow_type,
+                    status,
                     count
                 )
-                SELECT 
-                    DATE(completed_at), 
-                    workflow_type, 
-                    'COMPLETED', 
+                SELECT
+                    DATE(completed_at),
+                    workflow_type,
+                    'COMPLETED',
                     1
                 FROM workflow_instances
                 WHERE workflow_id = $1
@@ -6791,13 +6814,13 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             log::debug!("投影: 工作流完成 workflow_id={}", workflow_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理工作流失败事件
     pub async fn on_workflow_failed(
         &self,
@@ -6817,19 +6840,19 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             // 更新统计信息
             sqlx::query(r#"
                 INSERT INTO workflow_statistics (
-                    date, 
-                    workflow_type, 
-                    status, 
+                    date,
+                    workflow_type,
+                    status,
                     count
                 )
-                SELECT 
-                    DATE(completed_at), 
-                    workflow_type, 
-                    'FAILED', 
+                SELECT
+                    DATE(completed_at),
+                    workflow_type,
+                    'FAILED',
                     1
                 FROM workflow_instances
                 WHERE workflow_id = $1
@@ -6840,13 +6863,13 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             log::debug!("投影: 工作流失败 workflow_id={}", workflow_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务调度事件
     pub async fn on_task_scheduled(
         &self,
@@ -6856,10 +6879,10 @@ impl WorkflowProjection {
             // 插入任务记录
             sqlx::query(r#"
                 INSERT INTO workflow_tasks (
-                    task_id, 
-                    workflow_id, 
-                    task_type, 
-                    status, 
+                    task_id,
+                    workflow_id,
+                    task_type,
+                    status,
                     created_at
                 ) VALUES ($1, $2, $3, $4, NOW())
                 ON CONFLICT (task_id) DO UPDATE SET
@@ -6874,10 +6897,10 @@ impl WorkflowProjection {
             // 插入任务记录
             sqlx::query(r#"
                 INSERT INTO workflow_tasks (
-                    task_id, 
-                    workflow_id, 
-                    task_type, 
-                    status, 
+                    task_id,
+                    workflow_id,
+                    task_type,
+                    status,
                     created_at
                 ) VALUES ($1, $2, $3, $4, NOW())
                 ON CONFLICT (task_id) DO UPDATE SET
@@ -6891,13 +6914,13 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             // 更新统计信息
             sqlx::query(r#"
                 INSERT INTO task_statistics (
-                    date, 
-                    task_type, 
-                    status, 
+                    date,
+                    task_type,
+                    status,
                     count
                 ) VALUES (CURRENT_DATE, $1, $2, 1)
                 ON CONFLICT (date, task_type, status)
@@ -6908,13 +6931,13 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             log::debug!("投影: 任务调度 task_id={}", task_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务开始事件
     pub async fn on_task_started(
         &self,
@@ -6933,13 +6956,13 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             log::debug!("投影: 任务开始 task_id={}", task_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务完成事件
     pub async fn on_task_completed(
         &self,
@@ -6949,10 +6972,10 @@ impl WorkflowProjection {
             // 更新任务状态
             sqlx::query(r#"
                 UPDATE workflow_tasks
-                SET 
-                    status = $1, 
-                    completed_at = $2, 
-                    result = $3, 
+                SET
+                    status = $1,
+                    completed_at = $2,
+                    result = $3,
                     updated_at = NOW(),
                     execution_time_ms = EXTRACT(EPOCH FROM ($2 - started_at)) * 1000
                 WHERE task_id = $4
@@ -6964,22 +6987,22 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             // 更新统计信息
             sqlx::query(r#"
                 WITH task_type_query AS (
                     SELECT task_type FROM workflow_tasks WHERE task_id = $1
                 )
                 INSERT INTO task_statistics (
-                    date, 
-                    task_type, 
-                    status, 
+                    date,
+                    task_type,
+                    status,
                     count
-                ) 
-                SELECT 
-                    CURRENT_DATE, 
-                    task_type, 
-                    'COMPLETED', 
+                )
+                SELECT
+                    CURRENT_DATE,
+                    task_type,
+                    'COMPLETED',
                     1
                 FROM task_type_query
                 ON CONFLICT (date, task_type, status)
@@ -6989,13 +7012,13 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             log::debug!("投影: 任务完成 task_id={}", task_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务失败事件
     pub async fn on_task_failed(
         &self,
@@ -7005,10 +7028,10 @@ impl WorkflowProjection {
             // 更新任务状态
             sqlx::query(r#"
                 UPDATE workflow_tasks
-                SET 
-                    status = $1, 
-                    completed_at = $2, 
-                    error = $3, 
+                SET
+                    status = $1,
+                    completed_at = $2,
+                    error = $3,
                     updated_at = NOW(),
                     execution_time_ms = EXTRACT(EPOCH FROM ($2 - started_at)) * 1000
                 WHERE task_id = $4
@@ -7020,22 +7043,22 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             // 更新统计信息
             sqlx::query(r#"
                 WITH task_type_query AS (
                     SELECT task_type FROM workflow_tasks WHERE task_id = $1
                 )
                 INSERT INTO task_statistics (
-                    date, 
-                    task_type, 
-                    status, 
+                    date,
+                    task_type,
+                    status,
                     count
-                ) 
-                SELECT 
-                    CURRENT_DATE, 
-                    task_type, 
-                    'FAILED', 
+                )
+                SELECT
+                    CURRENT_DATE,
+                    task_type,
+                    'FAILED',
                     1
                 FROM task_type_query
                 ON CONFLICT (date, task_type, status)
@@ -7045,10 +7068,10 @@ impl WorkflowProjection {
             .execute(&*self.db_pool)
             .await
             .map_err(|e| ProjectionError::DatabaseError(e.to_string()))?;
-            
+  
             log::debug!("投影: 任务失败 task_id={}", task_id);
         }
-        
+  
         Ok(())
     }
 }
@@ -7066,29 +7089,29 @@ impl EventHandler {
             projections: Vec::new(),
         }
     }
-    
+  
     /// 注册投影
     pub fn register_projection(&mut self, projection: Arc<dyn Projection>) {
         self.projections.push(projection);
     }
-    
+  
     /// 处理事件
     pub async fn handle_event(&self, event: &WorkflowEvent) -> Result<(), EventHandlerError> {
         // 并行处理每个投影
         let futures: Vec<_> = self.projections.iter()
             .map(|p| p.handle_event(event))
             .collect();
-            
+  
         // 等待所有投影完成
         let results = futures::future::join_all(futures).await;
-        
+  
         // 检查结果
         for result in results {
             if let Err(e) = result {
                 return Err(EventHandlerError::ProjectionError(e.to_string()));
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -7105,7 +7128,7 @@ impl DashboardApiService {
             dashboard_service,
         }
     }
-    
+  
     /// 启动API服务
     pub async fn start(self, addr: SocketAddr) -> Result<(), std::io::Error> {
         let app = Router::new()
@@ -7131,13 +7154,13 @@ impl DashboardApiService {
             .route("/api/dashboard/workflows/:id/visualization", get(Self::get_workflow_visualization))
             // 设置共享状态
             .with_state(self.dashboard_service);
-            
+  
         // 启动服务器
         axum::Server::bind(&addr)
             .serve(app.into_make_service())
             .await
     }
-    
+  
     /// 获取仪表盘概览
     async fn get_dashboard_overview(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7146,7 +7169,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取工作流趋势
     async fn get_workflow_trends(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7156,7 +7179,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取活跃工作流
     async fn get_active_workflows(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7165,7 +7188,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取失败工作流
     async fn get_failed_workflows(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7174,7 +7197,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取工作流类型分布
     async fn get_workflow_type_distribution(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7183,7 +7206,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取任务执行时间分布
     async fn get_task_execution_time_distribution(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7192,7 +7215,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取系统资源使用情况
     async fn get_system_resource_usage(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7201,7 +7224,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取最近的告警
     async fn get_recent_alerts(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7210,7 +7233,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取工作流详情
     async fn get_workflow_details(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7220,7 +7243,7 @@ impl DashboardApiService {
             .map(Json)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
-    
+  
     /// 获取工作流可视化数据
     async fn get_workflow_visualization(
         State(dashboard_service): State<Arc<DashboardService>>,
@@ -7245,7 +7268,7 @@ impl VisualizationEngine {
             event_store,
         }
     }
-    
+  
     /// 创建工作流可视化数据
     pub async fn create_workflow_visualization(
         &self,
@@ -7255,17 +7278,17 @@ impl VisualizationEngine {
         // 加载工作流事件
         let events = self.event_store.load_events(workflow_id, 0, None).await
             .map_err(|e| VisualizationError::EventLoadFailed(e.to_string()))?;
-            
+  
         if events.is_empty() {
             return Err(VisualizationError::WorkflowNotFound(workflow_id.to_string()));
         }
-        
+  
         // 重建工作流状态
         let mut instance = WorkflowInstance::new(workflow_id);
         for event in &events {
             instance.apply(&event.event);
         }
-        
+  
         match config.format {
             VisualizationFormat::Graphviz => self.create_graphviz(&instance, &config),
             VisualizationFormat::Mermaid => self.create_mermaid(&instance, &config),
@@ -7273,7 +7296,7 @@ impl VisualizationEngine {
             VisualizationFormat::Html => self.create_html(&instance, &config),
         }
     }
-    
+  
     /// 创建Graphviz可视化
     fn create_graphviz(
         &self,
@@ -7283,7 +7306,7 @@ impl VisualizationEngine {
         let mut dot = String::from("digraph workflow {\n");
         dot.push_str("  rankdir=LR;\n");
         dot.push_str("  node [shape=box, style=filled, color=black];\n\n");
-        
+  
         // 添加节点
         if let Some(definition) = &instance.definition {
             for step in &definition.steps {
@@ -7297,12 +7320,12 @@ impl VisualizationEngine {
                     },
                     None => "white",
                 };
-                
+  
                 let label = format!("{} ({})", step.name, step.step_type);
-                dot.push_str(&format!("  \"{}\" [label=\"{}\", fillcolor={}];\n", 
+                dot.push_str(&format!("  \"{}\" [label=\"{}\", fillcolor={}];\n",
                                       step.id, label, color));
             }
-            
+  
             // 添加边
             for step in &definition.steps {
                 for next in &step.next_steps {
@@ -7310,9 +7333,9 @@ impl VisualizationEngine {
                 }
             }
         }
-        
+  
         dot.push_str("}\n");
-        
+  
         Ok(WorkflowVisualization {
             workflow_id: instance.workflow_id.clone(),
             format: VisualizationFormat::Graphviz,
@@ -7325,7 +7348,7 @@ impl VisualizationEngine {
             })),
         })
     }
-    
+  
     /// 创建Mermaid可视化
     fn create_mermaid(
         &self,
@@ -7333,7 +7356,7 @@ impl VisualizationEngine {
         config: &VisualizationConfig,
     ) -> Result<WorkflowVisualization, VisualizationError> {
         let mut mermaid = String::from("graph LR\n");
-        
+  
         // 添加节点
         if let Some(definition) = &instance.definition {
             for step in &definition.steps {
@@ -7347,11 +7370,11 @@ impl VisualizationEngine {
                     },
                     None => "classDef default fill:white",
                 };
-                
+  
                 mermaid.push_str(&format!("    {}[{}]\n", step.id, step.name));
                 mermaid.push_str(&format!("    {} {}\n", status_class, step.id));
             }
-            
+  
             // 添加边
             for step in &definition.steps {
                 for next in &step.next_steps {
@@ -7359,7 +7382,7 @@ impl VisualizationEngine {
                 }
             }
         }
-        
+  
         Ok(WorkflowVisualization {
             workflow_id: instance.workflow_id.clone(),
             format: VisualizationFormat::Mermaid,
@@ -7372,7 +7395,7 @@ impl VisualizationEngine {
             })),
         })
     }
-    
+  
     /// 创建JSON可视化
     fn create_json(
         &self,
@@ -7381,7 +7404,7 @@ impl VisualizationEngine {
     ) -> Result<WorkflowVisualization, VisualizationError> {
         let mut nodes = Vec::new();
         let mut edges = Vec::new();
-        
+  
         // 添加节点
         if let Some(definition) = &instance.definition {
             for step in &definition.steps {
@@ -7389,7 +7412,7 @@ impl VisualizationEngine {
                     Some(step_state) => step_state.status.to_string(),
                     None => "UNKNOWN".to_string(),
                 };
-                
+  
                 // 创建节点
                 let node = json!({
                     "id": step.id,
@@ -7398,21 +7421,21 @@ impl VisualizationEngine {
                     "status": status,
                     "is_critical": step.is_critical,
                 });
-                
+  
                 nodes.push(node);
-                
+  
                 // 创建边
                 for next in &step.next_steps {
                     let edge = json!({
                         "source": step.id,
                         "target": next,
                     });
-                    
+  
                     edges.push(edge);
                 }
             }
         }
-        
+  
         // 创建完整图表
         let graph = json!({
             "workflow_id": instance.workflow_id,
@@ -7423,7 +7446,7 @@ impl VisualizationEngine {
             "nodes": nodes,
             "edges": edges,
         });
-        
+  
         Ok(WorkflowVisualization {
             workflow_id: instance.workflow_id.clone(),
             format: VisualizationFormat::Json,
@@ -7434,7 +7457,7 @@ impl VisualizationEngine {
             })),
         })
     }
-    
+  
     /// 创建HTML可视化
     fn create_html(
         &self,
@@ -7444,7 +7467,7 @@ impl VisualizationEngine {
         // 先创建JSON数据
         let json_result = self.create_json(instance, config)?;
         let graph_data = json_result.content;
-        
+  
         // 构建HTML模板
         let html = format!(r#"
         <!DOCTYPE html>
@@ -7465,7 +7488,7 @@ impl VisualizationEngine {
                 .status-running {{ fill: #2196F3; }}
                 .status-pending {{ fill: #9E9E9E; }}
                 .status-scheduled {{ fill: #FFC107; }}
-                .tooltip {{ 
+                .tooltip {{
                     position: absolute;
                     background: #fff;
                     border: 1px solid #ddd;
@@ -7485,38 +7508,38 @@ impl VisualizationEngine {
         <body>
             <div id="container"></div>
             <div id="tooltip" class="tooltip"></div>
-            
+  
             <script>
                 // 工作流数据
                 const workflowData = {graph_data};
-                
+  
                 // 创建力导向图
                 const width = window.innerWidth;
                 const height = window.innerHeight;
-                
+  
                 const svg = d3.select('#container')
                     .append('svg')
                     .attr('width', width)
                     .attr('height', height);
-                    
+  
                 const g = svg.append('g');
-                
+  
                 // 添加缩放功能
                 const zoom = d3.zoom()
                     .scaleExtent([0.1, 4])
                     .on('zoom', (event) => {{
                         g.attr('transform', event.transform);
                     }});
-                
+  
                 svg.call(zoom);
-                
+  
                 // 创建力导向布局
                 const simulation = d3.forceSimulation(workflowData.nodes)
                     .force('link', d3.forceLink(workflowData.edges).id(d => d.id).distance(100))
                     .force('charge', d3.forceManyBody().strength(-500))
                     .force('center', d3.forceCenter(width / 2, height / 2))
                     .force('collide', d3.forceCollide(50));
-                
+  
                 // 创建链接
                 const link = g.selectAll('.link')
                     .data(workflowData.edges)
@@ -7524,7 +7547,7 @@ impl VisualizationEngine {
                     .append('path')
                     .attr('class', 'link')
                     .attr('marker-end', 'url(#arrow)');
-                
+  
                 // 创建箭头标记
                 svg.append('defs').append('marker')
                     .attr('id', 'arrow')
@@ -7537,7 +7560,7 @@ impl VisualizationEngine {
                     .append('path')
                     .attr('d', 'M0,-5L10,0L0,5')
                     .attr('fill', '#999');
-                
+  
                 // 创建节点组
                 const node = g.selectAll('.node')
                     .data(workflowData.nodes)
@@ -7548,43 +7571,43 @@ impl VisualizationEngine {
                         .on('start', dragStarted)
                         .on('drag', dragged)
                         .on('end', dragEnded));
-                
+  
                 // 添加节点圆形
                 node.append('circle')
                     .attr('r', 30)
                     .attr('class', d => `status-${{d.status.toLowerCase()}}`)
                     .on('mouseover', showTooltip)
                     .on('mouseout', hideTooltip);
-                
+  
                 // 添加节点文本
                 node.append('text')
                     .attr('dy', '.35em')
                     .attr('text-anchor', 'middle')
                     .text(d => d.name.length > 10 ? d.name.substring(0, 10) + '...' : d.name)
                     .attr('fill', '#000');
-                
+  
                 // 定义拖拽行为
                 function dragStarted(event, d) {{
                     if (!event.active) simulation.alphaTarget(0.3).restart();
                     d.fx = d.x;
                     d.fy = d.y;
                 }}
-                
+  
                 function dragged(event, d) {{
                     d.fx = event.x;
                     d.fy = event.y;
                 }}
-                
+  
                 function dragEnded(event, d) {{
                     if (!event.active) simulation.alphaTarget(0);
                     d.fx = null;
                     d.fy = null;
                 }}
-                
+  
                 // 定义提示框行为
                 function showTooltip(event, d) {{
                     const tooltip = d3.select('#tooltip');
-                    
+  
                     tooltip.style('opacity', 1)
                         .style('left', (event.pageX + 10) + 'px')
                         .style('top', (event.pageY + 10) + 'px')
@@ -7598,11 +7621,11 @@ impl VisualizationEngine {
                             </table>
                         `);
                 }}
-                
+  
                 function hideTooltip() {{
                     d3.select('#tooltip').style('opacity', 0);
                 }}
-                
+  
                 // 更新布局
                 simulation.on('tick', () => {{
                     link.attr('d', d => {{
@@ -7614,10 +7637,10 @@ impl VisualizationEngine {
                 const dr = Math.sqrt(dx * dx + dy * dy);
                 return `M${d.source.x},${d.source.y}A${dr},${dr} 0 0,1 ${d.target.x},${d.target.y}`;
             }});
-                
+  
             node.attr('transform', d => `translate(${d.x}, ${d.y})`);
         });
-                
+  
         // 添加工作流信息面板
         const infoPanel = d3.select('#container')
             .append('div')
@@ -7636,7 +7659,7 @@ impl VisualizationEngine {
                     <tr><td>ID:</td><td>${workflowData.workflow_id}</td></tr>
                     <tr><td>状态:</td><td>${workflowData.status}</td></tr>
                     <tr><td>开始时间:</td><td>${new Date(workflowData.started_at).toLocaleString()}</td></tr>
-                    ${workflowData.completed_at ? 
+                    ${workflowData.completed_at ?
                         `<tr><td>完成时间:</td><td>${new Date(workflowData.completed_at).toLocaleString()}</td></tr>` : ''}
                     <tr><td>节点数:</td><td>${workflowData.nodes.length}</td></tr>
                 </table>
@@ -7645,7 +7668,7 @@ impl VisualizationEngine {
         </body>
         </html>
         "#, instance.workflow_id);
-        
+  
         Ok(WorkflowVisualization {
             workflow_id: instance.workflow_id.clone(),
             format: VisualizationFormat::Html,
@@ -7671,11 +7694,11 @@ impl DashboardFrontend {
             api_base_url: api_base_url.to_string(),
         }
     }
-    
+  
     /// 提供前端静态文件
     pub fn serve_frontend(&self, req: &HttpRequest) -> Result<StaticFileResponse, std::io::Error> {
         let path = req.path();
-        
+  
         // 如果请求根路径，则返回主页
         let file_path = if path == "/" {
             "index.html"
@@ -7683,17 +7706,17 @@ impl DashboardFrontend {
             // 移除开头的斜杠
             &path[1..]
         };
-        
+  
         self.static_file_service.serve_file(file_path)
     }
-    
+  
     /// 提供主页
     pub fn serve_index(&self) -> Result<String, std::io::Error> {
         let mut index_html = include_str!("../static/index.html").to_string();
-        
+  
         // 替换API基础URL
         index_html = index_html.replace("__API_BASE_URL__", &self.api_base_url);
-        
+  
         Ok(index_html)
     }
 }
@@ -7739,12 +7762,12 @@ impl DashboardWebsocketHandler {
             subscribed_workflows: HashSet::new(),
         }
     }
-    
+  
     /// 处理客户端消息
     pub async fn handle_message(&mut self, message: String) -> Result<Option<String>, WebSocketError> {
         let request: WebSocketRequest = serde_json::from_str(&message)
             .map_err(|e| WebSocketError::InvalidRequest(e.to_string()))?;
-            
+  
         match request.action.as_str() {
             "subscribe" => {
                 self.handle_subscribe(&request).await
@@ -7766,13 +7789,13 @@ impl DashboardWebsocketHandler {
             }
         }
     }
-    
+  
     /// 处理订阅请求
     async fn handle_subscribe(&mut self, request: &WebSocketRequest) -> Result<Option<String>, WebSocketError> {
         if let Some(topic) = request.data.get("topic") {
             let topic = topic.as_str()
                 .ok_or_else(|| WebSocketError::InvalidParameter("topic must be a string".to_string()))?;
-                
+  
             // 检查主题类型
             if topic.starts_with("workflow.") {
                 // 订阅特定工作流
@@ -7785,7 +7808,7 @@ impl DashboardWebsocketHandler {
                 // 订阅一般主题
                 self.subscribe_to_topic(topic).await?;
             }
-            
+  
             // 返回成功响应
             let response = WebSocketResponse {
                 correlation_id: request.correlation_id.clone(),
@@ -7794,19 +7817,19 @@ impl DashboardWebsocketHandler {
                     "message": format!("Subscribed to {}", topic)
                 }),
             };
-            
+  
             return Ok(Some(serde_json::to_string(&response)?));
         }
-        
+  
         Err(WebSocketError::MissingParameter("topic".to_string()))
     }
-    
+  
     /// 处理取消订阅请求
     async fn handle_unsubscribe(&mut self, request: &WebSocketRequest) -> Result<Option<String>, WebSocketError> {
         if let Some(topic) = request.data.get("topic") {
             let topic = topic.as_str()
                 .ok_or_else(|| WebSocketError::InvalidParameter("topic must be a string".to_string()))?;
-                
+  
             // 检查主题类型
             if topic.starts_with("workflow.") {
                 // 取消订阅特定工作流
@@ -7819,7 +7842,7 @@ impl DashboardWebsocketHandler {
                 // 取消订阅一般主题
                 self.unsubscribe_from_topic(topic).await?;
             }
-            
+  
             // 返回成功响应
             let response = WebSocketResponse {
                 correlation_id: request.correlation_id.clone(),
@@ -7828,45 +7851,45 @@ impl DashboardWebsocketHandler {
                     "message": format!("Unsubscribed from {}", topic)
                 }),
             };
-            
+  
             return Ok(Some(serde_json::to_string(&response)?));
         }
-        
+  
         Err(WebSocketError::MissingParameter("topic".to_string()))
     }
-    
+  
     /// 处理获取工作流请求
     async fn handle_get_workflow(&self, request: &WebSocketRequest) -> Result<Option<String>, WebSocketError> {
         if let Some(workflow_id) = request.data.get("workflow_id") {
             let workflow_id = workflow_id.as_str()
                 .ok_or_else(|| WebSocketError::InvalidParameter("workflow_id must be a string".to_string()))?;
-                
+  
             // 查询工作流详情
             let include_tasks = request.data.get("include_tasks")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(true);
-                
+  
             let include_variables = request.data.get("include_variables")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(false);
-                
+  
             let workflow = self.workflow_service.get_workflow_details(workflow_id, include_tasks, include_variables)
                 .await
                 .map_err(|e| WebSocketError::ServiceError(e.to_string()))?;
-                
+  
             // 返回成功响应
             let response = WebSocketResponse {
                 correlation_id: request.correlation_id.clone(),
                 status: "success".to_string(),
                 data: serde_json::to_value(workflow)?,
             };
-            
+  
             return Ok(Some(serde_json::to_string(&response)?));
         }
-        
+  
         Err(WebSocketError::MissingParameter("workflow_id".to_string()))
     }
-    
+  
     /// 处理获取仪表盘概览请求
     async fn handle_get_dashboard_overview(&self, request: &WebSocketRequest) -> Result<Option<String>, WebSocketError> {
         // 获取仪表盘概览数据
@@ -7891,60 +7914,60 @@ impl DashboardWebsocketHandler {
             latest_workflows: self.workflow_service.get_latest_workflows(5).await
                 .map_err(|e| WebSocketError::ServiceError(e.to_string()))?,
         };
-        
+  
         // 返回成功响应
         let response = WebSocketResponse {
             correlation_id: request.correlation_id.clone(),
             status: "success".to_string(),
             data: serde_json::to_value(overview)?,
         };
-        
+  
         Ok(Some(serde_json::to_string(&response)?))
     }
-    
+  
     /// 处理获取工作流可视化请求
     async fn handle_get_workflow_visualization(&self, request: &WebSocketRequest) -> Result<Option<String>, WebSocketError> {
         if let Some(workflow_id) = request.data.get("workflow_id") {
             let workflow_id = workflow_id.as_str()
                 .ok_or_else(|| WebSocketError::InvalidParameter("workflow_id must be a string".to_string()))?;
-                
+  
             // 获取可视化配置
             let format = request.data.get("format")
                 .and_then(|v| v.as_str())
                 .unwrap_or("json");
-                
+  
             let format = match format {
                 "graphviz" => VisualizationFormat::Graphviz,
                 "mermaid" => VisualizationFormat::Mermaid,
                 "html" => VisualizationFormat::Html,
                 _ => VisualizationFormat::Json,
             };
-            
+  
             let include_execution_status = request.data.get("include_execution_status")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(true);
-                
+  
             let include_data = request.data.get("include_data")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(false);
-                
+  
             let include_timing = request.data.get("include_timing")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(true);
-                
+  
             let include_metrics = request.data.get("include_metrics")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(true);
-                
+  
             let show_unexecuted_steps = request.data.get("show_unexecuted_steps")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(true);
-                
+  
             let layout_algorithm = request.data.get("layout_algorithm")
                 .and_then(|v| v.as_str())
                 .unwrap_or("dagre")
                 .to_string();
-                
+  
             let theme = request.data.get("theme")
                 .and_then(|v| v.as_str())
                 .map(|t| match t {
@@ -7952,7 +7975,7 @@ impl DashboardWebsocketHandler {
                     _ => VisualizationTheme::Light,
                 })
                 .unwrap_or(VisualizationTheme::Light);
-                
+  
             let config = VisualizationConfig {
                 format,
                 include_execution_status,
@@ -7964,31 +7987,31 @@ impl DashboardWebsocketHandler {
                 theme,
                 custom_config: HashMap::new(),
             };
-            
+  
             // 创建可视化引擎
             let visualization = self.create_workflow_visualization(workflow_id, config).await
                 .map_err(|e| WebSocketError::ServiceError(e.to_string()))?;
-                
+  
             // 返回成功响应
             let response = WebSocketResponse {
                 correlation_id: request.correlation_id.clone(),
                 status: "success".to_string(),
                 data: serde_json::to_value(visualization)?,
             };
-            
+  
             return Ok(Some(serde_json::to_string(&response)?));
         }
-        
+  
         Err(WebSocketError::MissingParameter("workflow_id".to_string()))
     }
-    
+  
     /// 订阅主题
     async fn subscribe_to_topic(&mut self, topic: &str) -> Result<(), WebSocketError> {
         if self.subscribed_topics.contains(topic) {
             // 已经订阅过，直接返回
             return Ok(());
         }
-        
+  
         // 注册到事件总线
         let session_id = self.session_id.clone();
         self.event_bus.subscribe(topic, move |event| {
@@ -7998,80 +8021,80 @@ impl DashboardWebsocketHandler {
         })
         .await
         .map_err(|e| WebSocketError::SubscriptionError(e.to_string()))?;
-        
+  
         // 添加到已订阅主题
         self.subscribed_topics.insert(topic.to_string());
-        
+  
         Ok(())
     }
-    
+  
     /// 取消订阅主题
     async fn unsubscribe_from_topic(&mut self, topic: &str) -> Result<(), WebSocketError> {
         if !self.subscribed_topics.contains(topic) {
             // 未订阅，直接返回
             return Ok(());
         }
-        
+  
         // 从事件总线取消订阅
         self.event_bus.unsubscribe(topic, &self.session_id)
             .await
             .map_err(|e| WebSocketError::SubscriptionError(e.to_string()))?;
-        
+  
         // 从已订阅主题删除
         self.subscribed_topics.remove(topic);
-        
+  
         Ok(())
     }
-    
+  
     /// 订阅工作流
     async fn subscribe_to_workflow(&mut self, workflow_id: &str) -> Result<(), WebSocketError> {
         if self.subscribed_workflows.contains(workflow_id) {
             // 已经订阅过，直接返回
             return Ok(());
         }
-        
+  
         // 订阅工作流相关主题
         let workflow_topic = format!("workflow.{}", workflow_id);
         self.subscribe_to_topic(&workflow_topic).await?;
-        
+  
         // 订阅任务主题
         let tasks_topic = format!("workflow.{}.tasks", workflow_id);
         self.subscribe_to_topic(&tasks_topic).await?;
-        
+  
         // 添加到已订阅工作流
         self.subscribed_workflows.insert(workflow_id.to_string());
-        
+  
         Ok(())
     }
-    
+  
     /// 取消订阅工作流
     async fn unsubscribe_from_workflow(&mut self, workflow_id: &str) -> Result<(), WebSocketError> {
         if !self.subscribed_workflows.contains(workflow_id) {
             // 未订阅，直接返回
             return Ok(());
         }
-        
+  
         // 取消订阅工作流相关主题
         let workflow_topic = format!("workflow.{}", workflow_id);
         self.unsubscribe_from_topic(&workflow_topic).await?;
-        
+  
         // 取消订阅任务主题
         let tasks_topic = format!("workflow.{}.tasks", workflow_id);
         self.unsubscribe_from_topic(&tasks_topic).await?;
-        
+  
         // 从已订阅工作流删除
         self.subscribed_workflows.remove(workflow_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 获取系统健康状态
     async fn get_system_health(&self) -> SystemHealth {
         // 获取节点健康状态
         let nodes = self.workflow_service.get_node_health_status()
             .await
             .unwrap_or_default();
-            
+  
         // 计算系统整体健康状态
         let overall_status = if nodes.iter().any(|n| n.status == "DOWN") {
             "DEGRADED"
@@ -8080,19 +8103,19 @@ impl DashboardWebsocketHandler {
         } else {
             "WARNING"
         };
-        
+  
         SystemHealth {
             status: overall_status.to_string(),
             nodes,
             last_checked: Utc::now(),
         }
     }
-    
+  
     /// 创建工作流可视化
     async fn create_workflow_visualization(&self, workflow_id: &str, config: VisualizationConfig) -> Result<WorkflowVisualization, ServiceError> {
         // 获取可视化引擎
         let visualization_engine = self.workflow_service.get_visualization_engine();
-        
+  
         // 创建可视化
         visualization_engine.create_workflow_visualization(workflow_id, config)
             .await
@@ -8105,7 +8128,7 @@ pub static DASHBOARD_REACT_APP: &str = r#"
 // 工作流仪表盘React应用
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
+import {
   Container, Grid, Paper, Typography, Box, CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Card, CardContent, CardHeader, Divider, Button, Chip, IconButton,
@@ -8188,6 +8211,7 @@ function App() {
         <Box
           component="nav"
           sx={{ width: 240, flexShrink: 0 }}
+
         >
           <List>
             <ListItem button component={Link} to="/">
@@ -8249,7 +8273,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-    
+  
     // 每分钟刷新一次
     const interval = setInterval(fetchDashboardData, 60000);
     return () => clearInterval(interval);
@@ -8267,11 +8291,12 @@ function Dashboard() {
     return (
       <Box sx={{ mt: 2 }}>
         <Typography color="error">{error}</Typography>
-        <Button 
-          startIcon={<RefreshIcon />} 
-          variant="contained" 
+        <Button
+          startIcon={<RefreshIcon />}
+          variant="contained"
           onClick={fetchDashboardData}
           sx={{ mt: 2 }}
+
         >
           重试
         </Button>
@@ -8285,10 +8310,11 @@ function Dashboard() {
         <Typography variant="h4" component="h1">
           仪表盘概览
         </Typography>
-        <Button 
-          startIcon={<RefreshIcon />} 
-          variant="outlined" 
+        <Button
+          startIcon={<RefreshIcon />}
+          variant="outlined"
           onClick={fetchDashboardData}
+
         >
           刷新
         </Button>
@@ -8297,35 +8323,35 @@ function Dashboard() {
       <Grid container spacing={3}>
         {/* 状态卡片 */}
         <Grid item xs={12} sm={6} md={3}>
-          <MetricCard 
-            title="活跃工作流" 
-            value={overview?.active_workflows || 0} 
-            icon={<RunningIcon />} 
-            color={COLORS.running} 
+          <MetricCard
+            title="活跃工作流"
+            value={overview?.active_workflows || 0}
+            icon={<RunningIcon />}
+            color={COLORS.running}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <MetricCard 
-            title="已完成工作流" 
-            value={overview?.completed_workflows || 0} 
-            icon={<SuccessIcon />} 
-            color={COLORS.success} 
+          <MetricCard
+            title="已完成工作流"
+            value={overview?.completed_workflows || 0}
+            icon={<SuccessIcon />}
+            color={COLORS.success}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <MetricCard 
-            title="失败工作流" 
-            value={overview?.failed_workflows || 0} 
-            icon={<FailedIcon />} 
-            color={COLORS.error} 
+          <MetricCard
+            title="失败工作流"
+            value={overview?.failed_workflows || 0}
+            icon={<FailedIcon />}
+            color={COLORS.error}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <MetricCard 
-            title="待调度任务" 
-            value={overview?.scheduled_tasks || 0} 
-            icon={<PendingIcon />} 
-            color={COLORS.scheduled} 
+          <MetricCard
+            title="待调度任务"
+            value={overview?.scheduled_tasks || 0}
+            icon={<PendingIcon />}
+            color={COLORS.scheduled}
           />
         </Grid>
 
@@ -8336,8 +8362,8 @@ function Dashboard() {
               系统健康
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Chip 
-                icon={getHealthIcon(overview?.system_health?.status)} 
+              <Chip
+                icon={getHealthIcon(overview?.system_health?.status)}
                 label={getHealthStatusText(overview?.system_health?.status)}
                 color={getHealthColor(overview?.system_health?.status)}
                 sx={{ mr: 2 }}
@@ -8346,7 +8372,7 @@ function Dashboard() {
                 最后检查: {formatDateTime(overview?.system_health?.last_checked)}
               </Typography>
             </Box>
-            
+  
             <TableContainer>
               <Table size="small">
                 <TableHead>
@@ -8361,17 +8387,17 @@ function Dashboard() {
                     <TableRow key={node.id}>
                       <TableCell>{node.name}</TableCell>
                       <TableCell>
-                        <Chip 
+                        <Chip
                           size="small"
                           label={node.status}
                           color={node.status === 'UP' ? 'success' : 'error'}
                         />
                       </TableCell>
                       <TableCell>
-                        <LinearProgress 
-                          variant="determinate" 
-                          value={node.load || 0} 
-                          color={getLoadColor(node.load)} 
+                        <LinearProgress
+                          variant="determinate"
+                          value={node.load || 0}
+                          color={getLoadColor(node.load)}
                         />
                         <Typography variant="caption">{node.load}%</Typography>
                       </TableCell>
@@ -8483,6 +8509,7 @@ function Dashboard() {
                           to={`/workflows/${workflow.id}`}
                           size="small"
                           title="查看详情"
+
                         >
                           <VisibilityIcon fontSize="small" />
                         </IconButton>
@@ -8497,6 +8524,7 @@ function Dashboard() {
                 component={Link}
                 to="/workflows"
                 color="primary"
+
               >
                 查看全部工作流
               </Button>
@@ -8514,7 +8542,7 @@ function MetricCard({ title, value, icon, color }) {
     <Card sx={{ height: '100%' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Box sx={{ 
+          <Box sx={{
             bgcolor: `${color}22`,
             borderRadius: '50%',
             p: 1,
@@ -8559,12 +8587,12 @@ function WorkflowList() {
         ...(filters.type && { type: filters.type }),
         ...(filters.timeRange && { time_range: filters.timeRange })
       });
-      
+  
       const response = await fetch(`/api/workflows?${queryParams}`);
       if (!response.ok) {
         throw new Error('获取工作流列表失败');
       }
-      
+  
       const data = await response.json();
       setWorkflows(data.items || []);
       setTotalCount(data.total_count || 0);
@@ -8603,10 +8631,11 @@ function WorkflowList() {
         <Typography variant="h4" component="h1">
           工作流列表
         </Typography>
-        <Button 
-          startIcon={<RefreshIcon />} 
-          variant="outlined" 
+        <Button
+          startIcon={<RefreshIcon />}
+          variant="outlined"
           onClick={fetchWorkflows}
+
         >
           刷新
         </Button>
@@ -8623,6 +8652,7 @@ function WorkflowList() {
                 value={filters.status}
                 label="状态"
                 onChange={(e) => handleFilterChange('status', e.target.value)}
+
               >
                 <MenuItem value="">全部</MenuItem>
                 <MenuItem value="RUNNING">运行中</MenuItem>
@@ -8640,6 +8670,7 @@ function WorkflowList() {
                 value={filters.type}
                 label="工作流类型"
                 onChange={(e) => handleFilterChange('type', e.target.value)}
+
               >
                 <MenuItem value="">全部</MenuItem>
                 <MenuItem value="ORDER_PROCESSING">订单处理</MenuItem>
@@ -8656,6 +8687,7 @@ function WorkflowList() {
                 value={filters.timeRange}
                 label="时间范围"
                 onChange={(e) => handleFilterChange('timeRange', e.target.value)}
+
               >
                 <MenuItem value="1h">最近1小时</MenuItem>
                 <MenuItem value="6h">最近6小时</MenuItem>
@@ -8708,9 +8740,9 @@ function WorkflowList() {
                       <Typography variant="body2">
                         {workflow.completed_nodes} / {workflow.total_nodes}
                       </Typography>
-                      <LinearProgress 
-                        variant="determinate" 
-                        value={(workflow.completed_nodes / workflow.total_nodes) * 100} 
+                      <LinearProgress
+                        variant="determinate"
+                        value={(workflow.completed_nodes / workflow.total_nodes) * 100}
                         sx={{ ml: 1, width: '50px' }}
                       />
                     </Box>
@@ -8721,6 +8753,7 @@ function WorkflowList() {
                       to={`/workflows/${workflow.id}`}
                       size="small"
                       title="查看详情"
+
                     >
                       <VisibilityIcon fontSize="small" />
                     </IconButton>
@@ -8739,13 +8772,14 @@ function WorkflowList() {
             </TableBody>
           </Table>
         </TableContainer>
-        
+  
         {/* 分页 */}
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <FormControl variant="outlined" size="small">
             <Select
               value={pageSize}
               onChange={handlePageSizeChange}
+
             >
               <MenuItem value={10}>10 条/页</MenuItem>
               <MenuItem value={25}>25 条/页</MenuItem>
@@ -8753,11 +8787,11 @@ function WorkflowList() {
               <MenuItem value={100}>100 条/页</MenuItem>
             </Select>
           </FormControl>
-          <Pagination 
-            count={Math.ceil(totalCount / pageSize)} 
-            page={page + 1} 
+          <Pagination
+            count={Math.ceil(totalCount / pageSize)}
+            page={page + 1}
             onChange={(e, p) => handlePageChange(e, p - 1)}
-            color="primary" 
+            color="primary"
           />
         </Box>
       </Paper>
@@ -8791,7 +8825,7 @@ function WorkflowDetails() {
       if (!response.ok) {
         throw new Error('获取工作流详情失败');
       }
-      
+  
       const data = await response.json();
       setWorkflow(data);
       setError(null);
@@ -8818,14 +8852,14 @@ function WorkflowDetails() {
           theme: visualizationConfig.theme
         })
       });
-      
+  
       if (!response.ok) {
         throw new Error('获取工作流可视化数据失败');
       }
-      
+  
       const data = await response.json();
       setVisualization(data);
-      
+  
       // 如果是SVG或HTML格式，渲染到DOM
       if (['svg', 'html'].includes(visualizationConfig.format) && visualizationRef.current) {
         visualizationRef.current.innerHTML = data.content;
@@ -8841,13 +8875,13 @@ function WorkflowDetails() {
     if (websocketRef.current) {
       websocketRef.current.close();
     }
-    
+  
     // 创建新连接
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${wsProtocol}//${window.location.host}/ws/workflow/${id}`;
-    
+  
     const ws = new WebSocket(wsUrl);
-    
+  
     ws.onopen = () => {
       console.log('WebSocket已连接，订阅工作流更新');
       ws.send(JSON.stringify({
@@ -8858,11 +8892,11 @@ function WorkflowDetails() {
         }
       }));
     };
-    
+  
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        
+  
         // 处理工作流状态更新
         if (data.type === 'workflow_update') {
           setWorkflow(prev => ({
@@ -8870,15 +8904,15 @@ function WorkflowDetails() {
             ...data.workflow
           }));
         }
-        
+  
         // 处理任务更新
         if (data.type === 'task_update' && workflow) {
           setWorkflow(prev => {
             if (!prev) return prev;
-            
+  
             const updatedTasks = [...(prev.tasks || [])];
             const taskIndex = updatedTasks.findIndex(t => t.id === data.task.id);
-            
+  
             if (taskIndex >= 0) {
               updatedTasks[taskIndex] = {
                 ...updatedTasks[taskIndex],
@@ -8887,7 +8921,7 @@ function WorkflowDetails() {
             } else {
               updatedTasks.push(data.task);
             }
-            
+  
             return {
               ...prev,
               tasks: updatedTasks
@@ -8898,11 +8932,11 @@ function WorkflowDetails() {
         console.error('解析WebSocket消息失败:', err);
       }
     };
-    
+  
     ws.onerror = (error) => {
       console.error('WebSocket错误:', error);
     };
-    
+  
     ws.onclose = () => {
       console.log('WebSocket连接已关闭');
       // 如果工作流仍在运行，5秒后尝试重连
@@ -8910,7 +8944,7 @@ function WorkflowDetails() {
         setTimeout(connectWebSocket, 5000);
       }
     };
-    
+  
     websocketRef.current = ws;
   }, [id, workflow]);
 
@@ -8927,7 +8961,7 @@ function WorkflowDetails() {
   useEffect(() => {
     if (workflow && workflow.status === 'RUNNING') {
       connectWebSocket();
-      
+  
       // 定期刷新详情（作为WebSocket的备份机制）
       const interval = setInterval(fetchWorkflowDetails, 30000);
       return () => clearInterval(interval);
@@ -8966,11 +9000,12 @@ function WorkflowDetails() {
     return (
       <Box sx={{ mt: 2 }}>
         <Typography color="error">{error}</Typography>
-        <Button 
-          startIcon={<RefreshIcon />} 
-          variant="contained" 
+        <Button
+          startIcon={<RefreshIcon />}
+          variant="contained"
           onClick={fetchWorkflowDetails}
           sx={{ mt: 2 }}
+
         >
           重试
         </Button>
@@ -8981,14 +9016,15 @@ function WorkflowDetails() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ mb: 3 }}>
-        <Button 
+        <Button
           component={Link}
           to="/workflows"
           sx={{ mb: 2 }}
+
         >
           返回工作流列表
         </Button>
-        
+  
         {/* 工作流头部信息 */}
         <Paper sx={{ p: 3, mb: 3 }}>
           <Grid container spacing={2}>
@@ -8999,29 +9035,29 @@ function WorkflowDetails() {
               <Typography variant="body2" color="textSecondary" gutterBottom>
                 ID: {workflow?.id}
               </Typography>
-              
+  
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                <Chip 
+                <Chip
                   icon={<StatusIcon status={workflow?.status} />}
                   label={workflow?.status}
                   color={getStatusColor(workflow?.status)}
                   sx={{ mr: 2 }}
                 />
-                
+  
                 {workflow?.status === 'RUNNING' && (
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={(workflow?.completed_nodes / workflow?.total_nodes) * 100} 
-                    sx={{ width: '100px', mr: 1 }} 
+                  <LinearProgress
+                    variant="determinate"
+                    value={(workflow?.completed_nodes / workflow?.total_nodes) * 100}
+                    sx={{ width: '100px', mr: 1 }}
                   />
                 )}
-                
+  
                 <Typography variant="body2">
                   {workflow?.completed_nodes || 0} / {workflow?.total_nodes || 0} 节点完成
                 </Typography>
               </Box>
             </Grid>
-            
+  
             <Grid item xs={12} sm={6}>
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                 <Box sx={{ display: 'flex', mb: 1 }}>
@@ -9032,7 +9068,7 @@ function WorkflowDetails() {
                     {formatDateTime(workflow?.started_at)}
                   </Typography>
                 </Box>
-                
+  
                 {workflow?.completed_at && (
                   <Box sx={{ display: 'flex', mb: 1 }}>
                     <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
@@ -9043,7 +9079,7 @@ function WorkflowDetails() {
                     </Typography>
                   </Box>
                 )}
-                
+  
                 <Box sx={{ display: 'flex', mb: 1 }}>
                   <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
                     持续时间:
@@ -9052,7 +9088,7 @@ function WorkflowDetails() {
                     {formatDuration(workflow?.duration)}
                   </Typography>
                 </Box>
-                
+  
                 {workflow?.status === 'RUNNING' && workflow?.estimated_remaining_time && (
                   <Box sx={{ display: 'flex' }}>
                     <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
@@ -9102,25 +9138,25 @@ impl WorkflowVisualizationEngine {
         let instance = self.workflow_engine.get_workflow_instance(workflow_id)
             .await
             .map_err(|e| VisualizationError::DataFetchError(e.to_string()))?;
-            
+  
         let definition = self.workflow_engine.get_workflow_definition(&instance.workflow_type, &instance.version)
             .await
             .map_err(|e| VisualizationError::DataFetchError(e.to_string()))?;
-            
+  
         let tasks = match config.include_execution_status {
             true => Some(self.workflow_engine.get_workflow_tasks(workflow_id)
                 .await
                 .map_err(|e| VisualizationError::DataFetchError(e.to_string()))?),
             false => None,
         };
-        
+  
         let metrics = match config.include_metrics {
             true => Some(self.metrics_collector.get_workflow_metrics(workflow_id)
                 .await
                 .map_err(|e| VisualizationError::DataFetchError(e.to_string()))?),
             false => None,
         };
-        
+  
         match config.format {
             VisualizationFormat::Json => self.generate_json_visualization(&instance, &definition, tasks, metrics),
             VisualizationFormat::Graphviz => self.generate_graphviz_visualization(&instance, &definition, tasks, metrics, &config),
@@ -9128,7 +9164,7 @@ impl WorkflowVisualizationEngine {
             VisualizationFormat::Html => self.generate_html_visualization(&instance, &definition, tasks, metrics, &config),
         }
     }
-    
+  
     /// 创建工作流实时可视化WebSocket处理
     pub fn create_visualization_handler(&self, workflow_id: String, user_id: String) -> VisualizationWebSocketHandler {
         VisualizationWebSocketHandler::new(
@@ -9168,43 +9204,43 @@ impl VisualizationWebSocketHandler {
             event_subscription: None,
         }
     }
-    
+  
     /// 注册客户端连接
     pub fn register_client(&mut self, client_id: String, sender: mpsc::UnboundedSender<String>) {
         self.clients.insert(client_id, sender);
-        
+  
         // 如果是第一个客户端，开始订阅工作流事件
         if self.clients.len() == 1 {
             self.subscribe_to_workflow_events();
         }
     }
-    
+  
     /// 注销客户端连接
     pub fn unregister_client(&mut self, client_id: &str) {
         self.clients.remove(client_id);
-        
+  
         // 如果没有更多客户端，取消事件订阅
         if self.clients.is_empty() {
             self.unsubscribe_from_workflow_events();
         }
     }
-    
+  
     /// 订阅工作流事件
     fn subscribe_to_workflow_events(&mut self) {
         let workflow_id = self.workflow_id.clone();
         let visualization_engine = self.visualization_engine.clone();
         let clients = self.clients.clone();
-        
+  
         // TODO: 实现具体的事件订阅
     }
-    
+  
     /// 取消工作流事件订阅
     fn unsubscribe_from_workflow_events(&mut self) {
         if let Some(subscription) = self.event_subscription.take() {
             // TODO: 取消订阅
         }
     }
-    
+  
     /// 广播消息到所有客户端
     fn broadcast_message(&self, message: &str) {
         for (client_id, sender) in &self
@@ -9216,7 +9252,7 @@ impl VisualizationWebSocketHandler {
             }
         }
     }
-    
+  
     /// 处理来自客户端的消息
     pub async fn handle_client_message(&self, client_id: &str, message: &str) -> Result<(), VisualizationError> {
         // 解析消息
@@ -9226,7 +9262,7 @@ impl VisualizationWebSocketHandler {
                 return Err(VisualizationError::InvalidRequest(format!("消息解析失败: {}", e)));
             }
         };
-        
+  
         match request.request_type.as_str() {
             "get_full_view" => {
                 // 获取完整视图
@@ -9238,18 +9274,18 @@ impl VisualizationWebSocketHandler {
                     theme: request.theme.unwrap_or_else(|| "light".to_string()),
                     ..Default::default()
                 };
-                
+  
                 let visualization = self.visualization_engine
                     .create_workflow_visualization(&self.workflow_id, config)
                     .await?;
-                
+  
                 if let Some(sender) = self.clients.get(client_id) {
                     let response = serde_json::json!({
                         "type": "full_view",
                         "view_data": visualization,
                         "timestamp": chrono::Utc::now().to_rfc3339()
                     });
-                    
+  
                     if sender.send(response.to_string()).is_err() {
                         log::warn!("向客户端 {} 发送完整视图失败", client_id);
                     }
@@ -9264,7 +9300,7 @@ impl VisualizationWebSocketHandler {
                 return Err(VisualizationError::InvalidRequest(format!("未知请求类型: {}", request.request_type)));
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -9285,25 +9321,25 @@ impl VisualizationWebsocketMiddleware {
             visualization_handlers: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     /// 获取工作流的WebSocket处理器
     pub async fn get_or_create_handler(&self, workflow_id: &str, user_id: &str) -> Arc<Mutex<VisualizationWebSocketHandler>> {
         let mut handlers = self.visualization_handlers.write().await;
-        
+  
         if let Some(handler) = handlers.get(workflow_id) {
             return handler.clone();
         }
-        
+  
         // 创建新的处理器
         let handler = Arc::new(Mutex::new(self.visualization_engine.create_visualization_handler(
             workflow_id.to_string(),
             user_id.to_string(),
         )));
-        
+  
         handlers.insert(workflow_id.to_string(), handler.clone());
         handler
     }
-    
+  
     /// 处理WebSocket连接
     pub async fn handle_connection(
         &self,
@@ -9313,22 +9349,22 @@ impl VisualizationWebsocketMiddleware {
     ) {
         // 生成唯一客户端ID
         let client_id = format!("{}:{}", user_id, uuid::Uuid::new_v4());
-        
+  
         // 获取处理器
         let handler = self.get_or_create_handler(&workflow_id, &user_id).await;
-        
+  
         // 分割WebSocket
         let (ws_sender, mut ws_receiver) = websocket.split();
-        
+  
         // 创建消息通道
         let (tx, rx) = mpsc::unbounded_channel();
-        
+  
         // 注册客户端
         {
             let mut handler_lock = handler.lock().await;
             handler_lock.register_client(client_id.clone(), tx.clone());
         }
-        
+  
         // 发送确认消息
         let welcome_msg = serde_json::json!({
             "type": "connection_established",
@@ -9336,16 +9372,16 @@ impl VisualizationWebsocketMiddleware {
             "workflow_id": workflow_id,
             "timestamp": chrono::Utc::now().to_rfc3339()
         });
-        
+  
         if tx.send(welcome_msg.to_string()).is_err() {
             log::error!("发送欢迎消息失败");
             return;
         }
-        
+  
         // 转发接收到的消息
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(30));
-            
+  
             loop {
                 tokio::select! {
                     // 接收来自WebSocket的消息
@@ -9355,7 +9391,7 @@ impl VisualizationWebsocketMiddleware {
                                 // 处理客户端消息
                                 let handler_clone = handler.clone();
                                 let client_id_clone = client_id.clone();
-                                
+  
                                 tokio::spawn(async move {
                                     let handler_lock = handler_clone.lock().await;
                                     if let Err(e) = handler_lock.handle_client_message(&client_id_clone, &text).await {
@@ -9393,12 +9429,12 @@ impl VisualizationWebsocketMiddleware {
                     }
                 }
             }
-            
+  
             // 客户端断开连接，注销客户端
             let mut handler_lock = handler.lock().await;
             handler_lock.unregister_client(&client_id);
         });
-        
+  
         // 转发发送给客户端的消息
         tokio::spawn(rx.map(Ok).forward(ws_sender).map(|result| {
             if let Err(e) = result {
@@ -9406,25 +9442,25 @@ impl VisualizationWebsocketMiddleware {
             }
         }));
     }
-    
+  
     /// 创建WebSocket路由
     pub fn routes(&self) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
         let visualization_engine = self.visualization_engine.clone();
         let self_clone = Arc::new(self.clone());
-        
+  
         // 工作流可视化WebSocket路由
         warp::path!("ws" / "visualize" / String)
             .and(warp::ws())
             .and(warp::header::optional("authorization"))
             .map(move |workflow_id: String, ws: warp::ws::Ws, auth: Option<String>| {
                 let self_clone = self_clone.clone();
-                
+  
                 // 验证授权(在实际应用中应该解析令牌)
                 let user_id = auth.map(|token| {
                     // 这里应该验证token并提取user_id
                     "anonymous".to_string()
                 }).unwrap_or_else(|| "anonymous".to_string());
-                
+  
                 ws.on_upgrade(move |websocket| async move {
                     self_clone.handle_connection(websocket, workflow_id, user_id).await;
                 })
@@ -9434,7 +9470,9 @@ impl VisualizationWebsocketMiddleware {
 
 /// 为工作流监控系统实现React组件
 /// 以下是完整的React前端组件代码
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 struct WorkflowMonitoringFrontend {
     /// API服务
     api_service: Arc<ApiService>,
@@ -9457,19 +9495,19 @@ impl WorkflowMonitoringFrontend {
             static_files_service,
         }
     }
-    
+  
     /// 启动前端服务
     pub async fn start(&self, port: u16) -> Result<(), Error> {
         // 组合API路由、WebSocket路由和静态文件路由
         let routes = self.api_service.routes()
             .or(self.websocket_service.routes())
             .or(self.static_files_service.routes());
-        
+  
         // 启动服务器
         warp::serve(routes)
             .run(([0, 0, 0, 0], port))
             .await;
-        
+  
         Ok(())
     }
 }
@@ -9512,19 +9550,19 @@ class WebSocketService {
     if (this.connections.has(`workflow:${workflowId}`)) {
       return this.connections.get(`workflow:${workflowId}`);
     }
-    
+  
     // 创建WebSocket连接
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/ws/visualize/${workflowId}`;
-    
+  
     const ws = new WebSocket(wsUrl);
-    
+  
     // 设置事件处理器
     ws.onopen = () => {
       console.log(`工作流 ${workflowId} 的WebSocket连接已建立`);
       this.notifyListeners(`workflow:${workflowId}`, 'connection', { status: 'connected' });
     };
-    
+  
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -9533,17 +9571,17 @@ class WebSocketService {
         console.error('解析WebSocket消息失败:', e);
       }
     };
-    
+  
     ws.onerror = (error) => {
       console.error(`工作流 ${workflowId} 的WebSocket错误:`, error);
       this.notifyListeners(`workflow:${workflowId}`, 'error', { error });
     };
-    
+  
     ws.onclose = () => {
       console.log(`工作流 ${workflowId} 的WebSocket连接已关闭`);
       this.connections.delete(`workflow:${workflowId}`);
       this.notifyListeners(`workflow:${workflowId}`, 'connection', { status: 'disconnected' });
-      
+  
       // 5秒后尝试重新连接
       setTimeout(() => {
         if (this.hasListeners(`workflow:${workflowId}`)) {
@@ -9551,10 +9589,10 @@ class WebSocketService {
         }
       }, 5000);
     };
-    
+  
     // 保存连接
     this.connections.set(`workflow:${workflowId}`, ws);
-    
+  
     return ws;
   }
   
@@ -9596,19 +9634,19 @@ class WebSocketService {
    */
   addListener(workflowId, eventType, listener) {
     const key = `workflow:${workflowId}`;
-    
+  
     if (!this.listeners.has(key)) {
       this.listeners.set(key, new Map());
     }
-    
+  
     const workflowListeners = this.listeners.get(key);
-    
+  
     if (!workflowListeners.has(eventType)) {
       workflowListeners.set(eventType, new Set());
     }
-    
+  
     workflowListeners.get(eventType).add(listener);
-    
+  
     // 如果添加了监听器但没有连接，则创建连接
     if (!this.connections.has(key)) {
       this.connectToWorkflowVisualization(workflowId);
@@ -9623,19 +9661,19 @@ class WebSocketService {
    */
   removeListener(workflowId, eventType, listener) {
     const key = `workflow:${workflowId}`;
-    
+  
     if (!this.listeners.has(key)) {
       return;
     }
-    
+  
     const workflowListeners = this.listeners.get(key);
-    
+  
     if (!workflowListeners.has(eventType)) {
       return;
     }
-    
+  
     workflowListeners.get(eventType).delete(listener);
-    
+  
     // 如果没有更多监听器，则断开连接
     if (this.hasListeners(key)) {
       this.disconnect(workflowId);
@@ -9651,15 +9689,15 @@ class WebSocketService {
     if (!this.listeners.has(key)) {
       return false;
     }
-    
+  
     const workflowListeners = this.listeners.get(key);
-    
+  
     for (const [_, listeners] of workflowListeners.entries()) {
       if (listeners.size > 0) {
         return true;
       }
     }
-    
+  
     return false;
   }
   
@@ -9673,13 +9711,13 @@ class WebSocketService {
     if (!this.listeners.has(key)) {
       return;
     }
-    
+  
     const workflowListeners = this.listeners.get(key);
-    
+  
     if (!workflowListeners.has(eventType)) {
       return;
     }
-    
+  
     for (const listener of workflowListeners.get(eventType)) {
       try {
         listener(data);
@@ -9706,12 +9744,12 @@ const WorkflowVisualization = ({ workflowId, config }) => {
       setVisualization(data.view_data);
       setStatus('loaded');
     };
-    
+  
     const handleError = (data) => {
       setError(data.error);
       setStatus('error');
     };
-    
+  
     const handleConnection = (data) => {
       if (data.status === 'connected') {
         // 请求完整视图
@@ -9723,11 +9761,11 @@ const WorkflowVisualization = ({ workflowId, config }) => {
         });
       }
     };
-    
+  
     wsService.addListener(workflowId, 'full_view', handleFullView);
     wsService.addListener(workflowId, 'error', handleError);
     wsService.addListener(workflowId, 'connection', handleConnection);
-    
+  
     // 清理函数
     return () => {
       wsService.removeListener(workflowId, 'full_view', handleFullView);
@@ -9757,12 +9795,12 @@ const WorkflowVisualization = ({ workflowId, config }) => {
           <Typography variant="body2">加载工作流可视化...</Typography>
         </div>
       )}
-      
+  
       {status === 'error' && (
         <div className="error-container">
           <Typography color="error">加载失败: {error}</Typography>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={() => {
               setStatus('loading');
               wsService.sendMessage(workflowId, {
@@ -9770,12 +9808,13 @@ const WorkflowVisualization = ({ workflowId, config }) => {
                 include_metrics: config?.showMetrics !== false
               });
             }}
+
           >
             重试
           </Button>
         </div>
       )}
-      
+  
       <div className="visualization-container" ref={visRef}>
         {/* 可视化将在这里渲染 */}
       </div>
@@ -9793,14 +9832,14 @@ export default {
  * 工作流指标收集与展示组件
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Box, Typography, Grid, Paper, CircularProgress, 
+import {
+  Box, Typography, Grid, Paper, CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Card, CardContent, CardHeader, Divider, Chip, Button,
   List, ListItem, ListItemText, ListItemIcon, ListItemSecondaryAction,
   IconButton, Tooltip
 } from '@mui/material';
-import { 
+import {
   Timeline, Assessment, Error, CheckCircle, PlayArrow,
   Pause, Refresh, MoreVert, AccessTime, Memory, Speed
 } from '@mui/icons-material';
@@ -9845,25 +9884,25 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
       }));
       setLoading(false);
     };
-    
+  
     const handleError = (data) => {
       setError(data.error);
       setLoading(false);
     };
-    
+  
     wsService.addListener('global', 'statistics', handleStatsUpdate);
     wsService.addListener('global', 'error', handleError);
-    
+  
     // 请求统计数据
     wsService.connectToGlobalStats();
-    
+  
     // 定期刷新数据
     const interval = setInterval(() => {
       wsService.sendMessage('global', {
         request_type: 'refresh_statistics'
       });
     }, 30000); // 每30秒刷新一次
-    
+  
     // 清理函数
     return () => {
       clearInterval(interval);
@@ -9886,13 +9925,14 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
     return (
       <Box>
         <Typography color="error">{error}</Typography>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={() => {
             setLoading(true);
             setError(null);
             wsService.connectToGlobalStats();
           }}
+
         >
           重试
         </Button>
@@ -9905,8 +9945,8 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
     labels: ['活跃', '已完成', '已失败'],
     datasets: [{
       data: [
-        stats.overall.activeWorkflows, 
-        stats.overall.completedWorkflows, 
+        stats.overall.activeWorkflows,
+        stats.overall.completedWorkflows,
         stats.overall.failedWorkflows
       ],
       backgroundColor: ['#4caf50', '#2196f3', '#f44336'],
@@ -9944,8 +9984,8 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
       <Typography variant="h5" gutterBottom>
         工作流监控指标
         <Tooltip title="刷新">
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             sx={{ ml: 1 }}
             onClick={() => {
               setLoading(true);
@@ -9953,16 +9993,17 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
                 request_type: 'refresh_statistics'
               });
             }}
+
           >
             <Refresh />
           </IconButton>
         </Tooltip>
       </Typography>
-      
+  
       {/* 指标卡片 */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <MetricCard 
+          <MetricCard
             title="活跃工作流"
             value={stats.overall.activeWorkflows}
             icon={<PlayArrow />}
@@ -9970,7 +10011,7 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <MetricCard 
+          <MetricCard
             title="已完成工作流"
             value={stats.overall.completedWorkflows}
             icon={<CheckCircle />}
@@ -9978,7 +10019,7 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <MetricCard 
+          <MetricCard
             title="失败率"
             value={`${stats.overall.successRate ? (100 - stats.overall.successRate).toFixed(1) : 0}%`}
             icon={<Error />}
@@ -9986,7 +10027,7 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <MetricCard 
+          <MetricCard
             title="平均执行时间"
             value={`${stats.overall.avgExecutionTime.toFixed(0)} ms`}
             icon={<AccessTime />}
@@ -9994,7 +10035,7 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
           />
         </Grid>
       </Grid>
-      
+  
       {/* 图表区域 */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
@@ -10012,7 +10053,7 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
             <CardHeader title="执行时间趋势" />
             <CardContent>
               <Box height={250}>
-                <Line data={executionTimeData} options={{ 
+                <Line data={executionTimeData} options={{
                   maintainAspectRatio: false,
                   scales: {
                     y: {
@@ -10039,7 +10080,7 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
             <CardHeader title="错误率趋势" />
             <CardContent>
               <Box height={250}>
-                <Line data={errorRateData} options={{ 
+                <Line data={errorRateData} options={{
                   maintainAspectRatio: false,
                   scales: {
                     y: {
@@ -10083,7 +10124,7 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
           </Card>
         </Grid>
       </Grid>
-      
+  
       {/* 表格区域 */}
       <Grid container spacing={3} sx={{ mt: 1 }}>
         <Grid item xs={12} md={7}>
@@ -10109,11 +10150,11 @@ const WorkflowStatisticsDashboard = ({ wsService }) => {
                         <TableCell align="right">{wf.avgExecutionTime} ms</TableCell>
                         <TableCell align="right">{wf.successRate}%</TableCell>
                         <TableCell align="right">
-                          <Chip 
+                          <Chip
                             size="small"
                             label={wf.status}
                             color={
-                              wf.status === "活跃" ? "success" : 
+                              wf.status === "活跃" ? "success" :
                               wf.status === "完成" ? "primary" : "error"
                             }
                           />
@@ -10179,6 +10220,7 @@ const MetricCard = ({ title, value, icon, color }) => {
         height: 140,
         borderTop: `4px solid ${color}`
       }}
+
     >
       <Box display="flex" alignItems="center" mb={1}>
         <Box sx={{ color }}>
@@ -10211,6 +10253,7 @@ const CircularProgressWithLabel = ({ value, color }) => {
         display="flex"
         alignItems="center"
         justifyContent="center"
+
       >
         <Typography variant="caption" component="div" color="text.secondary">
           {`${Math.round(value)}%`}
@@ -10255,18 +10298,18 @@ const WorkflowRealTimeMonitor = ({ workflowId, wsService }) => {
       }));
       setLoading(false);
     };
-    
+  
     const handleError = (data) => {
       setError(data.error);
       setLoading(false);
     };
-    
+  
     wsService.addListener(workflowId, 'monitoring_data', handleMonitoringData);
     wsService.addListener(workflowId, 'error', handleError);
-    
+  
     // 发送请求获取初始监控数据
     wsService.connectToWorkflowMonitoring(workflowId);
-    
+  
     // 清理函数
     return () => {
       wsService.removeListener(workflowId, 'monitoring_data', handleMonitoringData);
@@ -10288,13 +10331,14 @@ const WorkflowRealTimeMonitor = ({ workflowId, wsService }) => {
     return (
       <Box>
         <Typography color="error">{error}</Typography>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={() => {
             setLoading(true);
             setError(null);
             wsService.connectToWorkflowMonitoring(workflowId);
           }}
+
         >
           重试
         </Button>
@@ -10305,7 +10349,7 @@ const WorkflowRealTimeMonitor = ({ workflowId, wsService }) => {
   return (
     <Box>
       <Card>
-        <CardHeader 
+        <CardHeader
           title={`工作流监控: ${monitoringData.workflow.name || workflowId}`}
           subheader={`状态: ${monitoringData.workflow.status} | 开始时间: ${new Date(monitoringData.workflow.startTime).toLocaleString()}`}
           action={
@@ -10332,7 +10376,7 @@ const WorkflowRealTimeMonitor = ({ workflowId, wsService }) => {
               </Box>
             </Box>
           </Box>
-          
+  
           <Box display="flex" justifyContent="space-between" mb={2}>
             <Box textAlign="center">
               <Typography variant="body2" color="text.secondary">执行时间</Typography>
@@ -10353,11 +10397,11 @@ const WorkflowRealTimeMonitor = ({ workflowId, wsService }) => {
               </Typography>
             </Box>
           </Box>
-          
+  
           {showDetails && (
             <>
               <Divider sx={{ my: 2 }} />
-              
+  
               <Typography variant="subtitle1" gutterBottom>
                 步骤执行状态
               </Typography>
@@ -10376,12 +10420,12 @@ const WorkflowRealTimeMonitor = ({ workflowId, wsService }) => {
                       <TableRow key={step.id}>
                         <TableCell>{step.name}</TableCell>
                         <TableCell align="right">
-                          <Chip 
+                          <Chip
                             size="small"
                             label={step.status}
                             color={
-                              step.status === "running" ? "warning" : 
-                              step.status === "completed" ? "success" : 
+                              step.status === "running" ? "warning" :
+                              step.status === "completed" ? "success" :
                               step.status === "waiting" ? "info" : "error"
                             }
                           />
@@ -10397,7 +10441,7 @@ const WorkflowRealTimeMonitor = ({ workflowId, wsService }) => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              
+  
               <Typography variant="subtitle1" gutterBottom>
                 最近事件
               </Typography>
@@ -10522,46 +10566,46 @@ impl WorkflowMetricsCollector {
             collection_task: Arc::new(AtomicBool::new(false)),
         }
     }
-    
+  
     /// 启动指标收集
     pub async fn start(&self) -> Result<(), Error> {
         if self.collection_task.load(Ordering::SeqCst) {
             return Err(Error::AlreadyRunning("指标收集器已经在运行".into()));
         }
-        
+  
         self.collection_task.store(true, Ordering::SeqCst);
-        
+  
         let engine = self.workflow_engine.clone();
         let store = self.metrics_store.clone();
         let handler = self.ws_handler.clone();
         let interval = self.collection_interval;
         let is_running = self.collection_task.clone();
-        
+  
         tokio::spawn(async move {
             let mut collection_interval = tokio::time::interval(interval);
-            
+  
             while is_running.load(Ordering::SeqCst) {
                 collection_interval.tick().await;
-                
+  
                 if let Err(e) = Self::collect_metrics(engine.clone(), store.clone()).await {
                     log::error!("收集工作流指标时发生错误: {}", e);
                 }
-                
+  
                 // 广播指标更新
                 if let Ok(metrics) = store.read().await.get_overall_statistics().await {
                     let _ = handler.broadcast_metrics(metrics).await;
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     /// 停止指标收集
     pub fn stop(&self) {
         self.collection_task.store(false, Ordering::SeqCst);
     }
-    
+  
     /// 收集工作流指标
     async fn collect_metrics(
         engine: Arc<WorkflowExecutionEngine>,
@@ -10569,16 +10613,16 @@ impl WorkflowMetricsCollector {
     ) -> Result<(), Error> {
         // 收集活跃工作流数量
         let active_workflows = engine.get_active_workflow_count().await?;
-        
+  
         // 收集已完成工作流数量
         let completed_workflows = engine.get_completed_workflow_count().await?;
-        
+  
         // 收集失败工作流数量
         let failed_workflows = engine.get_failed_workflow_count().await?;
-        
+  
         // 收集平均执行时间
         let avg_execution_time = engine.get_average_execution_time().await?;
-        
+  
         // 收集成功率
         let total = completed_workflows + failed_workflows;
         let success_rate = if total > 0 {
@@ -10586,16 +10630,16 @@ impl WorkflowMetricsCollector {
         } else {
             100.0
         };
-        
+  
         // 收集资源使用情况
         let resource_usage = engine.get_resource_usage().await?;
-        
+  
         // 收集热门工作流
         let top_workflows = engine.get_top_workflows(10).await?;
-        
+  
         // 收集最近错误
         let recent_errors = engine.get_recent_errors(10).await?;
-        
+  
         // 更新指标存储
         let mut store = store.write().await;
         store.update_overall_metrics(
@@ -10605,16 +10649,16 @@ impl WorkflowMetricsCollector {
             avg_execution_time,
             success_rate,
         ).await?;
-        
+  
         store.update_resource_usage(
             resource_usage.memory_usage,
             resource_usage.cpu_usage,
             resource_usage.connection_count,
         ).await?;
-        
+  
         store.update_top_workflows(top_workflows).await?;
         store.update_recent_errors(recent_errors).await?;
-        
+  
         // 添加趋势数据点
         store.add_trend_data_point(
             chrono::Utc::now(),
@@ -10622,10 +10666,10 @@ impl WorkflowMetricsCollector {
             avg_execution_time,
             100.0 - success_rate,
         ).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 获取当前所有指标
     pub async fn get_metrics(&self) -> Result<WorkflowStatistics, Error> {
         let store = self.metrics_store.read().await;
@@ -10658,7 +10702,7 @@ impl WorkflowMetricsStore {
             trends: WorkflowTrends::new(100), // 保留100个数据点
         }
     }
-    
+  
     /// 更新总体指标
     pub async fn update_overall_metrics(
         &mut self,
@@ -10680,7 +10724,7 @@ pub async fn update_overall_metrics(
     self.overall.avg_execution_time = avg_execution_time;
     self.overall.success_rate = success_rate;
     self.overall.last_updated = chrono::Utc::now();
-    
+  
     Ok(())
 }
 
@@ -10694,7 +10738,7 @@ pub async fn update_resource_usage(
     self.resource_usage.memory_usage = memory_usage;
     self.resource_usage.cpu_usage = cpu_usage;
     self.resource_usage.connection_count = connection_count;
-    
+  
     Ok(())
 }
 
@@ -10704,7 +10748,7 @@ pub async fn update_top_workflows(
     workflows: Vec<TopWorkflowData>,
 ) -> Result<(), Error> {
     self.top_workflows = workflows;
-    
+  
     Ok(())
 }
 
@@ -10714,7 +10758,7 @@ pub async fn update_recent_errors(
     errors: Vec<WorkflowError>,
 ) -> Result<(), Error> {
     self.recent_errors = errors;
-    
+  
     Ok(())
 }
 
@@ -10732,7 +10776,7 @@ pub async fn add_trend_data_point(
         avg_execution_time,
         error_rate,
     );
-    
+  
     Ok(())
 }
 
@@ -10776,7 +10820,7 @@ impl WorkflowAnomalyDetector {
         detection_interval: Duration,
     ) -> (Self, mpsc::Receiver<AnomalyNotification>) {
         let (sender, receiver) = mpsc::channel(100);
-        
+  
         (Self {
             workflow_engine,
             metrics_collector,
@@ -10787,15 +10831,15 @@ impl WorkflowAnomalyDetector {
             detection_task: Arc::new(AtomicBool::new(false)),
         }, receiver)
     }
-    
+  
     /// 启动异常检测
     pub async fn start(&self) -> Result<(), Error> {
         if self.detection_task.load(Ordering::SeqCst) {
             return Err(Error::AlreadyRunning("异常检测器已经在运行".into()));
         }
-        
+  
         self.detection_task.store(true, Ordering::SeqCst);
-        
+  
         let engine = self.workflow_engine.clone();
         let metrics = self.metrics_collector.clone();
         let model = self.anomaly_model.clone();
@@ -10803,13 +10847,13 @@ impl WorkflowAnomalyDetector {
         let interval = self.detection_interval;
         let sender = self.notification_sender.clone();
         let is_running = self.detection_task.clone();
-        
+  
         tokio::spawn(async move {
             let mut detection_interval = tokio::time::interval(interval);
-            
+  
             while is_running.load(Ordering::SeqCst) {
                 detection_interval.tick().await;
-                
+  
                 // 获取活跃工作流
                 match engine.get_active_workflows().await {
                     Ok(active_workflows) => {
@@ -10833,15 +10877,15 @@ impl WorkflowAnomalyDetector {
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     /// 停止异常检测
     pub fn stop(&self) {
         self.detection_task.store(false, Ordering::SeqCst);
     }
-    
+  
     /// 检测单个工作流的异常
     async fn detect_workflow_anomalies(
         engine: Arc<WorkflowExecutionEngine>,
@@ -10853,31 +10897,31 @@ impl WorkflowAnomalyDetector {
     ) -> Result<(), Error> {
         // 获取工作流执行指标
         let workflow_metrics = engine.get_workflow_metrics(&workflow.id).await?;
-        
+  
         // 提取特征
         let features = Self::extract_features(workflow, &workflow_metrics)?;
-        
+  
         // 检测异常
         let anomalies = model.detect_anomalies(&features).await?;
-        
+  
         // 过滤超过阈值的异常
         let significant_anomalies = anomalies.into_iter()
             .filter(|anomaly| {
                 match anomaly.anomaly_type {
-                    AnomalyType::ExecutionDelay => 
+                    AnomalyType::ExecutionDelay =>
                         anomaly.severity > thresholds.execution_delay_threshold,
-                    AnomalyType::ResourceUsage => 
+                    AnomalyType::ResourceUsage =>
                         anomaly.severity > thresholds.resource_usage_threshold,
-                    AnomalyType::ErrorRate => 
+                    AnomalyType::ErrorRate =>
                         anomaly.severity > thresholds.error_rate_threshold,
-                    AnomalyType::StateTransitionAnomaly => 
+                    AnomalyType::StateTransitionAnomaly =>
                         anomaly.severity > thresholds.state_transition_threshold,
-                    AnomalyType::DataVolatility => 
+                    AnomalyType::DataVolatility =>
                         anomaly.severity > thresholds.data_volatility_threshold,
                 }
             })
             .collect::<Vec<_>>();
-        
+  
         // 发送通知
         for anomaly in significant_anomalies {
             let notification = AnomalyNotification {
@@ -10890,15 +10934,15 @@ impl WorkflowAnomalyDetector {
                 affected_components: anomaly.affected_components,
                 recommended_action: Self::generate_recommendation(&anomaly, workflow).await?,
             };
-            
+  
             if let Err(e) = sender.send(notification).await {
                 log::error!("发送异常通知时发生错误: {}", e);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 提取特征
     fn extract_features(
         workflow: &WorkflowInstance,
@@ -10910,38 +10954,38 @@ impl WorkflowAnomalyDetector {
             .signed_duration_since(workflow.start_time)
             .to_std()
             .unwrap_or(Duration::from_secs(0));
-        
+  
         let execution_time_ratio = if expected_duration.as_secs() > 0 {
             actual_duration.as_secs_f64() / expected_duration.as_secs_f64()
         } else {
             1.0
         };
-        
+  
         // 计算错误率
         let error_rate = if metrics.total_tasks > 0 {
             metrics.failed_tasks as f64 / metrics.total_tasks as f64
         } else {
             0.0
         };
-        
+  
         // 计算资源使用率
         let resource_usage_ratio = metrics.resource_usage.values().fold(0.0, |acc, &val| acc.max(val)) / 100.0;
-        
+  
         // 收集状态转换特征
         let state_transitions = workflow.state_transitions.clone();
         let state_transition_count = state_transitions.len();
-        
+  
         // 计算平均步骤执行时间偏差
         let avg_step_duration_deviation = if metrics.step_durations.len() > 0 {
             let mean_duration = metrics.step_durations.values().sum::<f64>() / metrics.step_durations.len() as f64;
-            
+  
             metrics.step_durations.values()
                 .map(|&duration| (duration - mean_duration).powi(2))
                 .sum::<f64>() / metrics.step_durations.len() as f64
         } else {
             0.0
         };
-        
+  
         Ok(AnomalyFeatures {
             workflow_type: workflow.workflow_type.clone(),
             execution_time_ratio,
@@ -10956,7 +11000,7 @@ impl WorkflowAnomalyDetector {
             task_queue_length: metrics.task_queue_length as f64,
         })
     }
-    
+  
     /// 生成建议
     async fn generate_recommendation(
         anomaly: &AnomalyData,
@@ -10992,13 +11036,15 @@ impl WorkflowAnomalyDetector {
                 format!("数据波动性异常，建议验证输入数据质量或调整处理策略。")
             },
         };
-        
+  
         Ok(recommendation)
     }
 }
 
 /// 异常检测数据结构
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct AnomalyThresholds {
     pub execution_delay_threshold: f64,
     pub resource_usage_threshold: f64,
@@ -11019,7 +11065,8 @@ impl Default for AnomalyThresholds {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub enum AnomalyType {
     ExecutionDelay,
     ResourceUsage,
@@ -11028,7 +11075,8 @@ pub enum AnomalyType {
     DataVolatility,
 }
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 pub struct AnomalyData {
     pub anomaly_type: AnomalyType,
     pub severity: f64,
@@ -11036,7 +11084,8 @@ pub struct AnomalyData {
     pub affected_components: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 pub struct AnomalyNotification {
     pub workflow_id: String,
     pub workflow_name: String,
@@ -11048,7 +11097,8 @@ pub struct AnomalyNotification {
     pub recommended_action: String,
 }
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 pub struct AnomalyFeatures {
     pub workflow_type: String,
     pub execution_time_ratio: f64,
@@ -11064,11 +11114,13 @@ pub struct AnomalyFeatures {
 }
 
 /// 异常检测模型接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait AnomalyDetectionModel: Send + Sync {
     /// 检测异常
     async fn detect_anomalies(&self, features: &AnomalyFeatures) -> Result<Vec<AnomalyData>, Error>;
-    
+  
     /// 训练模型
     async fn train(&self, training_data: &[TrainingRecord]) -> Result<(), Error>;
 }
@@ -11095,7 +11147,7 @@ impl StatisticalAnomalyModel {
             }),
         }
     }
-    
+  
     fn default_rules() -> Vec<AnomalyRule> {
         vec![
             AnomalyRule {
@@ -11168,7 +11220,7 @@ impl WorkflowPredictionService {
             model_trainer,
         }
     }
-    
+  
     /// 预测工作流执行时间
     pub async fn predict_execution_time(
         &self,
@@ -11182,13 +11234,13 @@ impl WorkflowPredictionService {
             input_params,
             context,
         ).await?;
-        
+  
         // 执行预测
         let prediction = self.time_predictor.predict(&features).await?;
-        
+  
         Ok(prediction)
     }
-    
+  
     /// 预测工作流资源使用
     pub async fn predict_resource_usage(
         &self,
@@ -11202,13 +11254,13 @@ impl WorkflowPredictionService {
             input_params,
             context,
         ).await?;
-        
+  
         // 执行预测
         let prediction = self.resource_predictor.predict(&features).await?;
-        
+  
         Ok(prediction)
     }
-    
+  
     /// 预测工作流可能出现的异常
     pub async fn predict_anomalies(
         &self,
@@ -11232,36 +11284,36 @@ impl WorkflowPredictionService {
                 }
             }
         };
-        
+  
         // 提取特征
         let features = self.extract_anomaly_prediction_features(
             &workflow_state,
             execution_context,
         ).await?;
-        
+  
         // 执行预测
         let predictions = self.anomaly_predictor.predict_anomalies(&features).await?;
-        
+  
         Ok(predictions)
     }
-    
+  
     /// 定期训练预测模型
     pub async fn train_models(&self) -> Result<(), Error> {
         // 获取训练数据
         let training_data = self.history_store.get_training_data().await?;
-        
+  
         // 训练执行时间预测模型
         self.model_trainer.train_execution_time_model(&training_data.time_data).await?;
-        
+  
         // 训练资源使用预测模型
         self.model_trainer.train_resource_usage_model(&training_data.resource_data).await?;
-        
+  
         // 训练异常预测模型
         self.model_trainer.train_anomaly_model(&training_data.anomaly_data).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 提取时间预测特征
     async fn extract_time_prediction_features(
         &self,
@@ -11273,32 +11325,32 @@ impl WorkflowPredictionService {
         let history = self.history_store
             .get_workflow_execution_history(workflow_type, 50)
             .await?;
-        
+  
         // 估计输入复杂度
         let input_complexity = self.estimate_input_complexity(input_params)?;
-        
+  
         // 计算平均执行时间和标准差
         let mut total_time = Duration::from_secs(0);
         let mut times = Vec::new();
-        
+  
         for record in &history {
             total_time += record.execution_time;
             times.push(record.execution_time.as_secs_f64());
         }
-        
+  
         let avg_time = if !history.is_empty() {
             total_time.div_f64(history.len() as f64)
         } else {
             Duration::from_secs(60) // 默认1分钟
         };
-        
+  
         let std_dev = if !times.is_empty() {
             let mean = avg_time.as_secs_f64();
             (times.iter().map(|&t| (t - mean).powi(2)).sum::<f64>() / times.len() as f64).sqrt()
         } else {
             0.0
         };
-        
+  
         // 提取特征
         Ok(TimePredictionFeatures {
             workflow_type: workflow_type.to_string(),
@@ -11314,9 +11366,10 @@ impl WorkflowPredictionService {
             context_features: self.extract_context_features(context)?,
         })
     }
-    
+  
     // [其他提取特征和预测方法的实现]
 }
+
 ```
 
 ### 1.5.10 前端异常监控组件实现
@@ -11326,14 +11379,14 @@ impl WorkflowPredictionService {
  * 工作流异常监控组件
  */
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Box, Typography, Paper, Card, CardContent, CardHeader,
   List, ListItem, ListItemText, ListItemIcon, Grid,
   Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions,
   Alert, Snackbar, Divider, IconButton, Tooltip
 } from '@mui/material';
-import { 
-  Warning, Error, Info, ArrowUpward, ArrowDownward, 
+import {
+  Warning, Error, Info, ArrowUpward, ArrowDownward,
   Refresh, AssignmentLate, Memory, Speed, DataUsage, Transform,
   SettingsBackupRestore, Done, Close
 } from '@mui/icons-material';
@@ -11355,52 +11408,52 @@ const AnomalyMonitor = ({ wsService }) => {
           // 合并新的异常，避免重复
           const existingIds = new Set(prevAnomalies.map(a => a.id));
           const newAnomalies = data.anomalies.filter(a => !existingIds.has(a.id));
-          return [...prevAnomalies, ...newAnomalies].sort((a, b) => 
+          return [...prevAnomalies, ...newAnomalies].sort((a, b) =>
             b.detected_at.localeCompare(a.detected_at)
           );
         });
       }
       setLoading(false);
     };
-    
+  
     const handleNewAnomaly = (data) => {
       if (data.anomaly) {
         setAnomalies(prevAnomalies => {
           const newList = [data.anomaly, ...prevAnomalies];
           return newList;
         });
-        
+  
         // 显示通知
         setSnackbarMessage(`检测到新异常: ${data.anomaly.description}`);
         setSnackbarOpen(true);
       }
     };
-    
+  
     const handleAnomalyResolved = (data) => {
       if (data.anomaly_id) {
-        setAnomalies(prevAnomalies => 
+        setAnomalies(prevAnomalies =>
           prevAnomalies.filter(a => a.id !== data.anomaly_id)
         );
-        
+  
         // 显示通知
         setSnackbarMessage(`异常已解决`);
         setSnackbarOpen(true);
       }
     };
-    
+  
     const handleError = (data) => {
       setError(data.error);
       setLoading(false);
     };
-    
+  
     wsService.addListener('anomalies', 'anomaly_update', handleAnomalyUpdate);
     wsService.addListener('anomalies', 'new_anomaly', handleNewAnomaly);
     wsService.addListener('anomalies', 'anomaly_resolved', handleAnomalyResolved);
     wsService.addListener('anomalies', 'error', handleError);
-    
+  
     // 请求初始异常数据
     wsService.connectToAnomalyMonitor();
-    
+  
     // 清理函数
     return () => {
       wsService.removeListener('anomalies', 'anomaly_update', handleAnomalyUpdate);
@@ -11422,14 +11475,14 @@ const AnomalyMonitor = ({ wsService }) => {
         action: 'acknowledge',
         anomaly_id: selectedAnomaly.id
       });
-      
+  
       // 更新已确认状态
-      setAnomalies(prevAnomalies => 
-        prevAnomalies.map(a => 
+      setAnomalies(prevAnomalies =>
+        prevAnomalies.map(a =>
           a.id === selectedAnomaly.id ? {...a, acknowledged: true} : a
         )
       );
-      
+  
       setDialogOpen(false);
       setSelectedAnomaly(null);
     }
@@ -11441,7 +11494,7 @@ const AnomalyMonitor = ({ wsService }) => {
         action: 'resolve',
         anomaly_id: selectedAnomaly.id
       });
-      
+  
       setDialogOpen(false);
       setSelectedAnomaly(null);
     }
@@ -11503,7 +11556,7 @@ const AnomalyMonitor = ({ wsService }) => {
           </Tooltip>
         </Box>
       </Box>
-      
+  
       {anomalies.length === 0 ? (
         <Paper sx={{ p: 3, textAlign: 'center' }}>
           <Typography variant="body1" color="textSecondary">
@@ -11515,19 +11568,21 @@ const AnomalyMonitor = ({ wsService }) => {
           {anomalies.map((anomaly) => (
             <Paper
               key={anomaly.id}
-              sx={{ 
-                mb: 2, 
-                borderLeft: `4px solid ${getSeverityColor(anomaly.severity) === 'error' ? '#f44336' : 
-                             getSeverityColor(anomaly.severity) === 'warning' ? '#ff9800' : '#2196f3'}` 
+              sx={{
+                mb: 2,
+                borderLeft: `4px solid ${getSeverityColor(anomaly.severity) === 'error' ? '#f44336' :
+                             getSeverityColor(anomaly.severity) === 'warning' ? '#ff9800' : '#2196f3'}`
               }}
+
             >
-              <ListItem 
-                button 
+              <ListItem
+                button
                 onClick={() => handleAnomalyClick(anomaly)}
-                sx={{ 
+                sx={{
                   opacity: anomaly.acknowledged ? 0.7 : 1,
                   bgcolor: anomaly.acknowledged ? 'rgba(0, 0, 0, 0.05)' : 'transparent'
                 }}
+
               >
                 <ListItemIcon>
                   {getAnomalyIcon(anomaly.anomaly_type)}
@@ -11539,9 +11594,9 @@ const AnomalyMonitor = ({ wsService }) => {
                         {anomaly.description}
                       </Typography>
                       {anomaly.acknowledged && (
-                        <Chip 
-                          size="small" 
-                          label="已确认" 
+                        <Chip
+                          size="small"
+                          label="已确认"
                           sx={{ ml: 1, fontSize: '0.7rem' }}
                         />
                       )}
@@ -11559,7 +11614,7 @@ const AnomalyMonitor = ({ wsService }) => {
                     </React.Fragment>
                   }
                 />
-                <Chip 
+                <Chip
                   label={`严重程度: ${(anomaly.severity * 100).toFixed(0)}%`}
                   color={getSeverityColor(anomaly.severity)}
                   size="small"
@@ -11569,7 +11624,7 @@ const AnomalyMonitor = ({ wsService }) => {
           ))}
         </List>
       )}
-      
+  
       {selectedAnomaly && (
         <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
           <DialogTitle>
@@ -11579,7 +11634,7 @@ const AnomalyMonitor = ({ wsService }) => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Card>
-                  <CardHeader 
+                  <CardHeader
                     title="异常信息"
                     avatar={getAnomalyIcon(selectedAnomaly.anomaly_type)}
                   />
@@ -11632,34 +11687,37 @@ const AnomalyMonitor = ({ wsService }) => {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button 
-              onClick={() => setDialogOpen(false)} 
+            <Button
+              onClick={() => setDialogOpen(false)}
               startIcon={<Close />}
               variant="outlined"
+
             >
               关闭
             </Button>
             {!selectedAnomaly.acknowledged && (
-              <Button 
+              <Button
                 onClick={handleAcknowledge}
                 color="primary"
                 startIcon={<Done />}
+
               >
                 确认
               </Button>
             )}
-            <Button 
+            <Button
               onClick={handleResolve}
               color="primary"
               variant="contained"
               startIcon={<SettingsBackupRestore />}
+
             >
               解决
             </Button>
           </DialogActions>
         </Dialog>
       )}
-      
+  
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
@@ -11671,6 +11729,7 @@ const AnomalyMonitor = ({ wsService }) => {
 };
 
 export default AnomalyMonitor;
+
 ```
 
 现在实现工作流自适应调度器：
@@ -11680,28 +11739,28 @@ export default AnomalyMonitor;
 pub struct AdaptiveWorkflowScheduler {
     // 基础调度器类型
     base_schedulers: HashMap<SchedulingStrategy, Box<dyn WorkflowScheduler>>,
-    
+  
     // 当前活跃工作流的调度策略
     active_strategies: RwLock<HashMap<String, SchedulingStrategy>>,
-    
+  
     // 工作流历史执行数据
     execution_history: Arc<WorkflowHistoryStore>,
-    
+  
     // 资源监控器
     resource_monitor: Arc<ResourceMonitor>,
-    
+  
     // 预测引擎
     prediction_engine: Arc<WorkflowPredictionService>,
-    
+  
     // 策略选择器
     strategy_selector: Box<dyn StrategySelector>,
-    
+  
     // 学习引擎
     learning_engine: Arc<AdaptiveLearningEngine>,
-    
+  
     // 系统状态
     system_state: Arc<AtomicSystemState>,
-    
+  
     // 配置
     config: AdaptiveSchedulerConfig,
 }
@@ -11716,33 +11775,33 @@ impl AdaptiveWorkflowScheduler {
         config: AdaptiveSchedulerConfig,
     ) -> Self {
         let mut base_schedulers = HashMap::new();
-        
+  
         // 创建各种基础调度器
         base_schedulers.insert(
             SchedulingStrategy::RoundRobin,
             Box::new(RoundRobinScheduler::new()) as Box<dyn WorkflowScheduler>,
         );
-        
+  
         base_schedulers.insert(
             SchedulingStrategy::ResourceAware,
             Box::new(ResourceAwareScheduler::new()) as Box<dyn WorkflowScheduler>,
         );
-        
+  
         base_schedulers.insert(
             SchedulingStrategy::PriorityBased,
             Box::new(PriorityScheduler::new()) as Box<dyn WorkflowScheduler>,
         );
-        
+  
         base_schedulers.insert(
             SchedulingStrategy::DataLocality,
             Box::new(DataLocalityScheduler::new()) as Box<dyn WorkflowScheduler>,
         );
-        
+  
         base_schedulers.insert(
             SchedulingStrategy::DeadlineAware,
             Box::new(DeadlineAwareScheduler::new()) as Box<dyn WorkflowScheduler>,
         );
-        
+  
         Self {
             base_schedulers,
             active_strategies: RwLock::new(HashMap::new()),
@@ -11755,7 +11814,7 @@ impl AdaptiveWorkflowScheduler {
             config,
         }
     }
-    
+  
     /// 调度工作流任务
     pub async fn schedule_workflow_task(
         &self,
@@ -11765,23 +11824,23 @@ impl AdaptiveWorkflowScheduler {
     ) -> Result<SchedulingDecision, SchedulingError> {
         // 1. 获取或选择此工作流的调度策略
         let strategy = self.get_or_select_strategy(workflow_id, &task, context).await?;
-        
+  
         // 2. 获取对应的调度器
         let scheduler = self.base_schedulers.get(&strategy)
             .ok_or_else(|| SchedulingError::StrategyNotFound(format!("策略 {:?} 未找到", strategy)))?;
-        
+  
         // 3. 使用对应的调度器进行调度
         let decision = scheduler.schedule_task(&task, context).await?;
-        
+  
         // 4. 记录调度决策
         self.record_scheduling_decision(workflow_id, &task, &strategy, &decision).await;
-        
+  
         // 5. 更新系统状态
         self.update_system_state().await;
-        
+  
         Ok(decision)
     }
-    
+  
     /// 获取或为工作流选择调度策略
     async fn get_or_select_strategy(
         &self,
@@ -11797,7 +11856,7 @@ impl AdaptiveWorkflowScheduler {
                 if !self.config.enable_strategy_switching {
                     return Ok(*strategy);
                 }
-                
+  
                 // 检查是否应该切换策略(基于配置的策略切换间隔)
                 if let Some(last_changed) = self.get_strategy_last_changed(workflow_id).await {
                     let now = Instant::now();
@@ -11807,22 +11866,22 @@ impl AdaptiveWorkflowScheduler {
                 }
             }
         }
-        
+  
         // 需要选择新的策略
         let strategy = self.select_best_strategy(workflow_id, task, context).await?;
-        
+  
         // 更新活跃策略
         {
             let mut active_strategies = self.active_strategies.write().await;
             active_strategies.insert(workflow_id.to_string(), strategy);
         }
-        
+  
         // 记录策略变更时间
         self.record_strategy_change(workflow_id).await;
-        
+  
         Ok(strategy)
     }
-    
+  
     /// 选择最佳调度策略
     async fn select_best_strategy(
         &self,
@@ -11832,13 +11891,13 @@ impl AdaptiveWorkflowScheduler {
     ) -> Result<SchedulingStrategy, SchedulingError> {
         // 1. 获取工作流类型
         let workflow_type = &task.workflow_type;
-        
+  
         // 2. 获取工作流历史执行信息
         let history = self.execution_history
             .get_workflow_execution_history(workflow_type, 20)
             .await
             .unwrap_or_default();
-        
+  
         // 3. 收集特征
         let features = SchedulingFeatures {
             workflow_type: workflow_type.clone(),
@@ -11851,20 +11910,20 @@ impl AdaptiveWorkflowScheduler {
             has_deadline: task.deadline.is_some(),
             workflow_stage: context.workflow_progress,
         };
-        
+  
         // 4. 使用策略选择器选择最佳策略
         let strategy = self.strategy_selector
             .select_strategy(&features)
             .await?;
-            
+  
         // 5. 记录用于学习
         self.learning_engine
             .observe_strategy_selection(workflow_id, workflow_type, &features, &strategy)
             .await;
-            
+  
         Ok(strategy)
     }
-    
+  
     /// 记录调度决策
     async fn record_scheduling_decision(
         &self,
@@ -11883,48 +11942,48 @@ impl AdaptiveWorkflowScheduler {
             timestamp: chrono::Utc::now(),
             system_state: self.system_state.get().clone(),
         };
-        
+  
         if let Err(e) = self.execution_history.add_scheduling_record(record).await {
             log::error!("记录调度决策失败: {}", e);
         }
     }
-    
+  
     /// 启动自优化循环
     pub async fn start_optimization_loop(self: Arc<Self>) -> Result<(), SchedulingError> {
         let scheduler = self.clone();
-        
+  
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(scheduler.config.optimization_interval);
-            
+  
             loop {
                 interval.tick().await;
-                
+  
                 // 1. 收集系统指标
                 if let Err(e) = scheduler.collect_metrics().await {
                     log::error!("收集系统指标失败: {}", e);
                     continue;
                 }
-                
+  
                 // 2. 分析调度性能
                 if let Err(e) = scheduler.analyze_scheduling_performance().await {
                     log::error!("分析调度性能失败: {}", e);
                     continue;
                 }
-                
+  
                 // 3. 优化调度参数
                 if let Err(e) = scheduler.optimize_scheduling_parameters().await {
                     log::error!("优化调度参数失败: {}", e);
                     continue;
                 }
-                
+  
                 // 4. 训练预测模型
-                if scheduler.config.enable_model_training && 
+                if scheduler.config.enable_model_training &&
                    scheduler.should_train_models().await {
                     if let Err(e) = scheduler.prediction_engine.train_models().await {
                         log::error!("训练预测模型失败: {}", e);
                     }
                 }
-                
+  
                 // 5. 重新评估活跃工作流策略
                 if scheduler.config.enable_strategy_switching {
                     if let Err(e) = scheduler.reevaluate_active_strategies().await {
@@ -11933,18 +11992,18 @@ impl AdaptiveWorkflowScheduler {
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     /// 收集系统指标
     async fn collect_metrics(&self) -> Result<(), SchedulingError> {
         // 1. 获取系统资源使用情况
         let system_metrics = self.resource_monitor.get_system_metrics().await?;
-        
+  
         // 2. 获取工作流执行指标
         let workflow_metrics = self.execution_history.get_recent_workflow_metrics().await?;
-        
+  
         // 3. 更新系统状态
         let state = SystemState {
             cpu_load: system_metrics.cpu_usage,
@@ -11956,40 +12015,40 @@ impl AdaptiveWorkflowScheduler {
             avg_task_wait_time: workflow_metrics.avg_task_wait_time,
             avg_task_processing_time: workflow_metrics.avg_task_processing_time,
         };
-        
+  
         self.system_state.set(state);
-        
+  
         Ok(())
     }
-    
+  
     /// 分析调度性能
     async fn analyze_scheduling_performance(&self) -> Result<PerformanceAnalysis, SchedulingError> {
         // 获取最近的调度记录
         let recent_records = self.execution_history.get_recent_scheduling_records(1000).await?;
-        
+  
         // 按策略分组分析
         let mut strategy_performance = HashMap::new();
         for record in &recent_records {
             let stats = strategy_performance
                 .entry(record.strategy)
                 .or_insert_with(StrategyStats::default);
-                
+  
             stats.record_count += 1;
-            
+  
             // 基于决策结果更新统计
             if let Some(execution_time) = record.decision.estimated_execution_time {
                 stats.total_execution_time += execution_time.as_secs_f64();
             }
-            
+  
             if let Some(wait_time) = record.decision.wait_time {
                 stats.total_wait_time += wait_time.as_secs_f64();
             }
-            
+  
             if record.decision.successful {
                 stats.success_count += 1;
             }
         }
-        
+  
         // 计算每种策略的平均指标
         let mut strategy_metrics = HashMap::new();
         for (strategy, stats) in strategy_performance {
@@ -11997,7 +12056,7 @@ impl AdaptiveWorkflowScheduler {
                 let avg_execution_time = stats.total_execution_time / stats.record_count as f64;
                 let avg_wait_time = stats.total_wait_time / stats.record_count as f64;
                 let success_rate = stats.success_count as f64 / stats.record_count as f64;
-                
+  
                 strategy_metrics.insert(strategy, StrategyMetrics {
                     avg_execution_time,
                     avg_wait_time,
@@ -12005,7 +12064,7 @@ impl AdaptiveWorkflowScheduler {
                 });
             }
         }
-        
+  
         // 计算系统整体性能
         let total_records = recent_records.len();
         let successful_records = recent_records.iter().filter(|r| r.decision.successful).count();
@@ -12014,7 +12073,7 @@ impl AdaptiveWorkflowScheduler {
         } else {
             0.0
         };
-        
+  
         let total_execution_time: f64 = recent_records.iter()
             .filter_map(|r| r.decision.estimated_execution_time.map(|t| t.as_secs_f64()))
             .sum();
@@ -12023,7 +12082,7 @@ impl AdaptiveWorkflowScheduler {
         } else {
             0.0
         };
-        
+  
         Ok(PerformanceAnalysis {
             strategy_metrics,
             overall_success_rate: success_rate,
@@ -12032,12 +12091,12 @@ impl AdaptiveWorkflowScheduler {
             timestamp: chrono::Utc::now(),
         })
     }
-    
+  
     /// 优化调度参数
     async fn optimize_scheduling_parameters(&self) -> Result<(), SchedulingError> {
         // 1. 获取性能分析
         let analysis = self.analyze_scheduling_performance().await?;
-        
+  
         // 2. 根据分析结果优化各调度器的参数
         for (strategy, scheduler) in &self.base_schedulers {
             match strategy {
@@ -12045,7 +12104,7 @@ impl AdaptiveWorkflowScheduler {
                     if let Some(resource_scheduler) = scheduler.as_any().downcast_ref::<ResourceAwareScheduler>() {
                         // 基于性能分析优化资源参数
                         let mut scheduler = resource_scheduler.to_owned();
-                        
+  
                         // 获取此策略的性能指标
                         if let Some(metrics) = analysis.strategy_metrics.get(strategy) {
                             // 动态调整资源权重
@@ -12063,10 +12122,10 @@ impl AdaptiveWorkflowScheduler {
                     if let Some(deadline_scheduler) = scheduler.as_any().downcast_ref::<DeadlineAwareScheduler>() {
                         // 基于性能分析优化截止时间参数
                         let mut scheduler = deadline_scheduler.to_owned();
-                        
+  
                         // 获取当前系统负载
                         let system_state = self.system_state.get();
-                        
+  
                         // 根据系统负载调整截止时间余量
                         if system_state.cpu_load > 0.8 {
                             // 高负载下增加更多余量
@@ -12084,15 +12143,15 @@ impl AdaptiveWorkflowScheduler {
                 _ => {}
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 重新评估活跃工作流的调度策略
     async fn reevaluate_active_strategies(&self) -> Result<(), SchedulingError> {
         // 获取所有活跃工作流及其任务
         let active_workflows = self.get_active_workflows().await?;
-        
+  
         // 重新评估每个工作流的策略
         for (workflow_id, workflow_info) in active_workflows {
             // 跳过最近刚切换策略的工作流
@@ -12102,7 +12161,7 @@ impl AdaptiveWorkflowScheduler {
                     continue;
                 }
             }
-            
+  
             // 使用当前最优策略重新评估
             let context = ExecutionContext {
                 resource_state: self.resource_monitor.get_resource_state().await?,
@@ -12110,7 +12169,7 @@ impl AdaptiveWorkflowScheduler {
                 priority_level: workflow_info.priority,
                 deadline: workflow_info.deadline,
             };
-            
+  
             if let Some(current_task) = workflow_info.current_task {
                 // 选择新的最佳策略
                 match self.select_best_strategy(&workflow_id, &current_task, &context).await {
@@ -12120,18 +12179,18 @@ impl AdaptiveWorkflowScheduler {
                             let active_strategies = self.active_strategies.read().await;
                             active_strategies.get(&workflow_id).cloned()
                         };
-                        
+  
                         // 如果策略不同，更新策略
                         if current_strategy.is_none() || current_strategy.unwrap() != new_strategy {
                             let mut active_strategies = self.active_strategies.write().await;
                             active_strategies.insert(workflow_id.clone(), new_strategy);
-                            
+  
                             // 记录策略变更
                             self.record_strategy_change(&workflow_id).await;
-                            
+  
                             log::info!(
                                 "为工作流 {} 切换调度策略: {:?} -> {:?}",
-                                workflow_id, 
+                                workflow_id,
                                 current_strategy.unwrap_or(SchedulingStrategy::Default),
                                 new_strategy
                             );
@@ -12143,10 +12202,10 @@ impl AdaptiveWorkflowScheduler {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 判断是否应该训练模型
     async fn should_train_models(&self) -> bool {
         // 获取上次训练时间
@@ -12162,7 +12221,9 @@ impl AdaptiveWorkflowScheduler {
 }
 
 /// 调度策略选择器特征
-#[async_trait]
+
+# [async_trait]
+
 pub trait StrategySelector: Send + Sync {
     /// 选择最佳调度策略
     async fn select_strategy(&self, features: &SchedulingFeatures) -> Result<SchedulingStrategy, SchedulingError>;
@@ -12172,10 +12233,10 @@ pub trait StrategySelector: Send + Sync {
 pub struct MLStrategySelector {
     // 分类模型
     model: Arc<dyn ClassificationModel>,
-    
+  
     // 特征转换器
     feature_transformer: Box<dyn FeatureTransformer>,
-    
+  
     // 默认策略
     default_strategy: SchedulingStrategy,
 }
@@ -12190,12 +12251,13 @@ impl MLStrategySelector {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl StrategySelector for MLStrategySelector {
     async fn select_strategy(&self, features: &SchedulingFeatures) -> Result<SchedulingStrategy, SchedulingError> {
         // 转换特征为模型可用格式
         let transformed_features = self.feature_transformer.transform(features)?;
-        
+  
         // 使用模型预测
         match self.model.predict(&transformed_features).await {
             Ok(strategy) => Ok(strategy),
@@ -12208,20 +12270,22 @@ impl StrategySelector for MLStrategySelector {
 }
 
 /// 自适应调度器配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct AdaptiveSchedulerConfig {
     // 是否启用策略切换
     pub enable_strategy_switching: bool,
-    
+  
     // 策略切换最小间隔
     pub strategy_switch_interval: Duration,
-    
+  
     // 参数优化间隔
     pub optimization_interval: Duration,
-    
+  
     // 是否启用模型训练
     pub enable_model_training: bool,
-    
+  
     // 模型训练间隔
     pub model_training_interval: Duration,
 }
@@ -12242,25 +12306,25 @@ impl Default for AdaptiveSchedulerConfig {
 pub struct WorkflowPredictionService {
     /// 历史数据存储
     history_store: Arc<WorkflowHistoryStore>,
-    
+  
     /// 执行时间预测器
     time_predictor: Box<dyn ExecutionTimePredictor>,
-    
+  
     /// 资源使用预测器
     resource_predictor: Box<dyn ResourceUsagePredictor>,
-    
+  
     /// 异常预测器
     anomaly_predictor: Box<dyn AnomalyPredictor>,
-    
+  
     /// 负载预测器
     load_predictor: Box<dyn LoadPredictor>,
-    
+  
     /// 模型管理器
     model_manager: Arc<ModelManager>,
-    
+  
     /// 特征提取器
     feature_extractor: Box<dyn FeatureExtractor>,
-    
+  
     /// 模型训练配置
     training_config: TrainingConfig,
 }
@@ -12284,7 +12348,7 @@ impl WorkflowPredictionService {
             training_config: config,
         }
     }
-    
+  
     /// 预测工作流执行时间
     pub async fn predict_execution_time(
         &self,
@@ -12296,20 +12360,20 @@ impl WorkflowPredictionService {
         let features = self.feature_extractor
             .extract_time_prediction_features(workflow_type, input_params, context)
             .await?;
-        
+  
         // 执行预测
         let prediction = self.time_predictor.predict(&features).await?;
-        
+  
         log::debug!(
             "预测工作流 {} 执行时间为 {:?}，置信度: {:.2}",
             workflow_type,
             prediction.value,
             prediction.confidence
         );
-        
+  
         Ok(prediction)
     }
-    
+  
     /// 预测工作流资源使用情况
     pub async fn predict_resource_usage(
         &self,
@@ -12321,10 +12385,10 @@ impl WorkflowPredictionService {
         let features = self.feature_extractor
             .extract_resource_prediction_features(workflow_type, input_params, context)
             .await?;
-        
+  
         // 执行预测
         let prediction = self.resource_predictor.predict(&features).await?;
-        
+  
         log::debug!(
             "预测工作流 {} 资源使用: CPU={:.2}核, 内存={:.2}MB, 网络I/O={:.2}MB",
             workflow_type,
@@ -12332,10 +12396,10 @@ impl WorkflowPredictionService {
             prediction.value.memory_mb,
             (prediction.value.network_in + prediction.value.network_out) / (1024 * 1024)
         );
-        
+  
         Ok(prediction)
     }
-    
+  
     /// 预测未来系统负载
     pub async fn predict_future_load(
         &self,
@@ -12344,24 +12408,24 @@ impl WorkflowPredictionService {
     ) -> Result<PredictionResult<Vec<SystemLoad>>, PredictionError> {
         // 获取历史负载数据
         let history = self.history_store.get_system_load_history(prediction_window * 3).await?;
-        
+  
         // 提取特征
         let features = self.feature_extractor
             .extract_load_prediction_features(&history, prediction_window, granularity)
             .await?;
-        
+  
         // 执行预测
         let prediction = self.load_predictor.predict(&features).await?;
-        
+  
         log::debug!(
             "预测未来 {:?} 的系统负载，共 {} 个数据点",
             prediction_window,
             prediction.value.len()
         );
-        
+  
         Ok(prediction)
     }
-    
+  
     /// 检测潜在的异常
     pub async fn detect_potential_anomalies(
         &self,
@@ -12373,17 +12437,17 @@ impl WorkflowPredictionService {
         let features = self.feature_extractor
             .extract_anomaly_detection_features(workflow_id, workflow_type, current_state)
             .await?;
-        
+  
         // 执行预测
         let predictions = self.anomaly_predictor.predict_anomalies(&features).await?;
-        
+  
         if !predictions.is_empty() {
             log::info!(
                 "为工作流 {} 检测到 {} 个潜在异常",
                 workflow_id,
                 predictions.len()
             );
-            
+  
             for prediction in &predictions {
                 log::debug!(
                     "异常类型: {:?}, 概率: {:.2}, 可能影响: {:?}",
@@ -12393,10 +12457,10 @@ impl WorkflowPredictionService {
                 );
             }
         }
-        
+  
         Ok(predictions)
     }
-    
+  
     /// 获取最佳并行度
     pub async fn get_optimal_parallelism(
         &self,
@@ -12406,43 +12470,43 @@ impl WorkflowPredictionService {
     ) -> Result<u32, PredictionError> {
         // 首先预测资源使用情况
         let resource_prediction = self.predict_resource_usage(
-            workflow_type, 
-            input_params, 
+            workflow_type,
+            input_params,
             context
         ).await?;
-        
+  
         // 获取当前系统资源状态
         let system_resources = context.resource_state.available_resources.clone();
-        
+  
         // 计算基于CPU的并行度
         let cpu_parallelism = if resource_prediction.value.cpu_cores > 0.0 {
             (system_resources.cpu_cores as f64 / resource_prediction.value.cpu_cores) as u32
         } else {
             1
         };
-        
+  
         // 计算基于内存的并行度
         let memory_parallelism = if resource_prediction.value.memory_mb > 0 {
             (system_resources.memory_mb / resource_prediction.value.memory_mb) as u32
         } else {
             1
         };
-        
+  
         // 取最小值作为资源限制下的并行度
         let resource_limited_parallelism = cpu_parallelism.min(memory_parallelism);
-        
+  
         // 考虑工作流特定的最佳并行度（可能来自历史数据分析）
         let workflow_stats = self.history_store.get_workflow_stats(workflow_type).await?;
         let workflow_optimal_parallelism = workflow_stats
             .map(|stats| stats.optimal_parallelism)
             .unwrap_or(1);
-        
+  
         // 平衡资源限制和工作流最佳并行度
         let optimal_parallelism = resource_limited_parallelism
             .min(workflow_optimal_parallelism)
             .max(1) // 至少1个
             .min(16); // 最多16个（防止过度并行）
-        
+  
         log::debug!(
             "为工作流 {} 计算得出最佳并行度: {} (资源限制: {}, 工作流最佳: {})",
             workflow_type,
@@ -12450,40 +12514,40 @@ impl WorkflowPredictionService {
             resource_limited_parallelism,
             workflow_optimal_parallelism
         );
-        
+  
         Ok(optimal_parallelism)
     }
-    
+  
     /// 训练预测模型
     pub async fn train_models(&self) -> Result<TrainingReport, TrainingError> {
         log::info!("开始训练工作流预测模型");
-        
+  
         let training_start = Instant::now();
         let mut report = TrainingReport::default();
-        
+  
         // 1. 获取训练数据
         let training_data = self.history_store
             .get_training_data(self.training_config.training_window)
             .await?;
-        
+  
         log::info!(
             "收集了 {} 个工作流执行记录用于训练",
             training_data.workflow_executions.len()
         );
-        
+  
         // 2. 准备各模型的训练数据集
         let time_prediction_dataset = self.feature_extractor
             .prepare_time_prediction_dataset(&training_data)?;
-            
+  
         let resource_prediction_dataset = self.feature_extractor
             .prepare_resource_prediction_dataset(&training_data)?;
-            
+  
         let anomaly_detection_dataset = self.feature_extractor
             .prepare_anomaly_detection_dataset(&training_data)?;
-            
+  
         let load_prediction_dataset = self.feature_extractor
             .prepare_load_prediction_dataset(&training_data)?;
-            
+  
         // 3. 训练各模型
         if !time_prediction_dataset.is_empty() {
             let time_result = self.model_manager
@@ -12494,19 +12558,19 @@ impl WorkflowPredictionService {
                     &self.training_config.time_prediction_params,
                 )
                 .await?;
-                
+  
             report.model_results.insert(
-                "execution_time_predictor".to_string(), 
+                "execution_time_predictor".to_string(),
                 time_result
             );
-            
+  
             log::info!(
                 "执行时间预测模型训练完成: 精度={:.4}, 样本数={}",
                 time_result.accuracy,
                 time_result.sample_count
             );
         }
-        
+  
         if !resource_prediction_dataset.is_empty() {
             let resource_result = self.model_manager
                 .train_model(
@@ -12516,19 +12580,19 @@ impl WorkflowPredictionService {
                     &self.training_config.resource_prediction_params,
                 )
                 .await?;
-                
+  
             report.model_results.insert(
-                "resource_usage_predictor".to_string(), 
+                "resource_usage_predictor".to_string(),
                 resource_result
             );
-            
+  
             log::info!(
                 "资源使用预测模型训练完成: 精度={:.4}, 样本数={}",
                 resource_result.accuracy,
                 resource_result.sample_count
             );
         }
-        
+  
         if !anomaly_detection_dataset.is_empty() {
             let anomaly_result = self.model_manager
                 .train_model(
@@ -12538,19 +12602,19 @@ impl WorkflowPredictionService {
                     &self.training_config.anomaly_detection_params,
                 )
                 .await?;
-                
+  
             report.model_results.insert(
-                "anomaly_detector".to_string(), 
+                "anomaly_detector".to_string(),
                 anomaly_result
             );
-            
+  
             log::info!(
                 "异常检测模型训练完成: 精度={:.4}, 样本数={}",
                 anomaly_result.accuracy,
                 anomaly_result.sample_count
             );
         }
-        
+  
         if !load_prediction_dataset.is_empty() {
             let load_result = self.model_manager
                 .train_model(
@@ -12560,31 +12624,31 @@ impl WorkflowPredictionService {
                     &self.training_config.load_prediction_params,
                 )
                 .await?;
-                
+  
             report.model_results.insert(
-                "load_predictor".to_string(), 
+                "load_predictor".to_string(),
                 load_result
             );
-            
+  
             log::info!(
                 "负载预测模型训练完成: 精度={:.4}, 样本数={}",
                 load_result.accuracy,
                 load_result.sample_count
             );
         }
-        
+  
         // 4. 完成报告
         report.training_duration = training_start.elapsed();
         report.timestamp = chrono::Utc::now();
-        
+  
         // 5. 存储训练报告
         self.history_store.save_training_report(&report).await?;
-        
+  
         log::info!(
             "所有预测模型训练完成，用时: {:?}",
             report.training_duration
         );
-        
+  
         Ok(report)
     }
 }
@@ -12593,31 +12657,31 @@ impl WorkflowPredictionService {
 pub struct ResourceManager {
     // 可用资源池
     resource_pool: RwLock<ResourcePool>,
-    
+  
     // 资源分配跟踪
     allocations: RwLock<HashMap<String, ResourceAllocation>>,
-    
+  
     // 资源监控
     resource_monitor: Arc<ResourceMonitor>,
-    
+  
     // 资源规划器
     resource_planner: Box<dyn ResourcePlanner>,
-    
+  
     // 弹性控制器
     elasticity_controller: Box<dyn ElasticityController>,
-    
+  
     // 队列管理
     queue_manager: Box<dyn QueueManager>,
-    
+  
     // 负载均衡器
     load_balancer: Box<dyn LoadBalancer>,
-    
+  
     // 资源策略
     resource_policies: Vec<Box<dyn ResourcePolicy>>,
-    
+  
     // 度量收集器
     metrics_collector: Arc<MetricsCollector>,
-    
+  
     // 配置
     config: ResourceManagerConfig,
 }
@@ -12638,7 +12702,7 @@ impl ResourceManager {
             Box::new(PriorityBasedPolicy::new()) as Box<dyn ResourcePolicy>,
             Box::new(QuotaEnforcementPolicy::new()) as Box<dyn ResourcePolicy>,
         ];
-        
+  
         Self {
             resource_pool: RwLock::new(ResourcePool::new()),
             allocations: RwLock::new(HashMap::new()),
@@ -12652,48 +12716,48 @@ impl ResourceManager {
             config,
         }
     }
-    
+  
     /// 初始化资源池
     pub async fn initialize_resource_pool(
         &self,
         resources: Vec<ResourceDefinition>,
     ) -> Result<(), ResourceError> {
         log::info!("初始化资源池，资源定义数量: {}", resources.len());
-        
+  
         // 清空现有资源池
         {
             let mut pool = self.resource_pool.write().await;
             pool.clear();
         }
-        
+  
         // 创建初始资源分配
         for resource in resources {
             let allocations = self.resource_planner.create_initial_allocations(&resource)?;
-            
+  
             let mut pool = self.resource_pool.write().await;
             pool.add_resource(resource.resource_type.clone(), allocations);
-            
+  
             log::debug!(
                 "添加资源类型: {}, 初始容量: {:?}",
                 resource.resource_type,
                 resource.capacity
             );
         }
-        
+  
         // 启动资源监控
         self.resource_monitor.start_monitoring().await?;
-        
+  
         // 启动弹性控制
         self.elasticity_controller.start(
             Arc::new(self.clone()),
             self.config.scaling_config.clone(),
         ).await?;
-        
+  
         log::info!("资源池初始化成功");
-        
+  
         Ok(())
     }
-    
+  
     /// 为工作流分配资源
     pub async fn allocate_resources(
         &self,
@@ -12701,53 +12765,53 @@ impl ResourceManager {
         requirements: &ResourceRequirements,
     ) -> Result<ResourceAllocation, ResourceError> {
         log::debug!("为工作流 {} 分配资源", workflow_id);
-        
+  
         // 检查队列状态
         if self.queue_manager.should_queue(workflow_id, requirements).await? {
             log::info!("工作流 {} 被加入队列等待资源", workflow_id);
             self.queue_manager.enqueue(workflow_id, requirements.clone()).await?;
             return Err(ResourceError::ResourcesUnavailable("资源不足，已加入队列".to_string()));
         }
-        
+  
         // 应用资源策略
         let adjusted_requirements = self.apply_resource_policies(workflow_id, requirements).await?;
-        
+  
         // 查找最佳资源匹配
         let allocation = self.find_best_resource_match(&adjusted_requirements).await?;
-        
+  
         // 更新资源分配
         {
             let mut allocations = self.allocations.write().await;
             allocations.insert(workflow_id.to_string(), allocation.clone());
         }
-        
+  
         // 更新资源池
         {
             let mut pool = self.resource_pool.write().await;
             pool.allocate_resources(&allocation.resource_type, &allocation.resource_amount)?;
         }
-        
+  
         // 记录分配
         self.metrics_collector
             .record_resource_allocation(workflow_id, &allocation)
             .await;
-            
+  
         log::info!(
             "已为工作流 {} 分配资源: {:?}",
             workflow_id,
             allocation.resource_amount
         );
-        
+  
         Ok(allocation)
     }
-    
+  
     /// 释放工作流资源
     pub async fn release_resources(
         &self,
         workflow_id: &str,
     ) -> Result<(), ResourceError> {
         log::debug!("释放工作流 {} 的资源", workflow_id);
-        
+  
         // 查找分配
         let allocation = {
             let allocations = self.allocations.read().await;
@@ -12759,24 +12823,24 @@ impl ResourceManager {
                 }
             }
         };
-        
+  
         // 更新资源池
         {
             let mut pool = self.resource_pool.write().await;
             pool.release_resources(&allocation.resource_type, &allocation.resource_amount)?;
         }
-        
+  
         // 移除分配记录
         {
             let mut allocations = self.allocations.write().await;
             allocations.remove(workflow_id);
         }
-        
+  
         // 记录释放
         self.metrics_collector
             .record_resource_release(workflow_id, &allocation)
             .await;
-            
+  
         // 从队列中选择下一个工作流（如果有）
         if let Some(queued_workflow) = self.queue_manager.dequeue().await? {
             // 尝试为队列中的工作流分配资源
@@ -12791,9 +12855,9 @@ impl ResourceManager {
                 }
             }
         }
-        
+  
         log::info!("已释放工作流 {} 的资源", workflow_id);
-        
+  
         Ok(())
     }
 }
@@ -12802,28 +12866,28 @@ impl ResourceManager {
 pub struct WorkflowExecutionService {
     // 工作流存储
     workflow_store: Arc<WorkflowStore>,
-    
+  
     // 工作流引擎
     workflow_engine: Arc<WorkflowEngine>,
-    
+  
     // 调度器
     scheduler: Arc<AdaptiveWorkflowScheduler>,
-    
+  
     // 资源管理器
     resource_manager: Arc<ResourceManager>,
-    
+  
     // 预测服务
     prediction_service: Arc<WorkflowPredictionService>,
-    
+  
     // 执行历史
     history_store: Arc<WorkflowHistoryStore>,
-    
+  
     // 指标收集
     metrics_collector: Arc<MetricsCollector>,
-    
+  
     // 异常检测器
     anomaly_detector: Arc<AnomalyDetector>,
-    
+  
     // 配置
     config: ExecutionServiceConfig,
 }
@@ -12853,7 +12917,7 @@ impl WorkflowExecutionService {
             config,
         }
     }
-    
+  
     /// 提交工作流执行
     pub async fn submit_workflow(
         &self,
@@ -12864,16 +12928,16 @@ impl WorkflowExecutionService {
     ) -> Result<SubmissionResult, ExecutionError> {
         log::info!(
             "提交工作流执行: id={}, type={}, 选项={:?}",
-            workflow_id, 
+            workflow_id,
             workflow_type,
             options
         );
-        
+  
         // 获取工作流定义
         let workflow_def = self.workflow_store
             .get_workflow_definition(workflow_type)
             .await?;
-            
+  
         // 1. 预测资源需求
         let context = ExecutionContext {
             resource_state: self.resource_manager.get_resource_state().await?,
@@ -12881,7 +12945,7 @@ impl WorkflowExecutionService {
             priority_level: options.priority,
             deadline: options.deadline,
         };
-        
+  
         let predicted_resources = match self.prediction_service
             .predict_resource_usage(workflow_type, &input, &context)
             .await
@@ -12892,7 +12956,7 @@ impl WorkflowExecutionService {
                 ResourceUsage::default()
             }
         };
-        
+  
         let resource_requirements = ResourceRequirements {
             min_cpu: predicted_resources.cpu_cores * 0.8, // 保守估计
             preferred_cpu: predicted_resources.cpu_cores,
@@ -12903,7 +12967,7 @@ impl WorkflowExecutionService {
             min_network: predicted_resources.network_throughput,
             preferred_network: predicted_resources.network_throughput * 1.2,
         };
-        
+  
         // 2. 分配资源
         let resource_allocation = match self.resource_manager
             .allocate_resources(workflow_id, &resource_requirements)
@@ -12919,7 +12983,7 @@ impl WorkflowExecutionService {
                 }
             }
         };
-        
+  
         // 3. 如果已分配资源，则准备工作流执行
         if let Some(allocation) = resource_allocation {
             // 预测执行时间
@@ -12933,7 +12997,7 @@ impl WorkflowExecutionService {
                     Duration::from_secs(60) // 默认1分钟
                 }
             };
-            
+  
             // 创建工作流实例
             let instance = WorkflowInstance {
                 id: workflow_id.to_string(),
@@ -12948,15 +13012,15 @@ impl WorkflowExecutionService {
                 predicted_duration,
                 options,
             };
-            
+  
             // 提交到引擎执行
             match self.workflow_engine.submit(instance).await {
                 Ok(execution_id) => {
                     log::info!("工作流已提交到引擎，执行ID: {}", execution_id);
-                    
+  
                     // 开始异常检测
                     self.anomaly_detector.start_monitoring(workflow_id).await?;
-                    
+  
                     Ok(SubmissionResult {
                         workflow_id: workflow_id.to_string(),
                         execution_id,
@@ -12971,7 +13035,7 @@ impl WorkflowExecutionService {
                     if let Err(release_err) = self.resource_manager.release_resources(workflow_id).await {
                         log::error!("释放资源失败: {}", release_err);
                     }
-                    
+  
                     Err(ExecutionError::SubmissionFailed(e.to_string()))
                 }
             }
@@ -12988,6 +13052,7 @@ impl WorkflowExecutionService {
         }
     }
 }
+
 ```
 
 工作流监控和故障恢复
@@ -12997,34 +13062,34 @@ impl WorkflowExecutionService {
 pub struct WorkflowMonitoringService {
     /// 工作流状态存储
     state_storage: Arc<StateStorage>,
-    
+  
     /// 指标收集器
     metrics_collector: Arc<MetricsCollector>,
-    
+  
     /// 故障检测器
     fault_detector: Box<dyn FaultDetector>,
-    
+  
     /// 故障恢复控制器
     recovery_controller: Box<dyn RecoveryController>,
-    
+  
     /// 监控配置
     monitor_config: MonitoringConfig,
-    
+  
     /// 告警管理器
     alert_manager: Box<dyn AlertManager>,
-    
+  
     /// 健康检查器
     health_checker: Box<dyn HealthChecker>,
-    
+  
     /// 快照管理器
     snapshot_manager: Arc<SnapshotManager>,
-    
+  
     /// 故障历史记录
     fault_history: Arc<FaultHistory>,
-    
+  
     /// 监控工作器
     monitoring_worker: Option<JoinHandle<()>>,
-    
+  
     /// 关闭信号
     shutdown: Arc<AtomicBool>,
 }
@@ -13056,24 +13121,24 @@ impl WorkflowMonitoringService {
             shutdown: Arc::new(AtomicBool::new(false)),
         }
     }
-    
+  
     /// 启动监控服务
     pub async fn start(&mut self) -> Result<(), MonitoringError> {
         if self.monitoring_worker.is_some() {
             return Err(MonitoringError::AlreadyRunning("监控服务已在运行".to_string()));
         }
-        
+  
         log::info!("启动工作流监控服务");
-        
+  
         // 重置关闭信号
         self.shutdown.store(false, Ordering::SeqCst);
-        
+  
         // 初始化故障历史
         self.fault_history.initialize().await?;
-        
+  
         // 启动健康检查
         self.health_checker.start().await?;
-        
+  
         // 创建监控循环
         let shutdown = self.shutdown.clone();
         let fault_detector = Arc::new(Mutex::new(self.fault_detector.clone_box()));
@@ -13083,14 +13148,14 @@ impl WorkflowMonitoringService {
         let snapshot_manager = self.snapshot_manager.clone();
         let fault_history = self.fault_history.clone();
         let monitor_interval = self.monitor_config.monitoring_interval;
-        
+  
         // 启动监控工作器
         let handle = tokio::spawn(async move {
             log::info!("工作流监控循环已启动");
-            
+  
             let mut last_snapshot_time = Instant::now();
             let snapshot_interval = Duration::from_secs(300); // 5分钟快照间隔
-            
+  
             while !shutdown.load(Ordering::SeqCst) {
                 // 执行故障检测和恢复
                 if let Err(e) = Self::run_monitoring_cycle(
@@ -13102,7 +13167,7 @@ impl WorkflowMonitoringService {
                 ).await {
                     log::error!("监控循环执行失败: {}", e);
                 }
-                
+  
                 // 检查是否需要创建快照
                 let now = Instant::now();
                 if now.duration_since(last_snapshot_time) >= snapshot_interval {
@@ -13111,31 +13176,31 @@ impl WorkflowMonitoringService {
                     }
                     last_snapshot_time = now;
                 }
-                
+  
                 // 等待至下一个监控周期
                 tokio::time::sleep(monitor_interval).await;
             }
-            
+  
             log::info!("工作流监控循环已停止");
         });
-        
+  
         self.monitoring_worker = Some(handle);
-        
+  
         log::info!("工作流监控服务已启动");
         Ok(())
     }
-    
+  
     /// 停止监控服务
     pub async fn stop(&mut self) -> Result<(), MonitoringError> {
         if self.monitoring_worker.is_none() {
             return Ok(());
         }
-        
+  
         log::info!("停止工作流监控服务");
-        
+  
         // 设置关闭信号
         self.shutdown.store(true, Ordering::SeqCst);
-        
+  
         // 等待工作器完成
         if let Some(worker) = self.monitoring_worker.take() {
             match tokio::time::timeout(Duration::from_secs(10), worker).await {
@@ -13150,14 +13215,14 @@ impl WorkflowMonitoringService {
                 }
             }
         }
-        
+  
         // 停止健康检查
         self.health_checker.stop().await?;
-        
+  
         log::info!("工作流监控服务已停止");
         Ok(())
     }
-    
+  
     /// 运行单次监控循环
     async fn run_monitoring_cycle(
         fault_detector: Arc<Mutex<Box<dyn FaultDetector>>>,
@@ -13168,33 +13233,33 @@ impl WorkflowMonitoringService {
     ) -> Result<(), MonitoringError> {
         // 获取活跃工作流执行
         let active_executions = state_storage.get_active_executions().await?;
-        
+  
         // 获取节点状态
         let node_statuses = state_storage.get_all_node_statuses().await?;
-        
+  
         // 检测工作流故障
         let workflow_faults = {
             let detector = fault_detector.lock().await;
             detector.detect_workflow_faults(&active_executions).await?
         };
-        
+  
         // 检测节点故障
         let node_faults = {
             let detector = fault_detector.lock().await;
             detector.detect_node_faults(&node_statuses).await?
         };
-        
+  
         // 处理工作流故障
         for fault in workflow_faults {
             // 记录故障
             fault_history.record_fault(&fault).await?;
-            
+  
             // 发送告警
             {
                 let alert_mgr = alert_manager.lock().await;
                 alert_mgr.send_workflow_fault_alert(&fault).await?;
             }
-            
+  
             // 应用恢复策略
             {
                 let mut controller = recovery_controller.lock().await;
@@ -13202,7 +13267,7 @@ impl WorkflowMonitoringService {
                     Ok(result) => {
                         // 记录恢复结果
                         fault_history.record_recovery_result(&fault.fault_id, &result).await?;
-                        
+  
                         if result.success {
                             log::info!(
                                 "工作流故障恢复成功: {} ({})",
@@ -13229,18 +13294,18 @@ impl WorkflowMonitoringService {
                 }
             }
         }
-        
+  
         // 处理节点故障
         for fault in node_faults {
             // 记录故障
             fault_history.record_fault(&fault).await?;
-            
+  
             // 发送告警
             {
                 let alert_mgr = alert_manager.lock().await;
                 alert_mgr.send_node_fault_alert(&fault).await?;
             }
-            
+  
             // 应用恢复策略
             {
                 let mut controller = recovery_controller.lock().await;
@@ -13248,7 +13313,7 @@ impl WorkflowMonitoringService {
                     Ok(result) => {
                         // 记录恢复结果
                         fault_history.record_recovery_result(&fault.fault_id, &result).await?;
-                        
+  
                         if result.success {
                             log::info!(
                                 "节点故障恢复成功: {} ({})",
@@ -13275,7 +13340,7 @@ impl WorkflowMonitoringService {
                 }
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -13284,28 +13349,28 @@ impl WorkflowMonitoringService {
 pub struct FaultRecoveryController {
     /// 状态存储
     state_storage: Arc<StateStorage>,
-    
+  
     /// 工作流引擎
     workflow_engine: Arc<WorkflowEngine>,
-    
+  
     /// 节点管理器
     node_manager: Arc<NodeManager>,
-    
+  
     /// 快照管理器
     snapshot_manager: Arc<SnapshotManager>,
-    
+  
     /// 恢复策略提供者
     strategy_provider: Box<dyn RecoveryStrategyProvider>,
-    
+  
     /// 工作流恢复处理器集合
     workflow_recovery_handlers: HashMap<WorkflowFaultType, Box<dyn WorkflowRecoveryHandler>>,
-    
+  
     /// 节点恢复处理器集合
     node_recovery_handlers: HashMap<NodeFaultType, Box<dyn NodeRecoveryHandler>>,
-    
+  
     /// 度量收集器
     metrics: Arc<MetricsCollector>,
-    
+  
     /// 恢复配置
     config: RecoveryConfig,
 }
@@ -13332,16 +13397,16 @@ impl FaultRecoveryController {
             metrics,
             config,
         };
-        
+  
         // 注册默认工作流故障处理器
         controller.register_default_workflow_handlers();
-        
+  
         // 注册默认节点故障处理器
         controller.register_default_node_handlers();
-        
+  
         controller
     }
-    
+  
     /// 注册默认工作流故障处理器
     fn register_default_workflow_handlers(&mut self) {
         // 注册超时处理器
@@ -13352,7 +13417,7 @@ impl FaultRecoveryController {
                 self.config.max_workflow_retries,
             )),
         );
-        
+  
         // 注册步骤失败处理器
         self.register_workflow_handler(
             WorkflowFaultType::StepFailed,
@@ -13362,7 +13427,7 @@ impl FaultRecoveryController {
                 self.config.max_step_retries,
             )),
         );
-        
+  
         // 注册资源不足处理器
         self.register_workflow_handler(
             WorkflowFaultType::ResourceExhausted,
@@ -13371,7 +13436,7 @@ impl FaultRecoveryController {
                 self.node_manager.clone(),
             )),
         );
-        
+  
         // 注册状态损坏处理器
         self.register_workflow_handler(
             WorkflowFaultType::StateCorruption,
@@ -13381,7 +13446,7 @@ impl FaultRecoveryController {
             )),
         );
     }
-    
+  
     /// 注册默认节点故障处理器
     fn register_default_node_handlers(&mut self) {
         // 注册节点崩溃处理器
@@ -13392,7 +13457,7 @@ impl FaultRecoveryController {
                 self.workflow_engine.clone(),
             )),
         );
-        
+  
         // 注册节点超载处理器
         self.register_node_handler(
             NodeFaultType::Overloaded,
@@ -13400,7 +13465,7 @@ impl FaultRecoveryController {
                 self.node_manager.clone(),
             )),
         );
-        
+  
         // 注册网络分区处理器
         self.register_node_handler(
             NodeFaultType::NetworkPartitioned,
@@ -13408,7 +13473,7 @@ impl FaultRecoveryController {
                 self.node_manager.clone(),
             )),
         );
-        
+  
         // 注册磁盘空间不足处理器
         self.register_node_handler(
             NodeFaultType::DiskSpaceExhausted,
@@ -13417,7 +13482,7 @@ impl FaultRecoveryController {
             )),
         );
     }
-    
+  
     /// 注册工作流故障处理器
     pub fn register_workflow_handler(
         &mut self,
@@ -13426,7 +13491,7 @@ impl FaultRecoveryController {
     ) {
         self.workflow_recovery_handlers.insert(fault_type, handler);
     }
-    
+  
     /// 注册节点故障处理器
     pub fn register_node_handler(
         &mut self,
@@ -13446,24 +13511,24 @@ impl RecoveryController for FaultRecoveryController {
         // 记录恢复尝试
         self.metrics.recovery_attempt(&fault.fault_id, "workflow");
         let start_time = Instant::now();
-        
+  
         log::info!(
             "开始恢复工作流故障: {} ({})",
             fault.workflow_id,
             fault.fault_type
         );
-        
+  
         // 获取恢复策略
         let strategy = self.strategy_provider
             .get_workflow_recovery_strategy(fault)
             .await?;
-            
+  
         log::debug!(
             "为工作流故障 {} 选择恢复策略: {:?}",
             fault.workflow_id,
             strategy.strategy_type
         );
-        
+  
         // 获取处理器
         let handler = match self.workflow_recovery_handlers.get_mut(&fault.fault_type) {
             Some(handler) => handler,
@@ -13473,10 +13538,10 @@ impl RecoveryController for FaultRecoveryController {
                 ));
             }
         };
-        
+  
         // 执行恢复
         let result = handler.recover(fault, &strategy).await;
-        
+  
         // 记录恢复结果
         let recovery_time = start_time.elapsed();
         match &result {
@@ -13487,7 +13552,7 @@ impl RecoveryController for FaultRecoveryController {
                         "workflow",
                         recovery_time.as_millis() as u64,
                     );
-                    
+  
                     log::info!(
                         "工作流故障恢复成功: {} ({}) 耗时: {:?}",
                         fault.workflow_id,
@@ -13500,7 +13565,7 @@ impl RecoveryController for FaultRecoveryController {
                         "workflow",
                         recovery_result.error_message.as_deref().unwrap_or("未知错误"),
                     );
-                    
+  
                     log::warn!(
                         "工作流故障恢复失败: {} ({}): {} 耗时: {:?}",
                         fault.workflow_id,
@@ -13516,7 +13581,7 @@ impl RecoveryController for FaultRecoveryController {
                     "workflow",
                     &e.to_string(),
                 );
-                
+  
                 log::error!(
                     "工作流故障恢复出错: {} ({}): {} 耗时: {:?}",
                     fault.workflow_id,
@@ -13526,10 +13591,10 @@ impl RecoveryController for FaultRecoveryController {
                 );
             }
         }
-        
+  
         result
     }
-    
+  
     /// 恢复节点故障
     async fn recover_node_fault(
         &mut self,
@@ -13538,24 +13603,24 @@ impl RecoveryController for FaultRecoveryController {
         // 记录恢复尝试
         self.metrics.recovery_attempt(&fault.fault_id, "node");
         let start_time = Instant::now();
-        
+  
         log::info!(
             "开始恢复节点故障: {} ({})",
             fault.node_id,
             fault.fault_type
         );
-        
+  
         // 获取恢复策略
         let strategy = self.strategy_provider
             .get_node_recovery_strategy(fault)
             .await?;
-            
+  
         log::debug!(
             "为节点故障 {} 选择恢复策略: {:?}",
             fault.node_id,
             strategy.strategy_type
         );
-        
+  
         // 获取处理器
         let handler = match self.node_recovery_handlers.get_mut(&fault.fault_type) {
             Some(handler) => handler,
@@ -13565,10 +13630,10 @@ impl RecoveryController for FaultRecoveryController {
                 ));
             }
         };
-        
+  
         // 执行恢复
         let result = handler.recover(fault, &strategy).await;
-        
+  
         // 记录恢复结果
         let recovery_time = start_time.elapsed();
         match &result {
@@ -13579,7 +13644,7 @@ impl RecoveryController for FaultRecoveryController {
                         "node",
                         recovery_time.as_millis() as u64,
                     );
-                    
+  
                     log::info!(
                         "节点故障恢复成功: {} ({}) 耗时: {:?}",
                         fault.node_id,
@@ -13592,7 +13657,7 @@ impl RecoveryController for FaultRecoveryController {
                         "node",
                         recovery_result.error_message.as_deref().unwrap_or("未知错误"),
                     );
-                    
+  
                     log::warn!(
                         "节点故障恢复失败: {} ({}): {} 耗时: {:?}",
                         fault.node_id,
@@ -13608,7 +13673,7 @@ impl RecoveryController for FaultRecoveryController {
                     "node",
                     &e.to_string(),
                 );
-                
+  
                 log::error!(
                     "节点故障恢复出错: {} ({}): {} 耗时: {:?}",
                     fault.node_id,
@@ -13618,7 +13683,7 @@ impl RecoveryController for FaultRecoveryController {
                 );
             }
         }
-        
+  
         result
     }
 }
@@ -13627,22 +13692,22 @@ impl RecoveryController for FaultRecoveryController {
 pub struct SnapshotManager {
     /// 状态存储
     state_storage: Arc<StateStorage>,
-    
+  
     /// 快照存储
     snapshot_storage: Box<dyn SnapshotStorage>,
-    
+  
     /// 快照策略提供者
     snapshot_policy_provider: Box<dyn SnapshotPolicyProvider>,
-    
+  
     /// 指标收集器
     metrics: Arc<MetricsCollector>,
-    
+  
     /// 快照配置
     config: SnapshotConfig,
-    
+  
     /// 快照压缩器
     compressor: Option<Box<dyn SnapshotCompressor>>,
-    
+  
     /// 快照加密器
     encryptor: Option<Box<dyn SnapshotEncryptor>>,
 }
@@ -13668,23 +13733,23 @@ impl SnapshotManager {
             encryptor,
         }
     }
-    
+  
     /// 为工作流创建快照
     pub async fn create_workflow_snapshot(
         &self,
         workflow_id: &str,
     ) -> Result<SnapshotId, SnapshotError> {
         log::debug!("为工作流 {} 创建快照", workflow_id);
-        
+  
         // 获取工作流状态
         let workflow_state = self.state_storage
             .get_workflow_state(workflow_id)
             .await?;
-            
+  
         // 序列化状态
         let serialized_state = serde_json::to_vec(&workflow_state)
             .map_err(|e| SnapshotError::SerializationFailed(e.to_string()))?;
-            
+  
         // 压缩状态（如果配置了压缩器）
         let compressed_state = if let Some(compressor) = &self.compressor {
             compressor.compress(&serialized_state)
@@ -13692,7 +13757,7 @@ impl SnapshotManager {
         } else {
             serialized_state
         };
-        
+  
         // 加密状态（如果配置了加密器）
         let final_state = if let Some(encryptor) = &self.encryptor {
             encryptor.encrypt(&compressed_state)
@@ -13700,7 +13765,7 @@ impl SnapshotManager {
         } else {
             compressed_state
         };
-        
+  
         // 创建快照元数据
         let snapshot_metadata = SnapshotMetadata {
             workflow_id: workflow_id.to_string(),
@@ -13711,29 +13776,29 @@ impl SnapshotManager {
             snapshot_type: SnapshotType::Manual,
             tags: HashMap::new(),
         };
-        
+  
         // 存储快照
         let snapshot_id = self.snapshot_storage
             .store_snapshot(&final_state, &snapshot_metadata)
             .await?;
-            
+  
         // 记录快照创建
         self.metrics.snapshot_created(
             workflow_id,
             &snapshot_id,
             snapshot_metadata.size_bytes,
         );
-        
+  
         log::info!(
             "工作流 {} 快照创建成功，ID: {}, 大小: {} 字节",
             workflow_id,
             snapshot_id,
             snapshot_metadata.size_bytes
         );
-        
+  
         Ok(snapshot_id)
     }
-    
+  
     /// 从快照恢复工作流
     pub async fn restore_workflow_from_snapshot(
         &self,
@@ -13741,12 +13806,12 @@ impl SnapshotManager {
         snapshot_id: &str,
     ) -> Result<(), SnapshotError> {
         log::info!("从快照 {} 恢复工作流 {}", snapshot_id, workflow_id);
-        
+  
         // 获取快照
         let (snapshot_data, metadata) = self.snapshot_storage
             .retrieve_snapshot(snapshot_id)
             .await?;
-            
+  
         // 解密（如果需要）
         let decrypted_data = if metadata.encrypted {
             if let Some(encryptor) = &self.encryptor {
@@ -13760,7 +13825,7 @@ impl SnapshotManager {
         } else {
             snapshot_data
         };
-        
+  
         // 解压（如果需要）
         let decompressed_data = if metadata.compressed {
             if let Some(compressor) = &self.compressor {
@@ -13774,39 +13839,39 @@ impl SnapshotManager {
         } else {
             decrypted_data
         };
-        
+  
         // 反序列化状态
         let workflow_state: WorkflowState = serde_json::from_slice(&decompressed_data)
             .map_err(|e| SnapshotError::DeserializationFailed(e.to_string()))?;
-            
+  
         // 恢复工作流状态
         self.state_storage
             .restore_workflow_state(workflow_id, workflow_state)
             .await?;
-            
+  
         // 记录快照恢复
         self.metrics.snapshot_restored(workflow_id, snapshot_id);
-        
+  
         log::info!("工作流 {} 已从快照 {} 成功恢复", workflow_id, snapshot_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 创建定期快照
     pub async fn create_periodic_snapshots(&self) -> Result<Vec<SnapshotResult>, SnapshotError> {
         log::debug!("执行定期快照创建");
-        
+  
         // 获取活跃工作流
         let active_workflows = self.state_storage.get_active_workflow_ids().await?;
-        
+  
         let mut results = Vec::new();
-        
+  
         for workflow_id in active_workflows {
             // 获取快照策略
             let policy = self.snapshot_policy_provider
                 .get_snapshot_policy(&workflow_id)
                 .await?;
-                
+  
             // 检查是否应该创建快照
             if self.should_create_snapshot(&workflow_id, &policy).await? {
                 match self.create_workflow_snapshot(&workflow_id).await {
@@ -13820,7 +13885,7 @@ impl SnapshotManager {
                     },
                     Err(e) => {
                         log::error!("为工作流 {} 创建定期快照失败: {}", workflow_id, e);
-                        
+  
                         results.push(SnapshotResult {
                             workflow_id: workflow_id.clone(),
                             snapshot_id: String::new(),
@@ -13831,11 +13896,12 @@ impl SnapshotManager {
                 }
             }
         }
-        
+  
         log::info!(
             "定期快照创建完成，成功: {}, 失败: {}",
             results.iter().filter(|r| r.success).count(),
             results.iter().filter(|r
+
 ```
 
 性能优化和指标收集
@@ -13845,31 +13911,31 @@ impl SnapshotManager {
 pub struct WorkflowPerformanceOptimizer {
     /// 性能指标收集器
     metrics_collector: Arc<MetricsCollector>,
-    
+  
     /// 性能分析器
     performance_analyzer: Box<dyn PerformanceAnalyzer>,
-    
+  
     /// 优化规则注册表
     optimization_rules: Vec<Box<dyn OptimizationRule>>,
-    
+  
     /// 工作流历史存储
     history_store: Arc<ExecutionHistoryStore>,
-    
+  
     /// 工作流引擎
     workflow_engine: Arc<WorkflowEngine>,
-    
+  
     /// 资源监控器
     resource_monitor: Arc<ResourceMonitor>,
-    
+  
     /// 优化配置
     config: OptimizationConfig,
-    
+  
     /// 优化工作器
     optimization_worker: Option<JoinHandle<()>>,
-    
+  
     /// 关闭信号
     shutdown: Arc<AtomicBool>,
-    
+  
     /// 优化历史记录
     optimization_history: RwLock<HashMap<String, Vec<OptimizationRecord>>>,
 }
@@ -13897,21 +13963,21 @@ impl WorkflowPerformanceOptimizer {
             optimization_history: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     /// 启动性能优化器
     pub async fn start(&mut self) -> Result<(), OptimizationError> {
         if self.optimization_worker.is_some() {
             return Err(OptimizationError::AlreadyRunning("性能优化器已在运行".to_string()));
         }
-        
+  
         log::info!("启动工作流性能优化器");
-        
+  
         // 重置关闭信号
         self.shutdown.store(false, Ordering::SeqCst);
-        
+  
         // 注册默认优化规则
         self.register_default_rules();
-        
+  
         // 创建优化循环
         let shutdown = self.shutdown.clone();
         let metrics_collector = self.metrics_collector.clone();
@@ -13922,16 +13988,16 @@ impl WorkflowPerformanceOptimizer {
         let resource_monitor = self.resource_monitor.clone();
         let config = self.config.clone();
         let optimization_history = self.optimization_history.clone();
-        
+  
         // 启动优化工作器
         let handle = tokio::spawn(async move {
             let mut optimization_interval = tokio::time::interval(config.optimization_interval);
-            
+  
             log::info!("工作流性能优化循环已启动");
-            
+  
             while !shutdown.load(Ordering::SeqCst) {
                 optimization_interval.tick().await;
-                
+  
                 // 执行优化周期
                 if let Err(e) = Self::run_optimization_cycle(
                     metrics_collector.clone(),
@@ -13946,27 +14012,27 @@ impl WorkflowPerformanceOptimizer {
                     log::error!("性能优化循环执行失败: {}", e);
                 }
             }
-            
+  
             log::info!("工作流性能优化循环已停止");
         });
-        
+  
         self.optimization_worker = Some(handle);
-        
+  
         log::info!("工作流性能优化器已启动");
         Ok(())
     }
-    
+  
     /// 停止性能优化器
     pub async fn stop(&mut self) -> Result<(), OptimizationError> {
         if self.optimization_worker.is_none() {
             return Ok(());
         }
-        
+  
         log::info!("停止工作流性能优化器");
-        
+  
         // 设置关闭信号
         self.shutdown.store(true, Ordering::SeqCst);
-        
+  
         // 等待工作器完成
         if let Some(worker) = self.optimization_worker.take() {
             match tokio::time::timeout(Duration::from_secs(10), worker).await {
@@ -13981,54 +14047,54 @@ impl WorkflowPerformanceOptimizer {
                 }
             }
         }
-        
+  
         log::info!("工作流性能优化器已停止");
         Ok(())
     }
-    
+  
     /// 注册默认优化规则
     fn register_default_rules(&mut self) {
         // 注册并行度优化规则
         self.register_rule(Box::new(ParallelismOptimizationRule::new(
             self.config.max_parallelism,
         )));
-        
+  
         // 注册数据局部性优化规则
         self.register_rule(Box::new(DataLocalityOptimizationRule::new(
             self.config.locality_threshold,
         )));
-        
+  
         // 注册资源分配优化规则
         self.register_rule(Box::new(ResourceAllocationOptimizationRule::new(
             self.config.resource_threshold,
         )));
-        
+  
         // 注册超时调整规则
         self.register_rule(Box::new(TimeoutAdjustmentRule::new(
             self.config.timeout_adjustment_factor,
         )));
-        
+  
         // 注册重试策略优化规则
         self.register_rule(Box::new(RetryStrategyOptimizationRule::new(
             self.config.max_retry_count,
         )));
-        
+  
         // 注册批处理优化规则
         self.register_rule(Box::new(BatchProcessingOptimizationRule::new(
             self.config.max_batch_size,
         )));
     }
-    
+  
     /// 注册优化规则
     pub fn register_rule(&mut self, rule: Box<dyn OptimizationRule>) {
         self.optimization_rules.push(rule);
     }
-    
+  
     /// 克隆优化规则
     fn clone_rules(&self) -> Vec<Box<dyn OptimizationRule>> {
         self.optimization_rules.iter().map(|r| r.clone_box()).collect()
     }
-    
+  
     /// 运行单次优化循环
     async fn run_optimization_cycle(
         metrics_collector: Arc<MetricsCollector>,
@@ -14045,17 +14111,17 @@ impl WorkflowPerformanceOptimizer {
             &metrics_collector,
             config.min_execution_count,
         ).await?;
-        
+  
         if workflow_ids.is_empty() {
             log::debug!("未找到可优化的工作流");
             return Ok(());
         }
-        
+  
         log::info!("开始优化 {} 个工作流", workflow_ids.len());
-        
+  
         // 获取当前系统资源状态
         let system_resources = resource_monitor.get_system_resources().await?;
-        
+  
         // 处理每个需要优化的工作流
         for workflow_id in workflow_ids {
             // 获取工作流定义
@@ -14066,7 +14132,7 @@ impl WorkflowPerformanceOptimizer {
                     continue;
                 }
             };
-            
+  
             // 获取工作流执行历史
             let execution_history = match history_store.get_workflow_execution_history(&workflow_id, 10).await {
                 Ok(history) => history,
@@ -14075,10 +14141,10 @@ impl WorkflowPerformanceOptimizer {
                     continue;
                 }
             };
-            
+  
             // 获取工作流性能指标
             let performance_metrics = metrics_collector.get_workflow_metrics(&workflow_id).await;
-            
+  
             // 分析性能
             let performance_analysis = match performance_analyzer.analyze_workflow(
                 &workflow_definition,
@@ -14091,11 +14157,11 @@ impl WorkflowPerformanceOptimizer {
                     continue;
                 }
             };
-            
+  
             // 应用优化规则
             let mut applied_optimizations = Vec::new();
             let mut optimized_workflow = workflow_definition.clone();
-            
+  
             for rule in &rules {
                 if rule.can_apply(&optimized_workflow, &performance_analysis) {
                     match rule.apply(&mut optimized_workflow, &performance_analysis, &system_resources).await {
@@ -14107,7 +14173,7 @@ impl WorkflowPerformanceOptimizer {
                                     rule.name(),
                                     optimizations.len()
                                 );
-                                
+  
                                 applied_optimizations.extend(optimizations);
                             }
                         },
@@ -14122,7 +14188,7 @@ impl WorkflowPerformanceOptimizer {
                     }
                 }
             }
-            
+  
             // 如果有优化应用，更新工作流定义
             if !applied_optimizations.is_empty() {
                 // 验证优化后的工作流
@@ -14136,7 +14202,7 @@ impl WorkflowPerformanceOptimizer {
                                     workflow_id,
                                     applied_optimizations.len()
                                 );
-                                
+  
                                 // 记录优化历史
                                 let optimization_record = OptimizationRecord {
                                     timestamp: chrono::Utc::now(),
@@ -14144,7 +14210,7 @@ impl WorkflowPerformanceOptimizer {
                                     applied_optimizations: applied_optimizations.clone(),
                                     performance_before: performance_analysis.clone(),
                                 };
-                                
+  
                                 // 更新优化历史
                                 let mut history = optimization_history.write().await;
                                 history
@@ -14165,10 +14231,10 @@ impl WorkflowPerformanceOptimizer {
                 log::debug!("工作流 {} 没有应用任何优化", workflow_id);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 识别需要优化的工作流
     async fn identify_workflows_for_optimization(
         metrics_collector: &MetricsCollector,
@@ -14176,10 +14242,10 @@ impl WorkflowPerformanceOptimizer {
     ) -> Result<Vec<String>, OptimizationError> {
         // 获取所有工作流指标
         let all_workflow_metrics = metrics_collector.get_all_workflow_metrics().await;
-        
+  
         // 筛选满足优化条件的工作流
         let mut candidates = Vec::new();
-        
+  
         for (workflow_id, metrics) in all_workflow_metrics {
             // 检查执行次数是否达到最小要求
             if metrics.execution_count >= min_execution_count {
@@ -14189,41 +14255,41 @@ impl WorkflowPerformanceOptimizer {
                 }
             }
         }
-        
+  
         Ok(candidates)
     }
-    
+  
     /// 确定工作流是否需要优化
     fn workflow_needs_optimization(metrics: &WorkflowMetrics) -> bool {
         // 检查平均执行时间
         if metrics.avg_execution_time.as_millis() > 5000 {
             return true;
         }
-        
+  
         // 检查失败率
         if metrics.failure_rate > 0.05 {
             return true;
         }
-        
+  
         // 检查资源使用率
         if metrics.avg_cpu_usage > 0.8 || metrics.avg_memory_usage > 0.8 {
             return true;
         }
-        
+  
         // 检查步骤执行时间异常
         for (_, step_metrics) in &metrics.step_metrics {
             if step_metrics.avg_execution_time.as_millis() > 2000 {
                 return true;
             }
         }
-        
+  
         false
     }
-    
+  
     /// 获取工作流的优化历史
     pub async fn get_optimization_history(&self, workflow_id: &str) -> Vec<OptimizationRecord> {
         let history = self.optimization_history.read().await;
-        
+  
         match history.get(workflow_id) {
             Some(records) => records.clone(),
             None => Vec::new(),
@@ -14235,25 +14301,25 @@ impl WorkflowPerformanceOptimizer {
 pub struct MetricsCollector {
     /// 活跃工作流指标
     workflow_metrics: RwLock<HashMap<String, WorkflowMetrics>>,
-    
+  
     /// 节点指标
     node_metrics: RwLock<HashMap<String, NodeMetrics>>,
-    
+  
     /// 系统指标
     system_metrics: RwLock<SystemMetrics>,
-    
+  
     /// 工作流引擎
     workflow_engine: Arc<WorkflowEngine>,
-    
+  
     /// 指标存储
     metrics_store: Arc<dyn MetricsStorage>,
-    
+  
     /// 指标收集配置
     collection_config: MetricsCollectionConfig,
-    
+  
     /// 指标收集工作器
     metrics_worker: Option<JoinHandle<()>>,
-    
+  
     /// 关闭信号
     shutdown: Arc<AtomicBool>,
 }
@@ -14276,18 +14342,18 @@ impl MetricsCollector {
             shutdown: Arc::new(AtomicBool::new(false)),
         }
     }
-    
+  
     /// 启动指标收集
     pub async fn start(&mut self) -> Result<(), MetricsError> {
         if self.metrics_worker.is_some() {
             return Err(MetricsError::AlreadyRunning("指标收集器已在运行".to_string()));
         }
-        
+  
         log::info!("启动工作流指标收集器");
-        
+  
         // 重置关闭信号
         self.shutdown.store(false, Ordering::SeqCst);
-        
+  
         // 创建指标收集循环
         let shutdown = self.shutdown.clone();
         let workflow_engine = self.workflow_engine.clone();
@@ -14297,14 +14363,14 @@ impl MetricsCollector {
         let workflow_metrics = self.workflow_metrics.clone();
         let node_metrics = self.node_metrics.clone();
         let system_metrics = self.system_metrics.clone();
-        
+  
         // 启动指标收集工作器
         let handle = tokio::spawn(async move {
             let mut collection_interval_timer = tokio::time::interval(collection_interval);
             let mut storage_interval_timer = tokio::time::interval(storage_interval);
-            
+  
             log::info!("工作流指标收集循环已启动");
-            
+  
             while !shutdown.load(Ordering::SeqCst) {
                 tokio::select! {
                     _ = collection_interval_timer.tick() => {
@@ -14318,7 +14384,7 @@ impl MetricsCollector {
                             log::error!("收集指标失败: {}", e);
                         }
                     }
-                    
+  
                     _ = storage_interval_timer.tick() => {
                         // 存储指标
                         if let Err(e) = Self::store_metrics(
@@ -14332,27 +14398,27 @@ impl MetricsCollector {
                     }
                 }
             }
-            
+  
             log::info!("工作流指标收集循环已停止");
         });
-        
+  
         self.metrics_worker = Some(handle);
-        
+  
         log::info!("工作流指标收集器已启动");
         Ok(())
     }
-    
+  
     /// 停止指标收集
     pub async fn stop(&mut self) -> Result<(), MetricsError> {
         if self.metrics_worker.is_none() {
             return Ok(());
         }
-        
+  
         log::info!("停止工作流指标收集器");
-        
+  
         // 设置关闭信号
         self.shutdown.store(true, Ordering::SeqCst);
-        
+  
         // 等待工作器完成
         if let Some(worker) = self.metrics_worker.take() {
             match tokio::time::timeout(Duration::from_secs(10), worker).await {
@@ -14367,7 +14433,7 @@ impl MetricsCollector {
                 }
             }
         }
-        
+  
         // 存储最终指标
         Self::store_metrics(
             self.metrics_store.clone(),
@@ -14375,11 +14441,11 @@ impl MetricsCollector {
             self.node_metrics.clone(),
             self.system_metrics.clone(),
         ).await?;
-        
+  
         log::info!("工作流指标收集器已停止");
         Ok(())
     }
-    
+  
     /// 收集指标
     async fn collect_metrics(
         workflow_engine: Arc<WorkflowEngine>,
@@ -14389,16 +14455,16 @@ impl MetricsCollector {
     ) -> Result<(), MetricsError> {
         // 1. 收集工作流指标
         Self::collect_workflow_metrics(workflow_engine.clone(), workflow_metrics.clone()).await?;
-        
+  
         // 2. 收集节点指标
         Self::collect_node_metrics(workflow_engine.clone(), node_metrics.clone()).await?;
-        
+  
         // 3. 收集系统指标
         Self::collect_system_metrics(system_metrics.clone()).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 收集工作流指标
     async fn collect_workflow_metrics(
         workflow_engine: Arc<WorkflowEngine>,
@@ -14406,42 +14472,42 @@ impl MetricsCollector {
     ) -> Result<(), MetricsError> {
         // 获取活跃工作流
         let active_workflows = workflow_engine.get_active_workflows().await?;
-        
+  
         // 获取已完成工作流（自上次收集以来）
         let completed_workflows = workflow_engine.get_recently_completed_workflows().await?;
-        
+  
         // 更新工作流指标
         let mut metrics = workflow_metrics.write().await;
-        
+  
         // 处理活跃工作流
         for workflow in active_workflows {
             let workflow_id = workflow.id.clone();
-            
+  
             // 获取当前指标或创建新的
             let workflow_metric = metrics
                 .entry(workflow_id.clone())
                 .or_insert_with(|| WorkflowMetrics::new(&workflow_id));
-                
+  
             // 更新活跃工作流指标
             workflow_metric.update_from_active_workflow(&workflow);
         }
-        
+  
         // 处理已完成工作流
         for execution in completed_workflows {
             let workflow_id = execution.workflow_id.clone();
-            
+  
             // 获取当前指标或创建新的
             let workflow_metric = metrics
                 .entry(workflow_id.clone())
                 .or_insert_with(|| WorkflowMetrics::new(&workflow_id));
-                
+  
             // 更新已完成工作流指标
             workflow_metric.update_from_completed_execution(&execution);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 收集节点指标
     async fn collect_node_metrics(
         workflow_engine: Arc<WorkflowEngine>,
@@ -14449,25 +14515,25 @@ impl MetricsCollector {
     ) -> Result<(), MetricsError> {
         // 获取所有节点状态
         let node_statuses = workflow_engine.get_all_node_statuses().await?;
-        
+  
         // 更新节点指标
         let mut metrics = node_metrics.write().await;
-        
+  
         for node_status in node_statuses {
             let node_id = node_status.node_id.clone();
-            
+  
             // 获取当前指标或创建新的
             let node_metric = metrics
                 .entry(node_id.clone())
                 .or_insert_with(|| NodeMetrics::new(&node_id));
-                
+  
             // 更新节点指标
             node_metric.update_from_node_status(&node_status);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 收集系统指标
     async fn collect_system_metrics(
         system_metrics: RwLock<SystemMetrics>,
@@ -14477,20 +14543,20 @@ impl MetricsCollector {
         let memory_usage = get_system_memory_usage()?;
         let disk_usage = get_system_disk_usage()?;
         let network_usage = get_system_network_usage()?;
-        
+  
         // 更新系统指标
         let mut metrics = system_metrics.write().await;
-        
+  
         metrics.update(
             cpu_usage,
             memory_usage,
             disk_usage,
             network_usage,
         );
-        
+  
         Ok(())
     }
-    
+  
     /// 存储指标
     async fn store_metrics(
         metrics_store: Arc<dyn MetricsStorage>,
@@ -14502,60 +14568,60 @@ impl MetricsCollector {
         let workflows = workflow_metrics.read().await.clone();
         let nodes = node_metrics.read().await.clone();
         let system = system_metrics.read().await.clone();
-        
+  
         // 存储工作流指标
         for (id, metrics) in workflows {
             metrics_store.store_workflow_metrics(&id, &metrics).await?;
         }
-        
+  
         // 存储节点指标
         for (id, metrics) in nodes {
             metrics_store.store_node_metrics(&id, &metrics).await?;
         }
-        
+  
         // 存储系统指标
         metrics_store.store_system_metrics(&system).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 获取工作流指标
     pub async fn get_workflow_metrics(&self, workflow_id: &str) -> WorkflowMetrics {
         let metrics = self.workflow_metrics.read().await;
-        
+  
         metrics
             .get(workflow_id)
             .cloned()
             .unwrap_or_else(|| WorkflowMetrics::new(workflow_id))
     }
-    
+  
     /// 获取所有工作流指标
     pub async fn get_all_workflow_metrics(&self) -> HashMap<String, WorkflowMetrics> {
         self.workflow_metrics.read().await.clone()
     }
-    
+  
     /// 获取节点指标
     pub async fn get_node_metrics(&self, node_id: &str) -> Option<NodeMetrics> {
         let metrics = self.node_metrics.read().await;
         metrics.get(node_id).cloned()
     }
-    
+  
     /// 获取系统指标
     pub async fn get_system_metrics(&self) -> SystemMetrics {
         self.system_metrics.read().await.clone()
     }
-    
+  
     /// 记录工作流开始
     pub async fn record_workflow_started(&self, workflow_id: &str, workflow_type: &str) {
         let mut metrics = self.workflow_metrics.write().await;
-        
+  
         let workflow_metric = metrics
             .entry(workflow_id.to_string())
             .or_insert_with(|| WorkflowMetrics::new(workflow_id));
-            
+  
         workflow_metric.record_started(workflow_type);
     }
-    
+  
     /// 记录工作流完成
     pub async fn record_workflow_completed(
         &self,
@@ -14564,21 +14630,21 @@ impl MetricsCollector {
         result: &WorkflowResult,
     ) {
         let mut metrics = self.workflow_metrics.write().await;
-        
+  
         if let Some(workflow_metric) = metrics.get_mut(workflow_id) {
             workflow_metric.record_completed(execution_time, result);
         }
     }
-    
+  
     /// 记录工作流步骤开始
     pub async fn record_step_started(&self, workflow_id: &str, step_id: &str, step_type: &str) {
         let mut metrics = self.workflow_metrics.write().await;
-        
+  
         if let Some(workflow_metric) = metrics.get_mut(workflow_id) {
             workflow_metric.record_step_started(step_id, step_type);
         }
     }
-    
+  
     /// 记录工作流步骤完成
     pub async fn record_step_completed(
         &self,
@@ -14588,7 +14654,7 @@ impl MetricsCollector {
         result: &StepResult,
     ) {
         let mut metrics = self.workflow_metrics.write().await;
-        
+  
         if let Some(workflow_metric) = metrics.get_mut(workflow_id) {
             workflow_metric.record_step_completed(step_id, execution_time, result);
         }
@@ -14599,13 +14665,13 @@ impl MetricsCollector {
 pub struct PerformanceAnalyzer {
     /// 运行时指标提供者
     runtime_metrics: Arc<MetricsCollector>,
-    
+  
     /// 性能模型注册表
     performance_models: PerformanceModelRegistry,
-    
+  
     /// 资源估算器
     resource_estimator: ResourceEstimator,
-    
+  
     /// 优化规则
     optimization_rules: Vec<Box<dyn OptimizationRule>>,
 }
@@ -14623,7 +14689,7 @@ impl PerformanceAnalyzer {
             resource_estimator,
         }
     }
-    
+  
     /// 分析工作流性能
     pub async fn analyze_workflow(
         &self,
@@ -14640,6 +14706,7 @@ impl PerformanceAnalyzer {
             optimizations: Vec::new(),
             metrics: metrics.clone(),
         };
+
 ```
 
 工作流可观测性与追踪系统
@@ -14649,22 +14716,22 @@ impl PerformanceAnalyzer {
 pub struct WorkflowTracer {
     /// OpenTelemetry 追踪器
     tracer: opentelemetry::sdk::trace::Tracer,
-    
+  
     /// 服务名称
     service_name: String,
-    
+  
     /// 是否启用
     enabled: AtomicBool,
-    
+  
     /// 采样率 (0.0-1.0)
     sampling_ratio: AtomicF64,
-    
+  
     /// 活跃追踪记录
     active_traces: RwLock<HashMap<String, WorkflowTrace>>,
-    
+  
     /// 追踪导出器
     exporter: Box<dyn SpanExporter>,
-    
+  
     /// 追踪过滤器
     filters: Vec<Box<dyn TraceFilter>>,
 }
@@ -14680,13 +14747,13 @@ impl WorkflowTracer {
         if sampling_ratio < 0.0 || sampling_ratio > 1.0 {
             return Err(TracingError::InvalidSamplingRatio(sampling_ratio));
         }
-        
+  
         // 创建资源
         let resource = opentelemetry::sdk::Resource::new(vec![
             opentelemetry::KeyValue::new("service.name", service_name.clone()),
             opentelemetry::KeyValue::new("service.version", env!("CARGO_PKG_VERSION").to_string()),
         ]);
-        
+  
         // 创建采样器
         let sampler = if sampling_ratio >= 1.0 {
             Sampler::AlwaysOn
@@ -14695,24 +14762,24 @@ impl WorkflowTracer {
         } else {
             Sampler::TraceIdRatioBased(sampling_ratio)
         };
-        
+  
         // 创建批处理器
         let batch_processor = opentelemetry::sdk::trace::BatchSpanProcessor::builder(
             exporter.clone(),
             tokio::runtime::Handle::current(),
         )
         .build();
-        
+  
         // 创建追踪提供者
         let provider = opentelemetry::sdk::trace::TracerProvider::builder()
             .with_resource(resource)
             .with_sampler(sampler)
             .with_span_processor(batch_processor)
             .build();
-        
+  
         // 获取追踪器
         let tracer = provider.tracer("workflow_engine");
-        
+  
         Ok(Self {
             tracer,
             service_name,
@@ -14723,27 +14790,27 @@ impl WorkflowTracer {
             filters: Vec::new(),
         })
     }
-    
+  
     /// 启用或禁用追踪
     pub fn set_enabled(&self, enabled: bool) {
         self.enabled.store(enabled, Ordering::SeqCst);
     }
-    
+  
     /// 设置采样率
     pub fn set_sampling_ratio(&self, ratio: f64) -> Result<(), TracingError> {
         if ratio < 0.0 || ratio > 1.0 {
             return Err(TracingError::InvalidSamplingRatio(ratio));
         }
-        
+  
         self.sampling_ratio.store(ratio, Ordering::SeqCst);
         Ok(())
     }
-    
+  
     /// 添加追踪过滤器
     pub fn add_filter(&mut self, filter: Box<dyn TraceFilter>) {
         self.filters.push(filter);
     }
-    
+  
     /// 开始工作流追踪
     pub fn start_workflow_trace(
         &self,
@@ -14755,12 +14822,12 @@ impl WorkflowTracer {
         if !self.enabled.load(Ordering::SeqCst) {
             return WorkflowSpan::no_op();
         }
-        
+  
         // 检查是否应该追踪该工作流
         if !self.should_trace_workflow(workflow_id, workflow_type) {
             return WorkflowSpan::no_op();
         }
-        
+  
         // 创建追踪上下文
         let mut span_builder = self.tracer.span_builder(format!("workflow:{}", workflow_type))
             .with_kind(opentelemetry::trace::SpanKind::Internal)
@@ -14769,17 +14836,17 @@ impl WorkflowTracer {
                 KeyValue::new("workflow.type", workflow_type.to_string()),
                 KeyValue::new("workflow.version", workflow_version.to_string()),
             ]);
-            
+  
         // 添加输入参数（过滤敏感信息）
         let filtered_input = self.filter_sensitive_data(input_params);
         span_builder = span_builder.with_attributes(vec![
             KeyValue::new("workflow.input", format!("{}", filtered_input)),
         ]);
-        
+  
         // 开始追踪
         let span = span_builder.start(&self.tracer);
         let context = Context::current_with_span(span);
-        
+  
         // 创建工作流追踪记录
         let trace = WorkflowTrace {
             workflow_id: workflow_id.to_string(),
@@ -14790,11 +14857,11 @@ impl WorkflowTracer {
             end_time: None,
             status: WorkflowTraceStatus::Running,
         };
-        
+  
         // 保存活跃追踪
         let mut active_traces = self.active_traces.write().unwrap();
         active_traces.insert(workflow_id.to_string(), trace);
-        
+  
         // 返回追踪 span
         WorkflowSpan {
             context,
@@ -14803,7 +14870,7 @@ impl WorkflowTracer {
             is_active: true,
         }
     }
-    
+  
     /// 记录工作流步骤
     pub fn trace_workflow_step(
         &self,
@@ -14816,7 +14883,7 @@ impl WorkflowTracer {
         if !self.enabled.load(Ordering::SeqCst) || !parent_span.is_active {
             return f(&StepSpan::no_op());
         }
-        
+  
         // 创建步骤 span
         let parent_cx = parent_span.context.clone();
         let mut span_builder = self.tracer.span_builder(format!("step:{}", step_type))
@@ -14827,11 +14894,11 @@ impl WorkflowTracer {
                 KeyValue::new("step.id", step_id.to_string()),
                 KeyValue::new("step.type", step_type.to_string()),
             ]);
-            
+  
         // 开始追踪
         let span = span_builder.start(&self.tracer);
         let context = Context::current_with_span(span);
-        
+  
         // 创建步骤追踪 span
         let step_span = StepSpan {
             context,
@@ -14840,25 +14907,25 @@ impl WorkflowTracer {
             step_id: step_id.to_string(),
             is_active: true,
         };
-        
+  
         // 记录步骤开始时间
         let start_time = Utc::now();
-        
+  
         // 执行步骤函数
         let result = f(&step_span);
-        
+  
         // 记录步骤结束
         let end_time = Utc::now();
         let duration = end_time.signed_duration_since(start_time);
-        
+  
         // 更新 span 状态
         let span = step_span.context.span();
-        
+  
         match &result {
             Ok(output) => {
                 // 设置成功状态
                 span.set_status(opentelemetry::trace::Status::Ok);
-                
+  
                 // 添加输出属性（过滤敏感信息）
                 let filtered_output = self.filter_sensitive_data(output);
                 span.set_attribute(KeyValue::new("step.output", format!("{}", filtered_output)));
@@ -14875,10 +14942,10 @@ impl WorkflowTracer {
                 span.set_attribute(KeyValue::new("step.duration_ms", duration.num_milliseconds() as i64));
             }
         }
-        
+  
         // 结束步骤追踪
         drop(span);
-        
+  
         // 保存步骤记录
         if let Some(trace) = self.active_traces.write().unwrap().get_mut(workflow_id) {
             let step_record = WorkflowTraceStep {
@@ -14893,13 +14960,13 @@ impl WorkflowTracer {
                 },
                 error: result.as_ref().err().map(|e| format!("{}", e)),
             };
-            
+  
             trace.steps.write().unwrap().push(step_record);
         }
-        
+  
         result
     }
-    
+  
     /// 结束工作流追踪
     pub fn end_workflow_trace(
         &self,
@@ -14909,16 +14976,16 @@ impl WorkflowTracer {
         if !self.enabled.load(Ordering::SeqCst) || !workflow_span.is_active {
             return;
         }
-        
+  
         let workflow_id = workflow_span.workflow_id.clone();
         let span = workflow_span.context.span();
-        
+  
         // 获取工作流追踪记录
         let mut active_traces = self.active_traces.write().unwrap();
         if let Some(trace) = active_traces.get_mut(&workflow_id) {
             // 更新结束时间
             trace.end_time = Some(Utc::now());
-            
+  
             // 更新状态
             match result {
                 Ok(_) => {
@@ -14934,30 +15001,30 @@ impl WorkflowTracer {
                     ]);
                 }
             }
-            
+  
             // 计算持续时间
             if let Some(end_time) = trace.end_time {
                 let duration = end_time.signed_duration_since(trace.start_time);
                 span.set_attribute(KeyValue::new("workflow.duration_ms", duration.num_milliseconds() as i64));
             }
-            
+  
             // 添加输出结果
             if let Ok(output) = result {
                 let filtered_output = self.filter_sensitive_data(output);
                 span.set_attribute(KeyValue::new("workflow.output", format!("{}", filtered_output)));
             }
         }
-        
+  
         // 结束追踪
         drop(span);
-        
+  
         // 存档完成的追踪
         if let Some(trace) = active_traces.remove(&workflow_id) {
             // 这里可以将完成的追踪存储到持久化存储
             // 例如：self.trace_storage.store_trace(trace).await;
         }
     }
-    
+  
     /// 确定是否应该追踪工作流
     fn should_trace_workflow(&self, workflow_id: &str, workflow_type: &str) -> bool {
         // 检查过滤器
@@ -14966,7 +15033,7 @@ impl WorkflowTracer {
                 return false;
             }
         }
-        
+  
         // 应用采样率
         let sampling_ratio = self.sampling_ratio.load(Ordering::SeqCst);
         if sampling_ratio >= 1.0 {
@@ -14974,26 +15041,26 @@ impl WorkflowTracer {
         } else if sampling_ratio <= 0.0 {
             return false;
         }
-        
+  
         // 基于工作流ID进行确定性采样
         let hash = {
             let mut hasher = DefaultHasher::new();
             workflow_id.hash(&mut hasher);
             hasher.finish()
         };
-        
+  
         // 将哈希值转换为 0.0-1.0 范围
         let hash_float = (hash as f64) / (u64::MAX as f64);
-        
+  
         hash_float < sampling_ratio
     }
-    
+  
     /// 过滤敏感数据
     fn filter_sensitive_data(&self, data: &serde_json::Value) -> serde_json::Value {
         // 如果数据是对象，逐个字段处理
         if let serde_json::Value::Object(map) = data {
             let mut filtered_map = serde_json::Map::new();
-            
+  
             for (key, value) in map {
                 if self.is_sensitive_field(key) {
                     // 敏感字段被替换为 "***"
@@ -15006,7 +15073,7 @@ impl WorkflowTracer {
                     filtered_map.insert(key.clone(), value.clone());
                 }
             }
-            
+  
             serde_json::Value::Object(filtered_map)
         } else if let serde_json::Value::Array(arr) = data {
             // 处理数组
@@ -15014,36 +15081,36 @@ impl WorkflowTracer {
                 .iter()
                 .map(|item| self.filter_sensitive_data(item))
                 .collect();
-                
+  
             serde_json::Value::Array(filtered_arr)
         } else {
             // 基本类型保持不变
             data.clone()
         }
     }
-    
+  
     /// 检查字段是否敏感
     fn is_sensitive_field(&self, field_name: &str) -> bool {
         let sensitive_patterns = [
             "password", "token", "secret", "key", "auth", "credentials",
             "credit", "card", "ssn", "social", "security", "private"
         ];
-        
+  
         for pattern in &sensitive_patterns {
             if field_name.to_lowercase().contains(pattern) {
                 return true;
             }
         }
-        
+  
         false
     }
-    
+  
     /// 获取工作流追踪记录
     pub fn get_workflow_trace(&self, workflow_id: &str) -> Option<WorkflowTrace> {
         let active_traces = self.active_traces.read().unwrap();
         active_traces.get(workflow_id).cloned()
     }
-    
+  
     /// 获取所有活跃工作流追踪
     pub fn get_active_traces(&self) -> Vec<WorkflowTrace> {
         let active_traces = self.active_traces.read().unwrap();
@@ -15052,89 +15119,97 @@ impl WorkflowTracer {
 }
 
 /// 工作流追踪记录
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct WorkflowTrace {
     /// 工作流ID
     pub workflow_id: String,
-    
+  
     /// 工作流类型
     pub workflow_type: String,
-    
+  
     /// 开始时间
     pub start_time: DateTime<Utc>,
-    
+  
     /// 追踪上下文
     pub span_context: opentelemetry::trace::SpanContext,
-    
+  
     /// 步骤记录
     pub steps: RwLock<Vec<WorkflowTraceStep>>,
-    
+  
     /// 结束时间
     pub end_time: Option<DateTime<Utc>>,
-    
+  
     /// 状态
     pub status: WorkflowTraceStatus,
 }
 
 /// 工作流步骤追踪记录
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct WorkflowTraceStep {
     /// 步骤ID
     pub step_id: String,
-    
+  
     /// 步骤类型
     pub step_type: String,
-    
+  
     /// 开始时间
     pub start_time: DateTime<Utc>,
-    
+  
     /// 结束时间
     pub end_time: Option<DateTime<Utc>>,
-    
+  
     /// 持续时间
     pub duration: Duration,
-    
+  
     /// 状态
     pub status: StepStatus,
-    
+  
     /// 错误信息
     pub error: Option<String>,
 }
 
 /// 工作流追踪状态
-#[derive(Debug, Clone, PartialEq, Eq)]
+
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub enum WorkflowTraceStatus {
     /// 运行中
     Running,
-    
+  
     /// 已完成
     Completed,
-    
+  
     /// 失败
     Failed,
-    
+  
     /// 已取消
     Cancelled,
 }
 
 /// 步骤状态
-#[derive(Debug, Clone, PartialEq, Eq)]
+
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub enum StepStatus {
     /// 等待执行
     Pending,
-    
+  
     /// 运行中
     Running,
-    
+  
     /// 已完成
     Completed,
-    
+  
     /// 失败
     Failed,
-    
+  
     /// 已跳过
     Skipped,
-    
+  
     /// 已取消
     Cancelled,
 }
@@ -15143,13 +15218,13 @@ pub enum StepStatus {
 pub struct WorkflowSpan {
     /// 追踪上下文
     pub context: Context,
-    
+  
     /// 追踪器
     pub tracer: opentelemetry::sdk::trace::Tracer,
-    
+  
     /// 工作流ID
     pub workflow_id: String,
-    
+  
     /// 是否活跃
     pub is_active: bool,
 }
@@ -15164,22 +15239,22 @@ impl WorkflowSpan {
             is_active: false,
         }
     }
-    
+  
     /// 记录属性
     pub fn record_attribute(&self, key: &str, value: impl Into<Value>) {
         if !self.is_active {
             return;
         }
-        
+  
         self.context.span().set_attribute(KeyValue::new(key, value.into()));
     }
-    
+  
     /// 记录事件
     pub fn record_event(&self, name: &str, attributes: Vec<KeyValue>) {
         if !self.is_active {
             return;
         }
-        
+  
         self.context.span().add_event(name.to_string(), attributes);
     }
 }
@@ -15188,16 +15263,16 @@ impl WorkflowSpan {
 pub struct StepSpan {
     /// 追踪上下文
     pub context: Context,
-    
+  
     /// 追踪器
     pub tracer: opentelemetry::sdk::trace::Tracer,
-    
+  
     /// 工作流ID
     pub workflow_id: String,
-    
+  
     /// 步骤ID
     pub step_id: String,
-    
+  
     /// 是否活跃
     pub is_active: bool,
 }
@@ -15213,40 +15288,40 @@ impl StepSpan {
             is_active: false,
         }
     }
-    
+  
     /// 记录属性
     pub fn record_attribute(&self, key: &str, value: impl Into<Value>) {
         if !self.is_active {
             return;
         }
-        
+  
         self.context.span().set_attribute(KeyValue::new(key, value.into()));
     }
-    
+  
     /// 记录事件
     pub fn record_event(&self, name: &str, attributes: Vec<KeyValue>) {
         if !self.is_active {
             return;
         }
-        
+  
         self.context.span().add_event(name.to_string(), attributes);
     }
-    
+  
     /// 记录检查点
     pub fn record_checkpoint(&self, name: &str, metadata: Option<serde_json::Value>) {
         if !self.is_active {
             return;
         }
-        
+  
         let mut attributes = vec![
             KeyValue::new("checkpoint.name", name.to_string()),
             KeyValue::new("checkpoint.timestamp", chrono::Utc::now().timestamp_millis() as i64),
         ];
-        
+  
         if let Some(data) = metadata {
             attributes.push(KeyValue::new("checkpoint.metadata", format!("{}", data)));
         }
-        
+  
         self.context.span().add_event("checkpoint".to_string(), attributes);
     }
 }
@@ -15255,17 +15330,19 @@ impl StepSpan {
 pub trait TraceFilter: Send + Sync {
     /// 确定是否应该追踪
     fn should_trace(&self, workflow_id: &str, workflow_type: &str) -> bool;
-    
+  
     /// 克隆过滤器
     fn clone_box(&self) -> Box<dyn TraceFilter>;
 }
 
 /// 工作流类型过滤器
-#[derive(Clone)]
+
+# [derive(Clone)]
+
 pub struct WorkflowTypeFilter {
     /// 包含的工作流类型列表
     included_types: HashSet<String>,
-    
+  
     /// 排除的工作流类型列表
     excluded_types: HashSet<String>,
 }
@@ -15286,16 +15363,16 @@ impl TraceFilter for WorkflowTypeFilter {
         if self.excluded_types.contains(workflow_type) {
             return false;
         }
-        
+  
         // 如果包含列表为空，则追踪所有非排除的类型
         if self.included_types.is_empty() {
             return true;
         }
-        
+  
         // 否则只追踪包含列表中的类型
         self.included_types.contains(workflow_type)
     }
-    
+  
     fn clone_box(&self) -> Box<dyn TraceFilter> {
         Box::new(self.clone())
     }
@@ -15305,13 +15382,13 @@ impl TraceFilter for WorkflowTypeFilter {
 pub struct WorkflowObservability {
     /// 工作流追踪器
     pub tracer: WorkflowTracer,
-    
+  
     /// 指标收集器
     pub metrics: MetricsCollector,
-    
+  
     /// 结构化日志记录器
     pub logger: StructuredLogger,
-    
+  
     /// 可观测性配置
     pub config: ObservabilityConfig,
 }
@@ -15331,7 +15408,7 @@ impl WorkflowObservability {
             config,
         }
     }
-    
+  
     /// 创建工作流执行上下文
     pub fn create_execution_context(
         &self,
@@ -15347,7 +15424,7 @@ impl WorkflowObservability {
             workflow_version: workflow_version.to_string(),
             execution_id: Uuid::new_v4().to_string(),
         };
-        
+  
         // 创建追踪 span
         let workflow_span = self.tracer.start_workflow_trace(
             workflow_id,
@@ -15355,7 +15432,7 @@ impl WorkflowObservability {
             workflow_version,
             input_params,
         );
-        
+  
         // 记录工作流开始指标
         self.metrics.record_workflow_started(workflow_id, workflow_type).unwrap_or_else(|e| {
             self.logger.warning(
@@ -15364,7 +15441,7 @@ impl WorkflowObservability {
                 None,
             );
         });
-        
+  
         // 记录工作流开始日志
         self.logger.info(
             &log_context,
@@ -15373,7 +15450,7 @@ impl WorkflowObservability {
                 "input": self.filter_sensitive_data(input_params),
             })),
         );
-        
+  
         WorkflowExecutionContext {
             workflow_id: workflow_id.to_string(),
             workflow_type: workflow_type.to_string(),
@@ -15384,7 +15461,7 @@ impl WorkflowObservability {
             observability: self,
         }
     }
-    
+  
     /// 过滤敏感数据
     fn filter_sensitive_data(&self, data: &serde_json::Value) -> serde_json::Value {
         // 使用追踪器的敏感数据过滤方法
@@ -15396,22 +15473,22 @@ impl WorkflowObservability {
 pub struct WorkflowExecutionContext<'a> {
     /// 工作流ID
     pub workflow_id: String,
-    
+  
     /// 工作流类型
     pub workflow_type: String,
-    
+  
     /// 工作流版本
     pub workflow_version: String,
-    
+  
     /// 执行ID
     pub execution_id: String,
-    
+  
     /// 工作流追踪 span
     pub workflow_span: WorkflowSpan,
-    
+  
     /// 日志上下文
     pub log_context: LogContext,
-    
+  
     /// 可观测性管理器引用
     pub observability: &'a WorkflowObservability,
 }
@@ -15436,7 +15513,7 @@ impl<'a> WorkflowExecutionContext<'a> {
                 "step_type": step_type,
             })),
         );
-        
+  
         // 记录步骤开始指标
         self.observability.metrics.record_step_started(
             &self.workflow_id,
@@ -15449,7 +15526,7 @@ impl<'a> WorkflowExecutionContext<'a> {
                 None,
             );
         });
-        
+  
         // 执行步骤并追踪
         let result = self.observability.tracer.trace_workflow_step(
             &self.workflow_id,
@@ -15461,7 +15538,7 @@ impl<'a> WorkflowExecutionContext<'a> {
                 let start_time = Instant::now();
                 let step_result = step_fn();
                 let duration = start_time.elapsed();
-                
+  
                 // 记录结果
                 match &step_result {
                     Ok(output) => {
@@ -15473,16 +15550,17 @@ impl<'a> WorkflowExecutionContext<'a> {
                                 json!({"error": "无法序列化输出"})
                             }
                         };
-                        
+  
                         span.record_attribute("step.status", "completed");
                         span.record_attribute("step.duration_ms", duration.as_millis() as i64);
-                        
+  
                         Ok(output_json)
                     }
                     Err(e) => {
                         span.record_attribute("step.status", "failed");
                         span.record_attribute("step.error", e.to_string());
                         span.record_attribute("step.
+
 ```
 
 工作流分布式执行协调
@@ -15494,40 +15572,40 @@ impl<'a> WorkflowExecutionContext<'a> {
 pub struct DistributedCoordinator {
     /// 节点标识符
     node_id: String,
-    
+  
     /// 集群管理器
     cluster: Arc<dyn ClusterManager>,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 任务调度器
     scheduler: Arc<TaskScheduler>,
-    
+  
     /// 健康检查服务
     health_checker: Arc<HealthChecker>,
-    
+  
     /// 节点能力描述
     capabilities: NodeCapabilities,
-    
+  
     /// 心跳发送间隔
     heartbeat_interval: Duration,
-    
+  
     /// 运行状态
     running: AtomicBool,
-    
+  
     /// 活跃工作流实例
     active_instances: RwLock<HashMap<String, WorkflowInstanceInfo>>,
-    
+  
     /// 协调事件发送器
     event_sender: mpsc::Sender<CoordinationEvent>,
-    
+  
     /// 协调事件接收器
     event_receiver: Mutex<mpsc::Receiver<CoordinationEvent>>,
-    
+  
     /// 观测性管理器
     observability: Arc<WorkflowObservability>,
 }
@@ -15545,7 +15623,7 @@ impl DistributedCoordinator {
         observability: Arc<WorkflowObservability>,
     ) -> Self {
         let (event_sender, event_receiver) = mpsc::channel(1000);
-        
+  
         Self {
             node_id,
             cluster,
@@ -15562,50 +15640,50 @@ impl DistributedCoordinator {
             observability,
         }
     }
-    
+  
     /// 启动协调器
     pub async fn start(&self) -> Result<(), CoordinationError> {
         if self.running.swap(true, Ordering::SeqCst) {
             return Err(CoordinationError::AlreadyRunning);
         }
-        
+  
         // 注册节点到集群
         self.cluster.register_node(&self.node_id, self.capabilities.clone()).await?;
-        
+  
         // 启动心跳发送
         self.start_heartbeat().await?;
-        
+  
         // 启动事件处理循环
         self.start_event_loop().await?;
-        
+  
         // 加入工作流选举
         self.join_workflow_elections().await?;
-        
+  
         // 恢复未完成的工作流
         self.recover_workflows().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 停止协调器
     pub async fn stop(&self) -> Result<(), CoordinationError> {
         if !self.running.swap(false, Ordering::SeqCst) {
             return Ok(());
         }
-        
+  
         // 从集群注销节点
         self.cluster.deregister_node(&self.node_id).await?;
-        
+  
         // 释放所有持有的锁
         let active_instances = self.active_instances.read().unwrap();
         for (instance_id, _) in active_instances.iter() {
             let lock_key = format!("workflow:lock:{}", instance_id);
             let _ = self.lock_service.release_lock(&lock_key).await;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 启动心跳发送
     async fn start_heartbeat(&self) -> Result<(), CoordinationError> {
         let node_id = self.node_id.clone();
@@ -15613,7 +15691,7 @@ impl DistributedCoordinator {
         let health_checker = self.health_checker.clone();
         let heartbeat_interval = self.heartbeat_interval;
         let running = self.running.clone();
-        
+  
         tokio::spawn(async move {
             while running.load(Ordering::SeqCst) {
                 let health_status = health_checker.check_health().await;
@@ -15621,17 +15699,17 @@ impl DistributedCoordinator {
                 tokio::time::sleep(heartbeat_interval).await;
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     /// 启动事件处理循环
     async fn start_event_loop(&self) -> Result<(), CoordinationError> {
         let event_receiver = self.event_receiver.lock().unwrap();
         let event_receiver = event_receiver.clone();
         let coordinator = self.clone();
         let running = self.running.clone();
-        
+  
         tokio::spawn(async move {
             while running.load(Ordering::SeqCst) {
                 if let Ok(event) = event_receiver.recv().await {
@@ -15639,10 +15717,10 @@ impl DistributedCoordinator {
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     /// 处理协调事件
     async fn handle_coordination_event(&self, event: CoordinationEvent) -> Result<(), CoordinationError> {
         match event {
@@ -15675,61 +15753,61 @@ impl DistributedCoordinator {
             },
         }
     }
-    
+  
     /// 加入工作流选举
     async fn join_workflow_elections(&self) -> Result<(), CoordinationError> {
         // 获取所有活跃的工作流
         let active_workflows = self.state_store.get_active_workflow_ids().await?;
-        
+  
         for workflow_id in active_workflows {
             self.join_workflow_election(&workflow_id).await?;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 加入特定工作流的选举
     async fn join_workflow_election(&self, workflow_id: &str) -> Result<(), CoordinationError> {
         let election_key = format!("workflow:election:{}", workflow_id);
         let node_id = self.node_id.clone();
         let event_sender = self.event_sender.clone();
-        
+  
         self.cluster.join_election(&election_key, node_id, move |is_leader| {
             let event = if is_leader {
                 CoordinationEvent::LeadershipAcquired(workflow_id.to_string())
             } else {
                 CoordinationEvent::LeadershipLost(workflow_id.to_string())
             };
-            
+  
             let _ = event_sender.try_send(event);
         }).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 当获得工作流领导权时
     async fn on_leadership_acquired(&self, workflow_id: String) -> Result<(), CoordinationError> {
         // 获取工作流定义和状态
         let workflow = self.state_store.get_workflow_definition(&workflow_id).await?;
         let state = self.state_store.get_workflow_state(&workflow_id).await?;
-        
+  
         // 如果工作流未完成，开始协调执行
         if !state.is_terminal() {
             self.coordinate_workflow_execution(workflow, state).await?;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 当失去工作流领导权时
     async fn on_leadership_lost(&self, workflow_id: String) -> Result<(), CoordinationError> {
         // 从活跃实例中移除
         let mut active_instances = self.active_instances.write().unwrap();
         active_instances.remove(&workflow_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 协调工作流执行
     async fn coordinate_workflow_execution(
         &self,
@@ -15738,15 +15816,15 @@ impl DistributedCoordinator {
     ) -> Result<(), CoordinationError> {
         // 构建任务依赖图
         let task_graph = self.build_task_dependency_graph(&workflow);
-        
+  
         // 找出可以执行的任务
         let executable_tasks = self.find_executable_tasks(&task_graph, &state);
-        
+  
         // 将任务分配到合适的节点
         for task in executable_tasks {
             self.schedule_task(task, &workflow.id, &workflow).await?;
         }
-        
+  
         // 添加到活跃实例
         let instance_info = WorkflowInstanceInfo {
             workflow_id: workflow.id.clone(),
@@ -15755,36 +15833,36 @@ impl DistributedCoordinator {
             task_graph,
             start_time: Utc::now(),
         };
-        
+  
         let mut active_instances = self.active_instances.write().unwrap();
         active_instances.insert(workflow.id.clone(), instance_info);
-        
+  
         Ok(())
     }
-    
+  
     /// 构建任务依赖图
     fn build_task_dependency_graph(&self, workflow: &WorkflowDefinition) -> TaskGraph {
         let mut graph = TaskGraph::new();
-        
+  
         // 添加所有任务节点
         for task in &workflow.tasks {
             graph.add_node(task.id.clone(), task.clone());
         }
-        
+  
         // 添加依赖边
         for task in &workflow.tasks {
             for dep_id in &task.depends_on {
                 graph.add_edge(dep_id.clone(), task.id.clone());
             }
         }
-        
+  
         graph
     }
-    
+  
     /// 查找可执行的任务
     fn find_executable_tasks(&self, graph: &TaskGraph, state: &WorkflowState) -> Vec<TaskDefinition> {
         let mut executable = Vec::new();
-        
+  
         for (task_id, task) in graph.nodes() {
             // 如果任务已经完成或正在执行，跳过
             if let Some(task_state) = state.task_states.get(task_id) {
@@ -15792,7 +15870,7 @@ impl DistributedCoordinator {
                     continue;
                 }
             }
-            
+  
             // 检查所有依赖是否已完成
             let mut dependencies_met = true;
             for dep_id in graph.get_dependencies(task_id) {
@@ -15806,15 +15884,15 @@ impl DistributedCoordinator {
                     break;
                 }
             }
-            
+  
             if dependencies_met {
                 executable.push(task.clone());
             }
         }
-        
+  
         executable
     }
-    
+  
     /// 调度任务执行
     async fn schedule_task(
         &self,
@@ -15824,7 +15902,7 @@ impl DistributedCoordinator {
     ) -> Result<(), CoordinationError> {
         // 选择合适的执行节点
         let selected_node = self.select_execution_node(&task).await?;
-        
+  
         // 更新任务状态为调度中
         let task_state = TaskState {
             task_id: task.id.clone(),
@@ -15836,9 +15914,9 @@ impl DistributedCoordinator {
             error: None,
             result: None,
         };
-        
+  
         self.state_store.update_task_state(workflow_id, &task_state).await?;
-        
+  
         // 创建任务执行请求
         let execution_request = TaskExecutionRequest {
             workflow_id: workflow_id.to_string(),
@@ -15846,18 +15924,18 @@ impl DistributedCoordinator {
             task: task.clone(),
             context: self.build_task_execution_context(workflow_id, &task).await?,
         };
-        
+  
         // 发送到选定节点执行
         self.cluster.send_execution_request(&selected_node, execution_request).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 选择执行节点
     async fn select_execution_node(&self, task: &TaskDefinition) -> Result<String, CoordinationError> {
         // 获取活跃节点列表
         let nodes = self.cluster.get_active_nodes().await?;
-        
+  
         // 根据任务要求过滤合适的节点
         let mut suitable_nodes = Vec::new();
         for (node_id, node_info) in nodes {
@@ -15865,49 +15943,49 @@ impl DistributedCoordinator {
                 suitable_nodes.push((node_id, node_info));
             }
         }
-        
+  
         if suitable_nodes.is_empty() {
             return Err(CoordinationError::NoSuitableNodeFound);
         }
-        
+  
         // 根据负载选择最合适的节点
         suitable_nodes.sort_by(|(_, a), (_, b)| {
             a.load_factor.partial_cmp(&b.load_factor).unwrap_or(std::cmp::Ordering::Equal)
         });
-        
+  
         Ok(suitable_nodes[0].0.clone())
     }
-    
+  
     /// 检查节点是否适合执行任务
     fn is_node_suitable_for_task(&self, node_info: &NodeInfo, task: &TaskDefinition) -> bool {
         // 检查节点健康状态
         if node_info.health_status != HealthStatus::Healthy {
             return false;
         }
-        
+  
         // 检查节点是否支持任务类型
         if !node_info.capabilities.supported_task_types.contains(&task.task_type) {
             return false;
         }
-        
+  
         // 检查节点是否满足资源要求
         if let Some(resources) = &task.resource_requirements {
             if resources.cpu_cores > node_info.capabilities.available_resources.cpu_cores {
                 return false;
             }
-            
+  
             if resources.memory_mb > node_info.capabilities.available_resources.memory_mb {
                 return false;
             }
-            
+  
             if resources.disk_mb > node_info.capabilities.available_resources.disk_mb {
                 return false;
             }
         }
-        
+  
         true
     }
-    
+  
     /// 构建任务执行上下文
     async fn build_task_execution_context(
         &self,
@@ -15916,7 +15994,7 @@ impl DistributedCoordinator {
     ) -> Result<TaskExecutionContext, CoordinationError> {
         // 获取工作流状态
         let workflow_state = self.state_store.get_workflow_state(workflow_id).await?;
-        
+  
         // 收集所有依赖任务的输出
         let mut inputs = HashMap::new();
         for dep_id in &task.depends_on {
@@ -15926,7 +16004,7 @@ impl DistributedCoordinator {
                 }
             }
         }
-        
+  
         Ok(TaskExecutionContext {
             workflow_id: workflow_id.to_string(),
             workflow_variables: workflow_state.variables.clone(),
@@ -15934,7 +16012,7 @@ impl DistributedCoordinator {
             execution_params: task.parameters.clone(),
         })
     }
-    
+  
     /// 当工作流任务完成时
     async fn on_task_completed(
         &self,
@@ -15944,7 +16022,7 @@ impl DistributedCoordinator {
     ) -> Result<(), CoordinationError> {
         // 获取工作流状态
         let mut workflow_state = self.state_store.get_workflow_state(&workflow_id).await?;
-        
+  
         // 更新任务状态
         let now = Utc::now();
         let task_state = workflow_state.task_states.entry(task_id.clone())
@@ -15958,32 +16036,32 @@ impl DistributedCoordinator {
                 error: None,
                 result: None,
             });
-            
+  
         task_state.status = TaskStatus::Completed;
         task_state.end_time = Some(now);
         task_state.result = Some(result);
-        
+  
         // 保存更新后的状态
         self.state_store.update_workflow_state(&workflow_id, &workflow_state).await?;
-        
+  
         // 获取工作流定义
         let workflow_def = self.state_store.get_workflow_definition(&workflow_id).await?;
-        
+  
         // 检查是否有新的可执行任务
         let task_graph = self.build_task_dependency_graph(&workflow_def);
         let executable_tasks = self.find_executable_tasks(&task_graph, &workflow_state);
-        
+  
         // 调度新的可执行任务
         for task in executable_tasks {
             self.schedule_task(task, &workflow_id, &workflow_def).await?;
         }
-        
+  
         // 检查工作流是否已经完成
         self.check_workflow_completion(&workflow_id, &workflow_def, &workflow_state).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 当工作流任务失败时
     async fn on_task_failed(
         &self,
@@ -15994,7 +16072,7 @@ impl DistributedCoordinator {
         // 获取工作流状态和定义
         let mut workflow_state = self.state_store.get_workflow_state(&workflow_id).await?;
         let workflow_def = self.state_store.get_workflow_definition(&workflow_id).await?;
-        
+  
         // 更新任务状态
         let now = Utc::now();
         let task_state = workflow_state.task_states.entry(task_id.clone())
@@ -16008,54 +16086,54 @@ impl DistributedCoordinator {
                 error: None,
                 result: None,
             });
-            
+  
         task_state.status = TaskStatus::Failed;
         task_state.end_time = Some(now);
         task_state.error = Some(error.clone());
-        
+  
         // 保存更新后的状态
         self.state_store.update_workflow_state(&workflow_id, &workflow_state).await?;
-        
+  
         // 找到对应的任务定义
         let task_def = workflow_def.tasks.iter()
             .find(|t| t.id == task_id)
             .ok_or(CoordinationError::TaskNotFound(task_id.clone()))?;
-        
+  
         // 检查是否需要重试
         if let Some(retry_policy) = &task_def.retry_policy {
             let retry_count = workflow_state.task_retry_counts.get(&task_id).unwrap_or(&0);
-            
+  
             if *retry_count < retry_policy.max_attempts {
                 // 更新重试计数
                 workflow_state.task_retry_counts.insert(task_id.clone(), retry_count + 1);
                 self.state_store.update_workflow_state(&workflow_id, &workflow_state).await?;
-                
+  
                 // 根据重试策略计算延迟
                 let delay = self.calculate_retry_delay(retry_policy, *retry_count);
-                
+  
                 // 安排任务重试
                 let retry_task = task_def.clone();
                 let coordinator = self.clone();
                 let workflow_id_clone = workflow_id.clone();
-                
+  
                 tokio::spawn(async move {
                     tokio::time::sleep(delay).await;
                     let _ = coordinator.schedule_task(retry_task, &workflow_id_clone, &workflow_def).await;
                 });
-                
+  
                 return Ok(());
             }
         }
-        
+  
         // 检查任务失败是否导致工作流失败
         if task_def.is_critical {
             // 更新工作流状态为失败
             workflow_state.status = WorkflowStatus::Failed;
             workflow_state.end_time = Some(now);
             workflow_state.error = Some(format!("关键任务 {} 失败: {}", task_id, error));
-            
+  
             self.state_store.update_workflow_state(&workflow_id, &workflow_state).await?;
-            
+  
             // 发送工作流失败事件
             self.event_sender.send(CoordinationEvent::WorkflowFailed(
                 workflow_id.clone(),
@@ -16065,19 +16143,19 @@ impl DistributedCoordinator {
             // 检查是否有新的可执行任务
             let task_graph = self.build_task_dependency_graph(&workflow_def);
             let executable_tasks = self.find_executable_tasks(&task_graph, &workflow_state);
-            
+  
             // 调度新的可执行任务
             for task in executable_tasks {
                 self.schedule_task(task, &workflow_id, &workflow_def).await?;
             }
-            
+  
             // 检查工作流是否已经完成
             self.check_workflow_completion(&workflow_id, &workflow_def, &workflow_state).await?;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 计算重试延迟
     fn calculate_retry_delay(&self, policy: &RetryPolicy, attempt: u32) -> Duration {
         match policy.backoff_strategy {
@@ -16088,7 +16166,7 @@ impl DistributedCoordinator {
             }
         }
     }
-    
+  
     /// 检查工作流是否已完成
     async fn check_workflow_completion(
         &self,
@@ -16098,11 +16176,11 @@ impl DistributedCoordinator {
     ) -> Result<(), CoordinationError> {
         // 构建任务依赖图
         let task_graph = self.build_task_dependency_graph(workflow_def);
-        
+  
         // 检查是否所有任务都已完成
         let mut all_completed = true;
         let mut any_failed = false;
-        
+  
         for task_def in &workflow_def.tasks {
             if let Some(state) = workflow_state.task_states.get(&task_def.id) {
                 match state.status {
@@ -16123,15 +16201,15 @@ impl DistributedCoordinator {
                 break;
             }
         }
-        
+  
         if all_completed || any_failed {
             let mut updated_state = workflow_state.clone();
             updated_state.end_time = Some(Utc::now());
-            
+  
             if any_failed {
                 updated_state.status = WorkflowStatus::Failed;
                 updated_state.error = Some("关键任务失败导致工作流失败".to_string());
-                
+  
                 // 发送工作流失败事件
                 self.event_sender.send(CoordinationEvent::WorkflowFailed(
                     workflow_id.to_string(),
@@ -16139,7 +16217,7 @@ impl DistributedCoordinator {
                 )).await.map_err(|_| CoordinationError::EventSendFailed)?;
             } else {
                 updated_state.status = WorkflowStatus::Completed;
-                
+  
                 // 收集所有输出任务的结果
                 let mut outputs = HashMap::new();
                 for (task_id, task_state) in &updated_state.task_states {
@@ -16149,40 +16227,40 @@ impl DistributedCoordinator {
                         }
                     }
                 }
-                
+  
                 // 发送工作流完成事件
                 self.event_sender.send(CoordinationEvent::WorkflowCompleted(
                     workflow_id.to_string(),
                     serde_json::to_value(outputs).unwrap_or(serde_json::Value::Null),
                 )).await.map_err(|_| CoordinationError::EventSendFailed)?;
             }
-            
+  
             // 保存更新后的状态
             self.state_store.update_workflow_state(workflow_id, &updated_state).await?;
-            
+  
             // 从活跃实例中移除
             let mut active_instances = self.active_instances.write().unwrap();
             active_instances.remove(workflow_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 恢复未完成的工作流
     async fn recover_workflows(&self) -> Result<(), CoordinationError> {
         // 获取所有未完成的工作流
         let active_workflow_ids = self.state_store.get_active_workflow_ids().await?;
-        
+  
         for workflow_id in active_workflow_ids {
             // 尝试获取工作流锁
             let lock_key = format!("workflow:lock:{}", workflow_id);
             let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, self.node_id.clone(), Duration::from_secs(60)).await?;
-            
+  
             if lock_acquired {
                 // 获取工作流定义和状态
                 let workflow = self.state_store.get_workflow_definition(&workflow_id).await?;
                 let mut state = self.state_store.get_workflow_state(&workflow_id).await?;
-                
+  
                 // 重置所有正在运行的任务
                 for task_state in state.task_states.values_mut() {
                     if task_state.status == TaskStatus::Running || task_state.status == TaskStatus::Scheduled {
@@ -16190,15 +16268,15 @@ impl DistributedCoordinator {
                         task_state.node_id = None;
                     }
                 }
-                
+  
                 // 保存更新后的状态
                 self.state_store.update_workflow_state(&workflow_id, &state).await?;
-                
+  
                 // 重新协调工作流执行
                 self.coordinate_workflow_execution(workflow, state).await?;
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -16207,10 +16285,10 @@ impl DistributedCoordinator {
 pub struct TaskGraph {
     /// 任务节点 - 任务ID到任务定义的映射
     nodes: HashMap<String, TaskDefinition>,
-    
+  
     /// 任务依赖 - 任务ID到其依赖任务ID的映射
     dependencies: HashMap<String, Vec<String>>,
-    
+  
     /// 任务依赖者 - 任务ID到依赖它的任务ID的映射
     dependents: HashMap<String, Vec<String>>,
 }
@@ -16224,33 +16302,34 @@ impl TaskGraph {
             dependents: HashMap::new(),
         }
     }
-    
+  
     /// 添加任务节点
     pub fn add_node(&mut self, task_id: String, task: TaskDefinition) {
         self.nodes.insert(task_id, task);
     }
-    
+  
     /// 添加依赖边
     pub fn add_edge(&mut self, from: String, to: String) {
         // 添加依赖
         self.dependencies.entry(to.clone())
             .or_insert_with(Vec::new)
             .push(from.clone());
-        
+  
         // 添加依赖者
         self.dependents.entry(from)
             .or_insert_with(Vec::new)
             .push(to);
     }
-    
+  
     /// 获取所有节点
     pub fn nodes(&self) -> impl Iterator<Item = (&String, &TaskDefinition)> {
         self.nodes.iter()
     }
-    
+  
     /// 获取任务的依赖
     pub fn get_dependencies(&self, task_id: &str) -> &[String] {
         if let Some
+
 ```
 
 工作流容错与恢复机制
@@ -16261,66 +16340,70 @@ impl TaskGraph {
 pub struct FaultToleranceManager {
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
-    
+  
     /// 工作流引擎
     workflow_engine: Arc<WorkflowEngine>,
-    
+  
     /// 快照管理器
     snapshot_manager: Arc<SnapshotManager>,
-    
+  
     /// 节点管理器
     node_manager: Arc<NodeManager>,
-    
+  
     /// 故障处理器映射
     fault_handlers: RwLock<HashMap<WorkflowFaultType, Vec<Box<dyn FaultHandler>>>>,
-    
+  
     /// 配置
     config: FaultToleranceConfig,
-    
+  
     /// 观测性管理器
     observability: Arc<WorkflowObservability>,
 }
 
 /// 工作流故障类型
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+
+# [derive(Debug, Clone, PartialEq, Eq, Hash)]
+
 pub enum WorkflowFaultType {
     /// 节点崩溃
     NodeCrash,
-    
+  
     /// 任务执行失败
     TaskFailed,
-    
+  
     /// 工作流超时
     Timeout,
-    
+  
     /// 步骤失败
     StepFailed,
-    
+  
     /// 资源耗尽
     ResourceExhausted,
-    
+  
     /// 状态损坏
     StateCorruption,
-    
+  
     /// 网络分区
     NetworkPartition,
-    
+  
     /// 分布式一致性错误
     ConsistencyError,
-    
+  
     /// 外部系统故障
     ExternalSystemFailure,
 }
 
 /// 故障处理器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait FaultHandler: Send + Sync {
     /// 处理故障
     async fn handle_fault(&self, context: &FaultContext) -> Result<RecoveryAction, RecoveryError>;
-    
+  
     /// 获取处理器类型
     fn get_type(&self) -> &'static str;
 }
@@ -16329,22 +16412,22 @@ pub trait FaultHandler: Send + Sync {
 pub struct FaultContext {
     /// 工作流实例ID
     pub workflow_id: String,
-    
+  
     /// 故障类型
     pub fault_type: WorkflowFaultType,
-    
+  
     /// 故障发生时间
     pub occurred_at: DateTime<Utc>,
-    
+  
     /// 故障详情
     pub details: serde_json::Value,
-    
+  
     /// 当前工作流状态
     pub workflow_state: Option<WorkflowState>,
-    
+  
     /// 故障任务信息
     pub task_info: Option<TaskInfo>,
-    
+  
     /// 故障节点信息
     pub node_info: Option<NodeInfo>,
 }
@@ -16355,59 +16438,59 @@ pub enum RecoveryAction {
     RetryTask {
         /// 任务ID
         task_id: String,
-        
+  
         /// 延迟时间
         delay: Option<Duration>,
-        
+  
         /// 修改的任务参数
         modified_params: Option<serde_json::Value>,
     },
-    
+  
     /// 跳过任务
     SkipTask {
         /// 任务ID
         task_id: String,
-        
+  
         /// 模拟结果
         simulated_result: Option<serde_json::Value>,
     },
-    
+  
     /// 重新调度任务到不同节点
     RescheduleTask {
         /// 任务ID
         task_id: String,
-        
+  
         /// 指定节点ID
         target_node_id: Option<String>,
-        
+  
         /// 排除节点ID列表
         exclude_node_ids: Vec<String>,
     },
-    
+  
     /// 回滚到工作流快照
     RollbackToSnapshot {
         /// 快照ID
         snapshot_id: String,
     },
-    
+  
     /// 切换到备用流程
     SwitchToAlternativeFlow {
         /// 备用流程ID
         alternative_flow_id: String,
     },
-    
+  
     /// 启动补偿流程
     StartCompensation,
-    
+  
     /// 人工干预
     ManualIntervention {
         /// 消息
         message: String,
-        
+  
         /// 接收人
         recipients: Vec<String>,
     },
-    
+  
     /// 终止工作流
     TerminateWorkflow {
         /// 错误信息
@@ -16416,23 +16499,25 @@ pub enum RecoveryAction {
 }
 
 /// 恢复错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum RecoveryError {
     #[error("状态存储错误: {0}")]
     StateStore(String),
-    
+  
     #[error("快照错误: {0}")]
     Snapshot(String),
-    
+  
     #[error("节点管理错误: {0}")]
     NodeManager(String),
-    
+  
     #[error("锁服务错误: {0}")]
     LockService(String),
-    
+  
     #[error("恢复策略错误: {0}")]
     Strategy(String),
-    
+  
     #[error("无法恢复: {0}")]
     Unrecoverable(String),
 }
@@ -16458,13 +16543,13 @@ impl FaultToleranceManager {
             config,
             observability,
         };
-        
+  
         // 注册默认故障处理器
         manager.register_default_handlers();
-        
+  
         manager
     }
-    
+  
     /// 注册默认故障处理器
     fn register_default_handlers(&self) {
         // 注册节点崩溃处理器
@@ -16475,7 +16560,7 @@ impl FaultToleranceManager {
                 self.node_manager.clone(),
             )),
         );
-        
+  
         // 注册任务失败处理器
         self.register_fault_handler(
             WorkflowFaultType::TaskFailed,
@@ -16484,7 +16569,7 @@ impl FaultToleranceManager {
                 self.config.max_task_retries,
             )),
         );
-        
+  
         // 注册超时处理器
         self.register_fault_handler(
             WorkflowFaultType::Timeout,
@@ -16493,7 +16578,7 @@ impl FaultToleranceManager {
                 self.config.max_workflow_retries,
             )),
         );
-        
+  
         // 注册步骤失败处理器
         self.register_fault_handler(
             WorkflowFaultType::StepFailed,
@@ -16503,7 +16588,7 @@ impl FaultToleranceManager {
                 self.config.max_step_retries,
             )),
         );
-        
+  
         // 注册资源耗尽处理器
         self.register_fault_handler(
             WorkflowFaultType::ResourceExhausted,
@@ -16512,7 +16597,7 @@ impl FaultToleranceManager {
                 self.node_manager.clone(),
             )),
         );
-        
+  
         // 注册状态损坏处理器
         self.register_fault_handler(
             WorkflowFaultType::StateCorruption,
@@ -16522,7 +16607,7 @@ impl FaultToleranceManager {
             )),
         );
     }
-    
+  
     /// 注册故障处理器
     pub fn register_fault_handler(
         &self,
@@ -16530,14 +16615,14 @@ impl FaultToleranceManager {
         handler: Box<dyn FaultHandler>,
     ) {
         let mut handlers = self.fault_handlers.write().unwrap();
-        
+  
         // 获取指定类型的处理器列表，如果不存在则创建
         let type_handlers = handlers.entry(fault_type).or_insert_with(Vec::new);
-        
+  
         // 添加处理器
         type_handlers.push(handler);
     }
-    
+  
     /// 处理工作流故障
     pub async fn handle_workflow_fault(
         &self,
@@ -16549,11 +16634,11 @@ impl FaultToleranceManager {
         let trace_ctx = self.observability
             .create_fault_handling_span(workflow_id, &fault_type, &details);
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取工作流状态
         let workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-        
+  
         // 提取任务信息
         let task_info = if let Some(task_id) = details.get("task_id").and_then(|v| v.as_str()) {
             self.state_store.get_task_info(workflow_id, task_id).await
@@ -16561,7 +16646,7 @@ impl FaultToleranceManager {
         } else {
             None
         };
-        
+  
         // 提取节点信息
         let node_info = if let Some(node_id) = details.get("node_id").and_then(|v| v.as_str()) {
             self.node_manager.get_node_info(node_id).await
@@ -16569,7 +16654,7 @@ impl FaultToleranceManager {
         } else {
             None
         };
-        
+  
         // 创建故障上下文
         let fault_context = FaultContext {
             workflow_id: workflow_id.to_string(),
@@ -16580,7 +16665,7 @@ impl FaultToleranceManager {
             task_info,
             node_info,
         };
-        
+  
         // 记录故障信息
         self.observability.record_workflow_fault(
             workflow_id,
@@ -16588,18 +16673,18 @@ impl FaultToleranceManager {
             &fault_context.occurred_at,
             &details,
         );
-        
+  
         // 尝试获取锁，确保只有一个节点处理故障
         let lock_key = format!("workflow:fault:lock:{}", workflow_id);
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, "fault-handler", Duration::from_secs(60)).await
             .map_err(|e| RecoveryError::LockService(e.to_string()))?;
-        
+  
         if !lock_acquired {
             return Err(RecoveryError::LockService(
                 "无法获取故障处理锁，可能其他节点正在处理".to_string()
             ));
         }
-        
+  
         // 查找适用的故障处理器
         let handlers = self.fault_handlers.read().unwrap();
         let type_handlers = match handlers.get(&fault_type) {
@@ -16608,13 +16693,13 @@ impl FaultToleranceManager {
                 // 没有找到处理器，使用默认策略
                 self.lock_service.release_lock(&lock_key).await
                     .map_err(|e| RecoveryError::LockService(e.to_string()))?;
-                
+  
                 return Err(RecoveryError::Strategy(
                     format!("没有找到处理 {:?} 类型故障的处理器", fault_type)
                 ));
             }
         };
-        
+  
         // 依次尝试所有处理器
         let mut last_error = None;
         for handler in type_handlers {
@@ -16622,7 +16707,7 @@ impl FaultToleranceManager {
                 Ok(action) => {
                     // 释放锁
                     let _ = self.lock_service.release_lock(&lock_key).await;
-                    
+  
                     // 记录恢复行动
                     self.observability.record_recovery_action(
                         workflow_id,
@@ -16630,7 +16715,7 @@ impl FaultToleranceManager {
                         handler.get_type(),
                         &action,
                     );
-                    
+  
                     return Ok(action);
                 },
                 Err(e) => {
@@ -16639,16 +16724,16 @@ impl FaultToleranceManager {
                 }
             }
         }
-        
+  
         // 释放锁
         let _ = self.lock_service.release_lock(&lock_key).await;
-        
+  
         // 所有处理器都失败了
         Err(last_error.unwrap_or_else(|| RecoveryError::Unrecoverable(
             format!("所有 {:?} 故障处理器都失败了", fault_type)
         )))
     }
-    
+  
     /// 执行恢复行动
     pub async fn execute_recovery_action(
         &self,
@@ -16661,7 +16746,7 @@ impl FaultToleranceManager {
                 if let Some(d) = delay {
                     tokio::time::sleep(d.clone()).await;
                 }
-                
+  
                 // 重置任务状态
                 let mut task_update = TaskStateUpdate {
                     workflow_id: workflow_id.to_string(),
@@ -16671,16 +16756,16 @@ impl FaultToleranceManager {
                     error: None,
                     result: None,
                 };
-                
+  
                 // 如果有修改的参数，更新任务参数
                 if let Some(params) = modified_params {
                     task_update.parameters = Some(params.clone());
                 }
-                
+  
                 // 更新任务状态
                 self.state_store.update_task_state(&task_update).await
                     .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-                
+  
                 // 重新调度任务
                 self.workflow_engine.reschedule_task(workflow_id, task_id).await
                     .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
@@ -16699,11 +16784,11 @@ impl FaultToleranceManager {
                         "skipped_at": Utc::now().to_rfc3339(),
                     })),
                 };
-                
+  
                 // 更新任务状态
                 self.state_store.update_task_state(&task_update).await
                     .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-                
+  
                 // 通知工作流引擎任务已完成，以继续执行
                 self.workflow_engine.notify_task_completion(workflow_id, task_id, simulated_result.clone()).await
                     .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
@@ -16724,15 +16809,15 @@ impl FaultToleranceManager {
                         "exclude_node_ids": exclude_node_ids,
                     })),
                 };
-                
+  
                 // 更新任务状态
                 self.state_store.update_task_state(&task_update).await
                     .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-                
+  
                 // 重新调度任务到指定节点
                 self.workflow_engine.reschedule_task_to_node(
-                    workflow_id, 
-                    task_id, 
+                    workflow_id,
+                    task_id,
                     target_node_id.clone(),
                     exclude_node_ids.clone(),
                 ).await
@@ -16742,7 +16827,7 @@ impl FaultToleranceManager {
                 // 回滚到指定快照
                 self.snapshot_manager.restore_snapshot(workflow_id, snapshot_id).await
                     .map_err(|e| RecoveryError::Snapshot(e.to_string()))?;
-                
+  
                 // 重启工作流执行
                 self.workflow_engine.restart_workflow_from_snapshot(workflow_id, snapshot_id).await
                     .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
@@ -16765,15 +16850,15 @@ impl FaultToleranceManager {
                     recipients: recipients.clone(),
                     created_at: Utc::now(),
                 };
-                
+  
                 // 保存干预请求
                 self.state_store.create_intervention_request(&intervention_request).await
                     .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-                
+  
                 // 暂停工作流
                 self.workflow_engine.pause_workflow(workflow_id).await
                     .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
-                
+  
                 // 发送通知（假设有通知服务）
                 // self.notification_service.send_notification(...).await?;
             },
@@ -16783,29 +16868,29 @@ impl FaultToleranceManager {
                     .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
             },
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 恢复中断的工作流
     pub async fn recover_interrupted_workflows(&self) -> Result<Vec<String>, RecoveryError> {
         // 获取所有活跃但可能已中断的工作流
         let active_workflows = self.state_store.get_active_workflow_ids().await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-        
+  
         let mut recovered = Vec::new();
-        
+  
         for workflow_id in active_workflows {
             // 尝试获取锁
             let lock_key = format!("workflow:recovery:lock:{}", workflow_id);
             let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, "recovery-manager", Duration::from_secs(30)).await
                 .map_err(|e| RecoveryError::LockService(e.to_string()))?;
-            
+  
             if !lock_acquired {
                 // 其他节点可能已经在处理
                 continue;
             }
-            
+  
             // 获取工作流状态
             let workflow_state = match self.state_store.get_workflow_state(&workflow_id).await {
                 Ok(state) => state,
@@ -16814,20 +16899,20 @@ impl FaultToleranceManager {
                     continue;
                 }
             };
-            
+  
             // 检查工作流是否需要恢复
             let needs_recovery = match workflow_state.status {
                 WorkflowStatus::Running => {
                     // 检查最后更新时间，如果超过阈值则认为需要恢复
                     let now = Utc::now();
                     let last_updated = workflow_state.last_updated_at.unwrap_or(workflow_state.start_time.unwrap_or(now));
-                    
+  
                     now.signed_duration_since(last_updated) > chrono::Duration::seconds(self.config.heartbeat_timeout_seconds as i64)
                 },
                 WorkflowStatus::Scheduled => true,
                 _ => false,
             };
-            
+  
             if needs_recovery {
                 // 恢复工作流
                 match self.recover_workflow(&workflow_id).await {
@@ -16840,35 +16925,35 @@ impl FaultToleranceManager {
                     }
                 }
             }
-            
+  
             // 释放锁
             let _ = self.lock_service.release_lock(&lock_key).await;
         }
-        
+  
         Ok(recovered)
     }
-    
+  
     /// 恢复单个工作流
     async fn recover_workflow(&self, workflow_id: &str) -> Result<(), RecoveryError> {
         // 创建恢复追踪上下文
         let trace_ctx = self.observability.create_workflow_recovery_span(workflow_id);
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取工作流状态
         let mut workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-        
+  
         // 获取工作流定义
         let workflow_def = self.state_store.get_workflow_definition(&workflow_state.workflow_definition_id).await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-        
+  
         // 重置所有运行中和已调度的任务
         for (task_id, task_state) in workflow_state.task_states.iter_mut() {
             if task_state.status == TaskStatus::Running || task_state.status == TaskStatus::Scheduled {
                 task_state.status = TaskStatus::Pending;
                 task_state.node_id = None;
                 task_state.start_time = None;
-                
+  
                 // 创建任务状态更新
                 let task_update = TaskStateUpdate {
                     workflow_id: workflow_id.to_string(),
@@ -16882,18 +16967,18 @@ impl FaultToleranceManager {
                         "recovered_at": Utc::now().to_rfc3339(),
                     })),
                 };
-                
+  
                 // 更新任务状态
                 self.state_store.update_task_state(&task_update).await
                     .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
             }
         }
-        
+  
         // 更新工作流状态
         workflow_state.last_updated_at = Some(Utc::now());
         self.state_store.update_workflow_state(workflow_id, &workflow_state).await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-        
+  
         // 记录恢复事件
         self.observability.record_workflow_recovery(
             workflow_id,
@@ -16904,11 +16989,11 @@ impl FaultToleranceManager {
                 "workflow_status": format!("{:?}", workflow_state.status),
             }),
         );
-        
+  
         // 重新调度工作流
         self.workflow_engine.resume_workflow(workflow_id).await
             .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
-        
+  
         Ok(())
     }
 }
@@ -16928,7 +17013,8 @@ impl NodeCrashHandler {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl FaultHandler for NodeCrashHandler {
     async fn handle_fault(&self, context: &FaultContext) -> Result<RecoveryAction, RecoveryError> {
         // 获取崩溃节点ID
@@ -16936,11 +17022,11 @@ impl FaultHandler for NodeCrashHandler {
             .and_then(|v| v.as_str())
             .ok_or_else(|| RecoveryError::Strategy("缺少节点ID".to_string()))?
             .to_string();
-        
+  
         // 标记节点为不可用
         self.node_manager.mark_node_unavailable(&node_id).await
             .map_err(|e| RecoveryError::NodeManager(e.to_string()))?;
-        
+  
         // 如果任务信息存在，重新调度任务
         if let Some(task_info) = &context.task_info {
             return Ok(RecoveryAction::RescheduleTask {
@@ -16949,13 +17035,13 @@ impl FaultHandler for NodeCrashHandler {
                 exclude_node_ids: vec![node_id],
             });
         }
-        
+  
         // 如果没有任务信息，重新调度整个工作流
         Ok(RecoveryAction::SwitchToAlternativeFlow {
             alternative_flow_id: "auto_recovery".to_string(),
         })
     }
-    
+  
     fn get_type(&self) -> &'static str {
         "node_crash_handler"
     }
@@ -16976,7 +17062,8 @@ impl TaskFailureHandler {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl FaultHandler for TaskFailureHandler {
     async fn handle_fault(&self, context: &FaultContext) -> Result<RecoveryAction, RecoveryError> {
         // 获取任务ID
@@ -16984,25 +17071,25 @@ impl FaultHandler for TaskFailureHandler {
             .and_then(|v| v.as_str())
             .ok_or_else(|| RecoveryError::Strategy("缺少任务ID".to_string()))?
             .to_string();
-        
+  
         // 获取当前重试次数
         let retry_count = context.details.get("retry_count")
             .and_then(|v| v.as_u64())
             .unwrap_or(0) as u32;
-        
+  
         // 检查是否超过最大重试次数
         if retry_count >= self.max_retries {
             // 如果任务是关键任务，终止工作流
             let is_critical = context.details.get("is_critical")
                 .and_then(|v| v.as_bool())
                 .unwrap_or(false);
-            
+  
             if is_critical {
                 let error_message = context.details.get("error")
                     .and_then(|v| v.as_str())
                     .unwrap_or("关键任务执行失败")
                     .to_string();
-                
+  
                 return Ok(RecoveryAction::TerminateWorkflow {
                     error_message,
                 });
@@ -17014,10 +17101,10 @@ impl FaultHandler for TaskFailureHandler {
                 });
             }
         }
-        
+  
         // 计算退避时间
         let delay = Duration::from_millis((1000.0 * 1.5f64.powi(retry_count as i32)) as u64);
-        
+  
         // 重试任务
         Ok(RecoveryAction::RetryTask {
             task_id,
@@ -17025,7 +17112,7 @@ impl FaultHandler for TaskFailureHandler {
             modified_params: None,
         })
     }
-    
+  
     fn get_type(&self) -> &'static str {
         "task_failure_handler"
     }
@@ -17033,6 +17120,7 @@ impl FaultHandler for TaskFailureHandler {
 
 /// 工作流引擎的容错扩展接口
 impl
+
 ```
 
 工作流状态恢复与数据一致性保障
@@ -17043,10 +17131,10 @@ impl
 pub struct WorkflowConsistencyChecker {
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 事件存储
     event_store: Arc<dyn EventStore>,
-    
+  
     /// 一致性校验配置
     config: ConsistencyCheckConfig,
 }
@@ -17055,13 +17143,13 @@ pub struct WorkflowConsistencyChecker {
 pub struct ConsistencyCheckConfig {
     /// 是否验证事件序列与状态一致性
     pub verify_event_consistency: bool,
-    
+  
     /// 是否验证任务依赖完整性
     pub verify_task_dependencies: bool,
-    
+  
     /// 是否验证资源分配一致性
     pub verify_resource_allocations: bool,
-    
+  
     /// 一致性验证超时
     pub verification_timeout: Duration,
 }
@@ -17069,7 +17157,7 @@ pub struct ConsistencyCheckConfig {
 impl WorkflowConsistencyChecker {
     /// 创建新的一致性检查器
     pub fn new(
-        state_store: Arc<dyn StateStore>, 
+        state_store: Arc<dyn StateStore>,
         event_store: Arc<dyn EventStore>,
         config: ConsistencyCheckConfig,
     ) -> Self {
@@ -17079,7 +17167,7 @@ impl WorkflowConsistencyChecker {
             config,
         }
     }
-    
+  
     /// 验证恢复点状态的一致性
     pub async fn verify_recovery_point_consistency(
         &self,
@@ -17101,18 +17189,18 @@ impl WorkflowConsistencyChecker {
                 ));
             }
         };
-        
+  
         // 基本验证：工作流ID匹配
         if workflow_state.id != workflow_id {
             return Ok(false);
         }
-        
+  
         // 验证工作流状态内部一致性
         let is_internally_consistent = self.verify_internal_consistency(&workflow_state).await?;
         if !is_internally_consistent {
             return Ok(false);
         }
-        
+  
         // 如果配置了验证事件一致性，则进行事件验证
         if self.config.verify_event_consistency {
             let is_event_consistent = self.verify_event_consistency(workflow_id, &workflow_state).await?;
@@ -17120,7 +17208,7 @@ impl WorkflowConsistencyChecker {
                 return Ok(false);
             }
         }
-        
+  
         // 如果配置了验证任务依赖，则进行任务依赖验证
         if self.config.verify_task_dependencies {
             let is_dependencies_consistent = self.verify_task_dependencies(&workflow_state).await?;
@@ -17128,7 +17216,7 @@ impl WorkflowConsistencyChecker {
                 return Ok(false);
             }
         }
-        
+  
         // 如果配置了验证资源分配，则进行资源分配验证
         if self.config.verify_resource_allocations {
             let is_resources_consistent = self.verify_resource_allocations(&workflow_state).await?;
@@ -17136,17 +17224,17 @@ impl WorkflowConsistencyChecker {
                 return Ok(false);
             }
         }
-        
+  
         Ok(true)
     }
-    
+  
     /// 验证工作流状态内部一致性
     async fn verify_internal_consistency(&self, state: &WorkflowState) -> Result<bool, ConsistencyError> {
         // 检查关键字段是否有效
         if state.id.is_empty() || state.workflow_definition_id.is_empty() {
             return Ok(false);
         }
-        
+  
         // 检查状态类型是否合理
         match &state.status {
             WorkflowStatus::Created | WorkflowStatus::Running | WorkflowStatus::Paused |
@@ -17157,18 +17245,18 @@ impl WorkflowConsistencyChecker {
                 return Ok(false);
             }
         }
-        
+  
         // 检查任务状态与工作流状态一致性
         for (task_id, task_state) in &state.task_states {
             if task_id.is_empty() {
                 return Ok(false);
             }
-            
+  
             // 检查任务状态是否与工作流状态兼容
             match state.status {
                 WorkflowStatus::Completed => {
                     // 工作流完成时，所有任务应该是完成状态
-                    if task_state.status != TaskStatus::Completed && 
+                    if task_state.status != TaskStatus::Completed &&
                        task_state.status != TaskStatus::Skipped {
                         return Ok(false);
                     }
@@ -17182,51 +17270,51 @@ impl WorkflowConsistencyChecker {
                 }
             }
         }
-        
+  
         // 验证时间顺序
         if let (Some(start_time), Some(end_time)) = (state.start_time, state.end_time) {
             if end_time < start_time {
                 return Ok(false);
             }
         }
-        
+  
         Ok(true)
     }
-    
+  
     /// 验证事件序列与工作流状态一致性
     async fn verify_event_consistency(
-        &self, 
-        workflow_id: &str, 
+        &self,
+        workflow_id: &str,
         state: &WorkflowState
     ) -> Result<bool, ConsistencyError> {
         // 获取工作流事件
         let events = self.event_store.get_workflow_events(workflow_id).await
             .map_err(|e| ConsistencyError::EventRetrievalFailed(e.to_string()))?;
-        
+  
         if events.is_empty() {
             // 如果没有事件但有状态，这可能是有效的（初始状态）
             return Ok(true);
         }
-        
+  
         // 构建事件状态机来验证状态
         let mut event_states = HashMap::new();
-        
+  
         // 追踪最后已知的工作流状态
         let mut last_workflow_status = WorkflowStatus::Created;
-        
+  
         // 追踪任务状态转换
         let mut task_state_transitions = HashMap::<String, Vec<TaskStatus>>::new();
-        
+  
         // 检查事件时间顺序并构建状态转换图
         let mut last_event_time = events[0].timestamp;
-        
+  
         for event in &events {
             // 验证事件时间顺序
             if event.timestamp < last_event_time {
                 return Ok(false);
             }
             last_event_time = event.timestamp;
-            
+  
             // 基于事件类型更新状态
             match event.event_type {
                 EventType::WorkflowCreated => {
@@ -17234,7 +17322,7 @@ impl WorkflowConsistencyChecker {
                 },
                 EventType::WorkflowStarted => {
                     // 检查状态转换有效性
-                    if last_workflow_status != WorkflowStatus::Created && 
+                    if last_workflow_status != WorkflowStatus::Created &&
                        last_workflow_status != WorkflowStatus::Paused {
                         return Ok(false);
                     }
@@ -17281,15 +17369,15 @@ impl WorkflowConsistencyChecker {
                         let transitions = task_state_transitions
                             .entry(task_id.clone())
                             .or_insert_with(Vec::new);
-                        
+  
                         // 检查任务状态转换有效性
                         if let Some(last_status) = transitions.last() {
-                            if *last_status != TaskStatus::Scheduled && 
+                            if *last_status != TaskStatus::Scheduled &&
                                *last_status != TaskStatus::Pending {
                                 return Ok(false);
                             }
                         }
-                        
+  
                         transitions.push(TaskStatus::Running);
                     }
                 },
@@ -17298,14 +17386,14 @@ impl WorkflowConsistencyChecker {
                         let transitions = task_state_transitions
                             .entry(task_id.clone())
                             .or_insert_with(Vec::new);
-                        
+  
                         // 检查任务状态转换有效性
                         if let Some(last_status) = transitions.last() {
                             if *last_status != TaskStatus::Running {
                                 return Ok(false);
                             }
                         }
-                        
+  
                         transitions.push(TaskStatus::Completed);
                     }
                 },
@@ -17314,14 +17402,14 @@ impl WorkflowConsistencyChecker {
                         let transitions = task_state_transitions
                             .entry(task_id.clone())
                             .or_insert_with(Vec::new);
-                        
+  
                         // 检查任务状态转换有效性
                         if let Some(last_status) = transitions.last() {
                             if *last_status != TaskStatus::Running {
                                 return Ok(false);
                             }
                         }
-                        
+  
                         transitions.push(TaskStatus::Failed);
                     }
                 },
@@ -17329,12 +17417,12 @@ impl WorkflowConsistencyChecker {
                 _ => {}
             }
         }
-        
+  
         // 验证最终状态是否与事件构建的状态一致
         if state.status != last_workflow_status {
             return Ok(false);
         }
-        
+  
         // 验证任务状态是否与事件状态一致
         for (task_id, transitions) in task_state_transitions {
             if let Some(task_state) = state.task_states.get(&task_id) {
@@ -17348,29 +17436,29 @@ impl WorkflowConsistencyChecker {
                 return Ok(false);
             }
         }
-        
+  
         Ok(true)
     }
-    
+  
     /// 验证任务依赖关系一致性
     async fn verify_task_dependencies(&self, state: &WorkflowState) -> Result<bool, ConsistencyError> {
         // 获取工作流定义
         let workflow_def = self.state_store.get_workflow_definition(&state.workflow_definition_id).await
             .map_err(|e| ConsistencyError::DefinitionRetrievalFailed(e.to_string()))?;
-        
+  
         // 构建任务依赖图
         let mut dependencies = HashMap::new();
-        
+  
         // 从工作流定义提取任务依赖
         for (task_id, task_def) in &workflow_def.tasks {
             dependencies.insert(task_id.clone(), task_def.depends_on.clone());
         }
-        
+  
         // 检查已完成任务的依赖是否都已完成
         for (task_id, task_state) in &state.task_states {
-            if task_state.status == TaskStatus::Completed || 
+            if task_state.status == TaskStatus::Completed ||
                task_state.status == TaskStatus::Running {
-                
+  
                 // 获取此任务的依赖
                 if let Some(deps) = dependencies.get(task_id) {
                     for dep_id in deps {
@@ -17389,15 +17477,15 @@ impl WorkflowConsistencyChecker {
                 }
             }
         }
-        
+  
         Ok(true)
     }
-    
+  
     /// 验证资源分配一致性
     async fn verify_resource_allocations(&self, state: &WorkflowState) -> Result<bool, ConsistencyError> {
         // 获取所有正在运行任务的资源分配
         let mut resource_allocations = HashMap::new();
-        
+  
         for (task_id, task_state) in &state.task_states {
             if task_state.status == TaskStatus::Running {
                 if let Some(node_id) = &task_state.node_id {
@@ -17405,22 +17493,22 @@ impl WorkflowConsistencyChecker {
                     let node_allocations = resource_allocations
                         .entry(node_id.clone())
                         .or_insert_with(Vec::new);
-                    
+  
                     node_allocations.push(task_id.clone());
                 }
             }
         }
-        
+  
         // 检查每个节点的资源分配是否过载
         for (node_id, task_ids) in resource_allocations {
             // 获取节点容量
             let node_info = self.state_store.get_node_info(&node_id).await
                 .map_err(|e| ConsistencyError::NodeInfoRetrievalFailed(e.to_string()))?;
-            
+  
             // 计算已分配资源总和
             let mut total_cpu = 0.0;
             let mut total_memory = 0;
-            
+  
             for task_id in &task_ids {
                 if let Some(task_state) = state.task_states.get(task_id) {
                     if let Some(resource_req) = &task_state.resource_requirements {
@@ -17429,14 +17517,14 @@ impl WorkflowConsistencyChecker {
                     }
                 }
             }
-            
+  
             // 检查是否超过节点容量
-            if total_cpu > node_info.capacity.cpu || 
+            if total_cpu > node_info.capacity.cpu ||
                total_memory > node_info.capacity.memory {
                 return Ok(false);
             }
         }
-        
+  
         Ok(true)
     }
 }
@@ -17454,23 +17542,25 @@ fn extract_task_id_from_event(event: &WorkflowEvent) -> Option<String> {
 }
 
 /// 一致性检查错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum ConsistencyError {
     #[error("无效的恢复点: {0}")]
     InvalidRecoveryPoint(String),
-    
+  
     #[error("获取事件失败: {0}")]
     EventRetrievalFailed(String),
-    
+  
     #[error("获取工作流定义失败: {0}")]
     DefinitionRetrievalFailed(String),
-    
+  
     #[error("获取节点信息失败: {0}")]
     NodeInfoRetrievalFailed(String),
-    
+  
     #[error("验证超时")]
     VerificationTimeout,
-    
+  
     #[error("其他错误: {0}")]
     Other(String),
 }
@@ -17479,19 +17569,19 @@ pub enum ConsistencyError {
 pub struct SnapshotManager {
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 事件存储
     event_store: Arc<dyn EventStore>,
-    
+  
     /// 一致性检查器
     consistency_checker: WorkflowConsistencyChecker,
-    
+  
     /// 数据保护器（加密/解密）
     data_protector: Arc<dyn DataProtector>,
-    
+  
     /// 快照配置
     config: SnapshotConfig,
-    
+  
     /// 观测性管理器
     observability: Arc<WorkflowObservability>,
 }
@@ -17500,16 +17590,16 @@ pub struct SnapshotManager {
 pub struct SnapshotConfig {
     /// 自动快照间隔（秒）
     pub auto_snapshot_interval_seconds: u64,
-    
+  
     /// 保留快照数量
     pub max_snapshots_to_keep: u32,
-    
+  
     /// 是否启用增量快照
     pub enable_incremental_snapshots: bool,
-    
+  
     /// 是否加密快照
     pub encrypt_snapshots: bool,
-    
+  
     /// 是否压缩快照
     pub compress_snapshots: bool,
 }
@@ -17518,13 +17608,13 @@ pub struct SnapshotConfig {
 pub enum RecoveryPointType {
     /// 自动创建的快照
     AutoSnapshot,
-    
+  
     /// 手动创建的快照
     ManualSnapshot,
-    
+  
     /// 恢复前备份
     RecoveryBackup,
-    
+  
     /// 检查点（步骤间）
     Checkpoint,
 }
@@ -17533,13 +17623,13 @@ pub enum RecoveryPointType {
 pub enum RecoveryPointData {
     /// 完整工作流状态
     FullState(WorkflowState),
-    
+  
     /// 增量状态（基于基础快照ID）
     IncrementalState {
         base_snapshot_id: String,
         changes: serde_json::Value,
     },
-    
+  
     /// 事件日志
     EventLog(Vec<WorkflowEvent>),
 }
@@ -17548,22 +17638,22 @@ pub enum RecoveryPointData {
 pub struct RecoveryPoint {
     /// 唯一ID
     pub id: String,
-    
+  
     /// 工作流ID
     pub workflow_id: String,
-    
+  
     /// 恢复点类型
     pub point_type: RecoveryPointType,
-    
+  
     /// 创建时间
     pub created_at: DateTime<Utc>,
-    
+  
     /// 恢复点数据
     pub data: RecoveryPointData,
-    
+  
     /// 元数据
     pub metadata: HashMap<String, String>,
-    
+  
     /// 校验和
     pub checksum: String,
 }
@@ -17587,7 +17677,7 @@ impl SnapshotManager {
                 verification_timeout: Duration::from_secs(30),
             },
         );
-        
+  
         Self {
             state_store,
             event_store,
@@ -17597,7 +17687,7 @@ impl SnapshotManager {
             observability,
         }
     }
-    
+  
     /// 创建工作流快照
     pub async fn create_snapshot(
         &self,
@@ -17611,18 +17701,18 @@ impl SnapshotManager {
             "create_snapshot",
         );
         let _guard = trace_ctx.enter();
-        
+  
         // 获取当前工作流状态
         let workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| SnapshotError::StateRetrievalFailed(e.to_string()))?;
-        
+  
         // 序列化状态
         let state_json = serde_json::to_vec(&workflow_state)
             .map_err(|e| SnapshotError::SerializationFailed(e.to_string()))?;
-        
+  
         // 计算校验和
         let checksum = compute_checksum(&state_json);
-        
+  
         // 可选：压缩数据
         let processed_data = if self.config.compress_snapshots {
             compress_data(&state_json)
@@ -17630,7 +17720,7 @@ impl SnapshotManager {
         } else {
             state_json
         };
-        
+  
         // 可选：加密数据
         let protected_data = if self.config.encrypt_snapshots {
             self.data_protector.encrypt_data(&processed_data, "workflow-snapshot-key").await
@@ -17638,7 +17728,7 @@ impl SnapshotManager {
         } else {
             processed_data
         };
-        
+  
         // 准备元数据
         let mut snapshot_metadata = metadata.unwrap_or_default();
         snapshot_metadata.insert("workflow_definition_id".to_string(), workflow_state.workflow_definition_id.clone());
@@ -17646,10 +17736,10 @@ impl SnapshotManager {
         snapshot_metadata.insert("compressed".to_string(), self.config.compress_snapshots.to_string());
         snapshot_metadata.insert("encrypted".to_string(), self.config.encrypt_snapshots.to_string());
         snapshot_metadata.insert("created_at".to_string(), Utc::now().to_rfc3339());
-        
+  
         // 生成快照ID
         let snapshot_id = generate_snapshot_id(workflow_id);
-        
+  
         // 创建恢复点
         let recovery_point = RecoveryPoint {
             id: snapshot_id.clone(),
@@ -17660,11 +17750,11 @@ impl SnapshotManager {
             metadata: snapshot_metadata,
             checksum,
         };
-        
+  
         // 保存恢复点
         self.state_store.save_recovery_point(&recovery_point).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-        
+  
         // 清理旧快照
         if let Err(e) = self.cleanup_old_snapshots(workflow_id).await {
             // 仅记录错误，不终止操作
@@ -17674,17 +17764,17 @@ impl SnapshotManager {
                 &format!("清理旧快照失败: {}", e),
             );
         }
-        
+  
         // 记录快照创建事件
         self.observability.record_snapshot_created(
             workflow_id,
             &snapshot_id,
             format!("{:?}", point_type).as_str(),
         );
-        
+  
         Ok(snapshot_id)
     }
-    
+  
     /// 恢复工作流到指定快照
     pub async fn restore_snapshot(
         &self,
@@ -17697,11 +17787,11 @@ impl SnapshotManager {
             "restore_snapshot",
         );
         let _guard = trace_ctx.enter();
-        
+  
         // 获取恢复点
         let recovery_point = self.state_store.get_recovery_point(workflow_id, snapshot_id).await
             .map_err(|e| SnapshotError::SnapshotNotFound(format!("快照不存在: {}", e)))?;
-        
+  
         // 在恢复前创建当前状态的备份
         if let Err(e) = self.create_backup_before_restore(workflow_id).await {
             // 记录错误但继续
@@ -17711,18 +17801,18 @@ impl SnapshotManager {
                 &format!("恢复前创建备份失败: {}", e),
             );
         }
-        
+  
         // 验证快照一致性
         let is_consistent = self.consistency_checker
             .verify_recovery_point_consistency(workflow_id, &recovery_point).await
             .map_err(|e| SnapshotError::ConsistencyCheckFailed(e.to_string()))?;
-        
+  
         if !is_consistent {
             return Err(SnapshotError::InconsistentSnapshot(
                 "快照一致性验证失败".to_string()
             ));
         }
-        
+  
         // 获取工作流状态
         let workflow_state = match &recovery_point.data {
             RecoveryPointData::FullState(state) => state.clone(),
@@ -17738,7 +17828,7 @@ impl SnapshotManager {
                 ));
             }
         };
-        
+  
         // 更新工作流状态
         match self.state_store.restore_workflow_state(workflow_id, &workflow_state).await {
             Ok(_) => {
@@ -17748,7 +17838,7 @@ impl SnapshotManager {
                     snapshot_id,
                     &format!("{:?}", workflow_state.status),
                 );
-                
+  
                 Ok(())
             },
             Err(e) => {
@@ -17758,12 +17848,12 @@ impl SnapshotManager {
                     "snapshot_restore_failed",
                     &format!("恢复快照失败: {}", e),
                 );
-                
+  
                 Err(SnapshotError::RestoreFailed(e.to_string()))
             }
         }
     }
-    
+  
     /// 在恢复前创建备份
     async fn create_backup_before_restore(&self, workflow_id: &str) -> Result<String, SnapshotError> {
         let metadata = {
@@ -17772,40 +17862,41 @@ impl SnapshotManager {
             map.insert("auto_generated".to_string(), "true".to_string());
             Some(map)
         };
-        
+  
         self.create_snapshot(workflow_id, RecoveryPointType::RecoveryBackup, metadata).await
     }
-    
+  
     /// 清理旧快照
     async fn cleanup_old_snapshots(&self, workflow_id: &str) -> Result<(), SnapshotError> {
         if self.config.max_snapshots_to_keep == 0 {
             // 不限制快照数量
             return Ok(());
         }
-        
+  
         // 获取所有快照，按创建时间排序
         let mut snapshots = self.state_store.list_recovery_points(workflow_id).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-        
+  
         // 按创建时间排序
         snapshots.sort_by(|a, b| a.created_at.cmp(&b.created_at));
-        
+  
         // 保留最新的N个快照
         if snapshots.len() > self.config.max_snapshots_to_keep as usize {
             let to_delete = snapshots.len() - self.config.max_snapshots_to_keep as usize;
-            
+  
             for snapshot in snapshots.iter().take(to_delete) {
                 // 不删除手动创建的快照
                 if let RecoveryPointType::ManualSnapshot = snapshot.point_type {
                     continue;
                 }
-                
+  
                 if let Err(e) = self.state_store.delete_recovery_point(workflow_id, &snapshot.id).await {
                     // 记录错误但继续
                     self.observability.record_warning(
                         workflow_id,
                         "snapshot_delete_failed",
                         &format!("删除快照失败: {}", e),
+
 ```
 
 工作流状态存储与事件溯源设计
@@ -17816,34 +17907,34 @@ impl SnapshotManager {
 pub trait StateStore: Send + Sync + 'static {
     /// 保存工作流状态
     async fn save_workflow_state(&self, state: &WorkflowState) -> Result<(), StorageError>;
-    
+  
     /// 获取工作流状态
     async fn get_workflow_state(&self, workflow_id: &str) -> Result<WorkflowState, StorageError>;
-    
+  
     /// 更新工作流状态
     async fn update_workflow_state(&self, workflow_id: &str, state: &WorkflowState) -> Result<(), StorageError>;
-    
+  
     /// 删除工作流状态
     async fn delete_workflow_state(&self, workflow_id: &str) -> Result<(), StorageError>;
-    
+  
     /// 保存恢复点
     async fn save_recovery_point(&self, recovery_point: &RecoveryPoint) -> Result<(), StorageError>;
-    
+  
     /// 获取恢复点
     async fn get_recovery_point(&self, workflow_id: &str, recovery_point_id: &str) -> Result<RecoveryPoint, StorageError>;
-    
+  
     /// 列出工作流的所有恢复点
     async fn list_recovery_points(&self, workflow_id: &str) -> Result<Vec<RecoveryPoint>, StorageError>;
-    
+  
     /// 删除恢复点
     async fn delete_recovery_point(&self, workflow_id: &str, recovery_point_id: &str) -> Result<(), StorageError>;
-    
+  
     /// 获取节点信息
     async fn get_node_info(&self, node_id: &str) -> Result<NodeInfo, StorageError>;
-    
+  
     /// 获取工作流定义
     async fn get_workflow_definition(&self, definition_id: &str) -> Result<WorkflowDefinition, StorageError>;
-    
+  
     /// 更新任务状态
     async fn update_task_state(&self, update: &TaskStateUpdate) -> Result<(), StorageError>;
 }
@@ -17852,21 +17943,21 @@ pub trait StateStore: Send + Sync + 'static {
 pub trait EventStore: Send + Sync + 'static {
     /// 记录工作流事件
     async fn record_event(&self, event: &WorkflowEvent) -> Result<(), StorageError>;
-    
+  
     /// 获取工作流事件
     async fn get_workflow_events(&self, workflow_id: &str) -> Result<Vec<WorkflowEvent>, StorageError>;
-    
+  
     /// 按事件类型获取工作流事件
     async fn get_workflow_events_by_type(&self, workflow_id: &str, event_type: &EventType) -> Result<Vec<WorkflowEvent>, StorageError>;
-    
+  
     /// 获取指定时间范围内的事件
     async fn get_workflow_events_in_timerange(
-        &self, 
-        workflow_id: &str, 
-        start_time: &DateTime<Utc>, 
+        &self,
+        workflow_id: &str,
+        start_time: &DateTime<Utc>,
         end_time: &DateTime<Utc>
     ) -> Result<Vec<WorkflowEvent>, StorageError>;
-    
+  
     /// 按批次获取事件
     async fn get_events_batch(&self, batch_size: usize, cursor: Option<&str>) -> Result<(Vec<WorkflowEvent>, Option<String>), StorageError>;
 }
@@ -17875,13 +17966,13 @@ pub trait EventStore: Send + Sync + 'static {
 pub struct InMemoryStateStore {
     /// 工作流状态
     workflow_states: Arc<RwLock<HashMap<String, WorkflowState>>>,
-    
+  
     /// 恢复点
     recovery_points: Arc<RwLock<HashMap<String, HashMap<String, RecoveryPoint>>>>,
-    
+  
     /// 节点信息
     node_infos: Arc<RwLock<HashMap<String, NodeInfo>>>,
-    
+  
     /// 工作流定义
     workflow_definitions: Arc<RwLock<HashMap<String, WorkflowDefinition>>>,
 }
@@ -17898,21 +17989,22 @@ impl InMemoryStateStore {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl StateStore for InMemoryStateStore {
     async fn save_workflow_state(&self, state: &WorkflowState) -> Result<(), StorageError> {
         let mut states = self.workflow_states.write().await;
         states.insert(state.id.clone(), state.clone());
         Ok(())
     }
-    
+  
     async fn get_workflow_state(&self, workflow_id: &str) -> Result<WorkflowState, StorageError> {
         let states = self.workflow_states.read().await;
         states.get(workflow_id)
             .cloned()
             .ok_or_else(|| StorageError::NotFound(format!("工作流状态不存在: {}", workflow_id)))
     }
-    
+  
     async fn update_workflow_state(&self, workflow_id: &str, state: &WorkflowState) -> Result<(), StorageError> {
         let mut states = self.workflow_states.write().await;
         if !states.contains_key(workflow_id) {
@@ -17921,7 +18013,7 @@ impl StateStore for InMemoryStateStore {
         states.insert(workflow_id.to_string(), state.clone());
         Ok(())
     }
-    
+  
     async fn delete_workflow_state(&self, workflow_id: &str) -> Result<(), StorageError> {
         let mut states = self.workflow_states.write().await;
         if states.remove(workflow_id).is_none() {
@@ -17929,39 +18021,39 @@ impl StateStore for InMemoryStateStore {
         }
         Ok(())
     }
-    
+  
     async fn save_recovery_point(&self, recovery_point: &RecoveryPoint) -> Result<(), StorageError> {
         let mut points = self.recovery_points.write().await;
         let workflow_points = points
             .entry(recovery_point.workflow_id.clone())
             .or_insert_with(HashMap::new);
-            
+  
         workflow_points.insert(recovery_point.id.clone(), recovery_point.clone());
         Ok(())
     }
-    
+  
     async fn get_recovery_point(&self, workflow_id: &str, recovery_point_id: &str) -> Result<RecoveryPoint, StorageError> {
         let points = self.recovery_points.read().await;
         let workflow_points = points.get(workflow_id)
             .ok_or_else(|| StorageError::NotFound(format!("工作流恢复点不存在: {}", workflow_id)))?;
-            
+  
         workflow_points.get(recovery_point_id)
             .cloned()
             .ok_or_else(|| StorageError::NotFound(format!("恢复点不存在: {}", recovery_point_id)))
     }
-    
+  
     async fn list_recovery_points(&self, workflow_id: &str) -> Result<Vec<RecoveryPoint>, StorageError> {
         let points = self.recovery_points.read().await;
         let workflow_points = points.get(workflow_id)
             .map(|points| points.values().cloned().collect())
             .unwrap_or_else(Vec::new);
-            
+  
         Ok(workflow_points)
     }
-    
+  
     async fn delete_recovery_point(&self, workflow_id: &str, recovery_point_id: &str) -> Result<(), StorageError> {
         let mut points = self.recovery_points.write().await;
-        
+  
         if let Some(workflow_points) = points.get_mut(workflow_id) {
             if workflow_points.remove(recovery_point_id).is_none() {
                 return Err(StorageError::NotFound(format!("恢复点不存在: {}", recovery_point_id)));
@@ -17969,56 +18061,56 @@ impl StateStore for InMemoryStateStore {
         } else {
             return Err(StorageError::NotFound(format!("工作流恢复点不存在: {}", workflow_id)));
         }
-        
+  
         Ok(())
     }
-    
+  
     async fn get_node_info(&self, node_id: &str) -> Result<NodeInfo, StorageError> {
         let infos = self.node_infos.read().await;
         infos.get(node_id)
             .cloned()
             .ok_or_else(|| StorageError::NotFound(format!("节点信息不存在: {}", node_id)))
     }
-    
+  
     async fn get_workflow_definition(&self, definition_id: &str) -> Result<WorkflowDefinition, StorageError> {
         let definitions = self.workflow_definitions.read().await;
         definitions.get(definition_id)
             .cloned()
             .ok_or_else(|| StorageError::NotFound(format!("工作流定义不存在: {}", definition_id)))
     }
-    
+  
     async fn update_task_state(&self, update: &TaskStateUpdate) -> Result<(), StorageError> {
         let mut states = self.workflow_states.write().await;
         let state = states.get_mut(&update.workflow_id)
             .ok_or_else(|| StorageError::NotFound(format!("工作流状态不存在: {}", update.workflow_id)))?;
-            
+  
         let task_state = state.task_states.get_mut(&update.task_id)
             .ok_or_else(|| StorageError::NotFound(format!("任务状态不存在: {}", update.task_id)))?;
-            
+  
         task_state.status = update.status.clone();
-        
+  
         if let Some(node_id) = &update.node_id {
             task_state.node_id = Some(node_id.clone());
         } else {
             task_state.node_id = None;
         }
-        
+  
         if let Some(error) = &update.error {
             task_state.error = Some(error.clone());
         }
-        
+  
         if let Some(result) = &update.result {
             task_state.result = Some(result.clone());
         }
-        
+  
         if let Some(metadata) = &update.metadata {
             for (key, value) in metadata.as_object().unwrap() {
                 task_state.metadata.insert(key.clone(), value.clone());
             }
         }
-        
+  
         task_state.last_updated = Utc::now();
-        
+  
         Ok(())
     }
 }
@@ -18027,10 +18119,10 @@ impl StateStore for InMemoryStateStore {
 pub struct PersistentStateStore {
     /// 存储引擎
     storage_engine: Arc<dyn StorageEngine>,
-    
+  
     /// 缓存
     cache: Option<Arc<WorkflowStateCache>>,
-    
+  
     /// 观测性管理器
     observability: Arc<WorkflowObservability>,
 }
@@ -18039,22 +18131,22 @@ pub struct PersistentStateStore {
 pub trait StorageEngine: Send + Sync + 'static {
     /// 存储数据
     async fn put(&self, key: &str, value: &[u8]) -> Result<(), StorageError>;
-    
+  
     /// 获取数据
     async fn get(&self, key: &str) -> Result<Vec<u8>, StorageError>;
-    
+  
     /// 删除数据
     async fn delete(&self, key: &str) -> Result<(), StorageError>;
-    
+  
     /// 列出键前缀
     async fn list_prefix(&self, prefix: &str) -> Result<Vec<String>, StorageError>;
-    
+  
     /// 测试键是否存在
     async fn exists(&self, key: &str) -> Result<bool, StorageError>;
-    
+  
     /// 批量获取
     async fn batch_get(&self, keys: &[String]) -> Result<HashMap<String, Vec<u8>>, StorageError>;
-    
+  
     /// 批量存储
     async fn batch_put(&self, kvs: &HashMap<String, Vec<u8>>) -> Result<(), StorageError>;
 }
@@ -18072,48 +18164,49 @@ impl PersistentStateStore {
             observability,
         }
     }
-    
+  
     /// 生成工作流状态键
     fn workflow_state_key(workflow_id: &str) -> String {
         format!("workflow:state:{}", workflow_id)
     }
-    
+  
     /// 生成恢复点键
     fn recovery_point_key(workflow_id: &str, recovery_point_id: &str) -> String {
         format!("workflow:recovery:{}:{}", workflow_id, recovery_point_id)
     }
-    
+  
     /// 生成恢复点列表键前缀
     fn recovery_points_prefix(workflow_id: &str) -> String {
         format!("workflow:recovery:{}:", workflow_id)
     }
-    
+  
     /// 生成节点信息键
     fn node_info_key(node_id: &str) -> String {
         format!("node:info:{}", node_id)
     }
-    
+  
     /// 生成工作流定义键
     fn workflow_definition_key(definition_id: &str) -> String {
         format!("workflow:definition:{}", definition_id)
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl StateStore for PersistentStateStore {
     async fn save_workflow_state(&self, state: &WorkflowState) -> Result<(), StorageError> {
         let state_bytes = serde_json::to_vec(state)
             .map_err(|e| StorageError::SerializationError(e.to_string()))?;
-            
+  
         // 保存到存储引擎
         let key = Self::workflow_state_key(&state.id);
         self.storage_engine.put(&key, &state_bytes).await?;
-        
+  
         // 更新缓存
         if let Some(cache) = &self.cache {
             cache.put_workflow_state(&state.id, state.clone()).await;
         }
-        
+  
         // 记录指标
         self.observability.record_metric(
             "workflow_state_save",
@@ -18123,10 +18216,10 @@ impl StateStore for PersistentStateStore {
                 ("status".to_string(), format!("{:?}", state.status)),
             ])),
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn get_workflow_state(&self, workflow_id: &str) -> Result<WorkflowState, StorageError> {
         // 尝试从缓存获取
         if let Some(cache) = &self.cache {
@@ -18139,24 +18232,24 @@ impl StateStore for PersistentStateStore {
                         ("workflow_id".to_string(), workflow_id.to_string()),
                     ])),
                 );
-                
+  
                 return Ok(state);
             }
         }
-        
+  
         // 从存储引擎获取
         let key = Self::workflow_state_key(workflow_id);
         let state_bytes = self.storage_engine.get(&key).await?;
-        
+  
         // 反序列化
         let state: WorkflowState = serde_json::from_slice(&state_bytes)
             .map_err(|e| StorageError::DeserializationError(e.to_string()))?;
-            
+  
         // 更新缓存
         if let Some(cache) = &self.cache {
             cache.put_workflow_state(workflow_id, state.clone()).await;
         }
-        
+  
         // 记录指标
         self.observability.record_metric(
             "workflow_state_get",
@@ -18165,30 +18258,30 @@ impl StateStore for PersistentStateStore {
                 ("workflow_id".to_string(), workflow_id.to_string()),
             ])),
         );
-        
+  
         Ok(state)
     }
-    
+  
     async fn update_workflow_state(&self, workflow_id: &str, state: &WorkflowState) -> Result<(), StorageError> {
         // 检查状态是否存在
         let key = Self::workflow_state_key(workflow_id);
         let exists = self.storage_engine.exists(&key).await?;
-        
+  
         if !exists {
             return Err(StorageError::NotFound(format!("工作流状态不存在: {}", workflow_id)));
         }
-        
+  
         // 序列化并保存
         let state_bytes = serde_json::to_vec(state)
             .map_err(|e| StorageError::SerializationError(e.to_string()))?;
-            
+  
         self.storage_engine.put(&key, &state_bytes).await?;
-        
+  
         // 更新缓存
         if let Some(cache) = &self.cache {
             cache.put_workflow_state(workflow_id, state.clone()).await;
         }
-        
+  
         // 记录指标
         self.observability.record_metric(
             "workflow_state_update",
@@ -18198,28 +18291,28 @@ impl StateStore for PersistentStateStore {
                 ("status".to_string(), format!("{:?}", state.status)),
             ])),
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn delete_workflow_state(&self, workflow_id: &str) -> Result<(), StorageError> {
         let key = Self::workflow_state_key(workflow_id);
-        
+  
         // 检查状态是否存在
         let exists = self.storage_engine.exists(&key).await?;
-        
+  
         if !exists {
             return Err(StorageError::NotFound(format!("工作流状态不存在: {}", workflow_id)));
         }
-        
+  
         // 从存储引擎删除
         self.storage_engine.delete(&key).await?;
-        
+  
         // 从缓存删除
         if let Some(cache) = &self.cache {
             cache.remove_workflow_state(workflow_id).await;
         }
-        
+  
         // 记录指标
         self.observability.record_metric(
             "workflow_state_delete",
@@ -18228,19 +18321,19 @@ impl StateStore for PersistentStateStore {
                 ("workflow_id".to_string(), workflow_id.to_string()),
             ])),
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn save_recovery_point(&self, recovery_point: &RecoveryPoint) -> Result<(), StorageError> {
         // 序列化恢复点
         let point_bytes = serde_json::to_vec(recovery_point)
             .map_err(|e| StorageError::SerializationError(e.to_string()))?;
-            
+  
         // 保存到存储引擎
         let key = Self::recovery_point_key(&recovery_point.workflow_id, &recovery_point.id);
         self.storage_engine.put(&key, &point_bytes).await?;
-        
+  
         // 记录指标
         self.observability.record_metric(
             "recovery_point_save",
@@ -18251,19 +18344,19 @@ impl StateStore for PersistentStateStore {
                 ("recovery_point_type".to_string(), format!("{:?}", recovery_point.point_type)),
             ])),
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn get_recovery_point(&self, workflow_id: &str, recovery_point_id: &str) -> Result<RecoveryPoint, StorageError> {
         // 从存储引擎获取
         let key = Self::recovery_point_key(workflow_id, recovery_point_id);
         let point_bytes = self.storage_engine.get(&key).await?;
-        
+  
         // 反序列化
         let recovery_point: RecoveryPoint = serde_json::from_slice(&point_bytes)
             .map_err(|e| StorageError::DeserializationError(e.to_string()))?;
-            
+  
         // 记录指标
         self.observability.record_metric(
             "recovery_point_get",
@@ -18273,32 +18366,32 @@ impl StateStore for PersistentStateStore {
                 ("recovery_point_id".to_string(), recovery_point_id.to_string()),
             ])),
         );
-        
+  
         Ok(recovery_point)
     }
-    
+  
     async fn list_recovery_points(&self, workflow_id: &str) -> Result<Vec<RecoveryPoint>, StorageError> {
         // 获取前缀键列表
         let prefix = Self::recovery_points_prefix(workflow_id);
         let keys = self.storage_engine.list_prefix(&prefix).await?;
-        
+  
         if keys.is_empty() {
             return Ok(Vec::new());
         }
-        
+  
         // 批量获取所有恢复点
         let values = self.storage_engine.batch_get(&keys).await?;
-        
+  
         // 反序列化
         let mut recovery_points = Vec::with_capacity(values.len());
-        
+  
         for value in values.values() {
             let recovery_point: RecoveryPoint = serde_json::from_slice(value)
                 .map_err(|e| StorageError::DeserializationError(e.to_string()))?;
-                
+  
             recovery_points.push(recovery_point);
         }
-        
+  
         // 记录指标
         self.observability.record_metric(
             "recovery_points_list",
@@ -18308,23 +18401,23 @@ impl StateStore for PersistentStateStore {
                 ("count".to_string(), recovery_points.len().to_string()),
             ])),
         );
-        
+  
         Ok(recovery_points)
     }
-    
+  
     async fn delete_recovery_point(&self, workflow_id: &str, recovery_point_id: &str) -> Result<(), StorageError> {
         let key = Self::recovery_point_key(workflow_id, recovery_point_id);
-        
+  
         // 检查恢复点是否存在
         let exists = self.storage_engine.exists(&key).await?;
-        
+  
         if !exists {
             return Err(StorageError::NotFound(format!("恢复点不存在: {}", recovery_point_id)));
         }
-        
+  
         // 从存储引擎删除
         self.storage_engine.delete(&key).await?;
-        
+  
         // 记录指标
         self.observability.record_metric(
             "recovery_point_delete",
@@ -18334,69 +18427,69 @@ impl StateStore for PersistentStateStore {
                 ("recovery_point_id".to_string(), recovery_point_id.to_string()),
             ])),
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn get_node_info(&self, node_id: &str) -> Result<NodeInfo, StorageError> {
         // 从存储引擎获取
         let key = Self::node_info_key(node_id);
         let info_bytes = self.storage_engine.get(&key).await?;
-        
+  
         // 反序列化
         let node_info: NodeInfo = serde_json::from_slice(&info_bytes)
             .map_err(|e| StorageError::DeserializationError(e.to_string()))?;
-            
+  
         Ok(node_info)
     }
-    
+  
     async fn get_workflow_definition(&self, definition_id: &str) -> Result<WorkflowDefinition, StorageError> {
         // 从存储引擎获取
         let key = Self::workflow_definition_key(definition_id);
         let def_bytes = self.storage_engine.get(&key).await?;
-        
+  
         // 反序列化
         let definition: WorkflowDefinition = serde_json::from_slice(&def_bytes)
             .map_err(|e| StorageError::DeserializationError(e.to_string()))?;
-            
+  
         Ok(definition)
     }
-    
+  
     async fn update_task_state(&self, update: &TaskStateUpdate) -> Result<(), StorageError> {
         // 获取当前工作流状态
         let mut state = self.get_workflow_state(&update.workflow_id).await?;
-        
+  
         // 更新任务状态
         let task_state = state.task_states.get_mut(&update.task_id)
             .ok_or_else(|| StorageError::NotFound(format!("任务状态不存在: {}", update.task_id)))?;
-            
+  
         task_state.status = update.status.clone();
-        
+  
         if let Some(node_id) = &update.node_id {
             task_state.node_id = Some(node_id.clone());
         } else {
             task_state.node_id = None;
         }
-        
+  
         if let Some(error) = &update.error {
             task_state.error = Some(error.clone());
         }
-        
+  
         if let Some(result) = &update.result {
             task_state.result = Some(result.clone());
         }
-        
+  
         if let Some(metadata) = &update.metadata {
             for (key, value) in metadata.as_object().unwrap() {
                 task_state.metadata.insert(key.clone(), value.clone());
             }
         }
-        
+  
         task_state.last_updated = Utc::now();
-        
+  
         // 保存更新后的工作流状态
         self.update_workflow_state(&update.workflow_id, &state).await?;
-        
+  
         // 记录指标
         self.observability.record_metric(
             "task_state_update",
@@ -18407,7 +18500,7 @@ impl StateStore for PersistentStateStore {
                 ("status".to_string(), format!("{:?}", update.status)),
             ])),
         );
-        
+  
         Ok(())
     }
 }
@@ -18416,10 +18509,10 @@ impl StateStore for PersistentStateStore {
 pub struct EventSourcedStateStore {
     /// 事件存储
     event_store: Arc<dyn EventStore>,
-    
+  
     /// 状态缓存
     state_cache: Arc<WorkflowStateCache>,
-    
+  
     /// 观测性管理器
     observability: Arc<WorkflowObservability>,
 }
@@ -18437,20 +18530,20 @@ impl EventSourcedStateStore {
             observability,
         }
     }
-    
+  
     /// 从事件重建工作流状态
     async fn rebuild_state_from_events(&self, workflow_id: &str) -> Result<WorkflowState, StorageError> {
         // 获取所有工作流事件
         let events = self.event_store.get_workflow_events(workflow_id).await?;
-        
+  
         if events.is_empty() {
             return Err(StorageError::NotFound(format!("工作流没有事件: {}", workflow_id)));
         }
-        
+  
         // 提取工作流定义ID
         let definition_id = extract_definition_id_from_events(&events)
             .ok_or_else(|| StorageError::CorruptedState("无法从事件中提取工作流定义ID".to_string()))?;
-        
+  
         // 初始化空状态
         let mut state = WorkflowState {
             id: workflow_id.to_string(),
@@ -18464,15 +18557,15 @@ impl EventSourcedStateStore {
             last_updated_at: Some(events.last().unwrap().timestamp),
             metadata: HashMap::new(),
         };
-        
+  
         // 应用所有事件到状态
         for event in &events {
             apply_event_to_state(&mut state, event)?;
         }
-        
+  
         // 缓存重建的状态
         self.state_cache.put_workflow_state(workflow_id, state.clone()).await;
-        
+  
         // 记录指标
         self.observability.record_metric(
             "workflow_state_rebuilt",
@@ -18482,56 +18575,59 @@ impl EventSourcedStateStore {
                 ("event_count".to_string(), events.len().to_string()),
             ])),
         );
-        
+  
         Ok(state)
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl StateStore for EventSourcedStateStore {
     async fn save_workflow_state(&self, state: &WorkflowState) -> Result<(), StorageError> {
         // 事件溯源方式不直接保存状态，而是记录状态变更事件
         let event = create_state_snapshot_event(state)?;
-        
+  
         // 记录事件
         self.event_store.record_event(&event).await?;
-        
+  
         // 更新缓存
         self.state_cache.put_workflow_state(&state.id, state.clone()).await;
-        
+  
         Ok(())
     }
-    
+  
     async fn get_workflow_state(&self, workflow_id: &str) -> Result<WorkflowState, StorageError> {
         // 尝试从缓存获取
         if let Some(state) = self.state_cache.get_workflow_state(workflow_id).await {
             return Ok(state);
         }
-        
+  
         // 从事件重建状态
         self.rebuild_state_from_events(workflow_id).await
     }
-    
+  
     async fn update_workflow_state(&self,
 
 /// 继续实现 EventSourcedStateStore
-#[async_trait]
+
+# [async_trait]
+
 impl StateStore for EventSourcedStateStore {
     // ... [上一部分代码接续]
-    
+  
     async fn update_workflow_state(&self, workflow_id: &str, state: &WorkflowState) -> Result<(), StorageError> {
         // 生成状态变更事件
         let event = create_state_change_event(workflow_id, state)?;
-        
+  
         // 记录事件
         self.event_store.record_event(&event).await?;
-        
+  
         // 更新缓存
         self.state_cache.put_workflow_state(workflow_id, state.clone()).await;
-        
+  
         Ok(())
     }
-    
+  
     async fn delete_workflow_state(&self, workflow_id: &str) -> Result<(), StorageError> {
         // 创建状态删除事件
         let event = WorkflowEvent {
@@ -18541,16 +18637,16 @@ impl StateStore for EventSourcedStateStore {
             timestamp: Utc::now(),
             data: json!({}),
         };
-        
+  
         // 记录事件
         self.event_store.record_event(&event).await?;
-        
+  
         // 从缓存中移除
         self.state_cache.remove_workflow_state(workflow_id).await;
-        
+  
         Ok(())
     }
-    
+  
     // 其他方法的实现...
 }
 
@@ -18558,16 +18654,16 @@ impl StateStore for EventSourcedStateStore {
 pub struct WorkflowRecoveryManager {
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 工作流引擎
     workflow_engine: Arc<WorkflowEngine>,
-    
+  
     /// 恢复策略提供者
     recovery_strategy: Arc<dyn RecoveryStrategy>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
 }
@@ -18589,34 +18685,34 @@ impl WorkflowRecoveryManager {
             lock_service,
         }
     }
-    
+  
     /// 自动恢复中断的工作流
     pub async fn recover_interrupted_workflows(&self) -> Result<Vec<String>, RecoveryError> {
         // 获取需要恢复的工作流ID列表
         let workflows_to_recover = self.recovery_strategy.identify_workflows_to_recover().await
             .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
-            
+  
         if workflows_to_recover.is_empty() {
             return Ok(Vec::new());
         }
-        
+  
         let mut recovered = Vec::new();
-        
+  
         for workflow_id in workflows_to_recover {
             // 为每个工作流恢复获取锁，避免并发恢复
             let lock_key = format!("workflow:recovery:{}", workflow_id);
             let lock_acquired = self.lock_service.acquire_lock(&lock_key, Duration::from_secs(60)).await
                 .map_err(|e| RecoveryError::LockAcquisition(e.to_string()))?;
-                
+  
             if !lock_acquired {
                 // 未获取到锁，跳过该工作流
                 continue;
             }
-            
+  
             // 检查是否需要恢复
             let needs_recovery = self.recovery_strategy.should_recover_workflow(&workflow_id).await
                 .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
-                
+  
             if needs_recovery {
                 // 恢复工作流
                 match self.recover_workflow(&workflow_id).await {
@@ -18629,35 +18725,35 @@ impl WorkflowRecoveryManager {
                     }
                 }
             }
-            
+  
             // 释放锁
             let _ = self.lock_service.release_lock(&lock_key).await;
         }
-        
+  
         Ok(recovered)
     }
-    
+  
     /// 恢复单个工作流
     async fn recover_workflow(&self, workflow_id: &str) -> Result<(), RecoveryError> {
         // 创建恢复追踪上下文
         let trace_ctx = self.observability.create_workflow_recovery_span(workflow_id);
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取工作流状态
         let mut workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-        
+  
         // 获取工作流定义
         let workflow_def = self.state_store.get_workflow_definition(&workflow_state.workflow_definition_id).await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-        
+  
         // 重置所有运行中和已调度的任务
         for (task_id, task_state) in workflow_state.task_states.iter_mut() {
             if task_state.status == TaskStatus::Running || task_state.status == TaskStatus::Scheduled {
                 task_state.status = TaskStatus::Pending;
                 task_state.node_id = None;
                 task_state.start_time = None;
-                
+  
                 // 创建任务状态更新
                 let task_update = TaskStateUpdate {
                     workflow_id: workflow_id.to_string(),
@@ -18671,18 +18767,18 @@ impl WorkflowRecoveryManager {
                         "recovered_at": Utc::now().to_rfc3339(),
                     })),
                 };
-                
+  
                 // 更新任务状态
                 self.state_store.update_task_state(&task_update).await
                     .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
             }
         }
-        
+  
         // 更新工作流状态
         workflow_state.last_updated_at = Some(Utc::now());
         self.state_store.update_workflow_state(workflow_id, &workflow_state).await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-        
+  
         // 记录恢复事件
         self.observability.record_workflow_recovery(
             workflow_id,
@@ -18693,29 +18789,29 @@ impl WorkflowRecoveryManager {
                 "workflow_status": format!("{:?}", workflow_state.status),
             }),
         );
-        
+  
         // 重新调度工作流
         self.workflow_engine.resume_workflow(workflow_id).await
             .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
-        
+  
         Ok(())
     }
-    
+  
     /// 从指定的恢复点恢复工作流
     pub async fn recover_from_point(&self, workflow_id: &str, recovery_point_id: &str) -> Result<(), RecoveryError> {
         // 创建恢复追踪上下文
         let trace_ctx = self.observability.create_workflow_recovery_span(workflow_id);
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 为工作流恢复获取锁
         let lock_key = format!("workflow:recovery:{}", workflow_id);
         let lock_acquired = self.lock_service.acquire_lock(&lock_key, Duration::from_secs(60)).await
             .map_err(|e| RecoveryError::LockAcquisition(e.to_string()))?;
-            
+  
         if !lock_acquired {
             return Err(RecoveryError::LockAcquisition(format!("无法获取工作流锁: {}", workflow_id)));
         }
-        
+  
         // 确保锁在函数退出时释放
         let _lock_guard = scopeguard::guard((), |_| {
             let lock_key = format!("workflow:recovery:{}", workflow_id);
@@ -18724,11 +18820,11 @@ impl WorkflowRecoveryManager {
                 let _ = release_fut.await;
             });
         });
-        
+  
         // 获取恢复点
         let recovery_point = self.state_store.get_recovery_point(workflow_id, recovery_point_id).await
             .map_err(|e| RecoveryError::StateStore(e.to_string()))?;
-            
+  
         // 执行恢复操作
         match recovery_point.point_type {
             RecoveryPointType::Checkpoint => {
@@ -18757,7 +18853,7 @@ impl WorkflowRecoveryManager {
                 .map_err(|e| RecoveryError::Strategy(e.to_string()))?;
             },
         }
-        
+  
         // 记录恢复事件
         self.observability.record_workflow_recovery(
             workflow_id,
@@ -18769,7 +18865,7 @@ impl WorkflowRecoveryManager {
                 "recovery_point_type": format!("{:?}", recovery_point.point_type),
             }),
         );
-        
+  
         Ok(())
     }
 }
@@ -18778,13 +18874,13 @@ impl WorkflowRecoveryManager {
 pub struct SnapshotManager {
     /// 状态存储
     state_storage: Arc<dyn StateStore>,
-    
+  
     /// 压缩器
     compressor: Option<Arc<dyn DataCompressor>>,
-    
+  
     /// 加密器
     encryptor: Option<Arc<dyn DataEncryptor>>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
 }
@@ -18804,7 +18900,7 @@ impl SnapshotManager {
             observability,
         }
     }
-    
+  
     /// 为工作流创建快照
     pub async fn create_snapshot(
         &self,
@@ -18815,18 +18911,18 @@ impl SnapshotManager {
         // 创建快照追踪上下文
         let trace_ctx = self.observability.create_snapshot_span(workflow_id);
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 生成快照ID
         let snapshot_id = format!("snapshot-{}-{}", workflow_id, Uuid::new_v4());
-        
+  
         // 获取工作流状态
         let workflow_state = self.state_storage.get_workflow_state(workflow_id).await
             .map_err(|e| SnapshotError::StateFetchFailed(e.to_string()))?;
-            
+  
         // 序列化状态
         let state_json = serde_json::to_vec(&workflow_state)
             .map_err(|e| SnapshotError::SerializationFailed(e.to_string()))?;
-            
+  
         // 压缩数据（如果配置了压缩器）
         let compressed_state = if let Some(compressor) = &self.compressor {
             compressor.compress(&state_json)
@@ -18834,7 +18930,7 @@ impl SnapshotManager {
         } else {
             state_json
         };
-        
+  
         // 加密数据（如果配置了加密器）
         let protected_state = if let Some(encryptor) = &self.encryptor {
             encryptor.encrypt(&compressed_state)
@@ -18842,7 +18938,7 @@ impl SnapshotManager {
         } else {
             compressed_state
         };
-        
+  
         // 创建快照元数据
         let snapshot = WorkflowSnapshot {
             id: snapshot_id.clone(),
@@ -18855,7 +18951,7 @@ impl SnapshotManager {
             is_encrypted: self.encryptor.is_some(),
             metadata: HashMap::new(),
         };
-        
+  
         // 创建恢复点
         let recovery_point = RecoveryPoint {
             id: snapshot_id.clone(),
@@ -18865,15 +18961,15 @@ impl SnapshotManager {
             data_size: protected_state.len() as u64,
             metadata: snapshot.metadata.clone(),
         };
-        
+  
         // 存储恢复点
         self.state_storage.save_recovery_point(&recovery_point).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-        
+  
         // 存储快照数据
         self.save_snapshot_data(&snapshot_id, &protected_state).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-        
+  
         // 记录创建快照事件
         self.observability.record_metric(
             "snapshot_created",
@@ -18885,18 +18981,18 @@ impl SnapshotManager {
                 ("size_bytes".to_string(), protected_state.len().to_string()),
             ])),
         );
-        
-        log::info!("为工作流创建了快照: workflow_id={}, execution_id={}, snapshot_id={}", 
+  
+        log::info!("为工作流创建了快照: workflow_id={}, execution_id={}, snapshot_id={}",
                   workflow_id, execution_id, snapshot_id);
-        
+  
         Ok(snapshot_id)
     }
-    
+  
     /// 存储快照数据
     async fn save_snapshot_data(&self, snapshot_id: &str, data: &[u8]) -> Result<(), StorageError> {
         // 创建存储键
         let storage_key = format!("workflow:snapshot:data:{}", snapshot_id);
-        
+  
         // 存储数据
         let storage = match self.state_storage.as_any().downcast_ref::<PersistentStateStore>() {
             Some(persistent_store) => persistent_store.get_storage_engine(),
@@ -18905,10 +19001,10 @@ impl SnapshotManager {
                 return Err(StorageError::Unsupported("存储引擎不支持保存快照数据".to_string()));
             }
         };
-        
+  
         storage.put(&storage_key, data).await
     }
-    
+  
     /// 从快照恢复工作流状态
     pub async fn restore_from_snapshot(
         &self,
@@ -18917,11 +19013,11 @@ impl SnapshotManager {
         // 创建恢复追踪上下文
         let trace_ctx = self.observability.create_snapshot_restore_span(snapshot_id);
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取快照数据
         let protected_state = self.get_snapshot_data(snapshot_id).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-            
+  
         // 解密数据（如果需要）
         let compressed_state = if let Some(encryptor) = &self.encryptor {
             encryptor.decrypt(&protected_state)
@@ -18929,7 +19025,7 @@ impl SnapshotManager {
         } else {
             protected_state
         };
-        
+  
         // 解压数据（如果需要）
         let state_json = if let Some(compressor) = &self.compressor {
             compressor.decompress(&compressed_state)
@@ -18937,11 +19033,11 @@ impl SnapshotManager {
         } else {
             compressed_state
         };
-        
+  
         // 反序列化工作流状态
         let state: WorkflowState = serde_json::from_slice(&state_json)
             .map_err(|e| SnapshotError::DeserializationFailed(e.to_string()))?;
-            
+  
         // 记录从快照恢复事件
         self.observability.record_metric(
             "snapshot_restored",
@@ -18952,18 +19048,18 @@ impl SnapshotManager {
                 ("state_size".to_string(), state_json.len().to_string()),
             ])),
         );
-        
-        log::info!("从快照恢复了工作流状态: workflow_id={}, snapshot_id={}", 
+  
+        log::info!("从快照恢复了工作流状态: workflow_id={}, snapshot_id={}",
                   state.id, snapshot_id);
-        
+  
         Ok(state)
     }
-    
+  
     /// 获取快照数据
     async fn get_snapshot_data(&self, snapshot_id: &str) -> Result<Vec<u8>, StorageError> {
         // 创建存储键
         let storage_key = format!("workflow:snapshot:data:{}", snapshot_id);
-        
+  
         // 获取数据
         let storage = match self.state_storage.as_any().downcast_ref::<PersistentStateStore>() {
             Some(persistent_store) => persistent_store.get_storage_engine(),
@@ -18972,25 +19068,25 @@ impl SnapshotManager {
                 return Err(StorageError::Unsupported("存储引擎不支持获取快照数据".to_string()));
             }
         };
-        
+  
         storage.get(&storage_key).await
     }
-    
+  
     /// 列出工作流的所有快照
     pub async fn list_snapshots(&self, workflow_id: &str) -> Result<Vec<WorkflowSnapshot>, SnapshotError> {
         // 获取所有恢复点
         let recovery_points = self.state_storage.list_recovery_points(workflow_id).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-            
+  
         // 过滤出检查点类型的恢复点
         let checkpoint_recovery_points: Vec<_> = recovery_points.into_iter()
             .filter(|point| point.point_type == RecoveryPointType::Checkpoint)
             .collect();
-            
+  
         if checkpoint_recovery_points.is_empty() {
             return Ok(Vec::new());
         }
-        
+  
         // 转换为快照
         let snapshots = checkpoint_recovery_points.into_iter()
             .map(|point| WorkflowSnapshot {
@@ -19013,16 +19109,16 @@ impl SnapshotManager {
                 metadata: point.metadata,
             })
             .collect();
-            
+  
         Ok(snapshots)
     }
-    
+  
     /// 删除快照
     pub async fn delete_snapshot(&self, workflow_id: &str, snapshot_id: &str) -> Result<(), SnapshotError> {
         // 删除恢复点
         self.state_storage.delete_recovery_point(workflow_id, snapshot_id).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-            
+  
         // 删除快照数据
         let storage_key = format!("workflow:snapshot:data:{}", snapshot_id);
         let storage = match self.state_storage.as_any().downcast_ref::<PersistentStateStore>() {
@@ -19032,10 +19128,10 @@ impl SnapshotManager {
                 return Err(SnapshotError::StorageFailed("存储引擎不支持删除快照数据".to_string()));
             }
         };
-        
+  
         storage.delete(&storage_key).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-            
+  
         // 记录删除快照事件
         self.observability.record_metric(
             "snapshot_deleted",
@@ -19045,33 +19141,33 @@ impl SnapshotManager {
                 ("snapshot_id".to_string(), snapshot_id.to_string()),
             ])),
         );
-        
-        log::info!("删除了工作流快照: workflow_id={}, snapshot_id={}", 
+  
+        log::info!("删除了工作流快照: workflow_id={}, snapshot_id={}",
                   workflow_id, snapshot_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 清理过期快照
     pub async fn cleanup_expired_snapshots(&self, max_age: Duration) -> Result<usize, SnapshotError> {
         // 获取所有工作流ID
         let workflow_ids = self.get_all_workflow_ids().await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-            
+  
         let mut total_deleted = 0;
         let now = Utc::now();
-        
+  
         for workflow_id in workflow_ids {
             // 获取工作流的所有快照
             let snapshots = self.list_snapshots(&workflow_id).await?;
-            
+  
             // 过滤出过期的快照
             let expired_snapshots: Vec<_> = snapshots.into_iter()
                 .filter(|snapshot| {
                     now.signed_duration_since(snapshot.created_at) > max_age
                 })
                 .collect();
-                
+  
             // 删除过期快照
             for snapshot in expired_snapshots {
                 if let Err(e) = self.delete_snapshot(&workflow_id, &snapshot.id).await {
@@ -19082,12 +19178,12 @@ impl SnapshotManager {
                 }
             }
         }
-        
+  
         log::info!("清理了 {} 个过期快照", total_deleted);
-        
+  
         Ok(total_deleted)
     }
-    
+  
     /// 获取所有工作流ID
     async fn get_all_workflow_ids(&self) -> Result<Vec<String>, StorageError> {
         // 实现依赖于具体存储引擎
@@ -19099,14 +19195,14 @@ impl SnapshotManager {
                 return Err(StorageError::Unsupported("存储引擎不支持列出所有工作流".to_string()));
             }
         };
-        
+  
         let keys = storage.list_prefix(workflow_keys_prefix).await?;
-        
+  
         // 从键中提取工作流ID
         let workflow_ids = keys.into_iter()
             .map(|key| key[workflow_keys_prefix.len()..].to_string())
             .collect();
-            
+  
         Ok(workflow_ids)
     }
 }
@@ -19115,10 +19211,10 @@ impl SnapshotManager {
 pub struct StateTransitioner {
     /// 事件总线
     event_bus: Arc<EventBus>,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
 }
@@ -19136,14 +19232,14 @@ impl StateTransitioner {
             observability,
         }
     }
-    
+  
     /// 从事件中转换状态
     pub async fn transition_state_from_event(&self, event: &WorkflowEvent) -> Result<(), StateTransitionError> {
         // 获取当前工作流状态
         let workflow_id = &event.workflow_id;
         let current_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| StateTransitionError::StateFetchError(e.to_string()))?;
-            
+  
         // 根据事件类型和当前状态执行转换
         let new_state = match (&current_state.status, &event.event_type) {
             // 创建 -> 运行
@@ -19152,7 +19248,7 @@ impl StateTransitioner {
                 new_state.status = WorkflowStatus::Running;
                 new_state.start_time = Some(event.timestamp);
                 new_state.last_updated_at = Some(event.timestamp);
-                
+  
                 // 从事件数据中提取启动参数
                 if let Some(inputs) = event.data.get("inputs") {
                     if let Some(inputs_obj) = inputs.as_object() {
@@ -19161,92 +19257,92 @@ impl StateTransitioner {
                         }
                     }
                 }
-                
+  
                 new_state
             },
-            
+  
             // 运行 -> 完成
             (WorkflowStatus::Running, EventType::WorkflowCompleted) => {
                 let mut new_state = current_state.clone();
                 new_state.status = WorkflowStatus::Completed;
                 new_state.end_time = Some(event.timestamp);
                 new_state.last_updated_at = Some(event.timestamp);
-                
+  
                 // 从事件数据中提取输出结果
                 if let Some(outputs) = event.data.get("outputs") {
                     new_state.variables.insert("workflow_result".to_string(), outputs.clone());
                 }
-                
+  
                 new_state
             },
-            
+  
             // 运行 -> 失败
             (WorkflowStatus::Running, EventType::WorkflowFailed) => {
                 let mut new_state = current_state.clone();
                 new_state.status = WorkflowStatus::Failed;
                 new_state.end_time = Some(event.timestamp);
                 new_state.last_updated_at = Some(event.timestamp);
-                
+  
                 // 从事件数据中提取错误信息
                 if let Some(error) = event.data.get("error") {
                     new_state.variables.insert("workflow_error".to_string(), error.clone());
                 }
-                
+  
                 new_state
             },
-            
+  
             // 运行 -> 取消
             (WorkflowStatus::Running, EventType::WorkflowCancelled) => {
                 let mut new_state = current_state.clone();
                 new_state.status = WorkflowStatus::Cancelled;
                 new_state.end_time = Some(event.timestamp);
                 new_state.last_updated_at = Some(event.timestamp);
-                
+  
                 // 从事件数据中提取取
 /// 继续实现 StateTransitioner
 impl StateTransitioner {
     // ... [上一部分代码接续]
-    
+  
     // 运行 -> 取消
     (WorkflowStatus::Running, EventType::WorkflowCancelled) => {
         let mut new_state = current_state.clone();
         new_state.status = WorkflowStatus::Cancelled;
         new_state.end_time = Some(event.timestamp);
         new_state.last_updated_at = Some(event.timestamp);
-        
+  
         // 从事件数据中提取取消原因
         if let Some(reason) = event.data.get("reason") {
             new_state.variables.insert("cancel_reason".to_string(), reason.clone());
         }
-        
+  
         new_state
     },
-    
+  
     // 运行 -> 暂停
     (WorkflowStatus::Running, EventType::WorkflowSuspended) => {
         let mut new_state = current_state.clone();
         new_state.status = WorkflowStatus::Suspended;
         new_state.last_updated_at = Some(event.timestamp);
-        
+  
         // 从事件数据中提取暂停原因
         if let Some(reason) = event.data.get("reason") {
             new_state.variables.insert("suspend_reason".to_string(), reason.clone());
         }
-        
+  
         // 从事件数据中提取暂停点
         if let Some(suspend_point) = event.data.get("suspend_point") {
             new_state.variables.insert("suspend_point".to_string(), suspend_point.clone());
         }
-        
+  
         new_state
     },
-    
+  
     // 暂停 -> 运行
     (WorkflowStatus::Suspended, EventType::WorkflowResumed) => {
         let mut new_state = current_state.clone();
         new_state.status = WorkflowStatus::Running;
         new_state.last_updated_at = Some(event.timestamp);
-        
+  
         // 从事件数据中提取恢复输入
         if let Some(inputs) = event.data.get("inputs") {
             if let Some(inputs_obj) = inputs.as_object() {
@@ -19255,15 +19351,15 @@ impl StateTransitioner {
                 }
             }
         }
-        
+  
         new_state
     },
-    
+  
     // 其他状态转换...
     _ => {
         // 无效的状态转换
         return Err(StateTransitionError::InvalidTransition(
-            format!("Invalid transition from {:?} with event {:?}", 
+            format!("Invalid transition from {:?} with event {:?}",
                    current_state.status, event.event_type)
         ));
     },
@@ -19272,7 +19368,7 @@ impl StateTransitioner {
 // 保存更新后的状态
 self.state_store.update_workflow_state(workflow_id, &new_state).await
     .map_err(|e| StateTransitionError::StateUpdateError(e.to_string()))?;
-    
+  
 // 发布状态变更事件
 let state_changed_event = WorkflowEvent {
     id: Uuid::new_v4().to_string(),
@@ -19309,13 +19405,13 @@ Ok(())
 pub struct ErrorHandler {
     /// 错误分类器
     error_classifier: Arc<dyn ErrorClassifier>,
-    
+  
     /// 补偿操作注册表
     compensation_registry: Arc<CompensationRegistry>,
-    
+  
     /// 降级服务提供者
     fallback_provider: Arc<dyn FallbackProvider>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
 }
@@ -19335,7 +19431,7 @@ impl ErrorHandler {
             observability,
         }
     }
-    
+  
     /// 处理任务错误
     pub async fn handle_task_error(
         &self,
@@ -19347,16 +19443,16 @@ impl ErrorHandler {
     ) -> Result<ErrorHandlingAction, HandlingError> {
         // 创建错误处理追踪上下文
         let trace_ctx = self.observability.create_error_handling_span(
-            &context.workflow_id, 
-            &task.id, 
+            &context.workflow_id,
+            &task.id,
             &format!("{:?}", error)
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 1. 分类错误
         let error_class = self.error_classifier.classify(&error);
         log::info!("Classified error for task {}: {:?}", task.id, error_class);
-        
+  
         // 记录错误指标
         self.observability.record_metric(
             "task_error",
@@ -19368,14 +19464,14 @@ impl ErrorHandler {
                 ("attempt".to_string(), attempt.to_string()),
             ])),
         );
-        
+  
         // 2. 检查是否应该重试
         if let Some(retry) = &task.retry_strategy {
             if retry.should_retry(&error, attempt, first_failure_time) {
                 let delay = retry.next_delay(attempt);
-                log::info!("Scheduling retry #{} for task {} after {:?}", 
+                log::info!("Scheduling retry #{} for task {} after {:?}",
                          attempt + 1, task.id, delay);
-                
+  
                 // 记录重试指标
                 self.observability.record_metric(
                     "task_retry_scheduled",
@@ -19387,19 +19483,19 @@ impl ErrorHandler {
                         ("delay_ms".to_string(), delay.as_millis().to_string()),
                     ])),
                 );
-                
-                return Ok(ErrorHandlingAction::Retry { 
-                    delay, 
+  
+                return Ok(ErrorHandlingAction::Retry {
+                    delay,
                     attempt: attempt + 1,
                     error: error.clone(),
                 });
             }
         }
-        
+  
         // 3. 检查是否有补偿操作
         if let Some(compensation) = self.compensation_registry.get_compensation(task) {
             log::info!("Executing compensation for failed task {}", task.id);
-            
+  
             // 记录补偿指标
             self.observability.record_metric(
                 "task_compensation_started",
@@ -19410,14 +19506,14 @@ impl ErrorHandler {
                     ("compensation_id".to_string(), compensation.id.clone()),
                 ])),
             );
-            
+  
             return Ok(ErrorHandlingAction::Compensate(compensation));
         }
-        
+  
         // 4. 如果没有补偿，检查是否有错误处理步骤
         if let Some(handler_id) = &task.error_handler {
             log::info!("Using error handler {} for task {}", handler_id, task.id);
-            
+  
             // 记录错误处理指标
             self.observability.record_metric(
                 "task_error_handler_invoked",
@@ -19428,14 +19524,14 @@ impl ErrorHandler {
                     ("handler_id".to_string(), handler_id.clone()),
                 ])),
             );
-            
+  
             return Ok(ErrorHandlingAction::ExecuteHandler(handler_id.clone()));
         }
-        
+  
         // 5. 检查是否可以降级
         if let Some(fallback) = self.fallback_provider.get_fallback_for_task(task, &error) {
             log::info!("Using fallback for task {}: {}", task.id, fallback.description);
-            
+  
             // 记录降级指标
             self.observability.record_metric(
                 "task_fallback_used",
@@ -19446,22 +19542,22 @@ impl ErrorHandler {
                     ("fallback_id".to_string(), fallback.id.clone()),
                 ])),
             );
-            
+  
             return Ok(ErrorHandlingAction::UseFallback(fallback));
         }
-        
+  
         // 6. 如果以上策略都不适用，检查任务的错误策略
         match task.error_policy {
             ErrorPolicy::FailWorkflow => {
                 log::info!("Task {} failure will cause workflow to fail", task.id);
-                
+  
                 return Ok(ErrorHandlingAction::FailWorkflow {
                     reason: error.to_string(),
                 });
             },
             ErrorPolicy::ContinueWorkflow => {
                 log::info!("Ignoring task {} failure and continuing workflow", task.id);
-                
+  
                 return Ok(ErrorHandlingAction::ContinueWorkflow {
                     skip_result: json!({
                         "error": error.to_string(),
@@ -19484,7 +19580,7 @@ impl ErrorHandler {
 pub struct CompensationRegistry {
     /// 任务ID到补偿操作的映射
     compensations: RwLock<HashMap<String, CompensationAction>>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
 }
@@ -19497,12 +19593,12 @@ impl CompensationRegistry {
             observability,
         }
     }
-    
+  
     /// 注册补偿操作
     pub fn register_compensation(&self, task_id: &str, compensation: CompensationAction) {
         let mut compensations = self.compensations.write().unwrap();
         compensations.insert(task_id.to_string(), compensation);
-        
+  
         // 记录注册指标
         self.observability.record_metric(
             "compensation_registered",
@@ -19513,31 +19609,31 @@ impl CompensationRegistry {
             ])),
         );
     }
-    
+  
     /// 获取任务的补偿操作
     pub fn get_compensation(&self, task: &TaskDefinition) -> Option<CompensationAction> {
         let compensations = self.compensations.read().unwrap();
-        
+  
         // 首先检查精确匹配
         if let Some(compensation) = compensations.get(&task.id) {
             return Some(compensation.clone());
         }
-        
+  
         // 然后检查任务类型匹配
         if let Some(compensation) = compensations.get(&format!("type:{}", task.task_type)) {
             return Some(compensation.clone());
         }
-        
+  
         None
     }
-    
+  
     /// 批量注册补偿操作
     pub fn register_compensations(&self, compensations: Vec<(String, CompensationAction)>) {
         let mut comps = self.compensations.write().unwrap();
-        
+  
         for (task_id, compensation) in compensations {
             comps.insert(task_id, compensation);
-            
+  
             // 记录注册指标
             self.observability.record_metric(
                 "compensation_registered",
@@ -19549,12 +19645,12 @@ impl CompensationRegistry {
             );
         }
     }
-    
+  
     /// 移除补偿操作
     pub fn remove_compensation(&self, task_id: &str) -> Option<CompensationAction> {
         let mut compensations = self.compensations.write().unwrap();
         let removed = compensations.remove(task_id);
-        
+  
         if removed.is_some() {
             // 记录移除指标
             self.observability.record_metric(
@@ -19565,16 +19661,16 @@ impl CompensationRegistry {
                 ])),
             );
         }
-        
+  
         removed
     }
-    
+  
     /// 清除所有补偿操作
     pub fn clear_compensations(&self) {
         let mut compensations = self.compensations.write().unwrap();
         let count = compensations.len();
         compensations.clear();
-        
+  
         // 记录清除指标
         self.observability.record_metric(
             "compensations_cleared",
@@ -19587,42 +19683,46 @@ impl CompensationRegistry {
 }
 
 /// 补偿操作
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct CompensationAction {
     /// 补偿操作ID
     pub id: String,
-    
+  
     /// 补偿操作名称
     pub name: String,
-    
+  
     /// 补偿操作描述
     pub description: Option<String>,
-    
+  
     /// 补偿操作类型
     pub action_type: CompensationActionType,
-    
+  
     /// 补偿操作参数
     pub parameters: HashMap<String, Value>,
-    
+  
     /// 创建时间
     pub created_at: DateTime<Utc>,
 }
 
 /// 补偿操作类型
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+
+# [derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+
 pub enum CompensationActionType {
     /// 执行特定的补偿任务
     Task { task_id: String },
-    
+  
     /// 执行服务调用
     ServiceCall { service: String, operation: String },
-    
+  
     /// 执行脚本
     Script { language: String, code: String },
-    
+  
     /// 发送通知
     Notification { channel: String, template: String },
-    
+  
     /// 人工介入
     ManualIntervention { instructions: String },
 }
@@ -19631,13 +19731,13 @@ pub enum CompensationActionType {
 pub struct CompensationEngine {
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 补偿操作执行器
     executor: Arc<dyn CompensationExecutor>,
-    
+  
     /// 事件总线
     event_bus: Arc<EventBus>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
 }
@@ -19657,7 +19757,7 @@ impl CompensationEngine {
             observability,
         }
     }
-    
+  
     /// 启动针对特定工作流的补偿流程
     pub async fn start_compensation(
         &self,
@@ -19667,28 +19767,28 @@ impl CompensationEngine {
         // 创建补偿追踪上下文
         let trace_ctx = self.observability.create_compensation_span(workflow_id);
         let _trace_guard = trace_ctx.enter();
-        
+  
         log::info!("Starting compensation for workflow {}: {}", workflow_id, reason);
-        
+  
         // 获取工作流状态
         let mut workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| CompensationError::StateFetchError(e.to_string()))?;
-            
+  
         // 检查工作流是否已经在补偿中
         if workflow_state.status == WorkflowStatus::Compensating {
             return Err(CompensationError::AlreadyCompensating(workflow_id.to_string()));
         }
-        
+  
         // 更新工作流状态为补偿中
         workflow_state.status = WorkflowStatus::Compensating;
         workflow_state.last_updated_at = Some(Utc::now());
         workflow_state.variables.insert("compensation_reason".to_string(), json!(reason));
         workflow_state.variables.insert("compensation_started_at".to_string(), json!(Utc::now().to_rfc3339()));
-        
+  
         // 保存更新后的状态
         self.state_store.update_workflow_state(workflow_id, &workflow_state).await
             .map_err(|e| CompensationError::StateUpdateError(e.to_string()))?;
-            
+  
         // 发布补偿开始事件
         let compensation_started_event = WorkflowEvent {
             id: Uuid::new_v4().to_string(),
@@ -19699,11 +19799,11 @@ impl CompensationEngine {
                 "reason": reason,
             }),
         };
-        
+  
         if let Err(e) = self.event_bus.publish_event(&compensation_started_event).await {
             log::warn!("Failed to publish compensation started event: {:?}", e);
         }
-        
+  
         // 记录补偿开始指标
         self.observability.record_metric(
             "compensation_started",
@@ -19713,35 +19813,35 @@ impl CompensationEngine {
                 ("reason".to_string(), reason.to_string()),
             ])),
         );
-        
+  
         // 根据已执行步骤的顺序构建补偿计划（倒序执行补偿）
         let compensation_plan = self.build_compensation_plan(workflow_id).await?;
-        
+  
         // 开始执行补偿计划
         self.execute_compensation_plan(workflow_id, compensation_plan).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 构建补偿计划
     async fn build_compensation_plan(&self, workflow_id: &str) -> Result<Vec<CompensationStep>, CompensationError> {
         // 获取工作流状态
         let workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| CompensationError::StateFetchError(e.to_string()))?;
-            
+  
         // 获取工作流定义
         let workflow_def = self.state_store.get_workflow_definition(&workflow_state.workflow_definition_id).await
             .map_err(|e| CompensationError::DefinitionFetchError(e.to_string()))?;
-            
+  
         // 获取已完成的任务
         let completed_tasks: Vec<_> = workflow_state.task_states.iter()
             .filter(|(_, state)| state.status == TaskStatus::Completed)
             .map(|(id, _)| id.clone())
             .collect();
-            
+  
         // 倒序处理已完成的任务
         let mut compensation_steps = Vec::new();
-        
+  
         for task_id in completed_tasks.iter().rev() {
             // 获取任务定义
             if let Some(task_def) = workflow_def.tasks.get(task_id) {
@@ -19762,10 +19862,10 @@ impl CompensationEngine {
                 }
             }
         }
-        
+  
         Ok(compensation_steps)
     }
-    
+  
     /// 执行补偿计划
     async fn execute_compensation_plan(
         &self,
@@ -19775,25 +19875,25 @@ impl CompensationEngine {
         // 获取工作流状态
         let mut workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| CompensationError::StateFetchError(e.to_string()))?;
-            
+  
         // 更新补偿计划到工作流状态
         workflow_state.variables.insert("compensation_plan".to_string(), json!(compensation_plan));
         self.state_store.update_workflow_state(workflow_id, &workflow_state).await
             .map_err(|e| CompensationError::StateUpdateError(e.to_string()))?;
-            
+  
         let mut compensation_succeeded = true;
-        
+  
         // 执行每个补偿步骤
         for step in &mut compensation_plan {
             // 更新步骤状态
             step.status = CompensationStepStatus::Running;
             step.start_time = Some(Utc::now());
-            
+  
             // 更新工作流状态中的补偿计划
             workflow_state.variables.insert("compensation_plan".to_string(), json!(compensation_plan));
             self.state_store.update_workflow_state(workflow_id, &workflow_state).await
                 .map_err(|e| CompensationError::StateUpdateError(e.to_string()))?;
-                
+  
             // 发布补偿步骤开始事件
             let step_started_event = WorkflowEvent {
                 id: Uuid::new_v4().to_string(),
@@ -19805,11 +19905,11 @@ impl CompensationEngine {
                     "compensation_task_id": step.compensation_task_id,
                 }),
             };
-            
+  
             if let Err(e) = self.event_bus.publish_event(&step_started_event).await {
                 log::warn!("Failed to publish compensation step started event: {:?}", e);
             }
-            
+  
             // 执行补偿步骤
             let result = self.executor.execute_compensation_task(
                 workflow_id,
@@ -19817,15 +19917,15 @@ impl CompensationEngine {
                 &step.compensation_task,
                 &workflow_state,
             ).await;
-            
+  
             // 更新步骤状态
             step.end_time = Some(Utc::now());
-            
+  
             match result {
                 Ok(_) => {
                     // 补偿成功
                     step.status = CompensationStepStatus::Completed;
-                    
+  
                     // 发布补偿步骤完成事件
                     let step_completed_event = WorkflowEvent {
                         id: Uuid::new_v4().to_string(),
@@ -19837,7 +19937,7 @@ impl CompensationEngine {
                             "compensation_task_id": step.compensation_task_id,
                         }),
                     };
-                    
+  
                     if let Err(e) = self.event_bus.publish_event(&step_completed_event).await {
                         log::warn!("Failed to publish compensation step completed event: {:?}", e);
                     }
@@ -19847,7 +19947,7 @@ impl CompensationEngine {
                     compensation_succeeded = false;
                     step.status = CompensationStepStatus::Failed;
                     step.error = Some(e.to_string());
-                    
+  
                     // 发布补偿步骤失败事件
                     let step_failed_event = WorkflowEvent {
                         id: Uuid::new_v4().to_string(),
@@ -19860,11 +19960,11 @@ impl CompensationEngine {
                             "error": e.to_string(),
                         }),
                     };
-                    
+  
                     if let Err(e) = self.event_bus.publish_event(&step_failed_event).await {
                         log::warn!("Failed to publish compensation step failed event: {:?}", e);
                     }
-                    
+  
                     // 记录补偿步骤失败指标
                     self.observability.record_metric(
                         "compensation_step_failed",
@@ -19877,36 +19977,36 @@ impl CompensationEngine {
                     );
                 }
             }
-            
+  
             // 更新工作流状态中的补偿计划
             workflow_state.variables.insert("compensation_plan".to_string(), json!(compensation_plan));
             self.state_store.update_workflow_state(workflow_id, &workflow_state).await
                 .map_err(|e| CompensationError::StateUpdateError(e.to_string()))?;
         }
-        
+  
         // 更新工作流状态
         workflow_state.status = if compensation_succeeded {
             WorkflowStatus::Compensated
         } else {
             WorkflowStatus::CompensationFailed
         };
-        
+  
         workflow_state.end_time = Some(Utc::now());
         workflow_state.last_updated_at = Some(Utc::now());
         workflow_state.variables.insert("compensation_completed_at".to_string(), json!(Utc::now().to_rfc3339()));
         workflow_state.variables.insert("compensation_succeeded".to_string(), json!(compensation_succeeded));
-        
+  
         // 保存更新后的状态
         self.state_store.update_workflow_state(workflow_id, &workflow_state).await
             .map_err(|e| CompensationError::StateUpdateError(e.to_string()))?;
-        
+  
         // 发布补偿完成事件
         let event_type = if compensation_succeeded {
             EventType::CompensationCompleted
         } else {
             EventType::CompensationFailed
         };
-        
+  
         let compensation_completed_event = WorkflowEvent {
             id: Uuid::new_v4().to_string(),
             workflow_id: workflow_id.to_string(),
@@ -19921,11 +20021,11 @@ impl CompensationEngine {
                     .collect::<Vec<_>>(),
             }),
         };
-        
+  
         if let Err(e) = self.event_bus.publish_event(&compensation_completed_event).await {
             log::warn!("Failed to publish compensation completed event: {:?}", e);
         }
-        
+  
         // 记录补偿完成指标
         self.observability.record_metric(
             if compensation_succeeded { "compensation_completed" } else { "compensation_failed" },
@@ -19938,86 +20038,92 @@ impl CompensationEngine {
                     .count().to_string()),
             ])),
         );
-        
-        log::info!("Compensation for workflow {} {}", 
-                 workflow_id, 
+  
+        log::info!("Compensation for workflow {} {}",
+                 workflow_id,
                  if compensation_succeeded { "completed successfully" } else { "failed" });
-        
+  
         Ok(())
     }
 }
 
 /// 补偿步骤
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct CompensationStep {
     /// 原始任务ID
     pub original_task_id: String,
-    
+  
     /// 补偿任务ID
     pub compensation_task_id: String,
-    
+  
     /// 补偿任务定义
-    pub                
+    pub  
 
 /// 补偿任务定义
 pub compensation_task: TaskDefinition,
-    
+  
     /// 补偿步骤状态
     pub status: CompensationStepStatus,
-    
+  
     /// 补偿尝试次数
     pub attempt: u32,
-    
+  
     /// 错误信息（如果有）
     pub error: Option<String>,
-    
+  
     /// 开始时间
     pub start_time: Option<DateTime<Utc>>,
-    
+  
     /// 结束时间
     pub end_time: Option<DateTime<Utc>>,
 }
 
 /// 补偿步骤状态
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+
+# [derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+
 pub enum CompensationStepStatus {
     /// 等待执行
     Pending,
-    
+  
     /// 正在执行
     Running,
-    
+  
     /// 已完成
     Completed,
-    
+  
     /// 失败
     Failed,
-    
+  
     /// 跳过
     Skipped,
 }
 
 /// 补偿错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum CompensationError {
     #[error("Failed to fetch state: {0}")]
     StateFetchError(String),
-    
+  
     #[error("Failed to update state: {0}")]
     StateUpdateError(String),
-    
+  
     #[error("Failed to fetch workflow definition: {0}")]
     DefinitionFetchError(String),
-    
+  
     #[error("Failed to execute compensation task: {0}")]
     ExecutionError(String),
-    
+  
     #[error("Workflow {0} is already being compensated")]
     AlreadyCompensating(String),
-    
+  
     #[error("No compensation steps found for workflow")]
     NoCompensationSteps,
-    
+  
     #[error("Not all steps were compensated: {0}")]
     IncompleteCompensation(String),
 }
@@ -20026,19 +20132,19 @@ pub enum CompensationError {
 pub struct WorkflowTransactionManager {
     /// 事务存储
     transaction_store: Arc<dyn TransactionStore>,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 事件总线
     event_bus: Arc<EventBus>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 事务超时配置
     transaction_timeout: Duration,
-    
+  
     /// 是否启用两阶段提交
     enable_two_phase_commit: bool,
 }
@@ -20062,25 +20168,25 @@ impl WorkflowTransactionManager {
             enable_two_phase_commit,
         }
     }
-    
+  
     /// 开始工作流事务
     pub async fn begin_transaction(&self, workflow_id: &str) -> Result<TransactionId, TransactionError> {
         // 创建事务追踪上下文
         let trace_ctx = self.observability.create_transaction_span(workflow_id, "begin_transaction");
         let _trace_guard = trace_ctx.enter();
-        
+  
         log::info!("Beginning transaction for workflow {}", workflow_id);
-        
+  
         // 检查是否已存在活跃事务
         let existing_txs = self.transaction_store.get_active_transactions(workflow_id).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         if !existing_txs.is_empty() {
             return Err(TransactionError::TransactionAlreadyExists(
                 format!("Workflow {} already has active transactions", workflow_id)
             ));
         }
-        
+  
         // 创建新事务
         let tx_id = TransactionId::new();
         let transaction = WorkflowTransaction {
@@ -20093,11 +20199,11 @@ impl WorkflowTransactionManager {
             last_updated_at: Utc::now(),
             commit_status: None,
         };
-        
+  
         // 保存事务
         self.transaction_store.save_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 发布事务开始事件
         let transaction_started_event = WorkflowEvent {
             id: Uuid::new_v4().to_string(),
@@ -20109,11 +20215,11 @@ impl WorkflowTransactionManager {
                 "expires_at": transaction.expires_at.to_rfc3339(),
             }),
         };
-        
+  
         if let Err(e) = self.event_bus.publish_event(&transaction_started_event).await {
             log::warn!("Failed to publish transaction started event: {:?}", e);
         }
-        
+  
         // 记录事务开始指标
         self.observability.record_metric(
             "transaction_started",
@@ -20123,43 +20229,43 @@ impl WorkflowTransactionManager {
                 ("transaction_id".to_string(), tx_id.to_string()),
             ])),
         );
-        
+  
         Ok(tx_id)
     }
-    
+  
     /// 提交工作流事务
     pub async fn commit_transaction(&self, tx_id: &TransactionId) -> Result<(), TransactionError> {
         // 获取事务
         let mut transaction = self.transaction_store.get_transaction(tx_id).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 创建事务追踪上下文
         let trace_ctx = self.observability.create_transaction_span(&transaction.workflow_id, "commit_transaction");
         let _trace_guard = trace_ctx.enter();
-        
+  
         log::info!("Committing transaction {} for workflow {}", tx_id, transaction.workflow_id);
-        
+  
         // 检查事务状态
-        if transaction.status != TransactionStatus::Active && 
+        if transaction.status != TransactionStatus::Active &&
            transaction.status != TransactionStatus::Prepared {
             return Err(TransactionError::InvalidTransactionStatus(
                 format!("Cannot commit transaction in {:?} state", transaction.status)
             ));
         }
-        
+  
         // 检查事务是否过期
         if Utc::now() > transaction.expires_at {
             transaction.status = TransactionStatus::TimedOut;
-            
+  
             // 保存事务状态
             self.transaction_store.save_transaction(&transaction).await
                 .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-                
+  
             return Err(TransactionError::TransactionTimedOut(
                 format!("Transaction {} has timed out", tx_id)
             ));
         }
-        
+  
         // 处理两阶段提交
         if self.enable_two_phase_commit && transaction.status != TransactionStatus::Prepared {
             // 准备阶段
@@ -20168,15 +20274,15 @@ impl WorkflowTransactionManager {
                 if let Err(rollback_error) = self.rollback_transaction(tx_id).await {
                     log::error!("Failed to rollback transaction after prepare failure: {:?}", rollback_error);
                 }
-                
+  
                 return Err(prepare_error);
             }
-            
+  
             // 重新获取事务（状态已更新）
             transaction = self.transaction_store.get_transaction(tx_id).await
                 .map_err(|e| TransactionError::StorageError(e.to_string()))?;
         }
-        
+  
         // 更新事务状态为已提交
         transaction.status = TransactionStatus::Committed;
         transaction.last_updated_at = Utc::now();
@@ -20184,16 +20290,16 @@ impl WorkflowTransactionManager {
             committed_at: Utc::now(),
             commit_log: "Transaction committed successfully".to_string(),
         });
-        
+  
         // 保存事务状态
         self.transaction_store.save_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 提交所有资源变更
         for resource in &transaction.resources {
             if let Err(commit_error) = self.commit_resource_changes(tx_id, resource).await {
                 log::error!("Failed to commit changes for resource {}: {:?}", resource.resource_id, commit_error);
-                
+  
                 // 这里我们可以选择两种策略：
                 // 1. 继续提交其他资源，忽略错误（尽力而为）
                 // 2. 返回错误，但保持事务状态为已提交（需要人工干预）
@@ -20210,7 +20316,7 @@ impl WorkflowTransactionManager {
                 );
             }
         }
-        
+  
         // 发布事务提交事件
         let transaction_committed_event = WorkflowEvent {
             id: Uuid::new_v4().to_string(),
@@ -20222,11 +20328,11 @@ impl WorkflowTransactionManager {
                 "resources_count": transaction.resources.len(),
             }),
         };
-        
+  
         if let Err(e) = self.event_bus.publish_event(&transaction_committed_event).await {
             log::warn!("Failed to publish transaction committed event: {:?}", e);
         }
-        
+  
         // 记录事务提交指标
         self.observability.record_metric(
             "transaction_committed",
@@ -20237,44 +20343,44 @@ impl WorkflowTransactionManager {
                 ("resources_count".to_string(), transaction.resources.len().to_string()),
             ])),
         );
-        
+  
         log::info!("Transaction {} committed successfully", tx_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 回滚工作流事务
     pub async fn rollback_transaction(&self, tx_id: &TransactionId) -> Result<(), TransactionError> {
         // 获取事务
         let mut transaction = self.transaction_store.get_transaction(tx_id).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 创建事务追踪上下文
         let trace_ctx = self.observability.create_transaction_span(&transaction.workflow_id, "rollback_transaction");
         let _trace_guard = trace_ctx.enter();
-        
+  
         log::info!("Rolling back transaction {} for workflow {}", tx_id, transaction.workflow_id);
-        
+  
         // 检查事务状态
         if transaction.status == TransactionStatus::Committed {
             return Err(TransactionError::InvalidTransactionStatus(
                 format!("Cannot rollback committed transaction {}", tx_id)
             ));
         }
-        
+  
         // 更新事务状态为已回滚
         transaction.status = TransactionStatus::RolledBack;
         transaction.last_updated_at = Utc::now();
-        
+  
         // 保存事务状态
         self.transaction_store.save_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 回滚所有资源变更（倒序执行）
         for resource in transaction.resources.iter().rev() {
             if let Err(rollback_error) = self.rollback_resource_changes(tx_id, resource).await {
                 log::error!("Failed to rollback changes for resource {}: {:?}", resource.resource_id, rollback_error);
-                
+  
                 // 记录回滚失败指标
                 self.observability.record_metric(
                     "transaction_resource_rollback_failed",
@@ -20288,7 +20394,7 @@ impl WorkflowTransactionManager {
                 );
             }
         }
-        
+  
         // 发布事务回滚事件
         let transaction_rolled_back_event = WorkflowEvent {
             id: Uuid::new_v4().to_string(),
@@ -20300,11 +20406,11 @@ impl WorkflowTransactionManager {
                 "resources_count": transaction.resources.len(),
             }),
         };
-        
+  
         if let Err(e) = self.event_bus.publish_event(&transaction_rolled_back_event).await {
             log::warn!("Failed to publish transaction rolled back event: {:?}", e);
         }
-        
+  
         // 记录事务回滚指标
         self.observability.record_metric(
             "transaction_rolled_back",
@@ -20315,58 +20421,58 @@ impl WorkflowTransactionManager {
                 ("resources_count".to_string(), transaction.resources.len().to_string()),
             ])),
         );
-        
+  
         log::info!("Transaction {} rolled back successfully", tx_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 准备事务（两阶段提交的第一阶段）
     async fn prepare_transaction(&self, tx_id: &TransactionId) -> Result<(), TransactionError> {
         // 获取事务
         let mut transaction = self.transaction_store.get_transaction(tx_id).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         log::info!("Preparing transaction {} for workflow {}", tx_id, transaction.workflow_id);
-        
+  
         // 检查事务状态
         if transaction.status != TransactionStatus::Active {
             return Err(TransactionError::InvalidTransactionStatus(
                 format!("Cannot prepare transaction in {:?} state", transaction.status)
             ));
         }
-        
+  
         // 检查事务是否过期
         if Utc::now() > transaction.expires_at {
             transaction.status = TransactionStatus::TimedOut;
-            
+  
             // 保存事务状态
             self.transaction_store.save_transaction(&transaction).await
                 .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-                
+  
             return Err(TransactionError::TransactionTimedOut(
                 format!("Transaction {} has timed out", tx_id)
             ));
         }
-        
+  
         // 准备所有资源变更
         for resource in &transaction.resources {
             if let Err(prepare_error) = self.prepare_resource_changes(tx_id, resource).await {
                 log::error!("Failed to prepare changes for resource {}: {:?}", resource.resource_id, prepare_error);
-                
+  
                 // 准备失败，直接返回错误（调用者将回滚事务）
                 return Err(prepare_error);
             }
         }
-        
+  
         // 更新事务状态为已准备
         transaction.status = TransactionStatus::Prepared;
         transaction.last_updated_at = Utc::now();
-        
+  
         // 保存事务状态
         self.transaction_store.save_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 发布事务准备事件
         let transaction_prepared_event = WorkflowEvent {
             id: Uuid::new_v4().to_string(),
@@ -20378,11 +20484,11 @@ impl WorkflowTransactionManager {
                 "resources_count": transaction.resources.len(),
             }),
         };
-        
+  
         if let Err(e) = self.event_bus.publish_event(&transaction_prepared_event).await {
             log::warn!("Failed to publish transaction prepared event: {:?}", e);
         }
-        
+  
         // 记录事务准备指标
         self.observability.record_metric(
             "transaction_prepared",
@@ -20393,12 +20499,12 @@ impl WorkflowTransactionManager {
                 ("resources_count".to_string(), transaction.resources.len().to_string()),
             ])),
         );
-        
+  
         log::info!("Transaction {} prepared successfully", tx_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 添加资源到事务
     pub async fn add_resource_to_transaction(
         &self,
@@ -20412,30 +20518,30 @@ impl WorkflowTransactionManager {
         // 获取事务
         let mut transaction = self.transaction_store.get_transaction(tx_id).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
-        log::info!("Adding resource {} of type {} to transaction {}", 
+  
+        log::info!("Adding resource {} of type {} to transaction {}",
                  resource_id, resource_type, tx_id);
-        
+  
         // 检查事务状态
         if transaction.status != TransactionStatus::Active {
             return Err(TransactionError::InvalidTransactionStatus(
                 format!("Cannot add resource to transaction in {:?} state", transaction.status)
             ));
         }
-        
+  
         // 检查事务是否过期
         if Utc::now() > transaction.expires_at {
             transaction.status = TransactionStatus::TimedOut;
-            
+  
             // 保存事务状态
             self.transaction_store.save_transaction(&transaction).await
                 .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-                
+  
             return Err(TransactionError::TransactionTimedOut(
                 format!("Transaction {} has timed out", tx_id)
             ));
         }
-        
+  
         // 创建资源变更
         let resource_change = ResourceChange {
             resource_type: resource_type.to_string(),
@@ -20445,15 +20551,15 @@ impl WorkflowTransactionManager {
             after_state,
             created_at: Utc::now(),
         };
-        
+  
         // 添加资源变更到事务
         transaction.resources.push(resource_change);
         transaction.last_updated_at = Utc::now();
-        
+  
         // 保存事务状态
         self.transaction_store.save_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 记录资源添加指标
         self.observability.record_metric(
             "transaction_resource_added",
@@ -20466,12 +20572,12 @@ impl WorkflowTransactionManager {
                 ("operation".to_string(), format!("{:?}", operation)),
             ])),
         );
-        
+  
         log::info!("Resource {} added to transaction {} successfully", resource_id, tx_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 准备资源变更
     async fn prepare_resource_changes(
         &self,
@@ -20480,15 +20586,15 @@ impl WorkflowTransactionManager {
     ) -> Result<(), TransactionError> {
         // 根据资源类型获取相应的资源管理器
         let resource_manager = self.get_resource_manager(&resource.resource_type)?;
-        
+  
         // 调用资源管理器的准备方法
         resource_manager.prepare_change(tx_id, resource).await
             .map_err(|e| TransactionError::ResourceOperationFailed(
-                format!("Failed to prepare changes for resource {}: {}", 
+                format!("Failed to prepare changes for resource {}: {}",
                        resource.resource_id, e)
             ))
     }
-    
+  
     /// 提交资源变更
     async fn commit_resource_changes(
         &self,
@@ -20497,15 +20603,15 @@ impl WorkflowTransactionManager {
     ) -> Result<(), TransactionError> {
         // 根据资源类型获取相应的资源管理器
         let resource_manager = self.get_resource_manager(&resource.resource_type)?;
-        
+  
         // 调用资源管理器的提交方法
         resource_manager.commit_change(tx_id, resource).await
             .map_err(|e| TransactionError::ResourceOperationFailed(
-                format!("Failed to commit changes for resource {}: {}", 
+                format!("Failed to commit changes for resource {}: {}",
                        resource.resource_id, e)
             ))
     }
-    
+  
     /// 回滚资源变更
     async fn rollback_resource_changes(
         &self,
@@ -20514,15 +20620,15 @@ impl WorkflowTransactionManager {
     ) -> Result<(), TransactionError> {
         // 根据资源类型获取相应的资源管理器
         let resource_manager = self.get_resource_manager(&resource.resource_type)?;
-        
+  
         // 调用资源管理器的回滚方法
         resource_manager.rollback_change(tx_id, resource).await
             .map_err(|e| TransactionError::ResourceOperationFailed(
-                format!("Failed to rollback changes for resource {}: {}", 
+                format!("Failed to rollback changes for resource {}: {}",
                        resource.resource_id, e)
             ))
     }
-    
+  
     /// 获取资源管理器
     fn get_resource_manager(&self, resource_type: &str) -> Result<Arc<dyn ResourceManager>, TransactionError> {
         // 实际实现中，这里会有一个注册表来查找对应的资源管理器
@@ -20534,118 +20640,130 @@ impl WorkflowTransactionManager {
 }
 
 /// 工作流事务
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct WorkflowTransaction {
     /// 事务ID
     pub id: TransactionId,
-    
+  
     /// 工作流ID
     pub workflow_id: String,
-    
+  
     /// 事务状态
     pub status: TransactionStatus,
-    
+  
     /// 资源变更列表
     pub resources: Vec<ResourceChange>,
-    
+  
     /// 创建时间
     pub created_at: DateTime<Utc>,
-    
+  
     /// 过期时间
     pub expires_at: DateTime<Utc>,
-    
+  
     /// 最后更新时间
     pub last_updated_at: DateTime<Utc>,
-    
+  
     /// 提交状态
     pub commit_status: Option<CommitStatus>,
 }
 
 /// 提交状态
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct CommitStatus {
     /// 提交时间
     pub committed_at: DateTime<Utc>,
-    
+  
     /// 提交日志
     pub commit_log: String,
 }
 
 /// 资源变更
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct ResourceChange {
     /// 资源类型
     pub resource_type: String,
-    
+  
     /// 资源ID
     pub resource_id: String,
-    
+  
     /// 操作类型
     pub operation: ResourceOperation,
-    
+  
     /// 变更前状态
     pub before_state: Value,
-    
+  
     /// 变更后状态
     pub after_state: Value,
-    
+  
     /// 创建时间
     pub created_at: DateTime<Utc>,
 }
 
 /// 资源操作类型
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+
+# [derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+
 pub enum ResourceOperation {
     /// 创建资源
     Create,
-    
+  
     /// 更新资源
     Update,
-    
+  
     /// 删除资源
     Delete,
-    
+  
     /// 锁定资源
     Lock,
-    
+  
     /// 解锁资源
     Unlock,
 }
 
 /// 事务错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum TransactionError {
     #[error("Storage error: {0}")]
     StorageError(String),
-    
+  
     #[error("Invalid transaction status: {0}")]
     InvalidTransactionStatus(String),
-    
+  
     #[error("Transaction timed out: {0}")]
     TransactionTimedOut(String),
-    
+  
     #[error("Transaction already exists: {0}")]
     TransactionAlreadyExists(String),
-    
+  
     #[error("Resource operation failed: {0}")]
     ResourceOperationFailed(String),
-    
+  
     #[error("Unsupported resource type: {0}")]
     UnsupportedResourceType(String),
-    
+  
     #[error("Transaction not found: {0}")]
     TransactionNotFound(String),
 }
 
 /// 资源管理器特质
-#[async_trait]
+
+# [async_trait]
+
 pub trait ResourceManager: Send + Sync + 'static {
     /// 准备资源变更
     async fn prepare_change(&self, tx_id: &TransactionId, change: &ResourceChange) -> Result<(), String>;
-    
+  
     /// 提交资源变更
     async fn commit_change(&self, tx_id: &TransactionId, change: &ResourceChange) -> Result<(), String>;
-    
+  
     /// 回滚资源变更
     async fn rollback_change(&self, tx_id: &TransactionId, change: &ResourceChange) -> Result<(), String>;
 }
@@ -20659,13 +20777,13 @@ pub trait ResourceManager: Send + Sync + 'static {
 pub struct StateConsistencyValidator {
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 事件存储
     event_store: Arc<dyn EventStore>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 验证配置
     config: ConsistencyValidationConfig,
 }
@@ -20685,47 +20803,47 @@ impl StateConsistencyValidator {
             config,
         }
     }
-    
+  
     /// 验证工作流状态一致性
     pub async fn validate_workflow_state(&self, workflow_id: &str) -> Result<ValidationResult, ConsistencyError> {
         // 创建验证追踪上下文
         let trace_ctx = self.observability.create_consistency_validation_span(workflow_id);
         let _trace_guard = trace_ctx.enter();
-        
+  
         log::info!("Validating state consistency for workflow {}", workflow_id);
-        
+  
         // 获取工作流状态
         let workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| ConsistencyError::StateFetchError(e.to_string()))?;
-            
+  
         // 验证内部一致性
         let internal_consistency = self.verify_internal_consistency(&workflow_state).await?;
-        
+  
         // 验证事件一致性
         let event_consistency = if self.config.verify_event_consistency {
             self.verify_event_consistency(workflow_id, &workflow_state).await?
         } else {
             true
         };
-        
+  
         // 验证任务依赖一致性
         let dependency_consistency = if self.config.verify_task_dependencies {
             self.verify_task_dependencies(&workflow_state).await?
         } else {
             true
         };
-        
+  
         // 验证资源分配一致性
         let resource_consistency = if self.config.verify_resource_allocations {
             self.verify_resource_allocations(&workflow_state).await?
         } else {
             true
         };
-        
+  
         // 统计结果
-        let is_consistent = internal_consistency && event_consistency && 
+        let is_consistent = internal_consistency && event_consistency &&
                           dependency_consistency && resource_consistency;
-                          
+  
         let details = ValidationDetails {
             internal_consistency,
             event_consistency,
@@ -20733,7 +20851,7 @@ impl StateConsistencyValidator {
             resource_consistency,
             validation_time: Utc::now(),
         };
-        
+  
         // 记录验证指标
         self.observability.record_metric(
             "workflow_consistency_validation",
@@ -20747,24 +20865,24 @@ impl StateConsistencyValidator {
                 ("resource_consistency".to_string(), resource_consistency.to_string()),
             ])),
         );
-        
+  
         let result = ValidationResult {
             is_consistent,
             details,
             workflow_id: workflow_id.to_string(),
             timestamp: Utc::now(),
         };
-        
+  
         log::info!("Workflow {} consistency validation result: {}", workflow_id, is_consistent);
-        
+  
         Ok(result)
     }
-    
+  
     /// 验证资源分配一致性
     async fn verify_resource_allocations(&self, state: &WorkflowState) -> Result<bool, ConsistencyError> {
         // 获取所有已分配资源
         let resource_allocations = state.resource_allocations.clone();
-        
+  
         // 检查所有资源是否有效
         for (resource_id, allocation) in &resource_allocations {
             // 验证分配的资源数量不超过任务需要
@@ -20776,14 +20894,14 @@ impl StateConsistencyValidator {
                                  allocation.task_id, allocation.resources.cpu, requirements.cpu);
                         return Ok(false);
                     }
-                    
+  
                     // 检查内存资源
                     if allocation.resources.memory > requirements.memory {
                         log::warn!("Resource inconsistency: Task {} allocated more memory ({}) than required ({})",
                                  allocation.task_id, allocation.resources.memory, requirements.memory);
                         return Ok(false);
                     }
-                    
+  
                     // 检查GPU资源
                     if allocation.resources.gpu > requirements.gpu {
                         log::warn!("Resource inconsistency: Task {} allocated more GPU ({}) than required ({})",
@@ -20797,7 +20915,7 @@ impl StateConsistencyValidator {
                          resource_id, allocation.task_id);
                 return Ok(false);
             }
-            
+  
             // 检查资源分配时间一致性
             if let (Some(task_state), Some(start_time), Some(end_time)) = (
                 state.task_states.get(&allocation.task_id),
@@ -20811,17 +20929,17 @@ impl StateConsistencyValidator {
                                  allocation.task_id);
                         return Ok(false);
                     }
-                    
+  
                     let task_start = task_state.start_time.unwrap();
                     let task_end = task_state.end_time.unwrap();
-                    
+  
                     // 检查资源分配时间是否在任务执行时间之前
                     if start_time > task_start {
                         log::warn!("Resource timing inconsistency: Resource {} allocated after task {} started",
                                  resource_id, allocation.task_id);
                         return Ok(false);
                     }
-                    
+  
                     // 检查资源释放时间是否在任务执行时间之后
                     if end_time < task_end {
                         log::warn!("Resource timing inconsistency: Resource {} released before task {} ended",
@@ -20831,99 +20949,110 @@ impl StateConsistencyValidator {
                 }
             }
         }
-        
+  
         Ok(true)
     }
 }
 
 /// 验证结果
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct ValidationResult {
     /// 是否一致
     pub is_consistent: bool,
-    
+  
     /// 详细信息
     pub details: ValidationDetails,
-    
+  
     /// 工作流ID
     pub workflow_id: String,
-    
+  
     /// 验证时间
     pub timestamp: DateTime<Utc>,
 }
 
 /// 验证详细信息
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct ValidationDetails {
     /// 内部一致性
     pub internal_consistency: bool,
-    
+  
     /// 事件一致性
     pub event_consistency: bool,
-    
+  
     /// 依赖一致性
     pub dependency_consistency: bool,
-    
+  
     /// 资源分配一致性
     pub resource_consistency: bool,
-    
+  
     /// 验证时间
     pub validation_time: DateTime<Utc>,
 }
 
 /// 一致性错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum ConsistencyError {
     #[error("Failed to fetch state: {0}")]
     StateFetchError(String),
-    
+  
     #[error("Failed to fetch events: {0}")]
     EventRetrievalFailed(String),
-    
+  
     #[error("Failed to fetch workflow definition: {0}")]
     DefinitionRetrievalFailed(String),
-    
+  
     #[error("Invalid recovery point: {0}")]
     InvalidRecoveryPoint(String),
-    
+  
     #[error("Internal validation error: {0}")]
     InternalValidationError(String),
 }
 
 /// 一致性验证配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct ConsistencyValidationConfig {
     /// 是否验证事件一致性
     pub verify_event_consistency: bool,
-    
+  
     /// 是否验证任务依赖
     pub verify_task_dependencies: bool,
-    
+  
     /// 是否验证资源分配
     pub verify_resource_allocations: bool,
-    
+  
     /// 忽略的不一致类型
     pub ignored_inconsistencies: Vec<InconsistencyType>,
 }
 
 /// 不一致类型
-#[derive(Clone, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Debug, PartialEq, Eq)]
+
 pub enum InconsistencyType {
     /// 时间顺序不一致
     TimeOrdering,
-    
+  
     /// 状态转换不一致
     StateTransition,
-    
+  
     /// 任务依赖不一致
     TaskDependency,
-    
+  
     /// 资源分配不一致
     ResourceAllocation,
-    
+  
     /// 事件序列不一致
     EventSequence,
 }
+
 ```
 
 工作流分布式追踪实现
@@ -20933,22 +21062,22 @@ pub enum InconsistencyType {
 pub struct DistributedTracingManager {
     /// OpenTelemetry 追踪器
     tracer: opentelemetry::trace::Tracer,
-    
+  
     /// 是否启用
     enabled: AtomicBool,
-    
+  
     /// 追踪配置
     config: TracingConfig,
-    
+  
     /// 活跃工作流追踪
     active_traces: RwLock<HashMap<String, WorkflowTrace>>,
-    
+  
     /// 追踪存储
     trace_store: Arc<dyn TraceStore>,
-    
+  
     /// 敏感字段过滤器
     sensitive_filter: SensitiveDataFilter,
-    
+  
     /// 采样决策器
     sampler: Box<dyn Sampler>,
 }
@@ -20971,12 +21100,12 @@ impl DistributedTracingManager {
             sampler,
         }
     }
-    
+  
     /// 启用/禁用追踪
     pub fn set_enabled(&self, enabled: bool) {
         self.enabled.store(enabled, Ordering::SeqCst);
     }
-    
+  
     /// 开始工作流追踪
     pub fn start_workflow_trace(
         &self,
@@ -20988,12 +21117,12 @@ impl DistributedTracingManager {
         if !self.enabled.load(Ordering::SeqCst) {
             return WorkflowSpan::no_op();
         }
-        
+  
         // 检查是否应该追踪该工作流
         if !self.should_trace_workflow(workflow_id, workflow_type) {
             return WorkflowSpan::no_op();
         }
-        
+  
         // 创建追踪上下文
         let mut span_builder = self.tracer.span_builder(format!("workflow:{}", workflow_type))
             .with_kind(opentelemetry::trace::SpanKind::Internal)
@@ -21002,17 +21131,17 @@ impl DistributedTracingManager {
                 KeyValue::new("workflow.type", workflow_type.to_string()),
                 KeyValue::new("workflow.version", workflow_version.to_string()),
             ]);
-            
+  
         // 添加输入参数（过滤敏感信息）
         let filtered_input = self.sensitive_filter.filter_data(input_params);
         span_builder = span_builder.with_attributes(vec![
             KeyValue::new("workflow.input", format!("{}", filtered_input)),
         ]);
-        
+  
         // 开始追踪
         let span = span_builder.start(&self.tracer);
         let context = Context::current_with_span(span);
-        
+  
         // 创建工作流追踪记录
         let trace = WorkflowTrace {
             workflow_id: workflow_id.to_string(),
@@ -21023,11 +21152,11 @@ impl DistributedTracingManager {
             end_time: None,
             status: WorkflowTraceStatus::Running,
         };
-        
+  
         // 保存活跃追踪
         let mut active_traces = self.active_traces.write().unwrap();
         active_traces.insert(workflow_id.to_string(), trace);
-        
+  
         // 返回追踪 span
         WorkflowSpan {
             span: context.span(),
@@ -21036,7 +21165,7 @@ impl DistributedTracingManager {
             trace_id: context.span().span_context().trace_id().to_string(),
         }
     }
-    
+  
     /// 开始任务追踪
     pub fn start_task_trace(
         &self,
@@ -21048,7 +21177,7 @@ impl DistributedTracingManager {
         if !self.enabled.load(Ordering::SeqCst) {
             return TaskSpan::no_op();
         }
-        
+  
         // 获取工作流追踪上下文
         let workflow_trace = {
             let active_traces = self.active_traces.read().unwrap();
@@ -21060,10 +21189,10 @@ impl DistributedTracingManager {
                 }
             }
         };
-        
+  
         // 创建父追踪上下文
         let parent_context = opentelemetry::Context::new().with_remote_span_context(workflow_trace.span_context);
-        
+  
         // 创建任务追踪
         let mut span_builder = self.tracer.span_builder(format!("task:{}", task_type))
             .with_kind(opentelemetry::trace::SpanKind::Internal)
@@ -21073,17 +21202,17 @@ impl DistributedTracingManager {
                 KeyValue::new("task.id", task_id.to_string()),
                 KeyValue::new("task.type", task_type.to_string()),
             ]);
-            
+  
         // 添加输入参数（过滤敏感信息）
         let filtered_input = self.sensitive_filter.filter_data(input_params);
         span_builder = span_builder.with_attributes(vec![
             KeyValue::new("task.input", format!("{}", filtered_input)),
         ]);
-        
+  
         // 开始追踪
         let span = span_builder.start(&self.tracer);
         let context = Context::current_with_span(span);
-        
+  
         // 创建步骤记录
         let step = WorkflowTraceStep {
             step_id: task_id.to_string(),
@@ -21094,7 +21223,7 @@ impl DistributedTracingManager {
             status: StepStatus::Running,
             error: None,
         };
-        
+  
         // 添加到工作流追踪记录
         {
             let mut active_traces = self.active_traces.write().unwrap();
@@ -21103,7 +21232,7 @@ impl DistributedTracingManager {
                 steps.push(step);
             }
         }
-        
+  
         // 返回任务追踪span
         TaskSpan {
             span: context.span(),
@@ -21114,7 +21243,7 @@ impl DistributedTracingManager {
             trace_id: context.span().span_context().trace_id().to_string(),
         }
     }
-    
+  
     /// 结束工作流追踪
     pub fn end_workflow_trace(
         &self,
@@ -21126,7 +21255,7 @@ impl DistributedTracingManager {
         if !self.enabled.load(Ordering::SeqCst) {
             return;
         }
-        
+  
         // 获取工作流追踪记录
         let trace = {
             let mut active_traces = self.active_traces.write().unwrap();
@@ -21143,24 +21272,24 @@ impl DistributedTracingManager {
                 }
             }
         };
-        
+  
         // 获取追踪上下文
         let context = opentelemetry::Context::new().with_remote_span_context(trace.span_context);
         let span = context.span();
-        
+  
         // 设置追踪属性
         if let Some(output_value) = output {
             // 过滤敏感数据
             let filtered_output = self.sensitive_filter.filter_data(output_value);
             span.set_attribute(KeyValue::new("workflow.output", format!("{}", filtered_output)));
         }
-        
+  
         // 设置错误信息
         if let Some(err) = error {
             span.set_attribute(KeyValue::new("workflow.error", err.to_string()));
             span.record_error(&opentelemetry::trace::Status::Error { description: err.to_string() });
         }
-        
+  
         // 设置状态
         match status {
             WorkflowTraceStatus::Completed => {
@@ -21170,8 +21299,8 @@ impl DistributedTracingManager {
             WorkflowTraceStatus::Failed => {
                 span.set_attribute(KeyValue::new("workflow.status", "failed"));
                 if error.is_none() {
-                    span.record_error(&opentelemetry::trace::Status::Error { 
-                        description: "Workflow failed".to_string() 
+                    span.record_error(&opentelemetry::trace::Status::Error {
+                        description: "Workflow failed".to_string()
                     });
                 }
             }
@@ -21183,22 +21312,22 @@ impl DistributedTracingManager {
                 span.set_attribute(KeyValue::new("workflow.status", format!("{:?}", status)));
             }
         }
-        
+  
         // 计算持续时间
         if let Some(end_time) = trace.end_time {
             let duration = end_time.signed_duration_since(trace.start_time);
             span.set_attribute(KeyValue::new("workflow.duration_ms", duration.num_milliseconds() as i64));
         }
-        
+  
         // 结束追踪
         span.end();
-        
+  
         // 存储追踪记录
         if let Err(e) = self.trace_store.store_workflow_trace(&trace) {
             log::error!("Failed to store workflow trace: {:?}", e);
         }
     }
-    
+  
     /// 结束任务追踪
     pub fn end_task_trace(
         &self,
@@ -21211,7 +21340,7 @@ impl DistributedTracingManager {
         if !self.enabled.load(Ordering::SeqCst) {
             return;
         }
-        
+  
         // 更新工作流追踪记录中的任务状态
         {
             let active_traces = self.active_traces.read().unwrap();
@@ -21230,11 +21359,11 @@ impl DistributedTracingManager {
                 }
             }
         }
-        
+  
         // 获取当前活跃任务的追踪上下文
         // 注：实际应用中，这里应该通过存储的TaskSpan或者追踪上下文查找
         // 但为简化示例，我们直接创建一个新的span并结束它
-        
+  
         let parent_trace = {
             let active_traces = self.active_traces.read().unwrap();
             match active_traces.get(workflow_id) {
@@ -21245,10 +21374,10 @@ impl DistributedTracingManager {
                 }
             }
         };
-        
+  
         // 创建父追踪上下文
         let parent_context = opentelemetry::Context::new().with_remote_span_context(parent_trace.span_context);
-        
+  
         // 创建任务追踪
         let span = self.tracer.span_builder(format!("task_end:{}", task_id))
             .with_kind(opentelemetry::trace::SpanKind::Internal)
@@ -21259,20 +21388,20 @@ impl DistributedTracingManager {
                 KeyValue::new("task.status", format!("{:?}", status)),
             ])
             .start(&self.tracer);
-            
+  
         // 设置输出数据
         if let Some(output_value) = output {
             // 过滤敏感数据
             let filtered_output = self.sensitive_filter.filter_data(output_value);
             span.set_attribute(KeyValue::new("task.output", format!("{}", filtered_output)));
         }
-        
+  
         // 设置错误信息
         if let Some(err) = error {
             span.set_attribute(KeyValue::new("task.error", err.to_string()));
             span.record_error(&opentelemetry::trace::Status::Error { description: err.to_string() });
         }
-        
+  
         // 设置状态
         match status {
             StepStatus::Completed => {
@@ -21280,8 +21409,8 @@ impl DistributedTracingManager {
             }
             StepStatus::Failed => {
                 if error.is_none() {
-                    span.record_error(&opentelemetry::trace::Status::Error { 
-                        description: "Task failed".to_string() 
+                    span.record_error(&opentelemetry::trace::Status::Error {
+                        description: "Task failed".to_string()
                     });
                 }
             }
@@ -21290,11 +21419,11 @@ impl DistributedTracingManager {
             }
             _ => {}
         }
-        
+  
         // 结束追踪
         span.end();
     }
-    
+  
     /// 判断是否应该追踪工作流
     fn should_trace_workflow(&self, workflow_id: &str, workflow_type: &str) -> bool {
         // 调用采样器决定是否需要追踪
@@ -21309,17 +21438,19 @@ impl DistributedTracingManager {
 }
 
 /// 工作流追踪 Span
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 pub struct WorkflowSpan {
     /// 追踪 span
     span: opentelemetry::trace::Span,
-    
+  
     /// 追踪上下文
     context: Context,
-    
+  
     /// 是否无操作
     _is_no_op: bool,
-    
+  
     /// 追踪 ID
     trace_id: String,
 }
@@ -21334,25 +21465,25 @@ impl WorkflowSpan {
             trace_id: "no-op".to_string(),
         }
     }
-    
+  
     /// 添加事件
     pub fn add_event(&self, name: &str, attributes: Vec<KeyValue>) {
         if self._is_no_op {
             return;
         }
-        
+  
         self.span.add_event(name.to_string(), attributes);
     }
-    
+  
     /// 添加属性
     pub fn add_attribute(&self, key: &str, value: impl Into<Value>) {
         if self._is_no_op {
             return;
         }
-        
+  
         self.span.set_attribute(KeyValue::new(key, value));
     }
-    
+  
     /// 获取追踪 ID
     pub fn trace_id(&self) -> &str {
         &self.trace_id
@@ -21360,23 +21491,25 @@ impl WorkflowSpan {
 }
 
 /// 任务追踪 Span
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 pub struct TaskSpan {
     /// 追踪 span
     span: opentelemetry::trace::Span,
-    
+  
     /// 追踪上下文
     context: Context,
-    
+  
     /// 任务 ID
     task_id: String,
-    
+  
     /// 工作流 ID
     workflow_id: String,
-    
+  
     /// 是否无操作
     _is_no_op: bool,
-    
+  
     /// 追踪 ID
     trace_id: String,
 }
@@ -21393,25 +21526,25 @@ impl TaskSpan {
             trace_id: "no-op".to_string(),
         }
     }
-    
+  
     /// 添加事件
     pub fn add_event(&self, name: &str, attributes: Vec<KeyValue>) {
         if self._is_no_op {
             return;
         }
-        
+  
         self.span.add_event(name.to_string(), attributes);
     }
-    
+  
     /// 添加属性
     pub fn add_attribute(&self, key: &str, value: impl Into<Value>) {
         if self._is_no_op {
             return;
         }
-        
+  
         self.span.set_attribute(KeyValue::new(key, value));
     }
-    
+  
     /// 获取追踪 ID
     pub fn trace_id(&self) -> &str {
         &self.trace_id
@@ -21419,14 +21552,16 @@ impl TaskSpan {
 }
 
 /// 追踪存储接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait TraceStore: Send + Sync + 'static {
     /// 存储工作流追踪
     fn store_workflow_trace(&self, trace: &WorkflowTrace) -> Result<(), TracingError>;
-    
+  
     /// 获取工作流追踪
     async fn get_workflow_trace(&self, workflow_id: &str) -> Result<Option<WorkflowTrace>, TracingError>;
-    
+  
     /// 获取时间范围内的工作流追踪
     async fn get_workflow_traces_in_timerange(
         &self,
@@ -21435,76 +21570,84 @@ pub trait TraceStore: Send + Sync + 'static {
         limit: u32,
         offset: u32,
     ) -> Result<Vec<WorkflowTrace>, TracingError>;
-    
+  
     /// 通过追踪 ID 获取工作流追踪
     async fn get_workflow_trace_by_trace_id(&self, trace_id: &str) -> Result<Option<WorkflowTrace>, TracingError>;
 }
 
 /// 追踪错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum TracingError {
     #[error("Failed to initialize tracer: {0}")]
     InitializationError(String),
-    
+  
     #[error("Failed to store trace: {0}")]
     StorageError(String),
-    
+  
     #[error("Failed to retrieve trace: {0}")]
     RetrievalError(String),
-    
+  
     #[error("Trace not found: {0}")]
     NotFound(String),
 }
 
 /// 追踪配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct TracingConfig {
     /// 是否启用
     pub enabled: bool,
-    
+  
     /// 采样率
     pub sampling_ratio: f64,
-    
+  
     /// OpenTelemetry 导出器类型
     pub exporter_type: ExporterType,
-    
+  
     /// Jaeger 端点
     pub jaeger_endpoint: String,
-    
+  
     /// 服务名称
     pub service_name: String,
-    
+  
     /// 敏感字段列表
     pub sensitive_fields: Vec<String>,
-    
+  
     /// 最大队列大小
     pub max_queue_size: usize,
-    
+  
     /// 调度延迟（毫秒）
     pub scheduled_delay_ms: u64,
-    
+  
     /// 最大导出批量大小
     pub max_export_batch_size: usize,
 }
 
 /// 导出器类型
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub enum ExporterType {
     /// Jaeger 导出器
     Jaeger,
-    
+  
     /// Zipkin 导出器
     Zipkin,
-    
+  
     /// OTLP 导出器
     OTLP,
-    
+  
     /// 控制台导出器
     Console,
 }
 
 /// 敏感数据过滤器
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct SensitiveDataFilter {
     /// 敏感字段列表
     sensitive_fields: Vec<String>,
@@ -21515,12 +21658,12 @@ impl SensitiveDataFilter {
     pub fn new(sensitive_fields: Vec<String>) -> Self {
         Self { sensitive_fields }
     }
-    
+  
     /// 过滤数据
     pub fn filter_data(&self, data: &Value) -> Value {
         self.filter_value(data)
     }
-    
+  
     /// 过滤值
     fn filter_value(&self, value: &Value) -> Value {
         match value {
@@ -21551,20 +21694,24 @@ pub trait Sampler: Send + Sync + 'static {
 }
 
 /// 采样参数
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct SamplingParameters {
     /// 工作流 ID
     pub workflow_id: String,
-    
+  
     /// 工作流类型
     pub workflow_type: String,
-    
+  
     /// 时间戳
     pub timestamp: DateTime<Utc>,
 }
 
 /// 概率采样器
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct ProbabilitySampler {
     /// 采样率
     pub sampling_ratio: f64,
@@ -21579,11 +21726,13 @@ impl Sampler for ProbabilitySampler {
 
 /// 类型过滤采样器
 /// 类型过滤采样器
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct TypeFilterSampler {
     /// 包含的工作流类型
     pub included_types: HashSet<String>,
-    
+  
     /// 采样率
     pub sampling_ratio: f64,
 }
@@ -21596,7 +21745,7 @@ impl Sampler for TypeFilterSampler {
             let random_value: f64 = rand::random();
             return random_value < self.sampling_ratio;
         }
-        
+  
         // 不在包含列表中的类型不采样
         false
     }
@@ -21606,16 +21755,16 @@ impl Sampler for TypeFilterSampler {
 pub struct VectorClockConsistencyProtocol {
     /// 节点ID
     node_id: String,
-    
+  
     /// 向量时钟
     vector_clocks: RwLock<HashMap<String, HashMap<String, u64>>>,
-    
+  
     /// 数据存储
     data_store: Arc<dyn DataStore>,
-    
+  
     /// 冲突解决策略
     conflict_resolver: Arc<dyn ConflictResolver>,
-    
+  
     /// 一致性配置
     config: ConsistencyConfig,
 }
@@ -21636,44 +21785,44 @@ impl VectorClockConsistencyProtocol {
             config,
         }
     }
-    
+  
     /// 获取向量时钟
     pub fn get_vector_clock(&self, object_id: &str) -> HashMap<String, u64> {
         let vector_clocks = self.vector_clocks.read().unwrap();
-        
+  
         vector_clocks.get(object_id)
             .cloned()
             .unwrap_or_default()
     }
-    
+  
     /// 更新向量时钟
     pub fn update_vector_clock(&self, object_id: &str, mut new_clock: HashMap<String, u64>) {
         let mut vector_clocks = self.vector_clocks.write().unwrap();
-        
+  
         let current_clock = vector_clocks.entry(object_id.to_string())
             .or_insert_with(HashMap::new);
-        
+  
         // 合并时钟，取每个节点的最大值
         for (node, &version) in &new_clock {
             let current_version = current_clock.entry(node.clone()).or_insert(0);
             *current_version = (*current_version).max(version);
         }
     }
-    
+  
     /// 递增向量时钟
     pub fn increment_vector_clock(&self, object_id: &str) -> HashMap<String, u64> {
         let mut vector_clocks = self.vector_clocks.write().unwrap();
-        
+  
         let clock = vector_clocks.entry(object_id.to_string())
             .or_insert_with(HashMap::new);
-        
+  
         // 递增当前节点的时钟
         let version = clock.entry(self.node_id.clone()).or_insert(0);
         *version += 1;
-        
+  
         clock.clone()
     }
-    
+  
     /// 检查向量时钟是否存在因果关系
     pub fn check_causality(
         &self,
@@ -21682,27 +21831,27 @@ impl VectorClockConsistencyProtocol {
     ) -> CausalityResult {
         let mut clock1_dominates = true;
         let mut clock2_dominates = true;
-        
+  
         // 检查 clock1 是否支配 clock2
         for (node, &version1) in clock1 {
             let version2 = clock2.get(node).copied().unwrap_or(0);
-            
+  
             if version1 < version2 {
                 clock1_dominates = false;
             }
-            
+  
             if version1 > version2 {
                 clock2_dominates = false;
             }
         }
-        
+  
         // 检查 clock2 中的其他节点
         for (node, &version2) in clock2 {
             if !clock1.contains_key(node) && version2 > 0 {
                 clock1_dominates = false;
             }
         }
-        
+  
         if clock1_dominates && clock2_dominates {
             CausalityResult::Concurrent
         } else if clock1_dominates {
@@ -21713,7 +21862,7 @@ impl VectorClockConsistencyProtocol {
             CausalityResult::Concurrent
         }
     }
-    
+  
     /// 写入数据
     pub async fn write_data(
         &self,
@@ -21723,7 +21872,7 @@ impl VectorClockConsistencyProtocol {
     ) -> Result<(), ConsistencyError> {
         // 增加向量时钟
         let clock = self.increment_vector_clock(object_id);
-        
+  
         // 创建数据操作记录
         let op = DataOperation {
             object_id: object_id.to_string(),
@@ -21734,10 +21883,10 @@ impl VectorClockConsistencyProtocol {
             node_id: self.node_id.clone(),
             operation_type: OperationType::Write,
         };
-        
+  
         // 保存数据
         self.data_store.store_data(&op).await?;
-        
+  
         // 根据一致性级别决定同步策略
         match self.config.consistency_level {
             ConsistencyLevel::Strong => {
@@ -21753,10 +21902,10 @@ impl VectorClockConsistencyProtocol {
                 tokio::spawn(self.clone().sync_to_all_nodes(op.clone()));
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 读取数据
     pub async fn read_data(
         &self,
@@ -21765,54 +21914,54 @@ impl VectorClockConsistencyProtocol {
     ) -> Result<Value, ConsistencyError> {
         // 获取当前向量时钟
         let clock = self.get_vector_clock(object_id);
-        
+  
         // 使用提供的一致性级别或默认配置
         let level = consistency_level.unwrap_or(self.config.consistency_level);
-        
+  
         match level {
             ConsistencyLevel::Strong => {
                 // 强一致性：从所有节点获取最新数据
                 let remote_ops = self.fetch_from_all_nodes(object_id).await?;
-                
+  
                 // 解决可能的冲突
                 if remote_ops.is_empty() {
                     return Err(ConsistencyError::DataNotFound(object_id.to_string()));
                 }
-                
+  
                 let resolved_data = self.resolve_conflicts(remote_ops).await?;
                 return Ok(resolved_data);
             }
             ConsistencyLevel::Causal => {
                 // 因果一致性：确保所有因果相关的更新都已应用
                 let local_op = self.data_store.get_data(object_id).await?;
-                
+  
                 if let Some(op) = local_op {
                     // 检查是否需要同步远程数据
                     let remote_ops = self.fetch_from_all_nodes(object_id).await?;
-                    
+  
                     for remote_op in &remote_ops {
                         // 检查是否有因果关系
                         let causality = self.check_causality(&op.vector_clock, &remote_op.vector_clock);
-                        
+  
                         if causality == CausalityResult::After {
                             // 存在因果依赖，需要先应用远程更新
                             self.apply_remote_operation(remote_op).await?;
                         }
                     }
-                    
+  
                     // 获取最新的本地数据
                     let updated_op = self.data_store.get_data(object_id).await?
                         .ok_or_else(|| ConsistencyError::DataNotFound(object_id.to_string()))?;
-                    
+  
                     return Ok(updated_op.data);
                 } else {
                     // 本地没有数据，从远程获取
                     let remote_ops = self.fetch_from_all_nodes(object_id).await?;
-                    
+  
                     if remote_ops.is_empty() {
                         return Err(ConsistencyError::DataNotFound(object_id.to_string()));
                     }
-                    
+  
                     let resolved_data = self.resolve_conflicts(remote_ops).await?;
                     return Ok(resolved_data);
                 }
@@ -21820,33 +21969,33 @@ impl VectorClockConsistencyProtocol {
             ConsistencyLevel::Eventual => {
                 // 最终一致性：直接返回本地数据
                 let local_op = self.data_store.get_data(object_id).await?;
-                
+  
                 if let Some(op) = local_op {
                     return Ok(op.data);
                 } else {
                     // 本地没有数据，从远程获取
                     let remote_ops = self.fetch_from_all_nodes(object_id).await?;
-                    
+  
                     if remote_ops.is_empty() {
                         return Err(ConsistencyError::DataNotFound(object_id.to_string()));
                     }
-                    
+  
                     let resolved_data = self.resolve_conflicts(remote_ops).await?;
                     return Ok(resolved_data);
                 }
             }
         }
     }
-    
+  
     /// 同步数据到所有节点
     async fn sync_to_all_nodes(&self, op: &DataOperation) -> Result<(), ConsistencyError> {
         // 在实际环境中，这里会调用网络API将操作发送到其他节点
         // 为简化示例，这里只是模拟同步过程
-        
+  
         let all_nodes = self.get_all_nodes().await?;
-        
+  
         let mut tasks = Vec::new();
-        
+  
         for node in all_nodes {
             if node != self.node_id {
                 let op_clone = op.clone();
@@ -21854,41 +22003,41 @@ impl VectorClockConsistencyProtocol {
                     // 向节点发送操作
                     // 实际实现中，这里会使用网络调用
                     // 如: self.network_client.send_operation(node, op_clone).await
-                    
+  
                     // 模拟网络延迟
                     tokio::time::sleep(Duration::from_millis(100)).await;
-                    
+  
                     Ok::<_, ConsistencyError>(())
                 });
-                
+  
                 tasks.push(task);
             }
         }
-        
+  
         // 等待所有同步任务完成
         for task in tasks {
             task.await.map_err(|e| ConsistencyError::SyncError(e.to_string()))??;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 从所有节点获取数据
     async fn fetch_from_all_nodes(&self, object_id: &str) -> Result<Vec<DataOperation>, ConsistencyError> {
         // 在实际环境中，这里会调用网络API从其他节点获取数据
         // 为简化示例，这里只是模拟获取过程
-        
+  
         let all_nodes = self.get_all_nodes().await?;
-        
+  
         let mut operations = Vec::new();
-        
+  
         // 添加本地数据
         if let Some(local_op) = self.data_store.get_data(object_id).await? {
             operations.push(local_op);
         }
-        
+  
         let mut tasks = Vec::new();
-        
+  
         for node in all_nodes {
             if node != self.node_id {
                 let object_id = object_id.to_string();
@@ -21896,49 +22045,49 @@ impl VectorClockConsistencyProtocol {
                     // 从节点获取数据
                     // 实际实现中，这里会使用网络调用
                     // 如: self.network_client.get_data(node, object_id).await
-                    
+  
                     // 模拟网络延迟
                     tokio::time::sleep(Duration::from_millis(100)).await;
-                    
+  
                     // 模拟返回空数据
                     Ok::<Option<DataOperation>, ConsistencyError>(None)
                 });
-                
+  
                 tasks.push(task);
             }
         }
-        
+  
         // 等待所有获取任务完成
         for task in tasks {
             if let Some(op) = task.await.map_err(|e| ConsistencyError::FetchError(e.to_string()))?? {
                 operations.push(op);
             }
         }
-        
+  
         Ok(operations)
     }
-    
+  
     /// 解决冲突
     async fn resolve_conflicts(&self, operations: Vec<DataOperation>) -> Result<Value, ConsistencyError> {
         if operations.is_empty() {
             return Err(ConsistencyError::NoDataAvailable);
         }
-        
+  
         if operations.len() == 1 {
             return Ok(operations[0].data.clone());
         }
-        
+  
         // 查找具有最新向量时钟的操作
         let mut latest_ops = Vec::new();
-        
+  
         for op in &operations {
             if latest_ops.is_empty() {
                 latest_ops.push(op);
                 continue;
             }
-            
+  
             let causality = self.check_causality(&latest_ops[0].vector_clock, &op.vector_clock);
-            
+  
             match causality {
                 CausalityResult::Before => {
                     // 当前操作晚于最新操作
@@ -21954,41 +22103,41 @@ impl VectorClockConsistencyProtocol {
                 }
             }
         }
-        
+  
         if latest_ops.len() == 1 {
             return Ok(latest_ops[0].data.clone());
         }
-        
+  
         // 多个并发操作，需要解决冲突
         let object_type = latest_ops[0].object_type.clone();
-        
+  
         let mut values = Vec::new();
         for op in latest_ops {
             values.push(op.data.clone());
         }
-        
+  
         // 使用冲突解决器解决冲突
         let resolved_data = self.conflict_resolver.resolve(&object_type, values).await?;
-        
+  
         Ok(resolved_data)
     }
-    
+  
     /// 应用远程操作
     async fn apply_remote_operation(&self, op: &DataOperation) -> Result<(), ConsistencyError> {
         // 更新向量时钟
         self.update_vector_clock(&op.object_id, op.vector_clock.clone());
-        
+  
         // 将操作应用到本地存储
         self.data_store.store_data(op).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 获取所有节点
     async fn get_all_nodes(&self) -> Result<Vec<String>, ConsistencyError> {
         // 在实际实现中，这里会查询服务发现系统
         // 为简化示例，这里返回固定的节点列表
-        
+  
         Ok(vec![
             "node1".to_string(),
             "node2".to_string(),
@@ -22010,126 +22159,142 @@ impl Clone for VectorClockConsistencyProtocol {
 }
 
 /// 数据操作
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct DataOperation {
     /// 对象ID
     pub object_id: String,
-    
+  
     /// 对象类型
     pub object_type: String,
-    
+  
     /// 数据
     pub data: Value,
-    
+  
     /// 向量时钟
     pub vector_clock: HashMap<String, u64>,
-    
+  
     /// 时间戳
     pub timestamp: DateTime<Utc>,
-    
+  
     /// 节点ID
     pub node_id: String,
-    
+  
     /// 操作类型
     pub operation_type: OperationType,
 }
 
 /// 操作类型
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+
 pub enum OperationType {
     /// 读取
     Read,
-    
+  
     /// 写入
     Write,
-    
+  
     /// 删除
     Delete,
 }
 
 /// 因果关系结果
-#[derive(Clone, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Debug, PartialEq, Eq)]
+
 pub enum CausalityResult {
     /// 在之前（因果关系：第一个操作在第二个操作之前）
     Before,
-    
+  
     /// 在之后（因果关系：第一个操作在第二个操作之后）
     After,
-    
+  
     /// 并发（无因果关系）
     Concurrent,
 }
 
 /// 数据存储接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait DataStore: Send + Sync + 'static {
     /// 存储数据
     async fn store_data(&self, operation: &DataOperation) -> Result<(), ConsistencyError>;
-    
+  
     /// 获取数据
     async fn get_data(&self, object_id: &str) -> Result<Option<DataOperation>, ConsistencyError>;
-    
+  
     /// 获取对象的所有操作历史
     async fn get_operation_history(&self, object_id: &str) -> Result<Vec<DataOperation>, ConsistencyError>;
 }
 
 /// 冲突解决器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait ConflictResolver: Send + Sync + 'static {
     /// 解决冲突
     async fn resolve(&self, object_type: &str, values: Vec<Value>) -> Result<Value, ConsistencyError>;
 }
 
 /// 一致性错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum ConsistencyError {
     #[error("Storage error: {0}")]
     StorageError(String),
-    
+  
     #[error("Sync error: {0}")]
     SyncError(String),
-    
+  
     #[error("Fetch error: {0}")]
     FetchError(String),
-    
+  
     #[error("Data not found: {0}")]
     DataNotFound(String),
-    
+  
     #[error("No data available")]
     NoDataAvailable,
-    
+  
     #[error("Conflict resolution failed: {0}")]
     ConflictResolutionFailed(String),
-    
+  
     #[error("Invalid vector clock: {0}")]
     InvalidVectorClock(String),
 }
 
 /// 一致性级别
-#[derive(Clone, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Debug, PartialEq, Eq)]
+
 pub enum ConsistencyLevel {
     /// 强一致性：同步复制，保证一致，但可能影响性能
     Strong,
-    
+  
     /// 因果一致性：保证因果关系的操作顺序
     Causal,
-    
+  
     /// 最终一致性：异步复制，可能有短暂不一致
     Eventual,
 }
 
 /// 一致性配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct ConsistencyConfig {
     /// 一致性级别
     pub consistency_level: ConsistencyLevel,
-    
+  
     /// 同步超时时间
     pub sync_timeout: Duration,
-    
+  
     /// 最大重试次数
     pub max_retries: u32,
-    
+  
     /// 重试退避时间
     pub retry_backoff: Duration,
 }
@@ -22137,23 +22302,24 @@ pub struct ConsistencyConfig {
 /// 默认的冲突解决器实现
 pub struct DefaultConflictResolver;
 
-#[async_trait]
+# [async_trait]
+
 impl ConflictResolver for DefaultConflictResolver {
     async fn resolve(&self, object_type: &str, values: Vec<Value>) -> Result<Value, ConsistencyError> {
         if values.is_empty() {
             return Err(ConsistencyError::NoDataAvailable);
         }
-        
+  
         if values.len() == 1 {
             return Ok(values[0].clone());
         }
-        
+  
         match object_type {
             "workflow_definition" => {
                 // 对于工作流定义，选择最新版本
                 let mut latest_value = values[0].clone();
                 let mut latest_version = 0;
-                
+  
                 for value in values {
                     if let Some(version) = value.get("version").and_then(|v| v.as_u64()) {
                         if version > latest_version {
@@ -22162,13 +22328,13 @@ impl ConflictResolver for DefaultConflictResolver {
                         }
                     }
                 }
-                
+  
                 Ok(latest_value)
             }
             "workflow_instance" => {
                 // 对于工作流实例，合并状态，选择最新的状态
                 let mut merged_value = json!({});
-                
+  
                 for value in values {
                     if let Some(obj) = value.as_object() {
                         for (key, val) in obj {
@@ -22176,27 +22342,27 @@ impl ConflictResolver for DefaultConflictResolver {
                             if key != "status" && key != "task_states" {
                                 merged_value[key] = val.clone();
                             }
-                            
+  
                             // 对于状态字段，选择优先级最高的状态
                             if key == "status" {
                                 let current_status = merged_value.get("status")
                                     .and_then(|s| s.as_str())
                                     .unwrap_or("");
-                                
+  
                                 let new_status = val.as_str().unwrap_or("");
-                                
+  
                                 let priority_status = self.get_status_priority(current_status, new_status);
                                 merged_value["status"] = json!(priority_status);
                             }
-                            
+  
                             // 对于任务状态，合并各个任务的最新状态
                             if key == "task_states" && val.is_object() {
                                 if !merged_value.get("task_states").is_some() {
                                     merged_value["task_states"] = json!({});
                                 }
-                                
+  
                                 let task_states = val.as_object().unwrap();
-                                
+  
                                 for (task_id, task_state) in task_states {
                                     if !merged_value["task_states"].get(task_id).is_some() {
                                         merged_value["task_states"][task_id] = task_state.clone();
@@ -22205,11 +22371,11 @@ impl ConflictResolver for DefaultConflictResolver {
                                         let current_status = merged_value["task_states"][task_id].get("status")
                                             .and_then(|s| s.as_str())
                                             .unwrap_or("");
-                                        
+  
                                         let new_status = task_state.get("status")
                                             .and_then(|s| s.as_str())
                                             .unwrap_or("");
-                                        
+  
                                         let priority_status = self.get_status_priority(current_status, new_status);
                                         merged_value["task_states"][task_id]["status"] = json!(priority_status);
                                     }
@@ -22218,7 +22384,7 @@ impl ConflictResolver for DefaultConflictResolver {
                         }
                     }
                 }
-                
+  
                 Ok(merged_value)
             }
             _ => {
@@ -22244,7 +22410,7 @@ impl DefaultConflictResolver {
                 _ => 0,
             }
         };
-        
+  
         if priority(status1) >= priority(status2) {
             status1
         } else {
@@ -22268,44 +22434,46 @@ impl InMemoryDataStore {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl DataStore for InMemoryDataStore {
     async fn store_data(&self, operation: &DataOperation) -> Result<(), ConsistencyError> {
         let mut data = self.data.write().unwrap();
-        
+  
         let operations = data.entry(operation.object_id.clone())
             .or_insert_with(Vec::new);
-        
+  
         operations.push(operation.clone());
-        
+  
         Ok(())
     }
-    
+  
     async fn get_data(&self, object_id: &str) -> Result<Option<DataOperation>, ConsistencyError> {
         let data = self.data.read().unwrap();
-        
+  
         if let Some(operations) = data.get(object_id) {
             if operations.is_empty() {
                 return Ok(None);
             }
-            
+  
             // 返回最新的操作
             return Ok(Some(operations.last().unwrap().clone()));
         }
-        
+  
         Ok(None)
     }
-    
+  
     async fn get_operation_history(&self, object_id: &str) -> Result<Vec<DataOperation>, ConsistencyError> {
         let data = self.data.read().unwrap();
-        
+  
         if let Some(operations) = data.get(object_id) {
             return Ok(operations.clone());
         }
-        
+  
         Ok(Vec::new())
     }
 }
+
 ```
 
 以上代码实现了基于向量时钟的分布式一致性协议，支持三种一致性级别：
@@ -22328,31 +22496,31 @@ impl DataStore for InMemoryDataStore {
 pub struct WorkflowTransactionCoordinator {
     /// 协调器ID
     coordinator_id: String,
-    
+  
     /// 节点ID
     node_id: String,
-    
+  
     /// 事务存储
     transaction_store: Arc<dyn TransactionStore>,
-    
+  
     /// 资源管理器注册表
     resource_managers: RwLock<HashMap<String, Arc<dyn ResourceManager>>>,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 事务超时
     transaction_timeout: Duration,
-    
+  
     /// 状态检查间隔
     status_check_interval: Duration,
-    
+  
     /// 是否启用两阶段提交
     enable_two_phase_commit: bool,
 }
@@ -22381,7 +22549,7 @@ impl WorkflowTransactionCoordinator {
             enable_two_phase_commit: config.enable_two_phase_commit,
         }
     }
-    
+  
     /// 注册资源管理器
     pub fn register_resource_manager(
         &self,
@@ -22391,15 +22559,15 @@ impl WorkflowTransactionCoordinator {
         let mut managers = self.resource_managers.write().unwrap();
         managers.insert(resource_type, manager);
     }
-    
+  
     /// 开始新事务
     pub async fn begin_transaction(&self) -> Result<TransactionId, TransactionError> {
         let tx_id = TransactionId::new();
-        
+  
         // 创建事务追踪上下文
         let trace_ctx = self.observability.create_transaction_span(&tx_id.to_string(), "begin_transaction");
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 创建事务记录
         let transaction = Transaction {
             id: tx_id.clone(),
@@ -22411,17 +22579,17 @@ impl WorkflowTransactionCoordinator {
             changes: Vec::new(),
             metadata: HashMap::new(),
         };
-        
+  
         // 存储事务
         self.transaction_store.create_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-        
+  
         // 记录指标
         self.observability.record_transaction_started(&tx_id.to_string());
-        
+  
         Ok(tx_id)
     }
-    
+  
     /// 为事务注册资源变更
     pub async fn register_resource_change(
         &self,
@@ -22432,24 +22600,24 @@ impl WorkflowTransactionCoordinator {
         // 创建事务追踪上下文
         let trace_ctx = self.observability.create_transaction_span(&tx_id.to_string(), "register_resource_change");
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取事务
         let mut transaction = self.transaction_store.get_transaction(tx_id).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?
             .ok_or_else(|| TransactionError::TransactionNotFound(tx_id.to_string()))?;
-        
+  
         // 验证事务状态
         if transaction.status != TransactionStatus::Active {
             return Err(TransactionError::InvalidTransactionStatus(
                 format!("事务状态必须为Active，当前为: {:?}", transaction.status)
             ));
         }
-        
+  
         // 确保资源类型存在
         if !self.resource_managers.read().unwrap().contains_key(&resource_type) {
             return Err(TransactionError::UnsupportedResourceType(resource_type));
         }
-        
+  
         // 添加资源变更
         let change_record = ResourceChangeRecord {
             id: Uuid::new_v4().to_string(),
@@ -22459,39 +22627,39 @@ impl WorkflowTransactionCoordinator {
             status: ResourceChangeStatus::Registered,
             created_at: Utc::now(),
         };
-        
+  
         transaction.changes.push(change_record.clone());
-        
+  
         // 如果是新参与者，添加到参与者列表
         if !transaction.participants.contains(&resource_type) {
             transaction.participants.push(resource_type.clone());
         }
-        
+  
         // 更新事务
         transaction.last_update_time = Utc::now();
         self.transaction_store.update_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-        
+  
         Ok(())
     }
-    
+  
     /// 提交事务
     pub async fn commit_transaction(&self, tx_id: &TransactionId) -> Result<(), TransactionError> {
         // 创建事务追踪上下文
         let trace_ctx = self.observability.create_transaction_span(&tx_id.to_string(), "commit_transaction");
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取事务锁
         let lock_key = format!("transaction:lock:{}", tx_id);
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, self.node_id.clone(), Duration::from_secs(60)).await
             .map_err(|e| TransactionError::LockServiceError(e.to_string()))?;
-            
+  
         if !lock_acquired {
             return Err(TransactionError::LockServiceError(
                 format!("无法获取事务锁: {}", tx_id)
             ));
         }
-        
+  
         // 确保锁在函数退出时释放
         let lock_key_clone = lock_key.clone();
         let lock_service = self.lock_service.clone();
@@ -22500,19 +22668,19 @@ impl WorkflowTransactionCoordinator {
                 let _ = lock_service.release_lock(&lock_key_clone).await;
             });
         });
-        
+  
         // 获取事务
         let mut transaction = self.transaction_store.get_transaction(tx_id).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?
             .ok_or_else(|| TransactionError::TransactionNotFound(tx_id.to_string()))?;
-        
+  
         // 验证事务状态
         if transaction.status != TransactionStatus::Active {
             return Err(TransactionError::InvalidTransactionStatus(
                 format!("事务状态必须为Active，当前为: {:?}", transaction.status)
             ));
         }
-        
+  
         // 检查事务是否超时
         let now = Utc::now();
         if now - transaction.start_time > self.transaction_timeout {
@@ -22520,10 +22688,10 @@ impl WorkflowTransactionCoordinator {
             transaction.status = TransactionStatus::TimedOut;
             self.transaction_store.update_transaction(&transaction).await
                 .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-                
+  
             return Err(TransactionError::TransactionTimedOut(tx_id.to_string()));
         }
-        
+  
         // 处理两阶段提交或单阶段提交
         if self.enable_two_phase_commit {
             // 两阶段提交
@@ -22531,30 +22699,30 @@ impl WorkflowTransactionCoordinator {
             if let Err(e) = self.prepare_transaction(&transaction).await {
                 // 准备失败，回滚所有已准备的资源
                 self.rollback_prepared_resources(&transaction).await?;
-                
+  
                 // 更新事务状态为失败
                 transaction.status = TransactionStatus::Failed;
                 self.transaction_store.update_transaction(&transaction).await
                     .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-                    
+  
                 return Err(e);
             }
-            
+  
             // 更新事务状态为准备完成
             transaction.status = TransactionStatus::Prepared;
             self.transaction_store.update_transaction(&transaction).await
                 .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
             // 阶段2：提交
             if let Err(e) = self.commit_prepared_transaction(&transaction).await {
                 // 提交失败，回滚所有已准备的资源
                 self.rollback_prepared_resources(&transaction).await?;
-                
+  
                 // 更新事务状态为失败
                 transaction.status = TransactionStatus::Failed;
                 self.transaction_store.update_transaction(&transaction).await
                     .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-                    
+  
                 return Err(e);
             }
         } else {
@@ -22569,45 +22737,45 @@ impl WorkflowTransactionCoordinator {
                         &format!("提交失败: {}，回滚也失败: {}", e, rollback_err),
                     );
                 }
-                
+  
                 // 更新事务状态为失败
                 transaction.status = TransactionStatus::Failed;
                 self.transaction_store.update_transaction(&transaction).await
                     .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-                    
+  
                 return Err(e);
             }
         }
-        
+  
         // 更新事务状态为已提交
         transaction.status = TransactionStatus::Committed;
         transaction.last_update_time = Utc::now();
         self.transaction_store.update_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 记录指标
         self.observability.record_transaction_committed(&tx_id.to_string());
-        
+  
         Ok(())
     }
-    
+  
     /// 回滚事务
     pub async fn rollback_transaction(&self, tx_id: &TransactionId) -> Result<(), TransactionError> {
         // 创建事务追踪上下文
         let trace_ctx = self.observability.create_transaction_span(&tx_id.to_string(), "rollback_transaction");
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取事务锁
         let lock_key = format!("transaction:lock:{}", tx_id);
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, self.node_id.clone(), Duration::from_secs(60)).await
             .map_err(|e| TransactionError::LockServiceError(e.to_string()))?;
-            
+  
         if !lock_acquired {
             return Err(TransactionError::LockServiceError(
                 format!("无法获取事务锁: {}", tx_id)
             ));
         }
-        
+  
         // 确保锁在函数退出时释放
         let lock_key_clone = lock_key.clone();
         let lock_service = self.lock_service.clone();
@@ -22616,24 +22784,24 @@ impl WorkflowTransactionCoordinator {
                 let _ = lock_service.release_lock(&lock_key_clone).await;
             });
         });
-        
+  
         // 获取事务
         let mut transaction = self.transaction_store.get_transaction(tx_id).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?
             .ok_or_else(|| TransactionError::TransactionNotFound(tx_id.to_string()))?;
-        
+  
         // 验证事务状态
         if transaction.status == TransactionStatus::Committed {
             return Err(TransactionError::InvalidTransactionStatus(
                 "已提交的事务不能回滚".to_string()
             ));
         }
-        
+  
         if transaction.status == TransactionStatus::RolledBack {
             // 已经回滚，直接返回
             return Ok(());
         }
-        
+  
         // 回滚资源变更
         if let Err(e) = self.rollback_resources(&transaction).await {
             // 回滚失败
@@ -22642,27 +22810,27 @@ impl WorkflowTransactionCoordinator {
                 "rollback_failed",
                 &format!("回滚失败: {}", e),
             );
-            
+  
             // 更新事务状态为失败
             transaction.status = TransactionStatus::Failed;
             self.transaction_store.update_transaction(&transaction).await
                 .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-                
+  
             return Err(e);
         }
-        
+  
         // 更新事务状态为已回滚
         transaction.status = TransactionStatus::RolledBack;
         transaction.last_update_time = Utc::now();
         self.transaction_store.update_transaction(&transaction).await
             .map_err(|e| TransactionError::StorageError(e.to_string()))?;
-            
+  
         // 记录指标
         self.observability.record_transaction_rolledback(&tx_id.to_string());
-        
+  
         Ok(())
     }
-    
+  
     /// 准备事务（两阶段提交第一阶段）
     async fn prepare_transaction(&self, transaction: &Transaction) -> Result<(), TransactionError> {
         // 创建事务追踪上下文
@@ -22671,24 +22839,24 @@ impl WorkflowTransactionCoordinator {
             "prepare_transaction",
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         let resource_managers = self.resource_managers.read().unwrap();
-        
+  
         for change in &transaction.changes {
             // 获取资源管理器
             let manager = resource_managers.get(&change.resource_type)
                 .ok_or_else(|| TransactionError::UnsupportedResourceType(change.resource_type.clone()))?;
-                
+  
             // 准备变更
             manager.prepare_change(&transaction.id, &change.change).await
                 .map_err(|e| TransactionError::ResourceOperationFailed(
                     format!("准备资源变更失败: {}", e)
                 ))?;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 提交准备好的事务（两阶段提交第二阶段）
     async fn commit_prepared_transaction(&self, transaction: &Transaction) -> Result<(), TransactionError> {
         // 创建事务追踪上下文
@@ -22697,24 +22865,24 @@ impl WorkflowTransactionCoordinator {
             "commit_prepared_transaction",
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         let resource_managers = self.resource_managers.read().unwrap();
-        
+  
         for change in &transaction.changes {
             // 获取资源管理器
             let manager = resource_managers.get(&change.resource_type)
                 .ok_or_else(|| TransactionError::UnsupportedResourceType(change.resource_type.clone()))?;
-                
+  
             // 提交变更
             manager.commit_change(&transaction.id, &change.change).await
                 .map_err(|e| TransactionError::ResourceOperationFailed(
                     format!("提交资源变更失败: {}", e)
                 ))?;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 回滚已准备的资源
     async fn rollback_prepared_resources(&self, transaction: &Transaction) -> Result<(), TransactionError> {
         // 创建事务追踪上下文
@@ -22723,9 +22891,9 @@ impl WorkflowTransactionCoordinator {
             "rollback_prepared_resources",
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         let resource_managers = self.resource_managers.read().unwrap();
-        
+  
         for change in &transaction.changes {
             // 获取资源管理器
             if let Some(manager) = resource_managers.get(&change.resource_type) {
@@ -22740,10 +22908,10 @@ impl WorkflowTransactionCoordinator {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 直接提交资源（单阶段提交）
     async fn commit_resources(&self, transaction: &Transaction) -> Result<(), TransactionError> {
         // 创建事务追踪上下文
@@ -22752,17 +22920,17 @@ impl WorkflowTransactionCoordinator {
             "commit_resources",
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         let resource_managers = self.resource_managers.read().unwrap();
-        
+  
         // 记录已成功提交的变更，用于部分失败时回滚
         let mut committed_changes = Vec::new();
-        
+  
         for change in &transaction.changes {
             // 获取资源管理器
             let manager = resource_managers.get(&change.resource_type)
                 .ok_or_else(|| TransactionError::UnsupportedResourceType(change.resource_type.clone()))?;
-                
+  
             // 提交变更
             match manager.commit_change(&transaction.id, &change.change).await {
                 Ok(_) => {
@@ -22782,17 +22950,17 @@ impl WorkflowTransactionCoordinator {
                             }
                         }
                     }
-                    
+  
                     return Err(TransactionError::ResourceOperationFailed(
                         format!("提交资源变更失败: 资源类型={}, 错误={}", change.resource_type, e)
                     ));
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 回滚资源
     async fn rollback_resources(&self, transaction: &Transaction) -> Result<(), TransactionError> {
         // 创建事务追踪上下文
@@ -22801,10 +22969,10 @@ impl WorkflowTransactionCoordinator {
             "rollback_resources",
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         let resource_managers = self.resource_managers.read().unwrap();
         let mut errors = Vec::new();
-        
+  
         for change in &transaction.changes {
             // 获取资源管理器
             if let Some(manager) = resource_managers.get(&change.resource_type) {
@@ -22821,7 +22989,7 @@ impl WorkflowTransactionCoordinator {
                 }
             }
         }
-        
+  
         if errors.is_empty() {
             Ok(())
         } else {
@@ -22830,7 +22998,7 @@ impl WorkflowTransactionCoordinator {
             ))
         }
     }
-    
+  
     /// 启动超时事务清理任务
     pub fn start_timeout_cleaner(&self) -> JoinHandle<()> {
         let coordinator_id = self.coordinator_id.clone();
@@ -22838,24 +23006,24 @@ impl WorkflowTransactionCoordinator {
         let status_check_interval = self.status_check_interval;
         let transaction_timeout = self.transaction_timeout;
         let observer = self.observability.clone();
-        
+  
         tokio::spawn(async move {
             loop {
                 // 等待下一个检查间隔
                 tokio::time::sleep(status_check_interval).await;
-                
+  
                 // 获取活跃事务
                 match transaction_store.get_active_transactions_by_coordinator(&coordinator_id).await {
                     Ok(transactions) => {
                         let now = Utc::now();
-                        
+  
                         for transaction in transactions {
                             // 检查是否超时
                             if now - transaction.start_time > transaction_timeout {
                                 // 更新事务状态为超时
                                 let mut updated = transaction.clone();
                                 updated.status = TransactionStatus::TimedOut;
-                                
+  
                                 if let Err(e) = transaction_store.update_transaction(&updated).await {
                                     observer.record_transaction_error(
                                         &transaction.id.to_string(),
@@ -22886,25 +23054,25 @@ impl WorkflowTransactionCoordinator {
 pub struct WorkflowSnapshotManager {
     /// 快照管理器ID
     id: String,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 事件存储
     event_store: Arc<dyn EventStore>,
-    
+  
     /// 数据保护器（加密和压缩）
     data_protector: Arc<dyn DataProtector>,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 快照配置
     config: SnapshotConfig,
-    
+  
     /// 一致性检查器
     consistency_checker: WorkflowConsistencyChecker,
 }
@@ -22930,7 +23098,7 @@ impl WorkflowSnapshotManager {
                 verification_timeout: Duration::from_secs(30),
             },
         );
-        
+  
         Self {
             id,
             state_store,
@@ -22942,7 +23110,7 @@ impl WorkflowSnapshotManager {
             consistency_checker,
         }
     }
-    
+  
     /// 创建工作流快照
     pub async fn create_snapshot(
         &self,
@@ -22956,18 +23124,18 @@ impl WorkflowSnapshotManager {
             "create_snapshot",
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取工作流锁，防止并发操作
         let lock_key = format!("workflow:snapshot:lock:{}", workflow_id);
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, self.id.clone(), Duration::from_secs(60)).await
             .map_err(|e| SnapshotError::LockAcquisitionFailed(e.to_string()))?;
-            
+  
         if !lock_acquired {
             return Err(SnapshotError::LockAcquisitionFailed(
                 format!("无法获取工作流快照锁: {}", workflow_id)
             ));
         }
-        
+  
         // 确保锁在函数退出时释放
         let lock_key_clone = lock_key.clone();
         let lock_service = self.lock_service.clone();
@@ -22976,36 +23144,36 @@ impl WorkflowSnapshotManager {
                 let _ = lock_service.release_lock(&lock_key_clone).await;
             });
         });
-        
+  
         // 获取工作流状态
         let workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| SnapshotError::WorkflowNotFound(format!("无法获取工作流状态: {}", e)))?;
-            
+  
         // 生成快照ID
         let snapshot_id = format!("snapshot-{}-{}", workflow_id, Uuid::new_v4());
-        
+  
         // 准备元数据
         let snapshot_metadata = if let Some(meta) = metadata {
             meta
         } else {
             HashMap::new()
         };
-        
+  
         // 开始计时
         let start_time = Instant::now();
-        
+  
         // 序列化状态
         let state_json = serde_json::to_string(&workflow_state)
             .map_err(|e| SnapshotError::SerializationFailed(e.to_string()))?;
-            
+  
         // 保护数据（压缩和加密）
         let protected_data = self.data_protector.protect(state_json.as_bytes())
             .map_err(|e| SnapshotError::DataProtectionFailed(e.to_string()))?;
-            
+  
         // 计算校验和
         let checksum = calculate_checksum(&protected_data)
             .map_err(|e| SnapshotError::ChecksumFailed(e.to_string()))?;
-            
+  
         // 创建恢复点
         let recovery_point = RecoveryPoint {
             id: snapshot_id.clone(),
@@ -23021,26 +23189,26 @@ impl WorkflowSnapshotManager {
             metadata: snapshot_metadata,
             checksum,
         };
-        
+  
         // 保存恢复点
         self.state_store.save_recovery_point(&recovery_point).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-            
+  
         // 清理旧快照（根据配置）
         if self.config.enable_auto_cleanup {
             tokio::spawn(self.clone().cleanup_old_snapshots(workflow_id.to_string()));
         }
-        
+  
         // 计算耗时
         let elapsed = start_time.elapsed();
-        
+  
         // 记录快照创建事件
         self.observability.record_snapshot_created(
             workflow_id,
             &snapshot_id,
             &format!("{:?}", snapshot_type),
         );
-        
+  
         // 记录性能指标
         self.observability.record_metric(
             "snapshot_creation_time",
@@ -23052,13 +23220,13 @@ impl WorkflowSnapshotManager {
                 ("duration_ms".to_string(), elapsed.as_millis().to_string()),
             ])),
         );
-        
-        log::info!("成功创建工作流快照: workflow_id={}, snapshot_id={}, type={:?}, size={}bytes, time={}ms", 
+  
+        log::info!("成功创建工作流快照: workflow_id={}, snapshot_id={}, type={:?}, size={}bytes, time={}ms",
                   workflow_id, snapshot_id, snapshot_type, state_json.len(), elapsed.as_millis());
-        
+  
         Ok(snapshot_id)
     }
-    
+  
     /// 从快照恢复工作流
     pub async fn restore_from_snapshot(
         &self,
@@ -23071,18 +23239,18 @@ impl WorkflowSnapshotManager {
             "restore_from_snapshot",
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取工作流锁
         let lock_key = format!("workflow:snapshot:lock:{}", workflow_id);
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, self.id.clone(), Duration::from_secs(60)).await
             .map_err(|e| SnapshotError::LockAcquisitionFailed(e.to_string()))?;
-            
+  
         if !lock_acquired {
             return Err(SnapshotError::LockAcquisitionFailed(
                 format!("无法获取工作流快照锁: {}", workflow_id)
             ));
         }
-        
+  
         // 确保锁在函数退出时释放
         let lock_key_clone = lock_key.clone();
         let lock_service = self.lock_service.clone();
@@ -23091,18 +23259,18 @@ impl WorkflowSnapshotManager {
                 let _ = lock_service.release_lock(&lock_key_clone).await;
             });
         });
-        
+  
         // 获取恢复点
         let recovery_point = self.state_store.get_recovery_point(workflow_id, snapshot_id).await
             .map_err(|e| SnapshotError::SnapshotNotFound(format!("无法找到快照: {}", e)))?;
-            
+  
         // 创建恢复前备份
         self.create_recovery_backup(workflow_id).await?;
-        
+  
         // 验证快照一致性
         self.consistency_checker.verify_recovery_point_consistency(workflow_id, &recovery_point).await
             .map_err(|e| SnapshotError::ConsistencyCheckFailed(e.to_string()))?;
-            
+  
         // 获取状态数据
         let workflow_state = match &recovery_point.data {
             RecoveryPointData::FullState(state) => state.clone(),
@@ -23117,23 +23285,23 @@ impl WorkflowSnapshotManager {
                 ));
             }
         };
-        
+  
         // 恢复工作流状态
         self.state_store.update_workflow_state(workflow_id, &workflow_state).await
             .map_err(|e| SnapshotError::RestoreFailed(e.to_string()))?;
-            
+  
         // 记录快照恢复事件
         self.observability.record_snapshot_restored(
             workflow_id,
             snapshot_id,
             &format!("{:?}", workflow_state.status),
         );
-        
+  
         log::info!("成功从快照恢复工作流: workflow_id={}, snapshot_id={}", workflow_id, snapshot_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 创建恢复前备份
     async fn create_recovery_backup(&self, workflow_id: &str) -> Result<String, SnapshotError> {
         // 创建追踪上下文
@@ -23142,32 +23310,32 @@ impl WorkflowSnapshotManager {
             "create_recovery_backup",
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 获取当前工作流状态
         let workflow_state = self.state_store.get_workflow_state(workflow_id).await
             .map_err(|e| SnapshotError::WorkflowNotFound(format!("无法获取工作流状态: {}", e)))?;
-            
+  
         // 创建恢复前备份快照
         let backup_metadata = HashMap::from([
             ("backup_type".to_string(), "recovery_backup".to_string()),
             ("backup_time".to_string(), Utc::now().to_rfc3339()),
         ]);
-        
+  
         self.create_snapshot(workflow_id, SnapshotType::RecoveryBackup, Some(backup_metadata)).await
     }
-    
+  
     /// 清理旧快照
     async fn cleanup_old_snapshots(self, workflow_id: String) -> Result<(), SnapshotError> {
         // 获取所有快照
         let snapshots = self.state_store.list_recovery_points(&workflow_id).await
             .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-            
+  
         // 按类型分组
         let mut auto_snapshots = Vec::new();
         let mut manual_snapshots = Vec::new();
         let mut recovery_backups = Vec::new();
         let mut checkpoints = Vec::new();
-        
+  
         for snapshot in snapshots {
             match snapshot.point_type {
                 RecoveryPointType::AutoSnapshot => auto_snapshots.push(snapshot),
@@ -23176,43 +23344,43 @@ impl WorkflowSnapshotManager {
                 RecoveryPointType::Checkpoint => checkpoints.push(snapshot),
             }
         }
-        
+  
         // 按创建时间排序（降序）
         auto_snapshots.sort_by(|a, b| b.created_at.cmp(&a.created_at));
         manual_snapshots.sort_by(|a, b| b.created_at.cmp(&a.created_at));
         recovery_backups.sort_by(|a, b| b.created_at.cmp(&a.created_at));
         checkpoints.sort_by(|a, b| b.created_at.cmp(&a.created_at));
-        
+  
         // 清理自动快照
         if auto_snapshots.len() > self.config.max_auto_snapshots {
             for snapshot in &auto_snapshots[self.config.max_auto_snapshots..] {
                 self.state_store.delete_recovery_point(&workflow_id, &snapshot.id).await
                     .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-                    
+  
                 log::debug!("清理旧的自动快照: workflow_id={}, snapshot_id={}", workflow_id, snapshot.id);
             }
         }
-        
+  
         // 清理恢复备份
         if recovery_backups.len() > self.config.max_recovery_backups {
             for snapshot in &recovery_backups[self.config.max_recovery_backups..] {
                 self.state_store.delete_recovery_point(&workflow_id, &snapshot.id).await
                     .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-                    
+  
                 log::debug!("清理旧的恢复备份: workflow_id={}, snapshot_id={}", workflow_id, snapshot.id);
             }
         }
-        
+  
         // 清理检查点
         if checkpoints.len() > self.config.max_checkpoints {
             for snapshot in &checkpoints[self.config.max_checkpoints..] {
                 self.state_store.delete_recovery_point(&workflow_id, &snapshot.id).await
                     .map_err(|e| SnapshotError::StorageFailed(e.to_string()))?;
-                    
+  
                 log::debug!("清理旧的检查点: workflow_id={}, snapshot_id={}", workflow_id, snapshot.id);
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -23221,28 +23389,28 @@ impl WorkflowSnapshotManager {
 pub struct WorkflowStateMachine {
     /// 工作流ID
     workflow_id: String,
-    
+  
     /// 工作流执行ID
     execution_id: String,
-    
+  
     /// 当前状态
     current_state: WorkflowState,
-    
+  
     /// 当前事件ID
     next_event_id: u64,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 事件存储
     event_store: Arc<dyn EventStore>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 事件处理器
     event_handlers: HashMap<EventType, Vec<Arc<dyn EventHandler>>>,
 }
@@ -23258,11 +23426,11 @@ impl WorkflowStateMachine {
         observability: Arc<WorkflowObservability>,
     ) -> Result<Self, WorkflowError> {
         let workflow_state = state_store.get_workflow_state(&workflow_id).sync()?;
-        
+  
         let next_event_id = event_store.get_latest_event_id(&workflow_id, &execution_id).sync()
             .map(|id| id + 1)
             .unwrap_or(1);
-            
+  
         Ok(Self {
             workflow_id,
             execution_id,
@@ -23275,12 +23443,12 @@ impl WorkflowStateMachine {
             event_handlers: HashMap::new(),
         })
     }
-    
+  
     /// 注册事件处理器
     pub fn register_event_handler(&mut self, event_type: EventType, handler: Arc<dyn EventHandler>) {
         self.event_handlers.entry(event_type).or_insert_with(Vec::new).push(handler);
     }
-    
+  
     /// 处理事件
     pub async fn process_event(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 创建追踪上下文
@@ -23289,26 +23457,26 @@ impl WorkflowStateMachine {
             &event.event_type.to_string(),
         );
         let _trace_guard = trace_ctx.enter();
-        
+  
         // 验证事件ID
         if event.event_id != self.next_event_id {
             return Err(WorkflowError::InvalidEventSequence(format!(
-                "无效的事件ID，期望 {}，实际 {}", 
-                self.next_event_id, 
+                "无效的事件ID，期望 {}，实际 {}",
+                self.next_event_id,
                 event.event_id
             )));
         }
-        
+  
         // 获取工作流锁
         let lock_key = format!("workflow:lock:{}", self.workflow_id);
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, self.execution_id.clone(), Duration::from_secs(30)).await?;
-        
+  
         if !lock_acquired {
             return Err(WorkflowError::LockAcquisitionFailed(
                 format!("无法获取工作流锁: {}", self.workflow_id)
             ));
         }
-        
+  
         // 确保锁在函数退出时释放
         let lock_key_clone = lock_key.clone();
         let lock_service = self.lock_service.clone();
@@ -23318,10 +23486,10 @@ impl WorkflowStateMachine {
                 let _ = lock_service.release_lock(&lock_key_clone, &execution_id).await;
             });
         });
-        
+  
         // 存储事件
         self.event_store.append_event(&self.workflow_id, &self.execution_id, event).await?;
-        
+  
         // 处理事件
         match event.event_type {
             EventType::WorkflowExecutionStarted => self.handle_workflow_execution_started(event).await?,
@@ -23336,20 +23504,20 @@ impl WorkflowStateMachine {
             EventType::TaskTimedOut => self.handle_task_timed_out(event).await?,
             // 处理其他事件类型...
         }
-        
+  
         // 更新事件ID
         self.next_event_id += 1;
-        
+  
         // 调用自定义事件处理器
         if let Some(handlers) = self.event_handlers.get(&event.event_type) {
             for handler in handlers {
                 handler.handle_event(event, &mut self.current_state).await?;
             }
         }
-        
+  
         // 更新工作流状态
         self.state_store.update_workflow_state(&self.workflow_id, &self.current_state).await?;
-        
+  
         // 记录事件处理
         self.observability.record_event_processed(
             &self.workflow_id,
@@ -23357,99 +23525,99 @@ impl WorkflowStateMachine {
             &event.event_type.to_string(),
             event.event_id,
         );
-        
+  
         Ok(())
     }
-    
+  
     /// 处理工作流执行开始事件
     async fn handle_workflow_execution_started(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 更新工作流执行信息
         self.current_state.status = WorkflowStatus::Running;
         self.current_state.start_time = event.timestamp;
         self.current_state.current_execution_id = Some(self.execution_id.clone());
-        
+  
         // 获取事件属性
         if let Some(attrs) = event.attributes.as_object() {
             if let Some(input) = attrs.get("input") {
                 self.current_state.input = Some(input.clone());
             }
-            
+  
             if let Some(timeout) = attrs.get("execution_timeout").and_then(|v| v.as_u64()) {
                 self.current_state.execution_timeout = Some(Duration::from_secs(timeout));
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理工作流执行完成事件
     async fn handle_workflow_execution_completed(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 更新工作流执行信息
         self.current_state.status = WorkflowStatus::Completed;
         self.current_state.end_time = Some(event.timestamp);
-        
+  
         // 获取事件属性
         if let Some(attrs) = event.attributes.as_object() {
             if let Some(result) = attrs.get("result") {
                 self.current_state.result = Some(result.clone());
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理工作流执行失败事件
     async fn handle_workflow_execution_failed(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 更新工作流执行信息
         self.current_state.status = WorkflowStatus::Failed;
         self.current_state.end_time = Some(event.timestamp);
-        
+  
         // 获取事件属性
         if let Some(attrs) = event.attributes.as_object() {
             if let Some(error) = attrs.get("error") {
                 self.current_state.error = Some(error.clone());
             }
-            
+  
             if let Some(failure_reason) = attrs.get("reason").and_then(|v| v.as_str()) {
                 self.current_state.failure_reason = Some(failure_reason.to_string());
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理工作流执行取消事件
     async fn handle_workflow_execution_cancelled(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 更新工作流执行信息
         self.current_state.status = WorkflowStatus::Cancelled;
         self.current_state.end_time = Some(event.timestamp);
-        
+  
         // 获取事件属性
         if let Some(attrs) = event.attributes.as_object() {
             if let Some(reason) = attrs.get("reason").and_then(|v| v.as_str()) {
                 self.current_state.cancellation_reason = Some(reason.to_string());
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理工作流执行超时事件
     async fn handle_workflow_execution_timed_out(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 更新工作流执行信息
         self.current_state.status = WorkflowStatus::TimedOut;
         self.current_state.end_time = Some(event.timestamp);
-        
+  
         // 获取事件属性
         if let Some(attrs) = event.attributes.as_object() {
             if let Some(timeout_type) = attrs.get("timeout_type").and_then(|v| v.as_str()) {
                 self.current_state.timeout_type = Some(timeout_type.to_string());
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务调度事件
     async fn handle_task_scheduled(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 获取事件属性
@@ -23467,15 +23635,15 @@ impl WorkflowStateMachine {
                     node_id: None,
                     last_heartbeat: None,
                 };
-                
+  
                 // 更新任务状态
                 self.current_state.task_states.insert(task_id.to_string(), task_state);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务开始事件
     async fn handle_task_started(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 获取事件属性
@@ -23485,7 +23653,7 @@ impl WorkflowStateMachine {
                     // 更新任务状态
                     task_state.status = TaskStatus::Running;
                     task_state.start_time = Some(event.timestamp);
-                    
+  
                     // 获取节点ID
                     if let Some(node_id) = attrs.get("node_id").and_then(|v| v.as_str()) {
                         task_state.node_id = Some(node_id.to_string());
@@ -23493,10 +23661,10 @@ impl WorkflowStateMachine {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务完成事件
     async fn handle_task_completed(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 获取事件属性
@@ -23506,7 +23674,7 @@ impl WorkflowStateMachine {
                     // 更新任务状态
                     task_state.status = TaskStatus::Completed;
                     task_state.end_time = Some(event.timestamp);
-                    
+  
                     // 获取任务结果
                     if let Some(result) = attrs.get("result") {
                         task_state.result = Some(result.clone());
@@ -23514,10 +23682,10 @@ impl WorkflowStateMachine {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务失败事件
     async fn handle_task_failed(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 获取事件属性
@@ -23528,12 +23696,12 @@ impl WorkflowStateMachine {
                     task_state.status = TaskStatus::Failed;
                     task_state.end_time = Some(event.timestamp);
                     task_state.attempt += 1;
-                    
+  
                     // 获取错误信息
                     if let Some(error) = attrs.get("error") {
                         task_state.error = Some(error.clone());
                     }
-                    
+  
                     // 检查是否需要重试
                     if let Some(retry_policy) = attrs.get("retry_policy") {
                         if let Some(max_attempts) = retry_policy.get("max_attempts").and_then(|v| v.as_u64()) {
@@ -23549,10 +23717,10 @@ impl WorkflowStateMachine {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 处理任务超时事件
     async fn handle_task_timed_out(&mut self, event: &Event) -> Result<(), WorkflowError> {
         // 获取事件属性
@@ -23563,13 +23731,13 @@ impl WorkflowStateMachine {
                     task_state.status = TaskStatus::TimedOut;
                     task_state.end_time = Some(event.timestamp);
                     task_state.attempt += 1;
-                    
+  
                     // 添加超时错误
                     task_state.error = Some(serde_json::json!({
                         "type": "TaskTimeout",
                         "message": "任务执行超时"
                     }));
-                    
+  
                     // 检查是否需要重试
                     if let Some(retry_policy) = attrs.get("retry_policy") {
                         if let Some(max_attempts) = retry_policy.get("max_attempts").and_then(|v| v.as_u64()) {
@@ -23585,7 +23753,7 @@ impl WorkflowStateMachine {
                 }
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -23594,25 +23762,25 @@ impl WorkflowStateMachine {
 pub struct WorkflowFaultHandler {
     /// 节点管理器
     node_manager: Arc<NodeManager>,
-    
+  
     /// 工作流引擎
     workflow_engine: Arc<WorkflowEngine>,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 事件存储
     event_store: Arc<dyn EventStore>,
-    
+  
     /// 观测性组件
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 故障处理策略
     fault_handlers: RwLock<HashMap<FaultType, Vec<Box<dyn FaultHandlingStrategy>>>>,
-    
+  
     /// 恢复策略
     recovery_strategies: RwLock<HashMap<RecoveryStrategyType, Box<dyn RecoveryStrategy>>>,
 }
@@ -23638,7 +23806,7 @@ impl WorkflowFaultHandler {
             recovery_strategies: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     /// 注册故障处理策略
     pub fn register_fault_handling_strategy(
         &self,
@@ -23648,7 +23816,7 @@ impl WorkflowFaultHandler {
         let mut handlers = self.fault_handlers.write().unwrap();
         handlers.entry(fault_type).or_insert_with(Vec::new).push(strategy);
     }
-    
+  
     /// 注册恢复策略
     pub fn register_recovery_strategy(
         &self,
@@ -23658,26 +23826,26 @@ impl WorkflowFaultHandler {
         let mut strategies = self.recovery_strategies.write().unwrap();
         strategies.insert(strategy_type, strategy);
     }
-    
+  
     /// 处理节点故障
     pub async fn handle_node_failure(&self, node_id: &str) -> Result<Vec<String>, FaultHandlingError> {
         // 创建故障处理追踪上下文
         let trace_ctx = self.observability.create_fault_handling_span("node_failure", node_id);
         let _trace_guard = trace_ctx.enter();
-        
+  
         log::info!("处理节点故障: node_id={}", node_id);
-        
+  
         // 获取节点锁
         let lock_key = format!("node:fault:lock:{}", node_id);
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, "fault_handler", Duration::from_secs(60)).await
             .map_err(|e| FaultHandlingError::LockAcquisitionFailed(e.to_string()))?;
-            
+  
         if !lock_acquired {
             return Err(FaultHandlingError::LockAcquisitionFailed(
                 format!("无法获取节点故障锁: {}", node_id)
             ));
         }
-        
+  
         // 确保锁在函数退出时释放
         let lock_key_clone = lock_key.clone();
         let lock_service = self.lock_service.clone();
@@ -23686,20 +23854,20 @@ impl WorkflowFaultHandler {
                 let _ = lock_service.release_lock(&lock_key_clone).await;
             });
         });
-        
+  
         // 获取节点上的活跃工作流
         let active_workflows = self.state_store.get_workflows_by_node(node_id).await
             .map_err(|e| FaultHandlingError::StateStoreFailed(e.to_string()))?;
-            
+  
         // 处理每个受影响的工作流
         let mut recovered_workflows = Vec::new();
-        
+  
         for workflow_id in active_workflows {
             // 尝试恢复工作流
             match self.recover_workflow_from_node_failure(&workflow_id, node_id).await {
                 Ok(_) => {
                     recovered_workflows.push(workflow_id);
-                    
+  
                     self.observability.record_workflow_recovered(
                         &workflow_id,
                         "node_failure",
@@ -23710,9 +23878,9 @@ impl WorkflowFaultHandler {
                     );
                 },
                 Err(e) => {
-                    log::error!("恢复工作流失败: workflow_id={}, node_id={}, error={}", 
+                    log::error!("恢复工作流失败: workflow_id={}, node_id={}, error={}",
                                workflow_id, node_id, e);
-                               
+  
                     self.observability.record_workflow_recovery_failed(
                         &workflow_id,
                         "node_failure",
@@ -23721,15 +23889,15 @@ impl WorkflowFaultHandler {
                 }
             }
         }
-        
+  
         // 更新节点
     // 更新节点状态
     self.node_manager.update_node_status(node_id, NodeStatus::Faulty).await
         .map_err(|e| FaultHandlingError::NodeManagerFailed(e.to_string()))?;
-        
-    log::info!("节点故障处理完成: node_id={}, 已恢复{}个工作流", 
+  
+    log::info!("节点故障处理完成: node_id={}, 已恢复{}个工作流",
                node_id, recovered_workflows.len());
-               
+  
     Ok(recovered_workflows)
 }
 
@@ -23745,21 +23913,21 @@ async fn recover_workflow_from_node_failure(
         workflow_id,
     );
     let _trace_guard = trace_ctx.enter();
-    
-    log::info!("从节点故障恢复工作流: workflow_id={}, failed_node_id={}", 
+  
+    log::info!("从节点故障恢复工作流: workflow_id={}, failed_node_id={}",
               workflow_id, failed_node_id);
-              
+  
     // 获取工作流锁
     let lock_key = format!("workflow:fault:lock:{}", workflow_id);
     let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, "fault_handler", Duration::from_secs(60)).await
         .map_err(|e| FaultHandlingError::LockAcquisitionFailed(e.to_string()))?;
-        
+  
     if !lock_acquired {
         return Err(FaultHandlingError::LockAcquisitionFailed(
             format!("无法获取工作流故障锁: {}", workflow_id)
         ));
     }
-    
+  
     // 确保锁在函数退出时释放
     let lock_key_clone = lock_key.clone();
     let lock_service = self.lock_service.clone();
@@ -23768,14 +23936,14 @@ async fn recover_workflow_from_node_failure(
             let _ = lock_service.release_lock(&lock_key_clone).await;
         });
     });
-    
+  
     // 获取工作流状态
     let workflow_state = self.state_store.get_workflow_state(workflow_id).await
         .map_err(|e| FaultHandlingError::StateStoreFailed(e.to_string()))?;
-        
+  
     // 选择恢复策略
     let strategy_type = self.determine_recovery_strategy(&workflow_state, failed_node_id);
-    
+  
     // 获取对应的恢复策略
     let recovery_strategies = self.recovery_strategies.read().unwrap();
     let strategy = recovery_strategies.get(&strategy_type).ok_or_else(|| {
@@ -23783,7 +23951,7 @@ async fn recover_workflow_from_node_failure(
             format!("不支持的恢复策略: {:?}", strategy_type)
         )
     })?;
-    
+  
     // 执行恢复策略
     let recovery_context = RecoveryContext {
         workflow_id: workflow_id.to_string(),
@@ -23791,10 +23959,10 @@ async fn recover_workflow_from_node_failure(
         workflow_state: workflow_state.clone(),
         fault_time: Utc::now(),
     };
-    
+  
     strategy.execute(&recovery_context).await
         .map_err(|e| FaultHandlingError::RecoveryFailed(e.to_string()))?;
-        
+  
     // 更新工作流状态为恢复中
     let mut updated_state = workflow_state.clone();
     updated_state.status = WorkflowStatus::Recovering;
@@ -23807,10 +23975,10 @@ async fn recover_workflow_from_node_failure(
             .map(|(id, _)| id.clone())
             .collect(),
     });
-    
+  
     self.state_store.update_workflow_state(workflow_id, &updated_state).await
         .map_err(|e| FaultHandlingError::StateStoreFailed(e.to_string()))?;
-        
+  
     // 记录恢复事件
     let event = Event {
         event_id: 0, // 将由事件存储分配
@@ -23824,17 +23992,17 @@ async fn recover_workflow_from_node_failure(
             "affected_tasks": updated_state.recovery_info.as_ref().unwrap().affected_tasks,
         }),
     };
-    
+  
     self.event_store.append_event(workflow_id, &updated_state.current_execution_id.clone().unwrap_or_default(), &event).await
         .map_err(|e| FaultHandlingError::EventStoreFailed(e.to_string()))?;
-        
+  
     // 通知工作流引擎重新调度工作流
     self.workflow_engine.reschedule_workflow(workflow_id).await
         .map_err(|e| FaultHandlingError::RescheduleFailed(e.to_string()))?;
-        
-    log::info!("工作流恢复流程已启动: workflow_id={}, strategy={:?}", 
+  
+    log::info!("工作流恢复流程已启动: workflow_id={}, strategy={:?}",
               workflow_id, strategy_type);
-              
+  
     Ok(())
 }
 
@@ -23847,31 +24015,31 @@ fn determine_recovery_strategy(
     // 获取故障任务
     let failed_tasks: Vec<_> = workflow_state.task_states.iter()
         .filter(|(_, task)| {
-            task.node_id.as_deref() == Some(failed_node_id) && 
+            task.node_id.as_deref() == Some(failed_node_id) &&
             matches!(task.status, TaskStatus::Running | TaskStatus::Scheduled)
         })
         .collect();
-        
+  
     // 如果没有正在运行的故障任务，则使用简单重新调度
     if failed_tasks.is_empty() {
         return RecoveryStrategyType::Reschedule;
     }
-    
+  
     // 检查是否有检查点
     let has_checkpoint = workflow_state.recovery_points.iter()
         .any(|point| point.point_type == RecoveryPointType::Checkpoint);
-        
+  
     // 如果有检查点，优先使用检查点恢复
     if has_checkpoint {
         return RecoveryStrategyType::CheckpointRestore;
     }
-    
+  
     // 如果工作流支持补偿，使用补偿策略
     let workflow_definition = self.workflow_engine.get_workflow_definition(&workflow_state.workflow_type).unwrap();
     if workflow_definition.supports_compensation {
         return RecoveryStrategyType::Compensation;
     }
-    
+  
     // 默认使用重试策略
     RecoveryStrategyType::Retry
 }
@@ -23881,43 +24049,43 @@ fn determine_recovery_strategy(
 pub struct DistributedWorkflowScheduler {
     /// 调度器ID
     id: String,
-    
+  
     /// 集群管理器
     cluster_manager: Arc<ClusterManager>,
-    
+  
     /// 事件总线
     event_bus: Arc<EventBus>,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
-    
+  
     /// 工作流执行器
     workflow_executor: Arc<WorkflowExecutor>,
-    
+  
     /// 观测性
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 调度策略
     scheduling_strategy: SchedulingStrategy,
-    
+  
     /// 工作流优先级队列
     priority_queues: Arc<RwLock<PriorityQueues>>,
-    
+  
     /// 活跃工作流实例
     active_workflows: Arc<RwLock<HashMap<String, WorkflowExecutionInfo>>>,
-    
+  
     /// 调度配置
     config: SchedulerConfig,
-    
+  
     /// 是否运行中
     running: AtomicBool,
-    
+  
     /// 关闭通道
     shutdown_tx: watch::Sender<bool>,
-    
+  
     /// 关闭通道接收器
     shutdown_rx: watch::Receiver<bool>,
 }
@@ -23935,7 +24103,7 @@ impl DistributedWorkflowScheduler {
         config: SchedulerConfig,
     ) -> Self {
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
-        
+  
         Self {
             id,
             cluster_manager,
@@ -23953,65 +24121,65 @@ impl DistributedWorkflowScheduler {
             shutdown_rx,
         }
     }
-    
+  
     /// 启动调度器
     pub async fn start(&self) -> Result<(), SchedulerError> {
         // 检查是否已运行
         if self.running.load(Ordering::Acquire) {
             return Err(SchedulerError::AlreadyRunning);
         }
-        
+  
         // 设置运行状态
         self.running.store(true, Ordering::Release);
-        
+  
         // 启动工作流执行器
         self.workflow_executor.start().await
             .map_err(|e| SchedulerError::ExecutorStartFailed(e.to_string()))?;
-            
+  
         // 注册集群事件监听器
         self.register_cluster_event_listeners();
-        
+  
         // 注册工作流事件监听器
         self.register_workflow_event_listeners();
-        
+  
         // 启动调度循环
         self.start_scheduling_loop();
-        
+  
         // 恢复中断的工作流
         self.recover_interrupted_workflows().await
             .map_err(|e| SchedulerError::WorkflowRecoveryFailed(e.to_string()))?;
-            
+  
         log::info!("分布式工作流调度器已启动: {}", self.id);
-            
+  
         Ok(())
     }
-    
+  
     /// 停止调度器
     pub async fn stop(&self) -> Result<(), SchedulerError> {
         // 检查是否已停止
         if !self.running.load(Ordering::Acquire) {
             return Ok(());
         }
-        
+  
         // 设置停止状态
         self.running.store(false, Ordering::Release);
-        
+  
         // 发送关闭信号
         self.shutdown_tx.send(true)
             .map_err(|_| SchedulerError::ShutdownFailed("无法发送关闭信号".to_string()))?;
-            
+  
         // 停止工作流执行器
         self.workflow_executor.stop().await
             .map_err(|e| SchedulerError::ExecutorStopFailed(e.to_string()))?;
-            
+  
         // 等待所有活跃工作流完成或超时
         self.wait_for_active_workflows_completion(Duration::from_secs(30)).await;
-        
+  
         log::info!("分布式工作流调度器已停止: {}", self.id);
-        
+  
         Ok(())
     }
-    
+  
     /// 调度工作流
     pub async fn schedule_workflow(
         &self,
@@ -24024,10 +24192,10 @@ impl DistributedWorkflowScheduler {
         if !self.running.load(Ordering::Acquire) {
             return Err(SchedulerError::NotRunning);
         }
-        
+  
         // 生成执行ID
         let execution_id = format!("exec-{}", Uuid::new_v4().to_string());
-        
+  
         // 构建工作流状态
         let workflow_state = WorkflowState {
             workflow_id: workflow_id.to_string(),
@@ -24048,11 +24216,11 @@ impl DistributedWorkflowScheduler {
             metrics: WorkflowMetrics::new(),
             options,
         };
-        
+  
         // 保存工作流状态
         self.state_store.create_workflow_state(workflow_id, &workflow_state).await
             .map_err(|e| SchedulerError::StatePersistenceFailed(e.to_string()))?;
-            
+  
         // 创建工作流开始事件
         let start_event = Event {
             event_id: 1, // 初始事件
@@ -24066,15 +24234,15 @@ impl DistributedWorkflowScheduler {
                 "execution_timeout": options.execution_timeout.map(|d| d.as_secs()),
             }),
         };
-        
+  
         // 保存工作流事件
         self.event_store.append_event(workflow_id, &execution_id, &start_event).await
             .map_err(|e| SchedulerError::EventPersistenceFailed(e.to_string()))?;
-            
+  
         // 添加到调度队列
         let priority = options.priority.unwrap_or(WorkflowPriority::Normal);
         self.enqueue_workflow(workflow_id, workflow_type, priority).await?;
-        
+  
         // 记录工作流已调度
         self.observability.record_workflow_scheduled(
             workflow_id,
@@ -24082,13 +24250,13 @@ impl DistributedWorkflowScheduler {
             workflow_type,
             &priority.to_string(),
         );
-        
-        log::info!("工作流已调度: workflow_id={}, execution_id={}, type={}, priority={:?}", 
+  
+        log::info!("工作流已调度: workflow_id={}, execution_id={}, type={}, priority={:?}",
                   workflow_id, execution_id, workflow_type, priority);
-                  
+  
         Ok(execution_id)
     }
-    
+  
     /// 取消工作流
     pub async fn cancel_workflow(
         &self,
@@ -24099,38 +24267,38 @@ impl DistributedWorkflowScheduler {
         if !self.running.load(Ordering::Acquire) {
             return Err(SchedulerError::NotRunning);
         }
-        
+  
         // 获取工作流状态
         let workflow_state = match self.state_store.get_workflow_state(workflow_id).await {
             Ok(state) => state,
             Err(e) => return Err(SchedulerError::WorkflowNotFound(e.to_string())),
         };
-        
+  
         // 检查工作流是否可取消
-        if matches!(workflow_state.status, 
-            WorkflowStatus::Completed | 
-            WorkflowStatus::Failed | 
-            WorkflowStatus::Cancelled | 
+        if matches!(workflow_state.status,
+            WorkflowStatus::Completed |
+            WorkflowStatus::Failed |
+            WorkflowStatus::Cancelled |
             WorkflowStatus::TimedOut) {
             return Err(SchedulerError::InvalidWorkflowState(
                 format!("工作流已处于终态: {:?}", workflow_state.status)
             ));
         }
-        
+  
         // 获取当前执行ID
         let execution_id = workflow_state.current_execution_id.clone()
             .ok_or_else(|| SchedulerError::InvalidWorkflowState("工作流没有活跃的执行ID".to_string()))?;
-            
+  
         // 尝试从队列中移除
         let removed = self.dequeue_workflow(workflow_id).await;
-        
+  
         // 如果正在执行中，则发送取消信号
         if !removed {
             // 通知执行器取消工作流
             self.workflow_executor.cancel_workflow(workflow_id).await
                 .map_err(|e| SchedulerError::CancellationFailed(e.to_string()))?;
         }
-        
+  
         // 创建取消事件
         let cancel_event = Event {
             event_id: 0, // 将由事件存储分配
@@ -24142,46 +24310,46 @@ impl DistributedWorkflowScheduler {
                 "reason": reason.clone().unwrap_or_else(|| "用户请求取消".to_string()),
             }),
         };
-        
+  
         // 保存取消事件
         self.event_store.append_event(workflow_id, &workflow_state.current_execution_id.unwrap(), &cancel_event).await
             .map_err(|e| SchedulerError::EventPersistenceFailed(e.to_string()))?;
-            
+  
         // 更新工作流状态
         let mut updated_state = workflow_state.clone();
         updated_state.status = WorkflowStatus::Cancelled;
         updated_state.end_time = Some(Utc::now());
         updated_state.cancellation_reason = reason;
-        
+  
         self.state_store.update_workflow_state(workflow_id, &updated_state).await
             .map_err(|e| SchedulerError::StatePersistenceFailed(e.to_string()))?;
-            
+  
         // 从活跃工作流中移除
         {
             let mut active_workflows = self.active_workflows.write().await;
             active_workflows.remove(workflow_id);
         }
-        
+  
         // 记录工作流取消
         self.observability.record_workflow_cancelled(
             workflow_id,
             &updated_state.current_execution_id.unwrap(),
             &updated_state.cancellation_reason.unwrap_or_default(),
         );
-        
-        log::info!("工作流已取消: workflow_id={}, reason={}", 
+  
+        log::info!("工作流已取消: workflow_id={}, reason={}",
                   workflow_id, updated_state.cancellation_reason.unwrap_or_default());
-                  
+  
         Ok(())
     }
-    
+  
     /// 启动调度循环
     fn start_scheduling_loop(&self) {
         let scheduler = self.clone();
         tokio::spawn(async move {
             let mut interval = time::interval(Duration::from_millis(scheduler.config.scheduling_interval_ms));
             let mut shutdown_rx = scheduler.shutdown_rx.clone();
-            
+  
             loop {
                 tokio::select! {
                     _ = interval.tick() => {
@@ -24197,23 +24365,23 @@ impl DistributedWorkflowScheduler {
                     }
                 }
             }
-            
+  
             log::info!("调度循环已停止");
         });
     }
-    
+  
     /// 调度下一批工作流
     async fn schedule_next_batch(&self) -> Result<usize, SchedulerError> {
         // 创建分布式锁
         let lock_key = format!("scheduler:lock:{}", self.cluster_manager.get_partition_id());
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, self.id.clone(), Duration::from_secs(5)).await
             .map_err(|e| SchedulerError::LockAcquisitionFailed(e.to_string()))?;
-            
+  
         if !lock_acquired {
             // 其他调度器已获取锁，跳过本次调度
             return Ok(0);
         }
-        
+  
         // 确保锁在函数退出时释放
         let lock_key_clone = lock_key.clone();
         let lock_service = self.lock_service.clone();
@@ -24223,25 +24391,25 @@ impl DistributedWorkflowScheduler {
                 let _ = lock_service.release_lock(&lock_key_clone, &scheduler_id).await;
             });
         });
-        
+  
         // 获取集群资源状态
         let cluster_resources = self.cluster_manager.get_cluster_resources().await
             .map_err(|e| SchedulerError::ClusterResourcesFailed(e.to_string()))?;
-            
+  
         // 获取可执行的工作流
         let workflows_to_execute = self.select_workflows_to_execute(&cluster_resources).await?;
-        
+  
         if workflows_to_execute.is_empty() {
             return Ok(0);
         }
-        
+  
         // 执行选定的工作流
         let mut executed_count = 0;
-        
+  
         for scheduled_workflow in workflows_to_execute {
             // 分配执行节点
             let assigned_node = self.assign_execution_node(&scheduled_workflow, &cluster_resources).await?;
-            
+  
             // 提交工作流到执行器
             let execution_info = WorkflowExecutionInfo {
                 workflow_id: scheduled_workflow.workflow_id.clone(),
@@ -24250,30 +24418,30 @@ impl DistributedWorkflowScheduler {
                 scheduled_time: Utc::now(),
                 status: WorkflowExecutionStatus::Scheduled,
             };
-            
+  
             self.workflow_executor.execute_workflow(
                 &scheduled_workflow.workflow_id,
                 &scheduled_workflow.workflow_type,
                 &scheduled_workflow.execution_id,
                 &assigned_node.node_id,
             ).await.map_err(|e| SchedulerError::ExecutionFailed(e.to_string()))?;
-            
+  
             // 记录活跃工作流
             {
                 let mut active_workflows = self.active_workflows.write().await;
                 active_workflows.insert(scheduled_workflow.workflow_id.clone(), execution_info);
             }
-            
+  
             // 更新工作流状态
             let mut workflow_state = self.state_store.get_workflow_state(&scheduled_workflow.workflow_id).await
                 .map_err(|e| SchedulerError::StateRetrievalFailed(e.to_string()))?;
-                
+  
             workflow_state.status = WorkflowStatus::Running;
             workflow_state.start_time = Some(Utc::now());
-            
+  
             self.state_store.update_workflow_state(&scheduled_workflow.workflow_id, &workflow_state).await
                 .map_err(|e| SchedulerError::StatePersistenceFailed(e.to_string()))?;
-                
+  
             // 创建工作流开始执行事件
             let started_event = Event {
                 event_id: 0, // 将由事件存储分配
@@ -24286,13 +24454,13 @@ impl DistributedWorkflowScheduler {
                     "workflow_type": scheduled_workflow.workflow_type,
                 }),
             };
-            
+  
             self.event_store.append_event(
-                &scheduled_workflow.workflow_id, 
-                &scheduled_workflow.execution_id, 
+                &scheduled_workflow.workflow_id,
+                &scheduled_workflow.execution_id,
                 &started_event
             ).await.map_err(|e| SchedulerError::EventPersistenceFailed(e.to_string()))?;
-            
+  
             // 记录工作流开始执行
             self.observability.record_workflow_execution_started(
                 &scheduled_workflow.workflow_id,
@@ -24300,21 +24468,21 @@ impl DistributedWorkflowScheduler {
                 &scheduled_workflow.workflow_type,
                 &assigned_node.node_id,
             );
-            
-            log::info!("工作流开始执行: workflow_id={}, execution_id={}, node_id={}", 
+  
+            log::info!("工作流开始执行: workflow_id={}, execution_id={}, node_id={}",
                       scheduled_workflow.workflow_id, scheduled_workflow.execution_id, assigned_node.node_id);
-                      
+  
             executed_count += 1;
-            
+  
             // 检查是否达到批处理限制
             if executed_count >= self.config.max_batch_size {
                 break;
             }
         }
-        
+  
         Ok(executed_count)
     }
-    
+  
     /// 选择要执行的工作流
     async fn select_workflows_to_execute(
         &self,
@@ -24339,7 +24507,7 @@ impl DistributedWorkflowScheduler {
             },
         }
     }
-    
+  
     /// 按严格优先级选择工作流
     async fn select_workflows_by_strict_priority(
         &self,
@@ -24347,10 +24515,10 @@ impl DistributedWorkflowScheduler {
     ) -> Result<Vec<ScheduledWorkflowInfo>, SchedulerError> {
         let mut selected_workflows = Vec::new();
         let mut remaining_resources = cluster_resources.clone();
-        
+  
         // 按优先级从高到低处理队列
         let priority_queues = self.priority_queues.read().await;
-        
+  
         for priority in [
             WorkflowPriority::Critical,
             WorkflowPriority::High,
@@ -24368,18 +24536,18 @@ impl DistributedWorkflowScheduler {
                             continue;
                         }
                     };
-                    
+  
                     // 计算工作流资源需求
                     let resource_requirements = self.calculate_workflow_resources(&workflow_state);
-                    
+  
                     // 检查资源是否满足
                     if !remaining_resources.can_accommodate(&resource_requirements) {
                         continue;
                     }
-                    
+  
                     // 从资源中减去已分配部分
                     remaining_resources.allocate(&resource_requirements);
-                    
+  
                     // 添加到选中的工作流列表
                     selected_workflows.push(ScheduledWorkflowInfo {
                         workflow_id: workflow_id.clone(),
@@ -24389,7 +24557,7 @@ impl DistributedWorkflowScheduler {
                         resource_requirements,
                         scheduled_at: Utc::now(),
                     });
-                    
+  
                     // 检查是否达到批处理限制
                     if selected_workflows.len() >= self.config.max_batch_size {
                         return Ok(selected_workflows);
@@ -24397,10 +24565,10 @@ impl DistributedWorkflowScheduler {
                 }
             }
         }
-        
+  
         Ok(selected_workflows)
     }
-    
+  
     /// 分配执行节点
     async fn assign_execution_node(
         &self,
@@ -24410,11 +24578,11 @@ impl DistributedWorkflowScheduler {
         // 获取所有活跃节点
         let active_nodes = self.cluster_manager.get_active_nodes().await
             .map_err(|e| SchedulerError::NodeSelectionFailed(e.to_string()))?;
-            
+  
         if active_nodes.is_empty() {
             return Err(SchedulerError::NoAvailableNodes("没有可用的执行节点".to_string()));
         }
-        
+  
         // 筛选满足资源要求的节点
         let candidate_nodes: Vec<_> = active_nodes.iter()
             .filter(|node| {
@@ -24425,7 +24593,7 @@ impl DistributedWorkflowScheduler {
                 }
             })
             .collect();
-            
+  
         if candidate_nodes.is_empty() {
             return Err(SchedulerError::NoAvailableNodes(
                 format!("没有节点满足工作流资源需求: workflow_id={}", workflow.workflow_id)
@@ -24433,10 +24601,10 @@ impl DistributedWorkflowScheduler {
     // 更新节点状态
     self.node_manager.update_node_status(node_id, NodeStatus::Faulty).await
         .map_err(|e| FaultHandlingError::NodeManagerFailed(e.to_string()))?;
-        
-    log::info!("节点故障处理完成: node_id={}, 已恢复{}个工作流", 
+  
+    log::info!("节点故障处理完成: node_id={}, 已恢复{}个工作流",
                node_id, recovered_workflows.len());
-               
+  
     Ok(recovered_workflows)
 }
 
@@ -24452,21 +24620,21 @@ async fn recover_workflow_from_node_failure(
         workflow_id,
     );
     let _trace_guard = trace_ctx.enter();
-    
-    log::info!("从节点故障恢复工作流: workflow_id={}, failed_node_id={}", 
+  
+    log::info!("从节点故障恢复工作流: workflow_id={}, failed_node_id={}",
               workflow_id, failed_node_id);
-              
+  
     // 获取工作流锁
     let lock_key = format!("workflow:fault:lock:{}", workflow_id);
     let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, "fault_handler", Duration::from_secs(60)).await
         .map_err(|e| FaultHandlingError::LockAcquisitionFailed(e.to_string()))?;
-        
+  
     if !lock_acquired {
         return Err(FaultHandlingError::LockAcquisitionFailed(
             format!("无法获取工作流故障锁: {}", workflow_id)
         ));
     }
-    
+  
     // 确保锁在函数退出时释放
     let lock_key_clone = lock_key.clone();
     let lock_service = self.lock_service.clone();
@@ -24475,14 +24643,14 @@ async fn recover_workflow_from_node_failure(
             let _ = lock_service.release_lock(&lock_key_clone).await;
         });
     });
-    
+  
     // 获取工作流状态
     let workflow_state = self.state_store.get_workflow_state(workflow_id).await
         .map_err(|e| FaultHandlingError::StateStoreFailed(e.to_string()))?;
-        
+  
     // 选择恢复策略
     let strategy_type = self.determine_recovery_strategy(&workflow_state, failed_node_id);
-    
+  
     // 获取对应的恢复策略
     let recovery_strategies = self.recovery_strategies.read().unwrap();
     let strategy = recovery_strategies.get(&strategy_type).ok_or_else(|| {
@@ -24490,7 +24658,7 @@ async fn recover_workflow_from_node_failure(
             format!("不支持的恢复策略: {:?}", strategy_type)
         )
     })?;
-    
+  
     // 执行恢复策略
     let recovery_context = RecoveryContext {
         workflow_id: workflow_id.to_string(),
@@ -24498,10 +24666,10 @@ async fn recover_workflow_from_node_failure(
         workflow_state: workflow_state.clone(),
         fault_time: Utc::now(),
     };
-    
+  
     strategy.execute(&recovery_context).await
         .map_err(|e| FaultHandlingError::RecoveryFailed(e.to_string()))?;
-        
+  
     // 更新工作流状态为恢复中
     let mut updated_state = workflow_state.clone();
     updated_state.status = WorkflowStatus::Recovering;
@@ -24514,10 +24682,10 @@ async fn recover_workflow_from_node_failure(
             .map(|(id, _)| id.clone())
             .collect(),
     });
-    
+  
     self.state_store.update_workflow_state(workflow_id, &updated_state).await
         .map_err(|e| FaultHandlingError::StateStoreFailed(e.to_string()))?;
-        
+  
     // 记录恢复事件
     let event = Event {
         event_id: 0, // 将由事件存储分配
@@ -24531,17 +24699,17 @@ async fn recover_workflow_from_node_failure(
             "affected_tasks": updated_state.recovery_info.as_ref().unwrap().affected_tasks,
         }),
     };
-    
+  
     self.event_store.append_event(workflow_id, &updated_state.current_execution_id.clone().unwrap_or_default(), &event).await
         .map_err(|e| FaultHandlingError::EventStoreFailed(e.to_string()))?;
-        
+  
     // 通知工作流引擎重新调度工作流
     self.workflow_engine.reschedule_workflow(workflow_id).await
         .map_err(|e| FaultHandlingError::RescheduleFailed(e.to_string()))?;
-        
-    log::info!("工作流恢复流程已启动: workflow_id={}, strategy={:?}", 
+  
+    log::info!("工作流恢复流程已启动: workflow_id={}, strategy={:?}",
               workflow_id, strategy_type);
-              
+  
     Ok(())
 }
 
@@ -24554,31 +24722,31 @@ fn determine_recovery_strategy(
     // 获取故障任务
     let failed_tasks: Vec<_> = workflow_state.task_states.iter()
         .filter(|(_, task)| {
-            task.node_id.as_deref() == Some(failed_node_id) && 
+            task.node_id.as_deref() == Some(failed_node_id) &&
             matches!(task.status, TaskStatus::Running | TaskStatus::Scheduled)
         })
         .collect();
-        
+  
     // 如果没有正在运行的故障任务，则使用简单重新调度
     if failed_tasks.is_empty() {
         return RecoveryStrategyType::Reschedule;
     }
-    
+  
     // 检查是否有检查点
     let has_checkpoint = workflow_state.recovery_points.iter()
         .any(|point| point.point_type == RecoveryPointType::Checkpoint);
-        
+  
     // 如果有检查点，优先使用检查点恢复
     if has_checkpoint {
         return RecoveryStrategyType::CheckpointRestore;
     }
-    
+  
     // 如果工作流支持补偿，使用补偿策略
     let workflow_definition = self.workflow_engine.get_workflow_definition(&workflow_state.workflow_type).unwrap();
     if workflow_definition.supports_compensation {
         return RecoveryStrategyType::Compensation;
     }
-    
+  
     // 默认使用重试策略
     RecoveryStrategyType::Retry
 }
@@ -24588,43 +24756,43 @@ fn determine_recovery_strategy(
 pub struct DistributedWorkflowScheduler {
     /// 调度器ID
     id: String,
-    
+  
     /// 集群管理器
     cluster_manager: Arc<ClusterManager>,
-    
+  
     /// 事件总线
     event_bus: Arc<EventBus>,
-    
+  
     /// 状态存储
     state_store: Arc<dyn StateStore>,
-    
+  
     /// 锁服务
     lock_service: Arc<dyn LockService>,
-    
+  
     /// 工作流执行器
     workflow_executor: Arc<WorkflowExecutor>,
-    
+  
     /// 观测性
     observability: Arc<WorkflowObservability>,
-    
+  
     /// 调度策略
     scheduling_strategy: SchedulingStrategy,
-    
+  
     /// 工作流优先级队列
     priority_queues: Arc<RwLock<PriorityQueues>>,
-    
+  
     /// 活跃工作流实例
     active_workflows: Arc<RwLock<HashMap<String, WorkflowExecutionInfo>>>,
-    
+  
     /// 调度配置
     config: SchedulerConfig,
-    
+  
     /// 是否运行中
     running: AtomicBool,
-    
+  
     /// 关闭通道
     shutdown_tx: watch::Sender<bool>,
-    
+  
     /// 关闭通道接收器
     shutdown_rx: watch::Receiver<bool>,
 }
@@ -24642,7 +24810,7 @@ impl DistributedWorkflowScheduler {
         config: SchedulerConfig,
     ) -> Self {
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
-        
+  
         Self {
             id,
             cluster_manager,
@@ -24660,65 +24828,65 @@ impl DistributedWorkflowScheduler {
             shutdown_rx,
         }
     }
-    
+  
     /// 启动调度器
     pub async fn start(&self) -> Result<(), SchedulerError> {
         // 检查是否已运行
         if self.running.load(Ordering::Acquire) {
             return Err(SchedulerError::AlreadyRunning);
         }
-        
+  
         // 设置运行状态
         self.running.store(true, Ordering::Release);
-        
+  
         // 启动工作流执行器
         self.workflow_executor.start().await
             .map_err(|e| SchedulerError::ExecutorStartFailed(e.to_string()))?;
-            
+  
         // 注册集群事件监听器
         self.register_cluster_event_listeners();
-        
+  
         // 注册工作流事件监听器
         self.register_workflow_event_listeners();
-        
+  
         // 启动调度循环
         self.start_scheduling_loop();
-        
+  
         // 恢复中断的工作流
         self.recover_interrupted_workflows().await
             .map_err(|e| SchedulerError::WorkflowRecoveryFailed(e.to_string()))?;
-            
+  
         log::info!("分布式工作流调度器已启动: {}", self.id);
-            
+  
         Ok(())
     }
-    
+  
     /// 停止调度器
     pub async fn stop(&self) -> Result<(), SchedulerError> {
         // 检查是否已停止
         if !self.running.load(Ordering::Acquire) {
             return Ok(());
         }
-        
+  
         // 设置停止状态
         self.running.store(false, Ordering::Release);
-        
+  
         // 发送关闭信号
         self.shutdown_tx.send(true)
             .map_err(|_| SchedulerError::ShutdownFailed("无法发送关闭信号".to_string()))?;
-            
+  
         // 停止工作流执行器
         self.workflow_executor.stop().await
             .map_err(|e| SchedulerError::ExecutorStopFailed(e.to_string()))?;
-            
+  
         // 等待所有活跃工作流完成或超时
         self.wait_for_active_workflows_completion(Duration::from_secs(30)).await;
-        
+  
         log::info!("分布式工作流调度器已停止: {}", self.id);
-        
+  
         Ok(())
     }
-    
+  
     /// 调度工作流
     pub async fn schedule_workflow(
         &self,
@@ -24731,10 +24899,10 @@ impl DistributedWorkflowScheduler {
         if !self.running.load(Ordering::Acquire) {
             return Err(SchedulerError::NotRunning);
         }
-        
+  
         // 生成执行ID
         let execution_id = format!("exec-{}", Uuid::new_v4().to_string());
-        
+  
         // 构建工作流状态
         let workflow_state = WorkflowState {
             workflow_id: workflow_id.to_string(),
@@ -24755,11 +24923,11 @@ impl DistributedWorkflowScheduler {
             metrics: WorkflowMetrics::new(),
             options,
         };
-        
+  
         // 保存工作流状态
         self.state_store.create_workflow_state(workflow_id, &workflow_state).await
             .map_err(|e| SchedulerError::StatePersistenceFailed(e.to_string()))?;
-            
+  
         // 创建工作流开始事件
         let start_event = Event {
             event_id: 1, // 初始事件
@@ -24773,15 +24941,15 @@ impl DistributedWorkflowScheduler {
                 "execution_timeout": options.execution_timeout.map(|d| d.as_secs()),
             }),
         };
-        
+  
         // 保存工作流事件
         self.event_store.append_event(workflow_id, &execution_id, &start_event).await
             .map_err(|e| SchedulerError::EventPersistenceFailed(e.to_string()))?;
-            
+  
         // 添加到调度队列
         let priority = options.priority.unwrap_or(WorkflowPriority::Normal);
         self.enqueue_workflow(workflow_id, workflow_type, priority).await?;
-        
+  
         // 记录工作流已调度
         self.observability.record_workflow_scheduled(
             workflow_id,
@@ -24789,13 +24957,13 @@ impl DistributedWorkflowScheduler {
             workflow_type,
             &priority.to_string(),
         );
-        
-        log::info!("工作流已调度: workflow_id={}, execution_id={}, type={}, priority={:?}", 
+  
+        log::info!("工作流已调度: workflow_id={}, execution_id={}, type={}, priority={:?}",
                   workflow_id, execution_id, workflow_type, priority);
-                  
+  
         Ok(execution_id)
     }
-    
+  
     /// 取消工作流
     pub async fn cancel_workflow(
         &self,
@@ -24806,38 +24974,38 @@ impl DistributedWorkflowScheduler {
         if !self.running.load(Ordering::Acquire) {
             return Err(SchedulerError::NotRunning);
         }
-        
+  
         // 获取工作流状态
         let workflow_state = match self.state_store.get_workflow_state(workflow_id).await {
             Ok(state) => state,
             Err(e) => return Err(SchedulerError::WorkflowNotFound(e.to_string())),
         };
-        
+  
         // 检查工作流是否可取消
-        if matches!(workflow_state.status, 
-            WorkflowStatus::Completed | 
-            WorkflowStatus::Failed | 
-            WorkflowStatus::Cancelled | 
+        if matches!(workflow_state.status,
+            WorkflowStatus::Completed |
+            WorkflowStatus::Failed |
+            WorkflowStatus::Cancelled |
             WorkflowStatus::TimedOut) {
             return Err(SchedulerError::InvalidWorkflowState(
                 format!("工作流已处于终态: {:?}", workflow_state.status)
             ));
         }
-        
+  
         // 获取当前执行ID
         let execution_id = workflow_state.current_execution_id.clone()
             .ok_or_else(|| SchedulerError::InvalidWorkflowState("工作流没有活跃的执行ID".to_string()))?;
-            
+  
         // 尝试从队列中移除
         let removed = self.dequeue_workflow(workflow_id).await;
-        
+  
         // 如果正在执行中，则发送取消信号
         if !removed {
             // 通知执行器取消工作流
             self.workflow_executor.cancel_workflow(workflow_id).await
                 .map_err(|e| SchedulerError::CancellationFailed(e.to_string()))?;
         }
-        
+  
         // 创建取消事件
         let cancel_event = Event {
             event_id: 0, // 将由事件存储分配
@@ -24849,46 +25017,46 @@ impl DistributedWorkflowScheduler {
                 "reason": reason.clone().unwrap_or_else(|| "用户请求取消".to_string()),
             }),
         };
-        
+  
         // 保存取消事件
         self.event_store.append_event(workflow_id, &workflow_state.current_execution_id.unwrap(), &cancel_event).await
             .map_err(|e| SchedulerError::EventPersistenceFailed(e.to_string()))?;
-            
+  
         // 更新工作流状态
         let mut updated_state = workflow_state.clone();
         updated_state.status = WorkflowStatus::Cancelled;
         updated_state.end_time = Some(Utc::now());
         updated_state.cancellation_reason = reason;
-        
+  
         self.state_store.update_workflow_state(workflow_id, &updated_state).await
             .map_err(|e| SchedulerError::StatePersistenceFailed(e.to_string()))?;
-            
+  
         // 从活跃工作流中移除
         {
             let mut active_workflows = self.active_workflows.write().await;
             active_workflows.remove(workflow_id);
         }
-        
+  
         // 记录工作流取消
         self.observability.record_workflow_cancelled(
             workflow_id,
             &updated_state.current_execution_id.unwrap(),
             &updated_state.cancellation_reason.unwrap_or_default(),
         );
-        
-        log::info!("工作流已取消: workflow_id={}, reason={}", 
+  
+        log::info!("工作流已取消: workflow_id={}, reason={}",
                   workflow_id, updated_state.cancellation_reason.unwrap_or_default());
-                  
+  
         Ok(())
     }
-    
+  
     /// 启动调度循环
     fn start_scheduling_loop(&self) {
         let scheduler = self.clone();
         tokio::spawn(async move {
             let mut interval = time::interval(Duration::from_millis(scheduler.config.scheduling_interval_ms));
             let mut shutdown_rx = scheduler.shutdown_rx.clone();
-            
+  
             loop {
                 tokio::select! {
                     _ = interval.tick() => {
@@ -24904,23 +25072,23 @@ impl DistributedWorkflowScheduler {
                     }
                 }
             }
-            
+  
             log::info!("调度循环已停止");
         });
     }
-    
+  
     /// 调度下一批工作流
     async fn schedule_next_batch(&self) -> Result<usize, SchedulerError> {
         // 创建分布式锁
         let lock_key = format!("scheduler:lock:{}", self.cluster_manager.get_partition_id());
         let lock_acquired = self.lock_service.try_acquire_lock(&lock_key, self.id.clone(), Duration::from_secs(5)).await
             .map_err(|e| SchedulerError::LockAcquisitionFailed(e.to_string()))?;
-            
+  
         if !lock_acquired {
             // 其他调度器已获取锁，跳过本次调度
             return Ok(0);
         }
-        
+  
         // 确保锁在函数退出时释放
         let lock_key_clone = lock_key.clone();
         let lock_service = self.lock_service.clone();
@@ -24930,25 +25098,25 @@ impl DistributedWorkflowScheduler {
                 let _ = lock_service.release_lock(&lock_key_clone, &scheduler_id).await;
             });
         });
-        
+  
         // 获取集群资源状态
         let cluster_resources = self.cluster_manager.get_cluster_resources().await
             .map_err(|e| SchedulerError::ClusterResourcesFailed(e.to_string()))?;
-            
+  
         // 获取可执行的工作流
         let workflows_to_execute = self.select_workflows_to_execute(&cluster_resources).await?;
-        
+  
         if workflows_to_execute.is_empty() {
             return Ok(0);
         }
-        
+  
         // 执行选定的工作流
         let mut executed_count = 0;
-        
+  
         for scheduled_workflow in workflows_to_execute {
             // 分配执行节点
             let assigned_node = self.assign_execution_node(&scheduled_workflow, &cluster_resources).await?;
-            
+  
             // 提交工作流到执行器
             let execution_info = WorkflowExecutionInfo {
                 workflow_id: scheduled_workflow.workflow_id.clone(),
@@ -24957,30 +25125,30 @@ impl DistributedWorkflowScheduler {
                 scheduled_time: Utc::now(),
                 status: WorkflowExecutionStatus::Scheduled,
             };
-            
+  
             self.workflow_executor.execute_workflow(
                 &scheduled_workflow.workflow_id,
                 &scheduled_workflow.workflow_type,
                 &scheduled_workflow.execution_id,
                 &assigned_node.node_id,
             ).await.map_err(|e| SchedulerError::ExecutionFailed(e.to_string()))?;
-            
+  
             // 记录活跃工作流
             {
                 let mut active_workflows = self.active_workflows.write().await;
                 active_workflows.insert(scheduled_workflow.workflow_id.clone(), execution_info);
             }
-            
+  
             // 更新工作流状态
             let mut workflow_state = self.state_store.get_workflow_state(&scheduled_workflow.workflow_id).await
                 .map_err(|e| SchedulerError::StateRetrievalFailed(e.to_string()))?;
-                
+  
             workflow_state.status = WorkflowStatus::Running;
             workflow_state.start_time = Some(Utc::now());
-            
+  
             self.state_store.update_workflow_state(&scheduled_workflow.workflow_id, &workflow_state).await
                 .map_err(|e| SchedulerError::StatePersistenceFailed(e.to_string()))?;
-                
+  
             // 创建工作流开始执行事件
             let started_event = Event {
                 event_id: 0, // 将由事件存储分配
@@ -24993,13 +25161,13 @@ impl DistributedWorkflowScheduler {
                     "workflow_type": scheduled_workflow.workflow_type,
                 }),
             };
-            
+  
             self.event_store.append_event(
-                &scheduled_workflow.workflow_id, 
-                &scheduled_workflow.execution_id, 
+                &scheduled_workflow.workflow_id,
+                &scheduled_workflow.execution_id,
                 &started_event
             ).await.map_err(|e| SchedulerError::EventPersistenceFailed(e.to_string()))?;
-            
+  
             // 记录工作流开始执行
             self.observability.record_workflow_execution_started(
                 &scheduled_workflow.workflow_id,
@@ -25007,21 +25175,21 @@ impl DistributedWorkflowScheduler {
                 &scheduled_workflow.workflow_type,
                 &assigned_node.node_id,
             );
-            
-            log::info!("工作流开始执行: workflow_id={}, execution_id={}, node_id={}", 
+  
+            log::info!("工作流开始执行: workflow_id={}, execution_id={}, node_id={}",
                       scheduled_workflow.workflow_id, scheduled_workflow.execution_id, assigned_node.node_id);
-                      
+  
             executed_count += 1;
-            
+  
             // 检查是否达到批处理限制
             if executed_count >= self.config.max_batch_size {
                 break;
             }
         }
-        
+  
         Ok(executed_count)
     }
-    
+  
     /// 选择要执行的工作流
     async fn select_workflows_to_execute(
         &self,
@@ -25046,7 +25214,7 @@ impl DistributedWorkflowScheduler {
             },
         }
     }
-    
+  
     /// 按严格优先级选择工作流
     async fn select_workflows_by_strict_priority(
         &self,
@@ -25054,10 +25222,10 @@ impl DistributedWorkflowScheduler {
     ) -> Result<Vec<ScheduledWorkflowInfo>, SchedulerError> {
         let mut selected_workflows = Vec::new();
         let mut remaining_resources = cluster_resources.clone();
-        
+  
         // 按优先级从高到低处理队列
         let priority_queues = self.priority_queues.read().await;
-        
+  
         for priority in [
             WorkflowPriority::Critical,
             WorkflowPriority::High,
@@ -25075,18 +25243,18 @@ impl DistributedWorkflowScheduler {
                             continue;
                         }
                     };
-                    
+  
                     // 计算工作流资源需求
                     let resource_requirements = self.calculate_workflow_resources(&workflow_state);
-                    
+  
                     // 检查资源是否满足
                     if !remaining_resources.can_accommodate(&resource_requirements) {
                         continue;
                     }
-                    
+  
                     // 从资源中减去已分配部分
                     remaining_resources.allocate(&resource_requirements);
-                    
+  
                     // 添加到选中的工作流列表
                     selected_workflows.push(ScheduledWorkflowInfo {
                         workflow_id: workflow_id.clone(),
@@ -25096,7 +25264,7 @@ impl DistributedWorkflowScheduler {
                         resource_requirements,
                         scheduled_at: Utc::now(),
                     });
-                    
+  
                     // 检查是否达到批处理限制
                     if selected_workflows.len() >= self.config.max_batch_size {
                         return Ok(selected_workflows);
@@ -25104,10 +25272,10 @@ impl DistributedWorkflowScheduler {
                 }
             }
         }
-        
+  
         Ok(selected_workflows)
     }
-    
+  
     /// 分配执行节点
     async fn assign_execution_node(
         &self,
@@ -25117,11 +25285,11 @@ impl DistributedWorkflowScheduler {
         // 获取所有活跃节点
         let active_nodes = self.cluster_manager.get_active_nodes().await
             .map_err(|e| SchedulerError::NodeSelectionFailed(e.to_string()))?;
-            
+  
         if active_nodes.is_empty() {
             return Err(SchedulerError::NoAvailableNodes("没有可用的执行节点".to_string()));
         }
-        
+  
         // 筛选满足资源要求的节点
         let candidate_nodes: Vec<_> = active_nodes.iter()
             .filter(|node| {
@@ -25132,7 +25300,7 @@ impl DistributedWorkflowScheduler {
                 }
             })
             .collect();
-            
+  
         if candidate_nodes.is_empty() {
             return Err(SchedulerError::NoAvailableNodes(
                 format!("没有节点满足工作流资源需求: workflow_id={}", workflow.workflow_id)
@@ -38514,6 +38682,7 @@ pub async fn main_example() -> Result<(), String> {
     
     Ok(())
 }
+
 ```
 
 以上就是一个完整的工作流引擎实现，包括：

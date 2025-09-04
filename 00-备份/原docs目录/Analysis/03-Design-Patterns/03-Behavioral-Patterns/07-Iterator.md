@@ -130,6 +130,7 @@ classDiagram
     Collection <|.. ConcreteCollection
     ConcreteIterator --> ConcreteCollection
     AsyncIterator --> ConcreteCollection
+
 ```
 
 ### 3.2 时序图
@@ -157,6 +158,7 @@ sequenceDiagram
     
     Client->>Iterator: Reset()
     Iterator->>Client: Success
+
 ```
 
 ### 3.3 遍历流程图
@@ -170,6 +172,7 @@ flowchart TD
     E --> F[Move to Next]
     F --> C
     C -->|No| G[End]
+
 ```
 
 ## 4. Golang实现
@@ -210,6 +213,7 @@ type IteratorResult struct {
     Index int
     Error error
 }
+
 ```
 
 ### 4.2 基础迭代器实现
@@ -317,6 +321,7 @@ func (i *ConcreteIterator) HasNext() bool {
     }
     return false
 }
+
 ```
 
 ### 4.3 集合实现
@@ -407,6 +412,7 @@ func (c *ConcreteCollection) CreateFilteredIterator(filter func(interface{}) boo
 func (c *ConcreteCollection) CreateMappedIterator(mapper func(interface{}) interface{}) Iterator {
     return NewConcreteIterator(c, nil, mapper)
 }
+
 ```
 
 ### 4.4 异步迭代器实现
@@ -507,6 +513,7 @@ func (a *AsyncIterator) Stop() error {
         return nil
     }
 }
+
 ```
 
 ### 4.5 并发安全迭代器
@@ -567,6 +574,7 @@ func (c *ConcurrentIterator) GetIndex() int {
 func (c *ConcurrentIterator) GetSize() int {
     return c.size
 }
+
 ```
 
 ### 4.6 特殊迭代器实现
@@ -681,6 +689,7 @@ func (r *RangeIterator) GetIndex() int {
 func (r *RangeIterator) GetSize() int {
     return (r.end - r.start) / r.step
 }
+
 ```
 
 ## 5. 性能分析
@@ -864,6 +873,7 @@ func BenchmarkConcurrentIterator(b *testing.B) {
         }
     })
 }
+
 ```
 
 ## 6. 应用场景
@@ -938,6 +948,7 @@ func (d *DatabaseResultIterator) GetIndex() int {
 func (d *DatabaseResultIterator) GetSize() int {
     return -1 // 数据库迭代器不支持大小
 }
+
 ```
 
 ### 6.2 文件系统遍历
@@ -1027,6 +1038,7 @@ func (f *FileSystemIterator) GetIndex() int {
 func (f *FileSystemIterator) GetSize() int {
     return len(f.files)
 }
+
 ```
 
 ### 6.3 网络流数据遍历
@@ -1084,6 +1096,7 @@ func (n *NetworkStreamIterator) GetIndex() int {
 func (n *NetworkStreamIterator) GetSize() int {
     return -1
 }
+
 ```
 
 ## 7. 最佳实践
@@ -1229,6 +1242,7 @@ func ConcurrentIteratorExample() {
     
     wg.Wait()
 }
+
 ```
 
 ### 8.2 文件处理系统
@@ -1269,6 +1283,7 @@ func FileProcessingSystemExample() {
         fmt.Printf("  %s\n", file)
     }
 }
+
 ```
 
 ---

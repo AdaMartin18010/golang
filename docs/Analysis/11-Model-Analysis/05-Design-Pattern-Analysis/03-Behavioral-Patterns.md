@@ -48,19 +48,6 @@
     - [11.5.1.13.3 Golang特有的最佳实践](#golang特有的最佳实践)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.5.1.1 目录
 
 - [行为型设计模式分析](#行为型设计模式分析)
@@ -153,6 +140,7 @@ flowchart LR
     H2 -->|not handled| H3[Handler3]
     H3 -->|handled?| End3([End])
     H3 -->|not handled| EndFail([Unprocessed])
+
 ```
 
 ### 11.5.1.4.2 Golang实现
@@ -203,6 +191,7 @@ func (h *ConcreteHandlerB) Handle(request string) bool {
     }
     return h.BaseHandler.Handle(request)
 }
+
 ```
 
 ### 11.5.1.4.3 性能分析
@@ -230,6 +219,7 @@ classDiagram
     Invoker --> Command
     Command <|-- ConcreteCommand
     ConcreteCommand --> Receiver
+
 ```
 
 ### 11.5.1.5.2 Golang实现
@@ -274,6 +264,7 @@ func (i *Invoker) ExecuteAll() []string {
     }
     return results
 }
+
 ```
 
 ### 11.5.1.5.3 性能分析
@@ -311,6 +302,7 @@ classDiagram
     class Aggregate {
         +CreateIterator() Iterator
     }
+
 ```
 
 ### 11.5.1.6.2 Golang实现
@@ -370,6 +362,7 @@ func (ca *ConcreteAggregate) ForEach(f func(item interface{})) {
         f(item)
     }
 }
+
 ```
 
 ### 11.5.1.6.3 性能分析
@@ -412,6 +405,7 @@ classDiagram
     class Observer {
         +Update(Subject)
     }
+
 ```
 
 ### 11.5.1.7.2 Golang实现
@@ -511,6 +505,7 @@ func (o *ConcreteObserver) Update(subject Subject) error {
     fmt.Printf("Observer %d updated, new state: %s\n", o.id, o.state)
     return nil
 }
+
 ```
 
 ### 11.5.1.7.3 性能分析
@@ -560,6 +555,7 @@ classDiagram
         <<interface>>
         +Execute()
     }
+
 ```
 
 ### 11.5.1.8.2 Golang实现
@@ -623,6 +619,7 @@ func (f StrategyFunc) Execute(data int) int {
 func ExecuteWithStrategy(data int, strategy Strategy) int {
     return strategy.Execute(data)
 }
+
 ```
 
 ### 11.5.1.8.3 性能分析
@@ -668,6 +665,7 @@ stateDiagram-v2
     StateA --> StateC: Event2
     StateB --> StateC: Event3
     StateC --> StateA: Event4
+
 ```
 
 ### 11.5.1.9.2 Golang实现
@@ -778,6 +776,7 @@ func (sm *StateMachine) ProcessEvent(event string) bool {
     }
     return false
 }
+
 ```
 
 ### 11.5.1.9.3 性能分析
@@ -833,6 +832,7 @@ classDiagram
         #PrimitiveOperation2()
         #Hook()
     }
+
 ```
 
 ### 11.5.1.10.2 Golang实现
@@ -953,6 +953,7 @@ func (f *FunctionalTemplate) Execute() string {
     result += f.op2() + "\n"
     return result
 }
+
 ```
 
 ### 11.5.1.10.3 性能分析
@@ -999,6 +1000,7 @@ classDiagram
     class Element {
         +Accept(Visitor)
     }
+
 ```
 
 ### 11.5.1.11.2 Golang实现
@@ -1114,6 +1116,7 @@ func (o *ObjectStructure) Accept(visitor Visitor) {
         element.Accept(visitor)
     }
 }
+
 ```
 
 ### 11.5.1.11.3 性能分析

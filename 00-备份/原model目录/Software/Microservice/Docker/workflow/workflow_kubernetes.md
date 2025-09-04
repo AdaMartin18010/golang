@@ -21,6 +21,7 @@ C. 探讨工作流与分布式架构之间的关系
 我将以中文回答，并以Markdown格式组织内容，包括目录结构。
 不使用外部链接，并尽量以文本格式呈现思维导图。
 </think>
+
 ```
 
 ## 目录
@@ -62,6 +63,7 @@ C. 探讨工作流与分布式架构之间的关系
 
 ```text
 工作流模式 ≃ 容器编排架构
+
 ```
 
 其中≃表示同伦等价关系。
@@ -98,6 +100,7 @@ fn sequence<A, B, C>(f: impl FnOnce(A) -> B, g: impl FnOnce(B) -> C) -> impl FnO
 fn parallel_split<A, B, C>(f: impl FnOnce(A) -> B, g: impl FnOnce(A) -> C) -> impl FnOnce(A) -> (B, C) {
     move |a| (f(a), g(a))
 }
+
 ```
 
 ### 数据流模式
@@ -131,6 +134,7 @@ impl<A> DataFlow<A> {
         f(self.0)
     }
 }
+
 ```
 
 ### 资源模式
@@ -161,6 +165,7 @@ impl<T> Resource<T> {
         f(self.0)
     }
 }
+
 ```
 
 ### 异常处理模式
@@ -202,6 +207,7 @@ impl<T, E> Result<T, E> {
         }
     }
 }
+
 ```
 
 ## Docker与Kubernetes架构的形式化模型
@@ -223,6 +229,7 @@ struct Container(/* 容器属性 */);
 struct Pod(Vec<Container>);
 struct Service<P: AsRef<Pod>>(P);
 struct Deployment<S: AsRef<Service<P>>, P: AsRef<Pod>>(S, ReplicaStrategy);
+
 ```
 
 ### 协议交互
@@ -253,6 +260,7 @@ trait Controller {
         }
     }
 }
+
 ```
 
 ### 编排控制流
@@ -284,6 +292,7 @@ struct PodStateTransition {
     to: PodState,
     condition: Box<dyn Fn() -> bool>,
 }
+
 ```
 
 ### 资源管理形式化
@@ -310,6 +319,7 @@ impl<T: Add<Output = T> + PartialOrd> ResourceQuota<T> {
         }
     }
 }
+
 ```
 
 ## 工作流与分布式架构的范畴论分析
@@ -326,6 +336,7 @@ impl<T: Add<Output = T> + PartialOrd> ResourceQuota<T> {
 
 ```text
 F: W ≃ K
+
 ```
 
 具体体现为：
@@ -353,6 +364,7 @@ F: W ≃ K
  v      v
  C ---> D
     K
+
 ```
 
 此图表示从工作流模式A经过不同编排路径到达系统状态D的一致性。
@@ -409,4 +421,5 @@ F: W ≃ K
     ├── 反函子G: K→W（容器→工作流）
     ├── 自然变换η: Id_W≃G∘F
     └── 自然变换ε: F∘G≃Id_K
+
 ```

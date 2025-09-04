@@ -249,6 +249,7 @@ func (o *Orchestrator) ExecuteWorkflow(ctx context.Context, workflow *Workflow) 
     
     return nil
 }
+
 ```
 
 ### 5.2 执行流机制 (Execution Flow)
@@ -270,6 +271,7 @@ func (ef *ExecutionFlow) ScheduleTasks(tasks []*Task) []*Task {
     // 3. 并行度优化
     return ef.optimizeParallelism(sorted)
 }
+
 ```
 
 ### 5.3 数据流机制 (Data Flow)
@@ -297,6 +299,7 @@ func (df *DataFlow) ProcessData(ctx context.Context, data map[string]interface{}
     // 3. 数据加载
     return df.loadData(transformed)
 }
+
 ```
 
 ### 5.4 控制流机制 (Control Flow)
@@ -321,6 +324,7 @@ func (cf *ControlFlow) EvaluateCondition(ctx context.Context, condition string, 
     // 2. 评估条件
     return cf.evaluateExpression(expr, data)
 }
+
 ```
 
 ## 6. 形式化验证
@@ -409,6 +413,7 @@ type WorkflowEngine struct {
     lockManager    LockManager
     mu             sync.RWMutex
 }
+
 ```
 
 ### 7.2 任务执行系统
@@ -457,6 +462,7 @@ func (te *TaskExecutor) ExecuteTask(ctx context.Context, task *Task, instance *W
     
     return nil
 }
+
 ```
 
 ### 7.3 状态管理
@@ -493,6 +499,7 @@ func (sm *StateManager) UpdateState(ctx context.Context, instanceID string, newS
     
     return nil
 }
+
 ```
 
 ### 7.4 事件溯源
@@ -537,6 +544,7 @@ func (esr *EventSourcedRepository) Save(ctx context.Context, aggregate Aggregate
     
     return nil
 }
+
 ```
 
 ## 8. 最佳实践与性能优化
@@ -570,6 +578,7 @@ func (wss *WorkStealingScheduler) Schedule(ctx context.Context, tasks []*Task) e
     wg.Wait()
     return nil
 }
+
 ```
 
 #### 8.1.2 内存优化
@@ -598,6 +607,7 @@ func (tp *TaskPool) Put(task *Task) {
     task.Reset()
     tp.pool.Put(task)
 }
+
 ```
 
 ### 8.2 监控与可观测性
@@ -618,6 +628,7 @@ func (mc *MetricsCollector) RecordWorkflowDuration(workflowID, definitionID stri
 func (mc *MetricsCollector) RecordTaskDuration(workflowID, taskID, taskType string, duration time.Duration, success bool) {
     mc.taskDuration.WithLabelValues(workflowID, taskID, taskType, fmt.Sprintf("%t", success)).Observe(duration.Seconds())
 }
+
 ```
 
 ## 9. 总结

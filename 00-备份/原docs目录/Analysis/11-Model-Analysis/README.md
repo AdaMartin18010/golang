@@ -54,6 +54,7 @@ func (ra *RecursiveAnalyzer) analyzeDirectory(path string, depth int) error {
     }
     return nil
 }
+
 ```
 
 #### 1.1.2 内容识别与分类
@@ -127,6 +128,7 @@ type Proof struct {
     Invariant     string
     Termination   string
 }
+
 ```
 
 ### 1.3 多表征组织策略
@@ -182,6 +184,7 @@ func (dd *DuplicateDetector) DetectDuplicates(contents []Content) []DuplicateGro
     
     return groups
 }
+
 ```
 
 #### 1.4.2 内容合并策略
@@ -295,6 +298,7 @@ func (dd *DuplicateDetector) DetectDuplicates(contents []Content) []DuplicateGro
     ├── 01-Memory-Optimization.md
     ├── 02-Concurrent-Optimization.md
     └── ...
+
 ```
 
 #### 3.2.2 内容格式
@@ -314,6 +318,7 @@ func (dd *DuplicateDetector) DetectDuplicates(contents []Content) []DuplicateGro
 算法 $A$ 在满足前置条件 $P$ 的情况下，
 执行后满足后置条件 $Q$。
 \end{theorem}
+
 ```
 
 **代码示例格式**:
@@ -344,6 +349,7 @@ type Complexity struct {
     BestCase        string
     WorstCase       string
 }
+
 ```
 
 ## 4. 持续改进机制

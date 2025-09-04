@@ -325,6 +325,7 @@ fn data_transform_pipeline(data: Vec<i32>) -> Vec<i32> {
         .map(|x| x * 2)                // 映射操作
         .collect::<Vec<_>>()           // 收集操作
 }
+
 ```
 
 ## 5. 编程语言层数据流
@@ -395,6 +396,7 @@ fn main() {
         Err(e) => println!("Error: {}", e),
     }
 }
+
 ```
 
 ### 5.2 函数式编程中的数据流变换
@@ -441,6 +443,7 @@ fn functional_data_flow() {
     
     println!("Sum of squares of even Fibonacci numbers: {}", sum);
 }
+
 ```
 
 ### 5.3 并发编程中的数据流控制
@@ -502,6 +505,7 @@ fn concurrent_data_flow() {
     producer.join().unwrap();
     consumer.join().unwrap();
 }
+
 ```
 
 ## 6. 算法设计层数据流
@@ -566,6 +570,7 @@ fn merge_sort<T: Ord + Clone>(slice: &[T]) -> Vec<T> {
     
     result
 }
+
 ```
 
 ### 6.2 数据结构与存储优化
@@ -623,6 +628,7 @@ fn cache_friendly_matrix_multiply(a: &[Vec<f64>], b: &[Vec<f64>]) -> Vec<Vec<f64
     
     result
 }
+
 ```
 
 ### 6.3 时空复杂度与数据流效率
@@ -682,6 +688,7 @@ where
 {
     iter.fold(0, |acc, x| acc + x)
 }
+
 ```
 
 ## 7. 软件设计层数据流
@@ -781,6 +788,7 @@ impl Observer for DataProcessor {
         }
     }
 }
+
 ```
 
 ### 7.2 数据流驱动的设计模式
@@ -865,6 +873,7 @@ impl<T> Pipeline<T> {
         })
     }
 }
+
 ```
 
 ### 7.3 状态管理与数据一致性
@@ -972,6 +981,7 @@ fn state_management_example() {
     let final_state = state_ref.lock().unwrap().get_state();
     println!("Final state: {:?}", final_state);
 }
+
 ```
 
 ## 8. 系统设计层数据流
@@ -1120,6 +1130,7 @@ fn data_exchange_formats() {
     let parsed_user: User = serde_json::from_str(&json).unwrap();
     println!("Parsed user: {:?}", parsed_user);
 }
+
 ```
 
 ## 9. 架构设计层数据流
@@ -1279,6 +1290,7 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+
 ```
 
 ### 9.3 架构级数据治理策略
@@ -1519,6 +1531,7 @@ impl OrderRuleEngine {
         Ok(current_order)
     }
 }
+
 ```
 
 ### 10.3 领域驱动设计中的数据流表示
@@ -1585,7 +1598,8 @@ impl DomainEvent for OrderCreatedEvent {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 struct OrderShippedEvent {
     order_id: String,
     tracking_number: String,
@@ -1598,11 +1612,11 @@ impl DomainEvent for OrderShippedEvent {
     fn event_type(&self) -> &str {
         "order_shipped"
     }
-    
+  
     fn occurred_at(&self) -> DateTime<Utc> {
         self.occurred_at
     }
-    
+  
     fn entity_id(&self) -> &str {
         &self.order_id
     }
@@ -1621,21 +1635,21 @@ impl EventStore {
             entity_events: HashMap::new(),
         }
     }
-    
+  
     fn append_event<E: DomainEvent + 'static>(&mut self, event: E) {
         let entity_id = event.entity_id().to_string();
         let event_index = self.events.len();
-        
+  
         // 存储事件
         self.events.push(Box::new(event));
-        
+  
         // 更新实体到事件的映射
         self.entity_events
             .entry(entity_id)
             .or_insert_with(Vec::new)
             .push(event_index);
     }
-    
+  
     fn get_events_for_entity(&self, entity_id: &str) -> Vec<&Box<dyn DomainEvent>> {
         match self.entity_events.get(entity_id) {
             Some(indices) => {
@@ -1665,11 +1679,11 @@ impl OrderCommand {
             items,
             occurred_at: Utc::now(),
         };
-        
+  
         // 存储事件
         event_store.append_event(event);
     }
-    
+  
     fn ship_order(
         event_store: &mut EventStore,
         order_id: String,
@@ -1684,7 +1698,7 @@ impl OrderCommand {
             shipped_at: Utc::now(),
             occurred_at: Utc::now(),
         };
-        
+  
         // 存储事件
         event_store.append_event(event);
     }
@@ -1695,7 +1709,8 @@ struct OrderView {
     orders: HashMap<String, OrderViewModel>,
 }
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 struct OrderViewModel {
     id: String,
     customer_id: String,
@@ -1712,18 +1727,18 @@ impl OrderView {
             orders: HashMap::new(),
         }
     }
-    
+  
     // 从事件流重建视图
     fn rebuild_from_events(&mut self, event_store: &EventStore) {
         // 清空现有视图
         self.orders.clear();
-        
+  
         // 按时间顺序处理所有事件
         for event in &event_store.events {
             self.apply_event(event.as_ref());
         }
     }
-    
+  
     fn apply_event(&mut self, event: &dyn DomainEvent) {
         match event.event_type() {
             "order_created" => {
@@ -1753,15 +1768,16 @@ impl OrderView {
             _ => {} // 忽略未知事件类型
         }
     }
-    
+  
     fn get_order(&self, order_id: &str) -> Option<&OrderViewModel> {
         self.orders.get(order_id)
     }
-    
+  
     fn get_all_orders(&self) -> Vec<&OrderViewModel> {
         self.orders.values().collect()
     }
 }
+
 ```
 
 ## 11. 跨学科应用与新兴趋势
@@ -2269,6 +2285,7 @@ $$\forall \text{层次} \, L_i, \forall \text{领域} \, D_j: \exists \mathcal{T
   ├─实践中的综合优化方法
   ├─未来发展方向与研究挑战
   └─整体视角的持久价值
+
 ```
 
 以上内容从多个层次和维度展示了数据流在软件工程中的应用与理论，

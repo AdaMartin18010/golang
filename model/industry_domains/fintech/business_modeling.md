@@ -91,6 +91,7 @@ impl Account {
         Ok(())
     }
 }
+
 ```
 
 #### 1.2.1.2 支付聚合根
@@ -161,6 +162,7 @@ impl Payment {
         self.failure_reason = Some(reason);
     }
 }
+
 ```
 
 #### 1.2.1.3 交易聚合根
@@ -224,6 +226,7 @@ impl Trade {
         }
     }
 }
+
 ```
 
 ### 1.2.2 值对象
@@ -293,6 +296,7 @@ impl TradeId {
         Self(uuid::Uuid::new_v4().to_string())
     }
 }
+
 ```
 
 ### 1.2.3 领域服务
@@ -368,6 +372,7 @@ impl ComplianceService {
         })
     }
 }
+
 ```
 
 ## 1.3 2. 数据建模
@@ -426,6 +431,7 @@ CREATE TABLE account_balance_history (
     FOREIGN KEY (account_id) REFERENCES accounts(id),
     FOREIGN KEY (transaction_id) REFERENCES transactions(id)
 );
+
 ```
 
 #### 1.3.1.2 支付相关表
@@ -466,6 +472,7 @@ CREATE TABLE payment_routes (
     processed_at TIMESTAMP WITH TIME ZONE,
     FOREIGN KEY (payment_id) REFERENCES payments(id)
 );
+
 ```
 
 #### 1.3.1.3 交易相关表
@@ -518,6 +525,7 @@ CREATE TABLE trade_fees (
     description TEXT,
     FOREIGN KEY (trade_id) REFERENCES trades(id)
 );
+
 ```
 
 ### 1.3.2 仓储实现
@@ -635,6 +643,7 @@ impl AccountRepository for PostgresAccountRepository {
         Ok(accounts)
     }
 }
+
 ```
 
 ## 1.4 3. 流程建模
@@ -660,6 +669,7 @@ graph TD
     M --> N[发送确认通知]
     N --> O[更新支付状态]
     I --> P[发送拒绝通知]
+
 ```
 
 ### 1.4.2 交易执行流程
@@ -681,6 +691,7 @@ graph TD
     M --> N[发送确认]
     N --> O[结算处理]
     J --> P[发送拒绝通知]
+
 ```
 
 ### 1.4.3 风控流程
@@ -703,6 +714,7 @@ graph TD
     I --> M[记录决策]
     K --> M
     M --> N[更新风控模型]
+
 ```
 
 ### 1.4.4 流程实现
@@ -823,6 +835,7 @@ impl PaymentProcessingWorkflow {
         })
     }
 }
+
 ```
 
 ## 1.5 4. 业务规则引擎
@@ -923,6 +936,7 @@ impl BusinessRule for SuspiciousActivityRule {
         "SuspiciousActivityRule"
     }
 }
+
 ```
 
 ### 1.5.2 规则引擎
@@ -972,6 +986,7 @@ impl BusinessRuleEngine {
         })
     }
 }
+
 ```
 
 ## 1.6 5. 事件溯源
@@ -1019,6 +1034,7 @@ pub struct RiskAssessmentEvent {
     pub risk_factors: Vec<String>,
     pub timestamp: DateTime<Utc>,
 }
+
 ```
 
 ### 1.6.2 事件存储
@@ -1064,6 +1080,7 @@ impl EventStore {
         self.event_repository.get_events(aggregate_id, from_version).await
     }
 }
+
 ```
 
 ## 1.7 总结

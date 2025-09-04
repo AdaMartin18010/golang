@@ -29,6 +29,7 @@ tracing = "0.1"
 dashmap = "5.5"
 crossbeam = "0.8"
 parking_lot = "0.12"
+
 ```
 
 ### 2. 任务定义和状态
@@ -74,6 +75,7 @@ impl Task {
         self.state.read().clone()
     }
 }
+
 ```
 
 ### 3. 工作者池实现
@@ -187,6 +189,7 @@ impl Worker {
         })
     }
 }
+
 ```
 
 ### 4. 异步队列实现
@@ -225,6 +228,7 @@ impl<T> AsyncQueue<T> {
         }
     }
 }
+
 ```
 
 ### 5. 观察者模式实现
@@ -260,6 +264,7 @@ impl Observer for LoggingObserver {
         tracing::error!("Worker {} failed task {}: {}", worker_id, task.id, error);
     }
 }
+
 ```
 
 ### 6. 任务生成器实现
@@ -293,6 +298,7 @@ impl TaskGenerator {
         }
     }
 }
+
 ```
 
 ### 7. 任务调度器实现
@@ -331,6 +337,7 @@ impl TaskScheduler {
         });
     }
 }
+
 ```
 
 ### 8. 使用示例
@@ -352,6 +359,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 ### 9. 自定义观察者示例
@@ -392,6 +400,7 @@ impl Observer for MetricsObserver {
         self.metrics.active_tasks.dec();
     }
 }
+
 ```
 
 ### 10. 任务优先级队列实现
@@ -444,6 +453,7 @@ impl PriorityWorkerPool {
         }
     }
 }
+
 ```
 
 这个完整的示例展示了如何：

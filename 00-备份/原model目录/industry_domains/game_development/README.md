@@ -18,56 +18,70 @@
 
 ```toml
 [dependencies]
+
 # 游戏引擎
+
 bevy = "0.12"
 amethyst = "0.20"
 ggez = "0.9"
 
 # 图形渲染
+
 wgpu = "0.18"
 vulkano = "0.34"
 glium = "0.32"
 
 # 音频
+
 rodio = "0.17"
 cpal = "0.15"
 kira = "0.8"
 
 # 物理引擎
+
 rapier2d = "0.17"
 rapier3d = "0.17"
 nphysics3d = "0.16"
 
 # 网络
+
 tokio = { version = "1.35", features = ["full"] }
 quinn = "0.10"
 webrtc = "0.8"
 
 # 序列化
+
 serde = { version = "1.0", features = ["derive"] }
 bincode = "1.3"
+
 ```
 
 ### 行业特定库
 
 ```toml
 [dependencies]
+
 # 数学库
+
 glam = "0.25"
 nalgebra = "0.32"
 cgmath = "0.18"
 
 # 资源管理
+
 asset = "0.1"
 notify = "6.1"
 
 # 输入处理
+
 winit = "0.29"
 gilrs = "0.9"
 
 # 调试和性能
+
 tracy-client = "0.20"
 perf-event = "0.4"
+
 ```
 
 ## 架构模式
@@ -125,6 +139,7 @@ fn main() {
         .add_systems(Update, (movement_system, health_system))
         .run();
 }
+
 ```
 
 ### 2. 客户端-服务器架构
@@ -189,6 +204,7 @@ impl GameServer {
         }
     }
 }
+
 ```
 
 ### 3. 状态同步模式
@@ -217,6 +233,7 @@ pub trait StateSynchronizer {
     async fn predict_state(&self, input: &PlayerInput) -> GameState;
     async fn reconcile_state(&self, predicted: &GameState, actual: &GameState) -> GameState;
 }
+
 ```
 
 ## 业务领域建模
@@ -262,6 +279,7 @@ pub enum Action {
     Interact,
     UseItem(ItemId),
 }
+
 ```
 
 ### 游戏逻辑组件
@@ -296,6 +314,7 @@ pub struct Skill {
     pub mana_cost: f32,
     pub damage: f32,
 }
+
 ```
 
 ## 数据建模
@@ -331,6 +350,7 @@ pub struct GameAsset {
     pub data: Vec<u8>,
     pub metadata: AssetMetadata,
 }
+
 ```
 
 ### 网络数据模型
@@ -351,6 +371,7 @@ pub trait NetworkProtocol {
     fn serialize(&self, message: &NetworkMessage) -> Result<Vec<u8>, ProtocolError>;
     fn deserialize(&self, data: &[u8]) -> Result<NetworkMessage, ProtocolError>;
 }
+
 ```
 
 ## 流程建模
@@ -372,6 +393,7 @@ graph TD
     K -->|否| D
     K -->|是| L[清理资源]
     L --> M[退出]
+
 ```
 
 ### 多人游戏流程
@@ -392,6 +414,7 @@ graph TD
     L -->|否| F
     L -->|是| M[保存游戏数据]
     M --> N[断开连接]
+
 ```
 
 ## 组件建模
@@ -477,6 +500,7 @@ impl Renderer {
         Ok(())
     }
 }
+
 ```
 
 ### 音频系统
@@ -525,6 +549,7 @@ impl AudioManager {
         self.music = None;
     }
 }
+
 ```
 
 ### 物理系统
@@ -588,6 +613,7 @@ impl PhysicsEngine {
         })
     }
 }
+
 ```
 
 ## 性能优化
@@ -671,6 +697,7 @@ impl SpatialHashGrid {
         )
     }
 }
+
 ```
 
 ### 渲染优化
@@ -739,6 +766,7 @@ impl FrustumCuller {
         [Plane::default(); 6]
     }
 }
+
 ```
 
 ## 网络优化
@@ -830,6 +858,7 @@ impl Interpolation {
         curr.clone()
     }
 }
+
 ```
 
 ## 测试策略
@@ -878,6 +907,7 @@ mod tests {
         assert!(input_handler.is_action_pressed(Action::Jump));
     }
 }
+
 ```
 
 ### 性能测试
@@ -926,6 +956,7 @@ mod performance_tests {
         assert!(duration.as_millis() < 100);
     }
 }
+
 ```
 
 ## 部署和发布
@@ -933,7 +964,9 @@ mod performance_tests {
 ### 构建配置
 
 ```toml
+
 # Cargo.toml
+
 [package]
 name = "my-game"
 version = "0.1.0"
@@ -951,9 +984,12 @@ opt-level = 0
 debug = true
 
 [dependencies]
+
 # 开发依赖
+
 [dev-dependencies]
 criterion = "0.5"
+
 ```
 
 ### 跨平台构建
@@ -982,6 +1018,7 @@ mod platform {
         // macOS特定实现
     }
 }
+
 ```
 
 ## 总结

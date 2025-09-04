@@ -29,13 +29,6 @@
   - [1.9 思维导图](#思维导图)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 Rust异步编程的未来发展：形式化分析与应用趋势
 
 ## 1.1 目录
@@ -119,6 +112,7 @@ impl<T: TaskTrait> AdaptiveScheduler<T> {
         };
     }
 }
+
 ```
 
 #### 1.3.1.2 元理论 → 理论
@@ -157,6 +151,7 @@ impl WorkerMetrics {
         (local_avg / global_avg).abs()
     }
 }
+
 ```
 
 ### 1.3.2 2. 加强形式化验证工具和技术
@@ -215,6 +210,7 @@ impl SessionTypeChecker {
         Ok(())
     }
 }
+
 ```
 
 #### 1.3.2.2 元理论 → 理论
@@ -262,6 +258,7 @@ impl<S: State> LTLChecker<S> {
         None
     }
 }
+
 ```
 
 ### 1.3.3 3. 丰富异步编程模式和库生态
@@ -330,6 +327,7 @@ impl<T: Send + 'static, E: Send + 'static> ReactiveStream<T, E> {
         }
     }
 }
+
 ```
 
 #### 1.3.3.2 元理论 → 理论
@@ -402,6 +400,7 @@ where
         }
     }
 }
+
 ```
 
 ### 1.3.4 4. 简化API设计，提高开发者体验
@@ -525,6 +524,7 @@ impl<T> AsyncBuilder<T> {
         }
     }
 }
+
 ```
 
 #### 1.3.4.2 元理论 → 理论
@@ -595,6 +595,7 @@ pub trait AsyncOperation {
         }
     }
 }
+
 ```
 
 ## 1.4 当前热门设计模式与发展趋势
@@ -662,6 +663,7 @@ impl<T: Clone + Send + 'static> ReactiveProcessor<T> {
         unimplemented!()
     }
 }
+
 ```
 
 ### 1.4.2 状态机驱动(State Machine Driven)
@@ -725,6 +727,7 @@ impl<S: 'static, E: 'static> StateMachine<S, E> {
         false
     }
 }
+
 ```
 
 ### 1.4.3 面向通道编程(Channel-Oriented Programming)
@@ -774,6 +777,7 @@ impl ActorSystem {
         self.registry.get(&id).map(|tx| ActorRef::new(id, tx.clone()))
     }
 }
+
 ```
 
 ## 1.5 WebAssembly与Rust异步编程的融合
@@ -852,6 +856,7 @@ impl WasmAsyncAdapter {
         }
     }
 }
+
 ```
 
 ## 1.6 分布式系统设计模型
@@ -951,6 +956,7 @@ impl<T: Serialize + DeserializeOwned + Clone + Send + 'static> DistributedConsen
         // 实际应用逻辑
     }
 }
+
 ```
 
 ## 1.7 应用框架生态梳理
@@ -993,7 +999,8 @@ impl<M: WebComponent + Sized> MiddlewareChain<M> {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl<M: WebComponent + Send + Sync> WebComponent for MiddlewareChain<M> {
     async fn handle(&self, req: Request) -> Response {
         // 先执行当前中间件，然后传递给下一个
@@ -1015,7 +1022,7 @@ impl Router {
             routes: HashMap::new(),
         }
     }
-    
+  
     /// 添加路由
     pub fn route<H>(&mut self, pattern: &str, handler: H) -> &mut Self
     where
@@ -1027,7 +1034,8 @@ impl Router {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl WebComponent for Router {
     async fn handle(&self, req: Request) -> Response {
         // 匹配路由
@@ -1039,11 +1047,12 @@ impl WebComponent for Router {
                 return handler.handle(req).await;
             }
         }
-        
+  
         // 未找到匹配路由
         Response::not_found()
     }
 }
+
 ```
 
 ### 1.7.2 数据库访问框架
@@ -1066,7 +1075,7 @@ impl<T: Connection + Send + Sync + 'static> DatabaseClient<T> {
             trace_context: None,
         }
     }
-    
+  
     /// 执行查询
     pub async fn query<Q, R>(&self, query: Q) -> Result<Vec<R>, DbError>
     where
@@ -1074,16 +1083,16 @@ impl<T: Connection + Send + Sync + 'static> DatabaseClient<T> {
         R: DeserializeOwned,
     {
         let _span = self.create_span("db_query");
-        
+  
         let conn = self.pool.acquire().await?;
         let query = query.into();
-        
+  
         let result = conn.execute(&query).await?;
         let rows = result.rows::<R>().await?;
-        
+  
         Ok(rows)
     }
-    
+  
     /// 执行事务
     pub async fn transaction<F, R>(&self, f: F) -> Result<R, DbError>
     where
@@ -1091,10 +1100,10 @@ impl<T: Connection + Send + Sync + 'static> DatabaseClient<T> {
         R: Send + 'static,
     {
         let _span = self.create_span("db_transaction");
-        
+  
         let conn = self.pool.acquire().await?;
         let tx = conn.begin_transaction().await?;
-        
+  
         match f(&tx).await {
             Ok(result) => {
                 tx.commit().await?;
@@ -1106,7 +1115,7 @@ impl<T: Connection + Send + Sync + 'static> DatabaseClient<T> {
             }
         }
     }
-    
+  
     /// 创建跟踪范围
     fn create_span(&self, name: &str) -> tracing::Span {
         if let Some(ctx) = &self.trace_context {
@@ -1138,13 +1147,14 @@ impl QueryBuilder {
             params: Vec::new(),
         }
     }
-    
+  
     /// 添加参数
     pub fn param<T: Into<DbValue>>(mut self, value: T) -> Self {
         self.params.push(value.into());
         self
     }
 }
+
 ```
 
 ### 1.7.3 消息队列框架
@@ -1162,29 +1172,29 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + 'static> MessageQueue<T> {
     /// 创建新的消息队列客户端
     pub async fn new(config: ConnectionConfig) -> Result<Self, QueueError> {
         let connection = Connection::connect(config).await?;
-        
+  
         Ok(Self {
             connection,
             _marker: PhantomData,
         })
     }
-    
+  
     /// 发布消息
     pub async fn publish(&self, queue: &str, message: T) -> Result<(), QueueError> {
         let payload = serde_json::to_vec(&message)?;
-        
+  
         self.connection.publish(queue, payload).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 消费消息
     pub async fn consume(&self, queue: &str) -> impl Stream<Item = Result<Message<T>, QueueError>> {
         let rx = self.connection.consume(queue).await.unwrap_or_else(|_| {
             // 创建空流
             tokio::sync::mpsc::channel(1).1
         });
-        
+  
         rx.map(|result| {
             result.map_err(QueueError::from)
                 .and_then(|msg| {
@@ -1197,7 +1207,7 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + 'static> MessageQueue<T> {
                 })
         })
     }
-    
+  
     /// 创建消费者组
     pub async fn create_consumer_group<F, Fut>(
         &self,
@@ -1211,16 +1221,16 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + 'static> MessageQueue<T> {
         Fut: Future<Output = Result<(), QueueError>> + Send + 'static,
     {
         let mut handles = Vec::with_capacity(concurrency);
-        
+  
         for i in 0..concurrency {
             let connection = self.connection.clone();
             let queue = queue.to_string();
             let group_id = group_id.to_string();
             let consumer_id = format!("{}-{}", group_id, i);
-            
+  
             let handle = tokio::spawn(async move {
                 let consumer = connection.consume_with_group(&queue, &group_id, &consumer_id).await?;
-                
+  
                 consumer.for_each(|msg_result| async {
                     match msg_result {
                         Ok(raw_msg) => {
@@ -1231,7 +1241,7 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + 'static> MessageQueue<T> {
                                         payload,
                                         properties: raw_msg.properties,
                                     };
-                                    
+  
                                     if let Err(err) = handler(msg).await {
                                         tracing::error!("消息处理错误: {:?}", err);
                                     }
@@ -1246,13 +1256,13 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + 'static> MessageQueue<T> {
                         }
                     }
                 }).await;
-                
+  
                 Ok::<_, QueueError>(())
             });
-            
+  
             handles.push(handle);
         }
-        
+  
         Ok(ConsumerGroup { handles })
     }
 }
@@ -1269,10 +1279,11 @@ impl ConsumerGroup {
         for handle in self.handles {
             handle.await??;
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ## 1.8 结论与展望
@@ -1405,4 +1416,5 @@ Rust异步编程未来发展
         ├── Kubernetes集成
         ├── 服务网格
         └── 可观测性
+
 ```

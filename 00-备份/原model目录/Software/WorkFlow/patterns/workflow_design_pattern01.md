@@ -91,6 +91,7 @@ pub struct Marking {
     /// 每个条件节点的标记数量
     pub tokens: HashMap<String, u32>,
 }
+
 ```
 
 ### 2. 分布式系统理论
@@ -130,6 +131,7 @@ pub struct DistributedConfig {
     /// 失败检测阈值
     pub failure_detection_threshold: u32,
 }
+
 ```
 
 ### 3. 领域驱动设计
@@ -176,6 +178,7 @@ pub mod domain {
         }
     }
 }
+
 ```
 
 ## 架构设计层面
@@ -194,6 +197,7 @@ pub mod domain {
 ├─────────────────────────────────┤
 │    基础设施层 (Infrastructure)   │ ← 持久化、消息队列、事件总线
 └─────────────────────────────────┘
+
 ```
 
 每层的核心职责：
@@ -245,6 +249,7 @@ pub struct SapSystemAdapter {
 impl EnterpriseSystemPort for SapSystemAdapter {
     // 实现EnterpriseSystemPort接口...
 }
+
 ```
 
 ### 3. 事件驱动架构
@@ -313,6 +318,7 @@ impl WorkflowEventListener {
         self.subscription_ids.push(subscription_id);
     }
 }
+
 ```
 
 ## 技术层面实现
@@ -368,6 +374,7 @@ impl WorkflowContext {
         });
     }
 }
+
 ```
 
 ### 2. 并发与异步处理
@@ -445,6 +452,7 @@ impl AsyncWorkflowExecutor {
         Ok(())
     }
 }
+
 ```
 
 ### 3. 错误处理与恢复
@@ -561,6 +569,7 @@ impl RecoveryManager {
         }
     }
 }
+
 ```
 
 ### 4. 持久化与事件溯源
@@ -709,6 +718,7 @@ impl<T: AggregateRoot + Serialize + DeserializeOwned> HybridRepository<T> {
         Ok(())
     }
 }
+
 ```
 
 ### 5. 分布式协调
@@ -836,6 +846,7 @@ impl<'a> Drop for DistributedLock<'a> {
         });
     }
 }
+
 ```
 
 ## 最终综合架构
@@ -866,6 +877,7 @@ impl<'a> Drop for DistributedLock<'a> {
 │  │ 持久化存储  │ │ 事件总线   │ │ 分布式锁  │ │   外部系统集成    │ │
 │  └───────────┘ └───────────┘ └───────────┘ └───────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
+
 ```
 
 ### 2. 核心组件交互图
@@ -886,6 +898,7 @@ impl<'a> Drop for DistributedLock<'a> {
 ┌─────────────┐    通知    ┌─────────────┐    集成    ┌─────────────┐
 │  事件总线    │◄─────────►│  持久化存储   │◄─────────►│  外部系统   │
 └─────────────┘            └─────────────┘            └─────────────┘
+
 ```
 
 ### 3. 核心API设计
@@ -989,6 +1002,7 @@ pub mod workflow_api {
         pub async fn get_system_health() -> Result<SystemHealth, Error>;
     }
 }
+
 ```
 
 ## 工作流执行实现详解
@@ -1206,6 +1220,7 @@ impl WorkflowEngine {
     
     // 其他工作流管理方法...
 }
+
 ```
 
 ### 2. 活动执行与协调
@@ -1456,6 +1471,7 @@ impl ExecutionCoordinator {
     
     // 其他执行方法（网关、事件、子工作流等）...
 }
+
 ```
 
 ### 3. 事件溯源与持久化
@@ -1577,6 +1593,7 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
                     state: WorkflowState::Created,
                     data: HashMap::new(),
                     create
+
 # Rust工作流架构全面梳理（续）
 
 ## 事件溯源与持久化（续）
@@ -1587,7 +1604,7 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
     /// 加载工作流实例（续）
     async fn get_instance(&self, instance_id: &str) -> Result<WorkflowInstance, WorkflowError> {
         // 前面部分代码...
-        
+  
         // 6. 从事件重建工作流实例
         let mut instance = WorkflowInstance {
             id: instance_id.to_string(),
@@ -1606,13 +1623,13 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
             },
             version: 0,
         };
-        
+  
         // 7. 依次应用事件
         for event_data in events {
             if event_data.event_type == "WorkflowInstanceEvent" {
                 let workflow_event: WorkflowInstanceEvent = serde_json::from_value(event_data.data)
                     .map_err(|e| WorkflowError::Deserialization(e.to_string()))?;
-                
+  
                 // 更新工作流实例的基本信息
                 if instance.definition_id.is_empty() {
                     if let Some(definition_id) = workflow_event.metadata.get("definition_id") {
@@ -1622,7 +1639,7 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
                         instance.context.definition_id = instance.definition_id.clone();
                     }
                 }
-                
+  
                 if let Some(created_at) = workflow_event.metadata.get("created_at") {
                     if let Ok(timestamp) = DateTime::parse_from_rfc3339(
                         created_at.as_str()
@@ -1631,18 +1648,18 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
                         instance.context.created_at = timestamp.with_timezone(&Utc);
                     }
                 }
-                
+  
                 if let Some(created_by) = workflow_event.metadata.get("created_by") {
                     instance.context.created_by = created_by.as_str().map(|s| s.to_string());
                 }
-                
+  
                 // 应用事件到工作流实例
                 instance.state = workflow_event.state;
                 instance.context.state = workflow_event.state.clone();
                 instance.context.data = workflow_event.data;
                 instance.context.metadata = workflow_event.metadata;
                 instance.version = workflow_event.version;
-                
+  
                 // 处理特殊事件类型
                 if let Some(event_name) = workflow_event.metadata.get("event_name") {
                     match event_name.as_str() {
@@ -1665,29 +1682,29 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
                 }
             }
         }
-        
+  
         // 8. 验证工作流实例
         if instance.definition_id.is_empty() {
             return Err(WorkflowError::InvalidData("找不到工作流定义ID".into()));
         }
-        
+  
         Ok(instance)
     }
-    
+  
     /// 删除工作流实例
     async fn delete_instance(&self, instance_id: &str) -> Result<(), WorkflowError> {
         // 软删除：添加删除事件
         let stream_id = format!("workflow:{}", instance_id);
-        
+  
         // 先检查实例是否存在
         let stream_info = self.event_store.get_stream_info(&stream_id).await?;
         if stream_info.is_none() {
             return Err(WorkflowError::NotFound(format!("找不到工作流实例: {}", instance_id)));
         }
-        
+  
         // 获取当前版本
         let current_version = stream_info.unwrap().last_event_number;
-        
+  
         // 创建删除事件
         let delete_event = WorkflowInstanceEvent {
             workflow_id: instance_id.to_string(),
@@ -1700,11 +1717,11 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
             timestamp: Utc::now(),
             version: current_version + 1,
         };
-        
+  
         // 序列化事件
         let event_data = serde_json::to_value(&delete_event)
             .map_err(|e| WorkflowError::Serialization(e.to_string()))?;
-        
+  
         // 附加删除事件
         self.event_store.append_to_stream(
             &stream_id,
@@ -1715,45 +1732,45 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
                 metadata: json!({"final": true}),
             }]
         ).await?;
-        
+  
         // 删除快照
         self.snapshot_store.delete_snapshots(instance_id).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 查询工作流实例
     async fn query_instances(&self, query: &WorkflowQuery) -> Result<Vec<WorkflowInstance>, WorkflowError> {
         // 实现查询功能...
         // 这里需要根据具体的事件存储实现来支持查询
         // 可以考虑使用投影(projection)来构建查询视图
-        
+  
         // 示例：假设有一个查询API
         let mut instances = Vec::new();
-        
+  
         // 构建查询条件
         let mut conditions = Vec::new();
-        
+  
         if let Some(definition_id) = &query.definition_id {
             conditions.push(format!("definition_id = '{}'", definition_id));
         }
-        
+  
         if let Some(state) = &query.state {
             conditions.push(format!("state = '{:?}'", state));
         }
-        
+  
         if let Some(from) = &query.created_after {
             conditions.push(format!("created_at >= '{}'", from.to_rfc3339()));
         }
-        
+  
         if let Some(to) = &query.created_before {
             conditions.push(format!("created_at <= '{}'", to.to_rfc3339()));
         }
-        
+  
         // 执行查询
         let query_string = conditions.join(" AND ");
         let results = self.event_store.query_streams(&query_string, query.limit).await?;
-        
+  
         // 对于每个结果，加载完整实例
         for stream_id in results {
             if let Some(instance_id) = stream_id.strip_prefix("workflow:") {
@@ -1770,10 +1787,11 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
                 }
             }
         }
-        
+  
         Ok(instances)
     }
 }
+
 ```
 
 ## 数据流与业务集成
@@ -1785,10 +1803,10 @@ impl WorkflowInstanceRepository for EventSourcedWorkflowRepository {
 pub trait DataTransformer: Send + Sync {
     /// 转换器类型名称
     fn type_name(&self) -> &str;
-    
+  
     /// 执行数据转换
     fn transform(&self, input: &Value) -> Result<Value, WorkflowError>;
-    
+  
     /// 验证输入数据
     fn validate_input(&self, input: &Value) -> Result<(), WorkflowError> {
         Ok(())
@@ -1804,18 +1822,18 @@ impl DataTransformer for JsonPathExtractor {
     fn type_name(&self) -> &str {
         "json_path_extractor"
     }
-    
+  
     fn transform(&self, input: &Value) -> Result<Value, WorkflowError> {
         self.validate_input(input)?;
-        
+  
         let mut result = json!({});
-        
+  
         for (output_field, path_expr) in &self.path_expressions {
             let selector = jsonpath::selector(input, path_expr)
                 .map_err(|e| WorkflowError::DataTransformation(
                     format!("无效的JSON路径表达式 '{}': {}", path_expr, e)
                 ))?;
-            
+  
             if let Some(value) = selector.first() {
                 result[output_field] = value.clone();
             } else {
@@ -1823,17 +1841,17 @@ impl DataTransformer for JsonPathExtractor {
                 result[output_field] = Value::Null;
             }
         }
-        
+  
         Ok(result)
     }
-    
+  
     fn validate_input(&self, input: &Value) -> Result<(), WorkflowError> {
         if !input.is_object() && !input.is_array() {
             return Err(WorkflowError::InvalidInput(
                 "JSON路径提取器需要对象或数组输入".into()
             ));
         }
-        
+  
         Ok(())
     }
 }
@@ -1853,10 +1871,10 @@ impl DataTransformer for TemplateRenderer {
     fn type_name(&self) -> &str {
         "template_renderer"
     }
-    
+  
     fn transform(&self, input: &Value) -> Result<Value, WorkflowError> {
         self.validate_input(input)?;
-        
+  
         // 渲染模板
         let rendered = match &self.engine {
             TemplateEngine::Handlebars(hbs) => {
@@ -1880,14 +1898,14 @@ impl DataTransformer for TemplateRenderer {
                         context
                     }
                 };
-                
+  
                 tera.render_str(&self.template, &context)
                     .map_err(|e| WorkflowError::DataTransformation(
                         format!("模板渲染失败: {}", e)
                     ))?
             }
         };
-        
+  
         // 尝试解析为JSON，如果失败则作为字符串返回
         match serde_json::from_str::<Value>(&rendered) {
             Ok(json_value) => Ok(json_value),
@@ -1919,19 +1937,19 @@ impl DataTransformer for DataMapper {
     fn type_name(&self) -> &str {
         "data_mapper"
     }
-    
+  
     fn transform(&self, input: &Value) -> Result<Value, WorkflowError> {
         self.validate_input(input)?;
-        
+  
         let mut result = json!({});
-        
+  
         for mapping in &self.mappings {
             // 提取源值
             let source_selector = jsonpath::selector(input, &mapping.source_path)
                 .map_err(|e| WorkflowError::DataTransformation(
                     format!("无效的源路径表达式 '{}': {}", mapping.source_path, e)
                 ))?;
-            
+  
             if let Some(source_value) = source_selector.first() {
                 // 应用转换函数
                 let transformed_value = if let Some(transform) = &mapping.transform {
@@ -1975,12 +1993,12 @@ impl DataTransformer for DataMapper {
                     // 无转换，直接使用源值
                     source_value.clone()
                 };
-                
+  
                 // 使用点表示法构建嵌套对象路径
                 set_nested_value(&mut result, &mapping.target_path, transformed_value);
             }
         }
-        
+  
         Ok(result)
     }
 }
@@ -1989,7 +2007,7 @@ impl DataTransformer for DataMapper {
 fn set_nested_value(obj: &mut Value, path: &str, value: Value) {
     let parts: Vec<&str> = path.split('.').collect();
     let mut current = obj;
-    
+  
     for (i, part) in parts.iter().enumerate() {
         if i == parts.len() - 1 {
             // 最后一个部分，设置值
@@ -2010,6 +2028,7 @@ fn set_nested_value(obj: &mut Value, path: &str, value: Value) {
         }
     }
 }
+
 ```
 
 ### 2. 企业业务流程集成
@@ -2019,27 +2038,27 @@ fn set_nested_value(obj: &mut Value, path: &str, value: Value) {
 pub trait EnterpriseSystemConnector: Send + Sync {
     /// 连接器类型名称
     fn connector_type(&self) -> &str;
-    
+  
     /// 连接到企业系统
     async fn connect(&self) -> Result<(), WorkflowError>;
-    
+  
     /// 断开连接
     async fn disconnect(&self) -> Result<(), WorkflowError>;
-    
+  
     /// 执行业务操作
     async fn execute_operation(
         &self,
         operation: &str,
         parameters: &Value
     ) -> Result<Value, WorkflowError>;
-    
+  
     /// 查询业务数据
     async fn query_data(
         &self,
         query: &str,
         parameters: &Value
     ) -> Result<Value, WorkflowError>;
-    
+  
     /// 检查系统健康状态
     async fn check_health(&self) -> Result<SystemHealth, WorkflowError>;
 }
@@ -2056,17 +2075,17 @@ impl EnterpriseSystemConnector for SapConnector {
     fn connector_type(&self) -> &str {
         "sap_connector"
     }
-    
+  
     async fn connect(&self) -> Result<(), WorkflowError> {
         // 实现SAP连接逻辑...
         Ok(())
     }
-    
+  
     async fn disconnect(&self) -> Result<(), WorkflowError> {
         // 实现断开连接逻辑...
         Ok(())
     }
-    
+  
     async fn execute_operation(
         &self,
         operation: &str,
@@ -2076,7 +2095,7 @@ impl EnterpriseSystemConnector for SapConnector {
         if self.client.is_none() {
             self.connect().await?;
         }
-        
+  
         // 执行SAP BAPI/函数模块
         match operation {
             "create_sales_order" => {
@@ -2084,14 +2103,14 @@ impl EnterpriseSystemConnector for SapConnector {
                 let customer_id = parameters.get("customer_id")
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| WorkflowError::MissingParameter("customer_id".into()))?;
-                
+  
                 let items = parameters.get("items")
                     .and_then(|v| v.as_array())
                     .ok_or_else(|| WorkflowError::MissingParameter("items".into()))?;
-                
+  
                 // 调用SAP API创建销售订单
                 // ... 实现细节
-                
+  
                 Ok(json!({
                     "order_id": "SO-123456",
                     "status": "created",
@@ -2103,14 +2122,14 @@ impl EnterpriseSystemConnector for SapConnector {
                 let material_id = parameters.get("material_id")
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| WorkflowError::MissingParameter("material_id".into()))?;
-                
+  
                 let plant = parameters.get("plant")
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| WorkflowError::MissingParameter("plant".into()))?;
-                
+  
                 // 调用SAP API检查库存
                 // ... 实现细节
-                
+  
                 Ok(json!({
                     "material_id": material_id,
                     "plant": plant,
@@ -2124,7 +2143,7 @@ impl EnterpriseSystemConnector for SapConnector {
             ))),
         }
     }
-    
+  
     async fn query_data(
         &self,
         query: &str,
@@ -2136,10 +2155,10 @@ impl EnterpriseSystemConnector for SapConnector {
                 let customer_id = parameters.get("customer_id")
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| WorkflowError::MissingParameter("customer_id".into()))?;
-                
+  
                 // 查询客户信息
                 // ... 实现细节
-                
+  
                 Ok(json!({
                     "customer_id": customer_id,
                     "name": "示例客户",
@@ -2153,11 +2172,11 @@ impl EnterpriseSystemConnector for SapConnector {
             ))),
         }
     }
-    
+  
     async fn check_health(&self) -> Result<SystemHealth, WorkflowError> {
         // 检查SAP系统连接
         // ... 实现细节
-        
+  
         Ok(SystemHealth {
             status: HealthStatus::Healthy,
             details: json!({
@@ -2186,7 +2205,7 @@ impl Activity for EnterpriseSystemActivity {
     fn activity_type(&self) -> &str {
         "enterprise_system_activity"
     }
-    
+  
     async fn execute(
         &self,
         context: &ActivityContext
@@ -2194,16 +2213,16 @@ impl Activity for EnterpriseSystemActivity {
         // 1. 获取连接器
         let connector_registry = get_connector_registry()?;
         let connector = connector_registry.get_connector(&self.connector_type)?;
-        
+  
         // 2. 构建操作参数
         let mut parameters = json!({});
-        
+  
         for (param_name, data_path) in &self.parameter_mapping {
             // 从上下文中提取参数值
             let value = extract_value_from_context(context, data_path)?;
             parameters[param_name] = value;
         }
-        
+  
         // 3. 执行操作
         let start_time = Instant::now();
         let operation_result = tokio::time::timeout(
@@ -2213,9 +2232,9 @@ impl Activity for EnterpriseSystemActivity {
         .map_err(|_| WorkflowError::Timeout(format!(
             "执行企业系统操作 {} 超时", self.operation
         )))??;
-        
+  
         let duration = start_time.elapsed();
-        
+  
         // 4. 处理结果映射
         let result = if let Some(result_path) = &self.result_mapping {
             // 将结果存储到指定路径
@@ -2240,10 +2259,11 @@ impl Activity for EnterpriseSystemActivity {
                 }
             })
         };
-        
+  
         Ok(result)
     }
 }
+
 ```
 
 ### 3. IoT设备集成
@@ -2253,13 +2273,13 @@ impl Activity for EnterpriseSystemActivity {
 pub trait IoTDeviceConnector: Send + Sync {
     /// 连接器类型名称
     fn connector_type(&self) -> &str;
-    
+  
     /// 连接到IoT设备或平台
     async fn connect(&self) -> Result<(), WorkflowError>;
-    
+  
     /// 断开连接
     async fn disconnect(&self) -> Result<(), WorkflowError>;
-    
+  
     /// 发送命令到设备
     async fn send_command(
         &self,
@@ -2267,21 +2287,21 @@ pub trait IoTDeviceConnector: Send + Sync {
         command: &str,
         parameters: &Value
     ) -> Result<Value, WorkflowError>;
-    
+  
     /// 查询设备状态
     async fn query_device_state(
         &self,
         device_id: &str,
         metrics: Option<Vec<String>>
     ) -> Result<DeviceState, WorkflowError>;
-    
+  
     /// 订阅设备遥测数据
     async fn subscribe_to_telemetry(
         &self,
         device_ids: Vec<String>,
         callback: Box<dyn Fn(DeviceTelemetry) + Send + Sync>
     ) -> Result<SubscriptionId, WorkflowError>;
-    
+  
     /// 取消订阅
     async fn unsubscribe(
         &self,
@@ -2303,7 +2323,7 @@ impl IoTDeviceConnector for MqttDeviceConnector {
     fn connector_type(&self) -> &str {
         "mqtt_connector"
     }
-    
+  
     async fn connect(&self) -> Result<(), WorkflowError> {
         // 创建MQTT客户端选项
         let mut mqtt_options = MqttOptions::new(
@@ -2311,7 +2331,7 @@ impl IoTDeviceConnector for MqttDeviceConnector {
             &self.broker_url,
             1883 // 默认端口
         );
-        
+  
         // 设置凭据
         if let Some(creds) = &self.credentials {
             match creds {
@@ -2332,14 +2352,14 @@ impl IoTDeviceConnector for MqttDeviceConnector {
                 )),
             }
         }
-        
+  
         // 设置QoS
         mqtt_options.set_clean_session(true);
         mqtt_options.set_keep_alive(Duration::from_secs(30));
-        
+  
         // 创建MQTT客户端
         let (client, mut event_loop) = AsyncClient::new(mqtt_options, 10);
-        
+  
         // 异步连接处理
         tokio::spawn(async move {
             loop {
@@ -2369,13 +2389,13 @@ impl IoTDeviceConnector for MqttDeviceConnector {
                 }
             }
         });
-        
+  
         // 存储客户端
         self.client.replace(client);
-        
+  
         Ok(())
     }
-    
+  
     async fn disconnect(&self) -> Result<(), WorkflowError> {
         if let Some(client) = &self.client {
             client.disconnect().await
@@ -2383,10 +2403,10 @@ impl IoTDeviceConnector for MqttDeviceConnector {
                     "断开MQTT连接失败: {}", e
                 )))?;
         }
-        
+  
         Ok(())
     }
-    
+  
     async fn send_command(
         &self,
         device_id: &str,
@@ -2397,21 +2417,22 @@ impl IoTDeviceConnector for MqttDeviceConnector {
             Some(c) => c,
             None => return Err(WorkflowError::ConnectionError("MQTT客户端未连接".into())),
         };
-        
+  
         // 构建命令主题
-        let topic = format!("{}/devices/{}/commands/{}", 
+        let topic = format!("{}/devices/{}/commands/{}",
                            self.topic_prefix, device_id, command);
-        
+  
         // 序列化命令参数
         let payload = serde_json::to_string(parameters)
             .map_err(|e| WorkflowError::Serialization(format!(
                 "无法序列化命令参数: {}", e
             )))?;
-        
+  
         // 发送命令
         client.publish(
             topic,
             QoS::from_u8(self.qos).unwrap_or(Qo
+
 # Rust工作流架构全面梳理（续）
 
 ## IoT设备集成（续）
@@ -2723,6 +2744,7 @@ impl Activity for IoTDeviceActivity {
         }
     }
 }
+
 ```
 
 ## 工作流监控与运维
@@ -2987,6 +3009,7 @@ impl MetricsCollector for PrometheusMetricsCollector {
         }
     }
 }
+
 ```
 
 ### 2. 工作流可视化与管理
@@ -3062,6 +3085,7 @@ impl WorkflowVisualizer for DotVisualizer {
             };
             
             dot.push_str(&format!("  \"{}\" -> \"{}\"{};
+
 # Rust工作流架构全面梳理（续）
 
 ## 工作流可视化与管理（续）
@@ -3074,7 +3098,7 @@ impl WorkflowVisualizer for DotVisualizer {
         definition: &WorkflowDefinition
     ) -> Result<String, WorkflowError> {
         // 前面部分代码...
-        
+  
         // 添加转换
         for transition in &definition.transitions {
             let label = if let Some(condition) = &transition.condition {
@@ -3082,16 +3106,16 @@ impl WorkflowVisualizer for DotVisualizer {
             } else {
                 String::new()
             };
-            
-            dot.push_str(&format!("  \"{}\" -> \"{}\"{};\n", 
+  
+            dot.push_str(&format!("  \"{}\" -> \"{}\"{};\n",
                                  transition.source_id, transition.target_id, label));
         }
-        
+  
         dot.push_str("}\n");
-        
+  
         Ok(dot)
     }
-    
+  
     fn export_instance_graph(
         &self,
         definition: &WorkflowDefinition,
@@ -3100,12 +3124,12 @@ impl WorkflowVisualizer for DotVisualizer {
         let mut dot = String::from("digraph workflow_instance {\n");
         dot.push_str("  rankdir=LR;\n");
         dot.push_str("  node [shape=box, style=filled, fillcolor=lightblue];\n");
-        
+  
         // 设置图的标题
         dot.push_str(&format!("  labelloc=\"t\";\n"));
-        dot.push_str(&format!("  label=\"{} (ID: {})\\nState: {:?}\";\n", 
+        dot.push_str(&format!("  label=\"{} (ID: {})\\nState: {:?}\";\n",
                              definition.name, instance.id, instance.state));
-        
+  
         // 添加所有节点
         for node in &definition.nodes {
             let (shape, color) = match node.node_type {
@@ -3114,11 +3138,11 @@ impl WorkflowVisualizer for DotVisualizer {
                 NodeType::Event => ("ellipse", "lightsalmon"),
                 NodeType::SubWorkflow => ("box", "lightgreen"),
             };
-            
+  
             // 检查节点是否在执行路径中
             let is_executed = instance.context.execution_path.contains(&node.id);
             let is_current = instance.context.execution_path.last() == Some(&node.id);
-            
+  
             let style = if is_current {
                 "filled,bold"
             } else if is_executed {
@@ -3126,7 +3150,7 @@ impl WorkflowVisualizer for DotVisualizer {
             } else {
                 "filled,dashed"
             };
-            
+  
             let color = if is_current {
                 "green"
             } else if is_executed {
@@ -3134,20 +3158,20 @@ impl WorkflowVisualizer for DotVisualizer {
             } else {
                 "lightgray"
             };
-            
-            dot.push_str(&format!("  \"{}\" [label=\"{}\", shape={}, style=\"{}\", fillcolor={}];\n", 
+  
+            dot.push_str(&format!("  \"{}\" [label=\"{}\", shape={}, style=\"{}\", fillcolor={}];\n",
                                  node.id, node.name, shape, style, color));
         }
-        
+  
         // 添加转换
         for transition in &definition.transitions {
             let source_executed = instance.context.execution_path.contains(&transition.source_id);
             let target_executed = instance.context.execution_path.contains(&transition.target_id);
-            
+  
             // 查找源节点后是否直接执行了目标节点
             let is_traversed = instance.context.execution_path.windows(2)
                 .any(|w| w[0] == transition.source_id && w[1] == transition.target_id);
-            
+  
             let style = if is_traversed {
                 "bold"
             } else if source_executed && target_executed {
@@ -3155,7 +3179,7 @@ impl WorkflowVisualizer for DotVisualizer {
             } else {
                 "dashed"
             };
-            
+  
             let color = if is_traversed {
                 "green"
             } else if source_executed && target_executed {
@@ -3163,22 +3187,22 @@ impl WorkflowVisualizer for DotVisualizer {
             } else {
                 "gray"
             };
-            
+  
             let label = if let Some(condition) = &transition.condition {
                 format!(" [label=\"{}\", style={}, color={}]", condition, style, color)
             } else {
                 format!(" [style={}, color={}]", style, color)
             };
-            
-            dot.push_str(&format!("  \"{}\" -> \"{}\"{};\n", 
+  
+            dot.push_str(&format!("  \"{}\" -> \"{}\"{};\n",
                                  transition.source_id, transition.target_id, label));
         }
-        
+  
         dot.push_str("}\n");
-        
+  
         Ok(dot)
     }
-    
+  
     fn format(&self) -> VisualizationFormat {
         VisualizationFormat::Dot
     }
@@ -3210,7 +3234,7 @@ impl WorkflowAdminConsole {
             visualizer,
         }
     }
-    
+  
     /// 获取工作流定义列表
     pub async fn list_workflow_definitions(
         &self,
@@ -3219,14 +3243,14 @@ impl WorkflowAdminConsole {
     ) -> Result<(Vec<WorkflowDefinitionSummary>, usize), WorkflowError> {
         self.definition_repository.list_definitions(page, page_size).await
     }
-    
+  
     /// 获取工作流实例列表
     pub async fn list_workflow_instances(
         &self,
         query: &WorkflowQuery,
     ) -> Result<Vec<WorkflowInstanceSummary>, WorkflowError> {
         let instances = self.instance_repository.query_instances(query).await?;
-        
+  
         // 转换为摘要信息
         let summaries = instances.into_iter().map(|instance| {
             WorkflowInstanceSummary {
@@ -3241,10 +3265,10 @@ impl WorkflowAdminConsole {
                     .map(|dt| dt.with_timezone(&Utc)),
             }
         }).collect();
-        
+  
         Ok(summaries)
     }
-    
+  
     /// 获取工作流实例详情
     pub async fn get_workflow_instance_details(
         &self,
@@ -3252,18 +3276,18 @@ impl WorkflowAdminConsole {
     ) -> Result<WorkflowInstanceDetails, WorkflowError> {
         // 加载工作流实例
         let instance = self.instance_repository.get_instance(instance_id).await?;
-        
+  
         // 加载工作流定义
         let definition = self.definition_repository
             .get_definition(&instance.definition_id)
             .await?;
-        
+  
         // 生成可视化图
         let graph = self.visualizer.export_instance_graph(&definition, &instance)?;
-        
+  
         // 计算统计信息
         let stats = self.calculate_instance_stats(&instance);
-        
+  
         // 创建详细信息
         let details = WorkflowInstanceDetails {
             id: instance.id,
@@ -3283,29 +3307,29 @@ impl WorkflowAdminConsole {
             statistics: stats,
             error_stack: instance.context.error_stack,
         };
-        
+  
         Ok(details)
     }
-    
+  
     /// 计算工作流实例统计信息
     fn calculate_instance_stats(&self, instance: &WorkflowInstance) -> InstanceStatistics {
         // 从元数据中提取统计信息
         let start_time = instance.context.created_at;
-        
+  
         let end_time = instance.context.metadata.get("completed_at")
             .and_then(|v| v.as_str())
             .and_then(|s| DateTime::parse_from_rfc3339(s).ok())
             .map(|dt| dt.with_timezone(&Utc))
             .unwrap_or_else(|| Utc::now());
-        
+  
         let duration = (end_time - start_time).num_milliseconds() as u64;
-        
+  
         let activities_executed = instance.context.execution_path.len();
-        
+  
         let activities_failed = instance.context.metadata.get("activities_failed")
             .and_then(|v| v.as_u64())
             .unwrap_or(0) as usize;
-        
+  
         InstanceStatistics {
             start_time,
             end_time,
@@ -3317,7 +3341,7 @@ impl WorkflowAdminConsole {
                 .unwrap_or(0) as usize,
         }
     }
-    
+  
     /// 重启失败的工作流实例
     pub async fn restart_failed_workflow(
         &self,
@@ -3326,18 +3350,18 @@ impl WorkflowAdminConsole {
     ) -> Result<(), WorkflowError> {
         // 加载工作流实例
         let instance = self.instance_repository.get_instance(instance_id).await?;
-        
+  
         // 检查工作流状态
         if instance.state != WorkflowState::Failed {
             return Err(WorkflowError::InvalidState(format!(
                 "只能重启失败的工作流，当前状态: {:?}", instance.state
             )));
         }
-        
+  
         // 使用工作流引擎重启工作流
         self.engine.restart_workflow_instance(instance_id, user_context).await
     }
-    
+  
     /// 获取工作流统计摘要
     pub async fn get_workflow_statistics(
         &self,
@@ -3345,22 +3369,22 @@ impl WorkflowAdminConsole {
     ) -> Result<WorkflowStatistics, WorkflowError> {
         // 构建查询
         let mut query = WorkflowQuery::new();
-        
+  
         if let Some((start, end)) = time_range {
             query.created_after(start).created_before(end);
         }
-        
+  
         // 查询工作流实例
         let instances = self.instance_repository.query_instances(&query).await?;
-        
+  
         // 计算统计信息
         let total_workflows = instances.len();
-        
+  
         let mut completed = 0;
         let mut failed = 0;
         let mut running = 0;
         let mut other = 0;
-        
+  
         for instance in &instances {
             match instance.state {
                 WorkflowState::Completed => completed += 1,
@@ -3369,11 +3393,11 @@ impl WorkflowAdminConsole {
                 _ => other += 1,
             }
         }
-        
+  
         // 计算平均执行时间
         let mut total_duration_ms = 0;
         let mut completed_count = 0;
-        
+  
         for instance in &instances {
             if instance.state == WorkflowState::Completed {
                 if let (Some(start), Some(end)) = (
@@ -3388,13 +3412,13 @@ impl WorkflowAdminConsole {
                 }
             }
         }
-        
+  
         let avg_duration_ms = if completed_count > 0 {
             total_duration_ms / completed_count
         } else {
             0
         };
-        
+  
         // 返回统计信息
         Ok(WorkflowStatistics {
             total_workflows,
@@ -3407,6 +3431,7 @@ impl WorkflowAdminConsole {
         })
     }
 }
+
 ```
 
 ## 工作流版本管理与迁移
@@ -3426,7 +3451,7 @@ impl WorkflowVersionManager {
             migration_registry: HashMap::new(),
         }
     }
-    
+  
     /// 注册工作流迁移策略
     pub fn register_migration(
         &mut self,
@@ -3434,13 +3459,13 @@ impl WorkflowVersionManager {
         migration: Box<dyn WorkflowMigration>,
     ) {
         let source_version = migration.source_version();
-        
+  
         self.migration_registry
             .entry(workflow_type)
             .or_insert_with(HashMap::new)
             .insert(source_version, migration);
     }
-    
+  
     /// 发布新版本工作流定义
     pub async fn publish_new_version(
         &self,
@@ -3453,13 +3478,13 @@ impl WorkflowVersionManager {
                 "工作流定义验证失败".into()
             ));
         }
-        
+  
         // 检查是否存在旧版本
         let workflow_type = definition.workflow_type.clone();
         let latest_version = self.definition_repository
             .get_latest_version(&workflow_type)
             .await?;
-        
+  
         if let Some(latest) = latest_version {
             // 确保新版本号大于当前最新版本
             if definition.version <= latest.version {
@@ -3468,14 +3493,14 @@ impl WorkflowVersionManager {
                     definition.version, latest.version
                 )));
             }
-            
+  
             // 检查是否有从当前版本到新版本的迁移路径
             let migrations = self.migration_registry.get(&workflow_type);
-            
+  
             if let Some(migrations) = migrations {
                 if !self.has_migration_path(
-                    migrations, 
-                    &latest.version, 
+                    migrations,
+                    &latest.version,
                     &definition.version
                 ) {
                     return Err(WorkflowError::MigrationPathMissing(format!(
@@ -3491,15 +3516,15 @@ impl WorkflowVersionManager {
                 )));
             }
         }
-        
+  
         // 发布新版本
         let definition_id = self.definition_repository
             .save_definition(&definition)
             .await?;
-        
+  
         Ok(definition_id)
     }
-    
+  
     /// 检查是否存在迁移路径
     fn has_migration_path(
         &self,
@@ -3511,15 +3536,15 @@ impl WorkflowVersionManager {
         if from_version.major == to_version.major && from_version.minor == to_version.minor {
             return true;
         }
-        
+  
         // 如果是小版本升级，只需要检查是否有小版本迁移
         if from_version.major == to_version.major && from_version.minor < to_version.minor {
             return migrations.contains_key(from_version);
         }
-        
+  
         // 主版本升级需要完整的迁移路径
         let mut current = from_version.clone();
-        
+  
         while current < *to_version {
             if let Some(migration) = migrations.get(&current) {
                 current = migration.target_version();
@@ -3527,10 +3552,10 @@ impl WorkflowVersionManager {
                 return false;
             }
         }
-        
+  
         current == *to_version
     }
-    
+  
     /// 迁移工作流实例到新版本
     pub async fn migrate_instance(
         &self,
@@ -3541,12 +3566,12 @@ impl WorkflowVersionManager {
         // 加载工作流实例
         let instance_repository = get_instance_repository()?;
         let mut instance = instance_repository.get_instance(instance_id).await?;
-        
+  
         // 加载当前工作流定义
         let current_definition = self.definition_repository
             .get_definition(&instance.definition_id)
             .await?;
-        
+  
         // 确定目标版本
         let target = if let Some(version) = target_version {
             version
@@ -3559,22 +3584,22 @@ impl WorkflowVersionManager {
                     "找不到工作流类型 {} 的最新版本",
                     current_definition.workflow_type
                 )))?;
-            
+  
             latest.version
         };
-        
+  
         // 如果当前版本等于目标版本，无需迁移
         if current_definition.version == target {
             return Ok(());
         }
-        
+  
         // 检查工作流状态
         if instance.state == WorkflowState::Running {
             return Err(WorkflowError::InvalidState(
                 "无法迁移正在运行的工作流实例".into()
             ));
         }
-        
+  
         // 获取迁移路径
         let workflow_type = current_definition.workflow_type.clone();
         let migrations = self.migration_registry.get(&workflow_type)
@@ -3582,34 +3607,34 @@ impl WorkflowVersionManager {
                 "找不到工作流类型 {} 的迁移策略",
                 workflow_type
             )))?;
-        
+  
         // 执行迁移
         let mut current_version = current_definition.version.clone();
-        
+  
         while current_version < target {
             if let Some(migration) = migrations.get(&current_version) {
                 // 迁移上下文数据
                 migration.migrate_instance_data(&mut instance.context.data).await?;
-                
+  
                 // 更新版本信息
                 current_version = migration.target_version();
-                
+  
                 // 更新元数据
                 instance.context.metadata.insert(
                     "migrated_from".to_string(),
                     json!(current_definition.version.to_string())
                 );
-                
+  
                 instance.context.metadata.insert(
                     "migrated_to".to_string(),
                     json!(current_version.to_string())
                 );
-                
+  
                 instance.context.metadata.insert(
                     "migrated_at".to_string(),
                     json!(Utc::now().to_rfc3339())
                 );
-                
+  
                 if let Some(user) = user_context {
                     instance.context.metadata.insert(
                         "migrated_by".to_string(),
@@ -3623,7 +3648,7 @@ impl WorkflowVersionManager {
                 )));
             }
         }
-        
+  
         // 更新实例定义ID
         let target_definition = self.definition_repository
             .get_definition_by_type_and_version(&workflow_type, &target)
@@ -3632,13 +3657,13 @@ impl WorkflowVersionManager {
                 "找不到工作流类型 {} 版本 {}",
                 workflow_type, target
             )))?;
-        
+  
         instance.definition_id = target_definition.id.clone();
         instance.context.definition_id = target_definition.id.clone();
-        
+  
         // 保存更新后的实例
         instance_repository.save_instance(&instance).await?;
-        
+  
         Ok(())
     }
 }
@@ -3647,13 +3672,13 @@ impl WorkflowVersionManager {
 pub trait WorkflowMigration: Send + Sync {
     /// 获取源版本
     fn source_version(&self) -> SemanticVersion;
-    
+  
     /// 获取目标版本
     fn target_version(&self) -> SemanticVersion;
-    
+  
     /// 迁移实例数据
     async fn migrate_instance_data(&self, data: &mut HashMap<String, Value>) -> Result<(), WorkflowError>;
-    
+  
     /// 验证迁移兼容性
     fn validate_compatibility(
         &self,
@@ -3668,7 +3693,7 @@ pub trait WorkflowMigration: Send + Sync {
                 target_definition.workflow_type
             )));
         }
-        
+  
         // 验证版本匹配
         if self.source_version() != source_definition.version {
             return Err(WorkflowError::IncompatibleWorkflows(format!(
@@ -3677,7 +3702,7 @@ pub trait WorkflowMigration: Send + Sync {
                 source_definition.version
             )));
         }
-        
+  
         if self.target_version() != target_definition.version {
             return Err(WorkflowError::IncompatibleWorkflows(format!(
                 "目标版本不匹配: {} vs {}",
@@ -3685,10 +3710,11 @@ pub trait WorkflowMigration: Send + Sync {
                 target_definition.version
             )));
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ## 安全与权限模型
@@ -3714,7 +3740,7 @@ impl SecurityManager {
             audit_logger,
         }
     }
-    
+  
     /// 验证用户身份
     pub async fn authenticate(
         &self,
@@ -3722,7 +3748,7 @@ impl SecurityManager {
     ) -> Result<UserContext, WorkflowError> {
         self.authenticator.authenticate(credentials).await
     }
-    
+  
     /// 验证用户令牌
     pub async fn validate_token(
         &self,
@@ -3730,7 +3756,7 @@ impl SecurityManager {
     ) -> Result<UserContext, WorkflowError> {
         self.authenticator.validate_token(token).await
     }
-    
+  
     /// 检查用户权限
     pub async fn check_permission(
         &self,
@@ -3739,13 +3765,13 @@ impl SecurityManager {
         resource: &WorkflowResource,
     ) -> Result<(), WorkflowError> {
         let authorized = self.authorizer.authorize(user, permission, resource).await?;
-        
+  
         if !authorized {
             let error = WorkflowError::Unauthorized(format!(
                 "用户 {} 没有对资源 {} 的 {:?} 权限",
                 user.user_id, resource.resource_id, permission
             ));
-            
+  
             // 记录审计日志
             self.audit_logger.log_access_denied(
                 user,
@@ -3753,20 +3779,20 @@ impl SecurityManager {
                 resource,
                 &error.to_string(),
             ).await?;
-            
+  
             return Err(error);
         }
-        
+  
         // 记录审计日志
         self.audit_logger.log_access_granted(
             user,
             permission,
             resource,
         ).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 记录操作审计
     pub async fn audit_operation(
         &self,
@@ -3785,7 +3811,9 @@ impl SecurityManager {
 }
 
 /// 用户上下文
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct UserContext {
     pub user_id: String,
     pub username: String,
@@ -3796,7 +3824,9 @@ pub struct UserContext {
 }
 
 /// 权限枚举
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
 pub enum Permission {
     View,
     Create,
@@ -3808,7 +3838,9 @@ pub enum Permission {
 }
 
 /// 工作流资源
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct WorkflowResource {
     pub resource_type: ResourceType,
     pub resource_id: String,
@@ -3816,7 +3848,9 @@ pub struct WorkflowResource {
 }
 
 /// 资源类型
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
 pub enum ResourceType {
     WorkflowDefinition,
     WorkflowInstance,
@@ -3842,7 +3876,7 @@ impl Authorizer for RbacAuthorizer {
         if user.roles.contains(&"system_admin".to_string()) {
             return Ok(true);
         }
-        
+  
         // 检查租户隔离
         if self.tenant_isolation {
             if let Some(resource_tenant) = self.get_resource_tenant(&resource.resource_id).await? {
@@ -3853,7 +3887,7 @@ impl Authorizer for RbacAuthorizer {
                 }
             }
         }
-        
+  
         // 检查资源所有者
         if let Some(owner_id) = &resource.owner_id {
             if *owner_id == user.user_id {
@@ -3861,7 +3895,7 @@ impl Authorizer for RbacAuthorizer {
                 return Ok(true);
             }
         }
-        
+  
         // 检查基于角色的权限
         for role in &user.roles {
             if let Some(permissions) = self.role_permissions.get(role) {
@@ -3870,26 +3904,26 @@ impl Authorizer for RbacAuthorizer {
                 }
             }
         }
-        
+  
         // 检查直接权限
-        let permission_str = format!("{:?}_{:?}", 
+        let permission_str = format!("{:?}_{:?}",
                                     resource.resource_type, permission).to_lowercase();
-        
+  
         if user.permissions.contains(&permission_str) {
             return Ok(true);
         }
-        
+  
         // 资源级别的特定权限
-        let resource_permission = format!("{:?}_{:?}_{}", 
+        let resource_permission = format!("{:?}_{:?}_{}",
                                         resource.resource_type, permission, resource.resource_id).to_lowercase();
-        
+  
         if user.permissions.contains(&resource_permission) {
             return Ok(true);
         }
-        
+  
         Ok(false)
     }
-    
+  
     // 获取资源所属租户
     async fn get_resource_tenant(&self, resource_id: &str) -> Result<Option<String>, WorkflowError> {
         // 实际实现中应该从数据库查询资源的租户信息
@@ -3915,6 +3949,7 @@ impl AuditLogger for DatabaseAuditLogger {
             timestamp: Utc::now(),
             user_id: user.user_id.clone(),
             user_name: user.username
+
 # Rust工作流架构全面梳理（续）
 
 ## 安全与权限模型（续）
@@ -4146,6 +4181,7 @@ struct JwtClaims {
     permissions: Option<Vec<String>>, // 用户权限
     tenant_id: Option<String>,        // 租户ID
 }
+
 ```
 
 ## 整合与应用示例
@@ -4484,6 +4520,7 @@ fn create_temperature_monitoring_workflow() -> WorkflowDefinition {
     
     definition
 }
+
 ```
 
 ## 总结

@@ -157,6 +157,7 @@ graph TD
     Y --> FF[原子广播]
     Y --> GG[视图变更]
     Y --> HH[故障处理]
+
 ```
 
 ### 4.1.1.3.2 **学习路径设计**
@@ -221,6 +222,7 @@ type Task struct {
     Worker   string
     StartTime time.Time
 }
+
 ```
 
 #### 4.1.1.4.1.2 **关键算法实现**
@@ -256,6 +258,7 @@ func (m *Master) scheduleReduceTasks() {
         }
     }
 }
+
 ```
 
 #### 4.1.1.4.1.3 **容错机制设计**
@@ -287,6 +290,7 @@ func (m *Master) handleWorkerFailure(workerID string) {
     }
     delete(m.workers, workerID)
 }
+
 ```
 
 ### 4.1.1.4.2 **Lab 2: Raft**
@@ -325,6 +329,7 @@ type LogEntry struct {
     Index   int
     Command interface{}
 }
+
 ```
 
 #### 4.1.1.4.2.2 **领导者选举算法**
@@ -374,6 +379,7 @@ func (rf *Raft) startElection() {
         }
     }
 }
+
 ```
 
 #### 4.1.1.4.2.3 **日志复制机制**
@@ -419,6 +425,7 @@ func (rf *Raft) sendHeartbeat() {
         }
     }
 }
+
 ```
 
 ## 4.1.1.5 📊 **性能分析**
@@ -428,25 +435,33 @@ func (rf *Raft) sendHeartbeat() {
 #### 4.1.1.5.1.1 **MapReduce性能**
 
 ```bash
+
 # 4.1.2 单词计数测试
+
 BenchmarkWordCount_1GB    100     15000000 ns/op
 BenchmarkWordCount_10GB    10     150000000 ns/op
 BenchmarkWordCount_100GB    1     1500000000 ns/op
 
 # 4.1.3 内存使用
+
 BenchmarkWordCount_Memory  100     5000000 B/op
 BenchmarkWordCount_Allocs  100     10000 allocs/op
+
 ```
 
 #### 4.1.3 **Raft性能**
 
 ```bash
+
 # 4.1.4 领导者选举
+
 BenchmarkLeaderElection    1000    1000000 ns/op
 BenchmarkLogReplication    100     5000000 ns/op
 
 # 4.1.5 一致性检查
+
 BenchmarkConsistencyCheck  1000    500000 ns/op
+
 ```
 
 ### 4.1.5 **性能优化策略**

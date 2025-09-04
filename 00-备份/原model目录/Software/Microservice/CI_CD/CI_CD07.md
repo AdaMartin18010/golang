@@ -182,6 +182,7 @@
         ├── 聚合分析
         ├── 时序处理
         └── 预测分析
+
 ```
 
 ## 1. 引言
@@ -1078,6 +1079,7 @@ interface I_comm {
   subscribe(topic) -> subscription
   publish(topic, message, options)
 }
+
 ```
 
 每种通信技术（如MQTT、HTTP、gRPC等）都实现此接口，提供统一抽象。
@@ -1265,6 +1267,7 @@ AWS Greengrass支持边缘计算场景：
 
 ```math
 源码提交 → AWS CodeBuild(多架构构建) → AWS CodePipeline(测试) → Greengrass部署API → 边缘设备
+
 ```
 
 ### 14.3 Azure IoT Edge CI/CD实践

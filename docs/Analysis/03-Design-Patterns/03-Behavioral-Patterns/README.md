@@ -278,6 +278,7 @@ $$\mathcal{S} = (S, \Sigma, \delta, s_0, F)$$
     ├── 静态访问者
     ├── 动态访问者
     └── 反射访问者
+
 ```
 
 ### 3.3.2.4.2 高级行为型模式
@@ -296,6 +297,7 @@ $$\mathcal{S} = (S, \Sigma, \delta, s_0, F)$$
     ├── 高阶函数模式
     ├── 函数组合模式
     └── 单子模式
+
 ```
 
 ## 3.3.2.5 4. Golang实现规范
@@ -322,6 +324,7 @@ type BadHandler interface {
     Process(data interface{}) error  // 不应该在这里
     Validate(input interface{}) bool // 不应该在这里
 }
+
 ```
 
 #### 3.3.2.5.1.2 依赖倒置原则
@@ -345,6 +348,7 @@ func (h *SMSHandler) Handle(message Message) error {
     // 实现细节
     return nil
 }
+
 ```
 
 ### 3.3.2.5.2 并发安全设计
@@ -371,6 +375,7 @@ func (h *AsyncHandler) Start() {
         }
     }()
 }
+
 ```
 
 #### 3.3.2.5.2.2 互斥锁保护
@@ -393,6 +398,7 @@ func (h *ThreadSafeHandler) GetState(key string) (interface{}, bool) {
     value, exists := h.state[key]
     return value, exists
 }
+
 ```
 
 ### 3.3.2.5.3 错误处理规范
@@ -426,6 +432,7 @@ func (h *RetryHandler) HandleError(err error) error {
     // 重试逻辑
     return nil
 }
+
 ```
 
 ## 3.3.2.6 5. 性能分析框架
@@ -478,6 +485,7 @@ func (p *HandlerPool) Put(h *Handler) {
     h.Reset() // 重置状态
     p.pool.Put(h)
 }
+
 ```
 
 ### 3.3.2.6.3 并发性能分析

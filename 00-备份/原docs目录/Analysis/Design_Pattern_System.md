@@ -52,6 +52,7 @@ type ComplexityAnalysis struct {
     ImplementationComplexity string
     MaintenanceComplexity   string
 }
+
 ```
 
 ## 2. 创建型模式 (Creational Patterns)
@@ -135,6 +136,7 @@ func Example() {
     fmt.Printf("s1: %p, s2: %p\n", s1, s2)
     fmt.Printf("s1 == s2: %t\n", s1 == s2)
 }
+
 ```
 
 ### 2.2 工厂方法模式 (Factory Method)
@@ -221,6 +223,7 @@ func Example() {
         fmt.Println(creator.SomeOperation())
     }
 }
+
 ```
 
 ### 2.3 抽象工厂模式 (Abstract Factory)
@@ -329,6 +332,7 @@ func Example() {
     macApp := NewApplication(&MacFactory{})
     macApp.CreateUI()
 }
+
 ```
 
 ## 3. 结构型模式 (Structural Patterns)
@@ -390,6 +394,7 @@ func Example() {
     
     client.UseTarget(adapter)
 }
+
 ```
 
 ### 3.2 装饰器模式 (Decorator)
@@ -475,6 +480,7 @@ func Example() {
     decoratedAB := NewConcreteDecoratorB(decoratedA)
     fmt.Println(decoratedAB.Operation())
 }
+
 ```
 
 ## 4. 行为型模式 (Behavioral Patterns)
@@ -617,6 +623,7 @@ func Example() {
     subject.Detach(observerA1)
     subject.SetState("Updated state")
 }
+
 ```
 
 ### 4.2 策略模式 (Strategy)
@@ -692,6 +699,7 @@ func Example() {
         fmt.Println(context.ExecuteStrategy())
     }
 }
+
 ```
 
 ## 5. 并发模式 (Concurrency Patterns)
@@ -822,6 +830,7 @@ func Example() {
     time.Sleep(2 * time.Second)
     pool.Shutdown()
 }
+
 ```
 
 ### 5.2 Pipeline模式
@@ -977,6 +986,7 @@ func Example() {
     
     fmt.Printf("Final results: %v\n", results)
 }
+
 ```
 
 ## 6. 分布式模式 (Distributed Patterns)
@@ -1116,6 +1126,7 @@ func Example() {
     })
     fmt.Printf("After timeout: %v (State: %v)\n", err, cb.GetState())
 }
+
 ```
 
 ## 7. 工作流模式 (Workflow Patterns)
@@ -1307,6 +1318,7 @@ func Example() {
     sm.HandleEvent("reset")
     fmt.Printf("Current state: %s\n", sm.GetCurrentState().GetName())
 }
+
 ```
 
 ## 8. 性能分析
@@ -1369,6 +1381,7 @@ var MemoryProfiles = map[string]MemoryAnalysis{
         GarbageCollection: "moderate",
     },
 }
+
 ```
 
 ## 9. 最佳实践
@@ -1422,6 +1435,7 @@ var PatternSelectionGuide = []PatternCriteria{
         RecommendedPatterns: []string{"Circuit Breaker", "Retry"},
     },
 }
+
 ```
 
 ### 9.2 反模式识别
@@ -1455,6 +1469,7 @@ var AntiPatterns = []AntiPattern{
         Solutions:   []string{"Measure first", "Profile code", "Optimize bottlenecks"},
     },
 }
+
 ```
 
 ## 10. 总结

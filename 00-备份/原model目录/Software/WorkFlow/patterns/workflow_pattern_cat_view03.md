@@ -16,6 +16,7 @@
 
 我需要确保全面覆盖这些模式，并从范畴论角度进行深入分析，同时提供Rust代码示例。
 </think>
+
 ```
 
 ## 目录
@@ -148,6 +149,7 @@ fn main() {
     workflow.execute_task_b();
     workflow.complete();
 }
+
 ```
 
 ### 2. 并行分支 (Parallel Split)
@@ -187,6 +189,7 @@ fn main() {
     
     println!("最终结果: {}", *shared_data.lock().unwrap());
 }
+
 ```
 
 ### 3. 同步 (Synchronization)
@@ -229,6 +232,7 @@ fn main() {
     
     println!("所有分支同步完成后的工作");
 }
+
 ```
 
 ### 4. 排他选择 (Exclusive Choice)
@@ -271,6 +275,7 @@ fn main() {
     execute_workflow(0);
     execute_workflow(10);
 }
+
 ```
 
 ### 5. 简单合并 (Simple Merge)
@@ -319,6 +324,7 @@ fn main() {
     handle1.join().unwrap();
     handle2.join().unwrap();
 }
+
 ```
 
 ## 高级分支与同步模式
@@ -373,6 +379,7 @@ fn main() {
     multi_choice(15); // 将执行任务A
     multi_choice(0);  // 将执行任务B, C
 }
+
 ```
 
 ### 7. 结构化同步合并 (Structured Synchronizing Merge)
@@ -449,6 +456,7 @@ fn main() {
         handle.join().unwrap();
     }
 }
+
 ```
 
 ### 8. 多合并 (Multi-Merge)
@@ -497,6 +505,7 @@ fn main() {
     // 统计后续任务执行次数
     println!("后续任务总共执行了 {} 次", *counter.lock().unwrap());
 }
+
 ```
 
 ### 9. 判别器 (Discriminator)
@@ -551,6 +560,7 @@ fn main() {
     
     println!("所有分支执行完毕");
 }
+
 ```
 
 ### 10. N-out-of-M Join
@@ -610,6 +620,7 @@ fn main() {
     
     println!("最终完成了 {} 个分支", *completed_count.lock().unwrap());
 }
+
 ```
 
 ## 结构模式
@@ -678,6 +689,7 @@ fn main() {
     let mut workflow = Workflow::new();
     workflow.execute();
 }
+
 ```
 
 ### 12. 隐式终止 (Implicit Termination)
@@ -781,6 +793,7 @@ fn main() {
     
     workflow.execute();
 }
+
 ```
 
 ## 多实例模式
@@ -840,6 +853,7 @@ fn main() {
     
     println!("所有任务实例已完成");
 }
+
 ```
 
 ### 14. 设计时多实例 (Multiple Instances With A Priori Design-Time Knowledge)
@@ -920,6 +934,7 @@ fn main() {
     
     println!("所有设计时确定的任务实例已完成，结果总和: {}", sum);
 }
+
 ```
 
 ### 15. 运行时多实例 (Multiple Instances With A Priori Run-Time Knowledge)
@@ -1007,6 +1022,7 @@ fn main() {
     
     println!("所有运行时确定的任务实例已完成，结果总和: {}", sum);
 }
+
 ```
 
 ### 16. 无先验知识多实例 (Multiple Instances Without A Priori Runtime Knowledge)
@@ -1108,6 +1124,7 @@ fn main() {
     
     println!("所有动态创建的任务实例已完成");
 }
+
 ```
 
 ## 基于状态的模式
@@ -1175,6 +1192,7 @@ fn main() {
         Choice::None => println!("没有做出选择，工作流终止"),
     }
 }
+
 ```
 
 ### 18. 交错并行路由 (Interleaved Parallel Routing)
@@ -1265,6 +1283,7 @@ fn main() {
     
     println!("所有任务已完成，按交错方式执行");
 }
+
 ```
 
 ### 19. 里程碑 (Milestone)
@@ -1337,6 +1356,7 @@ fn main() {
     
     handle2.join().unwrap();
 }
+
 ```
 
 ### 20. 关键部分 (Critical Section)
@@ -1404,6 +1424,7 @@ fn main() {
     
     println!("所有任务已完成关键部分执行");
 }
+
 ```
 
 ### 21. 交错执行 (Interleaved Routing)
@@ -1517,6 +1538,7 @@ fn main() {
     
     println!("所有序列的活动已交错执行完成");
 }
+
 ```
 
 ## 取消与强制完成模式
@@ -1595,6 +1617,7 @@ fn main() {
     handle.join().unwrap();
     println!("工作流程完成");
 }
+
 ```
 
 ### 23. 取消案例 (Cancel Case)
@@ -1715,6 +1738,7 @@ fn main() {
     handle.join().unwrap();
     println!("程序完成");
 }
+
 ```
 
 ### 24. 取消区域 (Cancel Region)
@@ -1834,6 +1858,7 @@ fn main() {
     handle.join().unwrap();
     println!("工作流程完成");
 }
+
 ```
 
 ### 25. 取消多实例活动 (Cancel Multiple Instance Activity)
@@ -1935,6 +1960,7 @@ fn main() {
     handle.join().unwrap();
     println!("工作流程完成");
 }
+
 ```
 
 ## 模式间的范畴关系

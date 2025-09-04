@@ -33,6 +33,7 @@ fn main() {
     // 再次在主线程中访问 FOO
     FOO.with(|f| println!("Main: {}", f.borrow()));
 }
+
 ```
 
 在这个例子中，`FOO` 是一个线程局部变量，每个线程都有其独立的副本。主线程和子线程对 `FOO` 的修改互不影响。
@@ -48,6 +49,7 @@ FOO.with(|f| {
     *f.borrow_mut() = 42;
     println!("Value: {}", f.borrow());
 });
+
 ```
 
 在这个例子中，`with` 方法被用来修改和访问 `FOO` 的值。
@@ -272,6 +274,7 @@ fn main() {
 
     println!("Final counter: {}", *counter.lock().unwrap());
 }
+
 ```
 
 在这个例子中，`Arc` 确保多个线程能够安全地共享 `Mutex`，而 `Mutex` 保护共享数据 `counter`，防止在多个线程同时修改时出现数据竞争。
@@ -306,6 +309,7 @@ fn main() {
 
     println!("Final data: {}", *data.read().unwrap());
 }
+
 ```
 
 在这个例子中，`RwLock` 允许多个线程同时读取数据，但在写入数据时会独占锁，从而提高并发性能。
@@ -340,6 +344,7 @@ fn main() {
 
     println!("Final counter: {}", *counter.lock().unwrap());
 }
+
 ```
 
 在这个例子中，`Arc` 确保多个线程能够安全地共享 `Mutex`，而 `Mutex` 保护共享数据 `counter`。
@@ -378,6 +383,7 @@ fn main() {
 
     *guard += 1;
 }
+
 ```
 
 在这个例子中，如果一个线程在持有锁时发生 `panic`，后续尝试获取该锁的操作会返回一个 `PoisonError`，可以通过 `into_inner` 方法获取锁的内部值。
@@ -452,6 +458,7 @@ fn main() {
         Err(_) => println!("An error occurred"),
     }
 }
+
 ```
 
 #### 使用 `Mutex` 和 `PoisonError`
@@ -479,6 +486,7 @@ fn main() {
         Err(PoisonError { .. }) => println!("Mutex is poisoned"),
     }
 }
+
 ```
 
 ### **总结**
@@ -506,6 +514,7 @@ fn main() {
     handle.join().unwrap();
     println!("This line may not execute.");
 }
+
 ```
 
 在这个例子中，`panic` 会导致线程立即取消，并在取消过程中调用 `data` 的 `drop` 方法释放内存。
@@ -525,6 +534,7 @@ fn main() {
 
 ```text
 thread 'main' panicked at 'explicit panic', src/main.rs:3:5
+
 ```
 
 如果 `panic` 是由于未处理的错误（如 `unwrap` 或 `expect`）引起的。
@@ -555,6 +565,7 @@ fn main() {
 
     println!("Program continues after handling the panic.");
 }
+
 ```
 
 输出：
@@ -563,6 +574,7 @@ fn main() {
 Starting the operation...
 Operation failed with panic: Any
 Program continues after handling the panic.
+
 ```
 
 ### -总结-
@@ -600,6 +612,7 @@ fn main() {
         Err(e) => eprintln!("Error occurred: {}", e),
     }
 }
+
 ```
 
 **解释：**
@@ -620,6 +633,7 @@ fn main() {
     let value = get_optional_value().unwrap_or(10); // 提供默认值
     println!("Value: {}", value);
 }
+
 ```
 
 **解释：**
@@ -634,6 +648,7 @@ fn main() {
 ```rust
 let value = Some(42).unwrap(); // 正常
 let value = None.unwrap();     // 会导致 panic
+
 ```
 
 **替代方法：使用 `match` 或 `if let`**
@@ -647,6 +662,7 @@ fn main() {
         println!("No value found");
     }
 }
+
 ```
 
 #### 使用 `if let` 处理 `Option`
@@ -657,6 +673,7 @@ if let Some(value) = get_optional_value() {
 } else {
     println!("No value found");
 }
+
 ```
 
 #### 使用 `match` 处理 `Result`
@@ -666,6 +683,7 @@ match read_file() {
     Ok(contents) => println!("File contents: {}", contents),
     Err(e) => eprintln!("Error occurred: {}", e),
 }
+
 ```
 
 ### 3. 单元测试和模糊测试
@@ -691,6 +709,7 @@ mod tests {
         let contents = read_file().unwrap(); // 在测试失败时预期 panic
     }
 }
+
 ```
 
 #### 模糊测试（使用 `libfuzzer-sys`）
@@ -705,6 +724,7 @@ fuzz_target!(|data: &[u8]| {
     // 模糊测试代码
     println!("{}", s);
 });
+
 ```
 
 ### 4. 使用封装和抽象
@@ -727,6 +747,7 @@ fn main() {
     let value = read_config_key("name").unwrap_or("default".to_string());
     println!("Value: {}", value);
 }
+
 ```
 
 ### 5. 使用防御性编程
@@ -752,6 +773,7 @@ fn main() {
         println!("Result: {}", result.unwrap());
     }
 }
+
 ```
 
 ### 6. 使用智能指针
@@ -776,6 +798,7 @@ fn main() {
     increment(&data);
     println!("Value: {}", data.value.borrow());
 }
+
 ```
 
 ### 7. 审查第三方依赖
@@ -788,6 +811,7 @@ fn main() {
 [dependencies]
 serde = "1.0"
 tokio = { version = "1.0", features = ["full"] }
+
 ```
 
 ### -总结
@@ -820,6 +844,7 @@ fn main() {
     let config_value = get_config_value().unwrap_or("default_value".to_string());
     println!("Config value is: {}", config_value);
 }
+
 ```
 
 在这个示例中，`get_config_value` 函数返回一个 `Option<String>`。如果函数返回 `Some("value")`，`unwrap_or` 会返回 `"value"`；
@@ -849,6 +874,7 @@ fn main() {
     
     println!("Data: {}", data);
 }
+
 ```
 
 在这个示例中，`get_data_from_system` 函数返回一个 `Option<String>`。
@@ -872,6 +898,7 @@ fn main() {
         None => eprintln!("No configuration value found, using default settings."),
     }
 }
+
 ```
 
 在这个示例中，`config_value` 是一个 `Option<&str>`。`match` 表达式会检查 `config_value` 的值，如果它是 `Some(value)`，则打印 `value`；如果它是 `None`，则打印错误消息。
@@ -893,6 +920,7 @@ fn main() {
     let value = get_config_value().unwrap();
     println!("Configuration value is: {}", value);
 }
+
 ```
 
 在这个示例中，`get_config_value` 函数返回一个 `Option<String>`。如果函数返回 `Some("value")`，`unwrap` 会返回 `"value"`；如果返回 `None`，`unwrap` 会引发 panic。
@@ -913,6 +941,7 @@ fn get_config_value() -> Option<String> {
 fn main() {
     let value = get_config_value().expect("Failed to get configuration value");
 }
+
 ```
 
 在这个示例中，`get_config_value` 函数返回一个 `Option<String>`。如果函数返回 `Some("value")`，`expect` 会返回 `"value"`；如果返回 `None`，`expect` 会引发 panic，并打印 `"Failed to get configuration value"`。
@@ -939,6 +968,7 @@ fn main() {
         Err(err) => eprintln!("Error reading file: {}", err),
     }
 }
+
 ```
 
 在这个示例中，`read_file` 函数返回一个 `Result<String, io::Error>`。

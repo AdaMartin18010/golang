@@ -140,7 +140,9 @@ class Dog implements Animal {
         return name + " 说: 汪汪!";
     }
 }
+
 */
+
 ```
 
 ## 1.3 二、Rust 2024 中实现继承的等效方案
@@ -199,6 +201,7 @@ fn composition_example() {
     println!("名字: {}", dog.name());
     println!("声音: {}", dog.make_sound());
 }
+
 ```
 
 ### 1.3.2 2. 使用特征与默认实现
@@ -255,6 +258,7 @@ fn trait_default_example() {
     println!("声音: {}", dog.make_sound());
     dog.eat(); // 使用默认实现
 }
+
 ```
 
 ### 1.3.3 3. 特征继承（特征边界）
@@ -313,6 +317,7 @@ fn trait_inheritance_example() {
     println!("体温: {}°C", dog.body_temperature());
     dog.give_birth();
 }
+
 ```
 
 ### 1.3.4 4. 使用宏简化"继承"模式
@@ -373,6 +378,7 @@ fn macro_delegation_example() {
     println!("名字: {}", dog.name()); // 委托到animal.name()
     println!("声音: {}", dog.make_sound()); // 使用覆盖的方法
 }
+
 ```
 
 ## 1.4 三、Rust 2024 中实现多态的等效方案
@@ -419,6 +425,7 @@ fn static_dispatch_example() {
     print_animal_sound(&dog); // T = Dog
     print_animal_sound(&cat); // T = Cat
 }
+
 ```
 
 ### 1.4.2 2. 动态分派（运行时多态）
@@ -462,6 +469,7 @@ fn dynamic_dispatch_example() {
         println!("声音: {}", animal.make_sound());
     }
 }
+
 ```
 
 ### 1.4.3 3. 使用枚举实现多态
@@ -507,6 +515,7 @@ fn enum_polymorphism_example() {
         println!("{} - {}", animal.name(), animal.make_sound());
     }
 }
+
 ```
 
 ### 1.4.4 4. 使用 Rust 2024 的新特性：类型类（Type Classes）
@@ -561,6 +570,7 @@ fn type_class_example() {
     animal_sounds::<_, Dog>(&dog);
     animal_sounds::<_, Cat>(&cat);
 }
+
 ```
 
 ## 1.5 四、高级模式：组合继承与多态
@@ -648,6 +658,7 @@ fn heterogeneous_collection_example() {
         println!("---");
     }
 }
+
 ```
 
 ### 1.5.2 2. 使用组合模式实现复杂继承
@@ -742,6 +753,7 @@ fn complex_composition_example() {
     println!("已训练: {}", if dog.is_trained() { "是" } else { "否" });
     println!("声音: {}", dog.make_sound());
 }
+
 ```
 
 ### 1.5.3 3. 使用特征与泛型实现混合多态
@@ -819,6 +831,7 @@ fn mixed_polymorphism_example() {
         println!("声音: {}", animal.make_sound());
     }
 }
+
 ```
 
 ## 1.6 五、Rust 2024 与传统 OOP 的表达能力对比分析
@@ -959,6 +972,7 @@ fn expression_power_example() {
         println!("{}", element.draw());
     }
 }
+
 ```
 
 ### 1.6.4 4. 语言设计哲学对比
@@ -987,6 +1001,7 @@ fn inheritance_to_composition_example() {
     // Java: System.out.println(dog.makeSound());
     println!("声音: {}", dog.make_sound());
 }
+
 ```
 
 ### 1.7.2 2. 从虚函数到特征对象的转换策略
@@ -1019,6 +1034,7 @@ public:
         return 2 * 3.14159 * radius;
     }
 };
+
 */
 
 // Rust等效实现
@@ -1065,6 +1081,7 @@ fn virtual_to_trait_example() {
     // C++: shape->draw();
     circle.draw();
 }
+
 ```
 
 ### 1.7.3 3. 从接口继承到特征组合的转换策略
@@ -1113,6 +1130,7 @@ class Button implements UIComponent {
         System.out.println("调整按钮大小: " + width + "x" + height);
     }
 }
+
 */
 
 // Rust等效实现
@@ -1180,6 +1198,7 @@ fn interface_to_trait_example() {
         component.draw();
     }
 }
+
 ```
 
 ## 1.8 七、Rust 2024 特有的面向对象模式
@@ -1250,6 +1269,7 @@ fn type_state_example() {
     // 只有Published状态可以访问内容
     println!("发布的内容: {}", post.content());
 }
+
 ```
 
 ### 1.8.2 2. 访问者模式（Visitor Pattern）
@@ -1330,6 +1350,7 @@ fn visitor_pattern_example() {
         println!("形状面积: {}", area);
     }
 }
+
 ```
 
 ### 1.8.3 3. 命令模式（Command Pattern）
@@ -1435,6 +1456,7 @@ fn command_pattern_example() {
         cmd.execute();
     }
 }
+
 ```
 
 ## 1.9 八、结论：Rust 与传统 OOP 的等价性分析

@@ -25,6 +25,7 @@
 
 虽然我不能准确预测2025年的具体库，但我可以基于当前发展趋势预测可能的演进方向。
 我会尽量给出合理的预测。
+
 ```
 
 ## 总体架构设计
@@ -50,6 +51,7 @@
 │  OpenTelemetry│    Kafka    │   Consul/etcd  │    ClickHouse   │
 │  Elasticsearch│    NATS     │                │    PostgreSQL   │
 └─────────────┴─────────────┴────────────────┴─────────────────┘
+
 ```
 
 ## 一、分布式日志监控和检索
@@ -59,20 +61,33 @@
 ```rust
 // Cargo.toml 依赖示例
 [dependencies]
+
 # 异步运行时
+
 tokio = { version = "2.0", features = ["full"] }
+
 # 高性能日志框架 (tracing演进版)
+
 opentelemetry-tracing = "2.0"
 tracing-subscriber = "1.0"
+
 # 日志聚合与发送
+
 opentelemetry-otlp = "2.0"
+
 # 高性能日志滚动
+
 tracing-appender = "1.0"
+
 # Elasticsearch客户端
+
 elasticsearch = "3.0"
+
 # 指标监控
+
 metrics = "1.0"
 metrics-exporter-prometheus = "1.0"
+
 ```
 
 ### 本地日志与滚动实现
@@ -190,6 +205,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ### 分布式日志聚合与检索
@@ -328,6 +344,7 @@ impl LogSearchService {
         Ok(results)
     }
 }
+
 ```
 
 ## 二、分布式消息服务
@@ -337,20 +354,33 @@ impl LogSearchService {
 ```rust
 // Cargo.toml
 [dependencies]
+
 # 异步运行时
+
 tokio = { version = "2.0", features = ["full"] }
+
 # NATS消息队列客户端
+
 async-nats = "1.0"
+
 # Apache Kafka客户端
+
 rdkafka = { version = "1.0", features = ["ssl", "sasl"] }
+
 # HTTP服务器
+
 axum = "1.0"
+
 # 序列化
+
 serde = { version = "2.0", features = ["derive"] }
 serde_json = "2.0"
+
 # 分布式追踪集成
+
 opentelemetry = "2.0"
 tracing = "1.0"
+
 ```
 
 ### 消息发布/订阅服务实现
@@ -702,6 +732,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 三、集中式配置管理和订阅更新
@@ -711,21 +742,36 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```rust
 // Cargo.toml
 [dependencies]
+
 # 异步运行时
+
 tokio = { version = "2.0", features = ["full"] }
+
 # HTTP服务
+
 axum = "1.0"
+
 # Consul客户端
+
 consul-rs = "1.0"
+
 # ETCD客户端
+
 etcd-client = "1.0"
+
 # 序列化
+
 serde = { version = "2.0", features = ["derive"] }
 serde_json = "2.0"
+
 # 配置管理
+
 config = "1.0"
+
 # 观察者模式实现
+
 tokio-watch = "1.0"
+
 ```
 
 ### 配置管理服务实现
@@ -1307,6 +1353,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 四、大数据处理和数据库集成
@@ -1316,27 +1363,46 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```rust
 // Cargo.toml
 [dependencies]
+
 # 异步运行时
+
 tokio = { version = "2.0", features = ["full"] }
+
 # 数据库连接池
+
 sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "json"] }
+
 # 数据处理
+
 polars = { version = "1.0", features = ["lazy", "parquet", "csv", "json", "random"] }
 datafusion = "20.0"
+
 # Kafka流处理
+
 rdkafka = { version = "1.0", features = ["ssl", "sasl"] }
+
 # 流处理框架
+
 timely = "0.12"
 differential-dataflow = "0.13"
+
 # 工作流引擎
+
 temporal-sdk-core = "1.0"
+
 # HTTP服务
+
 axum = "1.0"
+
 # 序列化
+
 serde = { version = "2.0", features = ["derive"] }
 serde_json = "2.0"
+
 # ClickHouse客户端
+
 clickhouse-rs = "1.0"
+
 ```
 
 ### 数据处理和工作流实现
@@ -2501,6 +2567,7 @@ impl OrderWorkflow {
         Ok(())
     }
 }
+
 ```
 
 ## 部署与运维
@@ -2662,6 +2729,7 @@ volumes:
   elastic-data:
   postgres-data:
   clickhouse-data:
+
 ```
 
 ## 总结

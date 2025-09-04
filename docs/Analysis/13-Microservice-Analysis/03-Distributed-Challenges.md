@@ -23,19 +23,6 @@
     - [13.1.7.3 应用场景](#应用场景)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 13.1.1 目录
 
 1. [概述](#概述)
@@ -131,6 +118,7 @@ const (
     MediumTolerance
     LowTolerance
 }
+
 ```
 
 ## 13.1.4 一致性挑战
@@ -269,6 +257,7 @@ func (scm *StrongConsistencyManager) Read(key string) (interface{}, error) {
     
     return latestResponse.Value, nil
 }
+
 ```
 
 ### 13.1.4.2 最终一致性模型
@@ -422,6 +411,7 @@ func (ecm *EventualConsistencyManager) replicateToOtherNodes(key string, value i
         }(node)
     }
 }
+
 ```
 
 ## 13.1.5 可用性挑战
@@ -620,6 +610,7 @@ func (fm *FailoverManager) performFailover(newPrimary *ServiceInstance) error {
     
     return nil
 }
+
 ```
 
 ### 13.1.5.2 容错机制
@@ -756,6 +747,7 @@ func (ftm *FaultToleranceManager) ExecuteWithFaultTolerance(
     
     return result, err
 }
+
 ```
 
 ## 13.1.6 分区容错性挑战
@@ -894,6 +886,7 @@ type Partition struct {
     Nodes       []*Node
     Timestamp   time.Time
 }
+
 ```
 
 ### 13.1.6.2 分区恢复策略
@@ -1017,6 +1010,7 @@ func (rc *RecoveryCoordinator) validateRecovery(partition *Partition) error {
     
     return nil
 }
+
 ```
 
 ## 13.1.7 总结

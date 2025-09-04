@@ -11,19 +11,6 @@
   - [1.7 示例](#示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，"items"、"expressions" 和 "statements" 是三个基本的概念，
 它们在程序的结构和执行中扮演不同的角色。
 
@@ -83,6 +70,7 @@ fn main() {
         println!("y is greater than 10");
     }
 }
+
 ```
 
 在这个示例中，`add` 是一个 item，`a + b` 和 `add(x, 3)` 是 expressions，而 `let x = 5;` 和 `if y > 10 { ... }` 是 statements。

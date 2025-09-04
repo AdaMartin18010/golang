@@ -22,19 +22,6 @@
     - [1.6.4 4. 告警系统](#4-告警系统)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Go 1.25 监控与可观测性深度分析](#go-125-监控与可观测性深度分析)
@@ -150,6 +137,7 @@ func (rw *responseWriter) WriteHeader(code int) {
     rw.statusCode = code
     rw.ResponseWriter.WriteHeader(code)
 }
+
 ```
 
 ### 1.2.2 性能指标
@@ -218,6 +206,7 @@ func (smc *SystemMetricsCollector) Start() {
         }
     }()
 }
+
 ```
 
 ## 1.3 日志管理
@@ -301,6 +290,7 @@ func LoggingMiddleware(logger *StructuredLogger) func(http.Handler) http.Handler
         })
     }
 }
+
 ```
 
 ### 1.3.2 日志聚合
@@ -372,6 +362,7 @@ func (la *LogAggregator) SendBatch(entries []LogEntry) error {
     
     return nil
 }
+
 ```
 
 ## 1.4 分布式追踪
@@ -442,6 +433,7 @@ func TraceDatabaseQuery(ctx context.Context, operation, query string) (context.C
         ),
     )
 }
+
 ```
 
 ### 1.4.2 Jaeger集成
@@ -498,6 +490,7 @@ func JaegerMiddleware(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 }
+
 ```
 
 ## 1.5 告警系统
@@ -569,6 +562,7 @@ type Alert struct {
 type AlertNotifier interface {
     SendAlert(ctx context.Context, alert Alert) error
 }
+
 ```
 
 ### 1.5.2 告警通知
@@ -663,6 +657,7 @@ func (en *EmailNotifier) SendAlert(ctx context.Context, alert Alert) error {
     // 实现邮件发送逻辑
     return nil
 }
+
 ```
 
 ## 1.6 总结

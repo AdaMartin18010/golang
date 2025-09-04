@@ -176,6 +176,7 @@ fn main() {
 fn takes_ownership(s: String) {
     println!("{}", s);
 } // s离开作用域，String被释放
+
 ```
 
 所有权转移的形式化表述：
@@ -220,6 +221,7 @@ fn calculate_length(s: &String) -> usize {
 fn change(s: &mut String) {
     s.push_str(", world");
 }
+
 ```
 
 借用的形式化表述：
@@ -266,6 +268,7 @@ fn main() {
     let p2 = p1;  // 所有权转移
     // println!("{:?}", p1);  // 编译错误，p1已失效
 }
+
 ```
 
 `Copy`与`Clone`的区别在形式化表述中可表示为：
@@ -317,6 +320,7 @@ fn main() {
     println!("主函数结束");
     // cr在这里离开作用域，自动调用drop
 }
+
 ```
 
 `Drop`的形式化表述：
@@ -350,6 +354,7 @@ fn clone_and_process<T: Clone>(value: &T) -> T {
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 泛型与所有权的形式化表述：
@@ -398,6 +403,7 @@ fn main() {
     
     println!("计数: {}", *counter.lock().unwrap());  // 输出：1
 }
+
 ```
 
 智能指针形式化表述：
@@ -479,6 +485,7 @@ fn main() {
     
     println!("{} 仍然有效", outer);
 } // outer在这里离开作用域并被释放
+
 ```
 
 作用域的形式化定义：
@@ -525,6 +532,7 @@ fn process_data(maybe_string: Option<String>) {
     // optional在这里已经失效，因为其中的值被移出
     // println!("{:?}", optional); // 编译错误
 }
+
 ```
 
 条件分支所有权的形式化表述：
@@ -568,6 +576,7 @@ fn ownership_in_loops() {
     // optional仍然有效，但内部值已移出
     println!("optional: {:?}", optional);  // 输出: None
 }
+
 ```
 
 循环与所有权的形式化表述：
@@ -616,6 +625,7 @@ fn main() {
     let s3 = return_ownership();
     println!("获得返回值: {}", s3);
 }
+
 ```
 
 ```rust
@@ -633,6 +643,7 @@ fn main() {
     // s4不再有效，s5获得处理后的字符串所有权
     println!("处理结果: {}", s5);
 }
+
 ```
 
 函数调用中所有权转移的形式化表述：
@@ -681,6 +692,7 @@ fn closure_ownership() {
     // data不再有效
     // println!("{:?}", data); // 编译错误，如果闭包使用了move
 }
+
 ```
 
 闭包捕获的形式化表述：
@@ -732,6 +744,7 @@ fn main() {
         Ok(())
     }
 }
+
 ```
 
 错误处理中所有权的形式化表述：
@@ -743,6 +756,7 @@ match expr {
     Ok(v) => v,
     Err(e) => return Err(e.into()),
 }
+
 ```
 
 形式化为：
@@ -803,6 +817,7 @@ async fn ownership_in_futures() {
     let runtime = tokio::runtime::Runtime::new().unwrap();
     runtime.block_on(future2);
 }
+
 ```
 
 异步编程中所有权的形式化挑战：
@@ -896,6 +911,7 @@ fn variable_binding() {
     let Point { x, y } = origin;
     println!("x={}, y={}", x, y);
 }
+
 ```
 
 变量绑定的形式化表述：
@@ -944,6 +960,7 @@ fn mutability_and_ownership() {
     let mut mutable_move = String::from("hello");
     mutable_move.push_str(" world");  // 可以修改
 }
+
 ```
 
 可变性的形式化表述：
@@ -996,6 +1013,7 @@ fn variable_shadowing() {
     let counter = counter;  // 遮蔽，现在counter是不可变的
     // counter += 1;        // 错误：不能修改不可变变量
 }
+
 ```
 
 变量遮蔽的形式化表述：
@@ -1062,6 +1080,7 @@ fn destructuring_and_ownership() {
     }
     // optional被部分移动
 }
+
 ```
 
 解构模式的形式化表述：
@@ -1128,6 +1147,7 @@ fn partial_moves() {
     // 整个person2仍然有效
     println!("Person: {} is {} years old", person2.name, person2.age);
 }
+
 ```
 
 部分移动的形式化表述：
@@ -1195,6 +1215,7 @@ fn static_and_globals() {
 
     println!("映射值: {}", HASHMAP.get(&1).unwrap());
 }
+
 ```
 
 静态变量的形式化表述：
@@ -1290,6 +1311,7 @@ fn resource_symmetry() {
     println!("外部作用域");
     // r1在这里销毁
 }
+
 ```
 
 资源对称性的形式化表述：
@@ -1342,6 +1364,7 @@ fn borrow_symmetry() {
     // r1仍然有效
     println!("r1仍然有效: {:?}", r1);
 }
+
 ```
 
 借用对称性的形式化表述：
@@ -1394,6 +1417,7 @@ fn mutability_symmetry() {
     increment(&mut counter);  // 转让可变性
     println!("计数: {}", counter);  // 可变性已归还
 }
+
 ```
 
 可变性对称性的形式化表述：
@@ -1465,6 +1489,7 @@ fn ownership_path_integrity() {
         Ok(content)
     }
 }
+
 ```
 
 所有权路径完整性的形式化表述：
@@ -1650,6 +1675,7 @@ fn interior_mutability() {
     shared_data.borrow_mut().push(4);
     println!("从克隆看到的数据: {:?}", shared_data2.borrow());  // 输出: [1, 2, 3, 4]
 }
+
 ```
 
 内部可变性的形式化表述：
@@ -1718,6 +1744,7 @@ fn lifetime_annotations() {
         &s[..]
     }
 }
+
 ```
 
 生命周期标注的形式化表述：
@@ -1797,6 +1824,7 @@ fn unsafe_code() {
         println!("C语言abs(-3) = {}", abs(-3));
     }
 }
+
 ```
 
 `unsafe`的形式化表述：
@@ -1881,6 +1909,7 @@ fn pin_and_self_referential() {
     }
     */
 }
+
 ```
 
 `Pin`的形式化表述：
@@ -1961,6 +1990,7 @@ fn external_resources() {
         // 使用resource...
     } // resource自动释放
 }
+
 ```
 
 外部资源所有权的形式化表述：
@@ -2043,6 +2073,7 @@ fn asymmetric_patterns() {
         }
     }
 }
+
 ```
 
 非对称结构的形式化表述：
@@ -2128,6 +2159,7 @@ fn raii_pattern() {
     };
     // 如果获取了资源，将在作用域结束时释放
 }
+
 ```
 
 RAII模式的形式化表述：
@@ -2198,6 +2230,7 @@ fn borrowing_splitting() {
 
     println!("交换后: {:?}", numbers);
 }
+
 ```
 
 借用分割的形式化表述：
@@ -2283,6 +2316,7 @@ fn temporary_ownership() {
 
     println!("总和: {}, 向量: {:?}", sum, numbers);  // 10, [1, 2, 3, 4]
 }
+
 ```
 
 临时所有权的形式化表述：
@@ -2403,6 +2437,7 @@ fn shared_ownership() {
         }
     }
 }
+
 ```
 
 所有权共享的形式化表述：
@@ -2502,6 +2537,7 @@ fn producer_consumer() {
     }
     */
 }
+
 ```
 
 生产者消费者模式的形式化表述：
@@ -2637,6 +2673,7 @@ fn type_state_pattern() {
     let post = post.approve();
     println!("已发布内容: {}", post.content());
 }
+
 ```
 
 类型状态模式的形式化表述：
@@ -2767,6 +2804,7 @@ fn resource_pool() {
     pool.join();
     */
 }
+
 ```
 
 资源池管理的形式化表述：
@@ -2892,6 +2930,7 @@ fn ownership_and_concurrency() {
     handle1.join().unwrap();
     handle2.join().unwrap();
 }
+
 ```
 
 所有权分割的形式化表述：
@@ -2962,6 +3001,7 @@ fn send_sync_traits() {
     is_sync::<&mut i32>(); // 编译成功：&mut i32是Sync
     // is_send::<Rc<i32>>(); // 编译失败：Rc<i32>不是Send
 }
+
 ```
 
 `Send`和`Sync`的形式化定义：
@@ -3057,6 +3097,7 @@ fn mutex_and_ownership() {
              *resource1.lock().unwrap(),
              *resource2.lock().unwrap());
 }
+
 ```
 
 互斥锁的形式化表述：
@@ -3156,6 +3197,7 @@ fn channels_and_ownership() {
         println!("从同步通道收到: {}", received);
     }
 }
+
 ```
 
 通道的形式化表述：
@@ -3241,6 +3283,7 @@ fn atomics_and_interior_mutability() {
                             Ordering::SeqCst,
                             Ordering::SeqCst).unwrap(); // 最强，全序
 }
+
 ```
 
 原子类型的形式化表述：
@@ -3481,6 +3524,7 @@ fn concurrency_verification() {
     }
     write_handle.join().unwrap();
 }
+
 ```
 
 并发安全的形式化验证：
@@ -3557,6 +3601,7 @@ fn linear_types() {
     r3.push_str(" world");
     // r1, r2在这里不能再使用
 }
+
 ```
 
 线性类型理论的形式化定义：
@@ -3640,6 +3685,7 @@ fn region_based_memory() {
     let word = first_word("hello world");
     println!("第一个单词: {}", word);
 }
+
 ```
 
 区域型系统的形式化定义：
@@ -3705,6 +3751,7 @@ fn substructural_typing() {
     // 忽略result会产生警告，建议处理结果
     let _ = result;  // 显式忽略以消除警告
 }
+
 ```
 
 亚结构类型系统的形式化定义：
@@ -3799,6 +3846,7 @@ fn ownership_logic() {
 
     verify_unique_ownership();
 }
+
 ```
 
 所有权逻辑的形式化定义：
@@ -3881,6 +3929,7 @@ fn borrow_checking_theory() {
     // data可以移动，因为借用已结束
     let data2 = data;
 }
+
 ```
 
 借用检查算法的形式化定义：
@@ -4005,6 +4054,7 @@ fn type_systems_comparison() {
         result
     }
 }
+
 ```
 
 类型系统比较的理论分析：
@@ -4117,6 +4167,7 @@ fn ownership_efficiency() {
     println!("长度: {}", data.len());  // 读取长度不需要所有权
     */
 }
+
 ```
 
 效率与所有权平衡的理论分析：
@@ -4205,6 +4256,7 @@ fn dynamic_ownership() {
     }
     */
 }
+
 ```
 
 动态所有权检查的理论分析：
@@ -4259,6 +4311,7 @@ impl<T> DynamicOwnership<T> {
         }
     }
 }
+
 */
 
 // 使用标准库中现有的动态检查原语
@@ -4294,6 +4347,7 @@ fn dynamic_ownership_patterns() {
         // node1.borrow_mut();  // 这会在运行时panic，而不是编译错误
     }
 }
+
 ```
 
 动态所有权检查系统的潜在发展方向：
@@ -4377,6 +4431,7 @@ fn formal_verification() {
     }
     */
 }
+
 ```
 
 形式化验证与智能编译的发展方向：
@@ -4474,6 +4529,7 @@ fn ownership_in_other_languages() {
     // resource不再可用
     */
 }
+
 ```
 
 所有权模型在其他语言中的应用前景：
@@ -4582,6 +4638,7 @@ fn future_research() {
     }
     */
 }
+
 ```
 
 未来研究方向的理论前景：

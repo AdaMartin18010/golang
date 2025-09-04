@@ -23,21 +23,27 @@
 
 ```toml
 [dependencies]
+
 # GraphQL 依赖
+
 async-graphql = "7.0"
 async-graphql-actix-web = "7.0"
 
 # 数据库驱动
+
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "mysql", "postgres", "sqlite", "json"] }
 
 # 异步运行时
+
 tokio = { version = "1.0", features = ["full"] }
 async-stream = "0.3"
 
 # 工具库
+
 serde = { version = "1.0", features = ["derive"] }
 tracing = "0.1"
 thiserror = "1.0"
+
 ```
 
 ## 2. GraphQL Schema 生成器
@@ -146,6 +152,7 @@ impl SchemaGenerator {
         }
     }
 }
+
 ```
 
 ## 3. 数据库模型生成器
@@ -260,6 +267,7 @@ impl DatabaseModelGenerator {
         }
     }
 }
+
 ```
 
 ## 4. 查询解析器生成器
@@ -339,6 +347,7 @@ impl<'a> QueryResolverGenerator<'a> {
         }
     }
 }
+
 ```
 
 ## 5. 数据库连接池管理器
@@ -417,6 +426,7 @@ impl DatabasePoolManager {
         }
     }
 }
+
 ```
 
 ## 6. 实体关系管理器
@@ -466,6 +476,7 @@ impl EntityRelationManager {
         Ok(sql)
     }
 }
+
 ```
 
 ## 7. 使用示例
@@ -582,6 +593,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了：
@@ -622,26 +634,33 @@ async fn main() -> Result<()> {
 
 ```toml
 [dependencies]
+
 # GraphQL 相关
+
 async-graphql = { version = "7.0", features = ["chrono", "json"] }
 async-graphql-actix-web = "7.0"
 
 # 数据库驱动
+
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "mysql", "postgres", "sqlite", "json", "chrono"] }
 mongodb = "2.8"
 redis = { version = "0.24", features = ["tokio-comp", "json"] }
 
 # 序列化
+
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # 异步运行时
+
 tokio = { version = "1.0", features = ["full"] }
 async-stream = "0.3"
 
 # 工具库
+
 chrono = { version = "0.4", features = ["serde"] }
 tracing = "0.1"
+
 ```
 
 ## 2. 数据模型定义
@@ -691,6 +710,7 @@ pub enum PostStatus {
     Published,
     Archived,
 }
+
 ```
 
 ## 3. 数据库连接管理器
@@ -780,6 +800,7 @@ impl DatabaseManager {
         }
     }
 }
+
 ```
 
 ## 4. GraphQL 查询解析器
@@ -906,6 +927,7 @@ impl QueryRoot {
         Ok(posts)
     }
 }
+
 ```
 
 ## 5. GraphQL 变更解析器
@@ -1029,6 +1051,7 @@ impl MutationRoot {
         Err("Post not found".into())
     }
 }
+
 ```
 
 ## 6. 数据库迁移生成器
@@ -1118,6 +1141,7 @@ impl DatabaseMigrationGenerator {
         }
     }
 }
+
 ```
 
 ## 7.  使用示例
@@ -1191,6 +1215,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了：

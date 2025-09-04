@@ -233,6 +233,7 @@ Web UI架构现状分析
         ├── 混合语言开发
         ├── 浏览器API访问
         └── 插件系统
+
 ```
 
 ## 1. 引言
@@ -243,7 +244,7 @@ Web UI开发在过去十年经历了爆炸性增长，从简单的文档标记�
 
 ### 2.1 主流框架对比
 
--**React生态系统**
+- **React生态系统**
 
 React继续占据主导地位，但其架构面临显著的演变和挑战：
 
@@ -274,6 +275,7 @@ function SearchResults() {
     </>
   );
 }
+
 ```
 
 **批判分析**：
@@ -282,7 +284,7 @@ function SearchResults() {
 - 函数组件和Hooks虽简化了API，但导致了大量自定义hooks和逻辑片段难以调试
 - React Server Components解决了部分问题，但混合客户端与服务器组件增加了心智负担
 
--**Vue生态系统**
+- **Vue生态系统**
 
 Vue 3的组合式API代表了重大的范式转变：
 
@@ -314,6 +316,7 @@ onMounted(() => {
   <div v-else-if="error">Error: {{ error.message }}</div>
   <ResultsList v-else :items="data" />
 </template>
+
 ```
 
 **批判分析**：
@@ -322,7 +325,7 @@ onMounted(() => {
 - Vue的响应式系统更加直观，但在复杂应用中可能导致难以追踪的更新链
 - Nuxt提供了强大的元框架功能，但自定义服务器集成比Next.js更复杂
 
--**Svelte和编译时优化**
+- **Svelte和编译时优化**
 
 Svelte通过编译时优化改变了游戏规则：
 
@@ -349,6 +352,7 @@ Svelte通过编译时优化改变了游戏规则：
 </button>
 
 <p>Doubled: {doubled}</p>
+
 ```
 
 **批判分析**：
@@ -359,7 +363,7 @@ Svelte通过编译时优化改变了游戏规则：
 
 ### 2.2 组件库现状
 
--**组件库碎片化与重复**
+- **组件库碎片化与重复**
 
 当前组件库生态高度碎片化，导致资源浪费和学习成本增加：
 
@@ -367,7 +371,7 @@ Svelte通过编译时优化改变了游戏规则：
 - 库间存在大量功能重复，但API不兼容
 - 设计系统与组件库脱节，导致实现不一致
 
--**无头组件趋势**
+- **无头组件趋势**
 
 无头组件库分离了行为和样式，减少了耦合：
 
@@ -387,6 +391,7 @@ function Dropdown() {
                 active ? 'bg-blue-500 text-white' : 'bg-white text-black'
               }`}
               href="/account-settings"
+
             >
               Account settings
             </a>
@@ -397,6 +402,7 @@ function Dropdown() {
     </Menu>
   )
 }
+
 ```
 
 **批判分析**：
@@ -405,7 +411,7 @@ function Dropdown() {
 - 可访问性得到了改善，但开发者仍需了解复杂的ARIA规范
 - 组合模式增加了复用性，但也增加了JSX嵌套和代码复杂性
 
--**Web Components采用挑战**
+- **Web Components采用挑战**
 
 尽管是标准，Web Components仍面临生态系统挑战：
 
@@ -440,6 +446,7 @@ class MyCustomElement extends HTMLElement {
 }
 
 customElements.define('my-element', MyCustomElement);
+
 ```
 
 **批判分析**：
@@ -450,7 +457,7 @@ customElements.define('my-element', MyCustomElement);
 
 ### 2.3 编程范式演变
 
--**声明式UI的局限性**
+- **声明式UI的局限性**
 
 声明式UI已成为主流，但存在内在局限：
 
@@ -472,6 +479,7 @@ function ComplexList({ items, filter, sort }) {
     </div>
   );
 }
+
 ```
 
 **批判分析**：
@@ -480,7 +488,7 @@ function ComplexList({ items, filter, sort }) {
 - JSX混合了标记和逻辑，违反了关注点分离原则
 - 模板系统（Vue/Angular）和JSX各有优缺点，但两者都未能完全解决组件复杂性
 
--**响应式编程的新趋势**
+- **响应式编程的新趋势**
 
 信号系统代表了响应式编程的新一代解决方案：
 
@@ -504,6 +512,7 @@ function Counter() {
     </button>
   );
 }
+
 ```
 
 **批判分析**：
@@ -516,7 +525,7 @@ function Counter() {
 
 ### 3.1 组件设计模式
 
--**原子设计的适用性与局限**
+- **原子设计的适用性与局限**
 
 原子设计方法论（Atoms→Molecules→Organisms→Templates→Pages）虽然流行，但面临实施挑战：
 
@@ -524,7 +533,7 @@ function Counter() {
 - 组件重用率预期与实际不符，常导致过度抽象
 - 原子组件库维护成本高，导致设计与实现脱节
 
--**容器/展示分离的演变**
+- **容器/展示分离的演变**
 
 传统容器/展示组件模式正被更细粒度的关注点分离取代：
 
@@ -567,6 +576,7 @@ function ProductContainer({ productId }) {
   
   return <ProductView product={data} actions={actions} />;
 }
+
 ```
 
 **批判分析**：
@@ -577,7 +587,7 @@ function ProductContainer({ productId }) {
 
 ### 3.2 状态管理策略
 
--**状态管理碎片化危机**
+- **状态管理碎片化危机**
 
 状态管理已成为前端架构最碎片化的领域之一：
 
@@ -585,7 +595,7 @@ function ProductContainer({ productId }) {
 - Vue的Pinia与Vuex共存增加了选择复杂性
 - 商业逻辑、UI状态、服务器数据混合造成状态管理混乱
 
--**服务器状态与客户端状态分离**
+- **服务器状态与客户端状态分离**
 
 现代应用正在明确区分服务器与客户端状态：
 
@@ -620,6 +630,7 @@ function ProductList() {
   
   return (/* 渲染逻辑 */);
 }
+
 ```
 
 **批判分析**：
@@ -628,7 +639,7 @@ function ProductList() {
 - 乐观更新简化了用户体验，但复杂的数据依赖难以处理
 - 状态同步策略（缓存失效、重新验证等）需要仔细规划
 
--**有限状态机的兴起**
+- **有限状态机的兴起**
 
 复杂UI流程正逐渐采用有限状态机进行管理：
 
@@ -685,6 +696,7 @@ const formMachine = createMachine({
     }
   }
 });
+
 ```
 
 **批判分析**：
@@ -695,7 +707,7 @@ const formMachine = createMachine({
 
 ### 3.3 微前端架构
 
--**微前端的实际应用挑战**
+- **微前端的实际应用挑战**
 
 微前端架构承诺解
 我将继续展示之前文档的内容：
@@ -738,6 +750,7 @@ function App() {
     </div>
   );
 }
+
 ```
 
 **批判分析**：
@@ -749,7 +762,7 @@ function App() {
 
 ### 3.4 服务端组件与同构渲染
 
--**React Server Components的革新与挑战**
+- **React Server Components的革新与挑战**
 
 RSC代表了渲染模式的重大革新，但带来了新的复杂性：
 
@@ -791,6 +804,7 @@ export default function ClientProfileActions({ userId }) {
     </button>
   );
 }
+
 ```
 
 **批判分析**：
@@ -800,7 +814,7 @@ export default function ClientProfileActions({ userId }) {
 - 流式渲染改善了首屏体验，但构建与部署变得更加复杂
 - 与现有生态系统集成不完善，需要显著的重构工作
 
--**渲染策略的多样性与取舍**
+- **渲染策略的多样性与取舍**
 
 现代框架提供了多种渲染策略，各有优缺点：
 
@@ -819,7 +833,7 @@ export default function ClientProfileActions({ userId }) {
 
 ### 4.1 开发工具链复杂性
 
--**构建系统的困境**
+- **构建系统的困境**
 
 构建工具的复杂性已经成为前端开发的主要痛点：
 
@@ -880,6 +894,7 @@ module.exports = {
   },
   // 更多配置...
 };
+
 ```
 
 **批判分析**：
@@ -888,7 +903,7 @@ module.exports = {
 - 工具链"黑盒化"导致排错困难，开发者对底层不了解
 - Vite等新工具改善了开发体验，但生产构建仍然复杂且慢
 
--**依赖地狱与版本管理**
+- **依赖地狱与版本管理**
 
 npm生态系统的脆弱性导致了严重的依赖管理问题：
 
@@ -896,7 +911,7 @@ npm生态系统的脆弱性导致了严重的依赖管理问题：
 - 依赖图复杂且深度嵌套，导致版本冲突和安全隐患
 - package-lock.json和yarn.lock文件冲突导致团队协作问题
 
--**环境差异与一致性挑战**
+- **环境差异与一致性挑战**
 
 开发、测试、构建和生产环境之间的差异导致了"在我机器上能运行"综合症：
 
@@ -906,7 +921,7 @@ npm生态系统的脆弱性导致了严重的依赖管理问题：
 
 ### 4.2 构建系统效率
 
--**构建性能挑战**
+- **构建性能挑战**
 
 构建系统性能已成为大型项目的瓶颈：
 
@@ -914,7 +929,7 @@ npm生态系统的脆弱性导致了严重的依赖管理问题：
 - TypeScript类型检查严重影响构建速度
 - 现代优化（代码分割、树摇）增加了构建复杂性和时间
 
--**缓存策略不足**
+- **缓存策略不足**
 
 缓存策略缺陷导致不必要的重新构建：
 
@@ -930,7 +945,7 @@ npm生态系统的脆弱性导致了严重的依赖管理问题：
 
 ### 4.3 类型系统应用
 
--**TypeScript的价值与成本**
+- **TypeScript的价值与成本**
 
 TypeScript已成为前端开发标准，但其使用存在显著挑战：
 
@@ -961,10 +976,13 @@ function createRouter<
   T extends Record<
     string,
     (params: any, query: Record<string, string>) => Promise<any>
+
   >
+
 >(routes: T): RouterType<T> {
   // 实现...
 }
+
 ```
 
 **批判分析**：
@@ -974,7 +992,7 @@ function createRouter<
 - 泛型和高级类型导致难以理解的错误信息和调试困难
 - 类型与运行时完全分离，导致类型安全错觉
 
--**类型系统与工程实践**
+- **类型系统与工程实践**
 
 类型系统与工程实践的结合面临挑战：
 
@@ -985,7 +1003,7 @@ function createRouter<
 
 ### 4.4 测试实践与挑战
 
--**组件测试困境**
+- **组件测试困境**
 
 组件测试存在根本性挑战：
 
@@ -1036,6 +1054,7 @@ test('displays user data and handles follow button click', async () => {
     expect(screen.getByRole('button', { name: /unfollow/i })).toBeInTheDocument();
   });
 });
+
 ```
 
 **批判分析**：
@@ -1045,7 +1064,7 @@ test('displays user data and handles follow button click', async () => {
 - 异步测试特别困难，导致伪造定时器和复杂的等待逻辑
 - 隔离测试与真实场景不符，集成测试更有价值但更难编写
 
--**测试策略与投资回报**
+- **测试策略与投资回报**
 
 测试策略的投资回报率不明确：
 
@@ -1064,7 +1083,7 @@ test('displays user data and handles follow button click', async () => {
 
 ### 5.1 首屏性能挑战
 
--**JavaScript体积问题**
+- **JavaScript体积问题**
 
 JavaScript体积已成为性能瓶颈：
 
@@ -1072,7 +1091,7 @@ JavaScript体积已成为性能瓶颈：
 - 三方依赖和组件库贡献了大部分体积
 - 代码分割实施不当导致初始加载包含非必要代码
 
--**渲染阻塞与优化**
+- **渲染阻塞与优化**
 
 渲染阻塞问题导致用户感知性能下降：
 
@@ -1091,6 +1110,7 @@ JavaScript体积已成为性能瓶颈：
   <!-- 字体会阻塞渲染 -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
 </head>
+
 ```
 
 **批判分析**：
@@ -1100,7 +1120,7 @@ JavaScript体积已成为性能瓶颈：
 - 预加载和预连接使用不足，导致关键资源发现延迟
 - 优化策略（如内联关键CSS）在现代构建工具中实施复杂
 
--**现代加载策略评估**
+- **现代加载策略评估**
 
 现代加载策略存在实施挑战：
 
@@ -1124,6 +1144,7 @@ JavaScript体积已成为性能瓶颈：
   <script type="module" src="/app.js"></script>
   <script nomodule src="/app-legacy.js"></script>
 </head>
+
 ```
 
 **批判分析**：
@@ -1135,7 +1156,7 @@ JavaScript体积已成为性能瓶颈：
 
 ### 5.2 运行时性能瓶颈
 
--**过度渲染问题**
+- **过度渲染问题**
 
 框架的渲染特性常导致不必要的DOM操作：
 
@@ -1189,6 +1210,7 @@ function ProductList({ products, filter, addToCart }) {
     </div>
   );
 }
+
 ```
 
 **批判分析**：
@@ -1198,7 +1220,7 @@ function ProductList({ products, filter, addToCart }) {
 - 渲染优化与代码可读性存在权衡
 - 不同框架有不同优化策略，知识难以迁移
 
--**长任务与交互延迟**
+- **长任务与交互延迟**
 
 JavaScript长任务是造成交互延迟的主要原因：
 
@@ -1225,6 +1247,7 @@ async function processLargeDatasetChunked(items) {
   
   return aggregateResults(results);
 }
+
 ```
 
 **批判分析**：
@@ -1236,7 +1259,7 @@ async function processLargeDatasetChunked(items) {
 
 ### 5.3 可访问性现状
 
--**可访问性实施差距**
+- **可访问性实施差距**
 
 尽管WCAG标准存在多年，可访问性实施仍存在显著差距：
 
@@ -1289,6 +1312,7 @@ function AccessibleForm() {
     </div>
   );
 }
+
 ```
 
 **批判分析**：
@@ -1298,7 +1322,7 @@ function AccessibleForm() {
 - 自动化测试可以捕获部分问题，但无法替代手动审核和筛选阅读器测试
 - 可访问性知识在前端开发者中分布不均
 
--**移动和触摸可访问性**
+- **移动和触摸可访问性**
 
 移动和触摸界面的可访问性需求常被忽视：
 
@@ -1307,7 +1331,7 @@ function AccessibleForm() {
 - 媒体查询和响应式设计未考虑放大视图
 - 移动屏幕阅读器测试不足
 
--**可访问性与性能冲突**
+- **可访问性与性能冲突**
 
 可访问性与性能优化间存在紧张关系：
 
@@ -1318,7 +1342,7 @@ function AccessibleForm() {
 
 ### 5.4 国际化与本地化
 
--**国际化架构挑战**
+- **国际化架构挑战**
 
 国际化实施面临架构层面的挑战：
 
@@ -1359,6 +1383,7 @@ function ProductPrice({ price, currency, date }) {
     </div>
   );
 }
+
 ```
 
 **批判分析**：
@@ -1368,7 +1393,7 @@ function ProductPrice({ price, currency, date }) {
 - 动态内容和插值增加了翻译难度和错误风险
 - 日期、数字和货币格式化需要大量运行时支持
 
--**RTL支持缺陷**
+- **RTL支持缺陷**
 
 从左到右(LTR)到右到左(RTL)语言的支持存在显著缺陷：
 
@@ -1386,6 +1411,7 @@ function ProductPrice({ price, currency, date }) {
   text-align: start;          /* 自动适应文本方向 */
   background-position: inline-end top;  /* 自动适应文本方向 */
 }
+
 ```
 
 **批判分析**：
@@ -1399,7 +1425,7 @@ function ProductPrice({ price, currency, date }) {
 
 ### 6.1 依赖地狱问题
 
--**依赖管理与安全**
+- **依赖管理与安全**
 
 依赖管理已成为主要的安全和维护挑战：
 
@@ -1423,6 +1449,7 @@ function ProductPrice({ price, currency, date }) {
 }
 
 // npm ls 通常显示数百甚至上千个依赖
+
 ```
 
 **批判分析**：
@@ -1432,7 +1459,7 @@ function ProductPrice({ price, currency, date }) {
 - 依赖更新导致的破坏性变更难以预测
 - 供应链攻击风险高，自动更新不安全
 
--**包体积与优化**
+- **包体积与优化**
 
 依赖选择对包体积的影响巨大：
 
@@ -1449,7 +1476,7 @@ function ProductPrice({ price, currency, date }) {
 
 ### 6.2 代码库老化与迁移
 
--**渐进式迁移的挑战**
+- **渐进式迁移的挑战**
 
 大型应用的框架和架构迁移面临显著挑战：
 
@@ -1477,6 +1504,7 @@ function LegacyWrapper({ id, onUpdate }) {
   
   return <div id={id} ref={containerRef} />;
 }
+
 ```
 
 **批判分析**：
@@ -1515,6 +1543,7 @@ function ProductPage() {
   
   return (/* 渲染逻辑 */);
 }
+
 ```
 
 **批判分析**：
@@ -1524,7 +1553,7 @@ function ProductPage() {
 - 文档不足和知识孤岛造成团队对历史决策缺乏理解
 - 频繁的库更新和迁移压力加剧了技术债务
 
--**浏览器兼容性挑战**
+- **浏览器兼容性挑战**
 
 跨浏览器兼容性仍然是前端开发的痛点：
 
@@ -1545,6 +1574,7 @@ function ProductPage() {
     margin-left: 0; /* 重置在支持gap的浏览器中的margin */
   }
 }
+
 ```
 
 **批判分析**：
@@ -1558,7 +1588,7 @@ function ProductPage() {
 
 ### 7.1 编译优化革命
 
--**宏与部分评估**
+- **宏与部分评估**
 
 编译时优化正在成为前端性能的新前沿：
 
@@ -1595,6 +1625,7 @@ function create_fragment(ctx) {
     d() { /* 清理逻辑 */ }
   };
 }
+
 ```
 
 **批判分析**：
@@ -1603,7 +1634,7 @@ function create_fragment(ctx) {
 - 调试编译后代码困难，开发者工具支持不足
 - 缓存失效和增量编译问题导致开发体验不稳定
 
--**零运行时架构**
+- **零运行时架构**
 
 零运行时架构正在重新定义框架设计：
 
@@ -1635,6 +1666,7 @@ function Counter_compiled() {
   
   return button;
 }
+
 ```
 
 **批判分析**：
@@ -1646,7 +1678,7 @@ function Counter_compiled() {
 
 ### 7.2 AI辅助开发
 
--**生成式AI与代码生成**
+- **生成式AI与代码生成**
 
 AI辅助开发正在改变前端工作流：
 
@@ -1686,6 +1718,7 @@ function ProductList() {
     </div>
   );
 }
+
 ```
 
 **批判分析**：
@@ -1695,7 +1728,7 @@ function ProductList() {
 - 生成的代码可能包含常见反模式和性能问题
 - 代码完成与生成显著提高生产力，但可能导致代码膨胀
 
--**AI辅助测试与优化**
+- **AI辅助测试与优化**
 
 AI正在改变测试和优化方法：
 
@@ -1749,6 +1782,7 @@ test('renders products and handles pagination', async () => {
     expect(screen.getByText(mockProducts[10].name)).toBeInTheDocument();
   });
 });
+
 ```
 
 **批判分析**：
@@ -1760,7 +1794,7 @@ test('renders products and handles pagination', async () => {
 
 ### 7.3 系统设计范式转变
 
--**微前端到微核心**
+- **微前端到微核心**
 
 架构范式正在从微前端向微核心演变：
 
@@ -1799,6 +1833,7 @@ core
   .use(analyticsPlugin)
   .use(featuresPlugin)
   .start(document.getElementById('root'));
+
 ```
 
 **批判分析**：
@@ -1808,7 +1843,7 @@ core
 - 通用核心可能导致各应用间差异小，重用性高
 - 插件依赖管理复杂，版本兼容性挑战仍存在
 
--**声明式基础设施**
+- **声明式基础设施**
 
 应用配置正在向声明式基础设施演变：
 
@@ -1850,6 +1885,7 @@ export default {
     regions: ["us-east-1", "eu-west-1"]
   }
 };
+
 ```
 
 **批判分析**：
@@ -1861,7 +1897,7 @@ export default {
 
 ### 7.4 边缘计算与流式交付
 
--**边缘渲染架构**
+- **边缘渲染架构**
 
 边缘计算正在重塑内容交付架构：
 
@@ -1898,6 +1934,7 @@ async function handleRequest(request) {
   // 静态资产处理
   return fetch(`https://static-assets.example.com${path}`);
 }
+
 ```
 
 **批判分析**：
@@ -1907,7 +1944,7 @@ async function handleRequest(request) {
 - 边缘KV存储提供了数据本地化，但一致性保证较弱
 - 调试和监控分布式边缘应用困难
 
--**增量流式传输**
+- **增量流式传输**
 
 增量和流式内容传输正在改变页面加载模型：
 
@@ -1943,6 +1980,7 @@ app.get('/product/:id', async (req, res) => {
   res.write('</div></body></html>');
   res.end();
 });
+
 ```
 
 **批判分析**：

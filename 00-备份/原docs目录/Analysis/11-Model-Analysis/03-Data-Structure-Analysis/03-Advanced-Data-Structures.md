@@ -461,6 +461,7 @@ func (t *BinaryTree) IsFull() bool {
     // 满二叉树节点数 = 2^h - 1
     return nodeCount == (1<<height) - 1
 }
+
 ```
 
 #### 3.1.3 复杂度分析
@@ -782,6 +783,7 @@ func (t *AVLTree) InOrderTraversal() []interface{} {
     traverse(t.Root)
     return result
 }
+
 ```
 
 ##### 复杂度分析
@@ -935,6 +937,7 @@ func (t *BPlusTree) RangeQuery(start, end int) []int {
     
     return result
 }
+
 ```
 
 #### 3.3.3 复杂度分析与应用场景
@@ -1138,6 +1141,7 @@ func (t *RedBlackTree) Insert(value int) {
     // 修复红黑树属性
     t.insertFixup(z)
 }
+
 ```
 
 #### 3.4.3 复杂度分析
@@ -1264,6 +1268,7 @@ func (g *AdjMatrixGraph) Adj(v int) []int {
 
     return adj
 }
+
 ```
 
 **空间复杂度**: $O(V^2)$
@@ -1331,6 +1336,7 @@ func (g *AdjListGraph) GetAdjVertices(v int) []int {
 
     return vertices
 }
+
 ```
 
 **空间复杂度**: $O(V + E)$
@@ -1401,6 +1407,7 @@ func (g *AdjListGraph) IterativeDFS(start int) []int {
 
     return result
 }
+
 ```
 
 **时间复杂度**: $O(V + E)$
@@ -1438,6 +1445,7 @@ func (g *AdjListGraph) BFS(start int) []int {
 
     return result
 }
+
 ```
 
 **时间复杂度**: $O(V + E)$
@@ -1478,6 +1486,7 @@ func (g *AdjListGraph) ConnectedComponents() [][]int {
 
     return components
 }
+
 ```
 
 **时间复杂度**: $O(V + E)$
@@ -1559,6 +1568,7 @@ func (g *AdjListGraph) StronglyConnectedComponents() [][]int {
 
     return components
 }
+
 ```
 
 **时间复杂度**: $O(V + E)$
@@ -1668,6 +1678,7 @@ func ReconstructPath(start, end int, prev []int) []int {
 
     return path
 }
+
 ```
 
 **时间复杂度**：使用二叉堆优化的Dijkstra算法时间复杂度为$O((V+E)\log V)$
@@ -1724,6 +1735,7 @@ func (g *AdjListGraph) BellmanFord(start int) ([]int, []int, bool) {
 
     return dist, prev, false
 }
+
 ```
 
 **时间复杂度**：$O(V \cdot E)$
@@ -1766,6 +1778,7 @@ func (g *AdjMatrixGraph) FloydWarshall() [][]int {
 
     return dist
 }
+
 ```
 
 **时间复杂度**：$O(V^3)$
@@ -1840,6 +1853,7 @@ func (g *AdjListGraph) Prim(start int) ([]int, int) {
 
     return parent, mstWeight
 }
+
 ```
 
 **时间复杂度**：$O((V+E)\log V)$ (使用二叉堆优化)
@@ -1953,6 +1967,7 @@ func (g *AdjListGraph) Kruskal() ([]KruskalEdge, int) {
 
     return mstEdges, mstWeight
 }
+
 ```
 
 **时间复杂度**：$O(E \log E)$ (主要来自边的排序)
@@ -2059,6 +2074,7 @@ func (g *AdjListGraph) TopologicalSortDFS() ([]int, bool) {
 
     return order, true
 }
+
 ```
 
 **时间复杂度**：$O(V + E)$ (对于Kahn算法和DFS算法)
@@ -2200,6 +2216,7 @@ func (h *OpenAddressingHashTable) resize(newCapacity int) {
         }
     }
 }
+
 ```
 
 **时间复杂度**:
@@ -2351,6 +2368,7 @@ func (h *ChainHashTable) resize(newCapacity int) {
         }
     }
 }
+
 ```
 
 **时间复杂度**:
@@ -2449,6 +2467,7 @@ func (ch *ConsistentHash) Get(key string) string {
     
     return ch.nodeMap[ch.hashRing[idx]]
 }
+
 ```
 
 **时间复杂度**:
@@ -2624,6 +2643,7 @@ func isPrime(n int) bool {
     
     return true
 }
+
 ```
 
 **时间复杂度**:
@@ -2786,6 +2806,7 @@ func (h *CuckooHashTable) rehash() {
         }
     }
 }
+
 ```
 
 **时间复杂度**:
@@ -2872,6 +2893,7 @@ func OptimalSize(n int, p float64) int {
     // n是预期元素数量，p是期望的误判率
     return int(math.Ceil(-float64(n) * math.Log(p) / math.Pow(math.Log(2), 2)))
 }
+
 ```
 
 **时间复杂度**:
@@ -3027,6 +3049,7 @@ func (sl *SkipList) Delete(value int) bool {
     
     return false
 }
+
 ```
 
 **时间复杂度**:
@@ -3118,6 +3141,7 @@ func (t *Trie) StartsWith(prefix string) bool {
     
     return true
 }
+
 ```
 
 #### 6.3.2 压缩前缀树
@@ -3262,6 +3286,7 @@ func min(a, b int) int {
     }
     return b
 }
+
 ```
 
 #### 6.3.3 后缀树
@@ -3301,6 +3326,7 @@ func BuildPrefixSum(arr []int) []int {
 func QueryRange(prefixSum []int, left, right int) int {
     return prefixSum[right+1] - prefixSum[left]
 }
+
 ```
 
 **时间复杂度**:
@@ -3378,6 +3404,7 @@ func (root *SegmentTreeNode) Update(index, val int) {
     
     root.Sum = root.Left.Sum + root.Right.Sum
 }
+
 ```
 
 **时间复杂度**:
@@ -3439,6 +3466,7 @@ func (bit *BinaryIndexedTree) BuildFromArray(arr []int) {
         bit.Update(i, val)
     }
 }
+
 ```
 
 **时间复杂度**:
@@ -3517,6 +3545,7 @@ func min(a, b int) int {
     }
     return b
 }
+
 ```
 
 **时间复杂度**:
@@ -3598,6 +3627,7 @@ func (b *BitMap) Count() int {
     }
     return count
 }
+
 ```
 
 **时间复杂度**:
@@ -3722,6 +3752,7 @@ func (rt *RadixTree) collectKeys(node *RadixTreeNode, prefix string, result *[]s
         rt.collectKeys(child, prefix+string(ch), result)
     }
 }
+
 ```
 
 **时间复杂度**:
@@ -3952,6 +3983,7 @@ func (cpt *CompactPrefixTree) collectKeys(node *CompactPrefixTreeNode, prefix st
         cpt.collectKeys(child, newPrefix, result)
     }
 }
+
 ```
 
 **时间复杂度**:
@@ -4055,6 +4087,7 @@ func (cms *CountMinSketch) Merge(other *CountMinSketch) error {
     
     return nil
 }
+
 ```
 
 **时间复杂度**:
@@ -4307,6 +4340,7 @@ func murmurHash(data []byte) uint64 {
     
     return h1 ^ h2
 }
+
 ```
 
 **时间复杂度**:
@@ -4447,6 +4481,7 @@ func (dsl *DeterministicSkipList) Search(value int) bool {
     current = current.Forward[0]
     return current != nil && current.Value == value
 }
+
 ```
 
 **时间复杂度**:
@@ -4563,6 +4598,7 @@ func (bsl *BiasedSkipList) promoteNode(node *BiasedSkipListNode) {
         update[newLevel].Forward[newLevel] = node
     }
 }
+
 ```
 
 **时间复杂度**:

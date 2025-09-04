@@ -38,19 +38,6 @@
     - [1.10.3 未来方向](#未来方向)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>
 这个问题要求从工作流视角分析OpenTelemetry，使用范畴论进行形式化分析，并用Rust代码提供示例。
@@ -76,6 +63,7 @@
 4. 适当使用Rust的异步特性(async/await, Future, tokio等)
 5. 结合OpenTelemetry的Rust生态系统
 </think>
+
 ```
 
 ## 1.1 目录
@@ -278,6 +266,7 @@ where
         self.second.apply(&intermediate)
     }
 }
+
 ```
 
 ### 1.4.2 遥测数据范畴的形式化定义
@@ -431,6 +420,7 @@ where
         self.second.transform(&intermediate)
     }
 }
+
 ```
 
 ### 1.4.3 范畴间映射与函子
@@ -535,6 +525,7 @@ where
         (Context::current_with_span(span), TelemetryData::Trace(trace_data))
     }
 }
+
 ```
 
 ## 1.5 4. 同构关系：工作流与分布式追踪
@@ -876,6 +867,7 @@ async fn workflow_trace_example() -> Result<(), Box<dyn Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 1.6 5. 等价关系：异构遥测数据的统一表示
@@ -1491,6 +1483,7 @@ fn calculate_trace_similarity(original: &TraceData, reconstructed: &TraceData) -
     
     common_spans as f64 / original.spans.len() as f64
 }
+
 ```
 
 ## 1.7 6. 组合关系：处理管道与态射组合
@@ -2002,6 +1995,7 @@ async fn processor_composition_example() -> Result<(), Box<dyn Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 1.8 7. 聚合关系：分布式系统中的余极限结构
@@ -2684,6 +2678,7 @@ fn get_service_name(span: &SpanData) -> String {
             },
         )
 }
+
 ```
 
 ## 1.9 8. Rust异步工作流与OpenTelemetry集成实践
@@ -2692,7 +2687,7 @@ fn get_service_name(span: &SpanData) -> String {
 
 Rust的异步编程模型通过`async`/`await`语法和Future特征提供了高效的非阻塞执行模式。下面是几种关键的异步工作流设计模式：
 
--**1. 异步状态机模式**
+- **1. 异步状态机模式**
 
 使用异步函数表示工作流状态转换：
 
@@ -2725,9 +2720,10 @@ async fn process_order(initial: Order) -> OrderState {
         failed => failed,
     }
 }
+
 ```
 
--**2. 管道模式**
+- **2. 管道模式**
 
 使用futures的组合操作创建处理管道：
 
@@ -2743,9 +2739,10 @@ async fn order_pipeline(order: Order) -> Result<CompletedOrder, OrderError> {
         .then(send_notification)
         .await
 }
+
 ```
 
--**3. Actor模式**
+- **3. Actor模式**
 
 使用消息传递在独立的异步任务间协调工作流：
 
@@ -2778,13 +2775,14 @@ impl OrderProcessor {
         }
     }
 }
+
 ```
 
 ### 1.9.2 上下文传播与Rust所有权系统
 
 OpenTelemetry上下文传播在Rust中需要特别注意所有权和生命周期问题：
 
--**1. 上下文传播策略**
+- **1. 上下文传播策略**
 
 ```rust
 // Rust中的上下文传播
@@ -2849,9 +2847,10 @@ async fn propagate_context_example(tracer: &Tracer) {
     
     // 服务器操作现在与客户端追踪链接
 }
+
 ```
 
--**2. Rust所有权系统与上下文管理**
+- **2. Rust所有权系统与上下文管理**
 
 Rust的所有权系统对OpenTelemetry上下文传播提出了独特的挑战和机会：
 
@@ -2893,9 +2892,10 @@ async fn cross_thread_context() {
         span.end();
     }
 }
+
 ```
 
--**3. Rust异步上下文传播策略**
+- **3. Rust异步上下文传播策略**
 
 Rust异步工作流中的上下文传播需要特别考虑以下几点：
 
@@ -2946,6 +2946,7 @@ impl<I: Clone + Send + 'static, O: Send + 'static> ContextPipeline<I, O> {
         results
     }
 }
+
 ```
 
 ### 1.9.3 端到端示例：异步订单处理系统
@@ -3667,6 +3668,7 @@ fn create_test_order(index: usize) -> Order {
         created_at: SystemTime::now(),
     }
 }
+
 ```
 
 ## 1.10 9. 结论与展望

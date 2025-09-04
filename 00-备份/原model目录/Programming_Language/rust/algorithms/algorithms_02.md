@@ -18,6 +18,7 @@
 
 我将按照这个思路来构建我的回答，同时加入代码示例来展示这些概念的应用。
 </think>
+
 ```
 
 ## 目录
@@ -83,6 +84,7 @@ fn main() {
         println!("生成值: {}", value);
     }
 }
+
 ```
 
 ## 二、生成器在数据结构中的应用
@@ -149,6 +151,7 @@ impl<T: Clone> TreeNode<T> {
         yield self.value.clone();
     }
 }
+
 ```
 
 #### 与传统递归实现对比
@@ -172,6 +175,7 @@ impl<T: Clone> TreeNode<T> {
         result
     }
 }
+
 ```
 
 #### 表达能力分析
@@ -244,6 +248,7 @@ impl<T: Clone> LinkedList<T> {
         tasks.collect().await
     }
 }
+
 ```
 
 #### 生成器与迭代器对比
@@ -274,6 +279,7 @@ impl<'a, T> Iterator for LinkedListIterator<'a, T> {
         }
     }
 }
+
 ```
 
 表达能力分析
@@ -342,6 +348,7 @@ async fn quicksort_async<T: Ord + Clone + Send + 'static>(arr: &[T]) -> Vec<T> {
     
     result
 }
+
 ```
 
 ### 2. 归并排序：生成器与异步迭代
@@ -435,6 +442,7 @@ async fn merge_sort_async<T: Ord + Clone + Send + 'static>(arr: &[T]) -> Vec<T> 
     
     result
 }
+
 ```
 
 表达能力分析
@@ -557,6 +565,7 @@ impl Graph {
         result
     }
 }
+
 ```
 
 #### 生成器与传统实现对比
@@ -606,6 +615,7 @@ impl Graph {
         result
     }
 }
+
 ```
 
 表达能力分析
@@ -675,6 +685,7 @@ fn fibonacci_recursive_gen(n: u64) -> impl gen() -> u64 {
         yield value;
     }
 }
+
 ```
 
 #### 与传统实现对比
@@ -714,6 +725,7 @@ fn fibonacci_tail_recursive(n: u64) -> u64 {
     
     fib_inner(n, 0, 1)
 }
+
 ```
 
 表达能力分析
@@ -817,6 +829,7 @@ async fn coin_change_async(coins: &[u32], amount: u32) -> Option<Vec<u32>> {
     
     dp[amount as usize].clone()
 }
+
 ```
 
 表达能力分析
@@ -867,6 +880,7 @@ async fn process_async_stream() {
         tokio::task::yield_now().await;
     }
 }
+
 ```
 
 ### 2. 异步迭代与并发控制
@@ -923,6 +937,7 @@ where
         .collect()
         .await
 }
+
 ```
 
 ### 3. 协作式多任务处理
@@ -985,6 +1000,7 @@ fn task_gen(id: usize, steps: usize) -> impl gen() -> () {
         yield ();
     }
 }
+
 ```
 
 表达能力分析
@@ -1066,6 +1082,7 @@ async fn process_item(item: &str) -> String {
     tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
     format!("已处理: {}", item)
 }
+
 ```
 
 ### 3. 设计原则与选择指南
@@ -1120,13 +1137,14 @@ fn quick_sort_sync(arr: &[u32]) -> Vec<u32> {
 <think>
 我需要继续完成之前的代码和解释。我将接着上次的内容，完成并行排序块函数和其他相关内容，然后继续讨论Rust生成器和异步机制在算法实现中的表达能力。
 </think>
+
 ```
 
 ```rust
 // 并行排序块
 async fn parallel_sort_chunks(chunks: Vec<Vec<u32>>) -> Vec<Vec<u32>> {
     use futures::future;
-    
+  
     let handles = chunks.into_iter().map(|chunk| {
         tokio::spawn(async move {
             // 在独立任务中排序
@@ -1135,10 +1153,10 @@ async fn parallel_sort_chunks(chunks: Vec<Vec<u32>>) -> Vec<Vec<u32>> {
             sorted
         })
     });
-    
+  
     // 等待所有排序任务完成
     let results = future::join_all(handles).await;
-    
+  
     // 收集结果
     results.into_iter()
         .filter_map(|r| r.ok())
@@ -1150,22 +1168,22 @@ fn merge_sorted_chunks(chunks: &[Vec<u32>]) -> impl gen() -> u32 {
     if chunks.is_empty() {
         return;
     }
-    
+  
     if chunks.len() == 1 {
         for &item in &chunks[0] {
             yield item;
         }
         return;
     }
-    
+  
     // 多路合并
     let mut indices = vec![0; chunks.len()];
     let mut remaining = chunks.iter().map(|c| c.len()).sum::<usize>();
-    
+  
     while remaining > 0 {
         let mut min_value = u32::MAX;
         let mut min_idx = 0;
-        
+  
         // 找到当前所有块中最小的元素
         for (i, chunk) in chunks.iter().enumerate() {
             if indices[i] < chunk.len() {
@@ -1176,15 +1194,16 @@ fn merge_sorted_chunks(chunks: &[Vec<u32>]) -> impl gen() -> u32 {
                 }
             }
         }
-        
+  
         // 输出最小值
         yield min_value;
-        
+  
         // 更新索引和计数
         indices[min_idx] += 1;
         remaining -= 1;
     }
 }
+
 ```
 
 ## 八、算法复杂度与设计模式分析
@@ -1212,38 +1231,38 @@ fn complexity_analysis() {
             _ => fib_recursive(n-1) + fib_recursive(n-2)
         }
     }
-    
+  
     // 动态规划: 时间O(n), 空间O(n)
     fn fib_dp(n: u64) -> u64 {
         let mut dp = vec![0; (n+1) as usize];
         dp[1] = 1;
-        
+  
         for i in 2..=n as usize {
             dp[i] = dp[i-1] + dp[i-2];
         }
-        
+  
         dp[n as usize]
     }
-    
+  
     // 迭代: 时间O(n), 空间O(1)
     fn fib_iterative(n: u64) -> u64 {
         let mut a = 0;
         let mut b = 1;
-        
+  
         for _ in 0..n {
             let temp = a + b;
             a = b;
             b = temp;
         }
-        
+  
         a
     }
-    
+  
     // 生成器: 时间O(n), 空间O(1)
     fn fib_generator() -> impl gen() -> u64 {
         let mut a = 0;
         let mut b = 1;
-        
+  
         loop {
             yield a;
             let next = a + b;
@@ -1251,7 +1270,7 @@ fn complexity_analysis() {
             b = next;
         }
     }
-    
+  
     // 分析报告
     println!("斐波那契算法复杂度分析:");
     println!("递归实现: 时间O(2^n), 空间O(n) - 效率极低，但代码最简洁");
@@ -1259,6 +1278,7 @@ fn complexity_analysis() {
     println!("迭代实现: 时间O(n), 空间O(1) - 高效，仅计算单个值");
     println!("生成器实现: 时间O(n), 空间O(1) - 高效，可生成序列");
 }
+
 ```
 
 ### 2. 设计模式与实现选择
@@ -1268,11 +1288,11 @@ fn complexity_analysis() {
 // 1. 递归实现
 fn process_tree_recursive<T>(node: &TreeNode<T>, processor: &dyn Fn(&T)) {
     processor(&node.value);
-    
+  
     if let Some(left) = &node.left {
         process_tree_recursive(left, processor);
     }
-    
+  
     if let Some(right) = &node.right {
         process_tree_recursive(right, processor);
     }
@@ -1281,14 +1301,14 @@ fn process_tree_recursive<T>(node: &TreeNode<T>, processor: &dyn Fn(&T)) {
 // 2. 迭代实现
 fn process_tree_iterative<T>(root: &TreeNode<T>, processor: &dyn Fn(&T)) {
     let mut stack = vec![root];
-    
+  
     while let Some(node) = stack.pop() {
         processor(&node.value);
-        
+  
         if let Some(right) = &node.right {
             stack.push(right);
         }
-        
+  
         if let Some(left) = &node.left {
             stack.push(left);
         }
@@ -1305,33 +1325,34 @@ fn process_tree_generator<T>(root: &TreeNode<T>, processor: &dyn Fn(&T)) {
 
 // 4. 异步实现
 async fn process_tree_async<T: Clone + Send + 'static>(
-    root: &TreeNode<T>, 
+    root: &TreeNode<T>,
     processor: impl Fn(&T) -> impl std::future::Future<Output = ()> + Clone + Send + 'static
 ) {
     async fn visit<T: Clone + Send + 'static>(
-        node: &TreeNode<T>, 
+        node: &TreeNode<T>,
         processor: impl Fn(&T) -> impl std::future::Future<Output = ()> + Clone + Send + 'static
     ) {
         processor(&node.value).await;
-        
+  
         let left_fut = async {
             if let Some(left) = &node.left {
                 visit(left, processor.clone()).await;
             }
         };
-        
+  
         let right_fut = async {
             if let Some(right) = &node.right {
                 visit(right, processor.clone()).await;
             }
         };
-        
+  
         // 并行处理左右子树
         tokio::join!(left_fut, right_fut);
     }
-    
+  
     visit(root, processor).await;
 }
+
 ```
 
 ### 3. 选择指南与决策树
@@ -1369,35 +1390,36 @@ fn choose_implementation(
 ) -> &'static str {
     match (problem, data_size, processing) {
         // 递归问题
-        (ProblemType::Recursive, DataSize::Small, _) => 
+        (ProblemType::Recursive, DataSize::Small, _) =>
             "传统递归实现",
-        (ProblemType::Recursive, _, ProcessingModel::Lazy) => 
+        (ProblemType::Recursive, _, ProcessingModel::Lazy) =>
             "生成器递归转换",
-        (ProblemType::Recursive, DataSize::Large, _) => 
+        (ProblemType::Recursive, DataSize::Large, _) =>
             "迭代实现(避免栈溢出)",
-            
+  
         // 流数据
-        (_, DataSize::Infinite, ProcessingModel::Lazy) => 
+        (_, DataSize::Infinite, ProcessingModel::Lazy) =>
             "生成器实现",
-        (_, DataSize::Infinite, ProcessingModel::Parallel) => 
+        (_, DataSize::Infinite, ProcessingModel::Parallel) =>
             "异步生成器+并行处理",
-            
+  
         // IO密集型
-        (ProblemType::IOBound, _, _) => 
+        (ProblemType::IOBound, _, _) =>
             "异步实现",
-            
+  
         // CPU密集+大数据
-        (ProblemType::CPUBound, DataSize::Large, ProcessingModel::Parallel) => 
+        (ProblemType::CPUBound, DataSize::Large, ProcessingModel::Parallel) =>
             "异步并行实现",
-            
+  
         // 独立子问题
-        (ProblemType::Independent, _, ProcessingModel::Parallel) => 
+        (ProblemType::Independent, _, ProcessingModel::Parallel) =>
             "异步并行实现",
-            
+  
         // 默认情况
         _ => "迭代实现"
     }
 }
+
 ```
 
 ## 九、Rust 2024/2025实际应用案例
@@ -1409,12 +1431,12 @@ fn choose_implementation(
 async fn data_processing_pipeline(file_path: &str) -> Result<(), std::io::Error> {
     use tokio::io::{AsyncBufReadExt, BufReader};
     use tokio::fs::File;
-    
+  
     // 1. 异步文件读取
     let file = File::open(file_path).await?;
     let reader = BufReader::new(file);
     let mut lines = reader.lines();
-    
+  
     // 2. 创建处理流水线
     let pipeline = async {
         // 行生成器
@@ -1429,7 +1451,7 @@ async fn data_processing_pipeline(file_path: &str) -> Result<(), std::io::Error>
                 }
             }
         };
-        
+  
         // 解析记录生成器
         let record_gen = gen {
             for line in line_gen {
@@ -1442,7 +1464,7 @@ async fn data_processing_pipeline(file_path: &str) -> Result<(), std::io::Error>
                 }
             }
         };
-        
+  
         // 过滤生成器
         let filtered_gen = gen {
             for record in record_gen {
@@ -1451,27 +1473,27 @@ async fn data_processing_pipeline(file_path: &str) -> Result<(), std::io::Error>
                 }
             }
         };
-        
+  
         // 批处理
         let mut buffer = Vec::with_capacity(1000);
         for record in filtered_gen {
             buffer.push(record);
-            
+  
             // 每1000条记录批量处理
             if buffer.len() >= 1000 {
                 process_batch(&buffer).await?;
                 buffer.clear();
             }
         }
-        
+  
         // 处理剩余记录
         if !buffer.is_empty() {
             process_batch(&buffer).await?;
         }
-        
+  
         Ok(()) as Result<(), std::io::Error>
     };
-    
+  
     // 执行流水线
     pipeline.await
 }
@@ -1498,14 +1520,14 @@ async fn process_batch(records: &[Record]) -> Result<(), std::io::Error> {
             process_single_record(record).await
         })
     ).await;
-    
+  
     // 检查结果
     for result in results {
         if let Err(e) = result {
             eprintln!("处理错误: {}", e);
         }
     }
-    
+  
     Ok(())
 }
 
@@ -1521,6 +1543,7 @@ struct Record {
     id: u64,
     data: String,
 }
+
 ```
 
 ### 2. 网络爬虫实现
@@ -1530,19 +1553,19 @@ struct Record {
 async fn web_crawler(start_urls: Vec<String>, max_depth: usize) -> Result<(), Box<dyn std::error::Error>> {
     use std::collections::{HashSet, VecDeque};
     use std::sync::Mutex;
-    
+  
     // 已访问URL集合
     let visited = std::sync::Arc::new(Mutex::new(HashSet::<String>::new()));
-    
+  
     // URL队列
     let mut queue = VecDeque::new();
-    
+  
     // 添加起始URL
     for url in start_urls {
         visited.lock().unwrap().insert(url.clone());
         queue.push_back((url, 0)); // (URL, 深度)
     }
-    
+  
     // 爬虫生成器
     let page_gen = gen {
         while let Some((url, depth)) = queue.pop_front() {
@@ -1550,17 +1573,17 @@ async fn web_crawler(start_urls: Vec<String>, max_depth: usize) -> Result<(), Bo
             if depth > max_depth {
                 continue;
             }
-            
+  
             // 获取页面内容
             println!("爬取: {} (深度 {})", url, depth);
             match fetch_page(&url).await {
                 Ok(content) => {
                     // 提取链接
                     let links = extract_links(&url, &content);
-                    
+  
                     // 生成当前页面
                     yield (url.clone(), content);
-                    
+  
                     // 将新链接添加到队列
                     for link in links {
                         let mut visited_set = visited.lock().unwrap();
@@ -1576,10 +1599,10 @@ async fn web_crawler(start_urls: Vec<String>, max_depth: usize) -> Result<(), Bo
             }
         }
     };
-    
+  
     // 并行处理页面内容
     let mut processed = 0;
-    
+  
     // 页面处理流水线
     for _ in 0..5 {
         if let Some((url, content)) = page_gen.next().await {
@@ -1590,13 +1613,13 @@ async fn web_crawler(start_urls: Vec<String>, max_depth: usize) -> Result<(), Bo
                     Err(e) => eprintln!("处理失败 {}: {}", url, e),
                 }
             });
-            
+  
             processed += 1;
         } else {
             break;
         }
     }
-    
+  
     println!("共处理 {} 个页面", processed);
     Ok(())
 }
@@ -1623,6 +1646,7 @@ async fn process_page(url: &str, content: &str) -> Result<(), Box<dyn std::error
     tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
     Ok(())
 }
+
 ```
 
 ## 十、结论与最佳实践
@@ -1655,18 +1679,18 @@ async fn best_practice_example(data: Vec<u32>) -> Result<Stats, Error> {
         // 小数据集：直接处理
         return compute_stats_sync(&data);
     }
-    
+  
     // 2. 生成器用于流处理
     let mut filtered_data = Vec::new();
     let filter_gen = filter_outliers(&data);
-    
+  
     while let Some(item) = filter_gen.next() {
         filtered_data.push(item);
     }
-    
+  
     // 3. 大数据集：并行处理
     let chunks = split_into_chunks(&filtered_data, 1000);
-    
+  
     // 4. 异步并行
     let partial_results = futures::future::join_all(
         chunks.into_iter().map(|chunk| {
@@ -1675,19 +1699,19 @@ async fn best_practice_example(data: Vec<u32>) -> Result<Stats, Error> {
             })
         })
     ).await;
-    
+  
     // 5. 合并结果
     let results: Result<Vec<_>, _> = partial_results.into_iter()
         .map(|r| r.map_err(Error::TaskJoin)?.map_err(Error::Computation))
         .collect();
-    
+  
     merge_stats(&results?)
 }
 
 // 过滤异常值生成器
 fn filter_outliers(data: &[u32]) -> impl gen() -> u32 {
     let mean = data.iter().sum::<u32>() as f64 / data.len() as f64;
-    
+  
     for &item in data {
         if (item as f64 - mean).abs() < mean * 0.2 {
             yield item;
@@ -1732,6 +1756,7 @@ enum Error {
     Computation(String),
     TaskJoin(tokio::task::JoinError),
 }
+
 ```
 
 ### 3. 未来趋势与发展方向

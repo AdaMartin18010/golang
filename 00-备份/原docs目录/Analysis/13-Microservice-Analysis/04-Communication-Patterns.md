@@ -254,6 +254,7 @@ func (rc *RESTClient) Post(path string, data interface{}, result interface{}) er
     
     return nil
 }
+
 ```
 
 ### gRPC通信
@@ -371,6 +372,7 @@ func LoggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
     
     return resp, err
 }
+
 ```
 
 ## 异步通信模式
@@ -546,6 +548,7 @@ func (c *Consumer) worker() {
         }(topic, handler)
     }
 }
+
 ```
 
 ### 发布-订阅模式
@@ -736,6 +739,7 @@ func (t *Topic) sendToSubscriber(subscriber *Subscriber, message []byte) {
         }
     }
 }
+
 ```
 
 ## 事件驱动模式
@@ -899,6 +903,7 @@ func (es *EventSubscriber) handleEvent(eventType string, data []byte) error {
     
     return nil
 }
+
 ```
 
 ### 事件溯源
@@ -1018,6 +1023,7 @@ func (es *EventStore) ReplayEvents(aggregateID string, fromVersion int64) ([]*Ev
     
     return events, nil
 }
+
 ```
 
 ## 总结

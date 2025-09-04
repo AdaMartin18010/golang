@@ -49,13 +49,17 @@
   Undecidability results from computability theory actually explain some of the fundamental difficulties in predicting execution/data flow perfectly from static code.
   Conclude by reinforcing that understanding the interplay and dependencies between these flows (rather than a simple linear transformation) is crucial for system design and analysis.
  Refine language: Use precise terms. Avoid overly strong claims where nuance is needed. Ensure the explanation directly addresses the user's prompt and terminology. Structure the answer logically.
+
 ```
 
 好的，我们来分析您提出的这个断言：
 
 > 从结构层上看
+
 > 编程语言 --- 控制流 ---> 执行流 --》 数据流
+
 > 是不完备的映射关系 或者是 转换关系 不存在直接的映射和逆映射
+
 > 从可计算性上看
 
 您的观察非常敏锐，这个断言在很大程度上是**正确**的。

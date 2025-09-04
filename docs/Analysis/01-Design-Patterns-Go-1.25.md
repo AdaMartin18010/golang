@@ -28,19 +28,6 @@
   - [1.8 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 1. [创建型模式](#创建型模式)
@@ -104,6 +91,7 @@ func GetGenericInstance[T any](key string, factory func() T) T {
     genericInstances[key] = newInstance
     return newInstance
 }
+
 ```
 
 ### 1.2.2 工厂模式 (Factory)
@@ -146,6 +134,7 @@ func (f *GenericConcreteFactory[T]) Create() T {
 func NewGenericFactory[T Product](creator func() T) GenericFactory[T] {
     return &GenericConcreteFactory[T]{creator: creator}
 }
+
 ```
 
 ### 1.2.3 建造者模式 (Builder)
@@ -192,6 +181,7 @@ func (b *ComputerBuilder) SetGraphics(graphics string) *ComputerBuilder {
 func (b *ComputerBuilder) Build() *Computer {
     return b.computer
 }
+
 ```
 
 ## 1.3 结构型模式
@@ -227,6 +217,7 @@ func (a *Adapter) NewMethod() string {
     oldResult := a.legacy.OldMethod()
     return "adapted: " + oldResult
 }
+
 ```
 
 ### 1.3.2 装饰器模式 (Decorator)
@@ -265,6 +256,7 @@ func (l *LoggingDecorator) Operation() string {
     fmt.Printf("Logging: %s\n", result)
     return result
 }
+
 ```
 
 ### 1.3.3 代理模式 (Proxy)
@@ -304,6 +296,7 @@ func (p *Proxy) Request() string {
     
     return result
 }
+
 ```
 
 ## 1.4 行为型模式
@@ -361,6 +354,7 @@ func (s *ConcreteSubject) SetData(data interface{}) {
     s.mu.Unlock()
     s.Notify()
 }
+
 ```
 
 ### 1.4.2 策略模式 (Strategy)
@@ -401,6 +395,7 @@ func (q *QuickSortStrategy) Execute(data interface{}) interface{} {
     // 实现快速排序
     return "quick sorted"
 }
+
 ```
 
 ### 1.4.3 命令模式 (Command)
@@ -447,6 +442,7 @@ func (i *Invoker) ExecuteCommands() {
         command.Execute()
     }
 }
+
 ```
 
 ## 1.5 并发型模式
@@ -514,6 +510,7 @@ func (wp *WorkerPool) Close() {
     wp.wg.Wait()
     close(wp.resultChan)
 }
+
 ```
 
 ### 1.5.2 发布订阅模式 (Pub/Sub)
@@ -566,6 +563,7 @@ func (l *LoggingSubscriber) OnEvent(event Event) {
     fmt.Printf("Logging: Topic=%s, Data=%v, Time=%v\n",
         event.Topic, event.Data, event.Time)
 }
+
 ```
 
 ### 1.5.3 管道模式 (Pipeline)
@@ -633,6 +631,7 @@ func (cp *ConcurrentPipeline) Execute(input interface{}) interface{} {
     // 获取最终结果
     return <-channels[len(channels)-1]
 }
+
 ```
 
 ## 1.6 云原生模式
@@ -704,6 +703,7 @@ func (dhc *DatabaseHealthChecker) Check() HealthStatus {
         Timestamp: time.Now(),
     }
 }
+
 ```
 
 ### 1.6.2 配置管理模式 (Configuration Management)
@@ -803,6 +803,7 @@ func (cw *ConfigWatcher) reloadConfig() {
     
     fmt.Println("Configuration reloaded successfully")
 }
+
 ```
 
 ## 1.7 性能优化模式
@@ -871,6 +872,7 @@ func (cp *ConnectionPool) Put(conn *Connection) {
         // 池已满，丢弃连接
     }
 }
+
 ```
 
 ### 1.7.2 缓存模式 (Cache)
@@ -964,6 +966,7 @@ func (lru *LRUCache[K, V]) removeLRU() {
     lru.removeNode(lruNode)
     delete(lru.cache, lruNode.key)
 }
+
 ```
 
 ## 1.8 总结

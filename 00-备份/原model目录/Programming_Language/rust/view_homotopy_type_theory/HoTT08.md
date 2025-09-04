@@ -16,6 +16,7 @@
 
 我将保持原有的结构，但会更深入地探讨每个部分的内容。
 </think>
+
 ```
 
 ## 目录
@@ -220,6 +221,7 @@
         ├── 从算法证明到工作流验证
         ├── 从工作流模型到类型安全实现
         └── 三域综合的形式化方法论
+
 ```
 
 ## 1. 引言
@@ -291,6 +293,7 @@ HoTT的核心洞见在于"类型即空间"——将类型论中的类型解释�
 data S¹ : Type where
   base : S¹
   loop : base =_{S¹} base
+
 ```
 
 这定义了一个圆环类型，其中`base`是一个点，`loop`是从`base`到自身的非平凡路径。
@@ -311,6 +314,7 @@ data S¹ : Type where
 isContr(A) := Σ(a:A) ∏(x:A) (a =_A x)
 isProp(A) := ∏(x,y:A) isContr(x =_A y)
 isSet(A) := ∏(x,y:A) ∏(p,q:x=_A y) isContr(p =_{x=_A y} q)
+
 ```
 
 ### 2.4 单位化公理(Univalence Axiom)
@@ -342,6 +346,7 @@ enum Result<T, E> {
     Ok(T),
     Err(E),
 }
+
 ```
 
 形式定义：
@@ -357,6 +362,7 @@ Rust的泛型可以通过依赖类型进行形式化：
 fn identity<T>(x: T) -> T {
     x
 }
+
 ```
 
 形式定义：`identity : ∏(T:Type) ∏(x:T) T`
@@ -372,6 +378,7 @@ fn sort<T: Ord>(mut v: Vec<T>) -> Vec<T> {
     v.sort();
     v
 }
+
 ```
 
 形式定义：`sort : ∏(T:Type) (Ord(T) → ∏(v:Vec(T)) Vec(T))`
@@ -395,6 +402,7 @@ fn main() {
     // 错误：v已被移动
     // println!("{:?}", v);
 }
+
 ```
 
 形式定义：对于资源类型`A`：
@@ -414,6 +422,7 @@ fn borrow_imm(v: &Vec<i32>) {
 fn borrow_mut(v: &mut Vec<i32>) {
     v.push(42);
 }
+
 ```
 
 形式定义：
@@ -434,6 +443,7 @@ Rust的生命周期注解可以通过时态逻辑和路径空间形式化：
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 形式定义：对于生命周期`'a`，可以将其理解为时间区间`[t₀, t₁]`，则：
@@ -458,6 +468,7 @@ fn parallel_increment(counter: Arc<Mutex<i32>>) {
     });
     handle.join().unwrap();
 }
+
 ```
 
 形式定义：
@@ -497,6 +508,7 @@ where
 {
     type Output = Succ<<A as Add<B>>::Output>;
 }
+
 ```
 
 这段代码在类型级别实现了自然数加法，可以通过HoTT中的归纳类型形式化证明其正确性。
@@ -525,6 +537,7 @@ fn binary_search<T: Ord>(arr: &[T], target: &T) -> Option<usize> {
     
     None
 }
+
 ```
 
 形式化：
@@ -575,6 +588,7 @@ impl<C> ComplexityWitness<C> {
         ComplexityWitness(PhantomData)
     }
 }
+
 ```
 
 通过HoTT视角，不同的复杂度类可以看作同伦类型论中的不同同伦类，算法优化对应于找到同伦等价但复杂度更低的实现。
@@ -590,6 +604,7 @@ fn factorial(n: u64) -> u64 {
         n => n * factorial(n - 1)
     }
 }
+
 ```
 
 形式化证明：
@@ -616,6 +631,7 @@ enum BinaryTree<T> {
     Empty,
     Node(T, Box<BinaryTree<T>>, Box<BinaryTree<T>>),
 }
+
 ```
 
 形式定义：
@@ -629,6 +645,7 @@ enum BinaryTree<T> {
 
 ```text
 BSTᵀ(l,u) := μX. 1 + Σ(x:T) (l < x < u) × X(l,x) × X(x,u)
+
 ```
 
 其中`l`和`u`是下界和上界，保证树中每个节点的值都在范围内。
@@ -686,6 +703,7 @@ impl<T: Ord> BST<T> {
         })
     }
 }
+
 ```
 
 这种实现可以通过HoTT中的依赖类型系统进行形式化，并证明插入和删除操作保持BST不变量。
@@ -736,6 +754,7 @@ where
     
     result
 }
+
 ```
 
 形式化：
@@ -797,6 +816,7 @@ impl<S: Clone> Workflow<S> {
         Some(current)
     }
 }
+
 ```
 
 这可以通过HoTT的路径空间形式化：执行工作流对应于找到从初始状态到终止状态的有效路径。
@@ -846,6 +866,7 @@ impl PetriNet {
         true
     }
 }
+
 ```
 
 形式化：Petri网可以表示为高阶归纳类型，其中：
@@ -921,6 +942,7 @@ trait LivenessProperty<S> {
         false // 找不到通向目标的路径
     }
 }
+
 ```
 
 #### 5.3.3 业务规则作为依赖类型约束
@@ -979,6 +1001,7 @@ impl OrderWorkflow<Shipped> {
 }
 
 // 非法转换无法编译：例如，没有从Delivered到其他状态的转换
+
 ```
 
 这种设计使用类型系统强制执行工作流规则，对应于HoTT中使用依赖类型表达路径约束。
@@ -1028,6 +1051,7 @@ impl<S: Clone + Send + 'static> DistributedWorkflow<S> {
         }
     }
 }
+
 ```
 
 从HoTT角度，分布式工作流对应于：
@@ -1068,6 +1092,7 @@ Rust语言、算法设计和工作流理论在HoTT框架下展现出深层统一
              /  |  \
             /   |   \
       Rust语言  算法  工作流
+
 ```
 
 #### 6.1.2 范畴论映射的形式化
@@ -1130,6 +1155,7 @@ fn merge<T: Ord>(left: Vec<T>, right: Vec<T>) -> Vec<T> {
     
     result
 }
+
 ```
 
 形式映射：
@@ -1226,6 +1252,7 @@ impl<T: Ord + Clone> QuickSortWorkflow<T> {
         results.pop().unwrap_or_default()
     }
 }
+
 ```
 
 这展示了算法和工作流之间的同构：算法中的递归/迭代结构对应于工作流中的状态转换。
@@ -1273,6 +1300,7 @@ impl OrderProcessingAlgorithm {
         })
     }
 }
+
 ```
 
 这种对应关系表明了工作流和算法在结构上的同构性，它们都可以视为从输入空间到输出空间的类型变换。
@@ -1367,6 +1395,7 @@ impl<S, E> WorkflowEngine<S, E> {
         Ok(())
     }
 }
+
 ```
 
 这种实现将工作流概念映射到Rust的类型系统和函数式特性中，展示了它们之间的关系。
@@ -1441,6 +1470,7 @@ impl<S: 'static, E, Final: 'static> Workflow<S, E, Final> {
         }
     }
 }
+
 ```
 
 这种设计利用Rust的类型系统确保工作流步骤的类型安全，对应于HoTT中的正确性保证。
@@ -1522,6 +1552,7 @@ impl<S, M: Message, N: Node<S, M>> DistributedSystem<S, M, N> {
         while self.step() {}
     }
 }
+
 ```
 
 #### 7.1.2 分布式一致性的类型证明
@@ -1570,6 +1601,7 @@ impl<S: Clone> ConsistencyProtocol<S> for Paxos<S> {
         self.committed_value.clone().unwrap()
     }
 }
+
 ```
 
 从HoTT角度，这种设计使用类型系统跟踪分布式系统的状态变化和一致性属性。
@@ -1648,6 +1680,7 @@ impl<T: Ord + Clone> SortAlgorithm<T> for MergeSort {
         SortProof(sorted_vec, PhantomData)
     }
 }
+
 ```
 
 #### 7.2.2 算法不变量的静态保证
@@ -1694,6 +1727,7 @@ impl<'a, T: Ord> SortedSlice<'a, T> {
         None
     }
 }
+
 ```
 
 这种设计使用类型系统编码算法前置条件，确保二分查找只能在有序数组上执行。
@@ -1847,6 +1881,7 @@ fn process_order() {
     // 以下代码将导致编译错误：无法从已送达状态转换到其他状态
     // let workflow = workflow.cancel();
 }
+
 ```
 
 这种设计使用类型系统编码工作流状态转换规则，确保只有有效的状态转换才能编译通过。
@@ -1925,6 +1960,7 @@ impl QuantumCircuit {
         state
     }
 }
+
 ```
 
 从HoTT角度，量子计算可以形式化为：
@@ -1969,6 +2005,7 @@ impl<const N: usize> Bounded<N> for Index<N> {
         }
     }
 }
+
 ```
 
 此类扩展将允许Rust在编译时强制执行更多安全属性，接近全功能的依赖类型语言，同时保持其性能特性。
@@ -1999,6 +2036,7 @@ fn increment_all_loop(v: &[i32]) -> Vec<i32> {
     
     result
 }
+
 ```
 
 这种方法将Rust与形式验证技术结合，使开发人员能够表达和验证更复杂的程序属性。
@@ -2063,6 +2101,7 @@ impl<S: State, N: Node<State=S>> ConsensusProtocol<S, N> {
         unimplemented!()
     }
 }
+
 ```
 
 从HoTT视角，分布式共识可以理解为：

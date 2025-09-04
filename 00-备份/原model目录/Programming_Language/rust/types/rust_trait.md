@@ -136,6 +136,7 @@ Trait 描述了一组方法的行为，这些方法可以被实现于不同的�
 trait Speak {
     fn speak(&self);
 }
+
 ```
 
 ## 2. Trait 的功能
@@ -179,6 +180,7 @@ fn main() {
     let dog2 = dog1.clone(); // 使用 Clone trait
     println!("{:?}", dog2); // 输出: Dog { name: "Buddy" }
 }
+
 ```
 
 ### 3.2 自定义 Trait
@@ -204,6 +206,7 @@ fn main() {
     let bird = Bird;
     bird.fly(); // 输出: The bird is flying!
 }
+
 ```
 
 ### 3.3 Trait 作为约束
@@ -221,6 +224,7 @@ fn main() {
     let bird = Bird;
     make_it_fly(bird); // 输出: The bird is flying!
 }
+
 ```
 
 ## 4. Trait 的概念解释
@@ -241,6 +245,7 @@ fn main() {
     let bird = Bird;
     let_it_fly(&bird); // 输出: The bird is flying!
 }
+
 ```
 
 #### 4.2 默认实现
@@ -268,6 +273,7 @@ fn main() {
     let cat = Cat;
     println!("{}", cat.sound()); // 输出: Meow
 }
+
 ```
 
 ## 5. 总结
@@ -326,6 +332,7 @@ fn main() {
     });
     println!("{}", container.get().item); // 输出: World
 }
+
 ```
 
 ### 6.2 Trait 继承
@@ -362,6 +369,7 @@ fn main() {
     println!("{}", dog.sound()); // 输出: Woof
     dog.play(); // 输出: The dog is playing!
 }
+
 ```
 
 ## 7. Trait 的使用场景
@@ -409,6 +417,7 @@ fn main() {
     print_area(circle); // 输出: Area: 78.53981633974483
     print_area(rectangle); // 输出: Area: 12
 }
+
 ```
 
 ### 7.2 作为参数和返回值
@@ -430,6 +439,7 @@ fn main() {
     let circle = create_circle();
     describe(circle); // 输出: This shape has an area of: 12.566370614359172
 }
+
 ```
 
 ## 8. Trait 的局限性
@@ -497,6 +507,7 @@ fn main() {
     rect.resize(20.0, 10.0);
     rect.draw(); // 输出: Drawing a rectangle of width 20 and height 10
 }
+
 ```
 
 ### 10.2 接口隔离原则
@@ -534,6 +545,7 @@ fn main() {
     println!("{}", cat.sound()); // 输出: Meow
     cat.play(); // 输出: The cat is playing!
 }
+
 ```
 
 ## 11. Trait 的常见模式
@@ -573,6 +585,7 @@ fn main() {
     duck.fly(); // 输出: The duck is flying!
     duck.swim(); // 输出: The duck is swimming!
 }
+
 ```
 
 ### 11.2 适配器模式
@@ -610,6 +623,7 @@ fn main() {
     let adapter = Adapter { adaptee };
     adapter.request(); // 输出: Specific request from Adaptee
 }
+
 ```
 
 ## 12. Trait 的最佳实践
@@ -649,6 +663,7 @@ fn main() {
     notify(article); 
     // 输出: Breaking news! Rust is awesome!: Rust provides memory safety without garbage collection.
 }
+
 ```
 
 ### 12.2 避免 trait 过度复杂化
@@ -709,6 +724,7 @@ fn main() {
     my_car.start(); // 输出: Car is starting.
     my_car.stop();  // 输出: Car is stopping.
 }
+
 ```
 
 ### 15.2 Trait 的默认实现
@@ -736,6 +752,7 @@ fn main() {
     let cat = Cat;
     println!("{}", cat.sound()); // 输出: Meow
 }
+
 ```
 
 ## 16. Trait 的组合与扩展
@@ -774,6 +791,7 @@ fn main() {
     duck.fly(); // 输出: The duck is flying!
     duck.swim(); // 输出: The duck is swimming!
 }
+
 ```
 
 ### 16.2 Trait 的扩展
@@ -812,6 +830,7 @@ fn main() {
     println!("Area: {}", circle.area()); // 输出: Area: 78.53981633974483
     println!("Color: {}", circle.color()); // 输出: Color: Red
 }
+
 ```
 
 ## 17. Trait 的使用场景
@@ -849,6 +868,7 @@ fn main() {
     };
     notify(article); // 输出: Breaking news! Rust is awesome!: Rust provides memory safety without garbage collection.
 }
+
 ```
 
 ### 17.2 作为参数和返回值
@@ -873,6 +893,7 @@ fn main() {
     let article = create_article();
     describe(article); // 输出: This item is: Breaking News: Something important happened.
 }
+
 ```
 
 ## 18. Trait 的局限性与挑战
@@ -950,6 +971,7 @@ fn main() {
     let context = Context::new(strategy_b);
     context.execute_strategy(); // 输出: Executing strategy B
 }
+
 ```
 
 ### 20.2 观察者模式
@@ -1008,6 +1030,7 @@ fn main() {
     subject.attach(observer);
     subject.notify("Hello, Observers!"); // 输出: Observer received: Hello, Observers!
 }
+
 ```
 
 ## 21. Trait 的最佳实践
@@ -1046,6 +1069,7 @@ fn main() {
     };
     notify(article); // 输出: Breaking news! Rust is awesome!: Rust provides memory safety without garbage collection.
 }
+
 ```
 
 ### 21.2 避免 trait 过度复杂化
@@ -1129,6 +1153,7 @@ fn main() {
     print_formatted(json_formatter); // 输出: { "key": "value" }
     print_formatted(xml_formatter);   // 输出: <key>value</key>
 }
+
 ```
 
 ### 25.2 作为数据结构的行为定义
@@ -1154,6 +1179,7 @@ fn main() {
     numbers.sort(); // 使用 Sortable trait 的实现
     println!("{:?}", numbers); // 输出: [1, 2, 3, 5, 8]
 }
+
 ```
 
 ## 26. Trait 的错误处理与调试
@@ -1189,6 +1215,7 @@ fn main() {
         Err(err) => println!("Error: {}", err), // 输出: Error: Parse error
     }
 }
+
 ```
 
 ### 26.2 Trait 的调试
@@ -1222,6 +1249,7 @@ fn main() {
     println!("{:?}", user); // 输出: User { name: "Alice", age: 30 }
     println!("{}", user.describe()); // 输出: User: Alice, Age: 30
 }
+
 ```
 
 ## 27. Trait 的社区与生态
@@ -1292,6 +1320,7 @@ fn main() {
     let area = calculate_area(circle);
     println!("Area: {}", area); // 输出: Area: 78.53981633974483
 }
+
 ```
 
 在这个例子中，`calculate_area` 函数使用泛型来实现静态分发，从而避免了 trait 对象的性能开销。
@@ -1335,6 +1364,7 @@ fn main() {
         Err(err) => println!("Error: {}", err), // 输出: Error: Parse error
     }
 }
+
 ```
 
 ### 31.2 Trait 的调试
@@ -1368,6 +1398,7 @@ fn main() {
     println!("{:?}", user); // 输出: User { name: "Alice", age: 30 }
     println!("{}", user.describe()); // 输出: User: Alice, Age: 30
 }
+
 ```
 
 ## 32. Trait 的社区与生态
@@ -1442,6 +1473,7 @@ fn main() {
     let dog2 = dog1.clone(); // 使用 Clone trait
     println!("{:?}", dog2); // 输出: Dog { name: "Buddy" }
 }
+
 ```
 
 ### 36.2 自定义 Trait
@@ -1468,6 +1500,7 @@ fn main() {
     let bird = Bird;
     bird.fly(); // 输出: The bird is flying!
 }
+
 ```
 
 ### 36.3 Trait 作为约束
@@ -1486,6 +1519,7 @@ fn main() {
     let bird = Bird;
     make_it_fly(bird); // 输出: The bird is flying!
 }
+
 ```
 
 ## 37. Trait 的高级特性
@@ -1526,6 +1560,7 @@ fn main() {
     container.add(String::from("World"));
     println!("{}", container.get()); // 输出: World
 }
+
 ```
 
 ### 37.2 Trait 继承
@@ -1563,6 +1598,7 @@ fn main() {
     println!("{}", dog.sound()); // 输出: Woof
     dog.play(); // 输出: The dog is playing!
 }
+
 ```
 
 ## 38. Trait 的设计原则
@@ -1607,6 +1643,7 @@ fn main() {
     rect.resize(20.0, 10.0);
     rect.draw(); // 输出: Drawing a rectangle of width 20 and height 10
 }
+
 ```
 
 ### 38.2 接口隔离原则
@@ -1644,6 +1681,7 @@ fn main() {
     println!("{}", cat.sound()); // 输出: Meow
     cat.play(); // 输出: The cat is playing!
 }
+
 ```
 
 ## 39. Trait 的使用场景
@@ -1682,6 +1720,7 @@ fn main() {
     };
     notify(article); // 输出: Breaking news! Rust is awesome!: Rust provides memory safety without garbage collection.
 }
+
 ```
 
 ### 39.2 作为参数和返回值
@@ -1706,6 +1745,7 @@ fn main() {
     let article = create_article();
     describe(article); // 输出: This item is: Breaking News: Something important happened.
 }
+
 ```
 
 ## 40. Trait 的局限性与挑战
@@ -1752,6 +1792,7 @@ trait 其实就是行为规范：
 4. 运行时多态--单态化 的运行时语义，无继承多态的类型一对多绑定关系
 5. trait的组合性 trait的继承 和 默认行为函数的实现 
 以上归纳是否准确完善 请综合分析 推理论证 给出示例和评价
+
 ```
 
 您的归纳关于 Rust 中 trait 的功能和特性是相当准确的。
@@ -1776,6 +1817,7 @@ fn main() {
     let p2 = p1; // 由于实现了 Copy trait，p1 可以被复制
     println!("p2: ({}, {})", p2.x, p2.y); // 输出: p2: (1, 2)
 }
+
 ```
 
 在这个示例中，`Point` 类型实现了 `Clone` 和 `Copy` trait，使得它可以在赋值时被复制，而不是移动。
@@ -1810,6 +1852,7 @@ fn main() {
     };
     println!("{}", person.describe()); // 输出: Alice is 30 years old.
 }
+
 ```
 
 在这个示例中，`Describable` trait 是用户定义的，`Person` 类型实现了这个 trait，从而提供了描述自己的方法。
@@ -1833,6 +1876,7 @@ fn main() {
     };
     print_description(person); // 输出: Bob is 25 years old.
 }
+
 ```
 
 在这个示例中，`print_description` 函数接受任何实现了 `Describable` trait 的类型，确保了类型的行为符合预期。
@@ -1880,6 +1924,7 @@ fn main() {
     print_area(&circle); // 输出: Area: 78.53981633974483
     print_area(&square); // 输出: Area: 16
 }
+
 ```
 
 在这个示例中，`print_area` 函数接受一个 trait 对象 `&dyn Shape`，允许传入任何实现了 `Shape` trait 的类型，从而实现了运行时多态。
@@ -1919,6 +1964,7 @@ fn main() {
     println!("{}", dog.sound()); // 输出: Woof
     dog.play(); // 输出: The dog is playing!
 }
+
 ```
 
 在这个示例中，`Pet` trait 继承了 `Animal` trait，`Dog` 类型实现了这两个 trait，从而提供了声音和玩耍的行为。

@@ -232,6 +232,7 @@ impl EffectfulCell for MyCell {
         fn state(&self) -> Vec<u8> { self.state_data.to_be_bytes().to_vec() }
         fn load_state(&mut self, state: &[u8]) { /* ... */ }
 }
+
 ```
 
 **保证:**
@@ -259,6 +260,7 @@ impl EffectfulCell for MyCell {
             // Only available when awaiting
         async fn provide_outcome(self, outcome: Outcome) -> Result<CellHandle<StateReady>, CellHandle<StateFailed>> { /* ... */ }
     }
+
 ```
 
 **保证:** 编译时防止调用在当前状态下无效的操作。

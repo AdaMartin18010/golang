@@ -11,6 +11,7 @@
 3. 使用类型论(Type Theory)、线性逻辑(Linear Logic)、霍尔逻辑(Hoare Logic)等形式理论来分析
 4. 保持使用Rust作为例子进行说明
 5. 全文使用中文回答</think>
+
 ```
 
 ## 目录
@@ -66,6 +67,7 @@ fn main() {
     let x: u32 = 5;  // 一个形式系统中的"命题"
     assert!(x < 10); // 对该命题性质的断言
 }
+
 ```
 
 ## 2. 类型系统的形式理论基础
@@ -84,6 +86,7 @@ fn find_element(list: &[i32], target: i32) -> Option<usize> {
     }
     None // 表明无法证明"存在"
 }
+
 ```
 
 ### 2.2 依值类型论与Rust类型系统
@@ -110,6 +113,7 @@ fn concatenate<const N: usize, const M: usize>(
     
     result
 }
+
 ```
 
 ### 2.3 代数数据类型的范畴论解释
@@ -131,6 +135,7 @@ enum Shape {
 
 // 函数类型: 范畴论中的指数对象
 let transform: fn(Point) -> Point = |p| Point { x: p.x * 2.0, y: p.y * 2.0 };
+
 ```
 
 ### 2.4 参数多态与通用量化
@@ -147,6 +152,7 @@ fn identity<T>(x: T) -> T {
 fn first<T, U>(x: T, _: U) -> T {
     x
 }
+
 ```
 
 ### 2.5 子类型与存在量化
@@ -163,6 +169,7 @@ fn print_something(displayable: &dyn std::fmt::Display) {
 fn print_generic<T: std::fmt::Display>(item: T) {
     println!("{}", item);
 }
+
 ```
 
 ## 3. 变量与状态管理的形式化
@@ -182,6 +189,7 @@ fn main() {
     consume_string(s);
     // consume_string(s); // 错误：s已被消耗，不能二次使用
 }
+
 ```
 
 ### 3.2 所有权模型的线性逻辑解释
@@ -199,6 +207,7 @@ fn ownership_demo() {
     let s2 = s1.clone();   // 显式创建新资源
     println!("{}, {}", s1, s2); // 两个独立资源
 }
+
 ```
 
 ### 3.3 借用系统的分离逻辑模型
@@ -221,6 +230,7 @@ fn separation_logic_demo() {
     slice_mut[0] = 10;
     println!("{:?}", slice_mut);
 }
+
 ```
 
 ### 3.4 生命周期：时态逻辑视角
@@ -241,6 +251,7 @@ fn longest<'a>(x: &'a str, y: &str) -> &'a str {
 fn longest_fixed<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 ## 4. 控制流的形式理论表达
@@ -267,6 +278,7 @@ fn structured_programming() {
         println!("迭代: {}", i);
     }
 }
+
 ```
 
 ### 4.2 霍尔逻辑与程序验证
@@ -295,6 +307,7 @@ fn binary_search(arr: &[i32], target: i32) -> Option<usize> {
     // 后置条件: 如果返回Some(i)，则arr[i] == target
     None
 }
+
 ```
 
 ### 4.3 模式匹配作为构造性证明
@@ -324,6 +337,7 @@ fn action(light: TrafficLight) -> &'static str {
         // 如果缺少任何情况，编译器会指出证明不完整
     }
 }
+
 ```
 
 ### 4.4 迭代与不动点理论
@@ -347,6 +361,7 @@ fn fixed_point_iteration() {
     
     println!("x^2的不动点: {}", x); // 应该接近0或1
 }
+
 ```
 
 ### 4.5 异常处理的集成理论
@@ -375,6 +390,7 @@ fn compute_ratio(a: i32, b: i32, c: i32, d: i32) -> Result<f64, String> {
     
     Ok(div1 as f64 / div2 as f64)
 }
+
 ```
 
 ## 5. 三位一体：形式系统中的统一视角
@@ -399,6 +415,7 @@ enum Disjunction<A, B> {
     Left(A),
     Right(B),
 }
+
 ```
 
 ### 5.2 状态管线：变量转换与演算
@@ -427,6 +444,7 @@ fn process_data<T: Clone>(data: Vec<T>) -> Result<String, String> {
 
 fn predicate<T: Clone>(_: &T) -> bool { true } // 占位符
 fn transform<T: Clone>(_: &T) -> String { String::new() } // 占位符
+
 ```
 
 ### 5.3 计算即推理：控制流与逻辑推导
@@ -453,6 +471,7 @@ fn collatz_steps(n: u64) -> u64 {
         n => 1 + collatz_steps(logical_computation(n)) // 归纳步骤
     }
 }
+
 ```
 
 ## 6. 实例研究：Rust中的形式化思考
@@ -482,6 +501,7 @@ fn borrowing_formalism() {
     let r5 = &data;
     println!("{:?}", r5);
 }
+
 ```
 
 ### 6.2 不变量维护与程序正确性
@@ -511,6 +531,7 @@ impl NonNegative {
 fn sqrt(n: NonNegative) -> f64 {
     (n.value() as f64).sqrt() // 安全：n总是非负的
 }
+
 ```
 
 ### 6.3 高级抽象的形式语义
@@ -539,6 +560,7 @@ fn applicative_example() {
     // 实际使用中，我们会用combinators实现
     // let result = opt_add.and_then(|f| Some(1).and_then(|x| Some(2).map(|y| f(x, y))));
 }
+
 ```
 
 ## 7. 结论：形式理论指导下的语言设计

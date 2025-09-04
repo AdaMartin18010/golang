@@ -39,6 +39,7 @@
 ```rust
 let add = |x: i32, y: i32| x + y; // 这是一个闭包
 let result = add(2, 3);
+
 ```
 
 **闭包**：
@@ -47,6 +48,7 @@ let result = add(2, 3);
 let x = 10;
 let add_x = |y| x + y; // 这是一个闭包，捕获了外部变量 x
 let result = add_x(5); // result 为 15
+
 ```
 
 总结来说，闭包是 Rust 中一种特殊类型的匿名函数，具有捕获外部环境的能力，而普通的匿名函数则不具备这一特性。
@@ -365,6 +367,7 @@ fn main() {
     let fn_once_closure = move || println!("FnOnce closure: {}", s);
     call_fn_once(fn_once_closure);
 }
+
 ```
 
 ### 2. 泛型
@@ -402,6 +405,7 @@ fn main() {
     let fn_once_closure = move || println!("FnOnce closure: {}", s);
     apply(fn_once_closure, 0); // 这里的第二个参数不会被使用
 }
+
 ```
 
 ### 3. 多态行为的实现
@@ -538,6 +542,7 @@ let result2 = execute_strategy(multiply_by_two, 5); // 使用乘法策略
 
 println!("Add one: {}", result1); // 输出 6
 println!("Multiply by two: {}", result2); // 输出 10
+
 ```
 
 ### 2. **观察者模式**
@@ -578,6 +583,7 @@ fn main() {
 
     subject.notify(); // 通知所有观察者
 }
+
 ```
 
 ### 3. **命令模式**
@@ -610,6 +616,7 @@ fn main() {
     let command = Command::new(|| println!("Command executed!"));
     command.execute(); // 输出 "Command executed!"
 }
+
 ```
 
 ### 4. **适配器模式**
@@ -646,6 +653,7 @@ fn main() {
     let adapter = Adapter::new(adaptee);
     adapter.request(); // 输出 "Specific request from Adaptee"
 }
+
 ```
 
 ### 5. **状态模式**
@@ -682,6 +690,7 @@ fn main() {
     context.request(); // 输出 "In State A"
     context.request(); // 输出 "Transitioning to State B"
 }
+
 ```
 
 ### 6. **组合模式**
@@ -716,6 +725,7 @@ fn main() {
     leaf1.execute(); // 输出 "Leaf 1 action"
     leaf2.execute(); // 输出 "Leaf 2 action"
 }
+
 ```
 
 ### **总结***

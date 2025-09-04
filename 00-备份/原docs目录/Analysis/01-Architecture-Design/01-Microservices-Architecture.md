@@ -195,6 +195,7 @@ func (s *BaseService) Start(ctx context.Context) error {
     
     return nil
 }
+
 ```
 
 ### 4.2 服务注册与发现
@@ -261,6 +262,7 @@ func (d *ConsulDiscovery) Discover(serviceName string) ([]ServiceInfo, error) {
     
     return serviceInfos, nil
 }
+
 ```
 
 ### 4.3 服务间通信
@@ -355,6 +357,7 @@ func (c *ServiceCaller) Call(ctx context.Context, serviceName, endpoint string, 
     
     return body, nil
 }
+
 ```
 
 ### 4.4 熔断器模式
@@ -432,6 +435,7 @@ func (cb *CircuitBreaker) recordResult(err error) {
         }
     }
 }
+
 ```
 
 ## 5. 监控与可观测性
@@ -490,6 +494,7 @@ func (mc *MetricsCollector) RecordError(serviceName, errorType string) {
     
     errorCounter.WithLabelValues(serviceName, errorType).Inc()
 }
+
 ```
 
 ### 5.2 分布式追踪
@@ -532,6 +537,7 @@ func (c *ServiceCaller) CallWithTracing(ctx context.Context, serviceName, endpoi
     // 执行服务调用
     return c.Call(spanCtx, serviceName, endpoint, request)
 }
+
 ```
 
 ## 6. 最佳实践
@@ -642,6 +648,7 @@ func (s *InventoryService) ReserveStock(ctx context.Context, productID string, q
         return tx.Create(stockChange).Error
     })
 }
+
 ```
 
 ## 8. 总结

@@ -126,6 +126,7 @@ void c_memory_management() {
     // 必须手动释放，否则内存泄漏
     free(arr);
 }
+
 */
 
 // 与Java的比较
@@ -137,7 +138,9 @@ void java_memory_management() {
     
     // 由GC在某个未定时间点回收
 }
+
 */
+
 ```
 
 Rust相比其他系统编程语言的主要优势：
@@ -173,6 +176,7 @@ fn use_c_code() {
         println!("C全局变量: {}", c_global);
     }
 }
+
 ```
 
 Rust与C/C++的互操作特性：
@@ -211,6 +215,7 @@ fn my_rust_module(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     Ok(())
 }
+
 ```
 
 Rust与GC语言的生态桥接：
@@ -270,6 +275,7 @@ use core::panic::PanicInfo;
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
+
 ```
 
 Rust的领域专长：
@@ -309,6 +315,7 @@ fn zero_cost_safety() {
         42
     };
 }
+
 ```
 
 Rust的安全与性能平衡：
@@ -357,6 +364,7 @@ async fn process_socket(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
     
     Ok(())
 }
+
 ```
 
 Tokio生态系统组件：
@@ -407,6 +415,7 @@ async fn process_stream(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     
     Ok(())
 }
+
 ```
 
 async-std生态系统特点：
@@ -453,6 +462,7 @@ async fn futures_demo() {
     let doubled: Vec<_> = block_on(rx.collect());
     println!("加倍后的结果: {:?}", doubled);
 }
+
 ```
 
 Future生态核心组件：
@@ -521,6 +531,7 @@ impl Greeter for MyGreeter {
         Ok(Response::new(reply))
     }
 }
+
 ```
 
 Rust网络库生态：
@@ -587,6 +598,7 @@ async fn redis_example() -> Result<(), redis::RedisError> {
     
     Ok(())
 }
+
 ```
 
 主要的异步数据库接口：
@@ -666,6 +678,7 @@ fn mio_example() -> io::Result<()> {
         }
     }
 }
+
 ```
 
 跨平台IO支持：
@@ -784,6 +797,7 @@ async fn p2p_example() -> Result<(), Box<dyn Error>> {
         }
     }
 }
+
 ```
 
 Rust的P2P协议实现包括：
@@ -877,7 +891,7 @@ async fn libp2p_full_example() -> Result<(), Box<dyn Error>> {
 ```rust
     // 监听地址
     swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse()?)?;
-    
+  
     // 处理事件
     loop {
         match swarm.select_next_some().await {
@@ -897,7 +911,7 @@ async fn libp2p_full_example() -> Result<(), Box<dyn Error>> {
                         _ => {}
                     }
                 }
-                
+  
                 // 处理identify事件
                 // 处理ping事件
                 // 处理relay事件
@@ -906,6 +920,7 @@ async fn libp2p_full_example() -> Result<(), Box<dyn Error>> {
         }
     }
 }
+
 ```
 
 libp2p生态关键组件：
@@ -953,7 +968,7 @@ impl RaftNode {
             slog_stdlog::StdLog.fuse(),
             slog::o!("raft_node" => id),
         );
-        
+  
         // 配置Raft节点
         let config = Config {
             id,
@@ -961,13 +976,13 @@ impl RaftNode {
             heartbeat_tick: 3,
             ..Default::default()
         };
-        
+  
         // 创建存储
         let storage = MemStorage::new();
-        
+  
         // 初始化节点
         let mut node = RawNode::new(&config, storage, &logger)?;
-        
+  
         Ok(Self {
             id,
             node,
@@ -975,19 +990,19 @@ impl RaftNode {
             logger,
         })
     }
-    
+  
     fn tick(&mut self) {
         self.node.tick();
         self.process_ready();
     }
-    
+  
     fn process_ready(&mut self) {
         if !self.node.has_ready() {
             return;
         }
-        
+  
         let mut ready = self.node.ready();
-        
+  
         // 处理消息
         let msgs = ready.take_messages();
         for msg in msgs {
@@ -996,7 +1011,7 @@ impl RaftNode {
                 let _ = mailbox.send(msg);
             }
         }
-        
+  
         // 应用日志条目
         if let Some(entries) = ready.committed_entries.take() {
             for entry in entries {
@@ -1004,11 +1019,11 @@ impl RaftNode {
                 slog::info!(self.logger, "应用条目"; "entry" => ?entry);
             }
         }
-        
+  
         // 前进Raft状态机
         self.node.advance(ready);
     }
-    
+  
     fn receive(&mut self, msg: eraftpb::Message) {
         self.node.step(msg).unwrap();
         self.process_ready();
@@ -1021,23 +1036,24 @@ use consistent_hash_ring::{ConsistentHashRing, NodeId};
 fn consistent_hash_example() {
     // 创建具有2个副本的一致性哈希环
     let mut ring: ConsistentHashRing<String> = ConsistentHashRing::new(2);
-    
+  
     // 添加节点
     ring.add("node1".to_string());
     ring.add("node2".to_string());
     ring.add("node3".to_string());
-    
+  
     // 查找键的位置
     let node = ring.get("user123".as_bytes());
     println!("'user123'位于节点: {:?}", node);
-    
+  
     // 模拟节点故障
     ring.remove("node2".to_string());
-    
+  
     // 重新分配
     let new_node = ring.get("user123".as_bytes());
     println!("节点故障后，'user123'位于: {:?}", new_node);
 }
+
 ```
 
 Rust分布式系统工具：
@@ -1068,33 +1084,33 @@ async fn http2_example() -> Result<(), Box<dyn std::error::Error>> {
     // 连接到服务器
     let tcp = TcpStream::connect("127.0.0.1:8000").await?;
     let (h2, connection) = client::handshake(tcp).await?;
-    
+  
     // 在后台执行连接
     tokio::spawn(async move {
         if let Err(e) = connection.await {
             eprintln!("连接错误: {:?}", e);
         }
     });
-    
+  
     // 准备请求
     let req = Request::builder()
         .method(Method::GET)
         .uri("https://127.0.0.1:8000/")
         .body(())?;
-    
+  
     // 发送请求
     let (response, _) = h2.ready().await?.send_request(req, true)?;
-    
+  
     // 等待响应
     let (head, mut body) = response.await?.into_parts();
     println!("响应状态: {}", head.status);
-    
+  
     // 读取响应体
     while let Some(chunk) = body.data().await {
         let chunk = chunk?;
         println!("收到 {} 字节", chunk.len());
     }
-    
+  
     Ok(())
 }
 
@@ -1110,19 +1126,19 @@ async fn quic_server() -> Result<(), Box<dyn std::error::Error>> {
     let priv_key = cert.serialize_private_key_der();
     let priv_key = rustls::PrivateKey(priv_key);
     let cert_chain = vec![rustls::Certificate(cert_der)];
-    
+  
     // 配置QUIC服务器
     let mut server_config = ServerConfig::default();
     let mut cfg_builder = ServerConfigBuilder::default();
     cfg_builder.certificate(cert_chain, priv_key).unwrap();
     server_config.transport = Arc::new(cfg_builder.build());
-    
+  
     // 绑定地址
     let addr = "127.0.0.1:4433".parse::<SocketAddr>()?;
     let mut endpoint = Endpoint::server(server_config, addr)?;
-    
+  
     println!("监听QUIC连接在 {}", addr);
-    
+  
     // 接受连接
     while let Some(conn) = endpoint.accept().await {
         tokio::spawn(async move {
@@ -1137,9 +1153,10 @@ async fn quic_server() -> Result<(), Box<dyn std::error::Error>> {
             }
         });
     }
-    
+  
     Ok(())
 }
+
 ```
 
 Rust的网络协议实现：
@@ -1173,31 +1190,31 @@ async fn rustls_server() -> io::Result<()> {
     // 加载证书和私钥
     let cert_file = &mut std::io::BufReader::new(std::fs::File::open("cert.pem")?);
     let key_file = &mut std::io::BufReader::new(std::fs::File::open("key.pem")?);
-    
+  
     let certs = rustls_pemfile::certs(cert_file).collect::<Result<Vec<_>, _>>().unwrap();
     let keys = rustls_pemfile::pkcs8_private_keys(key_file)
         .collect::<Result<Vec<_>, _>>().unwrap();
-    
+  
     // 配置服务器
     let config = ServerConfig::builder()
         .with_safe_defaults()
         .with_no_client_auth()
         .with_single_cert(certs, rustls::PrivateKey(keys[0].clone()))
         .expect("配置TLS失败");
-    
+  
     let tls_config = Arc::new(config);
-    
+  
     // 创建TLS服务器
     let listener = TcpListener::bind("127.0.0.1:8443").await?;
     println!("TLS服务器监听在 127.0.0.1:8443");
-    
+  
     loop {
         let (tcp_stream, addr) = listener.accept().await?;
         let tls_config = tls_config.clone();
-        
+  
         tokio::spawn(async move {
             println!("接受来自 {} 的连接", addr);
-            
+  
             // 创建TLS会话
             let server = match ServerConnection::new(tls_config) {
                 Ok(s) => s,
@@ -1206,7 +1223,7 @@ async fn rustls_server() -> io::Result<()> {
                     return;
                 }
             };
-            
+  
             // 处理TLS会话...
         });
     }
@@ -1218,48 +1235,49 @@ use snow::{Builder, TransportState};
 fn noise_protocol() -> Result<(), Box<dyn std::error::Error>> {
     // 创建Noise参数
     let builder = Builder::new("Noise_XX_25519_ChaChaPoly_BLAKE2s".parse()?);
-    
+  
     // 初始化发起方
     let mut initiator = builder.build_initiator()?;
-    
+  
     // 生成一个随机密钥对
     let initiator_keypair = builder.generate_keypair()?;
-    
+  
     // 配置静态密钥
     let mut initiator_with_key = builder
         .local_private_key(&initiator_keypair.private)
         .build_initiator()?;
-    
+  
     // 进行握手
     let mut buffer_out = [0u8; 65535];
     let mut buffer_in = [0u8; 65535];
-    
+  
     // -> e
     let len = initiator_with_key.write_message(&[], &mut buffer_out)?;
     let message1 = &buffer_out[..len];
-    
+  
     // 在实际应用中，您会通过网络发送message1
     // 并接收响应，这里我们只是展示API
-    
+  
     // 使用已经建立的通信通道加密消息
     let payload = b"加密消息";
     let mut transport_mode = match initiator {
         TransportState::Transport(t) => t,
         _ => panic!("握手未完成"),
     };
-    
+  
     let len = transport_mode.write_message(payload, &mut buffer_out)?;
     let encrypted = &buffer_out[..len];
-    
+  
     // 解密接收到的消息
     let mut received_buffer = [0u8; 65535];
     let len = transport_mode.read_message(encrypted, &mut received_buffer)?;
     let decrypted = &received_buffer[..len];
-    
+  
     assert_eq!(decrypted, payload);
-    
+  
     Ok(())
 }
+
 ```
 
 Rust安全通信框架：
@@ -1288,7 +1306,8 @@ Rust在区块链基础设施方面有显著应用：
 use sha2::{Sha256, Digest};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 struct Block {
     index: u64,
     timestamp: u64,
@@ -1303,7 +1322,7 @@ impl Block {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs();
-        
+  
         let mut block = Block {
             index,
             timestamp,
@@ -1311,11 +1330,11 @@ impl Block {
             previous_hash,
             hash: String::new(),
         };
-        
+  
         block.hash = block.calculate_hash();
         block
     }
-    
+  
     fn calculate_hash(&self) -> String {
         let input = format!(
             "{}{}{}{}",
@@ -1324,7 +1343,7 @@ impl Block {
             self.data,
             self.previous_hash
         );
-        
+  
         let mut hasher = Sha256::new();
         hasher.update(input.as_bytes());
         format!("{:x}", hasher.finalize())
@@ -1342,7 +1361,7 @@ impl Blockchain {
             chain: vec![genesis_block],
         }
     }
-    
+  
     fn add_block(&mut self, data: String) {
         let previous_block = self.chain.last().unwrap();
         let new_block = Block::new(
@@ -1350,24 +1369,24 @@ impl Blockchain {
             data,
             previous_block.hash.clone(),
         );
-        
+  
         self.chain.push(new_block);
     }
-    
+  
     fn is_valid(&self) -> bool {
         for i in 1..self.chain.len() {
             let current = &self.chain[i];
             let previous = &self.chain[i - 1];
-            
+  
             if current.hash != current.calculate_hash() {
                 return false;
             }
-            
+  
             if current.previous_hash != previous.hash {
                 return false;
             }
         }
-        
+  
         true
     }
 }
@@ -1375,17 +1394,18 @@ impl Blockchain {
 // 区块链使用示例
 fn blockchain_example() {
     let mut my_chain = Blockchain::new();
-    
+  
     my_chain.add_block("转账: A -> B: 100".to_string());
     my_chain.add_block("转账: B -> C: 50".to_string());
-    
+  
     println!("区块链有效: {}", my_chain.is_valid());
-    
+  
     // 输出区块链
     for block in &my_chain.chain {
         println!("区块 #{}: {:?}", block.index, block);
     }
 }
+
 ```
 
 Rust区块链基础设施项目：
@@ -1429,26 +1449,26 @@ pub fn process_instruction(
 ) -> ProgramResult {
     // 解析账户迭代器
     let accounts_iter = &mut accounts.iter();
-    
+  
     // 获取账户
     let account = next_account_info(accounts_iter)?;
-    
+  
     // 检查程序所有权
     if account.owner != program_id {
         msg!("指定的账户不属于程序");
         return Err(ProgramError::IncorrectProgramId);
     }
-    
+  
     // 依据指令数据添加10
     let mut data = account.try_borrow_mut_data()?;
     let value = instruction_data
         .get(0)
         .ok_or(ProgramError::InvalidInstructionData)?;
-    
+  
     data[0] = data[0].saturating_add(*value);
-    
+  
     msg!("更新值为: {}", data[0]);
-    
+  
     Ok(())
 }
 
@@ -1456,23 +1476,27 @@ pub fn process_instruction(
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{env, near_bindgen, AccountId, Balance, Promise};
 
-#[near_bindgen]
-#[derive(Default, BorshDeserialize, BorshSerialize)]
+# [near_bindgen]
+
+# [derive(Default, BorshDeserialize, BorshSerialize)]
+
 pub struct StatusMessage {
     records: std::collections::HashMap<AccountId, String>,
 }
 
-#[near_bindgen]
+# [near_bindgen]
+
 impl StatusMessage {
     pub fn set_status(&mut self, message: String) {
         let account_id = env::signer_account_id();
         self.records.insert(account_id, message);
     }
-    
+  
     pub fn get_status(&self, account_id: AccountId) -> Option<String> {
         self.records.get(&account_id).cloned()
     }
 }
+
 ```
 
 Rust智能合约生态：
@@ -1500,7 +1524,8 @@ use rand::rngs::OsRng;
 use serde::{Deserialize, Serialize};
 use sha2::{Sha256, Digest};
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct Transaction {
     sender: String,
     recipient: String,
@@ -1517,20 +1542,20 @@ impl Transaction {
             signature: None,
         }
     }
-    
+  
     fn calculate_hash(&self) -> Vec<u8> {
         let mut hasher = Sha256::new();
         let data = format!("{}{}{}", self.sender, self.recipient, self.amount);
         hasher.update(data.as_bytes());
         hasher.finalize().to_vec()
     }
-    
+  
     fn sign(&mut self, keypair: &Keypair) {
         let hash = self.calculate_hash();
         let signature = keypair.sign(&hash);
         self.signature = Some(signature.to_bytes().to_vec());
     }
-    
+  
     fn verify(&self, public_key_bytes: &[u8]) -> bool {
         if let Some(sig_bytes) = &self.signature {
             if let Ok(public_key) = PublicKey::from_bytes(public_key_bytes) {
@@ -1549,28 +1574,29 @@ fn wallet_example() -> Result<(), Box<dyn std::error::Error>> {
     // 生成新的密钥对
     let mut csprng = OsRng{};
     let keypair = Keypair::generate(&mut csprng);
-    
+  
     // 派生公钥（地址）
     let public_key = keypair.public;
     println!("钱包地址: {}", hex::encode(public_key.as_bytes()));
-    
+  
     // 创建交易
     let mut transaction = Transaction::new(
         hex::encode(public_key.as_bytes()),
         "接收方地址".to_string(),
         100,
     );
-    
+  
     // 签名交易
     transaction.sign(&keypair);
     println!("已签名交易: {:?}", transaction);
-    
+  
     // 验证交易
     let is_valid = transaction.verify(public_key.as_bytes());
     println!("交易有效: {}", is_valid);
-    
+  
     Ok(())
 }
+
 ```
 
 Rust加密货币项目：
@@ -1604,22 +1630,23 @@ use tokio::try_join;
 use dotenv::dotenv;
 use std::env;
 
-#[tokio::main]
+# [tokio::main]
+
 async fn ethereum_interface() -> web3::Result<()> {
     dotenv().ok();
-    
+  
     // 连接到以太坊节点
     let websocket = web3::transports::WebSocket::new(&env::var("INFURA_URL").unwrap()).await?;
     let web3 = Web3::new(websocket);
-    
+  
     // 获取网络ID
     let net_version = web3.net().version().await?;
     println!("网络版本: {}", net_version);
-    
+  
     // 获取最新区块号
     let block_number = web3.eth().block_number().await?;
     println!("当前区块: {}", block_number);
-    
+  
     // 获取账户余额
     let address = Address::from_str("0xAddressHere").unwrap();
     let balance = web3.eth().balance(address, None).await?;
@@ -1627,7 +1654,7 @@ async fn ethereum_interface() -> web3::Result<()> {
         "账户余额: {} ETH",
         web3::types::U256::from(balance) / web3::types::U256::exp10(18)
     );
-    
+  
     // 与智能合约交互
     let contract_address = Address::from_str("0xContractAddressHere").unwrap();
     let contract = Contract::from_json(
@@ -1635,15 +1662,15 @@ async fn ethereum_interface() -> web3::Result<()> {
         contract_address,
         include_bytes!("../erc20_abi.json"),
     )?;
-    
+  
     // 调用合约方法
     let token_name: String = contract.query("name", (), None, Options::default(), None).await?;
     let token_symbol: String = contract.query("symbol", (), None, Options::default(), None).await?;
     let total_supply: U256 = contract.query("totalSupply", (), None, Options::default(), None).await?;
-    
+  
     println!("代币: {} ({})", token_name, token_symbol);
     println!("总供应量: {}", total_supply);
-    
+  
     Ok(())
 }
 
@@ -1654,26 +1681,27 @@ use std::io::Cursor;
 async fn ipfs_interface() -> Result<(), Box<dyn std::error::Error>> {
     // 连接到IPFS节点
     let client = IpfsClient::default();
-    
+  
     // 添加文件到IPFS
     let data = "Hello, IPFS from Rust!";
     let cursor = Cursor::new(data);
     let res = client.add(cursor).await?;
-    
+  
     println!("添加的文件哈希: {}", res.hash);
-    
+  
     // 从IPFS获取文件
     let data = client.cat(&res.hash).await?;
     let content = String::from_utf8(data)?;
-    
+  
     println!("检索到的内容: {}", content);
-    
+  
     // 列出IPFS对等节点
     let peers = client.peers(None).await?;
     println!("连接的对等节点数: {}", peers.len());
-    
+  
     Ok(())
 }
+
 ```
 
 Rust Web3接口：
@@ -1705,12 +1733,14 @@ fn abs(x: i32) -> u32 {
     }
 }
 
-#[cfg(kani)]
-#[kani::proof]
+# [cfg(kani)]
+
+# [kani::proof]
+
 fn verify_abs() {
     // 验证对于任何i32输入，abs都返回对应的绝对值
     let x: i32 = kani::any();
-    
+  
     if x == i32::MIN {
         // 特殊情况：i32::MIN的绝对值超出i32范围
         assert_eq!(abs(x), i32::MAX as u32 + 1);
@@ -1722,41 +1752,43 @@ fn verify_abs() {
 }
 
 // Move语言互操作性
-/* 
+/*
 module Counter {
     use std::signer;
-    
+  
     struct CounterResource has key {
         count: u64,
     }
-    
+  
     public fun init(account: &signer) {
         move_to(account, CounterResource { count: 0 });
     }
-    
+  
     public fun increment(account: &signer) acquires CounterResource {
         let counter = borrow_global_mut<CounterResource>(signer::address_of(account));
         counter.count = counter.count + 1;
     }
-    
+  
     public fun get_count(addr: address): u64 acquires CounterResource {
         let counter = borrow_global<CounterResource>(addr);
         counter.count
     }
 }
-*/
+* /
 
 // Rust中的形式验证规范
 use verification_annotations::*;
 
-#[invariant(x >= 0, "x must be non-negative")]
+# [invariant(x >= 0, "x must be non-negative")]
+
 fn checked_increment(x: i32) -> i32 {
     #[requires(x < i32::MAX, "x must be less than i32::MAX to avoid overflow")]
     #[ensures(ret == x + 1, "return value must be x + 1")]
     let result = x + 1;
-    
+  
     result
 }
+
 ```
 
 Rust区块链安全工具：
@@ -1786,7 +1818,9 @@ Rust拥有成熟的WebAssembly工具链：
 // 命令: cargo build --target wasm32-unknown-unknown
 
 // 简单的Wasm导出函数
-#[no_mangle]
+
+# [no_mangle]
+
 pub extern "C" fn add(a: i32, b: i32) -> i32 {
     a + b
 }
@@ -1794,7 +1828,8 @@ pub extern "C" fn add(a: i32, b: i32) -> i32 {
 // wasm-bindgen简化的JavaScript交互
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
+# [wasm_bindgen]
+
 pub fn fibonacci(n: u32) -> u32 {
     match n {
         0 => 0,
@@ -1803,7 +1838,8 @@ pub fn fibonacci(n: u32) -> u32 {
     }
 }
 
-#[wasm_bindgen]
+# [wasm_bindgen]
+
 pub fn greet(name: &str) -> String {
     format!("Hello, {}!", name)
 }
@@ -1812,19 +1848,22 @@ pub fn greet(name: &str) -> String {
 // 命令: wasm-pack build --target web
 
 // 使用web-sys操作DOM
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn update_ui() {
     let window = web_sys::window().expect("没有全局window对象");
     let document = window.document().expect("没有document");
-    
+  
     let element = document
         .get_element_by_id("wasm-output")
         .expect("应当有一个ID为'wasm-output'的元素");
-    
+  
     if let Some(html_element) = element.dyn_ref::<web_sys::HtmlElement>() {
         html_element.set_inner_text("从Wasm更新!");
     }
 }
+
 ```
 
 Rust Wasm工具链：
@@ -1850,7 +1889,8 @@ Rust可以与现代前端框架无缝集成：
 // 与React集成的Yew框架示例
 use yew::prelude::*;
 
-#[function_component(HelloWorld)]
+# [function_component(HelloWorld)]
+
 fn hello_world() -> Html {
     let counter = use_state(|| 0);
     let onclick = {
@@ -1860,7 +1900,7 @@ fn hello_world() -> Html {
             counter.set(value);
         })
     };
-    
+  
     html! {
         <div>
             <h1>{ "Hello World!" }</h1>
@@ -1869,7 +1909,8 @@ fn hello_world() -> Html {
     }
 }
 
-#[function_component(App)]
+# [function_component(App)]
+
 fn app() -> Html {
     html! {
         <HelloWorld />
@@ -1979,6 +2020,7 @@ fn view(model: &Model) -> Node<Msg> {
 fn seed_main() {
     App::start("app", init, update, view);
 }
+
 ```
 
 Rust前端框架和库：
@@ -2077,6 +2119,7 @@ fn wasmer_host() -> anyhow::Result<()> {
     
     Ok(())
 }
+
 ```
 
 服务器端Wasm技术栈：
@@ -2112,6 +2155,7 @@ interface greetings {
 world hello {
     export greetings;
 }
+
 */
 
 // 使用wit-bindgen实现WIT接口
@@ -2169,6 +2213,7 @@ async fn component_host() -> anyhow::Result<()> {
     
     Ok(())
 }
+
 ```
 
 Wasm组件模型生态：
@@ -2255,6 +2300,7 @@ impl DataProcessor {
         self.data.iter().sum()
     }
 }
+
 ```
 
 跨平台Wasm应用框架：
@@ -2370,6 +2416,7 @@ pub extern "C" fn sys_write(fd: usize, buf: *const u8, count: usize) -> isize {
         _ => -1 // 未知文件描述符
     }
 }
+
 ```
 
 Rust操作系统项目：
@@ -2496,6 +2543,7 @@ mod app {
         *ctx.local.state = !*ctx.local.state;
     }
 }
+
 ```
 
 Rust嵌入式生态系统：
@@ -2610,6 +2658,7 @@ where
         Ok(1013.25) // 示例返回
     }
 }
+
 ```
 
 Rust驱动和固件开发框架：
@@ -2750,6 +2799,7 @@ fn packet_processing() {
         }
     }
 }
+
 ```
 
 Rust底层网络栈生态：
@@ -2884,6 +2934,7 @@ fn disk_usage_analyzer<P: AsRef<Path>>(root: P) -> DirEntry {
     
     root_entry
 }
+
 ```
 
 Rust系统工具生态：
@@ -3033,6 +3084,7 @@ async fn axum_server() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 Rust微服务框架生态：
@@ -3218,6 +3270,7 @@ async fn redis_example() -> redis::RedisResult<()> {
     
     Ok(())
 }
+
 ```
 
 Rust数据库生态系统：
@@ -3371,6 +3424,7 @@ async fn docker_example() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 Rust容器和编排生态系统：
@@ -3501,6 +3555,7 @@ async fn traced_function() {
     
     // span在作用域结束时自动结束
 }
+
 ```
 
 Rust可观测性生态系统：
@@ -3655,6 +3710,7 @@ async fn start_gateway() {
         eprintln!("服务器错误: {}", e);
     }
 }
+
 ```
 
 Rust服务网格和API网关生态：
@@ -3808,6 +3864,7 @@ fn bevy_game() {
         .add_systems(Update, (player_movement, spawn_enemies, collision_detection))
         .run();
 }
+
 ```
 
 Rust游戏引擎生态：
@@ -3937,7 +3994,7 @@ impl State {
             },
             multiview: None,
         });
-        
+  
         Self {
             surface,
             device,
@@ -3947,7 +4004,7 @@ impl State {
             size,
         }
     }
-    
+  
     fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {
         if new_size.width > 0 && new_size.height > 0 {
             self.size = new_size;
@@ -3956,17 +4013,17 @@ impl State {
             self.surface.configure(&self.device, &self.config);
         }
     }
-    
+  
     fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
         // 获取下一帧
         let output = self.surface.get_current_texture()?;
         let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
-        
+  
         // 创建命令编码器
         let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
             label: Some("渲染编码器"),
         });
-        
+  
         // 渲染通道
         {
             let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
@@ -3986,18 +4043,18 @@ impl State {
                 })],
                 depth_stencil_attachment: None,
             });
-            
+  
             // 设置渲染管线
             render_pass.set_pipeline(&self.render_pipeline);
-            
+  
             // 绘制三角形
             render_pass.draw(0..3, 0..1);
         }
-        
+  
         // 提交命令
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();
-        
+  
         Ok(())
     }
 }
@@ -4011,7 +4068,7 @@ fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) ve
         vec2<f32>(-0.5, -0.5),
         vec2<f32>(0.5, -0.5)
     );
-    
+  
     return vec4<f32>(pos[in_vertex_index], 0.0, 1.0);
 }
 
@@ -4019,7 +4076,7 @@ fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) ve
 fn fs_main() -> @location(0) vec4<f32> {
     return vec4<f32>(1.0, 0.0, 0.0, 1.0);
 }
-*/
+* /
 
 // Vulkan绑定示例
 use ash::{vk, Entry, Instance};
@@ -4028,41 +4085,42 @@ use std::ffi::CString;
 fn vulkan_example() -> Result<(), Box<dyn std::error::Error>> {
     // 初始化Vulkan
     let entry = Entry::linked();
-    
+  
     // 创建实例
     let app_name = CString::new("Rust Vulkan App")?;
     let engine_name = CString::new("No Engine")?;
-    
+  
     let app_info = vk::ApplicationInfo::builder()
         .application_name(&app_name)
         .application_version(vk::make_api_version(0, 1, 0, 0))
         .engine_name(&engine_name)
         .engine_version(vk::make_api_version(0, 1, 0, 0))
         .api_version(vk::make_api_version(0, 1, 0, 0));
-    
+  
     let layer_names = [CString::new("VK_LAYER_KHRONOS_validation")?];
     let layer_name_ptrs: Vec<*const i8> = layer_names
         .iter()
         .map(|name| name.as_ptr())
         .collect();
-    
+  
     let instance_create_info = vk::InstanceCreateInfo::builder()
         .application_info(&app_info)
         .enabled_layer_names(&layer_name_ptrs);
-    
+  
     let instance = unsafe { entry.create_instance(&instance_create_info, None)? };
-    
+  
     // 列出物理设备
     let physical_devices = unsafe { instance.enumerate_physical_devices()? };
     println!("找到 {} 个物理设备", physical_devices.len());
-    
+  
     // 清理资源
     unsafe {
         instance.destroy_instance(None);
     }
-    
+  
     Ok(())
 }
+
 ```
 
 Rust图形和渲染生态：
@@ -4096,7 +4154,7 @@ fn rapier_physics() {
     // 创建物理世界
     let mut rigid_body_set = RigidBodySet::new();
     let mut collider_set = ColliderSet::new();
-    
+  
     // 配置物理参数
     let gravity = vector![0.0, -9.81, 0.0];
     let integration_parameters = IntegrationParameters::default();
@@ -4107,30 +4165,30 @@ fn rapier_physics() {
     let mut impulse_joint_set = ImpulseJointSet::new();
     let mut multibody_joint_set = MultibodyJointSet::new();
     let mut ccd_solver = CCDSolver::new();
-    
+  
     // 创建地面
     let ground_collider = ColliderBuilder::cuboid(100.0, 0.1, 100.0)
         .build();
     collider_set.insert(ground_collider);
-    
+  
     // 创建动态刚体
     let rigid_body = RigidBodyBuilder::dynamic()
         .translation(vector![0.0, 10.0, 0.0])
         .build();
     let rigid_body_handle = rigid_body_set.insert(rigid_body);
-    
+  
     // 为刚体添加碰撞体
     let collider = ColliderBuilder::ball(1.0)
         .restitution(0.7)
         .build();
     collider_set.insert_with_parent(collider, rigid_body_handle, &mut rigid_body_set);
-    
+  
     // 模拟几个时间步
     for _ in 0..100 {
         // 打印球的高度
         let ball_body = &rigid_body_set[rigid_body_handle];
         println!("球的高度: {}", ball_body.translation().y);
-        
+  
         // 物理模拟步进
         physics_pipeline.step(
             &gravity,
@@ -4169,10 +4227,10 @@ fn sph_fluid_simulation() {
     let gravity = [0.0, -9.81];
     let smoothing_length = 0.1;
     let viscosity = 0.1;
-    
+  
     // 创建粒子
     let mut particles = Vec::new();
-    
+  
     // 初始化网格中的粒子
     for i in 0..10 {
         for j in 0..10 {
@@ -4185,21 +4243,21 @@ fn sph_fluid_simulation() {
             });
         }
     }
-    
+  
     // 模拟时间步
     let dt = 0.01;
-    
+  
     // 运行模拟
     for step in 0..100 {
         // 计算密度和压力
         for i in 0..particles.len() {
             let mut density = 0.0;
-            
+  
             for j in 0..particles.len() {
                 let dx = particles[i].position[0] - particles[j].position[0];
                 let dy = particles[i].position[1] - particles[j].position[1];
                 let r2 = dx * dx + dy * dy;
-                
+  
                 if r2 < smoothing_length * smoothing_length {
                     // 简化的核函数
                     let r = r2.sqrt();
@@ -4207,66 +4265,66 @@ fn sph_fluid_simulation() {
                     density += particle_mass * kernel;
                 }
             }
-            
+  
             particles[i].density = density;
             particles[i].pressure = gas_constant * (density - rest_density);
         }
-        
+  
         // 计算力
         for i in 0..particles.len() {
             let mut fx = 0.0;
             let mut fy = 0.0;
-            
+  
             // 压力和粘性
             for j in 0..particles.len() {
                 if i == j { continue; }
-                
+  
                 let dx = particles[i].position[0] - particles[j].position[0];
                 let dy = particles[i].position[1] - particles[j].position[1];
                 let r2 = dx * dx + dy * dy;
-                
+  
                 if r2 < smoothing_length * smoothing_length && r2 > 1e-10 {
                     let r = r2.sqrt();
                     let kernel_gradient = (smoothing_length - r) / r;
-                    
+  
                     // 压力力
-                    let pressure_force = -particle_mass * 
-                        (particles[i].pressure + particles[j].pressure) / 
-                        (2.0 * particles[j].density) * 
+                    let pressure_force = -particle_mass *
+                        (particles[i].pressure + particles[j].pressure) /
+                        (2.0 * particles[j].density) *
                         kernel_gradient;
-                    
+  
                     fx += pressure_force * dx;
                     fy += pressure_force * dy;
-                    
+  
                     // 粘性力
                     let dvx = particles[j].velocity[0] - particles[i].velocity[0];
                     let dvy = particles[j].velocity[1] - particles[i].velocity[1];
-                    
-                    let viscosity_force = viscosity * particle_mass * 
-                        kernel_gradient / 
+  
+                    let viscosity_force = viscosity * particle_mass *
+                        kernel_gradient /
                         particles[j].density;
-                    
+  
                     fx += viscosity_force * dvx;
                     fy += viscosity_force * dvy;
                 }
             }
-            
+  
             // 重力
             fy += gravity[1] * particles[i].density;
-            
+  
             particles[i].force = [fx, fy];
         }
-        
+  
         // 更新位置和速度
         for i in 0..particles.len() {
             // 更新速度 (F = ma => a = F/m => a = F/density)
             particles[i].velocity[0] += dt * particles[i].force[0] / particles[i].density;
             particles[i].velocity[1] += dt * particles[i].force[1] / particles[i].density;
-            
+  
             // 更新位置
             particles[i].position[0] += dt * particles[i].velocity[0];
             particles[i].position[1] += dt * particles[i].velocity[1];
-            
+  
             // 简单的边界处理
             if particles[i].position[0] < 0.0 {
                 particles[i].position[0] = 0.0;
@@ -4285,13 +4343,14 @@ fn sph_fluid_simulation() {
                 particles[i].velocity[1] *= -0.5;
             }
         }
-        
+  
         // 输出一些粒子的位置
         if step % 10 == 0 {
             println!("步骤 {}: 粒子[0]位置 = {:?}", step, particles[0].position);
         }
     }
 }
+
 ```
 
 Rust物理和模拟生态：
@@ -4324,20 +4383,20 @@ use std::io::BufReader;
 fn play_audio() -> Result<(), Box<dyn std::error::Error>> {
     // 获取输出流
     let (_stream, stream_handle) = OutputStream::try_default()?;
-    
+  
     // 创建音频播放器
     let sink = Sink::try_new(&stream_handle)?;
-    
+  
     // 加载音频文件
     let file = BufReader::new(File::open("example.mp3")?);
     let source = Decoder::new(file)?;
-    
+  
     // 播放音频
     sink.append(source);
-    
+  
     // 等待播放完成
     sink.sleep_until_end();
-    
+  
     Ok(())
 }
 
@@ -4361,16 +4420,16 @@ impl SineWavePlayer {
             sample_rate,
         }
     }
-    
+  
     fn next_sample(&mut self) -> f32 {
         let value = (self.phase * 2.0 * PI).sin();
-        
+  
         // 更新相位
         self.phase += self.frequency / self.sample_rate;
         if self.phase >= 1.0 {
             self.phase -= 1.0;
         }
-        
+  
         value
     }
 }
@@ -4378,24 +4437,24 @@ impl SineWavePlayer {
 fn generate_audio() -> Result<(), Box<dyn std::error::Error>> {
     // 获取默认音频主机
     let host = cpal::default_host();
-    
+  
     // 获取默认输出设备
     let device = host.default_output_device()
         .expect("没有输出设备");
-    
+  
     // 获取默认输出配置
     let config = device.default_output_config()
         .expect("无法获取默认输出配置");
-    
+  
     println!("默认输出配置: {:?}", config);
-    
+  
     // 创建音频播放器（正弦波440Hz）
     let sample_rate = config.sample_rate().0 as f32;
     let player = Arc::new(Mutex::new(SineWavePlayer::new(440.0, sample_rate)));
-    
+  
     // 构建音频流
     let err_fn = |err| eprintln!("音频流错误: {}", err);
-    
+  
     let stream = match config.sample_format() {
         SampleFormat::F32 => device.build_output_stream(
             &config.into(),
@@ -4428,13 +4487,13 @@ fn generate_audio() -> Result<(), Box<dyn std::error::Error>> {
             err_fn,
         ),
     }?;
-    
+  
     // 启动流
     stream.play()?;
-    
+  
     // 播放5秒
     std::thread::sleep(std::time::Duration::from_secs(5));
-    
+  
     Ok(())
 }
 
@@ -4445,7 +4504,7 @@ fn audio_processor() {
         gain: f32,
         prev_samples: Vec<f32>,
     }
-    
+  
     impl AudioProcessor {
         fn new(gain: f32, delay_samples: usize) -> Self {
             Self {
@@ -4453,54 +4512,55 @@ fn audio_processor() {
                 prev_samples: vec![0.0; delay_samples],
             }
         }
-        
+  
         // 简单的延迟效果
         fn process_delay(&mut self, input: f32) -> f32 {
             let output = input + self.prev_samples[0] * self.gain;
-            
+  
             // 更新历史样本
             for i in 0..self.prev_samples.len() - 1 {
                 self.prev_samples[i] = self.prev_samples[i + 1];
             }
             self.prev_samples[self.prev_samples.len() - 1] = input;
-            
+  
             output
         }
-        
+  
         // 简单的低通滤波器
         fn process_lowpass(&mut self, input: f32, alpha: f32) -> f32 {
             let last = if self.prev_samples.is_empty() { 0.0 } else { self.prev_samples[0] };
             let output = alpha * input + (1.0 - alpha) * last;
-            
+  
             // 保存当前输出用于下一个样本
             if !self.prev_samples.is_empty() {
                 self.prev_samples[0] = output;
             }
-            
+  
             output
         }
     }
-    
+  
     // 创建处理器
     let mut delay = AudioProcessor::new(0.5, 22050); // 0.5秒延迟@44.1kHz
     let mut lowpass = AudioProcessor::new(0.0, 1); // 单样本历史
-    
+  
     // 处理一些样本
     let input_samples = vec![0.5, 0.7, 0.3, -0.2, -0.5, -0.1, 0.2, 0.4];
     let mut delay_output = Vec::new();
     let mut lowpass_output = Vec::new();
-    
+  
     for sample in input_samples {
         let delay_result = delay.process_delay(sample);
         let lowpass_result = lowpass.process_lowpass(sample, 0.1);
-        
+  
         delay_output.push(delay_result);
         lowpass_output.push(lowpass_result);
     }
-    
+  
     println!("延迟效果输出: {:?}", delay_output);
     println!("低通滤波器输出: {:?}", lowpass_output);
 }
+
 ```
 
 Rust音频生态：
@@ -4547,64 +4607,69 @@ impl AssetManager {
             base_path: base_path.as_ref().to_path_buf(),
         }
     }
-    
+  
     fn load_texture(&mut self, name: &str, path: &str) -> Result<(), std::io::Error> {
         let full_path = self.base_path.join("textures").join(path);
         let data = std::fs::read(&full_path)?;
         self.textures.insert(name.to_string(), data);
         Ok(())
     }
-    
+  
     fn load_model(&mut self, name: &str, path: &str) -> Result<(), std::io::Error> {
         let full_path = self.base_path.join("models").join(path);
         let data = std::fs::read(&full_path)?;
         self.models.insert(name.to_string(), data);
         Ok(())
     }
-    
+  
     fn load_sound(&mut self, name: &str, path: &str) -> Result<(), std::io::Error> {
         let full_path = self.base_path.join("sounds").join(path);
         let data = std::fs::read(&full_path)?;
         self.sounds.insert(name.to_string(), data);
         Ok(())
     }
-    
+  
     fn get_texture(&self, name: &str) -> Option<&Vec<u8>> {
         self.textures.get(name)
     }
-    
+  
     fn get_model(&self, name: &str) -> Option<&Vec<u8>> {
         self.models.get(name)
     }
-    
+  
     fn get_sound(&self, name: &str) -> Option<&Vec<u8>> {
         self.sounds.get(name)
     }
 }
 
 // 配置系统示例
-#[derive(Serialize, Deserialize, Debug)]
+
+# [derive(Serialize, Deserialize, Debug)]
+
 struct GameConfig {
     player: PlayerConfig,
     graphics: GraphicsConfig,
     audio: AudioConfig,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+# [derive(Serialize, Deserialize, Debug)]
+
 struct PlayerConfig {
     start_health: i32,
     start_level: i32,
     speed: f32,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+# [derive(Serialize, Deserialize, Debug)]
+
 struct GraphicsConfig {
     resolution: (u32, u32),
     fullscreen: bool,
     vsync: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+# [derive(Serialize, Deserialize, Debug)]
+
 struct AudioConfig {
     master_volume: f32,
     music_volume: f32,
@@ -4617,7 +4682,7 @@ impl GameConfig {
         let config = serde_json::from_reader(file)?;
         Ok(config)
     }
-    
+  
     fn save<P: AsRef<Path>>(&self, path: P) -> Result<(), Box<dyn std::error::Error>> {
         let file = std::fs::File::create(path)?;
         serde_json::to_writer_pretty(file, self)?;
@@ -4640,28 +4705,28 @@ impl Profiler {
             calls: HashMap::new(),
         }
     }
-    
+  
     fn start(&mut self, name: &str) {
         self.start_times.insert(name.to_string(), std::time::Instant::now());
     }
-    
+  
     fn end(&mut self, name: &str) {
         if let Some(start_time) = self.start_times.remove(name) {
             let duration = start_time.elapsed();
-            
+  
             let entry = self.durations.entry(name.to_string()).or_insert(std::time::Duration::new(0, 0));
             *entry += duration;
-            
+  
             let calls = self.calls.entry(name.to_string()).or_insert(0);
             *calls += 1;
         }
     }
-    
+  
     fn report(&self) {
         println!("性能分析报告:");
         println!("{:<20} {:<15} {:<15} {:<15}", "名称", "调用次数", "总时间(ms)", "平均时间(ms)");
         println!("{:-<65}", "");
-        
+  
         for (name, calls) in &self.calls {
             if let Some(duration) = self.durations.get(name) {
                 let total_ms = duration.as_secs_f64() * 1000.0;
@@ -4671,6 +4736,7 @@ impl Profiler {
         }
     }
 }
+
 ```
 
 Rust游戏开发工具生态：
@@ -4706,30 +4772,30 @@ fn ndarray_example() {
     a[[0, 1]] = 1.0;
     a[[1, 0]] = 2.0;
     a[[1, 1]] = 3.0;
-    
+  
     println!("数组 a:\n{:?}", a);
-    
+  
     // 矩阵操作
     let b = arr2(&[[1.0, 2.0, 3.0],
                    [4.0, 5.0, 6.0],
                    [7.0, 8.0, 9.0]]);
-    
+  
     // 矩阵加法
     let c = &a + &b;
     println!("a + b =\n{:?}", c);
-    
+  
     // 矩阵乘法
     let d = a.dot(&b);
     println!("a · b =\n{:?}", d);
-    
+  
     // 转置
     let e = b.t();
     println!("b的转置 =\n{:?}", e);
-    
+  
     // 切片
     let row = b.slice(ndarray::s![1, ..]);
     println!("b的第二行 = {:?}", row);
-    
+  
     // 简单统计
     let sum = b.sum();
     let mean = b.mean().unwrap();
@@ -4745,55 +4811,55 @@ fn polars_example() -> Result<(), PolarsError> {
     let s1 = Series::new("整数列", &[1, 2, 3, 4, 5]);
     let s2 = Series::new("浮点列", &[1.1, 2.2, 3.3, 4.4, 5.5]);
     let s3 = Series::new("字符串列", &["a", "b", "c", "d", "e"]);
-    
+  
     // 从Series创建DataFrame
     let df = DataFrame::new(vec![s1, s2, s3])?;
     println!("DataFrame:\n{}", df);
-    
+  
     // 简单统计
     println!("摘要统计:\n{}", df.describe(None)?);
-    
+  
     // 选择列
     let col = df.column("整数列")?;
     println!("整数列:\n{}", col);
-    
+  
     // 过滤行
     let filtered = df.filter(&df
         .column("整数列")?
         .gt(2)?)?;
     println!("过滤后的DataFrame (整数 > 2):\n{}", filtered);
-    
+  
     // 创建新列
     let mut df2 = df.clone();
     let integers = df2.column("整数列")?;
     let floats = df2.column("浮点列")?;
-    
+  
     let sum_col = integers + floats;
     df2.with_column(sum_col.rename("总和"))?;
     println!("添加列后的DataFrame:\n{}", df2);
-    
+  
     // 分组操作
     let df3 = df.clone();
     let gb = df3.groupby(&["字符串列"])?;
     let result = gb.agg(&[("整数列", &["min", "max", "mean"])])?;
     println!("分组后的DataFrame:\n{}", result);
-    
+  
     // 从CSV读取
     let csv_content = "id,name,value\n1,A,10\n2,B,20\n3,C,30\n";
     let csv_df = CsvReader::new(std::io::Cursor::new(csv_content))
         .has_header(true)
         .finish()?;
     println!("CSV DataFrame:\n{}", csv_df);
-    
+  
     // 保存到CSV
     let mut buf = Vec::new();
     CsvWriter::new(&mut buf)
         .has_header(true)
         .finish(&mut df.clone())?;
-    
+  
     let csv_str = String::from_utf8(buf).unwrap();
     println!("CSV输出:\n{}", csv_str);
-    
+  
     Ok(())
 }
 
@@ -4807,47 +4873,48 @@ fn nalgebra_example() {
         4.0, 5.0, 6.0,
         7.0, 8.0, 9.0
     );
-    
+  
     // 创建向量
     let v = Vector3::new(1.0, 2.0, 3.0);
-    
+  
     // 矩阵-向量乘法
     let result = m * v;
     println!("矩阵-向量乘法结果: {}", result);
-    
+  
     // 矩阵转置
     let m_t = m.transpose();
     println!("矩阵转置:\n{}", m_t);
-    
+  
     // 矩阵求逆
     match m.try_inverse() {
         Some(m_inv) => println!("矩阵求逆:\n{}", m_inv),
         None => println!("矩阵不可逆"),
     }
-    
+  
     // 特征值和特征向量
     let sym_matrix = Matrix3::new(
         2.0, 1.0, 0.0,
         1.0, 2.0, 1.0,
         0.0, 1.0, 2.0
     );
-    
+  
     let eigen = sym_matrix.symmetric_eigen();
     println!("特征值: {}", eigen.eigenvalues);
     println!("特征向量:\n{}", eigen.eigenvectors);
-    
+  
     // 创建动态矩阵
     let dynamic_matrix = DMatrix::from_row_slice(3, 3, &[
         1.0, 2.0, 3.0,
         4.0, 5.0, 6.0,
         7.0, 8.0, 9.0
     ]);
-    
+  
     // QR分解
     let qr = dynamic_matrix.qr();
     println!("QR分解 - Q:\n{}", qr.q());
     println!("QR分解 - R:\n{}", qr.r());
 }
+
 ```
 
 Rust数值计算和数据处理生态：
@@ -5030,6 +5097,7 @@ fn linear_regression_example() {
     let mse = mean_squared_error(&y_test, &y_pred);
     println!("均方误差 (MSE): {}", mse);
 }
+
 ```
 
 Rust机器学习生态系统：
@@ -5306,6 +5374,7 @@ fn plotly_example() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 Rust数据可视化生态：
@@ -5455,6 +5524,7 @@ fn chinese_segmentation() {
     );
     println!("搜索引擎模式: {:?}", words_search);
 }
+
 ```
 
 Rust自然语言处理生态：
@@ -5697,6 +5767,7 @@ fn image_classification() -> TractResult<()> {
     
     Ok(())
 }
+
 ```
 
 Rust计算机视觉生态：
@@ -5766,6 +5837,7 @@ b = "build --release"
 t = "test --all-features"
 docs = "doc --open"
 audit = "clippy && cargo outdated && cargo audit"
+
 */
 
 // Cargo工作区 (Cargo.toml)
@@ -5782,11 +5854,14 @@ members = [
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.0", features = ["full"] }
 log = "0.4"
+
 */
 
 // 使用cargo-make进行任务自动化
 /*
+
 # Makefile.toml
+
 [tasks.format]
 command = "cargo"
 args = ["fmt", "--all"]
@@ -5826,7 +5901,9 @@ dependencies = [
     "test",
     "audit",
 ]
+
 */
+
 ```
 
 Rust构建和包管理生态：
@@ -5856,21 +5933,23 @@ Rust提供了全面的测试和性能分析工具：
 
 ```rust
 // 单元测试示例
-#[cfg(test)]
+
+# [cfg(test)]
+
 mod tests {
     use super::*;
-    
+  
     #[test]
     fn test_addition() {
         assert_eq!(2 + 2, 4);
     }
-    
+  
     #[test]
     fn test_string_length() {
         let s = "Hello, world!";
         assert_eq!(s.len(), 13);
     }
-    
+  
     #[test]
     #[should_panic(expected = "除以零")]
     fn test_division_by_zero() {
@@ -5880,10 +5959,10 @@ mod tests {
             }
             a / b
         }
-        
+  
         divide(10, 0);
     }
-    
+  
     #[test]
     fn test_result() -> Result<(), String> {
         if 2 + 2 == 4 {
@@ -5897,13 +5976,15 @@ mod tests {
 // 集成测试示例 (tests/integration_test.rs)
 use my_crate::Calculator;
 
-#[test]
+# [test]
+
 fn test_calculator_add() {
     let calc = Calculator::new();
     assert_eq!(calc.add(2, 3), 5);
 }
 
-#[test]
+# [test]
+
 fn test_calculator_subtract() {
     let calc = Calculator::new();
     assert_eq!(calc.subtract(5, 2), 3);
@@ -5922,7 +6003,7 @@ fn fibonacci(n: u64) -> u64 {
 
 fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("fib 10", |b| b.iter(|| fibonacci(black_box(10))));
-    
+  
     // 参数化基准测试
     let mut group = c.benchmark_group("fibonacci");
     for i in [5, 10, 15].iter() {
@@ -5940,7 +6021,8 @@ criterion_main!(benches);
 use arbitrary::Arbitrary;
 use libfuzzer_sys::fuzz_target;
 
-#[derive(Arbitrary, Debug)]
+# [derive(Arbitrary, Debug)]
+
 struct FuzzInput {
     a: i32,
     b: i32,
@@ -5986,13 +6068,13 @@ impl Drop for SimpleProfiler {
 
 fn profiled_function() {
     let _p = SimpleProfiler::new("profiled_function");
-    
+  
     // 执行一些工作
     let mut sum = 0;
     for i in 0..1_000_000 {
         sum += i;
     }
-    
+  
     // 子函数也被分析
     {
         let _p2 = SimpleProfiler::new("内部循环");
@@ -6001,6 +6083,7 @@ fn profiled_function() {
         }
     }
 }
+
 ```
 
 Rust测试和性能分析生态：
@@ -6028,7 +6111,9 @@ Rust拥有多种静态分析和代码质量工具：
 
 ```rust
 // 自定义Clippy lint
-#![feature(rustc_private)]
+
+# ![feature(rustc_private)]
+
 extern crate rustc_ast;
 extern crate rustc_span;
 extern crate rustc_lint;
@@ -6068,7 +6153,7 @@ impl<'a, 'tcx> LateLintPass<'a, 'tcx> for ExampleLint {
 cognitive-complexity-threshold = 20
 too-many-arguments-threshold = 7
 type-complexity-threshold = 250
-*/
+* /
 
 // Rustfmt配置 (rustfmt.toml)
 /*
@@ -6077,11 +6162,13 @@ tab_spaces = 4
 edition = "2021"
 merge_derives = true
 use_field_init_shorthand = true
-*/
+* /
 
 // git hooks示例 (.git/hooks/pre-commit)
 /*
-#!/bin/sh
+
+# !/bin/sh
+
 set -e
 
 echo "运行cargo fmt检查..."
@@ -6092,7 +6179,7 @@ cargo clippy -- -D warnings
 
 echo "运行测试..."
 cargo test
-*/
+* /
 
 // 文档测试示例
 /// 将两个数字相加
@@ -6123,7 +6210,8 @@ pub fn add(a: i32, b: i32) -> i32 {
     "rust-analyzer.inlayHints.typeHints.enable": true,
     "rust-analyzer.diagnostics.disabled": ["unresolved-proc-macro"]
 }
-*/
+* /
+
 ```
 
 Rust静态分析和代码质量生态：
@@ -6196,7 +6284,7 @@ impl Calculator {
     pub fn new() -> Self {
         Self { memory: 0.0 }
     }
-    
+  
     /// 将两个数相加
     ///
     /// # 参数
@@ -6210,7 +6298,7 @@ impl Calculator {
     pub fn add(&self, a: i32, b: i32) -> i32 {
         a + b
     }
-    
+  
     /// 将当前值存入内存
     ///
     /// # 参数
@@ -6229,7 +6317,7 @@ impl Calculator {
     pub fn store(&mut self, value: f64) {
         self.memory = value;
     }
-    
+  
     /// 从内存中调用值
     ///
     /// # 返回
@@ -6238,7 +6326,7 @@ impl Calculator {
     pub fn recall(&self) -> f64 {
         self.memory
     }
-    
+  
     /// 执行除法操作
     ///
     /// # 参数
@@ -6287,27 +6375,27 @@ impl RequestBuilder {
             timeout: None,
         }
     }
-    
+  
     pub fn method(mut self, method: &str) -> Self {
         self.method = method.to_string();
         self
     }
-    
+  
     pub fn header(mut self, name: &str, value: &str) -> Self {
         self.headers.push((name.to_string(), value.to_string()));
         self
     }
-    
+  
     pub fn body(mut self, body: Vec<u8>) -> Self {
         self.body = Some(body);
         self
     }
-    
+  
     pub fn timeout(mut self, seconds: u64) -> Self {
         self.timeout = Some(seconds);
         self
     }
-    
+  
     pub fn build(self) -> Request {
         Request {
             url: self.url,
@@ -6344,7 +6432,7 @@ impl Connection<Disconnected> {
             state: Disconnected,
         }
     }
-    
+  
     pub fn connect(self) -> Connection<Connected> {
         println!("连接到 {}", self.address);
         Connection {
@@ -6362,7 +6450,7 @@ impl Connection<Connected> {
             state: Authenticated,
         }
     }
-    
+  
     pub fn disconnect(self) -> Connection<Disconnected> {
         println!("断开连接");
         Connection {
@@ -6376,7 +6464,7 @@ impl Connection<Authenticated> {
     pub fn send_message(&self, message: &str) {
         println!("发送消息: {}", message);
     }
-    
+  
     pub fn disconnect(self) -> Connection<Disconnected> {
         println!("断开连接");
         Connection {
@@ -6385,6 +6473,7 @@ impl Connection<Authenticated> {
         }
     }
 }
+
 ```
 
 Rust文档和API设计生态：
@@ -6431,7 +6520,7 @@ Rust提供了出色的IDE集成和开发体验：
     "rust-analyzer.rustfmt.extraArgs": ["--config", "tab_spaces=4"],
     "rust-analyzer.assist.importGranularity": "module"
 }
-*/
+* /
 
 // RLS配置
 /*
@@ -6444,7 +6533,7 @@ Rust提供了出色的IDE集成和开发体验：
     "rust.unstable_features": true,
     "rust.cfg_test": true
 }
-*/
+* /
 
 // 自定义任务 (tasks.json)
 /*
@@ -6490,7 +6579,7 @@ Rust提供了出色的IDE集成和开发体验：
         }
     ]
 }
-*/
+* /
 
 // 调试配置 (launch.json)
 /*
@@ -6527,7 +6616,7 @@ Rust提供了出色的IDE集成和开发体验：
         }
     ]
 }
-*/
+* /
 
 // Rust Playground的rust-project.json
 /*
@@ -6541,7 +6630,8 @@ Rust提供了出色的IDE集成和开发体验：
     }
   ]
 }
-*/
+* /
+
 ```
 
 Rust IDE集成和开发体验生态：
@@ -6582,19 +6672,19 @@ fn hashing_example() {
     sha256.update(b"hello world");
     let result = sha256.finalize();
     println!("SHA-256: {:x}", result);
-    
+  
     // BLAKE2b哈希
     let mut blake2b = Blake2b::new();
     blake2b.update(b"hello world");
     let result = blake2b.finalize();
     println!("BLAKE2b: {:x}", result);
-    
+  
     // BLAKE2s哈希
     let mut blake2s = Blake2s::new();
     blake2s.update(b"hello world");
     let result = blake2s.finalize();
     println!("BLAKE2s: {:x}", result);
-    
+  
     // MD5哈希 (不推荐用于安全用途)
     let mut md5 = Md5::new();
     md5.update(b"hello world");
@@ -6611,25 +6701,25 @@ use aes_gcm::{
 fn symmetric_encryption() -> Result<(), Box<dyn std::error::Error>> {
     // 生成随机密钥
     let key = Aes256Gcm::generate_key(OsRng);
-    
+  
     // 创建加密器
     let cipher = Aes256Gcm::new(&key);
-    
+  
     // 生成随机nonce
     let nonce = Aes256Gcm::generate_nonce(&mut OsRng);
-    
+  
     // 明文
     let plaintext = b"机密消息";
-    
+  
     // 加密
     let ciphertext = cipher.encrypt(&nonce, plaintext.as_ref())?;
     println!("加密后: {:?}", ciphertext);
-    
+  
     // 解密
     let decrypted = cipher.decrypt(&nonce, ciphertext.as_ref())?;
     println!("解密后: {:?}", decrypted);
     assert_eq!(&decrypted, &plaintext[..]);
-    
+  
     Ok(())
 }
 
@@ -6647,40 +6737,40 @@ fn asymmetric_encryption() -> Result<(), Box<dyn std::error::Error>> {
     let bits = 2048;
     let private_key = RsaPrivateKey::new(&mut rng, bits)?;
     let public_key = RsaPublicKey::from(&private_key);
-    
+  
     // 导出密钥
     let private_key_pem = private_key.to_pkcs1_pem(LineEnding::LF)?;
     let public_key_pem = public_key.to_pkcs1_pem(LineEnding::LF)?;
-    
+  
     println!("私钥:\n{}", private_key_pem);
     println!("公钥:\n{}", public_key_pem);
-    
+  
     // 加密
     let plaintext = b"机密消息";
     let ciphertext = public_key.encrypt(&mut rng, Pkcs1v15Encrypt, plaintext)?;
     println!("加密后: {:?}", ciphertext);
-    
+  
     // 解密
     let decrypted = private_key.decrypt(Pkcs1v15Encrypt, &ciphertext)?;
     println!("解密后: {:?}", decrypted);
     assert_eq!(&decrypted, &plaintext[..]);
-    
+  
     // 签名
     let message = b"要签名的消息";
     let digest = Sha256::digest(message);
     let signature = private_key.sign(Pkcs1v15Sign::new::<Sha256>(), &digest)?;
     println!("签名: {:?}", signature);
-    
+  
     // 验证签名
     let result = public_key.verify(
         Pkcs1v15Sign::new::<Sha256>(),
         &digest,
         &signature,
     );
-    
+  
     assert!(result.is_ok());
     println!("签名验证成功");
-    
+  
     Ok(())
 }
 
@@ -6696,28 +6786,29 @@ use argon2::{
 fn password_hashing() -> Result<(), argon2::password_hash::Error> {
     // 生成随机盐
     let salt = SaltString::generate(&mut OsRng);
-    
+  
     // 哈希密码
     let password = b"my_secure_password";
     let argon2 = Argon2::default();
     let password_hash = argon2.hash_password(password, &salt)?.to_string();
-    
+  
     println!("密码哈希: {}", password_hash);
-    
+  
     // 验证密码
     let parsed_hash = PasswordHash::new(&password_hash)?;
-    
+  
     // 正确密码
     let result = Argon2::default().verify_password(password, &parsed_hash);
     println!("正确密码验证: {:?}", result.is_ok());
-    
+  
     // 错误密码
     let wrong_password = b"wrong_password";
     let result = Argon2::default().verify_password(wrong_password, &parsed_hash);
     println!("错误密码验证: {:?}", result.is_ok());
-    
+  
     Ok(())
 }
+
 ```
 
 Rust密码学生态：
@@ -6762,33 +6853,33 @@ fn rustls_client() -> Result<(), Box<dyn std::error::Error>> {
             )
         })
     );
-    
+  
     // 创建客户端配置
     let config = ClientConfig::builder()
         .with_safe_defaults()
         .with_root_certificates(root_store)
         .with_no_client_auth();
-    
+  
     // 创建TLS连接
     let server_name = ServerName::try_from("example.com")?;
     let mut conn = rustls::ClientConnection::new(
         Arc::new(config),
         server_name,
     )?;
-    
+  
     // 连接到服务器
     let mut sock = std::net::TcpStream::connect("example.com:443")?;
     let mut tls = rustls::Stream::new(&mut conn, &mut sock);
-    
+  
     // 发送HTTP请求
     tls.write_all(b"GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n")?;
-    
+  
     // 读取响应
     let mut plaintext = Vec::new();
     tls.read_to_end(&mut plaintext)?;
-    
+  
     println!("收到响应: {}", String::from_utf8_lossy(&plaintext));
-    
+  
     Ok(())
 }
 
@@ -6803,47 +6894,47 @@ fn rustls_server() -> Result<(), Box<dyn std::error::Error>> {
     // 加载证书
     let cert_file = &mut BufReader::new(File::open("cert.pem")?);
     let key_file = &mut BufReader::new(File::open("key.pem")?);
-    
+  
     let cert_chain = certs(cert_file)?
         .into_iter()
         .map(Certificate)
         .collect();
-    
+  
     let mut keys: Vec<PrivateKey> = pkcs8_private_keys(key_file)?
         .into_iter()
         .map(PrivateKey)
         .collect();
-    
+  
     // 创建服务器配置
     let config = ServerConfig::builder()
         .with_safe_defaults()
         .with_no_client_auth()
         .with_single_cert(cert_chain, keys.remove(0))?;
-    
+  
     // 创建TLS接受器
     let acceptor = rustls::ServerConnection::new(Arc::new(config))?;
-    
+  
     // 绑定TCP监听器
     let listener = std::net::TcpListener::bind("127.0.0.1:8443")?;
     println!("服务器运行在 https://127.0.0.1:8443");
-    
+  
     // 接受连接
     let (mut stream, _addr) = listener.accept()?;
     let mut tls_conn = rustls::ServerConnection::new(Arc::new(config))?;
-    
+  
     // 处理TLS握手
     let mut tls = rustls::Stream::new(&mut tls_conn, &mut stream);
-    
+  
     // 读取请求
     let mut request = Vec::new();
     tls.read_to_end(&mut request)?;
-    
+  
     println!("收到请求: {}", String::from_utf8_lossy(&request));
-    
+  
     // 发送响应
     let response = b"HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
     tls.write_all(response)?;
-    
+  
     Ok(())
 }
 
@@ -6855,20 +6946,20 @@ async fn https_request() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::builder()
         .use_rustls_tls() // 使用rustls代替native-tls
         .build()?;
-    
+  
     // 发送GET请求
     let response = client.get("https://example.com")
         .header("User-Agent", "Rust Example")
         .send()
         .await?;
-    
+  
     // 检查状态码
     println!("状态码: {}", response.status());
-    
+  
     // 读取响应体
     let body = response.text().await?;
     println!("响应体: {}", body);
-    
+  
     // 发送POST请求
     let response = client.post("https://httpbin.org/post")
         .json(&serde_json::json!({
@@ -6877,16 +6968,16 @@ async fn https_request() -> Result<(), Box<dyn std::error::Error>> {
         }))
         .send()
         .await?;
-    
+  
     let json = response.json::<serde_json::Value>().await?;
     println!("JSON响应: {}", json);
-    
+  
     Ok(())
 }
 
 // TLS验证示例
 use rustls::{
-    Certificate, ClientConfig, OwnedTrustAnchor, PrivateKey, 
+    Certificate, ClientConfig, OwnedTrustAnchor, PrivateKey,
     RootCertStore, ServerName
 };
 use rustls::client::ResolvesClientCert;
@@ -6919,11 +7010,12 @@ impl rustls::client::ServerCertVerifier for CustomCertVerifier {
         // 自定义证书验证逻辑
         println!("验证服务器: {:?}", server_name);
         println!("证书长度: {} 字节", end_entity.0.len());
-        
+  
         // 简单示例：始终信任证书
         Ok(rustls::client::ServerCertVerified::assertion())
     }
 }
+
 ```
 
 Rust TLS和安全通信生态：
@@ -6948,6 +7040,7 @@ Rust TLS和安全通信生态：
 ### 11.3 认证与
 
 ```rust
+
 ### 11.3 认证与授权
 
 Rust提供了多种认证和授权库：
@@ -7290,6 +7383,7 @@ impl AbacSystem {
         }
     }
 }
+
 ```
 
 Rust认证与授权生态：
@@ -7520,6 +7614,7 @@ fn validate_user() -> Result<(), validator::ValidationErrors> {
     
     Ok(())
 }
+
 ```
 
 Rust安全编码生态：
@@ -7774,6 +7869,7 @@ fn rate_limiter_example() {
         println!("尝试 {}: {}", i, if limited { "已限速" } else { "允许" });
     }
 }
+
 ```
 
 Rust安全漏洞防护生态：
@@ -7919,6 +8015,7 @@ fn main() {
         .write_to_file(out_path.join("bindings.rs"))
         .expect("无法写入绑定");
 }
+
 */
 
 // 在代码中包含生成的绑定:
@@ -7958,6 +8055,7 @@ fn rust_function(value: i32) -> ffi::RustStruct {
         message: format!("从Rust, 值: {}", value),
     }
 }
+
 */
 
 /*
@@ -7973,6 +8071,7 @@ public:
 };
 
 std::unique_ptr<CppClass> new_cpp_class();
+
 */
 
 /*
@@ -7993,7 +8092,9 @@ int CppClass::static_method(int value) {
 std::unique_ptr<CppClass> new_cpp_class() {
     return std::make_unique<CppClass>();
 }
+
 */
+
 ```
 
 Rust与C/C++集成生态：
@@ -8018,6 +8119,7 @@ Rust与C/C++集成生态：
 ### 12.2 与动态语言集成
 
 ```rust
+
 ### 12.2 与动态语言集成
 
 Rust可以与多种动态语言进行集成：
@@ -8029,40 +8131,45 @@ use pyo3::types::PyDict;
 use pyo3::wrap_pyfunction;
 
 /// 一个将在Python中可用的Rust函数
-#[pyfunction]
+
+# [pyfunction]
+
 fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
     Ok((a + b).to_string())
 }
 
 /// 一个可在Python中用作类的Rust结构体
-#[pyclass]
+
+# [pyclass]
+
 struct RustCalculator {
     value: i32,
 }
 
-#[pymethods]
+# [pymethods]
+
 impl RustCalculator {
     #[new]
     fn new(value: i32) -> Self {
         RustCalculator { value }
     }
-    
+  
     fn add(&mut self, other: i32) -> PyResult<i32> {
         self.value += other;
         Ok(self.value)
     }
-    
+  
     fn subtract(&mut self, other: i32) -> PyResult<i32> {
         self.value -= other;
         Ok(self.value)
     }
-    
+  
     // 只读属性
     #[getter]
     fn get_value(&self) -> PyResult<i32> {
         Ok(self.value)
     }
-    
+  
     // 静态方法
     #[staticmethod]
     fn square(value: i32) -> PyResult<i32> {
@@ -8071,19 +8178,21 @@ impl RustCalculator {
 }
 
 /// 注册Python模块
-#[pymodule]
+
+# [pymodule]
+
 fn rust_extension(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     m.add_class::<RustCalculator>()?;
-    
+  
     // 添加模块级常量
     m.add("VERSION", "1.0.0")?;
-    
+  
     // 添加子模块
     let submod = PyModule::new(py, "utils")?;
     submod.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     m.add_submodule(submod)?;
-    
+  
     Ok(())
 }
 
@@ -8097,7 +8206,7 @@ fn hello(mut cx: FunctionContext) -> JsResult<JsString> {
 fn add(mut cx: FunctionContext) -> JsResult<JsNumber> {
     let a = cx.argument::<JsNumber>(0)?.value(&mut cx);
     let b = cx.argument::<JsNumber>(1)?.value(&mut cx);
-    
+  
     Ok(cx.number(a + b))
 }
 
@@ -8105,20 +8214,20 @@ fn process_array(mut cx: FunctionContext) -> JsResult<JsArray> {
     // 获取JavaScript数组
     let js_arr = cx.argument::<JsArray>(0)?;
     let arr_len = js_arr.len(&mut cx);
-    
+  
     // 创建新的JavaScript数组
     let result_arr = JsArray::new(&mut cx, arr_len);
-    
+  
     // 处理数组中的每个元素
     for i in 0..arr_len {
         let elem = js_arr.get(&mut cx, i)?;
         let num = elem.downcast::<JsNumber>(&mut cx)?.value(&mut cx);
-        
+  
         // 对每个元素加倍
         let doubled = cx.number(num * 2.0);
         result_arr.set(&mut cx, i, doubled)?;
     }
-    
+  
     Ok(result_arr)
 }
 
@@ -8126,26 +8235,28 @@ fn process_array(mut cx: FunctionContext) -> JsResult<JsArray> {
 fn process_object(mut cx: FunctionContext) -> JsResult<JsObject> {
     // 获取输入对象
     let js_obj = cx.argument::<JsObject>(0)?;
-    
+  
     // 获取对象属性
     let name = js_obj.get(&mut cx, "name")?.downcast::<JsString>(&mut cx)?.value(&mut cx);
     let age = js_obj.get(&mut cx, "age")?.downcast::<JsNumber>(&mut cx)?.value(&mut cx);
-    
+  
     // 创建一个新对象作为返回值
     let result_obj = cx.empty_object();
-    
+  
     // 设置属性
     let greeting = cx.string(format!("你好, {}!", name));
     result_obj.set(&mut cx, "greeting", greeting)?;
-    
+  
     let next_year = cx.number(age + 1.0);
     result_obj.set(&mut cx, "nextYearAge", next_year)?;
-    
+  
     Ok(result_obj)
 }
 
 // 注册模块
-#[neon::main]
+
+# [neon::main]
+
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("hello", hello)?;
     cx.export_function("add", add)?;
@@ -8165,7 +8276,8 @@ fn multiply(a: i64, b: i64) -> i64 {
     a * b
 }
 
-#[magnus::init]
+# [magnus::init]
+
 fn init(ruby: &Ruby) -> Result<(), Error> {
     let module = ruby.define_module("RustModule")?;
     module.define_singleton_method("greet", function!(greet, 1))?;
@@ -8182,36 +8294,36 @@ fn rust_function(context: Context) -> Result<String> {
 
 fn setup_lua() -> Result<()> {
     let lua = Lua::new();
-    
+  
     lua.context(|lua_ctx| {
         // 创建一个简单的Rust函数
         let greet = lua_ctx.create_function(|_, name: String| {
             Ok(format!("你好, {}!", name))
         })?;
-        
+  
         // 全局函数
         lua_ctx.globals().set("greet", greet)?;
-        
+  
         // 创建表并添加函数
         let utils = lua_ctx.create_table()?;
         utils.set("add", lua_ctx.create_function(|_, (a, b): (i32, i32)| {
             Ok(a + b)
         })?)?;
-        
+  
         utils.set("multiply", lua_ctx.create_function(|_, (a, b): (i32, i32)| {
             Ok(a * b)
         })?)?;
-        
+  
         // 设置为全局表
         lua_ctx.globals().set("utils", utils)?;
-        
+  
         // 执行Lua代码
         lua_ctx.load(r#"
             print(greet("世界"))
             print("2 + 3 =", utils.add(2, 3))
             print("4 * 5 =", utils.multiply(4, 5))
         "#).exec()?;
-        
+  
         Ok(())
     })
 }
@@ -8221,7 +8333,8 @@ use jni::JNIEnv;
 use jni::objects::{JClass, JString};
 use jni::sys::{jint, jstring};
 
-#[no_mangle]
+# [no_mangle]
+
 pub extern "system" fn Java_com_example_RustBindings_greeting(
     env: JNIEnv,
     _class: JClass,
@@ -8232,17 +8345,18 @@ pub extern "system" fn Java_com_example_RustBindings_greeting(
         .get_string(input)
         .expect("无法获取Java字符串!")
         .into();
-    
+  
     // 处理字符串
     let output = format!("来自Rust的问候, {}!", input);
-    
+  
     // 转换回Java字符串
     env.new_string(output)
         .expect("无法创建Java字符串!")
         .into_raw()
 }
 
-#[no_mangle]
+# [no_mangle]
+
 pub extern "system" fn Java_com_example_RustBindings_add(
     _env: JNIEnv,
     _class: JClass,
@@ -8251,6 +8365,7 @@ pub extern "system" fn Java_com_example_RustBindings_add(
 ) -> jint {
     a + b
 }
+
 ```
 
 Rust与动态语言集成生态：
@@ -8301,25 +8416,25 @@ my-project/
     ├── package.json
     ├── index.html
     └── main.js            # 使用WebAssembly
-*/
+* /
 
 // 核心库(lib.rs)示例
 pub mod data_processing {
     pub struct DataProcessor {
         config: String,
     }
-    
+  
     impl DataProcessor {
         pub fn new(config: &str) -> Self {
             Self {
                 config: config.to_string(),
             }
         }
-        
+  
         pub fn process_data(&self, data: &[u8]) -> Vec<u8> {
             // 实际处理逻辑
             println!("使用配置处理数据: {}", self.config);
-            
+  
             // 示例实现：反转数据
             let mut result = data.to_vec();
             result.reverse();
@@ -8329,17 +8444,19 @@ pub mod data_processing {
 }
 
 // 为Python构建绑定
-#[cfg(feature = "python")]
+
+# [cfg(feature = "python")]
+
 pub mod python_bindings {
     use pyo3::prelude::*;
     use pyo3::wrap_pyfunction;
     use super::data_processing::DataProcessor;
-    
+  
     #[pyclass]
     struct PyDataProcessor {
         inner: DataProcessor,
     }
-    
+  
     #[pymethods]
     impl PyDataProcessor {
         #[new]
@@ -8348,12 +8465,12 @@ pub mod python_bindings {
                 inner: DataProcessor::new(config),
             }
         }
-        
+  
         fn process(&self, data: Vec<u8>) -> PyResult<Vec<u8>> {
             Ok(self.inner.process_data(&data))
         }
     }
-    
+  
     #[pymodule]
     fn rust_core(_py: Python, m: &PyModule) -> PyResult<()> {
         m.add_class::<PyDataProcessor>()?;
@@ -8362,42 +8479,44 @@ pub mod python_bindings {
 }
 
 // 为Node.js构建绑定
-#[cfg(feature = "nodejs")]
+
+# [cfg(feature = "nodejs")]
+
 pub mod node_bindings {
     use neon::prelude::*;
     use super::data_processing::DataProcessor;
-    
+  
     struct JsDataProcessor {
         inner: DataProcessor,
     }
-    
+  
     impl Finalize for JsDataProcessor {}
-    
+  
     // 构造函数
     fn new_processor(mut cx: FunctionContext) -> JsResult<JsBox<JsDataProcessor>> {
         let config = cx.argument::<JsString>(0)?.value(&mut cx);
         let processor = JsDataProcessor {
             inner: DataProcessor::new(&config),
         };
-        
+  
         Ok(cx.boxed(processor))
     }
-    
+  
     // 处理方法
     fn process(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
         let processor = cx.argument::<JsBox<JsDataProcessor>>(0)?;
         let data_buffer = cx.argument::<JsArrayBuffer>(1)?;
-        
+  
         let data_view = data_buffer.as_slice(&mut cx);
         let result = processor.inner.process_data(data_view);
-        
+  
         let mut result_buffer = cx.array_buffer(result.len() as u32)?;
         let result_view = result_buffer.as_mut_slice(&mut cx);
         result_view.copy_from_slice(&result);
-        
+  
         Ok(result_buffer)
     }
-    
+  
     pub fn register_module(mut m: ModuleContext) -> NeonResult<()> {
         m.export_function("newProcessor", new_processor)?;
         m.export_function("process", process)?;
@@ -8406,17 +8525,19 @@ pub mod node_bindings {
 }
 
 // 为WebAssembly构建绑定
-#[cfg(feature = "wasm")]
+
+# [cfg(feature = "wasm")]
+
 pub mod wasm_bindings {
     use wasm_bindgen::prelude::*;
     use super::data_processing::DataProcessor;
-    
+  
     // JavaScript中可用的处理器
     #[wasm_bindgen]
     pub struct WasmDataProcessor {
         inner: DataProcessor,
     }
-    
+  
     #[wasm_bindgen]
     impl WasmDataProcessor {
         #[wasm_bindgen(constructor)]
@@ -8425,13 +8546,13 @@ pub mod wasm_bindings {
                 inner: DataProcessor::new(config),
             }
         }
-        
+  
         #[wasm_bindgen]
         pub fn process(&self, data: &[u8]) -> Vec<u8> {
             self.inner.process_data(data)
         }
     }
-    
+  
     // 直接暴露给JavaScript的函数
     #[wasm_bindgen]
     pub fn process_data(config: &str, data: &[u8]) -> Vec<u8> {
@@ -8449,20 +8570,20 @@ fn main() {
         println!("cargo:rustc-cfg=feature=\"python\"");
         // Python特定构建步骤
     }
-    
+  
     #[cfg(feature = "nodejs")]
     {
         println!("cargo:rustc-cfg=feature=\"nodejs\"");
         // Node.js特定构建步骤
     }
-    
+  
     #[cfg(feature = "wasm")]
     {
         println!("cargo:rustc-cfg=feature=\"wasm\"");
         // WebAssembly特定构建步骤
     }
 }
-*/
+* /
 
 // Python使用示例(app.py)
 /*
@@ -8471,19 +8592,19 @@ from rust_core import PyDataProcessor
 def main():
     # 创建处理器
     processor = PyDataProcessor("python-config")
-    
+  
     # 准备数据
     data = b"Hello from Python"
-    
+  
     # 处理数据
     result = processor.process(data)
-    
+  
     print(f"输入: {data}")
     print(f"输出: {result}")
 
 if __name__ == "__main__":
     main()
-*/
+* /
 
 // Node.js使用示例(index.js)
 /*
@@ -8500,7 +8621,7 @@ const result = rustCore.process(processor, data);
 
 console.log(`输入: ${data.toString()}`);
 console.log(`输出: ${Buffer.from(result).toString()}`);
-*/
+* /
 
 // Web应用使用示例(main.js)
 /*
@@ -8509,25 +8630,26 @@ import init, { WasmDataProcessor, process_data } from './rust_core.js';
 async function main() {
     // 初始化WASM模块
     await init();
-    
+  
     // 方法1: 使用类
     const processor = new WasmDataProcessor("wasm-config");
     const data = new TextEncoder().encode("Hello from Web");
     const result = processor.process(data);
-    
+  
     console.log(`输入: ${new TextDecoder().decode(data)}`);
     console.log(`输出: ${new TextDecoder().decode(result)}`);
-    
+  
     // 方法2: 使用直接函数
     const data2 = new TextEncoder().encode("Another message");
     const result2 = process_data("wasm-config", data2);
-    
+  
     console.log(`输入2: ${new TextDecoder().decode(data2)}`);
     console.log(`输出2: ${new TextDecoder().decode(result2)}`);
 }
 
 main().catch(console.error);
-*/
+* /
+
 ```
 
 多语言项目最佳实践：
@@ -8567,65 +8689,73 @@ Rust是WebAssembly的主要语言之一：
 use wasm_bindgen::prelude::*;
 
 // 导出Rust函数到JavaScript
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn add(a: i32, b: i32) -> i32 {
     a + b
 }
 
 // 计算斐波那契数列
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn fibonacci(n: u32) -> u32 {
     if n <= 1 {
         return n;
     }
-    
+  
     let mut a = 0;
     let mut b = 1;
-    
+  
     for _ in 2..=n {
         let temp = a + b;
         a = b;
         b = temp;
     }
-    
+  
     b
 }
 
 // DOM操作示例
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn create_element() {
     let window = web_sys::window().expect("没有全局window对象");
     let document = window.document().expect("没有document对象");
-    
+  
     // 创建一个div元素
     let div = document.create_element("div").expect("无法创建div");
     div.set_inner_html("这是由Rust/WebAssembly创建的div!");
-    
+  
     // 添加一些样式
     let style = div.style();
     style.set_property("background-color", "lightblue").expect("设置样式失败");
     style.set_property("padding", "20px").expect("设置样式失败");
     style.set_property("margin", "20px").expect("设置样式失败");
-    
+  
     // 添加到body
     let body = document.body().expect("没有body");
     body.append_child(&div).expect("无法添加子元素");
 }
 
 // 回调和事件处理
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn setup_button_click() {
     let window = web_sys::window().expect("没有全局window对象");
     let document = window.document().expect("没有document对象");
-    
+  
     // 创建按钮
     let button = document.create_element("button").expect("无法创建按钮");
     button.set_inner_html("点击我!");
-    
+  
     // 获取body元素
     let body = document.body().expect("没有body");
     body.append_child(&button).expect("无法添加按钮");
-    
+  
     // 设置点击事件
     let closure = Closure::wrap(Box::new(move || {
         // 创建警告
@@ -8634,42 +8764,46 @@ pub fn setup_button_click() {
             .alert_with_message("按钮被点击了!")
             .expect("无法显示警告");
     }) as Box<dyn FnMut()>);
-    
+  
     button
         .dyn_ref::<web_sys::HtmlElement>()
         .expect("按钮不是HtmlElement")
         .set_onclick(Some(closure.as_ref().unchecked_ref()));
-    
+  
     // 泄漏闭包，这样它就不会被丢弃
     closure.forget();
 }
 
 // 与JavaScript的Promise交互
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub async fn fetch_data() -> Result<JsValue, JsValue> {
     let window = web_sys::window().expect("没有全局window对象");
-    
+  
     // 创建请求
     let resp_value = wasm_bindgen_futures::JsFuture::from(
         window
             .fetch_with_str("https://api.example.com/data")
     ).await?;
-    
+  
     // 转换为Response对象
     let resp: web_sys::Response = resp_value.dyn_into()?;
-    
+  
     // 获取JSON
     let json = wasm_bindgen_futures::JsFuture::from(resp.json()?).await?;
-    
+  
     Ok(json)
 }
 
 // 高性能数据处理
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn process_image_data(data: &[u8], width: u32, height: u32) -> Vec<u8> {
     // 创建结果缓冲区
     let mut result = Vec::with_capacity(data.len());
-    
+  
     // 简单图像处理 - 反转颜色
     for pixel_idx in (0..data.len()).step_by(4) {
         // RGBA格式
@@ -8680,19 +8814,23 @@ pub fn process_image_data(data: &[u8], width: u32, height: u32) -> Vec<u8> {
             result.push(data[pixel_idx + 3]);       // A (保持不变)
         }
     }
-    
+  
     result
 }
 
 // 共享内存和大型数据处理
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn sum_shared_array(ptr: *const u8, len: usize) -> u32 {
     let array = unsafe { std::slice::from_raw_parts(ptr, len) };
     array.iter().map(|&x| x as u32).sum()
 }
 
 // 使用Canvas进行渲染
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn draw_mandelbrot(
     ctx: &web_sys::CanvasRenderingContext2d,
     width: u32,
@@ -8701,23 +8839,23 @@ pub fn draw_mandelbrot(
 ) {
     let scale_x = 3.0 / width as f64;
     let scale_y = 3.0 / height as f64;
-    
+  
     for y in 0..height {
         for x in 0..width {
             let cx = (x as f64) * scale_x - 2.0;
             let cy = (y as f64) * scale_y - 1.5;
-            
+  
             let mut zx = 0.0;
             let mut zy = 0.0;
             let mut iter = 0;
-            
+  
             while zx * zx + zy * zy < 4.0 && iter < max_iter {
                 let tmp = zx * zx - zy * zy + cx;
                 zy = 2.0 * zx * zy + cy;
                 zx = tmp;
                 iter += 1;
             }
-            
+  
             if iter < max_iter {
                 // 基于迭代次数着色
                 let color = format!(
@@ -8738,14 +8876,17 @@ pub fn draw_mandelbrot(
 }
 
 // Rust结构导出到JavaScript
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub struct User {
     name: String,
     age: u32,
     is_admin: bool,
 }
 
-#[wasm_bindgen]
+# [wasm_bindgen]
+
 impl User {
     #[wasm_bindgen(constructor)]
     pub fn new(name: String, age: u32) -> Self {
@@ -8755,35 +8896,35 @@ impl User {
             is_admin: false,
         }
     }
-    
+  
     #[wasm_bindgen(getter)]
     pub fn name(&self) -> String {
         self.name.clone()
     }
-    
+  
     #[wasm_bindgen(setter)]
     pub fn set_name(&mut self, name: String) {
         self.name = name;
     }
-    
+  
     #[wasm_bindgen(getter)]
     pub fn age(&self) -> u32 {
         self.age
     }
-    
+  
     #[wasm_bindgen(setter)]
     pub fn set_age(&mut self, age: u32) {
         self.age = age;
     }
-    
+  
     pub fn promote_to_admin(&mut self) {
         self.is_admin = true;
     }
-    
+  
     pub fn is_admin(&self) -> bool {
         self.is_admin
     }
-    
+  
     pub fn greet(&self) -> String {
         if self.is_admin {
             format!("你好，管理员{}！", self.name)
@@ -8792,6 +8933,7 @@ impl User {
         }
     }
 }
+
 ```
 
 Rust和WebAssembly生态系统：
@@ -8819,7 +8961,9 @@ Rust能够集成到移动应用程序中：
 
 ```rust
 // 跨平台移动核心库
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 pub struct MobileAppCore {
     app_name: String,
     version: String,
@@ -8832,27 +8976,29 @@ impl MobileAppCore {
             version: version.to_string(),
         }
     }
-    
+  
     pub fn get_app_info(&self) -> String {
         format!("{} v{}", self.app_name, self.version)
     }
-    
+  
     pub fn process_data(&self, input: &str) -> String {
         format!("处理结果: {}", input.to_uppercase())
     }
 }
 
 // Android JNI集成
-#[cfg(target_os = "android")]
+
+# [cfg(target_os = "android")]
+
 pub mod android {
     use super::MobileAppCore;
     use jni::JNIEnv;
     use jni::objects::{JClass, JString};
     use jni::sys::jstring;
-    
+  
     // 全局应用核心实例
     static mut APP_CORE: Option<MobileAppCore> = None;
-    
+  
     #[no_mangle]
     pub extern "system" fn Java_com_example_RustLib_initializeCore(
         env: JNIEnv,
@@ -8864,18 +9010,18 @@ pub mod android {
             .get_string(app_name)
             .expect("无法获取应用名称")
             .into();
-            
+  
         let version: String = env
             .get_string(version)
             .expect("无法获取版本")
             .into();
-            
+  
         // 初始化核心
         unsafe {
             APP_CORE = Some(MobileAppCore::new(&app_name, &version));
         }
     }
-    
+  
     #[no_mangle]
     pub extern "system" fn Java_com_example_RustLib_getAppInfo(
         env: JNIEnv,
@@ -8886,12 +9032,12 @@ pub mod android {
                 .expect("核心未初始化")
                 .get_app_info()
         };
-        
+  
         env.new_string(app_info)
             .expect("无法创建JString")
             .into_raw()
     }
-    
+  
     #[no_mangle]
     pub extern "system" fn Java_com_example_RustLib_processData(
         env: JNIEnv,
@@ -8902,13 +9048,13 @@ pub mod android {
             .get_string(input)
             .expect("无法获取输入")
             .into();
-            
+  
         let result = unsafe {
             APP_CORE.as_ref()
                 .expect("核心未初始化")
                 .process_data(&input)
         };
-        
+  
         env.new_string(result)
             .expect("无法创建JString")
             .into_raw()
@@ -8916,13 +9062,15 @@ pub mod android {
 }
 
 // iOS集成
-#[cfg(target_os = "ios")]
+
+# [cfg(target_os = "ios")]
+
 pub mod ios {
     use super::MobileAppCore;
     use std::os::raw::{c_char, c_void};
     use std::ffi::{CString, CStr};
     use std::ptr;
-    
+  
     // 创建和管理核心实例
     #[no_mangle]
     pub extern "C" fn create_app_core(
@@ -8936,21 +9084,21 @@ pub mod ios {
             }
             CStr::from_ptr(app_name).to_str().unwrap_or("未知")
         };
-        
+  
         let version = unsafe {
             if version.is_null() {
                 return ptr::null_mut();
             }
             CStr::from_ptr(version).to_str().unwrap_or("0.0")
         };
-        
+  
         // 创建核心实例
         let core = MobileAppCore::new(app_name, version);
-        
+  
         // 转换为原始指针
         Box::into_raw(Box::new(core)) as *mut c_void
     }
-    
+  
     #[no_mangle]
     pub extern "C" fn get_app_info(core: *mut c_void) -> *mut c_char {
         let core = unsafe {
@@ -8959,15 +9107,15 @@ pub mod ios {
             }
             &*(core as *mut MobileAppCore)
         };
-        
+  
         let info = core.get_app_info();
-        
+  
         // 转换为C字符串
         CString::new(info)
             .unwrap_or(CString::new("错误").unwrap())
             .into_raw()
     }
-    
+  
     #[no_mangle]
     pub extern "C" fn process_data(
         core: *mut c_void,
@@ -8979,22 +9127,22 @@ pub mod ios {
             }
             &*(core as *mut MobileAppCore)
         };
-        
+  
         let input = unsafe {
             if input.is_null() {
                 return ptr::null_mut();
             }
             CStr::from_ptr(input).to_str().unwrap_or("")
         };
-        
+  
         let result = core.process_data(input);
-        
+  
         // 转换为C字符串
         CString::new(result)
             .unwrap_or(CString::new("错误").unwrap())
             .into_raw()
     }
-    
+  
     #[no_mangle]
     pub extern "C" fn destroy_app_core(core: *mut c_void) {
         if !core.is_null() {
@@ -9004,7 +9152,7 @@ pub mod ios {
             }
         }
     }
-    
+  
     #[no_mangle]
     pub extern "C" fn free_string(s: *mut c_char) {
         if !s.is_null() {
@@ -9030,7 +9178,7 @@ impl FlutterAppCore {
     pub fn new(app_name: String, version: String) -> Self {
         Self { app_name, version }
     }
-    
+  
     pub fn get_app_info(&self) -> String {
         format!("{} v{}", self.app_name, self.version)
     }
@@ -9048,7 +9196,8 @@ pub fn get_app_info(core: &FlutterAppCore) -> String {
 pub fn process_data(core: &FlutterAppCore, input: String) -> String {
     format!("处理结果: {}", input.to_uppercase())
 }
-*/
+* /
+
 ```
 
 Android集成（Java）：
@@ -9062,12 +9211,12 @@ public class RustLib {
     static {
         System.loadLibrary("rust_lib");
     }
-    
+  
     // 原生方法声明
     public static native void initializeCore(String appName, String version);
     public static native String getAppInfo();
     public static native String processData(String input);
-    
+  
     // 辅助方法
     public static void setup(String appName, String version) {
         initializeCore(appName, version);
@@ -9081,26 +9230,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+  
         // 初始化Rust库
         RustLib.setup("我的应用", "1.0.0");
-        
+  
         // 获取应用信息
         String appInfo = RustLib.getAppInfo();
         Log.d("RustIntegration", "应用信息: " + appInfo);
-        
+  
         // 处理数据
         String result = RustLib.processData("hello from android");
         Log.d("RustIntegration", "处理结果: " + result);
-        
+  
         // 更新UI
         TextView infoView = findViewById(R.id.textViewInfo);
         infoView.setText(appInfo);
-        
+  
         Button processButton = findViewById(R.id.buttonProcess);
         EditText inputText = findViewById(R.id.editTextInput);
         TextView resultView = findViewById(R.id.textViewResult);
-        
+  
         processButton.setOnClickListener(v -> {
             String input = inputText.getText().toString();
             String processedResult = RustLib.processData(input);
@@ -9108,6 +9257,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
+
 ```
 
 iOS集成（Swift）：
@@ -9135,43 +9285,43 @@ func free_string(_ string: UnsafeMutablePointer<Int8>)
 // Swift包装类
 class RustAppCore {
     private var corePtr: UnsafeMutableRawPointer?
-    
+  
     init?(appName: String, version: String) {
         guard let appNameCStr = appName.cString(using: .utf8),
               let versionCStr = version.cString(using: .utf8) else {
             return nil
         }
-        
+  
         corePtr = create_app_core(appNameCStr, versionCStr)
-        
+  
         if corePtr == nil {
             return nil
         }
     }
-    
+  
     func getAppInfo() -> String {
         guard let corePtr = corePtr,
               let cString = get_app_info(corePtr) else {
             return "错误: 无法获取应用信息"
         }
-        
+  
         let result = String(cString: cString)
         free_string(cString)
         return result
     }
-    
+  
     func processData(_ input: String) -> String {
         guard let corePtr = corePtr,
               let inputCStr = input.cString(using: .utf8),
               let cString = process_data(corePtr, inputCStr) else {
             return "错误: 无法处理数据"
         }
-        
+  
         let result = String(cString: cString)
         free_string(cString)
         return result
     }
-    
+  
     deinit {
         if let corePtr = corePtr {
             destroy_app_core(corePtr)
@@ -9186,31 +9336,32 @@ class ViewController: UIViewController {
     @IBOutlet weak var infoLabel: UILabel!
     @IBOutlet weak var inputField: UITextField!
     @IBOutlet weak var resultLabel: UILabel!
-    
+  
     var rustCore: RustAppCore?
-    
+  
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+  
         // 初始化Rust核心
         rustCore = RustAppCore(appName: "我的iOS应用", version: "1.0.0")
-        
+  
         // 显示应用信息
         if let appInfo = rustCore?.getAppInfo() {
             infoLabel.text = appInfo
         }
     }
-    
+  
     @IBAction func processButtonTapped(_ sender: UIButton) {
         guard let input = inputField.text, !input.isEmpty else {
             return
         }
-        
+  
         if let result = rustCore?.processData(input) {
             resultLabel.text = result
         }
     }
 }
+
 ```
 
 Flutter集成：
@@ -9268,7 +9419,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _coreFuture = api.initAppCore(
-      appName: "Flutter Rust App", 
+      appName: "Flutter Rust App",
       version: "1.0.0"
     );
   }
@@ -9285,13 +9436,13 @@ class _MyHomePageState extends State<MyHomePage> {
             if (snapshot.connectionState != ConnectionState.done) {
               return Center(child: CircularProgressIndicator());
             }
-            
+  
             if (snapshot.hasError) {
               return Center(child: Text('错误: ${snapshot.error}'));
             }
-            
+  
             final core = snapshot.data;
-            
+  
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -9349,6 +9500,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
 ```
 
 Rust移动平台集成生态：
@@ -9397,14 +9549,17 @@ use std::env;
 use std::sync::Arc;
 
 // API模型
-#[derive(Serialize, Deserialize, FromRow)]
+
+# [derive(Serialize, Deserialize, FromRow)]
+
 struct User {
     id: i32,
     name: String,
     email: String,
 }
 
-#[derive(Deserialize)]
+# [derive(Deserialize)]
+
 struct CreateUser {
     name: String,
     email: String,
@@ -9434,7 +9589,7 @@ async fn get_user_by_id(
     path: web::Path<(i32,)>,
 ) -> impl Responder {
     let user_id = path.0;
-    
+  
     match sqlx::query_as::<_, User>(
         "SELECT id, name, email FROM users WHERE id = $1"
     )
@@ -9472,27 +9627,29 @@ async fn create_user(
 }
 
 // 应用入口
-#[actix_web::main]
+
+# [actix_web::main]
+
 async fn main() -> std::io::Result<()> {
     // 加载环境变量
     dotenv::dotenv().ok();
-    
+  
     // 设置日志
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
-    
+  
     // 创建数据库连接池
     let database_url = env::var("DATABASE_URL")
         .expect("必须设置DATABASE_URL环境变量");
-    
+  
     let db_pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url)
         .await
         .expect("无法连接到数据库");
-    
+  
     // 应用状态
     let state = Arc::new(AppState { db_pool });
-    
+  
     // 启动HTTP服务器
     log::info!("启动HTTP服务器在 http://127.0.0.1:8080");
     HttpServer::new(move || {
@@ -9514,7 +9671,9 @@ use std::time::Duration;
 use tokio::time::timeout;
 
 // 断路器实现
-#[derive(Clone)]
+
+# [derive(Clone)]
+
 struct CircuitBreaker {
     max_failures: u32,
     failure_count: std::sync::atomic::AtomicU32,
@@ -9531,22 +9690,22 @@ impl CircuitBreaker {
             reset_timeout,
         }
     }
-    
+  
     fn is_open(&self) -> bool {
         self.failure_count.load(std::sync::atomic::Ordering::Relaxed) >= self.max_failures
     }
-    
+  
     fn record_success(&self) {
         self.failure_count.store(0, std::sync::atomic::Ordering::Relaxed);
         self.half_open.store(false, std::sync::atomic::Ordering::Relaxed);
     }
-    
+  
     fn record_failure(&self) {
         self.failure_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        
+  
         if self.is_open() && !self.half_open.load(std::sync::atomic::Ordering::Relaxed) {
             self.half_open.store(true, std::sync::atomic::Ordering::Relaxed);
-            
+  
             // 半开状态计时器
             let breaker = self.clone();
             tokio::spawn(async move {
@@ -9555,7 +9714,7 @@ impl CircuitBreaker {
             });
         }
     }
-    
+  
     async fn execute<F, T, E>(&self, f: F) -> Result<T, E>
     where
         F: FnOnce() -> future::BoxFuture<'static, Result<T, E>>,
@@ -9564,7 +9723,7 @@ impl CircuitBreaker {
         if self.is_open() && !self.half_open.load(std::sync::atomic::Ordering::Relaxed) {
             return Err(std::panic::panic_any("断路器开路"));
         }
-        
+  
         match f().await {
             Ok(result) => {
                 self.record_success();
@@ -9593,14 +9752,14 @@ async fn resilient_request(
                     Duration::from_secs(5),
                     reqwest::get(&url),
                 ).await??;
-                
+  
                 // 重试模式
                 let op = || {
                     timeout_future
                         .text()
                         .map(|res| res.map_err(|e| e.into()))
                 };
-                
+  
                 let backoff = ExponentialBackoff::default();
                 Ok(op.retry_notify(backoff, |err, dur| {
                     log::warn!("重试请求，错误: {:?}, 等待: {:?}", err, dur);
@@ -9621,11 +9780,11 @@ fn setup_metrics() {
     builder
         .install()
         .expect("无法安装Prometheus导出器");
-    
+  
     // 注册指标
     describe_counter!("http_requests_total", "HTTP请求总数");
     register_counter!("http_requests_total");
-    
+  
     describe_gauge!("http_requests_in_flight", "当前进行中的HTTP请求数");
     register_gauge!("http_requests_in_flight");
 }
@@ -9637,6 +9796,7 @@ fn record_request_metrics(route: &str, status: u16) {
 fn update_in_flight_requests(count: i64) {
     gauge!("http_requests_in_flight").set(count as f64);
 }
+
 ```
 
 Rust云服务和后端系统生态：
@@ -9679,7 +9839,7 @@ use std::error::Error;
 async fn handle_connection(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
     // 分配缓冲区
     let mut buffer = vec![0u8; 1024];
-    
+  
     // 持续处理客户端请求
     loop {
         let n = match socket.read(&mut buffer).await {
@@ -9690,14 +9850,14 @@ async fn handle_connection(mut socket: TcpStream) -> Result<(), Box<dyn Error>> 
                 return Err(e.into());
             }
         };
-        
+  
         // 处理接收到的数据
         let data = &buffer[..n];
         println!("接收到数据: {:?}", data);
-        
+  
         // 处理请求...
         let response = process_request(data);
-        
+  
         // 发送响应
         if let Err(e) = socket.write_all(&response).await {
             eprintln!("写入错误: {}", e);
@@ -9713,16 +9873,17 @@ fn process_request(data: &[u8]) -> Vec<u8> {
     response
 }
 
-#[tokio::main]
+# [tokio::main]
+
 async fn main() -> Result<(), Box<dyn Error>> {
     // 绑定TCP监听器
     let listener = TcpListener::bind("127.0.0.1:8888").await?;
     println!("TCP服务器启动在 127.0.0.1:8888");
-    
+  
     // 接受连接
     while let Ok((socket, addr)) = listener.accept().await {
         println!("接受连接来自: {}", addr);
-        
+  
         // 为每个连接生成一个任务
         tokio::spawn(async move {
             if let Err(e) = handle_connection(socket).await {
@@ -9730,7 +9891,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
         });
     }
-    
+  
     Ok(())
 }
 
@@ -9742,25 +9903,25 @@ async fn udp_server() -> Result<(), Box<dyn Error>> {
     // 绑定UDP套接字
     let socket = UdpSocket::bind("127.0.0.1:8889").await?;
     println!("UDP服务器启动在 127.0.0.1:8889");
-    
+  
     // 共享套接字
     let socket = Arc::new(socket);
-    
+  
     // 分配接收缓冲区
     let mut buf = vec![0u8; 1024];
-    
+  
     // 处理传入的数据报
     loop {
         let socket_clone = socket.clone();
-        
+  
         // 接收数据
         let (n, addr) = socket_clone.recv_from(&mut buf).await?;
         println!("接收到来自 {} 的 {} 字节", addr, n);
-        
+  
         // 处理请求
         let data = &buf[..n];
         let response = process_udp_request(data);
-        
+  
         // 发送响应
         socket_clone.send_to(&response, addr).await?;
     }
@@ -9781,20 +9942,20 @@ use tokio::net::{TcpListener, TcpStream};
 async fn proxy_connection(mut client: TcpStream, target_addr: &str) -> io::Result<()> {
     // 连接到目标服务器
     let mut server = TcpStream::connect(target_addr).await?;
-    
+  
     // 双向复制数据
     let (mut client_reader, mut client_writer) = client.split();
     let (mut server_reader, mut server_writer) = server.split();
-    
+  
     // 同时处理两个方向的数据
     let client_to_server = async {
         io::copy(&mut client_reader, &mut server_writer).await
     };
-    
+  
     let server_to_client = async {
         io::copy(&mut server_reader, &mut client_writer).await
     };
-    
+  
     // 等待任一方向完成或失败
     tokio::select! {
         result = client_to_server => {
@@ -9804,7 +9965,7 @@ async fn proxy_connection(mut client: TcpStream, target_addr: &str) -> io::Resul
             println!("服务器到客户端传输完成: {:?}", result);
         }
     }
-    
+  
     Ok(())
 }
 
@@ -9812,11 +9973,11 @@ async fn run_proxy(listen_addr: &str, target_addr: &str) -> io::Result<()> {
     // 绑定监听器
     let listener = TcpListener::bind(listen_addr).await?;
     println!("代理服务器运行在 {}，转发到 {}", listen_addr, target_addr);
-    
+  
     // 处理连接
     while let Ok((client, addr)) = listener.accept().await {
         println!("接受来自 {} 的连接", addr);
-        
+  
         let target = target_addr.to_string();
         tokio::spawn(async move {
             if let Err(e) = proxy_connection(client, &target).await {
@@ -9824,7 +9985,7 @@ async fn run_proxy(listen_addr: &str, target_addr: &str) -> io::Result<()> {
             }
         });
     }
-    
+  
     Ok(())
 }
 
@@ -9845,7 +10006,7 @@ impl ProtocolHeader {
             payload_length,
         }
     }
-    
+  
     fn to_bytes(&self) -> [u8; 8] {
         let mut bytes = [0u8; 8];
         bytes[0..4].copy_from_slice(&self.magic);
@@ -9854,22 +10015,22 @@ impl ProtocolHeader {
         bytes[6..8].copy_from_slice(&self.payload_length.to_be_bytes());
         bytes
     }
-    
+  
     fn from_bytes(bytes: &[u8]) -> Option<Self> {
         if bytes.len() < 8 {
             return None;
         }
-        
+  
         let mut magic = [0u8; 4];
         magic.copy_from_slice(&bytes[0..4]);
-        
+  
         let version = bytes[4];
         let message_type = bytes[5];
-        
+  
         let mut length_bytes = [0u8; 2];
         length_bytes.copy_from_slice(&bytes[6..8]);
         let payload_length = u16::from_be_bytes(length_bytes);
-        
+  
         Some(Self {
             magic,
             version,
@@ -9883,20 +10044,20 @@ async fn process_protocol_message(stream: &mut TcpStream) -> io::Result<()> {
     // 读取头部
     let mut header_bytes = [0u8; 8];
     stream.read_exact(&mut header_bytes).await?;
-    
+  
     // 解析头部
     let header = ProtocolHeader::from_bytes(&header_bytes)
         .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "无效的协议头部"))?;
-    
+  
     // 验证魔数
     if &header.magic != b"RUST" {
         return Err(io::Error::new(io::ErrorKind::InvalidData, "无效的魔数"));
     }
-    
+  
     // 读取负载
     let mut payload = vec![0u8; header.payload_length as usize];
     stream.read_exact(&mut payload).await?;
-    
+  
     // 处理消息
     match header.message_type {
         1 => {
@@ -9904,7 +10065,7 @@ async fn process_protocol_message(stream: &mut TcpStream) -> io::Result<()> {
             // 创建响应
             let response_payload = b"响应有效负载".to_vec();
             let response_header = ProtocolHeader::new(2, response_payload.len() as u16);
-            
+  
             // 发送响应
             stream.write_all(&response_header.to_bytes()).await?;
             stream.write_all(&response_payload).await?;
@@ -9913,9 +10074,10 @@ async fn process_protocol_message(stream: &mut TcpStream) -> io::Result<()> {
             println!("未知的消息类型: {}", header.message_type);
         }
     }
-    
+  
     Ok(())
 }
+
 ```
 
 Rust网络和基础设施生态：
@@ -9951,8 +10113,10 @@ Rust在嵌入式系统和IoT中变得越来越流行：
 
 ```rust
 // 嵌入式无操作系统应用示例
-#![no_std]
-#![no_main]
+
+# ![no_std]
+
+# ![no_main]
 
 use cortex_m_rt::entry;
 use panic_halt as _;
@@ -9966,27 +10130,29 @@ use stm32f4xx_hal::{
 };
 
 // LED闪烁示例
-#[entry]
+
+# [entry]
+
 fn main() -> ! {
     // 获取外设访问
     let dp = pac::Peripherals::take().unwrap();
-    
+  
     // 配置时钟
     let rcc = dp.RCC.constrain();
     let clocks = rcc.cfgr.sysclk(48.MHz()).freeze();
-    
+  
     // 配置LED引脚 (PA5 在许多STM32F4板上连接到LED)
     let gpioa = dp.GPIOA.split();
     let mut led = gpioa.pa5.into_push_pull_output();
-    
+  
     // 配置定时器
     let mut timer = Timer::syst(dp.SYST, &clocks).counter_hz();
     timer.start(1.Hz()).unwrap();
-    
+  
     loop {
         // 等待定时器周期
         nb::block!(timer.wait()).unwrap();
-        
+  
         // 翻转LED
         if led.is_high().unwrap() {
             led.set_low().unwrap();
@@ -10022,20 +10188,22 @@ where
     fn read_temperature<A: OneShot<Adc<pac::ADC1>, P, u16>>(&mut self, adc: &mut A) -> Result<f32, A::Error> {
         // 读取ADC值
         let raw_value = adc.read(&mut self.adc_pin)?;
-        
+  
         // 将ADC值转换为温度 (简化的转换，需根据实际传感器调整)
         let voltage = (raw_value as f32) * 3.3 / 4096.0;
         let temperature = (voltage - 0.5) * 100.0;
-        
+  
         Ok(temperature)
     }
 }
 
 // 实时操作系统集成示例
-#[cfg(feature = "freertos")]
+
+# [cfg(feature = "freertos")]
+
 mod freertos_example {
     use freertos_rust::{CurrentTask, Duration, Task, TaskPriority};
-    
+  
     fn freertos_tasks() {
         // 创建任务
         let _producer = Task::new()
@@ -10046,13 +10214,13 @@ mod freertos_example {
                 loop {
                     // 生产数据...
                     println!("生产者: 生成数据");
-                    
+  
                     // 休眠
                     CurrentTask::delay(Duration::ms(1000));
                 }
             })
             .unwrap();
-        
+  
         // 创建消费者任务
         let _consumer = Task::new()
             .name("consumer")
@@ -10062,7 +10230,7 @@ mod freertos_example {
                 loop {
                     // 消费数据...
                     println!("消费者: 处理数据");
-                    
+  
                     // 休眠
                     CurrentTask::delay(Duration::ms(1500));
                 }
@@ -10072,20 +10240,22 @@ mod freertos_example {
 }
 
 // MQTT客户端示例 (适用于IoT设备)
-#[cfg(feature = "std")]
+
+# [cfg(feature = "std")]
+
 mod mqtt_example {
     use rumqttc::{Client, MqttOptions, QoS};
     use std::time::Duration;
-    
+  
     fn setup_mqtt() -> Client {
         // 配置MQTT选项
         let mut mqttoptions = MqttOptions::new("rust-device-id", "mqtt.example.org", 1883);
         mqttoptions.set_keep_alive(Duration::from_secs(30));
         mqttoptions.set_clean_session(true);
-        
+  
         // 创建客户端和事件循环
         let (client, mut eventloop) = Client::new(mqttoptions, 10);
-        
+  
         // 启动事件循环
         std::thread::spawn(move || {
             loop {
@@ -10100,17 +10270,17 @@ mod mqtt_example {
                 }
             }
         });
-        
+  
         client
     }
-    
+  
     fn publish_sensor_data(client: &Client, temperature: f32, humidity: f32) {
         // 创建JSON有效负载
         let payload = format!(
             r#"{{"temperature":{:.2},"humidity":{:.2}}}"#,
             temperature, humidity
         );
-        
+  
         // 发布到MQTT主题
         let topic = "sensors/environmental";
         match client.publish(topic, QoS::AtLeastOnce, false, payload.as_bytes()) {
@@ -10118,8 +10288,7 @@ mod mqtt_example {
             Err(e) => eprintln!("发布错误: {}", e),
         }
     }
-    
-
+  
 ```rust
     fn subscribe_to_commands(client: &Client) {
         // 订阅指令主题
@@ -10334,6 +10503,7 @@ mod embedded_graphics_example {
         unimplemented!("这是一个示例API，需要实际硬件实现");
     }
 }
+
 ```
 
 Rust嵌入式和IoT生态系统：
@@ -10767,6 +10937,7 @@ impl TransactionProcessor {
         }
     }
 }
+
 ```
 
 Rust区块链和金融科技生态系统：
@@ -11145,6 +11316,7 @@ fn main() {
         )
         .run();
 }
+
 ```
 
 Rust游戏开发生态系统：
@@ -11359,6 +11531,7 @@ impl Config {
         Self {}
     }
 }
+
 ```
 
 语言演进趋势：
@@ -11628,6 +11801,7 @@ fn normalize_quaternion(q: &mut Quaternion) {
     q.y /= magnitude;
     q.z /= magnitude;
 }
+
 ```
 
 跨行业应用扩展：
@@ -11816,6 +11990,7 @@ unsafe fn rustonomicon_example() {
         println!("C的abs(-3) = {}", abs(-3));
     }
 }
+
 ```
 
 关键学习资源:
@@ -11915,6 +12090,7 @@ fn create_rust_library() {
     
     println!("发布了自己的库！");
 }
+
 ```
 
 如何参与Rust社区:
@@ -12079,6 +12255,7 @@ mod blockchain_developer {
         }
     }
 }
+
 ```
 
 专业Rust发展路径:
@@ -12182,6 +12359,7 @@ fn rfc_process() {
     
     println!("关注RFC过程是了解Rust演进的好方法");
 }
+
 ```
 
 如何跟踪Rust的发展:

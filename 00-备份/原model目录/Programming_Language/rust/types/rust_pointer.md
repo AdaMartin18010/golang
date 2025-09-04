@@ -47,6 +47,7 @@ fn main() {
         println!("通过原始指针访问数据: {}", *raw_ptr);
     }
 }
+
 ```
 
 ## 3. 智能指针（Smart Pointers）
@@ -105,6 +106,7 @@ fn main() {
 
     println!("value: {}", value); // 输出 value: 100
 }
+
 ```
 
 在这个示例中：

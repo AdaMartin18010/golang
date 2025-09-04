@@ -145,6 +145,7 @@ func (r *RefinedAbstraction) Operation() string {
 func (r *RefinedAbstraction) AdditionalOperation() string {
     return fmt.Sprintf("RefinedAbstraction: AdditionalOperation + %s", r.implementor.OperationImpl())
 }
+
 ```
 
 ### 3.2.1.4.2 图形渲染桥接模式
@@ -269,6 +270,7 @@ func NewTriangle(renderer Renderer, x1, y1, x2, y2, x3, y3 int) *Triangle {
 func (t *Triangle) Draw() string {
     return t.renderer.RenderTriangle(t.x1, t.y1, t.x2, t.y2, t.x3, t.y3)
 }
+
 ```
 
 ### 3.2.1.4.3 消息发送桥接模式
@@ -465,6 +467,7 @@ func (t *TemplateMessage) renderTemplate() string {
     }
     return content
 }
+
 ```
 
 ## 3.2.1.5 4. 工程案例
@@ -704,6 +707,7 @@ func (p *PooledDatabase) Close() error {
         }
     }
 }
+
 ```
 
 ### 3.2.1.5.2 日志系统桥接模式
@@ -968,6 +972,7 @@ func (a *AsyncLogger) Close() error {
     close(a.done)
     return a.writer.Close()
 }
+
 ```
 
 ## 3.2.1.6 5. 批判性分析

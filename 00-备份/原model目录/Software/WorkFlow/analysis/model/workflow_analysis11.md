@@ -100,6 +100,7 @@ Rust工作流系统架构
         ├── 自适应控制模型
         ├── 资源动态分配
         └── 自愈机制
+
 ```
 
 ## 1. 形式模型层
@@ -168,6 +169,7 @@ impl<T: Clone + Send + Sync + 'static> WorkflowOp<T> {
         WorkflowOp::Choice(Box::new(self), Box::new(then_op), condition)
     }
 }
+
 ```
 
 #### 1.1.3 代数法则
@@ -251,6 +253,7 @@ impl ResourceAllocation {
         self
     }
 }
+
 ```
 
 #### 1.2.3 所有权与借用
@@ -317,6 +320,7 @@ impl ResourceManager {
         }
     }
 }
+
 ```
 
 ### 1.3 一致性规则
@@ -394,6 +398,7 @@ impl InvariantChecker {
         }
     }
 }
+
 ```
 
 ## 2. 执行引擎层
@@ -526,6 +531,7 @@ impl<E: EventStore> WorkflowStateManager<E> {
         Ok((state, new_version))
     }
 }
+
 ```
 
 ### 2.2 调度系统
@@ -645,6 +651,7 @@ impl WorkflowGraph {
         executable
     }
 }
+
 ```
 
 #### 2.2.2 资源感知调度
@@ -792,6 +799,7 @@ impl<R: ResourceProvider> WorkflowScheduler<R> {
         priorities
     }
 }
+
 ```
 
 ### 错误处理
@@ -836,9 +844,12 @@ impl WorkflowError {
 
 /// 重试策略
 #[derive(Debug, Clone,
+
 ```rust
 /// 重试策略
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct RetryStrategy {
     /// 最大重试次数
     pub max_retries: u32,
@@ -857,37 +868,39 @@ impl RetryStrategy {
     pub fn next_delay(&self, attempt: u32) -> Duration {
         let multiplier = self.backoff_multiplier.powi(attempt as i32);
         let delay = self.initial_delay.mul_f64(multiplier);
-        
+  
         if delay > self.max_delay {
             self.max_delay
         } else {
             delay
         }
     }
-    
+  
     /// 检查是否应该重试
     pub fn should_retry(&self, error: &WorkflowError, attempt: u32) -> bool {
         // 超过最大重试次数
         if attempt >= self.max_retries {
             return false;
         }
-        
+  
         // 检查错误是否可重试
         if !error.is_retriable() {
             return false;
         }
-        
+  
         // 检查重试条件
         if self.retry_on.is_empty() {
             return true; // 没有指定条件，默认重试所有可重试错误
         }
-        
+  
         self.retry_on.iter().any(|condition| condition.matches(error))
     }
 }
 
 /// 错误条件
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub enum ErrorCondition {
     /// 任何错误
     Any,
@@ -935,17 +948,17 @@ impl ErrorHandler {
                 return Ok(ErrorHandlingAction::Retry { delay, attempt: attempt + 1 });
             }
         }
-        
+  
         // 2. 检查是否有补偿操作
         if let Some(compensation) = self.compensation_registry.get_compensation(task) {
             return Ok(ErrorHandlingAction::Compensate(compensation.clone()));
         }
-        
+  
         // 3. 如果没有补偿，检查是否有错误处理步骤
         if let Some(handler_id) = &task.error_handler {
             return Ok(ErrorHandlingAction::ExecuteHandler(handler_id.clone()));
         }
-        
+  
         // 4. 默认失败处理
         Ok(ErrorHandlingAction::Fail)
     }
@@ -962,6 +975,7 @@ pub enum ErrorHandlingAction {
     /// 标记任务失败并传播错误
     Fail,
 }
+
 ```
 
 ## 3. 部署抽象层
@@ -976,24 +990,26 @@ pub enum ErrorHandlingAction {
 
 ```rust
 /// 执行环境特征
-#[async_trait]
+
+# [async_trait]
+
 pub trait ExecutionEnvironment: Send + Sync + 'static {
     /// 环境类型
     fn environment_type(&self) -> EnvironmentType;
-    
+  
     /// 执行任务
     async fn execute_task(
         &self,
         task: TaskDefinition,
         context: TaskContext,
     ) -> Result<TaskResult, TaskExecutionError>;
-    
+  
     /// 环境健康检查
     async fn health_check(&self) -> HealthStatus;
-    
+  
     /// 获取环境资源使用情况
     async fn resource_usage(&self) -> ResourceUsage;
-    
+  
     /// 关闭环境
     async fn shutdown(&self) -> Result<(), ShutdownError>;
 }
@@ -1016,27 +1032,28 @@ impl LocalEnvironment {
             config,
             resource_monitor: ResourceMonitor::new(),
         };
-        
+  
         // 注册标准执行器
         env.register_executor("shell", Box::new(ShellExecutor::new()));
         env.register_executor("http", Box::new(HttpExecutor::new()));
         env.register_executor("function", Box::new(FunctionExecutor::new()));
-        
+  
         env
     }
-    
+  
     /// 注册任务执行器
     pub fn register_executor(&mut self, task_type: impl Into<String>, executor: Box<dyn TaskExecutor>) {
         self.executors.insert(task_type.into(), executor);
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl ExecutionEnvironment for LocalEnvironment {
     fn environment_type(&self) -> EnvironmentType {
         EnvironmentType::Local
     }
-    
+  
     async fn execute_task(
         &self,
         task: TaskDefinition,
@@ -1045,21 +1062,21 @@ impl ExecutionEnvironment for LocalEnvironment {
         // 查找对应的执行器
         let executor = self.executors.get(&task.step_type)
             .ok_or_else(|| TaskExecutionError::UnsupportedTaskType(task.step_type.clone()))?;
-        
+  
         // 执行任务
         executor.execute(task, context).await
     }
-    
+  
     async fn health_check(&self) -> HealthStatus {
         // 执行健康检查
         HealthStatus::Healthy
     }
-    
+  
     async fn resource_usage(&self) -> ResourceUsage {
         // 获取当前资源使用情况
         self.resource_monitor.current_usage().await
     }
-    
+  
     async fn shutdown(&self) -> Result<(), ShutdownError> {
         // 关闭所有执行器并释放资源
         for (_, executor) in &self.executors {
@@ -1067,7 +1084,7 @@ impl ExecutionEnvironment for LocalEnvironment {
                 return Err(ShutdownError::ExecutorShutdownFailed(e.to_string()));
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -1082,12 +1099,13 @@ pub struct DockerEnvironment {
     running_containers: RwLock<HashMap<TaskId, ContainerInfo>>,
 }
 
-#[async_trait]
+# [async_trait]
+
 impl ExecutionEnvironment for DockerEnvironment {
     fn environment_type(&self) -> EnvironmentType {
         EnvironmentType::Docker
     }
-    
+  
     async fn execute_task(
         &self,
         task: TaskDefinition,
@@ -1095,10 +1113,10 @@ impl ExecutionEnvironment for DockerEnvironment {
     ) -> Result<TaskResult, TaskExecutionError> {
         // 创建容器配置
         let container_config = self.create_container_config(&task, &context)?;
-        
+  
         // 创建并启动容器
         let container_id = self.start_container(container_config).await?;
-        
+  
         // 记录运行中的容器
         {
             let mut containers = self.running_containers.write().await;
@@ -1108,24 +1126,25 @@ impl ExecutionEnvironment for DockerEnvironment {
                 started_at: Utc::now(),
             });
         }
-        
+  
         // 等待容器完成
         let result = self.wait_for_container_completion(&container_id).await?;
-        
+  
         // 清理容器
         self.cleanup_container(&container_id).await?;
-        
+  
         // 从运行列表中移除
         {
             let mut containers = self.running_containers.write().await;
             containers.remove(&task.id);
         }
-        
+  
         Ok(result)
     }
-    
+  
     // 其他方法实现...
 }
+
 ```
 
 ### 3.2 通信模型
@@ -1138,21 +1157,23 @@ impl ExecutionEnvironment for DockerEnvironment {
 
 ```rust
 /// 消息总线
-#[async_trait]
+
+# [async_trait]
+
 pub trait MessageBus: Send + Sync + 'static {
     /// 发布消息
     async fn publish<T: Message>(&self, message: T) -> Result<(), MessageBusError>;
-    
+  
     /// 订阅消息
     async fn subscribe<T: Message>(&self) -> Result<SubscriptionStream<T>, MessageBusError>;
-    
+  
     /// 发送请求并等待响应
     async fn request<Req: Message, Resp: Message>(
         &self,
         request: Req,
         timeout: Duration,
     ) -> Result<Resp, MessageBusError>;
-    
+  
     /// 注册请求处理器
     async fn register_handler<Req: Message, Resp: Message, F>(
         &self,
@@ -1180,29 +1201,30 @@ impl TokioChannelBus {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl MessageBus for TokioChannelBus {
     async fn publish<T: Message>(&self, message: T) -> Result<(), MessageBusError> {
         let type_id = TypeId::of::<T>();
         let channels = self.channels.read().await;
-        
+  
         if let Some(sender) = channels.get(&type_id) {
             // 克隆消息以便发送
             let message_clone = message.clone();
-            
+  
             // 发送消息
             if let Err(_) = sender.send(Box::new(message_clone)) {
                 return Err(MessageBusError::PublishFailed("Channel closed".into()));
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     async fn subscribe<T: Message>(&self) -> Result<SubscriptionStream<T>, MessageBusError> {
         let type_id = TypeId::of::<T>();
         let mut channels = self.channels.write().await;
-        
+  
         // 创建或获取现有通道
         let (sender, receiver) = if let Some(sender) = channels.get(&type_id) {
             let sender = sender.clone();
@@ -1213,16 +1235,16 @@ impl MessageBus for TokioChannelBus {
             channels.insert(type_id, tx.clone());
             (tx, rx)
         };
-        
+  
         // 创建订阅流
         let stream = SubscriptionStream {
             receiver,
             _phantom: PhantomData,
         };
-        
+  
         Ok(stream)
     }
-    
+  
     async fn request<Req: Message, Resp: Message>(
         &self,
         request: Req,
@@ -1230,61 +1252,62 @@ impl MessageBus for TokioChannelBus {
     ) -> Result<Resp, MessageBusError> {
         let type_id = TypeId::of::<Req>();
         let handlers = self.handlers.read().await;
-        
+  
         // 查找处理器
         let handler = handlers.get(&type_id)
             .ok_or_else(|| MessageBusError::NoHandlerFound)?;
-        
+  
         // 调用处理器并设置超时
         let response_future = handler.handle(Box::new(request));
         let response = tokio::time::timeout(timeout, response_future).await
             .map_err(|_| MessageBusError::RequestTimeout)?
             .map_err(|e| MessageBusError::HandlerError(e.to_string()))?;
-        
+  
         // 转换响应类型
         let resp = response.downcast::<Resp>()
             .map_err(|_| MessageBusError::ResponseTypeMismatch)?;
-        
+  
         Ok(*resp)
     }
-    
+  
     async fn register_handler<Req: Message, Resp: Message, F>(
         &self,
         handler: F,
     ) -> Result<HandlerRegistration, MessageBusError>
     where
-        F: Fn(Req) -> Future<Output = Result<Resp, HandlerError>> + Send + Sync + 'static 
+        F: Fn(Req) -> Future<Output = Result<Resp, HandlerError>> + Send + Sync + 'static
     {
         let type_id = TypeId::of::<Req>();
         let mut handlers = self.handlers.write().await;
-        
+  
         // 创建处理器包装
         let handler_wrapper = Box::new(TypedHandler {
             handler: Box::new(move |req| {
                 let req = req.downcast::<Req>()
                     .map_err(|_| HandlerError::TypeMismatch)?;
-                
+  
                 let resp_future = handler(*req);
-                
+  
                 Box::pin(async move {
                     let resp = resp_future.await?;
                     Ok(Box::new(resp) as Box<dyn Any + Send>)
                 })
             }),
         });
-        
+  
         // 注册处理器
         handlers.insert(type_id, handler_wrapper);
-        
+  
         // 创建注册凭证
         let registration = HandlerRegistration {
             type_id,
             bus: Arc::new(self.clone()),
         };
-        
+  
         Ok(registration)
     }
 }
+
 ```
 
 ### 3.3 存储抽象
@@ -1297,30 +1320,32 @@ impl MessageBus for TokioChannelBus {
 
 ```rust
 /// 持久化存储
-#[async_trait]
+
+# [async_trait]
+
 pub trait PersistentStore: Send + Sync + 'static {
     /// 存储类型
     fn store_type(&self) -> StoreType;
-    
+  
     /// 读取对象
     async fn read<T: DeserializeOwned + Send + Sync>(
         &self,
         key: &str,
     ) -> Result<Option<T>, StorageError>;
-    
+  
     /// 写入对象
     async fn write<T: Serialize + Send + Sync>(
         &self,
         key: &str,
         value: &T,
     ) -> Result<(), StorageError>;
-    
+  
     /// 删除对象
     async fn delete(&self, key: &str) -> Result<bool, StorageError>;
-    
+  
     /// 列出键前缀
     async fn list_keys(&self, prefix: &str) -> Result<Vec<String>, StorageError>;
-    
+  
     /// 事务操作
     async fn transaction<F, R>(&self, operations: F) -> Result<R, StorageError>
     where
@@ -1340,27 +1365,27 @@ impl Transaction {
             operations: Vec::new(),
         }
     }
-    
+  
     /// 添加写入操作
     pub fn write<T: Serialize>(&mut self, key: &str, value: &T) -> Result<(), StorageError> {
         let serialized = serde_json::to_vec(value)
             .map_err(|e| StorageError::SerializationFailed(e.to_string()))?;
-            
+  
         self.operations.push(TransactionOp::Write {
             key: key.to_string(),
             value: serialized,
         });
-        
+  
         Ok(())
     }
-    
+  
     /// 添加删除操作
     pub fn delete(&mut self, key: &str) {
         self.operations.push(TransactionOp::Delete {
             key: key.to_string(),
         });
     }
-    
+  
     /// 条件检查
     pub fn check_condition(&mut self, key: &str, condition: Condition) {
         self.operations.push(TransactionOp::Check {
@@ -1376,75 +1401,77 @@ pub struct FileSystemStore {
     config: FileSystemStoreConfig,
 }
 
-#[async_trait]
+# [async_trait]
+
 impl PersistentStore for FileSystemStore {
     fn store_type(&self) -> StoreType {
         StoreType::FileSystem
     }
-    
+  
     async fn read<T: DeserializeOwned + Send + Sync>(
         &self,
         key: &str,
     ) -> Result<Option<T>, StorageError> {
         let path = self.key_to_path(key);
-        
+  
         // 检查文件是否存在
         if !path.exists() {
             return Ok(None);
         }
-        
+  
         // 读取文件内容
         let content = tokio::fs::read(&path).await
             .map_err(|e| StorageError::ReadFailed(e.to_string()))?;
-            
+  
         // 反序列化
         let value = serde_json::from_slice(&content)
             .map_err(|e| StorageError::DeserializationFailed(e.to_string()))?;
-            
+  
         Ok(Some(value))
     }
-    
+  
     async fn write<T: Serialize + Send + Sync>(
         &self,
         key: &str,
         value: &T,
     ) -> Result<(), StorageError> {
         let path = self.key_to_path(key);
-        
+  
         // 确保父目录存在
         if let Some(parent) = path.parent() {
             tokio::fs::create_dir_all(parent).await
                 .map_err(|e| StorageError::WriteFailed(e.to_string()))?;
         }
-        
+  
         // 序列化
         let content = serde_json::to_vec(value)
             .map_err(|e| StorageError::SerializationFailed(e.to_string()))?;
-            
+  
         // 写入文件
         tokio::fs::write(&path, content).await
             .map_err(|e| StorageError::WriteFailed(e.to_string()))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn delete(&self, key: &str) -> Result<bool, StorageError> {
         let path = self.key_to_path(key);
-        
+  
         // 检查文件是否存在
         if !path.exists() {
             return Ok(false);
         }
-        
+  
         // 删除文件
         tokio::fs::remove_file(&path).await
             .map_err(|e| StorageError::DeleteFailed(e.to_string()))?;
-            
+  
         Ok(true)
     }
-    
+  
     // 其余方法实现...
 }
+
 ```
 
 ## 4. 自管理层
@@ -1480,49 +1507,49 @@ impl TelemetrySystem {
             config,
         }
     }
-    
+  
     /// 启动遥测系统
     pub async fn start(&self) -> Result<(), TelemetryError> {
         // 初始化各子系统
         self.metrics_collector.init().await?;
         self.log_manager.init().await?;
         self.tracer.init().await?;
-        
+  
         // 注册默认收集器
         self.register_default_collectors().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 注册指标
     pub fn register_metric<T: Metric + 'static>(&self, metric: T) -> Result<MetricHandle<T>, TelemetryError> {
         self.metrics_collector.register(metric)
     }
-    
+  
     /// 记录事件
     pub fn record_event<E: Event + 'static>(&self, event: E) -> Result<(), TelemetryError> {
         self.metrics_collector.record_event(event)
     }
-    
+  
     /// 创建追踪跨度
     pub fn create_span(&self, name: &str, context: Option<&SpanContext>) -> Result<Span, TelemetryError> {
         self.tracer.create_span(name, context)
     }
-    
+  
     /// 注册默认收集器
     async fn register_default_collectors(&self) -> Result<(), TelemetryError> {
         // 系统资源收集器
         let system_collector = SystemResourceCollector::new();
         self.metrics_collector.register_collector(Box::new(system_collector))?;
-        
+  
         // 工作流指标收集器
         let workflow_collector = WorkflowMetricsCollector::new();
         self.metrics_collector.register_collector(Box::new(workflow_collector))?;
-        
+  
         // 执行时间收集器
         let execution_time_collector = ExecutionTimeCollector::new();
         self.metrics_collector.register_collector(Box::new(execution_time_collector))?;
-        
+  
         Ok(())
     }
 }
@@ -1543,43 +1570,44 @@ impl MetricsCollector {
         let handle = self.registry.register(metric)?;
         Ok(handle)
     }
-    
+  
     /// 注册收集器
     pub fn register_collector(&self, collector: Box<dyn MetricCollector>) -> Result<(), TelemetryError> {
         let mut collectors = self.collectors.write().unwrap();
         collectors.push(collector);
         Ok(())
     }
-    
+  
     /// 记录事件
     pub fn record_event<E: Event + 'static>(&self, event: E) -> Result<(), TelemetryError> {
         // 将事件发送到所有关注的收集器
         let collectors = self.collectors.read().unwrap();
-        
+  
         for collector in collectors.iter() {
             if collector.is_interested_in::<E>() {
                 collector.process_event(&event)?;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 收集所有指标
     pub async fn collect_all(&self) -> Result<MetricsSnapshot, TelemetryError> {
         // 触发所有收集器
         let collectors = self.collectors.read().unwrap();
-        
+  
         for collector in collectors.iter() {
             collector.collect().await?;
         }
-        
+  
         // 从注册表获取指标快照
         let snapshot = self.registry.snapshot()?;
-        
+  
         Ok(snapshot)
     }
 }
+
 ```
 
 ### 4.2 分析引擎
@@ -1607,70 +1635,70 @@ impl AnalyticsEngine {
     /// 创建新的分析引擎
     pub fn new(data_store: Arc<dyn AnalyticsDataStore>, config: AnalyticsConfig) -> Self {
         let performance_analyzer = PerformanceAnalyzer::new(data_store.clone(), config.performance.clone());
-        
+  
         let mut engine = Self {
             data_store,
             detectors: Vec::new(),
             performance_analyzer,
             config,
         };
-        
+  
         // 注册默认检测器
         engine.register_default_detectors();
-        
+  
         engine
     }
-    
+  
     /// 注册异常检测器
     pub fn register_detector(&mut self, detector: Box<dyn AnomalyDetector>) {
         self.detectors.push(detector);
     }
-    
+  
     /// 注册默认检测器
     fn register_default_detectors(&mut self) {
         // CPU使用率检测器
         let cpu_detector = Box::new(CpuUsageDetector::new(self.config.thresholds.cpu_threshold));
         self.register_detector(cpu_detector);
-        
+  
         // 内存使用检测器
         let memory_detector = Box::new(MemoryUsageDetector::new(self.config.thresholds.memory_threshold));
         self.register_detector(memory_detector);
-        
+  
         // 任务延迟检测器
         let latency_detector = Box::new(TaskLatencyDetector::new(self.config.thresholds.latency_threshold));
         self.register_detector(latency_detector);
-        
+  
         // 错误率检测器
         let error_rate_detector = Box::new(ErrorRateDetector::new(self.config.thresholds.error_rate_threshold));
         self.register_detector(error_rate_detector);
     }
-    
+  
     /// 运行异常检测
     pub async fn detect_anomalies(&self) -> Result<Vec<Anomaly>, AnalyticsError> {
         let mut anomalies = Vec::new();
-        
+  
         // 获取最新指标数据
         let metrics = self.data_store.get_recent_metrics(self.config.analysis_window).await?;
-        
+  
         // 应用所有检测器
         for detector in &self.detectors {
             let results = detector.detect(&metrics).await?;
             anomalies.extend(results);
         }
-        
+  
         Ok(anomalies)
     }
-    
+  
     /// 识别性能瓶颈
     pub async fn identify_bottlenecks(&self) -> Result<Vec<PerformanceBottleneck>, AnalyticsError> {
         self.performance_analyzer.identify_bottlenecks().await
     }
-    
+  
     /// 生成性能报告
     pub async fn generate_performance_report(&self) -> Result<PerformanceReport, AnalyticsError> {
         self.performance_analyzer.generate_report().await
     }
-    
+  
     /// 预测资源需求
     pub async fn predict_resource_requirements(
         &self,
@@ -1682,11 +1710,13 @@ impl AnalyticsEngine {
 }
 
 /// 异常检测器特征
-#[async_trait]
+
+# [async_trait]
+
 pub trait AnomalyDetector: Send + Sync {
     /// 检测器名称
     fn name(&self) -> &'static str;
-    
+  
     /// 检测异常
     async fn detect(&self, metrics: &MetricsData) -> Result<Vec<Anomaly>, AnalyticsError>;
 }
@@ -1696,19 +1726,21 @@ pub struct CpuUsageDetector {
     threshold: f64,
 }
 
-#[async_trait]
+# [async_trait]
+
 impl AnomalyDetector for CpuUsageDetector {
     fn name(&self) -> &'static str {
         "CpuUsageDetector"
     }
-    
+  
     async fn detect(&self, metrics: &MetricsData) -> Result<Vec<Anomaly>, AnalyticsError> {
         let mut anomalies = Vec::new();
-        
+  
         // 获取CPU使用率时间序列
         let cpu_usage = metrics.get_time_series("system.cpu.usage")?;
-        
-        // 
+  
+        //
+
 ```rust
         // 检查最近的CPU使用率
         for (timestamp, value) in cpu_usage.recent_points(10) {
@@ -1900,6 +1932,7 @@ impl PerformanceAnalyzer {
         Ok(model)
     }
 }
+
 ```
 
 ### 4.3 控制回路
@@ -2290,6 +2323,7 @@ impl Controller for PidController {
         }
     }
 }
+
 ```
 
 ## 5. 系统集成与演化
@@ -2447,6 +2481,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 6. 结论

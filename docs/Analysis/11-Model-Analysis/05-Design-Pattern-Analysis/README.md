@@ -33,19 +33,6 @@
   - [11.5.1.8 7. 参考文献](#7-参考文献)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.5.1.1 目录
 
 1. [概述](#1-概述)
@@ -328,6 +315,7 @@ func NewConcreteImplementation() InterfaceName {
 func TestPatternName(t *testing.T) {
     // 测试逻辑
 }
+
 ```
 
 ### 11.5.1.6.2 并发安全规范
@@ -345,6 +333,7 @@ func (t *ThreadSafeStruct) Get(key string) (interface{}, bool) {
     defer t.mu.RUnlock()
     return t.data[key]
 }
+
 ```
 
 **通道使用**:
@@ -361,6 +350,7 @@ func (c *ChannelBasedStruct) Process() {
         c.output <- processedItem
     }
 }
+
 ```
 
 ### 11.5.1.6.3 错误处理规范
@@ -377,6 +367,7 @@ type PatternError struct {
 func (e *PatternError) Error() string {
     return fmt.Sprintf("[%s] %s: %v", e.Code, e.Message, e.Cause)
 }
+
 ```
 
 **错误处理**:
@@ -392,6 +383,7 @@ func (c *ConcreteImplementation) MethodName() error {
     }
     return nil
 }
+
 ```
 
 ---

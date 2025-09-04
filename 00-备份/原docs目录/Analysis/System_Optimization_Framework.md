@@ -211,6 +211,7 @@ func Example() {
     fmt.Printf("Best fitness: %f\n", best.Fitness)
     fmt.Printf("Best genes: %v\n", best.Genes)
 }
+
 ```
 
 ### 2.2 粒子群优化 (Particle Swarm Optimization)
@@ -351,6 +352,7 @@ func Example() {
     fmt.Printf("Best position: %v\n", bestPosition)
     fmt.Printf("Best fitness: %f\n", bestFitness)
 }
+
 ```
 
 ## 3. 资源分配策略 (Resource Allocation)
@@ -525,6 +527,7 @@ func Example() {
         fmt.Printf("Request %d allocated to resource %s\n", i, resource.ID)
     }
 }
+
 ```
 
 ## 4. 缓存机制 (Caching Mechanisms)
@@ -731,6 +734,7 @@ func Example() {
         fmt.Println("TTL key expired")
     }
 }
+
 ```
 
 ## 5. 负载均衡算法 (Load Balancing)
@@ -937,6 +941,7 @@ func Example() {
         fmt.Printf("Request %d -> %s\n", i+1, node)
     }
 }
+
 ```
 
 ## 6. 容错模式 (Fault Tolerance)
@@ -1130,6 +1135,7 @@ func Example() {
 
     time.Sleep(1 * time.Second)
 }
+
 ```
 
 ## 7. 监控系统 (Monitoring Systems)
@@ -1366,6 +1372,7 @@ func Example() {
         fmt.Println("System has health issues")
     }
 }
+
 ```
 
 ## 8. 性能分析
@@ -1402,6 +1409,7 @@ func CalculateImprovement(before, after PerformanceMetrics) OptimizationComparis
         Improvement: overallImprovement,
     }
 }
+
 ```
 
 ## 9. 总结

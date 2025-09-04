@@ -47,6 +47,7 @@ fn main() {
     let circle = Circle { radius: 5.0 };
     print_area(&circle); // 传递不可变引用
 }
+
 ```
 
 在这个示例中，`print_area` 函数接受一个 `&dyn Shape` 类型的参数，
@@ -89,6 +90,7 @@ fn main() {
     modify_shape(&mut circle); // 传递可变引用
     println!("New Area: {}", circle.area());
 }
+
 ```
 
 在这个示例中，`modify_shape` 函数接受一个 `&mut dyn Shape` 类型的参数，

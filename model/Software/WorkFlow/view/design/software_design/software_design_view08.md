@@ -68,6 +68,7 @@ VN_Architecture = (M, P, C, I, O)
 - C: Controller = (Fetch, Decode, Execute)
 - I: Input = (in_ports, in_buffers)
 - O: Output = (out_ports, out_buffers)
+
 ```
 
 **指令周期形式化**：
@@ -80,6 +81,7 @@ D: IR → Operation  // Decode
 E: Operation → State_Change  // Execute
 
 State_Change = (Register_Update × Memory_Update)
+
 ```
 
 **内存访问模型**：
@@ -91,6 +93,7 @@ Memory_Access = {
     latency: Access → Time,
     bandwidth: Time → Data_Size
 }
+
 ```
 
 ### 1.2.2 哈佛架构形式化
@@ -112,6 +115,7 @@ Memory_Parallelism = {
     data_access: Addr → Data,
     parallel_constraint: inst_fetch ∥ data_access
 }
+
 ```
 
 **分离总线模型**：
@@ -125,6 +129,7 @@ Bus_System = {
         data_bw: Time → Data_Size
     }
 }
+
 ```
 
 ### 1.2.3 数据流架构形式化
@@ -143,6 +148,7 @@ Execution_Model = {
     fire: V → Result,
     propagate: E → Data_Transfer
 }
+
 ```
 
 **令牌传递模型**：
@@ -154,6 +160,7 @@ Token_Model = {
     firing_rule: token_queue → Boolean
     consumption_rule: Token → Operation
 }
+
 ```
 
 ### 1.2.4 异构计算架构形式化
@@ -167,6 +174,7 @@ Heterogeneous_System = {
     efficiency: (Processor_Type × Operation_Type) → Performance,
     interconnect: Processor_Type → [Connection_Type]
 }
+
 ```
 
 **任务调度模型**：
@@ -181,6 +189,7 @@ Task_Scheduling = {
         timing_constraints: Task → Deadline
     }
 }
+
 ```
 
 ## 1.3 指令级并行与SIMD形式化
@@ -200,6 +209,7 @@ Pipeline = {
         control: Branch_Uncertainty
     }
 }
+
 ```
 
 **流水线调度**：
@@ -211,6 +221,7 @@ Schedule = {
     stall_conditions: Pipeline_State → Boolean,
     forwarding_paths: Register → Stage
 }
+
 ```
 
 ### 1.3.2 SIMD计算模型
@@ -230,6 +241,7 @@ Vector_Execution = {
     element_latency: Cycles,
     vector_throughput: Elements/Cycle
 }
+
 ```
 
 **向量寄存器模型**：
@@ -244,6 +256,7 @@ Vector_Register_File = {
         scattered: [Addr] → [Data]
     }
 }
+
 ```
 
 ### 1.3.3 向量处理模型
@@ -257,6 +270,7 @@ Vector_Operations = {
     permutation: (Vector × Pattern) → Vector,
     mask_operations: (Vector × Mask) → Vector
 }
+
 ```
 
 **向量性能模型**：
@@ -268,6 +282,7 @@ Vector_Performance = {
     vector_length: Natural,
     efficiency: actual_performance/peak_performance
 }
+
 ```
 
 ## 1.4 CPU-GPU异构计算形式化
@@ -286,6 +301,7 @@ SIMT_Model = {
         reconvergence: [PC] → PC
     }
 }
+
 ```
 
 **内存访问模型**：
@@ -304,6 +320,7 @@ Memory_Hierarchy = {
     },
     cache_hierarchy: [Cache_Level]
 }
+
 ```
 
 ### 1.4.2 内存层次模型
@@ -321,6 +338,7 @@ Memory_System = {
     },
     coherence_protocol: Protocol
 }
+
 ```
 
 **访问模式分析**：
@@ -331,6 +349,7 @@ Access_Pattern = {
     bank_conflict: [Thread_Access] → Bank_Access,
     cache_behavior: Access → {hit, miss}
 }
+
 ```
 
 ### 1.4.3 同步与调度模型
@@ -343,6 +362,7 @@ Synchronization = {
     atomic_ops: (Memory_Location × Operation) → Result,
     memory_fence: Memory_Order → Unit
 }
+
 ```
 
 **调度策略**：
@@ -354,6 +374,7 @@ Scheduler = {
     priority: Warp → Priority_Level,
     occupancy: SM → Resource_Usage
 }
+
 ```
 
 ## 1.5 控制流形式化
@@ -375,6 +396,7 @@ Basic_Block = {
     dominators: [Block],
     post_dominators: [Block]
 }
+
 ```
 
 **路径分析**：
@@ -385,6 +407,7 @@ Path_Analysis = {
     loop_detection: CFG → [Loop],
     reachability: (V × V) → Boolean
 }
+
 ```
 
 ### 1.5.2 分支预测形式化
@@ -398,6 +421,7 @@ Branch_Predictor = {
     update: (PC × Outcome) → State_Update,
     accuracy: History → Probability
 }
+
 ```
 
 **预测策略**：
@@ -411,6 +435,7 @@ Prediction_Strategy = {
         tournament: (Local × Global) → Predictor
     }
 }
+
 ```
 
 ### 1.5.3 异常处理模型
@@ -424,6 +449,7 @@ Exception = {
     context: Machine_State,
     recovery: Handler → Machine_State
 }
+
 ```
 
 **恢复机制**：
@@ -437,6 +463,7 @@ Recovery = {
         replay: [Instruction]
     }
 }
+
 ```
 
 ## 1.6 容错与一致性形式化
@@ -452,6 +479,7 @@ Fault_Model = {
     isolation: Fault_Type → Component,
     recovery: (Component × Fault_Type) → Action
 }
+
 ```
 
 **冗余策略**：
@@ -467,6 +495,7 @@ Redundancy = {
         validation: Result → Boolean
     }
 }
+
 ```
 
 ### 1.6.2 一致性协议
@@ -480,6 +509,7 @@ Cache_Coherence = {
     actions: State → [Action],
     invariants: [State_Predicate]
 }
+
 ```
 
 **内存一致性**：
@@ -494,6 +524,7 @@ Memory_Consistency = {
     visibility: Operation → [Thread],
     consistency_predicates: [Consistency_Rule]
 }
+
 ```
 
 ### 1.6.3 共识算法形式化
@@ -511,6 +542,7 @@ Consensus = {
         termination: ∀n ∈ Nodes: ◇decide(n) ≠ ⊥
     }
 }
+
 ```
 
 **分布式一致性**：
@@ -526,6 +558,7 @@ Distributed_Consistency = {
         causal: Causal_Consistency
     }
 }
+
 ```
 
 ## 1.7 思维导图
@@ -617,6 +650,7 @@ Distributed_Consistency = {
         ├── 共识协议
         ├── 分布式一致性
         └── 一致性证明
+
 ```
 
 这个扩展分析深入探讨了物理计算模型、指令级并行、异构计算、控制流以及容错与一致性等关键方面的形式化表示。

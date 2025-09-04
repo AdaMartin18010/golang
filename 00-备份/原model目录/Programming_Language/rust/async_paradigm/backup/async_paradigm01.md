@@ -68,6 +68,7 @@ Rust的异步模型结合了协作式多任务和事件驱动范式，可以形�
 - δ: S × E → S是转移函数
 - s₀ ∈ S是初始状态
 - F ⊆ S是终止状态集合
+
 ```
 
 这种形式化描述对应于Rust中的状态机实现，每个状态对应一个await点，每个事件对应一个Future完成。
@@ -90,6 +91,7 @@ async fn async_process_data(data: &[u8]) -> Result<Vec<u8>, Error> {
     let result = step_three(&step2).await?;
     Ok(result)
 }
+
 ```
 
 在异步模式中，每个await点都是状态机的一个状态，它们之间的转换由Future的完成事件驱动。
@@ -105,6 +107,7 @@ Future<T> = (State, Poll<T>, Context, TransitionFunction)
 - Poll<T> = Ready(T) | Pending是可能的轮询结果
 - Context包含唤醒机制
 - TransitionFunction: State × Context → (State', Poll<T>)是状态转换函数
+
 ```
 
 这种形式化定义捕获了`Future`核心特征：表示可能尚未完成的计算，可以被轮询，能够在就绪时通知调用者。
@@ -155,6 +158,7 @@ async fn use_delay() {
     delay.await;
     println!("延迟结束");
 }
+
 ```
 
 这个例子实现了一个简单的延迟Future，它展示了状态存储（when字段）、轮询逻辑和唤醒机制的基本原理。
@@ -168,6 +172,7 @@ async fn use_delay() {
 ```math
 E = {Await<T> : T是任意类型}  // 效应集合
 H(Await<T>, k) = Pending | apply(k, v)  // 处理器，其中k是续延，v是T类型的值
+
 ```
 
 在这个系统中，`Await<T>`是一个代数效应，表示等待一个T类型的值。处理器H有两种可能的行为：返回Pending表示等待继续，或者应用续延k到值v上继续计算。
@@ -180,6 +185,7 @@ async fn f() -> T {
   let y: B = h(x).await; // 效应Await<B>
   return y;
 }
+
 ```
 
 这可以翻译为：
@@ -188,6 +194,7 @@ async fn f() -> T {
 f = λ().do Await<A> as x in
        do Await<B> as y in
        return y
+
 ```
 
 这种表示法清楚地展示了await如何将异步计算分解为离散步骤，每个步骤都可能挂起并稍后恢复。
@@ -204,6 +211,7 @@ f = λ().do Await<A> as x in
 - δ: Q × Σ → Q是转移函数
 - q₀是初始状态
 - F = {qₙ₊₁}是终止状态集合
+
 ```
 
 转移函数δ的定义：
@@ -261,6 +269,7 @@ impl Future for ExampleStateMachine {
         }
     }
 }
+
 ```
 
 这个状态机实现直接对应于数学模型中的状态转换，每个状态存储了需要在后续计算中使用的变量。
@@ -294,6 +303,7 @@ async fn process(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     
     Ok(())
 }
+
 ```
 
 编译器生成的状态机大致如下（简化表示）：
@@ -383,6 +393,7 @@ impl Future for ProcessStateMachine {
         }
     }
 }
+
 ```
 
 这个生成的代码展示了：
@@ -404,6 +415,7 @@ Pin是Rust异步编程中的关键概念，它解决了自引用结构在内存�
 
 ```math
 Pin<P<T>> = { p ∈ P<T> | ∀m: MemOperation, IsValidMove(m, p) → !ContainsSelfRef(p) }
+
 ```
 
 这个定义表述了Pin的核心保证：如果一个指针p被Pin包装，那么只有在p不包含自引用时，才能执行移动操作。
@@ -428,6 +440,7 @@ impl SelfRef {
         s
     }
 }
+
 ```
 
 如果我们移动这个结构体，`ptr`指向的内存位置将不再有效：
@@ -436,6 +449,7 @@ impl SelfRef {
 let mut s1 = SelfRef::new("hello".to_string());
 let s2 = s1; // 移动s1到s2
 // 此时s2.ptr指向的是s1.value的原来位置，而不是s2.value
+
 ```
 
 Pin通过防止此类移动来确保安全性：
@@ -446,6 +460,7 @@ let pinned = Pin::new(&mut s); // 现在s不能被移动
 
 // 尝试移动将导致编译错误
 // let moved = *pinned; // 错误!
+
 ```
 
 对于`!Unpin`类型，Pin确保了以下定理成立：
@@ -517,6 +532,7 @@ async fn use_self_ref_future() {
     let mut pinned = Box::pin(future); // 把Future钉在堆上
     pinned.await;
 }
+
 ```
 
 这个例子展示了如何安全地创建和使用自引用Future，通过Pin确保它不会在执行过程中被移动。
@@ -538,6 +554,7 @@ async fn use_self_ref_future() {
 ```math
 对于异步函数 async fn f<'a>(x: &'a T) -> U,
 返回的Future类型为 impl Future<Output = U> + 'a
+
 ```
 
 这确保了返回的Future不会比其引用的数据活得更久。
@@ -560,6 +577,7 @@ async fn process_data<'a, 'b>(
     data.process().await;
     Ok(&data.result)
 }
+
 ```
 
 编译器会将生命周期参数传播到生成的Future类型：
@@ -571,6 +589,7 @@ fn process_data<'a, 'b>(
 ) -> impl Future<Output = Result<&'b str, &'a str>> + 'a + 'b {
     // 异步函数体被转换为状态机
 }
+
 ```
 
 这个类型签名确保：
@@ -588,6 +607,7 @@ Rust 2024进一步改进了Reference-Passing In Trait (RPIT)的生命周期捕�
 fn get_items<'a>(data: &'a Vec<Item>) -> impl Iterator<Item = &'a Item> + 'a {
     data.iter()
 }
+
 ```
 
 在Rust 2024中：
@@ -596,6 +616,7 @@ fn get_items<'a>(data: &'a Vec<Item>) -> impl Iterator<Item = &'a Item> + 'a {
 fn get_items(data: &Vec<Item>) -> impl Iterator<Item = &Item> {
     data.iter()  // 编译器自动推导出生命周期依赖
 }
+
 ```
 
 对于异步函数，这种改进尤其有用：
@@ -616,6 +637,7 @@ async fn process(
 ) -> Result<&str, &str> {
     // 编译器自动推导并应用正确的生命周期约束
 }
+
 ```
 
 这种改进大大减少了显式生命周期标注的需要，同时保持了Rust的安全保证。
@@ -647,6 +669,7 @@ Schedule(T) = {
       // 任务完成
   end
 }
+
 ```
 
 #### 唤醒机制详解
@@ -669,6 +692,7 @@ pub struct RawWakerVTable {
     wake_by_ref: unsafe fn(*const ()),
     drop: unsafe fn(*const ()),
 }
+
 ```
 
 这种设计允许执行器自定义唤醒行为，典型流程为：
@@ -790,6 +814,7 @@ async fn yield_once() {
     
     YieldOnce(false).await
 }
+
 ```
 
 这个最小化执行器展示了异步任务调度的核心概念：
@@ -817,6 +842,7 @@ pub trait Stream {
     
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>>;
 }
+
 ```
 
 与`Future`（表示单个异步结果）不同，`Stream`可以产生多个值序列，类似于异步版本的`Iterator`。
@@ -878,6 +904,7 @@ async fn reactive_stream_example() {
         println!("窗口: {:?}, 和: {}", result.0, result.1);
     }
 }
+
 ```
 
 这个示例展示了响应式编程的多个方面：
@@ -930,7 +957,6 @@ async fn monitor_temperature() {
     while let Some(temp) = alerts.next().await {
         if temp > 25.0 {
             
-
 ```rust
         if temp > 25.0 {
             println!("警告：温度过高 {:.1}°C", temp);
@@ -939,6 +965,7 @@ async fn monitor_temperature() {
         }
     }
 }
+
 ```
 
 这个例子展示了如何使用`gen async`语法创建长期运行的异步数据源，并通过Stream组合器链构建响应式数据处理管道。
@@ -961,7 +988,7 @@ async fn functional_combinators_example() -> Result<(), Box<dyn Error>> {
     let task1 = async { Ok::<_, anyhow::Error>(1) };
     let task2 = async { Ok::<_, anyhow::Error>(2) };
     let task3 = async { Ok::<_, anyhow::Error>(3) };
-    
+  
     // 使用组合器函数构建复杂的异步计算图
     let composed_task = future::try_join_all(vec![task1, task2, task3])
         .map_ok(|values| values.iter().sum::<i32>())
@@ -980,12 +1007,13 @@ async fn functional_combinators_example() -> Result<(), Box<dyn Error>> {
             println!("最终结果: {:?}", result);
             result
         });
-    
+  
     // 执行组合后的任务
     composed_task.await?;
-    
+  
     Ok(())
 }
+
 ```
 
 这种方法的优势在于：
@@ -1015,7 +1043,7 @@ where
 {
     let start = Instant::now();
     let timeout_fut = time::sleep(timeout);
-    
+  
     async move {
         tokio::select! {
             result = future => {
@@ -1044,13 +1072,13 @@ where
 {
     let mut attempt = 0;
     let mut last_error = None;
-    
+  
     while attempt <= max_retries {
         if attempt > 0 {
             println!("重试尝试 {}/{}", attempt, max_retries);
             time::sleep(backoff * attempt as u32).await;
         }
-        
+  
         match operation().await {
             Ok(value) => {
                 if attempt > 0 {
@@ -1065,11 +1093,12 @@ where
             }
         }
     }
-    
+  
     Err(last_error.unwrap())
 }
 
-#[derive(Debug)]
+# [derive(Debug)]
+
 struct TimeoutError {
     operation: &'static str,
 }
@@ -1081,15 +1110,15 @@ async fn use_custom_combinators() {
         time::sleep(Duration::from_millis(150)).await;
         "fetch_result"
     };
-    
+  
     let result = with_timeout_logged(
         data_fetch,
         Duration::from_millis(200),
         "fetch_data",
     ).await;
-    
+  
     println!("超时组合器结果: {:?}", result);
-    
+  
     // 使用重试组合器
     let mut counter = 0;
     let flaky_operation = || async move {
@@ -1102,15 +1131,16 @@ async fn use_custom_combinators() {
             Ok("成功结果".to_string())
         }
     };
-    
+  
     let retry_result = with_retry(
         flaky_operation,
         5,
         Duration::from_millis(100),
     ).await;
-    
+  
     println!("重试组合器结果: {:?}", retry_result);
 }
+
 ```
 
 这些自定义组合器封装了常见的异步处理模式（超时、重试），可以在整个代码库中重用，提高代码质量和可维护性。
@@ -1125,7 +1155,9 @@ use std::time::{Duration, Instant};
 use tokio::time;
 
 // 断路器状态
-#[derive(Debug, Clone, Copy, PartialEq)]
+
+# [derive(Debug, Clone, Copy, PartialEq)]
+
 enum CircuitState {
     Closed,
     Open,
@@ -1151,11 +1183,11 @@ impl CircuitBreaker {
             last_failure_time: Mutex::new(None),
         }
     }
-    
+  
     // 检查断路器是否允许操作
     fn allow_request(&self) -> bool {
         let mut state = self.state.lock().unwrap();
-        
+  
         match *state {
             CircuitState::Closed => true,
             CircuitState::Open => {
@@ -1173,7 +1205,7 @@ impl CircuitBreaker {
             CircuitState::HalfOpen => true,
         }
     }
-    
+  
     // 报告操作成功
     fn record_success(&self) {
         let mut state = self.state.lock().unwrap();
@@ -1183,17 +1215,17 @@ impl CircuitBreaker {
             *self.failure_count.lock().unwrap() = 0;
         }
     }
-    
+  
     // 报告操作失败
     fn record_failure(&self) {
         let mut state = self.state.lock().unwrap();
         let mut failure_count = self.failure_count.lock().unwrap();
         let mut last_failure = self.last_failure_time.lock().unwrap();
-        
+  
         *failure_count += 1;
         *last_failure = Some(Instant::now());
-        
-        if *state == CircuitState::HalfOpen || 
+  
+        if *state == CircuitState::HalfOpen ||
            (*state == CircuitState::Closed && *failure_count >= self.failure_threshold) {
             // 打开断路器
             *state = CircuitState::Open;
@@ -1215,7 +1247,7 @@ where
         println!("断路器打开，使用回退值");
         return fallback;
     }
-    
+  
     match operation().await {
         Ok(result) => {
             circuit_breaker.record_success();
@@ -1243,13 +1275,14 @@ async fn call_external_service(
             Ok("服务响应数据".to_string())
         }
     };
-    
+  
     with_circuit_breaker(
         circuit_breaker,
         operation,
         "回退响应".to_string(),
     ).await
 }
+
 ```
 
 这个断路器模式特别适合微服务架构中的弹性设计，可以防止一个故障服务导致级联失败。
@@ -1283,7 +1316,7 @@ impl<T> AsyncResource<T> {
             on_drop: None,
         }
     }
-    
+  
     // 设置资源释放回调
     fn with_cleanup<F>(mut self, cleanup: F) -> Self
     where
@@ -1292,12 +1325,12 @@ impl<T> AsyncResource<T> {
         self.on_drop = Some(Box::new(cleanup));
         self
     }
-    
+  
     // 获取对内部资源的引用
     fn get(&self) -> &T {
         &self.resource
     }
-    
+  
     // 获取对内部资源的可变引用
     fn get_mut(&mut self) -> &mut T {
         &mut self.resource
@@ -1331,7 +1364,7 @@ where
             _phantom: std::marker::PhantomData,
         }
     }
-    
+  
     fn with_cleanup<C>(mut self, cleanup: C) -> Self
     where
         C: FnOnce(&mut T) + Send + 'static,
@@ -1339,7 +1372,7 @@ where
         self.cleanup = Some(Box::new(cleanup));
         self
     }
-    
+  
     async fn run<R, AsyncFn, AsyncFnFut>(self, async_fn: AsyncFn) -> R
     where
         AsyncFn: FnOnce(&mut T) -> AsyncFnFut + Send,
@@ -1347,11 +1380,11 @@ where
     {
         let mut resource = (self.resource_factory)().await;
         let result = async_fn(&mut resource).await;
-        
+  
         if let Some(cleanup) = self.cleanup {
             (cleanup)(&mut resource);
         }
-        
+  
         result
     }
 }
@@ -1364,17 +1397,17 @@ async fn async_resource_management_example() {
         tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
         "资源内容".to_string()
     }
-    
+  
     let resource = acquire_resource().await;
     let async_resource = AsyncResource::new(resource)
         .with_cleanup(|res| println!("清理资源: {}", res));
-    
+  
     // 使用资源
     println!("使用资源: {}", async_resource.get());
-    
+  
     // 资源在这里超出范围并自动清理
     drop(async_resource);
-    
+  
     // 使用异步上下文管理器
     let manager = AsyncContextManager::new(|| async {
         println!("创建数据库连接");
@@ -1382,16 +1415,17 @@ async fn async_resource_management_example() {
         "数据库连接".to_string()
     })
     .with_cleanup(|conn| println!("关闭数据库连接: {}", conn));
-    
+  
     // 在上下文中运行异步代码
     let result = manager.run(|conn| async {
         println!("使用连接: {}", conn);
         tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
         42
     }).await;
-    
+  
     println!("上下文执行结果: {}", result);
 }
+
 ```
 
 这些模式确保即使在复杂的异步控制流中，资源也能得到适当的清理，防止资源泄漏。
@@ -1410,11 +1444,11 @@ use std::sync::Arc;
 async fn cancel_with_channel() {
     // 创建取消通道
     let (cancel_tx, cancel_rx) = oneshot::channel();
-    
+  
     // 启动可取消的任务
     let handle = tokio::spawn(async move {
         let mut counter = 0;
-        
+  
         loop {
             // 检查取消信号
             tokio::select! {
@@ -1425,7 +1459,7 @@ async fn cancel_with_channel() {
                 _ = time::sleep(Duration::from_millis(100)) => {
                     counter += 1;
                     println!("任务进行中: {}", counter);
-                    
+  
                     if counter >= 10 {
                         println!("任务完成");
                         break;
@@ -1433,15 +1467,15 @@ async fn cancel_with_channel() {
                 }
             }
         }
-        
+  
         counter
     });
-    
+  
     // 等待一段时间后取消任务
     time::sleep(Duration::from_millis(350)).await;
     println!("发送取消信号");
     let _ = cancel_tx.send(());
-    
+  
     // 等待任务结束并获取结果
     match handle.await {
         Ok(result) => println!("任务结果: {}", result),
@@ -1454,35 +1488,35 @@ async fn cancel_with_flag() {
     // 创建取消标志
     let cancel_flag = Arc::new(AtomicBool::new(false));
     let flag_clone = cancel_flag.clone();
-    
+  
     // 启动可取消的任务
     let handle = tokio::spawn(async move {
         let mut counter = 0;
-        
+  
         while !flag_clone.load(Ordering::SeqCst) {
             counter += 1;
             println!("任务进行中: {}", counter);
-            
+  
             if counter >= 10 {
                 println!("任务完成");
                 break;
             }
-            
+  
             time::sleep(Duration::from_millis(100)).await;
         }
-        
+  
         if flag_clone.load(Ordering::SeqCst) {
             println!("任务检测到取消标志");
         }
-        
+  
         counter
     });
-    
+  
     // 等待一段时间后设置取消标志
     time::sleep(Duration::from_millis(350)).await;
     println!("设置取消标志");
     cancel_flag.store(true, Ordering::SeqCst);
-    
+  
     // 等待任务结束并获取结果
     match handle.await {
         Ok(result) => println!("任务结果: {}", result),
@@ -1493,7 +1527,7 @@ async fn cancel_with_flag() {
 // 使用tokio的AbortHandle
 async fn cancel_with_abort_handle() {
     let mut handles = Vec::new();
-    
+  
     // 创建一些长时间运行的任务
     for i in 0..5 {
         let handle = tokio::spawn(async move {
@@ -1504,21 +1538,21 @@ async fn cancel_with_abort_handle() {
             println!("任务 {} 完成", i);
             i
         });
-        
+  
         handles.push(handle);
     }
-    
+  
     // 等待一段时间后取消所有任务
     time::sleep(Duration::from_millis(350)).await;
     println!("取消所有未完成任务");
-    
+  
     for (i, handle) in handles.iter_mut().enumerate() {
         if !handle.is_finished() {
             println!("取消任务 {}", i);
             handle.abort();
         }
     }
-    
+  
     // 等待所有任务结束
     for (i, handle) in handles.into_iter().enumerate() {
         match handle.await {
@@ -1528,6 +1562,7 @@ async fn cancel_with_abort_handle() {
         }
     }
 }
+
 ```
 
 这些取消模式展示了在Rust异步环境中实现可取消任务的不同策略，每种策略在不同场景下都有其优劣。
@@ -1549,33 +1584,33 @@ use tokio::time;
 async fn fetch_data(id: u32) -> Result<String> {
     // 模拟网络请求
     time::sleep(Duration::from_millis(100)).await;
-    
+  
     if id == 0 {
         return Err(anyhow!("无效ID"));
     }
-    
+  
     Ok(format!("数据 {}", id))
 }
 
 async fn process_data(data: String) -> Result<String> {
     // 模拟数据处理
     time::sleep(Duration::from_millis(50)).await;
-    
+  
     if data.len() < 5 {
         return Err(anyhow!("数据太短"));
     }
-    
+  
     Ok(format!("处理后: {}", data))
 }
 
 async fn save_data(processed: String) -> Result<()> {
     // 模拟保存数据
     time::sleep(Duration::from_millis(75)).await;
-    
+  
     if processed.contains("错误") {
         return Err(anyhow!("包含无效关键字"));
     }
-    
+  
     println!("已保存: {}", processed);
     Ok(())
 }
@@ -1585,10 +1620,11 @@ async fn fetch_process_save(id: u32) -> Result<()> {
     let data = fetch_data(id).await?;
     let processed = process_data(data).await?;
     save_data(processed).await?;
-    
+  
     println!("整个操作完成");
     Ok(())
 }
+
 ```
 
 这种方法允许错误自然地在异步调用链中传播，保持代码的简洁性和可读性。
@@ -1605,17 +1641,19 @@ use tokio::time;
 use thiserror::Error;
 
 // 使用thiserror定义具体错误类型
-#[derive(Error, Debug)]
+
+# [derive(Error, Debug)]
+
 enum ServiceError {
     #[error("网络错误: {0}")]
     Network(String),
-    
+  
     #[error("数据错误: {0}")]
     Data(String),
-    
+  
     #[error("存储错误: {0}")]
     Storage(String),
-    
+  
     #[error("超时错误")]
     Timeout,
 }
@@ -1640,11 +1678,11 @@ where
 async fn enhanced_fetch_data(id: u32) -> Result<String, ServiceError> {
     // 模拟网络请求
     time::sleep(Duration::from_millis(100)).await;
-    
+  
     if id == 0 {
         return Err(ServiceError::Network(format!("无效ID: {}", id)));
     }
-    
+  
     Ok(format!("数据 {}", id))
 }
 
@@ -1652,7 +1690,7 @@ async fn enhanced_fetch_data(id: u32) -> Result<String, ServiceError> {
 async fn fetch_with_fallback(id: u32) -> Result<String> {
     // 尝试主要数据源
     let primary_result = enhanced_fetch_data(id).await;
-    
+  
     match primary_result {
         Ok(data) => Ok(data),
         Err(ServiceError::Network(_)) => {
@@ -1673,14 +1711,14 @@ async fn fetch_multiple(ids: &[u32]) -> Result<Vec<String>> {
         enhanced_fetch_data(id)
             .map_err(move |e| anyhow!("获取ID {} 失败: {:?}", id, e))
     });
-    
+  
     // 收集所有结果，即使有些失败
     let results: Vec<Result<String, _>> = future::join_all(futures).await;
-    
+  
     // 过滤出成功结果，记录错误
     let mut success_count = 0;
     let mut error_count = 0;
-    
+  
     let successful_results = results
         .into_iter()
         .inspect(|result| {
@@ -1693,9 +1731,9 @@ async fn fetch_multiple(ids: &[u32]) -> Result<Vec<String>> {
         })
         .filter_map(Result::ok)
         .collect::<Vec<_>>();
-    
+  
     println!("获取结果: {} 成功, {} 失败", success_count, error_count);
-    
+  
     if successful_results.is_empty() {
         Err(anyhow!("所有请求都失败"))
     } else {
@@ -1706,7 +1744,7 @@ async fn fetch_multiple(ids: &[u32]) -> Result<Vec<String>> {
 // 按类别处理错误
 async fn categorized_error_handling(id: u32) -> Result<()> {
     let result = enhanced_fetch_data(id).await;
-    
+  
     match result {
         Ok(data) => {
             println!("成功: {}", data);
@@ -1729,6 +1767,7 @@ async fn categorized_error_handling(id: u32) -> Result<()> {
         }
     }
 }
+
 ```
 
 这些高级错误处理策略展示了如何在异步环境中实现：
@@ -1761,7 +1800,9 @@ use tokio::time;
 use tokio_util::codec::{Framed, LengthDelimitedCodec};
 
 // 服务器配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 struct ServerConfig {
     address: String,
     worker_threads: usize,
@@ -1783,7 +1824,9 @@ impl Default for ServerConfig {
 }
 
 // 服务器统计信息
-#[derive(Default, Debug)]
+
+# [derive(Default, Debug)]
+
 struct ServerStats {
     active_connections: usize,
     total_connections: usize,
@@ -1811,45 +1854,45 @@ impl ConnectionManager {
             connections: Arc::new(Mutex::new(HashMap::new())),
         }
     }
-    
+  
     // 更新连接状态
     fn register_connection(&self, addr: String) -> bool {
         let mut connections = self.connections.lock().unwrap();
         let mut stats = self.stats.lock().unwrap();
-        
+  
         // 检查是否超过最大连接数
         if connections.len() >= self.config.max_connections {
             stats.errors += 1;
             return false;
         }
-        
+  
         connections.insert(addr, Instant::now());
         stats.active_connections = connections.len();
         stats.total_connections += 1;
-        
+  
         true
     }
-    
+  
     // 移除连接
     fn remove_connection(&self, addr: &str) {
         let mut connections = self.connections.lock().unwrap();
         connections.remove(addr);
-        
+  
         let mut stats = self.stats.lock().unwrap();
         stats.active_connections = connections.len();
     }
-    
+  
     // 定期清理超时连接
     async fn cleanup_task(self: Arc<Self>) {
         let mut interval = time::interval(Duration::from_secs(5));
-        
+  
         loop {
             interval.tick().await;
-            
+  
             let mut to_remove = Vec::new();
             let now = Instant::now();
             let timeout = self.config.timeout;
-            
+  
             // 查找并记录超时连接
             {
                 let connections = self.connections.lock().unwrap();
@@ -1859,13 +1902,13 @@ impl ConnectionManager {
                     }
                 }
             }
-            
+  
             // 移除超时连接
             for addr in to_remove {
                 println!("移除超时连接: {}", addr);
                 self.remove_connection(&addr);
             }
-            
+  
             // 打印服务器统计信息
             let stats = self.stats.lock().unwrap();
             println!("服务器状态 - 活动连接: {}, 总连接: {}, 请求: {}, 响应: {}, 错误: {}, 运行时间: {:?}",
@@ -1881,7 +1924,9 @@ impl ConnectionManager {
 }
 
 // 请求和响应结构
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 struct Request {
     id: u64,
     client_addr: String,
@@ -1890,7 +1935,8 @@ struct Request {
     timestamp: Instant,
 }
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 struct Response {
     request_id: u64,
     status: u16,
@@ -1910,10 +1956,10 @@ impl RequestHandler for EchoHandler {
         // 记录请求信息
         println!("处理来自 {} 的请求: {}, 大小: {} 字节",
             request.client_addr, request.path, request.payload.len());
-        
+  
         // 简单的回显服务器逻辑
         tokio::time::sleep(Duration::from_millis(10)).await; // 模拟处理时间
-        
+  
         Response {
             request_id: request.id,
             status: 200,
@@ -1932,59 +1978,59 @@ struct AsyncServer<H: RequestHandler> {
 impl<H: RequestHandler> AsyncServer<H> {
     fn new(config: ServerConfig, handler: H) -> Self {
         let conn_manager = Arc::new(ConnectionManager::new(config.clone()));
-        
+  
         AsyncServer {
             config,
             connection_manager: conn_manager,
             handler: Arc::new(handler),
         }
     }
-    
+  
     // 启动服务器
     async fn run(&self) -> Result<(), Box<dyn Error>> {
         // 设置tokio运行时
         println!("服务器配置: {:?}", self.config);
-        
+  
         // 启动连接清理任务
         let conn_manager_clone = self.connection_manager.clone();
         tokio::spawn(async move {
             conn_manager_clone.cleanup_task().await;
         });
-        
+  
         // 监听TCP连接
         let listener = TcpListener::bind(&self.config.address).await?;
         println!("服务器监听地址: {}", self.config.address);
-        
+  
         // 接受并处理连接
         while let Ok((socket, addr)) = listener.accept().await {
             let client_addr = addr.to_string();
             println!("接受新连接: {}", client_addr);
-            
+  
             // 检查是否可以接受新连接
             if !self.connection_manager.register_connection(client_addr.clone()) {
                 println!("拒绝连接: {} - 服务器已达到最大连接数", client_addr);
                 continue;
             }
-            
+  
             // 为每个连接启动处理任务
             let conn_manager = self.connection_manager.clone();
             let handler = self.handler.clone();
             let buffer_size = self.config.backpressure_buffer_size;
-            
+  
             tokio::spawn(async move {
                 if let Err(e) = Self::handle_connection(socket, client_addr.clone(), handler, buffer_size).await {
                     println!("连接错误 {}: {:?}", client_addr, e);
                 }
-                
+  
                 // 无论如何都移除连接
                 conn_manager.remove_connection(&client_addr);
                 println!("连接关闭: {}", client_addr);
             });
         }
-        
+  
         Ok(())
     }
-    
+  
     // 处理单个连接
     async fn handle_connection(
         socket: TcpStream,
@@ -2097,6 +2143,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     
     Ok(())
 }
+
 ```
 
 ### 4.2 异步数据处理管道
@@ -2335,6 +2382,7 @@ async fn data_pipeline_example() -> Result<(), Box<dyn Error>> {
     
     Ok(())
 }
+
 ```
 
 ### 4.3 异步微服务架构
@@ -2806,6 +2854,7 @@ fn create_microservice_framework() -> MicroserviceFramework {
         health_checker,
     )
 }
+
 ```
 
 这个异步微服务架构设计包含了许多关键组件：

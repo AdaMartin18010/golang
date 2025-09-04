@@ -153,6 +153,7 @@ func (p *Proxy) checkAccess() bool {
     // 简单的访问控制逻辑
     return p.name != "forbidden"
 }
+
 ```
 
 ### 3.2.1.4.2 虚拟代理模式
@@ -272,6 +273,7 @@ func (v *VirtualProxy) GetHeight() int {
     }
     return v.realImage.GetHeight()
 }
+
 ```
 
 ### 3.2.1.4.3 保护代理模式
@@ -411,6 +413,7 @@ func (p *ProtectionProxy) canDelete(user User, docID string) bool {
     // 简单的权限检查逻辑
     return user.IsActive && user.Role == "admin"
 }
+
 ```
 
 ## 3.2.1.5 4. 工程案例
@@ -581,6 +584,7 @@ func (c *CacheProxy) cleanupRoutine() {
         c.mu.Unlock()
     }
 }
+
 ```
 
 ### 3.2.1.5.2 远程代理
@@ -810,6 +814,7 @@ func (r *RemoteProxy) DeleteUser(id string) error {
     
     return nil
 }
+
 ```
 
 ### 3.2.1.5.3 智能引用代理
@@ -955,6 +960,7 @@ func (r *ResourceProxy) GetSize() int64 {
 func (r *ResourceProxy) Release() {
     r.parent.ReleaseResource(r.resource.GetID())
 }
+
 ```
 
 ## 3.2.1.6 5. 批判性分析

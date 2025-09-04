@@ -16,6 +16,7 @@ trait Stream: Future<Output = ()> {
         cx: &mut Context<'_>,
     ) -> Poll<Option<Self::Item>>;
 }
+
 ```
 
 - `type Item`：这是一个关联类型，定义了 `Stream` 产生的值的类型。
@@ -69,6 +70,7 @@ async fn main() {
     let results: Vec<i32> = stream.collect().await;
     println!("Stream 产生的值： {:?}", results);
 }
+
 ```
 
 在这个示例中：
@@ -137,6 +139,7 @@ async fn main() {
         println!("Received value: {}", value);
     }
 }
+
 ```
 
 ### 2.2 示例：使用 `async_stream` 宏构建 Stream
@@ -166,6 +169,7 @@ async fn main() {
         println!("Yielded: {}", item);
     }
 }
+
 ```
 
 在以上两个示例中，stream 用于异步产生数据，消费端通过 `.next().await` 按顺序取得每个值，并可与其它异步操作并发协作。
@@ -219,6 +223,7 @@ async fn main() {
         println!("Result: {}", result);
     }
 }
+
 ```
 
 **问题分析：**  
@@ -247,6 +252,7 @@ async fn main() {
     }
     // 正确做法是使用 Stream 来生成并异步消费数据
 }
+
 ```
 
 **问题分析：**  
@@ -278,6 +284,7 @@ flowchart TD
     A --> E[常见反例]
     E --> E1[在 Stream 内进行阻塞式密集计算]
     E --> E2[错误使用同步 Iterator 替代 Stream]
+
 ```
 
 ---

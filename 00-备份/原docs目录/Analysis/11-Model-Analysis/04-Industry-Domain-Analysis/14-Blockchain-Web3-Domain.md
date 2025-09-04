@@ -282,6 +282,7 @@ func (ss *StateStorage) GetState(key []byte) ([]byte, error) {
     
     return ss.trie.Get(key)
 }
+
 ```
 
 ### 2.2 智能合约架构
@@ -446,6 +447,7 @@ func (cr *ContractRegistry) CallContract(address common.Address, data []byte) (*
     // 执行合约调用
     return vm.Execute(contract, data)
 }
+
 ```
 
 ### 2.3 交易处理系统
@@ -644,6 +646,7 @@ func (te *TransactionExecutor) executeContractCall(tx *Transaction) *ExecutionRe
     // 执行合约调用
     return te.vm.Execute(contract, tx.Data)
 }
+
 ```
 
 ## 4. 钱包系统
@@ -773,6 +776,7 @@ func (am *AccountManager) GetAccount(address common.Address) (*Account, error) {
     
     return account, nil
 }
+
 ```
 
 ### 4.2 Web3集成
@@ -908,6 +912,7 @@ func (ci *ContractInterface) CallFunction(functionName string, args ...interface
     // 解码返回值
     return ci.abi.DecodeFunctionReturn(function, result.Result.(string))
 }
+
 ```
 
 ## 5. 跨链通信
@@ -996,6 +1001,7 @@ func (ccp *CrossChainProtocol) ValidateMessage(message *CrossChainMessage) (bool
         return false, fmt.Errorf("unsupported protocol type")
     }
 }
+
 ```
 
 ## 6. 性能优化
@@ -1085,6 +1091,7 @@ func (ie *IndexingEngine) QueryIndex(indexName string, key string) ([]interface{
     
     return index.Data[key], nil
 }
+
 ```
 
 ## 7. 最佳实践
@@ -1181,6 +1188,7 @@ func (cm *ComplianceManager) CheckCompliance(tx *Transaction) error {
     
     return nil
 }
+
 ```
 
 ## 8. 案例分析

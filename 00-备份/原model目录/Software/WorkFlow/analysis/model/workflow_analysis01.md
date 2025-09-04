@@ -213,6 +213,7 @@
     |-- 存储适配器
     |-- 事务管理
     `-- 版本控制
+
 ```
 
 **Rust 实现核心层状态管理器示例**：
@@ -313,6 +314,7 @@ pub enum StateError {
     #[error("Storage error: {0}")]
     StorageError(String),
 }
+
 ```
 
 ### 3.2 服务层设计
@@ -338,6 +340,7 @@ pub enum StateError {
     |-- 外部系统连接器
     |-- 数据转换
     `-- 同步机制
+
 ```
 
 **Go 实现服务层执行服务示例**：
@@ -482,6 +485,7 @@ func (s *ExecutionService) executeWorkflow(ctx context.Context, execution *Workf
 }
 
 // 其他方法...
+
 ```
 
 ### 3.3 接口层设计
@@ -507,6 +511,7 @@ func (s *ExecutionService) executeWorkflow(ctx context.Context, execution *Workf
     |-- 工作流设计器
     |-- 监控面板
     `-- 管理控制台
+
 ```
 
 **Go 实现 REST API 示例**：
@@ -598,6 +603,7 @@ func (api *WorkflowAPI) StartWorkflow(c *gin.Context) {
 }
 
 // 其他API方法...
+
 ```
 
 ### 3.4 插件与扩展机制
@@ -623,6 +629,7 @@ func (api *WorkflowAPI) StartWorkflow(c *gin.Context) {
     |-- 调度策略
     |-- 重试策略
     `-- 容错策略
+
 ```
 
 **Rust 实现插件系统示例**：
@@ -659,28 +666,35 @@ pub trait TaskExecutorPlugin: Plugin {
 #[async_trait]
 pub trait ConnectorPlugin: Plugin {
     async fn connect(&self, config: serde_json::
+
 ```rust
 // 连接器插件特征（续）
-#[async_trait]
+
+# [async_trait]
+
 pub trait ConnectorPlugin: Plugin {
     async fn connect(&self, config: serde_json::Value) -> Result<ConnectorClient, ConnectorError>;
     fn supported_protocols(&self) -> Vec<String>;
 }
 
 // 策略插件特征
-#[async_trait]
+
+# [async_trait]
+
 pub trait PolicyPlugin: Plugin {
     async fn evaluate(
         &self,
         context: &PolicyContext,
         params: serde_json::Value,
     ) -> Result<PolicyDecision, PolicyError>;
-    
+  
     fn policy_type(&self) -> PolicyType;
 }
 
 // 插件类型枚举
-#[derive(Debug, Clone, PartialEq, Eq)]
+
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub enum PluginType {
     TaskExecutor,
     Connector,
@@ -705,17 +719,17 @@ impl PluginRegistry {
             policies: Arc::new(RwLock::new(HashMap::new())),
         }
     }
-    
+  
     pub async fn register_plugin<P: Plugin + 'static>(&self, plugin: P) -> Result<(), PluginError> {
         let plugin_name = plugin.name().to_string();
         let plugin_type = plugin.plugin_type();
-        
+  
         // 注册到通用插件表
         {
             let mut plugins = self.plugins.write().await;
             plugins.insert(plugin_name.clone(), Box::new(plugin));
         }
-        
+  
         // 根据类型注册到特定表中
         match plugin_type {
             PluginType::TaskExecutor => {
@@ -738,17 +752,18 @@ impl PluginRegistry {
             },
             _ => {}
         }
-        
+  
         Ok(())
     }
-    
+  
     pub async fn get_task_executor(&self, name: &str) -> Option<Arc<Box<dyn TaskExecutorPlugin>>> {
         let executors = self.task_executors.read().await;
         executors.get(name).map(|e| Arc::new(e.clone()))
     }
-    
+  
     // 其他获取方法...
 }
+
 ```
 
 ## 四、关键机制的深入分析
@@ -843,19 +858,19 @@ func (wd *WorkflowDefinition) Validate() error {
             return fmt.Errorf("target task '%s' not found", link.To)
         }
     }
-    
+  
     // 检查循环依赖
     if hasCyclicDependency(wd.Links) {
         return fmt.Errorf("cyclic dependency detected in workflow")
     }
-    
+  
     // 验证各任务定义
     for id, task := range wd.Tasks {
         if err := validateTaskDef(id, task); err != nil {
             return err
         }
     }
-    
+  
     return nil
 }
 
@@ -865,7 +880,7 @@ func hasCyclicDependency(links []Link) bool {
     graph := buildDependencyGraph(links)
     visited := make(map[string]bool)
     recStack := make(map[string]bool)
-    
+  
     for node := range graph {
         if !visited[node] {
             if isCyclicUtil(node, graph, visited, recStack) {
@@ -873,11 +888,12 @@ func hasCyclicDependency(links []Link) bool {
             }
         }
     }
-    
+  
     return false
 }
 
 // 其他辅助方法...
+
 ```
 
 ### 4.2 执行流机制深度分析
@@ -912,7 +928,9 @@ use async_trait::async_trait;
 use futures::future::{BoxFuture, FutureExt};
 
 // 任务执行状态
-#[derive(Debug, Clone, PartialEq, Eq)]
+
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub enum TaskExecutionStatus {
     Pending,
     Running,
@@ -923,7 +941,9 @@ pub enum TaskExecutionStatus {
 }
 
 // 任务执行器特征
-#[async_trait]
+
+# [async_trait]
+
 pub trait TaskExecutor: Send + Sync {
     async fn execute(&self, task: Task, context: TaskContext) -> Result<TaskResult, TaskExecutionError>;
     fn supported_task_types(&self) -> Vec<String>;
@@ -953,20 +973,20 @@ impl WorkflowExecutionEngine {
             event_sender,
         }
     }
-    
+  
     // 启动执行引擎
     pub async fn start(&self) -> Result<(), EngineError> {
         // 启动工作线程池
         let worker_count = 10; // 配置参数
         let mut worker_handles = Vec::with_capacity(worker_count);
-        
+  
         for i in 0..worker_count {
             let task_queue = self.task_queue.clone();
             let concurrency_limit = self.concurrency_limit.clone();
             let executors = self.executors.clone();
             let state_manager = self.state_manager.clone();
             let event_sender = self.event_sender.clone();
-            
+  
             let handle = tokio::spawn(async move {
                 log::info!("Worker {} started", i);
                 Self::worker_loop(
@@ -979,39 +999,39 @@ impl WorkflowExecutionEngine {
                 ).await;
                 log::info!("Worker {} stopped", i);
             });
-            
+  
             worker_handles.push(handle);
         }
-        
+  
         // 保存worker句柄以便后续管理
-        
+  
         Ok(())
     }
-    
+  
     // 提交工作流实例执行
     pub async fn execute_workflow(&self, instance: WorkflowInstance) -> Result<(), EngineError> {
         // 获取工作流定义
         let definition = self.state_manager.get_workflow_definition(&instance.definition_id).await?;
-        
+  
         // 初始化工作流状态
         self.state_manager.init_workflow_state(&instance.id, &definition).await?;
-        
+  
         // 调度初始任务
         let initial_tasks = self.get_initial_tasks(&definition);
         for task in initial_tasks {
             self.schedule_task(task, instance.id.clone(), definition.clone()).await?;
         }
-        
+  
         // 发布工作流启动事件
         let event = WorkflowEvent::Started {
             instance_id: instance.id.clone(),
             timestamp: chrono::Utc::now(),
         };
         self.event_sender.send(event).await.map_err(|_| EngineError::EventChannelClosed)?;
-        
+  
         Ok(())
     }
-    
+  
     // 调度任务执行
     async fn schedule_task(
         &self,
@@ -1025,16 +1045,16 @@ impl WorkflowExecutionEngine {
             workflow,
             scheduled_at: chrono::Utc::now(),
         };
-        
+  
         // 添加到任务队列
         {
             let mut queue = self.task_queue.write().await;
             queue.push_back(pending_task);
         }
-        
+  
         Ok(())
     }
-    
+  
     // 工作线程循环
     async fn worker_loop(
         worker_id: usize,
@@ -1047,13 +1067,13 @@ impl WorkflowExecutionEngine {
         loop {
             // 获取信号量，控制并发
             let permit = concurrency_limit.acquire().await.unwrap();
-            
+  
             // 从队列获取任务
             let task_option = {
                 let mut queue = task_queue.write().await;
                 queue.pop_front()
             };
-            
+  
             if let Some(pending_task) = task_option {
                 // 找到合适的执行器
                 if let Some(executor) = executors.get(&pending_task.task.task_type) {
@@ -1063,17 +1083,17 @@ impl WorkflowExecutionEngine {
                         task_id: pending_task.task.id.clone(),
                         workflow_data: state_manager.get_workflow_data(&pending_task.instance_id).await.unwrap_or_default(),
                     };
-                    
+  
                     // 更新任务状态为运行中
                     state_manager.update_task_status(
                         &pending_task.instance_id,
                         &pending_task.task.id,
                         TaskExecutionStatus::Running,
                     ).await.ok();
-                    
+  
                     // 执行任务
                     let task_result = executor.execute(pending_task.task.clone(), context).await;
-                    
+  
                     // 处理执行结果
                     match task_result {
                         Ok(result) => {
@@ -1083,37 +1103,37 @@ impl WorkflowExecutionEngine {
                                 &pending_task.task.id,
                                 TaskExecutionStatus::Completed,
                             ).await.ok();
-                            
+  
                             // 更新工作流数据
                             state_manager.update_workflow_data(
                                 &pending_task.instance_id,
                                 &pending_task.task.id,
                                 &result.output,
                             ).await.ok();
-                            
+  
                             // 调度后续任务
                             let next_tasks = Self::get_next_tasks(
                                 &pending_task.workflow,
                                 &pending_task.task.id,
                                 &result,
                             );
-                            
+  
                             for next_task in next_tasks {
                                 let mut ready = true;
-                                
+  
                                 // 检查依赖任务是否已完成
                                 for dep in &next_task.dependencies {
                                     let status = state_manager.get_task_status(
                                         &pending_task.instance_id,
                                         dep,
                                     ).await.unwrap_or(TaskExecutionStatus::Pending);
-                                    
+  
                                     if status != TaskExecutionStatus::Completed {
                                         ready = false;
                                         break;
                                     }
                                 }
-                                
+  
                                 if ready {
                                     // 添加到任务队列
                                     let next_pending_task = PendingTask {
@@ -1122,7 +1142,7 @@ impl WorkflowExecutionEngine {
                                         workflow: pending_task.workflow.clone(),
                                         scheduled_at: chrono::Utc::now(),
                                     };
-                                    
+  
                                     let mut queue = task_queue.write().await;
                                     queue.push_back(next_pending_task);
                                 }
@@ -1135,7 +1155,7 @@ impl WorkflowExecutionEngine {
                                 &pending_task.task.id,
                                 TaskExecutionStatus::Failed,
                             ).await.ok();
-                            
+  
                             // 处理错误策略
                             // ...
                         }
@@ -1148,9 +1168,10 @@ impl WorkflowExecutionEngine {
             }
         }
     }
-    
+  
     // 其他辅助方法...
 }
+
 ```
 
 ### 4.3 数据流机制深度分析
@@ -1182,7 +1203,7 @@ import (
     "encoding/json"
     "fmt"
     "reflect"
-    
+  
     "github.com/dop251/goja"
 )
 
@@ -1213,12 +1234,12 @@ func NewDataContext() *DataContext {
 func (dc *DataContext) SetWorkflowData(key string, value interface{}) error {
     dc.mutex.Lock()
     defer dc.mutex.Unlock()
-    
+  
     dataObj, err := serializeData(value)
     if err != nil {
         return err
     }
-    
+  
     dc.workflowData[key] = dataObj
     return nil
 }
@@ -1227,16 +1248,16 @@ func (dc *DataContext) SetWorkflowData(key string, value interface{}) error {
 func (dc *DataContext) SetTaskData(taskID, key string, value interface{}) error {
     dc.mutex.Lock()
     defer dc.mutex.Unlock()
-    
+  
     if _, ok := dc.taskData[taskID]; !ok {
         dc.taskData[taskID] = make(map[string]DataObject)
     }
-    
+  
     dataObj, err := serializeData(value)
     if err != nil {
         return err
     }
-    
+  
     dc.taskData[taskID][key] = dataObj
     return nil
 }
@@ -1245,7 +1266,7 @@ func (dc *DataContext) SetTaskData(taskID, key string, value interface{}) error 
 func (dc *DataContext) GetData(taskID, key string) (interface{}, bool) {
     dc.mutex.RLock()
     defer dc.mutex.RUnlock()
-    
+  
     // 先查找任务级别数据
     if taskMap, ok := dc.taskData[taskID]; ok {
         if dataObj, found := taskMap[key]; found {
@@ -1255,7 +1276,7 @@ func (dc *DataContext) GetData(taskID, key string) (interface{}, bool) {
             }
         }
     }
-    
+  
     // 查找工作流级别数据
     if dataObj, ok := dc.workflowData[key]; ok {
         value, err := deserializeData(dataObj)
@@ -1263,7 +1284,7 @@ func (dc *DataContext) GetData(taskID, key string) (interface{}, bool) {
             return value, true
         }
     }
-    
+  
     // 查找全局数据
     if dataObj, ok := dc.globalData[key]; ok {
         value, err := deserializeData(dataObj)
@@ -1271,7 +1292,7 @@ func (dc *DataContext) GetData(taskID, key string) (interface{}, bool) {
             return value, true
         }
     }
-    
+  
     return nil, false
 }
 
@@ -1290,10 +1311,10 @@ func NewDataMapper() *DataMapper {
 // MapData 根据映射规则转换数据
 func (dm *DataMapper) MapData(ctx context.Context, mapping DataMapping, input map[string]interface{}) (map[string]interface{}, error) {
     result := make(map[string]interface{})
-    
+  
     // 将输入数据注入JS运行时
     dm.jsRuntime.Set("input", input)
-    
+  
     // 处理每个映射项
     for outputKey, mappingItem := range mapping {
         switch mappingItem.Type {
@@ -1309,56 +1330,56 @@ func (dm *DataMapper) MapData(ctx context.Context, mapping DataMapping, input ma
             if mappingItem.Template == "" {
                 continue
             }
-            
+  
             // 通过JS表达式计算模板值
             templateFunc := fmt.Sprintf("(function() { return `%s`; })", mappingItem.Template)
             val, err := dm.jsRuntime.RunString(templateFunc)
             if err != nil {
                 return nil, fmt.Errorf("template evaluation error for key %s: %w", outputKey, err)
             }
-            
+  
             result[outputKey] = val.Export()
         case "expression":
             // 表达式映射
             if mappingItem.Expression == "" {
                 continue
             }
-            
+  
             // 计算表达式
             val, err := dm.jsRuntime.RunString(mappingItem.Expression)
             if err != nil {
                 return nil, fmt.Errorf("expression evaluation error for key %s: %w", outputKey, err)
             }
-            
+  
             result[outputKey] = val.Export()
         case "transform":
             // 转换函数
             if mappingItem.Transform == "" {
                 continue
             }
-            
+  
             // 创建转换函数
             transformFunc := fmt.Sprintf("(function(data) { %s })", mappingItem.Transform)
             fn, err := dm.jsRuntime.RunString(transformFunc)
             if err != nil {
                 return nil, fmt.Errorf("transform compilation error for key %s: %w", outputKey, err)
             }
-            
+  
             // 调用转换函数
             call, ok := goja.AssertFunction(fn)
             if !ok {
                 return nil, fmt.Errorf("transform is not a function for key %s", outputKey)
             }
-            
+  
             val, err := call(goja.Undefined(), dm.jsRuntime.ToValue(input))
             if err != nil {
                 return nil, fmt.Errorf("transform execution error for key %s: %w", outputKey, err)
             }
-            
+  
             result[outputKey] = val.Export()
         }
     }
-    
+  
     return result, nil
 }
 
@@ -1377,7 +1398,7 @@ func serializeData(value interface{}) (DataObject, error) {
     if err != nil {
         return DataObject{}, err
     }
-    
+  
     return DataObject{
         Type:  valueType,
         Value: jsonData,
@@ -1386,7 +1407,7 @@ func serializeData(value interface{}) (DataObject, error) {
 
 func deserializeData(obj DataObject) (interface{}, error) {
     var result interface{}
-    
+  
     // 根据类型进行反序列化
     switch obj.Type {
     case "string":
@@ -1408,6 +1429,7 @@ func deserializeData(obj DataObject) (interface{}, error) {
         return result, err
     }
 }
+
 ```
 
 ### 4.4 控制流机制深度分析
@@ -1440,6 +1462,7 @@ use async_trait::async_trait;
 use serde::{Serialize, Deserialize};
 
 // 控制
+
 ```rust
 // 控制流结构定义
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -1712,6 +1735,7 @@ pub enum ControlFlowError {
     #[error("Join error: {0}")]
     JoinError(#[from] tokio::task::JoinError),
 }
+
 ```
 
 ### 4.5 状态管理机制深度分析
@@ -2069,6 +2093,7 @@ func marshalOrEmpty(v interface{}) json.RawMessage {
     
     return data
 }
+
 ```
 
 ## 五、本地工作流的形式化验证
@@ -2452,6 +2477,7 @@ pub enum ValidationError {
     #[error("Data flow error: {0}")]
     DataFlowError(String),
 }
+
 ```
 
 ### 5.2 终止性与活性证明
@@ -2685,6 +2711,7 @@ func (a *LivenessAnalyzer) Analyze(workflow *model.WorkflowDefinition) (*Livenes
         Reason:       "No deadlock detected",
     }, nil
 }
+
 ```
 
 ### 5.3 并发安全性证明
@@ -2939,6 +2966,7 @@ impl ConcurrencyAnalyzer {
         task_groups
     }
 }
+
 ```
 
 ### 5.4 资源约束下的可行性证明
@@ -3202,6 +3230,7 @@ func buildTaskLevels(workflow *model.WorkflowDefinition) [][]string {
     
     return levels
 }
+
 ```
 
 ## 六、本地工作流的实现详解
@@ -3268,6 +3297,7 @@ pub struct RetryPolicy {
     pub multiplier: f64,
     pub max_interval: i64,      // 毫秒
 }
+
 ```
 
 #### 6.1.2 工作流执行引擎
@@ -3645,6 +3675,7 @@ impl ExecutionEngine for LocalExecutionEngine {
         self.state_manager.list_workflow_instances(status, limit, offset).await
     }
 }
+
 ```
 
 ### 6.2 Go实现核心组件
@@ -3942,6 +3973,7 @@ func (p *WorkerPool) Stop() {
     // 实现停止逻辑
     // ...
 }
+
 ```
 
 #### 6.2.2 数据存储和状态管理
@@ -4211,6 +4243,7 @@ func (s *InMemoryStorage) DeleteInstance(ctx context.Context, id string) error {
 }
 
 // 任务和事件存储方法的实现，类似于上述方法...
+
 ```
 
 ### 6.3 存储层实现
@@ -4395,6 +4428,7 @@ impl InstanceStore for FileSystemStorage {
 }
 
 // 同样实现TaskStore和EventStore接口...
+
 ```
 
 #### 6.3.2 数据库存储
@@ -4622,6 +4656,7 @@ func (s *DBStorage) ListDefinitions(ctx context.Context, limit, offset int) ([]*
 }
 
 // 其他方法（DeleteDefinition, CreateInstance, UpdateInstance等）的实现类似...
+
 ```
 
 ### 6.4 调度系统实现
@@ -4651,6 +4686,7 @@ pub struct TaskScheduler {
     task_queues: Arc<RwLock<HashMap<String, VecDeque<TaskDefinition>>>>,
     task_states: Arc<RwLock<HashMap<String, HashMap<String, TaskStatus>>>>,
     completion_channels: Arc<Mutex
+
 ```rust
 // 任务调度器（续）
 pub struct TaskScheduler {
@@ -4676,7 +4712,7 @@ impl TaskScheduler {
             paused_workflows: Arc::new(RwLock::new(HashMap::new())),
         }
     }
-    
+  
     // 调度任务执行
     pub async fn schedule_task(
         &self,
@@ -4691,7 +4727,7 @@ impl TaskScheduler {
                 return Err(SchedulerError::WorkflowPaused);
             }
         }
-        
+  
         // 确保工作流的任务队列存在
         {
             let mut queues = self.task_queues.write().await;
@@ -4699,44 +4735,44 @@ impl TaskScheduler {
                 queues.insert(workflow_id.clone(), VecDeque::new());
             }
         }
-        
+  
         // 确保工作流的任务状态映射存在
         {
             let mut states = self.task_states.write().await;
             if !states.contains_key(&workflow_id) {
                 states.insert(workflow_id.clone(), HashMap::new());
             }
-            
+  
             // 设置任务状态为待调度
             let workflow_tasks = states.get_mut(&workflow_id).unwrap();
             workflow_tasks.insert(task.id.clone(), TaskStatus::Scheduled);
         }
-        
+  
         // 添加任务到队列
         {
             let mut queues = self.task_queues.write().await;
             let queue = queues.get_mut(&workflow_id).unwrap();
             queue.push_back(task.clone());
         }
-        
+  
         // 持久化任务状态
         self.state_manager.update_task_status(
             &workflow_id,
             &task.id,
             TaskStatus::Scheduled,
         ).await?;
-        
+  
         // 启动任务处理
         self.process_tasks(workflow_id, context).await;
-        
+  
         Ok(())
     }
-    
+  
     // 处理任务队列
     async fn process_tasks(&self, workflow_id: String, context: &mut ExecutionContext) {
         let scheduler = self.clone();
         let context = context.clone();
-        
+  
         tokio::spawn(async move {
             loop {
                 // 检查工作流是否已暂停
@@ -4748,7 +4784,7 @@ impl TaskScheduler {
                         continue;
                     }
                 }
-                
+  
                 // 获取下一个任务
                 let task = {
                     let mut queues = scheduler.task_queues.write().await;
@@ -4758,13 +4794,13 @@ impl TaskScheduler {
                         None
                     }
                 };
-                
+  
                 // 如果没有更多任务，退出循环
                 let task = match task {
                     Some(t) => t,
                     None => break,
                 };
-                
+  
                 // 更新任务状态为执行中
                 {
                     let mut states = scheduler.task_states.write().await;
@@ -4772,19 +4808,19 @@ impl TaskScheduler {
                         workflow_tasks.insert(task.id.clone(), TaskStatus::Running);
                     }
                 }
-                
+  
                 // 持久化任务状态
                 scheduler.state_manager.update_task_status(
                     &workflow_id,
                     &task.id,
                     TaskStatus::Running,
                 ).await.ok();
-                
+  
                 // 获取适合的执行器
                 if let Some(executor) = scheduler.executors.get(&task.task_type) {
                     // 执行任务
                     let result = executor.execute_task(&task, &context).await;
-                    
+  
                     // 处理执行结果
                     match result {
                         Ok(result) => {
@@ -4795,7 +4831,7 @@ impl TaskScheduler {
                                     workflow_tasks.insert(task.id.clone(), TaskStatus::Completed);
                                 }
                             }
-                            
+  
                             // 持久化任务状态和结果
                             scheduler.state_manager.update_task_result(
                                 &workflow_id,
@@ -4803,7 +4839,7 @@ impl TaskScheduler {
                                 &result,
                                 TaskStatus::Completed,
                             ).await.ok();
-                            
+  
                             // 通知结果
                             scheduler.notify_completion(&workflow_id, &task.id, Ok(result)).await;
                         },
@@ -4815,7 +4851,7 @@ impl TaskScheduler {
                                     workflow_tasks.insert(task.id.clone(), TaskStatus::Failed);
                                 }
                             }
-                            
+  
                             // 持久化任务状态和错误
                             scheduler.state_manager.update_task_error(
                                 &workflow_id,
@@ -4823,17 +4859,17 @@ impl TaskScheduler {
                                 &err.to_string(),
                                 TaskStatus::Failed,
                             ).await.ok();
-                            
+  
                             // 通知错误
                             scheduler.notify_completion(&workflow_id, &task.id, Err(err)).await;
-                            
+  
                             // 可以在这里添加重试逻辑
                         }
                     }
                 } else {
                     // 找不到适合的执行器
                     let err = SchedulerError::NoExecutorFound(task.task_type.clone());
-                    
+  
                     // 更新任务状态为失败
                     {
                         let mut states = scheduler.task_states.write().await;
@@ -4841,7 +4877,7 @@ impl TaskScheduler {
                             workflow_tasks.insert(task.id.clone(), TaskStatus::Failed);
                         }
                     }
-                    
+  
                     // 持久化任务状态和错误
                     scheduler.state_manager.update_task_error(
                         &workflow_id,
@@ -4849,31 +4885,31 @@ impl TaskScheduler {
                         &err.to_string(),
                         TaskStatus::Failed,
                     ).await.ok();
-                    
+  
                     // 通知错误
                     scheduler.notify_completion(&workflow_id, &task.id, Err(err.into())).await;
                 }
             }
         });
     }
-    
+  
     // 等待工作流完成
     pub async fn wait_for_completion(&self, workflow_id: &str) -> Result<(), TaskExecutionError> {
         // 创建完成通知通道
         let (tx, mut rx) = mpsc::channel(100);
-        
+  
         {
             let mut channels = self.completion_channels.lock().await;
             channels.insert(workflow_id.to_string(), tx);
         }
-        
+  
         // 等待所有任务完成或出错
         while let Some(result) = rx.recv().await {
             if let Err(err) = result {
                 return Err(err);
             }
         }
-        
+  
         // 检查是否所有任务都已完成
         let all_completed = {
             let states = self.task_states.read().await;
@@ -4883,14 +4919,14 @@ impl TaskScheduler {
                 true // 没有任务就算完成
             }
         };
-        
+  
         if all_completed {
             Ok(())
         } else {
             Err(TaskExecutionError::IncompleteExecution)
         }
     }
-    
+  
     // 通知任务完成
     async fn notify_completion(
         &self,
@@ -4904,21 +4940,21 @@ impl TaskScheduler {
             tx.send(result).await.ok();
         }
     }
-    
+  
     // 暂停工作流调度
     pub async fn pause_scheduling(&self, workflow_id: &str) -> Result<(), SchedulerError> {
         let mut paused = self.paused_workflows.write().await;
         paused.insert(workflow_id.to_string(), true);
         Ok(())
     }
-    
+  
     // 恢复工作流调度
     pub async fn resume_scheduling(&self, workflow_id: &str) -> Result<(), SchedulerError> {
         let mut paused = self.paused_workflows.write().await;
         paused.insert(workflow_id.to_string(), false);
         Ok(())
     }
-    
+  
     // 取消所有任务
     pub async fn cancel_all_tasks(&self, workflow_id: &str) -> Result<(), SchedulerError> {
         // 清空任务队列
@@ -4928,7 +4964,7 @@ impl TaskScheduler {
                 queue.clear();
             }
         }
-        
+  
         // 更新所有未完成任务的状态为取消
         {
             let mut states = self.task_states.write().await;
@@ -4936,7 +4972,7 @@ impl TaskScheduler {
                 for (task_id, status) in workflow_tasks.iter_mut() {
                     if *status == TaskStatus::Pending || *status == TaskStatus::Scheduled || *status == TaskStatus::Running {
                         *status = TaskStatus::Cancelled;
-                        
+  
                         // 持久化任务状态
                         self.state_manager.update_task_status(
                             workflow_id,
@@ -4947,25 +4983,27 @@ impl TaskScheduler {
                 }
             }
         }
-        
+  
         Ok(())
     }
 }
 
-#[derive(Debug, thiserror::Error)]
+# [derive(Debug, thiserror::Error)]
+
 pub enum SchedulerError {
     #[error("No executor found for task type: {0}")]
     NoExecutorFound(String),
-    
+  
     #[error("Workflow is paused")]
     WorkflowPaused,
-    
+  
     #[error("State error: {0}")]
     StateError(#[from] StateError),
-    
+  
     #[error("Task execution error: {0}")]
     TaskExecutionError(#[from] TaskExecutionError),
 }
+
 ```
 
 #### 6.4.2 分布式调度器
@@ -4978,7 +5016,7 @@ import (
     "fmt"
     "sync"
     "time"
-    
+  
     "github.com/yourorg/workflow/executor"
     "github.com/yourorg/workflow/model"
     "github.com/yourorg/workflow/storage"
@@ -5025,7 +5063,7 @@ func (s *DistributedScheduler) Start(ctx context.Context) error {
     taskQueue := &distributedTaskQueue{
         scheduler: s,
     }
-    
+  
     // 创建工作节点池
     s.workerPool = executor.NewWorkerPool(
         s.executorRegistry,
@@ -5033,16 +5071,16 @@ func (s *DistributedScheduler) Start(ctx context.Context) error {
         10, // 工作节点数
         5,  // 每个节点并发任务数
     )
-    
+  
     // 启动工作节点池
     s.workerPool.Start(ctx)
-    
+  
     // 启动任务轮询
     go s.pollTasks(ctx)
-    
+  
     // 启动工作流监控
     go s.monitorWorkflows(ctx)
-    
+  
     return nil
 }
 
@@ -5057,12 +5095,12 @@ func (s *DistributedScheduler) ScheduleTask(ctx context.Context, task *model.Tas
     task.Status = "SCHEDULED"
     task.CreatedAt = time.Now()
     task.UpdatedAt = time.Now()
-    
+  
     // 将任务保存到存储
     if err := s.storage.CreateTask(ctx, task); err != nil {
         return fmt.Errorf("failed to create task: %w", err)
     }
-    
+  
     // 记录任务调度事件
     event := &model.WorkflowEvent{
         ID:                fmt.Sprintf("evt-%s", generateID()),
@@ -5072,15 +5110,15 @@ func (s *DistributedScheduler) ScheduleTask(ctx context.Context, task *model.Tas
         Timestamp:         time.Now(),
         Version:           getNextVersion(ctx, s.eventStore, task.WorkflowInstanceID),
     }
-    
+  
     if err := s.eventStore.RecordEvent(ctx, event); err != nil {
         // 仅记录错误，不影响任务调度
         fmt.Printf("Failed to record task scheduled event: %v\n", err)
     }
-    
+  
     // 将工作流标记为活动状态
     s.activeWorkflows.Store(task.WorkflowInstanceID, true)
-    
+  
     return nil
 }
 
@@ -5088,7 +5126,7 @@ func (s *DistributedScheduler) ScheduleTask(ctx context.Context, task *model.Tas
 func (s *DistributedScheduler) pollTasks(ctx context.Context) {
     ticker := time.NewTicker(s.pollInterval)
     defer ticker.Stop()
-    
+  
     for {
         select {
         case <-ctx.Done():
@@ -5100,7 +5138,7 @@ func (s *DistributedScheduler) pollTasks(ctx context.Context) {
                 fmt.Printf("Error polling tasks: %v\n", err)
                 continue
             }
-            
+  
             // 处理每个任务
             for _, task := range tasks {
                 // 尝试获取任务执行锁
@@ -5109,24 +5147,24 @@ func (s *DistributedScheduler) pollTasks(ctx context.Context) {
                     fmt.Printf("Error locking task %s: %v\n", task.ID, err)
                     continue
                 }
-                
+  
                 if !locked {
                     // 任务已被其他节点锁定
                     continue
                 }
-                
+  
                 // 更新任务状态为正在运行
                 task.Status = "RUNNING"
                 task.StartedAt = time.Now()
                 task.UpdatedAt = time.Now()
-                
+  
                 if err := s.storage.UpdateTask(ctx, task); err != nil {
                     fmt.Printf("Error updating task %s status: %v\n", task.ID, err)
                     // 释放锁
                     s.unlockTask(ctx, task.ID)
                     continue
                 }
-                
+  
                 // 记录任务开始事件
                 event := &model.WorkflowEvent{
                     ID:                fmt.Sprintf("evt-%s", generateID()),
@@ -5136,11 +5174,11 @@ func (s *DistributedScheduler) pollTasks(ctx context.Context) {
                     Timestamp:         time.Now(),
                     Version:           getNextVersion(ctx, s.eventStore, task.WorkflowInstanceID),
                 }
-                
+  
                 if err := s.eventStore.RecordEvent(ctx, event); err != nil {
                     fmt.Printf("Failed to record task started event: %v\n", err)
                 }
-                
+  
                 // 将任务放入本地队列
                 // 实际执行由工作节点池负责
                 // ...
@@ -5153,7 +5191,7 @@ func (s *DistributedScheduler) pollTasks(ctx context.Context) {
 func (s *DistributedScheduler) monitorWorkflows(ctx context.Context) {
     ticker := time.NewTicker(30 * time.Second)
     defer ticker.Stop()
-    
+  
     for {
         select {
         case <-ctx.Done():
@@ -5162,24 +5200,24 @@ func (s *DistributedScheduler) monitorWorkflows(ctx context.Context) {
             // 检查所有活动工作流
             s.activeWorkflows.Range(func(key, value interface{}) bool {
                 workflowID := key.(string)
-                
+  
                 // 检查工作流是否完成
                 completed, err := s.isWorkflowCompleted(ctx, workflowID)
                 if err != nil {
                     fmt.Printf("Error checking workflow %s completion: %v\n", workflowID, err)
                     return true
                 }
-                
+  
                 if completed {
                     // 工作流已完成，从活动列表中移除
                     s.activeWorkflows.Delete(workflowID)
-                    
+  
                     // 更新工作流状态
                     if err := s.completeWorkflow(ctx, workflowID); err != nil {
                         fmt.Printf("Error completing workflow %s: %v\n", workflowID, err)
                     }
                 }
-                
+  
                 return true
             })
         }
@@ -5192,18 +5230,18 @@ func (s *DistributedScheduler) isWorkflowCompleted(ctx context.Context, workflow
     if err != nil {
         return false, err
     }
-    
+  
     if len(tasks) == 0 {
         return false, nil
     }
-    
+  
     // 检查是否所有任务都已完成
     for _, task := range tasks {
         if task.Status != "COMPLETED" && task.Status != "FAILED" && task.Status != "CANCELLED" {
             return false, nil
         }
     }
-    
+  
     return true, nil
 }
 
@@ -5213,13 +5251,13 @@ func (s *DistributedScheduler) completeWorkflow(ctx context.Context, workflowID 
     if err != nil {
         return err
     }
-    
+  
     // 检查是否有任务失败
     tasks, err := s.storage.ListWorkflowTasks(ctx, workflowID)
     if err != nil {
         return err
     }
-    
+  
     hasFailedTasks := false
     for _, task := range tasks {
         if task.Status == "FAILED" {
@@ -5227,12 +5265,12 @@ func (s *DistributedScheduler) completeWorkflow(ctx context.Context, workflowID 
             break
         }
     }
-    
+  
     // 更新工作流状态
     if hasFailedTasks {
         instance.Status = "FAILED"
         instance.CompletedAt = time.Now()
-        
+  
         // 记录工作流失败事件
         event := &model.WorkflowEvent{
             ID:                fmt.Sprintf("evt-%s", generateID()),
@@ -5241,17 +5279,17 @@ func (s *DistributedScheduler) completeWorkflow(ctx context.Context, workflowID 
             Timestamp:         time.Now(),
             Version:           getNextVersion(ctx, s.eventStore, workflowID),
         }
-        
+  
         if err := s.eventStore.RecordEvent(ctx, event); err != nil {
             fmt.Printf("Failed to record workflow failed event: %v\n", err)
         }
     } else {
         instance.Status = "COMPLETED"
         instance.CompletedAt = time.Now()
-        
+  
         // 获取最终输出
         // ...
-        
+  
         // 记录工作流完成事件
         event := &model.WorkflowEvent{
             ID:                fmt.Sprintf("evt-%s", generateID()),
@@ -5260,12 +5298,12 @@ func (s *DistributedScheduler) completeWorkflow(ctx context.Context, workflowID 
             Timestamp:         time.Now(),
             Version:           getNextVersion(ctx, s.eventStore, workflowID),
         }
-        
+  
         if err := s.eventStore.RecordEvent(ctx, event); err != nil {
             fmt.Printf("Failed to record workflow completed event: %v\n", err)
         }
     }
-    
+  
     // 更新工作流实例
     return s.instanceStore.UpdateInstance(ctx, instance)
 }
@@ -5290,14 +5328,14 @@ func getNextVersion(ctx context.Context, store storage.EventStore, workflowID st
     if err != nil || len(events) == 0 {
         return 1
     }
-    
+  
     maxVersion := int64(0)
     for _, event := range events {
         if event.Version > maxVersion {
             maxVersion = event.Version
         }
     }
-    
+  
     return maxVersion + 1
 }
 
@@ -5320,11 +5358,11 @@ func (q *distributedTaskQueue) NextTask(ctx context.Context) (*model.TaskInstanc
     if err != nil {
         return nil, err
     }
-    
+  
     if len(tasks) == 0 {
         return nil, nil
     }
-    
+  
     return tasks[0], nil
 }
 
@@ -5335,25 +5373,25 @@ func (q *distributedTaskQueue) CompleteTask(ctx context.Context, taskID string, 
     if err != nil {
         return err
     }
-    
+  
     // 更新任务状态
     task.Status = "COMPLETED"
     task.CompletedAt = time.Now()
     task.UpdatedAt = time.Now()
-    
+  
     // 序列化输出
     outputBytes, err := json.Marshal(result.Output)
     if err != nil {
         return fmt.Errorf("failed to marshal task output: %w", err)
     }
-    
+  
     task.Output = outputBytes
-    
+  
     // 更新任务
     if err := q.scheduler.storage.UpdateTask(ctx, task); err != nil {
         return err
     }
-    
+  
     // 记录任务完成事件
     event := &model.WorkflowEvent{
         ID:                fmt.Sprintf("evt-%s", generateID()),
@@ -5364,16 +5402,16 @@ func (q *distributedTaskQueue) CompleteTask(ctx context.Context, taskID string, 
         Timestamp:         time.Now(),
         Version:           getNextVersion(ctx, q.scheduler.eventStore, task.WorkflowInstanceID),
     }
-    
+  
     if err := q.scheduler.eventStore.RecordEvent(ctx, event); err != nil {
         return fmt.Errorf("failed to record task completed event: %w", err)
     }
-    
+  
     // 调度后续任务
     if err := q.scheduler.scheduleNextTasks(ctx, task); err != nil {
         return fmt.Errorf("failed to schedule next tasks: %w", err)
     }
-    
+  
     return nil
 }
 
@@ -5384,19 +5422,19 @@ func (q *distributedTaskQueue) FailTask(ctx context.Context, taskID string, err 
     if getErr != nil {
         return getErr
     }
-    
+  
     // 检查是否需要重试
     if task.RetryCount < task.MaxRetries {
         // 更新重试计数
         task.RetryCount++
         task.Status = "SCHEDULED" // 重置为待调度状态
         task.UpdatedAt = time.Now()
-        
+  
         // 更新任务
         if updateErr := q.scheduler.storage.UpdateTask(ctx, task); updateErr != nil {
             return updateErr
         }
-        
+  
         // 记录任务重试事件
         event := &model.WorkflowEvent{
             ID:                fmt.Sprintf("evt-%s", generateID()),
@@ -5407,26 +5445,26 @@ func (q *distributedTaskQueue) FailTask(ctx context.Context, taskID string, err 
             Timestamp:         time.Now(),
             Version:           getNextVersion(ctx, q.scheduler.eventStore, task.WorkflowInstanceID),
         }
-        
+  
         if eventErr := q.scheduler.eventStore.RecordEvent(ctx, event); eventErr != nil {
             // 仅记录错误，不影响流程
             fmt.Printf("Failed to record task retrying event: %v\n", eventErr)
         }
-        
+  
         return nil
     }
-    
+  
     // 达到最大重试次数，标记为失败
     task.Status = "FAILED"
     task.Error = err.Error()
     task.CompletedAt = time.Now()
     task.UpdatedAt = time.Now()
-    
+  
     // 更新任务
     if updateErr := q.scheduler.storage.UpdateTask(ctx, task); updateErr != nil {
         return updateErr
     }
-    
+  
     // 记录任务失败事件
     event := &model.WorkflowEvent{
         ID:                fmt.Sprintf("evt-%s", generateID()),
@@ -5437,13 +5475,14 @@ func (q *distributedTaskQueue) FailTask(ctx context.Context, taskID string, err 
         Timestamp:         time.Now(),
         Version:           getNextVersion(ctx, q.scheduler.eventStore, task.WorkflowInstanceID),
     }
-    
+  
     if eventErr := q.scheduler.eventStore.RecordEvent(ctx, event); eventErr != nil {
         return fmt.Errorf("failed to record task failed event: %w", eventErr)
     }
-    
+  
     return nil
 }
+
 ```
 
 ## 七、高级特性与优化
@@ -5463,10 +5502,10 @@ use tokio::sync::RwLock;
 pub struct BatchOptimizer {
     // 批处理规则映射
     batch_rules: HashMap<String, BatchRule>,
-    
+  
     // 当前活跃批次
     active_batches: Arc<RwLock<HashMap<String, Batch>>>,
-    
+  
     // 批次收集超时（毫秒）
     collection_timeout: u64,
 }
@@ -5475,13 +5514,13 @@ pub struct BatchOptimizer {
 struct BatchRule {
     // 任务类型
     task_type: String,
-    
+  
     // 最大批次大小
     max_batch_size: usize,
-    
+  
     // 最小批次大小
     min_batch_size: usize,
-    
+  
     // 最大等待时间（毫秒）
     max_wait_time: u64,
 }
@@ -5490,11 +5529,12 @@ struct BatchRule {
 struct Batch {
     // 批次ID
     id: String,
-    
+  
     // 任务类型
     task_type: String,
-    
+  
     // 批次中的
+
 ```rust
 // 批次（续）
 struct Batch {
@@ -5628,6 +5668,7 @@ async fn process_batch(batch: Batch) {
     // 例如，将多个数据库操作合并为一个事务
     // 或者将多个API调用合并为一个批量调用
 }
+
 ```
 
 #### 7.1.2 并行度动态调整
@@ -5822,6 +5863,7 @@ func max(a, b int) int {
     }
     return b
 }
+
 ```
 
 ### 7.2 基于历史的预测执行
@@ -6205,6 +6247,7 @@ impl PredictionEngine for StatisticalPredictionEngine {
                 
                 let size_ratio = input_size as f64 / avg_input_size;
                 let adjustment_factor = 1.0 + (size_ratio - 1.0) * 0.8; // 保守系数
+
 ```rust
                 // 调整资源预测
                 predicted_metrics.cpu_usage *= adjustment_factor;
@@ -6214,7 +6257,7 @@ impl PredictionEngine for StatisticalPredictionEngine {
                 predicted_metrics.network_in = (predicted_metrics.network_in as f64 * adjustment_factor) as u64;
                 predicted_metrics.network_out = (predicted_metrics.network_out as f64 * adjustment_factor) as u64;
             }
-            
+  
             predicted_metrics
         } else {
             // 没有历史数据，返回默认值
@@ -6228,36 +6271,36 @@ impl PredictionEngine for StatisticalPredictionEngine {
             }
         }
     }
-    
+  
     async fn predict_optimal_parallelism(&self, workflow_type: &str, input_params: &serde_json::Value) -> u32 {
         // 获取工作流统计信息
         if let Some(stats) = self.workflow_stats.get(workflow_type) {
             // 分析任务依赖关系，找出可并行的任务组
             // 分析任务的典型资源使用情况
-            
+  
             // 简单模型：根据资源使用预测并行度
             let resource_prediction = self.predict_resource_usage(workflow_type, input_params).await;
-            
+  
             // 假设系统有4核CPU，8GB内存
             let system_cpu_cores = 4.0;
             let system_memory_mb = 8192.0;
-            
+  
             // 计算资源约束下的并行度
             let cpu_limited_parallelism = if resource_prediction.cpu_usage > 0.0 {
                 (system_cpu_cores / resource_prediction.cpu_usage) as u32
             } else {
                 1
             };
-            
+  
             let memory_limited_parallelism = if resource_prediction.memory_usage > 0.0 {
                 (system_memory_mb / resource_prediction.memory_usage) as u32
             } else {
                 1
             };
-            
+  
             // 取最小值作为资源约束
             let resource_parallelism = u32::min(cpu_limited_parallelism, memory_limited_parallelism);
-            
+  
             // 限制最大并行度，避免过度并行
             u32::min(resource_parallelism, 16)
         } else {
@@ -6265,22 +6308,22 @@ impl PredictionEngine for StatisticalPredictionEngine {
             4 // 假设默认并行度为4
         }
     }
-    
+  
     async fn update_model(&self, record: ExecutionRecord) {
         // 将新记录添加到历史数据中
         let mut engine = self.clone();
         engine.execution_history.push(record);
-        
+  
         // 如果历史记录太多，可以限制数量
         if engine.execution_history.len() > 1000 {
             // 保留最近的1000条记录
             engine.execution_history.sort_by(|a, b| b.start_time.cmp(&a.start_time));
             engine.execution_history.truncate(1000);
         }
-        
+  
         // 重建统计模型
         engine.rebuild_statistics();
-        
+  
         // 更新模型
         // 在实际实现中，这里需要安全地更新共享状态
     }
@@ -6293,6 +6336,7 @@ fn serialize_size(value: &serde_json::Value) -> usize {
         Err(_) => 0,
     }
 }
+
 ```
 
 ### 7.3 资源自适应调度
@@ -6305,7 +6349,7 @@ import (
     "sort"
     "sync"
     "time"
-    
+  
     "github.com/yourorg/workflow/model"
 )
 
@@ -6314,17 +6358,17 @@ type ResourceAwareScheduler struct {
     resourceMonitor ResourceMonitor
     taskStore       TaskStore
     executionEngine ExecutionEngine
-    
+  
     // 资源配置
     resourceConfig ResourceConfig
-    
+  
     // 调度策略
     schedulingPolicy SchedulingPolicy
-    
+  
     // 任务优先级队列
     priorityQueues map[string]PriorityQueue
     queueMutex     sync.RWMutex
-    
+  
     // 活跃任务
     activeTasks      map[string]*model.TaskInstance
     activeTasksMutex sync.RWMutex
@@ -6434,13 +6478,13 @@ func NewResourceAwareScheduler(
 func (s *ResourceAwareScheduler) Start(ctx context.Context) error {
     // 初始化优先级队列
     s.initQueues()
-    
+  
     // 启动资源监控
     go s.monitorResources(ctx)
-    
+  
     // 启动调度循环
     go s.schedulingLoop(ctx)
-    
+  
     return nil
 }
 
@@ -6448,7 +6492,7 @@ func (s *ResourceAwareScheduler) Start(ctx context.Context) error {
 func (s *ResourceAwareScheduler) initQueues() {
     s.queueMutex.Lock()
     defer s.queueMutex.Unlock()
-    
+  
     // 初始化不同优先级的队列
     s.priorityQueues["high"] = NewInMemoryPriorityQueue(100)
     s.priorityQueues["normal"] = NewInMemoryPriorityQueue(500)
@@ -6459,7 +6503,7 @@ func (s *ResourceAwareScheduler) initQueues() {
 func (s *ResourceAwareScheduler) monitorResources(ctx context.Context) {
     ticker := time.NewTicker(5 * time.Second)
     defer ticker.Stop()
-    
+  
     for {
         select {
         case <-ctx.Done():
@@ -6471,7 +6515,7 @@ func (s *ResourceAwareScheduler) monitorResources(ctx context.Context) {
                 // 记录错误
                 continue
             }
-            
+  
             // 检查资源过度使用情况，调整并发度
             if snapshot.CPUUsage > s.resourceConfig.CPUThreshold ||
                snapshot.MemoryUsage > s.resourceConfig.MemThreshold {
@@ -6490,7 +6534,7 @@ func (s *ResourceAwareScheduler) monitorResources(ctx context.Context) {
 func (s *ResourceAwareScheduler) schedulingLoop(ctx context.Context) {
     ticker := time.NewTicker(100 * time.Millisecond)
     defer ticker.Stop()
-    
+  
     for {
         select {
         case <-ctx.Done():
@@ -6501,16 +6545,16 @@ func (s *ResourceAwareScheduler) schedulingLoop(ctx context.Context) {
             if err != nil {
                 continue
             }
-            
+  
             // 获取所有待调度任务
             pendingTasks, err := s.fetchAndEnqueuePendingTasks(ctx)
             if err != nil {
                 continue
             }
-            
+  
             // 根据资源情况和调度策略选择要执行的任务
             tasksToExecute := s.selectTasksToExecute(resources, pendingTasks)
-            
+  
             // 执行选中的任务
             for _, task := range tasksToExecute {
                 s.executeTask(ctx, task)
@@ -6526,14 +6570,14 @@ func (s *ResourceAwareScheduler) fetchAndEnqueuePendingTasks(ctx context.Context
     if err != nil {
         return nil, err
     }
-    
+  
     pendingTasks := make([]*model.TaskInstance, 0)
-    
+  
     // 按照任务类型或优先级分配到不同队列
     for _, task := range tasks {
         // 确定任务优先级
         priority := s.determineTaskPriority(task)
-        
+  
         // 根据优先级选择队列
         var queueName string
         switch {
@@ -6544,19 +6588,19 @@ func (s *ResourceAwareScheduler) fetchAndEnqueuePendingTasks(ctx context.Context
         default:
             queueName = "low"
         }
-        
+  
         // 入队
         s.queueMutex.RLock()
         queue := s.priorityQueues[queueName]
         s.queueMutex.RUnlock()
-        
+  
         if queue != nil {
             if err := queue.Enqueue(task); err == nil {
                 pendingTasks = append(pendingTasks, task)
             }
         }
     }
-    
+  
     return pendingTasks, nil
 }
 
@@ -6568,7 +6612,7 @@ func (s *ResourceAwareScheduler) determineTaskPriority(task *model.TaskInstance)
         // 默认优先级
         return PriorityNormal
     }
-    
+  
     // 解析优先级
     switch priorityValue {
     case "critical":
@@ -6588,12 +6632,12 @@ func (s *ResourceAwareScheduler) selectTasksToExecute(resources ResourceSnapshot
     availableCPU := resources.AvailableCPU
     availableMemory := resources.AvailableMemory
     availableDisk := resources.AvailableDisk
-    
+  
     // 获取当前活跃任务数
     s.activeTasksMutex.RLock()
     activeTaskCount := len(s.activeTasks)
     s.activeTasksMutex.RUnlock()
-    
+  
     // 根据当前系统负载决定最大并发任务数
     maxConcurrentTasks := 10 // 默认值
     if resources.CPUUsage > 0.8 || resources.MemoryUsage > 0.8 {
@@ -6601,42 +6645,42 @@ func (s *ResourceAwareScheduler) selectTasksToExecute(resources ResourceSnapshot
     } else if resources.CPUUsage < 0.3 && resources.MemoryUsage < 0.3 {
         maxConcurrentTasks = 20
     }
-    
+  
     // 计算可以增加的任务数
     remainingSlots := maxConcurrentTasks - activeTaskCount
     if remainingSlots <= 0 {
         return nil
     }
-    
+  
     // 根据调度策略排序任务
     sortedTasks := s.sortTasksByPolicy(pendingTasks)
-    
+  
     // 选择资源足够的任务执行
     selectedTasks := make([]*model.TaskInstance, 0)
-    
+  
     for _, task := range sortedTasks {
         if len(selectedTasks) >= remainingSlots {
             break
         }
-        
+  
         // 估计任务资源需求
         estimate := s.estimateTaskResources(task)
-        
+  
         // 检查资源是否足够
         if estimate.CPUUsage <= availableCPU &&
            estimate.MemoryUsage <= availableMemory &&
            estimate.DiskUsage <= availableDisk {
-            
+  
             // 减少可用资源
             availableCPU -= estimate.CPUUsage
             availableMemory -= estimate.MemoryUsage
             availableDisk -= estimate.DiskUsage
-            
+  
             // 添加到选中任务列表
             selectedTasks = append(selectedTasks, task)
         }
     }
-    
+  
     return selectedTasks
 }
 
@@ -6644,14 +6688,14 @@ func (s *ResourceAwareScheduler) selectTasksToExecute(resources ResourceSnapshot
 func (s *ResourceAwareScheduler) sortTasksByPolicy(tasks []*model.TaskInstance) []*model.TaskInstance {
     sortedTasks := make([]*model.TaskInstance, len(tasks))
     copy(sortedTasks, tasks)
-    
+  
     switch s.schedulingPolicy {
     case PolicyFIFO:
         // 按创建时间排序
         sort.Slice(sortedTasks, func(i, j int) bool {
             return sortedTasks[i].CreatedAt.Before(sortedTasks[j].CreatedAt)
         })
-        
+  
     case PolicyPriority:
         // 按优先级排序
         sort.Slice(sortedTasks, func(i, j int) bool {
@@ -6659,13 +6703,13 @@ func (s *ResourceAwareScheduler) sortTasksByPolicy(tasks []*model.TaskInstance) 
             priorityJ := s.determineTaskPriority(sortedTasks[j])
             return priorityI > priorityJ
         })
-        
+  
     case PolicyEarliestFirst:
         // 按截止时间排序
         sort.Slice(sortedTasks, func(i, j int) bool {
             deadlineI, okI := sortedTasks[i].Metadata["deadline"].(time.Time)
             deadlineJ, okJ := sortedTasks[j].Metadata["deadline"].(time.Time)
-            
+  
             if okI && okJ {
                 return deadlineI.Before(deadlineJ)
             } else if okI {
@@ -6673,11 +6717,11 @@ func (s *ResourceAwareScheduler) sortTasksByPolicy(tasks []*model.TaskInstance) 
             } else if okJ {
                 return false
             }
-            
+  
             // 如果没有截止时间，按创建时间排序
             return sortedTasks[i].CreatedAt.Before(sortedTasks[j].CreatedAt)
         })
-        
+  
     case PolicyFairShare:
         // 按工作流实例公平共享排序
         // 计算每个工作流的任务数
@@ -6685,7 +6729,7 @@ func (s *ResourceAwareScheduler) sortTasksByPolicy(tasks []*model.TaskInstance) 
         for _, task := range sortedTasks {
             workflowTaskCount[task.WorkflowInstanceID]++
         }
-        
+  
         // 按工作流已有任务数排序
         sort.Slice(sortedTasks, func(i, j int) bool {
             countI := workflowTaskCount[sortedTasks[i].WorkflowInstanceID]
@@ -6693,7 +6737,7 @@ func (s *ResourceAwareScheduler) sortTasksByPolicy(tasks []*model.TaskInstance) 
             return countI < countJ
         })
     }
-    
+  
     return sortedTasks
 }
 
@@ -6701,7 +6745,7 @@ func (s *ResourceAwareScheduler) sortTasksByPolicy(tasks []*model.TaskInstance) 
 func (s *ResourceAwareScheduler) estimateTaskResources(task *model.TaskInstance) TaskResourceEstimate {
     // 从历史执行数据或任务配置中获取资源估计
     // 这里使用简化实现，实际应该基于历史数据和机器学习模型
-    
+  
     // 默认估计
     estimate := TaskResourceEstimate{
         TaskType:    task.Type,
@@ -6709,7 +6753,7 @@ func (s *ResourceAwareScheduler) estimateTaskResources(task *model.TaskInstance)
         MemoryUsage: 256,  // 默认使用256MB内存
         DiskUsage:   10,   // 默认使用10MB磁盘
     }
-    
+  
     // 根据任务类型调整估计
     switch task.Type {
     case "data_processing":
@@ -6725,7 +6769,7 @@ func (s *ResourceAwareScheduler) estimateTaskResources(task *model.TaskInstance)
         estimate.MemoryUsage = 384
         estimate.DiskUsage = 50
     }
-    
+  
     // 考虑输入数据大小
     if inputSize, ok := task.Metadata["input_size"].(int64); ok {
         // 调整资源估计
@@ -6737,7 +6781,7 @@ func (s *ResourceAwareScheduler) estimateTaskResources(task *model.TaskInstance)
             estimate.DiskUsage += int64(20 * sizeFactorMB)
         }
     }
-    
+  
     return estimate
 }
 
@@ -6748,12 +6792,12 @@ func (s *ResourceAwareScheduler) executeTask(ctx context.Context, task *model.Ta
         // 记录错误
         return
     }
-    
+  
     // 添加到活跃任务列表
     s.activeTasksMutex.Lock()
     s.activeTasks[task.ID] = task
     s.activeTasksMutex.Unlock()
-    
+  
     // 异步执行任务
     go func() {
         defer func() {
@@ -6762,7 +6806,7 @@ func (s *ResourceAwareScheduler) executeTask(ctx context.Context, task *model.Ta
             delete(s.activeTasks, task.ID)
             s.activeTasksMutex.Unlock()
         }()
-        
+  
         // 执行任务
         if err := s.executionEngine.ExecuteTask(ctx, task); err != nil {
             // 记录错误
@@ -6782,6 +6826,7 @@ func (s *ResourceAwareScheduler) increaseTaskExecution() {
     // 实现增加执行逻辑
     // 例如：重新启用低优先级队列的处理
 }
+
 ```
 
 ### 7.4 局部性优化
@@ -6795,16 +6840,18 @@ use tokio::sync::RwLock;
 pub struct LocalityOptimizer {
     // 数据位置映射：数据ID -> 节点ID
     data_locations: Arc<RwLock<HashMap<String, HashSet<String>>>>,
-    
+  
     // 节点位置映射：节点ID -> 位置信息
     node_locations: Arc<RwLock<HashMap<String, NodeLocation>>>,
-    
+  
     // 缓存统计信息
     cache_stats: Arc<RwLock<HashMap<String, CacheStat>>>,
 }
 
 // 节点位置信息
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 struct NodeLocation {
     node_id: String,
     rack_id: String,
@@ -6812,7 +6859,9 @@ struct NodeLocation {
 }
 
 // 数据局部性级别
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+
 pub enum LocalityLevel {
     Process,    // 同一进程
     Node,       // 同一节点
@@ -6822,7 +6871,9 @@ pub enum LocalityLevel {
 }
 
 // 缓存统计
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 struct CacheStat {
     data_id: String,
     size_bytes: u64,
@@ -6838,7 +6889,7 @@ impl LocalityOptimizer {
             cache_stats: Arc::new(RwLock::new(HashMap::new())),
         }
     }
-    
+  
     // 注册节点位置
     pub async fn register_node(&self, node_id: String, rack_id: String, datacenter_id: String) {
         let location = NodeLocation {
@@ -6846,19 +6897,19 @@ impl LocalityOptimizer {
             rack_id,
             datacenter_id,
         };
-        
+  
         let mut nodes = self.node_locations.write().await;
         nodes.insert(node_id, location);
     }
-    
+  
     // 注册数据位置
     pub async fn register_data_location(&self, data_id: String, node_id: String) {
         let mut locations = self.data_locations.write().await;
-        
+  
         locations.entry(data_id.clone())
             .or_insert_with(HashSet::new)
             .insert(node_id.clone());
-            
+  
         // 更新缓存统计
         let mut stats = self.cache_stats.write().await;
         let stat = stats.entry(data_id.clone()).or_insert_with(|| CacheStat {
@@ -6867,11 +6918,11 @@ impl LocalityOptimizer {
             last_accessed: chrono::Utc::now(),
             access_count: 0,
         });
-        
+  
         stat.last_accessed = chrono::Utc::now();
         stat.access_count += 1;
     }
-    
+  
     // 更新数据大小
     pub async fn update_data_size(&self, data_id: String, size_bytes: u64) {
         let mut stats = self.cache_stats.write().await;
@@ -6879,7 +6930,7 @@ impl LocalityOptimizer {
             stat.size_bytes = size_bytes;
         }
     }
-    
+  
     // 确定数据与节点的局部性级别
     pub async fn get_locality_level(&self, data_id: &str, node_id: &str) -> LocalityLevel {
         // 检查数据是否在节点上
@@ -6888,7 +6939,7 @@ impl LocalityOptimizer {
             if nodes.contains(node_id) {
                 return LocalityLevel::Node;
             }
-            
+  
             // 检查是否在同一机架或数据中心
             let node_locs = self.node_locations.read().await;
             if let Some(node_location) = node_locs.get(node_id) {
@@ -6897,7 +6948,7 @@ impl LocalityOptimizer {
                         if data_location.rack_id == node_location.rack_id {
                             return LocalityLevel::Rack;
                         }
-                        
+  
                         if data_location.datacenter_id == node_location.datacenter_id {
                             return LocalityLevel::DataCenter;
                         }
@@ -6905,11 +6956,11 @@ impl LocalityOptimizer {
                 }
             }
         }
-        
+  
         // 默认为远程
         LocalityLevel::Remote
     }
-    
+  
     // 获取数据的最佳节点
     pub async fn get_best_node_for_data(&self, data_id: &str) -> Option<String> {
         let locations = self.data_locations.read().await;
@@ -6917,31 +6968,31 @@ impl LocalityOptimizer {
             // 如果数据已经在某些节点上，选择其中一个
             return nodes.iter().next().cloned();
         }
-        
+  
         None
     }
-    
+  
     // 根据数据局部性选择最佳节点执行任务
     pub async fn select_best_node_for_task(&self, task: &TaskDefinition) -> Option<String> {
         // 分析任务的数据依赖
         let data_dependencies = self.analyze_task_data_dependencies(task);
-        
+  
         if data_dependencies.is_empty() {
             // 没有数据依赖，任何节点都可以
             return None;
         }
-        
+  
         // 为每个可能的节点计算数据局部性得分
         let node_locs = self.node_locations.read().await;
         let mut node_scores: HashMap<String, f64> = HashMap::new();
-        
+  
         for node_id in node_locs.keys() {
             let mut total_score = 0.0;
             let mut total_weight = 0.0;
-            
+  
             for (data_id, weight) in &data_dependencies {
                 let locality = self.get_locality_level(data_id, node_id).await;
-                
+  
                 // 根据局部性级别分配分数
                 let score = match locality {
                     LocalityLevel::Process => 10.0,
@@ -6950,27 +7001,27 @@ impl LocalityOptimizer {
                     LocalityLevel::DataCenter => 2.0,
                     LocalityLevel::Remote => 1.0,
                 };
-                
+  
                 total_score += score * weight;
                 total_weight += weight;
             }
-            
+  
             // 计算加权平均分
             if total_weight > 0.0 {
                 node_scores.insert(node_id.clone(), total_score / total_weight);
             }
         }
-        
+  
         // 选择得分最高的节点
         node_scores.into_iter()
             .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
             .map(|(node_id, _)| node_id)
     }
-    
+  
     // 分析任务的数据依赖关系
     fn analyze_task_data_dependencies(&self, task: &TaskDefinition) -> HashMap<String, f64> {
         let mut dependencies = HashMap::new();
-        
+  
         // 分析任务输入
         if let Some(inputs) = &task.inputs {
             for (_, input_spec) in inputs {
@@ -6978,6 +7029,7 @@ impl LocalityOptimizer {
                     // 提取数据ID
                     // 假设格式为 "task_id.output_name"
                     let parts: Vec
+
 ```rust
     // 分析任务的数据依赖关系（续）
     fn analyze_task_data_dependencies(&self, task: &TaskDefinition) -> HashMap<String, f64> {
@@ -7220,6 +7272,7 @@ impl LocalityOptimizer {
         }
     }
 }
+
 ```
 
 ## 八、云本地混合架构
@@ -7662,6 +7715,7 @@ func analyzeDataLocality(task *model.TaskInstance) string {
     // ...
     return "unknown"
 }
+
 ```
 
 ### 8.2 状态同步策略
@@ -7785,69 +7839,75 @@ pub struct HybridStateSynchronizer {
 pub struct HybridStateSynchronizer {
     // 本地存储
     local_store: Arc<dyn WorkflowStore>,
-    
+  
     // 云端客户端
     cloud_client: Arc<dyn CloudWorkflowClient>,
-    
+  
     // 同步策略
     strategy: SyncStrategy,
-    
+  
     // 同步记录存储
     sync_log: Arc<RwLock<Vec<SyncRecord>>>,
-    
+  
     // 同步状态缓存
     sync_status: Arc<RwLock<HashMap<String, SyncStatus>>>,
-    
+  
     // 冲突解决策略
     conflict_resolver: Arc<dyn ConflictResolver>,
-    
+  
     // 最后同步时间
     last_sync: Arc<RwLock<HashMap<SyncItemType, Instant>>>,
-    
+  
     // 周期性同步间隔
     sync_interval: HashMap<SyncItemType, Duration>,
 }
 
 // 工作流存储接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait WorkflowStore: Send + Sync {
     async fn get_definition(&self, id: &str) -> Result<WorkflowDefinition, StoreError>;
     async fn save_definition(&self, definition: &WorkflowDefinition) -> Result<(), StoreError>;
     async fn list_definitions(&self, last_sync: Option<chrono::DateTime<chrono::Utc>>) -> Result<Vec<WorkflowDefinition>, StoreError>;
-    
+  
     async fn get_instance(&self, id: &str) -> Result<WorkflowInstance, StoreError>;
     async fn save_instance(&self, instance: &WorkflowInstance) -> Result<(), StoreError>;
     async fn list_instances(&self, last_sync: Option<chrono::DateTime<chrono::Utc>>) -> Result<Vec<WorkflowInstance>, StoreError>;
-    
+  
     async fn get_task(&self, workflow_id: &str, task_id: &str) -> Result<TaskInstance, StoreError>;
     async fn save_task(&self, task: &TaskInstance) -> Result<(), StoreError>;
-    
+  
     async fn get_events(&self, workflow_id: &str, from_version: i64) -> Result<Vec<WorkflowEvent>, StoreError>;
     async fn save_events(&self, workflow_id: &str, events: &[WorkflowEvent]) -> Result<(), StoreError>;
 }
 
 // 云工作流客户端接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait CloudWorkflowClient: Send + Sync {
     async fn get_definition(&self, id: &str) -> Result<WorkflowDefinition, CloudError>;
     async fn create_definition(&self, definition: &WorkflowDefinition) -> Result<(), CloudError>;
     async fn update_definition(&self, definition: &WorkflowDefinition) -> Result<(), CloudError>;
     async fn list_definitions(&self, last_sync: Option<chrono::DateTime<chrono::Utc>>) -> Result<Vec<WorkflowDefinition>, CloudError>;
-    
+  
     async fn get_instance(&self, id: &str) -> Result<WorkflowInstance, CloudError>;
     async fn create_instance(&self, instance: &WorkflowInstance) -> Result<(), CloudError>;
     async fn update_instance(&self, instance: &WorkflowInstance) -> Result<(), CloudError>;
     async fn list_instances(&self, last_sync: Option<chrono::DateTime<chrono::Utc>>) -> Result<Vec<WorkflowInstance>, CloudError>;
-    
+  
     async fn get_task(&self, workflow_id: &str, task_id: &str) -> Result<TaskInstance, CloudError>;
     async fn update_task(&self, task: &TaskInstance) -> Result<(), CloudError>;
-    
+  
     async fn get_events(&self, workflow_id: &str, from_version: i64) -> Result<Vec<WorkflowEvent>, CloudError>;
     async fn push_events(&self, workflow_id: &str, events: &[WorkflowEvent]) -> Result<(), CloudError>;
 }
 
 // 冲突解决器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait ConflictResolver: Send + Sync {
     async fn resolve_definition_conflict(&self, local: &WorkflowDefinition, cloud: &WorkflowDefinition) -> Result<WorkflowDefinition, ConflictError>;
     async fn resolve_instance_conflict(&self, local: &WorkflowInstance, cloud: &WorkflowInstance) -> Result<WorkflowInstance, ConflictError>;
@@ -7867,7 +7927,7 @@ impl HybridStateSynchronizer {
         sync_interval.insert(SyncItemType::Instance, Duration::from_secs(300));    // 5分钟
         sync_interval.insert(SyncItemType::Task, Duration::from_secs(60));         // 1分钟
         sync_interval.insert(SyncItemType::Event, Duration::from_secs(10));        // 10秒
-        
+  
         Self {
             local_store,
             cloud_client,
@@ -7879,11 +7939,11 @@ impl HybridStateSynchronizer {
             sync_interval,
         }
     }
-    
+  
     // 启动周期性同步
     pub fn start_periodic_sync(&self) -> Result<(), SyncError> {
         let synchronizer = self.clone();
-        
+  
         tokio::spawn(async move {
             loop {
                 // 检查是否需要同步各类型项目
@@ -7897,7 +7957,7 @@ impl HybridStateSynchronizer {
                             true // 从未同步过，应该同步
                         }
                     };
-                    
+  
                     if should_sync {
                         // 根据同步策略确定同步方向
                         match synchronizer.strategy {
@@ -7906,7 +7966,7 @@ impl HybridStateSynchronizer {
                                 if let Err(e) = synchronizer.sync_all(*item_type, SyncDirection::ToCloud).await {
                                     eprintln!("Error syncing {:?} to cloud: {}", item_type, e);
                                 }
-                                
+  
                                 if let Err(e) = synchronizer.sync_all(*item_type, SyncDirection::ToLocal).await {
                                     eprintln!("Error syncing {:?} to local: {}", item_type, e);
                                 }
@@ -7927,21 +7987,21 @@ impl HybridStateSynchronizer {
                                 // 按需同步，周期性任务不处理
                             },
                         }
-                        
+  
                         // 更新最后同步时间
                         let mut last_sync_map = synchronizer.last_sync.write().unwrap();
                         last_sync_map.insert(*item_type, Instant::now());
                     }
                 }
-                
+  
                 // 等待一段时间
                 tokio::time::sleep(Duration::from_secs(1)).await;
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     // 同步特定类型的所有项目
     async fn sync_all(&self, item_type: SyncItemType, direction: SyncDirection) -> Result<(), SyncError> {
         match item_type {
@@ -7957,7 +8017,7 @@ impl HybridStateSynchronizer {
             },
         }
     }
-    
+  
     // 同步所有工作流定义
     async fn sync_all_definitions(&self, direction: SyncDirection) -> Result<(), SyncError> {
         // 获取上次同步时间
@@ -7969,13 +8029,13 @@ impl HybridStateSynchronizer {
                 .flatten()
                 .max()
         };
-        
+  
         match direction {
             SyncDirection::ToCloud => {
                 // 获取本地更新的定义
                 let definitions = self.local_store.list_definitions(last_sync_time).await
                     .map_err(|e| SyncError::SyncError(format!("Failed to list local definitions: {}", e)))?;
-                
+  
                 // 将本地定义同步到云端
                 for def in definitions {
                     if let Err(e) = self.sync_definition(&def.id, direction).await {
@@ -7987,7 +8047,7 @@ impl HybridStateSynchronizer {
                 // 获取云端更新的定义
                 let definitions = self.cloud_client.list_definitions(last_sync_time).await
                     .map_err(|e| SyncError::SyncError(format!("Failed to list cloud definitions: {}", e)))?;
-                
+  
                 // 将云端定义同步到本地
                 for def in definitions {
                     if let Err(e) = self.sync_definition(&def.id, direction).await {
@@ -7996,10 +8056,10 @@ impl HybridStateSynchronizer {
                 }
             },
         }
-        
+  
         Ok(())
     }
-    
+  
     // 同步所有工作流实例
     async fn sync_all_instances(&self, direction: SyncDirection) -> Result<(), SyncError> {
         // 获取上次同步时间
@@ -8011,13 +8071,13 @@ impl HybridStateSynchronizer {
                 .flatten()
                 .max()
         };
-        
+  
         match direction {
             SyncDirection::ToCloud => {
                 // 获取本地更新的实例
                 let instances = self.local_store.list_instances(last_sync_time).await
                     .map_err(|e| SyncError::SyncError(format!("Failed to list local instances: {}", e)))?;
-                
+  
                 // 将本地实例同步到云端
                 for instance in instances {
                     if let Err(e) = self.sync_instance(&instance.id, direction).await {
@@ -8029,7 +8089,7 @@ impl HybridStateSynchronizer {
                 // 获取云端更新的实例
                 let instances = self.cloud_client.list_instances(last_sync_time).await
                     .map_err(|e| SyncError::SyncError(format!("Failed to list cloud instances: {}", e)))?;
-                
+  
                 // 将云端实例同步到本地
                 for instance in instances {
                     if let Err(e) = self.sync_instance(&instance.id, direction).await {
@@ -8038,10 +8098,10 @@ impl HybridStateSynchronizer {
                 }
             },
         }
-        
+  
         Ok(())
     }
-    
+  
     // 记录同步操作
     fn log_sync_operation(&self, item_type: SyncItemType, id: &str, operation: SyncOperation, source: &str, status: &str, error: Option<String>) {
         let record = SyncRecord {
@@ -8054,16 +8114,16 @@ impl HybridStateSynchronizer {
             status: status.to_string(),
             error,
         };
-        
+  
         let mut log = self.sync_log.write().unwrap();
         log.push(record);
-        
+  
         // 如果日志太长，可以截断
         if log.len() > 1000 {
             log.drain(0..log.len() - 1000);
         }
     }
-    
+  
     // 更新同步状态
     fn update_sync_status(&self, item_type: SyncItemType, id: &str, is_in_sync: bool, version: i64, error: Option<String>) {
         let status = SyncStatus {
@@ -8074,14 +8134,15 @@ impl HybridStateSynchronizer {
             is_in_sync,
             last_sync_error: error,
         };
-        
+  
         let mut status_map = self.sync_status.write().unwrap();
         let key = format!("{:?}:{}", item_type, id);
         status_map.insert(key, status);
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl StateSynchronizer for HybridStateSynchronizer {
     async fn sync_definition(&self, id: &str, direction: SyncDirection) -> Result<(), SyncError> {
         match direction {
@@ -8089,10 +8150,10 @@ impl StateSynchronizer for HybridStateSynchronizer {
                 // 获取本地定义
                 let local_def = self.local_store.get_definition(id).await
                     .map_err(|e| SyncError::NotFound(format!("Local definition not found: {}", e)))?;
-                
+  
                 // 尝试获取云端定义
                 let cloud_def_result = self.cloud_client.get_definition(id).await;
-                
+  
                 match cloud_def_result {
                     Ok(cloud_def) => {
                         // 两者都存在，需要处理冲突
@@ -8100,17 +8161,17 @@ impl StateSynchronizer for HybridStateSynchronizer {
                             // 本地版本更新，直接更新云端
                             self.cloud_client.update_definition(&local_def).await
                                 .map_err(|e| SyncError::SyncError(format!("Failed to update cloud definition: {}", e)))?;
-                            
+  
                             self.log_sync_operation(SyncItemType::Definition, id, SyncOperation::Update, "local", "success", None);
                             self.update_sync_status(SyncItemType::Definition, id, true, local_def.version, None);
                         } else if local_def.version < cloud_def.version {
                             // 云端版本更新，可能需要冲突解决
                             let resolved = self.conflict_resolver.resolve_definition_conflict(&local_def, &cloud_def).await
                                 .map_err(|e| SyncError::VersionConflict(format!("Failed to resolve definition conflict: {}", e)))?;
-                            
+  
                             self.cloud_client.update_definition(&resolved).await
                                 .map_err(|e| SyncError::SyncError(format!("Failed to update cloud definition: {}", e)))?;
-                            
+  
                             self.log_sync_operation(SyncItemType::Definition, id, SyncOperation::Update, "merged", "success", None);
                             self.update_sync_status(SyncItemType::Definition, id, true, resolved.version, None);
                         } else {
@@ -8122,7 +8183,7 @@ impl StateSynchronizer for HybridStateSynchronizer {
                         // 云端不存在，创建
                         self.cloud_client.create_definition(&local_def).await
                             .map_err(|e| SyncError::SyncError(format!("Failed to create cloud definition: {}", e)))?;
-                        
+  
                         self.log_sync_operation(SyncItemType::Definition, id, SyncOperation::Create, "local", "success", None);
                         self.update_sync_status(SyncItemType::Definition, id, true, local_def.version, None);
                     }
@@ -8132,10 +8193,10 @@ impl StateSynchronizer for HybridStateSynchronizer {
                 // 获取云端定义
                 let cloud_def = self.cloud_client.get_definition(id).await
                     .map_err(|e| SyncError::NotFound(format!("Cloud definition not found: {}", e)))?;
-                
+  
                 // 尝试获取本地定义
                 let local_def_result = self.local_store.get_definition(id).await;
-                
+  
                 match local_def_result {
                     Ok(local_def) => {
                         // 两者都存在，需要处理冲突
@@ -8143,17 +8204,17 @@ impl StateSynchronizer for HybridStateSynchronizer {
                             // 云端版本更新，直接更新本地
                             self.local_store.save_definition(&cloud_def).await
                                 .map_err(|e| SyncError::SyncError(format!("Failed to update local definition: {}", e)))?;
-                            
+  
                             self.log_sync_operation(SyncItemType::Definition, id, SyncOperation::Update, "cloud", "success", None);
                             self.update_sync_status(SyncItemType::Definition, id, true, cloud_def.version, None);
                         } else if cloud_def.version < local_def.version {
                             // 本地版本更新，可能需要冲突解决
                             let resolved = self.conflict_resolver.resolve_definition_conflict(&local_def, &cloud_def).await
                                 .map_err(|e| SyncError::VersionConflict(format!("Failed to resolve definition conflict: {}", e)))?;
-                            
+  
                             self.local_store.save_definition(&resolved).await
                                 .map_err(|e| SyncError::SyncError(format!("Failed to update local definition: {}", e)))?;
-                            
+  
                             self.log_sync_operation(SyncItemType::Definition, id, SyncOperation::Update, "merged", "success", None);
                             self.update_sync_status(SyncItemType::Definition, id, true, resolved.version, None);
                         } else {
@@ -8165,31 +8226,31 @@ impl StateSynchronizer for HybridStateSynchronizer {
                         // 本地不存在，创建
                         self.local_store.save_definition(&cloud_def).await
                             .map_err(|e| SyncError::SyncError(format!("Failed to create local definition: {}", e)))?;
-                        
+  
                         self.log_sync_operation(SyncItemType::Definition, id, SyncOperation::Create, "cloud", "success", None);
                         self.update_sync_status(SyncItemType::Definition, id, true, cloud_def.version, None);
                     }
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     async fn sync_instance(&self, id: &str, direction: SyncDirection) -> Result<(), SyncError> {
         // 实现类似于sync_definition的逻辑，但针对工作流实例
         // 此外还需要同步实例相关的任务和事件
-        
+  
         // 同步实例
         match direction {
             SyncDirection::ToCloud => {
                 // 获取本地实例
                 let local_instance = self.local_store.get_instance(id).await
                     .map_err(|e| SyncError::NotFound(format!("Local instance not found: {}", e)))?;
-                
+  
                 // 尝试获取云端实例
                 let cloud_instance_result = self.cloud_client.get_instance(id).await;
-                
+  
                 match cloud_instance_result {
                     Ok(cloud_instance) => {
                         // 两者都存在，需要处理冲突
@@ -8198,17 +8259,17 @@ impl StateSynchronizer for HybridStateSynchronizer {
                             // 本地版本更新，直接更新云端
                             self.cloud_client.update_instance(&local_instance).await
                                 .map_err(|e| SyncError::SyncError(format!("Failed to update cloud instance: {}", e)))?;
-                            
+  
                             self.log_sync_operation(SyncItemType::Instance, id, SyncOperation::Update, "local", "success", None);
                             self.update_sync_status(SyncItemType::Instance, id, true, 0, None);
                         } else if local_instance.updated_at < cloud_instance.updated_at {
                             // 云端版本更新，可能需要冲突解决
                             let resolved = self.conflict_resolver.resolve_instance_conflict(&local_instance, &cloud_instance).await
                                 .map_err(|e| SyncError::VersionConflict(format!("Failed to resolve instance conflict: {}", e)))?;
-                            
+  
                             self.cloud_client.update_instance(&resolved).await
                                 .map_err(|e| SyncError::SyncError(format!("Failed to update cloud instance: {}", e)))?;
-                            
+  
                             self.log_sync_operation(SyncItemType::Instance, id, SyncOperation::Update, "merged", "success", None);
                             self.update_sync_status(SyncItemType::Instance, id, true, 0, None);
                         } else {
@@ -8220,12 +8281,12 @@ impl StateSynchronizer for HybridStateSynchronizer {
                         // 云端不存在，创建
                         self.cloud_client.create_instance(&local_instance).await
                             .map_err(|e| SyncError::SyncError(format!("Failed to create cloud instance: {}", e)))?;
-                        
+  
                         self.log_sync_operation(SyncItemType::Instance, id, SyncOperation::Create, "local", "success", None);
                         self.update_sync_status(SyncItemType::Instance, id, true, 0, None);
                     }
                 }
-                
+  
                 // 同步该实例的事件
                 self.sync_events(id, 0, direction).await?;
             },
@@ -8233,10 +8294,10 @@ impl StateSynchronizer for HybridStateSynchronizer {
                 // 获取云端实例
                 let cloud_instance = self.cloud_client.get_instance(id).await
                     .map_err(|e| SyncError::NotFound(format!("Cloud instance not found: {}", e)))?;
-                
+  
                 // 尝试获取本地实例
                 let local_instance_result = self.local_store.get_instance(id).await;
-                
+  
                 match local_instance_result {
                     Ok(local_instance) => {
                         // 两者都存在，需要处理冲突
@@ -8244,17 +8305,17 @@ impl StateSynchronizer for HybridStateSynchronizer {
                             // 云端版本更新，直接更新本地
                             self.local_store.save_instance(&cloud_instance).await
                                 .map_err(|e| SyncError::SyncError(format!("Failed to update local instance: {}", e)))?;
-                            
+  
                             self.log_sync_operation(SyncItemType::Instance, id, SyncOperation::Update, "cloud", "success", None);
                             self.update_sync_status(SyncItemType::Instance, id, true, 0, None);
                         } else if cloud_instance.updated_at < local_instance.updated_at {
                             // 本地版本更新，可能需要冲突解决
                             let resolved = self.conflict_resolver.resolve_instance_conflict(&local_instance, &cloud_instance).await
                                 .map_err(|e| SyncError::VersionConflict(format!("Failed to resolve instance conflict: {}", e)))?;
-                            
+  
                             self.local_store.save_instance(&resolved).await
                                 .map_err(|e| SyncError::SyncError(format!("Failed to update local instance: {}", e)))?;
-                            
+  
                             self.log_sync_operation(SyncItemType::Instance, id, SyncOperation::Update, "merged", "success", None);
                             self.update_sync_status(SyncItemType::Instance, id, true, 0, None);
                         } else {
@@ -8266,40 +8327,40 @@ impl StateSynchronizer for HybridStateSynchronizer {
                         // 本地不存在，创建
                         self.local_store.save_instance(&cloud_instance).await
                             .map_err(|e| SyncError::SyncError(format!("Failed to create local instance: {}", e)))?;
-                        
+  
                         self.log_sync_operation(SyncItemType::Instance, id, SyncOperation::Create, "cloud", "success", None);
                         self.update_sync_status(SyncItemType::Instance, id, true, 0, None);
                     }
                 }
-                
+  
                 // 同步该实例的事件
                 self.sync_events(id, 0, direction).await?;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     async fn sync_task(&self, workflow_id: &str, task_id: &str, direction: SyncDirection) -> Result<(), SyncError> {
         // 实现任务同步逻辑
         // ...
         Ok(())
     }
-    
+  
     async fn sync_events(&self, workflow_id: &str, from_version: i64, direction: SyncDirection) -> Result<(), SyncError> {
         match direction {
             SyncDirection::ToCloud => {
                 // 获取本地事件
                 let local_events = self.local_store.get_events(workflow_id, from_version).await
                     .map_err(|e| SyncError::SyncError(format!("Failed to get local events: {}", e)))?;
-                
+  
                 if !local_events.is_empty() {
                     // 将本地事件推送到云端
                     self.cloud_client.push_events(workflow_id, &local_events).await
                         .map_err(|e| SyncError::SyncError(format!("Failed to push events to cloud: {}", e)))?;
-                    
+  
                     self.log_sync_operation(SyncItemType::Event, workflow_id, SyncOperation::Create, "local", "success", None);
-                    
+  
                     // 获取最高版本号
                     let max_version = local_events.iter().map(|e| e.version).max().unwrap_or(0);
                     self.update_sync_status(SyncItemType::Event, workflow_id, true, max_version, None);
@@ -8309,28 +8370,28 @@ impl StateSynchronizer for HybridStateSynchronizer {
                 // 获取云端事件
                 let cloud_events = self.cloud_client.get_events(workflow_id, from_version).await
                     .map_err(|e| SyncError::SyncError(format!("Failed to get cloud events: {}", e)))?;
-                
+  
                 if !cloud_events.is_empty() {
                     // 将云端事件保存到本地
                     self.local_store.save_events(workflow_id, &cloud_events).await
                         .map_err(|e| SyncError::SyncError(format!("Failed to save events to local: {}", e)))?;
-                    
+  
                     self.log_sync_operation(SyncItemType::Event, workflow_id, SyncOperation::Create, "cloud", "success", None);
-                    
+  
                     // 获取最高版本号
                     let max_version = cloud_events.iter().map(|e| e.version).max().unwrap_or(0);
                     self.update_sync_status(SyncItemType::Event, workflow_id, true, max_version, None);
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     async fn get_sync_status(&self, item_type: SyncItemType, id: &str) -> Result<SyncStatus, SyncError> {
         let status_map = self.sync_status.read().unwrap();
         let key = format!("{:?}:{}", item_type, id);
-        
+  
         if let Some(status) = status_map.get(&key) {
             Ok(status.clone())
         } else {
@@ -8338,6 +8399,7 @@ impl StateSynchronizer for HybridStateSynchronizer {
         }
     }
 }
+
 ```
 
 ### 8.3 一致性保证机制
@@ -8352,6 +8414,7 @@ import (
     "errors"
     "sort"
     "sync"
+
 ```go
 package consistency
 
@@ -8856,6 +8919,7 @@ func calculateChecksum(data interface{}) (string, error) {
     hash := sha256.Sum256(jsonData)
     return hex.EncodeToString(hash[:]), nil
 }
+
 ```
 
 ### 8.4 故障恢复与数据保护
@@ -9208,6 +9272,7 @@ impl RecoveryManager {
     ) -> Result<RecoveryPoint, RecoveryError> {
         // 暂停工作流，确保状态一致性
         self
+
 ```rust
     // 创建工作流实例的检查点（续）
     async fn create_workflow_checkpoint(
@@ -9219,7 +9284,7 @@ impl RecoveryManager {
         // 暂停工作流，确保状态一致性
         self.workflow_service.pause_workflow(instance_id).await
             .map_err(|e| RecoveryError::RecoveryFailed(format!("Failed to pause workflow: {}", e)))?;
-        
+  
         // 确保在函数退出时恢复工作流执行
         let instance_id_copy = instance_id.to_string();
         let workflow_service = self.workflow_service.clone();
@@ -9232,18 +9297,18 @@ impl RecoveryManager {
                 }
             });
         });
-        
+  
         // 导出工作流状态
         let state_data = self.workflow_service.export_workflow_state(instance_id).await
             .map_err(|e| RecoveryError::RecoveryFailed(format!("Failed to export workflow state: {}", e)))?;
-        
+  
         // 计算数据校验和
         let checksum = calculate_checksum(&state_data);
-        
+  
         // 创建恢复点ID和存储路径
         let recovery_id = format!("rp-{}-{}", instance_id, chrono::Utc::now().timestamp());
         let storage_location = format!("workflows/{}/{}", instance_id, recovery_id);
-        
+  
         // 创建恢复点元数据
         let recovery_point = RecoveryPoint {
             id: recovery_id,
@@ -9256,17 +9321,17 @@ impl RecoveryManager {
             version: 1,
             checksum,
         };
-        
+  
         // 根据数据敏感度对数据进行加密
         let context = DataContext {
             object_type: "workflow_instance".to_string(),
             owner_id: metadata.get("owner_id").unwrap_or(&"unknown".to_string()).clone(),
             attributes: metadata.clone(),
         };
-        
+  
         let classification = self.protector.classify_data(&state_data, &context).await
             .map_err(|e| RecoveryError::RecoveryFailed(format!("Failed to classify data: {}", e)))?;
-        
+  
         let protected_data = match classification {
             DataClassification::Confidential | DataClassification::Restricted => {
                 // 对敏感数据进行加密
@@ -9276,32 +9341,32 @@ impl RecoveryManager {
             },
             _ => state_data,
         };
-        
+  
         // 保存恢复点数据
         self.storage.save_recovery_data(&recovery_point, &protected_data).await
             .map_err(|e| RecoveryError::StorageError(format!("Failed to save recovery data: {}", e)))?;
-        
+  
         // 保存恢复点元数据
         self.storage.save_recovery_metadata(&recovery_point).await
             .map_err(|e| RecoveryError::StorageError(format!("Failed to save recovery metadata: {}", e)))?;
-        
+  
         // 应用保留策略，清理旧恢复点
         self.apply_retention_policy(instance_id, "workflow_instance").await?;
-        
+  
         Ok(recovery_point)
     }
-    
+  
     // 应用保留策略
     async fn apply_retention_policy(&self, object_id: &str, object_type: &str) -> Result<(), RecoveryError> {
         let policy = &self.periodic_config.retention_policy;
-        
+  
         // 获取现有恢复点
         let mut points = self.storage.list_recovery_metadata(object_id, object_type).await
             .map_err(|e| RecoveryError::StorageError(format!("Failed to list recovery points: {}", e)))?;
-        
+  
         // 按创建时间排序
         points.sort_by(|a, b| b.created_at.cmp(&a.created_at));
-        
+  
         let points_to_delete = match policy {
             RetentionPolicy::KeepLatest(n) => {
                 if points.len() > *n {
@@ -9316,7 +9381,7 @@ impl RecoveryManager {
             },
             RetentionPolicy::KeepAll => vec![],
         };
-        
+  
         // 删除超出保留策略的恢复点
         for point in points_to_delete {
             // 删除恢复点数据
@@ -9324,22 +9389,22 @@ impl RecoveryManager {
                 eprintln!("Failed to delete recovery data for point {}: {}", point.id, e);
                 continue;
             }
-            
+  
             // 删除恢复点元数据
             if let Err(e) = self.storage.delete_recovery_metadata(&point.id).await {
                 eprintln!("Failed to delete recovery metadata for point {}: {}", point.id, e);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 执行恢复操作
     async fn execute_recovery(&self, recovery_point_id: &str) -> Result<(), RecoveryError> {
         // 获取恢复点元数据
         let recovery_point = self.storage.load_recovery_metadata(recovery_point_id).await
             .map_err(|e| RecoveryError::NotFound(format!("Recovery point not found: {}", e)))?;
-        
+  
         // 创建恢复操作记录
         let operation_id = format!("rec-op-{}", uuid::Uuid::new_v4());
         let operation = RecoveryOperation {
@@ -9350,44 +9415,44 @@ impl RecoveryManager {
             progress: 0,
             error: None,
         };
-        
+  
         // 注册活跃恢复操作
         {
             let mut active_ops = self.active_recoveries.lock().await;
             active_ops.insert(operation_id.clone(), operation);
         }
-        
+  
         // 获取对应实例ID
         let instance_id = &recovery_point.object_id;
-        
+  
         // 更新操作状态
         self.update_recovery_status(&operation_id, RecoveryStatus::InProgress, 10, None).await;
-        
+  
         // 加载恢复点数据
         let protected_data = self.storage.load_recovery_data(&recovery_point).await
             .map_err(|e| RecoveryError::StorageError(format!("Failed to load recovery data: {}", e)))?;
-        
+  
         // 更新进度
         self.update_recovery_status(&operation_id, RecoveryStatus::InProgress, 30, None).await;
-        
+  
         // 验证数据完整性
         let is_valid = self.protector.verify_data_integrity(&protected_data, &recovery_point.checksum).await
             .map_err(|e| RecoveryError::IntegrityError(format!("Data integrity check failed: {}", e)))?;
-        
+  
         if !is_valid {
             self.update_recovery_status(
-                &operation_id, 
-                RecoveryStatus::Failed, 
-                30, 
+                &operation_id,
+                RecoveryStatus::Failed,
+                30,
                 Some("Data integrity check failed: checksum mismatch".to_string())
             ).await;
-            
+  
             return Err(RecoveryError::IntegrityError("Checksum mismatch".to_string()));
         }
-        
+  
         // 更新进度
         self.update_recovery_status(&operation_id, RecoveryStatus::InProgress, 50, None).await;
-        
+  
         // 如果数据是加密的，进行解密
         let state_data = if recovery_point.metadata.get("encrypted").map_or(false, |v| v == "true") {
             let key_id = "workflow-recovery-key"; // 与加密时使用的相同密钥
@@ -9396,77 +9461,78 @@ impl RecoveryManager {
         } else {
             protected_data
         };
-        
+  
         // 更新进度
         self.update_recovery_status(&operation_id, RecoveryStatus::InProgress, 70, None).await;
-        
+  
         // 暂停工作流（如果正在运行）
         if let Err(e) = self.workflow_service.pause_workflow(instance_id).await {
             eprintln!("Failed to pause workflow before recovery: {}", e);
             // 继续恢复过程，因为工作流可能已经停止
         }
-        
+  
         // 导入工作流状态
         match self.workflow_service.import_workflow_state(instance_id, &state_data).await {
             Ok(_) => {
                 // 更新进度
                 self.update_recovery_status(&operation_id, RecoveryStatus::InProgress, 90, None).await;
-                
+  
                 // 恢复工作流执行
                 if let Err(e) = self.workflow_service.resume_workflow(instance_id).await {
                     // 记录错误但不终止恢复过程
                     eprintln!("Failed to resume workflow after recovery: {}", e);
                 }
-                
+  
                 // 标记恢复操作完成
                 self.update_recovery_status(&operation_id, RecoveryStatus::Completed, 100, None).await;
-                
+  
                 Ok(())
             },
             Err(e) => {
                 // 更新恢复操作状态为失败
                 let error_msg = format!("Failed to import workflow state: {}", e);
                 self.update_recovery_status(&operation_id, RecoveryStatus::Failed, 70, Some(error_msg.clone())).await;
-                
+  
                 Err(RecoveryError::RecoveryFailed(error_msg))
             }
         }
     }
-    
+  
     // 更新恢复操作状态
     async fn update_recovery_status(&self, operation_id: &str, status: RecoveryStatus, progress: u8, error: Option<String>) {
         let mut active_ops = self.active_recoveries.lock().await;
-        
+  
         if let Some(op) = active_ops.get_mut(operation_id) {
             op.status = status;
             op.progress = progress;
             op.error = error;
-            
+  
             // 如果操作完成或失败，考虑在一段时间后清理
             if status == RecoveryStatus::Completed || status == RecoveryStatus::Failed {
                 let id = operation_id.to_string();
                 let recoveries = self.active_recoveries.clone();
-                
+  
                 tokio::spawn(async move {
                     // 保留完成的恢复操作记录一段时间（如1小时）
                     tokio::time::sleep(std::time::Duration::from_secs(3600)).await;
-                    
+  
                     let mut ops = recoveries.lock().await;
                     ops.remove(&id);
                 });
             }
         }
     }
-    
+  
     // 获取恢复操作状态
     pub async fn get_recovery_operation_status(&self, operation_id: &str) -> Option<(RecoveryStatus, u8, Option<String>)> {
         let active_ops = self.active_recoveries.lock().await;
-        
+  
         active_ops.get(operation_id).map(|op| (op.status, op.progress, op.error.clone()))
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl Recoverer for RecoveryManager {
     async fn create_recovery_point(
         &self,
@@ -9480,7 +9546,7 @@ impl Recoverer for RecoveryManager {
             _ => Err(RecoveryError::InvalidPoint(format!("Unsupported object type: {}", object_type))),
         }
     }
-    
+  
     async fn list_recovery_points(
         &self,
         object_id: &str,
@@ -9489,14 +9555,14 @@ impl Recoverer for RecoveryManager {
         self.storage.list_recovery_metadata(object_id, object_type).await
             .map_err(|e| RecoveryError::StorageError(format!("Failed to list recovery points: {}", e)))
     }
-    
+  
     async fn recover_to_point(
         &self,
         recovery_point_id: &str,
     ) -> Result<(), RecoveryError> {
         self.execute_recovery(recovery_point_id).await
     }
-    
+  
     async fn delete_recovery_point(
         &self,
         recovery_point_id: &str,
@@ -9504,15 +9570,15 @@ impl Recoverer for RecoveryManager {
         // 获取恢复点元数据
         let recovery_point = self.storage.load_recovery_metadata(recovery_point_id).await
             .map_err(|e| RecoveryError::NotFound(format!("Recovery point not found: {}", e)))?;
-        
+  
         // 删除恢复点数据
         self.storage.delete_recovery_data(&recovery_point).await
             .map_err(|e| RecoveryError::StorageError(format!("Failed to delete recovery data: {}", e)))?;
-        
+  
         // 删除恢复点元数据
         self.storage.delete_recovery_metadata(recovery_point_id).await
             .map_err(|e| RecoveryError::StorageError(format!("Failed to delete recovery metadata: {}", e)))?;
-        
+  
         Ok(())
     }
 }
@@ -9526,139 +9592,140 @@ impl FileSystemRecoveryStorage {
     pub fn new(base_path: PathBuf) -> Self {
         Self { base_path }
     }
-    
+  
     // 获取恢复点数据文件路径
     fn get_data_path(&self, recovery_point: &RecoveryPoint) -> PathBuf {
         self.base_path.join("data").join(&recovery_point.storage_location)
     }
-    
+  
     // 获取恢复点元数据文件路径
     fn get_metadata_path(&self, id: &str) -> PathBuf {
         self.base_path.join("metadata").join(format!("{}.json", id))
     }
-    
+  
     // 获取对象恢复点索引路径
     fn get_object_index_path(&self, object_id: &str, object_type: &str) -> PathBuf {
         self.base_path.join("indexes").join(object_type).join(format!("{}.json", object_id))
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl RecoveryStorage for FileSystemRecoveryStorage {
     async fn save_recovery_data(&self, recovery_point: &RecoveryPoint, data: &[u8]) -> Result<(), StorageError> {
         let path = self.get_data_path(recovery_point);
-        
+  
         // 确保目录存在
         if let Some(parent) = path.parent() {
             tokio::fs::create_dir_all(parent).await
                 .map_err(|e| StorageError::IoError(format!("Failed to create directory: {}", e)))?;
         }
-        
+  
         // 写入数据
         tokio::fs::write(&path, data).await
             .map_err(|e| StorageError::IoError(format!("Failed to write data: {}", e)))?;
-        
+  
         Ok(())
     }
-    
+  
     async fn load_recovery_data(&self, recovery_point: &RecoveryPoint) -> Result<Vec<u8>, StorageError> {
         let path = self.get_data_path(recovery_point);
-        
+  
         // 读取数据
         tokio::fs::read(&path).await
             .map_err(|e| StorageError::IoError(format!("Failed to read data: {}", e)))
     }
-    
+  
     async fn delete_recovery_data(&self, recovery_point: &RecoveryPoint) -> Result<(), StorageError> {
         let path = self.get_data_path(recovery_point);
-        
+  
         // 删除文件
         if path.exists() {
             tokio::fs::remove_file(&path).await
                 .map_err(|e| StorageError::IoError(format!("Failed to delete data: {}", e)))?;
         }
-        
+  
         Ok(())
     }
-    
+  
     async fn save_recovery_metadata(&self, recovery_point: &RecoveryPoint) -> Result<(), StorageError> {
         let metadata_path = self.get_metadata_path(&recovery_point.id);
-        
+  
         // 确保目录存在
         if let Some(parent) = metadata_path.parent() {
             tokio::fs::create_dir_all(parent).await
                 .map_err(|e| StorageError::IoError(format!("Failed to create directory: {}", e)))?;
         }
-        
+  
         // 序列化和写入元数据
         let json = serde_json::to_string_pretty(recovery_point)
             .map_err(|e| StorageError::SerializationError(format!("Failed to serialize metadata: {}", e)))?;
-        
+  
         tokio::fs::write(&metadata_path, json).await
             .map_err(|e| StorageError::IoError(format!("Failed to write metadata: {}", e)))?;
-        
+  
         // 更新对象索引
         self.update_object_index(recovery_point).await?;
-        
+  
         Ok(())
     }
-    
+  
     async fn load_recovery_metadata(&self, id: &str) -> Result<RecoveryPoint, StorageError> {
         let path = self.get_metadata_path(id);
-        
+  
         // 读取元数据文件
         let json = tokio::fs::read_to_string(&path).await
             .map_err(|e| StorageError::NotFound(format!("Metadata file not found: {}", e)))?;
-        
+  
         // 反序列化
         serde_json::from_str(&json)
             .map_err(|e| StorageError::SerializationError(format!("Failed to deserialize metadata: {}", e)))
     }
-    
+  
     async fn list_recovery_metadata(&self, object_id: &str, object_type: &str) -> Result<Vec<RecoveryPoint>, StorageError> {
         let index_path = self.get_object_index_path(object_id, object_type);
-        
+  
         // 如果索引文件不存在，返回空列表
         if !index_path.exists() {
             return Ok(vec![]);
         }
-        
+  
         // 读取索引文件
         let json = tokio::fs::read_to_string(&index_path).await
             .map_err(|e| StorageError::IoError(format!("Failed to read index: {}", e)))?;
-        
+  
         // 反序列化索引获取恢复点ID列表
         let recovery_ids: Vec<String> = serde_json::from_str(&json)
             .map_err(|e| StorageError::SerializationError(format!("Failed to deserialize index: {}", e)))?;
-        
+  
         // 加载每个恢复点的元数据
         let mut recovery_points = Vec::new();
-        
+  
         for id in recovery_ids {
             match self.load_recovery_metadata(&id).await {
                 Ok(point) => recovery_points.push(point),
                 Err(e) => eprintln!("Failed to load recovery point {}: {}", id, e),
             }
         }
-        
+  
         Ok(recovery_points)
     }
-    
+  
     async fn delete_recovery_metadata(&self, id: &str) -> Result<(), StorageError> {
         let path = self.get_metadata_path(id);
-        
+  
         // 先加载元数据以获取对象信息
         let recovery_point = self.load_recovery_metadata(id).await?;
-        
+  
         // 从对象索引中移除
         self.remove_from_object_index(&recovery_point).await?;
-        
+  
         // 删除元数据文件
         if path.exists() {
             tokio::fs::remove_file(&path).await
                 .map_err(|e| StorageError::IoError(format!("Failed to delete metadata: {}", e)))?;
         }
-        
+  
         Ok(())
     }
 }
@@ -9667,65 +9734,65 @@ impl FileSystemRecoveryStorage {
     // 更新对象索引
     async fn update_object_index(&self, recovery_point: &RecoveryPoint) -> Result<(), StorageError> {
         let index_path = self.get_object_index_path(&recovery_point.object_id, &recovery_point.object_type);
-        
+  
         // 确保目录存在
         if let Some(parent) = index_path.parent() {
             tokio::fs::create_dir_all(parent).await
                 .map_err(|e| StorageError::IoError(format!("Failed to create directory: {}", e)))?;
         }
-        
+  
         // 读取现有索引或创建新索引
         let mut recovery_ids: Vec<String> = if index_path.exists() {
             let json = tokio::fs::read_to_string(&index_path).await
                 .map_err(|e| StorageError::IoError(format!("Failed to read index: {}", e)))?;
-            
+  
             serde_json::from_str(&json)
                 .map_err(|e| StorageError::SerializationError(format!("Failed to deserialize index: {}", e)))?
         } else {
             Vec::new()
         };
-        
+  
         // 添加恢复点ID到索引（如果不存在）
         if !recovery_ids.contains(&recovery_point.id) {
             recovery_ids.push(recovery_point.id.clone());
-            
+  
             // 保存更新后的索引
             let json = serde_json::to_string(&recovery_ids)
                 .map_err(|e| StorageError::SerializationError(format!("Failed to serialize index: {}", e)))?;
-            
+  
             tokio::fs::write(&index_path, json).await
                 .map_err(|e| StorageError::IoError(format!("Failed to write index: {}", e)))?;
         }
-        
+  
         Ok(())
     }
-    
+  
     // 从对象索引中移除恢复点
     async fn remove_from_object_index(&self, recovery_point: &RecoveryPoint) -> Result<(), StorageError> {
         let index_path = self.get_object_index_path(&recovery_point.object_id, &recovery_point.object_type);
-        
+  
         // 如果索引不存在，无需操作
         if !index_path.exists() {
             return Ok(());
         }
-        
+  
         // 读取现有索引
         let json = tokio::fs::read_to_string(&index_path).await
             .map_err(|e| StorageError::IoError(format!("Failed to read index: {}", e)))?;
-        
+  
         let mut recovery_ids: Vec<String> = serde_json::from_str(&json)
             .map_err(|e| StorageError::SerializationError(format!("Failed to deserialize index: {}", e)))?;
-        
+  
         // 移除恢复点ID
         recovery_ids.retain(|id| id != &recovery_point.id);
-        
+  
         // 保存更新后的索引
         let json = serde_json::to_string(&recovery_ids)
             .map_err(|e| StorageError::SerializationError(format!("Failed to serialize index: {}", e)))?;
-        
+  
         tokio::fs::write(&index_path, json).await
             .map_err(|e| StorageError::IoError(format!("Failed to write index: {}", e)))?;
-        
+  
         Ok(())
     }
 }
@@ -9738,6 +9805,7 @@ fn calculate_checksum(data: &[u8]) -> String {
     let result = hasher.finalize();
     format!("{:x}", result)
 }
+
 ```
 
 ## 九、实践案例与模式
@@ -9754,7 +9822,7 @@ import (
     "encoding/json"
     "fmt"
     "time"
-    
+  
     "github.com/yourorg/workflow/model"
 )
 
@@ -9892,6 +9960,7 @@ func DataProcessingWorkflow() *model.WorkflowDefinition {
                 Config: json.RawMessage(`{
                     "destination_type": "data_warehouse",
                     "connection
+
 ```go
 // 数据处理工作流示例及最佳实践（续）
 
@@ -10042,6 +10111,7 @@ func (dp *DataProcessingPatterns) GetCommonPatterns() map[string]string {
         "聚合模式": "将多个数据源或记录合并成单一结果",
     }
 }
+
 ```
 
 // 数据处理工作流示例代码 - Rust版本实现数据验证任务
@@ -10273,7 +10343,6 @@ impl DataValidationExecutor {
     }
 }
 
-
 // 数据处理工作流实现经验
 func DataProcessingInsights() map[string]string {
     return map[string]string{
@@ -10318,6 +10387,7 @@ func DataProcessingInsights() map[string]string {
 6. 降级机制：当云连接不可用时的本地处理策略`,
     }
 }
+
 ```
 
 ### 9.2 业务流程自动化模式
@@ -10623,6 +10693,7 @@ fn create_approval_tasks() -> HashMap<String, TaskDefinition> {
             });
             inputs
         },
+
 ```rust
         outputs: Some(serde_json::json!({
             "approval_results": {
@@ -10661,7 +10732,7 @@ fn create_approval_tasks() -> HashMap<String, TaskDefinition> {
         })),
         required_inputs: vec!["request".to_string()],
     });
-    
+  
     // 更新请求状态任务
     tasks.insert("update_request_status".to_string(), TaskDefinition {
         id: "update_request_status".to_string(),
@@ -10713,7 +10784,7 @@ fn create_approval_tasks() -> HashMap<String, TaskDefinition> {
         config: None,
         required_inputs: vec!["request".to_string()],
     });
-    
+  
     // 发送通知任务
     tasks.insert("send_notifications".to_string(), TaskDefinition {
         id: "send_notifications".to_string(),
@@ -10755,7 +10826,7 @@ fn create_approval_tasks() -> HashMap<String, TaskDefinition> {
         })),
         required_inputs: vec!["request".to_string(), "is_approved".to_string()],
     });
-    
+  
     // 条件性任务：根据审批结果执行不同操作
     tasks.insert("conditional_task".to_string(), TaskDefinition {
         id: "conditional_task".to_string(),
@@ -10787,7 +10858,7 @@ fn create_approval_tasks() -> HashMap<String, TaskDefinition> {
         config: None,
         required_inputs: vec!["is_approved".to_string()],
     });
-    
+  
     // 处理已批准的请求
     tasks.insert("process_approved_request".to_string(), TaskDefinition {
         id: "process_approved_request".to_string(),
@@ -10832,7 +10903,7 @@ fn create_approval_tasks() -> HashMap<String, TaskDefinition> {
         })),
         required_inputs: vec!["request".to_string()],
     });
-    
+  
     // 归档请求任务
     tasks.insert("archive_request".to_string(), TaskDefinition {
         id: "archive_request".to_string(),
@@ -10875,12 +10946,14 @@ fn create_approval_tasks() -> HashMap<String, TaskDefinition> {
         })),
         required_inputs: vec!["request".to_string()],
     });
-    
+  
     tasks
 }
 
 // 审批任务处理器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait ApprovalTaskHandler {
     async fn handle_task(&self, task: &TaskInstance, context: &ExecutionContext) -> Result<TaskResult, TaskError>;
 }
@@ -10906,19 +10979,20 @@ impl HumanApprovalTaskHandler {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl ApprovalTaskHandler for HumanApprovalTaskHandler {
     async fn handle_task(&self, task: &TaskInstance, context: &ExecutionContext) -> Result<TaskResult, TaskError> {
         // 解析任务配置
         let config = parse_config(task.config.clone())?;
-        
+  
         // 获取请求数据
         let request: ApprovalRequest = context.get_input("request")
             .ok_or_else(|| TaskError::MissingInput("request".to_string()))?;
-        
+  
         // 确定任务受理人
         let assignee = self.resolve_assignee(&request, &config).await?;
-        
+  
         // 创建表单任务
         let form_id = self.form_service.create_approval_form(
             &assignee,
@@ -10926,7 +11000,7 @@ impl ApprovalTaskHandler for HumanApprovalTaskHandler {
             &config.form_template,
             &config.required_fields,
         ).await?;
-        
+  
         // 发送通知
         self.notification_service.send_approval_request(
             &assignee,
@@ -10934,10 +11008,10 @@ impl ApprovalTaskHandler for HumanApprovalTaskHandler {
             &form_id,
             task.id.clone(),
         ).await?;
-        
+  
         // 创建人工任务记录
         let human_task_id = format!("ht-{}-{}", task.id, uuid::Uuid::new_v4());
-        
+  
         // 返回人工任务信息作为任务结果
         let result = TaskResult {
             output: {
@@ -10955,7 +11029,7 @@ impl ApprovalTaskHandler for HumanApprovalTaskHandler {
             },
             wait_callback: true, // 表示任务需要等待外部回调完成
         };
-        
+  
         Ok(result)
     }
 }
@@ -10966,7 +11040,7 @@ pub struct BusinessProcessAutomationBestPractices;
 impl BusinessProcessAutomationBestPractices {
     pub fn get_best_practices() -> HashMap<String, Vec<String>> {
         let mut practices = HashMap::new();
-        
+  
         // 建模最佳实践
         practices.insert("建模与设计".to_string(), vec![
             "使用领域特定语言(DSL)建模业务流程".to_string(),
@@ -10977,7 +11051,7 @@ impl BusinessProcessAutomationBestPractices {
             "基于角色而非特定人员设计审批链".to_string(),
             "使用角色解析器在运行时决定实际执行者".to_string(),
         ]);
-        
+  
         // 实施最佳实践
         practices.insert("实施与执行".to_string(), vec![
             "实现适当的错误处理和异常流程".to_string(),
@@ -10988,7 +11062,7 @@ impl BusinessProcessAutomationBestPractices {
             "使用超时自动处理被搁置的任务".to_string(),
             "实现服务级别协议(SLA)跟踪和管理".to_string(),
         ]);
-        
+  
         // 人工任务处理最佳实践
         practices.insert("人工任务处理".to_string(), vec![
             "使用任务列表让用户查看和处理分配的任务".to_string(),
@@ -11000,7 +11074,7 @@ impl BusinessProcessAutomationBestPractices {
             "使用提醒和提示防止逾期任务".to_string(),
             "提供批量操作功能处理类似任务".to_string(),
         ]);
-        
+  
         // 集成最佳实践
         practices.insert("系统集成".to_string(), vec![
             "使用标准API或消息队列进行系统集成".to_string(),
@@ -11011,7 +11085,7 @@ impl BusinessProcessAutomationBestPractices {
             "对敏感数据实施适当加密".to_string(),
             "实现数据转换和映射".to_string(),
         ]);
-        
+  
         // 监控与优化
         practices.insert("监控与优化".to_string(), vec![
             "收集和分析流程性能指标".to_string(),
@@ -11022,7 +11096,7 @@ impl BusinessProcessAutomationBestPractices {
             "监控自动化率和例外情况".to_string(),
             "实现预测性分析识别潜在问题".to_string(),
         ]);
-        
+  
         practices
     }
 }
@@ -11033,85 +11107,91 @@ pub struct BusinessProcessPatterns;
 impl BusinessProcessPatterns {
     pub fn get_common_patterns() -> HashMap<String, String> {
         let mut patterns = HashMap::new();
-        
+  
         patterns.insert("审批流程模式".to_string(),
             "序列或并行的多级审批过程，常用于报销、请假和采购申请等场景。".to_string());
-            
+  
         patterns.insert("顺序工作流模式".to_string(),
             "任务按预定义顺序线性执行，一个任务完成后才开始下一个任务。".to_string());
-            
+  
         patterns.insert("状态机模式".to_string(),
             "流程被建模为一系列状态和状态转换，特别适合具有明确状态的业务流程。".to_string());
-            
+  
         patterns.insert("规则驱动模式".to_string(),
             "使用业务规则引擎来动态评估条件并决定流程路径，减少硬编码的决策逻辑。".to_string());
-            
+  
         patterns.insert("内容审核模式".to_string(),
             "用于管理内容的创建、审核、发布和归档的全生命周期，常用于文档管理和发布系统。".to_string());
-            
+  
         patterns.insert("服务请求模式".to_string(),
             "处理内部服务请求的工作流，如IT服务、设施管理等，通常包括创建、分配、执行和关闭阶段。".to_string());
-            
+  
         patterns.insert("异常处理模式".to_string(),
             "捕获并处理业务流程中的异常情况，可能涉及升级、重新路由或自定义处理逻辑。".to_string());
-            
+  
         patterns.insert("协作工作流模式".to_string(),
             "多参与者共同完成复杂任务，可能包括讨论、协商和共享工作区，如产品开发或项目管理。".to_string());
-            
+  
         patterns.insert("案例管理模式".to_string(),
             "处理非结构化、知识密集型流程，参与者可以根据案例情况决定下一步行动，如客户投诉处理。".to_string());
-            
+  
         patterns.insert("集成工作流模式".to_string(),
             "协调多个系统之间的操作，处理数据转换、验证和同步，如跨系统的客户入职流程。".to_string());
-        
+  
         patterns
     }
 }
 
 // 人工任务接口示例
-#[async_trait]
+
+# [async_trait]
+
 pub trait HumanTaskService {
     // 创建人工任务
     async fn create_human_task(&self, task_def: HumanTaskDefinition) -> Result<String, ServiceError>;
-    
+  
     // 获取用户任务列表
     async fn get_user_tasks(&self, user_id: &str, filter: TaskFilter) -> Result<Vec<HumanTask>, ServiceError>;
-    
+  
     // 提交任务结果
     async fn submit_task_result(&self, task_id: &str, result: HumanTaskResult, user_id: &str) -> Result<(), ServiceError>;
-    
+  
     // 重新分配任务
     async fn reassign_task(&self, task_id: &str, new_assignee: &str, reason: &str) -> Result<(), ServiceError>;
-    
+  
     // 获取任务详情
     async fn get_task_details(&self, task_id: &str) -> Result<HumanTask, ServiceError>;
 }
 
 // 角色解析器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait RoleResolver {
     // 解析角色到具体用户
     async fn resolve_role(&self, role: &str, context: &HashMap<String, serde_json::Value>) -> Result<Vec<String>, ServiceError>;
-    
+  
     // 获取用户的角色
     async fn get_user_roles(&self, user_id: &str) -> Result<Vec<String>, ServiceError>;
-    
+  
     // 检查用户是否有特定角色
     async fn has_role(&self, user_id: &str, role: &str) -> Result<bool, ServiceError>;
 }
 
 // SLA监控接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait SlaMonitor {
     // 注册SLA
     async fn register_sla(&self, workflow_id: &str, task_id: &str, sla_def: SlaDefinition) -> Result<String, ServiceError>;
-    
+  
     // 更新SLA状态
     async fn update_sla_status(&self, sla_id: &str, status: SlaStatus) -> Result<(), ServiceError>;
-    
+  
     // 获取违反SLA的任务
     async fn get_sla_violations(&self, filter: SlaFilter) -> Result<Vec<SlaViolation>, ServiceError>;
-    
+  
     // 获取SLA指标
     async fn get_sla_metrics(&self, workflow_type: &str, time_range: (DateTime<Utc>, DateTime<Utc>)) -> Result<SlaMetrics, ServiceError>;
 }
@@ -11135,12 +11215,12 @@ impl TaskTimeoutHandler {
             escalation_service,
         }
     }
-    
+  
     // 处理超时任务
     pub async fn handle_timeout(&self, task_instance: &TaskInstance) -> Result<(), ServiceError> {
         // 根据任务类型和配置决定超时行为
         let timeout_action = self.determine_timeout_action(task_instance);
-        
+  
         match timeout_action {
             TimeoutAction::Notify => {
                 // 仅发送通知
@@ -11182,10 +11262,10 @@ impl TaskTimeoutHandler {
                 ).await?;
             },
         }
-        
+  
         Ok(())
     }
-    
+  
     // 确定超时行为
     fn determine_timeout_action(&self, task_instance: &TaskInstance) -> TimeoutAction {
         // 从任务配置中获取超时行为设置
@@ -11203,7 +11283,7 @@ impl TaskTimeoutHandler {
                 }
             }
         }
-        
+  
         // 默认行为
         TimeoutAction::Notify
     }
@@ -11219,44 +11299,48 @@ enum TimeoutAction {
 }
 
 // 业务流程指标模型
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct BusinessProcessMetrics {
     // 总体指标
     pub total_instances: u64,
     pub completed_instances: u64,
     pub active_instances: u64,
     pub failed_instances: u64,
-    
+  
     // 时间指标
     pub avg_completion_time: i64, // 毫秒
     pub min_completion_time: i64, // 毫秒
     pub max_completion_time: i64, // 毫秒
-    
+  
     // 任务指标
     pub total_tasks: u64,
     pub human_tasks: u64,
     pub automated_tasks: u64,
     pub task_completion_rates: HashMap<String, f64>,
-    
+  
     // 业务指标
     pub approval_rate: f64,
     pub rejection_rate: f64,
     pub auto_approval_rate: f64,
-    
+  
     // SLA指标
     pub sla_compliance_rate: f64,
     pub sla_violations: u64,
-    
+  
     // 按维度的指标
     pub metrics_by_department: HashMap<String, DepartmentMetrics>,
     pub metrics_by_request_type: HashMap<String, TypeMetrics>,
-    
+  
     // 趋势数据
     pub monthly_trends: Vec<MonthlyMetric>,
 }
 
 // 按部门的指标
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct DepartmentMetrics {
     pub department: String,
     pub instance_count: u64,
@@ -11265,7 +11349,9 @@ pub struct DepartmentMetrics {
 }
 
 // 按类型的指标
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct TypeMetrics {
     pub request_type: String,
     pub instance_count: u64,
@@ -11274,7 +11360,9 @@ pub struct TypeMetrics {
 }
 
 // 月度指标
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct MonthlyMetric {
     pub year_month: String,
     pub instance_count: u64,
@@ -11283,7 +11371,9 @@ pub struct MonthlyMetric {
 }
 
 // 业务流程指标服务接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait BusinessProcessMetricsService {
     // 获取流程指标
     async fn get_process_metrics(
@@ -11292,14 +11382,14 @@ pub trait BusinessProcessMetricsService {
         time_range: (DateTime<Utc>, DateTime<Utc>),
         dimensions: Vec<String>,
     ) -> Result<BusinessProcessMetrics, ServiceError>;
-    
+  
     // 获取任务分析
     async fn get_task_analytics(
         &self,
         workflow_type: &str,
         time_range: (DateTime<Utc>, DateTime<Utc>),
     ) -> Result<HashMap<String, TaskAnalytics>, ServiceError>;
-    
+  
     // 导出指标报告
     async fn export_metrics_report(
         &self,
@@ -11310,7 +11400,9 @@ pub trait BusinessProcessMetricsService {
 }
 
 // 任务分析数据
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct TaskAnalytics {
     pub task_name: String,
     pub avg_duration: i64,
@@ -11319,6 +11411,7 @@ pub struct TaskAnalytics {
     pub error_rate: f64,
     pub assignment_counts: HashMap<String, u64>,
 }
+
 ```
 
 ### 9.3 微服务编排模式
@@ -11331,7 +11424,7 @@ import (
     "errors"
     "fmt"
     "time"
-    
+  
     "github.com/yourorg/workflow/model"
 )
 
@@ -11360,16 +11453,16 @@ func (m *MicroserviceWorkflowPatterns) GetCommonPatterns() map[string]string {
 type MicroserviceOrchestrator interface {
     // 启动编排流程
     StartOrchestration(ctx context.Context, workflowID string, input map[string]interface{}) (string, error)
-    
+  
     // 获取编排状态
     GetOrchestrationStatus(ctx context.Context, instanceID string) (*OrchestrationStatus, error)
-    
+  
     // 取消编排
     CancelOrchestration(ctx context.Context, instanceID string, reason string) error
-    
+  
     // 处理服务回调
     HandleServiceCallback(ctx context.Context, callbackInfo ServiceCallback) error
-    
+  
     // 重试失败的服务调用
     RetryServiceCall(ctx context.Context, instanceID string, serviceCallID string) error
 }
@@ -11456,12 +11549,12 @@ func (o *DefaultMicroserviceOrchestrator) StartOrchestration(
     if err != nil {
         return "", fmt.Errorf("failed to get workflow definition: %w", err)
     }
-    
+  
     // 2. 验证输入
     if err := validateWorkflowInput(workflow, input); err != nil {
         return "", fmt.Errorf("invalid workflow input: %w", err)
     }
-    
+  
     // 3. 创建新的编排实例
     instanceID := generateInstanceID(workflowID)
     instance := &OrchestrationInstance{
@@ -11473,12 +11566,12 @@ func (o *DefaultMicroserviceOrchestrator) StartOrchestration(
         ServiceCalls: make(map[string]*ServiceCall),
         StateData: make(map[string]interface{}),
     }
-    
+  
     // 4. 保存实例状态
     if err := o.stateManager.SaveInstance(ctx, instance); err != nil {
         return "", fmt.Errorf("failed to save instance: %w", err)
     }
-    
+  
     // 5. 发布编排开始事件
     startEvent := OrchestrationEvent{
         Type:       "ORCHESTRATION_STARTED",
@@ -11493,10 +11586,10 @@ func (o *DefaultMicroserviceOrchestrator) StartOrchestration(
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to publish start event: %v\n", err)
     }
-    
+  
     // 6. 异步启动编排执行
     go o.executeOrchestration(context.Background(), instance, workflow)
-    
+  
     return instanceID, nil
 }
 
@@ -11508,17 +11601,17 @@ func (o *DefaultMicroserviceOrchestrator) executeOrchestration(
 ) {
     // 获取初始任务
     currentTasks := getInitialTasks(workflow)
-    
+  
     for len(currentTasks) > 0 {
         // 并行执行当前任务集
         nextTasks := make([]*WorkflowTask, 0)
-        
+  
         for _, task := range currentTasks {
             // 检查任务依赖是否满足
             if !areTaskDependenciesSatisfied(task, instance) {
                 continue
             }
-            
+  
             // 执行任务
             taskResult, err := o.executeTask(ctx, instance, task)
             instance.TaskResults[task.ID] = &TaskResult{
@@ -11528,19 +11621,19 @@ func (o *DefaultMicroserviceOrchestrator) executeOrchestration(
                 Error:     taskResult.Error,
                 Timestamp: time.Now(),
             }
-            
+  
             // 更新实例状态
             o.stateManager.UpdateInstance(ctx, instance)
-            
+  
             // 发布任务完成事件
             o.publishTaskEvent(ctx, instance.InstanceID, task.ID, taskResult)
-            
+  
             // 如果任务失败且不允许继续，终止编排
             if err != nil && !task.ContinueOnError {
                 o.completeOrchestrationWithError(ctx, instance, err)
                 return
             }
-            
+  
             // 添加后续任务到下一轮执行集
             if taskResult.Status == "COMPLETED" {
                 for _, nextTask := range getNextTasks(workflow, task) {
@@ -11548,10 +11641,10 @@ func (o *DefaultMicroserviceOrchestrator) executeOrchestration(
                 }
             }
         }
-        
+  
         // 更新当前任务集为下一轮任务
         currentTasks = nextTasks
-        
+  
         // 检查是否所有任务都已完成
         if len(currentTasks) == 0 {
             allTasksCompleted := true
@@ -11562,7 +11655,7 @@ func (o *DefaultMicroserviceOrchestrator) executeOrchestration(
                     break
                 }
             }
-            
+  
             if allTasksCompleted {
                 // 所有任务完成，结束编排
                 output := collectOutputs(instance, workflow.OutputMapping)
@@ -11611,7 +11704,7 @@ func (o *DefaultMicroserviceOrchestrator) executeServiceCall(
             },
         }, err
     }
-    
+  
     // 2. 检查服务熔断状态
     if !o.circuitBreakerPolicy.AllowRequest(serviceConfig.ServiceName, serviceConfig.OperationName) {
         return &TaskResult{
@@ -11622,7 +11715,7 @@ func (o *DefaultMicroserviceOrchestrator) executeServiceCall(
             },
         }, errors.New("circuit breaker open")
     }
-    
+  
     // 3. 解析并准备输入参数
     params, err := resolveTaskInputs(task.Inputs, instance)
     if err != nil {
@@ -11635,7 +11728,7 @@ func (o *DefaultMicroserviceOrchestrator) executeServiceCall(
             },
         }, err
     }
-    
+  
     // 4. 创建服务调用记录
     callID := generateCallID(instance.InstanceID, task.ID)
     serviceCall := &ServiceCall{
@@ -11650,19 +11743,19 @@ func (o *DefaultMicroserviceOrchestrator) executeServiceCall(
         MaxRetries:    o.retryPolicy.GetMaxRetries(serviceConfig.ServiceName, serviceConfig.OperationName),
         Parameters:    params,
     }
-    
+  
     // 5. 保存服务调用状态
     instance.ServiceCalls[callID] = serviceCall
     o.stateManager.UpdateInstance(ctx, instance)
-    
+  
     // 6. 执行服务调用
     result, err := service.Execute(ctx, serviceConfig.OperationName, params)
-    
+  
     // 7. 处理结果
     if err != nil {
         // 记录失败
         o.circuitBreakerPolicy.RecordFailure(serviceConfig.ServiceName, serviceConfig.OperationName)
-        
+  
         // 检查是否需要重试
         if serviceCall.RetryCount < serviceCall.MaxRetries {
             // 安排重试
@@ -11673,12 +11766,12 @@ func (o *DefaultMicroserviceOrchestrator) executeServiceCall(
                 Message: err.Error(),
             }
             o.stateManager.UpdateInstance(ctx, instance)
-            
+  
             // 使用 sleep 模拟延迟重试，生产环境应使用定时任务或消息队列
             time.Sleep(retryDelay)
             return o.executeServiceCall(ctx, instance, task)
         }
-        
+  
         // 超过重试次数，标记为失败
         serviceCall.Status = "FAILED"
         serviceCall.EndTime = time.Now()
@@ -11687,27 +11780,27 @@ func (o *DefaultMicroserviceOrchestrator) executeServiceCall(
             Message: err.Error(),
         }
         o.stateManager.UpdateInstance(ctx, instance)
-        
+  
         return &TaskResult{
             Status: "FAILED",
             Error: &ServiceError{
                 Code:    "SERVICE_ERROR",
-                Message: fmt.Sprintf("Service %s operation %s failed after %d retries", 
+                Message: fmt.Sprintf("Service %s operation %s failed after %d retries",
                     serviceConfig.ServiceName, serviceConfig.OperationName, serviceCall.RetryCount),
                 Details: err.Error(),
             },
         }, err
     }
-    
+  
     // 记录成功
     o.circuitBreakerPolicy.RecordSuccess(serviceConfig.ServiceName, serviceConfig.OperationName)
-    
+  
     // 更新服务调用状态
     serviceCall.Status = "COMPLETED"
     serviceCall.EndTime = time.Now()
     serviceCall.Result = result
     o.stateManager.UpdateInstance(ctx, instance)
-    
+  
     return &TaskResult{
         Status: "COMPLETED",
         Output: result,
@@ -11755,7 +11848,7 @@ func (s *SagaOrchestrator) StartSaga(
     // 创建新的Saga实例
     sagaID := generateSagaID()
     steps := make([]TransactionStep, len(sagaDefinition.Steps))
-    
+  
     // 初始化步骤
     for i, stepDef := range sagaDefinition.Steps {
         steps[i] = TransactionStep{
@@ -11767,7 +11860,7 @@ func (s *SagaOrchestrator) StartSaga(
             Status:      "PENDING",
         }
     }
-    
+  
     saga := &SagaInstance{
         ID:         sagaID,
         Status:     "RUNNING",
@@ -11776,12 +11869,12 @@ func (s *SagaOrchestrator) StartSaga(
         CurrentStep: 0,
         RollingBack: false,
     }
-    
+  
     // 保存Saga实例
     if err := s.stateManager.SaveSaga(ctx, saga); err != nil {
         return "", fmt.Errorf("failed to save saga: %w", err)
     }
-    
+  
     // 发布Saga开始事件
     startEvent := SagaEvent{
         Type:    "SAGA_STARTED",
@@ -11789,10 +11882,10 @@ func (s *SagaOrchestrator) StartSaga(
         Time:    time.Now(),
     }
     s.eventPublisher.PublishEvent(ctx, startEvent)
-    
+  
     // 异步执行Saga
     go s.executeSaga(context.Background(), saga)
-    
+  
     return sagaID, nil
 }
 
@@ -11802,7 +11895,7 @@ func (s *SagaOrchestrator) executeSaga(ctx context.Context, saga *SagaInstance) 
         step := &saga.Steps[saga.CurrentStep]
         step.Status = "IN_PROGRESS"
         s.stateManager.UpdateSaga(ctx, saga)
-        
+  
         // 获取服务
         service, err := s.serviceRegistry.GetService(step.ServiceName)
         if err != nil {
@@ -11815,7 +11908,7 @@ func (s *SagaOrchestrator) executeSaga(ctx context.Context, saga *SagaInstance) 
             s.stateManager.UpdateSaga(ctx, saga)
             continue
         }
-        
+  
         // 执行操作
         result, err := service.Execute(ctx, step.Operation, step.Input)
         if err != nil {
@@ -11829,14 +11922,14 @@ func (s *SagaOrchestrator) executeSaga(ctx context.Context, saga *SagaInstance) 
             s.stateManager.UpdateSaga(ctx, saga)
             continue
         }
-        
+  
         // 更新步骤状态
         step.Status = "COMPLETED"
         step.Output = result
         saga.CurrentStep++
         s.stateManager.UpdateSaga(ctx, saga)
     }
-    
+  
     // 如果需要回滚
     if saga.RollingBack {
         s.rollbackSaga(ctx, saga)
@@ -11846,7 +11939,7 @@ func (s *SagaOrchestrator) executeSaga(ctx context.Context, saga *SagaInstance) 
         saga.Status = "COMPLETED"
         saga.EndTime = &now
         s.stateManager.UpdateSaga(ctx, saga)
-        
+  
         // 发布Saga完成事件
         completeEvent := SagaEvent{
             Type:    "SAGA_COMPLETED",
@@ -11862,12 +11955,12 @@ func (s *SagaOrchestrator) rollbackSaga(ctx context.Context, saga *SagaInstance)
     // 从当前步骤开始回滚
     for i := saga.CurrentStep - 1; i >= 0; i-- {
         step := &saga.Steps[i]
-        
+  
         // 只回滚已完成的步骤
         if step.Status != "COMPLETED" {
             continue
         }
-        
+  
         // 获取服务
         service, err := s.serviceRegistry.GetService(step.ServiceName)
         if err != nil {
@@ -11880,7 +11973,7 @@ func (s *SagaOrchestrator) rollbackSaga(ctx context.Context, saga *SagaInstance)
             s.stateManager.UpdateSaga(ctx, saga)
             continue
         }
-        
+  
         // 执行补偿操作
         _, err = service.Execute(ctx, step.Compensation, step.Output)
         if err != nil {
@@ -11893,16 +11986,16 @@ func (s *SagaOrchestrator) rollbackSaga(ctx context.Context, saga *SagaInstance)
         } else {
             step.Status = "COMPENSATED"
         }
-        
+  
         s.stateManager.UpdateSaga(ctx, saga)
     }
-    
+  
     // 更新Saga状态
     now := time.Now()
     saga.Status = "ROLLED_BACK"
     saga.EndTime = &now
     s.stateManager.UpdateSaga(ctx, saga)
-    
+  
     // 发布Saga回滚事件
     rollbackEvent := SagaEvent{
         Type:    "SAGA_ROLLED_BACK",
@@ -11957,7 +12050,7 @@ type CacheConfig struct {
 // Aggregate 执行数据聚合
 func (a *DataAggregator) Aggregate(ctx context.Context, request AggregationRequest) (*AggregationResult, error) {
     startTime := time.Now()
-    
+  
     // 检查缓存
     if request.CacheConfig != nil && request.CacheConfig.Enabled {
         cacheKey := a.generateCacheKey(request)
@@ -11969,29 +12062,29 @@ func (a *DataAggregator) Aggregate(ctx context.Context, request AggregationReque
             }, nil
         }
     }
-    
+  
     // 创建超时上下文
     timeoutCtx, cancel := context.WithTimeout(ctx, request.Timeout)
     defer cancel()
-    
+  
     // 并行从所有数据源收集数据
     results := make(map[string]interface{})
     errors := make(map[string]ServiceError)
     missingDataSources := make([]string, 0)
-    
+  
     // 使用 WaitGroup 等待所有 goroutine 完成
     var wg sync.WaitGroup
     resultsMutex := &sync.Mutex{}
-    
+  
     for _, source := range request.DataSources {
         wg.Add(1)
         go func(ds DataSource) {
             defer wg.Done()
-            
+  
             // 创建数据源特定的超时上下文
             dsCtx, dsCancel := context.WithTimeout(timeoutCtx, ds.Timeout)
             defer dsCancel()
-            
+  
             // 获取服务并执行操作
             service, err := a.serviceRegistry.GetService(ds.ServiceName)
             if err != nil {
@@ -12006,7 +12099,7 @@ func (a *DataAggregator) Aggregate(ctx context.Context, request AggregationReque
                 resultsMutex.Unlock()
                 return
             }
-            
+  
             result, err := service.Execute(dsCtx, ds.Operation, ds.Parameters)
             resultsMutex.Lock()
             if err != nil {
@@ -12024,10 +12117,10 @@ func (a *DataAggregator) Aggregate(ctx context.Context, request AggregationReque
             resultsMutex.Unlock()
         }(source)
     }
-    
+  
     // 等待所有数据源处理完成
     wg.Wait()
-    
+  
     // 如果有必需的数据源缺失，返回错误
     if len(missingDataSources) > 0 {
         return &AggregationResult{
@@ -12037,7 +12130,7 @@ func (a *DataAggregator) Aggregate(ctx context.Context, request AggregationReque
             CompletionTime:     time.Since(startTime),
         }, fmt.Errorf("required data sources missing: %v", missingDataSources)
     }
-    
+  
     // 应用数据转换
     if len(request.Transforms) > 0 {
         transformedResults, err := a.transformer.ApplyTransformations(results, request.Transforms)
@@ -12046,13 +12139,13 @@ func (a *DataAggregator) Aggregate(ctx context.Context, request AggregationReque
         }
         results = transformedResults
     }
-    
+  
     // 更新缓存
     if request.CacheConfig != nil && request.CacheConfig.Enabled {
         cacheKey := a.generateCacheKey(request)
         a.cache.Set(cacheKey, results, request.CacheConfig.TTL)
     }
-    
+  
     return &AggregationResult{
         Data:           results,
         Errors:         errors,
@@ -12140,7 +12233,7 @@ func (e *EventDrivenOrchestrator) RegisterWorkflow(ctx context.Context, workflow
     if err := e.workflowStore.SaveWorkflowDefinition(ctx, workflow.ID, workflow); err != nil {
         return fmt.Errorf("failed to save workflow definition: %w", err)
     }
-    
+  
     // 向事件代理订阅触发事件
     subscription := EventSubscription{
         EventType: workflow.TriggerEvent,
@@ -12150,11 +12243,11 @@ func (e *EventDrivenOrchestrator) RegisterWorkflow(ctx context.Context, workflow
             Type: "WORKFLOW",
         },
     }
-    
+  
     if err := e.eventBroker.Subscribe(ctx, subscription); err != nil {
         return fmt.Errorf("failed to subscribe to trigger event: %w", err)
     }
-    
+  
     return nil
 }
 
@@ -12165,13 +12258,13 @@ func (e *EventDrivenOrchestrator) HandleEvent(ctx context.Context, event Event) 
     if err != nil {
         return fmt.Errorf("failed to find workflows for event %s: %w", event.Type, err)
     }
-    
+  
     for _, workflow := range workflows {
         // 验证事件是否匹配过滤器
         if !matchesFilter(event.Data, workflow.EventFilter) {
             continue
         }
-        
+  
         // 创建新的工作流实例
         instanceID := generateInstanceID(workflow.ID)
         instance := &WorkflowInstanceState{
@@ -12185,19 +12278,19 @@ func (e *EventDrivenOrchestrator) HandleEvent(ctx context.Context, event Event) 
             TriggerEvent:      event.Data,
             EventCorrelationID: event.CorrelationID,
         }
-        
+  
         // 保存实例状态
         if err := e.stateManager.SaveInstanceState(ctx, instance); err != nil {
             return fmt.Errorf("failed to save instance state: %w", err)
         }
-        
+  
         // 跟踪实例
         e.instanceTracker.TrackInstance(instanceID, workflow.ID)
-        
+  
         // 异步执行工作流
         go e.executeWorkflow(context.Background(), instance, workflow)
     }
-    
+  
     return nil
 }
 
@@ -12209,7 +12302,7 @@ func (e *EventDrivenOrchestrator) executeWorkflow(
 ) {
     for len(instance.CurrentSteps) > 0 {
         nextSteps := make([]string, 0)
-        
+  
         for _, stepID := range instance.CurrentSteps {
             // 获取步骤定义
             step := findStepByID(workflow.Steps, stepID)
@@ -12218,19 +12311,19 @@ func (e *EventDrivenOrchestrator) executeWorkflow(
                 fmt.Printf("Step %s not found in workflow %s\n", stepID, workflow.ID)
                 continue
             }
-            
+  
             // 执行步骤
             stepResult, err := e.executeStep(ctx, instance, workflow, *step)
-            
+  
             // 记录步骤结果
             instance.CompletedSteps[stepID] = stepResult
-            
+  
             // 如果出错且没有错误处理，终止工作流
             if err != nil && !hasErrorHandler(workflow, *step) {
                 e.completeWorkflowWithError(ctx, instance, err)
                 return
             }
-            
+  
             // 如果步骤成功，添加下一步
             if stepResult.Status == "COMPLETED" {
                 for _, nextStepID := range step.NextSteps {
@@ -12243,7 +12336,7 @@ func (e *EventDrivenOrchestrator) executeWorkflow(
                             fmt.Printf("Error evaluating condition for step %s: %v\n", nextStepID, err)
                             continue
                         }
-                        
+  
                         if conditionMet {
                             nextSteps = append(nextSteps, nextStepID)
                         }
@@ -12254,11 +12347,11 @@ func (e *EventDrivenOrchestrator) executeWorkflow(
                 }
             }
         }
-        
+  
         // 更新当前步骤
         instance.CurrentSteps = nextSteps
         e.stateManager.UpdateInstanceState(ctx, instance)
-        
+  
         // 如果没有更多步骤，检查是否完成
         if len(nextSteps) == 0 {
             e.completeWorkflowSuccess(ctx, instance)
@@ -12279,7 +12372,7 @@ func (e *EventDrivenOrchestrator) executeStep(
         StartTime: time.Now(),
         Status:    "RUNNING",
     }
-    
+  
     // 解析输入
     input, err := resolveStepInput(step.InputMapping, instance.StateData, instance.TriggerEvent)
     if err != nil {
@@ -12292,10 +12385,10 @@ func (e *EventDrivenOrchestrator) executeStep(
         result.EndTime = time.Now()
         return result, err
     }
-    
+  
     var output map[string]interface{}
     var stepErr error
-    
+  
     // 根据步骤类型执行
     switch step.Type {
     case PublishEventStep:
@@ -12311,7 +12404,7 @@ func (e *EventDrivenOrchestrator) executeStep(
     default:
         stepErr = fmt.Errorf("unsupported step type: %s", step.Type)
     }
-    
+  
     // 设置结果
     result.EndTime = time.Now()
     if stepErr != nil {
@@ -12323,17 +12416,17 @@ func (e *EventDrivenOrchestrator) executeStep(
         }
         return result, stepErr
     }
-    
+  
     result.Status = "COMPLETED"
     result.Output = output
-    
+  
     // 更新工作流状态数据
     for outputKey, stateKey := range step.OutputMapping {
         if outputValue, exists := output[outputKey]; exists {
             instance.StateData[stateKey] = outputValue
         }
     }
-    
+  
     return result, nil
 }
 
@@ -12348,7 +12441,7 @@ func (e *EventDrivenOrchestrator) executePublishEvent(
     if !ok {
         return nil, errors.New("event_type not specified in step config")
     }
-    
+  
     // 创建事件
     event := Event{
         Type:          eventType,
@@ -12357,12 +12450,12 @@ func (e *EventDrivenOrchestrator) executePublishEvent(
         Source:        "workflow-orchestrator",
         Timestamp:     time.Now(),
     }
-    
+  
     // 发布事件
     if err := e.eventBroker.PublishEvent(ctx, event); err != nil {
         return nil, fmt.Errorf("failed to publish event: %w", err)
     }
-    
+  
     return map[string]interface{}{
         "event_published": true,
         "event_type":      eventType,
@@ -12382,10 +12475,10 @@ func (e *EventDrivenOrchestrator) executeConsumeEvent(
     if !ok {
         return nil, errors.New("event_type not specified in step config")
     }
-    
+  
     filter, _ := config["filter"].(map[string]interface{})
     timeoutStr, _ := config["timeout"].(string)
-    
+  
     // 解析超时
     var timeout time.Duration
     var err error
@@ -12397,23 +12490,23 @@ func (e *EventDrivenOrchestrator) executeConsumeEvent(
     } else {
         timeout = 30 * time.Second // 默认超时
     }
-    
+  
     // 创建超时上下文
     timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
     defer cancel()
-    
+  
     // 创建等待事件的通道
     resultCh := make(chan map[string]interface{}, 1)
     errorCh := make(chan error, 1)
-    
+  
     // 注册临时事件处理程序
     correlationValue := ""
     if correlationField, ok := config["correlation_field"].(string); ok && correlationField != "" {
         correlationValue = getCorrelationValue(instance, correlationField)
     }
-    
+  
     handlerID := fmt.Sprintf("workflow-%s-step-%s", instance.InstanceID, "consume-event")
-    
+  
     subscription := EventSubscription{
         EventType: eventType,
         Filter:    filter,
@@ -12426,14 +12519,14 @@ func (e *EventDrivenOrchestrator) executeConsumeEvent(
             resultCh <- event.Data
         },
     }
-    
+  
     if err := e.eventBroker.Subscribe(timeoutCtx, subscription); err != nil {
         return nil, fmt.Errorf("failed to subscribe to event: %w", err)
     }
-    
+  
     // 清理时取消订阅
     defer e.eventBroker.Unsubscribe(context.Background(), handlerID, eventType)
-    
+  
     // 等待事件或超时
     select {
     case eventData := <-resultCh:
@@ -12456,24 +12549,24 @@ func (e *EventDrivenOrchestrator) executeServiceCall(
     if !ok {
         return nil, errors.New("service_name not specified in step config")
     }
-    
+  
     operationName, ok := config["operation"].(string)
     if !ok {
         return nil, errors.New("operation not specified in step config")
     }
-    
+  
     // 获取服务
     service, err := e.serviceRegistry.GetService(serviceName)
     if err != nil {
         return nil, fmt.Errorf("service %s not found: %w", serviceName, err)
     }
-    
+  
     // 执行服务调用
     result, err := service.Execute(ctx, operationName, input)
     if err != nil {
         return nil, fmt.Errorf("service call failed: %w", err)
     }
-    
+  
     return result, nil
 }
 
@@ -12488,7 +12581,7 @@ func (e *EventDrivenOrchestrator) executeTransform(
     if !ok {
         return nil, errors.New("transformations not specified in step config")
     }
-    
+  
     // 转换变换指令格式
     transformInstructions := make([]TransformationInstruction, 0, len(transforms))
     for _, t := range transforms {
@@ -12502,13 +12595,13 @@ func (e *EventDrivenOrchestrator) executeTransform(
             transformInstructions = append(transformInstructions, instruction)
         }
     }
-    
+  
     // 应用转换
     result, err := transformer.ApplyTransformations(input, transformInstructions)
     if err != nil {
         return nil, fmt.Errorf("transformation failed: %w", err)
     }
-    
+  
     return result, nil
 }
 
@@ -12522,13 +12615,13 @@ func (e *EventDrivenOrchestrator) executeCondition(
     if !ok {
         return nil, errors.New("condition not specified in step config")
     }
-    
+  
     // 评估条件
     result, err := evaluateCondition(expression, input)
     if err != nil {
         return nil, fmt.Errorf("condition evaluation failed: %w", err)
     }
-    
+  
     return map[string]interface{}{
         "condition_result": result,
         "condition":        expression,
@@ -12544,7 +12637,7 @@ func (e *EventDrivenOrchestrator) completeWorkflowSuccess(
     instance.Status = "COMPLETED"
     instance.EndTime = &now
     e.stateManager.UpdateInstanceState(ctx, instance)
-    
+  
     // 发布工作流完成事件
     completeEvent := Event{
         Type: "WORKFLOW_COMPLETED",
@@ -12558,7 +12651,7 @@ func (e *EventDrivenOrchestrator) completeWorkflowSuccess(
         Source:        "workflow-orchestrator",
         Timestamp:     now,
     }
-    
+  
     e.eventBroker.PublishEvent(ctx, completeEvent)
     e.instanceTracker.UntrackInstance(instance.InstanceID)
 }
@@ -12573,7 +12666,7 @@ func (e *EventDrivenOrchestrator) completeWorkflowWithError(
     instance.Status = "FAILED"
     instance.EndTime = &now
     e.stateManager.UpdateInstanceState(ctx, instance)
-    
+  
     // 发布工作流失败事件
     failedEvent := Event{
         Type: "WORKFLOW_FAILED",
@@ -12588,7 +12681,7 @@ func (e *EventDrivenOrchestrator) completeWorkflowWithError(
         Source:        "workflow-orchestrator",
         Timestamp:     now,
     }
-    
+  
     e.eventBroker.PublishEvent(ctx, failedEvent)
     e.instanceTracker.UntrackInstance(instance.InstanceID)
 }
@@ -12598,7 +12691,7 @@ type WorkflowBestPractices struct{}
 
 func (w *WorkflowBestPractices) GetBestPractices() map[string][]string {
     practices := make(map[string][]string)
-    
+  
     practices["设计原则"] = []string{
         "单一职责原则：每个工作流应该只做一件事",
         "有限状态模式：明确定义工作流的所有可能状态和转换",
@@ -12608,7 +12701,7 @@ func (w *WorkflowBestPractices) GetBestPractices() map[string][]string {
         "遵循 API 优先设计",
         "规范异常处理和重试策略",
     }
-    
+  
     practices["可靠性"] = []string{
         "实现持久化存储工作流状态",
         "使用补偿事务处理分布式事务",
@@ -12618,7 +12711,7 @@ func (w *WorkflowBestPractices) GetBestPractices() map[string][]string {
         "优雅处理服务中断和恢复",
         "设置适当的超时和重试策略",
     }
-    
+  
     practices["可扩展性"] = []string{
         "使用无状态设计",
         "采用异步和事件驱动模式",
@@ -12628,7 +12721,7 @@ func (w *WorkflowBestPractices) GetBestPractices() map[string][]string {
         "实现流量控制和限流",
         "使用缓存减少重复计算",
     }
-    
+  
     practices["可维护性"] = []string{
         "使用描述性命名",
         "为工作流和任务添加丰富的元数据",
@@ -12638,7 +12731,7 @@ func (w *WorkflowBestPractices) GetBestPractices() map[string][]string {
         "简化测试和调试",
         "设计便于升级的工作流版本",
     }
-    
+  
     practices["性能优化"] = []string{
         "并行执行独立任务",
         "预取和缓存常用数据",
@@ -12648,7 +12741,7 @@ func (w *WorkflowBestPractices) GetBestPractices() map[string][]string {
         "避免不必要的服务调用",
         "监控和优化数据库查询",
     }
-    
+  
     return practices
 }
 
@@ -12669,7 +12762,7 @@ func (wr *WorkflowRouter) ConfigureRoutes(router *gin.Engine) {
     router.Use(wr.authMiddleware)
     router.Use(wr.rateLimitMiddleware)
     router.Use(wr.loggingMiddleware)
-    
+  
     // 工作流管理 API
     workflowsGroup := router.Group("/api/workflows")
     {
@@ -12679,7 +12772,7 @@ func (wr *WorkflowRouter) ConfigureRoutes(router *gin.Engine) {
         workflowsGroup.GET("/definitions/:id", wr.getWorkflowDefinition)
         workflowsGroup.PUT("/definitions/:id", wr.updateWorkflowDefinition)
         workflowsGroup.DELETE("/definitions/:id", wr.deleteWorkflowDefinition)
-        
+  
         // 工作流实例 API
         workflowsGroup.POST("/instances", wr.startWorkflowInstance)
         workflowsGroup.GET("/instances", wr.listWorkflowInstances)
@@ -12687,14 +12780,14 @@ func (wr *WorkflowRouter) ConfigureRoutes(router *gin.Engine) {
         workflowsGroup.POST("/instances/:id/cancel", wr.cancelWorkflowInstance)
         workflowsGroup.GET("/instances/:id/history", wr.getWorkflowInstanceHistory)
     }
-    
+  
     // Saga API
     sagaGroup := router.Group("/api/sagas")
     {
         sagaGroup.POST("", wr.startSaga)
         sagaGroup.GET("/:id", wr.getSagaStatus)
     }
-    
+  
     // 事件相关 API
     eventsGroup := router.Group("/api/events")
     {
@@ -12702,13 +12795,13 @@ func (wr *WorkflowRouter) ConfigureRoutes(router *gin.Engine) {
         eventsGroup.POST("/workflows", wr.registerEventDrivenWorkflow)
         eventsGroup.GET("/workflows", wr.listEventDrivenWorkflows)
     }
-    
+  
     // 数据聚合 API
     router.POST("/api/aggregate", wr.aggregateData)
-    
+  
     // 回调 API
     router.POST("/api/callbacks/:type/:id", wr.handleCallback)
-    
+  
     // 监控和管理 API
     adminGroup := router.Group("/api/admin")
     {
@@ -12727,7 +12820,7 @@ func (wr *WorkflowRouter) authMiddleware(c *gin.Context) {
         })
         return
     }
-    
+  
     // 验证令牌
     claims, err := wr.authProvider.ValidateToken(token)
     if err != nil {
@@ -12736,12 +12829,12 @@ func (wr *WorkflowRouter) authMiddleware(c *gin.Context) {
         })
         return
     }
-    
+  
     // 设置用户信息到上下文
     c.Set("user_id", claims.UserID)
     c.Set("tenant_id", claims.TenantID)
     c.Set("roles", claims.Roles)
-    
+  
     c.Next()
 }
 
@@ -12749,7 +12842,7 @@ func (wr *WorkflowRouter) authMiddleware(c *gin.Context) {
 func (wr *WorkflowRouter) rateLimitMiddleware(c *gin.Context) {
     clientIP := c.ClientIP()
     userID, _ := c.Get("user_id")
-    
+  
     // 检查是否超过限制
     limited, waitTime := wr.rateLimiter.CheckLimit(clientIP, userID.(string), c.Request.URL.Path)
     if limited {
@@ -12760,7 +12853,7 @@ func (wr *WorkflowRouter) rateLimitMiddleware(c *gin.Context) {
         })
         return
     }
-    
+  
     c.Next()
 }
 
@@ -12768,18 +12861,18 @@ func (wr *WorkflowRouter) rateLimitMiddleware(c *gin.Context) {
 func (wr *WorkflowRouter) loggingMiddleware(c *gin.Context) {
     // 请求开始时间
     startTime := time.Now()
-    
+  
     // 处理请求
     c.Next()
-    
+  
     // 请求结束时间
     endTime := time.Now()
     latency := endTime.Sub(startTime)
-    
+  
     // 获取用户ID
     userID, _ := c.Get("user_id")
     tenantID, _ := c.Get("tenant_id")
-    
+  
     // 记录请求日志
     log.Printf(
         "[API] %s | %d | %s | %v | %s | UserID: %v | TenantID: %v",
@@ -12800,20 +12893,20 @@ func (wr *WorkflowRouter) startWorkflowInstance(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
         return
     }
-    
+  
     // 创建上下文
     userID, _ := c.Get("user_id")
     tenantID, _ := c.Get("tenant_id")
     ctx := context.WithValue(c.Request.Context(), "user_id", userID)
     ctx = context.WithValue(ctx, "tenant_id", tenantID)
-    
+  
     // 启动工作流
     instanceID, err := wr.workflowOrchestrator.StartOrchestration(ctx, request.WorkflowID, request.Input)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    
+  
     c.JSON(http.StatusAccepted, gin.H{
         "instance_id": instanceID,
         "status": "RUNNING",
@@ -12828,25 +12921,25 @@ func (wr *WorkflowRouter) getWorkflowInstance(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Instance ID is required"})
         return
     }
-    
+  
     // 创建上下文
     userID, _ := c.Get("user_id")
     tenantID, _ := c.Get("tenant_id")
     ctx := context.WithValue(c.Request.Context(), "user_id", userID)
     ctx = context.WithValue(ctx, "tenant_id", tenantID)
-    
+  
     // 获取工作流状态
     status, err := wr.workflowOrchestrator.GetOrchestrationStatus(ctx, instanceID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    
+  
     if status == nil {
         c.JSON(http.StatusNotFound, gin.H{"error": "Workflow instance not found"})
         return
     }
-    
+  
     c.JSON(http.StatusOK, status)
 }
 
@@ -12857,20 +12950,20 @@ func (wr *WorkflowRouter) startSaga(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
         return
     }
-    
+  
     // 创建上下文
     userID, _ := c.Get("user_id")
     tenantID, _ := c.Get("tenant_id")
     ctx := context.WithValue(c.Request.Context(), "user_id", userID)
     ctx = context.WithValue(ctx, "tenant_id", tenantID)
-    
+  
     // 启动Saga
     sagaID, err := wr.sagaOrchestrator.StartSaga(ctx, request.SagaDefinition, request.Input)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    
+  
     c.JSON(http.StatusAccepted, gin.H{
         "saga_id": sagaID,
         "status": "RUNNING",
@@ -12885,13 +12978,13 @@ func (wr *WorkflowRouter) publishEvent(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
         return
     }
-    
+  
     // 创建上下文
     userID, _ := c.Get("user_id")
     tenantID, _ := c.Get("tenant_id")
     ctx := context.WithValue(c.Request.Context(), "user_id", userID)
     ctx = context.WithValue(ctx, "tenant_id", tenantID)
-    
+  
     // 创建事件
     event := Event{
         Type:          request.EventType,
@@ -12900,14 +12993,14 @@ func (wr *WorkflowRouter) publishEvent(c *gin.Context) {
         Source:        "api-gateway",
         Timestamp:     time.Now(),
     }
-    
+  
     // 发布事件
     err := wr.eventOrchestrator.eventBroker.PublishEvent(ctx, event)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    
+  
     c.JSON(http.StatusAccepted, gin.H{
         "event_id": event.ID,
         "status": "PUBLISHED",
@@ -12922,18 +13015,18 @@ func (wr *WorkflowRouter) aggregateData(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
         return
     }
-    
+  
     // 创建上下文
     userID, _ := c.Get("user_id")
     tenantID, _ := c.Get("tenant_id")
     ctx := context.WithValue(c.Request.Context(), "user_id", userID)
     ctx = context.WithValue(ctx, "tenant_id", tenantID)
-    
+  
     // 如果没有设置超时，设置默认值
     if request.Timeout == 0 {
         request.Timeout = 30 * time.Second
     }
-    
+  
     // 执行数据聚合
     result, err := wr.aggregator.Aggregate(ctx, request)
     if err != nil {
@@ -12949,11 +13042,11 @@ func (wr *WorkflowRouter) aggregateData(c *gin.Context) {
             })
             return
         }
-        
+  
         c.JSON(code, gin.H{"error": err.Error()})
         return
     }
-    
+  
     c.JSON(http.StatusOK, result)
 }
 
@@ -12961,12 +13054,12 @@ func (wr *WorkflowRouter) aggregateData(c *gin.Context) {
 func (wr *WorkflowRouter) handleCallback(c *gin.Context) {
     callbackType := c.Param("type")
     callbackID := c.Param("id")
-    
+  
     // 创建上下文
     ctx := c.Request.Context()
-    
+  
     var err error
-    
+  
     switch callbackType {
     case "service":
         // 处理服务回调
@@ -12975,9 +13068,9 @@ func (wr *WorkflowRouter) handleCallback(c *gin.Context) {
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid callback format"})
             return
         }
-        
+  
         err = wr.workflowOrchestrator.HandleServiceCallback(ctx, callback)
-        
+  
     case "event":
         // 处理事件回调
         var event Event
@@ -12985,7 +13078,7 @@ func (wr *WorkflowRouter) handleCallback(c *gin.Context) {
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event format"})
             return
         }
-        
+  
         // 补充事件信息
         if event.ID == "" {
             event.ID = uuid.New().String()
@@ -12996,19 +13089,19 @@ func (wr *WorkflowRouter) handleCallback(c *gin.Context) {
         if event.Source == "" {
             event.Source = "external-callback"
         }
-        
+  
         err = wr.eventOrchestrator.HandleEvent(ctx, event)
-        
+  
     default:
         c.JSON(http.StatusBadRequest, gin.H{"error": "Unsupported callback type"})
         return
     }
-    
+  
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    
+  
     c.JSON(http.StatusAccepted, gin.H{
         "status": "ACCEPTED",
         "message": "Callback processed successfully",
@@ -13044,10 +13137,10 @@ func NewWorkflowTemplateStore() *WorkflowTemplateStore {
     store := &WorkflowTemplateStore{
         templates: make(map[string]WorkflowTemplate),
     }
-    
+  
     // 注册预定义模板
     store.registerPredefinedTemplates()
-    
+  
     return store
 }
 
@@ -13088,7 +13181,7 @@ func (s *WorkflowTemplateStore) registerPredefinedTemplates() {
         },
         Definition: loadDataProcessingTemplate(),
     }
-    
+  
     // 添加审批流模板
     s.templates["approval-workflow"] = WorkflowTemplate{
         ID:          "approval-workflow",
@@ -13118,7 +13211,7 @@ func (s *WorkflowTemplateStore) registerPredefinedTemplates() {
         },
         Definition: loadApprovalWorkflowTemplate(),
     }
-    
+  
     // 添加Saga事务模板
     s.templates["distributed-transaction"] = WorkflowTemplate{
         ID:          "distributed-transaction",
@@ -13143,7 +13236,7 @@ func (s *WorkflowTemplateStore) registerPredefinedTemplates() {
         },
         Definition: loadSagaTransactionTemplate(),
     }
-    
+  
     // 添加事件驱动集成模板
     s.templates["event-driven-integration"] = WorkflowTemplate{
         ID:          "event-driven-integration",
@@ -13411,18 +13504,18 @@ func (s *WorkflowTemplateStore) CreateWorkflowFromTemplate(
     if !exists {
         return nil, fmt.Errorf("template %s not found", templateID)
     }
-    
+  
     // 验证参数
     if err := validateTemplateParameters(template.Parameters, parameters); err != nil {
         return nil, err
     }
-    
+  
     // 深度复制模板定义
     definition := deepCopyMap(template.Definition)
-    
+  
     // 替换参数
     definition = replaceTemplateParameters(definition, parameters)
-    
+  
     return definition, nil
 }
 
@@ -13490,26 +13583,26 @@ func getNestedValue(
     if len(path) == 0 {
         return nil
     }
-    
+  
     current := params
     for i, part := range path {
         if i == len(path)-1 {
             return current[part]
         }
-        
+  
         next, ok := current[part]
         if !ok {
             return nil
         }
-        
+  
         nextMap, ok := next.(map[string]interface{})
         if !ok {
             return nil
         }
-        
+  
         current = nextMap
     }
-    
+  
     return nil
 }
 
@@ -13602,13 +13695,13 @@ func (vc *WorkflowVersionControl) CreateVersion(
     if err := vc.validator.ValidateWorkflowDefinition(definition); err != nil {
         return nil, fmt.Errorf("invalid workflow definition: %w", err)
     }
-    
+  
     // 检查工作流是否存在
     exists, err := vc.repository.WorkflowExists(ctx, workflowID)
     if err != nil {
         return nil, fmt.Errorf("failed to check workflow existence: %w", err)
     }
-    
+  
     var version string
     if exists {
         // 获取最新版本
@@ -13616,14 +13709,14 @@ func (vc *WorkflowVersionControl) CreateVersion(
         if err != nil {
             return nil, fmt.Errorf("failed to get latest version: %w", err)
         }
-        
+  
         // 增加版本号
         version = incrementVersion(latestVersion.Version)
     } else {
         // 新工作流
         version = "1.0.0"
     }
-    
+  
     // 创建新版本
     workflowVersion := &WorkflowVersion{
         WorkflowID:   workflowID,
@@ -13636,12 +13729,12 @@ func (vc *WorkflowVersionControl) CreateVersion(
         ChangeLog:    changeLog,
         Dependencies: extractDependencies(definition),
     }
-    
+  
     // 保存版本
     if err := vc.repository.SaveVersion(ctx, workflowVersion); err != nil {
         return nil, fmt.Errorf("failed to save version: %w", err)
     }
-    
+  
     return workflowVersion, nil
 }
 
@@ -13657,34 +13750,35 @@ func (vc *WorkflowVersionControl) PublishVersion(
     if err != nil {
         return nil, fmt.Errorf("failed to get version: %w", err)
     }
-    
+  
     // 检查版本状态
     if workflowVersion.Status != "DRAFT" {
         return nil, fmt.Errorf("only draft versions can be published")
     }
-    
+  
     // 验证工作流定义
     if err := vc.validator.ValidateWorkflowDefinition(workflowVersion.Definition); err != nil {
         return nil, fmt.Errorf("invalid workflow definition: %w", err)
     }
-    
+  
     // 检查依赖是否满足
     if err := vc.checkDependencies(ctx, workflowVersion.Dependencies); err != nil {
         return nil, fmt.Errorf("dependency check failed: %w", err)
     }
-    
+  
     // 更新状态为已发布
     now := time.Now()
     workflowVersion.Status = "PUBLISHED"
     workflowVersion.PublishedAt = &now
-    
+  
     // 保存更新
     if err := vc.repository.SaveVersion(ctx, workflowVersion); err != nil {
         return nil, fmt.Errorf("failed to save published version: %w", err)
     }
-    
+  
     return workflowVersion, nil
 }
+
 ```
 
 ## 十、本地工作流
@@ -13700,7 +13794,7 @@ import (
     "runtime"
     "sync"
     "time"
-    
+  
     "github.com/yourorg/workflow/model"
     "github.com/yourorg/workflow/store"
 )
@@ -13715,13 +13809,13 @@ type LocalWorkflowScheduler struct {
     eventPublisher  EventPublisher
     configManager   ConfigManager
     metrics         MetricsCollector
-    
+  
     // 调度器配置
     maxConcurrentWorkflows int
     maxConcurrentTasks     int
     defaultTaskTimeout     time.Duration
     shutdownTimeout        time.Duration
-    
+  
     // 运行时状态
     isRunning      bool
     runningLock    sync.RWMutex
@@ -13853,15 +13947,15 @@ func NewLocalWorkflowScheduler(
 ) *LocalWorkflowScheduler {
     // 获取系统配置
     config := configManager.GetSchedulerConfig()
-    
+  
     // 设置默认的并发数
     maxConcurrentWorkflows := config.GetInt("maxConcurrentWorkflows", runtime.NumCPU()*2)
     maxConcurrentTasks := config.GetInt("maxConcurrentTasks", runtime.NumCPU()*4)
-    
+  
     // 设置默认的超时时间
     defaultTaskTimeout := config.GetDuration("defaultTaskTimeout", 30*time.Second)
     shutdownTimeout := config.GetDuration("shutdownTimeout", 60*time.Second)
-    
+  
     return &LocalWorkflowScheduler{
         workflowStore:          workflowStore,
         taskExecutors:          taskExecutors,
@@ -13884,20 +13978,20 @@ func NewLocalWorkflowScheduler(
 func (s *LocalWorkflowScheduler) Start(ctx context.Context) error {
     s.runningLock.Lock()
     defer s.runningLock.Unlock()
-    
+  
     if s.isRunning {
         return fmt.Errorf("scheduler is already running")
     }
-    
+  
     s.shutdownCh = make(chan struct{})
     s.isRunning = true
-    
+  
     // 启动调度循环
     go s.scheduleLoop(ctx)
-    
+  
     // 恢复处理中的工作流
     go s.recoverWorkflows(ctx)
-    
+  
     return nil
 }
 
@@ -13905,26 +13999,26 @@ func (s *LocalWorkflowScheduler) Start(ctx context.Context) error {
 func (s *LocalWorkflowScheduler) Shutdown(ctx context.Context) error {
     s.runningLock.Lock()
     defer s.runningLock.Unlock()
-    
+  
     if !s.isRunning {
         return nil
     }
-    
+  
     // 创建带超时的上下文
     shutdownCtx, cancel := context.WithTimeout(ctx, s.shutdownTimeout)
     defer cancel()
-    
+  
     // 发送关闭信号
     close(s.shutdownCh)
-    
+  
     // 等待所有工作流和任务完成
     // 这里可以添加更复杂的优雅关闭逻辑
-    
+  
     // 关闭工作池
     if err := s.workerPool.Shutdown(shutdownCtx); err != nil {
         return fmt.Errorf("error shutting down worker pool: %w", err)
     }
-    
+  
     s.isRunning = false
     return nil
 }
@@ -13943,7 +14037,7 @@ func (s *LocalWorkflowScheduler) ScheduleWorkflow(
         }, fmt.Errorf("scheduler is not running")
     }
     s.runningLock.RUnlock()
-    
+  
     // 验证工作流存在且版本有效
     if err := s.validateWorkflow(ctx, request.WorkflowID, request.Version); err != nil {
         return WorkflowScheduleResponse{
@@ -13951,11 +14045,11 @@ func (s *LocalWorkflowScheduler) ScheduleWorkflow(
             Message: fmt.Sprintf("Workflow validation failed: %v", err),
         }, err
     }
-    
+  
     // 创建响应通道
     responseCh := make(chan WorkflowScheduleResponse, 1)
     request.ResponseCh = responseCh
-    
+  
     // 提交调度请求到队列
     select {
     case s.workflowQueue <- request:
@@ -13966,7 +14060,7 @@ func (s *LocalWorkflowScheduler) ScheduleWorkflow(
             Message: "Context cancelled",
         }, ctx.Err()
     }
-    
+  
     // 等待响应
     select {
     case response := <-responseCh:
@@ -13989,7 +14083,7 @@ func (s *LocalWorkflowScheduler) GetWorkflowStatus(
     if err != nil {
         return nil, fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     return executionContext, nil
 }
 
@@ -14004,30 +14098,30 @@ func (s *LocalWorkflowScheduler) CancelWorkflow(
     if !exists {
         return fmt.Errorf("workflow instance %s not found", instanceID)
     }
-    
+  
     // 检查是否可以取消
     if status == "COMPLETED" || status == "FAILED" || status == "CANCELLED" {
         return fmt.Errorf("workflow instance %s is already in terminal state: %s", instanceID, status)
     }
-    
+  
     // 更新状态
     s.instanceTracker.UpdateInstanceStatus(instanceID, "CANCELLING")
-    
+  
     // 获取执行上下文
     executionContext, err := s.stateManager.GetWorkflowState(ctx, instanceID)
     if err != nil {
         return fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 更新状态并保存
     executionContext.Status = "CANCELLED"
     executionContext.LastUpdated = time.Now()
     executionContext.Variables["cancel_reason"] = reason
-    
+  
     if err := s.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         return fmt.Errorf("failed to save cancelled state: %w", err)
     }
-    
+  
     // 发布取消事件
     cancelEvent := WorkflowEvent{
         Type:       "WORKFLOW_CANCELLED",
@@ -14038,15 +14132,15 @@ func (s *LocalWorkflowScheduler) CancelWorkflow(
             "reason": reason,
         },
     }
-    
+  
     if err := s.eventPublisher.PublishEvent(ctx, cancelEvent); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to publish cancel event: %v\n", err)
     }
-    
+  
     // 更新最终状态
     s.instanceTracker.UpdateInstanceStatus(instanceID, "CANCELLED")
-    
+  
     return nil
 }
 
@@ -14061,37 +14155,37 @@ func (s *LocalWorkflowScheduler) ResumeWorkflow(
     if !exists {
         return fmt.Errorf("workflow instance %s not found", instanceID)
     }
-    
+  
     // 检查是否可以恢复
     if status != "SUSPENDED" {
         return fmt.Errorf("workflow instance %s is not suspended: %s", instanceID, status)
     }
-    
+  
     // 获取执行上下文
     executionContext, err := s.stateManager.GetWorkflowState(ctx, instanceID)
     if err != nil {
         return fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 更新状态
     executionContext.Status = "RUNNING"
     executionContext.LastUpdated = time.Now()
-    
+  
     // 合并输入数据
     if input != nil {
         for k, v := range input {
             executionContext.Variables[k] = v
         }
     }
-    
+  
     // 保存状态
     if err := s.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         return fmt.Errorf("failed to save resumed state: %w", err)
     }
-    
+  
     // 继续执行工作流
     go s.continueWorkflowExecution(context.Background(), executionContext)
-    
+  
     // 发布恢复事件
     resumeEvent := WorkflowEvent{
         Type:       "WORKFLOW_RESUMED",
@@ -14099,12 +14193,12 @@ func (s *LocalWorkflowScheduler) ResumeWorkflow(
         WorkflowID: executionContext.WorkflowID,
         Timestamp:  time.Now(),
     }
-    
+  
     if err := s.eventPublisher.PublishEvent(ctx, resumeEvent); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to publish resume event: %v\n", err)
     }
-    
+  
     return nil
 }
 
@@ -14131,56 +14225,56 @@ func (s *LocalWorkflowScheduler) handleWorkflowRequest(
         // 达到最大并发数，计算预计开始时间
         estimatedWaitTime := time.Duration(stats.QueuedTasks) * 5 * time.Second
         estimatedStartTime := time.Now().Add(estimatedWaitTime)
-        
+  
         response := WorkflowScheduleResponse{
             Status:            "SCHEDULED",
             Message:           fmt.Sprintf("Workflow scheduled, estimated wait time: %v", estimatedWaitTime),
             ScheduledTime:     time.Now(),
             EstimatedStartTime: &estimatedStartTime,
         }
-        
+  
         // 异步模式直接返回
         if request.ScheduleOptions.ExecutionMode == "ASYNC" {
             instanceID := generateInstanceID(request.WorkflowID)
             response.InstanceID = instanceID
             request.ResponseCh <- response
             close(request.ResponseCh)
-            
+  
             // 提交到工作池等待执行
             s.workerPool.SubmitWithPriority(func() {
                 s.startWorkflowExecution(ctx, request, instanceID)
             }, request.Priority)
-            
+  
             return
         }
     }
-    
+  
     // 可以立即执行
     instanceID := generateInstanceID(request.WorkflowID)
-    
+  
     response := WorkflowScheduleResponse{
         InstanceID:    instanceID,
         Status:        "SCHEDULED",
         Message:       "Workflow scheduled for immediate execution",
         ScheduledTime: time.Now(),
     }
-    
+  
     // 异步模式
     if request.ScheduleOptions.ExecutionMode == "ASYNC" {
         request.ResponseCh <- response
         close(request.ResponseCh)
-        
+  
         // 提交到工作池
         s.workerPool.SubmitWithPriority(func() {
             s.startWorkflowExecution(ctx, request, instanceID)
         }, request.Priority)
-        
+  
         return
     }
-    
+  
     // 同步模式直接执行
     s.startWorkflowExecution(ctx, request, instanceID)
-    
+  
     // 执行完成后通知
     executionContext, err := s.stateManager.GetWorkflowState(ctx, instanceID)
     if err != nil {
@@ -14194,7 +14288,7 @@ func (s *LocalWorkflowScheduler) handleWorkflowRequest(
             response.Message = "Workflow execution completed"
         }
     }
-    
+  
     request.ResponseCh <- response
     close(request.ResponseCh)
 }
@@ -14207,7 +14301,7 @@ func (s *LocalWorkflowScheduler) startWorkflowExecution(
 ) {
     // 跟踪实例
     s.instanceTracker.TrackInstance(instanceID, "INITIALIZING")
-    
+  
     // 创建执行上下文
     executionContext := &WorkflowExecutionContext{
         InstanceID:     instanceID,
@@ -14227,20 +14321,20 @@ func (s *LocalWorkflowScheduler) startWorkflowExecution(
         TaskTimeouts:   make(map[string]time.Duration),
         ScheduleOptions: request.ScheduleOptions,
     }
-    
+  
     // 保存初始状态
     if err := s.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         s.handleWorkflowInitializationError(ctx, executionContext, err)
         return
     }
-    
+  
     // 加载工作流定义
     workflow, err := s.workflowStore.GetWorkflowDefinition(ctx, request.WorkflowID, request.Version)
     if err != nil {
         s.handleWorkflowInitializationError(ctx, executionContext, fmt.Errorf("failed to load workflow definition: %w", err))
         return
     }
-    
+  
     // 发布工作流启动事件
     startEvent := WorkflowEvent{
         Type:       "WORKFLOW_STARTED",
@@ -14252,26 +14346,26 @@ func (s *LocalWorkflowScheduler) startWorkflowExecution(
             "correlation_id": request.CorrelationID,
         },
     }
-    
+  
     if err := s.eventPublisher.PublishEvent(ctx, startEvent); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to publish start event: %v\n", err)
     }
-    
+  
     // 准备初始任务
     initialTasks := getInitialTasks(workflow)
     executionContext.CurrentTasks = initialTasks
     executionContext.Status = "RUNNING"
-    
+  
     // 更新状态
     if err := s.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         s.handleWorkflowInitializationError(ctx, executionContext, fmt.Errorf("failed to save workflow state: %w", err))
         return
     }
-    
+  
     // 更新跟踪状态
     s.instanceTracker.UpdateInstanceStatus(instanceID, "RUNNING")
-    
+  
     // 开始执行工作流
     s.executeWorkflow(ctx, executionContext, workflow)
 }
@@ -14291,7 +14385,7 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
         ctx, cancel = context.WithCancel(ctx)
         defer cancel()
     }
-    
+  
     // 监听上下文取消
     go func() {
         <-ctx.Done()
@@ -14300,14 +14394,14 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
             s.handleWorkflowTimeout(context.Background(), executionContext)
         }
     }()
-    
+  
     // 工作流执行循环
     for {
         // 检查工作流是否已在终止状态
         if isTerminalState(executionContext.Status) {
             break
         }
-        
+  
         // 检查是否有当前任务
         if len(executionContext.CurrentTasks) == 0 {
             // 检查是否所有任务都已完成
@@ -14315,10 +14409,10 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                 executionContext.Status = "COMPLETED"
                 executionContext.LastUpdated = time.Now()
                 s.stateManager.SaveWorkflowState(ctx, executionContext)
-                
+  
                 // 更新跟踪状态
                 s.instanceTracker.UpdateInstanceStatus(executionContext.InstanceID, "COMPLETED")
-                
+  
                 // 发布工作流完成事件
                 completeEvent := WorkflowEvent{
                     Type:       "WORKFLOW_COMPLETED",
@@ -14331,20 +14425,20 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                     },
                 }
                 s.eventPublisher.PublishEvent(ctx, completeEvent)
-                
+  
                 break
             }
-            
+  
             // 没有当前任务但工作流未完成，可能是等待外部事件
             if executionContext.Status != "SUSPENDED" {
                 executionContext.Status = "WAITING"
                 executionContext.LastUpdated = time.Now()
                 s.stateManager.SaveWorkflowState(ctx, executionContext)
-                
+  
                 // 更新跟踪状态
                 s.instanceTracker.UpdateInstanceStatus(executionContext.InstanceID, "WAITING")
             }
-            
+  
             // 等待一段时间或外部触发
             select {
             case <-time.After(5 * time.Second):
@@ -14359,18 +14453,18 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                 // 上下文取消
                 return
             }
-            
+  
             continue
         }
-        
+  
         // 准备执行当前任务
         taskIDs := executionContext.CurrentTasks
         executionContext.CurrentTasks = make([]string, 0)
-        
+  
         // 创建等待组和任务结果通道
         var wg sync.WaitGroup
         taskResultsCh := make(chan TaskExecutionResponse, len(taskIDs))
-        
+  
         // 并行执行任务
         for _, taskID := range taskIDs {
             // 获取任务定义
@@ -14383,33 +14477,33 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                 }
                 continue
             }
-            
+  
             // 检查任务依赖是否满足
             if !areTaskDependenciesSatisfied(taskDef, executionContext) {
                 // 依赖未满足，任务不能执行
                 continue
             }
-            
+  
             // 提交任务到工作池
             wg.Add(1)
             priority := executionContext.ScheduleOptions.TaskPriorities[taskID]
             if priority == 0 {
                 priority = 1 // 默认优先级
             }
-            
+  
             s.workerPool.SubmitWithPriority(func() {
                 defer wg.Done()
                 taskResult := s.executeTask(ctx, executionContext, taskDef)
                 taskResultsCh <- taskResult
             }, priority)
         }
-        
+  
         // 启动一个 goroutine 收集所有任务结果
         go func() {
             wg.Wait()
             close(taskResultsCh)
         }()
-        
+  
         // 处理任务结果
         for result := range taskResultsCh {
             // 更新任务结果
@@ -14417,10 +14511,10 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                 Output: result.Output,
                 Status: result.Status,
             }
-            
+  
             if result.Status == "COMPLETED" {
                 executionContext.CompletedTasks[result.TaskID] = true
-                
+  
                 // 查找后续任务
                 nextTasks := getNextTasks(workflow, result.TaskID)
                 for _, nextTaskID := range nextTasks {
@@ -14438,17 +14532,17 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                         Message: "Task execution failed with unknown error",
                     }
                 }
-                
+  
                 // 检查是否需要终止工作流
                 taskDef, _ := getTaskDefinition(workflow, result.TaskID)
                 if !taskDef.ContinueOnError {
                     executionContext.Status = "FAILED"
                     executionContext.LastUpdated = time.Now()
                     s.stateManager.SaveWorkflowState(ctx, executionContext)
-                    
+  
                     // 更新跟踪状态
                     s.instanceTracker.UpdateInstanceStatus(executionContext.InstanceID, "FAILED")
-                    
+  
                     // 发布工作流失败事件
                     failEvent := WorkflowEvent{
                         Type:       "WORKFLOW_FAILED",
@@ -14462,7 +14556,7 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                         },
                     }
                     s.eventPublisher.PublishEvent(ctx, failEvent)
-                    
+  
                     break
                 }
             } else if result.Status == "SUSPENDED" {
@@ -14471,10 +14565,10 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                 executionContext.LastUpdated = time.Now()
                 executionContext.Variables["suspended_task"] = result.TaskID
                 s.stateManager.SaveWorkflowState(ctx, executionContext)
-                
+  
                 // 更新跟踪状态
                 s.instanceTracker.UpdateInstanceStatus(executionContext.InstanceID, "SUSPENDED")
-                
+  
                 // 发布工作流挂起事件
                 suspendEvent := WorkflowEvent{
                     Type:       "WORKFLOW_SUSPENDED",
@@ -14487,11 +14581,11 @@ func (s *LocalWorkflowScheduler) executeWorkflow(
                     },
                 }
                 s.eventPublisher.PublishEvent(ctx, suspendEvent)
-                
+  
                 break
             }
         }
-        
+  
         // 更新工作流状态
         executionContext.LastUpdated = time.Now()
         s.stateManager.SaveWorkflowState(ctx, executionContext)
@@ -14506,7 +14600,7 @@ func (s *LocalWorkflowScheduler) executeTask(
 ) TaskExecutionResponse {
     taskID := taskDef.ID
     taskType := taskDef.Type
-    
+  
     // 获取任务执行器
     executor, exists := s.taskExecutors[taskType]
     if !exists {
@@ -14519,7 +14613,7 @@ func (s *LocalWorkflowScheduler) executeTask(
             },
         }
     }
-    
+  
     // 解析任务输入
     input, err := resolveTaskInput(taskDef, executionContext)
     if err != nil {
@@ -14533,13 +14627,13 @@ func (s *LocalWorkflowScheduler) executeTask(
             },
         }
     }
-    
+  
     // 准备任务执行配置
     config := make(map[string]interface{})
     if taskDef.Config != nil {
         config = taskDef.Config
     }
-    
+  
     // 确定超时时间
     timeout := s.defaultTaskTimeout
     if taskTimeout, exists := executionContext.TaskTimeouts[taskID]; exists {
@@ -14547,14 +14641,14 @@ func (s *LocalWorkflowScheduler) executeTask(
     } else if taskDef.Timeout > 0 {
         timeout = time.Duration(taskDef.Timeout) * time.Millisecond
     }
-    
+  
     // 创建响应通道
     responseCh := make(chan TaskExecutionResponse, 1)
-    
+  
     // 创建任务上下文，包括超时
     taskCtx, cancel := context.WithTimeout(ctx, timeout)
     defer cancel()
-    
+  
     // 创建任务执行请求
     request := TaskExecutionRequest{
         InstanceID:       executionContext.InstanceID,
@@ -14566,7 +14660,7 @@ func (s *LocalWorkflowScheduler) executeTask(
         Timeout:          timeout,
         ResponseCh:       responseCh,
     }
-    
+  
     // 发布任务开始事件
     startEvent := TaskEvent{
         Type:       "TASK_STARTED",
@@ -14577,16 +14671,16 @@ func (s *LocalWorkflowScheduler) executeTask(
         Timestamp:  time.Now(),
     }
     s.eventPublisher.PublishEvent(ctx, startEvent)
-    
+  
     // 记录指标：任务开始
     s.metrics.RecordTaskStart(executionContext.WorkflowID, taskID, taskType)
-    
+  
     // 执行任务
     startTime := time.Now()
     go executor.ExecuteTask(taskCtx, request)
-    
+  
     var response TaskExecutionResponse
-    
+  
     // 等待任务完成或超时
     select {
     case response = <-responseCh:
@@ -14614,10 +14708,10 @@ func (s *LocalWorkflowScheduler) executeTask(
             }
         }
     }
-    
+  
     executionTime := time.Since(startTime)
     response.ExecutionTime = executionTime
-    
+  
     // 记录指标：任务完成
     s.metrics.RecordTaskComplete(
         executionContext.WorkflowID,
@@ -14626,7 +14720,7 @@ func (s *LocalWorkflowScheduler) executeTask(
         response.Status,
         executionTime,
     )
-    
+  
     // 发布任务完成事件
     completeEvent := TaskEvent{
         Type:       fmt.Sprintf("TASK_%s", response.Status),
@@ -14640,7 +14734,7 @@ func (s *LocalWorkflowScheduler) executeTask(
             "status":         response.Status,
         },
     }
-    
+  
     if response.Status == "FAILED" && response.Error != nil {
         completeEvent.Data["error"] = response.Error
     } else if response.Output != nil {
@@ -14653,9 +14747,9 @@ func (s *LocalWorkflowScheduler) executeTask(
         }
         completeEvent.Data["output_meta"] = outputMeta
     }
-    
+  
     s.eventPublisher.PublishEvent(ctx, completeEvent)
-    
+  
     return response
 }
 
@@ -14676,7 +14770,7 @@ func (s *LocalWorkflowScheduler) allTasksCompleted(
 ) bool {
     // 获取所有任务 ID
     allTaskIDs := getAllTaskIDs(workflow)
-    
+  
     // 检查每个任务是否已完成
     for _, taskID := range allTaskIDs {
         // 如果任务有条件路径，它可能不需要执行
@@ -14684,7 +14778,7 @@ func (s *LocalWorkflowScheduler) allTasksCompleted(
         if !exists {
             continue
         }
-        
+  
         // 如果任务是条件路径上的，检查条件是否满足
         if isConditionalTask(taskDef, workflow) {
             // 如果任务的条件路径未满足，可以跳过
@@ -14692,13 +14786,13 @@ func (s *LocalWorkflowScheduler) allTasksCompleted(
                 continue
             }
         }
-        
+  
         // 任务应该执行但未完成
         if !executionContext.CompletedTasks[taskID] && !hasFatalError(taskID, executionContext) {
             return false
         }
     }
-    
+  
     return true
 }
 
@@ -14722,15 +14816,15 @@ func (s *LocalWorkflowScheduler) handleWorkflowInitializationError(
     executionContext.Status = "FAILED"
     executionContext.LastUpdated = time.Now()
     executionContext.Variables["initialization_error"] = err.Error()
-    
+  
     // 保存失败状态
     if saveErr := s.stateManager.SaveWorkflowState(ctx, executionContext); saveErr != nil {
         fmt.Printf("Failed to save workflow failure state: %v\n", saveErr)
     }
-    
+  
     // 更新跟踪状态
     s.instanceTracker.UpdateInstanceStatus(executionContext.InstanceID, "FAILED")
-    
+  
     // 发布工作流失败事件
     failEvent := WorkflowEvent{
         Type:       "WORKFLOW_FAILED",
@@ -14742,7 +14836,7 @@ func (s *LocalWorkflowScheduler) handleWorkflowInitializationError(
             "phase": "initialization",
         },
     }
-    
+  
     if pubErr := s.eventPublisher.PublishEvent(ctx, failEvent); pubErr != nil {
         fmt.Printf("Failed to publish workflow failure event: %v\n", pubErr)
     }
@@ -14759,15 +14853,15 @@ func (s *LocalWorkflowScheduler) handleWorkflowTimeout(
         "Workflow execution timed out after %v",
         executionContext.ScheduleOptions.Timeout,
     )
-    
+  
     // 保存失败状态
     if err := s.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         fmt.Printf("Failed to save workflow timeout state: %v\n", err)
     }
-    
+  
     // 更新跟踪状态
     s.instanceTracker.UpdateInstanceStatus(executionContext.InstanceID, "FAILED")
-    
+  
     // 发布工作流超时事件
     timeoutEvent := WorkflowEvent{
         Type:       "WORKFLOW_TIMEOUT",
@@ -14779,7 +14873,7 @@ func (s *LocalWorkflowScheduler) handleWorkflowTimeout(
             "execution_time":   time.Since(executionContext.StartTime).Milliseconds(),
         },
     }
-    
+  
     if err := s.eventPublisher.PublishEvent(ctx, timeoutEvent); err != nil {
         fmt.Printf("Failed to publish workflow timeout event: %v\n", err)
     }
@@ -14793,14 +14887,14 @@ func (s *LocalWorkflowScheduler) recoverWorkflows(ctx context.Context) {
         fmt.Printf("Failed to get active workflows for recovery: %v\n", err)
         return
     }
-    
+  
     // 恢复每个工作流
     for _, instance := range instances {
         // 跳过已处于终止状态的工作流
         if isTerminalState(instance.Status) {
             continue
         }
-        
+  
         // 恢复执行
         go s.recoverWorkflowExecution(ctx, instance)
     }
@@ -14813,7 +14907,7 @@ func (s *LocalWorkflowScheduler) recoverWorkflowExecution(
 ) {
     // 记录恢复事件
     s.instanceTracker.TrackInstance(executionContext.InstanceID, executionContext.Status)
-    
+  
     // 发布工作流恢复事件
     recoverEvent := WorkflowEvent{
         Type:       "WORKFLOW_RECOVERED",
@@ -14825,11 +14919,11 @@ func (s *LocalWorkflowScheduler) recoverWorkflowExecution(
             "recovery_time":   time.Since(executionContext.LastUpdated).Milliseconds(),
         },
     }
-    
+  
     if err := s.eventPublisher.PublishEvent(ctx, recoverEvent); err != nil {
         fmt.Printf("Failed to publish workflow recovery event: %v\n", err)
     }
-    
+  
     // 加载工作流定义
     workflow, err := s.workflowStore.GetWorkflowDefinition(ctx, executionContext.WorkflowID, executionContext.Version)
     if err != nil {
@@ -14840,7 +14934,7 @@ func (s *LocalWorkflowScheduler) recoverWorkflowExecution(
         )
         return
     }
-    
+  
     // 继续执行工作流
     s.executeWorkflow(ctx, executionContext, workflow)
 }
@@ -14852,7 +14946,7 @@ func (s *LocalWorkflowScheduler) continueWorkflowExecution(
 ) {
     // 更新跟踪状态
     s.instanceTracker.UpdateInstanceStatus(executionContext.InstanceID, "RUNNING")
-    
+  
     // 加载工作流定义
     workflow, err := s.workflowStore.GetWorkflowDefinition(ctx, executionContext.WorkflowID, executionContext.Version)
     if err != nil {
@@ -14863,7 +14957,7 @@ func (s *LocalWorkflowScheduler) continueWorkflowExecution(
         )
         return
     }
-    
+  
     // 继续执行工作流
     s.executeWorkflow(ctx, executionContext, workflow)
 }
@@ -14884,7 +14978,7 @@ type SystemTaskExecutor struct {
 func (e *SystemTaskExecutor) ExecuteTask(ctx context.Context, request TaskExecutionRequest) {
     // 根据任务类型执行不同的系统任务
     var result TaskExecutionResponse
-    
+  
     switch request.TaskType {
     case "delay":
         result = e.executeDelayTask(ctx, request)
@@ -14906,7 +15000,7 @@ func (e *SystemTaskExecutor) ExecuteTask(ctx context.Context, request TaskExecut
             },
         }
     }
-    
+  
     // 返回结果
     request.ResponseCh <- result
     close(request.ResponseCh)
@@ -14919,7 +15013,7 @@ func (e *SystemTaskExecutor) executeDelayTask(
 ) TaskExecutionResponse {
     // 解析延迟时间
     var delayDuration time.Duration
-    
+  
     if delayStr, ok := request.Config["delay"].(string); ok {
         var err error
         delayDuration, err = time.ParseDuration(delayStr)
@@ -14946,7 +15040,7 @@ func (e *SystemTaskExecutor) executeDelayTask(
             },
         }
     }
-    
+  
     // 执行延迟
     select {
     case <-time.After(delayDuration):
@@ -14998,15 +15092,15 @@ func (e *SystemTaskExecutor) executeConditionTask(
             },
         }
     }
-    
+  
     // 准备表达式上下文
     exprContext := make(map[string]interface{})
-    
+  
     // 添加输入数据
     for k, v := range request.Input {
         exprContext[k] = v
     }
-    
+  
     // 添加工作流上下文
     exprContext["workflow"] = map[string]interface{}{
         "instance_id":    request.ExecutionContext.InstanceID,
@@ -15014,7 +15108,7 @@ func (e *SystemTaskExecutor) executeConditionTask(
         "correlation_id": request.ExecutionContext.CorrelationID,
         "status":         request.ExecutionContext.Status,
     }
-    
+  
     // 评估条件
     result, err := evaluateCondition(conditionExpr, exprContext)
     if err != nil {
@@ -15028,7 +15122,7 @@ func (e *SystemTaskExecutor) executeConditionTask(
             },
         }
     }
-    
+  
     // 基于结果确定下一步路径
     var nextPath string
     if result {
@@ -15036,7 +15130,7 @@ func (e *SystemTaskExecutor) executeConditionTask(
     } else {
         nextPath, _ = request.Config["false_path"].(string)
     }
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15064,7 +15158,7 @@ func (e *SystemTaskExecutor) executeParallelTask(
             },
         }
     }
-    
+  
     // 准备分支任务ID
     branchTasks := make([]string, 0, len(branches))
     for _, branch := range branches {
@@ -15074,7 +15168,7 @@ func (e *SystemTaskExecutor) executeParallelTask(
             }
         }
     }
-    
+  
     // 保存分支任务到执行上下文
     instanceID := request.ExecutionContext.InstanceID
     workflowCtx, err := e.stateManager.GetWorkflowState(ctx, instanceID)
@@ -15089,7 +15183,7 @@ func (e *SystemTaskExecutor) executeParallelTask(
             },
         }
     }
-    
+  
     // 添加分支任务到当前任务列表
     workflowCtx.CurrentTasks = append(workflowCtx.CurrentTasks, branchTasks...)
     if err := e.stateManager.SaveWorkflowState(ctx, workflowCtx); err != nil {
@@ -15103,7 +15197,7 @@ func (e *SystemTaskExecutor) executeParallelTask(
             },
         }
     }
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15131,13 +15225,13 @@ func (e *SystemTaskExecutor) executeTransformTask(
             },
         }
     }
-    
+  
     // 复制输入数据作为工作区
     workspace := make(map[string]interface{})
     for k, v := range request.Input {
         workspace[k] = v
     }
-    
+  
     // 应用每个转换
     for _, transform := range transformations {
         if transformMap, ok := transform.(map[string]interface{}); ok {
@@ -15145,7 +15239,7 @@ func (e *SystemTaskExecutor) executeTransformTask(
             operation, _ := transformMap["operation"].(string)
             source, _ := transformMap["source"].(string)
             target, _ := transformMap["target"].(string)
-            
+  
             // 执行转换
             if err := applyTransformation(operation, source, target, transformMap, workspace); err != nil {
                 return TaskExecutionResponse{
@@ -15160,7 +15254,7 @@ func (e *SystemTaskExecutor) executeTransformTask(
             }
         }
     }
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15185,7 +15279,7 @@ func (e *SystemTaskExecutor) executeNotificationTask(
             },
         }
     }
-    
+  
     // 创建通知事件
     notificationEvent := NotificationEvent{
         Type:         notificationType,
@@ -15196,7 +15290,7 @@ func (e *SystemTaskExecutor) executeNotificationTask(
         Data:         request.Input,
         Config:       request.Config,
     }
-    
+  
     // 发布通知事件
     if err := e.eventPublisher.PublishNotification(ctx, notificationEvent); err != nil {
         return TaskExecutionResponse{
@@ -15209,7 +15303,7 @@ func (e *SystemTaskExecutor) executeNotificationTask(
             },
         }
     }
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15231,7 +15325,7 @@ type DataTaskExecutor struct {
 // 执行数据任务
 func (e *DataTaskExecutor) ExecuteTask(ctx context.Context, request TaskExecutionRequest) {
     var result TaskExecutionResponse
-    
+  
     switch request.TaskType {
     case "query":
         result = e.executeQueryTask(ctx, request)
@@ -15253,7 +15347,7 @@ func (e *DataTaskExecutor) ExecuteTask(ctx context.Context, request TaskExecutio
             },
         }
     }
-    
+  
     // 返回结果
     request.ResponseCh <- result
     close(request.ResponseCh)
@@ -15276,7 +15370,7 @@ func (e *DataTaskExecutor) executeQueryTask(
             },
         }
     }
-    
+  
     // 获取数据连接器
     connector, exists := e.dataConnectors[connectorType]
     if !exists {
@@ -15289,7 +15383,7 @@ func (e *DataTaskExecutor) executeQueryTask(
             },
         }
     }
-    
+  
     // 解析查询
     query, ok := request.Input["query"].(string)
     if !ok {
@@ -15302,7 +15396,7 @@ func (e *DataTaskExecutor) executeQueryTask(
             },
         }
     }
-    
+  
     // 解析连接参数
     connectionParams, ok := request.Input["connection"].(map[string]interface{})
     if !ok {
@@ -15315,16 +15409,16 @@ func (e *DataTaskExecutor) executeQueryTask(
             },
         }
     }
-    
+  
     // 执行查询
     startTime := time.Now()
     result, err := connector.ExecuteQuery(ctx, connectionParams, query)
     queryTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 记录失败指标
         e.metrics.RecordDataOperationFailure(connectorType, "query", queryTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -15335,7 +15429,7 @@ func (e *DataTaskExecutor) executeQueryTask(
             },
         }
     }
-    
+  
     // 记录成功指标
     recordCount := 0
     if result["records"] != nil {
@@ -15343,14 +15437,14 @@ func (e *DataTaskExecutor) executeQueryTask(
             recordCount = len(records)
         }
     }
-    
+  
     e.metrics.RecordDataOperationSuccess(
         connectorType,
         "query",
         queryTime,
         recordCount,
     )
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15375,7 +15469,7 @@ func (e *DataTaskExecutor) executeDataTransformTask(
             },
         }
     }
-    
+  
     // 解析转换规则
     transformations, ok := request.Config["transformations"].([]interface{})
     if !ok {
@@ -15388,16 +15482,16 @@ func (e *DataTaskExecutor) executeDataTransformTask(
             },
         }
     }
-    
+  
     // 执行数据转换
     startTime := time.Now()
     result, err := transformData(inputData, transformations)
     transformTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 记录失败指标
         e.metrics.RecordDataOperationFailure("transformer", "transform", transformTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -15408,20 +15502,20 @@ func (e *DataTaskExecutor) executeDataTransformTask(
             },
         }
     }
-    
+  
     // 记录成功指标
     recordCount := 0
     if resultData, ok := result["data"].([]interface{}); ok {
         recordCount = len(resultData)
     }
-    
+  
     e.metrics.RecordDataOperationSuccess(
         "transformer",
         "transform",
         transformTime,
         recordCount,
     )
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15446,7 +15540,7 @@ func (e *DataTaskExecutor) executeLoadDataTask(
             },
         }
     }
-    
+  
     // 获取数据连接器
     connector, exists := e.dataConnectors[connectorType]
     if !exists {
@@ -15459,7 +15553,7 @@ func (e *DataTaskExecutor) executeLoadDataTask(
             },
         }
     }
-    
+  
     // 解析目标信息
     target, ok := request.Input["target"].(string)
     if !ok {
@@ -15472,7 +15566,7 @@ func (e *DataTaskExecutor) executeLoadDataTask(
             },
         }
     }
-    
+  
     // 解析数据
     data, ok := request.Input["data"]
     if !ok {
@@ -15485,7 +15579,7 @@ func (e *DataTaskExecutor) executeLoadDataTask(
             },
         }
     }
-    
+  
     // 解析连接参数
     connectionParams, ok := request.Input["connection"].(map[string]interface{})
     if !ok {
@@ -15498,22 +15592,22 @@ func (e *DataTaskExecutor) executeLoadDataTask(
             },
         }
     }
-    
+  
     // 解析选项
     options := make(map[string]interface{})
     if opts, ok := request.Config["options"].(map[string]interface{}); ok {
         options = opts
     }
-    
+  
     // 执行数据加载
     startTime := time.Now()
     result, err := connector.LoadData(ctx, connectionParams, target, data, options)
     loadTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 记录失败指标
         e.metrics.RecordDataOperationFailure(connectorType, "load", loadTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -15524,7 +15618,7 @@ func (e *DataTaskExecutor) executeLoadDataTask(
             },
         }
     }
-    
+  
     // 记录成功指标
     recordCount := 0
     if result["affected_rows"] != nil {
@@ -15532,14 +15626,14 @@ func (e *DataTaskExecutor) executeLoadDataTask(
             recordCount = count
         }
     }
-    
+  
     e.metrics.RecordDataOperationSuccess(
         connectorType,
         "load",
         loadTime,
         recordCount,
     )
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15564,7 +15658,7 @@ func (e *DataTaskExecutor) executeExportDataTask(
             },
         }
     }
-    
+  
     // 解析数据
     data, ok := request.Input["data"]
     if !ok {
@@ -15577,22 +15671,22 @@ func (e *DataTaskExecutor) executeExportDataTask(
             },
         }
     }
-    
+  
     // 解析选项
     options := make(map[string]interface{})
     if opts, ok := request.Config["options"].(map[string]interface{}); ok {
         options = opts
     }
-    
+  
     // 执行数据导出
     startTime := time.Now()
     exportResult, err := exportData(data, format, options)
     exportTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 记录失败指标
         e.metrics.RecordDataOperationFailure("exporter", format, exportTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -15603,7 +15697,7 @@ func (e *DataTaskExecutor) executeExportDataTask(
             },
         }
     }
-    
+  
     // 记录成功指标
     e.metrics.RecordDataOperationSuccess(
         "exporter",
@@ -15611,7 +15705,7 @@ func (e *DataTaskExecutor) executeExportDataTask(
         exportTime,
         0,
     )
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15636,7 +15730,7 @@ func (e *DataTaskExecutor) executeValidateDataTask(
             },
         }
     }
-    
+  
     // 解析验证规则
     rules, ok := request.Config["validation_rules"].([]interface{})
     if !ok {
@@ -15649,16 +15743,16 @@ func (e *DataTaskExecutor) executeValidateDataTask(
             },
         }
     }
-    
+  
     // 执行数据验证
     startTime := time.Now()
     validationResult, err := validateData(data, rules)
     validationTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 记录失败指标
         e.metrics.RecordDataOperationFailure("validator", "validate", validationTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -15669,10 +15763,10 @@ func (e *DataTaskExecutor) executeValidateDataTask(
             },
         }
     }
-    
+  
     // 检查是否需要在验证失败时中断
     failOnValidationError, _ := request.Config["fail_on_validation_error"].(bool)
-    
+  
     if failOnValidationError && !validationResult["is_valid"].(bool) {
         return TaskExecutionResponse{
             TaskID: request.TaskID,
@@ -15680,13 +15774,13 @@ func (e *DataTaskExecutor) executeValidateDataTask(
             Error: &TaskError{
                 Code:    "VALIDATION_RULES_FAILED",
                 Message: "Data failed validation rules",
-                Details: fmt.Sprintf("Found %d validation errors", 
+                Details: fmt.Sprintf("Found %d validation errors",
                     len(validationResult["errors"].([]interface{}))),
             },
             Output: validationResult,
         }
     }
-    
+  
     // 记录成功指标
     e.metrics.RecordDataOperationSuccess(
         "validator",
@@ -15694,7 +15788,7 @@ func (e *DataTaskExecutor) executeValidateDataTask(
         validationTime,
         0,
     )
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15713,7 +15807,7 @@ type IntegrationTaskExecutor struct {
 // 执行集成任务
 func (e *IntegrationTaskExecutor) ExecuteTask(ctx context.Context, request TaskExecutionRequest) {
     var result TaskExecutionResponse
-    
+  
     switch request.TaskType {
     case "api_request":
         result = e.executeApiRequestTask(ctx, request)
@@ -15733,7 +15827,7 @@ func (e *IntegrationTaskExecutor) ExecuteTask(ctx context.Context, request TaskE
             },
         }
     }
-    
+  
     // 返回结果
     request.ResponseCh <- result
     close(request.ResponseCh)
@@ -15756,7 +15850,7 @@ func (e *IntegrationTaskExecutor) executeApiRequestTask(
             },
         }
     }
-    
+  
     // 获取集成客户端
     client, exists := e.integrationClients[integrationType]
     if !exists {
@@ -15769,7 +15863,7 @@ func (e *IntegrationTaskExecutor) executeApiRequestTask(
             },
         }
     }
-    
+  
     // 解析API请求参数
     operation, ok := request.Config["operation"].(string)
     if !ok {
@@ -15782,7 +15876,7 @@ func (e *IntegrationTaskExecutor) executeApiRequestTask(
             },
         }
     }
-    
+  
     // 解析认证配置
     auth, err := e.resolveAuthConfig(ctx, request.Config)
     if err != nil {
@@ -15796,18 +15890,18 @@ func (e *IntegrationTaskExecutor) executeApiRequestTask(
             },
         }
     }
-    
+  
     // 准备请求参数
     params := make(map[string]interface{})
     for k, v := range request.Input {
         params[k] = v
     }
-    
+  
     // 执行API请求
     startTime := time.Now()
     apiResult, err := client.ExecuteRequest(ctx, operation, params, auth)
     requestTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 检查是否需要重试
         shouldRetry, retryDelay := shouldRetryRequest(err, request.Config)
@@ -15828,10 +15922,10 @@ func (e *IntegrationTaskExecutor) executeApiRequestTask(
                 },
             }
         }
-        
+  
         // 记录失败指标
         e.metrics.RecordIntegrationFailure(integrationType, operation, requestTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -15842,10 +15936,10 @@ func (e *IntegrationTaskExecutor) executeApiRequestTask(
             },
         }
     }
-    
+  
     // 记录成功指标
     e.metrics.RecordIntegrationSuccess(integrationType, operation, requestTime)
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15870,7 +15964,7 @@ func (e *IntegrationTaskExecutor) executeFileOperationTask(
             },
         }
     }
-    
+  
     // 获取集成客户端
     client, exists := e.integrationClients[storageType]
     if !exists {
@@ -15883,7 +15977,7 @@ func (e *IntegrationTaskExecutor) executeFileOperationTask(
             },
         }
     }
-    
+  
     // 解析文件操作
     operation, ok := request.Config["operation"].(string)
     if !ok {
@@ -15896,7 +15990,7 @@ func (e *IntegrationTaskExecutor) executeFileOperationTask(
             },
         }
     }
-    
+  
     // 解析认证配置
     auth, err := e.resolveAuthConfig(ctx, request.Config)
     if err != nil {
@@ -15910,22 +16004,22 @@ func (e *IntegrationTaskExecutor) executeFileOperationTask(
             },
         }
     }
-    
+  
     // 准备请求参数
     params := make(map[string]interface{})
     for k, v := range request.Input {
         params[k] = v
     }
-    
+  
     // 执行文件操作
     startTime := time.Now()
     fileResult, err := client.ExecuteFileOperation(ctx, operation, params, auth)
     operationTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 记录失败指标
         e.metrics.RecordIntegrationFailure(storageType, operation, operationTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -15936,10 +16030,10 @@ func (e *IntegrationTaskExecutor) executeFileOperationTask(
             },
         }
     }
-    
+  
     // 记录成功指标
     e.metrics.RecordIntegrationSuccess(storageType, operation, operationTime)
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -15964,7 +16058,7 @@ func (e *IntegrationTaskExecutor) executeMessageQueueTask(
             },
         }
     }
-    
+  
     // 获取集成客户端
     client, exists := e.integrationClients[queueType]
     if !exists {
@@ -15977,7 +16071,7 @@ func (e *IntegrationTaskExecutor) executeMessageQueueTask(
             },
         }
     }
-    
+  
     // 解析队列操作
     operation, ok := request.Config["operation"].(string)
     if !ok {
@@ -15990,7 +16084,7 @@ func (e *IntegrationTaskExecutor) executeMessageQueueTask(
             },
         }
     }
-    
+  
     // 解析认证配置
     auth, err := e.resolveAuthConfig(ctx, request.Config)
     if err != nil {
@@ -16004,22 +16098,22 @@ func (e *IntegrationTaskExecutor) executeMessageQueueTask(
             },
         }
     }
-    
+  
     // 准备请求参数
     params := make(map[string]interface{})
     for k, v := range request.Input {
         params[k] = v
     }
-    
+  
     // 执行队列操作
     startTime := time.Now()
     queueResult, err := client.ExecuteQueueOperation(ctx, operation, params, auth)
     operationTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 记录失败指标
         e.metrics.RecordIntegrationFailure(queueType, operation, operationTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -16030,10 +16124,10 @@ func (e *IntegrationTaskExecutor) executeMessageQueueTask(
             },
         }
     }
-    
+  
     // 记录成功指标
     e.metrics.RecordIntegrationSuccess(queueType, operation, operationTime)
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -16063,13 +16157,13 @@ func (e *IntegrationTaskExecutor) executeWebhookTask(
             }
         }
     }
-    
+  
     // 解析HTTP方法
     method, ok := request.Config["method"].(string)
     if !ok {
         method = "POST" // 默认为POST
     }
-    
+  
     // 解析请求头
     headers := make(map[string]string)
     if headersConfig, ok := request.Config["headers"].(map[string]interface{}); ok {
@@ -16079,7 +16173,7 @@ func (e *IntegrationTaskExecutor) executeWebhookTask(
             }
         }
     }
-    
+  
     // 解析请求体
     var body interface{}
     if bodyInput, ok := request.Input["body"]; ok {
@@ -16090,16 +16184,16 @@ func (e *IntegrationTaskExecutor) executeWebhookTask(
         // 使用整个输入作为请求体
         body = request.Input
     }
-    
+  
     // 准备请求
     startTime := time.Now()
     webhookResult, err := executeWebhookRequest(ctx, method, url, headers, body)
     requestTime := time.Since(startTime)
-    
+  
     if err != nil {
         // 记录失败指标
         e.metrics.RecordIntegrationFailure("webhook", method, requestTime)
-        
+  
         return TaskExecutionResponse{
             TaskID: request.TaskID,
             Status: "FAILED",
@@ -16110,7 +16204,7 @@ func (e *IntegrationTaskExecutor) executeWebhookTask(
             },
         }
     }
-    
+  
     // 验证响应码
     if successStatusCodes, ok := request.Config["success_status_codes"].([]interface{}); ok {
         statusCode := webhookResult["status_code"].(int)
@@ -16126,10 +16220,10 @@ func (e *IntegrationTaskExecutor) executeWebhookTask(
             }
         }
     }
-    
+  
     // 记录成功指标
     e.metrics.RecordIntegrationSuccess("webhook", method, requestTime)
-    
+  
     return TaskExecutionResponse{
         TaskID: request.TaskID,
         Status: "COMPLETED",
@@ -16143,13 +16237,13 @@ func (e *IntegrationTaskExecutor) resolveAuthConfig(
     config map[string]interface{},
 ) (map[string]interface{}, error) {
     auth := make(map[string]interface{})
-    
+  
     // 检查是否有认证配置
     authConfig, ok := config["auth"].(map[string]interface{})
     if !ok {
         return auth, nil
     }
-    
+  
     // 检查是否使用密钥引用
     if secretRef, ok := authConfig["secret_ref"].(string); ok {
         // 从密钥管理器获取认证信息
@@ -16157,7 +16251,7 @@ func (e *IntegrationTaskExecutor) resolveAuthConfig(
         if err != nil {
             return nil, fmt.Errorf("failed to get secret %s: %w", secretRef, err)
         }
-        
+  
         // 将密钥内容合并到认证配置
         for k, v := range secret {
             auth[k] = v
@@ -16168,7 +16262,7 @@ func (e *IntegrationTaskExecutor) resolveAuthConfig(
             auth[k] = v
         }
     }
-    
+  
     return auth, nil
 }
 
@@ -16183,7 +16277,7 @@ type HumanTaskExecutor struct {
 // 执行人工任务
 func (e *HumanTaskExecutor) ExecuteTask(ctx context.Context, request TaskExecutionRequest) {
     var result TaskExecutionResponse
-    
+  
     // 支持的人工任务类型
     switch request.TaskType {
     case "approval":
@@ -16202,7 +16296,7 @@ func (e *HumanTaskExecutor) ExecuteTask(ctx context.Context, request TaskExecuti
             },
         }
     }
-    
+  
     // 返回结果
     request.ResponseCh <- result
     close(request.ResponseCh)
@@ -16218,7 +16312,7 @@ func (e *HumanTaskExecutor) executeApprovalTask(
     if !ok {
         approvalType = "simple" // 默认简单审批
     }
-    
+  
     // 解析审批人
     var approvers []string
     if approversInput, ok := request.Input["approvers"].([]interface{}); ok {
@@ -16234,7 +16328,7 @@ func (e *HumanTaskExecutor) executeApprovalTask(
             }
         }
     }
-    
+  
     if len(approvers) == 0 {
         return TaskExecutionResponse{
             TaskID: request.TaskID,
@@ -16245,13 +16339,13 @@ func (e *HumanTaskExecutor) executeApprovalTask(
             },
         }
     }
-    
+  
     // 解析审批规则
     approvalRule, ok := request.Config["approval_rule"].(string)
     if !ok {
         approvalRule = "any" // 默认任一人审批通过即可
     }
-    
+  
     // 解析到期时间
     var dueDate *time.Time
     if dueDateStr, ok := request.Config["due_date"].(string); ok {
@@ -16264,15 +16358,15 @@ func (e *HumanTaskExecutor) executeApprovalTask(
             dueDate = &due
         }
     }
-    
+  
     // 准备人工任务请求
     taskTitle, _ := request.Config["title"].(string)
     if taskTitle == "" {
         taskTitle = fmt.Sprintf("Approval Task for Workflow %s", request.ExecutionContext.WorkflowID)
     }
-    
+  
     description, _ := request.Config["description"].(string)
-    
+  
     // 准备表单数据
     formData := make(map[string]interface{})
     if data, ok := request.Input["form_data"].(map[string]interface{}); ok {
@@ -16281,7 +16375,7 @@ func (e *HumanTaskExecutor) executeApprovalTask(
         // 使用输入作为表单数据
         formData = request.Input
     }
-    
+  
     // 创建人工任务
     humanTaskRequest := HumanTaskRequest{
         TaskID:         request.TaskID,
@@ -16298,7 +16392,7 @@ func (e *HumanTaskExecutor) executeApprovalTask(
         Priority:       getPriority(request.Config),
         CorrelationID:  request.ExecutionContext.CorrelationID,
     }
-    
+  
     // 提交人工任务
     humanTaskID, err := e.taskManager.CreateTask(ctx, humanTaskRequest)
     if err != nil {
@@ -16312,19 +16406,19 @@ func (e *HumanTaskExecutor) executeApprovalTask(
             },
         }
     }
-    
+  
     // 将工作流状态设置为等待人工任务
     if err := e.updateWorkflowStateForHumanTask(ctx, request.ExecutionContext.InstanceID, humanTaskID); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to update workflow state for human task: %v\n", err)
     }
-    
+  
     // 发送通知给审批人
     if err := e.notifyApprovers(ctx, humanTaskRequest, humanTaskID); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to send notifications to approvers: %v\n", err)
     }
-    
+  
     // 返回挂起状态，等待人工任务完成
     return TaskExecutionResponse{
         TaskID: request.TaskID,
@@ -16349,7 +16443,7 @@ func (e *HumanTaskExecutor) executeFormSubmissionTask(
     if !ok {
         formType = "generic" // 默认通用表单
     }
-    
+  
     // 解析表单模板
     formTemplate, ok := request.Config["form_template"].(string)
     if !ok {
@@ -16362,7 +16456,7 @@ func (e *HumanTaskExecutor) executeFormSubmissionTask(
             },
         }
     }
-    
+  
     // 解析表单提交者
     var assignees []string
     if assigneesInput, ok := request.Input["assignees"].([]interface{}); ok {
@@ -16378,7 +16472,7 @@ func (e *HumanTaskExecutor) executeFormSubmissionTask(
             }
         }
     }
-    
+  
     if len(assignees) == 0 {
         return TaskExecutionResponse{
             TaskID: request.TaskID,
@@ -16389,7 +16483,7 @@ func (e *HumanTaskExecutor) executeFormSubmissionTask(
             },
         }
     }
-    
+  
     // 解析到期时间
     var dueDate *time.Time
     if dueDateStr, ok := request.Config["due_date"].(string); ok {
@@ -16402,21 +16496,21 @@ func (e *HumanTaskExecutor) executeFormSubmissionTask(
             dueDate = &due
         }
     }
-    
+  
     // 准备人工任务请求
     taskTitle, _ := request.Config["title"].(string)
     if taskTitle == "" {
         taskTitle = fmt.Sprintf("Form Submission for Workflow %s", request.ExecutionContext.WorkflowID)
     }
-    
+  
     description, _ := request.Config["description"].(string)
-    
+  
     // 准备初始表单数据
     initialData := make(map[string]interface{})
     if data, ok := request.Input["initial_data"].(map[string]interface{}); ok {
         initialData = data
     }
-    
+  
     // 创建人工任务
     humanTaskRequest := HumanTaskRequest{
         TaskID:        request.TaskID,
@@ -16433,7 +16527,7 @@ func (e *HumanTaskExecutor) executeFormSubmissionTask(
         Priority:      getPriority(request.Config),
         CorrelationID: request.ExecutionContext.CorrelationID,
     }
-    
+  
     // 提交人工任务
     humanTaskID, err := e.taskManager.CreateTask(ctx, humanTaskRequest)
     if err != nil {
@@ -16447,19 +16541,19 @@ func (e *HumanTaskExecutor) executeFormSubmissionTask(
             },
         }
     }
-    
+  
     // 将工作流状态设置为等待人工任务
     if err := e.updateWorkflowStateForHumanTask(ctx, request.ExecutionContext.InstanceID, humanTaskID); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to update workflow state for human task: %v\n", err)
     }
-    
+  
     // 发送通知给表单提交者
     if err := e.notifyFormAssignees(ctx, humanTaskRequest, humanTaskID); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to send notifications to form assignees: %v\n", err)
     }
-    
+  
     // 返回挂起状态，等待人工任务完成
     return TaskExecutionResponse{
         TaskID: request.TaskID,
@@ -16491,13 +16585,13 @@ func (e *HumanTaskExecutor) executeManualActionTask(
             },
         }
     }
-    
+  
     // 解析操作细节
     actionDetails, ok := request.Config["action_details"].(map[string]interface{})
     if !ok {
         actionDetails = make(map[string]interface{})
     }
-    
+  
     // 解析操作负责人
     var assignees []string
     if assigneesInput, ok := request.Input["assignees"].([]interface{}); ok {
@@ -16513,7 +16607,7 @@ func (e *HumanTaskExecutor) executeManualActionTask(
             }
         }
     }
-    
+  
     if len(assignees) == 0 {
         return TaskExecutionResponse{
             TaskID: request.TaskID,
@@ -16524,7 +16618,7 @@ func (e *HumanTaskExecutor) executeManualActionTask(
             },
         }
     }
-    
+  
     // 解析到期时间
     var dueDate *time.Time
     if dueDateStr, ok := request.Config["due_date"].(string); ok {
@@ -16537,15 +16631,15 @@ func (e *HumanTaskExecutor) executeManualActionTask(
             dueDate = &due
         }
     }
-    
+  
     // 准备人工任务请求
     taskTitle, _ := request.Config["title"].(string)
     if taskTitle == "" {
         taskTitle = fmt.Sprintf("Manual Action for Workflow %s", request.ExecutionContext.WorkflowID)
     }
-    
+  
     description, _ := request.Config["description"].(string)
-    
+  
     // 准备操作上下文数据
     contextData := make(map[string]interface{})
     if data, ok := request.Input["context_data"].(map[string]interface{}); ok {
@@ -16554,7 +16648,7 @@ func (e *HumanTaskExecutor) executeManualActionTask(
         // 使用输入作为上下文数据
         contextData = request.Input
     }
-    
+  
     // 创建人工任务
     humanTaskRequest := HumanTaskRequest{
         TaskID:        request.TaskID,
@@ -16571,7 +16665,7 @@ func (e *HumanTaskExecutor) executeManualActionTask(
         Priority:      getPriority(request.Config),
         CorrelationID: request.ExecutionContext.CorrelationID,
     }
-    
+  
     // 提交人工任务
     humanTaskID, err := e.taskManager.CreateTask(ctx, humanTaskRequest)
     if err != nil {
@@ -16585,19 +16679,19 @@ func (e *HumanTaskExecutor) executeManualActionTask(
             },
         }
     }
-    
+  
     // 将工作流状态设置为等待人工任务
     if err := e.updateWorkflowStateForHumanTask(ctx, request.ExecutionContext.InstanceID, humanTaskID); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to update workflow state for human task: %v\n", err)
     }
-    
+  
     // 发送通知给任务负责人
     if err := e.notifyActionAssignees(ctx, humanTaskRequest, humanTaskID); err != nil {
         // 仅记录错误，不中断流程
         fmt.Printf("Failed to send notifications to action assignees: %v\n", err)
     }
-    
+  
     // 返回挂起状态，等待人工任务完成
     return TaskExecutionResponse{
         TaskID: request.TaskID,
@@ -16622,12 +16716,12 @@ func (e *HumanTaskExecutor) updateWorkflowStateForHumanTask(
     if err != nil {
         return fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 更新状态
     executionContext.Status = "SUSPENDED"
     executionContext.LastUpdated = time.Now()
     executionContext.Variables["waiting_human_task"] = humanTaskID
-    
+  
     // 保存更新后的状态
     return e.stateManager.SaveWorkflowState(ctx, executionContext)
 }
@@ -16656,7 +16750,7 @@ func (e *HumanTaskExecutor) notifyApprovers(
             "form_data":     request.FormData,
         },
     }
-    
+  
     return e.notificationService.SendNotification(ctx, notification)
 }
 
@@ -16684,7 +16778,7 @@ func (e *HumanTaskExecutor) notifyFormAssignees(
             "initial_data":  request.FormData,
         },
     }
-    
+  
     return e.notificationService.SendNotification(ctx, notification)
 }
 
@@ -16712,7 +16806,7 @@ func (e *HumanTaskExecutor) notifyActionAssignees(
             "context_data":  request.ContextData,
         },
     }
-    
+  
     return e.notificationService.SendNotification(ctx, notification)
 }
 
@@ -16793,9 +16887,9 @@ func applyTransformation(
     if err != nil {
         return fmt.Errorf("source not found: %w", err)
     }
-    
+  
     var result interface{}
-    
+  
     switch operation {
     case "map":
         mapping, ok := config["mapping"].(map[string]interface{})
@@ -16854,11 +16948,11 @@ func applyTransformation(
     default:
         return fmt.Errorf("unsupported transformation operation: %s", operation)
     }
-    
+  
     if err != nil {
         return fmt.Errorf("transformation error: %w", err)
     }
-    
+  
     // 存储结果
     return setNestedValue(workspace, strings.Split(target, "."), result)
 }
@@ -16868,18 +16962,18 @@ func getNestedValue(data map[string]interface{}, path []string) (interface{}, er
     if len(path) == 0 {
         return nil, fmt.Errorf("empty path")
     }
-    
+  
     if len(path) == 1 {
         if value, exists := data[path[0]]; exists {
             return value, nil
         }
         return nil, fmt.Errorf("key %s not found", path[0])
     }
-    
+  
     if nestedData, ok := data[path[0]].(map[string]interface{}); ok {
         return getNestedValue(nestedData, path[1:])
     }
-    
+  
     return nil, fmt.Errorf("key %s not found or not a map", path[0])
 }
 
@@ -16888,21 +16982,21 @@ func setNestedValue(data map[string]interface{}, path []string, value interface{
     if len(path) == 0 {
         return fmt.Errorf("empty path")
     }
-    
+  
     if len(path) == 1 {
         data[path[0]] = value
         return nil
     }
-    
+  
     // 确保中间节点存在
     if _, exists := data[path[0]]; !exists {
         data[path[0]] = make(map[string]interface{})
     }
-    
+  
     if nestedData, ok := data[path[0]].(map[string]interface{}); ok {
         return setNestedValue(nestedData, path[1:], value)
     }
-    
+  
     return fmt.Errorf("key %s exists but is not a map", path[0])
 }
 
@@ -16910,30 +17004,30 @@ func setNestedValue(data map[string]interface{}, path []string, value interface{
 func shouldRetryRequest(err error, config map[string]interface{}) (bool, time.Duration) {
     // 默认重试间隔
     defaultDelay := 5 * time.Second
-    
+  
     // 检查是否有重试配置
     retryConfig, ok := config["retry"].(map[string]interface{})
     if !ok {
         return false, defaultDelay
     }
-    
+  
     // 检查是否启用重试
     enabled, ok := retryConfig["enabled"].(bool)
     if !ok || !enabled {
         return false, defaultDelay
     }
-    
+  
     // 获取当前重试次数和最大重试次数
     retryCount, _ := retryConfig["current_count"].(float64)
     maxRetries, _ := retryConfig["max_attempts"].(float64)
-    
+  
     if retryCount >= maxRetries {
         return false, defaultDelay
     }
-    
+  
     // 计算重试延迟
     var delay time.Duration
-    
+  
     if delayStr, ok := retryConfig["delay"].(string); ok {
         if parsedDelay, err := time.ParseDuration(delayStr); err == nil {
             delay = parsedDelay
@@ -16945,7 +17039,7 @@ func shouldRetryRequest(err error, config map[string]interface{}) (bool, time.Du
     } else {
         delay = defaultDelay
     }
-    
+  
     // 检查是否使用指数退避
     if exponential, ok := retryConfig["exponential"].(bool); ok && exponential {
         multiplier := 2.0
@@ -16954,7 +17048,7 @@ func shouldRetryRequest(err error, config map[string]interface{}) (bool, time.Du
         }
         delay = time.Duration(float64(delay) * math.Pow(multiplier, retryCount))
     }
-    
+  
     // 检查是否有最大延迟限制
     if maxDelay, ok := retryConfig["max_delay"].(string); ok {
         if parsedMaxDelay, err := time.ParseDuration(maxDelay); err == nil && delay > parsedMaxDelay {
@@ -16966,7 +17060,7 @@ func shouldRetryRequest(err error, config map[string]interface{}) (bool, time.Du
             delay = maxDelayDuration
         }
     }
-    
+  
     return true, delay
 }
 
@@ -17062,17 +17156,17 @@ func generateInstanceID(workflowID string) string {
 func getInitialTasks(workflow *model.WorkflowDefinition) []string {
     // 获取初始任务ID列表
     initialTasks := make([]string, 0)
-    
+  
     for _, task := range workflow.Tasks {
         if task.InitialTask {
             initialTasks = append(initialTasks, task.ID)
         }
     }
-    
+  
     // 如果没有标记为初始任务的任务，使用没有入边的任务作为初始任务
     if len(initialTasks) == 0 {
         incomingEdges := make(map[string]bool)
-        
+  
         for _, task := range workflow.Tasks {
             if task.Next != nil {
                 for _, nextTask := range task.Next {
@@ -17080,14 +17174,14 @@ func getInitialTasks(workflow *model.WorkflowDefinition) []string {
                 }
             }
         }
-        
+  
         for _, task := range workflow.Tasks {
             if !incomingEdges[task.ID] {
                 initialTasks = append(initialTasks, task.ID)
             }
         }
     }
-    
+  
     return initialTasks
 }
 
@@ -17099,7 +17193,7 @@ func getNextTasks(workflow *model.WorkflowDefinition, taskID string) []string {
             return task.Next
         }
     }
-    
+  
     return []string{}
 }
 
@@ -17110,7 +17204,7 @@ func getTaskDefinition(workflow *model.WorkflowDefinition, taskID string) (*mode
             return &task, true
         }
     }
-    
+  
     return nil, false
 }
 
@@ -17120,13 +17214,13 @@ func areTaskDependenciesSatisfied(taskDef *model.TaskDefinition, context *Workfl
     if taskDef.DependsOn == nil || len(taskDef.DependsOn) == 0 {
         return true
     }
-    
+  
     for _, dependency := range taskDef.DependsOn {
         if !context.CompletedTasks[dependency] {
             return false
         }
     }
-    
+  
     return true
 }
 
@@ -17142,7 +17236,7 @@ func isConditionalTask(taskDef *model.TaskDefinition, workflow *model.WorkflowDe
             }
         }
     }
-    
+  
     return false
 }
 
@@ -17150,12 +17244,12 @@ func isConditionalTask(taskDef *model.TaskDefinition, workflow *model.WorkflowDe
 func resolveTaskInput(taskDef *model.TaskDefinition, context *WorkflowExecutionContext) (map[string]interface{}, error) {
     // 解析任务的输入参数
     result := make(map[string]interface{})
-    
+  
     // 如果没有指定输入映射，使用默认的输入数据
     if taskDef.Inputs == nil || len(taskDef.Inputs) == 0 {
         return result, nil
     }
-    
+  
     // 处理每个输入映射
     for name, inputSpec := range taskDef.Inputs {
         // 如果有直接值，使用直接值
@@ -17163,7 +17257,7 @@ func resolveTaskInput(taskDef *model.TaskDefinition, context *WorkflowExecutionC
             result[name] = inputSpec.Value
             continue
         }
-        
+  
         // 如果有来源路径，从上下文解析
         if inputSpec.From != "" {
             value, err := resolveInputFromPath(inputSpec.From, context)
@@ -17174,7 +17268,7 @@ func resolveTaskInput(taskDef *model.TaskDefinition, context *WorkflowExecutionC
                 // 非必需输入，跳过
                 continue
             }
-            
+  
             // 如果有转换函数，应用转换
             if inputSpec.Transform != "" {
                 transformed, err := applyInputTransform(value, inputSpec.Transform, inputSpec.TransformParams)
@@ -17185,16 +17279,16 @@ func resolveTaskInput(taskDef *model.TaskDefinition, context *WorkflowExecutionC
             } else {
                 result[name] = value
             }
-            
+  
             continue
         }
-        
+  
         // 如果是必需的但没有提供值或来源，报错
         if inputSpec.Required {
             return nil, fmt.Errorf("required input %s has no value or source", name)
         }
     }
-    
+  
     return result, nil
 }
 
@@ -17202,11 +17296,11 @@ func resolveTaskInput(taskDef *model.TaskDefinition, context *WorkflowExecutionC
 func resolveInputFromPath(path string, context *WorkflowExecutionContext) (interface{}, error) {
     // 解析点分隔的路径，如 "task1.output.data"
     parts := strings.Split(path, ".")
-    
+  
     if len(parts) < 2 {
         return nil, fmt.Errorf("invalid input path: %s", path)
     }
-    
+  
     // 处理特殊路径
     if parts[0] == "workflow" {
         switch parts[1] {
@@ -17230,22 +17324,22 @@ func resolveInputFromPath(path string, context *WorkflowExecutionContext) (inter
             return nil, fmt.Errorf("unknown workflow attribute: %s", parts[1])
         }
     }
-    
+  
     // 从任务结果获取
     taskID := parts[0]
     taskResult, exists := context.TaskResults[taskID]
     if !exists {
         return nil, fmt.Errorf("task result not found: %s", taskID)
     }
-    
+  
     if len(parts) == 1 {
         return taskResult, nil
     }
-    
+  
     if parts[1] != "output" || len(parts) == 2 {
         return nil, fmt.Errorf("invalid task result path: %s", path)
     }
-    
+  
     // 从任务输出获取嵌套值
     return getNestedValue(taskResult.Output, parts[2:])
 }
@@ -17310,11 +17404,11 @@ func applyInputTransform(value interface{}, transform string, params map[string]
 func collectWorkflowOutput(context *WorkflowExecutionContext, workflow *model.WorkflowDefinition) map[string]interface{} {
     // 根据工作流定义的输出映射收集输出
     output := make(map[string]interface{})
-    
+  
     if workflow.OutputMapping == nil {
         return output
     }
-    
+  
     for outputName, path := range workflow.OutputMapping {
         value, err := resolveInputFromPath(path, context)
         if err != nil {
@@ -17322,10 +17416,10 @@ func collectWorkflowOutput(context *WorkflowExecutionContext, workflow *model.Wo
             fmt.Printf("Failed to resolve output %s from path %s: %v\n", outputName, path, err)
             continue
         }
-        
+  
         output[outputName] = value
     }
-    
+  
     return output
 }
 
@@ -17348,7 +17442,7 @@ func NewInMemoryInstanceTracker() *InMemoryInstanceTracker {
 func (t *InMemoryInstanceTracker) TrackInstance(instanceID string, status string) {
     t.mutex.Lock()
     defer t.mutex.Unlock()
-    
+  
     t.instances[instanceID] = status
 }
 
@@ -17356,7 +17450,7 @@ func (t *InMemoryInstanceTracker) TrackInstance(instanceID string, status string
 func (t *InMemoryInstanceTracker) UpdateInstanceStatus(instanceID string, status string) {
     t.mutex.Lock()
     defer t.mutex.Unlock()
-    
+  
     t.instances[instanceID] = status
 }
 
@@ -17364,7 +17458,7 @@ func (t *InMemoryInstanceTracker) UpdateInstanceStatus(instanceID string, status
 func (t *InMemoryInstanceTracker) GetInstanceStatus(instanceID string) (string, bool) {
     t.mutex.RLock()
     defer t.mutex.RUnlock()
-    
+  
     status, exists := t.instances[instanceID]
     return status, exists
 }
@@ -17373,12 +17467,12 @@ func (t *InMemoryInstanceTracker) GetInstanceStatus(instanceID string) (string, 
 func (t *InMemoryInstanceTracker) GetAllInstances() map[string]string {
     t.mutex.RLock()
     defer t.mutex.RUnlock()
-    
+  
     result := make(map[string]string)
     for id, status := range t.instances {
         result[id] = status
     }
-    
+  
     return result
 }
 
@@ -17386,7 +17480,7 @@ func (t *InMemoryInstanceTracker) GetAllInstances() map[string]string {
 func (t *InMemoryInstanceTracker) RemoveInstance(instanceID string) {
     t.mutex.Lock()
     defer t.mutex.Unlock()
-    
+  
     delete(t.instances, instanceID)
 }
 
@@ -17568,7 +17662,7 @@ type RetryConfig struct {
 func WorkflowSchedulerExample() {
     // 创建工作流存储
     workflowStore := store.NewInMemoryWorkflowStore()
-    
+  
     // 注册任务执行器
     taskExecutors := make(map[string]TaskExecutor)
     taskExecutors["system"] = &SystemTaskExecutor{
@@ -17583,22 +17677,22 @@ func WorkflowSchedulerExample() {
     taskExecutors["human"] = &HumanTaskExecutor{
         // 初始化依赖...
     }
-    
+  
     // 创建工作池
     workerPool := NewSimpleWorkerPool(10)
-    
+  
     // 创建状态管理器
     stateManager := NewInMemoryStateManager()
-    
+  
     // 创建事件发布者
     eventPublisher := NewInMemoryEventPublisher()
-    
+  
     // 创建配置管理器
     configManager := NewInMemoryConfigManager()
-    
+  
     // 创建指标收集器
     metrics := NewInMemoryMetricsCollector()
-    
+  
     // 创建调度器
     scheduler := NewLocalWorkflowScheduler(
         workflowStore,
@@ -17609,7 +17703,7 @@ func WorkflowSchedulerExample() {
         configManager,
         metrics,
     )
-    
+  
     // 启动调度器
     ctx := context.Background()
     err := scheduler.Start(ctx)
@@ -17617,7 +17711,7 @@ func WorkflowSchedulerExample() {
         fmt.Printf("Failed to start scheduler: %v\n", err)
         return
     }
-    
+  
     // 注册示例工作流
     workflowDef := model.WorkflowDefinition{
         ID:      "example-workflow",
@@ -17671,13 +17765,13 @@ func WorkflowSchedulerExample() {
             "result": "task1.output.output.greeting",
         },
     }
-    
+  
     err = workflowStore.SaveWorkflowDefinition(ctx, workflowDef.ID, workflowDef.Version, workflowDef)
     if err != nil {
         fmt.Printf("Failed to save workflow definition: %v\n", err)
         return
     }
-    
+  
     // 调度工作流
     request := WorkflowScheduleRequest{
         WorkflowID:    "example-workflow",
@@ -17690,28 +17784,28 @@ func WorkflowSchedulerExample() {
             Timeout:       30 * time.Second,
         },
     }
-    
+  
     response, err := scheduler.ScheduleWorkflow(ctx, request)
     if err != nil {
         fmt.Printf("Failed to schedule workflow: %v\n", err)
         return
     }
-    
+  
     fmt.Printf("Workflow scheduled: %+v\n", response)
-    
+  
     // 查询工作流状态
     if response.Status == "SCHEDULED" {
         time.Sleep(5 * time.Second) // 等待工作流执行
-        
+  
         status, err := scheduler.GetWorkflowStatus(ctx, response.InstanceID)
         if err != nil {
             fmt.Printf("Failed to get workflow status: %v\n", err)
             return
         }
-        
+  
         fmt.Printf("Workflow status: %+v\n", status)
     }
-    
+  
     // 关闭调度器
     err = scheduler.Shutdown(ctx)
     if err != nil {
@@ -17737,20 +17831,20 @@ func NewSimpleWorkerPool(workers int) *SimpleWorkerPool {
             WorkerCount: workers,
         },
     }
-    
+  
     // 启动工作线程
     for i := 0; i < workers; i++ {
         pool.wg.Add(1)
         go pool.worker()
     }
-    
+  
     return pool
 }
 
 // 工作线程
 func (p *SimpleWorkerPool) worker() {
     defer p.wg.Done()
-    
+  
     for task := range p.tasks {
         // 更新状态
         p.statsMu.Lock()
@@ -17758,29 +17852,29 @@ func (p *SimpleWorkerPool) worker() {
         p.stats.ActiveWorkers++
         p.stats.QueuedTasks--
         p.statsMu.Unlock()
-        
+  
         // 执行任务
         func() {
             defer func() {
                 if r := recover(); r != nil {
                     fmt.Printf("Recovered from panic in worker: %v\n", r)
                     debug.PrintStack()
-                    
+  
                     // 更新失败计数
                     p.statsMu.Lock()
                     p.stats.FailedTasks++
                     p.statsMu.Unlock()
                 }
             }()
-            
+  
             task()
-            
+  
             // 更新完成计数
             p.statsMu.Lock()
             p.stats.CompletedTasks++
             p.statsMu.Unlock()
         }()
-        
+  
         // 更新状态
         p.statsMu.Lock()
         p.stats.IdleWorkers++
@@ -17799,7 +17893,7 @@ func (p *SimpleWorkerPool) SubmitWithPriority(task func(), priority int) error {
     p.statsMu.Lock()
     p.stats.QueuedTasks++
     p.statsMu.Unlock()
-    
+  
     select {
     case p.tasks <- task:
         return nil
@@ -17815,14 +17909,14 @@ func (p *SimpleWorkerPool) SubmitWithPriority(task func(), priority int) error {
 func (p *SimpleWorkerPool) Shutdown(ctx context.Context) error {
     // 关闭任务通道
     close(p.tasks)
-    
+  
     // 等待所有工作线程完成
     done := make(chan struct{})
     go func() {
         p.wg.Wait()
         close(done)
     }()
-    
+  
     // 等待完成或上下文取消
     select {
     case <-done:
@@ -17836,7 +17930,7 @@ func (p *SimpleWorkerPool) Shutdown(ctx context.Context) error {
 func (p *SimpleWorkerPool) GetStats() WorkerPoolStats {
     p.statsMu.RLock()
     defer p.statsMu.RUnlock()
-    
+  
     return p.stats
 }
 
@@ -17857,12 +17951,12 @@ func NewInMemoryStateManager() *InMemoryStateManager {
 func (m *InMemoryStateManager) GetWorkflowState(ctx context.Context, instanceID string) (*WorkflowExecutionContext, error) {
     m.mutex.RLock()
     defer m.mutex.RUnlock()
-    
+  
     state, exists := m.states[instanceID]
     if !exists {
         return nil, fmt.Errorf("workflow instance %s not found", instanceID)
     }
-    
+  
     // 深度复制状态以防止并发修改
     stateCopy := *state
     return &stateCopy, nil
@@ -17872,11 +17966,11 @@ func (m *InMemoryStateManager) GetWorkflowState(ctx context.Context, instanceID 
 func (m *InMemoryStateManager) SaveWorkflowState(ctx context.Context, context *WorkflowExecutionContext) error {
     m.mutex.Lock()
     defer m.mutex.Unlock()
-    
+  
     // 深度复制状态以防止外部修改影响内部状态
     stateCopy := *context
     m.states[context.InstanceID] = &stateCopy
-    
+  
     return nil
 }
 
@@ -17884,9 +17978,9 @@ func (m *InMemoryStateManager) SaveWorkflowState(ctx context.Context, context *W
 func (m *InMemoryStateManager) GetActiveWorkflows(ctx context.Context) ([]*WorkflowExecutionContext, error) {
     m.mutex.RLock()
     defer m.mutex.RUnlock()
-    
+  
     var activeWorkflows []*WorkflowExecutionContext
-    
+  
     for _, state := range m.states {
         if !isTerminalState(state.Status) {
             // 深度复制状态
@@ -17894,7 +17988,7 @@ func (m *InMemoryStateManager) GetActiveWorkflows(ctx context.Context) ([]*Workf
             activeWorkflows = append(activeWorkflows, &stateCopy)
         }
     }
-    
+  
     return activeWorkflows, nil
 }
 
@@ -17902,9 +17996,9 @@ func (m *InMemoryStateManager) GetActiveWorkflows(ctx context.Context) ([]*Workf
 func (m *InMemoryStateManager) DeleteWorkflowState(ctx context.Context, instanceID string) error {
     m.mutex.Lock()
     defer m.mutex.Unlock()
-    
+  
     delete(m.states, instanceID)
-    
+  
     return nil
 }
 
@@ -17935,7 +18029,7 @@ func NewInMemoryEventPublisher() *InMemoryEventPublisher {
 func (p *InMemoryEventPublisher) PublishEvent(ctx context.Context, event WorkflowEvent) error {
     p.mutex.Lock()
     p.events = append(p.events, event)
-    
+  
     // 获取处理程序的副本以避免在锁内调用它们
     var handlers []func(WorkflowEvent)
     if eventHandlers, exists := p.eventHandlers[event.Type]; exists {
@@ -17943,12 +18037,12 @@ func (p *InMemoryEventPublisher) PublishEvent(ctx context.Context, event Workflo
         copy(handlers, eventHandlers)
     }
     p.mutex.Unlock()
-    
+  
     // 调用事件处理程序
     for _, handler := range handlers {
         handler(event)
     }
-    
+  
     return nil
 }
 
@@ -17956,7 +18050,7 @@ func (p *InMemoryEventPublisher) PublishEvent(ctx context.Context, event Workflo
 func (p *InMemoryEventPublisher) PublishTaskEvent(ctx context.Context, event TaskEvent) error {
     p.mutex.Lock()
     p.taskEvents = append(p.taskEvents, event)
-    
+  
     // 获取处理程序的副本
     var handlers []func(TaskEvent)
     if taskHandlers, exists := p.taskHandlers[event.Type]; exists {
@@ -17964,12 +18058,12 @@ func (p *InMemoryEventPublisher) PublishTaskEvent(ctx context.Context, event Tas
         copy(handlers, taskHandlers)
     }
     p.mutex.Unlock()
-    
+  
     // 调用任务事件处理程序
     for _, handler := range handlers {
         handler(event)
     }
-    
+  
     return nil
 }
 
@@ -17977,7 +18071,7 @@ func (p *InMemoryEventPublisher) PublishTaskEvent(ctx context.Context, event Tas
 func (p *InMemoryEventPublisher) PublishNotification(ctx context.Context, event NotificationEvent) error {
     p.mutex.Lock()
     p.notifications = append(p.notifications, event)
-    
+  
     // 获取处理程序的副本
     var handlers []func(NotificationEvent)
     if notifyHandlers, exists := p.notifyHandlers[event.Type]; exists {
@@ -17985,12 +18079,12 @@ func (p *InMemoryEventPublisher) PublishNotification(ctx context.Context, event 
         copy(handlers, notifyHandlers)
     }
     p.mutex.Unlock()
-    
+  
     // 调用通知处理程序
     for _, handler := range handlers {
         handler(event)
     }
-    
+  
     return nil
 }
 
@@ -17998,7 +18092,7 @@ func (p *InMemoryEventPublisher) PublishNotification(ctx context.Context, event 
 func (p *InMemoryEventPublisher) RegisterEventHandler(eventType string, handler func(WorkflowEvent)) {
     p.mutex.Lock()
     defer p.mutex.Unlock()
-    
+  
     p.eventHandlers[eventType] = append(p.eventHandlers[eventType], handler)
 }
 
@@ -18006,7 +18100,7 @@ func (p *InMemoryEventPublisher) RegisterEventHandler(eventType string, handler 
 func (p *InMemoryEventPublisher) RegisterTaskEventHandler(eventType string, handler func(TaskEvent)) {
     p.mutex.Lock()
     defer p.mutex.Unlock()
-    
+  
     p.taskHandlers[eventType] = append(p.taskHandlers[eventType], handler)
 }
 
@@ -18014,7 +18108,7 @@ func (p *InMemoryEventPublisher) RegisterTaskEventHandler(eventType string, hand
 func (p *InMemoryEventPublisher) RegisterNotificationHandler(notifyType string, handler func(NotificationEvent)) {
     p.mutex.Lock()
     defer p.mutex.Unlock()
-    
+  
     p.notifyHandlers[notifyType] = append(p.notifyHandlers[notifyType], handler)
 }
 
@@ -18049,7 +18143,6 @@ func (m *InMemoryConfigManager) GetTaskConfig(taskType string) ConfigProvider {
     return config
 }
 
-
 // 获取集成配置
 func (m *InMemoryConfigManager) GetIntegrationConfig(integrationType string) ConfigProvider {
     config, exists := m.integrationConfigs[integrationType]
@@ -18077,13 +18170,13 @@ func NewInMemoryConfigProvider() *InMemoryConfigProvider {
 func (p *InMemoryConfigProvider) GetString(key string, defaultValue string) string {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+  
     if value, exists := p.values[key]; exists {
         if strValue, ok := value.(string); ok {
             return strValue
         }
     }
-    
+  
     return defaultValue
 }
 
@@ -18091,7 +18184,7 @@ func (p *InMemoryConfigProvider) GetString(key string, defaultValue string) stri
 func (p *InMemoryConfigProvider) GetInt(key string, defaultValue int) int {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+  
     if value, exists := p.values[key]; exists {
         switch v := value.(type) {
         case int:
@@ -18104,7 +18197,7 @@ func (p *InMemoryConfigProvider) GetInt(key string, defaultValue int) int {
             }
         }
     }
-    
+  
     return defaultValue
 }
 
@@ -18112,7 +18205,7 @@ func (p *InMemoryConfigProvider) GetInt(key string, defaultValue int) int {
 func (p *InMemoryConfigProvider) GetBool(key string, defaultValue bool) bool {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+  
     if value, exists := p.values[key]; exists {
         switch v := value.(type) {
         case bool:
@@ -18127,7 +18220,7 @@ func (p *InMemoryConfigProvider) GetBool(key string, defaultValue bool) bool {
             return v != 0
         }
     }
-    
+  
     return defaultValue
 }
 
@@ -18135,7 +18228,7 @@ func (p *InMemoryConfigProvider) GetBool(key string, defaultValue bool) bool {
 func (p *InMemoryConfigProvider) GetFloat(key string, defaultValue float64) float64 {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+  
     if value, exists := p.values[key]; exists {
         switch v := value.(type) {
         case float64:
@@ -18148,7 +18241,7 @@ func (p *InMemoryConfigProvider) GetFloat(key string, defaultValue float64) floa
             }
         }
     }
-    
+  
     return defaultValue
 }
 
@@ -18156,7 +18249,7 @@ func (p *InMemoryConfigProvider) GetFloat(key string, defaultValue float64) floa
 func (p *InMemoryConfigProvider) GetDuration(key string, defaultValue time.Duration) time.Duration {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+  
     if value, exists := p.values[key]; exists {
         switch v := value.(type) {
         case time.Duration:
@@ -18171,7 +18264,7 @@ func (p *InMemoryConfigProvider) GetDuration(key string, defaultValue time.Durat
             }
         }
     }
-    
+  
     return defaultValue
 }
 
@@ -18179,13 +18272,13 @@ func (p *InMemoryConfigProvider) GetDuration(key string, defaultValue time.Durat
 func (p *InMemoryConfigProvider) GetMap(key string) map[string]interface{} {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+  
     if value, exists := p.values[key]; exists {
         if mapValue, ok := value.(map[string]interface{}); ok {
             return mapValue
         }
     }
-    
+  
     return make(map[string]interface{})
 }
 
@@ -18193,13 +18286,13 @@ func (p *InMemoryConfigProvider) GetMap(key string) map[string]interface{} {
 func (p *InMemoryConfigProvider) GetArray(key string) []interface{} {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+  
     if value, exists := p.values[key]; exists {
         if arrayValue, ok := value.([]interface{}); ok {
             return arrayValue
         }
     }
-    
+  
     return make([]interface{}, 0)
 }
 
@@ -18207,7 +18300,7 @@ func (p *InMemoryConfigProvider) GetArray(key string) []interface{} {
 func (p *InMemoryConfigProvider) SetValue(key string, value interface{}) {
     p.mutex.Lock()
     defer p.mutex.Unlock()
-    
+  
     p.values[key] = value
 }
 
@@ -18261,32 +18354,32 @@ func NewInMemoryMetricsCollector() *InMemoryMetricsCollector {
 // 记录任务开始
 func (c *InMemoryMetricsCollector) RecordTaskStart(workflowID string, taskID string, taskType string) {
     key := fmt.Sprintf("%s:%s", workflowID, taskID)
-    
+  
     c.mutex.Lock()
     defer c.mutex.Unlock()
-    
+  
     metrics, exists := c.taskMetrics[key]
     if !exists {
         metrics = make([]TaskMetric, 0)
     }
-    
+  
     metrics = append(metrics, TaskMetric{
         WorkflowID: workflowID,
         TaskID:     taskID,
         TaskType:   taskType,
         StartTime:  time.Now(),
     })
-    
+  
     c.taskMetrics[key] = metrics
 }
 
 // 记录任务完成
 func (c *InMemoryMetricsCollector) RecordTaskComplete(workflowID string, taskID string, taskType string, status string, duration time.Duration) {
     key := fmt.Sprintf("%s:%s", workflowID, taskID)
-    
+  
     c.mutex.Lock()
     defer c.mutex.Unlock()
-    
+  
     metrics, exists := c.taskMetrics[key]
     if !exists || len(metrics) == 0 {
         // 如果没有开始记录，创建一个新记录
@@ -18307,22 +18400,22 @@ func (c *InMemoryMetricsCollector) RecordTaskComplete(workflowID string, taskID 
         metrics[lastIdx].EndTime = time.Now()
         metrics[lastIdx].Duration = duration
     }
-    
+  
     c.taskMetrics[key] = metrics
 }
 
 // 记录数据操作成功
 func (c *InMemoryMetricsCollector) RecordDataOperationSuccess(connectorType string, operation string, duration time.Duration, recordCount int) {
     key := fmt.Sprintf("%s:%s", connectorType, operation)
-    
+  
     c.mutex.Lock()
     defer c.mutex.Unlock()
-    
+  
     metrics, exists := c.dataOpMetrics[key]
     if !exists {
         metrics = make([]DataOperationMetric, 0)
     }
-    
+  
     metrics = append(metrics, DataOperationMetric{
         ConnectorType: connectorType,
         Operation:     operation,
@@ -18331,22 +18424,22 @@ func (c *InMemoryMetricsCollector) RecordDataOperationSuccess(connectorType stri
         RecordCount:   recordCount,
         Timestamp:     time.Now(),
     })
-    
+  
     c.dataOpMetrics[key] = metrics
 }
 
 // 记录数据操作失败
 func (c *InMemoryMetricsCollector) RecordDataOperationFailure(connectorType string, operation string, duration time.Duration) {
     key := fmt.Sprintf("%s:%s", connectorType, operation)
-    
+  
     c.mutex.Lock()
     defer c.mutex.Unlock()
-    
+  
     metrics, exists := c.dataOpMetrics[key]
     if !exists {
         metrics = make([]DataOperationMetric, 0)
     }
-    
+  
     metrics = append(metrics, DataOperationMetric{
         ConnectorType: connectorType,
         Operation:     operation,
@@ -18355,22 +18448,22 @@ func (c *InMemoryMetricsCollector) RecordDataOperationFailure(connectorType stri
         RecordCount:   0,
         Timestamp:     time.Now(),
     })
-    
+  
     c.dataOpMetrics[key] = metrics
 }
 
 // 记录集成成功
 func (c *InMemoryMetricsCollector) RecordIntegrationSuccess(integrationType string, operation string, duration time.Duration) {
     key := fmt.Sprintf("%s:%s", integrationType, operation)
-    
+  
     c.mutex.Lock()
     defer c.mutex.Unlock()
-    
+  
     metrics, exists := c.integrationMetrics[key]
     if !exists {
         metrics = make([]IntegrationMetric, 0)
     }
-    
+  
     metrics = append(metrics, IntegrationMetric{
         IntegrationType: integrationType,
         Operation:       operation,
@@ -18378,22 +18471,22 @@ func (c *InMemoryMetricsCollector) RecordIntegrationSuccess(integrationType stri
         Duration:        duration,
         Timestamp:       time.Now(),
     })
-    
+  
     c.integrationMetrics[key] = metrics
 }
 
 // 记录集成失败
 func (c *InMemoryMetricsCollector) RecordIntegrationFailure(integrationType string, operation string, duration time.Duration) {
     key := fmt.Sprintf("%s:%s", integrationType, operation)
-    
+  
     c.mutex.Lock()
     defer c.mutex.Unlock()
-    
+  
     metrics, exists := c.integrationMetrics[key]
     if !exists {
         metrics = make([]IntegrationMetric, 0)
     }
-    
+  
     metrics = append(metrics, IntegrationMetric{
         IntegrationType: integrationType,
         Operation:       operation,
@@ -18401,7 +18494,7 @@ func (c *InMemoryMetricsCollector) RecordIntegrationFailure(integrationType stri
         Duration:        duration,
         Timestamp:       time.Now(),
     })
-    
+  
     c.integrationMetrics[key] = metrics
 }
 
@@ -18409,14 +18502,14 @@ func (c *InMemoryMetricsCollector) RecordIntegrationFailure(integrationType stri
 func (c *InMemoryMetricsCollector) GetTaskMetrics() map[string][]TaskMetric {
     c.mutex.RLock()
     defer c.mutex.RUnlock()
-    
+  
     result := make(map[string][]TaskMetric)
     for k, v := range c.taskMetrics {
         metricsCopy := make([]TaskMetric, len(v))
         copy(metricsCopy, v)
         result[k] = metricsCopy
     }
-    
+  
     return result
 }
 
@@ -18424,14 +18517,14 @@ func (c *InMemoryMetricsCollector) GetTaskMetrics() map[string][]TaskMetric {
 func (c *InMemoryMetricsCollector) GetDataOperationMetrics() map[string][]DataOperationMetric {
     c.mutex.RLock()
     defer c.mutex.RUnlock()
-    
+  
     result := make(map[string][]DataOperationMetric)
     for k, v := range c.dataOpMetrics {
         metricsCopy := make([]DataOperationMetric, len(v))
         copy(metricsCopy, v)
         result[k] = metricsCopy
     }
-    
+  
     return result
 }
 
@@ -18439,14 +18532,14 @@ func (c *InMemoryMetricsCollector) GetDataOperationMetrics() map[string][]DataOp
 func (c *InMemoryMetricsCollector) GetIntegrationMetrics() map[string][]IntegrationMetric {
     c.mutex.RLock()
     defer c.mutex.RUnlock()
-    
+  
     result := make(map[string][]IntegrationMetric)
     for k, v := range c.integrationMetrics {
         metricsCopy := make([]IntegrationMetric, len(v))
         copy(metricsCopy, v)
         result[k] = metricsCopy
     }
-    
+  
     return result
 }
 
@@ -18455,7 +18548,7 @@ type WorkflowBestPractices struct{}
 
 func (p *WorkflowBestPractices) GetLocalWorkflowBestPractices() map[string][]string {
     practices := make(map[string][]string)
-    
+  
     practices["设计原则"] = []string{
         "遵循单一职责原则，一个工作流只做一件事",
         "将工作流拆分为可重用的模块化组件",
@@ -18465,7 +18558,7 @@ func (p *WorkflowBestPractices) GetLocalWorkflowBestPractices() map[string][]str
         "使用版本控制管理工作流定义",
         "避免工作流之间的紧耦合",
     }
-    
+  
     practices["执行效率"] = []string{
         "充分利用并行执行独立任务",
         "对大型数据集使用批处理和分页",
@@ -18475,7 +18568,7 @@ func (p *WorkflowBestPractices) GetLocalWorkflowBestPractices() map[string][]str
         "实现任务级缓存减少重复计算",
         "针对常见操作使用专用的本地优化执行器",
     }
-    
+  
     practices["可靠性"] = []string{
         "实现持久化的状态管理机制",
         "为每个任务定义明确的重试策略",
@@ -18485,7 +18578,7 @@ func (p *WorkflowBestPractices) GetLocalWorkflowBestPractices() map[string][]str
         "处理工作流优雅关闭和恢复",
         "为长时间运行的工作流实现心跳机制",
     }
-    
+  
     practices["扩展性"] = []string{
         "定义清晰的任务执行器接口便于扩展",
         "使用工厂模式创建和注册任务执行器",
@@ -18495,7 +18588,7 @@ func (p *WorkflowBestPractices) GetLocalWorkflowBestPractices() map[string][]str
         "实现动态工作池大小调整",
         "支持自定义优先级调度",
     }
-    
+  
     practices["数据处理"] = []string{
         "利用数据本地性优化数据处理任务",
         "实现渐进式处理大型数据集",
@@ -18505,7 +18598,7 @@ func (p *WorkflowBestPractices) GetLocalWorkflowBestPractices() map[string][]str
         "优化序列化和反序列化操作",
         "使用内存映射文件处理大型数据",
     }
-    
+  
     practices["监控与调试"] = []string{
         "收集详细的任务执行指标",
         "实现结构化日志记录",
@@ -18515,7 +18608,7 @@ func (p *WorkflowBestPractices) GetLocalWorkflowBestPractices() map[string][]str
         "实现审计日志记录关键操作",
         "提供工作流状态检查API",
     }
-    
+  
     return practices
 }
 
@@ -18550,26 +18643,26 @@ func (u *LocalWorkflowUtils) EstimateWorkflowResources(workflow *model.WorkflowD
         "io":     0.0,
         "time":   0.0,
     }
-    
+  
     // 分析任务图找出关键路径
     criticalPath := u.findCriticalPath(workflow)
-    
+  
     // 估计关键路径上的资源需求
     for _, taskID := range criticalPath {
         taskDef, exists := getTaskDefinition(workflow, taskID)
         if !exists {
             continue
         }
-        
+  
         taskResources := u.estimateTaskResources(taskDef)
-        
+  
         // 累加资源估计
         resources["cpu"] += taskResources["cpu"]
         resources["memory"] = math.Max(resources["memory"], taskResources["memory"])
         resources["io"] += taskResources["io"]
         resources["time"] += taskResources["time"]
     }
-    
+  
     // 考虑非关键路径上的内存需求
     for _, task := range workflow.Tasks {
         if !u.isInPath(task.ID, criticalPath) {
@@ -18577,7 +18670,7 @@ func (u *LocalWorkflowUtils) EstimateWorkflowResources(workflow *model.WorkflowD
             resources["memory"] = math.Max(resources["memory"], taskResources["memory"] * 0.5)
         }
     }
-    
+  
     return resources
 }
 
@@ -18592,7 +18685,7 @@ func (u *LocalWorkflowUtils) findCriticalPath(workflow *model.WorkflowDefinition
             graph[task.ID] = []string{}
         }
     }
-    
+  
     // 找出所有无入边的节点（起始任务）
     var startNodes []string
     inEdges := make(map[string]int)
@@ -18601,13 +18694,13 @@ func (u *LocalWorkflowUtils) findCriticalPath(workflow *model.WorkflowDefinition
             inEdges[next]++
         }
     }
-    
+  
     for _, task := range workflow.Tasks {
         if inEdges[task.ID] == 0 {
             startNodes = append(startNodes, task.ID)
         }
     }
-    
+  
     // 找出所有无出边的节点（终止任务）
     var endNodes []string
     for id, nexts := range graph {
@@ -18615,33 +18708,33 @@ func (u *LocalWorkflowUtils) findCriticalPath(workflow *model.WorkflowDefinition
             endNodes = append(endNodes, id)
         }
     }
-    
+  
     // 计算每个任务的估计执行时间
     taskTimes := make(map[string]float64)
     for _, task := range workflow.Tasks {
         taskResources := u.estimateTaskResources(&task)
         taskTimes[task.ID] = taskResources["time"]
     }
-    
+  
     // 计算从起始到每个节点的最长路径
     distances := make(map[string]float64)
     predecessors := make(map[string]string)
-    
+  
     // 初始化距离
     for _, task := range workflow.Tasks {
         distances[task.ID] = -1.0
     }
-    
+  
     // 设置起始节点距离
     for _, start := range startNodes {
         distances[start] = taskTimes[start]
     }
-    
+  
     // 拓扑排序
     var sorted []string
     visited := make(map[string]bool)
     temp := make(map[string]bool)
-    
+  
     var topoSort func(node string)
     topoSort = func(node string) {
         if temp[node] {
@@ -18659,11 +18752,11 @@ func (u *LocalWorkflowUtils) findCriticalPath(workflow *model.WorkflowDefinition
         visited[node] = true
         sorted = append([]string{node}, sorted...)
     }
-    
+  
     for _, start := range startNodes {
         topoSort(start)
     }
-    
+  
     // 使用排序顺序计算最长路径
     for _, node := range sorted {
         for _, next := range graph[node] {
@@ -18676,18 +18769,18 @@ func (u *LocalWorkflowUtils) findCriticalPath(workflow *model.WorkflowDefinition
             }
         }
     }
-    
+  
     // 找出到终止节点的最长路径
     var longestEndNode string
     var maxDist float64 = -1.0
-    
+  
     for _, end := range endNodes {
         if distances[end] > maxDist {
             maxDist = distances[end]
             longestEndNode = end
         }
     }
-    
+  
     // 回溯构建关键路径
     path := []string{}
     current := longestEndNode
@@ -18695,7 +18788,7 @@ func (u *LocalWorkflowUtils) findCriticalPath(workflow *model.WorkflowDefinition
         path = append([]string{current}, path...)
         current = predecessors[current]
     }
-    
+  
     return path
 }
 
@@ -18717,7 +18810,7 @@ func (u *LocalWorkflowUtils) estimateTaskResources(task *model.TaskDefinition) m
         "io":     10.0, // 默认IO操作数
         "time":   1.0,  // 默认执行时间秒
     }
-    
+  
     // 根据任务类型调整资源估计
     switch task.Type {
     case "system":
@@ -18758,7 +18851,7 @@ func (u *LocalWorkflowUtils) estimateTaskResources(task *model.TaskDefinition) m
         resources["io"] = 5.0
         resources["time"] = 3600.0 // 1小时
     }
-    
+  
     // 应用任务特定配置
     if task.ResourceLimits != nil {
         if cpu, ok := task.ResourceLimits["cpu"].(float64); ok {
@@ -18774,7 +18867,7 @@ func (u *LocalWorkflowUtils) estimateTaskResources(task *model.TaskDefinition) m
             resources["time"] = time
         }
     }
-    
+  
     return resources
 }
 
@@ -18782,12 +18875,12 @@ func (u *LocalWorkflowUtils) estimateTaskResources(task *model.TaskDefinition) m
 func (u *LocalWorkflowUtils) AnalyzeDataDependencies(workflow *model.WorkflowDefinition) map[string][]string {
     // 构建任务数据依赖图
     dependencies := make(map[string][]string)
-    
+  
     // 分析每个任务的输入来源
     for _, task := range workflow.Tasks {
         // 初始化依赖列表
         dependencies[task.ID] = []string{}
-        
+  
         // 检查任务输入
         if task.Inputs != nil {
             for _, inputSpec := range task.Inputs {
@@ -18796,7 +18889,7 @@ func (u *LocalWorkflowUtils) AnalyzeDataDependencies(workflow *model.WorkflowDef
                     parts := strings.Split(inputSpec.From, ".")
                     if len(parts) >= 1 {
                         sourceTaskID := parts[0]
-                        
+  
                         // 跳过特殊路径（如workflow.input）
                         if sourceTaskID != "workflow" {
                             // 添加依赖，避免重复
@@ -18808,7 +18901,7 @@ func (u *LocalWorkflowUtils) AnalyzeDataDependencies(workflow *model.WorkflowDef
                 }
             }
         }
-        
+  
         // 检查显式声明的任务依赖
         if task.DependsOn != nil {
             for _, dependencyID := range task.DependsOn {
@@ -18818,7 +18911,7 @@ func (u *LocalWorkflowUtils) AnalyzeDataDependencies(workflow *model.WorkflowDef
             }
         }
     }
-    
+  
     return dependencies
 }
 
@@ -18836,13 +18929,13 @@ func (u *LocalWorkflowUtils) containsString(arr []string, str string) bool {
 func (u *LocalWorkflowUtils) AnalyzeScheduling(workflow *model.WorkflowDefinition, resources map[string]float64) map[string]interface{} {
     // 获取关键路径
     criticalPath := u.findCriticalPath(workflow)
-    
+  
     // 获取数据依赖
     dataDependencies := u.AnalyzeDataDependencies(workflow)
-    
+  
     // 获取可并行执行的任务组
     parallelGroups := u.findParallelGroups(workflow, dataDependencies)
-    
+  
     // 估计最大并行度
     maxParallelism := 0
     for _, group := range parallelGroups {
@@ -18850,10 +18943,10 @@ func (u *LocalWorkflowUtils) AnalyzeScheduling(workflow *model.WorkflowDefinitio
             maxParallelism = len(group)
         }
     }
-    
+  
     // 估计总执行时间
     totalTime := resources["time"]
-    
+  
     // 计算理想并行时间
     idealParallelTime := 0.0
     taskTimes := make(map[string]float64)
@@ -18863,19 +18956,19 @@ func (u *LocalWorkflowUtils) AnalyzeScheduling(workflow *model.WorkflowDefinitio
         idealParallelTime += taskResources["time"]
     }
     idealParallelTime = idealParallelTime / float64(maxParallelism)
-    
+  
     // 计算关键路径时间
     criticalPathTime := 0.0
     for _, taskID := range criticalPath {
         criticalPathTime += taskTimes[taskID]
     }
-    
+  
     // 计算并行效率
     parallelEfficiency := 0.0
     if totalTime > 0 {
         parallelEfficiency = criticalPathTime / totalTime
     }
-    
+  
     return map[string]interface{}{
         "critical_path":       criticalPath,
         "max_parallelism":     maxParallelism,
@@ -18898,13 +18991,13 @@ func (u *LocalWorkflowUtils) findParallelGroups(workflow *model.WorkflowDefiniti
             reverseDeps[dep] = append(reverseDeps[dep], taskID)
         }
     }
-    
+  
     // 检查任务图是否包含环
     if u.hasCycle(workflow, dependencies) {
         // 如果有环，使用简单算法
         return u.findIndependentTasks(workflow, dependencies)
     }
-    
+  
     // 使用拓扑排序找出分层
     return u.topologicalLayers(workflow, dependencies)
 }
@@ -18913,13 +19006,13 @@ func (u *LocalWorkflowUtils) findParallelGroups(workflow *model.WorkflowDefiniti
 func (u *LocalWorkflowUtils) hasCycle(workflow *model.WorkflowDefinition, dependencies map[string][]string) bool {
     visited := make(map[string]bool)
     recStack := make(map[string]bool)
-    
+  
     var checkCycle func(node string) bool
     checkCycle = func(node string) bool {
         if !visited[node] {
             visited[node] = true
             recStack[node] = true
-            
+  
             // 检查所有依赖该节点的任务
             for _, dependent := range dependencies[node] {
                 if !visited[dependent] && checkCycle(dependent) {
@@ -18932,37 +19025,37 @@ func (u *LocalWorkflowUtils) hasCycle(workflow *model.WorkflowDefinition, depend
         recStack[node] = false
         return false
     }
-    
+  
     // 检查每个任务
     for _, task := range workflow.Tasks {
         if !visited[task.ID] && checkCycle(task.ID) {
             return true
         }
     }
-    
+  
     return false
 }
 
 // 找出独立任务组（简单方法）
 func (u *LocalWorkflowUtils) findIndependentTasks(workflow *model.WorkflowDefinition, dependencies map[string][]string) [][]string {
     var result [][]string
-    
+  
     // 获取所有任务ID
     var allTasks []string
     for _, task := range workflow.Tasks {
         allTasks = append(allTasks, task.ID)
     }
-    
+  
     // 重复查找直到所有任务分组
     remaining := make(map[string]bool)
     for _, taskID := range allTasks {
         remaining[taskID] = true
     }
-    
+  
     for len(remaining) > 0 {
         // 查找当前可执行的独立任务
         var independent []string
-        
+  
         for taskID := range remaining {
             isIndependent := true
             for _, dep := range dependencies[taskID] {
@@ -18971,12 +19064,12 @@ func (u *LocalWorkflowUtils) findIndependentTasks(workflow *model.WorkflowDefini
                     break
                 }
             }
-            
+  
             if isIndependent {
                 independent = append(independent, taskID)
             }
         }
-        
+  
         // 如果没有找到独立任务但仍有剩余任务，打破环
         if len(independent) == 0 && len(remaining) > 0 {
             // 简单地选择第一个剩余任务
@@ -18985,7 +19078,7 @@ func (u *LocalWorkflowUtils) findIndependentTasks(workflow *model.WorkflowDefini
                 break
             }
         }
-        
+  
         // 将独立任务添加到结果并从剩余任务中移除
         if len(independent) > 0 {
             result = append(result, independent)
@@ -18996,7 +19089,7 @@ func (u *LocalWorkflowUtils) findIndependentTasks(workflow *model.WorkflowDefini
             break
         }
     }
-    
+  
     return result
 }
 
@@ -19007,17 +19100,17 @@ func (u *LocalWorkflowUtils) topologicalLayers(workflow *model.WorkflowDefinitio
     for _, task := range workflow.Tasks {
         inDegree[task.ID] = 0
     }
-    
+  
     // 计算每个任务的入度
     for _, deps := range dependencies {
         for _, dep := range deps {
             inDegree[dep]++
         }
     }
-    
+  
     // 使用队列进行分层
     var result [][]string
-    
+  
     for {
         // 找出入度为0的节点
         var currentLayer []string
@@ -19028,15 +19121,15 @@ func (u *LocalWorkflowUtils) topologicalLayers(workflow *model.WorkflowDefinitio
                 inDegree[task.ID] = -1
             }
         }
-        
+  
         // 如果没有找到入度为0的节点，则结束
         if len(currentLayer) == 0 {
             break
         }
-        
+  
         // 添加当前层到结果
         result = append(result, currentLayer)
-        
+  
         // 减少下一层节点的入度
         for _, taskID := range currentLayer {
             for _, dependent := range dependencies[taskID] {
@@ -19046,60 +19139,60 @@ func (u *LocalWorkflowUtils) topologicalLayers(workflow *model.WorkflowDefinitio
             }
         }
     }
-    
+  
     return result
 }
 
 // 识别瓶颈任务
 func (u *LocalWorkflowUtils) identifyBottlenecks(workflow *model.WorkflowDefinition, taskTimes map[string]float64, criticalPath []string) []string {
     var bottlenecks []string
-    
+  
     // 计算平均任务时间
     totalTime := 0.0
     for _, time := range taskTimes {
         totalTime += time
     }
     avgTime := totalTime / float64(len(taskTimes))
-    
+  
     // 查找时间显著高于平均值的关键路径任务
     for _, taskID := range criticalPath {
         if taskTimes[taskID] > avgTime*1.5 {
             bottlenecks = append(bottlenecks, taskID)
         }
     }
-    
+  
     return bottlenecks
 }
 
 // 建议工作线程数量
 func (u *LocalWorkflowUtils) recommendWorkerCount(maxParallelism int, resources map[string]float64) int {
     // 基于系统资源和最大并行度计算建议的工作线程数
-    
+  
     // 获取可用CPU核心数
     availableCPUs := runtime.NumCPU()
-    
+  
     // 计算每个并行任务的估计CPU使用率
     cpuPerTask := resources["cpu"]
-    
+  
     // 计算可支持的最大并行任务数（基于CPU）
     maxTasksByCPU := int(float64(availableCPUs) / cpuPerTask)
-    
+  
     // 考虑IO密集型任务，可以分配更多线程
     if resources["io"] > resources["cpu"]*10 {
         maxTasksByCPU = int(float64(maxTasksByCPU) * 1.5)
     }
-    
+  
     // 计算建议的工作线程数
     recommendedWorkers := maxParallelism
     if maxTasksByCPU < maxParallelism {
         recommendedWorkers = maxTasksByCPU
     }
-    
+  
     // 确保至少有一个工作线程
     if recommendedWorkers < 1 {
         recommendedWorkers = 1
     }
-    
+  
     return recommendedWorkers
 }
 
@@ -19107,18 +19200,18 @@ func (u *LocalWorkflowUtils) recommendWorkerCount(maxParallelism int, resources 
 func (u *LocalWorkflowUtils) GenerateScheduleVisualization(workflow *model.WorkflowDefinition, analysis map[string]interface{}) string {
     // 创建简单的ASCII图表显示任务调度情况
     var builder strings.Builder
-    
+  
     // 添加标题
     builder.WriteString("工作流调度可视化\n")
     builder.WriteString("====================\n\n")
-    
+  
     // 添加关键路径
     if criticalPath, ok := analysis["critical_path"].([]string); ok {
         builder.WriteString("关键路径: ")
         builder.WriteString(strings.Join(criticalPath, " -> "))
         builder.WriteString("\n\n")
     }
-    
+  
     // 添加并行任务组
     if parallelGroups, ok := analysis["parallel_groups"].([][]string); ok {
         builder.WriteString("并行执行层:\n")
@@ -19127,35 +19220,35 @@ func (u *LocalWorkflowUtils) GenerateScheduleVisualization(workflow *model.Workf
         }
         builder.WriteString("\n")
     }
-    
+  
     // 添加瓶颈任务
     if bottlenecks, ok := analysis["bottleneck_tasks"].([]string); ok && len(bottlenecks) > 0 {
         builder.WriteString("瓶颈任务: ")
         builder.WriteString(strings.Join(bottlenecks, ", "))
         builder.WriteString("\n\n")
     }
-    
+  
     // 添加估计时间
     if estimatedTime, ok := analysis["estimated_time"].(float64); ok {
         builder.WriteString(fmt.Sprintf("估计总执行时间: %.2f 秒\n", estimatedTime))
     }
-    
+  
     if criticalPathTime, ok := analysis["critical_path_time"].(float64); ok {
         builder.WriteString(fmt.Sprintf("关键路径时间: %.2f 秒\n", criticalPathTime))
     }
-    
+  
     if idealParallelTime, ok := analysis["ideal_parallel_time"].(float64); ok {
         builder.WriteString(fmt.Sprintf("理想并行时间: %.2f 秒\n", idealParallelTime))
     }
-    
+  
     if parallelEfficiency, ok := analysis["parallel_efficiency"].(float64); ok {
         builder.WriteString(fmt.Sprintf("并行效率: %.2f%%\n", parallelEfficiency*100))
     }
-    
+  
     if recommendedWorkers, ok := analysis["recommended_workers"].(int); ok {
         builder.WriteString(fmt.Sprintf("建议工作线程数: %d\n", recommendedWorkers))
     }
-    
+  
     return builder.String()
 }
 
@@ -19175,16 +19268,16 @@ func NewLocalWorkflowAnalyzer() *LocalWorkflowAnalyzer {
 func (a *LocalWorkflowAnalyzer) AnalyzeWorkflow(workflow *model.WorkflowDefinition) map[string]interface{} {
     // 估计资源需求
     resources := a.utils.EstimateWorkflowResources(workflow)
-    
+  
     // 分析调度
     schedulingAnalysis := a.utils.AnalyzeScheduling(workflow, resources)
-    
+  
     // 分析数据依赖
     dataDependencies := a.utils.AnalyzeDataDependencies(workflow)
-    
+  
     // 生成任务特征
     taskCharacteristics := a.analyzeTaskCharacteristics(workflow)
-    
+  
     // 整合分析结果
     result := map[string]interface{}{
         "workflow_id":         workflow.ID,
@@ -19197,14 +19290,14 @@ func (a *LocalWorkflowAnalyzer) AnalyzeWorkflow(workflow *model.WorkflowDefiniti
         "task_characteristics": taskCharacteristics,
         "optimization_recommendations": a.generateOptimizationRecommendations(workflow, resources, schedulingAnalysis, taskCharacteristics),
     }
-    
+  
     return result
 }
 
 // 分析任务特征
 func (a *LocalWorkflowAnalyzer) analyzeTaskCharacteristics(workflow *model.WorkflowDefinition) map[string]map[string]interface{} {
     result := make(map[string]map[string]interface{})
-    
+  
     for _, task := range workflow.Tasks {
         characteristics := map[string]interface{}{
             "type":             task.Type,
@@ -19215,7 +19308,7 @@ func (a *LocalWorkflowAnalyzer) analyzeTaskCharacteristics(workflow *model.Workf
             "next_count":       len(task.Next),
             "resources":        a.utils.estimateTaskResources(&task),
         }
-        
+  
         // 分析任务输入特征
         if task.Inputs != nil {
             inputSources := make([]string, 0)
@@ -19230,7 +19323,7 @@ func (a *LocalWorkflowAnalyzer) analyzeTaskCharacteristics(workflow *model.Workf
             characteristics["input_sources"] = []string{}
             characteristics["input_count"] = 0
         }
-        
+  
         // 分析任务配置特征
         if task.Config != nil {
             characteristics["has_config"] = true
@@ -19239,7 +19332,7 @@ func (a *LocalWorkflowAnalyzer) analyzeTaskCharacteristics(workflow *model.Workf
             characteristics["has_config"] = false
             characteristics["config_size"] = 0
         }
-        
+  
         // 确定任务类别
         if task.Type == "data" || strings.Contains(strings.ToLower(task.Name), "data") {
             characteristics["category"] = "data_processing"
@@ -19252,10 +19345,10 @@ func (a *LocalWorkflowAnalyzer) analyzeTaskCharacteristics(workflow *model.Workf
         } else {
             characteristics["category"] = "system"
         }
-        
+  
         result[task.ID] = characteristics
     }
-    
+  
     return result
 }
 
@@ -19267,13 +19360,13 @@ func (a *LocalWorkflowAnalyzer) generateOptimizationRecommendations(
     taskCharacteristics map[string]map[string]interface{},
 ) []string {
     var recommendations []string
-    
+  
     // 建议1: 优化工作池大小
     if recommendedWorkers, ok := schedulingAnalysis["recommended_workers"].(int); ok {
         recommendations = append(recommendations,
             fmt.Sprintf("配置工作池大小为 %d 以获得最佳性能与资源使用的平衡", recommendedWorkers))
     }
-    
+  
     // 建议2: 优化瓶颈任务
     if bottlenecks, ok := schedulingAnalysis["bottleneck_tasks"].([]string); ok && len(bottlenecks) > 0 {
         for _, taskID := range bottlenecks {
@@ -19284,12 +19377,12 @@ func (a *LocalWorkflowAnalyzer) generateOptimizationRecommendations(
                     break
                 }
             }
-            
+  
             recommendations = append(recommendations,
                 fmt.Sprintf("优化瓶颈任务 '%s' (%s) 以减少整体执行时间", taskName, taskID))
         }
     }
-    
+  
     // 建议3: 数据本地性优化
     dataProcessingTasks := 0
     for _, chars := range taskCharacteristics {
@@ -19297,18 +19390,18 @@ func (a *LocalWorkflowAnalyzer) generateOptimizationRecommendations(
             dataProcessingTasks++
         }
     }
-    
+  
     if dataProcessingTasks > 2 {
         recommendations = append(recommendations,
             "实现数据本地性优化，确保相关数据处理任务使用共享内存而非序列化传递数据")
     }
-    
+  
     // 建议4: 批处理优化
     if resources["memory"] > 500 {
         recommendations = append(recommendations,
             "考虑使用批处理和分页处理大型数据集，以减少内存占用")
     }
-    
+  
     // 建议5: 并行度优化
     if maxParallelism, ok := schedulingAnalysis["max_parallelism"].(int); ok {
         if maxParallelism < 2 && len(workflow.Tasks) > 3 {
@@ -19319,7 +19412,7 @@ func (a *LocalWorkflowAnalyzer) generateOptimizationRecommendations(
                 "考虑设置最大并行度限制，避免过度并行导致资源争用")
         }
     }
-    
+  
     // 建议6: 缓存优化
     repeatAccessPatterns := false
     for _, chars := range taskCharacteristics {
@@ -19332,32 +19425,32 @@ func (a *LocalWorkflowAnalyzer) generateOptimizationRecommendations(
             }
         }
     }
-    
+  
     if repeatAccessPatterns {
         recommendations = append(recommendations,
             "实现输入数据缓存，避免重复解析相同的工作流输入数据")
     }
-    
+  
     // 建议7: 错误处理优化
     recommendations = append(recommendations,
         "为每个任务实现特定的重试策略和错误处理逻辑，提高工作流弹性")
-    
+  
     // 建议8: 资源控制
     if resources["cpu"] > float64(runtime.NumCPU())*0.7 {
         recommendations = append(recommendations,
             "实现资源限制以防止CPU密集型任务影响系统稳定性")
     }
-    
+  
     // 建议9: 检查点优化
     if resources["time"] > 60 {
         recommendations = append(recommendations,
             "为长时间运行的工作流实现定期检查点，以便在失败时恢复")
     }
-    
+  
     // 建议10: 监控优化
     recommendations = append(recommendations,
         "实现详细的任务级指标收集，以识别性能问题和改进机会")
-    
+  
     return recommendations
 }
 
@@ -19365,20 +19458,20 @@ func (a *LocalWorkflowAnalyzer) generateOptimizationRecommendations(
 func (a *LocalWorkflowAnalyzer) GenerateReport(workflow *model.WorkflowDefinition) string {
     // 获取分析结果
     analysis := a.AnalyzeWorkflow(workflow)
-    
+  
     // 创建报告
     var builder strings.Builder
-    
+  
     // 添加标题
     builder.WriteString(fmt.Sprintf("本地工作流分析报告: %s (v%s)\n", workflow.Name, workflow.Version))
     builder.WriteString("=============================================\n\n")
-    
+  
     // 添加基本信息
     builder.WriteString("基本信息:\n")
     builder.WriteString(fmt.Sprintf("  工作流ID: %s\n", workflow.ID))
     builder.WriteString(fmt.Sprintf("  任务数量: %d\n", len(workflow.Tasks)))
     builder.WriteString("\n")
-    
+  
     // 添加资源估计
     if resources, ok := analysis["resources"].(map[string]float64); ok {
         builder.WriteString("资源估计:\n")
@@ -19388,7 +19481,7 @@ func (a *LocalWorkflowAnalyzer) GenerateReport(workflow *model.WorkflowDefinitio
         builder.WriteString(fmt.Sprintf("  估计时间: %.2f 秒\n", resources["time"]))
         builder.WriteString("\n")
     }
-    
+  
     // 添加调度分析
     if scheduling, ok := analysis["scheduling"].(map[string]interface{}); ok {
         builder.WriteString("调度分析:\n")
@@ -19402,16 +19495,16 @@ func (a *LocalWorkflowAnalyzer) GenerateReport(workflow *model.WorkflowDefinitio
             builder.WriteString(fmt.Sprintf("  建议工作线程数: %d\n", recommendedWorkers))
         }
         builder.WriteString("\n")
-        
+  
         // 添加任务执行可视化
         builder.WriteString(a.utils.GenerateScheduleVisualization(workflow, scheduling))
         builder.WriteString("\n")
     }
-    
+  
     // 添加任务特征
     if taskChars, ok := analysis["task_characteristics"].(map[string]map[string]interface{}); ok {
         builder.WriteString("任务特征分析:\n")
-        
+  
         // 按类别分组任务
         categoryCounts := make(map[string]int)
         for _, chars := range taskChars {
@@ -19419,11 +19512,11 @@ func (a *LocalWorkflowAnalyzer) GenerateReport(workflow *model.WorkflowDefinitio
                 categoryCounts[category]++
             }
         }
-        
+  
         for category, count := range categoryCounts {
             builder.WriteString(fmt.Sprintf("  %s: %d 任务\n", category, count))
         }
-        
+  
         builder.WriteString("\n  任务详情:\n")
         for taskID, chars := range taskChars {
             resources, _ := chars["resources"].(map[string]float64)
@@ -19435,7 +19528,7 @@ func (a *LocalWorkflowAnalyzer) GenerateReport(workflow *model.WorkflowDefinitio
         }
         builder.WriteString("\n")
     }
-    
+  
     // 添加优化建议
     if recommendations, ok := analysis["optimization_recommendations"].([]string); ok && len(recommendations) > 0 {
         builder.WriteString("优化建议:\n")
@@ -19444,7 +19537,7 @@ func (a *LocalWorkflowAnalyzer) GenerateReport(workflow *model.WorkflowDefinitio
         }
         builder.WriteString("\n")
     }
-    
+  
     return builder.String()
 }
 
@@ -19472,15 +19565,15 @@ func (d *LocalWorkflowDebugger) GetTaskExecutionLogs(ctx context.Context, instan
     if err != nil {
         return nil, fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 检查任务是否存在
     if _, exists := executionContext.TaskResults[taskID]; !exists {
         return nil, fmt.Errorf("task %s not found in workflow instance %s", taskID, instanceID)
     }
-    
+  
     // 此处应与日志系统集成以获取详细日志
     // 这里提供一个简化的实现
-    
+  
     logs := []map[string]interface{}{
         {
             "timestamp": time.Now().Add(-5 * time.Minute),
@@ -19488,7 +19581,7 @@ func (d *LocalWorkflowDebugger) GetTaskExecutionLogs(ctx context.Context, instan
             "message":   fmt.Sprintf("Task %s started", taskID),
         },
     }
-    
+  
     if executionContext.TaskResults[taskID].Status == "COMPLETED" {
         logs = append(logs, map[string]interface{}{
             "timestamp": time.Now().Add(-1 * time.Minute),
@@ -19504,7 +19597,7 @@ func (d *LocalWorkflowDebugger) GetTaskExecutionLogs(ctx context.Context, instan
             "error":     executionContext.FailedTasks[taskID],
         })
     }
-    
+  
     return logs, nil
 }
 
@@ -19515,16 +19608,16 @@ func (d *LocalWorkflowDebugger) GetWorkflowExecutionState(ctx context.Context, i
     if err != nil {
         return nil, fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 获取工作流定义
     workflow, err := d.workflowStore.GetWorkflowDefinition(ctx, executionContext.WorkflowID, executionContext.Version)
     if err != nil {
         return nil, fmt.Errorf("failed to get workflow definition: %w", err)
     }
-    
+  
     // 构建任务状态映射
     taskStates := make(map[string]map[string]interface{})
-    
+  
     for _, task := range workflow.Tasks {
         taskState := map[string]interface{}{
             "id":     task.ID,
@@ -19532,7 +19625,7 @@ func (d *LocalWorkflowDebugger) GetWorkflowExecutionState(ctx context.Context, i
             "type":   task.Type,
             "status": "PENDING",
         }
-        
+  
         // 检查任务是否已完成
         if _, completed := executionContext.CompletedTasks[task.ID]; completed {
             taskState["status"] = "COMPLETED"
@@ -19545,10 +19638,10 @@ func (d *LocalWorkflowDebugger) GetWorkflowExecutionState(ctx context.Context, i
         } else if containsTask(executionContext.CurrentTasks, task.ID) {
             taskState["status"] = "RUNNING"
         }
-        
+  
         taskStates[task.ID] = taskState
     }
-    
+  
     // 构建执行状态
     executionState := map[string]interface{}{
         "instance_id":    instanceID,
@@ -19564,12 +19657,12 @@ func (d *LocalWorkflowDebugger) GetWorkflowExecutionState(ctx context.Context, i
         "variables":      executionContext.Variables,
         "correlation_id": executionContext.CorrelationID,
     }
-    
+  
     // 如果已完成，计算输出
     if executionContext.Status == "COMPLETED" {
         executionState["output"] = collectWorkflowOutput(executionContext, workflow)
     }
-    
+  
     return executionState, nil
 }
 
@@ -19580,22 +19673,22 @@ func (d *LocalWorkflowDebugger) PauseWorkflowExecution(ctx context.Context, inst
     if err != nil {
         return fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 检查是否已经处于终止状态
     if isTerminalState(executionContext.Status) {
         return fmt.Errorf("cannot pause workflow in terminal state: %s", executionContext.Status)
     }
-    
+  
     // 更新状态
     executionContext.Status = "PAUSED"
     executionContext.LastUpdated = time.Now()
     executionContext.Variables["debug_paused_at"] = time.Now()
-    
+  
     // 保存更新后的状态
     if err := d.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         return fmt.Errorf("failed to save paused state: %w", err)
     }
-    
+  
     return nil
 }
 
@@ -19606,22 +19699,22 @@ func (d *LocalWorkflowDebugger) ResumeWorkflowExecution(ctx context.Context, ins
     if err != nil {
         return fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 检查是否处于暂停状态
     if executionContext.Status != "PAUSED" {
         return fmt.Errorf("workflow is not paused: %s", executionContext.Status)
     }
-    
+  
     // 更新状态
     executionContext.Status = "RUNNING"
     executionContext.LastUpdated = time.Now()
     executionContext.Variables["debug_resumed_at"] = time.Now()
-    
+  
     // 保存更新后的状态
     if err := d.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         return fmt.Errorf("failed to save resumed state: %w", err)
     }
-    
+  
     return nil
 }
 
@@ -19632,12 +19725,12 @@ func (d *LocalWorkflowDebugger) ModifyWorkflowVariable(ctx context.Context, inst
     if err != nil {
         return fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 检查是否处于暂停状态
     if executionContext.Status != "PAUSED" {
         return fmt.Errorf("can only modify variables when workflow is paused")
     }
-    
+  
     // 更新变量
     executionContext.Variables[key] = value
     executionContext.LastUpdated = time.Now()
@@ -19645,12 +19738,12 @@ func (d *LocalWorkflowDebugger) ModifyWorkflowVariable(ctx context.Context, inst
         executionContext.Variables["debug_modified_vars"].([]string),
         key,
     )
-    
+  
     // 保存更新后的状态
     if err := d.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         return fmt.Errorf("failed to save modified variables: %w", err)
     }
-    
+  
     return nil
 }
 
@@ -19661,33 +19754,33 @@ func (d *LocalWorkflowDebugger) RetryFailedTask(ctx context.Context, instanceID 
     if err != nil {
         return fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 检查任务是否失败
     if _, failed := executionContext.FailedTasks[taskID]; !failed {
         return fmt.Errorf("task %s is not in failed state", taskID)
     }
-    
+  
     // 从失败任务列表中移除
     delete(executionContext.FailedTasks, taskID)
-    
+  
     // 添加到当前任务列表
     if !containsTask(executionContext.CurrentTasks, taskID) {
         executionContext.CurrentTasks = append(executionContext.CurrentTasks, taskID)
     }
-    
+  
     // 如果工作流处于失败状态，更新为运行状态
     if executionContext.Status == "FAILED" {
         executionContext.Status = "RUNNING"
     }
-    
+  
     executionContext.LastUpdated = time.Now()
     executionContext.Variables["debug_retried_task"] = taskID
-    
+  
     // 保存更新后的状态
     if err := d.stateManager.SaveWorkflowState(ctx, executionContext); err != nil {
         return fmt.Errorf("failed to save retried task state: %w", err)
     }
-    
+  
     return nil
 }
 
@@ -19698,7 +19791,7 @@ func (d *LocalWorkflowDebugger) GenerateWorkflowTimeline(ctx context.Context, in
     if err != nil {
         return nil, fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 收集时间线事件
     events := []map[string]interface{}{
         {
@@ -19710,10 +19803,10 @@ func (d *LocalWorkflowDebugger) GenerateWorkflowTimeline(ctx context.Context, in
             },
         },
     }
-    
+  
     // 此处应与事件存储集成以获取详细事件
     // 这里提供一个简化的实现
-    
+  
     // 添加任务相关事件
     for taskID, result := range executionContext.TaskResults {
         // 添加任务开始事件（估计，实际应从事件存储获取）
@@ -19725,7 +19818,7 @@ func (d *LocalWorkflowDebugger) GenerateWorkflowTimeline(ctx context.Context, in
                 "task_id": taskID,
             },
         })
-        
+  
         // 添加任务完成或失败事件
         if _, completed := executionContext.CompletedTasks[taskID]; completed {
             events = append(events, map[string]interface{}{
@@ -19747,7 +19840,7 @@ func (d *LocalWorkflowDebugger) GenerateWorkflowTimeline(ctx context.Context, in
             })
         }
     }
-    
+  
     // 添加工作流状态事件
     switch executionContext.Status {
     case "COMPLETED":
@@ -19776,14 +19869,14 @@ func (d *LocalWorkflowDebugger) GenerateWorkflowTimeline(ctx context.Context, in
             },
         })
     }
-    
+  
     // 按时间排序
     sort.Slice(events, func(i, j int) bool {
         ti, _ := events[i]["timestamp"].(time.Time)
         tj, _ := events[j]["timestamp"].(time.Time)
         return ti.Before(tj)
     })
-    
+  
     return events, nil
 }
 
@@ -19820,19 +19913,19 @@ func (m *LocalWorkflowMonitor) GetWorkflowMetricsSummary(ctx context.Context, in
     if err != nil {
         return nil, fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 计算基本指标
     totalTasks := len(executionContext.TaskResults)
     completedTasks := len(executionContext.CompletedTasks)
     failedTasks := len(executionContext.FailedTasks)
     pendingTasks := totalTasks - completedTasks - failedTasks
-    
+  
     executionTime := time.Since(executionContext.StartTime)
     var completionRate float64
     if totalTasks > 0 {
         completionRate = float64(completedTasks) / float64(totalTasks) * 100
     }
-    
+  
     // 构建摘要
     summary := map[string]interface{}{
         "instance_id":          instanceID,
@@ -19848,23 +19941,23 @@ func (m *LocalWorkflowMonitor) GetWorkflowMetricsSummary(ctx context.Context, in
         "completion_rate":      completionRate,
         "current_task_count":   len(executionContext.CurrentTasks),
     }
-    
+  
     // 添加任务类型统计
     taskTypeStats := make(map[string]int)
     taskStatusByType := make(map[string]map[string]int)
-    
+  
     for taskID, taskResult := range executionContext.TaskResults {
         // 此处需要任务类型信息，实际实现可能需要从工作流定义或其他来源获取
         taskType := "unknown" // 简化实现
-        
+  
         // 更新任务类型计数
         taskTypeStats[taskType]++
-        
+  
         // 初始化状态计数
         if _, exists := taskStatusByType[taskType]; !exists {
             taskStatusByType[taskType] = make(map[string]int)
         }
-        
+  
         // 更新状态计数
         status := "PENDING"
         if _, completed := executionContext.CompletedTasks[taskID]; completed {
@@ -19872,13 +19965,13 @@ func (m *LocalWorkflowMonitor) GetWorkflowMetricsSummary(ctx context.Context, in
         } else if _, failed := executionContext.FailedTasks[taskID]; failed {
             status = "FAILED"
         }
-        
+  
         taskStatusByType[taskType][status]++
     }
-    
+  
     summary["task_type_stats"] = taskTypeStats
     summary["task_status_by_type"] = taskStatusByType
-    
+  
     return summary, nil
 }
 
@@ -19889,7 +19982,7 @@ func (m *LocalWorkflowMonitor) GetLiveExecutionMetrics(ctx context.Context, inst
     if err != nil {
         return nil, fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 检查是否仍在运行
     if isTerminalState(executionContext.Status) {
         return map[string]interface{}{
@@ -19898,7 +19991,7 @@ func (m *LocalWorkflowMonitor) GetLiveExecutionMetrics(ctx context.Context, inst
             "end_time": executionContext.LastUpdated,
         }, nil
     }
-    
+  
     // 获取当前正在执行的任务
     currentTasks := make([]map[string]interface{}, 0)
     for _, taskID := range executionContext.CurrentTasks {
@@ -19907,7 +20000,7 @@ func (m *LocalWorkflowMonitor) GetLiveExecutionMetrics(ctx context.Context, inst
             "running_for": time.Since(executionContext.LastUpdated).Seconds(),
         })
     }
-    
+  
     // 构建实时指标
     metrics := map[string]interface{}{
         "instance_id":           instanceID,
@@ -19920,7 +20013,7 @@ func (m *LocalWorkflowMonitor) GetLiveExecutionMetrics(ctx context.Context, inst
         "current_task_count":    len(executionContext.CurrentTasks),
         "last_state_update":     time.Since(executionContext.LastUpdated).Seconds(),
     }
-    
+  
     return metrics, nil
 }
 
@@ -19931,96 +20024,96 @@ func (m *LocalWorkflowMonitor) GetPerformanceInsights(ctx context.Context, insta
     if err != nil {
         return nil, fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 构建性能洞察
     insights := map[string]interface{}{
         "instance_id":      instanceID,
         "workflow_id":      executionContext.WorkflowID,
         "execution_status": executionContext.Status,
     }
-    
+  
     // 此处应与指标收集器集成以获取详细性能数据
     // 这里提供一个简化的实现
-    
+  
     // 计算任务执行时间统计
     taskExecutionTimes := make(map[string]float64)
     slowestTasks := make([]map[string]interface{}, 0)
-    
+  
     // 计算平均和最大值
     totalTime := 0.0
     maxTime := 0.0
     maxTaskID := ""
-    
+  
     for taskID := range executionContext.CompletedTasks {
         // 在实际实现中，应从指标收集器获取真实的执行时间
         executionTime := 1.0 // 默认值
         taskExecutionTimes[taskID] = executionTime
-        
+  
         totalTime += executionTime
         if executionTime > maxTime {
             maxTime = executionTime
             maxTaskID = taskID
         }
-        
+  
         slowestTasks = append(slowestTasks, map[string]interface{}{
             "task_id":        taskID,
             "execution_time": executionTime,
         })
     }
-    
+  
     // 按执行时间排序
     sort.Slice(slowestTasks, func(i, j int) bool {
         ti, _ := slowestTasks[i]["execution_time"].(float64)
         tj, _ := slowestTasks[j]["execution_time"].(float64)
         return ti > tj
     })
-    
+  
     // 只保留前3名
     if len(slowestTasks) > 3 {
         slowestTasks = slowestTasks[:3]
     }
-    
+  
     avgTime := 0.0
     if len(executionContext.CompletedTasks) > 0 {
         avgTime = totalTime / float64(len(executionContext.CompletedTasks))
     }
-    
+  
     // 添加统计信息
     insights["task_execution_times"] = taskExecutionTimes
     insights["avg_task_execution_time"] = avgTime
     insights["max_task_execution_time"] = maxTime
     insights["slowest_task_id"] = maxTaskID
     insights["slowest_tasks"] = slowestTasks
-    
+  
     // 添加资源使用统计（简化实现）
     insights["resource_usage"] = map[string]interface{}{
         "cpu_time_ms":    500,
         "memory_peak_mb": 100,
         "io_operations":  200,
     }
-    
+  
     // 添加性能瓶颈评估
     bottlenecks := []string{}
     if maxTime > avgTime*2 {
         bottlenecks = append(bottlenecks, fmt.Sprintf("任务 %s 执行时间显著高于平均值", maxTaskID))
     }
-    
+  
     if len(executionContext.FailedTasks) > 0 {
         bottlenecks = append(bottlenecks, fmt.Sprintf("%d 个任务失败，可能表明系统配置问题", len(executionContext.FailedTasks)))
     }
-    
+  
     insights["bottlenecks"] = bottlenecks
-    
+  
     // 添加优化建议
     optimizationTips := []string{}
     if maxTime > avgTime*2 {
         optimizationTips = append(optimizationTips, "考虑优化最慢任务的实现")
     }
-    
+  
     optimizationTips = append(optimizationTips, "增加任务并行度可能提升整体性能")
-    
+  
     insights["optimization_tips"] = optimizationTips
-    
+  
     return insights, nil
 }
 
@@ -20031,73 +20124,73 @@ func (m *LocalWorkflowMonitor) GenerateExecutionReport(ctx context.Context, inst
     if err != nil {
         return "", fmt.Errorf("failed to get workflow state: %w", err)
     }
-    
+  
     // 获取性能洞察
     insights, err := m.GetPerformanceInsights(ctx, instanceID)
     if err != nil {
         return "", fmt.Errorf("failed to get performance insights: %w", err)
     }
-    
+  
     // 创建报告
     var builder strings.Builder
-    
+  
     // 添加标题
     builder.WriteString(fmt.Sprintf("工作流执行报告: %s\n", instanceID))
     builder.WriteString("=============================================\n\n")
-    
+  
     // 添加基本信息
     builder.WriteString("基本信息:\n")
     builder.WriteString(fmt.Sprintf("  工作流ID: %s\n", executionContext.WorkflowID))
     builder.WriteString(fmt.Sprintf("  状态: %s\n", executionContext.Status))
     builder.WriteString(fmt.Sprintf("  开始时间: %s\n", executionContext.StartTime.Format(time.RFC3339)))
-    
+  
     if isTerminalState(executionContext.Status) {
         builder.WriteString(fmt.Sprintf("  结束时间: %s\n", executionContext.LastUpdated.Format(time.RFC3339)))
         builder.WriteString(fmt.Sprintf("  总执行时间: %s\n", executionContext.LastUpdated.Sub(executionContext.StartTime)))
     } else {
         builder.WriteString(fmt.Sprintf("  运行时间: %s\n", time.Since(executionContext.StartTime)))
     }
-    
+  
     builder.WriteString("\n")
-    
+  
     // 添加任务统计
     builder.WriteString("任务统计:\n")
     totalTasks := len(executionContext.TaskResults)
     completedTasks := len(executionContext.CompletedTasks)
     failedTasks := len(executionContext.FailedTasks)
     pendingTasks := totalTasks - completedTasks - failedTasks
-    
+  
     builder.WriteString(fmt.Sprintf("  总任务数: %d\n", totalTasks))
     builder.WriteString(fmt.Sprintf("  已完成: %d (%.1f%%)\n", completedTasks, float64(completedTasks)/float64(totalTasks)*100))
     builder.WriteString(fmt.Sprintf("  失败: %d (%.1f%%)\n", failedTasks, float64(failedTasks)/float64(totalTasks)*100))
     builder.WriteString(fmt.Sprintf("  待处理: %d (%.1f%%)\n", pendingTasks, float64(pendingTasks)/float64(totalTasks)*100))
     builder.WriteString("\n")
-    
+  
     // 添加性能统计
     builder.WriteString("性能统计:\n")
     if avgTime, ok := insights["avg_task_execution_time"].(float64); ok {
         builder.WriteString(fmt.Sprintf("  平均任务执行时间: %.2f 秒\n", avgTime))
     }
-    
+  
     if maxTime, ok := insights["max_task_execution_time"].(float64); ok {
         builder.WriteString(fmt.Sprintf("  最长任务执行时间: %.2f 秒\n", maxTime))
     }
-    
+  
     if slowestTaskID, ok := insights["slowest_task_id"].(string); ok {
         builder.WriteString(fmt.Sprintf("  最慢任务: %s\n", slowestTaskID))
     }
-    
+  
     if resourceUsage, ok := insights["resource_usage"].(map[string]interface{}); ok {
         if cpuTime, exists := resourceUsage["cpu_time_ms"]; exists {
             builder.WriteString(fmt.Sprintf("  CPU时间: %v 毫秒\n", cpuTime))
         }
-        
+  
         if memoryPeak, exists := resourceUsage["memory_peak_mb"]; exists {
             builder.WriteString(fmt.Sprintf("  内存峰值: %v MB\n", memoryPeak))
         }
     }
     builder.WriteString("\n")
-    
+  
     // 添加瓶颈信息
     if bottlenecks, ok := insights["bottlenecks"].([]string); ok && len(bottlenecks) > 0 {
         builder.WriteString("性能瓶颈:\n")
@@ -20106,7 +20199,7 @@ func (m *LocalWorkflowMonitor) GenerateExecutionReport(ctx context.Context, inst
         }
         builder.WriteString("\n")
     }
-    
+  
     // 添加优化建议
     if tips, ok := insights["optimization_tips"].([]string); ok && len(tips) > 0 {
         builder.WriteString("优化建议:\n")
@@ -20115,7 +20208,7 @@ func (m *LocalWorkflowMonitor) GenerateExecutionReport(ctx context.Context, inst
         }
         builder.WriteString("\n")
     }
-    
+  
     // 添加失败任务信息
     if failedTasks > 0 {
         builder.WriteString("失败任务详情:\n")
@@ -20127,7 +20220,7 @@ func (m *LocalWorkflowMonitor) GenerateExecutionReport(ctx context.Context, inst
         }
         builder.WriteString("\n")
     }
-    
+  
     return builder.String(), nil
 }
 
@@ -20135,12 +20228,13 @@ func (m *LocalWorkflowMonitor) GenerateExecutionReport(ctx context.Context, inst
 func RunLocalWorkflowExample() {
     fmt.Println("本地工作流引擎示例")
     fmt.Println("====================")
-    
+  
     // 运行调度器示例
     WorkflowSchedulerExample()
-    
+  
     fmt.Println("\n示例执行完成")
 }
+
 ```
 
 ### 10.2 数据本地化与分布式执行
@@ -20156,7 +20250,9 @@ use uuid::Uuid;
 use chrono::{DateTime, Utc};
 
 // 数据引用和本地化策略
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub enum DataLocality {
     // 始终保持数据本地，不允许远程访问
     StrictLocal,
@@ -20169,7 +20265,9 @@ pub enum DataLocality {
 }
 
 // 数据引用
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct DataReference {
     id: String,
     name: String,
@@ -20198,22 +20296,22 @@ impl DataReference {
             access_count: 0,
         }
     }
-    
+  
     pub fn with_locality(mut self, locality: DataLocality) -> Self {
         self.locality = locality;
         self
     }
-    
+  
     pub fn with_location(mut self, location: &str) -> Self {
         self.location = Some(location.to_string());
         self
     }
-    
+  
     pub fn with_metadata(mut self, key: &str, value: &str) -> Self {
         self.metadata.insert(key.to_string(), value.to_string());
         self
     }
-    
+  
     pub fn access(&mut self) {
         self.last_accessed = Utc::now();
         self.access_count += 1;
@@ -20221,38 +20319,42 @@ impl DataReference {
 }
 
 // 数据管理器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait DataManager: Send + Sync {
     // 注册数据引用
     async fn register_data(&self, reference: DataReference) -> Result<String, DataError>;
-    
+  
     // 获取数据引用
     async fn get_data_reference(&self, id: &str) -> Result<DataReference, DataError>;
-    
+  
     // 获取数据内容
     async fn get_data_content(&self, id: &str) -> Result<DataContent, DataError>;
-    
+  
     // 更新数据内容
     async fn update_data_content(&self, id: &str, content: DataContent) -> Result<(), DataError>;
-    
+  
     // 移动数据到指定位置
     async fn move_data(&self, id: &str, target_location: &str) -> Result<(), DataError>;
-    
+  
     // 复制数据到指定位置
     async fn copy_data(&self, id: &str, target_location: &str) -> Result<String, DataError>;
-    
+  
     // 删除数据
     async fn delete_data(&self, id: &str) -> Result<(), DataError>;
-    
+  
     // 获取数据大小
     async fn get_data_size(&self, id: &str) -> Result<u64, DataError>;
-    
+  
     // 获取数据位置
     async fn get_data_location(&self, id: &str) -> Result<String, DataError>;
 }
 
 // 数据内容
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub enum DataContent {
     Bytes(Vec<u8>),
     Text(String),
@@ -20264,29 +20366,31 @@ pub enum DataContent {
 }
 
 // 数据操作错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum DataError {
     #[error("数据不存在: {0}")]
     NotFound(String),
-    
+  
     #[error("数据访问错误: {0}")]
     AccessError(String),
-    
+  
     #[error("网络错误: {0}")]
     NetworkError(String),
-    
+  
     #[error("数据位置错误: {0}")]
     LocationError(String),
-    
+  
     #[error("存储限制: {0}")]
     StorageLimitExceeded(String),
-    
+  
     #[error("权限错误: {0}")]
     PermissionError(String),
-    
+  
     #[error("序列化错误: {0}")]
     SerializationError(String),
-    
+  
     #[error("内部错误: {0}")]
     InternalError(String),
 }
@@ -20312,12 +20416,13 @@ impl LocalDataManager {
             current_cache_size: Arc::new(RwLock::new(0)),
         }
     }
-    
+  
     // 检查缓存大小并进行清理
     async fn manage_cache_size(&self, additional_size: u64) -> Result<(), DataError> {
         let mut current_size = self.current_cache_size.write().await;
-        
+  
         //
+
 ```rust
         let mut current_size = self.current_cache_size.write().await;
         
@@ -21120,13 +21225,14 @@ impl HybridExecutionEngine {
             local_tasks,
             "local_sub_workflow",
             input.clone(),
+
 ```rust
             &workflow,
             local_tasks,
             "local_sub_workflow",
             input.clone(),
         )?;
-        
+  
         // 创建云端子工作流
         let cloud_workflow = self.create_sub_workflow(
             &workflow,
@@ -21134,7 +21240,7 @@ impl HybridExecutionEngine {
             "cloud_sub_workflow",
             input,
         )?;
-        
+  
         // 执行本地和云端子工作流
         let local_instance_id = if !local_workflow.tasks.is_empty() {
             match self.local_executor.execute_workflow(local_workflow, None).await {
@@ -21144,7 +21250,7 @@ impl HybridExecutionEngine {
         } else {
             None
         };
-        
+  
         let cloud_instance_id = if !cloud_workflow.tasks.is_empty() {
             match self.cloud_executor.execute_workflow(cloud_workflow, None).await {
                 Ok(id) => Some(id),
@@ -21159,20 +21265,20 @@ impl HybridExecutionEngine {
         } else {
             None
         };
-        
+  
         // 创建混合工作流实例ID
         let hybrid_instance_id = format!("hybrid-{}", Uuid::new_v4());
-        
+  
         // 创建实例跟踪记录（实际实现中应保存到存储）
         println!("Hybrid workflow {} created with local instance {} and cloud instance {}",
             hybrid_instance_id,
             local_instance_id.as_deref().unwrap_or("none"),
             cloud_instance_id.as_deref().unwrap_or("none")
         );
-        
+  
         Ok(hybrid_instance_id)
     }
-    
+  
     // 根据位置分割任务
     fn split_tasks_by_location(
         &self,
@@ -21181,7 +21287,7 @@ impl HybridExecutionEngine {
     ) -> Result<(Vec<String>, Vec<String>), ExecutionError> {
         let mut local_tasks = Vec::new();
         let mut cloud_tasks = Vec::new();
-        
+  
         for (task_id, placement) in &plan.task_placements {
             if placement.location == "local" {
                 local_tasks.push(task_id.clone());
@@ -21189,10 +21295,10 @@ impl HybridExecutionEngine {
                 cloud_tasks.push(task_id.clone());
             }
         }
-        
+  
         Ok((local_tasks, cloud_tasks))
     }
-    
+  
     // 创建子工作流
     fn create_sub_workflow(
         &self,
@@ -21204,21 +21310,21 @@ impl HybridExecutionEngine {
         // 从父工作流中提取子集任务
         let mut tasks = Vec::new();
         let mut task_id_map = HashMap::new();
-        
+  
         for task_id in &task_ids {
             if let Some(task) = parent_workflow.tasks.iter().find(|t| &t.id == task_id) {
                 // 创建新的任务ID
                 let new_task_id = format!("{}-{}", task.id, suffix);
                 task_id_map.insert(task.id.clone(), new_task_id.clone());
-                
+  
                 // 复制任务定义
                 let mut new_task = task.clone();
                 new_task.id = new_task_id;
-                
+  
                 tasks.push(new_task);
             }
         }
-        
+  
         // 更新任务依赖关系
         for task in &mut tasks {
             if let Some(deps) = &mut task.depends_on {
@@ -21230,7 +21336,7 @@ impl HybridExecutionEngine {
                 }
                 *deps = new_deps;
             }
-            
+  
             // 更新任务输入引用
             if let Some(inputs) = &mut task.inputs {
                 for (_, input) in inputs {
@@ -21242,7 +21348,7 @@ impl HybridExecutionEngine {
                 }
             }
         }
-        
+  
         // 创建子工作流定义
         let sub_workflow = WorkflowDefinition {
             id: format!("{}-{}", parent_workflow.id, suffix),
@@ -21251,13 +21357,15 @@ impl HybridExecutionEngine {
             tasks,
             metadata: parent_workflow.metadata.clone(),
         };
-        
+  
         Ok(sub_workflow)
     }
 }
 
 // 工作流执行器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait WorkflowExecutor: Send + Sync {
     // 执行工作流
     async fn execute_workflow(
@@ -21265,13 +21373,13 @@ pub trait WorkflowExecutor: Send + Sync {
         workflow: WorkflowDefinition,
         input: Option<HashMap<String, serde_json::Value>>,
     ) -> Result<String, ExecutionError>;
-    
+  
     // 获取工作流实例
     async fn get_workflow_instance(
         &self,
         instance_id: &str,
     ) -> Result<WorkflowInstance, ExecutionError>;
-    
+  
     // 取消工作流
     async fn cancel_workflow(
         &self,
@@ -21280,7 +21388,9 @@ pub trait WorkflowExecutor: Send + Sync {
 }
 
 // 工作流实例
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct WorkflowInstance {
     id: String,
     workflow_id: String,
@@ -21291,7 +21401,9 @@ pub struct WorkflowInstance {
 }
 
 // 任务实例
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct TaskInstance {
     id: String,
     task_id: String,
@@ -21304,7 +21416,9 @@ pub struct TaskInstance {
 }
 
 // 工作流状态
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+
+# [derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+
 pub enum WorkflowStatus {
     Pending,
     Running,
@@ -21314,7 +21428,9 @@ pub enum WorkflowStatus {
 }
 
 // 任务状态
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+
+# [derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+
 pub enum TaskStatus {
     Pending,
     Running,
@@ -21325,38 +21441,42 @@ pub enum TaskStatus {
 }
 
 // 执行错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum ExecutionError {
     #[error("执行计划失败: {0}")]
     PlanningFailed(String),
-    
+  
     #[error("任务执行失败: {0}")]
     TaskFailed(String),
-    
+  
     #[error("工作流实例不存在: {0}")]
     InstanceNotFound(String),
-    
+  
     #[error("子工作流执行失败: {0}")]
     SubWorkflowFailed(String),
-    
+  
     #[error("执行已取消")]
     Cancelled,
-    
+  
     #[error("无法满足资源需求: {0}")]
     ResourceConstraintViolation(String),
-    
+  
     #[error("数据访问错误: {0}")]
     DataAccessError(String),
-    
+  
     #[error("网络错误: {0}")]
     NetworkError(String),
-    
+  
     #[error("内部错误: {0}")]
     InternalError(String),
 }
 
 // 执行模式
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+
 pub enum ExecutionMode {
     Local,
     Cloud,
@@ -21364,7 +21484,9 @@ pub enum ExecutionMode {
 }
 
 // 执行决策
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct ExecutionDecision {
     mode: ExecutionMode,
     reason: String,
@@ -21372,7 +21494,9 @@ pub struct ExecutionDecision {
 }
 
 // 执行决策制定器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait ExecutionDecisionMaker: Send + Sync {
     // 决定执行模式
     async fn decide_execution_mode(
@@ -21403,7 +21527,7 @@ impl ResourceBasedDecisionMaker {
             cost_analyzer,
         }
     }
-    
+  
     // 分析工作流资源需求
     async fn analyze_resource_requirements(
         &self,
@@ -21414,7 +21538,7 @@ impl ResourceBasedDecisionMaker {
         let mut total_memory = 0;
         let mut total_disk = 0;
         let mut total_gpu = 0;
-        
+  
         for task in &workflow.tasks {
             if let Some(resources) = &task.resources {
                 if let Some(cpu) = resources.cpu {
@@ -21431,7 +21555,7 @@ impl ResourceBasedDecisionMaker {
                 }
             }
         }
-        
+  
         ResourceRequirements {
             cpu: Some(total_cpu),
             memory: Some(total_memory),
@@ -21439,45 +21563,45 @@ impl ResourceBasedDecisionMaker {
             gpu: Some(total_gpu),
         }
     }
-    
+  
     // 检查是否本地可执行
     async fn is_locally_executable(
         &self,
         requirements: &ResourceRequirements,
     ) -> bool {
         let available = self.local_resources.get_available_resources().await;
-        
+  
         // 检查CPU
         if let (Some(req_cpu), Some(avail_cpu)) = (requirements.cpu, available.cpu) {
             if req_cpu > avail_cpu {
                 return false;
             }
         }
-        
+  
         // 检查内存
         if let (Some(req_mem), Some(avail_mem)) = (requirements.memory, available.memory) {
             if req_mem > avail_mem {
                 return false;
             }
         }
-        
+  
         // 检查磁盘
         if let (Some(req_disk), Some(avail_disk)) = (requirements.disk, available.disk) {
             if req_disk > avail_disk {
                 return false;
             }
         }
-        
+  
         // 检查GPU
         if let (Some(req_gpu), Some(avail_gpu)) = (requirements.gpu, available.gpu) {
             if req_gpu > avail_gpu {
                 return false;
             }
         }
-        
+  
         true
     }
-    
+  
     // 分析数据敏感性
     async fn analyze_data_sensitivity(
         &self,
@@ -21485,12 +21609,12 @@ impl ResourceBasedDecisionMaker {
     ) -> DataSensitivityLevel {
         self.data_sensitivity_analyzer.analyze_workflow(workflow).await
     }
-    
+  
     // 分析网络条件
     async fn analyze_network_conditions(&self) -> NetworkCondition {
         self.network_monitor.get_current_condition().await
     }
-    
+  
     // 分析执行成本
     async fn analyze_execution_cost(
         &self,
@@ -21501,7 +21625,8 @@ impl ResourceBasedDecisionMaker {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl ExecutionDecisionMaker for ResourceBasedDecisionMaker {
     async fn decide_execution_mode(
         &self,
@@ -21536,10 +21661,10 @@ impl ExecutionDecisionMaker for ResourceBasedDecisionMaker {
                 }
             }
         }
-        
+  
         // 1. 分析数据敏感性
         let sensitivity = self.analyze_data_sensitivity(workflow).await;
-        
+  
         // 如果数据高度敏感，优先本地执行
         if sensitivity == DataSensitivityLevel::High {
             return Ok(ExecutionDecision {
@@ -21548,11 +21673,11 @@ impl ExecutionDecisionMaker for ResourceBasedDecisionMaker {
                 locality_preferences: HashMap::new(),
             });
         }
-        
+  
         // 2. 分析资源需求
         let resource_requirements = self.analyze_resource_requirements(workflow).await;
         let locally_executable = self.is_locally_executable(&resource_requirements).await;
-        
+  
         // 如果资源不足，使用云端执行
         if !locally_executable {
             return Ok(ExecutionDecision {
@@ -21561,10 +21686,10 @@ impl ExecutionDecisionMaker for ResourceBasedDecisionMaker {
                 locality_preferences: HashMap::new(),
             });
         }
-        
+  
         // 3. 分析网络条件
         let network_condition = self.analyze_network_conditions().await;
-        
+  
         // 如果网络条件差，优先本地执行
         if network_condition == NetworkCondition::Poor {
             return Ok(ExecutionDecision {
@@ -21573,12 +21698,12 @@ impl ExecutionDecisionMaker for ResourceBasedDecisionMaker {
                 locality_preferences: HashMap::new(),
             });
         }
-        
+  
         // 4. 分析执行成本
         let local_cost = self.analyze_execution_cost(workflow, ExecutionMode::Local).await;
         let cloud_cost = self.analyze_execution_cost(workflow, ExecutionMode::Cloud).await;
         let hybrid_cost = self.analyze_execution_cost(workflow, ExecutionMode::Hybrid).await;
-        
+  
         // 选择成本最低的执行模式
         let (mode, reason) = if local_cost <= cloud_cost && local_cost <= hybrid_cost {
             (ExecutionMode::Local, "本地执行成本最低".to_string())
@@ -21587,7 +21712,7 @@ impl ExecutionDecisionMaker for ResourceBasedDecisionMaker {
         } else {
             (ExecutionMode::Hybrid, "混合执行成本最低".to_string())
         };
-        
+  
         // 构建决策结果
         Ok(ExecutionDecision {
             mode,
@@ -21627,7 +21752,9 @@ impl NetworkMonitor {
 }
 
 // 网络状况
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
+# [derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum NetworkCondition {
     Good,
     Fair,
@@ -21643,7 +21770,7 @@ impl DataSensitivityAnalyzer {
     pub async fn analyze_workflow(&self, workflow: &WorkflowDefinition) -> DataSensitivityLevel {
         // 分析工作流数据敏感性的实现
         // 这里简化实现，实际应该分析工作流中的数据引用和操作
-        
+  
         if let Some(metadata) = &workflow.metadata {
             if let Some(sensitivity) = metadata.get("data_sensitivity") {
                 match sensitivity.as_str() {
@@ -21654,14 +21781,16 @@ impl DataSensitivityAnalyzer {
                 }
             }
         }
-        
+  
         // 默认中等敏感度
         DataSensitivityLevel::Medium
     }
 }
 
 // 数据敏感性级别
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
+# [derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum DataSensitivityLevel {
     High,
     Medium,
@@ -21677,7 +21806,7 @@ impl CostAnalyzer {
     pub async fn estimate_cost(&self, workflow: &WorkflowDefinition, mode: ExecutionMode) -> f64 {
         // 估算执行成本的实现
         // 简化版本，实际应考虑资源使用、数据传输、存储等因素
-        
+  
         match mode {
             ExecutionMode::Local => 10.0, // 假设本地执行成本
             ExecutionMode::Cloud => 20.0, // 假设云端执行成本
@@ -21710,7 +21839,7 @@ impl HybridStateSynchronizer {
             conflict_resolver,
         }
     }
-    
+  
     // 启动周期性同步
     pub async fn start_periodic_sync(&self, interval: Duration) -> Result<(), SyncError> {
         let local_store = self.local_store.clone();
@@ -21718,7 +21847,7 @@ impl HybridStateSynchronizer {
         let sync_strategy = self.sync_strategy.clone();
         let sync_logs = self.sync_logs.clone();
         let conflict_resolver = self.conflict_resolver.clone();
-        
+  
         // 创建同步器副本
         let synchronizer = HybridStateSynchronizer {
             local_store,
@@ -21727,44 +21856,44 @@ impl HybridStateSynchronizer {
             sync_logs,
             conflict_resolver,
         };
-        
+  
         // 开启周期性同步任务
         tokio::spawn(async move {
             let mut interval_timer = tokio::time::interval(interval);
-            
+  
             loop {
                 interval_timer.tick().await;
-                
+  
                 // 获取最后同步时间
                 let last_def_sync = synchronizer.get_last_sync_time(SyncItemType::Definition).await;
                 let last_inst_sync = synchronizer.get_last_sync_time(SyncItemType::Instance).await;
                 let last_task_sync = synchronizer.get_last_sync_time(SyncItemType::Task).await;
                 let last_event_sync = synchronizer.get_last_sync_time(SyncItemType::Event).await;
-                
+  
                 // 检查是否需要同步
                 let now = Utc::now();
-                
+  
                 // 定义同步
                 if synchronizer.should_sync(SyncItemType::Definition, last_def_sync, now) {
                     if let Err(e) = synchronizer.sync_all(SyncItemType::Definition).await {
                         eprintln!("Definition sync error: {}", e);
                     }
                 }
-                
+  
                 // 实例同步
                 if synchronizer.should_sync(SyncItemType::Instance, last_inst_sync, now) {
                     if let Err(e) = synchronizer.sync_all(SyncItemType::Instance).await {
                         eprintln!("Instance sync error: {}", e);
                     }
                 }
-                
+  
                 // 任务同步
                 if synchronizer.should_sync(SyncItemType::Task, last_task_sync, now) {
                     if let Err(e) = synchronizer.sync_all(SyncItemType::Task).await {
                         eprintln!("Task sync error: {}", e);
                     }
                 }
-                
+  
                 // 事件同步
                 if synchronizer.should_sync(SyncItemType::Event, last_event_sync, now) {
                     if let Err(e) = synchronizer.sync_all(SyncItemType::Event).await {
@@ -21773,10 +21902,10 @@ impl HybridStateSynchronizer {
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     // 检查是否应该同步
     async fn should_sync(
         &self,
@@ -21801,21 +21930,21 @@ impl HybridStateSynchronizer {
                 return false; // 不自动同步
             }
         }
-        
+  
         false
     }
-    
+  
     // 获取上次同步时间
     async fn get_last_sync_time(&self, item_type: SyncItemType) -> Option<DateTime<Utc>> {
         let logs = self.sync_logs.read().await;
-        
+  
         // 查找指定类型的最后一次同步记录
         logs.iter()
             .filter(|record| record.item_type == item_type)
             .map(|record| record.sync_time)
             .max()
     }
-    
+  
     // 同步所有项目
     pub async fn sync_all(&self, item_type: SyncItemType) -> Result<(), SyncError> {
         match item_type {
@@ -21831,7 +21960,7 @@ impl HybridStateSynchronizer {
             },
         }
     }
-    
+  
     // 同步所有工作流定义
     async fn sync_all_definitions(&self) -> Result<(), SyncError> {
         // 根据同步策略决定同步方向
@@ -21854,35 +21983,35 @@ impl HybridStateSynchronizer {
             },
         }
     }
-    
+  
     // 双向同步工作流定义
     async fn sync_definitions_bidirectional(&self) -> Result<(), SyncError> {
         // 1. 获取本地和云端的工作流定义
         let local_defs = self.local_store.list_workflow_definitions().await
             .map_err(|e| SyncError::LocalStoreError(format!("{}", e)))?;
-            
+  
         let cloud_defs = self.cloud_client.list_workflow_definitions().await
             .map_err(|e| SyncError::CloudClientError(format!("{}", e)))?;
-            
+  
         // 2. 对比并解决冲突
         let local_map: HashMap<String, (String, DateTime<Utc>)> = local_defs.into_iter()
             .map(|def| (def.id.clone(), (def.version.clone(), def.updated_at)))
             .collect();
-            
+  
         let cloud_map: HashMap<String, (String, DateTime<Utc>)> = cloud_defs.into_iter()
             .map(|def| (def.id.clone(), (def.version.clone(), def.updated_at)))
             .collect();
-            
+  
         // 3. 处理本地有而云端没有的定义
         for (id, (version, _)) in &local_map {
             if !cloud_map.contains_key(id) {
                 // 本地定义推送到云端
                 let def = self.local_store.get_workflow_definition(id, version).await
                     .map_err(|e| SyncError::LocalStoreError(format!("{}", e)))?;
-                    
+  
                 self.cloud_client.save_workflow_definition(&def).await
                     .map_err(|e| SyncError::CloudClientError(format!("{}", e)))?;
-                    
+  
                 self.log_sync_operation(
                     SyncOperation::Push,
                     SyncItemType::Definition,
@@ -21891,17 +22020,17 @@ impl HybridStateSynchronizer {
                 ).await;
             }
         }
-        
+  
         // 4. 处理云端有而本地没有的定义
         for (id, (version, _)) in &cloud_map {
             if !local_map.contains_key(id) {
                 // 云端定义拉取到本地
                 let def = self.cloud_client.get_workflow_definition(id, version).await
                     .map_err(|e| SyncError::CloudClientError(format!("{}", e)))?;
-                    
+  
                 self.local_store.save_workflow_definition(&def).await
                     .map_err(|e| SyncError::LocalStoreError(format!("{}", e)))?;
-                    
+  
                 self.log_sync_operation(
                     SyncOperation::Pull,
                     SyncItemType::Definition,
@@ -21910,7 +22039,7 @@ impl HybridStateSynchronizer {
                 ).await;
             }
         }
-        
+  
         // 5. 处理两边都有的定义（可能需要冲突解决）
         for (id, (local_version, local_time)) in &local_map {
             if let Some((cloud_version, cloud_time)) = cloud_map.get(id) {
@@ -21918,12 +22047,13 @@ impl HybridStateSynchronizer {
                 if local_version != cloud_version || local_time != cloud_time {
                     let local_def = self.local_store.get_workflow_definition(id, local_version).await
                         .map_err(|e| SyncError::LocalStoreError(format!("{}", e)))?;
-                        
+  
                     let cloud_def = self.cloud_client.get_workflow_definition(id, cloud_version).await
                         .map_err(|e| SyncError::CloudClientError(format!("{}", e)))?;
-                        
+  
                     // 解决冲突
                     let (resolved_def, resolution) = self.conflict_
+
 ```rust
                     // 解决冲突
                     let (resolved_def, resolution) = self.conflict_resolver
@@ -22684,10 +22814,11 @@ pub trait CloudWorkflowClient: Send + Sync {
     async fn save_event(
         &self,
         event: &
+
 ```rust
         event: &WorkflowEvent,
     ) -> Result<(), CloudError>;
-    
+  
     async fn get_events(
         &self,
         instance_id: &str,
@@ -22696,42 +22827,46 @@ pub trait CloudWorkflowClient: Send + Sync {
 }
 
 // 存储错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum StoreError {
     #[error("项目不存在: {0}")]
     NotFound(String),
-    
+  
     #[error("存储操作失败: {0}")]
     OperationFailed(String),
-    
+  
     #[error("数据格式错误: {0}")]
     DataFormatError(String),
-    
+  
     #[error("版本冲突: {0}")]
     VersionConflict(String),
-    
+  
     #[error("内部错误: {0}")]
     InternalError(String),
 }
 
 // 云端错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum CloudError {
     #[error("通信错误: {0}")]
     CommunicationError(String),
-    
+  
     #[error("认证错误: {0}")]
     AuthenticationError(String),
-    
+  
     #[error("项目不存在: {0}")]
     NotFound(String),
-    
+  
     #[error("操作失败: {0}")]
     OperationFailed(String),
-    
+  
     #[error("请求超时: {0}")]
     Timeout(String),
-    
+  
     #[error("API错误: {0}")]
     ApiError(String),
 }
@@ -22742,7 +22877,9 @@ pub struct DefaultConflictResolver {
 }
 
 // 默认解决策略
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
+# [derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum DefaultResolutionStrategy {
     PreferLocal,
     PreferCloud,
@@ -22756,7 +22893,8 @@ impl DefaultConflictResolver {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl ConflictResolver for DefaultConflictResolver {
     async fn resolve_definition_conflict(
         &self,
@@ -22784,17 +22922,17 @@ impl ConflictResolver for DefaultConflictResolver {
                 } else {
                     cloud.clone()
                 };
-                
+  
                 // 设置新版本号
                 let new_version = format!("{}-merged", merged.version);
                 merged.version = new_version;
                 merged.updated_at = Utc::now();
-                
+  
                 Ok((merged, ConflictResolution::Merge))
             }
         }
     }
-    
+  
     async fn resolve_instance_conflict(
         &self,
         local: &WorkflowInstance,
@@ -22823,10 +22961,10 @@ impl ConflictResolver for DefaultConflictResolver {
                 } else {
                     cloud.clone()
                 };
-                
+  
                 // 合并其他字段
                 merged.updated_at = Utc::now();
-                
+  
                 Ok((merged, ConflictResolution::Merge))
             }
         }
@@ -22837,7 +22975,7 @@ impl ConflictResolver for DefaultConflictResolver {
 impl PartialOrd for WorkflowStatus {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         use WorkflowStatus::*;
-        
+  
         // 定义状态的"级别"，数字越大级别越高
         fn status_level(status: &WorkflowStatus) -> u8 {
             match status {
@@ -22849,7 +22987,7 @@ impl PartialOrd for WorkflowStatus {
                 Cancelled => 4,
             }
         }
-        
+  
         Some(status_level(self).cmp(&status_level(other)))
     }
 }
@@ -22868,38 +23006,39 @@ pub struct FileSystemWorkflowStore {
 impl FileSystemWorkflowStore {
     pub fn new<P: AsRef<Path>>(base_path: P) -> Self {
         let path = base_path.as_ref().to_path_buf();
-        
+  
         // 确保目录存在
         std::fs::create_dir_all(&path.join("definitions")).unwrap();
         std::fs::create_dir_all(&path.join("instances")).unwrap();
         std::fs::create_dir_all(&path.join("tasks")).unwrap();
         std::fs::create_dir_all(&path.join("events")).unwrap();
-        
+  
         Self { base_path: path }
     }
-    
+  
     // 生成定义文件路径
     fn definition_path(&self, id: &str, version: &str) -> PathBuf {
         self.base_path.join("definitions").join(format!("{}-{}.json", id, version))
     }
-    
+  
     // 生成实例文件路径
     fn instance_path(&self, id: &str) -> PathBuf {
         self.base_path.join("instances").join(format!("{}.json", id))
     }
-    
+  
     // 生成任务文件路径
     fn task_path(&self, id: &str) -> PathBuf {
         self.base_path.join("tasks").join(format!("{}.json", id))
     }
-    
+  
     // 生成事件目录路径
     fn event_dir_path(&self, instance_id: &str) -> PathBuf {
         self.base_path.join("events").join(instance_id)
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl WorkflowStore for FileSystemWorkflowStore {
     async fn get_workflow_definition(
         &self,
@@ -22907,166 +23046,166 @@ impl WorkflowStore for FileSystemWorkflowStore {
         version: &str,
     ) -> Result<WorkflowDefinition, StoreError> {
         let path = self.definition_path(id, version);
-        
+  
         let content = tokio::fs::read(&path).await
             .map_err(|e| StoreError::NotFound(format!("读取定义文件失败: {}", e)))?;
-            
+  
         serde_json::from_slice(&content)
             .map_err(|e| StoreError::DataFormatError(format!("解析定义JSON失败: {}", e)))
     }
-    
+  
     async fn save_workflow_definition(
         &self,
         definition: &WorkflowDefinition,
     ) -> Result<(), StoreError> {
         let path = self.definition_path(&definition.id, &definition.version);
-        
+  
         let content = serde_json::to_vec_pretty(definition)
             .map_err(|e| StoreError::DataFormatError(format!("序列化定义失败: {}", e)))?;
-            
+  
         tokio::fs::write(&path, content).await
             .map_err(|e| StoreError::OperationFailed(format!("写入定义文件失败: {}", e)))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn list_workflow_definitions(&self) -> Result<Vec<WorkflowDefinition>, StoreError> {
         let mut definitions = Vec::new();
         let dir_path = self.base_path.join("definitions");
-        
+  
         let mut entries = tokio::fs::read_dir(&dir_path).await
             .map_err(|e| StoreError::OperationFailed(format!("读取定义目录失败: {}", e)))?;
-            
+  
         while let Some(entry) = entries.next_entry().await
             .map_err(|e| StoreError::OperationFailed(format!("读取目录条目失败: {}", e)))? {
-            
+  
             let path = entry.path();
             if path.is_file() && path.extension().map_or(false, |ext| ext == "json") {
                 let content = tokio::fs::read(&path).await
                     .map_err(|e| StoreError::OperationFailed(format!("读取定义文件失败: {}", e)))?;
-                    
+  
                 let definition: WorkflowDefinition = serde_json::from_slice(&content)
                     .map_err(|e| StoreError::DataFormatError(format!("解析定义JSON失败: {}", e)))?;
-                    
+  
                 definitions.push(definition);
             }
         }
-        
+  
         Ok(definitions)
     }
-    
+  
     async fn get_workflow_instance(
         &self,
         id: &str,
     ) -> Result<WorkflowInstance, StoreError> {
         let path = self.instance_path(id);
-        
+  
         let content = tokio::fs::read(&path).await
             .map_err(|e| StoreError::NotFound(format!("读取实例文件失败: {}", e)))?;
-            
+  
         serde_json::from_slice(&content)
             .map_err(|e| StoreError::DataFormatError(format!("解析实例JSON失败: {}", e)))
     }
-    
+  
     async fn save_workflow_instance(
         &self,
         instance: &WorkflowInstance,
     ) -> Result<(), StoreError> {
         let path = self.instance_path(&instance.id);
-        
+  
         let content = serde_json::to_vec_pretty(instance)
             .map_err(|e| StoreError::DataFormatError(format!("序列化实例失败: {}", e)))?;
-            
+  
         tokio::fs::write(&path, content).await
             .map_err(|e| StoreError::OperationFailed(format!("写入实例文件失败: {}", e)))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn list_workflow_instances(&self) -> Result<Vec<WorkflowInstance>, StoreError> {
         let mut instances = Vec::new();
         let dir_path = self.base_path.join("instances");
-        
+  
         let mut entries = tokio::fs::read_dir(&dir_path).await
             .map_err(|e| StoreError::OperationFailed(format!("读取实例目录失败: {}", e)))?;
-            
+  
         while let Some(entry) = entries.next_entry().await
             .map_err(|e| StoreError::OperationFailed(format!("读取目录条目失败: {}", e)))? {
-            
+  
             let path = entry.path();
             if path.is_file() && path.extension().map_or(false, |ext| ext == "json") {
                 let content = tokio::fs::read(&path).await
                     .map_err(|e| StoreError::OperationFailed(format!("读取实例文件失败: {}", e)))?;
-                    
+  
                 let instance: WorkflowInstance = serde_json::from_slice(&content)
                     .map_err(|e| StoreError::DataFormatError(format!("解析实例JSON失败: {}", e)))?;
-                    
+  
                 instances.push(instance);
             }
         }
-        
+  
         Ok(instances)
     }
-    
+  
     async fn get_task(
         &self,
         id: &str,
     ) -> Result<TaskInstance, StoreError> {
         let path = self.task_path(id);
-        
+  
         let content = tokio::fs::read(&path).await
             .map_err(|e| StoreError::NotFound(format!("读取任务文件失败: {}", e)))?;
-            
+  
         serde_json::from_slice(&content)
             .map_err(|e| StoreError::DataFormatError(format!("解析任务JSON失败: {}", e)))
     }
-    
+  
     async fn save_task(
         &self,
         task: &TaskInstance,
     ) -> Result<(), StoreError> {
         let path = self.task_path(&task.id);
-        
+  
         let content = serde_json::to_vec_pretty(task)
             .map_err(|e| StoreError::DataFormatError(format!("序列化任务失败: {}", e)))?;
-            
+  
         tokio::fs::write(&path, content).await
             .map_err(|e| StoreError::OperationFailed(format!("写入任务文件失败: {}", e)))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn list_instance_tasks(
         &self,
         instance_id: &str,
     ) -> Result<Vec<TaskInstance>, StoreError> {
         let mut tasks = Vec::new();
         let dir_path = self.base_path.join("tasks");
-        
+  
         let mut entries = tokio::fs::read_dir(&dir_path).await
             .map_err(|e| StoreError::OperationFailed(format!("读取任务目录失败: {}", e)))?;
-            
+  
         while let Some(entry) = entries.next_entry().await
             .map_err(|e| StoreError::OperationFailed(format!("读取目录条目失败: {}", e)))? {
-            
+  
             let path = entry.path();
             if path.is_file() && path.extension().map_or(false, |ext| ext == "json") {
                 let content = tokio::fs::read(&path).await
                     .map_err(|e| StoreError::OperationFailed(format!("读取任务文件失败: {}", e)))?;
-                    
+  
                 let task: TaskInstance = serde_json::from_slice(&content)
                     .map_err(|e| StoreError::DataFormatError(format!("解析任务JSON失败: {}", e)))?;
-                    
+  
                 // 仅返回属于指定实例的任务
                 if task.instance_id == instance_id {
                     tasks.push(task);
                 }
             }
         }
-        
+  
         Ok(tasks)
     }
-    
+  
     async fn save_event(
         &self,
         event: &WorkflowEvent,
@@ -23075,7 +23214,7 @@ impl WorkflowStore for FileSystemWorkflowStore {
         let event_dir = self.event_dir_path(&event.instance_id);
         tokio::fs::create_dir_all(&event_dir).await
             .map_err(|e| StoreError::OperationFailed(format!("创建事件目录失败: {}", e)))?;
-            
+  
         // 生成事件文件名: {timestamp}-{event_type}-{id}.json
         let file_name = format!(
             "{}-{}-{}.json",
@@ -23083,18 +23222,18 @@ impl WorkflowStore for FileSystemWorkflowStore {
             event.event_type,
             event.id
         );
-        
+  
         let path = event_dir.join(file_name);
-        
+  
         let content = serde_json::to_vec_pretty(event)
             .map_err(|e| StoreError::DataFormatError(format!("序列化事件失败: {}", e)))?;
-            
+  
         tokio::fs::write(&path, content).await
             .map_err(|e| StoreError::OperationFailed(format!("写入事件文件失败: {}", e)))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn get_events(
         &self,
         instance_id: &str,
@@ -23102,37 +23241,37 @@ impl WorkflowStore for FileSystemWorkflowStore {
     ) -> Result<Vec<WorkflowEvent>, StoreError> {
         let mut events = Vec::new();
         let event_dir = self.event_dir_path(instance_id);
-        
+  
         // 检查目录是否存在
         if !tokio::fs::try_exists(&event_dir).await
             .map_err(|e| StoreError::OperationFailed(format!("检查事件目录失败: {}", e)))? {
             return Ok(events); // 返回空列表，因为没有事件
         }
-        
+  
         let mut entries = tokio::fs::read_dir(&event_dir).await
             .map_err(|e| StoreError::OperationFailed(format!("读取事件目录失败: {}", e)))?;
-            
+  
         while let Some(entry) = entries.next_entry().await
             .map_err(|e| StoreError::OperationFailed(format!("读取目录条目失败: {}", e)))? {
-            
+  
             let path = entry.path();
             if path.is_file() && path.extension().map_or(false, |ext| ext == "json") {
                 let content = tokio::fs::read(&path).await
                     .map_err(|e| StoreError::OperationFailed(format!("读取事件文件失败: {}", e)))?;
-                    
+  
                 let event: WorkflowEvent = serde_json::from_slice(&content)
                     .map_err(|e| StoreError::DataFormatError(format!("解析事件JSON失败: {}", e)))?;
-                    
+  
                 // 如果指定了事件类型，仅返回该类型的事件
                 if event_type.map_or(true, |t| event.event_type == t) {
                     events.push(event);
                 }
             }
         }
-        
+  
         // 按时间戳排序
         events.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
-        
+  
         Ok(events)
     }
 }
@@ -23152,14 +23291,15 @@ impl HttpCloudWorkflowClient {
             auth_token: auth_token.to_string(),
         }
     }
-    
+  
     // 构建完整URL
     fn url(&self, path: &str) -> String {
         format!("{}{}", self.base_url, path)
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl CloudWorkflowClient for HttpCloudWorkflowClient {
     async fn get_workflow_definition(
         &self,
@@ -23167,17 +23307,17 @@ impl CloudWorkflowClient for HttpCloudWorkflowClient {
         version: &str,
     ) -> Result<WorkflowDefinition, CloudError> {
         let url = self.url(&format!("/api/workflows/definitions/{}/{}", id, version));
-        
+  
         let response = self.client.get(&url)
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .send()
             .await
             .map_err(|e| CloudError::CommunicationError(format!("请求失败: {}", e)))?;
-            
+  
         if response.status() == reqwest::StatusCode::NOT_FOUND {
             return Err(CloudError::NotFound(format!("找不到工作流定义: {}/{}", id, version)));
         }
-        
+  
         if !response.status().is_success() {
             return Err(CloudError::ApiError(format!(
                 "API错误: HTTP {} - {}",
@@ -23185,24 +23325,24 @@ impl CloudWorkflowClient for HttpCloudWorkflowClient {
                 response.text().await.unwrap_or_default()
             )));
         }
-        
+  
         response.json::<WorkflowDefinition>().await
             .map_err(|e| CloudError::DataFormatError(format!("解析响应失败: {}", e)))
     }
-    
+  
     async fn save_workflow_definition(
         &self,
         definition: &WorkflowDefinition,
     ) -> Result<(), CloudError> {
         let url = self.url("/api/workflows/definitions");
-        
+  
         let response = self.client.post(&url)
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .json(definition)
             .send()
             .await
             .map_err(|e| CloudError::CommunicationError(format!("请求失败: {}", e)))?;
-            
+  
         if !response.status().is_success() {
             return Err(CloudError::ApiError(format!(
                 "API错误: HTTP {} - {}",
@@ -23210,19 +23350,19 @@ impl CloudWorkflowClient for HttpCloudWorkflowClient {
                 response.text().await.unwrap_or_default()
             )));
         }
-        
+  
         Ok(())
     }
-    
+  
     async fn list_workflow_definitions(&self) -> Result<Vec<WorkflowDefinition>, CloudError> {
         let url = self.url("/api/workflows/definitions");
-        
+  
         let response = self.client.get(&url)
             .header("Authorization", format!("Bearer {}", self.auth_token))
             .send()
             .await
             .map_err(|e| CloudError::CommunicationError(format!("请求失败: {}", e)))?;
-            
+  
         if !response.status().is_success() {
             return Err(CloudError::ApiError(format!(
                 "API错误: HTTP {} - {}",
@@ -23230,17 +23370,19 @@ impl CloudWorkflowClient for HttpCloudWorkflowClient {
                 response.text().await.unwrap_or_default()
             )));
         }
-        
+  
         response.json::<Vec<WorkflowDefinition>>().await
             .map_err(|e| CloudError::DataFormatError(format!("解析响应失败: {}", e)))
     }
-    
+  
     // 实现其余接口方法...
     // 这里省略了其他方法的实现，它们与上面的模式类似
 }
 
 // 定义数据结构
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
 pub struct WorkflowDefinition {
     pub id: String,
     pub name: String,
@@ -23254,7 +23396,8 @@ pub struct WorkflowDefinition {
     pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+# [derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
 pub struct TaskDefinition {
     pub id: String,
     pub name: String,
@@ -23264,21 +23407,24 @@ pub struct TaskDefinition {
     pub timeout_seconds: Option<u32>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+# [derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
 pub struct Connection {
     pub source_task_id: String,
     pub target_task_id: String,
     pub condition: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+# [derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
 pub struct RetryPolicy {
     pub max_retries: u32,
     pub delay_seconds: u32,
     pub exponential_backoff: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+# [derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
 pub struct WorkflowInstance {
     pub id: String,
     pub definition_id: String,
@@ -23293,7 +23439,8 @@ pub struct WorkflowInstance {
     pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+# [derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+
 pub enum WorkflowStatus {
     Created,
     Running,
@@ -23303,7 +23450,8 @@ pub enum WorkflowStatus {
     Cancelled,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+# [derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
 pub struct TaskInstance {
     pub id: String,
     pub instance_id: String,
@@ -23319,7 +23467,8 @@ pub struct TaskInstance {
     pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+# [derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+
 pub enum TaskStatus {
     Pending,
     Running,
@@ -23328,7 +23477,8 @@ pub enum TaskStatus {
     Cancelled,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+# [derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
 pub struct WorkflowEvent {
     pub id: String,
     pub instance_id: String,
@@ -23360,7 +23510,7 @@ pub async fn start_sync_service(
     let conflict_resolver = Arc::new(DefaultConflictResolver::new(
         DefaultResolutionStrategy::PreferNewer
     ));
-    
+  
     // 创建同步器
     let synchronizer = HybridStateSynchronizer::new(
         local_store,
@@ -23368,7 +23518,7 @@ pub async fn start_sync_service(
         conflict_resolver,
         sync_strategy.clone(),
     );
-    
+  
     // 如果不是按需同步，则启动周期性同步
     match &sync_strategy {
         SynchronizationStrategy::OnDemand => {
@@ -23378,50 +23528,53 @@ pub async fn start_sync_service(
             synchronizer.start_periodic_sync().await?;
         }
     }
-    
+  
     Ok(synchronizer)
 }
 
 // 主函数示例
-#[tokio::main]
+
+# [tokio::main]
+
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 创建本地文件系统存储
     let local_store = Arc::new(FileSystemWorkflowStore::new("./workflow_data"));
-    
+  
     // 创建云端客户端
     let cloud_client = Arc::new(HttpCloudWorkflowClient::new(
         "https://api.example.com",
         "your-auth-token"
     ));
-    
+  
     // 创建同步策略
     let mut sync_intervals = HashMap::new();
     sync_intervals.insert(SyncItemType::Definition, chrono::Duration::minutes(5));
     sync_intervals.insert(SyncItemType::Instance, chrono::Duration::minutes(1));
     sync_intervals.insert(SyncItemType::Task, chrono::Duration::seconds(30));
     sync_intervals.insert(SyncItemType::Event, chrono::Duration::minutes(2));
-    
+  
     let sync_strategy = SynchronizationStrategy::Bidirectional(sync_intervals);
-    
+  
     // 启动同步服务
     let sync_service = start_sync_service(
         local_store.clone(),
         cloud_client.clone(),
         sync_strategy,
     ).await?;
-    
+  
     println!("同步服务已启动");
-    
+  
     // 运行一段时间后停止
     tokio::time::sleep(std::time::Duration::from_secs(3600)).await;
-    
+  
     // 停止同步
     sync_service.stop_sync().await?;
-    
+  
     println!("同步服务已停止");
-    
+  
     Ok(())
 }
+
 ```
 
 以上代码实现了一个混合工作流系统中的状态同步组件。这个`HybridStateSynchronizer`负责在本地工作流引擎和云端服务之间同步工作流定义、实例、任务和事件。主要特点包括：
@@ -23453,7 +23606,9 @@ use thiserror::Error;
 use async_trait::async_trait;
 
 // 执行统计信息
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct ExecutionStats {
     // 任务执行统计
     pub task_stats: HashMap<String, TaskStats>,
@@ -23466,7 +23621,9 @@ pub struct ExecutionStats {
 }
 
 // 任务执行统计
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct TaskStats {
     // 任务类型
     pub task_type: String,
@@ -23493,7 +23650,9 @@ pub struct TaskStats {
 }
 
 // 工作流执行统计
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct WorkflowStats {
     // 工作流定义ID
     pub definition_id: String,
@@ -23522,7 +23681,9 @@ pub struct WorkflowStats {
 }
 
 // 资源使用统计
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct ResourceStats {
     // CPU使用率历史（百分比）
     pub cpu_usage_history: Vec<(DateTime<Utc>, f64)>,
@@ -23539,7 +23700,9 @@ pub struct ResourceStats {
 }
 
 // 优化建议
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct OptimizationSuggestion {
     // 建议ID
     pub id: String,
@@ -23560,7 +23723,9 @@ pub struct OptimizationSuggestion {
 }
 
 // 建议类型
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+
 pub enum SuggestionType {
     // 任务并行化
     TaskParallelization,
@@ -23597,7 +23762,9 @@ pub struct LocalExecutionOptimizer {
 }
 
 // 优化器配置
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct OptimizerConfig {
     // 自动优化启用
     pub auto_optimize: bool,
@@ -23620,7 +23787,9 @@ pub struct OptimizerConfig {
 }
 
 // 资源监控器接口
-#[async_trait]
+
+# [async_trait]
+
 pub trait ResourceMonitor: Send + Sync {
     // 获取当前CPU使用率
     async fn get_cpu_usage(&self) -> Result<f64, MonitorError>;
@@ -23635,14 +23804,16 @@ pub trait ResourceMonitor: Send + Sync {
 }
 
 // 监控错误
-#[derive(Debug, Error)]
+
+# [derive(Debug, Error)]
+
 pub enum MonitorError {
     #[error("获取资源信息失败: {0}")]
     ResourceInfoError(String),
-    
+  
     #[error("权限不足: {0}")]
     PermissionError(String),
-    
+  
     #[error("内部错误: {0}")]
     InternalError(String),
 }
@@ -23666,11 +23837,11 @@ impl LocalExecutionOptimizer {
             },
             last_updated: Utc::now(),
         }));
-        
+  
         let suggestions = Arc::new(RwLock::new(Vec::new()));
         let last_analysis = Arc::new(RwLock::new(None));
         let workflow_definitions = Arc::new(RwLock::new(HashMap::new()));
-        
+  
         Self {
             stats,
             suggestions,
@@ -23680,7 +23851,7 @@ impl LocalExecutionOptimizer {
             workflow_definitions,
         }
     }
-    
+  
     // 启动优化器
     pub async fn start(&self) -> Result<(), OptimizerError> {
         if self.config.auto_optimize {
@@ -23690,7 +23861,7 @@ impl LocalExecutionOptimizer {
             let config = self.config.clone();
             let last_analysis = Arc::clone(&self.last_analysis);
             let workflow_definitions = Arc::clone(&self.workflow_definitions);
-            
+  
             // 创建优化器实例
             let optimizer = Self {
                 stats: stats.clone(),
@@ -23700,7 +23871,7 @@ impl LocalExecutionOptimizer {
                 last_analysis: last_analysis.clone(),
                 workflow_definitions: workflow_definitions.clone(),
             };
-            
+  
             // 启动后台任务
             tokio::spawn(async move {
                 loop {
@@ -23708,7 +23879,7 @@ impl LocalExecutionOptimizer {
                     if let Err(e) = optimizer.collect_resource_stats().await {
                         eprintln!("收集资源统计失败: {}", e);
                     }
-                    
+  
                     // 检查是否需要运行分析
                     let should_analyze = {
                         let last = last_analysis.read().await;
@@ -23716,32 +23887,32 @@ impl LocalExecutionOptimizer {
                             time.elapsed().as_secs() >= config.analysis_interval_seconds
                         })
                     };
-                    
+  
                     if should_analyze {
                         // 运行分析并生成建议
                         if let Err(e) = optimizer.analyze_and_suggest().await {
                             eprintln!("生成优化建议失败: {}", e);
                         }
-                        
+  
                         // 更新最后分析时间
                         let mut last = last_analysis.write().await;
                         *last = Some(Instant::now());
                     }
-                    
+  
                     // 清理过期的历史数据
                     if let Err(e) = optimizer.clean_old_history().await {
                         eprintln!("清理历史数据失败: {}", e);
                     }
-                    
+  
                     // 间隔10秒
                     tokio::time::sleep(Duration::from_secs(10)).await;
                 }
             });
         }
-        
+  
         Ok(())
     }
-    
+  
     // 记录任务执行
     pub async fn record_task_execution(
         &self,
@@ -23759,7 +23930,7 @@ impl LocalExecutionOptimizer {
     ) -> Result<(), OptimizerError> {
         let execution_time_ms = (end_time - start_time).num_milliseconds() as u64;
         let mut stats = self.stats.write().await;
-        
+  
         // 更新任务统计
         let task_stat = stats.task_stats.entry(task_type.to_string())
             .or_insert_with(|| TaskStats {
@@ -23775,36 +23946,36 @@ impl LocalExecutionOptimizer {
                 avg_output_size_bytes: 0.0,
                 last_execution: end_time,
             });
-        
+  
         // 更新统计值
         task_stat.execution_count += 1;
-        
+  
         if success {
             task_stat.success_count += 1;
         } else {
             task_stat.failure_count += 1;
         }
-        
+  
         task_stat.retry_count += retries;
         task_stat.last_execution = end_time;
-        
+  
         // 更新平均执行时间（增量计算）
         let old_avg = task_stat.avg_execution_time_ms;
         let old_count = task_stat.execution_count - 1;
-        task_stat.avg_execution_time_ms = (old_avg * old_count as f64 + execution_time_ms as f64) 
+        task_stat.avg_execution_time_ms = (old_avg * old_count as f64 + execution_time_ms as f64)
             / task_stat.execution_count as f64;
-            
+  
         // 更新最小/最大执行时间
         task_stat.min_execution_time_ms = std::cmp::min(task_stat.min_execution_time_ms, execution_time_ms);
         task_stat.max_execution_time_ms = std::cmp::max(task_stat.max_execution_time_ms, execution_time_ms);
-        
+  
         // 更新平均输入/输出大小
         task_stat.avg_input_size_bytes = (task_stat.avg_input_size_bytes * old_count as f64 + input_size as f64)
             / task_stat.execution_count as f64;
-            
+  
         task_stat.avg_output_size_bytes = (task_stat.avg_output_size_bytes * old_count as f64 + output_size as f64)
             / task_stat.execution_count as f64;
-            
+  
         // 更新工作流统计
         let workflow_key = format!("{}:{}", workflow_id, workflow_version);
         let workflow_stat = stats.workflow_stats.entry(workflow_key)
@@ -23822,13 +23993,13 @@ impl LocalExecutionOptimizer {
                 slowest_tasks: Vec::new(),
                 last_execution: end_time,
             });
-            
+  
         // 更新最慢任务
         if execution_time_ms > self.config.slow_task_threshold_ms {
             // 检查是否已存在该任务
             let task_index = workflow_stat.slowest_tasks.iter()
                 .position(|(id, _)| id == task_id);
-                
+  
             if let Some(index) = task_index {
                 // 更新已有条目
                 let (_, count) = &mut workflow_stat.slowest_tasks[index];
@@ -23844,13 +24015,13 @@ impl LocalExecutionOptimizer {
                 }
             }
         }
-        
+  
         // 更新失败任务
         if !success {
             // 检查是否已存在该任务
             let task_index = workflow_stat.most_failed_tasks.iter()
                 .position(|(id, _)| id == task_id);
-                
+  
             if let Some(index) = task_index {
                 // 更新已有条目
                 let (_, count) = &mut workflow_stat.most_failed_tasks[index];
@@ -23866,12 +24037,12 @@ impl LocalExecutionOptimizer {
                 }
             }
         }
-        
+  
         stats.last_updated = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     // 记录工作流执行
     pub async fn record_workflow_execution(
         &self,
@@ -23885,7 +24056,7 @@ impl LocalExecutionOptimizer {
     ) -> Result<(), OptimizerError> {
         let execution_time_ms = (end_time - start_time).num_milliseconds() as u64;
         let mut stats = self.stats.write().await;
-        
+  
         // 更新工作流统计
         let workflow_key = format!("{}:{}", workflow_id, workflow_version);
         let workflow_stat = stats.workflow_stats.entry(workflow_key)
@@ -23903,37 +24074,37 @@ impl LocalExecutionOptimizer {
                 slowest_tasks: Vec::new(),
                 last_execution: end_time,
             });
-            
+  
         workflow_stat.execution_count += 1;
-        
+  
         if success {
             workflow_stat.success_count += 1;
         } else {
             workflow_stat.failure_count += 1;
         }
-        
+  
         workflow_stat.last_execution = end_time;
-        
+  
         // 更新平均执行时间
         let old_avg = workflow_stat.avg_execution_time_ms;
         let old_count = workflow_stat.execution_count - 1;
-        workflow_stat.avg_execution_time_ms = (old_avg * old_count as f64 + execution_time_ms as f64) 
+        workflow_stat.avg_execution_time_ms = (old_avg * old_count as f64 + execution_time_ms as f64)
             / workflow_stat.execution_count as f64;
-            
+  
         // 更新最小/最大执行时间
         workflow_stat.min_execution_time_ms = std::cmp::min(workflow_stat.min_execution_time_ms, execution_time_ms);
         workflow_stat.max_execution_time_ms = std::cmp::max(workflow_stat.max_execution_time_ms, execution_time_ms);
-        
+  
         // 更新平均任务数
         let old_task_avg = workflow_stat.avg_task_count;
         workflow_stat.avg_task_count = (old_task_avg * old_count as f64 + task_count as f64)
             / workflow_stat.execution_count as f64;
-            
+  
         stats.last_updated = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     // 记录缓存命中率
     pub async fn record_cache_hit_ratio(&self, hit_ratio: f64) -> Result<(), OptimizerError> {
         let mut stats = self.stats.write().await;
@@ -23941,7 +24112,7 @@ impl LocalExecutionOptimizer {
         stats.last_updated = Utc::now();
         Ok(())
     }
-    
+  
     // 添加工作流定义
     pub async fn add_workflow_definition(
         &self,
@@ -23951,102 +24122,102 @@ impl LocalExecutionOptimizer {
         defs.insert(format!("{}:{}", definition.id, definition.version), definition);
         Ok(())
     }
-    
+  
     // 获取优化建议
     pub async fn get_suggestions(&self) -> Result<Vec<OptimizationSuggestion>, OptimizerError> {
         let suggestions = self.suggestions.read().await;
         Ok(suggestions.clone())
     }
-    
+  
     // 应用优化建议
     pub async fn apply_suggestion(
         &self,
         suggestion_id: &str,
     ) -> Result<(), OptimizerError> {
         let mut suggestions = self.suggestions.write().await;
-        
+  
         if let Some(suggestion) = suggestions.iter_mut().find(|s| s.id == suggestion_id) {
             suggestion.applied = true;
             suggestion.applied_at = Some(Utc::now());
             return Ok(());
         }
-        
+  
         Err(OptimizerError::SuggestionNotFound(suggestion_id.to_string()))
     }
-    
+  
     // 获取执行统计信息
     pub async fn get_stats(&self) -> Result<ExecutionStats, OptimizerError> {
         let stats = self.stats.read().await;
         Ok(stats.clone())
     }
-    
+  
     // 收集资源统计信息
     async fn collect_resource_stats(&self) -> Result<(), OptimizerError> {
         let now = Utc::now();
-        
+  
         // 获取当前资源使用情况
         let cpu_usage = self.resource_monitor.get_cpu_usage().await
             .map_err(|e| OptimizerError::MonitorError(format!("{}", e)))?;
-            
+  
         let memory_usage = self.resource_monitor.get_memory_usage().await
             .map_err(|e| OptimizerError::MonitorError(format!("{}", e)))?;
-            
+  
         let disk_io = self.resource_monitor.get_disk_io().await
             .map_err(|e| OptimizerError::MonitorError(format!("{}", e)))?;
-            
+  
         let network_io = self.resource_monitor.get_network_io().await
             .map_err(|e| OptimizerError::MonitorError(format!("{}", e)))?;
-            
+  
         let task_queue_length = self.resource_monitor.get_task_queue_length().await
             .map_err(|e| OptimizerError::MonitorError(format!("{}", e)))?;
-            
+  
         // 更新资源统计
         let mut stats = self.stats.write().await;
-        
+  
         // 添加新的数据点
         stats.resource_stats.cpu_usage_history.push((now, cpu_usage));
         stats.resource_stats.memory_usage_history.push((now, memory_usage));
         stats.resource_stats.disk_io_history.push((now, disk_io));
         stats.resource_stats.network_io_history.push((now, network_io));
-        
+  
         // 更新任务队列平均长度（简单移动平均）
         let queue_history_size = 10;
         let old_avg = stats.resource_stats.avg_task_queue_length;
         stats.resource_stats.avg_task_queue_length = old_avg * 0.9 + (task_queue_length as f64) * 0.1;
-        
+  
         // 限制历史数据点数量
         let max_history_points = 100;
-        
+  
         if stats.resource_stats.cpu_usage_history.len() > max_history_points {
             stats.resource_stats.cpu_usage_history.remove(0);
         }
-        
+  
         if stats.resource_stats.memory_usage_history.len() > max_history_points {
             stats.resource_stats.memory_usage_history.remove(0);
         }
-        
+  
         if stats.resource_stats.disk_io_history.len() > max_history_points {
             stats.resource_stats.disk_io_history.remove(0);
         }
-        
+  
         if stats.resource_stats.network_io_history.len() > max_history_points {
             stats.resource_stats.network_io_history.remove(0);
         }
-        
+  
         stats.last_updated = now;
-        
+  
         Ok(())
     }
-    
+  
     // 分析并生成建议
     async fn analyze_and_suggest(&self) -> Result<(), OptimizerError> {
         // 获取当前统计信息
         let stats = self.stats.read().await;
         let definitions = self.workflow_definitions.read().await;
-        
+  
         // 初始化建议列表
         let mut new_suggestions = Vec::new();
-        
+  
         // 分析慢任务并建议并行化
         for (workflow_key, workflow_stat) in &stats.workflow_stats {
             // 如果工作流定义可用，且有慢任务
@@ -24054,19 +24225,19 @@ impl LocalExecutionOptimizer {
                 if !workflow_stat.slowest_tasks.is_empty() {
                     // 检查是否有可并行化的慢任务
                     let mut parallelizable_tasks = Vec::new();
-                    
+  
                     for (task_id, count) in &workflow_stat.slowest_tasks {
                         // 在工作流定义中查找任务
                         if let Some(task_def) = definition.tasks.iter().find(|t| t.id == *task_id) {
                             // 检查任务是否可以并行化（这里简化为检查任务类型）
                             let parallelizable_types = ["data_processing", "batch_operation", "file_processing"];
-                            
+  
                             if parallelizable_types.contains(&task_def.task_type.as_str()) {
                                 parallelizable_tasks.push((task_id.clone(), *count, task_def.clone()));
                             }
                         }
                     }
-                    
+  
                     // 如果有可并行化的任务，生成建议
                     if !parallelizable_tasks.is_empty() {
                         let suggestion = OptimizationSuggestion {
@@ -24086,24 +24257,25 @@ impl LocalExecutionOptimizer {
                             applied: false,
                             applied_at: None,
                         };
-                        
+  
                         new_suggestions.push(suggestion);
                     }
                 }
-                
+  
                 // 分析资源使用情况并建议云端卸载
                 if workflow_stat.avg_execution_time_ms > self.config.cloud_offload_threshold_ms as f64 {
                     // 检查是否有高资源消耗
                     let high_cpu_usage = stats.resource_stats.cpu_usage_history.iter()
                         .filter(|(_, usage)| *usage > self.config.high_cpu_threshold_percent)
                         .count() > stats.resource_stats.cpu_usage_history.len() / 3;
-                        
+  
                     let high_memory_usage = stats.resource_stats.memory_usage_history.iter()
                         .filter(|(_, usage)| *usage > self.config.high_memory_threshold_percent)
                         .count() > stats.resource_stats.memory_usage_history.len() / 3;
-                        
+  
                     if high_cpu_usage || high_memory_usage {
                         let suggestion = Optimiz
+
 ```rust
                         let suggestion = OptimizationSuggestion {
                             id: format!("offload-{}-{}", definition.id, Utc::now().timestamp()),
@@ -24755,6 +24927,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 以上代码实现了一个本地执行引擎优化器(`LocalExecutionOptimizer`)，

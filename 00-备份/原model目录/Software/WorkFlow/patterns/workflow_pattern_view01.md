@@ -20,6 +20,7 @@
 
 我会尝试保持解释的深度和广度，并使用最新的理念来阐述这些概念。
 </think>
+
 ```
 
 ## 目录
@@ -102,6 +103,7 @@ fn sequence<A, B, C>(
         })
     }
 }
+
 ```
 
 ### 3.2 并行分支(Parallel Split)
@@ -127,6 +129,7 @@ fn parallel_split<A: Clone + Send + 'static, B: Send + 'static, C: Send + 'stati
         })
     }
 }
+
 ```
 
 ### 3.3 同步合并(Synchronization)
@@ -141,6 +144,7 @@ fn synchronize<B, C, D>(
 ) -> Task<(B, C), D> {
     merge_task
 }
+
 ```
 
 ### 3.4 互斥选择(Exclusive Choice)
@@ -170,6 +174,7 @@ fn exclusive_choice<A, B, C>(
         })
     }
 }
+
 ```
 
 ### 3.5 简单合并(Simple Merge)
@@ -192,6 +197,7 @@ fn simple_merge<B, C, D>(
         })
     }
 }
+
 ```
 
 ## 4. 高级分支与同步模式
@@ -241,6 +247,7 @@ fn multi_choice<A, B, C, D>(
         })
     }
 }
+
 ```
 
 ## 5. 结构模式
@@ -265,6 +272,7 @@ fn arbitrary_cycle<A: Clone>(
         })
     }
 }
+
 ```
 
 ## 10. Rust实现示例
@@ -414,6 +422,7 @@ fn main() {
     
     println!("Complex workflow result: {}", complex_workflow.apply(5));
 }
+
 ```
 
 ## 9. 模式间的范畴组合与关系
@@ -464,6 +473,7 @@ fn main() {
     ├── 伴随函子(分支/合并对)
     ├── 自然变换(模式变体)
     └── 单子与余单子(工作流状态演化)
+
 ```
 
 ## 11. 结论

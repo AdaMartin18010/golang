@@ -90,6 +90,7 @@
 4. 以markdown格式输出，包含目录和思维导图
 
 让我开始构思：</think>
+
 ```
 
 ## 1.1 目录
@@ -249,6 +250,7 @@ pub struct AdaptiveConsensus {
     current_engine: Box<dyn ConsensusEngine>,
     // 其他字段
 }
+
 ```
 
 ### 1.4.2 通信与网络层
@@ -290,6 +292,7 @@ pub struct QuicTransport {
 impl Transport for QuicTransport {
     // 实现...
 }
+
 ```
 
 ### 1.4.3 状态管理层
@@ -326,6 +329,7 @@ pub struct CrdtStateStore {
     document: automerge::Document,
     network: Arc<dyn CrdtNetwork>,
 }
+
 ```
 
 ### 1.4.4 调度与任务层
@@ -362,6 +366,7 @@ pub struct ActorWorkflow {
     inner: coerce::Workflow,
     // 其他字段
 }
+
 ```
 
 ### 1.4.5 可观测性层
@@ -398,6 +403,7 @@ pub struct PropagationContext {
     spanid: SpanId,
     baggage: HashMap<String, String>,
 }
+
 ```
 
 ## 1.5 4. 集成与组合策略
@@ -452,6 +458,7 @@ impl NebulaBuilder {
         // 构建逻辑
     }
 }
+
 ```
 
 ### 1.5.2 接口标准化
@@ -499,6 +506,7 @@ node.register_service(kv_service).await?;
 let client = NebulaClient::connect("node-1:8080").await?;
 client.put("key1", "value1").await?;
 let value = client.get("key1").await?;
+
 ```
 
 ### 1.6.2 物联网边缘计算平台
@@ -527,6 +535,7 @@ edge_node.deploy_workflow(workflow).await?;
 
 // 启动边缘处理
 edge_node.start().await?;
+
 ```
 
 ## 1.7 6. 最佳实践
@@ -626,6 +635,7 @@ Rust分布式系统框架 (2025)
     ├── 渐进式采用
     ├── 持续基准测试
     └── 可观测性优先
+
 ```
 
 ```text
@@ -645,6 +655,7 @@ Rust分布式系统框架 (2025)
 
 我将用中文继续这篇文章，维持上一篇的格式和风格。
 </think>
+
 ```
 
 ## 1.11 Rust分布式系统编程框架 (2025) (续)
@@ -742,6 +753,7 @@ impl LogStore for SledLogStore {
     
     // 其他方法实现...
 }
+
 ```
 
 ### 1.12.2 高效状态机复制
@@ -805,6 +817,7 @@ impl StateMachine for KvStateMachine {
     
     // 快照和恢复实现...
 }
+
 ```
 
 ### 1.12.3 自适应传输层
@@ -899,6 +912,7 @@ impl Transport for AdaptiveTransport {
     
     // 其他方法实现...
 }
+
 ```
 
 ## 1.13 10. 可扩展性与性能优化
@@ -970,6 +984,7 @@ impl ShardManager {
         }
     }
 }
+
 ```
 
 ### 1.13.2 本地性优化与缓存策略
@@ -1095,6 +1110,7 @@ where
         Ok(())
     }
 }
+
 ```
 
 ### 1.13.3 自动批处理与压缩
@@ -1272,6 +1288,7 @@ impl CompressionManager {
         codec.decompress(data).await
     }
 }
+
 ```
 
 ## 1.14 11. 高级容错模式
@@ -1458,6 +1475,7 @@ impl CircuitBreaker {
         }
     }
 }
+
 ```
 
 ### 1.14.2 节点健康管理
@@ -1576,6 +1594,7 @@ impl HealthChecker {
         report
     }
 }
+
 ```
 
 ### 1.14.3 故障恢复与重播
@@ -1808,6 +1827,7 @@ pub struct RecoveryReport {
     pub success: bool,
     pub error: Option<String>,
 }
+
 ```
 
 ## 1.15 12. 高级网络与通信模式
@@ -2013,6 +2033,7 @@ impl ExponentialMovingAverage {
         self.value.load(Ordering::Relaxed)
     }
 }
+
 ```
 
 ### 1.15.2 P2P集群协调
@@ -2285,6 +2306,7 @@ impl P2PClusterManager {
         }
     }
 }
+
 ```
 
 ## 1.16 13. 分布式应用模式与案例
@@ -2651,6 +2673,7 @@ impl CloudConnector {
         Ok(self.sync_manager.get_stats())
     }
 }
+
 ```
 
 ### 1.16.2 分布式内容分发网络
@@ -2738,7 +2761,6 @@ impl CdnNode {
                                 metrics.record_cache_hit();
                                 metrics.record_request_latency(start.elapsed());
                                 
-                
 <think>需要继续编写分布式内容分发网络的代码实现。上次我们写到了内容分发节点(CdnNode)的HTTP服务器实现部分，特别是get_content路由处理的开始部分。</think>```rust
                                 Ok(content)
                             }
@@ -3490,6 +3512,7 @@ fn parse_range(range: &str) -> Result<(u64, Option<u64>), CdnError> {
     
     Ok((start, end))
 }
+
 ```
 
 ## 1.17 14. 开发者工具与调试支持
@@ -3700,6 +3723,7 @@ where
         })
     }
 }
+
 ```
 
 ### 1.17.2 分布式日志聚合
@@ -4051,6 +4075,7 @@ pub enum LogError {
     #[error("Serialization error: {0}")]
     SerializationError(String),
 }
+
 ```
 
 ### 1.17.3 监控与可视化
@@ -4360,6 +4385,7 @@ impl From<prometheus::Error> for MetricsError {
         MetricsError::Other(err.to_string())
     }
 }
+
 ```
 
 ## 1.18 15. 应用示例: 分布式任务调度系统
@@ -5651,6 +5677,7 @@ impl TaskMetrics {
         histogram.record(duration.as_millis() as u64);
     }
 }
+
 ```
 
 ## 1.19 16. 总结
@@ -5798,6 +5825,7 @@ Rust分布式系统框架 (2025)
         ├── 在线推理服务
         ├── 特征存储
         └── A/B测试框架
+
 ```
 
 ## 1.21 17. 开发路线图与生态融合
@@ -5876,7 +5904,7 @@ Rust分布式系统框架 (2025)
    ```rust
    // 使用类型系统确保只有Leader可以提交日志
    struct Leader { /* ... */ }
-   
+  
    impl Leader {
        pub fn commit_log(&self, entry: LogEntry) -> Result<(), Error> {
            // 只有Leader类型才能访问此方法
@@ -5893,10 +5921,10 @@ Rust分布式系统框架 (2025)
    pub enum ClusterError {
        #[error("Consensus error: {0}")]
        Consensus(#[from] ConsensusError),
-       
+  
        #[error("Network error: {0}")]
        Network(#[from] NetworkError),
-       
+  
        #[error("State error: {0}")]
        State(#[from] StateError),
    }
@@ -5906,11 +5934,11 @@ Rust分布式系统框架 (2025)
 
    ```rust
    use eyre::{Result, WrapErr};
-   
+  
    async fn process_request(req: Request) -> Result<Response> {
        let user = authenticate(req)
            .wrap_err_with(|| format!("Failed to authenticate request from {}", req.source_ip))?;
-       
+  
        // ...更多处理
    }
    ```
@@ -5921,12 +5949,12 @@ Rust分布式系统框架 (2025)
 
    ```rust
    let (cancel_token, cancel_guard) = CancelToken::new();
-   
+  
    // 在一个地方使用token启动可取消的任务
-   let task = spawn_with_cancel(async move { 
+   let task = spawn_with_cancel(async move {
        // 长时间运行的操作
    }, cancel_token);
-   
+  
    // 在另一个地方决定是否取消
    if should_cancel {
        cancel_guard.cancel();
@@ -6042,6 +6070,7 @@ impl InventoryManager {
         // 类似实现，使用分布式锁和事务
     }
 }
+
 ```
 
 ### 1.23.2 实时数据分析流水线
@@ -6120,6 +6149,7 @@ impl StreamProcessor {
         Ok(processed)
     }
 }
+
 ```
 
 ## 1.24 20. 结论与未来展望

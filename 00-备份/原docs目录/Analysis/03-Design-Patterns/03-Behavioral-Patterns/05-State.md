@@ -128,6 +128,7 @@ classDiagram
     Context --> State
     StateMachine --> Context
     Context --> State
+
 ```
 
 ### 3.2 时序图
@@ -150,6 +151,7 @@ sequenceDiagram
     StateB->>Context: Result
     
     Context->>Client: Result
+
 ```
 
 ### 3.3 状态转换图
@@ -165,6 +167,7 @@ stateDiagram-v2
     Failed --> Processing
     Processing --> Cancelled
     Cancelled --> [*]
+
 ```
 
 ## 4. Golang实现
@@ -217,6 +220,7 @@ type StateEvent struct {
     Data      map[string]interface{}
     Timestamp time.Time
 }
+
 ```
 
 ### 4.2 基础状态实现
@@ -292,6 +296,7 @@ func (s *ConcreteState) AddAction(action string) {
 func (s *ConcreteState) RemoveAction(action string) {
     delete(s.actions, action)
 }
+
 ```
 
 ### 4.3 上下文实现
@@ -438,6 +443,7 @@ func (c *StateContext) copyData() map[string]interface{} {
     }
     return result
 }
+
 ```
 
 ### 4.4 状态机实现
@@ -582,6 +588,7 @@ func (sm *StateMachine) getState(stateName string) (State, error) {
     // 实际实现中可能需要修改Context接口
     return nil, fmt.Errorf("state %s not found", stateName)
 }
+
 ```
 
 ### 4.5 具体状态实现
@@ -690,6 +697,7 @@ func (a *AsyncState) Handle(context Context, action string) error {
 func (a *AsyncState) Stop() {
     close(a.done)
 }
+
 ```
 
 ### 4.6 状态持久化
@@ -771,6 +779,7 @@ func (f *FileStatePersistence) GetStateHistory(contextID string) ([]StateEvent, 
     // 实现状态历史查询
     return []StateEvent{}, nil
 }
+
 ```
 
 ## 5. 性能分析
@@ -864,6 +873,7 @@ func (p *StatePool) Put(state *BaseState) {
     state.name = ""
     p.pool.Put(state)
 }
+
 ```
 
 ### 5.3 并发性能分析
@@ -963,6 +973,7 @@ func BenchmarkAsyncState(b *testing.B) {
     
     asyncState.Stop()
 }
+
 ```
 
 ## 6. 应用场景
@@ -1098,6 +1109,7 @@ func (w *WorkflowEngine) createWorkflowStates() {
     w.machine.AddTransition("review", "reject", "draft")
     w.machine.AddTransition("approved", "publish", "published")
 }
+
 ```
 
 ### 6.2 游戏状态管理
@@ -1204,6 +1216,7 @@ func (g *GameStateMachine) createGameStates() {
     g.machine.AddTransition("game_over", "restart", "playing")
     g.machine.AddTransition("game_over", "menu", "menu")
 }
+
 ```
 
 ### 6.3 网络连接状态管理
@@ -1268,6 +1281,7 @@ func (c *Connection) createConnectionStates() {
     c.machine.AddTransition("reconnecting", "connected", "connected")
     c.machine.AddTransition("reconnecting", "failed", "disconnected")
 }
+
 ```
 
 ## 7. 最佳实践
@@ -1376,6 +1390,7 @@ func GameStateMachineExample() {
     }
     fmt.Printf("After restart: %s\n", game.machine.GetCurrentState())
 }
+
 ```
 
 ### 8.2 状态持久化示例
@@ -1417,6 +1432,7 @@ func StatePersistenceExample() {
     fmt.Printf("Loaded state: %s\n", newContext.GetCurrentState().GetName())
     fmt.Printf("Loaded data: %v\n", newContext.GetData())
 }
+
 ```
 
 ---

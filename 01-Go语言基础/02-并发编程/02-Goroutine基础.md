@@ -19,19 +19,6 @@
   - [1.2.1.7 📚 **扩展阅读**](#📚-**扩展阅读**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.2.1.1 📚 **理论分析**
 
 ### 1.2.1.1.1 **Goroutine定义与原理**
@@ -45,6 +32,7 @@
 ```text
 Goroutine ::= go FunctionCall
 FunctionCall ::= identifier(arguments)
+
 ```
 
 ### 1.2.1.1.2 **生命周期与调度**
@@ -78,6 +66,7 @@ func main() {
     fmt.Println("Hello from main!")
     time.Sleep(time.Millisecond * 50)
 }
+
 ```
 
 ### 1.2.1.2.2 **Goroutine并发执行**
@@ -100,6 +89,7 @@ func main() {
     time.Sleep(time.Millisecond * 200)
     fmt.Println("All workers launched")
 }
+
 ```
 
 ### 1.2.1.2.3 **使用sync.WaitGroup等待Goroutine完成**
@@ -122,6 +112,7 @@ func main() {
     wg.Wait()
     fmt.Println("All done")
 }
+
 ```
 
 ### 1.2.1.2.4 **Goroutine泄漏示例与避免**
@@ -141,6 +132,7 @@ func main() {
     leak()
     // 正确做法：确保有接收方或关闭通道
 }
+
 ```
 
 ## 1.2.1.3 📊 **性能分析**
@@ -170,6 +162,7 @@ func TestGoroutine(t *testing.T) {
     wg.Wait()
     // 结果不确定，演示竞态
 }
+
 ```
 
 ## 1.2.1.5 🎯 **最佳实践**

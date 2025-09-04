@@ -222,6 +222,7 @@ classDiagram
     +string Data
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -254,6 +255,7 @@ sequenceDiagram
   I->>Mon: 推理监控
   I->>L: 日志采集
   I->>Ev: 事件记录
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -354,6 +356,7 @@ type Event struct {
     Data string
     Time time.Time
 }
+
 ```
 
 ---
@@ -447,6 +450,7 @@ graph TD
   EVS --> IS
   EVS --> TS
   EVS --> US
+
 ```
 
 ### 5.5 Golang代码示例
@@ -455,6 +459,7 @@ graph TD
 // 推理请求数量Prometheus监控
 var inferenceRequestCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "inference_request_total"})
 inferenceRequestCount.Set(1000000)
+
 ```
 
 ---
@@ -484,6 +489,7 @@ ai-ml-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -510,6 +516,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

@@ -136,6 +136,7 @@ func (cs *ConfigSingleton) Get(key string) (interface{}, bool) {
     value, exists := cs.config[key]
     return value, exists
 }
+
 ```
 
 ### 3.2 工厂模式
@@ -188,6 +189,7 @@ func NewProduct(productType string) (Product, error) {
         return nil, fmt.Errorf("unknown product type: %s", productType)
     }
 }
+
 ```
 
 ### 3.3 建造者模式
@@ -265,6 +267,7 @@ func (d *ComputerDirector) ConstructGamingComputer() *Computer {
         SetGPU("RTX 4090").
         Build()
 }
+
 ```
 
 ## 4. 结构型模式
@@ -316,6 +319,7 @@ func NewFunctionAdapter(fn func() string) *FunctionAdapter {
 func (fa *FunctionAdapter) Request() string {
     return fa.fn()
 }
+
 ```
 
 ### 4.2 装饰器模式
@@ -381,6 +385,7 @@ func (d *LoggingDecorator) Operation() string {
     log.Printf("After operation: %s", result)
     return result
 }
+
 ```
 
 ### 4.3 代理模式
@@ -457,6 +462,7 @@ func (vp *VirtualProxy) Request() string {
     
     return vp.realSubject.Request()
 }
+
 ```
 
 ## 5. 行为型模式
@@ -527,6 +533,7 @@ func (sf *StrategyFactory) GetStrategy(name string) (Strategy, error) {
     }
     return strategy, nil
 }
+
 ```
 
 ### 5.2 观察者模式
@@ -628,6 +635,7 @@ func (es *EventSubject) Publish(eventType string, data interface{}) {
         go handler(data)
     }
 }
+
 ```
 
 ### 5.3 状态模式
@@ -714,6 +722,7 @@ func (sm *StateMachine) Trigger(event string) error {
     
     return fmt.Errorf("invalid transition from %s on event %s", currentStateName, event)
 }
+
 ```
 
 ## 6. 并发模式
@@ -797,6 +806,7 @@ func (wp *WorkerPool) Stop() {
     close(wp.taskQueue)
     close(wp.resultChan)
 }
+
 ```
 
 ### 6.2 Pipeline 模式
@@ -878,6 +888,7 @@ func (cp *ConcurrentPipeline) Execute(input interface{}) (interface{}, error) {
     
     return finalResult, nil
 }
+
 ```
 
 ## 7. 模式质量评估
@@ -975,6 +986,7 @@ func AuthMiddleware(handler http.HandlerFunc) http.HandlerFunc {
         handler(w, r)
     }
 }
+
 ```
 
 ### 9.2 并发系统中的模式应用
@@ -1009,6 +1021,7 @@ func (dp *DataProcessor) ProcessData(data []interface{}) error {
     
     return nil
 }
+
 ```
 
 ## 10. 总结

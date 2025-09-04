@@ -29,19 +29,6 @@
     - [1.5.1.1.9.3 **3. 数据服务**](#**3-数据服务**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.5.1.1.1 🎯 **核心概念**
 
 `sendfile` 是一种高性能的文件传输技术，它允许数据直接从文件系统传输到网络套接字，而无需经过用户空间。在Go语言中，我们可以通过系统调用和优化的网络编程来实现零拷贝传输，显著提升文件传输和网络服务的性能。
@@ -63,6 +50,7 @@ import "syscall"
 func SendFile(dst *net.TCPConn, src *os.File, offset int64, count int64) (written int64, err error) {
     // 使用sendfile系统调用实现零拷贝传输
 }
+
 ```
 
 ### 1.5.1.1.3.2 **2. 网络服务优化**
@@ -71,6 +59,7 @@ func SendFile(dst *net.TCPConn, src *os.File, offset int64, count int64) (writte
 func (s *Server) handleFileTransfer(w http.ResponseWriter, r *http.Request) {
     // 使用sendfile优化文件传输
 }
+
 ```
 
 ### 1.5.1.1.3.3 **3. 高性能文件服务器**
@@ -80,6 +69,7 @@ type FileServer struct {
     rootDir string
     pool    *BufferPool
 }
+
 ```
 
 ## 1.5.1.1.4 📊 **应用场景**
@@ -131,6 +121,7 @@ sendfile/
     ├── file_transfer_test.go    # 文件传输测试
     ├── concurrent_test.go       # 并发测试
     └── memory_test.go           # 内存使用测试
+
 ```
 
 ## 1.5.1.1.7 💡 **最佳实践**
@@ -161,6 +152,7 @@ sendfile/
 func BenchmarkFileTransfer(b *testing.B) {
     // 测试文件传输性能
 }
+
 ```
 
 ### 1.5.1.1.8.2 **2. 性能监控**

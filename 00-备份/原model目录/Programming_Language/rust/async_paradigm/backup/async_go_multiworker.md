@@ -147,6 +147,7 @@ async fn main() {
     let final_value = shared.lock().await;
     println!("Tokio: 最终共享数据: {}", *final_value);
 }
+
 ```
 
 ### 3.2 async-std 示例代码
@@ -205,6 +206,7 @@ async fn main() {
     let final_value = shared.lock().await;
     println!("async-std: 最终共享数据: {}", *final_value);
 }
+
 ```
 
 ### 3.3 实现类似 Golang 的并行机制
@@ -250,6 +252,7 @@ async fn main() {
 
     handle.await.unwrap();
 }
+
 ```
 
 #### 3.3.2 类似 WaitGroup、Chan、Select 和 Goroutine 池化
@@ -277,7 +280,7 @@ async fn main() {
               sleep(Duration::from_millis(100)).await;
           }
       });
-      
+  
       loop {
           select! {
               Some(val) = rx.recv() => {
@@ -364,6 +367,7 @@ flowchart TD
     F --> F1[Golang: goroutine, chan, select, defer, context, WaitGroup]
     F --> F2[Rust: async/await, spawn, select!, scopeguard, CancellationToken]
     F --> F3[优点对比：内存安全、性能极高 vs 简单易用、内置 GC]
+
 ```
 
 ---

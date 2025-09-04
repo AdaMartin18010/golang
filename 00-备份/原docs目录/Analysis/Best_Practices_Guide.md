@@ -47,6 +47,7 @@ type User struct {
     Email     string    `json:"email"`
     CreatedAt time.Time `json:"created_at"`
 }
+
 ```
 
 #### 错误处理
@@ -104,6 +105,7 @@ func processUser(userID string) error {
     
     return nil
 }
+
 ```
 
 ### 1.2 代码组织
@@ -134,6 +136,7 @@ project/
 ├── tests/                 # 测试文件
 ├── go.mod
 └── go.sum
+
 ```
 
 #### 包设计原则
@@ -172,6 +175,7 @@ func NewUserService(repo Repository, cache Cache, logger Logger) Service {
         logger: logger,
     }
 }
+
 ```
 
 ## 2. 架构设计最佳实践
@@ -244,6 +248,7 @@ func (r *userRepository) Create(ctx context.Context, user *User) error {
     _, err := r.db.ExecContext(ctx, query, user.ID, user.Name, user.Email, user.CreatedAt)
     return err
 }
+
 ```
 
 ### 2.2 依赖注入
@@ -295,6 +300,7 @@ func NewContainer(config *Config) *Container {
 func (c *Container) NewUserService() Service {
     return NewUserService(c.userRepo, c.cache, c.eventPublisher, c.logger)
 }
+
 ```
 
 ## 3. 性能优化最佳实践
@@ -361,6 +367,7 @@ func (wp *WorkerPool) Stop() {
     close(wp.tasks)
     close(wp.results)
 }
+
 ```
 
 #### 连接池
@@ -394,6 +401,7 @@ func (cp *ConnectionPool) GetConnection() *sql.DB {
 func (cp *ConnectionPool) Close() error {
     return cp.pool.Close()
 }
+
 ```
 
 ### 3.2 内存优化
@@ -439,6 +447,7 @@ func processData(data []byte) []byte {
     copy(result, buffer)
     return result
 }
+
 ```
 
 #### 内存监控
@@ -482,6 +491,7 @@ func (mm *MemoryMonitor) StartMonitoring(interval time.Duration) {
         mm.CheckMemory()
     }
 }
+
 ```
 
 ## 4. 安全最佳实践
@@ -527,6 +537,7 @@ func isValidEmail(email string) bool {
     emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
     return emailRegex.MatchString(email)
 }
+
 ```
 
 #### SQL注入防护
@@ -557,6 +568,7 @@ func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*Use
     err := r.db.Where("email = ?", email).First(&user).Error
     return &user, err
 }
+
 ```
 
 ### 4.2 身份认证
@@ -613,6 +625,7 @@ func validateJWT(tokenString, secretKey string) (*Claims, error) {
     
     return nil, errors.New("invalid token")
 }
+
 ```
 
 #### 权限控制
@@ -652,6 +665,7 @@ func setupRoutes(r *gin.Engine) {
         users.DELETE("/:id", RoleAuthMiddleware("admin"), DeleteUser) // 仅管理员
     }
 }
+
 ```
 
 ## 5. 测试最佳实践
@@ -726,6 +740,7 @@ func TestUserService_CreateUser(t *testing.T) {
         })
     }
 }
+
 ```
 
 #### Mock对象
@@ -790,6 +805,7 @@ func (m *MockUserRepository) Delete(ctx context.Context, id string) error {
     delete(m.users, id)
     return nil
 }
+
 ```
 
 ### 5.2 集成测试
@@ -839,6 +855,7 @@ func setupTestDatabase(t *testing.T) (*sql.DB, func()) {
     
     return db, cleanup
 }
+
 ```
 
 ## 6. 部署运维最佳实践
@@ -924,6 +941,7 @@ func loadFromEnv(config *Config) error {
     
     return nil
 }
+
 ```
 
 ### 6.2 健康检查
@@ -992,6 +1010,7 @@ func (h *HealthHandler) ReadinessCheck(c *gin.Context) {
         })
     }
 }
+
 ```
 
 ### 6.3 日志记录
@@ -1072,6 +1091,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
     
     c.JSON(http.StatusCreated, user)
 }
+
 ```
 
 ## 7. 监控和可观测性最佳实践
@@ -1185,6 +1205,7 @@ func MetricsMiddleware(metrics *AppMetrics) gin.HandlerFunc {
         ).Observe(duration)
     }
 }
+
 ```
 
 ### 7.2 链路追踪
@@ -1249,6 +1270,7 @@ func (r *userRepository) Create(ctx context.Context, user *User) error {
     
     return nil
 }
+
 ```
 
 ## 8. 总结

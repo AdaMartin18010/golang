@@ -12,19 +12,6 @@
   - [1.8 解释和联系](#解释和联系)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 所有权（Ownership）
 
 所有权是 Rust 中的一个基本特性，它意味着每个值在 Rust 中都有一个被称为其所有者（owner）的变量。所有权规则如下：
@@ -50,6 +37,7 @@ fn main() {
 fn take_ownership(some_string: String) { // some_string 现在拥有 String 的所有权
     println!("{}", some_string);
 } // 函数结束，some_string 被丢弃，String 被自动释放
+
 ```
 
 ## 1.3 生命周期（Lifetime）
@@ -76,6 +64,7 @@ fn longest<'a>(s1: &'a str, s2: &'a str) -> &'a str {
         s2
     }
 }
+
 ```
 
 在这个例子中，`longest` 函数有两个字符串引用作为参数，并且它们具有相同的生命周期 `'a`。
@@ -105,6 +94,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 `Deref` trait 允许类型表现得像引用，通过自定义解引用的行为。
@@ -121,6 +111,7 @@ pub trait Deref {
 pub trait Drop {
     fn drop(&mut self);
 }
+
 ```
 
 `Drop` trait 定义了当值被销毁时执行的代码。
@@ -137,6 +128,7 @@ Rust 编译器在值离开作用域时自动调用 `drop` 方法。
 pub trait Clone: Sized {
     fn clone(&self) -> Self;
 }
+
 ```
 
 `Clone` trait 允许类型创建自身的一个完全独立的副本。
@@ -150,6 +142,7 @@ pub trait Clone: Sized {
 
 ```rust
 pub trait Copy: Clone {}
+
 ```
 
 `Copy` trait 表示类型拥有简单的复制语义，即它们的位模式可以被简单地复制。

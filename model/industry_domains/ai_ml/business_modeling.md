@@ -113,6 +113,7 @@ impl Dataset {
         })
     }
 }
+
 ```
 
 #### 1.2.1.2 特征集聚合根
@@ -218,6 +219,7 @@ impl FeatureSet {
         }
     }
 }
+
 ```
 
 #### 1.2.1.3 模型聚合根
@@ -294,6 +296,7 @@ impl Model {
         Ok(vec![])
     }
 }
+
 ```
 
 ### 1.2.2 值对象
@@ -369,6 +372,7 @@ impl PredictionValue {
         }
     }
 }
+
 ```
 
 ## 1.3 2. 数据建模
@@ -416,6 +420,7 @@ CREATE TABLE dataset_quality_checks (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     FOREIGN KEY (dataset_id) REFERENCES datasets(id)
 );
+
 ```
 
 #### 1.3.1.2 特征集相关表
@@ -456,6 +461,7 @@ CREATE TABLE feature_store (
     FOREIGN KEY (feature_set_id) REFERENCES feature_sets(id),
     UNIQUE(feature_set_id, entity_id, timestamp)
 );
+
 ```
 
 #### 1.3.1.3 模型相关表
@@ -501,6 +507,7 @@ CREATE TABLE model_deployments (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
     FOREIGN KEY (model_id) REFERENCES models(id)
 );
+
 ```
 
 #### 1.3.1.4 预测记录表
@@ -538,6 +545,7 @@ CREATE TABLE model_performance (
     timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
     FOREIGN KEY (model_id) REFERENCES models(id)
 );
+
 ```
 
 ### 1.3.2 特征存储实现
@@ -594,6 +602,7 @@ impl FeatureStore for RedisFeatureStore {
         Ok(())
     }
 }
+
 ```
 
 ## 1.4 3. 流程建模
@@ -614,6 +623,7 @@ graph TD
     H -->|是| J[模型注册]
     J --> K[模型部署]
     K --> L[性能监控]
+
 ```
 
 ### 1.4.2 推理服务流程
@@ -628,6 +638,7 @@ graph TD
     F --> G[缓存结果]
     G --> H[返回响应]
     H --> I[记录指标]
+
 ```
 
 ### 1.4.3 特征工程流程
@@ -642,6 +653,7 @@ graph TD
     F --> G[特征编码]
     G --> H[特征缩放]
     H --> I[特征存储]
+
 ```
 
 ### 1.4.4 流程实现
@@ -755,6 +767,7 @@ impl ModelTrainingWorkflow {
         Ok(best_params)
     }
 }
+
 ```
 
 ## 1.5 4. 模型服务
@@ -813,6 +826,7 @@ impl InferenceService {
         Ok(prediction)
     }
 }
+
 ```
 
 ### 1.5.2 模型监控
@@ -897,6 +911,7 @@ impl ModelMonitoringService {
         anomalies
     }
 }
+
 ```
 
 ## 1.6 5. 事件系统
@@ -940,6 +955,7 @@ pub struct DriftEvent {
     pub affected_features: Vec<String>,
     pub timestamp: DateTime<Utc>,
 }
+
 ```
 
 ### 1.6.2 事件处理器
@@ -1013,6 +1029,7 @@ impl ModelLifecycleEventHandler {
         Ok(())
     }
 }
+
 ```
 
 ## 1.7 总结

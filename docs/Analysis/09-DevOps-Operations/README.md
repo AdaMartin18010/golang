@@ -74,12 +74,15 @@
   \item 部署: 自动部署到不同环境
   \item 监控: 生产环境监控和反馈
 \end{itemize}
+
 ```
 
 ### 9.1.3.2 GitHub Actions配置
 
 ```yaml
+
 # 9.2 .github/workflows/ci-cd.yml
+
 name: CI/CD Pipeline
 
 on:
@@ -116,6 +119,7 @@ jobs:
     
     - name: Push to registry
       run: docker push myapp:${{ github.sha }}
+
 ```
 
 ### 9.2 Golang CI/CD实践
@@ -166,6 +170,7 @@ func runSecurityScan() error {
     cmd := exec.Command("gosec", "./...")
     return cmd.Run()
 }
+
 ```
 
 ---
@@ -175,7 +180,9 @@ func runSecurityScan() error {
 ### 9.2.1.1 基础设施即代码（IaC）
 
 ```hcl
+
 # 9.3 Terraform配置示例
+
 terraform {
   required_providers {
     aws = {
@@ -201,6 +208,7 @@ resource "aws_ecs_service" "app" {
     container_port   = 8080
   }
 }
+
 ```
 
 ### 9.3 监控和可观测性
@@ -214,12 +222,15 @@ resource "aws_ecs_service" "app" {
   \item 日志(Logs): 事件的时间序列记录
   \item 追踪(Traces): 请求的端到端路径
 \end{itemize}
+
 ```
 
 ### 9.3 Prometheus监控配置
 
 ```yaml
+
 # 9.4 prometheus.yml
+
 global:
   scrape_interval: 15s
 
@@ -229,6 +240,7 @@ scrape_configs:
       - targets: ['localhost:8080']
     metrics_path: '/metrics'
     scrape_interval: 5s
+
 ```
 
 ### 9.4 Golang监控实现
@@ -279,6 +291,7 @@ func metricsMiddleware(next http.Handler) http.Handler {
         httpRequestDuration.WithLabelValues(r.Method, r.URL.Path).Observe(duration)
     })
 }
+
 ```
 
 ---
@@ -312,6 +325,7 @@ func loadConfig() (*Config, error) {
     }
     return &cfg, nil
 }
+
 ```
 
 ### 9.4.1.2 健康检查和就绪检查
@@ -361,6 +375,7 @@ func checkDiskSpace() bool {
     // 实现磁盘空间检查
     return true
 }
+
 ```
 
 ### 9.4.1.3 日志管理
@@ -408,6 +423,7 @@ func main() {
         zap.String("environment", "production"),
     )
 }
+
 ```
 
 ---
@@ -426,6 +442,7 @@ graph LR;
     F --> G[生产监控];
     G --> H[反馈循环];
     H --> A;
+
 ```
 
 ### 9.4.2.2 性能模型
@@ -442,6 +459,7 @@ DeploymentFrequency = \frac{1}{MTTR + BuildTime + TestTime + DeployTime}
   \item TestTime: 测试时间
   \item DeployTime: 部署时间
 \end{itemize}
+
 ```
 
 ### 9.4.2.3 自动化程度评估
@@ -452,6 +470,7 @@ DeploymentFrequency = \frac{1}{MTTR + BuildTime + TestTime + DeployTime}
 AutomationLevel = \frac{AutomatedSteps}{TotalSteps} \times 100\%
 
 其中AutomatedSteps是自动化步骤数，TotalSteps是总步骤数。
+
 ```
 
 ---

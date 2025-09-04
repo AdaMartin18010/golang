@@ -20,6 +20,7 @@ fn might_fail(divisor: i32) {
 fn main() {
     might_fail(0);
 }
+
 ```
 
 在上面的代码中，传入 0 会直接调用 `panic!`，从而触发 panic 行为。
@@ -50,9 +51,12 @@ fn main() {
   发生 panic 后，不调用任何析构函数，整个程序会立刻中止。这种策略常用于对代码体积有严格要求或性能要求极高的场景，但会牺牲部分安全性，比如局部资源不会被清理。
 
 ```toml
+
 # Cargo.toml
+
 [profile.release]
 panic = "abort"
+
 ```
 
 ---
@@ -76,6 +80,7 @@ fn main() {
         Err(err) => println!("捕获到 panic: {:?}", err),
     }
 }
+
 ```
 
 在这个例子中，闭包中的 panic 被 `catch_unwind` 捕获，程序得以继续运行。

@@ -16,6 +16,7 @@
 
 我将组织一个结构良好的回答，包含这些要素，并尝试创建一个简单的文本形式的思维导图。
 </think>
+
 ```
 
 ## 目录
@@ -77,6 +78,7 @@ Kubernetes 与 Docker 关系架构
     ├── 声明式 API 模型
     ├── 控制循环 (Observe-Diff-Act)
     └── Operator 模式 ── 扩展编排能力
+
 ```
 
 ## 1. 容器技术基础概念
@@ -201,6 +203,7 @@ ReplicaSet 控制器创建 Pod
 Scheduler 为 Pod 分配节点
 ↓
 Kubelet 确保 Pod 容器在节点上运行
+
 ```
 
 ### 3.3 Kubernetes 编排生命周期
@@ -376,6 +379,7 @@ fn main() {
     let yaml = serde_yaml::to_string(&deployment).unwrap();
     println!("{}", yaml);
 }
+
 ```
 
 ### 5.2 控制器模式的实现
@@ -564,6 +568,7 @@ fn main() {
         thread::sleep(Duration::from_secs(1));
     }
 }
+
 ```
 
 这个示例展示了 Kubernetes 控制器的基本工作原理：通过不断比较当前状态和期望状态，采取必要的操作使系统达到期望状态。

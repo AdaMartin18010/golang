@@ -25,6 +25,7 @@ func NewCreator(creatorType string) Creator {
         return &ConcreteCreatorA{}
     }
 }
+
 ```
 
 **Singleton Pattern**:
@@ -41,6 +42,7 @@ func GetInstance() *Singleton {
     })
     return instance
 }
+
 ```
 
 **Builder Pattern**:
@@ -57,6 +59,7 @@ func (cb *ConcreteComputerBuilder) SetCPU(cpu string) ComputerBuilder {
     cb.computer.CPU = cpu
     return cb
 }
+
 ```
 
 ### 2. Structural Patterns
@@ -75,6 +78,7 @@ type Adapter struct {
 func (a *Adapter) Request() string {
     return "Adapter: " + a.adaptee.SpecificRequest()
 }
+
 ```
 
 **Decorator Pattern**:
@@ -95,6 +99,7 @@ func (d *Decorator) Operation() string {
 func (cda *ConcreteDecoratorA) Operation() string {
     return "ConcreteDecoratorA(" + cda.component.Operation() + ")"
 }
+
 ```
 
 **Proxy Pattern**:
@@ -117,6 +122,7 @@ func (p *Proxy) Request() string {
     p.accessCount++
     return fmt.Sprintf("Proxy (access #%d): %s", p.accessCount, p.realSubject.Request())
 }
+
 ```
 
 ### 3. Behavioral Patterns
@@ -144,6 +150,7 @@ func (cs *ConcreteSubject) Notify() {
         observer.Update(cs.data)
     }
 }
+
 ```
 
 **Strategy Pattern**:
@@ -160,6 +167,7 @@ type Context struct {
 func (c *Context) ExecuteStrategy(data []int) []int {
     return c.strategy.Algorithm(data)
 }
+
 ```
 
 **Command Pattern**:
@@ -186,6 +194,7 @@ func (i *Invoker) ExecuteCommands() {
     }
     i.commands = i.commands[:0]
 }
+
 ```
 
 ### 4. Concurrency Patterns
@@ -218,6 +227,7 @@ func (wp *WorkerPool) worker(id int) {
         }
     }
 }
+
 ```
 
 **Pipeline Pattern**:
@@ -244,6 +254,7 @@ func (p *Pipeline) Execute(data interface{}) (interface{}, error) {
     
     return result, nil
 }
+
 ```
 
 ### 5. Enterprise Patterns
@@ -276,6 +287,7 @@ func (imr *InMemoryRepository[T]) FindByID(id string) (T, error) {
     
     return entity, nil
 }
+
 ```
 
 **Unit of Work Pattern**:
@@ -305,6 +317,7 @@ func (uow *ConcreteUnitOfWork) Commit() error {
     uow.clearTracking()
     return nil
 }
+
 ```
 
 ## Performance Characteristics
@@ -347,6 +360,7 @@ func processItemsWithPool(items []string) {
     
     pool.Stop()
 }
+
 ```
 
 ### Mutex Misuse
@@ -369,6 +383,7 @@ func (s *Service) ProcessData(data []int) {
     s.data = result
     s.mutex.Unlock()
 }
+
 ```
 
 ## Best Practices

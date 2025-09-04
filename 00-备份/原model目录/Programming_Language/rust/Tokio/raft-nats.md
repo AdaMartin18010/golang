@@ -32,6 +32,7 @@ thiserror = "1.0"
 bytes = "1.0"
 futures = "0.3"
 uuid = { version = "1.0", features = ["v4"] }
+
 ```
 
 ## 2. Raft 节点实现
@@ -173,6 +174,7 @@ impl RaftNode {
         })
     }
 }
+
 ```
 
 ### 3. P2P 网络实现
@@ -289,6 +291,7 @@ impl P2PNetwork {
         Ok(())
     }
 }
+
 ```
 
 ### 4. NATS 消息处理器
@@ -386,6 +389,7 @@ impl NatsHandler {
         Ok(())
     }
 }
+
 ```
 
 ### 5. 分布式状态机实现
@@ -457,6 +461,7 @@ impl StateMachine {
         Ok(())
     }
 }
+
 ```
 
 ### 6. 控制系统实现
@@ -571,6 +576,7 @@ impl ControlSystem {
         }
     }
 }
+
 ```
 
 ### 7. 主程序实现
@@ -613,6 +619,7 @@ fn load_config() -> Result<Config> {
 
     Ok(config)
 }
+
 ```
 
 这个实现提供了一个完整的分布式控制系统，具有以下特点：

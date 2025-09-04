@@ -16,19 +16,6 @@
   - [5.6 7. 主程序实现](#7-主程序实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个基于 Rust 2024 + Generator 的 AsyncAPI 与多消息队列集成项目。
 
 ## 1.1 目录
@@ -47,24 +34,30 @@
 
 ```toml
 [dependencies]
+
 # 2 2 2 2 2 2 2 异步运行时
+
 tokio = { version = "1.0", features = ["full"] }
 async-stream = "0.3"
 futures = "0.3"
 
 # 3 3 3 3 3 3 3 消息队列客户端
+
 async-nats = "0.33"
 rdkafka = { version = "0.36", features = ["cmake-build"] }
 rumqttc = "0.24"
 
 # 4 4 4 4 4 4 4 AsyncAPI 工具
+
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 async-trait = "0.1"
 
 # 5 5 5 5 5 5 5 工具库
+
 tracing = "0.1"
 thiserror = "1.0"
+
 ```
 
 ## 5.1 2. AsyncAPI 规范解析器
@@ -139,6 +132,7 @@ impl AsyncApiGenerator {
         }
     }
 }
+
 ```
 
 ## 5.2 3. 消息队列集成层
@@ -267,6 +261,7 @@ impl MessageQueue for MqttMessageQueue {
         })
     }
 }
+
 ```
 
 ## 5.3 4. 消息处理器生成器
@@ -311,6 +306,7 @@ impl<T: MessageQueue> MessageHandlerGenerator<T> {
         }
     }
 }
+
 ```
 
 ## 5.4 5. 消息转换和验证
@@ -365,6 +361,7 @@ impl MessageValidationGenerator {
         }
     }
 }
+
 ```
 
 ## 5.5 6. 错误处理和重试机制
@@ -406,6 +403,7 @@ impl ErrorHandlingGenerator {
         }
     }
 }
+
 ```
 
 ## 5.6 7. 主程序实现
@@ -473,6 +471,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了：

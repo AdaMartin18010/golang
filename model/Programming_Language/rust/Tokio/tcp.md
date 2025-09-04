@@ -15,19 +15,6 @@
   - [1.11 10. 测试实现](#10-测试实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个使用 Rust 2024 实现的完整 IM (即时通讯) 系统，包含 TCP/UDP 服务端和客户端。
 
 ## 1.1 目录
@@ -66,6 +53,7 @@ quinn = "0.10"  # QUIC 协议支持
 parking_lot = "0.12"
 backoff = { version = "0.4", features = ["tokio"] }
 metrics = "0.21"
+
 ```
 
 ## 1.3 2. 消息协议定义
@@ -153,6 +141,7 @@ impl Decoder for MessageCodec {
         }
     }
 }
+
 ```
 
 ## 1.4 3. TCP 服务端实现
@@ -307,6 +296,7 @@ impl ImServer {
         });
     }
 }
+
 ```
 
 ## 1.5 4. TCP 客户端实现
@@ -464,6 +454,7 @@ impl ImClient {
         });
     }
 }
+
 ```
 
 ## 1.6 5. UDP 消息广播实现
@@ -544,6 +535,7 @@ impl BroadcastClient {
         Ok(stream)
     }
 }
+
 ```
 
 ## 1.7 6. 消息存储实现
@@ -584,6 +576,7 @@ impl MessageStore {
         Ok(())
     }
 }
+
 ```
 
 ## 1.8 7. 错误处理实现
@@ -618,6 +611,7 @@ impl From<ImError> for backoff::Error<ImError> {
         }
     }
 }
+
 ```
 
 ## 1.9 8. 指标收集实现
@@ -660,6 +654,7 @@ impl ImMetrics {
         self.message_latency.observe(latency.as_millis() as f64);
     }
 }
+
 ```
 
 ## 1.10 9. 主程序实现
@@ -702,6 +697,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 ## 1.11 10. 测试实现
@@ -751,6 +747,7 @@ mod tests {
         Ok(())
     }
 }
+
 ```
 
 这个完整的示例展示了如何构建一个功能完整的 IM 系统，包括：

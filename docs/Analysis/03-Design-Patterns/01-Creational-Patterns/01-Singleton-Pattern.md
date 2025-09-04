@@ -129,6 +129,7 @@ func (s *Singleton) SetData(data string) {
     defer s.mu.Unlock()
     s.data = data
 }
+
 ```
 
 ### 3.1.1.4.2 配置管理单例
@@ -212,6 +213,7 @@ func (cm *ConfigManager) GetConfig() *Config {
     defer cm.mu.RUnlock()
     return cm.config
 }
+
 ```
 
 ### 3.1.1.4.3 连接池单例
@@ -271,6 +273,7 @@ func (cp *ConnectionPool) GetDB() *sql.DB {
     defer cp.mu.RUnlock()
     return cp.db
 }
+
 ```
 
 ## 3.1.1.5 4. 工程案例
@@ -320,6 +323,7 @@ func (l *Logger) Error(format string, v ...interface{}) {
     defer l.mu.Unlock()
     l.logger.Printf("[ERROR] "+format, v...)
 }
+
 ```
 
 ### 3.1.1.5.2 缓存管理器单例
@@ -387,6 +391,7 @@ func (cm *CacheManager) Get(key string) (interface{}, bool) {
     
     return item.Value, true
 }
+
 ```
 
 ## 3.1.1.6 5. 批判性分析

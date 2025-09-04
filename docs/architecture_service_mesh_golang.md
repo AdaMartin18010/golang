@@ -103,6 +103,7 @@ graph TD
 
     style DataPlane fill:#e6f3ff,stroke:#a6cfff,stroke-width:2px
     style ControlPlane fill:#fffbe6,stroke:#ffe680,stroke-width:2px
+
 ```
 
 ### 3.2 Sidecar代理模式
@@ -325,6 +326,7 @@ func (lc *LeastConnectionsStrategy) DecrementConnections(endpointID string) {
         lc.connectionCounts[endpointID]--
     }
 }
+
 ```
 
 ### 3.4 流量管理与路由
@@ -708,6 +710,7 @@ func (tm *TrafficManager) calculateBackoffDelay(attempt int) time.Duration {
         return policy.BaseDelay
     }
 }
+
 ```
 
 ### 3.5 安全与认证
@@ -1065,6 +1068,7 @@ func (sm *SecurityManager) evaluateCondition(authResult *AuthResult, condition *
         return true
     }
 }
+
 ```
 
 ## 4. 实际案例分析
@@ -1211,6 +1215,7 @@ func (sr *ServiceRegistry) updateEndpointStatus(endpoint *Endpoint, healthy bool
     
     endpoint.LastCheck = time.Now()
 }
+
 ```
 
 ### 4.2 金丝雀发布
@@ -1507,6 +1512,7 @@ func (cdm *CanaryDeploymentManager) rollbackCanary(config *DeploymentConfig) err
     
     return nil
 }
+
 ```
 
 ## 5. 未来趋势与国际前沿
@@ -1609,6 +1615,7 @@ func main() {
         log.Fatalf("Failed to start server: %v", err)
     }
 }
+
 ```
 
 **关键点**:
@@ -1646,6 +1653,7 @@ spec:
         host: reviews-service
         subset: v2
       weight: 5
+
 ```
 
 #### 9.1.2 流量镜像 (Traffic Mirroring)
@@ -1673,6 +1681,7 @@ spec:
       subset: v3
     mirrorPercentage:
       value: 100.0
+
 ```
 
 ### 9.2 安全 (Security)
@@ -1696,6 +1705,7 @@ metadata:
 spec:
   mtls:
     mode: STRICT
+
 ```
 
 ## 10. 相关架构主题
@@ -1715,4 +1725,4 @@ spec:
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

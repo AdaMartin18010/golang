@@ -28,19 +28,6 @@
   - [10.6 7.  使用示例](#7-使用示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [基于 Rust 2024 + Generator 的 GraphQL API 与多数据库集成项目](#基于-rust-2024--generator-的-graphql-api-与多数据库集成项目)
@@ -64,21 +51,27 @@
 
 ```toml
 [dependencies]
+
 # 2 2 2 2 2 2 2 GraphQL 依赖
+
 async-graphql = "7.0"
 async-graphql-actix-web = "7.0"
 
 # 3 3 3 3 3 3 3 数据库驱动
+
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "mysql", "postgres", "sqlite", "json"] }
 
 # 4 4 4 4 4 4 4 异步运行时
+
 tokio = { version = "1.0", features = ["full"] }
 async-stream = "0.3"
 
 # 5 5 5 5 5 5 5 工具库
+
 serde = { version = "1.0", features = ["derive"] }
 tracing = "0.1"
 thiserror = "1.0"
+
 ```
 
 ## 5.1 2. GraphQL Schema 生成器
@@ -187,6 +180,7 @@ impl SchemaGenerator {
         }
     }
 }
+
 ```
 
 ## 5.2 3. 数据库模型生成器
@@ -301,6 +295,7 @@ impl DatabaseModelGenerator {
         }
     }
 }
+
 ```
 
 ## 5.3 4. 查询解析器生成器
@@ -380,6 +375,7 @@ impl<'a> QueryResolverGenerator<'a> {
         }
     }
 }
+
 ```
 
 ## 5.4 5. 数据库连接池管理器
@@ -458,6 +454,7 @@ impl DatabasePoolManager {
         }
     }
 }
+
 ```
 
 ## 5.5 6. 实体关系管理器
@@ -507,6 +504,7 @@ impl EntityRelationManager {
         Ok(sql)
     }
 }
+
 ```
 
 ## 5.6 7. 使用示例
@@ -623,6 +621,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了：
@@ -663,26 +662,33 @@ async fn main() -> Result<()> {
 
 ```toml
 [dependencies]
+
 # 6 6 6 6 6 6 6 GraphQL 相关
+
 async-graphql = { version = "7.0", features = ["chrono", "json"] }
 async-graphql-actix-web = "7.0"
 
 # 7 7 7 7 7 7 7 数据库驱动
+
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "mysql", "postgres", "sqlite", "json", "chrono"] }
 mongodb = "2.8"
 redis = { version = "0.24", features = ["tokio-comp", "json"] }
 
 # 8 8 8 8 8 8 8 序列化
+
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # 9 9 9 9 9 9 9 异步运行时
+
 tokio = { version = "1.0", features = ["full"] }
 async-stream = "0.3"
 
 # 10 10 10 10 10 10 10 工具库
+
 chrono = { version = "0.4", features = ["serde"] }
 tracing = "0.1"
+
 ```
 
 ## 10.1 2. 数据模型定义
@@ -732,6 +738,7 @@ pub enum PostStatus {
     Published,
     Archived,
 }
+
 ```
 
 ## 10.2 3. 数据库连接管理器
@@ -821,6 +828,7 @@ impl DatabaseManager {
         }
     }
 }
+
 ```
 
 ## 10.3 4. GraphQL 查询解析器
@@ -947,6 +955,7 @@ impl QueryRoot {
         Ok(posts)
     }
 }
+
 ```
 
 ## 10.4 5. GraphQL 变更解析器
@@ -1070,6 +1079,7 @@ impl MutationRoot {
         Err("Post not found".into())
     }
 }
+
 ```
 
 ## 10.5 6. 数据库迁移生成器
@@ -1159,6 +1169,7 @@ impl DatabaseMigrationGenerator {
         }
     }
 }
+
 ```
 
 ## 10.6 7.  使用示例
@@ -1232,6 +1243,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了：

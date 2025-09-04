@@ -73,6 +73,7 @@
 2. 函数应用规则：如果 Γ ⊢ f : τ₁ → τ₂ 且 Γ ⊢ e : τ₁，则 Γ ⊢ f(e) : τ₂
 3. 函数抽象规则：如果 Γ, x:τ₁ ⊢ e : τ₂，则 Γ ⊢ λx.e : τ₁ → τ₂
 4. 类型推导规则：如果 Γ ⊢ e : τ 且 τ ≤ τ'，则 Γ ⊢ e : τ'
+
 ```
 
 **优势**：
@@ -95,6 +96,7 @@
 1. 编译时类型检查确保类型安全
 2. 运行时类型信息保持一致性
 3. 类型转换必须显式声明
+
 ```
 
 ### 6.1.1.2.2 **类型层次结构**
@@ -135,6 +137,7 @@ graph TD
     
     E --> Y[EmptyInterface]
     E --> Z[MethodSet]
+
 ```
 
 ## 6.1.1.3 🔍 **基础类型深度分析**
@@ -167,6 +170,7 @@ var IntegerTypes = map[string]IntegerType{
     "uint32": {4, false, 0, 4294967295},
     "uint64": {8, false, 0, 18446744073709551615},
 }
+
 ```
 
 **类型转换规则**：
@@ -211,6 +215,7 @@ func ConvertInteger(value int64, targetType string) (interface{}, error) {
         return value, nil
     }
 }
+
 ```
 
 #### 6.1.1.3.1.2 **浮点类型**
@@ -245,6 +250,7 @@ func FloatOperations() {
     result := new(big.Float).Add(bigA, bigB)
     fmt.Printf("BigFloat: a + b == c: %v\n", result.Cmp(bigC) == 0)
 }
+
 ```
 
 ### 6.1.1.3.2 **字符串类型系统**
@@ -282,6 +288,7 @@ func StringOperations() {
     // 使用fmt.Sprintf进行格式化
     formatted := fmt.Sprintf("%s, %s", s1, s2)
 }
+
 ```
 
 #### 6.1.1.3.2.2 **字符串性能优化**
@@ -313,6 +320,7 @@ func BenchmarkStringOperations(b *testing.B) {
         }
     })
 }
+
 ```
 
 ## 6.1.1.4 🏗️ **复合类型深度分析**
@@ -357,6 +365,7 @@ func ArrayOperations() {
 func modifyArray(arr [5]int) {
     arr[0] = 999 // 修改的是副本
 }
+
 ```
 
 #### 6.1.1.4.1.2 **数组性能特征**
@@ -389,6 +398,7 @@ func ArrayPerformanceAnalysis() {
     fmt.Printf("Array copy time: %v\n", copyTime)
     fmt.Printf("Sum: %d\n", sum)
 }
+
 ```
 
 ### 6.1.1.4.2 **切片类型系统**
@@ -429,6 +439,7 @@ func SliceOperations() {
     slice5[0] = 200
     fmt.Printf("slice2 after modifying slice5: %v\n", slice2)
 }
+
 ```
 
 #### 6.1.1.4.2.2 **切片性能优化**
@@ -458,6 +469,7 @@ func SlicePerformanceOptimization() {
     fmt.Printf("Dynamic time: %v\n", dynamicTime)
     fmt.Printf("Performance improvement: %.2fx\n", float64(dynamicTime)/float64(preallocTime))
 }
+
 ```
 
 ### 6.1.1.4.3 **映射类型系统**
@@ -503,6 +515,7 @@ func MapOperations() {
     map3["a"] = 999
     fmt.Printf("map2 after modifying map3: %v\n", map2)
 }
+
 ```
 
 #### 6.1.1.4.3.2 **映射性能特征**
@@ -536,6 +549,7 @@ func MapPerformanceAnalysis() {
     fmt.Printf("Lookup time: %v\n", lookupTime)
     fmt.Printf("Insert time: %v\n", insertTime)
 }
+
 ```
 
 ## 6.1.1.5 🔧 **接口类型系统**
@@ -559,6 +573,7 @@ type Method struct {
     Name string // 方法名
     Type *Type // 方法类型
 }
+
 ```
 
 #### 6.1.1.5.1.2 **接口实现分析**
@@ -601,6 +616,7 @@ func InterfaceTypeAssertion() {
         fmt.Printf("Unknown animal type: %T\n", v)
     }
 }
+
 ```
 
 ### 6.1.1.5.2 **空接口分析**
@@ -638,6 +654,7 @@ func EmptyInterfaceAnalysis() {
     
     fmt.Printf("Interface overhead: %.2fx\n", float64(interfaceTime)/float64(directTime))
 }
+
 ```
 
 ## 6.1.1.6 🚀 **泛型类型系统**
@@ -689,6 +706,7 @@ func Sum[T Number](numbers []T) T {
     }
     return sum
 }
+
 ```
 
 ### 6.1.1.6.2 **泛型性能分析**
@@ -723,6 +741,7 @@ func MinInterface(a, b interface{}) interface{} {
     }
     return a
 }
+
 ```
 
 ## 6.1.1.7 📊 **类型系统性能分析**
@@ -756,6 +775,7 @@ func MemoryLayoutAnalysis() {
     fmt.Printf("Optimized alignment: %d\n", unsafe.Alignof(opt))
     fmt.Printf("Unoptimized alignment: %d\n", unsafe.Alignof(unopt))
 }
+
 ```
 
 ### 6.1.1.7.2 **类型转换性能**
@@ -786,6 +806,7 @@ func TypeConversionPerformance() {
     fmt.Printf("Interface conversion time: %v\n", interfaceConversionTime)
     fmt.Printf("Interface overhead: %.2fx\n", float64(interfaceConversionTime)/float64(intConversionTime))
 }
+
 ```
 
 ## 6.1.1.8 🎯 **类型系统最佳实践**
@@ -827,6 +848,7 @@ func (sc *SafeContainer) GetString(key string) (string, error) {
     
     return "", fmt.Errorf("value for key %s is not a string", key)
 }
+
 ```
 
 #### 6.1.1.8.1.2 **性能优化原则**
@@ -854,6 +876,7 @@ func (oc *OptimizedContainer) GetString(key string) (string, bool) {
     value, exists := oc.strings[key]
     return value, exists
 }
+
 ```
 
 ## 6.1.1.9 🔮 **类型系统发展趋势**
@@ -877,6 +900,7 @@ type Result[T any] = struct {
     Data  T
     Error error
 }
+
 ```
 
 #### 6.1.1.9.1.2 **类型推导改进**
@@ -912,6 +936,7 @@ func Reduce[T, U any](slice []T, initial U, fn func(U, T) U) U {
     }
     return result
 }
+
 ```
 
 ---

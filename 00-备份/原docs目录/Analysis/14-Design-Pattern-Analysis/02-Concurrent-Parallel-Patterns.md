@@ -147,6 +147,7 @@ func (ao *ActiveObject) Shutdown() {
 func generateID() string {
     return fmt.Sprintf("req_%d", time.Now().UnixNano())
 }
+
 ```
 
 ### 1.4 性能分析
@@ -244,6 +245,7 @@ func (m *Monitor) Snapshot() map[string]interface{} {
     }
     return snapshot
 }
+
 ```
 
 ## 3. 线程池模式 (Thread Pool)
@@ -465,6 +467,7 @@ func (p *ThreadPool) Shutdown() {
 func (p *ThreadPool) GetStats() map[string]interface{} {
     return p.stats.GetStats()
 }
+
 ```
 
 ## 4. 生产者-消费者模式 (Producer-Consumer)
@@ -715,6 +718,7 @@ func (s *ProducerConsumerSystem) Stop() {
 func (s *ProducerConsumerSystem) GetStats() map[string]interface{} {
     return s.buffer.stats.GetStats()
 }
+
 ```
 
 ## 5. 读写锁模式 (Readers-Writer Lock)
@@ -875,6 +879,7 @@ func (r *RWLock) Snapshot() map[string]interface{} {
 func (r *RWLock) GetStats() map[string]interface{} {
     return r.stats.GetStats()
 }
+
 ```
 
 ## 6. Future/Promise模式
@@ -1087,6 +1092,7 @@ func (p *FutureExecutor) Any(futures []*Future) *Future {
     
     return resultFuture
 }
+
 ```
 
 ## 7. Actor模型
@@ -1314,6 +1320,7 @@ func (a *ExampleActor) handleMessage(message Message) {
         fmt.Printf("Actor %s: Unknown message type %s\n", a.ID, message.GetType())
     }
 }
+
 ```
 
 ## 8. 性能分析

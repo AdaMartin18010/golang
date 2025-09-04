@@ -38,6 +38,7 @@ if let Some(strong_again) = weak.upgrade() {
 } else {
     println!("The data has been dropped.");
 }
+
 ```
 
 #### `downgrade`
@@ -55,6 +56,7 @@ let strong = Rc::new(5);
 let weak: Weak<i32> = Rc::downgrade(&strong); // 创建 Weak 引用
 
 println!("Strong reference count: {}", Rc::strong_count(&strong)); // 输出 1
+
 ```
 
 ### 总结
@@ -137,6 +139,7 @@ fn main() {
     // 等待线程完成
     handle.join().unwrap();
 }
+
 ```
 
 ### 代码解释
@@ -224,6 +227,7 @@ fn main() {
         }
     }
 }
+
 ```
 
 ## 5. 代码解释

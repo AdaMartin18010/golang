@@ -74,19 +74,6 @@
     - [3.2.4 实现层面](#实现层面)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 一、理论层面
 
 ### 1.1.1 1. 分布式系统基础理论
@@ -100,6 +87,7 @@ CAP定理指出分布式系统无法同时满足一致性(Consistency)、可用�
 - 核心交易: CP系统 (强一致性)
 - 用户体验: AP系统 (高可用性)
 - 分析报表: EC系统 (低延迟)
+
 ```
 
 #### 1.1.1.2 一致性模型谱系
@@ -152,6 +140,7 @@ CAP定理指出分布式系统无法同时满足一致性(Consistency)、可用�
 - 松耦合: 事件发布者不关心事件处理
 - 可扩展: 容易添加新的事件消费者
 - 弹性: 系统部分故障不会导致整体崩溃
+
 ```
 
 具体模式:
@@ -189,13 +178,18 @@ CAP定理指出分布式系统无法同时满足一致性(Consistency)、可用�
 将系统分为命令端(写)和查询端(读):
 
 ```text
+
 +----------------+      +-----------------+
 | 命令端(写模型)  |----->| 事件存储/消息队列 |
+
 +----------------+      +-----------------+
                                |
+
 +----------------+      +-----------------+
 | 查询端(读模型)  |<-----| 读模型投影      |
+
 +----------------+      +-----------------+
+
 ```
 
 #### 1.2.2.3 六边形架构(端口与适配器)
@@ -224,18 +218,23 @@ CAP定理指出分布式系统无法同时满足一致性(Consistency)、可用�
 为特定前端优化的后端服务:
 
 ```text
+
 +-------+  +-------+  +-------+
 | Web端 |  | 移动端 |  | IoT端 |
+
 +-------+  +-------+  +-------+
     |          |          |
+
 +-------+  +-------+  +-------+
 |Web BFF|  |移动BFF|  |IoT BFF|
+
 +-------+  +-------+  +-------+
          \     |     /
           \    |    /
        +----------------+
        | 微服务/领域服务 |
        +----------------+
+
 ```
 
 ### 1.2.4 4. 可靠性架构
@@ -305,6 +304,7 @@ impl PendingOrder {
         }
     }
 }
+
 ```
 
 #### 1.3.1.2 不变量强制
@@ -332,6 +332,7 @@ impl Account {
         Ok(())
     }
 }
+
 ```
 
 ### 1.3.2 2. 错误处理架构
@@ -397,6 +398,7 @@ enum ApiError {
     
     // ...
 }
+
 ```
 
 #### 1.3.2.2 错误处理策略
@@ -442,6 +444,7 @@ impl ErrorHandler for DatabaseErrorHandler {
         }
     }
 }
+
 ```
 
 ### 1.3.3 3. 工作流设计
@@ -529,6 +532,7 @@ impl OrderWorkflow {
         Err(WorkflowError::InvalidTransition)
     }
 }
+
 ```
 
 #### 1.3.3.2 工作流引擎接口
@@ -558,6 +562,7 @@ trait WorkflowEngine {
     async fn get_history(&self, instance_id: WorkflowInstanceId) 
         -> Result<Vec<WorkflowHistoryEntry<Self::Event, Self::State>>, Self::Error>;
 }
+
 ```
 
 ### 1.3.4 4. 服务交互设计
@@ -583,6 +588,7 @@ trait MesSystem {
     async fn get_production_status(&self, id: &MesOrderId) -> Result<ProductionStatus, MesError>;
     // ...
 }
+
 ```
 
 #### 1.3.4.2 适配器实现
@@ -624,6 +630,7 @@ struct SiemensMesAdapter {
 impl MesSystem for SiemensMesAdapter {
     // 具体实现...
 }
+
 ```
 
 ## 1.4 四、实现层面
@@ -706,6 +713,7 @@ impl Order<Submitted> {
         }
     }
 }
+
 ```
 
 #### 1.4.1.2 代数数据类型(ADT)建模
@@ -759,6 +767,7 @@ enum ProcessingResult<T, E> {
         check_after: Duration,
     },
 }
+
 ```
 
 ### 1.4.2 2. 异步编程实现
@@ -874,6 +883,7 @@ where
         Ok(result.new_state)
     }
 }
+
 ```
 
 #### 1.4.2.2 自定义执行器实现
@@ -962,6 +972,7 @@ where
         Ok(new_state)
     }
 }
+
 ```
 
 ### 1.4.3 3. 事务与一致性实现
@@ -1005,6 +1016,7 @@ impl<C: Clone + Send + Sync + 'static> SagaCoordinator<C> {
                             Err(ce) => {
                                 // 补偿失败是严重问题,记录但继续尝试其他补偿
                                 log::error!
+
 # 2 2 2 2 2 2 2 复杂分布式系统的全面分析（续）
 
 ## 2.1 四、实现层面（续）
@@ -1018,7 +1030,7 @@ impl<C: Clone + Send + Sync + 'static> SagaCoordinator<C> {
 impl<C: Clone + Send + Sync + 'static> SagaCoordinator<C> {
     async fn execute(&self, context: C) -> Result<(), SagaError> {
         let mut executed_steps = Vec::new();
-        
+  
         // 执行每个步骤
         for step in &self.steps {
             match (step.action)(&context).await {
@@ -1029,7 +1041,7 @@ impl<C: Clone + Send + Sync + 'static> SagaCoordinator<C> {
                 Err(e) => {
                     // 步骤失败,开始补偿流程
                     log::error!("Saga步骤 '{}' 失败: {:?}, 开始补偿", step.name, e);
-                    
+  
                     // 按相反顺序执行补偿动作
                     for executed_step in executed_steps.iter().rev() {
                         match (executed_step.compensation)(&context).await {
@@ -1042,12 +1054,12 @@ impl<C: Clone + Send + Sync + 'static> SagaCoordinator<C> {
                             }
                         }
                     }
-                    
+  
                     return Err(SagaError::StepFailed(step.name.clone(), e));
                 }
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -1055,7 +1067,7 @@ impl<C: Clone + Send + Sync + 'static> SagaCoordinator<C> {
 // 使用示例
 async fn create_order_saga() -> SagaCoordinator<OrderContext> {
     let mut saga = SagaCoordinator { steps: Vec::new() };
-    
+  
     // 1. 验证库存
     saga.steps.push(SagaStep {
         name: "验证库存".to_string(),
@@ -1074,7 +1086,7 @@ async fn create_order_saga() -> SagaCoordinator<OrderContext> {
             })
         }),
     });
-    
+  
     // 2. 处理支付
     saga.steps.push(SagaStep {
         name: "处理支付".to_string(),
@@ -1093,7 +1105,7 @@ async fn create_order_saga() -> SagaCoordinator<OrderContext> {
             })
         }),
     });
-    
+  
     // 3. 创建配送单
     saga.steps.push(SagaStep {
         name: "创建配送单".to_string(),
@@ -1116,9 +1128,10 @@ async fn create_order_saga() -> SagaCoordinator<OrderContext> {
             })
         }),
     });
-    
+  
     saga
 }
+
 ```
 
 #### 2.1.1.2 事件溯源实现
@@ -1134,7 +1147,9 @@ trait DomainEvent: Send + Sync {
 }
 
 // 具体领域事件
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 struct OrderCreatedEvent {
     id: OrderId,
     customer_id: CustomerId,
@@ -1148,30 +1163,32 @@ impl DomainEvent for OrderCreatedEvent {
     fn entity_id(&self) -> &str { self.id.as_str() }
     fn occurred_at(&self) -> DateTime<Utc> { self.occurred_at }
     fn version(&self) -> u64 { self.version }
-    fn payload(&self) -> &serde_json::Value { 
-        /* 实现省略 */ 
+    fn payload(&self) -> &serde_json::Value {
+        /* 实现省略 */
         &serde_json::json!({})
     }
 }
 
 // 事件存储接口
-#[async_trait]
+
+# [async_trait]
+
 trait EventStore {
     async fn append_events<E: DomainEvent + 'static>(
-        &self, 
-        stream_id: &str, 
-        expected_version: Option<u64>, 
+        &self,
+        stream_id: &str,
+        expected_version: Option<u64>,
         events: Vec<E>
     ) -> Result<u64, EventStoreError>;
-    
+  
     async fn read_stream<E: DomainEvent + DeserializeOwned + 'static>(
-        &self, 
+        &self,
         stream_id: &str
     ) -> Result<Vec<E>, EventStoreError>;
-    
+  
     async fn read_stream_from<E: DomainEvent + DeserializeOwned + 'static>(
-        &self, 
-        stream_id: &str, 
+        &self,
+        stream_id: &str,
         start_version: u64
     ) -> Result<Vec<E>, EventStoreError>;
 }
@@ -1180,23 +1197,23 @@ trait EventStore {
 trait EventSourcedAggregate: Send + Sync {
     type Event: DomainEvent;
     type Error;
-    
+  
     // 通过事件序列重建聚合根
     fn apply_event(&mut self, event: Self::Event) -> Result<(), Self::Error>;
-    
+  
     // 获取未提交的事件
     fn uncommitted_events(&self) -> Vec<Self::Event>;
-    
+  
     // 清除未提交事件
     fn clear_uncommitted_events(&mut self);
-    
+  
     // 获取当前版本
     fn version(&self) -> u64;
 }
 
 // 事件溯源仓库
-struct EventSourcedRepository<A, E> 
-where 
+struct EventSourcedRepository<A, E>
+where
     A: EventSourcedAggregate<Event = E>,
     E: DomainEvent + DeserializeOwned + 'static,
 {
@@ -1204,8 +1221,8 @@ where
     _marker: PhantomData<(A, E)>,
 }
 
-impl<A, E> EventSourcedRepository<A, E> 
-where 
+impl<A, E> EventSourcedRepository<A, E>
+where
     A: EventSourcedAggregate<Event = E> + Default,
     E: DomainEvent + DeserializeOwned + 'static,
 {
@@ -1213,21 +1230,21 @@ where
         // 1. 从事件存储读取事件流
         let events = self.event_store.read_stream::<E>(id).await
             .map_err(|e| RepositoryError::EventStoreError(e))?;
-            
+  
         // 2. 重建聚合根
         let mut aggregate = A::default();
-        
+  
         for event in events {
             aggregate.apply_event(event)
                 .map_err(|e| RepositoryError::AggregateError(format!("{:?}", e)))?;
         }
-        
+  
         Ok(aggregate)
     }
-    
+  
     async fn save(&self, aggregate: &mut A) -> Result<(), RepositoryError> {
         let uncommitted_events = aggregate.uncommitted_events();
-        
+  
         if !uncommitted_events.is_empty() {
             // 保存新事件
             self.event_store.append_events(
@@ -1235,17 +1252,19 @@ where
                 Some(aggregate.version()),
                 uncommitted_events
             ).await.map_err(|e| RepositoryError::EventStoreError(e))?;
-            
+  
             // 清理未提交事件
             aggregate.clear_uncommitted_events();
         }
-        
+  
         Ok(())
     }
 }
 
 // 使用示例
-#[derive(Default)]
+
+# [derive(Default)]
+
 struct Order {
     id: Option<OrderId>,
     customer_id: Option<CustomerId>,
@@ -1258,7 +1277,7 @@ struct Order {
 impl EventSourcedAggregate for Order {
     type Event = OrderEvent;
     type Error = OrderError;
-    
+  
     fn apply_event(&mut self, event: Self::Event) -> Result<(), Self::Error> {
         match event {
             OrderEvent::Created(e) => {
@@ -1274,18 +1293,18 @@ impl EventSourcedAggregate for Order {
             },
             // 处理其他事件类型...
         }
-        
+  
         Ok(())
     }
-    
+  
     fn uncommitted_events(&self) -> Vec<Self::Event> {
         self.uncommitted_events.clone()
     }
-    
+  
     fn clear_uncommitted_events(&mut self) {
         self.uncommitted_events.clear();
     }
-    
+  
     fn version(&self) -> u64 {
         self.version
     }
@@ -1294,7 +1313,7 @@ impl EventSourcedAggregate for Order {
 impl Order {
     fn create(id: OrderId, customer_id: CustomerId) -> Result<Self, OrderError> {
         let mut order = Order::default();
-        
+  
         let event = OrderEvent::Created(OrderCreatedEvent {
             id,
             customer_id,
@@ -1302,31 +1321,32 @@ impl Order {
             occurred_at: Utc::now(),
             version: 1,
         });
-        
+  
         order.apply_event(event.clone())?;
         order.uncommitted_events.push(event);
-        
+  
         Ok(order)
     }
-    
+  
     fn add_item(&mut self, item: OrderItem) -> Result<(), OrderError> {
         if self.status != OrderStatus::Created {
             return Err(OrderError::InvalidState("只能在创建状态添加商品".to_string()));
         }
-        
+  
         let event = OrderEvent::ItemAdded(OrderItemAddedEvent {
             order_id: self.id.clone().unwrap(),
             item,
             occurred_at: Utc::now(),
             version: self.version + 1,
         });
-        
+  
         self.apply_event(event.clone())?;
         self.uncommitted_events.push(event);
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ### 2.1.2 4. 容错与弹性实现
@@ -1375,7 +1395,7 @@ impl CircuitBreaker {
             tripped: AtomicBool::new(false),
         }
     }
-    
+  
     fn current_state(&self) -> CircuitState {
         match self.state.load(Ordering::SeqCst) {
             0 => CircuitState::Closed,
@@ -1384,7 +1404,7 @@ impl CircuitBreaker {
             _ => unreachable!(),
         }
     }
-    
+  
     async fn execute<F, Fut, T, E>(&self, operation: F) -> Result<T, BreakerError<E>>
     where
         F: FnOnce() -> Fut,
@@ -1399,9 +1419,9 @@ impl CircuitBreaker {
                     let guard = self.last_failure.lock().await;
                     guard.unwrap_or_else(|| Instant::now() - self.config.open_duration - Duration::from_secs(1))
                 };
-                
+  
                 let elapsed = last_failure_time.elapsed();
-                
+  
                 if elapsed >= self.config.open_duration {
                     // 进入半开状态
                     self.state.store(2, Ordering::SeqCst);
@@ -1414,7 +1434,7 @@ impl CircuitBreaker {
             },
             _ => {},
         }
-        
+  
         // 执行操作
         let result = match timeout(self.config.timeout, operation()).await {
             Ok(inner_result) => inner_result,
@@ -1423,7 +1443,7 @@ impl CircuitBreaker {
                 return Err(BreakerError::Timeout);
             }
         };
-        
+  
         // 处理结果
         match result {
             Ok(value) => {
@@ -1436,12 +1456,12 @@ impl CircuitBreaker {
             }
         }
     }
-    
+  
     async fn record_success(&self) {
         match self.current_state() {
             CircuitState::HalfOpen => {
                 let success = self.success_count.fetch_add(1, Ordering::SeqCst) + 1;
-                
+  
                 if success >= self.config.success_threshold {
                     // 达到成功阈值,切换回关闭状态
                     self.state.store(0, Ordering::SeqCst);
@@ -1456,36 +1476,36 @@ impl CircuitBreaker {
             _ => {},
         }
     }
-    
+  
     async fn record_failure(&self) {
         match self.current_state() {
             CircuitState::Closed => {
                 let failures = self.failure_count.fetch_add(1, Ordering::SeqCst) + 1;
-                
+  
                 if failures >= self.config.failure_threshold {
                     // 达到失败阈值,打开断路器
                     self.state.store(1, Ordering::SeqCst);
                     self.tripped.store(true, Ordering::SeqCst);
-                    
+  
                     // 记录失败时间
                     {
                         let mut guard = self.last_failure.lock().await;
                         *guard = Some(Instant::now());
                     }
-                    
+  
                     log::warn!("断路器 '{}' 已触发断路", self.name);
                 }
             },
             CircuitState::HalfOpen => {
                 // 半开状态下任何失败都会重新打开断路器
                 self.state.store(1, Ordering::SeqCst);
-                
+  
                 // 更新失败时间
                 {
                     let mut guard = self.last_failure.lock().await;
                     *guard = Some(Instant::now());
                 }
-                
+  
                 log::warn!("断路器 '{}' 半开状态失败,重新断路", self.name);
             },
             _ => {},
@@ -1504,6 +1524,7 @@ async fn call_external_service(breaker: &CircuitBreaker) -> Result<Response, Ser
         BreakerError::OperationFailed(inner) => ServiceError::ExternalError(inner.to_string()),
     })
 }
+
 ```
 
 #### 2.1.2.2 重试机制实现
@@ -1533,12 +1554,12 @@ where
 {
     let mut attempt = 0;
     let mut backoff = config.initial_backoff;
-    
+  
     loop {
         attempt += 1;
-        
+  
         let result = operation().await;
-        
+  
         match result {
             Ok(value) => return Ok(value),
             Err(error) => {
@@ -1546,12 +1567,12 @@ where
                 if attempt >= config.max_attempts {
                     return Err(RetryError::ExhaustedRetries(error));
                 }
-                
+  
                 // 检查是否应该重试这类错误
                 if !(config.retry_on)(&error) {
                     return Err(RetryError::NonRetryableError(error));
                 }
-                
+  
                 // 计算下一次重试前的等待时间
                 log::info!(
                     "操作失败,将进行第 {}/{} 次重试,等待 {:?}: {:?}",
@@ -1560,10 +1581,10 @@ where
                     backoff,
                     error
                 );
-                
+  
                 // 等待退避时间
                 sleep(backoff).await;
-                
+  
                 // 计算下一次退避时间
                 backoff = std::cmp::min(
                     Duration::from_secs_f64(backoff.as_secs_f64() * config.backoff_multiplier),
@@ -1583,7 +1604,7 @@ impl Retrier {
     fn new(config: RetryConfig) -> Self {
         Self { config }
     }
-    
+  
     async fn retry<F, Fut, T, E>(&self, operation: F) -> Result<T, RetryError<E>>
     where
         F: Fn() -> Fut + Send,
@@ -1604,6 +1625,7 @@ async fn submit_to_erp(order: &Order, retrier: &Retrier) -> Result<ErpReference,
         RetryError::NonRetryableError(inner) => ApiError::BadRequest(format!("无效请求: {}", inner)),
     })
 }
+
 ```
 
 ### 2.1.3 5. 服务注册与发现实现
@@ -1615,7 +1637,9 @@ use tokio::sync::RwLock;
 use rand::{thread_rng, seq::SliceRandom};
 
 // 服务实例信息
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 struct ServiceInstance {
     id: String,
     service_name: String,
@@ -1627,7 +1651,8 @@ struct ServiceInstance {
     last_heartbeat: DateTime<Utc>,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+# [derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+
 enum HealthStatus {
     UP,
     DOWN,
@@ -1645,46 +1670,46 @@ impl ServiceRegistry {
             instances: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     // 注册服务实例
     async fn register(&self, instance: ServiceInstance) -> Result<(), RegistryError> {
         let mut instances = self.instances.write().await;
-        
+  
         let service_instances = instances
             .entry(instance.service_name.clone())
             .or_insert_with(Vec::new);
-            
+  
         // 检查是否已存在相同ID
         if service_instances.iter().any(|i| i.id == instance.id) {
             return Err(RegistryError::DuplicateInstance(instance.id));
         }
-        
+  
         service_instances.push(instance);
         Ok(())
     }
-    
+  
     // 注销服务实例
     async fn deregister(&self, service_name: &str, instance_id: &str) -> Result<(), RegistryError> {
         let mut instances = self.instances.write().await;
-        
+  
         if let Some(service_instances) = instances.get_mut(service_name) {
             let before_len = service_instances.len();
             service_instances.retain(|i| i.id != instance_id);
-            
+  
             if service_instances.len() == before_len {
                 return Err(RegistryError::InstanceNotFound(instance_id.to_string()));
             }
-            
+  
             Ok(())
         } else {
             Err(RegistryError::ServiceNotFound(service_name.to_string()))
         }
     }
-    
+  
     // 更新服务实例状态
     async fn update_status(&self, service_name: &str, instance_id: &str, status: HealthStatus) -> Result<(), RegistryError> {
         let mut instances = self.instances.write().await;
-        
+  
         if let Some(service_instances) = instances.get_mut(service_name) {
             if let Some(instance) = service_instances.iter_mut().find(|i| i.id == instance_id) {
                 instance.health_status = status;
@@ -1697,29 +1722,29 @@ impl ServiceRegistry {
             Err(RegistryError::ServiceNotFound(service_name.to_string()))
         }
     }
-    
+  
     // 获取服务所有实例
     async fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>, RegistryError> {
         let instances = self.instances.read().await;
-        
+  
         if let Some(service_instances) = instances.get(service_name) {
             Ok(service_instances.clone())
         } else {
             Err(RegistryError::ServiceNotFound(service_name.to_string()))
         }
     }
-    
+  
     // 获取健康的服务实例
     async fn get_healthy_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>, RegistryError> {
         let instances = self.instances.read().await;
-        
+  
         if let Some(service_instances) = instances.get(service_name) {
             let healthy = service_instances
                 .iter()
                 .filter(|i| i.health_status == HealthStatus::UP)
                 .cloned()
                 .collect::<Vec<_>>();
-                
+  
             if healthy.is_empty() {
                 Err(RegistryError::NoHealthyInstances(service_name.to_string()))
             } else {
@@ -1744,18 +1769,18 @@ impl ServiceDiscoveryClient {
             load_balancers: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     // 注册负载均衡器
     async fn register_load_balancer(&self, service_name: &str, load_balancer: Box<dyn LoadBalancer>) {
         let mut lbs = self.load_balancers.write().await;
         lbs.insert(service_name.to_string(), load_balancer);
     }
-    
+  
     // 获取服务实例(使用负载均衡)
     async fn get_instance(&self, service_name: &str) -> Result<ServiceInstance, DiscoveryError> {
         let instances = self.registry.get_healthy_instances(service_name).await
             .map_err(|e| DiscoveryError::RegistryError(e))?;
-            
+  
         // 获取负载均衡器
         let lb = {
             let lbs = self.load_balancers.read().await;
@@ -1766,21 +1791,21 @@ impl ServiceDiscoveryClient {
                 Box::new(RandomLoadBalancer {})
             }
         };
-        
+  
         // 选择实例
         lb.choose_instance(instances).ok_or(DiscoveryError::NoInstanceAvailable)
     }
-    
+  
     // 创建服务客户端
     async fn create_client<T: ServiceClient>(&self, service_name: &str) -> Result<T, DiscoveryError> {
         let instance = self.get_instance(service_name).await?;
-        
+  
         let url = if instance.secure {
             format!("https://{}:{}", instance.host, instance.port)
         } else {
             format!("http://{}:{}", instance.host, instance.port)
         };
-        
+  
         T::new(&url, instance.metadata.clone())
             .map_err(|e| DiscoveryError::ClientCreationError(e.to_string()))
     }
@@ -1800,15 +1825,16 @@ impl LoadBalancer for RandomLoadBalancer {
         if instances.is_empty() {
             return None;
         }
-        
+  
         let mut rng = thread_rng();
         instances.shuffle(&mut rng);
         instances.into_iter().next()
     }
-    
+  
     fn clone_box(&self) -> Box<dyn LoadBalancer> {
         Box::new(Self {})
     }
+
 # 3 3 3 3 3 3 3 复杂分布式系统的全面分析（续）
 
 ## 3.1 四、实现层面（续）
@@ -1887,6 +1913,7 @@ impl LoadBalancer for WeightedLoadBalancer {
         })
     }
 }
+
 ```
 
 ### 3.1.2 6. 调度与资源管理实现
@@ -2126,6 +2153,7 @@ impl<T: Send + Clone + 'static, R: Send + 'static> BatchProcessor<T, R> {
         }
     }
 }
+
 ```
 
 ### 3.1.3 7. 复杂异常处理与恢复策略
@@ -2365,6 +2393,7 @@ impl ExceptionCoordinator {
         }
     }
 }
+
 ```
 
 ### 3.1.4 8. 配置与策略动态调整
@@ -2545,6 +2574,7 @@ impl<T: Send + 'static, E: std::error::Error + 'static> DynamicPolicyExecutor<T,
         (self.executor)(&config, input).await
     }
 }
+
 ```
 
 ## 3.2 总结

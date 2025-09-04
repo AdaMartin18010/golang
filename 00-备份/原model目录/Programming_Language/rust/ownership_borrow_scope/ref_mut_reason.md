@@ -40,6 +40,7 @@ fn borrowing_example() {
     // s 仍然拥有字符串的所有权
     println!("原始字符串: {}", s);
 }
+
 ```
 
 ### 2.2 可变性与引用的关系
@@ -68,6 +69,7 @@ fn mutability_relationship() {
     let s2 = String::from("immutable");
     // let r2 = &mut s2; // 错误：不能从不可变绑定创建可变引用
 }
+
 ```
 
 ### 2.3 `ref` 与 `&` 的关系
@@ -100,6 +102,7 @@ fn ref_vs_ampersand() {
     assert_eq!(*rx, x);
     assert_eq!(*ry, y);
 }
+
 ```
 
 ### 2.4 `Borrow` 与 `AsRef` 的关系
@@ -130,6 +133,7 @@ fn borrow_vs_asref() {
     // 可以使用 &str 查找 String 键，因为 String: Borrow<str>
     assert_eq!(map.get("key"), Some(&42));
 }
+
 ```
 
 ### 2.5 `to_owned` 与 `clone` 的关系
@@ -151,6 +155,7 @@ fn to_owned_vs_clone() {
     let owned_from_clone: String = slice.to_string();
     assert_eq!(owned, owned_from_clone);
 }
+
 ```
 
 ## 三、多层级引用与解引用
@@ -175,6 +180,7 @@ fn reference_levels() {
     let r3 = &r2;
     assert_eq!(***r3, 42);
 }
+
 ```
 
 ### 3.2 自动解引用与方法调用
@@ -199,6 +205,7 @@ fn auto_deref() {
     assert_eq!(len1, len2);
     assert_eq!(len2, len3);
 }
+
 ```
 
 ### 3.3 多层级可变引用
@@ -225,6 +232,7 @@ fn multi_level_mut_refs() {
     // 检查修改是否生效
     assert_eq!(value, 44);
 }
+
 ```
 
 ## 四、等价关系与推理
@@ -254,6 +262,7 @@ fn ref_equivalence() {
     assert_eq!(x, 11);
     assert_eq!(y, 11);
 }
+
 ```
 
 **推理**：`let ref x = v;` 等价于 `let x = &v;`，两者都创建了对 `v` 的不可变引用。
@@ -278,6 +287,7 @@ fn deref_equivalence() {
     // 最终值
     assert_eq!(value, 46);
 }
+
 ```
 
 **推理**：对于 `n` 层引用，需要 `n` 个 `*` 操作符才能访问原始值。
@@ -302,6 +312,7 @@ fn borrowing_methods_equivalence() {
     
     assert_eq!(s1, s2);
 }
+
 ```
 
 **推理**：
@@ -340,6 +351,7 @@ fn borrow_checker_rules() {
     }
     // println!("r4: {}", r4); // 如果上面的赋值被允许，这里会访问无效内存
 }
+
 ```
 
 ### 5.2 借用检查与生命周期
@@ -364,6 +376,7 @@ fn lifetime_analysis() {
     // 不能再使用 r1，因为它的生命周期已结束
     // println!("r1 again: {}", r1); // 错误：借用冲突
 }
+
 ```
 
 **证明**：借用检查器通过静态分析确定每个引用的生命周期，并验证它们不会违反借用规则。
@@ -388,6 +401,7 @@ fn non_lexical_lifetimes() {
     let r2 = &v[0];
     println!("First element again: {}", r2);
 }
+
 ```
 
 **证明**：NLL 通过控制流分析确定引用的实际使用范围，而不仅仅是词法作用域。
@@ -419,6 +433,7 @@ fn multi_level_references_and_mutability() {
     // 最终值
     assert_eq!(value, 44);
 }
+
 ```
 
 **分析**：
@@ -462,6 +477,7 @@ fn self_referential_structs() {
     data.value.push_str(" world");
     println!("Modified value: {}", data.value);
 }
+
 ```
 
 **分析**：
@@ -499,6 +515,7 @@ fn borrowing_and_ownership_transfer() {
     println!("owned: {}", owned);
     println!("cloned: {}", cloned);
 }
+
 ```
 
 **分析**：
@@ -535,6 +552,7 @@ fn to_owned_and_borrow_interaction() {
     // 验证插入成功
     assert_eq!(map.get("key3"), Some(&3));
 }
+
 ```
 
 **分析**：
@@ -589,6 +607,7 @@ fn ref_ampersand_equivalence_proof() {
     assert_eq!(m, 11);
     assert_eq!(n, 11);
 }
+
 ```
 
 ### 7.2 多层解引用的等价性证明
@@ -623,6 +642,7 @@ fn multi_level_deref_proof() {
     assert_ne!(**r3, value);
     assert_eq!(***r3, value);
 }
+
 ```
 
 ### 7.3 借用方法的等价性证明
@@ -669,6 +689,7 @@ fn borrowing_methods_equivalence_proof() {
     assert_eq!(slice1, slice2);
     assert_eq!(slice2, slice3);
 }
+
 ```
 
 ## 八、总结与最佳实践

@@ -16,6 +16,7 @@
 我将保持范畴论的讨论，因为这部分是语言无关的理论基础。
 但会调整实际应用案例部分，使其更贴合Rust生态。
 </think>
+
 ```
 
 ## 目录
@@ -273,6 +274,7 @@ impl OrderService for OrderServiceImpl {
         Ok(order)
     }
 }
+
 ```
 
 ### 4.2 服务执行模型
@@ -431,6 +433,7 @@ impl EventListener {
         Ok(())
     }
 }
+
 ```
 
 ### 4.3 生态适配策略
@@ -575,6 +578,7 @@ pub async fn create_publisher(publisher_type: PublisherType, config: &str) -> Re
         }
     }
 }
+
 ```
 
 ## 5. 工作流与微服务的关系分析
@@ -708,6 +712,7 @@ fn process_order_scope() {
     // 函数结束时，repository和client自动清理，
     // 无需显式关闭连接，避免资源泄漏
 }
+
 ```
 
 **错误处理**：Rust的Result类型和模式匹配提供了强大的错误处理能力。
@@ -800,6 +805,7 @@ async fn handle_payment_request(request: PaymentRequest) -> HttpResponse {
         }
     }
 }
+
 ```
 
 **Trait系统**：Rust的trait系统提供了接口抽象和多态性，支持松耦合设计。
@@ -964,6 +970,7 @@ impl PaymentService {
         })
     }
 }
+
 ```
 
 ### 7.2 核心开源组件
@@ -1106,6 +1113,7 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+
 ```
 
 **异步运行时**：Tokio, async-std
@@ -1161,6 +1169,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 **服务发现与配置管理**：Consul Client, etcd Client
@@ -1242,6 +1251,7 @@ async fn start_service() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 **消息队列客户端**：lapin (RabbitMQ), rdkafka (Kafka)
@@ -1346,7 +1356,9 @@ impl MicroserviceApp {
             Response = actix_web::dev::ServiceResponse<actix_web::body::BoxBody>,
             Error = actix_web::Error,
             InitError = (),
+
         >,
+
     > {
         let storage = self.storage.clone();
         let health_manager = self.health_manager.clone();
@@ -1542,6 +1554,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 8. 关键技术挑战与解决方案
@@ -1737,6 +1750,7 @@ async fn call_external_service(circuit_breaker: &CircuitBreaker) -> Result<Strin
         CircuitBreakerError::InnerError(e) => e,
     })
 }
+
 ```
 
 ### 8.2 服务降级与流量控制
@@ -1956,6 +1970,7 @@ async fn get_product_recommendations(
         })
     ).await
 }
+
 ```
 
 ### 8.3 缓存击穿防护
@@ -2187,6 +2202,7 @@ async fn get_product_details(
         fetch_product_from_database(product_id).await
     }).await
 }
+
 ```
 
 ### 8.4 分布式一致性保障
@@ -2486,6 +2502,7 @@ async fn place_order(
         }
     }
 }
+
 ```
 
 ### 8.5 幂等处理
@@ -2678,6 +2695,7 @@ async fn create_payment(
         }
     }
 }
+
 ```
 
 ### 8.6 系统弹性设计
@@ -3052,6 +3070,7 @@ impl ServiceClient {
         }
     }
 }
+
 ```
 
 ## 9. 实际应用案例分析
@@ -3091,6 +3110,7 @@ impl ServiceClient {
              │ 通知服务    │      │ 评价服务    │    │ 推荐服务    │
              │(Notification)│      │(Review)     │    │(Recommendation)│
              └─────────────┘      └─────────────┘    └─────────────┘
+
 ```
 
 **工作流实现**：订单处理工作流示例。
@@ -3345,6 +3365,7 @@ async fn place_order(
         _ => Err(WorkflowError::WorkflowIncomplete),
     }
 }
+
 ```
 
 ### 9.2 金融支付系统案例
@@ -3381,6 +3402,7 @@ async fn place_order(
              │ 银行通道    │    │ 第三方支付  │
              │(Bank)       │    │(ThirdParty) │
              └─────────────┘    └─────────────┘
+
 ```
 
 **交易处理工作流**：
@@ -3705,6 +3727,7 @@ async fn process_payment(
         _ => Err(WorkflowError::WorkflowIncomplete),
     }
 }
+
 ```
 
 ## 10. 总结与展望

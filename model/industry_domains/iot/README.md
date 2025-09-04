@@ -61,64 +61,80 @@
 
 ```toml
 [dependencies]
+
 # 2 2 2 2 2 2 2 异步运行时
+
 tokio = { version = "1.35", features = ["full"] }
 async-std = "1.35"
 
 # 3 3 3 3 3 3 3 网络通信
+
 tokio-mqtt = "0.8"
 rumqttc = "0.24"
 coap = "0.3"
 reqwest = { version = "0.11", features = ["json"] }
 
 # 4 4 4 4 4 4 4 序列化
+
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 bincode = "1.3"
 
 # 5 5 5 5 5 5 5 数据库
+
 sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio-rustls"] }
 rusqlite = "0.29"
 sled = "0.34"
 
 # 6 6 6 6 6 6 6 加密和安全
+
 ring = "0.17"
 rustls = "0.21"
 webpki-roots = "0.25"
 
 # 7 7 7 7 7 7 7 配置管理
+
 config = "0.14"
 toml = "0.8"
 
 # 8 8 8 8 8 8 8 日志
+
 tracing = "0.1"
 tracing-subscriber = "0.3"
 log = "0.4"
+
 ```
 
 ### 8 8 8 8 8 8 8 行业特定库
 
 ```toml
 [dependencies]
+
 # 9 9 9 9 9 9 9 硬件抽象
+
 embedded-hal = "0.2"
 cortex-m = "0.7"
 cortex-m-rt = "0.7"
 
 # 10 10 10 10 10 10 10 传感器支持
+
 embedded-sensors = "0.1"
 dht-sensor = "0.1"
 
 # 11 11 11 11 11 11 11 时间处理
+
 chrono = { version = "0.4", features = ["serde"] }
 time = "0.3"
 
 # 12 12 12 12 12 12 12 消息队列
+
 lapin = "2.3"
 redis = { version = "0.24", features = ["tokio-comp"] }
 
 # 13 13 13 13 13 13 13 缓存
+
 moka = "0.12"
+
 ```
 
 ## 13.1 架构模式
@@ -150,6 +166,7 @@ moka = "0.12"
 │  │   传感器    │ │   执行器    │ │   通信模块  │           │
 │  └─────────────┘ └─────────────┘ └─────────────┘           │
 └─────────────────────────────────────────────────────────────┘
+
 ```
 
 ### 13.1.2 2. 边缘计算架构
@@ -215,6 +232,7 @@ impl CloudService {
         Ok(())
     }
 }
+
 ```
 
 ### 13.1.3 3. 事件驱动架构
@@ -262,6 +280,7 @@ impl EventBus {
         Ok(())
     }
 }
+
 ```
 
 ## 13.2 业务领域建模
@@ -318,6 +337,7 @@ pub struct Alert {
     pub acknowledged: bool,
     pub resolved: bool,
 }
+
 ```
 
 ### 13.2.2 值对象
@@ -348,6 +368,7 @@ pub struct DeviceConfiguration {
     pub threshold_values: HashMap<String, f64>,
     pub communication_interval: Duration,
 }
+
 ```
 
 ## 13.3 数据建模
@@ -409,6 +430,7 @@ CREATE TABLE alerts (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     FOREIGN KEY (device_id) REFERENCES devices(id)
 );
+
 ```
 
 ### 13.3.2 时间序列数据存储
@@ -478,6 +500,7 @@ impl TimeSeriesDB for InfluxDB {
         Ok(vec![])
     }
 }
+
 ```
 
 ## 13.4 流程建模
@@ -494,6 +517,7 @@ graph TD
     F --> G[分配设备配置]
     G --> H[开始数据采集]
     H --> I[定期心跳]
+
 ```
 
 ### 13.4.2 数据处理流程
@@ -511,6 +535,7 @@ graph TD
     H --> I[云端处理]
     I --> J[数据存储]
     J --> K[分析报告]
+
 ```
 
 ## 13.5 组件建模
@@ -574,6 +599,7 @@ impl DeviceManager {
         Ok(all_data)
     }
 }
+
 ```
 
 ### 13.5.2 数据处理引擎
@@ -634,6 +660,7 @@ impl DataFilter for OutlierFilter {
         Ok(filtered)
     }
 }
+
 ```
 
 ### 13.5.3 规则引擎
@@ -701,6 +728,7 @@ impl RuleEngine {
         Ok(())
     }
 }
+
 ```
 
 ## 13.6 通信协议
@@ -771,6 +799,7 @@ impl MQTTClient {
         Ok(messages)
     }
 }
+
 ```
 
 ### 13.6.2 CoAP客户端
@@ -810,6 +839,7 @@ impl CoAPClient {
         Ok(response.message.payload)
     }
 }
+
 ```
 
 ## 13.7 安全机制
@@ -848,6 +878,7 @@ impl DeviceAuthenticator {
         Ok(DeviceToken::new(device_id))
     }
 }
+
 ```
 
 ### 13.7.2 数据加密
@@ -892,6 +923,7 @@ impl DataEncryptor {
         Ok(plaintext)
     }
 }
+
 ```
 
 ## 13.8 性能优化
@@ -921,6 +953,7 @@ impl DataCompressor {
         Ok(decompressed)
     }
 }
+
 ```
 
 ### 13.8.2 批量处理
@@ -957,6 +990,7 @@ impl BatchProcessor {
         }
     }
 }
+
 ```
 
 ## 13.9 测试策略
@@ -997,6 +1031,7 @@ mod tests {
         assert_eq!(processed.len(), 2);
     }
 }
+
 ```
 
 ### 13.9.2 集成测试
@@ -1023,6 +1058,7 @@ mod integration_tests {
         assert!(!cloud_data.is_empty());
     }
 }
+
 ```
 
 ## 13.10 部署和运维
@@ -1030,7 +1066,9 @@ mod integration_tests {
 ### 13.10.1 容器化部署
 
 ```dockerfile
+
 # 14 14 14 14 14 14 14 Dockerfile for IoT Edge Node
+
 FROM rust:1.75 as builder
 WORKDIR /app
 COPY . .
@@ -1047,12 +1085,15 @@ COPY config/ config/
 
 EXPOSE 8080
 CMD ["./iot-edge-node"]
+
 ```
 
 ### 14 14 14 14 14 14 14 配置管理
 
 ```toml
+
 # 15 15 15 15 15 15 15 config.toml
+
 [device]
 id = "edge-node-001"
 name = "Edge Node 1"
@@ -1078,6 +1119,7 @@ encryption_key = "your-encryption-key"
 batch_size = 100
 batch_timeout_seconds = 60
 sampling_rate_seconds = 1
+
 ```
 
 ## 15.1 总结

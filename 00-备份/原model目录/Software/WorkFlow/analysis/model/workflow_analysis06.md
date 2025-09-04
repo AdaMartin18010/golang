@@ -62,6 +62,7 @@ Temporal核心概念
     ├── 定义：工作流执行的完整记录
     ├── 形式特性：全序、持久化、不可变
     └── 历史模型：\(H = \{e_i\}_{i=1}^n, e_i \prec e_{i+1}\)
+
 ```
 
 ### 概念映射到三流模型
@@ -112,6 +113,7 @@ Temporal架构设计
     ├── 功能：执行活动任务和工作流任务
     ├── 形式化角色：执行引擎 \(E: T \rightarrow R\)
     └── 映射到执行流：任务执行
+
 ```
 
 ### 设计模式形式化
@@ -160,6 +162,7 @@ Temporal执行模型
     ├── 定义：系统提供的可靠性保证
     ├── 形式特性：无单点故障、弹性恢复
     └── 生命周期保证：\(\square\lozenge(\text{Progress})\)
+
 ```
 
 ### 状态转换形式化
@@ -203,6 +206,7 @@ Temporal事件模型
 └── 信号事件
     ├── SignalExternalWorkflowExecutionInitiated
     └── ExternalWorkflowExecutionSignaled
+
 ```
 
 ### 持久化状态模型
@@ -250,6 +254,7 @@ Temporal拓扑结构
     └── 调度决策网络
         ├── 形式化：\(G_{schedule} = (V_{workers}, E_{assign})\)
         └── 映射到控制流：调度控制逻辑
+
 ```
 
 ### 三流模型与Temporal架构映射

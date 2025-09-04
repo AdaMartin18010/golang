@@ -29,6 +29,7 @@
 fn infinite_loop() -> ! {
     loop {}
 }
+
 ```
 
 ### 1.2.2 2. **错误处理**：在某些情况下，函数可能会遇到错误情况并立即退出，使用 `!` 可以表示这种情况
@@ -38,6 +39,7 @@ fn might_panic(a: i32, b: i32) -> ! {
     assert!(a != 0, "Division by zero");
     b / a
 }
+
 ```
 
 ### 1.2.3 3. **异步编程**：在异步编程中，`!` 类型用于表示一个 `Future` 可能永远不会完成
@@ -48,6 +50,7 @@ async fn async_infinite_loop() -> ! {
         // 无限循环的异步操作
     }
 }
+
 ```
 
 ## 1.3 特点
@@ -67,6 +70,7 @@ async fn async_infinite_loop() -> ! {
 fn foo<T: !Send>(x: T) {
     // T 不能被 Send
 }
+
 ```
 
 在这个例子中，`!Send` 表示类型参数 `T` 不能实现 `Send` trait，这是一种类型系统层面的限制。

@@ -110,6 +110,7 @@ classDiagram
     AbstractClass <|-- ConcreteClassB
     Template --> Step
     AbstractClass --> Template
+
 ```
 
 ### 3.2 时序图
@@ -136,6 +137,7 @@ sequenceDiagram
     Step3->>Template: Result3
     Template->>Template: Finalize
     Template->>Client: Final Result
+
 ```
 
 ### 3.3 算法流程图
@@ -154,6 +156,7 @@ flowchart TD
     I --> J
     F --> K[End]
     J --> K
+
 ```
 
 ## 4. Golang实现
@@ -191,6 +194,7 @@ type AlgorithmTemplate struct {
     validate func(interface{}) error
     finalize func(interface{}) error
 }
+
 ```
 
 ### 4.2 基础步骤实现
@@ -250,6 +254,7 @@ func (s *ConcreteStep) CanExecute(input interface{}) bool {
     }
     return s.matcher(input)
 }
+
 ```
 
 ### 4.3 模板实现
@@ -355,6 +360,7 @@ func (t *AlgorithmTemplate) SetValidator(validator func(interface{}) error) {
 func (t *AlgorithmTemplate) SetFinalizer(finalizer func(interface{}) error) {
     t.finalize = finalizer
 }
+
 ```
 
 ### 4.4 钩子实现
@@ -403,6 +409,7 @@ func NewConditionalHook(name string, condition func(interface{}) bool, action fu
 func (c *ConditionalHook) GetName() string {
     return c.name
 }
+
 ```
 
 ### 4.5 具体应用实现
@@ -609,6 +616,7 @@ func NewFileProcessingTemplate() *FileProcessingTemplate {
     
     return template
 }
+
 ```
 
 ## 5. 性能分析
@@ -703,6 +711,7 @@ func (p *StepPool) Put(step *BaseStep) {
     step.priority = 0
     p.pool.Put(step)
 }
+
 ```
 
 ### 5.3 并发性能分析
@@ -781,6 +790,7 @@ func BenchmarkHookExecution(b *testing.B) {
         hook.ShouldExecute("test context")
     }
 }
+
 ```
 
 ## 6. 应用场景
@@ -843,6 +853,7 @@ func NewDataPipeline() *DataPipeline {
 func (p *DataPipeline) Process(data interface{}) (interface{}, error) {
     return p.template.Execute(data)
 }
+
 ```
 
 ### 6.2 构建系统
@@ -916,6 +927,7 @@ func NewBuildSystem() *BuildSystem {
 func (b *BuildSystem) Build(project interface{}) (interface{}, error) {
     return b.template.Execute(project)
 }
+
 ```
 
 ### 6.3 工作流引擎
@@ -976,6 +988,7 @@ func NewWorkflowEngine() *WorkflowEngine {
 func (w *WorkflowEngine) Execute(workflow interface{}) (interface{}, error) {
     return w.template.Execute(workflow)
 }
+
 ```
 
 ## 7. 最佳实践
@@ -1076,6 +1089,7 @@ func FileProcessingSystemExample() {
     
     fmt.Printf("File processing result: %s\n", result)
 }
+
 ```
 
 ### 8.2 构建系统示例
@@ -1114,6 +1128,7 @@ func BuildSystemExample() {
     
     fmt.Printf("Build result: %+v\n", result)
 }
+
 ```
 
 ---

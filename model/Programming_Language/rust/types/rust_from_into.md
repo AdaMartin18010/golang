@@ -37,6 +37,7 @@
 pub trait From<T> {
     fn from(t: T) -> Self;
 }
+
 ```
 
 ## 1.3 2. `Into` Trait
@@ -48,6 +49,7 @@ pub trait From<T> {
 pub trait Into<T> {
     fn into(self) -> T;
 }
+
 ```
 
 `Into` Trait 通常通过 `From` Trait 来实现。
@@ -70,6 +72,7 @@ println!("{}", num_str_from); // 输出: 123
 // 使用 Into Trait
 let num_str_into: String = num.into();
 println!("{}", num_str_into); // 输出: 123
+
 ```
 
 ### 1.4.2 示例 2：自定义类型转换
@@ -104,6 +107,7 @@ fn main() {
     let coords: (f64, f64) = point.into();
     println!("Coordinates: ({}, {})", coords.0, coords.1); // 输出: Coordinates: (3.0, 4.0)
 }
+
 ```
 
 ### 1.4.3 示例 3：泛型转换
@@ -131,6 +135,7 @@ fn main() {
     let value_back: i32 = wrapper.into();
     println!("Value: {}", value_back); // 输出: Value: 42
 }
+
 ```
 
 ## 1.5 4. 总结

@@ -21,19 +21,6 @@
   - [1.6 6. 总结](#6-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面给出一个详细的说明，涵盖了 Rust async 如何全面支持多任务调度的机制、示例代码、以及 Tokio 与 async-std 这两个运行时的对比与使用场景，
 同时介绍了如何实现类似 Go 语言中 context（异步取消）、waitgroup、chan、select 以及 goroutine 池化等并行机制，并对比分析了两种并发模型的优缺点。
 最后通过思维导图进行总结。
@@ -181,6 +168,7 @@ async fn main() {
     let final_value = shared.lock().await;
     println!("Tokio: 最终共享数据: {}", *final_value);
 }
+
 ```
 
 ### 1.3.2 async-std 示例代码
@@ -239,6 +227,7 @@ async fn main() {
     let final_value = shared.lock().await;
     println!("async-std: 最终共享数据: {}", *final_value);
 }
+
 ```
 
 ### 1.3.3 实现类似 Golang 的并行机制
@@ -284,6 +273,7 @@ async fn main() {
 
     handle.await.unwrap();
 }
+
 ```
 
 #### 1.3.3.2 类似 WaitGroup、Chan、Select 和 Goroutine 池化
@@ -311,7 +301,7 @@ async fn main() {
               sleep(Duration::from_millis(100)).await;
           }
       });
-      
+  
       loop {
           select! {
               Some(val) = rx.recv() => {
@@ -398,6 +388,7 @@ flowchart TD
     F --> F1[Golang: goroutine, chan, select, defer, context, WaitGroup]
     F --> F2[Rust: async/await, spawn, select!, scopeguard, CancellationToken]
     F --> F3[优点对比：内存安全、性能极高 vs 简单易用、内置 GC]
+
 ```
 
 ---

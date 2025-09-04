@@ -324,4 +324,5 @@ P2P 设计框架综合分析
 │   └── 6.3 应用领域 (File Sharing, CDN, Crypto, Communication, IoT, Databases, Computing)
 │
 └── 7. 总结与展望 (Key Challenges, Trade-offs, Future Trends (Blockchain, Mobile/IoT, Privacy, Standardization, Edge))
+
 ```

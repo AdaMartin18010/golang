@@ -30,19 +30,6 @@
   - [1.8 结论](#结论)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 让我基于之前的形式化模型框架，分析 Temporal 工作流引擎的设计模型。
 
 ## 1.1 目录
@@ -105,6 +92,7 @@ Temporal 架构
     ├── Payload
     ├── State History
     └── Event History
+
 ```
 
 ## 1.3 2. 模型层次结构
@@ -132,6 +120,7 @@ Temporal 架构
 └── Workflow Logic
     ├── Deterministic
     └── Repeatable
+
 ```
 
 ### 1.3.2 执行流模型 \(E\)
@@ -157,6 +146,7 @@ Temporal 架构
 └── Resource Management
     ├── Rate Limiting
     └── Load Balancing
+
 ```
 
 ### 1.3.3 数据流模型 \(D\)
@@ -200,6 +190,7 @@ Event History
 └── Event Replay
     ├── State Recreation
     └── Deterministic Replay
+
 ```
 
 ## 1.5 4. 状态转换模型
@@ -223,6 +214,7 @@ State Machine
 └── State Persistence
     ├── Event Sourcing
     └── History Based
+
 ```
 
 ### 1.5.2 活动状态转换
@@ -248,6 +240,7 @@ Consistency Guarantees
 └── Data Consistency
     ├── Payload
     └── History
+
 ```
 
 ## 1.7 6. 关键特性形式化
@@ -273,6 +266,7 @@ Error Handling
 └── Error Propagation
     ├── Activity Level
     └── Workflow Level
+
 ```
 
 ## 1.8 结论

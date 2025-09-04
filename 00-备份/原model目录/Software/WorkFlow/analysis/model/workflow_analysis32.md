@@ -44,6 +44,7 @@ enum ResourceId {
     ApiRateLimit(String),   // e.g., "external_service_X"
     // ... 其他需要控制的资源类型
 }
+
 ```
 
 1. **增强 `Effect` 定义以包含访问模式:**
@@ -89,6 +90,7 @@ impl MinimalEffect {
         }
     }
 }
+
 ```
 
 1. **设计 `Fabric` 的运行时访问控制器 (`CapabilityManager`):**
@@ -188,6 +190,7 @@ impl CapabilityManager {
         }
     }
 }
+
 ```
 
 `Fabric` 结构将包含 `capability_manager: Arc<Mutex<CapabilityManager>>`。
@@ -227,7 +230,6 @@ impl EffectGuard<'_> {
         self.result_receiver.await.unwrap_or_else(|_| Err("Effect handler channel closed unexpectedly".to_string()))
     }
 }
-
 
 impl Drop for EffectGuard<'_> {
     fn drop(&mut self) {
@@ -377,6 +379,7 @@ impl EffectfulCell for MyResourceUsingCell {
         fn state(&self) -> Vec<u8> { self.state.to_be_bytes().to_vec() }
         fn load_state(&mut self, state: &[u8]) { /* ... */ self.id = Uuid::new_v4(); /* Assign ID on load */ } // simplified
 }
+
 ```
 
 **MVP 语义映射总结:**

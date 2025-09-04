@@ -219,6 +219,7 @@ mindmap
         后量子密码学
         量子分布式计算
         量子通信协议
+
 ```
 
 ## 1. 引言
@@ -742,6 +743,7 @@ MetaModel_P2P
 
   ∀ pt: PropertyType •
     pt.owner ∈ EntityTypes ∪ RelationshipTypes
+
 ```
 
 **组件元模型**：
@@ -760,6 +762,7 @@ ComponentMetaModel
   ∀ conn: ConnectionType •
     conn.source ∈ InterfaceTypes ∧ conn.target ∈ InterfaceTypes ∧
     conn.source.type = "Required" ∧ conn.target.type = "Provided"
+
 ```
 
 ### 5.2 模型层：特定P2P系统的抽象
@@ -781,6 +784,7 @@ DHT_Model
   Properties: {NodeID, KeyID, DistanceFunction}
   Interactions: {Lookup(Key), Store(Key, Value), Join, Leave}
   States: {Active, Inactive, Joining, Leaving}
+
 ```
 
 **Gossip协议模型**：
@@ -795,6 +799,7 @@ Gossip_Model
   Properties: {MessageID, NodeState, InfectionStatus}
   Interactions: {SelectPeers(), SendMessage(), ReceiveMessage()}
   States: {Susceptible, Infected, Removed}
+
 ```
 
 **BitTorrent模型**：
@@ -810,6 +815,7 @@ BitTorrent_Model
   Properties: {DownloadRate, UploadRate, PieceAvailability}
   Interactions: {RequestPiece(), SendPiece(), Choke(), Unchoke()}
   States: {Leecher, Seeder, Connecting, Disconnecting}
+
 ```
 
 **一致性模型**：
@@ -825,6 +831,7 @@ ConsistencyModel
     EventualConsistency: ∀ write: eventually all reads return that write
     CausalConsistency: ∀ causally related writes: seen in same order
   }
+
 ```
 
 ### 5.3 实现层：具体实现与接口
@@ -852,6 +859,7 @@ pub trait DhtNode {
     /// 离开网络
     fn leave(&mut self) -> Result<(), Error>;
 }
+
 ```
 
 **状态映射**：
@@ -869,6 +877,7 @@ pub enum PeerState {
     Disconnecting,
     Disconnected,
 }
+
 ```
 
 **约束实现**：
@@ -886,6 +895,7 @@ impl PeerManager {
         Ok(())
     }
 }
+
 ```
 
 **服务质量(QoS)映射**：
@@ -919,6 +929,7 @@ impl RateLimiter {
         }
     }
 }
+
 ```
 
 ### 5.4 元模型驱动的P2P系统设计
@@ -954,6 +965,7 @@ transform DHT_Model to RustCode {
     }
   }
 }
+
 ```
 
 **代码生成**：
@@ -989,6 +1001,7 @@ impl Node {
     
     // 其他从交互自动生成的方法...
 }
+
 ```
 
 **验证框架**：
@@ -1011,6 +1024,7 @@ fn test_max_bucket_size_constraint() {
     let extra_node = create_test_node(max_size as u64);
     assert!(bucket.add(extra_node).is_err());
 }
+
 ```
 
 **模型驱动的自适应性**：
@@ -1031,6 +1045,7 @@ impl AdaptiveNode {
         // 其他适应性调整...
     }
 }
+
 ```
 
 ## 6. P2P技术的元理论与理论层级
@@ -1311,6 +1326,7 @@ pub trait Network {
     /// 断开与指定节点的连接
     async fn disconnect(&mut self, peer: Self::NodeId) -> Result<(), Self::Error>;
 }
+
 ```
 
 **UDP传输实现**：
@@ -1378,6 +1394,7 @@ impl Network for UdpNetwork {
     
     // 其他方法实现...
 }
+
 ```
 
 **核心数据结构**：
@@ -1420,6 +1437,7 @@ pub struct ResourceRef {
     pub location: Vec<NodeId>,
     pub metadata: HashMap<String, String>,
 }
+
 ```
 
 **异步任务模型**：
@@ -1466,6 +1484,7 @@ impl TaskManager {
         let _ = self.shutdown_tx.blocking_send(());
     }
 }
+
 ```
 
 **错误处理**：
@@ -1498,6 +1517,7 @@ pub enum P2pError {
 
 /// 结果类型别名
 pub type P2pResult<T> = Result<T, P2pError>;
+
 ```
 
 ### 7.2 分布式哈希表(DHT)实现
@@ -1540,6 +1560,7 @@ pub struct NodeInfo {
     pub last_seen: Instant,
     pub rtt: Option<Duration>,  // 往返时间，用于延迟优化
 }
+
 ```
 
 **Kademlia实现**：
@@ -1669,6 +1690,7 @@ impl<TNetwork: Network> Kademlia<TNetwork> {
     
     // RPC发送方法和其他辅助方法...
 }
+
 ```
 
 **路由表实现**：
@@ -1759,6 +1781,7 @@ impl RoutingTable {
         index - 1
     }
 }
+
 ```
 
 **K桶实现**：
@@ -1825,6 +1848,7 @@ impl KBucket {
         *distance >= self.range.0 && *distance <= self.range.1
     }
 }
+
 ```
 
 **键值存储实现**：
@@ -1922,6 +1946,7 @@ impl KeyValueStore {
         })
     }
 }
+
 ```
 
 ### 7.3 点对点通信协议
@@ -2035,6 +2060,7 @@ impl Message {
         bytes
     }
 }
+
 ```
 
 **消息处理器**：
@@ -2086,6 +2112,7 @@ impl MessageHandler for CompositeMessageHandler {
         self.handlers.keys().cloned().collect()
     }
 }
+
 ```
 
 **NAT穿透实现**：
@@ -2229,6 +2256,7 @@ impl NatTraversal {
     
     // 中继服务器连接方法...
 }
+
 ```
 
 **加密通信**：
@@ -2368,12 +2396,12 @@ impl EncryptedSession {
         // 创建随机IV/Nonce
         let mut nonce = [0u8; 12];
         getrandom::getrandom(&mut nonce).expect("Failed to generate random nonce");
-        
+  
         // 将计数器与nonce组合
         for i in 0..8 {
             nonce[i] ^= ((counter >> (i * 8)) & 0xFF) as u8;
         }
-        
+  
         // 执行AEAD加密
         let cipher = match self.cipher_suite {
             CipherSuite::AesGcm => {
@@ -2387,30 +2415,30 @@ impl EncryptedSession {
                 cipher
             }
         };
-        
+  
         let nonce_array = GenericArray::from_slice(&nonce);
         let ciphertext = cipher
             .encrypt(nonce_array, plaintext)
             .map_err(|_| P2pError::Security("Encryption failed".into()))?;
-        
+  
         // 组合nonce和密文
         let mut result = Vec::with_capacity(nonce.len() + ciphertext.len());
         result.extend_from_slice(&nonce);
         result.extend_from_slice(&ciphertext);
-        
+  
         Ok(result)
     }
-    
+  
     /// 解密消息
     pub fn decrypt(&self, ciphertext: &[u8]) -> P2pResult<Vec<u8>> {
         if ciphertext.len() < 12 + 16 {  // nonce + tag长度
             return Err(P2pError::Security("Ciphertext too short".into()));
         }
-        
+  
         // 提取nonce和密文
         let nonce = &ciphertext[0..12];
         let encrypted_data = &ciphertext[12..];
-        
+  
         // 执行AEAD解密
         let cipher = match self.cipher_suite {
             CipherSuite::AesGcm => {
@@ -2424,18 +2452,19 @@ impl EncryptedSession {
                 cipher
             }
         };
-        
+  
         let nonce_array = GenericArray::from_slice(nonce);
         let plaintext = cipher
             .decrypt(nonce_array, encrypted_data)
             .map_err(|_| P2pError::Security("Decryption failed".into()))?;
-        
+  
         // 递增接收计数器
         self.receive_counter.fetch_add(1, Ordering::SeqCst);
-        
+  
         Ok(plaintext)
     }
 }
+
 ```
 
 ### 7.4 资源发现与共享
@@ -2446,7 +2475,9 @@ P2P系统的核心功能之一是资源发现和共享：
 
 ```rust
 /// 资源查询参数
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct ResourceQuery {
     pub keywords: Vec<String>,
     pub content_type: Option<String>,
@@ -2480,7 +2511,7 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
             index: SearchIndex::new(),
         }
     }
-    
+  
     /// 发布资源
     pub async fn publish_resource(&self, metadata: ResourceMetadata) -> P2pResult<()> {
         // 添加到本地资源表
@@ -2488,10 +2519,10 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
             let mut resources = self.local_resources.write().await;
             resources.insert(metadata.id.clone(), metadata.clone());
         }
-        
+  
         // 添加到搜索索引
         self.index.add_resource(&metadata).await?;
-        
+  
         // 将资源信息存储到DHT
         let resource_key = Key::from(metadata.id.clone());
         let resource_value = bincode::serialize(&ResourceRef {
@@ -2499,18 +2530,18 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
             location: vec![self.local_node_id.clone()],
             metadata: metadata.to_map(),
         })?;
-        
+  
         self.kad.store(resource_key, resource_value).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 搜索资源
     pub async fn search_resources(&self, query: ResourceQuery) -> P2pResult<Vec<ResourceRef>> {
         // 首先在本地索引中搜索
         let local_results = self.index.search(&query).await?;
         let mut results = Vec::new();
-        
+  
         // 将本地结果转换为ResourceRef格式
         for metadata in local_results {
             results.push(ResourceRef {
@@ -2519,17 +2550,17 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                 metadata: metadata.to_map(),
             });
         }
-        
+  
         // 构建网络查询
         let network_query = Message::new(
             self.local_node_id.clone(),
             NodeId::broadcast(), // 广播给所有节点
             MessageType::ResourceQuery(query.clone()),
         );
-        
+  
         // 发送到网络上的多个节点
         let closest_nodes = self.kad.find_closest_nodes(&Key::random(), 20).await?;
-        
+  
         let mut query_futures = Vec::new();
         for node in closest_nodes {
             let node_id = node.id.clone();
@@ -2539,10 +2570,10 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
             };
             query_futures.push(query_future);
         }
-        
+  
         // 等待结果（使用超时）
         let responses = futures::future::join_all(query_futures).await;
-        
+  
         // 处理响应
         for (node_id, response) in responses {
             match response {
@@ -2559,7 +2590,7 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                 }
             }
         }
-        
+  
         // 如果结果不足，尝试使用DHT查询关键词
         if results.len() < query.limit && !query.keywords.is_empty() {
             for keyword in &query.keywords {
@@ -2568,10 +2599,10 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                     if let Ok(keyword_refs) = bincode::deserialize::<Vec<ResourceRef>>(&value) {
                         for r in keyword_refs {
                             // 应用查询过滤器和检查重复
-                            if self.matches_query(&r, &query) && 
+                            if self.matches_query(&r, &query) &&
                                !results.iter().any(|existing| existing.id == r.id) {
                                 results.push(r);
-                                
+  
                                 // 如果达到限制，停止
                                 if results.len() >= query.limit {
                                     break;
@@ -2580,25 +2611,25 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                         }
                     }
                 }
-                
+  
                 // 如果达到限制，停止
                 if results.len() >= query.limit {
                     break;
                 }
             }
         }
-        
+  
         // 根据相关性排序结果
         self.sort_results_by_relevance(&mut results, &query);
-        
+  
         // 截断到请求的限制
         if results.len() > query.limit {
             results.truncate(query.limit);
         }
-        
+  
         Ok(results)
     }
-    
+  
     /// 发送查询到特定节点
     async fn send_query_to_node(
         &self,
@@ -2607,23 +2638,23 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
     ) -> P2pResult<Vec<ResourceRef>> {
         // 发送查询消息
         self.network.send(node_id.clone(), query.encode()?).await?;
-        
+  
         // 等待响应
         let timeout = Duration::from_secs(5);
         let start = Instant::now();
-        
+  
         while start.elapsed() < timeout {
             // 这里应该是处理收到的消息，简化版
             // 在实际实现中，会有专门的消息接收和路由机制
             tokio::time::sleep(Duration::from_millis(100)).await;
-            
+  
             // 模拟收到响应
             return Ok(Vec::new());
         }
-        
+  
         Err(P2pError::Timeout(timeout))
     }
-    
+  
     /// 检查资源是否匹配查询条件
     fn matches_query(&self, resource: &ResourceRef, query: &ResourceQuery) -> bool {
         // 检查内容类型
@@ -2636,7 +2667,7 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                 return false;
             }
         }
-        
+  
         // 检查大小范围
         if let Some(size_str) = resource.metadata.get("size") {
             if let Ok(size) = size_str.parse::<u64>() {
@@ -2645,7 +2676,7 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                         return false;
                     }
                 }
-                
+  
                 if let Some(max_size) = query.max_size {
                     if size > max_size {
                         return false;
@@ -2653,7 +2684,7 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                 }
             }
         }
-        
+  
         // 检查年龄
         if let Some(timestamp_str) = resource.metadata.get("timestamp") {
             if let Ok(timestamp) = timestamp_str.parse::<u64>() {
@@ -2662,19 +2693,19 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                         .duration_since(UNIX_EPOCH)
                         .unwrap_or_default()
                         .as_secs();
-                    
+  
                     if now - timestamp > max_age.as_secs() {
                         return false;
                     }
                 }
             }
         }
-        
+  
         // 检查关键词
         if !query.keywords.is_empty() {
             let name = resource.metadata.get("name").unwrap_or(&String::new()).to_lowercase();
             let description = resource.metadata.get("description").unwrap_or(&String::new()).to_lowercase();
-            
+  
             let mut matches_any_keyword = false;
             for keyword in &query.keywords {
                 let keyword_lower = keyword.to_lowercase();
@@ -2683,15 +2714,15 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                     break;
                 }
             }
-            
+  
             if !matches_any_keyword {
                 return false;
             }
         }
-        
+  
         true
     }
-    
+  
     /// 根据相关性排序结果
     fn sort_results_by_relevance(&self, results: &mut Vec<ResourceRef>, query: &ResourceQuery) {
         results.sort_by(|a, b| {
@@ -2700,11 +2731,11 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
             score_b.partial_cmp(&score_a).unwrap_or(std::cmp::Ordering::Equal)
         });
     }
-    
+  
     /// 计算资源相关性得分
     fn calculate_relevance_score(&self, resource: &ResourceRef, query: &ResourceQuery) -> f64 {
         let mut score = 0.0;
-        
+  
         // 计算标题匹配得分
         if let Some(name) = resource.metadata.get("name") {
             let name_lower = name.to_lowercase();
@@ -2718,7 +2749,7 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                 }
             }
         }
-        
+  
         // 计算描述匹配得分
         if let Some(description) = resource.metadata.get("description") {
             let desc_lower = description.to_lowercase();
@@ -2729,7 +2760,7 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                 }
             }
         }
-        
+  
         // 考虑文件大小因素
         if let (Some(min_size), Some(size_str)) = (query.min_size, resource.metadata.get("size")) {
             if let Ok(size) = size_str.parse::<u64>() {
@@ -2739,10 +2770,11 @@ impl<TNetwork: Network> ResourceDiscovery<TNetwork> {
                 }
             }
         }
-        
+  
         score
     }
 }
+
 ```
 
 **搜索索引实现**：
@@ -2764,7 +2796,7 @@ impl SearchIndex {
             content_type_index: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     /// 添加资源到索引
     pub async fn add_resource(&self, metadata: &ResourceMetadata) -> P2pResult<()> {
         // 添加到资源元数据表
@@ -2772,7 +2804,7 @@ impl SearchIndex {
             let mut resources = self.resource_metadata.write().await;
             resources.insert(metadata.id.clone(), metadata.clone());
         }
-        
+  
         // 索引内容类型
         if let Some(content_type) = &metadata.content_type {
             let mut content_index = self.content_type_index.write().await;
@@ -2781,7 +2813,7 @@ impl SearchIndex {
                 entries.push(metadata.id.clone());
             }
         }
-        
+  
         // 索引关键词
         let mut keywords = Vec::new();
         if let Some(name) = &metadata.name {
@@ -2793,7 +2825,7 @@ impl SearchIndex {
         if let Some(tags) = &metadata.tags {
             keywords.extend(tags.iter().map(|s| s.to_lowercase()));
         }
-        
+  
         // 添加到关键词索引
         {
             let mut keyword_index = self.keyword_index.write().await;
@@ -2804,10 +2836,10 @@ impl SearchIndex {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 从索引中移除资源
     pub async fn remove_resource(&self, resource_id: &ResourceId) -> P2pResult<()> {
         // 首先获取元数据
@@ -2818,13 +2850,13 @@ impl SearchIndex {
                 None => return Ok(()),  // 资源不存在，无需移除
             }
         };
-        
+  
         // 从资源元数据表移除
         {
             let mut resources = self.resource_metadata.write().await;
             resources.remove(resource_id);
         }
-        
+  
         // 从内容类型索引移除
         if let Some(content_type) = &metadata.content_type {
             let mut content_index = self.content_type_index.write().await;
@@ -2835,7 +2867,7 @@ impl SearchIndex {
                 }
             }
         }
-        
+  
         // 收集所有关键词
         let mut keywords = Vec::new();
         if let Some(name) = &metadata.name {
@@ -2847,7 +2879,7 @@ impl SearchIndex {
         if let Some(tags) = &metadata.tags {
             keywords.extend(tags.iter().map(|s| s.to_lowercase()));
         }
-        
+  
         // 从关键词索引移除
         {
             let mut keyword_index = self.keyword_index.write().await;
@@ -2860,28 +2892,28 @@ impl SearchIndex {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 搜索资源
     pub async fn search(&self, query: &ResourceQuery) -> P2pResult<Vec<ResourceMetadata>> {
         let mut result_ids = HashSet::new();
-        
+  
         // 首先根据关键词搜索
         if !query.keywords.is_empty() {
             let keyword_index = self.keyword_index.read().await;
-            
+  
             for keyword in &query.keywords {
                 let keyword_lower = keyword.to_lowercase();
-                
+  
                 // 尝试精确匹配
                 if let Some(ids) = keyword_index.get(&keyword_lower) {
                     for id in ids {
                         result_ids.insert(id.clone());
                     }
                 }
-                
+  
                 // 尝试部分匹配
                 for (indexed_keyword, ids) in keyword_index.iter() {
                     if indexed_keyword.contains(&keyword_lower) {
@@ -2898,11 +2930,11 @@ impl SearchIndex {
                 result_ids.insert(id.clone());
             }
         }
-        
+  
         // 按内容类型过滤
         if let Some(content_type) = &query.content_type {
             let content_index = self.content_type_index.read().await;
-            
+  
             if let Some(ids) = content_index.get(content_type) {
                 // 取两个集合的交集
                 result_ids = result_ids
@@ -2914,11 +2946,11 @@ impl SearchIndex {
                 return Ok(Vec::new());
             }
         }
-        
+  
         // 获取完整元数据并应用其他过滤器
         let resources = self.resource_metadata.read().await;
         let mut results = Vec::new();
-        
+  
         for id in result_ids {
             if let Some(metadata) = resources.get(&id) {
                 // 检查大小约束
@@ -2927,28 +2959,28 @@ impl SearchIndex {
                         continue;
                     }
                 }
-                
+  
                 if let Some(max_size) = query.max_size {
                     if metadata.size > max_size {
                         continue;
                     }
                 }
-                
+  
                 // 检查年龄约束
                 if let Some(max_age) = query.max_age {
                     let now = SystemTime::now()
                         .duration_since(UNIX_EPOCH)
                         .unwrap_or_default();
-                    
+  
                     if now - metadata.creation_time > max_age {
                         continue;
                     }
                 }
-                
+  
                 results.push(metadata.clone());
             }
         }
-        
+  
         // 按相关性排序
         if !query.keywords.is_empty() {
             results.sort_by(|a, b| {
@@ -2957,37 +2989,37 @@ impl SearchIndex {
                 score_b.partial_cmp(&score_a).unwrap_or(std::cmp::Ordering::Equal)
             });
         }
-        
+  
         // 截断到请求的限制
         if results.len() > query.limit {
             results.truncate(query.limit);
         }
-        
+  
         Ok(results)
     }
-    
+  
     /// 提取文本中的关键词
     fn extract_keywords(text: &str) -> Vec<String> {
         let mut keywords = Vec::new();
-        
+  
         // 简单的分词和过滤
         for word in text.split_whitespace() {
             let cleaned = word
                 .trim_matches(|c: char| !c.is_alphanumeric())
                 .to_lowercase();
-                
+  
             if cleaned.len() >= 2 && !STOPWORDS.contains(&cleaned.as_str()) {
                 keywords.push(cleaned);
             }
         }
-        
+  
         keywords
     }
-    
+  
     /// 计算资源与关键词的相关性分数
     fn calculate_relevance(metadata: &ResourceMetadata, keywords: &[String]) -> f64 {
         let mut score = 0.0;
-        
+  
         // 检查标题中的关键词
         if let Some(name) = &metadata.name {
             let name_lower = name.to_lowercase();
@@ -3002,7 +3034,7 @@ impl SearchIndex {
                 }
             }
         }
-        
+  
         // 检查描述中的关键词
         if let Some(description) = &metadata.description {
             let desc_lower = description.to_lowercase();
@@ -3013,7 +3045,7 @@ impl SearchIndex {
                 }
             }
         }
-        
+  
         // 检查标签中的关键词
         if let Some(tags) = &metadata.tags {
             for tag in tags {
@@ -3030,10 +3062,11 @@ impl SearchIndex {
                 }
             }
         }
-        
+  
         score
     }
 }
+
 ```
 
 **资源传输管理**：
@@ -3064,7 +3097,7 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
             config,
         }
     }
-    
+  
     /// 开始下载资源
     pub async fn download(
         &self,
@@ -3073,7 +3106,7 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
     ) -> P2pResult<TransferId> {
         // 创建传输标识符
         let transfer_id = TransferId::new();
-        
+  
         // 初始化传输状态
         let state = TransferState {
             transfer_id: transfer_id.clone(),
@@ -3087,16 +3120,16 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
             start_time: Instant::now(),
             last_activity: Instant::now(),
         };
-        
+  
         // 保存传输状态
         {
             let mut transfers = self.active_transfers.write().await;
             transfers.insert(transfer_id.clone(), state);
         }
-        
+  
         // 创建临时存储
         self.storage.create_temp_storage(&resource_id).await?;
-        
+  
         // 启动下载任务
         let self_clone = self.clone();
         tokio::spawn(async move {
@@ -3106,10 +3139,10 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                 self_clone.abort_transfer(&transfer_id).await.ok();
             }
         });
-        
+  
         Ok(transfer_id)
     }
-    
+  
     /// 执行下载过程
     async fn run_download(
         &self,
@@ -3119,7 +3152,7 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
     ) -> P2pResult<()> {
         // 首先请求资源元数据
         let metadata = self.request_resource_metadata(&resource_id, &source_nodes).await?;
-        
+  
         // 更新传输状态
         {
             let mut transfers = self.active_transfers.write().await;
@@ -3130,22 +3163,22 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                 return Err(P2pError::NotFound(resource_id));
             }
         }
-        
+  
         // 计算分块策略
         let chunk_size = self.config.chunk_size;
         let total_chunks = (metadata.size + chunk_size - 1) / chunk_size;
-        
+  
         // 创建每个分块的下载任务
         let mut chunk_futures = Vec::new();
         for chunk_idx in 0..total_chunks {
             let start = chunk_idx * chunk_size;
             let end = (start + chunk_size).min(metadata.size);
-            
+  
             let self_clone = self.clone();
             let source_nodes = source_nodes.clone();
             let resource_id = resource_id.clone();
             let transfer_id = transfer_id.clone();
-            
+  
             let future = tokio::spawn(async move {
                 let result = self_clone
                     .download_chunk(
@@ -3157,12 +3190,12 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                         end,
                     )
                     .await;
-                    
+  
                 (chunk_idx as u32, result)
             });
-            
+  
             chunk_futures.push(future);
-            
+  
             // 限制并发下载数
             if chunk_futures.len() >= self.config.max_concurrent_chunks {
                 if let Ok((chunk_idx, result)) = chunk_futures.remove(0).await {
@@ -3179,7 +3212,7 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                 }
             }
         }
-        
+  
         // 等待所有剩余分块完成
         for future in chunk_futures {
             if let Ok((chunk_idx, result)) = future.await {
@@ -3194,7 +3227,7 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                 }
             }
         }
-        
+  
         // 检查是否所有分块都已接收
         let all_chunks_received = {
             let transfers = self.active_transfers.read().await;
@@ -3204,7 +3237,7 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                 return Err(P2pError::NotFound(resource_id));
             }
         };
-        
+  
         if all_chunks_received {
             // 完成下载
             self.finalize_download(&transfer_id, &resource_id, &metadata).await?;
@@ -3212,10 +3245,10 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
             // 下载不完整
             return Err(P2pError::Protocol("Incomplete download".into()));
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 下载单个分块
     async fn download_chunk(
         &self,
@@ -3229,33 +3262,33 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
         // 选择源节点 (简单轮询策略)
         let source_idx = (chunk_idx as usize) % source_nodes.len();
         let source_node = &source_nodes[source_idx];
-        
+  
         // 创建分块请求
         let request = DataRequest {
             resource_id: resource_id.clone(),
             range: Some((start, end)),
             chunk_index: Some(chunk_idx),
         };
-        
+  
         // 发送请求
         let request_msg = Message::new(
             self.local_node_id.clone(),
             source_node.clone(),
             MessageType::DataRequest(request.clone()),
         );
-        
+  
         self.network.send(source_node.clone(), request_msg.encode()?).await?;
-        
+  
         // 等待分块数据
         // 实际实现应该有消息处理系统处理接收到的数据分块
         // 这里简化为等待超时或接收完成
         let timeout = self.config.chunk_timeout;
         let mut interval = tokio::time::interval(Duration::from_millis(100));
         let start_time = Instant::now();
-        
+  
         loop {
             interval.tick().await;
-            
+  
             // 检查分块是否已接收
             let chunk_received = {
                 let transfers = self.active_transfers.read().await;
@@ -3265,35 +3298,35 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                     return Err(P2pError::NotFound(resource_id.clone()));
                 }
             };
-            
+  
             if chunk_received {
                 return Ok(());
             }
-            
+  
             // 检查超时
             if start_time.elapsed() > timeout {
                 // 尝试另一个源
                 if source_nodes.len() > 1 {
                     let next_source_idx = (source_idx + 1) % source_nodes.len();
                     let next_source = &source_nodes[next_source_idx];
-                    
+  
                     let retry_msg = Message::new(
                         self.local_node_id.clone(),
                         next_source.clone(),
                         MessageType::DataRequest(request.clone()),
                     );
-                    
+  
                     self.network.send(next_source.clone(), retry_msg.encode()?).await?;
-                    
+  
                     // 重置超时
                     continue;
                 }
-                
+  
                 return Err(P2pError::Timeout(timeout));
             }
         }
     }
-    
+  
     /// 更新下载进度
     async fn update_download_progress(
         &self,
@@ -3301,26 +3334,26 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
         chunk_idx: u32,
     ) -> P2pResult<()> {
         let mut transfers = self.active_transfers.write().await;
-        
+  
         if let Some(state) = transfers.get_mut(transfer_id) {
             state.chunks_received.insert(chunk_idx);
             state.last_activity = Instant::now();
-            
+  
             // 计算已接收大小
             let chunk_size = self.config.chunk_size;
             state.received_size = state.chunks_received.len() as u64 * chunk_size;
-            
+  
             // 确保不超过总大小
             if state.received_size > state.total_size {
                 state.received_size = state.total_size;
             }
-            
+  
             Ok(())
         } else {
             Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
         }
     }
-    
+  
     /// 完成下载
     async fn finalize_download(
         &self,
@@ -3330,7 +3363,7 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
     ) -> P2pResult<()> {
         // 从临时存储移动到永久存储
         self.storage.finalize_content(resource_id, metadata).await?;
-        
+  
         // 更新传输状态
         {
             let mut transfers = self.active_transfers.write().await;
@@ -3338,10 +3371,10 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                 state.status = TransferStatus::Completed;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 中止传输
     async fn abort_transfer(&self, transfer_id: &TransferId) -> P2pResult<()> {
         let resource_id = {
@@ -3353,13 +3386,13 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                 return Err(P2pError::NotFound(ResourceId::from([0u8; 32])));
             }
         };
-        
+  
         // 清理临时存储
         self.storage.delete_temp_storage(&resource_id).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 请求资源元数据
     async fn request_resource_metadata(
         &self,
@@ -3376,15 +3409,15 @@ impl<TNetwork: Network> ResourceTransfer<TNetwork> {
                 max_age: None,
                 limit: 1,
             };
-            
+  
             let query_msg = Message::new(
                 self.local_node_id.clone(),
                 source.clone(),
                 MessageType::ResourceQuery(query),
             );
-            
+  
             self.network.send(source.clone(), query_msg.encode()?).await?;
-            
+  
             // 等待响应
             // 实际实现应有专门的消息处理
             // 这里简化为模拟接收到的元数据
@@ -3460,6 +3493,7 @@ pub struct DataChunk {
     pub data: Vec<u8>,
     pub checksum: [u8; 32],
 }
+
 ```
 
 ### 7.5 P2P应用示例
@@ -3874,6 +3908,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ### 7.6 安全与隐私保护
@@ -4278,6 +4313,7 @@ struct EncryptedLayer {
     encrypted_key: Vec<u8>,
     encrypted_data: Vec<u8>,
 }
+
 ```
 
 ## 8. 实际应用案例分析
@@ -4426,36 +4462,36 @@ impl DistributedFileSystem {
             let chunk = self.get_chunk(chunk_cid).await?;
             content.extend_from_slice(&chunk);
         }
-        
+  
         // 将文件记录添加到索引
         self.file_manager.add_to_index(cid, &file_object).await?;
-        
+  
         Ok(content)
     }
-    
+  
     /// 获取单个数据块
     async fn get_chunk(&self, cid: &Cid) -> Result<Vec<u8>, P2pError> {
         // 尝试从本地获取
         if let Ok(data) = self.content_router.get(cid).await {
             return Ok(data);
         }
-        
+  
         // 如果本地没有，尝试从DHT查找
         let providers = self.node.kad.find_providers(Key::from(cid.to_bytes())).await?;
-        
+  
         if providers.is_empty() {
             return Err(P2pError::NotFound(ResourceId::from(cid.to_bytes())));
         }
-        
+  
         // 从提供者获取数据块
         let chunk_data = self.fetch_from_providers(cid, &providers).await?;
-        
+  
         // 存储数据块
         self.content_router.store(&chunk_data).await?;
-        
+  
         Ok(chunk_data)
     }
-    
+  
     /// 从提供者获取数据
     async fn fetch_from_providers(
         &self,
@@ -4473,66 +4509,66 @@ impl DistributedFileSystem {
                     chunk_index: None,
                 }),
             );
-            
+  
             // 发送请求
             if let Ok(_) = self.node.network.send(provider.id.clone(), request.encode()?).await {
                 // 等待响应
                 let timeout = Duration::from_secs(30);
                 let start = Instant::now();
-                
+  
                 while start.elapsed() < timeout {
                     // 检查是否收到数据
                     // 实际实现中会有消息分发系统
                     // 这里简化为直接轮询一个结果缓存
-                    
+  
                     // 假设我们有查询方法
                     if let Some(data) = self.check_received_data(cid).await {
                         return Ok(data);
                     }
-                    
+  
                     tokio::time::sleep(Duration::from_millis(100)).await;
                 }
             }
         }
-        
+  
         Err(P2pError::Timeout(Duration::from_secs(30)))
     }
-    
+  
     /// 检查是否收到特定CID的数据（模拟方法）
     async fn check_received_data(&self, _cid: &Cid) -> Option<Vec<u8>> {
         // 实际实现应该查询消息系统或缓存
         None
     }
-    
+  
     /// 列出所有可用文件
     pub async fn list_files(&self) -> Result<Vec<(Cid, FileObject)>, P2pError> {
         self.file_manager.list_files().await
     }
-    
+  
     /// 搜索文件
     pub async fn search_files(&self, query: &str) -> Result<Vec<(Cid, FileObject)>, P2pError> {
         self.file_manager.search_files(query).await
     }
-    
+  
     /// 启动服务
     pub async fn start(&self) -> Result<(), P2pError> {
         // 启动P2P节点
         self.node.start().await?;
-        
+  
         // 启动复制管理器
         self.replication_manager.start().await;
-        
+  
         Ok(())
     }
-    
+  
     /// 停止服务
     pub async fn stop(&self) -> Result<(), P2pError> {
         // 停止复制管理器
         self.replication_manager.stop().await;
-        
+  
         // 停止P2P节点
         self.node.stop().await?;
-        
+  
         Ok(())
     }
 }
@@ -4554,13 +4590,13 @@ impl ContentAddressableStore {
     ) -> Result<Self, P2pError> {
         // 确保存储目录存在
         std::fs::create_dir_all(&storage_path)?;
-        
+  
         // 打开数据库
         let db = sled::Config::new()
             .path(storage_path.join("cas.db"))
             .mode(sled::Mode::HighThroughput)
             .open()?;
-            
+  
         Ok(Self {
             node_id,
             kad,
@@ -4568,49 +4604,49 @@ impl ContentAddressableStore {
             db,
         })
     }
-    
+  
     /// 存储数据并返回CID
     pub async fn store(&self, data: &[u8]) -> Result<Cid, P2pError> {
         // 计算数据的CID (内容标识符)
         let cid = self.calculate_cid(data)?;
-        
+  
         // 检查是否已存储
         if self.db.contains_key(cid.to_bytes())? {
             return Ok(cid);
         }
-        
+  
         // 存储数据
         self.db.insert(cid.to_bytes(), data)?;
         self.db.flush()?;
-        
+  
         // 通知DHT此节点提供此内容
         self.kad.provide(Key::from(cid.to_bytes())).await?;
-        
+  
         Ok(cid)
     }
-    
+  
     /// 获取指定CID的数据
     pub async fn get(&self, cid: &Cid) -> Result<Vec<u8>, P2pError> {
         // 从本地数据库获取
         if let Some(data) = self.db.get(cid.to_bytes())? {
             return Ok(data.to_vec());
         }
-        
+  
         Err(P2pError::NotFound(ResourceId::from(cid.to_bytes())))
     }
-    
+  
     /// 检查是否存储了指定CID的数据
     pub fn contains(&self, cid: &Cid) -> Result<bool, P2pError> {
         Ok(self.db.contains_key(cid.to_bytes())?)
     }
-    
+  
     /// 删除指定CID的数据
     pub fn delete(&self, cid: &Cid) -> Result<bool, P2pError> {
         let existed = self.db.remove(cid.to_bytes())?.is_some();
         self.db.flush()?;
         Ok(existed)
     }
-    
+  
     /// 迭代所有存储的内容
     pub fn iter_all(&self) -> impl Iterator<Item = Result<(Cid, Vec<u8>), P2pError>> + '_ {
         self.db.iter().map(|res| {
@@ -4619,7 +4655,7 @@ impl ContentAddressableStore {
             Ok((cid, value.to_vec()))
         })
     }
-    
+  
     /// 计算数据的CID
     fn calculate_cid(&self, data: &[u8]) -> Result<Cid, P2pError> {
         // 创建多哈希
@@ -4627,13 +4663,13 @@ impl ContentAddressableStore {
         let mut hasher = Sha256::new();
         hasher.update(data);
         let hash = hasher.finalize();
-        
+  
         // 创建CID
         let mut cid_bytes = Vec::with_capacity(34); // 2字节前缀 + 32字节哈希
         cid_bytes.push(0x12); // SHA-256 哈希算法标识
         cid_bytes.push(0x20); // 32字节长度
         cid_bytes.extend_from_slice(&hash);
-        
+  
         Ok(Cid::from_bytes(&cid_bytes)?)
     }
 }
@@ -4653,75 +4689,75 @@ impl FileManager {
     ) -> Result<Self, P2pError> {
         // 确保索引目录存在
         std::fs::create_dir_all(&index_path)?;
-        
+  
         // 打开文件索引数据库
         let file_index = sled::Config::new()
             .path(index_path.join("file_index.db"))
             .mode(sled::Mode::HighThroughput)
             .open()?;
-            
+  
         Ok(Self {
             content_store,
             file_index,
             chunk_size: 1024 * 256, // 默认块大小：256KB
         })
     }
-    
+  
     /// 将文件内容分割成块
     pub fn split_into_chunks(&self, data: &[u8]) -> Result<Vec<Vec<u8>>, P2pError> {
         let mut chunks = Vec::new();
         let mut offset = 0;
-        
+  
         while offset < data.len() {
             let end = (offset + self.chunk_size).min(data.len());
             chunks.push(data[offset..end].to_vec());
             offset = end;
         }
-        
+  
         Ok(chunks)
     }
-    
+  
     /// 将文件添加到索引
     pub async fn add_to_index(&self, cid: &Cid, file: &FileObject) -> Result<(), P2pError> {
         // 序列化文件对象
         let serialized = bincode::serialize(file)
             .map_err(|_| P2pError::Protocol("Serialization failed".into()))?;
-            
+  
         // 存储到索引
         self.file_index.insert(cid.to_bytes(), serialized)?;
-        
+  
         // 添加文件名索引
         let name_key = format!("name:{}", file.name.to_lowercase());
         let existing = self.file_index.get(name_key.as_bytes())?;
-        
+  
         let mut cids = if let Some(data) = existing {
             let mut cids: Vec<Cid> = bincode::deserialize(&data)
                 .map_err(|_| P2pError::Protocol("Deserialization failed".into()))?;
-            
+  
             if !cids.contains(cid) {
                 cids.push(cid.clone());
             }
-            
+  
             cids
         } else {
             vec![cid.clone()]
         };
-        
+  
         // 更新文件名索引
         let serialized_cids = bincode::serialize(&cids)
             .map_err(|_| P2pError::Protocol("Serialization failed".into()))?;
-            
+  
         self.file_index.insert(name_key.as_bytes(), serialized_cids)?;
-        
+  
         // 提取和索引关键词
         if let Some(description) = &file.metadata.get("description") {
             self.index_keywords(cid, description).await?;
         }
-        
+  
         self.file_index.flush()?;
         Ok(())
     }
-    
+  
     /// 为文件索引关键词
     async fn index_keywords(&self, cid: &Cid, text: &str) -> Result<(), P2pError> {
         // 提取关键词
@@ -4730,114 +4766,114 @@ impl FileManager {
             .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()).to_lowercase())
             .filter(|w| w.len() >= 3)
             .collect::<Vec<_>>();
-            
+  
         // 为每个关键词添加索引
         for keyword in keywords {
             let key = format!("keyword:{}", keyword);
             let existing = self.file_index.get(key.as_bytes())?;
-            
+  
             let mut cids = if let Some(data) = existing {
                 let mut cids: Vec<Cid> = bincode::deserialize(&data)
                     .map_err(|_| P2pError::Protocol("Deserialization failed".into()))?;
-                
+  
                 if !cids.contains(cid) {
                     cids.push(cid.clone());
                 }
-                
+  
                 cids
             } else {
                 vec![cid.clone()]
             };
-            
+  
             // 更新关键词索引
             let serialized_cids = bincode::serialize(&cids)
                 .map_err(|_| P2pError::Protocol("Serialization failed".into()))?;
-                
+  
             self.file_index.insert(key.as_bytes(), serialized_cids)?;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 列出所有文件
     pub async fn list_files(&self) -> Result<Vec<(Cid, FileObject)>, P2pError> {
         let mut files = Vec::new();
-        
+  
         // 遍历所有非索引项
         for result in self.file_index.iter() {
             let (key, value) = result?;
             let key_str = String::from_utf8_lossy(&key);
-            
+  
             // 跳过索引项
             if key_str.starts_with("name:") || key_str.starts_with("keyword:") {
                 continue;
             }
-            
+  
             // 解析CID和文件对象
             let cid = Cid::from_bytes(&key)?;
             let file: FileObject = bincode::deserialize(&value)
                 .map_err(|_| P2pError::Protocol("Deserialization failed".into()))?;
-                
+  
             files.push((cid, file));
         }
-        
+  
         Ok(files)
     }
-    
+  
     /// 搜索文件
     pub async fn search_files(&self, query: &str) -> Result<Vec<(Cid, FileObject)>, P2pError> {
         let query = query.trim().to_lowercase();
         let mut results = HashSet::new();
-        
+  
         // 搜索文件名
         let name_key = format!("name:{}", query);
         if let Some(data) = self.file_index.get(name_key.as_bytes())? {
             let cids: Vec<Cid> = bincode::deserialize(&data)
                 .map_err(|_| P2pError::Protocol("Deserialization failed".into()))?;
-                
+  
             for cid in cids {
                 results.insert(cid);
             }
         }
-        
+  
         // 搜索关键词
         let keywords = query
             .split_whitespace()
             .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()).to_lowercase())
             .filter(|w| w.len() >= 3);
-            
+  
         for keyword in keywords {
             let key = format!("keyword:{}", keyword);
             if let Some(data) = self.file_index.get(key.as_bytes())? {
                 let cids: Vec<Cid> = bincode::deserialize(&data)
                     .map_err(|_| P2pError::Protocol("Deserialization failed".into()))?;
-                    
+  
                 for cid in cids {
                     results.insert(cid);
                 }
             }
         }
-        
+  
         // 获取文件对象
         let mut files = Vec::new();
         for cid in results {
             if let Some(data) = self.file_index.get(cid.to_bytes())? {
                 let file: FileObject = bincode::deserialize(&data)
                     .map_err(|_| P2pError::Protocol("Deserialization failed".into()))?;
-                    
+  
                 files.push((cid, file));
             }
         }
-        
+  
         Ok(files)
     }
-    
+  
     /// 获取文件对象
     pub async fn get_file_object(&self, cid: &Cid) -> Result<FileObject, P2pError> {
         if let Some(data) = self.file_index.get(cid.to_bytes())? {
             let file: FileObject = bincode::deserialize(&data)
                 .map_err(|_| P2pError::Protocol("Deserialization failed".into()))?;
-                
+  
             Ok(file)
         } else {
             Err(P2pError::NotFound(ResourceId::from(cid.to_bytes())))
@@ -4869,65 +4905,65 @@ impl ReplicationManager {
             _task: Mutex::new(None),
         }
     }
-    
+  
     /// 启动复制管理器
     pub async fn start(&self) {
         if self.running.swap(true, Ordering::SeqCst) {
             return; // 已经运行中
         }
-        
+  
         // 创建复制任务
         let self_clone = self.clone();
         let task = tokio::spawn(async move {
             let interval = Duration::from_secs(self_clone.config.check_interval);
             let mut timer = tokio::time::interval(interval);
-            
+  
             while self_clone.running.load(Ordering::SeqCst) {
                 timer.tick().await;
-                
+  
                 // 执行复制检查
                 if let Err(e) = self_clone.check_and_replicate().await {
                     log::error!("Replication check failed: {}", e);
                 }
             }
         });
-        
+  
         // 保存任务句柄
         let mut task_guard = self._task.lock().await;
         *task_guard = Some(task);
     }
-    
+  
     /// 停止复制管理器
     pub async fn stop(&self) {
         if !self.running.swap(false, Ordering::SeqCst) {
             return; // 已经停止
         }
-        
+  
         // 取消任务
         let mut task_guard = self._task.lock().await;
         if let Some(task) = task_guard.take() {
             task.abort();
         }
     }
-    
+  
     /// 检查并执行复制
     async fn check_and_replicate(&self) -> Result<(), P2pError> {
         // 遍历所有内容
         for entry in self.content_store.iter_all() {
             let (cid, _) = entry?;
-            
+  
             // 查找提供者
             let providers = self.node.kad.find_providers(Key::from(cid.to_bytes())).await?;
-            
+  
             // 如果提供者数量低于阈值，调度复制
             if providers.len() < self.config.min_replicas {
                 self.schedule_replication(cid).await;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 调度复制任务
     pub async fn schedule_replication(&self, cid: Cid) {
         // 实际实现应该有更复杂的调度逻辑
@@ -4939,19 +4975,19 @@ impl ReplicationManager {
             }
         });
     }
-    
+  
     /// 执行内容复制
     async fn replicate_content(&self, cid: &Cid) -> Result<(), P2pError> {
         // 获取内容数据
         let data = self.content_store.get(cid).await?;
-        
+  
         // 找到可能的复制目标节点
         let target_nodes = self.find_replication_targets(cid).await?;
-        
+  
         if target_nodes.is_empty() {
             return Ok(());
         }
-        
+  
         // 向每个目标节点请求复制
         for node in target_nodes {
             let replication_request = Message::new(
@@ -4963,35 +4999,35 @@ impl ReplicationManager {
                     priority: ReplicationPriority::Normal,
                 }),
             );
-            
+  
             // 发送复制请求
             if let Err(e) = self.node.network.send(node.id.clone(), replication_request.encode()?).await {
                 log::warn!("Failed to send replication request to {}: {}", node.id, e);
                 continue;
             }
-            
+  
             // 预期会收到确认，但这里简化处理
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 寻找复制目标节点
     async fn find_replication_targets(&self, cid: &Cid) -> Result<Vec<NodeInfo>, P2pError> {
         // 查找当前提供者
         let current_providers = self.node.kad.find_providers(Key::from(cid.to_bytes())).await?;
         let provider_ids: HashSet<_> = current_providers.iter().map(|p| p.id.clone()).collect();
-        
+  
         // 排除已经有内容的节点
         let mut candidates = Vec::new();
         let closest_nodes = self.node.kad.find_closest_nodes(&Key::from(cid.to_bytes()), 20).await?;
-        
+  
         for node in closest_nodes {
             if !provider_ids.contains(&node.id) {
                 candidates.push(node);
             }
         }
-        
+  
         // 选择复制目标
         // 这里简化为选择离内容最近的节点
         candidates.sort_by(|a, b| {
@@ -4999,17 +5035,19 @@ impl ReplicationManager {
             let dist_b = b.id.distance(&NodeId::from(cid.to_bytes()));
             dist_a.cmp(&dist_b)
         });
-        
+  
         // 限制目标数量
         let target_count = (self.config.min_replicas - current_providers.len())
             .min(candidates.len());
-            
+  
         Ok(candidates.into_iter().take(target_count).collect())
     }
 }
 
 /// 复制请求消息
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct ReplicationRequest {
     pub cid: Cid,
     pub data: Vec<u8>,
@@ -5017,7 +5055,9 @@ pub struct ReplicationRequest {
 }
 
 /// 复制优先级
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+
 pub enum ReplicationPriority {
     Low,
     Normal,
@@ -5026,7 +5066,9 @@ pub enum ReplicationPriority {
 }
 
 /// 文件对象
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct FileObject {
     pub name: String,
     pub size: u64,
@@ -5036,7 +5078,9 @@ pub struct FileObject {
 }
 
 /// 内容标识符
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
 pub struct Cid(Vec<u8>);
 
 impl Cid {
@@ -5046,15 +5090,15 @@ impl Cid {
         if bytes.len() < 3 {
             return Err(P2pError::Protocol("Invalid CID format".into()));
         }
-        
+  
         Ok(Self(bytes.to_vec()))
     }
-    
+  
     /// 获取CID的字节表示
     pub fn to_bytes(&self) -> Vec<u8> {
         self.0.clone()
     }
-    
+  
     /// 获取可读的字符串表示
     pub fn to_string(&self) -> String {
         // 实际实现应该使用multibase编码
@@ -5083,6 +5127,7 @@ pub struct ReplicationConfig {
     pub check_interval: u64,  // 秒
     pub priority_rules: HashMap<String, ReplicationPriority>,
 }
+
 ```
 
 ### 8.2 区块链P2P网络
@@ -5102,16 +5147,16 @@ impl BlockchainNetwork {
     pub async fn new(config: BlockchainNetworkConfig) -> Result<Self, P2pError> {
         // 初始化P2P节点
         let node = P2PNode::new(config.node_config).await?;
-        
+  
         // 创建区块链实例
         let blockchain = Blockchain::new(
             config.blockchain_path,
             config.blockchain_config,
         )?;
-        
+  
         // 创建交易内存池
         let mempool = TransactionPool::new(config.mempool_config);
-        
+  
         // 创建共识机制
         let consensus: Box<dyn Consensus> = match config.consensus_type {
             ConsensusType::ProofOfWork => Box::new(ProofOfWork::new(config.pow_config)),
@@ -5120,7 +5165,7 @@ impl BlockchainNetwork {
                 blockchain.clone(),
             )),
         };
-        
+  
         // 创建消息处理器
         let message_handler = BlockchainMessageHandler::new(
             node.node_id().clone(),
@@ -5128,7 +5173,7 @@ impl BlockchainNetwork {
             mempool.clone(),
             consensus.clone(),
         );
-        
+  
         Ok(Self {
             node,
             blockchain,
@@ -5137,91 +5182,91 @@ impl BlockchainNetwork {
             message_handler,
         })
     }
-    
+  
     /// 启动区块链网络
     pub async fn start(&self) -> Result<(), P2pError> {
         // 启动P2P节点
         self.node.start().await?;
-        
+  
         // 注册消息处理器
         self.register_message_handlers().await?;
-        
+  
         // 连接到引导节点
         for bootstrap_node in &self.node.config.bootstrap_nodes {
             if let Err(e) = self.node.connect(bootstrap_node).await {
                 log::warn!("Failed to connect to bootstrap node {}: {}", bootstrap_node, e);
             }
         }
-        
+  
         // 启动共识协议
         self.consensus.start().await?;
-        
+  
         // 同步区块链
         self.sync_blockchain().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 停止区块链网络
     pub async fn stop(&self) -> Result<(), P2pError> {
         // 停止共识协议
         self.consensus.stop().await?;
-        
+  
         // 停止P2P节点
         self.node.stop().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 注册消息处理器
     async fn register_message_handlers(&self) -> Result<(), P2pError> {
         // 在实际实现中，应该将消息处理器注册到P2P节点
         // 这里我们假设有这样的注册方法
         // self.node.register_handler(self.message_handler.clone()).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 同步区块链
     async fn sync_blockchain(&self) -> Result<(), P2pError> {
         // 获取本地最高块
         let local_height = self.blockchain.get_height()?;
-        
+  
         // 查询网络中的节点
         let peers = self.node.connected_peers().await?;
         if peers.is_empty() {
             log::info!("No peers to sync with");
             return Ok(());
         }
-        
+  
         // 选择一个随机节点
         let mut rng = rand::thread_rng();
         let peer_idx = rng.gen_range(0..peers.len());
         let peer = &peers[peer_idx];
-        
+  
         // 请求区块头
         let headers = self.request_block_headers(peer, local_height + 1, 500).await?;
-        
+  
         if headers.is_empty() {
             log::info!("Already in sync with the network");
             return Ok(());
         }
-        
+  
         // 验证区块头链
         self.validate_header_chain(&headers)?;
-        
+  
         // 下载区块
         for header in headers {
             let block = self.request_block(peer, header.hash()).await?;
-            
+  
             // 验证并添加到区块链
             self.blockchain.add_block(block)?;
         }
-        
+  
         log::info!("Blockchain synchronized to height {}", self.blockchain.get_height()?);
         Ok(())
     }
-    
+  
     /// 请求区块头
     async fn request_block_headers(
         &self,
@@ -5234,22 +5279,22 @@ impl BlockchainNetwork {
             start_height,
             count: count as u32,
         });
-        
+  
         let message = Message::new(
             self.node.node_id().clone(),
             peer.clone(),
             MessageType::BlockchainMessage(request),
         );
-        
+  
         // 发送请求
         self.node.network.send(peer.clone(), message.encode()?).await?;
-        
+  
         // 等待响应
         // 实际实现应该有等待特定消息的机制
         // 这里我们简化为直接返回空结果
         Ok(Vec::new())
     }
-    
+  
     /// 请求区块
     async fn request_block(
         &self,
@@ -5260,16 +5305,16 @@ impl BlockchainNetwork {
         let request = BlockchainMessage::GetBlock(GetBlockMessage {
             block_hash,
         });
-        
+  
         let message = Message::new(
             self.node.node_id().clone(),
             peer.clone(),
             MessageType::BlockchainMessage(request),
         );
-        
+  
         // 发送请求
         self.node.network.send(peer.clone(), message.encode()?).await?;
-        
+  
         // 等待响应
         // 实际实现应该有等待特定消息的机制
         // 这里我们简化为返回一个空块
@@ -5278,55 +5323,55 @@ impl BlockchainNetwork {
             Vec::new(),
         ))
     }
-    
+  
     /// 验证区块头链
     fn validate_header_chain(&self, headers: &[BlockHeader]) -> Result<(), P2pError> {
         if headers.is_empty() {
             return Ok(());
         }
-        
+  
         // 检查第一个区块头是否连接到我们的链
         let first_header = &headers[0];
         let local_tip = self.blockchain.get_tip()?;
-        
+  
         if first_header.prev_block_hash != local_tip.hash() {
             return Err(P2pError::Protocol("Headers do not connect to local chain".into()));
         }
-        
+  
         // 验证每个头与前一个头的连接
         for i in 1..headers.len() {
             let prev_header = &headers[i - 1];
             let curr_header = &headers[i];
-            
+  
             // 检查高度是否递增
             if curr_header.height != prev_header.height + 1 {
                 return Err(P2pError::Protocol("Non-sequential block heights".into()));
             }
-            
+  
             // 检查前一个哈希是否匹配
             if curr_header.prev_block_hash != prev_header.hash() {
                 return Err(P2pError::Protocol("Invalid header chain".into()));
             }
-            
+  
             // 验证工作量证明
             if !self.consensus.verify_header(curr_header)? {
                 return Err(P2pError::Protocol("Invalid header proof".into()));
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 广播交易
     pub async fn broadcast_transaction(&self, tx: Transaction) -> Result<(), P2pError> {
         // 验证交易
         if !self.mempool.validate_transaction(&tx, &self.blockchain)? {
             return Err(P2pError::Protocol("Invalid transaction".into()));
         }
-        
+  
         // 添加到内存池
         self.mempool.add_transaction(tx.clone())?;
-        
+  
         // 创建广播消息
         let broadcast = BlockchainMessage::Transaction(tx);
         let message = Message::new(
@@ -5334,7 +5379,7 @@ impl BlockchainNetwork {
             NodeId::broadcast(), // 广播
             MessageType::BlockchainMessage(broadcast),
         );
-        
+  
         // 广播到所有连接的节点
         let peers = self.node.connected_peers().await?;
         for peer in peers {
@@ -5342,25 +5387,25 @@ impl BlockchainNetwork {
                 log::warn!("Failed to send transaction to {}: {}", peer, e);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 广播新区块
     pub async fn broadcast_block(&self, block: Block) -> Result<(), P2pError> {
         // 验证区块
         if !self.blockchain.validate_block(&block)? {
             return Err(P2pError::Protocol("Invalid block".into()));
         }
-        
+  
         // 尝试添加到链
         self.blockchain.add_block(block.clone())?;
-        
+  
         // 从内存池移除已包含的交易
         for tx in &block.transactions {
             self.mempool.remove_transaction(&tx.hash())?;
         }
-        
+  
         // 创建广播消息
         let broadcast = BlockchainMessage::Block(block);
         let message = Message::new(
@@ -5368,7 +5413,7 @@ impl BlockchainNetwork {
             NodeId::broadcast(), // 广播
             MessageType::BlockchainMessage(broadcast),
         );
-        
+  
         // 广播到所有连接的节点
         let peers = self.node.connected_peers().await?;
         for peer in peers {
@@ -5376,32 +5421,32 @@ impl BlockchainNetwork {
                 log::warn!("Failed to send block to {}: {}", peer, e);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 创建新区块
     pub async fn create_block(&self) -> Result<Block, P2pError> {
         // 从内存池获取交易
         let transactions = self.mempool.get_transactions_for_block(
             self.blockchain.get_max_block_size()?,
         )?;
-        
+  
         // 创建新区块
         let block = self.consensus.create_block(
             self.blockchain.get_tip()?,
             transactions,
             self.node.node_id(),
         ).await?;
-        
+  
         Ok(block)
     }
-    
+  
     /// 获取区块链状态
     pub fn get_blockchain_info(&self) -> Result<BlockchainInfo, P2pError> {
         let height = self.blockchain.get_height()?;
         let tip = self.blockchain.get_tip()?;
-        
+  
         Ok(BlockchainInfo {
             height,
             tip_hash: tip.hash(),
@@ -6434,21 +6479,21 @@ fn calculate_merkle_root(transactions: &[Transaction]) -> [u8; 32] {
     // 不断组合哈希，直到只剩一个
     while hashes.len() > 1 {
         let mut new_hashes = Vec::with_capacity(hashes.len() / 2);
-        
+  
         for i in (0..hashes.len()).step_by(2) {
             let mut hasher = Sha256::new();
             hasher.update(&hashes[i]);
             hasher.update(&hashes[i + 1]);
             let hash = hasher.finalize();
-            
+  
             let mut combined = [0u8; 32];
             combined.copy_from_slice(&hash);
             new_hashes.push(combined);
         }
-        
+  
         hashes = new_hashes;
     }
-    
+  
     hashes[0]
 }
 
@@ -6467,7 +6512,7 @@ fn verify_signature(
 fn calculate_target(difficulty: u64) -> U256 {
     // 最高难度对应的目标值（全0，实际不可能达到）
     let max_target = U256::MAX;
-    
+  
     // 计算实际目标 = 最大目标 / 难度
     if difficulty == 0 {
         max_target
@@ -6477,7 +6522,9 @@ fn calculate_target(difficulty: u64) -> U256 {
 }
 
 /// 区块链信息
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct BlockchainInfo {
     pub height: u64,
     pub tip_hash: BlockHash,
@@ -6486,7 +6533,9 @@ pub struct BlockchainInfo {
 }
 
 /// 区块
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct Block {
     pub header: BlockHeader,
     pub transactions: Vec<Transaction>,
@@ -6497,7 +6546,7 @@ impl Block {
     pub fn new(header: BlockHeader, transactions: Vec<Transaction>) -> Self {
         Self { header, transactions }
     }
-    
+  
     /// 计算区块哈希
     pub fn hash(&self) -> BlockHash {
         self.header.hash()
@@ -6505,7 +6554,9 @@ impl Block {
 }
 
 /// 区块头
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct BlockHeader {
     pub height: u64,
     pub prev_block_hash: BlockHash,
@@ -6531,18 +6582,18 @@ impl BlockHeader {
             merkle_root,
         }
     }
-    
+  
     /// 计算区块头哈希
     pub fn hash(&self) -> BlockHash {
         let mut hasher = Sha256::new();
-        
+  
         // 序列化区块头
         let header_bytes = bincode::serialize(self)
             .expect("Failed to serialize header");
-            
+  
         hasher.update(&header_bytes);
         let hash = hasher.finalize();
-        
+  
         let mut result = [0u8; 32];
         result.copy_from_slice(&hash);
         BlockHash(result)
@@ -6550,7 +6601,9 @@ impl BlockHeader {
 }
 
 /// 区块哈希
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
 pub struct BlockHash(pub [u8; 32]);
 
 impl std::fmt::Display for BlockHash {
@@ -6560,7 +6613,9 @@ impl std::fmt::Display for BlockHash {
 }
 
 /// 交易
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct Transaction {
     pub version: u32,
     pub inputs: Vec<TransactionInput>,
@@ -6583,18 +6638,18 @@ impl Transaction {
             lock_time,
         }
     }
-    
+  
     /// 计算交易哈希
     pub fn hash(&self) -> TransactionHash {
         let mut hasher = Sha256::new();
-        
+  
         // 序列化交易
         let tx_bytes = bincode::serialize(self)
             .expect("Failed to serialize transaction");
-            
+  
         hasher.update(&tx_bytes);
         let hash = hasher.finalize();
-        
+  
         let mut result = [0u8; 32];
         result.copy_from_slice(&hash);
         TransactionHash(result)
@@ -6602,7 +6657,9 @@ impl Transaction {
 }
 
 /// 交易哈希
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+
 pub struct TransactionHash(pub [u8; 32]);
 
 impl std::fmt::Display for TransactionHash {
@@ -6612,7 +6669,9 @@ impl std::fmt::Display for TransactionHash {
 }
 
 /// 交易输入
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct TransactionInput {
     pub prev_tx: TransactionHash,
     pub prev_index: u32,
@@ -6621,14 +6680,18 @@ pub struct TransactionInput {
 }
 
 /// 交易输出
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct TransactionOutput {
     pub value: u64,
     pub script_pubkey: Vec<u8>,
 }
 
 /// 区块链配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct BlockchainConfig {
     pub genesis_timestamp: u64,
     pub max_block_size: usize,
@@ -6636,21 +6699,27 @@ pub struct BlockchainConfig {
 }
 
 /// 内存池配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct MempoolConfig {
     pub max_pool_size: usize,
     pub min_fee_rate: u64,
 }
 
 /// 工作量证明配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct PowConfig {
     pub difficulty: u64,
     pub difficulty_adjustment_interval: u64,  // 区块数
 }
 
 /// 权益证明配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct PosConfig {
     pub min_stake: u64,
     pub slot_time: u64,  // 秒
@@ -6658,14 +6727,18 @@ pub struct PosConfig {
 }
 
 /// 共识类型
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq)]
+
 pub enum ConsensusType {
     ProofOfWork,
     ProofOfStake,
 }
 
 /// 区块链网络配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct BlockchainNetworkConfig {
     pub node_config: P2PNodeConfig,
     pub blockchain_path: PathBuf,
@@ -6701,11 +6774,12 @@ fn utxo_key(tx_hash: &TransactionHash, output_index: u32) -> Vec<u8> {
     key
 }
 
-#[tokio::main]
+# [tokio::main]
+
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 初始化日志
     env_logger::init();
-    
+  
     // 创建区块链网络配置
     let config = BlockchainNetworkConfig {
         node_config: P2PNodeConfig {
@@ -6741,20 +6815,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             validator_count: 100,
         },
     };
-    
+  
     // 创建并启动区块链网络
     let network = BlockchainNetwork::new(config).await?;
     network.start().await?;
-    
+  
     // 等待退出信号
     tokio::signal::ctrl_c().await?;
     println!("收到退出信号，正在关闭...");
-    
+  
     // 优雅关闭
     network.stop().await?;
-    
+  
     Ok(())
 }
+
 ```
 
 ### 8.3 去中心化应用平台
@@ -6776,19 +6851,19 @@ impl DAppPlatform {
     pub async fn new(config: DAppPlatformConfig) -> Result<Self, P2pError> {
         // 初始化P2P节点
         let node = P2PNode::new(config.node_config).await?;
-        
+  
         // 初始化状态存储
         let state_store = StateStore::new(config.state_path.clone())?;
-        
+  
         // 初始化合约引擎
         let contract_engine = ContractEngine::new(state_store.clone())?;
-        
+  
         // 初始化事件总线
         let p2p_bus = EventBus::new();
-        
+  
         // 初始化应用注册表
         let app_registry = AppRegistry::new(config.registry_path.clone())?;
-        
+  
         Ok(Self {
             node,
             state_store,
@@ -6797,52 +6872,52 @@ impl DAppPlatform {
             app_registry,
         })
     }
-    
+  
     /// 启动平台
     pub async fn start(&self) -> Result<(), P2pError> {
         // 启动P2P节点
         self.node.start().await?;
-        
+  
         // 注册消息处理器
         self.register_message_handlers().await?;
-        
+  
         // 连接到引导节点
         for bootstrap_node in &self.node.config.bootstrap_nodes {
             if let Err(e) = self.node.connect(bootstrap_node).await {
                 log::warn!("Failed to connect to bootstrap node {}: {}", bootstrap_node, e);
             }
         }
-        
+  
         // 启动应用
         self.start_applications().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 停止平台
     pub async fn stop(&self) -> Result<(), P2pError> {
         // 停止应用
         self.stop_applications().await?;
-        
+  
         // 停止P2P节点
         self.node.stop().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 注册消息处理器
     async fn register_message_handlers(&self) -> Result<(), P2pError> {
         // 在实际实现中，应该将消息处理器注册到P2P节点
         // 这里我们假设有这样的注册方法
-        
+  
         Ok(())
     }
-    
+  
     /// 启动已安装的应用
     async fn start_applications(&self) -> Result<(), P2pError> {
         // 获取已安装的应用
         let apps = self.app_registry.list_applications()?;
-        
+  
         for app_info in apps {
             if app_info.auto_start {
                 match self.start_application(&app_info.id).await {
@@ -6851,43 +6926,43 @@ impl DAppPlatform {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 停止所有应用
     async fn stop_applications(&self) -> Result<(), P2pError> {
         // 获取运行中的应用
         let running_apps = self.app_registry.list_running_applications()?;
-        
+  
         for app_id in running_apps {
             match self.stop_application(&app_id).await {
                 Ok(_) => log::info!("Stopped application: {}", app_id),
                 Err(e) => log::error!("Failed to stop application {}: {}", app_id, e),
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 安装应用
     pub async fn install_application(&self, app_package: AppPackage) -> Result<AppInfo, P2pError> {
         // 验证应用包
         if !app_package.verify()? {
             return Err(P2pError::Protocol("Invalid application package".into()));
         }
-        
+  
         // 检查依赖
         for dep in &app_package.manifest.dependencies {
             if !self.app_registry.is_installed(&dep.id)? {
                 return Err(P2pError::Protocol(format!("Missing dependency: {}", dep.id)));
             }
         }
-        
+  
         // 解压应用代码
         let app_path = self.app_registry.get_app_path(&app_package.manifest.id)?;
         app_package.extract_to(&app_path)?;
-        
+  
         // 注册应用
         let app_info = AppInfo {
             id: app_package.manifest.id.clone(),
@@ -6896,17 +6971,17 @@ impl DAppPlatform {
             auto_start: app_package.manifest.auto_start,
             status: AppStatus::Installed,
         };
-        
+  
         self.app_registry.register_application(app_info.clone())?;
-        
+  
         // 如果配置为自动启动，则启动应用
         if app_package.manifest.auto_start {
             self.start_application(&app_info.id).await?;
         }
-        
+  
         Ok(app_info)
     }
-    
+  
     /// 卸载应用
     pub async fn uninstall_application(&self, app_id: &str) -> Result<(), P2pError> {
         // 检查是否有其他应用依赖于此应用
@@ -6917,65 +6992,65 @@ impl DAppPlatform {
                 dependent_apps.join(", ")
             )));
         }
-        
+  
         // 如果应用正在运行，先停止它
         if self.app_registry.is_running(app_id)? {
             self.stop_application(app_id).await?;
         }
-        
+  
         // 卸载应用
         self.app_registry.unregister_application(app_id)?;
-        
+  
         // 删除应用文件
         let app_path = self.app_registry.get_app_path(app_id)?;
         std::fs::remove_dir_all(app_path)?;
-        
+  
         Ok(())
     }
-    
+  
     /// 启动应用
     pub async fn start_application(&self, app_id: &str) -> Result<(), P2pError> {
         // 检查应用是否已安装
         if !self.app_registry.is_installed(app_id)? {
             return Err(P2pError::NotFound(ResourceId::from([0u8; 32])));
         }
-        
+  
         // 如果应用已在运行，直接返回
         if self.app_registry.is_running(app_id)? {
             return Ok(());
         }
-        
+  
         // 获取应用信息
         let app_info = self.app_registry.get_application_info(app_id)?;
-        
+  
         // 加载应用合约
         let app_path = self.app_registry.get_app_path(app_id)?;
         let contract_path = app_path.join("contract.wasm");
-        
+  
         let contract_id = self.contract_engine.load_contract(
             app_id,
             contract_path,
         )?;
-        
+  
         // 初始化应用状态
         let init_result = self.contract_engine.initialize_contract(
             &contract_id,
             &app_info.id,
         )?;
-        
+  
         if !init_result.success {
             return Err(P2pError::Protocol(format!(
                 "Failed to initialize application: {}",
                 init_result.error.unwrap_or_default()
             )));
         }
-        
+  
         // 更新应用状态为运行中
         self.app_registry.update_application_status(
             app_id,
             AppStatus::Running,
         )?;
-        
+  
         // 广播应用启动事件
         self.p2p_bus.publish(
             "app.started",
@@ -6988,24 +7063,24 @@ impl DAppPlatform {
                     .as_secs(),
             },
         ).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 停止应用
     pub async fn stop_application(&self, app_id: &str) -> Result<(), P2pError> {
         // 检查应用是否在运行
         if !self.app_registry.is_running(app_id)? {
             return Ok(());
         }
-        
+  
         // 调用应用的关闭方法
         let stop_result = self.contract_engine.call_contract(
             app_id,
             "stop",
             &[],
         )?;
-        
+  
         if !stop_result.success {
             log::warn!("Error stopping application {}: {}",
                 app_id,
@@ -7013,16 +7088,16 @@ impl DAppPlatform {
             );
             // 继续卸载过程，即使停止时出错
         }
-        
+  
         // 卸载合约
         self.contract_engine.unload_contract(app_id)?;
-        
+  
         // 更新应用状态
         self.app_registry.update_application_status(
             app_id,
             AppStatus::Installed,
         )?;
-        
+  
         // 广播应用停止事件
         self.p2p_bus.publish(
             "app.stopped",
@@ -7035,10 +7110,10 @@ impl DAppPlatform {
                     .as_secs(),
             },
         ).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 调用应用方法
     pub async fn call_application(
         &self,
@@ -7050,17 +7125,17 @@ impl DAppPlatform {
         if !self.app_registry.is_running(app_id)? {
             return Err(P2pError::Protocol("Application is not running".into()));
         }
-        
+  
         // 调用合约方法
         let result = self.contract_engine.call_contract(
             app_id,
             method,
             params,
         )?;
-        
+  
         Ok(result)
     }
-    
+  
     /// 查询应用状态
     pub async fn query_application(
         &self,
@@ -7072,24 +7147,24 @@ impl DAppPlatform {
         if !self.app_registry.is_installed(app_id)? {
             return Err(P2pError::NotFound(ResourceId::from([0u8; 32])));
         }
-        
+  
         // 查询应用状态
         let result = self.contract_engine.query_contract(
             app_id,
             query,
             params,
         )?;
-        
+  
         if !result.success {
             return Err(P2pError::Protocol(format!(
                 "Query failed: {}",
                 result.error.unwrap_or_default()
             )));
         }
-        
+  
         Ok(result.result.unwrap_or(Value::Null))
     }
-    
+  
     /// 获取应用信息
     pub fn get_application_info(&self, app_id: &str) -> Result<Option<AppInfo>, P2pError> {
         if self.app_registry.is_installed(app_id)? {
@@ -7098,7 +7173,7 @@ impl DAppPlatform {
             Ok(None)
         }
     }
-    
+  
     /// 列出所有应用
     pub fn list_applications(&self) -> Result<Vec<AppInfo>, P2pError> {
         self.app_registry.list_applications()
@@ -7116,39 +7191,39 @@ impl AppRegistry {
     pub fn new(registry_path: PathBuf) -> Result<Self, P2pError> {
         // 确保目录存在
         std::fs::create_dir_all(&registry_path)?;
-        
+  
         // 应用目录
         let apps_dir = registry_path.join("apps");
         std::fs::create_dir_all(&apps_dir)?;
-        
+  
         // 打开数据库
         let db = sled::Config::new()
             .path(registry_path.join("registry.db"))
             .mode(sled::Mode::HighThroughput)
             .open()?;
-            
+  
         Ok(Self { db, apps_dir })
     }
-    
+  
     /// 注册应用
     pub fn register_application(&self, app_info: AppInfo) -> Result<(), P2pError> {
         let app_data = bincode::serialize(&app_info)
             .map_err(|_| P2pError::Protocol("Failed to serialize app info".into()))?;
-            
+  
         self.db.insert(app_key(&app_info.id), app_data)?;
         self.db.flush()?;
-        
+  
         Ok(())
     }
-    
+  
     /// 取消注册应用
     pub fn unregister_application(&self, app_id: &str) -> Result<(), P2pError> {
         self.db.remove(app_key(app_id))?;
         self.db.flush()?;
-        
+  
         Ok(())
     }
-    
+  
     /// 更新应用状态
     pub fn update_application_status(
         &self,
@@ -7157,116 +7232,116 @@ impl AppRegistry {
     ) -> Result<(), P2pError> {
         let mut app_info = self.get_application_info(app_id)?;
         app_info.status = status;
-        
+  
         let app_data = bincode::serialize(&app_info)
             .map_err(|_| P2pError::Protocol("Failed to serialize app info".into()))?;
-            
+  
         self.db.insert(app_key(app_id), app_data)?;
         self.db.flush()?;
-        
+  
         Ok(())
     }
-    
+  
     /// 获取应用信息
     pub fn get_application_info(&self, app_id: &str) -> Result<AppInfo, P2pError> {
         if let Some(app_data) = self.db.get(app_key(app_id))? {
             let app_info: AppInfo = bincode::deserialize(&app_data)
                 .map_err(|_| P2pError::Protocol("Failed to deserialize app info".into()))?;
-                
+  
             Ok(app_info)
         } else {
             Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
         }
     }
-    
+  
     /// 列出所有应用
     pub fn list_applications(&self) -> Result<Vec<AppInfo>, P2pError> {
         let mut apps = Vec::new();
-        
+  
         for result in self.db.iter() {
             let (key, value) = result?;
             let key_str = std::str::from_utf8(&key)
                 .map_err(|_| P2pError::Protocol("Invalid key encoding".into()))?;
-                
+  
             if key_str.starts_with("app:") {
                 let app_info: AppInfo = bincode::deserialize(&value)
                     .map_err(|_| P2pError::Protocol("Failed to deserialize app info".into()))?;
-                    
+  
                 apps.push(app_info);
             }
         }
-        
+  
         Ok(apps)
     }
-    
+  
     /// 列出运行中的应用
     pub fn list_running_applications(&self) -> Result<Vec<String>, P2pError> {
         let mut running_apps = Vec::new();
-        
+  
         for result in self.db.iter() {
             let (key, value) = result?;
             let key_str = std::str::from_utf8(&key)
                 .map_err(|_| P2pError::Protocol("Invalid key encoding".into()))?;
-                
+  
             if key_str.starts_with("app:") {
                 let app_info: AppInfo = bincode::deserialize(&value)
                     .map_err(|_| P2pError::Protocol("Failed to deserialize app info".into()))?;
-                    
+  
                 if app_info.status == AppStatus::Running {
                     running_apps.push(app_info.id);
                 }
             }
         }
-        
+  
         Ok(running_apps)
     }
-    
+  
     /// 检查应用是否已安装
     pub fn is_installed(&self, app_id: &str) -> Result<bool, P2pError> {
         Ok(self.db.contains_key(app_key(app_id))?)
     }
-    
+  
     /// 检查应用是否正在运行
     pub fn is_running(&self, app_id: &str) -> Result<bool, P2pError> {
         if let Some(app_data) = self.db.get(app_key(app_id))? {
             let app_info: AppInfo = bincode::deserialize(&app_data)
                 .map_err(|_| P2pError::Protocol("Failed to deserialize app info".into()))?;
-                
+  
             Ok(app_info.status == AppStatus::Running)
         } else {
             Ok(false)
         }
     }
-    
+  
     /// 查找依赖于指定应用的其他应用
     pub fn find_dependents(&self, app_id: &str) -> Result<Vec<String>, P2pError> {
         let mut dependents = Vec::new();
-        
+  
         for result in self.db.iter() {
             let (key, value) = result?;
             let key_str = std::str::from_utf8(&key)
                 .map_err(|_| P2pError::Protocol("Invalid key encoding".into()))?;
-                
+  
             if key_str.starts_with("app:") {
                 let app_info: AppInfo = bincode::deserialize(&value)
                     .map_err(|_| P2pError::Protocol("Failed to deserialize app info".into()))?;
-                    
+  
                 // 检查依赖
                 let deps_key = format!("deps:{}", app_info.id);
                 if let Some(deps_data) = self.db.get(deps_key.as_bytes())? {
                     let deps: Vec<String> = bincode::deserialize(&deps_data)
                         .map_err(|_| P2pError::Protocol("Failed to deserialize dependencies".into()))?;
-                        
+  
                     if deps.contains(&app_id.to_string()) {
                         dependents.push(app_info.id);
                     }
                 }
             }
         }
-        
+  
         Ok(dependents)
     }
-    
+  
     /// 获取应用目录路径
     pub fn get_app_path(&self, app_id: &str) -> Result<PathBuf, P2pError> {
         Ok(self.apps_dir.join(app_id))
@@ -7287,7 +7362,7 @@ impl ContractEngine {
             contracts: RwLock::new(HashMap::new()),
         })
     }
-    
+  
     /// 加载合约
     pub fn load_contract(
         &self,
@@ -7297,29 +7372,29 @@ impl ContractEngine {
         // 读取WASM文件
         let wasm_bytes = std::fs::read(&wasm_path)
             .map_err(|e| P2pError::Storage(StorageError::IoError(e)))?;
-            
+  
         // 创建WASM实例
         let instance = WasmInstance::new(
             contract_id,
             &wasm_bytes,
             self.state_store.clone(),
         )?;
-        
+  
         // 保存合约实例
         let mut contracts = self.contracts.write().unwrap();
         contracts.insert(contract_id.to_string(), instance);
-        
+  
         Ok(contract_id.to_string())
     }
-    
+  
     /// 卸载合约
     pub fn unload_contract(&self, contract_id: &str) -> Result<(), P2pError> {
         let mut contracts = self.contracts.write().unwrap();
         contracts.remove(contract_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 初始化合约
     pub fn initialize_contract(
         &self,
@@ -7327,14 +7402,14 @@ impl ContractEngine {
         context: &str,
     ) -> Result<ContractResult, P2pError> {
         let contracts = self.contracts.read().unwrap();
-        
+  
         if let Some(instance) = contracts.get(contract_id) {
             instance.call("initialize", &[Value::String(context.to_string())])
         } else {
             Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
         }
     }
-    
+  
     /// 调用合约方法
     pub fn call_contract(
         &self,
@@ -7343,14 +7418,14 @@ impl ContractEngine {
         params: &[Value],
     ) -> Result<ContractResult, P2pError> {
         let contracts = self.contracts.read().unwrap();
-        
+  
         if let Some(instance) = contracts.get(contract_id) {
             instance.call(method, params)
         } else {
             Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
         }
     }
-    
+  
     /// 查询合约状态
     pub fn query_contract(
         &self,
@@ -7359,7 +7434,7 @@ impl ContractEngine {
         params: &[Value],
     ) -> Result<ContractResult, P2pError> {
         let contracts = self.contracts.read().unwrap();
-        
+  
         if let Some(instance) = contracts.get(contract_id) {
             let query_method = format!("query_{}", query);
             instance.call(&query_method, params)
@@ -7387,17 +7462,17 @@ impl WasmInstance {
     ) -> Result<Self, P2pError> {
         // 设置WASM运行时
         let store = wasmer::Store::default();
-        
+  
         // 编译WASM模块
         let module = wasmer::Module::new(&store, wasm_bytes)
             .map_err(|e| P2pError::Protocol(format!("Failed to compile WASM: {}", e)))?;
-            
+  
         // 创建导入对象
         let memory = wasmer::Memory::new(&store, wasmer::MemoryType::new(10, Some(100), false))
             .map_err(|e| P2pError::Protocol(format!("Failed to create memory: {}", e)))?;
-            
+  
         let state_store_clone = state_store.clone();
-            
+  
         let import_object = wasmer::imports! {
             "env" => {
                 "memory" => memory.clone(),
@@ -7412,11 +7487,11 @@ impl WasmInstance {
                 // 添加其他必要的导入函数
             }
         };
-        
+  
         // 实例化WASM模块
         let instance = wasmer::Instance::new(&module, &import_object)
             .map_err(|e| P2pError::Protocol(format!("Failed to instantiate WASM: {}", e)))?;
-            
+  
         Ok(Self {
             id: id.to_string(),
             _module: module,
@@ -7425,7 +7500,7 @@ impl WasmInstance {
             memory,
         })
     }
-    
+  
     /// 调用合约方法
     pub fn call(
         &self,
@@ -7435,34 +7510,34 @@ impl WasmInstance {
         // 序列化参数
         let params_json = serde_json::to_string(params)
             .map_err(|e| P2pError::Protocol(format!("Failed to serialize params: {}", e)))?;
-            
+  
         // 分配内存并写入参数
         let params_ptr = self.allocate_and_write_string(&params_json)?;
-        
+  
         // 获取方法
         let method_func = self.instance.exports.get_function(method)
             .map_err(|_| P2pError::Protocol(format!("Method not found: {}", method)))?;
-            
+  
         // 调用方法
         let result = method_func.call(&[wasmer::Value::I32(params_ptr as i32)])
             .map_err(|e| P2pError::Protocol(format!("Failed to call method: {}", e)))?;
-            
+  
         // 读取结果指针
         let result_ptr = match result[0] {
             wasmer::Value::I32(ptr) => ptr as usize,
             _ => return Err(P2pError::Protocol("Invalid return type".into())),
         };
-        
+  
         // 读取结果字符串
         let result_json = self.read_string(result_ptr)?;
-        
+  
         // 解析结果
         let contract_result: ContractResult = serde_json::from_str(&result_json)
             .map_err(|e| P2pError::Protocol(format!("Failed to parse result: {}", e)))?;
-            
+  
         Ok(contract_result)
     }
-    
+  
     /// 分配内存并写入字符串
     fn allocate_and_write_string(&self, s: &str) -> Result<usize, P
 
@@ -7829,6 +7904,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 9. P2P技术的未来展望
@@ -8454,17 +8530,17 @@ impl FutureReport {
                 TransformationPotential::Moderate => "中等",
                 TransformationPotential::Low => "低",
             };
-            
+  
             summary.push_str(&format!("- **{}**: {} 转型潜力\n", industry, potential_str));
         }
         summary.push_str("\n");
-        
+  
         // 添加技术成熟度
         summary.push_str("## 技术成熟度评估\n\n");
-        
+  
         let mut technologies: Vec<_> = self.technology_maturity.iter().collect();
         technologies.sort_by(|a, b| b.1.cmp(a.1));
-        
+  
         for (technology, maturity) in technologies {
             let maturity_str = match maturity {
                 MaturityLevel::Mature => "成熟",
@@ -8472,22 +8548,22 @@ impl FutureReport {
                 MaturityLevel::Emerging => "新兴",
                 MaturityLevel::Declining => "衰退",
             };
-            
+  
             summary.push_str(&format!("- **{}**: {} 阶段\n", technology, maturity_str));
         }
         summary.push_str("\n");
-        
+  
         // 添加区域影响
         summary.push_str("## 区域影响分布\n\n");
-        
+  
         let mut regions: Vec<_> = self.regional_impact.iter().collect();
         regions.sort_by(|a, b| b.1.cmp(a.1));
-        
+  
         for (region, impact) in regions {
             summary.push_str(&format!("- **{}**: 影响指数 {}/10\n", region, impact));
         }
         summary.push_str("\n");
-        
+  
         // 添加结束语
         summary.push_str("## 结论\n\n");
         summary.push_str(&format!(
@@ -8495,7 +8571,7 @@ impl FutureReport {
             self.trend_analysis.average_impact_score,
             self.prediction_analysis.optimism_index
         ));
-        
+  
         summary
     }
 }
@@ -8504,13 +8580,14 @@ impl FutureReport {
 fn main() {
     // 创建分析器
     let analyzer = P2PFutureAnalyzer::new();
-    
+  
     // 生成综合报告
     let report = analyzer.generate_comprehensive_report();
-    
+  
     // 打印报告摘要
     println!("{}", report.generate_summary());
 }
+
 ```
 
 ### 9.1 P2P与量子计算的交叉
@@ -8535,35 +8612,35 @@ impl QuantumSafeP2P {
             qrng: QuantumRandomNumberGenerator::new(),
         }
     }
-    
+  
     /// 使用后量子密码学进行密钥交换
     pub fn perform_key_exchange(&self, peer_id: &NodeId) -> Result<SharedSecret, P2pError> {
         // 生成密钥对
         let keypair = self.pqc.generate_keypair(PQCAlgorithm::Kyber1024)?;
-        
+  
         // 导出公钥
         let public_key = keypair.public_key();
-        
+  
         // 将公钥发送给对等方（模拟）
         let peer_public_key = self.send_public_key_to_peer(peer_id, &public_key)?;
-        
+  
         // 使用对方公钥计算共享密钥
         let shared_secret = keypair.compute_shared_secret(&peer_public_key)?;
-        
+  
         Ok(shared_secret)
     }
-    
+  
     /// 使用量子安全签名算法签名消息
     pub fn sign_message(&self, message: &[u8]) -> Result<Signature, P2pError> {
         // 生成签名密钥对
         let signing_keypair = self.pqc.generate_signing_keypair(PQCSigningAlgorithm::Dilithium3)?;
-        
+  
         // 签名消息
         let signature = signing_keypair.sign(message)?;
-        
+  
         Ok(signature)
     }
-    
+  
     /// 验证量子安全签名
     pub fn verify_signature(
         &self,
@@ -8573,7 +8650,7 @@ impl QuantumSafeP2P {
     ) -> Result<bool, P2pError> {
         self.pqc.verify_signature(message, signature, public_key)
     }
-    
+  
     /// 使用量子安全加密算法加密数据
     pub fn encrypt_data(
         &self,
@@ -8582,7 +8659,7 @@ impl QuantumSafeP2P {
     ) -> Result<Vec<u8>, P2pError> {
         self.pqc.encrypt(data, recipient_public_key, EncryptionMode::Hybrid)
     }
-    
+  
     /// 使用量子安全解密算法解密数据
     pub fn decrypt_data(
         &self,
@@ -8591,7 +8668,7 @@ impl QuantumSafeP2P {
     ) -> Result<Vec<u8>, P2pError> {
         self.pqc.decrypt(encrypted_data, keypair, EncryptionMode::Hybrid)
     }
-    
+  
     /// 为DHT提供量子安全路由
     pub fn route_quantum_safe(
         &self,
@@ -8600,12 +8677,12 @@ impl QuantumSafeP2P {
     ) -> Result<Vec<NodeInfo>, P2pError> {
         self.quantum_dht.find_nodes(key, routing_table, 20)
     }
-    
+  
     /// 生成量子安全随机数
     pub fn generate_random_bytes(&self, length: usize) -> Result<Vec<u8>, P2pError> {
         self.qrng.generate_random_bytes(length)
     }
-    
+  
     // 辅助方法 - 实际实现中应替换为实际网络通信
     fn send_public_key_to_peer(
         &self,
@@ -8617,7 +8694,7 @@ impl QuantumSafeP2P {
             algorithm: PQCAlgorithm::Kyber1024,
             key_data: vec![0u8; 32], // 模拟数据
         };
-        
+  
         Ok(peer_public_key)
     }
 }
@@ -8632,7 +8709,7 @@ impl QuantumSafeDHT {
     pub fn new() -> Self {
         Self {}
     }
-    
+  
     /// 查找节点（采用量子安全算法）
     pub fn find_nodes(
         &self,
@@ -8642,7 +8719,7 @@ impl QuantumSafeDHT {
     ) -> Result<Vec<NodeInfo>, P2pError> {
         // 使用量子安全路由策略
         // 在实际实现中，会进行额外的安全检查和量子安全路由
-        
+  
         Ok(routing_table.closest_nodes(key, count))
     }
 }
@@ -8657,7 +8734,7 @@ impl PostQuantumCryptography {
     pub fn new() -> Self {
         Self {}
     }
-    
+  
     /// 生成密钥对
     pub fn generate_keypair(&self, algorithm: PQCAlgorithm) -> Result<PQCKeyPair, P2pError> {
         match algorithm {
@@ -8707,7 +8784,7 @@ impl PostQuantumCryptography {
             },
         }
     }
-    
+  
     /// 生成签名密钥对
     pub fn generate_signing_keypair(
         &self,
@@ -8749,7 +8826,7 @@ impl PostQuantumCryptography {
             }
         }
     }
-    
+  
     /// 验证签名
     pub fn verify_signature(
         &self,
@@ -8762,10 +8839,10 @@ impl PostQuantumCryptography {
         if message.is_empty() {
             return Err(P2pError::Protocol("Empty message".into()));
         }
-        
+  
         Ok(true)
     }
-    
+  
     /// 加密数据
     pub fn encrypt(
         &self,
@@ -8780,7 +8857,7 @@ impl PostQuantumCryptography {
                 if data.is_empty() {
                     return Err(P2pError::Protocol("Empty data".into()));
                 }
-                
+  
                 Ok(data.to_vec())
             },
             EncryptionMode::PureQuantum => {
@@ -8789,12 +8866,12 @@ impl PostQuantumCryptography {
                 if data.is_empty() {
                     return Err(P2pError::Protocol("Empty data".into()));
                 }
-                
+  
                 Ok(data.to_vec())
             }
         }
     }
-    
+  
     /// 解密数据
     pub fn decrypt(
         &self,
@@ -8809,7 +8886,7 @@ impl PostQuantumCryptography {
                 if encrypted_data.is_empty() {
                     return Err(P2pError::Protocol("Empty data".into()));
                 }
-                
+  
                 Ok(encrypted_data.to_vec())
             },
             EncryptionMode::PureQuantum => {
@@ -8817,7 +8894,7 @@ impl PostQuantumCryptography {
                 if encrypted_data.is_empty() {
                     return Err(P2pError::Protocol("Empty data".into()));
                 }
-                
+  
                 Ok(encrypted_data.to_vec())
             }
         }
@@ -8834,21 +8911,23 @@ impl QuantumRandomNumberGenerator {
     pub fn new() -> Self {
         Self {}
     }
-    
+  
     /// 生成随机字节
     pub fn generate_random_bytes(&self, length: usize) -> Result<Vec<u8>, P2pError> {
         // 实际实现应使用真实的量子随机源或高质量CSPRNG
         let mut bytes = vec![0u8; length];
-        
+  
         // 使用系统随机数（仅作为占位符）
         getrandom::getrandom(&mut bytes)?;
-        
+  
         Ok(bytes)
     }
 }
 
 /// 后量子加密算法
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq)]
+
 pub enum PQCAlgorithm {
     Kyber512,  // 安全级别1
     Kyber768,  // 安全级别3
@@ -8857,7 +8936,9 @@ pub enum PQCAlgorithm {
 }
 
 /// 后量子签名算法
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq)]
+
 pub enum PQCSigningAlgorithm {
     Dilithium2, // 安全级别2
     Dilithium3, // 安全级别3
@@ -8865,21 +8946,27 @@ pub enum PQCSigningAlgorithm {
 }
 
 /// 加密模式
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq)]
+
 pub enum EncryptionMode {
     Hybrid,      // 混合加密（后量子KEM + 对称加密）
     PureQuantum, // 纯后量子加密
 }
 
 /// 后量子公钥
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct PQCPublicKey {
     pub algorithm: PQCAlgorithm,
     pub key_data: Vec<u8>,
 }
 
 /// 后量子密钥对
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct PQCKeyPair {
     pub algorithm: PQCAlgorithm,
     pub private_key: Vec<u8>,
@@ -8891,26 +8978,28 @@ impl PQCKeyPair {
     pub fn public_key(&self) -> PQCPublicKey {
         self.public_key.clone()
     }
-    
+  
     /// 计算共享密钥
     pub fn compute_shared_secret(&self, peer_public_key: &PQCPublicKey) -> Result<SharedSecret, P2pError> {
         // 实际实现应使用相应的后量子密钥交换算法
         // 这里返回一个模拟的共享密钥
-        
+  
         let mut hasher = Sha256::new();
         hasher.update(&self.private_key);
         hasher.update(&peer_public_key.key_data);
         let hash = hasher.finalize();
-        
+  
         let mut bytes = [0u8; 32];
         bytes.copy_from_slice(&hash);
-        
+  
         Ok(SharedSecret { bytes })
     }
 }
 
 /// 后量子签名密钥对
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct PQCSigningKeyPair {
     pub algorithm: PQCSigningAlgorithm,
     pub private_key: Vec<u8>,
@@ -8922,30 +9011,35 @@ impl PQCSigningKeyPair {
     pub fn sign(&self, message: &[u8]) -> Result<Signature, P2pError> {
         // 实际实现应使用相应的后量子签名算法
         // 这里返回一个模拟的签名
-        
+  
         let mut hasher = Sha256::new();
         hasher.update(&self.private_key);
         hasher.update(message);
         let hash = hasher.finalize();
-        
+  
         let mut bytes = Vec::with_capacity(hash.len());
         bytes.extend_from_slice(&hash);
-        
+  
         Ok(Signature { bytes })
     }
 }
 
 /// 共享密钥
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct SharedSecret {
     pub bytes: [u8; 32],
 }
 
 /// 签名
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct Signature {
     pub bytes: Vec<u8>,
 }
+
 ```
 
 ### 9.2 P2P系统与人工智能
@@ -8968,25 +9062,25 @@ impl P2PAISystem {
     pub async fn new(config: P2PAIConfig) -> Result<Self, P2pError> {
         // 初始化P2P节点
         let node = P2PNode::new(config.node_config).await?;
-        
+  
         // 初始化联邦学习协调器
         let federated_learning = FederatedLearningCoordinator::new(
             node.node_id().clone(),
             config.fl_config,
         );
-        
+  
         // 初始化分布式推理引擎
         let distributed_inference = DistributedInferenceEngine::new(
             node.clone(),
             config.inference_config,
         );
-        
+  
         // 初始化去中心化数据管理
         let decentralized_data = DecentralizedDataManager::new(
             node.clone(),
             config.data_config,
         );
-        
+  
         Ok(Self {
             federated_learning,
             distributed_inference,
@@ -8994,24 +9088,24 @@ impl P2PAISystem {
             network: node,
         })
     }
-    
+  
     /// 启动P2P AI系统
     pub async fn start(&self) -> Result<(), P2pError> {
         // 启动P2P网络
         self.network.start().await?;
-        
+  
         // 启动联邦学习服务
         self.federated_learning.start().await?;
-        
+  
         // 启动分布式推理服务
         self.distributed_inference.start().await?;
-        
+  
         // 启动数据管理服务
         self.decentralized_data.start().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 停止P2P AI系统
     pub async fn stop(&self) -> Result<(), P2pError> {
         // 停止所有服务
@@ -9019,10 +9113,10 @@ impl P2PAISystem {
         self.distributed_inference.stop().await?;
         self.federated_learning.stop().await?;
         self.network.stop().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 开始联邦学习训练
     pub async fn start_federated_training(
         &self,
@@ -9031,7 +9125,7 @@ impl P2PAISystem {
     ) -> Result<FederatedTrainingJob, P2pError> {
         self.federated_learning.create_training_job(model_id, config).await
     }
-    
+  
     /// 查询联邦学习训练状态
     pub async fn query_training_status(
         &self,
@@ -9039,7 +9133,7 @@ impl P2PAISystem {
     ) -> Result<TrainingStatus, P2pError> {
         self.federated_learning.get_job_status(job_id).await
     }
-    
+  
     /// 执行分布式推理
     pub async fn run_distributed_inference(
         &self,
@@ -9049,7 +9143,7 @@ impl P2PAISystem {
     ) -> Result<InferenceResult, P2pError> {
         self.distributed_inference.run_inference(model_id, input_data, config).await
     }
-    
+  
     /// 发布AI模型
     pub async fn publish_model(
         &self,
@@ -9057,7 +9151,7 @@ impl P2PAISystem {
     ) -> Result<String, P2pError> {
         self.decentralized_data.publish_model(model).await
     }
-    
+  
     /// 获取AI模型
     pub async fn get_model(
         &self,
@@ -9065,7 +9159,7 @@ impl P2PAISystem {
     ) -> Result<AIModel, P2pError> {
         self.decentralized_data.get_model(model_id).await
     }
-    
+  
     /// 提交本地训练结果
     pub async fn submit_local_training_results(
         &self,
@@ -9074,7 +9168,7 @@ impl P2PAISystem {
     ) -> Result<(), P2pError> {
         self.federated_learning.submit_local_results(job_id, results).await
     }
-    
+  
     /// 查询可用的分布式计算资源
     pub async fn query_available_resources(&self) -> Result<Vec<ComputeResourceInfo>, P2pError> {
         self.distributed_inference.query_available_resources().await
@@ -9099,34 +9193,34 @@ impl FederatedLearningCoordinator {
             running: AtomicBool::new(false),
         }
     }
-    
+  
     /// 启动联邦学习服务
     pub async fn start(&self) -> Result<(), P2pError> {
         if self.running.swap(true, Ordering::SeqCst) {
             return Ok(()); // 已经运行中
         }
-        
+  
         // 启动协调服务
         // 在实际实现中，应该启动监听对等节点消息的循环
-        
+  
         Ok(())
     }
-    
+  
     /// 停止联邦学习服务
     pub async fn stop(&self) -> Result<(), P2pError> {
         if !self.running.swap(false, Ordering::SeqCst) {
             return Ok(()); // 已经停止
         }
-        
+  
         // 停止所有活动作业
         let mut jobs = self.active_jobs.write().await;
         for (_, job) in jobs.iter_mut() {
             job.status = TrainingStatus::Stopped;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 创建联邦训练作业
     pub async fn create_training_job(
         &self,
@@ -9136,7 +9230,7 @@ impl FederatedLearningCoordinator {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 创建新作业
         let job_id = format!("job_{}", uuid::Uuid::new_v4());
         let job = FederatedTrainingJob {
@@ -9153,30 +9247,30 @@ impl FederatedLearningCoordinator {
             aggregated_model: None,
             metrics: HashMap::new(),
         };
-        
+  
         // 保存作业
         {
             let mut jobs = self.active_jobs.write().await;
             jobs.insert(job_id, job.clone());
         }
-        
+  
         // 广播训练作业以招募参与者
         self.broadcast_training_job(&job).await?;
-        
+  
         Ok(job)
     }
-    
+  
     /// 获取作业状态
     pub async fn get_job_status(&self, job_id: &str) -> Result<TrainingStatus, P2pError> {
         let jobs = self.active_jobs.read().await;
-        
+  
         if let Some(job) = jobs.get(job_id) {
             Ok(job.status)
         } else {
             Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
         }
     }
-    
+  
     /// 提交本地训练结果
     pub async fn submit_local_results(
         &self,
@@ -9184,7 +9278,7 @@ impl FederatedLearningCoordinator {
         results: LocalTrainingResults,
     ) -> Result<(), P2pError> {
         let mut jobs = self.active_jobs.write().await;
-        
+  
         if let Some(job) = jobs.get_mut(job_id) {
             // 检查提交的轮次是否正确
             if results.round != job.round {
@@ -9193,40 +9287,40 @@ impl FederatedLearningCoordinator {
                     job.round, results.round
                 )));
             }
-            
+  
             // 在实际实现中，应该验证结果并更新作业状态
             // 这里简化为更新指标
             job.metrics.insert(format!("node_{}", results.node_id), results.metrics.clone());
-            
+  
             // 检查是否所有参与者都提交了结果
             if job.metrics.len() >= job.participants.len() {
                 // 进入下一轮或完成训练
                 job.round += 1;
-                
+  
                 if job.round >= job.max_rounds {
                     job.status = TrainingStatus::Completed;
                     job.end_time = Some(SystemTime::now());
-                    
+  
                     // 在实际实现中，应该计算并保存最终模型
                 } else {
                     job.status = TrainingStatus::WaitingForRound;
-                    
+  
                     // 在实际实现中，应该执行模型聚合并开始下一轮
                 }
             }
-            
+  
             Ok(())
         } else {
             Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
         }
     }
-    
+  
     /// 广播训练作业以招募参与者
     async fn broadcast_training_job(&self, job: &FederatedTrainingJob) -> Result<(), P2pError> {
         // 在实际实现中，应该广播作业信息到网络
         // 简化为打印日志
         log::info!("Broadcasting training job {}: model {}", job.id, job.model_id);
-        
+  
         Ok(())
     }
 }
@@ -9249,29 +9343,29 @@ impl DistributedInferenceEngine {
             running: AtomicBool::new(false),
         }
     }
-    
+  
     /// 启动分布式推理服务
     pub async fn start(&self) -> Result<(), P2pError> {
         if self.running.swap(true, Ordering::SeqCst) {
             return Ok(()); // 已经运行中
         }
-        
+  
         // 在实际实现中，应该启动推理服务和资源发现
-        
+  
         Ok(())
     }
-    
+  
     /// 停止分布式推理服务
     pub async fn stop(&self) -> Result<(), P2pError> {
         if !self.running.swap(false, Ordering::SeqCst) {
             return Ok(()); // 已经停止
         }
-        
+  
         // 停止推理服务
-        
+  
         Ok(())
     }
-    
+  
     /// 运行分布式推理
     pub async fn run_inference(
         &self,
@@ -9282,7 +9376,7 @@ impl DistributedInferenceEngine {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 查找模型元数据
         let model_metadata = {
             let models = self.models.read().await;
@@ -9293,10 +9387,10 @@ impl DistributedInferenceEngine {
                 self.discover_model(model_id).await?
             }
         };
-        
+  
         // 确定推理策略
         let strategy = self.determine_inference_strategy(&model_metadata, &config).await?;
-        
+  
         // 根据策略执行推理
         match strategy {
             InferenceStrategy::Local => {
@@ -9321,18 +9415,18 @@ impl DistributedInferenceEngine {
             },
         }
     }
-    
+  
     /// 查询可用的计算资源
     pub async fn query_available_resources(&self) -> Result<Vec<ComputeResourceInfo>, P2pError> {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 在实际实现中，应该查询网络中的可用资源
         // 这里返回一个模拟的资源列表
-        
+  
         let mut resources = Vec::new();
-        
+  
         // 添加一些模拟资源
         resources.push(ComputeResourceInfo {
             node_id: self.node.node_id().clone(),
@@ -9346,7 +9440,7 @@ impl DistributedInferenceEngine {
             ],
             cost_per_unit: 0.0,
         });
-        
+  
         resources.push(ComputeResourceInfo {
             node_id: self.node.node_id().clone(),
             resource_type: ComputeResourceType::GPU,
@@ -9360,18 +9454,18 @@ impl DistributedInferenceEngine {
             ],
             cost_per_unit: 0.01,
         });
-        
+  
         Ok(resources)
     }
-    
+  
     /// 在网络中发现模型
     async fn discover_model(&self, model_id: &str) -> Result<AIModelMetadata, P2pError> {
         // 在实际实现中，应该在P2P网络中查询模型
         // 这里返回一个错误
-        
+  
         Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
     }
-    
+  
     /// 确定推理策略
     async fn determine_inference_strategy(
         &self,
@@ -9380,7 +9474,7 @@ impl DistributedInferenceEngine {
     ) -> Result<InferenceStrategy, P2pError> {
         // 在实际实现中，应该根据模型大小、复杂性和配置选择策略
         // 这里简化为根据模型大小决定
-        
+  
         if model_metadata.size > 1024 * 1024 * 1024 { // 1GB
             // 大模型，使用分布式推理
             Ok(InferenceStrategy::Distributed {
@@ -9402,7 +9496,7 @@ impl DistributedInferenceEngine {
             Ok(InferenceStrategy::Local)
         }
     }
-    
+  
     /// 运行本地推理
     async fn run_local_inference(
         &self,
@@ -9411,7 +9505,7 @@ impl DistributedInferenceEngine {
     ) -> Result<InferenceResult, P2pError> {
         // 在实际实现中，应该加载模型并执行推理
         // 这里返回一个模拟结果
-        
+  
         Ok(InferenceResult {
             output: vec![0u8; 32], // 模拟输出
             confidence: 0.95,
@@ -9419,7 +9513,7 @@ impl DistributedInferenceEngine {
             metadata: HashMap::new(),
         })
     }
-    
+  
     /// 运行分布式推理
     async fn run_distributed_inference(
         &self,
@@ -9430,10 +9524,10 @@ impl DistributedInferenceEngine {
         if partitions.is_empty() {
             return Err(P2pError::Protocol("Empty partitions list".into()));
         }
-        
+  
         // 在实际实现中，应该将模型分区并分发到不同节点
         // 然后收集和聚合结果
-        
+  
         // 为每个分区创建推理任务
         let mut partition_futures = Vec::new();
         for partition in partitions {
@@ -9444,15 +9538,15 @@ impl DistributedInferenceEngine {
             );
             partition_futures.push(task);
         }
-        
+  
         // 等待所有分区完成
         let results = futures::future::join_all(partition_futures).await;
-        
+  
         // 检查结果并聚合
         let mut all_successful = true;
         let mut partial_outputs = Vec::new();
         let mut total_latency = Duration::from_millis(0);
-        
+  
         for result in results {
             match result {
                 Ok(output) => {
@@ -9465,11 +9559,11 @@ impl DistributedInferenceEngine {
                 }
             }
         }
-        
+  
         if !all_successful {
             return Err(P2pError::Protocol("Some partitions failed".into()));
         }
-        
+  
         // 聚合输出
         // 在实际实现中，应该根据模型结构正确聚合输出
         // 这里简化为拼接所有输出
@@ -9477,7 +9571,7 @@ impl DistributedInferenceEngine {
         for output in partial_outputs {
             aggregated_output.extend_from_slice(&output);
         }
-        
+  
         Ok(InferenceResult {
             output: aggregated_output,
             confidence: 0.9, // 模拟置信度
@@ -9485,7 +9579,7 @@ impl DistributedInferenceEngine {
             metadata: HashMap::new(),
         })
     }
-    
+  
     /// 执行模型分区
     async fn execute_partition(
         &self,
@@ -9498,9 +9592,9 @@ impl DistributedInferenceEngine {
             // 本地执行
             // 在实际实现中，应该只执行指定的操作
             // 这里返回一个模拟结果
-            
+  
             log::info!("Executing partition {} locally", partition.partition_id);
-            
+  
             Ok(InferenceResult {
                 output: vec![0u8; 16], // 模拟输出
                 confidence: 0.95,
@@ -9511,13 +9605,13 @@ impl DistributedInferenceEngine {
             // 远程执行
             // 在实际实现中，应该发送请求到目标节点
             // 这里模拟远程执行
-            
-            log::info!("Executing partition {} on remote node {}", 
+  
+            log::info!("Executing partition {} on remote node {}",
                 partition.partition_id, partition.target_node);
-                
+  
             // 模拟网络延迟
             tokio::time::sleep(Duration::from_millis(20)).await;
-            
+  
             Ok(InferenceResult {
                 output: vec![0u8; 16], // 模拟输出
                 confidence: 0.9,
@@ -9526,7 +9620,7 @@ impl DistributedInferenceEngine {
             })
         }
     }
-    
+  
     /// 将推理任务卸载到特定节点
     async fn offload_inference(
         &self,
@@ -9536,12 +9630,12 @@ impl DistributedInferenceEngine {
     ) -> Result<InferenceResult, P2pError> {
         // 在实际实现中，应该将整个推理任务发送到目标节点
         // 这里模拟卸载过程
-        
+  
         log::info!("Offloading inference to node {}", target_node);
-        
+  
         // 模拟网络延迟
         tokio::time::sleep(Duration::from_millis(30)).await;
-        
+  
         Ok(InferenceResult {
             output: vec![0u8; 32], // 模拟输出
             confidence: 0.92,
@@ -9571,42 +9665,42 @@ impl DecentralizedDataManager {
             running: AtomicBool::new(false),
         }
     }
-    
+  
     /// 启动数据管理服务
     pub async fn start(&self) -> Result<(), P2pError> {
         if self.running.swap(true, Ordering::SeqCst) {
             return Ok(()); // 已经运行中
         }
-        
+  
         // 在实际实现中，应该启动数据索引和分发服务
-        
+  
         Ok(())
     }
-    
+  
     /// 停止数据管理服务
     pub async fn stop(&self) -> Result<(), P2pError> {
         if !self.running.swap(false, Ordering::SeqCst) {
             return Ok(()); // 已经停止
         }
-        
+  
         // 停止数据服务
-        
+  
         Ok(())
     }
-    
+  
     /// 发布AI模型
     pub async fn publish_model(&self, model: AIModel) -> Result<String, P2pError> {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 生成模型ID
         let model_id = if model.metadata.id.is_empty() {
             format!("model_{}", uuid::Uuid::new_v4())
         } else {
             model.metadata.id.clone()
         };
-        
+  
         // 存储模型元数据
         {
             let mut models = self.model_store.write().await;
@@ -9614,24 +9708,24 @@ impl DecentralizedDataManager {
             metadata.id = model_id.clone();
             metadata.publisher = self.node.node_id().clone();
             metadata.publication_time = SystemTime::now();
-            
+  
             models.insert(model_id.clone(), metadata);
         }
-        
+  
         // 在实际实现中，应该将模型存储到分布式存储系统
         // 并广播模型索引信息
-        
+  
         log::info!("Published model {}: {}", model_id, model.metadata.name);
-        
+  
         Ok(model_id)
     }
-    
+  
     /// 获取AI模型
     pub async fn get_model(&self, model_id: &str) -> Result<AIModel, P2pError> {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 获取模型元数据
         let metadata = {
             let models = self.model_store.read().await;
@@ -9642,29 +9736,29 @@ impl DecentralizedDataManager {
                 self.discover_model(model_id).await?
             }
         };
-        
+  
         // 在实际实现中，应该从分布式存储中获取模型数据
         // 这里返回一个只有元数据的模型
-        
+  
         Ok(AIModel {
             metadata,
             data: Vec::new(), // 实际应该从存储中加载
         })
     }
-    
+  
     /// 发布数据集
     pub async fn publish_dataset(&self, dataset: Dataset) -> Result<String, P2pError> {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 生成数据集ID
         let dataset_id = if dataset.metadata.id.is_empty() {
             format!("dataset_{}", uuid::Uuid::new_v4())
         } else {
             dataset.metadata.id.clone()
         };
-        
+  
         // 存储数据集元数据
         {
             let mut datasets = self.dataset_store.write().await;
@@ -9672,24 +9766,24 @@ impl DecentralizedDataManager {
             metadata.id = dataset_id.clone();
             metadata.publisher = self.node.node_id().clone();
             metadata.publication_time = SystemTime::now();
-            
+  
             datasets.insert(dataset_id.clone(), metadata);
         }
-        
+  
         // 在实际实现中，应该将数据集存储到分布式存储系统
         // 并广播数据集索引信息
-        
+  
         log::info!("Published dataset {}: {}", dataset_id, dataset.metadata.name);
-        
+  
         Ok(dataset_id)
     }
-    
+  
     /// 获取数据集
     pub async fn get_dataset(&self, dataset_id: &str) -> Result<Dataset, P2pError> {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 获取数据集元数据
         let metadata = {
             let datasets = self.dataset_store.read().await;
@@ -9700,28 +9794,28 @@ impl DecentralizedDataManager {
                 self.discover_dataset(dataset_id).await?
             }
         };
-        
+  
         // 在实际实现中，应该从分布式存储中获取数据集数据
         // 这里返回一个只有元数据的数据集
-        
+  
         Ok(Dataset {
             metadata,
             data: Vec::new(), // 实际应该从存储中加载
         })
     }
-    
+  
     /// 搜索模型
     pub async fn search_models(&self, query: &str) -> Result<Vec<AIModelMetadata>, P2pError> {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 在实际实现中，应该执行本地搜索并联合网络搜索
         // 这里只执行本地搜索
-        
+  
         let models = self.model_store.read().await;
         let query_lower = query.to_lowercase();
-        
+  
         let matching_models = models.values()
             .filter(|meta| {
                 meta.name.to_lowercase().contains(&query_lower) ||
@@ -9730,22 +9824,22 @@ impl DecentralizedDataManager {
             })
             .cloned()
             .collect();
-            
+  
         Ok(matching_models)
     }
-    
+  
     /// 搜索数据集
     pub async fn search_datasets(&self, query: &str) -> Result<Vec<DatasetMetadata>, P2pError> {
         if !self.running.load(Ordering::SeqCst) {
             return Err(P2pError::Protocol("Service not running".into()));
         }
-        
+  
         // 在实际实现中，应该执行本地搜索并联合网络搜索
         // 这里只执行本地搜索
-        
+  
         let datasets = self.dataset_store.read().await;
         let query_lower = query.to_lowercase();
-        
+  
         let matching_datasets = datasets.values()
             .filter(|meta| {
                 meta.name.to_lowercase().contains(&query_lower) ||
@@ -9754,29 +9848,31 @@ impl DecentralizedDataManager {
             })
             .cloned()
             .collect();
-            
+  
         Ok(matching_datasets)
     }
-    
+  
     /// 在网络中发现模型
     async fn discover_model(&self, model_id: &str) -> Result<AIModelMetadata, P2pError> {
         // 在实际实现中，应该在P2P网络中查找模型
         // 这里返回一个错误
-        
+  
         Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
     }
-    
+  
     /// 在网络中发现数据集
     async fn discover_dataset(&self, dataset_id: &str) -> Result<DatasetMetadata, P2pError> {
         // 在实际实现中，应该在P2P网络中查找数据集
         // 这里返回一个错误
-        
+  
         Err(P2pError::NotFound(ResourceId::from([0u8; 32])))
     }
 }
 
 /// 联邦训练作业
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct FederatedTrainingJob {
     pub id: String,
     pub model_id: String,
@@ -9793,7 +9889,9 @@ pub struct FederatedTrainingJob {
 }
 
 /// 训练状态
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq)]
+
 pub enum TrainingStatus {
     Initializing,
     Recruiting,
@@ -9806,7 +9904,9 @@ pub enum TrainingStatus {
 }
 
 /// 本地训练结果
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct LocalTrainingResults {
     pub job_id: String,
     pub node_id: NodeId,
@@ -9817,14 +9917,18 @@ pub struct LocalTrainingResults {
 }
 
 /// AI模型
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct AIModel {
     pub metadata: AIModelMetadata,
     pub data: Vec<u8>, // 实际应该使用正确的模型表示
 }
 
 /// AI模型元数据
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct AIModelMetadata {
     pub id: String,
     pub name: String,
@@ -9844,14 +9948,18 @@ pub struct AIModelMetadata {
 }
 
 /// 数据集
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct Dataset {
     pub metadata: DatasetMetadata,
     pub data: Vec<u8>, // 实际应该使用正确的数据集表示
 }
 
 /// 数据集元数据
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct DatasetMetadata {
     pub id: String,
     pub name: String,
@@ -9870,7 +9978,9 @@ pub struct DatasetMetadata {
 }
 
 /// 推理结果
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct InferenceResult {
     pub output: Vec<u8>, // 实际应该使用正确的输出表示
     pub confidence: f64,
@@ -9879,7 +9989,9 @@ pub struct InferenceResult {
 }
 
 /// 推理策略
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub enum InferenceStrategy {
     Local,
     Distributed {
@@ -9891,7 +10003,9 @@ pub enum InferenceStrategy {
 }
 
 /// 模型分区
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct ModelPartition {
     pub partition_id: String,
     pub operations: Vec<String>,
@@ -9899,7 +10013,9 @@ pub struct ModelPartition {
 }
 
 /// 计算资源信息
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct ComputeResourceInfo {
     pub node_id: NodeId,
     pub resource_type: ComputeResourceType,
@@ -9910,7 +10026,9 @@ pub struct ComputeResourceInfo {
 }
 
 /// 计算资源类型
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Copy, Debug, PartialEq, Eq)]
+
 pub enum ComputeResourceType {
     CPU,
     GPU,
@@ -9920,7 +10038,9 @@ pub enum ComputeResourceType {
 }
 
 /// 联邦学习配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct FederatedLearningConfig {
     pub default_rounds: u32,
     pub min_participants: usize,
@@ -9930,7 +10050,9 @@ pub struct FederatedLearningConfig {
 }
 
 /// 训练配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct TrainingConfig {
     pub batch_size: usize,
     pub learning_rate: f64,
@@ -9942,7 +10064,9 @@ pub struct TrainingConfig {
 }
 
 /// 推理引擎配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct InferenceEngineConfig {
     pub max_concurrent_inferences: usize,
     pub default_timeout: Duration,
@@ -9952,7 +10076,9 @@ pub struct InferenceEngineConfig {
 }
 
 /// 推理配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct InferenceConfig {
     pub batch_size: usize,
     pub timeout: Duration,
@@ -9962,7 +10088,9 @@ pub struct InferenceConfig {
 }
 
 /// 数据管理器配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct DataManagerConfig {
     pub storage_path: PathBuf,
     pub max_cache_size: u64,
@@ -9972,7 +10100,9 @@ pub struct DataManagerConfig {
 }
 
 /// P2P AI系统配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct P2PAIConfig {
     pub node_config: P2PNodeConfig,
     pub fl_config: FederatedLearningConfig,
@@ -9980,11 +10110,12 @@ pub struct P2PAIConfig {
     pub data_config: DataManagerConfig,
 }
 
-#[tokio::main]
+# [tokio::main]
+
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 初始化日志
     env_logger::init();
-    
+  
     // 创建P2P AI系统配置
     let config = P2PAIConfig {
         node_config: P2PNodeConfig {
@@ -10018,20 +10149,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             privacy_preserving_queries: true,
         },
     };
-    
+  
     // 创建并启动P2P AI系统
     let system = P2PAISystem::new(config).await?;
     system.start().await?;
-    
+  
     // 等待退出信号
     tokio::signal::ctrl_c().await?;
     println!("收到退出信号，正在关闭...");
-    
+  
     // 优雅关闭
     system.stop().await?;
-    
+  
     Ok(())
 }
+
 ```
 
 ### 9.3 P2P技术的跨学科应用
@@ -10062,7 +10194,7 @@ impl P2PCrossdomainApplications {
             healthcare: P2PHealthcareSharing::new(),
         }
     }
-    
+  
     /// 分析跨学科应用共同模式
     pub fn analyze_common_patterns(&self) -> CommonPatternAnalysis {
         let mut analysis = CommonPatternAnalysis {
@@ -10072,7 +10204,7 @@ impl P2PCrossdomainApplications {
             scaling_solutions: Vec::new(),
             governance_models: Vec::new(),
         };
-        
+  
         // 数据共享模式
         analysis.data_sharing_patterns = vec![
             "联合数据访问控制".to_string(),
@@ -10081,7 +10213,7 @@ impl P2PCrossdomainApplications {
             "零知识证明".to_string(),
             "基于目的的数据授权".to_string(),
         ];
-        
+  
         // 共识机制
         analysis.consensus_mechanisms = vec![
             "基于权益的共识".to_string(),
@@ -10090,7 +10222,7 @@ impl P2PCrossdomainApplications {
             "信誉加权投票".to_string(),
             "分层共识协议".to_string(),
         ];
-        
+  
         // 安全挑战
         analysis.security_challenges = vec![
             "Sybil攻击防御".to_string(),
@@ -10099,7 +10231,7 @@ impl P2PCrossdomainApplications {
             "跨域信任建立".to_string(),
             "密钥管理".to_string(),
         ];
-        
+  
         // 扩展解决方案
         analysis.scaling_solutions = vec![
             "分片技术".to_string(),
@@ -10108,7 +10240,7 @@ impl P2PCrossdomainApplications {
             "区域化资源分配".to_string(),
             "自适应路由".to_string(),
         ];
-        
+  
         // 治理模型
         analysis.governance_models = vec![
             "代币投票".to_string(),
@@ -10117,10 +10249,10 @@ impl P2PCrossdomainApplications {
             "流动民主".to_string(),
             "自治组织".to_string(),
         ];
-        
+  
         analysis
     }
-    
+  
     /// 生成跨领域创新建议
     pub fn generate_innovation_suggestions(&self) -> Vec<InnovationSuggestion> {
         vec![
@@ -10174,7 +10306,7 @@ impl P2PEnergyGrid {
     pub fn new() -> Self {
         Self {}
     }
-    
+  
     /// 执行能源交易
     pub fn execute_energy_trade(
         &self,
@@ -10186,13 +10318,13 @@ impl P2PEnergyGrid {
         if amount <= 0.0 {
             return Err(P2pError::Protocol("Invalid energy amount".into()));
         }
-        
+  
         if price < 0.0 {
             return Err(P2pError::Protocol("Invalid energy price".into()));
         }
-        
+  
         // 在实际实现中，应该验证交易可行性和调度能源传输
-        
+  
         let transaction = EnergyTransaction {
             id: format!("tx_{}", uuid::Uuid::new_v4()),
             seller: seller.clone(),
@@ -10203,10 +10335,10 @@ impl P2PEnergyGrid {
             timestamp: SystemTime::now(),
             status: TransactionStatus::Completed,
         };
-        
+  
         Ok(transaction)
     }
-    
+  
     /// 优化能源分配
     pub fn optimize_energy_distribution(
         &self,
@@ -10216,13 +10348,13 @@ impl P2PEnergyGrid {
         if nodes.is_empty() {
             return Err(P2pError::Protocol("Empty nodes list".into()));
         }
-        
+  
         // 在实际实现中，应该根据网络拓扑和负载计算最优能源分配
         // 这里简化为平均分配
-        
+  
         let per_node_load = grid_load / nodes.len() as f64;
         let mut allocations = Vec::new();
-        
+  
         for node in nodes {
             allocations.push(EnergyAllocation {
                 node: node.clone(),
@@ -10230,7 +10362,7 @@ impl P2PEnergyGrid {
                 priority: AllocationPriority::Normal,
             });
         }
-        
+  
         Ok(EnergyDistributionPlan {
             allocations,
             total_energy: grid_load,
@@ -10250,7 +10382,7 @@ impl P2PSupplyChain {
     pub fn new() -> Self {
         Self {}
     }
-    
+  
     /// 跟踪产品
     pub fn track_product(
         &self,
@@ -10258,7 +10390,7 @@ impl P2PSupplyChain {
     ) -> Result<ProductTrackingInfo, P2pError> {
         // 在实际实现中，应该查询区块链或分布式账本
         // 这里返回一个模拟的跟踪信息
-        
+  
         Ok(ProductTrackingInfo {
             product_id: product_id.to_string(),
             current_location: "Distribution Center 5".to_string(),
@@ -10294,7 +10426,7 @@ impl P2PSupplyChain {
             ],
         })
     }
-    
+  
     /// 验证供应链
     pub fn verify_supply_chain(
         &self,
@@ -10302,7 +10434,7 @@ impl P2PSupplyChain {
     ) -> Result<SupplyChainVerification, P2pError> {
         // 在实际实现中，应该验证整个供应链的完整性
         // 这里返回一个模拟的验证结果
-        
+  
         Ok(SupplyChainVerification {
             product_id: product_id.to_string(),
             is_verified: true,
@@ -10325,7 +10457,7 @@ impl P2PDecentralizedFinance {
     pub fn new() -> Self {
         Self {}
     }
-    
+  
     /// 执行P2P贷款
     pub fn execute_p2p_loan(
         &self,
@@ -10338,17 +10470,17 @@ impl P2PDecentralizedFinance {
         if amount <= 0.0 {
             return Err(P2pError::Protocol("Invalid loan amount".into()));
         }
-        
+  
         if interest_rate < 0.0 {
             return Err(P2pError::Protocol("Invalid interest rate".into()));
         }
-        
+  
         if duration_days == 0 {
             return Err(P2pError::Protocol("Invalid loan duration".into()));
         }
-        
+  
         // 在实际实现中，应该执行信用检查和风险评估
-        
+  
         let contract = LoanContract {
             id: format!("loan_{}", uuid::Uuid::new_v4()),
             lender: lender.clone(),
@@ -10372,10 +10504,10 @@ impl P2PDecentralizedFinance {
             status: LoanStatus::Active,
             collateral: None,
         };
-        
+  
         Ok(contract)
     }
-    
+  
     /// 计算信用评分
     pub fn calculate_credit_score(
         &self,
@@ -10383,7 +10515,7 @@ impl P2PDecentralizedFinance {
     ) -> Result<CreditScore, P2pError> {
         // 在实际实现中，应该基于历史交易和行为计算信用评分
         // 这里返回一个模拟的评分
-        
+  
         Ok(CreditScore {
             actor_id: actor.id.clone(),
             score: 720, // 范围通常为300-850
@@ -10408,7 +10540,7 @@ impl P2PEdgeComputing {
     pub fn new() -> Self {
         Self {}
     }
-    
+  
     /// 部署边缘任务
     pub fn deploy_edge_task(
         &self,
@@ -10416,8 +10548,7 @@ impl P2PEdgeComputing {
         requirements: ResourceRequirements,
     ) -> Result<TaskDeployment, P2pError> {
         if task.code.is_empty() {
-            
-
+  
 ```rust
     /// 部署边缘任务
     pub fn deploy_edge_task(
@@ -11138,6 +11269,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 10. 总结

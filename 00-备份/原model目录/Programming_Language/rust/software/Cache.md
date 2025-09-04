@@ -44,6 +44,7 @@ fn main() {
         println!("获取的值为: {}", value);
     }
 }
+
 ```
 
 ---
@@ -78,6 +79,7 @@ fn main() {
     // 第二次调用将直接返回缓存结果
     println!("计算结果: {}", expensive_calculation(4));
 }
+
 ```
 
 ---
@@ -125,6 +127,7 @@ fn main() -> redis::RedisResult<()> {
     println!("从 Redis 中读取到的值: {}", result);
     Ok(())
 }
+
 ```
 
 ---

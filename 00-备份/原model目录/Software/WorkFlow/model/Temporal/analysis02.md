@@ -46,6 +46,7 @@ E: 事件集合
 s₀ ∈ S: 初始状态
 F ⊆ S: 终止状态集合
 H: 历史事件序列
+
 ```
 
 从形式化角度，Temporal工作流系统是一个具有确定性行为的增强状态机，通过事件溯源机制维护状态一致性。
@@ -57,6 +58,7 @@ C = (W, R, O) 其中：
 W: 工作流集合
 R: 关系集合，定义工作流间的组合关系
 O: 操作集合，定义工作流间的交互操作
+
 ```
 
 这个模型将Temporal视为一个通过各种组合操作连接的工作流集合，形成了一个工作流系统的代数。
@@ -71,12 +73,14 @@ Temporal的执行语义可以通过以下规则集形式化表示：
 ExecutionStep: (s, e) → (s', e') 其中
 s, s' ∈ S: 前后状态
 e, e' ∈ E: 触发事件和产生事件
+
 ```
 
 **2. 决定性原则：**
 
 ```rust
 ∀s ∈ S, ∀e ∈ E, |{s' | (s,e) → (s',e')}| ≤ 1
+
 ```
 
 即给定状态和事件，下一状态是唯一确定的（如果存在）。
@@ -85,6 +89,7 @@ e, e' ∈ E: 触发事件和产生事件
 
 ```rust
 s_current = Replay(s₀, H)
+
 ```
 
 即当前状态可以通过从初始状态重放历史事件序列完全重建。
@@ -97,6 +102,7 @@ Temporal工作流的组合性可以形式化为以下特性：
 
 ```rust
 ∀w₁, w₂ ∈ W, ∃op ∈ O: op(w₁, w₂) ∈ W
+
 ```
 
 即任意两个工作流的组合仍然是一个有效的工作流。
@@ -106,6 +112,7 @@ Temporal工作流的组合性可以形式化为以下特性：
 ```rust
 ∀w_parent, w_child ∈ W, ∃r_parent_child ∈ R:
 Hierarchy(w_parent, w_child, r_parent_child) ∈ W
+
 ```
 
 即父子工作流的层次结构形成一个有效的复合工作流。
@@ -116,6 +123,7 @@ Hierarchy(w_parent, w_child, r_parent_child) ∈ W
 ∀w₁, w₂ ∈ W, ∀op ∈ O:
 TypeOf(w₁) = T₁, TypeOf(w₂) = T₂ →
 TypeOf(op(w₁, w₂)) = TypeCompose(T₁, T₂, op)
+
 ```
 
 即工作流组合保持类型安全。
@@ -136,6 +144,7 @@ SubWorkflow(parent, child) :=
   child.Execute(): S_child × I_child → S_child × O_child,
   ∃trigger: S_parent × O_parent → I_child,
   ∃update: S_parent × O_child → S_parent
+
 ```
 
 此模型表明父工作流可以触发子工作流，并根据子工作流的输出更新自身状态。
@@ -163,6 +172,7 @@ func ParentWorkflow(ctx workflow.Context, input string) (string, error) {
     // 处理子工作流结果
     return "Parent processed: " + childResult, nil
 }
+
 ```
 
 **多层嵌套能力验证：**
@@ -172,6 +182,7 @@ Temporal支持任意层级的工作流嵌套，可以形式化表示为：
 ```rust
 ∀n ∈ ℕ, ∃W = {w₁, w₂, ..., wₙ} ⊆ W:
   Hierarchy(w₁, w₂) ∧ Hierarchy(w₂, w₃) ∧ ... ∧ Hierarchy(wₙ₋₁, wₙ)
+
 ```
 
 这表明Temporal支持n层深度的工作流嵌套，没有理论上的深度限制。实际实现中，嵌套深度主要受系统资源和配置限制。
@@ -185,6 +196,7 @@ Temporal提供了以下工作流组合规则，保证类型安全：
 ```rust
 Sequential(w₁, w₂) := 
   Execute(): (I₁ → (O₁ → (I₂ → O₂)))
+
 ```
 
 **2. 并行组合：**
@@ -192,6 +204,7 @@ Sequential(w₁, w₂) :=
 ```rust
 Parallel(w₁, w₂) :=
   Execute(): ((I₁ × I₂) → (O₁ × O₂))
+
 ```
 
 **3. 条件组合：**
@@ -199,6 +212,7 @@ Parallel(w₁, w₂) :=
 ```rust
 Conditional(condition, w₁, w₂) :=
   Execute(): (I → (condition(I) ? O₁ : O₂))
+
 ```
 
 Temporal通过类型系统保证工作流组合的类型安全性，特别是在Rust SDK中：
@@ -224,6 +238,7 @@ pub async fn composite_workflow(ctx: workflow::Context, input: InputType) -> Res
     
     Ok(final_result)
 }
+
 ```
 
 ### 2.3 嵌套边界与限制
@@ -234,6 +249,7 @@ pub async fn composite_workflow(ctx: workflow::Context, input: InputType) -> Res
 
 ```rust
 ∀w_nested ∈ W, Resources(w_nested) ≤ SystemLimits
+
 ```
 
 即嵌套工作流的资源消耗必须在系统限制内。
@@ -242,6 +258,7 @@ pub async fn composite_workflow(ctx: workflow::Context, input: InputType) -> Res
 
 ```rust
 ∀w ∈ W, |History(w)| ≤ HistorySizeLimit
+
 ```
 
 工作流历史大小有限制（默认为10MB），这可能限制深度嵌套工作流的复杂性。
@@ -250,6 +267,7 @@ pub async fn composite_workflow(ctx: workflow::Context, input: InputType) -> Res
 
 ```rust
 ∀w₁ ⊆ w₂ ⊆ ... ⊆ wₙ, ExecutionPath(wₙ) ≤ MaxExecutionPathLength
+
 ```
 
 长执行路径可能受超时设置限制。
@@ -267,6 +285,7 @@ func LongRunningWorkflow(ctx workflow.Context, param string, iteration int) erro
     // 达到历史大小限制，继续为新的执行
     return workflow.NewContinueAsNewError(ctx, LongRunningWorkflow, param, iteration+1)
 }
+
 ```
 
 ## 3. 图结构工作流支持
@@ -282,6 +301,7 @@ GraphWorkflow := (V, E, δ) 其中：
 V: 顶点集合，表示工作流状态或活动
 E: 边集合，表示状态转换或活动间依赖
 δ: V × E → V 转换函数
+
 ```
 
 Temporal通过其控制流原语可以表达任何有向图结构：
@@ -290,6 +310,7 @@ Temporal通过其控制流原语可以表达任何有向图结构：
 
 ```rust
 ∀G(V,E) 为DAG, ∃w ∈ W: StructureOf(w) ≅ G
+
 ```
 
 其中≅表示同构，即存在一个双射将工作流结构映射到图结构。
@@ -298,6 +319,7 @@ Temporal通过其控制流原语可以表达任何有向图结构：
 
 ```rust
 ∀G(V,E) 为有向图(可含环), ∃w ∈ W: StructureOf(w) ≅ G
+
 ```
 
 Temporal支持循环和条件分支，因此可以表达任意有向图，包括有环图。
@@ -323,6 +345,7 @@ pub async fn fan_out_fan_in(ctx: workflow::Context, inputs: Vec<Input>) -> Resul
     let outputs: Result<Vec<_>, _> = results.into_iter().collect();
     outputs
 }
+
 ```
 
 **2. 动态分支模式：**
@@ -355,6 +378,7 @@ func DynamicBranchingWorkflow(ctx workflow.Context, input Input) (Output, error)
     // 合并所有分支结果
     return aggregateResults(results), nil
 }
+
 ```
 
 **3. 动态子工作流图：**
@@ -401,6 +425,7 @@ func DynamicGraphWorkflow(ctx workflow.Context, graphSpec GraphSpecification) (G
     
     return buildGraphResult(nodeResults, graphSpec), nil
 }
+
 ```
 
 ### 3.3 环路和反向边处理
@@ -431,6 +456,7 @@ func LoopWorkflow(ctx workflow.Context, iterations int) error {
     }
     return nil
 }
+
 ```
 
 **2. 递归循环支持：**
@@ -458,6 +484,7 @@ pub async fn recursive_workflow(ctx: workflow::Context, state: State) -> Result<
     let child_ctx = ctx.with_child_options(child_options);
     recursive_workflow(&child_ctx, next_state).await
 }
+
 ```
 
 **3. 状态机实现：**
@@ -491,6 +518,7 @@ func StateMachineWorkflow(ctx workflow.Context, initialState State) (FinalState,
     
     return FinalState{State: currentState}, nil
 }
+
 ```
 
 ## 4. 工作流拓扑的完备性分析
@@ -549,6 +577,7 @@ func StateMachineWorkflow(ctx workflow.Context, initialState State) (FinalState,
 
 ```rust
 |History(w)| ≤ 10MB (默认值)
+
 ```
 
 对于非常复杂的图结构，历史记录可能会超过此限制。
@@ -559,6 +588,7 @@ func StateMachineWorkflow(ctx workflow.Context, initialState State) (FinalState,
 
 ```rust
 ExecutionTime(w) ≤ WorkflowExecutionTimeout (默认值: 无限，但可配置)
+
 ```
 
 长时间运行的复杂拓扑可能受超时限制。
@@ -569,6 +599,7 @@ ExecutionTime(w) ≤ WorkflowExecutionTimeout (默认值: 无限，但可配置)
 
 ```rust
 NestingDepth(w) ≤ f(AvailableResources)
+
 ```
 
 嵌套深度受可用资源限制，尤其是内存。
@@ -729,6 +760,7 @@ func isEntryNode(nodeID string, entryNodes []string) bool {
     }
     return false
 }
+
 ```
 
 这个实现可以执行任意有向图结构，包括有环图（通过条件边来处理循环）。
@@ -794,6 +826,7 @@ pub async fn nested_workflow(ctx: WfContext, input: NestedInput) -> Result<Neste
     let child_input = NestedInput {
         value: processed_value,
         depth: current_depth + 1,
+
 ## 5. 示例与证明（续）
 
 ### 5.2 多层嵌套工作流示例（续）
@@ -825,6 +858,7 @@ Ok(NestedOutput {
     value: child_result.value,
     max_reached_depth: child_result.max_reached_depth,
 })
+
 ```
 
 这个示例演示了如何使用递归方式实现任意深度的嵌套工作流。每一层工作流处理自己的任务，然后创建子工作流继续处理下一层，直到达到最大深度。实际中，通过参数控制，这种模式可以实现任意复杂的嵌套结构。
@@ -905,29 +939,29 @@ Ok(NestedOutput {
 func ComplexGraphWithNestedWorkflowsExecutor(ctx workflow.Context, spec WorkflowSpec) (interface{}, error) {
     // 工作流状态存储
     state := workflow.NewDisconnectedContext(ctx)
-    
+  
     // 初始化执行图
     executionGraph := buildExecutionGraph(spec.Graph)
-    
+  
     // 初始化当前节点为入口节点
     currentNodes := executionGraph.EntryNodes
     visitedNodes := make(map[string]bool)
     nodeResults := make(map[string]interface{})
-    
+  
     // 工作流执行循环 - 可以表达任意图结构
     for len(currentNodes) > 0 {
         nextNodes := make(map[string]bool)
-        
+  
         // 处理当前层级所有节点
         for _, nodeID := range currentNodes {
             if visitedNodes[nodeID] && !executionGraph.AllowRevisit(nodeID) {
                 continue // 避免重复访问（除非允许）
             }
-            
+  
             node := executionGraph.GetNode(nodeID)
             var result interface{}
             var err error
-            
+  
             // 根据节点类型处理 - 支持任意嵌套
             switch node.Type {
             case "activity":
@@ -938,7 +972,7 @@ func ComplexGraphWithNestedWorkflowsExecutor(ctx workflow.Context, spec Workflow
                     node.Input,
                     state.Value(node.StateKey),
                 ).Get(ctx, &result)
-                
+  
             case "workflow":
                 // 执行嵌套工作流 - 可以嵌套任意深度
                 err = workflow.ExecuteChildWorkflow(
@@ -946,7 +980,7 @@ func ComplexGraphWithNestedWorkflowsExecutor(ctx workflow.Context, spec Workflow
                     node.WorkflowName,
                     buildChildInput(node, state),
                 ).Get(ctx, &result)
-                
+  
             case "subgraph":
                 // 执行子图 - 递归图结构
                 subgraphSpec := WorkflowSpec{
@@ -959,18 +993,18 @@ func ComplexGraphWithNestedWorkflowsExecutor(ctx workflow.Context, spec Workflow
                     subgraphSpec,
                 ).Get(ctx, &result)
             }
-            
+  
             if err != nil {
                 return nil, fmt.Errorf("error executing node %s: %w", nodeID, err)
             }
-            
+  
             // 保存结果和状态
             nodeResults[nodeID] = result
             if node.StateKey != "" {
                 state.SetValue(node.StateKey, result)
             }
             visitedNodes[nodeID] = true
-            
+  
             // 计算下一批节点 - 支持动态条件边
             for _, edge := range executionGraph.GetOutgoingEdges(nodeID) {
                 // 评估边条件
@@ -979,14 +1013,15 @@ func ComplexGraphWithNestedWorkflowsExecutor(ctx workflow.Context, spec Workflow
                 }
             }
         }
-        
+  
         // 更新当前节点为下一批待处理节点
         currentNodes = mapKeysToSlice(nextNodes)
     }
-    
+  
     // 返回最终结果
     return buildFinalResult(executionGraph.ExitNodes, nodeResults, state), nil
 }
+
 ```
 
 这个实现展示了Temporal如何支持：

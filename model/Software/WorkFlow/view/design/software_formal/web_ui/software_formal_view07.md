@@ -111,6 +111,7 @@
 ├─────────┬─────────┬─────────┬───────┤
 │ iOS实现  │Android实现│ Web实现 │桌面实现│ ← 平台特定实现
 └─────────┴─────────┴─────────┴───────┘
+
 ```
 
 **抽象隔离原则**：
@@ -161,6 +162,7 @@ class AndroidStorageService(private val context: Context) : StorageService {
     
     // 其他方法实现...
 }
+
 ```
 
 ### 1.3.2 共享代码策略
@@ -177,6 +179,7 @@ class AndroidStorageService(private val context: Context) : StorageService {
 
 ```math
 Ctotal = Cshared + Σ(Cplatform_i)
+
 ```
 
 其中，Cshared是共享代码开发成本，Cplatform_i是每个平台特定代码的成本。
@@ -224,6 +227,7 @@ export class AuthenticationService {
     }
   }
 }
+
 ```
 
 ### 1.3.3 平台适配模式
@@ -265,6 +269,7 @@ class LocationService {
     }
   }
 }
+
 ```
 
 **2. 编译时条件编译**：使用预处理器或编译器标志来选择平台特定代码
@@ -302,6 +307,7 @@ actual class PlatformFile actual constructor(private val path: String) {
         file.writeBytes(data)
     }
 }
+
 ```
 
 **3. 依赖注入模式**：在应用启动时注入平台特定实现
@@ -346,6 +352,7 @@ function bootstrapAndroidApp(context: Context) {
   const app = new Application(services);
   app.initialize();
 }
+
 ```
 
 **形式化证明**：
@@ -373,6 +380,7 @@ function bootstrapAndroidApp(context: Context) {
 ├───────────────────┬─────────────────────────────┤
 │     原生模块(iOS)  │       原生模块(Android)     │
 └───────────────────┴─────────────────────────────┘
+
 ```
 
 **技术原理**：
@@ -463,6 +471,7 @@ const styles = StyleSheet.create({
 });
 
 export default TaskList;
+
 ```
 
 ### 1.4.2 Flutter
@@ -481,6 +490,7 @@ export default TaskList;
 ├───────────────────┬─────────────────────────────┤
 │   平台嵌入层(iOS)   │     平台嵌入层(Android)      │
 └───────────────────┴─────────────────────────────┘
+
 ```
 
 **技术原理**：Flutter不依赖原生UI组件，而是使用自己的渲染引擎(Skia)直接绘制UI，实现像素级的控制和一致性。
@@ -606,6 +616,7 @@ class Task {
     this.completed = false,
   });
 }
+
 ```
 
 ### 1.4.3 Xamarin/MAUI
@@ -622,6 +633,7 @@ class Task {
 ├───────────┬───────────┬───────────┬─────────────┤
 │  iOS绑定   │Android绑定 │ Windows绑定│ macOS绑定   │
 └───────────┴───────────┴───────────┴─────────────┘
+
 ```
 
 **技术原理**：使用C#和.NET平台，通过绑定原生平台API，在保持平台特性的同时实现代码共享。
@@ -787,6 +799,7 @@ namespace TaskManagerApp
         public bool IsCompleted { get; set; }
     }
 }
+
 ```
 
 ### 1.4.4 Electron
@@ -1000,6 +1013,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 });
+
 ```
 
 ### 1.4.5 Tauri
@@ -1020,6 +1034,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 ├─────────────────────────────────────────────────┤
 │       Windows/macOS/Linux 系统API              │
 └─────────────────────────────────────────────────┘
+
 ```
 
 **技术原理**：
@@ -1140,6 +1155,7 @@ fn main() {
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
+
 ```
 
 ```typescript
@@ -1302,6 +1318,7 @@ fn main() {
   
   /* 其他样式... */
 </style>
+
 ```
 
 ### 1.4.6 Kotlin Multiplatform
@@ -1319,6 +1336,7 @@ Kotlin编译器支持的跨平台框架
 ├─────────────────────┼───────────────────────────┤
 │     Android API      │     iOS API (Objective-C) │
 └─────────────────────┴───────────────────────────┘
+
 ```
 
 **技术原理**：
@@ -1642,6 +1660,7 @@ class TaskListViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
 }
+
 ```
 
 ## 1.5 4. 跨平台架构设计模式
@@ -1686,6 +1705,7 @@ class DefaultNotificationService(private val implementation: NotificationImpleme
     
     override fun scheduleNotification(message: String, recipient: String, delayInSeconds: Int) {
         val triggerTime = System.
+
 ```kotlin
     override fun scheduleNotification(message: String, recipient: String, delayInSeconds: Int) {
         val triggerTime = System.currentTimeMillis() + (delayInSeconds * 1000L)
@@ -1696,7 +1716,7 @@ class DefaultNotificationService(private val implementation: NotificationImpleme
             triggerAtMillis = triggerTime
         )
     }
-    
+  
     override fun cancelAllNotifications() {
         implementation.cancelAllNotifications()
     }
@@ -1705,42 +1725,42 @@ class DefaultNotificationService(private val implementation: NotificationImpleme
 // iOS平台实现
 class IOSNotificationImplementation : NotificationImplementation {
     private val notificationCenter = UNUserNotificationCenter.current()
-    
+  
     override fun showNotification(title: String, message: String, id: String) {
         val content = UNMutableNotificationContent().apply {
             this.title = title
             this.body = message
             this.sound = UNNotificationSound.default
         }
-        
+  
         val request = UNNotificationRequest(
             identifier = id,
             content = content,
             trigger = UNTimeIntervalNotificationTrigger(timeInterval = 0.1, repeats = false)
         )
-        
+  
         notificationCenter.add(request, null)
     }
-    
+  
     override fun scheduleNotification(title: String, message: String, id: String, triggerAtMillis: Long) {
         val content = UNMutableNotificationContent().apply {
             this.title = title
             this.body = message
             this.sound = UNNotificationSound.default
         }
-        
+  
         val triggerSeconds = (triggerAtMillis - System.currentTimeMillis()) / 1000.0
         val trigger = UNTimeIntervalNotificationTrigger(timeInterval = triggerSeconds, repeats = false)
-        
+  
         val request = UNNotificationRequest(identifier = id, content = content, trigger = trigger)
         notificationCenter.add(request, null)
     }
-    
+  
     override fun cancelNotification(id: String) {
         notificationCenter.removePendingNotificationRequests(withIdentifiers = listOf(id))
         notificationCenter.removeDeliveredNotifications(withIdentifiers = listOf(id))
     }
-    
+  
     override fun cancelAllNotifications() {
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
@@ -1751,7 +1771,7 @@ class IOSNotificationImplementation : NotificationImplementation {
 class AndroidNotificationImplementation(private val context: Context) : NotificationImplementation {
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     private val channelId = "app_notifications"
-    
+  
     init {
         // 为Android 8.0及以上创建通知渠道
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -1767,31 +1787,31 @@ class AndroidNotificationImplementation(private val context: Context) : Notifica
             notificationManager.createNotificationChannel(channel)
         }
     }
-    
+  
     override fun showNotification(title: String, message: String, id: String) {
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-        
+  
         notificationManager.notify(id.hashCode(), builder.build())
     }
-    
+  
     override fun scheduleNotification(title: String, message: String, id: String, triggerAtMillis: Long) {
         val intent = Intent(context, NotificationReceiver::class.java).apply {
             putExtra("notification_id", id.hashCode())
             putExtra("title", title)
             putExtra("message", message)
         }
-        
+  
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             id.hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        
+  
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -1799,10 +1819,10 @@ class AndroidNotificationImplementation(private val context: Context) : Notifica
             pendingIntent
         )
     }
-    
+  
     override fun cancelNotification(id: String) {
         notificationManager.cancel(id.hashCode())
-        
+  
         // 取消任何待定的通知
         val intent = Intent(context, NotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
@@ -1811,15 +1831,16 @@ class AndroidNotificationImplementation(private val context: Context) : Notifica
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        
+  
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(pendingIntent)
     }
-    
+  
     override fun cancelAllNotifications() {
         notificationManager.cancelAll()
     }
 }
+
 ```
 
 桥接模式的优势在于它允许抽象和实现独立变化，非常适合跨平台架构。
@@ -1856,16 +1877,16 @@ class WebFileSystemAdapter implements FileSystem {
   private async initDB(): Promise<void> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('FileSystemDB', 1);
-      
+  
       request.onerror = () => reject(new Error('Failed to open database'));
-      
+  
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains('files')) {
           db.createObjectStore('files', { keyPath: 'path' });
         }
       };
-      
+  
       request.onsuccess = (event) => {
         this.indexedDB = (event.target as IDBOpenDBRequest).result;
         resolve();
@@ -1875,14 +1896,14 @@ class WebFileSystemAdapter implements FileSystem {
   
   async readFile(path: string): Promise<string> {
     await this.ensureDBInitialized();
-    
+  
     return new Promise((resolve, reject) => {
       const transaction = this.indexedDB!.transaction(['files'], 'readonly');
       const store = transaction.objectStore('files');
       const request = store.get(path);
-      
+  
       request.onerror = () => reject(new Error(`Error reading file: ${path}`));
-      
+  
       request.onsuccess = () => {
         if (request.result) {
           resolve(request.result.content);
@@ -1895,12 +1916,12 @@ class WebFileSystemAdapter implements FileSystem {
   
   async writeFile(path: string, content: string): Promise<void> {
     await this.ensureDBInitialized();
-    
+  
     return new Promise((resolve, reject) => {
       const transaction = this.indexedDB!.transaction(['files'], 'readwrite');
       const store = transaction.objectStore('files');
       const request = store.put({ path, content, timestamp: Date.now() });
-      
+  
       request.onerror = () => reject(new Error(`Error writing file: ${path}`));
       request.onsuccess = () => resolve();
     });
@@ -1908,14 +1929,14 @@ class WebFileSystemAdapter implements FileSystem {
   
   async removeFile(path: string): Promise<boolean> {
     await this.ensureDBInitialized();
-    
+  
     return new Promise((resolve, reject) => {
       const transaction = this.indexedDB!.transaction(['files'], 'readwrite');
       const store = transaction.objectStore('files');
       const request = store.delete(path);
-      
+  
       request.onerror = () => reject(new Error(`Error deleting file: ${path}`));
-      
+  
       request.onsuccess = () => {
         resolve(true);
       };
@@ -1924,22 +1945,22 @@ class WebFileSystemAdapter implements FileSystem {
   
   async listFiles(directory: string): Promise<string[]> {
     await this.ensureDBInitialized();
-    
+  
     return new Promise((resolve, reject) => {
       const transaction = this.indexedDB!.transaction(['files'], 'readonly');
       const store = transaction.objectStore('files');
       const request = store.openCursor();
-      
+  
       const files: string[] = [];
-      
+  
       request.onerror = () => reject(new Error(`Error listing files in: ${directory}`));
-      
+  
       request.onsuccess = (event) => {
         const cursor = (event.target as IDBRequest).result;
-        
+  
         if (cursor) {
           const path = cursor.value.path;
-          
+  
           // Only include files in the specified directory
           if (path.startsWith(directory)) {
             const relativePath = path.substring(directory.length);
@@ -1947,7 +1968,7 @@ class WebFileSystemAdapter implements FileSystem {
               files.push(path);
             }
           }
-          
+  
           cursor.continue();
         } else {
           resolve(files);
@@ -1958,16 +1979,16 @@ class WebFileSystemAdapter implements FileSystem {
   
   async fileExists(path: string): Promise<boolean> {
     await this.ensureDBInitialized();
-    
+  
     return new Promise((resolve) => {
       const transaction = this.indexedDB!.transaction(['files'], 'readonly');
       const store = transaction.objectStore('files');
       const request = store.count(path);
-      
+  
       request.onsuccess = () => {
         resolve(request.result > 0);
       };
-      
+  
       request.onerror = () => {
         resolve(false);
       };
@@ -2122,6 +2143,7 @@ async function saveUserSettings(settings: object): Promise<void> {
     console.error('Failed to save settings:', error);
   }
 }
+
 ```
 
 适配器模式的关键优势是允许现有接口在不修改的情况下与目标接口协同工作，使跨平台代码能够使用统一API，同时利用各平台特有的实现。
@@ -2162,7 +2184,7 @@ class WebNavigationStrategy: NavigationStrategy {
             }
         }
     }
-    
+  
     func canHandle(destination: String) -> Bool {
         // Web视图可以处理几乎所有URL类型
         return true
@@ -2176,7 +2198,7 @@ class NativeNavigationStrategy: NavigationStrategy {
             print("Unknown destination type: \(destination)")
             return
         }
-        
+  
         switch destType {
         case .screen:
             let screenName = destination.replacingOccurrences(of: "screen://", with: "")
@@ -2192,17 +2214,17 @@ class NativeNavigationStrategy: NavigationStrategy {
             }
         }
     }
-    
+  
     func canHandle(destination: String) -> Bool {
         return getDestinationType(destination) != nil
     }
-    
+  
     private enum DestinationType {
         case screen
         case external
         case deeplinking
     }
-    
+  
     private func getDestinationType(_ destination: String) -> DestinationType? {
         if destination.starts(with: "screen://") {
             return .screen
@@ -2213,24 +2235,24 @@ class NativeNavigationStrategy: NavigationStrategy {
         }
         return nil
     }
-    
+  
     private func navigateToScreen(_ screenName: String, parameters: [String: Any]?) {
         // 查找视图控制器
         guard let viewController = instantiateViewController(screenName, parameters: parameters) else {
             print("Failed to instantiate view controller for screen: \(screenName)")
             return
         }
-        
+  
         // 获取当前的导航控制器
         guard let navController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController else {
             print("Root view controller is not a navigation controller")
             return
         }
-        
+  
         // 导航到新屏幕
         navController.pushViewController(viewController, animated: true)
     }
-    
+  
     private func instantiateViewController(_ screenName: String, parameters: [String: Any]?) -> UIViewController? {
         // 实例化视图控制器的逻辑...
         // 这取决于你的应用程序架构
@@ -2242,12 +2264,12 @@ class NativeNavigationStrategy: NavigationStrategy {
 class NavigationManager {
     private var strategies: [NavigationStrategy] = []
     private var fallbackStrategy: NavigationStrategy?
-    
+  
     init() {
         // 注册策略
         registerStrategy()
     }
-    
+  
     private func registerStrategy() {
         // 根据平台注册适当的策略
         #if os(iOS)
@@ -2260,7 +2282,7 @@ class NavigationManager {
         strategies.append(WebNavigationStrategy())
         #endif
     }
-    
+  
     func navigateTo(destination: String, options: [String: Any]? = nil) {
         // 尝试找到可以处理此目标的策略
         for strategy in strategies {
@@ -2269,7 +2291,7 @@ class NavigationManager {
                 return
             }
         }
-        
+  
         // 使用后备策略
         fallbackStrategy?.navigateTo(destination: destination, options: options)
     }
@@ -2282,6 +2304,7 @@ let navigationManager = NavigationManager()
 navigationManager.navigateTo(destination: "screen://profile", options: ["userId": "12345"])
 navigationManager.navigateTo(destination: "https://example.com")
 navigationManager.navigateTo(destination: "app://products/1234")
+
 ```
 
 策略模式使得应用程序可以根据当前平台动态选择最合适的行为实现，同时保持统一的接口，非常适合需要针对不同平台优化特定功能的跨平台应用。
@@ -2334,10 +2357,10 @@ class AndroidAnalyticsService implements AnalyticsService {
   @override
   void logEvent(String name, [Map<String, dynamic>? parameters]) {
     // Android特定的配置或调整
-    final adjustedParams = parameters != null 
+    final adjustedParams = parameters != null
         ? Map<String, dynamic>.from(parameters)
         : <String, dynamic>{};
-        
+  
     // 添加Android特定参数
     adjustedParams['platform'] = 'android';
     _analytics.logEvent(name: name, parameters: adjustedParams);
@@ -2440,11 +2463,11 @@ class AnalyticsManager {
   
   void identifyUser(String userId, {String? email, String? name}) {
     _analyticsService.setUserId(userId);
-    
+  
     if (email != null) {
       _analyticsService.setUserProperty('email', email);
     }
-    
+  
     if (name != null) {
       _analyticsService.setUserProperty('name', name);
     }
@@ -2465,6 +2488,7 @@ void onProfilePageLoaded(BuildContext context, User user) {
     name: user.displayName
   );
 }
+
 ```
 
 依赖注入和服务定位器使跨平台应用能够以一种松耦合的方式集成平台特定功能，同时保持代码的可测试性和可维护性。
@@ -2555,10 +2579,10 @@ function generateKotlinModel(model: ModelDefinition): string {
   const fields = model.fields.map(field => {
     const kotlinType = typeMapping.kotlin[field.type];
     const nullableMark = field.required ? '' : '?';
-    const defaultValue = field.defaultValue 
+    const defaultValue = field.defaultValue
       ? ` = ${field.type === 'date' ? 'java.util.Date()' : field.defaultValue}`
       : field.required ? '' : ' = null';
-    
+  
     return `    val ${field.name}: ${kotlinType}${nullableMark}${defaultValue}`;
   });
   
@@ -2576,7 +2600,7 @@ function generateSwiftModel(model: ModelDefinition): string {
   model.fields.forEach(field => {
     const swiftType = typeMapping.swift[field.type];
     const optionalMark = field.required ? '' : '?';
-    
+  
     code += `    let ${field.name}: ${swiftType}${optionalMark}\n`;
   });
   
@@ -2588,7 +2612,7 @@ function generateSwiftModel(model: ModelDefinition): string {
     const defaultValue = field.defaultValue && !field.required
       ? ` = ${field.type === 'date' ? 'Date()' : field.defaultValue}`
       : '';
-    
+  
     return `${field.name}: ${swiftType}${optionalMark}${defaultValue}`;
   });
   code += initParams.join(', ');
@@ -2612,7 +2636,7 @@ function generateTypeScriptModel(model: ModelDefinition): string {
   model.fields.forEach(field => {
     const tsType = typeMapping.typescript[field.type];
     const optionalMark = field.required ? '' : '?';
-    
+  
     code += `  ${field.name}${optionalMark}: ${tsType};\n`;
   });
   
@@ -2656,6 +2680,7 @@ console.log("\n=== Swift ===");
 console.log(generatedCode.swift);
 console.log("\n=== TypeScript ===");
 console.log(generatedCode.typescript);
+
 ```
 
 生成代码的输出示例：
@@ -2672,6 +2697,7 @@ data class User(
     val createdAt: java.util.Date = java.util.Date(),
     val isActive: Boolean? = true
 )
+
 ```
 
 ```swift
@@ -2697,6 +2723,7 @@ struct User: Codable {
         self.isActive = isActive
     }
 }
+
 ```
 
 ```typescript
@@ -2724,6 +2751,7 @@ export function createUser(data: Partial<User>): User {
     isActive: data.isActive ?? true,
   };
 }
+
 ```
 
 #### 1.6.1.1 基于Protobuf的跨平台代码生成
@@ -2786,19 +2814,25 @@ message DeleteTaskRequest {
 message DeleteTaskResponse {
   bool success = 1;
 }
+
 ```
 
 通过protoc编译器生成各语言代码：
 
 ```bash
+
 # 2 2 2 2 2 2 2 生成Java代码
+
 protoc --java_out=./android/app/src/main/java task.proto
 
 # 3 3 3 3 3 3 3 生成Swift代码
+
 protoc --swift_out=./ios/App task.proto
 
 # 4 4 4 4 4 4 4 生成TypeScript代码
+
 protoc --ts_out=./web/src task.proto
+
 ```
 
 这种方式可以确保不同平台的数据模型保持一致，并自动处理序列化/反序列化。
@@ -2808,7 +2842,9 @@ protoc --ts_out=./web/src task.proto
 GraphQL也是一种流行的跨平台代码生成方案，通过定义统一的类型系统，可以为各平台生成类型安全的代码。
 
 ```graphql
+
 # 5 5 5 5 5 5 5 schema.graphql
+
 type User {
   id: ID!
   username: String!
@@ -2850,19 +2886,25 @@ type Mutation {
   deleteTask(id: ID!): Boolean!
   markTaskCompleted(id: ID!, completed: Boolean!): Task!
 }
+
 ```
 
 使用工具生成各平台客户端代码：
 
 ```bash
+
 # 6 6 6 6 6 6 6 使用Apollo codegen生成TypeScript代码
+
 apollo client:codegen --target typescript --outputFlat ./src/generated
 
 # 7 7 7 7 7 7 7 使用SwiftGraphQL生成Swift代码
+
 swiftgraphql generate --schema schema.graphql --output ./iOS/App/GraphQL
 
 # 8 8 8 8 8 8 8 使用Apollo Android生成Java/Kotlin代码
+
 ./gradlew generateApolloSources
+
 ```
 
 生成的代码包括类型定义、查询/变更操作的类型安全接口，以及运行时支持。
@@ -2918,6 +2960,7 @@ mindmap
         AST转换
         注解处理
         IDL/Protobuf/GraphQL
+
 ```
 
 ## 8.1 6. 总结与未来趋势

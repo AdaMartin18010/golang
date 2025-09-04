@@ -205,6 +205,7 @@ fn main() {
     };
     greet();
 }
+
 ```
 
 在这个例子中，闭包 `greet` 捕获了变量 `name`，并在执行时使用它。
@@ -233,6 +234,7 @@ fn main() {
         .sum();
     println!("Sum of squares of even numbers: {}", result);
 }
+
 ```
 
 在这个例子中，我们使用迭代器的 `filter` 方法筛选出偶数，使用 `map` 方法对每个偶数进行平方操作，最后使用 `sum` 方法计算总和。
@@ -263,6 +265,7 @@ fn main() {
     let result = apply(|x| x * 2, 5);
     println!("Result: {}", result);
 }
+
 ```
 
 在这个例子中，`apply` 函数接受一个闭包 `f` 和一个值 `x`，并返回 `f(x)` 的结果。
@@ -285,6 +288,7 @@ fn main() {
     let x = 5; // 不可变变量
     println!("x is {}", x);
 }
+
 ```
 
 在这个例子中，变量 `x` 是不可变的，不能被修改。
@@ -310,6 +314,7 @@ fn main() {
     let result = add(2, 3);
     println!("Result: {}", result);
 }
+
 ```
 
 在这个例子中，`add` 函数是一个纯函数，其输出只依赖于输入参数 `a` 和 `b`。
@@ -342,6 +347,7 @@ fn main() {
         TrafficLight::Green => println!("Go"),
     }
 }
+
 ```
 
 在这个例子中，我们使用 `match` 表达式来匹配 `TrafficLight` 枚举的值，并根据匹配结果执行不同的操作。
@@ -374,6 +380,7 @@ fn main() {
         TrafficLight::Green => println!("Go"),
     }
 }
+
 ```
 
 在这个例子中，我们定义了一个 `TrafficLight` 枚举，用于表示交通灯的状态。
@@ -498,6 +505,7 @@ fn add(a: i32, b: i32) -> i32 {
 fn main() {
     assert_eq!(add(2, 3), 5); // Always returns 5
 }
+
 ```
 
 ### Summary

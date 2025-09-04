@@ -17,6 +17,7 @@
 - 利用Rust特性(如模式匹配、所有权、生命周期等)的算法实现
 - 不同实现方式的性能和可读性对比
 - Rust 2024/2025假设的新特性如何改进算法实现
+
 ```
 
 ## 目录
@@ -76,6 +77,7 @@ fn main() {
     
     println!("偶数之和: {}", sum);
 }
+
 ```
 
 ## 二、基本数据结构实现分析
@@ -117,6 +119,7 @@ impl<T> List<T> {
         })
     }
 }
+
 ```
 
 ```rust
@@ -161,6 +164,7 @@ impl<T> Drop for UnsafeList<T> {
         while let Some(_) = self.pop() {}
     }
 }
+
 ```
 
 #### 表达能力分析
@@ -206,6 +210,7 @@ fn performance_comparison() {
     println!("不安全链表耗时: {:?}", unsafe_duration);
     println!("性能比率: {:.2}", safe_duration.as_secs_f64() / unsafe_duration.as_secs_f64());
 }
+
 ```
 
 ### 2. 二叉树：递归与迭代实现
@@ -307,6 +312,7 @@ impl<T: Ord> BinaryTree<T> {
         false
     }
 }
+
 ```
 
 表达能力分析
@@ -377,6 +383,7 @@ impl<'a, T: Ord> Iterator for BinaryTreeIterator<'a, T> {
         None
     }
 }
+
 ```
 
 ## 三、排序算法：同步与异步实现
@@ -414,6 +421,7 @@ fn partition<T: Ord + Clone>(arr: &mut [T]) -> usize {
     arr.swap(i, pivot_idx);
     i
 }
+
 ```
 
 #### 迭代实现
@@ -457,6 +465,7 @@ fn partition_range<T: Ord + Clone>(arr: &mut [T], low: usize, high: usize) -> us
     arr.swap(i, high);
     i
 }
+
 ```
 
 #### 并行实现（使用Rayon）
@@ -484,6 +493,7 @@ fn quick_sort_parallel<T: Ord + Clone + Send>(arr: &mut [T]) {
         || quick_sort_parallel(&mut right[1..]) // 跳过pivot
     );
 }
+
 ```
 
 #### 异步实现
@@ -521,6 +531,7 @@ async fn quick_sort_async<T: Ord + Clone + Send + 'static>(arr: &mut [T]) {
         left.copy_from_slice(&sorted_left);
     }
 }
+
 ```
 
 表达能力分析
@@ -602,6 +613,7 @@ async fn sort_performance_comparison() {
 fn is_sorted<T: Ord>(arr: &[T]) -> bool {
     arr.windows(2).all(|w| w[0] <= w[1])
 }
+
 ```
 
 ### 2. 归并排序：多种设计对比
@@ -645,6 +657,7 @@ fn merge<T: Ord + Clone>(left: &[T], right: &[T]) -> Vec<T> {
     
     result
 }
+
 ```
 
 ```rust
@@ -702,6 +715,7 @@ fn merge_in_place<T: Ord + Clone>(left: &[T], right: &[T], result: &mut [T]) {
         k += 1;
     }
 }
+
 ```
 
 表达能力分析
@@ -719,6 +733,7 @@ fn merge_in_place<T: Ord + Clone>(left: &[T], right: &[T], result: &mut [T]) {
 ```rust
 // 并行版本与异步版本类似于快速排序
 // 这里省略，实现逻辑相似
+
 ```
 
 ## 四、搜索算法：同步与异步、迭代与递归
@@ -788,6 +803,7 @@ impl Graph {
         result
     }
 }
+
 ```
 
 #### 广度优先搜索（BFS）：迭代与异步
@@ -861,6 +877,7 @@ impl Graph {
         result
     }
 }
+
 ```
 
 表达能力分析
@@ -916,6 +933,7 @@ fn graph_search_performance() {
     
     // 异步BFS需要运行时，这里省略
 }
+
 ```
 
 ### 2. 动态规划：多种实现比较
@@ -975,6 +993,7 @@ fn fibonacci_optimized(n: u64) -> u64 {
     
     b
 }
+
 ```
 
 表达能力分析
@@ -1027,6 +1046,7 @@ async fn parallel_dp_example() {
         current_row = task.await.unwrap();
     }
 }
+
 ```
 
 ## 五、高级数据结构：Rust表达能力分析
@@ -1117,6 +1137,7 @@ impl<T: Ord> BinaryHeap<T> {
         }
     }
 }
+
 ```
 
 ```rust
@@ -1143,6 +1164,7 @@ fn heap_functional_example() {
     
     println!("排序结果: {:?}", sorted);
 }
+
 ```
 
 表达能力分析
@@ -1175,6 +1197,7 @@ struct Segment<K, V> {
 <think>
 I need to continue writing the implementation of the ConcurrentHashMap and then proceed with more content about Rust's ability to express various algorithms and data structures. Let me continue with implementing the ConcurrentHashMap and then add more content.
 </think>
+
 ```
 
 ```rust
@@ -1189,42 +1212,42 @@ where
         while capacity < concurrency_level {
             capacity <<= 1;
         }
-        
+  
         let segment_shift = (std::mem::size_of::<usize>() * 8) as u32 - (capacity.trailing_zeros());
         let segment_mask = capacity - 1;
-        
+  
         let mut segments = Vec::with_capacity(capacity);
         for _ in 0..capacity {
             segments.push(Segment {
                 entries: Mutex::new(HashMap::new()),
             });
         }
-        
+  
         ConcurrentHashMap {
             segments,
             segment_shift,
             segment_mask,
         }
     }
-    
+  
     fn segment_for(&self, hash: usize) -> usize {
         (hash >> self.segment_shift) & self.segment_mask
     }
-    
+  
     pub fn insert(&self, key: K, value: V) -> Option<V> {
         let hash = calculate_hash(&key);
         let segment_index = self.segment_for(hash);
         let mut segment = self.segments[segment_index].entries.lock().unwrap();
         segment.insert(key, value)
     }
-    
+  
     pub fn get(&self, key: &K) -> Option<V> {
         let hash = calculate_hash(key);
         let segment_index = self.segment_for(hash);
         let segment = self.segments[segment_index].entries.lock().unwrap();
         segment.get(key).cloned()
     }
-    
+  
     pub fn remove(&self, key: &K) -> Option<V> {
         let hash = calculate_hash(key);
         let segment_index = self.segment_for(hash);
@@ -1235,11 +1258,12 @@ where
 
 fn calculate_hash<T: Hash>(value: &T) -> usize {
     use std::collections::hash_map::DefaultHasher;
-    
+  
     let mut hasher = DefaultHasher::new();
     value.hash(&mut hasher);
     hasher.finish() as usize
 }
+
 ```
 
 ```rust
@@ -1265,46 +1289,46 @@ where
         for _ in 0..capacity {
             buckets.push(AtomicPtr::new(std::ptr::null_mut()));
         }
-        
+  
         LockFreeHashMap {
             buckets,
             size: AtomicUsize::new(0),
         }
     }
-    
+  
     pub fn insert(&self, key: K, value: V) -> Option<V> {
         let hash = calculate_hash(&key) % self.buckets.len();
         let bucket = &self.buckets[hash];
-        
+  
         // 创建新节点
         let new_node = Box::into_raw(Box::new(Node {
             key,
             value,
             next: AtomicPtr::new(std::ptr::null_mut()),
         }));
-        
+  
         loop {
             let head = bucket.load(Ordering::Acquire);
-            
+  
             // 遍历链表查找键
             let mut current = head;
             let mut prev = std::ptr::null_mut();
             let mut found = false;
             let mut old_value = None;
-            
+  
             while !current.is_null() {
                 let node = unsafe { &*current };
-                
+  
                 if node.key == unsafe { &*new_node }.key {
                     found = true;
                     old_value = Some(node.value.clone());
                     break;
                 }
-                
+  
                 prev = current;
                 current = node.next.load(Ordering::Acquire);
             }
-            
+  
             if found {
                 // 更新现有节点
                 unsafe {
@@ -1316,22 +1340,22 @@ where
                 }
                 return old_value;
             }
-            
+  
             // 添加新节点到链表头
             unsafe {
                 (*new_node).next.store(head, Ordering::Release);
             }
-            
+  
             if bucket.compare_exchange(head, new_node, Ordering::Release, Ordering::Relaxed).is_ok() {
                 // 成功插入
                 self.size.fetch_add(1, Ordering::Relaxed);
                 return None;
             }
-            
+  
             // 失败，重试
         }
     }
-    
+  
     // 其他方法（get、remove等）略，实现类似
 }
 
@@ -1340,7 +1364,7 @@ impl<K, V> Drop for LockFreeHashMap<K, V> {
         // 清理所有节点（避免内存泄漏）
         for bucket in &self.buckets {
             let mut current = bucket.load(Ordering::Relaxed);
-            
+  
             while !current.is_null() {
                 let next = unsafe { &*current }.next.load(Ordering::Relaxed);
                 unsafe {
@@ -1351,6 +1375,7 @@ impl<K, V> Drop for LockFreeHashMap<K, V> {
         }
     }
 }
+
 ```
 
 表达能力分析
@@ -1373,28 +1398,28 @@ fn hash_map_performance_test() {
     use std::sync::{Arc, Mutex};
     use std::time::Instant;
     use std::thread;
-    
+  
     const THREADS: usize = 8;
     const OPERATIONS: usize = 100_000;
-    
+  
     // 标准HashMap + 全局锁
     {
         let map = Arc::new(Mutex::new(HashMap::<i32, i32>::new()));
         let start = Instant::now();
-        
+  
         let mut handles = vec![];
         for t in 0..THREADS {
             let map = Arc::clone(&map);
             let handle = thread::spawn(move || {
                 for i in 0..(OPERATIONS / THREADS) {
                     let key = (i * t) as i32;
-                    
+  
                     // 写入
                     {
                         let mut guard = map.lock().unwrap();
                         guard.insert(key, key);
                     }
-                    
+  
                     // 读取
                     {
                         let guard = map.lock().unwrap();
@@ -1404,46 +1429,47 @@ fn hash_map_performance_test() {
             });
             handles.push(handle);
         }
-        
+  
         for handle in handles {
             handle.join().unwrap();
         }
-        
+  
         println!("标准HashMap+全局锁: {:?}", start.elapsed());
     }
-    
+  
     // 分段锁HashMap
     {
         let map = Arc::new(ConcurrentHashMap::<i32, i32>::new(16));
         let start = Instant::now();
-        
+  
         let mut handles = vec![];
         for t in 0..THREADS {
             let map = Arc::clone(&map);
             let handle = thread::spawn(move || {
                 for i in 0..(OPERATIONS / THREADS) {
                     let key = (i * t) as i32;
-                    
+  
                     // 写入
                     map.insert(key, key);
-                    
+  
                     // 读取
                     let _ = map.get(&key);
                 }
             });
             handles.push(handle);
         }
-        
+  
         for handle in handles {
             handle.join().unwrap();
         }
-        
+  
         println!("分段锁HashMap: {:?}", start.elapsed());
     }
-    
+  
     // 无锁HashMap（如实现完整）测试代码类似
     println!("无锁HashMap: 实现复杂，需要深入设计");
 }
+
 ```
 
 ## 六、异步编程模式下的算法实现
@@ -1470,7 +1496,7 @@ impl AsyncCounter {
         if self.current < self.max {
             // 模拟异步操作
             tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
-            
+  
             let result = self.current;
             self.current += 1;
             Some(result)
@@ -1478,7 +1504,7 @@ impl AsyncCounter {
             None
         }
     }
-    
+  
     // 提供类似迭代器的组合子函数
     pub fn map<F, T>(self, f: F) -> AsyncMap<Self, F>
     where
@@ -1489,7 +1515,7 @@ impl AsyncCounter {
             f,
         }
     }
-    
+  
     pub fn filter<F>(self, predicate: F) -> AsyncFilter<Self, F>
     where
         F: FnMut(&u64) -> bool,
@@ -1543,15 +1569,16 @@ async fn process_async_stream() {
     let mut counter = AsyncCounter::new(100)
         .filter(|&x| x % 2 == 0)
         .map(|x| x * x);
-    
+  
     let mut sum = 0;
     while let Some(value) = counter.next().await {
         sum += value;
         println!("处理值: {}", value);
     }
-    
+  
     println!("总和: {}", sum);
 }
+
 ```
 
 ### 2. 异步并行算法
@@ -1565,7 +1592,7 @@ where
     F: Fn(T) -> U + Send + Sync + Clone + 'static,
 {
     use futures::stream::{self, StreamExt};
-    
+  
     // 将项目转换为并行异步任务流
     let tasks = stream::iter(items)
         .map(|item| {
@@ -1575,7 +1602,7 @@ where
             })
         })
         .buffer_unordered(10); // 控制并发度
-    
+  
     // 收集结果
     tasks.collect::<Vec<_>>().await
         .into_iter()
@@ -1590,7 +1617,7 @@ where
     F: Fn(&T) -> bool + Send + Sync + Clone + 'static,
 {
     use futures::stream::{self, StreamExt};
-    
+  
     // 创建异步测试任务
     let tasks = stream::iter(items.iter().enumerate())
         .map(|(i, item)| {
@@ -1605,13 +1632,13 @@ where
             })
         })
         .buffer_unordered(10);
-    
+  
     // 收集结果并保持原顺序
     let mut results: Vec<Option<(usize, T)>> = tasks.collect::<Vec<_>>().await
         .into_iter()
         .filter_map(|r| r.ok())
         .collect();
-    
+  
     results.sort_by_key(|r| r.as_ref().map(|(i, _)| *i));
     results.into_iter().filter_map(|r| r.map(|(_, item)| item)).collect()
 }
@@ -1621,13 +1648,13 @@ async fn parallel_async_sort<T: Ord + Clone + Send + 'static>(mut items: Vec<T>)
     if items.len() <= 1 {
         return items;
     }
-    
+  
     const CHUNK_SIZE: usize = 1000;
-    
+  
     // 分块并并行排序
     let chunk_count = (items.len() + CHUNK_SIZE - 1) / CHUNK_SIZE;
     let chunks: Vec<_> = items.chunks_mut(CHUNK_SIZE).collect();
-    
+  
     let mut handles = Vec::new();
     for chunk in chunks {
         let mut chunk_data = chunk.to_vec();
@@ -1637,13 +1664,13 @@ async fn parallel_async_sort<T: Ord + Clone + Send + 'static>(mut items: Vec<T>)
         });
         handles.push(handle);
     }
-    
+  
     // 等待所有块排序完成
     let mut sorted_chunks = Vec::new();
     for handle in handles {
         sorted_chunks.push(handle.await.unwrap());
     }
-    
+  
     // 合并已排序的块
     merge_sorted_chunks(sorted_chunks).await
 }
@@ -1652,22 +1679,22 @@ async fn merge_sorted_chunks<T: Ord + Clone>(chunks: Vec<Vec<T>>) -> Vec<T> {
     if chunks.len() == 1 {
         return chunks.into_iter().next().unwrap();
     }
-    
+  
     let mid = chunks.len() / 2;
     let (left, right) = chunks.split_at(mid);
-    
+  
     // 递归合并左右两部分
     let left_future = tokio::spawn(merge_sorted_chunks(left.to_vec()));
     let right_future = tokio::spawn(merge_sorted_chunks(right.to_vec()));
-    
+  
     let left_result = left_future.await.unwrap();
     let right_result = right_future.await.unwrap();
-    
+  
     // 合并两个已排序的向量
     let mut result = Vec::with_capacity(left_result.len() + right_result.len());
     let mut i = 0;
     let mut j = 0;
-    
+  
     while i < left_result.len() && j < right_result.len() {
         if left_result[i] <= right_result[j] {
             result.push(left_result[i].clone());
@@ -1677,13 +1704,14 @@ async fn merge_sorted_chunks<T: Ord + Clone>(chunks: Vec<Vec<T>>) -> Vec<T> {
             j += 1;
         }
     }
-    
+  
     // 添加剩余元素
     result.extend_from_slice(&left_result[i..]);
     result.extend_from_slice(&right_result[j..]);
-    
+  
     result
 }
+
 ```
 
 表达能力分析
@@ -1705,27 +1733,27 @@ async fn web_crawler_example() {
     use futures::stream::{self, StreamExt};
     use std::collections::HashSet;
     use std::sync::{Arc, Mutex};
-    
+  
     // 要爬取的URL
     let start_urls = vec![
         "https://www.example.com",
         "https://www.rust-lang.org",
         "https://crates.io",
     ];
-    
+  
     // 已访问的URL集合
     let visited = Arc::new(Mutex::new(HashSet::new()));
-    
+  
     // 限制并发请求数
     const MAX_CONCURRENT: usize = 5;
-    
+  
     // 爬取单个URL并提取链接
     async fn crawl_url(url: &str) -> Result<Vec<String>, Box<dyn std::error::Error + Send + Sync>> {
         println!("爬取: {}", url);
-        
+  
         // 模拟请求
         tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
-        
+  
         // 在实际应用中，这里会执行HTTP请求并解析HTML
         // 这里仅返回一些模拟链接
         Ok(vec![
@@ -1733,16 +1761,16 @@ async fn web_crawler_example() {
             format!("{}/page2", url),
         ])
     }
-    
+  
     // 初始化URL队列
     let mut queue: Vec<String> = start_urls.iter().map(|&s| s.to_string()).collect();
     let mut results = Vec::new();
-    
+  
     // 爬取过程
     while !queue.is_empty() {
         // 获取要处理的URL批次
         let batch: Vec<_> = queue.drain(..std::cmp::min(MAX_CONCURRENT, queue.len())).collect();
-        
+  
         // 并行爬取URL
         let new_urls: Vec<_> = stream::iter(batch)
             .map(|url| {
@@ -1756,7 +1784,7 @@ async fn web_crawler_example() {
                         }
                         visited_guard.insert(url.clone());
                     }
-                    
+  
                     // 爬取URL
                     match crawl_url(&url).await {
                         Ok(links) => {
@@ -1770,7 +1798,7 @@ async fn web_crawler_example() {
             .buffer_unordered(MAX_CONCURRENT)
             .collect()
             .await;
-        
+  
         // 添加新发现的URL到队列
         for urls in new_urls {
             for url in urls {
@@ -1780,9 +1808,10 @@ async fn web_crawler_example() {
             }
         }
     }
-    
+  
     println!("爬取完成，访问了 {} 个URL", results.len());
 }
+
 ```
 
 ## 七、算法设计对比：抽象能力与性能权衡
@@ -1797,15 +1826,15 @@ fn max_subarray_sum_imperative(nums: &[i32]) -> i32 {
     if nums.is_empty() {
         return 0;
     }
-    
+  
     let mut max_so_far = nums[0];
     let mut max_ending_here = nums[0];
-    
+  
     for &num in &nums[1..] {
         max_ending_here = std::cmp::max(num, max_ending_here + num);
         max_so_far = std::cmp::max(max_so_far, max_ending_here);
     }
-    
+  
     max_so_far
 }
 
@@ -1814,14 +1843,14 @@ fn max_subarray_sum_functional(nums: &[i32]) -> i32 {
     if nums.is_empty() {
         return 0;
     }
-    
+  
     let (max_sum, _) = nums.iter()
         .fold((nums[0], nums[0]), |(max_so_far, max_ending_here), &num| {
             let new_max_ending_here = std::cmp::max(num, max_ending_here + num);
             let new_max_so_far = std::cmp::max(max_so_far, new_max_ending_here);
             (new_max_so_far, new_max_ending_here)
         });
-    
+  
     max_sum
 }
 
@@ -1835,7 +1864,7 @@ fn max_subarray_sum_recursive(nums: &[i32]) -> i32 {
             sum += nums[i];
             left_sum = std::cmp::max(left_sum, sum);
         }
-        
+  
         // 计算包含中点的最大右子数组和
         let mut right_sum = std::i32::MIN;
         sum = 0;
@@ -1843,31 +1872,32 @@ fn max_subarray_sum_recursive(nums: &[i32]) -> i32 {
             sum += nums[i];
             right_sum = std::cmp::max(right_sum, sum);
         }
-        
+  
         left_sum + right_sum
     }
-    
+  
     fn max_subarray_sum_recursive_util(nums: &[i32], left: usize, right: usize) -> i32 {
         if left == right {
             return nums[left];
         }
-        
+  
         let mid = (left + right) / 2;
-        
+  
         // 计算三种情况：左半部分、右半部分、跨越中点
         let left_sum = max_subarray_sum_recursive_util(nums, left, mid);
         let right_sum = max_subarray_sum_recursive_util(nums, mid + 1, right);
         let crossing_sum = max_crossing_sum(nums, left, mid, right);
-        
+  
         std::cmp::max(std::cmp::max(left_sum, right_sum), crossing_sum)
     }
-    
+  
     if nums.is_empty() {
         return 0;
     }
-    
+  
     max_subarray_sum_recursive_util(nums, 0, nums.len() - 1)
 }
+
 ```
 
 表达能力分析
@@ -1894,35 +1924,36 @@ fn max_subarray_sum_recursive(nums: &[i32]) -> i32 {
 fn compare_approaches() {
     use rand::Rng;
     use std::time::Instant;
-    
+  
     // 创建一个大型测试数组
     let mut rng = rand::thread_rng();
     let nums: Vec<i32> = (0..1_000_000).map(|_| rng.gen_range(-100..100)).collect();
-    
+  
     // 命令式风格
     let start = Instant::now();
     let result1 = max_subarray_sum_imperative(&nums);
     let imperative_time = start.elapsed();
-    
+  
     // 函数式风格
     let start = Instant::now();
     let result2 = max_subarray_sum_functional(&nums);
     let functional_time = start.elapsed();
-    
+  
     // 递归分治风格
     let start = Instant::now();
     let result3 = max_subarray_sum_recursive(&nums);
     let recursive_time = start.elapsed();
-    
+  
     // 验证结果一致性
     assert_eq!(result1, result2);
     assert_eq!(result1, result3);
-    
+  
     println!("命令式实现: {:?}", imperative_time);
     println!("函数式实现: {:?}", functional_time);
     println!("递归分治实现: {:?}", recursive_time);
     println!("结果: {}", result1);
 }
+
 ```
 
 ### 2. 泛型算法与特化实现
@@ -1934,17 +1965,17 @@ fn compare_approaches() {
 fn binary_search<T: Ord>(arr: &[T], target: &T) -> Option<usize> {
     let mut left = 0;
     let mut right = arr.len();
-    
+  
     while left < right {
         let mid = left + (right - left) / 2;
-        
+  
         match arr[mid].cmp(target) {
             std::cmp::Ordering::Equal => return Some(mid),
             std::cmp::Ordering::Less => left = mid + 1,
             std::cmp::Ordering::Greater => right = mid,
         }
     }
-    
+  
     None
 }
 
@@ -1952,21 +1983,21 @@ fn binary_search<T: Ord>(arr: &[T], target: &T) -> Option<usize> {
 fn binary_search_i32(arr: &[i32], target: i32) -> Option<usize> {
     let mut left = 0;
     let mut right = arr.len();
-    
+  
     while left < right {
         let mid = left + (right - left) / 2;
-        
+  
         // 避免分支，使用算术运算
         let is_less = (arr[mid] < target) as usize;
         left = left * (1 - is_less) + (mid + 1) * is_less;
         right = right * is_less + mid * (1 - is_less);
-        
+  
         // 检查是否找到
         if left < right && arr[left] == target {
             return Some(left);
         }
     }
-    
+  
     None
 }
 
@@ -1975,18 +2006,19 @@ fn binary_search_i32(arr: &[i32], target: i32) -> Option<usize> {
 fn binary_search_simd(arr: &[i32], target: i32) -> Option<usize> {
     // SIMD实现在Rust 2024中预期会更加成熟
     // 这里只是概念性示例
-    
+  
     // 查找小数组使用标准二分查找
     if arr.len() < 16 {
         return binary_search(arr, &target);
     }
-    
+  
     // 在实际实现中，这里会使用SIMD指令进行并行比较
     // 例如使用AVX2/AVX-512指令集加速搜索
-    
+  
     // 模拟SIMD加速的实现
     binary_search(arr, &target)
 }
+
 ```
 
 表达能力分析
@@ -2011,14 +2043,14 @@ fn binary_search_simd(arr: &[i32], target: i32) -> Option<usize> {
 fn search_performance_comparison() {
     use rand::seq::SliceRandom;
     use std::time::Instant;
-    
+  
     // 创建有序数组
     let arr: Vec<i32> = (0..10_000_000).collect();
-    
+  
     // 创建随机查找目标
     let mut rng = rand::thread_rng();
     let targets: Vec<i32> = (0..10_000).map(|_| rng.gen_range(0..10_000_000)).collect();
-    
+  
     // 泛型二分查找
     let start = Instant::now();
     let mut found = 0;
@@ -2028,7 +2060,7 @@ fn search_performance_comparison() {
         }
     }
     let generic_time = start.elapsed();
-    
+  
     // 特化二分查找
     let start = Instant::now();
     let mut found_specialized = 0;
@@ -2038,7 +2070,7 @@ fn search_performance_comparison() {
         }
     }
     let specialized_time = start.elapsed();
-    
+  
     // SIMD二分查找
     let start = Instant::now();
     let mut found_simd = 0;
@@ -2048,15 +2080,16 @@ fn search_performance_comparison() {
         }
     }
     let simd_time = start.elapsed();
-    
+  
     // 验证结果一致性
     assert_eq!(found, found_specialized);
     assert_eq!(found, found_simd);
-    
+  
     println!("泛型二分查找: {:?}", generic_time);
     println!("特化二分查找: {:?}", specialized_time);
     println!("SIMD二分查找: {:?}", simd_time);
 }
+
 ```
 
 ## 八、Rust 2024/2025算法设计最佳实践
@@ -2091,16 +2124,16 @@ fn choose_paradigm(problem_type: ProblemType, data_size: usize, io_bound: bool, 
     match (problem_type, data_size, io_bound, cpu_cores) {
         // 小型递归问题
         (ProblemType::Recursive, size, false, _) if size < 10000 => Paradigm::SyncRecursive,
-        
+  
         // 大型递归问题转为迭代
         (ProblemType::Recursive, _, false, _) => Paradigm::SyncIterative,
-        
+  
         // I/O绑定任务
         (_, _, true, _) => Paradigm::Async,
-        
+  
         // 大型计算问题且有多核CPU
         (_, size, false, cores) if size > 10000 && cores > 1 => Paradigm::Parallel,
-        
+  
         // 默认同步迭代
         _ => Paradigm::SyncIterative,
     }
@@ -2118,6 +2151,7 @@ enum Paradigm {
     Parallel,
     Async,
 }
+
 ```
 
 ### 2. 性能优化技巧
@@ -2180,12 +2214,12 @@ fn swap_elements(arr: &mut [i32], i: usize, j: usize) {
     if i >= arr.len() || j >= arr.len() {
         panic!("索引越界");
     }
-    
+  
     // 安全的实现
     let temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
-    
+  
     // 不安全但更快的实现（在某些平台上）
     unsafe {
         let ptr = arr.as_mut_ptr();
@@ -2197,7 +2231,7 @@ fn swap_elements(arr: &mut [i32], i: usize, j: usize) {
 fn matrix_multiply_naive(a: &[Vec<f64>], b: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let n = a.len();
     let mut result = vec![vec![0.0; n]; n];
-    
+  
     for i in 0..n {
         for j in 0..n {
             for k in 0..n {
@@ -2205,7 +2239,7 @@ fn matrix_multiply_naive(a: &[Vec<f64>], b: &[Vec<f64>]) -> Vec<Vec<f64>> {
             }
         }
     }
-    
+  
     result
 }
 
@@ -2220,6 +2254,7 @@ fn matrix_multiply_naive(a: &[Vec<f64>], b: &[Vec<f64>]) -> Vec<Vec<f64>> {
 
 然后确保整体结构完整，内容全面。
 </think>
+
 ```
 
 ```rust
@@ -2281,6 +2316,7 @@ fn intersection_better(a: &[i32], b: &[i32]) -> Vec<i32> {
     
     set_a.intersection(&set_b).cloned().collect()
 }
+
 ```
 
 ### 3. 内存使用优化
@@ -2454,6 +2490,7 @@ mod memory_optimized {
         }
     }
 }
+
 ```
 
 ### 4. 异步算法设计指南
@@ -2696,6 +2733,7 @@ mod channel_example {
         });
     }
 }
+
 ```
 
 ## 九、高级算法示例：结合Rust 2024/2025新特性
@@ -2919,6 +2957,7 @@ fn combine_path_segments(segments: Vec<Vec<(i32, i32)>>) -> Vec<(i32, i32)> {
     // 合并路径段
     vec![] // 实际实现会返回完整路径
 }
+
 ```
 
 ### 2. 大规模数据处理
@@ -3090,6 +3129,7 @@ async fn process_large_dataset() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 十、结论：Rust 2024/2025的算法设计优势与挑战

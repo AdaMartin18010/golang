@@ -20,19 +20,6 @@
   - [1.2.1.7 📚 **扩展阅读**](#📚-**扩展阅读**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.2.1.1 📚 **理论分析**
 
 ### 1.2.1.1.1 **Channel定义与原理**
@@ -48,6 +35,7 @@ ChannelType ::= 'chan' ElementType | 'chan' '<-' ElementType | '<-' 'chan' Eleme
 Send ::= ch <- value
 Receive ::= value := <-ch
 Close ::= close(ch)
+
 ```
 
 ### 1.2.1.1.2 **Channel类型**
@@ -79,6 +67,7 @@ func main() {
     v := <-ch
     fmt.Println("received:", v)
 }
+
 ```
 
 ### 1.2.1.2.2 **有缓冲Channel通信**
@@ -93,6 +82,7 @@ func main() {
     fmt.Println(<-ch)
     fmt.Println(<-ch)
 }
+
 ```
 
 ### 1.2.1.2.3 **单向Channel用法**
@@ -107,6 +97,7 @@ func main() {
     send(ch)
     recv(ch)
 }
+
 ```
 
 ### 1.2.1.2.4 **关闭Channel与检测**
@@ -123,6 +114,7 @@ func main() {
         fmt.Println(v)
     }
 }
+
 ```
 
 ## 1.2.1.3 📊 **性能分析**
@@ -152,6 +144,7 @@ func TestChannelClosed(t *testing.T) {
         t.Errorf("expected closed channel to return ok=false")
     }
 }
+
 ```
 
 ## 1.2.1.5 🎯 **最佳实践**

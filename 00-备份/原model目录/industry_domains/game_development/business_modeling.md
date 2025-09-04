@@ -56,6 +56,7 @@ impl GameWorld {
         }
     }
 }
+
 ```
 
 #### 玩家聚合根
@@ -116,6 +117,7 @@ impl Player {
         self.health = 100.0; // 满血复活
     }
 }
+
 ```
 
 #### 物品系统
@@ -191,6 +193,7 @@ impl Inventory {
         SlotId(0) // 不应该到达这里
     }
 }
+
 ```
 
 ### 1.2 值对象
@@ -233,6 +236,7 @@ pub enum Currency {
     Gems,
     Credits,
 }
+
 ```
 
 ## 2. 数据建模
@@ -293,6 +297,7 @@ CREATE TABLE player_skills (
     FOREIGN KEY (player_id) REFERENCES players(id),
     FOREIGN KEY (skill_id) REFERENCES skills(id)
 );
+
 ```
 
 #### 游戏世界表
@@ -336,6 +341,7 @@ CREATE TABLE game_sessions (
     session_data JSONB,
     FOREIGN KEY (world_id) REFERENCES game_worlds(id)
 );
+
 ```
 
 #### 物品和技能表
@@ -380,6 +386,7 @@ CREATE TABLE transactions (
     FOREIGN KEY (player_id) REFERENCES players(id),
     FOREIGN KEY (item_id) REFERENCES items(id)
 );
+
 ```
 
 ### 2.2 仓储实现
@@ -475,6 +482,7 @@ impl PlayerRepository for PostgresPlayerRepository {
         }
     }
 }
+
 ```
 
 ## 3. 流程建模
@@ -494,6 +502,7 @@ graph TD
     I --> J[同步游戏状态]
     J --> K[开始游戏循环]
     G --> L[显示错误信息]
+
 ```
 
 ### 3.2 战斗流程
@@ -515,6 +524,7 @@ graph TD
     K --> N[同步到其他玩家]
     L --> O[升级奖励]
     M --> P[更新背包]
+
 ```
 
 ### 3.3 交易流程
@@ -535,6 +545,7 @@ graph TD
     K --> L[记录交易日志]
     L --> M[通知双方]
     H --> N[返回错误]
+
 ```
 
 ### 3.4 流程实现
@@ -615,6 +626,7 @@ impl GameSessionWorkflow {
         Ok(())
     }
 }
+
 ```
 
 ## 4. 游戏规则引擎
@@ -691,6 +703,7 @@ impl GameRule for CooldownRule {
         "CooldownRule"
     }
 }
+
 ```
 
 ## 5. 事件系统
@@ -729,6 +742,7 @@ pub struct PlayerDiedEvent {
     pub items_dropped: Vec<Item>,
     pub timestamp: DateTime<Utc>,
 }
+
 ```
 
 ### 5.2 事件处理器
@@ -784,6 +798,7 @@ impl CombatEventHandler {
         Ok(())
     }
 }
+
 ```
 
 ## 总结

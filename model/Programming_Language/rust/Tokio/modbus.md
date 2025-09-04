@@ -16,19 +16,6 @@
     - [2 2 2 2 2 2 2 10. 测试实现](#2-2-2-2-2-2-2-10-测试实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个使用 Rust 2024 + Tokio + MQTT + Modbus 实现的 IoT 项目示例。这个项目将包含设备管理、数据采集、消息处理等功能。
 
 ## 1.1 目录
@@ -63,6 +50,7 @@ dashmap = "5.5"
 chrono = { version = "0.4", features = ["serde"] }
 sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres", "chrono"] }
 config = "0.13"
+
 ```
 
 ### 1.2.1 2. 设备配置和状态定义
@@ -123,6 +111,7 @@ pub struct MqttConfig {
     pub password: Option<String>,
     pub topics: Vec<String>,
 }
+
 ```
 
 ### 1.2.2 3. Modbus 设备管理器实现
@@ -214,6 +203,7 @@ impl ModbusManager {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.3 4. MQTT 消息处理器实现
@@ -326,6 +316,7 @@ impl MqttHandler {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.4 5. 数据存储实现
@@ -398,6 +389,7 @@ impl DataStorage {
         Ok(records)
     }
 }
+
 ```
 
 ### 1.2.5 6. 设备管理器实现
@@ -468,6 +460,7 @@ impl DeviceManager {
         })
     }
 }
+
 ```
 
 ### 1.2.6 7. 主程序实现
@@ -510,6 +503,7 @@ fn load_config() -> anyhow::Result<AppConfig> {
 
     Ok(settings.try_deserialize()?)
 }
+
 ```
 
 ### 1.2.7 8. HTTP API 实现
@@ -579,12 +573,15 @@ async fn handle_device_data(
 
     Ok(warp::reply::json(&data))
 }
+
 ```
 
 ### 1.2.8 9. 配置文件示例
 
 ```yaml
+
 # 2 2 2 2 2 2 2 config.yaml
+
 database_url: "postgres://user:password@localhost/iot_db"
 
 devices:
@@ -631,6 +628,7 @@ devices:
       topics:
         - "device/002/command"
     polling_interval: 1000
+
 ```
 
 ### 2 2 2 2 2 2 2 10. 测试实现
@@ -679,6 +677,7 @@ mod tests {
         Ok(())
     }
 }
+
 ```
 
 这个完整的示例展示了如何构建一个功能完整的 IoT 项目，包括：

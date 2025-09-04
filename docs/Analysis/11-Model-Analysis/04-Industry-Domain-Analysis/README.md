@@ -96,19 +96,6 @@
   - [11.4.1.9 下一步工作](#下一步工作)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.4.1.1 目录
 
 1. [概述](#概述)
@@ -580,6 +567,7 @@ project/
 ├── go.mod
 ├── go.sum
 └── README.md
+
 ```
 
 ### 11.4.1.6.2 2. 领域层实现
@@ -610,6 +598,7 @@ type OrderCreatedEvent struct {
     CustomerID  string
     CreatedAt   time.Time
 }
+
 ```
 
 ### 11.4.1.6.3 3. 应用层实现
@@ -638,6 +627,7 @@ func (s *OrderApplicationService) CreateOrder(cmd CreateOrderCommand) error {
         return s.eventBus.Publish(event)
     })
 }
+
 ```
 
 ### 11.4.1.6.4 4. 基础设施层实现
@@ -675,6 +665,7 @@ func (b *EventBusImpl) Publish(event Event) error {
     }
     return nil
 }
+
 ```
 
 ### 11.4.1.6.5 5. 接口层实现
@@ -717,6 +708,7 @@ func (s *OrderServiceServer) CreateOrder(ctx context.Context, req *CreateOrderRe
     
     return &CreateOrderResponse{Message: "Order created successfully"}, nil
 }
+
 ```
 
 ## 11.4.1.7 架构模式分析
@@ -758,6 +750,7 @@ func (h *OrderEventHandler) HandleOrderCreated(event OrderCreatedEvent) error {
     }
     return h.publisher.Publish("orders", message)
 }
+
 ```
 
 ### 11.4.1.7.2 2. 事件驱动架构
@@ -796,6 +789,7 @@ func (e OrderCreatedEvent) Version() int {
 func (e OrderCreatedEvent) OccurredAt() time.Time {
     return e.CreatedAt
 }
+
 ```
 
 #### 11.4.1.7.2.2 事件处理
@@ -818,6 +812,7 @@ func (h *OrderEventHandler) HandleOrderCreated(event OrderCreatedEvent) error {
     // 发送通知
     return h.notificationService.SendOrderConfirmation(event.CustomerID, event.OrderID)
 }
+
 ```
 
 ### 11.4.1.7.3 3. CQRS模式
@@ -860,6 +855,7 @@ func (h *CreateOrderHandler) Handle(cmd CreateOrderCommand) error {
     
     return h.eventBus.Publish(event)
 }
+
 ```
 
 #### 11.4.1.7.3.2 查询处理
@@ -887,6 +883,7 @@ type GetOrderHandler struct {
 func (h *GetOrderHandler) Handle(query GetOrderQuery) (*Order, error) {
     return h.orderRepository.FindByID(query.OrderID)
 }
+
 ```
 
 ## 11.4.1.8 质量保证标准

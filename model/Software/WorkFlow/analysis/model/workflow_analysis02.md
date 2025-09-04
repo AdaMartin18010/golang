@@ -18,19 +18,6 @@
   - [1.6 五、结论](#五、结论)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [工作流形式模型在不同行业的应用分析](#工作流形式模型在不同行业的应用分析)
@@ -134,6 +121,7 @@ pub async fn device_monitoring_workflow(device_id: String, threshold: f32) {
         ctx.timer(Duration::from_secs(60)).await?;
     }
 }
+
 ```
 
 这个工作流模型实现了IOT中常见的监控-决策-执行循环，展示了如何将IOT概念模型转换为可执行的工作流代码。
@@ -249,6 +237,7 @@ pub async fn purchase_approval_workflow(initial_request: PurchaseRequest) -> Res
     
     Ok(request.status)
 }
+
 ```
 
 这个工作流实现了企业审批流程中的请求提交、条件路由、审批处理和结果通知，体现了企业管理概念模型到工作流的转换。

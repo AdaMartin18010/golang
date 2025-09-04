@@ -23,13 +23,6 @@
   - [1.7 6. 总结与展望](#6-总结与展望)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 Rust异步编程技术分析
 
 ## 1.1 目录
@@ -84,6 +77,7 @@ pub trait Future {
     type Output;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 这种设计允许底层异步运行时有效地管理和调度任务，而不牺牲类型安全和性能。
@@ -118,6 +112,7 @@ let async_numbers = gen async {
     tokio::time::sleep(Duration::from_secs(1)).await;
     yield 2;
 };
+
 ```
 
 `gen`提供了一种更直观的声明式方式来创建迭代器和流，替代了之前需要手动实现`Iterator`或`Stream` trait的复杂方式。
@@ -145,6 +140,7 @@ Reference-Passing In Trait (RPIT)的生命周期规则在Rust 2024中得到显�
 fn process<'d>(data: &'d Vec<u8>) -> impl Iterator<Item = u8> + 'd {
     data.iter().map(|v| *v + 1)
 }
+
 ```
 
 改进后：
@@ -153,6 +149,7 @@ fn process<'d>(data: &'d Vec<u8>) -> impl Iterator<Item = u8> + 'd {
 fn process(data: &Vec<u8>) -> impl Iterator<Item = u8> {
     data.iter().map(|v| *v + 1)
 }
+
 ```
 
 这一改进大大简化了异步代码中的生命周期管理，提高了开发效率。
@@ -165,6 +162,7 @@ Rust 2024引入了`AsyncFn`特性，允许在trait中直接定义异步方法：
 trait AsyncProcessor {
     async fn process(&self, data: &[u8]) -> Result<(), std::io::Error>;
 }
+
 ```
 
 这解决了之前在trait中定义异步方法的困难，增强了抽象能力和代码重用。
@@ -188,6 +186,7 @@ async fn process_stream<T: AsyncRead>(reader: T) -> impl Stream<Item = Result<Ve
         }
     }
 }
+
 ```
 
 这种方式使得复杂的异步数据处理流程变得更加直观和易于维护。
@@ -209,6 +208,7 @@ fn transform_stream<T, U>(
         }
     }
 }
+
 ```
 
 这种组合器模式允许以更声明式的方式构建数据处理管道。
@@ -228,6 +228,7 @@ fn fallible_generator() -> impl Iterator<Item = Result<i32, Error>> {
         }
     }
 }
+
 ```
 
 这种模式允许在生成序列的同时优雅地处理错误情况。
@@ -246,6 +247,7 @@ async fn managed_async_stream() -> impl Stream<Item = Result<Data, Error>> {
         connection.close().await?;
     }
 }
+
 ```
 
 这种模式确保资源在使用完毕后能够正确释放，防止资源泄漏。
@@ -349,6 +351,7 @@ Rust异步编程技术
     ├── Python (asyncio)
     ├── C# (Task)
     └── Kotlin (coroutines)
+
 ```
 
 ## 1.7 6. 总结与展望

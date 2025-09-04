@@ -104,6 +104,7 @@ mindmap
         社会-技术映射
         角色动态调整
         共享心智模型
+
 ```
 
 ## 1.3 1. 引言
@@ -200,7 +201,9 @@ $$\forall s \in Reach(ACICD), \forall i \in I: s \models i$$
 **形式化规约示例**：
 
 ```math
+
 # 2 2 2 2 2 2 2 CI/CD流水线的时间约束规约
+
 pipeline TimedPipeline {
   stage Build {
     maxDuration: 10m;
@@ -225,6 +228,7 @@ pipeline TimedPipeline {
     availability during deployment > 99.9%;
   }
 }
+
 ```
 
 ### 2 2 2 2 2 2 2 自动证明与模型检验

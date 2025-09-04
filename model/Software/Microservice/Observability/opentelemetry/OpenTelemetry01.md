@@ -81,6 +81,7 @@
 
 ```math
 (h ∘ g) ∘ f = h ∘ (g ∘ f)
+
 ```
 
 这在OpenTelemetry中体现为：
@@ -112,6 +113,7 @@ OpenTelemetry的数据模型本身具有复杂的内部结构，可以视为另�
 ```math
 F_proto: C_Model → C_Protobuf
 F_json: C_Model → C_JSON
+
 ```
 
 这些函子将模型范畴的对象和态射映射到特定表示范畴中。
@@ -129,6 +131,7 @@ OpenTelemetry的处理管道可以表示为态射的代数组合：
 
 ```math
 P = h_n ∘ h_{n-1} ∘ ... ∘ h_1
+
 ```
 
 其中每个h_i是一个处理器。这种代数结构允许对处理管道进行形式化推理。
@@ -139,6 +142,7 @@ P = h_n ∘ h_{n-1} ∘ ... ∘ h_1
 
 ```math
 h_2 ∘ h_1 ∘ h_1 = h_2 ∘ h_1
+
 ```
 
 这意味着即使h_1被错误地执行了两次，整体结果不变。
@@ -152,6 +156,7 @@ h_2 ∘ h_1 ∘ h_1 = h_2 ∘ h_1
 ```math
 单体态射: f: A → B
 批处理态射: f': A^n → B^n
+
 ```
 
 **命题**：如果f'在A^n上的行为等价于单独应用f于每个元素，则批处理是正确的。
@@ -160,6 +165,7 @@ h_2 ∘ h_1 ∘ h_1 = h_2 ∘ h_1
 
 ```math
 f'(a_1, a_2, ..., a_n) = (f(a_1), f(a_2), ..., f(a_n))
+
 ```
 
 **批判分析**：
@@ -175,6 +181,7 @@ OpenTelemetry的插件系统可以形式化为函子族：
 
 ```math
 {F_p: C_Core → C_Extended | p ∈ Plugins}
+
 ```
 
 每个插件p定义了一个函子F_p，将核心范畴映射到扩展范畴。
@@ -191,6 +198,7 @@ OpenTelemetry的插件系统可以形式化为函子族：
   η_X|               |η_Y
   v               v
  G(X) --G(f)--> G(Y)
+
 ```
 
 这保证了插件与核心API变更的兼容性。
@@ -217,6 +225,7 @@ OpenTelemetry文档应明确指出这类限制。
 
 ```math
 F_instr: C_App → C_Tel
+
 ```
 
 该函子将：
@@ -233,6 +242,7 @@ F_instr: C_App → C_Tel
 
 ```math
 F_instr(g ∘ f) = F_instr(g) ∘ F_instr(f)
+
 ```
 
 **案例分析**：考虑HTTP请求处理：
@@ -256,6 +266,7 @@ F_instr(g ∘ f) = F_instr(g) ∘ F_instr(f)
 
 ```math
 η: I_local → P_distributed
+
 ```
 
 其中：
@@ -274,6 +285,7 @@ F_instr(g ∘ f) = F_instr(g) ∘ F_instr(f)
  η_S1|             |η_S2
   v             v
    S1 --P(f)--> S2
+
 ```
 
 这意味着：本地上下文传播后远程调用 = 远程调用后传播上下文。
@@ -301,6 +313,7 @@ F_instr(g ∘ f) = F_instr(g) ∘ F_instr(f)
 
 ```math
 单子T = (T, μ, η)
+
 ```
 
 其中：
@@ -328,6 +341,7 @@ F_instr(g ∘ f) = F_instr(g) ∘ F_instr(f)
 
 ```math
 T(Span) = (Span, p, priority)
+
 ```
 
 其中p是采样概率，priority是优先级。
@@ -336,6 +350,7 @@ T(Span) = (Span, p, priority)
 
 ```math
 μ((Span, p1, priority1), p2, priority2) = (Span, p1*p2, max(priority1, priority2))
+
 ```
 
 **批判分析**：
@@ -353,6 +368,7 @@ OpenTelemetry将API和SDK分离，可以用范畴论的对偶性（adjunction）
 ```math
 F: C_API → C_SDK (API到SDK的实现函子)
 G: C_SDK → C_API (SDK到API的遗忘函子)
+
 ```
 
 这两个函子之间存在自然变换：
@@ -360,6 +376,7 @@ G: C_SDK → C_API (SDK到API的遗忘函子)
 ```math
 η: 1_C_API → G∘F (单位)
 ε: F∘G → 1_C_SDK (余单位)
+
 ```
 
 满足三角恒等式：
@@ -367,6 +384,7 @@ G: C_SDK → C_API (SDK到API的遗忘函子)
 ```math
 (ε∘F) ∘ (F∘η) = 1_F
 (G∘ε) ∘ (η∘G) = 1_G
+
 ```
 
 #### 1.3.1.2 对偶性分析的实际意义
@@ -383,6 +401,7 @@ G: C_SDK → C_API (SDK到API的遗忘函子)
 ```math
 API: interface Tracer { Span createSpan(String name); }
 SDK: class TracerImpl implements Tracer { Span createSpan(String name) { ... } }
+
 ```
 
 F将Tracer映射为TracerImpl，而G将TracerImpl视为Tracer。
@@ -404,6 +423,7 @@ F_java: C_Spec → C_Java
 F_go: C_Spec → C_Go
 F_python: C_Spec → C_Python
 ...
+
 ```
 
 #### 1.3.2.2 语言间一致性的数学条件
@@ -415,6 +435,7 @@ F_python: C_Spec → C_Python
 
 ```math
 η_ij: F_i → F_j
+
 ```
 
 使得对象和态射的本质特性在变换中保持不变。
@@ -444,6 +465,7 @@ OpenTelemetry应建立更严格的跨语言测试套件，验证函子映射的�
 ```math
 G∘F ≅ 1_C (通过自然同构)
 F∘G ≅ 1_D (通过自然同构)
+
 ```
 
 #### 1.3.3.2 跨语言等价的挑战
@@ -493,6 +515,7 @@ OpenTelemetry规范应明确区分：
 
 ```math
 τ: Path(MS) → Trace
+
 ```
 
 其中Path(MS)是MS中所有可能的态射路径集合。
@@ -502,6 +525,7 @@ OpenTelemetry规范应明确区分：
 
 ```math
 τ(p ⊕ q) = τ(p) ⊕ τ(q)
+
 ```
 
 其中⊕表示路径连接。
@@ -525,6 +549,7 @@ OpenTelemetry在这三方面的平衡是其设计挑战。
 
 ```math
 P: MS → MS_enriched
+
 ```
 
 其中MS_enriched是增强的微服务范畴，态射携带额外的上下文信息。
@@ -539,6 +564,7 @@ P: MS → MS_enriched
 
 ```math
 P(f) 和 P(g) 应传播相同的上下文信息
+
 ```
 
 **案例分析**：考虑服务A调用服务B的场景：
@@ -565,6 +591,7 @@ OpenTelemetry提供了多种传播器（HTTP、gRPC、消息队列等），但�
 
 ```math
 E: Events → Handlers
+
 ```
 
 其中：
@@ -583,6 +610,7 @@ E: Events → Handlers
 
 ```math
 E(e1⊕e2) = E(e1)⊕E(e2)
+
 ```
 
 **实例**：

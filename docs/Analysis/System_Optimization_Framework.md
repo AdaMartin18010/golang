@@ -40,19 +40,6 @@
   - [1.10 参考文献](#参考文献)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 1. 概述
 
 ### 1.1.1 正式定义
@@ -264,6 +251,7 @@ func Example() {
     fmt.Printf("Best fitness: %f\n", best.Fitness)
     fmt.Printf("Best genes: %v\n", best.Genes)
 }
+
 ```
 
 ### 1.2.2 粒子群优化 (Particle Swarm Optimization)
@@ -404,6 +392,7 @@ func Example() {
     fmt.Printf("Best position: %v\n", bestPosition)
     fmt.Printf("Best fitness: %f\n", bestFitness)
 }
+
 ```
 
 ## 1.3 3. 资源分配策略 (Resource Allocation)
@@ -578,6 +567,7 @@ func Example() {
         fmt.Printf("Request %d allocated to resource %s\n", i, resource.ID)
     }
 }
+
 ```
 
 ## 1.4 4. 缓存机制 (Caching Mechanisms)
@@ -784,6 +774,7 @@ func Example() {
         fmt.Println("TTL key expired")
     }
 }
+
 ```
 
 ## 1.5 5. 负载均衡算法 (Load Balancing)
@@ -990,6 +981,7 @@ func Example() {
         fmt.Printf("Request %d -> %s\n", i+1, node)
     }
 }
+
 ```
 
 ## 1.6 6. 容错模式 (Fault Tolerance)
@@ -1183,6 +1175,7 @@ func Example() {
 
     time.Sleep(1 * time.Second)
 }
+
 ```
 
 ## 1.7 7. 监控系统 (Monitoring Systems)
@@ -1419,6 +1412,7 @@ func Example() {
         fmt.Println("System has health issues")
     }
 }
+
 ```
 
 ## 1.8 8. 性能分析
@@ -1455,6 +1449,7 @@ func CalculateImprovement(before, after PerformanceMetrics) OptimizationComparis
         Improvement: overallImprovement,
     }
 }
+
 ```
 
 ## 1.9 9. 总结

@@ -15,19 +15,6 @@
     - [1.5.6 10. 使用示例](#10-使用示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面是一个使用 Rust 2024 + Tonic + Tower + Raft 实现的完整分布式系统示例：
 
 ## 1.1 目录
@@ -64,6 +51,7 @@ dashmap = "5.5"
 
 [build-dependencies]
 tonic-build = "0.10"
+
 ```
 
 ## 1.3 2. Proto 定义
@@ -150,6 +138,7 @@ message ClientResponse {
 }
 
 // ... (其他消息定义)
+
 ```
 
 ## 1.4 3. Raft 节点实现
@@ -262,6 +251,7 @@ impl RaftServer {
         Ok(())
     }
 }
+
 ```
 
 ## 1.5 4. gRPC 服务实现
@@ -382,6 +372,7 @@ impl RaftNode for RaftService {
         }
     }
 }
+
 ```
 
 ### 1.5.1 5. 状态机实现
@@ -433,6 +424,7 @@ impl StateMachine {
         Ok(())
     }
 }
+
 ```
 
 ### 1.5.2 6. 存储实现
@@ -504,6 +496,7 @@ impl Storage for RaftStorage {
         Ok(self.snapshot.read().unwrap().clone())
     }
 }
+
 ```
 
 ### 1.5.3 7. 中间件实现
@@ -557,6 +550,7 @@ where
         })
     }
 }
+
 ```
 
 ### 1.5.4 8. 客户端实现
@@ -618,6 +612,7 @@ impl RaftClient {
         Ok(response.data)
     }
 }
+
 ```
 
 ### 1.5.5 9. 服务器启动
@@ -655,6 +650,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 ### 1.5.6 10. 使用示例
@@ -677,6 +673,7 @@ async fn example() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个完整的示例展示了如何使用 Tonic、Tower 和 Raft 构建一个分布式系统，包括：

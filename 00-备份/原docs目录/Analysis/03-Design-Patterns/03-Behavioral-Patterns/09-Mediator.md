@@ -109,6 +109,7 @@ classDiagram
     ConcreteMediator --> Component : manages
     ConcreteComponentA --> Mediator : uses
     ConcreteComponentB --> Mediator : uses
+
 ```
 
 ### 3.2 时序图
@@ -135,6 +136,7 @@ sequenceDiagram
     Mediator->>ComponentB: React to A_ACTION
     ComponentB-->>Mediator: Result
     Mediator-->>ComponentA: Coordinated Result
+
 ```
 
 ### 3.3 中介者通信流图
@@ -159,6 +161,7 @@ flowchart TD
     B1 <-->|直接通信| D1
     C1 <-->|直接通信| D1
     end
+
 ```
 
 ### 3.4 中介者类型分析
@@ -302,6 +305,7 @@ func (c *ConcreteComponentB) ReactToA(data string) {
         c.DoB()
     }
 }
+
 ```
 
 ### 4.2 事件驱动中介者
@@ -369,6 +373,7 @@ func (c *EventComponent) RegisterHandler(event string, handler func(interface{})
     }
     c.mediator.Subscribe(event, wrappedHandler)
 }
+
 ```
 
 ### 4.3 协调者中介者
@@ -466,6 +471,7 @@ func (c *UserComponent) OnStateChanged(key string, value interface{}) {
         fmt.Printf("Component %s updated language to: %v\n", c.name, value)
     }
 }
+
 ```
 
 ### 4.4 中介者与通道结合
@@ -585,6 +591,7 @@ func (c *ConcreteChannelComponent) SendEvent(eventType string, target string, pa
     }
     c.mediator.SendEvent(event)
 }
+
 ```
 
 ## 5. 性能分析
@@ -686,6 +693,7 @@ func (m *BatchMediator) QueueUpdate(key string, value interface{}) {
         go m.flushUpdates()
     }
 }
+
 ```
 
 ### 5.4 基准测试
@@ -717,6 +725,7 @@ func BenchmarkChannelMediator(b *testing.B) {
     
     mediator.Stop()
 }
+
 ```
 
 ## 6. 应用场景
@@ -987,6 +996,7 @@ func (m *SmartHomeMediator) CreateScene(sceneName string, commands []DeviceComma
     m.scenes[sceneName] = commands
     fmt.Printf("Created scene: %s with %d commands\n", sceneName, len(commands))
 }
+
 ```
 
 这个智能家居中介者案例展示了中介者模式如何在复杂的设备协调系统中发挥作用：
@@ -1258,6 +1268,7 @@ func (c *ChatClient) Disconnect() {
     close(c.msgQueue)
     c.server.Unregister(c.ID)
 }
+
 ```
 
 这个聊天服务器中介者案例展示了中介者模式在通信系统中的应用：
@@ -1585,6 +1596,7 @@ func NewRunway(id string, length, heading int, atc *AirTrafficControl) *Runway {
     atc.RegisterRunway(runway)
     return runway
 }
+
 ```
 
 这个空中交通管制系统案例展示了中介者模式在协调多个实体复杂交互时的应用：

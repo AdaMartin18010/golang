@@ -31,6 +31,7 @@ match x {
     3..=5 => println!("Three to Five"),
     _ => println!("Something else"),
 }
+
 ```
 
 ### 解构模式
@@ -45,6 +46,7 @@ match point {
     (x, y) if x < y => println!("y is greater than x"),
     _ => println!("It's a tie"),
 }
+
 ```
 
 ### `if let` 表达式
@@ -57,6 +59,7 @@ let some_value = Some(10);
 if let Some(x) = some_value {
     println!("The value is: {}", x);
 }
+
 ```
 
 ### `while let` 表达式
@@ -70,6 +73,7 @@ while let Some(x) = optional_value {
     println!("The value is: {}", x);
     optional_value = None; // Break the loop
 }
+
 ```
 
 ### 范围模式
@@ -84,6 +88,7 @@ match num {
     6..=10 => println!("It's between 6 and 10"),
     _ => println!("It's out of the range"),
 }
+
 ```
 
 模式匹配是 Rust 编程中非常强大和灵活的工具，它不仅可以提高代码的可读性，还可以在编译时提供类型安全保证。

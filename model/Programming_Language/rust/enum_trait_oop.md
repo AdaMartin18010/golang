@@ -27,19 +27,6 @@
     - [1.3.14 5. **总结**](#5-**总结**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`enum` 和 `dyn trait` 的结合可以实现运行时的多态，类似于面向对象编程（OOP）中的多态机制。
 通过使用 `enum` 来定义不同的类型，并结合 `dyn Trait` 来实现动态分发，我们可以创建灵活的多态结构。
 以下是如何实现这一点的详细说明。
@@ -148,6 +135,7 @@ fn main() {
         println!("Shape area: {}", calculate_area_dyn(&shape));
     }
 }
+
 ```
 
 ### 1.2.2 代码解释
@@ -184,6 +172,7 @@ enum Shape {
     Circle(f64),          // 半径
     Rectangle(f64, f64),  // 宽度和高度
 }
+
 ```
 
 在这个例子中，`Shape` 是一个枚举类型，它有两个变体：`Circle` 和 `Rectangle`。
@@ -205,6 +194,7 @@ struct Point<T> {
 fn print_point<T: std::fmt::Display>(point: &Point<T>) {
     println!("Point: ({}, {})", point.x, point.y);
 }
+
 ```
 
 在这个例子中，`Point` 是一个泛型结构体，它可以接受任何类型 `T`，
@@ -222,6 +212,7 @@ enum Result<T, E> {
     Ok(T),
     Err(E),
 }
+
 ```
 
 在这个例子中，`Result` 是一个泛型枚举，它可以表示成功的结果（`Ok`）和错误的结果（`Err`），
@@ -262,6 +253,7 @@ enum Shape {
     Rectangle(f64, f64),  // 变体 Rectangle，携带两个 f64 类型的宽度和高度
     Triangle(f64, f64, f64), // 变体 Triangle，携带三个 f64 类型的边长
 }
+
 ```
 
 在这个示例中，`Shape` 是一个枚举类型，它有三个变体：
@@ -286,6 +278,7 @@ fn area(shape: Shape) -> f64 {
         }
     }
 }
+
 ```
 
 在这个函数中，我们使用 `match` 语句来根据传入的 `Shape` 变体计算面积。
@@ -309,6 +302,7 @@ fn area(shape: Shape) -> f64 {
 trait Operation {
     fn execute(&self, input: i32) -> i32;
 }
+
 ```
 
 ### 1.3.11 2. 实现 Trait
@@ -345,6 +339,7 @@ impl Operation for Multiply {
         input * self.value
     }
 }
+
 ```
 
 ### 1.3.12 3. 使用 `Box<dyn Trait>`
@@ -355,6 +350,7 @@ impl Operation for Multiply {
 fn apply_operations(operations: Vec<Box<dyn Operation>>, input: i32) -> i32 {
     operations.into_iter().fold(input, |acc, op| op.execute(acc))
 }
+
 ```
 
 在这个函数中，我们使用 `fold` 方法来依次应用所有操作。`fold` 方法接受一个初始值和一个闭包，闭包会对每个操作进行调用。
@@ -375,6 +371,7 @@ fn main() {
     let result = apply_operations(operations, input);
     println!("最终结果: {}", result); // 输出: 最终结果: 20
 }
+
 ```
 
 ### 1.3.14 5. **总结**

@@ -265,6 +265,7 @@ func (ps *PhysicsSystem) Update(world *World, deltaTime float64) error {
 func (ps *PhysicsSystem) Name() string {
     return "PhysicsSystem"
 }
+
 ```
 
 ### 2.2 游戏引擎架构
@@ -495,6 +496,7 @@ func (im *InputManager) GetMousePosition() *Vector2 {
     
     return im.mouse.position
 }
+
 ```
 
 ### 2.3 客户端-服务器架构
@@ -660,6 +662,7 @@ func (gs *GameServer) broadcastStateUpdates() error {
     
     return nil
 }
+
 ```
 
 ## 4. 物理引擎
@@ -810,6 +813,7 @@ func (pe *PhysicsEngine) separateBodies(collision *Collision) {
         collision.BodyB.Position.Z += collision.Normal.Z * separation * ratioB
     }
 }
+
 ```
 
 ### 4.2 碰撞检测
@@ -876,6 +880,7 @@ func (sh *SpatialHash) GetNearbyColliders(position *Vector3) []*Collider {
     
     return nearby
 }
+
 ```
 
 ## 5. 网络同步
@@ -996,6 +1001,7 @@ func (ss *StateSynchronizer) ApplySnapshot(clientID ClientID, snapshot *StateSna
     clientState.LastUpdate = snapshot.Timestamp
     return nil
 }
+
 ```
 
 ### 5.2 输入预测
@@ -1075,6 +1081,7 @@ func (ip *InputPredictor) predictMovement(current, previous *Vector3, timeDiff f
         Z: current.Z + velocity.Z*timeDiff,
     }
 }
+
 ```
 
 ## 6. 资源管理
@@ -1181,6 +1188,7 @@ func (rc *ResourceCache) evictOldest() {
         break
     }
 }
+
 ```
 
 ## 7. 性能优化
@@ -1323,6 +1331,7 @@ func (b *Batcher) RenderBatch(batchID string) error {
     
     return nil
 }
+
 ```
 
 ## 8. 最佳实践
@@ -1420,6 +1429,7 @@ func (a *Analytics) TrackEvent(eventType string, data map[string]interface{}) {
     
     a.events = append(a.events, event)
 }
+
 ```
 
 ## 9. 案例分析
@@ -1485,4 +1495,4 @@ func (a *Analytics) TrackEvent(eventType string, data map[string]interface{}) {
 - [Amethyst游戏引擎](https://amethyst.rs/)
 - [WGPU图形API](https://wgpu.rs/)
 - [Rapier物理引擎](https://rapier.rs/)
-- [Tokio异步运行时](https://tokio.rs/) 
+- [Tokio异步运行时](https://tokio.rs/)

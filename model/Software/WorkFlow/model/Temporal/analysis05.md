@@ -31,19 +31,6 @@
   - [1.8 思维导图 (Text)](#思维导图-text)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Temporal 是一个分布式工作流编排平台，它提供了一种灵活的方式来构建和运行复杂的分布式应用程序。
 本分析将深入探讨 Temporal 的架构、代码结构、实现细节和应用实践这四个维度。
 
@@ -334,4 +321,5 @@ Temporal 分析 (架构、代码、实现、应用)
 │   └── 5.5. 常见反模式 (WF I/O, Big Payloads, Simple Req/Res, Complex Activities, No Versioning, Misuse SideEffect)
 │
 └── 6. 总结 (架构基础, 代码维护性, 实现保证, 应用价值)
+
 ```

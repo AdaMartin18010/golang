@@ -16,6 +16,7 @@
 ```toml:Cargo.toml
 [dependencies]
 rusqlite = "0.29"
+
 ```
 
 ### 1.2 编写示例代码
@@ -64,6 +65,7 @@ struct User {
     id: i32,
     name: String,
 }
+
 ```
 
 #### 代码说明
@@ -92,6 +94,7 @@ struct User {
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 sqlx = { version = "0.6", features = [ "sqlite", "runtime-tokio-native-tls", "macros" ] }
+
 ```
 
 ### 2.2 示例代码
@@ -140,6 +143,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
     Ok(())
 }
+
 ```
 
 #### *代码说明*

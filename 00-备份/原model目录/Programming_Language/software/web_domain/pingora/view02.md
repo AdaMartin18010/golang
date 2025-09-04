@@ -218,6 +218,7 @@ Pingora框架
         ├── 自定义中间件
         ├── 用户定义服务
         └── 负载均衡策略
+
 ```
 
 ## 1. 元模型与元理论
@@ -294,6 +295,7 @@ trait Service<Request> {
     
     fn call(&self, req: Request) -> Self::Future;
 }
+
 ```
 
 **定理1.1**：任何实现`Service`特征的类型都能在异步环境中处理请求。
@@ -352,6 +354,7 @@ Pingora的控制流围绕请求处理生命周期展开，主要包括以下阶�
 
 ```math
 初始化配置 -> 创建Server实例 -> 注册服务 -> 绑定监听端口 -> 启动工作线程 -> 进入事件循环
+
 ```
 
 核心启动逻辑示例：
@@ -363,12 +366,14 @@ let service = ServiceBuilder::new(handler).build();
 server.add_tcp_service("http", service);
 server.listen_addr("0.0.0.0:8080")?;
 server.run_forever();
+
 ```
 
 #### 请求处理阶段
 
 ```math
 接受连接 -> 协议识别 -> 解析HTTP请求 -> 应用中间件链 -> 路由请求 -> 上游服务处理 -> 构建响应 -> 返回响应
+
 ```
 
 中间件处理控制流：
@@ -388,6 +393,7 @@ foreach middleware in reverse(chain):
 endfor
 
 return response
+
 ```
 
 ### 3.2 执行流分析
@@ -402,6 +408,7 @@ Pingora的执行流基于Tokio异步运行时，结合工作线程池实现高�
   创建监听套接字
   分派接受连接任务到工作线程
   监听信号处理热重载/关闭
+
 ```
 
 #### 工作线程执行流
@@ -417,6 +424,7 @@ Pingora的执行流基于Tokio异步运行时，结合工作线程池实现高�
     调度异步任务执行
   结束循环(关闭信号)
   清理资源
+
 ```
 
 #### 请求处理异步执行流
@@ -433,6 +441,7 @@ async fn handle_request():
   处理响应
   应用响应中间件
   返回客户端
+
 ```
 
 ### 3.3 数据流分析
@@ -443,6 +452,7 @@ Pingora的数据流设计优化了内存使用和数据拷贝：
 
 ```math
 客户端 -> TCP缓冲区 -> HTTP解析器 -> 请求对象构建 -> 中间件处理 -> 可能的请求体转换 -> 上游请求构建 -> 上游服务
+
 ```
 
 关键优化点：
@@ -456,6 +466,7 @@ Pingora的数据流设计优化了内存使用和数据拷贝：
 
 ```math
 上游服务 -> 响应对象构建 -> 可能的响应体转换 -> 中间件处理 -> HTTP序列化 -> TCP缓冲区 -> 客户端
+
 ```
 
 关键优化点：
@@ -487,6 +498,7 @@ let middleware_chain = vec![
 let service = ServiceBuilder::new(handler)
     .add_middleware(middleware_chain)
     .build();
+
 ```
 
 **优势**：
@@ -510,6 +522,7 @@ let upstream_config = UpstreamConfig {
 
 // 创建连接池
 let pool = LoadBalancer::new(upstream_config);
+
 ```
 
 **关键算法**：
@@ -709,6 +722,7 @@ Pingora采用事件驱动的多阶段并行处理模型：
      ┌─────────▼─────────▼────────────▼───────┐
      │            连接 & 请求池              │
      └───────────────────────────────────────┘
+
 ```
 
 每个工作线程运行独立Tokio运行时实例，避免跨线程同步开销，实现高效并行处理。
@@ -752,6 +766,7 @@ impl<T> MemoryPool<T> {
         }
     }
 }
+
 ```
 
 1. **请求头优化**：特殊设计的头部存储结构，兼顾查找效率和内存使用
@@ -800,7 +815,7 @@ HTTP协议优化措施：
 | HAProxy    | ~280,000      | 56%      |
 | Envoy      | ~250,000      | 50%      |
 
--*注：具体数值会根据硬件配置、请求特性和测试方法而变化*
+- *注：具体数值会根据硬件配置、请求特性和测试方法而变化*
 
 #### 延迟特性
 
@@ -967,6 +982,7 @@ Pingora在CDN边缘节点场景的应用详情：
 ```math
 客户端 → DNS解析 → 边缘节点入口(Pingora) → 内容处理 
 → 缓存查询 → 未命中时上游请求 → 内容分发
+
 ```
 
 #### 部署特性
@@ -1009,6 +1025,7 @@ Pingora作为微服务API网关的应用：
     ┌────┴────┐
     ▼         ▼
 微服务A     微服务B ...
+
 ```
 
 #### 性能优势应用
@@ -1053,6 +1070,7 @@ Pingora作为负载均衡器和反向代理的应用：
      ┌──────▼──┐ ┌─────▼─────┐
      │应用服务器│ │应用服务器 │ ...
      └─────────┘ └───────────┘
+
 ```
 
 #### 性能优化场景
@@ -1095,6 +1113,7 @@ Pingora在边缘计算平台中的创新应用：
                      │
                      ▼
               核心云服务/数据中心
+
 ```
 
 #### 性能与安全平衡
@@ -1193,6 +1212,7 @@ impl Server {
     
     // 其他方法...
 }
+
 ```
 
 #### 工作线程（Worker）模块
@@ -1306,6 +1326,7 @@ impl Worker {
         // 实现优雅关闭逻辑...
     }
 }
+
 ```
 
 #### 服务（Service）模块
@@ -1361,6 +1382,7 @@ impl<H: HttpHandler> Service for HttpService<H> {
         conn.process_requests(&self.handler).await
     }
 }
+
 ```
 
 ### 9.2 内存管理与资源分配
@@ -1444,6 +1466,7 @@ impl Drop for Buffer {
         }
     }
 }
+
 ```
 
 #### 零拷贝转发实现
@@ -1498,6 +1521,7 @@ impl Stream for ProxyBody {
         }
     }
 }
+
 ```
 
 ### 9.3 异常处理与容错设计
@@ -1524,26 +1548,28 @@ pub enum PingoraError {
 
 ```rust
 // 错误类型定义（续）
-#[derive(Debug, Error)]
+
+# [derive(Debug, Error)]
+
 pub enum PingoraError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
-    
+  
     #[error("HTTP error: {0}")]
     Http(#[from] hyper::Error),
-    
+  
     #[error("TLS error: {0}")]
     Tls(#[from] rustls::Error),
-    
+  
     #[error("Timeout error")]
     Timeout,
-    
+  
     #[error("Connection error: {0}")]
     Connection(String),
-    
+  
     #[error("Upstream error: {status_code} - {message}")]
     Upstream { status_code: u16, message: String },
-    
+  
     #[error("Internal error: {0}")]
     Internal(String),
 }
@@ -1567,7 +1593,7 @@ impl ErrorHandler {
     ) -> Result<(), PingoraError> {
         // 记录错误指标
         self.metrics.record_error(&err);
-        
+  
         match err {
             PingoraError::Io(io_err) if io_err.kind() == std::io::ErrorKind::TimedOut => {
                 // 超时错误处理
@@ -1579,7 +1605,7 @@ impl ErrorHandler {
                     Err(PingoraError::Timeout)
                 }
             },
-            
+  
             PingoraError::Connection(msg) => {
                 // 连接错误处理
                 if self.retry_policy.should_retry(RetryReason::ConnectionFailure) {
@@ -1590,12 +1616,12 @@ impl ErrorHandler {
                     Err(err)
                 }
             },
-            
+  
             // 其他错误类型处理...
             _ => Err(err),
         }
     }
-    
+  
     // 处理请求级别错误
     pub async fn handle_request_error(
         &self,
@@ -1605,7 +1631,7 @@ impl ErrorHandler {
     ) -> Result<Response, PingoraError> {
         // 记录错误指标
         self.metrics.record_error(&err);
-        
+  
         // 根据错误类型应用不同策略
         match &err {
             PingoraError::Upstream { status_code, .. } => {
@@ -1615,7 +1641,7 @@ impl ErrorHandler {
                     return fallback.apply(req, context).await;
                 }
             },
-            
+  
             PingoraError::Timeout => {
                 // 超时处理
                 if context.retry_count < self.retry_policy.max_retries {
@@ -1624,15 +1650,15 @@ impl ErrorHandler {
                     return context.retry_handler.retry(req).await;
                 }
             },
-            
+  
             // 其他错误类型处理...
             _ => {}
         }
-        
+  
         // 构造错误响应
         self.build_error_response(&err)
     }
-    
+  
     // 构建错误响应
     fn build_error_response(&self, err: &PingoraError) -> Result<Response, PingoraError> {
         let status = match err {
@@ -1641,26 +1667,27 @@ impl ErrorHandler {
                 .unwrap_or(StatusCode::BAD_GATEWAY),
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        
+  
         // 创建错误响应
         let mut response = Response::builder()
             .status(status)
             .header("content-type", "application/json");
-            
+  
         // 添加额外错误信息（仅在调试模式）
         if cfg!(debug_assertions) {
             response = response.header("x-error", err.to_string());
         }
-        
+  
         // 构建错误体
         let body = json!({
             "error": status.as_u16(),
             "message": status.canonical_reason().unwrap_or("Unknown Error")
         }).to_string();
-        
+  
         Ok(response.body(Body::from(body))?)
     }
 }
+
 ```
 
 #### 熔断器模式实现
@@ -1669,7 +1696,9 @@ impl ErrorHandler {
 
 ```rust
 // 熔断器状态机
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct CircuitBreaker {
     // 服务标识
     service_id: String,
@@ -1686,7 +1715,9 @@ pub struct CircuitBreaker {
 }
 
 // 熔断器状态
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
+# [derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 enum CircuitState {
     Closed,     // 正常状态
     Open,       // 断开状态
@@ -1697,7 +1728,7 @@ impl CircuitBreaker {
     // 检查是否允许请求通过
     pub async fn allow_request(&self) -> bool {
         let state = self.state.read().await.clone();
-        
+  
         match state {
             CircuitState::Closed => true,
             CircuitState::Open => {
@@ -1720,17 +1751,17 @@ impl CircuitBreaker {
             }
         }
     }
-    
+  
     // 记录请求结果
     pub async fn record_result(&self, success: bool) {
         let current_state = self.state.read().await.clone();
-        
+  
         match current_state {
             CircuitState::Closed => {
                 if !success {
                     // 增加失败计数
                     self.failure_counter.increment();
-                    
+  
                     // 检查是否超过失败阈值
                     if self.failure_counter.get_count() >= self.config.failure_threshold {
                         // 转入断开状态
@@ -1744,13 +1775,13 @@ impl CircuitBreaker {
                 // 记录探测结果
                 self.probe_results.write().await.push_back(success);
                 let results = self.probe_results.read().await.clone();
-                
+  
                 // 如果收集了足够的样本，评估是否恢复
                 if results.len() >= self.config.half_open_max_requests {
                     // 计算成功率
                     let success_count = results.iter().filter(|&r| *r).count();
                     let success_rate = success_count as f64 / results.len() as f64;
-                    
+  
                     if success_rate >= self.config.success_threshold {
                         // 恢复到闭合状态
                         *self.state.write().await = CircuitState::Closed;
@@ -1758,7 +1789,7 @@ impl CircuitBreaker {
                         // 保持断开状态
                         *self.state.write().await = CircuitState::Open;
                     }
-                    
+  
                     *self.last_state_change.write().await = Instant::now();
                     self.probe_results.write().await.clear();
                 }
@@ -1767,6 +1798,7 @@ impl CircuitBreaker {
         }
     }
 }
+
 ```
 
 ### 9.4 并发安全保障机制
@@ -1777,7 +1809,9 @@ Pingora大量使用无锁数据结构提高并发性能：
 
 ```rust
 // 原子计数器实现
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 pub struct AtomicCounter {
     count: AtomicU64,
 }
@@ -1788,22 +1822,24 @@ impl AtomicCounter {
             count: AtomicU64::new(0),
         }
     }
-    
+  
     pub fn increment(&self) -> u64 {
         self.count.fetch_add(1, Ordering::Relaxed)
     }
-    
+  
     pub fn decrement(&self) -> u64 {
         self.count.fetch_sub(1, Ordering::Relaxed)
     }
-    
+  
     pub fn get(&self) -> u64 {
         self.count.load(Ordering::Relaxed)
     }
 }
 
 // 分片计数器，减少高并发下的缓存争用
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 pub struct ShardedCounter {
     // 多个分片计数器
     shards: Vec<AtomicCounter>,
@@ -1817,25 +1853,26 @@ impl ShardedCounter {
         for _ in 0..shard_count {
             shards.push(AtomicCounter::new());
         }
-        
+  
         Self {
             shards,
             rng: thread_rng(),
         }
     }
-    
+  
     pub fn increment(&self) -> u64 {
         // 随机选择一个分片增加计数
         let shard = self.rng.gen_range(0..self.shards.len());
         self.shards[shard].increment();
         self.get()
     }
-    
+  
     pub fn get(&self) -> u64 {
         // 汇总所有分片的计数
         self.shards.iter().map(|shard| shard.get()).sum()
     }
 }
+
 ```
 
 #### 共享状态管理
@@ -1873,7 +1910,7 @@ impl ConnectionPool {
                     // 丢弃过期连接
                 }
             }
-            
+  
             // 检查是否可以创建新连接
             let current = self.active_count.load(Ordering::Relaxed);
             if current < self.config.max_connections {
@@ -1900,13 +1937,13 @@ impl ConnectionPool {
                 if self.config.wait_timeout.is_zero() {
                     return Err(Error::PoolExhausted);
                 }
-                
+  
                 // 设置超时等待
                 let timeout = tokio::time::timeout(
                     self.config.wait_timeout,
                     self.waiters.notified()
                 );
-                
+  
                 // 等待通知或超时
                 if timeout.await.is_err() {
                     return Err(Error::ConnectionTimeout);
@@ -1915,12 +1952,12 @@ impl ConnectionPool {
             }
         }
     }
-    
+  
     // 释放连接回池
     pub async fn release_connection(&self, conn: PooledConnection) {
         // 定期清理池中过期连接
         self.maybe_cleanup().await;
-        
+  
         // 如果连接有效，放回池中
         if conn.is_valid() {
             let mut idle = self.idle_connections.lock().await;
@@ -1932,7 +1969,7 @@ impl ConnectionPool {
             self.active_count.fetch_sub(1, Ordering::Relaxed);
         }
     }
-    
+  
     // 定期清理过期连接
     async fn maybe_cleanup(&self) {
         // 使用原子操作检查上次清理时间
@@ -1940,9 +1977,9 @@ impl ConnectionPool {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs();
-            
+  
         let last = self.last_cleanup.load(Ordering::Relaxed);
-        
+  
         // 如果距离上次清理超过间隔，执行清理
         if now - last > self.config.cleanup_interval.as_secs() {
             // 尝试获得清理锁
@@ -1956,14 +1993,14 @@ impl ConnectionPool {
             }
         }
     }
-    
+  
     // 清理过期连接
     async fn cleanup(&self) {
         let mut idle = self.idle_connections.lock().await;
         // 移除过期连接
         let initial_len = idle.len();
         idle.retain(|conn| !conn.is_expired());
-        
+  
         // 更新统计
         let removed = initial_len - idle.len();
         if removed > 0 {
@@ -1974,6 +2011,7 @@ impl ConnectionPool {
         }
     }
 }
+
 ```
 
 #### 工作窃取调度器
@@ -2020,10 +2058,10 @@ impl WorkStealingScheduler {
                 return;
             }
         }
-        
+  
         // 负载均衡：寻找负载最轻的队列
         let min_load_worker = self.find_min_load_worker();
-        
+  
         // 提交到负载最轻的工作线程
         if self.local_queues[min_load_worker].count.load(Ordering::Relaxed) < MAX_LOCAL_QUEUE_SIZE {
             self.submit_to_local(task, min_load_worker);
@@ -2032,7 +2070,7 @@ impl WorkStealingScheduler {
             self.submit_to_global(task);
         }
     }
-    
+  
     // 工作线程主循环
     pub async fn worker_run(&self, worker_id: usize) {
         loop {
@@ -2041,64 +2079,65 @@ impl WorkStealingScheduler {
                 self.execute_task(task).await;
                 continue;
             }
-            
+  
             // 2. 尝试从其他工作线程窃取任务(FIFO)
             if let Some(task) = self.steal_task(worker_id).await {
                 self.execute_task(task).await;
                 continue;
             }
-            
+  
             // 3. 尝试从全局队列获取任务
             if let Some(task) = self.pop_global().await {
                 self.execute_task(task).await;
                 continue;
             }
-            
+  
             // 4. 没有任务可执行，等待通知
             self.global_queue.notify.notified().await;
         }
     }
-    
+  
     // 从其他工作线程窃取任务
     async fn steal_task(&self, thief_id: usize) -> Option<Task> {
         // 随机顺序探测其他工作线程
         let mut indices: Vec<usize> = (0..self.num_workers).filter(|&i| i != thief_id).collect();
         indices.shuffle(&mut thread_rng());
-        
+  
         for victim_id in indices {
             // 尝试窃取任务(从队尾窃取，FIFO)
             if let Some(task) = self.steal_from_worker(victim_id) {
                 return Some(task);
             }
         }
-        
+  
         None
     }
-    
+  
     // 从指定工作线程窃取任务
     fn steal_from_worker(&self, victim_id: usize) -> Option<Task> {
         let victim = &self.local_queues[victim_id];
-        
+  
         // 获取锁
         let _guard = match victim.lock.try_lock() {
             Ok(guard) => guard,
             // 如果无法立即获取锁，跳过此工作线程
             Err(_) => return None,
         };
-        
+  
         // 从队尾窃取(FIFO)
         let mut deque = &mut victim.deque;
         if deque.is_empty() {
             return None;
         }
-        
+  
         let task = deque.pop_back()?;
         // 减少计数
         victim.count.fetch_sub(1, Ordering::Relaxed);
-        
+  
         Some(task)
     }
 }
+
 ```
 
 ## 10. 发展前景与挑战

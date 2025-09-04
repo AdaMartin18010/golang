@@ -50,19 +50,6 @@
     - [1.6.2 核心建议](#核心建议)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 一、核心基础库
 
 ### 1.1.1 1. 异步运行时
@@ -104,6 +91,7 @@ async fn main() {
     let data = shared_data.read().await;
     println!("收集的消息: {:?}", *data);
 }
+
 ```
 
 **优势**:
@@ -163,6 +151,7 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+
 ```
 
 **优势**:
@@ -213,6 +202,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 **优势**:
@@ -269,6 +259,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 **优势**:
@@ -326,6 +317,7 @@ async fn get_config(client: &Client) -> Result<ServiceConfig, Box<dyn std::error
     let config: ServiceConfig = serde_json::from_slice(&value)?;
     Ok(config)
 }
+
 ```
 
 **优势**:
@@ -377,6 +369,7 @@ match result {
         resilient::Error::OperationError(e) => println!("操作失败: {:?}", e),
     },
 }
+
 ```
 
 **优势**:
@@ -438,6 +431,7 @@ pub async fn order_processing_workflow(ctx: WfContext, order_id: String) -> Work
     
     Ok(WfExitValue::Normal(format!("订单 {} 处理完成", order_id)))
 }
+
 ```
 
 **优势**:
@@ -508,6 +502,7 @@ async fn consume_events(consumer: &StreamConsumer) -> Result<(), Box<dyn std::er
     
     Ok(())
 }
+
 ```
 
 **优势**:
@@ -575,6 +570,7 @@ async fn validate_order(order_id: &str) {
     info!("验证订单");
     // 验证逻辑...
 }
+
 ```
 
 **优势**:
@@ -624,6 +620,7 @@ fn main() {
     
     histogram!("api.request.duration", duration.as_secs_f64());
 }
+
 ```
 
 **优势**:
@@ -752,6 +749,7 @@ async fn get_product_from_db(
         }
     }
 }
+
 ```
 
 **优势**:
@@ -781,34 +779,47 @@ async fn get_product_from_db(
 基于Rust开源库构建复杂业务系统的层次架构:
 
 ```text
+
 +-------------------------+
 |       用户界面层        |
+
 +-------------------------+
            ↓
+
 +-------------------------+
 |      API网关层         |
 | [actix-web, tonic]     |
+
 +-------------------------+
            ↓
+
 +-------------------------+       +------------------+
 |      业务服务层        | <---> |    集成服务层    |
 | [domain logic, sqlx]   |       | [tonic clients]  |
+
 +-------------------------+       +------------------+
            ↓
+
 +-------------------------+
 |      工作流引擎        |
 | [temporal-sdk-rs]      |
+
 +-------------------------+
            ↓
+
 +-------------------------+       +------------------+
 |      消息队列层        | <---> |    事件存储层    |
 | [rdkafka, async-nats]  |       | [sqlx, sled]     |
+
 +-------------------------+       +------------------+
            ↓
+
 +-------------------------+       +------------------+
 |      数据访问层        | <---> |    缓存层        |
 | [sqlx, deadpool]       |       | [redis-rs]       |
+
 +-------------------------+       +------------------+
+
 ```
 
 ## 1.5 五、评估与综合分析

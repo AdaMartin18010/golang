@@ -15,6 +15,7 @@
 
 我将保持用中文回答，并增加内容的深度和广度。
 </think>
+
 ```
 
 ## 目录
@@ -282,6 +283,7 @@ fn consume(v: Vec<i32>) -> i32 {
     let sum = v.iter().sum();
     sum // v被消费后不能再使用
 }
+
 ```
 
 ### 变量与状态
@@ -343,6 +345,7 @@ fn calculate_length(s: &String) -> usize {
 fn change(s: &mut String) {
     s.push_str(", world");
 }
+
 ```
 
 ### 控制流结构
@@ -410,6 +413,7 @@ fn control_flow_example(numbers: Vec<i32>) -> i32 {
     
     result
 }
+
 ```
 
 ### 资源管理机制
@@ -483,6 +487,7 @@ fn resource_example() {
     
     // 当所有Rc引用都超出作用域时，数据被清理
 }
+
 ```
 
 ### 代码组织模式
@@ -555,6 +560,7 @@ fn organization_example() {
     println!("Area: {}", circle.area());
     circle.draw();
 }
+
 ```
 
 ## 模式间的相容性与等价性分析
@@ -692,6 +698,7 @@ impl Workflow {
         println!("Workflow completed with data: {:?}", self.data);
     }
 }
+
 ```
 
 #### 高阶等价性
@@ -963,6 +970,7 @@ fn create_workflow_net() -> PetriNet {
     
     net
 }
+
 ```
 
 ### 基于π演算的证明
@@ -1226,4 +1234,5 @@ fn create_workflow_net() -> PetriNet {
     └── 模型论视角
         ├── 逻辑模型表示
         └── 模型等价性证明
+
 ```

@@ -50,19 +50,6 @@
       - [7.1.1.8.1.2 **调度器优化**](#**调度器优化**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 7.1.1.1 🎯 **概述**
 
 本文档对Go语言的Goroutine并发模型进行深度分析，从理论基础、实现机制、性能特征、最佳实践等多个维度进行系统性研究，为Go语言开发者提供完整的并发编程知识体系。
@@ -95,6 +82,7 @@
 并行执行：∀tᵢ, tⱼ ∈ T, ∃时间点 τ，使得 tᵢ 和 tⱼ 在 τ 时刻同时执行
 
 关系：并行 ⊂ 并发
+
 ```
 
 ### 7.1.1.2.2 **Go并发哲学**
@@ -114,6 +102,7 @@ CSP (Communicating Sequential Processes) 理论：
 进程间通信通过 Channel 进行
 每个进程独立运行，通过消息传递协作
 避免了共享内存的复杂性
+
 ```
 
 ## 7.1.1.3 🔍 **Goroutine内部机制**
@@ -145,6 +134,7 @@ type g struct {
     waiting      *sudog  // 等待队列
     selectdone   *uint32 // select完成标志
 }
+
 ```
 
 #### 7.1.1.3.1.2 **栈管理**
@@ -160,6 +150,7 @@ func StackGrowth() {
     // 栈溢出检测
     // 栈收缩机制
 }
+
 ```
 
 ### 7.1.1.3.2 **Goroutine生命周期**
@@ -180,6 +171,7 @@ graph TD
     
     C --> G[Gcopystack]
     G --> C
+
 ```
 
 #### 7.1.1.3.2.2 **状态定义**
@@ -195,6 +187,7 @@ const (
     _Gdead               // 死亡状态
     _Gcopystack          // 栈复制状态
 )
+
 ```
 
 ## 7.1.1.4 🚀 **Goroutine创建与管理**
@@ -231,6 +224,7 @@ type MyObject struct{}
 func (obj *MyObject) method() {
     fmt.Println("Method goroutine")
 }
+
 ```
 
 #### 7.1.1.4.1.2 **批量创建**
@@ -256,6 +250,7 @@ func BatchGoroutineCreation() {
     wg.Wait()
     fmt.Println("All goroutines completed")
 }
+
 ```
 
 ### 7.1.1.4.2 **生命周期管理**
@@ -295,6 +290,7 @@ func worker(ctx context.Context) {
         }
     }
 }
+
 ```
 
 #### 7.1.1.4.2.2 **资源清理**
@@ -320,6 +316,7 @@ func ResourceCleanup() {
     
     time.Sleep(2 * time.Millisecond)
 }
+
 ```
 
 ## 7.1.1.5 ⚡ **Goroutine性能特征**
@@ -356,6 +353,7 @@ func BenchmarkGoroutineMemory(b *testing.B) {
         }
     })
 }
+
 ```
 
 #### 7.1.1.5.1.2 **内存优化策略**
@@ -389,6 +387,7 @@ func MemoryOptimization() {
         }(i)
     }
 }
+
 ```
 
 ### 7.1.1.5.2 **性能基准测试**
@@ -439,6 +438,7 @@ func BenchmarkGoroutineCreation(b *testing.B) {
         }
     })
 }
+
 ```
 
 #### 7.1.1.5.2.2 **通信性能**
@@ -482,6 +482,7 @@ func BenchmarkChannelCommunication(b *testing.B) {
         }
     })
 }
+
 ```
 
 ## 7.1.1.6 🔧 **Goroutine最佳实践**
@@ -559,6 +560,7 @@ func (wp *WorkerPool) Stop() {
     wp.wg.Wait()
     close(wp.resultChan)
 }
+
 ```
 
 #### 7.1.1.6.1.2 **Pipeline模式**
@@ -621,6 +623,7 @@ func filterEven(in <-chan int) <-chan int {
     
     return out
 }
+
 ```
 
 ### 7.1.1.6.2 **错误处理**
@@ -659,6 +662,7 @@ func workerWithError(ctx context.Context, id int) error {
         return nil
     }
 }
+
 ```
 
 #### 7.1.1.6.2.2 **Panic恢复**
@@ -686,6 +690,7 @@ func PanicRecovery() {
     
     time.Sleep(time.Millisecond)
 }
+
 ```
 
 ## 7.1.1.7 📊 **性能监控与分析**
@@ -717,6 +722,7 @@ func GoroutineMonitoring() {
         }
     }
 }
+
 ```
 
 #### 7.1.1.7.1.2 **性能分析工具**
@@ -751,6 +757,7 @@ func doWork() {
     
     time.Sleep(2 * time.Second)
 }
+
 ```
 
 ### 7.1.1.7.2 **竞态检测**
@@ -796,6 +803,7 @@ func FixedRaceCondition() {
     wg.Wait()
     fmt.Printf("Final counter: %d\n", counter)
 }
+
 ```
 
 ## 7.1.1.8 🔮 **未来发展趋势**
@@ -834,6 +842,7 @@ func NewGoroutineFeatures() {
     fmt.Printf("Created %d goroutines in %v\n", numGoroutines, duration)
     fmt.Printf("Rate: %.0f goroutines/second\n", float64(numGoroutines)/duration.Seconds())
 }
+
 ```
 
 #### 7.1.1.8.1.2 **调度器优化**
@@ -863,6 +872,7 @@ func SchedulerOptimization() {
         fmt.Println("Working on locked OS thread")
     }()
 }
+
 ```
 
 ---

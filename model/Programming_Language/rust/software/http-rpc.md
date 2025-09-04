@@ -14,19 +14,6 @@
   - [1.5 小结](#小结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面介绍在 Rust 开源生态系统中，能够根据 API 规范自动生成代码的几种著名实现，
 它们主要分布在 REST API、gRPC 和 GraphQL 等领域，下面逐一说明。
 
@@ -189,6 +176,7 @@ graph TD
     D --> D1[async-graphql]
     D1 --> D1a[自动生成 GraphQL Schema]
     D1 --> D1b[基于宏简化 Resolver 定义]
+
 ```
 
 ---

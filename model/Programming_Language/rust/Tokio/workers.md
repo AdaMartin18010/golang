@@ -15,19 +15,6 @@
     - [1.2.9 10. 任务优先级队列实现](#10-任务优先级队列实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面是一个使用 Rust 2024 新特性实现的多线程工作者模式、观察者模式和任务池化模式的示例：
 
 ## 1.1 目录
@@ -57,6 +44,7 @@ tracing = "0.1"
 dashmap = "5.5"
 crossbeam = "0.8"
 parking_lot = "0.12"
+
 ```
 
 ### 1.2.1 2. 任务定义和状态
@@ -102,6 +90,7 @@ impl Task {
         self.state.read().clone()
     }
 }
+
 ```
 
 ### 1.2.2 3. 工作者池实现
@@ -215,6 +204,7 @@ impl Worker {
         })
     }
 }
+
 ```
 
 ### 1.2.3 4. 异步队列实现
@@ -253,6 +243,7 @@ impl<T> AsyncQueue<T> {
         }
     }
 }
+
 ```
 
 ### 1.2.4 5. 观察者模式实现
@@ -288,6 +279,7 @@ impl Observer for LoggingObserver {
         tracing::error!("Worker {} failed task {}: {}", worker_id, task.id, error);
     }
 }
+
 ```
 
 ### 1.2.5 6. 任务生成器实现
@@ -321,6 +313,7 @@ impl TaskGenerator {
         }
     }
 }
+
 ```
 
 ### 1.2.6 7. 任务调度器实现
@@ -359,6 +352,7 @@ impl TaskScheduler {
         });
     }
 }
+
 ```
 
 ### 1.2.7 8. 使用示例
@@ -380,6 +374,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 ### 1.2.8 9. 自定义观察者示例
@@ -420,6 +415,7 @@ impl Observer for MetricsObserver {
         self.metrics.active_tasks.dec();
     }
 }
+
 ```
 
 ### 1.2.9 10. 任务优先级队列实现
@@ -472,6 +468,7 @@ impl PriorityWorkerPool {
         }
     }
 }
+
 ```
 
 这个完整的示例展示了如何：

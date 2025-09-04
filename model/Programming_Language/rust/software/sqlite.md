@@ -14,19 +14,6 @@
   - [1.3 *小结*](#*小结*)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面介绍两种常用方式，将 SQLite 集成到 Rust 应用中：
 使用同步的 [rusqlite](https://crates.io/crates/rusqlite)
 或使用异步的 [sqlx](https://crates.io/crates/sqlx)。
@@ -43,6 +30,7 @@
 ```toml:Cargo.toml
 [dependencies]
 rusqlite = "0.29"
+
 ```
 
 ### 1.1.2 编写示例代码
@@ -91,6 +79,7 @@ struct User {
     id: i32,
     name: String,
 }
+
 ```
 
 #### 1.1.2.1 代码说明
@@ -119,6 +108,7 @@ struct User {
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 sqlx = { version = "0.6", features = [ "sqlite", "runtime-tokio-native-tls", "macros" ] }
+
 ```
 
 ### 1.2.2 示例代码
@@ -167,6 +157,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
     Ok(())
 }
+
 ```
 
 #### 1.2.2.1 *代码说明*

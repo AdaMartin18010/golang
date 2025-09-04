@@ -39,19 +39,6 @@
   - [3.4 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust工作流架构的高性能持久化与实时集群系统扩展](#rust工作流架构的高性能持久化与实时集群系统扩展)
@@ -123,6 +110,7 @@ pub enum ConsistencyModel {
     /// 适用于：需要保证前进性的应用
     MonotonicRead,
 }
+
 ```
 
 ### 1.2.2 2. CQRS与事件溯源的优化
@@ -152,6 +140,7 @@ pub enum ConsistencyModel {
                      └──►│  (Read Model)  │
                          │                │
                          └────────────────┘
+
 ```
 
 这种架构允许我们：
@@ -303,6 +292,7 @@ impl MultiTierPersistenceManager {
     
     // 其他方法...
 }
+
 ```
 
 ### 1.3.2 2. 工作流分片与分区策略
@@ -438,6 +428,7 @@ impl ShardedWorkflowStorage {
         }
     }
 }
+
 ```
 
 ## 1.4 实时集群系统扩展
@@ -577,6 +568,7 @@ impl HighPerformanceEventBus for KafkaEventBus {
     
     // 其他方法实现...
 }
+
 ```
 
 ### 1.4.2 2. 实时工作流状态同步
@@ -709,6 +701,7 @@ pub trait WebSocketServer: Send + Sync {
     /// 获取与工作流相关的活跃客户端数量
     async fn get_active_clients_count(&self, workflow_id: &str) -> Result<usize, Error>;
 }
+
 ```
 
 ### 1.4.3 3. 集群健康监控与自修复
@@ -832,6 +825,7 @@ impl ClusterHealthMonitor {
                     return Ok(true);
                 }
                 Ok(false)
+
 # 2 2 2 2 2 2 2 Rust工作流架构的高性能持久化与实时集群系统扩展（续）
 
 ## 2.1 集群健康监控与自修复（续）
@@ -840,15 +834,15 @@ impl ClusterHealthMonitor {
 /// 集群健康监控（续）
 impl ClusterHealthMonitor {
     // 前面的方法...
-    
+  
     /// 检查单个节点健康状态
     async fn check_node_health(node: &NodeStatus) -> Result<bool, Error> {
         // 实现节点健康检查逻辑
         // 例如发送心跳请求、检查资源利用率等
-        
+  
         let client = reqwest::Client::new();
         let url = format!("http://{}:{}/health", node.address, node.port);
-        
+  
         match tokio::time::timeout(
             Duration::from_secs(5),
             client.get(&url).send()
@@ -862,64 +856,64 @@ impl ClusterHealthMonitor {
             _ => Ok(false)
         }
     }
-    
+  
     /// 尝试恢复节点
     async fn attempt_node_recovery(node_id: &str) -> Result<(), Error> {
         // 实现节点恢复逻辑
         // 1. 尝试重启服务
         // 2. 重新分配工作流
         // 3. 触发警报
-        
+  
         log::info!("尝试恢复节点 {}", node_id);
-        
+  
         // 1. 首先尝试重新启动节点服务
         if let Err(e) = Self::restart_node_service(node_id).await {
             log::warn!("重启节点 {} 服务失败: {}", node_id, e);
         }
-        
+  
         // 2. 重新分配该节点上的工作流
         Self::redistribute_workflows(node_id).await?;
-        
+  
         // 3. 如果还是不行，触发人工干预警报
         Self::trigger_recovery_alert(node_id).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 重新启动节点服务
     async fn restart_node_service(node_id: &str) -> Result<(), Error> {
         // 实现重启节点服务的逻辑
         // 这可能需要与基础设施API集成，如Kubernetes、Docker或云服务商API
-        
+  
         // 模拟实现
         log::info!("正在重启节点 {} 的服务", node_id);
         tokio::time::sleep(Duration::from_secs(2)).await;
         log::info!("节点 {} 服务重启完成", node_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 重新分配工作流
     async fn redistribute_workflows(node_id: &str) -> Result<(), Error> {
         // 实现工作流重新分配逻辑
         // 1. 找出该节点负责的所有工作流
         // 2. 将它们重新分配到健康节点
-        
+  
         log::info!("正在重新分配节点 {} 上的工作流", node_id);
-        
+  
         // 模拟实现
         tokio::time::sleep(Duration::from_secs(1)).await;
         log::info!("节点 {} 的工作流重新分配完成", node_id);
-        
+  
         Ok(())
     }
-    
+  
     /// 触发恢复警报
     async fn trigger_recovery_alert(node_id: &str) -> Result<(), Error> {
         // 实现警报逻辑，如发送电子邮件、短信或集成监控系统
-        
+  
         log::warn!("触发节点 {} 恢复警报", node_id);
-        
+  
         // 发送告警
         let alert = Alert {
             severity: AlertSeverity::High,
@@ -933,30 +927,30 @@ impl ClusterHealthMonitor {
                 "suggestion": "检查节点硬件和网络状态",
             }),
         };
-        
+  
         let alert_service = AlertService::global();
         alert_service.send_alert(alert).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 获取集群健康状态摘要
     pub async fn get_cluster_health_summary(&self) -> ClusterHealthSummary {
         let nodes_read = self.nodes.read().unwrap();
-        
+  
         let total_nodes = nodes_read.len();
         let healthy_nodes = nodes_read.values()
             .filter(|n| n.status == NodeHealthStatus::Healthy)
             .count();
-        
+  
         let warning_nodes = nodes_read.values()
             .filter(|n| n.status == NodeHealthStatus::Warning)
             .count();
-        
+  
         let down_nodes = nodes_read.values()
             .filter(|n| n.status == NodeHealthStatus::Down)
             .count();
-        
+  
         // 计算集群整体状态
         let cluster_status = if down_nodes > 0 {
             ClusterStatus::Degraded
@@ -965,7 +959,7 @@ impl ClusterHealthMonitor {
         } else {
             ClusterStatus::Healthy
         };
-        
+  
         ClusterHealthSummary {
             timestamp: Utc::now(),
             cluster_status,
@@ -981,7 +975,9 @@ impl ClusterHealthMonitor {
 }
 
 /// 节点状态
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct NodeStatus {
     pub address: String,
     pub port: u16,
@@ -993,7 +989,9 @@ pub struct NodeStatus {
 }
 
 /// 节点健康状态
-#[derive(Clone, Debug, PartialEq)]
+
+# [derive(Clone, Debug, PartialEq)]
+
 pub enum NodeHealthStatus {
     Healthy,
     Warning,
@@ -1001,7 +999,9 @@ pub enum NodeHealthStatus {
 }
 
 /// 集群状态
-#[derive(Clone, Debug, PartialEq)]
+
+# [derive(Clone, Debug, PartialEq)]
+
 pub enum ClusterStatus {
     Healthy,
     Warning,
@@ -1010,7 +1010,9 @@ pub enum ClusterStatus {
 }
 
 /// 集群健康摘要
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct ClusterHealthSummary {
     pub timestamp: DateTime<Utc>,
     pub cluster_status: ClusterStatus,
@@ -1020,6 +1022,7 @@ pub struct ClusterHealthSummary {
     pub down_nodes: usize,
     pub node_details: HashMap<String, NodeStatus>,
 }
+
 ```
 
 ## 2.2 高性能工作流执行引擎
@@ -1031,53 +1034,55 @@ pub struct ClusterHealthSummary {
 pub struct HighPerformanceWorkflowEngine {
     /// 工作流定义仓库
     definition_repository: Arc<dyn WorkflowDefinitionRepository>,
-    
+  
     /// 工作流实例仓库
     instance_repository: Arc<dyn WorkflowInstanceRepository>,
-    
+  
     /// 活动注册表
     activity_registry: Arc<ActivityRegistry>,
-    
+  
     /// 高性能事件总线
     event_bus: Arc<dyn HighPerformanceEventBus>,
-    
+  
     /// 分布式锁管理器
     lock_manager: Arc<dyn LockManager>,
-    
+  
     /// 任务协调器
     task_coordinator: Arc<TaskCoordinator>,
-    
+  
     /// 指标收集器
     metrics_collector: Arc<dyn MetricsCollector>,
-    
+  
     /// 工作流调度器
     scheduler: Arc<WorkflowScheduler>,
-    
+  
     /// 执行器配置
     config: ExecutorConfig,
 }
 
 /// 执行器配置
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 pub struct ExecutorConfig {
     /// 最大并发工作流数
     pub max_concurrent_workflows: usize,
-    
+  
     /// 每个节点的最大并发任务数
     pub max_concurrent_tasks_per_node: usize,
-    
+  
     /// 默认任务超时
     pub default_task_timeout: Duration,
-    
+  
     /// 启用自适应负载均衡
     pub adaptive_load_balancing: bool,
-    
+  
     /// 执行优先级队列深度
     pub priority_queue_depth: usize,
-    
+  
     /// 批处理大小
     pub batch_size: usize,
-    
+  
     /// 启用预测执行
     pub enable_predictive_execution: bool,
 }
@@ -1091,15 +1096,15 @@ impl HighPerformanceWorkflowEngine {
         options: StartWorkflowOptions,
     ) -> Result<String, Error> {
         let start_time = Instant::now();
-        
+  
         // 1. 获取最新工作流定义
         let definition = self.definition_repository
             .get_latest_definition(workflow_type)
             .await?;
-        
+  
         // 2. 创建工作流ID
         let workflow_id = options.workflow_id.unwrap_or_else(|| Uuid::new_v4().to_string());
-        
+  
         // 3. 创建工作流上下文
         let context = WorkflowContext {
             workflow_id: workflow_id.clone(),
@@ -1113,10 +1118,10 @@ impl HighPerformanceWorkflowEngine {
             metadata: options.metadata.unwrap_or_default(),
             version: 0,
         };
-        
+  
         // 4. 保存工作流实例
         self.instance_repository.save_context(&context).await?;
-        
+  
         // 5. 发布工作流创建事件
         self.event_bus.publish(
             "workflow.events",
@@ -1133,16 +1138,16 @@ impl HighPerformanceWorkflowEngine {
                 }),
             }
         ).await?;
-        
+  
         // 6. 调度工作流执行
         let execution_priority = options.priority.unwrap_or(ExecutionPriority::Normal);
-        
+  
         self.scheduler.schedule_workflow(
             workflow_id.clone(),
             execution_priority,
             options.execution_deadline,
         ).await?;
-        
+  
         // 7. 记录指标
         let duration = start_time.elapsed().as_millis() as u64;
         self.metrics_collector.record_histogram(
@@ -1152,21 +1157,21 @@ impl HighPerformanceWorkflowEngine {
                 "workflow_type".to_string() => workflow_type.to_string(),
             },
         );
-        
+  
         Ok(workflow_id)
     }
-    
+  
     /// 执行工作流
     async fn execute_workflow(&self, workflow_id: &str) -> Result<(), Error> {
         let start_time = Instant::now();
-        
+  
         // 1. 获取分布式锁
         let lock = self.lock_manager.acquire_lock(
             &format!("workflow:{}", workflow_id),
             "executor",
             Duration::from_secs(30),
         ).await?;
-        
+  
         // 2. 加载工作流上下文
         let mut context = match self.instance_repository.load_context(workflow_id).await {
             Ok(ctx) => ctx,
@@ -1176,14 +1181,14 @@ impl HighPerformanceWorkflowEngine {
                 return Err(e);
             }
         };
-        
+  
         // 3. 检查工作流状态
         if context.state != WorkflowState::Created && context.state != WorkflowState::Running {
             // 工作流已经在运行或已完成
             drop(lock);
             return Ok(());
         }
-        
+  
         // 4. 加载工作流定义
         let definition = match self.definition_repository.get_definition(&context.definition_id).await {
             Ok(def) => def,
@@ -1193,12 +1198,12 @@ impl HighPerformanceWorkflowEngine {
                 return Err(e);
             }
         };
-        
+  
         // 5. 更新工作流状态为运行中
         if context.state == WorkflowState::Created {
             context.state = WorkflowState::Running;
             self.instance_repository.save_context(&context).await?;
-            
+  
             // 发布工作流开始事件
             self.event_bus.publish(
                 "workflow.events",
@@ -1215,7 +1220,7 @@ impl HighPerformanceWorkflowEngine {
                 }
             ).await?;
         }
-        
+  
         // 6. 确定起始节点
         let start_node = if context.execution_path.is_empty() {
             // 新工作流，从开始节点开始
@@ -1224,34 +1229,34 @@ impl HighPerformanceWorkflowEngine {
             // 恢复工作流，从上次执行的节点继续
             context.execution_path.last().cloned().unwrap_or_else(|| definition.get_start_node().unwrap())
         };
-        
+  
         // 7. 释放锁，避免长时间持有
         drop(lock);
-        
+  
         // 8. 执行工作流
         let execution_result = self.task_coordinator.execute_workflow_from_node(
             &context,
             &definition,
             &start_node,
         ).await;
-        
+  
         // 9. 重新获取锁并更新工作流状态
         let lock = self.lock_manager.acquire_lock(
             &format!("workflow:{}", workflow_id),
             "executor",
             Duration::from_secs(30),
         ).await?;
-        
+  
         // 重新加载上下文，以获取最新状态
         let mut context = self.instance_repository.load_context(workflow_id).await?;
-        
+  
         match execution_result {
             Ok(executed_to_completion) => {
                 if executed_to_completion {
                     // 工作流已完成
                     context.state = WorkflowState::Completed;
                     context.metadata.insert("completed_at".to_string(), json!(Utc::now().to_rfc3339()));
-                    
+  
                     // 发布完成事件
                     self.event_bus.publish(
                         "workflow.events",
@@ -1275,7 +1280,7 @@ impl HighPerformanceWorkflowEngine {
                 context.state = WorkflowState::Failed(e.to_string());
                 context.error_stack.push(format!("执行失败: {}", e));
                 context.metadata.insert("failed_at".to_string(), json!(Utc::now().to_rfc3339()));
-                
+  
                 // 发布失败事件
                 self.event_bus.publish(
                     "workflow.events",
@@ -1295,13 +1300,13 @@ impl HighPerformanceWorkflowEngine {
                 ).await?;
             }
         }
-        
+  
         // 保存更新后的上下文
         self.instance_repository.save_context(&context).await?;
-        
+  
         // 释放锁
         drop(lock);
-        
+  
         // 记录执行时间
         let duration = start_time.elapsed().as_millis() as u64;
         self.metrics_collector.record_histogram(
@@ -1312,7 +1317,7 @@ impl HighPerformanceWorkflowEngine {
                 "success".to_string() => (context.state == WorkflowState::Completed).to_string(),
             },
         );
-        
+  
         Ok(())
     }
 }
@@ -1321,19 +1326,19 @@ impl HighPerformanceWorkflowEngine {
 pub struct TaskCoordinator {
     /// 活动注册表
     activity_registry: Arc<ActivityRegistry>,
-    
+  
     /// 任务执行器
     task_executor: Arc<TaskExecutor>,
-    
+  
     /// 门控执行器 - 用于控制流程执行
     gateway_executor: Arc<GatewayExecutor>,
-    
+  
     /// 事件处理器
     event_handler: Arc<EventHandler>,
-    
+  
     /// 子工作流处理器
     subworkflow_handler: Arc<SubworkflowHandler>,
-    
+  
     /// 分布式追踪
     tracer: Arc<dyn Tracer>,
 }
@@ -1351,7 +1356,7 @@ impl TaskCoordinator {
             "execute_workflow",
             Some(&format!("workflow:{}", context.workflow_id)),
         );
-        
+  
         // 将span附加到执行上下文
         let exec_context = ExecutionContext {
             workflow_context: context.clone(),
@@ -1359,22 +1364,22 @@ impl TaskCoordinator {
             depth: 0,
             parent_workflow_id: None,
         };
-        
+  
         // 执行节点
         let result = self.execute_node(&exec_context, definition, node_id).await;
-        
+  
         // 完成追踪span
         if let Some(span) = exec_context.current_span {
             self.tracer.end_span(span, &result);
         }
-        
+  
         // 返回执行结果
         match result {
             Ok(complete) => Ok(complete),
             Err(e) => Err(e),
         }
     }
-    
+  
     /// 执行单个节点
     async fn execute_node(
         &self,
@@ -1384,13 +1389,13 @@ impl TaskCoordinator {
     ) -> Result<bool, Error> {
         // 获取节点定义
         let node = definition.get_node(node_id)?;
-        
+  
         // 创建节点执行span
         let span = self.tracer.create_span(
             &format!("node:{}", node_id),
             Some(&format!("workflow:{}", exec_context.workflow_context.workflow_id)),
         );
-        
+  
         // 创建子执行上下文
         let child_context = ExecutionContext {
             workflow_context: exec_context.workflow_context.clone(),
@@ -1398,7 +1403,7 @@ impl TaskCoordinator {
             depth: exec_context.depth + 1,
             parent_workflow_id: exec_context.parent_workflow_id.clone(),
         };
-        
+  
         // 根据节点类型执行不同的逻辑
         let result = match node.node_type {
             NodeType::Activity => {
@@ -1414,15 +1419,15 @@ impl TaskCoordinator {
                 self.execute_subworkflow(&child_context, definition, node_id).await
             },
         };
-        
+  
         // 完成节点执行span
         if let Some(span) = child_context.current_span {
             self.tracer.end_span(span, &result);
         }
-        
+  
         result
     }
-    
+  
     // 其他方法...
 }
 
@@ -1430,22 +1435,22 @@ impl TaskCoordinator {
 pub struct WorkflowScheduler {
     /// 高优先级队列
     high_priority_queue: Arc<WorkQueue>,
-    
+  
     /// 普通优先级队列
     normal_priority_queue: Arc<WorkQueue>,
-    
+  
     /// 低优先级队列
     low_priority_queue: Arc<WorkQueue>,
-    
+  
     /// 工作流引擎
     engine: Weak<HighPerformanceWorkflowEngine>,
-    
+  
     /// 执行线程池
     executor_pool: Arc<ThreadPool>,
-    
+  
     /// 调度策略
     scheduling_strategy: SchedulingStrategy,
-    
+  
     /// 指标收集器
     metrics_collector: Arc<dyn MetricsCollector>,
 }
@@ -1460,7 +1465,7 @@ impl WorkflowScheduler {
         let engine_weak = self.engine.clone();
         let metrics = self.metrics_collector.clone();
         let strategy = self.scheduling_strategy.clone();
-        
+  
         // 启动工作处理器
         for _ in 0..self.executor_pool.max_count() {
             let high_q = high_queue.clone();
@@ -1469,7 +1474,7 @@ impl WorkflowScheduler {
             let engine = engine_weak.clone();
             let metrics_clone = metrics.clone();
             let strategy_clone = strategy.clone();
-            
+  
             self.executor_pool.execute(move || {
                 tokio::runtime::Handle::current().block_on(async {
                     loop {
@@ -1479,19 +1484,19 @@ impl WorkflowScheduler {
                             high_q.len() as f64,
                             hashmap!{"priority".to_string() => "high".to_string()},
                         );
-                        
+  
                         metrics_clone.record_gauge(
                             "workflow.queue.size",
                             normal_q.len() as f64,
                             hashmap!{"priority".to_string() => "normal".to_string()},
                         );
-                        
+  
                         metrics_clone.record_gauge(
                             "workflow.queue.size",
                             low_q.len() as f64,
                             hashmap!{"priority".to_string() => "low".to_string()},
                         );
-                        
+  
                         // 根据调度策略选择下一个工作项
                         let next_work_item = match strategy_clone {
                             SchedulingStrategy::StrictPriority => {
@@ -1519,23 +1524,23 @@ impl WorkflowScheduler {
                             SchedulingStrategy::DynamicAdaptive { .. } => {
                                 // 动态自适应策略
                                 // 基于队列长度、等待时间等动态调整
-                                
+  
                                 // 简化实现
                                 high_q.pop().await
                                     .or_else(|| normal_q.pop().await)
                                     .or_else(|| low_q.pop().await)
                             }
                         };
-                        
+  
                         if let Some(work_item) = next_work_item {
                             // 获取强引用
                             if let Some(engine) = engine.upgrade() {
                                 let start = Instant::now();
-                                
+  
                                 if let Err(e) = engine.execute_workflow(&work_item.workflow_id).await {
                                     log::error!("执行工作流 {} 失败: {}", work_item.workflow_id, e);
                                 }
-                                
+  
                                 let duration = start.elapsed().as_millis() as u64;
                                 metrics_clone.record_histogram(
                                     "workflow.processing_time_ms",
@@ -1556,10 +1561,10 @@ impl WorkflowScheduler {
                 });
             });
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 调度工作流
     pub async fn schedule_workflow(
         &self,
@@ -1573,7 +1578,7 @@ impl WorkflowScheduler {
             created_at: Utc::now(),
             deadline,
         };
-        
+  
         // 根据优先级选择队列
         match priority {
             ExecutionPriority::High => {
@@ -1586,13 +1591,15 @@ impl WorkflowScheduler {
                 self.low_priority_queue.push(work_item).await?;
             },
         }
-        
+  
         Ok(())
     }
 }
 
 /// 执行优先级
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+
+# [derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 pub enum ExecutionPriority {
     High,
     Normal,
@@ -1600,7 +1607,9 @@ pub enum ExecutionPriority {
 }
 
 /// 工作项
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct WorkItem {
     pub workflow_id: String,
     pub priority: ExecutionPriority,
@@ -1609,18 +1618,20 @@ pub struct WorkItem {
 }
 
 /// 调度策略
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub enum SchedulingStrategy {
     /// 严格优先级策略
     StrictPriority,
-    
+  
     /// 加权公平共享
     WeightedFairShare {
         high: f32,   // 高优先级权重 (0.0-1.0)
         normal: f32, // 普通优先级权重 (0.0-1.0)
         low: f32,    // 低优先级权重 (0.0-1.0)
     },
-    
+  
     /// 动态自适应策略
     DynamicAdaptive {
         base_high: f32,    // 高优先级基础权重
@@ -1630,6 +1641,7 @@ pub enum SchedulingStrategy {
         wait_factor: f32,  // 等待时间影响因子
     },
 }
+
 ```
 
 ## 2.3 IM和Web应用的实时工作流集成
@@ -1641,16 +1653,16 @@ pub enum SchedulingStrategy {
 pub struct WebSocketServerImpl {
     /// 客户端会话
     sessions: Arc<RwLock<HashMap<String, WebSocketSession>>>,
-    
+  
     /// 工作流订阅
     workflow_subscriptions: Arc<RwLock<HashMap<String, HashSet<String>>>>,
-    
+  
     /// 会话计数
     active_sessions: AtomicUsize,
-    
+  
     /// 最大会话数
     max_sessions: usize,
-    
+  
     /// 指标收集器
     metrics: Arc<dyn MetricsCollector>,
 }
@@ -1663,37 +1675,37 @@ impl WebSocketServer for WebSocketServerImpl {
         if !sessions.contains_key(client_id) {
             return Err(Error::InvalidClient(format!("客户端 {} 不存在", client_id)));
         }
-        
+  
         // 2. 注册工作流订阅
         drop(sessions); // 释放读锁
-        
+  
         let mut subs = self.workflow_subscriptions.write().unwrap();
         subs.entry(workflow_id.to_string())
             .or_insert_with(HashSet::new)
             .insert(client_id.to_string());
-        
+  
         // 3. 记录指标
         self.metrics.increment_counter(
             "websocket.workflow_subscriptions",
             1,
             hashmap!{},
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn send_to_client(&self, client_id: &str, event: &Event) -> Result<(), Error> {
         // 1. 获取客户端会话
         let sessions = self.sessions.read().unwrap();
         let session = sessions.get(client_id)
             .ok_or_else(|| Error::InvalidClient(format!("客户端 {} 不存在", client_id)))?;
-        
+  
         // 2. 序列化事件
         let message = serde_json::to_string(event)?;
-        
+  
         // 3. 发送消息
         session.send_message(&message).await?;
-        
+  
         // 4. 记录指标
         self.metrics.increment_counter(
             "websocket.messages_sent",
@@ -1702,30 +1714,30 @@ impl WebSocketServer for WebSocketServerImpl {
                 "event_type".to_string() => event.event_type.clone(),
             },
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn broadcast_to_workflow(&self, workflow_id: &str, event: &Event) -> Result<(), Error> {
         // 1. 获取订阅此工作流的客户端
         let subs = self.workflow_subscriptions.read().unwrap();
         let clients = subs.get(workflow_id)
             .cloned() // 克隆集合避免长时间持有锁
             .unwrap_or_default();
-        
+  
         drop(subs); // 释放读锁
-        
+  
         if clients.is_empty() {
             return Ok(());
         }
-        
+  
         // 2. 序列化事件（只做一次）
         let message = serde_json::to_string(event)?;
-        
+  
         // 3. 向所有客户端广播
         let sessions = self.sessions.read().unwrap();
         let mut sent_count = 0;
-        
+  
         for client_id in clients {
             if let Some(session) = sessions.get(&client_id) {
                 if let Err(e) = session.send_message(&message).await {
@@ -1735,7 +1747,7 @@ impl WebSocketServer for WebSocketServerImpl {
                 }
             }
         }
-        
+  
         // 4. 记录指标
         self.metrics.increment_counter(
             "websocket.broadcast_messages",
@@ -1745,16 +1757,16 @@ impl WebSocketServer for WebSocketServerImpl {
                 "event_type".to_string() => event.event_type.clone(),
             },
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn get_active_clients_count(&self, workflow_id: &str) -> Result<usize, Error> {
         let subs = self.workflow_subscriptions.read().unwrap();
         let count = subs.get(workflow_id)
             .map(|clients| clients.len())
             .unwrap_or(0);
-        
+  
         Ok(count)
     }
 }
@@ -1770,7 +1782,7 @@ impl WebSocketServerImpl {
             metrics,
         }
     }
-    
+  
     /// 处理新的WebSocket连接
     pub async fn handle_connection(&self, socket: WebSocket, client_id: String) -> Result<(), Error> {
         // 1. 检查是否超过最大会话数
@@ -1778,7 +1790,7 @@ impl WebSocketServerImpl {
         if current_sessions >= self.max_sessions {
             return Err(Error::ResourceLimitExceeded("超过最大WebSocket会话数".into()));
         }
-        
+  
         // 2. 创建会话
         let (tx, rx) = socket.split();
         let session = WebSocketSession {
@@ -1787,48 +1799,48 @@ impl WebSocketServerImpl {
             created_at: Utc::now(),
             last_activity: Arc::new(AtomicI64::new(Utc::now().timestamp())),
         };
-        
+  
         // 3. 存储会话
         {
             let mut sessions = self.sessions.write().unwrap();
             sessions.insert(client_id.clone(), session);
         }
-        
+  
         // 4. 增加会话计数
         self.active_sessions.fetch_add(1, Ordering::Relaxed);
-        
+  
         // 5. 处理接收消息
         let sessions_weak = Arc::downgrade(&self.sessions);
         let subscriptions_weak = Arc::downgrade(&self.workflow_subscriptions);
         let client_id_clone = client_id.clone();
         let metrics = self.metrics.clone();
-        
+  
         tokio::spawn(async move {
             Self::process_incoming_messages(
-                rx, 
-                client_id_clone, 
+                rx,
+                client_id_clone,
                 sessions_weak,
                 subscriptions_weak,
                 metrics,
             ).await;
         });
-        
+  
         // 6. 记录指标
         self.metrics.increment_counter(
             "websocket.connections",
             1,
             hashmap!{},
         );
-        
+  
         self.metrics.record_gauge(
             "websocket.active_connections",
             self.active_sessions.load(Ordering::Relaxed) as f64,
             hashmap!{},
         );
-        
+  
         Ok(())
     }
-    
+  
     /// 处理传入的WebSocket消息
     async fn process_incoming_messages(
         mut receiver: SplitStream<WebSocket>,
@@ -1849,7 +1861,7 @@ impl WebSocketServerImpl {
                             );
                         }
                     }
-                    
+  
                     // 处理消息
                     match msg {
                         Message::Text(text) => {
@@ -1862,7 +1874,7 @@ impl WebSocketServerImpl {
                                             subs_write.entry(workflow_id.clone())
                                                 .or_insert_with(HashSet::new)
                                                 .insert(client_id.clone());
-                                                
+  
                                             metrics.increment_counter(
                                                 "websocket.subscriptions",
                                                 1,
@@ -1893,7 +1905,7 @@ impl WebSocketServerImpl {
                                     },
                                 }
                             }
-                            
+  
                             metrics.increment_counter(
                                 "websocket.messages_received",
                                 1,
@@ -1924,11 +1936,11 @@ impl WebSocketServerImpl {
                 }
             }
         }
-        
+  
         // 连接已关闭，清理资源
         Self::cleanup_connection(client_id, sessions, subscriptions, metrics).await;
     }
-    
+  
     /// 清理关闭的连接
     async fn cleanup_connection(
         client_id: String,
@@ -1942,7 +1954,7 @@ impl WebSocketServerImpl {
                 let mut sessions_write = sessions.write().unwrap();
                 sessions_write.remove(&client_id).is_some()
             };
-            
+  
             if removed {
                 metrics.decrement_counter(
                     "websocket.active_connections",
@@ -1951,18 +1963,18 @@ impl WebSocketServerImpl {
                 );
             }
         }
-        
+  
         // 移除订阅
         if let Some(subs) = subscriptions.upgrade() {
             let mut subs_write = subs.write().unwrap();
             for clients in subs_write.values_mut() {
                 clients.remove(&client_id);
             }
-            
+  
             // 移除空的订阅集合
             subs_write.retain(|_, clients| !clients.is_empty());
         }
-        
+  
         log::debug!("已清理WebSocket连接: {}", client_id);
     }
 }
@@ -1985,13 +1997,17 @@ impl WebSocketSession {
 }
 
 /// WebSocket命令
-#[derive(Debug, Deserialize)]
-#[serde(tag = "type", rename_all = "camelCase")]
+
+# [derive(Debug, Deserialize)]
+
+# [serde(tag = "type", rename_all = "camelCase")]
+
 enum WebSocketCommand {
     Subscribe { workflow_id: String },
     Unsubscribe { workflow_id: String },
     Ping,
 }
+
 ```
 
 ### 2.3.2 2. IM应用集成
@@ -2001,16 +2017,16 @@ enum WebSocketCommand {
 pub struct IMWorkflowIntegration {
     /// 工作流引擎
     workflow_engine: Arc<HighPerformanceWorkflowEngine>,
-    
+  
     /// WebSocket服务器
     websocket_server: Arc<dyn WebSocketServer>,
-    
+  
     /// 消息总线
     message_bus: Arc<dyn MessageBus>,
-    
+  
     /// 用户状态管理器
     user_status_manager: Arc<UserStatusManager>,
-    
+  
     /// IM配置
     config: IMIntegrationConfig,
 }
@@ -2032,21 +2048,21 @@ impl IMWorkflowIntegration {
             config,
         }
     }
-    
+  
     /// 初始化IM工作流集成
     pub async fn initialize(&self) -> Result<(), Error> {
         // 1. 注册IM特定活动类型
         self.register_im_activities().await?;
-        
+  
         // 2. 订阅IM相关事件
         self.subscribe_to_im_events().await?;
-        
+  
         // 3. 启动定期状态同步
         self.start_status_sync()?;
-        
+  
         Ok(())
     }
-    
+  
     /// 注册IM特定活动类型
     async fn register_im_activities(&self) -> Result<(), Error> {
         // 注册发送消息活动
@@ -2054,36 +2070,36 @@ impl IMWorkflowIntegration {
             self.message_bus.clone(),
             self.user_status_manager.clone(),
         );
-        
+  
         // 注册群组消息活动
         let group_message_activity = GroupMessageActivity::new(
             self.message_bus.clone(),
         );
-        
+  
         // 注册用户状态活动
         let user_status_activity = UserStatusActivity::new(
             self.user_status_manager.clone(),
         );
-        
+  
         // 向工作流引擎注册活动
         activity_registry::register(Box::new(send_message_activity))?;
         activity_registry::register(Box::new(group_message_activity))?;
         activity_registry::register(Box::new(user_status_activity))?;
-        
+  
         Ok(())
     }
-    
+  
     /// 订阅IM相关事件
     async fn subscribe_to_im_events(&self) -> Result<(), Error> {
         // 订阅新消息事件
         let engine = self.workflow_engine.clone();
         self.message_bus.subscribe("im.message.new", Box::new(move |event| {
             let engine_clone = engine.clone();
-            
+  
             async move {
                 // 提取消息数据
                 let message_data = event.data.clone();
-                
+  
                 // 检查是否需要触发工作流
                 if let Some(trigger_config) = message_data.get("trigger_workflow") {
                     if let Some(workflow_type) = trigger_config.get("type").and_then(|v| v.as_str()) {
@@ -2092,7 +2108,7 @@ impl IMWorkflowIntegration {
                             "message": message_data,
                             "metadata": event.metadata,
                         });
-                        
+  
                         let options = StartWorkflowOptions {
                             workflow_id: None,
                             created_by: message_data.get("sender_id").and_then(|v| v.as_str()).map(|s| s.to_string()),
@@ -2100,26 +2116,26 @@ impl IMWorkflowIntegration {
                             priority: Some(ExecutionPriority::High), // 消息处理通常为高优先级
                             execution_deadline: None,
                         };
-                        
+  
                         if let Err(e) = engine_clone.start_workflow(workflow_type, input_data, options).await {
                             log::error!("触发消息工作流失败: {}", e);
                         }
                     }
                 }
-                
+  
                 Ok(())
             }
         })).await?;
-        
+  
         // 订阅用户状态变更事件
         let engine = self.workflow_engine.clone();
         self.message_bus.subscribe("im.user.status_changed", Box::new(move |event| {
             let engine_clone = engine.clone();
-            
+  
             async move {
                 // 提取用户状态数据
                 let status_data = event.data.clone();
-                
+  
                 // 如果是上线事件，可能需要处理离线期间累积的工作流通知
                 if let Some(status) = status_data.get("status").and_then(|v| v.as_str()) {
                     if status == "online" {
@@ -2129,7 +2145,7 @@ impl IMWorkflowIntegration {
                                 "user_id": user_id,
                                 "status_change": status_data,
                             });
-                            
+  
                             let options = StartWorkflowOptions {
                                 workflow_id: None,
                                 created_by: Some(user_id.to_string()),
@@ -2137,10 +2153,10 @@ impl IMWorkflowIntegration {
                                 priority: Some(ExecutionPriority::Normal),
                                 execution_deadline: None,
                             };
-                            
+  
                             if let Err(e) = engine_clone.start_workflow(
-                                "offline_notification_processor", 
-                                input_data, 
+                                "offline_notification_processor",
+                                input_data,
                                 options
                             ).await {
                                 log::error!("启动离线通知处理工作流失败: {}", e);
@@ -2148,33 +2164,33 @@ impl IMWorkflowIntegration {
                         }
                     }
                 }
-                
+  
                 Ok(())
             }
         })).await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 启动定期状态同步
     fn start_status_sync(&self) -> Result<(), Error> {
         let sync_interval = self.config.status_sync_interval;
         let engine = self.workflow_engine.clone();
         let user_manager = self.user_status_manager.clone();
-        
+  
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(sync_interval);
-            
+  
             loop {
                 interval.tick().await;
-                
+  
                 // 获取活跃工作流和活跃用户
                 let active_workflows = engine.get_active_workflows().await
                     .unwrap_or_else(|_| Vec::new());
-                
+  
                 let active_users = user_manager.get_active_users().await
                     .unwrap_or_else(|_| Vec::new());
-                
+  
                 // 为每个活跃用户同步相关工作流状态
                 for user_id in active_users {
                     // 找出与该用户相关的工作流
@@ -2185,7 +2201,7 @@ impl IMWorkflowIntegration {
                                 .map_or(false, |id| id == user_id)
                         })
                         .collect();
-                    
+  
                     if !user_workflows.is_empty() {
                         if let Err(e) = user_manager.sync_workflow_status(&user_id, &user_workflows).await {
                             log::error!("同步用户 {} 的工作流状态失败: {}", user_id, e);
@@ -2194,10 +2210,10 @@ impl IMWorkflowIntegration {
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     /// 处理新消息
     pub async fn handle_new_message(&self, message: IMMessage) -> Result<(), Error> {
         // 1. 检查消息是否包含工作流命令
@@ -2211,7 +2227,7 @@ impl IMWorkflowIntegration {
                         "chat_id": message.chat_id,
                         "params": params,
                     });
-                    
+  
                     let options = StartWorkflowOptions {
                         workflow_id: None,
                         created_by: Some(message.sender_id.clone()),
@@ -2223,13 +2239,13 @@ impl IMWorkflowIntegration {
                         priority: Some(ExecutionPriority::High),
                         execution_deadline: None,
                     };
-                    
+  
                     let workflow_id = self.workflow_engine.start_workflow(
-                        &workflow_type, 
-                        input_data, 
+                        &workflow_type,
+                        input_data,
                         options
                     ).await?;
-                    
+  
                     // 发送确认消息
                     let confirm_message = IMMessage {
                         id: Uuid::new_v4().to_string(),
@@ -2239,7 +2255,7 @@ impl IMWorkflowIntegration {
                         timestamp: Utc::now(),
                         metadata: json!({}),
                     };
-                    
+  
                     self.message_bus.publish(
                         "im.message.new",
                         &Event {
@@ -2266,7 +2282,7 @@ impl IMWorkflowIntegration {
                                 timestamp: Utc::now(),
                                 metadata: json!({}),
                             };
-                            
+  
                             self.message_bus.publish(
                                 "im.message.new",
                                 &Event {
@@ -2290,7 +2306,7 @@ impl IMWorkflowIntegration {
                                 timestamp: Utc::now(),
                                 metadata: json!({}),
                             };
-                            
+  
                             self.message_bus.publish(
                                 "im.message.new",
                                 &Event {
@@ -2309,10 +2325,10 @@ impl IMWorkflowIntegration {
                 // 其他命令...
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 提取工作流命令
     fn extract_workflow_command(&self, content: &str) -> Option<WorkflowCommand> {
         // 简单的命令解析逻辑
@@ -2324,17 +2340,17 @@ impl IMWorkflowIntegration {
                     "start" => {
                         let workflow_type = parts[2].to_string();
                         let mut params = json!({});
-                        
+  
                         // 解析参数
                         for i in 3..parts.len() {
                             if let Some((key, value)) = parts[i].split_once('=') {
                                 params[key] = value.into();
                             }
                         }
-                        
-                        return Some(WorkflowCommand::Start { 
-                            workflow_type, 
-                            params, 
+  
+                        return Some(WorkflowCommand::Start {
+                            workflow_type,
+                            params,
                         });
                     },
                     "status" => {
@@ -2346,13 +2362,15 @@ impl IMWorkflowIntegration {
                 }
             }
         }
-        
+  
         None
     }
 }
 
 /// IM消息结构
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct IMMessage {
     pub id: String,
     pub chat_id: String,
@@ -2363,7 +2381,9 @@ pub struct IMMessage {
 }
 
 /// 工作流命令
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 enum WorkflowCommand {
     Start { workflow_type: String, params: Value },
     Status { workflow_id: String },
@@ -2371,13 +2391,16 @@ enum WorkflowCommand {
 }
 
 /// IM集成配置
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct IMIntegrationConfig {
     pub status_sync_interval: Duration,
     pub enable_commands: bool,
     pub max_active_workflows_per_user: usize,
     pub workflow_activity_timeout: Duration,
 }
+
 ```
 
 ### 2.3.3 3. Web应用集成
@@ -2387,16 +2410,16 @@ pub struct IMIntegrationConfig {
 pub struct WebAppWorkflowIntegration {
     /// 工作流引擎
     workflow_engine: Arc<HighPerformanceWorkflowEngine>,
-    
+  
     /// WebSocket服务器
     websocket_server: Arc<dyn WebSocketServer>,
-    
+  
     /// Web应用事件总线
     event_bus: Arc<dyn HighPerformanceEventBus>,
-    
+  
     /// 会话管理器
     session_manager: Arc<SessionManager>,
-    
+  
     /// Web集成配置
     config: WebIntegrationConfig,
 }
@@ -2406,16 +2429,16 @@ impl WebAppWorkflowIntegration {
     pub async fn initialize(&self) -> Result<(), Error> {
         // 1. 注册Web应用特定活动
         self.register_web_activities().await?;
-        
+  
         // 2. 创建实时更新处理器
         self.setup_realtime_updates().await?;
-        
+  
         // 3. 集成单页应用状态管理
         self.integrate_spa_state().await?;
-        
+  
         Ok(())
     }
-    
+  
     /// 将工作流绑定到Web会话
     pub async fn bind_workflow_to_session(
         &self,
@@ -2424,17 +2447,17 @@ impl WebAppWorkflowIntegration {
     ) -> Result<(), Error> {
         // 1. 验证会话
         let session = self.session_manager.get_session(session_id).await?;
-        
+  
         // 2. 验证工作流
         let workflow = self.workflow_engine.get_workflow_status(workflow_id).await?;
-        
+  
         // 3. 建立绑定
         self.session_manager.add_workflow_binding(
-            session_id, 
+            session_id,
             workflow_id,
             &workflow.definition_id,
         ).await?;
-        
+  
         // 4. 建立WebSocket订阅
         if let Some(client_id) = session.websocket_client_id {
             self.websocket_server.register_client_for_workflow(
@@ -2442,10 +2465,10 @@ impl WebAppWorkflowIntegration {
                 workflow_id,
             ).await?;
         }
-        
+  
         // 5. 发送当前工作流状态
         let current_state = serde_json::to_value(&workflow)?;
-        
+  
         self.websocket_server.broadcast_to_workflow(
             workflow_id,
             &Event {
@@ -2458,11 +2481,12 @@ impl WebAppWorkflowIntegration {
                 }),
             }
         ).await?;
-        
+  
         Ok(())
     }
-    
+  
     ///
+
 # 3 3 3 3 3 3 3 Rust工作流架构的高性能持久化与实时集群系统扩展（续）
 
 ## 3.1 Web应用集成（续）
@@ -2822,6 +2846,7 @@ pub struct WebIntegrationConfig {
     pub enable_realtime_updates: bool,
     pub max_concurrent_form_submissions: usize,
 }
+
 ```
 
 ## 3.2 综合架构评估与权衡
@@ -3007,6 +3032,7 @@ impl OptimizedPersistenceManager {
         }
     }
 }
+
 ```
 
 ### 3.3.2 2. 实时集群系统优化
@@ -3105,6 +3131,7 @@ impl OptimizedWebSocketManager {
         });
     }
 }
+
 ```
 
 ### 3.3.3 3. 高性能调度系统
@@ -3184,6 +3211,7 @@ impl AdaptiveWorkflowScheduler {
         Ok(processed)
     }
 }
+
 ```
 
 ## 3.4 总结

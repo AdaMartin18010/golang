@@ -54,19 +54,6 @@
   - [11.5.1.16 参考资料](#参考资料)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.5.1.1 目录
 
 1. [概述](#1-概述)
@@ -125,6 +112,7 @@ $$C = \{c_i | c_i = (Tasks_i, Resources_i, Synchronization_i)\}$$
 │   ├── 无锁算法
 │   ├── Actor模型
 │   └── Future/Promise
+
 ```
 
 ## 11.5.1.3 2. CSP模型与Golang并发原语
@@ -247,6 +235,7 @@ func selectExample() {
         }
     }
 }
+
 ```
 
 ## 11.5.1.4 3. Worker Pool模式
@@ -387,6 +376,7 @@ func (t *SimpleTask) Execute() (interface{}, error) {
 func (t *SimpleTask) GetID() string {
     return t.id
 }
+
 ```
 
 ## 11.5.1.5 4. Pipeline模式
@@ -526,6 +516,7 @@ func ExamplePipeline() {
         fmt.Printf("Result: %d\n", result)
     }
 }
+
 ```
 
 ## 11.5.1.6 5. Fan-Out/Fan-In模式
@@ -652,6 +643,7 @@ func ExampleFanOutFanIn() {
         fmt.Printf("Final result: %d\n", value)
     }
 }
+
 ```
 
 ## 11.5.1.7 6. 生产者-消费者模式
@@ -774,6 +766,7 @@ func ExampleProducerConsumer() {
     time.Sleep(5 * time.Second)
     pc.Stop()
 }
+
 ```
 
 ## 11.5.1.8 7. 读者-写者模式
@@ -867,6 +860,7 @@ func ExampleReaderWriter() {
     
     wg.Wait()
 }
+
 ```
 
 ## 11.5.1.9 8. 哲学家进餐问题
@@ -1005,6 +999,7 @@ func ExampleDiningPhilosophers() {
     wg.Wait()
     fmt.Println("All philosophers finished dining")
 }
+
 ```
 
 ## 11.5.1.10 9. 无锁算法
@@ -1110,6 +1105,7 @@ func (s *LockFreeStack[T]) Pop() (T, bool) {
 func (s *LockFreeStack[T]) IsEmpty() bool {
  return atomic.LoadPointer(&s.head) == nil
 }
+
 ```
 
 ### 11.5.1.10.3 无锁队列的Golang实现
@@ -1217,6 +1213,7 @@ func (q *LockFreeQueue[T]) IsEmpty() bool {
   }
  }
 }
+
 ```
 
 ### 11.5.1.10.4 无锁算法的形式化性质
@@ -1449,6 +1446,7 @@ func ExampleActorSystem() {
  // 停止Actor
  printActor.Stop()
 }
+
 ```
 
 ### 11.5.1.11.3 Actor模型核心特性
@@ -1696,6 +1694,7 @@ func ExampleFuturePromise() {
         fmt.Printf("Result: %d\n", result2)
     }
 }
+
 ```
 
 ## 11.5.1.13 12. 模式关系分析
@@ -1712,6 +1711,7 @@ graph TD
     K[无锁算法] --> L[高性能同步]
     M[Actor模型] --> N[消息传递]
     O[Future/Promise] --> P[异步计算]
+
 ```
 
 ### 11.5.1.13.2 模式选择指南
@@ -1781,7 +1781,7 @@ graph TD
 
 ---
 
-*本文档提供了Golang并发模式的完整分析，包括形式化定义、实现示例和最佳实践。*
+* 本文档提供了Golang并发模式的完整分析，包括形式化定义、实现示例和最佳实践。*
 
 ## 11.5.1.16 参考资料
 

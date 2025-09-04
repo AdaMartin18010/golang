@@ -15,19 +15,6 @@
     - [1.2.9 10. 使用示例](#10-使用示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面是一个使用 Tokio 实现的多线程组合模式组件示例，支持 MQTT 消息订阅和命令模式：
 
 ## 1.1 目录
@@ -58,6 +45,7 @@ serde_json = "1.0"
 anyhow = "1.0"
 tracing = "0.1"
 uuid = { version = "1.0", features = ["v4"] }
+
 ```
 
 ### 1.2.1 2. 组件接口定义
@@ -85,6 +73,7 @@ pub trait MessageHandler: Send + Sync {
 pub trait CommandHandler: Send + Sync {
     async fn execute(&self, command: Command) -> anyhow::Result<()>;
 }
+
 ```
 
 ### 1.2.2 3. 基础组件实现
@@ -151,6 +140,7 @@ impl Component for BaseComponent {
         &self.id
     }
 }
+
 ```
 
 ### 1.2.3 4. MQTT 组件实现
@@ -238,6 +228,7 @@ impl Component for MqttComponent {
 
     // ... other Component trait implementations
 }
+
 ```
 
 ### 1.2.4 5. 命令处理器实现
@@ -304,6 +295,7 @@ impl CommandProcessor {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.5 6. 消息处理器实现
@@ -338,6 +330,7 @@ impl MessageProcessor {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.6 7. 组合组件实现
@@ -423,6 +416,7 @@ impl Component for CompositeComponent {
 
     // ... other Component trait implementations
 }
+
 ```
 
 ### 1.2.7 8. 自定义消息处理器示例
@@ -440,6 +434,7 @@ impl MessageHandler for CustomMessageHandler {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.8 9. 自定义命令处理器示例
@@ -462,6 +457,7 @@ impl CommandHandler for CustomCommandHandler {
         }
     }
 }
+
 ```
 
 ### 1.2.9 10. 使用示例
@@ -518,6 +514,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个完整的示例展示了如何：

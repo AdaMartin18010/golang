@@ -18,19 +18,6 @@
   - [1.5 6. 总结](#6-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`Weak` 智能指针是与 `Rc` 和 `Arc` 结合使用的，用于避免循环引用的问题。
 以下是 `Weak` 的实现原理以及 `upgrade` 和 `downgrade` 方法的区别。
 
@@ -69,6 +56,7 @@ if let Some(strong_again) = weak.upgrade() {
 } else {
     println!("The data has been dropped.");
 }
+
 ```
 
 #### 1.1.1.2 `downgrade`
@@ -86,6 +74,7 @@ let strong = Rc::new(5);
 let weak: Weak<i32> = Rc::downgrade(&strong); // 创建 Weak 引用
 
 println!("Strong reference count: {}", Rc::strong_count(&strong)); // 输出 1
+
 ```
 
 ### 1.1.2 总结
@@ -168,6 +157,7 @@ fn main() {
     // 等待线程完成
     handle.join().unwrap();
 }
+
 ```
 
 ### 1.2.3 代码解释
@@ -255,6 +245,7 @@ fn main() {
         }
     }
 }
+
 ```
 
 ## 1.4 5. 代码解释

@@ -15,19 +15,6 @@
   - [1.11 10. 测试实现](#10-测试实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个使用 Rust 2024 + Hyper 实现的完整 HTTP 客户端和服务端项目，包含各种高级特性。
 
 ## 1.1 目录
@@ -66,6 +53,7 @@ async-trait = "0.1"
 backoff = { version = "0.4", features = ["tokio"] }
 metrics = "0.21"
 metrics-exporter-prometheus = "0.12"
+
 ```
 
 ## 1.3 2. HTTP 客户端实现
@@ -80,6 +68,7 @@ pub struct HttpClient {
     client: hyper_util::client::legacy::Client<
         hyper_util::client::legacy::connect::HttpConnector,
         http_body_util::Full<bytes::Bytes>,
+
     >,
     retry_config: RetryConfig,
     timeout: Duration,
@@ -186,6 +175,7 @@ impl HttpClient {
         self.request(req).await
     }
 }
+
 ```
 
 ## 1.4 3. HTTP 服务端实现
@@ -306,6 +296,7 @@ impl tower::Service<Request<hyper::body::Incoming>> for Router {
         })
     }
 }
+
 ```
 
 ## 1.5 4. 中间件实现
@@ -398,6 +389,7 @@ where
         })
     }
 }
+
 ```
 
 ## 1.6 5. 任务管理器实现
@@ -479,6 +471,7 @@ impl TaskManager {
             .map(|handle| handle.status.load())
     }
 }
+
 ```
 
 ## 1.7 6. 示例处理器实现
@@ -531,6 +524,7 @@ impl UserHandler {
             .body(serde_json::to_vec(&user)?.into())?)
     }
 }
+
 ```
 
 ## 1.8 7. 错误处理实现
@@ -578,6 +572,7 @@ impl From<Error> for Response<Bytes> {
             .unwrap()
     }
 }
+
 ```
 
 ## 1.9 8. 指标收集实现
@@ -637,6 +632,7 @@ impl Metrics {
         self.active_tasks.set(count as f64);
     }
 }
+
 ```
 
 ## 1.10 9. 主程序实现
@@ -677,6 +673,7 @@ async fn main() -> Result<(), Error> {
 
     Ok(())
 }
+
 ```
 
 ## 1.11 10. 测试实现
@@ -718,6 +715,7 @@ mod tests {
         Ok(())
     }
 }
+
 ```
 
 这个完整的示例展示了如何构建一个功能完整的 HTTP 客户端和服务端项目，包括：

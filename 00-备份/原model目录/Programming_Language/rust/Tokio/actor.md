@@ -25,6 +25,7 @@ futures = "0.3"
 dashmap = "5.5"
 parking_lot = "0.12"
 tracing = "0.1"
+
 ```
 
 ## 2. Actor 基础结构实现
@@ -89,6 +90,7 @@ pub trait DataStructureActor<T>: Actor {
     async fn remove(&mut self, item: T) -> Result<(), ActorError>;
     async fn contains(&self, item: &T) -> Result<bool, ActorError>;
 }
+
 ```
 
 ### 3. 树结构 Actor 实现
@@ -192,6 +194,7 @@ impl<T: Ord> BinaryTreeActor<T> {
         }
     }
 }
+
 ```
 
 ### 4. 图结构 Actor 实现
@@ -299,6 +302,7 @@ impl<T: Eq> GraphActor<T> {
         }
     }
 }
+
 ```
 
 ### 5. 排序算法 Actor 实现
@@ -360,6 +364,7 @@ impl<T: Ord> SortingActor<T> {
         }
     }
 }
+
 ```
 
 ### 6. 搜索算法 Actor 实现
@@ -424,6 +429,7 @@ impl<T: Ord> SearchActor<T> {
         }
     }
 }
+
 ```
 
 ### 7. 主程序实现
@@ -475,6 +481,7 @@ async fn main() -> Result<(), ActorError> {
     system.run()?;
     Ok(())
 }
+
 ```
 
 这个实现提供了以下特性：

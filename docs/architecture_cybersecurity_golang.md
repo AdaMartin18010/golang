@@ -218,6 +218,7 @@ classDiagram
     +float Value
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -252,6 +253,7 @@ sequenceDiagram
   AL->>TA: 自动响应
   E->>L: 日志记录
   D->>C: 合规审计
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -354,6 +356,7 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
+
 ```
 
 ---
@@ -442,6 +445,7 @@ graph TD
   TA --> E
   EN --> AS
   EN --> E
+
 ```
 
 ### 5.5 Golang代码示例
@@ -450,6 +454,7 @@ graph TD
 // 告警数量Prometheus监控
 var alertCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "alert_total"})
 alertCount.Set(1000000)
+
 ```
 
 ---
@@ -482,6 +487,7 @@ cybersecurity-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -508,6 +514,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

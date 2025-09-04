@@ -31,19 +31,6 @@
   - [1.6 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 1. [加密与认证](#加密与认证)
@@ -105,6 +92,7 @@ func (cs *CryptoService) Decrypt(data []byte) ([]byte, error) {
     nonce, ciphertext := data[:nonceSize], data[nonceSize:]
     return gcm.Open(nil, nonce, ciphertext, nil)
 }
+
 ```
 
 #### 1.2.1.2 哈希函数
@@ -140,6 +128,7 @@ func VerifyPassword(password, hashedPassword string) bool {
     testHash := pbkdf2.Key([]byte(password), salt, 10000, 32, sha256.New)
     return bytes.Equal(hash, testHash)
 }
+
 ```
 
 ### 1.2.2 JWT认证
@@ -202,6 +191,7 @@ func (jas *JWTAuthService) ValidateToken(tokenString string) (*Claims, error) {
     
     return nil, fmt.Errorf("invalid token")
 }
+
 ```
 
 #### 1.2.2.2 中间件
@@ -238,6 +228,7 @@ func (jas *JWTAuthService) AuthMiddleware() gin.HandlerFunc {
         c.Next()
     }
 }
+
 ```
 
 ## 1.3 安全编码规范
@@ -292,6 +283,7 @@ func (v *Validator) ValidateUsername(username string) error {
     
     return nil
 }
+
 ```
 
 #### 1.3.1.2 SQL注入防护
@@ -344,6 +336,7 @@ func (sdb *SecureDB) SearchUsers(searchTerm string) ([]*User, error) {
     
     return users, nil
 }
+
 ```
 
 ### 1.3.2 XSS防护
@@ -377,6 +370,7 @@ func (xp *XSSProtector) ValidateURL(url string) error {
     
     return nil
 }
+
 ```
 
 ## 1.4 漏洞防护
@@ -417,6 +411,7 @@ func (ptp *PathTraversalProtector) SafeReadFile(path string) ([]byte, error) {
     
     return os.ReadFile(path)
 }
+
 ```
 
 #### 1.4.1.2 命令注入防护
@@ -471,6 +466,7 @@ func (cip *CommandInjectionProtector) SafeExecuteCommand(command string) ([]byte
     cmd := exec.Command("sh", "-c", command)
     return cmd.Output()
 }
+
 ```
 
 ### 1.4.2 内存安全
@@ -505,6 +501,7 @@ func (bs *BufferSecurity) ValidateStringLength(s string, maxLength int) error {
     
     return nil
 }
+
 ```
 
 ## 1.5 安全审计
@@ -545,6 +542,7 @@ func (sl *SecurityLogger) LogSuspiciousActivity(userID, activity, details string
 func (sl *SecurityLogger) LogDataAccess(userID, dataType, operation string) {
     sl.logger.Printf("DATA_ACCESS user_id=%s data_type=%s operation=%s", userID, dataType, operation)
 }
+
 ```
 
 #### 1.5.1.2 审计追踪
@@ -602,6 +600,7 @@ func (at *AuditTrail) GetUserEvents(userID string, limit int) ([]*AuditEvent, er
     
     return events, nil
 }
+
 ```
 
 ### 1.5.2 安全监控
@@ -659,6 +658,7 @@ func (ad *AnomalyDetector) IsAccountLocked(userID string) bool {
     failedCount := ad.failedLogins[userID]
     return failedCount >= 5
 }
+
 ```
 
 ## 1.6 总结

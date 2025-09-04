@@ -38,19 +38,6 @@
   - [1.9 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 类型代数是一种用于描述和操作类型系统的代数结构，
 它将类型视为代数中的值，并通过一系列代数运算符来构造更复杂的类型。
 类型代数的核心在于通过数学化的形式来描述类型之间的组合关系，
@@ -110,6 +97,7 @@ struct Point {
     x: i32,
     y: i32,
 }
+
 ```
 
 ### 1.2.2 数学解释
@@ -134,6 +122,7 @@ enum Shape {
     Circle(f64), // 圆的半径
     Rectangle(f64, f64), // 矩形的宽和高
 }
+
 ```
 
 ### 1.3.2 数学解释
@@ -160,6 +149,7 @@ fn add_one(x: i32) -> i32 {
 fn bool_to_i32(b: bool) -> i32 {
     if b { 1 } else { 0 }
 }
+
 ```
 
 ### 1.4.2 数学解释
@@ -197,6 +187,7 @@ fn main() {
     let result = do_nothing();
     println!("{:?}", result); // 输出：()
 }
+
 ```
 
 说明
@@ -218,6 +209,7 @@ fn never_return() -> ! {
     // 这个函数会导致程序崩溃
     panic!("This function never returns!");
 }
+
 ```
 
 说明
@@ -276,6 +268,7 @@ fn main() {
     // 获取数组的长度
     println!("Array length: {}", arr.length()); // 输出：Array length: 3
 }
+
 ```
 
 说明
@@ -329,6 +322,7 @@ fn main() {
     let ds = create_dependent_sum(42);
     println!("Value: {}, Dependent Value: {}", ds.value, ds.dependent_value);
 }
+
 ```
 
 说明
@@ -364,6 +358,7 @@ fn main() {
         println!("{}", result);
     }
 }
+
 ```
 
 说明
@@ -428,6 +423,7 @@ fn add_one(x: i32) -> i32 {
 fn bool_to_i32(b: bool) -> i32 {
     if b { 1 } else { 0 }
 }
+
 ```
 
 在这里，`add_one` 是一个从 `i32` 到 `i32` 的函数，`bool_to_i32` 是一个从 `bool` 到 `i32` 的函数。

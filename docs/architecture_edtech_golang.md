@@ -50,6 +50,7 @@ classDiagram
   Teacher --> Course
   Course --> LearningResource
   LearningRecord --> Assessment
+
 ```
 
 ## 1.5 典型数据流与时序图
@@ -68,6 +69,7 @@ sequenceDiagram
   Student->>Record: 记录学习行为
   Record->>Assessment: 自动评测
   Assessment->>Student: 反馈结果
+
 ```
 
 ## 1.6 Golang领域模型代码示例
@@ -86,6 +88,7 @@ sequenceDiagram
    ID    string
    Title string
  }
+
 ```
 
 ## 1.7 分布式系统挑战
@@ -103,6 +106,7 @@ graph TD
   Course-->LearningResource
   LearningRecord-->Assessment
   LearningRecord-->AI[AI推荐]
+
 ```
 
 - 关键代码：Golang实现LTI/xAPI接口、学习行为采集、评测自动化。

@@ -378,6 +378,7 @@ func (ps *PlanningSystem) PlanPath(perceptionData *PerceptionData, vehicleState 
         Timestamp:     time.Now(),
     }, nil
 }
+
 ```
 
 ### 2.2 传感器融合架构
@@ -577,6 +578,7 @@ func (ekf *ExtendedKalmanFilter) calculateKalmanGain(predictedCovariance *Matrix
     
     return kalmanGain, nil
 }
+
 ```
 
 ## 3. 控制系统
@@ -740,6 +742,7 @@ func (sa *SteeringActuator) GetAngle() float64 {
     
     return sa.currentAngle
 }
+
 ```
 
 ### 3.2 安全系统
@@ -865,6 +868,7 @@ func (fs *FailSafe) CheckSafety() (*SafetyStatus, error) {
     
     return safetyStatus, nil
 }
+
 ```
 
 ## 4. 通信系统
@@ -967,6 +971,7 @@ const (
     SSM                        // Signal Status Message
     RSM                        // Road Side Information
 )
+
 ```
 
 ### 4.2 车载网络
@@ -1073,6 +1078,7 @@ type NetworkEndpoint struct {
     IP       string
     mutex    sync.RWMutex
 }
+
 ```
 
 ## 5. 诊断系统
@@ -1207,6 +1213,7 @@ func (uds *UDSSystem) ProcessRequest(request *UDSRequest) (*UDSResponse, error) 
     
     return service.Handler(request)
 }
+
 ```
 
 ## 6. 性能优化
@@ -1327,6 +1334,7 @@ func (mm *MemoryManager) Free(poolID string, memory []byte) error {
     
     return nil
 }
+
 ```
 
 ## 7. 最佳实践
@@ -1443,6 +1451,7 @@ func (ac *AccessControl) CheckAccess(userID, resource, action string) bool {
     
     return false
 }
+
 ```
 
 ## 8. 案例分析

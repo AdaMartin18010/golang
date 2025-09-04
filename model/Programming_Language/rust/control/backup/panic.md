@@ -10,19 +10,6 @@
   - [2.2 小结](#小结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`panic` 是用于表示程序遇到了不可恢复错误的机制，其运行时行为主要涉及以下几个方面：
 
 ---
@@ -43,6 +30,7 @@ fn might_fail(divisor: i32) {
 fn main() {
     might_fail(0);
 }
+
 ```
 
 在上面的代码中，传入 0 会直接调用 `panic!`，从而触发 panic 行为。
@@ -79,9 +67,12 @@ fn main() {
   这种策略常用于对代码体积有严格要求或性能要求极高的场景，但会牺牲部分安全性，比如局部资源不会被清理。
 
 ```toml
+
 # 2 2 2 2 2 2 2 Cargo.toml
+
 [profile.release]
 panic = "abort"
+
 ```
 
 ---
@@ -105,6 +96,7 @@ fn main() {
         Err(err) => println!("捕获到 panic: {:?}", err),
     }
 }
+
 ```
 
 在这个例子中，闭包中的 panic 被 `catch_unwind` 捕获，程序得以继续运行。

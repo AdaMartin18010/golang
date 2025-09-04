@@ -122,6 +122,7 @@
         - Rust 类型系统表达能力、控制力远超 Wasm。
         - Wasm 类型系统关注点在于底层安全和跨平台兼容性。
         - 理论视角揭示了两者在抽象结构和控制机制上的本质区别。
+
 ```
 
 ## 1.3 1. 引言
@@ -181,6 +182,7 @@ Wasm 的核心类型系统非常基础，主要包含：
     ;; Result i32 is on the stack
   )
 )
+
 ```
 
 在这个例子中，类型 (`i32`) 直接关联到参数、局部变量（隐式，通过参数索引或 `local` 声明）和栈上的值。控制流 (`if`) 也基于栈顶的值进行。验证器会确保 `i32.add` 的操作数是 `i32`，`if` 的条件是 `i32`，并且分支产生的值类型与 `if` 声明的 `(result i32)` 匹配。
@@ -229,6 +231,7 @@ fn main() {
 
     // 'numbers' is still valid here because it was only borrowed
 } // 'numbers' goes out of scope, Vec<i32> is dropped
+
 ```
 
 Rust 的类型系统与所有权/借用/生命周期紧密集成，共同构成了强大的静态控制机制。编译器不仅仅检查类型匹配，还检查内存安全、数据竞争等问题。
@@ -287,6 +290,7 @@ Wasm 的类型组合能力非常有限。没有结构体、枚举、泛型等高
 
   (export "dispatch" (func $dispatch))
 )
+
 ```
 
 这里，`funcref` 和 `table` 提供了一种有限的动态分发能力，但类型检查仍然基于预定义的函数签名 (`$bin_op`)。
@@ -394,6 +398,7 @@ Rust 的类型系统允许高度的组合和抽象。类型之间的关联性通
               ;; TRAPS if $b is 0 or if result overflows (e.g., MIN_INT / -1)
   )
 )
+
 ```
 
 ### 1.6.2 Rust: Trait 作为接口、Result/panic 错误处理、所有权保证一致性
@@ -465,6 +470,7 @@ fn main() {
     // Compiler error: `owner` does not live long enough
     // println!("{}", dangling_ref); // This would be a use-after-free
 }
+
 ```
 
 ### 1.6.3 比较分析
@@ -528,6 +534,7 @@ fn main() {
     // We can use Data<'long> where Data<'short> is expected.
     process(data_long);
 }
+
 ```
 
 **示例 (Rust - 函数类型型变):**
@@ -569,6 +576,7 @@ fn main() {
     needs_dog_processor(takes_animal); // This works because `Fn(&dyn Animal)` is a subtype of `Fn(&Dog)`
                                        // due to contravariance in the argument.
 }
+
 ```
 
 ### 1.7.3 比较分析
@@ -620,6 +628,7 @@ fn main() {
 
   ;; ... Memory definition, etc. ...
 )
+
 ```
 
 ```javascript
@@ -661,6 +670,7 @@ const importObject = {
 //   window.wasmInstance = instance;
 //   // Now you can call instance.exports.do_fetch(...)
 // });
+
 ```
 
 ### 1.8.2 Rust: async/await 与 Future Trait
@@ -713,6 +723,7 @@ async fn run_tasks() {
 async fn main() {
     run_tasks().await;
 }
+
 ```
 
 Rust 的异步模型是**非阻塞**的，并且与特定的运行时（执行器）解耦（`Future` Trait 本身不依赖特定运行时）。

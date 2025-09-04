@@ -17,6 +17,7 @@
 我会选择Golang作为主要的示例语言，因为它在云原生和微服务领域较为常见，
 OpenTelemetry的Go SDK也很成熟。
 </think>
+
 ```
 
 ## 目录
@@ -169,6 +170,7 @@ func ComposeOperations(f, g WorkflowOperation) WorkflowOperation {
         return g(f(state))
     }
 }
+
 ```
 
 ### 4.2 遥测数据范畴
@@ -235,6 +237,7 @@ func ComposeTransforms(f, g TelemetryTransform) TelemetryTransform {
         return g(f(data))
     }
 }
+
 ```
 
 ### 4.3 上下文传播函子
@@ -302,6 +305,7 @@ func (f ContextPropagationFunctor) MapMorphism(op WorkflowOperation, name string
         return ctx
     }
 }
+
 ```
 
 ## 5. 同构关系：工作流与分布式追踪
@@ -502,6 +506,7 @@ func ExampleWorkflow() {
     fmt.Printf("Order %s shipped with tracking ID: %s\n", 
         shipment.OrderID, shipment.TrackingID)
 }
+
 ```
 
 ## 6. 等价关系：不同遥测数据间的转换
@@ -728,6 +733,7 @@ func attributesMapToOTelAttributes(attributes map[string]string) []attribute.Key
     }
     return attrs
 }
+
 ```
 
 ## 7. 组合关系：处理管道的范畱表示
@@ -988,6 +994,7 @@ func ExamplePipeline() {
         fmt.Println("Data was filtered out")
     }
 }
+
 ```
 
 ## 8. 聚合关系：多源遥测数据的整合
@@ -1376,6 +1383,7 @@ func printTraceTree(trace *AggregatedTrace, spanID string, depth int) {
         printTraceTree(trace, child.SpanID, depth+1)
     }
 }
+
 ```
 
 ## 9. 工作流与OpenTelemetry集成实践
@@ -1828,6 +1836,7 @@ func sendOrderConfirmation(ctx context.Context, order Order, transactionID strin
     
     return true, nil
 }
+
 ```
 
 ### 9.2 最佳实践与模式
@@ -1836,7 +1845,7 @@ func sendOrderConfirmation(ctx context.Context, order Order, transactionID strin
 
 #### 9.2.1 工作流追踪模式
 
--**层次化跨度创建模式**
+- **层次化跨度创建模式**
 
 将工作流结构映射到跨度嵌套层次中，使追踪结构反映工作流结构：
 
@@ -1869,9 +1878,10 @@ func HierarchicalSpanPattern(ctx context.Context) {
     // ... 阶段2内的步骤 ...
     phase2Span.End()
 }
+
 ```
 
--**工作流状态转换模式**
+- **工作流状态转换模式**
 
 使用跨度事件记录工作流状态转换：
 
@@ -1908,11 +1918,12 @@ func WorkflowStateTransitionPattern(ctx context.Context, workflowID string) {
     
     // ... 其他状态转换 ...
 }
+
 ```
 
 #### 9.2.2 上下文传播模式
 
--**服务间上下文传播模式**
+- **服务间上下文传播模式**
 
 在分布式工作流中正确传播上下文：
 
@@ -1971,11 +1982,12 @@ func ServerServicePattern(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
     serverSpan.SetAttributes(attribute.Int("http.status_code", http.StatusOK))
 }
+
 ```
 
 #### 9.2.3 错误处理与度量模式
 
--**工作流错误跟踪模式**
+- **工作流错误跟踪模式**
 
 统一记录和跟踪工作流错误：
 
@@ -2019,9 +2031,10 @@ func WorkflowErrorHandlingPattern(ctx context.Context) error {
     
     return nil
 }
+
 ```
 
--**工作流指标收集模式**
+- **工作流指标收集模式**
 
 全面收集工作流性能指标：
 
@@ -2067,6 +2080,7 @@ func WorkflowMetricsPattern(ctx context.Context) {
         attribute.String("workflow.type", workflowType),
         attribute.String("workflow.outcome", outcomeFromError(err)))
 }
+
 ```
 
 ## 10. 结论

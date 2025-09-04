@@ -131,6 +131,7 @@ where
 {
     move |x| g(f(x))
 }
+
 ```
 
 ### 1.2 对象与态射
@@ -150,6 +151,7 @@ type B = String;
 fn f(x: A) -> B {
     x.to_string()
 }
+
 ```
 
 ### 1.3 组合与恒等态射
@@ -178,6 +180,7 @@ fn to_string(x: i32) -> String {
 }
 
 // 组合：(to_string ○ double)(5) = to_string(double(5)) = "10"
+
 ```
 
 ## 2. 函子
@@ -207,6 +210,7 @@ where
         None => None,
     }
 }
+
 ```
 
 ### 2.2 内函子和协变函子
@@ -225,6 +229,7 @@ where
 {
     vec.into_iter().map(f).collect()
 }
+
 ```
 
 ### 2.3 Rust中的函子实现
@@ -263,6 +268,7 @@ impl<A> Functor<A> for Vec<A> {
         self.into_iter().map(f).collect()
     }
 }
+
 ```
 
 ## 3. 自然变换
@@ -283,6 +289,7 @@ F(f)          G(f)
  |             |
  v             v
 F(Y) --ηY--> G(Y)
+
 ```
 
 即：G(f) ○ ηX = ηY ○ F(f)
@@ -297,6 +304,7 @@ fn option_to_vec<T>(opt: Option<T>) -> Vec<T> {
         None => vec![],
     }
 }
+
 ```
 
 ### 3.2 自然变换的性质
@@ -327,6 +335,7 @@ fn vec_to_result<T>(vec: Vec<T>) -> Result<T, String> {
 fn option_to_result<T>(opt: Option<T>) -> Result<T, String> {
     vec_to_result(option_to_vec(opt))
 }
+
 ```
 
 ### 3.3 Rust中的自然变换
@@ -344,6 +353,7 @@ impl<T: std::fmt::Display> ToString for T {
         format!("{}", self)
     }
 }
+
 ```
 
 ## 4. 单子
@@ -381,6 +391,7 @@ impl<A> Monad<A> for Option<A> {
         }
     }
 }
+
 ```
 
 ### 4.2 单子的定律
@@ -415,6 +426,7 @@ fn verify_option_monad_laws() {
         Some(42).flat_map(|x| f(x).flat_map(g))
     );
 }
+
 ```
 
 ### 4.3 Rust中的Option和Result单子
@@ -467,6 +479,7 @@ impl<T, E> Result<T, E> {
         }
     }
 }
+
 ```
 
 ## 5. 积与余积
@@ -496,6 +509,7 @@ fn second<A, B>(product: &Product<A, B>) -> &B {
 fn make_product<A, B>(a: A, b: B) -> Product<A, B> {
     (a, b)
 }
+
 ```
 
 ### 5.2 余积的定义
@@ -537,6 +551,7 @@ where
         Coproduct::Right(b) => g(b),
     }
 }
+
 ```
 
 ### 5.3 Rust中的产品类型与和类型
@@ -563,6 +578,7 @@ fn area(shape: Shape) -> f64 {
         Shape::Rectangle(w, h) => w * h,
     }
 }
+
 ```
 
 ## 6. 极限与余极限
@@ -598,6 +614,7 @@ impl B for AB {
         println!("b");
     }
 }
+
 ```
 
 ### 6.2 余极限的定义
@@ -625,6 +642,7 @@ where
         Either::Right(b) => println!("Right: {:?}", b),
     }
 }
+
 ```
 
 ### 6.3 Rust中的应用
@@ -658,6 +676,7 @@ fn handle_message(msg: Message) {
         Message::ChangeColor(r, g, b) => println!("Change color to ({}, {}, {})", r, g, b),
     }
 }
+
 ```
 
 ## 7. 代数数据类型
@@ -683,6 +702,7 @@ fn add(a: &Nat, b: &Nat) -> Nat {
         Nat::Succ(n) => Nat::Succ(Box::new(add(n, b))),
     }
 }
+
 ```
 
 ### 7.2 余归纳类型
@@ -706,6 +726,7 @@ fn naturals_from(n: u32) -> Stream<u32> {
         tail: Box::new(move || naturals_from(n + 1)),
     }
 }
+
 ```
 
 ### 7.3 Rust中的递归类型
@@ -737,6 +758,7 @@ where
         List::Cons(head, tail) => List::Cons(f(head), Box::new(map(*tail, f))),
     }
 }
+
 ```
 
 ---
@@ -796,6 +818,7 @@ I'll maintain the same structured approach with markdown formatting, providing d
     1. [类型即对象](#141-类型即对象)
     2. [函数即态射](#142-函数即态射)
     3. [Rust类型系统的范畴论解释](#143-rust类型系统的范畴论解释)
+
 ```
 
 ## 8. 伴随函子
@@ -828,6 +851,7 @@ fn first<T>(xs: Vec<T>) -> Option<T> {
 fn verify_adjunction<T: PartialEq + Clone>(x: T) -> bool {
     first(singleton(x.clone())) == Some(x)
 }
+
 ```
 
 ### 8.2 单位与余单位
@@ -855,6 +879,7 @@ fn counit<T>(xs: Vec<Option<T>>) -> Vec<T> {
        .filter_map(|x| x)
        .collect()
 }
+
 ```
 
 ### 8.3 Rust中的伴随函子
@@ -881,6 +906,7 @@ fn some_to_ok<T, E: Default>(option: Option<T>) -> Result<T, E> {
 fn verify_result_option_adjunction<T: PartialEq, E: Default>(x: T) -> bool {
     ok_to_some(some_to_ok(Some(x.clone()))) == Some(x)
 }
+
 ```
 
 ## 9. Yoneda引理
@@ -906,6 +932,7 @@ struct Yoneda<A, B, F> {
 struct FAValue<F>(F);
 
 // Yoneda引理声明了Yoneda<A, B, F>与FAValue<F>之间的同构
+
 ```
 
 ### 9.2 Yoneda引理的含义
@@ -939,6 +966,7 @@ impl ObjectMorphisms<i32> for ObjectB {
 }
 
 // 根据Yoneda引理，如果两个对象接受相同的态射集合，则它们是同构的
+
 ```
 
 ### 9.3 Rust中的Yoneda引理应用
@@ -965,6 +993,7 @@ fn main() {
     let result = factorial_cps(5, |x| x);
     println!("5! = {}", result);  // 120
 }
+
 ```
 
 ## 10. 自由单子
@@ -1001,6 +1030,7 @@ impl<A> F<A> {
         }
     }
 }
+
 ```
 
 ### 10.2 解释器模式
@@ -1026,6 +1056,7 @@ where
         Free::Lift(f) => { /* 解释F<Free<F, A>> */ }
     }
 }
+
 ```
 
 ### 10.3 Rust中的自由单子实现
@@ -1092,6 +1123,7 @@ fn run_console<A>(program: Console<A>) -> A {
         },
     }
 }
+
 ```
 
 ## 11. Kleisli范畴
@@ -1126,6 +1158,7 @@ fn kleisli_compose<A, B, C>(
 fn kleisli_id<A>(a: A) -> Option<A> {
     Some(a)
 }
+
 ```
 
 ### 11.2 Kleisli范畴与单子编程
@@ -1156,6 +1189,7 @@ fn safe_sqrt(a: f64) -> Result<f64, String> {
 fn divide_then_sqrt(a: f64, b: f64) -> Result<f64, String> {
     safe_divide(a, b).and_then(safe_sqrt)
 }
+
 ```
 
 ### 11.3 Rust中的Kleisli箭头
@@ -1193,6 +1227,7 @@ fn main() {
     println!("{:?}", h(3));  // Some(36)
     println!("{:?}", h(-1)); // None
 }
+
 ```
 
 ## 12. F-代数与递归模式
@@ -1231,6 +1266,7 @@ impl Algebra<ListF<i32, i32>, i32> for SumAlgebra {
         }
     }
 }
+
 ```
 
 ### 12.2 递归模式
@@ -1267,6 +1303,7 @@ fn sum(list: List<i32>) -> i32 {
         ListF::Cons(head, tail) => head + tail,
     })
 }
+
 ```
 
 ### 12.3 Rust中的F-代数应用
@@ -1330,6 +1367,7 @@ fn cata_expr<A>(expr: Expr, alg: impl Fn(ExprF<A>) -> A) -> A {
         },
     }
 }
+
 ```
 
 ## 13. 多函子与Lens
@@ -1368,6 +1406,7 @@ impl<A, B, R> Profunctor<A, B> for fn(A) -> B {
         move |c| g(self(f(c)))
     }
 }
+
 ```
 
 ### 13.2 Lens的结构
@@ -1415,6 +1454,7 @@ where
         (self.set)(s, a)
     }
 }
+
 ```
 
 ### 13.3 Rust中的Lens实现
@@ -1479,6 +1519,7 @@ fn main() {
     let updated_person = name_lens().set(person, "Bob".to_string());
     println!("Updated name: {}", updated_person.name);
 }
+
 ```
 
 ## 14. 范畴论视角下的Rust类型系统
@@ -1503,6 +1544,7 @@ type Bool = bool;
 // 复合类型作为对象
 type Pair<A, B> = (A, B);
 type Either<A, B> = Result<A, B>;
+
 ```
 
 ### 14.2 函数即态射
@@ -1539,6 +1581,7 @@ where
 {
     move |a| g(f(a))
 }
+
 ```
 
 ### 14.3 Rust类型系统的范畴论解释
@@ -1592,6 +1635,7 @@ where
 {
     list.into_iter().fold(init, f)
 }
+
 ```
 
 通过这些高级概念和示例，我们进一步探索了范畴论与Rust编程之间的深刻联系。
@@ -1644,6 +1688,7 @@ impl<F, G, A> Compose<F, G, A> {
         unimplemented!()
     }
 }
+
 ```
 
 ### 15.2 应用函子结构
@@ -1688,6 +1733,7 @@ impl<A> Applicative<A> for Option<A> {
         }
     }
 }
+
 ```
 
 ### 15.3 Rust中的高阶函子实现
@@ -1749,6 +1795,7 @@ impl<A, E> Applicative<A> for Result<A, E> {
         }
     }
 }
+
 ```
 
 ## 16. 范畴论与Rust的所有权系统
@@ -1782,6 +1829,7 @@ fn main() {
     // 错误：resource已被移动
     // consume(resource);
 }
+
 ```
 
 ### 16.2 借用作为自然变换
@@ -1824,6 +1872,7 @@ where
     assert_eq!(result1, result2);
     (value, result1)
 }
+
 ```
 
 ### 16.3 所有权系统的范畴论解释
@@ -1870,6 +1919,7 @@ impl<T> AffineType<T> {
         self.0
     }
 }
+
 ```
 
 ## 17. 类型级编程与实例推导
@@ -1906,6 +1956,7 @@ impl<T> Collection for Vec<T> {
         self.iter()
     }
 }
+
 ```
 
 ### 17.2 特征解析作为实例推导
@@ -1960,6 +2011,7 @@ fn save<T: Serializable>(value: &T, path: &str) -> std::io::Result<()> {
     let data = value.serialize();
     std::fs::write(path, data)
 }
+
 ```
 
 ### 17.3 Rust中的依赖类型模拟
@@ -2031,6 +2083,7 @@ impl<T, N: Nat> Vector<T, N> {
         &self.data[M::to_usize()]
     }
 }
+
 ```
 
 ## 18. 效果系统与计算的范畴
@@ -2108,6 +2161,7 @@ fn run_console<A>(effect: Effect<A>) -> A {
         },
     }
 }
+
 ```
 
 ### 18.2 函数式反应式编程
@@ -2182,6 +2236,7 @@ impl<A> EventSource<A> {
         }
     }
 }
+
 ```
 
 ### 18.3 Rust中实现效果系统
@@ -2261,6 +2316,7 @@ fn main() {
     // 等待异步操作完成
     std::thread::sleep(std::time::Duration::from_secs(3));
 }
+
 ```
 
 ## 19. 高级模式与范畴论应用
@@ -2343,6 +2399,7 @@ fn main() {
     println!("Result: {}", result);
     println!("Expression: {}", printed);
 }
+
 ```
 
 ### 19.2 自由模板与余余单子
@@ -2416,6 +2473,7 @@ fn main() {
     println!("{}", sum.extract());
     println!("{}", (sum.tail)().extract());
 }
+
 ```
 
 ### 19.3 Rust中的范畴论库
@@ -2453,6 +2511,7 @@ fn monad_example() {
     let opt = Some(1);
     let result = opt.and_then(|x| if x > 0 { Some(x) } else { None });
 }
+
 ```
 
 ## 20. 计算模型与范畴嵌入
@@ -2498,6 +2557,7 @@ where
     };
     Box::new(g)
 }
+
 ```
 
 ### 20.2 线性逻辑与线性范畴
@@ -2546,6 +2606,7 @@ fn invalid_function<T: Clone>(x: Linear<T>) -> (T, T) {
     // (value, x.consume())
     unimplemented!()
 }
+
 ```
 
 ### 20.3 Rust的计算模型分析
@@ -2605,6 +2666,7 @@ fn actor_model() {
     let msg = rx.recv().unwrap();
     println!("Received: {}", msg);
 }
+
 ```
 
 ## 21. 范畴论与并发系统
@@ -2680,6 +2742,7 @@ impl Actor for Counter {
         }
     }
 }
+
 ```
 
 ### 21.2 并行计算的单子模型
@@ -2772,6 +2835,7 @@ fn parallel_computation() -> Par<i32> {
         compute2.map(move |y| x + y)
     })
 }
+
 ```
 
 ### 21.3 Rust并发原语的范畴论解释
@@ -2865,6 +2929,7 @@ fn send_sync_example<T: Send + Sync>() {
         // 使用&data的引用...
     });
 }
+
 ```
 
 # 总结与展望

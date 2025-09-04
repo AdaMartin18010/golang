@@ -27,19 +27,6 @@
     - [1.7.3 所有权驱动设计](#所有权驱动设计)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 前言
 
 ```text
@@ -56,6 +43,7 @@ Let me plan the remaining sections:
 
 This will provide a complete picture of Rust's ownership system from a resource management perspective.
 </think>
+
 ```
 
 ## 1.2 目录
@@ -117,6 +105,7 @@ fn non_linear_example<T: Copy>(x: T) -> (T, T) {
     // 对于实现 Copy 的类型，Rust 放宽了线性约束
     (x, x) // x 被复制和使用两次
 }
+
 ```
 
 ### 1.3.2 能力理论
@@ -162,6 +151,7 @@ fn demonstrate_capabilities() {
     // 销毁能力
     drop(data); // 显式行使销毁能力
 }
+
 ```
 
 ### 1.3.3 借用与区域多态性
@@ -200,6 +190,7 @@ fn region_demo() {
         println!("较长的字符串是: {}", result);
     } // string2 和关联的区域在这里结束
 }
+
 ```
 
 ### 1.3.4 子结构类型理论
@@ -243,6 +234,7 @@ fn substructural_demo() {
     let n2 = n; // 复制而非移动
     println!("n = {}, n2 = {}", n, n2); // 两者都可使用
 }
+
 ```
 
 ## 1.4 所有权系统的演化与设计决策
@@ -276,6 +268,7 @@ Rust 所有权系统的演化历程：
 fn modern_ownership_demo(x: Rc<i32>) {
     let y = Box::new(5);
 }
+
 ```
 
 ### 1.4.2 关键设计决策分析
@@ -309,6 +302,7 @@ fn first_word(s: &str) -> &str {
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 ### 1.4.3 非公开接受的替代方案
@@ -343,6 +337,7 @@ fn rust_actual(data: &Vec<i32>) -> i32 {
     println!("长度: {}", data.len());
     sum
 }
+
 ```
 
 ## 1.5 教学与学习所有权系统
@@ -379,6 +374,7 @@ fn mental_model_example() {
     
     resource.push(4); // 使用完整能力
 }
+
 ```
 
 ### 1.5.2 常见认知障碍
@@ -418,6 +414,7 @@ fn common_misconceptions() {
 fn process(data: &Vec<i32>) {
     println!("处理数据: {:?}", data);
 }
+
 ```
 
 ### 1.5.3 有效学习策略
@@ -462,6 +459,7 @@ fn borrowing_basics() {
 fn lifetime_basics<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 ## 1.6 所有权系统的未来发展
@@ -500,6 +498,7 @@ struct PinnedSelfRef {
 }
 
 // 仍然很复杂，未来可能简化
+
 ```
 
 ### 1.6.2 潜在扩展与改进
@@ -533,6 +532,7 @@ fn theoretical_partial_borrow(data: &mut ComplexStruct) {
 // fn ownership_polymorphic<T, O: Ownership>(value: O<T>) -> ReturnType<O, T> {
 //     // 根据 O 是所有权、不可变引用还是可变引用自动处理
 // }
+
 ```
 
 ### 1.6.3 对其他语言的影响
@@ -566,7 +566,9 @@ func modifyInPlace(_ a: inout Int, _ b: inout Int) {
     a += 1
     b += 1
 }
+
 */
+
 ```
 
 ## 1.7 综合实践模式
@@ -619,6 +621,7 @@ impl<'a> View<'a> {
         self.data.len()
     }
 }
+
 ```
 
 ### 1.7.2 权衡与设计决策
@@ -667,6 +670,7 @@ fn multi_threaded_design() {
     
     println!("数据: {:?}", shared_data.lock().unwrap());
 }
+
 ```
 
 ### 1.7.3 所有权驱动设计
@@ -722,6 +726,7 @@ trait Processor {
     // 接口明确表示借用
     fn process(&self, data: &mut Data) -> Result<(), Error>;
 }
+
 ```
 
 通过这套系统分析，我们可以看出 Rust 的所有权系统不仅是一种内存管理机制，

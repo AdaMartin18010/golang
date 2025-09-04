@@ -9,19 +9,6 @@
   - [1.5 解释和联系](#解释和联系)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Rust 中与所有权相关的主要 trait 包括 `Deref` 和 `Drop`。
 此外，`Clone` 和 `Copy` trait 也在一定程度上与所有权相关，因为它们决定了值的复制行为。
 以下是这些 trait 的定义、解释以及它们在 Rust 中的应用。
@@ -35,6 +22,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 `Deref` trait 允许类型表现得像引用，通过自定义解引用的行为。
@@ -52,6 +40,7 @@ pub trait Deref {
 pub trait Drop {
     fn drop(&mut self);
 }
+
 ```
 
 `Drop` trait 定义了当值被销毁时执行的代码。
@@ -69,6 +58,7 @@ pub trait Drop {
 pub trait Clone: Sized {
     fn clone(&self) -> Self;
 }
+
 ```
 
 `Clone` trait 允许类型创建自身的一个完全独立的副本。
@@ -84,6 +74,7 @@ pub trait Clone: Sized {
 
 ```rust
 pub trait Copy: Clone {}
+
 ```
 
 `Copy` trait 表示类型拥有简单的复制语义，即它们的位模式可以被简单地复制。

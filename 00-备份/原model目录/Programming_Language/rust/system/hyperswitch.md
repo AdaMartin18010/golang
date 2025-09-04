@@ -11,6 +11,7 @@ Hyperswitch是一个开源的支付交换机/支付路由/支付网关系统，�
 3. 支持分布式的对账、流水和会计分析
 
 让我规划一下实现方案：
+
 ```
 
 ## 系统架构概览
@@ -44,6 +45,7 @@ Hyperswitch是一个开源的支付交换机/支付路由/支付网关系统，�
 │  │ PostgreSQL  │  │ Redis缓存   │  │ Kafka消息队列│  │ ClickHouse  │ │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
 └─────────────────────────────────────────────────────────────────────┘
+
 ```
 
 ## 一、Hyperswitch支付核心系统实现
@@ -467,6 +469,7 @@ impl PaymentCoreService {
         }
     }
 }
+
 ```
 
 ## 二、支付撤销、对冲、对账和清算系统
@@ -1333,6 +1336,7 @@ impl FinancialService {
         Ok(entries)
     }
 }
+
 ```
 
 ## 三、分布式、分层对账与会计分析系统
@@ -1637,6 +1641,7 @@ struct DistributorAllocation {
         Ok(())
     }
 }
+
 ```
 
 ## 四、API接口实现
@@ -1846,6 +1851,7 @@ async fn get_channel_profitability(
         }
     }
 }
+
 ```
 
 ## 五、数据库模式设计
@@ -1964,6 +1970,7 @@ the payment system using Hyperswitch.
 I need to finish the settlements table and 
 add any other remaining tables for 
 the accounting and financial management components.
+
 */
 
 -- 结算表
@@ -2124,6 +2131,7 @@ CREATE TABLE connector_fee_configs (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
     UNIQUE(connector, currency, payment_method, card_network, transaction_type, effective_from)
 );
+
 ```
 
 ## 六、构建主程序和配置
@@ -2283,6 +2291,7 @@ async fn start_background_tasks(
         }
     });
 }
+
 ```
 
 ## 七、系统配置和部署
@@ -2426,6 +2435,7 @@ volumes:
   postgres-data:
   redis-data:
   clickhouse-data:
+
 ```
 
 ## 八、总结与关键功能

@@ -23,19 +23,6 @@
   - [11.4.1.8 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.4.1.1 目录
 
 1. [概述](#概述)
@@ -270,6 +257,7 @@ func (nm *NodeManager) GetAvailableNodes() []*Node {
     
     return availableNodes
 }
+
 ```
 
 ### 11.4.1.4.2 调度器
@@ -440,6 +428,7 @@ func (s *Scheduler) UpdateNode(node *Node) {
     defer s.mu.Unlock()
     s.nodes[node.ID] = node
 }
+
 ```
 
 ## 11.4.1.5 容器编排
@@ -679,6 +668,7 @@ func (sm *ServiceManager) UpdateService(id string, replicas int) error {
     
     return nil
 }
+
 ```
 
 ### 11.4.1.5.2 负载均衡
@@ -843,6 +833,7 @@ func (lb *LoadBalancer) Route(serviceID string, algorithm LoadBalancingAlgorithm
     
     return algorithm.Select(backends)
 }
+
 ```
 
 ## 11.4.1.6 服务网格
@@ -1048,6 +1039,7 @@ func (pm *ProxyManager) selectEndpoint(endpoints []*Endpoint) (*Endpoint, error)
     
     return healthyEndpoints[0], nil
 }
+
 ```
 
 ## 11.4.1.7 最佳实践
@@ -1099,6 +1091,7 @@ func HandleCloudInfrastructureError(err error, nodeID, serviceID string) *CloudI
         }
     }
 }
+
 ```
 
 ### 11.4.1.7.2 2. 监控和日志
@@ -1169,6 +1162,7 @@ func (l *CloudInfrastructureLogger) LogContainerScheduled(container *Container, 
         zap.String("node_name", node.Name),
     )
 }
+
 ```
 
 ### 11.4.1.7.3 3. 测试策略
@@ -1303,6 +1297,7 @@ func BenchmarkScheduler_Schedule(b *testing.B) {
         }
     }
 }
+
 ```
 
 ---

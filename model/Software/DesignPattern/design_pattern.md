@@ -1,143 +1,67 @@
-# 1 1 1 1 1 1 1 设计模式详解
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 设计模式详解](#1-1-1-1-1-1-1-设计模式详解)
-  - [1.1 目录](#目录)
-  - [1.2 1. 设计模式 (GoF)](#1-设计模式-gof)
-    - [1.2.1 1.1. 概念与定义](#11-概念与定义)
-    - [1.2.2 1.2. 分类](#12-分类)
-    - [1.2.3 1.3. 创建型模式 (Creational Patterns)](#13-创建型模式-creational-patterns)
-      - [1.2.3.1 1.3.1. 单例模式 (Singleton)](#131-单例模式-singleton)
-      - [1.2.3.2 1.3.2. 工厂方法模式 (Factory Method)](#132-工厂方法模式-factory-method)
-      - [1.2.3.3 1.3.3. 抽象工厂模式 (Abstract Factory)](#133-抽象工厂模式-abstract-factory)
-      - [1.2.3.4 1.3.4. 建造者模式 (Builder)](#134-建造者模式-builder)
-      - [1.2.3.5 1.3.5. 原型模式 (Prototype)](#135-原型模式-prototype)
-    - [1.2.4 1.4. 结构型模式 (Structural Patterns)](#14-结构型模式-structural-patterns)
-      - [1.2.4.1 1.4.1. 适配器模式 (Adapter)](#141-适配器模式-adapter)
-      - [1.2.4.2 1.4.2. 桥接模式 (Bridge)](#142-桥接模式-bridge)
-      - [1.2.4.3 1.4.3. 组合模式 (Composite)](#143-组合模式-composite)
-      - [1.2.4.4 1.4.4. 装饰器模式 (Decorator)](#144-装饰器模式-decorator)
-      - [1.2.4.5 1.4.5. 外观模式 (Facade)](#145-外观模式-facade)
-      - [1.2.4.6 1.4.6. 享元模式 (Flyweight)](#146-享元模式-flyweight)
-      - [1.2.4.7 1.4.7. 代理模式 (Proxy)](#147-代理模式-proxy)
-    - [1.2.5 1.5. 行为型模式 (Behavioral Patterns)](#15-行为型模式-behavioral-patterns)
-      - [1.2.5.1 1.5.1. 责任链模式 (Chain of Responsibility)](#151-责任链模式-chain-of-responsibility)
-      - [1.2.5.2 1.5.2. 命令模式 (Command)](#152-命令模式-command)
-      - [1.2.5.3 1.5.3. 解释器模式 (Interpreter)](#153-解释器模式-interpreter)
-      - [1.2.5.4 1.5.4. 迭代器模式 (Iterator)](#154-迭代器模式-iterator)
-      - [1.2.5.5 1.5.5. 中介者模式 (Mediator)](#155-中介者模式-mediator)
-      - [1.2.5.6 1.5.6. 备忘录模式 (Memento)](#156-备忘录模式-memento)
-      - [1.2.5.7 1.5.7. 观察者模式 (Observer)](#157-观察者模式-observer)
-      - [1.2.5.8 1.5.8. 状态模式 (State)](#158-状态模式-state)
-      - [1.2.5.9 1.5.9. 策略模式 (Strategy)](#159-策略模式-strategy)
-      - [1.2.5.10 1.5.10. 模板方法模式 (Template Method)](#1510-模板方法模式-template-method)
-      - [1.2.5.11 1.5.11. 访问者模式 (Visitor)](#1511-访问者模式-visitor)
-  - [1.3 2. 并发并行设计模式](#2-并发并行设计模式)
-    - [1.3.1 2.1. 概念与定义](#21-概念与定义)
-    - [1.3.2 2.2. 常见模式](#22-常见模式)
-      - [1.3.2.1 2.2.1. 活动对象模式 (Active Object)](#221-活动对象模式-active-object)
-      - [1.3.2.2 2.2.2. 管程模式 (Monitor)](#222-管程模式-monitor)
-      - [1.3.2.3 2.2.3. 线程池模式 (Thread Pool)](#223-线程池模式-thread-pool)
-      - [1.3.2.4 2.2.4. 生产者-消费者模式 (Producer-Consumer)](#224-生产者-消费者模式-producer-consumer)
-      - [1.3.2.5 2.2.5. 读写锁模式 (Readers-Writer Lock)](#225-读写锁模式-readers-writer-lock)
-      - [1.3.2.6 2.2.6. Future/Promise 模式](#226-futurepromise-模式)
-      - [1.3.2.7 2.2.7. Actor 模型](#227-actor-模型)
-  - [1.4 3. 分布式设计模式](#3-分布式设计模式)
-    - [1.4.1 3.1. 概念与定义](#31-概念与定义)
-    - [1.4.2 3.2. 常见模式](#32-常见模式)
-      - [1.4.2.1 3.2.1. 服务发现 (Service Discovery)](#321-服务发现-service-discovery)
-      - [1.4.2.2 3.2.2. 熔断器模式 (Circuit Breaker)](#322-熔断器模式-circuit-breaker)
-      - [1.4.2.3 3.2.3. API 网关 (API Gateway)](#323-api-网关-api-gateway)
-      - [1.4.2.4 3.2.4. Saga 模式](#324-saga-模式)
-      - [1.4.2.5 3.2.5. 领导者选举 (Leader Election)](#325-领导者选举-leader-election)
-      - [1.4.2.6 3.2.6. 分片/分区 (Sharding/Partitioning)](#326-分片分区-shardingpartitioning)
-      - [1.4.2.7 3.2.7. 复制 (Replication)](#327-复制-replication)
-      - [1.4.2.8 3.2.8. 消息队列 (Message Queue)](#328-消息队列-message-queue)
-  - [1.5 4. 工作流设计模式](#4-工作流设计模式)
-    - [1.5.1 4.1. 概念与定义](#41-概念与定义)
-    - [1.5.2 4.2. 常见模式](#42-常见模式)
-      - [1.5.2.1 4.2.1. 状态机模式 (State Machine)](#421-状态机模式-state-machine)
-      - [1.5.2.2 4.2.2. 工作流引擎 (Workflow Engine)](#422-工作流引擎-workflow-engine)
-      - [1.5.2.3 4.2.3. 任务队列 (Task Queue)](#423-任务队列-task-queue)
-      - [1.5.2.4 4.2.4. 编排 (Orchestration) vs. 协同 (Choreography)](#424-编排-orchestration-vs-协同-choreography)
-  - [1.6 5. 思维导图 (Text)](#5-思维导图-text)
-<!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 设计模式详解
 
 ## 1.1 目录
 
 - [设计模式详解](#设计模式详解)
-  - [目录](#目录)
-  - [1. 设计模式 (GoF)](#1-设计模式-gof)
-    - [1.1. 概念与定义](#11-概念与定义)
-    - [1.2. 分类](#12-分类)
-    - [1.3. 创建型模式 (Creational Patterns)](#13-创建型模式-creational-patterns)
-      - [1.3.1. 单例模式 (Singleton)](#131-单例模式-singleton)
-      - [1.3.2. 工厂方法模式 (Factory Method)](#132-工厂方法模式-factory-method)
-      - [1.3.3. 抽象工厂模式 (Abstract Factory)](#133-抽象工厂模式-abstract-factory)
-      - [1.3.4. 建造者模式 (Builder)](#134-建造者模式-builder)
-      - [1.3.5. 原型模式 (Prototype)](#135-原型模式-prototype)
-    - [1.4. 结构型模式 (Structural Patterns)](#14-结构型模式-structural-patterns)
-      - [1.4.1. 适配器模式 (Adapter)](#141-适配器模式-adapter)
-      - [1.4.2. 桥接模式 (Bridge)](#142-桥接模式-bridge)
-      - [1.4.3. 组合模式 (Composite)](#143-组合模式-composite)
-      - [1.4.4. 装饰器模式 (Decorator)](#144-装饰器模式-decorator)
-      - [1.4.5. 外观模式 (Facade)](#145-外观模式-facade)
-      - [1.4.6. 享元模式 (Flyweight)](#146-享元模式-flyweight)
-      - [1.4.7. 代理模式 (Proxy)](#147-代理模式-proxy)
-    - [1.5. 行为型模式 (Behavioral Patterns)](#15-行为型模式-behavioral-patterns)
-      - [1.5.1. 责任链模式 (Chain of Responsibility)](#151-责任链模式-chain-of-responsibility)
-      - [1.5.2. 命令模式 (Command)](#152-命令模式-command)
-      - [1.5.3. 解释器模式 (Interpreter)](#153-解释器模式-interpreter)
-      - [1.5.4. 迭代器模式 (Iterator)](#154-迭代器模式-iterator)
-      - [1.5.5. 中介者模式 (Mediator)](#155-中介者模式-mediator)
-      - [1.5.6. 备忘录模式 (Memento)](#156-备忘录模式-memento)
-      - [1.5.7. 观察者模式 (Observer)](#157-观察者模式-observer)
-      - [1.5.8. 状态模式 (State)](#158-状态模式-state)
-      - [1.5.9. 策略模式 (Strategy)](#159-策略模式-strategy)
-      - [1.5.10. 模板方法模式 (Template Method)](#1510-模板方法模式-template-method)
-      - [1.5.11. 访问者模式 (Visitor)](#1511-访问者模式-visitor)
-  - [2. 并发并行设计模式](#2-并发并行设计模式)
-    - [2.1. 概念与定义](#21-概念与定义)
-    - [2.2. 常见模式](#22-常见模式)
-      - [2.2.1. 活动对象模式 (Active Object)](#221-活动对象模式-active-object)
-      - [2.2.2. 管程模式 (Monitor)](#222-管程模式-monitor)
-      - [2.2.3. 线程池模式 (Thread Pool)](#223-线程池模式-thread-pool)
-      - [2.2.4. 生产者-消费者模式 (Producer-Consumer)](#224-生产者-消费者模式-producer-consumer)
-      - [2.2.5. 读写锁模式 (Readers-Writer Lock)](#225-读写锁模式-readers-writer-lock)
-      - [2.2.6. Future/Promise 模式](#226-futurepromise-模式)
-      - [2.2.7. Actor 模型](#227-actor-模型)
-  - [3. 分布式设计模式](#3-分布式设计模式)
-    - [3.1. 概念与定义](#31-概念与定义)
-    - [3.2. 常见模式](#32-常见模式)
-      - [3.2.1. 服务发现 (Service Discovery)](#321-服务发现-service-discovery)
-      - [3.2.2. 熔断器模式 (Circuit Breaker)](#322-熔断器模式-circuit-breaker)
-      - [3.2.3. API 网关 (API Gateway)](#323-api-网关-api-gateway)
-      - [3.2.4. Saga 模式](#324-saga-模式)
-      - [3.2.5. 领导者选举 (Leader Election)](#325-领导者选举-leader-election)
-      - [3.2.6. 分片/分区 (Sharding/Partitioning)](#326-分片分区-shardingpartitioning)
-      - [3.2.7. 复制 (Replication)](#327-复制-replication)
-      - [3.2.8. 消息队列 (Message Queue)](#328-消息队列-message-queue)
-  - [4. 工作流设计模式](#4-工作流设计模式)
-    - [4.1. 概念与定义](#41-概念与定义)
-    - [4.2. 常见模式](#42-常见模式)
-      - [4.2.1. 状态机模式 (State Machine)](#421-状态机模式-state-machine)
-      - [4.2.2. 工作流引擎 (Workflow Engine)](#422-工作流引擎-workflow-engine)
-      - [4.2.3. 任务队列 (Task Queue)](#423-任务队列-task-queue)
-      - [4.2.4. 编排 (Orchestration) vs. 协同 (Choreography)](#424-编排-orchestration-vs-协同-choreography)
-  - [5. 思维导图 (Text)](#5-思维导图-text)
+  - [1.1 目录](#11-目录)
+  - [1.2 1. 设计模式 (GoF)](#12-1-设计模式-gof)
+    - [1.2.1 1.1. 概念与定义](#121-11-概念与定义)
+    - [1.2.2 1.2. 分类](#122-12-分类)
+    - [1.2.3 1.3. 创建型模式 (Creational Patterns)](#123-13-创建型模式-creational-patterns)
+      - [1.2.3.1 1.3.1. 单例模式 (Singleton)](#1231-131-单例模式-singleton)
+      - [1.2.3.2 1.3.2. 工厂方法模式 (Factory Method)](#1232-132-工厂方法模式-factory-method)
+      - [1.2.3.3 1.3.3. 抽象工厂模式 (Abstract Factory)](#1233-133-抽象工厂模式-abstract-factory)
+      - [1.2.3.4 1.3.4. 建造者模式 (Builder)](#1234-134-建造者模式-builder)
+      - [1.2.3.5 1.3.5. 原型模式 (Prototype)](#1235-135-原型模式-prototype)
+    - [1.2.4 1.4. 结构型模式 (Structural Patterns)](#124-14-结构型模式-structural-patterns)
+      - [1.2.4.1 1.4.1. 适配器模式 (Adapter)](#1241-141-适配器模式-adapter)
+      - [1.2.4.2 1.4.2. 桥接模式 (Bridge)](#1242-142-桥接模式-bridge)
+      - [1.2.4.3 1.4.3. 组合模式 (Composite)](#1243-143-组合模式-composite)
+      - [1.2.4.4 1.4.4. 装饰器模式 (Decorator)](#1244-144-装饰器模式-decorator)
+      - [1.2.4.5 1.4.5. 外观模式 (Facade)](#1245-145-外观模式-facade)
+      - [1.2.4.6 1.4.6. 享元模式 (Flyweight)](#1246-146-享元模式-flyweight)
+      - [1.2.4.7 1.4.7. 代理模式 (Proxy)](#1247-147-代理模式-proxy)
+    - [1.2.5 1.5. 行为型模式 (Behavioral Patterns)](#125-15-行为型模式-behavioral-patterns)
+      - [1.2.5.1 1.5.1. 责任链模式 (Chain of Responsibility)](#1251-151-责任链模式-chain-of-responsibility)
+      - [1.2.5.2 1.5.2. 命令模式 (Command)](#1252-152-命令模式-command)
+      - [1.2.5.3 1.5.3. 解释器模式 (Interpreter)](#1253-153-解释器模式-interpreter)
+      - [1.2.5.4 1.5.4. 迭代器模式 (Iterator)](#1254-154-迭代器模式-iterator)
+      - [1.2.5.5 1.5.5. 中介者模式 (Mediator)](#1255-155-中介者模式-mediator)
+      - [1.2.5.6 1.5.6. 备忘录模式 (Memento)](#1256-156-备忘录模式-memento)
+      - [1.2.5.7 1.5.7. 观察者模式 (Observer)](#1257-157-观察者模式-observer)
+      - [1.2.5.8 1.5.8. 状态模式 (State)](#1258-158-状态模式-state)
+      - [1.2.5.9 1.5.9. 策略模式 (Strategy)](#1259-159-策略模式-strategy)
+      - [1.2.5.10 1.5.10. 模板方法模式 (Template Method)](#12510-1510-模板方法模式-template-method)
+      - [1.2.5.11 1.5.11. 访问者模式 (Visitor)](#12511-1511-访问者模式-visitor)
+  - [1.3 2. 并发并行设计模式](#13-2-并发并行设计模式)
+    - [1.3.1 2.1. 概念与定义](#131-21-概念与定义)
+    - [1.3.2 2.2. 常见模式](#132-22-常见模式)
+      - [1.3.2.1 2.2.1. 活动对象模式 (Active Object)](#1321-221-活动对象模式-active-object)
+      - [1.3.2.2 2.2.2. 管程模式 (Monitor)](#1322-222-管程模式-monitor)
+      - [1.3.2.3 2.2.3. 线程池模式 (Thread Pool)](#1323-223-线程池模式-thread-pool)
+      - [1.3.2.4 2.2.4. 生产者-消费者模式 (Producer-Consumer)](#1324-224-生产者-消费者模式-producer-consumer)
+      - [1.3.2.5 2.2.5. 读写锁模式 (Readers-Writer Lock)](#1325-225-读写锁模式-readers-writer-lock)
+      - [1.3.2.6 2.2.6. Future/Promise 模式](#1326-226-futurepromise-模式)
+      - [1.3.2.7 2.2.7. Actor 模型](#1327-227-actor-模型)
+  - [1.4 3. 分布式设计模式](#14-3-分布式设计模式)
+    - [1.4.1 3.1. 概念与定义](#141-31-概念与定义)
+    - [1.4.2 3.2. 常见模式](#142-32-常见模式)
+      - [1.4.2.1 3.2.1. 服务发现 (Service Discovery)](#1421-321-服务发现-service-discovery)
+      - [1.4.2.2 3.2.2. 熔断器模式 (Circuit Breaker)](#1422-322-熔断器模式-circuit-breaker)
+      - [1.4.2.3 3.2.3. API 网关 (API Gateway)](#1423-323-api-网关-api-gateway)
+      - [1.4.2.4 3.2.4. Saga 模式](#1424-324-saga-模式)
+      - [1.4.2.5 3.2.5. 领导者选举 (Leader Election)](#1425-325-领导者选举-leader-election)
+      - [1.4.2.6 3.2.6. 分片/分区 (Sharding/Partitioning)](#1426-326-分片分区-shardingpartitioning)
+      - [1.4.2.7 3.2.7. 复制 (Replication)](#1427-327-复制-replication)
+      - [1.4.2.8 3.2.8. 消息队列 (Message Queue)](#1428-328-消息队列-message-queue)
+  - [1.5 4. 工作流设计模式](#15-4-工作流设计模式)
+    - [1.5.1 4.1. 概念与定义](#151-41-概念与定义)
+    - [1.5.2 4.2. 常见模式](#152-42-常见模式)
+      - [1.5.2.1 4.2.1. 状态机模式 (State Machine)](#1521-421-状态机模式-state-machine)
+      - [1.5.2.2 4.2.2. 工作流引擎 (Workflow Engine)](#1522-422-工作流引擎-workflow-engine)
+      - [1.5.2.3 4.2.3. 任务队列 (Task Queue)](#1523-423-任务队列-task-queue)
+      - [1.5.2.4 4.2.4. 编排 (Orchestration) vs. 协同 (Choreography)](#1524-424-编排-orchestration-vs-协同-choreography)
+  - [1.6 5. 思维导图 (Text)](#16-5-思维导图-text)
 
 ---
 
@@ -242,7 +166,6 @@
         // 确认是同一个实例
         println!("Logger1 addr: {:p}", logger1);
         println!("Logger2 addr: {:p}", logger2);
-
 
         // 使用 once_cell 的版本 (更推荐)
         let config1 = GLOBAL_CONFIG.lock().unwrap();
@@ -745,7 +668,6 @@
         let _ = composite2.add(Box::new(Dot { x: 10, y: 10 }));
         let _ = root.add(Box::new(composite2));
 
-
         root.draw();
 
         // 尝试在叶子节点上调用 add (会失败)
@@ -859,7 +781,6 @@
          fn operation_c1(&self) -> String { "SubsystemC: Preparing!\n".to_string() }
      }
 
-
     // 外观 (Facade)
     struct ComputerFacade {
         subsystem_a: SubsystemA,
@@ -964,7 +885,6 @@
             println!("Character '{}' with style {:?}", self.char_code, self.style);
         }
     }
-
 
     fn main() {
         let mut factory = StyleFactory::new();
@@ -1131,7 +1051,6 @@
         }
     }
 
-
     // 具体处理者 A
     struct ConcreteHandlerA {
         base: BaseHandler,
@@ -1204,7 +1123,6 @@
          }
     }
 
-
     fn main() {
         // 构建责任链 A -> B -> Default
         let handler_a = ConcreteHandlerA::new();
@@ -1214,7 +1132,6 @@
         // 链式设置：default_handler 变成 B 的 next, B 变成 A 的 next
         // 注意 set_next 消耗并返回 Box，所以需要重新赋值
         let chain = handler_a.set_next(handler_b.set_next(default_handler));
-
 
         println!("Sending RequestA...");
         if let Some(result) = chain.handle("RequestA") {
@@ -1375,7 +1292,6 @@
          }
     }
 
-
     // 非终结符表达式 - 加法
     struct Add {
         left: Box<dyn Expression>,
@@ -1398,7 +1314,6 @@
          }
     }
 
-
     fn main() {
         let mut context = Context::new();
         context.insert("x".to_string(), 10);
@@ -1416,7 +1331,6 @@
         let expr_add_xy = Box::new(Add { left: expr_x, right: expr_y });
         // (x + y) - z
         let expression_tree = Box::new(Subtract { left: expr_add_xy, right: expr_z });
-
 
         // 解释表达式
         let result = expression_tree.interpret(&context);
@@ -1496,7 +1410,6 @@
               println!("Modified Item: {}", item);
              // item 是 &mut i32 类型
          }
-
 
          println!("\nIterating using into_iter() and consuming:");
           // into_iter 会消耗 collection
@@ -1599,7 +1512,6 @@
         }
     }
 
-
     // 具体同事 A
     struct ConcreteColleagueA {
         mediator: Weak<RefCell<dyn Mediator>>,
@@ -1672,7 +1584,6 @@
              self.self_weak.clone() as Weak<RefCell<dyn Colleague>>
          }
     }
-
 
     fn main() {
         // 创建同事
@@ -1906,7 +1817,6 @@
          fn id(&self) -> usize { self.id }
     }
 
-
     fn main() {
         let mut subject = ConcreteSubject::new();
 
@@ -1918,7 +1828,6 @@
         subject.attach(observer_a.clone() as Rc<RefCell<dyn Observer>>);
         subject.attach(observer_b.clone() as Rc<RefCell<dyn Observer>>);
         subject.attach(observer_a2.clone() as Rc<RefCell<dyn Observer>>);
-
 
         subject.set_state("State 1");
 
@@ -2008,7 +1917,6 @@
         }
     }
 
-
     // --- 方法 2: 使用 Enum (更符合 Rust 习惯) ---
     enum DocumentStateEnum {
         Draft,
@@ -2080,7 +1988,6 @@
         }
     }
 
-
     fn main() {
         println!("--- State Pattern using Trait Object ---");
         let mut context = Context::new();
@@ -2094,7 +2001,6 @@
         context.request(); // B -> B (val=2)
         context.request(); // B -> A (val=0)
         context.request(); // A -> A (val=1)
-
 
         println!("\n--- State Pattern using Enum ---");
         let mut doc = Document::new();
@@ -2176,7 +2082,6 @@
         }
     }
 
-
     // --- 方法 2: Enum (当策略集合固定时更常用) ---
     enum ShippingStrategy {
         Standard,
@@ -2221,7 +2126,6 @@
         let mut data3 = vec![9, 3, 7, 6];
         std_sorter.execute_sort(&mut data3);
         println!("Data sorted with changed strategy: {:?}", data3);
-
 
         println!("\n--- Strategy Pattern using Enum ---");
         let order = Order { items_weight: 2.5 };
@@ -2305,7 +2209,6 @@
          // 使用默认的钩子实现 (添加页眉和页脚)
     }
 
-
     fn client_code(generator: &dyn ReportGenerator) {
         generator.generate_report();
     }
@@ -2386,7 +2289,6 @@
             self.result.push_str(&format!("<ElementB>{}</ElementB>\n", element.data_b));
         }
     }
-
 
     // 对象结构 (通常是一个集合或树)
     struct ObjectStructure {
@@ -2527,7 +2429,6 @@
         }
     }
 
-
     #[tokio::main]
     async fn main() {
         let proxy = ActiveObjectProxy::new(10); // 创建代理，活动对象在后台启动
@@ -2620,7 +2521,6 @@
             println!("Producer: Adding item. Buffer size before add: {}", buffer_guard.len());
             buffer_guard.push_back(item);
             println!("Producer: Item added. Buffer size after add: {}", buffer_guard.len());
-
 
             // 4. 发出信号 (通知可能在等待的消费者)
             // 只需要通知一个等待的消费者即可
@@ -2717,7 +2617,6 @@
         println!("Serial results: {:?}", serial_results);
         println!("Serial execution time: {:?}", duration_serial);
 
-
         // --- 使用 Rayon 并行计算 ---
         println!("\nCalculating Fibonacci numbers in parallel using Rayon...");
         let start_parallel = Instant::now();
@@ -2726,7 +2625,6 @@
         let duration_parallel = start_parallel.elapsed();
         println!("Parallel results: {:?}", parallel_results);
         println!("Parallel execution time: {:?}", duration_parallel);
-
 
         // 也可以手动配置线程池 (虽然通常不需要)
         let pool = rayon::ThreadPoolBuilder::new()
@@ -2841,7 +2739,6 @@
             println!("ThreadPool: All workers shut down.");
         }
     }
-
 
     fn main() {
         let pool = ThreadPool::new(4); // 创建一个有 4 个线程的池
@@ -3063,7 +2960,6 @@
          println!("RunConcurrent: All concurrent computations finished.");
      }
 
-
     #[tokio::main] // 使用 tokio 运行时来执行 async main
     async fn main() {
         println!("Main: Starting sequential await example...");
@@ -3153,7 +3049,6 @@
          }
      }
 
-
     #[actix::main] // 使用 actix 运行时
     async fn main() {
         // 启动 Actor，返回一个地址 (Addr) 用于向 Actor 发送消息
@@ -3168,22 +3063,18 @@
              Err(e) => println!("Main: Failed to send Ping: {}", e),
         }
 
-
         // 2. 使用 `do_send` 发送消息，不等待响应 (fire and forget)
         println!("Main: Sending Increment (do_send)...");
         addr.do_send(Increment);
         addr.do_send(Increment);
 
-
         // 等待一点时间让 do_send 的消息被处理 (实际应用中应避免随意 sleep)
         actix_rt::time::sleep(Duration::from_millis(50)).await;
-
 
         // 3. 再次发送需要响应的消息
         println!("Main: Sending GetData...");
         let current_count = addr.send(GetData).await.unwrap();
         println!("Main: Got current count: {}", current_count); // 应该输出 17 (15 + 1 + 1)
-
 
         // 优雅地停止 Actor (可选)
         println!("Main: Stopping actor system.");
@@ -3274,7 +3165,6 @@
         impl consulrs::client::Client for MockConsulClient {} // 实现空 trait 以匹配函数签名
 
         let client = MockConsulClient;
-
 
         // 模拟服务 A 注册自己
         let service_a_id = "user-service-instance-1";
@@ -3446,7 +3336,6 @@
             }
         }
 
-
         // 记录成功
         fn record_success(&self) {
              let mut store = self.store.lock().unwrap();
@@ -3507,7 +3396,6 @@
         Inner(E),    // 包装底层操作错误
     }
 
-
     // 模拟一个可能失败的操作
     fn potentially_failing_operation(succeed: bool) -> Result<String, String> {
         if succeed {
@@ -3516,7 +3404,6 @@
             Err("Operation failed!".to_string())
         }
     }
-
 
     fn main() {
         let breaker = CircuitBreaker::new(3, Duration::from_secs(5)); // 失败 3 次跳闸，5 秒后尝试重置
@@ -3551,11 +3438,9 @@
          }
           println!(" Current State: {:?}", breaker.get_state()); // Open
 
-
         // 等待超过重置时间
         println!("\n--- Phase 4: Waiting for reset timeout ({} seconds)... ---", breaker.reset_timeout.as_secs());
         thread::sleep(breaker.reset_timeout + Duration::from_millis(100));
-
 
         // 第一次请求进入 HalfOpen 状态
          println!("\n--- Phase 5: Attempting request in HalfOpen ---");
@@ -3578,7 +3463,6 @@
               Err(e) => println!(" Error: {:?}", e),
          }
          println!(" Current State: {:?}", breaker.get_state()); // Closed (HalfOpen -> Closed)
-
 
          // 熔断器已关闭，恢复正常
          println!("\n--- Phase 8: Circuit is Closed again ---");
@@ -3629,7 +3513,6 @@
     #[derive(Deserialize, Serialize, Debug)]
     struct CreateUser { name: String }
 
-
     // --- 处理函数 ---
 
     // 代理到用户服务: GET /users/:id
@@ -3665,7 +3548,6 @@
         }
     }
 
-
      // 代理到用户服务: POST /users
      async fn create_user_handler(
          State(state): State<AppState>,
@@ -3682,7 +3564,6 @@
              }
          }
      }
-
 
     // 代理到产品服务: GET /products/:id
     async fn get_product_handler(
@@ -3720,7 +3601,6 @@
 
         Ok(response)
     }
-
 
     // --- 主函数 ---
     // #[tokio::main]
@@ -3836,7 +3716,6 @@
          }
     }
 
-
     // 步骤 2: 处理支付 (假设在 Payment Service 中)
     #[derive(Debug)]
     struct ProcessPaymentStep { should_fail: bool } // 用于测试失败场景
@@ -3865,7 +3744,6 @@
              Ok(())
          }
     }
-
 
     // 步骤 3: 预留库存 (假设在 Inventory Service 中)
     #[derive(Debug)]
@@ -3974,7 +3852,6 @@
          }
      }
 
-
     // --- 运行 Saga ---
     // #[tokio::main]
     async fn conceptual_saga_main() {
@@ -3997,7 +3874,6 @@
              Err((err_msg, final_context)) => println!("Saga Failed: {} \nFinal Context: {:?}", err_msg, final_context),
         }
 
-
         println!("\n--- Running Saga (Failure Path - Payment Fails) ---");
          // 定义 Saga 步骤 (失败路径)
          let steps_fail: Vec<Arc<dyn SagaStep<_, _, _>>> = vec![
@@ -4011,7 +3887,6 @@
               Err((err_msg, final_context)) => println!("Saga Failed: {} \nFinal Context after compensation: {:?}", err_msg, final_context),
          }
     }
-
 
      fn main() {
         println!("--- Saga Pattern Conceptual Example ---");
@@ -4038,7 +3913,6 @@
     const LEADER_KEY: &str = "/myapp/leader"; // etcd 中用于选举的 key
     const LEASE_TTL: i64 = 10; // 租约 TTL (秒)
     const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(LEASE_TTL as u64 / 3); // 心跳间隔
-
 
     async fn try_become_leader(client: &etcd_client::Client, node_id: &str) -> Result<Option<i64>, Box<dyn std::error::Error>> {
          println!("[{}] Attempting to become leader...", node_id);
@@ -4111,7 +3985,6 @@
              println!("[{}] Lease keep-alive task finished for lease {}.", node_id_clone, lease_id);
         });
 
-
         Ok(Some(lease_id)) // 返回租约 ID，表示成为 leader
     }
 
@@ -4151,7 +4024,6 @@
         // let lease2 = try_become_leader(&client2, &node_id_2).await.unwrap();
         let lease2: Option<i64> = None; // 模拟失败
          println!("Node {} result: {:?}", node_id_2, lease2);
-
 
         if let Some(id1) = lease1 {
             println!("Node {} is leader. Performing leader duties for a while...", node_id_1);
@@ -4245,7 +4117,6 @@
         user_id: String,
         data: String,
     }
-
 
     fn main() {
         println!("--- Sharding/Partitioning Conceptual Example (Hash-based Routing) ---");
@@ -4370,7 +4241,6 @@
         Err(lapin::Error::ProtocolError(amqp_proto::protocol::Error::UnexpectedFrame)) // 返回一个错误来表示这是模拟
     }
 
-
     async fn publish_message(channel: &lapin::Channel, message: &str) -> Result<(), lapin::Error> {
         // let payload = message.as_bytes();
         // println!("MQ Publisher: Publishing message: '{}'", message);
@@ -4439,7 +4309,6 @@
         Ok(())
     }
 
-
     // #[tokio::main]
     async fn conceptual_mq_main() {
         // // --- Publisher ---
@@ -4472,7 +4341,6 @@
              println!("Conceptual Publisher finished.");
          });
 
-
         tokio::time::sleep(Duration::from_millis(100)).await; // 确保发布者先启动
 
         // --- Consumer ---
@@ -4492,7 +4360,6 @@
          // --- 启动消费者 (模拟) ---
          println!("Conceptual Consumer starting...");
          let _ = consume_messages(&lapin::Channel::default()).await;
-
 
     }
 
@@ -4687,7 +4554,6 @@
         impl MockJob { pub fn new(key: i64) -> Self { MockJob { key } } }
     }
 
-
     // #[tokio::main]
     async fn conceptual_engine_main() {
         // // 创建 Zeebe 客户端 (需要配置连接地址)
@@ -4764,7 +4630,6 @@
          println!("Workflow [{}]: Triggering shipment preparation...", order_id);
          tokio::time::sleep(Duration::from_millis(100)).await; // 模拟
 
-
           // 步骤 4: 生成发票 (异步任务)
           let invoice_task = serde_json::json!({
               "task_type": "generate_invoice",
@@ -4774,7 +4639,6 @@
           println!("Workflow [{}]: Publishing 'generate_invoice' task to queue.", order_id);
           // publish_message(mq_channel, &invoice_task.to_string()).await.ok();
           println!("Conceptual MQ Publisher: Publishing '{}'", invoice_task.to_string());
-
 
          println!("Workflow [{}]: Finished main flow (background tasks queued).", order_id);
     }
@@ -4981,7 +4845,6 @@
          let payment_processed_data = json!({ "eventType": PAYMENT_PROCESSED_EVENT, "orderId": order_id, "paymentStatus": "SUCCESS" });
           handle_payment_processed_event(payment_processed_data).await;
 
-
          // 4. 模拟 Shipping Service 监听到 InventoryReserved
           let inventory_reserved_data = json!({ "eventType": INVENTORY_RESERVED_EVENT, "orderId": order_id, "reservationStatus": "SUCCESS" });
           handle_inventory_reserved_event(inventory_reserved_data).await;
@@ -4989,7 +4852,6 @@
           println!("\n--- End of Simulation ---");
           // 流程通过事件链驱动完成
     }
-
 
      fn main() {
         println!("--- Orchestration vs Choreography ---");
@@ -5064,6 +4926,7 @@
         ├── 4.2.2. 工作流引擎 (Workflow Engine)
         ├── 4.2.3. 任务队列 (Task Queue)
         └── 4.2.4. 编排 (Orchestration) vs. 协同 (Choreography)
+
 ```
 
 希望这份详细的分析和示例能满足你的需求。

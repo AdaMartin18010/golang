@@ -32,19 +32,6 @@
   - [1.8 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>
 这个问询要求我从同伦类型论的视角分析工作流形式模式与程序语言模型之间的各种关系，
@@ -65,6 +52,7 @@
 
 按照要求，我会以markdown格式输出，并尝试提供思维导图结构。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -200,6 +188,7 @@ impl<T: Clone> State<T> {
         self.value = new_value;
     }
 }
+
 ```
 
 在HoTT中，这可表示为依值类型 `∑(x:A)B(x)` 的演化。
@@ -226,6 +215,7 @@ fn control_flow_example(condition: bool, x: i32) -> i32 {
     
     sum
 }
+
 ```
 
 ### 1.5.4 资源管理机制
@@ -254,6 +244,7 @@ fn use_resource() {
     let resource = Resource::new(); // 资源获取
     // 使用资源...
 } // 资源自动释放
+
 ```
 
 ## 1.6 模式间的相容性与等价性分析
@@ -302,6 +293,7 @@ fn valid_combination() -> Result<(), String> {
         }
     }
 }
+
 ```
 
 ## 1.7 形式化证明与示例
@@ -328,6 +320,7 @@ fn valid_combination() -> Result<(), String> {
 
 ```text
 P = x(y).P' | x<z>.P' | P|Q | (νx)P | !P
+
 ```
 
 这对应到编程语言中的:

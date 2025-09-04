@@ -151,6 +151,7 @@ func (s *LockFreeStack[T]) Size() int {
     
     return count
 }
+
 ```
 
 ### 无锁队列 (Lock-Free Queue)
@@ -251,6 +252,7 @@ func (q *LockFreeQueue[T]) IsEmpty() bool {
     headNode := (*QueueNode[T])(head)
     return headNode.Next == nil
 }
+
 ```
 
 ### 无锁哈希表 (Lock-Free Hash Table)
@@ -388,6 +390,7 @@ func (h *LockFreeHashMap[K, V]) Delete(key K) bool {
 func (h *LockFreeHashMap[K, V]) Size() int64 {
     return atomic.LoadInt64(&h.size)
 }
+
 ```
 
 ## 锁基数据结构
@@ -464,6 +467,7 @@ func (m *ReadWriteMap[K, V]) Keys() []K {
     }
     return keys
 }
+
 ```
 
 ### 分段锁数据结构
@@ -558,6 +562,7 @@ func (m *SegmentLockMap[K, V]) Size() int {
     }
     return total
 }
+
 ```
 
 ## 内存模型与原子操作
@@ -600,6 +605,7 @@ func (c *AtomicCounter) Set(value int64) {
 func (c *AtomicCounter) CompareAndSwap(old, new int64) bool {
     return atomic.CompareAndSwapInt64(&c.value, old, new)
 }
+
 ```
 
 ### 内存屏障
@@ -626,6 +632,7 @@ func (mb *MemoryBarrier) ReadData() []int {
     }
     return nil
 }
+
 ```
 
 ## 性能分析与优化
@@ -685,6 +692,7 @@ func BenchmarkConcurrentDataStructures(b *testing.B) {
         })
     }
 }
+
 ```
 
 ### 优化策略
@@ -709,6 +717,7 @@ func (lc *LocalCache[T]) Get() T {
     // 从全局池获取
     return lc.getFromGlobal()
 }
+
 ```
 
 #### 2. 批量操作
@@ -736,6 +745,7 @@ func (bp *BatchProcessor[T]) processBatch() {
     // ...
     bp.batch = bp.batch[:0]
 }
+
 ```
 
 #### 3. 内存池优化
@@ -758,6 +768,7 @@ func putNode(node *Node) {
     node.Next = nil
     nodePool.Put(node)
 }
+
 ```
 
 ## 最佳实践
@@ -814,6 +825,7 @@ func TestRaceCondition(t *testing.T) {
         t.Errorf("Expected 1000, got %d", counter)
     }
 }
+
 ```
 
 #### 2.2 死锁检测
@@ -838,6 +850,7 @@ func (m *MutexMap[K, V]) GetWithTimeout(key K, timeout time.Duration) (V, bool) 
         return zero, false
     }
 }
+
 ```
 
 ### 3. 监控与调试
@@ -871,6 +884,7 @@ func (pm *PerformanceMonitor) GetStats() map[string]interface{} {
         "error_rate":  float64(errs) / float64(ops),
     }
 }
+
 ```
 
 #### 3.2 调试工具
@@ -896,6 +910,7 @@ func (ds *DataStructure[T]) Visualize() string {
     
     return result.String()
 }
+
 ```
 
 ### 4. 测试策略
@@ -927,6 +942,7 @@ func TestConcurrentOperations(t *testing.T) {
         t.Errorf("Expected empty structure, got size %d", ds.Size())
     }
 }
+
 ```
 
 #### 4.2 压力测试
@@ -946,6 +962,7 @@ func BenchmarkStressTest(b *testing.B) {
         }
     })
 }
+
 ```
 
 ---

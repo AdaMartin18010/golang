@@ -220,6 +220,7 @@ func (ps *ProductService) SearchProducts(query *SearchQuery) ([]*Product, error)
     
     return results, nil
 }
+
 ```
 
 ### 2.2 事件驱动电商架构
@@ -336,6 +337,7 @@ func (och *OrderCreatedHandler) Handle(event *ECommerceEvent) error {
     
     return och.notificationService.Send(notification)
 }
+
 ```
 
 ## 3. 核心组件实现
@@ -490,6 +492,7 @@ func (ow *OrderWorkflow) ProcessOrder(order *Order) error {
     
     return nil
 }
+
 ```
 
 ### 3.2 支付系统
@@ -620,6 +623,7 @@ func (ps *PaymentSecurity) DetectFraud(payment *Payment) (*FraudResult, error) {
     
     return ps.fraud.Analyze(payment)
 }
+
 ```
 
 ### 3.3 库存管理系统
@@ -797,6 +801,7 @@ func (wm *WarehouseManager) calculateDistance(loc1, loc2 *Location) float64 {
     
     return 6371 * c // 地球半径6371km
 }
+
 ```
 
 ## 4. 推荐系统
@@ -920,6 +925,7 @@ func (cf *CollaborativeFiltering) calculateSimilarity(ratings1, ratings2 map[str
     
     return num / den
 }
+
 ```
 
 ### 4.2 内容推荐
@@ -994,6 +1000,7 @@ func (cbr *ContentBasedRecommendation) calculateSimilarity(preferences, features
     
     return dotProduct / (math.Sqrt(norm1) * math.Sqrt(norm2))
 }
+
 ```
 
 ## 5. 搜索系统
@@ -1123,6 +1130,7 @@ func (ps *ProductSearcher) calculateRelevance(query *SearchQuery, entry *IndexEn
     
     return score
 }
+
 ```
 
 ## 6. 性能优化
@@ -1246,6 +1254,7 @@ func (lb *LoadBalancer) GetServer() (*Server, error) {
         return availableServers[0], nil
     }
 }
+
 ```
 
 ## 7. 最佳实践
@@ -1359,6 +1368,7 @@ func (pm *PrivacyManager) ApplyPrivacyPolicy(data map[string]interface{}, policy
     
     return result, nil
 }
+
 ```
 
 ## 8. 案例分析

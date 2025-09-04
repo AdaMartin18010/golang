@@ -53,6 +53,7 @@ graph TD
     E --> E1[流畅体验]
     E --> E2[公平性]
     E --> E3[可扩展性]
+
 ```
 
 ---
@@ -115,6 +116,7 @@ graph TB
     A <--> B
     A --> C
     B --> C
+
 ```
 
 ### 3.2 组件系统
@@ -156,6 +158,7 @@ type RenderComponent struct {
 func (r *RenderComponent) Update(deltaTime float64) {
     // 渲染更新
 }
+
 ```
 
 ---
@@ -180,6 +183,7 @@ graph TD
     C --> C1
     C --> C2
     C --> C3
+
 ```
 
 ### 4.2 服务实现
@@ -233,6 +237,7 @@ func (gs *GameServer) JoinRoom(playerID, roomID string) error {
     
     return nil
 }
+
 ```
 
 ---
@@ -280,6 +285,7 @@ func (pe *PhysicsEngine) detectCollisions() {
         }
     }
 }
+
 ```
 
 ### 5.2 AI系统
@@ -322,6 +328,7 @@ func (pb *PathfindingBehavior) Update(agent *AIAgent, deltaTime float64) {
         pb.pathIndex++
     }
 }
+
 ```
 
 ---
@@ -360,6 +367,7 @@ game-engine/
 │   ├── utils/
 │   └── config/
 └── assets/
+
 ```
 
 ### 6.2 核心实现
@@ -412,6 +420,7 @@ func (ns *NetworkSync) broadcastGameState() {
         client.SendGameState(state)
     }
 }
+
 ```
 
 ---
@@ -452,6 +461,7 @@ func (ro *RenderOptimizer) OptimizeRenderList(objects []*GameObject, camera *Cam
     
     return visibleObjects
 }
+
 ```
 
 ### 7.2 内存优化
@@ -489,6 +499,7 @@ func (gop *GameObjectPool) Put(obj *GameObject) {
         pool.Put(obj)
     }
 }
+
 ```
 
 ---
@@ -527,6 +538,7 @@ func (cp *ClientPrediction) Reconcile(serverState GameState) {
         }
     }
 }
+
 ```
 
 ### 8.2 错误处理
@@ -555,6 +567,7 @@ func (gs *GameServer) handleError(err error) {
         }
     }
 }
+
 ```
 
 ---

@@ -16,6 +16,7 @@ fn main() {
     // **rrx 等价于 *(*rrx)，即先解引用一次得到 &i32，再解引用得到 i32
     assert_eq!(x, **rrx);
 }
+
 ```
 
 在上面的代码中：
@@ -47,6 +48,7 @@ fn main() {
     // *boxed 得到 MyBox<i32>，对其再解引用 **boxed 则得到 i32，即 x 的值
     assert_eq!(x, **boxed);
 }
+
 ```
 
 在这个例子中：

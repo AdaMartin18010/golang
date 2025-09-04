@@ -156,6 +156,7 @@ func (d *Director) Construct() *Product {
     d.builder.BuildPartC()
     return d.builder.GetResult()
 }
+
 ```
 
 ### 3.1.1.4.2 链式建造者模式
@@ -229,6 +230,7 @@ func Example() {
     
     fmt.Printf("Product: %+v\n", product)
 }
+
 ```
 
 ### 3.1.1.4.3 函数式建造者模式
@@ -301,6 +303,7 @@ func Example() {
     
     fmt.Printf("Product: %+v\n", product)
 }
+
 ```
 
 ## 3.1.1.5 4. 工程案例
@@ -395,6 +398,7 @@ func (r *HTTPRequest) Execute() (*http.Response, error) {
     client := &http.Client{Timeout: r.Timeout}
     return client.Do(req)
 }
+
 ```
 
 ### 3.1.1.5.2 数据库查询建造者
@@ -495,6 +499,7 @@ func (b *QueryBuilder) Build() *Query {
     b.query.SQL = sql
     return b.query
 }
+
 ```
 
 ## 3.1.1.6 5. 批判性分析

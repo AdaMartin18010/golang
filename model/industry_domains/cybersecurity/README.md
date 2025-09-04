@@ -120,6 +120,7 @@ impl ZeroTrustArchitecture {
         })
     }
 }
+
 ```
 
 #### 1.2.2.2 深度防御架构
@@ -164,6 +165,7 @@ impl DefenseInDepth {
         Ok(response)
     }
 }
+
 ```
 
 ## 1.3 业务领域概念建模
@@ -221,6 +223,7 @@ pub struct Mitigation {
     pub controls: Vec<SecurityControl>,
     pub effectiveness: f64,
 }
+
 ```
 
 #### 1.3.1.2 安全事件
@@ -286,6 +289,7 @@ pub enum IndicatorType {
     RegistryKey,
     ProcessName,
 }
+
 ```
 
 #### 1.3.1.3 安全策略
@@ -362,6 +366,7 @@ pub enum ActionType {
     Log,
     Notify,
 }
+
 ```
 
 ## 1.4 数据建模
@@ -468,6 +473,7 @@ impl EncryptedStorage {
         Ok(decrypted_key)
     }
 }
+
 ```
 
 #### 1.4.1.2 威胁情报数据库
@@ -575,6 +581,7 @@ impl ThreatIntelligenceDB {
             .collect())
     }
 }
+
 ```
 
 ## 1.5 流程建模
@@ -648,6 +655,7 @@ impl IncidentResponseEngine {
         Ok(response)
     }
 }
+
 ```
 
 #### 1.5.1.2 威胁狩猎流程
@@ -719,6 +727,7 @@ impl ThreatHuntingEngine {
         Ok(findings)
     }
 }
+
 ```
 
 ## 1.6 组件建模
@@ -812,6 +821,7 @@ impl AnomalyDetector {
         }
     }
 }
+
 ```
 
 #### 1.6.1.2 漏洞扫描器
@@ -902,6 +912,7 @@ impl ScanEngine {
         }
     }
 }
+
 ```
 
 ## 1.7 运维运营
@@ -990,6 +1001,7 @@ impl SecurityMetrics {
         self.active_incidents.set(count);
     }
 }
+
 ```
 
 #### 1.7.1.2 安全日志聚合
@@ -1061,6 +1073,7 @@ impl SecurityLogAggregator {
         Ok(logs)
     }
 }
+
 ```
 
 ### 1.7.2 安全配置管理
@@ -1129,6 +1142,7 @@ pub struct PasswordPolicy {
     pub require_special_chars: bool,
     pub max_age_days: u32,
 }
+
 ```
 
 ## 1.8 总结

@@ -174,4 +174,5 @@ Rust Distributed Systems Frameworks & Libraries Evaluation
 |   |-- More integration effort needed than "batteries-included" frameworks
 |   |-- Choose based on team skill, performance needs, tolerance for ecosystem gaps
 |   |-- Ecosystem is rapidly evolving
+
 ```

@@ -130,6 +130,7 @@ Web UI架构形式化分析
     └── 案例研究
         ├── React: 单向数据流证明
         └── 微前端: 边界内聚度证明
+
 ```
 
 ## 1.3 1. 引言
@@ -265,6 +266,7 @@ const [state, setState] = useState(initialState);
 const handleEvent = (event) => {
   setState(currentState => newState);  // δ(q, e) = q'
 };
+
 ```
 
 ### 1.5.3 属性维度分析
@@ -293,6 +295,7 @@ const MemoizedComponent = React.memo(Component, (prevProps, nextProps) => {
   // 相等性函数实现 - 控制重渲染边界
   return deepEqual(prevProps, nextProps);
 });
+
 ```
 
 ### 1.5.4 维度间映射关系
@@ -345,6 +348,7 @@ function UserProfile({ user }) {
     </div>
   );
 }
+
 ```
 
 ### 1.6.2 状态管理模式的形式化证明
@@ -380,6 +384,7 @@ function reducer(state = initialState, action) {
 // 状态一致性保证
 const store = createStore(reducer);
 // 任何状态变更都通过单一入口，保证一致性
+
 ```
 
 ### 1.6.3 路由系统的形式化证明
@@ -410,6 +415,7 @@ function AppRoutes() {
   );
 }
 // 这确保了所有视图间的可达性
+
 ```
 
 ### 1.6.4 渲染优化的形式化证明
@@ -441,6 +447,7 @@ class OptimizedComponent extends React.Component {
     return <div>{this.props.value}</div>;
   }
 }
+
 ```
 
 ## 1.7 5. 架构演化的形式化模型
@@ -568,6 +575,7 @@ const architectureHealth = {
 };
 
 // 评估结果：0.686 - 中等健康度
+
 ```
 
 ### 1.8.3 形式化分析工具链
@@ -667,6 +675,7 @@ function UserProfile({ userId, onUpdate }) {
     </div>
   );
 }
+
 ```
 
 ### 1.9.2 微前端架构形式化分析
@@ -742,6 +751,7 @@ const microFrontendSystem = {
     subscribe: (topic, callback) => { /* 订阅事件 */ }
   }
 };
+
 ```
 
 ## 1.10 8. 结论与未来研究方向

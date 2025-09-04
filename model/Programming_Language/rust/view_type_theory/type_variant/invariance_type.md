@@ -31,19 +31,6 @@
     - [1.10.6 六、为什么这些概念很重要？](#六、为什么这些概念很重要？)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，不变（Invariance）是一种类型变体（Variance）特性，表示如果类型 `A` 是类型 `B` 的子类型（`A <: B`），则泛型类型 `F<A>` 和 `F<B>` 之间没有子类型关系。
 这意味着不能将 `F<A>` 隐式转换为 `F<B>`，也不能将 `F<B>` 隐式转换为 `F<A>`。
 
@@ -92,6 +79,7 @@ fn main() {
     let x = Cell::new(5);
     let y: Cell<i32> = x; // 无法隐式转换，因为 Cell<T> 是不变的
 }
+
 ```
 
  `Cell<i32>` 和 `Cell<i32>` 是相同类型，因此可以赋值。
@@ -112,6 +100,7 @@ fn main() {
     let x: Invariant<i32> = Invariant(PhantomData);
     let y: Invariant<u32> = x; // 编译错误：无法将 Invariant<i32> 转换为 Invariant<u32>
 }
+
 ```
 
 由于 `PhantomData<fn(T) -> T>` 的变体是不变的，因此 `Invariant<i32>` 和 `Invariant<u32>` 之间没有子类型关系，无法进行隐式转换。
@@ -151,6 +140,7 @@ fn main() {
     // 以下代码将无法编译
     let _: Invariant<f64> = invariant_i32; // 错误：无法将 Invariant<i32> 转换为 Invariant<f64>
 }
+
 ```
 
 在这个例子中：
@@ -189,6 +179,7 @@ fn main() {
     let longer_lifetime: &'static str = s; // &'a str 可以隐式转换为 &'static str
     println!("{}", longer_lifetime);
 }
+
 ```
 
 - 由于 `&str` 是协变的，生命周期 `'a` 是 `'static` 的子类型，因此 `&'a str` 可以隐式转换为 `&'static str`。
@@ -205,6 +196,7 @@ fn main() {
     let fruit: &dyn std::fmt::Display = &apple;
     eat(fruit); // eat<dyn Display> 可以接受 eat<&str>
 }
+
 ```
 
 - 函数参数是逆变的，`eat<dyn Display>` 可以接受 `eat<&str>`，因为 `&str` 是 `dyn Display` 的子类型。
@@ -218,6 +210,7 @@ fn main() {
     let x = Cell::new(5);
     let y: Cell<i32> = x; // 无法隐式转换，因为 Cell<T> 是不变的
 }
+
 ```
 
 - `Cell<T>` 是不变的，无法将 `Cell<i32>` 转换为 `Cell<u32>`，即使 `i32` 和 `u32` 是不同的类型。
@@ -252,6 +245,7 @@ let x = 5;
 // 可变变量
 let mut y = 5;
 y = 6; // 正确：可以修改可变变量
+
 ```
 
 ## 1.5 协变 (Covariance)
@@ -266,6 +260,7 @@ fn example<'a, 'b>(x: &'a str, y: &'b str) where 'b: 'a {
     // 因为生命周期是协变的，所以 &'b T 可以被视为 &'a T 的子类型
     let _: &'a str = y; // 正确：可以将 &'b str 赋值给 &'a str
 }
+
 ```
 
 ## 1.6 逆变 (Contravariance)
@@ -282,6 +277,7 @@ fn example<'short, 'long>(short: &'short str, long: &'long str) where 'long: 'sh
     // 可以将接受 &'long str 的函数赋值给接受 &'short str 的函数类型
     f(short);
 }
+
 ```
 
 ## 1.7 不变性 (Invariance)
@@ -297,6 +293,7 @@ fn example<'a, 'b>(x: &'a mut i32, y: &'b mut i32) where 'b: 'a {
     
     // 即使 'b 比 'a 活得更长，&'b mut T 也不能被视为 &'a mut T 的子类型
 }
+
 ```
 
 ## 1.8 实际示例
@@ -340,6 +337,7 @@ fn main() {
 fn takes_any_ref<'a>(r: &'a String) {
     println!("字符串: {}", r);
 }
+
 ```
 
 ## 1.9 为什么这些概念很重要？
@@ -384,7 +382,9 @@ let r = &x;
 
 // 可变引用
 let mr = &mut y;
+
 *mr = 10; // 正确：可以通过可变引用修改值
+
 ```
 
 ### 1.10.2 二、协变 (Covariance)
@@ -423,6 +423,7 @@ fn main() {
         let s2: &'_ str = s1; // 协变允许从长生命周期转换到短生命周期
     }
 }
+
 ```
 
 ### 1.10.3 三、逆变 (Contravariance)
@@ -468,6 +469,7 @@ fn example() {
         println!("{}", s);
     });
 }
+
 ```
 
 ### 1.10.4 四、不变性 (Invariance)
@@ -515,6 +517,7 @@ fn main() {
     // 下面的代码会编译错误，因为 Invariant<T> 是不变的
     // let _: Invariant<i64> = inv_i32;
 }
+
 ```
 
 ### 1.10.5 五、综合示例
@@ -576,6 +579,7 @@ fn main() {
 fn takes_covariant<'a>(c: Covariant<'a, String>) {
     println!("接收了协变类型: {}", c.0);
 }
+
 ```
 
 ### 1.10.6 六、为什么这些概念很重要？

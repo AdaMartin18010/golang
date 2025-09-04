@@ -14,19 +14,6 @@
     - [1.2.5 解释和联系](#解释和联系)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，借用（Borrowing）是所有权系统的一个重要部分，它允许在不转移所有权的情况下使用值。
 与借用直接相关的 trait 主要有 `Deref` 和 `Borrow`。
 
@@ -41,6 +28,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 `Deref` trait 允许类型通过 `deref` 方法表现得像引用。
@@ -58,6 +46,7 @@ pub trait Deref {
 pub trait Borrow<Borrowed: ?Sized>: Sized {
     fn borrow(&self) -> &Borrowed;
 }
+
 ```
 
 `Borrow` trait 允许类型创建另一个类型的不可变引用。
@@ -76,6 +65,7 @@ pub trait ToOwned {
     type Owned: Borrow<Self>;
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 `ToOwned` trait 允许类型创建自己的拥有版本。
@@ -108,6 +98,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 `Deref` trait 允许类型表现得像引用，通过自定义解引用的行为。
@@ -125,6 +116,7 @@ pub trait Deref {
 pub trait DerefMut: Deref {
     fn deref_mut(&mut self) -> &mut Self::Target;
 }
+
 ```
 
 `DerefMut` trait 允许对智能指针的内部数据进行可变解引用。
@@ -141,6 +133,7 @@ pub trait DerefMut: Deref {
 pub trait Drop {
     fn drop(&mut self);
 }
+
 ```
 
 `Drop` trait 定义了当智能指针所管理的对象被销毁时执行的代码。

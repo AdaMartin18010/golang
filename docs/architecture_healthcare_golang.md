@@ -66,6 +66,7 @@ classDiagram
   EHR --> Diagnosis
   EHR --> Compliance
   MedicalDevice --> EHR
+
 ```
 
 ## 6. 典型数据流与时序图
@@ -84,6 +85,7 @@ sequenceDiagram
   EHR->>Doctor: 医生查看
   EHR->>AI: 智能分析
   AI->>Doctor: 辅助诊断建议
+
 ```
 
 ## 7. Golang领域模型代码示例
@@ -102,6 +104,7 @@ sequenceDiagram
    PatientID string
    Records   []string
  }
+
 ```
 
 ## 8. 分布式系统挑战
@@ -120,6 +123,7 @@ graph TD
   EHR-->Diagnosis
   EHR-->Compliance
   EHR-->AI[AI诊断]
+
 ```
 
 - 关键代码：Golang实现FHIR接口、数据加密、设备数据采集。

@@ -129,6 +129,7 @@ impl Clone for ThreadSafeCounter {
         }
     }
 }
+
 ```
 
 ### 1.1.2 2. 读写锁模式（Read-Write Lock Pattern）
@@ -247,6 +248,7 @@ fn rwlock_pattern_example() {
     println!("数据库访问计数: {}", database.get_access_count().unwrap());
     println!("最终数据项数: {}", database.get_all().unwrap().len());
 }
+
 ```
 
 ### 1.1.3 3. 通道模式（Channel Pattern）
@@ -408,6 +410,7 @@ fn channel_pattern_example() {
     // 等待工作者线程结束
     worker_thread.join().unwrap();
 }
+
 ```
 
 ### 1.1.4 4. Actor 模式（Actor Pattern）
@@ -591,6 +594,7 @@ fn actor_pattern_example() {
     // 等待 Actor 线程结束
     actor_handle.join().unwrap();
 }
+
 ```
 
 ### 1.1.5 5. 异步任务模式（Async Task Pattern）
@@ -684,6 +688,7 @@ async fn async_task_pattern_example() {
     
     println!("异步任务示例完成");
 }
+
 ```
 
 ## 1.2 二、Rust 2024 并行设计模式
@@ -805,6 +810,7 @@ fn divide_and_conquer_example() {
     let speedup = serial_duration.as_secs_f64() / parallel_duration.as_secs_f64();
     println!("加速比: {:.2}x", speedup);
 }
+
 ```
 
 ### 1.2.2 2. 映射归约模式（Map-Reduce Pattern）
@@ -940,6 +946,7 @@ fn map_reduce_example() {
         println!("{}: {}", word, count);
     }
 }
+
 ```
 
 ### 1.2.3 3. 工作窃取模式（Work Stealing Pattern）
@@ -1127,6 +1134,7 @@ fn work_stealing_example() {
     let sum: usize = results.iter().sum();
     println!("结果总和: {}", sum);
 }
+
 ```
 
 ### 1.2.4 4. 数据并行模式（Data Parallelism Pattern）
@@ -1301,6 +1309,7 @@ fn data_parallelism_example() {
     let speedup = serial_duration.as_secs_f64() / parallel_duration.as_secs_f64();
     println!("加速比: {:.2}x", speedup);
 }
+
 ```
 
 ### 1.2.5 5. 管道并行模式（Pipeline Parallelism Pattern）
@@ -1542,6 +1551,7 @@ fn pipeline_parallelism_example() {
     println!("理论最大加速比: {:.2}x", theoretical_max);
     println!("效率: {:.2}%", (speedup / theoretical_max) * 100.0);
 }
+
 ```
 
 ## 1.3 三、Rust 2024 分布式设计模式
@@ -1852,6 +1862,7 @@ fn master_worker_example() {
         );
     }
 }
+
 ```
 
 ### 1.3.2 2. 发布-订阅模式（Publish-Subscribe Pattern）
@@ -2127,6 +2138,7 @@ fn publish_subscribe_example() {
         }
     }
 }
+
 ```
 
 ### 1.3.3 3. 远程过程调用模式（RPC Pattern）
@@ -2346,6 +2358,7 @@ fn rpc_pattern_example() {
         }
     }
 }
+
 ```
 
 ### 1.3.4 4. 分布式锁模式（Distributed Lock Pattern）
@@ -2680,6 +2693,7 @@ fn distributed_lock_example() {
         }
     }
 }
+
 ```
 
 ### 1.3.5 5. 一致性哈希模式（Consistent Hashing Pattern）
@@ -3016,6 +3030,7 @@ fn consistent_hashing_example() {
         println!("节点 {}: {} 个项目", node, count);
     }
 }
+
 ```
 
 ## 1.4 四、Rust 2024 表达能力分析
@@ -3115,6 +3130,7 @@ async fn async_example() {
     let results = futures::future::join_all(tasks).await;
     println!("异步结果: {:?}", results);
 }
+
 ```
 
 ### 1.4.2 2. Rust 并行模式的表达能力
@@ -3238,6 +3254,7 @@ fn parallel_safety_example() {
     
     handle.join().unwrap();
 }
+
 ```
 
 ### 1.4.3 3. Rust 分布式模式的表达能力
@@ -3533,6 +3550,7 @@ fn circuit_breaker_example() {
         thread::sleep(Duration::from_millis(500));
     }
 }
+
 ```
 
 ## 1.5 五、Rust 2024 设计模式实现对比分析
@@ -3675,6 +3693,7 @@ fn mutex_performance_comparison() {
         println!("原子类型: {:?}, 结果: {}", duration, counter.load(Ordering::SeqCst));
     }
 }
+
 ```
 
 #### 1.5.1.2 通道模式对比
@@ -3811,6 +3830,7 @@ fn channel_performance_comparison() {
         println!("crossbeam 通道: {:?} 用于 {} 条消息", duration, MESSAGES);
     }
 }
+
 ```
 
 ### 1.5.2 2. 并行模式实现对比
@@ -3929,6 +3949,7 @@ fn parallel_performance_comparison() {
         println!("Rayon: {:?}, 结果: {}", duration, sum);
     }
 }
+
 ```
 
 #### 1.5.2.2 分而治之模式对比
@@ -4076,6 +4097,7 @@ fn quicksort_performance_comparison() {
 fn is_sorted(slice: &[i32]) -> bool {
     slice.windows(2).all(|w| w[0] <= w[1])
 }
+
 ```
 
 ### 1.5.3 3. 分布式模式实现对比
@@ -4307,6 +4329,7 @@ fn rpc_performance_comparison() {
         println!("Bincode 序列化/反序列化: {:?}", start.elapsed());
     }
 }
+
 ```
 
 ## 1.6 六、结论与最佳实践
@@ -4357,6 +4380,7 @@ async fn io_heavy_example() {
     // 使用 async/await 处理 I/O
     // 适用于: 网络服务器，文件处理等
 }
+
 ```
 
 #### 1.6.1.2 并行模式选择
@@ -4403,6 +4427,7 @@ fn pipeline_example() {
     // 将处理分为多个阶段
     // 适用于: 数据转换、ETL 过程等
 }
+
 ```
 
 #### 1.6.1.3 分布式模式选择
@@ -4447,6 +4472,7 @@ fn load_balancing_example() {
     // 分布式缓存和服务发现
     // 适用于: 缓存系统、服务路由
 }
+
 ```
 
 ### 1.6.2 2. Rust 2024 设计模式实现的最佳实践
@@ -4541,6 +4567,7 @@ async fn async_best_practice() {
     let result = handle.await.unwrap();
     println!("异步结果: {}", result);
 }
+
 ```
 
 ### 1.6.4 并行编程最佳实践
@@ -4668,6 +4695,7 @@ fn avoid_over_parallelization() {
     
     let sum: i32 = data.par_iter().sum();
 }
+
 ```
 
 ### 1.6.5 分布式编程最佳实践
@@ -4807,6 +4835,7 @@ fn secure_communication_best_practice() {
         true
     }
 }
+
 ```
 
 ### 1.6.6 3. 总结

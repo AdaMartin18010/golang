@@ -44,19 +44,6 @@
     - [1.2.12 9. 注意事项](#9-注意事项)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 详细解析 Rust 2024 edition 中的 `gen` 关键字带来的创新：
 
 ## 1.1 1. Gen 关键字基础概念
@@ -70,6 +57,7 @@ let nums = gen {
     yield 2;
     yield 3;
 }
+
 ```
 
 ## 1.2 2. 异步编程中的应用
@@ -88,6 +76,7 @@ async fn process_stream() {
         println!("Got value: {}", value);
     }
 }
+
 ```
 
 ### 1.2.2 2. **异步迭代器模式**
@@ -115,6 +104,7 @@ let new_async_iterator = gen async {
         tokio::time::sleep(Duration::from_secs(1)).await;
     }
 };
+
 ```
 
 ### 1.2.3 3. 函数式编程增强
@@ -129,6 +119,7 @@ fn transform_stream<T, U>(input: impl Iterator<Item = T>, f: impl Fn(T) -> U) ->
         }
     }
 }
+
 ```
 
 #### 1.2.3.2 2. **惰性求值**
@@ -143,6 +134,7 @@ fn lazy_fibonacci() -> impl Iterator<Item = u64> {
         }
     }
 }
+
 ```
 
 #### 1.2.3.3 3. **函数式流处理**
@@ -161,6 +153,7 @@ async fn process_data<T>(
         }
     }
 }
+
 ```
 
 ### 1.2.4 4. 高级使用技巧
@@ -178,6 +171,7 @@ fn fallible_generator() -> impl Iterator<Item = Result<i32, Error>> {
         }
     }
 }
+
 ```
 
 #### 1.2.4.2 2. **异步资源管理**
@@ -192,6 +186,7 @@ async fn managed_resource() -> impl Stream<Item = Result<Data, Error>> {
         connection.close().await?;
     }
 }
+
 ```
 
 #### 1.2.4.3 3. **并发控制模式**
@@ -221,6 +216,7 @@ where
         }
     }
 }
+
 ```
 
 ### 1.2.5 5. 实践建议
@@ -238,6 +234,7 @@ fn optimized_generator(size: usize) -> impl Iterator<Item = Vec<u8>> {
         }
     }
 }
+
 ```
 
 #### 1.2.5.2 2. **组合多个生成器**
@@ -256,6 +253,7 @@ fn combined_generators<T>(
         }
     }
 }
+
 ```
 
 总结：
@@ -292,6 +290,7 @@ let iterator = gen {
 let async_stream = gen async {
     // 异步生成器体
 };
+
 ```
 
 ##### 1.2.5.3.2 2. **yield**
@@ -309,6 +308,7 @@ let computed = gen {
         yield i * 2;
     }
 };
+
 ```
 
 ##### 1.2.5.3.3 3. **next**
@@ -323,6 +323,7 @@ while let Some(value) = iterator.next() {
 while let Some(value) = stream.next().await {
     println!("{}", value);
 }
+
 ```
 
 #### 1.2.5.4 2. 高级特性组合
@@ -337,6 +338,7 @@ fn generic_generator<T>(items: Vec<T>) -> impl Iterator<Item = T> {
         }
     }
 }
+
 ```
 
 ##### 1.2.5.4.2 2. **与生命周期结合**
@@ -349,6 +351,7 @@ fn borrowed_generator<'a>(data: &'a [i32]) -> impl Iterator<Item = &'a i32> {
         }
     }
 }
+
 ```
 
 ##### 1.2.5.4.3 3. **与trait bounds结合**
@@ -361,6 +364,7 @@ fn bounded_generator<T: Display + Clone>(item: T) -> impl Iterator<Item = T> {
         yield item;
     }
 }
+
 ```
 
 ### 1.2.6 *3. 异步编程模式*
@@ -380,6 +384,7 @@ async fn process_stream<T: AsyncRead>(reader: T) -> impl Stream<Item = Result<Ve
         }
     }
 }
+
 ```
 
 #### 1.2.6.2 2. **并发控制**
@@ -402,6 +407,7 @@ async fn controlled_stream<T>(
         }
     }
 }
+
 ```
 
 ### 1.2.7 -4. 函数式编程模式-
@@ -421,6 +427,7 @@ fn transform_stream<T, U>(
         }
     }
 }
+
 ```
 
 #### 1.2.7.2 2. **组合器模式**-
@@ -439,6 +446,7 @@ fn combine_streams<T>(
         }
     }
 }
+
 ```
 
 ### 1.2.8 *5. 错误处理模式*
@@ -456,6 +464,7 @@ fn fallible_generator() -> impl Iterator<Item = Result<i32, Error>> {
         }
     }
 }
+
 ```
 
 #### 1.2.8.2 2. **Option处理**
@@ -472,6 +481,7 @@ fn optional_generator() -> impl Iterator<Item = Option<i32>> {
         }
     }
 }
+
 ```
 
 ### 1.2.9 *6. 资源管理模式*
@@ -492,6 +502,7 @@ impl<T> ManagedResource<T> {
         }
     }
 }
+
 ```
 
 #### 1.2.9.2 2. *异步资源管理*
@@ -506,6 +517,7 @@ async fn managed_async_stream() -> impl Stream<Item = Result<Data, Error>> {
         connection.close().await?;
     }
 }
+
 ```
 
 ### 1.2.10 *7. 最佳实践建议*
@@ -523,6 +535,7 @@ fn optimized_generator() -> impl Iterator<Item = Vec<u8>> {
         }
     }
 }
+
 ```
 
 #### 1.2.10.2 2. **调试辅助**
@@ -537,6 +550,7 @@ fn debuggable_generator() -> impl Iterator<Item = i32> {
         }
     }
 }
+
 ```
 
 ### 1.2.11 8. 编程建议

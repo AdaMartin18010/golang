@@ -46,6 +46,7 @@ Program ::= PackageDeclaration ImportDeclaration* FunctionDeclaration*
 PackageDeclaration ::= "package" PackageName
 ImportDeclaration ::= "import" ImportPath
 FunctionDeclaration ::= "func" FunctionName "(" Parameters? ")" ReturnType? Block
+
 ```
 
 其中：
@@ -83,6 +84,7 @@ import "fmt"
 func main() {
     fmt.Println("Hello, World!")
 }
+
 ```
 
 ### 1.1.1.2.2 **程序结构分析**
@@ -99,6 +101,7 @@ func main() {
     // 函数调用：使用fmt包的Println函数
     fmt.Println("Hello, World!")
 }
+
 ```
 
 ### 1.1.1.2.3 **扩展版本：带参数的程序**
@@ -122,6 +125,7 @@ func main() {
         fmt.Println("Hello, World!")
     }
 }
+
 ```
 
 ### 1.1.1.2.4 **带错误处理的版本**
@@ -150,6 +154,7 @@ func main() {
         fmt.Println("Hello, World!")
     }
 }
+
 ```
 
 ## 1.1.1.3 🔧 **编译和运行**
@@ -157,40 +162,55 @@ func main() {
 ### 1.1.1.3.1 **使用go run命令**
 
 ```bash
+
 # 1.1.2 直接运行程序
+
 go run hello.go
 
 # 1.1.3 运行带参数的程序
+
 go run hello_advanced.go Alice
 
 # 1.1.4 运行带错误处理的程序
+
 go run hello_error.go Bob
+
 ```
 
 ### 1.1.4 **使用go build命令**
 
 ```bash
+
 # 1.1.5 编译程序
+
 go build hello.go
 
 # 1.1.6 运行编译后的程序
+
 ./hello
 
 # 1.1.7 在Windows上
+
 hello.exe
+
 ```
 
 ### 1.1.7 **交叉编译**
 
 ```bash
+
 # 1.1.8 编译为Linux可执行文件
+
 GOOS=linux GOARCH=amd64 go build hello.go
 
 # 1.1.9 编译为Windows可执行文件
+
 GOOS=windows GOARCH=amd64 go build hello.go
 
 # 1.1.10 编译为macOS可执行文件
+
 GOOS=darwin GOARCH=amd64 go build hello.go
+
 ```
 
 ## 1.1.10.1 📊 **性能分析**
@@ -207,6 +227,7 @@ GOOS=darwin GOARCH=amd64 go build hello.go
 执行main函数
     ↓
 程序结束
+
 ```
 
 ### 1.1.10.1.2 **内存使用分析**
@@ -234,6 +255,7 @@ func main() {
 func bToMb(b uint64) uint64 {
     return b / 1024 / 1024
 }
+
 ```
 
 ## 1.1.10.2 🧪 **测试代码**
@@ -261,6 +283,7 @@ func TestHelloOutput(t *testing.T) {
     // 实际测试中需要捕获输出进行比较
     t.Logf("Expected output: %s", expected)
 }
+
 ```
 
 ### 1.1.10.2.2 **基准测试**
@@ -279,6 +302,7 @@ func BenchmarkHelloWorld(b *testing.B) {
         _ = "Hello, World!"
     }
 }
+
 ```
 
 ## 1.1.10.3 🎯 **最佳实践**
@@ -305,6 +329,7 @@ func run() error {
     // 程序逻辑
     return nil
 }
+
 ```
 
 ### 1.1.10.3.3 **配置管理**
@@ -325,6 +350,7 @@ func main() {
     }
     fmt.Println(message)
 }
+
 ```
 
 ## 1.1.10.4 🔍 **常见问题**

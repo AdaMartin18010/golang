@@ -152,6 +152,7 @@ pub struct PlannedPath {
     pub traffic_rules: Vec<TrafficRule>,
     pub safety_margins: SafetyMargins,
 }
+
 ```
 
 #### 1.2.2.2 传感器融合架构
@@ -262,6 +263,7 @@ impl ExtendedKalmanFilter {
         })
     }
 }
+
 ```
 
 ## 1.3 业务领域概念建模
@@ -343,6 +345,7 @@ pub enum SteeringType {
     Electric,
     SteerByWire,
 }
+
 ```
 
 #### 1.3.1.2 交通管理系统
@@ -408,6 +411,7 @@ pub enum ConditionType {
     Congestion,
     RoadDamage,
 }
+
 ```
 
 #### 1.3.1.3 车辆通信系统
@@ -478,6 +482,7 @@ pub enum V2XMessageType {
     PersonalSafetyMessage,
     EmergencyElectronicBrakeLight,
 }
+
 ```
 
 ## 1.4 数据建模
@@ -560,6 +565,7 @@ impl VehicleDataStreamProcessor {
         Ok(validation_result)
     }
 }
+
 ```
 
 #### 1.4.1.2 车辆诊断数据
@@ -670,6 +676,7 @@ impl DiagnosticDatabase {
             .collect())
     }
 }
+
 ```
 
 ## 1.5 流程建模
@@ -749,6 +756,7 @@ impl PerceptionPlanningControlLoop {
         Ok(())
     }
 }
+
 ```
 
 #### 1.5.1.2 紧急情况处理流程
@@ -839,6 +847,7 @@ impl EmergencyHandlingSystem {
         Ok(actions)
     }
 }
+
 ```
 
 ## 1.6 组件建模
@@ -1004,6 +1013,7 @@ impl Sensor for Camera {
         SensorConfig::Camera(self.config.clone())
     }
 }
+
 ```
 
 #### 1.6.1.2 车辆控制接口
@@ -1133,6 +1143,7 @@ impl VehicleControlInterface {
         Ok(messages)
     }
 }
+
 ```
 
 ## 1.7 运维运营
@@ -1243,6 +1254,7 @@ impl VehicleHealthMetrics {
         self.tire_pressure.set(pressure);
     }
 }
+
 ```
 
 #### 1.7.1.2 预测性维护系统
@@ -1357,6 +1369,7 @@ impl PredictiveMaintenanceSystem {
         Ok(recommendations)
     }
 }
+
 ```
 
 ## 1.8 总结

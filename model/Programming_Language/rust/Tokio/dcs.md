@@ -17,19 +17,6 @@
     - [2 2 2 2 2 2 2 运行系统](#2-2-2-2-2-2-2-运行系统)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将展示一个使用 Rust 和 tokio 实现的分布式控制系统(DCS)。
 这个系统包含控制器节点、执行器节点、传感器节点等组件。
 
@@ -78,6 +65,7 @@ prometheus = "0.13"
 config = "0.13"
 deadpool = "0.9"
 tokio-modbus = "0.8"
+
 ```
 
 ## 1.3 下面是主要实现代码
@@ -432,6 +420,7 @@ async fn main() -> Result<(), DCSError> {
     
     Ok(())
 }
+
 ```
 
 ### 1.3.1 这个实现包含以下主要特性
@@ -497,9 +486,12 @@ async fn main() -> Result<(), DCSError> {
 ### 1.3.2 1. 配置环境
 
 ```bash
+
 # 2 2 2 2 2 2 2 设置环境变量
+
 export DATABASE_URL="postgres://user:password@localhost/dcs"
 export REDIS_URL="redis://localhost"
+
 ```
 
 ### 2 2 2 2 2 2 2 2. 初始化数据库
@@ -507,12 +499,14 @@ export REDIS_URL="redis://localhost"
 ```bash
 sqlx database create
 sqlx migrate run
+
 ```
 
 ### 2 2 2 2 2 2 2 3. 运行系统
 
 ```bash
 cargo run
+
 ```
 
 建议添加的功能：
@@ -557,6 +551,7 @@ bytes = "1.5"
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres"] }
 prometheus = "0.13"
 config = "0.13"
+
 ```
 
 ### 2 2 2 2 2 2 2 主要实现代码
@@ -787,6 +782,7 @@ async fn main() -> Result<(), AdaptiveError> {
     
     Ok(())
 }
+
 ```
 
 ### 2 2 2 2 2 2 2 代码说明
@@ -836,6 +832,7 @@ async fn main() -> Result<(), AdaptiveError> {
 
 ```bash
 cargo run
+
 ```
 
 这个实现提供了一个基础的自适应系统框架，您可以根据具体需求进行扩展和优化。建议关注：

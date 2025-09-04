@@ -215,6 +215,7 @@ match msg {
     Message::Value(other) => println!("Other value: {}", other),
     _ => (),
 }
+
 ```
 
 ### C. 引用模式 (`ref`, `ref mut`)
@@ -231,6 +232,7 @@ match x {
     None => (),
 }
 println!("{:?}", x); // Output: Some(6)
+
 ```
 
 ### D. 匹配守卫 (Match Guards)
@@ -246,6 +248,7 @@ match num {
     None => (),
     _ => (), // 对于 Some(x) where x==0 需要这个，因为守卫可能不满足
 }
+
 ```
 
 ### E. 解构 `if let` 与 `while let`
@@ -262,6 +265,7 @@ let mut stack = vec![1, 2, 3];
 while let Some(top) = stack.pop() { // 循环直到 pop 返回 None
     println!("{}", top);
 }
+
 ```
 
 ## V. 函数式编程范式融合
@@ -557,4 +561,5 @@ Rust控制流与核心机制 (修订版)
 │   ├── `_` (通配符/忽略)
 │
 └── XII. 结论 (立体多维系统, 核心原则总结)
+
 ```

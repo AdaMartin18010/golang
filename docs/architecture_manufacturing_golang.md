@@ -211,6 +211,7 @@ classDiagram
     +float Value
     +time.Time Time
   }
+
 ```
 
 ### 1.3.3 典型数据流
@@ -243,6 +244,7 @@ sequenceDiagram
   O->>S: 供应链协同
   PR->>EV: 事件采集
   EV->>DA: 数据分析
+
 ```
 
 ### 1.3.4 Golang 领域模型代码示例
@@ -331,6 +333,7 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
+
 ```
 
 ---
@@ -417,6 +420,7 @@ graph TD
   DA --> PR
   EN --> D
   EN --> PR
+
 ```
 
 ### 1.5.5 Golang代码示例
@@ -425,6 +429,7 @@ graph TD
 // 产品数量Prometheus监控
 var productCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "product_total"})
 productCount.Set(1000000)
+
 ```
 
 ---
@@ -455,6 +460,7 @@ manufacturing-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 1.6.2 关键代码片段
@@ -481,6 +487,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

@@ -93,6 +93,7 @@ fn main() {
 
     println!("Updated value: {}", data.borrow().value); // 输出: Updated value: 15
 }
+
 ```
 
 ## 2. 外部可变性（External Mutability）
@@ -123,6 +124,7 @@ fn main() {
 
     println!("Updated value: {}", data.value); // 输出: Updated value: 15
 }
+
 ```
 
 ## 3. 区别与联系
@@ -174,6 +176,7 @@ fn main() {
 
     println!("Updated value: {}", data.borrow().value); // 输出: Updated value: 15
 }
+
 ```
 
 ### 1.2 C++ 中的内部可变性
@@ -202,6 +205,7 @@ int main() {
     std::cout << "Updated value: " << data.value << std::endl; // 输出: Updated value: 15
     return 0;
 }
+
 ```
 
 ## 对比 2. 外部可变性（External Mutability）
@@ -229,6 +233,7 @@ fn main() {
 
     println!("Updated value: {}", data.value); // 输出: Updated value: 15
 }
+
 ```
 
 ### 2.2 C++ 中的外部可变性
@@ -257,6 +262,7 @@ int main() {
     std::cout << "Updated value: " << data.value << std::endl; // 输出: Updated value: 15
     return 0;
 }
+
 ```
 
 ### 3. 总结对比
@@ -320,6 +326,7 @@ int main() {
 
     return 0;
 }
+
 ```
 
 ### 代码解释
@@ -365,6 +372,7 @@ int main() {
 
     return 0;
 }
+
 ```
 
 ### 总结
@@ -570,6 +578,7 @@ fn main() {
     // data 的所有权仍然有效，reference 在其生命周期内有效
     // 这里可以看到，借用的生命周期与所有权的生命周期是相互关联的
 }
+
 ```
 
 ### *总结*

@@ -26,19 +26,6 @@
   - [1.7 6. 思维导图](#6-思维导图)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [WebAssembly的概念、原理与技术分析](#webassembly的概念原理与技术分析)
@@ -159,6 +146,7 @@ WebAssembly.instantiateStreaming(fetch('module.wasm'), importObject)
     const result = obj.instance.exports.processMemory();
     console.log(result);
   });
+
 ```
 
 ### 1.3.2 执行模型
@@ -450,4 +438,5 @@ mindmap
         移动平台
         IoT设备
         统一应用模型
+
 ```

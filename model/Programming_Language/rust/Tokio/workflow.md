@@ -13,19 +13,6 @@
   - [1.9 8. 主程序实现](#8-主程序实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个基于 Rust 2024 + Tokio 的分布式工作流系统，实现各种工作流模式。
 
 ## 1.1 目录
@@ -57,6 +44,7 @@ thiserror = "1.0"
 async-graphql = "6.0"
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-native-tls"] }
 redis = { version = "0.23", features = ["tokio-comp"] }
+
 ```
 
 ## 1.3 2. 基础工作流模式定义
@@ -130,6 +118,7 @@ impl WorkflowPattern for ParallelPattern {
         Ok(())
     }
 }
+
 ```
 
 ## 1.4 3. 高级工作流模式实现
@@ -219,6 +208,7 @@ impl WorkflowPattern for DiscriminatorPattern {
         self.next_pattern.execute(context).await
     }
 }
+
 ```
 
 ## 1.5 4. 工作流状态和上下文管理
@@ -292,6 +282,7 @@ impl WorkflowStorage {
         Ok(())
     }
 }
+
 ```
 
 ## 1.6 5. 工作流模式组合示例
@@ -388,6 +379,7 @@ pub fn create_document_approval_workflow() -> Box<dyn WorkflowPattern> {
         ],
     })
 }
+
 ```
 
 ## 1.7 6. 工作流执行引擎
@@ -473,6 +465,7 @@ impl WorkflowExecutor {
         Ok(())
     }
 }
+
 ```
 
 ## 1.8 7. 工作流监控和指标收集
@@ -516,6 +509,7 @@ impl WorkflowMetrics {
         self.task_duration.observe(duration.as_secs_f64());
     }
 }
+
 ```
 
 ## 1.9 8. 主程序实现
@@ -542,6 +536,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了一个完整的分布式工作流系统，支持以下工作流模式：

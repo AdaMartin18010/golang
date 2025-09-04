@@ -68,6 +68,7 @@ impl SafeData {
         Arc::clone(&self.data)
     }
 }
+
 ```
 
 ### 1.2.2 边界检查
@@ -91,6 +92,7 @@ pub fn safe_string_operation(s: &str, start: usize, end: usize) -> Option<&str> 
 pub fn safe_conversion(value: i64) -> Option<i32> {
     value.try_into().ok() // 使用try_into避免溢出
 }
+
 ```
 
 ## 1.3 2. 密码学安全
@@ -157,6 +159,7 @@ impl CryptoService {
         Ok(plaintext)
     }
 }
+
 ```
 
 ### 1.3.2 哈希和签名
@@ -201,6 +204,7 @@ pub fn secure_hash(data: &[u8]) -> Vec<u8> {
     let hash = digest::digest(&digest::SHA256, data);
     hash.as_ref().to_vec()
 }
+
 ```
 
 ## 1.4 3. 输入验证
@@ -242,6 +246,7 @@ impl UserInput {
         self.email = self.email.trim().to_lowercase();
     }
 }
+
 ```
 
 ### 1.4.2 SQL注入防护
@@ -281,6 +286,7 @@ impl UserRepository {
         Ok(user)
     }
 }
+
 ```
 
 ## 1.5 4. 认证和授权
@@ -339,6 +345,7 @@ impl AuthService {
         Ok(token_data.claims)
     }
 }
+
 ```
 
 ### 1.5.2 基于角色的访问控制
@@ -394,6 +401,7 @@ impl RBACService {
         self.has_permission(user_role, required_permission)
     }
 }
+
 ```
 
 ## 1.6 5. 网络安全
@@ -454,6 +462,7 @@ impl SecureServer {
         // 处理连接逻辑
     }
 }
+
 ```
 
 ### 1.6.2 请求限流
@@ -499,6 +508,7 @@ impl RateLimiter {
         }
     }
 }
+
 ```
 
 ## 1.7 6. 安全配置
@@ -533,6 +543,7 @@ impl SecurityConfig {
         config.try_deserialize()
     }
 }
+
 ```
 
 ### 1.7.2 安全中间件
@@ -568,6 +579,7 @@ pub fn create_secure_app() -> App<()> {
             .service(admin_routes())
         )
 }
+
 ```
 
 ## 1.8 7. 安全测试
@@ -617,6 +629,7 @@ fn is_strong_password(password: &str) -> bool {
 fn sanitize_input(input: &str) -> String {
     input.replace(['<', '>', '"', '\'', '&', ';'], "")
 }
+
 ```
 
 ### 1.8.2 集成测试
@@ -648,6 +661,7 @@ mod integration_tests {
         assert_eq!(resp.status(), 200);
     }
 }
+
 ```
 
 ## 1.9 8. 安全监控
@@ -699,6 +713,7 @@ impl SecurityLogger {
         );
     }
 }
+
 ```
 
 ### 1.9.2 异常检测
@@ -749,6 +764,7 @@ impl AnomalyDetector {
         true
     }
 }
+
 ```
 
 ## 1.10 总结

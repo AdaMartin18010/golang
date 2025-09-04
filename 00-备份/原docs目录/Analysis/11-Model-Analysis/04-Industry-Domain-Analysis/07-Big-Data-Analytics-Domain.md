@@ -167,6 +167,7 @@ func (la *LambdaArchitecture) Query(ctx context.Context, query *Query) (*QueryRe
     // 合并结果
     return la.servingLayer.MergeResults(speedResult, batchResult)
 }
+
 ```
 
 ### 3.2 Kappa架构
@@ -268,6 +269,7 @@ func (ka *KappaArchitecture) ReplayEvents(ctx context.Context, fromTimestamp tim
     
     return nil
 }
+
 ```
 
 ### 3.3 数据管道架构
@@ -418,6 +420,7 @@ func (dp *DataPipeline) executeGraph(ctx context.Context, graph *ExecutionGraph)
     
     return nil
 }
+
 ```
 
 ## 4. 核心组件实现
@@ -534,6 +537,7 @@ func (sp *StreamProcessor) processWindow(ctx context.Context, events []*DataEven
     
     return nil
 }
+
 ```
 
 ### 4.2 数据湖存储
@@ -689,6 +693,7 @@ func (dl *DataLake) ReadDataset(ctx context.Context, dataset string, filters []F
     
     return batches, nil
 }
+
 ```
 
 ### 4.3 查询引擎
@@ -802,6 +807,7 @@ func (qe *QueryEngine) analyzeQuery(ast *ASTNode) (*LogicalPlan, error) {
     analyzer := NewQueryAnalyzer(qe.catalog)
     return analyzer.Analyze(ast)
 }
+
 ```
 
 ## 5. 数据质量监控
@@ -960,6 +966,7 @@ func (dqm *DataQualityMonitor) checkCompleteness(rule *DataQualityRule, data *Re
         CheckedAt:  time.Now(),
     }, nil
 }
+
 ```
 
 ## 6. 性能优化
@@ -1045,6 +1052,7 @@ func (op *ObjectPool) Get() interface{} {
 func (op *ObjectPool) Put(obj interface{}) {
     op.pool.Put(obj)
 }
+
 ```
 
 ### 6.2 并行处理优化
@@ -1163,6 +1171,7 @@ type ProcessResult[T any] struct {
     ChunkIndex int
     Results    []T
 }
+
 ```
 
 ## 7. 监控和可观测性
@@ -1249,6 +1258,7 @@ func (dpm *DataProcessingMetrics) SetQueueSize(size float64) {
 func (dpm *DataProcessingMetrics) SetThroughput(throughput float64) {
     dpm.throughput.Set(throughput)
 }
+
 ```
 
 ## 8. 总结

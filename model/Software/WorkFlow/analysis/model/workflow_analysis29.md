@@ -20,19 +20,6 @@
   - [1.4 4. **总结与工程实践关联:**](#4-**总结与工程实践关联**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 Here's a thinking process that leads to the detailed explanation about engineering practices and theoretical models for Control Flow, Execution Flow, and Data Flow:
  Understand the User's Need: The user, having grasped the theoretical limitations of the linear flow model (PL -> CF -> EF -> DF), now wants to bridge this understanding to engineering practice. They're asking for theoretical models, concepts, definitions, and descriptions relevant to how these flows manifest dynamically and evolve in real-world systems. They want to know how engineers actually deal with this complexity in practice, perhaps using specific models or techniques.
@@ -72,6 +59,7 @@ Here's a thinking process that leads to the detailed explanation about engineeri
   Key Point: Evolution involves managing the consistency across these intertwined aspects. Version control, CI/CD, testing (unit, integration, E2E), monitoring are practical tools for managing this.
   Conclusion: Emphasize that engineers use a combination of mental models, specific formalisms (like FSMs or tracing models where appropriate), practical tools (debuggers, logs, profilers), and rigorous processes (testing, monitoring) to manage this complexity. There isn't one single unifying theory applied universally, but rather a toolkit of approaches.
  Review and Refine: Read through the generated text. Ensure clarity, accuracy, and direct relevance to the user's request. Check for jargon and explain it if necessary. Make sure the distinction between static structure and dynamic behavior is clear. Ensure the connection to engineering practice is maintained throughout. Self-correction: Initially, I might have focused too much on pure theory. Need to explicitly link back to how engineers use* these ideas or tools.* Add emphasis on the practical tools engineers rely on daily (debuggers, logs, etc.).
+
 ```
 
 好的，我们来从**工程实践**的角度，

@@ -12,19 +12,6 @@
   - [1.8 7. 使用示例](#7-使用示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个纯 Rust 2024 标准库 + Generator 实现的算法和数据结构集合。
 
 ## 1.1 目录
@@ -71,6 +58,7 @@ impl<G: Generator> Future for GenWrapper<G> {
         }
     }
 }
+
 ```
 
 ## 1.3 2. 排序算法实现
@@ -163,6 +151,7 @@ impl<T: Ord> QuickSortGen<T> {
         i
     }
 }
+
 ```
 
 ## 1.4 3. 二叉树实现
@@ -231,6 +220,7 @@ impl<T: Clone> Generator for TreeTraversalGen<T> {
         Poll::Ready(None)
     }
 }
+
 ```
 
 ## 1.5 4. 图算法实现
@@ -338,6 +328,7 @@ impl<T> DijkstraGen<T> {
         path
     }
 }
+
 ```
 
 ## 1.6 5. 搜索算法实现
@@ -391,6 +382,7 @@ impl<T: Ord> Generator for BinarySearchGen<T> {
         Poll::Ready(None)
     }
 }
+
 ```
 
 ## 1.7 6. 堆实现
@@ -456,6 +448,7 @@ impl<T: Ord> MaxHeapGen<T> {
         }
     }
 }
+
 ```
 
 ## 1.8 7. 使用示例
@@ -513,6 +506,7 @@ fn main() {
         println!("{:?}", heap);
     }
 }
+
 ```
 
 这个实现提供了：

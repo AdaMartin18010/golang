@@ -103,6 +103,7 @@ const (
     UserStatusInactive UserStatus = "INACTIVE"
     UserStatusSuspended UserStatus = "SUSPENDED"
 )
+
 ```
 
 ### 2.2 业务流程模型
@@ -162,6 +163,7 @@ const (
     ProcessStatusInactive  ProcessStatus = "INACTIVE"
     ProcessStatusDeprecated ProcessStatus = "DEPRECATED"
 )
+
 ```
 
 ### 2.3 文档模型
@@ -192,6 +194,7 @@ const (
     DocumentStatusPublished DocumentStatus = "PUBLISHED"
     DocumentStatusArchived  DocumentStatus = "ARCHIVED"
 )
+
 ```
 
 ## 3. 形式化转换
@@ -408,6 +411,7 @@ func (c *EnterpriseWorkflowConverter) buildConditionExpression(conditions []*Con
     
     return strings.Join(expressions, " && ")
 }
+
 ```
 
 ## 4. 架构设计
@@ -429,6 +433,7 @@ func (c *EnterpriseWorkflowConverter) buildConditionExpression(conditions []*Con
 ├─────────────────────────────────────────────────────────┤
 │  ERP  │  CRM  │  HR  │  Finance  │  自定义系统          │
 └─────────────────────────────────────────────────────────┘
+
 ```
 
 ### 4.2 核心组件设计
@@ -551,6 +556,7 @@ func (e *EnterpriseWorkflowEngine) DeployEnterpriseWorkflow(enterprise *Enterpri
     
     return nil
 }
+
 ```
 
 ## 5. Golang实现
@@ -717,6 +723,7 @@ func (a *OfficeActivities) UpdateDatabase(ctx context.Context, request *Purchase
     
     return nil
 }
+
 ```
 
 ### 5.2 员工入职工作流
@@ -1123,6 +1130,7 @@ func (a *OnboardingActivities) ScheduleTeamIntroduction(ctx context.Context, emp
     time.Sleep(1 * time.Second)
     return nil
 }
+
 ```
 
 ## 6. 最佳实践

@@ -163,6 +163,7 @@ func (s *StateC) Handle(context *Context) {
 func (s *StateC) GetName() string {
     return "StateC"
 }
+
 ```
 
 ### 3.3.1.4.2 自动售货机状态模式
@@ -333,6 +334,7 @@ func (s *SoldState) Dispense(machine *VendingMachine) {
 func (s *SoldState) GetName() string {
     return "Sold"
 }
+
 ```
 
 ### 3.3.1.4.3 订单状态模式
@@ -543,6 +545,7 @@ func (c *CancelledState) Cancel(order *Order) {
 func (c *CancelledState) GetName() string {
     return "Cancelled"
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -675,6 +678,7 @@ func (c *ConnectedState) Receive(conn *Connection) []byte {
 func (c *ConnectedState) GetName() string {
     return "Connected"
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

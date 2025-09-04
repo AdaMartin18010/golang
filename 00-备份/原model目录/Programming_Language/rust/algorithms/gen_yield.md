@@ -24,6 +24,7 @@ Rust目前没有直接的`yield`关键字，
 ```toml:Cargo.toml
 [dependencies]
 genawaiter = "0.99"
+
 ```
 
 ### 斐波那契数列生成器
@@ -54,6 +55,7 @@ fn main() {
         println!("{}", num);
     }
 }
+
 ```
 
 ### 使用泛型容器的素数筛选
@@ -106,6 +108,7 @@ fn main() {
     }
     println!();
 }
+
 ```
 
 ## 异步模式下的生成器实现
@@ -144,6 +147,7 @@ async fn async_fibonacci(limit: usize) {
 async fn main() {
     async_fibonacci(10).await;
 }
+
 ```
 
 ### 使用泛型异步队列的生产者-消费者模式
@@ -218,6 +222,7 @@ async fn main() {
     // 等待任务完成
     let _ = tokio::join!(producer_task, consumer_task);
 }
+
 ```
 
 ### 使用泛型实现异步迭代器适配器
@@ -301,6 +306,7 @@ async fn main() {
         tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
     }
 }
+
 ```
 
 ## 总结
@@ -321,4 +327,5 @@ async fn main() {
 genawaiter = "0.99"
 tokio = { version = "1", features = ["full"] }
 futures = "0.3"
+
 ```

@@ -22,19 +22,6 @@
     - [1.5.7 **总结**](#**总结**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`std::ops` 模块提供了许多 trait，用于定义不同类型的操作符行为。
 这些 trait 可以被实现以支持自定义类型的操作符重载。
 以下是一些常见的 `std::ops` trait 及其用途：
@@ -125,6 +112,7 @@ fn main() {
     assert_eq!(p3, Point { x: 4, y: 6 });
     assert_eq!(p4, Point { x: -2, y: -2 });
 }
+
 ```
 
 #### 1.5.1.2 2. **实现 `BitAnd` 和 `BitOr`**
@@ -161,6 +149,7 @@ fn main() {
     assert_eq!(c, BitFlags(0b1000));
     assert_eq!(d, BitFlags(0b1110));
 }
+
 ```
 
 #### 1.5.1.3 3. **实现 `AddAssign` 和 `SubAssign`**
@@ -195,6 +184,7 @@ fn main() {
     a -= b;
     assert_eq!(a, Counter { value: 5 });
 }
+
 ```
 
 #### 1.5.1.4 4. **实现 `Index` 和 `IndexMut`**
@@ -229,6 +219,7 @@ fn main() {
     vec[1] = 4;
     assert_eq!(vec[1], 4);
 }
+
 ```
 
 ### 1.5.2 总结
@@ -273,6 +264,7 @@ fn main() {
     assert_eq!(neg_temp, Temperature { celsius: -10 });
     println!("Test passed.");
 }
+
 ```
 
 #### 1.5.3.2 2. `Not`（逻辑非）
@@ -310,6 +302,7 @@ fn main() {
     assert_eq!(negated.value, false);
     println!("Test passed.");
 }
+
 ```
 
 ### 1.5.4 *总结*
@@ -352,6 +345,7 @@ fn main() {
     let neg_temp = -temp;
     println!("Negative temperature: {:?}", neg_temp); // 输出: Negative temperature: Temperature { celsius: -10 }
 }
+
 ```
 
 ### 1.5.6 `Not` 可用的数据类型
@@ -388,6 +382,7 @@ fn main() {
     let negated = !container;
     println!("Negated boolean: {:?}", negated); // 输出: Negated boolean: BooleanContainer { value: false }
 }
+
 ```
 
 ### 1.5.7 **总结**

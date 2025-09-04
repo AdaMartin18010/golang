@@ -52,6 +52,7 @@ opentelemetry = { version = "0.18", features = ["trace", "log"] }
 opentelemetry-jaeger = "0.18"
 log = "0.4"
 env_logger = "0.10"
+
 ```
 
 ### 2. 创建 Tracer
@@ -104,6 +105,7 @@ async fn init_tracer() -> Arc<dyn Tracer> {
     global::set_tracer_provider(tracer_provider);
     global::tracer("my_tracer")
 }
+
 ```
 
 ### 3. 创建 Span
@@ -125,6 +127,7 @@ async fn perform_task(tracer: Arc<dyn Tracer>) {
     drop(_guard);
     span.end();
 }
+
 ```
 
 ### 4. 记录日志
@@ -147,6 +150,7 @@ async fn another_task(tracer: Arc<dyn Tracer>) {
     drop(_guard);
     span.end();
 }
+
 ```
 
 ### 5. 导出跟踪数据
@@ -172,6 +176,7 @@ async fn context_propagation_example(tracer: Arc<dyn Tracer>) {
     drop(_guard);
     span.end();
 }
+
 ```
 
 ### 7. 错误处理
@@ -201,6 +206,7 @@ async fn perform_risky_operation(tracer: Arc<dyn Tracer>) {
     drop(_guard);
     span.end();
 }
+
 ```
 
 ### 总结
@@ -223,6 +229,7 @@ chrono = "0.4"
 serde_json = "1.0"
 rolling-file = "0.2"
 flate2 = "1.0"
+
 ```
 
 ### 2. 日志管理器实现
@@ -289,6 +296,7 @@ impl LogManager {
         encoder.finish().unwrap();
     }
 }
+
 ```
 
 ### 3. 跟踪器实现
@@ -382,6 +390,7 @@ where
         writeln!(writer)
     }
 }
+
 ```
 
 ### 4. 执行跟踪器实现
@@ -437,6 +446,7 @@ impl Drop for ExecutionTracer {
 thread_local! {
     static DEPTH: std::cell::RefCell<usize> = std::cell::RefCell::new(0);
 }
+
 ```
 
 ### 5. 异步任务跟踪器
@@ -482,6 +492,7 @@ impl<F: Future> Future for AsyncTaskTracer<F> {
         result
     }
 }
+
 ```
 
 ### 6. 使用示例
@@ -526,6 +537,7 @@ async fn nested_task() {
     let _trace = ExecutionTracer::new("Nested Task");
     tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
 }
+
 ```
 
 ### 7. 错误处理和调试工具
@@ -567,6 +579,7 @@ pub fn setup_panic_hook() {
         );
     }));
 }
+
 ```
 
 ### 8. 日志分析工具
@@ -625,6 +638,7 @@ pub struct LogStats {
     pub warn_count: usize,
     // 添加更多统计字段...
 }
+
 ```
 
 ### 9. 配置示例
@@ -647,6 +661,7 @@ impl LogConfig {
         Ok(toml::from_str(&content)?)
     }
 }
+
 ```
 
 ### 10. 使用示例
@@ -693,6 +708,7 @@ async fn run_with_tracing() -> Result<(), Box<dyn std::error::Error>> {
     debug_trace!("Main operation completed");
     Ok(())
 }
+
 ```
 
 这个完整的示例展示了如何：

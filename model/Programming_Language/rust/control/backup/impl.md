@@ -12,19 +12,6 @@
   - [1.5 5. 总结](#5-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`impl` 关键字用于为类型实现方法和特征（traits）。
 以下是 `impl` 可以使用的不同类型的详细说明：
 
@@ -55,6 +42,7 @@ fn main() {
     let circle = Circle::new(5.0);
     println!("Area of the circle: {}", circle.area());
 }
+
 ```
 
 ## 1.2 2. 枚举（Enums）
@@ -85,6 +73,7 @@ fn main() {
     println!("Area of the circle: {}", circle.area());
     println!("Area of the rectangle: {}", rectangle.area());
 }
+
 ```
 
 ## 1.3 3. 特征（Traits）
@@ -112,6 +101,7 @@ fn main() {
     let circle = Circle { radius: 5.0 };
     println!("Area of the circle: {}", circle.area());
 }
+
 ```
 
 ## 1.4 4. 其他类型

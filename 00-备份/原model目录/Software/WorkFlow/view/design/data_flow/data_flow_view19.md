@@ -66,6 +66,7 @@
 ```math
 定义：边界模式是针对系统边界设计中反复出现的问题的可重用解决方案，
 包含问题描述、解决方案、适用条件和后果影响等要素。
+
 ```
 
 模式语言的核心要素包括：
@@ -113,6 +114,7 @@ data Relation = Relation {
 }
 
 data RelationType = Uses | Refines | Conflicts | Complements
+
 ```
 
 形式化表达有助于：
@@ -164,6 +166,7 @@ enum BehaviorCategory {
     Reactive,           // 响应式模式
     Proactive,          // 主动式模式
 }
+
 ```
 
 这种多维度分类框架有助于设计者快速找到适合特定问题情境的边界模式。
@@ -222,6 +225,7 @@ trait ServiceAdapter {
     fn adapt_request(&self, request: Self::Request) -> Vec<u8>;
     fn adapt_response(&self, response: Vec<u8>) -> Self::Response;
 }
+
 ```
 
 防腐层模式的适用场景：
@@ -258,6 +262,7 @@ impl TargetInterface for Adapter {
         format!("Adapter: (TRANSLATED) {}", specific_result)
     }
 }
+
 ```
 
 适配器模式的跨领域应用：
@@ -302,6 +307,7 @@ impl<I, O> BoundaryInterface<I, O> for ConcreteInterface<I, O> {
         self.descriptor.clone()
     }
 }
+
 ```
 
 边界接口模式的关键特性：
@@ -374,6 +380,7 @@ struct BoundaryPolicy {
     fn before_request(&self) { /* ... */ }
     fn after_request(&self, result: &Result<Response, Error>) { /* ... */ }
 }
+
 ```
 
 代理边界模式的应用：
@@ -425,6 +432,7 @@ impl<S, C, T> ModelTransformer<S, T> for CanonicalModelTransformer<S, C, T> {
         self.canonical_to_target.transform(&canonical)
     }
 }
+
 ```
 
 规范模型转换模式的优势：
@@ -482,6 +490,7 @@ impl<S, T> ProjectionMap<S, T> {
         Ok(target)
     }
 }
+
 ```
 
 投影映射模式的应用场景：
@@ -546,6 +555,7 @@ impl<S> StatePipeline<S> {
         Ok(())
     }
 }
+
 ```
 
 状态转换管道的特点：
@@ -603,6 +613,7 @@ impl<P1: Protocol, P2: Protocol> ProtocolConverter<P1, P2> {
         Ok(source_response)
     }
 }
+
 ```
 
 协议转换模式的应用：
@@ -687,6 +698,7 @@ impl<T> BoundaryGuard<T> {
         Ok(input)
     }
 }
+
 ```
 
 边界卫士模式的关键功能：
@@ -764,6 +776,7 @@ struct SandboxEnvironment {
         where F: FnOnce() -> Result<T, SandboxError> { /* ... */ }
     fn cleanup(&self) -> Result<(), SandboxError> { /* ... */ }
 }
+
 ```
 
 沙箱隔离模式的应用：
@@ -807,6 +820,7 @@ impl PermissionTransformer {
     // 转换权限
     fn transform_permissions(
         &self,
+
 ```rust
     // 转换权限
     fn transform_permissions(
@@ -815,7 +829,7 @@ impl PermissionTransformer {
         context: &Context
     ) -> HashSet<Permission> {
         let mut target_permissions = HashSet::new();
-        
+  
         // 应用映射规则
         for rule in &self.mapping_rules {
             if source_permissions.contains(&rule.source_permission) {
@@ -824,7 +838,7 @@ impl PermissionTransformer {
                     Some(condition) => condition(context),
                     None => true,
                 };
-                
+  
                 if condition_met {
                     // 添加目标权限
                     for perm in &rule.target_permissions {
@@ -833,7 +847,7 @@ impl PermissionTransformer {
                 }
             }
         }
-        
+  
         // 如果没有映射，应用回退策略
         if target_permissions.is_empty() {
             match &self.fallback_strategy {
@@ -853,10 +867,11 @@ impl PermissionTransformer {
                 }
             }
         }
-        
+  
         target_permissions
     }
 }
+
 ```
 
 权限转换模式的应用场景：
@@ -898,7 +913,7 @@ impl Auditor {
     fn record(&self, event: AuditEvent) -> Result<(), AuditError> {
         // 编码事件
         let encoded = self.encoder.encode(&event)?;
-        
+  
         // 存储事件
         self.storage.store(&encoded)
     }
@@ -921,14 +936,14 @@ impl<T> BoundaryHandler<T> for AuditBoundary<T> {
             // 前置审计
             let pre_event = self.create_audit_event(&request, context, AuditStage::Pre);
             self.auditor.record(pre_event)?;
-            
+  
             // 处理请求
             let result = self.next_handler.handle(request, context);
-            
+  
             // 后置审计
             let post_event = self.create_audit_event_for_result(&result, context, AuditStage::Post);
             self.auditor.record(post_event)?;
-            
+  
             result
         } else {
             // 跳过审计，直接处理
@@ -944,7 +959,7 @@ impl<T> AuditBoundary<T> {
         if !self.policy.audited_operations.contains(&context.operation_type) {
             return false;
         }
-        
+  
         // 应用采样率
         if self.policy.sampling_rate < 1.0 {
             let random = rand::random::<f64>();
@@ -952,16 +967,16 @@ impl<T> AuditBoundary<T> {
                 return false;
             }
         }
-        
+  
         true
     }
-    
+  
     // 创建审计事件
     fn create_audit_event(&self, request: &T, context: &Context, stage: AuditStage) -> AuditEvent {
         // 创建审计事件
         // ...
     }
-    
+  
     // 为结果创建审计事件
     fn create_audit_event_for_result(
         &self,
@@ -973,6 +988,7 @@ impl<T> AuditBoundary<T> {
         // ...
     }
 }
+
 ```
 
 审计边界模式的关键特性：
@@ -1019,31 +1035,31 @@ impl<T, V> DimensionProjector<T, V> {
     fn project(&self, source: &T) -> Result<V, ProjectionError> {
         // 检查维度兼容性
         self.validate_dimensions()?;
-        
+  
         // 执行投影
         (self.projector)(source, &self.target_dimensions)
     }
-    
+  
     // 添加维度映射规则
     fn add_projection_rule(&mut self, rule: ProjectionRule) -> Result<(), ProjectionError> {
         // 验证规则维度兼容性
         if !self.source_dimensions.contains(&rule.source_dimension) {
             return Err(ProjectionError::InvalidSourceDimension);
         }
-        
+  
         if !self.target_dimensions.contains(&rule.target_dimension) {
             return Err(ProjectionError::InvalidTargetDimension);
         }
-        
+  
         // 添加规则
         self.mapping_rules
             .entry(rule.source_dimension.clone())
             .or_insert_with(Vec::new)
             .push(rule);
-        
+  
         Ok(())
     }
-    
+  
     // 验证维度兼容性
     fn validate_dimensions(&self) -> Result<(), ProjectionError> {
         // 确保每个目标维度都有对应的映射规则
@@ -1051,15 +1067,16 @@ impl<T, V> DimensionProjector<T, V> {
             let has_mapping = self.mapping_rules.values().any(|rules| {
                 rules.iter().any(|rule| rule.target_dimension == *target_dim)
             });
-            
+  
             if !has_mapping {
                 return Err(ProjectionError::MissingDimensionMapping(target_dim.name.clone()));
             }
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 维度投影模式的应用：
@@ -1115,27 +1132,28 @@ impl<T> DimensionCrossProcessor<T> {
                 let dimensions_match = rule.applicable_dimensions.is_subset(
                     &context.active_dimensions.iter().cloned().collect()
                 );
-                
+  
                 // 检查条件
                 dimensions_match && (rule.condition)(data, context)
             })
             .collect();
-        
+  
         // 如果有冲突，使用优先级解析器
         let rules_to_apply = if matching_rules.len() > 1 {
             self.priority_resolver.resolve_conflicts(data, context, matching_rules)
         } else {
             matching_rules
         };
-        
+  
         // 按顺序应用规则
         for rule in rules_to_apply {
             (rule.processor)(data, context)?;
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 维度交叉处理模式的优势：
@@ -1163,10 +1181,10 @@ struct MultiDimensionCoordinator<T> {
 trait DimensionCoordinator<T> {
     // 获取相关维度
     fn dimension(&self) -> &Dimension;
-    
+  
     // 处理维度特定变更
     fn process_change(&self, data: &mut T, change: &Change) -> Result<Vec<Change>, CoordinationError>;
-    
+  
     // 验证维度一致性
     fn validate_consistency(&self, data: &T) -> Result<(), ConsistencyError>;
 }
@@ -1199,26 +1217,26 @@ impl<T> MultiDimensionCoordinator<T> {
             }
         }
     }
-    
+  
     // 顺序协调
     fn coordinate_sequential(&self, data: &mut T, initial_change: Change) -> Result<(), CoordinationError> {
         let mut pending_changes = vec![initial_change];
         let mut processed_changes = HashSet::new();
-        
+  
         // 处理所有待处理的变更
         while let Some(change) = pending_changes.pop() {
             // 避免循环依赖
             if processed_changes.contains(&change) {
                 continue;
             }
-            
+  
             // 标记为已处理
             processed_changes.insert(change.clone());
-            
+  
             // 对每个维度处理变更
             for (_, coordinator) in &self.coordinators {
                 let new_changes = coordinator.process_change(data, &change)?;
-                
+  
                 // 添加新产生的变更到待处理列表
                 for new_change in new_changes {
                     if !processed_changes.contains(&new_change) {
@@ -1227,17 +1245,18 @@ impl<T> MultiDimensionCoordinator<T> {
                 }
             }
         }
-        
+  
         // 验证最终一致性
         self.consistency_validator.validate(data)
             .map_err(|errors| CoordinationError::ConsistencyErrors(errors))?;
-        
+  
         Ok(())
     }
-    
+  
     // 并行和层次化协调方法类似，但处理逻辑不同
     // ...
 }
+
 ```
 
 多维度协同模式的关键特点：
@@ -1257,10 +1276,10 @@ Rust的强类型系统为实现通用边界模式提供了强大支持：
 trait TypedBoundary<I, O> {
     // 处理入境请求
     fn inbound(&self, input: I) -> Result<O, BoundaryError>;
-    
+  
     // 处理出境请求
     fn outbound(&self, output: O) -> Result<I, BoundaryError>;
-    
+  
     // 获取边界描述符
     fn descriptor(&self) -> &BoundaryDescriptor;
 }
@@ -1290,19 +1309,20 @@ where
         let intermediate2 = self.boundary_b.inbound(intermediate1)?;
         self.boundary_c.inbound(intermediate2)
     }
-    
+  
     fn outbound(&self, output: C::Output) -> Result<A::Input, BoundaryError> {
         // 反向依次通过各边界
         let intermediate2 = self.boundary_c.outbound(output)?;
         let intermediate1 = self.boundary_b.outbound(intermediate2)?;
         self.boundary_a.outbound(intermediate1)
     }
-    
+  
     fn descriptor(&self) -> &BoundaryDescriptor {
         // 创建复合描述符
         // ...
     }
 }
+
 ```
 
 类型驱动边界模式的优势：
@@ -1328,7 +1348,7 @@ impl<T> OwnershipBoundary<T> {
         // 验证值
         (self.validator)(&value)
             .map_err(|e| BoundaryError::ValidationFailed(e))?;
-        
+  
         // 处理转移
         Ok((self.post_transfer)(value))
     }
@@ -1346,16 +1366,16 @@ impl<T> BorrowBoundary<T> {
         // 验证访问
         (self.access_validator)(value)
             .map_err(|e| BoundaryError::AccessDenied(e))?;
-        
+  
         Ok(value)
     }
-    
+  
     // 可变借用通过边界
     fn borrow_mut<'a>(&self, value: &'a mut T) -> Result<GuardedMut<'a, T>, BoundaryError> {
         // 验证访问
         (self.access_validator)(value)
             .map_err(|e| BoundaryError::AccessDenied(e))?;
-        
+  
         // 返回带验证的守卫引用
         Ok(GuardedMut {
             value,
@@ -1385,7 +1405,7 @@ impl<'a, T> Drop for GuardedMut<'a, T> {
 
 impl<'a, T> Deref for GuardedMut<'a, T> {
     type Target = T;
-    
+  
     fn deref(&self) -> &Self::Target {
         &*self.value
     }
@@ -1396,6 +1416,7 @@ impl<'a, T> DerefMut for GuardedMut<'a, T> {
         &mut *self.value
     }
 }
+
 ```
 
 所有权系统边界模式的特点：
@@ -1415,59 +1436,59 @@ mod boundary_patterns {
     pub trait Boundary {
         type Input;
         type Output;
-        
+  
         fn process(&self, input: Self::Input) -> Result<Self::Output, BoundaryError>;
         fn name(&self) -> &str;
     }
-    
+  
     // 防腐层模式
     pub struct AntiCorruptionLayer<I, O> {
         name: String,
         translator: Box<dyn Fn(I) -> Result<O, TranslationError>>,
     }
-    
+  
     impl<I, O> Boundary for AntiCorruptionLayer<I, O> {
         type Input = I;
         type Output = O;
-        
+  
         fn process(&self, input: I) -> Result<O, BoundaryError> {
             (self.translator)(input)
                 .map_err(|e| BoundaryError::TranslationError(e))
         }
-        
+  
         fn name(&self) -> &str {
             &self.name
         }
     }
-    
+  
     // 边界卫士模式
     pub struct BoundaryGuard<I, O> {
         name: String,
         validators: Vec<Box<dyn Fn(&I) -> Result<(), ValidationError>>>,
         processor: Box<dyn Fn(I) -> Result<O, ProcessingError>>,
     }
-    
+  
     impl<I, O> Boundary for BoundaryGuard<I, O> {
         type Input = I;
         type Output = O;
-        
+  
         fn process(&self, input: I) -> Result<O, BoundaryError> {
             // 验证输入
             for validator in &self.validators {
                 validator(&input)
                     .map_err(|e| BoundaryError::ValidationError(e))?;
             }
-            
+  
             // 处理输入
             (self.processor)(input)
                 .map_err(|e| BoundaryError::ProcessingError(e))
         }
-        
+  
         fn name(&self) -> &str {
             &self.name
         }
     }
-    
+  
     // 规范模型转换模式
     pub struct CanonicalModelTransformer<S, C, T> {
         name: String,
@@ -1475,32 +1496,32 @@ mod boundary_patterns {
         canonical_to_target: Box<dyn Fn(C) -> Result<T, TransformError>>,
         validators: Vec<Box<dyn Fn(&C) -> Result<(), ValidationError>>>,
     }
-    
+  
     impl<S, C, T> Boundary for CanonicalModelTransformer<S, C, T> {
         type Input = S;
         type Output = T;
-        
+  
         fn process(&self, input: S) -> Result<T, BoundaryError> {
             // 转换到规范模型
             let canonical = (self.source_to_canonical)(input)
                 .map_err(|e| BoundaryError::TransformError(e))?;
-            
+  
             // 验证规范模型
             for validator in &self.validators {
                 validator(&canonical)
                     .map_err(|e| BoundaryError::ValidationError(e))?;
             }
-            
+  
             // 转换到目标模型
             (self.canonical_to_target)(canonical)
                 .map_err(|e| BoundaryError::TransformError(e))
         }
-        
+  
         fn name(&self) -> &str {
             &self.name
         }
     }
-    
+  
     // 边界组合器
     pub struct BoundaryComposer<B1, B2>
     where
@@ -1511,7 +1532,7 @@ mod boundary_patterns {
         first: B1,
         second: B2,
     }
-    
+  
     impl<B1, B2> Boundary for BoundaryComposer<B1, B2>
     where
         B1: Boundary,
@@ -1519,17 +1540,17 @@ mod boundary_patterns {
     {
         type Input = B1::Input;
         type Output = B2::Output;
-        
+  
         fn process(&self, input: Self::Input) -> Result<Self::Output, BoundaryError> {
             let intermediate = self.first.process(input)?;
             self.second.process(intermediate)
         }
-        
+  
         fn name(&self) -> &str {
             &self.name
         }
     }
-    
+  
     // 边界错误类型
     #[derive(Debug)]
     pub enum BoundaryError {
@@ -1544,7 +1565,7 @@ mod boundary_patterns {
 // 使用边界模式库的示例
 fn main() {
     use boundary_patterns::*;
-    
+  
     // 创建一个防腐层
     let acl = AntiCorruptionLayer {
         name: "ExternalToInternal".to_string(),
@@ -1561,7 +1582,7 @@ fn main() {
             })
         }),
     };
-    
+  
     // 创建一个边界卫士
     let guard = BoundaryGuard {
         name: "InputValidator".to_string(),
@@ -1582,21 +1603,21 @@ fn main() {
             })
         }),
     };
-    
+  
     // 组合边界
     let composed = BoundaryComposer {
         name: "ExternalToProcessed".to_string(),
         first: acl,
         second: guard,
     };
-    
+  
     // 使用组合边界
     let external = ExternalModel {
         external_id: 123,
         name: "Example".to_string(),
         state: "A".to_string(),
     };
-    
+  
     match composed.process(external) {
         Ok(processed) => {
             println!("Successfully processed: {}", processed.display_name);
@@ -1620,7 +1641,8 @@ struct InternalModel {
     status: Status,
 }
 
-#[derive(PartialEq)]
+# [derive(PartialEq)]
+
 enum Status {
     Active,
     Inactive,
@@ -1633,29 +1655,35 @@ struct ProcessedModel {
 }
 
 // 错误类型
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 enum TranslationError {
     InvalidState,
     MissingData,
 }
 
-#[derive(Debug)]
+# [derive(Debug)]
+
 enum ValidationError {
     EmptyName,
     InvalidId,
 }
 
-#[derive(Debug)]
+# [derive(Debug)]
+
 enum ProcessingError {
     InternalError,
     ResourceNotFound,
 }
 
-#[derive(Debug)]
+# [derive(Debug)]
+
 enum TransformError {
     SchemaViolation,
     DataLoss,
 }
+
 ```
 
 这个边界模式库提供了:
@@ -1678,6 +1706,7 @@ struct DomainSpecificBoundaryAdapter<B, D> {
     generic_boundary: B,
     // 领域特定上下文
     domain_context: D,
+
 ```rust
     // 领域特定边界适配
     struct DomainSpecificBoundaryAdapter<B, D> {
@@ -1757,6 +1786,7 @@ struct DomainSpecificBoundaryAdapter<B, D> {
             self.base_boundary.name()
         }
     }
+
 ```
 
 从通用到特定的转化策略包括：
@@ -1869,6 +1899,7 @@ impl<D, B> DomainAdaptationValidator<D, B> {
         }
     }
 }
+
 ```
 
 验证方法的关键步骤：
@@ -1949,6 +1980,7 @@ impl<U, L> LayerBoundary<U, L> {
         Ok(())
     }
 }
+
 ```
 
 软件架构中的应用案例：
@@ -2030,6 +2062,7 @@ impl<S, T> IntegrationBoundary<S, T> {
     
     // 错误处理和其他方法...
 }
+
 ```
 
 系统集成中的应用案例：
@@ -2132,6 +2165,7 @@ impl<I, O> DataProcessingBoundary<I, O> {
         }
     }
 }
+
 ```
 
 数据科学中的应用案例：
@@ -2253,6 +2287,7 @@ impl<M> DistributedBoundary<M> {
         Ok(data) // 简化示例
     }
 }
+
 ```
 
 分布式系统中的应用案例：
@@ -2353,6 +2388,7 @@ impl<I, O, C> AdaptiveBoundary<I, O, C> {
         boundary.process(input)
     }
 }
+
 ```
 
 自适应边界模式的关键特性：
@@ -2443,6 +2479,7 @@ impl BoundaryPatternDiscoveryEngine {
         // ...
     }
 }
+
 ```
 
 智能边界模式发现的关键功能：
@@ -2558,6 +2595,7 @@ impl FormalBoundaryVerifier {
         // ...
     }
 }
+
 ```
 
 形式化验证的关键内容：
@@ -2669,6 +2707,7 @@ graph TD
     
     J1 --> J11[上下文感知]
     J1 --> J12[动态边界选择]
+
 ```
 
 通过这个思维导图，我们可以清晰地看到跨领域边界模式的整体结构和关联。

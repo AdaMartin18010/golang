@@ -8,19 +8,6 @@
     - [1.1.3 3. 异步函数式编程](#3-异步函数式编程)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 让我为您详细解析这些概念：
 
 ## 1.1 1. Rust Async 编程机制
@@ -34,6 +21,7 @@ pub trait Future {
     type Output;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 核心概念解释：
@@ -62,6 +50,7 @@ async fn example() -> Result<String, Error> {
     let result = some_async_operation().await?;
     Ok(result)
 }
+
 ```
 
 ### 1.1.2 2. Rust函数式编程与范畴论
@@ -74,6 +63,7 @@ Rust的函数式编程特性：
 // Option 实现了函子
 let x: Option<i32> = Some(1);
 let y = x.map(|n| n + 1); // Some(2)
+
 ```
 
 1. **单子（Monad）**
@@ -82,6 +72,7 @@ let y = x.map(|n| n + 1); // Some(2)
 // Result 实现了单子
 let x: Result<i32, Error> = Ok(1);
 let y = x.and_then(|n| Ok(n + 1));
+
 ```
 
 1. **高阶函数**
@@ -93,6 +84,7 @@ where
 {
     list.into_iter().map(f).collect()
 }
+
 ```
 
 1. **闭包与 trait bounds**
@@ -100,6 +92,7 @@ where
 ```rust
 // FnOnce, FnMut, Fn 特征
 let closure = |x: i32| x + 1;
+
 ```
 
 ### 1.1.3 3. 异步函数式编程
@@ -114,6 +107,7 @@ where
     let futures = vec.into_iter().map(|x| f(x));
     futures::future::join_all(futures).await
 }
+
 ```
 
 主要优势：
@@ -139,6 +133,7 @@ where
         .collect()
         .await
 }
+
 ```
 
 1. **错误处理**
@@ -153,6 +148,7 @@ where
             .map(|r| async move { r?.await })
     ).await
 }
+
 ```
 
 这种结合带来的主要便利：

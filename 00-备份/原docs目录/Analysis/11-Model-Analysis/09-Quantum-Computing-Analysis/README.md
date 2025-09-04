@@ -184,6 +184,7 @@ func (qs *QuantumState) ApplyControlledPhase(control, target, power int) {
         }
     }
 }
+
 ```
 
 ### Shor算法
@@ -330,6 +331,7 @@ func (sa *ShorAlgorithm) gcd(a, b int) int {
     }
     return a
 }
+
 ```
 
 ## 后量子密码学
@@ -424,6 +426,7 @@ func (lc *LatticeCryptography) ShortestVector(basis *LatticeBasis) ([]int, float
     
     return shortest, minNorm
 }
+
 ```
 
 ### 基于哈希的签名
@@ -621,6 +624,7 @@ func (hbs *HashBasedSignature) generatePath(node *MerkleNode, target *MerkleNode
     
     return nil
 }
+
 ```
 
 ## 量子-经典混合系统
@@ -765,6 +769,7 @@ type TaskResult struct {
     Status  TaskStatus
     Error   error
 }
+
 ```
 
 ## Golang实现框架
@@ -832,6 +837,7 @@ type Oracle struct {
     Function func([]int) bool
     Qubits   int
 }
+
 ```
 
 ## 性能分析与优化
@@ -948,6 +954,7 @@ type IterationResult struct {
     Solution  interface{}
     Cost      float64
 }
+
 ```
 
 ## 最佳实践
@@ -1055,6 +1062,7 @@ type SVMModel struct {
     Bias           float64
     Kernel         string
 }
+
 ```
 
 ## 总结

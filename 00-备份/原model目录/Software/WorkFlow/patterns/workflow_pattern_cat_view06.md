@@ -42,6 +42,7 @@
 我会保持中文回答，并维持范畴论的形式化视角，
 但会更加关注工作流引擎的设计原理和组合规则的具体细节。
 </think>
+
 ```
 
 ## 目录
@@ -116,6 +117,7 @@ struct ExecutionEngine<M, S, R> {
     scheduler: Box<dyn WorkflowComponent<S, R>>,
     state_store: Box<dyn WorkflowComponent<S, Result<(), StorageError>>>,
 }
+
 ```
 
 ### 1.2 执行模型
@@ -166,6 +168,7 @@ trait StatefulWorkflow<T> {
     fn transition(&mut self, action: &str) -> Result<(), TransitionError>;
     fn persist(&self, store: &mut dyn StateStore<T>) -> Result<(), PersistError>;
 }
+
 ```
 
 ## 2. 工作流定义与表示
@@ -201,6 +204,7 @@ enum TaskImplementation<I, O> {
     External(ExternalSystemReference),
     SubWorkflow(Box<WorkflowElement<I, O>>),
 }
+
 ```
 
 ### 2.2 图形表示
@@ -224,6 +228,7 @@ trait GraphBasedWorkflow<N, E> {
     fn from_graph(graph: &Graph<N, E>) -> Result<Self, GraphConversionError> where Self: Sized;
     fn validate_graph(graph: &Graph<N, E>) -> Result<(), ValidationError>;
 }
+
 ```
 
 ### 2.3 序列化格式
@@ -251,6 +256,7 @@ impl<T: Serialize + DeserializeOwned> Serializable for WorkflowElement<T> {
         serde_json::from_str(data).map_err(|e| DeserializeError::JsonError(e))
     }
 }
+
 ```
 
 ## 3. 工作流组合基本规则
@@ -297,6 +303,7 @@ impl<I: Clone, O1, O2> Workflow<I, (O1, O2)> for Parallel<I, O1, O2> {
         Ok((result1, result2))
     }
 }
+
 ```
 
 ### 3.2 组合语义
@@ -354,6 +361,7 @@ trait WorkflowValidator {
         Ok(())
     }
 }
+
 ```
 
 ## 4. 工作流模式的范畴建模
@@ -394,6 +402,7 @@ enum ControlFlow<S> {
     // 同步点，等待多个条件满足
     Synchronize(Vec<Box<dyn Fn(&S) -> bool>>, Box<dyn Fn(S) -> S>),
 }
+
 ```
 
 ### 4.2 数据流范畴
@@ -431,6 +440,7 @@ enum DataFlow<A, B> {
     // 数据转换：在不同表示之间转换
     Transform(Box<dyn Fn(A) -> B>, Box<dyn Fn(B) -> A>),
 }
+
 ```
 
 ### 4.3 资源管理范畴
@@ -476,6 +486,7 @@ enum ResourceOperation<R, A> {
         Box<dyn Fn(R) -> Result<(), ResourceError>> // 返回池中
     ),
 }
+
 ```
 
 ### 4.4 异常处理范畴
@@ -525,6 +536,7 @@ enum ExceptionHandling<A, E> {
         Box<dyn Fn() -> Result<(), E>> // 补偿操作
     ),
 }
+
 ```
 
 ## 5. 组合规则形式化与证明
@@ -577,6 +589,7 @@ fn prove_parallel_closure<A, B, C, D>(
     
     ParallelWorkflow { first: f, second: g }
 }
+
 ```
 
 ### 5.2 类型安全性
@@ -610,6 +623,7 @@ impl<I, M, O, W1: TypedWorkflow<I, M>, W2: TypedWorkflow<M, O>>
         self.second.execute(mid)
     }
 }
+
 ```
 
 ### 5.3 运行时保证
@@ -652,6 +666,7 @@ fn compose_deadlock_free<I, M, O>(
     let detector = DeadlockDetector::combine(&f.detector, &g.detector);
     DeadlockFreeWorkflow { inner: composed, detector }
 }
+
 ```
 
 ## 6. 现代理论在组合设计中的应用
@@ -710,6 +725,7 @@ trait HigherOrderCombinator {
         Conditional { condition: cond, workflow, default: default_value }
     }
 }
+
 ```
 
 ### 6.2 同伦类型论的应用
@@ -750,6 +766,7 @@ enum HomotopyWorkflow<I, O> {
         Vec<(Box<HomotopyWorkflow<I, O>>, Box<HomotopyWorkflow<I, O>>)> // 强制等价的工作流对
     ),
 }
+
 ```
 
 这种设计允许我们不仅定义工作流，还能形式化地表示工作流之间的等价关系和变换，从而在保持行为等价性的前提下进行工作流优化和重构。
@@ -869,6 +886,7 @@ enum HomotopyWorkflow<I, O> {
         ├── 路径类型：工作流等价性表示
         ├── 依赖类型：状态依赖工作流表示
         └── 高阶归纳类型：工作流等价关系定义
+
 ```
 
 ## 7. 工作流组合的协调与语义
@@ -910,6 +928,7 @@ enum CoordinationMechanism<S, M> {
         Box<dyn Fn(Instant, S) -> (S, Option<Instant>)>, // 定时处理
     ),
 }
+
 ```
 
 ### 7.2 组合的语义一致性
@@ -945,6 +964,7 @@ trait SemanticConsistency {
         equivalence_relation: &EquivalenceRelation
     ) -> bool;
 }
+
 ```
 
 ### 7.3 代数属性与不变量
@@ -984,6 +1004,7 @@ struct WorkflowOptimizer {
         Box::new(optimized)
     }
 }
+
 ```
 
 ## 8. 高级组合模式与策略
@@ -1025,6 +1046,7 @@ enum AdvancedCompositionPattern<I, O> {
         Box<dyn Fn(&[&dyn Workflow<I, O>]) -> Box<dyn Workflow<I, O>>>,  // 组合策略
     ),
 }
+
 ```
 
 ### 8.2 组合策略
@@ -1066,6 +1088,7 @@ impl CompositionStrategy for ReliabilityFirstStrategy {
     // 实现注重可靠性的组合选择和优化
     // ...
 }
+
 ```
 
 ### 8.3 组合的形式验证
@@ -1103,6 +1126,7 @@ trait FormalVerification {
         workflow: &dyn Workflow,
     ) -> Vec<ExecutionPath>;
 }
+
 ```
 
 ## 9. 形式证明的实践应用
@@ -1153,6 +1177,7 @@ fn prove_safety_preservation<P: SafetyProperty, I, O>(
     // 返回安全性证明
     Proof::new("Safety property is preserved by workflow")
 }
+
 ```
 
 ### 9.2 工作流组合的活性证明
@@ -1210,6 +1235,7 @@ fn prove_termination<I, M, O>(
     
     Proof::new("Combined workflow terminates in finite steps")
 }
+
 ```
 
 ### 9.3 工作流组合的可组合性证明
@@ -1248,6 +1274,7 @@ fn prove_associativity<I, M1, M2, O>(
     
     Proof::new("Sequence composition is associative")
 }
+
 ```
 
 ## 10. 总结与展望

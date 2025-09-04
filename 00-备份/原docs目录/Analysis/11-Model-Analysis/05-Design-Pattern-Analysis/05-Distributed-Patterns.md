@@ -154,6 +154,7 @@ func (c *RequestResponseClient) SendRequest(ctx context.Context, req *Request) (
     // ...
     return nil, nil
 }
+
 ```
 
 ### 3.2 发布-订阅模式
@@ -271,6 +272,7 @@ func (b *PubSubBroker) Publish(ctx context.Context, topic string, data interface
 func generateID() string {
     return fmt.Sprintf("%d", time.Now().UnixNano())
 }
+
 ```
 
 ## 4. 一致性与复制模式
@@ -557,11 +559,11 @@ func NewGCounter() *GCounter {
 func (g *GCounter) Increment(nodeID string, delta int) {
  g.mu.Lock()
  defer g.mu.Unlock()
- 
+
  if delta < 0 {
   return // G-Counter只能增加
  }
- 
+
  g.Counters[nodeID] += delta
 }
 
@@ -569,12 +571,12 @@ func (g *GCounter) Increment(nodeID string, delta int) {
 func (g *GCounter) Value() int {
  g.mu.RLock()
  defer g.mu.RUnlock()
- 
+
  sum := 0
  for _, val := range g.Counters {
   sum += val
  }
- 
+
  return sum
 }
 
@@ -582,7 +584,7 @@ func (g *GCounter) Value() int {
 func (g *GCounter) Merge(other *GCounter) {
  g.mu.Lock()
  defer g.mu.Unlock()
- 
+
  for nodeID, count := range other.Counters {
   if g.Counters[nodeID] < count {
    g.Counters[nodeID] = count
@@ -609,11 +611,11 @@ func NewPNCounter() *PNCounter {
 func (p *PNCounter) Increment(nodeID string, delta int) {
  p.mu.Lock()
  defer p.mu.Unlock()
- 
+
  if delta < 0 {
   return
  }
- 
+
  p.Increments.Increment(nodeID, delta)
 }
 
@@ -621,11 +623,11 @@ func (p *PNCounter) Increment(nodeID string, delta int) {
 func (p *PNCounter) Decrement(nodeID string, delta int) {
  p.mu.Lock()
  defer p.mu.Unlock()
- 
+
  if delta < 0 {
   return
  }
- 
+
  p.Decrements.Increment(nodeID, delta)
 }
 
@@ -633,7 +635,7 @@ func (p *PNCounter) Decrement(nodeID string, delta int) {
 func (p *PNCounter) Value() int {
  p.mu.RLock()
  defer p.mu.RUnlock()
- 
+
  return p.Increments.Value() - p.Decrements.Value()
 }
 
@@ -641,7 +643,7 @@ func (p *PNCounter) Value() int {
 func (p *PNCounter) Merge(other *PNCounter) {
  p.mu.Lock()
  defer p.mu.Unlock()
- 
+
  p.Increments.Merge(other.Increments)
  p.Decrements.Merge(other.Decrements)
 }
@@ -665,13 +667,13 @@ func NewLWWRegister(initialValue interface{}) *LWWRegister {
 func (l *LWWRegister) Set(value interface{}, timestamp int64) bool {
  l.mu.Lock()
  defer l.mu.Unlock()
- 
+
  if timestamp > l.Timestamp {
   l.Value = value
   l.Timestamp = timestamp
   return true
  }
- 
+
  return false
 }
 
@@ -679,7 +681,7 @@ func (l *LWWRegister) Set(value interface{}, timestamp int64) bool {
 func (l *LWWRegister) Get() interface{} {
  l.mu.RLock()
  defer l.mu.RUnlock()
- 
+
  return l.Value
 }
 
@@ -687,13 +689,13 @@ func (l *LWWRegister) Get() interface{} {
 func (l *LWWRegister) Merge(other *LWWRegister) bool {
  l.mu.Lock()
  defer l.mu.Unlock()
- 
+
  if other.Timestamp > l.Timestamp {
   l.Value = other.Value
   l.Timestamp = other.Timestamp
   return true
  }
- 
+
  return false
 }
 
@@ -716,11 +718,11 @@ func NewORSet() *ORSet {
 func (o *ORSet) Add(element string, tagID string) {
  o.mu.Lock()
  defer o.mu.Unlock()
- 
+
  if _, exists := o.Additions[element]; !exists {
   o.Additions[element] = make(map[string]bool)
  }
- 
+
  o.Additions[element][tagID] = true
 }
 
@@ -728,7 +730,7 @@ func (o *ORSet) Add(element string, tagID string) {
 func (o *ORSet) Remove(element string) {
  o.mu.Lock()
  defer o.mu.Unlock()
- 
+
  if tags, exists := o.Additions[element]; exists {
   if _, exists := o.Removals[element]; !exists {
    o.Removals[element] = make(map[string]bool)
@@ -744,24 +746,24 @@ func (o *ORSet) Remove(element string) {
 func (o *ORSet) Contains(element string) bool {
  o.mu.RLock()
  defer o.mu.RUnlock()
- 
+
  addTags, addExists := o.Additions[element]
  if !addExists {
   return false
  }
- 
+
  removeTags, removeExists := o.Removals[element]
  if !removeExists {
   return len(addTags) > 0
  }
- 
+
  // 检查是否有任何添加标签不在删除标签中
  for tag := range addTags {
   if !removeTags[tag] {
    return true
   }
  }
- 
+
  return false
 }
 
@@ -769,7 +771,7 @@ func (o *ORSet) Contains(element string) bool {
 func (o *ORSet) Merge(other *ORSet) {
  o.mu.Lock()
  defer o.mu.Unlock()
- 
+
  // 合并添加集
  for element, tags := range other.Additions {
   if _, exists := o.Additions[element]; !exists {
@@ -780,7 +782,7 @@ func (o *ORSet) Merge(other *ORSet) {
    o.Additions[element][tag] = true
   }
  }
- 
+
  // 合并删除集
  for element, tags := range other.Removals {
   if _, exists := o.Removals[element]; !exists {
@@ -792,6 +794,7 @@ func (o *ORSet) Merge(other *ORSet) {
   }
  }
 }
+
 ```
 
 **理论证明**:
@@ -866,7 +869,7 @@ func NewCircuitBreaker(failureThreshold int, timeout time.Duration) *CircuitBrea
 func (cb *CircuitBreaker) Execute(ctx context.Context, operation func() error) error {
     cb.mu.Lock()
     defer cb.mu.Unlock()
-    
+  
     switch cb.state {
     case Open:
         if time.Since(cb.lastFailureTime) > cb.timeout {
@@ -879,29 +882,30 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, operation func() error) e
     case Closed:
         // 正常状态
     }
-    
+  
     // 执行操作
     err := operation()
-    
+  
     if err != nil {
         cb.failureCount++
         cb.lastFailureTime = time.Now()
-        
+  
         if cb.failureCount >= cb.failureThreshold {
             cb.state = Open
         }
-        
+  
         return err
     }
-    
+  
     // 成功执行
     if cb.state == HalfOpen {
         cb.state = Closed
         cb.failureCount = 0
     }
-    
+  
     return nil
 }
+
 ```
 
 ## 6. 分区与扩展模式
@@ -946,14 +950,14 @@ func NewConsistentHash(replicas int) *ConsistentHash {
 func (ch *ConsistentHash) AddNode(node string) {
     ch.mu.Lock()
     defer ch.mu.Unlock()
-    
+  
     for i := 0; i < ch.replicas; i++ {
         virtualNode := fmt.Sprintf("%s-%d", node, i)
         hash := ch.hash(virtualNode)
         ch.nodes[virtualNode] = hash
         ch.ring = append(ch.ring, virtualNode)
     }
-    
+  
     sort.Strings(ch.ring)
 }
 
@@ -961,11 +965,11 @@ func (ch *ConsistentHash) AddNode(node string) {
 func (ch *ConsistentHash) RemoveNode(node string) {
     ch.mu.Lock()
     defer ch.mu.Unlock()
-    
+  
     for i := 0; i < ch.replicas; i++ {
         virtualNode := fmt.Sprintf("%s-%d", node, i)
         delete(ch.nodes, virtualNode)
-        
+  
         // 从环中移除
         for j, vnode := range ch.ring {
             if vnode == virtualNode {
@@ -980,22 +984,22 @@ func (ch *ConsistentHash) RemoveNode(node string) {
 func (ch *ConsistentHash) GetNode(key string) string {
     ch.mu.RLock()
     defer ch.mu.RUnlock()
-    
+  
     if len(ch.ring) == 0 {
         return ""
     }
-    
+  
     hash := ch.hash(key)
-    
+  
     // 二分查找
     idx := sort.Search(len(ch.ring), func(i int) bool {
         return ch.nodes[ch.ring[i]] >= hash
     })
-    
+  
     if idx == len(ch.ring) {
         idx = 0
     }
-    
+  
     return ch.ring[idx]
 }
 
@@ -1004,9 +1008,10 @@ func (ch *ConsistentHash) hash(key string) int {
     h := md5.New()
     h.Write([]byte(key))
     hash := h.Sum(nil)
-    
+  
     return int(hash[0])<<24 | int(hash[1])<<16 | int(hash[2])<<8 | int(hash[3])
 }
+
 ```
 
 ## 7. 事务模式
@@ -1061,9 +1066,9 @@ func (s *Saga) AddStep(step SagaStep) {
 func (s *Saga) Execute(ctx context.Context) error {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+  
     executedSteps := make([]SagaStep, 0)
-    
+  
     for _, step := range s.steps {
         if err := step.Action(ctx); err != nil {
             // 执行补偿操作
@@ -1076,9 +1081,10 @@ func (s *Saga) Execute(ctx context.Context) error {
         }
         executedSteps = append(executedSteps, step)
     }
-    
+  
     return nil
 }
+
 ```
 
 ## 8. 缓存模式
@@ -1113,10 +1119,10 @@ func NewDistributedCache() *DistributedCache {
     cache := &DistributedCache{
         data: make(map[string]CacheEntry),
     }
-    
+  
     // 启动清理过期数据的goroutine
     go cache.cleanup()
-    
+  
     return cache
 }
 
@@ -1124,7 +1130,7 @@ func NewDistributedCache() *DistributedCache {
 func (c *DistributedCache) Set(key string, value interface{}, ttl time.Duration) {
     c.mu.Lock()
     defer c.mu.Unlock()
-    
+  
     c.data[key] = CacheEntry{
         Value:      value,
         Expiration: time.Now().Add(ttl),
@@ -1135,16 +1141,16 @@ func (c *DistributedCache) Set(key string, value interface{}, ttl time.Duration)
 func (c *DistributedCache) Get(key string) (interface{}, bool) {
     c.mu.RLock()
     defer c.mu.RUnlock()
-    
+  
     entry, exists := c.data[key]
     if !exists {
         return nil, false
     }
-    
+  
     if time.Now().After(entry.Expiration) {
         return nil, false
     }
-    
+  
     return entry.Value, true
 }
 
@@ -1152,7 +1158,7 @@ func (c *DistributedCache) Get(key string) (interface{}, bool) {
 func (c *DistributedCache) cleanup() {
     ticker := time.NewTicker(time.Minute)
     defer ticker.Stop()
-    
+  
     for range ticker.C {
         c.mu.Lock()
         now := time.Now()
@@ -1164,6 +1170,7 @@ func (c *DistributedCache) cleanup() {
         c.mu.Unlock()
     }
 }
+
 ```
 
 ## 9. 服务发现与配置
@@ -1203,10 +1210,10 @@ func NewServiceRegistry() *ServiceRegistry {
     registry := &ServiceRegistry{
         services: make(map[string]map[string]*ServiceInstance),
     }
-    
+  
     // 启动健康检查
     go registry.healthCheck()
-    
+  
     return registry
 }
 
@@ -1214,11 +1221,11 @@ func NewServiceRegistry() *ServiceRegistry {
 func (r *ServiceRegistry) Register(instance *ServiceInstance) error {
     r.mu.Lock()
     defer r.mu.Unlock()
-    
+  
     if r.services[instance.Name] == nil {
         r.services[instance.Name] = make(map[string]*ServiceInstance)
     }
-    
+  
     r.services[instance.Name][instance.ID] = instance
     return nil
 }
@@ -1227,11 +1234,11 @@ func (r *ServiceRegistry) Register(instance *ServiceInstance) error {
 func (r *ServiceRegistry) Deregister(serviceName, instanceID string) error {
     r.mu.Lock()
     defer r.mu.Unlock()
-    
+  
     if services, exists := r.services[serviceName]; exists {
         delete(services, instanceID)
     }
-    
+  
     return nil
 }
 
@@ -1239,19 +1246,19 @@ func (r *ServiceRegistry) Deregister(serviceName, instanceID string) error {
 func (r *ServiceRegistry) Discover(serviceName string) ([]*ServiceInstance, error) {
     r.mu.RLock()
     defer r.mu.RUnlock()
-    
+  
     services, exists := r.services[serviceName]
     if !exists {
         return nil, fmt.Errorf("service %s not found", serviceName)
     }
-    
+  
     instances := make([]*ServiceInstance, 0)
     for _, instance := range services {
         if instance.Health {
             instances = append(instances, instance)
         }
     }
-    
+  
     return instances, nil
 }
 
@@ -1259,7 +1266,7 @@ func (r *ServiceRegistry) Discover(serviceName string) ([]*ServiceInstance, erro
 func (r *ServiceRegistry) healthCheck() {
     ticker := time.NewTicker(30 * time.Second)
     defer ticker.Stop()
-    
+  
     for range ticker.C {
         r.mu.Lock()
         now := time.Now()
@@ -1273,6 +1280,7 @@ func (r *ServiceRegistry) healthCheck() {
         r.mu.Unlock()
     }
 }
+
 ```
 
 ## 10. 调度与负载均衡
@@ -1316,7 +1324,7 @@ func (lb *LoadBalancer) AddInstance(instance *ServiceInstance) {
 func (lb *LoadBalancer) RemoveInstance(instanceID string) {
     lb.mu.Lock()
     defer lb.mu.Unlock()
-    
+  
     for i, instance := range lb.instances {
         if instance.ID == instanceID {
             lb.instances = append(lb.instances[:i], lb.instances[i+1:]...)
@@ -1329,16 +1337,17 @@ func (lb *LoadBalancer) RemoveInstance(instanceID string) {
 func (lb *LoadBalancer) GetNextInstance() (*ServiceInstance, error) {
     lb.mu.RLock()
     defer lb.mu.RUnlock()
-    
+  
     if len(lb.instances) == 0 {
         return nil, fmt.Errorf("no available instances")
     }
-    
+  
     current := atomic.AddInt64(&lb.current, 1)
     index := int(current) % len(lb.instances)
-    
+  
     return lb.instances[index], nil
 }
+
 ```
 
 ## 11. 最佳实践
@@ -1406,16 +1415,16 @@ func (m *Microservice) Start() error {
         Health:   true,
         LastSeen: time.Now(),
     }
-    
+  
     if err := m.registry.Register(instance); err != nil {
         return err
     }
-    
+  
     // 启动HTTP服务器
     mux := http.NewServeMux()
     mux.HandleFunc("/health", m.healthHandler)
     mux.HandleFunc("/api", m.apiHandler)
-    
+  
     return http.ListenAndServe(fmt.Sprintf(":%d", m.port), mux)
 }
 
@@ -1432,15 +1441,16 @@ func (m *Microservice) apiHandler(w http.ResponseWriter, r *http.Request) {
         // 实际的API逻辑
         return nil
     })
-    
+  
     if err != nil {
         http.Error(w, err.Error(), http.StatusServiceUnavailable)
         return
     }
-    
+  
     w.WriteHeader(http.StatusOK)
     w.Write([]byte("success"))
 }
+
 ```
 
 ### 12.2 分布式系统监控
@@ -1480,18 +1490,18 @@ func NewMonitor() *Monitor {
 func (m *Monitor) RecordRequest(service string, duration time.Duration, err error) {
     m.mu.Lock()
     defer m.mu.Unlock()
-    
+  
     if m.metrics[service] == nil {
         m.metrics[service] = &Metrics{}
     }
-    
+  
     metrics := m.metrics[service]
     atomic.AddInt64(&metrics.RequestCount, 1)
-    
+  
     if err != nil {
         atomic.AddInt64(&metrics.ErrorCount, 1)
     }
-    
+  
     metrics.ResponseTime = duration
     metrics.LastUpdate = time.Now()
 }
@@ -1500,10 +1510,11 @@ func (m *Monitor) RecordRequest(service string, duration time.Duration, err erro
 func (m *Monitor) GetMetrics(service string) (*Metrics, bool) {
     m.mu.RLock()
     defer m.mu.RUnlock()
-    
+  
     metrics, exists := m.metrics[service]
     return metrics, exists
 }
+
 ```
 
 ---

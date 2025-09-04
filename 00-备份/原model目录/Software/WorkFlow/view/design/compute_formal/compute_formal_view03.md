@@ -148,6 +148,7 @@
         ├── 能耗优化
         ├── 延迟敏感处理
         └── 移动边缘计算
+
 ```
 
 ## 1. 自适应与学习模型
@@ -360,6 +361,7 @@ impl<S: Clone, A: Clone> ModelBasedRL<S, A> {
         unimplemented!("需要根据具体问题实现")
     }
 }
+
 ```
 
 ### 1.2 在线学习与自适应
@@ -584,6 +586,7 @@ impl AdwinDriftDetector {
         -0.5 * (delta).ln()
     }
 }
+
 ```
 
 ### 1.3 元学习框架
@@ -881,6 +884,7 @@ impl<T, P> Model<T, P> for LinearModel<T, P> {
         vec![0.0; self.weights.len()]
     }
 }
+
 ```
 
 ### 1.4 智能系统架构
@@ -1235,47 +1239,47 @@ impl BDIAgent {
             reasoner,
         }
     }
-    
+  
     fn perceive(&mut self, percepts: Vec<Percept>) {
         self.reasoner.update_beliefs(self, &percepts);
     }
-    
+  
     fn deliberate(&mut self) {
         let options = self.reasoner.generate_options(self);
         let filtered_options = self.reasoner.filter_options(self, &options);
         let new_intentions = self.reasoner.select_intentions(self, &filtered_options);
-        
+  
         for intention in new_intentions {
             self.intentions.push(intention);
         }
     }
-    
+  
     fn execute(&mut self) {
         self.reasoner.execute_intentions(self);
     }
-    
+  
     fn run_bdi_cycle(&mut self, percepts: Vec<Percept>) {
         self.perceive(percepts);
         self.deliberate();
         self.execute();
     }
-    
-    fn add_plan(&mut self, goal_type: &str, plan: Plan, 
+  
+    fn add_plan(&mut self, goal_type: &str, plan: Plan,
                 applicability: Box<dyn Fn(&BeliefBase, &Goal) -> bool>) {
         self.plan_library.plans.entry(goal_type.to_string())
             .or_insert_with(Vec::new)
             .push(plan);
-        
+  
         self.plan_library.applicability_conditions.insert(
             goal_type.to_string(),
             applicability
         );
     }
-    
+  
     fn add_desire(&mut self, desire: Desire) {
         self.desires.push(desire);
     }
-    
+  
     fn drop_intention(&mut self, index: usize) {
         if index < self.intentions.len() {
             self.intentions.remove(index);
@@ -1406,34 +1410,34 @@ impl HybridReasoningSystem {
             fusion_strategy,
         }
     }
-    
+  
     fn reason(&self, facts: &[Fact], problem: &Problem, evidence: &HashMap<String, Value>) -> ReasoningResult {
         // 使用规则推理
         let rule_result = self.rule_based_reasoning(facts);
-        
+  
         // 使用案例推理
         let case_result = self.case_based_reasoning(problem);
-        
+  
         // 使用统计推理
         let statistical_result = self.statistical_reasoning(evidence);
-        
+  
         // 融合结果
         self.fusion_strategy.fuse_results(rule_result, case_result, statistical_result)
     }
-    
+  
     fn rule_based_reasoning(&self, facts: &[Fact]) -> Option<Vec<Fact>> {
         Some(self.rule_based_component.inference_engine.infer(facts, &self.rule_based_component.rules))
     }
-    
+  
     fn case_based_reasoning(&self, problem: &Problem) -> Option<Solution> {
         if self.case_based_component.case_library.is_empty() {
             return None;
         }
-        
+  
         // 找到最相似的案例
         let mut best_case = &self.case_based_component.case_library[0];
         let mut best_similarity = (self.case_based_component.similarity_measure)(best_case, problem);
-        
+  
         for case in &self.case_based_component.case_library[1..] {
             let similarity = (self.case_based_component.similarity_measure)(case, problem);
             if similarity > best_similarity {
@@ -1441,32 +1445,33 @@ impl HybridReasoningSystem {
                 best_case = case;
             }
         }
-        
+  
         // 如果相似度太低，返回None
         if best_similarity < 0.5 {
             return None;
         }
-        
+  
         // 调整案例以适应当前问题
         Some(self.case_based_component.adaptation_strategy.adapt_case(best_case, problem))
     }
-    
+  
     fn statistical_reasoning(&self, evidence: &HashMap<String, Value>) -> Option<HashMap<String, f64>> {
         Some(self.statistical_component.model.infer(evidence))
     }
-    
+  
     fn add_rule(&mut self, rule: Rule) {
         self.rule_based_component.rules.push(rule);
     }
-    
+  
     fn add_case(&mut self, case: Case) {
         self.case_based_component.case_library.push(case);
     }
-    
+  
     fn update_statistical_model(&mut self, data: &[(HashMap<String, Value>, HashMap<String, Value>)]) {
         self.statistical_component.model.update(data);
     }
 }
+
 ```
 
 ## 2. 形式化方法与验证
@@ -1575,54 +1580,54 @@ impl FormalSpecification {
             temporal_properties: Vec::new(),
         }
     }
-    
+  
     fn add_entity(&mut self, entity: Entity) {
         self.entities.insert(entity.name.clone(), entity);
     }
-    
+  
     fn add_state_variable(&mut self, variable: StateVariable) {
         self.state_variables.insert(variable.name.clone(), variable);
     }
-    
+  
     fn add_invariant(&mut self, invariant: Invariant) {
         self.invariants.push(invariant);
     }
-    
-    fn add_operation_specification(&mut self, 
-                                  operation_name: &str, 
-                                  precondition: Predicate, 
+  
+    fn add_operation_specification(&mut self,
+                                  operation_name: &str,
+                                  precondition: Predicate,
                                   postcondition: Predicate) {
         self.pre_post_conditions.insert(
-            operation_name.to_string(), 
+            operation_name.to_string(),
             (precondition, postcondition)
         );
     }
-    
+  
     fn add_temporal_property(&mut self, property: TemporalProperty) {
         self.temporal_properties.push(property);
     }
-    
+  
     fn verify_against_model(&self, model: &SystemModel) -> VerificationResult {
         // 在实际实现中，这会调用模型检验器或定理证明器
         // 这里只是简化示例
         let mut violations = Vec::new();
-        
+  
         // 检查所有状态变量是否在模型中有对应
         for (name, var) in &self.state_variables {
             if !model.has_state_variable(name) {
                 violations.push(Violation::MissingStateVariable(name.clone()));
             }
         }
-        
+  
         // 检查所有操作是否在模型中有对应
         for (name, _) in &self.pre_post_conditions {
             if !model.has_operation(name) {
                 violations.push(Violation::MissingOperation(name.clone()));
             }
         }
-        
+  
         // 其他更复杂的检查...
-        
+  
         if violations.is_empty() {
             VerificationResult::Success
         } else {
@@ -1653,7 +1658,7 @@ impl SystemModel {
     fn has_state_variable(&self, name: &str) -> bool {
         self.state_variables.contains_key(name)
     }
-    
+  
     fn has_operation(&self, name: &str) -> bool {
         self.operations.contains_key(name)
     }
@@ -1672,6 +1677,7 @@ enum Violation {
     PostconditionViolation(String, HashMap<String, Value>, HashMap<String, Value>),
     TemporalPropertyViolation(usize, Vec<HashMap<String, Value>>),
 }
+
 ```
 
 ### 2.2 模型检验
@@ -1778,18 +1784,18 @@ impl ModelChecker {
             optimization_techniques: Vec::new(),
         }
     }
-    
+  
     fn add_property(&mut self, property: Property) {
         self.properties.push(property);
     }
-    
+  
     fn add_optimization(&mut self, technique: OptimizationTechnique) {
         self.optimization_techniques.push(technique);
     }
-    
+  
     fn check(&self) -> Vec<CheckResult> {
         let mut results = Vec::new();
-        
+  
         for (index, property) in self.properties.iter().enumerate() {
             match property {
                 Property::Safety(predicate) => {
@@ -1809,16 +1815,16 @@ impl ModelChecker {
                 },
             }
         }
-        
+  
         results
     }
-    
+  
     fn check_safety(&self, property_index: usize, predicate: &Predicate) -> CheckResult {
         // 安全属性检查：确保坏事从不发生
         // 简化实现，实际检查需要遍历可达状态
-        
+  
         println!("检查安全属性 #{}", property_index);
-        
+  
         // 模拟找到违反
         if rand::random::<bool>() {
             let counter_example = self.generate_counter_example(property_index);
@@ -1827,13 +1833,13 @@ impl ModelChecker {
             CheckResult::Satisfied
         }
     }
-    
+  
     fn check_liveness(&self, property_index: usize, predicate: &Predicate) -> CheckResult {
         // 活性属性检查：确保好事最终发生
         // 简化实现
-        
+  
         println!("检查活性属性 #{}", property_index);
-        
+  
         // 模拟找到违反
         if rand::random::<bool>() {
             let counter_example = self.generate_counter_example(property_index);
@@ -1842,13 +1848,13 @@ impl ModelChecker {
             CheckResult::Satisfied
         }
     }
-    
+  
     fn check_ctl(&self, property_index: usize, formula: &CTLFormula) -> CheckResult {
         // CTL公式检查
         // 简化实现
-        
+  
         println!("检查CTL属性 #{}", property_index);
-        
+  
         // 模拟找到违反
         if rand::random::<bool>() {
             let counter_example = self.generate_counter_example(property_index);
@@ -1857,13 +1863,13 @@ impl ModelChecker {
             CheckResult::Satisfied
         }
     }
-    
+  
     fn check_ltl(&self, property_index: usize, formula: &LTLFormula) -> CheckResult {
         // LTL公式检查，通常转换为Büchi自动机
         // 简化实现
-        
+  
         println!("检查LTL属性 #{}", property_index);
-        
+  
         // 模拟找到违反
         if rand::random::<bool>() {
             let counter_example = self.generate_counter_example(property_index);
@@ -1872,13 +1878,13 @@ impl ModelChecker {
             CheckResult::Satisfied
         }
     }
-    
+  
     fn check_fairness(&self, property_index: usize, strong: bool, condition: &Predicate, consequence: &Predicate) -> CheckResult {
         // 公平性属性检查
         // 简化实现
-        
+  
         println!("检查{}公平性属性 #{}", if strong { "强" } else { "弱" }, property_index);
-        
+  
         // 模拟找到违反
         if rand::random::<bool>() {
             let counter_example = self.generate_counter_example(property_index);
@@ -1887,7 +1893,7 @@ impl ModelChecker {
             CheckResult::Satisfied
         }
     }
-    
+  
     fn generate_counter_example(&self, property_index: usize) -> CounterExample {
         // 生成反例（简化）
         CounterExample {
@@ -1902,6 +1908,7 @@ enum CheckResult {
     Violation(CounterExample),
     Unknown(String),
 }
+
 ```
 
 ### 2.3 类型系统与静态分析
@@ -2065,30 +2072,30 @@ impl StaticAnalyzer {
             type_system,
         }
     }
-    
+  
     fn add_analysis(&mut self, analysis: Box<dyn StaticAnalysis>) {
         self.analyses.push(analysis);
     }
-    
+  
     fn run_all_analyses(&self) -> HashMap<String, AnalysisResult> {
         let mut results = HashMap::new();
-        
+  
         for analysis in &self.analyses {
             let name = analysis.name().to_string();
             let result = analysis.analyze(&self.program);
             results.insert(name, result);
         }
-        
+  
         results
     }
-    
+  
     fn is_program_well_typed(&self) -> Result<(), Vec<TypeCheckError>> {
         // 类型检查逻辑
         let mut errors = Vec::new();
-        
+  
         // 实际应用中应遍历AST检查类型
         // ...
-        
+  
         if errors.is_empty() {
 
 ```rust
@@ -2451,6 +2458,7 @@ enum Property {
     List(Vec<Property>),
     Map(HashMap<String, String>), // 简化表示
 }
+
 ```
 
 ### 2.4 定理证明
@@ -3006,6 +3014,7 @@ enum ProgramStatement {
     While { condition: String, body: Box<ProgramStatement> },
     Skip,
 }
+
 ```
 
 ## 3. 实时与响应式系统
@@ -3625,6 +3634,7 @@ impl EarliestDeadlineFirstScheduler {
         total_utilization
     }
 }
+
 ```
 
 ### 3.2 软实时策略
@@ -4133,6 +4143,7 @@ struct TaskPerformanceReport {
     avg_execution_time: Duration,
     current_adaptation_level: AdaptationLevel,
 }
+
 ```
 
 ### 3.3 调度理论
@@ -4951,6 +4962,7 @@ fn calculate_utilization(tasks: &[GenericTask]) -> f64 {
         })
         .sum()
 }
+
 ```
 
 ### 3.4 响应式编程模型
@@ -5167,16 +5179,16 @@ impl ReactiveSystem {
                 context: HashMap::new(),
             });
         }
-        
+  
         self.sinks.insert(sink_id.to_string(), sink);
-        
+  
         if let Some(stream) = self.reactive_streams.get_mut(stream_id) {
             stream.sink_id = Some(sink_id.to_string());
         }
-        
+  
         Ok(())
     }
-    
+  
     fn set_backpressure_strategy(&mut self, stream_id: &str, strategy: BackpressureStrategy) -> Result<(), ReactiveError> {
         if let Some(stream) = self.reactive_streams.get_mut(stream_id) {
             stream.backpressure_strategy = strategy;
@@ -5190,16 +5202,16 @@ impl ReactiveSystem {
             })
         }
     }
-    
+  
     fn subscribe(&mut self, event_type: &str, subscription: Subscription) -> Result<(), ReactiveError> {
         self.event_broker.subscriptions
             .entry(event_type.to_string())
             .or_insert_with(Vec::new)
             .push(subscription);
-            
+  
         Ok(())
     }
-    
+  
     fn publish(&mut self, event: Event) -> Result<DispatchResult, ReactiveError> {
         // 检查是否有对此事件类型的订阅
         if let Some(subscriptions) = self.event_broker.subscriptions.get(&event.event_type) {
@@ -5213,7 +5225,7 @@ impl ReactiveSystem {
             Ok(DispatchResult::Success(0))
         }
     }
-    
+  
     fn start_stream(&mut self, stream_id: &str) -> Result<(), ReactiveError> {
         if !self.reactive_streams.contains_key(stream_id) {
             return Err(ReactiveError {
@@ -5223,35 +5235,35 @@ impl ReactiveSystem {
                 context: HashMap::new(),
             });
         }
-        
+  
         // 从流中克隆所需信息，避免借用冲突
         let stream_clone = self.reactive_streams.get(stream_id).unwrap().clone();
         let operators_clone = self.operators.clone();
         let sinks_clone = self.sinks.clone();
-        
+  
         // 创建处理任务
         let task = Box::new(move || {
             // 简化版流处理逻辑
             let mut source = stream_clone.source;
-            
+  
             while let Some(event) = source.emit() {
                 let mut current_events = vec![event];
-                
+  
                 // 应用管道中的每个操作符
                 for operator_id in &stream_clone.pipeline {
                     if let Some(operator) = operators_clone.get(operator_id) {
                         // 处理当前事件批次
                         let mut next_events = Vec::new();
-                        
+  
                         for event in current_events {
                             let results = operator.process(event);
                             next_events.extend(results);
                         }
-                        
+  
                         current_events = next_events;
                     }
                 }
-                
+  
                 // 将最终事件发送到接收器
                 if let Some(sink_id) = &stream_clone.sink_id {
                     if let Some(mut sink) = sinks_clone.get(sink_id) {
@@ -5263,13 +5275,13 @@ impl ReactiveSystem {
                         }
                     }
                 }
-                
+  
                 // 如果源已完成，退出循环
                 if source.is_complete() {
                     break;
                 }
             }
-            
+  
             // 流处理完成，通知接收器
             if let Some(sink_id) = &stream_clone.sink_id {
                 if let Some(mut sink) = sinks_clone.get(sink_id) {
@@ -5277,10 +5289,10 @@ impl ReactiveSystem {
                 }
             }
         });
-        
+  
         // 调度任务执行
         let result = self.scheduler.schedule(task);
-        
+  
         match result {
             SchedulingResult::Scheduled => Ok(()),
             SchedulingResult::Rejected => Err(ReactiveError {
@@ -5292,7 +5304,7 @@ impl ReactiveSystem {
             SchedulingResult::Queued => Ok(()),
         }
     }
-    
+  
     fn shutdown(&mut self) {
         // 关闭调度器
         self.scheduler.shutdown();
@@ -5374,22 +5386,22 @@ impl EventDispatcher for AsyncEventDispatcher {
         if subscriptions.is_empty() {
             return DispatchResult::Success(0);
         }
-        
+  
         let mut successful_count = 0;
         let mut errors = Vec::new();
-        
+  
         // 克隆事件和订阅以在线程间安全传递
         for subscription in subscriptions {
             let event_clone = event.clone();
             let subscriber = subscription.subscriber.clone();
-            
+  
             // 检查事件过滤器
             if let Some(filter) = &subscription.event_filter {
                 if !filter(&event) {
                     continue;
                 }
             }
-            
+  
             // 在线程池中调度订阅者执行
             self.thread_pool.execute(move || {
                 if let Err(error) = subscriber(event_clone) {
@@ -5397,10 +5409,10 @@ impl EventDispatcher for AsyncEventDispatcher {
                     println!("订阅者错误: {}", error.message);
                 }
             });
-            
+  
             successful_count += 1;
         }
-        
+  
         if errors.is_empty() {
             DispatchResult::Success(successful_count)
         } else {
@@ -5527,24 +5539,24 @@ where
     fn name(&self) -> &str {
         "Map操作符"
     }
-    
+  
     fn process(&self, event: Event) -> Vec<Event> {
         // 尝试从事件中提取输入类型
         if let Ok(input) = event.payload.downcast::<T>() {
             // 应用映射函数
             let result = (self.mapper)(*input);
-            
+  
             // 创建包含结果的新事件
             let mut new_event = event.clone();
             new_event.payload = Box::new(result);
-            
+  
             vec![new_event]
         } else {
             // 类型不匹配，返回原始事件
             vec![event]
         }
     }
-    
+  
     fn on_error(&self, error: ReactiveError) -> ErrorHandlingAction {
         // 简单的错误处理：传播错误
         ErrorHandlingAction::Propagate
@@ -5563,7 +5575,7 @@ where
     fn name(&self) -> &str {
         "Filter操作符"
     }
-    
+  
     fn process(&self, event: Event) -> Vec<Event> {
         // 尝试从事件中提取输入类型
         if let Ok(input) = event.payload.downcast_ref::<T>() {
@@ -5579,7 +5591,7 @@ where
             vec![event]
         }
     }
-    
+  
     fn on_error(&self, error: ReactiveError) -> ErrorHandlingAction {
         // 简单的错误处理：传播错误
         ErrorHandlingAction::Propagate
@@ -5596,20 +5608,20 @@ impl StreamOperator for DebounceOperator {
     fn name(&self) -> &str {
         "Debounce操作符"
     }
-    
+  
     fn process(&self, event: Event) -> Vec<Event> {
         let now = Instant::now();
         let mut last_time = self.last_event_time.lock().unwrap();
         let mut timer = self.timer.lock().unwrap();
-        
+  
         *last_time = Some(now);
-        
+  
         // 设置或重置定时器
         *timer = Some(now + self.window);
-        
+  
         // Debounce会延迟发送事件，这里简化处理
         // 实际实现应使用定时器等机制
-        
+  
         // 简化：如果距离上次事件超过窗口期，则发送
         if let Some(last) = *last_time {
             if now.duration_since(last) > self.window {
@@ -5619,11 +5631,11 @@ impl StreamOperator for DebounceOperator {
             // 首次事件
             return vec![event];
         }
-        
+  
         // 否则抑制事件
         vec![]
     }
-    
+  
     fn on_error(&self, error: ReactiveError) -> ErrorHandlingAction {
         ErrorHandlingAction::Propagate
     }
@@ -5651,25 +5663,25 @@ impl Source for IntervalSource {
     fn name(&self) -> &str {
         "Interval源"
     }
-    
+  
     fn emit(&mut self) -> Option<Event> {
         let now = Instant::now();
-        
+  
         if let Some(last) = self.last_emit {
             if now.duration_since(last) < self.interval {
                 // 尚未达到下一个间隔
                 return None;
             }
         }
-        
+  
         // 更新上次发射时间
         self.last_emit = Some(now);
-        
+  
         if self.count > 0 && self.current >= self.count {
             // 已达到最大计数
             return None;
         }
-        
+  
         // 创建事件
         let event = Event {
             id: Uuid::new_v4(),
@@ -5679,12 +5691,12 @@ impl Source for IntervalSource {
             origin: "IntervalSource".to_string(),
             metadata: HashMap::new(),
         };
-        
+  
         self.current += 1;
-        
+  
         Some(event)
     }
-    
+  
     fn is_complete(&self) -> bool {
         self.count > 0 && self.current >= self.count
     }
@@ -5708,17 +5720,17 @@ impl Sink for ConsoleLogSink {
     fn name(&self) -> &str {
         "Console日志接收器"
     }
-    
+  
     fn accept(&mut self, event: Event) -> Result<(), ReactiveError> {
         println!("[{}] 事件 {} (类型: {}): {:?}",
                event.timestamp.elapsed().as_millis(),
                event.id,
                event.event_type,
                event.payload);
-        
+  
         Ok(())
     }
-    
+  
     fn on_complete(&mut self) {
         println!("流处理完成");
     }
@@ -5734,10 +5746,10 @@ impl ExecutionScheduler for ThreadPoolScheduler {
         self.thread_pool.execute(move || {
             task();
         });
-        
+  
         SchedulingResult::Scheduled
     }
-    
+  
     fn shutdown(&mut self) {
         // 线程池会在drop时自动关闭
     }
@@ -5755,40 +5767,41 @@ impl ThreadPoolScheduler {
 fn create_reactive_system() -> ReactiveSystem {
     let scheduler = Box::new(ThreadPoolScheduler::new(4));
     let mut system = ReactiveSystem::new(scheduler);
-    
+  
     // 创建一个每秒发出10个事件的源
     let source = Box::new(IntervalSource::new(Duration::from_millis(100), 10));
     system.create_stream("ticker", source, BufferStrategy::Bounded(100)).unwrap();
-    
+  
     // 添加一个映射操作符
     let map_operator = Box::new(MapOperator {
         mapper: |x: usize| format!("Tick #{}", x),
     });
     system.add_operator("ticker", "string_mapper", map_operator).unwrap();
-    
+  
     // 添加一个控制台输出接收器
     let sink = Box::new(ConsoleLogSink);
     system.set_sink("ticker", "console", sink).unwrap();
-    
+  
     // 设置背压策略
     system.set_backpressure_strategy("ticker", BackpressureStrategy::Drop).unwrap();
-    
+  
     system
 }
 
 // 示例运行
 fn run_reactive_example() {
     let mut system = create_reactive_system();
-    
+  
     // 启动流
     system.start_stream("ticker").unwrap();
-    
+  
     // 等待处理完成
     thread::sleep(Duration::from_secs(2));
-    
+  
     // 关闭系统
     system.shutdown();
 }
+
 ```
 
 ## 4. 分布式计算模型
@@ -5909,34 +5922,34 @@ enum ViolationType {
 impl ConsistencyModelImplementer {
     fn new() -> Self {
         let mut models = HashMap::new();
-        
+  
         // 注册默认一致性模型
         models.insert(
             ConsistencyModelType::StrongConsistency,
             Box::new(StrongConsistencyProtocol::new()) as Box<dyn ConsistencyProtocol>
         );
-        
+  
         models.insert(
             ConsistencyModelType::EventualConsistency,
             Box::new(EventualConsistencyProtocol::new()) as Box<dyn ConsistencyProtocol>
         );
-        
+  
         models.insert(
             ConsistencyModelType::CausalConsistency,
             Box::new(CausalConsistencyProtocol::new()) as Box<dyn ConsistencyProtocol>
         );
-        
+  
         ConsistencyModelImplementer { models }
     }
-    
+  
     fn register_protocol(&mut self, model_type: ConsistencyModelType, protocol: Box<dyn ConsistencyProtocol>) {
         self.models.insert(model_type, protocol);
     }
-    
+  
     fn get_protocol(&self, model_type: &ConsistencyModelType) -> Option<&Box<dyn ConsistencyProtocol>> {
         self.models.get(model_type)
     }
-    
+  
     fn process_read(&self, model_type: &ConsistencyModelType, object_id: &str, client_id: &str) -> Result<DataVersion, ConsistencyError> {
         if let Some(protocol) = self.models.get(model_type) {
             protocol.process_read(object_id, client_id)
@@ -5947,7 +5960,7 @@ impl ConsistencyModelImplementer {
             })
         }
     }
-    
+  
     fn process_write(&self, model_type: &ConsistencyModelType, object_id: &str, client_id: &str, value: DataValue) -> Result<(), ConsistencyError> {
         if let Some(protocol) = self.models.get(model_type) {
             protocol.process_write(object_id, client_id, value)
@@ -5958,7 +5971,7 @@ impl ConsistencyModelImplementer {
             })
         }
     }
-    
+  
     fn verify_history(&self, model_type: &ConsistencyModelType, history: &[Operation]) -> ConsistencyVerificationResult {
         if let Some(protocol) = self.models.get(model_type) {
             protocol.check_consistency(history)
@@ -5983,11 +5996,11 @@ impl StrongConsistencyProtocol {
             lock_timeout: Duration::from_secs(10),
         }
     }
-    
+  
     fn acquire_lock(&self, object_id: &str) -> Result<(), ConsistencyError> {
         let mut locks = self.lock_manager.lock().unwrap();
         let now = Instant::now();
-        
+  
         // 检查对象锁
         if let Some(lock_time) = locks.get(object_id) {
             if now.duration_since(*lock_time) < self.lock_timeout {
@@ -5998,12 +6011,12 @@ impl StrongConsistencyProtocol {
                 });
             }
         }
-        
+  
         // 获取锁
         locks.insert(object_id.to_string(), now);
         Ok(())
     }
-    
+  
     fn release_lock(&self, object_id: &str) {
         let mut locks = self.lock_manager.lock().unwrap();
         locks.remove(object_id);
@@ -6014,14 +6027,14 @@ impl ConsistencyProtocol for StrongConsistencyProtocol {
     fn name(&self) -> &str {
         "强一致性协议"
     }
-    
+  
     fn process_read(&self, object_id: &str, client_id: &str) -> Result<DataVersion, ConsistencyError> {
         // 对于强一致性，读取需要获取锁
         self.acquire_lock(object_id)?;
-        
+  
         let result = {
             let store = self.data_store.lock().unwrap();
-            
+  
             if let Some(version) = store.get(object_id) {
                 Ok(version.clone())
             } else {
@@ -6031,18 +6044,18 @@ impl ConsistencyProtocol for StrongConsistencyProtocol {
                 })
             }
         };
-        
+  
         self.release_lock(object_id);
         result
     }
-    
+  
     fn process_write(&self, object_id: &str, client_id: &str, value: DataValue) -> Result<(), ConsistencyError> {
         // 获取锁
         self.acquire_lock(object_id)?;
-        
+  
         {
             let mut store = self.data_store.lock().unwrap();
-            
+  
             // 创建新版本
             let new_version = if let Some(old_version) = store.get(object_id) {
                 DataVersion {
@@ -6061,23 +6074,23 @@ impl ConsistencyProtocol for StrongConsistencyProtocol {
                     metadata: HashMap::new(),
                 }
             };
-            
+  
             // 更新数据
             store.insert(object_id.to_string(), new_version);
         }
-        
+  
         self.release_lock(object_id);
         Ok(())
     }
-    
+  
     fn check_consistency(&self, history: &[Operation]) -> ConsistencyVerificationResult {
         // 对于强一致性，每个操作都应该看到最新的写入
         // 实现线性化检查
-        
+  
         // 简化版本，实际实现需要更复杂的算法
         let mut last_write_time: HashMap<String, Instant> = HashMap::new();
         let mut violations = Vec::new();
-        
+  
         for op in history {
             match op {
                 Operation::Write { object_id, timestamp, .. } => {
@@ -6097,14 +6110,14 @@ impl ConsistencyProtocol for StrongConsistencyProtocol {
                 }
             }
         }
-        
+  
         if violations.is_empty() {
             ConsistencyVerificationResult::Consistent
         } else {
             ConsistencyVerificationResult::Inconsistent(violations)
         }
     }
-    
+  
     fn get_consistency_metrics(&self) -> HashMap<String, f64> {
         let mut metrics = HashMap::new();
         metrics.insert("staleness".to_string(), 0.0); // 强一致性没有过时
@@ -6135,10 +6148,10 @@ impl ConsistencyProtocol for EventualConsistencyProtocol {
     fn name(&self) -> &str {
         "最终一致性协议"
     }
-    
+  
     fn process_read(&self, object_id: &str, client_id: &str) -> Result<DataVersion, ConsistencyError> {
         let store = self.data_store.read().unwrap();
-        
+  
         if let Some(versions) = store.get(object_id) {
             if versions.is_empty() {
                 return Err(ConsistencyError {
@@ -6146,7 +6159,7 @@ impl ConsistencyProtocol for EventualConsistencyProtocol {
                     error_type: ConsistencyErrorType::InvalidData,
                 });
             }
-            
+  
             // 最终一致性读取最近的版本
             // 注意：不保证总是最新的，可能有延迟
             Ok(versions.last().unwrap().clone())
@@ -6157,10 +6170,10 @@ impl ConsistencyProtocol for EventualConsistencyProtocol {
             })
         }
     }
-    
+  
     fn process_write(&self, object_id: &str, client_id: &str, value: DataValue) -> Result<(), ConsistencyError> {
         let mut store = self.data_store.write().unwrap();
-        
+  
         // 创建新版本
         let new_version = DataVersion {
             value,
@@ -6169,23 +6182,23 @@ impl ConsistencyProtocol for EventualConsistencyProtocol {
             causal_dependencies: None,
             metadata: HashMap::new(),
         };
-        
+  
         // 更新版本历史
         let versions = store.entry(object_id.to_string())
             .or_insert_with(Vec::new);
-        
+  
         versions.push(new_version);
-        
+  
         // 异步复制
         let versions_clone = versions.clone();
         let data_store_clone = self.data_store.clone();
         let object_id_clone = object_id.to_string();
         let delay = self.replication_delay;
         let probability = self.propagation_probability;
-        
+  
         thread::spawn(move || {
             thread::sleep(delay);
-            
+  
             // 模拟随机传播失败
             if rand::random::<f64>() <= probability {
                 let mut store = data_store_clone.write().unwrap();
@@ -6194,18 +6207,18 @@ impl ConsistencyProtocol for EventualConsistencyProtocol {
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     fn check_consistency(&self, history: &[Operation]) -> ConsistencyVerificationResult {
         // 对于最终一致性，我们检查是否所有的写入最终都被所有的读取看到
         // 简化版本，只检查最后的读取是否看到所有的写入
-        
+  
         let mut violations = Vec::new();
         let mut last_writes: HashMap<String, HashMap<String, (DataValue, Instant)>> = HashMap::new();
         let mut last_reads: HashMap<String, HashMap<String, (DataVersion, Instant)>> = HashMap::new();
-        
+  
         // 收集所有写入
         for op in history {
             match op {
@@ -6221,7 +6234,7 @@ impl ConsistencyProtocol for EventualConsistencyProtocol {
                 }
             }
         }
-        
+  
         // 检查每个客户端的最后一次读取是否包含所有写入
         for (client_id, reads) in &last_reads {
             for (object_id, (read_version, read_time)) in reads {
@@ -6229,8 +6242,8 @@ impl ConsistencyProtocol for EventualConsistencyProtocol {
                     if let Some((write_value, write_time)) = writes.get(object_id) {
                         // 如果写入发生在很久之前（超过合理的传播时间），读取应该看到它
                         let reasonable_delay = Duration::from_secs(5); // 假设5秒是合理的延迟
-                        
-                        if *write_time + reasonable_delay < *read_time && 
+  
+                        if *write_time + reasonable_delay < *read_time &&
                            !Self::value_equals(&read_version.value, write_value) {
                             violations.push(ConsistencyViolation {
                                 violation_type: ViolationType::EventualConsistencyViolation,
@@ -6671,6 +6684,7 @@ impl ConsistencyProtocol for SessionConsistencyProtocol {
         metrics
     }
 }
+
 ```
 
 ### 4.2 共识算法
@@ -7209,6 +7223,7 @@ _ => Err(ConsensusError {
     message: "不支持的消息类型".to_string(),
     error_type: ConsensusErrorType::InternalError,
 }),
+
 ```
 
 ```rust
@@ -7227,6 +7242,7 @@ fn get_status(&self) -> InstanceStatus {
 fn get_metrics(&self) -> HashMap<String, f64> {
     self.metrics.clone()
 }
+
 ```
 
 // Raft算法实现
@@ -7244,19 +7260,19 @@ impl ConsensusAlgorithm for RaftAlgorithm {
     fn name(&self) -> &str {
         "Raft"
     }
-    
+  
     fn create_instance(&self, config: ConsensusConfig) -> Box<dyn ConsensusInstance> {
         Box::new(RaftInstance::new(config))
     }
-    
+  
     fn fault_tolerance(&self, nodes: usize) -> usize {
         (nodes - 1) / 2 // Raft容忍少于一半的节点故障
     }
-    
+  
     fn message_complexity(&self) -> MessageComplexity {
         MessageComplexity::Linear // 每个操作的消息复杂度为O(n)
     }
-    
+  
     fn supports_byzantine_faults(&self) -> bool {
         false // Raft不支持拜占庭故障
     }
@@ -7307,7 +7323,7 @@ impl RaftInstance {
         let mut rng = rand::thread_rng();
         let timeout_ms = rng.gen_range(150..300);
         let election_timeout = Duration::from_millis(timeout_ms);
-        
+  
         let mut instance = RaftInstance {
             config,
             state: RaftState::Initializing,
@@ -7328,7 +7344,7 @@ impl RaftInstance {
             status: InstanceStatus::Initializing,
             metrics: HashMap::new(),
         };
-        
+  
         // 初始化每个节点的next_index和match_index
         for node in &instance.config.nodes {
             if &node.id != &instance.config.self_id.id {
@@ -7336,10 +7352,10 @@ impl RaftInstance {
                 instance.match_index.insert(node.clone(), 0);
             }
         }
-        
+  
         instance
     }
-    
+  
     fn check_election_timeout(&mut self) {
         if let RaftRole::Follower | RaftRole::Candidate = self.role {
             if self.last_heartbeat.elapsed() > self.election_timeout {
@@ -7347,20 +7363,20 @@ impl RaftInstance {
             }
         }
     }
-    
+  
     fn start_election(&mut self) {
         self.role = RaftRole::Candidate;
         self.current_term += 1;
         self.voted_for = Some(self.config.self_id.clone());
         self.votes_received.clear();
         self.votes_received.insert(self.config.self_id.clone()); // 自己给自己投票
-        
+  
         // 重置选举超时
         let mut rng = rand::thread_rng();
         let timeout_ms = rng.gen_range(150..300);
         self.election_timeout = Duration::from_millis(timeout_ms);
         self.last_heartbeat = Instant::now();
-        
+  
         // 发送RequestVote消息
         let request_vote_message = ConsensusMessage {
             instance_id: self.config.id.clone(),
@@ -7369,7 +7385,7 @@ impl RaftInstance {
             round: self.current_term,
             payload: Vec::new(), // 简化：应包含last_log_index和last_log_term
         };
-        
+  
         for node in &self.config.nodes {
             if &node.id != &self.config.self_id.id {
                 if let Err(err) = (self.config.message_sender)(node.clone(), request_vote_message.clone()) {
@@ -7378,10 +7394,10 @@ impl RaftInstance {
             }
         }
     }
-    
+  
     fn handle_request_vote(&mut self, from: &NodeId, message: &ConsensusMessage) -> Result<(), ConsensusError> {
         let term = message.round;
-        
+  
         // 如果消息的任期小于当前任期，拒绝投票
         if term < self.current_term {
             let response = ConsensusMessage {
@@ -7391,18 +7407,18 @@ impl RaftInstance {
                 round: self.current_term,
                 payload: vec![0], // 0表示拒绝
             };
-            
+  
             (self.config.message_sender)(from.clone(), response)?;
             return Ok(());
         }
-        
+  
         // 如果消息的任期大于当前任期，更新任期并转为follower
         if term > self.current_term {
             self.current_term = term;
             self.role = RaftRole::Follower;
             self.voted_for = None;
         }
-        
+  
         // 决定是否投票
         let vote_granted = if self.voted_for.is_none() || self.voted_for.as_ref() == Some(from) {
             // 简化：在完整实现中，这里还需要检查日志是否足够新
@@ -7410,12 +7426,12 @@ impl RaftInstance {
         } else {
             false
         };
-        
+  
         if vote_granted {
             self.voted_for = Some(from.clone());
             self.last_heartbeat = Instant::now(); // 重置选举超时
         }
-        
+  
         // 发送投票响应
         let response = ConsensusMessage {
             instance_id: self.config.id.clone(),
@@ -7424,39 +7440,39 @@ impl RaftInstance {
             round: self.current_term,
             payload: if vote_granted { vec![1] } else { vec![0] },
         };
-        
+  
         (self.config.message_sender)(from.clone(), response)?;
-        
+  
         Ok(())
     }
-    
+  
     fn handle_request_vote_response(&mut self, from: &NodeId, message: &ConsensusMessage) -> Result<(), ConsensusError> {
         if message.round != self.current_term || self.role != RaftRole::Candidate {
             return Ok(()); // 忽略过期的响应
         }
-        
+  
         // 检查是否获得投票
         if !message.payload.is_empty() && message.payload[0] == 1 {
             self.votes_received.insert(from.clone());
-            
+  
             // 检查是否获得多数票
             if self.votes_received.len() > self.config.nodes.len() / 2 {
                 // 成为领导者
                 self.become_leader();
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn become_leader(&mut self) {
         if self.role != RaftRole::Candidate {
             return;
         }
-        
+  
         self.role = RaftRole::Leader;
         self.leader_id = Some(self.config.self_id.clone());
-        
+  
         // 初始化领导者状态
         for node in &self.config.nodes {
             if &node.id != &self.config.self_id.id {
@@ -7464,14 +7480,14 @@ impl RaftInstance {
                 self.match_index.insert(node.clone(), 0);
             }
         }
-        
+  
         // 立即发送心跳
         self.send_heartbeat()?;
     }
-    
+  
     fn send_heartbeat(&mut self) -> Result<(), ConsensusError> {
         self.last_heartbeat = Instant::now();
-        
+  
         // 发送AppendEntries消息作为心跳
         for node in &self.config.nodes {
             if &node.id != &self.config.self_id.id {
@@ -7482,7 +7498,7 @@ impl RaftInstance {
                 } else {
                     0
                 };
-                
+  
                 // 构建心跳消息
                 let heartbeat_message = ConsensusMessage {
                     instance_id: self.config.id.clone(),
@@ -7491,19 +7507,19 @@ impl RaftInstance {
                     round: self.current_term,
                     payload: Vec::new(), // 简化：应包含prev_log_index、prev_log_term等
                 };
-                
+  
                 if let Err(err) = (self.config.message_sender)(node.clone(), heartbeat_message) {
                     println!("向节点 {} 发送心跳失败: {}", node.id, err.message);
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn handle_append_entries(&mut self, from: &NodeId, message: &ConsensusMessage) -> Result<(), ConsensusError> {
         let term = message.round;
-        
+  
         // 如果消息的任期小于当前任期，拒绝
         if term < self.current_term {
             let response = ConsensusMessage {
@@ -7513,24 +7529,24 @@ impl RaftInstance {
                 round: self.current_term,
                 payload: vec![0], // 0表示失败
             };
-            
+  
             (self.config.message_sender)(from.clone(), response)?;
             return Ok(());
         }
-        
+  
         // 更新当前任期并转为follower
         if term > self.current_term {
             self.current_term = term;
             self.role = RaftRole::Follower;
             self.voted_for = None;
         }
-        
+  
         // 更新领导者ID和选举超时
         self.leader_id = Some(from.clone());
         self.last_heartbeat = Instant::now();
-        
+  
         // 简化：在完整实现中，这里需要处理日志复制逻辑
-        
+  
         // 发送成功响应
         let response = ConsensusMessage {
             instance_id: self.config.id.clone(),
@@ -7539,19 +7555,19 @@ impl RaftInstance {
             round: self.current_term,
             payload: vec![1], // 1表示成功
         };
-        
+  
         (self.config.message_sender)(from.clone(), response)?;
-        
+  
         Ok(())
     }
-    
+  
     fn handle_append_entries_response(&mut self, from: &NodeId, message: &ConsensusMessage) -> Result<(), ConsensusError> {
         if message.round != self.current_term || self.role != RaftRole::Leader {
             return Ok(()); // 忽略过期的响应
         }
-        
+  
         let success = !message.payload.is_empty() && message.payload[0] == 1;
-        
+  
         if success {
             // 更新matchIndex和nextIndex
             // 简化：在完整实现中，这里需要处理提交逻辑
@@ -7560,11 +7576,11 @@ impl RaftInstance {
             if let Some(next_idx) = self.next_index.get_mut(from) {
                 *next_idx = (*next_idx).saturating_sub(1);
             }
-            
+  
             // 重新发送AppendEntries
             // 简化：完整实现应该立即发送新的AppendEntries
         }
-        
+  
         Ok(())
     }
 }
@@ -7573,7 +7589,7 @@ impl ConsensusInstance for RaftInstance {
     fn id(&self) -> &str {
         &self.config.id
     }
-    
+  
     fn propose(&mut self, value: Vec<u8>) -> Result<(), ConsensusError> {
         if self.role != RaftRole::Leader {
             return Err(ConsensusError {
@@ -7581,22 +7597,22 @@ impl ConsensusInstance for RaftInstance {
                 error_type: ConsensusErrorType::WrongLeader,
             });
         }
-        
+  
         // 添加新的日志条目
         let log_entry = LogEntry {
             term: self.current_term,
             index: self.log.len() + 1,
             data: value,
         };
-        
+  
         self.log.push(log_entry);
-        
+  
         // 复制日志到所有节点
         // 简化：在完整实现中，这里应该调用replicate_log方法
-        
+  
         Ok(())
     }
-    
+  
     fn receive_message(&mut self, from: &NodeId, message: ConsensusMessage) -> Result<(), ConsensusError> {
         if message.instance_id != self.config.id {
             return Err(ConsensusError {
@@ -7604,7 +7620,7 @@ impl ConsensusInstance for RaftInstance {
                 error_type: ConsensusErrorType::InternalError,
             });
         }
-        
+  
         match message.message_type {
             ConsensusMessageType::RequestVote => self.handle_request_vote(from, &message),
             ConsensusMessageType::RequestVoteResponse => self.handle_request_vote_response(from, &message),
@@ -7616,19 +7632,19 @@ impl ConsensusInstance for RaftInstance {
             }),
         }
     }
-    
+  
     fn is_decided(&self) -> bool {
         self.decided_value.is_some()
     }
-    
+  
     fn get_decision(&self) -> Option<Vec<u8>> {
         self.decided_value.clone()
     }
-    
+  
     fn get_status(&self) -> InstanceStatus {
         self.status.clone()
     }
-    
+  
     fn get_metrics(&self) -> HashMap<String, f64> {
         self.metrics.clone()
     }
@@ -7647,19 +7663,19 @@ impl ConsensusAlgorithm for PBFTAlgorithm {
     fn name(&self) -> &str {
         "PBFT"
     }
-    
+  
     fn create_instance(&self, config: ConsensusConfig) -> Box<dyn ConsensusInstance> {
         Box::new(PBFTInstance::new(config))
     }
-    
+  
     fn fault_tolerance(&self, nodes: usize) -> usize {
         (nodes - 1) / 3 // PBFT容忍不超过1/3的节点故障
     }
-    
+  
     fn message_complexity(&self) -> MessageComplexity {
         MessageComplexity::Cubic // O(n³)
     }
-    
+  
     fn supports_byzantine_faults(&self) -> bool {
         true // PBFT支持拜占庭故障
     }
@@ -7694,7 +7710,7 @@ impl PBFTInstance {
         let self_id = &config.self_id;
         let primary_idx = 0; // 简化：始终选择第一个节点作为主节点
         let is_primary = nodes.get(primary_idx).map(|n| n.id == self_id.id).unwrap_or(false);
-        
+  
         PBFTInstance {
             config,
             state: PBFTState::Normal,
@@ -7711,12 +7727,12 @@ impl PBFTInstance {
             metrics: HashMap::new(),
         }
     }
-    
+  
     fn get_primary(&self) -> Option<NodeId> {
         let primary_idx = (self.view as usize) % self.config.nodes.len();
         self.config.nodes.get(primary_idx).cloned()
     }
-    
+  
     fn is_self_primary(&self) -> bool {
         if let Some(primary) = self.get_primary() {
             primary.id == self.config.self_id.id
@@ -7724,13 +7740,13 @@ impl PBFTInstance {
             false
         }
     }
-    
+  
     fn get_quorum_size(&self) -> usize {
         // PBFT需要2f+1个节点达成共识，其中f是最大容错数量
         let f = self.config.nodes.len() / 3;
         2 * f + 1
     }
-    
+  
     fn start_pre_prepare(&mut self, value: Vec<u8>) -> Result<(), ConsensusError> {
         if !self.is_self_primary() {
             return Err(ConsensusError {
@@ -7738,10 +7754,10 @@ impl PBFTInstance {
                 error_type: ConsensusErrorType::WrongLeader,
             });
         }
-        
+  
         self.sequence_number += 1;
         let seq_num = self.sequence_number;
-        
+  
         // 构建PrePrepare消息
         let pre_prepare_message = ConsensusMessage {
             instance_id: self.config.id.clone(),
@@ -7750,7 +7766,7 @@ impl PBFTInstance {
             round: seq_num,
             payload: value.clone(),
         };
-        
+  
         // 向所有副本发送PrePrepare消息
         for node in &self.config.nodes {
             if &node.id != &self.config.self_id.id {
@@ -7759,18 +7775,18 @@ impl PBFTInstance {
                 }
             }
         }
-        
+  
         // 自己处理这条消息
         let mut prepared = HashSet::new();
         prepared.insert(self.config.self_id.clone());
         self.prepared_messages.insert(seq_num, (value, prepared));
-        
+  
         Ok(())
     }
-    
+  
     fn handle_pre_prepare(&mut self, from: &NodeId, message: &ConsensusMessage) -> Result<(), ConsensusError> {
         let seq_num = message.round;
-        
+  
         // 验证发送者是当前视图的主节点
         if let Some(primary) = self.get_primary() {
             if primary.id != from.id {
@@ -7785,13 +7801,13 @@ impl PBFTInstance {
                 error_type: ConsensusErrorType::InternalError,
             });
         }
-        
+  
         // 检查序列号是否在水位线之内
         // 简化：在完整实现中，需要检查序列号是否在水位线范围内
-        
+  
         // 存储PrepareMessage以便后续步骤
         let data = message.payload.clone();
-        
+  
         // 构建Prepare消息
         let prepare_message = ConsensusMessage {
             instance_id: self.config.id.clone(),
@@ -7800,7 +7816,7 @@ impl PBFTInstance {
             round: seq_num,
             payload: data.clone(),
         };
-        
+  
         // 向所有节点发送Prepare消息
         for node in &self.config.nodes {
             if &node.id != &self.config.self_id.id {
@@ -7809,7 +7825,7 @@ impl PBFTInstance {
                 }
             }
         }
-        
+  
         // 记录自己的Prepare
         if let Some((_, prepared)) = self.prepared_messages.get_mut(&seq_num) {
             prepared.insert(self.config.self_id.clone());
@@ -7818,18 +7834,18 @@ impl PBFTInstance {
             prepared.insert(self.config.self_id.clone());
             self.prepared_messages.insert(seq_num, (data, prepared));
         }
-        
+  
         Ok(())
     }
-    
+  
     fn handle_prepare(&mut self, from: &NodeId, message: &ConsensusMessage) -> Result<(), ConsensusError> {
         let seq_num = message.round;
-        
+  
         // 记录Prepare消息
         if let Some((data, prepared)) = self.prepared_messages.get_mut(&seq_num) {
             if data == &message.payload {
                 prepared.insert(from.clone());
-                
+  
                 // 检查是否有足够的Prepare
                 if prepared.len() >= self.get_quorum_size() {
                     // 进入Commit阶段
@@ -7841,10 +7857,10 @@ impl PBFTInstance {
             prepared.insert(from.clone());
             self.prepared_messages.insert(seq_num, (message.payload.clone(), prepared));
         }
-        
+  
         Ok(())
     }
-    
+  
     fn start_commit(&mut self, seq_num: u64, data: Vec<u8>) -> Result<(), ConsensusError> {
         // 构建Commit消息
         let commit_message = ConsensusMessage {
@@ -7854,7 +7870,7 @@ impl PBFTInstance {
             round: seq_num,
             payload: data,
         };
-        
+  
         // 向所有节点发送Commit消息
         for node in &self.config.nodes {
             if &node.id != &self.config.self_id.id {
@@ -7863,21 +7879,21 @@ impl PBFTInstance {
                 }
             }
         }
-        
+  
         // 记录自己的Commit
         let mut committed = self.committed_messages.entry(seq_num).or_insert_with(HashSet::new);
         committed.insert(self.config.self_id.clone());
-        
+  
         Ok(())
     }
-    
+  
     fn handle_commit(&mut self, from: &NodeId, message: &ConsensusMessage) -> Result<(), ConsensusError> {
         let seq_num = message.round;
-        
+  
         // 记录Commit消息
         let committed = self.committed_messages.entry(seq_num).or_insert_with(HashSet::new);
         committed.insert(from.clone());
-        
+  
         // 检查是否有足够的Commit
         if committed.len() >= self.get_quorum_size() {
             // 确认请求已提交
@@ -7885,24 +7901,24 @@ impl PBFTInstance {
                 self.decided_value = Some(data.clone());
                 self.state = PBFTState::Decided;
                 self.status = InstanceStatus::Decided;
-                
+  
                 // 记录指标
-                self.metrics.insert("decision_time".to_string(), 
+                self.metrics.insert("decision_time".to_string(),
                                    self.config.start_time.elapsed().as_secs_f64());
-                
+  
                 // 检查是否需要做检查点
                 if seq_num >= self.last_checkpoint + self.checkpoint_interval {
                     self.start_checkpoint(seq_num)?;
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn start_checkpoint(&mut self, seq_num: u64) -> Result<(), ConsensusError> {
         self.last_checkpoint = seq_num;
-        
+  
         // 构建Checkpoint消息
         let checkpoint_message = ConsensusMessage {
             instance_id: self.config.id.clone(),
@@ -7911,7 +7927,7 @@ impl PBFTInstance {
             round: seq_num,
             payload: Vec::new(), // 简化：应包含状态摘要
         };
-        
+  
         // 向所有节点发送Checkpoint消息
         for node in &self.config.nodes {
             if &node.id != &self.config.self_id.id {
@@ -7920,42 +7936,42 @@ impl PBFTInstance {
                 }
             }
         }
-        
+  
         // 记录自己的Checkpoint
         let checkpoint_states = self.checkpoint_states.entry(seq_num).or_insert_with(HashSet::new);
         checkpoint_states.insert(self.config.self_id.clone());
-        
+  
         Ok(())
     }
-    
+  
     fn handle_checkpoint(&mut self, from: &NodeId, message: &ConsensusMessage) -> Result<(), ConsensusError> {
         let seq_num = message.round;
-        
+  
         // 记录Checkpoint消息
         let checkpoint_states = self.checkpoint_states.entry(seq_num).or_insert_with(HashSet::new);
         checkpoint_states.insert(from.clone());
-        
+  
         // 检查是否有足够的Checkpoint
         if checkpoint_states.len() >= self.get_quorum_size() {
             // 稳定检查点
             // 简化：在完整实现中，应该在这里垃圾回收已确认的消息
-            
+  
             // 更新最后的检查点
             if seq_num > self.last_checkpoint {
                 self.last_checkpoint = seq_num;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn start_view_change(&mut self, new_view: u64) -> Result<(), ConsensusError> {
         if new_view <= self.view {
             return Ok(());
         }
-        
+  
         self.state = PBFTState::ViewChange;
-        
+  
         // 构建ViewChange消息
         let view_change_message = ConsensusMessage {
             instance_id: self.config.id.clone(),
@@ -7964,7 +7980,7 @@ impl PBFTInstance {
             round: new_view,
             payload: Vec::new(), // 简化：应包含检查点和准备好的消息
         };
-        
+  
         // 向所有节点发送ViewChange消息
         for node in &self.config.nodes {
             if &node.id != &self.config.self_id.id {
@@ -7973,7 +7989,7 @@ impl PBFTInstance {
                 }
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -7982,7 +7998,7 @@ impl ConsensusInstance for PBFTInstance {
     fn id(&self) -> &str {
         &self.config.id
     }
-    
+  
     fn propose(&mut self, value: Vec<u8>) -> Result<(), ConsensusError> {
         if !self.is_self_primary() {
             return Err(ConsensusError {
@@ -7990,10 +8006,10 @@ impl ConsensusInstance for PBFTInstance {
                 error_type: ConsensusErrorType::WrongLeader,
             });
         }
-        
+  
         self.start_pre_prepare(value)
     }
-    
+  
     fn receive_message(&mut self, from: &NodeId, message: ConsensusMessage) -> Result<(), ConsensusError> {
         if message.instance_id != self.config.id {
             return Err(ConsensusError {
@@ -8001,7 +8017,7 @@ impl ConsensusInstance for PBFTInstance {
                 error_type: ConsensusErrorType::InternalError,
             });
         }
-        
+  
         match message.message_type {
             ConsensusMessageType::PrePrepare => self.handle_pre_prepare(from, &message),
             ConsensusMessageType::Prepare => self.handle_prepare(from, &message),
@@ -8017,23 +8033,24 @@ impl ConsensusInstance for PBFTInstance {
             }),
         }
     }
-    
+  
     fn is_decided(&self) -> bool {
         self.decided_value.is_some()
     }
-    
+  
     fn get_decision(&self) -> Option<Vec<u8>> {
         self.decided_value.clone()
     }
-    
+  
     fn get_status(&self) -> InstanceStatus {
         self.status.clone()
     }
-    
+  
     fn get_metrics(&self) -> HashMap<String, f64> {
         self.metrics.clone()
     }
 }
+
 ```
 
 ### 4.3 分布式事务框架
@@ -8103,16 +8120,16 @@ impl DistributedTransactionFramework {
             active_transactions: HashMap::new(),
         }
     }
-    
+  
     fn register_manager(&mut self, name: &str, manager: Box<dyn TransactionManager>) -> Result<(), String> {
         if self.transaction_managers.contains_key(name) {
             return Err(format!("事务管理器 '{}' 已经注册", name));
         }
-        
+  
         self.transaction_managers.insert(name.to_string(), manager);
         Ok(())
     }
-    
+  
     fn begin_transaction(&mut self, tx_id: &str, coordinator: &str, participants: Vec<String>) -> Result<(), TransactionError> {
         // 检查事务ID是否已存在
         if self.active_transactions.contains_key(tx_id) {
@@ -8121,7 +8138,7 @@ impl DistributedTransactionFramework {
                 error_type: TransactionErrorType::AlreadyExists,
             });
         }
-        
+  
         // 检查协调者和参与者是否都已注册
         if !self.transaction_managers.contains_key(coordinator) {
             return Err(TransactionError {
@@ -8129,7 +8146,7 @@ impl DistributedTransactionFramework {
                 error_type: TransactionErrorType::NotFound,
             });
         }
-        
+  
         for participant in &participants {
             if !self.transaction_managers.contains_key(participant) {
                 return Err(TransactionError {
@@ -8138,7 +8155,7 @@ impl DistributedTransactionFramework {
                 });
             }
         }
-        
+  
         // 创建事务状态
         let transaction_state = TransactionState {
             id: tx_id.to_string(),
@@ -8150,14 +8167,14 @@ impl DistributedTransactionFramework {
             commit_results: HashMap::new(),
             abort_results: HashMap::new(),
         };
-        
+  
         // 在所有参与者中开始事务
         if let Some(coordinator_manager) = self.transaction_managers.get(coordinator) {
             if let Err(err) = coordinator_manager.begin_transaction(tx_id) {
                 return Err(err);
             }
         }
-        
+  
         for participant in &transaction_state.participants {
             if let Some(participant_manager) = self.transaction_managers.get(participant) {
                 if let Err(err) = participant_manager.begin_transaction(tx_id) {
@@ -8167,12 +8184,12 @@ impl DistributedTransactionFramework {
                 }
             }
         }
-        
+  
         self.active_transactions.insert(tx_id.to_string(), transaction_state);
-        
+  
         Ok(())
     }
-    
+  
 fn prepare_transaction(&mut self, tx_id: &str) -> Result<bool, TransactionError> {
     // 检查事务是否存在
     let transaction = match self.active_transactions.get_mut(tx_id) {
@@ -8182,10 +8199,10 @@ fn prepare_transaction(&mut self, tx_id: &str) -> Result<bool, TransactionError>
             error_type: TransactionErrorType::NotFound,
         }),
     };
-    
+  
     // 更新事务状态
     transaction.status = TransactionStatus::Preparing;
-    
+  
     // 向所有参与者发送Prepare消息
     for participant in &transaction.participants {
         if let Some(participant_manager) = self.transaction_managers.get(participant) {
@@ -8201,11 +8218,11 @@ fn prepare_transaction(&mut self, tx_id: &str) -> Result<bool, TransactionError>
             }
         }
     }
-    
+  
     // 检查所有参与者是否都准备好
     let all_ready = transaction.prepare_results.values()
         .all(|result| matches!(result, PrepareResult::Ready));
-    
+  
     // 根据Prepare结果更新事务状态
     if all_ready {
         transaction.status = TransactionStatus::Prepared;
@@ -8225,7 +8242,7 @@ fn commit_transaction(&mut self, tx_id: &str) -> Result<(), TransactionError> {
             error_type: TransactionErrorType::NotFound,
         }),
     };
-    
+  
     // 检查事务是否处于Prepared状态
     if !matches!(transaction.status, TransactionStatus::Prepared) {
         return Err(TransactionError {
@@ -8233,10 +8250,10 @@ fn commit_transaction(&mut self, tx_id: &str) -> Result<(), TransactionError> {
             error_type: TransactionErrorType::InternalError,
         });
     }
-    
+  
     // 更新事务状态
     transaction.status = TransactionStatus::Committing;
-    
+  
     // 向所有参与者发送Commit消息
     for participant in &transaction.participants {
         if let Some(participant_manager) = self.transaction_managers.get(participant) {
@@ -8252,10 +8269,10 @@ fn commit_transaction(&mut self, tx_id: &str) -> Result<(), TransactionError> {
             }
         }
     }
-    
+  
     // 更新事务状态为Committed
     transaction.status = TransactionStatus::Committed;
-    
+  
     Ok(())
 }
 
@@ -8268,10 +8285,10 @@ fn abort_transaction(&mut self, tx_id: &str) -> Result<(), TransactionError> {
             error_type: TransactionErrorType::NotFound,
         }),
     };
-    
+  
     // 更新事务状态
     transaction.status = TransactionStatus::Aborting;
-    
+  
     // 向所有参与者发送Abort消息
     for participant in &transaction.participants {
         if let Some(participant_manager) = self.transaction_managers.get(participant) {
@@ -8287,10 +8304,10 @@ fn abort_transaction(&mut self, tx_id: &str) -> Result<(), TransactionError> {
             }
         }
     }
-    
+  
     // 更新事务状态为Aborted
     transaction.status = TransactionStatus::Aborted;
-    
+  
     Ok(())
 }
 
@@ -8313,17 +8330,17 @@ fn cleanup_transaction(&mut self, tx_id: &str) -> Result<(), TransactionError> {
             error_type: TransactionErrorType::NotFound,
         });
     }
-    
+  
     // 移除事务
     self.active_transactions.remove(tx_id);
-    
+  
     Ok(())
 }
 
 fn execute_two_phase_commit(&mut self, tx_id: &str) -> Result<bool, TransactionError> {
     // 第一阶段：准备
     let prepare_result = self.prepare_transaction(tx_id)?;
-    
+  
     // 第二阶段：根据准备结果决定提交或中止
     if prepare_result {
         // 所有参与者都准备好，提交事务
@@ -8345,15 +8362,15 @@ fn get_transaction_metrics(&self, tx_id: &str) -> Result<HashMap<String, f64>, T
             error_type: TransactionErrorType::NotFound,
         }),
     };
-    
+  
     let mut metrics = HashMap::new();
-    
+  
     // 计算事务持续时间
     metrics.insert("duration".to_string(), transaction.start_time.elapsed().as_secs_f64());
-    
+  
     // 计算参与者数量
     metrics.insert("participants".to_string(), transaction.participants.len() as f64);
-    
+  
     // 计算准备率
     let prepare_rate = if transaction.prepare_results.is_empty() {
         0.0
@@ -8364,7 +8381,7 @@ fn get_transaction_metrics(&self, tx_id: &str) -> Result<HashMap<String, f64>, T
         ready_count as f64 / transaction.prepare_results.len() as f64
     };
     metrics.insert("prepare_rate".to_string(), prepare_rate);
-    
+  
     // 计算提交率
     let commit_rate = if transaction.commit_results.is_empty() {
         0.0
@@ -8375,9 +8392,10 @@ fn get_transaction_metrics(&self, tx_id: &str) -> Result<HashMap<String, f64>, T
         success_count as f64 / transaction.commit_results.len() as f64
     };
     metrics.insert("commit_rate".to_string(), commit_rate);
-    
+  
     Ok(metrics)
 }
+
 ```
 
 // 两阶段提交实现
@@ -8430,29 +8448,29 @@ impl TwoPhaseCommitManager {
             timeout,
         }
     }
-    
+  
     fn create_resource(&self, resource_id: &str, value: Vec<u8>) -> Result<(), TransactionError> {
         let mut resource_manager = self.resource_manager.write().unwrap();
-        
+  
         if resource_manager.resources.contains_key(resource_id) {
             return Err(TransactionError {
                 message: format!("资源 '{}' 已经存在", resource_id),
                 error_type: TransactionErrorType::AlreadyExists,
             });
         }
-        
+  
         resource_manager.resources.insert(resource_id.to_string(), Resource {
             id: resource_id.to_string(),
             value,
             version: 1,
         });
-        
+  
         Ok(())
     }
-    
+  
     fn update_resource(&self, tx_id: &str, resource_id: &str, value: Vec<u8>) -> Result<(), TransactionError> {
         let mut resource_manager = self.resource_manager.write().unwrap();
-        
+  
         // 检查资源是否存在
         if !resource_manager.resources.contains_key(resource_id) {
             return Err(TransactionError {
@@ -8460,7 +8478,7 @@ impl TwoPhaseCommitManager {
                 error_type: TransactionErrorType::NotFound,
             });
         }
-        
+  
         // 检查资源是否被锁定
         if let Some(lock_tx_id) = resource_manager.locks.get(resource_id) {
             if lock_tx_id != tx_id {
@@ -8473,12 +8491,12 @@ impl TwoPhaseCommitManager {
             // 锁定资源
             resource_manager.locks.insert(resource_id.to_string(), tx_id.to_string());
         }
-        
+  
         // 更新资源的待提交版本
         let prepared_resources = resource_manager.prepared_resources
             .entry(tx_id.to_string())
             .or_insert_with(HashMap::new);
-        
+  
         if let Some(resource) = resource_manager.resources.get(resource_id) {
             prepared_resources.insert(resource_id.to_string(), Resource {
                 id: resource_id.to_string(),
@@ -8486,13 +8504,13 @@ impl TwoPhaseCommitManager {
                 version: resource.version + 1,
             });
         }
-        
+  
         Ok(())
     }
-    
+  
     fn prepare_resources(&self, tx_id: &str) -> Result<(), TransactionError> {
         let resource_manager = self.resource_manager.read().unwrap();
-        
+  
         // 检查事务是否有准备好的资源
         if !resource_manager.prepared_resources.contains_key(tx_id) {
             return Err(TransactionError {
@@ -8500,15 +8518,15 @@ impl TwoPhaseCommitManager {
                 error_type: TransactionErrorType::NotFound,
             });
         }
-        
+  
         // 在实际实现中，这里应该将准备好的资源写入持久化存储
-        
+  
         Ok(())
     }
-    
+  
     fn commit_resources(&self, tx_id: &str) -> Result<(), TransactionError> {
         let mut resource_manager = self.resource_manager.write().unwrap();
-        
+  
         // 检查事务是否有准备好的资源
         let prepared_resources = match resource_manager.prepared_resources.remove(tx_id) {
             Some(resources) => resources,
@@ -8517,35 +8535,35 @@ impl TwoPhaseCommitManager {
                 error_type: TransactionErrorType::NotFound,
             }),
         };
-        
+  
         // 提交所有准备好的资源
         for (resource_id, prepared_resource) in prepared_resources {
             resource_manager.resources.insert(resource_id.clone(), prepared_resource);
             resource_manager.locks.remove(&resource_id);
         }
-        
+  
         Ok(())
     }
-    
+  
     fn abort_resources(&self, tx_id: &str) -> Result<(), TransactionError> {
         let mut resource_manager = self.resource_manager.write().unwrap();
-        
+  
         // 移除所有准备好的资源
         resource_manager.prepared_resources.remove(tx_id);
-        
+  
         // 释放所有被事务锁定的资源
         for (resource_id, lock_tx_id) in resource_manager.locks.clone() {
             if lock_tx_id == tx_id {
                 resource_manager.locks.remove(&resource_id);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn log_transaction(&self, tx_id: &str, status: TransactionStatus, participants: Vec<String>, resources: Vec<String>, coordinator: &str) -> Result<(), TransactionError> {
         let mut transaction_log = self.transaction_log.write().unwrap();
-        
+  
         transaction_log.entries.insert(tx_id.to_string(), TransactionLogEntry {
             tx_id: tx_id.to_string(),
             status,
@@ -8554,13 +8572,13 @@ impl TwoPhaseCommitManager {
             coordinator: coordinator.to_string(),
             timestamp: Instant::now(),
         });
-        
+  
         Ok(())
     }
-    
+  
     fn update_log_status(&self, tx_id: &str, status: TransactionStatus) -> Result<(), TransactionError> {
         let mut transaction_log = self.transaction_log.write().unwrap();
-        
+  
         if let Some(entry) = transaction_log.entries.get_mut(tx_id) {
             entry.status = status;
             Ok(())
@@ -8577,14 +8595,14 @@ impl TransactionManager for TwoPhaseCommitManager {
     fn name(&self) -> &str {
         &self.node_id
     }
-    
+  
     fn begin_transaction(&self, tx_id: &str) -> Result<(), TransactionError> {
         // 记录事务开始
         self.log_transaction(tx_id, TransactionStatus::Active, Vec::new(), Vec::new(), "")?;
-        
+  
         Ok(())
     }
-    
+  
     fn prepare(&self, tx_id: &str) -> Result<PrepareResult, TransactionError> {
         // 准备阶段
         match self.prepare_resources(tx_id) {
@@ -8600,7 +8618,7 @@ impl TransactionManager for TwoPhaseCommitManager {
             }
         }
     }
-    
+  
     fn commit(&self, tx_id: &str) -> Result<(), TransactionError> {
         // 提交阶段
         match self.commit_resources(tx_id) {
@@ -8616,7 +8634,7 @@ impl TransactionManager for TwoPhaseCommitManager {
             }
         }
     }
-    
+  
     fn abort(&self, tx_id: &str) -> Result<(), TransactionError> {
         // 中止阶段
         match self.abort_resources(tx_id) {
@@ -8631,10 +8649,10 @@ impl TransactionManager for TwoPhaseCommitManager {
             }
         }
     }
-    
+  
     fn get_status(&self, tx_id: &str) -> Result<TransactionStatus, TransactionError> {
         let transaction_log = self.transaction_log.read().unwrap();
-        
+  
         if let Some(entry) = transaction_log.entries.get(tx_id) {
             Ok(entry.status.clone())
         } else {
@@ -8669,13 +8687,13 @@ impl ThreePhaseCommitManager {
             timeout,
         }
     }
-    
+  
     // 可重用TwoPhaseCommitManager中的大部分方法
-    
+  
     fn pre_commit(&self, tx_id: &str) -> Result<(), TransactionError> {
         // 检查事务状态
         let transaction_log = self.transaction_log.read().unwrap();
-        
+  
         if let Some(entry) = transaction_log.entries.get(tx_id) {
             if entry.status != TransactionStatus::Prepared {
                 return Err(TransactionError {
@@ -8689,12 +8707,12 @@ impl ThreePhaseCommitManager {
                 error_type: TransactionErrorType::NotFound,
             });
         }
-        
+  
         drop(transaction_log);
-        
+  
         // 更新事务日志状态为PreCommitted
         self.update_log_status(tx_id, TransactionStatus::PreCommitted)?;
-        
+  
         Ok(())
     }
 }
@@ -8703,7 +8721,7 @@ impl TransactionManager for ThreePhaseCommitManager {
     fn name(&self) -> &str {
         &self.node_id
     }
-    
+  
     fn begin_transaction(&self, tx_id: &str) -> Result<(), TransactionError> {
         // 复用TwoPhaseCommitManager的实现
         let two_phase_manager = TwoPhaseCommitManager {
@@ -8712,10 +8730,10 @@ impl TransactionManager for ThreePhaseCommitManager {
             node_id: self.node_id.clone(),
             timeout: self.timeout,
         };
-        
+  
         two_phase_manager.begin_transaction(tx_id)
     }
-    
+  
     fn prepare(&self, tx_id: &str) -> Result<PrepareResult, TransactionError> {
         // 复用TwoPhaseCommitManager的实现
         let two_phase_manager = TwoPhaseCommitManager {
@@ -8724,14 +8742,14 @@ impl TransactionManager for ThreePhaseCommitManager {
             node_id: self.node_id.clone(),
             timeout: self.timeout,
         };
-        
+  
         two_phase_manager.prepare(tx_id)
     }
-    
+  
     fn commit(&self, tx_id: &str) -> Result<(), TransactionError> {
         // 三阶段提交的提交流程：先PreCommit，再Commit
         self.pre_commit(tx_id)?;
-        
+  
         // 然后执行实际的提交
         let two_phase_manager = TwoPhaseCommitManager {
             resource_manager: self.resource_manager.clone(),
@@ -8739,10 +8757,10 @@ impl TransactionManager for ThreePhaseCommitManager {
             node_id: self.node_id.clone(),
             timeout: self.timeout,
         };
-        
+  
         two_phase_manager.commit(tx_id)
     }
-    
+  
     fn abort(&self, tx_id: &str) -> Result<(), TransactionError> {
         // 复用TwoPhaseCommitManager的实现
         let two_phase_manager = TwoPhaseCommitManager {
@@ -8751,10 +8769,10 @@ impl TransactionManager for ThreePhaseCommitManager {
             node_id: self.node_id.clone(),
             timeout: self.timeout,
         };
-        
+  
         two_phase_manager.abort(tx_id)
     }
-    
+  
     fn get_status(&self, tx_id: &str) -> Result<TransactionStatus, TransactionError> {
         // 复用TwoPhaseCommitManager的实现
         let two_phase_manager = TwoPhaseCommitManager {
@@ -8763,10 +8781,11 @@ impl TransactionManager for ThreePhaseCommitManager {
             node_id: self.node_id.clone(),
             timeout: self.timeout,
         };
-        
+  
         two_phase_manager.get_status(tx_id)
     }
 }
+
 ```
 
 ### 4.4 分布式追踪系统
@@ -8861,7 +8880,7 @@ impl DistributedTracingSystem {
         propagation_headers.push("traceparent".to_string());
         propagation_headers.push("tracestate".to_string());
         propagation_headers.push("baggage".to_string());
-        
+  
         DistributedTracingSystem {
             tracers: HashMap::new(),
             active_traces: HashMap::new(),
@@ -8870,37 +8889,37 @@ impl DistributedTracingSystem {
             propagation_headers,
         }
     }
-    
+  
     fn register_tracer(&mut self, name: &str, tracer: Box<dyn Tracer>) -> Result<(), String> {
         if self.tracers.contains_key(name) {
             return Err(format!("追踪器 '{}' 已经注册", name));
         }
-        
+  
         self.tracers.insert(name.to_string(), tracer);
         Ok(())
     }
-    
+  
     fn add_exporter(&mut self, exporter: Box<dyn TraceExporter>) {
         self.exporters.push(exporter);
     }
-    
+  
     fn should_sample(&self) -> bool {
         let mut rng = rand::thread_rng();
         rng.gen::<f64>() < self.sampling_rate
     }
-    
+  
     fn generate_trace_id() -> String {
         let mut rng = rand::thread_rng();
         let random_bytes: [u8; 16] = rng.gen();
         hex::encode(random_bytes)
     }
-    
+  
     fn generate_span_id() -> String {
         let mut rng = rand::thread_rng();
         let random_bytes: [u8; 8] = rng.gen();
         hex::encode(random_bytes)
     }
-    
+  
     fn start_trace(&mut self, operation_name: &str, tracer_name: &str) -> Result<TraceContext, TracingError> {
         // 决定是否采样
         if !self.should_sample() {
@@ -8913,14 +8932,14 @@ impl DistributedTracingSystem {
                 baggage: HashMap::new(),
             });
         }
-        
+  
         // 生成新的追踪ID
         let trace_id = Self::generate_trace_id();
-        
+  
         // 通过指定的追踪器创建根span
         if let Some(tracer) = self.tracers.get(tracer_name) {
             let span_id = tracer.start_span(&trace_id, None, operation_name)?;
-            
+  
             // 创建追踪上下文
             let context = TraceContext {
                 trace_id: trace_id.clone(),
@@ -8929,10 +8948,10 @@ impl DistributedTracingSystem {
                 attributes: HashMap::new(),
                 baggage: HashMap::new(),
             };
-            
+  
             // 保存活动追踪
             self.active_traces.insert(trace_id.clone(), context.clone());
-            
+  
             Ok(context)
         } else {
             Err(TracingError {
@@ -8941,7 +8960,7 @@ impl DistributedTracingSystem {
             })
         }
     }
-    
+  
     fn start_span(&mut self, parent_context: &TraceContext, operation_name: &str, tracer_name: &str) -> Result<TraceContext, TracingError> {
         // 检查追踪ID是否有效
         if parent_context.trace_id == "00000000000000000000000000000000" {
@@ -8954,15 +8973,15 @@ impl DistributedTracingSystem {
                 baggage: HashMap::new(),
             });
         }
-        
+  
         // 通过指定的追踪器创建子span
         if let Some(tracer) = self.tracers.get(tracer_name) {
             let span_id = tracer.start_span(
-                &parent_context.trace_id, 
-                Some(&parent_context.span_id), 
+                &parent_context.trace_id,
+                Some(&parent_context.span_id),
                 operation_name
             )?;
-            
+  
             // 创建新的上下文
             let context = TraceContext {
                 trace_id: parent_context.trace_id.clone(),
@@ -8971,7 +8990,7 @@ impl DistributedTracingSystem {
                 attributes: HashMap::new(),
                 baggage: parent_context.baggage.clone(), // 继承baggage
             };
-            
+  
             Ok(context)
         } else {
             Err(TracingError {
@@ -8980,18 +8999,18 @@ impl DistributedTracingSystem {
             })
         }
     }
-    
+  
     fn end_span(&mut self, context: &TraceContext, tracer_name: &str) -> Result<(), TracingError> {
         // 检查上下文是否有效
         if context.trace_id == "00000000000000000000000000000000" {
             // 无操作的上下文
             return Ok(());
         }
-        
+  
         // 通过指定的追踪器结束span
         if let Some(tracer) = self.tracers.get(tracer_name) {
             tracer.end_span(&context.span_id)?;
-            
+  
             // 如果是根span，导出追踪数据
             if context.parent_span_id.is_none() {
                 if let Some(active_context) = self.active_traces.remove(&context.trace_id) {
@@ -9006,7 +9025,7 @@ impl DistributedTracingSystem {
                     }
                 }
             }
-            
+  
             Ok(())
         } else {
             Err(TracingError {
@@ -9015,19 +9034,19 @@ impl DistributedTracingSystem {
             })
         }
     }
-    
+  
     fn collect_spans(&self, trace_id: &str, tracer_name: &str) -> Result<Vec<SpanData>, TracingError> {
         // 实际实现中，这会从追踪器存储中检索所有与给定trace_id相关的span
         // 简化实现：返回一个空向量
         Ok(Vec::new())
     }
-    
+  
     fn inject_context(&self, context: &TraceContext, carrier: &mut HashMap<String, String>) {
         // 检查上下文是否有效
         if context.trace_id == "00000000000000000000000000000000" {
             return;
         }
-        
+  
         // 注入W3C TraceContext格式
         let version = "00";
         let trace_flags = "01"; // 采样
@@ -9039,18 +9058,18 @@ impl DistributedTracingSystem {
             trace_flags
         );
         carrier.insert("traceparent".to_string(), traceparent);
-        
+  
         // 注入baggage
         if !context.baggage.is_empty() {
             let baggage: Vec<String> = context.baggage
                 .iter()
                 .map(|(k, v)| format!("{}={}", k, v))
                 .collect();
-            
+  
             carrier.insert("baggage".to_string(), baggage.join(","));
         }
     }
-    
+  
     fn extract_context(&self, carrier: &HashMap<String, String>) -> Result<TraceContext, TracingError> {
         // 尝试提取W3C TraceContext
         if let Some(traceparent) = carrier.get("traceparent") {
@@ -9058,7 +9077,7 @@ impl DistributedTracingSystem {
             if parts.len() == 4 {
                 let trace_id = parts[1].to_string();
                 let span_id = parts[2].to_string();
-                
+  
                 // 解析baggage
                 let mut baggage = HashMap::new();
                 if let Some(baggage_str) = carrier.get("baggage") {
@@ -9069,7 +9088,7 @@ impl DistributedTracingSystem {
                         }
                     }
                 }
-                
+  
                 return Ok(TraceContext {
                     trace_id,
                     span_id,
@@ -9079,33 +9098,34 @@ impl DistributedTracingSystem {
                 });
             }
         }
-        
+  
         Err(TracingError {
             message: "无法从载体中提取追踪上下文".to_string(),
             error_type: TracingErrorType::InvalidContext,
         })
     }
-    
+  
     fn add_baggage(&mut self, context: &mut TraceContext, key: &str, value: &str) {
         if context.trace_id != "00000000000000000000000000000000" {
             context.baggage.insert(key.to_string(), value.to_string());
         }
     }
-    
+  
     fn get_baggage(&self, context: &TraceContext, key: &str) -> Option<String> {
         context.baggage.get(key).cloned()
     }
-    
+  
     fn shutdown(&mut self) -> Result<(), ExportError> {
         for exporter in &self.exporters {
             if let Err(err) = exporter.shutdown() {
                 return Err(err);
             }
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ```rust
@@ -9128,12 +9148,12 @@ impl Tracer for InMemoryTracer {
     fn name(&self) -> &str {
         "内存追踪器"
     }
-    
+  
     fn start_span(&self, trace_id: &str, parent_span_id: Option<&str>, operation_name: &str) -> Result<String, TracingError> {
         let span_id = format!("{}-{}", self.id_prefix, DistributedTracingSystem::generate_span_id());
-        
+  
         let mut spans = self.spans.write().unwrap();
-        
+  
         spans.insert(span_id.clone(), SpanData {
             trace_id: trace_id.to_string(),
             span_id: span_id.clone(),
@@ -9145,13 +9165,13 @@ impl Tracer for InMemoryTracer {
             attributes: HashMap::new(),
             events: Vec::new(),
         });
-        
+  
         Ok(span_id)
     }
-    
+  
     fn end_span(&self, span_id: &str) -> Result<(), TracingError> {
         let mut spans = self.spans.write().unwrap();
-        
+  
         if let Some(span) = spans.get_mut(span_id) {
             span.end_time = Some(Instant::now());
             Ok(())
@@ -9162,10 +9182,10 @@ impl Tracer for InMemoryTracer {
             })
         }
     }
-    
+  
     fn add_event(&self, span_id: &str, event_name: &str, attributes: HashMap<String, String>) -> Result<(), TracingError> {
         let mut spans = self.spans.write().unwrap();
-        
+  
         if let Some(span) = spans.get_mut(span_id) {
             span.events.push(SpanEvent {
                 name: event_name.to_string(),
@@ -9180,10 +9200,10 @@ impl Tracer for InMemoryTracer {
             })
         }
     }
-    
+  
     fn set_attribute(&self, span_id: &str, key: &str, value: &str) -> Result<(), TracingError> {
         let mut spans = self.spans.write().unwrap();
-        
+  
         if let Some(span) = spans.get_mut(span_id) {
             span.attributes.insert(key.to_string(), value.to_string());
             Ok(())
@@ -9194,10 +9214,10 @@ impl Tracer for InMemoryTracer {
             })
         }
     }
-    
+  
     fn set_status(&self, span_id: &str, status: SpanStatus) -> Result<(), TracingError> {
         let mut spans = self.spans.write().unwrap();
-        
+  
         if let Some(span) = spans.get_mut(span_id) {
             span.status = status;
             Ok(())
@@ -9208,10 +9228,10 @@ impl Tracer for InMemoryTracer {
             })
         }
     }
-    
+  
     fn get_context(&self, span_id: &str) -> Result<TraceContext, TracingError> {
         let spans = self.spans.read().unwrap();
-        
+  
         if let Some(span) = spans.get(span_id) {
             Ok(TraceContext {
                 trace_id: span.trace_id.clone(),
@@ -9242,30 +9262,30 @@ impl TraceExporter for ConsoleExporter {
     fn name(&self) -> &str {
         "控制台导出器"
     }
-    
+  
     fn export(&self, spans: Vec<SpanData>) -> Result<(), ExportError> {
         for span in spans {
             println!("导出追踪: {} - {}", span.trace_id, span.operation_name);
             println!("  Span ID: {}", span.span_id);
-            
+  
             if let Some(parent_id) = &span.parent_span_id {
                 println!("  父Span ID: {}", parent_id);
             }
-            
+  
             let duration = if let Some(end_time) = span.end_time {
                 end_time.duration_since(span.start_time).as_millis()
             } else {
                 0
             };
-            
+  
             println!("  持续时间: {}ms", duration);
             println!("  状态: {:?}", span.status);
-            
+  
             println!("  属性:");
             for (key, value) in &span.attributes {
                 println!("    {}: {}", key, value);
             }
-            
+  
             println!("  事件:");
             for event in &span.events {
                 println!("    {} @ {:?}", event.name, event.timestamp);
@@ -9273,13 +9293,13 @@ impl TraceExporter for ConsoleExporter {
                     println!("      {}: {}", key, value);
                 }
             }
-            
+  
             println!("");
         }
-        
+  
         Ok(())
     }
-    
+  
     fn shutdown(&self) -> Result<(), ExportError> {
         // 无需特殊清理
         Ok(())
@@ -9298,7 +9318,7 @@ impl HttpJsonExporter {
     fn new(endpoint: &str, batch_size: usize) -> Self {
         let mut headers = HashMap::new();
         headers.insert("Content-Type".to_string(), "application/json".to_string());
-        
+  
         HttpJsonExporter {
             endpoint: endpoint.to_string(),
             client: reqwest::Client::new(),
@@ -9306,11 +9326,11 @@ impl HttpJsonExporter {
             headers,
         }
     }
-    
+  
     fn add_header(&mut self, key: &str, value: &str) {
         self.headers.insert(key.to_string(), value.to_string());
     }
-    
+  
     fn span_to_json(&self, span: &SpanData) -> serde_json::Value {
         json!({
             "traceId": span.trace_id,
@@ -9340,23 +9360,23 @@ impl TraceExporter for HttpJsonExporter {
     fn name(&self) -> &str {
         "HTTP JSON导出器"
     }
-    
+  
     fn export(&self, spans: Vec<SpanData>) -> Result<(), ExportError> {
         if spans.is_empty() {
             return Ok(());
         }
-        
+  
         // 将span转换为JSON
         let json_spans: Vec<serde_json::Value> = spans.iter()
             .map(|span| self.span_to_json(span))
             .collect();
-        
+  
         // 分批导出
         for chunk in json_spans.chunks(self.batch_size) {
             let json_body = json!({
                 "spans": chunk
             });
-            
+  
             // 在实际实现中，这应该是一个异步发送
             // 简化实现：同步发送
             match self.client.post(&self.endpoint)
@@ -9378,10 +9398,10 @@ impl TraceExporter for HttpJsonExporter {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn shutdown(&self) -> Result<(), ExportError> {
         // 简化实现：仅返回成功
         Ok(())
@@ -9399,17 +9419,17 @@ impl OpenTelemetryBridge {
         let mut resource = HashMap::new();
         resource.insert("service.name".to_string(), "unknown_service".to_string());
         resource.insert("service.version".to_string(), "0.1.0".to_string());
-        
+  
         OpenTelemetryBridge {
             tracing_system,
             resource,
         }
     }
-    
+  
     fn set_resource(&mut self, key: &str, value: &str) {
         self.resource.insert(key.to_string(), value.to_string());
     }
-    
+  
     fn convert_span_data(&self, span: &SpanData) -> serde_json::Value {
         // 转换为OpenTelemetry格式
         json!({
@@ -9446,6 +9466,7 @@ impl OpenTelemetryBridge {
         })
     }
 }
+
 ```
 
 ### 4.5 Gossip协议和失败检测
@@ -9525,21 +9546,21 @@ impl PhiAccrualFailureDetector {
             failure_timeout: Duration::from_secs(15),
         }
     }
-    
+  
     fn calculate_phi(&self, node_id: &str) -> f64 {
         if let Some(history) = self.heartbeat_history.get(node_id) {
             if history.len() < 2 {
                 return 0.0; // 历史记录太少，无法计算
             }
-            
+  
             let now = Instant::now();
             let last = self.last_heartbeat.get(node_id).cloned().unwrap_or(now);
             let elapsed = now.duration_since(last);
-            
+  
             // 计算平均间隔
             let total: Duration = history.iter().sum();
             let mean = total / history.len() as u32;
-            
+  
             // 计算标准差
             let variance: f64 = history.iter()
                 .map(|interval| {
@@ -9547,19 +9568,19 @@ impl PhiAccrualFailureDetector {
                     diff * diff
                 })
                 .sum::<f64>() / history.len() as f64;
-            
+  
             let std_dev = variance.sqrt().max(self.min_std_dev);
-            
+  
             // 计算phi值 (基于正态分布的CDF)
             let x = elapsed.as_secs_f64() - mean.as_secs_f64();
-            
+  
             if x <= 0.0 {
                 return 0.0;
             }
-            
+  
             let y = x / (std_dev * std::f64::consts::SQRT_2);
             let phi = -y.error_function_complement().ln();
-            
+  
             phi
         } else {
             0.0
@@ -9571,37 +9592,37 @@ impl FailureDetector for PhiAccrualFailureDetector {
     fn name(&self) -> &str {
         "Phi失效检测器"
     }
-    
+  
     fn record_heartbeat(&mut self, node_id: &str, timestamp: Instant) {
         let now = Instant::now();
-        
+  
         // 计算心跳间隔
         if let Some(last) = self.last_heartbeat.get(node_id) {
             let interval = now.duration_since(*last);
-            
+  
             // 更新心跳历史
             let history = self.heartbeat_history
                 .entry(node_id.to_string())
                 .or_insert_with(|| VecDeque::with_capacity(self.window_size));
-            
+  
             history.push_back(interval);
-            
+  
             // 保持历史窗口大小
             if history.len() > self.window_size {
                 history.pop_front();
             }
         }
-        
+  
         // 更新上次心跳时间
         self.last_heartbeat.insert(node_id.to_string(), timestamp);
     }
-    
+  
     fn suspect_failure(&self, node_id: &str) -> bool {
         // 如果phi值超过阈值，则怀疑节点故障
         let phi = self.calculate_phi(node_id);
         phi > self.phi_threshold
     }
-    
+  
     fn confirm_failure(&self, node_id: &str) -> bool {
         // 检查上一次心跳是否超过失败超时
         if let Some(last) = self.last_heartbeat.get(node_id) {
@@ -9611,11 +9632,11 @@ impl FailureDetector for PhiAccrualFailureDetector {
             false
         }
     }
-    
+  
     fn get_suspect_timeout(&self) -> Duration {
         self.suspect_timeout
     }
-    
+  
     fn get_failure_timeout(&self) -> Duration {
         self.failure_timeout
     }
@@ -9624,7 +9645,7 @@ impl FailureDetector for PhiAccrualFailureDetector {
 impl GossipProtocol {
     fn new(node_id: &str, address: &str, failure_detector: Box<dyn FailureDetector>) -> Self {
         let mut members = HashMap::new();
-        
+  
         // 添加自己作为成员
         members.insert(node_id.to_string(), MemberInfo {
             node_id: node_id.to_string(),
@@ -9635,7 +9656,7 @@ impl GossipProtocol {
             last_updated: Instant::now(),
             metadata: HashMap::new(),
         });
-        
+  
         GossipProtocol {
             node_id: node_id.to_string(),
             members: Arc::new(RwLock::new(members)),
@@ -9646,14 +9667,14 @@ impl GossipProtocol {
             running: Arc::new(AtomicBool::new(false)),
         }
     }
-    
+  
     fn start(&mut self) -> Result<(), String> {
         if self.running.load(Ordering::SeqCst) {
             return Err("Gossip协议已经在运行".to_string());
         }
-        
+  
         self.running.store(true, Ordering::SeqCst);
-        
+  
         // 启动gossip线程
         let members = self.members.clone();
         let message_queue = self.message_queue.clone();
@@ -9661,7 +9682,7 @@ impl GossipProtocol {
         let dissemination_factor = self.dissemination_factor;
         let gossip_interval = self.gossip_interval;
         let running = self.running.clone();
-        
+  
         std::thread::spawn(move || {
             while running.load(Ordering::SeqCst) {
                 // 增加自己的心跳计数
@@ -9672,17 +9693,17 @@ impl GossipProtocol {
                         self_info.last_updated = Instant::now();
                     }
                 }
-                
+  
                 // 选择随机目标节点进行gossip
                 let targets = GossipProtocol::select_random_members(&members, &node_id, dissemination_factor);
-                
+  
                 for target in targets {
                     // 准备gossip消息
                     let gossip_data = GossipProtocol::prepare_gossip_message(&members, &node_id);
-                    
+  
                     // 在实际实现中，这里会通过网络发送gossip消息
                     println!("向节点 {} 发送gossip消息", target);
-                    
+  
                     // 处理消息队列中的消息
                     let mut queue = message_queue.lock().unwrap();
                     while let Some(message) = queue.pop_front() {
@@ -9691,24 +9712,24 @@ impl GossipProtocol {
                         println!("处理来自 {} 的消息", message.sender_id);
                     }
                 }
-                
+  
                 // 等待下一个gossip间隔
                 std::thread::sleep(gossip_interval);
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     fn stop(&mut self) {
         self.running.store(false, Ordering::SeqCst);
     }
-    
+  
     fn join(&mut self, seed_node: &str, seed_address: &str) -> Result<(), String> {
         if seed_node == self.node_id {
             return Err("不能使用自己作为种子节点".to_string());
         }
-        
+  
         // 添加种子节点作为成员
         let mut members = self.members.write().unwrap();
         members.insert(seed_node.to_string(), MemberInfo {
@@ -9720,16 +9741,16 @@ impl GossipProtocol {
             last_updated: Instant::now(),
             metadata: HashMap::new(),
         });
-        
+  
         // 准备加入消息
         let self_info = members.get(&self.node_id).unwrap().clone();
-        
+  
         // 在实际实现中，这里会通过网络发送加入请求到种子节点
         println!("向种子节点 {} 发送加入请求", seed_node);
-        
+  
         Ok(())
     }
-    
+  
     fn leave(&mut self) -> Result<(), String> {
         // 更新自己的状态为已离开
         let mut members = self.members.write().unwrap();
@@ -9738,87 +9759,87 @@ impl GossipProtocol {
             self_info.incarnation += 1;
             self_info.last_updated = Instant::now();
         }
-        
+  
         // 广播离开消息
         // 在实际实现中，这会向其他节点广播离开消息
         println!("广播离开消息");
-        
+  
         // 停止gossip线程
         self.stop();
-        
+  
         Ok(())
     }
-    
+  
     fn handle_message(&mut self, message: GossipMessage) -> Result<(), String> {
         // 将消息添加到队列
         let mut queue = self.message_queue.lock().unwrap();
         queue.push_back(message);
-        
+  
         Ok(())
     }
-    
+  
     fn select_random_members(members: &Arc<RwLock<HashMap<String, MemberInfo>>>, exclude_id: &str, count: usize) -> Vec<String> {
         let members_lock = members.read().unwrap();
-        
+  
         // 过滤出活跃成员，排除自己
         let active_members: Vec<String> = members_lock.iter()
             .filter(|(id, info)| *id != exclude_id && matches!(info.status, MemberStatus::Alive))
             .map(|(id, _)| id.clone())
             .collect();
-        
+  
         if active_members.is_empty() {
             return Vec::new();
         }
-        
+  
         // 选择随机成员
         let mut rng = rand::thread_rng();
         let mut selected = Vec::new();
-        
+  
         // 如果活跃成员数量小于要选择的数量，返回所有活跃成员
         if active_members.len() <= count {
             return active_members;
         }
-        
+  
         // 随机选择不重复的成员
         let mut available = active_members.clone();
         for _ in 0..count {
             if available.is_empty() {
                 break;
             }
-            
+  
             let index = rng.gen_range(0..available.len());
             let member = available.remove(index);
             selected.push(member);
         }
-        
+  
         selected
     }
-    
+  
     fn prepare_gossip_message(members: &Arc<RwLock<HashMap<String, MemberInfo>>>, sender_id: &str) -> Vec<u8> {
         let members_lock = members.read().unwrap();
-        
+  
         // 在实际实现中，这会序列化所有成员状态
         // 简化实现：返回空向量
         Vec::new()
     }
-    
+  
     fn merge_gossip_state(&mut self, sender_id: &str, gossip_data: &[u8]) -> Result<(), String> {
         // 在实际实现中，这会解析gossip数据并合并成员状态
         println!("合并来自 {} 的gossip状态", sender_id);
-        
+  
         Ok(())
     }
-    
+  
     fn check_failures(&mut self) {
         let mut members = self.members.write().unwrap();
         let now = Instant::now();
-        
+  
         // 检查所有成员的失败状态
         for (_, member) in members.iter_mut() {
             if member.node_id == self.node_id {
                 continue; // 跳过自己
             }
-            
+  
             match member.status {
                 MemberStatus::Alive => {
                     // 检查是否应该怀疑
@@ -9840,12 +9861,12 @@ impl GossipProtocol {
             }
         }
     }
-    
+  
     fn get_members(&self) -> HashMap<String, MemberInfo> {
         let members = self.members.read().unwrap();
         members.clone()
     }
-    
+  
     fn get_alive_members(&self) -> HashMap<String, MemberInfo> {
         let members = self.members.read().unwrap();
         members.iter()
@@ -9853,10 +9874,10 @@ impl GossipProtocol {
             .map(|(id, info)| (id.clone(), info.clone()))
             .collect()
     }
-    
+  
     fn set_metadata(&mut self, key: &str, value: &str) -> Result<(), String> {
         let mut members = self.members.write().unwrap();
-        
+  
         if let Some(self_info) = members.get_mut(&self.node_id) {
             self_info.metadata.insert(key.to_string(), value.to_string());
             self_info.incarnation += 1;
@@ -9866,14 +9887,15 @@ impl GossipProtocol {
             Err("找不到自己的成员信息".to_string())
         }
     }
-    
+  
     fn get_metadata(&self, node_id: &str, key: &str) -> Option<String> {
         let members = self.members.read().unwrap();
-        
+  
         members.get(node_id)
             .and_then(|info| info.metadata.get(key).cloned())
     }
 }
+
 ```
 
 ### 4.6 服务发现与负载均衡
@@ -9948,34 +9970,34 @@ impl ServiceDiscovery {
             running: Arc::new(AtomicBool::new(false)),
         }
     }
-    
+  
     fn add_resolver(&mut self, resolver: Box<dyn ServiceResolver>) {
         self.resolvers.push(resolver);
     }
-    
+  
     fn add_load_balancer(&mut self, service_name: &str, load_balancer: Box<dyn LoadBalancer>) {
         self.load_balancers.insert(service_name.to_string(), load_balancer);
     }
-    
+  
     fn start(&mut self) -> Result<(), String> {
         if self.running.load(Ordering::SeqCst) {
             return Err("服务发现已经在运行".to_string());
         }
-        
+  
         self.running.store(true, Ordering::SeqCst);
-        
+  
         // 启动更新线程
         let services = self.services.clone();
         let resolvers_count = self.resolvers.len();
         let update_interval = self.update_interval;
         let running = self.running.clone();
         let health_check_interval = self.health_checker.get_check_interval();
-        
+  
         std::thread::spawn(move || {
             while running.load(Ordering::SeqCst) {
                 // 这里应该定期从所有解析器更新服务列表
                 println!("从 {} 个解析器更新服务列表", resolvers_count);
-                
+  
                 // 然后检查所有服务实例的健康状态
                 {
                     let mut services_lock = services.write().unwrap();
@@ -9983,50 +10005,50 @@ impl ServiceDiscovery {
                         for instance in instances.iter_mut() {
                             if instance.last_checked.elapsed() >= health_check_interval {
                                 // 应该调用健康检查器检查实例状态
-                                println!("检查服务 {} 实例 {} 的健康状态", 
+                                println!("检查服务 {} 实例 {} 的健康状态",
                                          instance.service_name, instance.id);
                                 instance.last_checked = Instant::now();
                             }
                         }
                     }
                 }
-                
+  
                 // 等待下一个更新间隔
                 std::thread::sleep(update_interval);
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     fn stop(&mut self) {
         self.running.store(false, Ordering::SeqCst);
     }
-    
+  
     fn register_service(&mut self, instance: ServiceInstance) -> Result<(), String> {
         let mut services = self.services.write().unwrap();
-        
+  
         let instances = services
             .entry(instance.service_name.clone())
             .or_insert_with(Vec::new);
-        
+  
         // 检查实例是否已经存在
         if instances.iter().any(|i| i.id == instance.id) {
             return Err(format!("服务实例 {} 已经注册", instance.id));
         }
-        
+  
         instances.push(instance);
-        
+  
         Ok(())
     }
-    
+  
     fn deregister_service(&mut self, service_name: &str, instance_id: &str) -> Result<(), String> {
         let mut services = self.services.write().unwrap();
-        
+  
         if let Some(instances) = services.get_mut(service_name) {
             let prev_len = instances.len();
             instances.retain(|i| i.id != instance_id);
-            
+  
             if instances.len() < prev_len {
                 Ok(())
             } else {
@@ -10036,11 +10058,11 @@ impl ServiceDiscovery {
             Err(format!("找不到服务 {}", service_name))
         }
     }
-    
+  
     fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>, ResolveError> {
         // 首先从本地缓存中查找
         let services = self.services.read().unwrap();
-        
+  
         if let Some(instances) = services.get(service_name) {
             if !instances.is_empty() {
                 // 返回健康的实例
@@ -10048,58 +10070,58 @@ impl ServiceDiscovery {
                     .filter(|i| matches!(i.health_status, HealthStatus::Healthy))
                     .cloned()
                     .collect();
-                
+  
                 if !healthy_instances.is_empty() {
                     return Ok(healthy_instances);
                 }
             }
         }
-        
+  
         // 如果本地没有或者没有健康的实例，尝试从解析器获取
         drop(services);
-        
+  
         for resolver in &self.resolvers {
             match resolver.resolve(service_name) {
                 Ok(instances) => {
                     // 更新本地缓存
                     let mut services = self.services.write().unwrap();
                     services.insert(service_name.to_string(), instances.clone());
-                    
+  
                     return Ok(instances);
                 },
                 Err(_) => continue, // 尝试下一个解析器
             }
         }
-        
+  
         Err(ResolveError {
             message: format!("找不到服务 {}", service_name),
             error_type: ResolveErrorType::ServiceNotFound,
         })
     }
-    
+  
     fn select_instance(&mut self, service_name: &str) -> Result<ServiceInstance, ResolveError> {
         // 获取服务实例
         let instances = self.get_instances(service_name)?;
-        
+  
         // 使用负载均衡器选择一个实例
         if let Some(load_balancer) = self.load_balancers.get(service_name) {
             if let Some(instance) = load_balancer.select(service_name, &instances) {
                 return Ok(instance);
             }
         }
-        
+  
         // 如果没有特定的负载均衡器或负载均衡器没有选择实例，使用默认策略
         if !instances.is_empty() {
             let mut rng = rand::thread_rng();
             let index = rng.gen_range(0..instances.len());
             return Ok(instances[index].clone());
         }
-        
+  
         Err(ResolveError {
             message: format!("没有可用的服务实例 {}", service_name),
             error_type: ResolveErrorType::ServiceNotFound,})
     }
-    
+  
     fn report_result(&mut self, service_name: &str, instance: &ServiceInstance, success: bool) {
         // 向负载均衡器报告调用结果
         if let Some(load_balancer) = self.load_balancers.get_mut(service_name) {
@@ -10110,13 +10132,13 @@ impl ServiceDiscovery {
             }
         }
     }
-    
+  
     fn watch_service(&self, service_name: &str, callback: Box<dyn Fn(&[ServiceInstance]) + Send + Sync + 'static>) -> Result<String, String> {
         // 注册一个监视器，当服务实例变化时调用回调函数
         // 简化实现：返回一个虚拟的监视器ID
         Ok(uuid::Uuid::new_v4().to_string())
     }
-    
+  
     fn unwatch_service(&self, watch_id: &str) -> Result<(), String> {
         // 取消服务监视
         // 简化实现：假装取消成功
@@ -10137,21 +10159,21 @@ impl LoadBalancer for RandomLoadBalancer {
     fn name(&self) -> &str {
         "随机负载均衡器"
     }
-    
+  
     fn select(&self, _service_name: &str, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         if instances.is_empty() {
             return None;
         }
-        
+  
         let mut rng = rand::thread_rng();
         let index = rng.gen_range(0..instances.len());
         Some(instances[index].clone())
     }
-    
+  
     fn report_success(&mut self, _service_name: &str, _instance: &ServiceInstance) {
         // 随机负载均衡器不需要跟踪成功或失败
     }
-    
+  
     fn report_failure(&mut self, _service_name: &str, _instance: &ServiceInstance) {
         // 随机负载均衡器不需要跟踪成功或失败
     }
@@ -10174,24 +10196,24 @@ impl LoadBalancer for RoundRobinLoadBalancer {
     fn name(&self) -> &str {
         "轮询负载均衡器"
     }
-    
+  
     fn select(&self, service_name: &str, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         if instances.is_empty() {
             return None;
         }
-        
+  
         let mut counters = self.counters.clone();
         let current = *counters.get(service_name).unwrap_or(&0);
         let next = (current + 1) % instances.len();
         counters.insert(service_name.to_string(), next);
-        
+  
         Some(instances[current].clone())
     }
-    
+  
     fn report_success(&mut self, _service_name: &str, _instance: &ServiceInstance) {
         // 轮询负载均衡器不需要跟踪成功或失败
     }
-    
+  
     fn report_failure(&mut self, _service_name: &str, _instance: &ServiceInstance) {
         // 轮询负载均衡器不需要跟踪成功或失败
     }
@@ -10214,48 +10236,48 @@ impl LoadBalancer for WeightedLoadBalancer {
     fn name(&self) -> &str {
         "加权负载均衡器"
     }
-    
+  
     fn select(&self, service_name: &str, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         if instances.is_empty() {
             return None;
         }
-        
+  
         let mut current_weights = self.current_weights.clone();
         let weights = current_weights.entry(service_name.to_string()).or_insert_with(HashMap::new);
-        
+  
         let mut total_weight = 0;
         let mut best_instance = None;
         let mut best_weight = -1;
-        
+  
         for instance in instances {
             // 初始化实例权重
             let weight = instance.weight as i32;
             total_weight += weight;
-            
+  
             // 增加当前权重
             let current = weights.entry(instance.id.clone()).or_insert(0);
             *current += weight;
-            
+  
             // 选择最大的当前权重
             if *current > best_weight {
                 best_weight = *current;
                 best_instance = Some(instance.clone());
             }
         }
-        
+  
         // 更新选择的实例的权重
         if let Some(ref instance) = best_instance {
             let current = weights.get_mut(&instance.id).unwrap();
             *current -= total_weight;
         }
-        
+  
         best_instance
     }
-    
+  
     fn report_success(&mut self, _service_name: &str, _instance: &ServiceInstance) {
         // 加权负载均衡器不需要跟踪成功或失败
     }
-    
+  
     fn report_failure(&mut self, _service_name: &str, _instance: &ServiceInstance) {
         // 加权负载均衡器不需要跟踪成功或失败
     }
@@ -10278,18 +10300,18 @@ impl LoadBalancer for LeastConnectionsLoadBalancer {
     fn name(&self) -> &str {
         "最少连接数负载均衡器"
     }
-    
+  
     fn select(&self, service_name: &str, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         if instances.is_empty() {
             return None;
         }
-        
+  
         let counts = self.connection_counts.get(service_name).unwrap_or(&HashMap::new());
-        
+  
         // 寻找连接数最少的实例
         let mut least_instance = &instances[0];
         let mut least_count = counts.get(&least_instance.id).unwrap_or(&0);
-        
+  
         for instance in instances.iter().skip(1) {
             let count = counts.get(&instance.id).unwrap_or(&0);
             if count < least_count {
@@ -10297,19 +10319,19 @@ impl LoadBalancer for LeastConnectionsLoadBalancer {
                 least_count = count;
             }
         }
-        
+  
         Some(least_instance.clone())
     }
-    
+  
     fn report_success(&mut self, service_name: &str, instance: &ServiceInstance) {
         // 连接开始，增加计数
         let counts = self.connection_counts.entry(service_name.to_string())
             .or_insert_with(HashMap::new);
-        
+  
         let count = counts.entry(instance.id.clone()).or_insert(0);
         *count += 1;
     }
-    
+  
     fn report_failure(&mut self, service_name: &str, instance: &ServiceInstance) {
         // 连接结束，减少计数
         if let Some(counts) = self.connection_counts.get_mut(service_name) {
@@ -10335,13 +10357,13 @@ impl ResponseTimeLoadBalancer {
             decay_factor,
         }
     }
-    
+  
     fn update_response_time(&mut self, service_name: &str, instance_id: &str, new_time: Duration) {
         let times = self.response_times.entry(service_name.to_string())
             .or_insert_with(HashMap::new);
-        
+  
         let current = times.entry(instance_id.to_string()).or_insert(new_time);
-        
+  
         // 使用指数移动平均更新响应时间
         let current_ms = current.as_millis() as f64;
         let new_ms = new_time.as_millis() as f64;
@@ -10354,38 +10376,38 @@ impl LoadBalancer for ResponseTimeLoadBalancer {
     fn name(&self) -> &str {
         "响应时间负载均衡器"
     }
-    
+  
     fn select(&self, service_name: &str, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         if instances.is_empty() {
             return None;
         }
-        
+  
         let times = self.response_times.get(service_name).unwrap_or(&HashMap::new());
-        
+  
         // 寻找响应时间最短的实例
         let mut best_instance = &instances[0];
         let mut best_time = times.get(&best_instance.id)
             .unwrap_or(&Duration::from_secs(60)); // 默认假设60秒
-        
+  
         for instance in instances.iter().skip(1) {
             let time = times.get(&instance.id)
                 .unwrap_or(&Duration::from_secs(60));
-            
+  
             if time < best_time {
                 best_instance = instance;
                 best_time = time;
             }
         }
-        
+  
         Some(best_instance.clone())
     }
-    
+  
     fn report_success(&mut self, service_name: &str, instance: &ServiceInstance) {
         // 在实际实现中，这应该使用测量的响应时间而不是固定值
         let response_time = Duration::from_millis(100); // 示例值
         self.update_response_time(service_name, &instance.id, response_time);
     }
-    
+  
     fn report_failure(&mut self, service_name: &str, instance: &ServiceInstance) {
         // 失败会增加响应时间惩罚
         let penalty = Duration::from_secs(1);
@@ -10414,7 +10436,7 @@ impl ServiceResolver for DnsServiceResolver {
     fn name(&self) -> &str {
         "DNS服务解析器"
     }
-    
+  
     fn resolve(&self, service_name: &str) -> Result<Vec<ServiceInstance>, ResolveError> {
         // 检查缓存
         if let Some((instances, timestamp)) = self.dns_cache.get(service_name) {
@@ -10422,17 +10444,17 @@ impl ServiceResolver for DnsServiceResolver {
                 return Ok(instances.clone());
             }
         }
-        
+  
         // 构建DNS查询名称
         let dns_name = format!("{}.{}", service_name, self.dns_suffix);
-        
+  
         // 在实际实现中，这会执行真正的DNS查询
         println!("执行DNS查询: {}", dns_name);
-        
+  
         // 模拟查询结果
         let mut instances = Vec::new();
         let mut rng = rand::thread_rng();
-        
+  
         for i in 1..=3 {
             let port = 8000 + rng.gen_range(0..1000);
             instances.push(ServiceInstance {
@@ -10446,10 +10468,10 @@ impl ServiceResolver for DnsServiceResolver {
                 weight: 100,
             });
         }
-        
+  
         // 更新缓存
         self.dns_cache.insert(service_name.to_string(), (instances.clone(), Instant::now()));
-        
+  
         Ok(instances)
     }
 }
@@ -10467,11 +10489,11 @@ impl FileSystemServiceResolver {
             last_modified: HashMap::new(),
         }
     }
-    
+  
     fn read_service_config(&self, service_name: &str) -> Result<(Vec<ServiceInstance>, SystemTime), ResolveError> {
         // 构建配置文件路径
         let config_file = format!("{}/{}.json", self.config_path, service_name);
-        
+  
         // 检查文件是否存在
         let metadata = match std::fs::metadata(&config_file) {
             Ok(meta) => meta,
@@ -10482,7 +10504,7 @@ impl FileSystemServiceResolver {
                 });
             }
         };
-        
+  
         // 获取修改时间
         let modified = match metadata.modified() {
             Ok(time) => time,
@@ -10493,7 +10515,7 @@ impl FileSystemServiceResolver {
                 });
             }
         };
-        
+  
         // 如果文件未修改，返回缓存
         if let Some(last_time) = self.last_modified.get(service_name) {
             if *last_time >= modified {
@@ -10501,7 +10523,7 @@ impl FileSystemServiceResolver {
                 // 简化实现：假设需要重新读取
             }
         }
-        
+  
         // 读取文件内容
         let content = match std::fs::read_to_string(&config_file) {
             Ok(content) => content,
@@ -10512,7 +10534,7 @@ impl FileSystemServiceResolver {
                 });
             }
         };
-        
+  
         // 解析JSON
         let instances: Vec<ServiceInstance> = match serde_json::from_str(&content) {
             Ok(instances) => instances,
@@ -10523,7 +10545,7 @@ impl FileSystemServiceResolver {
                 });
             }
         };
-        
+  
         Ok((instances, modified))
     }
 }
@@ -10532,14 +10554,14 @@ impl ServiceResolver for FileSystemServiceResolver {
     fn name(&self) -> &str {
         "文件系统服务解析器"
     }
-    
+  
     fn resolve(&self, service_name: &str) -> Result<Vec<ServiceInstance>, ResolveError> {
         // 读取服务配置
         let (instances, modified) = self.read_service_config(service_name)?;
-        
+  
         // 更新最后修改时间
         self.last_modified.insert(service_name.to_string(), modified);
-        
+  
         Ok(instances)
     }
 }
@@ -10568,11 +10590,11 @@ impl HealthChecker for HttpHealthChecker {
     fn name(&self) -> &str {
         "HTTP健康检查器"
     }
-    
+  
     fn check(&self, instance: &ServiceInstance) -> HealthStatus {
         // 构建健康检查URL
         let url = format!("http://{}:{}{}", instance.host, instance.port, self.path);
-        
+  
         // 执行HTTP请求
         match self.http_client.get(&url).send() {
             Ok(response) => {
@@ -10585,7 +10607,7 @@ impl HealthChecker for HttpHealthChecker {
             Err(_) => HealthStatus::Unhealthy,
         }
     }
-    
+  
     fn get_check_interval(&self) -> Duration {
         Duration::from_secs(10) // 默认每10秒检查一次
     }
@@ -10608,21 +10630,22 @@ impl HealthChecker for TcpHealthChecker {
     fn name(&self) -> &str {
         "TCP健康检查器"
     }
-    
+  
     fn check(&self, instance: &ServiceInstance) -> HealthStatus {
         // 尝试建立TCP连接
         let addr = format!("{}:{}", instance.host, instance.port);
-        
+  
         match std::net::TcpStream::connect_timeout(&addr.parse().unwrap(), self.timeout) {
             Ok(_) => HealthStatus::Healthy,
             Err(_) => HealthStatus::Unhealthy,
         }
     }
-    
+  
     fn get_check_interval(&self) -> Duration {
         Duration::from_secs(15) // 默认每15秒检查一次
     }
 }
+
 ```
 
 ### 4.7 分布式锁
@@ -10683,31 +10706,31 @@ impl DistributedLockManager {
             default_provider: default_provider.to_string(),
         }
     }
-    
+  
     fn register_provider(&mut self, provider: Box<dyn LockProvider>) -> Result<(), String> {
         let name = provider.name().to_string();
-        
+  
         if self.lock_providers.contains_key(&name) {
             return Err(format!("锁提供器 '{}' 已经注册", name));
         }
-        
+  
         self.lock_providers.insert(name, provider);
         Ok(())
     }
-    
+  
     fn set_default_provider(&mut self, provider_name: &str) -> Result<(), String> {
         if !self.lock_providers.contains_key(provider_name) {
             return Err(format!("锁提供器 '{}' 未注册", provider_name));
         }
-        
+  
         self.default_provider = provider_name.to_string();
         Ok(())
     }
-    
+  
     fn acquire_lock(&self, lock_name: &str, timeout: Duration) -> Result<Lock, LockError> {
         self.acquire_lock_with_provider(lock_name, &self.default_provider, timeout)
     }
-    
+  
     fn acquire_lock_with_provider(&self, lock_name: &str, provider_name: &str, timeout: Duration) -> Result<Lock, LockError> {
         // 检查锁提供器是否存在
         let provider = match self.lock_providers.get(provider_name) {
@@ -10719,10 +10742,10 @@ impl DistributedLockManager {
                 });
             }
         };
-        
+  
         // 尝试获取锁
         let handle = provider.acquire(lock_name, timeout)?;
-        
+  
         // 创建锁对象
         let lock = Lock {
             name: lock_name.to_string(),
@@ -10733,14 +10756,14 @@ impl DistributedLockManager {
             handle: handle.clone(),
             metadata: HashMap::new(),
         };
-        
+  
         // 记录活动锁
         let mut active_locks = self.active_locks.write().unwrap();
         active_locks.insert(lock_name.to_string(), lock.clone());
-        
+  
         Ok(lock)
     }
-    
+  
     fn release_lock(&self, lock: &Lock) -> Result<(), LockError> {
         // 检查锁提供器是否存在
         let provider = match self.lock_providers.get(&lock.provider) {
@@ -10752,17 +10775,17 @@ impl DistributedLockManager {
                 });
             }
         };
-        
+  
         // 释放锁
         provider.release(&lock.handle)?;
-        
+  
         // 移除活动锁
         let mut active_locks = self.active_locks.write().unwrap();
         active_locks.remove(&lock.name);
-        
+  
         Ok(())
     }
-    
+  
     fn refresh_lock(&self, lock: &Lock) -> Result<Lock, LockError> {
         // 检查锁提供器是否存在
         let provider = match self.lock_providers.get(&lock.provider) {
@@ -10774,10 +10797,10 @@ impl DistributedLockManager {
                 });
             }
         };
-        
+  
         // 刷新锁
         provider.refresh(&lock.handle)?;
-        
+  
         // 更新锁对象
         let mut updated_lock = lock.clone();
         if let Some(expiry) = lock.expires_at {
@@ -10785,18 +10808,18 @@ impl DistributedLockManager {
             let timeout = expiry.duration_since(lock.acquired_at);
             updated_lock.expires_at = Some(now + timeout);
         }
-        
+  
         // 更新活动锁
         let mut active_locks = self.active_locks.write().unwrap();
         active_locks.insert(lock.name.clone(), updated_lock.clone());
-        
+  
         Ok(updated_lock)
     }
-    
+  
     fn is_locked(&self, lock_name: &str) -> Result<bool, LockError> {
         self.is_locked_with_provider(lock_name, &self.default_provider)
     }
-    
+  
     fn is_locked_with_provider(&self, lock_name: &str, provider_name: &str) -> Result<bool, LockError> {
         // 检查锁提供器是否存在
         let provider = match self.lock_providers.get(provider_name) {
@@ -10808,11 +10831,11 @@ impl DistributedLockManager {
                 });
             }
         };
-        
+  
         // 检查锁状态
         provider.is_locked(lock_name)
     }
-    
+  
     fn get_active_locks(&self) -> HashMap<String, Lock> {
         let active_locks = self.active_locks.read().unwrap();
         active_locks.clone()
@@ -10831,7 +10854,7 @@ struct RedisLockProvider {
 impl RedisLockProvider {
     fn new(redis_url: &str, lock_prefix: &str, node_id: &str) -> Result<Self, redis::RedisError> {
         let client = redis::Client::open(redis_url)?;
-        
+  
         Ok(RedisLockProvider {
             client,
             lock_prefix: lock_prefix.to_string(),
@@ -10840,11 +10863,11 @@ impl RedisLockProvider {
             clock_drift_factor: 0.01, // 1%的时钟漂移容忍度
         })
     }
-    
+  
     fn get_lock_key(&self, lock_name: &str) -> String {
         format!("{}:{}", self.lock_prefix, lock_name)
     }
-    
+  
     fn get_token(&self, lock_name: &str) -> String {
         format!("{}:{}:{}", self.node_id, lock_name, uuid::Uuid::new_v4())
     }
@@ -10854,7 +10877,7 @@ impl LockProvider for RedisLockProvider {
     fn name(&self) -> &str {
         "Redis锁提供器"
     }
-    
+  
     fn acquire(&self, lock_name: &str, timeout: Duration) -> Result<LockHandle, LockError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -10865,11 +10888,11 @@ impl LockProvider for RedisLockProvider {
                 });
             }
         };
-        
+  
         let lock_key = self.get_lock_key(lock_name);
         let token = self.get_token(lock_name);
         let expiry = timeout.as_millis() as usize;
-        
+  
         // 使用Redlock算法设置锁
         // 使用NX选项只有在键不存在时才设置
         // 使用PX选项设置毫秒级过期时间
@@ -10884,7 +10907,7 @@ impl LockProvider for RedisLockProvider {
                 message: format!("Redis SET操作失败: {}", err),
                 error_type: LockErrorType::InternalError,
             })?;
-        
+  
         if result {
             // 成功获取锁
             Ok(LockHandle {
@@ -10901,7 +10924,7 @@ impl LockProvider for RedisLockProvider {
             })
         }
     }
-    
+  
     fn release(&self, handle: &LockHandle) -> Result<(), LockError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -10912,9 +10935,9 @@ impl LockProvider for RedisLockProvider {
                 });
             }
         };
-        
+  
         let lock_key = self.get_lock_key(&handle.name);
-        
+  
         // 使用Lua脚本原子性地检查并释放锁
         // 这确保我们只释放自己的锁，避免意外释放其他节点的锁
         let script = r"
@@ -10924,7 +10947,7 @@ impl LockProvider for RedisLockProvider {
                 return 0
             end
         ";
-        
+  
         let result: i32 = redis::cmd("EVAL")
             .arg(script)
             .arg(1) // 1个键
@@ -10935,7 +10958,7 @@ impl LockProvider for RedisLockProvider {
                 message: format!("Redis EVAL操作失败: {}", err),
                 error_type: LockErrorType::InternalError,
             })?;
-        
+  
         if result == 1 {
             // 成功释放锁
             Ok(())
@@ -10947,7 +10970,7 @@ impl LockProvider for RedisLockProvider {
             })
         }
     }
-    
+  
     fn refresh(&self, handle: &LockHandle) -> Result<(), LockError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -10958,10 +10981,10 @@ impl LockProvider for RedisLockProvider {
                 });
             }
         };
-        
+  
         let lock_key = self.get_lock_key(&handle.name);
         let expiry = self.default_timeout.as_millis() as usize;
-        
+  
         // 使用Lua脚本原子性地检查并刷新锁
         let script = r"
             if redis.call('get', KEYS[1]) == ARGV[1] then
@@ -10970,7 +10993,7 @@ impl LockProvider for RedisLockProvider {
                 return 0
             end
         ";
-        
+  
         let result: i32 = redis::cmd("EVAL")
             .arg(script)
             .arg(1) // 1个键
@@ -10982,7 +11005,7 @@ impl LockProvider for RedisLockProvider {
                 message: format!("Redis EVAL操作失败: {}", err),
                 error_type: LockErrorType::InternalError,
             })?;
-        
+  
         if result == 1 {
             // 成功刷新锁
             Ok(())
@@ -10994,7 +11017,7 @@ impl LockProvider for RedisLockProvider {
             })
         }
     }
-    
+  
     fn is_locked(&self, lock_name: &str) -> Result<bool, LockError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -11005,9 +11028,9 @@ impl LockProvider for RedisLockProvider {
                 });
             }
         };
-        
+  
         let lock_key = self.get_lock_key(lock_name);
-        
+  
         // 检查键是否存在
         let exists: bool = redis::cmd("EXISTS")
             .arg(&lock_key)
@@ -11016,10 +11039,10 @@ impl LockProvider for RedisLockProvider {
                 message: format!("Redis EXISTS操作失败: {}", err),
                 error_type: LockErrorType::InternalError,
             })?;
-        
+  
         Ok(exists)
     }
-    
+  
     fn get_owner(&self, lock_name: &str) -> Result<Option<String>, LockError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -11030,9 +11053,9 @@ impl LockProvider for RedisLockProvider {
                 });
             }
         };
-        
+  
         let lock_key = self.get_lock_key(lock_name);
-        
+  
         // 获取锁的值
         let value: Option<String> = redis::cmd("GET")
             .arg(&lock_key)
@@ -11041,7 +11064,7 @@ impl LockProvider for RedisLockProvider {
                 message: format!("Redis GET操作失败: {}", err),
                 error_type: LockErrorType::InternalError,
             })?;
-        
+  
         match value {
             Some(token) => {
                 // 解析令牌以获取所有者信息
@@ -11070,15 +11093,15 @@ impl InMemoryLockProvider {
             node_id: node_id.to_string(),
         }
     }
-    
+  
     fn get_token(&self, lock_name: &str) -> String {
         format!("{}:{}:{}", self.node_id, lock_name, uuid::Uuid::new_v4())
     }
-    
+  
     fn cleanup_expired_locks(&self) {
         let mut locks = self.locks.write().unwrap();
         let now = Instant::now();
-        
+  
         // 移除所有过期的锁
         locks.retain(|_, (_, expires_at)| *expires_at > now);
     }
@@ -11088,13 +11111,13 @@ impl LockProvider for InMemoryLockProvider {
     fn name(&self) -> &str {
         "内存锁提供器"
     }
-    
+  
     fn acquire(&self, lock_name: &str, timeout: Duration) -> Result<LockHandle, LockError> {
         // 先清理过期的锁
         self.cleanup_expired_locks();
-        
+  
         let mut locks = self.locks.write().unwrap();
-        
+  
         // 检查锁是否已存在
         if let Some((_, expires_at)) = locks.get(lock_name) {
             if *expires_at > Instant::now() {
@@ -11104,13 +11127,13 @@ impl LockProvider for InMemoryLockProvider {
                 });
             }
         }
-        
+  
         // 创建新的锁
         let token = self.get_token(lock_name);
         let expires_at = Instant::now() + timeout;
-        
+  
         locks.insert(lock_name.to_string(), (token.clone(), expires_at));
-        
+  
         Ok(LockHandle {
             id: uuid::Uuid::new_v4().to_string(),
             name: lock_name.to_string(),
@@ -11118,10 +11141,10 @@ impl LockProvider for InMemoryLockProvider {
             token,
         })
     }
-    
+  
     fn release(&self, handle: &LockHandle) -> Result<(), LockError> {
         let mut locks = self.locks.write().unwrap();
-        
+  
         // 检查锁是否存在并且令牌匹配
         if let Some((token, _)) = locks.get(&handle.name) {
             if token == &handle.token {
@@ -11129,16 +11152,16 @@ impl LockProvider for InMemoryLockProvider {
                 return Ok(());
             }
         }
-        
+  
         Err(LockError {
             message: format!("锁 '{}' 不存在或已被其他节点持有", handle.name),
             error_type: LockErrorType::NotLocked,
         })
     }
-    
+  
     fn refresh(&self, handle: &LockHandle) -> Result<(), LockError> {
         let mut locks = self.locks.write().unwrap();
-        
+  
         // 检查锁是否存在并且令牌匹配
         if let Some((token, _)) = locks.get(&handle.name) {
             if token == &handle.token {
@@ -11148,32 +11171,32 @@ impl LockProvider for InMemoryLockProvider {
                 return Ok(());
             }
         }
-        
+  
         Err(LockError {
             message: format!("锁 '{}' 不存在或已被其他节点持有", handle.name),
             error_type: LockErrorType::NotLocked,
         })
     }
-    
+  
     fn is_locked(&self, lock_name: &str) -> Result<bool, LockError> {
         // 先清理过期的锁
         self.cleanup_expired_locks();
-        
+  
         let locks = self.locks.read().unwrap();
-        
+  
         if let Some((_, expires_at)) = locks.get(lock_name) {
             return Ok(*expires_at > Instant::now());
         }
-        
+  
         Ok(false)
     }
-    
+  
     fn get_owner(&self, lock_name: &str) -> Result<Option<String>, LockError> {
         // 先清理过期的锁
         self.cleanup_expired_locks();
-        
+  
         let locks = self.locks.read().unwrap();
-        
+  
         if let Some((token, expires_at)) = locks.get(lock_name) {
             if *expires_at > Instant::now() {
                 // 解析令牌以获取所有者信息
@@ -11183,7 +11206,7 @@ impl LockProvider for InMemoryLockProvider {
                 }
             }
         }
-        
+  
         Ok(None)
     }
 }
@@ -11205,78 +11228,78 @@ impl LockMonitor {
             running: Arc::new(AtomicBool::new(false)),
         }
     }
-    
+  
     fn start(&self) -> Result<(), String> {
         if self.running.load(Ordering::SeqCst) {
             return Err("锁监控器已经在运行".to_string());
         }
-        
+  
         self.running.store(true, Ordering::SeqCst);
-        
+  
         // 启动主监控线程
         let lock_manager = self.lock_manager.clone();
         let monitor_interval = self.monitor_interval;
         let active_monitors = self.active_monitors.clone();
         let running = self.running.clone();
-        
+  
         std::thread::spawn(move || {
             while running.load(Ordering::SeqCst) {
                 // 获取所有活动锁
                 let active_locks = lock_manager.get_active_locks();
-                
+  
                 // 更新监控器
                 for (lock_name, lock) in active_locks {
                     let active_monitors_clone = active_monitors.clone();
-                    
+  
                     // 检查是否已经有监控器在运行
                     let exists = {
                         let monitors = active_monitors_clone.read().unwrap();
                         monitors.contains_key(&lock_name)
                     };
-                    
+  
                     if !exists {
                         // 为锁创建新的监控器
                         let lock_manager_clone = lock_manager.clone();
                         let lock_clone = lock.clone();
                         let running_clone = running.clone();
-                        
+  
                         let handle = std::thread::spawn(move || {
                             Self::monitor_lock(lock_manager_clone, lock_clone, running_clone);
                         });
-                        
+  
                         // 保存监控器句柄
                         let mut monitors = active_monitors_clone.write().unwrap();
                         monitors.insert(lock_name.clone(), handle);
                     }
                 }
-                
+  
                 // 清理已完成的监控器
                 {
                     let mut monitors = active_monitors.write().unwrap();
                     let mut to_remove = Vec::new();
-                    
+  
                     for (lock_name, handle) in monitors.iter() {
                         if handle.is_finished() {
                             to_remove.push(lock_name.clone());
                         }
                     }
-                    
+  
                     for lock_name in to_remove {
                         monitors.remove(&lock_name);
                     }
                 }
-                
+  
                 // 等待下一个监控间隔
                 std::thread::sleep(monitor_interval);
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     fn stop(&self) {
         self.running.store(false, Ordering::SeqCst);
-        
+  
         // 等待所有监控器完成
         let monitors = self.active_monitors.read().unwrap();
         for (_, handle) in monitors.iter() {
@@ -11284,16 +11307,16 @@ impl LockMonitor {
             // 例如使用通道发送终止信号
         }
     }
-    
+  
     fn monitor_lock(lock_manager: Arc<DistributedLockManager>, lock: Lock, running: Arc<AtomicBool>) {
         let refresh_interval = Duration::from_secs(5); // 每5秒刷新一次
-        
+  
         while running.load(Ordering::SeqCst) {
             // 检查锁是否快要过期
             if let Some(expires_at) = lock.expires_at {
                 let now = Instant::now();
                 let remaining = expires_at.saturating_duration_since(now);
-                
+  
                 // 如果剩余时间少于刷新间隔的两倍，则刷新锁
                 if remaining < refresh_interval * 2 {
                     match lock_manager.refresh_lock(&lock) {
@@ -11309,7 +11332,7 @@ impl LockMonitor {
                     }
                 }
             }
-            
+  
             // 等待下一个刷新间隔
             std::thread::sleep(refresh_interval);
         }
@@ -11348,31 +11371,31 @@ impl DistributedRateLimiter {
             default_limiter: default_limiter.to_string(),
         }
     }
-    
+  
     fn register_limiter(&mut self, limiter: Box<dyn RateLimiter>) -> Result<(), String> {
         let name = limiter.name().to_string();
-        
+  
         if self.rate_limiters.contains_key(&name) {
             return Err(format!("速率限制器 '{}' 已经注册", name));
         }
-        
+  
         self.rate_limiters.insert(name, limiter);
         Ok(())
     }
-    
+  
     fn set_default_limiter(&mut self, limiter_name: &str) -> Result<(), String> {
         if !self.rate_limiters.contains_key(limiter_name) {
             return Err(format!("速率限制器 '{}' 未注册", limiter_name));
         }
-        
+  
         self.default_limiter = limiter_name.to_string();
         Ok(())
     }
-    
+  
     fn try_acquire(&self, key: &str, permits: u32) -> Result<bool, RateLimitError> {
         self.try_acquire_with_limiter(key, permits, &self.default_limiter)
     }
-    
+  
     fn try_acquire_with_limiter(&self, key: &str, permits: u32, limiter_name: &str) -> Result<bool, RateLimitError> {
         // 检查限制器是否存在
         let limiter = match self.rate_limiters.get(limiter_name) {
@@ -11384,15 +11407,15 @@ impl DistributedRateLimiter {
                 });
             }
         };
-        
+  
         // 尝试获取令牌
         limiter.try_acquire(key, permits)
     }
-    
+  
     fn get_rate(&self, key: &str) -> Result<f64, RateLimitError> {
         self.get_rate_with_limiter(key, &self.default_limiter)
     }
-    
+  
     fn get_rate_with_limiter(&self, key: &str, limiter_name: &str) -> Result<f64, RateLimitError> {
         // 检查限制器是否存在
         let limiter = match self.rate_limiters.get(limiter_name) {
@@ -11404,15 +11427,15 @@ impl DistributedRateLimiter {
                 });
             }
         };
-        
+  
         // 获取速率
         limiter.get_rate(key)
     }
-    
+  
     fn update_rate(&self, key: &str, rate: f64) -> Result<(), RateLimitError> {
         self.update_rate_with_limiter(key, rate, &self.default_limiter)
     }
-    
+  
     fn update_rate_with_limiter(&self, key: &str, rate: f64, limiter_name: &str) -> Result<(), RateLimitError> {
         // 检查限制器是否存在
         let limiter = match self.rate_limiters.get(limiter_name) {
@@ -11424,15 +11447,15 @@ impl DistributedRateLimiter {
                 });
             }
         };
-        
+  
         // 更新速率
         limiter.update_rate(key, rate)
     }
-    
+  
     fn reset(&self, key: &str) -> Result<(), RateLimitError> {
         self.reset_with_limiter(key, &self.default_limiter)
     }
-    
+  
     fn reset_with_limiter(&self, key: &str, limiter_name: &str) -> Result<(), RateLimitError> {
         // 检查限制器是否存在
         let limiter = match self.rate_limiters.get(limiter_name) {
@@ -11444,7 +11467,7 @@ impl DistributedRateLimiter {
                 });
             }
         };
-        
+  
         // 重置限制器
         limiter.reset(key)
     }
@@ -11461,7 +11484,7 @@ struct RedisTokenBucketRateLimiter {
 impl RedisTokenBucketRateLimiter {
     fn new(redis_url: &str, key_prefix: &str, default_capacity: u32, default_rate: f64) -> Result<Self, redis::RedisError> {
         let client = redis::Client::open(redis_url)?;
-        
+  
         Ok(RedisTokenBucketRateLimiter {
             client,
             key_prefix: key_prefix.to_string(),
@@ -11469,11 +11492,11 @@ impl RedisTokenBucketRateLimiter {
             default_rate,
         })
     }
-    
+  
     fn get_bucket_key(&self, key: &str) -> String {
         format!("{}:bucket:{}", self.key_prefix, key)
     }
-    
+  
     fn get_rate_key(&self, key: &str) -> String {
         format!("{}:rate:{}", self.key_prefix, key)
     }
@@ -11483,7 +11506,7 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
     fn name(&self) -> &str {
         "Redis令牌桶限速器"
     }
-    
+  
     fn try_acquire(&self, key: &str, permits: u32) -> Result<bool, RateLimitError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -11494,10 +11517,10 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 });
             }
         };
-        
+  
         let bucket_key = self.get_bucket_key(key);
         let rate_key = self.get_rate_key(key);
-        
+  
         // 使用Lua脚本原子性地实现令牌桶算法
         let script = r"
             -- 获取速率和上次更新时间
@@ -11507,17 +11530,17 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 redis.call('SET', KEYS[2], rate)
             end
             rate = tonumber(rate)
-            
+  
             -- 获取当前桶状态
             local bucket = redis.call('HMGET', KEYS[1], 'tokens', 'last_refill')
             local tokens = tonumber(bucket[1] or ARGV[3]) -- 默认容量
             local last_refill = tonumber(bucket[2] or 0)
-            
+  
             -- 计算经过的时间和新增的令牌
             local now = tonumber(ARGV[1])
             local delta = math.max(0, now - last_refill)
             local new_tokens = math.min(ARGV[3], tokens + delta * rate)
-            
+  
             -- 检查是否有足够的令牌
             if new_tokens >= tonumber(ARGV[4]) then
                 -- 扣除令牌并更新桶
@@ -11530,12 +11553,12 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 return 0
             end
         ";
-        
+  
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_secs();
-        
+  
         let result: i32 = redis::cmd("EVAL")
             .arg(script)
             .arg(2) // 2个键
@@ -11550,10 +11573,10 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 message: format!("Redis EVAL操作失败: {}", err),
                 error_type: RateLimitErrorType::InternalError,
             })?;
-        
+  
         Ok(result == 1)
     }
-    
+  
     fn get_rate(&self, key: &str) -> Result<f64, RateLimitError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -11564,9 +11587,9 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 });
             }
         };
-        
+  
         let rate_key = self.get_rate_key(key);
-        
+  
         let rate: Option<String> = redis::cmd("GET")
             .arg(&rate_key)
             .query(&mut conn)
@@ -11574,20 +11597,20 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 message: format!("Redis GET操作失败: {}", err),
                 error_type: RateLimitErrorType::InternalError,
             })?;
-        
+  
         match rate {
             Some(rate_str) => {
                 let rate = rate_str.parse::<f64>().map_err(|_| RateLimitError {
                     message: format!("无法解析速率值: {}", rate_str),
                     error_type: RateLimitErrorType::InternalError,
                 })?;
-                
+  
                 Ok(rate)
             },
             None => Ok(self.default_rate),
         }
     }
-    
+  
     fn update_rate(&self, key: &str, rate: f64) -> Result<(), RateLimitError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -11598,9 +11621,9 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 });
             }
         };
-        
+  
         let rate_key = self.get_rate_key(key);
-        
+  
         let _: () = redis::cmd("SET")
             .arg(&rate_key)
             .arg(rate.to_string())
@@ -11609,10 +11632,10 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 message: format!("Redis SET操作失败: {}", err),
                 error_type: RateLimitErrorType::InternalError,
             })?;
-        
+  
         Ok(())
     }
-    
+  
     fn reset(&self, key: &str) -> Result<(), RateLimitError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -11623,9 +11646,9 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 });
             }
         };
-        
+  
         let bucket_key = self.get_bucket_key(key);
-        
+  
         let _: () = redis::cmd("DEL")
             .arg(&bucket_key)
             .query(&mut conn)
@@ -11633,10 +11656,11 @@ impl RateLimiter for RedisTokenBucketRateLimiter {
                 message: format!("Redis DEL操作失败: {}", err),
                 error_type: RateLimitErrorType::InternalError,
             })?;
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ### 4.8 分布式工作队列
@@ -11700,31 +11724,31 @@ impl DistributedWorkQueue {
             default_provider: default_provider.to_string(),
         }
     }
-    
+  
     fn register_provider(&mut self, provider: Box<dyn QueueProvider>) -> Result<(), String> {
         let name = provider.name().to_string();
-        
+  
         if self.queue_providers.contains_key(&name) {
             return Err(format!("队列提供器 '{}' 已经注册", name));
         }
-        
+  
         self.queue_providers.insert(name, provider);
         Ok(())
     }
-    
+  
     fn set_default_provider(&mut self, provider_name: &str) -> Result<(), String> {
         if !self.queue_providers.contains_key(provider_name) {
             return Err(format!("队列提供器 '{}' 未注册", provider_name));
         }
-        
+  
         self.default_provider = provider_name.to_string();
         Ok(())
     }
-    
+  
     fn push_task(&self, queue_name: &str, task: Task) -> Result<String, QueueError> {
         self.push_task_with_provider(queue_name, task, &self.default_provider)
     }
-    
+  
     fn push_task_with_provider(&self, queue_name: &str, task: Task, provider_name: &str) -> Result<String, QueueError> {
         // 检查提供器是否存在
         let provider = match self.queue_providers.get(provider_name) {
@@ -11736,15 +11760,15 @@ impl DistributedWorkQueue {
                 });
             }
         };
-        
+  
         // 推送任务
         provider.push(queue_name, task)
     }
-    
+  
     fn pop_task(&self, queue_name: &str) -> Result<Option<Task>, QueueError> {
         self.pop_task_from_provider(queue_name, &self.default_provider)
     }
-    
+  
     fn pop_task_from_provider(&self, queue_name: &str, provider_name: &str) -> Result<Option<Task>, QueueError> {
         // 检查提供器是否存在
         let provider = match self.queue_providers.get(provider_name) {
@@ -11756,11 +11780,11 @@ impl DistributedWorkQueue {
                 });
             }
         };
-        
+  
         // 弹出任务
         provider.pop(queue_name)
     }
-    
+  
     fn register_worker<F>(&mut self, queue_name: &str, provider_name: &str, concurrency: usize, handler: F) -> Result<(), String>
     where
         F: Fn(Task) -> Result<(), String> + Send + Sync + 'static,
@@ -12556,6 +12580,7 @@ impl QueueProvider for InMemoryQueueProvider {
         Ok(())
     }
 }
+
 ```
 
 ### 4.9 批处理框架
@@ -12789,26 +12814,26 @@ impl BatchProcessingFramework {
 
 ```rust
 = self.job_registry.read().unwrap();
-            
+  
             registry.get(job_id).cloned().ok_or_else(|| JobError {
                 message: format!("作业 '{}' 未注册", job_id),
                 error_type: JobErrorType::InvalidJob,
                 task_id: None,
             })?
         };
-        
+  
         // 合并参数
         let mut merged_parameters = definition.parameters.clone();
         for (key, value) in parameters {
             merged_parameters.insert(key, value);
         }
-        
+  
         // 创建作业实例
         let instance_id = uuid::Uuid::new_v4().to_string();
-        
+  
         // 创建任务
         let tasks = self.create_tasks(&definition, &instance_id)?;
-        
+  
         let job = Job {
             definition: JobDefinition {
                 parameters: merged_parameters,
@@ -12823,25 +12848,25 @@ impl BatchProcessingFramework {
             progress: 0.0,
             metrics: HashMap::new(),
         };
-        
+  
         // 将作业添加到运行中的作业列表
         {
             let mut running_jobs = self.running_jobs.write().unwrap();
             running_jobs.insert(instance_id.clone(), JobStatus::Pending);
         }
-        
+  
         // 启动作业执行线程
         self.execute_job_async(job)?;
-        
+  
         Ok(instance_id)
     }
-    
+  
     fn create_tasks(&self, definition: &JobDefinition, instance_id: &str) -> Result<Vec<Task>, JobError> {
         let mut tasks = Vec::new();
-        
+  
         for (index, task_def) in definition.tasks.iter().enumerate() {
             let task_id = format!("{}-{}", instance_id, index);
-            
+  
             tasks.push(Task {
                 id: task_id,
                 job_id: instance_id.to_string(),
@@ -12856,64 +12881,64 @@ impl BatchProcessingFramework {
                 retry_count: 0,
             });
         }
-        
+  
         Ok(tasks)
     }
-    
+  
     fn execute_job_async(&self, job: Job) -> Result<(), JobError> {
         let job_arc = Arc::new(Mutex::new(job));
         let job_registry = self.job_registry.clone();
         let running_jobs = self.running_jobs.clone();
         let executors = self.executors.clone();
         let scheduler = Arc::new(self.scheduler.clone());
-        
+  
         std::thread::spawn(move || {
             let instance_id;
             {
                 let job = job_arc.lock().unwrap();
                 instance_id = job.instance_id.clone();
-                
+  
                 // 更新作业状态为运行中
                 running_jobs
                     .write()
                     .unwrap()
                     .insert(instance_id.clone(), JobStatus::Running);
             }
-            
+  
             // 执行作业
             let result = Self::execute_job(job_arc.clone(), executors, scheduler);
-            
+  
             // 更新作业状态
             let status = match result {
                 Ok(_) => JobStatus::Succeeded,
                 Err(error) => JobStatus::Failed(error.message),
             };
-            
+  
             running_jobs.write().unwrap().insert(instance_id, status);
         });
-        
+  
         Ok(())
     }
-    
+  
     fn execute_job(
-        job: Arc<Mutex<Job>>, 
-        executors: Vec<Box<dyn JobExecutor>>, 
+        job: Arc<Mutex<Job>>,
+        executors: Vec<Box<dyn JobExecutor>>,
         scheduler: Arc<Box<dyn JobScheduler>>
     ) -> Result<JobResult, JobError> {
         // 获取作业信息
         let mut job_instance = job.lock().unwrap();
-        
+  
         // 设置作业开始时间
         job_instance.start_time = Some(SystemTime::now());
         job_instance.status = JobStatus::Running;
-        
+  
         // 检查依赖的作业是否满足
         // 简化：实际实现中，这应该检查所有依赖作业的状态
-        
+  
         // 计算可以立即执行的任务
         let ready_tasks = Self::get_ready_tasks(&job_instance);
         drop(job_instance);
-        
+  
         if ready_tasks.is_empty() {
             return Err(JobError {
                 message: "没有可执行的任务".to_string(),
@@ -12921,15 +12946,15 @@ impl BatchProcessingFramework {
                 task_id: None,
             });
         }
-        
+  
         // 调度和执行任务
         let mut task_results = HashMap::new();
         let mut remaining_tasks = ready_tasks;
-        
+  
         while !remaining_tasks.is_empty() {
             // 调度任务
             let assignments = scheduler.schedule(&*job.lock().unwrap(), &executors)?;
-            
+  
             if assignments.is_empty() {
                 return Err(JobError {
                     message: "无法调度任务".to_string(),
@@ -12937,12 +12962,12 @@ impl BatchProcessingFramework {
                     task_id: None,
                 });
             }
-            
+  
             // 执行分配的任务
             for assignment in assignments {
                 let task_id = assignment.task_id.clone();
                 let executor_name = assignment.executor_name.clone();
-                
+  
                 // 找到执行器
                 let executor = executors.iter()
                     .find(|e| e.name() == executor_name)
@@ -12951,7 +12976,7 @@ impl BatchProcessingFramework {
                         error_type: JobErrorType::InternalError,
                         task_id: Some(task_id.clone()),
                     })?;
-                
+  
                 // 更新任务状态
                 {
                     let mut job_instance = job.lock().unwrap();
@@ -12964,7 +12989,7 @@ impl BatchProcessingFramework {
                         }
                     }
                 }
-                
+  
                 // 执行任务
                 let result = match executor.execute(&*job.lock().unwrap()) {
                     Ok(result) => {
@@ -12980,7 +13005,7 @@ impl BatchProcessingFramework {
                                 .unwrap_or_default(),
                         };
                         task_results.insert(task_id.clone(), task_result);
-                        
+  
                         // 更新任务状态
                         {
                             let mut job_instance = job.lock().unwrap();
@@ -12992,7 +13017,7 @@ impl BatchProcessingFramework {
                                 }
                             }
                         }
-                        
+  
                         true
                     },
                     Err(error) => {
@@ -13002,7 +13027,7 @@ impl BatchProcessingFramework {
                             .find(|t| t.id == task_id)
                             .unwrap()
                             .clone();
-                        
+  
                         match scheduler.handle_failure(&*job.lock().unwrap(), &task, &**executor)? {
                             FailureAction::Retry => {
                                 // 重试任务
@@ -13016,7 +13041,7 @@ impl BatchProcessingFramework {
                                         } else {
                                             task.status = TaskStatus::Failed(error.message.clone());
                                             task.end_time = Some(SystemTime::now());
-                                            
+  
                                             let task_result = TaskResult {
                                                 success: false,
                                                 error_message: Some(error.message.clone()),
@@ -13028,7 +13053,7 @@ impl BatchProcessingFramework {
                                         break;
                                     }
                                 }
-                                
+  
                                 // 继续执行下一个任务
                                 false
                             },
@@ -13042,7 +13067,7 @@ impl BatchProcessingFramework {
                                         break;
                                     }
                                 }
-                                
+  
                                 let task_result = TaskResult {
                                     success: false,
                                     error_message: Some(error.message.clone()),
@@ -13050,7 +13075,7 @@ impl BatchProcessingFramework {
                                     metrics: HashMap::new(),
                                 };
                                 task_results.insert(task_id.clone(), task_result);
-                                
+  
                                 true
                             },
                             FailureAction::FailJob => {
@@ -13058,7 +13083,7 @@ impl BatchProcessingFramework {
                                 let mut job_instance = job.lock().unwrap();
                                 job_instance.status = JobStatus::Failed(error.message.clone());
                                 job_instance.end_time = Some(SystemTime::now());
-                                
+  
                                 // 更新失败任务的状态
                                 for task in &mut job_instance.tasks {
                                     if task.id == task_id {
@@ -13067,7 +13092,7 @@ impl BatchProcessingFramework {
                                         break;
                                     }
                                 }
-                                
+  
                                 return Err(JobError {
                                     message: format!("任务 '{}' 失败导致作业失败: {}", task_id, error.message),
                                     error_type: JobErrorType::ExecutionError,
@@ -13084,36 +13109,36 @@ impl BatchProcessingFramework {
                                         break;
                                     }
                                 }
-                                
+  
                                 false
                             },
                         }
                     }
                 };
-                
+  
                 // 如果任务成功完成，更新剩余任务集合
                 if result {
                     remaining_tasks = Self::get_ready_tasks(&*job.lock().unwrap());
                 }
             }
         }
-        
+  
         // 设置作业结束时间和状态
         {
             let mut job_instance = job.lock().unwrap();
             job_instance.end_time = Some(SystemTime::now());
-            
+  
             // 检查所有任务的状态，决定作业的最终状态
             let all_succeeded = job_instance.tasks.iter()
                 .all(|task| matches!(task.status, TaskStatus::Succeeded | TaskStatus::Skipped));
-            
+  
             if all_succeeded {
                 job_instance.status = JobStatus::Succeeded;
             } else {
                 let failed_tasks: Vec<&Task> = job_instance.tasks.iter()
                     .filter(|task| matches!(task.status, TaskStatus::Failed(_)))
                     .collect();
-                
+  
                 if !failed_tasks.is_empty() {
                     let error_messages: Vec<String> = failed_tasks.iter()
                         .filter_map(|task| {
@@ -13124,12 +13149,12 @@ impl BatchProcessingFramework {
                             }
                         })
                         .collect();
-                    
+  
                     job_instance.status = JobStatus::Failed(error_messages.join("; "));
                 }
             }
         }
-        
+  
         // 构建作业结果
         let result = JobResult {
             task_results,
@@ -13137,45 +13162,45 @@ impl BatchProcessingFramework {
             output_locations: HashMap::new(), // 简化：实际应该包含输出位置
             metrics: HashMap::new(), // 简化：实际应该汇总指标
         };
-        
+  
         Ok(result)
     }
-    
+  
     fn get_ready_tasks(job: &Job) -> Vec<Task> {
         let mut ready_tasks = Vec::new();
-        
+  
         for task in &job.tasks {
             // 跳过已完成或正在运行的任务
             match task.status {
                 TaskStatus::Pending => {},
                 _ => continue,
             }
-            
+  
             // 检查依赖是否满足
             let dependencies_met = task.dependencies.iter().all(|dep_id| {
                 job.tasks.iter().any(|t| {
                     t.name == *dep_id && matches!(t.status, TaskStatus::Succeeded | TaskStatus::Skipped)
                 })
             });
-            
+  
             if dependencies_met {
                 ready_tasks.push(task.clone());
             }
         }
-        
+  
         ready_tasks
     }
-    
+  
     fn get_job_status(&self, instance_id: &str) -> Result<JobStatus, JobError> {
         let running_jobs = self.running_jobs.read().unwrap();
-        
+  
         running_jobs.get(instance_id).cloned().ok_or_else(|| JobError {
             message: format!("作业实例 '{}' 不存在", instance_id),
             error_type: JobErrorType::InvalidJob,
             task_id: None,
         })
     }
-    
+  
     fn get_job_details(&self, instance_id: &str) -> Result<Job, JobError> {
         // 简化：实际应该从存储中获取完整的作业详情
         Err(JobError {
@@ -13184,10 +13209,10 @@ impl BatchProcessingFramework {
             task_id: None,
         })
     }
-    
+  
     fn cancel_job(&self, instance_id: &str) -> Result<(), JobError> {
         let mut running_jobs = self.running_jobs.write().unwrap();
-        
+  
         if let Some(status) = running_jobs.get(instance_id) {
             match status {
                 JobStatus::Pending | JobStatus::Running | JobStatus::Paused => {
@@ -13210,10 +13235,10 @@ impl BatchProcessingFramework {
             })
         }
     }
-    
+  
     fn pause_job(&self, instance_id: &str) -> Result<(), JobError> {
         let mut running_jobs = self.running_jobs.write().unwrap();
-        
+  
         if let Some(status) = running_jobs.get(instance_id) {
             if let JobStatus::Running = status {
                 running_jobs.insert(instance_id.to_string(), JobStatus::Paused);
@@ -13233,10 +13258,10 @@ impl BatchProcessingFramework {
             })
         }
     }
-    
+  
     fn resume_job(&self, instance_id: &str) -> Result<(), JobError> {
         let mut running_jobs = self.running_jobs.write().unwrap();
-        
+  
         if let Some(status) = running_jobs.get(instance_id) {
             if let JobStatus::Paused = status {
                 running_jobs.insert(instance_id.to_string(), JobStatus::Running);
@@ -13256,12 +13281,12 @@ impl BatchProcessingFramework {
             })
         }
     }
-    
+  
     fn list_running_jobs(&self) -> HashMap<String, JobStatus> {
         let running_jobs = self.running_jobs.read().unwrap();
         running_jobs.clone()
     }
-    
+  
     fn list_job_definitions(&self) -> Vec<JobDefinition> {
         let registry = self.job_registry.read().unwrap();
         registry.values().cloned().collect()
@@ -13283,19 +13308,19 @@ impl SimpleTaskExecutor {
             resource_limits: HashMap::new(),
             features: HashSet::new(),
         };
-        
+  
         capabilities.resource_limits.insert("memory".to_string(), 1024);
         capabilities.resource_limits.insert("cpu".to_string(), 2);
-        
+  
         capabilities.features.insert("local".to_string());
-        
+  
         SimpleTaskExecutor {
             name: name.to_string(),
             capabilities,
             task_handlers: HashMap::new(),
         }
     }
-    
+  
     fn register_task_handler<F>(&mut self, task_type: &str, handler: F)
     where
         F: Fn(&Task) -> Result<TaskResult, JobError> + Send + Sync + 'static,
@@ -13308,10 +13333,10 @@ impl JobExecutor for SimpleTaskExecutor {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn execute(&self, job: &Job) -> Result<JobResult, JobError> {
         let mut task_results = HashMap::new();
-        
+  
         // 找出分配给此执行器的任务
         for task in &job.tasks {
             if let Some(executor) = &task.assigned_executor {
@@ -13331,7 +13356,7 @@ impl JobExecutor for SimpleTaskExecutor {
                 }
             }
         }
-        
+  
         // 构建作业结果
         let result = JobResult {
             task_results,
@@ -13339,14 +13364,14 @@ impl JobExecutor for SimpleTaskExecutor {
             output_locations: HashMap::new(),
             metrics: HashMap::new(),
         };
-        
+  
         Ok(result)
     }
-    
+  
     fn get_capabilities(&self) -> ExecutorCapabilities {
         self.capabilities.clone()
     }
-    
+  
     fn is_available(&self) -> bool {
         true // 简化：实际应该检查资源可用性
     }
@@ -13365,10 +13390,10 @@ impl JobScheduler for SimpleJobScheduler {
     fn name(&self) -> &str {
         "简单作业调度器"
     }
-    
+  
     fn schedule(&self, job: &Job, executors: &[Box<dyn JobExecutor>]) -> Result<Vec<TaskAssignment>, JobError> {
         let mut assignments = Vec::new();
-        
+  
         // 找出待执行的任务
         for task in &job.tasks {
             if matches!(task.status, TaskStatus::Pending) {
@@ -13378,11 +13403,11 @@ impl JobScheduler for SimpleJobScheduler {
                         t.name == *dep_id && matches!(t.status, TaskStatus::Succeeded | TaskStatus::Skipped)
                     })
                 });
-                
+  
                 if dependencies_met {
                     // 找一个合适的执行器
                     for executor in executors {
-                        if executor.is_available() && 
+                        if executor.is_available() &&
                            executor.get_capabilities().supported_job_types.contains(&job.definition.job_type) {
                             // 分配任务
                             assignments.push(TaskAssignment {
@@ -13390,17 +13415,17 @@ impl JobScheduler for SimpleJobScheduler {
                                 executor_name: executor.name().to_string(),
                                 priority: 1, // 简化：固定优先级
                             });
-                            
+  
                             break;
                         }
                     }
                 }
             }
         }
-        
+  
         Ok(assignments)
     }
-    
+  
     fn handle_failure(&self, job: &Job, task: &Task, executor: &dyn JobExecutor) -> Result<FailureAction, JobError> {
         // 简单的重试策略
         if task.retry_count < job.definition.retry_strategy.max_retries {
@@ -13411,6 +13436,7 @@ impl JobScheduler for SimpleJobScheduler {
         }
     }
 }
+
 ```
 
 ### 4.10 分布式状态机
@@ -13538,7 +13564,7 @@ impl DistributedStateMachine {
             event_handlers: HashMap::new(),
         }
     }
-    
+  
     fn register_state_definition(&self, definition: StateDefinition) -> Result<(), StateError> {
         // 验证状态机定义
         if definition.states.is_empty() {
@@ -13547,75 +13573,75 @@ impl DistributedStateMachine {
                 error_type: StateErrorType::InvalidState,
             });
         }
-        
+  
         if !definition.states.contains_key(&definition.initial_state) {
             return Err(StateError {
                 message: format!("初始状态 '{}' 未在状态列表中定义", definition.initial_state),
                 error_type: StateErrorType::InvalidState,
             });
         }
-        
+  
         // 注册状态机定义
         let mut registry = self.state_registry.write().unwrap();
-        
+  
         if registry.contains_key(&definition.id) {
             return Err(StateError {
                 message: format!("状态机定义 '{}' 已存在", definition.id),
                 error_type: StateErrorType::InvalidState,
             });
         }
-        
+  
         registry.insert(definition.id.clone(), definition);
-        
+  
         Ok(())
     }
-    
+  
     fn register_transition(&self, transition: TransitionDefinition) -> Result<(), StateError> {
         let registry = self.state_registry.read().unwrap();
-        
+  
         // 验证状态是否存在
         let mut valid_states = false;
-        
+  
         for definition in registry.values() {
-            if definition.states.contains_key(&transition.from_state) && 
+            if definition.states.contains_key(&transition.from_state) &&
                definition.states.contains_key(&transition.to_state) {
                 valid_states = true;
                 break;
             }
         }
-        
+  
         if !valid_states {
             return Err(StateError {
                 message: format!("无效的状态转换: {} -> {}", transition.from_state, transition.to_state),
                 error_type: StateErrorType::InvalidTransition,
             });
         }
-        
+  
         // 注册转换
         let mut transitions = self.transitions.write().unwrap();
-        
+  
         let transition_list = transitions
             .entry(transition.from_state.clone())
             .or_insert_with(Vec::new);
-        
+  
         transition_list.push(transition);
-        
+  
         Ok(())
     }
-    
+  
     fn create_instance(&self, definition_id: &str, context: HashMap<String, serde_json::Value>) -> Result<String, StateError> {
         let registry = self.state_registry.read().unwrap();
-        
+  
         // 获取状态机定义
         let definition = registry.get(definition_id).ok_or_else(|| StateError {
             message: format!("状态机定义 '{}' 不存在", definition_id),
             error_type: StateErrorType::InvalidState,
         })?;
-        
+  
         // 创建实例
         let instance_id = uuid::Uuid::new_v4().to_string();
         let now = SystemTime::now();
-        
+  
         let instance = StateInstance {
             id: instance_id.clone(),
             definition_id: definition_id.to_string(),
@@ -13627,57 +13653,57 @@ impl DistributedStateMachine {
             status: InstanceStatus::Active,
             metadata: HashMap::new(),
         };
-        
+  
         // 保存实例
         self.persistence.save_state(&instance)?;
-        
+  
         // 添加到活动实例列表
         let mut active_states = self.active_states.write().unwrap();
         active_states.insert(instance_id.clone(), instance);
-        
+  
         // 触发初始状态的动作
         self.execute_state_actions(definition_id, &instance_id, &definition.initial_state)?;
-        
+  
         Ok(instance_id)
     }
-    
+  
     fn trigger_event(&self, event: Event) -> Result<(), StateError> {
         // 查找实例
         let instance = {
             let active_states = self.active_states.read().unwrap();
-            
+  
             active_states.get(&event.instance_id).cloned().ok_or_else(|| StateError {
                 message: format!("实例 '{}' 不存在", event.instance_id),
                 error_type: StateErrorType::InvalidState,
             })?
         };
-        
+  
         // 处理事件
         self.process_event(&instance, &event)?;
-        
+  
         // 调用事件处理器
         if let Some(handlers) = self.event_handlers.get(&event.event_type) {
             for handler in handlers {
                 handler(&event)?;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn process_event(&self, instance: &StateInstance, event: &Event) -> Result<(), StateError> {
         // 获取可能的转换
         let transitions = {
             let transitions = self.transitions.read().unwrap();
-            
+  
             transitions.get(&instance.current_state)
                 .cloned()
                 .unwrap_or_default()
         };
-        
+  
         // 找到匹配的转换
         let mut matched_transition = None;
-        
+  
         for transition in transitions {
             // 检查条件
             if let Some(condition) = &transition.condition {
@@ -13685,22 +13711,22 @@ impl DistributedStateMachine {
                     continue;
                 }
             }
-            
+  
             matched_transition = Some(transition);
             break;
         }
-        
+  
         // 如果找到匹配的转换，执行转换
         if let Some(transition) = matched_transition {
             self.execute_transition(instance, &transition, event)?;
         }
-        
+  
         Ok(())
     }
-    
+  
     fn evaluate_condition(&self, condition: &Condition, instance: &StateInstance, event: &Event) -> Result<bool, StateError> {
         // 简化：实际应该根据条件类型实现不同的计算逻辑
-        
+  
         match condition.condition_type.as_str() {
             "event_type_equals" => {
                 if let Some(event_type) = condition.parameters.get("event_type") {
@@ -13730,18 +13756,18 @@ impl DistributedStateMachine {
             }
         }
     }
-    
+  
     fn execute_transition(&self, instance: &StateInstance, transition: &TransitionDefinition, event: &Event) -> Result<(), StateError> {
         // 执行转换的动作
         for action in &transition.actions {
             self.execute_action(action, instance, event)?;
         }
-        
+  
         // 创建新的实例状态
         let mut updated_instance = instance.clone();
         updated_instance.current_state = transition.to_state.clone();
         updated_instance.updated_at = SystemTime::now();
-        
+  
         // 添加转换历史
         updated_instance.history.push(StateTransition {
             from_state: instance.current_state.clone(),
@@ -13750,11 +13776,11 @@ impl DistributedStateMachine {
             timestamp: SystemTime::now(),
             data: Some(event.data.clone()),
         });
-        
+  
         // 检查是否是最终状态
         let is_final_state = {
             let registry = self.state_registry.read().unwrap();
-            
+  
             if let Some(definition) = registry.get(&instance.definition_id) {
                 if let Some(state) = definition.states.get(&transition.to_state) {
                     state.is_final
@@ -13765,34 +13791,34 @@ impl DistributedStateMachine {
                 false
             }
         };
-        
+  
         if is_final_state {
             updated_instance.status = InstanceStatus::Completed;
         }
-        
+  
         // 保存更新后的实例
         self.persistence.save_state(&updated_instance)?;
-        
+  
         // 更新活动实例
         {
             let mut active_states = self.active_states.write().unwrap();
-            
+  
             if is_final_state {
                 active_states.remove(&instance.id);
             } else {
                 active_states.insert(instance.id.clone(), updated_instance.clone());
             }
         }
-        
+  
         // 执行新状态的动作
         self.execute_state_actions(&instance.definition_id, &instance.id, &transition.to_state)?;
-        
+  
         Ok(())
     }
-    
+  
     fn execute_state_actions(&self, definition_id: &str, instance_id: &str, state_name: &str) -> Result<(), StateError> {
         let registry = self.state_registry.read().unwrap();
-        
+  
         if let Some(definition) = registry.get(definition_id) {
             if let Some(state) = definition.states.get(state_name) {
                 let instance = {
@@ -13802,7 +13828,7 @@ impl DistributedStateMachine {
                         error_type: StateErrorType::InvalidState,
                     })?
                 };
-                
+  
                 // 执行状态的动作
                 for action in &state.actions {
                     // 创建空事件
@@ -13814,15 +13840,15 @@ impl DistributedStateMachine {
                         timestamp: SystemTime::now(),
                         source: "system".to_string(),
                     };
-                    
+  
                     self.execute_action(action, &instance, &event)?;
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn execute_action(&self, action: &Action, instance: &StateInstance, event: &Event) -> Result<(), StateError> {
         // 简化：实际
 
@@ -14096,6 +14122,7 @@ impl StatePersistence for FileSystemStatePersistence {
         Ok(())
     }
 }
+
 ```
 
 ### 4.11 分布式配置和服务发现
@@ -15671,15 +15698,15 @@ impl LoadBalancer for RoundRobinLoadBalancer {
 () {
             return None;
         }
-        
+  
         let mut counter = self.counters.clone();
         let service_name = &instances[0].name;
         let current = *counter.get(service_name).unwrap_or(&0);
         let next = (current + 1) % instances.len();
-        
+  
         counter.insert(service_name.clone(), next);
         self.counters = counter;
-        
+  
         Some(instances[current].clone())
     }
 }
@@ -15700,15 +15727,15 @@ impl LoadBalancer for RandomLoadBalancer {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn select(&self, instances: &[ServiceInstance]) -> Option<ServiceInstance> {
         if instances.is_empty() {
             return None;
         }
-        
+  
         let mut rng = rand::thread_rng();
         let index = rng.gen_range(0..instances.len());
-        
+  
         Some(instances[index].clone())
     }
 }
@@ -15722,11 +15749,11 @@ impl ServiceDiscoveryClient {
             load_balancers: HashMap::new(),
         }
     }
-    
+  
     fn register_load_balancer(&mut self, service_name: &str, load_balancer: Box<dyn LoadBalancer>) {
         self.load_balancers.insert(service_name.to_string(), load_balancer);
     }
-    
+  
     fn discover_service(&mut self, service_name: &str) -> Result<Vec<ServiceInstance>, ServiceError> {
         match self.registry.get_service_from_provider(service_name, &self.provider) {
             Ok(instances) => {
@@ -15743,29 +15770,29 @@ impl ServiceDiscoveryClient {
             }
         }
     }
-    
+  
     fn select_service(&mut self, service_name: &str) -> Result<ServiceInstance, ServiceError> {
         // 发现服务实例
         let instances = self.discover_service(service_name)?;
-        
+  
         if instances.is_empty() {
             return Err(ServiceError {
                 message: format!("服务 '{}' 没有可用实例", service_name),
                 error_type: ServiceErrorType::ServiceNotFound,
             });
         }
-        
+  
         // 使用负载均衡器选择实例
         if let Some(lb) = self.load_balancers.get_mut(service_name) {
             if let Some(instance) = lb.select(&instances) {
                 return Ok(instance);
             }
         }
-        
+  
         // 默认使用第一个实例
         Ok(instances[0].clone())
     }
-    
+  
     fn watch_service(&self, service_name: &str, callback: Box<dyn Fn(&str, &Vec<ServiceInstance>) -> Result<(), ServiceError> + Send + Sync>) -> Result<WatchId, ServiceError> {
         self.registry.watch_with_provider(service_name, callback, &self.provider)
     }
@@ -15800,7 +15827,7 @@ impl ServiceGateway {
             client: reqwest::Client::new(),
         }
     }
-    
+  
     fn add_route(&mut self, path: &str, service_name: &str, strip_prefix: bool, timeout: Duration, retry_count: usize) {
         let route = RouteConfig {
             path: path.to_string(),
@@ -15809,32 +15836,32 @@ impl ServiceGateway {
             timeout,
             retry_count,
         };
-        
+  
         self.router.routes.insert(path.to_string(), route);
     }
-    
+  
     fn handle_request(&self, path: &str, method: &str, headers: HashMap<String, String>, body: Vec<u8>) -> Result<(u16, HashMap<String, String>, Vec<u8>), String> {
         // 查找路由
         let route = self.find_route(path).ok_or_else(|| format!("找不到路由: {}", path))?;
-        
+  
         // 发现服务
         let mut discovery_client = self.discovery_client.lock().unwrap();
         let service_instance = discovery_client.select_service(&route.service_name)
             .map_err(|err| format!("选择服务实例失败: {}", err.message))?;
-        
+  
         // 构建目标URL
         let target_path = if route.strip_prefix {
             path.strip_prefix(&route.path).unwrap_or(path)
         } else {
             path
         };
-        
+  
         let target_url = format!("http://{}:{}{}", service_instance.address, service_instance.port, target_path);
-        
+  
         // 发送请求
         let mut retry_count = 0;
         let max_retries = route.retry_count;
-        
+  
         loop {
             match self.forward_request(&target_url, method, &headers, &body) {
                 Ok(response) => return Ok(response),
@@ -15842,21 +15869,21 @@ impl ServiceGateway {
                     if retry_count >= max_retries {
                         return Err(format!("转发请求失败: {}", err));
                     }
-                    
+  
                     retry_count += 1;
                     std::thread::sleep(Duration::from_millis(100 * 2u64.pow(retry_count as u32)));
                 }
             }
         }
     }
-    
+  
     fn find_route(&self, path: &str) -> Option<&RouteConfig> {
         self.router.routes.iter()
             .filter(|(route_path, _)| path.starts_with(*route_path))
             .max_by_key(|(route_path, _)| route_path.len())
             .map(|(_, route)| route)
     }
-    
+  
     fn forward_request(&self, url: &str, method: &str, headers: &HashMap<String, String>, body: &[u8]) -> Result<(u16, HashMap<String, String>, Vec<u8>), reqwest::Error> {
         let mut request_builder = match method {
             "GET" => self.client.get(url),
@@ -15867,25 +15894,25 @@ impl ServiceGateway {
             "HEAD" => self.client.head(url),
             _ => self.client.get(url),
         };
-        
+  
         for (key, value) in headers {
             request_builder = request_builder.header(key, value);
         }
-        
+  
         if !body.is_empty() {
             request_builder = request_builder.body(body.to_vec());
         }
-        
+  
         let response = request_builder.send()?;
-        
+  
         let status = response.status().as_u16();
-        
+  
         let response_headers = response.headers().iter()
             .map(|(name, value)| (name.to_string(), value.to_str().unwrap_or("").to_string()))
             .collect();
-        
+  
         let response_body = response.bytes()?.to_vec();
-        
+  
         Ok((status, response_headers, response_body))
     }
 }
@@ -15906,7 +15933,7 @@ impl ApplicationConfig {
         application_id: &str
     ) -> Self {
         let discovery_client = ServiceDiscoveryClient::new(service_registry.clone(), "default");
-        
+  
         ApplicationConfig {
             config_system,
             service_registry,
@@ -15915,15 +15942,15 @@ impl ApplicationConfig {
             application_id: application_id.to_string(),
         }
     }
-    
+  
     fn register_service(&mut self, service_name: &str, port: u16) -> Result<(), String> {
         let hostname = hostname::get()
             .map_err(|e| format!("获取主机名失败: {}", e))?
             .to_string_lossy()
             .to_string();
-        
+  
         let id = format!("{}-{}-{}", service_name, hostname, port);
-        
+  
         let service = ServiceRegistration {
             id,
             name: service_name.to_string(),
@@ -15943,24 +15970,24 @@ impl ApplicationConfig {
             }),
             ttl: None,
         };
-        
+  
         let mut service_client = ServiceRegistrationClient::new(
             self.service_registry.clone(),
             "default",
             Duration::from_secs(5)
         );
-        
+  
         service_client.register_service(service)
             .map_err(|e| format!("注册服务失败: {}", e.message))?;
-        
+  
         service_client.start_heartbeat()
             .map_err(|e| format!("启动心跳失败: {}", e))?;
-        
+  
         self.service_client = Some(service_client);
-        
+  
         Ok(())
     }
-    
+  
     fn get_config<T: serde::de::DeserializeOwned>(&self, key: &str) -> Result<T, String> {
         match self.config_system.get(key) {
             Ok(value) => {
@@ -15970,7 +15997,7 @@ impl ApplicationConfig {
             Err(err) => Err(format!("获取配置失败: {}", err.message)),
         }
     }
-    
+  
     fn get_service_url(&mut self, service_name: &str) -> Result<String, String> {
         match self.discovery_client.select_service(service_name) {
             Ok(instance) => {
@@ -15979,7 +16006,7 @@ impl ApplicationConfig {
             Err(err) => Err(format!("发现服务失败: {}", err.message)),
         }
     }
-    
+  
     fn watch_config<F>(&self, key: &str, callback: F) -> Result<WatchId, String>
     where
         F: Fn(&str, &serde_json::Value) -> Result<(), String> + Send + Sync + 'static,
@@ -15990,23 +16017,24 @@ impl ApplicationConfig {
                 error_type: ConfigErrorType::InternalError,
             })
         });
-        
+  
         self.config_system.watch(key, wrapped_callback)
             .map_err(|e| format!("监视配置失败: {}", e.message))
     }
-    
+  
     fn shutdown(&self) -> Result<(), String> {
         if let Some(client) = &self.service_client {
             client.stop_heartbeat();
             client.deregister_all().map_err(|e| format!("注销服务失败: {}", e.message))?;
         }
-        
+  
         self.config_system.stop();
         self.service_registry.stop();
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ### 4.12 分布式缓存系统
@@ -16066,128 +16094,128 @@ impl DistributedCacheSystem {
             default_provider: default_provider.to_string(),
         }
     }
-    
+  
     fn register_provider(&mut self, provider: Box<dyn CacheProvider>) -> Result<(), String> {
         let name = provider.name().to_string();
-        
+  
         if self.providers.contains_key(&name) {
             return Err(format!("缓存提供器 '{}' 已经注册", name));
         }
-        
+  
         self.providers.insert(name, provider);
         Ok(())
     }
-    
+  
     fn set_default_provider(&mut self, provider_name: &str) -> Result<(), String> {
         if !self.providers.contains_key(provider_name) {
             return Err(format!("缓存提供器 '{}' 未注册", provider_name));
         }
-        
+  
         self.default_provider = provider_name.to_string();
         Ok(())
     }
-    
+  
     fn get(&self, key: &str) -> Result<Option<CacheEntry>, CacheError> {
         self.get_from_provider(key, &self.default_provider)
     }
-    
+  
     fn get_from_provider(&self, key: &str, provider_name: &str) -> Result<Option<CacheEntry>, CacheError> {
         let provider = self.providers.get(provider_name).ok_or_else(|| CacheError {
             message: format!("缓存提供器 '{}' 未注册", provider_name),
             error_type: CacheErrorType::InternalError,
         })?;
-        
+  
         provider.get(key)
     }
-    
+  
     fn set(&self, key: &str, value: &[u8], ttl: Option<Duration>) -> Result<(), CacheError> {
         self.set_with_provider(key, value, ttl, &self.default_provider)
     }
-    
+  
     fn set_with_provider(&self, key: &str, value: &[u8], ttl: Option<Duration>, provider_name: &str) -> Result<(), CacheError> {
         let provider = self.providers.get(provider_name).ok_or_else(|| CacheError {
             message: format!("缓存提供器 '{}' 未注册", provider_name),
             error_type: CacheErrorType::InternalError,
         })?;
-        
+  
         provider.set(key, value, ttl)
     }
-    
+  
     fn delete(&self, key: &str) -> Result<bool, CacheError> {
         self.delete_from_provider(key, &self.default_provider)
     }
-    
+  
     fn delete_from_provider(&self, key: &str, provider_name: &str) -> Result<bool, CacheError> {
         let provider = self.providers.get(provider_name).ok_or_else(|| CacheError {
             message: format!("缓存提供器 '{}' 未注册", provider_name),
             error_type: CacheErrorType::InternalError,
         })?;
-        
+  
         provider.delete(key)
     }
-    
+  
     fn exists(&self, key: &str) -> Result<bool, CacheError> {
         self.exists_in_provider(key, &self.default_provider)
     }
-    
+  
     fn exists_in_provider(&self, key: &str, provider_name: &str) -> Result<bool, CacheError> {
         let provider = self.providers.get(provider_name).ok_or_else(|| CacheError {
             message: format!("缓存提供器 '{}' 未注册", provider_name),
             error_type: CacheErrorType::InternalError,
         })?;
-        
+  
         provider.exists(key)
     }
-    
+  
     fn increment(&self, key: &str, amount: i64) -> Result<i64, CacheError> {
         self.increment_in_provider(key, amount, &self.default_provider)
     }
-    
+  
     fn increment_in_provider(&self, key: &str, amount: i64, provider_name: &str) -> Result<i64, CacheError> {
         let provider = self.providers.get(provider_name).ok_or_else(|| CacheError {
             message: format!("缓存提供器 '{}' 未注册", provider_name),
             error_type: CacheErrorType::InternalError,
         })?;
-        
+  
         provider.increment(key, amount)
     }
-    
+  
     fn expire(&self, key: &str, ttl: Duration) -> Result<bool, CacheError> {
         self.expire_in_provider(key, ttl, &self.default_provider)
     }
-    
+  
     fn expire_in_provider(&self, key: &str, ttl: Duration, provider_name: &str) -> Result<bool, CacheError> {
         let provider = self.providers.get(provider_name).ok_or_else(|| CacheError {
             message: format!("缓存提供器 '{}' 未注册", provider_name),
             error_type: CacheErrorType::InternalError,
         })?;
-        
+  
         provider.expire(key, ttl)
     }
-    
+  
     fn flush_all(&self) -> Result<(), CacheError> {
         self.flush_all_in_provider(&self.default_provider)
     }
-    
+  
     fn flush_all_in_provider(&self, provider_name: &str) -> Result<(), CacheError> {
         let provider = self.providers.get(provider_name).ok_or_else(|| CacheError {
             message: format!("缓存提供器 '{}' 未注册", provider_name),
             error_type: CacheErrorType::InternalError,
         })?;
-        
+  
         provider.flush_all()
     }
-    
+  
     fn get_stats(&self) -> Result<CacheStats, CacheError> {
         self.get_stats_from_provider(&self.default_provider)
     }
-    
+  
     fn get_stats_from_provider(&self, provider_name: &str) -> Result<CacheStats, CacheError> {
         let provider = self.providers.get(provider_name).ok_or_else(|| CacheError {
             message: format!("缓存提供器 '{}' 未注册", provider_name),
             error_type: CacheErrorType::InternalError,
         })?;
-        
+  
         provider.get_stats()
     }
 }
@@ -16203,7 +16231,7 @@ struct RedisCacheProvider {
 impl RedisCacheProvider {
     fn new(redis_url: &str, name: &str) -> Result<Self, redis::RedisError> {
         let client = redis::Client::open(redis_url)?;
-        
+  
         Ok(RedisCacheProvider {
             client,
             name: name.to_string(),
@@ -16223,7 +16251,7 @@ impl CacheProvider for RedisCacheProvider {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn get(&self, key: &str) -> Result<Option<CacheEntry>, CacheError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -16234,7 +16262,7 @@ impl CacheProvider for RedisCacheProvider {
                 });
             }
         };
-        
+  
         // 获取值
         let value: Option<Vec<u8>> = redis::cmd("GET")
             .arg(key)
@@ -16243,14 +16271,14 @@ impl CacheProvider for RedisCacheProvider {
                 message: format!("Redis GET操作失败: {}", err),
                 error_type: CacheErrorType::OperationFailed,
             })?;
-        
+  
         if let Some(value) = value {
             // 更新统计信息
             {
                 let mut stats = self.stats.lock().unwrap();
                 stats.hits += 1;
             }
-            
+  
             // 获取TTL
             let ttl_seconds: isize = redis::cmd("TTL")
                 .arg(key)
@@ -16259,13 +16287,13 @@ impl CacheProvider for RedisCacheProvider {
                     message: format!("Redis TTL操作失败: {}", err),
                     error_type: CacheErrorType::OperationFailed,
                 })?;
-            
+  
             let ttl = if ttl_seconds > 0 {
                 Some(Duration::from_secs(ttl_seconds as u64))
             } else {
                 None
             };
-            
+  
             Ok(Some(CacheEntry {
                 value,
                 ttl,
@@ -16278,11 +16306,11 @@ impl CacheProvider for RedisCacheProvider {
                 let mut stats = self.stats.lock().unwrap();
                 stats.misses += 1;
             }
-            
+  
             Ok(None)
         }
     }
-    
+  
     fn set(&self, key: &str, value: &[u8], ttl: Option<Duration>) -> Result<(), CacheError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -16293,11 +16321,11 @@ impl CacheProvider for RedisCacheProvider {
                 });
             }
         };
-        
+  
         if let Some(ttl) = ttl {
             // 设置带有过期时间的键
             let ttl_seconds = ttl.as_secs() as usize;
-            
+  
             let _: () = redis::cmd("SETEX")
                 .arg(key)
                 .arg(ttl_seconds)
@@ -16318,10 +16346,10 @@ impl CacheProvider for RedisCacheProvider {
                     error_type: CacheErrorType::OperationFailed,
                 })?;
         }
-        
+  
         Ok(())
     }
-    
+  
     fn delete(&self, key: &str) -> Result<bool, CacheError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -16332,7 +16360,7 @@ impl CacheProvider for RedisCacheProvider {
                 });
             }
         };
-        
+  
         // 删除键
         let deleted: isize = redis::cmd("DEL")
             .arg(key)
@@ -16341,10 +16369,10 @@ impl CacheProvider for RedisCacheProvider {
                 message: format!("Redis DEL操作失败: {}", err),
                 error_type: CacheErrorType::OperationFailed,
             })?;
-        
+  
         Ok(deleted > 0)
     }
-    
+  
     fn exists(&self, key: &str) -> Result<bool, CacheError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -16355,7 +16383,7 @@ impl CacheProvider for RedisCacheProvider {
                 });
             }
         };
-        
+  
         // 检查键是否存在
         let exists: bool = redis::cmd("EXISTS")
             .arg(key)
@@ -16364,10 +16392,10 @@ impl CacheProvider for RedisCacheProvider {
                 message: format!("Redis EXISTS操作失败: {}", err),
                 error_type: CacheErrorType::OperationFailed,
             })?;
-        
+  
         Ok(exists)
     }
-    
+  
     fn increment(&self, key: &str, amount: i64) -> Result<i64, CacheError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -16378,7 +16406,7 @@ impl CacheProvider for RedisCacheProvider {
                 });
             }
         };
-        
+  
         // 递增键
         let new_value: i64 = redis::cmd("INCRBY")
             .arg(key)
@@ -16388,10 +16416,10 @@ impl CacheProvider for RedisCacheProvider {
                 message: format!("Redis INCRBY操作失败: {}", err),
                 error_type: CacheErrorType::OperationFailed,
             })?;
-        
+  
         Ok(new_value)
     }
-    
+  
     fn expire(&self, key: &str, ttl: Duration) -> Result<bool, CacheError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -16402,10 +16430,10 @@ impl CacheProvider for RedisCacheProvider {
                 });
             }
         };
-        
+  
         // 设置过期时间
         let ttl_seconds = ttl.as_secs() as usize;
-        
+  
         let success: bool = redis::cmd("EXPIRE")
             .arg(key)
             .arg(ttl_seconds)
@@ -16414,10 +16442,10 @@ impl CacheProvider for RedisCacheProvider {
                 message: format!("Redis EXPIRE操作失败: {}", err),
                 error_type: CacheErrorType::OperationFailed,
             })?;
-        
+  
         Ok(success)
     }
-    
+  
     fn flush_all(&self) -> Result<(), CacheError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -16428,7 +16456,7 @@ impl CacheProvider for RedisCacheProvider {
                 });
             }
         };
-        
+  
         // 清空数据库
         let _: () = redis::cmd("FLUSHDB")
             .query(&mut conn)
@@ -16436,10 +16464,10 @@ impl CacheProvider for RedisCacheProvider {
                 message: format!("Redis FLUSHDB操作失败: {}", err),
                 error_type: CacheErrorType::OperationFailed,
             })?;
-        
+  
         Ok(())
     }
-    
+  
     fn get_stats(&self) -> Result<CacheStats, CacheError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -16450,7 +16478,7 @@ impl CacheProvider for RedisCacheProvider {
                 });
             }
         };
-        
+  
         // 获取键数量
         let keys: usize = redis::cmd("DBSIZE")
             .query(&mut conn)
@@ -16458,7 +16486,7 @@ impl CacheProvider for RedisCacheProvider {
                 message: format!("Redis DBSIZE操作失败: {}", err),
                 error_type: CacheErrorType::OperationFailed,
             })?;
-        
+  
         // 获取内存使用情况
         let info: HashMap<String, String> = redis::cmd("INFO")
             .arg("memory")
@@ -16467,16 +16495,16 @@ impl CacheProvider for RedisCacheProvider {
                 message: format!("Redis INFO操作失败: {}", err),
                 error_type: CacheErrorType::OperationFailed,
             })?;
-        
+  
         let memory_usage = info.get("used_memory")
             .and_then(|s| s.parse::<u64>().ok())
             .unwrap_or(0);
-        
+  
         let mut stats = self.stats.lock().unwrap();
         stats.keys = keys as u64;
         stats.memory_usage = memory_usage;
         stats.uptime = self.start_time.elapsed();
-        
+  
         Ok(stats.clone())
     }
 }
@@ -16504,11 +16532,11 @@ impl InMemoryCacheProvider {
             start_time: Instant::now(),
         }
     }
-    
+  
     fn cleanup_expired_keys(&self) {
         let mut cache = self.cache.write().unwrap();
         let now = SystemTime::now();
-        
+  
         // 移除所有过期的键
         cache.retain(|_, entry| {
             if let Some(ttl) = entry.ttl {
@@ -16528,24 +16556,24 @@ impl CacheProvider for InMemoryCacheProvider {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn get(&self, key: &str) -> Result<Option<CacheEntry>, CacheError> {
         // 清理过期的键
         self.cleanup_expired_keys();
-        
+  
         let cache = self.cache.read().unwrap();
-        
+  
         if let Some(entry) = cache.get(key) {
             // 更新统计信息
             {
                 let mut stats = self.stats.lock().unwrap();
                 stats.hits += 1;
             }
-            
+  
             // 创建一个新的条目，更新最后访问时间
             let mut updated_entry = entry.clone();
             updated_entry.last_accessed = SystemTime::now();
-            
+  
             Ok(Some(updated_entry))
         } else {
             // 更新统计信息
@@ -16553,36 +16581,36 @@ impl CacheProvider for InMemoryCacheProvider {
                 let mut stats = self.stats.lock().unwrap();
                 stats.misses += 1;
             }
-            
+  
             Ok(None)
         }
     }
-    
+  
     fn set(&self, key: &str, value: &[u8], ttl: Option<Duration>) -> Result<(), CacheError> {
         let mut cache = self.cache.write().unwrap();
-        
+  
         let entry = CacheEntry {
             value: value.to_vec(),
             ttl,
             created_at: SystemTime::now(),
             last_accessed: SystemTime::now(),
         };
-        
+  
         cache.insert(key.to_string(), entry);
-        
+  
         // 更新统计信息
         {
             let mut stats = self.stats.lock().unwrap();
             stats.keys = cache.len() as u64;
             stats.memory_usage += value.len() as u64;
         }
-        
+  
         Ok(())
     }
-    
+  
     fn delete(&self, key: &str) -> Result<bool, CacheError> {
         let mut cache = self.cache.write().unwrap();
-        
+  
         if let Some(entry) = cache.remove(key) {
             // 更新统计信息
             {
@@ -16590,30 +16618,30 @@ impl CacheProvider for InMemoryCacheProvider {
                 stats.keys = cache.len() as u64;
                 stats.memory_usage = stats.memory_usage.saturating_sub(entry.value.len() as u64);
             }
-            
+  
             Ok(true)
         } else {
             Ok(false)
         }
     }
-    
+  
     fn exists(&self, key: &str) -> Result<bool, CacheError> {
         // 清理过期的键
         self.cleanup_expired_keys();
-        
+  
         let cache = self.cache.read().unwrap();
         Ok(cache.contains_key(key))
     }
-    
+  
     fn increment(&self, key: &str, amount: i64) -> Result<i64, CacheError> {
         let mut cache = self.cache.write().unwrap();
-        
+  
         let current_value = if let Some(entry) = cache.get(key) {
             let value_str = String::from_utf8(entry.value.clone()).map_err(|err| CacheError {
                 message: format!("无法解析整数值: {}", err),
                 error_type: CacheErrorType::SerializationError,
             })?;
-            
+  
             value_str.parse::<i64>().map_err(|err| CacheError {
                 message: format!("无法解析整数值: {}", err),
                 error_type: CacheErrorType::SerializationError,
@@ -16621,25 +16649,25 @@ impl CacheProvider for InMemoryCacheProvider {
         } else {
             0
         };
-        
+  
         let new_value = current_value + amount;
         let new_value_bytes = new_value.to_string().into_bytes();
-        
+  
         let entry = CacheEntry {
             value: new_value_bytes,
             ttl: cache.get(key).and_then(|e| e.ttl),
             created_at: SystemTime::now(),
             last_accessed: SystemTime::now(),
         };
-        
+  
         cache.insert(key.to_string(), entry);
-        
+  
         Ok(new_value)
     }
-    
+  
     fn expire(&self, key: &str, ttl: Duration) -> Result<bool, CacheError> {
         let mut cache = self.cache.write().unwrap();
-        
+  
         if let Some(entry) = cache.get_mut(key) {
             entry.ttl = Some(ttl);
             entry.created_at = SystemTime::now(); // 重置创建时间
@@ -16648,28 +16676,28 @@ impl CacheProvider for InMemoryCacheProvider {
             Ok(false)
         }
     }
-    
+  
     fn flush_all(&self) -> Result<(), CacheError> {
         let mut cache = self.cache.write().unwrap();
         cache.clear();
-        
+  
         // 更新统计信息
         {
             let mut stats = self.stats.lock().unwrap();
             stats.keys = 0;
             stats.memory_usage = 0;
         }
-        
+  
         Ok(())
     }
-    
+  
     fn get_stats(&self) -> Result<CacheStats, CacheError> {
         let cache = self.cache.read().unwrap();
-        
+  
         let mut stats = self.stats.lock().unwrap();
         stats.keys = cache.len() as u64;
         stats.uptime = self.start_time.elapsed();
-        
+  
         Ok(stats.clone())
     }
 }
@@ -16697,7 +16725,7 @@ impl CacheProvider for TwoLevelCacheProvider {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn get(&self, key: &str) -> Result<Option<CacheEntry>, CacheError> {
         // 首先从本地缓存获取
         match self.local_cache.get(key) {
@@ -16725,72 +16753,72 @@ impl CacheProvider for TwoLevelCacheProvider {
             }
         }
     }
-    
+  
     fn set(&self, key: &str, value: &[u8], ttl: Option<Duration>) -> Result<(), CacheError> {
         // 同时设置远程和本地缓存
         self.remote_cache.set(key, value, ttl)?;
-        
+  
         // 本地缓存可能使用更短的TTL
         let local_ttl = if let Some(ttl) = ttl {
             Some(std::cmp::min(ttl, self.local_ttl))
         } else {
             Some(self.local_ttl)
         };
-        
+  
         self.local_cache.set(key, value, local_ttl)?;
-        
+  
         Ok(())
     }
-    
+  
     fn delete(&self, key: &str) -> Result<bool, CacheError> {
         // 先删除远程缓存
         let remote_result = self.remote_cache.delete(key)?;
-        
+  
         // 然后删除本地缓存
         let _ = self.local_cache.delete(key);
-        
+  
         Ok(remote_result)
     }
-    
+  
     fn exists(&self, key: &str) -> Result<bool, CacheError> {
         // 首先检查本地缓存
         if self.local_cache.exists(key)? {
             return Ok(true);
         }
-        
+  
         // 如果本地缓存没有，检查远程缓存
         self.remote_cache.exists(key)
     }
-    
+  
     fn increment(&self, key: &str, amount: i64) -> Result<i64, CacheError> {
         // 在远程缓存上执行递增操作
         let new_value = self.remote_cache.increment(key, amount)?;
-        
+  
         // 更新本地缓存
         let _ = self.local_cache.set(key, new_value.to_string().as_bytes(), Some(self.local_ttl));
-        
+  
         Ok(new_value)
     }
-    
+  
     fn expire(&self, key: &str, ttl: Duration) -> Result<bool, CacheError> {
         // 设置远程缓存的过期时间
         let result = self.remote_cache.expire(key, ttl)?;
-        
+  
         // 同时设置本地缓存的过期时间
         let local_ttl = std::cmp::min(ttl, self.local_ttl);
         let _ = self.local_cache.expire(key, local_ttl);
-        
+  
         Ok(result)
     }
-    
+  
     fn flush_all(&self) -> Result<(), CacheError> {
         // 清空远程和本地缓存
         self.remote_cache.flush_all()?;
         self.local_cache.flush_all()?;
-        
+  
         Ok(())
     }
-    
+  
     fn get_stats(&self) -> Result<CacheStats, CacheError> {
         // 只返回远程缓存的统计信息
         self.remote_cache.get_stats()
@@ -16807,14 +16835,14 @@ impl CacheUtils {
             error_type: CacheErrorType::SerializationError,
         })
     }
-    
+  
     fn deserialize<T: serde::de::DeserializeOwned>(data: &[u8]) -> Result<T, CacheError> {
         bincode::deserialize(data).map_err(|err| CacheError {
             message: format!("反序列化失败: {}", err),
             error_type: CacheErrorType::SerializationError,
         })
     }
-    
+  
     fn get_or_compute<T, F>(
         cache: &DistributedCacheSystem,
         key: &str,
@@ -16829,27 +16857,27 @@ impl CacheUtils {
         if let Some(entry) = cache.get(key)? {
             return Self::deserialize(&entry.value);
         }
-        
+  
         // 如果缓存中没有，计算值
         let value = compute_fn()?;
-        
+  
         // 序列化并存储在缓存中
         let serialized = Self::serialize(&value)?;
         cache.set(key, &serialized, ttl)?;
-        
+  
         Ok(value)
     }
-    
+  
     fn invalidate_by_prefix(cache: &DistributedCacheSystem, prefix: &str) -> Result<usize, CacheError> {
         // 这个函数在实际实现中需要依赖缓存提供器支持按前缀搜索键
         // 简化版：默认返回0，表示没有键被删除
         Ok(0)
     }
-    
+  
     fn atomic_increment_and_get(cache: &DistributedCacheSystem, key: &str, amount: i64) -> Result<i64, CacheError> {
         cache.increment(key, amount)
     }
-    
+  
     fn memoize<F, R, E>(
         cache: &DistributedCacheSystem,
         key_prefix: &str,
@@ -16864,7 +16892,7 @@ impl CacheUtils {
     {
         // 构建缓存键
         let key = format!("{}:{}", key_prefix, args.join(":"));
-        
+  
         // 尝试从缓存获取
         match cache.get(&key) {
             Ok(Some(entry)) => {
@@ -16880,7 +16908,7 @@ impl CacheUtils {
             _ => {
                 // 执行函数
                 let result = function()?;
-                
+  
                 // 序列化并缓存结果
                 match Self::serialize(&result) {
                     Ok(serialized) => {
@@ -16890,7 +16918,7 @@ impl CacheUtils {
                         return Err(err.into());
                     }
                 }
-                
+  
                 Ok(result)
             }
         }
@@ -16916,10 +16944,10 @@ impl DistributedCacheManager {
             default_ttl,
         }
     }
-    
+  
     fn get<T: serde::de::DeserializeOwned>(&self, key: &str) -> Result<Option<T>, CacheError> {
         let provider = (self.cache_resolver)(key);
-        
+  
         match self.cache_system.get_from_provider(key, &provider)? {
             Some(entry) => {
                 let value = CacheUtils::deserialize(&entry.value)?;
@@ -16928,19 +16956,19 @@ impl DistributedCacheManager {
             None => Ok(None),
         }
     }
-    
+  
     fn set<T: serde::Serialize>(&self, key: &str, value: &T, ttl: Option<Duration>) -> Result<(), CacheError> {
         let provider = (self.cache_resolver)(key);
         let serialized = CacheUtils::serialize(value)?;
-        
+  
         self.cache_system.set_with_provider(key, &serialized, ttl.or(Some(self.default_ttl)), &provider)
     }
-    
+  
     fn delete(&self, key: &str) -> Result<bool, CacheError> {
         let provider = (self.cache_resolver)(key);
         self.cache_system.delete_from_provider(key, &provider)
     }
-    
+  
     fn get_or_compute<T, F>(&self, key: &str, compute_fn: F) -> Result<T, CacheError>
     where
         T: serde::de::DeserializeOwned + serde::Serialize,
@@ -16948,12 +16976,12 @@ impl DistributedCacheManager {
     {
         CacheUtils::get_or_compute(&self.cache_system, key, Some(self.default_ttl), compute_fn)
     }
-    
+  
     fn increment(&self, key: &str, amount: i64) -> Result<i64, CacheError> {
         let provider = (self.cache_resolver)(key);
         self.cache_system.increment_in_provider(key, amount, &provider)
     }
-    
+  
     fn flush_all(&self) -> Result<(), CacheError> {
         self.cache_system.flush_all()
     }
@@ -16972,7 +17000,7 @@ impl DbQueryCache {
             query_timeout,
         }
     }
-    
+  
     fn get_query_result<T: serde::de::DeserializeOwned + serde::Serialize>(
         &self,
         query: &str,
@@ -16982,7 +17010,7 @@ impl DbQueryCache {
         // 创建查询缓存键
         let params_str = params.join(":");
         let key = format!("db:query:{}:{}", query, params_str);
-        
+  
         // 尝试从缓存获取
         match self.cache_manager.get::<T>(&key) {
             Ok(Some(result)) => {
@@ -16991,12 +17019,12 @@ impl DbQueryCache {
             Ok(None) => {
                 // 缓存未命中，执行查询
                 let result = executor()?;
-                
+  
                 // 缓存结果
                 if let Err(err) = self.cache_manager.set(&key, &result, Some(self.query_timeout)) {
                     println!("缓存查询结果失败: {}", err.message);
                 }
-                
+  
                 Ok(result)
             },
             Err(err) => {
@@ -17006,21 +17034,21 @@ impl DbQueryCache {
             }
         }
     }
-    
+  
     fn invalidate_query(&self, query: &str) -> Result<(), String> {
         let key_prefix = format!("db:query:{}", query);
-        
+  
         match CacheUtils::invalidate_by_prefix(&self.cache_manager.cache_system, &key_prefix) {
             Ok(_) => Ok(()),
             Err(err) => Err(format!("无效化查询缓存失败: {}", err.message)),
         }
     }
-    
+  
     fn invalidate_table(&self, table: &str) -> Result<(), String> {
         // 在实际实现中，这需要一个将表名映射到相关查询的机制
         // 简化版：假设我们直接存储了表相关的查询缓存键
         let key_prefix = format!("db:table:{}", table);
-        
+  
         match CacheUtils::invalidate_by_prefix(&self.cache_manager.cache_system, &key_prefix) {
             Ok(_) => Ok(()),
             Err(err) => Err(format!("无效化表缓存失败: {}", err.message)),
@@ -17048,63 +17076,63 @@ impl WebResponseCache {
             default_cache_time,
         }
     }
-    
+  
     fn get_cached_response(&self, request_key: &str) -> Result<Option<CachedResponse>, String> {
         match self.cache_manager.get::<CachedResponse>(request_key) {
             Ok(response) => Ok(response),
             Err(err) => Err(format!("获取缓存响应失败: {}", err.message)),
         }
     }
-    
+  
     fn cache_response(&self, request_key: &str, response: CachedResponse, ttl: Option<Duration>) -> Result<(), String> {
         let cache_time = ttl.unwrap_or(self.default_cache_time);
-        
+  
         match self.cache_manager.set(request_key, &response, Some(cache_time)) {
             Ok(_) => Ok(()),
             Err(err) => Err(format!("缓存响应失败: {}", err.message)),
         }
     }
-    
+  
     fn invalidate_response(&self, request_key: &str) -> Result<(), String> {
         match self.cache_manager.delete(request_key) {
             Ok(_) => Ok(()),
             Err(err) => Err(format!("无效化缓存响应失败: {}", err.message)),
         }
     }
-    
+  
     fn invalidate_by_pattern(&self, pattern: &str) -> Result<(), String> {
         match CacheUtils::invalidate_by_prefix(&self.cache_manager.cache_system, pattern) {
             Ok(_) => Ok(()),
             Err(err) => Err(format!("无效化缓存模式失败: {}", err.message)),
         }
     }
-    
+  
     fn generate_cache_key(&self, method: &str, url: &str, query_params: &HashMap<String, String>, headers: &[(&str, &str)]) -> String {
         // 排序查询参数以确保一致性
         let mut sorted_params: Vec<(&String, &String)> = query_params.iter().collect();
         sorted_params.sort_by(|a, b| a.0.cmp(b.0));
-        
+  
         let param_str = sorted_params.iter()
             .map(|(k, v)| format!("{}={}", k, v))
             .collect::<Vec<_>>()
             .join("&");
-        
+  
         // 添加相关的头信息（例如接受语言）
         let relevant_headers: Vec<String> = headers.iter()
-            .filter(|(name, _)| 
-                *name == "accept-language" || 
-                *name == "user-agent" || 
+            .filter(|(name, _)|
+                *name == "accept-language" ||
+                *name == "user-agent" ||
                 *name == "accept"
             )
             .map(|(name, value)| format!("{}:{}", name, value))
             .collect();
-        
+  
         let header_str = if !relevant_headers.is_empty() {
             format!("|{}", relevant_headers.join("|"))
         } else {
             "".to_string()
         };
-        
+  
         format!("web:{}:{}:{}:{}", method, url, param_str, header_str)
     }
 }
@@ -17130,19 +17158,19 @@ impl SessionCache {
             session_timeout,
         }
     }
-    
+  
     fn get_session(&self, session_id: &str) -> Result<Option<SessionData>, String> {
         let key = format!("session:{}", session_id);
-        
+  
         match self.cache_manager.get::<SessionData>(&key) {
             Ok(session) => Ok(session),
             Err(err) => Err(format!("获取会话失败: {}", err.message)),
         }
     }
-    
+  
     fn create_session(&self, user_id: Option<String>) -> Result<SessionData, String> {
         let session_id = uuid::Uuid::new_v4().to_string();
-        
+  
         let session = SessionData {
             id: session_id.clone(),
             user_id,
@@ -17150,36 +17178,36 @@ impl SessionCache {
             created_at: SystemTime::now(),
             last_accessed: SystemTime::now(),
         };
-        
+  
         let key = format!("session:{}", session_id);
-        
+  
         match self.cache_manager.set(&key, &session, Some(self.session_timeout)) {
             Ok(_) => Ok(session),
             Err(err) => Err(format!("创建会话失败: {}", err.message)),
         }
     }
-    
+  
     fn update_session(&self, session: &SessionData) -> Result<(), String> {
         let key = format!("session:{}", session.id);
-        
+  
         let mut updated_session = session.clone();
         updated_session.last_accessed = SystemTime::now();
-        
+  
         match self.cache_manager.set(&key, &updated_session, Some(self.session_timeout)) {
             Ok(_) => Ok(()),
             Err(err) => Err(format!("更新会话失败: {}", err.message)),
         }
     }
-    
+  
     fn delete_session(&self, session_id: &str) -> Result<(), String> {
         let key = format!("session:{}", session_id);
-        
+  
         match self.cache_manager.delete(&key) {
             Ok(_) => Ok(()),
             Err(err) => Err(format!("删除会话失败: {}", err.message)),
         }
     }
-    
+  
     fn get_session_data<T: serde::de::DeserializeOwned>(&self, session_id: &str, key: &str) -> Result<Option<T>, String> {
         match self.get_session(session_id)? {
             Some(session) => {
@@ -17195,7 +17223,7 @@ impl SessionCache {
             None => Ok(None)
         }
     }
-    
+  
     fn set_session_data<T: serde::Serialize>(&self, session_id: &str, key: &str, value: &T) -> Result<(), String> {
         match self.get_session(session_id)? {
             Some(mut session) => {
@@ -17210,7 +17238,7 @@ impl SessionCache {
             None => Err(format!("会话不存在"))
         }
     }
-    
+  
     fn remove_session_data(&self, session_id: &str, key: &str) -> Result<(), String> {
         match self.get_session(session_id)? {
             Some(mut session) => {
@@ -17220,7 +17248,7 @@ impl SessionCache {
             None => Err(format!("会话不存在"))
         }
     }
-    
+  
     fn clean_expired_sessions(&self) -> Result<usize, String> {
         // 这在实际中需要依赖缓存提供器支持按过期时间查询
         // 简化版：返回0，表示没有会话被清理
@@ -17277,21 +17305,21 @@ impl DistributedQueueSystem {
             default_provider: default_provider.to_string(),
         }
     }
-    
+  
     fn register_provider(&mut self, provider: Box<dyn QueueProvider>) -> Result<(), QueueError> {
         let name = provider.name().to_string();
-        
+  
         if self.queue_providers.contains_key(&name) {
             return Err(QueueError {
                 message: format!("队列提供器 {} 已存在", name),
                 error_type: QueueErrorType::InvalidArgument,
             });
         }
-        
+  
         self.queue_providers.insert(name, provider);
         Ok(())
     }
-    
+  
     fn set_default_provider(&mut self, provider_name: &str) -> Result<(), QueueError> {
         if !self.queue_providers.contains_key(provider_name) {
             return Err(QueueError {
@@ -17299,11 +17327,11 @@ impl DistributedQueueSystem {
                 error_type: QueueErrorType::InvalidArgument,
             });
         }
-        
+  
         self.default_provider = provider_name.to_string();
         Ok(())
     }
-    
+  
     fn push(&self, queue_name: &str, message: &[u8], ttl: Option<Duration>) -> Result<String, QueueError> {
         if let Some(provider) = self.queue_providers.get(&self.default_provider) {
             provider.push(queue_name, message, ttl)
@@ -17314,7 +17342,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn push_with_provider(&self, queue_name: &str, message: &[u8], ttl: Option<Duration>, provider_name: &str) -> Result<String, QueueError> {
         if let Some(provider) = self.queue_providers.get(provider_name) {
             provider.push(queue_name, message, ttl)
@@ -17325,7 +17353,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn pop(&self, queue_name: &str, wait_time: Option<Duration>) -> Result<Option<QueueMessage>, QueueError> {
         if let Some(provider) = self.queue_providers.get(&self.default_provider) {
             provider.pop(queue_name, wait_time)
@@ -17336,7 +17364,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn pop_from_provider(&self, queue_name: &str, wait_time: Option<Duration>, provider_name: &str) -> Result<Option<QueueMessage>, QueueError> {
         if let Some(provider) = self.queue_providers.get(provider_name) {
             provider.pop(queue_name, wait_time)
@@ -17347,7 +17375,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn ack(&self, queue_name: &str, message_id: &str) -> Result<bool, QueueError> {
         if let Some(provider) = self.queue_providers.get(&self.default_provider) {
             provider.ack(queue_name, message_id)
@@ -17358,7 +17386,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn ack_in_provider(&self, queue_name: &str, message_id: &str, provider_name: &str) -> Result<bool, QueueError> {
         if let Some(provider) = self.queue_providers.get(provider_name) {
             provider.ack(queue_name, message_id)
@@ -17369,7 +17397,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn peek(&self, queue_name: &str, count: usize) -> Result<Vec<QueueMessage>, QueueError> {
         if let Some(provider) = self.queue_providers.get(&self.default_provider) {
             provider.peek(queue_name, count)
@@ -17380,7 +17408,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn peek_in_provider(&self, queue_name: &str, count: usize, provider_name: &str) -> Result<Vec<QueueMessage>, QueueError> {
         if let Some(provider) = self.queue_providers.get(provider_name) {
             provider.peek(queue_name, count)
@@ -17391,7 +17419,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn len(&self, queue_name: &str) -> Result<usize, QueueError> {
         if let Some(provider) = self.queue_providers.get(&self.default_provider) {
             provider.len(queue_name)
@@ -17402,7 +17430,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn len_in_provider(&self, queue_name: &str, provider_name: &str) -> Result<usize, QueueError> {
         if let Some(provider) = self.queue_providers.get(provider_name) {
             provider.len(queue_name)
@@ -17413,7 +17441,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn purge(&self, queue_name: &str) -> Result<usize, QueueError> {
         if let Some(provider) = self.queue_providers.get(&self.default_provider) {
             provider.purge(queue_name)
@@ -17424,7 +17452,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn purge_in_provider(&self, queue_name: &str, provider_name: &str) -> Result<usize, QueueError> {
         if let Some(provider) = self.queue_providers.get(provider_name) {
             provider.purge(queue_name)
@@ -17435,7 +17463,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn list_queues(&self) -> Result<Vec<String>, QueueError> {
         if let Some(provider) = self.queue_providers.get(&self.default_provider) {
             provider.list_queues()
@@ -17446,7 +17474,7 @@ impl DistributedQueueSystem {
             })
         }
     }
-    
+  
     fn list_queues_in_provider(&self, provider_name: &str) -> Result<Vec<String>, QueueError> {
         if let Some(provider) = self.queue_providers.get(provider_name) {
             provider.list_queues()
@@ -17468,22 +17496,22 @@ struct RedisQueueProvider {
 impl RedisQueueProvider {
     fn new(redis_url: &str, name: &str, visibility_timeout: Duration) -> Result<Self, redis::RedisError> {
         let client = redis::Client::open(redis_url)?;
-        
+  
         Ok(RedisQueueProvider {
             client,
             name: name.to_string(),
             visibility_timeout,
         })
     }
-    
+  
     fn get_queue_key(&self, queue_name: &str) -> String {
         format!("queue:{}:messages", queue_name)
     }
-    
+  
     fn get_processing_key(&self, queue_name: &str) -> String {
         format!("queue:{}:processing", queue_name)
     }
-    
+  
     fn get_message_key(&self, queue_name: &str, message_id: &str) -> String {
         format!("queue:{}:message:{}", queue_name, message_id)
     }
@@ -17493,7 +17521,7 @@ impl QueueProvider for RedisQueueProvider {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn push(&self, queue_name: &str, message: &[u8], ttl: Option<Duration>) -> Result<String, QueueError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -17504,10 +17532,10 @@ impl QueueProvider for RedisQueueProvider {
                 });
             }
         };
-        
+  
         // 生成消息ID
         let message_id = uuid::Uuid::new_v4().to_string();
-        
+  
         // 创建消息
         let message = QueueMessage {
             id: message_id.clone(),
@@ -17517,7 +17545,7 @@ impl QueueProvider for RedisQueueProvider {
             received_at: None,
             visible_at: SystemTime::now(),
         };
-        
+  
         // 序列化消息
         let message_data = match bincode::serialize(&message) {
             Ok(data) => data,
@@ -17528,11 +17556,11 @@ impl QueueProvider for RedisQueueProvider {
                 });
             }
         };
-        
+  
         // 存储消息
         let message_key = self.get_message_key(queue_name, &message_id);
         let queue_key = self.get_queue_key(queue_name);
-        
+  
         let _: () = redis::pipe()
             .cmd("SET").arg(&message_key).arg(&message_data).ignore()
             .cmd("LPUSH").arg(&queue_key).arg(&message_id).ignore()
@@ -17541,11 +17569,11 @@ impl QueueProvider for RedisQueueProvider {
                 message: format!("Redis操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         // 如果指定了TTL，设置消息的过期时间
         if let Some(ttl) = ttl {
             let ttl_seconds = ttl.as_secs() as usize;
-            
+  
             let _: () = redis::cmd("EXPIRE")
                 .arg(&message_key)
                 .arg(ttl_seconds)
@@ -17555,10 +17583,10 @@ impl QueueProvider for RedisQueueProvider {
                     error_type: QueueErrorType::OperationFailed,
                 })?;
         }
-        
+  
         Ok(message_id)
     }
-    
+  
     fn pop(&self, queue_name: &str, wait_time: Option<Duration>) -> Result<Option<QueueMessage>, QueueError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -17569,15 +17597,15 @@ impl QueueProvider for RedisQueueProvider {
                 });
             }
         };
-        
+  
         let queue_key = self.get_queue_key(queue_name);
         let processing_key = self.get_processing_key(queue_name);
-        
+  
         // 从队列中弹出消息ID
         let message_id: Option<String> = if let Some(wait_time) = wait_time {
             // 如果指定了等待时间，使用阻塞弹出
             let wait_seconds = wait_time.as_secs() as usize;
-            
+  
             let result: Option<(String, String)> = redis::cmd("BRPOPLPUSH")
                 .arg(&queue_key)
                 .arg(&processing_key)
@@ -17587,7 +17615,7 @@ impl QueueProvider for RedisQueueProvider {
                     message: format!("Redis BRPOPLPUSH操作失败: {}", err),
                     error_type: QueueErrorType::OperationFailed,
                 })?;
-            
+  
             result.map(|(_, id)| id)
         } else {
             // 否则使用非阻塞弹出
@@ -17600,11 +17628,11 @@ impl QueueProvider for RedisQueueProvider {
                     error_type: QueueErrorType::OperationFailed,
                 })?
         };
-        
+  
         if let Some(message_id) = message_id {
             // 获取消息数据
             let message_key = self.get_message_key(queue_name, &message_id);
-            
+  
             let message_data: Option<Vec<u8>> = redis::cmd("GET")
                 .arg(&message_key)
                 .query(&mut conn)
@@ -17612,7 +17640,7 @@ impl QueueProvider for RedisQueueProvider {
                     message: format!("Redis GET操作失败: {}", err),
                     error_type: QueueErrorType::OperationFailed,
                 })?;
-            
+  
             if let Some(message_data) = message_data {
                 // 反序列化消息
                 let mut message: QueueMessage = match bincode::deserialize(&message_data) {
@@ -17624,18 +17652,18 @@ impl QueueProvider for RedisQueueProvider {
                         });
                     }
                 };
-                
+  
                 // 更新消息接收计数和时间
                 let now = SystemTime::now();
                 message.received_count += 1;
-                
+  
                 if message.first_received_at.is_none() {
                     message.first_received_at = Some(now);
                 }
-                
+  
                 message.received_at = Some(now);
                 message.visible_at = now + self.visibility_timeout;
-                
+  
                 // 重新序列化并存储更新后的消息
                 let updated_message_data = match bincode::serialize(&message) {
                     Ok(data) => data,
@@ -17646,7 +17674,7 @@ impl QueueProvider for RedisQueueProvider {
                         });
                     }
                 };
-                
+  
                 let _: () = redis::cmd("SET")
                     .arg(&message_key)
                     .arg(&updated_message_data)
@@ -17655,14 +17683,14 @@ impl QueueProvider for RedisQueueProvider {
                         message: format!("Redis SET操作失败: {}", err),
                         error_type: QueueErrorType::OperationFailed,
                     })?;
-                
+  
                 return Ok(Some(message));
             }
         }
-        
+  
         Ok(None)
     }
-    
+  
     fn ack(&self, queue_name: &str, message_id: &str) -> Result<bool, QueueError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -17673,10 +17701,10 @@ impl QueueProvider for RedisQueueProvider {
                 });
             }
         };
-        
+  
         let processing_key = self.get_processing_key(queue_name);
         let message_key = self.get_message_key(queue_name, message_id);
-        
+  
         // 从处理中列表移除消息ID
         let removed: i64 = redis::cmd("LREM")
             .arg(&processing_key)
@@ -17687,7 +17715,7 @@ impl QueueProvider for RedisQueueProvider {
                 message: format!("Redis LREM操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         // 删除消息
         let deleted: i64 = redis::cmd("DEL")
             .arg(&message_key)
@@ -17696,10 +17724,10 @@ impl QueueProvider for RedisQueueProvider {
                 message: format!("Redis DEL操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         Ok(removed > 0 && deleted > 0)
     }
-    
+  
     fn peek(&self, queue_name: &str, count: usize) -> Result<Vec<QueueMessage>, QueueError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -17710,9 +17738,9 @@ impl QueueProvider for RedisQueueProvider {
                 });
             }
         };
-        
+  
         let queue_key = self.get_queue_key(queue_name);
-        
+  
         // 获取队列中的消息ID（右侧为队列头）
         let message_ids: Vec<String> = redis::cmd("LRANGE")
             .arg(&queue_key)
@@ -17723,12 +17751,12 @@ impl QueueProvider for RedisQueueProvider {
                 message: format!("Redis LRANGE操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         let mut messages = Vec::with_capacity(message_ids.len());
-        
+  
         for message_id in message_ids {
             let message_key = self.get_message_key(queue_name, &message_id);
-            
+  
             let message_data: Option<Vec<u8>> = redis::cmd("GET")
                 .arg(&message_key)
                 .query(&mut conn)
@@ -17736,7 +17764,7 @@ impl QueueProvider for RedisQueueProvider {
                     message: format!("Redis GET操作失败: {}", err),
                     error_type: QueueErrorType::OperationFailed,
                 })?;
-            
+  
             if let Some(message_data) = message_data {
                 match bincode::deserialize(&message_data) {
                     Ok(message) => messages.push(message),
@@ -17749,10 +17777,10 @@ impl QueueProvider for RedisQueueProvider {
                 }
             }
         }
-        
+  
         Ok(messages)
     }
-    
+  
     fn len(&self, queue_name: &str) -> Result<usize, QueueError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -17763,9 +17791,9 @@ impl QueueProvider for RedisQueueProvider {
                 });
             }
         };
-        
+  
         let queue_key = self.get_queue_key(queue_name);
-        
+  
         let length: usize = redis::cmd("LLEN")
             .arg(&queue_key)
             .query(&mut conn)
@@ -17773,15 +17801,15 @@ impl QueueProvider for RedisQueueProvider {
                 message: format!("Redis LLEN操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         Ok(length)
     }
-    
+  
     fn is_empty(&self, queue_name: &str) -> Result<bool, QueueError> {
         let length = self.len(queue_name)?;
         Ok(length == 0)
     }
-    
+  
     fn purge(&self, queue_name: &str) -> Result<usize, QueueError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -17792,10 +17820,10 @@ impl QueueProvider for RedisQueueProvider {
                 });
             }
         };
-        
+  
         let queue_key = self.get_queue_key(queue_name);
         let processing_key = self.get_processing_key(queue_name);
-        
+  
         // 获取所有消息ID
         let mut message_ids: Vec<String> = redis::cmd("LRANGE")
             .arg(&queue_key)
@@ -17806,7 +17834,7 @@ impl QueueProvider for RedisQueueProvider {
                 message: format!("Redis LRANGE操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         let processing_ids: Vec<String> = redis::cmd("LRANGE")
             .arg(&processing_key)
             .arg(0)
@@ -17816,37 +17844,37 @@ impl QueueProvider for RedisQueueProvider {
                 message: format!("Redis LRANGE操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         message_ids.extend(processing_ids);
-        
+  
         // 删除所有消息
         let mut pipeline = redis::pipe();
-        
+  
         for message_id in &message_ids {
             let message_key = self.get_message_key(queue_name, message_id);
             pipeline.cmd("DEL").arg(&message_key).ignore();
         }
-        
+  
         // 清空队列
         pipeline.cmd("DEL").arg(&queue_key).ignore();
         pipeline.cmd("DEL").arg(&processing_key).ignore();
-        
+  
         let _: () = pipeline
             .query(&mut conn)
             .map_err(|err| QueueError {
                 message: format!("Redis管道操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         Ok(message_ids.len())
     }
-    
+  
     fn delete_queue(&self, queue_name: &str) -> Result<bool, QueueError> {
         // 清空队列然后删除队列键
         let _ = self.purge(queue_name)?;
         Ok(true)
     }
-    
+  
     fn list_queues(&self) -> Result<Vec<String>, QueueError> {
         let mut conn = match self.client.get_connection() {
             Ok(conn) => conn,
@@ -17857,7 +17885,7 @@ impl QueueProvider for RedisQueueProvider {
                 });
             }
         };
-        
+  
         // 查找所有队列键
         let keys: Vec<String> = redis::cmd("KEYS")
             .arg("queue:*:messages")
@@ -17866,7 +17894,7 @@ impl QueueProvider for RedisQueueProvider {
                 message: format!("Redis KEYS操作失败: {}", err),
                 error_type: QueueErrorType::OperationFailed,
             })?;
-        
+  
         // 提取队列名
         let queues = keys
             .iter()
@@ -17879,7 +17907,7 @@ impl QueueProvider for RedisQueueProvider {
                 }
             })
             .collect();
-        
+  
         Ok(queues)
     }
 }
@@ -17901,30 +17929,30 @@ impl InMemoryQueueProvider {
             visibility_timeout,
         }
     }
-    
+  
     fn get_or_create_queue(&self, queue_name: &str) -> Result<(), QueueError> {
         let mut queues = self.queues.write().unwrap();
         if !queues.contains_key(queue_name) {
             queues.insert(queue_name.to_string(), VecDeque::new());
         }
-        
+  
         let mut processing = self.processing.write().unwrap();
         if !processing.contains_key(queue_name) {
             processing.insert(queue_name.to_string(), HashMap::new());
         }
-        
+  
         Ok(())
     }
-    
+  
     fn requeue_expired_messages(&self, queue_name: &str) -> Result<usize, QueueError> {
         let now = SystemTime::now();
         let mut count = 0;
-        
+  
         // 获取过期的消息
         let mut expired_messages = Vec::new();
         {
             let processing = self.processing.read().unwrap();
-            
+  
             if let Some(queue_processing) = processing.get(queue_name) {
                 for (id, message) in queue_processing {
                     if message.visible_at <= now {
@@ -17933,12 +17961,12 @@ impl InMemoryQueueProvider {
                 }
             }
         }
-        
+  
         // 重新入队过期的消息
         if !expired_messages.is_empty() {
             let mut processing = self.processing.write().unwrap();
             let mut queues = self.queues.write().unwrap();
-            
+  
             if let Some(queue_processing) = processing.get_mut(queue_name) {
                 if let Some(queue) = queues.get_mut(queue_name) {
                     for id in &expired_messages {
@@ -17950,7 +17978,7 @@ impl InMemoryQueueProvider {
                 }
             }
         }
-        
+  
         Ok(count)
     }
 }
@@ -17959,13 +17987,13 @@ impl QueueProvider for InMemoryQueueProvider {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn push(&self, queue_name: &str, message: &[u8], ttl: Option<Duration>) -> Result<String, QueueError> {
         self.get_or_create_queue(queue_name)?;
-        
+  
         // 生成消息ID
         let message_id = uuid::Uuid::new_v4().to_string();
-        
+  
         // 创建消息
         let message = QueueMessage {
             id: message_id.clone(),
@@ -17975,22 +18003,22 @@ impl QueueProvider for InMemoryQueueProvider {
             received_at: None,
             visible_at: SystemTime::now(),
         };
-        
+  
         // 添加到队列
         let mut queues = self.queues.write().unwrap();
         if let Some(queue) = queues.get_mut(queue_name) {
             queue.push_back(message);
         }
-        
+  
         Ok(message_id)
     }
-    
+  
     fn pop(&self, queue_name: &str, wait_time: Option<Duration>) -> Result<Option<QueueMessage>, QueueError> {
         self.get_or_create_queue(queue_name)?;
-        
+  
         // 重新入队过期的消息
         self.requeue_expired_messages(queue_name)?;
-        
+  
         // 尝试获取消息
         let start_time = Instant::now();
         loop {
@@ -18001,31 +18029,31 @@ impl QueueProvider for InMemoryQueueProvider {
                         // 更新消息状态
                         let now = SystemTime::now();
                         message.received_count += 1;
-                        
+  
                         if message.first_received_at.is_none() {
                             message.first_received_at = Some(now);
                         }
-                        
+  
                         message.received_at = Some(now);
                         message.visible_at = now + self.visibility_timeout;
-                        
+  
                         // 添加到处理中消息集合
                         let mut processing = self.processing.write().unwrap();
                         if let Some(queue_processing) = processing.get_mut(queue_name) {
                             queue_processing.insert(message.id.clone(), message.clone());
                         }
-                        
+  
                         return Ok(Some(message));
                     }
                 }
             }
-            
+  
             // 检查是否等待超时
             if let Some(wait_time) = wait_time {
                 if start_time.elapsed() >= wait_time {
                     return Ok(None);
                 }
-                
+  
                 // 短暂休眠后重试
                 std::thread::sleep(Duration::from_millis(100));
             } else {
@@ -18033,24 +18061,24 @@ impl QueueProvider for InMemoryQueueProvider {
             }
         }
     }
-    
+  
     fn ack(&self, queue_name: &str, message_id: &str) -> Result<bool, QueueError> {
         let mut processing = self.processing.write().unwrap();
-        
+  
         if let Some(queue_processing) = processing.get_mut(queue_name) {
             if queue_processing.remove(message_id).is_some() {
                 return Ok(true);
             }
         }
-        
+  
         Ok(false)
     }
-    
+  
     fn peek(&self, queue_name: &str, count: usize) -> Result<Vec<QueueMessage>, QueueError> {
         self.get_or_create_queue(queue_name)?;
-        
+  
         let queues = self.queues.read().unwrap();
-        
+  
         if let Some(queue) = queues.get(queue_name) {
             let mut messages = Vec::new();
             for (i, message) in queue.iter().enumerate() {
@@ -18061,28 +18089,28 @@ impl QueueProvider for InMemoryQueueProvider {
             }
             return Ok(messages);
         }
-        
+  
         Ok(Vec::new())
     }
-    
+  
     fn len(&self, queue_name: &str) -> Result<usize, QueueError> {
         let queues = self.queues.read().unwrap();
-        
+  
         if let Some(queue) = queues.get(queue_name) {
             return Ok(queue.len());
         }
-        
+  
         Ok(0)
     }
-    
+  
     fn is_empty(&self, queue_name: &str) -> Result<bool, QueueError> {
         let length = self.len(queue_name)?;
         Ok(length == 0)
     }
-    
+  
     fn purge(&self, queue_name: &str) -> Result<usize, QueueError> {
         let mut total_count = 0;
-        
+  
         // 清空队列
         {
             let mut queues = self.queues.write().unwrap();
@@ -18091,7 +18119,7 @@ impl QueueProvider for InMemoryQueueProvider {
                 queue.clear();
             }
         }
-        
+  
         // 清空处理中的消息
         {
             let mut processing = self.processing.write().unwrap();
@@ -18100,20 +18128,20 @@ impl QueueProvider for InMemoryQueueProvider {
                 queue_processing.clear();
             }
         }
-        
+  
         Ok(total_count)
     }
-    
+  
     fn delete_queue(&self, queue_name: &str) -> Result<bool, QueueError> {
         let mut queues = self.queues.write().unwrap();
         let mut processing = self.processing.write().unwrap();
-        
+  
         let removed_queue = queues.remove(queue_name).is_some();
         let removed_processing = processing.remove(queue_name).is_some();
-        
+  
         Ok(removed_queue || removed_processing)
     }
-    
+  
     fn list_queues(&self) -> Result<Vec<String>, QueueError> {
         let queues = self.queues.read().unwrap();
         let queue_names = queues.keys().cloned().collect();
@@ -18174,21 +18202,21 @@ impl DistributedMessageBus {
             default_provider: default_provider.to_string(),
         }
     }
-    
+  
     fn register_provider(&mut self, provider: Box<dyn MessageBusProvider>) -> Result<(), MessageBusError> {
         let name = provider.name().to_string();
-        
+  
         if self.providers.contains_key(&name) {
             return Err(MessageBusError {
                 message: format!("消息总线提供器 {} 已存在", name),
                 error_type: MessageBusErrorType::InvalidArgument,
             });
         }
-        
+  
         self.providers.insert(name, provider);
         Ok(())
     }
-    
+  
     fn set_default_provider(&mut self, provider_name: &str) -> Result<(), MessageBusError> {
         if !self.providers.contains_key(provider_name) {
             return Err(MessageBusError {
@@ -18196,11 +18224,11 @@ impl DistributedMessageBus {
                 error_type: MessageBusErrorType::InvalidArgument,
             });
         }
-        
+  
         self.default_provider = provider_name.to_string();
         Ok(())
     }
-    
+  
     fn publish(&self, topic: &str, message: &[u8], headers: Option<HashMap<String, String>>) -> Result<String, MessageBusError> {
         if let Some(provider) = self.providers.get(&self.default_provider) {
             provider.publish(topic, message, headers)
@@ -18211,7 +18239,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn publish_with_provider(&self, topic: &str, message: &[u8], headers: Option<HashMap<String, String>>, provider_name: &str) -> Result<String, MessageBusError> {
         if let Some(provider) = self.providers.get(provider_name) {
             provider.publish(topic, message, headers)
@@ -18222,7 +18250,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn subscribe<F>(&self, subscription_id: &str, topics: &[String], handler: F) -> Result<(), MessageBusError>
     where
         F: Fn(Message) -> Result<(), MessageBusError> + Send + Sync + 'static
@@ -18236,7 +18264,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn subscribe_with_provider<F>(&self, subscription_id: &str, topics: &[String], handler: F, provider_name: &str) -> Result<(), MessageBusError>
     where
         F: Fn(Message) -> Result<(), MessageBusError> + Send + Sync + 'static
@@ -18250,7 +18278,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn unsubscribe(&self, subscription_id: &str) -> Result<bool, MessageBusError> {
         if let Some(provider) = self.providers.get(&self.default_provider) {
             provider.unsubscribe(subscription_id)
@@ -18261,7 +18289,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn unsubscribe_from_provider(&self, subscription_id: &str, provider_name: &str) -> Result<bool, MessageBusError> {
         if let Some(provider) = self.providers.get(provider_name) {
             provider.unsubscribe(subscription_id)
@@ -18272,7 +18300,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn list_topics(&self) -> Result<Vec<String>, MessageBusError> {
         if let Some(provider) = self.providers.get(&self.default_provider) {
             provider.list_topics()
@@ -18283,7 +18311,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn list_topics_from_provider(&self, provider_name: &str) -> Result<Vec<String>, MessageBusError> {
         if let Some(provider) = self.providers.get(provider_name) {
             provider.list_topics()
@@ -18294,7 +18322,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn list_subscriptions(&self) -> Result<Vec<Subscription>, MessageBusError> {
         if let Some(provider) = self.providers.get(&self.default_provider) {
             provider.list_subscriptions()
@@ -18305,7 +18333,7 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     fn list_subscriptions_from_provider(&self, provider_name: &str) -> Result<Vec<Subscription>, MessageBusError> {
         if let Some(provider) = self.providers.get(provider_name) {
             provider.list_subscriptions()
@@ -18316,17 +18344,17 @@ impl DistributedMessageBus {
             })
         }
     }
-    
+  
     // 工具函数：发布序列化的值
     fn publish_value<T: serde::Serialize>(&self, topic: &str, value: &T, headers: Option<HashMap<String, String>>) -> Result<String, MessageBusError> {
         let data = serde_json::to_vec(value).map_err(|err| MessageBusError {
             message: format!("序列化值失败: {}", err),
             error_type: MessageBusErrorType::SerializationError,
         })?;
-        
+  
         self.publish(topic, &data, headers)
     }
-    
+  
     // 工具函数：订阅并反序列化消息
     fn subscribe_values<T, F>(&self, subscription_id: &str, topics: &[String], handler: F) -> Result<(), MessageBusError>
     where
@@ -18338,7 +18366,7 @@ impl DistributedMessageBus {
                 message: format!("反序列化消息失败: {}", err),
                 error_type: MessageBusErrorType::SerializationError,
             })?;
-            
+  
             handler(value, message.headers)
         })
     }
@@ -18369,37 +18397,37 @@ impl InMemoryMessageBusProvider {
             subscriptions: Arc::new(RwLock::new(HashMap::new())),
             worker_pool: ThreadPool::new(num_workers),
         };
-        
+  
         // 启动消息分发线程
         let topics = provider.topics.clone();
         let subscriptions = provider.subscriptions.clone();
         let worker_pool = provider.worker_pool.clone();
-        
+  
         std::thread::spawn(move || {
             loop {
                 // 检查所有主题的消息并分发给订阅者
                 let mut messages_to_dispatch = Vec::new();
-                
+  
                 {
                     let mut topics_lock = topics.write().unwrap();
-                    
+  
                     for (topic_name, messages) in topics_lock.iter_mut() {
                         if !messages.is_empty() {
                             // 收集待分发的消息
                             let mut topic_messages = Vec::new();
                             std::mem::swap(&mut topic_messages, messages);
-                            
+  
                             for message in topic_messages {
                                 messages_to_dispatch.push((topic_name.clone(), message));
                             }
                         }
                     }
                 }
-                
+  
                 // 分发消息
                 if !messages_to_dispatch.is_empty() {
                     let subscriptions_lock = subscriptions.read().unwrap();
-                    
+  
                     for (topic, message) in messages_to_dispatch {
                         for (_, subscription) in subscriptions_lock.iter() {
                             // 检查是否订阅了该主题
@@ -18408,7 +18436,7 @@ impl InMemoryMessageBusProvider {
                                 let message_clone = message.clone();
                                 let handler = subscription.handler.clone();
                                 let message_count = subscription.message_count.clone();
-                                
+  
                                 // 分发消息到线程池
                                 worker_pool.execute(move || {
                                     // 尝试处理消息
@@ -18422,12 +18450,12 @@ impl InMemoryMessageBusProvider {
                         }
                     }
                 }
-                
+  
                 // 暂停一小段时间
                 std::thread::sleep(Duration::from_millis(10));
             }
         });
-        
+  
         provider
     }
 }
@@ -18436,10 +18464,10 @@ impl MessageBusProvider for InMemoryMessageBusProvider {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn publish(&self, topic: &str, message: &[u8], headers: Option<HashMap<String, String>>) -> Result<String, MessageBusError> {
         let message_id = uuid::Uuid::new_v4().to_string();
-        
+  
         let message = Message {
             id: message_id.clone(),
             topic: topic.to_string(),
@@ -18448,31 +18476,31 @@ impl MessageBusProvider for InMemoryMessageBusProvider {
             timestamp: SystemTime::now(),
             attempts: 0,
         };
-        
+  
         // 添加消息到主题
         let mut topics = self.topics.write().unwrap();
-        
+  
         if !topics.contains_key(topic) {
             topics.insert(topic.to_string(), Vec::new());
         }
-        
+  
         if let Some(messages) = topics.get_mut(topic) {
             messages.push(message);
         }
-        
+  
         Ok(message_id)
     }
-    
+  
     fn subscribe(&self, subscription_id: &str, topics: &[String], handler: Arc<dyn Fn(Message) -> Result<(), MessageBusError> + Send + Sync>) -> Result<(), MessageBusError> {
         let mut subscriptions = self.subscriptions.write().unwrap();
-        
+  
         if subscriptions.contains_key(subscription_id) {
             return Err(MessageBusError {
                 message: format!("订阅ID {} 已存在", subscription_id),
                 error_type: MessageBusErrorType::InvalidArgument,
             });
         }
-        
+  
         let subscription = SubscriptionInfo {
             id: subscription_id.to_string(),
             topics: topics.to_vec(),
@@ -18481,27 +18509,27 @@ impl MessageBusProvider for InMemoryMessageBusProvider {
             last_active: SystemTime::now(),
             message_count: Arc::new(AtomicU64::new(0)),
         };
-        
+  
         subscriptions.insert(subscription_id.to_string(), subscription);
-        
+  
         Ok(())
     }
-    
+  
     fn unsubscribe(&self, subscription_id: &str) -> Result<bool, MessageBusError> {
         let mut subscriptions = self.subscriptions.write().unwrap();
-        
+  
         Ok(subscriptions.remove(subscription_id).is_some())
     }
-    
+  
     fn list_topics(&self) -> Result<Vec<String>, MessageBusError> {
         let topics = self.topics.read().unwrap();
         let topic_names = topics.keys().cloned().collect();
         Ok(topic_names)
     }
-    
+  
     fn list_subscriptions(&self) -> Result<Vec<Subscription>, MessageBusError> {
         let subscriptions = self.subscriptions.read().unwrap();
-        
+  
         let result = subscriptions
             .values()
             .map(|sub| Subscription {
@@ -18512,7 +18540,7 @@ impl MessageBusProvider for InMemoryMessageBusProvider {
                 message_count: sub.message_count.load(Ordering::SeqCst),
             })
             .collect();
-        
+  
         Ok(result)
     }
 }
@@ -18547,32 +18575,32 @@ impl EventDrivenSystem {
             event_deserializer: Arc::new(event_deserializer),
         }
     }
-    
+  
     fn publish_event(&self, event: &Event) -> Result<String, String> {
         // 序列化事件
         let event_data = (self.event_serializer)(event).map_err(|err| {
             format!("序列化事件失败: {}", err)
         })?;
-        
+  
         // 创建消息头信息
         let mut headers = HashMap::new();
         headers.insert("event_type".to_string(), event.event_type.clone());
         headers.insert("source".to_string(), event.source.clone());
-        
+  
         if let Some(correlation_id) = &event.correlation_id {
             headers.insert("correlation_id".to_string(), correlation_id.clone());
         }
-        
+  
         if let Some(causation_id) = &event.causation_id {
             headers.insert("causation_id".to_string(), causation_id.clone());
         }
-        
+  
         // 发布到消息总线
         let topic = format!("events.{}", event.event_type);
         self.message_bus.publish(&topic, &event_data, Some(headers))
             .map_err(|err| format!("发布事件失败: {}", err.message))
     }
-    
+  
     fn subscribe_to_events<F>(&self, subscription_id: &str, event_types: &[String], handler: F) -> Result<(), String>
     where
         F: Fn(Event) -> Result<(), String> + Send + Sync + 'static
@@ -18581,9 +18609,9 @@ impl EventDrivenSystem {
         let topics = event_types.iter()
             .map(|event_type| format!("events.{}", event_type))
             .collect::<Vec<_>>();
-        
+  
         let event_deserializer = self.event_deserializer.clone();
-        
+  
         // 订阅消息总线
         self.message_bus.subscribe(
             subscription_id,
@@ -18595,7 +18623,7 @@ impl EventDrivenSystem {
                         message: format!("反序列化事件失败: {}", err),
                         error_type: MessageBusErrorType::SerializationError,
                     })?;
-                
+  
                 // 调用处理器
                 handler(event).map_err(|err| MessageBusError {
                     message: format!("事件处理失败: {}", err),
@@ -18604,7 +18632,7 @@ impl EventDrivenSystem {
             }
         ).map_err(|err| format!("订阅事件失败: {}", err.message))
     }
-    
+  
     fn create_event(&self, event_type: &str, payload: serde_json::Value, source: &str) -> Event {
         Event {
             id: uuid::Uuid::new_v4().to_string(),
@@ -18617,14 +18645,14 @@ impl EventDrivenSystem {
             metadata: HashMap::new(),
         }
     }
-    
+  
     fn create_correlated_event(&self, event_type: &str, payload: serde_json::Value, source: &str, parent_event: &Event) -> Event {
         let mut event = self.create_event(event_type, payload, source);
-        
+  
         // 设置关联ID
         event.correlation_id = parent_event.correlation_id.clone().or(Some(parent_event.id.clone()));
         event.causation_id = Some(parent_event.id.clone());
-        
+  
         event
     }
 }
@@ -18673,14 +18701,14 @@ impl EventSourcingSystem {
             snapshotter,
         }
     }
-    
+  
     fn save_events<A: Aggregate>(&self, aggregate: &mut A, new_events: &[Event]) -> Result<(), String> {
         if new_events.is_empty() {
             return Ok(());
         }
-        
+  
         let current_version = aggregate.version();
-        
+  
         // 将事件保存到事件存储
         let new_version = self.event_store.append_events(
             aggregate.aggregate_type(),
@@ -18688,19 +18716,19 @@ impl EventSourcingSystem {
             new_events,
             Some(current_version)
         )?;
-        
+  
         // 应用事件到聚合
         for event in new_events {
             aggregate.apply_event(event)?;
         }
-        
+  
         // 发布事件到事件总线
         for event in new_events {
             if let Err(err) = self.event_bus.publish_event(event) {
                 eprintln!("发布事件失败: {}", err);
             }
         }
-        
+  
         // 检查是否需要创建快照
         if let Some(snapshotter) = &self.snapshotter {
             if new_version % 10 == 0 {  // 每10个版本创建一次快照
@@ -18708,13 +18736,13 @@ impl EventSourcingSystem {
                 snapshotter.save_snapshot(&snapshot)?;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn load_aggregate<A: Aggregate + Default>(&self, aggregate_type: &str, aggregate_id: &str) -> Result<A, String> {
         let mut aggregate = A::default();
-        
+  
         // 尝试从快照加载
         let mut start_version = 0;
         if let Some(snapshotter) = &self.snapshotter {
@@ -18723,22 +18751,22 @@ impl EventSourcingSystem {
                 start_version = snapshot.version;
             }
         }
-        
+  
         // 加载剩余事件
         let events = self.event_store.get_events(aggregate_type, aggregate_id, Some(start_version), None)?;
-        
+  
         // 应用事件
         for event in &events {
             aggregate.apply_event(event)?;
         }
-        
+  
         Ok(aggregate)
     }
-    
+  
     fn get_event_history(&self, aggregate_type: &str, aggregate_id: &str) -> Result<Vec<Event>, String> {
         self.event_store.get_events(aggregate_type, aggregate_id, None, None)
     }
-    
+  
     fn find_events_by_type(&self, event_types: &[String], start_time: Option<SystemTime>, end_time: Option<SystemTime>, limit: Option<usize>) -> Result<Vec<Event>, String> {
         self.event_store.get_events_by_type(event_types, start_time, end_time, limit)
     }
@@ -18765,30 +18793,30 @@ impl CommandProcessor {
             event_sourcing,
         }
     }
-    
+  
     fn register_handler<F>(&mut self, command_type: &str, handler: F)
     where
         F: Fn(&Command) -> Result<Vec<Event>, String> + Send + Sync + 'static
     {
         self.command_handlers.insert(command_type.to_string(), Box::new(handler));
     }
-    
+  
     fn process(&self, command: &Command) -> Result<Vec<Event>, String> {
         // 查找命令处理器
         if let Some(handler) = self.command_handlers.get(&command.command_type) {
             // 处理命令
             let events = handler(command)?;
-            
+  
             // TODO: 这里我们应该加载聚合并应用事件
             // 但由于我们没有聚合信息，所以简化处理
-            
+  
             // 返回生成的事件
             Ok(events)
         } else {
             Err(format!("未找到命令类型 {} 的处理器", command.command_type))
         }
     }
-    
+  
     fn create_command(&self, command_type: &str, payload: serde_json::Value) -> Command {
         Command {
             id: uuid::Uuid::new_v4().to_string(),
@@ -18863,22 +18891,22 @@ impl CommandBus {
             handlers: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     fn register_handler<H: CommandHandler + 'static>(&self, handler: H) -> Result<(), String> {
         let mut handlers = self.handlers.write().unwrap();
         let command_type = handler.command_type();
-        
+  
         if handlers.contains_key(&command_type) {
             return Err(format!("命令处理器已存在: {}", command_type));
         }
-        
+  
         handlers.insert(command_type, Box::new(handler));
         Ok(())
     }
-    
+  
     fn dispatch(&self, command: &Command) -> Result<CommandResult, CommandError> {
         let handlers = self.handlers.read().unwrap();
-        
+  
         if let Some(handler) = handlers.get(&command.command_type) {
             handler.handle(command)
         } else {
@@ -18897,22 +18925,22 @@ impl QueryBus {
             handlers: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     fn register_handler<H: QueryHandler + 'static>(&self, handler: H) -> Result<(), String> {
         let mut handlers = self.handlers.write().unwrap();
         let query_type = handler.query_type();
-        
+  
         if handlers.contains_key(&query_type) {
             return Err(format!("查询处理器已存在: {}", query_type));
         }
-        
+  
         handlers.insert(query_type, Box::new(handler));
         Ok(())
     }
-    
+  
     fn dispatch(&self, query: &Query) -> Result<QueryResult, QueryError> {
         let handlers = self.handlers.read().unwrap();
-        
+  
         if let Some(handler) = handlers.get(&query.query_type) {
             handler.handle(query)
         } else {
@@ -18933,15 +18961,15 @@ impl CQRSFramework {
             event_sourcing: None,
         }
     }
-    
+  
     fn with_event_sourcing(mut self, event_sourcing: Arc<EventSourcingSystem>) -> Self {
         self.event_sourcing = Some(event_sourcing);
         self
     }
-    
+  
     fn execute_command(&self, command: &Command) -> Result<CommandResult, CommandError> {
         let result = self.command_bus.dispatch(command);
-        
+  
         if let Ok(ref command_result) = result {
             // 如果启用了事件溯源，发布事件
             if let Some(event_sourcing) = &self.event_sourcing {
@@ -18952,14 +18980,14 @@ impl CQRSFramework {
                 }
             }
         }
-        
+  
         result
     }
-    
+  
     fn execute_query(&self, query: &Query) -> Result<QueryResult, QueryError> {
         self.query_bus.dispatch(query)
     }
-    
+  
     fn create_command(&self, command_type: &str, payload: serde_json::Value) -> Command {
         Command {
             id: uuid::Uuid::new_v4().to_string(),
@@ -18969,7 +18997,7 @@ impl CQRSFramework {
             timestamp: SystemTime::now(),
         }
     }
-    
+  
     fn create_query(&self, query_type: &str, parameters: serde_json::Value) -> Query {
         Query {
             id: uuid::Uuid::new_v4().to_string(),
@@ -18995,7 +19023,8 @@ struct CircuitBreaker {
     listeners: Arc<RwLock<Vec<Box<dyn Fn(CircuitBreakerEvent) + Send + Sync>>>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+# [derive(Debug, Clone, Copy, PartialEq)]
+
 enum CircuitState {
     Closed,      // 正常工作
     Open,        // 断路，所有请求快速失败
@@ -19026,17 +19055,17 @@ impl CircuitBreaker {
             listeners: Arc::new(RwLock::new(Vec::new())),
         }
     }
-    
+  
     fn with_success_threshold(mut self, threshold: u32) -> Self {
         self.success_threshold = threshold;
         self
     }
-    
+  
     fn with_half_open_timeout(mut self, timeout: Duration) -> Self {
         self.half_open_timeout = timeout;
         self
     }
-    
+  
     fn add_listener<F>(&self, listener: F)
     where
         F: Fn(CircuitBreakerEvent) + Send + Sync + 'static
@@ -19044,7 +19073,7 @@ impl CircuitBreaker {
         let mut listeners = self.listeners.write().unwrap();
         listeners.push(Box::new(listener));
     }
-    
+  
     fn execute<F, T, E>(&self, func: F) -> Result<T, E>
     where
         F: FnOnce() -> Result<T, E>,
@@ -19054,7 +19083,7 @@ impl CircuitBreaker {
         if !self.allow_request() {
             panic!("断路器已打开: {}", self.name);
         }
-        
+  
         // 执行函数
         match func() {
             Ok(result) => {
@@ -19067,16 +19096,16 @@ impl CircuitBreaker {
             }
         }
     }
-    
+  
     fn allow_request(&self) -> bool {
         let state = *self.state.read().unwrap();
-        
+  
         match state {
             CircuitState::Closed => true,
             CircuitState::Open => {
                 // 检查是否应该转换到半开状态
                 let mut last_failure = self.last_failure_time.lock().unwrap();
-                
+  
                 if let Some(time) = *last_failure {
                     if time.elapsed() >= self.reset_timeout {
                         // 转换到半开状态
@@ -19084,7 +19113,7 @@ impl CircuitBreaker {
                         return true;
                     }
                 }
-                
+  
                 false
             },
             CircuitState::HalfOpen => {
@@ -19093,14 +19122,14 @@ impl CircuitBreaker {
             }
         }
     }
-    
+  
     fn on_success(&self) {
         let state = *self.state.read().unwrap();
-        
+  
         // 更新最后成功时间
         let mut last_success = self.last_success_time.lock().unwrap();
         *last_success = Some(Instant::now());
-        
+  
         match state {
             CircuitState::Closed => {
                 // 在关闭状态下重置失败计数
@@ -19109,7 +19138,7 @@ impl CircuitBreaker {
             CircuitState::HalfOpen => {
                 // 在半开状态下，增加成功计数
                 let prev_count = self.success_count.fetch_add(1, Ordering::SeqCst);
-                
+  
                 if prev_count + 1 >= self.success_threshold {
                     // 转换到关闭状态
                     self.transit_to(CircuitState::Closed);
@@ -19120,19 +19149,19 @@ impl CircuitBreaker {
             _ => {}
         }
     }
-    
+  
     fn on_failure(&self) {
         let state = *self.state.read().unwrap();
-        
+  
         // 更新最后失败时间
         let mut last_failure = self.last_failure_time.lock().unwrap();
         *last_failure = Some(Instant::now());
-        
+  
         match state {
             CircuitState::Closed => {
                 // 在关闭状态下增加失败计数
                 let prev_count = self.failure_count.fetch_add(1, Ordering::SeqCst);
-                
+  
                 if prev_count + 1 >= self.failure_threshold {
                     // 转换到打开状态
                     self.transit_to(CircuitState::Open);
@@ -19146,14 +19175,14 @@ impl CircuitBreaker {
             _ => {}
         }
     }
-    
+  
     fn transit_to(&self, new_state: CircuitState) {
         let mut state = self.state.write().unwrap();
         let old_state = *state;
-        
+  
         if old_state != new_state {
             *state = new_state;
-            
+  
             // 触发事件
             let event = CircuitBreakerEvent {
                 breaker_name: self.name.clone(),
@@ -19162,7 +19191,7 @@ impl CircuitBreaker {
                 timestamp: Instant::now(),
                 trip_count: 0, // TODO: 跟踪断路次数
             };
-            
+  
             // 通知监听器
             let listeners = self.listeners.read().unwrap();
             for listener in listeners.iter() {
@@ -19170,11 +19199,11 @@ impl CircuitBreaker {
             }
         }
     }
-    
+  
     fn get_state(&self) -> CircuitState {
         *self.state.read().unwrap()
     }
-    
+  
     fn reset(&self) {
         self.transit_to(CircuitState::Closed);
         self.failure_count.store(0, Ordering::SeqCst);
@@ -19201,62 +19230,62 @@ impl RetryPolicy {
             jitter: true,
         }
     }
-    
+  
     fn with_backoff_multiplier(mut self, multiplier: f64) -> Self {
         self.backoff_multiplier = multiplier;
         self
     }
-    
+  
     fn with_max_backoff(mut self, max_backoff: Duration) -> Self {
         self.max_backoff = max_backoff;
         self
     }
-    
+  
     fn with_jitter(mut self, jitter: bool) -> Self {
         self.jitter = jitter;
         self
     }
-    
+  
     fn calculate_backoff(&self, attempt: u32) -> Duration {
         if attempt == 0 {
             return Duration::from_millis(0);
         }
-        
+  
         let mut backoff = self.initial_backoff.as_millis() as f64 * self.backoff_multiplier.powi(attempt as i32 - 1);
         backoff = backoff.min(self.max_backoff.as_millis() as f64);
-        
+  
         if self.jitter {
             let jitter_factor = rand::random::<f64>() * 0.25 + 0.75; // 75% to 100% of original
             backoff *= jitter_factor;
         }
-        
+  
         Duration::from_millis(backoff as u64)
     }
-    
+  
     fn execute<F, T, E>(&self, operation: F) -> Result<T, E>
     where
         F: Fn() -> Result<T, E>,
         E: std::fmt::Debug,
     {
         let mut attempt = 0;
-        
+  
         loop {
             attempt += 1;
-            
+  
             match operation() {
                 Ok(result) => return Ok(result),
                 Err(error) => {
                     if attempt >= self.max_attempts {
                         return Err(error);
                     }
-                    
+  
                     let backoff = self.calculate_backoff(attempt);
                     std::thread::sleep(backoff);
                 }
             }
         }
     }
-    
+  
     fn execute_with_check<F, C, T, E>(&self, operation: F, should_retry: C) -> Result<T, E>
     where
         F: Fn() -> Result<T, E>,
@@ -19264,24 +19293,24 @@ impl RetryPolicy {
         E: std::fmt::Debug,
     {
         let mut attempt = 0;
-        
+  
         loop {
             attempt += 1;
-            
+  
             match operation() {
                 Ok(result) => return Ok(result),
                 Err(error) => {
                     if attempt >= self.max_attempts || !should_retry(&error) {
                         return Err(error);
                     }
-                    
+  
                     let backoff = self.calculate_backoff(attempt);
                     std::thread::sleep(backoff);
                 }
             }
         }
     }
-    
+  
     // 异步版本的重试（为异步代码设计）
     async fn execute_async<F, Fut, T, E>(&self, operation: F) -> Result<T, E>
     where
@@ -19290,17 +19319,17 @@ impl RetryPolicy {
         E: std::fmt::Debug,
     {
         let mut attempt = 0;
-        
+  
         loop {
             attempt += 1;
-            
+  
             match operation().await {
                 Ok(result) => return Ok(result),
                 Err(error) => {
                     if attempt >= self.max_attempts {
                         return Err(error);
                     }
-                    
+  
                     let backoff = self.calculate_backoff(attempt);
                     tokio::time::sleep(backoff).await;
                 }
@@ -19318,7 +19347,7 @@ impl Timeout {
     fn new(duration: Duration) -> Self {
         Timeout { duration }
     }
-    
+  
     // 同步版本的超时（使用线程）
     fn execute<F, T>(&self, operation: F) -> Result<T, String>
     where
@@ -19326,13 +19355,13 @@ impl Timeout {
         T: Send + 'static,
     {
         let (tx, rx) = std::sync::mpsc::channel();
-        
+  
         // 在新线程中执行操作
         let handle = std::thread::spawn(move || {
             let result = operation();
             let _ = tx.send(result);
         });
-        
+  
         // 等待结果或超时
         match rx.recv_timeout(self.duration) {
             Ok(result) => Ok(result),
@@ -19343,7 +19372,7 @@ impl Timeout {
             }
         }
     }
-    
+  
     // 异步版本的超时（为异步代码设计）
     async fn execute_async<F, Fut, T>(&self, operation: F) -> Result<T, String>
     where
@@ -19351,7 +19380,7 @@ impl Timeout {
         Fut: std::future::Future<Output = T>,
     {
         use tokio::time::timeout;
-        
+  
         match timeout(self.duration, operation()).await {
             Ok(result) => Ok(result),
             Err(_) => Err("操作超时".to_string()),
@@ -19378,7 +19407,7 @@ impl Bulkhead {
             semaphore: Arc::new(tokio::sync::Semaphore::new(max_concurrent_calls as usize)),
         }
     }
-    
+  
     // 同步版本
     fn execute<F, T>(&self, operation: F) -> Result<T, String>
     where
@@ -19388,18 +19417,18 @@ impl Bulkhead {
         if self.active_calls.load(Ordering::SeqCst) >= self.max_concurrent_calls {
             return Err(format!("舱壁 {} 已满", self.name));
         }
-        
+  
         // 增加活动调用计数
         self.active_calls.fetch_add(1, Ordering::SeqCst);
-        
+  
         let result = operation();
-        
+  
         // 减少活动调用计数
         self.active_calls.fetch_sub(1, Ordering::SeqCst);
-        
+  
         result
     }
-    
+  
     // 异步版本
     async fn execute_async<F, Fut, T, E>(&self, operation: F) -> Result<T, E>
     where
@@ -19416,16 +19445,16 @@ impl Bulkhead {
             Ok(Err(_)) => return Err(format!("舱壁 {} 已损坏", self.name).into()),
             Err(_) => return Err(format!("舱壁 {} 等待超时", self.name).into()),
         };
-        
+  
         // 执行操作
         let result = operation().await;
-        
+  
         // 释放许可
         drop(permit);
-        
+  
         result
     }
-    
+  
     fn get_metrics(&self) -> BulkheadMetrics {
         BulkheadMetrics {
             name: self.name.clone(),
@@ -19460,71 +19489,71 @@ impl ResilienceManager {
             timeouts: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     fn register_circuit_breaker(&self, name: &str, circuit_breaker: Arc<CircuitBreaker>) -> Result<(), String> {
         let mut breakers = self.circuit_breakers.write().unwrap();
-        
+  
         if breakers.contains_key(name) {
             return Err(format!("断路器 {} 已存在", name));
         }
-        
+  
         breakers.insert(name.to_string(), circuit_breaker);
         Ok(())
     }
-    
+  
     fn register_bulkhead(&self, name: &str, bulkhead: Arc<Bulkhead>) -> Result<(), String> {
         let mut bulkheads = self.bulkheads.write().unwrap();
-        
+  
         if bulkheads.contains_key(name) {
             return Err(format!("舱壁 {} 已存在", name));
         }
-        
+  
         bulkheads.insert(name.to_string(), bulkhead);
         Ok(())
     }
-    
+  
     fn register_retry_policy(&self, name: &str, retry_policy: Arc<RetryPolicy>) -> Result<(), String> {
         let mut policies = self.retry_policies.write().unwrap();
-        
+  
         if policies.contains_key(name) {
             return Err(format!("重试策略 {} 已存在", name));
         }
-        
+  
         policies.insert(name.to_string(), retry_policy);
         Ok(())
     }
-    
+  
     fn register_timeout(&self, name: &str, timeout: Arc<Timeout>) -> Result<(), String> {
         let mut timeouts = self.timeouts.write().unwrap();
-        
+  
         if timeouts.contains_key(name) {
             return Err(format!("超时 {} 已存在", name));
         }
-        
+  
         timeouts.insert(name.to_string(), timeout);
         Ok(())
     }
-    
+  
     fn get_circuit_breaker(&self, name: &str) -> Option<Arc<CircuitBreaker>> {
         let breakers = self.circuit_breakers.read().unwrap();
         breakers.get(name).cloned()
     }
-    
+  
     fn get_bulkhead(&self, name: &str) -> Option<Arc<Bulkhead>> {
         let bulkheads = self.bulkheads.read().unwrap();
         bulkheads.get(name).cloned()
     }
-    
+  
     fn get_retry_policy(&self, name: &str) -> Option<Arc<RetryPolicy>> {
         let policies = self.retry_policies.read().unwrap();
         policies.get(name).cloned()
     }
-    
+  
     fn get_timeout(&self, name: &str) -> Option<Arc<Timeout>> {
         let timeouts = self.timeouts.read().unwrap();
         timeouts.get(name).cloned()
     }
-    
+  
     // 组合多种容错策略
     fn execute_with_resilience<F, T, E>(
         &self,
@@ -19548,7 +19577,7 @@ impl ResilienceManager {
         } else {
             Box::new(operation.clone())
         };
-        
+  
         let operation_with_bulkhead = if let Some(name) = bulkhead_name {
             if let Some(bulkhead) = self.get_bulkhead(name) {
                 let op = operation_with_timeout.clone();
@@ -19559,7 +19588,7 @@ impl ResilienceManager {
         } else {
             operation_with_timeout
         };
-        
+  
         let operation_with_retry = if let Some(name) = retry_policy_name {
             if let Some(retry_policy) = self.get_retry_policy(name) {
                 let op = operation_with_bulkhead.clone();
@@ -19570,7 +19599,7 @@ impl ResilienceManager {
         } else {
             operation_with_bulkhead
         };
-        
+  
         let operation_with_circuit_breaker = if let Some(name) = circuit_breaker_name {
             if let Some(circuit_breaker) = self.get_circuit_breaker(name) {
                 let op = operation_with_retry.clone();
@@ -19581,7 +19610,7 @@ impl ResilienceManager {
         } else {
             operation_with_retry
         };
-        
+  
         operation_with_circuit_breaker()
     }
 }
@@ -19621,19 +19650,19 @@ impl Sampler for RateLimitingSampler {
     fn should_sample(&self, _operation_name: &str, _trace_id: &str) -> bool {
         let mut last_tick = self.last_tick.lock().unwrap();
         let mut balance = self.balance.lock().unwrap();
-        
+  
         let tick = Instant::now();
         let elapsed = tick.duration_since(*last_tick).as_secs_f64();
         *last_tick = tick;
-        
+  
         // 添加时间流逝期间积累的点数
         *balance += elapsed * self.max_traces_per_second;
-        
+  
         // 限制最大积累点数
         if *balance > self.max_balance {
             *balance = self.max_balance;
         }
-        
+  
         if *balance >= 1.0 {
             *balance -= 1.0;
             true
@@ -19703,11 +19732,11 @@ impl DistributedTracer {
             reporter,
         }
     }
-    
+  
     fn start_span(&self, operation_name: &str) -> Arc<Span> {
         self.start_span_with_options(operation_name, None, Vec::new())
     }
-    
+  
     fn start_span_with_options(
         &self,
         operation_name: &str,
@@ -19721,17 +19750,17 @@ impl DistributedTracer {
         } else {
             uuid::Uuid::new_v4().to_string()
         };
-        
+  
         // 确定父跨度ID
         let parent_span_id = parent_span.map(|span| span.span_id.clone());
-        
+  
         // 决定是否采样
         if !self.sampler.should_sample(operation_name, &trace_id) {
             // 创建一个不记录的跨度
             // 在真实实现中，这应该是一个特殊的空操作跨度
             // 简化：我们仍然返回一个完整的跨度但不报告它
         }
-        
+  
         // 创建新跨度
         let span = Arc::new(Span {
             span_id,
@@ -19745,30 +19774,30 @@ impl DistributedTracer {
             is_finished: AtomicBool::new(false),
             references,
         });
-        
+  
         // 存储跨度
         {
             let mut spans = self.spans.write().unwrap();
             spans.insert(span.span_id.clone(), span.clone());
         }
-        
+  
         // 设置为当前活动跨度
         Self::active_spans.with(|active_spans| {
             active_spans.borrow_mut().push(span.clone());
         });
-        
+  
         span
     }
-    
+  
     fn finish_span(&self, span: &Arc<Span>) {
         if span.is_finished.swap(true, Ordering::SeqCst) {
             // 跨度已经完成
             return;
         }
-        
+  
         // 设置结束时间
         span.end_time = Some(SystemTime::now());
-        
+  
         // 从活动跨度中移除
         Self::active_spans.with(|active_spans| {
             let mut spans = active_spans.borrow_mut();
@@ -19776,50 +19805,50 @@ impl DistributedTracer {
                 spans.remove(pos);
             }
         });
-        
+  
         // 报告跨度
         self.reporter.report(span);
     }
-    
+  
     fn get_active_span(&self) -> Option<Arc<Span>> {
         Self::active_spans.with(|active_spans| {
             active_spans.borrow().last().cloned()
         })
     }
-    
+  
     fn set_tag(&self, span: &Arc<Span>, key: &str, value: &str) {
         let mut tags = span.tags.write().unwrap();
         tags.insert(key.to_string(), value.to_string());
     }
-    
+  
     fn log_kv(&self, span: &Arc<Span>, fields: HashMap<String, String>) {
         let log_entry = LogEntry {
             timestamp: SystemTime::now(),
             fields,
         };
-        
+  
         let mut logs = span.logs.write().unwrap();
         logs.push(log_entry);
     }
-    
+  
     fn inject(&self, span: &Arc<Span>, carrier: &mut dyn PropagationCarrier) {
         let context = SpanContext {
             trace_id: span.trace_id.clone(),
             span_id: span.span_id.clone(),
             baggage_items: HashMap::new(), // 这里简化了，没有实现行李项
         };
-        
+  
         self.propagator.inject(&context, carrier);
     }
-    
+  
     fn extract(&self, carrier: &dyn PropagationCarrier) -> Option<SpanContext> {
         self.propagator.extract(carrier)
     }
-    
+  
     fn join_trace(&self, operation_name: &str, context: SpanContext) -> Arc<Span> {
         // 创建一个加入现有跟踪的新跨度
         let span_id = uuid::Uuid::new_v4().to_string();
-        
+  
         let span = Arc::new(Span {
             span_id,
             trace_id: context.trace_id,
@@ -19832,21 +19861,21 @@ impl DistributedTracer {
             is_finished: AtomicBool::new(false),
             references: vec![SpanReference::ChildOf(context.span_id.clone())],
         });
-        
+  
         // 存储跨度
         {
             let mut spans = self.spans.write().unwrap();
             spans.insert(span.span_id.clone(), span.clone());
         }
-        
+  
         // 设置为当前活动跨度
         Self::active_spans.with(|active_spans| {
             active_spans.borrow_mut().push(span.clone());
         });
-        
+  
         span
     }
-    
+  
     fn close(&self) {
         self.reporter.close();
     }
@@ -19900,28 +19929,28 @@ impl Counter {
             value: AtomicU64::new(0),
         }
     }
-    
+  
     fn with_tags(mut self, tags: HashMap<String, String>) -> Self {
         *self.tags.write().unwrap() = tags;
         self
     }
-    
+  
     fn increment(&self) {
         self.value.fetch_add(1, Ordering::SeqCst);
     }
-    
+  
     fn increment_by(&self, amount: u64) {
         self.value.fetch_add(amount, Ordering::SeqCst);
     }
-    
+  
     fn decrement(&self) {
         self.value.fetch_sub(1, Ordering::SeqCst);
     }
-    
+  
     fn decrement_by(&self, amount: u64) {
         self.value.fetch_sub(amount, Ordering::SeqCst);
     }
-    
+  
     fn get(&self) -> u64 {
         self.value.load(Ordering::SeqCst)
     }
@@ -19931,19 +19960,19 @@ impl Metric for Counter {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn metric_type(&self) -> MetricType {
         MetricType::Counter
     }
-    
+  
     fn description(&self) -> &str {
         &self.description
     }
-    
+  
     fn tags(&self) -> HashMap<String, String> {
         self.tags.read().unwrap().clone()
     }
-    
+  
     fn reset(&self) {
         self.value.store(0, Ordering::SeqCst);
     }
@@ -19965,20 +19994,20 @@ impl Gauge {
             value: AtomicU64::new(0),
         }
     }
-    
+  
     fn with_tags(mut self, tags: HashMap<String, String>) -> Self {
         *self.tags.write().unwrap() = tags;
         self
     }
-    
+  
     fn set(&self, value: u64) {
         self.value.store(value, Ordering::SeqCst);
     }
-    
+  
     fn get(&self) -> u64 {
         self.value.load(Ordering::SeqCst)
     }
-    
+  
     fn update<F>(&self, f: F)
     where
         F: Fn(u64) -> u64,
@@ -20003,19 +20032,19 @@ impl Metric for Gauge {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn metric_type(&self) -> MetricType {
         MetricType::Gauge
     }
-    
+  
     fn description(&self) -> &str {
         &self.description
     }
-    
+  
     fn tags(&self) -> HashMap<String, String> {
         self.tags.read().unwrap().clone()
     }
-    
+  
     fn reset(&self) {
         self.value.store(0, Ordering::SeqCst);
     }
@@ -20045,16 +20074,16 @@ impl Histogram {
             max: AtomicU64::new(0),
         }
     }
-    
+  
     fn with_tags(mut self, tags: HashMap<String, String>) -> Self {
         *self.tags.write().unwrap() = tags;
         self
     }
-    
+  
     fn update(&self, value: u64) {
         self.count.fetch_add(1, Ordering::SeqCst);
         self.sum.fetch_add(value, Ordering::SeqCst);
-        
+  
         // 更新最小值
         let mut current_min = self.min.load(Ordering::SeqCst);
         while value < current_min {
@@ -20068,7 +20097,7 @@ impl Histogram {
                 Err(val) => current_min = val,
             }
         }
-        
+  
         // 更新最大值
         let mut current_max = self.max.load(Ordering::SeqCst);
         while value > current_max {
@@ -20082,28 +20111,28 @@ impl Histogram {
                 Err(val) => current_max = val,
             }
         }
-        
+  
         // 记录值
         let mut values = self.values.lock().unwrap();
         values.push(value);
     }
-    
+  
     fn count(&self) -> u64 {
         self.count.load(Ordering::SeqCst)
     }
-    
+  
     fn sum(&self) -> u64 {
         self.sum.load(Ordering::SeqCst)
     }
-    
+  
     fn min(&self) -> u64 {
         self.min.load(Ordering::SeqCst)
     }
-    
+  
     fn max(&self) -> u64 {
         self.max.load(Ordering::SeqCst)
     }
-    
+  
     fn mean(&self) -> f64 {
         let count = self.count.load(Ordering::SeqCst);
         if count == 0 {
@@ -20111,16 +20140,16 @@ impl Histogram {
         }
         self.sum.load(Ordering::SeqCst) as f64 / count as f64
     }
-    
+  
     fn percentile(&self, p: f64) -> u64 {
         let values = self.values.lock().unwrap();
         if values.is_empty() {
             return 0;
         }
-        
+  
         let mut sorted_values = values.clone();
         sorted_values.sort();
-        
+  
         let index = (p * sorted_values.len() as f64).floor() as usize;
         sorted_values[index.min(sorted_values.len() - 1)]
     }
@@ -20130,19 +20159,19 @@ impl Metric for Histogram {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn metric_type(&self) -> MetricType {
         MetricType::Histogram
     }
-    
+  
     fn description(&self) -> &str {
         &self.description
     }
-    
+  
     fn tags(&self) -> HashMap<String, String> {
         self.tags.read().unwrap().clone()
     }
-    
+  
     fn reset(&self) {
         self.count.store(0, Ordering::SeqCst);
         self.sum.store(0, Ordering::SeqCst);
@@ -20171,23 +20200,23 @@ impl Timer {
             active_timers: Mutex::new(HashMap::new()),
         }
     }
-    
+  
     fn with_tags(mut self, tags: HashMap<String, String>) -> Self {
         *self.tags.write().unwrap() = tags.clone();
         *self.histogram.tags.write().unwrap() = tags;
         self
     }
-    
+  
     fn start(&self) -> String {
         let timer_id = uuid::Uuid::new_v4().to_string();
         let mut active_timers = self.active_timers.lock().unwrap();
         active_timers.insert(timer_id.clone(), Instant::now());
         timer_id
     }
-    
+  
     fn stop(&self, timer_id: &str) -> Option<Duration> {
         let mut active_timers = self.active_timers.lock().unwrap();
-        
+  
         if let Some(start_time) = active_timers.remove(timer_id) {
             let duration = start_time.elapsed();
             self.histogram.update(duration.as_millis() as u64);
@@ -20196,7 +20225,7 @@ impl Timer {
             None
         }
     }
-    
+  
     fn time<F, T>(&self, f: F) -> T
     where
         F: FnOnce() -> T,
@@ -20206,23 +20235,23 @@ impl Timer {
         self.stop(&timer_id);
         result
     }
-    
+  
     fn count(&self) -> u64 {
         self.histogram.count()
     }
-    
+  
     fn min(&self) -> Duration {
         Duration::from_millis(self.histogram.min())
     }
-    
+  
     fn max(&self) -> Duration {
         Duration::from_millis(self.histogram.max())
     }
-    
+  
     fn mean(&self) -> Duration {
         Duration::from_millis(self.histogram.mean() as u64)
     }
-    
+  
     fn percentile(&self, p: f64) -> Duration {
         Duration::from_millis(self.histogram.percentile(p))
     }
@@ -20232,19 +20261,19 @@ impl Metric for Timer {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn metric_type(&self) -> MetricType {
         MetricType::Timer
     }
-    
+  
     fn description(&self) -> &str {
         &self.description
     }
-    
+  
     fn tags(&self) -> HashMap<String, String> {
         self.tags.read().unwrap().clone()
     }
-    
+  
     fn reset(&self) {
         self.histogram.reset();
         let mut active_timers = self.active_timers.lock().unwrap();
@@ -20267,7 +20296,7 @@ struct Meter {
 impl Meter {
     fn new(name: &str, description: &str) -> Self {
         let now = Instant::now();
-        
+  
         Meter {
             name: name.to_string(),
             description: description.to_string(),
@@ -20280,29 +20309,29 @@ impl Meter {
             last_tick: Mutex::new(now),
         }
     }
-    
+  
     fn with_tags(mut self, tags: HashMap<String, String>) -> Self {
         *self.tags.write().unwrap() = tags;
         self
     }
-    
+  
     fn mark(&self) {
         self.mark_n(1);
     }
-    
+  
     fn mark_n(&self, n: u64) {
         self.count.fetch_add(n, Ordering::SeqCst);
         self.tick();
     }
-    
+  
     fn tick(&self) {
         let mut last_tick = self.last_tick.lock().unwrap();
         let now = Instant::now();
         let elapsed = now.duration_since(*last_tick).as_secs_f64();
-        
+  
         if elapsed > 5.0 {
             *last_tick = now;
-            
+  
             // 更新速率
             let count = self.count.load(Ordering::SeqCst);
             let mean_rate_micros = if count > 0 {
@@ -20311,31 +20340,31 @@ impl Meter {
             } else {
                 0
             };
-            
+  
             // 这里使用了简化的指数加权移动平均计算
             // 在实际实现中，应该使用更精确的EWMA算法
             let m1_rate = self.m1_rate.load(Ordering::SeqCst);
             let m5_rate = self.m5_rate.load(Ordering::SeqCst);
             let m15_rate = self.m15_rate.load(Ordering::SeqCst);
-            
+  
             let alpha1 = 1.0 - (-5.0 / 60.0).exp();
             let alpha5 = 1.0 - (-5.0 / 300.0).exp();
             let alpha15 = 1.0 - (-5.0 / 900.0).exp();
-            
+  
             let new_m1_rate = ((mean_rate_micros as f64) * alpha1 + (m1_rate as f64) * (1.0 - alpha1)) as u64;
             let new_m5_rate = ((mean_rate_micros as f64) * alpha5 + (m5_rate as f64) * (1.0 - alpha5)) as u64;
             let new_m15_rate = ((mean_rate_micros as f64) * alpha15 + (m15_rate as f64) * (1.0 - alpha15)) as u64;
-            
+  
             self.m1_rate.store(new_m1_rate, Ordering::SeqCst);
             self.m5_rate.store(new_m5_rate, Ordering::SeqCst);
             self.m15_rate.store(new_m15_rate, Ordering::SeqCst);
         }
     }
-    
+  
     fn count(&self) -> u64 {
         self.count.load(Ordering::SeqCst)
     }
-    
+  
     fn mean_rate(&self) -> f64 {
         let count = self.count.load(Ordering::SeqCst);
         if count == 0 {
@@ -20344,17 +20373,17 @@ impl Meter {
         let elapsed = self.start_time.elapsed().as_secs_f64();
         count as f64 / elapsed
     }
-    
+  
     fn one_minute_rate(&self) -> f64 {
         self.tick();
         self.m1_rate.load(Ordering::SeqCst) as f64 / 1_000_000.0
     }
-    
+  
     fn five_minute_rate(&self) -> f64 {
         self.tick();
         self.m5_rate.load(Ordering::SeqCst) as f64 / 1_000_000.0
     }
-    
+  
     fn fifteen_minute_rate(&self) -> f64 {
         self.tick();
         self.m15_rate.load(Ordering::SeqCst) as f64 / 1_000_000.0
@@ -20365,19 +20394,19 @@ impl Metric for Meter {
     fn name(&self) -> &str {
         &self.name
     }
-    
+  
     fn metric_type(&self) -> MetricType {
         MetricType::Meter
     }
-    
+  
     fn description(&self) -> &str {
         &self.description
     }
-    
+  
     fn tags(&self) -> HashMap<String, String> {
         self.tags.read().unwrap().clone()
     }
-    
+  
     fn reset(&self) {
         self.count.store(0, Ordering::SeqCst);
         self.m1_rate.store(0, Ordering::SeqCst);
@@ -20395,20 +20424,20 @@ impl MetricsRegistry {
             reporters: RwLock::new(Vec::new()),
         }
     }
-    
+  
     fn with_tags(mut self, tags: HashMap<String, String>) -> Self {
         *self.tags.write().unwrap() = tags;
         self
     }
-    
+  
     fn add_reporter(&self, reporter: Box<dyn MetricReporter>) {
         let mut reporters = self.reporters.write().unwrap();
         reporters.push(reporter);
     }
-    
+  
     fn counter(&self, name: &str, description: &str) -> Arc<Counter> {
         let metrics = self.metrics.read().unwrap();
-        
+  
         if let Some(metric) = metrics.get(name) {
             if let Some(counter) = metric.downcast_ref::<Counter>() {
                 return counter;
@@ -20416,21 +20445,21 @@ impl MetricsRegistry {
                 panic!("度量 {} 已经存在，但不是计数器", name);
             }
         }
-        
+  
         // 创建新计数器
         drop(metrics);
         let tags = self.tags.read().unwrap().clone();
         let counter = Arc::new(Counter::new(name, description).with_tags(tags));
-        
+  
         let mut metrics = self.metrics.write().unwrap();
         metrics.insert(name.to_string(), counter.clone() as Arc<dyn Metric>);
-        
+  
         counter
     }
-    
+  
     fn gauge(&self, name: &str, description: &str) -> Arc<Gauge> {
         let metrics = self.metrics.read().unwrap();
-        
+  
         if let Some(metric) = metrics.get(name) {
             if let Some(gauge) = metric.downcast_ref::<Gauge>() {
                 return gauge;
@@ -20438,21 +20467,21 @@ impl MetricsRegistry {
                 panic!("度量 {} 已经存在，但不是仪表", name);
             }
         }
-        
+  
         // 创建新仪表
         drop(metrics);
         let tags = self.tags.read().unwrap().clone();
         let gauge = Arc::new(Gauge::new(name, description).with_tags(tags));
-        
+  
         let mut metrics = self.metrics.write().unwrap();
         metrics.insert(name.to_string(), gauge.clone() as Arc<dyn Metric>);
-        
+  
         gauge
     }
-    
+  
     fn histogram(&self, name: &str, description: &str) -> Arc<Histogram> {
         let metrics = self.metrics.read().unwrap();
-        
+  
         if let Some(metric) = metrics.get(name) {
             if let Some(histogram) = metric.downcast_ref::<Histogram>() {
                 return histogram;
@@ -20460,21 +20489,21 @@ impl MetricsRegistry {
                 panic!("度量 {} 已经存在，但不是直方图", name);
             }
         }
-        
+  
         // 创建新直方图
         drop(metrics);
         let tags = self.tags.read().unwrap().clone();
         let histogram = Arc::new(Histogram::new(name, description).with_tags(tags));
-        
+  
         let mut metrics = self.metrics.write().unwrap();
         metrics.insert(name.to_string(), histogram.clone() as Arc<dyn Metric>);
-        
+  
         histogram
     }
-    
+  
     fn timer(&self, name: &str, description: &str) -> Arc<Timer> {
         let metrics = self.metrics.read().unwrap();
-        
+  
         if let Some(metric) = metrics.get(name) {
             if let Some(timer) = metric.downcast_ref::<Timer>() {
                 return timer;
@@ -20482,21 +20511,21 @@ impl MetricsRegistry {
                 panic!("度量 {} 已经存在，但不是计时器", name);
             }
         }
-        
+  
         // 创建新计时器
         drop(metrics);
         let tags = self.tags.read().unwrap().clone();
         let timer = Arc::new(Timer::new(name, description).with_tags(tags));
-        
+  
         let mut metrics = self.metrics.write().unwrap();
         metrics.insert(name.to_string(), timer.clone() as Arc<dyn Metric>);
-        
+  
         timer
     }
-    
+  
     fn meter(&self, name: &str, description: &str) -> Arc<Meter> {
         let metrics = self.metrics.read().unwrap();
-        
+  
         if let Some(metric) = metrics.get(name) {
             if let Some(meter) = metric.downcast_ref::<Meter>() {
                 return meter;
@@ -20504,38 +20533,38 @@ impl MetricsRegistry {
                 panic!("度量 {} 已经存在，但不是流量计", name);
             }
         }
-        
+  
         // 创建新流量计
         drop(metrics);
         let tags = self.tags.read().unwrap().clone();
         let meter = Arc::new(Meter::new(name, description).with_tags(tags));
-        
+  
         let mut metrics = self.metrics.write().unwrap();
         metrics.insert(name.to_string(), meter.clone() as Arc<dyn Metric>);
-        
+  
         meter
     }
-    
+  
     fn get_metric(&self, name: &str) -> Option<Arc<dyn Metric>> {
         let metrics = self.metrics.read().unwrap();
         metrics.get(name).cloned()
     }
-    
+  
     fn get_metrics(&self) -> Vec<Arc<dyn Metric>> {
         let metrics = self.metrics.read().unwrap();
         metrics.values().cloned().collect()
     }
-    
+  
     fn remove_metric(&self, name: &str) -> bool {
         let mut metrics = self.metrics.write().unwrap();
         metrics.remove(name).is_some()
     }
-    
+  
     fn clear(&self) {
         let mut metrics = self.metrics.write().unwrap();
         metrics.clear();
     }
-    
+  
     fn report(&self) {
         let reporters = self.reporters.read().unwrap();
         for reporter in reporters.iter() {
@@ -20551,11 +20580,11 @@ impl MetricReporter for ConsoleMetricReporter {
     fn report_counter(&self, counter: &Counter) {
         println!("计数器 {}: {}", counter.name(), counter.get());
     }
-    
+  
     fn report_gauge(&self, gauge: &Gauge) {
         println!("仪表 {}: {}", gauge.name(), gauge.get());
     }
-    
+  
     fn report_histogram(&self, histogram: &Histogram) {
         println!("直方图 {}:", histogram.name());
         println!("  计数: {}", histogram.count());
@@ -20567,7 +20596,7 @@ impl MetricReporter for ConsoleMetricReporter {
         println!("  95%: {}", histogram.percentile(0.95));
         println!("  99%: {}", histogram.percentile(0.99));
     }
-    
+  
     fn report_timer(&self, timer: &Timer) {
         println!("计时器 {}:", timer.name());
         println!("  计数: {}", timer.count());
@@ -20579,7 +20608,7 @@ impl MetricReporter for ConsoleMetricReporter {
         println!("  95%: {:?}", timer.percentile(0.95));
         println!("  99%: {:?}", timer.percentile(0.99));
     }
-    
+  
     fn report_meter(&self, meter: &Meter) {
         println!("流量计 {}:", meter.name());
         println!("  计数: {}", meter.count());
@@ -20588,11 +20617,11 @@ impl MetricReporter for ConsoleMetricReporter {
         println!("  5分钟速率: {:.2} 次/秒", meter.five_minute_rate());
         println!("  15分钟速率: {:.2} 次/秒", meter.fifteen_minute_rate());
     }
-    
+  
     fn report_all(&self, registry: &MetricsRegistry) {
         println!("===== 度量报告 =====");
         let metrics = registry.get_metrics();
-        
+  
         for metric in metrics {
             match metric.metric_type() {
                 MetricType::Counter => {
@@ -20623,7 +20652,7 @@ impl MetricReporter for ConsoleMetricReporter {
             }
             println!();
         }
-        
+  
         println!("===================");
     }
 }
@@ -20660,45 +20689,45 @@ impl HealthCheckRegistry {
             checks: RwLock::new(HashMap::new()),
         }
     }
-    
+  
     fn register<H: HealthCheck + 'static>(&self, check: H) -> Result<(), String> {
         let mut checks = self.checks.write().unwrap();
         let name = check.name().to_string();
-        
+  
         if checks.contains_key(&name) {
             return Err(format!("健康检查 {} 已经存在", name));
         }
-        
+  
         checks.insert(name, Box::new(check));
         Ok(())
     }
-    
+  
     fn unregister(&self, name: &str) -> bool {
         let mut checks = self.checks.write().unwrap();
         checks.remove(name).is_some()
     }
-    
+  
     fn run_check(&self, name: &str) -> Option<HealthCheckResult> {
         let checks = self.checks.read().unwrap();
-        
+  
         if let Some(check) = checks.get(name) {
             Some(check.check())
         } else {
             None
         }
     }
-    
+  
     fn run_all_checks(&self) -> Vec<HealthCheckResult> {
         let checks = self.checks.read().unwrap();
-        
+  
         checks.values()
             .map(|check| check.check())
             .collect()
     }
-    
+  
     fn is_healthy(&self) -> bool {
         let results = self.run_all_checks();
-        
+  
         results.iter().all(|result| match result.status {
             HealthStatus::Up => true,
             _ => false,
@@ -20740,9 +20769,9 @@ impl DistributedSystemFramework {
             tracer,
         }
     }
-    
+  
     // 可以为框架添加各种应用场景的辅助方法
-    
+  
     fn build_service_client(&self, service_name: &str) -> ServiceClient {
         ServiceClient {
             service_name: service_name.to_string(),
@@ -20752,35 +20781,35 @@ impl DistributedSystemFramework {
             tracer: self.tracer.clone(),
         }
     }
-    
+  
     fn register_service(&self, registration: ServiceRegistration) -> Result<(), String> {
         // 创建并注册服务相关的度量
         let service_counter = self.metrics_registry.counter(
             &format!("service.{}.requests", registration.name),
             &format!("请求计数器 for {}", registration.name),
         );
-        
+  
         let service_timer = self.metrics_registry.timer(
             &format!("service.{}.response_time", registration.name),
             &format!("响应时间 for {}", registration.name),
         );
-        
+  
         // 注册健康检查
         if let Some(health) = &registration.health_check {
             self.register_service_health_check(&registration.name, health)?;
         }
-        
+  
         // 注册服务到注册中心
         self.service_registry.register_service(&registration)
     }
-    
+  
     fn register_service_health_check(&self, service_name: &str, health_check: &HealthCheck) -> Result<(), String> {
         self.health_check_registry.register(ServiceHealthCheck {
             service_name: service_name.to_string(),
             inner_check: health_check,
         })
     }
-    
+  
     fn create_cache_client(&self, name: &str) -> CacheClient {
         CacheClient {
             name: name.to_string(),
@@ -20788,7 +20817,7 @@ impl DistributedSystemFramework {
             metrics_registry: self.metrics_registry.clone(),
         }
     }
-    
+  
     fn create_queue_client(&self, name: &str) -> QueueClient {
         QueueClient {
             name: name.to_string(),
@@ -20796,7 +20825,7 @@ impl DistributedSystemFramework {
             metrics_registry: self.metrics_registry.clone(),
         }
     }
-    
+  
     fn create_event_publisher(&self, source: &str) -> EventPublisher {
         EventPublisher {
             source: source.to_string(),
@@ -20816,11 +20845,11 @@ impl<'a> HealthCheck for ServiceHealthCheck<'a> {
     fn name(&self) -> &str {
         self.inner_check.name()
     }
-    
+  
     fn check(&self) -> HealthCheckResult {
         self.inner_check.check()
     }
-    
+  
     fn description(&self) -> &str {
         self.inner_check.description()
     }
@@ -20846,27 +20875,27 @@ impl ServiceClient {
             &format!("service.{}.requests", self.service_name),
             &format!("请求计数器 for {}", self.service_name),
         );
-        
+  
         let timer = self.metrics_registry.timer(
             &format!("service.{}.response_time", self.service_name),
             &format!("响应时间 for {}", self.service_name),
         );
-        
+  
         // 创建跟踪跨度
         let span = self.tracer.start_span(&format!("{}.{}", self.service_name, method));
         self.tracer.set_tag(&span, "service", &self.service_name);
         self.tracer.set_tag(&span, "method", method);
-        
+  
         // 增加请求计数
         request_counter.increment();
-        
+  
         // 使用断路器、舱壁和重试策略
         let circuit_breaker_name = format!("{}-breaker", self.service_name);
         let bulkhead_name = format!("{}-bulkhead", self.service_name);
         let retry_policy_name = format!("{}-retry", self.service_name);
-        
+  
         let timer_id = timer.start();
-        
+  
         let result = self.resilience_manager.execute_with_resilience(
             Some(&circuit_breaker_name),
             Some(&bulkhead_name),
@@ -20913,26 +20942,26 @@ impl CacheClient {
             &format!("cache.{}.hits", self.name),
             &format!("缓存命中计数器 for {}", self.name),
         );
-        
+  
         let misses = self.metrics_registry.counter(
             &format!("cache.{}.misses", self.name),
             &format!("缓存未命中计数器 for {}", self.name),
         );
-        
+  
         let timer = self.metrics_registry.timer(
             &format!("cache.{}.get_time", self.name),
             &format!("缓存获取时间 for {}", self.name),
         );
-        
+  
         // 开始计时
         let timer_id = timer.start();
-        
+  
         // 从缓存获取
         let result = match self.cache_system.get(key) {
             Ok(Some(entry)) => {
                 // 命中缓存
                 hits.increment();
-                
+  
                 // 反序列化值
                 match bincode::deserialize(&entry.value) {
                     Ok(value) => Ok(Some(value)),
@@ -20948,23 +20977,23 @@ impl CacheClient {
                 Err(format!("缓存获取操作失败: {}", err.message))
             }
         };
-        
+  
         // 停止计时
         timer.stop(&timer_id);
-        
+  
         result
     }
-    
+  
     fn set<T: serde::Serialize>(&self, key: &str, value: &T, ttl: Option<Duration>) -> Result<(), String> {
         // 获取缓存度量
         let timer = self.metrics_registry.timer(
             &format!("cache.{}.set_time", self.name),
             &format!("缓存设置时间 for {}", self.name),
         );
-        
+  
         // 开始计时
         let timer_id = timer.start();
-        
+  
         // 序列化值
         let data = match bincode::serialize(value) {
             Ok(data) => data,
@@ -20972,19 +21001,19 @@ impl CacheClient {
                 return Err(format!("序列化值失败: {}", err));
             }
         };
-        
+  
         // 设置到缓存
         let result = match self.cache_system.set(key, &data, ttl) {
             Ok(_) => Ok(()),
             Err(err) => Err(format!("缓存设置操作失败: {}", err.message)),
         };
-        
+  
         // 停止计时
         timer.stop(&timer_id);
-        
+  
         result
     }
-    
+  
     fn get_or_compute<T, F>(&self, key: &str, ttl: Option<Duration>, compute_fn: F) -> Result<T, String>
     where
         T: serde::de::DeserializeOwned + serde::Serialize,
@@ -20994,16 +21023,16 @@ impl CacheClient {
         if let Some(value) = self.get::<T>(key)? {
             return Ok(value);
         }
-        
+  
         // 计算值
         let value = compute_fn()?;
-        
+  
         // 缓存值
         self.set(key, &value, ttl)?;
-        
+  
         Ok(value)
     }
-    
+  
     fn delete(&self, key: &str) -> Result<bool, String> {
         match self.cache_system.delete(key) {
             Ok(deleted) => Ok(deleted),
@@ -21026,15 +21055,15 @@ impl QueueClient {
             &format!("queue.{}.push_time", self.name),
             &format!("队列推送时间 for {}", self.name),
         );
-        
+  
         let size = self.metrics_registry.gauge(
             &format!("queue.{}.size", queue_name),
             &format!("队列大小 for {}", queue_name),
         );
-        
+  
         // 开始计时
         let timer_id = timer.start();
-        
+  
         // 序列化消息
         let data = match bincode::serialize(message) {
             Ok(data) => data,
@@ -21042,7 +21071,7 @@ impl QueueClient {
                 return Err(format!("序列化消息失败: {}", err));
             }
         };
-        
+  
         // 推送到队列
         let result = match self.queue_system.push(queue_name, &data, ttl) {
             Ok(message_id) => {
@@ -21050,33 +21079,33 @@ impl QueueClient {
                 if let Ok(queue_size) = self.queue_system.len(queue_name) {
                     size.set(queue_size as u64);
                 }
-                
+  
                 Ok(message_id)
             },
             Err(err) => Err(format!("队列推送操作失败: {}", err.message)),
         };
-        
+  
         // 停止计时
         timer.stop(&timer_id);
-        
+  
         result
     }
-    
+  
     fn pop<T: serde::de::DeserializeOwned>(&self, queue_name: &str, wait_time: Option<Duration>) -> Result<Option<(String, T)>, String> {
         // 获取队列度量
         let timer = self.metrics_registry.timer(
             &format!("queue.{}.pop_time", self.name),
             &format!("队列弹出时间 for {}", self.name),
         );
-        
+  
         let size = self.metrics_registry.gauge(
             &format!("queue.{}.size", queue_name),
             &format!("队列大小 for {}", queue_name),
         );
-        
+  
         // 开始计时
         let timer_id = timer.start();
-        
+  
         // 从队列弹出
         let result = match self.queue_system.pop(queue_name, wait_time) {
             Ok(Some(message)) => {
@@ -21087,7 +21116,7 @@ impl QueueClient {
                         if let Ok(queue_size) = self.queue_system.len(queue_name) {
                             size.set(queue_size as u64);
                         }
-                        
+  
                         Ok(Some((message.id, value)))
                     },
                     Err(err) => Err(format!("反序列化消息失败: {}", err)),
@@ -21096,13 +21125,13 @@ impl QueueClient {
             Ok(None) => Ok(None),
             Err(err) => Err(format!("队列弹出操作失败: {}", err.message)),
         };
-        
+  
         // 停止计时
         timer.stop(&timer_id);
-        
+  
         result
     }
-    
+  
     fn ack(&self, queue_name: &str, message_id: &str) -> Result<bool, String> {
         match self.queue_system.ack(queue_name, message_id) {
             Ok(acknowledged) => Ok(acknowledged),
@@ -21125,57 +21154,57 @@ impl EventPublisher {
             &format!("events.{}.published", event_type),
             &format!("已发布事件计数器 for {}", event_type),
         );
-        
+  
         let timer = self.metrics_registry.timer(
             &format!("events.{}.publish_time", event_type),
             &format!("事件发布时间 for {}", event_type),
         );
-        
+  
         // 开始计时
         let timer_id = timer.start();
-        
+  
         // 创建事件
         let event = self.event_bus.create_event(event_type, payload, &self.source);
-        
+  
         // 发布事件
         let result = self.event_bus.publish_event(&event);
-        
+  
         // 增加计数
         counter.increment();
-        
+  
         // 停止计时
         timer.stop(&timer_id);
-        
+  
         result
     }
-    
+  
     fn publish_correlated(&self, event_type: &str, payload: serde_json::Value, parent_event: &Event) -> Result<String, String> {
         // 获取事件度量
         let counter = self.metrics_registry.counter(
             &format!("events.{}.published", event_type),
             &format!("已发布事件计数器 for {}", event_type),
         );
-        
+  
         let timer = self.metrics_registry.timer(
             &format!("events.{}.publish_time", event_type),
             &format!("事件发布时间 for {}", event_type),
         );
-        
+  
         // 开始计时
         let timer_id = timer.start();
-        
+  
         // 创建关联事件
         let event = self.event_bus.create_correlated_event(event_type, payload, &self.source, parent_event);
-        
+  
         // 发布事件
         let result = self.event_bus.publish_event(&event);
-        
+  
         // 增加计数
         counter.increment();
-        
+  
         // 停止计时
         timer.stop(&timer_id);
-        
+  
         result
     }
 }
@@ -21191,4 +21220,5 @@ impl EventPublisher {
 // - 容错机制（断路器、舱壁、重试和超时）
 
 // 通过这些组件，可以构建复杂的分布式系统，同时保持高可用性、可扩展性和弹性。
+
 ```

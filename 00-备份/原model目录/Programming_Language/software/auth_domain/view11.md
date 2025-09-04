@@ -55,6 +55,7 @@ fn encrypt_data(data: &[u8], key: &[u8]) -> Result<Vec<u8>, CryptoError> {
     let ciphertext = cipher.encrypt(data)?;
     Ok(ciphertext)
 }
+
 ```
 
 ### 1.2 验证与认证概念
@@ -86,6 +87,7 @@ async fn authenticate_user(username: &str, password: &str) -> Result<AuthToken, 
     let token = generate_token(username, &user.roles)?;
     Ok(token)
 }
+
 ```
 
 ### 1.3 授权与访问控制
@@ -120,6 +122,7 @@ fn authorize(&self, token: &AuthToken, resource: &str, action: &str) -> Result<(
     
     result
 }
+
 ```
 
 ### 1.4 形式化验证基础
@@ -149,6 +152,7 @@ enum FormalProperty {
     Deadline(String, Duration), // 实时性约束
     Fairness(String),    // 公平性
 }
+
 ```
 
 ## 2. 形式化验证方法
@@ -182,6 +186,7 @@ fn secure_compare(a: &[u8], b: &[u8]) -> bool {
     
     result == 0
 }
+
 ```
 
 ### 2.2 定理证明
@@ -203,12 +208,14 @@ fn secure_compare(a: &[u8], b: &[u8]) -> bool {
 #[ensures(result <= dividend)]
 #[ensures(dividend == result * divisor + remainder)]
 #[ensures(remainder < divisor.abs())]
+
 */
 fn integer_division(dividend: i32, divisor: i32) -> (i32, i32) {
     let result = dividend / divisor;
     let remainder = dividend % divisor;
     (result, remainder)
 }
+
 ```
 
 ### 2.3 符号执行
@@ -264,6 +271,7 @@ fn encrypt_data(key: &[u8; 32], plaintext: &[u8], associated_data: &[u8]) -> Res
     result.append(&mut ciphertext_with_tag);
     Ok(result)
 }
+
 ```
 
 ### 3.2 协议层
@@ -309,6 +317,7 @@ impl Rbac {
         false
     }
 }
+
 ```
 
 ### 3.4 层次关联与元模型
@@ -389,6 +398,7 @@ impl Session {
         }
     }
 }
+
 ```
 
 **类型状态模式**：
@@ -423,6 +433,7 @@ let system = MySystem::new()
     .initialize("config".to_string())
     .activate();
 // system.initialize(...); // 编译错误：Active状态没有定义initialize
+
 ```
 
 ## 5. 高级主题与前沿应用
@@ -533,6 +544,7 @@ proptest! {
         prop_assert_eq!(v, decoded);
     }
 }
+
 ```
 
 **与形式化验证的关系**：
@@ -699,4 +711,5 @@ Rust语言的内存安全特性为构建可靠系统奠定了良好基础，而K
     ├── 7.2 组合性验证
     ├── 7.3 工具易用性
     └── 7.4 量子安全验证
+
 ```

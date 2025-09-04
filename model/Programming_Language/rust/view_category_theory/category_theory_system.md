@@ -114,6 +114,7 @@ I'll cover:
 6. Examples showing how category theory concepts map to system design patterns
 
 I'll make sure to use proper mathematical notation where needed and present the material in a systematic way as requested.</think>
+
 ```
 
 ## 1.1 目录
@@ -413,6 +414,7 @@ Yoneda引理告诉我们，对象可以通过其与其他对象的关系（态�
 </think># 范畴论（Category Theory）全面概述（续）
 
 ## 1.8 目录
+
 - [范畴论（Category Theory）全面概述](#范畴论category-theory全面概述)
   - [目录](#目录)
   - [1. 范畴论简介](#1-范畴论简介)
@@ -474,6 +476,7 @@ Yoneda引理告诉我们，对象可以通过其与其他对象的关系（态�
     - [13.2 进阶学习路径](#132-进阶学习路径)
     - [13.3 实践技巧](#133-实践技巧)
   - [14. 总结与展望](#14-总结与展望)
+
 ```
 
 ## 1.9 7. 更多高级范畴论概念
@@ -504,6 +507,7 @@ fetchUser(userId)
   .then(orders => calculateTotal(orders))
   .then(total => formatCurrency(total))
   .catch(error => handleError(error));
+
 ```
 
 ### 1.9.2 笛卡尔闭范畴
@@ -550,6 +554,7 @@ function processPayment(method: PaymentMethod) {
     case 'wallet': return processDigitalWallet(method);
   }
 }
+
 ```
 
 ### 1.9.4 范畴的积与余积
@@ -589,6 +594,7 @@ data ListF a b = NilF | ConsF a b
 
 -- 将List a视为ListF a的不动点
 type List a = Fix (ListF a)
+
 ```
 
 ## 1.10 8. 特定软件架构模式中的范畴论
@@ -629,6 +635,7 @@ val userStream: Observable[User] = Observable.fromIterable(users)
   .filter(user => user.isActive)
   .map(user => enrichUserData(user))
   .flatMap(user => getUserPreferences(user))
+
 ```
 
 ### 1.10.3 管道与过滤器架构
@@ -648,8 +655,11 @@ val userStream: Observable[User] = Observable.fromIterable(users)
 - 数据可视化工具如Tableau的数据流
 
 ```bash
+
 # 2 2 2 2 2 2 2 Unix管道作为函子组合
+
 cat log.txt | grep "ERROR" | sort | uniq -c | sort -nr
+
 ```
 
 ### 2 2 2 2 2 2 2 六边形架构
@@ -757,6 +767,7 @@ const optionFunctor: Functor<Option> = {
     return fa.tag === 'some' ? { tag: 'some', value: f(fa.value) } : fa;
   }
 };
+
 ```
 
 ### 2.2.2 纯函数式语言
@@ -805,6 +816,7 @@ val program: ZIO[Random with Logging, Nothing, Int] = for {
 val result: UIO[Int] = program.provideLayer(
   Random.live ++ Logging.console
 )
+
 ```
 
 ## 2.3 11. 系统验证与形式化方法
@@ -882,6 +894,7 @@ val listToOption: List ~> Option =
   new (List ~> Option) {
     def apply[A](fa: List[A]): Option[A] = fa.headOption
   }
+
 ```
 
 ### 2.4.2 Haskell中的范畴抽象
@@ -903,6 +916,7 @@ data Free f a = Pure a | Free (f (Free f a))
 
 -- 余积（ADT）
 data Either a b = Left a | Right b
+
 ```
 
 ### 2.4.3 ReasonML与OCaml
@@ -923,6 +937,7 @@ let processPayment = (method) =>
   | BankTransfer(account, routing) => processBankTransfer(account, routing)
   | DigitalWallet(email) => processDigitalWallet(email)
   };
+
 ```
 
 ### 2.4.4 TypeScript中的函数式编程
@@ -948,6 +963,7 @@ const handleResult = fold(
   (error: Error) => handleError(error),
   (user: User) => welcomeUser(user)
 );
+
 ```
 
 ## 2.5 13. 学习资源与实践建议
@@ -1030,6 +1046,7 @@ const handleResult = fold(
 这些内容将使整个范畴论概述更加全面，涵盖从理论到实践的多个层面。</think># 范畴论（Category Theory）全面概述（第三部分）
 
 ## 2.7 目录
+
 - [范畴论（Category Theory）全面概述](#范畴论category-theory全面概述)
   - [目录](#目录)
   - [1. 范畴论简介](#1-范畴论简介)
@@ -1121,6 +1138,7 @@ const handleResult = fold(
     - [21.1 结构现实主义](#211-结构现实主义)
     - [21.2 范畴论作为思维工具](#212-范畴论作为思维工具)
     - [21.3 复杂系统理解框架](#213-复杂系统理解框架)
+
 ```
 
 ## 2.8 15. 范畴论与人工智能
@@ -1146,7 +1164,9 @@ const handleResult = fold(
 - **模型架构搜索**：作为范畴上的搜索问题
 
 ```python
+
 # 3 3 3 3 3 3 3 PyTorch中的神经网络作为函子组合
+
 import torch.nn as nn
 
 class NeuralNet(nn.Module):
@@ -1164,6 +1184,7 @@ class NeuralNet(nn.Module):
         x = self.activation2(self.layer2(x))
         x = self.output(x)
         return x
+
 ```
 
 ### 3 3 3 3 3 3 3 概率编程与贝叶斯推理
@@ -1200,6 +1221,7 @@ instance Monad Prob where
 
 -- 贝叶斯推理
 bayesianUpdate :: Prob a -> (a -> Prob b) -> (b -> Prob a)
+
 ```
 
 ### 3 3 3 3 3 3 3 表示学习
@@ -1256,16 +1278,21 @@ bayesianUpdate :: Prob a -> (a -> Prob b) -> (b -> Prob a)
 - **量子-经典接口**：通过函子连接不同计算模型
 
 ```python
+
 # 4 4 4 4 4 4 4 Qiskit中的量子电路示例（通过函子视角）
+
 from qiskit import QuantumCircuit
 
 # 5 5 5 5 5 5 5 创建2量子比特电路
+
 qc = QuantumCircuit(2)
 
 # 6 6 6 6 6 6 6 应用量子门（态射）
+
 qc.h(0)      # Hadamard门作为态射
 qc.cx(0, 1)  # CNOT门作为态射
 qc.measure_all()  # 测量作为特殊态射
+
 ```
 
 ### 6 6 6 6 6 6 6 量子逻辑与范畴
@@ -1345,6 +1372,7 @@ class SupervisorActor extends Actor {
       println(result)
   }
 }
+
 ```
 
 ### 6.1.2 会话类型与通信
@@ -1416,6 +1444,7 @@ case class GCounter(counters: Map[String, Int]) {
   // 查询值（函子应用）
   def value: Int = counters.values.sum
 }
+
 ```
 
 ## 6.2 18. 依赖类型与证明辅助系统
@@ -1454,6 +1483,7 @@ data _⊎_ (A B : Set) : Set where
 distrib : {A B C : Set} → (A × B) ⊎ (A × C) → A × (B ⊎ C)
 distrib (inj₁ (a , b)) = a , inj₁ b
 distrib (inj₂ (a , c)) = a , inj₂ c
+
 ```
 
 ### 6.2.2 同伦类型论
@@ -1518,6 +1548,7 @@ Theorem insertion_sort_correct :
 Proof.
   (* 证明过程... *)
 Qed.
+
 ```
 
 ## 6.3 19. 拓扑数据分析
@@ -1649,6 +1680,7 @@ class Order implements Entity<string> {
     return other instanceof Order && this.id === other.id;
   }
 }
+
 ```
 
 ### 6.4.3 演化架构

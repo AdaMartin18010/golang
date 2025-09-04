@@ -170,6 +170,7 @@ fn main() {
     // let key_ref2 = &mut secret_key; // 错误：不能同时存在多个可变借用
     // process_sensitive_data(key_ref1);
 }
+
 ```
 
 ### 1.3.3 控制结构 (Control Structures)
@@ -329,6 +330,7 @@ fn main() {
     session.authentication_success();
     // session.start_authentication(); // 尝试非法转换
 }
+
 ```
 
 ### 1.4.2 数据流 (Data Flow)
@@ -407,6 +409,7 @@ func main() {
     fmt.Println("\nSimulating request with malicious username: admin' OR '1'='1")
     queryUserData("admin' OR '1'='1") // 参数化查询会将其视为普通字符串
 }
+
 ```
 
 ### 1.4.3 执行流 (Execution Flow)
@@ -690,7 +693,6 @@ func main() {
  // 结果通常会小于 numGoroutines，因为写入操作被覆盖了
  fmt.Printf("Unsafe Counter final value: %d (Expected: %d)\n", unsafeCounter, numGoroutines)
 
-
  // --- 测试安全的计数器 ---
  safeCounter = 0
  wg.Add(numGoroutines)
@@ -701,6 +703,7 @@ func main() {
  // 结果总是等于 numGoroutines
  fmt.Printf("Safe Counter final value: %d (Expected: %d)\n", safeCounter, numGoroutines)
 }
+
 ```
 
 - **安全影响**: 在认证或授权场景下，竞态条件可能导致凭证被多次使用、权限检查被绕过、或者关键状态（如“已登录”）被错误地更新或读取。
@@ -856,6 +859,7 @@ ABAC 或其他复杂授权策略可以使用形式化语言（如 XACML 的逻�
 ├── 安全经济学 (成本效益)
 ├── 硬件安全 (TPM, Enclaves)
 └── AI/ML 在安全攻防中的应用
+
 ```
 
 ---

@@ -325,6 +325,7 @@ func (c *ServiceDiscoveryClient) ClearCache() {
     defer c.mu.Unlock()
     c.cache = make(map[string]*Service)
 }
+
 ```
 
 ## 2. 熔断器模式 (Circuit Breaker)
@@ -635,6 +636,7 @@ func (m *CircuitBreakerManager) GetAllStats() map[string]interface{} {
     }
     return stats
 }
+
 ```
 
 ## 3. API网关模式 (API Gateway)
@@ -893,6 +895,7 @@ func (s *GatewayServer) Start() error {
 func (s *GatewayServer) Shutdown(ctx context.Context) error {
     return s.server.Shutdown(ctx)
 }
+
 ```
 
 ## 4. Saga模式
@@ -1064,6 +1067,7 @@ func (m *SagaManager) ExecuteSaga(id string) error {
     
     return saga.Execute()
 }
+
 ```
 
 ## 5. 性能分析

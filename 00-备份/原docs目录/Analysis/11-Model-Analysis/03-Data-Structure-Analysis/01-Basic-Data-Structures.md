@@ -108,6 +108,7 @@ func (a *Array[T]) Clear() {
         a.data[i] = zero
     }
 }
+
 ```
 
 ### 性能分析
@@ -289,6 +290,7 @@ func (l *LinkedList[T]) Clear() {
     l.tail = nil
     l.size = 0
 }
+
 ```
 
 ### 性能分析
@@ -402,6 +404,7 @@ func (s *Stack[T]) Clear() {
         s.data[i] = zero
     }
 }
+
 ```
 
 ### 性能分析
@@ -526,6 +529,7 @@ func (q *Queue[T]) Clear() {
         q.data[i] = zero
     }
 }
+
 ```
 
 ### 性能分析
@@ -688,6 +692,7 @@ func (d *Deque[T]) Clear() {
         d.data[i] = zero
     }
 }
+
 ```
 
 ### 性能分析
@@ -803,6 +808,7 @@ func getNode() *Node {
 func putNode(node *Node) {
     nodePool.Put(node)
 }
+
 ```
 
 #### 2.2 并发优化
@@ -823,6 +829,7 @@ func (s *AtomicStack[T]) Push(element T) {
         }
     }
 }
+
 ```
 
 #### 2.3 缓存优化
@@ -834,6 +841,7 @@ type CacheFriendlyNode[T any] struct {
     Next *CacheFriendlyNode[T]
     _    [64 - unsafe.Sizeof(T) - unsafe.Sizeof(unsafe.Pointer(nil))]byte // 填充到64字节
 }
+
 ```
 
 ### 3. 错误处理
@@ -847,6 +855,7 @@ func (a *Array[T]) boundsCheck(index int) error {
     }
     return nil
 }
+
 ```
 
 #### 3.2 空值检查
@@ -858,6 +867,7 @@ func (l *LinkedList[T]) nullCheck() error {
     }
     return nil
 }
+
 ```
 
 ### 4. 测试策略
@@ -882,6 +892,7 @@ func TestArrayOperations(t *testing.T) {
         t.Errorf("Expected value 2 at index 1, got %d", val)
     }
 }
+
 ```
 
 #### 4.2 性能测试
@@ -904,6 +915,7 @@ func BenchmarkLinkedListAppend(b *testing.B) {
         list.InsertAtTail(i)
     }
 }
+
 ```
 
 #### 4.3 并发测试
@@ -929,6 +941,7 @@ func TestConcurrentStack(t *testing.T) {
         t.Errorf("Expected size 1000, got %d", stack.Size())
     }
 }
+
 ```
 
 ---

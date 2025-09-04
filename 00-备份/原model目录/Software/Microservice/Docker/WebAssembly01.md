@@ -120,6 +120,7 @@ WebAssembly.instantiateStreaming(fetch('module.wasm'), importObject)
     const result = obj.instance.exports.processMemory();
     console.log(result);
   });
+
 ```
 
 ### 2.2 执行模型
@@ -411,4 +412,5 @@ mindmap
         移动平台
         IoT设备
         统一应用模型
+
 ```

@@ -196,6 +196,7 @@ func ExposeMetrics() {
     http.Handle("/metrics", promhttp.Handler())
     go http.ListenAndServe(":8080", nil)
 }
+
 ```
 
 ### 3.2 指标与日志层
@@ -272,6 +273,7 @@ func getLogLevel(statusCode int) string {
     }
     return "info"
 }
+
 ```
 
 ### 3.3 分布式追踪层
@@ -369,6 +371,7 @@ func ProcessOrder(ctx context.Context, orderID string) error {
     span.AddEvent("order_processing_completed")
     return nil
 }
+
 ```
 
 ### 3.4 告警与可视化层
@@ -396,7 +399,9 @@ $$
 **Prometheus告警规则示例**：
 
 ```yaml
+
 # prometheus-alerts.yml
+
 groups:
   - name: golang-service-alerts
     rules:
@@ -417,6 +422,7 @@ groups:
         annotations:
           summary: "High latency detected"
           description: "95th percentile latency is {{ $value }} seconds"
+
 ```
 
 ---
@@ -505,6 +511,7 @@ func CollectSystemMetrics() {
         }
     }
 }
+
 ```
 
 ### 4.2 应用级指标
@@ -604,6 +611,7 @@ func (cm *ConnectionManager) RemoveConnection() {
 func TrackBusinessOperation(operation, status string) {
     businessMetrics.WithLabelValues(operation, status).Inc()
 }
+
 ```
 
 ### 4.3 业务级指标
@@ -711,6 +719,7 @@ func TrackCustomerSatisfaction(score float64) {
 func TrackIssueResolution(resolutionTime time.Duration) {
     issueResolutionTimeHistogram.Observe(resolutionTime.Hours())
 }
+
 ```
 
 ---
@@ -855,6 +864,7 @@ func (tm *TracingManager) TraceBusinessOperation(ctx context.Context, operation 
         trace.WithAttributes(attributes...),
     )
 }
+
 ```
 
 ### 5.3 链路分析工具
@@ -902,6 +912,7 @@ func InitJaegerTracer(serviceName, jaegerEndpoint string) (*sdktrace.TracerProvi
     
     return tp, nil
 }
+
 ```
 
 ---
@@ -926,6 +937,7 @@ Golang监控系统应遵循以下设计原则：
 
 ```latex
 {namespace}_{subsystem}_{name}_{unit}
+
 ```
 
 例如：
@@ -1155,6 +1167,7 @@ func (am *AppMetrics) TrackCacheMiss() {
 func (am *AppMetrics) SetCacheSize(size int64) {
     am.cacheSizeGauge.Set(float64(size))
 }
+
 ```
 
 ### 6.3 日志最佳实践
@@ -1282,6 +1295,7 @@ func getLogLevel(statusCode int) string {
     }
     return "info"
 }
+
 ```
 
 ---
@@ -1317,12 +1331,15 @@ Prometheus是云原生监控的事实标准，提供了强大的指标收集、�
 │   Grafana       │    │   AlertManager  │    │   Jaeger        │
 │   Dashboard     │    │   Alerting      │    │   Tracing       │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
+
 ```
 
 **Prometheus配置示例**：
 
 ```yaml
+
 # prometheus.yml
+
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -1350,6 +1367,7 @@ alerting:
     - static_configs:
         - targets:
           - localhost:9093
+
 ```
 
 **Golang Prometheus客户端使用**：
@@ -1408,6 +1426,7 @@ func ExposeMetrics(addr string) {
     http.Handle("/metrics", promhttp.Handler())
     go http.ListenAndServe(addr, nil)
 }
+
 ```
 
 ### 7.2 Grafana仪表板
@@ -1485,6 +1504,7 @@ Grafana提供了强大的可视化和仪表板功能。
     ]
   }
 }
+
 ```
 
 ### 7.3 AlertManager告警
@@ -1494,7 +1514,9 @@ AlertManager负责告警的分组、去重和路由。
 **告警规则配置**：
 
 ```yaml
+
 # alerts.yml
+
 groups:
   - name: golang-service-alerts
     rules:
@@ -1541,12 +1563,15 @@ groups:
         annotations:
           summary: "Potential goroutine leak"
           description: "Goroutine count increased by {{ $value }} in 5 minutes"
+
 ```
 
 **AlertManager配置**：
 
 ```yaml
+
 # alertmanager.yml
+
 global:
   resolve_timeout: 5m
 
@@ -1581,6 +1606,7 @@ inhibit_rules:
     target_match:
       severity: 'warning'
     equal: ['alertname', 'service']
+
 ```
 
 ---
@@ -1874,6 +1900,7 @@ func (hpm *HighPerformanceMetrics) CollectResourceMetrics() {
         }
     }()
 }
+
 ```
 
 ### 9.2 Golang微服务监控实践
@@ -2008,6 +2035,7 @@ func (mm *MicroserviceMonitor) TrackServiceDiscovery(serviceName string, instanc
     // 记录服务发现指标
     mm.metrics.throughput.WithLabelValues("service_discovery").Set(float64(len(instances)))
 }
+
 ```
 
 ### 9.3 性能基准测试
@@ -2067,6 +2095,7 @@ func BenchmarkLogging(b *testing.B) {
         )
     }
 }
+
 ```
 
 ---
@@ -2110,6 +2139,7 @@ func BenchmarkLogging(b *testing.B) {
 │   Grafana       │    │   AlertManager  │    │   Jaeger        │
 │   Dashboard     │    │   Alerting      │    │   Tracing       │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
+
 ```
 
 ### 10.2 指标分类表
@@ -2144,6 +2174,7 @@ HTTP Request Rate (requests/second)
    0 └─────────────────────────────────────────────────────────────────────
      00:00  04:00  08:00  12:00  16:00  20:00  24:00
                     Time (hours)
+
 ```
 
 ### 10.4 分布式追踪链路图
@@ -2170,6 +2201,7 @@ Span Tree:
 │   └── Cache Check (2ms)
 └── User Service (25ms)
     └── Database Query (20ms)
+
 ```
 
 ---

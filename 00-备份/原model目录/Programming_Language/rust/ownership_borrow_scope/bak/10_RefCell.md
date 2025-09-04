@@ -41,6 +41,7 @@ fn main() {
 
     println!("Value after modification: {}", *value.borrow());
 }
+
 ```
 
 在这个示例中，我们使用 `RefCell` 来包装一个值，然后通过 `borrow_mut` 方法获取一个可变引用，即使在不可变引用的情况下也能修改值。
@@ -102,6 +103,7 @@ impl<'a, T> Borrow<T> for RefCell<T> {
         // 实现细节
     }
 }
+
 ```
 
 这允许 `RefCell` 的用户通过调用 `borrow` 方法来获取对内部数据的不可变引用。
@@ -116,6 +118,7 @@ impl<'a, T> BorrowMut<T> for RefCell<T> {
         // 实现细节
     }
 }
+
 ```
 
 `BorrowMut` 允许 `RefCell` 的用户即使在存在不可变引用的情况下也能获取可变引用，这是 `RefCell` 提供内部可变性的关键特性。

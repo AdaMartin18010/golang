@@ -16,6 +16,7 @@
 我将组织一个全面的微服务架构设计指南，包含最新的理念和实践。
 由于思维导图在纯文本格式中有限制，我将尝试用ASCII艺术来表示简单的思维导图结构。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -101,6 +102,7 @@
 ┌─────────┐ ┌────────┐ ┌──────────┐ ┌───────────────┐ ┌──────────────┐
 │ 独立部署 │ │ 去中心化│ │ 业务划分 │ │ 技术多样性     │ │ 弹性与韧性    │
 └─────────┘ └────────┘ └──────────┘ └───────────────┘ └──────────────┘
+
 ```
 
 ### 1.2.1 微服务架构的核心特性
@@ -140,6 +142,7 @@
 ┌──────┐ ┌──────┐ ┌──────────┐ ┌──────────┐ ┌────────────┐
 │自治性 │ │弹性  │ │可扩展性   │ │可观测性   │ │业务驱动设计│
 └──────┘ └──────┘ └──────────┘ └──────────┘ └────────────┘
+
 ```
 
 ## 1.4 领域驱动设计在微服务中的应用
@@ -195,6 +198,7 @@ impl Order {
         Ok(())
     }
 }
+
 ```
 
 ## 1.5 微服务通信模式
@@ -259,6 +263,7 @@ async fn publish_order_created_event(event: OrderCreatedEvent) -> Result<(), Err
     
     Ok(())
 }
+
 ```
 
 ## 1.6 服务网格架构
@@ -296,6 +301,7 @@ async fn publish_order_created_event(event: OrderCreatedEvent) -> Result<(), Err
 │  │ Proxy1 │◄────┼────►│ Proxy2 │       │
 │  └────────┘     │     └────────┘       │
 └─────────────────┴──────────────────────┘
+
 ```
 
 ## 1.7 API网关与边缘计算
@@ -369,6 +375,7 @@ async fn proxy_to_service(
         .status(status)
         .body(body))
 }
+
 ```
 
 ## 1.8 事件驱动架构
@@ -445,6 +452,7 @@ impl Order {
         order
     }
 }
+
 ```
 
 ## 1.9 数据一致性与分布式事务
@@ -524,6 +532,7 @@ impl OrderSaga {
     
     // 实现具体步骤执行和补偿逻辑...
 }
+
 ```
 
 ## 1.10 微服务安全架构
@@ -599,6 +608,7 @@ fn auth() -> impl Filter<Extract = (Claims,), Error = Rejection> + Clone {
             Ok(token_data.claims)
         })
 }
+
 ```
 
 ## 1.11 可观测性设计
@@ -673,6 +683,7 @@ async fn process_order(order_id: String) -> Result<(), Error> {
     
     payment_result
 }
+
 ```
 
 ## 1.12 云原生微服务实践
@@ -750,6 +761,7 @@ impl HealthChecker {
         status
     }
 }
+
 ```
 
 ## 1.13 微服务演进与重构策略
@@ -827,6 +839,7 @@ impl OrderRepository for LegacyOrderAdapter {
         Ok(())
     }
 }
+
 ```
 
 ## 1.14 Rust实现微服务示例
@@ -900,6 +913,7 @@ pub enum OrderEvent {
     OrderShipped { order_id: OrderId, tracking_id: String },
     OrderCancelled { order_id: OrderId, reason: String },
 }
+
 ```
 
 ### 1.14.2 应用服务
@@ -962,6 +976,7 @@ impl<R: OrderRepository, E: EventPublisher> OrderService<R, E> {
     
     // 其他业务方法...
 }
+
 ```
 
 ### 1.14.3 API层
@@ -1017,6 +1032,7 @@ async fn create_order_handler(
 }
 
 // 其他处理函数...
+
 ```
 
 ### 1.14.4 基础设施
@@ -1064,6 +1080,7 @@ impl OrderRepository for MongoOrderRepository {
     
     // 其他仓储方法...
 }
+
 ```
 
 ### 1.14.5 主应用
@@ -1095,33 +1112,34 @@ async fn main() -> Result<(), Error> {
 // main.rs（续）
     // 初始化日志
     tracing_subscriber::fmt::init();
-    
+  
     // 获取配置
     let mongo_uri = env::var("MONGO_URI").expect("MONGO_URI must be set");
     let kafka_brokers = env::var("KAFKA_BROKERS").expect("KAFKA_BROKERS must be set");
     let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string()).parse::<u16>()?;
-    
+  
     // 初始化存储
     let order_repository = MongoOrderRepository::new(&mongo_uri, "order_service").await?;
-    
+  
     // 初始化事件发布器
     let event_publisher = KafkaEventPublisher::new(&kafka_brokers).await?;
-    
+  
     // 创建应用服务
     let order_service = OrderService::new(order_repository, event_publisher);
-    
+  
     // 创建API路由
     let api = order_api::order_routes(order_service);
-    
+  
     // 添加日志中间件
     let routes = api.with(warp::log("order_service"));
-    
+  
     // 启动服务器
     println!("Starting server on port {}", port);
     warp::serve(routes).run(([0, 0, 0, 0], port)).await;
-    
+  
     Ok(())
 }
+
 ```
 
 ### 1.15.2 消费事件
@@ -1147,13 +1165,13 @@ impl<I: InventoryService> OrderEventsConsumer<I> {
             .set("enable.auto.commit", "true")
             .set("auto.offset.reset", "earliest")
             .create()?;
-            
+  
         Ok(Self { consumer, inventory_service })
     }
-    
+  
     pub async fn start(&self) -> Result<(), Error> {
         self.consumer.subscribe(&["order-events"])?;
-        
+  
         loop {
             match self.consumer.recv().await {
                 Ok(msg) => {
@@ -1168,7 +1186,7 @@ impl<I: InventoryService> OrderEventsConsumer<I> {
             }
         }
     }
-    
+  
     async fn process_event(&self, event: OrderEvent) -> Result<(), Error> {
         match event {
             OrderEvent::OrderCreated(order) => {
@@ -1194,10 +1212,11 @@ impl<I: InventoryService> OrderEventsConsumer<I> {
             // 处理其他事件...
             _ => {}
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ## 1.16 高级微服务设计模式
@@ -1226,7 +1245,7 @@ impl OrderProcessor {
         while let Some(order) = self.order_rx.recv().await {
             // 处理订单
             println!("Processing order: {}", order.id);
-            
+  
             // 异步处理支付
             let payment = Payment::from_order(&order);
             if let Err(e) = self.payment_tx.send(payment).await {
@@ -1242,13 +1261,13 @@ async fn process_orders(orders: Vec<Order>) {
         .map(|order| async {
             // 异步验证订单
             let validated = validate_order(&order).await?;
-            
+  
             // 异步处理支付
             let payment_result = process_payment(&validated).await?;
-            
+  
             // 异步更新库存
             update_inventory(&validated).await?;
-            
+  
             Ok::<_, Error>(payment_result)
         })
         .buffer_unordered(10) // 并发处理10个订单
@@ -1260,6 +1279,7 @@ async fn process_orders(orders: Vec<Order>) {
         })
         .await;
 }
+
 ```
 
 ### 1.16.2 多租户架构模式
@@ -1297,14 +1317,14 @@ where
         .get("X-Tenant-ID")
         .ok_or(Error::MissingTenant)?
         .to_str()?;
-    
+  
     // 创建租户上下文
     let tenant_context = TenantContext::new(tenant_id);
-    
+  
     // 在租户上下文中执行请求处理
     let future = next(request, tenant_context);
     let response = future.await.map_err(Into::into)?;
-    
+  
     Ok(response)
 }
 
@@ -1323,10 +1343,10 @@ impl MultiTenantOrderRepository {
         .bind(tenant.id())
         .fetch_one(&self.db_pool)
         .await?;
-        
+  
         Ok(order)
     }
-    
+  
     async fn save(&self, order: &Order, tenant: &TenantContext) -> Result<(), Error> {
         // 保存订单时始终包含租户ID
         sqlx::query(
@@ -1344,10 +1364,11 @@ impl MultiTenantOrderRepository {
         .bind(order.updated_at())
         .execute(&self.db_pool)
         .await?;
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ### 1.16.3 边缘函数模式
@@ -1369,7 +1390,8 @@ impl MultiTenantOrderRepository {
 // Rust边缘函数示例(使用Cloudflare Workers类似架构)
 use worker::*;
 
-#[event(fetch)]
+# [event(fetch)]
+
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     // 路由请求
     Router::new()
@@ -1377,10 +1399,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get("/api/products/:id", |req, ctx| {
             // 从URL获取产品ID
             let id = req.param("id").unwrap();
-            
+  
             // 获取用户地理位置
             let geo = req.cf().unwrap().country().unwrap_or("unknown");
-            
+  
             // 基于地理位置定制响应
             if geo == "CN" {
                 // 中国区域使用本地产品数据
@@ -1402,6 +1424,7 @@ async fn get_product_from_asia_cache(id: &str, ctx: &Context) -> Result<Product>
     let product = kv.get(id).json::<Product>().await?;
     Ok(product.unwrap_or_default())
 }
+
 ```
 
 ## 1.17 微服务测试策略
@@ -1430,55 +1453,57 @@ async fn get_product_from_asia_cache(id: &str, ctx: &Context) -> Result<Product>
 
 ```rust
 // Rust单元测试示例
-#[cfg(test)]
+
+# [cfg(test)]
+
 mod tests {
     use super::*;
     use mockall::predicate::*;
     use mockall::*;
-    
+  
     mock! {
         OrderRepository {}
-        
+  
         impl OrderRepository for OrderRepository {
             fn find_by_id(&self, id: &OrderId) -> Result<Order, Error>;
             fn save(&self, order: &Order) -> Result<(), Error>;
         }
     }
-    
+  
     mock! {
         EventPublisher {}
-        
+  
         impl EventPublisher for EventPublisher {
             fn publish(&self, event: OrderEvent) -> Result<(), Error>;
         }
     }
-    
+  
     #[tokio::test]
     async fn test_create_order() {
         // 创建模拟
         let mut mock_repo = MockOrderRepository::new();
         let mut mock_publisher = MockEventPublisher::new();
-        
+  
         // 设置期望行为
         mock_repo
             .expect_save()
             .returning(|_| Ok(()));
-            
+  
         mock_publisher
             .expect_publish()
             .returning(|_| Ok(()));
-        
+  
         // 创建测试服务
         let service = OrderService::new(mock_repo, mock_publisher);
-        
+  
         // 执行测试
         let customer_id = CustomerId::new();
         let items = vec![
             OrderItem::new(ProductId::new(), 2, Money::new(100.0, Currency::CNY)),
         ];
-        
+  
         let result = service.create_order(customer_id, items).await;
-        
+  
         // 验证结果
         assert!(result.is_ok());
         let order = result.unwrap();
@@ -1486,17 +1511,20 @@ mod tests {
         assert_eq!(order.total().amount(), 200.0);
     }
 }
+
 ```
 
 ### 1.17.2 契约测试
 
 ```rust
 // Rust契约测试示例(使用Pact框架概念)
-#[tokio::test]
+
+# [tokio::test]
+
 async fn test_order_service_contract() {
     // 创建消费者测试
     let mut pact_builder = PactBuilder::new("OrderService", "PaymentService");
-    
+  
     // 定义期望的交互
     pact_builder
         .interaction("process payment for order")
@@ -1521,13 +1549,13 @@ async fn test_order_service_contract() {
                    "timestamp": matching!("timestamp")
                }));
         });
-    
+  
     // 运行测试
     let mock_server = pact_builder.start_mock_server().await;
-    
+  
     // 使用模拟服务器URL创建客户端
     let client = PaymentClient::new(&mock_server.url());
-    
+  
     // 执行客户端代码
     let result = client
         .process_payment(
@@ -1535,13 +1563,14 @@ async fn test_order_service_contract() {
             Money::new(100.0, Currency::CNY)
         )
         .await;
-    
+  
     // 验证结果
     assert!(result.is_ok());
-    
+  
     // 验证所有期望的交互都发生
     mock_server.verify().await;
 }
+
 ```
 
 ## 1.18 微服务性能优化
@@ -1585,7 +1614,8 @@ async fn test_order_service_contract() {
 use futures::{stream, StreamExt};
 use async_trait::async_trait;
 
-#[async_trait]
+# [async_trait]
+
 trait ProductRepository {
     async fn find_by_ids(&self, ids: &[ProductId]) -> Result<Vec<Product>, Error>;
 }
@@ -1602,10 +1632,10 @@ impl<P: ProductRepository> OrderEnrichmentService<P> {
             .iter()
             .flat_map(|order| order.items().iter().map(|item| item.product_id().clone()))
             .collect();
-            
+  
         // 批量加载产品(带缓存)
         let products = self.load_products(product_ids).await?;
-        
+  
         // 并行处理订单丰富
         stream::iter(orders)
             .map(|order| {
@@ -1616,7 +1646,7 @@ impl<P: ProductRepository> OrderEnrichmentService<P> {
                         .map(|item| {
                             let product = products.get(item.product_id())
                                 .ok_or_else(|| Error::ProductNotFound(item.product_id().to_string()))?;
-                            
+  
                             Ok(EnrichedOrderItem {
                                 product: product.clone(),
                                 quantity: item.quantity(),
@@ -1624,7 +1654,7 @@ impl<P: ProductRepository> OrderEnrichmentService<P> {
                             })
                         })
                         .collect::<Result<Vec<_>, Error>>()?;
-                        
+  
                     Ok::<_, Error>(EnrichedOrder {
                         id: order.id().clone(),
                         customer_id: order.customer_id().clone(),
@@ -1638,12 +1668,12 @@ impl<P: ProductRepository> OrderEnrichmentService<P> {
             .try_collect()
             .await
     }
-    
+  
     async fn load_products(&self, product_ids: Vec<ProductId>) -> Result<HashMap<ProductId, Product>, Error> {
         // 先检查缓存
         let mut result = HashMap::new();
         let mut missing_ids = Vec::new();
-        
+  
         for id in &product_ids {
             if let Some(product) = self.cache.get(id).await {
                 result.insert(id.clone(), product);
@@ -1651,21 +1681,22 @@ impl<P: ProductRepository> OrderEnrichmentService<P> {
                 missing_ids.push(id.clone());
             }
         }
-        
+  
         // 批量加载缓存未命中的产品
         if !missing_ids.is_empty() {
             let products = self.product_repo.find_by_ids(&missing_ids).await?;
-            
+  
             // 更新缓存并添加到结果
             for product in products {
                 self.cache.set(product.id().clone(), product.clone(), Duration::from_secs(300)).await;
                 result.insert(product.id().clone(), product);
             }
         }
-        
+  
         Ok(result)
     }
 }
+
 ```
 
 ## 1.19 总结

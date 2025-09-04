@@ -395,6 +395,7 @@
 
 ```haskell
 let x = (1, 2) in let y = (1, 2) in x == y
+
 ```
 
 在这个例子中，`x` 和 `y` 是结构等价的元组，因此它们在运行时是等价的。
@@ -410,6 +411,7 @@ data List a = Nil | Cons a (List a)
 
 let lst1 = Cons 1 (Cons 2 Nil)
 let lst2 = Cons 1 (Cons 2 Nil)
+
 ```
 
 在这个例子中，`lst1` 和 `lst2` 是通过相同的递归结构构造的，因此它们在运行时是等价的。
@@ -422,6 +424,7 @@ let lst2 = Cons 1 (Cons 2 Nil)
 
 ```haskell
 let x = 2 + 3 in let y = 5 in x == y
+
 ```
 
 在这个例子中，`2 + 3` 可以被替换为 `5`，因此 `x` 和 `y` 在运行时是等价的。
@@ -435,6 +438,7 @@ let x = 2 + 3 in let y = 5 in x == y
 ```haskell
 let f x = x * 2
 let g = f 3
+
 ```
 
 在这个例子中，`g` 可以被替换为 `6`，因此 `f 3` 和 `g` 在运行时是等价的。

@@ -95,6 +95,7 @@ Temporal源码实现分析
         ├── 代码到状态机转换
         ├── 状态持久化序列化
         └── 历史事件重建
+
 ```
 
 ## 1. 引言
@@ -132,6 +133,7 @@ func (e *historyEngineImpl) RecordWorkflowTaskStarted(
     err = e.updateWorkflowExecution(ctx, weContext, request.GetNamespaceId())
     // ...
 }
+
 ```
 
 核心持久化层是在`persistence`包中实现的，以Cassandra实现为例：
@@ -167,6 +169,7 @@ func (d *cassandraWorkflowStore) UpdateWorkflowExecution(
     }
     // ...
 }
+
 ```
 
 #### 2.1.2 确定性重放引擎
@@ -206,6 +209,7 @@ func (c *workflowEnvironmentInterceptor) isReplay() bool {
     // 通过比较当前事件ID和重放事件ID确定是否处于重放模式
     return c.workflowEnvironment.IsReplay()
 }
+
 ```
 
 Rust SDK中的重放实现（简化）：
@@ -271,6 +275,7 @@ impl WorkflowState {
         Ok(handle)
     }
 }
+
 ```
 
 #### 2.1.3 工作流执行状态机
@@ -332,6 +337,7 @@ func (m *WorkflowStateMachine) handleWorkflowExecutionStarted(event *historypb.H
     m.nextEventID++
     return nil
 }
+
 ```
 
 #### 2.1.4 故障恢复实现机制
@@ -374,6 +380,7 @@ func (p *PolicyImpl) ComputeNextDelay(attempt int32, err error) (time.Duration, 
     
     return time.Duration(nextInterval), true
 }
+
 ```
 
 工作流服务端的活动任务重试实现：
@@ -425,6 +432,7 @@ func (s *workflowTaskHandlerCallbacksImpl) handleActivityScheduled(
     
     return nil
 }
+
 ```
 
 ### 2.2 控制流构建的代码实现
@@ -487,6 +495,7 @@ func SequentialExecution(ctx Context) error {
     // 执行活动C
     return ExecuteActivity(ctx, ActivityC, resultB).Get(ctx, nil)
 }
+
 ```
 
 Rust SDK中的顺序执行则通过async/await实现：
@@ -525,6 +534,7 @@ pub async fn sequential_workflow(ctx: &WfContext) -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 #### 2.2.2 并行执行实现
@@ -597,6 +607,7 @@ func ParallelExecution(ctx Context) error {
     
     return nil
 }
+
 ```
 
 Rust SDK中的并行执行通过async/await和Future组合实现：
@@ -635,6 +646,7 @@ pub async fn parallel_workflow(ctx: &WfContext) -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 #### 2.2.3 条件分支实现
@@ -652,6 +664,7 @@ func ConditionalWorkflow(ctx workflow.Context, condition bool) error {
         return workflow.ExecuteActivity(ctx, ActivityB).Get(ctx, nil)
     }
 }
+
 ```
 
 Rust SDK的实现：
@@ -669,6 +682,7 @@ pub async fn conditional_workflow(ctx: &WfContext, condition: bool) -> Result<()
     
     Ok(())
 }
+
 ```
 
 Temporal内部状态机对条件分支的处理，主要通过事件历史构建和重放时的状态追踪来实现：
@@ -691,6 +705,7 @@ func (d *dispatcherImpl) ProcessEvent(event *historypb.HistoryEvent) error {
     
     return nil
 }
+
 ```
 
 #### 2.2.4 循环结构实现
@@ -728,6 +743,7 @@ func RetryableLoop(ctx workflow.Context) error {
         workflow.Sleep(ctx, time.Second*time.Duration(attempt))
     }
 }
+
 ```
 
 Rust SDK的实现：
@@ -759,6 +775,7 @@ pub async fn conditional_loop_workflow(ctx: &WfContext) -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 ### 2.3 组合构建的代码实现
@@ -820,6 +837,7 @@ func ParentWorkflow(ctx workflow.Context) (string, error) {
     
     return fmt.Sprintf("Parent completed with child result: %s", childResult), nil
 }
+
 ```
 
 Rust SDK的子工作流实现：
@@ -887,6 +905,7 @@ pub async fn parent_workflow(ctx: &WfContext) -> Result<String, Error> {
     
     Ok(format!("Parent completed with child result: {}", child_result))
 }
+
 ```
 
 服务端子工作流执行实现：
@@ -919,6 +938,7 @@ func (handler *childWorkflowTaskHandlerImpl) handleStartChildWorkflow(
         startAttributes.GetWorkflowId(),
     )
 }
+
 ```
 
 #### 2.3.2 信号机制实现
@@ -993,6 +1013,7 @@ func SignalWorkflow(ctx workflow.Context) error {
     // 后续处理...
     return nil
 }
+
 ```
 
 Rust SDK的信号实现：
@@ -1057,6 +1078,7 @@ pub async fn signal_receiver_workflow(ctx: &WfContext) -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 #### 2.3.3 查询机制实现
@@ -1126,6 +1148,7 @@ func OrderWorkflow(ctx workflow.Context, orderID string) error {
     status = "COMPLETED"
     return nil
 }
+
 ```
 
 Rust SDK的查询实现：
@@ -1200,6 +1223,7 @@ impl Workflow for OrderWorkflow {
         ))]
     }
 }
+
 ```
 
 #### 2.3.4 动态工作流实现
@@ -1260,6 +1284,7 @@ func DynamicWorkflow(ctx workflow.Context, workflowType string, input []byte) ([
     
     return result, err
 }
+
 ```
 
 Rust SDK的动态工作流支持：
@@ -1332,6 +1357,7 @@ pub async fn execute_activity_by_name(
     
     Ok(result.into_inner())
 }
+
 ```
 
 ## 3. 完备性分析与实现限制
@@ -1388,6 +1414,7 @@ func (m *StateMachine) ProcessEvent(event Event) error {
     
     return nil
 }
+
 ```
 
 工作流任务状态机示例：
@@ -1435,6 +1462,7 @@ func NewTaskStateMachine() *StateMachine {
     
     return machine
 }
+
 ```
 
 #### 3.1.2 事件处理器实现
@@ -1501,6 +1529,7 @@ func (h *Handler) AppendEvents(
     
     return nil
 }
+
 ```
 
 #### 3.1.3 确定性保证机制
@@ -1555,6 +1584,7 @@ func (r *deterministicRunner) NewUUID() string {
     }
     return uuid.Must(uuid.FromBytes(randomBytes)).String()
 }
+
 ```
 
 Rust SDK中确定性保证实现：
@@ -1629,6 +1659,7 @@ impl DeterministicRandom {
         self.seed
     }
 }
+
 ```
 
 ### 3.2 源码中的完备性保证
@@ -1655,6 +1686,7 @@ func SequentialPattern(ctx workflow.Context) error {
     
     return workflow.ExecuteActivity(ctx, ActivityC).Get(ctx, nil)
 }
+
 ```
 
 **2. 并行分支模式**：通过Future并行执行
@@ -1680,6 +1712,7 @@ func ParallelSplitPattern(ctx workflow.Context) error {
     
     return nil
 }
+
 ```
 
 **3. 选择模式**：通过条件分支实现
@@ -1697,6 +1730,7 @@ func ExclusiveChoicePattern(ctx workflow.Context, condition string) error {
         return workflow.ExecuteActivity(ctx, DefaultActivity).Get(ctx, nil)
     }
 }
+
 ```
 
 **4. 多选模式**：通过多条件分支实现
@@ -1727,6 +1761,7 @@ func MultiChoicePattern(ctx workflow.Context, conditions map[string]bool) error 
     
     return nil
 }
+
 ```
 
 **5. 循环模式**：通过语言循环结构实现
@@ -1742,6 +1777,7 @@ func ArbitraryLoopPattern(ctx workflow.Context, iterations int) error {
     }
     return nil
 }
+
 ```
 
 **6. 延迟选择模式**：通过Selector实现
@@ -1780,6 +1816,7 @@ func DeferredChoicePattern(ctx workflow.Context) error {
         return workflow.ExecuteActivity(ctx, TimeoutActivity).Get(ctx, nil)
     }
 }
+
 ```
 
 **7. 里程碑模式**：通过信号和查询实现
@@ -1823,13 +1860,14 @@ func MilestonePattern(ctx workflow.Context) error {
     
     return nil
 }
+
 ```
 
 #### 3.2.2 确定性执行保证代码
 
 Temporal SDK中确保工作流确定性的关键代码：
 
--**1. 确定性时间实现**
+- **1. 确定性时间实现**
 
 ```go
 // internal/workflow/context.go
@@ -1847,9 +1885,10 @@ func (weh *workflowExecutionEventHandlerImpl) Now() time.Time {
     // 非重放期间，使用服务器当前时间
     return weh.currentTime
 }
+
 ```
 
--**2. 确定性随机数实现**
+- **2. 确定性随机数实现**
 
 ```go
 // internal/workflow/deterministic_wrappers.go
@@ -1866,9 +1905,10 @@ func (weh *workflowExecutionEventHandlerImpl) GetRandom() int64 {
     }
     return weh.rand.Int63()
 }
+
 ```
 
--**3. 确定性UUID实现**
+- **3. 确定性UUID实现**
 
 ```go
 // internal/workflow/deterministic_wrappers.go
@@ -1884,9 +1924,10 @@ func (weh *workflowExecutionEventHandlerImpl) GenerateUUID() string {
     }
     return weh.determinisUUIDGen.New().String()
 }
+
 ```
 
--**4. 重放与非重放状态区分**
+- **4. 重放与非重放状态区分**
 
 ```go
 // internal/internal_worker.go
@@ -1912,13 +1953,14 @@ func (weh *workflowExecutionEventHandlerImpl) SideEffect(f func() interface{}) i
     weh.sideEffectResult.Send(weh.currentContext, result)
     return result
 }
+
 ```
 
 #### 3.2.3 分布式一致性实现
 
 Temporal服务端保证分布式一致性的关键代码：
 
--**1. 乐观并发控制**
+- **1. 乐观并发控制**
 
 ```go
 // service/history/workflowExecutor.go
@@ -1987,9 +2029,10 @@ func (e *workflowExecutorImpl) updateWorkflowExecution(
     // 更新成功
     return nil
 }
+
 ```
 
--**2. 事务性任务队列**
+- **2. 事务性任务队列**
 
 ```go
 // service/history/transferQueueActiveTaskExecutor.go
@@ -2075,9 +2118,10 @@ func (t *transferQueueActiveTaskExecutor) processActivityTask(
     // 任务处理成功
     return nil
 }
+
 ```
 
--**3. 状态恢复与重试**
+- **3. 状态恢复与重试**
 
 ```go
 // service/worker/failover/failover.go
@@ -2165,6 +2209,7 @@ func (f *failoverManagerImpl) failoverDomain(
     
     return nil
 }
+
 ```
 
 ### 3.3 实现限制的代码体现
@@ -2203,6 +2248,7 @@ func validateWorkflowDefinition(wf interface{}) error {
     
     return nil
 }
+
 ```
 
 非确定性代码检测实现：
@@ -2235,6 +2281,7 @@ func (i *workflowEnvironmentInterceptor) NewRandom() *rand.Rand {
     // 返回带有确定性种子的随机数生成器
     return rand.New(rand.NewSource(i.workflowEnvironment.Next()))
 }
+
 ```
 
 非确定性的外部API调用限制：
@@ -2271,6 +2318,7 @@ func ExecuteActivity(ctx Context, activity interface{}, args ...interface{}) Fut
     // 通过工作流环境执行活动
     return getWorkflowEnvironment(ctx).ExecuteActivity(params)
 }
+
 ```
 
 #### 3.3.2 状态大小限制实现
@@ -2299,6 +2347,7 @@ func (e *historyEngineImpl) validateEventBatchSize(
     
     return nil
 }
+
 ```
 
 工作流执行状态大小限制实现：
@@ -2328,6 +2377,7 @@ func (m *cassandraMetadataManagerImpl) validateLimitConfig(config *persistencesp
     
     return nil
 }
+
 ```
 
 状态管理和分页实现：
@@ -2416,6 +2466,7 @@ func (wh *WorkflowHandler) getHistory(
     
     return events, resp.GetResponse().GetNextPageToken(), nil
 }
+
 ```
 
 #### 3.3.3 时间相关限制处理
@@ -2512,6 +2563,7 @@ func (handler *timeoutHandlerImpl) timeoutActivity(
     
     return nil
 }
+
 ```
 
 工作流执行超时控制：
@@ -2563,6 +2615,7 @@ func (t *timerQueueProcessorImpl) processWorkflowExecutionTimeout(
     // 重新安排超时检查
     return t.rescheduleWorkflowTimeout(ctx, mutableState)
 }
+
 ```
 
 ### 3.4 实现场景与方案映射
@@ -2743,6 +2796,7 @@ func LoanApprovalWorkflow(ctx workflow.Context, application LoanApplication) (Lo
     currentState = "COMPLETED"
     return decision, nil
 }
+
 ```
 
 Rust版的长时间运行工作流：
@@ -3021,6 +3075,7 @@ impl Workflow for ClaimProcessingWorkflow {
         Ok(self.decision.clone())
     }
 }
+
 ```
 
 #### 3.4.2 微服务编排代码模式
@@ -3252,6 +3307,7 @@ func OrderFulfillmentWorkflow(ctx workflow.Context, order Order) error {
     logger.Info("Order fulfillment workflow completed successfully", "orderId", order.ID)
     return nil
 }
+
 ```
 
 Rust版微服务编排模式：
@@ -3388,7 +3444,6 @@ impl Workflow for UserRegistrationWorkflow {
         let (profile_result, preferences_result, security_result) = 
             futures::try_join!(profile_future, preferences_future, security_future)?;
         
-        
         // 5. 创建初始资源 - 资源服务
         self.status = "CREATING_RESOURCES".to_string();
         let resource_result = execute_activity(
@@ -3508,6 +3563,7 @@ impl Workflow for UserRegistrationWorkflow {
         })
     }
 }
+
 ```
 
 #### 3.4.3 分布式事务实现方案
@@ -3723,6 +3779,7 @@ func OrderProcessingSaga(ctx workflow.Context, orderRequest OrderRequest) (Order
     
     return result, nil
 }
+
 ```
 
 Rust版Saga实现：
@@ -4032,6 +4089,7 @@ impl Workflow for TravelBookingSaga {
         Ok(self.booking_result.clone())
     }
 }
+
 ```
 
 ## 4. 模型转换的代码实现
@@ -4108,6 +4166,7 @@ func (g *taskGeneratorImpl) generateScheduleWorkflowTask(targetCluster string) e
     
     return nil
 }
+
 ```
 
 #### 4.1.2 执行流到调度转换
@@ -4179,6 +4238,7 @@ func (m *TaskMatcher) OfferTask(
 func (m *TaskMatcher) PollForTask(
     ctx context.Context,
 ) (*in
+
 ```go
 // 工作器轮询任务
 func (m *TaskMatcher) PollForTask(
@@ -4186,17 +4246,17 @@ func (m *TaskMatcher) PollForTask(
 ) (*internalTask, error) {
     // 创建通道接收任务
     taskC := make(chan *internalTask, 1)
-    
+  
     // 注册到匹配器
     m.mutex.Lock()
     m.taskC = append(m.taskC, taskC)
     m.mutex.Unlock()
-    
+  
     // 确保退出时取消注册
     defer func() {
         m.mutex.Lock()
         defer m.mutex.Unlock()
-        
+  
         // 从等待列表中移除
         for i, ch := range m.taskC {
             if ch == taskC {
@@ -4206,7 +4266,7 @@ func (m *TaskMatcher) PollForTask(
         }
         close(taskC)
     }()
-    
+  
     // 等待任务分派或超时
     select {
     case task := <-taskC:
@@ -4215,6 +4275,7 @@ func (m *TaskMatcher) PollForTask(
         return nil, ctx.Err()
     }
 }
+
 ```
 
 Temporal队列处理器实现：
@@ -4227,7 +4288,7 @@ func (t *transferQueueProcessorImpl) processTransferTask(
 ) (retError error) {
     // 根据任务类型决定处理器
     var taskExecutor queueTaskExecutor
-    
+  
     switch taskInfo.TaskType {
     case enumsspb.TASK_TYPE_TRANSFER_ACTIVITY_TASK:
         taskExecutor = t.activeTaskExecutor
@@ -4239,7 +4300,7 @@ func (t *transferQueueProcessorImpl) processTransferTask(
     default:
         return errUnknownTransferTask
     }
-    
+  
     // 调用相应的执行器处理任务
     return taskExecutor.execute(ctx, taskInfo, true)
 }
@@ -4266,7 +4327,7 @@ func (t *transferQueueActiveTaskExecutor) execute(
         }
     // ... 其他任务类型处理
     }
-    
+  
     return err
 }
 
@@ -4280,19 +4341,19 @@ func (t *transferQueueActiveTaskExecutor) processActivityTask(
         WorkflowId: task.GetWorkflowId(),
         RunId:      task.GetRunId(),
     }
-    
+  
     // 加载工作流状态
     mutableState, err := t.loadMutableState(ctx, task.GetNamespaceId(), execution, openWorkflow)
     if err != nil {
         return err
     }
-    
+  
     // 检查活动是否仍然需要调度
     if activityInfo, ok := mutableState.GetActivityInfo(task.GetScheduleId()); ok {
         if activityInfo.StartedId == common.EmptyEventID {
             // 活动尚未开始，需要调度
             taskQueue := activityInfo.TaskQueue
-            
+  
             // 发送活动任务到匹配服务
             _, err := t.matchingClient.AddActivityTask(ctx, &matchingservice.AddActivityTaskRequest{
                 NamespaceId:    task.GetNamespaceId(),
@@ -4302,15 +4363,16 @@ func (t *transferQueueActiveTaskExecutor) processActivityTask(
                 WorkflowId:     task.GetWorkflowId(),
                 ScheduledEventAttributes: activityInfo.ScheduledEvent,
             })
-            
+  
             if err != nil {
                 return err
             }
         }
     }
-    
+  
     return nil
 }
+
 ```
 
 #### 4.1.3 控制流实现抽象
@@ -4325,9 +4387,9 @@ func ExecuteActivity(ctx Context, activity interface{}, args ...interface{}) Fut
     if err != nil {
         return newErrorFuture(ctx, err)
     }
-    
+  
     // ... 省略部分代码
-    
+  
     // 创建活动执行参数
     params := ExecuteActivityParams{
         ActivityID:             activityID,
@@ -4337,7 +4399,7 @@ func ExecuteActivity(ctx Context, activity interface{}, args ...interface{}) Fut
         ScheduleToCloseTimeout: options.ScheduleToCloseTimeout,
         // ... 其他参数
     }
-    
+  
     // 调用环境执行活动
     return getWorkflowEnvironment(ctx).ExecuteActivity(params)
 }
@@ -4362,7 +4424,7 @@ func (s *selectorImpl) Select(ctx Context) (selected bool) {
             return true
         }
     }
-    
+  
     // 查找是否有可接收的channel
     for _, ch := range s.channels {
         if ch.channel.CanReceive() {
@@ -4370,26 +4432,26 @@ func (s *selectorImpl) Select(ctx Context) (selected bool) {
             return true
         }
     }
-    
+  
     // 没有就绪的操作，等待事件
     if s.hasDefault {
         s.defaultFn()
         return true
     }
-    
+  
     // 创建选择器
     selectedIndex, more := getWorkflowEnvironment(ctx).Select(ctx, s)
     if selectedIndex == -1 {
         return false
     }
-    
+  
     if selectedIndex < len(s.futures) {
         s.futures[selectedIndex].fn(s.futures[selectedIndex].future)
     } else {
         selectedIndex -= len(s.futures)
         s.channels[selectedIndex].fn(s.channels[selectedIndex].channel, more)
     }
-    
+  
     return true
 }
 
@@ -4409,13 +4471,13 @@ func ExecuteChildWorkflow(
         var future ChildWorkflowFuture
         return future
     }
-    
+  
     // 获取子工作流类型
     childWorkflowType, err := getWorkflowFunctionName(childWorkflow)
     if err != nil {
         return nil
     }
-    
+  
     // 创建子工作流执行参数
     params := StartChildWorkflowExecutionParams{
         Domain:                 options.Domain,
@@ -4425,10 +4487,11 @@ func ExecuteChildWorkflow(
         ExecutionStartToCloseTimeout: options.ExecutionStartToCloseTimeout,
         // ... 其他参数
     }
-    
+  
     // 调用环境执行子工作流
     return getWorkflowEnvironment(ctx).ExecuteChildWorkflow(params)
 }
+
 ```
 
 ### 4.2 模型转换的具体实现
@@ -4447,12 +4510,12 @@ func (m *workflowExecutionStateMachineImpl) ApplyEvent(
     nextEventID := m.state.GetNextEventID()
     if event.GetEventId() != nextEventID {
         return serviceerror.NewInternal(fmt.Sprintf(
-            "invalid event ID: expected %v, actual %v", 
-            nextEventID, 
+            "invalid event ID: expected %v, actual %v",
+            nextEventID,
             event.GetEventId(),
         ))
     }
-    
+  
     // 基于事件类型，更新状态机状态
     switch event.GetEventType() {
     case enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_STARTED:
@@ -4483,7 +4546,7 @@ func (m *workflowExecutionStateMachineImpl) applyWorkflowExecutionStartedEvent(
 ) error {
     // 从事件属性中提取信息
     attributes := event.GetWorkflowExecutionStartedEventAttributes()
-    
+  
     // 设置工作流基本信息
     m.state.ExecutionInfo.WorkflowId = m.workflowID
     m.state.ExecutionInfo.WorkflowRunId = m.runID
@@ -4491,15 +4554,15 @@ func (m *workflowExecutionStateMachineImpl) applyWorkflowExecutionStartedEvent(
     m.state.ExecutionInfo.TaskQueue = attributes.GetTaskQueue().GetName()
     m.state.ExecutionInfo.WorkflowRunTimeout = attributes.GetWorkflowRunTimeout()
     m.state.ExecutionInfo.WorkflowTaskTimeout = attributes.GetWorkflowTaskTimeout()
-    
+  
     // 更新工作流执行状态
     m.state.ExecutionState.State = enumsspb.WORKFLOW_EXECUTION_STATE_CREATED
     m.state.ExecutionState.Status = enumspb.WORKFLOW_EXECUTION_STATUS_RUNNING
-    
+  
     // 添加事件到历史记录
     m.state.AddHistoryEvent(event)
     m.state.NextEventID++
-    
+  
     return nil
 }
 
@@ -4511,22 +4574,23 @@ func (m *workflowExecutionStateMachineImpl) applyWorkflowTaskCompletedEvent(
     if m.state.WorkflowTaskInfo == nil || m.state.WorkflowTaskInfo.ScheduleID == common.EmptyEventID {
         return serviceerror.NewInternal("workflow task not scheduled")
     }
-    
+  
     // 确认工作流任务确实已经开始
     if m.state.WorkflowTaskInfo.StartedID == common.EmptyEventID {
         return serviceerror.NewInternal("workflow task not started")
     }
-    
+  
     // 更新工作流任务状态为已完成
     m.state.WorkflowTaskInfo.ScheduleID = common.EmptyEventID
     m.state.WorkflowTaskInfo.StartedID = common.EmptyEventID
-    
+  
     // 添加事件到历史记录
     m.state.AddHistoryEvent(event)
     m.state.NextEventID++
-    
+  
     return nil
 }
+
 ```
 
 Rust中的状态机转换实现：
@@ -4548,7 +4612,7 @@ impl WorkflowStateMachine {
                 actual: event.event_id,
             });
         }
-        
+  
         // 根据事件类型更新状态
         match event.event_type {
             EventType::WorkflowExecutionStarted => {
@@ -4574,14 +4638,14 @@ impl WorkflowStateMachine {
                 return Err(Error::UnsupportedEventType(event.event_type));
             }
         }
-        
+  
         // 添加事件到历史记录并递增事件ID
         self.history.push(event);
         self.next_event_id += 1;
-        
+  
         Ok(())
     }
-    
+  
     fn apply_workflow_execution_started(&mut self, event: &HistoryEvent) -> Result<(), Error> {
         // 确保工作流处于初始状态
         if self.state != WorkflowState::Initial {
@@ -4590,18 +4654,18 @@ impl WorkflowStateMachine {
                 event_type: event.event_type,
             });
         }
-        
+  
         // 解析事件属性
         let attrs = event.workflow_execution_started_attributes
             .as_ref()
             .ok_or(Error::MissingEventAttributes)?;
-        
+  
         // 更新工作流状态
         self.state = WorkflowState::Started;
-        
+  
         Ok(())
     }
-    
+  
     fn apply_workflow_task_completed(&mut self, event: &HistoryEvent) -> Result<(), Error> {
         // 确保工作流处于正确状态
         if self.state != WorkflowState::WorkflowTaskStarted {
@@ -4610,18 +4674,19 @@ impl WorkflowStateMachine {
                 event_type: event.event_type,
             });
         }
-        
+  
         // 解析事件属性
         let _attrs = event.workflow_task_completed_attributes
             .as_ref()
             .ok_or(Error::MissingEventAttributes)?;
-        
+  
         // 更新工作流状态
         self.state = WorkflowState::WorkflowTaskCompleted;
-        
+  
         Ok(())
     }
 }
+
 ```
 
 #### 4.2.2 状态持久化序列化
@@ -4634,7 +4699,7 @@ func (p *payloadSerializer) SerializeEvent(event *historypb.HistoryEvent) ([]byt
     if event == nil {
         return nil, nil
     }
-    
+  
     return p.ShardSerializer.SeriailizeEvent(event)
 }
 
@@ -4642,7 +4707,7 @@ func (p *payloadSerializer) SerializeBatchEvents(events []*historypb.HistoryEven
     if events == nil {
         return nil, nil
     }
-    
+  
     return p.ShardSerializer.SerializeBatchEvents(events)
 }
 
@@ -4663,6 +4728,7 @@ func (w *serializerForWorkflow) DeserializeWorkflowExecutionInfo(
     }
     return info, nil
 }
+
 ```
 
 工作流状态持久化的实现（Cassandra为例）：
@@ -4674,21 +4740,21 @@ func (d *cassandraStore) UpdateWorkflowExecution(
     request *p.UpdateWorkflowExecutionRequest,
 ) error {
     batch := d.session.NewBatch(gocql.LoggedBatch)
-    
+  
     // 序列化工作流执行信息
     executionInfo := request.UpdateWorkflowMutation.ExecutionInfo
     executionInfoBlob, err := d.payloadSerializer.SerializeWorkflowExecutionInfo(executionInfo)
     if err != nil {
         return serviceerror.NewInternal(fmt.Sprintf("UpdateWorkflowExecution: failed to serialize execution info: %v", err))
     }
-    
+  
     // 序列化工作流状态
     executionState := request.UpdateWorkflowMutation.ExecutionState
     executionStateBlob, err := d.payloadSerializer.SerializeWorkflowExecutionState(executionState)
     if err != nil {
         return serviceerror.NewInternal(fmt.Sprintf("UpdateWorkflowExecution: failed to serialize execution state: %v", err))
     }
-    
+  
     // 更新工作流执行记录
     batch.Query(templateUpdateWorkflowExecutionQuery,
         executionInfoBlob,
@@ -4700,7 +4766,7 @@ func (d *cassandraStore) UpdateWorkflowExecution(
         executionState.RunId,
         request.UpdateWorkflowMutation.Condition, // 乐观锁条件
     )
-    
+  
     // 添加新事件
     for _, e := range request.UpdateWorkflowMutation.NewEvents {
         batch.Query(templateCreateWorkflowExecutionEventQuery,
@@ -4713,7 +4779,7 @@ func (d *cassandraStore) UpdateWorkflowExecution(
             e.DataEncoding,
         )
     }
-    
+  
     // 执行批处理
     if err := d.session.ExecuteBatch(batch); err != nil {
         if d.isConditionFailedError(err) {
@@ -4721,9 +4787,10 @@ func (d *cassandraStore) UpdateWorkflowExecution(
         }
         return serviceerror.NewInternal(fmt.Sprintf("UpdateWorkflowExecution operation failed: %v", err))
     }
-    
+  
     return nil
 }
+
 ```
 
 #### 4.2.3 历史事件重建
@@ -4736,7 +4803,7 @@ func (b *mutableStateBuilder) ReplicateWorkflowExecutionStartedEvent(
     event *historypb.HistoryEvent,
 ) error {
     attributes := event.GetWorkflowExecutionStartedEventAttributes()
-    
+  
     // 设置工作流执行信息
     b.executionInfo.WorkflowId = b.workflowID
     b.executionInfo.WorkflowRunId = b.runID
@@ -4745,11 +4812,11 @@ func (b *mutableStateBuilder) ReplicateWorkflowExecutionStartedEvent(
     b.executionInfo.TaskQueue = attributes.GetTaskQueue().GetName()
     b.executionInfo.WorkflowRunTimeout = attributes.GetWorkflowRunTimeout()
     b.executionInfo.WorkflowTaskTimeout = attributes.GetWorkflowTaskTimeout()
-    
+  
     // 设置工作流执行状态
     b.executionState.State = enumsspb.WORKFLOW_EXECUTION_STATE_CREATED
     b.executionState.Status = enumspb.WORKFLOW_EXECUTION_STATUS_RUNNING
-    
+  
     return nil
 }
 
@@ -4764,26 +4831,26 @@ func (b *mutableStateBuilder) ApplyEvents(
     if len(history.Events) == 0 {
         return serviceerror.NewInvalidArgument("history is empty")
     }
-    
+  
     firstEvent := history.Events[0]
-    
+  
     // 验证第一个事件
     if firstEvent.GetEventId() != common.FirstEventID {
         return serviceerror.NewInvalidArgument("first event ID is not 1")
     }
-    
+  
     // 验证第一个事件是否为工作流启动事件
     if firstEvent.GetEventType() != enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_STARTED {
         return serviceerror.NewInvalidArgument("first event is not WorkflowExecutionStarted")
     }
-    
+  
     // 依次应用所有事件
     for _, event := range history.Events {
         if err := b.ReplicateHistoryEvent(ctx, event); err != nil {
             return err
         }
     }
-    
+  
     return nil
 }
 
@@ -4816,6 +4883,7 @@ func (b *mutableStateBuilder) ReplicateHistoryEvent(
         return serviceerror.NewInvalidArgument(fmt.Sprintf("unknown event type: %v", event.GetEventType()))
     }
 }
+
 ```
 
 Rust SDK的历史事件重建实现：
@@ -4838,35 +4906,35 @@ impl WorkflowReplay {
             deterministic_random: DeterministicRandom::new(0),
         }
     }
-    
+  
     pub fn replay(&mut self) -> Result<WorkflowState, Error> {
         // 确保历史不为空
         if self.history.is_empty() {
             return Err(Error::EmptyHistory);
         }
-        
+  
         // 验证第一个事件
         let first_event = self.history.get_event(0).ok_or(Error::EmptyHistory)?;
         if first_event.event_type != EventType::WorkflowExecutionStarted {
             return Err(Error::InvalidFirstEvent);
         }
-        
+  
         // 初始化工作流状态
         self.apply_workflow_started(&first_event)?;
         self.current_event_idx = 1;
-        
+  
         // 依次应用所有事件
         while self.current_event_idx < self.history.len() {
             let event = self.history.get_event(self.current_event_idx)
                 .ok_or_else(|| Error::MissingEvent(self.current_event_idx))?;
-            
+  
             self.apply_event(&event)?;
             self.current_event_idx += 1;
         }
-        
+  
         Ok(self.state.clone())
     }
-    
+  
     fn apply_event(&mut self, event: &HistoryEvent) -> Result<(), Error> {
         match event.event_type {
             EventType::WorkflowTaskScheduled => {
@@ -4893,34 +4961,34 @@ impl WorkflowReplay {
                 log::warn!("Unhandled event type: {:?}", event.event_type);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     fn apply_workflow_started(&mut self, event: &HistoryEvent) -> Result<(), Error> {
         let attrs = event.workflow_execution_started_attributes
             .as_ref()
             .ok_or(Error::MissingEventAttributes)?;
-        
+  
         // 初始化工作流状态
         self.state.workflow_id = attrs.workflow_id.clone();
         self.state.run_id = attrs.run_id.clone();
         self.state.workflow_type = attrs.workflow_type.clone();
         self.state.status = WorkflowStatus::Running;
-        
+  
         // 初始化随机数生成器
         self.deterministic_random = DeterministicRandom::new(
             self.state.run_id.as_bytes().iter().fold(0u64, |acc, &x| acc + x as u64)
         );
-        
+  
         Ok(())
     }
-    
+  
     fn apply_activity_task_scheduled(&mut self, event: &HistoryEvent) -> Result<(), Error> {
         let attrs = event.activity_task_scheduled_attributes
             .as_ref()
             .ok_or(Error::MissingEventAttributes)?;
-        
+  
         // 创建活动信息
         let activity_info = ActivityInfo {
             schedule_id: event.event_id,
@@ -4932,29 +5000,30 @@ impl WorkflowReplay {
             result: None,
             status: ActivityStatus::Scheduled,
         };
-        
+  
         // 添加活动到状态
         self.state.activities.insert(event.event_id, activity_info);
-        
+  
         Ok(())
     }
-    
+  
     fn apply_activity_task_completed(&mut self, event: &HistoryEvent) -> Result<(), Error> {
         let attrs = event.activity_task_completed_attributes
             .as_ref()
             .ok_or(Error::MissingEventAttributes)?;
-        
+  
         // 查找对应的活动
         let activity_info = self.state.activities.get_mut(&attrs.scheduled_event_id)
             .ok_or(Error::ActivityNotFound(attrs.scheduled_event_id))?;
-        
+  
         // 更新活动状态
         activity_info.status = ActivityStatus::Completed;
         activity_info.result = Some(attrs.result.clone());
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ## 5. 结论

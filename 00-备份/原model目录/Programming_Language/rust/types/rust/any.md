@@ -41,6 +41,7 @@ fn main() {
     let x = 42;
     print_if_string(&x); // 此处输出将表明 x 不是 String 类型
 }
+
 ```
 
 在上面的代码中，`print_if_string` 函数接收一个 `&dyn Any` 引用，并利用 `downcast_ref::<String>()` 方法检测该值是否为 `String` 类型。如果转换成功，则可以安全地以 `String` 类型对数据进行后续处理。
@@ -78,6 +79,7 @@ fn main() {
     let y: f64 = x as f64;
     println!("y = {}", y);
 }
+
 ```
 
 ### (2) 利用 `From`/`Into` 与 `TryFrom`/`TryInto` Trait
@@ -107,6 +109,7 @@ fn main() {
 
     println!("num1: {}, num2: {}", num1.0, num2.0);
 }
+
 ```
 
 ### (3) 自动解引用转换（Deref Coercion）
@@ -134,6 +137,7 @@ fn main() {
     let s: &str = &x;
     println!("{}", s);
 }
+
 ```
 
 ---
@@ -173,6 +177,7 @@ pub trait Any: 'static {
         }
     }
 }
+
 ```
 
 ### 解释

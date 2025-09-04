@@ -28,6 +28,7 @@ match msg {
         println!("Found some other id: {}", id);
     }
 }
+
 ```
 
 在这个例子中：
@@ -46,6 +47,7 @@ match tuple {
     }
     _ => (),
 }
+
 ```
 
 在这个例子中：
@@ -64,6 +66,7 @@ match tuple {
 
 ```rust
 pattern = variable @ subpattern
+
 ```
 
 其中：
@@ -95,6 +98,7 @@ match tuple {
     (_, 2, .., 4) => println!("匹配到第二个元素是 2，最后一个元素是 4"),
     _ => println!("未匹配"),
 }
+
 ```
 
 ### **2. `_`（通配符）**
@@ -109,6 +113,7 @@ match x {
     0 => println!("零"),
     _ => println!("非零"), // 匹配所有其他情况
 }
+
 ```
 
 ### **3. `ref` 和 `ref mut`**
@@ -123,6 +128,7 @@ match &x {
     ref mut num => *num += 1, // 修改引用
 }
 println!("Modified x: {}", x);
+
 ```
 
 ### **4. `$`（宏中的占位符）**
@@ -137,6 +143,7 @@ macro_rules! my_macro {
         y
     };
 }
+
 ```
 
 ### **5. `|`（管符）**
@@ -151,6 +158,7 @@ match x {
     0 | 1 => println!("零或一"),
     _ => println!("其他"),
 }
+
 ```
 
 ### **6. `@`（绑定操作符）**
@@ -171,6 +179,7 @@ match msg {
     }
     _ => (),
 }
+
 ```
 
 ### 总结
@@ -198,6 +207,7 @@ fn main() {
     }
     // pair 的值已经被修改
 }
+
 ```
 
 在这个例子中，`ref mut x` 和 `ref mut y` 分别创建了 `pair` 中两个元素的可变引用，允许在匹配块中修改它们的值。
@@ -215,6 +225,7 @@ fn main() {
         println!("Found a value: {}", x); // 输出: Found a value: 43
     }
 }
+
 ```
 
 在这个例子中，`ref mut x` 创建了 `some_value` 中值的可变引用，允许在 `if let` 块中修改它的值。
@@ -235,6 +246,7 @@ fn main() {
     increment_tuple(&mut pair); // 传递 pair 的可变引用
     println!("pair: {:?}", pair); // 输出: pair: (11, 21)
 }
+
 ```
 
 在这个例子中，`increment_tuple` 函数接收一个元组的可变引用，并在函数内部修改元组中的值。
@@ -253,6 +265,7 @@ fn main() {
     println!("x: {}, y: {}", x, y); // 输出: x: 11, y: 21
     println!("{:?}", pair); // (11, 21)
 }
+
 ```
 
 在这个例子中，`let (ref mut x, ref mut y) = pair` 创建了 `pair` 中两个元素的可变引用，允许在后续代码中修改它们的值。
@@ -283,6 +296,7 @@ fn main() {
     *y_ref += 2;
     println!("New x: {}, New y: {}", x_ref, y_ref); // 输出: New x: 43, New y: 7
 }
+
 ```
 
 ### **2. 在函数参数中使用 `ref mut`**
@@ -302,6 +316,7 @@ fn main() {
     increment_values(&mut tuple);
     println!("{:?}", tuple); // 输出: (4, 7)
 }
+
 ```
 
 ### **3. 在 `if let` 或 `while let` 中使用 `ref mut`**
@@ -318,6 +333,7 @@ fn main() {
     }
     println!("a: {:?}", a); // 输出: a: Some(15)
 }
+
 ```
 
 ### **-总结-**
@@ -356,6 +372,7 @@ fn main() {
     println!("Circle area: {}", area(circle));
     println!("Rectangle area: {}", area(rectangle));
 }
+
 ```
 
 ### 2. 组合类型

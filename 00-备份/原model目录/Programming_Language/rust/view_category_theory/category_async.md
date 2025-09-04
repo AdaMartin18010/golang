@@ -101,6 +101,7 @@ async fn compute() -> i32 {
     let sum = add_async(2, 3).await;
     multiply_async(sum, 2).await
 }
+
 ```
 
 在这个例子中，`add_async` 和 `multiply_async` 是态射

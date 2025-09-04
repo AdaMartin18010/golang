@@ -10,19 +10,6 @@
     - [1.3.3 错误处理](#错误处理)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`async` 和 `await` 是用于编写异步代码的关键字，它们使得异步代码的编写更加直观和简洁。以下是这些关键字的使用和解释：
 
 ## 1.1 `async`
@@ -69,6 +56,7 @@ async fn async_function() {
 async fn main() {
     async_function().await;
 }
+
 ```
 
 在这个示例中：
@@ -110,6 +98,7 @@ async fn main() {
         Err(e) => println!("发生错误：{}", e),
     }
 }
+
 ```
 
 在这个示例中：

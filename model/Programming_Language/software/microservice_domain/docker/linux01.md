@@ -101,19 +101,6 @@
   - [1.12 11. 思维导图](#11-思维导图)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Linux操作系统架构与模块系统综合分析](#linux操作系统架构与模块系统综合分析)
@@ -542,9 +529,10 @@ Linux文件系统子系统提供了统一的文件抽象，形式化表示为：
 $$FS = (VFS, FS\_Types, Mount\_Points, Cache, ...)$$
 
 其中 $VFS$ 是虚拟文件系统层，$FS\_Types$ 是支持的文件系统类型集合，$Mount\_Points$ 是挂载点集合，$Cache$ 是缓存系统。
+
 ```
 
--**文件操作抽象 3.3.2**
+- **文件操作抽象 3.3.2**
 
 ```math
 文件操作可表示为一组函数：
@@ -554,14 +542,16 @@ read: FD \times Offset \times Size \rightarrow Data \cup \{\bot\} \\
 write: FD \times Offset \times Data \rightarrow Size \cup \{\bot\} \\
 close: FD \rightarrow \{0, \bot\}
 \end{align}$$
+
 ```
 
--**定理 3.3.3 (VFS一致性)**
+- **定理 3.3.3 (VFS一致性)**
 
 ```math
 对于任意文件系统类型 $fs\_type \in FS\_Types$ 和任意文件操作 $op \in \{open, read, write, close, ...\}$，
 虚拟文件系统层保证了操作语义的一致性：
 $$\forall fs\_type, \text{语义}(op_{VFS}) = \text{语义}(op_{fs\_type})$$
+
 ```
 
 **证明：**
@@ -575,9 +565,10 @@ VFS通过定义统一的文件操作接口和行为规范，要求所有具体�
 
 这种设计确保了无论底层是什么类型的文件系统，用户空间程序看到的文件操作行为都是一致的。
 例如，$read$ 操作总是从指定偏移量读取指定长度的数据，无论文件存储在ext4、XFS还是NFS文件系统上。
+
 ```
 
--**文件系统缓存模型 3.3.4**
+- **文件系统缓存模型 3.3.4**
 
 ```math
 文件系统缓存可表示为函数：
@@ -588,28 +579,31 @@ cache\_invalidate: Key \rightarrow \{0\}
 \end{align}$$
 
 其中缓存可能包括页缓存、inode缓存、dentry缓存等。
+
 ```
 
--**定理 3.3.5 (缓存一致性)**
+- **定理 3.3.5 (缓存一致性)**
 
 ```math
 在Linux文件系统中，缓存系统保证在任意时刻 $t$，缓存中的数据与底层存储的数据一致，
 或者不一致的数据会在固定时间内被同步：
 $$\forall k, t, \exists \Delta t \leq T_{sync}: cache\_lookup(k, t) = storage\_lookup(k, t') \text{ 其中 } t \leq t' \leq t + \Delta t$$
+
 ```
 
 ### 1.4.4 网络子系统
 
--**定义 3.4.1 (网络子系统模型)**
+- **定义 3.4.1 (网络子系统模型)**
 
 ```math
 Linux网络子系统可表示为：
 $$NET = (Stack, Protocols, Interfaces, Socket, ...)$$
 
 其中 $Stack$ 是网络协议栈，$Protocols$ 是支持的协议集合，$Interfaces$ 是网络接口集合，$Socket$ 是套接字抽象。
+
 ```
 
--**套接字抽象 3.4.2**
+- **套接字抽象 3.4.2**
 
 ```math
 套接字是网络通信的端点，可表示为：
@@ -617,14 +611,16 @@ $$Socket = (domain, type, protocol, state, ops, ...)$$
 
 其中 $domain$ 是协议域（如AF_INET），$type$ 是套接字类型（如SOCK_STREAM），
 $protocol$ 是具体协议，$state$ 是套接字状态，$ops$ 是操作函数集。
+
 ```
 
--**定理 3.4.3 (协议栈模块化)**
+- **定理 3.4.3 (协议栈模块化)**
 
 ```math
 Linux网络协议栈是高度模块化的，对于任意两个网络协议 $P_1$ 和 $P_2$，如果它们在协议栈中的层次不同，
 则存在清晰定义的接口 $I_{P_1,P_2}$ 使它们可以互操作：
 $$\forall P_1, P_2 \in Protocols, layer(P_1) \neq layer(P_2) \Rightarrow \exists I_{P_1,P_2}: P_1 \leftrightarrow P_2$$
+
 ```
 
 **证明：** Linux网络协议栈遵循分层设计，类似于OSI模型，但更加灵活。不同层次的协议通过明确定义的接口进行交互：
@@ -636,7 +632,7 @@ $$\forall P_1, P_2 \in Protocols, layer(P_1) \neq layer(P_2) \Rightarrow \exists
 每个接口都有明确定义的函数集合和数据结构，确保不同层次的协议可以独立开发和替换，只要它们遵循接口规范。
 这种模块化设计使得协议栈可以灵活组合不同的协议，如IPv4/IPv6、TCP/UDP/SCTP等。
 
--**网络数据包处理模型 3.4.4**
+- **网络数据包处理模型 3.4.4**
 
 ```math
 数据包在网络栈中的处理可表示为变换链：
@@ -645,13 +641,15 @@ $$packet \xrightarrow{f_1} packet_1 \xrightarrow{f_2} packet_2 \xrightarrow{f_3}
 $$packet \xrightarrow{f_1} packet_1 \xrightarrow{f_2} packet_2 \xrightarrow{f_3} ... \xrightarrow{f_n} packet_n$$
 
 其中 $f_i$ 是第 $i$ 个处理函数，可能包括解封装、路由查找、过滤、封装等操作。
+
 ```
 
--**定理 3.4.5 (零拷贝网络)**
+- **定理 3.4.5 (零拷贝网络)**
 
 ```math
 在Linux零拷贝网络实现中，数据从磁盘到网络接口的传输路径中，数据拷贝次数显著减少，
 对于大小为 $s$ 的数据传输，拷贝次数从传统的 $O(s)$ 降低到 $O(1)$。
+
 ```
 
 **证明:**
@@ -668,33 +666,37 @@ $$packet \xrightarrow{f_1} packet_1 \xrightarrow{f_2} packet_2 \xrightarrow{f_3}
 
 对于大小为 $s$ 的数据，传统方法需要拷贝 $O(s)$ 字节的数据4次，而零拷贝方法仅需拷贝 $O(s)$ 字节的数据1-2次，
 因此总体拷贝操作从 $O(s)$ 降低到 $O(1)$ 次拷贝。
+
 ```
 
 ### 1.4.5 设备驱动子系统
 
--**定义 3.5.1 (设备驱动模型)**
+- **定义 3.5.1 (设备驱动模型)**
 
 ```math
 Linux设备驱动子系统提供了对硬件设备的统一抽象，形式化表示为:
 $$DD = (Drivers, Devices, Buses, Classes, ...)$$
 
 其中 $Drivers$ 是驱动程序集合，$Devices$ 是设备集合，$Buses$ 是总线类型集合，$Classes$ 是设备类别集合。
+
 ```
 
--**设备模型形式化 3.5.2**
+- **设备模型形式化 3.5.2**
 
 ```math
 设备可表示为:
 $$Device = (dev\_id, type, ops, driver, state, ...)$$
 
 其中 $dev\_id$ 是设备标识符，$type$ 是设备类型，$ops$ 是设备操作集，$driver$ 是关联的驱动程序，$state$ 是设备状态。
+
 ```
 
--**定理 3.5.3 (设备驱动一致性)**
+- **定理 3.5.3 (设备驱动一致性)**
 
 ```math
 对于同一类型的设备 $d_1, d_2 \in Devices$ 且 $type(d_1) = type(d_2)$，无论使用何种物理设备，其操作接口 $ops$ 在语义上是一致的:
 $$\forall op \in ops, semantics(op_{d_1}) = semantics(op_{d_2})$$
+
 ```
 
 **证明:**
@@ -705,38 +707,41 @@ Linux设备驱动模型基于面向对象的设计原则，将设备抽象为具
 
 具体来说，Linux通过设备类别（如class_block、class_net）和总线类型（如pci、usb）来组织驱动程序，每个类别和总线类型都定义了清晰的接口要求。驱动程序在注册时必须提供符合这些接口要求的函数指针，内核通过这些函数指针调用驱动程序的实现，从而保证了操作语义的一致性。
 
--**驱动加载模型 3.5.4**
+- **驱动加载模型 3.5.4**
 
 ```math
 驱动加载过程可表示为状态转换:
 $$driver\_state \xrightarrow{probe} driver\_state' \xrightarrow{init} driver\_state'' \xrightarrow{register} driver\_state'''$$
 
 其中 $probe$ 检测设备存在性，$init$ 初始化驱动，$register$ 注册驱动到系统。
+
 ```
 
--**设备树形式化模型 3.5.5**
+- **设备树形式化模型 3.5.5**
 
 ```math
 设备树是描述硬件设备层次结构的有向无环图 $G = (V, E)$，其中:
 - 顶点集 $V$ 代表设备和总线
 - 边集 $E \subseteq V \times V$ 表示设备间的父子关系
 - 对于任意设备 $d \in V$，其祖先集合 $Ancestors(d) = \{a \in V | (a, d) \in E^+\}$，其中 $E^+$ 是 $E$ 的传递闭包
+
 ```
 
 ## 1.5 4. 模块系统理论分析
 
 ### 1.5.1 模块加载机制形式化模型
 
--**定义 4.1.1 (内核模块)**
+- **定义 4.1.1 (内核模块)**
 
 ```math
 Linux内核模块是可动态加载和卸载的内核代码单元，形式化定义为:
 $$Module = (name, code, sym\_tab, deps, init, exit, ...)$$
 
 其中 $name$ 是模块名称，$code$ 是模块代码，$sym\_tab$ 是符号表，$deps$ 是依赖列表，$init$ 是初始化函数，$exit$ 是清理函数。
+
 ```
 
--**模块状态机 4.1.2**
+- **模块状态机 4.1.2**
 
 ```math
 模块生命周期可表示为有限状态机:
@@ -748,15 +753,17 @@ $$FSM_{module} = (Q, \Sigma, \delta, q_0, F)$$
 - $\delta: Q \times \Sigma \rightarrow Q$ 是转换函数
 - $q_0 = UNLOADED$ 是初始状态
 - $F = \{UNLOADED\}$ 是终止状态集
+
 ```
 
--**定理 4.1.3 (模块加载独立性)**
+- **定理 4.1.3 (模块加载独立性)**
 
 ```math
 对于任意两个不相互依赖的模块 $M_1$ 和 $M_2$，它们的加载顺序不影响系统的最终状态:
 $$M_1 \notin deps(M_2) \land M_2 \notin deps(M_1) \Rightarrow S(load(load(S_0, M_1), M_2)) = S(load(load(S_0, M_2), M_1))$$
 
 其中 $S_0$ 是初始系统状态，$load(S, M)$ 表示在状态 $S$ 上加载模块 $M$，$S(...)$ 表示系统的最终状态。
+
 ```
 
 **证明:**
@@ -776,20 +783,22 @@ $$M_1 \notin deps(M_2) \land M_2 \notin deps(M_1) \Rightarrow S(load(load(S_0, M
 $$S(load(S_1, M_2)) = S(load(S_2, M_1))$$
 
 这证明了不相互依赖的模块加载顺序不影响系统的最终状态。
+
 ```
 
--**模块符号解析形式化 4.1.4**
+- **模块符号解析形式化 4.1.4**
 
 ```math
 模块符号解析过程可表示为函数:
 $$resolve\_sym: Symbol \times Module \times Kernel \rightarrow Address \cup \{\bot\}$$
 
 其中 $Symbol$ 是符号名称空间，$Module$ 是模块空间，$Kernel$ 是内核空间，$Address$ 是内存地址空间，$\bot$ 表示解析失败。
+
 ```
 
 ### 1.5.2 模块依赖性理论
 
--**定义 4.2.1 (模块依赖图)**
+- **定义 4.2.1 (模块依赖图)**
 
 ```math
 Linux内核模块之间的依赖关系可表示为有向图:
@@ -797,13 +806,15 @@ $$G_{dep} = (V, E)$$
 
 其中顶点集 $V$ 是所有模块的集合，
 边集 $E \subseteq V \times V$ 表示依赖关系，$(M_i, M_j) \in E$ 表示模块 $M_i$ 依赖于模块 $M_j$。
+
 ```
 
--**定理 4.2.2 (依赖图无环性)**
+- **定理 4.2.2 (依赖图无环性)**
 
 ```math
 有效的模块依赖图 $G_{dep}$ 必须是无环的，即不存在模块序列 $M_1, M_2, ..., M_k$ 使得:
 $$M_1 \text{ 依赖 } M_2 \text{ 依赖 } ... \text{ 依赖 } M_k \text{ 依赖 } M_1$$
+
 ```
 
 **证明:**
@@ -817,9 +828,10 @@ $$M_1 \text{ 依赖 } M_2 \text{ 依赖 } ... \text{ 依赖 } M_k \text{ 依赖 
 
 内核模块加载器在加载模块时会检测这种循环依赖情况，如果发现循环依赖，会拒绝加载模块并报错。
 因此，有效的模块依赖图必须是无环的。
+
 ```
 
--**模块依赖解析算法 4.2.3**
+- **模块依赖解析算法 4.2.3**
 
 ```math
 给定模块 $M$ 及其直接依赖集合 $deps(M)$，计算完整依赖集合的算法可表示为:
@@ -839,15 +851,17 @@ function resolve_dependencies(M):
 
     resolve(M)
     return resolved - {M}  // 返回除M自身外的所有依赖
+
 ```
 
--**定理 4.2.4 (模块依赖传递性)**
+- **定理 4.2.4 (模块依赖传递性)**
 
 ```math
 如果模块 $M_1$ 依赖模块 $M_2$，且模块 $M_2$ 依赖模块 $M_3$，则模块 $M_1$ 间接依赖模块 $M_3$:
 $$M_2 \in deps(M_1) \land M_3 \in deps(M_2) \Rightarrow M_3 \in deps^+(M_1)$$
 
 其中 $deps^+(M)$ 表示模块 $M$ 的传递依赖闭包。
+
 ```
 
 ### 1.5.3 模块安全性定理
@@ -2109,6 +2123,7 @@ Linux操作系统与Docker
         ├── 技术融合
         ├── 安全增强
         └── 标准化发展
+
 ```
 
 上述思维导图全面展示了Linux操作系统架构与Docker容器技术之间的关系，涵盖了核心子系统、容器关键技术、Docker架构组件以及二者之间的边界和依赖关系。

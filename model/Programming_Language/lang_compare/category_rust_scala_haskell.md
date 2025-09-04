@@ -70,6 +70,7 @@
 这个结构应该能够全面、清晰地组织对比内容，突出范畴论的视角。
 每个部分我会尽量形式化，提供范畴论的角度，并对三种语言进行细致对比。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -118,6 +119,7 @@
 
 ```text
 Lang = (Types, Functions, ∘, id)
+
 ```
 
 其中Types为对象，Functions为态射，∘为组合，id为恒等态射。
@@ -152,6 +154,7 @@ Haskell类型系统形成笛卡尔闭范畴：
 
 ```haskell
 Hask = (Types, Functions, ∘, id, ×, →, 1)
+
 ```
 
 其中×是笛卡尔积，→是函数空间，1是单位类型。
@@ -186,6 +189,7 @@ class Functor f => Applicative f where
 class Applicative m => Monad m where
   return :: a -> m a
   (>>=) :: m a -> (a -> m b) -> m b
+
 ```
 
 ### 1.3.2 Scala类型系统：混合范畴模型
@@ -195,6 +199,7 @@ Scala类型系统形成带子类型的笛卡尔闭范畴：
 
 ```scala
 Scala = (Types, Functions, ∘, id, ×, →, 1, <:)
+
 ```
 
 其中<:是子类型关系，扩展了基本范畴结构。
@@ -230,6 +235,7 @@ trait Applicative[F[_]] extends Functor[F] {
 trait Monad[F[_]] extends Applicative[F] {
   def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
 }
+
 ```
 
 ### 1.3.3 Rust类型系统：线性类型与所有权范畴
@@ -239,6 +245,7 @@ Rust类型系统形成带线性约束的范畴：
 
 ```rust
 Rust = (Types, Functions, ∘, id, ×, →, 1, Ownership)
+
 ```
 
 其中Ownership表示所有权规则，构成线性约束。
@@ -278,6 +285,7 @@ trait FlatMap {
     fn flat_map<F, B>(self, f: F) -> B
     where F: FnOnce(Self) -> B;
 }
+
 ```
 
 ### 1.3.4 范畴论视角的类型系统对比
@@ -327,6 +335,7 @@ Haskell的控制结构可表示为Kleisli范畴：
 
 ```haskell
 Kleisli(M) = (Types, a → M b, <=<, return)
+
 ```
 
 其中M是单子，<=<是Kleisli组合，return是单位。
@@ -357,6 +366,7 @@ do
 action1 >>= \a ->
 action2 a >>= \b ->
 return (b + 1)
+
 ```
 
 ### 1.4.2 Scala的效应控制系统
@@ -366,6 +376,7 @@ Scala的控制结构形成混合范畴：
 
 ```scala
 ScalaControl = (Types, Functions, EitherT, For, Try)
+
 ```
 
 结合了直接效应和单子抽象。
@@ -396,6 +407,7 @@ for {
 action1.flatMap(a =>
   action2(a).map(b =>
     b + 1))
+
 ```
 
 ### 1.4.3 Rust的所有权与错误控制系统
@@ -405,6 +417,7 @@ Rust的控制结构可表示为线性资源范畴：
 
 ```rust
 RustControl = (Types, Functions, Result, Option, Drop)
+
 ```
 
 其中Drop表示RAII析构语义。
@@ -442,6 +455,7 @@ fn process() -> Result<T, E> {
         Err(e) => Err(e),
     }
 }
+
 ```
 
 ### 1.4.4 范畴论视角的控制系统对比
@@ -490,6 +504,7 @@ Haskell编程模式形成函数式范畴：
 
 ```haskell
 HaskellPattern = (Types, Functions, Typeclasses, HigherKinded)
+
 ```
 
 以函子、应用函子和单子为核心抽象。
@@ -527,6 +542,7 @@ data Tree a = Leaf a | Branch (Tree a) (Tree a)
 class Monoid a where
   mempty :: a
   mappend :: a -> a -> a
+
 ```
 
 ### 1.5.2 Scala的混合范式编程模式
@@ -536,6 +552,7 @@ Scala编程模式形成混合范畴：
 
 ```scala
 ScalaPattern = (OOP, FP, TypeClasses, Implicits)
+
 ```
 
 结合了面向对象和函数式编程。
@@ -579,6 +596,7 @@ class Service extends Logging with Validating {
 
 // 函数式集合操作
 List(1,2,3).map(_ + 1).filter(_ % 2 == 0)
+
 ```
 
 ### 1.5.3 Rust的所有权驱动编程模式
@@ -588,6 +606,7 @@ Rust编程模式形成所有权驱动范畴：
 
 ```rust
 RustPattern = (Ownership, Borrowing, Traits, Generics, RAII)
+
 ```
 
 以资源安全为核心关注点。
@@ -634,6 +653,7 @@ impl Drawable for Button {
     fn draw(&self) { /* ... */ }
 }
 let drawable: Box<dyn Drawable> = Box::new(Button { /* ... */ });
+
 ```
 
 ### 1.5.4 范畴论视角的编程模式对比
@@ -717,6 +737,7 @@ data S n
 type family Add m n where
   Add Z n = n
   Add (S m) n = S (Add m n)
+
 ```
 
 ```scala
@@ -734,6 +755,7 @@ class Succ[N <: Nat] extends Nat
 trait Add[A <: Nat, B <: Nat] { 
   type Result <: Nat 
 }
+
 ```
 
 ```rust
@@ -752,6 +774,7 @@ struct Vec<T, N> {
 trait IsNonZero {}
 impl IsNonZero for u32 {}
 fn divide<T: IsNonZero>(x: u32, y: T) -> u32 { x / y }
+
 ```
 
 ### 1.6.2 形式验证支持对比
@@ -795,6 +818,7 @@ inc n = n + 1
 -- 精确类型规约
 {-@ append :: xs:List a -> ys:List a -> 
     {v:List a | len v = len xs + len ys} @-}
+
 ```
 
 ```scala
@@ -813,6 +837,7 @@ def append[T](l1: List[T], l2: List[T]): List[T] = {
     case Cons(h, t) => Cons(h, append(t, l2))
   })
 } ensuring(res => res.size == l1.size + l2.size)
+
 ```
 
 ```rust
@@ -830,6 +855,7 @@ fn append<T>(self: &Vec<T>, other: &Vec<T>) -> Vec<T> {
     result.extend_from_slice(other);
     result
 }
+
 ```
 
 ### 1.6.3 表达能力的范畴对比
@@ -921,7 +947,7 @@ fn append<T>(self: &Vec<T>, other: &Vec<T>) -> Vec<T> {
    ```haskell
    -- 范畴论直接对应
    newtype Kleisli m a b = Kleisli { runKleisli :: a -> m b }
-   
+  
    instance Monad m => Category (Kleisli m) where
      id = Kleisli return
      (Kleisli g) . (Kleisli f) = Kleisli (\x -> f x >>= g)
@@ -940,7 +966,7 @@ fn append<T>(self: &Vec<T>, other: &Vec<T>) -> Vec<T> {
      def id[A]: F[A, A]
      def compose[A, B, C](f: F[B, C], g: F[A, B]): F[A, C]
    }
-   
+  
    // 既可OOP风格又可FP风格使用
    object FunctionCategory extends Category[Function1] {
      def id[A]: A => A = a => a
@@ -960,7 +986,7 @@ fn append<T>(self: &Vec<T>, other: &Vec<T>) -> Vec<T> {
    trait Category {
        type Object;
        type Morphism<A: Self::Object, B: Self::Object>;
-       
+  
        fn id<A: Self::Object>() -> Self::Morphism<A, A>;
        fn compose<A, B, C>(
            f: Self::Morphism<B, C>,

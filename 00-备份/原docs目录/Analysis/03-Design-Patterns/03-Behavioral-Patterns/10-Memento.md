@@ -140,6 +140,7 @@ classDiagram
     Originator --> Memento : creates
     Caretaker o--> Memento : stores
     Caretaker --> Originator : manages
+
 ```
 
 ### 3.2 角色解析
@@ -191,6 +192,7 @@ sequenceDiagram
     Originator->>Memento: GetState()
     Memento-->>Originator: 返回保存的状态
     Originator->>Originator: 恢复状态
+
 ```
 
 ### 3.4 备忘录模式变体
@@ -208,6 +210,7 @@ flowchart LR
     C[管理者] -->|存储| B
     B -->|窄接口| C
     B -->|宽接口| A
+
 ```
 
 #### 3.4.2 嵌套类备忘录模式
@@ -225,6 +228,7 @@ flowchart TD
     C[管理者] -->|引用| B
     A -->|创建| B
     A -->|访问| B
+
 ```
 
 #### 3.4.3 序列化备忘录模式
@@ -239,6 +243,7 @@ flowchart LR
     B -->|持久化| C[存储]
     C -->|读取| D[字节流]
     D -->|反序列化| A
+
 ```
 
 #### 3.4.4 多状态备忘录模式
@@ -254,6 +259,7 @@ flowchart TD
     B -->|包含| D[状态2]
     B -->|包含| E[状态3]
     F[管理者] -->|管理| B
+
 ```
 
 ### 3.5 结构优缺点分析
@@ -443,6 +449,7 @@ func (c *Caretaker) GetHistory() []string {
  }
  return result
 }
+
 ```
 
 ### 4.2 使用示例
@@ -510,6 +517,7 @@ func main() {
   fmt.Println(h)
  }
 }
+
 ```
 
 执行结果：
@@ -557,6 +565,7 @@ func main() {
   1: 状态 1 (15:04:02)
   2: 状态 2 (15:04:03)
 * 3: 状态 2 (修改) (15:04:05)
+
 ```
 
 ### 4.3 嵌套类实现
@@ -711,6 +720,7 @@ func (c *CaretakerForInner) Redo(o *OriginatorWithInnerMemento) bool {
  fmt.Printf("管理者: 已重做到状态 #%d\n", c.current)
  return true
 }
+
 ```
 
 ### 4.4 序列化实现
@@ -908,6 +918,7 @@ func (c *SerializableCaretaker) loadMemento(index int, o *SerializableOriginator
  fmt.Printf("管理者: 已从文件加载状态 #%d (%s)\n", index, filename)
  return nil
 }
+
 ```
 
 ## 5. 性能分析
@@ -968,6 +979,7 @@ func (o *Originator) CreateDifferentialMemento(previous *Memento) *DifferentialM
     
     return diff
 }
+
 ```
 
 #### 5.3.2 懒拷贝
@@ -997,6 +1009,7 @@ func (m *LazyMemento) GetState() map[string]interface{} {
     }
     return m.state.data
 }
+
 ```
 
 #### 5.3.3 状态压缩
@@ -1034,6 +1047,7 @@ func (o *Originator) CreateCompressedMemento() (*CompressedMemento, error) {
         timestamp:      time.Now(),
     }, nil
 }
+
 ```
 
 #### 5.3.4 池化备忘录
@@ -1077,6 +1091,7 @@ func (p *MementoPool) ReleaseMemento(m *Memento) {
     
     p.pool.Put(m)
 }
+
 ```
 
 ### 5.4 基准测试
@@ -1118,6 +1133,7 @@ func BenchmarkSerializeMemento(b *testing.B) {
         originator.CreateMemento()
     }
 }
+
 ```
 
 ## 6. 应用场景
@@ -1210,6 +1226,7 @@ func (h *TextEditorHistory) Redo() bool {
     
     return true
 }
+
 ```
 
 ### 6.2 游戏存档系统
@@ -1285,6 +1302,7 @@ func (s *GameSaveSystem) ListSaves() []string {
     
     return saves
 }
+
 ```
 
 ### 6.3 系统事务处理
@@ -1335,6 +1353,7 @@ func (t *SystemTransaction) Rollback() {
         }
     }
 }
+
 ```
 
 ### 6.4 应用程序状态管理
@@ -1402,6 +1421,7 @@ func (m *AppStateManager) cloneState(state *AppState) *AppState {
     // 深拷贝实现...
     return nil // 简化示例
 }
+
 ```
 
 ### 6.5 网络请求重试和回滚
@@ -1479,6 +1499,7 @@ func (e *RequestExecutor) processResponse(resp *http.Response) error {
     // 处理响应
     return nil
 }
+
 ```
 
 ## 7. 最佳实践
@@ -1515,7 +1536,7 @@ func (e *RequestExecutor) processResponse(resp *http.Response) error {
        GetTimestamp() time.Time
        GetID() string
    }
-   
+  
    // 提供给发起人的完全接口
    type CompleteMemento interface {
        MementoInterface
@@ -1528,13 +1549,13 @@ func (e *RequestExecutor) processResponse(resp *http.Response) error {
    ```go
    func NewOriginator() *Originator {
        o := &Originator{/* 初始化 */}
-       
+  
        // 创建备忘录的闭包方法
        o.createMemento = func() interface{} {
            // 内部直接访问发起人的私有状态
            return deepCopy(o.state)
        }
-       
+  
        return o
    }
    ```
@@ -1761,6 +1782,7 @@ func (h *EditorHistory) Redo() bool {
     
     return true
 }
+
 ```
 
 #### 8.1.3 收益分析
@@ -1914,6 +1936,7 @@ func (db *DBConnection) Rollback() error {
     }
     return err
 }
+
 ```
 
 #### 8.2.3 收益分析

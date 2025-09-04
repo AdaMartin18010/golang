@@ -48,19 +48,6 @@
   - [29.2 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 好的，这是一个关于使用Rust实现分布式高吞吐集群服务的问题。
 用户期望了解2025年的Rust生态系统中的著名开源库和语言特性，用于构建几个关键组件。
@@ -86,6 +73,7 @@
 
 虽然我不能准确预测2025年的具体库，但我可以基于当前发展趋势预测可能的演进方向。
 我会尽量给出合理的预测。
+
 ```
 
 ## 1.1 总体架构设计
@@ -111,6 +99,7 @@
 │  OpenTelemetry│    Kafka    │   Consul/etcd  │    ClickHouse   │
 │  Elasticsearch│    NATS     │                │    PostgreSQL   │
 └─────────────┴─────────────┴────────────────┴─────────────────┘
+
 ```
 
 ## 1.2 一、分布式日志监控和检索
@@ -120,20 +109,33 @@
 ```rust
 // Cargo.toml 依赖示例
 [dependencies]
+
 # 2 2 2 2 2 2 2 异步运行时
+
 tokio = { version = "2.0", features = ["full"] }
+
 # 3 3 3 3 3 3 3 高性能日志框架 (tracing演进版)
+
 opentelemetry-tracing = "2.0"
 tracing-subscriber = "1.0"
+
 # 4 4 4 4 4 4 4 日志聚合与发送
+
 opentelemetry-otlp = "2.0"
+
 # 5 5 5 5 5 5 5 高性能日志滚动
+
 tracing-appender = "1.0"
+
 # 6 6 6 6 6 6 6 Elasticsearch客户端
+
 elasticsearch = "3.0"
+
 # 7 7 7 7 7 7 7 指标监控
+
 metrics = "1.0"
 metrics-exporter-prometheus = "1.0"
+
 ```
 
 ### 7 7 7 7 7 7 7 本地日志与滚动实现
@@ -251,6 +253,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ### 7 7 7 7 7 7 7 分布式日志聚合与检索
@@ -389,6 +392,7 @@ impl LogSearchService {
         Ok(results)
     }
 }
+
 ```
 
 ## 7.1 二、分布式消息服务
@@ -398,20 +402,33 @@ impl LogSearchService {
 ```rust
 // Cargo.toml
 [dependencies]
+
 # 8 8 8 8 8 8 8 异步运行时
+
 tokio = { version = "2.0", features = ["full"] }
+
 # 9 9 9 9 9 9 9 NATS消息队列客户端
+
 async-nats = "1.0"
+
 # 10 10 10 10 10 10 10 Apache Kafka客户端
+
 rdkafka = { version = "1.0", features = ["ssl", "sasl"] }
+
 # 11 11 11 11 11 11 11 HTTP服务器
+
 axum = "1.0"
+
 # 12 12 12 12 12 12 12 序列化
+
 serde = { version = "2.0", features = ["derive"] }
 serde_json = "2.0"
+
 # 13 13 13 13 13 13 13 分布式追踪集成
+
 opentelemetry = "2.0"
 tracing = "1.0"
+
 ```
 
 ### 13 13 13 13 13 13 13 消息发布/订阅服务实现
@@ -763,6 +780,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 13.1 三、集中式配置管理和订阅更新
@@ -772,21 +790,36 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```rust
 // Cargo.toml
 [dependencies]
+
 # 14 14 14 14 14 14 14 异步运行时
+
 tokio = { version = "2.0", features = ["full"] }
+
 # 15 15 15 15 15 15 15 HTTP服务
+
 axum = "1.0"
+
 # 16 16 16 16 16 16 16 Consul客户端
+
 consul-rs = "1.0"
+
 # 17 17 17 17 17 17 17 ETCD客户端
+
 etcd-client = "1.0"
+
 # 18 18 18 18 18 18 18 序列化
+
 serde = { version = "2.0", features = ["derive"] }
 serde_json = "2.0"
+
 # 19 19 19 19 19 19 19 配置管理
+
 config = "1.0"
+
 # 20 20 20 20 20 20 20 观察者模式实现
+
 tokio-watch = "1.0"
+
 ```
 
 ### 20 20 20 20 20 20 20 配置管理服务实现
@@ -1368,6 +1401,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 20.1 四、大数据处理和数据库集成
@@ -1377,27 +1411,46 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```rust
 // Cargo.toml
 [dependencies]
+
 # 21 21 21 21 21 21 21 异步运行时
+
 tokio = { version = "2.0", features = ["full"] }
+
 # 22 22 22 22 22 22 22 数据库连接池
+
 sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "json"] }
+
 # 23 23 23 23 23 23 23 数据处理
+
 polars = { version = "1.0", features = ["lazy", "parquet", "csv", "json", "random"] }
 datafusion = "20.0"
+
 # 24 24 24 24 24 24 24 Kafka流处理
+
 rdkafka = { version = "1.0", features = ["ssl", "sasl"] }
+
 # 25 25 25 25 25 25 25 流处理框架
+
 timely = "0.12"
 differential-dataflow = "0.13"
+
 # 26 26 26 26 26 26 26 工作流引擎
+
 temporal-sdk-core = "1.0"
+
 # 27 27 27 27 27 27 27 HTTP服务
+
 axum = "1.0"
+
 # 28 28 28 28 28 28 28 序列化
+
 serde = { version = "2.0", features = ["derive"] }
 serde_json = "2.0"
+
 # 29 29 29 29 29 29 29 ClickHouse客户端
+
 clickhouse-rs = "1.0"
+
 ```
 
 ### 29 29 29 29 29 29 29 数据处理和工作流实现
@@ -2562,6 +2615,7 @@ impl OrderWorkflow {
         Ok(())
     }
 }
+
 ```
 
 ## 29.1 部署与运维
@@ -2723,6 +2777,7 @@ volumes:
   elastic-data:
   postgres-data:
   clickhouse-data:
+
 ```
 
 ## 29.2 总结

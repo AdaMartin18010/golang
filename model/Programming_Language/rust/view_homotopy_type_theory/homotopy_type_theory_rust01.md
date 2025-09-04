@@ -81,6 +81,7 @@
 
 我会创建一个全面的目录，确保之前讨论的所有主题都包含在内，并且结构清晰。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -181,6 +182,7 @@ fn compute_ratio(x: f64, y: f64, z: f64) -> Option<f64> {
         safe_division(xy_ratio, z).map(|result| result * 100.0)
     )
 }
+
 ```
 
 这里，`Option<T>`类型可以看作是命题"存在类型T的值"，`Some(value)`是该命题成立的证据，而`None`表示命题不成立。函数组合对应着逻辑推理的组合。
@@ -233,6 +235,7 @@ fn flatten_isomorphism<T>() -> impl Fn(Option<Option<T>>) -> Option<T> {
 fn elevate_isomorphism<T>() -> impl Fn(Option<T>) -> Option<Option<T>> {
     |x| Some(x)
 }
+
 ```
 
 ### 1.3.3 高阶归纳类型
@@ -271,6 +274,7 @@ impl Interval {
         self.0 == 0.0 || self.0 == 1.0
     }
 }
+
 ```
 
 ### 1.3.4 依赖类型系统
@@ -322,6 +326,7 @@ fn main() {
         println!("{} 是负数，无法计算平方根", NEGATIVE);
     }
 }
+
 ```
 
 ### 1.3.5 向量空间与n维类型
@@ -372,6 +377,7 @@ where
     }
     result
 }
+
 ```
 
 ## 1.4 推理机制在编程语言中的应用
@@ -405,6 +411,7 @@ fn main() {
 fn process<T: std::fmt::Display>(items: Vec<T>) -> impl Iterator<Item = String> {
     items.into_iter().map(|x| format!("项目: {}", x))
 }
+
 ```
 
 Rust的类型推导系统是Hindley-Milner类型系统的一个变种，它支持局部类型推导和部分类型信息。
@@ -457,6 +464,7 @@ impl<T> Container for BoxedValue<T> {
         Some(&self.0)
     }
 }
+
 ```
 
 ### 1.4.3 自动证明生成
@@ -513,6 +521,7 @@ where
 // 辅助特质
 trait SameAs<T> {}
 impl SameAs<True> for True {}
+
 ```
 
 ## 1.5 Rust中的类型理论实践
@@ -559,6 +568,7 @@ fn main() {
     let s2 = String::from("temp move");
     let s3 = takes_and_returns(s2);  // s2的所有权移动后又返回给s3
 }
+
 ```
 
 ### 1.5.2 代数数据类型与模式匹配
@@ -611,6 +621,7 @@ fn is_empty<T>(tree: &BinaryTree<T>) -> bool {
         // 如果不处理所有情况，编译器会报错
     }
 }
+
 ```
 
 ### 1.5.3 特质系统与类型界限
@@ -683,6 +694,7 @@ impl Shape for Rectangle {
         "矩形"
     }
 }
+
 ```
 
 ### 1.5.4 生命周期参数作为时序逻辑
@@ -721,6 +733,7 @@ fn main() {
     
     println!("{}", e.part);
 }
+
 ```
 
 ### 1.5.5 类型态射与函子
@@ -774,6 +787,7 @@ fn main() {
     // 自然变换的应用
     let result = option_to_result(opt, || "值未找到".to_string());
 }
+
 ```
 
 ## 1.6 高级类型系统设计模式
@@ -847,6 +861,7 @@ where
 {
     vector.0.get(/* 运行时索引值 */)
 }
+
 ```
 
 ### 1.6.2 幻影类型与零成本抽象
@@ -931,6 +946,7 @@ impl File<Open> {
         }
     }
 }
+
 ```
 
 ### 1.6.3 依赖类型模拟
@@ -996,6 +1012,7 @@ fn main() {
     // let v3: Vector<i32, 4> = Vector { elements: [1, 2, 3, 4] };
     // let invalid_product = dot_product(&v1, &v3);
 }
+
 ```
 
 ## 1.7 形式化验证与程序证明
@@ -1069,6 +1086,7 @@ fn main() {
         Err(msg) => println!("错误: {}", msg),
     }
 }
+
 ```
 
 这个例子展示了如何结合Rust的类型系统和运行时检查来实现合约编程的概念，确保程序满足特定的前置条件和后置条件。
@@ -1173,6 +1191,7 @@ fn main() {
     // new_conn.send_data("无效状态"); // 只有Established状态可以发送数据
     // new_conn.receive_syn(); // 只有Listen状态可以接收SYN
 }
+
 ```
 
 这个例子展示了如何使用Rust的类型系统来建模状态机，并在编译时确保状态转换的正确性。
@@ -1279,6 +1298,7 @@ fn main() {
         println!("数组未排序");
     }
 }
+
 ```
 
 ## 1.8 高级应用场景与未来发展
@@ -1338,6 +1358,7 @@ fn run_server(channel: Channel<ServerProtocol>) {
     let _channel = channel.send(Response("响应数据".to_string()));
     // 通信完成
 }
+
 ```
 
 ### 1.8.2 领域特定语言的类型安全设计
@@ -1406,6 +1427,7 @@ fn main() {
     //    .select::<Column<StrLit<"invalid_column">, String>>() // 错误：表中没有此列
     //    .execute();
 }
+
 ```
 
 ### 1.8.3 量子计算与线性类型
@@ -1494,6 +1516,7 @@ fn quantum_teleportation() {
     // 打印电路操作
     circuit.print_operations();
 }
+
 ```
 
 ### 1.8.4 工业界形式化方法的逐步采纳
@@ -1646,6 +1669,7 @@ fn main() {
         }
     }
 }
+
 ```
 
 ### 1.8.5 人工智能与机器学习的形式化验证
@@ -1793,6 +1817,7 @@ fn main() {
         Err(msg) => println!("极端输入验证失败: {}", msg),
     }
 }
+
 ```
 
 ## 1.9 结论与展望
@@ -1833,6 +1858,7 @@ fn main() {
 
 我将选择第3和第4点的组合，
 讨论一些当前实现同伦类型理论概念的编程语言，以及它们与Rust的对比，并提供一些更高级的Rust示例。</think>
+
 ```
 
 ## 1.10 理论在实际编程语言中的体现
@@ -1855,12 +1881,16 @@ append (x :: xs) ys = x :: append xs ys
 index : Fin n -> Vect n a -> a
 index FZ (x :: xs) = x
 index (FS k) (x :: xs) = index k xs
+
 */
 
 // Agda示例 - 证明加法交换律
 /*
+
 +-comm : ∀ (m n : ℕ) → m + n ≡ n + m
+
 +-comm zero n = sym (+-identity n)
+
 +-comm (suc m) n = 
   begin
     suc m + n
@@ -1871,6 +1901,7 @@ index (FS k) (x :: xs) = index k xs
   ≡⟨ sym (+-suc n m) ⟩
     n + suc m
   ∎
+
 */
 
 // Coq示例 - 证明排序后列表仍包含所有原始元素
@@ -1882,6 +1913,7 @@ Proof.
   - simpl. apply perm_skip_insert.
     apply IHl.
 Qed.
+
 */
 
 // 在Rust中模拟的依赖类型（有限近似）
@@ -1911,6 +1943,7 @@ impl<T, N> Vec<T, N> {
         Vec { data, _marker: PhantomData }
     }
 }
+
 ```
 
 ### 1.10.2 路径类型和高阶归纳类型
@@ -1931,6 +1964,7 @@ sym p = λ i → p (~ i)
 
 trans : {A : Type} {x y z : A} → x ≡ y → y ≡ z → x ≡ z
 trans p q = λ i → primComp (λ _ → A) (λ j → λ { (i = i0) → p i0 ; (i = i1) → q j }) (p i)
+
 */
 
 // Rust中的近似模拟（只是概念性的）
@@ -1959,6 +1993,7 @@ enum Circle {
     Base,
     // 在真正的HoTT中，还有一个路径构造器：loop : Base ≡ Base
 }
+
 ```
 
 ## 1.11 实际工程中的应用
@@ -1987,6 +2022,7 @@ val encrypt :
   ST ciphertext 
     (requires (fun h -> secure_state h /\ authorized h k))
     (ensures (fun h0 c h1 -> secure_state h1))
+
 */
 
 // Rust中使用MIRAI验证工具
@@ -2012,6 +2048,7 @@ fn verify_no_overflow() {
     // 验证属性
     assert!(a + b <= u32::MAX);
 }
+
 */
 
 // 使用TLA+为分布式系统建模
@@ -2035,7 +2072,9 @@ Init ==
 ReadHit(p, a) ==
   /\ cache[p][a] # NoValue
   /\ UNCHANGED <<cache, memory>>
+
 */
+
 ```
 
 ### 1.11.2 自动化推理的进阶实践
@@ -2073,6 +2112,7 @@ fn verify_sorting_preserves_elements() {
     // 排序算法保持元素不变的性质
     println!("验证排序算法保持元素不变");
 }
+
 ```
 
 ### 1.11.3 跨领域整合：类型理论与区块链
@@ -2149,6 +2189,7 @@ impl Account {
         }
     }
 }
+
 ```
 
 ## 1.12 未来技术展望
@@ -2186,6 +2227,7 @@ fn bridge_example<T: Clone, const N: usize>(
     // 构造新的线性资源
     linear_types::LinearResource(Vec::with_capacity(length))
 }
+
 ```
 
 ### 1.12.2 可解释的人工智能与形式化方法
@@ -2226,6 +2268,7 @@ impl NeuralNetwork {
         true
     }
 }
+
 ```
 
 ### 1.12.3 可编程证明系统
@@ -2256,6 +2299,7 @@ algorithm verified_sum(list: List<Int>) -> Int
   }
   return total;
 }
+
 */
 
 // 在Rust中的概念性模拟
@@ -2279,6 +2323,7 @@ fn use_proof<P>(_proof: Proof<P>) {
     // 使用已证明的性质编写程序
     println!("使用经过证明的性质");
 }
+
 ```
 
 ## 1.13 终极愿景：人机协作的软件开发
@@ -2311,6 +2356,7 @@ implementation secure_communication using:
     confidentiality: by reduction to hardness of AES and X25519
     integrity: by properties of Ed25519 and AES-GCM
     authentication: by properties of Ed25519
+
 */
 
 // 在当前Rust中的近似
@@ -2343,6 +2389,7 @@ impl SecureCommunication for SecureChannel {
         self.signature.is_secure()
     }
 }
+
 ```
 
 ## 1.14 结语
@@ -2368,6 +2415,7 @@ Rust等语言已经采纳了类型理论的许多元素，未来我们可以期�
 
 我会编写一个新的章节，继续探讨这些主题，并保持使用Rust作为示例语言，同时介绍一些其他语言中的相关概念。我会确保内容的深度和广度进一步扩展，并保持中文输出。
 </think>
+
 ```
 
 ## 1.15 同伦类型理论的数学基础深探
@@ -2398,6 +2446,7 @@ p i : A  where p : Path A a b
 -- 定义一个路径
 line : Path (λ i → A) a b
 line i = ... // i可在定义中使用
+
 */
 
 // 在Rust中的概念模拟
@@ -2440,6 +2489,7 @@ where
         }
     }
 }
+
 ```
 
 ### 1.15.2 高阶类型与宇宙层级
@@ -2458,6 +2508,7 @@ Set₂ : Set₃
 
 -- 宇宙多态
 ∀ {ℓ} → Set ℓ → Set ℓ  -- 保持宇宙级别的多态函数
+
 */
 
 // 在Rust中的概念模拟
@@ -2491,6 +2542,7 @@ impl Universe for Level1 {
 fn polymorphic_identity<T, L: Universe>(x: TypeInUniverse<T, L>) -> TypeInUniverse<T, L> {
     x
 }
+
 ```
 
 ### 1.15.3 同伦与类型同伦
@@ -2506,6 +2558,7 @@ A ≃ B = Σ(f : A → B), isEquiv f
 
 -- 其中isEquiv表示f是等价的证明
 isEquiv f = Σ(g : B → A), (∀x, g(f(x)) = x) × (∀y, f(g(y)) = y)
+
 */
 
 // 在Rust中模拟同构与等价
@@ -2550,6 +2603,7 @@ fn option_option_iso<T>() -> Isomorphism<Option<Option<T>>, Option<T>,
         },
     }
 }
+
 ```
 
 ## 1.16 高阶类型系统设计理念
@@ -2606,6 +2660,7 @@ struct FunctionArrow;
 impl TypeOperator for FunctionArrow {
     type Applied<T: Type, U: Type> = fn(T) -> U;
 }
+
 ```
 
 ### 1.16.2 证明搜索与类型推导算法
@@ -2710,6 +2765,7 @@ fn infer_type(expr: &Expr, env: &TypeEnv) -> Result<Type, String> {
         // 其他表达式类型...
     }
 }
+
 ```
 
 ### 1.16.3 嵌入证明助手和交互式定理证明
@@ -2863,6 +2919,7 @@ fn prove_theorem() {
         println!("证明未完成，剩余目标：{:?}", assistant.remaining_goals());
     }
 }
+
 ```
 
 ## 1.17 跨领域集成与应用扩展
@@ -3119,6 +3176,7 @@ impl ProgramSynthesizer {
         ])
     }
 }
+
 ```
 
 ### 1.17.2 类型系统与机器学习的深度融合
@@ -3272,6 +3330,7 @@ fn verified_learning() {
     let important_features = network.identify_important_features(&[0.1; 10]);
     println!("最重要的特征: {:?}", important_features);
 }
+
 ```
 
 ### 1.17.3 分布式系统与一致性证明
@@ -3673,6 +3732,7 @@ fn verify_distributed_system() {
         },
     }
 }
+
 ```
 
 ## 1.18 理论扩展与未来展望
@@ -3874,6 +3934,7 @@ fn prove_addition_commutativity() -> Result<(), String> {
     
     Ok(())
 }
+
 ```
 
 ### 1.18.2 赋值类型与分类学
@@ -4037,6 +4098,7 @@ struct Sigma<T, P> {
 fn exists_square_four() -> Sigma<i32, ()> {
     Sigma { value: 2, proof: () }
 }
+
 ```
 
 ### 1.18.3 多元类型理论与分布式系统形式化
@@ -4174,6 +4236,7 @@ impl<S1: 'static, S2: 'static> TypedChannel<SessionType::Offer<S1, S2>> {
         unimplemented!("Offer")
     }
 }
+
 ```
 
 ## 1.19 结语：走向程序语言的统一理论

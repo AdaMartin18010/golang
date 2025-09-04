@@ -44,19 +44,6 @@
     - [1.9.4 未来研究方向](#未来研究方向)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>
 这个问题要求我从工作流的视角分析分布式设计模式面对的核心问题，
@@ -76,6 +63,7 @@
 
 我将创建一个结构清晰的回答，使用范畴论语言来表达这些关系，同时保持可读性。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -838,7 +826,7 @@ false & \text{否则}
 
 从范畴视角分析实际系统案例：
 
--**案例1：Kubernetes与工作流编排**
+- **案例1：Kubernetes与工作流编排**
 
 Kubernetes pod调度可以表示为工作流资源分配函子 \(K: \mathcal{W}_{tasks} \rightarrow \mathcal{D}_{resources}\)：
 \[ K(\text{task\_requirements}) = \text{pod\_placement} \]
@@ -846,7 +834,7 @@ Kubernetes pod调度可以表示为工作流资源分配函子 \(K: \mathcal{W}_
 自愈机制表示为恢复余单子 \(R_K\)：
 \[ R_K(\text{pod\_failure}) = \text{pod\_recreation} \]
 
--**案例2：Kafka与事件驱动工作流**
+- **案例2：Kafka与事件驱动工作流**
 
 Kafka消息系统可以表示为工作流通信函子 \(MQ: \mathcal{W}_{events} \rightarrow \mathcal{D}_{messages}\)：
 \[ MQ(\text{workflow\_event}) = \text{kafka\_message} \]
@@ -854,7 +842,7 @@ Kafka消息系统可以表示为工作流通信函子 \(MQ: \mathcal{W}_{events}
 一致性保证表示为时序保持态射：
 \[ MQ(e_1 \prec e_2) \Rightarrow MQ(e_1) \prec MQ(e_2) \]
 
--**案例3：分布式数据库与工作流状态**
+- **案例3：分布式数据库与工作流状态**
 
 分布式数据库可以表示为状态持久化函子 \(DB: \mathcal{W}_{states} \rightarrow \mathcal{D}_{storage}\)：
 \[ DB(\text{workflow\_state}) = \text{distributed\_record} \]

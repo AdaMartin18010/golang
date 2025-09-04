@@ -15,19 +15,6 @@
   - [1.11 10. 客户端示例](#10-客户端示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面是一个使用 Rust 2024 + Tokio + Tonic 实现的分布式 gRPC 组合模式示例：
 
 ## 1.1 目录
@@ -64,6 +51,7 @@ tower = "0.4"
 
 [build-dependencies]
 tonic-build = "0.10"
+
 ```
 
 ## 1.3 2. Proto 定义
@@ -146,6 +134,7 @@ message TaskStatus {
     string status = 2;
     bytes result = 3;
 }
+
 ```
 
 ## 1.4 3. 基础组件接口
@@ -178,6 +167,7 @@ pub trait TaskScheduler: Send + Sync {
     async fn submit_task(&self, task: Task) -> anyhow::Result<String>;
     async fn get_task_status(&self, task_id: &str) -> anyhow::Result<TaskStatus>;
 }
+
 ```
 
 ## 1.5 4. 分布式节点实现
@@ -256,6 +246,7 @@ impl DistributedNode {
         self.components.insert(component.get_id().to_string(), component);
     }
 }
+
 ```
 
 ## 1.6 5. gRPC 服务实现
@@ -392,6 +383,7 @@ impl DistributedService for DistributedServiceImpl {
         Ok(Response::new(status))
     }
 }
+
 ```
 
 ## 1.7 6. 服务发现实现
@@ -441,6 +433,7 @@ impl ServiceDiscovery for EtcdServiceDiscovery {
         Ok(services)
     }
 }
+
 ```
 
 ## 1.8 7. 消息代理实现
@@ -501,6 +494,7 @@ impl MessageBroker for RedisBroker {
         Ok(rx)
     }
 }
+
 ```
 
 ## 1.9 8. 任务调度器实现
@@ -567,6 +561,7 @@ impl TaskScheduler for DistributedTaskScheduler {
             .ok_or_else(|| anyhow::anyhow!("Task not found"))
     }
 }
+
 ```
 
 ## 1.10 9. 使用示例
@@ -613,6 +608,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 ## 1.11 10. 客户端示例
@@ -677,6 +673,7 @@ async fn example_client() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个完整的示例展示了如何：

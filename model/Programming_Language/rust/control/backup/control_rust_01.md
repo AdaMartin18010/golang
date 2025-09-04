@@ -52,19 +52,6 @@
     - [1.10.5 跨层级全景视角](#跨层级全景视角)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```rust
 <think>
 我需要进一步扩展和深化对Rust控制流及相关概念的分析，创建更加多维、立体的系统视角。
@@ -81,6 +68,7 @@
 
 我将在这些维度上展开分析，同时将它们相互关联，形成一个更加立体、系统化的Rust控制流模型。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -156,7 +144,7 @@
       fn new() -> Self {
           Machine { value: 0, _state: PhantomData }
       }
-      
+  
       fn init(self) -> Machine<Init> {
           Machine { value: self.value, _state: PhantomData }
       }
@@ -214,18 +202,18 @@
   ```rust
   {
       let mut data = vec![1, 2, 3];
-      
+  
       let r1 = &data;      // 不可变借用区域开始
       let r2 = &data;      // 重叠的不可变借用区域
-      
+  
       println!("{:?} {:?}", r1, r2);  // 两个借用区域在此使用
-      
+  
       let r3 = &mut data;  // 可变借用区域开始（前面的不可变借用区域已结束）
-      
+  
       r3.push(4);          // 使用可变借用
-      
+  
       println!("{:?}", r3);  // 可变借用区域结束
-      
+  
       // 原始data再次可用
       println!("{:?}", data);
   }  // 所有区域在此结束
@@ -409,29 +397,29 @@
   fn example<'a>(some_data: &'a str) -> impl Future<Output = usize> + 'a {
       enum ExampleStateMachine<'a, F1, F2> {
           Start,
-          WaitingOnOp1 { 
-              data: &'a str, 
-              future: F1 
+          WaitingOnOp1 {
+              data: &'a str,
+              future: F1
           },
-          WaitingOnOp2 { 
-              future: F2 
+          WaitingOnOp2 {
+              future: F2
           },
           Completed,
       }
-      
+  
       impl<'a, F1, F2> Future for ExampleStateMachine<'a, F1, F2>
       where
           F1: Future<Output = String>,
           F2: Future<Output = String>,
       {
           type Output = usize;
-          
+  
           fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<usize> {
               // 状态机轮转实现
               // ...
           }
       }
-      
+  
       ExampleStateMachine::Start { data: some_data }
   }
   ```

@@ -14,19 +14,6 @@
   - [1.8 4. 总结](#4-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`ToOwned` trait 定义在标准库的 `std::borrow` 模块中，其主要作用是将借用的数据（例如 `&T`）转换成拥有所有权的数据（例如 `T::Owned`），也就是从不可变借用转换为可拥有的副本。
 简单来说，它提供了一个公共接口，使得可以通过调用 `to_owned` 方法，从一个借用值中创建一个拥有独立所有权的克隆数据。
 
@@ -53,6 +40,7 @@ pub trait ToOwned {
     /// 从当前借用实例创建一个拥有所有权的数据
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 ## 1.3 使用示例
@@ -67,6 +55,7 @@ fn main() {
 
     println!("{}", owned);
 }
+
 ```
 
 在这个例子中，`s.to_owned()` 会返回一个 `String`，即拥有独立所有权的数据，从而使得这个字符串数据可以自由地传递和修改，而不依赖原始的借用数据。
@@ -90,6 +79,7 @@ pub trait ToOwned {
     type Owned: Borrow<Self>;
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 可以看到，`to_owned` 方法的签名是接受一个 `&self`（不可变引用），返回一个拥有所有权的值。也就是说，**ToOwned** trait 的设计就是基于不可变借用的。
@@ -118,6 +108,7 @@ fn main() {
     let owned_string: String = s.to_owned();
     println!("Owned string: {}", owned_string);
 }
+
 ```
 
 ### 1.7.2 示例 2：从可变引用调用 `to_owned()`
@@ -133,6 +124,7 @@ fn main() {
     let owned_string = (&s).to_owned();
     println!("Owned string: {}", owned_string);
 }
+
 ```
 
 在这个例子中，即使 `s` 是可变的，但调用 `(&s).to_owned()` 实际上是对 `&s`（不可变引用）的操作。**ToOwned** 本身不会区分 `&T` 和 `&mut T`；它只关心不可变借用。

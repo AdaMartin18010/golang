@@ -15,19 +15,6 @@
   - [1.11 10. 配置文件支持](#10-配置文件支持)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面是一个使用 Rust 2024 结合 ratatui (之前的 tui-rs) 实现的交互式控制台应用示例，用于展示程序的指标和状态。
 
 ## 1.1 目录
@@ -61,6 +48,7 @@ futures = "0.3"
 async-trait = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+
 ```
 
 ## 1.3 2. 基础 UI 框架实现
@@ -141,6 +129,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 ```
 
 ## 1.4 3. 指标状态管理
@@ -193,6 +182,7 @@ impl MetricsState {
         self.last_update = Some(now);
     }
 }
+
 ```
 
 ## 1.5 4. UI 渲染实现
@@ -286,6 +276,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         .block(Block::default().borders(Borders::ALL));
     f.render_widget(status_bar, chunks[2]);
 }
+
 ```
 
 ## 1.6 5. 交互控制实现
@@ -332,6 +323,7 @@ impl InputHandler {
         self.actions.pop()
     }
 }
+
 ```
 
 ## 1.7 6. 帮助菜单实现
@@ -379,6 +371,7 @@ impl HelpMenu {
         f.render_widget(paragraph, area);
     }
 }
+
 ```
 
 ## 1.8 7. 指标收集器实现
@@ -442,6 +435,7 @@ impl MetricsCollector {
         self.memory_gauge.set(usage);
     }
 }
+
 ```
 
 ## 1.9 8. 主程序实现
@@ -513,6 +507,7 @@ async fn run_app(
         app.update_metrics(metrics_collector.as_ref());
     }
 }
+
 ```
 
 ## 1.10 9. 自定义图表实现
@@ -570,6 +565,7 @@ impl CustomChart {
         f.render_widget(chart, area);
     }
 }
+
 ```
 
 ## 1.11 10. 配置文件支持
@@ -606,6 +602,7 @@ impl Config {
         Ok(toml::from_str(&content)?)
     }
 }
+
 ```
 
 这个完整的示例展示了如何：

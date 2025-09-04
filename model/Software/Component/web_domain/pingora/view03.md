@@ -177,6 +177,7 @@ Pingora Design Analysis
         ├── CDN Edge
         ├── General Network Framework
         └── Nginx/Envoy/HAProxy Alternative
+
 ```
 
 希望这个分析能够帮助你理解 Pingora 的设计框架。由于其相对较新且仍在快速发展，具体的实现细节和设计决策可能会随版本迭代而变化。最准确的信息来源始终是官方文档和源代码本身。

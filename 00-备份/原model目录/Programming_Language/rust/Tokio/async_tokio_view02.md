@@ -133,6 +133,7 @@ graph TD
         I2 --> I2_Detail(<b>Critique Focus:</b> 学习曲线<br/>现实差距<br/>生成器利弊<br/>深度/一致性);
         I3 --> I3_Detail(人体工程学<br/>标准化<br/>生产实践指导);
     end
+
 ```
 
 ## 2. 引言：目标与方法

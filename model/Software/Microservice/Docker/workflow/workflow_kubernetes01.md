@@ -45,6 +45,7 @@
 
 需要使用markdown格式，并且最好提供一个思维导图来展示主要概念和它们之间的关系。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -108,6 +109,7 @@ Docker架构模型：
                         │           容器运行时             │
                         │  (containerd/runc/runsc等)      │
                         └─────────────────────────────────┘
+
 ```
 
 ### 1.3.2 Docker运行机制
@@ -155,6 +157,7 @@ trait ContainerRuntime {
     fn stop(&self, container_id: &str, timeout: Option<Duration>) -> Result<(), Error>;
     fn remove(&self, container_id: &str, force: bool) -> Result<(), Error>;
 }
+
 ```
 
 ## 1.4 Kubernetes架构模型
@@ -198,6 +201,7 @@ Kubernetes架构模型：
 │  └───────────────────────┘││  └───────────────────────┘│
 └───────────────────────────┘└───────────────────────────┘
         数据平面
+
 ```
 
 ### 1.4.2 控制平面与数据平面
@@ -271,6 +275,7 @@ trait Controller {
     fn reconcile(&self, resource: &Self::Resource) -> Result<(), Error>;
     fn watch_and_reconcile(&self) -> Result<(), Error>;
 }
+
 ```
 
 ## 1.5 Kubernetes编排控制流
@@ -311,6 +316,7 @@ fn control_loop<R: Resource>(controller: &impl Controller<Resource=R>) {
         sleep(Duration::from_secs(10));
     }
 }
+
 ```
 
 ### 1.5.2 调度与资源管理
@@ -345,6 +351,7 @@ fn schedule_pod(pod: &Pod, nodes: &[Node]) -> Option<String> {
         .max_by(|(_, score1), (_, score2)| score1.partial_cmp(score2).unwrap())
         .map(|(node, _)| node.metadata.name.clone())
 }
+
 ```
 
 ### 1.5.3 状态协调机制
@@ -382,6 +389,7 @@ impl Controller for DeploymentController {
         Ok(())
     }
 }
+
 ```
 
 ## 1.6 组合规则与有效性
@@ -428,6 +436,7 @@ fn validate_resource<T: Resource>(resource: &T) -> Result<(), ValidationError> {
     
     Ok(())
 }
+
 ```
 
 ### 1.6.3 形式语义
@@ -479,6 +488,7 @@ fn apply_transition(state: &mut ClusterState, transition: StateTransition) -> Re
     
     Ok(())
 }
+
 ```
 
 ## 1.7 Kubernetes与工作流模式对应关系
@@ -550,7 +560,7 @@ Kubernetes实现了一系列数据流模式，与工作流数据模式有明确�
        value: Option<String>,
        value_from: Option<EnvVarSource>,
    }
-   
+  
    enum EnvVarSource {
        ConfigMapKeyRef(ConfigMapKeySelector),
        SecretKeyRef(SecretKeySelector),
@@ -645,15 +655,15 @@ Kubernetes的异常处理机制与工作流异常处理模式有对应关系：
    fn terminate_pod(pod: &Pod, grace_period: Duration) -> Result<(), Error> {
        // 发送SIGTERM信号
        send_signal(pod, Signal::SIGTERM);
-       
+  
        // 等待优雅终止期
        wait_for(grace_period);
-       
+  
        // 如果仍在运行，强制终止
        if pod_still_running(pod) {
            send_signal(pod, Signal::SIGKILL);
        }
-       
+  
        Ok(())
    }
    ```
@@ -680,7 +690,7 @@ Kubernetes的异常处理机制与工作流异常处理模式有对应关系：
        OnFailure,
        Never,
    }
-   
+  
    struct Probe {
        handler: Handler,
        initial_delay_seconds: i32,
@@ -730,6 +740,7 @@ fn prove_equivalence() {
         formalize(workflow_model).semantics()
     );
 }
+
 ```
 
 ## 1.9 总结与展望
@@ -774,4 +785,5 @@ fn prove_equivalence() {
            ├── 终止过程 ⟷ 取消活动模式
            ├── Finalizer/PreStop ⟷ 补偿模式
            └── 重启策略/探针 ⟷ 异常处理模式
+
 ```

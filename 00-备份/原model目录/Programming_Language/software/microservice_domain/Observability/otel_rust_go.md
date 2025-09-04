@@ -98,6 +98,7 @@ Rust中的OpenTelemetry实现由多个库组成，形成完整的生态系统：
 opentelemetry = { version = "0.20", features = ["rt-tokio"] }
 opentelemetry-otlp = { version = "0.13", features = ["grpc-tonic"] }
 opentelemetry_sdk = { version = "0.20", features = ["rt-tokio"] }
+
 ```
 
 ### 1.2 API使用模式
@@ -153,6 +154,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     global::shutdown_tracer_provider();
     Ok(())
 }
+
 ```
 
 ### 1.3 集成方式
@@ -197,6 +199,7 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+
 ```
 
 **与Tokio集成:**
@@ -229,6 +232,7 @@ async fn main() -> Result<(), TraceError> {
     global::shutdown_tracer_provider();
     Ok(())
 }
+
 ```
 
 ### 1.4 性能特性
@@ -255,6 +259,7 @@ opentelemetry_otlp::new_pipeline()
     .with_exporter(exporter)
     .with_trace_config(trace_config)
     .install_batch(Tokio, batch_config)?;
+
 ```
 
 ### 1.5 最佳实践
@@ -294,6 +299,7 @@ impl Sampler for CustomSampler {
         }
     }
 }
+
 ```
 
 ## 2. Golang中的OpenTelemetry实现
@@ -322,6 +328,7 @@ go get go.opentelemetry.io/otel
 go get go.opentelemetry.io/otel/sdk
 go get go.opentelemetry.io/otel/exporters/otlp/otlptrace
 go get go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc
+
 ```
 
 ### 2.2 API使用模式
@@ -413,6 +420,7 @@ func nestedOperation(ctx context.Context) {
     
     // 业务逻辑
 }
+
 ```
 
 ### 2.3 集成方式
@@ -475,6 +483,7 @@ func getUserDetails(ctx context.Context, id string) {
     // 模拟数据库操作
     time.Sleep(100 * time.Millisecond)
 }
+
 ```
 
 **与gRPC集成:**
@@ -529,6 +538,7 @@ func main() {
         log.Fatalf("failed to serve: %v", err)
     }
 }
+
 ```
 
 ### 2.4 性能特性
@@ -556,6 +566,7 @@ tp := sdktrace.NewTracerProvider(
     sdktrace.WithResource(resources),
     sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.1)), // 采样率10%
 )
+
 ```
 
 ### 2.5 最佳实践
@@ -602,6 +613,7 @@ func containsHighPriorityAttribute(attrs []attribute.KeyValue) bool {
     }
     return false
 }
+
 ```
 
 ## 3. 两种实现的比较分析
@@ -723,6 +735,7 @@ impl<'a> opentelemetry::propagation::Injector for HeaderMapCarrier<'a> {
         }
     }
 }
+
 ```
 
 **Golang实现案例:**
@@ -797,6 +810,7 @@ func callInventoryService(ctx context.Context, orderID string) error {
     // 模拟处理逻辑
     return nil
 }
+
 ```
 
 ### 4.2 异步处理系统
@@ -886,6 +900,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     global::shutdown_tracer_provider();
     Ok(())
 }
+
 ```
 
 **Golang异步系统示例:**
@@ -990,6 +1005,7 @@ func consumer(queue <-chan WorkMessage) {
         span.End()
     }
 }
+
 ```
 
 ### 4.3 高性能计算场景
@@ -1025,26 +1041,26 @@ fn compute_intensive_task(data_batch: &[u32]) -> Result<u64, Box<dyn std::error:
 ```rust
                     let child_span = child_cx.span();
                     child_span.set_attribute(KeyValue::new("compute.value", num as i64));
-                    
+  
                     // 执行复杂计算
                     let mut result = num as u64;
                     for i in 0..10000 {
                         result = result.wrapping_mul(i).wrapping_add(num as u64);
                     }
-                    
+  
                     child_span.add_event("chunk_computed", vec![
                         KeyValue::new("compute.result", result as i64),
                     ]);
-                    
+  
                     result
                 })
             })
             .sum();
-        
+  
         let duration = start.elapsed();
         span.set_attribute(KeyValue::new("computation.duration_ms", duration.as_millis() as i64));
         span.set_attribute(KeyValue::new("computation.result", result as i64));
-        
+  
         result
     })
 }
@@ -1052,17 +1068,18 @@ fn compute_intensive_task(data_batch: &[u32]) -> Result<u64, Box<dyn std::error:
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 初始化tracer
     let _provider = init_tracer()?;
-    
+  
     // 生成测试数据
     let data: Vec<u32> = (0..100000).collect();
-    
+  
     // 执行计算任务
     let result = compute_intensive_task(&data)?;
     println!("计算结果: {}", result);
-    
+  
     global::shutdown_tracer_provider();
     Ok(())
 }
+
 ```
 
 **Golang高性能计算示例:**
@@ -1076,7 +1093,7 @@ import (
     "runtime"
     "sync"
     "time"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/trace"
@@ -1086,40 +1103,40 @@ func computeIntensiveTask(ctx context.Context, dataBatch []uint32) uint64 {
     tracer := otel.Tracer("compute-service")
     ctx, span := tracer.Start(ctx, "compute_task")
     defer span.End()
-    
+  
     span.SetAttributes(attribute.Int("batch.size", len(dataBatch)))
-    
+  
     start := time.Now()
-    
+  
     // 准备多线程计算
     numCPU := runtime.NumCPU()
     chunkSize := (len(dataBatch) + numCPU - 1) / numCPU
-    
+  
     var wg sync.WaitGroup
     resultChan := make(chan uint64, numCPU)
-    
+  
     // 将数据分成多个块并行处理
     for i := 0; i < numCPU; i++ {
         wg.Add(1)
-        
+  
         startIdx := i * chunkSize
         endIdx := startIdx + chunkSize
         if endIdx > len(dataBatch) {
             endIdx = len(dataBatch)
         }
-        
+  
         // 数据块切片
         chunk := dataBatch[startIdx:endIdx]
-        
+  
         go func(chunk []uint32, idx int) {
             defer wg.Done()
-            
+  
             // 为每个goroutine创建子span
-            _, childSpan := tracer.Start(ctx, "parallel_compute_chunk", 
+            _, childSpan := tracer.Start(ctx, "parallel_compute_chunk",
                 trace.WithAttributes(attribute.Int("chunk.index", idx),
                                    attribute.Int("chunk.size", len(chunk))))
             defer childSpan.End()
-            
+  
             // 执行计算
             var result uint64
             for _, num := range chunk {
@@ -1129,32 +1146,32 @@ func computeIntensiveTask(ctx context.Context, dataBatch []uint32) uint64 {
                     result = result*i + val
                 }
             }
-            
-            childSpan.AddEvent("chunk_computed", 
+  
+            childSpan.AddEvent("chunk_computed",
                 trace.WithAttributes(attribute.Int64("compute.result", int64(result))))
-            
+  
             resultChan <- result
         }(chunk, i)
     }
-    
+  
     // 等待所有goroutine完成
     go func() {
         wg.Wait()
         close(resultChan)
     }()
-    
+  
     // 汇总结果
     var finalResult uint64
     for result := range resultChan {
         finalResult += result
     }
-    
+  
     duration := time.Since(start)
     span.SetAttributes(
         attribute.Int64("computation.duration_ms", duration.Milliseconds()),
         attribute.Int64("computation.result", int64(finalResult)),
     )
-    
+  
     return finalResult
 }
 
@@ -1164,17 +1181,18 @@ func main() {
         log.Fatal(err)
     }
     defer tp.Shutdown(context.Background())
-    
+  
     // 生成测试数据
     data := make([]uint32, 100000)
     for i := range data {
         data[i] = uint32(i)
     }
-    
+  
     // 执行计算任务
     result := computeIntensiveTask(context.Background(), data)
     log.Printf("计算结果: %d", result)
 }
+
 ```
 
 ## 5. 高级集成模式
@@ -1200,7 +1218,7 @@ fn init_telemetry() -> Result<(), TraceError> {
         KeyValue::new("service.version", env!("CARGO_PKG_VERSION")),
         KeyValue::new("deployment.environment", "production"),
     ]);
-    
+  
     // 追踪配置
     let tracer_provider = opentelemetry_otlp::new_pipeline()
         .tracing()
@@ -1211,7 +1229,7 @@ fn init_telemetry() -> Result<(), TraceError> {
                 .with_sampler(opentelemetry_sdk::trace::Sampler::AlwaysOn)
         )
         .install_batch(Tokio)?;
-    
+  
     // 指标配置
     let meter_provider = SdkMeterProvider::builder()
         .with_resource(resource)
@@ -1227,11 +1245,11 @@ fn init_telemetry() -> Result<(), TraceError> {
             .build()
         )
         .build();
-    
+  
     // 设置全局提供程序
     global::set_tracer_provider(tracer_provider);
     global::set_meter_provider(meter_provider);
-    
+  
     Ok(())
 }
 
@@ -1239,25 +1257,25 @@ fn init_telemetry() -> Result<(), TraceError> {
 fn process_request(user_id: &str, operation: &str) -> Result<(), Box<dyn std::error::Error>> {
     let tracer = global::tracer("multi-signal-service");
     let meter = global::meter("multi-signal-service");
-    
+  
     // 创建计数器
     let request_counter = meter
         .u64_counter("request_count")
         .with_description("Counts the number of requests")
         .init();
-    
+  
     // 创建直方图
     let duration_histogram = meter
         .f64_histogram("request_duration")
         .with_description("Measures the duration of requests")
         .init();
-    
+  
     // 在span中记录指标
     tracer.in_span(format!("process_{}_{}", operation, user_id), |cx| {
         let span = cx.span();
         span.set_attribute(KeyValue::new("user.id", user_id.to_string()));
         span.set_attribute(KeyValue::new("operation", operation.to_string()));
-        
+  
         // 增加请求计数
         request_counter.add(
             1,
@@ -1266,16 +1284,16 @@ fn process_request(user_id: &str, operation: &str) -> Result<(), Box<dyn std::er
                 KeyValue::new("operation", operation.to_string()),
             ],
         );
-        
+  
         // 记录开始时间
         let start = std::time::Instant::now();
-        
+  
         // 执行操作
         // ...
-        
+  
         // 模拟处理时间
         std::thread::sleep(Duration::from_millis(100));
-        
+  
         // 记录持续时间
         let duration = start.elapsed().as_secs_f64();
         duration_histogram.record(
@@ -1285,14 +1303,15 @@ fn process_request(user_id: &str, operation: &str) -> Result<(), Box<dyn std::er
                 KeyValue::new("operation", operation.to_string()),
             ],
         );
-        
+  
         span.add_event("request_completed", vec![
             KeyValue::new("duration_secs", duration),
         ]);
     });
-    
+  
     Ok(())
 }
+
 ```
 
 **Golang多信号关联示例:**
@@ -1304,7 +1323,7 @@ import (
     "context"
     "log"
     "time"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
@@ -1322,7 +1341,7 @@ import (
 // 初始化追踪器和指标收集器
 func initTelemetry() (*sdktrace.TracerProvider, *sdkmetric.MeterProvider, error) {
     ctx := context.Background()
-    
+  
     // 创建通用资源
     res := resource.NewWithAttributes(
         semconv.SchemaURL,
@@ -1330,7 +1349,7 @@ func initTelemetry() (*sdktrace.TracerProvider, *sdkmetric.MeterProvider, error)
         semconv.ServiceVersionKey.String("1.0.0"),
         attribute.String("deployment.environment", "production"),
     )
-    
+  
     // 创建追踪导出器
     traceExporter, err := otlptracegrpc.New(
         ctx,
@@ -1340,14 +1359,14 @@ func initTelemetry() (*sdktrace.TracerProvider, *sdkmetric.MeterProvider, error)
     if err != nil {
         return nil, nil, err
     }
-    
+  
     // 创建追踪提供器
     tp := sdktrace.NewTracerProvider(
         sdktrace.WithBatcher(traceExporter),
         sdktrace.WithResource(res),
         sdktrace.WithSampler(sdktrace.AlwaysOn()),
     )
-    
+  
     // 创建指标导出器
     metricExporter, err := otlpmetricgrpc.New(
         ctx,
@@ -1357,7 +1376,7 @@ func initTelemetry() (*sdktrace.TracerProvider, *sdkmetric.MeterProvider, error)
     if err != nil {
         return tp, nil, err
     }
-    
+  
     // 创建指标提供器
     mp := sdkmetric.NewMeterProvider(
         sdkmetric.WithResource(res),
@@ -1368,11 +1387,11 @@ func initTelemetry() (*sdktrace.TracerProvider, *sdkmetric.MeterProvider, error)
             ),
         ),
     )
-    
+  
     // 设置全局提供器
     otel.SetTracerProvider(tp)
     otel.SetMeterProvider(mp)
-    
+  
     return tp, mp, nil
 }
 
@@ -1380,7 +1399,7 @@ func initTelemetry() (*sdktrace.TracerProvider, *sdkmetric.MeterProvider, error)
 func processRequest(ctx context.Context, userID, operation string) error {
     tracer := otel.Tracer("multi-signal-service")
     meter := otel.Meter("multi-signal-service")
-    
+  
     // 创建计数器
     requestCounter, err := meter.Int64Counter(
         "request_count",
@@ -1389,7 +1408,7 @@ func processRequest(ctx context.Context, userID, operation string) error {
     if err != nil {
         return err
     }
-    
+  
     // 创建直方图
     durationHistogram, err := meter.Float64Histogram(
         "request_duration",
@@ -1398,40 +1417,40 @@ func processRequest(ctx context.Context, userID, operation string) error {
     if err != nil {
         return err
     }
-    
+  
     // 常用属性
     attrs := []attribute.KeyValue{
         attribute.String("user.id", userID),
         attribute.String("operation", operation),
     }
-    
+  
     // 在span中记录指标
     ctx, span := tracer.Start(
-        ctx, 
+        ctx,
         "process_"+operation+"_"+userID,
         trace.WithAttributes(attrs...),
     )
     defer span.End()
-    
+  
     // 增加请求计数
     requestCounter.Add(ctx, 1, metric.WithAttributes(attrs...))
-    
+  
     // 记录开始时间
     start := time.Now()
-    
+  
     // 执行操作
     // ...
-    
+  
     // 模拟处理时间
     time.Sleep(100 * time.Millisecond)
-    
+  
     // 记录持续时间
     duration := time.Since(start).Seconds()
     durationHistogram.Record(ctx, duration, metric.WithAttributes(attrs...))
-    
-    span.AddEvent("request_completed", 
+  
+    span.AddEvent("request_completed",
         trace.WithAttributes(attribute.Float64("duration_secs", duration)))
-    
+  
     return nil
 }
 
@@ -1449,13 +1468,14 @@ func main() {
             log.Printf("Error shutting down meter provider: %v", err)
         }
     }()
-    
+  
     // 处理请求
     ctx := context.Background()
     if err := processRequest(ctx, "user123", "login"); err != nil {
         log.Printf("Error processing request: %v", err)
     }
 }
+
 ```
 
 ### 5.2 自定义检测
@@ -1493,38 +1513,38 @@ impl<F> TracedFuture<F> {
 
 impl<F: Future> Future for TracedFuture<F> {
     type Output = F::Output;
-    
+  
     fn poll(self: Pin<&mut Self>, cx: &mut TaskContext<'_>) -> Poll<Self::Output> {
         // 获取可变引用
         let this = unsafe { self.get_unchecked_mut() };
-        
+  
         // 首次poll时初始化span
         if this.start_time.is_none() {
             this.start_time = Some(Instant::now());
-            
+  
             let tracer = global::tracer("traced-future");
             tracer.in_span(this.operation_name.clone(), |ctx| {
                 let span = ctx.span();
                 span.set_kind(SpanKind::Internal);
-                
+  
                 for attr in &this.attributes {
                     span.set_attribute(attr.clone());
                 }
-                
+  
                 span.add_event("future_started", vec![]);
                 this.context = Some(ctx.clone());
             });
         }
-        
+  
         // 获取内部Future的可变引用并poll
         let inner = unsafe { Pin::new_unchecked(&mut this.inner) };
         let result = inner.poll(cx);
-        
+  
         // 如果Future完成了，结束span
         if result.is_ready() {
             if let Some(context) = this.context.take() {
                 let duration = this.start_time.unwrap().elapsed();
-                
+  
                 global::tracer("traced-future").with_span(context.current_span(), |span| {
                     span.add_event("future_completed", vec![
                         KeyValue::new("duration_ms", duration.as_millis() as i64),
@@ -1532,7 +1552,7 @@ impl<F: Future> Future for TracedFuture<F> {
                 });
             }
         }
-        
+  
         result
     }
 }
@@ -1545,7 +1565,7 @@ async fn fetch_data(id: &str) -> Result<String, Box<dyn std::error::Error>> {
         async move {
             // 模拟网络请求
             tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
-            
+  
             if id == "error" {
                 Err("Failed to fetch data".into())
             } else {
@@ -1560,7 +1580,7 @@ async fn fetch_data(id: &str) -> Result<String, Box<dyn std::error::Error>> {
 // 使用上述自定义工具的应用
 async fn process_data(id: &str) -> Result<(), Box<dyn std::error::Error>> {
     let tracer = global::tracer("data-service");
-    
+  
     tracer.in_span("process_data", |_| async {
         // 获取数据
         match fetch_data(id).await {
@@ -1575,6 +1595,7 @@ async fn process_data(id: &str) -> Result<(), Box<dyn std::error::Error>> {
         }
     }.await)
 }
+
 ```
 
 **Golang自定义检测示例:**
@@ -1587,7 +1608,7 @@ import (
     "fmt"
     "log"
     "time"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/trace"
@@ -1596,26 +1617,26 @@ import (
 // 定制检测中间件，用于包装函数执行
 func TraceFunction(ctx context.Context, name string, attrs []attribute.KeyValue, fn func(context.Context) error) error {
     tracer := otel.Tracer("function-tracer")
-    
+  
     ctx, span := tracer.Start(ctx, name, trace.WithAttributes(attrs...))
     defer span.End()
-    
+  
     start := time.Now()
-    
+  
     // 执行被包装的函数
     err := fn(ctx)
-    
+  
     // 记录执行结果
     duration := time.Since(start)
     span.SetAttributes(attribute.Float64("duration_ms", float64(duration.Milliseconds())))
-    
+  
     if err != nil {
         span.RecordError(err)
         span.SetStatus(trace.StatusCodeError, err.Error())
     } else {
         span.SetStatus(trace.StatusCodeOk, "")
     }
-    
+  
     return err
 }
 
@@ -1632,7 +1653,7 @@ type Database interface {
 
 func (t *TracedDB) Query(ctx context.Context, query string, args ...interface{}) ([]map[string]interface{}, error) {
     var result []map[string]interface{}
-    
+  
     err := TraceFunction(
         ctx,
         "db.query",
@@ -1647,13 +1668,13 @@ func (t *TracedDB) Query(ctx context.Context, query string, args ...interface{})
             return err
         },
     )
-    
+  
     return result, err
 }
 
 func (t *TracedDB) Execute(ctx context.Context, statement string, args ...interface{}) (int64, error) {
     var result int64
-    
+  
     err := TraceFunction(
         ctx,
         "db.execute",
@@ -1668,7 +1689,7 @@ func (t *TracedDB) Execute(ctx context.Context, statement string, args ...interf
             return err
         },
     )
-    
+  
     return result, err
 }
 
@@ -1678,20 +1699,20 @@ type MockDB struct{}
 func (db *MockDB) Query(ctx context.Context, query string, args ...interface{}) ([]map[string]interface{}, error) {
     // 模拟查询延迟
     time.Sleep(50 * time.Millisecond)
-    
+  
     // 模拟结果
     result := []map[string]interface{}{
         {"id": 1, "name": "Item 1"},
         {"id": 2, "name": "Item 2"},
     }
-    
+  
     return result, nil
 }
 
 func (db *MockDB) Execute(ctx context.Context, statement string, args ...interface{}) (int64, error) {
     // 模拟执行延迟
     time.Sleep(30 * time.Millisecond)
-    
+  
     // 模拟影响行数
     return 2, nil
 }
@@ -1703,41 +1724,42 @@ func main() {
         log.Fatal(err)
     }
     defer tp.Shutdown(context.Background())
-    
+  
     // 创建追踪数据库
     db := &TracedDB{
         DB:          &MockDB{},
         ServiceName: "postgres",
     }
-    
+  
     // 执行应用逻辑
     ctx := context.Background()
     tracer := otel.Tracer("app")
-    
+  
     ctx, span := tracer.Start(ctx, "process_user_data")
     defer span.End()
-    
+  
     // 查询数据
     results, err := db.Query(ctx, "SELECT * FROM users WHERE status = ?", "active")
     if err != nil {
         span.RecordError(err)
         log.Fatal(err)
     }
-    
+  
     span.SetAttributes(attribute.Int("result.count", len(results)))
-    
+  
     // 更新数据
-    affected, err := db.Execute(ctx, "UPDATE users SET last_login = ? WHERE status = ?", 
+    affected, err := db.Execute(ctx, "UPDATE users SET last_login = ? WHERE status = ?",
         time.Now(), "active")
     if err != nil {
         span.RecordError(err)
         log.Fatal(err)
     }
-    
+  
     span.SetAttributes(attribute.Int64("affected.rows", affected))
-    
+  
     fmt.Printf("处理了 %d 条记录，更新了 %d 行\n", len(results), affected)
 }
+
 ```
 
 ## 6. 深入对比分析
@@ -1819,23 +1841,25 @@ use actix_web_opentelemetry::RequestTracing;
 use std::time::{Duration, Instant};
 
 // 模拟延迟敏感API
-#[get("/api/v1/price/{symbol}")]
+
+# [get("/api/v1/price/{symbol}")]
+
 async fn get_price(path: web::Path<String>) -> impl Responder {
     let symbol = path.into_inner();
     let tracer = global::tracer("pricing-service");
-    
+  
     let start = Instant::now();
-    
+  
     let result = tracer.in_span(format!("get_price_{}", symbol), |cx| {
         let span = cx.span();
         span.set_attribute(KeyValue::new("symbol", symbol.clone()));
-        
+  
         // 模拟快速查询
         let price = calculate_price(&symbol);
-        
+  
         let latency = start.elapsed();
         span.set_attribute(KeyValue::new("latency_ns", latency.as_nanos() as i64));
-        
+  
         // 记录SLO
         if latency > Duration::from_micros(100) {
             span.add_event("slo_violation", vec![
@@ -1843,7 +1867,7 @@ async fn get_price(path: web::Path<String>) -> impl Responder {
                 KeyValue::new("actual_us", latency.as_micros() as i64),
             ]);
         }
-        
+  
         HttpResponse::Ok().json(json!({
             "symbol": symbol,
             "price": price,
@@ -1851,7 +1875,7 @@ async fn get_price(path: web::Path<String>) -> impl Responder {
             "latency_ns": latency.as_nanos()
         }))
     });
-    
+  
     result
 }
 
@@ -1860,11 +1884,12 @@ fn calculate_price(symbol: &str) -> f64 {
     100.0 + symbol.chars().fold(0.0, |acc, c| acc + (c as u8 as f64) / 100.0)
 }
 
-#[actix_web::main]
+# [actix_web::main]
+
 async fn main() -> std::io::Result<()> {
     // 初始化高性能配置的tracer
     init_tracer_for_low_latency().expect("Failed to initialize tracer");
-    
+  
     HttpServer::new(|| {
         App::new()
             .wrap(RequestTracing::new())
@@ -1881,7 +1906,7 @@ fn init_tracer_for_low_latency() -> Result<(), TraceError> {
         .with_max_queue_size(10_000)
         .with_scheduled_delay(Duration::from_secs(1))
         .with_max_export_batch_size(1_000);
-    
+  
     opentelemetry_otlp::new_pipeline()
         .tracing()
         .with_exporter(opentelemetry_otlp::new_exporter().tonic())
@@ -1894,6 +1919,7 @@ fn init_tracer_for_low_latency() -> Result<(), TraceError> {
         )
         .install_batch(opentelemetry_sdk::runtime::Tokio, batch_config)
 }
+
 ```
 
 ### 7.2 适合Golang的场景
@@ -1917,7 +1943,7 @@ import (
     "os"
     "os/signal"
     "time"
-    
+  
     "github.com/gorilla/mux"
     "go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
     "go.opentelemetry.io/otel"
@@ -1942,19 +1968,19 @@ func getServiceInfo(ctx context.Context) (*Service, error) {
     tracer := otel.Tracer("service-api")
     ctx, span := tracer.Start(ctx, "get_service_info")
     defer span.End()
-    
+  
     // 从环境变量获取信息
     podName := os.Getenv("POD_NAME")
     nodeName := os.Getenv("NODE_NAME")
-    
+  
     span.SetAttributes(
         attribute.String("k8s.pod.name", podName),
         attribute.String("k8s.node.name", nodeName),
     )
-    
+  
     // 添加人为延迟以模拟工作
     time.Sleep(10 * time.Millisecond)
-    
+  
     service := &Service{
         Name:        "example-service",
         Version:     "1.0.0",
@@ -1962,23 +1988,23 @@ func getServiceInfo(ctx context.Context) (*Service, error) {
         K8sPod:      podName,
         Environment: os.Getenv("ENVIRONMENT"),
     }
-    
+  
     return service, nil
 }
 
 func serviceInfoHandler(w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
-    
+  
     // 获取服务信息
     info, err := getServiceInfo(ctx)
     if err != nil {
         span := trace.SpanFromContext(ctx)
         span.RecordError(err)
-        
+  
         http.Error(w, "Failed to get service info", http.StatusInternalServerError)
         return
     }
-    
+  
     // 返回JSON响应
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(info)
@@ -1991,7 +2017,7 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 func initTracer() (*sdktrace.TracerProvider, error) {
     ctx := context.Background()
-    
+  
     exporter, err := otlptrace.New(
         ctx,
         otlptracegrpc.NewClient(
@@ -2002,7 +2028,7 @@ func initTracer() (*sdktrace.TracerProvider, error) {
     if err != nil {
         return nil, err
     }
-    
+  
     // 创建云原生环境的资源属性
     hostName, _ := os.Hostname()
     resource := resource.NewWithAttributes(
@@ -2017,7 +2043,7 @@ func initTracer() (*sdktrace.TracerProvider, error) {
         attribute.String("k8s.namespace.name", os.Getenv("NAMESPACE")),
         attribute.String("k8s.container.name", os.Getenv("CONTAINER_NAME")),
     )
-    
+  
     tp := sdktrace.NewTracerProvider(
         sdktrace.WithBatcher(exporter),
         sdktrace.WithResource(resource),
@@ -2025,7 +2051,7 @@ func initTracer() (*sdktrace.TracerProvider, error) {
             sdktrace.TraceIDRatioBased(0.1),
         )),
     )
-    
+  
     otel.SetTracerProvider(tp)
     return tp, nil
 }
@@ -2040,13 +2066,13 @@ func main() {
             log.Printf("Error shutting down tracer provider: %v", err)
         }
     }()
-    
+  
     r := mux.NewRouter()
     r.Use(otelmux.Middleware("http-server"))
-    
+  
     r.HandleFunc("/api/v1/service", serviceInfoHandler).Methods("GET")
     r.HandleFunc("/health", healthCheckHandler).Methods("GET")
-    
+  
     srv := &http.Server{
         Addr:         ":8080",
         Handler:      r,
@@ -2054,7 +2080,7 @@ func main() {
         WriteTimeout: 10 * time.Second,
         IdleTimeout:  120 * time.Second,
     }
-    
+  
     // 启动服务器
     go func() {
         log.Println("Starting server on :8080")
@@ -2062,20 +2088,21 @@ func main() {
             log.Fatalf("Failed to start server: %v", err)
         }
     }()
-    
+  
     // 优雅关闭
     c := make(chan os.Signal, 1)
     signal.Notify(c, os.Interrupt)
     <-c
-    
+  
     ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
     if err := srv.Shutdown(ctx); err != nil {
         log.Fatalf("Server forced to shutdown: %v", err)
     }
-    
+  
     log.Println("Server shutdown gracefully")
 }
+
 ```
 
 ## 8. 跨语言集成与互操作性
@@ -2097,19 +2124,19 @@ use reqwest::header::{HeaderMap, HeaderValue};
 async fn call_golang_service(ctx: Context, user_id: &str) -> Result<String, Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
     let mut headers = HeaderMap::new();
-    
+  
     // 注入当前上下文到请求头
     global::get_text_map_propagator(|propagator| {
         propagator.inject_context(&ctx, &mut HeaderMapCarrier(&mut headers));
     });
-    
+  
     // 发送请求到Go服务
     let response = client.get("http://go-service:8080/api/v1/users")
         .headers(headers)
         .query(&[("user_id", user_id)])
         .send()
         .await?;
-    
+  
     let body = response.text().await?;
     Ok(body)
 }
@@ -2124,6 +2151,7 @@ impl<'a> opentelemetry::propagation::Injector for HeaderMapCarrier<'a> {
         }
     }
 }
+
 ```
 
 **Golang跨服务上下文传播：**
@@ -2135,7 +2163,7 @@ import (
     "context"
     "io/ioutil"
     "net/http"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/propagation"
     "go.opentelemetry.io/otel/trace"
@@ -2146,18 +2174,18 @@ func callRustService(ctx context.Context, orderID string) (string, error) {
     tracer := otel.Tracer("go-service")
     ctx, span := tracer.Start(ctx, "call_rust_service")
     defer span.End()
-    
+  
     // 创建请求
-    req, err := http.NewRequestWithContext(ctx, "GET", 
+    req, err := http.NewRequestWithContext(ctx, "GET",
         "http://rust-service:8000/api/v1/orders/"+orderID, nil)
     if err != nil {
         span.RecordError(err)
         return "", err
     }
-    
+  
     // 注入当前上下文到请求头
     otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
-    
+  
     // 发送请求
     client := http.Client{}
     resp, err := client.Do(req)
@@ -2166,15 +2194,16 @@ func callRustService(ctx context.Context, orderID string) (string, error) {
         return "", err
     }
     defer resp.Body.Close()
-    
+  
     body, err := ioutil.ReadAll(resp.Body)
     if err != nil {
         span.RecordError(err)
         return "", err
     }
-    
+  
     return string(body), nil
 }
+
 ```
 
 ### 8.2 统一属性命名和语义约定
@@ -2190,16 +2219,17 @@ use opentelemetry_semantic_conventions as semcov;
 // 使用统一的语义约定记录span属性
 fn trace_http_request(method: &str, url: &str, status_code: u16) {
     let tracer = global::tracer("http-client");
-    
+  
     tracer.in_span("http_request", |cx| {
         let span = cx.span();
-        
+  
         // 使用标准属性名
         span.set_attribute(semcov::trace::HTTP_METHOD.string(method.to_string()));
         span.set_attribute(semcov::trace::HTTP_URL.string(url.to_string()));
         span.set_attribute(semcov::trace::HTTP_STATUS_CODE.i64(status_code as i64));
     });
 }
+
 ```
 
 **Golang统一语义约定：**
@@ -2209,7 +2239,7 @@ package main
 
 import (
     "context"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
@@ -2219,10 +2249,10 @@ import (
 // 使用统一的语义约定记录span属性
 func traceHTTPRequest(ctx context.Context, method, url string, statusCode int) {
     tracer := otel.Tracer("http-client")
-    
+  
     _, span := tracer.Start(ctx, "http_request")
     defer span.End()
-    
+  
     // 使用标准属性名
     span.SetAttributes(
         semconv.HTTPMethodKey.String(method),
@@ -2230,6 +2260,7 @@ func traceHTTPRequest(ctx context.Context, method, url string, statusCode int) {
         semconv.HTTPStatusCodeKey.Int(statusCode),
     )
 }
+
 ```
 
 ### 8.3 多语言系统实例
@@ -2239,21 +2270,22 @@ func traceHTTPRequest(ctx context.Context, method, url string, statusCode int) {
 **系统架构图：**
 
 ```text
-+----------------+        +----------------+
++ ----------------+        +----------------+
 | Rust API层服务  |------->| Golang数据服务 |
 | (高性能Web API) |        | (业务逻辑处理) |
-+----------------+        +----------------+
++ ----------------+        +----------------+
         |                          |
         v                          v
-+-----------------------------------------------+
++ -----------------------------------------------+
 |           OpenTelemetry Collector             |
-+-----------------------------------------------+
++ -----------------------------------------------+
         |                 |                |
         v                 v                v
-+-------------+   +---------------+   +------------+
++ -------------+   +---------------+   +------------+
 |  Jaeger     |   |  Prometheus   |   |  Elastic   |
 | (追踪可视化) |   |  (指标监控)    |   | (日志存储) |
-+-------------+   +---------------+   +------------+
++ -------------+   +---------------+   +------------+
+
 ```
 
 **跨语言架构示例：**
@@ -2266,7 +2298,8 @@ use opentelemetry::trace::TraceError;
 use actix_web_opentelemetry::RequestTracing;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+# [derive(Serialize, Deserialize)]
+
 struct Order {
     id: String,
     user_id: String,
@@ -2276,17 +2309,17 @@ struct Order {
 
 async fn create_order(order: web::Json<Order>) -> impl Responder {
     let tracer = global::tracer("order-api");
-    
+  
     tracer.in_span("create_order", |cx| {
         let span = cx.span();
         span.set_attribute(KeyValue::new("order.id", order.id.clone()));
         span.set_attribute(KeyValue::new("order.user_id", order.user_id.clone()));
         span.set_attribute(KeyValue::new("order.items.count", order.items.len() as i64));
         span.set_attribute(KeyValue::new("order.total", order.total));
-        
+  
         // 调用Golang服务处理订单
         let result = call_order_processing_service(&order, cx).await;
-        
+  
         match result {
             Ok(_) => {
                 span.add_event("order_processed", vec![]);
@@ -2308,11 +2341,12 @@ async fn call_order_processing_service(order: &Order, ctx: &opentelemetry::Conte
     Ok(())
 }
 
-#[actix_web::main]
+# [actix_web::main]
+
 async fn main() -> std::io::Result<()> {
     // 初始化tracer
     init_tracer().expect("Failed to initialize tracer");
-    
+  
     HttpServer::new(|| {
         App::new()
             .wrap(RequestTracing::new())
@@ -2322,6 +2356,7 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+
 ```
 
 ```go
@@ -2333,7 +2368,7 @@ import (
     "encoding/json"
     "log"
     "net/http"
-    
+  
     "github.com/gorilla/mux"
     "go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
     "go.opentelemetry.io/otel"
@@ -2351,28 +2386,28 @@ type Order struct {
 func processOrderHandler(w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
     span := trace.SpanFromContext(ctx)
-    
+  
     var order Order
     if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
         span.RecordError(err)
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
-    
+  
     span.SetAttributes(
         attribute.String("order.id", order.ID),
         attribute.String("order.user_id", order.UserID),
         attribute.Int("order.items.count", len(order.Items)),
         attribute.Float64("order.total", order.Total),
     )
-    
+  
     // 处理订单业务逻辑
     if err := processOrder(ctx, &order); err != nil {
         span.RecordError(err)
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    
+  
     span.AddEvent("order_processed")
     w.WriteHeader(http.StatusOK)
     json.NewEncoder(w).Encode(map[string]string{"status": "processed"})
@@ -2382,22 +2417,22 @@ func processOrder(ctx context.Context, order *Order) error {
     tracer := otel.Tracer("order-processor")
     ctx, span := tracer.Start(ctx, "process_order_business_logic")
     defer span.End()
-    
+  
     // 订单验证
     if err := validateOrder(ctx, order); err != nil {
         return err
     }
-    
+  
     // 库存检查
     if err := checkInventory(ctx, order); err != nil {
         return err
     }
-    
+  
     // 支付处理
     if err := processPayment(ctx, order); err != nil {
         return err
     }
-    
+  
     return nil
 }
 
@@ -2423,17 +2458,18 @@ func main() {
         log.Fatalf("Failed to initialize tracer: %v", err)
     }
     defer tp.Shutdown(context.Background())
-    
+  
     r := mux.NewRouter()
     r.Use(otelmux.Middleware("order-processor"))
-    
+  
     r.HandleFunc("/api/v1/process-order", processOrderHandler).Methods("POST")
-    
+  
     log.Println("Starting order processing service on :8080")
     if err := http.ListenAndServe(":8080", r); err != nil {
         log.Fatalf("Failed to start server: %v", err)
     }
 }
+
 ```
 
 ## 9. 性能优化与成本控制
@@ -2452,7 +2488,7 @@ use std::env;
 // 基于环境的动态采样配置
 fn configure_adaptive_sampling() -> Result<(), TraceError> {
     let environment = env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string());
-    
+  
     // 根据环境配置采样率
     let sampler = match environment.as_str() {
         "production" => {
@@ -2472,7 +2508,7 @@ fn configure_adaptive_sampling() -> Result<(), TraceError> {
             opentelemetry_sdk::trace::Sampler::always_on()
         }
     };
-    
+  
     // 配置tracer
     opentelemetry_otlp::new_pipeline()
         .tracing()
@@ -2487,6 +2523,7 @@ fn configure_adaptive_sampling() -> Result<(), TraceError> {
         )
         .install_batch(opentelemetry_sdk::runtime::Tokio)
 }
+
 ```
 
 **Golang采样优化：**
@@ -2498,7 +2535,7 @@ import (
     "context"
     "os"
     "strings"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/exporters/otlp/otlptrace"
@@ -2519,7 +2556,7 @@ type AdaptiveSampler struct {
 func NewAdaptiveSampler() sdktrace.Sampler {
     environment := os.Getenv("ENVIRONMENT")
     var defaultRatio float64
-    
+  
     switch strings.ToLower(environment) {
     case "production":
         defaultRatio = 0.05
@@ -2528,7 +2565,7 @@ func NewAdaptiveSampler() sdktrace.Sampler {
     default:
         defaultRatio = 1.0
     }
-    
+  
     return &AdaptiveSampler{
         defaultSampler: sdktrace.TraceIDRatioBased(defaultRatio),
         criticalPathSampler: sdktrace.AlwaysOn(),
@@ -2541,12 +2578,12 @@ func (s *AdaptiveSampler) ShouldSample(p sdktrace.SamplingParameters) sdktrace.S
     if isCriticalPath(p.Name) {
         return s.criticalPathSampler.ShouldSample(p)
     }
-    
+  
     // 高价值用户提高采样率
     if isHighValueUser(p.Attributes) {
         return s.highValueSampler.ShouldSample(p)
     }
-    
+  
     // 其他情况使用默认采样器
     return s.defaultSampler.ShouldSample(p)
 }
@@ -2561,37 +2598,37 @@ func isCriticalPath(name string) bool {
         "checkout", "payment", "order_confirmation",
         "login", "register", "password_reset",
     }
-    
+  
     for _, path := range criticalPaths {
         if strings.Contains(strings.ToLower(name), path) {
             return true
         }
     }
-    
+  
     return false
 }
 
 func isHighValueUser(attrs []attribute.KeyValue) bool {
     for _, attr := range attrs {
-        if attr.Key == "user.tier" && 
+        if attr.Key == "user.tier" &&
            (attr.Value.AsString() == "premium" || attr.Value.AsString() == "vip") {
             return true
         }
-        
+  
         if attr.Key == "transaction.value" {
             if val, ok := attr.Value.AsFloat64(); ok && val > 1000.0 {
                 return true
             }
         }
     }
-    
+  
     return false
 }
 
 // 配置Provider
 func initTracerWithAdaptiveSampling() (*sdktrace.TracerProvider, error) {
     ctx := context.Background()
-    
+  
     exporter, err := otlptrace.New(
         ctx,
         otlptracegrpc.NewClient(
@@ -2602,23 +2639,24 @@ func initTracerWithAdaptiveSampling() (*sdktrace.TracerProvider, error) {
     if err != nil {
         return nil, err
     }
-    
+  
     resource := resource.NewWithAttributes(
         semconv.SchemaURL,
         semconv.ServiceNameKey.String("adaptive-sampling-service"),
         semconv.ServiceVersionKey.String("1.0.0"),
         attribute.String("environment", os.Getenv("ENVIRONMENT")),
     )
-    
+  
     tp := sdktrace.NewTracerProvider(
         sdktrace.WithBatcher(exporter),
         sdktrace.WithResource(resource),
         sdktrace.WithSampler(NewAdaptiveSampler()),
     )
-    
+  
     otel.SetTracerProvider(tp)
     return tp, nil
 }
+
 ```
 
 ### 9.2 批处理与缓冲优化
@@ -2639,7 +2677,7 @@ fn configure_optimized_batching() -> Result<(), TraceError> {
         .with_scheduled_delay(Duration::from_secs(5))  // 减少发送频率
         .with_max_export_batch_size(1_000)   // 增加批量大小
         .with_max_export_timeout(Duration::from_secs(30)); // 增加导出超时
-    
+  
     opentelemetry_otlp::new_pipeline()
         .tracing()
         .with_exporter(opentelemetry_otlp::new_exporter().tonic())
@@ -2649,6 +2687,7 @@ fn configure_optimized_batching() -> Result<(), TraceError> {
         )
         .install_batch(opentelemetry_sdk::runtime::Tokio, batch_config)
 }
+
 ```
 
 **Golang批处理优化：**
@@ -2659,7 +2698,7 @@ package main
 import (
     "context"
     "time"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/exporters/otlp/otlptrace"
     "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -2671,7 +2710,7 @@ import (
 // 配置优化的批处理
 func configureOptimizedBatching() (*sdktrace.TracerProvider, error) {
     ctx := context.Background()
-    
+  
     exporter, err := otlptrace.New(
         ctx,
         otlptracegrpc.NewClient(
@@ -2684,12 +2723,12 @@ func configureOptimizedBatching() (*sdktrace.TracerProvider, error) {
     if err != nil {
         return nil, err
     }
-    
+  
     resource := resource.NewWithAttributes(
         semconv.SchemaURL,
         semconv.ServiceNameKey.String("optimized-batch-service"),
     )
-    
+  
     // 配置批处理选项
     batchOptions := []sdktrace.BatchSpanProcessorOption{
         sdktrace.WithMaxQueueSize(10000),             // 增加队列大小
@@ -2697,15 +2736,16 @@ func configureOptimizedBatching() (*sdktrace.TracerProvider, error) {
         sdktrace.WithMaxExportBatchSize(1000),        // 增加批量大小
         sdktrace.WithExportTimeout(30 * time.Second), // 增加导出超时
     }
-    
+  
     tp := sdktrace.NewTracerProvider(
         sdktrace.WithBatcher(exporter, batchOptions...),
         sdktrace.WithResource(resource),
     )
-    
+  
     otel.SetTracerProvider(tp)
     return tp, nil
 }
+
 ```
 
 ## 10. 总结与最佳实践
@@ -2772,22 +2812,22 @@ impl TransactionProcessor {
     pub fn new() -> Self {
         let tracer = global::tracer("transaction-processor");
         let meter = global::meter("transaction-processor");
-        
+  
         let transaction_counter = meter
             .u64_counter("transactions.count")
             .with_description("交易处理计数")
             .init();
-            
+  
         let transaction_value_recorder = meter
             .f64_value_recorder("transaction.value")
             .with_description("交易金额")
             .init();
-            
+  
         let transaction_latency = meter
             .f64_value_recorder("transaction.latency_ms")
             .with_description("交易处理延迟")
             .init();
-            
+  
         Self {
             tracer,
             meter,
@@ -2796,16 +2836,16 @@ impl TransactionProcessor {
             transaction_latency,
         }
     }
-    
+  
     pub fn process_transaction(&self, tx: Transaction) -> Result<TransactionResult, TransactionError> {
         let start = Instant::now();
-        
+  
         // 记录交易请求
         self.transaction_counter.add(1, &[
             KeyValue::new("transaction.type", tx.tx_type.clone()),
             KeyValue::new("transaction.source", tx.source.clone()),
         ]);
-        
+  
         // 记录交易金额
         self.transaction_value_recorder.record(
             tx.amount,
@@ -2814,24 +2854,24 @@ impl TransactionProcessor {
                 KeyValue::new("currency", tx.currency.clone()),
             ],
         );
-        
+  
         // 创建交易处理span
         let result = self.tracer.in_span(format!("process_tx_{}", tx.id), |cx| {
             let span = cx.span();
             span.set_attribute(KeyValue::new("transaction.id", tx.id.clone()));
             span.set_attribute(KeyValue::new("transaction.amount", tx.amount));
             span.set_attribute(KeyValue::new("transaction.type", tx.tx_type.clone()));
-            
+  
             // 执行风险评估
             let risk_result = self.assess_risk(&tx, cx)?;
-            
+  
             // 执行交易处理
             let process_result = self.execute_transaction(&tx, risk_result, cx)?;
-            
+  
             // 记录结果
             Ok(process_result)
         });
-        
+  
         // 记录处理延迟
         let duration = start.elapsed();
         self.transaction_latency.record(
@@ -2841,31 +2881,31 @@ impl TransactionProcessor {
                 KeyValue::new("transaction.status", result.is_ok().to_string()),
             ],
         );
-        
+  
         result
     }
-    
+  
     fn assess_risk(&self, tx: &Transaction, cx: &Context) -> Result<RiskAssessment, TransactionError> {
         self.tracer.in_span("risk_assessment", |child_cx| {
             let span = child_cx.span();
             span.set_attribute(KeyValue::new("transaction.id", tx.id.clone()));
-            
+  
             // 执行风险评估逻辑
             // ...
-            
+  
             Ok(RiskAssessment::Low)
         })
     }
-    
+  
     fn execute_transaction(&self, tx: &Transaction, risk: RiskAssessment, cx: &Context) -> Result<TransactionResult, TransactionError> {
         self.tracer.in_span("execute_transaction", |child_cx| {
             let span = child_cx.span();
             span.set_attribute(KeyValue::new("transaction.id", tx.id.clone()));
             span.set_attribute(KeyValue::new("risk.level", risk.to_string()));
-            
+  
             // 执行交易处理逻辑
             // ...
-            
+  
             Ok(TransactionResult {
                 id: tx.id.clone(),
                 status: "completed".to_string(),
@@ -2874,6 +2914,7 @@ impl TransactionProcessor {
         })
     }
 }
+
 ```
 
 **性能数据：**
@@ -2900,7 +2941,7 @@ type OrderService struct {
 func NewOrderService(repo OrderRepository, paymentClient PaymentClient, inventoryClient InventoryClient) (*OrderService, error) {
     tracer := otel.Tracer("order-service")
     meter := otel.Meter("order-service")
-    
+  
     orderCounter, err := meter.Int64Counter(
         "orders.count",
         metric.WithDescription("订单处理计数"),
@@ -2908,7 +2949,7 @@ func NewOrderService(repo OrderRepository, paymentClient PaymentClient, inventor
     if err != nil {
         return nil, err
     }
-    
+  
     processingTime, err := meter.Float64Histogram(
         "order.processing_time",
         metric.WithDescription("订单处理时间"),
@@ -2916,7 +2957,7 @@ func NewOrderService(repo OrderRepository, paymentClient PaymentClient, inventor
     if err != nil {
         return nil, err
     }
-    
+  
     return &OrderService{
         repo:            repo,
         paymentClient:   paymentClient,
@@ -2936,32 +2977,32 @@ func (s *OrderService) CreateOrder(ctx context.Context, order *Order) (*OrderRes
             attribute.Int("order.items_count", len(order.Items)),
         ))
     defer span.End()
-    
+  
     startTime := time.Now()
-    
+  
     // 记录订单创建
     s.orderCounter.Add(ctx, 1,
         metric.WithAttributes(
             attribute.String("order.type", order.Type),
             attribute.String("user.segment", getUserSegment(order.UserID)),
         ))
-    
+  
     // 检查库存
     inventoryCtx, inventorySpan := s.tracer.Start(ctx, "check_inventory")
     inventoryResult, err := s.inventoryClient.CheckInventory(inventoryCtx, order.Items)
     inventorySpan.End()
-    
+  
     if err != nil {
         span.RecordError(err)
         span.SetStatus(codes.Error, "inventory check failed")
         return nil, fmt.Errorf("inventory check failed: %w", err)
     }
-    
+  
     if !inventoryResult.Available {
         span.SetAttributes(attribute.Bool("inventory.available", false))
         return nil, errors.New("items out of stock")
     }
-    
+  
     // 处理支付
     paymentCtx, paymentSpan := s.tracer.Start(ctx, "process_payment")
     paymentResult, err := s.paymentClient.ProcessPayment(paymentCtx, &Payment{
@@ -2971,24 +3012,24 @@ func (s *OrderService) CreateOrder(ctx context.Context, order *Order) (*OrderRes
         Method:  order.PaymentMethod,
     })
     paymentSpan.End()
-    
+  
     if err != nil {
         span.RecordError(err)
         span.SetStatus(codes.Error, "payment processing failed")
         return nil, fmt.Errorf("payment processing failed: %w", err)
     }
-    
+  
     // 保存订单
     saveCtx, saveSpan := s.tracer.Start(ctx, "save_order")
     err = s.repo.SaveOrder(saveCtx, order)
     saveSpan.End()
-    
+  
     if err != nil {
         span.RecordError(err)
         span.SetStatus(codes.Error, "order save failed")
         return nil, fmt.Errorf("order save failed: %w", err)
     }
-    
+  
     // 记录处理时间
     processingDuration := time.Since(startTime).Seconds()
     s.processingTime.Record(ctx, processingDuration,
@@ -2996,9 +3037,9 @@ func (s *OrderService) CreateOrder(ctx context.Context, order *Order) (*OrderRes
             attribute.String("order.type", order.Type),
             attribute.Bool("payment.successful", paymentResult.Success),
         ))
-    
+  
     span.SetStatus(codes.Ok, "order created successfully")
-    
+  
     return &OrderResult{
         OrderID:     order.ID,
         Status:      "created",
@@ -3006,6 +3047,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, order *Order) (*OrderRes
         ProcessedAt: time.Now(),
     }, nil
 }
+
 ```
 
 **可扩展性数据：**
@@ -3043,12 +3085,12 @@ impl TelemetryIntensityRegulator {
             base_sampling_rate,
         })
     }
-    
+  
     // 更新系统负载
     fn update_load(&self, load: u64) {
         self.current_load.store(load, Ordering::Relaxed);
     }
-    
+  
     // 获取当前采样率
     fn get_sampling_rate(&self) -> f64 {
         let load = self.current_load.load(Ordering::Relaxed);
@@ -3063,13 +3105,13 @@ impl TelemetryIntensityRegulator {
             self.base_sampling_rate
         }
     }
-    
+  
     // 决定是否添加详细属性
     fn should_add_detailed_attributes(&self) -> bool {
         let load = self.current_load.load(Ordering::Relaxed);
         load < 80 // 只在负载合理时添加详细属性
     }
-    
+  
     // 决定是否记录事件
     fn should_record_events(&self) -> bool {
         let load = self.current_load.load(Ordering::Relaxed);
@@ -3090,17 +3132,17 @@ impl AdaptiveTelemetry {
             regulator,
         }
     }
-    
+  
     fn trace_operation<F, R>(&self, name: &str, priority: u8, f: F) -> R
     where
         F: FnOnce(Option<&Context>) -> R
     {
         // 计算操作优先级因子 (0.0-1.0)
         let priority_factor = priority as f64 / 10.0;
-        
+  
         // 获取当前采样率并结合优先级
         let sampling_prob = self.regulator.get_sampling_rate() * priority_factor;
-        
+  
         // 决定是否追踪
         if rand::random::<f64>() <= sampling_prob {
             // 创建span并执行操作
@@ -3111,14 +3153,14 @@ impl AdaptiveTelemetry {
                     span.set_attribute(KeyValue::new("operation.priority", priority as i64));
                     span.set_attribute(KeyValue::new("sampling.probability", sampling_prob));
                 }
-                
+  
                 let result = f(Some(cx));
-                
+  
                 // 根据负载决定是否记录结束事件
                 if self.regulator.should_record_events() {
                     cx.span().add_event("operation_completed", vec![]);
                 }
-                
+  
                 result
             })
         } else {
@@ -3127,6 +3169,7 @@ impl AdaptiveTelemetry {
         }
     }
 }
+
 ```
 
 **Golang实现：**
@@ -3138,7 +3181,7 @@ import (
     "context"
     "math/rand"
     "sync/atomic"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/trace"
@@ -3167,7 +3210,7 @@ func (r *TelemetryIntensityRegulator) UpdateLoad(load int64) {
 // 获取当前采样率
 func (r *TelemetryIntensityRegulator) GetSamplingRate() float64 {
     load := atomic.LoadInt64(&r.currentLoad)
-    
+  
     if load > 90 {
         // 高负载时降低采样率
         return r.baseSamplingRate * 0.1
@@ -3212,16 +3255,16 @@ func (t *AdaptiveTelemetry) TraceOperation(
 ) (interface{}, error) {
     // 计算操作优先级因子 (0.0-1.0)
     priorityFactor := float64(priority) / 10.0
-    
+  
     // 获取当前采样率并结合优先级
     samplingProb := t.regulator.GetSamplingRate() * priorityFactor
-    
+  
     // 决定是否追踪
     if rand.Float64() <= samplingProb {
         var span trace.Span
         ctx, span = t.tracer.Start(ctx, name)
         defer span.End()
-        
+  
         // 根据负载决定属性详细程度
         if t.regulator.ShouldAddDetailedAttributes() {
             span.SetAttributes(
@@ -3229,27 +3272,28 @@ func (t *AdaptiveTelemetry) TraceOperation(
                 attribute.Float64("sampling.probability", samplingProb),
             )
         }
-        
+  
         result, err := f(ctx)
-        
+  
         if err != nil {
             span.RecordError(err)
             span.SetStatus(trace.StatusCodeError, err.Error())
         } else {
             span.SetStatus(trace.StatusCodeOk, "")
-            
+  
             // 根据负载决定是否记录结束事件
             if t.regulator.ShouldRecordEvents() {
                 span.AddEvent("operation_completed")
             }
         }
-        
+  
         return result, err
     }
-    
+  
     // 不创建span直接执行
     return f(ctx)
 }
+
 ```
 
 #### 上下文丰富模式
@@ -3265,7 +3309,9 @@ use opentelemetry::propagation::{TextMapPropagator, TextMapInjector, TextMapExtr
 use std::collections::HashMap;
 
 // 业务上下文信息
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 struct BusinessContext {
     tenant_id: String,
     user_id: Option<String>,
@@ -3286,16 +3332,16 @@ impl EnrichedContext {
             business_context,
         }
     }
-    
+  
     // 从当前span中提取业务上下文
     fn from_current() -> Option<Self> {
         let current_cx = Context::current();
-        
+  
         // 从span属性中提取业务上下文
         if let Some(span) = current_cx.span() {
             // 注意：这里是示意，实际的OpenTelemetry API并不提供直接从span获取属性的方法
             // 在实际实现中，可能需要通过Baggage或自定义传播器实现
-            
+  
             let mut features = HashMap::new();
             // ... 填充features
 
@@ -3305,48 +3351,48 @@ impl EnrichedContext {
                 request_id: "extracted-request".to_string(),
                 features,
             };
-            
+  
             return Some(Self {
                 otel_context: current_cx,
                 business_context,
             });
         }
-        
+  
         None
     }
-    
+  
     // 将业务上下文添加到span属性
     fn add_to_span(&self, span: &opentelemetry::trace::Span) {
         span.set_attribute(KeyValue::new("tenant.id", self.business_context.tenant_id.clone()));
-        
+  
         if let Some(user_id) = &self.business_context.user_id {
             span.set_attribute(KeyValue::new("user.id", user_id.clone()));
         }
-        
+  
         span.set_attribute(KeyValue::new("request.id", self.business_context.request_id.clone()));
-        
+  
         // 添加特性标志
         for (key, value) in &self.business_context.features {
             span.set_attribute(KeyValue::new(format!("feature.{}", key), value.clone()));
         }
     }
-    
+  
     // 传播到远程服务
     fn inject_to_headers(&self, headers: &mut HashMap<String, String>) {
         // 注入OpenTelemetry上下文
         global::get_text_map_propagator(|propagator| {
             propagator.inject_context(&self.otel_context, &mut HashMapCarrier(headers));
         });
-        
+  
         // 添加业务上下文
         headers.insert("X-Tenant-ID".to_string(), self.business_context.tenant_id.clone());
-        
+  
         if let Some(user_id) = &self.business_context.user_id {
             headers.insert("X-User-ID".to_string(), user_id.clone());
         }
-        
+  
         headers.insert("X-Request-ID".to_string(), self.business_context.request_id.clone());
-        
+  
         // 序列化特性标志
         if !self.business_context.features.is_empty() {
             if let Ok(features_json) = serde_json::to_string(&self.business_context.features) {
@@ -3354,39 +3400,39 @@ impl EnrichedContext {
             }
         }
     }
-    
+  
     // 从远程服务提取
     fn extract_from_headers(headers: &HashMap<String, String>) -> Self {
         // 提取OpenTelemetry上下文
         let otel_context = global::get_text_map_propagator(|propagator| {
             propagator.extract(&HashMapCarrier(headers))
         });
-        
+  
         // 提取业务上下文
         let tenant_id = headers.get("X-Tenant-ID")
             .cloned()
             .unwrap_or_else(|| "default".to_string());
-            
+  
         let user_id = headers.get("X-User-ID").cloned();
-        
+  
         let request_id = headers.get("X-Request-ID")
             .cloned()
             .unwrap_or_else(|| "unknown".to_string());
-            
+  
         let mut features = HashMap::new();
         if let Some(features_json) = headers.get("X-Features") {
             if let Ok(parsed_features) = serde_json::from_str::<HashMap<String, String>>(features_json) {
                 features = parsed_features;
             }
         }
-        
+  
         let business_context = BusinessContext {
             tenant_id,
             user_id,
             request_id,
             features,
         };
-        
+  
         Self {
             otel_context,
             business_context,
@@ -3407,11 +3453,12 @@ impl<'a> TextMapExtractor for HashMapCarrier<'a> {
     fn get(&self, key: &str) -> Option<&str> {
         self.0.get(key).map(|s| s.as_str())
     }
-    
+  
     fn keys(&self) -> Vec<&str> {
         self.0.keys().map(|k| k.as_str()).collect()
     }
 }
+
 ```
 
 **Golang实现：**
@@ -3422,7 +3469,7 @@ package telemetry
 import (
     "context"
     "encoding/json"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/baggage"
@@ -3471,24 +3518,24 @@ func NewContextEnricher() *ContextEnricher {
 // 创建丰富的span
 func (e *ContextEnricher) StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
     ctx, span := e.tracer.Start(ctx, name)
-    
+  
     // 从上下文中获取业务信息并添加到span
     if bc := GetBusinessContext(ctx); bc != nil {
         span.SetAttributes(
             attribute.String("tenant.id", bc.TenantID),
             attribute.String("request.id", bc.RequestID),
         )
-        
+  
         if bc.UserID != "" {
             span.SetAttributes(attribute.String("user.id", bc.UserID))
         }
-        
+  
         // 添加特性标志
         for key, value := range bc.Features {
             span.SetAttributes(attribute.String("feature."+key, value))
         }
     }
-    
+  
     return ctx, span
 }
 
@@ -3498,25 +3545,25 @@ func (e *ContextEnricher) EnrichBaggage(ctx context.Context) context.Context {
     if bc == nil {
         return ctx
     }
-    
+  
     // 创建包含业务上下文的Baggage
     b := baggage.FromContext(ctx)
-    
+  
     // 添加业务上下文成员
     if m, err := baggage.NewMember("tenant.id", bc.TenantID); err == nil {
         b, _ = b.SetMember(m)
     }
-    
+  
     if bc.UserID != "" {
         if m, err := baggage.NewMember("user.id", bc.UserID); err == nil {
             b, _ = b.SetMember(m)
         }
     }
-    
+  
     if m, err := baggage.NewMember("request.id", bc.RequestID); err == nil {
         b, _ = b.SetMember(m)
     }
-    
+  
     // 序列化特性标志
     if len(bc.Features) > 0 {
         featuresJSON, err := json.Marshal(bc.Features)
@@ -3526,7 +3573,7 @@ func (e *ContextEnricher) EnrichBaggage(ctx context.Context) context.Context {
             }
         }
     }
-    
+  
     return baggage.ContextWithBaggage(ctx, b)
 }
 
@@ -3536,7 +3583,7 @@ func (e *ContextEnricher) ExtractContextFromHTTP(ctx context.Context, headers ma
     propagator := otel.GetTextMapPropagator()
     carrier := propagation.MapCarrier(headers)
     ctx = propagator.Extract(ctx, carrier)
-    
+  
     // 提取业务上下文
     bc := &BusinessContext{
         TenantID:  headers["X-Tenant-ID"],
@@ -3544,16 +3591,16 @@ func (e *ContextEnricher) ExtractContextFromHTTP(ctx context.Context, headers ma
         RequestID: headers["X-Request-ID"],
         Features:  make(map[string]string),
     }
-    
+  
     // 默认值
     if bc.TenantID == "" {
         bc.TenantID = "default"
     }
-    
+  
     if bc.RequestID == "" {
         bc.RequestID = "unknown"
     }
-    
+  
     // 解析特性
     if featuresJSON, ok := headers["X-Features"]; ok && featuresJSON != "" {
         var features map[string]string
@@ -3561,30 +3608,30 @@ func (e *ContextEnricher) ExtractContextFromHTTP(ctx context.Context, headers ma
             bc.Features = features
         }
     }
-    
+  
     // 也可以从Baggage中提取业务上下文
     b := baggage.FromContext(ctx)
-    
+  
     // Baggage提供的值优先
     if tenantMember := b.Member("tenant.id"); tenantMember.Key() != "" {
         bc.TenantID = tenantMember.Value()
     }
-    
+  
     if userMember := b.Member("user.id"); userMember.Key() != "" {
         bc.UserID = userMember.Value()
     }
-    
+  
     if requestMember := b.Member("request.id"); requestMember.Key() != "" {
         bc.RequestID = requestMember.Value()
     }
-    
+  
     if featuresMember := b.Member("features"); featuresMember.Key() != "" {
         var features map[string]string
         if err := json.Unmarshal([]byte(featuresMember.Value()), &features); err == nil {
             bc.Features = features
         }
     }
-    
+  
     return WithBusinessContext(ctx, bc)
 }
 
@@ -3592,23 +3639,23 @@ func (e *ContextEnricher) ExtractContextFromHTTP(ctx context.Context, headers ma
 func (e *ContextEnricher) InjectContextToHTTP(ctx context.Context, headers map[string]string) {
     // 确保业务上下文在baggage中
     ctx = e.EnrichBaggage(ctx)
-    
+  
     // 注入OTel上下文
     propagator := otel.GetTextMapPropagator()
     carrier := propagation.MapCarrier(headers)
     propagator.Inject(ctx, carrier)
-    
+  
     // 也添加明确的HTTP头用于非OTel系统
     bc := GetBusinessContext(ctx)
     if bc != nil {
         headers["X-Tenant-ID"] = bc.TenantID
-        
+  
         if bc.UserID != "" {
             headers["X-User-ID"] = bc.UserID
         }
-        
+  
         headers["X-Request-ID"] = bc.RequestID
-        
+  
         // 序列化特性标志
         if len(bc.Features) > 0 {
             featuresJSON, err := json.Marshal(bc.Features)
@@ -3618,6 +3665,7 @@ func (e *ContextEnricher) InjectContextToHTTP(ctx context.Context, headers map[s
         }
     }
 }
+
 ```
 
 ## 12. 新兴技术集成
@@ -3657,11 +3705,11 @@ impl EbpfEnhancedTelemetry {
     fn new(ebpf_collector: Arc<dyn EbpfCollector + Send + Sync>) -> Self {
         let tracer = global::tracer("ebpf-enhanced-telemetry");
         let meter = global::meter("ebpf-enhanced-telemetry");
-        
+  
         let mut syscall_counters = HashMap::new();
         let mut network_meters = HashMap::new();
         let mut io_meters = HashMap::new();
-        
+  
         // 为常见系统调用创建计数器
         for syscall in &["read", "write", "open", "close", "connect"] {
             let counter = meter
@@ -3670,7 +3718,7 @@ impl EbpfEnhancedTelemetry {
                 .init();
             syscall_counters.insert(syscall.to_string(), counter);
         }
-        
+  
         // 为网络指标创建记录器
         for metric in &["tcp.bytes_sent", "tcp.bytes_received", "tcp.connections"] {
             let recorder = meter
@@ -3679,7 +3727,7 @@ impl EbpfEnhancedTelemetry {
                 .init();
             network_meters.insert(metric.to_string(), recorder);
         }
-        
+  
         // 为I/O指标创建记录器
         for metric in &["io.reads", "io.writes", "io.bytes_read", "io.bytes_written"] {
             let recorder = meter
@@ -3688,7 +3736,7 @@ impl EbpfEnhancedTelemetry {
                 .init();
             io_meters.insert(metric.to_string(), recorder);
         }
-        
+  
         Self {
             tracer,
             meter,
@@ -3699,13 +3747,13 @@ impl EbpfEnhancedTelemetry {
             process_to_trace_map: Arc::new(RwLock::new(HashMap::new())),
         }
     }
-    
+  
     // 关联进程ID与追踪
     fn associate_process_with_trace(&self, pid: u32, trace_id: &str) {
         let mut map = self.process_to_trace_map.write().unwrap();
         map.insert(pid, trace_id.to_string());
     }
-    
+  
     // 收集和记录eBPF指标
     fn collect_metrics(&self) {
         // 收集系统调用指标
@@ -3715,7 +3763,7 @@ impl EbpfEnhancedTelemetry {
                 counter.add(count, &[]);
             }
         }
-        
+  
         // 收集网络指标
         let network_metrics = self.ebpf_collector.collect_network_metrics();
         for (metric, value) in network_metrics {
@@ -3723,7 +3771,7 @@ impl EbpfEnhancedTelemetry {
                 recorder.record(value, &[]);
             }
         }
-        
+  
         // 收集I/O指标
         let io_metrics = self.ebpf_collector.collect_io_metrics();
         for (metric, value) in io_metrics {
@@ -3732,50 +3780,50 @@ impl EbpfEnhancedTelemetry {
             }
         }
     }
-    
+  
     // 使用eBPF数据丰富追踪
     fn trace_with_ebpf<F, R>(&self, operation: &str, pid: u32, f: F) -> R
     where
         F: FnOnce() -> R
     {
         let trace_id = uuid::Uuid::new_v4().to_string();
-        
+  
         // 关联进程与追踪
-        
-
+  
         // 关联进程与追踪
         self.associate_process_with_trace(pid, &trace_id);
-        
+  
         // 创建追踪并丰富eBPF数据
         self.tracer.in_span(operation.to_string(), |cx| {
             let span = cx.span();
             span.set_attribute(KeyValue::new("ebpf.trace_id", trace_id.clone()));
             span.set_attribute(KeyValue::new("process.id", pid as i64));
-            
+  
             // 执行被跟踪的操作
             let result = f();
-            
+  
             // 收集操作完成后的eBPF指标
             let syscall_metrics = self.ebpf_collector.collect_syscall_metrics();
             for (syscall, count) in syscall_metrics {
                 span.set_attribute(KeyValue::new(format!("ebpf.syscall.{}", syscall), count as i64));
             }
-            
+  
             // 添加网络和I/O指标
             let network_metrics = self.ebpf_collector.collect_network_metrics();
             for (metric, value) in network_metrics {
                 span.set_attribute(KeyValue::new(format!("ebpf.{}", metric), value as i64));
             }
-            
+  
             let io_metrics = self.ebpf_collector.collect_io_metrics();
             for (metric, value) in io_metrics {
                 span.set_attribute(KeyValue::new(format!("ebpf.{}", metric), value as i64));
             }
-            
+  
             result
         })
     }
 }
+
 ```
 
 #### Golang与eBPF集成
@@ -3786,7 +3834,7 @@ package telemetry
 import (
     "context"
     "sync"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/metric"
@@ -3815,11 +3863,11 @@ type EbpfEnhancedTelemetry struct {
 func NewEbpfEnhancedTelemetry(ebpfCollector EbpfCollector) (*EbpfEnhancedTelemetry, error) {
     tracer := otel.Tracer("ebpf-enhanced-telemetry")
     meter := otel.Meter("ebpf-enhanced-telemetry")
-    
+  
     syscallCounters := make(map[string]metric.Int64Counter)
     networkMeters := make(map[string]metric.Int64Histogram)
     ioMeters := make(map[string]metric.Int64Histogram)
-    
+  
     // 为常见系统调用创建计数器
     for _, syscall := range []string{"read", "write", "open", "close", "connect"} {
         counter, err := meter.Int64Counter(
@@ -3831,7 +3879,7 @@ func NewEbpfEnhancedTelemetry(ebpfCollector EbpfCollector) (*EbpfEnhancedTelemet
         }
         syscallCounters[syscall] = counter
     }
-    
+  
     // 为网络指标创建记录器
     for _, metricName := range []string{"tcp.bytes_sent", "tcp.bytes_received", "tcp.connections"} {
         histogram, err := meter.Int64Histogram(
@@ -3843,7 +3891,7 @@ func NewEbpfEnhancedTelemetry(ebpfCollector EbpfCollector) (*EbpfEnhancedTelemet
         }
         networkMeters[metricName] = histogram
     }
-    
+  
     // 为I/O指标创建记录器
     for _, metricName := range []string{"io.reads", "io.writes", "io.bytes_read", "io.bytes_written"} {
         histogram, err := meter.Int64Histogram(
@@ -3855,7 +3903,7 @@ func NewEbpfEnhancedTelemetry(ebpfCollector EbpfCollector) (*EbpfEnhancedTelemet
         }
         ioMeters[metricName] = histogram
     }
-    
+  
     return &EbpfEnhancedTelemetry{
         tracer:          tracer,
         meter:           meter,
@@ -3883,7 +3931,7 @@ func (e *EbpfEnhancedTelemetry) CollectMetrics(ctx context.Context) {
             counter.Add(ctx, int64(count))
         }
     }
-    
+  
     // 收集网络指标
     networkMetrics := e.ebpfCollector.CollectNetworkMetrics()
     for metricName, value := range networkMetrics {
@@ -3891,7 +3939,7 @@ func (e *EbpfEnhancedTelemetry) CollectMetrics(ctx context.Context) {
             histogram.Record(ctx, int64(value))
         }
     }
-    
+  
     // 收集I/O指标
     ioMetrics := e.ebpfCollector.CollectIOMetrics()
     for metricName, value := range ioMetrics {
@@ -3910,10 +3958,10 @@ func (e *EbpfEnhancedTelemetry) TraceWithEbpf(
 ) (interface{}, error) {
     // 生成唯一跟踪ID
     traceID := uuid.New().String()
-    
+  
     // 关联进程与追踪
     e.AssociateProcessWithTrace(pid, traceID)
-    
+  
     // 创建追踪并丰富eBPF数据
     ctx, span := e.tracer.Start(ctx, operation,
         trace.WithAttributes(
@@ -3922,10 +3970,10 @@ func (e *EbpfEnhancedTelemetry) TraceWithEbpf(
         ),
     )
     defer span.End()
-    
+  
     // 执行被跟踪的操作
     result, err := f(ctx)
-    
+  
     // 收集操作完成后的eBPF指标
     syscallMetrics := e.ebpfCollector.CollectSyscallMetrics()
     for syscall, count := range syscallMetrics {
@@ -3933,7 +3981,7 @@ func (e *EbpfEnhancedTelemetry) TraceWithEbpf(
             attribute.Int64("ebpf.syscall."+syscall, int64(count)),
         )
     }
-    
+  
     // 添加网络和I/O指标
     networkMetrics := e.ebpfCollector.CollectNetworkMetrics()
     for metricName, value := range networkMetrics {
@@ -3941,21 +3989,22 @@ func (e *EbpfEnhancedTelemetry) TraceWithEbpf(
             attribute.Int64("ebpf."+metricName, int64(value)),
         )
     }
-    
+  
     ioMetrics := e.ebpfCollector.CollectIOMetrics()
     for metricName, value := range ioMetrics {
         span.SetAttributes(
             attribute.Int64("ebpf."+metricName, int64(value)),
         )
     }
-    
+  
     if err != nil {
         span.RecordError(err)
         span.SetStatus(trace.StatusCodeError, err.Error())
     }
-    
+  
     return result, err
 }
+
 ```
 
 ### 12.2 AI 辅助分析与 OpenTelemetry
@@ -4017,20 +4066,20 @@ impl AIEnhancedTelemetry {
             prediction_enabled,
         }
     }
-    
+  
     // 记录指标并检测异常
     fn record_and_analyze(&self, metric_name: &str, value: f64, attributes: &[KeyValue]) {
         // 记录指标
         let now = chrono::Utc::now();
-        
+  
         // 更新历史记录
         {
             let mut history = self.metric_history.lock().unwrap();
             let entry = history.entry(metric_name.to_string()).or_insert_with(VecDeque::new);
-            
+  
             // 添加新数据点
             entry.push_back((now, value));
-            
+  
             // 移除超出时间窗口的旧数据
             let cutoff = now - chrono::Duration::from_std(self.history_window).unwrap();
             while let Some((timestamp, _)) = entry.front() {
@@ -4041,31 +4090,31 @@ impl AIEnhancedTelemetry {
                 }
             }
         }
-        
+  
         // 构建当前指标快照
         let metrics = {
             let history = self.metric_history.lock().unwrap();
             let mut snapshot = HashMap::new();
-            
+  
             for (name, values) in &*history {
                 if let Some((_, value)) = values.back() {
                     snapshot.insert(name.clone(), *value);
                 }
             }
-            
+  
             snapshot
         };
-        
+  
         // 检测异常
         let anomalies = self.anomaly_detector.detect_anomalies(&metrics);
-        
+  
         // 如果发现异常，创建span记录
         if !anomalies.is_empty() {
             self.tracer.in_span("anomaly_detected", |cx| {
                 let span = cx.span();
-                
+  
                 span.set_attribute(KeyValue::new("anomalies.count", anomalies.len() as i64));
-                
+  
                 for (i, anomaly) in anomalies.iter().enumerate() {
                     span.set_attribute(KeyValue::new(format!("anomaly.{}.metric", i), anomaly.metric.clone()));
                     span.set_attribute(KeyValue::new(format!("anomaly.{}.value", i), anomaly.value));
@@ -4073,7 +4122,7 @@ impl AIEnhancedTelemetry {
                     span.set_attribute(KeyValue::new(format!("anomaly.{}.expected_max", i), anomaly.expected_range.1));
                     span.set_attribute(KeyValue::new(format!("anomaly.{}.severity", i), anomaly.severity));
                 }
-                
+  
                 // 触发告警事件
                 span.add_event("anomaly_alert", vec![
                     KeyValue::new("alert.count", anomalies.len() as i64),
@@ -4081,7 +4130,7 @@ impl AIEnhancedTelemetry {
                 ]);
             });
         }
-        
+  
         // 如果启用了预测功能，为当前指标生成预测
         if self.prediction_enabled {
             // 提取历史数据
@@ -4093,24 +4142,24 @@ impl AIEnhancedTelemetry {
                     vec![]
                 }
             };
-            
+  
             // 只有当有足够的历史数据时才进行预测
             if values.len() >= 10 {
                 let prediction = self.anomaly_detector.predict_values(metric_name, &values);
-                
+  
                 // 记录预测结果
                 self.tracer.in_span("metric_prediction", |cx| {
                     let span = cx.span();
-                    
+  
                     span.set_attribute(KeyValue::new("metric.name", metric_name.to_string()));
                     span.set_attribute(KeyValue::new("prediction.value", prediction.predicted_value));
                     span.set_attribute(KeyValue::new("prediction.confidence", prediction.confidence));
                     span.set_attribute(KeyValue::new("prediction.window_ms", prediction.prediction_window.as_millis() as i64));
-                    
+  
                     // 如果预测值与当前值差异很大，记录为潜在趋势变化
                     let current_value = values.last().unwrap_or(&0.0);
                     let change_percent = ((prediction.predicted_value - current_value) / current_value).abs() * 100.0;
-                    
+  
                     if change_percent > 10.0 {
                         span.add_event("trend_change_predicted", vec![
                             KeyValue::new("metric.name", metric_name.to_string()),
@@ -4122,38 +4171,39 @@ impl AIEnhancedTelemetry {
             }
         }
     }
-    
+  
     // 跟踪操作并进行AI分析
     fn trace_with_ai_analysis<F, R>(&self, operation: &str, f: F) -> R
     where
         F: FnOnce() -> R
     {
         let start = Instant::now();
-        
+  
         // 创建主操作span
         let result = self.tracer.in_span(operation.to_string(), |cx| {
             let span = cx.span();
-            
+  
             // 执行操作
             let result = f();
-            
+  
             // 记录执行时间
             let duration = start.elapsed();
             span.set_attribute(KeyValue::new("operation.duration_ms", duration.as_millis() as i64));
-            
+  
             // 进行AI分析
             self.record_and_analyze(
                 &format!("{}.duration", operation),
                 duration.as_millis() as f64,
                 &[KeyValue::new("operation", operation.to_string())],
             );
-            
+  
             result
         });
-        
+  
         result
     }
 }
+
 ```
 
 #### Golang与AI分析集成
@@ -4165,7 +4215,7 @@ import (
     "context"
     "sync"
     "time"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/metric"
@@ -4235,14 +4285,14 @@ func (t *AIEnhancedTelemetry) RecordAndAnalyze(
 ) {
     // 记录指标
     now := time.Now()
-    
+  
     // 更新历史记录
     t.mu.Lock()
     t.metricHistory[metricName] = append(t.metricHistory[metricName], MetricDataPoint{
         Timestamp: now,
         Value:     value,
     })
-    
+  
     // 移除超出时间窗口的旧数据
     cutoff := now.Add(-t.historyWindow)
     var validPoints []MetricDataPoint
@@ -4252,7 +4302,7 @@ func (t *AIEnhancedTelemetry) RecordAndAnalyze(
         }
     }
     t.metricHistory[metricName] = validPoints
-    
+  
     // 构建当前指标快照
     snapshot := make(map[string]float64)
     for name, points := range t.metricHistory {
@@ -4261,16 +4311,16 @@ func (t *AIEnhancedTelemetry) RecordAndAnalyze(
         }
     }
     t.mu.Unlock()
-    
+  
     // 检测异常
     anomalies := t.anomalyDetector.DetectAnomalies(snapshot)
-    
+  
     // 如果发现异常，创建span记录
     if len(anomalies) > 0 {
         ctx, span := t.tracer.Start(ctx, "anomaly_detected")
-        
+  
         span.SetAttributes(attribute.Int("anomalies.count", len(anomalies)))
-        
+  
         for i, anomaly := range anomalies {
             span.SetAttributes(
                 attribute.String(fmt.Sprintf("anomaly.%d.metric", i), anomaly.Metric),
@@ -4280,7 +4330,7 @@ func (t *AIEnhancedTelemetry) RecordAndAnalyze(
                 attribute.Float64(fmt.Sprintf("anomaly.%d.severity", i), anomaly.Severity),
             )
         }
-        
+  
         // 找出最高严重性
         var highestSeverity float64
         for _, anomaly := range anomalies {
@@ -4288,16 +4338,16 @@ func (t *AIEnhancedTelemetry) RecordAndAnalyze(
                 highestSeverity = anomaly.Severity
             }
         }
-        
+  
         // 触发告警事件
         span.AddEvent("anomaly_alert", trace.WithAttributes(
             attribute.Int("alert.count", len(anomalies)),
             attribute.Float64("alert.highest_severity", highestSeverity),
         ))
-        
+  
         span.End()
     }
-    
+  
     // 如果启用了预测功能，为当前指标生成预测
     if t.predictionEnabled {
         // 提取历史数据
@@ -4310,38 +4360,38 @@ func (t *AIEnhancedTelemetry) RecordAndAnalyze(
             }
         }
         t.mu.RUnlock()
-        
+  
         // 只有当有足够的历史数据时才进行预测
         if len(values) >= 10 {
             prediction := t.anomalyDetector.PredictValues(metricName, values)
-            
+  
             // 记录预测结果
             ctx, span := t.tracer.Start(ctx, "metric_prediction")
-            
+  
             span.SetAttributes(
                 attribute.String("metric.name", metricName),
                 attribute.Float64("prediction.value", prediction.PredictedValue),
                 attribute.Float64("prediction.confidence", prediction.Confidence),
                 attribute.Int64("prediction.window_ms", prediction.PredictionWindow.Milliseconds()),
             )
-            
+  
             // 如果预测值与当前值差异很大，记录为潜在趋势变化
             currentValue := values[len(values)-1]
             changePercent := math.Abs((prediction.PredictedValue-currentValue)/currentValue) * 100.0
-            
+  
             if changePercent > 10.0 {
                 direction := "up"
                 if prediction.PredictedValue < currentValue {
                     direction = "down"
                 }
-                
+  
                 span.AddEvent("trend_change_predicted", trace.WithAttributes(
                     attribute.String("metric.name", metricName),
                     attribute.Float64("change_percent", changePercent),
                     attribute.String("direction", direction),
                 ))
             }
-            
+  
             span.End()
         }
     }
@@ -4355,16 +4405,16 @@ func (t *AIEnhancedTelemetry) TraceWithAIAnalysis(
 ) (interface{}, error) {
     ctx, span := t.tracer.Start(ctx, operation)
     defer span.End()
-    
+  
     start := time.Now()
-    
+  
     // 执行操作
     result, err := f(ctx)
-    
+  
     // 记录执行时间
     duration := time.Since(start)
     span.SetAttributes(attribute.Int64("operation.duration_ms", duration.Milliseconds()))
-    
+  
     // 进行AI分析
     t.RecordAndAnalyze(
         ctx,
@@ -4372,16 +4422,17 @@ func (t *AIEnhancedTelemetry) TraceWithAIAnalysis(
         float64(duration.Milliseconds()),
         attribute.String("operation", operation),
     )
-    
+  
     if err != nil {
         span.RecordError(err)
         span.SetStatus(trace.StatusCodeError, err.Error())
     } else {
         span.SetStatus(trace.StatusCodeOk, "")
     }
-    
+  
     return result, err
 }
+
 ```
 
 ### 12.3 分布式处理与流遥测
@@ -4474,7 +4525,7 @@ impl StreamingTelemetry {
         buffer_size: usize,
     ) -> Self {
         let (metrics_tx, metrics_rx) = mpsc::channel(buffer_size);
-        
+  
         let telemetry = Self {
             tracer: global::tracer("streaming-telemetry"),
             meter: global::meter("streaming-telemetry"),
@@ -4485,13 +4536,13 @@ impl StreamingTelemetry {
             metric_buffer: Arc::new(Mutex::new(Vec::with_capacity(buffer_size))),
             flush_interval,
         };
-        
+  
         // 启动后台处理任务
         telemetry.start_background_processing();
-        
+  
         telemetry
     }
-    
+  
     // 启动后台处理任务
     fn start_background_processing(&self) {
         let span_buffer = self.span_buffer.clone();
@@ -4499,13 +4550,13 @@ impl StreamingTelemetry {
         let processor = self.processor.clone();
         let metrics_tx = self.metrics_tx.clone();
         let flush_interval = self.flush_interval;
-        
+  
         tokio::spawn(async move {
             let mut interval = time::interval(flush_interval);
-            
+  
             loop {
                 interval.tick().await;
-                
+  
                 // 处理跨度缓冲区
                 let spans_to_process = {
                     let mut buffer = span_buffer.lock().unwrap();
@@ -4513,14 +4564,14 @@ impl StreamingTelemetry {
                     buffer.clear();
                     spans
                 };
-                
+  
                 for span in spans_to_process {
                     let processed_metrics = processor.process_span(span);
                     for metric in processed_metrics {
                         let _ = metrics_tx.send(metric).await;
                     }
                 }
-                
+  
                 // 处理指标缓冲区
                 let metrics_to_process = {
                     let mut buffer = metric_buffer.lock().unwrap();
@@ -4528,7 +4579,7 @@ impl StreamingTelemetry {
                     buffer.clear();
                     metrics
                 };
-                
+  
                 for metric in metrics_to_process {
                     let processed_metrics = processor.process_metric(metric);
                     for processed in processed_metrics {
@@ -4538,54 +4589,54 @@ impl StreamingTelemetry {
             }
         });
     }
-    
+  
     // 添加跨度数据到缓冲区
     fn add_span(&self, span: SpanData) {
         let mut buffer = self.span_buffer.lock().unwrap();
         buffer.push(span);
     }
-    
+  
     // 添加指标数据到缓冲区
     fn add_metric(&self, metric: MetricData) {
         let mut buffer = self.metric_buffer.lock().unwrap();
         buffer.push(metric);
     }
-    
+  
     // 启动消费处理后的指标的任务
     fn start_metrics_consumer<F>(&self, mut callback: F)
     where
         F: FnMut(ProcessedMetric) + Send + 'static,
     {
         let mut rx = self.metrics_rx.lock().unwrap().take().expect("Receiver already taken");
-        
+  
         tokio::spawn(async move {
             while let Some(metric) = rx.recv().await {
                 callback(metric);
             }
         });
     }
-    
+  
     // 跟踪操作并流式处理
     fn trace_with_streaming<F, R>(&self, operation: &str, attributes: HashMap<String, String>, f: F) -> R
     where
         F: FnOnce() -> R
     {
         let start_time = chrono::Utc::now();
-        
+  
         // 创建跟踪并执行操作
         let result = self.tracer.in_span(operation.to_string(), |cx| {
             let span = cx.span();
-            
+  
             // 添加属性
             for (key, value) in &attributes {
                 span.set_attribute(KeyValue::new(key.clone(), value.clone()));
             }
-            
+  
             f()
         });
-        
+  
         let end_time = chrono::Utc::now();
-        
+  
         // 收集跨度数据
         let span_data = SpanData {
             trace_id: "trace-id".to_string(), // 实际实现中应从上下文中获取
@@ -4598,13 +4649,14 @@ impl StreamingTelemetry {
             attributes,
             events: vec![],                   // 实际实现中应从span中收集
         };
-        
+  
         // 添加到处理缓冲区
         self.add_span(span_data);
-        
+  
         result
     }
 }
+
 ```
 
 #### Golang与流处理集成
@@ -4616,7 +4668,7 @@ import (
     "context"
     "sync"
     "time"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/trace"
@@ -4706,10 +4758,10 @@ func NewStreamingTelemetry(
         flushInterval: flushInterval,
         bufferSize:    bufferSize,
     }
-    
+  
     // 启动后台处理任务
     go st.backgroundProcessing()
-    
+  
     return st
 }
 
@@ -4717,7 +4769,7 @@ func NewStreamingTelemetry(
 func (st *StreamingTelemetry) backgroundProcessing() {
     ticker := time.NewTicker(st.flushInterval)
     defer ticker.Stop()
-    
+  
     for range ticker.C {
         // 处理跨度缓冲区
         st.spanMu.Lock()
@@ -4725,21 +4777,21 @@ func (st *StreamingTelemetry) backgroundProcessing() {
         copy(spansToProcess, st.spanBuffer)
         st.spanBuffer = st.spanBuffer[:0]
         st.spanMu.Unlock()
-        
+  
         for _, span := range spansToProcess {
             processedMetrics := st.processor.ProcessSpan(span)
             for _, metric := range processedMetrics {
                 st.metricsChan <- metric
             }
         }
-        
+  
         // 处理指标缓冲区
         st.metricMu.Lock()
         metricsToProcess := make([]MetricData, len(st.metricBuffer))
         copy(metricsToProcess, st.metricBuffer)
         st.metricBuffer = st.metricBuffer[:0]
         st.metricMu.Unlock()
-        
+  
         for _, metric := range metricsToProcess {
             processedMetrics := st.processor.ProcessMetric(metric)
             for _, processed := range processedMetrics {
@@ -4782,30 +4834,30 @@ func (st *StreamingTelemetry) TraceWithStreaming(
     f func(context.Context) (interface{}, error),
 ) (interface{}, error) {
     startTime := time.Now()
-    
+  
     // 转换属性格式
     attributes := make([]attribute.KeyValue, 0, len(attrs))
     for k, v := range attrs {
         attributes = append(attributes, attribute.String(k, v))
     }
-    
+  
     // 创建跟踪并执行操作
     ctx, span := st.tracer.Start(ctx, operation, trace.WithAttributes(attributes...))
     defer span.End()
-    
+  
     result, err := f(ctx)
     endTime := time.Now()
-    
+  
     if err != nil {
         span.RecordError(err)
         span.SetStatus(trace.StatusCodeError, err.Error())
     } else {
         span.SetStatus(trace.StatusCodeOk, "")
     }
-    
+  
     // 从上下文中提取span信息
     spanContext := span.SpanContext()
-    
+  
     // 收集跨度数据
     spanData := SpanData{
         TraceID:      spanContext.TraceID().String(),
@@ -4818,10 +4870,10 @@ func (st *StreamingTelemetry) TraceWithStreaming(
         Attributes:   attrs,
         Events:       []SpanEvent{}, // 在实际实现中从span中提取
     }
-    
+  
     // 添加到处理缓冲区
     st.AddSpan(spanData)
-    
+  
     return result, err
 }
 
@@ -4844,9 +4896,10 @@ func (st *StreamingTelemetry) RecordMetricWithStreaming(
         },
         Attributes: attributes,
     }
-    
+  
     st.AddMetric(metricData)
 }
+
 ```
 
 ## 13. 最终集成方案
@@ -4856,7 +4909,7 @@ func (st *StreamingTelemetry) RecordMetricWithStreaming(
 下面介绍一个综合性的可观测性架构，适用于使用Rust和Golang混合实现的系统：
 
 ```math
-+-------------------------------------------------------------------------+
++ -------------------------------------------------------------------------+
 |                         应用层 (Rust 和 Golang 服务)                      |
 |                                                                         |
 | +-------------------+  +--------------------+  +--------------------+   |
@@ -4874,10 +4927,10 @@ func (st *StreamingTelemetry) RecordMetricWithStreaming(
 | | +------------------+  +------------------+  +-------------------+ |   |
 | +-------------------------------------------------------------------+   |
 |         |                       |                       |               |
-+---------|---------------------------|-------------------|---------------+
++ ---------|---------------------------|-------------------|---------------+
           |                       |                       |
           v                       v                       v
-+------------------------------------------------------------------+
++ ------------------------------------------------------------------+
 |                     OpenTelemetry Collector 层                    |
 |                                                                  |
 | +----------------+  +----------------+  +---------------------+  |
@@ -4896,10 +4949,10 @@ func (st *StreamingTelemetry) RecordMetricWithStreaming(
 | +----------------+  +----------------+  +---------------------+  |
 | | 导出器          |  | 导出器          |  | 导出器              |  |
 | +----------------+  +----------------+  +---------------------+  |
-+------------------------------------------------------------------+
++ ------------------------------------------------------------------+
           |                  |                     |
           v                  v                     v
-+------------------------------------------------------------------+
++ ------------------------------------------------------------------+
 |                        存储和分析层                               |
 |                                                                  |
 | +----------------+  +----------------+  +---------------------+  |
@@ -4911,16 +4964,17 @@ func (st *StreamingTelemetry) RecordMetricWithStreaming(
 | | Grafana                       |  | 告警管理器               |   |
 | | (可视化和分析)                 |  | (条件监测和通知)          |   |
 | +-------------------------------+  +-------------------------+   |
-+------------------------------------------------------------------+
++ ------------------------------------------------------------------+
           |                  |                     |
           v                  v                     v
-+------------------------------------------------------------------+
++ ------------------------------------------------------------------+
 |                     高级分析和自动化层                             |
 |                                                                  |
 | +----------------+  +----------------+  +---------------------+  |
 | | AI异常检测      |  | eBPF性能分析   |  | 自动化根因分析        |  |
 | +----------------+  +----------------+  +---------------------+  |
-+------------------------------------------------------------------+
++ ------------------------------------------------------------------+
+
 ```
 
 ### 13.2 统一配置管理系统
@@ -4930,7 +4984,9 @@ func (st *StreamingTelemetry) RecordMetricWithStreaming(
 **配置模式示例:**
 
 ```yaml
+
 # otel-config.yaml - 统一配置文件
+
 global:
   service_namespace: "example-corp"
   environment: "production"
@@ -4952,7 +5008,7 @@ exporters:
   
   prometheus:
     endpoint: "otel-collector:8889"
-    
+  
 batch_processing:
   max_queue_size: 8192
   scheduled_delay_ms: 5000
@@ -4965,7 +5021,7 @@ propagation:
   correlation_headers:
     - "x-request-id"
     - "x-tenant-id"
-    
+  
 resource_detectors:
   enabled:
     - "env"
@@ -4974,6 +5030,7 @@ resource_detectors:
     - "process"
     - "container"
     - "k8s"
+
 ```
 
 **Rust配置加载器:**
@@ -4984,7 +5041,8 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct OtelConfig {
     global: GlobalConfig,
     sampling: SamplingConfig,
@@ -4994,52 +5052,60 @@ struct OtelConfig {
     resource_detectors: ResourceDetectorsConfig,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct GlobalConfig {
     service_namespace: String,
     environment: String,
     deployment_region: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct SamplingConfig {
     default_ratio: f64,
     high_value_ratio: f64,
     critical_paths: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct ExportersConfig {
     otlp: OtlpConfig,
     prometheus: PrometheusConfig,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct OtlpConfig {
     endpoint: String,
     insecure: bool,
     certificate: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct PrometheusConfig {
     endpoint: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct BatchProcessingConfig {
     max_queue_size: usize,
     scheduled_delay_ms: u64,
     max_export_batch_size: usize,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct PropagationConfig {
     enabled_propagators: Vec<String>,
     correlation_headers: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct ResourceDetectorsConfig {
     enabled: Vec<String>,
 }
@@ -5053,11 +5119,11 @@ impl OtelConfigLoader {
         let mut file = File::open(path)?;
         let mut contents = String::new();
         file.read_to_string(&mut contents)?;
-        
+  
         let config: OtelConfig = serde_yaml::from_str(&contents)?;
         Ok(config)
     }
-    
+  
     // 应用配置到OpenTelemetry
     fn apply_config(config: &OtelConfig) -> Result<(), Box<dyn std::error::Error>> {
         // 创建资源
@@ -5066,27 +5132,27 @@ impl OtelConfigLoader {
             opentelemetry::KeyValue::new("deployment.environment", config.global.environment.clone()),
             opentelemetry::KeyValue::new("deployment.region", config.global.deployment_region.clone()),
         ]);
-        
+  
         // 配置采样器
         let sampler = Self::configure_sampler(&config.sampling)?;
-        
+  
         // 配置批处理
         let batch_config = opentelemetry_sdk::trace::BatchConfig::default()
             .with_max_queue_size(config.batch_processing.max_queue_size)
             .with_scheduled_delay(std::time::Duration::from_millis(config.batch_processing.scheduled_delay_ms))
             .with_max_export_batch_size(config.batch_processing.max_export_batch_size);
-        
+  
         // 配置OTLP导出器
         let exporter = opentelemetry_otlp::new_exporter()
             .tonic()
             .with_endpoint(config.exporters.otlp.endpoint.clone());
-        
+  
         let exporter = if config.exporters.otlp.insecure {
             exporter.with_insecure()
         } else {
             exporter
         };
-        
+  
         // 初始化tracer provider
         opentelemetry_otlp::new_pipeline()
             .tracing()
@@ -5097,14 +5163,14 @@ impl OtelConfigLoader {
                     .with_resource(resource.clone())
             )
             .install_batch(opentelemetry_sdk::runtime::Tokio, batch_config)?;
-        
+  
         // 配置传播器
         let propagators = Self::configure_propagators(&config.propagation);
         opentelemetry::global::set_text_map_propagator(propagators);
-        
+  
         Ok(())
     }
-    
+  
     // 配置采样器
     fn configure_sampler(config: &SamplingConfig) -> Result<opentelemetry_sdk::trace::Sampler, Box<dyn std::error::Error>> {
         // 创建自定义采样器
@@ -5113,14 +5179,14 @@ impl OtelConfigLoader {
             high_value_sampler: opentelemetry_sdk::trace::Sampler::trace_id_ratio_based(config.high_value_ratio),
             critical_paths: config.critical_paths.clone(),
         };
-        
+  
         Ok(opentelemetry_sdk::trace::Sampler::from(critical_path_sampler))
     }
-    
+  
     // 配置传播器
     fn configure_propagators(config: &PropagationConfig) -> opentelemetry::sdk::propagation::TextMapCompositePropagator {
         let mut propagators: Vec<Box<dyn opentelemetry::propagation::TextMapPropagator + Send + Sync>> = Vec::new();
-        
+  
         for name in &config.enabled_propagators {
             match name.as_str() {
                 "tracecontext" => propagators.push(Box::new(opentelemetry::sdk::propagation::TraceContextPropagator::new())),
@@ -5129,7 +5195,7 @@ impl OtelConfigLoader {
                 _ => {}
             }
         }
-        
+  
         opentelemetry::sdk::propagation::TextMapCompositePropagator::new(propagators)
     }
 }
@@ -5164,7 +5230,7 @@ impl opentelemetry_sdk::trace::Sampler for CriticalPathSampler {
                 );
             }
         }
-        
+  
         // 默认采样
         self.default_sampler.should_sample(
             parent_context,
@@ -5180,6 +5246,7 @@ impl opentelemetry_sdk::trace::Sampler for CriticalPathSampler {
         "CriticalPathSampler".to_string()
     }
 }
+
 ```
 
 **Golang配置加载器:**
@@ -5191,7 +5258,7 @@ import (
     "io/ioutil"
     "os"
     "time"
-    
+  
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/exporters/otlp/otlptrace"
@@ -5264,12 +5331,12 @@ func (l *OtelConfigLoader) LoadFromFile(path string) (*OtelConfig, error) {
     if err != nil {
         return nil, err
     }
-    
+  
     var config OtelConfig
     if err := yaml.Unmarshal(data, &config); err != nil {
         return nil, err
     }
-    
+  
     return &config, nil
 }
 
@@ -5283,19 +5350,19 @@ func (l *OtelConfigLoader) ApplyConfig(config *OtelConfig, serviceName string) (
         attribute.String("deployment.environment", config.Global.Environment),
         attribute.String("deployment.region", config.Global.DeploymentRegion),
     )
-    
+  
     // 添加额外的资源检测器
     // 在实际实现中，这里会根据config.ResourceDetectors.Enabled添加额外的检测器
-    
+  
     // 配置OTLP导出器
     opts := []otlptracegrpc.Option{
         otlptracegrpc.WithEndpoint(config.Exporters.Otlp.Endpoint),
     }
-    
+  
     if config.Exporters.Otlp.Insecure {
         opts = append(opts, otlptracegrpc.WithInsecure())
     }
-    
+  
     traceExporter, err := otlptrace.New(
         context.Background(),
         otlptracegrpc.NewClient(opts...),
@@ -5303,31 +5370,31 @@ func (l *OtelConfigLoader) ApplyConfig(config *OtelConfig, serviceName string) (
     if err != nil {
         return nil, err
     }
-    
+  
     // 配置采样器
     sampler := l.configureSampler(&config.Sampling)
-    
+  
     // 配置批处理选项
     batchOpts := []sdktrace.BatchSpanProcessorOption{
         sdktrace.WithMaxQueueSize(config.BatchProcessing.MaxQueueSize),
         sdktrace.WithBatchTimeout(time.Duration(config.BatchProcessing.ScheduledDelayMs) * time.Millisecond),
         sdktrace.WithMaxExportBatchSize(config.BatchProcessing.MaxExportBatchSize),
     }
-    
+  
     // 创建和配置TracerProvider
     tp := sdktrace.NewTracerProvider(
         sdktrace.WithSampler(sampler),
         sdktrace.WithResource(res),
         sdktrace.WithBatcher(traceExporter, batchOpts...),
     )
-    
+  
     // 配置传播器
     propagators := l.configurePropagators(&config.Propagation)
     otel.SetTextMapPropagator(propagators)
-    
+  
     // 设置全局TracerProvider
     otel.SetTracerProvider(tp)
-    
+  
     return tp, nil
 }
 
@@ -5343,7 +5410,7 @@ func (l *OtelConfigLoader) configureSampler(config *SamplingConfig) sdktrace.Sam
 // 配置传播器
 func (l *OtelConfigLoader) configurePropagators(config *PropagationConfig) propagation.TextMapPropagator {
     var props []propagation.TextMapPropagator
-    
+  
     for _, name := range config.EnabledPropagators {
         switch name {
         case "tracecontext":
@@ -5353,7 +5420,7 @@ func (l *OtelConfigLoader) configurePropagators(config *PropagationConfig) propa
         // 可以添加其他传播器
         }
     }
-    
+  
     return propagation.NewCompositeTextMapPropagator(props...)
 }
 
@@ -5372,7 +5439,7 @@ func (s *CriticalPathSampler) ShouldSample(p sdktrace.SamplingParameters) sdktra
             return s.highValueSampler.ShouldSample(p)
         }
     }
-    
+  
     // 默认采样
     return s.defaultSampler.ShouldSample(p)
 }
@@ -5381,6 +5448,7 @@ func (s *CriticalPathSampler) ShouldSample(p sdktrace.SamplingParameters) sdktra
 func (s *CriticalPathSampler) Description() string {
     return "CriticalPathSampler"
 }
+
 ```
 
 ## 14. 总结

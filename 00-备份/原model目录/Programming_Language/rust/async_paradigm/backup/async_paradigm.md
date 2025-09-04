@@ -82,6 +82,7 @@ async fn fetch_data(url: &str) -> Result<String, Error> {
     let body = response.text().await?;
     Ok(body)
 }
+
 ```
 
 编译器会将这种看似顺序的代码转换为复杂的状态机，保留每个await点的执行状态。
@@ -96,6 +97,7 @@ pub trait Stream {
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>)
         -> Poll<Option<Self::Item>>;
 }
+
 ```
 
 Stream特别适合处理：
@@ -132,6 +134,7 @@ enum ExampleStateMachine {
     WaitingForStepThree { b: StepTwoOutput, future: StepThreeFuture },
     Completed,
 }
+
 ```
 
 这种转换使得异步代码的执行能在await点暂停并稍后恢复，而不会阻塞线程。
@@ -155,6 +158,7 @@ struct SelfReferential {
     data: String,
     ptr: *const String, // 指向data的指针
 }
+
 ```
 
 当状态机包含自引用时，如果状态机被移动，内部引用会变得无效。`Pin`类型通过防止被固定值的移动来解决这个问题：
@@ -165,6 +169,7 @@ pub struct Pin<P> {
     // 防止创建非Pin API的私有字段
     _marker: PhantomPinned,
 }
+
 ```
 
 这确保了自引用的Future可以安全地跨越await点。
@@ -191,7 +196,7 @@ Rust的异步网络编程通常基于Tokio等运行时实现：
   ```rust
   async fn run_server() -> Result<(), Box<dyn Error>> {
       let listener = TcpListener::bind("127.0.0.1:8080").await?;
-      
+  
       loop {
           let (socket, addr) = listener.accept().await?;
           tokio::spawn(async move {
@@ -207,7 +212,7 @@ Rust的异步网络编程通常基于Tokio等运行时实现：
   async fn handle_udp() -> Result<(), Box<dyn Error>> {
       let socket = UdpSocket::bind("127.0.0.1:8081").await?;
       let mut buf = [0u8; 1024];
-      
+  
       loop {
           let (len, addr) = socket.recv_from(&mut buf).await?;
           let data = &buf[..len];
@@ -247,6 +252,7 @@ impl Encoder<MyProtocolMessage> for MyProtocolCodec {
         // 编码逻辑
     }
 }
+
 ```
 
 通过这种方式，可以将底层字节流和高层协议消息之间的转换清晰地分离出来。
@@ -290,6 +296,7 @@ async fn my_async_function(arg: u32) {
     tokio::time::sleep(Duration::from_millis(100)).await;
     info!("处理完成");
 }
+
 ```
 
 - **日志滚动与存储**：使用`tracing-appender`或`flexi_logger`管理日志文件
@@ -479,6 +486,7 @@ Rust异步编程
         ├── 开发者体验
         ├── 结构化并发
         └── 简化使用模式
+
 ```
 
 Rust的异步编程模型通过精心的设计，成功地将高级抽象与底层控制相结合，实现了安全、高效的并发处理能力。尽管存在学习曲线陡峭、生态系统分裂等挑战，但其在性能关键型应用中的优势是显著的。随着语言和生态系统的不断发展，Rust异步编程的可访问性和表达力有望继续提升，同时保持其性能和安全性优势。

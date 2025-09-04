@@ -58,6 +58,7 @@ fn main() {
     display(number);
     display(text);
 }
+
 ```
 
 这里，`display` 函数能接受任何实现了 `Printable` trait 的类型。这就是一种 ad-hoc 多态的体现：在不同的具体类型上调用 `print` 方法，会执行不同的实现。
@@ -116,6 +117,7 @@ flowchart TD
     A --> E[单态化]
     E --> E1[静态分发]
     E --> E2[编译期优化]
+
 ```
 
 ---
@@ -247,6 +249,7 @@ flowchart TD
     B1 --- C1[均使用接口约定]
     B2 --- C2[分发方式不同]
     B3 --- C3[权衡性能与灵活性]
+
 ```
 
 ---

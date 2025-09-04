@@ -28,19 +28,6 @@
     - [1.8.2 潜在的错误使用](#潜在的错误使用)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 2024 版本中，`gen`、`yield` 和 `next` 关键字为生成器和异步编程引入了新的特性。
 以下是对这些关键字的定义、解释和使用说明，以及它们与其他语言特性的组合方式、编程建议，
 以及与 Tokio 等异步库的兼容性和潜在的错误使用。
@@ -66,6 +53,7 @@ let async_gen = gen async {
     yield 2;
     yield 3;
 };
+
 ```
 
 ### 1.1.2 `yield` 关键字
@@ -79,6 +67,7 @@ let numbers = gen {
         yield i;
     }
 };
+
 ```
 
 ### 1.1.3 `next` 方法
@@ -96,6 +85,7 @@ while let Some(value) = sync_gen.next() {
 while let Some(value) = async_gen.next().await {
     println!("{}", value);
 }
+
 ```
 
 ## 1.2 2. 高级特性组合
@@ -110,6 +100,7 @@ fn generic_generator<T>(items: Vec<T>) -> impl Iterator<Item = T> {
         }
     }
 }
+
 ```
 
 ### 1.2.2 与生命周期结合
@@ -122,6 +113,7 @@ fn borrowed_generator<'a>(data: &'a [i32]) -> impl Iterator<Item = &'a i32> {
         }
     }
 }
+
 ```
 
 ### 1.2.3 与 trait bounds 结合
@@ -133,6 +125,7 @@ fn bounded_generator<T: Clone>(item: T) -> impl Iterator<Item = T> {
         yield item;
     }
 }
+
 ```
 
 ## 1.3 3. 异步编程模式
@@ -152,6 +145,7 @@ async fn process_stream<T: AsyncRead>(reader: T) -> impl Stream<Item = Result<Ve
         }
     }
 }
+
 ```
 
 ### 1.3.2 并发控制
@@ -174,6 +168,7 @@ async fn controlled_stream<T>(
         }
     }
 }
+
 ```
 
 ## 1.4 4. 函数式编程模式
@@ -193,6 +188,7 @@ fn transform_stream<T, U>(
         }
     }
 }
+
 ```
 
 ### 1.4.2 组合器模式
@@ -211,6 +207,7 @@ fn combine_streams<T>(
         }
     }
 }
+
 ```
 
 ## 1.5 5. 错误处理模式
@@ -228,6 +225,7 @@ fn fallible_generator() -> impl Iterator<Item = Result<i32, Error>> {
         }
     }
 }
+
 ```
 
 ### 1.5.2 Option 处理
@@ -244,6 +242,7 @@ fn optional_generator() -> impl Iterator<Item = Option<i32>> {
         }
     }
 }
+
 ```
 
 ## 1.6 6. 资源管理模式
@@ -263,6 +262,7 @@ impl<T> ManagedResource<T> {
         }
     }
 }
+
 ```
 
 ### 1.6.2 异步资源管理
@@ -277,6 +277,7 @@ async fn managed_async_stream() -> impl Stream<Item = Result<Data, Error>> {
         connection.close().await?;
     }
 }
+
 ```
 
 ## 1.7 7. 最佳实践建议

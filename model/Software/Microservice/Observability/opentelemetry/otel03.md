@@ -88,6 +88,7 @@ tracer.in_span("operation_name", |cx| {
     let span = cx.span();
     span.set_attribute(KeyValue::new("key", "value"));
 });
+
 ```
 
 ### 1.3.2 SDK层
@@ -122,6 +123,7 @@ tracerProvider := trace.NewTracerProvider(
 )
 
 otel.SetTracerProvider(tracerProvider)
+
 ```
 
 ### 1.3.3 Collector组件
@@ -133,7 +135,9 @@ Collector是一个独立的服务，负责接收、处理和导出遥测数据�
 - **导出器(Exporters)**: 将数据发送到目标后端
 
 ```yaml
+
 # 2 2 2 2 2 2 2 Collector配置示例
+
 receivers:
   otlp:
     protocols:
@@ -169,6 +173,7 @@ service:
       receivers: [otlp]
       processors: [memory_limiter, batch]
       exporters: [prometheus]
+
 ```
 
 ## 2.1 3. 信号类型
@@ -217,6 +222,7 @@ global::get_text_map_propagator(|propagator| {
 let parent_cx = global::get_text_map_propagator(|propagator| {
     propagator.extract(&carrier)
 });
+
 ```
 
 ### 2.2.2 采样策略
@@ -281,6 +287,7 @@ impl<W: ObservableWorkflow> TelemetryWorkflow<W> {
         result
     }
 }
+
 ```
 
 ### 2.3.2 Golang实现
@@ -357,6 +364,7 @@ func doWork(ctx context.Context) {
     span.SetAttributes(attribute.String("key", "value"))
     // 执行业务逻辑
 }
+
 ```
 
 ## 2.4 6. 集成场景
@@ -543,6 +551,7 @@ OpenTelemetry
     ├── 自动检测
     ├── 统一配置
     └── AI辅助分析
+
 ```
 
 综上所述，OpenTelemetry作为一个统一的可观测性框架，通过提供标准化的API、SDK和数据模型，解决了分布式系统监控的碎片化问题。它不仅支持多种编程语言和集成场景，还具有高度的可扩展性和灵活性。然而，其实施仍面临架构复杂性、数据量和实施难度等挑战。随着技术的发展，OpenTelemetry将继续演进，与eBPF、AI等新技术结合，提供更强大的可观测性能力。

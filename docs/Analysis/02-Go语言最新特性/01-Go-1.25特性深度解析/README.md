@@ -57,6 +57,7 @@ Go 1.25 是Go语言的重要版本，引入了多项重要特性和改进。本�
 ```text
 对于类型参数 T，类型别名 A[T] 定义为：
 A[T] = B[T] 当且仅当 ∀x, x ∈ A[T] ↔ x ∈ B[T]
+
 ```
 
 **类型理论分析**：
@@ -101,6 +102,7 @@ type UserService struct {
     handlers map[string]HandlerFunc[UserRequest, UserResponse]
     middleware []Middleware[UserRequest, UserResponse]
 }
+
 ```
 
 #### 2.1.1.2.1.4 **1.4 性能影响分析**
@@ -134,6 +136,7 @@ type UserService struct {
 4. 如果 e 是泛型实例化，则：
    - 推导类型参数
    - 应用类型替换
+
 ```
 
 #### 2.1.1.2.2.2 **2.2 认知复杂度**
@@ -231,6 +234,7 @@ graph TD
     
     M --> DD[性能测试]
     M --> EE[基准比较]
+
 ```
 
 ### 2.1.1.3.2 **学习路径设计**
@@ -266,6 +270,7 @@ func BenchmarkGenericTypeAlias(b *testing.B) {
         // 测试代码
     }
 }
+
 ```
 
 **性能指标**：
@@ -304,6 +309,7 @@ func BenchmarkGenericTypeAlias(b *testing.B) {
 3. 因此 A[T] 和 B[T] 在编译时等价
 
 推论：类型别名不产生运行时开销
+
 ```
 
 **类型安全证明**：
@@ -316,6 +322,7 @@ func BenchmarkGenericTypeAlias(b *testing.B) {
 2. 替换后的类型保持原有的类型约束
 3. 类型检查在编译时完成
 4. 因此类型安全得到保证
+
 ```
 
 ### 2.1.1.5.2 **编译器实现分析**
@@ -338,6 +345,7 @@ func inferTypes(expr Expr, env TypeEnv) Type {
         return inferDefault(e, env)
     }
 }
+
 ```
 
 **类型别名处理**：
@@ -350,6 +358,7 @@ func substituteTypeAliases(typ Type, aliases map[string]Type) Type {
     }
     return typ
 }
+
 ```
 
 ## 2.1.1.6 🎯 **最佳实践指南**

@@ -140,6 +140,7 @@ impl PaymentService {
         }
     }
 }
+
 ```
 
 **映射分析**:
@@ -299,6 +300,7 @@ impl Order {
         Ok(())
     }
 }
+
 ```
 
 **映射分析**:
@@ -442,6 +444,7 @@ impl InventoryAdjustment {
         Ok(())
     }
 }
+
 ```
 
 **映射分析**:
@@ -594,6 +597,7 @@ impl CheckoutService {
         Ok(result)
     }
 }
+
 ```
 
 **映射分析**:
@@ -727,6 +731,7 @@ impl CancellationToken {
         self.is_cancelled.load(Ordering::SeqCst)
     }
 }
+
 ```
 
 **映射分析**:
@@ -870,6 +875,7 @@ impl PaymentProcessor {
         }
     }
 }
+
 ```
 
 **映射分析**:
@@ -1001,11 +1007,11 @@ impl OrderShipmentProcessor {
     pub async fn process_shipment(&self, order_id: &OrderId) -> Result<ShipmentResult, ShipmentError> {
         // 生成幂等操作键
         let idempotency_key = format!("ship_order:{}", order_id);
-        
+  
         // 检查订单是否已出货
         let order = self.order_repository.find_by_id(order_id).await?
             .ok_or_else(|| ShipmentError::OrderNotFound(order_id.clone()))?;
-            
+  
         // 如果订单已经处于已发货状态，返回之前的结果
         if let OrderStatus::Shipped { tracking_code, carrier, shipped_at } = order.status() {
             return Ok(ShipmentResult {
@@ -1015,17 +1021,17 @@ impl OrderShipmentProcessor {
                 shipped_at: *shipped_at,
             });
         }
-        
+  
         // 验证订单是否可以发货
         if order.status() != &OrderStatus::Paid {
             return Err(ShipmentError::InvalidOrderState(
                 format!("订单必须处于已支付状态才能发货，当前状态: {:?}", order.status())
             ));
         }
-        
+  
         // 执行出货流程（第一步：提交给配送服务）
         let shipment = self.shipping_service.create_shipment(&order).await?;
-        
+  
         // 更新订单状态（第二步：更新订单）
         let mut updated_order = order.clone();
         updated_order.mark_as_shipped(
@@ -1033,9 +1039,9 @@ impl OrderShipmentProcessor {
             &shipment.carrier,
             shipment.estimated_delivery,
         )?;
-        
+  
         self.order_repository.save(&updated_order).await?;
-        
+  
         // 返回结果
         Ok(ShipmentResult {
             order_id: order_id.clone(),
@@ -1045,6 +1051,7 @@ impl OrderShipmentProcessor {
         })
     }
 }
+
 ```
 
 **映射分析**:
@@ -1062,7 +1069,9 @@ impl OrderShipmentProcessor {
 
 ```rust
 // 时间敏感的领域对象
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct Reservation {
     id: ReservationId,
     resource_id: ResourceId,
@@ -1073,7 +1082,8 @@ pub struct Reservation {
     last_modified: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub struct TimeSlot {
     start: DateTime<Utc>,
     end: DateTime<Utc>,
@@ -1085,46 +1095,46 @@ impl TimeSlot {
         if start >= end {
             return Err(ValidationError::InvalidTimeSlot("开始时间必须早于结束时间".into()));
         }
-        
+  
         // 验证持续时间
         let duration = end - start;
         if duration < Duration::minutes(15) {
             return Err(ValidationError::InvalidTimeSlot("时间段必须至少15分钟".into()));
         }
-        
+  
         if duration > Duration::hours(4) {
             return Err(ValidationError::InvalidTimeSlot("时间段不能超过4小时".into()));
         }
-        
+  
         Ok(Self { start, end })
     }
-    
+  
     pub fn overlaps_with(&self, other: &TimeSlot) -> bool {
         (self.start < other.end) && (self.end > other.start)
     }
-    
+  
     pub fn contains(&self, time: DateTime<Utc>) -> bool {
         time >= self.start && time < self.end
     }
-    
+  
     pub fn duration(&self) -> Duration {
         self.end - self.start
     }
-    
+  
     // 检查是否在可预订的未来时间范围内
     pub fn is_bookable(&self, booking_policy: &BookingPolicy) -> bool {
         let now = Utc::now();
-        
+  
         // 检查最小提前预订时间
         if self.start - now < booking_policy.min_advance_time {
             return false;
         }
-        
+  
         // 检查最大提前预订时间
         if self.start - now > booking_policy.max_advance_time {
             return false;
         }
-        
+  
         // 检查是否在营业时间内
         booking_policy.is_within_operating_hours(self)
     }
@@ -1143,7 +1153,7 @@ impl BookingPolicy {
         // 获取时间段开始和结束的工作日
         let start_weekday = time_slot.start.weekday().num_days_from_monday();
         let end_weekday = time_slot.end.weekday().num_days_from_monday();
-        
+  
         // 如果开始和结束日期不同，需要分段检查
         if start_weekday != end_weekday {
             // 复杂情况处理逻辑...
@@ -1152,7 +1162,7 @@ impl BookingPolicy {
             // 同一天内的时间段
             let applicable_rule = self.operating_hours.iter()
                 .find(|rule| rule.applies_to_weekday(start_weekday));
-                
+  
             if let Some(rule) = applicable_rule {
                 rule.is_within_hours(time_slot)
             } else {
@@ -1160,7 +1170,7 @@ impl BookingPolicy {
             }
         }
     }
-    
+  
     pub fn is_in_blackout_period(&self, time_slot: &TimeSlot) -> bool {
         self.blackout_periods.iter().any(|period| period.overlaps_with(time_slot))
     }
@@ -1181,26 +1191,26 @@ impl ReservationService {
         // 检查资源是否存在
         let resource = self.resource_repository.find_by_id(&request.resource_id).await?
             .ok_or(ReservationError::ResourceNotFound(request.resource_id.clone()))?;
-            
+  
         // 创建时间段
         let time_slot = TimeSlot::new(request.start_time, request.end_time)
             .map_err(ReservationError::ValidationError)?;
-            
+  
         // 检查预订策略
         if !time_slot.is_bookable(&resource.booking_policy()) {
             return Err(ReservationError::PolicyViolation("所选时间段不符合预订策略".into()));
         }
-        
+  
         // 检查时间段是否已被预订
         let conflicting = self.reservation_repository
             .find_overlapping(&request.resource_id, &time_slot).await?;
-            
+  
         if !conflicting.is_empty() {
             return Err(ReservationError::TimeSlotUnavailable(
                 "所选时间段已被预订".into()
             ));
         }
-        
+  
         // 创建预订
         let reservation = Reservation::new(
             ReservationId::new(),
@@ -1209,22 +1219,22 @@ impl ReservationService {
             time_slot,
             self.clock.now(),
         );
-        
+  
         // 保存预订
         self.reservation_repository.save(&reservation).await?;
-        
+  
         Ok(reservation)
     }
-    
+  
     // 检查预订即将到期并发送提醒
     pub async fn check_upcoming_reservations(&self) -> Result<Vec<Reservation>, ReservationError> {
         let now = self.clock.now();
         let reminder_window = now + Duration::hours(24);
-        
+  
         // 查找未来24小时内的预订
         let upcoming = self.reservation_repository
             .find_by_time_range(now, reminder_window).await?;
-            
+  
         Ok(upcoming)
     }
 }
@@ -1252,7 +1262,7 @@ impl FixedClock {
     pub fn new(time: DateTime<Utc>) -> Self {
         Self { fixed_time: time }
     }
-    
+  
     pub fn advance(&mut self, duration: Duration) {
         self.fixed_time = self.fixed_time + duration;
     }
@@ -1263,6 +1273,7 @@ impl Clock for FixedClock {
         self.fixed_time
     }
 }
+
 ```
 
 **映射分析**:
@@ -1278,7 +1289,9 @@ impl Clock for FixedClock {
 
 ```rust
 // 物理约束的领域对象
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct ShippingPackage {
     id: PackageId,
     items: Vec<ShippableItem>,
@@ -1287,7 +1300,8 @@ pub struct ShippingPackage {
     shipping_class: ShippingClass,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+# [derive(Debug, Clone, PartialEq)]
+
 pub struct Dimensions {
     length: Measurement,
     width: Measurement,
@@ -1295,7 +1309,8 @@ pub struct Dimensions {
     unit: LengthUnit,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+# [derive(Debug, Clone, PartialEq)]
+
 pub struct Weight {
     value: f64,
     unit: WeightUnit,
@@ -1306,17 +1321,17 @@ impl ShippingPackage {
         if items.is_empty() {
             return Err(PackagingError::EmptyPackage);
         }
-        
+  
         // 计算包裹尺寸和重量
         let dimensions = Self::calculate_package_dimensions(&items)?;
         let weight = Self::calculate_total_weight(&items)?;
-        
+  
         // 确定运输类别
         let shipping_class = Self::determine_shipping_class(&dimensions, &weight, &items);
-        
+  
         // 验证物理约束
         Self::validate_physical_constraints(&dimensions, &weight, &shipping_class)?;
-        
+  
         Ok(Self {
             id: PackageId::new(),
             items,
@@ -1325,26 +1340,26 @@ impl ShippingPackage {
             shipping_class,
         })
     }
-    
+  
     fn calculate_package_dimensions(items: &[ShippableItem]) -> Result<Dimensions, PackagingError> {
         // 简化版本：使用最大的物品尺寸，实际上需要更复杂的3D装箱算法
         let mut max_length = Measurement::zero();
         let mut max_width = Measurement::zero();
         let mut max_height = Measurement::zero();
         let unit = LengthUnit::Centimeter; // 标准化为厘米
-        
+  
         for item in items {
             let item_dims = item.dimensions().to_unit(unit);
             max_length = max_length.max(item_dims.length);
             max_width = max_width.max(item_dims.width);
             max_height = max_height.max(item_dims.height);
         }
-        
+  
         // 添加包装材料的额外空间
         let package_length = max_length + Measurement::new(2.0, unit);
         let package_width = max_width + Measurement::new(2.0, unit);
         let package_height = max_height + Measurement::new(2.0, unit);
-        
+  
         Ok(Dimensions {
             length: package_length,
             width: package_width,
@@ -1352,26 +1367,26 @@ impl ShippingPackage {
             unit,
         })
     }
-    
+  
     fn calculate_total_weight(items: &[ShippableItem]) -> Result<Weight, PackagingError> {
         let unit = WeightUnit::Kilogram; // 标准化为千克
         let mut total = 0.0;
-        
+  
         for item in items {
             let item_weight = item.weight().to_unit(unit);
             total += item_weight.value;
         }
-        
+  
         // 添加包装材料的重量（估计为物品总重的5%）
         let packaging_weight = total * 0.05;
         let total_weight = total + packaging_weight;
-        
+  
         Ok(Weight {
             value: total_weight,
             unit,
         })
     }
-    
+  
     fn determine_shipping_class(
         dimensions: &Dimensions,
         weight: &Weight,
@@ -1379,17 +1394,17 @@ impl ShippingPackage {
     ) -> ShippingClass {
         // 检查是否含有危险品
         let has_hazardous = items.iter().any(|item| item.is_hazardous());
-        
+  
         // 检查是否含有易碎品
         let has_fragile = items.iter().any(|item| item.is_fragile());
-        
+  
         // 检查是否超重
         let is_heavy = weight.value > 20.0; // 超过20公斤视为重物
-        
+  
         // 检查是否超大
         let volume = dimensions.length.value() * dimensions.width.value() * dimensions.height.value();
         let is_oversized = volume > 125000.0; // 超过125000立方厘米视为超大
-        
+  
         // 确定运输类别
         match (has_hazardous, has_fragile, is_heavy, is_oversized) {
             (true, _, _, _) => ShippingClass::Hazardous,
@@ -1401,7 +1416,7 @@ impl ShippingPackage {
             _ => ShippingClass::Standard,
         }
     }
-    
+  
     fn validate_physical_constraints(
         dimensions: &Dimensions,
         weight: &Weight,
@@ -1412,13 +1427,13 @@ impl ShippingPackage {
         if dimensions.length > max_length {
             return Err(PackagingError::ExceedsMaximumLength(dimensions.length.clone()));
         }
-        
+  
         let max_girth = Measurement::new(300.0, LengthUnit::Centimeter);
         let girth = (dimensions.width * 2.0) + (dimensions.height * 2.0);
         if girth > max_girth {
             return Err(PackagingError::ExceedsMaximumGirth(girth));
         }
-        
+  
         // 检查重量是否超过运输限制
         let max_weight = Weight {
             value: match shipping_class {
@@ -1429,27 +1444,27 @@ impl ShippingPackage {
             },
             unit: WeightUnit::Kilogram,
         };
-        
+  
         if weight.value > max_weight.value {
             return Err(PackagingError::ExceedsMaximumWeight(weight.clone()));
         }
-        
+  
         Ok(())
     }
-    
+  
     // 计算运输成本
     pub fn calculate_shipping_cost(&self, distance: Distance, carrier: &Carrier) -> Money {
         // 基础运费由重量、尺寸和距离决定
-        let volume = self.dimensions.length.value() * 
-                     self.dimensions.width.value() * 
+        let volume = self.dimensions.length.value() *
+                     self.dimensions.width.value() *
                      self.dimensions.height.value();
-                     
+  
         let volumetric_weight = volume / 5000.0; // 体积重 (cm³/5000)
         let chargeable_weight = f64::max(self.weight.value, volumetric_weight);
-        
+  
         // 基础费率
         let base_rate = carrier.base_rate_per_kg() * chargeable_weight;
-        
+  
         // 距离因子
         let distance_factor = match distance.to_unit(DistanceUnit::Kilometer).value() {
             d if d <= 50.0 => 1.0,
@@ -1458,7 +1473,7 @@ impl ShippingPackage {
             d if d <= 1000.0 => 1.8,
             _ => 2.2,
         };
-        
+  
         // 特殊处理附加费
         let special_handling_fee = match self.shipping_class {
             ShippingClass::Fragile => base_rate * 0.2,
@@ -1469,13 +1484,14 @@ impl ShippingPackage {
             ShippingClass::Hazardous => base_rate * 1.0,
             ShippingClass::Standard => 0.0,
         };
-        
+  
         // 总运费
         let total = (base_rate * distance_factor) + special_handling_fee;
-        
+  
         Money::new_usd(total)
     }
 }
+
 ```
 
 **映射分析**:
@@ -1501,7 +1517,7 @@ impl PaymentGatewayAdapter {
     pub async fn process_payment(&self, payment: &Payment) -> Result<PaymentResult, GatewayError> {
         // 转换内部支付模型到外部API格式
         let request_data = self.mapper.to_gateway_request(payment, &self.config);
-        
+  
         // 构建HTTP请求
         let response = self.client
             .post(&self.config.api_url)
@@ -1511,13 +1527,13 @@ impl PaymentGatewayAdapter {
             .send()
             .await
             .map_err(|e| GatewayError::ConnectionError(e.to_string()))?;
-            
+  
         // 处理HTTP响应
         if !response.status().is_success() {
             let status = response.status();
             let error_text = response.text().await
                 .unwrap_or_else(|_| "Failed to read error response".to_string());
-                
+  
             return match status.as_u16() {
                 400 => Err(GatewayError::InvalidRequest(parse_error_message(&error_text))),
                 401 | 403 => Err(GatewayError::AuthenticationError),
@@ -1527,20 +1543,20 @@ impl PaymentGatewayAdapter {
                 _ => Err(GatewayError::UnexpectedResponse(status.as_u16())),
             };
         }
-        
+  
         // 解析成功响应
         let gateway_response: GatewayResponse = response.json().await
             .map_err(|e| GatewayError::ResponseParseError(e.to_string()))?;
-            
+  
         // 验证响应
         self.validate_gateway_response(&gateway_response, payment)?;
-        
+  
         // 转换为内部模型
         let result = self.mapper.from_gateway_response(gateway_response, payment);
-        
+  
         Ok(result)
     }
-    
+  
     fn validate_gateway_response(
         &self,
         response: &GatewayResponse,
@@ -1553,7 +1569,7 @@ impl PaymentGatewayAdapter {
                 actual: response.amount,
             });
         }
-        
+  
         // 验证货币匹配
         if response.currency != original_payment.amount.currency().code() {
             return Err(GatewayError::CurrencyMismatch {
@@ -1561,16 +1577,16 @@ impl PaymentGatewayAdapter {
                 actual: response.currency.clone(),
             });
         }
-        
+  
         // 验证交易状态有效
         match response.status.as_str() {
             "succeeded" | "pending" | "failed" => {}
             unknown => return Err(GatewayError::UnknownTransactionStatus(unknown.to_string())),
         }
-        
+  
         Ok(())
     }
-    
+  
     // 处理金额比较的浮点数精度问题
     fn is_amount_matching(&self, gateway_amount: f64, original_amount: f64) -> bool {
         (gateway_amount - original_amount).abs() < 0.01
@@ -1593,17 +1609,17 @@ impl TaxCalculationService {
         // 验证地址
         let validated_address = self.address_validator.validate(shipping_address).await
             .map_err(|e| TaxCalculationError::InvalidAddress(e.to_string()))?;
-            
+  
         // 准备税务计算请求
         let mut line_items = Vec::with_capacity(order.items().len());
-        
+  
         for item in order.items() {
             // 获取产品的税务分类
             let product = self.product_catalog.find_by_id(item.product_id()).await?
                 .ok_or_else(|| TaxCalculationError::ProductNotFound(item.product_id().clone()))?;
-                
+  
             let tax_code = product.tax_code().unwrap_or("A_GEN_STANDARD");
-            
+  
             line_items.push(TaxLineItem {
                 id: item.id().to_string(),
                 product_code: item.product_id().to_string(),
@@ -1613,7 +1629,7 @@ impl TaxCalculationService {
                 discount_amount: item.discount_amount().map(|d| d.value()).unwrap_or(0.0),
             });
         }
-        
+  
         // 添加运费作为单独的税务项目
         if let Some(shipping_cost) = order.shipping_cost() {
             line_items.push(TaxLineItem {
@@ -1625,7 +1641,7 @@ impl TaxCalculationService {
                 discount_amount: 0.0,
             });
         }
-        
+  
         // 调用税务提供商
         let calculation_request = TaxCalculationRequest {
             document_type: "SalesOrder".to_string(),
@@ -1635,7 +1651,7 @@ impl TaxCalculationService {
             shipping_address: validated_address,
             line_items,
         };
-        
+  
         let tax_response = self.tax_provider.calculate_taxes(&calculation_request).await
             .map_err(|e| match e {
                 TaxProviderError::RateLimitExceeded => TaxCalculationError::ProviderThrottled,
@@ -1645,13 +1661,13 @@ impl TaxCalculationService {
                 ),
                 _ => TaxCalculationError::ProviderError(e.to_string()),
             })?;
-            
+  
         // 转换响应为内部模型
         let result = self.map_provider_response(tax_response, order)?;
-        
+  
         Ok(result)
     }
-    
+  
     fn map_provider_response(
         &self,
         response: TaxProviderResponse,
@@ -1663,17 +1679,17 @@ impl TaxCalculationService {
                 format!("Transaction ID mismatch: {} vs {}", response.document_id, order.id())
             ));
         }
-        
+  
         // 创建税务明细条目
         let mut tax_lines = Vec::with_capacity(response.line_items.len());
-        
+  
         for line in response.line_items {
             let item_id = if line.line_id == "shipping" {
                 None // 运费的特殊处理
             } else {
                 Some(OrderItemId::from_string(&line.line_id)?)
             };
-            
+  
             tax_lines.push(TaxLine {
                 item_id,
                 tax_amount: Money::new(line.tax_amount, Currency::USD)?,
@@ -1682,13 +1698,13 @@ impl TaxCalculationService {
                 tax_name: line.tax_name,
             });
         }
-        
+  
         // 计算总税额
         let total_tax = tax_lines.iter()
             .fold(Money::zero(Currency::USD), |acc, line| {
                 acc.add(&line.tax_amount).unwrap_or(acc)
             });
-            
+  
         Ok(TaxCalculationResult {
             total_tax,
             tax_lines,
@@ -1697,6 +1713,7 @@ impl TaxCalculationService {
         })
     }
 }
+
 ```
 
 **映射分析**:
@@ -1725,16 +1742,16 @@ impl FraudRiskAssessor {
     ) -> Result<RiskAssessment, AssessmentError> {
         // 收集风险因素
         let risk_factors = self.collect_risk_factors(transaction).await?;
-        
+  
         // 计算风险分数
         let risk_score = self.risk_model.calculate_risk_score(&risk_factors);
-        
+  
         // 根据分数确定风险级别
         let risk_level = self.determine_risk_level(risk_score);
-        
+  
         // 确定操作建议
         let recommendation = self.get_recommendation(risk_level, &risk_factors);
-        
+  
         // 创建评估结果
         let assessment = RiskAssessment {
             transaction_id: transaction.id.clone(),
@@ -1744,28 +1761,28 @@ impl FraudRiskAssessor {
             risk_factors,
             assessed_at: Utc::now(),
         };
-        
+  
         // 保存评估结果
         self.fraud_repository.save_assessment(&assessment).await?;
-        
+  
         Ok(assessment)
     }
-    
+  
     async fn collect_risk_factors(&self, transaction: &Transaction) -> Result<Vec<RiskFactor>, AssessmentError> {
         let mut factors = Vec::new();
-        
+  
         // 检查IP地址与账单地址的地理位置匹配
         if let Some(ip_address) = &transaction.ip_address {
             if let Some(geo_mismatch) = self.check_ip_location_mismatch(ip_address, &transaction.billing_address).await? {
                 factors.push(RiskFactor::GeoLocationMismatch(geo_mismatch));
             }
         }
-        
+  
         // 检查交易金额异常
         if let Some(amount_anomaly) = self.check_amount_anomaly(transaction).await? {
             factors.push(RiskFactor::AbnormalAmount(amount_anomaly));
         }
-        
+  
         // 检查设备是否为新设备
         if transaction.is_new_device {
             factors.push(RiskFactor::NewDevice {
@@ -1773,17 +1790,17 @@ impl FraudRiskAssessor {
                 first_seen: transaction.timestamp,
             });
         }
-        
+  
         // 检查账户近期活动
         if let Some(velocity_factor) = self.check_transaction_velocity(transaction).await? {
             factors.push(velocity_factor);
         }
-        
+  
         // 其他风险因素检查...
-        
+  
         Ok(factors)
     }
-    
+  
     fn determine_risk_level(&self, risk_score: f64) -> RiskLevel {
         if risk_score >= self.threshold_config.high_risk_threshold {
             RiskLevel::High
@@ -1793,14 +1810,14 @@ impl FraudRiskAssessor {
             RiskLevel::Low
         }
     }
-    
+  
     fn get_recommendation(&self, risk_level: RiskLevel, factors: &[RiskFactor]) -> Recommendation {
         match risk_level {
             RiskLevel::High => {
                 // 检查是否含有某些高风险因素的组合
                 let has_geo_mismatch = factors.iter().any(|f| matches!(f, RiskFactor::GeoLocationMismatch(_)));
                 let has_amount_anomaly = factors.iter().any(|f| matches!(f, RiskFactor::AbnormalAmount(_)));
-                
+  
                 if has_geo_mismatch && has_amount_anomaly {
                     Recommendation::Reject
                 } else {
@@ -1817,7 +1834,7 @@ impl FraudRiskAssessor {
             }
         }
     }
-    
+  
     async fn check_ip_location_mismatch(
         &self,
         ip_address: &str,
@@ -1825,13 +1842,13 @@ impl FraudRiskAssessor {
     ) -> Result<Option<GeoMismatch>, AssessmentError> {
         // 使用地理位置服务获取IP位置
         let ip_location = self.get_ip_location(ip_address).await?;
-        
+  
         // 使用地址验证服务获取账单地址位置
         let billing_location = self.get_address_location(billing_address).await?;
-        
+  
         // 计算两个位置之间的距离
         let distance = self.calculate_distance(&ip_location, &billing_location);
-        
+  
         // 如果距离超过阈值，视为不匹配
         if distance > self.threshold_config.ip_location_mismatch_km {
             Ok(Some(GeoMismatch {
@@ -1843,7 +1860,7 @@ impl FraudRiskAssessor {
             Ok(None)
         }
     }
-    
+  
     // 其他风险评估方法...
 }
 
@@ -1864,44 +1881,44 @@ impl InventoryForecaster {
         let sales_history = self.sales_repository
             .get_product_sales_history(product_id, forecast_period.history_window)
             .await?;
-            
+  
         // 获取当前库存水平
         let current_inventory = self.inventory_repository
             .get_current_level(product_id)
             .await?
             .ok_or_else(|| ForecastError::ProductNotFound(product_id.clone()))?;
-            
+  
         // 获取已知的未来供应
         let future_supply = self.inventory_repository
             .get_expected_supply(product_id, forecast_period.forecast_window)
             .await?;
-            
+  
         // 执行需求预测
         let demand_forecast = self.forecast_model.forecast_demand(
             &sales_history,
             forecast_period.forecast_window,
         )?;
-        
+  
         // 计算库存预测
         let mut inventory_levels = Vec::with_capacity(forecast_period.forecast_window.num_days() as usize);
         let mut current_level = current_inventory.available_quantity;
         let start_date = Utc::now().date();
-        
+  
         for day in 0..forecast_period.forecast_window.num_days() {
             let forecast_date = start_date + Duration::days(day);
-            
+  
             // 获取当天预测需求
             let daily_demand = demand_forecast.get_daily_demand(&forecast_date);
-            
+  
             // 添加当天的预期供应
             let daily_supply = future_supply.iter()
                 .filter(|supply| supply.expected_date.date() == forecast_date)
                 .map(|supply| supply.quantity)
                 .sum::<u32>();
-                
+  
             // 更新库存水平
             current_level = current_level.saturating_sub(daily_demand) + daily_supply;
-            
+  
             // 记录预测
             inventory_levels.push(DailyInventoryForecast {
                 date: forecast_date,
@@ -2060,6 +2077,7 @@ impl InventoryForecaster {
         lead_time_demand
     }
 }
+
 ```
 
 **映射分析**:
@@ -2436,6 +2454,7 @@ impl PersonalDataProcessor {
     
     // 其他辅助方法...
 }
+
 ```
 
 **映射分析**:
@@ -2894,30 +2913,30 @@ impl SubscriptionBillingEngine {
             PaymentStatus::Failed => InvoiceStatus::PaymentFailed,
             PaymentStatus::Pending => InvoiceStatus::PaymentPending,
         };
-        
+  
         invoice.payment_id = Some(payment_result.payment_id.clone());
         invoice.paid_at = if payment_result.status == PaymentStatus::Succeeded {
             Some(Utc::now())
         } else {
             None
         };
-        
+  
         // 保存更新的发票
         self.invoice_repository.save(&invoice).await?;
-        
+  
         Ok(payment_result)
     }
-    
+  
     fn calculate_base_charge(
         &self,
         subscription: &Subscription,
         billing_period: &DateRange,
     ) -> Result<InvoiceLineItem, BillingError> {
         let plan = &subscription.plan;
-        
+  
         // 计算周期天数
         let period_days = (billing_period.end - billing_period.start).num_days();
-        
+  
         // 对于月度或年度计划，计算每日费率
         let daily_rate = match plan.billing_interval {
             BillingInterval::Monthly => {
@@ -2933,13 +2952,13 @@ impl SubscriptionBillingEngine {
                 plan.base_price.value()
             },
         };
-        
+  
         // 计算基本费用
         let amount = Money::new(
             daily_rate * period_days as f64,
             plan.base_price.currency().clone(),
         )?;
-        
+  
         Ok(InvoiceLineItem {
             description: format!("{} Plan - Base Subscription", plan.name),
             quantity: 1,
@@ -2948,14 +2967,14 @@ impl SubscriptionBillingEngine {
             item_type: InvoiceItemType::SubscriptionFee,
         })
     }
-    
+  
     async fn calculate_usage_charges(
         &self,
         subscription: &Subscription,
         billing_period: &DateRange,
     ) -> Result<Vec<InvoiceLineItem>, BillingError> {
         let mut charges = Vec::new();
-        
+  
         // 获取每个计量组件的使用量
         for component in &subscription.plan.metered_components {
             // 查询计量服务获取使用数据
@@ -2966,7 +2985,7 @@ impl SubscriptionBillingEngine {
                     billing_period,
                 )
                 .await?;
-                
+  
             // 应用计量组件的定价模型
             let amount = match &component.pricing_model {
                 MeteredPricingModel::PerUnit { unit_price } => {
@@ -2976,59 +2995,59 @@ impl SubscriptionBillingEngine {
                         unit_price.currency().clone(),
                     )?
                 },
-                
+  
                 MeteredPricingModel::Tiered { tiers } => {
                     let total_units = usage_data.total_usage;
-                    
+  
                     // 按层级计算价格
                     let mut remaining_units = total_units;
                     let mut total_price = 0.0;
                     let currency = tiers[0].unit_price.currency().clone();
-                    
+  
                     for tier in tiers {
                         let units_in_tier = if let Some(max) = tier.max_units {
                             remaining_units.min(max - tier.min_units + 1)
                         } else {
                             remaining_units
                         };
-                        
+  
                         total_price += tier.unit_price.value() * units_in_tier as f64;
                         remaining_units -= units_in_tier;
-                        
+  
                         if remaining_units == 0 {
                             break;
                         }
                     }
-                    
+  
                     Money::new(total_price, currency)?
                 },
-                
+  
                 MeteredPricingModel::Volume { tiers } => {
                     let total_units = usage_data.total_usage;
                     let currency = tiers[0].unit_price.currency().clone();
-                    
+  
                     // 找到适用的层级
                     let applicable_tier = tiers.iter()
                         .find(|tier| {
-                            total_units >= tier.min_units && 
+                            total_units >= tier.min_units &&
                             (tier.max_units.is_none() || total_units <= tier.max_units.unwrap())
                         })
                         .ok_or_else(|| BillingError::PricingModelError(
                             "No applicable tier found for usage".into()
                         ))?;
-                        
+  
                     Money::new(
                         applicable_tier.unit_price.value() * total_units as f64,
                         currency,
                     )?
                 },
             };
-            
+  
             // 只有在有费用时才添加行项目
             if amount.value() > 0.0 {
                 charges.push(InvoiceLineItem {
-                    description: format!("{} - Usage ({} {})", 
-                        component.name, 
+                    description: format!("{} - Usage ({} {})",
+                        component.name,
                         usage_data.total_usage,
                         component.unit_label),
                     quantity: usage_data.total_usage,
@@ -3044,10 +3063,10 @@ impl SubscriptionBillingEngine {
                 });
             }
         }
-        
+  
         Ok(charges)
     }
-    
+  
     async fn calculate_one_time_charges(
         &self,
         subscription: &Subscription,
@@ -3057,7 +3076,7 @@ impl SubscriptionBillingEngine {
         let charges = self.subscription_repository
             .get_one_time_charges(&subscription.id, billing_period)
             .await?;
-            
+  
         // 转换为发票行项目
         let line_items = charges.into_iter()
             .map(|charge| InvoiceLineItem {
@@ -3068,10 +3087,10 @@ impl SubscriptionBillingEngine {
                 item_type: InvoiceItemType::OneTimeFee,
             })
             .collect();
-            
+  
         Ok(line_items)
     }
-    
+  
     async fn calculate_adjustments(
         &self,
         subscription: &Subscription,
@@ -3081,10 +3100,10 @@ impl SubscriptionBillingEngine {
         let adjustments = self.subscription_repository
             .get_adjustments(&subscription.id, billing_period)
             .await?;
-            
+  
         Ok(adjustments)
     }
-    
+  
     async fn calculate_taxes(
         &self,
         base_charge: &InvoiceLineItem,
@@ -3097,20 +3116,20 @@ impl SubscriptionBillingEngine {
         if tax_info.tax_exempt {
             return Ok(vec![]);
         }
-        
+  
         let mut taxes = Vec::new();
         let currency = base_charge.amount.currency().clone();
-        
+  
         // 计算应税金额
         let taxable_amount = base_charge.amount.value() +
             usage_charges.iter().map(|c| c.amount.value()).sum::<f64>() +
             one_time_charges.iter().map(|c| c.amount.value()).sum::<f64>() +
             adjustments.iter().filter(|a| a.taxable).map(|a| a.amount.value()).sum::<f64>();
-            
+  
         // 应用税率
         for tax_rate in &tax_info.applicable_tax_rates {
             let tax_amount = taxable_amount * tax_rate.rate;
-            
+  
             if tax_amount > 0.0 {
                 taxes.push(InvoiceTax {
                     name: tax_rate.name.clone(),
@@ -3120,10 +3139,11 @@ impl SubscriptionBillingEngine {
                 });
             }
         }
-        
+  
         Ok(taxes)
     }
 }
+
 ```
 
 **映射分析**:
@@ -3146,7 +3166,7 @@ mod domain {
     use chrono::{DateTime, Utc};
     use uuid::Uuid;
     use std::collections::HashMap;
-    
+  
     // 核心领域概念，不包含技术细节
     #[derive(Debug, Clone)]
     pub struct Order {
@@ -3159,7 +3179,7 @@ mod domain {
         created_at: DateTime<Utc>,
         updated_at: DateTime<Utc>,
     }
-    
+  
     impl Order {
         // 业务逻辑方法 - 验证领域规则
         pub fn add_item(&mut self, item: OrderItem) -> Result<(), OrderError> {
@@ -3169,7 +3189,7 @@ mod domain {
                     "只能在草稿状态下添加商品".into()
                 ));
             }
-            
+  
             // 检查商品是否已存在，如果存在则增加数量
             if let Some(existing_item) = self.items.iter_mut()
                 .find(|i| i.product_id == item.product_id) {
@@ -3179,12 +3199,12 @@ mod domain {
                 // 否则添加新商品
                 self.items.push(item);
             }
-            
+  
             self.updated_at = Utc::now();
-            
+  
             Ok(())
         }
-        
+  
         pub fn submit(&mut self) -> Result<(), OrderError> {
             // 验证订单可以提交
             if self.status != OrderStatus::Draft {
@@ -3192,22 +3212,22 @@ mod domain {
                     "只能提交草稿状态的订单".into()
                 ));
             }
-            
+  
             if self.items.is_empty() {
                 return Err(OrderError::ValidationError("订单必须包含至少一个商品".into()));
             }
-            
+  
             if self.shipping_address.is_none() {
                 return Err(OrderError::ValidationError("订单必须包含送货地址".into()));
             }
-            
+  
             // 更新状态
             self.status = OrderStatus::Submitted;
             self.updated_at = Utc::now();
-            
+  
             Ok(())
         }
-        
+  
         // 计算订单总金额 - 纯业务计算
         pub fn calculate_total(&self) -> Money {
             self.items.iter()
@@ -3215,24 +3235,24 @@ mod domain {
                     acc + Money::new_usd(item.total_price).unwrap_or(Money::zero(Currency::USD))
                 })
         }
-        
+  
         // 其他业务逻辑方法...
     }
-    
+  
     // 领域服务 - 包含更复杂的业务逻辑
     pub trait OrderService {
         fn place_order(&self, order: &mut Order) -> Result<(), OrderServiceError>;
         fn cancel_order(&self, order: &mut Order, reason: &str) -> Result<(), OrderServiceError>;
         fn refund_order(&self, order: &mut Order, amount: Money) -> Result<(), OrderServiceError>;
     }
-    
+  
     // 领域仓储接口 - 定义存储操作但不包含实现
     pub trait OrderRepository {
         fn find_by_id(&self, id: &OrderId) -> Result<Option<Order>, RepositoryError>;
         fn save(&self, order: &Order) -> Result<(), RepositoryError>;
         fn find_by_customer(&self, customer_id: &CustomerId) -> Result<Vec<Order>, RepositoryError>;
     }
-    
+  
     // 其他领域定义...
 }
 
@@ -3241,7 +3261,7 @@ mod application {
     use super::domain::*;
     use super::infrastructure::*;
     use std::sync::Arc;
-    
+  
     // 应用服务 - 编排领域逻辑和技术操作
     pub struct OrderApplicationService {
         order_repository: Arc<dyn OrderRepository>,
@@ -3249,7 +3269,7 @@ mod application {
         payment_service: Arc<dyn PaymentService>,
         notification_service: Arc<dyn NotificationService>,
     }
-    
+  
     impl OrderApplicationService {
         // 用例：创建订单
         pub async fn create_order(
@@ -3262,13 +3282,13 @@ mod application {
             let shipping_address_domain = shipping_address
                 .map(|addr| addr.to_domain())
                 .transpose()?;
-                
+  
             let order_items = items.into_iter()
                 .map(|item| {
                     // 验证商品是否存在并获取最新价格
                     let product = self.inventory_service.get_product(&item.product_id)
                         .map_err(|e| ApplicationError::ExternalServiceError(e.to_string()))?;
-                        
+  
                     Ok(OrderItem {
                         id: OrderItemId::new(),
                         product_id: item.product_id,
@@ -3279,7 +3299,7 @@ mod application {
                     })
                 })
                 .collect::<Result<Vec<_>, _>>()?;
-                
+  
             // 创建领域对象
             let mut order = Order::new(
                 OrderId::new(),
@@ -3287,19 +3307,19 @@ mod application {
                 order_items,
                 shipping_address_domain,
             );
-            
+  
             // 保存订单
             self.order_repository.save(&order)
                 .map_err(|e| ApplicationError::RepositoryError(e.to_string()))?;
-                
+  
             // 通知客户
             self.notification_service.send_order_confirmation(&order)
                 .map_err(|e| ApplicationError::NotificationError(e.to_string()))?;
-                
+  
             // 转换回DTO
             Ok(OrderDto::from_domain(&order))
         }
-        
+  
         // 用例：处理订单支付
         pub async fn process_order_payment(
             &self,
@@ -3310,17 +3330,17 @@ mod application {
             let mut order = self.order_repository.find_by_id(order_id)
                 .map_err(|e| ApplicationError::RepositoryError(e.to_string()))?
                 .ok_or_else(|| ApplicationError::EntityNotFound(format!("订单 {}", order_id)))?;
-                
+  
             // 验证订单状态
             if order.status() != &OrderStatus::Submitted {
                 return Err(ApplicationError::InvalidOperation(
                     "只能处理已提交状态的订单支付".into()
                 ));
             }
-            
+  
             // 计算金额
             let amount = order.calculate_total();
-            
+  
             // 处理支付
             let payment_result = self.payment_service.process_payment(
                 &PaymentRequest {
@@ -3329,28 +3349,28 @@ mod application {
                     payment_method: payment_method.to_domain(),
                 }
             ).await.map_err(|e| ApplicationError::PaymentError(e.to_string()))?;
-            
+  
             // 更新订单状态
             if payment_result.status == PaymentStatus::Succeeded {
                 order.mark_as_paid(payment_result.transaction_id.clone())
                     .map_err(|e| ApplicationError::DomainError(e.to_string()))?;
-                    
+  
                 // 保存更新后的订单
                 self.order_repository.save(&order)
                     .map_err(|e| ApplicationError::RepositoryError(e.to_string()))?;
-                    
+  
                 // 分配库存
                 self.inventory_service.allocate_stock(&order)
                     .map_err(|e| ApplicationError::InventoryError(e.to_string()))?;
             }
-            
+  
             // 返回支付结果
             Ok(PaymentResultDto::from_domain(&payment_result))
         }
-        
+  
         // 其他应用服务方法...
     }
-    
+  
     // 其他应用层组件...
 }
 
@@ -3359,93 +3379,93 @@ mod infrastructure {
     use super::domain::*;
     use sqlx::{PgPool, postgres::PgRow, Row};
     use reqwest::Client;
-    
+  
     // 仓储实现
     pub struct SqlOrderRepository {
         pool: PgPool,
     }
-    
+  
     impl OrderRepository for SqlOrderRepository {
         fn find_by_id(&self, id: &OrderId) -> Result<Option<Order>, RepositoryError> {
             // SQL查询实现
             // ...
             todo!()
         }
-        
+  
         fn save(&self, order: &Order) -> Result<(), RepositoryError> {
             // SQL插入/更新实现
             // ...
             todo!()
         }
-        
+  
         fn find_by_customer(&self, customer_id: &CustomerId) -> Result<Vec<Order>, RepositoryError> {
             // SQL查询实现
             // ...
             todo!()
         }
     }
-    
+  
     // 支付服务实现
     pub struct StripePaymentService {
         client: Client,
         api_key: String,
     }
-    
+  
     impl PaymentService for StripePaymentService {
         async fn process_payment(&self, request: &PaymentRequest) -> Result<PaymentResult, PaymentServiceError> {
             // Stripe API调用实现
             // ...
             todo!()
         }
-        
+  
         async fn refund_payment(&self, transaction_id: &str, amount: Money) -> Result<RefundResult, PaymentServiceError> {
             // Stripe退款API调用实现
             // ...
             todo!()
         }
     }
-    
+  
     // 通知服务实现
     pub struct EmailNotificationService {
         email_client: Client,
         sender_email: String,
         templates: HashMap<String, String>,
     }
-    
+  
     impl NotificationService for EmailNotificationService {
         fn send_order_confirmation(&self, order: &Order) -> Result<(), NotificationError> {
             // 电子邮件发送实现
             // ...
             todo!()
         }
-        
+  
         fn send_shipment_notification(&self, order: &Order, tracking_info: &TrackingInfo) -> Result<(), NotificationError> {
             // 电子邮件发送实现
             // ...
             todo!()
         }
     }
-    
+  
     // 库存服务实现
     pub struct WarehouseInventoryService {
         client: Client,
         warehouse_api_url: String,
     }
-    
+  
     impl InventoryService for WarehouseInventoryService {
         fn get_product(&self, product_id: &ProductId) -> Result<Product, InventoryServiceError> {
             // 仓库API调用实现
             // ...
             todo!()
         }
-        
+  
         fn allocate_stock(&self, order: &Order) -> Result<(), InventoryServiceError> {
             // 库存分配API调用实现
             // ...
             todo!()
         }
     }
-    
+  
     // 其他基础设施实现...
 }
 
@@ -3455,12 +3475,12 @@ mod interface {
     use super::domain::*;
     use actix_web::{web, HttpResponse, ResponseError};
     use serde::{Deserialize, Serialize};
-    
+  
     // REST API控制器
     pub struct OrderController {
         order_service: Arc<OrderApplicationService>,
     }
-    
+  
     impl OrderController {
         // REST API端点
         pub async fn create_order(
@@ -3472,18 +3492,18 @@ mod interface {
             if user_info.customer_id.is_none() {
                 return Err(ActixError::Forbidden("必须登录才能创建订单".into()));
             }
-            
+  
             // 调用应用服务
             let order = self.order_service.create_order(
                 user_info.customer_id.unwrap(),
                 req.items.clone(),
                 req.shipping_address.clone(),
             ).await?;
-            
+  
             // 返回API响应
             Ok(HttpResponse::Created().json(order))
         }
-        
+  
         pub async fn process_payment(
             &self,
             order_id: web::Path<String>,
@@ -3494,37 +3514,38 @@ mod interface {
             if user_info.customer_id.is_none() {
                 return Err(ActixError::Forbidden("必须登录才能处理支付".into()));
             }
-            
+  
             // 解析订单ID
             let order_id = OrderId::from_string(&order_id)?;
-            
+  
             // 调用应用服务
             let payment_result = self.order_service.process_order_payment(
                 &order_id,
                 req.payment_method.clone(),
             ).await?;
-            
+  
             // 返回API响应
             Ok(HttpResponse::Ok().json(payment_result))
         }
-        
+  
         // 其他API端点...
     }
-    
+  
     // 请求/响应DTO
     #[derive(Deserialize)]
     pub struct CreateOrderRequest {
         items: Vec<OrderItemDto>,
         shipping_address: Option<AddressDto>,
     }
-    
+  
     #[derive(Deserialize)]
     pub struct ProcessPaymentRequest {
         payment_method: PaymentMethodDto,
     }
-    
+  
     // 其他接口层组件...
 }
+
 ```
 
 **映射分析**:
@@ -3566,7 +3587,7 @@ impl FixedTimeProvider {
     pub fn new(time: DateTime<Utc>) -> Self {
         Self { fixed_time: time }
     }
-    
+  
     pub fn advance(&mut self, duration: Duration) {
         self.fixed_time = self.fixed_time + duration;
     }
@@ -3593,17 +3614,17 @@ impl RandomGenerator for DefaultRandomGenerator {
     fn generate_id(&self) -> String {
         Uuid::new_v4().to_string()
     }
-    
+  
     fn random_bool(&self, probability: f64) -> bool {
         let mut rng = rand::thread_rng();
         rng.gen_bool(probability)
     }
-    
+  
     fn random_f64(&self, min: f64, max: f64) -> f64 {
         let mut rng = rand::thread_rng();
         rng.gen_range(min..max)
     }
-    
+  
     fn random_u32(&self, min: u32, max: u32) -> u32 {
         let mut rng = rand::thread_rng();
         rng.gen_range(min..max)
@@ -3622,15 +3643,15 @@ impl RandomGenerator for MockRandomGenerator {
     fn generate_id(&self) -> String {
         self.next_id.clone().unwrap_or_else(|| "mock-id-123".to_string())
     }
-    
+  
     fn random_bool(&self, _probability: f64) -> bool {
         self.next_bool.unwrap_or(false)
     }
-    
+  
     fn random_f64(&self, min: f64, _max: f64) -> f64 {
         self.next_f64.unwrap_or(min)
     }
-    
+  
     fn random_u32(&self, min: u32, _max: u32) -> u32 {
         self.next_u32.unwrap_or(min)
     }
@@ -3654,32 +3675,32 @@ impl PromotionService {
             Ok(promotions) => promotions,
             Err(_) => return None,
         };
-        
+  
         if active_promotions.is_empty() {
             return None;
         }
-        
+  
         // 计算每个促销的适用性和权重
         let mut weighted_promotions = Vec::new();
-        
+  
         for promotion in active_promotions {
             // 检查促销适用条件
             if !self.is_promotion_applicable(&promotion, customer, cart) {
                 continue;
             }
-            
+  
             // 添加到带权重的列表
             weighted_promotions.push((promotion, self.calculate_promotion_weight(&promotion, customer)));
         }
-        
+  
         if weighted_promotions.is_empty() {
             return None;
         }
-        
+  
         // 根据权重随机选择促销
         let total_weight: f64 = weighted_promotions.iter().map(|(_, weight)| *weight).sum();
         let random_value = self.random_generator.random_f64(0.0, total_weight);
-        
+  
         let mut cumulative_weight = 0.0;
         for (promotion, weight) in weighted_promotions {
             cumulative_weight += weight;
@@ -3687,105 +3708,107 @@ impl PromotionService {
                 return Some(promotion);
             }
         }
-        
+  
         // 如果随机选择失败，返回第一个
         weighted_promotions.first().map(|(promotion, _)| promotion.clone())
     }
-    
+  
     fn is_promotion_applicable(&self, promotion: &Promotion, customer: &Customer, cart: &Cart) -> bool {
         // 检查时间限制
         let now = self.time_provider.now();
         if now < promotion.start_date || now > promotion.end_date {
             return false;
         }
-        
+  
         // 检查客户段限制
         if let Some(segments) = &promotion.customer_segments {
             if !segments.contains(&customer.segment) {
                 return false;
             }
         }
-        
+  
         // 检查最小订单金额
         if let Some(min_amount) = promotion.min_order_amount {
             if cart.calculate_subtotal() < min_amount {
                 return false;
             }
         }
-        
+  
         // 检查特定产品要求
         if let Some(required_products) = &promotion.required_products {
             let cart_products: HashSet<_> = cart.items.iter()
                 .map(|item| item.product_id.clone())
                 .collect();
-                
+  
             if !required_products.iter().all(|p| cart_products.contains(p)) {
                 return false;
             }
         }
-        
+  
         // 检查使用配额
         if let Some(usage_limit) = promotion.usage_limit {
             let current_usage = self.promotion_repository.get_usage_count(&promotion.id)
                 .unwrap_or(0);
-                
+  
             if current_usage >= usage_limit {
                 return false;
             }
         }
-        
+  
         true
     }
-    
+  
     fn calculate_promotion_weight(&self, promotion: &Promotion, customer: &Customer) -> f64 {
         let mut weight = 1.0;
-        
+  
         // 新客户权重调整
         if customer.is_new && promotion.boost_for_new_customers {
             weight *= 2.0;
         }
-        
+  
         // 即将到期的促销权重增加
         let days_until_expiry = (promotion.end_date - self.time_provider.now()).num_days();
         if days_until_expiry <= 3 {
             weight *= 1.5;
         }
-        
+  
         // 按促销优先级调整
         weight *= match promotion.priority {
             PromotionPriority::Low => 0.5,
             PromotionPriority::Normal => 1.0,
             PromotionPriority::High => 2.0,
         };
-        
+  
         weight
     }
 }
 
 // 针对上述代码的测试
-#[cfg(test)]
+
+# [cfg(test)]
+
 mod tests {
     use super::*;
     use std::sync::Arc;
-    
+  
     // 模拟促销仓储
     struct MockPromotionRepository {
         active_promotions: Vec<Promotion>,
         usage_counts: HashMap<String, u32>,
     }
-    
+  
     impl PromotionRepository for MockPromotionRepository {
         fn find_active(&self, _now: DateTime<Utc>) -> Result<Vec<Promotion>, RepositoryError> {
             Ok(self.active_promotions.clone())
         }
-        
+  
         fn get_usage_count(&self, promotion_id: &str) -> Result<u32, RepositoryError> {
             Ok(*self.usage_counts.get(promotion_id).unwrap_or(&0))
         }
-        
+  
         // 其他必要方法的实现...
     }
-    
+  
     #[test]
     fn test_apply_random_promotion_returns_none_when_no_promotions() {
         // 准备
@@ -3794,60 +3817,60 @@ mod tests {
                 .unwrap()
                 .with_timezone(&Utc)
         ));
-        
+  
         let random_generator = Arc::new(MockRandomGenerator {
             next_id: None,
             next_bool: None,
             next_f64: Some(0.5), // 随机数固定为0.5
             next_u32: None,
         });
-        
+  
         let promotion_repository = Arc::new(MockPromotionRepository {
             active_promotions: vec![],
             usage_counts: HashMap::new(),
         });
-        
+  
         let service = PromotionService {
             time_provider,
             random_generator,
             promotion_repository,
         };
-        
+  
         let customer = Customer {
             id: CustomerId::new(),
             name: "Test Customer".to_string(),
             segment: CustomerSegment::Regular,
             is_new: false,
         };
-        
+  
         let cart = Cart {
             id: CartId::new(),
             items: vec![],
         };
-        
+  
         // 执行
         let result = service.apply_random_promotion(&customer, &cart);
-        
+  
         // 验证
         assert!(result.is_none());
     }
-    
+  
     #[test]
     fn test_apply_random_promotion_respects_time_constraints() {
         // 准备
         let now = DateTime::parse_from_rfc3339("2023-01-15T12:00:00Z")
             .unwrap()
             .with_timezone(&Utc);
-            
+  
         let time_provider = Arc::new(FixedTimeProvider::new(now));
-        
+  
         let random_generator = Arc::new(MockRandomGenerator {
             next_id: None,
             next_bool: None,
             next_f64: Some(0.5),
             next_u32: None,
         });
-        
+  
         // 创建一个过期的促销和一个未来的促销
         let expired_promotion = Promotion {
             id: "promo1".to_string(),
@@ -3856,7 +3879,7 @@ mod tests {
             end_date: now - Duration::days(1),
             // 其他字段设置...
         };
-        
+  
         let future_promotion = Promotion {
             id: "promo2".to_string(),
             name: "Future Promo".to_string(),
@@ -3864,39 +3887,40 @@ mod tests {
             end_date: now + Duration::days(10),
             // 其他字段设置...
         };
-        
+  
         let promotion_repository = Arc::new(MockPromotionRepository {
             active_promotions: vec![expired_promotion, future_promotion],
             usage_counts: HashMap::new(),
         });
-        
+  
         let service = PromotionService {
             time_provider,
             random_generator,
             promotion_repository,
         };
-        
+  
         let customer = Customer {
             id: CustomerId::new(),
             name: "Test Customer".to_string(),
             segment: CustomerSegment::Regular,
             is_new: false,
         };
-        
+  
         let cart = Cart {
             id: CartId::new(),
             items: vec![],
         };
-        
+  
         // 执行
         let result = service.apply_random_promotion(&customer, &cart);
-        
+  
         // 验证 - 两个促销都不应适用
         assert!(result.is_none());
     }
-    
+  
     // 更多测试...
 }
+
 ```
 
 **映射分析**:
@@ -3913,7 +3937,9 @@ mod tests {
 ```rust
 // 外部系统契约定义
 // 支付网关API契约
-#[derive(Debug, Serialize)]
+
+# [derive(Debug, Serialize)]
+
 pub struct PaymentGatewayRequest {
     pub merchant_id: String,
     pub transaction_id: String,
@@ -3924,7 +3950,8 @@ pub struct PaymentGatewayRequest {
     pub metadata: HashMap<String, String>,
 }
 
-#[derive(Debug, Deserialize)]
+# [derive(Debug, Deserialize)]
+
 pub struct PaymentGatewayResponse {
     pub success: bool,
     pub transaction_id: String,
@@ -4397,6 +4424,7 @@ mod contract_tests {
         assert_eq!(payment_result.provider_reference, "gateway-ref-456");
     }
 }
+
 ```
 
 **映射分析**:
@@ -4659,6 +4687,7 @@ impl NotificationService for MultiChannelNotificationAdapter {
         adapter.send_notification(notification).await
     }
 }
+
 ```
 
 **映射分析**:
@@ -4918,7 +4947,7 @@ mod repository_adapter_tests {
                 updated_at TIMESTAMP WITH TIME ZONE NOT NULL
             )
         "#).execute(pool).await.expect("Failed to create orders table");
-        
+  
         sqlx::query(r#"
             CREATE TABLE IF NOT EXISTS order_items (
                 id UUID PRIMARY KEY,
@@ -4930,7 +4959,7 @@ mod repository_adapter_tests {
                 total_price DECIMAL(10, 2) NOT NULL
             )
         "#).execute(pool).await.expect("Failed to create order_items table");
-        
+  
         sqlx::query(r#"
             CREATE TABLE IF NOT EXISTS addresses (
                 id UUID PRIMARY KEY,
@@ -4946,11 +4975,11 @@ mod repository_adapter_tests {
             )
         "#).execute(pool).await.expect("Failed to create addresses table");
     }
-    
+  
     async fn insert_test_order(pool: &PgPool) -> OrderId {
         let order_id = OrderId::new();
         let customer_id = CustomerId::new();
-        
+  
         // 插入订单
         sqlx::query(r#"
             INSERT INTO orders (id, customer_id, status, created_at, updated_at)
@@ -4964,11 +4993,11 @@ mod repository_adapter_tests {
         .execute(pool)
         .await
         .expect("Failed to insert test order");
-        
+  
         // 插入订单项
         let item1_id = OrderItemId::new();
         let product1_id = ProductId::new();
-        
+  
         sqlx::query(r#"
             INSERT INTO order_items (id, order_id, product_id, name, unit_price, quantity, total_price)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -4983,10 +5012,10 @@ mod repository_adapter_tests {
         .execute(pool)
         .await
         .expect("Failed to insert first order item");
-        
+  
         let item2_id = OrderItemId::new();
         let product2_id = ProductId::new();
-        
+  
         sqlx::query(r#"
             INSERT INTO order_items (id, order_id, product_id, name, unit_price, quantity, total_price)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -5001,10 +5030,10 @@ mod repository_adapter_tests {
         .execute(pool)
         .await
         .expect("Failed to insert second order item");
-        
+  
         // 插入地址
         let address_id = Uuid::new_v4();
-        
+  
         sqlx::query(r#"
             INSERT INTO addresses (id, entity_id, entity_type, street_line1, street_line2, city, state, postal_code, country)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -5021,56 +5050,58 @@ mod repository_adapter_tests {
         .execute(pool)
         .await
         .expect("Failed to insert address");
-        
+  
         order_id
     }
 }
 
 // 4. 端到端测试 - 验证整个系统流程
-#[cfg(test)]
+
+# [cfg(test)]
+
 mod end_to_end_tests {
     use super::*;
     use testcontainers::{clients, Docker, images};
     use actix_web::{test, App, web};
-    
+  
     #[actix_web::test]
     async fn test_create_and_process_order() {
         // 设置测试容器
         let docker = clients::Cli::default();
-        
+  
         // PostgreSQL
         let postgres = docker.run(images::postgres::Postgres::default());
         let db_connection_string = format!(
             "postgres://postgres:postgres@127.0.0.1:{}/postgres",
             postgres.get_host_port_ipv4(5432)
         );
-        
+  
         // Redis (用于缓存)
         let redis = docker.run(images::redis::Redis::default());
         let redis_connection_string = format!(
             "redis://127.0.0.1:{}/",
             redis.get_host_port_ipv4(6379)
         );
-        
+  
         // 设置数据库连接池
         let pool = PgPoolOptions::new()
             .max_connections(5)
             .connect(&db_connection_string)
             .await
             .expect("Failed to connect to Postgres");
-            
+  
         // 设置测试架构
         setup_test_schema(&pool).await;
-        
+  
         // 设置必要的依赖
         let order_repository = Arc::new(SqlOrderRepository { pool: pool.clone() });
         let customer_repository = Arc::new(SqlCustomerRepository { pool: pool.clone() });
         let product_repository = Arc::new(SqlProductRepository { pool: pool.clone() });
-        
+  
         // 使用模拟外部服务
         let payment_gateway = Arc::new(MockPaymentGateway::new());
         let email_service = Arc::new(MockEmailService::new());
-        
+  
         // 创建应用服务
         let order_service = Arc::new(OrderApplicationService {
             order_repository: order_repository.clone(),
@@ -5085,18 +5116,18 @@ mod end_to_end_tests {
                 client: email_service.clone(),
             }),
         });
-        
+  
         // 创建控制器
         let order_controller = OrderController {
             order_service: order_service.clone(),
         };
-        
+  
         // 设置测试用户
         let customer_id = insert_test_customer(&pool).await;
-        
+  
         // 设置测试产品
         let product_id = insert_test_product(&pool).await;
-        
+  
         // 创建测试应用
         let app = test::init_service(
             App::new()
@@ -5104,7 +5135,7 @@ mod end_to_end_tests {
                 .route("/orders", web::post().to(OrderController::create_order))
                 .route("/orders/{id}/payments", web::post().to(OrderController::process_payment))
         ).await;
-        
+  
         // 测试创建订单
         let create_request = CreateOrderRequest {
             items: vec![OrderItemDto {
@@ -5120,19 +5151,19 @@ mod end_to_end_tests {
                 country: "US".to_string(),
             }),
         };
-        
+  
         let create_resp = test::TestRequest::post()
             .uri("/orders")
             .set_json(&create_request)
             .header("X-Customer-ID", customer_id.to_string())
             .send_request(&app)
             .await;
-            
+  
         assert_eq!(create_resp.status(), 201);
-        
+  
         let order: OrderDto = test::read_body_json(create_resp).await;
         assert_eq!(order.status, "DRAFT");
-        
+  
         // 测试处理支付
         let payment_request = ProcessPaymentRequest {
             payment_method: PaymentMethodDto::CreditCard(CreditCardDto {
@@ -5143,40 +5174,42 @@ mod end_to_end_tests {
                 holder_name: "Test User".to_string(),
             }),
         };
-        
+  
         let payment_resp = test::TestRequest::post()
             .uri(&format!("/orders/{}/payments", order.id))
             .set_json(&payment_request)
             .header("X-Customer-ID", customer_id.to_string())
             .send_request(&app)
             .await;
-            
+  
         assert_eq!(payment_resp.status(), 200);
-        
+  
         let payment_result: PaymentResultDto = test::read_body_json(payment_resp).await;
         assert_eq!(payment_result.status, "SUCCEEDED");
-        
+  
         // 验证订单状态已更新
         let updated_order = order_repository.find_by_id(&OrderId::from_string(&order.id).unwrap())
             .await
             .unwrap()
             .unwrap();
-            
+  
         assert_eq!(updated_order.status, OrderStatus::Paid);
-        
+  
         // 验证通知已发送
         assert!(email_service.has_email_for(&updated_order.customer_id.to_string()));
     }
-    
+  
     // 辅助函数...
 }
 
 // 5. 属性测试 - 验证特定属性在各种输入下保持不变
-#[cfg(test)]
+
+# [cfg(test)]
+
 mod property_tests {
     use super::*;
     use proptest::prelude::*;
-    
+  
     // 生成有效的订单项
     fn order_item_strategy() -> impl Strategy<Value = OrderItem> {
         (
@@ -5189,7 +5222,7 @@ mod property_tests {
             let id = OrderItemId::from_uuid(Uuid::from_u64_pair(id_seed, 0));
             let product_id = ProductId::from_uuid(Uuid::from_u64_pair(product_seed, 0));
             let total_price = unit_price * quantity as f64;
-            
+  
             OrderItem {
                 id,
                 product_id,
@@ -5200,7 +5233,7 @@ mod property_tests {
             }
         })
     }
-    
+  
     // 生成有效的订单
     fn order_strategy() -> impl Strategy<Value = Order> {
         (
@@ -5210,7 +5243,7 @@ mod property_tests {
         ).prop_map(|(order_seed, customer_seed, items)| {
             let id = OrderId::from_uuid(Uuid::from_u64_pair(order_seed, 0));
             let customer_id = CustomerId::from_uuid(Uuid::from_u64_pair(customer_seed, 0));
-            
+  
             Order::new(
                 id,
                 customer_id,
@@ -5219,7 +5252,7 @@ mod property_tests {
             )
         })
     }
-    
+  
     proptest! {
         // 属性：添加项目后，订单总金额等于所有项目金额之和
         #[test]
@@ -5231,21 +5264,21 @@ mod property_tests {
             if order.status != OrderStatus::Draft {
                 return Ok(());
             }
-            
+  
             let initial_total = order.calculate_total();
             let item_price = Money::new_usd(item.total_price).unwrap();
-            
+  
             // 添加新项目
             let result = order.add_item(item);
             prop_assert!(result.is_ok());
-            
+  
             // 计算新总额
             let new_total = order.calculate_total();
-            
+  
             // 验证总额增加了正确的金额
             prop_assert_eq!(new_total.value(), initial_total.value() + item_price.value());
         }
-        
+  
         // 属性：订单提交后不能修改
         #[test]
         fn test_submitted_order_is_immutable(
@@ -5257,24 +5290,24 @@ mod property_tests {
                 let result = order.add_item(item);
                 prop_assert!(result.is_ok());
             }
-            
+  
             if order.shipping_address.is_none() {
                 order.shipping_address = Some(Address::default());
             }
-            
+  
             // 提交订单
             let submit_result = order.submit();
             prop_assert!(submit_result.is_ok());
             prop_assert_eq!(order.status, OrderStatus::Submitted);
-            
+  
             // 保存订单状态
             let submitted_status = order.status.clone();
             let items_count = order.items.len();
-            
+  
             // 尝试添加新项目（应该失败）
             let add_result = order.add_item(item);
             prop_assert!(add_result.is_err());
-            
+  
             // 验证状态未改变
             prop_assert_eq!(order.status, submitted_status);
             prop_assert_eq!(order.items.len(), items_count);
@@ -5297,17 +5330,17 @@ impl MappingValidator {
         let domain_id = domain_id_extractor(domain_object);
         let domain_id_str = id_to_string(domain_id);
         let dto_id = dto_id_extractor(dto);
-        
+  
         if domain_id_str != dto_id {
             return Err(MappingValidationError::IdentityMismatch {
                 expected: domain_id_str,
                 actual: dto_id.to_string(),
             });
         }
-        
+  
         Ok(())
     }
-    
+  
     // 验证DTO到领域对象的映射保持标识符一致性
     pub fn validate_dto_to_domain_identity<T, DTO, ID>(
         dto: &DTO,
@@ -5324,7 +5357,7 @@ impl MappingValidator {
             id_to_string,
         )
     }
-    
+  
     // 验证金额映射的一致性
     pub fn validate_money_mapping<T, DTO>(
         domain_object: &T,
@@ -5336,7 +5369,7 @@ impl MappingValidator {
         let domain_money = domain_money_extractor(domain_object);
         let dto_amount = dto_amount_extractor(dto);
         let dto_currency = dto_currency_extractor(dto);
-        
+  
         // 检查金额
         if (domain_money.value() - dto_amount).abs() > 0.001 {
             return Err(MappingValidationError::AmountMismatch {
@@ -5344,7 +5377,7 @@ impl MappingValidator {
                 actual: dto_amount,
             });
         }
-        
+  
         // 检查货币
         if domain_money.currency().code() != dto_currency {
             return Err(MappingValidationError::CurrencyMismatch {
@@ -5352,10 +5385,10 @@ impl MappingValidator {
                 actual: dto_currency.to_string(),
             });
         }
-        
+  
         Ok(())
     }
-    
+  
     // 验证集合映射的一致性
     pub fn validate_collection_mapping<T, DTO, TItem, DTOItem, TID>(
         domain_object: &T,
@@ -5368,7 +5401,7 @@ impl MappingValidator {
     ) -> Result<(), MappingValidationError> {
         let domain_items = domain_collection_extractor(domain_object);
         let dto_items = dto_collection_extractor(dto);
-        
+  
         // 检查集合大小
         if domain_items.len() != dto_items.len() {
             return Err(MappingValidationError::CollectionSizeMismatch {
@@ -5376,14 +5409,14 @@ impl MappingValidator {
                 actual: dto_items.len(),
             });
         }
-        
+  
         // 创建域对象ID到索引的映射
         let mut domain_id_map = HashMap::new();
         for (index, item) in domain_items.iter().enumerate() {
             let id = id_to_string(domain_item_id_extractor(item));
             domain_id_map.insert(id, index);
         }
-        
+  
         // 验证每个DTO项目都有匹配的域对象项目
         for dto_item in dto_items {
             let dto_id = dto_item_id_extractor(dto_item);
@@ -5391,22 +5424,24 @@ impl MappingValidator {
                 return Err(MappingValidationError::ItemNotFound(dto_id.to_string()));
             }
         }
-        
+  
         Ok(())
     }
 }
 
 // 映射验证测试
-#[cfg(test)]
+
+# [cfg(test)]
+
 mod mapping_tests {
     use super::*;
-    
+  
     #[test]
     fn test_order_dto_mapping() {
         // 创建域对象
         let order_id = OrderId::new();
         let customer_id = CustomerId::new();
-        
+  
         let item1 = OrderItem {
             id: OrderItemId::new(),
             product_id: ProductId::new(),
@@ -5415,7 +5450,7 @@ mod mapping_tests {
             quantity: 2,
             total_price: 20.0,
         };
-        
+  
         let item2 = OrderItem {
             id: OrderItemId::new(),
             product_id: ProductId::new(),
@@ -5424,7 +5459,7 @@ mod mapping_tests {
             quantity: 1,
             total_price: 15.0,
         };
-        
+  
         let order = Order {
             id: order_id.clone(),
             customer_id,
@@ -5442,10 +5477,10 @@ mod mapping_tests {
             created_at: Utc::now(),
             updated_at: Utc::now(),
         };
-        
+  
         // 转换为DTO
         let order_dto = OrderDto::from_domain(&order);
-        
+  
         // 验证身份映射
         let result = MappingValidator::validate_identity_preservation(
             &order,
@@ -5454,9 +5489,9 @@ mod mapping_tests {
             |dto| &dto.id,
             |id| id.to_string(),
         );
-        
+  
         assert!(result.is_ok());
-        
+  
         // 验证集合映射
         let result = MappingValidator::validate_collection_mapping(
             &order,
@@ -5467,9 +5502,9 @@ mod mapping_tests {
             |dto_item| &dto_item.id,
             |id| id.to_string(),
         );
-        
+  
         assert!(result.is_ok());
-        
+  
         // 验证总金额映射
         let result = MappingValidator::validate_money_mapping(
             &order,
@@ -5478,10 +5513,11 @@ mod mapping_tests {
             |dto| dto.total_amount,
             |dto| &dto.currency,
         );
-        
+  
         assert!(result.is_ok());
     }
 }
+
 ```
 
 ## 1.5 4. 现实世界映射的挑战与解决方案
@@ -5493,7 +5529,9 @@ mod mapping_tests {
 ```rust
 // 模型不一致挑战示例
 // 内部领域模型
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct Customer {
     id: CustomerId,
     name: String,
@@ -5507,7 +5545,9 @@ pub struct Customer {
 }
 
 // 第三方CRM系统模型
-#[derive(Debug, Serialize, Deserialize)]
+
+# [derive(Debug, Serialize, Deserialize)]
+
 pub struct CrmContact {
     contact_id: String,
     first_name: String,
@@ -5537,18 +5577,18 @@ impl CrmSynchronizer {
         // 获取客户
         let customer = self.customer_repository.find_by_id(customer_id).await?
             .ok_or_else(|| SyncError::EntityNotFound(format!("Customer {}", customer_id)))?;
-            
+  
         // 检查是否需要与CRM系统同步
         if !self.should_sync_with_crm(&customer) {
             return Ok(SyncResult::Skipped { reason: "Customer not eligible for CRM sync".into() });
         }
-            
+  
         // 转换为CRM联系人格式
         let crm_contact = self.map_customer_to_crm_contact(&customer)?;
-        
+  
         // 检查CRM中是否已存在
         let existing_contact = self.crm_client.find_contact_by_email(&customer.email.value()).await?;
-        
+  
         let result = if let Some(existing) = existing_contact {
             // 更新现有联系人
             let updated_contact = self.crm_client.update_contact(&existing.contact_id, &crm_contact).await?;
@@ -5558,28 +5598,28 @@ impl CrmSynchronizer {
             let new_contact = self.crm_client.create_contact(&crm_contact).await?;
             SyncResult::Created { external_id: new_contact.contact_id }
         };
-        
+  
         // 记录同步结果
         self.log_sync_result(customer_id, &result).await?;
-        
+  
         Ok(result)
     }
-    
+  
     pub async fn sync_from_crm_to_customer(
         &self,
         crm_contact_id: &str,
     ) -> Result<SyncResult, SyncError> {
         // 从CRM获取联系人
         let crm_contact = self.crm_client.get_contact(crm_contact_id).await?;
-        
+  
         // 尝试查找已存在的客户
         let existing_customer = self.customer_repository
             .find_by_email(&Email::try_from(crm_contact.email_address.clone())?)
             .await?;
-            
+  
         // 将CRM联系人映射到客户
         let mut customer = self.map_crm_contact_to_customer(&crm_contact, existing_customer.as_ref())?;
-        
+  
         // 保存客户
         let result = if existing_customer.is_some() {
             self.customer_repository.update(&customer).await?;
@@ -5588,25 +5628,25 @@ impl CrmSynchronizer {
             self.customer_repository.create(&customer).await?;
             SyncResult::Created { external_id: customer.id.to_string() }
         };
-        
+  
         // 记录同步结果
         self.log_sync_result(&customer.id, &result).await?;
-        
+  
         Ok(result)
     }
-    
+  
     fn should_sync_with_crm(&self, customer: &Customer) -> bool {
         // 基于一些业务规则决定是否同步
         // 例如，只同步活跃客户
         if customer.status != CustomerStatus::Active {
             return false;
         }
-        
+  
         // 确保有电子邮件
         if customer.email.value().is_empty() {
             return false;
         }
-        
+  
         // 根据客户类型决定
         match customer.customer_type {
             CustomerType::Individual | CustomerType::Business => true,
@@ -5614,11 +5654,11 @@ impl CrmSynchronizer {
             CustomerType::Internal => false,
         }
     }
-    
+  
     fn map_customer_to_crm_contact(&self, customer: &Customer) -> Result<CrmContact, SyncError> {
         // 分解全名为姓和名
         let (first_name, last_name) = self.split_full_name(&customer.name);
-        
+  
         // 转换地址
         let addresses = if let Some(address) = &customer.address {
             vec![CrmAddress {
@@ -5634,7 +5674,7 @@ impl CrmSynchronizer {
         } else {
             vec![]
         };
-        
+  
         // 转换客户类型为CRM细分市场
         let segment = match customer.customer_type {
             CustomerType::Individual => "CONSUMER".to_string(),
@@ -5642,34 +5682,34 @@ impl CrmSynchronizer {
             CustomerType::Guest => "PROSPECT".to_string(),
             CustomerType::Internal => "EMPLOYEE".to_string(),
         };
-        
+  
         // 客户偏好转换为自定义字段
         let mut custom_fields = HashMap::new();
-        
+  
         if let Some(marketing_pref) = &customer.preferences.marketing_preferences {
             custom_fields.insert(
                 "marketing_consent".to_string(),
                 serde_json::Value::Bool(marketing_pref.has_consent)
             );
-            
+  
             custom_fields.insert(
                 "preferred_channels".to_string(),
                 serde_json::Value::String(marketing_pref.preferred_channels.join(","))
             );
         }
-        
+  
         if let Some(communication_pref) = &customer.preferences.communication_preferences {
             custom_fields.insert(
                 "preferred_language".to_string(),
                 serde_json::Value::String(communication_pref.preferred_language.clone())
             );
-            
+  
             custom_fields.insert(
                 "communication_frequency".to_string(),
                 serde_json::Value::String(communication_pref.frequency.to_string())
             );
         }
-        
+  
         // 构建CRM联系人
         let crm_contact = CrmContact {
             contact_id: "".to_string(), // 新联系人留空
@@ -5684,10 +5724,10 @@ impl CrmSynchronizer {
             creation_date: customer.created_at.to_rfc3339(),
             custom_fields,
         };
-        
+  
         Ok(crm_contact)
     }
-    
+  
     fn map_crm_contact_to_customer(
         &self,
         contact: &CrmContact,
@@ -5695,16 +5735,16 @@ impl CrmSynchronizer {
     ) -> Result<Customer, SyncError> {
         // 合并姓名
         let name = format!("{} {}", contact.first_name, contact.last_name);
-        
+  
         // 电子邮件验证
         let email = Email::try_from(contact.email_address.clone())?;
-        
+  
         // 电话处理
         let phone = contact.mobile_phone.as_ref()
             .or(contact.work_phone.as_ref())
             .map(|p| PhoneNumber::try_from(p.clone()))
             .transpose()?;
-            
+  
         // 地址处理
         let address = contact.addresses.iter()
             .find(|addr| addr.is_default || addr.address_type == "PRIMARY")
@@ -5716,7 +5756,7 @@ impl CrmSynchronizer {
                 postal_code: addr.postal_code.clone(),
                 country: addr.country.clone(),
             });
-            
+  
         // 客户类型映射
         let customer_type = match contact.segment.as_str() {
             "CONSUMER" => CustomerType::Individual,
@@ -5725,24 +5765,24 @@ impl CrmSynchronizer {
             "EMPLOYEE" => CustomerType::Internal,
             _ => CustomerType::Individual, // 默认
         };
-        
+  
         // 状态映射
         let status = if contact.is_active {
             CustomerStatus::Active
         } else {
             CustomerStatus::Inactive
         };
-        
+  
         // 处理自定义字段
         let mut preferences = CustomerPreferences::default();
-        
+  
         if let Some(marketing_consent) = contact.custom_fields.get("marketing_consent") {
             if let Some(consent) = marketing_consent.as_bool() {
                 let preferred_channels = contact.custom_fields.get("preferred_channels")
                     .and_then(|v| v.as_str())
                     .map(|s| s.split(',').map(String::from).collect())
                     .unwrap_or_else(Vec::new);
-                    
+  
                 preferences.marketing_preferences = Some(MarketingPreferences {
                     has_consent: consent,
                     consent_date: Utc::now(), // 我们没有这个信息，使用当前时间
@@ -5750,19 +5790,19 @@ impl CrmSynchronizer {
                 });
             }
         }
-        
+  
         if let Some(language) = contact.custom_fields.get("preferred_language").and_then(|v| v.as_str()) {
             let frequency = contact.custom_fields.get("communication_frequency")
                 .and_then(|v| v.as_str())
                 .map(|s| CommunicationFrequency::from_string(s))
                 .unwrap_or(CommunicationFrequency::Normal);
-                
+  
             preferences.communication_preferences = Some(CommunicationPreferences {
                 preferred_language: language.to_string(),
                 frequency,
             });
         }
-        
+  
         // 创建或更新客户
         let customer = Customer {
             id: existing.map(|c| c.id.clone()).unwrap_or_else(CustomerId::new),
@@ -5775,27 +5815,27 @@ impl CrmSynchronizer {
             created_at: existing.map(|c| c.created_at).unwrap_or_else(Utc::now),
             preferences,
         };
-        
+  
         Ok(customer)
     }
-    
+  
     fn split_full_name(&self, full_name: &str) -> (String, String) {
         let parts: Vec<&str> = full_name.split_whitespace().collect();
-        
+  
         if parts.is_empty() {
             return ("".to_string(), "".to_string());
         }
-        
+  
         if parts.len() == 1 {
             return (parts[0].to_string(), "".to_string());
         }
-        
+  
         let first_name = parts[0].to_string();
         let last_name = parts[1..].join(" ");
-        
+  
         (first_name, last_name)
     }
-    
+  
     async fn log_sync_result(
         &self,
         entity_id: &CustomerId,
@@ -5821,12 +5861,13 @@ impl CrmSynchronizer {
             },
             timestamp: Utc::now(),
         };
-        
+  
         self.sync_log_repository.save(&log_entry).await?;
-        
+  
         Ok(())
     }
 }
+
 ```
 
 **映射分析**:
@@ -5844,7 +5885,7 @@ impl CrmSynchronizer {
 // 版本化的API模型
 mod v1 {
     use serde::{Serialize, Deserialize};
-    
+  
     #[derive(Debug, Serialize, Deserialize)]
     pub struct ProductDto {
         pub id: String,
@@ -5859,7 +5900,7 @@ mod v1 {
 mod v2 {
     use serde::{Serialize, Deserialize};
     use chrono::{DateTime, Utc};
-    
+  
     #[derive(Debug, Serialize, Deserialize)]
     pub struct ProductDto {
         pub id: String,
@@ -5872,7 +5913,7 @@ mod v2 {
         pub created_at: DateTime<Utc>,
         pub updated_at: DateTime<Utc>,
     }
-    
+  
     #[derive(Debug, Serialize, Deserialize)]
     pub struct PricingInfo {
         pub base_price: f64,
@@ -5880,7 +5921,7 @@ mod v2 {
         pub discount_percent: Option<f64>,
         pub tax_rate: Option<f64>,
     }
-    
+  
     #[derive(Debug, Serialize, Deserialize)]
     pub struct InventoryInfo {
         pub in_stock: bool,
@@ -6397,6 +6438,7 @@ impl ProductApiController {
         }
     }
 }
+
 ```
 
 **映射分析**:
@@ -6781,6 +6823,7 @@ impl DistributedLockService {
         Ok(result == 1)
     }
 }
+
 ```
 
 **映射分析**:
@@ -6893,51 +6936,51 @@ impl<T: Send + Sync + 'static> CacheManager<T> {
                 missing_keys.push(key.clone());
             }
         }
-        
+  
         // 如果有未命中的键，从源加载
         if !missing_keys.is_empty() {
             let loaded_data = loader(missing_keys.clone()).await
                 .map_err(|e| CacheError::SourceError(e.to_string()))?;
-                
+  
             // 更新缓存并合并结果
             for (key, value) in &loaded_data {
                 let cache_key = self.build_key(key);
                 let serialized = self.serializer.serialize(value)?;
-                
+  
                 // 异步更新缓存，不阻塞响应
                 let cache_client = self.cache_client.clone();
                 let serialized_clone = serialized.clone();
                 let cache_key_clone = cache_key.clone();
                 let ttl = self.ttl;
-                
+  
                 tokio::spawn(async move {
                     if let Err(e) = cache_client.set(&cache_key_clone, &serialized_clone, Some(ttl)).await {
                         log::error!("Failed to update cache for key {}: {}", cache_key_clone, e);
                     }
                 });
-                
+  
                 result.insert(key.clone(), loaded_data[key].clone());
             }
         }
-        
+  
         Ok(result)
     }
-    
+  
     // 批量更新缓存
     pub async fn multi_set(&self, values: &HashMap<String, T>) -> Result<(), CacheError> {
         let mut cache_entries = HashMap::with_capacity(values.len());
-        
+  
         for (key, value) in values {
             let cache_key = self.build_key(key);
             let serialized = self.serializer.serialize(value)?;
             cache_entries.insert(cache_key, serialized);
         }
-        
+  
         self.cache_client.multi_set(&cache_entries, Some(self.ttl)).await?;
-        
+  
         Ok(())
     }
-    
+  
     // 生成缓存键
     fn build_key(&self, key: &str) -> String {
         format!("{}:{}", self.key_prefix, key)
@@ -6958,59 +7001,59 @@ impl MultilevelCache {
         namespace: &str,
     ) -> Result<Option<T>, CacheError> {
         let full_key = format!("{}:{}", namespace, key);
-        
+  
         // 计时器开始
         let timer = Instant::now();
-        
+  
         // 首先检查本地缓存
         if let Some(value) = self.local_cache.get::<T>(&full_key) {
             // 记录本地缓存命中
             self.metrics_collector.increment_counter("cache.local.hit", 1);
             self.metrics_collector.record_timing("cache.local.get_time", timer.elapsed());
-            
+  
             return Ok(Some(value));
         }
-        
+  
         // 本地缓存未命中，记录指标
         self.metrics_collector.increment_counter("cache.local.miss", 1);
-        
+  
         // 检查分布式缓存
         let dist_timer = Instant::now();
         let result = self.distributed_cache.get(&full_key).await?;
-        
+  
         if let Some(data) = &result {
             // 分布式缓存命中
             self.metrics_collector.increment_counter("cache.distributed.hit", 1);
             self.metrics_collector.record_timing("cache.distributed.get_time", dist_timer.elapsed());
-            
+  
             // 反序列化
             match serde_json::from_slice::<T>(data) {
                 Ok(value) => {
                     // 更新本地缓存
                     self.local_cache.set(&full_key, &value);
-                    
+  
                     return Ok(Some(value));
                 },
                 Err(e) => {
                     // 反序列化错误
                     self.metrics_collector.increment_counter("cache.deserialization.error", 1);
                     log::error!("Failed to deserialize cache data: {}", e);
-                    
+  
                     // 删除可能损坏的缓存条目
                     self.distributed_cache.delete(&full_key).await?;
-                    
+  
                     return Err(CacheError::DeserializationError(e.to_string()));
                 }
             }
         }
-        
+  
         // 分布式缓存也未命中
         self.metrics_collector.increment_counter("cache.distributed.miss", 1);
         self.metrics_collector.record_timing("cache.get_time", timer.elapsed());
-        
+  
         Ok(None)
     }
-    
+  
     pub async fn set<T: Serialize + Send + Sync>(
         &self,
         key: &str,
@@ -7019,38 +7062,38 @@ impl MultilevelCache {
         ttl: Option<Duration>,
     ) -> Result<(), CacheError> {
         let full_key = format!("{}:{}", namespace, key);
-        
+  
         // 序列化值
         let serialized = serde_json::to_vec(value)
             .map_err(|e| CacheError::SerializationError(e.to_string()))?;
-            
+  
         // 更新本地缓存
         self.local_cache.set(&full_key, value);
-        
+  
         // 更新分布式缓存
         self.distributed_cache.set(&full_key, &serialized, ttl).await?;
-        
+  
         // 记录缓存写入
         self.metrics_collector.increment_counter("cache.set", 1);
-        
+  
         Ok(())
     }
-    
+  
     pub async fn invalidate(&self, key: &str, namespace: &str) -> Result<(), CacheError> {
         let full_key = format!("{}:{}", namespace, key);
-        
+  
         // 从本地缓存删除
         self.local_cache.delete(&full_key);
-        
+  
         // 从分布式缓存删除
         self.distributed_cache.delete(&full_key).await?;
-        
+  
         // 记录缓存失效
         self.metrics_collector.increment_counter("cache.invalidate", 1);
-        
+  
         Ok(())
     }
-    
+  
     // 缓存预热
     pub async fn warm_up<F, T>(
         &self,
@@ -7064,51 +7107,51 @@ impl MultilevelCache {
     {
         // 检查哪些键需要加载
         let mut keys_to_load = Vec::new();
-        
+  
         for key in keys {
             let full_key = format!("{}:{}", namespace, key);
-            
+  
             // 检查本地缓存
             if self.local_cache.contains_key(&full_key) {
                 continue;
             }
-            
+  
             // 检查分布式缓存
             if self.distributed_cache.get(&full_key).await?.is_some() {
                 continue;
             }
-            
+  
             keys_to_load.push(key.clone());
         }
-        
+  
         if keys_to_load.is_empty() {
             return Ok(());
         }
-        
+  
         // 记录需要预热的键数量
         self.metrics_collector.increment_counter("cache.warmup.keys", keys_to_load.len() as u64);
-        
+  
         // 批量加载数据
         let loaded_data = loader(keys_to_load).await
             .map_err(|e| CacheError::SourceError(e.to_string()))?;
-            
+  
         // 更新缓存
         for (key, value) in &loaded_data {
             let full_key = format!("{}:{}", namespace, key);
-            
+  
             // 更新本地缓存
             self.local_cache.set(&full_key, value);
-            
+  
             // 更新分布式缓存
             let serialized = serde_json::to_vec(value)
                 .map_err(|e| CacheError::SerializationError(e.to_string()))?;
-                
+  
             self.distributed_cache.set(&full_key, &serialized, None).await?;
         }
-        
+  
         // 记录预热完成
         self.metrics_collector.increment_counter("cache.warmup.completed", 1);
-        
+  
         Ok(())
     }
 }
@@ -7150,10 +7193,10 @@ impl LocalCache {
             metrics_collector,
             eviction_policy,
         };
-        
+  
         // 启动定期清理过期项目的任务
         let cache_clone = Arc::new(cache);
-        
+  
         std::thread::spawn(move || {
             let cache = cache_clone;
             loop {
@@ -7161,13 +7204,13 @@ impl LocalCache {
                 cache.cleanup_expired();
             }
         });
-        
+  
         cache
     }
-    
+  
     pub fn get<T: DeserializeOwned>(&self, key: &str) -> Option<T> {
         let result = self.cache.get(key);
-        
+  
         if let Some(entry) = result {
             // 检查是否过期
             if let Some(expires_at) = entry.expires_at {
@@ -7178,11 +7221,11 @@ impl LocalCache {
                     return None;
                 }
             }
-            
+  
             // 更新访问统计
             entry.access_count.fetch_add(1, Ordering::Relaxed);
             entry.last_accessed.store(Instant::now());
-            
+  
             // 反序列化
             match serde_json::from_slice(&entry.value) {
                 Ok(value) => Some(value),
@@ -7196,7 +7239,7 @@ impl LocalCache {
             None
         }
     }
-    
+  
     pub fn set<T: Serialize>(&self, key: &str, value: &T) -> bool {
         let serialized = match serde_json::to_vec(value) {
             Ok(data) => data,
@@ -7205,15 +7248,15 @@ impl LocalCache {
                 return false;
             }
         };
-        
+  
         // 检查缓存大小，如果已满则执行淘汰
         if self.cache.len() >= self.max_size && !self.cache.contains_key(key) {
             self.evict_entry();
         }
-        
+  
         let now = Instant::now();
         let expires_at = now + self.default_ttl;
-        
+  
         // 创建缓存条目
         let entry = CacheEntry {
             value: serialized,
@@ -7222,16 +7265,16 @@ impl LocalCache {
             access_count: AtomicU64::new(0),
             last_accessed: AtomicCell::new(now),
         };
-        
+  
         // 插入或更新缓存
         self.cache.insert(key.to_string(), entry);
         true
     }
-    
+  
     pub fn delete(&self, key: &str) -> bool {
         self.cache.remove(key).is_some()
     }
-    
+  
     pub fn contains_key(&self, key: &str) -> bool {
         if let Some(entry) = self.cache.get(key) {
             // 检查是否过期
@@ -7247,12 +7290,12 @@ impl LocalCache {
             false
         }
     }
-    
+  
     // 清理过期条目
     fn cleanup_expired(&self) {
         let now = Instant::now();
         let mut expired_count = 0;
-        
+  
         self.cache.retain(|_, entry| {
             if let Some(expires_at) = entry.expires_at {
                 if expires_at <= now {
@@ -7265,12 +7308,12 @@ impl LocalCache {
                 true // 永不过期，保留
             }
         });
-        
+  
         if expired_count > 0 {
             self.metrics_collector.increment_counter("cache.local.cleanup", expired_count);
         }
     }
-    
+  
     // 根据策略淘汰条目
     fn evict_entry(&self) {
         match self.eviction_policy {
@@ -7279,12 +7322,12 @@ impl LocalCache {
             EvictionPolicy::FIFO => self.evict_fifo(),
         }
     }
-    
+  
     // 最近最少使用淘汰
     fn evict_lru(&self) {
         let mut oldest_key = None;
         let mut oldest_time = Instant::now();
-        
+  
         for item in self.cache.iter() {
             let last_accessed = item.last_accessed.load();
             if last_accessed < oldest_time {
@@ -7292,18 +7335,18 @@ impl LocalCache {
                 oldest_key = Some(item.key().clone());
             }
         }
-        
+  
         if let Some(key) = oldest_key {
             self.cache.remove(&key);
             self.metrics_collector.increment_counter("cache.local.eviction.lru", 1);
         }
     }
-    
+  
     // 最不常使用淘汰
     fn evict_lfu(&self) {
         let mut least_used_key = None;
         let mut least_count = u64::MAX;
-        
+  
         for item in self.cache.iter() {
             let count = item.access_count.load(Ordering::Relaxed);
             if count < least_count {
@@ -7311,25 +7354,25 @@ impl LocalCache {
                 least_used_key = Some(item.key().clone());
             }
         }
-        
+  
         if let Some(key) = least_used_key {
             self.cache.remove(&key);
             self.metrics_collector.increment_counter("cache.local.eviction.lfu", 1);
         }
     }
-    
+  
     // 先进先出淘汰
     fn evict_fifo(&self) {
         let mut oldest_key = None;
         let mut oldest_time = Instant::now();
-        
+  
         for item in self.cache.iter() {
             if item.created_at < oldest_time {
                 oldest_time = item.created_at;
                 oldest_key = Some(item.key().clone());
             }
         }
-        
+  
         if let Some(key) = oldest_key {
             self.cache.remove(&key);
             self.metrics_collector.increment_counter("cache.local.eviction.fifo", 1);
@@ -7353,16 +7396,16 @@ impl CacheConsistencyManager {
             event_subscriber,
         }
     }
-    
+  
     // 启动缓存一致性监听器
     pub async fn start(&self) -> Result<(), CacheError> {
         // 订阅实体变更事件
         self.event_subscriber.subscribe(&["entity.created", "entity.updated", "entity.deleted"])
             .await?;
-            
+  
         // 处理事件循环
         let cache = self.cache.clone();
-        
+  
         tokio::spawn(async move {
             while let Some(event) = cache.event_subscriber.receive().await {
                 if let Err(e) = Self::handle_entity_event(&cache, &event).await {
@@ -7370,10 +7413,10 @@ impl CacheConsistencyManager {
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     // 处理实体事件，更新或失效缓存
     async fn handle_entity_event(
         cache: &MultilevelCache,
@@ -7382,10 +7425,10 @@ impl CacheConsistencyManager {
         // 解析事件类型和实体ID
         let entity_type = event.metadata.get("entity_type")
             .ok_or_else(|| CacheError::InvalidEvent("Missing entity_type in event metadata".into()))?;
-            
+  
         let entity_id = event.metadata.get("entity_id")
             .ok_or_else(|| CacheError::InvalidEvent("Missing entity_id in event metadata".into()))?;
-            
+  
         // 根据事件类型处理
         match event.event_type.as_str() {
             "entity.deleted" => {
@@ -7453,7 +7496,7 @@ impl CacheConsistencyManager {
                 log::warn!("Unhandled event type for cache consistency: {}", event.event_type);
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -7474,21 +7517,21 @@ impl QueryCache {
         // 解析查询并生成缓存键
         let cache_key = self.query_parser.generate_cache_key(query)?;
         let entity_type = self.query_parser.get_entity_type(query)?;
-        
+  
         // 检查是否可缓存
         if !self.query_parser.is_cacheable(query) {
             // 直接执行查询
             return self.repository.execute_query(query).await;
         }
-        
+  
         // 尝试从缓存获取
         if let Some(cached_result) = self.cache.get::<QueryResult<T>>(&cache_key, entity_type).await? {
             return Ok(cached_result);
         }
-        
+  
         // 缓存未命中，执行查询
         let result = self.repository.execute_query(query).await?;
-        
+  
         // 确定缓存TTL
         let ttl = match self.query_parser.get_query_type(query)? {
             QueryType::Lookup => Duration::from_secs(3600), // 单个实体查询缓存1小时
@@ -7496,13 +7539,14 @@ impl QueryCache {
             QueryType::Search { .. } => Duration::from_secs(60), // 搜索查询缓存1分钟
             QueryType::Aggregate { .. } => Duration::from_secs(600), // 聚合查询缓存10分钟
         };
-        
+  
         // 缓存结果
         self.cache.set(&cache_key, entity_type, &result, Some(ttl)).await?;
-        
+  
         Ok(result)
     }
 }
+
 ```
 
 **映射分析**:
@@ -7521,23 +7565,25 @@ impl QueryCache {
 ```rust
 // 映射策略选择示例
 // 1. 简单值对象映射
-#[derive(Debug, Clone, PartialEq, Eq)]
+
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub struct CustomerId(String);
 
 impl CustomerId {
     pub fn new() -> Self {
         Self(Uuid::new_v4().to_string())
     }
-    
+  
     pub fn from_string(id: &str) -> Result<Self, ValidationError> {
         // 验证ID格式
         if id.is_empty() {
             return Err(ValidationError::new("Customer ID cannot be empty"));
         }
-        
+  
         Ok(Self(id.to_string()))
     }
-    
+  
     pub fn value(&self) -> &str {
         &self.0
     }
@@ -7569,7 +7615,9 @@ impl<'de> Deserialize<'de> for CustomerId {
 }
 
 // 2. 复杂值对象映射
-#[derive(Debug, Clone, PartialEq)]
+
+# [derive(Debug, Clone, PartialEq)]
+
 pub struct Money {
     amount: Decimal,
     currency: Currency,
@@ -7580,7 +7628,7 @@ impl Money {
         if amount.is_nan() || amount.is_infinite() {
             return Err(ValidationError::new("Money amount must be a valid number"));
         }
-        
+  
         Ok(Self {
             amount: Decimal::from_f64(amount).ok_or_else(|| {
                 ValidationError::new("Failed to convert amount to Decimal")
@@ -7588,61 +7636,61 @@ impl Money {
             currency,
         })
     }
-    
+  
     pub fn new_usd(amount: f64) -> Result<Self, ValidationError> {
         Self::new(amount, Currency::USD)
     }
-    
+  
     pub fn zero(currency: Currency) -> Self {
         Self {
             amount: Decimal::ZERO,
             currency,
         }
     }
-    
+  
     pub fn value(&self) -> f64 {
         self.amount.to_f64().unwrap_or(0.0)
     }
-    
+  
     pub fn currency(&self) -> &Currency {
         &self.currency
     }
-    
+  
     pub fn add(&self, other: &Money) -> Result<Money, MoneyError> {
         if self.currency != other.currency {
             return Err(MoneyError::CurrencyMismatch(
                 format!("Cannot add {} to {}", self.currency, other.currency)
             ));
         }
-        
+  
         Ok(Money {
             amount: self.amount + other.amount,
             currency: self.currency.clone(),
         })
     }
-    
+  
     pub fn subtract(&self, other: &Money) -> Result<Money, MoneyError> {
         if self.currency != other.currency {
             return Err(MoneyError::CurrencyMismatch(
                 format!("Cannot subtract {} from {}", other.currency, self.currency)
             ));
         }
-        
+  
         Ok(Money {
             amount: self.amount - other.amount,
             currency: self.currency.clone(),
         })
     }
-    
+  
     pub fn multiply(&self, factor: f64) -> Result<Money, MoneyError> {
         if factor.is_nan() || factor.is_infinite() {
             return Err(MoneyError::InvalidOperation("Invalid multiplication factor".into()));
         }
-        
+  
         let factor_decimal = Decimal::from_f64(factor).ok_or_else(|| {
             MoneyError::InvalidOperation("Failed to convert factor to Decimal".into())
         })?;
-        
+  
         Ok(Money {
             amount: self.amount * factor_decimal,
             currency: self.currency.clone(),
@@ -7652,7 +7700,7 @@ impl Money {
 
 impl std::ops::Add for Money {
     type Output = Money;
-    
+  
     fn add(self, rhs: Self) -> Self::Output {
         self.add(&rhs).unwrap_or_else(|_| self)
     }
@@ -7660,7 +7708,7 @@ impl std::ops::Add for Money {
 
 impl std::ops::Mul<f64> for Money {
     type Output = Money;
-    
+  
     fn mul(self, rhs: f64) -> Self::Output {
         self.multiply(rhs).unwrap_or_else(|_| self)
     }
@@ -7688,15 +7736,15 @@ impl<'de> Deserialize<'de> for Money {
             amount: String,
             currency: String,
         }
-        
+  
         let helper = MoneyHelper::deserialize(deserializer)?;
-        
+  
         let amount = helper.amount.parse::<Decimal>()
             .map_err(|e| serde::de::Error::custom(format!("Invalid amount: {}", e)))?;
-            
+  
         let currency = Currency::from_code(&helper.currency)
             .map_err(|e| serde::de::Error::custom(format!("Invalid currency: {}", e)))?;
-            
+  
         Ok(Money {
             amount,
             currency,
@@ -7706,7 +7754,9 @@ impl<'de> Deserialize<'de> for Money {
 
 // 3. 实体映射
 // 领域实体
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct Order {
     id: OrderId,
     customer_id: CustomerId,
@@ -7719,7 +7769,9 @@ pub struct Order {
 }
 
 // DTO映射
-#[derive(Debug, Serialize, Deserialize)]
+
+# [derive(Debug, Serialize, Deserialize)]
+
 pub struct OrderDto {
     pub id: String,
     pub customer_id: String,
@@ -7737,7 +7789,7 @@ impl OrderDto {
     // 从领域实体到DTO的映射
     pub fn from_domain(order: &Order) -> Self {
         let total = order.calculate_total();
-        
+  
         Self {
             id: order.id.to_string(),
             customer_id: order.customer_id.to_string(),
@@ -7751,33 +7803,33 @@ impl OrderDto {
             updated_at: order.updated_at.to_rfc3339(),
         }
     }
-    
+  
     // 从DTO到领域实体的映射
     pub fn to_domain(&self) -> Result<Order, DtoMappingError> {
         let order_id = OrderId::from_string(&self.id)?;
         let customer_id = CustomerId::from_string(&self.customer_id)?;
-        
+  
         let items = self.items.iter()
             .map(|item| item.to_domain())
             .collect::<Result<Vec<_>, _>>()?;
-            
+  
         let status = OrderStatus::from_string(&self.status)?;
         let payment_status = PaymentStatus::from_string(&self.payment_status)?;
-        
+  
         let shipping_address = if let Some(addr) = &self.shipping_address {
             Some(addr.to_domain()?)
         } else {
             None
         };
-        
+  
         let created_at = DateTime::parse_from_rfc3339(&self.created_at)
             .map_err(|e| DtoMappingError::DateParseError(e.to_string()))?
             .with_timezone(&Utc);
-            
+  
         let updated_at = DateTime::parse_from_rfc3339(&self.updated_at)
             .map_err(|e| DtoMappingError::DateParseError(e.to_string()))?
             .with_timezone(&Utc);
-            
+  
         Ok(Order {
             id: order_id,
             customer_id,
@@ -7793,7 +7845,9 @@ impl OrderDto {
 
 // 4. 聚合根映射
 // 领域聚合根
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct Cart {
     id: CartId,
     customer_id: Option<CustomerId>,
@@ -7811,7 +7865,7 @@ impl Cart {
         if quantity == 0 {
             return Err(CartError::InvalidQuantity);
         }
-        
+  
         // 检查是否已有该商品
         if let Some(existing_item) = self.items.iter_mut()
             .find(|item| item.product_id == product_id)
@@ -7822,7 +7876,7 @@ impl Cart {
         } else {
             // 添加新商品
             let total_price = unit_price.clone() * quantity as f64;
-            
+  
             self.items.push(CartItem {
                 id: CartItemId::new(),
                 product_id,
@@ -7832,76 +7886,75 @@ impl Cart {
                 added_at: Utc::now(),
             });
         }
-        
+  
         self.updated_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn remove_item(&mut self, product_id: &ProductId) -> Result<(), CartError> {
         let initial_len = self.items.len();
-        
+  
         self.items.retain(|item| item.product_id != *product_id);
-        
+  
         if self.items.len() == initial_len {
             return Err(CartError::ItemNotFound);
         }
-        
+  
         self.updated_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn update_quantity(&mut self, product_id: &ProductId, quantity: u32) -> Result<(), CartError> {
         if quantity == 0 {
             return self.remove_item(product_id);
         }
-        
+  
         let item = self.items.iter_mut()
             .find(|item| item.product_id == *product_id)
             .ok_or(CartError::ItemNotFound)?;
-            
+  
         item.quantity = quantity;
         item.total_price = item.unit_price.clone() * quantity as f64;
-        
+  
         self.updated_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn apply_coupon(&mut self, coupon_code: String) -> Result<(), CartError> {
         // 此处应验证优惠券，但为简化示例，仅存储代码
         self.coupon_code = Some(coupon_code);
         self.updated_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn select_shipping_method(&mut self, method: ShippingMethod) -> Result<(), CartError> {
         self.shipping_method = Some(method);
         self.updated_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn calculate_subtotal(&self) -> Money {
         self.items.iter()
             .fold(Money::zero(Currency::USD), |acc, item| {
                 acc + item.total_price.clone()
             })
     }
-    
+  
     pub fn calculate_total(&self) -> Money {
         let subtotal = self.calculate_subtotal();
-        
+  
         // 添加运费
         let with_shipping = if let Some(shipping) = &self.shipping_method {
             subtotal.clone() + shipping.cost.clone()
         } else {
             subtotal.clone()
         };
-        
-
+  
 ```rust
         // 应用优惠券折扣
         let with_discount = if let Some(_coupon) = &self.coupon_code {
@@ -8431,6 +8484,7 @@ pub fn demonstrate_mapping_strategy_selection() {
     let dto_guidelines = MappingGuidelines::dto_mapping_guidelines();
     println!("DTO映射最佳实践: {:?}", dto_guidelines);
 }
+
 ```
 
 ### 1.6.2 避免常见陷阱
@@ -8805,6 +8859,7 @@ impl MappingPitfallAvoidanceStrategies {
         strategies
     }
 }
+
 ```
 
 ### 1.6.3 测试映射的最佳实践
@@ -8827,7 +8882,7 @@ mod mapping_tests {
         // 准备测试数据
         let order_id = OrderId::new();
         let customer_id = CustomerId::new();
-        
+  
         let item1 = OrderItem {
             id: OrderItemId::new(),
             product_id: ProductId::new(),
@@ -8836,7 +8891,7 @@ mod mapping_tests {
             quantity: 2,
             total_price: 20.0,
         };
-        
+  
         let item2 = OrderItem {
             id: OrderItemId::new(),
             product_id: ProductId::new(),
@@ -8845,7 +8900,7 @@ mod mapping_tests {
             quantity: 1,
             total_price: 15.0,
         };
-        
+  
         let shipping_address = Address {
             street_line1: "123 Test St".to_string(),
             street_line2: "".to_string(),
@@ -8854,7 +8909,7 @@ mod mapping_tests {
             postal_code: "12345".to_string(),
             country: "US".to_string(),
         };
-        
+  
         let order = Order {
             id: order_id,
             customer_id,
@@ -8865,33 +8920,33 @@ mod mapping_tests {
             created_at: Utc::now(),
             updated_at: Utc::now(),
         };
-        
+  
         // 执行映射
         let dto = OrderDto::from_domain(&order);
-        
+  
         // 验证基本属性映射
         assert_eq!(dto.id, order.id.to_string());
         assert_eq!(dto.customer_id, order.customer_id.to_string());
         assert_eq!(dto.status, order.status.to_string());
         assert_eq!(dto.payment_status, order.payment_status.to_string());
-        
+  
         // 验证集合映射
         assert_eq!(dto.items.len(), order.items.len());
         assert_eq!(dto.items[0].id, order.items[0].id.to_string());
         assert_eq!(dto.items[0].quantity, order.items[0].quantity as i32);
-        
+  
         // 验证嵌套对象映射
         assert!(dto.shipping_address.is_some());
         let address_dto = dto.shipping_address.unwrap();
         assert_eq!(address_dto.city, order.shipping_address.unwrap().city);
-        
+  
         // 验证计算字段
         let expected_total = order.items.iter()
             .map(|item| item.total_price)
             .sum::<f64>();
         assert_eq!(dto.total_amount, expected_total);
     }
-    
+  
     // 2. 往返映射测试：验证双向转换的一致性
     #[test]
     fn test_bidirectional_mapping_consistency() {
@@ -8914,26 +8969,26 @@ mod mapping_tests {
             created_at: Utc::now(),
             preferences: CustomerPreferences::default(),
         };
-        
+  
         // 从领域对象到DTO
         let dto = CustomerDto::from_domain(&customer);
-        
+  
         // 验证基本映射
         assert_eq!(dto.id, customer.id.to_string());
         assert_eq!(dto.name, customer.name);
         assert_eq!(dto.email, customer.email.value());
-        
+  
         // 从DTO回到领域对象
         let result = dto.to_domain();
         assert!(result.is_ok());
         let mapped_customer = result.unwrap();
-        
+  
         // 验证一致性
         assert_eq!(mapped_customer.id, customer.id);
         assert_eq!(mapped_customer.name, customer.name);
         assert_eq!(mapped_customer.email, customer.email);
         assert_eq!(mapped_customer.status, customer.status);
-        
+  
         // 验证嵌套对象
         if let Some(original_address) = customer.address.as_ref() {
             assert!(mapped_customer.address.is_some());
@@ -8943,26 +8998,26 @@ mod mapping_tests {
             assert_eq!(mapped_address.postal_code, original_address.postal_code);
         }
     }
-    
+  
     // 3. 属性测试：使用生成的测试数据验证映射属性
     proptest! {
         #[test]
         fn test_money_mapping_properties(amount in 0.01..100000.0) {
             // 创建Money值对象
             let money = Money::new_usd(amount).unwrap();
-            
+  
             // 序列化为JSON
             let json = serde_json::to_string(&money).unwrap();
-            
+  
             // 反序列化回Money
             let deserialized: Money = serde_json::from_str(&json).unwrap();
-            
+  
             // 验证属性：序列化和反序列化应保持值的一致性
             // 使用近似相等处理浮点数精度问题
             prop_assert!((deserialized.value() - money.value()).abs() < 0.001);
             prop_assert_eq!(deserialized.currency(), money.currency());
         }
-        
+  
         #[test]
         fn test_order_item_dto_mapping(
             quantity in 1u32..100,
@@ -8973,7 +9028,7 @@ mod mapping_tests {
             let id = OrderItemId::new();
             let product_id = ProductId::new();
             let total_price = unit_price * quantity as f64;
-            
+  
             let item = OrderItem {
                 id: id.clone(),
                 product_id: product_id.clone(),
@@ -8982,10 +9037,10 @@ mod mapping_tests {
                 quantity,
                 total_price,
             };
-            
+  
             // 映射到DTO
             let dto = OrderItemDto::from_domain(&item);
-            
+  
             // 验证映射结果
             prop_assert_eq!(dto.id, id.to_string());
             prop_assert_eq!(dto.product_id, product_id.to_string());
@@ -8993,11 +9048,11 @@ mod mapping_tests {
             prop_assert_eq!(dto.quantity, quantity as i32);
             prop_assert!((dto.unit_price - unit_price).abs() < 0.001);
             prop_assert!((dto.total_price - total_price).abs() < 0.001);
-            
+  
             // 从DTO映射回领域对象
             let result = dto.to_domain();
             prop_assert!(result.is_ok());
-            
+  
             let mapped_item = result.unwrap();
             prop_assert_eq!(mapped_item.id, id);
             prop_assert_eq!(mapped_item.product_id, product_id);
@@ -9007,7 +9062,7 @@ mod mapping_tests {
             prop_assert!((mapped_item.total_price - total_price).abs() < 0.001);
         }
     }
-    
+  
     // 4. 边界条件测试：验证特殊情况处理
     #[test]
     fn test_address_mapping_edge_cases() {
@@ -9020,17 +9075,17 @@ mod mapping_tests {
             postal_code: "".to_string(),
             country: "".to_string(),
         };
-        
+  
         let dto = AddressDto::from_domain(&empty_address);
-        
+  
         // 验证空字段处理
         assert_eq!(dto.street_line1, "");
         assert_eq!(dto.city, "");
-        
+  
         // 映射回领域对象
         let result = dto.to_domain();
         assert!(result.is_ok());
-        
+  
         // 测试超长字段
         let long_string = "a".repeat(1000);
         let long_address = Address {
@@ -9041,12 +9096,12 @@ mod mapping_tests {
             postal_code: "12345".to_string(),
             country: "US".to_string(),
         };
-        
+  
         let dto = AddressDto::from_domain(&long_address);
-        
+  
         // 验证长字段处理（假设DTO实现了截断）
         assert!(dto.street_line1.len() <= 255);
-        
+  
         // 测试特殊字符
         let special_address = Address {
             street_line1: "123 Test St, Apt #1".to_string(),
@@ -9056,27 +9111,27 @@ mod mapping_tests {
             postal_code: "12345-6789".to_string(),
             country: "US".to_string(),
         };
-        
+  
         let dto = AddressDto::from_domain(&special_address);
         let result = dto.to_domain();
         assert!(result.is_ok());
-        
+  
         let mapped_address = result.unwrap();
         assert_eq!(mapped_address.street_line1, special_address.street_line1);
         assert_eq!(mapped_address.street_line2, special_address.street_line2);
         assert_eq!(mapped_address.city, special_address.city);
     }
-    
+  
     // 5. 集成测试：验证与存储层的映射
     #[tokio::test]
     async fn test_cart_repository_mapping() {
         // 设置测试数据库
         let pool = setup_test_database().await;
-        
+  
         // 创建购物车
         let cart_id = CartId::new();
         let customer_id = CustomerId::new();
-        
+  
         let item1 = CartItem {
             id: CartItemId::new(),
             product_id: ProductId::new(),
@@ -9085,7 +9140,7 @@ mod mapping_tests {
             total_price: Money::new_usd(20.0).unwrap(),
             added_at: Utc::now(),
         };
-        
+  
         let item2 = CartItem {
             id: CartItemId::new(),
             product_id: ProductId::new(),
@@ -9094,14 +9149,14 @@ mod mapping_tests {
             total_price: Money::new_usd(15.0).unwrap(),
             added_at: Utc::now(),
         };
-        
+  
         let shipping = ShippingMethod {
             code: "express".to_string(),
             name: "Express Shipping".to_string(),
             cost: Money::new_usd(5.0).unwrap(),
             estimated_days: 2,
         };
-        
+  
         let cart = Cart {
             id: cart_id.clone(),
             customer_id: Some(customer_id),
@@ -9111,49 +9166,49 @@ mod mapping_tests {
             coupon_code: Some("SAVE10".to_string()),
             shipping_method: Some(shipping),
         };
-        
+  
         // 创建仓储
         let repository = CartRepository {
             db_client: Arc::new(pool.clone()),
         };
-        
+  
         // 保存购物车
         let save_result = repository.save(&cart).await;
         assert!(save_result.is_ok());
-        
+  
         // 加载购物车
         let loaded_result = repository.find_by_id(&cart_id).await;
         assert!(loaded_result.is_ok());
-        
+  
         let loaded_cart_option = loaded_result.unwrap();
         assert!(loaded_cart_option.is_some());
-        
+  
         let loaded_cart = loaded_cart_option.unwrap();
-        
+  
         // 验证基本属性
         assert_eq!(loaded_cart.id, cart.id);
         assert_eq!(loaded_cart.customer_id, cart.customer_id);
         assert_eq!(loaded_cart.coupon_code, cart.coupon_code);
-        
+  
         // 验证集合
         assert_eq!(loaded_cart.items.len(), cart.items.len());
-        
+  
         // 验证项目
         let loaded_item1 = loaded_cart.items.iter()
             .find(|i| i.id == item1.id)
             .expect("Item 1 should be present");
-        
+  
         assert_eq!(loaded_item1.product_id, item1.product_id);
         assert_eq!(loaded_item1.quantity, item1.quantity);
         assert_eq!(loaded_item1.unit_price.value(), item1.unit_price.value());
-        
+  
         // 验证复杂对象
         assert!(loaded_cart.shipping_method.is_some());
         let loaded_shipping = loaded_cart.shipping_method.unwrap();
         assert_eq!(loaded_shipping.code, shipping.code);
         assert_eq!(loaded_shipping.cost.value(), shipping.cost.value());
     }
-    
+  
     // 6. 异常情况测试：验证错误处理
     #[test]
     fn test_customer_dto_mapping_validation() {
@@ -9166,17 +9221,17 @@ mod mapping_tests {
             status: "active".to_string(),
             // ...其他字段
         };
-        
+  
         let result = invalid_dto.to_domain();
         assert!(result.is_err());
-        
+  
         match result {
             Err(DtoMappingError::ValidationError(msg)) => {
                 assert!(msg.contains("email"));
             },
             _ => panic!("Expected ValidationError for invalid email"),
         }
-        
+  
         // 无效电话号码
         let invalid_phone_dto = CustomerDto {
             id: Uuid::new_v4().to_string(),
@@ -9186,10 +9241,10 @@ mod mapping_tests {
             status: "active".to_string(),
             // ...其他字段
         };
-        
+  
         let result = invalid_phone_dto.to_domain();
         assert!(result.is_err());
-        
+  
         // 无效状态
         let invalid_status_dto = CustomerDto {
             id: Uuid::new_v4().to_string(),
@@ -9199,10 +9254,10 @@ mod mapping_tests {
             status: "not-a-status".to_string(),
             // ...其他字段
         };
-        
+  
         let result = invalid_status_dto.to_domain();
         assert!(result.is_err());
-        
+  
         match result {
             Err(DtoMappingError::InvalidEnumValue(field, value)) => {
                 assert_eq!(field, "status");
@@ -9211,20 +9266,20 @@ mod mapping_tests {
             _ => panic!("Expected InvalidEnumValue for invalid status"),
         }
     }
-    
+  
     // 7. 性能测试：验证映射效率
     #[test]
     fn test_mapping_performance() {
         use std::time::Instant;
-        
+  
         // 生成大量测试数据
         const NUM_ITEMS: usize = 1000;
         let mut orders = Vec::with_capacity(NUM_ITEMS);
-        
+  
         for _ in 0..NUM_ITEMS {
             let order_id = OrderId::new();
             let customer_id = CustomerId::new();
-            
+  
             let item1 = OrderItem {
                 id: OrderItemId::new(),
                 product_id: ProductId::new(),
@@ -9233,7 +9288,7 @@ mod mapping_tests {
                 quantity: 2,
                 total_price: 20.0,
             };
-            
+  
             let item2 = OrderItem {
                 id: OrderItemId::new(),
                 product_id: ProductId::new(),
@@ -9242,7 +9297,7 @@ mod mapping_tests {
                 quantity: 1,
                 total_price: 15.0,
             };
-            
+  
             let order = Order {
                 id: order_id,
                 customer_id,
@@ -9253,31 +9308,31 @@ mod mapping_tests {
                 created_at: Utc::now(),
                 updated_at: Utc::now(),
             };
-            
+  
             orders.push(order);
         }
-        
+  
         // 测量批量映射性能
         let start = Instant::now();
-        
+  
         let dtos: Vec<OrderDto> = orders.iter()
             .map(OrderDto::from_domain)
             .collect();
-            
+  
         let duration = start.elapsed();
-        
+  
         // 验证结果
         assert_eq!(dtos.len(), NUM_ITEMS);
-        
+  
         // 输出性能数据
         println!("Mapped {} orders in {:?} ({:?} per order)",
             NUM_ITEMS, duration, duration / NUM_ITEMS as u32);
-            
+  
         // 确保映射速度合理
         // 这是一个相对宽松的上限，实际性能会因环境而异
         assert!(duration.as_millis() < 1000, "Mapping took too long: {:?}", duration);
     }
-    
+  
     // 辅助函数
     async fn setup_test_database() -> PgPool {
         // 这里应该连接测试数据库或使用内存数据库
@@ -9294,59 +9349,60 @@ pub struct MappingTestBestPractices;
 impl MappingTestBestPractices {
     pub fn get_practices() -> HashMap<&'static str, Vec<&'static str>> {
         let mut practices = HashMap::new();
-        
+  
         practices.insert("单元测试", vec![
             "测试从领域对象到DTO的基本映射",
             "验证所有字段的正确映射",
             "测试嵌套对象和集合的映射",
             "验证计算字段和导出值",
         ]);
-        
+  
         practices.insert("往返映射测试", vec![
             "验证双向转换的一致性",
             "测试从领域对象到DTO再回到领域对象的过程",
             "确保没有信息丢失或错误转换",
             "验证嵌套对象和集合的往返映射",
         ]);
-        
+  
         practices.insert("属性测试", vec![
             "使用生成的测试数据验证映射属性",
             "测试不同范围的数值和字符串输入",
             "验证映射不变量在随机输入下的保持",
             "使用proptest或类似框架自动生成测试用例",
         ]);
-        
+  
         practices.insert("边界条件测试", vec![
             "测试空值和默认值处理",
             "验证长字符串和大数值的处理",
             "测试特殊字符和非ASCII字符的映射",
             "验证最小和最大值处理",
         ]);
-        
+  
         practices.insert("异常情况测试", vec![
             "验证无效输入的错误处理",
             "测试类型转换的异常情况",
             "验证错误消息的明确性",
             "测试验证逻辑的正确应用",
         ]);
-        
+  
         practices.insert("集成测试", vec![
             "验证与存储层的完整映射",
             "测试从数据库到领域模型的映射",
             "验证领域模型到数据库的保存",
             "测试事务处理和并发情况",
         ]);
-        
+  
         practices.insert("性能测试", vec![
             "衡量批量映射的性能",
             "验证映射速度在可接受范围内",
             "识别和优化性能瓶颈",
             "比较不同映射实现的性能",
         ]);
-        
+  
         practices
     }
 }
+
 ```
 
 ### 1.6.4 映射的自动化和代码生成
@@ -9356,7 +9412,9 @@ impl MappingTestBestPractices {
 ```rust
 // 自动化映射实现
 // 基于宏的映射生成
-#[macro_export]
+
+# [macro_export]
+
 macro_rules! derive_dto_mapping {
     // 从实体到DTO的映射
     (entity_to_dto, $entity:ty, $dto:ty, {
@@ -9375,7 +9433,7 @@ macro_rules! derive_dto_mapping {
             }
         }
     };
-    
+  
     // 从DTO到实体的映射
     (dto_to_entity, $dto:ty, $entity:ty, {
         $(
@@ -9393,12 +9451,12 @@ macro_rules! derive_dto_mapping {
             }
         }
     };
-    
+  
     // 双向映射
     (bidirectional, $entity:ty, $dto:ty, {
         $(
             $entity_field:ident <=> $dto_field:ident $(,
-                to_dto: $to_dto:expr, 
+                to_dto: $to_dto:expr,
                 to_entity: $to_entity:expr
             )?
         ),*
@@ -9412,7 +9470,7 @@ macro_rules! derive_dto_mapping {
                     )*
                 }
             }
-            
+  
             pub fn to_domain(&self) -> Result<$entity, DtoMappingError> {
                 Ok($entity {
                     $(
@@ -9422,19 +9480,21 @@ macro_rules! derive_dto_mapping {
             }
         }
     };
-    
+  
     // 用于处理转换表达式的内部规则
     (@transform_field $field:expr) => { $field.clone() };
     (@transform_field $field:expr, $transform:expr) => { $transform($field) };
-    
+  
     (@transform_field_result $field:expr) => { $field.clone() };
-    (@transform_field_result $field:expr, $transform:expr) => { 
+    (@transform_field_result $field:expr, $transform:expr) => {
         $transform($field).map_err(|e| DtoMappingError::ValidationError(e.to_string()))?
     };
 }
 
 // 使用宏生成映射示例
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 struct Product {
     id: ProductId,
     name: String,
@@ -9443,7 +9503,8 @@ struct Product {
     categories: Vec<ProductCategory>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct ProductDto {
     id: String,
     name: String,
@@ -9555,12 +9616,12 @@ impl TryMapper<OrderDto, Order, DtoMappingError> for OrderDtoToOrderMapper {
     fn try_map(&self, dto: &OrderDto) -> Result<Order, DtoMappingError> {
         let order_id = OrderId::from_string(&dto.id)?;
         let customer_id = CustomerId::from_string(&dto.customer_id)?;
-        
+  
         let items = dto.items.iter()
             .map(|item_dto| {
                 let item_id = OrderItemId::from_string(&item_dto.id)?;
                 let product_id = ProductId::from_string(&item_dto.product_id)?;
-                
+  
                 Ok(OrderItem {
                     id: item_id,
                     product_id,
@@ -9571,10 +9632,10 @@ impl TryMapper<OrderDto, Order, DtoMappingError> for OrderDtoToOrderMapper {
                 })
             })
             .collect::<Result<Vec<_>, _>>()?;
-            
+  
         let status = OrderStatus::from_string(&dto.status)?;
         let payment_status = PaymentStatus::from_string(&dto.payment_status)?;
-        
+  
         let shipping_address = if let Some(addr_dto) = &dto.shipping_address {
             Some(Address {
                 street_line1: addr_dto.street_line1.clone(),
@@ -9587,15 +9648,15 @@ impl TryMapper<OrderDto, Order, DtoMappingError> for OrderDtoToOrderMapper {
         } else {
             None
         };
-        
+  
         let created_at = DateTime::parse_from_rfc3339(&dto.created_at)
             .map_err(|e| DtoMappingError::DateParseError(e.to_string()))?
             .with_timezone(&Utc);
-            
+  
         let updated_at = DateTime::parse_from_rfc3339(&dto.updated_at)
             .map_err(|e| DtoMappingError::DateParseError(e.to_string()))?
             .with_timezone(&Utc);
-            
+  
         Ok(Order {
             id: order_id,
             customer_id,
@@ -9620,7 +9681,7 @@ impl MapperFactory {
             mappers: HashMap::new(),
         }
     }
-    
+  
     pub fn register<From, To, M>(&mut self, mapper: M)
     where
         From: 'static,
@@ -9631,7 +9692,7 @@ impl MapperFactory {
         let key = (TypeId::of::<From>(), TypeId::of::<To>());
         self.mappers.insert(type_id, Box::new(mapper));
     }
-    
+  
     pub fn register_try<From, To, Error, M>(&mut self, mapper: M)
     where
         From: 'static,
@@ -9643,7 +9704,7 @@ impl MapperFactory {
         let key = (TypeId::of::<From>(), TypeId::of::<To>(), TypeId::of::<Error>());
         self.mappers.insert(type_id, Box::new(mapper));
     }
-    
+  
     pub fn get<From, To>(&self) -> Option<&dyn Mapper<From, To>>
     where
         From: 'static,
@@ -9651,11 +9712,11 @@ impl MapperFactory {
     {
         let type_id = TypeId::of::<(TypeId, TypeId)>();
         let key = (TypeId::of::<From>(), TypeId::of::<To>());
-        
+  
         self.mappers.get(&type_id)
             .and_then(|boxed| boxed.downcast_ref::<dyn Mapper<From, To>>())
     }
-    
+  
     pub fn get_try<From, To, Error>(&self) -> Option<&dyn TryMapper<From, To, Error>>
     where
         From: 'static,
@@ -9664,11 +9725,12 @@ impl MapperFactory {
     {
         let type_id = TypeId::of::<(TypeId, TypeId, TypeId)>();
         let key = (TypeId::of::<From>(), TypeId::of::<To>(), TypeId::of::<Error>());
-        
+  
         self.mappers.get(&type_id)
             .and_then(|boxed| boxed.downcast_ref::<dyn TryMapper<From, To, Error>>())
     }
 }
+
 ```
 
 ### 1.6.5 结论与实践建议
@@ -9692,10 +9754,10 @@ impl MappingBestPractices {
             ("可维护性", "选择适当的自动化工具减少样板代码，但保持逻辑透明和可调试。"),
         ]
     }
-    
+  
     pub fn decision_matrix() -> HashMap<&'static str, Vec<(&'static str, u8)>> {
         let mut matrix = HashMap::new();
-        
+  
         // 手动映射
         matrix.insert("手动映射", vec![
             ("控制精度", 5),
@@ -9705,7 +9767,7 @@ impl MappingBestPractices {
             ("维护成本", 1),
             ("开发速度", 1),
         ]);
-        
+  
         // 宏生成映射
         matrix.insert("宏生成", vec![
             ("控制精度", 4),
@@ -9715,7 +9777,7 @@ impl MappingBestPractices {
             ("维护成本", 3),
             ("开发速度", 4),
         ]);
-        
+  
         // 特征框架映射
         matrix.insert("特征框架", vec![
             ("控制精度", 3),
@@ -9725,7 +9787,7 @@ impl MappingBestPractices {
             ("维护成本", 4),
             ("开发速度", 4),
         ]);
-        
+  
         // 代码生成工具
         matrix.insert("代码生成", vec![
             ("控制精度", 2),
@@ -9735,10 +9797,10 @@ impl MappingBestPractices {
             ("维护成本", 5),
             ("开发速度", 5),
         ]);
-        
+  
         matrix
     }
-    
+  
     pub fn select_strategy_for_scenario(scenario: &MappingScenario) -> &'static str {
         match scenario {
             MappingScenario::SimpleDtoMapping => "宏生成或代码生成是效率最高的选择，因为这些映射通常是直接的字段对应。",
@@ -9749,40 +9811,40 @@ impl MappingBestPractices {
             MappingScenario::RapidPrototyping => "代码生成工具可以快速建立映射骨架，适合原型验证阶段，后续可以逐步优化关键部分。",
         }
     }
-    
+  
     pub fn common_pitfalls() -> Vec<(&'static str, &'static str)> {
         vec![
             (
-                "过度映射", 
+                "过度映射",
                 "不必要地在每层间创建不同的模型和映射，增加代码复杂性而没有带来实际价值。应该根据实际需求决定是否需要单独的模型。"
             ),
             (
-                "忽略验证", 
+                "忽略验证",
                 "在映射过程中没有执行适当的验证，导致无效数据传递到系统深处。应在边界处进行充分验证。"
             ),
             (
-                "循环依赖", 
+                "循环依赖",
                 "在对象图映射中创建循环引用，导致无限递归或内存泄漏。应该使用ID引用或限制递归深度解决。"
             ),
             (
-                "性能问题", 
+                "性能问题",
                 "在映射过程中执行昂贵的操作，如数据库查询或网络请求，导致性能瓶颈。应该使用批量加载和装配器模式优化。"
             ),
             (
-                "丢失异常", 
+                "丢失异常",
                 "吞掉映射过程中的异常或使用默认值掩盖错误，导致排错困难。应该提供明确的错误处理和日志记录。"
             ),
             (
-                "工具滥用", 
+                "工具滥用",
                 "过度依赖自动映射工具而不理解底层实现，导致意外行为和难以调试的问题。应该理解工具的限制和实现机制。"
             ),
             (
-                "一刀切思维", 
+                "一刀切思维",
                 "对所有类型的映射使用同一种方法，忽略不同场景的特殊需求。应该根据具体需求选择适当的映射策略。"
             ),
         ]
     }
-    
+  
     pub fn implementation_checklist() -> Vec<&'static str> {
         vec![
             "所有映射都有单元测试覆盖，包括边界情况",
@@ -9823,7 +9885,7 @@ impl DomainSpecificMappingPractices {
             "对敏感财务数据实施额外的验证和安全措施",
         ]
     }
-    
+  
     pub fn healthcare_domain_practices() -> Vec<&'static str> {
         vec![
             "实现对患者敏感数据的隐私保护和脱敏映射",
@@ -9835,7 +9897,7 @@ impl DomainSpecificMappingPractices {
             "满足监管合规性要求的数据转换和追踪",
         ]
     }
-    
+  
     pub fn ecommerce_domain_practices() -> Vec<&'static str> {
         vec![
             "产品目录信息的多级缓存和懒加载策略",
@@ -9847,7 +9909,7 @@ impl DomainSpecificMappingPractices {
             "库存数量和可用性的实时映射",
         ]
     }
-    
+  
     pub fn iot_domain_practices() -> Vec<&'static str> {
         vec![
             "设备遥测数据的高效批量处理",
@@ -9867,92 +9929,92 @@ pub struct MappingPatternsAndAntipatterns;
 impl MappingPatternsAndAntipatterns {
     pub fn effective_patterns() -> HashMap<&'static str, &'static str> {
         let mut patterns = HashMap::new();
-        
-        patterns.insert("装配器模式", 
+  
+        patterns.insert("装配器模式",
             "预先加载所有必要数据，然后在内存中进行组装，避免N+1查询问题。");
-            
-        patterns.insert("投影器模式", 
+  
+        patterns.insert("投影器模式",
             "创建专门的视图模型，仅包含特定用例所需的字段，减少数据传输量。");
-            
-        patterns.insert("两步映射模式", 
+  
+        patterns.insert("两步映射模式",
             "将复杂映射分解为两个或多个简单映射步骤，提高可维护性和测试性。");
-            
-        patterns.insert("上下文感知映射", 
+  
+        patterns.insert("上下文感知映射",
             "根据使用上下文调整映射策略，如详细视图vs列表视图。");
-            
-        patterns.insert("缓存结果模式", 
+  
+        patterns.insert("缓存结果模式",
             "缓存频繁使用的映射结果，特别是计算成本高的转换。");
-            
-        patterns.insert("映射策略模式", 
+  
+        patterns.insert("映射策略模式",
             "在运行时选择不同的映射实现，适应不同的需求和优化路径。");
-            
-        patterns.insert("即时映射模式", 
+  
+        patterns.insert("即时映射模式",
             "仅在实际需要时执行映射，避免不必要的转换开销。");
-            
-        patterns.insert("版本化映射模式", 
+  
+        patterns.insert("版本化映射模式",
             "支持不同版本的模型之间的映射，实现向前和向后兼容性。");
-            
+  
         patterns
     }
-    
+  
     pub fn antipatterns() -> HashMap<&'static str, &'static str> {
         let mut antipatterns = HashMap::new();
-        
-        antipatterns.insert("万能映射器", 
+  
+        antipatterns.insert("万能映射器",
             "试图创建一个处理所有类型映射的通用解决方案，导致复杂性过高且难以维护。");
-            
-        antipatterns.insert("深度复制", 
+  
+        antipatterns.insert("深度复制",
             "无差别地复制所有字段和嵌套对象，包括不需要的数据，导致性能问题。");
-            
-        antipatterns.insert("映射中的业务逻辑", 
+  
+        antipatterns.insert("映射中的业务逻辑",
             "在映射过程中包含业务规则和决策逻辑，破坏了关注点分离原则。");
-            
-        antipatterns.insert("串联映射", 
+  
+        antipatterns.insert("串联映射",
             "创建长链的连续映射转换，而不考虑中间步骤的必要性和性能影响。");
-            
-        antipatterns.insert("无验证映射", 
+  
+        antipatterns.insert("无验证映射",
             "映射过程中忽略数据验证，假设输入总是有效的，导致错误传播。");
-            
-        antipatterns.insert("影子复制", 
+  
+        antipatterns.insert("影子复制",
             "在不同层创建几乎相同的模型结构，增加了维护负担而没有实际价值。");
-            
-        antipatterns.insert("内联数据库查询", 
+  
+        antipatterns.insert("内联数据库查询",
             "在映射过程中执行数据库查询或其他IO操作，导致性能问题和难以测试。");
-            
+  
         antipatterns
     }
-    
+  
     pub fn refactoring_strategies() -> HashMap<&'static str, Vec<&'static str>> {
         let mut strategies = HashMap::new();
-        
+  
         strategies.insert("从万能映射器到专用映射器", vec![
             "识别不同类型的映射需求并按功能分组",
             "为每组创建专门的映射器实现",
             "使用工厂模式或依赖注入管理这些专用映射器",
             "逐步迁移代码使用新的专用映射器",
         ]);
-        
+  
         strategies.insert("解决N+1查询问题", vec![
             "识别映射过程中的数据库查询",
             "重构为使用批量加载预取所有需要的数据",
             "创建装配器将预加载的数据组合到最终对象中",
             "添加性能测试验证改进",
         ]);
-        
+  
         strategies.insert("提取业务逻辑", vec![
             "识别映射中嵌入的业务规则",
             "将这些规则移动到专门的领域服务或策略类",
             "在映射之前或之后应用这些业务规则",
             "确保映射保持纯粹的数据转换职责",
         ]);
-        
+  
         strategies.insert("优化过度映射", vec![
             "审查项目中的所有模型类并识别相似结构",
             "合并不必要的中间模型",
             "为特定视图创建专门的投影，而不是通用转换",
             "使用部分映射仅转换必要的字段",
         ]);
-        
+  
         strategies
     }
 }
@@ -9963,22 +10025,22 @@ pub fn mapping_implementation_guide() -> String {
     let decision_matrix = MappingBestPractices::decision_matrix();
     let pitfalls = MappingBestPractices::common_pitfalls();
     let checklist = MappingBestPractices::implementation_checklist();
-    
+  
     let patterns = MappingPatternsAndAntipatterns::effective_patterns();
     let antipatterns = MappingPatternsAndAntipatterns::antipatterns();
-    
+  
     let mut guide = String::new();
-    
+  
     guide.push_str("# 映射实现最佳实践指南\n\n");
-    
+  
     guide.push_str("## 核心原则\n\n");
     for (name, description) in principles {
         guide.push_str(&format!("- **{}**: {}\n", name, description));
     }
-    
+  
     guide.push_str("\n## 选择合适的映射策略\n\n");
     guide.push_str("根据不同场景选择合适的映射实现方式：\n\n");
-    
+  
     guide.push_str("| 场景 | 推荐策略 |\n");
     guide.push_str("|------|----------|\n");
     guide.push_str(&format!("| 简单DTO映射 | {} |\n", MappingBestPractices::select_strategy_for_scenario(&MappingScenario::SimpleDtoMapping)));
@@ -9987,50 +10049,51 @@ pub fn mapping_implementation_guide() -> String {
     guide.push_str(&format!("| 高性能要求 | {} |\n", MappingBestPractices::select_strategy_for_scenario(&MappingScenario::HighPerformanceMapping)));
     guide.push_str(&format!("| 大型应用 | {} |\n", MappingBestPractices::select_strategy_for_scenario(&MappingScenario::LargeScaleApplication)));
     guide.push_str(&format!("| 快速原型 | {} |\n", MappingBestPractices::select_strategy_for_scenario(&MappingScenario::RapidPrototyping)));
-    
+  
     guide.push_str("\n## 有效模式\n\n");
     for (name, description) in patterns {
         guide.push_str(&format!("- **{}**: {}\n", name, description));
     }
-    
+  
     guide.push_str("\n## 常见反模式（避免这些）\n\n");
     for (name, description) in antipatterns {
         guide.push_str(&format!("- **{}**: {}\n", name, description));
     }
-    
+  
     guide.push_str("\n## 避免的常见陷阱\n\n");
     for (name, description) in pitfalls {
         guide.push_str(&format!("- **{}**: {}\n", name, description));
     }
-    
+  
     guide.push_str("\n## 实现检查清单\n\n");
     for item in checklist {
         guide.push_str(&format!("- [ ] {}\n", item));
     }
-    
+  
     guide.push_str("\n## 实际案例建议\n\n");
     guide.push_str("### 从不同层次进行设计\n\n");
     guide.push_str("1. **领域层映射**：专注于保持领域概念的完整性和业务规则，使用值对象和实体的精确映射。\n");
     guide.push_str("2. **应用层映射**：关注用例和服务边界，创建适合特定应用场景的DTOs和装配器。\n");
     guide.push_str("3. **基础设施层映射**：处理技术细节，如数据库映射、序列化和外部系统集成的适配器。\n");
     guide.push_str("4. **表示层映射**：优化为UI需求，创建视图模型和投影，处理格式化和本地化。\n\n");
-    
+  
     guide.push_str("### 性能优化技巧\n\n");
     guide.push_str("1. 使用批量获取替代逐个查询，避免N+1问题\n");
     guide.push_str("2. 对热点路径实现缓存策略\n");
     guide.push_str("3. 考虑延迟加载不常用的大型集合或嵌套对象\n");
     guide.push_str("4. 使用投影只返回必要字段，减少数据传输量\n");
     guide.push_str("5. 对大型列表考虑分页映射\n\n");
-    
+  
     guide.push_str("### 测试策略建议\n\n");
     guide.push_str("1. 单元测试每个映射器，验证所有字段正确转换\n");
     guide.push_str("2. 使用属性测试验证映射不变量在随机输入下保持\n");
     guide.push_str("3. 特别测试边界情况：空值、最大值、特殊字符等\n");
     guide.push_str("4. 对双向映射执行往返测试，确保转换一致性\n");
     guide.push_str("5. 包含性能测试验证大量数据的映射效率\n\n");
-    
+  
     guide
 }
+
 ```
 
 ## 1.7 总结

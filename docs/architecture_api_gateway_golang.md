@@ -168,6 +168,7 @@ func (ag *APIGateway) forwardRequest(ctx context.Context, req *Request, endpoint
     // 4. 构建响应
     return ag.buildResponse(resp)
 }
+
 ```
 
 ### 3.2 路由管理
@@ -297,6 +298,7 @@ func (t *Trie) Search(path string) *Route {
     
     return nil
 }
+
 ```
 
 ### 3.3 中间件系统
@@ -392,6 +394,7 @@ func (cm *CachingMiddleware) Process(ctx context.Context, req *Request) (context
     
     return ctx, nil
 }
+
 ```
 
 ## 4. 认证与授权
@@ -495,6 +498,7 @@ func (op *OAuthProvider) exchangeCodeForToken(ctx context.Context, code string) 
     
     return &token, nil
 }
+
 ```
 
 ### 4.2 授权系统
@@ -581,6 +585,7 @@ func (pe *PolicyEngine) evaluateCondition(ctx context.Context, condition *Condit
         return true
     }
 }
+
 ```
 
 ## 5. 限流与熔断
@@ -676,6 +681,7 @@ func (rls *RateLimitSystem) refillTokens(limiter *RateLimiter) {
         }
     }
 }
+
 ```
 
 ### 5.2 熔断系统
@@ -781,6 +787,7 @@ func (cb *CircuitBreaker) checkStateTransition() {
         }
     }
 }
+
 ```
 
 ## 6. 监控与可观测性
@@ -892,6 +899,7 @@ func (gm *GatewayMonitor) checkAlerts(req *Request, resp *Response, duration tim
         })
     }
 }
+
 ```
 
 ### 6.2 分布式追踪
@@ -1001,6 +1009,7 @@ func (ts *TracingSystem) Extract(ctx context.Context, headers map[string]string)
     
     return context.WithValue(ctx, "span", span)
 }
+
 ```
 
 ## 7. 实际案例分析
@@ -1092,6 +1101,7 @@ func (mg *MicroserviceGateway) filterHealthyEndpoints(endpoints []*Endpoint) []*
     }
     return healthy
 }
+
 ```
 
 ### 7.2 GraphQL网关
@@ -1208,6 +1218,7 @@ func (gg *GraphQLGateway) executeQuery(ctx context.Context, query *ParsedQuery, 
     
     return result, nil
 }
+
 ```
 
 ## 8. 未来趋势与国际前沿
@@ -1257,4 +1268,4 @@ func (gg *GraphQLGateway) executeQuery(ctx context.Context, query *ParsedQuery, 
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

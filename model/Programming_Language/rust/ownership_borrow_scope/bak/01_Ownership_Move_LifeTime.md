@@ -9,19 +9,6 @@
   - [1.4 应用](#应用)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Rust 语言的所有权（Ownership）、移动（Move）和生命周期（Lifetime）模型是其核心概念，
 它们共同确保了内存安全和并发安全，而无需垃圾收集器。
 
@@ -52,6 +39,7 @@ fn main() {
 fn take_ownership(some_string: String) { // some_string 现在拥有 String 的所有权
     println!("{}", some_string);
 } // 函数结束，some_string 被丢弃，String 被自动释放
+
 ```
 
 ### 1.2.1 生命周期（Lifetime）
@@ -78,6 +66,7 @@ fn longest<'a>(s1: &'a str, s2: &'a str) -> &'a str {
         s2
     }
 }
+
 ```
 
 在这个例子中，`longest` 函数有两个字符串引用作为参数，并且它们具有相同的生命周期 `'a`。

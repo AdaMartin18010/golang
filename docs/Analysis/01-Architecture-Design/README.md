@@ -178,6 +178,7 @@ func (r *ConsulRegistry) Register(service ServiceInfo) error {
     }
     return r.client.Agent().ServiceRegister(registration)
 }
+
 ```
 
 ### 1.1.4.2 事件驱动架构实现
@@ -242,6 +243,7 @@ func (eb *EventBus) Publish(event Event) error {
     }
     return nil
 }
+
 ```
 
 ## 1.1.5 5. 架构质量评估
@@ -338,6 +340,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, req CreateOrderRequest) 
     
     return order, nil
 }
+
 ```
 
 ## 1.1.8 8. 总结

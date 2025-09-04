@@ -112,6 +112,7 @@ flowchart TD
     A --> F[运行时与调度配置]
     F --> F1[Tokio: 多线程 + spawn_blocking]
     F --> F2[监控与动态调整：使用 profiling 工具]
+
 ```
 
 ---
@@ -190,6 +191,7 @@ async fn main() {
 
     println!("所有任务均已完成，CPU 任务结果: {}", cpu_result);
 }
+
 ```
 
 ### 代码说明
@@ -219,6 +221,7 @@ flowchart TD
     A --> E[结果合并与等待]
     E --> B
     E --> C
+
 ```
 
 ---
@@ -324,6 +327,7 @@ async fn main() {
     
     println!("所有任务均已完成");
 }
+
 ```
 
 ### *代码说明*
@@ -353,6 +357,7 @@ flowchart TD
     E --> F[任务状态数据发送]
     F --> G[Tokio Console 收集数据]
     G --> H[通过控制台显示任务状态、调度信息]
+
 ```
 
 ---
@@ -388,6 +393,7 @@ tokio = { version = "1", features = ["full"] }
 metrics = "0.17"
 metrics-exporter-prometheus = "0.7"
 hyper = "0.14"
+
 ```
 
 ---
@@ -450,6 +456,7 @@ async fn main() {
         println!("更新指标: app_requests_total 与 app_response_time_seconds");
     }
 }
+
 ```
 
 ---

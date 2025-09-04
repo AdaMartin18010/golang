@@ -83,6 +83,7 @@ fn main() {
     let animals = [dog_ref, cat_ref];
     animal_chorus(&animals);
 }
+
 ```
 
 ```rust
@@ -101,6 +102,7 @@ fn main() {
     process_data(static_str);  // &'static str -> &'a str
     process_data(borrowed_str); // &'temp str -> &'a str
 }
+
 ```
 
 ## 三、逆变与多态
@@ -143,6 +145,7 @@ fn main() {
     // 可以将接受 &dyn Animal 的闭包用在需要接受 &Dog 的地方
     process_specific(animal_processor);
 }
+
 ```
 
 ```rust
@@ -164,6 +167,7 @@ fn main() {
     
     // 这种逆变关系使得函数可以更多态化地使用
 }
+
 ```
 
 ## 四、不变性与多态
@@ -203,6 +207,7 @@ fn main() {
     
     // 不变性限制了某些多态操作，以保证类型安全
 }
+
 ```
 
 ```rust
@@ -241,6 +246,7 @@ fn main() {
     // 但 RefCell<T> 本身对 T 是不变的
     // 不能将 RefCell<i32> 转换为 RefCell<u32>
 }
+
 ```
 
 ## 五、变体性与多态的综合应用
@@ -285,6 +291,7 @@ fn main() {
     let str_wrapper = Wrapper { value: &static_str };
     str_wrapper.display();
 }
+
 ```
 
 ### 动态分发与静态分发
@@ -315,6 +322,7 @@ fn main() {
     
     // 两种方式都是多态的体现，但机制不同
 }
+
 ```
 
 ### 函数式编程中的多态
@@ -353,6 +361,7 @@ fn main() {
 }
 
 use std::any::Any;
+
 ```
 
 ## 六、变体性与多态的关系总结

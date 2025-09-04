@@ -55,6 +55,7 @@ classDiagram
   Cluster --> Node
   ServiceMesh --> Service
   CICDPipeline --> Service
+
 ```
 
 ## 6. 典型数据流与时序图
@@ -72,6 +73,7 @@ sequenceDiagram
   K8s->>Svc: 创建/更新服务
   User->>Svc: 访问服务流量
   Svc->>K8s: 服务发现与路由
+
 ```
 
 ## 7. Golang领域模型代码示例
@@ -90,6 +92,7 @@ sequenceDiagram
    Name string
    Pods []Pod
  }
+
 ```
 
 ## 8. 分布式系统挑战
@@ -110,6 +113,7 @@ graph TD
   K8s-->ServiceMesh
   ServiceMesh-->Service
   K8s-->Monitor[监控/可观测]
+
 ```
 
 - 关键代码：Golang操作Kubernetes API、自动化部署、服务注册与发现。

@@ -24,6 +24,7 @@ let async_gen = gen async {
     yield 2;
     yield 3;
 };
+
 ```
 
 #### *`yield` 关键字
@@ -37,6 +38,7 @@ let numbers = gen {
         yield i;
     }
 };
+
 ```
 
 #### *`next` 方法
@@ -54,6 +56,7 @@ while let Some(value) = sync_gen.next() {
 while let Some(value) = async_gen.next().await {
     println!("{}", value);
 }
+
 ```
 
 ## *2. 高级特性组合
@@ -68,6 +71,7 @@ fn generic_generator<T>(items: Vec<T>) -> impl Iterator<Item = T> {
         }
     }
 }
+
 ```
 
 #### *与生命周期结合
@@ -80,6 +84,7 @@ fn borrowed_generator<'a>(data: &'a [i32]) -> impl Iterator<Item = &'a i32> {
         }
     }
 }
+
 ```
 
 #### *与 trait bounds 结合
@@ -91,6 +96,7 @@ fn bounded_generator<T: Clone>(item: T) -> impl Iterator<Item = T> {
         yield item;
     }
 }
+
 ```
 
 ## *3. 异步编程模式
@@ -110,6 +116,7 @@ async fn process_stream<T: AsyncRead>(reader: T) -> impl Stream<Item = Result<Ve
         }
     }
 }
+
 ```
 
 ### *并发控制
@@ -132,6 +139,7 @@ async fn controlled_stream<T>(
         }
     }
 }
+
 ```
 
 ## *4. 函数式编程模式
@@ -151,6 +159,7 @@ fn transform_stream<T, U>(
         }
     }
 }
+
 ```
 
 #### *组合器模式
@@ -169,6 +178,7 @@ fn combine_streams<T>(
         }
     }
 }
+
 ```
 
 ## *5. 错误处理模式
@@ -186,6 +196,7 @@ fn fallible_generator() -> impl Iterator<Item = Result<i32, Error>> {
         }
     }
 }
+
 ```
 
 ### *Option 处理
@@ -202,6 +213,7 @@ fn optional_generator() -> impl Iterator<Item = Option<i32>> {
         }
     }
 }
+
 ```
 
 ## *6. 资源管理模式
@@ -221,6 +233,7 @@ impl<T> ManagedResource<T> {
         }
     }
 }
+
 ```
 
 ### *异步资源管理
@@ -235,6 +248,7 @@ async fn managed_async_stream() -> impl Stream<Item = Result<Data, Error>> {
         connection.close().await?;
     }
 }
+
 ```
 
 ## *7. 最佳实践建议

@@ -18,19 +18,6 @@
   - [1.4.1.1.7 🔄 **与Go语言生态的集成**](#🔄-**与go语言生态的集成**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.4.1.1.1 🎯 **核心思想**
 
 Clean Architecture 由 Robert C. Martin (Uncle Bob) 提出，其核心思想是通过依赖倒置原则，让业务逻辑独立于外部框架、数据库、UI等具体实现。在Go语言中实现Clean Architecture时，我们需要保持Go的简洁性和实用性，避免过度抽象。
@@ -80,6 +67,7 @@ type UserService struct {
 func NewUserService(repo UserRepository) *UserService {
     return &UserService{repo: repo}
 }
+
 ```
 
 ### 1.4.1.1.3.2 **2. 接口隔离**
@@ -99,6 +87,7 @@ type UserRepository interface {
     UserReader
     UserWriter
 }
+
 ```
 
 ### 1.4.1.1.3.3 **3. 错误处理**
@@ -113,6 +102,7 @@ type BusinessError struct {
 func (e *BusinessError) Error() string {
     return fmt.Sprintf("[%s] %s", e.Code, e.Message)
 }
+
 ```
 
 ## 1.4.1.1.4 📁 **项目结构**
@@ -139,6 +129,7 @@ clean-architecture/
 ├── pkg/                        # 共享包
 │   └── logger/
 └── go.mod
+
 ```
 
 ## 1.4.1.1.5 🚀 **核心优势**

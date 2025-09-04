@@ -16,19 +16,6 @@
     - [1.3.4 4. Watch 通道 （单生产者，多消费者）](#4-watch-通道-（单生产者，多消费者）)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 以下是关于 Tokio 通道的类型、定义、概念、示例以及输出的思维导图和 Markdown 文档。
 
 ## 1.1 目录
@@ -161,7 +148,7 @@
 
 ### 1.2.5 Tokio 通道思维导图
 
-    ```text 
+    ```text
     mermaid
     graph TD
         A[Tokio Channels] --> B[MPSC]

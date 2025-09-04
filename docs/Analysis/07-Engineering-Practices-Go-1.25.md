@@ -117,6 +117,7 @@ func BenchmarkUserService_CreateUser(b *testing.B) {
         service.CreateUser(user)
     }
 }
+
 ```
 
 #### 1.2.1.2 测试覆盖率
@@ -159,6 +160,7 @@ func TestCoverageThreshold(t *testing.T) {
         t.Errorf("Coverage %.2f%% is below threshold 80%%", coverage)
     }
 }
+
 ```
 
 ### 1.2.2 集成测试
@@ -260,6 +262,7 @@ func (suite *DatabaseTestSuite) TestUserCRUD() {
     _, err = suite.service.GetUserByID(user.ID)
     suite.Error(err)
 }
+
 ```
 
 #### 1.2.2.2 API测试
@@ -322,6 +325,7 @@ func (suite *APITestSuite) TestUserAPI() {
     json.NewDecoder(resp.Body).Decode(&foundUser)
     suite.Equal(user.Name, foundUser.Name)
 }
+
 ```
 
 ### 1.2.3 性能测试
@@ -387,6 +391,7 @@ func BenchmarkCachePerformance(b *testing.B) {
         cache.Get(key)
     }
 }
+
 ```
 
 #### 1.2.3.2 压力测试
@@ -464,6 +469,7 @@ func TestMemoryLeak(t *testing.T) {
             initialAlloc, finalAlloc, finalAlloc-initialAlloc)
     }
 }
+
 ```
 
 ## 1.3 CI/CD流水线
@@ -473,7 +479,9 @@ func TestMemoryLeak(t *testing.T) {
 #### 1.3.1.1 代码质量检查
 
 ```yaml
+
 # 2 2 2 2 2 2 2 .github/workflows/ci.yml
+
 name: CI Pipeline
 
 on:
@@ -527,12 +535,15 @@ jobs:
         file: ./coverage.out
         flags: unittests
         name: codecov-umbrella
+
 ```
 
 #### 2 2 2 2 2 2 2 自动化测试
 
 ```yaml
+
 # 3 3 3 3 3 3 3 .github/workflows/test.yml
+
 name: Automated Testing
 
 on:
@@ -596,6 +607,7 @@ jobs:
       run: go test -v -tags=integration ./...
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/testdb?sslmode=disable
+
 ```
 
 ### 3 3 3 3 3 3 3 持续部署
@@ -603,64 +615,85 @@ jobs:
 #### 3 3 3 3 3 3 3 容器化部署
 
 ```dockerfile
+
 # 4 4 4 4 4 4 4 Dockerfile
+
 # 5 5 5 5 5 5 5 多阶段构建
+
 FROM golang:1.25-alpine AS builder
 
 # 6 6 6 6 6 6 6 安装构建依赖
+
 RUN apk add --no-cache git ca-certificates tzdata
 
 # 7 7 7 7 7 7 7 设置工作目录
+
 WORKDIR /app
 
 # 8 8 8 8 8 8 8 复制go mod文件
+
 COPY go.mod go.sum ./
 
 # 9 9 9 9 9 9 9 下载依赖
+
 RUN go mod download
 
 # 10 10 10 10 10 10 10 复制源代码
+
 COPY . .
 
 # 11 11 11 11 11 11 11 构建应用
+
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 # 12 12 12 12 12 12 12 运行阶段
+
 FROM alpine:latest
 
 # 13 13 13 13 13 13 13 安装运行时依赖
+
 RUN apk --no-cache add ca-certificates tzdata
 
 # 14 14 14 14 14 14 14 创建非root用户
+
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
 WORKDIR /root/
 
 # 15 15 15 15 15 15 15 从构建阶段复制二进制文件
+
 COPY --from=builder /app/main .
 
 # 16 16 16 16 16 16 16 设置权限
+
 RUN chown appuser:appgroup main
 
 # 17 17 17 17 17 17 17 切换到非root用户
+
 USER appuser
 
 # 18 18 18 18 18 18 18 暴露端口
+
 EXPOSE 8080
 
 # 19 19 19 19 19 19 19 健康检查
+
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
 # 20 20 20 20 20 20 20 启动应用
+
 CMD ["./main"]
+
 ```
 
 #### 20 20 20 20 20 20 20 蓝绿部署
 
 ```yaml
+
 # 21 21 21 21 21 21 21 k8s/blue-green-deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -718,19 +751,23 @@ spec:
     port: 80
     targetPort: 8080
   type: LoadBalancer
+
 ```
 
 ```bash
 #!/bin/bash
+
 # 22 22 22 22 22 22 22 blue-green-deploy.sh
 
 # 23 23 23 23 23 23 23 蓝绿部署脚本
+
 DEPLOYMENT_NAME="app"
 BLUE_VERSION="blue"
 GREEN_VERSION="green"
 SERVICE_NAME="app-service"
 
 # 24 24 24 24 24 24 24 获取当前活跃版本
+
 CURRENT_VERSION=$(kubectl get service $SERVICE_NAME -o jsonpath='{.spec.selector.version}')
 
 if [ "$CURRENT_VERSION" = "$BLUE_VERSION" ]; then
@@ -745,12 +782,15 @@ echo "Current version: $CURRENT_VERSION"
 echo "Deploying new version: $NEW_VERSION"
 
 # 25 25 25 25 25 25 25 部署新版本
+
 kubectl set image deployment/$DEPLOYMENT_NAME-$NEW_VERSION app=myapp:$NEW_VERSION
 
 # 26 26 26 26 26 26 26 等待新版本就绪
+
 kubectl rollout status deployment/$DEPLOYMENT_NAME-$NEW_VERSION
 
 # 27 27 27 27 27 27 27 运行健康检查
+
 echo "Running health checks..."
 for i in {1..10}; do
     if curl -f http://localhost/health; then
@@ -762,12 +802,15 @@ for i in {1..10}; do
 done
 
 # 28 28 28 28 28 28 28 切换流量到新版本
+
 kubectl patch service $SERVICE_NAME -p "{\"spec\":{\"selector\":{\"version\":\"$NEW_VERSION\"}}}"
 
 echo "Traffic switched to $NEW_VERSION"
 
 # 29 29 29 29 29 29 29 可选：清理旧版本
+
 # 30 30 30 30 30 30 30 kubectl delete deployment $DEPLOYMENT_NAME-$OLD_VERSION
+
 ```
 
 ## 30.1 代码质量保证
@@ -836,6 +879,7 @@ issues:
         - gomnd
         - dupl
         - gocyclo
+
 ```
 
 #### 30.1.1.2 代码格式化
@@ -922,6 +966,7 @@ func (cf *CodeFormatter) FormatDirectory(dir string) error {
         return nil
     })
 }
+
 ```
 
 ### 30.1.2 代码审查
@@ -1091,6 +1136,7 @@ func (s *CodeReviewService) RejectReview(ctx context.Context, reviewID string, r
     
     return s.repo.SaveReview(ctx, review)
 }
+
 ```
 
 #### 30.1.2.2 自动化检查
@@ -1208,6 +1254,7 @@ type CheckResult struct {
     Passed  bool
     Message string
 }
+
 ```
 
 ## 30.2 部署策略
@@ -1217,19 +1264,24 @@ type CheckResult struct {
 #### 30.2.1.1 Docker最佳实践
 
 ```dockerfile
+
 # 31 31 31 31 31 31 31 优化的Dockerfile
+
 # 32 32 32 32 32 32 32 使用多阶段构建和最佳实践
 
 # 33 33 33 33 33 33 33 构建阶段
+
 FROM golang:1.25-alpine AS builder
 
 # 34 34 34 34 34 34 34 设置环境变量
+
 ENV CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
     GO111MODULE=on
 
 # 35 35 35 35 35 35 35 安装构建工具
+
 RUN apk add --no-cache \
     git \
     ca-certificates \
@@ -1239,29 +1291,37 @@ RUN apk add --no-cache \
     musl-dev
 
 # 36 36 36 36 36 36 36 设置工作目录
+
 WORKDIR /build
 
 # 37 37 37 37 37 37 37 复制go mod文件
+
 COPY go.mod go.sum ./
 
 # 38 38 38 38 38 38 38 下载依赖（利用Docker缓存）
+
 RUN go mod download
 
 # 39 39 39 39 39 39 39 复制源代码
+
 COPY . .
 
 # 40 40 40 40 40 40 40 运行测试
+
 RUN go test -v -race -coverprofile=coverage.out ./...
 
 # 41 41 41 41 41 41 41 构建应用
+
 RUN go build \
     -ldflags="-w -s -X main.Version=${VERSION:-dev} -X main.BuildTime=$(date -u '+%Y-%m-%d_%H:%M:%S')" \
     -o app .
 
 # 42 42 42 42 42 42 42 运行阶段
+
 FROM alpine:3.18
 
 # 43 43 43 43 43 43 43 安装运行时依赖
+
 RUN apk add --no-cache \
     ca-certificates \
     tzdata \
@@ -1269,73 +1329,92 @@ RUN apk add --no-cache \
     && rm -rf /var/cache/apk/*
 
 # 44 44 44 44 44 44 44 创建非root用户
+
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
 # 45 45 45 45 45 45 45 创建应用目录
+
 WORKDIR /app
 
 # 46 46 46 46 46 46 46 从构建阶段复制二进制文件
+
 COPY --from=builder /build/app .
 
 # 47 47 47 47 47 47 47 复制配置文件
+
 COPY --from=builder /build/configs/ ./configs/
 
 # 48 48 48 48 48 48 48 设置权限
+
 RUN chown -R appuser:appgroup /app
 
 # 49 49 49 49 49 49 49 切换到非root用户
+
 USER appuser
 
 # 50 50 50 50 50 50 50 暴露端口
+
 EXPOSE 8080
 
 # 51 51 51 51 51 51 51 健康检查
+
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
 # 52 52 52 52 52 52 52 设置标签
+
 LABEL maintainer="team@example.com" \
       version="${VERSION:-dev}" \
       description="Go application"
 
 # 53 53 53 53 53 53 53 启动应用
+
 ENTRYPOINT ["./app"]
+
 ```
 
 #### 53 53 53 53 53 53 53 多阶段构建
 
 ```dockerfile
+
 # 54 54 54 54 54 54 54 多阶段构建示例
+
 # 55 55 55 55 55 55 55 阶段1: 依赖下载
+
 FROM golang:1.25-alpine AS deps
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
 # 56 56 56 56 56 56 56 阶段2: 测试
+
 FROM deps AS test
 COPY . .
 RUN go test -v -race -coverprofile=coverage.out ./...
 
 # 57 57 57 57 57 57 57 阶段3: 构建
+
 FROM deps AS build
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 # 58 58 58 58 58 58 58 阶段4: 安全扫描
+
 FROM build AS security-scan
 RUN apk add --no-cache curl
 RUN curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 RUN trivy fs --exit-code 1 --severity HIGH,CRITICAL .
 
 # 59 59 59 59 59 59 59 阶段5: 运行
+
 FROM alpine:latest AS runtime
 RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /root/
 COPY --from=build /app/main .
 EXPOSE 8080
 CMD ["./main"]
+
 ```
 
 ### 59 59 59 59 59 59 59 云原生部署
@@ -1343,7 +1422,9 @@ CMD ["./main"]
 #### 59 59 59 59 59 59 59 Kubernetes部署
 
 ```yaml
+
 # 60 60 60 60 60 60 60 k8s/deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1499,12 +1580,15 @@ spec:
       - type: Percent
         value: 10
         periodSeconds: 60
+
 ```
 
 #### 60 60 60 60 60 60 60 服务网格集成
 
 ```yaml
+
 # 61 61 61 61 61 61 61 istio/virtual-service.yaml
+
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -1598,6 +1682,7 @@ spec:
     - operation:
         methods: ["GET"]
         paths: ["/metrics"]
+
 ```
 
 ## 61.1 总结

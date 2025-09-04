@@ -20,12 +20,14 @@
 
 ```rust
 type Kilometers = f64; // 为 f64 类型创建一个别名，表示千米
+
 ```
 
 **使用类型别名：**
 
 ```rust
 let distance: Kilometers = 10.5; // 使用别名声明变量
+
 ```
 
 ### 1.1.1 新类型（Newtypes）
@@ -40,6 +42,7 @@ let distance: Kilometers = 10.5; // 使用别名声明变量
 struct Milliliter(u32); // 创建一个新类型，表示毫升
 
 let volume = Milliliter(250); // 创建新类型实例
+
 ```
 
 ### 1.1.2 联系和区别

@@ -108,6 +108,7 @@ func ExampleSingleton() {
     // db1 and db2 are the same instance
     fmt.Printf("Same instance: %v\n", &db1 == &db2)
 }
+
 ```
 
 ### 2.2 Factory Method Pattern
@@ -215,6 +216,7 @@ func ExampleFactoryMethod() {
     fmt.Println(genericCreatorA.SomeOperation())
     fmt.Println(genericCreatorB.SomeOperation())
 }
+
 ```
 
 ### 2.3 Abstract Factory Pattern
@@ -355,6 +357,7 @@ func ExampleAbstractFactory() {
     genericFactory1 := NewGenericConcreteFactory(createA1, createB1)
     ClientCode(genericFactory1)
 }
+
 ```
 
 ### 2.4 Builder Pattern
@@ -530,6 +533,7 @@ func ExampleBuilder() {
     product5 := Build(&Product{}, setPartA, setPartB)
     fmt.Println("Product 5:", product5)
 }
+
 ```
 
 ### 2.5 Prototype Pattern
@@ -739,6 +743,7 @@ func ExamplePrototype() {
     fmt.Printf("Original person: %+v\n", genericProto.GetValue())
     fmt.Printf("Cloned person: %+v\n", clonedPerson.GetValue())
 }
+
 ```
 
 ## 3. Structural Patterns
@@ -827,6 +832,7 @@ func ExampleAdapter() {
     result2 := client.ClientMethod(genericAdapter)
     fmt.Println(result2)
 }
+
 ```
 
 ### 3.2 Bridge Pattern
@@ -932,6 +938,7 @@ func ExampleBridge() {
     fmt.Println(genericAbstractionA.Operation())
     fmt.Println(genericAbstractionB.Operation())
 }
+
 ```
 
 ## 4. Behavioral Patterns
@@ -1140,6 +1147,7 @@ func ExampleObserver() {
     close(ch1)
     close(ch2)
 }
+
 ```
 
 ## 5. Pattern Composition and Analysis
@@ -1201,6 +1209,7 @@ func (pc *PatternComposer) Compose(patterns ...string) interface{} {
     // Implementation for pattern composition
     return nil
 }
+
 ```
 
 ## 6. Conclusion

@@ -48,6 +48,7 @@
   \item GOARCH=wasm: WebAssembly架构
   \item 特殊包: syscall/js用于JavaScript交互
 \end{itemize}
+
 ```
 
 ### 2.2 基础示例
@@ -85,16 +86,21 @@ func main() {
     // 保持程序运行
     select {}
 }
+
 ```
 
 ### 2.3 编译和运行
 
 ```bash
+
 # 编译Golang代码到WASM
+
 GOOS=js GOARCH=wasm go build -o main.wasm main.go
 
 # 复制JavaScript运行时
+
 cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
+
 ```
 
 ```html
@@ -119,6 +125,7 @@ cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
     </script>
 </body>
 </html>
+
 ```
 
 ---
@@ -138,6 +145,7 @@ P(wasm) = P(compilation) + P(execution) + P(interop)
   \item P(execution): 执行时间（接近原生）
   \item P(interop): JavaScript互操作开销
 \end{itemize}
+
 ```
 
 ### 3.2 内存管理
@@ -187,6 +195,7 @@ func processArray(this js.Value, args []js.Value) interface{} {
 func registerCallbacks() {
     js.Global().Set("processArray", js.FuncOf(processArray))
 }
+
 ```
 
 ### 3.3 并发处理
@@ -260,6 +269,7 @@ func worker(jobs <-chan int, results chan<- int, wg *sync.WaitGroup) {
         results <- result
     }
 }
+
 ```
 
 ---
@@ -278,6 +288,7 @@ func worker(jobs <-chan int, results chan<- int, wg *sync.WaitGroup) {
   \item 加密算法: 安全计算
   \item 跨平台应用: 统一代码库
 \end{itemize}
+
 ```
 
 ### 4.2 图像处理示例
@@ -365,6 +376,7 @@ func applyBlur(data js.Value, width, height int) {
         }
     }
 }
+
 ```
 
 ### 4.3 最佳实践
@@ -426,6 +438,7 @@ func safeCall(obj js.Value, method string, args ...interface{}) js.Value {
     
     return obj.Call(method, args...)
 }
+
 ```
 
 ---
@@ -446,6 +459,7 @@ graph TB;
     
     H[Web API] --> I[网络请求];
     I --> E;
+
 ```
 
 ### 5.2 性能对比图
@@ -459,6 +473,7 @@ graph LR;
     D --> G[开发效率: 高];
     E --> H[开发效率: 中];
     F --> I[开发效率: 低];
+
 ```
 
 ### 5.3 内存模型
@@ -474,6 +489,7 @@ Memory = \{0, 1, 2, ..., 2^{32} - 1\}
   \item 存储: i32.store, i64.store, f32.store, f64.store
   \item 增长: memory.grow
 \end{itemize}
+
 ```
 
 ### 5.4 性能优化公式
@@ -490,6 +506,7 @@ Performance = \frac{ComputationalComplexity}{MemoryAccess + InteropOverhead}
   \item 使用TypedArray
   \item 避免频繁内存分配
 \end{itemize}
+
 ```
 
 ---

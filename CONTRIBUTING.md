@@ -33,18 +33,24 @@
 ### 本地开发
 
 ```bash
+
 # 克隆仓库
+
 git clone https://github.com/your-username/golang-modernization.git
 cd golang-modernization
 
 # 安装依赖
+
 go mod download
 
 # 运行测试
+
 go test ./...
 
 # 运行基准测试
+
 go test -bench=. ./...
+
 ```
 
 ## 📝 代码规范
@@ -67,6 +73,7 @@ style: 代码格式调整
 refactor: 代码重构
 test: 添加测试
 chore: 构建过程或辅助工具的变动
+
 ```
 
 ### 分支命名规范

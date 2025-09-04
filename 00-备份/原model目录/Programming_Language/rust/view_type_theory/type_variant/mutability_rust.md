@@ -75,6 +75,7 @@
 ```rust
 let x = 5; // 不变变量
 // x = 10; // 编译错误：不能对不可变变量进行赋值
+
 ```
 
 ## 3. 可变性
@@ -97,6 +98,7 @@ let mut y = 5; // 可变变量
     *r += 5; // 通过可变引用修改值
 } // 可变引用 r 的作用域结束
 println!("y: {}", y); // 输出 10
+
 ```
 
 ### 3.2 内部可变性
@@ -110,8 +112,10 @@ println!("y: {}", y); // 输出 10
 use std::cell::RefCell;
 
 let data = RefCell::new(5); // 创建一个内部可变的 RefCell
+
 *data.borrow_mut() = 10; // 通过 borrow_mut() 修改值
 println!("data: {}", data.borrow()); // 输出 10
+
 ```
 
 通过从类型论的视角来看待变量的定义和不变性、可变性，我们可以更好地理解 Rust 中的内存安全和数据管理机制。
@@ -138,6 +142,7 @@ println!("data: {}", data.borrow()); // 输出 10
 ```rust
 let x = 5; // 不变变量
 // x = 10; // 编译错误：不能对不可变变量进行赋值
+
 ```
 
 ## 6. 可变性
@@ -160,6 +165,7 @@ let mut y = 5; // 可变变量
     *r += 5; // 通过可变引用修改值
 } // 可变引用 r 的作用域结束
 println!("y: {}", y); // 输出 10
+
 ```
 
 ### 6.2 内部可变性
@@ -173,8 +179,10 @@ println!("y: {}", y); // 输出 10
 use std::cell::RefCell;
 
 let data = RefCell::new(5); // 创建一个内部可变的 RefCell
+
 *data.borrow_mut() = 10; // 通过 borrow_mut() 修改值
 println!("data: {}", data.borrow()); // 输出 10
+
 ```
 
 ## 7. 总结
@@ -208,6 +216,7 @@ fn main() {
     } // b 的作用域结束
     // println!("b: {}", b); // 编译错误：b 不再可用
 }
+
 ```
 
 ### 8.2 生命周期
@@ -233,6 +242,7 @@ fn main() {
     let result = longest(&str1, &str2);
     println!("The longest string is: {}", result);
 }
+
 ```
 
 在这个例子中，`longest` 函数的生命周期参数 `'a` 确保了返回的引用在输入字符串的生命周期内是有效的。
@@ -258,6 +268,7 @@ fn main() {
     // let c = "hello"; // 编译错误：类型不匹配
     // let result2 = add(a, c); // 这行代码会导致编译错误
 }
+
 ```
 
 在这个例子中，`add` 函数要求两个 `i32` 类型的参数，编译器会在编译时检查类型一致性，确保类型安全。
@@ -290,6 +301,7 @@ fn main() {
     // println!("{}", s1); // 编译错误：s1 不再有效
     println!("{}", s2); // 输出 "hello"
 }
+
 ```
 
 在这个例子中，`s1` 的所有权被转移到 `s2`，因此 `s1` 在转移后不再有效。
@@ -312,6 +324,7 @@ fn main() {
 fn calculate_length(s: &String) -> usize {
     s.len() // 通过引用访问 s 的长度
 }
+
 ```
 
 在这个例子中，`calculate_length` 函数通过不可变引用借用了 `s`，确保了 `s` 的所有权没有被转移。
@@ -333,6 +346,7 @@ fn main() {
 fn change(s: &mut String) {
     s.push_str(", world"); // 修改借用的值
 }
+
 ```
 
 在这个例子中，`change` 函数通过可变引用修改了 `s` 的内容。
@@ -380,6 +394,7 @@ fn main() {
     handle.join().unwrap();
     println!("Value: {}", value); // 可能会输出不正确的值
 }
+
 ```
 
 在这个例子中，`value` 被多个线程同时访问，可能导致数据竞争。Rust 的编译器会在编译时捕获这种情况。
@@ -415,6 +430,7 @@ fn main() {
 
     println!("Value: {}", *value.lock().unwrap()); // 输出 10
 }
+
 ```
 
 在这个例子中，`Arc` 和 `Mutex` 结合使用，确保了在多个线程之间安全地共享和修改数据。
@@ -453,6 +469,7 @@ fn main() {
     }
     println!("x is: {}", x);
 }
+
 ```
 
 在这个例子中，如果 `x` 大于 10，程序将会调用 `panic!`，并终止执行。
@@ -480,6 +497,7 @@ fn main() {
         Err(e) => println!("Error: {}", e), // 处理错误
     }
 }
+
 ```
 
 在这个例子中，`divide` 函数返回一个 `Result` 类型，允许调用者处理可能的错误。
@@ -503,6 +521,7 @@ fn main() {
         Err(e) => println!("Error reading file: {}", e),
     }
 }
+
 ```
 
 在这个例子中，`read_file_content` 函数使用 `?` 运算符来处理文件读取中的错误。

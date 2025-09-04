@@ -9,7 +9,7 @@ Copy和Clone这两个trait常被初学者混淆，但它们在语义和实现层
 Rust通过所有权系统实现内存安全的核心目标。
 当变量被赋值给其他变量时，默认行为是转移所有权而非复制数据。
 这种设计能有效防止悬垂指针，但也带来了一个关键问题：
-*何时需要真正的数据复制？*
+* 何时需要真正的数据复制？*
 
 ```rust
 let x = 5;
@@ -19,6 +19,7 @@ println!("{}", x);  // 正常执行
 let s1 = String::from("hello");
 let s2 = s1;        // 所有权转移
 // println!("{}", s1); // 编译错误：value borrowed after move
+
 ```
 
 ### Copy Trait的隐式复制
@@ -39,6 +40,7 @@ struct Point {
 let p1 = Point { x: 10, y: 20 };
 let p2 = p1;  // 自动复制发生
 println!("p1: {:?}", p1);  // 仍然有效
+
 ```
 
 基本数值类型（如i32、f64）和不可变引用都实现了Copy。
@@ -58,6 +60,7 @@ struct Buffer {
 
 let buf1 = Buffer { data: vec![1, 2, 3] };
 let buf2 = buf1.clone();  // 显式深拷贝
+
 ```
 
 实现Clone时需要特别注意：
@@ -90,6 +93,7 @@ struct Pixel {
     g: u8,
     b: u8,
 }
+
 ```
 
 ### 手动实现Clone
@@ -113,6 +117,7 @@ impl Clone for CustomArray {
         }
     }
 }
+
 ```
 
 ### 典型应用场景
@@ -139,6 +144,7 @@ struct InvalidCopy {
     id: i32,
     name: String,
 }
+
 ```
 
 错误原因：String未实现Copy，因此包含它的类型也不能实现Copy。
@@ -153,6 +159,7 @@ struct Config {
 
 let cfg1 = Config { timeout: 30 };
 let cfg2 = cfg1;  // 这里其实发生了移动！
+
 ```
 
 正确做法：在需要复制时显式调用clone()方法。
@@ -172,6 +179,7 @@ struct LargeData([u8; 1024]);
 fn process_data(data: Arc<LargeData>) {
     // 共享数据无需克隆
 }
+
 ```
 
 ### 设计哲学启示

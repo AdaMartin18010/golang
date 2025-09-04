@@ -70,19 +70,6 @@
     - [2.4.3 3. 订单工作流定义](#3-订单工作流定义)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 一、理论层面分析
 
 ### 1.1.1 1. 理论基础
@@ -227,30 +214,39 @@
 ### 1.5.1 1. 核心架构设计
 
 ```text
+
 +---------------------+      +----------------------+
 |  工作流定义服务      |      |   工作流实例服务     |
+
 +---------------------+      +----------------------+
           |                             |
           v                             v
+
 +---------------------+      +----------------------+
 |  工作流版本存储      |      |   实例状态管理器     |
+
 +---------------------+      +----------------------+
                                        |
                                        v
+
 +-------------------------------------------------+
 |                 活动执行器                      |
 |  +-------------+  +------------+  +-----------+ |
 |  | HTTP活动    |  | 脚本活动   |  | 自定义活动 | |
 |  +-------------+  +------------+  +-----------+ |
+
 +-------------------------------------------------+
                        |
                        v
+
 +-------------------------------------------------+
 |                  持久化层                       |
 |  +-------------+  +------------+  +-----------+ |
 |  | 事件存储    |  | 状态存储   |  | 定义存储  | |
 |  +-------------+  +------------+  +-----------+ |
+
 +-------------------------------------------------+
+
 ```
 
 ### 1.5.2 2. 基于Rust类型系统的工作流状态模型
@@ -345,6 +341,7 @@ pub struct WorkflowInstance<S: WorkflowState, E: WorkflowEvent> {
     /// 完成时间 (如果已完成)
     completed_at: Option<DateTime<Utc>>,
 }
+
 ```
 
 ### 1.5.3 3. 事件溯源实现
@@ -516,6 +513,7 @@ impl<S: WorkflowState + DeserializeOwned, E: WorkflowEvent + DeserializeOwned> W
         })
     }
 }
+
 ```
 
 ### 1.5.4 4. 活动执行器实现
@@ -626,6 +624,7 @@ impl ActivityExecutor for LocalActivityExecutor {
         Ok(result)
     }
 }
+
 ```
 
 ### 1.5.5 5. API接口设计
@@ -736,6 +735,7 @@ impl<S: WorkflowState + DeserializeOwned, E: WorkflowEvent + DeserializeOwned> W
         }
     }
 }
+
 ```
 
 ## 1.6 六、实现步骤与路线图
@@ -1051,6 +1051,7 @@ pub enum WorkflowError {
     #[error("内部错误: {0}")]
     InternalError(String),
 }
+
 ```
 
 ### 1.7.2 2. 事件存储实现
@@ -1243,6 +1244,7 @@ impl EventStore for PostgresEventStore {
         Ok(events)
     }
 }
+
 ```
 
 ### 1.7.3 3. 工作流引擎核心实现
@@ -1545,14 +1547,15 @@ where
     #[instrument(skip(self), fields(workflow_id = %workflow_id))]
     pub async fn get_workflow_history(&self, workflow_id: &str) -> Result<WorkflowHistory<E>, WorkflowError> {
         let instance =
+
 # 2 2 2 2 2 2 2 工作流引擎设计与实现分析（续）
 
 ### 2 2 2 2 2 2 2 3. 工作流引擎核心实现（续）
 
 ```rust
 /// 工作流引擎
-impl<S, E> WorkflowEngine<S, E> 
-where 
+impl<S, E> WorkflowEngine<S, E>
+where
     S: WorkflowState + for<'de> Deserialize<'de> + Serialize,
     E: WorkflowEvent + for<'de> Deserialize<'de> + Serialize,
 {
@@ -1560,7 +1563,7 @@ where
     #[instrument(skip(self), fields(workflow_id = %workflow_id))]
     pub async fn get_workflow_history(&self, workflow_id: &str) -> Result<WorkflowHistory<E>, WorkflowError> {
         let instance = self.load_instance(workflow_id).await?;
-        
+  
         Ok(WorkflowHistory {
             workflow_id: workflow_id.to_string(),
             workflow_type: instance.workflow_type,
@@ -1571,7 +1574,7 @@ where
             completed_at: instance.completed_at,
         })
     }
-    
+  
     /// 执行活动
     #[instrument(skip(self, input), fields(activity_type = %activity_type, workflow_id = %workflow_id))]
     pub async fn execute_activity(
@@ -1582,48 +1585,48 @@ where
     ) -> Result<serde_json::Value, WorkflowError> {
         let timer = self.metrics.start_timer(&format!("workflow.activity.{}.duration", activity_type));
         self.metrics.increment_counter(&format!("workflow.activity.{}.started", activity_type));
-        
+  
         // 生成相关ID
         let correlation_id = format!("{}-{}", workflow_id, Uuid::new_v4());
-        
+  
         // 执行活动
         let result = self.activity_executor.execute_activity(activity_type, input, &correlation_id).await
             .map_err(|e| WorkflowError::ActivityError(e.to_string()))?;
-            
+  
         self.metrics.increment_counter(&format!("workflow.activity.{}.completed", activity_type));
         timer.observe_duration();
-        
+  
         Ok(result)
     }
-    
+  
     /// 重试工作流流
     #[instrument(skip(self), fields(workflow_id = %workflow_id))]
     pub async fn retry_workflow(&self, workflow_id: &str) -> Result<(), WorkflowError> {
         // 1. 获取工作流状态
         let info = self.get_workflow_state(workflow_id).await?;
-        
+  
         // 2. 检查工作流是否已完成
         if info.completed_at.is_some() {
             return Err(WorkflowError::ValidationError("无法重试已完成的工作流".to_string()));
         }
-        
+  
         // 3. 获取最后一个事件
         let history = self.get_workflow_history(workflow_id).await?;
         let last_event = history.events.last()
             .ok_or_else(|| WorkflowError::ValidationError("工作流历史为空,无法重试".to_string()))?;
-            
+  
         // 4. 创建重试事件
         let retry_event = self.create_retry_event(&last_event.event)?;
-        
+  
         // 5. 触发重试事件
         self.trigger_event(workflow_id, retry_event).await?;
-        
+  
         info!("工作流重试已启动");
         self.metrics.increment_counter("workflow.retried");
-        
+  
         Ok(())
     }
-    
+  
     /// 创建重试事件
     fn create_retry_event(&self, last_event: &E) -> Result<E, WorkflowError> {
         // 这里需要具体实现来创建重试事件
@@ -1631,104 +1634,104 @@ where
         // 此处简化为错误返回
         Err(WorkflowError::InternalError("创建重试事件的具体实现缺失".to_string()))
     }
-    
+  
     /// 暂停工作流
     #[instrument(skip(self), fields(workflow_id = %workflow_id))]
     pub async fn pause_workflow(&self, workflow_id: &str, reason: Option<String>) -> Result<(), WorkflowError> {
         // 1. 获取工作流状态
         let info = self.get_workflow_state(workflow_id).await?;
-        
+  
         // 2. 检查工作流是否已完成
         if info.completed_at.is_some() {
             return Err(WorkflowError::ValidationError("无法暂停已完成的工作流".to_string()));
         }
-        
+  
         // 3. 创建暂停事件
         let pause_event = self.create_pause_event(reason)?;
-        
+  
         // 4. 触发暂停事件
         self.trigger_event(workflow_id, pause_event).await?;
-        
+  
         info!("工作流已暂停");
         self.metrics.increment_counter("workflow.paused");
-        
+  
         Ok(())
     }
-    
+  
     /// 创建暂停事件
     fn create_pause_event(&self, reason: Option<String>) -> Result<E, WorkflowError> {
         // 这里需要具体实现来创建暂停事件
         // 此处简化为错误返回
         Err(WorkflowError::InternalError("创建暂停事件的具体实现缺失".to_string()))
     }
-    
+  
     /// 恢复工作流
     #[instrument(skip(self), fields(workflow_id = %workflow_id))]
     pub async fn resume_workflow(&self, workflow_id: &str) -> Result<(), WorkflowError> {
         // 1. 获取工作流实例
         let instance = self.load_instance(workflow_id).await?;
-        
+  
         // 2. 检查工作流是否处于暂停状态
         if instance.current_state.state_type() != "paused" {
             return Err(WorkflowError::ValidationError("只能恢复处于暂停状态的工作流".to_string()));
         }
-        
+  
         // 3. 创建恢复事件
         let resume_event = self.create_resume_event()?;
-        
+  
         // 4. 触发恢复事件
         self.trigger_event(workflow_id, resume_event).await?;
-        
+  
         info!("工作流已恢复");
         self.metrics.increment_counter("workflow.resumed");
-        
+  
         Ok(())
     }
-    
+  
     /// 创建恢复事件
     fn create_resume_event(&self) -> Result<E, WorkflowError> {
         // 这里需要具体实现来创建恢复事件
         // 此处简化为错误返回
         Err(WorkflowError::InternalError("创建恢复事件的具体实现缺失".to_string()))
     }
-    
+  
     /// 终止工作流
     #[instrument(skip(self), fields(workflow_id = %workflow_id))]
     pub async fn terminate_workflow(&self, workflow_id: &str, reason: String) -> Result<(), WorkflowError> {
         // 1. 获取工作流状态
         let info = self.get_workflow_state(workflow_id).await?;
-        
+  
         // 2. 检查工作流是否已完成
         if info.completed_at.is_some() {
             return Err(WorkflowError::ValidationError("无法终止已完成的工作流".to_string()));
         }
-        
+  
         // 3. 创建终止事件
         let terminate_event = self.create_terminate_event(reason)?;
-        
+  
         // 4. 触发终止事件
         self.trigger_event(workflow_id, terminate_event).await?;
-        
+  
         info!("工作流已终止");
         self.metrics.increment_counter("workflow.terminated");
-        
+  
         Ok(())
     }
-    
+  
     /// 创建终止事件
     fn create_terminate_event(&self, reason: String) -> Result<E, WorkflowError> {
         // 这里需要具体实现来创建终止事件
         // 此处简化为错误返回
         Err(WorkflowError::InternalError("创建终止事件的具体实现缺失".to_string()))
     }
-    
+  
     /// 调度并监控工作流执行中的超时
     pub async fn start_timeout_monitor(&self, check_interval: Duration) -> tokio::task::JoinHandle<()> {
         let engine = Arc::new(self.clone());
-        
+  
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(check_interval);
-            
+  
             loop {
                 interval.tick().await;
                 if let Err(e) = engine.check_timeouts().await {
@@ -1737,26 +1740,26 @@ where
             }
         })
     }
-    
+  
     async fn check_timeouts(&self) -> Result<(), WorkflowError> {
         // 获取可能超时的工作流
         let potentially_timed_out = self.state_store.find_potentially_timed_out().await
             .map_err(|e| WorkflowError::StatePersistenceError(e.to_string()))?;
-            
+  
         for workflow_id in potentially_timed_out {
             // 检查工作流是否确实超时
             match self.load_instance(&workflow_id).await {
                 Ok(instance) => {
                     let definition = self.get_definition(&instance.workflow_type, &instance.workflow_version).await?;
-                    
+  
                     if let Some(timeout_config) = &definition.timeout_config {
                         let now = Utc::now();
-                        
+  
                         // 检查工作流执行时间是否超时
                         if let Some(workflow_timeout) = timeout_config.workflow_timeout {
                             if now - instance.created_at > workflow_timeout {
                                 info!(workflow_id = %workflow_id, "工作流执行超时");
-                                
+  
                                 // 创建并触发超时事件
                                 if let Ok(timeout_event) = self.create_timeout_event() {
                                     if let Err(e) = self.trigger_event(&workflow_id, timeout_event).await {
@@ -1765,27 +1768,27 @@ where
                                 }
                             }
                         }
-                        
+  
                         // 检查工作流状态超时
                         if let Some(state_timeouts) = &timeout_config.state_timeouts {
                             let current_state = instance.current_state.state_type();
-                            
+  
                             if let Some(timeout) = state_timeouts.get(current_state) {
                                 // 获取最后一次状态更新时间
                                 if now - instance.updated_at > *timeout {
                                     info!(
-                                        workflow_id = %workflow_id, 
-                                        state = %current_state, 
+                                        workflow_id = %workflow_id,
+                                        state = %current_state,
                                         "工作流状态超时"
                                     );
-                                    
+  
                                     // 创建并触发状态超时事件
                                     if let Ok(state_timeout_event) = self.create_state_timeout_event(current_state) {
                                         if let Err(e) = self.trigger_event(&workflow_id, state_timeout_event).await {
                                             error!(
-                                                workflow_id = %workflow_id, 
+                                                workflow_id = %workflow_id,
                                                 state = %current_state,
-                                                error = %e, 
+                                                error = %e,
                                                 "处理状态超时失败"
                                             );
                                         }
@@ -1800,17 +1803,17 @@ where
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 创建超时事件
     fn create_timeout_event(&self) -> Result<E, WorkflowError> {
         // 这里需要具体实现来创建超时事件
         // 此处简化为错误返回
         Err(WorkflowError::InternalError("创建超时事件的具体实现缺失".to_string()))
     }
-    
+  
     /// 创建状态超时事件
     fn create_state_timeout_event(&self, state: &str) -> Result<E, WorkflowError> {
         // 这里需要具体实现来创建状态超时事件
@@ -1820,20 +1823,24 @@ where
 }
 
 /// 工作流超时配置
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct WorkflowTimeoutConfig {
     /// 整个工作流的执行超时
     pub workflow_timeout: Option<chrono::Duration>,
-    
+  
     /// 特定状态的超时设置
     pub state_timeouts: Option<HashMap<String, chrono::Duration>>,
-    
+  
     /// 活动超时
     pub activity_timeout: Option<chrono::Duration>,
 }
 
 /// 工作流状态信息(API返回)
-#[derive(Debug, Serialize, Deserialize)]
+
+# [derive(Debug, Serialize, Deserialize)]
+
 pub struct WorkflowStateInfo {
     pub workflow_id: String,
     pub workflow_type: String,
@@ -1846,7 +1853,9 @@ pub struct WorkflowStateInfo {
 }
 
 /// 工作流历史(API返回)
-#[derive(Debug, Serialize, Deserialize)]
+
+# [derive(Debug, Serialize, Deserialize)]
+
 pub struct WorkflowHistory<E: WorkflowEvent> {
     pub workflow_id: String,
     pub workflow_type: String,
@@ -1864,19 +1873,20 @@ fn version_compare(a: &str, b: &str) -> std::cmp::Ordering {
             .filter_map(|s| s.parse::<u32>().ok())
             .collect()
     };
-    
+  
     let va = parse_version(a);
     let vb = parse_version(b);
-    
+  
     for (a_num, b_num) in va.iter().zip(vb.iter()) {
         match a_num.cmp(b_num) {
             std::cmp::Ordering::Equal => continue,
             other => return other,
         }
     }
-    
+  
     va.len().cmp(&vb.len())
 }
+
 ```
 
 ### 2 2 2 2 2 2 2 活动执行器实现
@@ -1894,109 +1904,117 @@ use tracing::{info, error, instrument};
 pub struct ActivityDefinition {
     /// 活动类型
     pub activity_type: String,
-    
+  
     /// 版本
     pub version: String,
-    
+  
     /// 活动描述
     pub description: Option<String>,
-    
+  
     /// 超时设置
     pub timeout: std::time::Duration,
-    
+  
     /// 重试策略
     pub retry_policy: Option<RetryPolicy>,
-    
+  
     /// 活动处理器
     pub handler: Box<dyn Fn(serde_json::Value) -> BoxFuture<'static, Result<serde_json::Value, ActivityError>> + Send + Sync>,
 }
 
 /// 活动执行记录
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct ActivityExecution {
     /// 活动类型
     pub activity_type: String,
-    
+  
     /// 活动版本
     pub activity_version: String,
-    
+  
     /// 输入数据
     pub input: serde_json::Value,
-    
+  
     /// 输出数据
     pub output: serde_json::Value,
-    
+  
     /// 开始时间
     pub started_at: DateTime<Utc>,
-    
+  
     /// 完成时间
     pub completed_at: DateTime<Utc>,
-    
+  
     /// 执行状态
     pub status: String,
 }
 
 /// 活动错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum ActivityError {
     #[error("活动 {0} 未找到")]
     ActivityNotFound(String),
-    
+  
     #[error("活动执行超时")]
     Timeout,
-    
+  
     #[error("重试次数已达上限")]
     ExhaustedRetries,
-    
+  
     #[error("输入验证失败: {0}")]
     ValidationError(String),
-    
+  
     #[error("执行错误: {0}")]
     ExecutionError(String),
-    
+  
     #[error("序列化错误: {0}")]
     SerializationError(String),
-    
+  
     #[error("HTTP错误: {0}")]
     HttpError(String),
-    
+  
     #[error("内部错误: {0}")]
     InternalError(String),
 }
 
 /// 重试策略
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub struct RetryPolicy {
     /// 最大重试次数
     pub max_attempts: u32,
-    
+  
     /// 初始重试间隔
     pub initial_interval: std::time::Duration,
-    
+  
     /// 最大重试间隔
     pub max_interval: std::time::Duration,
-    
+  
     /// 退避系数
     pub backoff_coefficient: f64,
-    
+  
     /// 不可重试的错误类型
     pub non_retryable_errors: Vec<String>,
 }
 
 /// 活动执行器特质
-#[async_trait]
+
+# [async_trait]
+
 pub trait ActivityExecutor: Send + Sync {
     /// 注册活动定义
     async fn register_activity(&self, definition: ActivityDefinition) -> Result<(), ActivityError>;
-    
+  
     /// 执行活动
     async fn execute_activity(
-        &self, 
-        activity_type: &str, 
+        &self,
+        activity_type: &str,
         input: serde_json::Value,
         correlation_id: &str,
     ) -> Result<serde_json::Value, ActivityError>;
-    
+  
     /// 获取活动执行历史
     async fn get_activity_execution(&self, correlation_id: &str) -> Result<ActivityExecution, ActivityError>;
 }
@@ -2005,13 +2023,13 @@ pub trait ActivityExecutor: Send + Sync {
 pub struct LocalActivityExecutor {
     /// 活动定义注册表
     definitions: RwLock<HashMap<String, ActivityDefinition>>,
-    
+  
     /// 最新版本索引
     version_index: RwLock<HashMap<String, String>>,
-    
+  
     /// 执行历史
     execution_history: RwLock<HashMap<String, ActivityExecution>>,
-    
+  
     /// 指标收集
     metrics: Arc<Metrics>,
 }
@@ -2025,16 +2043,16 @@ impl LocalActivityExecutor {
             metrics,
         }
     }
-    
+  
     /// 获取活动最新版本
     async fn get_latest_version(&self, activity_type: &str) -> Result<String, ActivityError> {
         let version_index = self.version_index.read().await;
-        
+  
         version_index.get(activity_type)
             .cloned()
             .ok_or_else(|| ActivityError::ActivityNotFound(activity_type.to_string()))
     }
-    
+  
     /// 使用重试策略执行函数
     async fn execute_with_retry<F, Fut, T, E>(
         &self,
@@ -2051,10 +2069,10 @@ impl LocalActivityExecutor {
         let mut attempt = 0;
         let mut last_error = None;
         let mut backoff = retry_policy.initial_interval;
-        
+  
         while attempt < retry_policy.max_attempts {
             attempt += 1;
-            
+  
             match tokio::time::timeout(timeout, f(input.clone())).await {
                 Ok(Ok(result)) => {
                     return Ok(result);
@@ -2065,18 +2083,18 @@ impl LocalActivityExecutor {
                     if retry_policy.non_retryable_errors.iter().any(|non_retryable| error_str.contains(non_retryable)) {
                         return Err(ActivityError::ExecutionError(error_str));
                     }
-                    
+  
                     // 记录错误,准备重试
                     last_error = Some(error_str);
-                    
+  
                     // 如果这是最后一次尝试,不需要等待,直接返回错误
                     if attempt >= retry_policy.max_attempts {
                         break;
                     }
-                    
+  
                     // 等待退避时间
                     tokio::time::sleep(backoff).await;
-                    
+  
                     // 计算下一次退避时间
                     backoff = std::cmp::min(
                         std::time::Duration::from_secs_f64(backoff.as_secs_f64() * retry_policy.backoff_coefficient),
@@ -2088,7 +2106,7 @@ impl LocalActivityExecutor {
                 }
             }
         }
-        
+  
         // 重试次数已用尽
         if let Some(last_error) = last_error {
             Err(ActivityError::ExecutionError(format!("重试已用尽: {}", last_error)))
@@ -2098,24 +2116,25 @@ impl LocalActivityExecutor {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl ActivityExecutor for LocalActivityExecutor {
     #[instrument(skip(self, definition))]
     async fn register_activity(&self, definition: ActivityDefinition) -> Result<(), ActivityError> {
         let activity_type = definition.activity_type.clone();
         let version = definition.version.clone();
         let key = format!("{}:{}", activity_type, version);
-        
+  
         // 更新定义注册表
         {
             let mut definitions = self.definitions.write().await;
             definitions.insert(key, definition);
         }
-        
+  
         // 更新版本索引
         let mut version_index = self.version_index.write().await;
         let current_latest = version_index.get(&activity_type).cloned();
-        
+  
         if let Some(current) = current_latest {
             if version_compare(&version, &current) == std::cmp::Ordering::Greater {
                 version_index.insert(activity_type.clone(), version.clone());
@@ -2123,16 +2142,16 @@ impl ActivityExecutor for LocalActivityExecutor {
         } else {
             version_index.insert(activity_type.clone(), version.clone());
         }
-        
+  
         info!(
             activity_type = %activity_type,
             version = %version,
             "活动已注册"
         );
-        
+  
         Ok(())
     }
-    
+  
     #[instrument(skip(self, input), fields(activity_type = %activity_type, correlation_id = %correlation_id))]
     async fn execute_activity(
         &self,
@@ -2143,13 +2162,13 @@ impl ActivityExecutor for LocalActivityExecutor {
         // 1. 计时开始
         let timer = self.metrics.start_timer(&format!("activity.{}.duration", activity_type));
         self.metrics.increment_counter(&format!("activity.{}.started", activity_type));
-        
+  
         info!("开始执行活动");
-        
+  
         // 2. 获取活动最新版本
         let latest_version = self.get_latest_version(activity_type).await?;
         let key = format!("{}:{}", activity_type, latest_version);
-        
+  
         // 3. 获取活动定义
         let definition = {
             let definitions = self.definitions.read().await;
@@ -2157,7 +2176,7 @@ impl ActivityExecutor for LocalActivityExecutor {
                 .cloned()
                 .ok_or_else(|| ActivityError::ActivityNotFound(format!("{} v{}", activity_type, latest_version)))?
         };
-        
+  
         // 4. 执行活动
         let start_time = Utc::now();
         let result = if let Some(retry_policy) = &definition.retry_policy {
@@ -2174,10 +2193,10 @@ impl ActivityExecutor for LocalActivityExecutor {
                 Err(_) => Err(ActivityError::Timeout),
             }
         };
-        
+  
         // 5. 记录结果
         let end_time = Utc::now();
-        
+  
         match &result {
             Ok(output) => {
                 // 记录成功执行
@@ -2190,10 +2209,10 @@ impl ActivityExecutor for LocalActivityExecutor {
                     completed_at: end_time,
                     status: "completed".to_string(),
                 };
-                
+  
                 let mut history = self.execution_history.write().await;
                 history.insert(correlation_id.to_string(), execution);
-                
+  
                 self.metrics.increment_counter(&format!("activity.{}.completed", activity_type));
                 info!("活动执行成功");
             },
@@ -2208,23 +2227,23 @@ impl ActivityExecutor for LocalActivityExecutor {
                     completed_at: end_time,
                     status: "failed".to_string(),
                 };
-                
+  
                 let mut history = self.execution_history.write().await;
                 history.insert(correlation_id.to_string(), execution);
-                
+  
                 self.metrics.increment_counter(&format!("activity.{}.failed", activity_type));
                 error!(error = %e, "活动执行失败");
             }
         }
-        
+  
         timer.observe_duration();
         result
     }
-    
+  
     #[instrument(skip(self), fields(correlation_id = %correlation_id))]
     async fn get_activity_execution(&self, correlation_id: &str) -> Result<ActivityExecution, ActivityError> {
         let history = self.execution_history.read().await;
-        
+  
         history.get(correlation_id)
             .cloned()
             .ok_or_else(|| ActivityError::InternalError(format!("未找到活动执行记录: {}", correlation_id)))
@@ -2238,19 +2257,20 @@ fn version_compare(a: &str, b: &str) -> std::cmp::Ordering {
             .filter_map(|s| s.parse::<u32>().ok())
             .collect()
     };
-    
+  
     let va = parse_version(a);
     let vb = parse_version(b);
-    
+  
     for (a_num, b_num) in va.iter().zip(vb.iter()) {
         match a_num.cmp(b_num) {
             std::cmp::Ordering::Equal => continue,
             other => return other,
         }
     }
-    
+  
     va.len().cmp(&vb.len())
 }
+
 ```
 
 ## 2.1 八、工作流引擎实现路线图
@@ -2342,64 +2362,64 @@ fn version_compare(a: &str, b: &str) -> std::cmp::Ordering {
 pub struct DistributedWorkflowEngine<S: WorkflowState, E: WorkflowEvent> {
     /// 本地工作流引擎
     local_engine: Arc<WorkflowEngine<S, E>>,
-    
+  
     /// 工作流分片协调器
     shard_coordinator: Arc<ShardCoordinator>,
-    
+  
     /// 分布式锁服务
     lock_service: Arc<dyn DistributedLockService>,
-    
+  
     /// 工作流调度器
     scheduler: Arc<WorkflowScheduler<S, E>>,
-    
+  
     /// 集群节点管理器
     node_manager: Arc<ClusterNodeManager>,
 }
 
-impl<S, E> DistributedWorkflowEngine<S, E> 
-where 
+impl<S, E> DistributedWorkflowEngine<S, E>
+where
     S: WorkflowState + for<'de> Deserialize<'de> + Serialize,
     E: WorkflowEvent + for<'de> Deserialize<'de> + Serialize,
 {
     pub async fn start_node(&self) -> Result<(), EngineError> {
         // 1. 注册节点
         let node_id = self.node_manager.register_node().await?;
-        
+  
         // 2. 获取分片分配
         let shards = self.shard_coordinator.get_assigned_shards(node_id).await?;
-        
+  
         // 3. 为每个分片启动工作流处理器
         for shard_id in shards {
             self.start_shard_processor(shard_id).await?;
         }
-        
+  
         // 4. 启动分片分配监听器
         self.start_shard_assignment_listener(node_id).await?;
-        
+  
         // 5. 启动心跳发送
         self.start_heartbeat_sender(node_id).await?;
-        
+  
         Ok(())
     }
-    
+  
     async fn start_shard_processor(&self, shard_id: String) -> Result<(), EngineError> {
         // 启动特定分片的处理循环
         let engine = self.local_engine.clone();
         let lock_service = self.lock_service.clone();
         let scheduler = self.scheduler.clone();
-        
+  
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_millis(100));
-            
+  
             loop {
                 interval.tick().await;
-                
+  
                 // 尝试获取分片锁
                 let lock = match lock_service.try_lock(&format!("shard:{}", shard_id), Duration::from_secs(30)).await {
                     Ok(lock) => lock,
                     Err(_) => continue, // 无法获取锁,稍后重试
                 };
-                
+  
                 // 处理分片中的工作流任务
                 match scheduler.get_tasks_for_shard(&shard_id, 10).await {
                     Ok(tasks) => {
@@ -2408,7 +2428,7 @@ where
                                 WorkflowTask::ProcessEvent { workflow_id, event } => {
                                     if let Err(e) = engine.trigger_event(&workflow_id, event).await {
                                         error!(workflow_id = %workflow_id, error = %e, "处理工作流事件失败");
-                                        
+  
                                         // 记录失败并可能重新调度
                                         if let Err(e) = scheduler.record_task_failure(&workflow_id, &e.to_string()).await {
                                             error!(workflow_id = %workflow_id, error = %e, "记录任务失败状态失败");
@@ -2423,30 +2443,30 @@ where
                         error!(shard_id = %shard_id, error = %e, "获取分片任务失败");
                     }
                 }
-                
+  
                 // 释放分片锁
                 if let Err(e) = lock_service.unlock(lock).await {
                     error!(shard_id = %shard_id, error = %e, "释放分片锁失败");
                 }
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     async fn start_shard_assignment_listener(&self, node_id: String) -> Result<(), EngineError> {
         let shard_coordinator = self.shard_coordinator.clone();
         let engine = self.clone();
-        
+  
         tokio::spawn(async move {
             let mut receiver = shard_coordinator.watch_shard_assignments(node_id.clone()).await
                 .expect("启动分片分配监听器失败");
-                
+  
             while let Some(assignments) = receiver.recv().await {
                 // 处理分片分配变更
                 let current_shards = shard_coordinator.get_assigned_shards(&node_id).await
                     .expect("获取当前分片分配失败");
-                    
+  
                 // 找出新分配的分片
                 for shard_id in assignments {
                     if !current_shards.contains(&shard_id) {
@@ -2455,33 +2475,34 @@ where
                         }
                     }
                 }
-                
+  
                 // 处理已经移除的分片
                 // 注意:分片处理器会在无法获取锁时自动退出
             }
         });
-        
+  
         Ok(())
     }
-    
+  
     async fn start_heartbeat_sender(&self, node_id: String) -> Result<(), EngineError> {
         let node_manager = self.node_manager.clone();
-        
+  
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(5));
-            
+  
             loop {
                 interval.tick().await;
-                
+  
                 if let Err(e) = node_manager.send_heartbeat(&node_id).await {
                     error!(node_id = %node_id, error = %e, "发送心跳失败");
                 }
             }
         });
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ### 2.2.2 2. 工作流定义DSL
@@ -2493,16 +2514,16 @@ where
 pub struct WorkflowDslParser<S: WorkflowState, E: WorkflowEvent> {
     /// 状态工厂
     state_factory: Arc<dyn StateFactory<S>>,
-    
+  
     /// 事件工厂
     event_factory: Arc<dyn EventFactory<E>>,
-    
+  
     /// 活动注册表
     activity_registry: Arc<dyn ActivityRegistry>,
 }
 
 impl<S, E> WorkflowDslParser<S, E>
-where 
+where
     S: WorkflowState + for<'de> Deserialize<'de> + Serialize,
     E: WorkflowEvent + for<'de> Deserialize<'de> + Serialize,
 {
@@ -2510,51 +2531,51 @@ where
     pub fn parse_from_file(&self, file_path: &str) -> Result<WorkflowDefinition<S, E>, DslError> {
         let content = std::fs::read_to_string(file_path)
             .map_err(|e| DslError::IoError(e.to_string()))?;
-            
+  
         self.parse(&content)
     }
-    
+  
     /// 解析DSL内容
     pub fn parse(&self, dsl_content: &str) -> Result<WorkflowDefinition<S, E>, DslError> {
         // 解析DSL内容为工作流定义
         let dsl: WorkflowDsl = serde_yaml::from_str(dsl_content)
             .map_err(|e| DslError::ParseError(e.to_string()))?;
-            
+  
         // 验证DSL定义
         self.validate_dsl(&dsl)?;
-        
+  
         // 创建初始状态
         let initial_state = self.state_factory.create_state(&dsl.initial_state)
             .map_err(|e| DslError::StateCreationError(e.to_string()))?;
-            
+  
         // 创建转换定义
         let mut transitions = Vec::new();
-        
+  
         for transition_def in dsl.transitions {
             let event_type = transition_def.event;
             let from_state = transition_def.from;
             let to_state = transition_def.to;
-            
+  
             // 创建条件
             let condition = if let Some(condition_expr) = transition_def.condition {
                 Some(self.create_condition_function(&condition_expr)?)
             } else {
                 None
             };
-            
+  
             // 创建动作
             let pre_action = if let Some(actions) = transition_def.pre_actions {
                 Some(self.create_action_function(&actions, "pre")?)
             } else {
                 None
             };
-            
+  
             let post_action = if let Some(actions) = transition_def.post_actions {
                 Some(self.create_action_function(&actions, "post")?)
             } else {
                 None
             };
-            
+  
             // 添加转换
             transitions.push(WorkflowTransition {
                 from_state,
@@ -2565,7 +2586,7 @@ where
                 post_action,
             });
         }
-        
+  
         // 创建工作流定义
         let definition = WorkflowDefinition {
             workflow_type: dsl.name,
@@ -2575,48 +2596,48 @@ where
             timeout_config: self.parse_timeout_config(&dsl.timeouts),
             retry_policy: self.parse_retry_policy(&dsl.retry_policy),
         };
-        
+  
         Ok(definition)
     }
-    
+  
     // 验证DSL定义
     fn validate_dsl(&self, dsl: &WorkflowDsl) -> Result<(), DslError> {
         // 验证工作流名称和版本
         if dsl.name.is_empty() {
             return Err(DslError::ValidationError("工作流名称不能为空".to_string()));
         }
-        
+  
         if dsl.version.is_empty() {
             return Err(DslError::ValidationError("工作流版本不能为空".to_string()));
         }
-        
+  
         // 验证初始状态
         if dsl.initial_state.is_empty() {
             return Err(DslError::ValidationError("初始状态不能为空".to_string()));
         }
-        
+  
         // 验证转换定义
         if dsl.transitions.is_empty() {
             return Err(DslError::ValidationError("至少需要一个状态转换".to_string()));
         }
-        
+  
         for (i, transition) in dsl.transitions.iter().enumerate() {
             if transition.from.is_empty() {
                 return Err(DslError::ValidationError(format!("转换 #{} 的源状态不能为空", i)));
             }
-            
+  
             if transition.to.is_empty() {
                 return Err(DslError::ValidationError(format!("转换 #{} 的目标状态不能为空", i)));
             }
-            
+  
             if transition.event.is_empty() {
                 return Err(DslError::ValidationError(format!("转换 #{} 的事件类型不能为空", i)));
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 创建条件函数
     fn create_condition_function(
         &self,
@@ -2627,7 +2648,7 @@ where
         // 简化示例:返回一个始终为真的条件
         Ok(Box::new(move |_, _, _| true))
     }
-    
+  
     // 创建动作函数
     fn create_action_function(
         &self,
@@ -2637,21 +2658,21 @@ where
         // 创建动作执行器
         let action_executor = self.activity_registry.clone();
         let actions = actions.to_vec();
-        
+  
         Ok(Box::new(move |state, event, context| {
             let actions = actions.clone();
             let action_executor = action_executor.clone();
-            
+  
             Box::pin(async move {
                 for action in &actions {
                     match action.action_type.as_str() {
                         "activity" => {
                             // 执行活动
                             let input = self.prepare_activity_input(&action.parameters, state, event, context)?;
-                            
+  
                             let result = action_executor.execute_activity(&action.name, input).await
                                 .map_err(|e| WorkflowError::ActivityError(e.to_string()))?;
-                                
+  
                             // 处理结果
                             if let Some(result_var) = &action.result_variable {
                                 context.set_variable(result_var, result);
@@ -2661,10 +2682,10 @@ where
                             // 设置变量
                             let variable_name = action.parameters.get("name")
                                 .ok_or_else(|| WorkflowError::ValidationError("变量名称缺失".to_string()))?;
-                                
+  
                             let variable_value = action.parameters.get("value")
                                 .ok_or_else(|| WorkflowError::ValidationError("变量值缺失".to_string()))?;
-                                
+  
                             context.set_variable(
                                 variable_name.as_str().unwrap_or(""),
                                 variable_value.clone(),
@@ -2678,12 +2699,12 @@ where
                         }
                     }
                 }
-                
+  
                 Ok(())
             })
         }))
     }
-    
+  
     // 准备活动输入
     fn prepare_activity_input(
         &self,
@@ -2693,7 +2714,7 @@ where
         context: &WorkflowContext,
     ) -> Result<serde_json::Value, WorkflowError> {
         let mut input = serde_json::Map::new();
-        
+  
         for (key, value) in parameters {
             if let serde_json::Value::String(s) = value {
                 if s.starts_with("${") && s.ends_with("}") {
@@ -2708,10 +2729,10 @@ where
                 input.insert(key.clone(), value.clone());
             }
         }
-        
+  
         Ok(serde_json::Value::Object(input))
     }
-    
+  
     // 解析表达式
     fn resolve_expression(
         &self,
@@ -2734,12 +2755,12 @@ where
             Err(WorkflowError::ValidationError(format!("无法解析表达式: {}", expr)))
         }
     }
-    
+  
     // 解析超时配置
     fn parse_timeout_config(&self, timeouts: &Option<TimeoutsDef>) -> Option<WorkflowTimeoutConfig> {
         timeouts.as_ref().map(|t| {
             let workflow_timeout = t.workflow.map(|secs| chrono::Duration::seconds(secs as i64));
-            
+  
             let mut state_timeouts = None;
             if let Some(states) = &t.states {
                 let mut map = HashMap::new();
@@ -2750,9 +2771,9 @@ where
                     state_timeouts = Some(map);
                 }
             }
-            
+  
             let activity_timeout = t.activity.map(|secs| chrono::Duration::seconds(secs as i64));
-            
+  
             WorkflowTimeoutConfig {
                 workflow_timeout,
                 state_timeouts,
@@ -2760,7 +2781,7 @@ where
             }
         })
     }
-    
+  
     // 解析重试策略
     fn parse_retry_policy(&self, retry: &Option<RetryPolicyDef>) -> Option<RetryPolicy> {
         retry.as_ref().map(|r| {
@@ -2776,7 +2797,9 @@ where
 }
 
 /// 工作流DSL结构
-#[derive(Debug, Serialize, Deserialize)]
+
+# [derive(Debug, Serialize, Deserialize)]
+
 struct WorkflowDsl {
     name: String,
     version: String,
@@ -2788,7 +2811,8 @@ struct WorkflowDsl {
     retry_policy: Option<RetryPolicyDef>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct StateDef {
     name: String,
     description: Option<String>,
@@ -2796,7 +2820,8 @@ struct StateDef {
     metadata: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct TransitionDef {
     from: String,
     to: String,
@@ -2807,7 +2832,8 @@ struct TransitionDef {
     post_actions: Option<Vec<ActionDef>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 struct ActionDef {
     name: String,
     action_type: String,
@@ -2816,14 +2842,16 @@ struct ActionDef {
     result_variable: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct TimeoutsDef {
     workflow: Option<u64>,
     states: Option<HashMap<String, u64>>,
     activity: Option<u64>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+# [derive(Debug, Serialize, Deserialize)]
+
 struct RetryPolicyDef {
     max_attempts: u32,
     initial_interval_seconds: u64,
@@ -2833,26 +2861,29 @@ struct RetryPolicyDef {
 }
 
 /// DSL解析错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum DslError {
     #[error("解析错误: {0}")]
     ParseError(String),
-    
+  
     #[error("验证错误: {0}")]
     ValidationError(String),
-    
+  
     #[error("状态创建错误: {0}")]
     StateCreationError(String),
-    
+  
     #[error("事件创建错误: {0}")]
     EventCreationError(String),
-    
+  
     #[error("IO错误: {0}")]
     IoError(String),
-    
+  
     #[error("表达式解析错误: {0}")]
     ExpressionError(String),
 }
+
 ```
 
 ### 2.2.3 3. 工作流可视化和监控
@@ -2864,19 +2895,19 @@ pub enum DslError {
 pub struct WorkflowMonitoringService<S: WorkflowState, E: WorkflowEvent> {
     /// 工作流引擎
     workflow_engine: Arc<WorkflowEngine<S, E>>,
-    
+  
     /// 度量收集器
     metrics: Arc<Metrics>,
-    
+  
     /// 工作流统计数据
     stats_repository: Arc<dyn WorkflowStatsRepository>,
-    
+  
     /// 活动实时监控
     activity_monitor: Arc<dyn ActivityMonitor>,
 }
 
 impl<S, E> WorkflowMonitoringService<S, E>
-where 
+where
     S: WorkflowState + for<'de> Deserialize<'de> + Serialize,
     E: WorkflowEvent + for<'de> Deserialize<'de> + Serialize,
 {
@@ -2884,32 +2915,32 @@ where
     pub async fn get_workflow_state_stats(&self, workflow_type: &str) -> Result<WorkflowStateStats, MonitoringError> {
         self.stats_repository.get_state_distribution(workflow_type).await
     }
-    
+  
     /// 获取活动执行统计
     pub async fn get_activity_stats(&self, activity_type: &str, time_range: TimeRange) -> Result<ActivityStats, MonitoringError> {
         self.stats_repository.get_activity_stats(activity_type, time_range).await
     }
-    
+  
     /// 获取工作流执行时间统计
     pub async fn get_workflow_duration_stats(&self, workflow_type: &str, time_range: TimeRange) -> Result<DurationStats, MonitoringError> {
         self.stats_repository.get_workflow_duration_stats(workflow_type, time_range).await
     }
-    
+  
     /// 获取当前活跃工作流实例
     pub async fn get_active_workflow_instances(&self, workflow_type: &str, page: usize, page_size: usize) -> Result<PaginatedResult<WorkflowInstanceSummary>, MonitoringError> {
         self.stats_repository.get_active_instances(workflow_type, page, page_size).await
     }
-    
+  
     /// 获取工作流历史趋势
     pub async fn get_workflow_trend(&self, workflow_type: &str, time_range: TimeRange, interval: TimeInterval) -> Result<WorkflowTrendStats, MonitoringError> {
         self.stats_repository.get_workflow_trend(workflow_type, time_range, interval).await
     }
-    
+  
     /// 订阅工作流事件
     pub fn subscribe_to_workflow_events(&self, workflow_id: &str) -> mpsc::Receiver<WorkflowEventNotification> {
         self.activity_monitor.subscribe_to_workflow(workflow_id)
     }
-    
+  
     /// 获取工作流DAG可视化数据
     pub async fn get_workflow_visualization_data(&self, workflow_type: &str, version: Option<String>) -> Result<WorkflowVisualizationData, MonitoringError> {
         // 1. 获取工作流定义
@@ -2917,11 +2948,11 @@ where
             Some(v) => self.workflow_engine.get_definition_by_version(workflow_type, &v).await?,
             None => self.workflow_engine.get_latest_definition(workflow_type).await?,
         };
-        
+  
         // 2. 构建节点列表
         let mut nodes = Vec::new();
         let mut edges = Vec::new();
-        
+  
         // 添加初始状态节点
         let initial_state = workflow_def.initial_state.state_type();
         nodes.push(VisNode {
@@ -2933,15 +2964,15 @@ where
                 "isTerminal": workflow_def.initial_state.is_terminal(),
             }),
         });
-        
+  
         // 处理转换,提取所有状态和边
         let mut all_states = HashSet::new();
         all_states.insert(initial_state.to_string());
-        
+  
         for transition in &workflow_def.transitions {
             all_states.insert(transition.from_state.clone());
             all_states.insert(transition.to_state.clone());
-            
+  
             // 添加边
             edges.push(VisEdge {
                 id: format!("{}-{}-{}", transition.from_state, transition.event_type, transition.to_state),
@@ -2954,7 +2985,7 @@ where
                 }),
             });
         }
-        
+  
         // 添加所有状态节点
         for state in all_states {
             if state != initial_state {
@@ -2962,7 +2993,7 @@ where
                 let is_terminal = workflow_def.transitions.iter()
                     .filter(|t| t.from_state == state)
                     .count() == 0;
-                    
+  
                 nodes.push(VisNode {
                     id: state.clone(),
                     label: state.clone(),
@@ -2974,7 +3005,7 @@ where
                 });
             }
         }
-        
+  
         Ok(WorkflowVisualizationData {
             workflow_type: workflow_type.to_string(),
             version: workflow_def.version,
@@ -2982,23 +3013,23 @@ where
             edges,
         })
     }
-    
+  
     /// 获取工作流热点路径分析
     pub async fn get_workflow_hotpath_analysis(&self, workflow_type: &str, time_range: TimeRange) -> Result<WorkflowHotpathAnalysis, MonitoringError> {
         self.stats_repository.get_hotpath_analysis(workflow_type, time_range).await
     }
-    
+  
     /// 启动统计收集器
     pub async fn start_stats_collector(&self, interval: Duration) -> tokio::task::JoinHandle<()> {
         let stats_repository = self.stats_repository.clone();
         let workflow_engine = self.workflow_engine.clone();
-        
+  
         tokio::spawn(async move {
             let mut collection_interval = tokio::time::interval(interval);
-            
+  
             loop {
                 collection_interval.tick().await;
-                
+  
                 // 收集工作流统计数据
                 if let Err(e) = stats_repository.collect_current_stats().await {
                     error!("收集工作流统计数据失败: {:?}", e);
@@ -3009,7 +3040,9 @@ where
 }
 
 /// 可视化节点
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct VisNode {
     pub id: String,
     pub label: String,
@@ -3018,7 +3051,9 @@ pub struct VisNode {
 }
 
 /// 可视化边
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct VisEdge {
     pub id: String,
     pub source: String,
@@ -3028,13 +3063,16 @@ pub struct VisEdge {
 }
 
 /// 工作流可视化数据
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct WorkflowVisualizationData {
     pub workflow_type: String,
     pub version: String,
     pub nodes: Vec<VisNode>,
     pub edges: Vec<VisEdge>,
 }
+
 ```
 
 ## 2.3 十、总结与建议
@@ -3153,18 +3191,20 @@ pub struct WorkflowVisualizationData {
 
 ```rust
 /// 订单工作流状态
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub enum OrderState {
     Created {
         order_id: String,
         created_at: DateTime<Utc>,
     },
-    
+  
     Validated {
         order_id: String,
         validated_at: DateTime<Utc>,
     },
-    
+  
     PaymentPending {
         order_id: String,
         payment_id: Option<String>,
@@ -3172,7 +3212,7 @@ pub enum OrderState {
         currency: String,
         started_at: DateTime<Utc>,
     },
-    
+  
     PaymentFailed {
         order_id: String,
         payment_id: Option<String>,
@@ -3180,20 +3220,20 @@ pub enum OrderState {
         failed_at: DateTime<Utc>,
         attempt_count: u32,
     },
-    
+  
     PaymentCompleted {
         order_id: String,
         payment_id: String,
         transaction_id: String,
         completed_at: DateTime<Utc>,
     },
-    
+  
     InventoryAllocated {
         order_id: String,
         allocation_id: String,
         allocated_at: DateTime<Utc>,
     },
-    
+  
     Shipped {
         order_id: String,
         shipment_id: String,
@@ -3201,19 +3241,19 @@ pub enum OrderState {
         carrier: String,
         shipped_at: DateTime<Utc>,
     },
-    
+  
     Delivered {
         order_id: String,
         shipment_id: String,
         delivered_at: DateTime<Utc>,
     },
-    
+  
     Cancelled {
         order_id: String,
         reason: String,
         cancelled_at: DateTime<Utc>,
     },
-    
+  
     Refunded {
         order_id: String,
         refund_id: String,
@@ -3237,26 +3277,29 @@ impl WorkflowState for OrderState {
             OrderState::Refunded { .. } => "refunded",
         }
     }
-    
+  
     fn is_terminal(&self) -> bool {
         matches!(self, OrderState::Delivered { .. } | OrderState::Cancelled { .. } | OrderState::Refunded { .. })
     }
-    
+  
     fn to_json(&self) -> Result<serde_json::Value, serde_json::Error> {
         serde_json::to_value(self)
     }
-    
+  
     fn from_json(json: &serde_json::Value) -> Result<Self, serde_json::Error> {
         serde_json::from_value(json.clone())
     }
 }
+
 ```
 
 ### 2.4.2 2. 订单工作流事件定义
 
 ```rust
 /// 订单工作流事件
-#[derive(Clone, Debug, Serialize, Deserialize)]
+
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 pub enum OrderEvent {
     OrderCreated {
         event_id: Uuid,
@@ -3268,13 +3311,13 @@ pub enum OrderEvent {
         shipping_address: Address,
         timestamp: DateTime<Utc>,
     },
-    
+  
     OrderValidated {
         event_id: Uuid,
         order_id: String,
         timestamp: DateTime<Utc>,
     },
-    
+  
     PaymentInitiated {
         event_id: Uuid,
         order_id: String,
@@ -3284,7 +3327,7 @@ pub enum OrderEvent {
         payment_method: PaymentMethod,
         timestamp: DateTime<Utc>,
     },
-    
+  
     PaymentFailed {
         event_id: Uuid,
         order_id: String,
@@ -3293,7 +3336,7 @@ pub enum OrderEvent {
         attempt_count: u32,
         timestamp: DateTime<Utc>,
     },
-    
+  
     PaymentCompleted {
         event_id: Uuid,
         order_id: String,
@@ -3301,7 +3344,7 @@ pub enum OrderEvent {
         transaction_id: String,
         timestamp: DateTime<Utc>,
     },
-    
+  
     InventoryAllocated {
         event_id: Uuid,
         order_id: String,
@@ -3309,7 +3352,7 @@ pub enum OrderEvent {
         items: Vec<AllocatedItem>,
         timestamp: DateTime<Utc>,
     },
-    
+  
     OrderShipped {
         event_id: Uuid,
         order_id: String,
@@ -3318,21 +3361,21 @@ pub enum OrderEvent {
         carrier: String,
         timestamp: DateTime<Utc>,
     },
-    
+  
     OrderDelivered {
         event_id: Uuid,
         order_id: String,
         shipment_id: String,
         timestamp: DateTime<Utc>,
     },
-    
+  
     OrderCancelled {
         event_id: Uuid,
         order_id: String,
         reason: String,
         timestamp: DateTime<Utc>,
     },
-    
+  
     RefundProcessed {
         event_id: Uuid,
         order_id: String,
@@ -3340,7 +3383,7 @@ pub enum OrderEvent {
         amount: f64,
         timestamp: DateTime<Utc>,
     },
-    
+  
     RetryPayment {
         event_id: Uuid,
         order_id: String,
@@ -3364,19 +3407,20 @@ impl WorkflowEvent for OrderEvent {
             OrderEvent::RetryPayment { .. } => "retry_payment",
         }
     }
-    
+  
     fn payload(&self) -> &serde_json::Value {
         &serde_json::json!({})  // 实际实现中会返回事件数据
     }
-    
+  
     fn to_json(&self) -> Result<serde_json::Value, serde_json::Error> {
         serde_json::to_value(self)
     }
-    
+  
     fn from_json(json: &serde_json::Value) -> Result<Self, serde_json::Error> {
         serde_json::from_value(json.clone())
     }
 }
+
 ```
 
 ### 2.4.3 3. 订单工作流定义
@@ -3385,7 +3429,7 @@ impl WorkflowEvent for OrderEvent {
 /// 创建订单工作流定义
 pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, OrderEvent> {
     let mut transitions = Vec::new();
-    
+  
     // 1. Created -> Validated (订单验证)
     transitions.push(WorkflowTransition {
         from_state: "created".to_string(),
@@ -3399,12 +3443,12 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                     OrderState::Created { order_id, .. } => order_id.clone(),
                     _ => return Err(WorkflowError::InternalError("状态类型错误".to_string())),
                 };
-                
+  
                 // 构建验证请求
                 let validate_input = serde_json::json!({
                     "order_id": order_id,
                 });
-                
+  
                 // 获取活动执行器并执行验证
                 if let Some(activity_executor) = context.get_transient("activity_executor") {
                     if let Some(executor) = activity_executor.as_object() {
@@ -3412,13 +3456,13 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                         // 此处省略实际实现...
                     }
                 }
-                
+  
                 Ok(())
             })
         })),
         post_action: None,
     });
-    
+  
     // 2. Validated -> PaymentPending (发起支付)
     transitions.push(WorkflowTransition {
         from_state: "validated".to_string(),
@@ -3432,24 +3476,24 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                     OrderState::Validated { order_id, .. } => order_id.clone(),
                     _ => return Err(WorkflowError::InternalError("状态类型错误".to_string())),
                 };
-                
+  
                 // 从上下文中获取支付信息
                 let amount = context.get_variable("total_amount")
                     .and_then(|v| v.as_f64())
                     .ok_or_else(|| WorkflowError::ValidationError("缺少总金额".to_string()))?;
-                    
+  
                 let currency = context.get_variable("currency")
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| WorkflowError::ValidationError("缺少币种".to_string()))?;
-                    
+  
                 // 构建支付请求...
-                
+  
                 Ok(())
             })
         })),
         post_action: None,
     });
-    
+  
     // 3. PaymentPending -> PaymentFailed (支付失败)
     transitions.push(WorkflowTransition {
         from_state: "payment_pending".to_string(),
@@ -3464,12 +3508,12 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                     context.set_variable("payment_failure_reason", serde_json::Value::String(reason.clone()));
                     context.set_variable("payment_attempts", serde_json::json!(attempt_count));
                 }
-                
+  
                 Ok(())
             })
         })),
     });
-    
+  
     // 4. PaymentFailed -> PaymentPending (重试支付)
     transitions.push(WorkflowTransition {
         from_state: "payment_failed".to_string(),
@@ -3485,7 +3529,7 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
         pre_action: None,
         post_action: None,
     });
-    
+  
     // 5. PaymentFailed -> Cancelled (放弃重试,取消订单)
     transitions.push(WorkflowTransition {
         from_state: "payment_failed".to_string(),
@@ -3501,7 +3545,7 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
         pre_action: None,
         post_action: None,
     });
-    
+  
     // 6. PaymentPending -> PaymentCompleted (支付成功)
     transitions.push(WorkflowTransition {
         from_state: "payment_pending".to_string(),
@@ -3511,7 +3555,7 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
         pre_action: None,
         post_action: None,
     });
-    
+  
     // 7. PaymentCompleted -> InventoryAllocated (分配库存)
     transitions.push(WorkflowTransition {
         from_state: "payment_completed".to_string(),
@@ -3525,19 +3569,19 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                     OrderState::PaymentCompleted { order_id, .. } => order_id.clone(),
                     _ => return Err(WorkflowError::InternalError("状态类型错误".to_string())),
                 };
-                
+  
                 // 从上下文中获取订单项
                 let items = context.get_variable("items")
                     .ok_or_else(|| WorkflowError::ValidationError("缺少订单项".to_string()))?;
-                    
+  
                 // 构建库存分配请求...
-                
+  
                 Ok(())
             })
         })),
         post_action: None,
     });
-    
+  
     // 8. InventoryAllocated -> Shipped (订单发货)
     transitions.push(WorkflowTransition {
         from_state: "inventory_allocated".to_string(),
@@ -3551,9 +3595,9 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                     OrderState::InventoryAllocated { order_id, .. } => order_id.clone(),
                     _ => return Err(WorkflowError::InternalError("状态类型错误".to_string())),
                 };
-                
+  
                 // 构建发货请求...
-                
+  
                 Ok(())
             })
         })),
@@ -3568,16 +3612,16 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                         "carrier": carrier,
                         "type": "shipping_notification"
                     });
-                    
+  
                     // 发送通知...
                     context.set_variable("notification_sent", serde_json::json!(true));
                 }
-                
+  
                 Ok(())
             })
         })),
     });
-    
+  
     // 9. Shipped -> Delivered (订单交付)
     transitions.push(WorkflowTransition {
         from_state: "shipped".to_string(),
@@ -3594,16 +3638,16 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                         "order_id": order_id,
                         "type": "delivery_notification"
                     });
-                    
+  
                     // 发送通知...
                     context.set_variable("delivery_notification_sent", serde_json::json!(true));
                 }
-                
+  
                 Ok(())
             })
         })),
     });
-    
+  
     // 10. 任何非终态 -> Cancelled (订单取消)
     // 从Created到Shipped的任何状态都可以取消
     for state in &["created", "validated", "payment_pending", "payment_completed", "inventory_allocated", "shipped"] {
@@ -3618,7 +3662,7 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                     // 处理取消后的清理操作
                     if let OrderEvent::OrderCancelled { order_id, reason, .. } = event {
                         context.set_variable("cancellation_reason", serde_json::Value::String(reason.clone()));
-                        
+  
                         // 根据当前状态执行不同的补偿操作
                         match state {
                             OrderState::PaymentCompleted { .. } => {
@@ -3632,13 +3676,13 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                             _ => {} // 其他状态无需特殊处理
                         }
                     }
-                    
+  
                     Ok(())
                 })
             })),
         });
     }
-    
+  
     // 11. PaymentCompleted/InventoryAllocated/Shipped/Cancelled -> Refunded (退款处理)
     for state in &["payment_completed", "inventory_allocated", "shipped", "cancelled"] {
         transitions.push(WorkflowTransition {
@@ -3650,7 +3694,7 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                 Box::pin(async move {
                     // 发起退款操作
                     let (order_id, payment_id) = match state {
-                        OrderState::PaymentCompleted { order_id, payment_id, .. } => 
+                        OrderState::PaymentCompleted { order_id, payment_id, .. } =>
                             (order_id.clone(), Some(payment_id.clone())),
                         OrderState::InventoryAllocated { order_id, .. } =>
                             (order_id.clone(), context.get_variable("payment_id").and_then(|v| v.as_str().map(String::from))),
@@ -3660,13 +3704,13 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                             (order_id.clone(), context.get_variable("payment_id").and_then(|v| v.as_str().map(String::from))),
                         _ => return Err(WorkflowError::InternalError("状态类型错误".to_string())),
                     };
-                    
+  
                     if let Some(payment_id) = payment_id {
                         // 构建退款请求...
                     } else {
                         return Err(WorkflowError::ValidationError("找不到支付ID,无法发起退款".to_string()));
                     }
-                    
+  
                     Ok(())
                 })
             })),
@@ -3681,34 +3725,34 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
                             "amount": amount,
                             "type": "refund_notification"
                         });
-                        
+  
                         // 发送通知...
                         context.set_variable("refund_notification_sent", serde_json::json!(true));
                     }
-                    
+  
                     Ok(())
                 })
             })),
         });
     }
-    
+  
     // 创建工作流定义
-    let initial_state = OrderState::Created { 
-        order_id: "placeholder".to_string(), 
-        created_at: Utc::now() 
+    let initial_state = OrderState::Created {
+        order_id: "placeholder".to_string(),
+        created_at: Utc::now()
     };
-    
+  
     // 设置超时配置
     let mut state_timeouts = HashMap::new();
     state_timeouts.insert("payment_pending".to_string(), chrono::Duration::hours(2)); // 支付有2小时超时
     state_timeouts.insert("shipped".to_string(), chrono::Duration::days(14)); // 发货后14天送达超时
-    
+  
     let timeout_config = Some(WorkflowTimeoutConfig {
         workflow_timeout: Some(chrono::Duration::days(30)), // 整个订单流程30天超时
         state_timeouts: Some(state_timeouts),
         activity_timeout: Some(chrono::Duration::minutes(5)), // 活动默认5分钟超时
     });
-    
+  
     // 设置重试策略
     let retry_policy = Some(RetryPolicy {
         max_attempts: 3,
@@ -3717,7 +3761,7 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
         backoff_coefficient: 2.0,
         non_retryable_errors: vec!["ValidationError".to_string(), "BusinessRuleViolation".to_string()],
     });
-    
+  
     WorkflowDefinition {
         workflow_type: "order_processing".to_string(),
         version: "1.0.0".to_string(),
@@ -3727,6 +3771,7 @@ pub fn create_order_workflow_definition() -> WorkflowDefinition<OrderState, Orde
         retry_policy,
     }
 }
+
 ```
 
 通过以上示例,我们可以看到工作流引擎如何应用于实际业务场景。这种设计将业务逻辑和状态转换规则清晰地分离,并利用Rust的类型系统确保状态转换的安全性。通过事件溯源,系统可以确保所有业务操作都被记录和可审计,同时提供高效的错误处理和恢复机制。

@@ -70,6 +70,7 @@ struct Meters(i32); // 新类型，封装了 i32
 fn distance_travelled(distance: Meters) {
     println!("Distance: {} m", distance.0);
 }
+
 ```
 
 ## 2. 类型别名（Type Alias）
@@ -84,6 +85,7 @@ type Kilometers = i32; // 类型别名
 fn distance_travelled(distance: Kilometers) {
     println!("Distance: {} km", distance);
 }
+
 ```
 
 ## 3. 类型相同（Type Identity）
@@ -106,6 +108,7 @@ fn add_distance(a: Meters, b: Meters) -> Meters {
 // fn add_mixed(a: Meters, b: Kilometers) -> Meters {
 //     Meters(a.0 + b.0) // 错误
 // }
+
 ```
 
 ## 4. 类型等价（Type Equivalence）
@@ -122,6 +125,7 @@ type Kilometers = i32; // 类型别名，等价于 i32
 fn add_distance(a: Kilometers, b: Kilometers) -> Kilometers {
     a + b // 这里可以直接使用 i32 的操作
 }
+
 ```
 
 ## 5. 类型操作（Type Operations）
@@ -173,6 +177,7 @@ Rust 的类型系统支持类型推导，这意味着编译器可以根据上下
 ```rust
 let x = 5; // 编译器推导 x 的类型为 i32
 let y = 3.14; // 编译器推导 y 的类型为 f64
+
 ```
 
 ## 7. 泛型（Generics）
@@ -195,6 +200,7 @@ fn main() {
     let int_wrapper = Wrapper::new(10); // 包装一个 i32
     let str_wrapper = Wrapper::new("Hello"); // 包装一个 &str
 }
+
 ```
 
 ## 8. 类型转换（Type Conversion）
@@ -241,6 +247,7 @@ trait Shape {
 fn print_area<T: Shape>(shape: T) {
     println!("Area: {}", shape.area());
 }
+
 ```
 
 ## 10. 组合类型（Composite Types）
@@ -266,6 +273,7 @@ enum ShapeEnum {
     Circle(Circle),
     Rectangle(Rectangle),
 }
+
 ```
 
 ## 10.2 总结
@@ -295,6 +303,7 @@ fn longest<'a>(s1: &'a str, s2: &'a str) -> &'a str {
         s2
     }
 }
+
 ```
 
 在这个例子中，`longest` 函数接受两个字符串切片，并返回一个引用，
@@ -325,6 +334,7 @@ impl Shape for Circle {
         std::f64::consts::PI * self.radius * self.radius
     }
 }
+
 ```
 
 ## 13. 特征对象（Trait Objects）
@@ -347,6 +357,7 @@ fn print_area(shape: &dyn Shape) {
 
 let circle = Circle { radius: 5.0 };
 print_area(&circle); // 传递实现了 Shape 特征的对象
+
 ```
 
 ## 14. 代数数据类型（Algebraic Data Types, ADTs）
@@ -368,6 +379,7 @@ fn area(shape: Shape) -> f64 {
         Shape::Rectangle(width, height) => width * height,
     }
 }
+
 ```
 
 ## 15. 组合与解构（Composition and Destructuring）
@@ -389,6 +401,7 @@ fn print_point(Point { x, y }: Point) {
 
 let point = Point { x: 10, y: 20 };
 print_point(point); // 解构 Point
+
 ```
 
 ## 16. 运行时与编译时类型检查
@@ -445,6 +458,7 @@ fn main() {
     duck.fly();
     duck.swim();
 }
+
 ```
 
 在这个例子中，`Duck` 结构体实现了两个特征，分别表示可以飞和可以游泳的能力。
@@ -483,6 +497,7 @@ fn main() {
     };
     dog.speak();
 }
+
 ```
 
 ## 20. 迭代器（Iterators）
@@ -498,6 +513,7 @@ fn main() {
     let sum: i32 = numbers.iter().sum(); // 使用迭代器计算总和
     println!("Sum: {}", sum);
 }
+
 ```
 
 ## 21. 错误处理（Error Handling）
@@ -515,6 +531,7 @@ fn divide(a: i32, b: i32) -> Result<i32, String> {
         Ok(a / b)
     }
 }
+
 ```
 
 - **Option**：用于表示可能存在或不存在的值。
@@ -528,6 +545,7 @@ fn find_item(index: usize) -> Option<&'static str> {
         None
     }
 }
+
 ```
 
 ## 22. 并发（Concurrency）
@@ -560,6 +578,7 @@ fn main() {
 
     println!("Result: {}", *counter.lock().unwrap());
 }
+
 ```
 
 ## 23. 宏（Macros）
@@ -579,6 +598,7 @@ macro_rules! say_hello {
 fn main() {
     say_hello!(); // 调用宏
 }
+
 ```
 
 ## 24. 代码组织（Modules and Crates）
@@ -599,6 +619,7 @@ mod my_module {
 fn main() {
     my_module::greet(); // 调用模块中的函数
 }
+
 ```
 
 ## 25. 性能优化

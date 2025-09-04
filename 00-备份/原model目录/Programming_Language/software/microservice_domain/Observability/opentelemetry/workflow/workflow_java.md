@@ -32,6 +32,7 @@ From a category theory perspective, I can model:
 This should provide a comprehensive analysis showing how workflow 
 concepts map to OpenTelemetry's architecture.
 </think>
+
 ```
 
 ## 目录
@@ -254,7 +255,7 @@ OpenTelemetry中的遥测数据类型可以通过范畴论中的态射类型来�
 
    ```java
    // 记录日志
-   logger.recordEvent("request_received", 
+   logger.recordEvent("request_received",
        Attributes.builder()
            .put("request_id", requestId)
            .put("user_id", userId)
@@ -312,6 +313,7 @@ try (Scope scope = childSpan.makeCurrent()) {
 } finally {
     childSpan.end();
 }
+
 ```
 
 ## 3. 同构关系：工作流与分布式追踪
@@ -394,6 +396,7 @@ try (Scope scope = childSpan.makeCurrent()) {
 ```logic
 开始订单处理 → 验证订单 → 支付处理 → [成功] → 配送安排 → 通知客户 → 结束
                                → [失败] → 回退处理 → 通知客户 → 结束
+
 ```
 
 分布式追踪表示：
@@ -409,6 +412,7 @@ Span("订单处理") {
   }
   Span("通知客户") {...}
 }
+
 ```
 
 同构映射代码示例：
@@ -475,6 +479,7 @@ DistributedTrace mapToTrace(Workflow workflow) {
   
   return new DistributedTrace(rootSpan);
 }
+
 ```
 
 **示例3.3.2**：数据处理工作流同构映射
@@ -568,6 +573,7 @@ void logsToMetrics(LogRecord logRecord, MeterProvider meterProvider) {
         }
     }
 }
+
 ```
 
 ### 4.3 等价系统对比
@@ -645,6 +651,7 @@ public class TracesToMetricsProcessor implements SpanProcessor {
         return true;
     }
 }
+
 ```
 
 ## 5. 组合关系：遥测处理管道
@@ -710,6 +717,7 @@ public <T, R1, R2, R> Processor<T, R> parallelComposition(
         }
     };
 }
+
 ```
 
 ### 5.3 组合应用实例
@@ -771,11 +779,11 @@ interface Processor<I, O> {
 // 采样处理器：根据采样策略过滤追踪
 class SamplingProcessor implements SpanProcessor {
     private final Sampler sampler;
-    
+  
     public SamplingProcessor(Sampler sampler) {
         this.sampler = sampler;
     }
-    
+  
     @Override
     public void onStart(Context context, ReadWriteSpan span) {
         SamplingResult result = sampler.shouldSample(
@@ -786,7 +794,7 @@ class SamplingProcessor implements SpanProcessor {
             span.getAttributes(),
             Collections.emptyList()
         );
-        
+  
         if (result.getDecision() == SamplingDecision.DROP) {
             span.setAttribute("sampled", false);
         } else {
@@ -797,17 +805,17 @@ class SamplingProcessor implements SpanProcessor {
             }
         }
     }
-    
+  
     @Override
     public void onEnd(ReadWriteSpan span) {
         // 不在结束时操作
     }
-    
+  
     @Override
     public boolean isStartRequired() {
         return true;
     }
-    
+  
     @Override
     public boolean isEndRequired() {
         return false;
@@ -818,35 +826,36 @@ class SamplingProcessor implements SpanProcessor {
 class EnrichmentProcessor implements SpanProcessor {
     private final Function<Resource, Resource> resourceEnricher;
     private final Consumer<ReadWriteSpan> spanEnricher;
-    
+  
     public EnrichmentProcessor(
             Function<Resource, Resource> resourceEnricher,
             Consumer<ReadWriteSpan> spanEnricher) {
         this.resourceEnricher = resourceEnricher;
         this.spanEnricher = spanEnricher;
     }
-    
+  
     @Override
     public void onStart(Context context, ReadWriteSpan span) {
         // 在开始时丰富span
         spanEnricher.accept(span);
     }
-    
+  
     @Override
     public void onEnd(ReadWriteSpan span) {
         // 不在结束时操作
     }
-    
+  
     @Override
     public boolean isStartRequired() {
         return true;
     }
-    
+  
     @Override
     public boolean isEndRequired() {
         return false;
     }
 }
+
 ```
 
 **示例5.3.2**：度量处理管道
@@ -861,61 +870,62 @@ public class MetricsProcessingPipeline {
         MetricExporter otlpExporter = OtlpGrpcMetricExporter.builder()
             .setEndpoint("https://otel-collector:4317")
             .build();
-        
+  
         // 聚合处理：配置聚合器
-        AggregationTemporalitySelector temporalitySelector = 
+        AggregationTemporalitySelector temporalitySelector =
             AggregationTemporalitySelector.deltaPreferred();
-        
+  
         // 过滤处理：选择性导出度量
         MetricExporter filteredExporter = new FilteringMetricExporter(
             otlpExporter,
             metricData -> {
                 // 只导出特定命名空间的度量
                 String metricName = metricData.getName();
-                return metricName.startsWith("app.") || 
+                return metricName.startsWith("app.") ||
                        metricName.startsWith("http.") ||
                        metricName.startsWith("db.");
             }
         );
-        
+  
         // 批处理：配置周期性导出
         return PeriodicMetricReader.builder(filteredExporter)
             .setInterval(Duration.ofSeconds(60))
             .build();
     }
-    
+  
     // 过滤度量导出器
     static class FilteringMetricExporter implements MetricExporter {
         private final MetricExporter delegate;
         private final Predicate<Metric> filter;
-        
+  
         public FilteringMetricExporter(
-                MetricExporter delegate, 
+                MetricExporter delegate,
                 Predicate<Metric> filter) {
             this.delegate = delegate;
             this.filter = filter;
         }
-        
+  
         @Override
         public CompletableResultCode export(Collection<Metric> metrics) {
             List<Metric> filteredMetrics = metrics.stream()
                 .filter(filter)
                 .collect(Collectors.toList());
-            
+  
             return delegate.export(filteredMetrics);
         }
-        
+  
         @Override
         public CompletableResultCode flush() {
             return delegate.flush();
         }
-        
+  
         @Override
         public CompletableResultCode shutdown() {
             return delegate.shutdown();
         }
     }
 }
+
 ```
 
 这些例子展示了OpenTelemetry的处理管道如何通过组合模式构建复杂的遥测数据处理流程。每个处理组件都是一个函子，通过组合保持整体结构和语义，形成强大而灵活的观测系统。
@@ -966,11 +976,11 @@ public class TelemetryAggregator {
     public static Trace aggregateTraces(List<Span> spans) {
         Map<String, Span> spanById = new HashMap<>();
         Map<String, List<Span>> childrenByParentId = new HashMap<>();
-        
+  
         // 第一步：索引所有spans
         for (Span span : spans) {
             spanById.put(span.getSpanContext().getSpanId(), span);
-            
+  
             // 按父ID组织子span
             String parentId = span.getParentSpanContext().getSpanId();
             if (parentId != null && !parentId.isEmpty()) {
@@ -978,7 +988,7 @@ public class TelemetryAggregator {
                     .add(span);
             }
         }
-        
+  
         // 第二步：找出根spans（无父span或父span不在集合中的span）
         List<Span> rootSpans = spans.stream()
             .filter(span -> {
@@ -986,102 +996,103 @@ public class TelemetryAggregator {
                 return parentId == null || parentId.isEmpty() || !spanById.containsKey(parentId);
             })
             .collect(Collectors.toList());
-        
+  
         // 第三步：构建追踪树
         Map<String, TraceNode> traceNodes = new HashMap<>();
         for (Span rootSpan : rootSpans) {
             TraceNode rootNode = buildTraceTree(rootSpan, childrenByParentId, traceNodes);
             traceNodes.put(rootSpan.getSpanContext().getSpanId(), rootNode);
         }
-        
+  
         // 第四步：创建聚合追踪
         return new AggregatedTrace(rootSpans, traceNodes);
     }
-    
+  
     private static TraceNode buildTraceTree(
-            Span span, 
+            Span span,
             Map<String, List<Span>> childrenByParentId,
             Map<String, TraceNode> traceNodes) {
-        
+  
         String spanId = span.getSpanContext().getSpanId();
-        
+  
         // 创建当前span的节点
         TraceNode node = new TraceNode(span);
         traceNodes.put(spanId, node);
-        
+  
         // 添加子节点
         List<Span> children = childrenByParentId.getOrDefault(spanId, Collections.emptyList());
         for (Span child : children) {
             TraceNode childNode = buildTraceTree(child, childrenByParentId, traceNodes);
             node.addChild(childNode);
         }
-        
+  
         return node;
     }
-    
+  
     // 追踪节点内部类
     static class TraceNode {
         private final Span span;
         private final List<TraceNode> children = new ArrayList<>();
-        
+  
         public TraceNode(Span span) {
             this.span = span;
         }
-        
+  
         public void addChild(TraceNode child) {
             children.add(child);
         }
-        
+  
         public Span getSpan() {
             return span;
         }
-        
+  
         public List<TraceNode> getChildren() {
             return Collections.unmodifiableList(children);
         }
     }
-    
+  
     // 聚合追踪内部类
     static class AggregatedTrace implements Trace {
         private final List<Span> rootSpans;
         private final Map<String, TraceNode> traceNodes;
-        
+  
         public AggregatedTrace(List<Span> rootSpans, Map<String, TraceNode> traceNodes) {
             this.rootSpans = rootSpans;
             this.traceNodes = traceNodes;
         }
-        
+  
         @Override
         public List<Span> getRootSpans() {
             return Collections.unmodifiableList(rootSpans);
         }
-        
+  
         @Override
         public List<Span> getSpans() {
             return traceNodes.values().stream()
                 .map(TraceNode::getSpan)
                 .collect(Collectors.toList());
         }
-        
+  
         @Override
         public Span getSpanById(String spanId) {
             TraceNode node = traceNodes.get(spanId);
             return node != null ? node.getSpan() : null;
         }
-        
+  
         @Override
         public List<Span> getChildSpans(String parentSpanId) {
             TraceNode parentNode = traceNodes.get(parentSpanId);
             if (parentNode == null) {
                 return Collections.emptyList();
             }
-            
+  
             return parentNode.getChildren().stream()
                 .map(TraceNode::getSpan)
                 .collect(Collectors.toList());
         }
     }
 }
+
 ```
 
 ### 6.3 聚合实例分析
@@ -1106,45 +1117,46 @@ public class CollectorConfiguration {
     public static void main(String[] args) {
         // 创建收集器实例
         OtelCollectorBuilder builder = OtelCollector.builder();
-        
+  
         // 配置接收器（数据输入）
         builder.addReceiver(OtlpReceiver.builder()
             .setProtocol(Protocol.GRPC)
             .setEndpoint("0.0.0.0:4317")
             .build());
-        
+  
         // 配置处理器（聚合逻辑）
         builder.addProcessor(BatchProcessor.builder()
             .setMaxQueueSize(2048)
             .setScheduleDelay(Duration.ofSeconds(5))
             .setExportTimeout(Duration.ofSeconds(30))
             .build());
-        
+  
         // 配置追踪关联处理器
         builder.addProcessor(SpanCorrelationProcessor.builder()
             .setMaxNumTraces(1000)
             .setTtl(Duration.ofMinutes(5))
             .build());
-        
+  
         // 配置服务关联（拓扑图构建）
         builder.addProcessor(ServiceGraphProcessor.builder()
             .setCallsUpdateFrequency(Duration.ofSeconds(10))
             .build());
-        
+  
         // 配置导出器（数据输出）
         builder.addExporter(OtlpExporter.builder()
             .setProtocol(Protocol.GRPC)
             .setEndpoint("observability-platform:4317")
             .build());
-        
+  
         // 创建并启动收集器
         OtelCollector collector = builder.build();
         collector.start();
-        
+  
         // 注册关闭钩子
         Runtime.getRuntime().addShutdownHook(new Thread(collector::shutdown));
     }
 }
+
 ```
 
 **示例6.3.2**：多环境遥测数据聚合
@@ -1161,12 +1173,12 @@ public class MultiEnvironmentAggregator {
             if (env == null || env.isEmpty()) {
                 env = "unknown";
             }
-            
+  
             return Resource.builder()
                 .put(ResourceAttributes.DEPLOYMENT_ENVIRONMENT, env)
                 .build();
         };
-        
+  
         // 创建全局追踪提供者
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder()
             // 添加资源检测器
@@ -1201,54 +1213,55 @@ public class MultiEnvironmentAggregator {
                     .build()
             )
             .build();
-        
+  
         // 注册全局追踪提供者
         OpenTelemetrySdk.builder()
             .setTracerProvider(tracerProvider)
             .buildAndRegisterGlobal();
     }
-    
+  
     // 环境过滤处理器
     static class EnvironmentFilteredProcessor implements SpanProcessor {
         private final String targetEnvironment;
         private final SpanProcessor delegate;
-        
+  
         public EnvironmentFilteredProcessor(String targetEnvironment, SpanProcessor delegate) {
             this.targetEnvironment = targetEnvironment;
             this.delegate = delegate;
         }
-        
+  
         @Override
         public void onStart(Context context, ReadWriteSpan span) {
             if (isTargetEnvironment(span)) {
                 delegate.onStart(context, span);
             }
         }
-        
+  
         @Override
         public void onEnd(ReadWriteSpan span) {
             if (isTargetEnvironment(span)) {
                 delegate.onEnd(span);
             }
         }
-        
+  
         private boolean isTargetEnvironment(ReadWriteSpan span) {
             String environment = span.getResource()
                 .getAttribute(ResourceAttributes.DEPLOYMENT_ENVIRONMENT);
             return targetEnvironment.equals(environment);
         }
-        
+  
         @Override
         public boolean isStartRequired() {
             return delegate.isStartRequired();
         }
-        
+  
         @Override
         public boolean isEndRequired() {
             return delegate.isEndRequired();
         }
     }
 }
+
 ```
 
 这些例子展示了OpenTelemetry如何通过余极限结构聚合来自不同来源的异构遥测数据，形成统一且关联的观测视图，为分布式系统提供全面的可观测性。
@@ -1267,21 +1280,21 @@ public class OrderProcessingService {
     private final PaymentService paymentService;
     private final ShippingService shippingService;
     private final NotificationService notificationService;
-    
+  
     public OrderProcessingService(
             OpenTelemetry openTelemetry,
             ProductService productService,
             PaymentService paymentService,
             ShippingService shippingService,
             NotificationService notificationService) {
-        
+  
         this.tracer = openTelemetry.getTracer("com.example.orders");
         this.productService = productService;
         this.paymentService = paymentService;
         this.shippingService = shippingService;
         this.notificationService = notificationService;
     }
-    
+  
     // 处理订单工作流
     public OrderResult processOrder(Order order) {
         // 创建顶层追踪单元（对应整个工作流）
@@ -1290,7 +1303,7 @@ public class OrderProcessingService {
             .setAttribute("order.id", order.getId())
             .setAttribute("customer.id", order.getCustomerId())
             .startSpan();
-        
+  
         try (Scope scope = orderSpan.makeCurrent()) {
             // 工作流步骤1: 验证订单
             boolean isValid = validateOrder(order);
@@ -1299,7 +1312,7 @@ public class OrderProcessingService {
                 orderSpan.setStatus(StatusCode.ERROR, "Invalid order");
                 return new OrderResult(order.getId(), OrderStatus.REJECTED, "Invalid order");
             }
-            
+  
             // 工作流步骤2: 检查库存
             try {
                 boolean inStock = checkInventory(order);
@@ -1313,7 +1326,7 @@ public class OrderProcessingService {
                 orderSpan.setStatus(StatusCode.ERROR, "Inventory check failed");
                 return new OrderResult(order.getId(), OrderStatus.ERROR, "Inventory check failed");
             }
-            
+  
             // 工作流步骤3: 处理支付
             PaymentResult paymentResult = processPayment(order);
             if (!paymentResult.isSuccessful()) {
@@ -1321,7 +1334,7 @@ public class OrderProcessingService {
                 orderSpan.setStatus(StatusCode.ERROR, "Payment failed: " + paymentResult.getMessage());
                 return new OrderResult(order.getId(), OrderStatus.PAYMENT_FAILED, paymentResult.getMessage());
             }
-            
+  
             // 工作流步骤4: 安排配送
             ShippingResult shippingResult = arrangeShipping(order);
             if (!shippingResult.isSuccessful()) {
@@ -1331,19 +1344,19 @@ public class OrderProcessingService {
                 orderSpan.setStatus(StatusCode.ERROR, "Shipping failed: " + shippingResult.getMessage());
                 return new OrderResult(order.getId(), OrderStatus.SHIPPING_FAILED, shippingResult.getMessage());
             }
-            
+  
             // 工作流步骤5: 通知客户
             notifyCustomer(order, paymentResult, shippingResult);
-            
+  
             // 订单工作流成功完成
             orderSpan.setStatus(StatusCode.OK);
             return new OrderResult(
-                order.getId(), 
-                OrderStatus.COMPLETED, 
+                order.getId(),
+                OrderStatus.COMPLETED,
                 "Order processed successfully",
                 shippingResult.getTrackingNumber()
             );
-            
+  
         } catch (Exception e) {
             orderSpan.recordException(e);
             orderSpan.setStatus(StatusCode.ERROR, "Order processing failed: " + e.getMessage());
@@ -1352,65 +1365,65 @@ public class OrderProcessingService {
             orderSpan.end();
         }
     }
-    
+  
     // 工作流子步骤：验证订单
     private boolean validateOrder(Order order) {
         Span span = tracer.spanBuilder("validate_order")
             .setSpanKind(SpanKind.INTERNAL)
             .startSpan();
-        
+  
         try (Scope scope = span.makeCurrent()) {
             span.setAttribute("order.id", order.getId());
-            
+  
             // 验证逻辑
             boolean hasItems = !order.getItems().isEmpty();
             boolean hasValidCustomer = order.getCustomerId() != null && !order.getCustomerId().isEmpty();
             boolean hasValidAddress = order.getShippingAddress() != null && order.getShippingAddress().isValid();
-            
+  
             span.setAttribute("order.has_items", hasItems);
             span.setAttribute("order.has_valid_customer", hasValidCustomer);
             span.setAttribute("order.has_valid_address", hasValidAddress);
-            
+  
             boolean isValid = hasItems && hasValidCustomer && hasValidAddress;
             span.setAttribute("order.is_valid", isValid);
-            
+  
             return isValid;
         } finally {
             span.end();
         }
     }
-    
+  
     // 工作流子步骤：检查库存（远程调用）
     private boolean checkInventory(Order order) {
         Span span = tracer.spanBuilder("check_inventory")
             .setSpanKind(SpanKind.CLIENT)
             .startSpan();
-        
+  
         try (Scope scope = span.makeCurrent()) {
             span.setAttribute("order.id", order.getId());
             span.setAttribute("items.count", order.getItems().size());
-            
+  
             // 调用产品服务检查库存
             boolean allInStock = productService.checkInventory(order.getItems());
             span.setAttribute("inventory.all_in_stock", allInStock);
-            
+  
             return allInStock;
         } finally {
             span.end();
         }
     }
-    
+  
     // 工作流子步骤：处理支付（远程调用）
     private PaymentResult processPayment(Order order) {
         Span span = tracer.spanBuilder("process_payment")
             .setSpanKind(SpanKind.CLIENT)
             .startSpan();
-        
+  
         try (Scope scope = span.makeCurrent()) {
             span.setAttribute("order.id", order.getId());
             span.setAttribute("payment.amount", order.getTotalAmount());
             span.setAttribute("payment.currency", order.getCurrency());
-            
+  
             // 调用支付服务处理付款
             PaymentResult result = paymentService.processPayment(
                 order.getCustomerId(),
@@ -1418,30 +1431,30 @@ public class OrderProcessingService {
                 order.getTotalAmount(),
                 order.getCurrency()
             );
-            
+  
             span.setAttribute("payment.successful", result.isSuccessful());
             if (result.isSuccessful()) {
                 span.setAttribute("payment.transaction_id", result.getTransactionId());
             } else {
                 span.setStatus(StatusCode.ERROR, "Payment failed: " + result.getMessage());
             }
-            
+  
             return result;
         } finally {
             span.end();
         }
     }
-    
+  
     // 工作流子步骤：安排配送（远程调用）
     private ShippingResult arrangeShipping(Order order) {
         Span span = tracer.spanBuilder("arrange_shipping")
             .setSpanKind(SpanKind.CLIENT)
             .startSpan();
-        
+  
         try (Scope scope = span.makeCurrent()) {
             span.setAttribute("order.id", order.getId());
             span.setAttribute("shipping.address", order.getShippingAddress().toString());
-            
+  
             // 调用配送服务安排配送
             ShippingResult result = shippingService.arrangeDelivery(
                 order.getId(),
@@ -1449,7 +1462,7 @@ public class OrderProcessingService {
                 order.getShippingAddress(),
                 order.getShippingMethod()
             );
-            
+  
             span.setAttribute("shipping.successful", result.isSuccessful());
             if (result.isSuccessful()) {
                 span.setAttribute("shipping.tracking_number", result.getTrackingNumber());
@@ -1457,28 +1470,28 @@ public class OrderProcessingService {
             } else {
                 span.setStatus(StatusCode.ERROR, "Shipping failed: " + result.getMessage());
             }
-            
+  
             return result;
         } finally {
             span.end();
         }
     }
-    
+  
     // 工作流子步骤：退款处理（补偿事务）
     private void refundPayment(Order order, String transactionId) {
         Span span = tracer.spanBuilder("refund_payment")
             .setSpanKind(SpanKind.CLIENT)
             .startSpan();
-        
+  
         try (Scope scope = span.makeCurrent()) {
             span.setAttribute("order.id", order.getId());
             span.setAttribute("payment.transaction_id", transactionId);
             span.setAttribute("refund.amount", order.getTotalAmount());
-            
+  
             // 调用支付服务处理退款
             boolean refunded = paymentService.refundPayment(transactionId);
             span.setAttribute("refund.successful", refunded);
-            
+  
             if (!refunded) {
                 span.setStatus(StatusCode.ERROR, "Refund failed");
             }
@@ -1486,17 +1499,17 @@ public class OrderProcessingService {
             span.end();
         }
     }
-    
+  
     // 工作流子步骤：通知客户（远程调用）
     private void notifyCustomer(Order order, PaymentResult paymentResult, ShippingResult shippingResult) {
         Span span = tracer.spanBuilder("notify_customer")
             .setSpanKind(SpanKind.CLIENT)
             .startSpan();
-        
+  
         try (Scope scope = span.makeCurrent()) {
             span.setAttribute("order.id", order.getId());
             span.setAttribute("customer.id", order.getCustomerId());
-            
+  
             // 准备通知内容
             String subject = "Your order #" + order.getId() + " has been processed";
             String message = String.format(
@@ -1509,7 +1522,7 @@ public class OrderProcessingService {
                 shippingResult.getTrackingNumber(),
                 shippingResult.getEstimatedDelivery()
             );
-            
+  
             // 调用通知服务发送通知
             boolean notified = notificationService.sendNotification(
                 order.getCustomerId(),
@@ -1517,7 +1530,7 @@ public class OrderProcessingService {
                 subject,
                 message
             );
-            
+  
             span.setAttribute("notification.sent", notified);
             if (!notified) {
                 span.setStatus(StatusCode.ERROR, "Failed to send notification");
@@ -1527,6 +1540,7 @@ public class OrderProcessingService {
         }
     }
 }
+
 ```
 
 ### 7.2 度量收集实现
@@ -1537,7 +1551,7 @@ public class OrderProcessingService {
 // 订单处理度量收集
 public class OrderProcessingMetrics {
     private final Meter meter;
-    
+  
     // 度量仪表
     private final LongCounter orderCounter;
     private final LongCounter orderItemsCounter;
@@ -1545,41 +1559,41 @@ public class OrderProcessingMetrics {
     private final LongCounter orderStatusCounter;
     private final LongCounter paymentMethodCounter;
     private final DoubleHistogram processingTimeHistogram;
-    
+  
     public OrderProcessingMetrics(OpenTelemetry openTelemetry) {
         this.meter = openTelemetry.getMeter("com.example.orders");
-        
+  
         // 创建订单计数器
         this.orderCounter = meter
             .counterBuilder("orders.total")
             .setDescription("Total number of orders processed")
             .build();
-        
+  
         // 创建订单商品计数器
         this.orderItemsCounter = meter
             .counterBuilder("orders.items")
             .setDescription("Total number of items in all orders")
             .build();
-        
+  
         // 创建订单金额直方图
         this.orderValueHistogram = meter
             .histogramBuilder("orders.value")
             .setDescription("Distribution of order values")
             .setUnit("USD")
             .build();
-        
+  
         // 创建订单状态计数器
         this.orderStatusCounter = meter
             .counterBuilder("orders.status")
             .setDescription("Number of orders by status")
             .build();
-        
+  
         // 创建支付方式计数器
         this.paymentMethodCounter = meter
             .counterBuilder("orders.payment_method")
             .setDescription("Number of orders by payment method")
             .build();
-        
+  
         // 创建处理时间直方图
         this.processingTimeHistogram = meter
             .histogramBuilder("orders.processing_time")
@@ -1587,7 +1601,7 @@ public class OrderProcessingMetrics {
             .setUnit("ms")
             .build();
     }
-    
+  
     // 记录订单度量
     public void recordOrderProcessed(Order order, OrderResult result, long processingTimeMs) {
         // 通用属性
@@ -1596,44 +1610,44 @@ public class OrderProcessingMetrics {
             .put("order.channel", order.getChannel().toString())
             .put("shipping.method", order.getShippingMethod().toString())
             .build();
-        
+  
         // 记录订单数量
         orderCounter.add(1, commonAttributes);
-        
+  
         // 记录订单项数量
         orderItemsCounter.add(order.getItems().size(), commonAttributes);
-        
+  
         // 记录订单金额
         orderValueHistogram.record(order.getTotalAmount(), commonAttributes);
-        
+  
         // 记录订单状态
         Attributes statusAttributes = Attributes.builder()
             .putAll(commonAttributes)
             .put("order.status", result.getStatus().toString())
             .build();
         orderStatusCounter.add(1, statusAttributes);
-        
+  
         // 记录支付方式
         Attributes paymentAttributes = Attributes.builder()
             .putAll(commonAttributes)
             .put("payment.method", order.getPaymentMethod().toString())
             .build();
         paymentMethodCounter.add(1, paymentAttributes);
-        
+  
         // 记录处理时间
         processingTimeHistogram.record(processingTimeMs, Attributes.builder()
             .putAll(commonAttributes)
             .put("order.status", result.getStatus().toString())
             .build());
     }
-    
+  
     // 工作流执行指标记录
     public <T> T recordWorkflowStep(String stepName, Supplier<T> operation) {
         long startTime = System.currentTimeMillis();
-        
+  
         try {
             T result = operation.get();
-            
+  
             // 记录步骤执行时间
             meter.histogramBuilder("workflow.step.duration")
                 .setDescription("Duration of workflow steps")
@@ -1643,7 +1657,7 @@ public class OrderProcessingMetrics {
                     AttributeKey.stringKey("step.name"), stepName,
                     AttributeKey.stringKey("step.status"), "success"
                 ));
-            
+  
             // 记录步骤完成计数
             meter.counterBuilder("workflow.step.completed")
                 .setDescription("Number of completed workflow steps")
@@ -1652,7 +1666,7 @@ public class OrderProcessingMetrics {
                     AttributeKey.stringKey("step.name"), stepName,
                     AttributeKey.stringKey("step.status"), "success"
                 ));
-            
+  
             return result;
         } catch (Exception e) {
             // 记录步骤执行时间（错误情况）
@@ -1665,7 +1679,7 @@ public class OrderProcessingMetrics {
                     AttributeKey.stringKey("step.status"), "error",
                     AttributeKey.stringKey("error.type"), e.getClass().getSimpleName()
                 ));
-            
+  
             // 记录步骤错误计数
             meter.counterBuilder("workflow.step.errors")
                 .setDescription("Number of workflow step errors")
@@ -1674,19 +1688,20 @@ public class OrderProcessingMetrics {
                     AttributeKey.stringKey("step.name"), stepName,
                     AttributeKey.stringKey("error.type"), e.getClass().getSimpleName()
                 ));
-            
-            throw e instanceof RuntimeException 
-                ? (RuntimeException)e 
+  
+            throw e instanceof RuntimeException
+                ? (RuntimeException)e
                 : new RuntimeException(e);
         }
     }
-    
+  
     // 确定客户类型（辅助方法）
     private String getCustomerType(String customerId) {
         // 实际应用中，可能会从客户数据库或缓存中获取
         return "regular"; // 示例：可能是"regular"、"premium"或"new"
     }
 }
+
 ```
 
 ### 7.3 完整观测系统实例
@@ -1699,21 +1714,21 @@ public class OrderServiceApplication {
     public static void main(String[] args) {
         // 初始化OpenTelemetry
         OpenTelemetry openTelemetry = initializeOpenTelemetry();
-        
+  
         // 创建服务实例
         ProductService productService = new ProductService(openTelemetry);
         PaymentService paymentService = new PaymentService(openTelemetry);
         ShippingService shippingService = new ShippingService(openTelemetry);
         NotificationService notificationService = new NotificationService(openTelemetry);
-        
+  
         OrderProcessingService orderService = new OrderProcessingService(
-            openTelemetry, 
-            productService, 
-            paymentService, 
-            shippingService, 
+            openTelemetry,
+            productService,
+            paymentService,
+            shippingService,
             notificationService
         );
-        
+  
 <think>我需要继续完成7.3节的完整观测系统实例。我已经开始了OrderServiceApplication类的代码，但还需要完成它，然后可能需要展示一个实际的工作流执行示例，以及如何在整个系统中实现遥测数据集成。</think>### 7.3 完整观测系统实例（续）
 
 ```java
@@ -1914,9 +1929,10 @@ public class OrderServiceApplication {
     );
   }
 }
+
 ```
 
--**完整工作流执行示例**
+- **完整工作流执行示例**
 
 下面是一个实际的订单处理工作流执行流程，展示了OpenTelemetry如何提供端到端可观测性：
 
@@ -2260,6 +2276,7 @@ public class OrderProcessingExample {
         public ShippingResult getShippingResult() { return shippingResult; }
     }
 }
+
 ```
 
 这个完整的观测系统实例展示了如何在真实应用中集成OpenTelemetry，将工作流结构映射到分布式追踪、度量和日志中，形成统一的可观测性解决方案。通过这种方式，系统可以在复杂的分布式环境中提供端到端的可见性，帮助识别性能瓶颈、故障根因和业务异常。

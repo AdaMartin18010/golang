@@ -641,7 +641,7 @@
 - **可用性形式定义**
 
   ```text
-  Availability(S) = MTBF / (MTBF + MTTR) 
+  Availability(S) = MTBF / (MTBF + MTTR)
   其中MTBF是平均故障间隔时间，MTTR是平均修复时间
   
   ∀ t ∈ Time, P(System_Available(t)) ≥ AvailabilityThreshold
@@ -661,7 +661,7 @@
 - **可修改性形式定义**
 
   ```text
-  ∀ c ∈ Changes, 
+  ∀ c ∈ Changes,
     ImpactSet(c) ⊆ LocalizedComponents ∧
     ImplementationEffort(c) ≤ MaxEffort
   ```
@@ -688,7 +688,7 @@
   Controllability(C) = |ControlPoints| / |RequiredStates|
   Observability(C) = |ObservationPoints| / |RelevantStates|
   
-  ∀ C ∈ Components, 
+  ∀ C ∈ Components,
     Controllability(C) ≥ MinControllability ∧
     Observability(C) ≥ MinObservability
   ```
@@ -698,7 +698,7 @@
 - **安全性形式定义**
 
   ```text
-  ∀ s ∈ SecureState, ∀ i ∈ Input, 
+  ∀ s ∈ SecureState, ∀ i ∈ Input,
     Transition(s, i) ∈ SecureState
   
   ∀ u ∈ Users, ∀ r ∈ Resources,
@@ -797,9 +797,9 @@
 - **接口兼容性推理**
 
   ```text
-  Compatible(I1, I2) ⇔ 
+  Compatible(I1, I2) ⇔
     Required(I1) ⊆ Provided(I2) ∧
-    ∀ op ∈ Required(I1), 
+    ∀ op ∈ Required(I1),
       PreCondition(I2.op) ⊆ PreCondition(I1.op) ∧
       PostCondition(I1.op) ⊆ PostCondition(I2.op)
   ```
@@ -858,7 +858,7 @@
   
   ∀ lock_seq ∈ LockSequences,
     ¬(∃ i, j, k, l. i < j < k < l ∧
-      lock_seq[i] = A ∧ lock_seq[j] = B ∧ 
+      lock_seq[i] = A ∧ lock_seq[j] = B ∧
       lock_seq[k] = A ∧ lock_seq[l] = B)
   ```
 
@@ -889,7 +889,7 @@
   
   ∀ artifact ∈ ProcessArtifacts,
     (∃ task ∈ Tasks, Produces(task, artifact)) ∧
-    (∀ task ∈ Consumers(artifact), 
+    (∀ task ∈ Consumers(artifact),
       ∃ path ∈ Paths, Precedes(Producers(artifact), task, path))
   ```
 
@@ -899,13 +899,13 @@
 
   ```text
   ∀ tx ∈ Transactions,
-    (Commits(tx) ∨ 
-     (Aborts(tx) ∧ ∀ op ∈ Operations(tx), 
+    (Commits(tx) ∨
+     (Aborts(tx) ∧ ∀ op ∈ Operations(tx),
        Executed(op) → Compensated(op)))
   
   ∀ state ∈ VisibleStates,
     Consistent(state) ∧
-    (∀ tx ∈ Transactions, 
+    (∀ tx ∈ Transactions,
       (Before(state, tx) ∧ After(state', tx)) → Consistent(state'))
   ```
 
@@ -921,7 +921,7 @@
     ∑(Duration(task) | task ∈ p) ≤ DeadlineConstraint
   
   ∀ periodic_task ∈ PeriodicTasks,
-    □(Executed(periodic_task) → 
+    □(Executed(periodic_task) →
       ◇[0, Period(periodic_task)] Executed(periodic_task))
   ```
 
@@ -938,9 +938,9 @@
   ∀ op ∈ Operations, ∀ r ∈ Replicas,
     EventuallyApplied(op, r)
   
-  Linearizable(H) ⇔ 
-    ∃ sequential_history S, 
-      (Complete(H) ⊆ S) ∧ 
+  Linearizable(H) ⇔
+    ∃ sequential_history S,
+      (Complete(H) ⊆ S) ∧
       (Preserves_RealTime_Order(H, S)) ∧
       (Legal(S))
   ```
@@ -958,7 +958,7 @@
       Available(partition) ∧ Consistent(partition)
   
   ∀ s1, s2 ∈ States, ∀ f ∈ Failures,
-    (Transition(s1, f) = s2) → 
+    (Transition(s1, f) = s2) →
       (∃ recovery_path, Reaches(s2, recovery_path, NormalState))
   ```
 
@@ -969,12 +969,12 @@
   ```text
   ∀ m ∈ Messages, Sent(m) → ◇Delivered(m)  // 最终送达
   
-  ∀ m1, m2 ∈ Messages, 
-    (Sent(m1) < Sent(m2) ∧ SameSource(m1, m2)) → 
+  ∀ m1, m2 ∈ Messages,
+    (Sent(m1) < Sent(m2) ∧ SameSource(m1, m2)) →
     (Delivered(m1) < Delivered(m2))  // FIFO顺序
   
   ∀ m ∈ Messages, ∀ r1, r2 ∈ Recipients,
-    (Delivered(m, r1) ∧ Delivered(m, r2)) → 
+    (Delivered(m, r1) ∧ Delivered(m, r2)) →
     (CausalHistory(r1) = CausalHistory(r2))  // 因果一致性
   ```
 
@@ -990,7 +990,7 @@
   Entropy(System, t+1) ≤ Entropy(System, t)  // 熵减过程
   
   ∀ external_control ∈ ExternalControls,
-    SystemOutcome without external_control ≈ 
+    SystemOutcome without external_control ≈
     SystemOutcome with external_control  // 内部规则主导
   
   ∃ simple_rules : LocalRules,
@@ -1002,15 +1002,15 @@
 - **相变与临界点**
 
   ```text
-  ∃ parameter ∈ SystemParameters, 
+  ∃ parameter ∈ SystemParameters,
     ∃ threshold : CriticalValue,
-      |System_Behavior(parameter < threshold) - 
+      |System_Behavior(parameter < threshold) -
        System_Behavior(parameter > threshold)| > ε
   
-  CriticalSlowing(System) ∝ 
+  CriticalSlowing(System) ∝
     1/|parameter - threshold|  // 接近临界点时响应减缓
   
-  Fluctuations(System) ∝ 
+  Fluctuations(System) ∝
     1/|parameter - threshold|^α  // 临界点附近波动增强
   ```
 
@@ -1023,7 +1023,7 @@
   
   Marginal_Value(n) ∝ f(n)  // 可能是线性、平方或指数关系
   
-  Tipping_Point(System) = 
+  Tipping_Point(System) =
     min{n : Value(System, n) > Cost(System, n)}
   ```
 
@@ -1034,13 +1034,13 @@
 - **反馈循环动态**
 
   ```text
-  Positive_Feedback(X, Y) ⇔ 
+  Positive_Feedback(X, Y) ⇔
     dY/dX > 0 ∧ dX/dY > 0
   
-  Negative_Feedback(X, Y) ⇔ 
+  Negative_Feedback(X, Y) ⇔
     dY/dX > 0 ∧ dX/dY < 0
   
-  System_Stability ∝ 
+  System_Stability ∝
     Negative_Feedback_Strength / Positive_Feedback_Strength
   ```
 
@@ -1049,10 +1049,10 @@
 - **适应性与学习**
 
   ```rust
-  Adaptability(System) = 
+  Adaptability(System) =
     ResponseDiversity × ConnectivityDegree × FeedbackSpeed
   
-  Learning_Rate(System) = 
+  Learning_Rate(System) =
     ∫(Experience_Acquisition - Knowledge_Decay)dt
   
   Exploration_Exploitation_Balance(System, t) =
@@ -1064,13 +1064,13 @@
 - **弹性与抗脆弱性**
 
   ```rust
-  Resilience(System) = 
+  Resilience(System) =
     Recovery_Speed × Recovery_Completeness
   
-  Antifragility(System) = 
+  Antifragility(System) =
     d(Performance)/d(Perturbation) > 0  // 波动提升性能
   
-  Response_Curve(System, Stress) = 
+  Response_Curve(System, Stress) =
     BaseResponse + f(Stress) - Cost(Adaptation)
   ```
 
@@ -1124,14 +1124,14 @@
 - **属性计算**
 
   ```rust
-  Latency(PF_System) = 
+  Latency(PF_System) =
     max{∑(ProcessingTime(f) | f ∈ path) | path ∈ Paths(PF_System)}
   
   Throughput(PF_System) =
     min{Throughput(f) | f ∈ Filters(PF_System)}
   
-  Parallelizable(f) ⇔ 
-    ∀ x, y ∈ Domain(f), x ≠ y → 
+  Parallelizable(f) ⇔
+    ∀ x, y ∈ Domain(f), x ≠ y →
     NoSharedState(Processing(f, x), Processing(f, y))
   ```
 
@@ -1158,15 +1158,15 @@
 - **变换操作**
 
   ```rust
-  SplitLayer(L, l, criteria) = 
+  SplitLayer(L, l, criteria) =
     L[l → (l_upper, l_lower)] where
     Components(l_upper) ∪ Components(l_lower) = Components(l) ∧
     ∀ c ∈ Components(l), criteria(c) → c ∈ Components(l_upper)
   
-  MergeLayers(L, l1, l2) requires Adjacent(l1, l2) = 
+  MergeLayers(L, l1, l2) requires Adjacent(l1, l2) =
     L[(l1, l2) → l_new] where
     Components(l_new) = Components(l1) ∪ Components(l2) ∧
-    Provided_Interfaces(l_new) = 
+    Provided_Interfaces(l_new) =
       Provided_Interfaces(l1) ∪ Provided_Interfaces(l2)
   ```
 
@@ -1175,11 +1175,11 @@
 - **属性计算**
 
   ```rust
-  Modularity(L) = 
+  Modularity(L) =
     1 - (CrossLayerDependencies / TotalDependencies)
   
-  ChangeImpact(L, c) = 
-    {c'| Depends(c', c)} ∪ 
+  ChangeImpact(L, c) =
+    {c'| Depends(c', c)} ∪
     {c'| ∃ path ∈ DependencyPaths, c ∈ path ∧ c' ∈ path}
   
   Abstraction_Gradient(L) =
@@ -1223,8 +1223,8 @@
 - **属性计算**
 
   ```rust
-  Coupling(EDA) = 
-    |{(h1, h2) | ∃ e, Produces(h1, e) ∧ Consumes(h2, e)}| / 
+  Coupling(EDA) =
+    |{(h1, h2) | ∃ e, Produces(h1, e) ∧ Consumes(h2, e)}| /
     (|Handlers| × (|Handlers| - 1))
   
   Scalability(EDA) =
@@ -1302,7 +1302,7 @@
     DeploymentFrequency(s) × DeploymentSuccess(s) / DeploymentDuration(s)
   
   Resilience(MS) =
-    ∏(1 - (FailureRate(s) × ImpactFactor(s) × 
+    ∏(1 - (FailureRate(s) × ImpactFactor(s) ×
          (1 - Isolation(s)))) for s ∈ Microservices(MS)
   
   EvolvabilityIndex(MS) =
@@ -1392,7 +1392,7 @@
 
   ```text
   BackpressureHandling(rs) ⇔
-    ∀ o ∈ Observables(rs), 
+    ∀ o ∈ Observables(rs),
       HasStrategy(o, OnOverload) ∧
       (Bounded(Buffer(o)) ∨ HasThrottling(o))
   
@@ -1457,11 +1457,11 @@
   ModelIntegrity(model) ⇔
     ∀ term ∈ UbiquitousLanguage,
       ∃ concept ∈ Model, Represents(concept, term) ∧
-      ∀ concept ∈ Model, 
+      ∀ concept ∈ Model,
         ∃ term ∈ UbiquitousLanguage, Represents(concept, term)
   
   ContextIsolation(bc1, bc2) =
-    1 - |SharedConcepts(bc1, bc2)| / 
+    1 - |SharedConcepts(bc1, bc2)| /
         |Concepts(bc1) ∪ Concepts(bc2)|
   ```
 
@@ -1477,7 +1477,7 @@
     {c | concept ∈ model, Affected(concept, refactoring)}
   
   StrategicImportance(context) =
-    BusinessValue(context) × ChangeFrequency(context) × 
+    BusinessValue(context) × ChangeFrequency(context) ×
     LevelOfRefinement(context)
   ```
 
@@ -1517,8 +1517,8 @@
      AbstractBehaviors(concrete_arch, abstraction_level)}
   
   AbstractionQuality(abstract, concrete) =
-    AnalysisPrecision(abstract) × 
-    ModelingEfficiency(abstract) / 
+    AnalysisPrecision(abstract) ×
+    ModelingEfficiency(abstract) /
     AbstractionError(abstract, concrete)
   ```
 
@@ -1528,15 +1528,15 @@
 
   ```rust
   PropagatesProperty(abstract, concrete, property) ⇔
-    SatisfiesProperty(abstract, property) → 
+    SatisfiesProperty(abstract, property) →
     SatisfiesProperty(concrete, property)
   
   AbstractionGap(abstract, concrete) =
-    {property | SatisfiesProperty(abstract, property) ∧ 
+    {property | SatisfiesProperty(abstract, property) ∧
                ¬SatisfiesProperty(concrete, property)}
   
   RefinementStrategy(abstract, concrete, gap) =
-    {refinement | 
+    {refinement |
       ApplyRefinement(abstract, refinement, refined_abstract) ∧
       AbstractionGap(refined_abstract, concrete) ⊂ gap}
   ```
@@ -1552,7 +1552,7 @@
   
   ArchitectureType(A) = Σ(components: Components(A)).Valid(components)
   
-  Refinement(A, A') = 
+  Refinement(A, A') =
     Π(a: ArchitectureType(A)).ArchitectureType(A')(refine(a))
   ```
 
@@ -1561,16 +1561,16 @@
 - **线性类型资源控制**
 
   ```rust
-  ResourceProtocol(R) = 
-    !Init(R) ⊸ ∃state.(State(R, state) ⊗ 
-          (!Use(R, state) ⊸ ∃state'.(State(R, state') ⊗ 
+  ResourceProtocol(R) =
+    !Init(R) ⊸ ∃state.(State(R, state) ⊗
+          (!Use(R, state) ⊸ ∃state'.(State(R, state') ⊗
           (!Release(R, state') ⊸ 1))))
   
   ComponentResource(C, R) =
     ResourceAcquisition(C, R) → EventualResourceRelease(C, R)
   
   SystemResourceBalance =
-    ∀ R, InitialResourceUnits(R) = 
+    ∀ R, InitialResourceUnits(R) =
       FinalResourceUnits(R) + LeakedUnits(R)
   ```
 
@@ -1579,15 +1579,15 @@
 - **会话类型与通信**
 
   ```rust
-  ComponentProtocol(C) = 
+  ComponentProtocol(C) =
     Sequence(InputActions(C), OutputActions(C), InternalActions(C))
   
   DualProtocols(P1, P2) ⇔
-    ∀ send ∈ OutputActions(P1), 
+    ∀ send ∈ OutputActions(P1),
       recv ∈ InputActions(P2) ∧ MessageType(send) = MessageType(recv)
   
   DeadlockFreeSystem(S) ⇔
-    ∀ components ∈ S, 
+    ∀ components ∈ S,
       !(∃ cycle. WaitingFor(cycle) ∧ cycle ⊆ components)
   ```
 
@@ -1600,7 +1600,7 @@
   ```rust
   ArchitecturalStateMachine(A) = (
     States(A),
-    InitialStates(A), 
+    InitialStates(A),
     Transitions(A),
     AtomicProperties(A)
   )
@@ -1617,14 +1617,14 @@
 - **时态属性规范**
 
   ```rust
-  Availability(component) = 
+  Availability(component) =
     □(Request(component) → ◇Response(component))
   
-  Recoverability(system) = 
+  Recoverability(system) =
     □(Failure(system) → ◇Normal(system))
   
-  MutualExclusion(r) = 
-    □(∀ p1, p2: Process, 
+  MutualExclusion(r) =
+    □(∀ p1, p2: Process,
       (Access(p1, r) ∧ Access(p2, r)) → p1 = p2)
   ```
 
@@ -1633,13 +1633,13 @@
 - **概率模型检验**
 
   ```rust
-  ReliabilityMeasure(A) = 
+  ReliabilityMeasure(A) =
     P[□◇Operational(A)] ≥ ReliabilityThreshold
   
-  PerformanceSatisfaction(A) = 
+  PerformanceSatisfaction(A) =
     P[ResponseTime(A) ≤ MaxResponseTime] ≥ SatisfactionThreshold
   
-  CostUtilityRatio(A) = 
+  CostUtilityRatio(A) =
     E[OperationalCost(A)] / E[DeliveredUtility(A)]
   ```
 
@@ -1652,14 +1652,14 @@
 - **组合运算符**
 
   ```rust
-  Compose(A1, A2, mappings) = 
+  Compose(A1, A2, mappings) =
     (Components(A1) ∪ Components(A2) - {c | Mapped(c, mappings)}) ∪
     {Merge(c1, c2) | Mapped(c1, c2, mappings)}
   
-  Connect(A, pattern) = 
+  Connect(A, pattern) =
     A{Connections += pattern(Components(A))}
   
-  Restrict(A, constraint) = 
+  Restrict(A, constraint) =
     A{Behavior = Behavior(A) ∩ Satisfy(constraint)}
   ```
 
@@ -1675,7 +1675,7 @@
     Protocol(c1) ⊕ Protocol(c2) is deadlock-free
   
   QualityCompatible(c1, c2) ⇔
-    ∀ q ∈ CriticalQualities, 
+    ∀ q ∈ CriticalQualities,
       Quality(Compose(c1, c2), q) ≥ min(Quality(c1, q), Quality(c2, q))
   ```
 
@@ -1686,15 +1686,15 @@
   ```rust
   EmergentProperty(A1, A2, property) ⇔
     Satisfies(Compose(A1, A2), property) ∧
-    ¬Satisfies(A1, property) ∧ 
+    ¬Satisfies(A1, property) ∧
     ¬Satisfies(A2, property)
   
   InteractionEffect(A1, A2, quality) =
-    Quality(Compose(A1, A2), quality) - 
+    Quality(Compose(A1, A2), quality) -
     (Quality(A1, quality) + Quality(A2, quality))
   
   CompositionComplexity(A1, A2) =
-    |InterfacesA1| × |InterfacesA2| × 
+    |InterfacesA1| × |InterfacesA2| ×
     ConnectorComplexity(A1, A2)
   ```
 
@@ -1705,7 +1705,7 @@
 - **演化运算符**
 
   ```rust
-  Refine(A, detail_level) = 
+  Refine(A, detail_level) =
     A{Components = ExpandComponents(A, detail_level),
       Connections = RefineConnections(A, detail_level)}
   
@@ -1727,11 +1727,11 @@
   
   IncrementalImprovement(old, new, quality) ⇔
     Quality(new, quality) > Quality(old, quality) ∧
-    ∀ q ∈ OtherCriticalQualities, 
+    ∀ q ∈ OtherCriticalQualities,
       Quality(new, q) ≥ Quality(old, q)
   
   EvolutionDistance(old, new) =
-    StructuralDistance(old, new) + 
+    StructuralDistance(old, new) +
     BehavioralDistance(old, new) +
     QualityDistance(old, new)
   ```
@@ -1747,14 +1747,14 @@
     }
   
   EvolutionRisk(A, step) =
-    Probability(Failure(ApplyEvolution(A, step))) × 
+    Probability(Failure(ApplyEvolution(A, step))) ×
     Impact(Failure(ApplyEvolution(A, step)))
   
   EvolutionStrategy(A, goal) =
     if Distance(A, goal) < threshold then
       DirectTransformation(A, goal)
     else
-      IdentifyIntermediate(A, goal) >>= 
+      IdentifyIntermediate(A, goal) >>=
       λi. EvolutionStrategy(A, i) >> EvolutionStrategy(i, goal)
   ```
 
@@ -1769,17 +1769,17 @@
 - **形式抽象度量**
 
   ```rust
-  FormalAbstractionLevel(model) = 
-    InformationLoss(reality, model) + 
+  FormalAbstractionLevel(model) =
+    InformationLoss(reality, model) +
     SimplificationGain(model)
   
-  ReasoningPower(model) = 
-    DeductiveCapability(model) × 
+  ReasoningPower(model) =
+    DeductiveCapability(model) ×
     AnalyticalPrecision(model) ×
     Range(ApplicationDomain(model))
   
   AbstractionFidelity(model, reality) =
-    1 - DistortionError(model, reality) / 
+    1 - DistortionError(model, reality) /
         InformationContent(reality)
   ```
 
@@ -1798,7 +1798,7 @@
   
   OptimalAbstractionLevel(task) =
     argmax_level {
-      ReasoningUtility(level, task) - 
+      ReasoningUtility(level, task) -
       ModelingCost(level, task)
     }
   ```
@@ -1808,12 +1808,12 @@
 - **形式-实际衔接原则**
 
   ```rust
-  ModelingBoundary(domain) = 
-    {conceptual_elements | 
+  ModelingBoundary(domain) =
+    {conceptual_elements |
       FormalizeableBenefit(element) > FormalizingCost(element)}
   
   HybridFormalization(domain) =
-    FormalCore(domain) ∪ 
+    FormalCore(domain) ∪
     SemiFormalBoundary(domain) ∪
     InformalContext(domain)
   
@@ -1835,12 +1835,12 @@
     ¬∃ algorithm: Decides(algorithm, property, system)
   
   HeuristicApproximation(undecidable) =
-    {heuristic | 
+    {heuristic |
       AccuracyRate(heuristic, undecidable) is acceptable ∧
       ComplexityOf(heuristic) is tractable}
   
   ExternalValidation(formal_result) =
-    EmpiricalEvidence(formal_result) + 
+    EmpiricalEvidence(formal_result) +
     ExpertJudgment(formal_result) +
     HistoricalConsistency(formal_result)
   ```
@@ -1871,9 +1871,9 @@
     Variance(Residuals(formalModel, realityData))
   
   RobustnessThreshold(model, noise_level) =
-    max{perturbation | 
-      ∀ p ≤ perturbation, 
-        QualitativeConclusions(model) = 
+    max{perturbation |
+      ∀ p ≤ perturbation,
+        QualitativeConclusions(model) =
         QualitativeConclusions(model with noise p)}
   
   UncertaintyAccountability(decision) =
@@ -1889,12 +1889,12 @@
 
   ```rust
   ImplementationMapping(theory) =
-    {(theorem, implementation) | 
+    {(theorem, implementation) |
       Realizes(implementation, theorem) ∧
       VerifiablyCorrect(implementation, theorem)}
   
   PracticalApproximation(ideal_algorithm) =
-    {practical | 
+    {practical |
       PerformanceRatio(practical, ideal_algorithm) > threshold ∧
       ResourceRequirements(practical) are feasible}
   
@@ -1916,8 +1916,8 @@
     OperationalMonitoring(system)
   
   ValidationCoverage(formal_property, tests) =
-    |{scenario | 
-      scenario ∈ TestScenarios(tests) ∧ 
+    |{scenario |
+      scenario ∈ TestScenarios(tests) ∧
       RelatesTo(scenario, formal_property)}| /
     |ImplicationScenarios(formal_property)|
   
@@ -1948,7 +1948,7 @@
   
   AdaptiveFormalization(domain, time) =
     InitialFormalModel(domain) +
-    ∑(LearningIncrements(observation, time) | 
+    ∑(LearningIncrements(observation, time) |
       observation ∈ Observations(domain, time))
   ```
 
@@ -1961,8 +1961,8 @@
 - **认知负荷量化**
 
   ```rust
-  CognitiveLoad(design) = 
-    ∑(ElementComplexity(e) × AttentionWeight(e) | 
+  CognitiveLoad(design) =
+    ∑(ElementComplexity(e) × AttentionWeight(e) |
       e ∈ Elements(design))
   
   ChunkingEfficiency(design) =
@@ -1979,9 +1979,9 @@
 
   ```rust
   AttentionAllocation(design) =
-    {(element, attention) | 
+    {(element, attention) |
       element ∈ Elements(design) ∧
-      attention = Salience(element) / 
+      attention = Salience(element) /
                   ∑(Salience(e) | e ∈ Elements(design))}
   
   InformationDiscoverability(architecture) =
@@ -2008,8 +2008,8 @@
     (|team| × |ComponentSet(architecture)|)
   
   CollectiveComprehension(architecture, team) =
-    SharedUnderstanding(team) × 
-    Completeness(∪(Knowledge(member) | member ∈ team), 
+    SharedUnderstanding(team) ×
+    Completeness(∪(Knowledge(member) | member ∈ team),
                  architecture)
   ```
 
@@ -2021,13 +2021,13 @@
 
   ```rust
   ConwayAlignmentIndex(org, system) =
-    |{(team, component) | 
+    |{(team, component) |
       Responsible(team, component) ∧
       MatchingCharacteristics(team, component)}| /
     |Components(system)|
   
   CommunicationOverhead(architecture, org) =
-    ∑(Required(component1, component2) × 
+    ∑(Required(component1, component2) ×
       CommunicationCost(Team(component1), Team(component2)) |
       component1, component2 ∈ Components(architecture))
   
@@ -2045,11 +2045,11 @@
     |Deployments(component)| / TimeInterval
   
   ChangeLeadTime(component) =
-    Avg{TimeToProduction(change) | 
+    Avg{TimeToProduction(change) |
         change ∈ Changes(component)}
   
   ExperimentationVelocity(architecture) =
-    |SuccessfulExperiments(architecture)| / 
+    |SuccessfulExperiments(architecture)| /
     (TimeInterval × ExperimentCost)
   ```
 
@@ -2062,13 +2062,13 @@
     -ln(1 - Awareness(org, concept, t)) / t
   
   PracticeAdoptionCurve(org, practice) =
-    InitialAdopters(org, practice) + 
-    DiffusionRate(practice) × 
-    Time × 
+    InitialAdopters(org, practice) +
+    DiffusionRate(practice) ×
+    Time ×
     (PotentialAdopters(org) - CurrentAdopters(org, practice))
   
   OrganizationalInertia(org, change) =
-    ResistanceFactors(org, change) / 
+    ResistanceFactors(org, change) /
     (ChangeMotivation(org, change) × Leadership(change))
   ```
 
@@ -2083,13 +2083,13 @@
     Distance(location1, location2) / SpeedOfLight
   
   EndToEndLatency(architecture, deployment) =
-    ∑(ProcessingLatency(component) | 
+    ∑(ProcessingLatency(component) |
       component ∈ CriticalPath(architecture)) +
-    ∑(NetworkLatency(link) | 
+    ∑(NetworkLatency(link) |
       link ∈ CommunicationPath(deployment))
   
   BandwidthUtilization(architecture, deployment) =
-    ∑(DataRate(communication) | 
+    ∑(DataRate(communication) |
       communication ∈ Communications(architecture)) /
     AvailableBandwidth(deployment)
   ```
@@ -2105,13 +2105,13 @@
   
   ComputationalDensity(solution) =
     FullfillFunction(solution) / (
-      ComputationalResources(solution) × 
-      Energy(solution) × 
+      ComputationalResources(solution) ×
+      Energy(solution) ×
       Time(solution)
     )
   
   SustainabilityIndex(architecture) =
-    ResourceEfficiency(architecture) × 
+    ResourceEfficiency(architecture) ×
     OperationalLifetime(architecture) ×
     RecyclabilityFactor(architecture)
   ```
@@ -2123,12 +2123,12 @@
   ```rust
   TotalCostOfOwnership(architecture) =
     UpfrontCost(architecture) +
-    ∫(OperationalCost(architecture, t) + 
+    ∫(OperationalCost(architecture, t) +
       MaintenanceCost(architecture, t) -
       ValueDelivered(architecture, t)) dt
   
   ScaleEconomyFactor(architecture) =
-    ln(Cost(architecture, 2*load) - 
+    ln(Cost(architecture, 2*load) -
        Cost(architecture, load)) / ln(2)
   
   InvestmentReturnRate(architecture) =
@@ -2146,18 +2146,18 @@
 
   ```rust
   QualityUtilityFunction(architecture) =
-    ∑(weight(q) × NormalizedMeasure(q, architecture) | 
+    ∑(weight(q) × NormalizedMeasure(q, architecture) |
       q ∈ QualityAttributes)
   
   ParetoOptimal(architecture, alternatives) ⇔
     ¬∃ alternative ∈ alternatives:
-      ∀ q ∈ QualityAttributes, 
+      ∀ q ∈ QualityAttributes,
         Quality(alternative, q) ≥ Quality(architecture, q) ∧
-      ∃ q' ∈ QualityAttributes, 
+      ∃ q' ∈ QualityAttributes,
         Quality(alternative, q') > Quality(architecture, q')
 
   QualitySensitivity(architecture, quality) =
-    ∂ OverallUtility(architecture) / 
+    ∂ OverallUtility(architecture) /
     ∂ QualityMeasure(quality, architecture)
   ```
 
@@ -2167,15 +2167,15 @@
 
   ```rust
   ExpectedUtility(decision) =
-    ∑(Probability(scenario) × Utility(decision, scenario) | 
+    ∑(Probability(scenario) × Utility(decision, scenario) |
       scenario ∈ PossibleScenarios)
   
   RobustnessValue(architecture) =
-    min{Utility(architecture, scenario) | 
+    min{Utility(architecture, scenario) |
         scenario ∈ AdversarialScenarios}
   
   InformationValue(data, decision) =
-    ExpectedUtility(decision with data) - 
+    ExpectedUtility(decision with data) -
     ExpectedUtility(decision without data)
   ```
 
@@ -2185,11 +2185,11 @@
 
   ```rust
   TimeDiscountedValue(architecture) =
-    ∑(Value(architecture, t) / (1 + DiscountRate)^t | 
+    ∑(Value(architecture, t) / (1 + DiscountRate)^t |
       t ∈ TimeHorizon)
   
   TechnicalDebtRatio(architecture) =
-    AccumulatedDebt(architecture) / 
+    AccumulatedDebt(architecture) /
     BusinessValue(architecture)
   
   EvolutionaryPotential(architecture) =
@@ -2218,7 +2218,7 @@
       Invalidates(d1, Assumptions(d2))
   
   DecisionTrace(architecture) =
-    {(element, decisions) | 
+    {(element, decisions) |
       element ∈ Architecture ∧
       decisions = {d | Influences(d, element)}}
   ```
@@ -2229,16 +2229,16 @@
 
   ```rust
   EvidenceStrength(evidence, claim) =
-    Relevance(evidence, claim) × 
-    Reliability(evidence) × 
+    Relevance(evidence, claim) ×
+    Reliability(evidence) ×
     Consistency(evidence, other_evidence)
   
   BeliefUpdateRule(prior, evidence) =
-    Posterior = (Prior × LikelihoodRatio(evidence)) / 
+    Posterior = (Prior × LikelihoodRatio(evidence)) /
                 NormalizingConstant
   
   ExperimentValue(experiment, decision) =
-    Cost(experiment) vs. 
+    Cost(experiment) vs.
     ExpectedValueOfInformation(experiment, decision)
   ```
 
@@ -2248,16 +2248,16 @@
 
   ```rust
   StakeholderAlignment(decision) =
-    ∑(Satisfaction(stakeholder, decision) × 
-      Influence(stakeholder)) / 
+    ∑(Satisfaction(stakeholder, decision) ×
+      Influence(stakeholder)) /
     ∑(Influence(stakeholder))
   
   ConsensusMetric(team, options) =
     1 - Variance({Preference(member, options) | member ∈ team})
   
   CollaborativeOutcome(process) =
-    Individual_Satisfaction × 
-    Decision_Quality × 
+    Individual_Satisfaction ×
+    Decision_Quality ×
     Implementation_Commitment
   ```
 
@@ -2295,16 +2295,16 @@
 - **渐进式形式化策略**
 
   ```rust
-  FormalizationRoadmap(system) = 
+  FormalizationRoadmap(system) =
     [(subsystem, formalization_level, priority)] ordered by priority
     where formalization_level ∈ {
       Informal, Semi-formal, Lightweight-formal, Rigorous-formal
     }
   
   FormalizationROI(element) =
-    CriticalityOf(element) × 
-    FailureCost(element) × 
-    FormalizationBenefit(element) / 
+    CriticalityOf(element) ×
+    FailureCost(element) ×
+    FormalizationBenefit(element) /
     FormalizationCost(element)
   
   HybridVerificationStrategy(system) =
@@ -2332,7 +2332,7 @@
   MultiModalEvidence(claim) = {
     (evidence_type, evidence_value, confidence) |
     evidence_type ∈ {
-      FormalProof, StatisticalData, ExpertOpinion, 
+      FormalProof, StatisticalData, ExpertOpinion,
       HistoricalPrecedent, Simulation
     } ∧
     Supports(evidence_value, claim)
@@ -2748,7 +2748,7 @@
     MatchingDegree(ConceptModel(domain), StructuralModel(solution))
   
   SemanticCoherence(model) =
-    ConsistencyDegree(ConceptDefinitions) × 
+    ConsistencyDegree(ConceptDefinitions) ×
     CompletenessRatio(CoreConcepts) ×
     PrecisionLevel(Relationships)
   ```
@@ -2792,12 +2792,12 @@
   
   TypeCorrectness(model) ⇔
     ∀op ∈ Operations, ∀state ∈ ValidStates,
-      PreCondition(op, state) → 
+      PreCondition(op, state) →
       PostCondition(op, ResultState(op, state))
   
   InvariantProtection(model) ⇔
     ∀op ∈ Operations, ∀state ∈ ValidStates,
-      Invariants(state) ∧ PreCondition(op, state) → 
+      Invariants(state) ∧ PreCondition(op, state) →
       Invariants(ResultState(op, state))
   ```
 
@@ -2864,7 +2864,7 @@
       rule ∈ Rules(style)) / ∑(Importance(rule))
   
   StyleCompatibility(style1, style2) =
-    |ConsistentRules(style1, style2)| / 
+    |ConsistentRules(style1, style2)| /
     |AllRules(style1) ∪ AllRules(style2)|
   ```
 
@@ -2908,11 +2908,11 @@
   
   StateIntegrity(model) ⇔
     ∀op ∈ ConcurrentOperations, ∀s ∈ ValidStates,
-      ConsistentResult(s, Interleave(op)) ≡ 
+      ConsistentResult(s, Interleave(op)) ≡
       SequentialResult(s, Serialize(op))
   
   StatePropagationEfficiency(model) =
-    StateChangeThroughput / 
+    StateChangeThroughput /
     (CommunicationOverhead × ConsistencyDelay)
   ```
 
@@ -2933,7 +2933,7 @@
     min{ProcessingRate(node) | node ∈ ProcessingNodes(model)}
   
   EventualConsistencyDelay(model) =
-    max{PropagationTime(source, sink) | 
+    max{PropagationTime(source, sink) |
         source ∈ EventSources, sink ∈ EventSinks}
   ```
 
@@ -2979,7 +2979,7 @@
       component ∈ CriticalComponents)
   
   MTTR(system) =
-    ∑(DetectionTime(failure) + DiagnosisTime(failure) + 
+    ∑(DetectionTime(failure) + DiagnosisTime(failure) +
       RepairTime(failure) | failure ∈ CommonFailures) /
     |CommonFailures|
   ```
@@ -3067,7 +3067,7 @@
   )
   
   OperabilityIndex(model) =
-    MonitoringCoverage × DiagnosticDepth × 
+    MonitoringCoverage × DiagnosticDepth ×
     RecoveryEffectiveness × UpdateSafety
   
   MeanTimeToRepair(model) =
@@ -3097,8 +3097,8 @@
 
   ```rust
   VerificationDrivenDesign = {
-    PropertyIdentification → FormalSpecification → 
-    DesignSearchSpace → VerificationFeedback → 
+    PropertyIdentification → FormalSpecification →
+    DesignSearchSpace → VerificationFeedback →
     DesignRefinement → ConstraintSatisfaction
   }
   ```
@@ -3270,7 +3270,7 @@
   ValueRealizationTimeline = {
     (TechnicalEnablement → BusinessCapability → ValueMetric → ROIMeasurement),
     TimeToFirstValue: MinimumViableCapability / ImplementationVelocity,
-    LongTermValueAccretion: ∑(BusinessImpact(capability) × AdoptionRate(t) − 
+    LongTermValueAccretion: ∑(BusinessImpact(capability) × AdoptionRate(t) −
                              MaintenanceCost(t))
   }
   ```

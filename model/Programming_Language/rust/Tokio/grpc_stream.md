@@ -7,19 +7,6 @@
 - [4 4 4 4 4 4 4 Jaeger](#4-4-4-4-4-4-4-jaeger)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将展示如何使用 Rust、tokio 和 gRPC 实现一个完整的分布式微服务系统示例。
 我们将使用 `tonic` 作为 gRPC 框架。
 
@@ -45,6 +32,7 @@ uuid = { version = "1.7", features = ["v4"] }
 
 [build-dependencies]
 tonic-build = "0.10"
+
 ```
 
 创建 proto 文件：
@@ -92,6 +80,7 @@ message ChatMessage {
     string content = 2;
     int64 timestamp = 3;
 }
+
 ```
 
 创建构建脚本：
@@ -101,6 +90,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     tonic_build::compile_protos("proto/service.proto")?;
     Ok(())
 }
+
 ```
 
 实现服务器和客户端：
@@ -381,6 +371,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 ```
 
 这个示例展示了：
@@ -408,12 +399,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```bash
 cargo build
+
 ```
 
    1. 运行服务：
 
 ```bash
 cargo run
+
 ```
 
 使用建议：
@@ -480,6 +473,7 @@ opentelemetry-jaeger = "0.19"
 
 [build-dependencies]
 tonic-build = "0.10"
+
 ```
 
 Proto 文件定义：
@@ -515,6 +509,7 @@ service NotificationService {
 }
 
 // 消息定义...（略）
+
 ```
 
 主要实现代码：
@@ -776,6 +771,7 @@ fn init_tracing() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 ```
 
 配置文件示例：
@@ -796,6 +792,7 @@ redis:
 
 metrics:
   port: 9090
+
 ```
 
 这个示例包含以下高级特性：
@@ -876,14 +873,19 @@ metrics:
 1. 启动依赖服务：
 
 ```bash
+
 # 2 2 2 2 2 2 2 PostgreSQL
+
 docker run -d --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 postgres
 
 # 3 3 3 3 3 3 3 Redis
+
 docker run -d --name redis -p 6379:6379 redis
 
 # 4 4 4 4 4 4 4 Jaeger
+
 docker run -d --name jaeger -p 16686:16686 -p 6831:6831/udp jaegertracing/all-in-one
+
 ```
 
 1. 初始化数据库：
@@ -891,12 +893,14 @@ docker run -d --name jaeger -p 16686:16686 -p 6831:6831/udp jaegertracing/all-in
 ```bash
 sqlx database create
 sqlx migrate run
+
 ```
 
 1. 运行服务：
 
 ```bash
 cargo run
+
 ```
 
 这个示例提供了一个完整的微服务系统框架，您可以根据实际需求进行扩展和定制。

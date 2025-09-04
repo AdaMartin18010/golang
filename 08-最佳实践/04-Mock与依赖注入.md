@@ -41,6 +41,7 @@ func TestQuery(t *testing.T) {
         t.Errorf("want mock, got %s", got)
     }
 }
+
 ```
 
 ### 8.1.3.2 **gomock用法**
@@ -48,6 +49,7 @@ func TestQuery(t *testing.T) {
 ```bash
 go install github.com/golang/mock/mockgen@latest
 mockgen -source=db.go -destination=mock_db.go -package=yourpkg
+
 ```
 
 ## 8.1.4 🎯 **最佳实践**

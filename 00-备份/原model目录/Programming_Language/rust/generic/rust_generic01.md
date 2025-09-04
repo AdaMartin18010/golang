@@ -97,6 +97,7 @@ fn main() {
     let result = largest(&char_list);
     println!("The largest char is {}", result); // 输出: The largest char is y
 }
+
 ```
 
 ##### 2.2.2 泛型结构体
@@ -123,6 +124,7 @@ fn main() {
 
     let multi_point = PointMulti { x: 5, y: 4.0 }; // 正确，T 是 i32, U 是 f64
 }
+
 ```
 
 ##### 2.2.3 泛型枚举
@@ -149,6 +151,7 @@ fn main() {
     let success: Result<String, std::io::Error> = Ok("Success".to_string());
     // let failure: Result<String, std::io::Error> = Err(std::io::Error::new(...));
 }
+
 ```
 
 ##### 2.2.4 泛型方法
@@ -185,6 +188,7 @@ fn main() {
 
     // p_int.distance_from_origin(); // 编译错误！该方法仅为 Point<f32> 定义
 }
+
 ```
 
 #### 2.3 Trait 与 Trait Bounds
@@ -220,6 +224,7 @@ fn compare<T: PartialOrd>(a: T, b: T) {
         println!("a equals b");
     }
 }
+
 ```
 
 ##### 2.3.2 `where` 子句
@@ -240,6 +245,7 @@ where
     // ...
     0
 }
+
 ```
 
 `where` 子句在处理关联类型约束或更复杂的生命周期约束时尤其有用。
@@ -276,6 +282,7 @@ fn spawn_thread_with_data<T: Send + 'static>(data: T) {
         println!("Data received in thread.");
     });
 }
+
 ```
 
 #### 2.4 类型推导
@@ -298,6 +305,7 @@ fn main() {
     let mut numbers = Vec::new(); // 或者让编译器稍后推断
     numbers.push(1); // 此时编译器推断出 Vec 的类型是 Vec<i32>
 }
+
 ```
 
 有时需要使用 `::<Type>` 语法（称为 "turbofish"）来帮助编译器进行类型推导，特别是当函数返回值是泛型且没有输入参数可以推导时。
@@ -311,6 +319,7 @@ fn main() {
     let result: i32 = "123".parse().unwrap(); // 通过类型注解指定
     let result = "123".parse::<i32>().unwrap(); // 通过 turbofish 指定
 }
+
 ```
 
 #### 2.5 单态化 (Monomorphization)
@@ -325,6 +334,7 @@ identity(x); // 编译器生成 identity_i32(x: i32) -> i32
 
 let s: String = String::from("hello");
 identity(s); // 编译器生成 identity_String(x: String) -> String
+
 ```
 
 **优点：**
@@ -373,6 +383,7 @@ fn main() {
     let buffer: Buffer<u8, 1024> = Buffer::new(); // SIZE 是 1024
     println!("Buffer size: {}", buffer.data.len()); // 输出 1024
 }
+
 ```
 
 `const` 泛型极大地增强了类型系统的表达能力，可以在编译时进行更多检查和计算。
@@ -417,6 +428,7 @@ fn main() {
     assert_eq!(iterator.next(), Some(3));
     assert_eq!(iterator.next(), None);
 }
+
 ```
 
 ##### 2.7.2 与泛型参数对比
@@ -458,6 +470,7 @@ Rust 编译器有一套省略规则，允许在一些常见模式下省略生命
 //     // 注意：set_x 的 v 必须显式标注或满足其他规则，这里省略不了 'a
 //     fn set_x(&mut self, v: &'a i32) { self.x = v; }
 // }
+
 ```
 
 ##### 2.8.2 显式生命周期
@@ -499,6 +512,7 @@ fn main_struct() {
         part: first_sentence, // i 的生命周期不能超过 first_sentence (也就是 novel)
     };
 }
+
 ```
 
 ##### 2.8.3 生命周期约束
@@ -533,6 +547,7 @@ fn main() {
     // }
     // print_ref(dead_ref); // 编译错误！dead_ref 指向的数据已经失效，不满足 T: 'a
 }
+
 ```
 
 `T: 'a` 意味着 `T` 中包含的所有引用生命周期都必须比 `'a` 长。
@@ -567,6 +582,7 @@ fn main() {
     // };
     // apply_to_ref(closure_with_capture, &x); // 编译错误！
 }
+
 ```
 
 `for<'a>` 使得 Trait Bound 可以在不同的调用点适用于不同的具体生命周期。
@@ -645,6 +661,7 @@ fn main() {
     // 现在 post 是最终状态，可以发布 (假设有 publish 方法)
     println!("Published content: {}", post.content);
 }
+
 ```
 
 这里虽然没有显式使用 `<T>` 泛型，但其思想是用不同的类型 (`DraftPost`, `PendingReviewPost`, `Post`) 来代表状态，方法签名控制了状态转换，这与使用泛型标记状态 (`Post<Draft>`, `Post<PendingReview>`, `Post<Published>`) 是等价的思路。
@@ -729,6 +746,7 @@ fn main() {
         .header("Content-Type", "application/json")
         .build(); // 正确，所有必需状态已满足
 }
+
 ```
 
 ##### 3.1.3 Newtype 模式
@@ -787,6 +805,7 @@ fn main() {
     println!("Positive value: {}", val.value());
     // let invalid = PositiveFloat::new(-1.0); // 返回 None
 }
+
 ```
 
 #### 3.2 编程技巧
@@ -853,6 +872,7 @@ fn main() {
     // 静态分发通常不能直接用于异构集合 (除非使用 Enum 或其他技巧)
     // let items_static: Vec<???> = vec![Foo, Bar]; // 类型不同，无法放入 Vec
 }
+
 ```
 
 选择静态还是动态分发取决于具体需求：追求极致性能时选静态；需要运行时灵活性或存储异构类型时选动态。
@@ -908,6 +928,7 @@ fn main() {
 
     println!("Handler counter: {}", dispatcher.handler.counter); // 输出 2
 }
+
 ```
 
 ##### 3.3.2 平衡泛型与具体实现
@@ -975,7 +996,6 @@ struct User { id: UserId, name: String }
 #[derive(Clone, Copy, PartialEq, Eq, Hash)] // UserId 也需要相应 traits
 struct UserId(u64);
 
-
 fn main() {
     // 可以注入 InMemoryUserRepository 或将来实现的 DatabaseUserRepository
     let repo = InMemoryUserRepository { users: HashMap::new() };
@@ -983,6 +1003,7 @@ fn main() {
 
     // ... 使用 user_service ...
 }
+
 ```
 
 #### 3.5 多线程设计
@@ -1028,6 +1049,7 @@ fn main() {
     // let rc_ptr = std::rc::Rc::new(5); // Rc is NOT Send
     // process_in_thread(rc_ptr); // 编译错误！Rc 不能跨线程传递
 }
+
 ```
 
 ##### 3.5.2 泛型并发数据结构
@@ -1065,6 +1087,7 @@ fn fetch_data<T: Send + 'static>(url: String) -> impl Future<Output = Result<T, 
         Err("Not implemented".to_string()) // 示例
     }
 }
+
 ```
 
 注意，在 `async` 代码中跨 `await` 点使用的变量（被 Future 捕获的）通常需要是 `Send`，因为 Future 可能在不同的线程上恢复执行。
@@ -1078,6 +1101,7 @@ trait Future {
     type Output; // 关联类型，表示 Future 完成时返回的值的类型
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 异步函数和库经常返回 `impl Future<Output = SomeType>`，这里的 `SomeType` 可以是具体的，也可以是泛型的。泛型使得可以编写通用的异步组合器或中间件。
@@ -1111,6 +1135,7 @@ fn main() {
     let words = ["apple", "banana", "grape", "orange"];
     assert_eq!(binary_search(&words, &"grape"), Some(2));
 }
+
 ```
 
 通过要求 `T: Ord` Trait Bound，`binary_search` 函数可以用于任何实现了全序比较的类型切片。
@@ -1134,6 +1159,7 @@ fn main() {
 
     println!("Sum: {}", sum_of_squares_of_evens); // 输出: Sum: 20 (4 + 16)
 }
+
 ```
 
 ##### 3.8.2 泛型递归结构与函数
@@ -1167,6 +1193,7 @@ fn main() {
     let list: List<i32> = List::Cons(1, Box::new(List::Cons(2, Box::new(List::Nil))));
     println!("List length: {}", list.len()); // 输出: List length: 2
 }
+
 ```
 
 ---

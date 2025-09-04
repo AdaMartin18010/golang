@@ -25,6 +25,7 @@
 
 ```rust
 #![allow(dead_code)]
+
 ```
 
 该属性告诉编译器对整个 crate 放宽死代码（dead code）警告。
@@ -44,6 +45,7 @@ struct Point {
     x: i32,
     y: i32,
 }
+
 ```
 
 - **`#[cfg(...)]`**  
@@ -54,6 +56,7 @@ struct Point {
 fn linux_only() {
     println!("这段代码只在 Linux 平台上编译运行");
 }
+
 ```
 
 - **`#[inline]` / `#[inline(always)]`**  
@@ -64,6 +67,7 @@ fn linux_only() {
 fn add(a: i32, b: i32) -> i32 {
     a + b
 }
+
 ```
 
 - **`#[test]`**  
@@ -77,6 +81,7 @@ mod tests {
         assert_eq!(2 + 2, 4);
     }
 }
+
 ```
 
 - **`#![allow(...)]` 和 `#![warn(...)]`**  
@@ -84,6 +89,7 @@ mod tests {
 
 ```rust
 #![allow(unused_variables)]
+
 ```
 
 ---
@@ -99,6 +105,7 @@ struct Person {
     name: String,
     age: u8,
 }
+
 ```
 
 这里，`Serialize` 与 `Deserialize` 便是通过过程宏实现的自定义属性，自动生成序列化与反序列化代码。
@@ -120,6 +127,7 @@ pub fn my_attribute(_attr: TokenStream, item: TokenStream) -> TokenStream {
     // 处理传入的 item，可以生成修改后的代码
     item
 }
+
 ```
 
   使用：
@@ -129,6 +137,7 @@ pub fn my_attribute(_attr: TokenStream, item: TokenStream) -> TokenStream {
 fn example() {
     println!("这是一个自定义的属性函数");
 }
+
 ```
 
 ---
@@ -158,6 +167,7 @@ fn main() {
     // PartialEq 实现支持直接比较
     assert_eq!(a, b);
 }
+
 ```
 
 ### 示例 2：条件编译
@@ -176,6 +186,7 @@ fn check_os() {
 fn main() {
     check_os();
 }
+
 ```
 
 ### 示例 3：控制警告
@@ -192,6 +203,7 @@ fn unused_function() {
 fn main() {
     println!("Rust 属性示例");
 }
+
 ```
 
 ---

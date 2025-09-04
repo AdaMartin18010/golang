@@ -278,6 +278,7 @@ func (d *DivideExpression) Interpret(context *Context) interface{} {
     
     return fmt.Sprintf("Cannot divide %v by %v", leftValue, rightValue)
 }
+
 ```
 
 ### 3.3.1.4.2 简单计算器解释器
@@ -572,6 +573,7 @@ func (c *Calculator) Evaluate(expression string) interface{} {
 func (c *Calculator) GetContext() *Context {
     return c.context
 }
+
 ```
 
 ### 3.3.1.4.3 SQL查询解释器
@@ -968,6 +970,7 @@ func (s *SQLInterpreter) Execute(sql string) []map[string]interface{} {
 func (s *SQLInterpreter) GetContext() *SQLContext {
     return s.context
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -1189,6 +1192,7 @@ func (c *ConfigInterpreter) GetValue(section, key string) interface{} {
 func (c *ConfigInterpreter) SetVariable(name string, value interface{}) {
     c.context.SetVariable(name, value)
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

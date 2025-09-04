@@ -57,58 +57,74 @@
 
 ```toml
 [dependencies]
+
 # 2 2 2 2 2 2 2 Web框架 - 高性能HTTP服务
+
 actix-web = "4.4"
 axum = "0.7"
 
 # 3 3 3 3 3 3 3 异步运行时
+
 tokio = { version = "1.35", features = ["full"] }
 
 # 4 4 4 4 4 4 4 数据库
+
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-rustls"] }
 diesel = { version = "2.1", features = ["postgres"] }
 
 # 5 5 5 5 5 5 5 加密和安全
+
 ring = "0.17"
 rust-crypto = "0.2"
 secp256k1 = "0.28"
 
 # 6 6 6 6 6 6 6 序列化
+
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # 7 7 7 7 7 7 7 配置管理
+
 config = "0.14"
 dotenv = "0.15"
 
 # 8 8 8 8 8 8 8 日志和监控
+
 tracing = "0.1"
 tracing-subscriber = "0.3"
 prometheus = "0.13"
 
 # 9 9 9 9 9 9 9 测试
+
 tokio-test = "0.4"
 mockall = "0.12"
+
 ```
 
 ### 9 9 9 9 9 9 9 行业特定库
 
 ```toml
 [dependencies]
+
 # 10 10 10 10 10 10 10 金融计算
+
 decimal = "2.1"
 rust_decimal = "1.32"
 
 # 11 11 11 11 11 11 11 时间处理
+
 chrono = { version = "0.4", features = ["serde"] }
 time = "0.3"
 
 # 12 12 12 12 12 12 12 消息队列
+
 lapin = "2.3"
 redis = { version = "0.24", features = ["tokio-comp"] }
 
 # 13 13 13 13 13 13 13 缓存
+
 moka = "0.12"
+
 ```
 
 ## 13.1 架构模式
@@ -127,6 +143,7 @@ moka = "0.12"
          │  Payment Service│    │  Trading Service│    │  Risk Service   │
          │                 │    │                 │    │                 │
          └─────────────────┘    └─────────────────┘    └─────────────────┘
+
 ```
 
 ### 13.1.2 2. 事件驱动架构
@@ -145,6 +162,7 @@ pub enum FinancialEvent {
 pub trait EventHandler {
     async fn handle(&self, event: &FinancialEvent) -> Result<(), Box<dyn Error>>;
 }
+
 ```
 
 ### 13.1.3 3. CQRS模式
@@ -175,6 +193,7 @@ pub trait CommandHandler<C> {
 pub trait QueryHandler<Q, R> {
     async fn handle(&self, query: Q) -> Result<R, Box<dyn Error>>;
 }
+
 ```
 
 ## 13.2 业务领域建模
@@ -219,6 +238,7 @@ pub struct Trade {
     pub status: TradeStatus,
     pub executed_at: Option<DateTime<Utc>>,
 }
+
 ```
 
 ### 13.2.2 值对象
@@ -238,6 +258,7 @@ pub struct PaymentId(String);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TradeId(String);
+
 ```
 
 ## 13.3 数据建模
@@ -286,6 +307,7 @@ CREATE TABLE trades (
     executed_at TIMESTAMP WITH TIME ZONE,
     version INTEGER NOT NULL DEFAULT 1
 );
+
 ```
 
 ### 13.3.2 仓储模式
@@ -302,6 +324,7 @@ pub trait PaymentRepository {
     async fn find_by_id(&self, id: &PaymentId) -> Result<Option<Payment>, RepositoryError>;
     async fn find_pending_payments(&self) -> Result<Vec<Payment>, RepositoryError>;
 }
+
 ```
 
 ## 13.4 流程建模
@@ -318,6 +341,7 @@ graph TD
     F --> G[更新余额]
     G --> H[发送确认]
     H --> I[记录审计日志]
+
 ```
 
 ### 13.4.2 交易执行流程
@@ -332,6 +356,7 @@ graph TD
     F --> G[更新持仓]
     G --> H[结算]
     H --> I[发送确认]
+
 ```
 
 ## 13.5 组件建模
@@ -375,6 +400,7 @@ impl RiskService {
         // 风险评估逻辑
     }
 }
+
 ```
 
 ### 13.5.2 基础设施层
@@ -408,6 +434,7 @@ impl EventPublisher for RabbitMQEventPublisher {
         // 消息发布实现
     }
 }
+
 ```
 
 ## 13.6 运维运营
@@ -415,7 +442,9 @@ impl EventPublisher for RabbitMQEventPublisher {
 ### 13.6.1 部署架构
 
 ```yaml
+
 # 14 14 14 14 14 14 14 docker-compose.yml
+
 version: '3.8'
 services:
   api-gateway:
@@ -457,6 +486,7 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=pass
+
 ```
 
 ### 14 14 14 14 14 14 14 监控和日志
@@ -507,6 +537,7 @@ impl PaymentApplicationService {
         Ok(command.payment_id)
     }
 }
+
 ```
 
 ### 14 14 14 14 14 14 14 安全配置
@@ -537,6 +568,7 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+
 ```
 
 ## 14.1 性能优化
@@ -580,6 +612,7 @@ impl PaymentProcessor {
         results
     }
 }
+
 ```
 
 ### 14.1.2 缓存策略
@@ -609,6 +642,7 @@ impl AccountRepository for CachedAccountRepository {
         }
     }
 }
+
 ```
 
 ## 14.2 测试策略
@@ -645,6 +679,7 @@ mod tests {
         assert!(result.is_ok());
     }
 }
+
 ```
 
 ### 14.2.2 集成测试
@@ -673,6 +708,7 @@ mod integration_tests {
         assert_eq!(payment.status, PaymentStatus::Completed);
     }
 }
+
 ```
 
 ## 14.3 合规和审计
@@ -697,6 +733,7 @@ pub struct AuditLog {
 pub trait AuditLogger {
     async fn log(&self, audit_log: AuditLog) -> Result<(), AuditError>;
 }
+
 ```
 
 ### 14.3.2 数据加密
@@ -741,6 +778,7 @@ impl EncryptionService {
         Ok(plaintext)
     }
 }
+
 ```
 
 ## 14.4 总结

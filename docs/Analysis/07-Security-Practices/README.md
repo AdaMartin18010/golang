@@ -36,19 +36,6 @@
   - [7.1.12 参考资料](#参考资料)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 7.1.1 目录
 
 1. [安全基础](#1-安全基础)
@@ -153,6 +140,7 @@ func (blp *BellLaPadulaModel) CanWrite(subjectID, objectID string) bool {
     // 星属性：主体不能写入更低安全级别的对象
     return subject.SecurityLevel <= object.SecurityLevel
 }
+
 ```
 
 ### 7.1.3.2 Biba模型
@@ -202,6 +190,7 @@ func (biba *BibaModel) CanWrite(subjectID, objectID string) bool {
     // 星完整性属性：主体不能写入更高完整性级别的对象
     return subject.IntegrityLevel >= object.IntegrityLevel
 }
+
 ```
 
 ## 7.1.4 3. 威胁分析
@@ -273,6 +262,7 @@ func (tm *ThreatModel) calculateRisk(threat *Threat) float64 {
     
     return threat.Probability * impact
 }
+
 ```
 
 ### 7.1.4.2 攻击树分析
@@ -336,6 +326,7 @@ func (at *AttackTree) CalculatePathRisk(path []*AttackNode) float64 {
     
     return risk
 }
+
 ```
 
 ## 7.1.5 4. 防护策略
@@ -411,6 +402,7 @@ func (did *DefenseInDepth) isControlEffective(control SecurityControl, attack *A
         return true
     }
 }
+
 ```
 
 ### 7.1.5.2 零信任模型
@@ -489,6 +481,7 @@ func (ztm *ZeroTrustModel) logAccess(context *Context, allowed bool) {
     // 发送到日志系统
     ztm.continuous.LogAccess(logEntry)
 }
+
 ```
 
 ## 7.1.6 5. 加密技术
@@ -554,6 +547,7 @@ func (ae *AESEncryption) Decrypt(ciphertext []byte) ([]byte, error) {
     
     return plaintext, nil
 }
+
 ```
 
 ### 7.1.6.2 非对称加密
@@ -618,6 +612,7 @@ func (re *RSAEncryption) Verify(data, signature []byte) error {
         nil,
     )
 }
+
 ```
 
 ## 7.1.7 6. 身份认证
@@ -715,6 +710,7 @@ func (mfa *MultiFactorAuth) verifyFactor(factor *AuthFactor, credential string) 
         return false
     }
 }
+
 ```
 
 ### 7.1.7.2 OAuth 2.0
@@ -810,6 +806,7 @@ func (oas *OAuth2Server) ExchangeCode(code, clientID, clientSecret string) (*Tok
     
     return token, nil
 }
+
 ```
 
 ## 7.1.8 7. 访问控制
@@ -897,6 +894,7 @@ func (rbac *RBACModel) roleHasPermission(role *Role, resource, action string) bo
     }
     return false
 }
+
 ```
 
 ### 7.1.8.2 ABAC模型
@@ -990,6 +988,7 @@ func (abac *ABACModel) evaluateCondition(condition AttributeCondition, value int
     }
     return false
 }
+
 ```
 
 ## 7.1.9 8. 安全监控
@@ -1093,6 +1092,7 @@ func (ids *IntrusionDetectionSystem) isAnomaly(entry *LogEntry) bool {
     // 实际应用中可能使用机器学习算法
     return entry.Level == LogLevelError || entry.Level == LogLevelCritical
 }
+
 ```
 
 ### 7.1.9.2 安全信息与事件管理
@@ -1195,6 +1195,7 @@ func (siem *SIEMSystem) applyProcessor(processor LogProcessor, entry *LogEntry) 
     
     return entry
 }
+
 ```
 
 ## 7.1.10 9. 最佳实践
@@ -1243,6 +1244,7 @@ func securityBestPractices() {
         return base64.URLEncoding.EncodeToString(b)
     }
 }
+
 ```
 
 ### 7.1.10.2 安全配置
@@ -1296,6 +1298,7 @@ func (sc *SecurityConfig) Validate() error {
     
     return nil
 }
+
 ```
 
 ## 7.1.11 10. 案例分析
@@ -1386,6 +1389,7 @@ func (swa *SecureWebApp) authenticateUser(r *http.Request) (*User, error) {
 func (swa *SecureWebApp) authorizeUser(user *User, resource, action string) bool {
     return swa.rbac.CheckPermission(user.ID, resource, action)
 }
+
 ```
 
 ### 7.1.11.2 API安全
@@ -1471,6 +1475,7 @@ func (sa *SecureAPI) encryptResponse(response []byte) []byte {
     }
     return encrypted
 }
+
 ```
 
 ---
@@ -1485,4 +1490,4 @@ func (sa *SecureAPI) encryptResponse(response []byte) []byte {
 
 ---
 
-*本文档涵盖了网络安全的核心概念、模型和技术实现，为构建安全可靠的系统提供指导。*
+* 本文档涵盖了网络安全的核心概念、模型和技术实现，为构建安全可靠的系统提供指导。*

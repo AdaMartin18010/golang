@@ -48,19 +48,6 @@
     - [11.5.1.13.2 审批工作流](#审批工作流)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.5.1.1 目录
 
 - [工作流模式 (Workflow Patterns)](#工作流模式-workflow-patterns)
@@ -295,6 +282,7 @@ func SequenceExample() {
  
  fmt.Printf("Result: %v\n", result) // 输出: Result: 2
 }
+
 ```
 
 ### 11.5.1.4.2 并行拆分模式 (Parallel Split Pattern)
@@ -468,6 +456,7 @@ func ParallelExample() {
  
  fmt.Printf("Results: %v\n", results) // 输出: Results: [10 15 25]
 }
+
 ```
 
 ### 11.5.1.4.3 同步模式 (Synchronization Pattern)
@@ -655,6 +644,7 @@ func (t *wrappedTask[I, O, R]) Execute(input I) (R, error) {
 func (t *wrappedTask[I, O, R]) Name() string {
  return t.task.Name()
 }
+
 ```
 
 ## 11.5.1.5 4. 高级分支合并模式
@@ -779,6 +769,7 @@ func NewBaseCondition(evaluator func(ctx context.Context, data interface{}) bool
 func (bc *BaseCondition) Evaluate(ctx context.Context, data interface{}) bool {
     return bc.evaluator(ctx, data)
 }
+
 ```
 
 ### 11.5.1.5.2 结构化同步合并模式
@@ -889,6 +880,7 @@ func NewBaseMergeCondition(evaluator func(ctx context.Context, completedBranches
 func (bmc *BaseMergeCondition) CanMerge(ctx context.Context, completedBranches []string) bool {
     return bmc.evaluator(ctx, completedBranches)
 }
+
 ```
 
 ## 11.5.1.6 5. 结构模式
@@ -978,6 +970,7 @@ func NewBaseLoopCondition(evaluator func(ctx context.Context, data interface{}) 
 func (blc *BaseLoopCondition) ShouldContinue(ctx context.Context, data interface{}) bool {
     return blc.evaluator(ctx, data)
 }
+
 ```
 
 ## 11.5.1.7 6. 多实例模式
@@ -1062,6 +1055,7 @@ func (miw *MultipleInstancesWorkflow) Execute(ctx context.Context, data interfac
     
     return results, nil
 }
+
 ```
 
 ## 11.5.1.8 7. 状态基础模式
@@ -1187,6 +1181,7 @@ func (be *BaseEvent) ID() string {
 func (be *BaseEvent) Trigger(ctx context.Context) bool {
     return be.trigger(ctx)
 }
+
 ```
 
 ### 11.5.1.8.2 里程碑模式
@@ -1268,6 +1263,7 @@ func (mw *MilestoneWorkflow) Execute(ctx context.Context, data interface{}) (int
     
     return result, nil
 }
+
 ```
 
 ## 11.5.1.9 8. 资源模式
@@ -1327,6 +1323,7 @@ func (daw *DirectAllocationWorkflow) Execute(ctx context.Context, data interface
     
     return daw.activity.Execute(ctx, data)
 }
+
 ```
 
 ### 11.5.1.9.2 基于角色分配模式
@@ -1400,6 +1397,7 @@ func (rbw *RoleBasedWorkflow) Execute(ctx context.Context, data interface{}) (in
     
     return rbw.activity.Execute(ctx, data)
 }
+
 ```
 
 ### 11.5.1.9.3 授权模式
@@ -1461,6 +1459,7 @@ func (aw *AuthorizationWorkflow) Execute(ctx context.Context, data interface{}) 
     // 执行活动
     return aw.activity.Execute(ctx, data)
 }
+
 ```
 
 ## 11.5.1.10 9. 数据流模式
@@ -1553,6 +1552,7 @@ func (dpw *DataPassingWorkflow) Execute(ctx context.Context, data map[string]int
     
     return result, nil
 }
+
 ```
 
 ### 11.5.1.10.2 数据转换模式
@@ -1634,6 +1634,7 @@ func (btr *BaseTransformationRule) ID() string {
 func (btr *BaseTransformationRule) Apply(input interface{}) (interface{}, error) {
     return btr.transform(input)
 }
+
 ```
 
 ### 11.5.1.10.3 数据路由模式
@@ -1728,6 +1729,7 @@ func (brr *BaseRoutingRule) Matches(ctx context.Context, data interface{}) bool 
 func (brr *BaseRoutingRule) GetTargetActivity() Activity {
     return brr.activity
 }
+
 ```
 
 ## 11.5.1.11 10. Petri网建模分析
@@ -1870,6 +1872,7 @@ func (we *WorkflowExecutor) worker() {
         }
     }
 }
+
 ```
 
 ## 11.5.1.13 12. 模式集成案例
@@ -1950,6 +1953,7 @@ func (opw *OrderProcessingWorkflow) Execute(ctx context.Context, data interface{
 func (opw *OrderProcessingWorkflow) ID() string {
     return "order_processing"
 }
+
 ```
 
 ### 11.5.1.13.2 审批工作流
@@ -2033,6 +2037,7 @@ func (aw *ApprovalWorkflow) Execute(ctx context.Context, data interface{}) (inte
 func (aw *ApprovalWorkflow) ID() string {
     return "approval_workflow"
 }
+
 ```
 
 ---

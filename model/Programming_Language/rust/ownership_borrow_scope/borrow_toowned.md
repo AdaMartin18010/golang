@@ -23,19 +23,6 @@
     - [1.9.8 4. 总结](#4-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，借用（Borrowing）是所有权系统的一个重要部分，它允许在不转移所有权的情况下使用值。
 与借用直接相关的 trait 主要有 `Deref` 和 `Borrow`。
 以下是这些 trait 的定义、应用和解释：
@@ -49,6 +36,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 `Deref` trait 允许类型通过 `deref` 方法表现得像引用。
@@ -66,6 +54,7 @@ pub trait Deref {
 pub trait Borrow<Borrowed: ?Sized>: Sized {
     fn borrow(&self) -> &Borrowed;
 }
+
 ```
 
 `Borrow` trait 允许类型创建另一个类型的不可变引用。
@@ -84,6 +73,7 @@ pub trait ToOwned {
     type Owned: Borrow<Self>;
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 `ToOwned` trait 允许类型创建自己的拥有版本。
@@ -114,6 +104,7 @@ Rust 的借用机制是其内存安全保证的关键部分，它允许开发者
 pub trait DerefMut: Deref {
     fn deref_mut(&mut self) -> &mut Self::Target;
 }
+
 ```
 
 `DerefMut` trait 允许对智能指针的内部数据进行可变解引用。
@@ -130,6 +121,7 @@ pub trait DerefMut: Deref {
 pub trait Drop {
     fn drop(&mut self);
 }
+
 ```
 
 `Drop` trait 定义了当智能指针所管理的对象被销毁时执行的代码。
@@ -198,6 +190,7 @@ pub trait ToOwned {
     /// 从当前借用实例创建一个拥有所有权的数据
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 ### 1.9.3 使用示例
@@ -212,6 +205,7 @@ fn main() {
 
     println!("{}", owned);
 }
+
 ```
 
 在这个例子中，`s.to_owned()` 会返回一个 `String`，即拥有独立所有权的数据，
@@ -235,6 +229,7 @@ pub trait ToOwned {
     type Owned: Borrow<Self>;
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 可以看到，`to_owned` 方法的签名是接受一个 `&self`（不可变引用），返回一个拥有所有权的值。
@@ -268,6 +263,7 @@ fn main() {
     let owned_string: String = s.to_owned();
     println!("Owned string: {}", owned_string);
 }
+
 ```
 
 #### 1.9.7.2 示例 2：从可变引用调用 `to_owned()`
@@ -283,6 +279,7 @@ fn main() {
     let owned_string = (&s).to_owned();
     println!("Owned string: {}", owned_string);
 }
+
 ```
 
 在这个例子中，即使 `s` 是可变的，但调用 `(&s).to_owned()` 实际上是对 `&s`（不可变引用）的操作。
@@ -307,6 +304,7 @@ trait ToOwned {
     type Owned: Borrow<Self>;
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 **应用**：
@@ -321,6 +319,7 @@ use std::borrow::Cow;
 
 let borrowed = Cow::Borrowed("hello");
 let owned: String = borrowed.to_owned(); // 创建 "hello" 的 String 类型的独立副本
+
 ```
 
 在这个例子中，`to_owned` 方法被调用来创建 `String` 类型的值，它拥有自己的数据副本。
@@ -333,6 +332,7 @@ let owned: String = borrowed.to_owned(); // 创建 "hello" 的 String 类型的�
 ```rust
 let s = String::from("hello");
 let s2 = s; // s 的所有权被转移到 s2，s 不再可用
+
 ```
 
 在这个例子中，`s` 的所有权被直接转移到了 `s2`，这是通过值的移动来实现的，而不是通过 `to_owned`。

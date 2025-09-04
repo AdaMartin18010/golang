@@ -83,13 +83,6 @@
     - [1.8.2 总体评估](#总体评估)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 Rust异步编程模型: 批判性分析与改进方向
 
 ## 1.1 目录
@@ -261,6 +254,7 @@ graph TD
     D4 --> D4_1(错误传播形式化)
     D4 --> D4_2(超时与取消语义)
     D4 --> D4_3(恢复策略设计)
+
 ```
 
 ## 1.3 2. 理论基础与模型
@@ -286,6 +280,7 @@ graph TD
 
 ```math
 type Future<T> = ∀R. ((T → R) → R)
+
 ```
 
 这是一种延续传递风格(CPS)的表达，表明`Future<T>`是一种接受消费者函数的计算。
@@ -308,6 +303,7 @@ pub trait Future {
 trait Future<T> {
     fn poll<R>(self, k: impl FnOnce(T) -> R) -> Poll<R>;
 }
+
 ```
 
 ### 1.3.2 Rust异步模型的形式化定义
@@ -350,6 +346,7 @@ async fn self_referential() {
     // 如果async代码体被移动，ptr可能指向无效位置
     println!("{}, {:p}", x, ptr);
 }
+
 ```
 
 **批判分析**：
@@ -401,6 +398,7 @@ impl Scheduler {
         victim.local_queue.steal()
     }
 }
+
 ```
 
 **批判分析**：
@@ -421,6 +419,7 @@ async fn main() {
         .with_poll_duration(true)
         .build();
 }
+
 ```
 
 #### 1.3.3.2 唤醒机制与执行保证
@@ -454,6 +453,7 @@ fn example_reactor<F: Future>(future: F) -> F::Output {
         }
     }
 }
+
 ```
 
 **批判分析**：
@@ -493,6 +493,7 @@ impl Future for FStateMachine {
         }
     }
 }
+
 ```
 
 **代码膨胀分析**：
@@ -512,6 +513,7 @@ async fn complex() -> u32 {
         d * 2
     }
 }
+
 ```
 
 此函数生成的状态机至少有5个状态，包括初始状态和4个中间状态。
@@ -561,6 +563,7 @@ fn callback_model() {
         });
     }
 }
+
 ```
 
 ### 1.4.2 生成器模式的批判性分析
@@ -588,6 +591,7 @@ fn generator_to_stream<T>(
         }
     })
 }
+
 ```
 
 **批判分析**：
@@ -612,6 +616,7 @@ struct Locals {
     var2: Type2,
     // ...
 }
+
 ```
 
 **内存分析**：
@@ -637,6 +642,7 @@ fn memory_efficient_generator() -> impl Generator<Yield = i32, Return = ()> {
         // 生成器状态机只需存储一个大对象的空间，而非两个
     }
 }
+
 ```
 
 **批判分析**：
@@ -687,6 +693,7 @@ async fn stream_laws() {
         
     assert_eq!(merged1, merged2);
 }
+
 ```
 
 **批判分析**：
@@ -733,6 +740,7 @@ async fn backpressure_example() {
         process_data(data).await;  // 处理时间较长
     }
 }
+
 ```
 
 **批判分析**：
@@ -779,6 +787,7 @@ impl<T> Mutex<T> {
         MutexGuard::new(self)
     }
 }
+
 ```
 
 **批判分析**：
@@ -821,6 +830,7 @@ async fn channel_selection_comparison() {
         val = rx2.next().fuse() => println!("rx2: {:?}", val),
     }
 }
+
 ```
 
 **批判分析**：
@@ -869,6 +879,7 @@ impl Actor {
         }
     }
 }
+
 ```
 
 **理论优势**：
@@ -925,6 +936,7 @@ async fn csp_example() {
     // 等待所有进程完成
     let _ = tokio::join!(p1, p2, p3);
 }
+
 ```
 
 **与Actor模型对比**：
@@ -1028,6 +1040,7 @@ impl<T: Send + 'static> PriorityWorkerPool<T> {
         self.task_available.notify_one();
     }
 }
+
 ```
 
 **批判分析**：
@@ -1109,6 +1122,7 @@ impl MultiTenantWorkerPool {
         unimplemented!()
     }
 }
+
 ```
 
 **批判分析**：
@@ -1225,6 +1239,7 @@ async fn backpressure_strategies() {
         }
     });
 }
+
 ```
 
 **批判分析**：
@@ -1340,6 +1355,7 @@ impl AdaptiveShaper {
         self.current_rate.store(new_rate, Ordering::Relaxed);
     }
 }
+
 ```
 
 **批判分析**：
@@ -1432,6 +1448,7 @@ where
         }
     }
 }
+
 ```
 
 **批判分析**：
@@ -1554,6 +1571,7 @@ struct Cancelled;
 async fn perform_cleanup() {
     // 资源清理逻辑
 }
+
 ```
 
 **批判分析**：
@@ -1652,6 +1670,7 @@ async fn async_vs_sync_sort() {
         result
     };
 }
+
 ```
 
 **批判分析**：
@@ -1782,12 +1801,12 @@ where
             write_buffer: Mutex::new(HashMap::new()),
             flush_interval,
         };
-        
+  
         // 启动后台刷新任务
         let storage = map.main_storage.clone();
         let buffer = map.write_buffer.clone();
         let interval = map.flush_interval;
-        
+  
         tokio::spawn(async move {
             let mut timer = tokio::time::interval(interval);
             loop {
@@ -1799,22 +1818,22 @@ where
                 }
             }
         });
-        
+  
         map
     }
-    
+  
     // 写入很快，但不保证立即可见
     async fn insert(&self, key: K, value: V) {
         let mut buffer = self.write_buffer.lock().await;
         buffer.insert(key, value);
     }
-    
+  
     // 读取主存储，可能看不到最近的写入
     fn get(&self, key: &K) -> Option<V> {
         self.main_storage.get(key).map(|v| v.clone())
         // 注意：这里不检查写缓冲区，保持简单和高性能
     }
-    
+  
     // 强一致性读取，但性能较差
     async fn consistent_get(&self, key: &K) -> Option<V> {
         // 先检查写缓冲区
@@ -1822,11 +1841,12 @@ where
         if let Some(value) = buffer.get(key) {
             return Some(value.clone());
         }
-        
+  
         // 再检查主存储
         self.main_storage.get(key).map(|v| v.clone())
     }
 }
+
 ```
 
 **批判分析**：
@@ -1861,7 +1881,9 @@ use tokio_util::codec::{Framed, LengthDelimitedCodec};
 use futures::{SinkExt, StreamExt};
 
 // 1. 协议消息定义
-#[derive(Debug, Serialize, Deserialize)]
+
+# [derive(Debug, Serialize, Deserialize)]
+
 enum Message {
     Request { id: u32, content: String },
     Response { id: u32, result: String },
@@ -1876,12 +1898,12 @@ struct ProtocolCodec;
 impl Decoder for ProtocolCodec {
     type Item = Message;
     type Error = io::Error;
-    
+  
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
         if src.is_empty() {
             return Ok(None);
         }
-        
+  
         match serde_json::from_slice(&src) {
             Ok(message) => {
                 src.clear();
@@ -1894,7 +1916,7 @@ impl Decoder for ProtocolCodec {
 
 impl Encoder<Message> for ProtocolCodec {
     type Error = io::Error;
-    
+  
     fn encode(&mut self, item: Message, dst: &mut BytesMut) -> Result<(), Self::Error> {
         let json = serde_json::to_vec(&item)
             .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
@@ -1923,7 +1945,7 @@ where
 {
     fn new(transport: T) -> Self {
         let length_delimited = Framed::new(transport, LengthDelimitedCodec::new());
-        
+  
         Self {
             state: ProtocolState {
                 last_ping: Instant::now(),
@@ -1934,20 +1956,20 @@ where
             codec: ProtocolCodec,
         }
     }
-    
+  
     // 发送请求并等待响应
     async fn request(&mut self, content: String) -> Result<String, ProtocolError> {
         let request_id = self.state.next_request_id;
         self.state.next_request_id += 1;
-        
+  
         // 创建用于接收响应的通道
         let (tx, rx) = oneshot::channel();
         self.state.pending_requests.insert(request_id, tx);
-        
+  
         // 发送请求
         let message = Message::Request { id: request_id, content };
         self.send_message(message).await?;
-        
+  
         // 等待响应或超时
         tokio::select! {
             result = rx => {
@@ -1960,24 +1982,24 @@ where
             }
         }
     }
-    
+  
     // 发送消息
     async fn send_message(&mut self, message: Message) -> Result<(), ProtocolError> {
         let mut buf = BytesMut::new();
         self.codec.encode(message, &mut buf)
             .map_err(|e| ProtocolError::Encoding(e.to_string()))?;
-            
+  
         self.transport.send(buf.freeze()).await
             .map_err(|e| ProtocolError::Transport(e.to_string()))?;
-            
+  
         Ok(())
     }
-    
+  
     // 启动消息处理循环
     async fn run(mut self) {
         // 心跳定时器
         let mut ping_interval = tokio::time::interval(Duration::from_secs(15));
-        
+  
         loop {
             tokio::select! {
                 // 处理接收到的消息
@@ -2004,7 +2026,7 @@ where
                         }
                     }
                 }
-                
+  
                 // 心跳检查
                 _ = ping_interval.tick() => {
                     // 发送PING消息
@@ -2012,7 +2034,7 @@ where
                         eprintln!("发送PING失败: {:?}", e);
                         break;
                     }
-                    
+  
                     // 检查上次PING时间，超时断开
                     if self.state.last_ping.elapsed() > Duration::from_secs(60) {
                         eprintln!("心跳超时，关闭连接");
@@ -2021,13 +2043,13 @@ where
                 }
             }
         }
-        
+  
         // 清理所有待处理请求
         for (_, sender) in self.state.pending_requests.drain() {
             let _ = sender.send(Err(ProtocolError::ConnectionClosed));
         }
     }
-    
+  
     // 处理接收到的消息
     async fn handle_message(&mut self, message: Message) {
         match message {
@@ -2036,23 +2058,23 @@ where
                     let _ = sender.send(Ok(result));
                 }
             }
-            
+  
             Message::Error { id, code, message } => {
                 if let Some(sender) = self.state.pending_requests.remove(&id) {
                     let _ = sender.send(Err(ProtocolError::RemoteError { code, message }));
                 }
             }
-            
+  
             Message::Ping => {
                 // 响应PING
                 let _ = self.send_message(Message::Pong).await;
             }
-            
+  
             Message::Pong => {
                 // 更新最后心跳时间
                 self.state.last_ping = Instant::now();
             }
-            
+  
             _ => {
                 // 其他消息处理
             }
@@ -2060,26 +2082,28 @@ where
     }
 }
 
-#[derive(Debug, thiserror::Error)]
+# [derive(Debug, thiserror::Error)]
+
 enum ProtocolError {
     #[error("编码错误: {0}")]
     Encoding(String),
-    
+  
     #[error("传输错误: {0}")]
     Transport(String),
-    
+  
     #[error("远程错误: {code} - {message}")]
     RemoteError { code: u32, message: String },
-    
+  
     #[error("请求超时")]
     Timeout,
-    
+  
     #[error("请求已取消")]
     Cancelled,
-    
+  
     #[error("连接已关闭")]
     ConnectionClosed,
 }
+
 ```
 
 **批判分析**：
@@ -2136,7 +2160,7 @@ impl<W: AsyncWrite + Unpin> AsyncWrite for CompressedWriter<W> {
         // 实现压缩写入逻辑...
         unimplemented!()
     }
-    
+  
     fn poll_flush(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
@@ -2144,7 +2168,7 @@ impl<W: AsyncWrite + Unpin> AsyncWrite for CompressedWriter<W> {
         // 实现刷新逻辑...
         unimplemented!()
     }
-    
+  
     fn poll_shutdown(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
@@ -2165,7 +2189,7 @@ impl<R> RateLimitedReader<R> {
     fn new(reader: R, bytes_per_second: usize) -> Self {
         let tokens = Arc::new(Semaphore::new(0));
         let tokens_clone = tokens.clone();
-        
+  
         // 创建令牌补充任务
         let refill_task = tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(1));
@@ -2174,7 +2198,7 @@ impl<R> RateLimitedReader<R> {
                 tokens_clone.add_permits(bytes_per_second);
             }
         });
-        
+  
         Self {
             inner: reader,
             tokens,
@@ -2191,13 +2215,13 @@ impl<R: AsyncRead + Unpin> AsyncRead for RateLimitedReader<R> {
     ) -> Poll<Result<usize, io::Error>> {
         // 尝试获取令牌
         let max_bytes = buf.len();
-        
+  
         match self.tokens.try_acquire(max_bytes) {
             Ok(permit) => {
                 // 成功获取令牌，读取不超过许可的字节数
                 let bytes_allowed = permit.available_permits();
                 let limited_buf = &mut buf[..bytes_allowed];
-                
+  
                 // 委托给内部读取器
                 Pin::new(&mut self.inner).poll_read(cx, limited_buf)
             }
@@ -2229,7 +2253,7 @@ fn multiplex_streams<T, E>(
             result.map(|item| (idx, item))
         }))
         .collect::<Vec<_>>();
-    
+  
     futures::stream::select_all(indexed_streams)
 }
 
@@ -2240,6 +2264,7 @@ where
 {
     reader.compat()
 }
+
 ```
 
 **批判分析**：
@@ -2287,10 +2312,10 @@ impl DatabaseExecutor {
             .idle_timeout(Duration::from_secs(600))
             .connect(connection_string)
             .await?;
-            
+  
         Ok(Self { pool: pool_options })
     }
-    
+  
     async fn with_connection<F, R>(&self, f: F) -> Result<R, sqlx::Error>
     where
         F: FnOnce(&mut sqlx::PgConnection) -> BoxFuture<'_, Result<R, sqlx::Error>> + Send,
@@ -2299,14 +2324,14 @@ impl DatabaseExecutor {
         let mut conn = self.pool.acquire().await?;
         f(&mut conn).await
     }
-    
+  
     async fn with_transaction<F, R>(&self, f: F) -> Result<R, sqlx::Error>
     where
         F: FnOnce(&mut Transaction<'_, Postgres>) -> BoxFuture<'_, Result<R, sqlx::Error>> + Send,
         R: Send + 'static,
     {
         let mut tx = self.pool.begin().await?;
-        
+  
         let result = match f(&mut tx).await {
             Ok(result) => {
                 tx.commit().await?;
@@ -2318,13 +2343,15 @@ impl DatabaseExecutor {
                 Err(e)
             }
         };
-        
+  
         result
     }
 }
 
 // 2. 仓储模式 - 封装数据库访问逻辑
-#[async_trait]
+
+# [async_trait]
+
 trait UserRepository {
     async fn find_by_id(&self, id: i64) -> Result<Option<User>, sqlx::Error>;
     async fn save(&self, user: &User) -> Result<(), sqlx::Error>;
@@ -2335,7 +2362,8 @@ struct SqlxUserRepository {
     executor: Arc<DatabaseExecutor>,
 }
 
-#[async_trait]
+# [async_trait]
+
 impl UserRepository for SqlxUserRepository {
     async fn find_by_id(&self, id: i64) -> Result<Option<User>, sqlx::Error> {
         self.executor.with_connection(|conn| {
@@ -2347,7 +2375,7 @@ impl UserRepository for SqlxUserRepository {
             })
         }).await
     }
-    
+  
     async fn save(&self, user: &User) -> Result<(), sqlx::Error> {
         self.executor.with_transaction(|tx| {
             Box::pin(async move {
@@ -2357,7 +2385,7 @@ impl UserRepository for SqlxUserRepository {
                     .fetch_optional(tx)
                     .await?
                     .is_some();
-                    
+  
                 if exists {
                     // 更新现有用户
                     sqlx::query("UPDATE users SET name = $1, email = $2, updated_at = $3 WHERE id = $4")
@@ -2377,12 +2405,12 @@ impl UserRepository for SqlxUserRepository {
                         .execute(tx)
                         .await?;
                 }
-                
+  
                 Ok(())
             })
         }).await
     }
-    
+  
     async fn find_active_users(&self, limit: i64) -> Result<Vec<User>, sqlx::Error> {
         self.executor.with_connection(|conn| {
             Box::pin(async move {
@@ -2404,50 +2432,50 @@ impl SqlxUserRepository {
         if users.is_empty() {
             return Ok(());
         }
-        
+  
         self.executor.with_transaction(|tx| {
             Box::pin(async move {
                 // 创建临时表
                 sqlx::query("CREATE TEMPORARY TABLE tmp_users (id BIGINT, name TEXT, email TEXT) ON COMMIT DROP")
                     .execute(tx)
                     .await?;
-                
+  
                 // 构建COPY语句
                 let mut copy = String::from("COPY tmp_users (id, name, email) FROM STDIN");
                 let mut copy_writer = tx.copy_in_raw(&copy).await?;
-                
+  
                 // 写入数据
                 for user in users {
                     let row = format!("{}\t{}\t{}\n", user.id, user.name, user.email);
                     copy_writer.write_all(row.as_bytes()).await?;
                 }
-                
+  
                 // 完成COPY
                 copy_writer.finish().await?;
-                
+  
                 // 从临时表插入到实际表
                 sqlx::query(
-                    "INSERT INTO users (id, name, email, created_at, updated_at) 
-                     SELECT id, name, email, NOW(), NOW() FROM tmp_users 
-                     ON CONFLICT (id) DO UPDATE 
+                    "INSERT INTO users (id, name, email, created_at, updated_at)
+                     SELECT id, name, email, NOW(), NOW() FROM tmp_users
+                     ON CONFLICT (id) DO UPDATE
                      SET name = EXCLUDED.name, email = EXCLUDED.email, updated_at = NOW()"
                 )
                 .execute(tx)
                 .await?;
-                
+  
                 Ok(())
             })
         }).await
     }
-    
+  
     // 流式处理 - 使用游标处理大量数据
     async fn stream_all_users(&self) -> Result<impl Stream<Item = Result<User, sqlx::Error>>, sqlx::Error> {
         let pool = self.executor.pool.clone();
-        
+  
         // 创建游标查询
         let stream = sqlx::query_as::<_, User>("SELECT * FROM users")
             .fetch(pool);
-            
+  
         Ok(stream)
     }
 }
@@ -2466,24 +2494,24 @@ impl UserService {
             repo as SqlxUserRepository => repo.executor.clone(),
             _ => return Err(ApplicationError::UnsupportedRepository),
         };
-        
+  
         executor.with_transaction(|tx| {
             Box::pin(async move {
                 // 创建托管事务连接
                 let tx_manager = TransactionManager::new(tx);
-                
+  
                 // 创建用户
                 let user = self.user_repo.save_with_transaction(&tx_manager, &user_data).await?;
-                
+  
                 // 记录活动
                 let activity = Activity {
                     user_id: user.id,
                     action: "user_created".to_string(),
                     timestamp: chrono::Utc::now(),
                 };
-                
+  
                 self.activity_repo.save_with_transaction(&tx_manager, &activity).await?;
-                
+  
                 Ok(user)
             })
         }).await.map_err(|e| e.into())
@@ -2495,10 +2523,12 @@ struct TransactionManager<'a> {
     tx: &'a mut Transaction<'_, Postgres>,
 }
 
-#[async_trait]
+# [async_trait]
+
 trait TransactionalRepository<T> {
     async fn save_with_transaction(&self, tx: &TransactionManager<'_>, entity: &T) -> Result<T, sqlx::Error>;
 }
+
 ```
 
 **批判分析**：
@@ -2549,7 +2579,7 @@ where
 {
     async fn get(&self, key: &str) -> Result<Option<T>, CacheError> {
         let cache_key = format!("{}:{}", self.prefix, key);
-        
+  
         // 1. 检查内存缓存
         {
             let mut cache = self.memory_cache.lock().await;
@@ -2557,11 +2587,11 @@ where
                 return Ok(Some(value.clone()));
             }
         }
-        
+  
         // 2. 检查Redis缓存
         let mut conn = self.redis_client.get_async_connection().await?;
         let redis_value: Option<String> = conn.get(&cache_key).await?;
-        
+  
         // 3. 反序列化并更新内存缓存
         if let Some(json) = redis_value {
             match serde_json::from_str(&json) {
@@ -2576,37 +2606,37 @@ where
             Ok(None)
         }
     }
-    
+  
     async fn set(&self, key: &str, value: T) -> Result<(), CacheError> {
         let cache_key = format!("{}:{}", self.prefix, key);
         let json = serde_json::to_string(&value)?;
-        
+  
         // 1. 更新内存缓存
         {
             let mut cache = self.memory_cache.lock().await;
             cache.put(cache_key.clone(), value);
         }
-        
+  
         // 2. 更新Redis缓存
         let mut conn = self.redis_client.get_async_connection().await?;
         conn.set_ex(&cache_key, json, self.ttl.as_secs() as usize).await?;
-        
+  
         Ok(())
     }
-    
+  
     async fn invalidate(&self, key: &str) -> Result<(), CacheError> {
         let cache_key = format!("{}:{}", self.prefix, key);
-        
+  
         // 1. 从内存缓存中删除
         {
             let mut cache = self.memory_cache.lock().await;
             cache.pop(&cache_key);
         }
-        
+  
         // 2. 从Redis缓存中删除
         let mut conn = self.redis_client.get_async_connection().await?;
         conn.del(&cache_key).await?;
-        
+  
         Ok(())
     }
 }
@@ -2627,7 +2657,7 @@ where
             in_flight: Arc::new(Mutex::new(HashMap::new())),
         }
     }
-    
+  
     // 执行操作，确保相同键只有一个请求在进行
     async fn do_once<F, Fut>(&self, key: K, operation: F) -> Result<Arc<V>, CacheError>
     where
@@ -2637,7 +2667,7 @@ where
         // 检查是否已有请求在进行
         let rx = {
             let mut in_flight = self.in_flight.lock().await;
-            
+  
             if let Some(entry) = in_flight.get(&key) {
                 // 创建新接收器接收已有请求的结果
                 let (tx, rx) = oneshot::channel();
@@ -2650,7 +2680,7 @@ where
                 None
             }
         };
-        
+  
         // 如果已有请求在进行，等待其结果
         if let Some(rx) = rx {
             return rx
@@ -2882,6 +2912,7 @@ async fn batch_and_pipeline_example<T: DeserializeOwned>(
         
     Ok(parsed_results)
 }
+
 ```
 
 **批判分析**：
@@ -3379,6 +3410,7 @@ enum RaftError {
     #[error("状态机错误: {0}")]
     StateMachineError(String),
 }
+
 ```
 
 **批判分析**：
@@ -3659,49 +3691,49 @@ impl DistributedCounter {
 ```rust
         // 本地更新
         self.counter.increment(amount);
-        
+  
         // 传播更新
         self.propagate_update().await
     }
-    
+  
     // 递减计数器并传播更新
     async fn decrement(&mut self, amount: u64) -> Result<(), GossipError> {
         // 本地更新
         self.counter.decrement(amount);
-        
+  
         // 传播更新
         self.propagate_update().await
     }
-    
+  
     // 获取当前值
     fn value(&self) -> i64 {
         self.counter.value()
     }
-    
+  
     // 传播更新到所有对等节点
     async fn propagate_update(&self) -> Result<(), GossipError> {
         // 序列化计数器状态
         let data = serde_json::to_vec(&self.counter)
             .map_err(|e| GossipError::SerializationError(e.to_string()))?;
-        
+  
         // 向所有对等节点发送更新
         let mut futures = Vec::new();
-        
+  
         for peer in &self.peers {
             let peer = peer.clone();
             let data = data.clone();
             let client = self.gossip_client.clone();
-            
+  
             let future = tokio::spawn(async move {
                 client.send_update(&peer, data).await
             });
-            
+  
             futures.push(future);
         }
-        
+  
         // 等待所有更新完成
         let results = futures::future::join_all(futures).await;
-        
+  
         // 检查是否有错误
         for result in results {
             match result {
@@ -3715,35 +3747,37 @@ impl DistributedCounter {
                 }
             }
         }
-        
+  
         // 即使部分失败也返回成功，保证系统可用性
         Ok(())
     }
-    
+  
     // 处理来自对等节点的更新
     fn process_update(&mut self, data: &[u8]) -> Result<(), GossipError> {
         // 反序列化计数器状态
         let other_counter: PNCounter = serde_json::from_slice(data)
             .map_err(|e| GossipError::DeserializationError(e.to_string()))?;
-        
+  
         // 合并状态
         self.counter.merge(&other_counter);
-        
+  
         Ok(())
     }
 }
 
-#[derive(Debug, thiserror::Error)]
+# [derive(Debug, thiserror::Error)]
+
 enum GossipError {
     #[error("序列化错误: {0}")]
     SerializationError(String),
-    
+  
     #[error("反序列化错误: {0}")]
     DeserializationError(String),
-    
+  
     #[error("网络错误: {0}")]
     NetworkError(String),
 }
+
 ```
 
 **批判分析**：
@@ -3808,7 +3842,7 @@ impl AsyncTaskMetrics {
             total_duration: Mutex::new(Duration::from_secs(0)),
         })
     }
-    
+  
     // 创建任务追踪器
     fn task_tracer(self: &Arc<Self>) -> TaskTracer {
         self.running_tasks.fetch_add(1, Ordering::SeqCst);
@@ -3817,12 +3851,12 @@ impl AsyncTaskMetrics {
             start_time: Instant::now(),
         }
     }
-    
+  
     // 导出指标
     fn export_metrics(&self) {
         gauge!("async_tasks_running", self.running_tasks.load(Ordering::SeqCst) as f64, "name" => self.name.clone());
         counter!("async_tasks_completed", self.completed_tasks.load(Ordering::SeqCst) as u64, "name" => self.name.clone());
-        
+  
         let avg_duration = {
             let total = *self.total_duration.lock().unwrap();
             let completed = self.completed_tasks.load(Ordering::SeqCst);
@@ -3832,7 +3866,7 @@ impl AsyncTaskMetrics {
                 0.0
             }
         };
-        
+  
         gauge!("async_task_avg_duration", avg_duration, "name" => self.name.clone());
     }
 }
@@ -3846,14 +3880,14 @@ struct TaskTracer {
 impl Drop for TaskTracer {
     fn drop(&mut self) {
         let duration = self.start_time.elapsed();
-        
+  
         // 更新指标
         self.metrics.running_tasks.fetch_sub(1, Ordering::SeqCst);
         self.metrics.completed_tasks.fetch_add(1, Ordering::SeqCst);
-        
+  
         let mut total = self.metrics.total_duration.lock().unwrap();
         *total += duration;
-        
+  
         // 记录到直方图
         histogram!("async_task_duration", duration.as_secs_f64(), "name" => self.metrics.name.clone());
     }
@@ -3863,12 +3897,12 @@ impl Drop for TaskTracer {
 async fn monitor_tokio_runtime() {
     // 创建运行时监控器
     let runtime_monitor = RuntimeMonitor::new();
-    
+  
     // 定期采集运行时指标
     let runtime_intervals = runtime_monitor.intervals();
     tokio::spawn(async move {
         let mut runtime_intervals = runtime_intervals;
-        
+  
         while let Some(interval) = runtime_intervals.next().await {
             // 输出Tokio运行时指标
             info!(
@@ -3880,7 +3914,7 @@ async fn monitor_tokio_runtime() {
                 blocking_queue_depth = interval.blocking_queue_depth,
                 "Runtime metrics"
             );
-            
+  
             // 导出为Prometheus指标
             gauge!("tokio_active_tasks", interval.active_tasks as f64);
             gauge!("tokio_idle_worker_threads", interval.idle_worker_threads as f64);
@@ -3888,25 +3922,25 @@ async fn monitor_tokio_runtime() {
             gauge!("tokio_blocking_queue_depth", interval.blocking_queue_depth as f64);
         }
     });
-    
+  
     // 创建任务监控器
     let task_monitor = TaskMonitor::new();
-    
+  
     // 监控特定任务类型
     let db_task_metrics = task_monitor.clone().with_name("db");
     tokio::spawn(async move {
         // 使用监控器包装任务
         let _guard = db_task_metrics.instrument();
-        
+  
         // 执行数据库操作
         database_operation().await;
     });
-    
+  
     // 定期采集任务指标
     let task_intervals = task_monitor.intervals();
     tokio::spawn(async move {
         let mut task_intervals = task_intervals;
-        
+  
         while let Some(interval) = task_intervals.next().await {
             // 输出任务指标
             info!(
@@ -3917,7 +3951,7 @@ async fn monitor_tokio_runtime() {
                 scheduled_count = interval.scheduled_count,
                 "Task metrics"
             );
-            
+  
             // 导出为Prometheus指标
             histogram!("task_poll_duration", interval.poll_duration_sum.as_secs_f64(), "name" => interval.name.clone());
             histogram!("task_first_poll_delay", interval.first_poll_delay_sum.as_secs_f64(), "name" => interval.name.clone());
@@ -3938,15 +3972,15 @@ where
 {
     let mut individual_times = Vec::with_capacity(iterations);
     let overall_start = Instant::now();
-    
+  
     for _ in 0..iterations {
         let start = Instant::now();
         let _ = operation().await;
         individual_times.push(start.elapsed());
     }
-    
+  
     let overall_time = overall_start.elapsed();
-    
+  
     // 计算统计数据
     individual_times.sort();
     let min = individual_times.first().unwrap();
@@ -3954,7 +3988,7 @@ where
     let p50 = individual_times[iterations / 2];
     let p90 = individual_times[iterations * 90 / 100];
     let p99 = individual_times[iterations * 99 / 100];
-    
+  
     // 输出结果
     println!("Benchmark results:");
     println!("  Total time: {:?}", overall_time);
@@ -3964,17 +3998,17 @@ where
     println!("  p50: {:?}", p50);
     println!("  p90: {:?}", p90);
     println!("  p99: {:?}", p99);
-    
+  
     (overall_time, individual_times)
 }
 
 // 4. 火焰图生成示例
 async fn generate_flamegraph() {
     // 注意：此函数仅展示概念，实际使用需要与系统性能分析工具集成
-    
+  
     // 启动性能记录
     let guard = pprof::ProfilerGuard::new(100).unwrap();
-    
+  
     // 执行需要分析的代码
     let complex_operation = async {
         // 模拟复杂操作
@@ -3982,14 +4016,14 @@ async fn generate_flamegraph() {
             tokio::spawn(compute_intensive_task()).await.unwrap();
         }
     };
-    
+  
     complex_operation.await;
-    
+  
     // 生成报告
     if let Ok(report) = guard.report().build() {
         let file = std::fs::File::create("flamegraph.svg").unwrap();
         report.flamegraph(file).unwrap();
-        
+  
         println!("Flamegraph generated at flamegraph.svg");
     }
 }
@@ -4002,6 +4036,7 @@ async fn compute_intensive_task() -> u64 {
     }
     result
 }
+
 ```
 
 **批判分析**：
@@ -4051,10 +4086,10 @@ where
     // 分批处理，而非每个项单独处理
     let mut results = Vec::new();
     let mut current_batch = Vec::with_capacity(batch_size);
-    
+  
     for item in items {
         current_batch.push(item);
-        
+  
         if current_batch.len() >= batch_size {
             // 处理当前批次
             let batch_results = operation(current_batch).await;
@@ -4062,13 +4097,13 @@ where
             current_batch = Vec::with_capacity(batch_size);
         }
     }
-    
+  
     // 处理剩余项
     if !current_batch.is_empty() {
         let batch_results = operation(current_batch).await;
         results.extend(batch_results);
     }
-    
+  
     results
 }
 
@@ -4087,48 +4122,48 @@ where
     // 使用信号量控制并发度
     let semaphore = Arc::new(Semaphore::new(max_concurrent));
     let (tx, mut rx) = mpsc::channel(max_concurrent * 2);  // 添加一些缓冲
-    
+  
     // 启动处理任务
     let process_handle = tokio::spawn(async move {
         let mut results = Vec::with_capacity(items.len());
-        
+  
         while let Some(result) = rx.recv().await {
             results.push(result);
         }
-        
+  
         results
     });
-    
+  
     // 处理所有项
     let mut handles = Vec::new();
-    
+  
     for item in items {
         let permit = semaphore.clone().acquire_owned().await.unwrap();
         let operation = operation.clone();
         let tx = tx.clone();
-        
+  
         let handle = tokio::spawn(async move {
             // 执行操作
             let result = operation(item).await;
-            
+  
             // 发送结果
             tx.send(result).await.ok();
-            
+  
             // 释放许可
             drop(permit);
         });
-        
+  
         handles.push(handle);
     }
-    
+  
     // 等待所有任务完成
     for handle in handles {
         let _ = handle.await;
     }
-    
+  
     // 关闭发送者，允许接收者完成
     drop(tx);
-    
+  
     // 等待所有结果收集完成
     process_handle.await.unwrap()
 }
@@ -4141,7 +4176,8 @@ struct BatchingClient<T> {
     queue: Mutex<VecDeque<(T, oneshot::Sender<Result<(), Error>>)>>,
 }
 
-#[async_trait]
+# [async_trait]
+
 trait AsyncClient<T>: Send + Sync {
     async fn send_single(&self, item: T) -> Result<(), Error>;
     async fn send_batch(&self, items: Vec<T>) -> Result<Vec<Result<(), Error>>, Error>;
@@ -4159,25 +4195,25 @@ impl<T: Clone + Send + 'static> BatchingClient<T> {
             flush_interval,
             queue: Mutex::new(VecDeque::new()),
         };
-        
+  
         // 启动周期性刷新任务
         let client_clone = client.clone();
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(client_clone.flush_interval);
-            
+  
             loop {
                 interval.tick().await;
                 client_clone.flush().await;
             }
         });
-        
+  
         client
     }
-    
+  
     // 发送单个项，自动批处理
     async fn send(&self, item: T) -> Result<(), Error> {
         let (tx, rx) = oneshot::channel();
-        
+  
         // 将项添加到队列
         let should_flush;
         {
@@ -4185,16 +4221,16 @@ impl<T: Clone + Send + 'static> BatchingClient<T> {
             queue.push_back((item, tx));
             should_flush = queue.len() >= self.batch_size;
         }
-        
+  
         // 如果队列已满，立即刷新
         if should_flush {
             self.flush().await;
         }
-        
+  
         // 等待结果
         rx.await.unwrap_or(Err(Error::ChannelClosed))
     }
-    
+  
     // 刷新队列中的所有项
     async fn flush(&self) {
         // 获取当前队列中的所有项
@@ -4202,14 +4238,14 @@ impl<T: Clone + Send + 'static> BatchingClient<T> {
             let mut queue = self.queue.lock().await;
             std::mem::take(&mut *queue)
         };
-        
+  
         if batch.is_empty() {
             return;
         }
-        
+  
         // 分离项和发送者
         let (items, senders): (Vec<_>, Vec<_>) = batch.into_iter().unzip();
-        
+  
         // 发送批处理请求
         match self.inner_client.send_batch(items).await {
             Ok(results) => {
@@ -4239,7 +4275,7 @@ impl ZeroCopyBuffer {
             inner: bytes::Bytes::from(data),
         }
     }
-    
+  
     // 获取子缓冲区，不复制数据
     fn slice(&self, start: usize, end: usize) -> Self {
         Self {
@@ -4251,15 +4287,15 @@ impl ZeroCopyBuffer {
 async fn zero_copy_pipeline(data: Vec<u8>) -> io::Result<()> {
     // 创建零拷贝缓冲区
     let buffer = ZeroCopyBuffer::new(data);
-    
+  
     // 处理头部，不复制数据
     let header = buffer.slice(0, 16);
     process_header(&header).await?;
-    
+  
     // 处理主体，不复制数据
     let body = buffer.slice(16, buffer.inner.len());
     process_body(&body).await?;
-    
+  
     Ok(())
 }
 
@@ -4293,40 +4329,40 @@ type Task = Box<dyn FnOnce() + Send + 'static>;
 impl ProcessorAffinity {
     fn new(worker_count: usize) -> Self {
         let mut worker_queues = Vec::with_capacity(worker_count);
-        
+  
         for worker_id in 0..worker_count {
             let (tx, mut rx) = mpsc::channel::<Task>(1000);
-            
+  
             // 启动工作线程
             let worker_thread = std::thread::spawn(move || {
                 let rt = tokio::runtime::Builder::new_current_thread()
                     .enable_all()
                     .build()
                     .unwrap();
-                
+  
                 rt.block_on(async move {
                     while let Some(task) = rx.recv().await {
                         task();
                     }
                 });
             });
-            
+  
             // 设置线程亲和性
             if let Some(core_ids) = core_affinity::get_core_ids() {
                 if worker_id < core_ids.len() {
                     core_affinity::set_for_current(core_ids[worker_id]);
                 }
             }
-            
+  
             worker_queues.push(WorkQueue {
                 inner: tx,
                 worker_id,
             });
         }
-        
+  
         Self { worker_queues }
     }
-    
+  
     // 提交任务到特定工作线程
     async fn submit_to_worker<F>(&self, worker_id: usize, f: F)
     where
@@ -4335,7 +4371,7 @@ impl ProcessorAffinity {
         let queue = &self.worker_queues[worker_id % self.worker_queues.len()];
         let _ = queue.inner.send(Box::new(f)).await;
     }
-    
+  
     // 根据哈希值分配任务，确保相关任务在同一线程上执行
     async fn submit<K, F>(&self, key: K, f: F)
     where
@@ -4347,10 +4383,11 @@ impl ProcessorAffinity {
         key.hash(&mut hasher);
         let hash = hasher.finish();
         let worker_id = (hash % self.worker_queues.len() as u64) as usize;
-        
+  
         self.submit_to_worker(worker_id, f).await;
     }
 }
+
 ```
 
 **批判分析**：
@@ -4403,12 +4440,12 @@ impl RequestContext {
     fn new_root(request_id: String) -> Self {
         // 获取OpenTelemetry跟踪器
         let tracer = global::tracer("app_tracer");
-        
+  
         // 创建根span
         let span = tracer.start("request.root");
         let span_context = span.span_context().clone();
         let trace_id = span_context.trace_id().to_string();
-        
+  
         Self {
             trace_id,
             span_context,
@@ -4417,19 +4454,19 @@ impl RequestContext {
             attributes: HashMap::new(),
         }
     }
-    
+  
     // 创建子请求上下文
     fn new_child(&self, name: &str) -> Self {
         let tracer = global::tracer("app_tracer");
-        
+  
         // 从父上下文创建子span
         let span = tracer
             .span_builder(name)
             .with_parent_context(self.span_context.clone())
             .start(&tracer);
-            
+  
         let span_context = span.span_context().clone();
-        
+  
         Self {
             trace_id: self.trace_id.clone(),
             span_context,
@@ -4438,20 +4475,20 @@ impl RequestContext {
             attributes: self.attributes.clone(),
         }
     }
-    
+  
     // 设置用户ID
     fn with_user_id(mut self, user_id: String) -> Self {
         self.user_id = Some(user_id);
         self.attributes.insert("user_id".to_string(), user_id);
         self
     }
-    
+  
     // 添加自定义属性
     fn with_attribute(mut self, key: String, value: String) -> Self {
         self.attributes.insert(key, value);
         self
     }
-    
+  
     // 跟踪异步操作
     async fn trace<F, Fut, T>(&self, name: &str, operation: F) -> T
     where
@@ -4465,22 +4502,24 @@ impl RequestContext {
             trace_id = %self.trace_id,
             request_id = %self.request_id,
         );
-        
+  
         // 将OpenTelemetry上下文链接到span
         span.set_parent(self.span_context.clone());
-        
+  
         // 添加自定义属性
         for (key, value) in &self.attributes {
             span.record(key, value.as_str());
         }
-        
+  
         // 在span上下文中执行操作
         operation().instrument(span).await
     }
 }
 
 // 2. 跨服务边界传播上下文
-#[derive(Serialize, Deserialize)]
+
+# [derive(Serialize, Deserialize)]
+
 struct TracingHeaders {
     trace_id: String,
     parent_span_id: String,
@@ -4498,13 +4537,13 @@ impl RequestContext {
             user_id: self.user_id.clone(),
         }
     }
-    
+  
     // 从传入请求头还原上下文
     fn from_headers(headers: &TracingHeaders) -> Self {
         // 创建OpenTelemetry跟踪上下文
         let trace_id = opentelemetry::trace::TraceId::from_hex(&headers.trace_id).unwrap();
         let span_id = opentelemetry::trace::SpanId::from_hex(&headers.parent_span_id).unwrap();
-        
+  
         let span_context = opentelemetry::trace::SpanContext::new(
             trace_id,
             span_id,
@@ -4512,7 +4551,7 @@ impl RequestContext {
             true,
             opentelemetry::trace::TraceState::default(),
         );
-        
+  
         let mut ctx = Self {
             trace_id: headers.trace_id.clone(),
             span_context,
@@ -4520,11 +4559,11 @@ impl RequestContext {
             request_id: headers.request_id.clone(),
             attributes: HashMap::new(),
         };
-        
+  
         if let Some(user_id) = &headers.user_id {
             ctx.attributes.insert("user_id".to_string(), user_id.clone());
         }
-        
+  
         ctx
     }
 }
@@ -4535,41 +4574,41 @@ async fn process_request(request_data: Vec<u8>) -> Result<Vec<u8>, Error> {
     let request_id = uuid::Uuid::new_v4().to_string();
     let ctx = RequestContext::new_root(request_id)
         .with_attribute("request_size".to_string(), request_data.len().to_string());
-    
+  
     info!(
         trace_id = %ctx.trace_id,
         request_id = %ctx.request_id,
         "开始处理请求"
     );
-    
+  
     // 第一个服务操作
     let user_id = ctx.trace("auth.validate", || async {
         // 模拟验证操作
         tokio::time::sleep(Duration::from_millis(50)).await;
         "user-123".to_string()
     }).await;
-    
+  
     // 添加用户ID到上下文
     let ctx = ctx.with_user_id(user_id);
-    
+  
     // 调用数据库服务
     let db_result = ctx.trace("db.query", || async {
         // 模拟数据库调用
         // 在实际应用中，这会发送请求到另一个服务
         // 将上下文传递为请求头
         let headers = ctx.to_headers();
-        
+  
         // 模拟发送请求到数据库服务
         call_database_service(headers, "query_data").await
     }).await?;
-    
+  
     // 调用外部API
     let api_result = ctx.trace("api.external_call", || async {
         // 模拟API调用
         let headers = ctx.to_headers();
         call_external_api(headers, db_result).await
     }).await?;
-    
+  
     // 最
 
 ```rust
@@ -4642,6 +4681,7 @@ async fn call_external_api(
         Ok(data.iter().map(|&x| x * 2).collect())
     }).await
 }
+
 ```
 
 **批判分析**：
@@ -4933,6 +4973,7 @@ async fn handle_request(
     
     result
 }
+
 ```
 
 **批判分析**：
@@ -5351,6 +5392,7 @@ fn build_api_server() {
     println!("生成模型代码:\n{}", models);
     println!("生成服务器代码:\n{}", server);
 }
+
 ```
 
 **批判分析**：
@@ -5564,7 +5606,7 @@ impl TestServer {
 ```rust
         let addr = listener.local_addr().unwrap();
         let address = format!("{}:{}", addr.ip(), addr.port());
-        
+  
         // 启动服务器
         let server_address = address.clone();
         tokio::spawn(async move {
@@ -5572,23 +5614,23 @@ impl TestServer {
             let server = axum::Server::from_tcp(listener)
                 .unwrap()
                 .serve(app.into_make_service());
-                
+  
             let server = server.with_graceful_shutdown(async {
                 shutdown_rx.await.ok();
             });
-            
+  
             server.await.unwrap();
         });
-        
+  
         // 等待服务器启动
         tokio::time::sleep(Duration::from_millis(100)).await;
-        
+  
         Self {
             address,
             _shutdown_tx: shutdown_tx,
         }
     }
-    
+  
     fn address(&self) -> &str {
         &self.address
     }
@@ -5605,16 +5647,16 @@ proptest! {
             Just(QueueOp::Enqueue(2)),
             Just(QueueOp::Enqueue(3)),
             Just(QueueOp::Dequeue),
-        ], 
+        ],
         1..100
     )) {
         let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(async {
             let queue = Arc::new(AsyncQueue::new());
-            
+  
             // 执行随机操作序列
             let mut expected_size = 0;
-            
+  
             for op in operations {
                 match op {
                     QueueOp::Enqueue(item) => {
@@ -5629,7 +5671,7 @@ proptest! {
                     }
                 }
             }
-            
+  
             // 验证最终队列大小
             assert_eq!(queue.size().await, expected_size);
         });
@@ -5642,14 +5684,17 @@ enum QueueOp {
 }
 
 // 7. 测试超时控制
-#[tokio::test(flavor = "multi_thread")]
-#[timeout(5000)]  // 5秒超时
+
+# [tokio::test(flavor = "multi_thread")]
+
+# [timeout(5000)]  // 5秒超时
+
 async fn test_with_global_timeout() {
     // 这个测试如果运行超过5秒会失败
-    
+  
     // 模拟一些异步工作
     tokio::time::sleep(Duration::from_secs(1)).await;
-    
+  
     // 断言
     assert!(true);
 }
@@ -5664,35 +5709,36 @@ impl TestFixture {
     async fn new() -> Self {
         // 创建临时目录
         let temp_dir = TempDir::new().unwrap();
-        
+  
         // 初始化测试数据库
         let db_path = temp_dir.path().join("test.db");
         let db_client = TestDatabaseClient::new(&db_path).await;
-        
+  
         // 返回夹具
         Self {
             temp_dir,
             db_client,
         }
     }
-    
+  
     async fn cleanup(self) {
         // 关闭数据库连接
         self.db_client.close().await;
-        
+  
         // 临时目录会在Drop时自动删除
     }
 }
 
-#[tokio::test]
+# [tokio::test]
+
 async fn test_with_fixture() {
     // 设置测试夹具
     let fixture = TestFixture::new().await;
-    
+  
     // 使用夹具进行测试
     let result = fixture.db_client.execute_query("SELECT 1").await;
     assert!(result.is_ok());
-    
+  
     // 清理资源
     fixture.cleanup().await;
 }
@@ -5708,7 +5754,7 @@ where
     T: Send + 'static,
 {
     let task_fn = Arc::new(task_fn);
-    
+  
     let handles: Vec<_> = (0..count)
         .map(|i| {
             let task_fn = task_fn.clone();
@@ -5717,20 +5763,21 @@ where
             })
         })
         .collect();
-    
+  
     let mut results = Vec::with_capacity(count);
     for handle in handles {
         results.push(handle.await.unwrap());
     }
-    
+  
     results
 }
 
-#[tokio::test]
+# [tokio::test]
+
 async fn test_concurrent_inserts() {
     // 设置测试数据库
     let db = setup_test_db().await;
-    
+  
     // 执行并发插入
     let results = run_concurrent_tasks(100, |i| {
         let db = db.clone();
@@ -5738,33 +5785,35 @@ async fn test_concurrent_inserts() {
             db.insert(&format!("key-{}", i), &format!("value-{}", i)).await
         }
     }).await;
-    
+  
     // 验证所有插入都成功
     for result in results {
         assert!(result.is_ok());
     }
-    
+  
     // 验证数据库状态
     assert_eq!(db.count().await, 100);
 }
 
 // 10. 内存泄漏检测
-#[tokio::test]
+
+# [tokio::test]
+
 async fn test_no_memory_leaks() {
     // 使用弱引用进行追踪
     let (tracker, weak) = create_leak_tracker();
-    
+  
     // 执行潜在的泄漏操作
     {
         // 创建一个新作用域
         let _result = execute_operation(tracker).await;
-        
+  
         // 作用域结束，tracker应该被释放
     }
-    
+  
     // 强制GC
     drop(Vec::<u8>::with_capacity(1024 * 1024));
-    
+  
     // 验证弱引用已失效
     assert!(weak.upgrade().is_none(), "内存泄漏检测：对象未被释放");
 }
@@ -5781,6 +5830,7 @@ async fn execute_operation(tracker: Arc<()>) -> Result<(), ()> {
     tokio::time::sleep(Duration::from_millis(10)).await;
     Ok(())
 }
+
 ```
 
 **批判分析**：
@@ -5857,7 +5907,7 @@ struct Task<T, R> {
 impl<T: Send + 'static, R: Send + 'static> TaskScheduler<T, R> {
     fn new(worker_count: usize, queue_depth: usize) -> Self {
         let (task_tx, task_rx) = mpsc::channel(queue_depth);
-        
+  
         Self {
             task_tx,
             task_rx,
@@ -5866,63 +5916,63 @@ impl<T: Send + 'static, R: Send + 'static> TaskScheduler<T, R> {
             active_tasks: Arc::new(AtomicUsize::new(0)),
         }
     }
-    
+  
     // 启动工作线程池
     async fn start(&mut self) {
         let active_tasks = self.active_tasks.clone();
-        
+  
         for worker_id in 0..self.worker_count {
             let mut task_rx = self.task_rx.clone();
-            
+  
             tokio::spawn(async move {
                 while let Some(task) = task_rx.recv().await {
                     // 增加活跃任务计数
                     active_tasks.fetch_add(1, Ordering::SeqCst);
-                    
+  
                     // 处理任务
                     let start = Instant::now();
                     let wait_time = start.duration_since(task.created_at);
-                    
+  
                     tracing::debug!(
                         worker_id = worker_id,
                         priority = task.priority,
                         wait_time_ms = wait_time.as_millis(),
                         "处理任务"
                     );
-                    
+  
                     // 执行任务处理函数
                     let result = (task.handler)(task.input).await;
-                    
+  
                     // 计算任务处理时间
                     let duration = start.elapsed();
-                    
+  
                     tracing::debug!(
                         worker_id = worker_id,
                         duration_ms = duration.as_millis(),
                         "任务完成"
                     );
-                    
+  
                     // 发送结果（如果接收者仍然存在）
                     let _ = task.completion.send(result);
-                    
+  
                     // 减少活跃任务计数
                     active_tasks.fetch_sub(1, Ordering::SeqCst);
                 }
-                
+  
                 tracing::info!(worker_id = worker_id, "工作线程退出");
             });
         }
     }
-    
+  
     // 提交任务到调度器
-    async fn submit<F>(&self, input: T, priority: u8, handler: F) 
+    async fn submit<F>(&self, input: T, priority: u8, handler: F)
     -> Result<oneshot::Receiver<R>, SchedulerError>
     where
         F: FnOnce(T) -> Pin<Box<dyn Future<Output = R> + Send>> + Send + 'static,
     {
         // 创建完成通道
         let (completion_tx, completion_rx) = oneshot::channel();
-        
+  
         // 创建任务
         let task = Task {
             input,
@@ -5931,7 +5981,7 @@ impl<T: Send + 'static, R: Send + 'static> TaskScheduler<T, R> {
             priority,
             created_at: Instant::now(),
         };
-        
+  
         // 尝试发送任务，带超时
         match timeout(Duration::from_millis(100), self.task_tx.send(task)).await {
             Ok(Ok(_)) => Ok(completion_rx),
@@ -5939,17 +5989,17 @@ impl<T: Send + 'static, R: Send + 'static> TaskScheduler<T, R> {
             Err(_) => Err(SchedulerError::Timeout),
         }
     }
-    
+  
     // 获取活跃任务数
     fn active_tasks(&self) -> usize {
         self.active_tasks.load(Ordering::SeqCst)
     }
-    
+  
     // 停止调度器
     async fn shutdown(self) {
         // 关闭任务发送通道，所有工作线程将退出
         drop(self.task_tx);
-        
+  
         // 等待所有任务完成
         let mut interval = tokio::time::interval(Duration::from_millis(100));
         while self.active_tasks() > 0 {
@@ -5958,7 +6008,8 @@ impl<T: Send + 'static, R: Send + 'static> TaskScheduler<T, R> {
     }
 }
 
-#[derive(Debug, thiserror::Error)]
+# [derive(Debug, thiserror::Error)]
+
 enum SchedulerError {
     #[error("任务队列已满")]
     QueueFull,
@@ -5984,7 +6035,7 @@ impl<T: Send + 'static> BackpressureProcessor<T> {
             process_fn: Arc::new(process_fn),
         }
     }
-    
+  
     // 处理项目，应用背压
     async fn process(&self, item: T) -> Result<(), BackpressureError> {
         // 尝试获取信号量许可，带超时
@@ -5996,29 +6047,30 @@ impl<T: Send + 'static> BackpressureProcessor<T> {
             Ok(Err(_)) => return Err(BackpressureError::Unavailable),
             Err(_) => return Err(BackpressureError::Timeout),
         };
-        
+  
         // 创建处理任务
         let process_fn = self.process_fn.clone();
-        
+  
         // 启动处理，但确保信号量许可在完成时释放
         tokio::spawn(async move {
             // 执行处理
             (process_fn)(item).await;
-            
+  
             // 许可在这里被释放
             drop(permit);
         });
-        
+  
         Ok(())
     }
-    
+  
     // 检查是否可以处理更多项目
     fn available_capacity(&self) -> usize {
         self.semaphore.available_permits()
     }
 }
 
-#[derive(Debug, thiserror::Error)]
+# [derive(Debug, thiserror::Error)]
+
 enum BackpressureError {
     #[error("处理器不可用")]
     Unavailable,
@@ -6054,18 +6106,18 @@ impl RateLimiter {
             fill_rate: rate_per_second,
         }
     }
-    
+  
     // 尝试获取令牌
     async fn acquire(&self, count: usize) -> bool {
         // 更新令牌
         self.add_tokens().await;
-        
+  
         // 尝试消费令牌
         let current = self.tokens.load(Ordering::Acquire);
         if current < count {
             return false;
         }
-        
+  
         // 尝试原子减少令牌
         self.tokens
             .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |current| {
@@ -6077,13 +6129,13 @@ impl RateLimiter {
             })
             .is_ok()
     }
-    
+  
     // 添加新令牌
     async fn add_tokens(&self) {
         let mut last_add = self.last_add.lock().await;
         let now = Instant::now();
         let elapsed = now.duration_since(*last_add).as_secs_f64();
-        
+  
         // 计算要添加的令牌数
         let new_tokens = (elapsed * self.fill_rate) as usize;
         if new_tokens > 0 {
@@ -6091,7 +6143,7 @@ impl RateLimiter {
             let current = self.tokens.load(Ordering::Acquire);
             let new_count = std::cmp::min(current + new_tokens, self.burst_size);
             self.tokens.store(new_count, Ordering::Release);
-            
+  
             // 更新上次添加时间
             *last_add = now;
         }
@@ -6100,7 +6152,7 @@ impl RateLimiter {
 
 impl<T> Stream for RateLimitedStream<T> {
     type Item = T;
-    
+  
     fn poll_next(
         mut self: Pin<&mut Self>,
         cx: &mut Context<'_>,
@@ -6127,26 +6179,26 @@ impl RateLimiter {
         if self.acquire_immediate(count) {
             return Poll::Ready(true);
         }
-        
+  
         // 如果立即获取失败，安排稍后重试
         let waker = cx.waker().clone();
         let rate_limiter = self.get_ref().clone();
-        
+  
         tokio::spawn(async move {
             tokio::time::sleep(Duration::from_millis(100)).await;
             waker.wake();
         });
-        
+  
         Poll::Pending
     }
-    
+  
     // 尝试立即获取令牌，无需异步等待
     fn acquire_immediate(&self, count: usize) -> bool {
         let current = self.tokens.load(Ordering::Acquire);
         if current < count {
             return false;
         }
-        
+  
         self.tokens
             .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |current| {
                 if current >= count {
@@ -6182,7 +6234,7 @@ impl<T> PriorityTaskQueue<T> {
         let (high_tx, high_rx) = mpsc::channel(high_capacity);
         let (medium_tx, medium_rx) = mpsc::channel(medium_capacity);
         let (low_tx, low_rx) = mpsc::channel(low_capacity);
-        
+  
         Self {
             high: high_tx,
             medium: medium_tx,
@@ -6194,7 +6246,7 @@ impl<T> PriorityTaskQueue<T> {
             },
         }
     }
-    
+  
     // 提交任务
     async fn submit(&self, item: T, priority: Priority) -> Result<(), mpsc::error::SendError<T>> {
         match priority {
@@ -6203,7 +6255,7 @@ impl<T> PriorityTaskQueue<T> {
             Priority::Low => self.low.send(item).await,
         }
     }
-    
+  
     // 获取接收器
     fn receiver(&mut self) -> &mut PriorityReceiver<T> {
         &mut self.receiver
@@ -6218,7 +6270,7 @@ enum Priority {
 
 impl<T> Stream for PriorityReceiver<T> {
     type Item = T;
-    
+  
     fn poll_next(
         mut self: Pin<&mut Self>,
         cx: &mut Context<'_>,
@@ -6227,17 +6279,17 @@ impl<T> Stream for PriorityReceiver<T> {
         if let Poll::Ready(Some(item)) = Pin::new(&mut self.high).poll_recv(cx) {
             return Poll::Ready(Some(item));
         }
-        
+  
         // 然后检查中优先级队列
         if let Poll::Ready(Some(item)) = Pin::new(&mut self.medium).poll_recv(cx) {
             return Poll::Ready(Some(item));
         }
-        
+  
         // 最后检查低优先级队列
         if let Poll::Ready(Some(item)) = Pin::new(&mut self.low).poll_recv(cx) {
             return Poll::Ready(Some(item));
         }
-        
+  
         // 检查是否所有队列都已关闭
         if let Poll::Ready(None) = Pin::new(&mut self.high).poll_recv(cx) {
             if let Poll::Ready(None) = Pin::new(&mut self.medium).poll_recv(cx) {
@@ -6246,7 +6298,7 @@ impl<T> Stream for PriorityReceiver<T> {
                 }
             }
         }
-        
+  
         // 所有队列都是Pending
         Poll::Pending
     }
@@ -6280,14 +6332,14 @@ struct ExecutorStats {
 impl AdaptiveExecutor {
     fn new(core_size: usize, max_size: usize, queue_capacity: usize) -> Self {
         let (task_tx, task_rx) = mpsc::channel(queue_capacity);
-        
+  
         let stats = Arc::new(ExecutorStats {
             queue_length_history: Mutex::new(VecDeque::with_capacity(10)),
             processing_time_history: Mutex::new(VecDeque::with_capacity(100)),
             last_adjustment: AtomicU64::new(now_millis()),
             history_window_size: 100,
         });
-        
+  
         let executor = Self {
             core_pool_size: core_size,
             max_pool_size: max_size,
@@ -6295,29 +6347,29 @@ impl AdaptiveExecutor {
             task_queue: task_tx,
             stats: stats.clone(),
         };
-        
+  
         // 启动初始工作线程（核心线程池）
         for _ in 0..core_size {
             executor.start_worker(task_rx.clone(), stats.clone());
         }
-        
+  
         // 启动调整线程
         let stats_clone = stats.clone();
         let task_queue = executor.task_queue.clone();
         let worker_count = Arc::new(executor.worker_count.clone());
         let core_size = executor.core_pool_size;
         let max_size = executor.max_pool_size;
-        
+  
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(5));
-            
+  
             loop {
                 interval.tick().await;
-                
+  
                 // 分析负载并调整工作线程数
                 let current_workers = worker_count.load(Ordering::SeqCst);
                 let queue_pressure = get_queue_pressure(&stats_clone).await;
-                
+  
                 // 根据队列压力调整
                 match queue_pressure {
                     QueuePressure::High => {
@@ -6329,9 +6381,9 @@ impl AdaptiveExecutor {
                                 stats_clone.clone(),
                                 worker_count.clone()
                             );
-                            
+  
                             stats_clone.last_adjustment.store(now_millis(), Ordering::SeqCst);
-                            
+  
                             tracing::info!(
                                 current = current_workers + 1,
                                 max = max_size,
@@ -6345,9 +6397,9 @@ impl AdaptiveExecutor {
                         if current_workers > core_size {
                             worker_count.fetch_sub(1, Ordering::SeqCst);
                             // 实际工作线程将在完成当前任务后退出
-                            
+  
                             stats_clone.last_adjustment.store(now_millis(), Ordering::SeqCst);
-                            
+  
                             tracing::info!(
                                 current = current_workers - 1,
                                 core = core_size,
@@ -6362,51 +6414,51 @@ impl AdaptiveExecutor {
                 }
             }
         });
-        
+  
         executor
     }
-    
+  
     // 启动工作线程
     fn start_worker(&self, mut task_rx: mpsc::Receiver<Box<dyn FnOnce() + Send>>, stats: Arc<ExecutorStats>) {
         self.worker_count.fetch_add(1, Ordering::SeqCst);
         let worker_count = Arc::new(self.worker_count.clone());
-        
+  
         tokio::spawn(async move {
             let should_exit = Arc::new(AtomicBool::new(false));
-            
+  
             while let Some(task) = task_rx.recv().await {
                 // 记录开始时间
                 let start = Instant::now();
-                
+  
                 // 执行任务
                 task();
-                
+  
                 // 记录处理时间
                 let elapsed = start.elapsed().as_millis() as u64;
                 record_processing_time(&stats, elapsed).await;
-                
+  
                 // 检查是否应该退出
                 if should_exit.load(Ordering::SeqCst) {
                     break;
                 }
             }
-            
+  
             // 减少工作线程计数
             worker_count.fetch_sub(1, Ordering::SeqCst);
         });
     }
-    
+  
     // 提交任务
     async fn submit<F>(&self, task: F) -> Result<(), mpsc::error::SendError<Box<dyn FnOnce() + Send>>>
     where
         F: FnOnce() + Send + 'static,
     {
         let boxed_task = Box::new(task);
-        
+  
         // 记录队列长度
         let queue_length = self.task_queue.capacity().unwrap_or(0) - self.task_queue.capacity().unwrap_or(0);
         record_queue_length(&self.stats, queue_length).await;
-        
+  
         self.task_queue.send(boxed_task).await
     }
 }
@@ -6419,24 +6471,24 @@ fn start_worker_static(
 ) {
     tokio::spawn(async move {
         let should_exit = Arc::new(AtomicBool::new(false));
-        
+  
         while let Some(task) = task_rx.recv().await {
             // 记录开始时间
             let start = Instant::now();
-            
+  
             // 执行任务
             task();
-            
+  
             // 记录处理时间
             let elapsed = start.elapsed().as_millis() as u64;
             record_processing_time(&stats, elapsed).await;
-            
+  
             // 检查是否应该退出
             if should_exit.load(Ordering::SeqCst) {
                 break;
             }
         }
-        
+  
         // 减少工作线程计数
         worker_count.fetch_sub(1, Ordering::SeqCst);
     });
@@ -6452,14 +6504,14 @@ enum QueuePressure {
 // 计算队列压力
 async fn get_queue_pressure(stats: &ExecutorStats) -> QueuePressure {
     let queue_history = stats.queue_length_history.lock().await;
-    
+  
     if queue_history.len() < 3 {
         return QueuePressure::Normal;
     }
-    
+  
     // 计算平均队列长度
     let avg_queue_length: f64 = queue_history.iter().sum::<usize>() as f64 / queue_history.len() as f64;
-    
+  
     // 根据平均队列长度确定压力
     if avg_queue_length > 10.0 {
         QueuePressure::High
@@ -6473,22 +6525,22 @@ async fn get_queue_pressure(stats: &ExecutorStats) -> QueuePressure {
 // 记录处理时间
 async fn record_processing_time(stats: &ExecutorStats, elapsed_ms: u64) {
     let mut history = stats.processing_time_history.lock().await;
-    
+  
     if history.len() >= stats.history_window_size {
         history.pop_front();
     }
-    
+  
     history.push_back(elapsed_ms);
 }
 
 // 记录队列长度
 async fn record_queue_length(stats: &ExecutorStats, length: usize) {
     let mut history = stats.queue_length_history.lock().await;
-    
+  
     if history.len() >= 10 {
         history.pop_front();
     }
-    
+  
     history.push_back(length);
 }
 
@@ -6497,9 +6549,10 @@ fn now_millis() -> u64 {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default();
-        
+  
     now.as_millis() as u64
 }
+
 ```
 
 **批判分析**：
@@ -7346,6 +7399,7 @@ async fn aggregate_user_with_orders(
         "cart": results.get("cart").cloned().unwrap_or(json!(null)),
     }))
 }
+
 ```
 
 **批判分析**：
@@ -7605,13 +7659,13 @@ impl<T: for<'de> Deserialize<'de> + Send + 'static> EventHandler<T> {
     async fn process_with_retry(&self, event: Event<T>) -> Result<(), FailedEventError<T>> {
         let mut attempts = 0;
         let max_attempts = self.retry_policy.max_retries + 1; // 包括初始尝试
-        
+  
         loop {
             attempts += 1;
-            
+  
             // 执行处理
             let result = (self.handler)(event.clone()).await;
-            
+  
             match result {
                 Ok(_) => {
                     // 处理成功
@@ -7635,10 +7689,10 @@ impl<T: for<'de> Deserialize<'de> + Send + 'static> EventHandler<T> {
                             attempts,
                         });
                     }
-                    
+  
                     // 计算退避时间
                     let delay = self.retry_policy.calculate_delay(attempts);
-                    
+  
                     tracing::warn!(
                         handler = self.name,
                         event_id = %event.id,
@@ -7647,7 +7701,7 @@ impl<T: for<'de> Deserialize<'de> + Send + 'static> EventHandler<T> {
                         error = %e,
                         "事件处理失败，将重试"
                     );
-                    
+  
                     // 等待退避时间
                     tokio::time::sleep(delay).await;
                 }
@@ -7677,7 +7731,9 @@ struct MessageQueueConnector<T> {
 }
 
 // 消息队列客户端接口
-#[async_trait]
+
+# [async_trait]
+
 trait MessageQueueClient<T>: Send + Sync {
     async fn connect(&self) -> Result<(), MqError>;
     async fn disconnect(&self) -> Result<(), MqError>;
@@ -7691,7 +7747,9 @@ trait MessageQueueClient<T>: Send + Sync {
 type MessageHandler<T> = Box<dyn Fn(Event<T>) -> Pin<Box<dyn Future<Output = Result<(), HandlerError>> + Send>> + Send + Sync>;
 
 // 消息队列错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 enum MqError {
     #[error("连接错误: {0}")]
     ConnectionError(String),
@@ -7738,26 +7796,26 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
             local_buffer: Arc::new(Mutex::new(VecDeque::new())),
         }
     }
-    
+  
     // 启动连接器
     async fn start(&self) -> Result<(), MqError> {
         // 连接到消息队列
         self.connect_with_retry().await?;
-        
+  
         // 启动本地缓冲区刷新任务
         self.start_buffer_flush_task().await;
-        
+  
         Ok(())
     }
-    
+  
     // 带重试的连接
     async fn connect_with_retry(&self) -> Result<(), MqError> {
         let mut attempts = 0;
         let mut delay = self.reconnect_policy.initial_delay_ms;
-        
+  
         loop {
             attempts += 1;
-            
+  
             match self.client.connect().await {
                 Ok(_) => {
                     tracing::info!(
@@ -7774,7 +7832,7 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
                             ));
                         }
                     }
-                    
+  
                     tracing::warn!(
                         queue = self.queue_name,
                         attempt = attempts,
@@ -7782,10 +7840,10 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
                         error = %e,
                         "连接消息队列失败，将重试"
                     );
-                    
+  
                     // 等待重试
                     tokio::time::sleep(Duration::from_millis(delay)).await;
-                    
+  
                     // 计算下一次延迟（指数退避）
                     delay = ((delay as f64) * self.reconnect_policy.backoff_factor) as u64;
                     delay = delay.min(self.reconnect_policy.max_delay_ms);
@@ -7793,44 +7851,44 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
             }
         }
     }
-    
+  
     // 启动缓冲区刷新任务
     async fn start_buffer_flush_task(&self) {
         let client = self.client.clone();
         let queue_name = self.queue_name.clone();
         let local_buffer = self.local_buffer.clone();
         let batch_config = self.batch_config.clone();
-        
+  
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(
                 Duration::from_millis(batch_config.max_batch_wait_ms)
             );
-            
+  
             loop {
                 interval.tick().await;
-                
+  
                 // 检查是否有缓冲的消息
                 let events_to_flush = {
                     let mut buffer = local_buffer.lock().await;
-                    
+  
                     if buffer.is_empty() {
                         // 没有消息需要刷新
                         continue;
                     }
-                    
+  
                     // 取出要刷新的消息（最多batch_size个）
                     let count = buffer.len().min(batch_config.max_batch_size);
                     let mut events = Vec::with_capacity(count);
-                    
+  
                     for _ in 0..count {
                         if let Some(event) = buffer.pop_front() {
                             events.push(event);
                         }
                     }
-                    
+  
                     events
                 };
-                
+  
                 // 尝试刷新缓冲区
                 if !events_to_flush.is_empty() {
                     if client.is_connected().await {
@@ -7849,7 +7907,7 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
                                     count = events_to_flush.len(),
                                     "刷新消息缓冲区失败，将重新缓冲消息"
                                 );
-                                
+  
                                 // 将消息放回缓冲区
                                 let mut buffer = local_buffer.lock().await;
                                 for event in events_to_flush {
@@ -7864,7 +7922,7 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
                             count = events_to_flush.len(),
                             "消息队列客户端未连接，保持消息在缓冲区"
                         );
-                        
+  
                         let mut buffer = local_buffer.lock().await;
                         for event in events_to_flush {
                             buffer.push_back(event);
@@ -7874,7 +7932,7 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
             }
         });
     }
-    
+  
     // 发布事件
     async fn publish(&self, event: Event<T>) -> Result<(), MqError> {
         // 检查客户端是否已连接
@@ -7891,11 +7949,11 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
                         error = %e,
                         "发布事件失败，将添加到本地缓冲区"
                     );
-                    
+  
                     // 失败时添加到本地缓冲区
                     let mut buffer = self.local_buffer.lock().await;
                     buffer.push_back(event);
-                    
+  
                     return Ok(()); // 返回OK，因为消息已被安全地缓冲
                 }
             }
@@ -7906,14 +7964,14 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
                 event_id = %event.id,
                 "客户端未连接，添加事件到本地缓冲区"
             );
-            
+  
             let mut buffer = self.local_buffer.lock().await;
             buffer.push_back(event);
-            
+  
             Ok(())
         }
     }
-    
+  
     // 订阅并处理事件
     async fn subscribe<F, Fut>(&self, handler: F) -> Result<(), MqError>
     where
@@ -7924,7 +7982,7 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
         let handler_fn = Box::new(move |event: Event<T>| -> Pin<Box<dyn Future<Output = Result<(), HandlerError>> + Send>> {
             Box::pin(handler(event))
         });
-        
+  
         // 订阅队列
         self.client.subscribe(&self.queue_name, handler_fn).await
     }
@@ -7953,34 +8011,35 @@ struct KafkaConfig {
     extra_config: HashMap<String, String>,
 }
 
-#[async_trait]
+# [async_trait]
+
 impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> MessageQueueClient<T> for KafkaClient<T> {
     async fn connect(&self) -> Result<(), MqError> {
         // 模拟连接到Kafka
         // 在实际应用中，这里会创建真正的Kafka生产者和消费者
-        
+  
         tokio::time::sleep(Duration::from_millis(100)).await;
         self.connected.store(true, Ordering::SeqCst);
-        
+  
         Ok(())
     }
-    
+  
     async fn disconnect(&self) -> Result<(), MqError> {
         // 模拟断开连接
         self.connected.store(false, Ordering::SeqCst);
-        
+  
         Ok(())
     }
-    
+  
     async fn publish(&self, queue: &str, event: &Event<T>) -> Result<(), MqError> {
         if !self.connected.load(Ordering::SeqCst) {
             return Err(MqError::ConnectionError("未连接到Kafka".to_string()));
         }
-        
+  
         // 序列化事件
         let payload = serde_json::to_vec(event)
             .map_err(|e| MqError::PublishError(format!("序列化错误: {}", e)))?;
-            
+  
         // 模拟发送消息到Kafka
         tracing::debug!(
             topic = queue,
@@ -7988,48 +8047,48 @@ impl<T: Clone + Serialize + for<'de> Deserialize<'de> + Send + Sync + 'static> M
             event_type = %event.event_type,
             "发送消息到Kafka"
         );
-        
+  
         // 模拟网络延迟
         tokio::time::sleep(Duration::from_millis(5)).await;
-        
+  
         Ok(())
     }
-    
+  
     async fn publish_batch(&self, queue: &str, events: &[Event<T>]) -> Result<(), MqError> {
         if !self.connected.load(Ordering::SeqCst) {
             return Err(MqError::ConnectionError("未连接到Kafka".to_string()));
         }
-        
+  
         // 模拟批量发送消息到Kafka
         tracing::debug!(
             topic = queue,
             count = events.len(),
             "批量发送消息到Kafka"
         );
-        
+  
         // 模拟网络延迟
         tokio::time::sleep(Duration::from_millis(10)).await;
-        
+  
         Ok(())
     }
-    
+  
     async fn subscribe(&self, queue: &str, handler: MessageHandler<T>) -> Result<(), MqError> {
         if !self.connected.load(Ordering::SeqCst) {
             return Err(MqError::ConnectionError("未连接到Kafka".to_string()));
         }
-        
+  
         // 模拟订阅Kafka主题
         tracing::info!(
             topic = queue,
             group_id = self.config.group_id,
             "订阅Kafka主题"
         );
-        
+  
         // 在实际应用中，这里会启动一个消费者循环，从Kafka读取消息并调用处理函数
-        
+  
         Ok(())
     }
-    
+  
     async fn is_connected(&self) -> bool {
         self.connected.load(Ordering::SeqCst)
     }
@@ -8048,13 +8107,16 @@ struct EventSourcedEntity<T, S> {
 }
 
 // 事件存储接口
-#[async_trait]
+
+# [async_trait]
+
 trait EventStore<T>: Send + Sync {
     async fn append_event(&self, entity_id: &str, event: Event<T>) -> Result<(), EventStoreError>;
     async fn get_events(&self, entity_id: &str) -> Result<Vec<Event<T>>, EventStoreError>;
 }
 
-#[derive(Debug, thiserror::Error)]
+# [derive(Debug, thiserror::Error)]
+
 enum EventStoreError {
     #[error("存储错误: {0}")]
     StorageError(String),
@@ -8077,52 +8139,52 @@ impl<T: Clone + Send + Sync + 'static, S: Send + Sync + 'static> EventSourcedEnt
             event_store,
             apply_event: Box::new(apply_event),
         };
-        
+  
         // 从事件存储中加载事件，重建状态
         entity.rebuild_state().await?;
-        
+  
         Ok(entity)
     }
-    
+  
     // 从事件历史重建状态
     async fn rebuild_state(&self) -> Result<(), EventStoreError> {
         // 获取所有历史事件
         let events = self.event_store.get_events(&self.id).await?;
-        
+  
         if events.is_empty() {
             return Ok(());
         }
-        
+  
         // 应用所有事件以重建状态
         let mut state = self.state.write().await;
-        
+  
         for event in events {
             (self.apply_event)(&mut state, &event);
         }
-        
+  
         tracing::info!(
             entity_id = self.id,
             event_count = events.len(),
             "从事件历史重建实体状态"
         );
-        
+  
         Ok(())
     }
-    
+  
     // 应用新事件
     async fn apply(&self, event: Event<T>) -> Result<(), EventStoreError> {
         // 首先存储事件
         self.event_store.append_event(&self.id, event.clone()).await?;
-        
+  
         // 然后更新内存状态
         let mut state = self.state.write().await;
         (self.apply_event)(&mut state, &event);
-        
+  
         Ok(())
     }
-    
+  
     // 获取当前状态（只读）
-    async fn get_state(&self) -> S 
+    async fn get_state(&self) -> S
     where
         S: Clone,
     {
@@ -8140,7 +8202,8 @@ struct CommandHandler<C, E, S> {
     event_bus: Arc<EventBus>,
 }
 
-#[derive(Debug, thiserror::Error)]
+# [derive(Debug, thiserror::Error)]
+
 enum CommandError {
     #[error("验证错误: {0}")]
     ValidationError(String),
@@ -8169,20 +8232,20 @@ where
             event_bus,
         }
     }
-    
+  
     // 处理命令
     async fn execute(&self, command: C) -> Result<(), CommandError> {
         // 获取当前状态
         let state = self.entity.get_state().await;
-        
+  
         // 处理命令，产生事件
         let events = (self.handle_command)(command, &state)?;
-        
+  
         if events.is_empty() {
             // 没有事件产生，说明命令没有效果
             return Ok(());
         }
-        
+  
         // 应用并存储所有事件
         for event in &events {
             if let Err(e) = self.entity.apply(event.clone()).await {
@@ -8191,7 +8254,7 @@ where
                 ));
             }
         }
-        
+  
         // 发布所有事件到事件总线
         for event in events {
             if let Err(e) = self.event_bus.publish(event).await {
@@ -8203,7 +8266,7 @@ where
                 // 不回滚，因为事件已经被保存
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -8218,7 +8281,9 @@ enum UserCommand {
 }
 
 // 用户事件
-#[derive(Clone, Serialize, Deserialize)]
+
+# [derive(Clone, Serialize, Deserialize)]
+
 enum UserEvent {
     UserCreated { name: String, email: String },
     EmailChanged { old_email: String, new_email: String },
@@ -8227,7 +8292,9 @@ enum UserEvent {
 }
 
 // 用户状态
-#[derive(Clone, Default)]
+
+# [derive(Clone, Default)]
+
 struct UserState {
     name: String,
     email: String,
@@ -8238,10 +8305,10 @@ struct UserState {
 async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, UserState>> {
     // 创建事件存储
     let event_store = Arc::new(InMemoryEventStore::<UserEvent>::new());
-    
+  
     // 创建事件总线
     let event_bus = Arc::new(EventBus::new());
-    
+  
     // 定义事件应用函数
     let apply_event = |state: &mut UserState, event: &Event<UserEvent>| {
         match &event.data {
@@ -8261,7 +8328,7 @@ async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, Use
             }
         }
     };
-    
+  
     // 创建用户实体
     let user_id = "user-1";
     let entity = Arc::new(
@@ -8272,7 +8339,7 @@ async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, Use
             apply_event
         ).await.unwrap()
     );
-    
+  
     // 定义命令处理函数
     let handle_command = |cmd: UserCommand, state: &UserState| -> Result<Vec<Event<UserEvent>>, CommandError> {
         match cmd {
@@ -8281,14 +8348,14 @@ async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, Use
                 if !state.name.is_empty() {
                     return Err(CommandError::ValidationError("用户已存在".to_string()));
                 }
-                
+  
                 // 创建事件
                 let event = Event::new(
                     "user.created",
                     "user-service",
                     UserEvent::UserCreated { name, email }
                 );
-                
+  
                 Ok(vec![event])
             }
             UserCommand::ChangeEmail { new_email } => {
@@ -8296,11 +8363,11 @@ async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, Use
                 if state.is_deleted {
                     return Err(CommandError::ValidationError("无法修改已删除的用户".to_string()));
                 }
-                
+  
                 if state.email == new_email {
                     return Ok(vec![]); // 没有变化，不产生事件
                 }
-                
+  
                 // 创建事件
                 let event = Event::new(
                     "user.email_changed",
@@ -8310,7 +8377,7 @@ async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, Use
                         new_email,
                     }
                 );
-                
+  
                 Ok(vec![event])
             }
             UserCommand::ChangeName { new_name } => {
@@ -8318,11 +8385,11 @@ async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, Use
                 if state.is_deleted {
                     return Err(CommandError::ValidationError("无法修改已删除的用户".to_string()));
                 }
-                
+  
                 if state.name == new_name {
                     return Ok(vec![]); // 没有变化，不产生事件
                 }
-                
+  
                 // 创建事件
                 let event = Event::new(
                     "user.name_changed",
@@ -8332,7 +8399,7 @@ async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, Use
                         new_name,
                     }
                 );
-                
+  
                 Ok(vec![event])
             }
             UserCommand::DeleteUser => {
@@ -8340,19 +8407,19 @@ async fn create_user_service() -> Arc<CommandHandler<UserCommand, UserEvent, Use
                 if state.is_deleted {
                     return Ok(vec![]); // 已经删除，不产生事件
                 }
-                
+  
                 // 创建事件
                 let event = Event::new(
                     "user.deleted",
                     "user-service",
                     UserEvent::UserDeleted
                 );
-                
+  
                 Ok(vec![event])
             }
         }
     };
-    
+  
     // 创建命令处理器
     Arc::new(CommandHandler::new(entity, event_bus, handle_command))
 }
@@ -8370,23 +8437,24 @@ impl<T> InMemoryEventStore<T> {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl<T: Clone + Send + Sync + 'static> EventStore<T> for InMemoryEventStore<T> {
     async fn append_event(&self, entity_id: &str, event: Event<T>) -> Result<(), EventStoreError> {
         let mut events = self.events.write().await;
-        
+  
         let entity_events = events
             .entry(entity_id.to_string())
             .or_insert_with(Vec::new);
-            
+  
         entity_events.push(event);
-        
+  
         Ok(())
     }
-    
+  
     async fn get_events(&self, entity_id: &str) -> Result<Vec<Event<T>>, EventStoreError> {
         let events = self.events.read().await;
-        
+  
         if let Some(entity_events) = events.get(entity_id) {
             Ok(entity_events.clone())
         } else {
@@ -8409,14 +8477,17 @@ struct Projector<T, S> {
 }
 
 // 读模型存储接口
-#[async_trait]
+
+# [async_trait]
+
 trait ReadModelStore<S>: Send + Sync {
     async fn save(&self, id: &str, model: S) -> Result<(), ReadModelError>;
     async fn get(&self, id: &str) -> Result<Option<S>, ReadModelError>;
     async fn delete(&self, id: &str) -> Result<(), ReadModelError>;
 }
 
-#[derive(Debug, thiserror::Error)]
+# [derive(Debug, thiserror::Error)]
+
 enum ReadModelError {
     #[error("存储错误: {0}")]
     StorageError(String),
@@ -8437,7 +8508,7 @@ where
     ) -> Self {
         // 订阅事件总线
         let (subscriber_id, receiver) = event_bus.subscribe(topic, 100).await;
-        
+  
         Self {
             subscriber_id,
             receiver,
@@ -8445,14 +8516,14 @@ where
             project_event: Box::new(project_event),
         }
     }
-    
+  
     // 启动投影器
     async fn start(mut self) {
         tracing::info!(
             subscriber_id = self.subscriber_id,
             "启动投影器"
         );
-        
+  
         while let Some(event_json) = self.receiver.recv().await {
             // 反序列化事件
             let event = match serde_json::from_str::<Event<T>>(&event_json) {
@@ -8465,7 +8536,7 @@ where
                     continue;
                 }
             };
-            
+  
             // 获取实体ID
             let entity_id = match self.extract_entity_id(&event) {
                 Some(id) => id,
@@ -8477,7 +8548,7 @@ where
                     continue;
                 }
             };
-            
+  
             // 从存储中获取当前读模型
             let current_model = match self.read_model_store.get(&entity_id).await {
                 Ok(model) => model,
@@ -8490,10 +8561,10 @@ where
                     continue;
                 }
             };
-            
+  
             // 应用投影函数
             let new_model = (self.project_event)(&event, current_model);
-            
+  
             // 更新或删除读模型
             match new_model {
                 Some(model) => {
@@ -8518,13 +8589,13 @@ where
                 }
             }
         }
-        
+  
         tracing::info!(
             subscriber_id = self.subscriber_id,
             "投影器已停止"
         );
     }
-    
+  
     // 从事件中提取实体ID
     fn extract_entity_id(&self, event: &Event<T>) -> Option<String> {
         // 简化实现：假设实体ID是从事件源中提取的
@@ -8532,6 +8603,7 @@ where
         Some(event.source.clone())
     }
 }
+
 ```
 
 **批判分析**：
@@ -9379,6 +9451,7 @@ enum TimeoutError {
     #[error("检测到死锁: {0}")]
     DeadlockDetected(String),
 }
+
 ```
 
 **批判分析**：
@@ -9610,16 +9683,16 @@ impl ActorSystem {
             return Err(ActorError::ActorAlreadyExists(id.to_string()));
         }
         drop(actors);
-        
+  
         // 创建消息通道
         let (sender, mut receiver) = mpsc::channel::<BoxedMessage>(mailbox_size);
-        
+  
         // 创建Actor地址
         let address = ActorAddress {
             id: id.to_string(),
             sender: Some(sender),
         };
-        
+  
         // 创建Actor上下文
         let mut ctx = ActorContext {
             id: id.to_string(),
@@ -9630,19 +9703,19 @@ impl ActorSystem {
             status: ActorStatus::Starting,
             system: Arc::new(self.clone()),
         };
-        
+  
         // 启动Actor任务
         let actor = Arc::new(actor);
         let actor_clone = actor.clone();
         let system = Arc::new(self.clone());
-        
+  
         let handle = tokio::spawn(async move {
             // 调用启动钩子
             actor_clone.started(&mut ctx).await;
-            
+  
             // 更新状态
             ctx.status = ActorStatus::Running;
-            
+  
             // 处理消息循环
             while let Some(msg) = receiver.recv().await {
                 // 尝试将消息转换为Actor的消息类型
@@ -9657,40 +9730,40 @@ impl ActorSystem {
                     );
                 }
             }
-            
+  
             // 消息通道关闭，调用停止钩子
             ctx.status = ActorStatus::Stopping;
             actor_clone.stopped(&mut ctx).await;
             ctx.status = ActorStatus::Stopped;
-            
+  
             // 从系统中移除Actor
             system.remove_actor(&ctx.id).await;
         });
-        
+  
         // 注册Actor
         let actor_ref = ActorRef {
             address: address.clone(),
             handle,
         };
-        
+  
         let mut actors = self.actors.write().await;
         actors.insert(id.to_string(), actor_ref);
-        
+  
         Ok(address)
     }
-    
+  
     // 从系统中移除Actor
     async fn remove_actor(&self, id: &str) {
         let mut actors = self.actors.write().await;
         actors.remove(id);
     }
-    
+  
     // 查找Actor
     async fn lookup(&self, id: &str) -> Option<ActorAddress> {
         let actors = self.actors.read().await;
         actors.get(id).map(|ref_| ref_.address.clone())
     }
-    
+  
     // 关闭Actor系统
     async fn shutdown(self: Arc<Self>) -> Result<(), ActorError> {
         // 设置状态为关闭中
@@ -9700,7 +9773,7 @@ impl ActorSystem {
         }
         *status = ActorSystemStatus::ShuttingDown;
         drop(status);
-        
+  
         // 停止根监护人（会级联停止所有Actor）
         let root_guardian = self.root_guardian.read().await;
         if let Some(ref address) = *root_guardian {
@@ -9708,15 +9781,15 @@ impl ActorSystem {
             address.send(StopMessage {}).await?;
         }
         drop(root_guardian);
-        
+  
         // 等待所有Actor停止
         let shutdown_timeout = Duration::from_millis(self.config.shutdown_timeout_ms);
         let mut interval = tokio::time::interval(Duration::from_millis(100));
-        
+  
         let start = std::time::Instant::now();
         while start.elapsed() < shutdown_timeout {
             interval.tick().await;
-            
+  
             let actors = self.actors.read().await;
             if actors.is_empty() {
                 // 所有Actor已停止
@@ -9725,18 +9798,18 @@ impl ActorSystem {
                 return Ok(());
             }
         }
-        
+  
         // 超时 - 强制停止所有剩余Actor
         let mut actors = self.actors.write().await;
         for (id, actor_ref) in actors.drain() {
             actor_ref.handle.abort();
             tracing::warn!(actor_id = id, "强制终止Actor");
         }
-        
+  
         // 更新状态
         let mut status = self.status.write().await;
         *status = ActorSystemStatus::Terminated;
-        
+  
         Ok(())
     }
 }
@@ -9768,7 +9841,7 @@ impl ActorContext {
     async fn send<M: 'static + Send>(&self, to: &ActorAddress, msg: M) -> Result<(), ActorError> {
         to.send(msg).await
     }
-    
+  
     // 向另一个Actor发送消息并等待回复
     async fn ask<M: 'static + Send, R: 'static + Send>(
         &self,
@@ -9777,7 +9850,7 @@ impl ActorContext {
     ) -> Result<R, ActorError> {
         to.ask(msg).await
     }
-    
+  
     // 创建子Actor
     async fn spawn<A: Actor + 'static>(
         &mut self,
@@ -9787,7 +9860,7 @@ impl ActorContext {
     ) -> Result<ActorAddress, ActorError> {
         // 生成子Actor的完整ID
         let child_id = format!("{}/{}", self.id, id);
-        
+  
         // 创建子Actor
         let child_address = self.system.spawn_actor(
             &child_id,
@@ -9796,13 +9869,13 @@ impl ActorContext {
             strategy,
             self.system.config.default_mailbox_size,
         ).await?;
-        
+  
         // 添加到子Actor列表
         self.children.insert(id.to_string(), child_address.clone());
-        
+  
         Ok(child_address)
     }
-    
+  
     // 停止子Actor
     async fn stop_child(&mut self, id: &str) -> Result<(), ActorError> {
         if let Some(child) = self.children.get(id) {
@@ -9815,7 +9888,7 @@ impl ActorContext {
             Err(ActorError::ChildNotFound(id.to_string()))
         }
     }
-    
+  
     // 在Actor失败时应用监督策略
     async fn apply_supervision_strategy(
         &mut self,
@@ -9827,7 +9900,7 @@ impl ActorContext {
                 // 检查重试次数
                 let child_full_id = format!("{}/{}", self.id, child_id);
                 let retries = self.get_retry_count(&child_full_id).await;
-                
+  
                 if retries >= max_retries {
                     // 超过最大重试次数，停止子Actor
                     tracing::warn!(
@@ -9837,7 +9910,7 @@ impl ActorContext {
                         error = ?error,
                         "子Actor超过最大重试次数，将停止"
                     );
-                    
+  
                     // 停止子Actor
                     if let Err(e) = self.stop_child(child_id).await {
                         tracing::error!(
@@ -9847,24 +9920,24 @@ impl ActorContext {
                             "停止失败的子Actor失败"
                         );
                     }
-                    
+  
                     SupervisionDecision::Stop
                 } else {
                     // 增加重试计数并重启
                     self.increment_retry_count(&child_full_id).await;
-                    
+  
                     // 延迟重启
                     if retry_interval_ms > 0 {
                         tokio::time::sleep(Duration::from_millis(retry_interval_ms)).await;
                     }
-                    
+  
                     tracing::info!(
                         actor_id = self.id,
                         child_id = child_id,
                         retries = retries + 1,
                         "重启失败的子Actor"
                     );
-                    
+  
                     SupervisionDecision::Restart
                 }
             }
@@ -9878,7 +9951,7 @@ impl ActorContext {
                         "停止失败的子Actor失败"
                     );
                 }
-                
+  
                 SupervisionDecision::Stop
             }
             SupervisionStrategy::Escalate => {
@@ -9889,7 +9962,7 @@ impl ActorContext {
                         failed_actor: self.address.clone(),
                         error: error.clone(),
                     };
-                    
+  
                     if let Err(e) = parent.send(escalate_msg).await {
                         tracing::error!(
                             actor_id = self.id,
@@ -9898,7 +9971,7 @@ impl ActorContext {
                         );
                     }
                 }
-                
+  
                 SupervisionDecision::Escalate
             }
             SupervisionStrategy::Resume => {
@@ -9908,23 +9981,23 @@ impl ActorContext {
                     child_id = child_id,
                     "恢复失败的子Actor"
                 );
-                
+  
                 SupervisionDecision::Resume
             }
         }
     }
-    
+  
     // 获取子Actor的重试计数
     async fn get_retry_count(&self, child_id: &str) -> usize {
         // 简化实现：实际应用中可能使用持久化存储
         0
     }
-    
+  
     // 增加子Actor的重试计数
     async fn increment_retry_count(&self, child_id: &str) {
         // 简化实现：实际应用中可能使用持久化存储
     }
-    
+  
     // 处理子Actor的故障
     async fn handle_child_failure(
         &mut self,
@@ -9937,7 +10010,7 @@ impl ActorContext {
             error = ?error,
             "子Actor失败"
         );
-        
+  
         // 应用监督策略
         self.apply_supervision_strategy(child_id, &error).await
     }
@@ -9958,7 +10031,7 @@ impl ActorAddress {
         if let Some(ref sender) = self.sender {
             // 装箱消息
             let boxed = Box::new(msg);
-            
+  
             // 发送
             sender.send(boxed)
                 .await
@@ -9967,25 +10040,25 @@ impl ActorAddress {
             Err(ActorError::ActorNotAvailable(self.id.clone()))
         }
     }
-    
+  
     // 发送消息并等待回复
     async fn ask<M: 'static + Send, R: 'static + Send>(&self, msg: M) -> Result<R, ActorError> {
         // 创建回复通道
         let (reply_tx, reply_rx) = oneshot::channel();
-        
+  
         // 创建包含回复通道的消息
         let ask_msg = AskMessage {
             message: Box::new(msg),
             reply_to: reply_tx,
         };
-        
+  
         // 发送消息
         self.send(ask_msg).await?;
-        
+  
         // 等待回复
         reply_rx.await.map_err(|_| ActorError::ResponseChannelClosed(self.id.clone()))
     }
-    
+  
     // 停止Actor
     async fn stop(&self) -> Result<(), ActorError> {
         self.send(StopMessage {}).await
@@ -10025,13 +10098,14 @@ impl RootGuardian {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl Actor for RootGuardian {
     type Message = BoxedMessage;
-    
+  
     async fn started(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, "根监护人启动");
-        
+  
         // 创建用户监护人
         let user_guardian = UserGuardian::new();
         let user_address = ctx.spawn(
@@ -10042,7 +10116,7 @@ impl Actor for RootGuardian {
                 retry_interval_ms: 1000,
             },
         ).await.unwrap();
-        
+  
         // 创建系统监护人
         let system_guardian = SystemGuardian::new();
         let system_address = ctx.spawn(
@@ -10053,12 +10127,12 @@ impl Actor for RootGuardian {
                 retry_interval_ms: 1000,
             },
         ).await.unwrap();
-        
+  
         // 保存引用
         ctx.user_guardian = Some(user_address);
         ctx.system_guardian = Some(system_address);
     }
-    
+  
     async fn handle(&self, msg: Self::Message, ctx: &mut ActorContext) {
         // 根监护人处理顶级消息
         if let Ok(stop_msg) = msg.downcast::<StopMessage>() {
@@ -10081,7 +10155,7 @@ impl Actor for RootGuardian {
                 error = ?escalate_msg.error,
                 "收到升级的故障"
             );
-            
+  
             // 在根监护人层面，通常会停止失败的Actor树
             if let Err(e) = escalate_msg.failed_actor.stop().await {
                 tracing::error!(
@@ -10093,7 +10167,7 @@ impl Actor for RootGuardian {
             }
         }
     }
-    
+  
     async fn stopped(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, "根监护人停止");
     }
@@ -10108,14 +10182,15 @@ impl UserGuardian {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl Actor for UserGuardian {
     type Message = BoxedMessage;
-    
+  
     async fn started(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, "用户监护人启动");
     }
-    
+  
     async fn handle(&self, msg: Self::Message, ctx: &mut ActorContext) {
         // 处理用户Actor的消息
         if let Ok(stop_msg) = msg.downcast::<StopMessage>() {
@@ -10138,7 +10213,7 @@ impl Actor for UserGuardian {
                 error = ?escalate_msg.error,
                 "收到升级的故障"
             );
-            
+  
             // 用户监护人可能会实现自定义的恢复策略
             // 简化实现：停止失败的Actor
             if let Err(e) = escalate_msg.failed_actor.stop().await {
@@ -10151,7 +10226,7 @@ impl Actor for UserGuardian {
             }
         }
     }
-    
+  
     async fn stopped(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, "用户监护人停止");
     }
@@ -10166,14 +10241,15 @@ impl SystemGuardian {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl Actor for SystemGuardian {
     type Message = BoxedMessage;
-    
+  
     async fn started(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, "系统监护人启动");
     }
-    
+  
     async fn handle(&self, msg: Self::Message, ctx: &mut ActorContext) {
         // 处理系统Actor的消息
         if let Ok(stop_msg) = msg.downcast::<StopMessage>() {
@@ -10196,7 +10272,7 @@ impl Actor for SystemGuardian {
                 error = ?escalate_msg.error,
                 "收到升级的故障"
             );
-            
+  
             // 系统监护人通常对系统Actor有更严格的处理
             // 简化实现：停止失败的Actor
             if let Err(e) = escalate_msg.failed_actor.stop().await {
@@ -10209,36 +10285,38 @@ impl Actor for SystemGuardian {
             }
         }
     }
-    
+  
     async fn stopped(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, "系统监护人停止");
     }
 }
 
 // 9. Actor错误类型
-#[derive(Debug, Clone, thiserror::Error)]
+
+# [derive(Debug, Clone, thiserror::Error)]
+
 enum ActorError {
     #[error("Actor已存在: {0}")]
     ActorAlreadyExists(String),
-    
+  
     #[error("未找到Actor: {0}")]
     ActorNotFound(String),
-    
+  
     #[error("Actor不可用: {0}")]
     ActorNotAvailable(String),
-    
+  
     #[error("未找到子Actor: {0}")]
     ChildNotFound(String),
-    
+  
     #[error("消息队列已关闭: {0}")]
     MessageQueueClosed(String),
-    
+  
     #[error("响应通道已关闭: {0}")]
     ResponseChannelClosed(String),
-    
+  
     #[error("系统未运行")]
     SystemNotRunning,
-    
+  
     #[error("未知错误: {0}")]
     Unknown(String),
 }
@@ -10262,14 +10340,15 @@ enum CounterMessage {
     FailAfter(usize),
 }
 
-#[async_trait]
+# [async_trait]
+
 impl Actor for CounterActor {
     type Message = CounterMessage;
-    
+  
     async fn started(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, "计数器Actor启动");
     }
-    
+  
     async fn handle(&self, msg: Self::Message, ctx: &mut ActorContext) {
         match msg {
             CounterMessage::Increment => {
@@ -10290,7 +10369,7 @@ impl Actor for CounterActor {
             }
         }
     }
-    
+  
     async fn stopped(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, count = self.count, "计数器Actor停止");
     }
@@ -10319,14 +10398,15 @@ enum CoordinatorMessage {
     GetTotalCount(oneshot::Sender<usize>),
 }
 
-#[async_trait]
+# [async_trait]
+
 impl Actor for WorkflowCoordinatorActor {
     type Message = CoordinatorMessage;
-    
+  
     async fn started(&self, ctx: &mut ActorContext) {
         tracing::info!(actor_id = ctx.id, "工作流协调器启动");
     }
-    
+  
     async fn handle(&self, msg: Self::Message, ctx: &mut ActorContext) {
         match msg {
             CoordinatorMessage::CreateCounters(count) => {
@@ -10334,7 +10414,7 @@ impl Actor for WorkflowCoordinatorActor {
                 for i in 0..count {
                     let counter = CounterActor::new();
                     let counter_id = format!("counter-{}", i);
-                    
+  
                     match ctx.spawn(
                         &counter_id,
                         counter,
@@ -10382,13 +10462,13 @@ impl Actor for WorkflowCoordinatorActor {
                 if !self.counters.is_empty() {
                     let idx = rand::random::<usize>() % self.counters.len();
                     let counter = &self.counters[idx];
-                    
+  
                     tracing::info!(
                         actor_id = ctx.id,
                         counter_idx = idx,
                         "触发计数器失败"
                     );
-                    
+  
                     // 发送使计数器失败的消息
                     if let Err(e) = counter.send(CounterMessage::FailAfter(0)).await {
                         tracing::error!(
@@ -10403,7 +10483,7 @@ impl Actor for WorkflowCoordinatorActor {
             CoordinatorMessage::GetTotalCount(reply) => {
                 // 聚合所有计数器的值
                 let mut total = 0;
-                
+  
                 for (i, counter) in self.counters.iter().enumerate() {
                     match counter.ask::<_, usize>(CounterMessage::GetCount).await {
                         Ok(count) => {
@@ -10419,18 +10499,18 @@ impl Actor for WorkflowCoordinatorActor {
                         }
                     }
                 }
-                
+  
                 // 发送聚合结果
                 if reply.send(total).is_err() {
                     tracing::warn!(actor_id = ctx.id, "发送总计数回复失败");
                 }
-                
+  
                 // 更新聚合计数
                 self.aggregated_count = total;
             }
         }
     }
-    
+  
     async fn stopped(&self, ctx: &mut ActorContext) {
         tracing::info!(
             actor_id = ctx.id,
@@ -10449,12 +10529,12 @@ async fn run_actor_example() {
         lookup_timeout_ms: 5000,
         shutdown_timeout_ms: 10000,
     };
-    
+  
     let system = ActorSystem::new(config);
-    
+  
     // 启动系统
     system.start().await.unwrap();
-    
+  
     // 创建工作流协调器
     let coordinator = WorkflowCoordinatorActor::new();
     let coordinator_address = system.spawn_actor(
@@ -10467,33 +10547,34 @@ async fn run_actor_example() {
         },
         200,
     ).await.unwrap();
-    
+  
     // 创建计数器
     coordinator_address.send(CoordinatorMessage::CreateCounters(5)).await.unwrap();
-    
+  
     // 增加计数器值
     coordinator_address.send(CoordinatorMessage::IncrementAll(10)).await.unwrap();
-    
+  
     // 获取总计数
     let total = coordinator_address.ask::<_, usize>(CoordinatorMessage::GetTotalCount).await.unwrap();
     println!("总计数: {}", total);
-    
+  
     // 触发随机失败
     coordinator_address.send(CoordinatorMessage::FailRandom).await.unwrap();
-    
+  
     // 等待监督策略处理失败
     tokio::time::sleep(Duration::from_secs(2)).await;
-    
+  
     // 再次增加计数
     coordinator_address.send(CoordinatorMessage::IncrementAll(5)).await.unwrap();
-    
+  
     // 再次获取总计数（应该少一点，因为一个计数器被重置）
     let total = coordinator_address.ask::<_, usize>(CoordinatorMessage::GetTotalCount).await.unwrap();
     println!("故障后总计数: {}", total);
-    
+  
     // 关闭系统
     system.shutdown().await.unwrap();
 }
+
 ```
 
 **批判分析**：

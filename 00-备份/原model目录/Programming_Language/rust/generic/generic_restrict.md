@@ -24,6 +24,7 @@ let raw_ptr: *const i32 = &5;
 unsafe {
     println!("Value: {}", *raw_ptr);
 }
+
 ```
 
 - **`extern` 类型**：
@@ -35,6 +36,7 @@ unsafe {
 extern "C" {
     type ExternType;
 }
+
 ```
 
 ### 2. **生命周期限制**
@@ -65,6 +67,7 @@ extern "C" {
 fn process<T: ?Sized>(value: &T) {
 // 可以处理任何类型，无论大小是否已知
 }
+
 ```
 
 ### 4. **实例化限制**
@@ -80,6 +83,7 @@ value: T,
 }
 
 let s = SomeStruct { value: 5 }; // 隐式地实例化为 SomeStruct<i32>
+
 ```
 
 ### 5. **依赖类型和资源管理**
@@ -106,6 +110,7 @@ impl<T, U> Pair<T, U> {
        }
    }
 }
+
 ```
 
 - **资源管理**：

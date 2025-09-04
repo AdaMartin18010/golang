@@ -32,6 +32,7 @@
 ```rust
 // 函数声明（在 Rust 中通常与定义一起完成）
 fn add(a: i32, b: i32) -> i32;
+
 ```
 
 ## 函数定义 (Function Definition)
@@ -45,6 +46,7 @@ fn add(a: i32, b: i32) -> i32;
 fn add(a: i32, b: i32) -> i32 {
     a + b
 }
+
 ```
 
 ## 函数实现 (Function Implementation)
@@ -58,6 +60,7 @@ fn add(a: i32, b: i32) -> i32 {
 fn add(a: i32, b: i32) -> i32 {
     a + b // 这里是函数实现
 }
+
 ```
 
 ## 抽象和默认实现
@@ -75,6 +78,7 @@ struct Dog;
 impl Animal for Dog {
     // 这里可以不实现 make_sound 方法
 }
+
 ```
 
 ## 默认实现
@@ -96,6 +100,7 @@ impl Animal for Dog {
 
     // Dog 可以不实现 eat 方法，因为它已经有一个默认实现
 }
+
 ```
 
 ## 分离定义和实现
@@ -112,6 +117,7 @@ pub use math::add;
 pub fn add(a: i32, b: i32) -> i32 {
     a + b
 }
+
 ```
 
 在这个例子中，`add` 函数在 `math.rs` 中被定义和实现，然后在 `lib.rs` 或 `mod.rs` 中被声明和重导出。
@@ -196,6 +202,7 @@ fn first_word(s: &str) -> &str {
 extern "C" {
     fn abs(input: i32) -> i32;
 }
+
 ```
 
 函数声明是 Rust 编程中的基础，它们是构建程序逻辑的基本单元。
@@ -211,6 +218,7 @@ Rust 的函数可以有不同的类型，这些类型由函数的参数和返回
 fn add(a: i32, b: i32) -> i32 {
     a + b
 }
+
 ```
 
 这个 `add` 函数接受两个 `i32` 类型的参数，并返回一个 `i32` 类型的值。
@@ -222,6 +230,7 @@ fn add(a: i32, b: i32) -> i32 {
 ```rust
 let add = |a, b| a + b;
 let result = add(5, 7); // result is 12
+
 ```
 
 这里的 `|a, b| a + b` 是一个匿名函数，它捕获了两个参数 `a` 和 `b` 并返回它们的和。
@@ -234,6 +243,7 @@ let result = add(5, 7); // result is 12
 let x = 5;
 let add_x = |a| a + x;
 let result = add_x(3); // result is 8
+
 ```
 
 在这个例子中，闭包 `add_x` 捕获了外部变量 `x`。
@@ -249,6 +259,7 @@ fn function_pointer_example(a: i32, b: i32) -> i32 {
 
 let f: fn(i32, i32) -> i32 = function_pointer_example;
 let result = f(5, 7); // result is 12
+
 ```
 
 这里的 `f` 是一个函数指针，它指向 `function_pointer_example` 函数。
@@ -270,6 +281,7 @@ fn increment(x: i32) -> i32 {
 }
 
 let result = apply(increment, 5); // result is 6
+
 ```
 
 `apply` 是一个高阶函数，它接受一个函数 `f` 和一个值 `x`，然后应用 `f` 到 `x` 上。
@@ -285,6 +297,7 @@ fn identity<T>(value: T) -> T {
 
 let string = identity("Hello, world!");
 let number = identity(42);
+
 ```
 
 `identity` 函数是一个泛型函数，它可以接收任何类型的参数并返回相同类型的值。
@@ -303,6 +316,7 @@ fn sum_all(args: i32...) -> i32 {
 }
 
 let result = sum_all(1, 2, 3, 4); // result is 10
+
 ```
 
 注意：Rust 标准库中没有直接支持可变参数的语法，但可以通过宏或者其他方式实现类似的功能。
@@ -321,6 +335,7 @@ async fn fetch_data() -> Result<String, std::io::Error> {
 async fn main() {
     let data = fetch_data().await;
 }
+
 ```
 
 在这个例子中，`fetch_data` 是一个异步函数，它使用 `async` 关键字定义，并返回一个 `Result` 类型。

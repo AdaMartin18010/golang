@@ -27,6 +27,7 @@ enum Example {
     Variant1(u32, f64),
     Variant2 { field1: String, field2: i32 },
 }
+
 ```
 
 枚举可以有不同的变体，每个变体可以存储不同类型的数据。
@@ -45,6 +46,7 @@ struct Point {
     x: f32,
     y: f32,
 }
+
 ```
 
 结构体是一系列命名字段的集合。
@@ -70,6 +72,7 @@ struct Point {
 
 ```rust
 fn add(x: i32, y: i32) -> i32 { x + y }
+
 ```
 
 函数可以视为接受一定数量的参数并返回一个结果的类型。
@@ -95,6 +98,7 @@ fn add(x: i32, y: i32) -> i32 { x + y }
 trait ExampleTrait {
     fn method(&self);
 }
+
 ```
 
 Trait 定义了一组方法的接口。
@@ -110,6 +114,7 @@ Trait 定义了一组方法的接口。
 
 ```rust
 fn generic_function<T: Trait>(x: T) { /* ... */ }
+
 ```
 
 泛型允许函数和类型在定义时不指定具体的类型。

@@ -30,19 +30,6 @@
   - [11.4.1.10 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.4.1.1 目录
 
 1. [概述](#1-概述)
@@ -97,6 +84,7 @@ graph TD
     E --> E1[版本管理]
     E --> E2[性能监控]
     E --> E3[A/B测试]
+
 ```
 
 ---
@@ -174,6 +162,7 @@ graph TB
     C3 --> D1
     D1 --> D2
     D2 --> D3
+
 ```
 
 ### 11.4.1.4.2 模型生命周期
@@ -232,6 +221,7 @@ type Transformer interface {
 type Selector interface {
     Select(features [][]float64, labels []float64) []int
 }
+
 ```
 
 ---
@@ -256,6 +246,7 @@ graph TD
     B1 --> F[数据分片]
     B2 --> F
     B3 --> F
+
 ```
 
 ### 11.4.1.5.2 推理服务架构
@@ -276,6 +267,7 @@ graph TD
     B1 --> F[监控系统]
     B2 --> F
     B3 --> F
+
 ```
 
 ### 11.4.1.5.3 服务实现
@@ -369,6 +361,7 @@ func (is *InferenceService) Predict(modelID string, input []float64) ([]float64,
     
     return predictions, nil
 }
+
 ```
 
 ---
@@ -450,6 +443,7 @@ func (lr *LinearRegression) PredictBatch(X [][]float64) []float64 {
     }
     return predictions
 }
+
 ```
 
 ### 11.4.1.6.2 随机森林
@@ -573,6 +567,7 @@ func (rf *RandomForest) Predict(x []float64) float64 {
     
     return rf.mean(predictions)
 }
+
 ```
 
 ---
@@ -613,6 +608,7 @@ ml-platform/
 │   ├── utils/
 │   └── config/
 └── configs/
+
 ```
 
 ### 11.4.1.7.2 核心实现
@@ -749,6 +745,7 @@ func (ss *StandardScaler) Transform(data [][]float64) ([][]float64, error) {
     
     return transformed, nil
 }
+
 ```
 
 ---
@@ -803,6 +800,7 @@ func (pt *ParallelTrainer) worker(model Model, batches [][][]float64, jobs <-cha
         results <- err
     }
 }
+
 ```
 
 ### 11.4.1.8.2 模型缓存
@@ -879,6 +877,7 @@ func (mc *ModelCache) evictLRU() {
         delete(mc.cache, oldestKey)
     }
 }
+
 ```
 
 ---
@@ -945,6 +944,7 @@ func (acc *Accuracy) Calculate(yTrue, yPred []float64) float64 {
     
     return float64(correct) / float64(len(yTrue))
 }
+
 ```
 
 ### 11.4.1.9.2 超参数调优
@@ -1019,6 +1019,7 @@ func (gs *GridSearch) crossValidate(model Model, X [][]float64, y []float64) flo
     }
     return sum / float64(gs.cv)
 }
+
 ```
 
 ---

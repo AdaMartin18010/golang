@@ -82,6 +82,7 @@ classDiagram
     Target <|-- Adapter
     Adapter --> Adaptee
     Adaptee <|-- ConcreteAdaptee
+
 ```
 
 ### 3.2 Golang实现
@@ -157,6 +158,7 @@ func NewClient(target Target) *Client {
 func (c *Client) UseTarget() string {
     return c.target.Request()
 }
+
 ```
 
 ### 3.3 性能分析
@@ -184,6 +186,7 @@ classDiagram
     Abstraction --> Implementation
     RefinedAbstraction --|> Abstraction
     ConcreteImplementation --|> Implementation
+
 ```
 
 ### 4.2 Golang实现
@@ -251,6 +254,7 @@ func NewExtendedAbstraction(impl Implementation) *ExtendedAbstraction {
 func (e *ExtendedAbstraction) Operation() string {
     return fmt.Sprintf("Extended: %s", e.implementation.OperationImpl())
 }
+
 ```
 
 ### 4.3 性能分析
@@ -410,6 +414,7 @@ func (c *SafeComposite) GetName() string {
 func (c *SafeComposite) AddChild(child SafeComponent) {
     c.children = append(c.children, child)
 }
+
 ```
 
 ### 5.3 性能分析
@@ -543,6 +548,7 @@ func (c *CachingComponent) Operation() string {
     c.cache[key] = result
     return result
 }
+
 ```
 
 ### 6.3 性能分析
@@ -672,6 +678,7 @@ func (c *ConfigFacade) ExecuteOperation(operation string) string {
     }
     return "Unknown operation"
 }
+
 ```
 
 ### 7.3 性能分析
@@ -715,6 +722,7 @@ classDiagram
     FlyweightFactory --> Flyweight
     Flyweight <|-- ConcreteFlyweight
     Flyweight <|-- UnsharedConcreteFlyweight
+
 ```
 
 ### 8.2 Golang实现
@@ -844,6 +852,7 @@ func (f *StringFlyweightFactory) GetString(content string) *StringFlyweight {
     f.strings[content] = str
     return str
 }
+
 ```
 
 #### 8.2.2 图形渲染系统实例
@@ -966,6 +975,7 @@ func (f *ShapeFactory) GetShape(shapeType string) Shape {
     f.shapes[shapeType] = shape
     return shape
 }
+
 ```
 
 #### 8.2.3 字符串池（Golang内置享元）
@@ -1011,6 +1021,7 @@ func main() {
     // 使用buffer
     copy(buffer, []byte("data"))
 }
+
 ```
 
 ### 8.3 性能分析
@@ -1061,16 +1072,16 @@ func main() {
            return fw
        }
        f.mu.RUnlock()
-       
+  
        // 写锁
        f.mu.Lock()
        defer f.mu.Unlock()
-       
+  
        // 双重检查，避免重复创建
        if fw, exists := f.flyweights[key]; exists {
            return fw
        }
-       
+  
        fw := NewConcreteFlyweight(key)
        f.flyweights[key] = fw
        return fw
@@ -1083,12 +1094,12 @@ func main() {
    type FlyweightFactory struct {
        flyweights sync.Map
    }
-   
+  
    func (f *FlyweightFactory) GetFlyweight(key string) Flyweight {
        if value, exists := f.flyweights.Load(key); exists {
            return value.(Flyweight)
        }
-       
+  
        fw := NewConcreteFlyweight(key)
        actual, _ := f.flyweights.LoadOrStore(key, fw)
        return actual.(Flyweight)
@@ -1107,7 +1118,7 @@ func main() {
        // 不可变，创建后不能修改
        intrinsicState string
    }
-   
+  
    // 无setter方法，只有getter
    func (f *ImmutableFlyweight) GetIntrinsicState() string {
        return f.intrinsicState
@@ -1143,6 +1154,7 @@ classDiagram
         <<interface>>
         +Request()
     }
+
 ```
 
 ### 9.2 Golang实现
@@ -1214,6 +1226,7 @@ func (p *Proxy) Request() string {
     p.cache["request"] = result
     return result
 }
+
 ```
 
 #### 9.2.2 各种代理类型实现
@@ -1322,6 +1335,7 @@ func (p *LoggingProxy) Request() string {
     p.logger.Log(fmt.Sprintf("Request completed in %s", elapsed))
     return result
 }
+
 ```
 
 #### 9.2.3 代理组合与装饰器模式结合
@@ -1425,6 +1439,7 @@ func WithAccess(user, role string) func(Subject) Subject {
         return NewProtectionProxy(subject, user, role)
     }
 }
+
 ```
 
 ### 9.3 性能分析
@@ -1466,11 +1481,11 @@ func WithAccess(user, role string) func(Subject) Subject {
        result := subject.Request()
        fmt.Println(result)
    }
-   
+  
    // 可以传入真实主题或代理
    realSubject := NewRealSubject("example")
    proxy := NewProxy(realSubject)
-   
+  
    ClientCode(realSubject) // 使用真实主题
    ClientCode(proxy)       // 使用代理
    ```
@@ -1480,7 +1495,7 @@ func WithAccess(user, role string) func(Subject) Subject {
    ```go
    // 组合多个代理功能
    subject := NewRealSubject("data")
-   
+  
    // 自底向上叠加代理功能
    chain := NewProxyChain(
        subject,
@@ -1489,7 +1504,7 @@ func WithAccess(user, role string) func(Subject) Subject {
        WithMetrics,              // 指标层
        WithAccess("user", "admin"), // 访问控制层
    )
-   
+  
    result := chain.Request()
    ```
 
@@ -1500,7 +1515,7 @@ func WithAccess(user, role string) func(Subject) Subject {
    type ContextAwareProxy struct {
        realSubject Subject
    }
-   
+  
    func (p *ContextAwareProxy) RequestWithContext(ctx context.Context) (string, error) {
        // 检查上下文是否已取消
        select {
@@ -1509,7 +1524,7 @@ func WithAccess(user, role string) func(Subject) Subject {
        default:
            // 继续处理
        }
-       
+  
        return p.realSubject.Request(), nil
    }
    ```
@@ -1523,7 +1538,7 @@ func WithAccess(user, role string) func(Subject) Subject {
        if typ.Kind() != reflect.Ptr {
            panic("Expected pointer type")
        }
-       
+  
        proxyType := reflect.StructOf([]reflect.StructField{
            {
                Name: "RealObject",
@@ -1531,10 +1546,10 @@ func WithAccess(user, role string) func(Subject) Subject {
                Tag:  `json:"-"`,
            },
        })
-       
+  
        proxy := reflect.New(proxyType).Elem()
        proxy.Field(0).Set(reflect.ValueOf(realObject))
-       
+  
        return proxy.Addr().Interface()
    }
    ```
@@ -1583,6 +1598,7 @@ type BaseComponent struct{}
 func (b *BaseComponent) Operation() string {
     return "Base operation"
 }
+
 ```
 
 #### 10.2.2 组合优于继承
@@ -1596,6 +1612,7 @@ type Decorator struct {
 func (d *Decorator) Operation() string {
     return d.component.Operation()
 }
+
 ```
 
 #### 10.2.3 线程安全
@@ -1623,6 +1640,7 @@ func (p *ThreadSafeProxy) Request() string {
     p.cache["request"] = result
     return result
 }
+
 ```
 
 ### 10.3 性能优化建议

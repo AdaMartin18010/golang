@@ -73,6 +73,7 @@ pub trait Future {
     type Output;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 这个接口体现了几个关键设计决策：
@@ -100,6 +101,7 @@ enum ExampleStateMachine {
     WritePending(TcpStream),
     Completed,
 }
+
 ```
 
 这种状态机转换保留了变量的所有权信息，确保内存安全，同时最小化运行时开销。
@@ -113,6 +115,7 @@ struct SelfReferential {
     data: String,
     ptr_to_data: *const u8,
 }
+
 ```
 
 在异步状态机中，局部变量可能包含指向自身其他部分的指针。`Pin`通过以下机制解决这一问题：
@@ -173,6 +176,7 @@ fn async_stream<T: Clone>(data: Vec<T>) -> impl Stream<Item = T> {
         }
     }
 }
+
 ```
 
 这种变革具有多重意义：
@@ -202,6 +206,7 @@ fn process<'a>(data: &'a [u8]) -> impl Iterator<Item = u8> + 'a {
 fn process(data: &[u8]) -> impl Iterator<Item = u8> {
     data.iter().map(|&b| b + 1)
 }
+
 ```
 
 这一改进具有双面性：
@@ -235,6 +240,7 @@ trait OldAsyncProcessor {
 trait AsyncProcessor {
     async fn process(&self, data: &[u8]) -> Result<(), Error>;
 }
+
 ```
 
 这一特性有重要意义：
@@ -289,6 +295,7 @@ async fn resource_management_example() -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 **关键考量**：
@@ -314,6 +321,7 @@ async fn managed_stream() -> impl Stream<Item = Result<Data, Error>> {
         // 资源在此自动释放
     }
 }
+
 ```
 
 ### 3.2 错误处理与传播机制
@@ -336,6 +344,7 @@ async fn error_handling() -> Result<(), Error> {
         }
     }
 }
+
 ```
 
 **关键考量**：
@@ -366,6 +375,7 @@ async fn error_stream() -> impl Stream<Item = Result<Data, Error>> {
         }
     }
 }
+
 ```
 
 ### 3.3 并发控制与背压机制
@@ -398,6 +408,7 @@ async fn controlled_concurrency<T>(
     
     results
 }
+
 ```
 
 **关键考量**：
@@ -435,6 +446,7 @@ async fn backpressure_stream<T>(
         }
     }
 }
+
 ```
 
 ### 3.4 可测试性与调试技术
@@ -456,6 +468,7 @@ async fn test_async_function() {
     assert!(result.is_ok());
     assert_eq!(result.unwrap(), "expected value");
 }
+
 ```
 
 **关键考量**：
@@ -488,6 +501,7 @@ async fn test_with_time_control() {
     assert!(result.is_err());
     assert_matches!(result.unwrap_err(), TimeoutError);
 }
+
 ```
 
 ## 四、运行时生态与互操作性
@@ -521,6 +535,7 @@ fn start_tokio_runtime() {
         // 异步代码在这里
     });
 }
+
 ```
 
 Tokio采用基于work-stealing的任务调度，与Go的协程调度器类似，但具有更细粒度的控制选项。
@@ -556,6 +571,7 @@ async fn combined_function() -> Result<(), Error> {
     function_from_lib_b().await?; // 可能需要适配层
     Ok(())
 }
+
 ```
 
 ### 4.3 标准化努力与前景
@@ -601,6 +617,7 @@ pub extern "C" fn process_async(data: *const u8, len: usize, callback: extern "C
         }
     });
 }
+
 ```
 
 **关键挑战**：
@@ -629,6 +646,7 @@ Rust异步代码的编译过程存在显著开销：
 $ cargo build --release
    Compiling async-heavy-project v0.1.0
     Finished release [optimized] target(s) in 3m 42s
+
 ```
 
 ### 5.2 运行时性能特征
@@ -691,6 +709,7 @@ async fn cpu_intensive_task(data: &[u8]) -> Result<Vec<u8>, Error> {
         compute_hash(data)
     }).await?
 }
+
 ```
 
 其他关键优化：
@@ -739,6 +758,7 @@ impl SelfReferential {
         self.ptr
     }
 }
+
 ```
 
 ### 6.2 学习路径规划
@@ -814,6 +834,7 @@ enum ExampleStateMachine {
     WaitingOnWrite(TcpStream, WriteFuture),
     Done,
 }
+
 ```
 
 这种状态机模型让开发者能够更准确地理解异步代码的工作方式。
@@ -841,6 +862,7 @@ async fn get_user(path: web::Path<u64>, db: web::Data<DbPool>) -> Result<HttpRes
         None => Ok(HttpResponse::NotFound().finish()),
     }
 }
+
 ```
 
 **优势分析**：
@@ -892,6 +914,7 @@ async fn process_data_stream(source: impl Stream<Item = Result<Data, Error>>) ->
     
     Ok(final_stats)
 }
+
 ```
 
 **优势分析**：
@@ -926,6 +949,7 @@ async fn control_motor(mut motor: Motor) {
         Timer::after(Duration::from_millis(100)).await;
     }
 }
+
 ```
 
 **优势分析**：
@@ -1003,6 +1027,7 @@ async fn main() -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 **优势分析**：
@@ -1060,6 +1085,7 @@ async fn authenticate(username: &str, password: &str) -> Result<User, AuthError>
     
     result
 }
+
 ```
 
 ### 8.3 生态系统整合
@@ -1094,6 +1120,7 @@ impl AsyncRead for MyReader {
         // 实现可适配不同运行时
     }
 }
+
 ```
 
 ### 8.4 跨平台发展
@@ -1118,6 +1145,7 @@ pub async fn process_data(data: &[u8]) -> Result<JsValue, JsError> {
     // 转换为JavaScript可理解的值
     Ok(serde_wasm_bindgen::to_value(&result)?)
 }
+
 ```
 
 ## 九、综合评价
@@ -1384,4 +1412,5 @@ Rust异步编程全景分析
         ├── 接口统一推进
         ├── 开发体验改善
         └── 生态整合促进
+
 ```

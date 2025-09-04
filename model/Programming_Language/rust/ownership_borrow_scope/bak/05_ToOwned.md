@@ -4,19 +4,6 @@
 - [1 1 1 1 1 1 1 to_owned](#1-1-1-1-1-1-1-to_owned)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`to_owned` 是一个方法，通常与 `Borrow` trait 配合使用。
 它用于创建某个值的 "拥有" 版本（owned version），即该值的独立副本，而不是引用。
 `to_owned` 方法本身并不直接转移所有权，但它可以用来创建一个可以拥有的新值。
@@ -28,6 +15,7 @@ trait ToOwned {
     type Owned: Borrow<Self>;
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 **应用**：
@@ -42,6 +30,7 @@ use std::borrow::Cow;
 
 let borrowed = Cow::Borrowed("hello");
 let owned: String = borrowed.to_owned(); // 创建 "hello" 的 String 类型的独立副本
+
 ```
 
 在这个例子中，`to_owned` 方法被调用来创建 `String` 类型的值，它拥有自己的数据副本。
@@ -54,6 +43,7 @@ let owned: String = borrowed.to_owned(); // 创建 "hello" 的 String 类型的�
 ```rust
 let s = String::from("hello");
 let s2 = s; // s 的所有权被转移到 s2，s 不再可用
+
 ```
 
 在这个例子中，`s` 的所有权被直接转移到了 `s2`，这是通过值的移动来实现的，而不是通过 `to_owned`。

@@ -52,6 +52,7 @@
 我会以markdown格式输出，包含目录结构，并尽量提供一个文本形式的思维导图。
 我不会包含外部链接，并会全部使用中文回答。
 </think>
+
 ```
 
 - [1 1 1 1 1 1 1 OpenTelemetry工作流编排架构详解](#1-1-1-1-1-1-1-opentelemetry工作流编排架构详解)
@@ -129,6 +130,7 @@ OpenTelemetry系统架构采用分层模型，以确保各组件的解耦和可�
 │  │ OTLP导出  │  │ 标准导出  │  │ 自定义导出    │   │
 │  └───────────┘  └───────────┘  └───────────────┘   │
 └─────────────────────────────────────────────────────┘
+
 ```
 
 ### 1.2.1 组件层次结构
@@ -144,6 +146,7 @@ OpenTelemetry系统架构采用分层模型，以确保各组件的解耦和可�
 
 ```text
 应用程序 → API → SDK → 处理器(采样/聚合) → 导出器 → 后端存储
+
 ```
 
 ## 1.3 3. 工作流编排核心机制
@@ -175,6 +178,7 @@ Provider是OpenTelemetry中的核心编排机制，负责创建和管理资源�
 ┌────────────┐    ┌────────────┐    ┌────────────┐    ┌────────────┐
 │  收集器    │ → │  处理器1   │ → │  处理器2   │ → │  导出器    │
 └────────────┘    └────────────┘    └────────────┘    └────────────┘
+
 ```
 
 ## 1.4 4. 数据流转与形式转换
@@ -212,6 +216,7 @@ OpenTelemetry工作流中最关键的部分是数据的流转和形式转换，�
 │ SpanId: 1  │    │ SpanId: 2  │    │ SpanId: 3  │
 │ ParentId:0 │    │ ParentId:1 │    │ ParentId:2 │
 └────────────┘    └────────────┘    └────────────┘
+
 ```
 
 ## 1.5 5. 组件组合与聚合关系
@@ -286,6 +291,7 @@ fn init_tracer() -> opentelemetry::sdk::trace::Tracer {
         .install_batch(opentelemetry::runtime::Tokio)
         .expect("Failed to initialize tracer")
 }
+
 ```
 
 ### 1.6.2 工作流编排应用示例
@@ -345,6 +351,7 @@ fn perform_subtask_b(tracer: &opentelemetry::sdk::trace::Tracer) {
         cx.span().set_attribute(Key::new("result").string("success"));
     });
 }
+
 ```
 
 ### 1.6.3 处理器链设计示例
@@ -402,6 +409,7 @@ fn setup_tracer_with_processors() -> opentelemetry::sdk::trace::Tracer {
         .build()
         .tracer("component-library")
 }
+
 ```
 
 ## 1.7 7. 最新理念与发展趋势
@@ -473,6 +481,7 @@ OpenTelemetry工作流编排
     ├── 自动检测
     ├── 资源优化
     └── AI辅助分析
+
 ```
 
 OpenTelemetry的工作流编排体现了现代可观测性系统的复杂性和灵活性，通过标准化的接口、可插拔的组件和灵活的处理管道，实现了高效可靠的遥测数据收集和处理。它的架构设计不仅支持当前的分布式系统监控需求，也为未来的扩展和创新提供了坚实基础。

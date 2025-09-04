@@ -20,19 +20,6 @@
   - [1.4 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Go 1.25 云原生架构深度分析](#go-125-云原生架构深度分析)
@@ -138,6 +125,7 @@ type ApplicationList struct {
     metav1.ListMeta `json:"metadata"`
     Items []Application `json:"items"`
 }
+
 ```
 
 #### 1.2.1.2 Operator控制器
@@ -322,6 +310,7 @@ func (r *ApplicationReconciler) SetupWithManager(mgr ctrl.Manager) error {
         Owns(&corev1.Service{}).
         Complete(r)
 }
+
 ```
 
 ### 1.2.2 Kubernetes客户端库
@@ -371,6 +360,7 @@ func (dkc *DynamicK8sClient) DeleteResource(gvr schema.GroupVersionResource, nam
 func (dkc *DynamicK8sClient) ListResources(gvr schema.GroupVersionResource, namespace string, opts metav1.ListOptions) (*unstructured.UnstructuredList, error) {
     return dkc.dynamicClient.Resource(gvr).Namespace(namespace).List(context.Background(), opts)
 }
+
 ```
 
 #### 1.2.2.2 资源监控
@@ -439,6 +429,7 @@ func (rw *ResourceWatcher) handleEvent(event watch.Event) {
         }
     }
 }
+
 ```
 
 ## 1.3 Service Mesh实现
@@ -519,6 +510,7 @@ func (ic *IstioClient) CreateDestinationRule(name, host string, subsets []string
     
     return ic.client.Create(context.Background(), destinationRule)
 }
+
 ```
 
 #### 1.3.1.2 流量管理
@@ -594,6 +586,7 @@ func (tm *TrafficManager) CreateCircuitBreaker(serviceName string, maxConnection
     
     return tm.istioClient.client.Create(context.Background(), destinationRule)
 }
+
 ```
 
 ### 1.3.2 服务发现与负载均衡
@@ -704,6 +697,7 @@ func (sr *ServiceRegistry) notifyWatchers(service *ServiceInfo, event string) {
         }
     }
 }
+
 ```
 
 #### 1.3.2.2 负载均衡器
@@ -802,6 +796,7 @@ func (lb *LoadBalancer) SelectService(serviceName string) (*ServiceInfo, error) 
     
     return lb.strategy.Select(healthyServices), nil
 }
+
 ```
 
 ## 1.4 总结

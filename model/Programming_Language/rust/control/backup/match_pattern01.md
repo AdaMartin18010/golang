@@ -39,19 +39,6 @@
     - [1.1.26 5. 总结](#5-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`@` 是一个用于模式匹配的符号，称为绑定操作符（`binding operator`）。
 它的主要用途是在匹配的过程中，将值绑定到一个变量，同时又对这个值进行某种检查。
 以下是对 `@` 的详细解释和示例：
@@ -80,6 +67,7 @@ match msg {
         println!("Found some other id: {}", id);
     }
 }
+
 ```
 
 在这个例子中：
@@ -98,6 +86,7 @@ match tuple {
     }
     _ => (),
 }
+
 ```
 
 在这个例子中：
@@ -116,6 +105,7 @@ match tuple {
 
 ```rust
 pattern = variable @ subpattern
+
 ```
 
 其中：
@@ -147,6 +137,7 @@ match tuple {
     (_, 2, .., 4) => println!("匹配到第二个元素是 2，最后一个元素是 4"),
     _ => println!("未匹配"),
 }
+
 ```
 
 ### 1.1.7 **2. `_`（通配符）**
@@ -161,6 +152,7 @@ match x {
     0 => println!("零"),
     _ => println!("非零"), // 匹配所有其他情况
 }
+
 ```
 
 ### 1.1.8 **3. `ref` 和 `ref mut`**
@@ -175,6 +167,7 @@ match &x {
     ref mut num => *num += 1, // 修改引用
 }
 println!("Modified x: {}", x);
+
 ```
 
 ### 1.1.9 **4. `$`（宏中的占位符）**
@@ -189,6 +182,7 @@ macro_rules! my_macro {
         y
     };
 }
+
 ```
 
 ### 1.1.10 **5. `|`（管符）**
@@ -203,6 +197,7 @@ match x {
     0 | 1 => println!("零或一"),
     _ => println!("其他"),
 }
+
 ```
 
 ### 1.1.11 **6. `@`（绑定操作符）**
@@ -223,6 +218,7 @@ match msg {
     }
     _ => (),
 }
+
 ```
 
 ### 1.1.12 总结
@@ -250,6 +246,7 @@ fn main() {
     }
     // pair 的值已经被修改
 }
+
 ```
 
 在这个例子中，`ref mut x` 和 `ref mut y` 分别创建了 `pair` 中两个元素的可变引用，允许在匹配块中修改它们的值。
@@ -267,6 +264,7 @@ fn main() {
         println!("Found a value: {}", x); // 输出: Found a value: 43
     }
 }
+
 ```
 
 在这个例子中，`ref mut x` 创建了 `some_value` 中值的可变引用，允许在 `if let` 块中修改它的值。
@@ -287,6 +285,7 @@ fn main() {
     increment_tuple(&mut pair); // 传递 pair 的可变引用
     println!("pair: {:?}", pair); // 输出: pair: (11, 21)
 }
+
 ```
 
 在这个例子中，`increment_tuple` 函数接收一个元组的可变引用，并在函数内部修改元组中的值。
@@ -305,6 +304,7 @@ fn main() {
     println!("x: {}, y: {}", x, y); // 输出: x: 11, y: 21
     println!("{:?}", pair); // (11, 21)
 }
+
 ```
 
 在这个例子中，`let (ref mut x, ref mut y) = pair` 创建了 `pair` 中两个元素的可变引用，允许在后续代码中修改它们的值。
@@ -335,6 +335,7 @@ fn main() {
     *y_ref += 2;
     println!("New x: {}, New y: {}", x_ref, y_ref); // 输出: New x: 43, New y: 7
 }
+
 ```
 
 ### 1.1.19 **2. 在函数参数中使用 `ref mut`**
@@ -354,6 +355,7 @@ fn main() {
     increment_values(&mut tuple);
     println!("{:?}", tuple); // 输出: (4, 7)
 }
+
 ```
 
 ### 1.1.20 **3. 在 `if let` 或 `while let` 中使用 `ref mut`**
@@ -370,6 +372,7 @@ fn main() {
     }
     println!("a: {:?}", a); // 输出: a: Some(15)
 }
+
 ```
 
 ### 1.1.21 **-总结-**
@@ -408,6 +411,7 @@ fn main() {
     println!("Circle area: {}", area(circle));
     println!("Rectangle area: {}", area(rectangle));
 }
+
 ```
 
 ### 1.1.23 2. 组合类型

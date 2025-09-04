@@ -137,6 +137,7 @@ func partition(arr []int, low, high int) int {
     arr[i+1], arr[high] = arr[high], arr[i+1]
     return i + 1
 }
+
 ```
 
 #### 2.1.2 归并排序
@@ -190,6 +191,7 @@ func merge(left, right []int) []int {
     
     return result
 }
+
 ```
 
 ### 2.2 搜索算法
@@ -201,7 +203,7 @@ func merge(left, right []int) []int {
 \text{mid} & \text{if } A[\text{mid}] = x \\
 \text{BinarySearch}(A[:\text{mid}], x) & \text{if } A[\text{mid}] > x \\
 \text{BinarySearch}(A[\text{mid}+1:], x) & \text{if } A[\text{mid}] < x \\
--1 & \text{if } \text{not found}
+- 1 & \text{if } \text{not found}
 \end{cases} \]
 
 **复杂度分析**:
@@ -247,6 +249,7 @@ func BinarySearchRecursive(arr []int, target, left, right int) int {
         return BinarySearchRecursive(arr, target, left, mid-1)
     }
 }
+
 ```
 
 ### 2.3 动态规划算法
@@ -303,6 +306,7 @@ func fibonacciMemoHelper(n int, memo map[int]int) int {
     memo[n] = fibonacciMemoHelper(n-1, memo) + fibonacciMemoHelper(n-2, memo)
     return memo[n]
 }
+
 ```
 
 ## 3. 并发算法分析
@@ -377,6 +381,7 @@ func (c *Channel) Receive() (interface{}, error) {
     c.buffer = c.buffer[1:]
     return value, nil
 }
+
 ```
 
 ### 3.2 经典并发问题
@@ -448,6 +453,7 @@ func (pc *ProducerConsumer) consumer(id int) {
         time.Sleep(time.Millisecond * 200)
     }
 }
+
 ```
 
 #### 3.2.2 读者-写者问题
@@ -525,6 +531,7 @@ func ReaderWriterExample() {
     
     time.Sleep(time.Second * 5)
 }
+
 ```
 
 #### 3.2.3 哲学家进餐问题
@@ -624,6 +631,7 @@ func (p *Philosopher) eat() {
     p.rightChop.mutex.Unlock()
     p.leftChop.mutex.Unlock()
 }
+
 ```
 
 ### 3.3 无锁算法
@@ -710,6 +718,7 @@ func (q *LockFreeQueue) Dequeue() (interface{}, bool) {
         }
     }
 }
+
 ```
 
 ## 4. 分布式算法分析
@@ -814,6 +823,7 @@ func (r *RaftNode) RequestVote(candidateID, term, lastLogIndex, lastLogTerm int)
     
     return false
 }
+
 ```
 
 ### 4.2 分布式哈希表
@@ -890,6 +900,7 @@ func (ch *ConsistentHash) hash(key string) uint32 {
     h.Write([]byte(key))
     return h.Sum32()
 }
+
 ```
 
 ## 5. 图算法分析
@@ -983,6 +994,7 @@ func (g *Graph) AddEdge(from, to int, weight float64) {
         g.vertices[to].neighbors[from] = reverseEdge
     }
 }
+
 ```
 
 ### 5.2 图遍历算法
@@ -1055,6 +1067,7 @@ func (g *Graph) DFSIterative(startID int) []int {
     
     return result
 }
+
 ```
 
 #### 5.2.2 广度优先搜索 (BFS)
@@ -1104,6 +1117,7 @@ func (g *Graph) BFS(startID int) []int {
     
     return result
 }
+
 ```
 
 ### 5.3 最短路径算法
@@ -1168,6 +1182,7 @@ func (g *Graph) Dijkstra(startID int) map[int]float64 {
     
     return distances
 }
+
 ```
 
 ## 6. 算法优化策略
@@ -1221,6 +1236,7 @@ func min(a, b int) int {
     }
     return b
 }
+
 ```
 
 ### 6.2 并行算法
@@ -1312,6 +1328,7 @@ func mergeInPlace(arr []int, mid int) {
         k++
     }
 }
+
 ```
 
 ## 7. 性能分析与基准测试
@@ -1391,6 +1408,7 @@ func generateRandomArray(size int) []int {
     }
     return arr
 }
+
 ```
 
 ## 8. 最佳实践与总结

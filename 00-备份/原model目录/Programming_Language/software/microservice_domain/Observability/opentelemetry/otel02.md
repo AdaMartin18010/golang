@@ -18,6 +18,7 @@
 
 这是一个全面的问题，我需要确保在回答中涵盖OpenTelemetry的所有重要方面，同时保持清晰和有条理。
 </think>
+
 ```
 
 ## 目录
@@ -93,6 +94,7 @@ OpenTelemetry
     ├── 自动检测
     ├── 统一配置
     └── AI 辅助分析
+
 ```
 
 ## 1. OpenTelemetry 基础概念
@@ -252,6 +254,7 @@ SDK 层
 Collector
   ↓
 后端系统
+
 ```
 
 ### 5.2 水平组合
@@ -358,6 +361,7 @@ fn perform_work() {
     // 模拟工作
     std::thread::sleep(std::time::Duration::from_millis(100));
 }
+
 ```
 
 ### 6.2 指标收集示例
@@ -450,6 +454,7 @@ fn perform_work() {
     let duration = 50 + (rand::random::<u8>() % 100);
     std::thread::sleep(Duration::from_millis(duration as u64));
 }
+
 ```
 
 ### 6.3 上下文传播示例
@@ -559,6 +564,7 @@ fn init_tracer() -> Result<sdktrace::Tracer, Box<dyn Error>> {
     // 返回追踪器
     Ok(provider.tracer("context-propagation-example"))
 }
+
 ```
 
 ## 7. 最新演进与发展趋势

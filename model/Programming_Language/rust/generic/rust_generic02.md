@@ -35,19 +35,6 @@
     - [1.9.3 递归与泛型](#递归与泛型)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>这个问题要求我提供关于Rust泛型的全面分析，包含多个方面：
 
@@ -69,6 +56,7 @@
 
 要求以markdown格式输出，并且包含目录。这是一个很全面的Rust泛型主题，我需要从基础知识开始，然后逐步深入到更复杂的应用场景。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -138,6 +126,7 @@ enum Result<T, E> {
     Ok(T),
     Err(E),
 }
+
 ```
 
 ### 1.2.2 类型推导机制
@@ -153,12 +142,14 @@ fn main() {
     let p1 = Point::new(1, 2); // T被推导为i32
     let p2 = Point::new(1.0, 2.0); // T被推导为f64
 }
+
 ```
 
 当编译器无法推导时，需要显式指定类型：
 
 ```rust
 let result: Result<i32, String> = Ok(42);
+
 ```
 
 ### 1.2.3 泛型约束
@@ -185,6 +176,7 @@ where
     println!("{}", u);
     t
 }
+
 ```
 
 ### 1.2.4 泛型参数默认值
@@ -200,6 +192,7 @@ fn main() {
     let c1 = Container { value: 42 }; // 使用默认类型i32
     let c2: Container<String> = Container { value: String::from("hello") }; // 指定类型
 }
+
 ```
 
 ## 1.3 2. 泛型与Trait系统
@@ -229,6 +222,7 @@ impl Printable for Person {
 fn print_anything<T: Printable>(item: T) {
     item.print();
 }
+
 ```
 
 ### 1.3.2 关联类型
@@ -260,6 +254,7 @@ impl Iterator for Counter {
         }
     }
 }
+
 ```
 
 关联类型与泛型参数的区别：
@@ -291,6 +286,7 @@ impl Converter<f64> for Number {
         self.0 as f64
     }
 }
+
 ```
 
 ## 1.4 3. 生命周期与泛型
@@ -309,6 +305,7 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
 struct Excerpt<'a> {
     part: &'a str,
 }
+
 ```
 
 ### 1.4.2 生命周期参数约束
@@ -320,6 +317,7 @@ struct Excerpt<'a> {
 fn annotated<'a, T: std::fmt::Display>(x: &'a T, y: &'a T) -> &'a T {
     if format!("{}", x).len() > format!("{}", y).len() { x } else { y }
 }
+
 ```
 
 ### 1.4.3 高级生命周期技巧
@@ -343,6 +341,7 @@ impl<'a, T: 'a> StrWrapper<'a> {
         t
     }
 }
+
 ```
 
 ## 1.5 4. 编译期计算与常量泛型
@@ -368,6 +367,7 @@ fn main() {
     let arr1 = Array::new([1, 2, 3]);      // N = 3
     let arr2 = Array::new([1, 2, 3, 4, 5]); // N = 5
 }
+
 ```
 
 ### 1.5.2 const fn与编译期求值
@@ -395,6 +395,7 @@ impl<const N: u32> Factorial<N> {
 }
 
 const FACT_5: Factorial<5> = Factorial::<5>::new();
+
 ```
 
 ## 1.6 5. 泛型编程模式与技巧
@@ -414,6 +415,7 @@ fn main() {
     process(42);       // 处理i32版本
     process("hello");  // 处理&str版本
 }
+
 ```
 
 ### 1.6.2 静态分派vs动态分派
@@ -438,6 +440,7 @@ fn main() {
     dynamic_dispatch(&42);      // 运行时决定调用哪个方法
     dynamic_dispatch(&"hello"); // 运行时决定调用哪个方法
 }
+
 ```
 
 ### 1.6.3 泛型设计模式
@@ -468,6 +471,7 @@ impl RequestBuilder<()> {
         }
     }
 }
+
 ```
 
 ## 1.7 6. 泛型在多线程编程中的应用
@@ -500,6 +504,7 @@ impl<T: Copy + std::ops::AddAssign<T>> ThreadSafeCounter<T> {
         *self.value.lock().unwrap()
     }
 }
+
 ```
 
 ### 1.7.2 Send与Sync特性
@@ -519,6 +524,7 @@ where
 fn share_between_threads<T: Send + Sync + 'static>(value: T) -> Arc<T> {
     Arc::new(value)
 }
+
 ```
 
 ## 1.8 7. 泛型在异步编程中的应用
@@ -541,6 +547,7 @@ where
 {
     future.await
 }
+
 ```
 
 ### 1.8.2 泛型在异步执行器中的应用
@@ -566,6 +573,7 @@ impl<F: std::future::Future<Output = ()>> SimpleExecutor<F> {
         // 执行所有Future
     }
 }
+
 ```
 
 ## 1.9 8. 泛型与算法设计
@@ -585,6 +593,7 @@ fn sort<T: Ord>(mut collection: Vec<T>) -> Vec<T> {
 fn find<T: PartialEq>(collection: &[T], item: &T) -> Option<usize> {
     collection.iter().position(|x| x == item)
 }
+
 ```
 
 ### 1.9.2 迭代器与泛型
@@ -619,6 +628,7 @@ where
 {
     iter.filter_map(f)
 }
+
 ```
 
 ### 1.9.3 递归与泛型
@@ -652,6 +662,7 @@ impl<T> List<T> {
         List::Cons(item, Box::new(self))
     }
 }
+
 ```
 
 以上是Rust泛型的全面介绍，涵盖了从基础概念到高级应用的多个方面。Rust的泛型系统结合其所有权和类型系统，提供了强大而安全的抽象能力，为构建高性能、高可靠性的软件提供了坚实基础。

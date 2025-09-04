@@ -238,6 +238,7 @@ func (d *DefaultHandler) Handle(request Request) bool {
         d.GetName(), request.GetContent(), request.GetPriority())
     return true
 }
+
 ```
 
 ### 3.3.1.4.2 日志处理责任链
@@ -505,6 +506,7 @@ func (l *LogChain) Handle(request *LogRequest) bool {
 func (a *AbstractLogHandler) GetNext() LogHandler {
     return a.next
 }
+
 ```
 
 ### 3.3.1.4.3 HTTP中间件责任链
@@ -793,6 +795,7 @@ func (m *MiddlewareChain) Handle(request *Request, response *Response) bool {
 func (a *AbstractMiddleware) GetNext() Middleware {
     return a.next
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -954,6 +957,7 @@ func (t *TerminationHandler) Handle(exception *Exception) bool {
     
     return t.AbstractExceptionHandler.Handle(exception)
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

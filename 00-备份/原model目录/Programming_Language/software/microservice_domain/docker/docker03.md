@@ -671,7 +671,7 @@ $$C^* = \min\{C_i \in \mathcal{C} | C_i \geq C_{min} \text{ 且 } A_i(S) \geq A_
 
 ### 6.1 可解释性数学基础
 
--**定义 6.1.1 (可解释性)**
+- **定义 6.1.1 (可解释性)**
 
 ```math
 AI系统的可解释性定义为函数 $E: \mathcal{M} \times \mathcal{X} \times \mathcal{Y} \rightarrow \mathcal{Z}$，其中:
@@ -683,21 +683,23 @@ AI系统的可解释性定义为函数 $E: \mathcal{M} \times \mathcal{X} \times
 
 对于模型 $m \in \mathcal{M}$，
 输入 $x \in \mathcal{X}$ 和输出 $y \in \mathcal{Y}$，$E(m, x, y)$ 产生解释 $z \in \mathcal{Z}$。
+
 ```
 
--**可解释性度量 6.1.2:**
+- **可解释性度量 6.1.2:**
 
 1. **简洁性**: 解释的简短程度 $Conciseness(z) = \frac{1}{length(z)}$
 2. **完整性**: 解释覆盖决策因素的程度 $Completeness(z) = \frac{|factors(z)|}{|relevantFactors(m,x,y)|}$
 3. **一致性**: 类似输入产生类似解释的程度 $Consistency(z_1, z_2) = similarity(z_1, z_2)$
 4. **可理解性**: 目标用户理解解释的能力 $Understandability(z, u) = P(understand(u, z))$
 
--**定理 6.1.3 (可解释性与模型复杂度关系)**
+- **定理 6.1.3 (可解释性与模型复杂度关系)**
 
 ```math
 对于一类模型 $\mathcal{M}$，存在可解释性函数 $E$ 和模型复杂度函数 $C$，使得:
 
 $$\forall m_1, m_2 \in \mathcal{M}: C(m_1) < C(m_2) \Rightarrow E(m_1) > E(m_2)$$
+
 ```
 
 **证明:**
@@ -719,10 +721,11 @@ $$\forall m_1, m_2 \in \mathcal{M}: C(m_1) < C(m_2) \Rightarrow E(m_1) > E(m_2)$
 
 ### 6.2 模型透明度量化理论
 
--**定义 6.2.1 (模型透明度)**
+- **定义 6.2.1 (模型透明度)**
 
 ```math
 模型 $m$ 的透明度是一个函数 $T: \mathcal{M} \rightarrow [0,1]$，量化模型内部工作机制的可见性和可理解性。
+
 ```
 
 **透明度分解 6.2.2:** 模型透明度可分解为多个维度:
@@ -740,7 +743,7 @@ $T(m) = \alpha \cdot T_{alg}(m) + \beta \cdot T_{param}(m) + \gamma \cdot T_{com
 
 ```
 
--**定理 6.2.3 (透明度上界)**
+- **定理 6.2.3 (透明度上界)**
 
 ```math
 对于任何模型 $m \in \mathcal{M}$，其透明度存在理论上界，受模型复杂度和人类认知能力的限制:
@@ -748,6 +751,7 @@ $T(m) = \alpha \cdot T_{alg}(m) + \beta \cdot T_{param}(m) + \gamma \cdot T_{com
 $$T(m) \leq \min(f(C(m)), g(H))$$
 
 其中 $f$ 是与模型复杂度 $C(m)$ 相关的递减函数，$g$ 是与人类认知能力 $H$ 相关的函数。
+
 ```
 
 **证明:**
@@ -759,6 +763,7 @@ $$T(m) \leq \min(f(C(m)), g(H))$$
 2. 人类认知限制: 人类认知能力有限，即使模型相对简单，超过一定复杂度后，人类也难以完全理解，即 $g(H)$ 表示人类认知能力对透明度的上限。
 
 模型实际透明度不能超过这两个限制的最小值，因此 $T(m) \leq \min(f(C(m)), g(H))$。
+
 ```
 
 **透明度量化方法 6.2.4:**
@@ -770,12 +775,13 @@ $$T(m) \leq \min(f(C(m)), g(H))$$
 
 ### 6.3 决策过程归因理论
 
--**定义 6.3.1 (决策归因)**
+- **定义 6.3.1 (决策归因)**
 
 ```math
 决策归因是一个函数
  $A: \mathcal{M} \times \mathcal{X} \times \mathcal{Y} \rightarrow 2^{\mathcal{F} \times \mathbb{R}}$，
  将模型决策映射到一组特征及其重要性得分，其中 $\mathcal{F}$ 是特征空间。
+
 ```
 
 **归因公理 6.3.2:** 良好的归因方法应满足以下公理:
@@ -799,7 +805,7 @@ $$T(m) \leq \min(f(C(m)), g(H))$$
 3. **基于博弈论的方法**: 将特征视为博弈中的玩家 (Shapley值)
 4. **反事实方法**: 比较实际输出与假设输入变化后的输出 (反事实解释)
 
--**定理 6.3.5 (归因方法的近似保证)**
+- **定理 6.3.5 (归因方法的近似保证)**
 
 ```math
 对于一类模型 $\mathcal{M}$，存在参数 $\epsilon$ 和样本数 $n$，使得基于采样的Shapley值近似算法以至少 $1-\delta$ 的概率产生不超过 $\epsilon$ 误差的归因值，其中:
@@ -809,6 +815,7 @@ $$n \geq \frac{1}{2\epsilon^2} \ln\frac{2|\
 $$n \geq \frac{1}{2\epsilon^2} \ln\frac{2|\mathcal{F}|}{\delta}$$
 
 其中 $|\mathcal{F}|$ 是特征空间的大小。
+
 ```
 
 **证明:**
@@ -829,11 +836,12 @@ $$P\left(\exists f \in \mathcal{F}: \left|\hat{\phi}_f - \phi_f\right| \geq \eps
 通过标准化特征归因值使 $b-a=1$，并设置右侧小于 $\delta$，解得:
 
 $$n \geq \frac{1}{2\epsilon^2} \ln\frac{2|\mathcal{F}|}{\delta}$$
+
 ```
 
 ### 6.4 可解释性与性能权衡模型
 
--**定义 6.4.1 (可解释性-性能权衡)**
+- **定义 6.4.1 (可解释性-性能权衡)**
 
 ```math
 在模型空间 $\mathcal{M}$ 上，定义可解释性函数 $E: \mathcal{M} \rightarrow [0,1]$ 和性能函数 $P: \mathcal{M} \rightarrow [0,1]$，可解释性-性能前沿定义为:
@@ -843,12 +851,14 @@ $$\mathcal{F} = \{(E(m), P(m)) | m \in \mathcal{M} \text{ 且 } \nexists m' \in 
 **多目标优化问题 6.4.2:** 给定目标权重 $\alpha \in [0,1]$，最优模型为:
 
 $$m^* = \arg\max_{m \in \mathcal{M}} \alpha \cdot E(m) + (1-\alpha) \cdot P(m)$$
+
 ```
 
--**定理 6.4.3 (权衡凸性)**
+- **定理 6.4.3 (权衡凸性)**
 
 ```math
 如果模型空间 $\mathcal{M}$ 足够丰富，则可解释性-性能前沿 $\mathcal{F}$ 是凸的。
+
 ```
 
 **证明:**
@@ -861,6 +871,7 @@ $$P(m_{\lambda}) \approx \lambda P(m_1) + (1-\lambda) P(m_2)$$
 
 这可以通过集成方法、模型蒸馏或混合专家模型实现。
 这样的构造确保了前沿的凸性。实际上，由于模型空间的离散性，前沿可能是近似凸的而非严格凸的。
+
 ```
 
 **权衡优化策略 6.4.4:**
@@ -1419,6 +1430,7 @@ $$Value(D_1 \cup D_2) > Value(D_1) + Value(D_2)$$
         ├── 关键合作领域
         ├── 跨领域协同增益定理
         └── 合作模式设计
+
 ```
 
 ## 11. 形式化证明案例研究
@@ -1455,6 +1467,7 @@ Section IsolationProof.
   (* 证明略 *)
   
 End IsolationProof.
+
 ```
 
 **证明要点:**
@@ -1484,6 +1497,7 @@ End IsolationProof.
   s.t. ∑_i x_i ≤ C
        x_i ≥ 0, ∀i
 有唯一的全局最优解x*，且基于梯度的迭代算法会收敛到x*。
+
 ```
 
 **证明要点:**
@@ -1525,6 +1539,7 @@ LogConsistency ==
 \* 活性属性：如果系统稳定且大多数节点正常工作，最终将提交新的日志条目
 Liveness ==
   []<>(DOMAIN committed' > DOMAIN committed)
+
 ```
 
 **证明要点:**
@@ -1557,6 +1572,7 @@ S = (M, X, D, E)，其中:
 
 验证目标:
 证明系统S满足解释一致性和决策公平性属性。
+
 ```
 
 **证明方法:**

@@ -22,19 +22,6 @@
   - [11.8.1.7 7. 参考与交叉引用](#7-参考与交叉引用)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.8.1.1 1. 概述
 
 本文件系统性梳理 Golang 编程语言的核心语义、类型系统、并发模型、内存管理与模块机制，并与 Rust 进行对比，采用数学、代码、图示等多表征方式，强调工程与架构实践。
@@ -58,10 +45,12 @@ $\mathcal{T}_{Go} = (T, S, I, C)$
 
 ```go
 type Point struct { X float64; Y float64 }
+
 ```
 
 ```rust
 struct Point { x: f64, y: f64 }
+
 ```
 
 ### 11.8.1.2.2 接口与多态
@@ -80,6 +69,7 @@ $\mathcal{I} = (I, M, S)$
 type Reader interface { Read([]byte) (int, error) }
 type File struct{}
 func (f *File) Read(p []byte) (int, error) { /* ... */ }
+
 ```
 
 ### 11.8.1.2.3 并发模型
@@ -104,6 +94,7 @@ $\mathcal{C}_{Go} = (G, Ch, S, P)$
 ch := make(chan int)
 go func() { ch <- 42 }()
 fmt.Println(<-ch)
+
 ```
 
 ### 11.8.1.2.4 内存管理
@@ -126,6 +117,7 @@ fmt.Println(<-ch)
 package geometry
 import "math"
 func Distance(p, q Point) float64 { /* ... */ }
+
 ```
 
 ---
@@ -147,6 +139,7 @@ func Distance(p, q Point) float64 { /* ... */ }
 ```go
 f, err := os.Open("file.txt")
 if err != nil { log.Fatal(err) }
+
 ```
 
 ### 11.8.1.3.3 泛型（Go 1.18+）
@@ -158,6 +151,7 @@ if err != nil { log.Fatal(err) }
 
 ```go
 func Map[T any](s []T, f func(T) T) []T { /* ... */ }
+
 ```
 
 ### 11.8.1.3.4 反射与元编程
@@ -175,6 +169,7 @@ func Map[T any](s []T, f func(T) T) []T { /* ... */ }
 graph TD
   A[Goroutine A] --发送--> Ch[Channel]
   B[Goroutine B] --接收--> Ch
+
 ```
 
 ### 11.8.1.4.2 接口实现关系
@@ -183,6 +178,7 @@ graph TD
 graph TD
   File --实现--> Reader
   Buffer --实现--> Reader
+
 ```
 
 ---
@@ -218,4 +214,4 @@ graph TD
 
 ---
 
-*本文件持续更新，确保与工程最佳实践和学术规范一致。*
+* 本文件持续更新，确保与工程最佳实践和学术规范一致。*

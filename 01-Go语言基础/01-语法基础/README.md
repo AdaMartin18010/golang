@@ -79,15 +79,20 @@
 ### 1.1.1.4.1 **环境准备**
 
 ```bash
+
 # 1.1.2 安装Go语言
+
 # 1.1.3 下载地址: https://golang.org/dl/
 
 # 1.1.4 验证安装
+
 go version
 
 # 1.1.5 设置GOPATH (可选，Go 1.11+推荐使用Go Modules)
+
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
+
 ```
 
 ### 1.1.1.4.2 **第一个程序**
@@ -101,12 +106,14 @@ import "fmt"
 func main() {
     fmt.Println("Hello, Go!")
 }
+
 ```
 
 ### 1.1.1.4.3 **运行程序**
 
 ```bash
 go run hello.go
+
 ```
 
 ## 1.1.1.5 📊 **学习进度**

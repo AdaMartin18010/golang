@@ -15,6 +15,7 @@
 
 我将以Markdown格式输出，并创建一个思维导图来展示系统的各个组件和它们之间的关系。
 </think>
+
 ```
 
 ## 目录
@@ -101,6 +102,7 @@ pub enum WorkflowStrategy {
     Parallel(usize), // 最大并行度
     DAG(DirectedAcyclicGraph),
 }
+
 ```
 
 ### 分层架构模式
@@ -166,6 +168,7 @@ mod api {
         }
     }
 }
+
 ```
 
 ### 演化与迭代模型
@@ -198,6 +201,7 @@ pub mod v1 {
 pub mod v2 {
     pub struct WorkflowAPI { /* v2 实现，包含向后兼容逻辑 */ }
 }
+
 ```
 
 ## 系统架构
@@ -271,6 +275,7 @@ impl ExecutionEngine {
         Ok(())
     }
 }
+
 ```
 
 ### 协调层
@@ -348,6 +353,7 @@ impl StateReplicationManager {
         Ok(value)
     }
 }
+
 ```
 
 ### 服务层
@@ -434,6 +440,7 @@ impl MonitoringService {
         }
     }
 }
+
 ```
 
 ### 接口层
@@ -506,6 +513,7 @@ impl WorkflowService for GrpcApiServer {
     
     // 其他gRPC方法实现...
 }
+
 ```
 
 ## 组件设计与实现
@@ -604,6 +612,7 @@ impl WorkflowEngine {
         Ok(results)
     }
 }
+
 ```
 
 ### 状态管理系统
@@ -695,6 +704,7 @@ enum TransactionOp {
     Put { key: Vec<u8>, value: Vec<u8> },
     Delete { key: Vec<u8> },
 }
+
 ```
 
 ### 共识协调器
@@ -824,6 +834,7 @@ impl RaftNode {
         Ok(())
     }
 }
+
 ```
 
 ### 调度系统
@@ -961,6 +972,7 @@ impl<T> WorkQueue<T> {
         }
     }
 }
+
 ```
 
 ## 数据模型与存储
@@ -1091,6 +1103,7 @@ pub trait EventDatabase: Send + Sync {
     async fn get_events(&self, stream_id: &str, start_sequence: u64) -> Result<Vec<EventRecord>, EventStoreError>;
     async fn get_stream_sequence(&self, stream_id: &str) -> Result<u64, EventStoreError>;
 }
+
 ```
 
 ### CQRS模式实现
@@ -1238,6 +1251,7 @@ pub struct PaginatedResult<T> {
     pub page: usize,
     pub page_size: usize,
 }
+
 ```
 
 ### 分布式存储策略
@@ -1447,6 +1461,7 @@ impl DistributedStorageManager {
         versioned_value
     }
 }
+
 ```
 
 ## 通信与协议
@@ -1573,6 +1588,7 @@ pub trait MessagePublisher: Send + Sync {
 pub trait MessageSubscriber: Send + Sync {
     async fn handle_message(&self, message: &Message) -> Result<(), MessageBusError>;
 }
+
 ```
 
 ### RPC框架实现
@@ -1785,6 +1801,7 @@ impl workflow::workflow_service_server::WorkflowService for GrpcWorkflowService 
     
     // 实现其他gRPC方法...
 }
+
 ```
 
 ### 异步通信机制
@@ -1986,6 +2003,7 @@ impl<T: Send + 'static> ResultSender for Sender<Result<T, TaskError>> {
         self.send(typed_result).await.map_err(|_| SendError::ChannelClosed)
     }
 }
+
 ```
 
 ## 容错与恢复
@@ -2189,6 +2207,7 @@ fn notify_panic_error(panic_info: &PanicInfo) {
     // 实现发送警报通知的逻辑
     // 例如发送邮件、Slack消息或使用监控服务API
 }
+
 ```
 
 ### 故障检测机制
@@ -2371,6 +2390,7 @@ impl FailureHandler for ReplicationFailureHandler {
         let _ = self.replication_manager.remove_replica(node_id);
     }
 }
+
 ```
 
 ### 恢复策略
@@ -2701,6 +2721,7 @@ pub struct RecoverySummary {
     pub duration: Option<Duration>,
     pub success: bool,
 }
+
 ```
 
 ## 演化与更新机制
@@ -3199,6 +3220,7 @@ impl UpdateArtifact {
         true
     }
 }
+
 ```
 
 ### 版本兼容性保障
@@ -3589,6 +3611,7 @@ impl CompatibilityChecker for ApiCompatibilityChecker {
         })
     }
 }
+
 ```
 
 ### 状态迁移机制
@@ -4151,6 +4174,7 @@ struct ExecutionEvent {
     timestamp: DateTime<Utc>,
     details: Value,
 }
+
 ```
 
 ## 结论与未来方向
@@ -4275,4 +4299,5 @@ Rust分布式工作流系统
         ├── 数据转换逻辑
         ├── 迁移执行与监控
         └── 回滚机制
+
 ```

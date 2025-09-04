@@ -16,13 +16,6 @@
   - [1.6 六、结论](#六、结论)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 Rust异步编程技术批判性分析
 
 ## 1.1 一、基础概念评析
@@ -53,6 +46,7 @@ pub trait Future {
     type Output;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 这个接口设计值得更深入讨论：
@@ -76,6 +70,7 @@ let async_stream = gen async {
         tokio::time::sleep(Duration::from_secs(1)).await;
     }
 };
+
 ```
 
 这一改进具有双面性：
@@ -102,6 +97,7 @@ fn process<'d>(data: &'d Vec<u8>) -> impl Iterator<Item = u8> + 'd { ... }
 
 // 改进后
 fn process(data: &Vec<u8>) -> impl Iterator<Item = u8> { ... }
+
 ```
 
 这种简化虽然提高了开发体验，但也带来新的问题：
@@ -126,6 +122,7 @@ async fn managed_async_stream() -> impl Stream<Item = Result<Data, Error>> {
         connection.close().await?;
     }
 }
+
 ```
 
 这些模式展示了强大的表达能力，但分析不够深入：
@@ -243,6 +240,7 @@ Rust异步编程批判性分析
         ├── Web开发生态成熟
         ├── 嵌入式异步支持
         └── 云原生基础设施
+
 ```
 
 ## 1.6 六、结论

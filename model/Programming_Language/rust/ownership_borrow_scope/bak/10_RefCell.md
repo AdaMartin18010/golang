@@ -12,19 +12,6 @@
   - [1.8 运行时借用检查](#运行时借用检查)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Rust 是一种注重安全性和并发性的编程语言，它通过所有权（ownership）、借用（borrowing）和生命周期（lifetime）的概念来保证内存安全。
 在 Rust 中，`RefCell` 是一种智能指针，它提供了内部可变性（interior mutability）的机制，允许在借用规则之外修改数据。
 
@@ -66,6 +53,7 @@ fn main() {
 
     println!("Value after modification: {}", *value.borrow());
 }
+
 ```
 
 在这个示例中，我们使用 `RefCell` 来包装一个值，然后通过 `borrow_mut` 方法获取一个可变引用，即使在不可变引用的情况下也能修改值。
@@ -127,6 +115,7 @@ impl<'a, T> Borrow<T> for RefCell<T> {
         // 实现细节
     }
 }
+
 ```
 
 这允许 `RefCell` 的用户通过调用 `borrow` 方法来获取对内部数据的不可变引用。
@@ -141,6 +130,7 @@ impl<'a, T> BorrowMut<T> for RefCell<T> {
         // 实现细节
     }
 }
+
 ```
 
 `BorrowMut` 允许 `RefCell` 的用户即使在存在不可变引用的情况下也能获取可变引用，这是 `RefCell` 提供内部可变性的关键特性。

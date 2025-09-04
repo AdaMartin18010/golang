@@ -225,6 +225,7 @@ Pingora 设计框架分析
     ├── 依赖技术栈: Rust, tokio, hyper?, rustls/OpenSSL, serde, tracing, metrics, cargo
     ├── 典型应用场景: 反向代理, LB, API网关, CDN节点, (潜在)Service Mesh Sidecar
     └── 生态集成: 监控 (Prometheus), 日志 (ELK), 配置 (Consul), 容器 (Docker/K8s), CI/CD
+
 ```
 
 ## 1.8 深入探讨：可编程性与扩展机制
@@ -345,6 +346,7 @@ Pingora 设计框架分析
 │   └── 设计上的优势与潜在挑战
 │       ├── 优势: 内存安全, 高性能, 现代可编程性, 可靠性, 可维护性
 │       └── 挑战: Rust 学习曲线, 生态成熟度, 编译时间, 运行时开销?, 配置复杂性?
+
 ```
 
 希望这次的深入分析对您更有帮助。如果您希望继续探讨某个特定方面，请告诉我。

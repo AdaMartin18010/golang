@@ -32,19 +32,6 @@
       - [1.2.19.4 4. **异步上下文传播**](#4-**异步上下文传播**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面是一个详细的示例，展示如何在 Tokio 异步编程中结合 trace、console 和 OpenTelemetry 实现完整的日志、度量和跟踪功能。
 
 ## 1.1 目录
@@ -96,6 +83,7 @@ prometheus = "0.13"
 console = "0.15"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+
 ```
 
 ### 1.2.1 2. 基础设施代码
@@ -179,6 +167,7 @@ impl Telemetry {
         encoder.encode_to_string(&metric_families).unwrap()
     }
 }
+
 ```
 
 ### 1.2.2 3. 创建自定义的跟踪宏
@@ -209,6 +198,7 @@ macro_rules! trace_async_op {
         }
     };
 }
+
 ```
 
 ### 1.2.3 4. 实现业务逻辑
@@ -258,6 +248,7 @@ impl UserService {
         Ok(42)
     }
 }
+
 ```
 
 ### 1.2.4 5. 实现 HTTP 服务器
@@ -321,6 +312,7 @@ pub async fn run_server(
 
     Ok(())
 }
+
 ```
 
 ### 1.2.5 6. 主程序入口
@@ -356,6 +348,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 ```
 
 ### 1.2.6 7. 使用示例
@@ -373,6 +366,7 @@ async fn example_operation() -> Result<(), String> {
     })
     .await
 }
+
 ```
 
 ### 1.2.7 8. 配置文件示例
@@ -383,6 +377,7 @@ async fn example_operation() -> Result<(), String> {
 RUST_LOG=info,my_service=debug
 OTEL_SERVICE_NAME=my-service
 OTEL_EXPORTER_JAEGER_ENDPOINT=http://localhost:14268/api/traces
+
 ```
 
 ### 1.2.8 9. 设计规范
@@ -449,6 +444,7 @@ OTEL_EXPORTER_JAEGER_ENDPOINT=http://localhost:14268/api/traces
     ]
   }
 }
+
 ```
 
 这个完整的示例展示了如何在 Tokio 异步应用程序中实现全面的可观测性。它包括：
@@ -479,6 +475,7 @@ tracing-futures = "0.2"
 console = "0.15"
 chrono = "0.4"
 colored = "2.0"
+
 ```
 
 ### 1.2.11 2. 自定义跟踪器实现
@@ -541,6 +538,7 @@ macro_rules! trace_async {
         let _tracer = crate::tracer::AsyncTracer::new($name);
     };
 }
+
 ```
 
 ### 1.2.12 3. 自定义日志格式化器
@@ -601,6 +599,7 @@ where
         writeln!(writer)
     }
 }
+
 ```
 
 ### 1.2.13 4. 异步任务跟踪器
@@ -680,6 +679,7 @@ impl TaskTracker {
         }
     }
 }
+
 ```
 
 ### 1.2.14 5. 示例应用程序
@@ -770,6 +770,7 @@ fn init_tracing() {
         .with(fmt_layer)
         .init();
 }
+
 ```
 
 ### 1.2.15 6. 使用示例
@@ -787,12 +788,14 @@ async fn example_async_function() {
     
     info!("Async operation completed");
 }
+
 ```
 
 ### 1.2.16 7. 运行时环境变量配置
 
 ```bash
 RUST_LOG=debug,my_app=trace
+
 ```
 
 ### 1.2.17 8. 输出示例
@@ -808,6 +811,7 @@ RUST_LOG=debug,my_app=trace
     Executing step two
   12:34:57.042 INFO  my_app   ← step_two (took 151ms)
 12:34:57.042 INFO  my_app ← complex_operation (took 253ms)
+
 ```
 
 ### 1.2.18 9. 调试功能
@@ -822,6 +826,7 @@ async fn process_user(user: User) {
     }
     // ... 处理逻辑
 }
+
 ```
 
 #### 1.2.18.2 2. **性能分析**
@@ -844,6 +849,7 @@ where
     
     result
 }
+
 ```
 
 #### 1.2.18.3 3. **错误跟踪**
@@ -862,6 +868,7 @@ impl std::fmt::Display for TracedError {
         write!(f, "{} (in span: {:?})", self.message, self.span_context)
     }
 }
+
 ```
 
 ### 1.2.19 10. 最佳实践
@@ -873,6 +880,7 @@ impl std::fmt::Display for TracedError {
 async fn authenticate_user(username: &str, password: &str) {
     // ...
 }
+
 ```
 
 #### 1.2.19.2 2. **结构化日志记录**
@@ -884,6 +892,7 @@ info!(
     status = "success",
     "User successfully logged in"
 );
+
 ```
 
 #### 1.2.19.3 3. **错误处理与日志记录**
@@ -893,6 +902,7 @@ match operation().await {
     Ok(result) => info!(value = ?result, "Operation succeeded"),
     Err(e) => error!(error = ?e, "Operation failed"),
 }
+
 ```
 
 #### 1.2.19.4 4. **异步上下文传播**
@@ -906,6 +916,7 @@ async fn process_request(request_id: String) {
     process_step_one().await;
     process_step_two().await;
 }
+
 ```
 
 这个完整的示例展示了如何在 Tokio 异步应用程序中实现全面的日志跟踪和调试功能。它提供了：

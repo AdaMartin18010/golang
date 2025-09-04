@@ -93,6 +93,7 @@ Docker与Kubernetes架构模型
 │       ├── 类型与模型对应
 │       ├── 路径与转换等价
 │       └── 同伦类型关系
+
 ```
 
 ## 1. 基础架构概念
@@ -184,6 +185,7 @@ struct InfrastructureComponents {
     network_drivers: Vec<NetworkDriver>,
     execution_drivers: Vec<ExecutionDriver>,
 }
+
 ```
 
 ### 2.2 Kubernetes架构模型
@@ -237,6 +239,7 @@ struct AddOnComponents {
     network_plugin: Box<dyn NetworkPlugin>,
     storage_plugin: Vec<Box<dyn StoragePlugin>>,
 }
+
 ```
 
 ### 2.3 控制平面与数据平面
@@ -301,6 +304,7 @@ fn execute_container(client: &DockerClient, image: &str, cmd: &[&str]) -> Result
     
     Ok(container_id)
 }
+
 ```
 
 ### 3.2 Kubernetes组件交互模型
@@ -348,6 +352,7 @@ fn create_deployment(client: &KubeClient, spec: DeploymentSpec) -> Result<(), Er
     
     Ok(())
 }
+
 ```
 
 ### 3.3 CRI接口与容器运行时
@@ -385,6 +390,7 @@ trait ContainerRuntime {
     fn list_images(&self) -> Result<Vec<Image>, Error>;
     fn remove_image(&self, image: &str) -> Result<(), Error>;
 }
+
 ```
 
 ## 4. 工作流与编排模型
@@ -452,6 +458,7 @@ impl<R: Resource> Controller<R> {
         }
     }
 }
+
 ```
 
 ### 4.2 调度与资源管理
@@ -500,6 +507,7 @@ fn schedule_pod(pod: &Pod, nodes: &[Node]) -> Option<String> {
     // 4. 返回最优节点
     scored_nodes.first().map(|(node, _)| node.name.clone())
 }
+
 ```
 
 ### 4.3 状态协调机制
@@ -549,6 +557,7 @@ fn reconcile_deployment(deployment: &Deployment) -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 ## 5. 工作流模式的形式对应
@@ -610,6 +619,7 @@ struct JobSpec {
     // Pod模板
     template: PodTemplateSpec,
 }
+
 ```
 
 ### 5.2 数据流模式对应
@@ -658,6 +668,7 @@ struct ServiceSpec {
     // 服务类型
     type_: ServiceType,
 }
+
 ```
 
 ### 5.3 资源模式对应
@@ -710,6 +721,7 @@ struct ResourceQuota {
         used: HashMap<String, Quantity>,
     },
 }
+
 ```
 
 ### 5.4 异常处理模式对应
@@ -783,6 +795,7 @@ struct Probe {
     // 失败阈值
     failure_threshold: i32,
 }
+
 ```
 
 ## 6. 形式化系统分析
@@ -803,7 +816,7 @@ struct Probe {
    struct ClusterState {
        resources: HashMap<ResourceKey, Resource>,
    }
-   
+  
    // 资源键 (类型+命名空间+名称)
    struct ResourceKey {
        api_version: String,
@@ -811,7 +824,7 @@ struct Probe {
        namespace: Option<String>,
        name: String,
    }
-   
+  
    // 资源通用结构
    struct Resource {
        metadata: Metadata,
@@ -872,6 +885,7 @@ fn apply_transition(state: &mut ClusterState, transition: StateTransition) -> Re
     
     Ok(())
 }
+
 ```
 
 ### 6.3 等价性证明
@@ -911,25 +925,26 @@ fn prove_equivalence() {
         diff: |actual, desired| { /* 计算差异 */ },
         act: |diff| { /* 执行变更 */ },
     };
-    
+  
     // 工作流引擎模型
     let workflow_model = WorkflowEngine {
         get_state: |workflow| { /* 获取工作流状态 */ },
         determine_next: |state| { /* 确定下一步 */ },
         execute: |activity| { /* 执行活动 */ },
     };
-    
+  
     // 两种模型在数学形式上的映射关系证明
     assert_eq!(
         formalize(k8s_model).semantics(),
         formalize(workflow_model).semantics()
     );
-    
+  
     // 证明核心等价性质
     // 1. 状态空间可互相映射
     // 2. 转换规则语义等价
     // 3. 执行路径保持不变
 }
+
 ```
 
 这种等价性表明Kubernetes实际上是一种特殊的分布式工作流引擎，它使用声明式API和控制循环实现了工作流执行语义。
@@ -948,7 +963,7 @@ trait ContainerRuntime {
     fn stop_pod_sandbox(&self, pod_id: &str) -> Result<(), Error>;
     fn remove_pod_sandbox(&self, pod_id: &str) -> Result<(), Error>;
     fn list_pod_sandboxes(&self) -> Result<Vec<PodSandbox>, Error>;
-    
+  
     // 容器管理
     fn create_container(&self, pod_id: &str, config: ContainerConfig) -> Result<String, Error>;
     fn start_container(&self, container_id: &str) -> Result<(), Error>;
@@ -956,7 +971,7 @@ trait ContainerRuntime {
     fn remove_container(&self, container_id: &str) -> Result<(), Error>;
     fn list_containers(&self) -> Result<Vec<Container>, Error>;
     fn exec_sync(&self, container_id: &str, cmd: &[&str]) -> Result<ExecResponse, Error>;
-    
+  
     // 镜像管理
     fn pull_image(&self, image: &str) -> Result<ImageInfo, Error>;
     fn list_images(&self) -> Result<Vec<ImageInfo>, Error>;
@@ -972,10 +987,10 @@ impl ContainerRuntime for DockerRuntime {
     fn create_pod_sandbox(&self, config: PodSandboxConfig) -> Result<String, Error> {
         // 创建网络命名空间
         let network_ns = self.client.create_network_namespace()?;
-        
+  
         // 创建数据卷
         let volumes = self.client.setup_volumes(&config.volumes)?;
-        
+  
         // 创建基础设施容器（pause容器）
         let sandbox_id = self.client.create_container(
             "k8s.gcr.io/pause:3.6",
@@ -987,12 +1002,12 @@ impl ContainerRuntime for DockerRuntime {
                 // 其他配置...
             }
         )?;
-        
+  
         self.client.start_container(&sandbox_id)?;
-        
+  
         Ok(sandbox_id)
     }
-    
+  
     // 其他方法实现...
 }
 
@@ -1005,6 +1020,7 @@ impl ContainerRuntime for ContainerdRuntime {
     // containerd原生实现CRI接口
     // 实现方法...
 }
+
 ```
 
 ### 7.2 控制器模式实现
@@ -1025,24 +1041,24 @@ impl DeploymentController {
         self.informer.on_add(|deployment| self.reconcile(deployment));
         self.informer.on_update(|_, deployment| self.reconcile(deployment));
         self.informer.on_delete(|deployment| self.cleanup(deployment));
-        
+  
         // 启动事件处理
         self.informer.run();
-        
+  
         Ok(())
     }
-    
+  
     // 核心调和方法 - 确保实际状态符合期望状态
     fn reconcile(&self, deployment: &Deployment) -> Result<(), Error> {
         // 获取关联的ReplicaSets
         let owned_replicasets = self.client
             .list_replicasets_by_owner(deployment.metadata.uid)?;
-        
+  
         // 检查是否需要创建新的ReplicaSet
         let current_rs_hash = calculate_template_hash(&deployment.spec.template);
         let matching_rs = owned_replicasets.iter()
             .find(|rs| rs.metadata.annotations.get("pod-template-hash") == Some(&current_rs_hash));
-        
+  
         let current_rs = match matching_rs {
             Some(rs) => rs.clone(),
             None => {
@@ -1051,13 +1067,13 @@ impl DeploymentController {
                 new_rs
             }
         };
-        
+  
         // 根据部署策略计算ReplicaSet的期望副本数
         let replicas_allocation = match deployment.spec.strategy {
             DeploymentStrategy::RollingUpdate { max_surge, max_unavailable } => {
                 calculate_rolling_update_allocation(
-                    deployment, 
-                    &current_rs, 
+                    deployment,
+                    &current_rs,
                     &owned_replicasets,
                     max_surge,
                     max_unavailable
@@ -1065,29 +1081,30 @@ impl DeploymentController {
             },
             DeploymentStrategy::Recreate => {
                 calculate_recreate_allocation(
-                    deployment, 
-                    &current_rs, 
+                    deployment,
+                    &current_rs,
                     &owned_replicasets
                 )
             }
         };
-        
+  
         // 扩缩容ReplicaSets
         for (rs, replicas) in replicas_allocation {
             self.client.scale_replicaset(&rs.metadata.name, replicas)?;
         }
-        
+  
         // 清理不再需要的旧ReplicaSet
         self.cleanup_old_replicasets(deployment, &owned_replicasets)?;
-        
+  
         // 更新Deployment状态
         self.update_deployment_status(deployment, &current_rs, &owned_replicasets)?;
-        
+  
         Ok(())
     }
-    
+  
     // 其他辅助方法...
 }
+
 ```
 
 ### 7.3 资源模型与调度
@@ -1102,23 +1119,23 @@ func scheduleOne(ctx context.Context, pod *v1.Pod, nodes []*v1.Node) (*v1.Node, 
     if len(feasibleNodes) == 0 {
         return nil, fmt.Errorf("no nodes available to schedule pod %s", pod.Name)
     }
-    
+  
     // 第二阶段：打分 - 为每个可行节点评分
     nodeScores := make(map[string]int64)
     for _, node := range feasibleNodes {
         // 资源分配评分
         resourceScore := scoreNodeResources(pod, node)
-        
+  
         // 节点亲和性评分
         affinityScore := scoreNodeAffinity(pod, node)
-        
+  
         // 拓扑分布评分
         spreadScore := scoreTopologySpread(pod, node)
-        
+  
         // 聚合各项评分
         nodeScores[node.Name] = resourceScore + affinityScore + spreadScore
     }
-    
+  
     // 找出得分最高的节点
     var selectedNode *v1.Node
     highestScore := int64(-1)
@@ -1129,7 +1146,7 @@ func scheduleOne(ctx context.Context, pod *v1.Pod, nodes []*v1.Node) (*v1.Node, 
             highestScore = score
         }
     }
-    
+  
     return selectedNode, nil
 }
 
@@ -1138,27 +1155,28 @@ func scoreNodeResources(pod *v1.Pod, node *v1.Node) int64 {
     // 计算节点当前资源使用率
     cpuUtilization := calculateCPUUtilization(node)
     memUtilization := calculateMemoryUtilization(node)
-    
+  
     // 计算添加Pod后的资源使用率
     podCPURequest := getPodResourceRequest(pod, v1.ResourceCPU)
     podMemRequest := getPodResourceRequest(pod, v1.ResourceMemory)
-    
+  
     newCPUUtilization := calculateNewUtilization(
         node.Status.Allocatable.Cpu().MilliValue(),
         cpuUtilization,
         podCPURequest)
-    
+  
     newMemUtilization := calculateNewUtilization(
         node.Status.Allocatable.Memory().Value(),
         memUtilization,
         podMemRequest)
-    
+  
     // 平衡资源使用率的评分逻辑
     // 使用率越平衡，得分越高
     balanceScore := 100 - int64(math.Abs(float64(newCPUUtilization-newMemUtilization)))
-    
+  
     return balanceScore
 }
+
 ```
 
 ## 8. 系统演化与趋势
@@ -1208,10 +1226,10 @@ Kubernetes与Docker的关系经历了明显的演变过程：
 struct EdgeController {
     // 本地状态存储
     local_state: LocalStateStore,
-    
+  
     // 与中心云的同步管理
     sync_manager: CloudSyncManager,
-    
+  
     // 本地控制循环
     local_controllers: Vec<Box<dyn Controller>>,
 }
@@ -1222,27 +1240,28 @@ impl EdgeController {
         for controller in &self.local_controllers {
             controller.start()?;
         }
-        
+  
         // 当有云连接时进行状态同步
         self.sync_manager.start_sync_when_available()?;
-        
+  
         Ok(())
     }
-    
+  
     // 处理本地资源创建，即使断开连接
     fn handle_local_resource<R: Resource>(&self, resource: R) -> Result<(), Error> {
         // 保存到本地状态
         self.local_state.store(&resource)?;
-        
+  
         // 尝试同步到云端（如果可用）
         self.sync_manager.sync_to_cloud_if_available(&resource);
-        
+  
         // 本地协调逻辑
         self.reconcile_locally(&resource)?;
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ### 8.3 新兴技术的整合
@@ -1274,10 +1293,10 @@ impl EdgeController {
 type WasmContainer struct {
     // WebAssembly模块
     Module []byte
-    
+  
     // 运行时配置
     Config WasmRuntimeConfig
-    
+  
     // 沙箱安全策略
     SecurityPolicy SecurityPolicy
 }
@@ -1295,18 +1314,19 @@ func (r *WasmRuntime) RunContainer(container *WasmContainer) error {
     if err != nil {
         return err
     }
-    
+  
     // 配置资源限制
     r.applyResourceLimits(instance, container.Config.Resources)
-    
+  
     // 配置网络策略
     r.applyNetworkPolicy(instance, container.SecurityPolicy.Network)
-    
+  
     // 启动WebAssembly模块
     result, err := instance.Call("_start")
-    
+  
     return err
 }
+
 ```
 
 ## 9. 结论与总结

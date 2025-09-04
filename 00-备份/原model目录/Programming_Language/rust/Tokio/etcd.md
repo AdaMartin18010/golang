@@ -16,6 +16,7 @@ tokio = { version = "1.36", features = ["full"] }
 etcd-client = "0.12"
 anyhow = "1.0"
 futures = "0.3"
+
 ```
 
 以下是一个完整的示例，展示了 etcd 的主要功能：
@@ -144,6 +145,7 @@ async fn get_all_keys(client: &mut Client, prefix: &str) -> anyhow::Result<KeysG
         current_key: None,
     })
 }
+
 ```
 
 这个示例展示了以下主要功能：
@@ -181,6 +183,7 @@ docker run -d --name etcd-server \
     --publish 2380:2380 \
     --env ALLOW_NONE_AUTHENTICATION=yes \
     bitnami/etcd:latest
+
 ```
 
 这个示例涵盖了 etcd 的主要功能，并展示了如何使用 Rust 的异步特性和生成器模式来处理数据。您可以根据实际需求修改和扩展这些代码。

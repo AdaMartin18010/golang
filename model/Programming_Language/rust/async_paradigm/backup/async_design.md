@@ -35,19 +35,6 @@
   - [1.21 **5. 总结*](#**5-总结*)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 以下是关于 Rust async 设计中多线程与异步编程权衡的问题讨论，以及如何根据性能需求在不同层次做设计决策的详细说明。
 
 ---
@@ -160,6 +147,7 @@ flowchart TD
     A --> F[运行时与调度配置]
     F --> F1[Tokio: 多线程 + spawn_blocking]
     F --> F2[监控与动态调整：使用 profiling 工具]
+
 ```
 
 ---
@@ -238,6 +226,7 @@ async fn main() {
 
     println!("所有任务均已完成，CPU 任务结果: {}", cpu_result);
 }
+
 ```
 
 ### 1.7.1 代码说明
@@ -267,6 +256,7 @@ flowchart TD
     A --> E[结果合并与等待]
     E --> B
     E --> C
+
 ```
 
 ---
@@ -372,6 +362,7 @@ async fn main() {
     
     println!("所有任务均已完成");
 }
+
 ```
 
 ### 1.13.1 *代码说明*
@@ -401,6 +392,7 @@ flowchart TD
     E --> F[任务状态数据发送]
     F --> G[Tokio Console 收集数据]
     G --> H[通过控制台显示任务状态、调度信息]
+
 ```
 
 ---
@@ -436,6 +428,7 @@ tokio = { version = "1", features = ["full"] }
 metrics = "0.17"
 metrics-exporter-prometheus = "0.7"
 hyper = "0.14"
+
 ```
 
 ---
@@ -498,6 +491,7 @@ async fn main() {
         println!("更新指标: app_requests_total 与 app_response_time_seconds");
     }
 }
+
 ```
 
 ---

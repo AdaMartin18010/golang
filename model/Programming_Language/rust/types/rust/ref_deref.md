@@ -88,6 +88,7 @@ fn main() {
     // 编译器自动将 &String 解引用为 &str，从而调用 &str 上的 len() 方法
     println!("Length of s = {}", s_ref.len());
 }
+
 ```
 
 在这段代码中，我们可以看到：

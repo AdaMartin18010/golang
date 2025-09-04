@@ -19,19 +19,6 @@
     - [5 5 5 5 5 5 5 10. Grafana 仪表板配置](#5-5-5-5-5-5-5-10-grafana-仪表板配置)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面是一个结合 Tokio、tracing、console 和 OpenTelemetry 实现完整的异步调用跟踪和度量的示例：
 
 ## 1.1 目录
@@ -62,6 +49,7 @@ opentelemetry-prometheus = "0.11"
 prometheus = "0.13"
 console = "0.15"
 chrono = "0.4"
+
 ```
 
 ### 1.2.1 2. 度量收集器实现
@@ -122,6 +110,7 @@ impl Metrics {
         })
     }
 }
+
 ```
 
 ### 1.2.2 3. 异步跟踪器实现
@@ -164,6 +153,7 @@ impl Drop for AsyncTracer {
         );
     }
 }
+
 ```
 
 ### 1.2.3 4. 请求上下文实现
@@ -203,6 +193,7 @@ impl RequestContext {
         f().await
     }
 }
+
 ```
 
 ### 1.2.4 5. 业务服务实现
@@ -245,6 +236,7 @@ impl UserService {
         .await
     }
 }
+
 ```
 
 ### 1.2.5 6. HTTP 服务器实现
@@ -294,6 +286,7 @@ async fn metrics_handler(
     let metric_families = state.metrics.registry.gather();
     encoder.encode_to_string(&metric_families).unwrap()
 }
+
 ```
 
 ### 1.2.6 7. 主程序入口
@@ -350,6 +343,7 @@ fn init_tracing() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 ```
 
 ### 1.2.7 8. 使用示例
@@ -377,22 +371,29 @@ async fn example_operation(ctx: &RequestContext) -> Result<(), String> {
     })
     .await
 }
+
 ```
 
 ### 1.2.8 9. Prometheus 查询示例
 
 ```promql
+
 # 2 2 2 2 2 2 2 请求总数
+
 rate(request_total[5m])
 
 # 3 3 3 3 3 3 3 请求持续时间
+
 histogram_quantile(0.95, rate(request_duration_seconds_bucket[5m]))
 
 # 4 4 4 4 4 4 4 活跃请求数
+
 active_requests
 
 # 5 5 5 5 5 5 5 错误率
+
 rate(errors_total[5m])
+
 ```
 
 ### 5 5 5 5 5 5 5 10. Grafana 仪表板配置
@@ -444,6 +445,7 @@ rate(errors_total[5m])
     ]
   }
 }
+
 ```
 
 这个完整的示例展示了如何：

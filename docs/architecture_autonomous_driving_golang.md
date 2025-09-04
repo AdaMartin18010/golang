@@ -53,6 +53,7 @@ classDiagram
   Control --> VehicleController
   Communication --> Planning
   Communication --> Control
+
 ```
 
 ## 6. 典型数据流与时序图
@@ -70,6 +71,7 @@ sequenceDiagram
   Perception->>Planning: 目标识别/建图
   Planning->>Control: 路径规划/决策
   Control->>Vehicle: 执行控制指令
+
 ```
 
 ## 7. Golang领域模型代码示例
@@ -89,6 +91,7 @@ sequenceDiagram
  type Control struct {
    PlanningResult []float64
  }
+
 ```
 
 ## 8. 分布式系统挑战
@@ -108,6 +111,7 @@ graph TD
   VehicleController-->Actuator[执行器]
   Planning-->Cloud[云端协同]
   Cloud-->Planning
+
 ```
 
 - 关键代码：Golang实现传感器数据采集、消息队列、决策算法接口。

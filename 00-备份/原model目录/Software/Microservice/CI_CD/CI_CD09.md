@@ -188,6 +188,7 @@ CI/CD与Git/GitHub集成
         ├── 团队能力建设
         ├── 绩效度量框架
         └── 持续改进模式
+
 ```
 
 ## 1. 引言
@@ -281,7 +282,7 @@ $IntegratedDevOps = CI/CD \circ VersionControl$
 
 CI/CD系统与Git版本控制系统之间的理论关系可通过以下三个方面阐述：
 
--**1. 事件驱动关系**
+- **1. 事件驱动关系**
 
 Git操作产生事件，这些事件触发CI/CD系统的相应行为：
 
@@ -293,7 +294,7 @@ $\forall e \in GitEvents, \exists a \in CI/CDActions: Trigger(e, a)$
 
 其中，$Trigger$是触发关系，定义了Git事件如何映射到CI/CD动作。
 
--**2. 状态依赖关系**
+- **2. 状态依赖关系**
 
 CI/CD系统的输入状态直接依赖于Git仓库的状态：
 
@@ -301,7 +302,7 @@ $CI/CDState = f(GitRepoState)$
 
 这意味着任何时刻，CI/CD系统的状态是Git仓库状态的函数。
 
--**3. 历史映射关系**
+- **3. 历史映射关系**
 
 Git提交历史与CI/CD执行历史之间存在映射关系：
 
@@ -674,6 +675,7 @@ jobs:
           java-version: '11'
       - name: Build
         run: mvn -B package
+
 ```
 
 **语法结构形式化**：
@@ -812,7 +814,9 @@ GitFlow模型与CI/CD的整合可形式化为：
 **CI/CD配置示例**：
 
 ```yaml
+
 # GitFlow CI/CD 配置示例
+
 name: GitFlow CI/CD
 
 on:
@@ -855,6 +859,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Deploy to Production
         run: ./deploy-production.sh
+
 ```
 
 **整合挑战**：
@@ -890,7 +895,9 @@ $FeatureFlags = \{(f, env, state) | f \in Features, env \in Environments, state 
 **CI/CD配置示例**：
 
 ```yaml
+
 # 主干开发 CI/CD 配置示例
+
 name: Trunk-Based CI/CD
 
 on:
@@ -923,6 +930,7 @@ jobs:
       - name: Auto-Rollback
         if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: ./rollback.sh
+
 ```
 
 **定理14 (主干开发的部署频率优势)**：在相同的开发活动下，主干开发模式的部署频率显著高于特性分支模式。
@@ -1124,13 +1132,17 @@ $Deterministic(Build) \iff \forall input: Build(input, t_1) = Build(input, t_2)$
 **确定性构建实现**代码示例：
 
 ```dockerfile
+
 # 确定性构建的Dockerfile示例
+
 FROM debian:buster-20210721@sha256:e8aa10cf8261246577d984be2873ddaa50c7232ba91e182c13d61720bae40aa5
 
 # 设置时区为UTC避免时间相关性
+
 ENV TZ=UTC
 
 # 安装固定版本的依赖
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     g++=4:8.3.0-1 \
@@ -1139,20 +1151,25 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # 设置固定的工作目录
+
 WORKDIR /build
 
 # 复制源代码
+
 COPY . .
 
 # 使用固定的编译参数
+
 RUN make CFLAGS="-O2" LDFLAGS="-Wl,--strip-all" build
 
 # 生成确定性构建制品
+
 RUN find . -type f -name "*.o" -delete && \
     tar --sort=name \
         --mtime="2022-01-01 00:00:00" \
         --owner=0 --group=0 --numeric-owner \
         -czf /output/artifact.tar.gz ./bin
+
 ```
 
 **定理20 (确定性构建充分条件)**：如果构建过程满足依赖封闭性、时间无关性、路径无关性和无随机性，则构建过程是确定性的。
@@ -1204,7 +1221,9 @@ $GitOpsLoop = \{(Observe, Diff, Reconcile) | t \in Time\}$
 **声明式配置**示例：
 
 ```yaml
+
 # Kubernetes声明式配置示例
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1232,6 +1251,7 @@ spec:
           requests:
             cpu: "0.5"
             memory: "256Mi"
+
 ```
 
 **Git仓库结构**可形式化为：
@@ -1285,7 +1305,9 @@ $\forall s_{initial} \in S, \exists t_{convergence} > 0: State(System, t_{conver
 **GitOps实现示例**：
 
 ```yaml
+
 # ArgoCD应用定义示例
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -1306,6 +1328,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
 ```
 
 ## 10. 安全模型与实践
@@ -1343,6 +1366,7 @@ Branch Protection Rules:
 - Required reviews: min_reviewers=2
 - Status checks: required_checks=["ci/build", "ci/test"]
 - Restrictions: protected_branch_pushers=["senior-team"]
+
 ```
 
 **定理22 (最小权限原则)**：在满足功能需求的前提下，为每个主体赋予最小必要权限集可以最大化系统安全性。
@@ -1376,7 +1400,9 @@ $\forall t > t_{rotation}: \nexists process: Access(process, S_{old})$
 **GitHub密钥管理**示例：
 
 ```yaml
+
 # GitHub Actions密钥使用示例
+
 name: Deploy with Secrets
 
 on:
@@ -1399,6 +1425,7 @@ jobs:
       - name: Deploy
         run: |
           aws s3 sync ./build s3://my-app-bucket/
+
 ```
 
 **定理23 (密钥分离原则)**：将不同环境的密钥严格分离可以最小化密钥泄露的影响范围。
@@ -1451,7 +1478,9 @@ $Verify: SignedArtifact \times PublicKey \to \{Valid, Invalid\}$
 **GitHub安全供应链功能**示例：
 
 ```yaml
+
 # Dependabot配置示例
+
 version: 2
 updates:
   - package-ecosystem: "npm"
@@ -1469,6 +1498,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+
 ```
 
 **定理24 (最小特权构建)**：在构建系统中实施最小特权原则可以最大限度减少供应链攻击的可能性。
@@ -1494,7 +1524,9 @@ GitHub Actions提供与GitHub深度集成的CI/CD能力：
 **多阶段构建部署流水线**示例：
 
 ```yaml
+
 # 完整CI/CD工作流示例
+
 name: CI/CD Pipeline
 
 on:
@@ -1593,12 +1625,15 @@ jobs:
         with:
           environment: production
           token: ${{ secrets.DEPLOY_TOKEN }}
+
 ```
 
 **矩阵构建**示例：
 
 ```yaml
+
 # 矩阵构建示例
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -1618,6 +1653,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm test
+
 ```
 
 **定理25 (GitHub Actions工作流可组合性)**：复杂GitHub Actions工作流可以通过组合基本构建块实现，同时保持可维护性和可测试性。
@@ -1733,6 +1769,7 @@ pipeline {
         }
     }
 }
+
 ```
 
 **Jenkins多分支管道**配置：
@@ -1767,6 +1804,7 @@ multibranchPipelineJob('my-app') {
         }
     }
 }
+
 ```
 
 **定理26 (Jenkins与Git集成完备性)**：Jenkins管道可以与任何Git工作流模型集成，提供完整的CI/CD功能覆盖。
@@ -1789,7 +1827,9 @@ GitLab提供了与其Git仓库深度整合的CI/CD功能：
 **GitLab CI/CD配置**示例：
 
 ```yaml
+
 # GitLab CI/CD配置示例
+
 stages:
   - validate
   - test
@@ -1867,12 +1907,15 @@ deploy-production:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
   when: manual
+
 ```
 
 **GitLab CI/CD与合并请求集成**：
 
 ```yaml
+
 # GitLab CI与合并请求集成
+
 merge_request_pipeline:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -1882,6 +1925,7 @@ merge_request_pipeline:
     - ./ci/validate_mr.sh
 
 # 动态环境部署
+
 review:
   stage: deploy
   script:
@@ -1903,6 +1947,7 @@ stop_review:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: manual
+
 ```
 
 **定理27 (GitLab CI/CD与仓库集成优势)**：GitLab CI/CD与代码仓库的深度集成减少了上下文切换和集成开销，提高了开发效率。
@@ -1948,22 +1993,28 @@ $Efficiency(GitLabIntegrated) > Efficiency(ExternalIntegration)$，其中效率�
 **Git大规模优化**命令示例：
 
 ```bash
+
 # 浅克隆
+
 git clone --depth=1 https://github.com/large-org/large-repo.git
 
 # 稀疏检出
+
 git clone --no-checkout https://github.com/large-org/large-repo.git
 cd large-repo
 git sparse-checkout init --cone
 git sparse-checkout set apps/myapp
 
 # 部分克隆（需要服务端支持）
+
 git clone --filter=blob:none https://github.com/large-org/large-repo.git
 
 # 历史压缩
+
 git checkout --orphan new-main
 git add .
 git commit -m "Compressed history"
+
 ```
 
 **定理28 (大规模仓库分解定理)**：将大型单体仓库分解为多个关联仓库，在保持功能完整性的同时，可以显著提高CI/CD性能。
@@ -2019,6 +2070,7 @@ $ExecutionTime(job) \approx \max_{i} ExecutionTime(task_i) + Overhead$
                     │ 构建制品存储 │
                     │ (Artifacts) │
                     └─────────────┘
+
 ```
 
 **定理29 (分布式CI/CD效率)**：分布式CI/CD系统的效率与系统的并行度和任务粒度有密切关系。
@@ -2058,7 +2110,9 @@ $Diff(c_{current}, c_{previous})$ 是两次提交之间的差异
 **GitHub Actions缓存**示例：
 
 ```yaml
+
 # GitHub Actions缓存示例
+
 - name: Cache Node.js modules
   uses: actions/cache@v3
   with:
@@ -2070,6 +2124,7 @@ $Diff(c_{current}, c_{previous})$ 是两次提交之间的差异
       ${{ runner.os }}-node-
 
 # Gradle增量构建缓存
+
 - name: Cache Gradle packages
   uses: actions/cache@v3
   with:
@@ -2079,6 +2134,7 @@ $Diff(c_{current}, c_{previous})$ 是两次提交之间的差异
     key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
     restore-keys: |
       ${{ runner.os }}-gradle-
+
 ```
 
 **定理30 (缓存优化上限)**：构建时间优化存在理论上限，由不可缓存的必要操作决定。

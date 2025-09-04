@@ -30,6 +30,7 @@ fn main() {
     let circle = Circle::new(5.0);
     println!("Area of the circle: {}", circle.area());
 }
+
 ```
 
 ## 2. 枚举（Enums）
@@ -60,6 +61,7 @@ fn main() {
     println!("Area of the circle: {}", circle.area());
     println!("Area of the rectangle: {}", rectangle.area());
 }
+
 ```
 
 ## 3. 特征（Traits）
@@ -87,6 +89,7 @@ fn main() {
     let circle = Circle { radius: 5.0 };
     println!("Area of the circle: {}", circle.area());
 }
+
 ```
 
 ## 4. 其他类型

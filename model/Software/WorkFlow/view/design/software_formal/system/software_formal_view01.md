@@ -93,6 +93,7 @@ Set = {x | P(x)}  // 集合定义
 A ∩ B = {x | x ∈ A ∧ x ∈ B}  // 交集
 A ∪ B = {x | x ∈ A ∨ x ∈ B}  // 并集
 A × B = {(a,b) | a ∈ A ∧ b ∈ B}  // 笛卡尔积
+
 ```
 
 **代数结构**：
@@ -102,6 +103,7 @@ A × B = {(a,b) | a ∈ A ∧ b ∈ B}  // 笛卡尔积
 群 = (G, •, 封闭性, 结合律, 单位元, 逆元)
 环 = (R, +, ×, 加法交换群, 乘法半群, 分配律)
 域 = (F, +, ×, 加法交换群, 乘法交换群, 除零外均有乘法逆元)
+
 ```
 
 Rust代码示例（代数结构特征）：
@@ -128,6 +130,7 @@ trait Group: Monoid {
     // 逆元公理: self.op(&self.inverse()) == Self::identity()
     //        self.inverse().op(&self) == Self::identity()
 }
+
 ```
 
 ### 1.2.2 逻辑基础
@@ -138,6 +141,7 @@ trait Group: Monoid {
 语法：φ ::= p | ¬φ | φ ∧ φ | φ ∨ φ | φ → φ | φ ↔ φ
 语义：⟦_⟧: Formula → {true, false}
 证明系统：(公理集, 推理规则)
+
 ```
 
 **一阶逻辑**：
@@ -146,6 +150,7 @@ trait Group: Monoid {
 语法：φ ::= P(t₁,...,tₙ) | ¬φ | φ ∧ φ | φ ∨ φ | φ → φ | ∀x.φ | ∃x.φ
 语义：⟦_⟧ₘ: (Formula × Model) → {true, false}
 证明系统：自然演绎、序贯演算
+
 ```
 
 **时序逻辑**：
@@ -153,6 +158,7 @@ trait Group: Monoid {
 ```math
 CTL: φ ::= p | ¬φ | φ ∧ φ | EXφ | AXφ | E[φUφ] | A[φUφ]
 LTL: φ ::= p | ¬φ | φ ∧ φ | Xφ | φUφ | Fφ | Gφ
+
 ```
 
 Rust代码示例（命题逻辑表示）：
@@ -179,6 +185,7 @@ fn evaluate(formula: &Proposition, interpretation: &HashMap<String, bool>) -> bo
         Proposition::Iff(phi1, phi2) => evaluate(phi1, interpretation) == evaluate(phi2, interpretation),
     }
 }
+
 ```
 
 ### 1.2.3 范畴论基础
@@ -192,6 +199,7 @@ fn evaluate(formula: &Proposition, interpretation: &HashMap<String, bool>) -> bo
 - Hom(C): 态射集合（Hom(A,B)表示从A到B的态射）
 - ∘: 态射组合，满足结合律 (f ∘ g) ∘ h = f ∘ (g ∘ h)
 - id: 单位态射，满足 f ∘ idA = f = idB ∘ f，对任意 f: A → B
+
 ```
 
 **函子**：
@@ -203,6 +211,7 @@ fn evaluate(formula: &Proposition, interpretation: &HashMap<String, bool>) -> bo
 满足:
 - F(idA) = idF(A)
 - F(f ∘ g) = F(f) ∘ F(g)
+
 ```
 
 **自然变换**：
@@ -211,6 +220,7 @@ fn evaluate(formula: &Proposition, interpretation: &HashMap<String, bool>) -> bo
 自然变换 η: F ⇒ G（其中F,G: C → D）是一族态射:
 - 对每个对象A∈C，有态射ηA: F(A) → G(A)
 - 对每个态射f: A → B，满足自然性条件：ηB ∘ F(f) = G(f) ∘ ηA
+
 ```
 
 ### 1.2.4 计算理论基础
@@ -220,6 +230,7 @@ fn evaluate(formula: &Proposition, interpretation: &HashMap<String, bool>) -> bo
 ```math
 语法: t ::= x | λx.t | t t
 规约: (λx.t₁) t₂ → t₁[t₂/x]  (β-规约)
+
 ```
 
 Rust代码示例（λ演算）：
@@ -275,6 +286,7 @@ fn beta_reduce_once(term: &Term) -> Option<Term> {
         _ => None
     }
 }
+
 ```
 
 **π演算**：
@@ -282,6 +294,7 @@ fn beta_reduce_once(term: &Term) -> Option<Term> {
 ```math
 语法: P ::= 0 | x⟨y⟩.P | x(y).P | P|P | !P | νx.P
 规约: (x⟨z⟩.P₁ | x(y).P₂) → (P₁ | P₂[z/y])
+
 ```
 
 **图灵机**：
@@ -296,6 +309,7 @@ fn beta_reduce_once(term: &Term) -> Option<Term> {
 - δ: Q × Γ → Q × Γ × {L,R}: 转移函数
 - q₀ ∈ Q: 初始状态
 - F ⊆ Q: 接受状态集
+
 ```
 
 ## 1.3 元模型层
@@ -312,6 +326,7 @@ fn beta_reduce_once(term: &Term) -> Option<Term> {
 - MC: 元类(meta-classes)集合
 - MR: 元关系(meta-relationships)集合
 - WF: 良构性规则(well-formedness rules)集合
+
 ```
 
 **模型与元模型关系**：
@@ -322,6 +337,7 @@ conformsTo: Model → Metamodel → Boolean
 - M中的每个元素都是MM中某个元类的实例
 - M中的每个关系都是MM中某个元关系的实例
 - M满足MM中定义的所有良构性规则
+
 ```
 
 **元元模型**：
@@ -329,6 +345,7 @@ conformsTo: Model → Metamodel → Boolean
 ```math
 元元模型是元模型的元模型，通常是自我描述的:
 conformsTo(MMM, MMM) = true
+
 ```
 
 Rust代码示例（简单元模型框架）：
@@ -421,6 +438,7 @@ impl Model {
     
     // ... check_element_conforms和check_relationship_conforms的实现
 }
+
 ```
 
 ### 1.3.2 元模型间的转换与映射
@@ -430,6 +448,7 @@ impl Model {
 ```math
 元模型转换 MT: MM₁ → MM₂
 是一组规则，将符合MM₁的模型转换为符合MM₂的模型
+
 ```
 
 **模型转换与元模型转换关系**：
@@ -438,6 +457,7 @@ impl Model {
 对于模型转换M': transform(M, MT)，其中M符合MM₁，有：
 - M'符合MM₂
 - MT是MM₁到MM₂的元模型转换
+
 ```
 
 **元模型映射**：
@@ -445,6 +465,7 @@ impl Model {
 ```math
 元模型映射 MMM: MM₁ → MM₂
 定义MM₁中元素如何映射到MM₂中元素的对应关系
+
 ```
 
 ### 1.3.3 元模型的验证与一致性
@@ -456,6 +477,7 @@ impl Model {
 - MC中没有矛盾的定义
 - MR中的关系都引用MC中存在的元类
 - WF中的规则不相互矛盾
+
 ```
 
 **元模型间一致性**：
@@ -464,6 +486,7 @@ impl Model {
 两个元模型MM₁和MM₂之间的一致性映射C，需要满足:
 - 对于M₁符合MM₁，如果通过C导出M₂，则M₂符合MM₂
 - 对于任意符合MM₁的模型，通过C都能导出唯一的符合MM₂的模型
+
 ```
 
 ### 1.3.4 元推理系统
@@ -477,6 +500,7 @@ Meta-Rule = (Pattern, Condition, Conclusion)
 - Pattern: 匹配推理规则的模式
 - Condition: 应用该元规则的条件
 - Conclusion: 生成或修改推理规则的结论
+
 ```
 
 **元推理**：
@@ -486,6 +510,7 @@ Meta-Rule = (Pattern, Condition, Conclusion)
 - 生成新的推理规则
 - 验证推理规则的正确性
 - 优化推理规则系统
+
 ```
 
 **元推理与推理的关系**：
@@ -493,6 +518,7 @@ Meta-Rule = (Pattern, Condition, Conclusion)
 ```math
 元推理 →→→ 生成/修改 →→→ 推理系统
 推理系统 →→→ 应用于 →→→ 具体问题
+
 ```
 
 ## 1.4 形式化模型层
@@ -505,6 +531,7 @@ Meta-Rule = (Pattern, Condition, Conclusion)
 纯函数定义: f: A → B，满足引用透明性
 组合子: compose(f, g) = λx.f(g(x))
 高阶函数: map: (A → B) → [A] → [B]
+
 ```
 
 Rust代码示例（函数式模型）：
@@ -540,6 +567,7 @@ fn main() {
     
     assert_eq!(transformed, vec![4, 6, 8, 10]);
 }
+
 ```
 
 **命令式计算模型**：
@@ -550,6 +578,7 @@ fn main() {
 状态转换: ⟦c⟧: S → S
 程序: p = c₁;c₂;...;cₙ
 程序语义: ⟦p⟧ = ⟦cₙ⟧ ∘ ... ∘ ⟦c₂⟧ ∘ ⟦c₁⟧
+
 ```
 
 **并发计算模型**：
@@ -564,6 +593,7 @@ P ::= 0 | α.P | P + P | P|P | P\L | P[f]
 - P|P: 并行组合
 - P\L: 限制（隐藏L中的动作）
 - P[f]: 重命名
+
 ```
 
 ### 1.4.2 类型系统形式化
@@ -577,6 +607,7 @@ P ::= 0 | α.P | P + P | P|P | P\L | P[f]
 - (var) Γ, x:τ ⊢ x:τ
 - (abs) Γ, x:τ₁ ⊢ t:τ₂ ⇒ Γ ⊢ λx:τ₁.t : τ₁→τ₂
 - (app) Γ ⊢ t₁:τ₁→τ₂, Γ ⊢ t₂:τ₁ ⇒ Γ ⊢ t₁ t₂:τ₂
+
 ```
 
 **依赖类型**：
@@ -584,6 +615,7 @@ P ::= 0 | α.P | P + P | P|P | P\L | P[f]
 ```math
 类型: τ ::= b | x:τ₁→τ₂(x) | Πx:τ₁.τ₂(x)
 其中Πx:τ₁.τ₂(x)表示依赖函数类型，函数返回值类型依赖于参数值
+
 ```
 
 **线性类型**：
@@ -591,6 +623,7 @@ P ::= 0 | α.P | P + P | P|P | P\L | P[f]
 ```math
 类型: τ ::= b | τ ⊸ τ
 其中⊸是线性函数类型，确保每个资源恰好使用一次
+
 ```
 
 Rust代码示例（类型系统中的所有权）：
@@ -624,6 +657,7 @@ fn calculate_length(s: &String) -> usize {
 fn change(s: &mut String) {
     s.push_str(", world");
 }
+
 ```
 
 ### 1.4.3 并发模型形式化
@@ -643,6 +677,7 @@ receive(Actor, Msg) =
   当Actor空闲时，取出Msg
   执行处理函数Actor.Behavior[Msg.type]
   可能修改Actor.State和发送新消息
+
 ```
 
 **CSP（通信顺序进程）**：
@@ -652,6 +687,7 @@ receive(Actor, Msg) =
 P ::= SKIP | STOP | a → P | P □ P | P ∥ P | ...
 通信同步:
 (a → P) ∥ (a → Q) = a → (P ∥ Q)
+
 ```
 
 Rust代码示例（CSP模型）：
@@ -695,6 +731,7 @@ fn csp_example() {
     q_handle.join().unwrap();
     r_handle.join().unwrap();
 }
+
 ```
 
 **Petri网**：
@@ -710,6 +747,7 @@ Petri网 = (P, T, F, M₀)
 转移规则:
 - 当所有输入库所都有足够令牌时，变迁t可以发生
 - 发生后，从每个输入库所移除一个令牌，向每个输出库所添加一个令牌
+
 ```
 
 ### 1.4.4 资源模型形式化
@@ -725,6 +763,7 @@ Petri网 = (P, T, F, M₀)
 - Load: Loc → Val：读操作
 - Operation: 操作集合（如原子操作）
 - Order: 操作之间的顺序关系（如happens-before）
+
 ```
 
 **时间模型**：
@@ -733,6 +772,7 @@ Petri网 = (P, T, F, M₀)
 离散时间模型: Time = ℕ，表示离散时间点
 连续时间模型: Time = ℝ⁺，表示连续时间域
 时序属性: φ(s, t) 表示状态s在时间t满足属性φ
+
 ```
 
 **能源模型**：
@@ -741,6 +781,7 @@ Petri网 = (P, T, F, M₀)
 能源消耗函数: Energy: Operation × Time → ℝ⁺
 能源约束: TotalEnergy(Program) ≤ AvailableEnergy
 能效优化: 在性能约束下最小化能源消耗
+
 ```
 
 ## 1.5 物理实现层
@@ -756,6 +797,7 @@ Petri网 = (P, T, F, M₀)
 - Decode: IR → Operation
 - Execute: Operation → Result
 - Store: Result → Memory/Register
+
 ```
 
 **内存访问**：
@@ -764,6 +806,7 @@ Petri网 = (P, T, F, M₀)
 内存层次: (Registers → L1 → L2 → L3 → Main Memory → Disk)
 访问速度: Speed(Registers) >> Speed(L1) >> ... >> Speed(Disk)
 访问模型: Access(Address) = Data[if in cache] | Load_From_Next_Level(Address)
+
 ```
 
 **状态转换**：
@@ -772,6 +815,7 @@ Petri网 = (P, T, F, M₀)
 CPU状态 = (PC, Registers, Flags)
 指令执行: State × Instruction → State
 状态转换规则: 形式化为每种指令如何修改状态
+
 ```
 
 ### 1.5.2 哈佛架构
@@ -788,6 +832,7 @@ CPU状态 = (PC, Registers, Flags)
 
 与冯诺伊曼架构的关键区别:
 instruction_fetch 和 data_access 可以并行进行
+
 ```
 
 **并行访问**：
@@ -796,6 +841,7 @@ instruction_fetch 和 data_access 可以并行进行
 并行度 = 指令访问速率 + 数据访问速率
 冯诺伊曼架构: 并行度 = max(指令访问速率, 数据访问速率)
 哈佛架构: 并行度 = 指令访问速率 + 数据访问速率
+
 ```
 
 **总线系统**：
@@ -804,6 +850,7 @@ instruction_fetch 和 data_access 可以并行进行
 哈佛总线 = (指令总线, 数据总线)
 带宽 = 指令总线带宽 + 数据总线带宽
 冲突处理: 独立总线可消除指令获取与数据访问间的总线冲突
+
 ```
 
 ### 1.5.3 异构计算架构
@@ -816,6 +863,7 @@ instruction_fetch 和 data_access 可以并行进行
 - CPU: 复杂控制流，少量线程
 - GPU: 简单控制流，大量线程
 调度模型: 任务特性 → 处理器选择 → 执行 → 结果整合
+
 ```
 
 Rust代码示例（CPU-GPU异构计算）：
@@ -974,11 +1022,11 @@ impl GpuCompute {
             compute_pass.set_bind_group(0, &self.bind_group, &[]);
             compute_pass.dispatch_workgroups(workgroup_count, 1, 1);
         }
-        
+  
         // 提交命令队列
         self.queue.submit(Some(encoder.finish()));
     }
-    
+  
     async fn read_result(&self) -> Vec<f32> {
         // 创建用于读取结果的暂存缓冲区
         let staging_buffer = self.device.create_buffer(&BufferDescriptor {
@@ -987,7 +1035,7 @@ impl GpuCompute {
             usage: BufferUsages::MAP_READ | BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
-        
+  
         // 创建命令将输出缓冲区复制到暂存缓冲区
         let mut encoder = self.device.create_command_encoder(&CommandEncoderDescriptor {
             label: Some("Read Encoder"),
@@ -998,13 +1046,13 @@ impl GpuCompute {
             self.buffer_size
         );
         self.queue.submit(Some(encoder.finish()));
-        
+  
         // 映射暂存缓冲区以读取结果
         let buffer_slice = staging_buffer.slice(..);
         let (sender, receiver) = futures_intrusive::channel::shared::oneshot_channel();
         buffer_slice.map_async(MapMode::Read, move |v| sender.send(v).unwrap());
         self.device.poll(wgpu::Maintain::Wait);
-        
+  
         if let Ok(Ok(())) = receiver.receive().await {
             let data = buffer_slice.get_mapped_range();
             let result = bytemuck::cast_slice(&data).to_vec();
@@ -1021,16 +1069,16 @@ impl GpuCompute {
 async fn gpu_compute_example() {
     // 准备输入数据
     let data: Vec<f32> = (0..1024).map(|i| i as f32).collect();
-    
+  
     // 初始化GPU计算
     let gpu = GpuCompute::new(&data).await;
-    
+  
     // 执行计算
     gpu.compute(32); // 32个工作组
-    
+  
     // 读取结果
     let result = gpu.read_result().await;
-    
+  
     // 验证结果 (假设着色器对每个元素乘以2)
     for (i, &val) in result.iter().enumerate() {
         assert_eq!(val, (i as f32) * 2.0);
@@ -1041,13 +1089,14 @@ async fn gpu_compute_example() {
 // ```
 // @group(0) @binding(0) var<storage, read> input: array<f32>;
 // @group(0) @binding(1) var<storage, read_write> output: array<f32>;
-// 
+//
 // @compute @workgroup_size(32)
 // fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
 //     let idx = global_id.x;
 //     output[idx] = input[idx] * 2.0;
 // }
 // ```
+
 ```
 
 **FPGA架构**：
@@ -1061,6 +1110,7 @@ FPGA系统 = (LUTs, Flip-Flops, Block RAMs, DSPs, 互连网络)
 - 细粒度并行性
 - 可重配置性
 - 低延迟，确定性时序
+
 ```
 
 **专用处理器**：
@@ -1075,6 +1125,7 @@ FPGA系统 = (LUTs, Flip-Flops, Block RAMs, DSPs, 互连网络)
 - 专用化程度 vs. 灵活性
 - 性能 vs. 能耗
 - 设计复杂度 vs. 时间成本
+
 ```
 
 ### 1.6.2 量子计算架构
@@ -1085,6 +1136,7 @@ FPGA系统 = (LUTs, Flip-Flops, Block RAMs, DSPs, 互连网络)
 量子状态: |ψ⟩ = α|0⟩ + β|1⟩，满足|α|² + |β|² = 1
 测量: 概率|α|²得到|0⟩，概率|β|²得到|1⟩
 纠缠: |ψ⟩ = (|00⟩ + |11⟩)/√2，不可表示为单个量子比特的张量积
+
 ```
 
 **量子门**：
@@ -1095,6 +1147,7 @@ FPGA系统 = (LUTs, Flip-Flops, Block RAMs, DSPs, 互连网络)
 - X门(NOT): [0 1; 1 0]
 - H门(Hadamard): 1/√2 * [1 1; 1 -1]
 - CNOT门: [1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0]
+
 ```
 
 **量子电路**：
@@ -1103,6 +1156,7 @@ FPGA系统 = (LUTs, Flip-Flops, Block RAMs, DSPs, 互连网络)
 量子电路 = (量子比特, 量子门序列)
 电路运行: |ψ_final⟩ = U_n * ... * U_2 * U_1 * |ψ_initial⟩
 量子算法: 量子傅立叶变换、Grover搜索、Shor因式分解
+
 ```
 
 ## 1.7 执行模型层
@@ -1121,6 +1175,7 @@ FPGA系统 = (LUTs, Flip-Flops, Block RAMs, DSPs, 互连网络)
 
 流水线调度:
 schedule(I, t) = S_i 表示指令I在时间t执行阶段S_i
+
 ```
 
 **乱序执行**：
@@ -1130,6 +1185,7 @@ schedule(I, t) = S_i 表示指令I在时间t执行阶段S_i
 依赖图: G = (V, E)，V为指令集，E为依赖关系
 发射策略: 当指令的所有依赖都满足时发射
 提交策略: 按程序顺序提交，确保架构状态正确更新
+
 ```
 
 **分支预测**：
@@ -1143,6 +1199,7 @@ schedule(I, t) = S_i 表示指令I在时间t执行阶段S_i
 
 预测准确率: Accuracy = Correct_Predictions / Total_Predictions
 错误预测代价: Mispredict_Penalty = 流水线冲刷成本 + 重填充成本
+
 ```
 
 ### 1.7.2 数据流计算
@@ -1158,6 +1215,7 @@ schedule(I, t) = S_i 表示指令I在时间t执行阶段S_i
 并行度分析:
 - 关键路径长度: 图中最长路径
 - 最大可并行度: |V|/关键路径长度
+
 ```
 
 **令牌传递**：
@@ -1165,10 +1223,11 @@ schedule(I, t) = S_i 表示指令I在时间t执行阶段S_i
 ```math
 令牌 = (数据, 目标, 类型)
 触发规则: 当节点所有输入都收到令牌时，节点可执行
-执行模型: 
+执行模型:
 - 节点执行计算
 - 消耗输入令牌
 - 生成输出令牌
+
 ```
 
 **执行规则**：
@@ -1177,6 +1236,7 @@ schedule(I, t) = S_i 表示指令I在时间t执行阶段S_i
 节点就绪条件: ready(node) ⟺ ∀input ∈ inputs(node): has_token(input)
 节点执行规则: execute(node) = consume_inputs() → compute() → produce_outputs()
 系统调度: 在就绪节点集合中选择节点执行，可使用各种策略（如静态优先级）
+
 ```
 
 ### 1.7.3 向量/SIMD计算
@@ -1194,6 +1254,7 @@ schedule(I, t) = S_i 表示指令I在时间t执行阶段S_i
 - 算术: vadd, vmul, ...
 - 归约: vreduce, ...
 - 重排: vshuffle, ...
+
 ```
 
 **数据并行**：
@@ -1202,6 +1263,7 @@ schedule(I, t) = S_i 表示指令I在时间t执行阶段S_i
 SIMD并行度 = 向量寄存器位宽 / 元素大小
 效率 = 有效利用的SIMD槽 / 总SIMD槽
 向量化条件: 循环迭代间无依赖，或依赖可通过特殊指令处理
+
 ```
 
 **访存模式**：
@@ -1215,13 +1277,16 @@ SIMD并行度 = 向量寄存器位宽 / 元素大小
 向量性能:
 - 连续访问 > 步长访问 > 散布/收集
 - 对齐访问 > 非对齐访问
+
 ```
 
 Rust代码示例（SIMD计算）：
 
 ```rust
 // 使用Rust的portable-simd特性实现SIMD计算
-#![feature(portable_simd)]
+
+# ![feature(portable_simd)]
+
 use std::simd::{f32x4, f32x8, SimdFloat};
 
 // SIMD向量计算示例
@@ -1229,10 +1294,10 @@ fn simd_vector_add() {
     // 准备两个向量
     let a = f32x4::from_array([1.0, 2.0, 3.0, 4.0]);
     let b = f32x4::from_array([5.0, 6.0, 7.0, 8.0]);
-    
+  
     // SIMD向量加法
     let c = a + b;
-    
+  
     // 结果转换回标量数组
     let result = c.to_array();
     assert_eq!(result, [6.0, 8.0, 10.0, 12.0]);
@@ -1241,11 +1306,11 @@ fn simd_vector_add() {
 // 向量归约操作
 fn simd_reduction() {
     let v = f32x8::from_array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-    
+  
     // 水平求和归约
     let sum = v.reduce_sum();
     assert_eq!(sum, 36.0);
-    
+  
     // 水平求最大值归约
     let max = v.reduce_max();
     assert_eq!(max, 8.0);
@@ -1254,28 +1319,29 @@ fn simd_reduction() {
 // SIMD向量化循环
 fn simd_vectorized_loop(a: &[f32], b: &[f32], c: &mut [f32]) {
     assert!(a.len() == b.len() && b.len() == c.len());
-    
+  
     let chunks = a.len() / 4;
-    
+  
     for i in 0..chunks {
         let start = i * 4;
-        
+  
         // 加载数据到SIMD寄存器
         let va = f32x4::from_slice(&a[start..]);
         let vb = f32x4::from_slice(&b[start..]);
-        
+  
         // SIMD计算
         let vc = va * vb;
-        
+  
         // 存储结果
         vc.write_to_slice(&mut c[start..]);
     }
-    
+  
     // 处理剩余元素
     for i in (chunks * 4)..a.len() {
         c[i] = a[i] * b[i];
     }
 }
+
 ```
 
 ### 1.7.4 GPU/SIMT计算
@@ -1293,6 +1359,7 @@ GPU线程层次 = (线程, 线程束, 线程块, 网格)
 层次映射:
 - 一维问题: [0, N-1] → 线程ID
 - 二维问题: [0, M-1] × [0, N-1] → (blockIdx.x × blockDim.x + threadIdx.x, blockIdx.y × blockDim.y + threadIdx.y)
+
 ```
 
 **内存层次**：
@@ -1309,6 +1376,7 @@ GPU内存层次 = (寄存器, 共享内存, 全局内存, 常量内存, 纹理�
 访问特性:
 - 合并访问(Coalescing): 同一线程束中的线程访问连续内存
 - 银行冲突(Bank Conflict): 多线程访问同一共享内存银行
+
 ```
 
 **同步机制**：
@@ -1323,6 +1391,7 @@ GPU内存层次 = (寄存器, 共享内存, 全局内存, 常量内存, 纹理�
 - 线程束内: 线程束内线程隐式同步
 - 线程块内: 使用__syncthreads()显式同步
 - 全局: 通常需要多次内核调用或使用原子操作
+
 ```
 
 ## 1.8 系统抽象层
@@ -1340,6 +1409,7 @@ GPU内存层次 = (寄存器, 共享内存, 全局内存, 常量内存, 纹理�
 一致性属性:
 - 单写多读(SWMR): 某时刻一个数据块要么有一个写者，要么有多个读者
 - 数据值不变(DVI): 读取返回最近写入的值
+
 ```
 
 **内存模型**：
@@ -1354,6 +1424,7 @@ GPU内存层次 = (寄存器, 共享内存, 全局内存, 常量内存, 纹理�
 
 内存模型强度:
 - 顺序一致性(SC) > 全存储顺序(TSO) > 部分存储顺序(PSO) > 弱一致性(WC)
+
 ```
 
 Rust代码示例（内存模型）：
@@ -1367,25 +1438,25 @@ use std::thread;
 fn memory_ordering_example() {
     let x = Arc::new(AtomicBool::new(false));
     let y = Arc::new(AtomicUsize::new(0));
-    
+  
     let x_clone = Arc::clone(&x);
     let y_clone = Arc::clone(&y);
-    
+  
     // 线程1 - 写操作
     let t1 = thread::spawn(move || {
         y_clone.store(42, Ordering::Relaxed); // [1] 写入数据
         x_clone.store(true, Ordering::Release); // [2] 发布同步信号，建立happens-before关系
     });
-    
+  
     // 线程2 - 读操作
     let t2 = thread::spawn(move || {
         // 等待同步信号，使用Acquire建立happens-before关系
         while !x.load(Ordering::Acquire) { /* spin-wait */ }
-        
+  
         // 由于Release-Acquire关系，此处一定能看到[1]的效果
         assert_eq!(y.load(Ordering::Relaxed), 42);
     });
-    
+  
     t1.join().unwrap();
     t2.join().unwrap();
 }
@@ -1394,23 +1465,23 @@ fn memory_ordering_example() {
 fn relaxed_reordering_example() {
     static mut X: usize = 0;
     static mut Y: usize = 0;
-    
+  
     // 计数观察到的重排序现象
     let mut reordering_observed = 0;
-    
+  
     for _ in 0..10000 {
         // 重置状态
         unsafe {
             X = 0;
             Y = 0;
         }
-        
+  
         let flag1 = Arc::new(AtomicBool::new(false));
         let flag2 = Arc::new(AtomicBool::new(false));
-        
+  
         let flag1_clone = Arc::clone(&flag1);
         let flag2_clone = Arc::clone(&flag2);
-        
+  
         // 线程1
         let t1 = thread::spawn(move || {
             unsafe {
@@ -1420,7 +1491,7 @@ fn relaxed_reordering_example() {
                 }
             }
         });
-        
+  
         // 线程2
         let t2 = thread::spawn(move || {
             unsafe {
@@ -1430,19 +1501,20 @@ fn relaxed_reordering_example() {
                 }
             }
         });
-        
+  
         t1.join().unwrap();
         t2.join().unwrap();
-        
+  
         // 检查是否观察到重排序
         if flag1.load(Ordering::Relaxed) && flag2.load(Ordering::Relaxed) {
             reordering_observed += 1;
         }
     }
-    
+  
     // 在弱内存模型下，可能会观察到重排序现象
     println!("Reordering observed: {} times", reordering_observed);
 }
+
 ```
 
 **垃圾回收**：
@@ -1459,6 +1531,7 @@ fn relaxed_reordering_example() {
 - 吞吐量: 应用代码执行时间 / 总执行时间
 - 暂停时间: 垃圾回收导致的应用暂停
 - 空间开销: 垃圾回收所需额外内存
+
 ```
 
 ### 1.8.2 控制流系统
@@ -1477,6 +1550,7 @@ fn relaxed_reordering_example() {
 - 支配关系: dom(n) = {m | m支配n}
 - 到达定义: reachingDef(n) = 到达节点n的定义集
 - 活跃变量: liveVar(n) = 节点n处活跃的变量集
+
 ```
 
 **异常处理**：
@@ -1491,6 +1565,7 @@ fn relaxed_reordering_example() {
 - 抛出: throw e →→ 寻找最近的handler(e)
 - 处理: try S catch(e) H →→ 当S抛出异常e时执行H
 - 清理: try S finally F →→ 无论S正常结束还是抛出异常都执行F
+
 ```
 
 Rust代码示例（错误处理）：
@@ -1506,7 +1581,7 @@ fn error_handling_example() -> Result<String, io::Error> {
     let mut file = File::open("config.txt")?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;
-    
+  
     Ok(content)
 }
 
@@ -1523,7 +1598,7 @@ fn combined_error_handling() -> Result<String, io::Error> {
         },
         Err(e) => Err(e),
     }?;
-    
+  
     Ok(content)
 }
 
@@ -1536,7 +1611,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
             file.read_to_string(&mut content)?;
             Ok(content)
         });
-    
+  
     // 如果主路径失败，尝试备用路径
     match result {
         Ok(content) => Ok(content),
@@ -1549,6 +1624,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
         }
     }
 }
+
 ```
 
 **中断管理**：
@@ -1565,6 +1641,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 - 确定中断处理程序
 - 执行中断处理程序
 - 恢复上下文并继续
+
 ```
 
 ### 1.8.3 并发系统
@@ -1582,6 +1659,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 - 信号量: semaphore = (count: int)
   - 操作: P()/wait(), V()/signal()
   - 不变式: count ≥ 0
+
 ```
 
 **死锁检测**：
@@ -1601,6 +1679,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 
 死锁检测:
 - 检查资源分配图是否存在环
+
 ```
 
 **调度策略**：
@@ -1619,6 +1698,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 - 吞吐量: 单位时间内完成的任务数
 - 响应时间: 从提交到首次响应的时间
 - 等待时间: 在就绪队列中等待的时间
+
 ```
 
 ### 1.8.4 分布式系统
@@ -1635,6 +1715,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 典型协议:
 - Paxos: 基于提议者、接受者和学习者角色
 - Raft: 基于领导者选举、日志复制和安全性保证
+
 ```
 
 **容错机制**：
@@ -1650,6 +1731,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 - 崩溃故障: 节点停止运行
 - 拜占庭故障: 节点可能表现任意行为
 - 网络分区: 网络连接中断造成节点集合分离
+
 ```
 
 **共识算法**：
@@ -1664,6 +1746,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 容错能力:
 - 在异步系统中，任何解决共识的算法最多能容忍(n-1)/3个拜占庭故障
 - 在同步系统中，最多能容忍(n-1)/2个拜占庭故障
+
 ```
 
 ## 1.9 错误与容错层
@@ -1683,6 +1766,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 - 设计错误: 算法或架构缺陷
 - 实现错误: 编码错误（如缓冲区溢出、空指针）
 - 配置错误: 系统配置不当
+
 ```
 
 **错误传播模型**：
@@ -1698,6 +1782,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 - 错误传播图: G = (C, E)
   其中C是组件集，E表示错误可从一个组件传播到另一个组件
 - 传播函数: P(c_i → c_j) = 错误从c_i传播到c_j的概率
+
 ```
 
 **故障树分析**：
@@ -1713,6 +1798,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 分析方法:
 - 定性分析: 确定导致顶级事件的最小割集
 - 定量分析: 计算顶级事件概率
+
 ```
 
 ### 1.9.2 容错理论与机制
@@ -1728,6 +1814,7 @@ fn fallback_strategy(path: &Path) -> Result<String, io::Error> {
 形式化定义:
 - 可靠性模型: R_system = 1 - ∏(1 - R_i) (并联)
              R_system = ∏R_i (串联)
+
 ```
 
 Rust代码示例（空间冗余）：
@@ -1760,10 +1847,10 @@ where
             voter: Arc::new(Mutex::new(HashMap::new())),
         }
     }
-    
+  
     fn execute(&self) -> Option<T> {
         let voter = self.voter.clone();
-        
+  
         // 并行执行三个模块
         let handles: Vec<_> = self.functions
             .iter()
@@ -1771,7 +1858,7 @@ where
             .map(|(idx, f)| {
                 let f = f.clone();
                 let voter = voter.clone();
-                
+  
                 thread::spawn(move || {
                     let result = f();
                     let mut voter = voter.lock().unwrap();
@@ -1779,23 +1866,23 @@ where
                 })
             })
             .collect();
-        
+  
         // 等待所有执行完成
         for handle in handles {
             handle.join().unwrap();
         }
-        
+  
         // 投票决定结果
         let voter = voter.lock().unwrap();
         if voter.len() < 2 {
             return None; // 不足以做决定
         }
-        
+  
         let mut counts = HashMap::new();
         for result in voter.values() {
             *counts.entry(result).or_insert(0) += 1;
         }
-        
+  
         // 找出多数结果
         counts.into_iter()
             .max_by_key(|(_, count)| *count)
@@ -1816,9 +1903,9 @@ fn tmr_example() {
             43 // 正确值
         }
     };
-    
+  
     let tmr = TMRSystem::new(compute);
-    
+  
     for _ in 0..10 {
         match tmr.execute() {
             Some(result) => println!("TMR result: {}", result),
@@ -1827,6 +1914,7 @@ fn tmr_example() {
         thread::sleep(Duration::from_millis(100));
     }
 }
+
 ```
 
 **容错策略**：
@@ -1844,6 +1932,7 @@ fn tmr_example() {
 
 理论基础:
 - 故障包含定理: 对于任何组件故障，其影响不超过一个故障包含区域
+
 ```
 
 **RAS特性**：
@@ -1862,6 +1951,7 @@ RAS = (可靠性, 可用性, 可服务性)
 - 诊断能力
 - 修复难易度
 - 维护所需时间和资源
+
 ```
 
 ### 1.9.3 恢复模型与策略
@@ -1878,6 +1968,7 @@ RAS = (可靠性, 可用性, 可服务性)
 算法:
 - 异常处理: try/catch结构
 - 补偿事务: 执行反向操作来中和错误
+
 ```
 
 **后向恢复**：
@@ -1891,6 +1982,7 @@ RAS = (可靠性, 可用性, 可服务性)
 技术:
 - 检查点/回滚: 定期保存状态，出错时回滚
 - 日志重放: 记录操作日志，回滚后重放
+
 ```
 
 **恢复导向计算**：
@@ -1905,6 +1997,7 @@ RAS = (可靠性, 可用性, 可服务性)
 形式化模型:
 - recover(op, error_handler): 将操作op与处理器error_handler关联
 - stabilize(state): 将错误状态转变为稳定状态
+
 ```
 
 Rust代码示例（恢复策略）：
@@ -1918,7 +2011,7 @@ use std::thread;
 trait RecoveryStrategy {
     type Error;
     type Output;
-    
+  
     fn recover(&self, operation: impl Fn() -> Result<Self::Output, Self::Error>) -> Result<Self::Output, Self::Error>;
 }
 
@@ -1931,10 +2024,10 @@ struct RetryStrategy {
 impl<E, T> RecoveryStrategy for RetryStrategy {
     type Error = E;
     type Output = T;
-    
+  
     fn recover(&self, operation: impl Fn() -> Result<T, E>) -> Result<T, E> {
         let mut attempts = 0;
-        
+  
         loop {
             attempts += 1;
             match operation() {
@@ -1961,11 +2054,11 @@ struct ExponentialBackoffStrategy {
 impl<E, T> RecoveryStrategy for ExponentialBackoffStrategy {
     type Error = E;
     type Output = T;
-    
+  
     fn recover(&self, operation: impl Fn() -> Result<T, E>) -> Result<T, E> {
         let mut attempts = 0;
         let mut current_delay = self.initial_delay;
-        
+  
         loop {
             attempts += 1;
             match operation() {
@@ -1974,9 +2067,9 @@ impl<E, T> RecoveryStrategy for ExponentialBackoffStrategy {
                     if attempts >= self.max_attempts {
                         return Err(error);
                     }
-                    
+  
                     thread::sleep(current_delay);
-                    
+  
                     // 计算下一次延迟（指数退避）
                     let next_delay = current_delay.as_millis() as f64 * self.backoff_factor;
                     current_delay = Duration::from_millis(
@@ -2000,7 +2093,7 @@ fn recovery_strategy_example() -> Result<String, io::Error> {
             Ok("Operation succeeded".to_string())
         }
     };
-    
+  
     // 使用指数退避重试策略
     let strategy = ExponentialBackoffStrategy {
         max_attempts: 5,
@@ -2008,9 +2101,10 @@ fn recovery_strategy_example() -> Result<String, io::Error> {
         max_delay: Duration::from_secs(2),
         backoff_factor: 2.0,
     };
-    
+  
     strategy.recover(unstable_operation)
 }
+
 ```
 
 **自适应系统**：
@@ -2028,6 +2122,7 @@ MAPE-K闭环:
 - 参数调整: 动态修改系统参数
 - 架构重构: 运行时改变组件拓扑
 - 资源重分配: 动态分配计算资源
+
 ```
 
 ### 1.9.4 中断与异常处理
@@ -2046,6 +2141,7 @@ MAPE-K闭环:
 2. 识别中断源: identify_source()
 3. 调用处理程序: call_handler(source)
 4. 恢复上下文: restore_context()
+
 ```
 
 **异常处理体系**：
@@ -2060,6 +2156,7 @@ MAPE-K闭环:
 - try E catch H = 执行E，如果抛出异常则执行H
 - throw e = 沿调用栈查找处理程序，否则终止程序
 - finally F = 无论正常执行还是异常都执行F
+
 ```
 
 **实时系统中断**：
@@ -2074,6 +2171,7 @@ MAPE-K闭环:
 形式化约束:
 - 响应时间约束: ∀i ∈ I: response_time(i) ≤ deadline(i)
 - 优先级规则: ∀i,j ∈ I: priority(i) > priority(j) ⟹ i可以抢占j
+
 ```
 
 ## 1.10 形式化验证层
@@ -2092,19 +2190,21 @@ MAPE-K闭环:
 形式化表示:
 - 判断: Γ ⊢ φ (在上下文Γ中可证明φ)
 - 规则: premise₁, premise₂, ..., premiseₙ ⊢ conclusion
+
 ```
 
 **类型系统证明**：
 
 ```math
 类型安全性定理 = (进展性 + 保持性)
-进展性(Progress): 
+进展性(Progress):
   well_typed(e) ∧ ¬is_value(e) ⟹ ∃e': e → e'
   （类型良好且非值的表达式可以进一步求值）
 
-保持性(Preservation): 
+保持性(Preservation):
   Γ ⊢ e: τ ∧ e → e' ⟹ Γ ⊢ e': τ
   （求值保持类型）
+
 ```
 
 **程序逻辑**：
@@ -2119,6 +2219,7 @@ MAPE-K闭环:
 - 顺序规则: {P} c₁ {R}, {R} c₂ {Q} ⊢ {P} c₁;c₂ {Q}
 - 条件规则: {P∧b} c₁ {Q}, {P∧¬b} c₂ {Q} ⊢ {P} if b then c₁ else c₂ {Q}
 - 循环规则: {P∧b} c {P} ⊢ {P} while b do c {P∧¬b}
+
 ```
 
 ### 1.10.2 模型检验
@@ -2136,6 +2237,7 @@ Kripke结构 = (S, S₀, R, L)
 状态空间表示:
 - 显式表示: 列举所有状态和转换
 - 符号表示: 使用BDD, SAT/SMT等表示状态集和转换关系
+
 ```
 
 **时序属性**：
@@ -2154,6 +2256,7 @@ Kripke结构 = (S, S₀, R, L)
 - 语义: π ⊨ φ，路径π满足φ
   - π ⊨ Xφ iff π¹ ⊨ φ
   - π ⊨ φ₁Uφ₂ iff ∃j≥0: π^j ⊨ φ₂ ∧ ∀0≤i<j: π^i ⊨ φ₁
+
 ```
 
 **反例生成**：
@@ -2168,6 +2271,7 @@ Kripke结构 = (S, S₀, R, L)
 反例简化:
 - Delta Debugging: 通过二分检查确定最小反例
 - 抽象反例: 提取导致错误的关键因素
+
 ```
 
 ### 1.10.3 类型检查
@@ -2184,6 +2288,7 @@ Kripke结构 = (S, S₀, R, L)
 
 形式化代表:
 - Γ ⊢ e: τ (在环境Γ中，表达式e的类型是τ)
+
 ```
 
 **类型推导**：
@@ -2200,13 +2305,16 @@ Hindley-Milner算法 = (语法分析, 类型变量分配, 约束生成, 统一�
 - Infer(Γ, e) = (τ, C)，返回类型τ和约束集C
 - Unify(C) = σ，返回满足约束集C的替换σ
 - Principal(e) = σ(τ)，返回e的主类型
+
 ```
 
 Rust代码示例（类型推导）：
 
 ```rust
 // 简单类型推导系统的实现
-#[derive(Clone, Debug, PartialEq, Eq)]
+
+# [derive(Clone, Debug, PartialEq, Eq)]
+
 enum Type {
     Int,
     Bool,
@@ -2250,25 +2358,25 @@ fn infer(env: &TypeEnv, expr: &Expr) -> (Type, Vec<Constraint>) {
             let (t1, mut c1) = infer(env, cond);
             let (t2, mut c2) = infer(env, then_expr);
             let (t3, mut c3) = infer(env, else_expr);
-            
+  
             let mut constraints = vec![(t1, Type::Bool), (t2.clone(), t3.clone())];
             constraints.append(&mut c1);
             constraints.append(&mut c2);
             constraints.append(&mut c3);
-            
+  
             (t2, constraints)
         },
         Expr::Lam(x, body) => {
             // 为参数创建新类型变量
             let param_type = Type::Var(format!("t{}", next_type_var()));
-            
+  
             // 扩展环境
             let mut new_env = env.clone();
             new_env.insert(x.clone(), param_type.clone());
-            
+  
             // 推导函数体
             let (return_type, constraints) = infer(&new_env, body);
-            
+  
             // 函数类型是参数类型到返回类型
             (Type::Fun(Box::new(param_type), Box::new(return_type)), constraints)
         },
@@ -2276,17 +2384,17 @@ fn infer(env: &TypeEnv, expr: &Expr) -> (Type, Vec<Constraint>) {
             // 函数应用
             let (t1, mut c1) = infer(env, func);
             let (t2, mut c2) = infer(env, arg);
-            
+  
             // 返回类型是一个新类型变量
             let result_type = Type::Var(format!("t{}", next_type_var()));
-            
+  
             // 函数类型必须是arg_type -> result_type
             let constraint = (t1, Type::Fun(Box::new(t2), Box::new(result_type.clone())));
-            
+  
             let mut constraints = vec![constraint];
             constraints.append(&mut c1);
             constraints.append(&mut c2);
-            
+  
             (result_type, constraints)
         }
     }
@@ -2295,50 +2403,50 @@ fn infer(env: &TypeEnv, expr: &Expr) -> (Type, Vec<Constraint>) {
 // 统一算法
 fn unify(constraints: Vec<Constraint>) -> Subst {
     let mut subst = HashMap::new();
-    
+  
     for (t1, t2) in constraints {
         // 应用当前替换到约束
         let t1 = apply_subst(&subst, &t1);
         let t2 = apply_subst(&subst, &t2);
-        
+  
         match (t1, t2) {
             // 相同类型，无需约束
             (a, b) if a == b => {},
-            
+  
             // 类型变量，添加替换
             (Type::Var(name), t) | (t, Type::Var(name)) => {
                 // 出现检查（避免循环类型）
                 if occurs(&name, &t) {
                     panic!("Recursive type: {} occurs in {:?}", name, t);
                 }
-                
+  
                 // 更新当前替换中所有使用此变量的类型
                 for val in subst.values_mut() {
                     *val = apply_subst_type(&HashMap::from([(name.clone(), t.clone())]), val);
                 }
-                
+  
                 // 添加新替换
                 subst.insert(name, t);
             },
-            
+  
             // 函数类型，递归统一
             (Type::Fun(p1, r1), Type::Fun(p2, r2)) => {
                 let mut new_constraints = vec![(*p1, *p2), (*r1, *r2)];
                 let s = unify(new_constraints);
-                
+  
                 // 合并替换
                 for (k, v) in s {
                     subst.insert(k, v);
                 }
             },
-            
+  
             // 类型不匹配
             (t1, t2) => {
                 panic!("Type mismatch: {:?} and {:?}", t1, t2);
             }
         }
     }
-    
+  
     subst
 }
 
@@ -2379,6 +2487,7 @@ fn next_type_var() -> usize {
         TYPE_VAR_COUNTER
     }
 }
+
 ```
 
 ### 1.10.4 抽象解释
@@ -2398,6 +2507,7 @@ Galois连接:
   - ∀c∈C, a∈A: α(c) ⊑_A a ⟺ c ⊑_C γ(a)
   - α是单调的: c₁ ⊑_C c₂ ⟹ α(c₁) ⊑_A α(c₂)
   - γ是单调的: a₁ ⊑_A a₂ ⟹ γ(a₁) ⊑_C γ(a₂)
+
 ```
 
 **抽象域设计**：
@@ -2411,6 +2521,7 @@ Galois连接:
 抽象操作定义:
 - 如对区间域的加法: [a,b] + [c,d] = [a+c, b+d]
 - 对区间域的乘法: [a,b] × [c,d] = [min(ac,ad,bc,bd), max(ac,ad,bc,bd)]
+
 ```
 
 **固定点计算**：
@@ -2425,6 +2536,7 @@ Galois连接:
   - 保证收敛: 对任何上升链a₀ ⊑ a₁ ⊑ ..., 序列 b_{i+1} = b_i ∇ a_{i+1} 最终稳定
 - 收窄算子(narrowing): Δ: A × A → A
   - 改进精度: a ⊒ a Δ b ⊒ b, 当a ⊒ b时
+
 ```
 
 ## 1.11 模型推理层
@@ -2443,6 +2555,7 @@ Galois连接:
 - 自然演绎
 - 顺序演算
 - 分辨演算
+
 ```
 
 **演绎证明策略**：
@@ -2457,6 +2570,7 @@ Galois连接:
 - 规则选择函数: select: (Goals, Rules) → Rule
 - 规则应用函数: apply: (Rule, Goal) → Goals
 - 证明搜索: search: (Goals, Rules) → Proof
+
 ```
 
 ### 1.11.2 归纳推理系统
@@ -2474,6 +2588,7 @@ Galois连接:
 - 结构归纳法: 基于数据结构递归定义
 - 数学归纳法: 从基础情况和归纳步骤
 - 归纳逻辑程序设计(ILP): 从实例推导逻辑规则
+
 ```
 
 **归纳证明技术**：
@@ -2488,6 +2603,7 @@ Galois连接:
 - 基础情况: P(b)对所有基础构造b成立
 - 归纳步骤: 如果P对所有直接子结构成立，则P对复合结构成立
 - 结论: P对所有结构成立
+
 ```
 
 ### 1.11.3 溯因推理系统
@@ -2506,6 +2622,7 @@ Galois连接:
 - 观察o, 知识库KB
 - 寻找假设h使得KB ∪ h ⊢ o
 - 选择"最好"的假设，通常基于简洁性、解释力等标准
+
 ```
 
 **最佳解释推断**：
@@ -2524,6 +2641,7 @@ IBE(最佳解释推断) = (生成, 评分, 选择)
 形式化表达:
 - score(h) = simplicity(h) × explanatory_power(h) × coherence(h)
 - select(H, o) = argmax_{h∈H} score(h)
+
 ```
 
 ### 1.11.4 概率推理系统
@@ -2544,6 +2662,7 @@ P(H|E) = P(E|H) × P(H) / P(E)
 - 从观察证据E更新对假设H的信念
 - 计算多个假设的后验概率
 - 选择最大后验概率(MAP)假设
+
 ```
 
 **概率图模型**：
@@ -2561,6 +2680,7 @@ P(H|E) = P(E|H) × P(H) / P(E)
 形式化表示:
 - 贝叶斯网络的联合概率: P(X₁,X₂,...,Xₙ) = ∏ᵢ P(Xᵢ|Parents(Xᵢ))
 - 马尔可夫网络的联合概率: P(X) = 1/Z ∏_c φ_c(X_c)，Z是归一化常数
+
 ```
 
 ## 1.12 跨层次分析
@@ -2574,13 +2694,14 @@ P(H|E) = P(E|H) × P(H) / P(E)
 形式定义:
 - 抽象函数: abs: Lower → Higher 将低层次结构映射到高层次
 - 具体化函数: conc: Higher → P(Lower) 将高层次结构映射到低层次可能实现集合
-- 一致性条件: 
+- 一致性条件:
   - abs(conc(h)) = h (抽象完美）
   - x ∈ conc(abs(x)) (具体化相容）
 
 例如:
 - 机器码 → 汇编 → 高级语言
 - 物理实现 → 微架构 → 指令集架构(ISA)
+
 ```
 
 **精化关系**：
@@ -2597,6 +2718,7 @@ S' ⊑ S 意味着S'是S的精化/实现
 精化具体形式:
 - 痕迹精化: traces(S') ⊆ traces(S)
 - 失败精化: failures(S') ⊆ failures(S)
+
 ```
 
 **模拟关系**：
@@ -2613,6 +2735,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 意义:
 - 模拟表示一个系统能够模拟另一个系统的行为
 - 双模拟表示两个系统行为等价
+
 ```
 
 ### 1.12.2 正确性保持
@@ -2629,6 +2752,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 - 顺序组合: {P} S₁ {R}, {R} S₂ {Q} ⊢ {P} S₁;S₂ {Q}
 - 条件语句: {P∧B} S₁ {Q}, {P∧¬B} S₂ {Q} ⊢ {P} if B then S₁ else S₂ {Q}
 - 循环不变式: {P∧B} S {P} ⊢ {P} while B do S {P∧¬B}
+
 ```
 
 **时序正确性**：
@@ -2643,6 +2767,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 模型检查:
 - M ⊨ φ: 模型M满足属性φ
 - 证明路径: 使用反例(模型M中违反φ的执行路径)或归纳不变式
+
 ```
 
 **安全性**：
@@ -2657,6 +2782,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 - 越界检查: 不会访问已分配内存外的地址
 - 悬垂指针: 不会使用已释放的内存
 - 双重释放: 不会释放已释放的内存
+
 ```
 
 ### 1.12.3 性能保持
@@ -2673,6 +2799,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 - P: 多项式时间可解问题
 - NP: 非确定性多项式时间可解问题
 - PSPACE: 多项式空间可解问题
+
 ```
 
 **空间复杂度**：
@@ -2685,6 +2812,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 
 复杂度表示:
 - S(n) = O(f(n)): 输入大小为n时算法使用的空间上界是f(n)
+
 ```
 
 **资源利用**：
@@ -2700,6 +2828,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 分析方法:
 - 排队论: 使用M/M/1, M/M/c等模型分析系统延迟和吞吐量
 - 负载理论: 利用为资源请求率与服务率之比
+
 ```
 
 ### 1.12.4 资源约束
@@ -2716,6 +2845,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 - 最短作业优先(SJF): 最小化平均等待时间
 - 最早截止期限优先(EDF): 优先调度截止期限最近的任务
 - 响应比优先(HRRN): 考虑等待时间和执行时间的综合指标
+
 ```
 
 **存储资源**：
@@ -2731,6 +2861,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 - 速度: 寄存器 > 缓存 > 主存 > 辅存
 - 成本: 寄存器 > 缓存 > 主存 > 辅存
 - 容量: 寄存器 < 缓存 < 主存 < 辅存
+
 ```
 
 **能源资源**：
@@ -2753,6 +2884,7 @@ s～t iff 存在双模拟关系R使得(s,t)∈R且(t,s)∈R^{-1}
 - 总能耗: E = ∫ P(t) dt
 - 能效: η = Work / Energy
 - 能耗约束: E_total ≤ E_budget
+
 ```
 
 Rust代码示例（能源感知计算）：
@@ -2780,25 +2912,25 @@ impl EnergyAwareScheduler {
             current_power: 0.0,
         }
     }
-    
+  
     fn add_task(&mut self, task: EnergyAwareTask) {
         self.tasks.push(task);
     }
-    
+  
     // 选择最优频率使任务在截止时间内完成，同时最小化能耗
     fn select_optimal_frequency(&self, task: &EnergyAwareTask) -> f64 {
         let mut optimal_freq = 0.0;
         let mut min_energy = f64::INFINITY;
-        
+  
         for &(freq, power) in &task.energy_profile {
             // 计算在此频率下完成任务所需时间
             let execution_time = task.workload / freq;
-            
+  
             // 如果能在截止时间内完成
             if execution_time <= task.deadline {
                 // 计算能耗
                 let energy = power * execution_time;
-                
+  
                 // 如果能耗更低且在预算内，更新最优频率
                 if energy < min_energy && energy <= self.available_energy {
                     min_energy = energy;
@@ -2806,35 +2938,35 @@ impl EnergyAwareScheduler {
                 }
             }
         }
-        
+  
         optimal_freq
     }
-    
+  
     // 调度任务，考虑能源约束
     fn schedule(&mut self) -> Vec<(usize, f64)> {
         let mut schedule = Vec::new();
-        
+  
         // 按截止时间排序
         let mut tasks = self.tasks.clone();
         tasks.sort_by(|a, b| a.deadline.partial_cmp(&b.deadline).unwrap());
-        
+  
         for task in tasks {
             let optimal_freq = self.select_optimal_frequency(&task);
-            
+  
             if optimal_freq > 0.0 {
                 // 找到此频率对应的功率
                 let power = task.energy_profile.iter()
                     .find(|&&(freq, _)| freq == optimal_freq)
                     .map(|&(_, power)| power)
                     .unwrap();
-                
+  
                 // 计算执行时间和能耗
                 let execution_time = task.workload / optimal_freq;
                 let energy = power * execution_time;
-                
+  
                 // 更新可用能源
                 self.available_energy -= energy;
-                
+  
                 // 添加到调度
                 schedule.push((task.id, optimal_freq));
             } else {
@@ -2842,10 +2974,11 @@ impl EnergyAwareScheduler {
                 println!("Task {} cannot be scheduled within energy constraints", task.id);
             }
         }
-        
+  
         schedule
     }
 }
+
 ```
 
 ## 1.13 统一推理框架
@@ -2867,6 +3000,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 元规则:
 - 替换规则: 等价式可互换
 - 实例化规则: 将通用规则应用于特定情况
+
 ```
 
 **组合规则**：
@@ -2888,6 +3022,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 迭代组合:
 - R*: 重复应用R直到不变
 - 语义: R*(x) = fix(λy.x ∪ R(y))
+
 ```
 
 **策略规则**：
@@ -2903,6 +3038,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - try S: 尝试策略S，失败时回溯
 - repeat S: 重复应用S直到失败
 - S₁ <+ S₂: 先尝试S₁，失败时尝试S₂
+
 ```
 
 ### 1.13.2 证明构造方法
@@ -2920,6 +3056,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - Facts₀ = 初始事实集
 - Facts_{i+1} = Facts_i ∪ {f | Facts_i ⊢_R f}
 - 证明成功当Goal ∈ Facts_n
+
 ```
 
 **后向推理**：
@@ -2936,6 +3073,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - Goals₀ = {Goal}
 - Goals_{i+1} = (Goals_i - {g}) ∪ {p₁,...,pₙ | g←p₁,...,pₙ ∈ Rules}
 - 证明成功当Goals_n ⊆ Facts
+
 ```
 
 **归约证明**：
@@ -2953,6 +3091,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 归约函数: reduce: P → Q
 - 结果映射: map: solution(Q) → solution(P)
 - 解决方案: solve_P(p) = map(solve_Q(reduce(p)))
+
 ```
 
 ### 1.13.3 验证技术
@@ -2972,6 +3111,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 传递函数F: D → D，表示程序点对抽象值的变换
 - 汇合操作⊔: D × D → D，合并来自不同程序路径的抽象值
 - 固定点方程: OUT[n] = F_n(IN[n])，IN[n] = ⊔_{p∈pred(n)} OUT[p]
+
 ```
 
 **动态检查**：
@@ -2988,6 +3128,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 监视器M: Trace → {true, false}
 - 属性φ: 要检查的程序属性
 - 检测: M(trace) = true ⟺ trace ⊨ φ
+
 ```
 
 **混合验证**：
@@ -3003,6 +3144,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 静态分析结果: Static(P)
 - 动态检查范围: Dynamic(P, Static(P))
 - 最终验证: Verify(P) = Static(P) ∩ Dynamic(P, Static(P))
+
 ```
 
 ### 1.13.4 分析方法
@@ -3021,6 +3163,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 安全性: □φ (始终满足φ)
 - 活性: ◇φ (最终满足φ)
 - 无死锁: □(blocked → ◇¬blocked)
+
 ```
 
 **性能分析**：
@@ -3038,6 +3181,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 服务率μ: 系统处理速率
 - 利用率ρ = λ/μ
 - 响应时间RT = 1/(μ-λ)（对于M/M/1模型）
+
 ```
 
 **资源分析**：
@@ -3054,6 +3198,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 资源需求约束: ∀t: Demand(r,t) ≤ Capacity(r,t)
 - 性能目标约束: Performance(t) ≥ Target(t)
 - 成本约束: Cost(resources) ≤ Budget
+
 ```
 
 ## 1.14 理论局限性
@@ -3072,6 +3217,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 推论:
 - 程序等价性不可判定
 - 程序是否满足任意非平凡性质不可判定（Rice定理）
+
 ```
 
 **等价性检验**：
@@ -3085,6 +3231,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 约束版本:
 - 特定领域下的等价性有时可判定
 - 使用等价于停机问题的归约证明
+
 ```
 
 **活性验证**：
@@ -3099,6 +3246,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 特殊情况:
 - 有限状态系统中，活性属性验证是可判定的
 - 某些受限的无限状态系统，部分活性属性可判定
+
 ```
 
 ### 1.14.2 形式化鸿沟
@@ -3117,6 +3265,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 具体语义: [[P]]_C
 - 语义保持: [[P]]_A = α([[P]]_C)
 - 语义鸿沟: 当无法建立完美α时存在
+
 ```
 
 **抽象层次**：
@@ -3134,6 +3283,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 不同抽象层次使用不同形式化方法
 - 层次间转换可能丢失信息或引入错误
 - 跨层次推理需特殊技术支持
+
 ```
 
 **验证复杂性**：
@@ -3152,6 +3302,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 分层验证: 不同层次使用不同验证技术
 - 抽象解释: 使用抽象减少状态空间
 - 模块化验证: 分而治之，分模块验证
+
 ```
 
 ### 1.14.3 计算复杂性
@@ -3170,6 +3321,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 量化布尔公式(QBF): PSPACE-完全
 - 模型检查: 对CTL为P，对LTL为PSPACE-完全
 - 程序终止性: 图灵完全程序为不可判定
+
 ```
 
 **空间界限**：
@@ -3184,6 +3336,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 状态压缩: 减少每个状态的表示大小
 - 状态空间削减: 只存储必要状态
 - 增量验证: 分部分验证以减少同时所需空间
+
 ```
 
 **规模限制**：
@@ -3199,6 +3352,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 模块化: 分解大系统
 - 指导式验证: 使用领域知识指导验证过程
 - 反例引导抽象精化(CEGAR): 基于失败案例精炼模型
+
 ```
 
 ### 1.14.4 实用性边界
@@ -3220,6 +3374,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 抛弃完备性: 保证可靠且终止，但可能有假否定
 - 抛弃可靠性: 保证完备且终止，但可能有假肯定
 - 抛弃终止保证: 保证可靠且完备，但可能不终止
+
 ```
 
 **工具支持**：
@@ -3235,6 +3390,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 轻量级: 集成到开发流程，如类型检查器、静态分析工具
 - 中量级: 半自动化，如单元测试生成、契约检查
 - 重量级: 高度形式化，如定理证明器、全功能模型检查器
+
 ```
 
 **应用成本**：
@@ -3256,6 +3412,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 渐进式采用: 从轻量级方法开始
 - 自动化工具: 减少手动工作量
 - 领域特定语言: 简化特定领域的形式化
+
 ```
 
 ## 1.15 未来发展方向
@@ -3276,6 +3433,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 类型系统: 区分量子和经典类型
 - 程序逻辑: 支持量子叠加和纠缠
 - 资源分析: 量子门和量子比特使用
+
 ```
 
 **神经计算**：
@@ -3292,6 +3450,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 形式化验证: 证明神经网络满足规约
 - 鲁棒性分析: 量化对扰动的敏感度
 - 可解释性模型: 理解决策过程
+
 ```
 
 **生物计算**：
@@ -3308,6 +3467,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 随机过程: 马尔可夫过程、随机微分方程
 - 信息论: 生物通信信道的容量和噪声
 - 自组织系统: 从局部规则到全局行为
+
 ```
 
 ### 1.15.2 形式化方法扩展
@@ -3330,6 +3490,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 可达性分析: 计算连续空间中的可达集
 - 稳定性分析: 证明系统不会偏离平衡点
 - 参数化验证: 验证参数范围内的系统行为
+
 ```
 
 **概率系统**：
@@ -3352,6 +3513,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 概率模型检查: 验证PCTL/CSL属性
 - 统计模型检查: 通过采样估计概率
 - 参数化模型检查: 计算满足特定属性的参数区域
+
 ```
 
 **连续系统**：
@@ -3367,6 +3529,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 稳定性分析: 李雅普诺夫方法
 - 控制理论: PID控制器、状态空间方法
 - 信号处理: 频域分析、滤波器设计
+
 ```
 
 ### 1.15.3 工具与自动化
@@ -3384,6 +3547,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 机器学习辅助: 学习证明策略和模式
 - 证明复用: 从已有证明中提取策略和模式
 - 协作证明: 支持多人协作的证明开发
+
 ```
 
 **代码生成**：
@@ -3399,6 +3563,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 正确性保持转换: 确保生成代码满足原规约
 - 类型驱动开发: 从类型推导代码结构
 - 领域特定语言: 特定领域的高级抽象
+
 ```
 
 **验证自动化**：
@@ -3415,6 +3580,7 @@ P₁, P₂, ..., Pₙ ⊢ C [条件]
 - 学习式验证: 机器学习指导验证过程
 - 预测式抽象: 预测有效的抽象
 - 自动修复: 从验证失败自动生成修复
+
 ```
 
 ### 1.15.4 应用领域拓展
@@ -3433,6 +3599,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 形式化规约: 精确表达AI系统属性
 - 验证技术: 针对神经网络的特殊算法
 - 运行时监控: 实时监测AI行为
+
 ```
 
 **区块链**：
@@ -3448,6 +3615,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 形式化建模: π演算或进程代数
 - 特性验证: 模型检查或定理证明
 - 合约分析: 静态分析特定漏洞（重入、溢出等）
+
 ```
 
 **物联网**：
@@ -3464,6 +3632,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 轻量级形式化: 适应资源限制
 - 组合验证: 不同组件的组合验证
 - 运行时监控: 实时监测系统行为
+
 ```
 
 ## 1.16 思维导图
@@ -3710,6 +3879,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
         ├── 人工智能
         ├── 区块链
         └── 物联网
+
 ```
 
 ## 1.17 跨层分析模型
@@ -3729,6 +3899,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 模型: M = (EM, RM, CM)
 - 映射: φ: M → MM
 - 一致性条件: ∀c ∈ CMM: M ⊨ φ(c)
+
 ```
 
 **模型-代码一致性**：
@@ -3743,6 +3914,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 代码生成: 从模型自动生成符合一致性的代码
 - 反向工程: 从代码提取模型并验证一致性
 - 运行时验证: 监控代码执行与模型的符合性
+
 ```
 
 **执行-验证一致性**：
@@ -3757,6 +3929,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 正确性: 验证结果正确预测实际执行
 - 完备性: 验证覆盖所有可能执行路径
 - 精确性: 验证精确预测执行行为（无假阳性/假阴性）
+
 ```
 
 ### 1.17.2 横向互操作性分析
@@ -3773,6 +3946,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 共享模型: 各模型共享的核心元素
 - 映射关系: 不同模型间的元素映射
 - 一致性规则: 确保映射保持语义
+
 ```
 
 **异构代码互操作**：
@@ -3787,6 +3961,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 类型安全: 跨组件交互保持类型一致性
 - 协议一致: 交互符合预定义协议
 - 状态一致: 组件间共享状态保持一致性
+
 ```
 
 **异构系统验证**：
@@ -3801,6 +3976,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 接口契约: 定义并验证组件间契约
 - 集成测试: 专注于组件交互的测试
 - 端到端验证: 验证整个系统行为
+
 ```
 
 ### 1.17.3 全局属性分析
@@ -3821,6 +3997,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 验证方法:
 - 安全性: 不变式、类型系统、模型检查
 - 活性: 模型检查、排程分析、终止性证明
+
 ```
 
 **性能与资源使用**：
@@ -3837,6 +4014,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 性能建模: 构建系统性能的数学模型
 - 性能测试: 测量实际系统性能
 - 性能剖析: 识别性能瓶颈
+
 ```
 
 **可靠性与弹性**：
@@ -3853,6 +4031,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 隔离策略: 限制故障影响范围
 - 恢复机制: 从故障中恢复的方法
 - 降级运行: 在资源受限时提供核心功能
+
 ```
 
 ## 1.18 实践应用展望
@@ -3871,6 +4050,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 基础理论: 逻辑、集合论、代数结构
 - 形式化方法: 类型系统、程序逻辑、模型
 - 实践应用: 从形式规约到形式化验证
+
 ```
 
 **工具使用培训**：
@@ -3885,6 +4065,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 渐进式学习: 从简单应用到复杂应用
 - 案例研究: 分析实际项目中的应用
 - 交互式教程: 引导使用工具的关键功能
+
 ```
 
 **形式化社区建设**：
@@ -3899,6 +4080,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 形式化模式库: 常见问题的形式化解决方案
 - 案例研究库: 形式化方法成功应用案例
 - 在线学习资源: 课程、教程和练习
+
 ```
 
 ### 1.18.2 工业实践
@@ -3915,6 +4097,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 安全关键系统: 强调安全性和正确性
 - 高性能系统: 关注性能模型和资源分析
 - 分布式系统: 专注一致性和容错性
+
 ```
 
 **成本效益分析**：
@@ -3933,6 +4116,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 投资回报:
 - 短期ROI: 减少后期测试和修复成本
 - 长期ROI: 提高质量、可靠性和安全性
+
 ```
 
 **集成开发过程**：
@@ -3948,6 +4132,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - IDE集成: 形式化工具与IDE集成
 - CI/CD集成: 在持续集成中包含形式化验证
 - 版本控制集成: 形式化模型的版本管理
+
 ```
 
 ### 1.18.3 研究方向
@@ -3965,6 +4150,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 新的决策程序: 更高效的SAT/SMT求解器
 - 抽象技术: 自动生成有效抽象
 - 模块化验证: 基于组件的验证技术
+
 ```
 
 **跨领域融合研究**：
@@ -3980,6 +4166,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 混合智能系统: 符号推理与神经网络结合
 - 可信AI: AI系统的形式化保证
 - 自适应形式化: 根据运行时数据调整形式化模型
+
 ```
 
 **标准化与互操作性**：
@@ -3994,6 +4181,7 @@ AI验证 = (神经网络验证, 强化学习验证, 决策系统验证)
 - 形式化模型转换: 不同形式化模型间映射
 - 证明复用: 跨工具复用证明
 - 验证组合: 组合不同验证技术的结果
+
 ```
 
 ## 1.19 结论

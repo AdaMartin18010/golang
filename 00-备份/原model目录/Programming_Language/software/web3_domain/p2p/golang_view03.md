@@ -81,7 +81,7 @@ $$k \geq \frac{\log n + \log(1/\epsilon)}{\log(1/(f+\rho \cdot \sigma_f))}$$
 
 其中$f$是平均节点失效率，$\rho$是失效相关系数，$\sigma_f$是失效率标准差，$\epsilon$是容许的网络分区概率。
 
-*证明*:
+* 证明*:
 实际网络中，节点失效并非完全独立。当地区性网络问题或协同攻击发生时，相邻节点或特定类型节点可能同时失效。
 
 假设节点失效的相关性由系数$\rho$表示（$\rho=0$表示独立失效，$\rho=1$表示完全相关）。考虑相关性后，节点$i$和节点$j$同时失效的概率为:
@@ -108,7 +108,7 @@ $$E[T(lookup)] = \min(T_S, T_U) + O(T_L)$$
 
 其中$T_S = O(\log n)$是结构化组件的查找时间，$T_U$是非结构化组件的查找时间，$T_L$是组件间切换的开销。
 
-*证明*:
+* 证明*:
 混合网络允许同时利用结构化网络的确定性和非结构化网络的灵活性。例如，当DHT查找失败或缓慢时，系统可切换到洪泛或随机游走策略。
 
 **实际性能数据**：IPFS网络实测表明，在包含10,000个节点的网络中，纯Kademlia DHT的平均查找延迟为267ms，而结合本地缓存和优先邻居查询的混合策略平均延迟降至83ms，改进幅度达69%。
@@ -119,7 +119,7 @@ $$P^*_A = \arg\max_P f_A(P)$$
 
 其中$P$包含连接度、缓存大小、超时参数等。
 
-*实践验证*：Ethereum 2.0 Beacon Chain通过优化4个关键拓扑参数：子网大小(128)、随机连接数(8)、持久连接寿命(12小时)和重连频率(5分钟)，将消息传播延迟降低了42%，同时减少31%带宽消耗。
+* 实践验证*：Ethereum 2.0 Beacon Chain通过优化4个关键拓扑参数：子网大小(128)、随机连接数(8)、持久连接寿命(12小时)和重连频率(5分钟)，将消息传播延迟降低了42%，同时减少31%带宽消耗。
 
 ### CAP定理的实践应用与权衡策略
 
@@ -131,7 +131,7 @@ $$C^\alpha \cdot A^\beta \leq (1-p)$$
 
 其中$\alpha,\beta > 0$是反映系统对一致性和可用性偏好的权重，且$\alpha+\beta=1$。
 
-*证明*:
+* 证明*:
 传统CAP定理的表述过于严格，实际系统可在不同程度的一致性和可用性间寻找平衡点。引入参数$\alpha$和$\beta$，可表达系统设计中对一致性和可用性的不同偏好。
 
 **实例分析**：
@@ -158,6 +158,7 @@ function lookup(target):
         update candidates with new nodes from responses
         update results with α nodes that responded
     return k closest nodes from results
+
 ```
 
 其中$\alpha$是并行查询参数，通常取3-5。
@@ -166,7 +167,7 @@ function lookup(target):
 
 $$E[steps] = \frac{\log n}{\log(1+\alpha \cdot r)} + \frac{1}{r} - 1$$
 
-*证明*:
+* 证明*:
 理想情况下，每步查询$\alpha$个节点，距离可减少$(1+\alpha)$倍。但考虑节点在线率$r$，平均每步只有$\alpha \cdot r$个节点响应，因此距离减少率变为$(1+\alpha \cdot r)$。
 
 额外的$\frac{1}{r} - 1$项考虑了因节点离线导致的重试次数。
@@ -179,7 +180,7 @@ $$P_{success\_attack} \leq (f^q)^p$$
 
 其中$f$是攻击者控制的网络比例。
 
-*工程实现*：Ethereum的discv5协议（Kademlia变种）实现了多路径查询，当$p=3, q=4$时，在攻击者控制20%网络的情况下，成功攻击概率降至约$10^{-5}$，但查询开销增加2.7倍。
+* 工程实现*：Ethereum的discv5协议（Kademlia变种）实现了多路径查询，当$p=3, q=4$时，在攻击者控制20%网络的情况下，成功攻击概率降至约$10^{-5}$，但查询开销增加2.7倍。
 
 ### Chord与Kademlia的实际对比
 
@@ -189,7 +190,7 @@ $$P_{success\_attack} \leq (f^q)^p$$
 - Kademlia维护开销: $O(\lambda \log n)$ 消息/秒
 - 当网络规模$n>10^3$且$\lambda>0.1$时，Kademlia的维护效率显著高于Chord
 
-*实证分析*:
+* 实证分析*:
 Chord要求严格维护前驱和后继节点以及完整的finger table，导致较高的维护成本。Kademlia的k-桶设计具有隐式冗余和宽容性，适应性更强。
 
 **性能基准测试结果**：在测试中，当网络拥有10,000个节点，每分钟有1%节点加入/离开时:
@@ -239,7 +240,7 @@ $$T \propto \sqrt{S}, M \propto S^{1.5}$$
 
 其中$S$是安全强度参数。
 
-*实证验证*：IPFS在实施S/Kademlia安全扩展后，查询延迟增加了42%，但节点维护开销增加了127%，确认了二次方增长关系。
+* 实证验证*：IPFS在实施S/Kademlia安全扩展后，查询延迟增加了42%，但节点维护开销增加了127%，确认了二次方增长关系。
 
 **实用防御权衡**：为平衡安全性和性能，推荐对不同类型查询采用差异化策略：
 
@@ -265,6 +266,7 @@ type Host interface {
     NewStream(ctx context.Context, p peer.ID, pids ...protocol.ID) (network.Stream, error)
     Close() error
 }
+
 ```
 
 **多传输协议性能对比**：
@@ -304,6 +306,7 @@ host, err := libp2p.New(
         connmgr.WithGracePeriod(time.Minute),
     )),
 )
+
 ```
 
 **定理 3.1** (libp2p资源管理): 使用适当资源限制的libp2p节点在DoS攻击下，服务可用性满足:
@@ -312,7 +315,7 @@ $$A \geq 1 - \frac{R_{attack}}{R_{limit} \cdot n_{conns}}$$
 
 其中$R_{attack}$是攻击资源量，$R_{limit}$是每连接资源限制，$n_{conns}$是最大连接数。
 
-*案例分析*：使用默认配置的libp2p节点在1Gbps流量DoS攻击下可用性降至12%，而实施每连接10Mbps带宽限制、最大连接数250的节点维持了78%可用性。
+* 案例分析*：使用默认配置的libp2p节点在1Gbps流量DoS攻击下可用性降至12%，而实施每连接10Mbps带宽限制、最大连接数250的节点维持了78%可用性。
 
 ### IPFS与Filecoin的P2P设计权衡
 
@@ -347,7 +350,7 @@ $$P_{success} = 1 - \prod_{i=1}^{k}(1-p_i)$$
 
 其中$p_i$是第$i$个路由器的查询成功率。
 
-*实际应用*：IPFS分布式委托集群(Saturn)在查询流量超过10,000 QPS时，使用5个委托路由器，将内容检索成功率从单路由器的87%提升至99.3%，同时减少平均延迟72%。
+* 实际应用*：IPFS分布式委托集群(Saturn)在查询流量超过10,000 QPS时，使用5个委托路由器，将内容检索成功率从单路由器的87%提升至99.3%，同时减少平均延迟72%。
 
 ### Ethereum P2P网络演进
 
@@ -369,7 +372,7 @@ $$P_{success} = 1 - \prod_{i=1}^{k}(1-p_i)$$
 
 **定理 3.3** (ETH2分片网络效率): 在具有$m$个分片的ETH2网络中，节点只需维护$O(\log m + \log n)$个连接，而非$O(m \cdot \log n)$个，同时保持$O(\log n)$的查找复杂度。
 
-*实现方式*：通过主题广告和订阅机制，节点可以选择性地只参与部分分片的gossip，显著降低带宽需求。ETH2.0测试网数据显示，对于64个分片，普通验证节点的带宽需求从理论全参与的372Mbps降至实际的23Mbps。
+* 实现方式*：通过主题广告和订阅机制，节点可以选择性地只参与部分分片的gossip，显著降低带宽需求。ETH2.0测试网数据显示，对于64个分片，普通验证节点的带宽需求从理论全参与的372Mbps降至实际的23Mbps。
 
 **实战最佳实践**：
 
@@ -402,6 +405,7 @@ conn := discover.NewUDP(ln.Database(), ln.Node(), socket, conn.Config{
     Bootnodes: bootnodes,
     Unhandled: unhandled,
 })
+
 ```
 
 ### Tendermint与Cosmos生态P2P层
@@ -427,7 +431,7 @@ $$E[D] = 2 \cdot L_{p2p} + Proposal_{size} / BW_{min} + L_{commit}$$
 
 其中$L_{p2p}$是节点间P2P延迟，$Proposal_{size}$是提案大小，$BW_{min}$是最小节点带宽，$L_{commit}$是提交延迟。
 
-*实测数据*：在地理分布的128个验证者环境中，Tendermint达成共识的平均延迟为1.24秒，其中P2P消息传播占40%，验证计算占35%，提交确认占25%。
+* 实测数据*：在地理分布的128个验证者环境中，Tendermint达成共识的平均延迟为1.24秒，其中P2P消息传播占40%，验证计算占35%，提交确认占25%。
 
 **防止长程攻击的改进**：
 
@@ -470,6 +474,7 @@ func (pm *GeoAwarePeerManager) SelectPeersToConnect(candidates []*p2p.Peer) []*p
     
     return selected
 }
+
 ```
 
 ### 新兴框架对比：Polkadot(Go)与Libra/Diem
@@ -526,7 +531,6 @@ func (rcn *RelayChainNetwork) RegisterParachainProtocol(
         
         // 验证发送者权限
         
-
 **Polkadot平行链设计分析**（续）：
 
 ```go
@@ -536,20 +540,21 @@ func (rcn *RelayChainNetwork) RegisterParachainProtocol(
             log.Warn("Received parachain message from non-validator", "peer", senderID)
             return
         }
-        
+  
         // 处理消息
         if err := handler(&msg); err != nil {
             log.Error("Failed to handle parachain message", "error", err)
         }
     })
-    
+  
     rcn.protocols[fmt.Sprintf("%d", parachainID)] = &ParachainProtocol{
         ID: parachainID,
         ProtocolID: protocolID,
     }
-    
+  
     return nil
 }
+
 ```
 
 **定理 3.5** (平行链通信效率): 在Polkadot网络中，具有$n$个验证者和$m$个平行链时，中继链处理的交叉消息量为:
@@ -611,20 +616,20 @@ func (d *DnsDiscovery) Nodes() ([]*enode.Node, error) {
         return nodes, nil
     }
     d.mu.RUnlock()
-    
+  
     return d.refresh()
 }
 
 func (d *DnsDiscovery) refresh() ([]*enode.Node, error) {
     d.mu.Lock()
     defer d.mu.Unlock()
-    
+  
     fqdn := fmt.Sprintf("%s.%s", d.recordName, d.domain)
     records, err := net.LookupTXT(fqdn)
     if err != nil {
         return nil, fmt.Errorf("DNS lookup failed: %v", err)
     }
-    
+  
     var nodes []*enode.Node
     for _, record := range records {
         if strings.HasPrefix(record, "enr:") {
@@ -634,14 +639,14 @@ func (d *DnsDiscovery) refresh() ([]*enode.Node, error) {
             }
         }
     }
-    
+  
     // 实现指数退避重试和故障转移
     if len(nodes) == 0 {
         fallbackDomains := []string{
             "fallback1." + d.domain,
             "fallback2." + d.domain,
         }
-        
+  
         for _, domain := range fallbackDomains {
             fbNodes, err := lookupNodesFromDomain(domain)
             if err == nil && len(fbNodes) > 0 {
@@ -650,11 +655,12 @@ func (d *DnsDiscovery) refresh() ([]*enode.Node, error) {
             }
         }
     }
-    
+  
     d.cachedNodes = nodes
     d.lastRefresh = time.Now()
     return nodes, nil
 }
+
 ```
 
 **定理 4.1** (DNS发现恢复性): 使用多级DNS记录树的节点发现机制在DNS服务部分失效时，保持可用性为:
@@ -695,7 +701,7 @@ type AdaptiveRefreshStrategy struct {
     minInterval time.Duration  // 最小刷新间隔
     maxInterval time.Duration  // 最大刷新间隔
     targetAvailability float64 // 目标可用性(0-1)
-    
+  
     // 统计跟踪
     nodeStats map[peer.ID]*NodeStats
     globalFailRate float64     // 全局节点失效率
@@ -707,21 +713,21 @@ type AdaptiveRefreshStrategy struct {
 func (s *AdaptiveRefreshStrategy) NextRefreshInterval() time.Duration {
     s.mu.RLock()
     defer s.mu.RUnlock()
-    
+  
     // 基于全局失效率调整刷新间隔
     // 失效率高时缩短间隔，失效率低时延长间隔
     adjustmentFactor := 1.0
     if s.globalFailRate > 0 {
         // 计算调整因子，保证目标可用性
-        adjustmentFactor = math.Log(1-s.targetAvailability) / 
+        adjustmentFactor = math.Log(1-s.targetAvailability) /
                           math.Log(1-s.globalFailRate)
     }
-    
-    baseInterval := s.minInterval + 
+  
+    baseInterval := s.minInterval +
                    (s.maxInterval - s.minInterval) * (1 - s.globalFailRate)
-    
+  
     interval := time.Duration(float64(baseInterval) * adjustmentFactor)
-    
+  
     // 确保在最小和最大间隔之间
     if interval < s.minInterval {
         return s.minInterval
@@ -729,7 +735,7 @@ func (s *AdaptiveRefreshStrategy) NextRefreshInterval() time.Duration {
     if interval > s.maxInterval {
         return s.maxInterval
     }
-    
+  
     return interval
 }
 
@@ -737,10 +743,10 @@ func (s *AdaptiveRefreshStrategy) NextRefreshInterval() time.Duration {
 func (s *AdaptiveRefreshStrategy) UpdateStats(results map[peer.ID]bool) {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+  
     totalNodes := len(results)
     failedNodes := 0
-    
+  
     for nodeID, succeeded := range results {
         if _, exists := s.nodeStats[nodeID]; !exists {
             s.nodeStats[nodeID] = &NodeStats{
@@ -749,10 +755,10 @@ func (s *AdaptiveRefreshStrategy) UpdateStats(results map[peer.ID]bool) {
                 LastSeen: time.Now(),
             }
         }
-        
+  
         stats := s.nodeStats[nodeID]
         stats.TotalChecks++
-        
+  
         if !succeeded {
             stats.FailedChecks++
             failedNodes++
@@ -760,15 +766,16 @@ func (s *AdaptiveRefreshStrategy) UpdateStats(results map[peer.ID]bool) {
             stats.LastSeen = time.Now()
         }
     }
-    
+  
     // 更新全局失效率，使用指数移动平均
     if totalNodes > 0 {
         currentFailRate := float64(failedNodes) / float64(totalNodes)
         s.globalFailRate = 0.7*s.globalFailRate + 0.3*currentFailRate
     }
-    
+  
     s.lastRefresh = time.Now()
 }
+
 ```
 
 **定理 4.2** (最优刷新间隔): 在节点失效率为$\lambda$且呈指数分布的动态P2P网络中，路由表的最优刷新间隔为:
@@ -809,10 +816,10 @@ type ICENatTraversal struct {
     stunServers []string
     turnServers []TurnConfig
     useUPnP     bool
-    
+  
     // ICE代理
     iceAgent    *ice.Agent
-    
+  
     // 统计
     statsMu     sync.RWMutex
     connStats   map[peer.ID]*ConnStats
@@ -832,7 +839,7 @@ func NewICENatTraversal(config NATConfig) (*ICENatTraversal, error) {
         useUPnP:     config.EnableUPnP,
         connStats:   make(map[peer.ID]*ConnStats),
     }
-    
+  
     // 配置ICE
     iceConfig := &ice.AgentConfig{
         NetworkTypes: []ice.NetworkType{
@@ -840,7 +847,7 @@ func NewICENatTraversal(config NATConfig) (*ICENatTraversal, error) {
             ice.NetworkTypeTCP4,
         },
     }
-    
+  
     // 添加STUN服务器
     for _, stunURL := range nat.stunServers {
         iceConfig.Urls = append(iceConfig.Urls, &ice.URL{
@@ -848,7 +855,7 @@ func NewICENatTraversal(config NATConfig) (*ICENatTraversal, error) {
             Host:   stunURL,
         })
     }
-    
+  
     // 添加TURN服务器
     for _, turn := range nat.turnServers {
         iceConfig.Urls = append(iceConfig.Urls, &ice.URL{
@@ -858,19 +865,19 @@ func NewICENatTraversal(config NATConfig) (*ICENatTraversal, error) {
             Password: turn.Password,
         })
     }
-    
+  
     agent, err := ice.NewAgent(iceConfig)
     if err != nil {
         return nil, fmt.Errorf("failed to create ICE agent: %v", err)
     }
-    
+  
     nat.iceAgent = agent
-    
+  
     // 如果启用uPnP，启动端口映射
     if nat.useUPnP {
         go nat.setupUPnP()
     }
-    
+  
     return nat, nil
 }
 
@@ -878,14 +885,14 @@ func NewICENatTraversal(config NATConfig) (*ICENatTraversal, error) {
 func (nat *ICENatTraversal) Connect(peerID peer.ID, peerAddrs []ma.Multiaddr) (net.Conn, error) {
     // 记录开始时间
     startTime := time.Now()
-    
+  
     // 直接IP连接尝试
     directConn, err := nat.tryDirectConnect(peerAddrs)
     if err == nil {
         nat.recordSuccess(peerID, "direct", time.Since(startTime))
         return directConn, nil
     }
-    
+  
     // ICE协商连接
     iceConn, err := nat.negotiateICEConnection(peerID, peerAddrs)
     if err == nil {
@@ -896,7 +903,7 @@ func (nat *ICENatTraversal) Connect(peerID peer.ID, peerAddrs []ma.Multiaddr) (n
         nat.recordSuccess(peerID, method, time.Since(startTime))
         return iceConn.Conn, nil
     }
-    
+  
     // 所有方法失败
     nat.recordFailure(peerID, time.Since(startTime))
     return nil, fmt.Errorf("failed to establish connection with peer %s: %v", peerID, err)
@@ -906,19 +913,20 @@ func (nat *ICENatTraversal) Connect(peerID peer.ID, peerAddrs []ma.Multiaddr) (n
 func (nat *ICENatTraversal) recordSuccess(peerID peer.ID, method string, duration time.Duration) {
     nat.statsMu.Lock()
     defer nat.statsMu.Unlock()
-    
+  
     stats, exists := nat.connStats[peerID]
     if !exists {
         stats = &ConnStats{}
         nat.connStats[peerID] = stats
     }
-    
+  
     stats.Attempts++
     stats.Successes++
     stats.LastMethod = method
     stats.LastConnectTime = time.Now()
     stats.LastConnectDuration = duration
 }
+
 ```
 
 **定理 4.3** (NAT穿透优化策略): 在具有多种NAT类型分布的P2P网络中，最优穿透策略应基于历史成功率动态选择，以最小化期望连接时间:
@@ -956,26 +964,26 @@ $$T_{conn} = \sum_{i=1}^{n} P(success_i) \cdot (t_i + \sum_{j=1}^{i-1} t_j)$$
 type P2PMetricsCollector struct {
     // 基础设施
     registry prometheus.Registry
-    
+  
     // 节点度量
     peerCount    prometheus.Gauge
     peerCountByRegion *prometheus.GaugeVec
-    
+  
     // 连接度量
     connAttempts prometheus.Counter
     connSuccesses prometheus.Counter
     connFailures *prometheus.CounterVec
     connLatency  prometheus.Histogram
-    
+  
     // 协议度量
     msgReceived  *prometheus.CounterVec
     msgSent      *prometheus.CounterVec
     msgSize      *prometheus.HistogramVec
     propagationDelay *prometheus.HistogramVec
-    
+  
     // 网络拓扑
     connectionGraph *NetworkGraph
-    
+  
     // 安全度量
     connRate     *prometheus.GaugeVec
     bannedPeers  prometheus.Gauge
@@ -986,71 +994,71 @@ func NewP2PMetricsCollector() *P2PMetricsCollector {
     collector := &P2PMetricsCollector{
         registry: prometheus.NewRegistry(),
     }
-    
+  
     // 初始化所有度量
     collector.peerCount = prometheus.NewGauge(prometheus.GaugeOpts{
         Name: "p2p_peer_count",
         Help: "Current number of connected peers",
     })
-    
+  
     collector.peerCountByRegion = prometheus.NewGaugeVec(prometheus.GaugeOpts{
         Name: "p2p_peer_count_by_region",
         Help: "Number of peers by geographic region",
     }, []string{"region"})
-    
+  
     collector.connAttempts = prometheus.NewCounter(prometheus.CounterOpts{
         Name: "p2p_connection_attempts_total",
         Help: "Total number of connection attempts",
     })
-    
+  
     collector.connSuccesses = prometheus.NewCounter(prometheus.CounterOpts{
         Name: "p2p_connection_successes_total",
         Help: "Total number of successful connections",
     })
-    
+  
     collector.connFailures = prometheus.NewCounterVec(prometheus.CounterOpts{
         Name: "p2p_connection_failures_total",
         Help: "Total number of failed connections by reason",
     }, []string{"reason"})
-    
+  
     collector.connLatency = prometheus.NewHistogram(prometheus.HistogramOpts{
         Name:    "p2p_connection_latency_seconds",
         Help:    "Histogram of connection establishment latency",
         Buckets: prometheus.ExponentialBuckets(0.001, 2, 15), // 1ms to ~16s
     })
-    
+  
     collector.msgReceived = prometheus.NewCounterVec(prometheus.CounterOpts{
         Name: "p2p_messages_received_total",
         Help: "Total number of messages received by protocol",
     }, []string{"protocol"})
-    
+  
     collector.msgSent = prometheus.NewCounterVec(prometheus.CounterOpts{
         Name: "p2p_messages_sent_total",
         Help: "Total number of messages sent by protocol",
     }, []string{"protocol"})
-    
+  
     collector.msgSize = prometheus.NewHistogramVec(prometheus.HistogramOpts{
         Name:    "p2p_message_size_bytes",
         Help:    "Size of messages by protocol",
         Buckets: prometheus.ExponentialBuckets(64, 2, 14), // 64B to ~0.5MB
     }, []string{"protocol", "direction"})
-    
+  
     collector.propagationDelay = prometheus.NewHistogramVec(prometheus.HistogramOpts{
         Name:    "p2p_message_propagation_seconds",
         Help:    "Message propagation delay by type",
         Buckets: prometheus.ExponentialBuckets(0.01, 2, 12), // 10ms to ~20s
     }, []string{"msg_type"})
-    
+  
     collector.connRate = prometheus.NewGaugeVec(prometheus.GaugeOpts{
         Name: "p2p_connection_rate",
         Help: "Rate of new connections per minute by direction",
     }, []string{"direction"})
-    
+  
     collector.bannedPeers = prometheus.NewGauge(prometheus.GaugeOpts{
         Name: "p2p_banned_peers",
         Help: "Number of currently banned peers",
     })
-    
+  
     // 注册所有度量
     collector.registry.MustRegister(
         collector.peerCount,
@@ -1066,10 +1074,10 @@ func NewP2PMetricsCollector() *P2PMetricsCollector {
         collector.connRate,
         collector.bannedPeers,
     )
-    
+  
     // 初始化网络图
     collector.connectionGraph = NewNetworkGraph()
-    
+  
     return collector
 }
 
@@ -1084,7 +1092,7 @@ func (c *P2PMetricsCollector) RecordConnectionSuccess(peerID peer.ID, duration t
     c.connLatency.Observe(duration.Seconds())
     c.peerCount.Inc()
     c.peerCountByRegion.WithLabelValues(region).Inc()
-    
+  
     // 更新连接图
     c.connectionGraph.AddConnection(peerID)
 }
@@ -1099,6 +1107,7 @@ func (c *P2PMetricsCollector) RecordMessageReceived(protocol string, size int) {
 func (c *P2PMetricsCollector) RecordPropagationDelay(msgType string, delay time.Duration) {
     c.propagationDelay.WithLabelValues(msgType).Observe(delay.Seconds())
 }
+
 ```
 
 **定理 4.4** (P2P网络健康度评分): 网络健康度$H$可通过加权组合多维度指标计算:
@@ -1149,16 +1158,16 @@ type DynamicSecurityConfig struct {
     confirmations   int     // 确认数量
     messageTimeout  time.Duration // 消息超时
     validationLevel int     // 验证级别(1-5)
-    
+  
     // 监控状态
     networkHealth   float64 // 网络健康度分数(0-1)
     attackProbability float64 // 攻击概率估计(0-1)
     latencyPercentile float64 // 网络延迟百分位
-    
+  
     // 策略参数
     securityPreference float64 // 安全优先级(0-1)
     livenessPreference float64 // 活跃度优先级(0-1)
-    
+  
     mu sync.RWMutex
 }
 
@@ -1166,24 +1175,24 @@ type DynamicSecurityConfig struct {
 func (c *DynamicSecurityConfig) AdjustParameters() {
     c.mu.Lock()
     defer c.mu.Unlock()
-    
+  
     // 基于网络健康度计算安全系数
     securityFactor := (1 - c.networkHealth) * c.securityPreference
     livenessFactor := c.networkHealth * c.livenessPreference
-    
+  
     // 调整确认数
     baseConfirmations := 3
     maxConfirmations := 12
-    
+  
     // 估计最优确认数
-    optimalConfirmations := baseConfirmations + 
+    optimalConfirmations := baseConfirmations +
                           int(float64(maxConfirmations-baseConfirmations) * securityFactor)
-    
+  
     // 当攻击概率高时提高确认数
     if c.attackProbability > 0.3 {
         optimalConfirmations += 2
     }
-    
+  
     // 限制确认数变化速度，防止剧烈波动
     if optimalConfirmations > c.confirmations + 2 {
         c.confirmations += 2
@@ -1192,25 +1201,26 @@ func (c *DynamicSecurityConfig) AdjustParameters() {
     } else {
         c.confirmations = optimalConfirmations
     }
-    
+  
     // 确保不低于最小值
     if c.confirmations < baseConfirmations {
         c.confirmations = baseConfirmations
     }
-    
+  
     // 调整超时值，网络延迟高时提高超时
     baseTimeout := 5 * time.Second
-    c.messageTimeout = time.Duration(float64(baseTimeout) * 
+    c.messageTimeout = time.Duration(float64(baseTimeout) *
                        (1.0 + 2.0 * c.latencyPercentile)) *
                        (1.0 + livenessFactor)
-    
+  
     // 调整验证级别
     c.validationLevel = 1 + int(4 * securityFactor)
-    
+  
     // 调整最小对等节点要求
     basePeers := 3
     c.minPeers = basePeers + int(15 * securityFactor)
 }
+
 ```
 
 **定理 5.2** (动态安全级别优化): 在网络条件变化的P2P系统中，动态调整安全参数$\theta(t)$能够在保持安全阈值$S_{min}$的前提下，优化活跃度:
@@ -1251,7 +1261,7 @@ type HotStuffConsensus struct {
     publicKeys    map[NodeID]crypto.PublicKey
     n             int // 总节点数
     f             int // 最大故障数
-    
+  
     // 状态
     view          uint64
     phase         Phase
@@ -1261,17 +1271,17 @@ type HotStuffConsensus struct {
     commitQC      *QuorumCert
     highQC        *QuorumCert
     pendingBlocks map[BlockID]*Block
-    
+  
     // 超时和节点管理
     timeoutManager *TimeoutManager
     pacemaker      *Pacemaker
-    
+  
     // 消息传输
     network        Network
-    
+  
     // 并发控制
     mu             sync.RWMutex
-    
+  
     // 度量
     metrics        *ConsensusMetrics
 }
@@ -1282,10 +1292,10 @@ func (hs *HotStuffConsensus) Run(ctx context.Context) {
         select {
         case <-ctx.Done():
             return
-            
+  
         case msg := <-hs.network.Receive():
             hs.handleMessage(msg)
-            
+  
         case <-hs.pacemaker.Timeout():
             hs.onTimeout()
         }
@@ -1296,10 +1306,10 @@ func (hs *HotStuffConsensus) Run(ctx context.Context) {
 func (hs *HotStuffConsensus) onPropose() {
     hs.mu.Lock()
     defer hs.mu.Unlock()
-    
+  
     // 获取待处理的交易
     txs := hs.collectTransactions()
-    
+  
     // 创建新区块
     block := &Block{
         Parent:   hs.highQC.BlockID,
@@ -1308,15 +1318,13 @@ func (hs *HotStuffConsensus) onPropose() {
         View:     hs.view,
         Proposer: hs.id,
     }
-    
+  
     // 对区块进行签名
     block.Signature = hs.sign(block.Hash())
-    
+  
     // 广播提议
     hs.network.Broadcast(&ProposeMsg{Block: block})
-    
-    
-
+  
 ```go
     // 记录提议的区块
     hs.proposedBlock = block
@@ -1489,6 +1497,7 @@ func (hs *HotStuffConsensus) advanceToNextView() {
         hs.timeoutManager.StartTimer(ViewTimeout)
     }
 }
+
 ```
 
 **定理 5.3** (BFT工程化权衡): 在实用BFT系统中，存在消息复杂度$C_m$、容错能力$f$、共识延迟$L$和实现复杂度$C_i$之间的权衡，满足:
@@ -1497,7 +1506,7 @@ $$C_m \cdot L \geq k \cdot n \cdot f$$
 
 其中$k$是与实现相关的常数，$n$是网络节点数。
 
-*实证分析*：在实际部署中，HotStuff相比PBFT降低了消息复杂度(从$O(n^2)$到$O(n)$)，但增加了共识延迟(从2轮到4轮)，总体效率在大型网络中更高。Tendermint的Cosmos Hub在100个验证者规模下，通过适当增加区块间隔(6秒)，实现了99.8%的共识可靠性和98.5%的出块率。
+* 实证分析*：在实际部署中，HotStuff相比PBFT降低了消息复杂度(从$O(n^2)$到$O(n)$)，但增加了共识延迟(从2轮到4轮)，总体效率在大型网络中更高。Tendermint的Cosmos Hub在100个验证者规模下，通过适当增加区块间隔(6秒)，实现了99.8%的共识可靠性和98.5%的出块率。
 
 ### 网络分区下的一致性恢复机制
 
@@ -1703,6 +1712,7 @@ func (prm *PartitionRecoveryManager) determineReferenceState(
         return prm.findMajorityState(summaries, localSummary)
     }
 }
+
 ```
 
 **定理 5.4** (分区恢复效率): 在网络分区恢复后，同步所需时间$T_{sync}$与分区持续时间$T_{partition}$和同步带宽$B_{sync}$相关:
@@ -1711,7 +1721,7 @@ $$T_{sync} \geq \frac{\Delta_{data} \cdot T_{partition}}{B_{sync}}$$
 
 其中$\Delta_{data}$是单位时间数据变更率。
 
-*实际案例*：在Hyperledger Fabric网络测试中，当网络分区持续30分钟，事务速率为100 TPS时，恢复同步需要约4.7分钟(使用1Gbps链路)。实施批量同步和增量状态传输后，恢复时间减少67%至1.55分钟。
+* 实际案例*：在Hyperledger Fabric网络测试中，当网络分区持续30分钟，事务速率为100 TPS时，恢复同步需要约4.7分钟(使用1Gbps链路)。实施批量同步和增量状态传输后，恢复时间减少67%至1.55分钟。
 
 ### 混沌工程在P2P系统中的应用
 
@@ -1918,6 +1928,7 @@ func (cm *ChaosMesh) StopExperiment(experimentID string) (*ExperimentResult, err
         Report:       report,
     }, nil
 }
+
 ```
 
 **定理 5.5** (混沌测试的最小故障集): 存在一个最小故障注入集$F_{min}$，通过它可以覆盖系统所有关键故障路径，其大小满足:
@@ -1926,7 +1937,7 @@ $$|F_{min}| \leq C \cdot \log(N \cdot P)$$
 
 其中$N$是系统节点数，$P$是协议数量，$C$是与系统复杂度相关的常数。
 
-*实践经验*：以太坊2.0测试网使用混沌工程方法，发现只需注入7种核心故障类型的63个具体故障场景，就能发现90%以上的系统弹性问题。在正式上线前，该方法发现了3个关键共识问题和12个网络层弱点。
+* 实践经验*：以太坊2.0测试网使用混沌工程方法，发现只需注入7种核心故障类型的63个具体故障场景，就能发现90%以上的系统弹性问题。在正式上线前，该方法发现了3个关键共识问题和12个网络层弱点。
 
 **最佳混沌测试实践**：
 
@@ -2165,6 +2176,7 @@ func (m *BehaviorMonitor) AnalyzeNodeBehavior(id peer.ID) (*BehaviorAnalysis, er
     
     return analysis, nil
 }
+
 ```
 
 **定理 6.1** (Sybil检测效用): 在攻击者控制比例为$\alpha$的网络中，基于多维特征的Sybil检测可以将误报率$f_p$和漏报率$f_n$优化为:
@@ -2173,7 +2185,7 @@ $$f_p \cdot f_n \leq \left(\frac{\alpha}{1-\alpha}\right)^d$$
 
 其中$d$是有效特征维度数。
 
-*实证验证*：在以太坊测试网络实验中，结合5维防御特征(ID分布、IP多样性、连接模式、查询行为、响应延迟)，当Sybil节点比例为20%时，检测系统实现了3.2%的误报率和4.1%的漏报率，显著优于单一维度防御。
+* 实证验证*：在以太坊测试网络实验中，结合5维防御特征(ID分布、IP多样性、连接模式、查询行为、响应延迟)，当Sybil节点比例为20%时，检测系统实现了3.2%的误报率和4.1%的漏报率，显著优于单一维度防御。
 
 ### Eclipse攻击真实事件分析
 
@@ -2450,6 +2462,7 @@ func (cm *ConnectionMonitor) DetectEclipseAttack() *EclipseAnalysis {
     analysis.Score = riskScore
     return analysis
 }
+
 ```
 
 **定理 6.2** (Eclipse攻击复杂度): 在实施多样性保护的P2P网络中，成功发起Eclipse攻击的最低资源要求是:
@@ -2458,7 +2471,7 @@ $$R_{min} = O\left(\frac{k \cdot d \cdot \log n}{1-p_{fail}}\right)$$
 
 其中$k$是节点连接数，$d$是多样性维度数，$n$是网络规模，$p_{fail}$是防御机制失效概率。
 
-*实际验证*：以太坊实施多样性保护后，对单节点的Eclipse攻击复杂度从需要32个IP地址增加到需要控制至少6个不同/24 CIDR块和3个不同ASN的61个IP地址，资源要求提高约4.8倍。
+* 实际验证*：以太坊实施多样性保护后，对单节点的Eclipse攻击复杂度从需要32个IP地址增加到需要控制至少6个不同/24 CIDR块和3个不同ASN的61个IP地址，资源要求提高约4.8倍。
 
 **关键防御策略**：
 
@@ -2488,7 +2501,7 @@ $$R_{min} = O\left(\frac{k \cdot d \cdot \log n}{1-p_{fail}}\right)$$
 | Eclipse攻击 | $C_A = i \cdot s \cdot r$ | $C_D = k \cdot d \cdot \log(n)$ | 防御者: 多样性保护\攻击者: 目标选择性攻击 |
 | 女巫+日食 | $C_A = c \cdot n \cdot f(d) + i \cdot s \cdot r$ | $C_D = k \cdot d \cdot \log(n) + v \cdot n$ | 防御者: 自适应验证\攻击者: 策略性撤退 |
 
-*参数说明*：
+* 参数说明*：
 
 - $c$: 创建单个身份成本
 - $n$: 网络规模
@@ -2645,6 +2658,7 @@ func (ga *SecurityGameAnalyzer) calculateSybilSuccessProbability(
         return math.Min(0.95, attackRatio / (defenseFactor * 0.5 + 0.1))
     }
 }
+
 ```
 
 **定理 6.3** (攻击经济合理性): 在理性攻击者模型下，攻击者只有当预期收益超过成本时才会发起攻击，即:
@@ -2653,7 +2667,7 @@ $$P_{success} \cdot V_{asset} > C_{attack}$$
 
 通过防御机制，系统可以提高攻击成本$C_{attack}$或降低成功概率$P_{success}$，使多数攻击在经济上不可行。
 
-*实例分析*：在比特币网络中，对一个10亿美元交易实施双花攻击的理论成本约为190万美元(包括哈希算力租赁和网络操纵)，而实际成功概率不超过12%，使得预期收益为1.2亿美元，远高于成本，这解释了为何深度确认(6个区块)是必要的。而增加到12个确认后，攻击成本提高到13.2亿美元，成功率降至0.2%，使得预期收益200万美元低于成本。
+* 实例分析*：在比特币网络中，对一个10亿美元交易实施双花攻击的理论成本约为190万美元(包括哈希算力租赁和网络操纵)，而实际成功概率不超过12%，使得预期收益为1.2亿美元，远高于成本，这解释了为何深度确认(6个区块)是必要的。而增加到12个确认后，攻击成本提高到13.2亿美元，成功率降至0.2%，使得预期收益200万美元低于成本。
 
 ### 去中心化系统的风险管理框架
 
@@ -2878,6 +2892,7 @@ func (rm *RiskManagementFramework) PerformRiskAssessment() *RiskAssessmentReport
     
     return report
 }
+
 ```
 
 **定理 6.4** (风险管理有效性): 有效的P2P风险管理能够降低安全事件的预期损失，具体为:
@@ -2886,7 +2901,7 @@ $$E[L] = \sum_{i=1}^{n} P_i \cdot I_i \cdot (1-M_i)$$
 
 其中$P_i$是威胁$i$的发生概率，$I_i$是威胁$i$的影响，$M_i$是缓解措施的有效性。
 
-*风险管理案例*：Filecoin网络在主网启动前进行了全面风险评估，识别了37个不同安全风险，其中7个被评为高风险。实施针对性缓解措施后，高风险降至2个，整体风险评分从0.68(高)降至0.41(中)。主网运行18个月内，只发生1次重大安全事件，而预期风险模型预测为2-3次，证实了风险管理框架的有效性。
+* 风险管理案例*：Filecoin网络在主网启动前进行了全面风险评估，识别了37个不同安全风险，其中7个被评为高风险。实施针对性缓解措施后，高风险降至2个，整体风险评分从0.68(高)降至0.41(中)。主网运行18个月内，只发生1次重大安全事件，而预期风险模型预测为2-3次，证实了风险管理框架的有效性。
 
 **去中心化系统风险管理最佳实践**：
 
@@ -3154,13 +3169,14 @@ func (mps *MessagePropagationSystem) PropagateMessage(msg *Message) error {
     
     return nil
 }
+
 ```
 
 **定理 7.1** (消息传播效率): 在具有$n$个节点的P2P网络中，使用扇出因子为$f$的消息传播策略，该消息传播到$(1-\epsilon)$比例网络的期望传播轮数为:
 
 $$E[rounds] = \log_f\left(\frac{n \cdot \ln(1/\epsilon)}{f}\right) + O(1)$$
 
-*实测验证*：在以太坊主网测试中，将固定扇出因子(8)替换为自适应扇出策略(基于网络位置的5-12动态调整)，区块传播时间减少23.7%，网络带宽消耗减少18.3%。在Filecoin网络中，基于熵的传播策略相比随机策略将消息传播延迟降低41.2%，同时仅增加7.6%的带宽消耗。
+* 实测验证*：在以太坊主网测试中，将固定扇出因子(8)替换为自适应扇出策略(基于网络位置的5-12动态调整)，区块传播时间减少23.7%，网络带宽消耗减少18.3%。在Filecoin网络中，基于熵的传播策略相比随机策略将消息传播延迟降低41.2%，同时仅增加7.6%的带宽消耗。
 
 **最优传播理论指导**：
 
@@ -3397,6 +3413,7 @@ func (ma *MessageAggregator) sendBatch(topic string) {
     
     ma.metrics.IncBatchSend(topic, len(batch.Messages))
 }
+
 ```
 
 **定理 7.2** (分层DHT效率): 在具有$n$个节点的分层DHT中，将节点分为$k$层，每层节点数量为$n_i$，查询延迟与传统平坦DHT相比为:
@@ -3405,7 +3422,7 @@ $$\frac{T_{hier}}{T_{flat}} = \frac{\sum_{i=1}^{k} P_i \cdot \log(n_i)}{\log(n)}
 
 其中$P_i$是在第$i$层查询成功的概率。
 
-*实际效果*：在IPFS网络中实施三层DHT结构后，DHT查询延迟从平均842ms降至193ms，减少了77.1%，同时路由表内存使用减少65.3%。顶层仅包含约2%的稳定节点，但处理了47%的查询请求。
+* 实际效果*：在IPFS网络中实施三层DHT结构后，DHT查询延迟从平均842ms降至193ms，减少了77.1%，同时路由表内存使用减少65.3%。顶层仅包含约2%的稳定节点，但处理了47%的查询请求。
 
 **定理 7.3** (消息聚合优化): 在消息率为$\lambda$的系统中，使用最大延迟$d$和最大批次大小$B$的聚合策略，带宽减少比例为:
 
@@ -3413,7 +3430,7 @@ $$R_{bw} = 1 - \frac{H_{msg} + H_{batch} \cdot \lambda \cdot d / B}{H_{msg} \cdo
 
 其中$H_{msg}$是单消息头开销，$H_{batch}$是批量消息头开销。
 
-*实测数据*：在Cosmos网络部署中，应用消息聚合技术(最大延迟50ms，最大批次大小50)将验证者间的网络流量减少59.7%，同时仅增加平均共识延迟8.3ms(2.7%)。消息压缩与聚合结合使用时，总带宽减少可达78.2%。
+* 实测数据*：在Cosmos网络部署中，应用消息聚合技术(最大延迟50ms，最大批次大小50)将验证者间的网络流量减少59.7%，同时仅增加平均共识延迟8.3ms(2.7%)。消息压缩与聚合结合使用时，总带宽减少可达78.2%。
 
 ### 实用资源优化算法与启发式方法
 
@@ -3569,6 +3586,7 @@ func (ara *AdaptiveResourceAllocator) optimizeAllocations() {
                 "improvements", ara.optimizer.GetImprovementDetails())
     }
 }
+
 ```
 
 **资源分配启发式算法对比**：
@@ -3587,7 +3605,7 @@ $$E[R_{adaptive}] - E[R_{fixed}] \geq \frac{1}{2} \sigma_L^2 \cdot \frac{d^2P}{d
 
 其中$\sigma_L^2$是负载方差，$\frac{d^2P}{dR^2}$是性能对资源的二阶导数。
 
-*实际应用*：在Filecoin存储提供者网络中，实施自适应资源分配策略后，平均资源利用率从62.3%提升至86.7%，同时减少了43.5%的资源争用事件，服务拒绝率从2.7%降至0.4%。
+* 实际应用*：在Filecoin存储提供者网络中，实施自适应资源分配策略后，平均资源利用率从62.3%提升至86.7%，同时减少了43.5%的资源争用事件，服务拒绝率从2.7%降至0.4%。
 
 ### 基准测试方法与性能模型
 
@@ -3771,6 +3789,7 @@ func (bf *P2PBenchmarkFramework) setupTestEnvironment(
     // 等待网络稳定
     return bf.waitForNetworkStability(options.NetworkStabilizationTime)
 }
+
 ```
 
 **性能基准常用工作负载模型**：
@@ -3977,6 +3996,7 @@ func (sa *ScalabilityAnalysis) findBestFittingModel(
     
     return bestModel
 }
+
 ```
 
 **定理 7.5** (系统扩展性模型): P2P系统的扩展性通常遵循通用模型:
@@ -3985,7 +4005,7 @@ $$P(n) = \frac{a \cdot n}{1 + b \cdot n^c}$$
 
 其中$P(n)$是节点数为$n$时的性能指标，$a$是线性扩展系数，$b$和$c$反映扩展瓶颈的特性。
 
-*模型应用*：通过基准测试，分析不同P2P框架的扩展模型参数:
+* 模型应用*：通过基准测试，分析不同P2P框架的扩展模型参数:
 
 | 框架 | 工作负载 | a | b | c | 线性扩展上限 | 主要瓶颈 |
 |-----|---------|---|---|---|------------|---------|
@@ -4001,7 +4021,7 @@ $$r = \arg\max_i \left\{ \rho(U_i, P) \cdot \frac{\partial P}{\partial U_i} \rig
 
 其中$U_i$是资源$i$的利用率，$P$是性能指标，$\rho$是相关系数。
 
-*瓶颈分析案例*：通过基准测试，识别不同P2P操作的主要瓶颈:
+* 瓶颈分析案例*：通过基准测试，识别不同P2P操作的主要瓶颈:
 
 | 操作类型 | 主要瓶颈 | 瓶颈出现节点数 | 优化方向 |
 |---------|---------|--------------|---------|
@@ -4050,7 +4070,7 @@ $$DSN = (I, C, R, P, G)$$
 
 这三者间存在不可避免的权衡。
 
-*理论证明*：高效内容发现需要公开索引，而完全隐私要求信息对未授权方不可见，这在无信任环境中构成逻辑矛盾。任何DSN系统必须在某一维度做出妥协。
+* 理论证明*：高效内容发现需要公开索引，而完全隐私要求信息对未授权方不可见，这在无信任环境中构成逻辑矛盾。任何DSN系统必须在某一维度做出妥协。
 
 **去中心化社交系统实现**：
 
@@ -4279,6 +4299,7 @@ func (cas *ContentAddressableStore) Put(
     
     return cid, nil
 }
+
 ```
 
 **定理 8.2** (社交图隐私与发现权衡): 在去中心化社交网络中，关系图的隐私程度$P$与关系发现效率$D$之间存在权衡:
@@ -4287,7 +4308,7 @@ $$P \cdot D \leq C$$
 
 其中$C$是与系统设计相关的常数。
 
-*实用方案*：实际系统通常采用分层隐私模型，例如:
+* 实用方案*：实际系统通常采用分层隐私模型，例如:
 
 1. **公开关系**: 完全公开，高效发现 ($P$低,$D$高)
 2. **朋友关系**: 仅对关系网络可见 ($P$中,$D$中)
@@ -4324,7 +4345,7 @@ $$R_S = P \cdot U \cdot (1-f) - C_S > 0$$
 
 其中$R_S$是存储提供者收益，$P$是存储价格，$U$是利用率，$f$是惩罚因子，$C_S$是存储成本。
 
-*市场平衡分析*：Filecoin网络数据显示，存储价格在市场竞争下逐渐接近边际成本，2021年至2023年间从0.0182 FIL/GiB/年降至0.0023 FIL/GiB/年。同时，存储提供者通过规模效应和优化将成本从0.0158 FIL/GiB/年降至0.0018 FIL/GiB/年，维持了经济可行性。
+* 市场平衡分析*：Filecoin网络数据显示，存储价格在市场竞争下逐渐接近边际成本，2021年至2023年间从0.0182 FIL/GiB/年降至0.0023 FIL/GiB/年。同时，存储提供者通过规模效应和优化将成本从0.0158 FIL/GiB/年降至0.0018 FIL/GiB/年，维持了经济可行性。
 
 **去中心化存储系统实现**：
 
@@ -4559,6 +4580,7 @@ func (vs *VerificationSystem) VerifyStorageProof(
     
     return valid, result, nil
 }
+
 ```
 
 **存储网络经济模型对比**：
@@ -4577,7 +4599,7 @@ $$S \cdot (1+\delta) \geq L \cdot p_{fail}$$
 
 其中$\delta$是成本溢价，$L$是数据丢失成本，$p_{fail}$是在给定安全级别下的验证失败概率。
 
-*验证方案分析*：不同验证方案成本效益比对比:
+* 验证方案分析*：不同验证方案成本效益比对比:
 
 - 复制证明(PoRep): 初始计算成本高($C_{setup} \approx O(n \log n)$)，但持续验证成本低($C_{verify} \approx O(\log n)$)
 - 持有证明(PoH): 设置简单($C_{setup} \approx O(n)$)，但持续验证成本较高($C_{verify} \approx O(k)$，$k$为挑战大小)
@@ -4604,7 +4626,7 @@ $$E = \frac{\alpha \cdot n}{1 + \beta \cdot c + \gamma \cdot p}$$
 
 其中$\alpha$、$\beta$、$\gamma$是权重系数。
 
-*市场设计权衡*：在Ocean Protocol实际部署中，降低验证复杂度(从链上验证到声誉系统)将交易成功率从76.3%提升至94.7%，同时降低交易成本86.2%，但提高了不当使用风险约5.8%。
+* 市场设计权衡*：在Ocean Protocol实际部署中，降低验证复杂度(从链上验证到声誉系统)将交易成功率从76.3%提升至94.7%，同时降低交易成本86.2%，但提高了不当使用风险约5.8%。
 
 **数据市场实现**：
 
@@ -4931,6 +4953,7 @@ func (ddm *DistributedDataMarket) ExecuteDataAccess(
     
     return accessResult, nil
 }
+
 ```
 
 **数据市场设计关键挑战**：
@@ -4949,7 +4972,7 @@ $$U = U_{max} \cdot (1 - \alpha \cdot P^{\beta})$$
 
 其中$\alpha$和$\beta$是与具体隐私技术相关的参数。
 
-*实用隐私技术效果*：基于不同隐私技术的数据效用评估:
+* 实用隐私技术效果*：基于不同隐私技术的数据效用评估:
 
 - 差分隐私: $\alpha \approx 2.3, \beta \approx 1.2$，数据效用快速下降
 - 联邦学习: $\alpha \approx 0.4, \beta \approx 0.8$，保持较高数据效用
@@ -4977,7 +5000,7 @@ $$S = \min(S_{auth}, S_{cred}, S_{reg})$$
 
 其中$S_{auth}$是认证强度，$S_{cred}$是凭证完整性，$S_{reg}$是注册表安全性。
 
-*实际安全分析*：主流DID方法安全性对比:
+* 实际安全分析*：主流DID方法安全性对比:
 
 - did:web: $S_{auth}=$ 中(DNS依赖), $S_{cred}=$ 高, $S_{reg}=$ 低(单点故障)
 - did:key: $S_{auth}=$ 高, $S_{cred}=$ 高, $S_{reg}=$ 高(无注册表)，但功能有限
@@ -5387,6 +5410,7 @@ func (dis *DecentralizedIdentitySystem) VerifyCredential(
     
     return result, nil
 }
+
 ```
 
 **DID系统关键挑战与解决方案**：
@@ -5405,7 +5429,7 @@ $$P + F \leq 2 - \frac{1}{c}$$
 
 其中$c$是与实现复杂度相关的系数。复杂度越高，权衡越优化，但开发和维护成本增加。
 
-*实用模型*：当前身份系统实现在隐私-功能谱上的位置:
+* 实用模型*：当前身份系统实现在隐私-功能谱上的位置:
 
 - 传统PKI: $P = 0.2, F = 0.9$，低隐私但功能完备
 - ION(did:ion): $P = 0.6, F = 0.8$，适度隐私和良好功能
@@ -5433,7 +5457,7 @@ $$\frac{C_{QR}}{C_{classical}} = \begin{pmatrix} \alpha \cdot \frac{S_k}{S_{k,c}
 
 其中$S_k$是密钥大小，$C_t$是计算时间，$B_w$是带宽消耗，下标$c$表示经典算法，$\alpha$、$\beta$、$\gamma$是权重系数。
 
-*实际性能对比*：主流抗量子算法与传统算法对比:
+* 实际性能对比*：主流抗量子算法与传统算法对比:
 
 | 算法类别 | 算法 | 密钥大小比例 | 计算时间比例 | 带宽比例 |
 |---------|-----|-----------|-----------|---------|
@@ -5702,6 +5726,7 @@ func (tm *PQTLSHandshakeManager) PerformHandshake(
     
     return session, nil
 }
+
 ```
 
 **定理 9.2** (混合加密系统优化): 结合传统和抗量子算法的混合系统可以在保持安全性的同时优化性能:
@@ -6005,6 +6030,7 @@ func (vcf *VerifiableComputationFramework) VerifyResult(
     
     return verResult, nil
 }
+
 ```
 
 **定理 9.4** (分布式验证效率): 在P2P网络中，通过随机验证者分配，可以在总验证工作量$V_t$和验证信心$C$之间实现:
@@ -6264,6 +6290,7 @@ func (pv *P2PFormalVerificationFramework) VerifyLiveness(
     
     return result, nil
 }
+
 ```
 
 **形式化验证案例**:
@@ -6562,6 +6589,7 @@ func (sa *SymbioticArchitecture) OptimizeResourceAllocation(
         OptimizationTime:     time.Now(),
     }, nil
 }
+
 ```
 
 **定理 9.8** (共生协议适应性): P2P共生系统中的协议适应性$A_p$可描述为:
@@ -6871,6 +6899,7 @@ func (asf *AdaptiveSecurityFramework) AdaptDefenseStrategy(
     
     return result, nil
 }
+
 ```
 
 **定理 9.10** (威胁检测最优敏感度): 在给定误报成本$C_{fp}$和漏报成本$C_{fn}$的情况下，最优威胁检测阈值$\theta^*$为:

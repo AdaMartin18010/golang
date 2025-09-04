@@ -111,6 +111,7 @@ classDiagram
     ElementA --> Visitor : accepts
     ElementB --> Visitor : accepts
     ObjectStructure o-- Element
+
 ```
 
 ### 3.2 时序图
@@ -128,6 +129,7 @@ sequenceDiagram
         ConcreteElement->>ConcreteVisitor: VisitElementX(this)
         ConcreteVisitor-->>ConcreteElement: Access element state
     end
+
 ```
 
 ### 3.3 流程图
@@ -145,6 +147,7 @@ flowchart TD
     H --> I{还有更多元素?}
     I -->|是| E
     I -->|否| J[结束访问]
+
 ```
 
 ## 4. Golang实现
@@ -239,6 +242,7 @@ func (o *ObjectStructure) Accept(visitor Visitor) {
         element.Accept(visitor)
     }
 }
+
 ```
 
 ### 4.2 高级实现：动态分派的访问者
@@ -296,6 +300,7 @@ func (v *TypeVisitor) Visit(element Element) interface{} {
         return fmt.Sprintf("Unknown element type")
     }
 }
+
 ```
 
 ### 4.3 反射实现的访问者
@@ -333,6 +338,7 @@ func (v *ReflectionVisitor) VisitElementA(element *ElementA) interface{} {
 func (v *ReflectionVisitor) VisitElementB(element *ElementB) interface{} {
     return fmt.Sprintf("Reflection visit ElementB: %s", element.OperationB())
 }
+
 ```
 
 ### 4.4 功能强化的访问者模式
@@ -391,6 +397,7 @@ func (v *ParallelVisitor) Wait() {
 func (v *ParallelVisitor) GetResults() []interface{} {
     return v.results
 }
+
 ```
 
 ## 5. 性能分析
@@ -431,6 +438,7 @@ func ReleaseVisitor(visitor *ConcreteVisitor1) {
     visitor.result = ""
     visitorPool.Put(visitor)
 }
+
 ```
 
 ### 5.4 基准测试
@@ -470,6 +478,7 @@ func BenchmarkParallelVisitor(b *testing.B) {
         visitor.Wait()
     }
 }
+
 ```
 
 ## 6. 应用场景
@@ -640,6 +649,7 @@ func (v *FileSearchVisitor) VisitDirectory(directory *Directory) {
         v.Results = append(v.Results, directory)
     }
 }
+
 ```
 
 ### 8.2 语法树解析器
@@ -717,6 +727,7 @@ func (v *EvaluationVisitor) VisitBinary(expr *BinaryExpression) {
     
     v.Results = append(v.Results, result)
 }
+
 ```
 
 ### 8.3 GUI渲染系统
@@ -824,6 +835,7 @@ func (v *UIEventsVisitor) VisitTextField(textField *TextField) {
         v.ClickedElement = textField
     }
 }
+
 ```
 
 ---

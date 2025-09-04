@@ -34,19 +34,6 @@
   - [11.9.1.12 参考资料](#参考资料)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.9.1.1 目录
 
 1. [概述](#概述)
@@ -231,6 +218,7 @@ func (qs *QuantumState) ApplyControlledPhase(control, target, power int) {
         }
     }
 }
+
 ```
 
 ### 11.9.1.4.2 Shor算法
@@ -377,6 +365,7 @@ func (sa *ShorAlgorithm) gcd(a, b int) int {
     }
     return a
 }
+
 ```
 
 ## 11.9.1.5 后量子密码学
@@ -471,6 +460,7 @@ func (lc *LatticeCryptography) ShortestVector(basis *LatticeBasis) ([]int, float
     
     return shortest, minNorm
 }
+
 ```
 
 ### 11.9.1.5.2 基于哈希的签名
@@ -668,6 +658,7 @@ func (hbs *HashBasedSignature) generatePath(node *MerkleNode, target *MerkleNode
     
     return nil
 }
+
 ```
 
 ## 11.9.1.6 量子-经典混合系统
@@ -812,6 +803,7 @@ type TaskResult struct {
     Status  TaskStatus
     Error   error
 }
+
 ```
 
 ## 11.9.1.7 Golang实现框架
@@ -879,6 +871,7 @@ type Oracle struct {
     Function func([]int) bool
     Qubits   int
 }
+
 ```
 
 ## 11.9.1.8 性能分析与优化
@@ -995,6 +988,7 @@ type IterationResult struct {
     Solution  interface{}
     Cost      float64
 }
+
 ```
 
 ## 11.9.1.9 最佳实践
@@ -1102,6 +1096,7 @@ type SVMModel struct {
     Bias           float64
     Kernel         string
 }
+
 ```
 
 ## 11.9.1.11 总结

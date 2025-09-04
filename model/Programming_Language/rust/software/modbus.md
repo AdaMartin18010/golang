@@ -10,19 +10,6 @@
   - [1.6 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```rust
 /**
  * Rust Modbus 协议实现示例
@@ -68,6 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 1.1 Rust Modbus 协议实现

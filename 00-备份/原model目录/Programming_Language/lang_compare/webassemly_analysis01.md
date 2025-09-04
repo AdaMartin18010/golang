@@ -71,6 +71,7 @@
       └── 抽象程度
           ├── Wasm：低级抽象、近机器模型
           └── 高级语言：高级抽象、近人类思维
+
 ```
 
 ## 简介
@@ -99,6 +100,7 @@ Wasm的类型系统主要用于验证指令操作的类型安全性，确保栈�
   )
   (export "add" (func $add))
 )
+
 ```
 
 ### 1.2 与其他语言的类型系统对比
@@ -134,6 +136,7 @@ trait Display {
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 ### 1.3 同伦类型论视角
@@ -158,6 +161,7 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
 // 函子性质展示
 let x: Option<i32> = Some(1);
 let y = x.map(|n| n.to_string());  // Some("1")
+
 ```
 
 WebAssembly中无法直接表达这种高阶抽象，需要通过具体函数调用模拟。
@@ -181,6 +185,7 @@ fn main() {
     }
     println!("{}", r);
 }
+
 ```
 
 ```wat
@@ -189,6 +194,7 @@ fn main() {
   i32.const 100000  ;; 可能超出内存范围的地址
   i32.load          ;; 如果超出范围，运行时会产生陷阱(trap)
 )
+
 ```
 
 WebAssembly依赖运行时陷阱机制处理错误，而高级语言更依赖编译时静态分析防止错误。
@@ -233,6 +239,7 @@ fn area(shape: &Shape) -> f64 {
         Shape::Rectangle { width, height } => width * height
     }
 }
+
 ```
 
 在WebAssembly中模拟类似结构需要手动管理内存和调度：
@@ -262,6 +269,7 @@ fn area(shape: &Shape) -> f64 {
     f64.mul
   end
 )
+
 ```
 
 从范畴论视角，高级语言能直接表达类型的代数结构，而WebAssembly只能通过较低级的内存和控制流操作模拟。
@@ -302,6 +310,7 @@ class Repository<T> {
 
 // 使用组合类型
 const userRepo = new Repository<User>();
+
 ```
 
 从同伦类型论视角，类型组合对应空间操作(并、交、笛卡尔积等)，高级语言能直接表达这些空间结构，而WebAssembly只能间接实现。
@@ -323,6 +332,7 @@ class Counter {
     return this.count;
   }
 }
+
 ```
 
 在WebAssembly中模拟:
@@ -361,6 +371,7 @@ class Counter {
   (export "increment" (func $increment))
   (export "getValue" (func $getValue))
 )
+
 ```
 
 从控制论角度，面向对象模型提供了数据与行为封装的抽象控制机制，而WebAssembly仅提供底层机制的原语，需要编译器或手动编码实现这种抽象。
@@ -395,6 +406,7 @@ impl Point {
         (dx*dx + dy*dy).sqrt()
     }
 }
+
 ```
 
 编译到WebAssembly后，结构会被转换为线性内存布局，方法转换为普通函数：
@@ -442,6 +454,7 @@ impl Point {
   f64.add       ;; dx*dx + dy*dy
   f64.sqrt      ;; sqrt(dx*dx + dy*dy)
 )
+
 ```
 
 从理论视角看，这种映射过程会丢失高级语言类型系统的抽象性质，但保留其运行时语义。
@@ -470,6 +483,7 @@ fn process_command(cmd: Command) {
         Command::Text(s) => println!("Displaying text: {}", s),
     }
 }
+
 ```
 
 WebAssembly中需要手动映射类型标签和跳转：
@@ -504,6 +518,7 @@ WebAssembly中需要手动映射类型标签和跳转：
     ;; ...
   end $exit
 )
+
 ```
 
 从范畴论视角，高级语言的类型驱动控制流可视为类型对象间的条件态射选择，而WebAssembly则是更显式的指令序列。
@@ -539,6 +554,7 @@ fn process_result() {
         Ok(y * 2)
     }
 }
+
 ```
 
 WebAssembly需要通过返回值或内存标志模拟错误处理：
@@ -561,6 +577,7 @@ WebAssembly需要通过返回值或内存标志模拟错误处理：
     i32.div_s    ;; 带符号除法
   end
 )
+
 ```
 
 从控制论角度，高级语言的错误处理类型提供了精细的错误信息传递通道和强制处理机制，而WebAssembly的错误处理更基础且不透明。
@@ -595,6 +612,7 @@ fn concurrent_safety() {
     let r4 = &data;  // 现在可以创建新的不可变引用
     println!("{:?}", r4);
 }
+
 ```
 
 WebAssembly没有内置的并发安全机制，需要依赖源语言或手动编码实现：
@@ -610,6 +628,7 @@ WebAssembly没有内置的并发安全机制，需要依赖源语言或手动编
   i32.const 0
   i32.store    ;; 存回内存
 )
+
 ```
 
 从HoTT和范畴论视角，高级语言的类型系统能够表达和强制更丰富的不变性和约束，而WebAssembly更依赖于运行时检查和外部保证。
@@ -639,6 +658,7 @@ type Func<T, U> = fn(T) -> U;
 
 // 不变示例: Cell<T>在T上是不变的
 use std::cell::Cell;
+
 ```
 
 从范畴论角度，型变规则确保了类型构造器(函子)保持或反转态射方向，维护类型系统的一致性。WebAssembly缺乏这种抽象能力。
@@ -669,6 +689,7 @@ type DistributiveLaw<A, B, C> =
 // 等价于
 type Distributed<A, B, C> = 
   Sum<Product<A, B>, Product<A, C>>;  // (A × B) + (A × C)
+
 ```
 
 这些类型代数运算在WebAssembly中只能通过手动编码内存布局和标签模拟。
@@ -694,6 +715,7 @@ fn process_items(items: &[i32]) -> i32 {
          .map(|x| x * 2)
          .sum()
 }
+
 ```
 
 WebAssembly中需要显式循环：
@@ -756,6 +778,7 @@ WebAssembly中需要显式循环：
   ;; 返回结果
   local.get $sum
 )
+
 ```
 
 从范畴论角度，高级语言的迭代抽象可视为函子操作和单子绑定，WebAssembly则需要显式循环和累加。
@@ -788,6 +811,7 @@ fn main() {
         .unwrap()
         .block_on(process());
 }
+
 ```
 
 WebAssembly需要通过宿主环境和回调机制支持异步：
@@ -814,6 +838,7 @@ const wasm = await WebAssembly.instantiateStreaming(fetch('module.wasm'), {
     }
   }
 });
+
 ```
 
 从控制论角度，异步模型是一种时间控制机制，高级语言提供内置抽象，WebAssembly依赖外部环境和协议。
@@ -883,6 +908,7 @@ impl Future for AsyncFunction {
         }
     }
 }
+
 ```
 
 WebAssembly要实现类似的异步转换需要更复杂的运行时支持：
@@ -952,6 +978,7 @@ WebAssembly要实现类似的异步转换需要更复杂的运行时支持：
   ;; 通知完成
   call $notify_completion
 )
+
 ```
 
 从范畴论视角，异步转换可视为一种自然变换，将普通计算`T`转换为上下文计算`F<T>`。高级语言通过类型系统直接支持这种变换，而WebAssembly需要显式编码。

@@ -15,19 +15,6 @@
     - [1.2.9 解释和用途](#解释和用途)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`async`、`await` 和 `Future` 是异步编程的核心概念，它们共同构成了 Rust 的异步编程模型。
 以下是它们的定义和联系：
 
@@ -79,6 +66,7 @@ pub trait Future {
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 - `Output`：是一个与 `Future` 关联的类型，表示 `Future` 完成时产生的结果。
@@ -119,6 +107,7 @@ impl Future for MyFuture {
         }
     }
 }
+
 ```
 
 在这个例子中，`MyFuture` 结构体包含一个简单的计数器 `state`。
@@ -135,6 +124,7 @@ async fn main() {
     let result = future.await;
     // 使用 result
 }
+
 ```
 
 在这个例子中，`MyFuture` 实例被 `await`，这会导致当前异步任务在 `MyFuture` 完成之前挂起。当 `MyFuture` 完成时，`await` 表达式的执行会继续。
@@ -162,6 +152,7 @@ pub trait Pin<T> {
     unsafe fn get_unchecked(self: Pin<&Self>) -> *const T;
     unsafe fn get_unchecked_mut(self: Pin<&mut Self>) -> *mut T;
 }
+
 ```
 
 - `new`：创建一个新的 `Pin<T>` 包装器，它包含了类型 `T` 的值。
@@ -200,6 +191,7 @@ fn main() {
     
     // 现在 my_string_pin 不能被移动，它的地址是固定的
 }
+
 ```
 
 在这个例子中，`MyStruct` 结构体包含了一个 `String` 和一个 `PhantomPinned` 类型，后者是一个空的标记类型，用来指示这个结构体可以被 `Pin`。

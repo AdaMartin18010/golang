@@ -117,6 +117,7 @@ Rust中，内部可变性（通过`Cell`、`RefCell`等）和外部可变性（�
 ```rust
 State = PrivateImmutable(S) | PrivateMutable(S) | SharedMutable(S, AccessControl)
 AccessControl = ReadOnly | WriteWithCheck | ExclusiveWrite
+
 ```
 
 ### 安全共享可变状态的模式
@@ -155,7 +156,7 @@ AccessControl = ReadOnly | WriteWithCheck | ExclusiveWrite
    ```math
    ∀s ∈ WfUnitState, ∀c ∈ Components:
      access(c, s) ⇒ (
-       c = owner(s) ∨ 
+       c = owner(s) ∨
        (classification(s) = SharedMutable ∧ hasPermission(c, s))
      )
    ```
@@ -174,7 +175,7 @@ AccessControl = ReadOnly | WriteWithCheck | ExclusiveWrite
 
    ```math
    ∀s ∈ SharedMutable, ∀t ∈ Time:
-     (∃c: hasWritePermission(c, s, t)) ⇒ 
+     (∃c: hasWritePermission(c, s, t)) ⇒
        (¬∃c': c'≠c ∧ hasAnyPermission(c', s, t))
    ```
 
@@ -211,12 +212,12 @@ AccessControl = ReadOnly | WriteWithCheck | ExclusiveWrite
        change_log: ChangeLog,
        consistency_level: ConsistencyLevel,
    }
-   
+  
    impl<T> DistributedCell<T> {
        fn replace(&self, new_value: T) -> Result<T, StateError> {
            // 实现原子替换，可能涉及分布式锁或共识协议
        }
-       
+  
        fn get(&self) -> T {
            // 读取当前值，可能涉及一致性检查
        }
@@ -231,12 +232,12 @@ AccessControl = ReadOnly | WriteWithCheck | ExclusiveWrite
        active_borrows: DistributedCounter,
        owner: WfUnitId,
    }
-   
+  
    impl<T> DistributedRefCell<T> {
        fn borrow(&self) -> Result<DistributedRef<T>, BorrowError> {
            // 实现分布式读取借用
        }
-       
+  
        fn borrow_mut(&self) -> Result<DistributedRefMut<T>, BorrowError> {
            // 实现分布式可变借用，确保独占访问
        }
@@ -266,6 +267,7 @@ AccessControl = ReadOnly | WriteWithCheck | ExclusiveWrite
 
 ```rust
 SharedMutableState<T, ConsistencyLevel>
+
 ```
 
 ## 工作流级别的内部可变性保证
@@ -303,6 +305,7 @@ impl WfUnit {
         result
     }
 }
+
 ```
 
 ### 跨边界状态变更控制
@@ -323,7 +326,7 @@ impl WfUnit {
        expiration: Instant,
        _phantom: PhantomData<T>,
    }
-   
+  
    // 使用RAII模式自动释放
    impl<T> Drop for StateAccessToken<T> {
        fn drop(&mut self) {
@@ -357,7 +360,7 @@ impl WfUnit {
        ReadWrite,
        Exclusive,
    }
-   
+  
    struct AccessGuard<T, Mode: AccessMode> {
        state: &T,
        _mode: PhantomData<Mode>,
@@ -371,9 +374,9 @@ impl WfUnit {
    struct StateRef<'state, T> {
        data: &'state T,
    }
-   
+  
    // 确保访问控制在正确的作用域内
-   struct StateMutRef<'state, 'access, T> 
+   struct StateMutRef<'state, 'access, T>
    where 'access: 'state {
        data: &'state mut T,
        _access_marker: PhantomData<&'access ()>,
@@ -421,6 +424,7 @@ impl WfUnit {
 ```math
 ∀x: x ∈ State ⇔ lifecycle(x) ⊆ lifecycle(WfUnit)
 ∀y: y ∈ Resource ⇔ lifecycle(y) ⊇ lifecycle(WfUnit)
+
 ```
 
 ### 动态边界场景处理
@@ -481,6 +485,7 @@ struct StateUpdate<T> {
     update_mode: StateUpdateMode,
     conditions: Option<UpdateCondition>,
 }
+
 ```
 
 ### 向后兼容保证
@@ -646,4 +651,5 @@ struct StateUpdate<T> {
         ├── 内部可变性测试
         ├── 形式化验证
         └── 性能基准
+
 ```

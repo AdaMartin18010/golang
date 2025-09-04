@@ -18,6 +18,7 @@ trait Future {
     type Output;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 - **`type Output`**：这是一个关联类型，定义了 `Future` 完成时返回的结果类型。
@@ -61,6 +62,7 @@ fn main() {
     let result = future.await;
     println!("Future 的结果是：{}", result);
 }
+
 ```
 
 在这个示例中：

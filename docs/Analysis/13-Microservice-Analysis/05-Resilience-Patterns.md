@@ -26,19 +26,6 @@
     - [13.1.9.3 应用场景](#应用场景)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 13.1.1 目录
 
 1. [概述](#概述)
@@ -250,6 +237,7 @@ func (cb *CircuitBreaker) ForceClose() {
     cb.FailureCount = 0
     cb.SuccessCount = 0
 }
+
 ```
 
 ### 13.1.4.2 断路器管理器
@@ -310,6 +298,7 @@ func (cbm *CircuitBreakerManager) GetAllStates() map[string]CircuitState {
     
     return states
 }
+
 ```
 
 ## 13.1.5 重试模式
@@ -501,6 +490,7 @@ func (tre *TimeoutRetryExecutor) Execute(operation func() error) error {
     
     return fmt.Errorf("operation failed after %d attempts: %v", tre.policy.MaxRetries, lastErr)
 }
+
 ```
 
 ## 13.1.6 超时模式
@@ -647,6 +637,7 @@ func (tm *TimeoutManager) Execute(operation string, fn func() error) error {
     executor := NewTimeoutExecutor(policy)
     return executor.Execute(operation, fn)
 }
+
 ```
 
 ## 13.1.7 降级模式
@@ -827,6 +818,7 @@ func (fe *FallbackExecutor) ExecuteWithCache(
     
     return result, err
 }
+
 ```
 
 ## 13.1.8 舱壁模式
@@ -1051,6 +1043,7 @@ func (bm *BulkheadManager) GetAllPoolStatus() map[string]*PoolStatus {
     
     return status
 }
+
 ```
 
 ## 13.1.9 总结

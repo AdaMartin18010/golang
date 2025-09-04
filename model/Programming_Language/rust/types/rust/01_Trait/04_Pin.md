@@ -8,19 +8,6 @@
     - [1.1.3.1 使用 `Pin`](#使用-pin)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`Pin` trait 属于 `std::marker` 模块，它用于指示某个值的内存位置不应该被移动。
 这通常用于确保某些操作的稳定性，比如异步任务的执行或与原始内存地址相关的操作。
 
@@ -39,6 +26,7 @@ pub trait Pin {
     fn into_ref(self: Pin<&mut Self>) -> Self::Target where Self: Unpin;
     fn into_mut(self: Pin<&mut Self>) -> &mut Self::Target where Self: Unpin;
 }
+
 ```
 
 `Pin` trait 有一个关联类型 `Target`，它代表了 `Pin` 内部持有的值的类型。
@@ -74,6 +62,7 @@ let pinned_vec = Pin::new(&mut vec);
 
 // 使用 pinned_vec 获取内部值的引用
 let vec_ref = unsafe { &*pinned_vec.get_ref() };
+
 ```
 
 在这个例子中，我们创建了一个 `Vec` 的可变引用，并使用 `Pin::new` 将其固定。

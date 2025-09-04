@@ -31,19 +31,6 @@
   - [1.8 V. 结论与建议](#v-结论与建议)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 好的，遵照您的要求，我将以批判性思维、形式分析、逻辑推理和综合论证的方式，
 全面分析工作流架构需要面对的核心问题、潜在解决方案、形式证明的尝试以及评价体系。
 
@@ -128,6 +115,7 @@ Workflow System Architecture Analysis
     ├── Emphasize engineering practices
     ├── Focus formalism on critical core
     ├── Leverage language features (Rust)
+
 ```
 
 ## 1.4 I. 工作流架构的核心挑战与形式化表述
@@ -298,6 +286,7 @@ fn apply(state: WorkflowState, event: &WorkflowEvent) -> WorkflowState {
     }
     // 注意：这里没有 IO, 没有随机数, 没有访问外部状态, 结果只依赖输入
 }
+
 ```
 
 ### 1.6.4 D. 形式证明的局限性与批判

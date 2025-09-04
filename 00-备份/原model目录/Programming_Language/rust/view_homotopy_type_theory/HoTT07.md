@@ -44,6 +44,7 @@
 
 让我开始编写回答。
 </think>
+
 ```
 
 ## 目录
@@ -121,6 +122,7 @@
     ├── 基于依赖类型的算法验证
     ├── 同伦等价的代码转换
     └── 范畴论桥接的三域统一
+
 ```
 
 ## 1. 引言
@@ -188,6 +190,7 @@ struct Point {
     x: f64,
     y: f64,
 }
+
 ```
 
 从HoTT视角，`Option<T>`是一个高阶归纳类型，其中：
@@ -205,6 +208,7 @@ trait Mappable {
     fn map<F>(self, f: F) -> Self::Output
     where F: FnOnce(Self) -> Self::Output;
 }
+
 ```
 
 这里，`Mappable`定义了一个依赖类型族，其中`Output`是依赖于实现类型的关联类型。
@@ -216,6 +220,7 @@ trait Mappable {
 ```rust
 let v1 = vec![1, 2, 3];
 let v2 = v1; // 所有权转移
+
 ```
 
 从HoTT角度，所有权转移可以视为一个等价映射(equivalence)，它保留了值的同一性但改变了"拥有者"。
@@ -226,6 +231,7 @@ let v2 = v1; // 所有权转移
 fn process(v: &Vec<i32>) {
     // 只读借用
 }
+
 ```
 
 借用可以建模为一个纤维束(fibration)，其中基空间是所有者类型，纤维是被借用值的类型。不可变借用和可变借用对应不同的纤维结构。
@@ -238,6 +244,7 @@ Rust的生命周期注解可以解释为同伦类型论中的路径依赖：
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 这里，`'a`可以理解为一个时间维度上的路径，函数签名保证了返回引用的生命周期与输入参数的生命周期之间存在同伦关系。
@@ -254,6 +261,7 @@ fn divide(a: f64, b: f64) -> Result<f64, String> {
         Ok(a / b)
     }
 }
+
 ```
 
 错误传播操作符`?`对应于同伦类型论中的定理组合子，允许错误沿执行路径传播。
@@ -281,12 +289,14 @@ fn binary_search<T: Ord>(arr: &[T], target: &T) -> Option<usize> {
     
     None
 }
+
 ```
 
 该算法的正确性可以表述为类型：
 
 ```text
 ∏(arr: Array<T>) ∏(target: T) (IsSorted(arr) → (BinarySearch(arr, target) = LinearSearch(arr, target)))
+
 ```
 
 ### 4.2 复杂度分析作为同伦分类
@@ -307,6 +317,7 @@ fn factorial(n: u64) -> u64 {
         n => n * factorial(n - 1)
     }
 }
+
 ```
 
 这对应于HoTT中自然数归纳原理，其中基础情况和递归情况分别对应零点和后继构造子。
@@ -350,6 +361,7 @@ fn parallel_sum(data: &[i32], num_threads: usize) -> i32 {
     
     *result.lock().unwrap()
 }
+
 ```
 
 这里的互斥锁(`Mutex`)可以理解为路径空间上的约束，保证路径之间不会相互干扰。
@@ -399,6 +411,7 @@ struct Arc<State> {
     weight: usize,
     guard: Option<Box<dyn Fn(&State) -> bool>>,
 }
+
 ```
 
 ### 5.3 工作流验证作为类型检查
@@ -439,6 +452,7 @@ impl<T, E> Workflow<T, E> {
         Ok(state)
     }
 }
+
 ```
 
 从同伦视角，工作流是路径空间中的特定路径，组合操作对应路径复合。
@@ -460,6 +474,7 @@ fn sort<T: Ord>(mut arr: Vec<T>) -> Vec<T> {
     arr.sort();
     arr  // 编译器确保返回的向量长度与输入相同
 }
+
 ```
 
 ### 6.2 算法与工作流的同构
@@ -493,6 +508,7 @@ where
     // Reduce阶段：聚合结果
     reduce_fn(mapped)
 }
+
 ```
 
 ### 6.3 工作流与Rust的纤维关系
@@ -529,6 +545,7 @@ async fn workflow() {
     }
     println!("最终结果: {}", sum);
 }
+
 ```
 
 这种实现反映了工作流的流水线结构，与Rust的异步运行时形成纤维关系。

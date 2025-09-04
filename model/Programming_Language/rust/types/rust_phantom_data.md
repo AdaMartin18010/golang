@@ -90,6 +90,7 @@ fn main() {
     // 这里可能会导致类型不匹配的错误
     let _ = unsafe { std::mem::transmute::<Wrapper<String>, Wrapper<i32>>(w) }; // 不安全的类型转换
 }
+
 ```
 
 在这个例子中，`Wrapper`没有使用`PhantomData`来标记与`String`的关系，导致在进行不安全的类型转换时可能引发未定义行为。
@@ -111,6 +112,7 @@ fn main() {
     let wrapper = create_ref_wrapper(r);
     // 这里可能会导致悬垂引用，因为没有正确管理生命周期
 }
+
 ```
 
 在这个例子中，`RefWrapper`没有使用`PhantomData`来标记与生命周期的关系，导致在使用时可能出现悬垂引用的问题。
@@ -126,6 +128,7 @@ struct UnusedType<T> {
 fn main() {
     let _ = UnusedType { value: 42 }; // 编译器可能会发出警告，提示未使用的类型
 }
+
 ```
 
 在这个例子中，`UnusedType`没有使用`PhantomData`来标记类型`T`，导致编译器发出警告，提示该类型未被使用，影响代码的整洁性。
@@ -143,6 +146,7 @@ fn main() {
     // 这里可能会导致类型推导错误，因为没有标记与 String 的关系
     let _ = c.data; // 这里的类型推导可能不符合预期
 }
+
 ```
 
 在这个例子中，`Container`没有使用`PhantomData`，导致编译器无法正确推导出与`String`的关系，可能导致后续使用时出现类型不匹配的问题。

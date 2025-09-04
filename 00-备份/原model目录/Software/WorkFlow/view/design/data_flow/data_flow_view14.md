@@ -45,6 +45,7 @@ impl Money {
         &self.currency
     }
 }
+
 ```
 
 **映射关系**:
@@ -93,6 +94,7 @@ impl Order {
         &self.total
     }
 }
+
 ```
 
 **映射关系**:
@@ -150,6 +152,7 @@ impl<P: PaymentProcessor> PaymentService<P> {
 // 使用示例
 let credit_processor = CreditCardProcessor::new();
 let payment_service = PaymentService::new(credit_processor);
+
 ```
 
 **映射关系**:
@@ -207,6 +210,7 @@ impl ShoppingCart {
             })
     }
 }
+
 ```
 
 **映射关系**:
@@ -284,6 +288,7 @@ impl EventBus {
         Ok(())
     }
 }
+
 ```
 
 **映射关系**:
@@ -347,6 +352,7 @@ impl Customer {
     //     &mut self.addresses
     // }
 }
+
 ```
 
 **映射关系**:
@@ -419,6 +425,7 @@ impl<R> Deref for ResourceGuard<R> {
         self.resource.as_ref().unwrap()
     }
 }
+
 ```
 
 **映射关系**:
@@ -486,6 +493,7 @@ impl AggregateRoot for Order {
         self.version += 1;
     }
 }
+
 ```
 
 **映射关系**:

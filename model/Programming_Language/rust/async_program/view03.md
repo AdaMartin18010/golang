@@ -38,19 +38,6 @@
     - [1.1.9 9. 思维导图](#9-思维导图)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust 异步编程技术深度解析与批判性评估 (修订版)](#rust-异步编程技术深度解析与批判性评估-修订版)
@@ -128,6 +115,7 @@ pub enum Poll<T> {
     Ready(T),
     Pending,
 }
+
 ```
 
 **设计选择分析**：
@@ -160,6 +148,7 @@ struct ExampleFuture {
     // ... 可能还有 step1 和 step2 的 Future
 }
 impl Future for ExampleFuture { /* ... poll 实现 ... */ }
+
 ```
 
 **关键点**：
@@ -218,6 +207,7 @@ async fn ticker(interval: Duration) -> impl Stream<Item = Instant> {
         }
     }
 }
+
 ```
 
 **评估**：
@@ -240,6 +230,7 @@ Rust 2024 中对返回位置 `impl Trait` (RPIT) 的生命周期捕获规则进�
 fn process(data: &Vec<u8>) -> impl Iterator<Item = &u8> { // 不再需要显式 '+ 'a'
     data.iter()
 }
+
 ```
 
 **评估**：
@@ -261,6 +252,7 @@ fn process(data: &Vec<u8>) -> impl Iterator<Item = &u8> { // 不再需要显式 
 trait AsyncProcessor {
     async fn process(&self, data: &[u8]) -> Result<(), Error>; // 更自然
 }
+
 ```
 
 **评估**：
@@ -282,6 +274,7 @@ trait AsyncProcessor {
 let async_closure = async |x| {
     perform_async_op(x).await
 };
+
 ```
 
 **评估**：
@@ -319,6 +312,7 @@ impl Drop for AsyncConnection {
 impl AsyncConnection {
     async fn close(self) -> Result<(), Error> { /* ... 异步关闭逻辑 ... */ }
 }
+
 ```
 
 **实践挑战**：
@@ -570,4 +564,5 @@ Rust异步编程深度解析与批判性评估 (修订版)
 │   ├── 主要挑战：学习曲线，生态碎片化，调试困难，标准化滞后
 │   └── 未来方向：提升开发体验 (标准化/工具/文档)，解决生态问题
 └── 9. 思维导图 (本结构)
+
 ```

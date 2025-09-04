@@ -48,19 +48,6 @@
   - [1.29 XXVIII. Final Philosophical Statement](#xxviii-final-philosophical-statement)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Okay, stepping away from analyzing existing systems or strictly adhering to the previous discussions,
 let's design a workflow architecture from a fresh perspective,
 aiming to address the identified limitations and build upon core principles for robustness, adaptability, and clarity.
@@ -103,23 +90,23 @@ This design philosophy prioritizes **Intrinsic Adaptability, Composable Effects,
 
 ## 1.2 I. 核心设计哲学 (Core Design Philosophy)
 
--1.  **拥抱变化而非抵抗变化 (Embrace Change, Don't Resist It)**
+- 1.  **拥抱变化而非抵抗变化 (Embrace Change, Don't Resist It)**
     演化是常态。架构应将版本控制、兼容性处理和动态适应性作为一等公民，而非事后补救。
--2.  **显式化副作用 (Make Side Effects Explicit)**
+- 2.  **显式化副作用 (Make Side Effects Explicit)**
     工作流的核心是协调副作用（与外部世界交互）。
     副作用应被明确声明、类型化、追踪和管理，而非隐藏在业务逻辑中。
     这是可靠性和可恢复性的关键。
--3.  **去中心化与局部自治 (Decentralization & Local Autonomy)**
+- 3.  **去中心化与局部自治 (Decentralization & Local Autonomy)**
     避免单点瓶颈（如单一的中央历史服务或状态管理器）。
     尽可能将状态和决策局部化，通过明确的协议进行协调。
--4.  **自适应运行时 (Adaptive Runtime)**
+- 4.  **自适应运行时 (Adaptive Runtime)**
     运行时不应仅仅是任务的被动执行者，而应是能感知系统状态（负载、故障、资源）、
     根据策略进行自适应调整（调度、资源分配、甚至路由）的主动参与者。
--5.  **聚焦的形式化 (Focused Formalism)**
+- 5.  **聚焦的形式化 (Focused Formalism)**
     将形式化方法应用于最关键、最稳定的部分（如通信协议、核心状态协调、效应类型），
     而不是试图形式化所有业务逻辑。
     利用强类型语言（如 Rust）的编译器保证来处理局部逻辑的正确性。
--6.  **组合优于继承/配置 (Composition Over Inheritance/Configuration)**
+- 6.  **组合优于继承/配置 (Composition Over Inheritance/Configuration)**
     通过组合简单、定义良好的原语来构建复杂行为，而不是依赖复杂的配置或继承层次。
 
 ## 1.3 II. 关键架构概念 (Key Architectural Concepts)
@@ -182,7 +169,6 @@ trait EffectfulCell {
     fn state(&self) -> Vec<u8>;
     fn load_state(&mut self, state: &[u8]);
 }
-
 
 ### 1.3.2 B. 运行时：自适应结构 (Runtime: The Adaptive Fabric)
 
@@ -413,7 +399,8 @@ type ResolutionError = String; // Simplified
 // Represents Fabric internal errors
 type FabricError = String; // Simplified
 
-#[derive(Clone, Debug)]
+# [derive(Clone, Debug)]
+
 struct WorkflowContext {
     workflow_id: String,
     cell_instance_id: String,
@@ -423,7 +410,9 @@ struct WorkflowContext {
 }
 
 // The interface provided by the Fabric to the Cell
-#[async_trait]
+
+# [async_trait]
+
 pub trait FabricInterface<Effect>: Send + Sync {
     // Request execution of a side effect declared by the Cell
     fn request_effect(
@@ -447,6 +436,7 @@ pub trait FabricInterface<Effect>: Send + Sync {
 
     // (Potentially other methods like resolve_dependency, yield_control, spawn_child_cell)
 }
+
 ```
 
 ### 1.9.2 B. 效应执行器 (Effect Handlers)
@@ -462,7 +452,9 @@ pub trait FabricInterface<Effect>: Send + Sync {
 
 ```rust
 // Example: An Effect Handler for making HTTP calls
-#[async_trait]
+
+# [async_trait]
+
 trait HttpEffectHandler: Send + Sync {
     async fn handle_http_request(
         &self,
@@ -495,6 +487,7 @@ impl EffectHandlerRegistry {
         unimplemented!()
     }
 }
+
 ```
 
 ### 1.9.3 C. 协调日志与恢复 (Coordination Log & Recovery)
@@ -566,7 +559,8 @@ use async_trait::async_trait;
 use serde::{Serialize, Deserialize};
 // ... other imports: FabricInterface, EffectOutcome, EffectError etc.
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+# [derive(Serialize, Deserialize, Debug, Default)]
+
 struct OrderProcessingState {
     order_id: String,
     items_processed: usize,
@@ -574,14 +568,16 @@ struct OrderProcessingState {
     // ... other state fields
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+# [derive(Clone, Debug, Serialize, Deserialize)]
+
 enum OrderProcessingEffect {
     VerifyInventory { item_id: String, quantity: u32 },
     ProcessPayment { order_id: String, amount: u64 },
     ShipOrder { order_id: String, address: String },
 }
 
-#[derive(Debug)] // Implement Error trait appropriately
+# [derive(Debug)] // Implement Error trait appropriately
+
 enum OrderProcessingError {
     InventoryShortage(String),
     PaymentFailed(String),
@@ -592,7 +588,8 @@ struct OrderProcessorCell {
     state: OrderProcessingState,
 }
 
-#[async_trait]
+# [async_trait]
+
 impl EffectfulCell for OrderProcessorCell {
     type Input = OrderDetails; // Define OrderDetails struct
     type Output = OrderConfirmation; // Define OrderConfirmation struct
@@ -661,6 +658,7 @@ impl EffectfulCell for OrderProcessorCell {
        }
     }
 }
+
 ```
 
 ### 1.11.2 B. Fabric Implementation

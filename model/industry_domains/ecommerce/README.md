@@ -173,6 +173,7 @@ pub struct Product {
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
+
 ```
 
 #### 1.2.2.2 事件驱动电商架构
@@ -251,6 +252,7 @@ impl EventDrivenECommerce {
             .push(handler);
     }
 }
+
 ```
 
 ## 1.3 业务领域概念建模
@@ -329,6 +331,7 @@ pub struct OrderTotals {
     pub discount: Money,
     pub total: Money,
 }
+
 ```
 
 #### 1.3.1.2 库存管理系统
@@ -390,6 +393,7 @@ pub struct WarehouseCapacity {
     pub available_space: f64,
     pub unit: String,
 }
+
 ```
 
 #### 1.3.1.3 推荐系统
@@ -461,6 +465,7 @@ pub enum BehaviorType {
     Click,
     Scroll,
 }
+
 ```
 
 ## 1.4 数据建模
@@ -570,6 +575,7 @@ pub enum EvictionPolicy {
     TTL,
     Random,
 }
+
 ```
 
 #### 1.4.1.2 搜索引擎集成
@@ -714,6 +720,7 @@ impl ProductSearchEngine {
         Ok(search_body)
     }
 }
+
 ```
 
 ## 1.5 流程建模
@@ -783,6 +790,7 @@ impl OrderProcessingWorkflow {
         })
     }
 }
+
 ```
 
 #### 1.5.1.2 支付处理流程
@@ -883,6 +891,7 @@ impl PaymentProcessingWorkflow {
         Ok(validation_result)
     }
 }
+
 ```
 
 ## 1.6 组件建模
@@ -1018,6 +1027,7 @@ impl ShoppingCartSystem {
         Ok(())
     }
 }
+
 ```
 
 #### 1.6.1.2 推荐引擎
@@ -1115,6 +1125,7 @@ impl CollaborativeFilter {
         Ok(similarities)
     }
 }
+
 ```
 
 ## 1.7 运维运营
@@ -1251,6 +1262,7 @@ impl ECommerceMetrics {
         self.search_queries.inc();
     }
 }
+
 ```
 
 #### 1.7.1.2 性能监控
@@ -1316,6 +1328,7 @@ impl PerformanceMonitor {
         })
     }
 }
+
 ```
 
 ## 1.8 总结

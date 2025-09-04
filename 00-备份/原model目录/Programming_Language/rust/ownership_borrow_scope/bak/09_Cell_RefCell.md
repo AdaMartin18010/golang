@@ -11,6 +11,7 @@
 struct Cell<T> {
     value: T,
 }
+
 ```
 
 `Cell` 提供了一种方式来存储一个值，并能够修改这个值，即使它被固定为不可变借用。
@@ -28,6 +29,7 @@ println!("Initial value: {}", c.get()); // 获取当前值
 
 c.set(10); // 修改值
 println!("After modification: {}", c.get());
+
 ```
 
 ### RefCell
@@ -38,6 +40,7 @@ println!("After modification: {}", c.get());
 struct RefCell<T> {
     value: T,
 }
+
 ```
 
 `RefCell` 允许你获取对内部数据的可变借用，即使在不可变借用的上下文中。
@@ -55,6 +58,7 @@ println!("Initial value: {}", *c.borrow()); // 获取当前值
 
 *c.borrow_mut() = 10; // 修改值
 println!("After modification: {}", *c.borrow());
+
 ```
 
 ### 区别和联系

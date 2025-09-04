@@ -65,13 +65,6 @@
     - [1.18.3 未来研究方向](#未来研究方向)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 从CI/CD视角论述边缘云架构：定义、形式化与交互模型
 
 ## 1.1 目录
@@ -255,6 +248,7 @@
         ├── 聚合分析
         ├── 时序处理
         └── 预测分析
+
 ```
 
 ## 1.3 1. 引言
@@ -1151,6 +1145,7 @@ interface I_comm {
   subscribe(topic) -> subscription
   publish(topic, message, options)
 }
+
 ```
 
 每种通信技术（如MQTT、HTTP、gRPC等）都实现此接口，提供统一抽象。
@@ -1338,6 +1333,7 @@ AWS Greengrass支持边缘计算场景：
 
 ```math
 源码提交 → AWS CodeBuild(多架构构建) → AWS CodePipeline(测试) → Greengrass部署API → 边缘设备
+
 ```
 
 ### 1.16.3 Azure IoT Edge CI/CD实践

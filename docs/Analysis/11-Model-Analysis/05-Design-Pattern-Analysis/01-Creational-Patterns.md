@@ -53,19 +53,6 @@
   - [11.5.1.11 10. 参考文献](#10-参考文献)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.5.1.1 目录
 
 1. [概述](#1-概述)
@@ -149,6 +136,7 @@ stateDiagram-v2
     Uninitialized --> Initialized : create()
     Initialized --> Initialized : create()
     Initialized --> [*] : destroy()
+
 ```
 
 ### 11.5.1.4.2 Golang实现
@@ -213,6 +201,7 @@ func (l *ConcreteLogger) GetLevel() string {
     defer l.mu.RUnlock()
     return l.level
 }
+
 ```
 
 #### 11.5.1.4.2.2 延迟初始化单例
@@ -264,6 +253,7 @@ func (l *LazySingleton) Get(key string) (interface{}, bool) {
     value, exists := l.data[key]
     return value, exists
 }
+
 ```
 
 ### 11.5.1.4.3 性能分析
@@ -292,6 +282,7 @@ classDiagram
     Product <|-- ConcreteProduct
     Creator --> Product : creates
     ConcreteCreator --> ConcreteProduct : creates
+
 ```
 
 ### 11.5.1.5.2 Golang实现
@@ -381,6 +372,7 @@ func FactoryMethod(productType string) Creator {
         return &ConcreteCreatorA{}
     }
 }
+
 ```
 
 ### 11.5.1.5.3 性能分析
@@ -504,6 +496,7 @@ func (c *Client) Run() string {
         productA.UseA(), 
         productB.InteractWithA(productA))
 }
+
 ```
 
 ### 11.5.1.6.3 性能分析
@@ -627,6 +620,7 @@ func (b *FunctionalBuilder) WithPartC(partC string) *FunctionalBuilder {
 func (b *FunctionalBuilder) Build() *Product {
     return b.product
 }
+
 ```
 
 ### 11.5.1.7.3 性能分析
@@ -728,6 +722,7 @@ func (r *PrototypeRegistry) Clone(name string) (Prototype, error) {
     }
     return nil, fmt.Errorf("prototype %s not found", name)
 }
+
 ```
 
 #### 11.5.1.8.2.2 深拷贝与浅拷贝
@@ -800,6 +795,7 @@ func (c *ComplexObject) ManualDeepCopy() *ComplexObject {
     
     return clone
 }
+
 ```
 
 #### 11.5.1.8.2.3 原型工厂
@@ -859,6 +855,7 @@ func (f *FunctionalPrototypeFactory) Create(name string) (interface{}, error) {
     }
     return cloneFunc(), nil
 }
+
 ```
 
 ### 11.5.1.8.3 性能分析
@@ -908,24 +905,24 @@ func (f *FunctionalPrototypeFactory) Create(name string) (interface{}, error) {
        if v == nil {
            return nil
        }
-       
+  
        original := reflect.ValueOf(v)
        if !original.IsValid() {
            return nil
        }
-       
+  
        // 处理指针
        if original.Kind() == reflect.Ptr {
            original = original.Elem()
        }
-       
+  
        // 创建新实例
        copied := reflect.New(original.Type())
        copyRecursive(original, copied.Elem())
-       
+  
        return copied.Interface()
    }
-   
+  
    // 递归复制
    func copyRecursive(original, copied reflect.Value) {
        // ... 实现根据类型的复制逻辑
@@ -1069,6 +1066,7 @@ func (p *ObjectPool) Close() {
         }
     }
 }
+
 ```
 
 #### 11.5.1.9.2.2 同步对象池
@@ -1144,6 +1142,7 @@ func (p *ResourcePool) Release(res interface{}) {
     p.resources--
     p.pool.Put(res)
 }
+
 ```
 
 #### 11.5.1.9.2.3 带监控的池
@@ -1273,6 +1272,7 @@ func (p *MetricsObjectPool) monitor() {
                   metrics, acquireMs, releaseMs)
     }
 }
+
 ```
 
 ### 11.5.1.9.3 性能分析
@@ -1317,19 +1317,19 @@ func (p *MetricsObjectPool) monitor() {
    func (p *Pool) CleanupLoop() {
        ticker := time.NewTicker(p.cleanupInterval)
        defer ticker.Stop()
-       
+  
        for range ticker.C {
            p.removeStaleItems()
        }
    }
-   
+  
    func (p *Pool) removeStaleItems() {
        // 移除过期连接
        var valid []PoolObject
-       
+  
        p.mu.Lock()
        defer p.mu.Unlock()
-       
+  
        for _, obj := range p.availableObjects {
            if obj.IsValid() {
                valid = append(valid, obj)
@@ -1337,7 +1337,7 @@ func (p *MetricsObjectPool) monitor() {
                p.closeResource(obj)
            }
        }
-       
+  
        p.availableObjects = valid
    }
    ```
@@ -1348,13 +1348,13 @@ func (p *MetricsObjectPool) monitor() {
    // 使用前验证对象健康状态
    func (p *Pool) Acquire() (PoolObject, error) {
        obj := <-p.objects
-       
+  
        // 验证对象
        if !obj.IsValid() {
            // 创建新对象替代
            obj = p.factory()
        }
-       
+  
        return obj, nil
    }
    ```
@@ -1365,15 +1365,15 @@ func (p *MetricsObjectPool) monitor() {
    func (p *Pool) Close() error {
        p.mu.Lock()
        defer p.mu.Unlock()
-       
+  
        // 标记为关闭
        p.closed = true
-       
+  
        // 关闭所有资源
        for _, obj := range p.availableObjects {
            p.closeResource(obj)
        }
-       
+  
        return nil
    }
    ```
@@ -1429,6 +1429,7 @@ func GetInstance() *Singleton {
     })
     return instance
 }
+
 ```
 
 #### 11.5.1.10.2.2 错误处理
@@ -1445,6 +1446,7 @@ func CreateProduct(productType string) (Product, error) {
         return nil, fmt.Errorf("unknown product type: %s", productType)
     }
 }
+
 ```
 
 #### 11.5.1.10.2.3 资源管理
@@ -1459,6 +1461,7 @@ func (p *ObjectPool) AcquireWithContext(ctx context.Context) (PoolObject, error)
         return nil, ctx.Err()
     }
 }
+
 ```
 
 ### 11.5.1.10.3 性能优化建议

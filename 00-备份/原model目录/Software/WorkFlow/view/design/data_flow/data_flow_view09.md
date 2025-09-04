@@ -126,6 +126,7 @@ graph TD
     style L2 fill:#ccf,stroke:#333,stroke-width:2px;
     style L1 fill:#9cf,stroke:#333,stroke-width:2px;
     style L0 fill:#9fc,stroke:#333,stroke-width:2px;
+
 ```
 
 - **图示说明**：此图展示了从最高层的元元模型（定义基础构造块）到元模型（定义建模语言），再到具体模型（特定领域表示），最终到运行时实例的实例化过程。
@@ -185,6 +186,7 @@ graph TD
     CM -->|指导/约束| Impl;
 
     style CM fill:#f9f,stroke:#333,stroke-width:4px;
+
 ```
 
 - **图示说明**：此图展示了概念模型作为中心枢纽，连接不同的利益相关者（提供统一语言），并指导和约束后续的架构、系统、软件设计及实现。
@@ -315,6 +317,7 @@ graph TD
         Transfer --> Route;
         Transfer --> Broadcast;
     end
+
 ```
 
 - **图示说明**：此图将数据操作分为四大类（访问、转换、存储、传递），并列出了每类下的具体操作示例。
@@ -335,6 +338,7 @@ fn update_order_status(order: &mut Order, new_status: OrderStatus) { /* ... */ }
 
 // 传递操作 (Publish - 模拟): 发布订单创建事件
 fn publish_order_created_event(order: &Order, event_bus: &impl EventBus) { /* ... */ }
+
 ```
 
 ### 4.2 数据流状态与转换语义
@@ -374,6 +378,7 @@ stateDiagram-v2
     note right of PendingConfirmation : 初始状态，等待库存确认
     note left of AwaitingShipment : 支付成功，等待发货安排
     note right of Shipped : 已发货，等待客户确认收货
+
 ```
 
 - **图示说明**：这是一个简化的订单状态机图。箭头表示状态转换，标签表示触发转换的事件。它清晰地展示了订单从创建到完成或失败的可能路径。
@@ -399,6 +404,7 @@ match current_status.transition(event) {
     Ok(new_status) => println!("状态更新为: {:?}", new_status), // 输出: 状态更新为: PaymentSuccessful
     Err(e) => eprintln!("错误: {}", e),
 }
+
 ```
 
 - **代码说明**：此 Rust 代码定义了 `OrderStatus` 和 `OrderEvent` 枚举，并通过 `transition` 方法实现了状态转换逻辑。这直接反映了状态机模型，并通过 Rust 的类型系统提供了编译时的部分检查。
@@ -479,6 +485,7 @@ struct OrderItem { /* ... 字段 ... */ }
 
 // 类型系统确保了 Order 结构符合预期
 fn process_new_order(order: &mut Order) -> Result<(), String> { /* ... 函数体 ... */ }
+
 ```
 
 - **代码说明**：展示了如何将概念模型映射到 Rust 的 `struct`，以及类型系统和函数签名如何定义和约束数据流。
@@ -514,6 +521,7 @@ graph LR
     end
     style Client fill:#eee,stroke:#333
     style EventBus fill:#ccf,stroke:#333
+
 ```
 
 - **图示说明**：此图展示了订单处理系统中主要组件（服务）之间的数据流和交互（方法调用和事件发布）。
@@ -579,6 +587,7 @@ graph TD
     end
     style Concept fill:#f9f, stroke:#333, stroke-width:2px
     style Compute fill:#ccc, stroke:#333, stroke-width:2px
+
 ```
 
 - **图示说明**：此图展示了不同抽象层级之间自顶向下（驱动/约束）和自底向上（限制/反馈）的相互影响关系。
@@ -653,7 +662,6 @@ graph TD
 
     end
 
-
 ```
 
 - **图示说明**：顶部展示了主要的垂直映射类型：细化、抽象和实现。底部通过简单的集合映射示例说明了单射（每个源映射到唯一目标，目标可剩余）、满射（所有目标都被映射）和双射（一一对应）的概念。
@@ -721,6 +729,7 @@ fn complete_order_flow(raw_data: RawOrderData) -> Result<(), &'static str> {
 let raw = RawOrderData("some raw order string".to_string());
 let result = complete_order_flow(raw);
 println!("Result: {:?}", result);
+
 ```
 
 - **代码说明**：此示例通过不同类型强制订单处理必须按 `Parse -> Payment -> Ship` 的顺序进行，编译时即可发现流程错误。
@@ -908,4 +917,5 @@ println!("Result: {:?}", result);
 ├── 11. 术语表 (关键术语解释)
 │
 └── 12. 思维导图 (本文结构)
+
 ```

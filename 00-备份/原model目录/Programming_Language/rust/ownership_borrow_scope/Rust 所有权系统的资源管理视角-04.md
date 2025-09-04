@@ -17,6 +17,7 @@
 
 将以与前面相同的结构化方式继续探讨这些主题。
 </think>
+
 ```
 
 ## 目录
@@ -156,6 +157,7 @@ fn use_query_dsl() {
     // let invalid = QueryBuilder::new()
     //     .from("users") // 错误：QueryBuilder 没有 from 方法
 }
+
 ```
 
 ### Fluent API 与所有权转移
@@ -231,6 +233,7 @@ fn use_fluent_api() {
         
     println!("状态码: {}", response.status);
 }
+
 ```
 
 ### 类型状态模式
@@ -344,6 +347,7 @@ fn use_type_state() {
     
     let closed_listener = listener.close();
 }
+
 ```
 
 ### DSL 安全约束实现
@@ -487,6 +491,7 @@ fn use_drawing_dsl() {
     // idle_canvas.rect(0.0, 0.0, 10.0, 10.0); // 错误：Idle 没有 rect 方法
     // idle_canvas.begin_draw().end_path(); // 错误：Drawing 没有 end_path 方法
 }
+
 ```
 
 ## 函数式编程与所有权
@@ -576,6 +581,7 @@ impl<K: Ord, V> ImmutableMap<K, V> {
         Some(node)
     }
 }
+
 ```
 
 ### Rust 中的函数式模式
@@ -655,6 +661,7 @@ fn functional_error_handling() -> Result<i32, String> {
     
     result
 }
+
 ```
 
 ### 闭包捕获与所有权
@@ -726,6 +733,7 @@ fn execute_fn_once<F: FnOnce()>(f: F) {
     f(); // 只能调用一次
     // f(); // 错误：f 已被消耗
 }
+
 ```
 
 ### 纯函数与副作用管理
@@ -781,6 +789,7 @@ fn pure_impure_examples() {
     let pure_adder: PureFn<Vec<i32>, i32> = PureFn(pure_sum);
     let impure_adder: ImpureFn<Vec<i32>, i32> = ImpureFn(impure_sum);
 }
+
 ```
 
 ## 所有权审计与检查
@@ -884,6 +893,7 @@ fn audit_example() {
     
     // array.set(0, String::from("new")); // 编译错误：已存在不可变借用
 }
+
 ```
 
 ### 资源泄漏分析
@@ -976,6 +986,7 @@ fn resource_leak_patterns() {
     
     std::thread::spawn(callback);
 }
+
 ```
 
 ### 关键路径优化
@@ -1102,6 +1113,7 @@ fn improve_locality() {
     let _ = process_poor(&poor);
     let _ = process_better(&better); // 通常更快，因为更好的缓存局部性
 }
+
 ```
 
 ### 静态分析工具
@@ -1184,6 +1196,7 @@ fn performance_patterns() {
     // - 不必要的 Box 装箱
     // - 临时创建后立即消耗的大型结构
 }
+
 ```
 
 ## 所有权与系统架构
@@ -1289,6 +1302,7 @@ impl Application {
         println!("最终记录: {:?}", self.database.get_record(1));
     }
 }
+
 ```
 
 ### 微服务与所有权边界
@@ -1392,6 +1406,7 @@ async fn service_client_example() {
         // 客户端现在拥有最后一个用户副本
     }
 }
+
 ```
 
 ### 长生命周期服务设计
@@ -1538,6 +1553,7 @@ impl Server {
         Ok(())
     }
 }
+
 ```
 
 ### 容错系统的所有权模式
@@ -1770,6 +1786,7 @@ fn fault_tolerant_example() -> Result<(), String> {
     
     Ok(())
 }
+
 ```
 
 ## 所有权与语言研究前沿
@@ -1853,6 +1870,7 @@ fn consume(res: LinearResource) {
 fn split<A: Linear, B: Linear>(pair: (A, B)) -> (A, B) {
     // 拆分线性对，必须返回两部分
 }
+
 */
 
 // 依赖类型思想在当前 Rust 中的概念性模拟
@@ -1900,6 +1918,7 @@ impl File<OpenState> {
         }
     }
 }
+
 ```
 
 ### 属性语法的形式化
@@ -1984,6 +2003,7 @@ fn attribute_examples() {
     //    println!("数据: {:?}", rc_data);
     // });
 }
+
 ```
 
 ### 可验证所有权系统
@@ -2049,6 +2069,7 @@ fn parallel_process(data: &[u8]) {
         || process_chunk(right)
     );
 }
+
 */
 
 // 形式化验证概念在当前 Rust 中的近似表达
@@ -2096,6 +2117,7 @@ fn verified_pattern() -> Result<(), &'static str> {
     
     Ok(())
 }
+
 ```
 
 ### 量子计算与所有权
@@ -2292,6 +2314,7 @@ fn quantum_ownership_example() {
     // 以下代码会导致编译错误，因为 algorithm 已被消耗
     // algorithm.prepare_bell_state();
 }
+
 ```
 
 ## 总结与未来展望
@@ -2356,6 +2379,7 @@ fn concurrent_safety() {
 }
 
 struct TcpConnection;
+
 ```
 
 ### 语言进化方向
@@ -2401,6 +2425,7 @@ fn enhanced_borrowing(data: &mut Vec<i32>) {
 fn verified_function(data: &mut [u8]) {
     // 带有自动形式化验证的代码
 }
+
 */
 
 // 概念性示例：改进的所有权模式
@@ -2420,6 +2445,7 @@ fn future_ownership_patterns() {
     
     println!("处理后的数据: {:?}", data);
 }
+
 ```
 
 ### 跨领域影响
@@ -2453,6 +2479,7 @@ std::unique_ptr<Resource> create_resource() {
 inout parameter func modify(value: inout Int) {
     value += 1
 }
+
 */
 
 // 2. 架构模式影响
@@ -2527,6 +2554,7 @@ impl SafetyControl {
         println!("安全控制已禁用");
     }
 }
+
 ```
 
 ### 最终思考
@@ -2577,6 +2605,7 @@ fn ownership_thinking() {
     // - 生命周期关系是什么？
     // - 并发访问模式如何？
 }
+
 ```
 
 ## 结论

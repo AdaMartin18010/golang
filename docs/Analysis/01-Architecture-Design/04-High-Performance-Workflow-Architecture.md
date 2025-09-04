@@ -472,6 +472,7 @@ func (m *MultiTierPersistenceManager) calculateWorkflowHotness(workflow *Workflo
         return Cold
     }
 }
+
 ```
 
 ### 1.1.9.2 高性能消息总线
@@ -583,6 +584,7 @@ func (e *HighPerformanceEventBus) PublishBatch(ctx context.Context, topic string
 
     return nil
 }
+
 ```
 
 ### 1.1.9.3 自适应调度器
@@ -734,6 +736,7 @@ func (s *AdaptiveWorkflowScheduler) selectWorkItemAdaptively() *WorkItem {
         return s.lowPriorityQueue.Pop()
     }
 }
+
 ```
 
 ### 1.1.9.4 WebSocket实时推送
@@ -955,6 +958,7 @@ type WebSocketResponse struct {
     Type string `json:"type"`
     Data []byte `json:"data,omitempty"`
 }
+
 ```
 
 ## 1.1.10 9. 总结

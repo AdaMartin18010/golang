@@ -237,6 +237,7 @@ impl Shape for Circle {
 fn create_shape() -> impl Shape {
     Circle { radius: 5.0 }
 }
+
 ```
 
 在上面的示例中，`create_shape` 函数返回一个实现了 `Shape` 特征的类型，但具体类型是隐藏的。
@@ -250,6 +251,7 @@ fn create_shape() -> impl Shape {
 ```rust
 // 这是不合法的
 type ShapeType = impl Shape; // 错误：不能将 `impl Trait` 用于类型别名
+
 ```
 
 ### 1.4.6 3 *总结*

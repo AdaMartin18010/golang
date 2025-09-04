@@ -30,6 +30,7 @@ redis = { version = "0.23", features = ["tokio-comp"] }
 openapiv3 = "1.0"
 async-trait = "0.1"
 inflector = "0.11"
+
 ```
 
 ### 2. OpenAPI 解析和代码生成器
@@ -97,6 +98,7 @@ impl ApiCodeGenerator {
         }
     }
 }
+
 ```
 
 ### 3. 数据库集成生成器
@@ -164,6 +166,7 @@ impl DatabaseIntegrationGenerator {
         }
     }
 }
+
 ```
 
 ### 4. 消息中间件集成生成器
@@ -221,6 +224,7 @@ impl MessageBrokerGenerator {
         }
     }
 }
+
 ```
 
 ### 5. API 路由生成器
@@ -267,6 +271,7 @@ impl RouterGenerator {
         }
     }
 }
+
 ```
 
 ### 6. 验证生成器
@@ -318,6 +323,7 @@ impl ValidationGenerator {
         }
     }
 }
+
 ```
 
 ### 7. 集成测试生成器
@@ -376,6 +382,7 @@ impl TestGenerator {
         }
     }
 }
+
 ```
 
 ### 8. 主程序实现
@@ -438,6 +445,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了以下特性：

@@ -149,6 +149,7 @@ fn encrypt_data(data: &[u8], key: &[u8]) -> Result<Vec<u8>, CryptoError> {
     let ciphertext = cipher.encrypt(data)?;
     Ok(ciphertext)
 }
+
 ```
 
 ### 1.2.2 验证与鉴权概念
@@ -173,6 +174,7 @@ async fn authenticate_user(username: &str, password: &str) -> Result<AuthToken, 
     let token = generate_token(username, &user.roles)?;
     Ok(token)
 }
+
 ```
 
 ### 1.2.3 形式化证明基础
@@ -196,6 +198,7 @@ fn verify_token(token: &str) -> Result<UserClaims, AuthError> {
     
     Ok(decoded_claims)
 }
+
 ```
 
 ## 1.3 2. 语言机制与安全保障
@@ -230,6 +233,7 @@ enum AuthenticationLevel {
     High,
     Critical,
 }
+
 ```
 
 **类型系统提供的静态保证**：
@@ -271,6 +275,7 @@ fn authorize(&self, token: &AuthToken, resource: &str, action: &str) -> Result<(
     
     result
 }
+
 ```
 
 ### 1.3.3 数据流与安全边界
@@ -303,6 +308,7 @@ fn handle_auth_request(request: &Request) -> Result<Response, Error> {
         }
     }
 }
+
 ```
 
 ## 1.4 3. 形式化验证方法
@@ -332,6 +338,7 @@ fn get_protected_resource(token: VerifiedToken) -> Resource {
     // 安全地访问资源，因为令牌已验证
     Resource::new()
 }
+
 ```
 
 **形式化推理**：
@@ -380,6 +387,7 @@ impl FormalVerifier {
         })
     }
 }
+
 ```
 
 ### 1.4.3 时序逻辑验证
@@ -415,6 +423,7 @@ fn verify_auth_system(&self, system: &AuthSystem) -> VerificationResult {
     // 使用模型检查器验证属性
     self.model_checker.check(system, &property)
 }
+
 ```
 
 ## 1.5 4. 安全架构模型
@@ -450,6 +459,7 @@ impl SecurityManager {
         result
     }
 }
+
 ```
 
 ### 1.5.2 零信任模型
@@ -500,6 +510,7 @@ impl ZeroTrustAuthenticator {
         Ok(AuthenticationResult::new(request))
     }
 }
+
 ```
 
 ## 1.6 5. 实践示例
@@ -549,6 +560,7 @@ fn verify_jwt(token: &str) -> Result<Claims, JwtError> {
     
     Ok(token_data.claims)
 }
+
 ```
 
 ### 1.6.2 状态转换系统
@@ -608,6 +620,7 @@ fn state_driven_security_flow() {
         }
     }
 }
+
 ```
 
 ## 1.7 思维导图
@@ -673,6 +686,7 @@ fn state_driven_security_flow() {
         ├── 状态定义
         ├── 转换规则
         └── 安全约束
+
 ```
 
 ## 1.8 6. 类型系统的形式化保障
@@ -730,6 +744,7 @@ fn handle_auth_result(result: AuthResult) -> Response {
         },
     }
 }
+
 ```
 
 **形式化保障**：
@@ -763,6 +778,7 @@ fn encrypt_aes256(data: &[u8], key: &Aes256Key) -> Vec<u8> {
     // ...加密实现
     vec![]
 }
+
 ```
 
 **形式化理解**：
@@ -815,6 +831,7 @@ impl HtmlSafeString {
         HtmlSafeString(trusted_html.to_string())
     }
 }
+
 ```
 
 **形式化原理**：
@@ -866,6 +883,7 @@ impl ControlFlowVerifier {
         Ok(())
     }
 }
+
 ```
 
 **形式化基础**：
@@ -900,6 +918,7 @@ async fn secure_async_operation() -> Result<Data, SecurityError> {
     // 4. 返回处理结果
     Ok(result)
 }
+
 ```
 
 **形式化属性**：
@@ -948,6 +967,7 @@ impl<S: State + Clone + Send + Sync + 'static> ConcurrentStateMachine<S> {
         Ok(next_state)
     }
 }
+
 ```
 
 **形式化模型**：
@@ -990,6 +1010,7 @@ fn process_user_input(input: &str) -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 **理论基础**：
@@ -1045,6 +1066,7 @@ impl<T: Clone> SecureData<T> {
         })
     }
 }
+
 ```
 
 **形式化模型**：
@@ -1096,6 +1118,7 @@ fn handle_api_request(request: Request) -> Result<Response, ApiError> {
     // 现在可以安全处理已验证的数据
     process_validated_request(validated_body)
 }
+
 ```
 
 **形式化视角**：
@@ -1171,6 +1194,7 @@ fn prove_transition_preserves_invariant<I: ProtocolInvariant>(
     
     ProofResult::Valid
 }
+
 ```
 
 **理论基础**：
@@ -1241,6 +1265,7 @@ impl<S: Clone + Eq + Hash, A> ModelChecker<S, A> {
         Ok(())
     }
 }
+
 ```
 
 **形式化理论**：
@@ -1281,6 +1306,7 @@ fn authenticate(username: &str, password: &str) -> Result<AuthToken, AuthError> 
         Err(AuthError::InvalidCredentials)
     }
 }
+
 ```
 
 **理论基础**：
@@ -1345,6 +1371,7 @@ fn verify_identity(system: &ZkpSystem, username: &str, proof: &ZkProof) -> bool 
     // 验证证明，不需要知道用户的密码
     (system.verify)(vk, &statement, proof)
 }
+
 ```
 
 **数学基础**：零知识证明基于**承诺方案**(Commitment Schemes)、**交互式证明**(Interactive Proofs)和**随机化证明**(Probabilistic Proofs)等密码学原语。
@@ -1389,6 +1416,7 @@ fn privacy_preserving_analytics(system: &HomomorphicCrypto, data: &[u64]) -> Res
     
     Ok(sum_plain.to_u64())
 }
+
 ```
 
 **理论背景**：同态加密基于**格密码学**(Lattice-based Cryptography)和**环学习错误问题**(Ring Learning With Errors)等数学难题。
@@ -1442,6 +1470,7 @@ fn quantum_resistant_key_exchange(system: &PostQuantumCrypto) -> Result<SharedSe
     
     Ok(shared_secret)
 }
+
 ```
 
 **数学基础**：
@@ -1518,6 +1547,7 @@ fn quantum_resistant_key_exchange(system: &PostQuantumCrypto) -> Result<SharedSe
         ├── 抗量子算法
         ├── 格基密码学
         └── 长期安全保障
+
 ```
 
 ## 1.14 11. 形式化方法的理论基础
@@ -1571,6 +1601,7 @@ impl<T, const N: usize> Vec<T, N> {
         Some(&self.data[I])
     }
 }
+
 ```
 
 **形式化理论**：柯里-霍华德同构(Curry-Howard Isomorphism)建立了类型系统与逻辑系统的深刻对应关系，使得程序验证可以转化为类型检查问题。
@@ -1643,6 +1674,7 @@ impl<T, E> Validated<T, E> {
         }
     }
 }
+
 ```
 
 **理论深入**：范畴论提供了代数结构（函子、单子、应用函子等）来组织和理解复杂程序的组合方式，为形式验证提供了代数框架。
@@ -1693,6 +1725,7 @@ fn binary_search<T: Ord>(arr: &[T], target: &T) -> Option<usize> {
     // 后置条件: 不存在索引i使得arr[i] == target
     None
 }
+
 ```
 
 **理论拓展**：霍尔逻辑通过前置条件、后置条件和不变量，建立了程序状态转换的形式化规约，是程序验证的基础框架。
@@ -1765,6 +1798,7 @@ impl ControlFlowGraph {
         }
     }
 }
+
 ```
 
 **理论深入**：控制流分析基于图论，将程序表示为控制流图，通过数据流分析算法（如到达定义分析、活跃变量分析）检测潜在问题。
@@ -1844,6 +1878,7 @@ impl SymbolicEngine {
         test_cases
     }
 }
+
 ```
 
 **实现原理**：符号执行将程序输入表示为符号值，维护路径约束，使用SMT求解器检查路径可行性和生成测试用例，能够发现传统测试难以覆盖的边界情况。
@@ -1976,6 +2011,7 @@ impl AuthStateMachine {
         results
     }
 }
+
 ```
 
 **形式化分析**：状态机模型允许通过状态空间遍历验证安全属性（如"无未授权访问"），使用时态逻辑表达复杂的时序性质（如"锁定账户在超时前不能登录"）。
@@ -2079,6 +2115,7 @@ impl ProtocolExecution {
         results
     }
 }
+
 ```
 
 **形式化方法**：协议形式化基于**过程演算**(Process Calculi)和**应用逻辑**(Applied Pi-calculus)，将协议表示为交互式通信过程，通过符号模型验证安全属性。
@@ -2174,6 +2211,7 @@ impl TlsHandshake {
         results
     }
 }
+
 ```
 
 **形式化分析**：认证协议可通过**BAN逻辑**(Burrows-Abadi-Needham Logic)等形式化工具分析，验证各方的信任关系和信息共享状态，检测潜在的中间人攻击或重放攻击。
@@ -2267,6 +2305,7 @@ impl DolevYaoAdversary {
         report
     }
 }
+
 ```
 
 **形式化模型**：Dolev-Yao模型假设攻击者完全控制网络通信，但不能破解密码学原语，通过这种模型可以系统地分析协议在敌对环境中的安全性。
@@ -2348,6 +2387,7 @@ impl LayeredSecurityArchitecture {
         report
     }
 }
+
 ```
 
 **架构原理**：分层安全模型基于**防御纵深**(Defense in Depth)原则，确保单一层防御被突破不会导致整个系统沦陷，每一层提供独立且互补的安全机制。
@@ -2466,6 +2506,7 @@ impl DistributedAuthSystem {
         report
     }
 }
+
 ```
 
 **架构特点**：分布式认证架构采用联合身份管理和基于声明的身份(Claims-based Identity)模型，结合XACML(eXtensible Access Control Markup Language)架构的策略管理组件，实现跨域认证和细粒度访问控制。
@@ -2587,6 +2628,7 @@ impl AdaptiveSecuritySystem {
         log_adaptive_changes(&trends);
     }
 }
+
 ```
 
 **理论基础**：自适应安全系统基于**控制理论**(Control Theory)和**机器学习**(Machine Learning)，将安全系统视为具有反馈回路的控制系统，动态调整安全控制以响应环境变化和威胁演变。
@@ -2677,6 +2719,7 @@ where
     
     Ok(final_output)
 }
+
 ```
 
 **技术原理**：可验证计算基于**简洁非交互式知识论证**(SNARKs)、**可验证延迟函数**(VDFs)等密码学原语，允许计算委托方高效验证外部计算结果的正确性，适用于云计算和区块链等场景。
@@ -2811,6 +2854,7 @@ impl DifferentialPrivacyMechanism {
         Ok(results)
     }
 }
+
 ```
 
 **理论基础**：差分隐私提供严格的数学保证，确保分析结果不会泄露个体信息，形式化为ε-差分隐私：对于任意相邻数据集D1和D2（仅有一条记录不同），以及任意输出集S，满足P[M(D1) ∈ S] ≤ e^ε · P[M(D2) ∈ S]。
@@ -2946,6 +2990,7 @@ impl QuantumSecurityVerifier {
         config
     }
 }
+
 ```
 
 **理论背景**：量子安全协议分析基于量子计算模型，特别是量子算法（如Shor算法和Grover算法）对经典密码学的威胁。后量子密码学依赖于格问题、哈希函数等被认为对量子攻击仍然安全的数学难题。
@@ -3019,4 +3064,5 @@ impl QuantumSecurityVerifier {
         ├── 后量子密码分析
         ├── 量子攻击模拟
         └── 安全性约简证明
+
 ```

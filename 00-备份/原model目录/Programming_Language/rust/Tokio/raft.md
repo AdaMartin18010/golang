@@ -36,6 +36,7 @@ dashmap = "5.5"
 
 [build-dependencies]
 tonic-build = "0.10"
+
 ```
 
 ## 2. Proto 定义
@@ -122,6 +123,7 @@ message ClientResponse {
 }
 
 // ... (其他消息定义)
+
 ```
 
 ## 3. Raft 节点实现
@@ -234,6 +236,7 @@ impl RaftServer {
         Ok(())
     }
 }
+
 ```
 
 ## 4. gRPC 服务实现
@@ -354,6 +357,7 @@ impl RaftNode for RaftService {
         }
     }
 }
+
 ```
 
 ### 5. 状态机实现
@@ -405,6 +409,7 @@ impl StateMachine {
         Ok(())
     }
 }
+
 ```
 
 ### 6. 存储实现
@@ -476,6 +481,7 @@ impl Storage for RaftStorage {
         Ok(self.snapshot.read().unwrap().clone())
     }
 }
+
 ```
 
 ### 7. 中间件实现
@@ -529,6 +535,7 @@ where
         })
     }
 }
+
 ```
 
 ### 8. 客户端实现
@@ -590,6 +597,7 @@ impl RaftClient {
         Ok(response.data)
     }
 }
+
 ```
 
 ### 9. 服务器启动
@@ -627,6 +635,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 ### 10. 使用示例
@@ -649,6 +658,7 @@ async fn example() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个完整的示例展示了如何使用 Tonic、Tower 和 Raft 构建一个分布式系统，包括：

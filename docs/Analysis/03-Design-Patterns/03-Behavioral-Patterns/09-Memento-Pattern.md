@@ -198,6 +198,7 @@ func (c *Caretaker) ListMementos() {
             memento.GetTimestamp().Format("15:04:05"))
     }
 }
+
 ```
 
 ### 3.3.1.4.2 文本编辑器备忘录模式
@@ -358,6 +359,7 @@ func (u *UndoManager) CanRedo() bool {
 func (u *UndoManager) GetHistory() []*TextMemento {
     return u.mementos[:u.current+1]
 }
+
 ```
 
 ### 3.3.1.4.3 游戏状态备忘录模式
@@ -543,6 +545,7 @@ func (a *AutoSaveManager) CheckAutoSave() {
 func (a *AutoSaveManager) LoadAutoSave() bool {
     return a.game.LoadGame(a.autoSaveSlot)
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -716,6 +719,7 @@ func (d *Database) RestoreFromCheckpoint(memento *TransactionMemento) {
         fmt.Printf("Database: Restored from checkpoint: %s\n", memento.GetDescription())
     }
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

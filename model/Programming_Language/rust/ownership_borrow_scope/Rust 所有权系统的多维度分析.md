@@ -32,19 +32,6 @@
   - [1.9 7. 总结与展望](#7-总结与展望)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 引言
 
 ```text
@@ -64,6 +51,7 @@
 确保每个章节都包含理论分析、实例、形式证明和实践应用，
 以全面展示Rust所有权系统的特性和优势。
 </think>
+
 ```
 
 ## 1.2 目录
@@ -147,6 +135,7 @@ change(&mut s);       // 可变借用允许修改
 // 5. Copy类型模式
 let x = 5;
 let y = x;  // 原始类型实现Copy，x仍然可用
+
 ```
 
 ### 1.4.3 形式证明
@@ -332,11 +321,11 @@ Rust的类型系统与所有权紧密集成，体现以下原则：
    ```rust
    struct Idle;
    struct Running;
-   
+  
    struct Machine<State> {
        state: PhantomData<State>,
    }
-   
+  
    impl Machine<Idle> {
        fn start(self) -> Machine<Running> { ... }
    }
@@ -365,7 +354,7 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
 
    ```rust
    struct File { fd: RawFd }
-   
+  
    impl Drop for File {
        fn drop(&mut self) {
            unsafe { libc::close(self.fd); }
@@ -378,7 +367,7 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
    ```rust
    // 可安全发送到其他线程
    trait Send {}
-   
+  
    // 可从多线程并发引用
    trait Sync {}
    ```
@@ -408,12 +397,12 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
 
    ```rust
    let data = vec![1, 2, 3];
-   
+  
    thread::spawn(move || {
        // data所有权移入新线程
        println!("{:?}", data);
    });
-   
+  
    // 此处不能再访问data
    ```
 
@@ -421,7 +410,7 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
 
    ```rust
    let data = Arc::new(vec![1, 2, 3]);
-   
+  
    for _ in 0..3 {
        let data_clone = Arc::clone(&data);
        thread::spawn(move || {
@@ -434,7 +423,7 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
 
    ```rust
    let counter = Arc::new(Mutex::new(0));
-   
+  
    for _ in 0..10 {
        let counter_clone = Arc::clone(&counter);
        thread::spawn(move || {
@@ -449,7 +438,7 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
    ```rust
    let shared_mem = SharedMemory::create("name", 1024)?;
    let data_ptr = shared_mem.as_ptr();
-   
+  
    // 写入数据
    unsafe {
        std::ptr::write(data_ptr as *mut u32, 42);
@@ -499,7 +488,7 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
        registers: Mmio<Registers>,
        irq: Option<Irq>,
    }
-   
+  
    impl Drop for Driver {
        fn drop(&mut self) {
            // 自动释放中断和内存映射资源
@@ -514,7 +503,7 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
    struct UART {
        regs: &'static mut UartRegisters,
    }
-   
+  
    // 只有UART的所有者可以发送数据
    impl UART {
        pub fn send(&mut self, byte: u8) {
@@ -531,7 +520,7 @@ Rust所有权系统与操作系统资源管理结合，体现以下原则：
        lib_handle: LibraryHandle,
        instance: Box<dyn PluginInstance>,
    }
-   
+  
    impl Drop for Plugin {
        fn drop(&mut self) {
            // 先释放实例，再卸载库
@@ -560,7 +549,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
        session_id: Uuid,
        client: Client,
    }
-   
+  
    impl Drop for RemoteConnection {
        fn drop(&mut self) {
            // 发送断开连接请求
@@ -574,10 +563,10 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```rust
    // 获取资源租约，有时间限制的"借用"
    let lease = resource_manager.acquire_lease(id, Duration::from_secs(30))?;
-   
+  
    // 使用远程资源
    lease.use_resource()?;
-   
+  
    // 提前释放租约
    lease.release()?;
    ```
@@ -598,7 +587,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```rust
    // 单生产者单消费者通道
    let (tx, rx) = mpsc::channel();
-   
+  
    tx.send(message)?;  // 所有权转移
    let received = rx.recv()?;  // 获取所有权
    ```
@@ -609,10 +598,10 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    struct MyActor {
        data: Vec<String>,  // Actor拥有data所有权
    }
-   
+  
    impl Actor for MyActor {
        type Message = ActorMessage;
-       
+  
        fn handle(&mut self, msg: Self::Message) {
            // 处理消息，可以修改自己拥有的数据
        }
@@ -625,7 +614,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    // 客户端
    let result = client.call("create_resource", params)?;
    let resource_id = result.resource_id;
-   
+  
    // 使用后释放
    client.call("release_resource", resource_id)?;
    ```
@@ -635,10 +624,10 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```rust
    // 获取分布式锁（获取临时所有权）
    let lock = distributed_lock_manager.acquire("resource_name", timeout)?;
-   
+  
    // 使用资源
    update_shared_resource()?;
-   
+  
    // 释放锁（归还所有权）
    lock.release()?;
    ```
@@ -700,7 +689,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
        id: UserId,
        profile: UserProfile,
    }
-   
+  
    // 将用户数据发送给另一服务（所有权转移）
    user_service.process_user(user_data)?;
    ```
@@ -710,7 +699,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```rust
    // 数据从边缘节点上传到云端（所有权转移）
    edge_node.upload_data(sensor_data)?;
-   
+  
    // 配置从云端下发到边缘节点（所有权转移）
    cloud.deploy_config(edge_node_id, new_config)?;
    ```
@@ -726,7 +715,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```math
    对任意资源R：
    创建(R) ↔ 销毁(R)
-   
+  
    形式化为：
    alloc(R) ↔ dealloc(R)
    ```
@@ -736,7 +725,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```math
    对任意资源R：
    获取(R) ↔ 释放(R)
-   
+  
    形式化为：
    acquire(R) ↔ release(R)
    ```
@@ -746,7 +735,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```math
    对任意资源R：
    发送(R) ↔ 接收(R)
-   
+  
    形式化为：
    send(R, A→B) ↔ receive(R, A→B)
    ```
@@ -756,7 +745,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```math
    对任意资源R：
    借用(R) ↔ 归还(R)
-   
+  
    形式化为：
    borrow(R, t₁) ↔ return(R, t₂)，其中t₂ > t₁
    ```
@@ -774,7 +763,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    let shared = Rc::new(Data::new());
    let clone1 = Rc::clone(&shared);
    let clone2 = Rc::clone(&shared);
-   
+  
    // 资源在最后一个所有者drop时释放
    ```
 
@@ -783,7 +772,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
    ```rust
    // RefCell打破"不可变引用不可变"的限制
    let data = RefCell::new(5);
-   
+  
    let r1 = &data;  // 不可变引用
    r1.borrow_mut().modify();  // 但可以获得可变访问
    ```
@@ -819,6 +808,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
 - ⊗是资源组合操作 (A ⊗ B 表示同时拥有A和B)
 - ⊸是资源消费操作 (A ⊸ B 表示消费A产生B)
 - !是资源复制操作 (!A 表示可复制的A)
+
 ```
 
 **所有权变换群 (Ownership Transformation Group)**:
@@ -831,6 +821,7 @@ Rust所有权系统在网络和分布式系统中扩展为以下原则：
 - borrow(R) = &R (不可变借用)
 - borrow_mut(R) = &mut R (可变借用)
 - clone(!R) = !R ⊗ !R (复制)
+
 ```
 
 此模型可以形式化证明：

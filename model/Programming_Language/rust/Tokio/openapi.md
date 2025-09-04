@@ -13,19 +13,6 @@
     - [1.2.7 8. 主程序实现](#8-主程序实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个基于 Rust 2024 的 OpenAPI/AsyncAPI 代码生成器实现。
 
 ## 1.1 目录
@@ -56,6 +43,7 @@ redis = { version = "0.23", features = ["tokio-comp"] }
 openapiv3 = "1.0"
 async-trait = "0.1"
 inflector = "0.11"
+
 ```
 
 ### 1.2.1 2. OpenAPI 解析和代码生成器
@@ -123,6 +111,7 @@ impl ApiCodeGenerator {
         }
     }
 }
+
 ```
 
 ### 1.2.2 3. 数据库集成生成器
@@ -190,6 +179,7 @@ impl DatabaseIntegrationGenerator {
         }
     }
 }
+
 ```
 
 ### 1.2.3 4. 消息中间件集成生成器
@@ -247,6 +237,7 @@ impl MessageBrokerGenerator {
         }
     }
 }
+
 ```
 
 ### 1.2.4 5. API 路由生成器
@@ -293,6 +284,7 @@ impl RouterGenerator {
         }
     }
 }
+
 ```
 
 ### 1.2.5 6. 验证生成器
@@ -344,6 +336,7 @@ impl ValidationGenerator {
         }
     }
 }
+
 ```
 
 ### 1.2.6 7. 集成测试生成器
@@ -402,6 +395,7 @@ impl TestGenerator {
         }
     }
 }
+
 ```
 
 ### 1.2.7 8. 主程序实现
@@ -464,6 +458,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了以下特性：

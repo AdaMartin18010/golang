@@ -130,6 +130,7 @@ func ExampleAdapter() {
     result := Client(adapter)
     fmt.Println(result)
 }
+
 ```
 
 ### 性能分析
@@ -233,6 +234,7 @@ func ExampleBridge() {
     fmt.Println(Client(abstraction1))
     fmt.Println(Client(abstraction2))
 }
+
 ```
 
 ## 组合模式 (Composite)
@@ -353,6 +355,7 @@ func ExampleComposite() {
     
     fmt.Println(tree.Operation())
 }
+
 ```
 
 ## 装饰器模式 (Decorator)
@@ -451,6 +454,7 @@ func ExampleDecorator() {
     fmt.Println("\nClient: Now I've got a decorated component:")
     fmt.Println(Client(decorator2))
 }
+
 ```
 
 ## 外观模式 (Facade)
@@ -551,6 +555,7 @@ func ExampleFacade() {
     facade := NewFacade()
     Client(facade)
 }
+
 ```
 
 ## 享元模式 (Flyweight)
@@ -652,6 +657,7 @@ func ExampleFlyweight() {
     
     fmt.Printf("Flyweight count: %d\n", factory.GetFlyweightCount())
 }
+
 ```
 
 ## 代理模式 (Proxy)
@@ -780,6 +786,7 @@ func ExampleProxy() {
     protectionProxy2 := NewProtectionProxy("user")
     fmt.Println(Client(protectionProxy2))
 }
+
 ```
 
 ## 性能分析与优化
@@ -843,6 +850,7 @@ func ValidateComponent(c Component) error {
     }
     return nil
 }
+
 ```
 
 ### 3. 测试策略
@@ -857,6 +865,7 @@ func TestAdapter(t *testing.T) {
         t.Error("Adapter should return non-empty result")
     }
 }
+
 ```
 
 ## 参考资料
@@ -869,4 +878,4 @@ func TestAdapter(t *testing.T) {
 
 ---
 
-*本文档遵循学术规范，包含形式化定义、数学证明和完整的代码示例。所有内容都与 Golang 相关，并符合最新的软件架构和设计模式最佳实践。*
+* 本文档遵循学术规范，包含形式化定义、数学证明和完整的代码示例。所有内容都与 Golang 相关，并符合最新的软件架构和设计模式最佳实践。*

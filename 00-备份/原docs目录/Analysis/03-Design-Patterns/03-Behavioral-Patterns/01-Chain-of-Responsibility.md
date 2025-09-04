@@ -115,6 +115,7 @@ classDiagram
     BaseHandler <|-- ConcreteHandlerB
     Handler --> Request
     Handler --> Response
+
 ```
 
 ### 3.2 时序图
@@ -141,6 +142,7 @@ sequenceDiagram
             HandlerC->>Client: Response
         end
     end
+
 ```
 
 ### 3.3 状态转换图
@@ -158,6 +160,7 @@ stateDiagram-v2
     NoMoreHandlers --> ErrorResponse
     ResponseSent --> [*]
     ErrorResponse --> [*]
+
 ```
 
 ## 4. Golang实现
@@ -208,6 +211,7 @@ func (h *BaseHandler) HandleNext(request Request) Response {
         Error:   fmt.Errorf("no handler available"),
     }
 }
+
 ```
 
 ### 4.2 具体处理者实现
@@ -367,6 +371,7 @@ func (h *ProcessingHandler) Handle(request Request) Response {
         Handler: h.name,
     }
 }
+
 ```
 
 ### 4.3 并发安全实现
@@ -422,6 +427,7 @@ func (h *ConcurrentHandler) Handle(request Request) Response {
     
     return h.HandleNext(request)
 }
+
 ```
 
 ### 4.4 链构建器
@@ -500,6 +506,7 @@ func ExampleChainBuilder() {
     response := chain.Handle(request)
     fmt.Printf("Response: %+v\n", response)
 }
+
 ```
 
 ## 5. 性能分析
@@ -576,6 +583,7 @@ func (p *HandlerPool) Put(h *BaseHandler) {
     h.next = nil // 清理引用
     p.pool.Put(h)
 }
+
 ```
 
 ### 5.3 并发性能分析
@@ -646,6 +654,7 @@ func BenchmarkConcurrentChain(b *testing.B) {
         }
     })
 }
+
 ```
 
 ## 6. 应用场景
@@ -679,6 +688,7 @@ func (m *AuthMiddleware) Process(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 }
+
 ```
 
 ### 6.2 审批流程
@@ -711,6 +721,7 @@ func (h *ApprovalHandler) Handle(request Request) Response {
         Handler: h.name,
     }
 }
+
 ```
 
 ### 6.3 异常处理
@@ -744,6 +755,7 @@ func (h *ExceptionHandler) Handle(request Request) Response {
         Handler: h.name,
     }
 }
+
 ```
 
 ## 7. 最佳实践
@@ -805,6 +817,7 @@ func LogProcessingSystem() {
         chain.Handle(request)
     }
 }
+
 ```
 
 ### 8.2 数据验证系统
@@ -842,6 +855,7 @@ func DataValidationSystem() {
         fmt.Printf("Validation result: %+v\n", response)
     }
 }
+
 ```
 
 ---

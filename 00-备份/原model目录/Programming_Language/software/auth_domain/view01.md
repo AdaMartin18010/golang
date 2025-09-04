@@ -372,6 +372,7 @@ impl SecurityManager {
         Ok(encrypted)
     }
 }
+
 ```
 
 ## 思维导图
@@ -444,6 +445,7 @@ impl SecurityManager {
     │   ├── 元模型到模型: 概念到实现
     │   └── 跨层映射: 协议到系统保证
     └── 形式化关联: M_i,j:L_i→L_j
+
 ```
 
 ## 类型系统的形式化分析
@@ -456,6 +458,7 @@ impl SecurityManager {
 
 ```rust
 Vec<u8, n> // n是长度参数
+
 ```
 
 形式化规则：
@@ -506,6 +509,7 @@ $$\nu k.(\bar{c}\langle \{m\}_k \rangle.0 | c(x).\text{解密}(x, k))$$
 Client = auth.username?u -> auth.password?p -> check!{u,p} -> (Authenticated [] Rejected)
 Server = check?{username,password} -> (validate.{username,password} -> Authenticated [] Rejected)
 System = Client || Server
+
 ```
 
 ## 状态机模型与验证
@@ -554,6 +558,7 @@ $$\forall c_1, c_2 \in Components: level(c_1) > level(c_2) \Rightarrow \neg depe
 // pc指明上下文安全级别，'a指明数据安全级别
 fn process_data<'pc, 'a>(data: &'a SecureData) -> Result<'pc>
 where 'a: 'pc // 确保信息只能从低级流向高级
+
 ```
 
 ## 时间和概率性质
@@ -579,6 +584,7 @@ fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
     }
     result == 0
 }
+
 ```
 
 ### 概率安全性
@@ -630,6 +636,7 @@ rule Authenticate:
       Authentication($A, ~sid) ]->
   [ !Session($A, ~sid),
     Out(<$A, 'authenticated', ~sid>) ]
+
 ```
 
 ### 形式化测试技术
@@ -672,6 +679,7 @@ impl ApiKey {
         Ok(ApiKey(key.to_string()))
     }
 }
+
 ```
 
 ### 零成本抽象
@@ -688,6 +696,7 @@ let validator = check_format()
 let result = validator.validate(token);
 
 // 编译为高效的条件和跳转指令，无运行时开销
+
 ```
 
 ## 形式化规约与实现映射
@@ -722,6 +731,7 @@ fn authenticate(user: &str, pwd: &str) -> Result<Claims, AuthError> {
     }
     generate_claims(stored_user)
 }
+
 ```
 
 证明映射正确性需要证明：
@@ -799,6 +809,7 @@ impl ZeroKnowledgeProof for SchnorrZKP {
         // 实现模拟器，不需要知道私钥
     }
 }
+
 ```
 
 ## 正向与逆向分析技术
@@ -824,6 +835,7 @@ $$\alpha(Sem(P)) \subseteq Sem^\#(P)$$
 // 分支: if x > 0 then x else -x
 // 具体: 5 > 0, 所以结果是5
 // 抽象: [5,5] > [0,0], 取true分支: [5,5]
+
 ```
 
 ### 符号执行
@@ -851,6 +863,7 @@ fn decrypt_and_process(ciphertext: &[u8], key: &Key) -> Result<Data, Error> {
 // 路径1: decrypt(c, k) = p ∧ validate(p) = true → process(p)
 // 路径2: decrypt(c, k) = p ∧ validate(p) = false → Error
 // 路径3: decrypt(c, k) = Error → Error
+
 ```
 
 ### 模型精化
@@ -886,6 +899,7 @@ fn authenticate(db: &Db, user: &str, pwd: &str) -> Result<Token, Error> {
     }
     Token::generate(user, &record.roles, Duration::hours(1))
 }
+
 ```
 
 ## 控制流与数据流的交互证明
@@ -923,6 +937,7 @@ fn process_safe(user: &User) {
     
     return result;
 }
+
 ```
 
 ### 信息流控制的形式化模型
@@ -967,6 +982,7 @@ where
         Sensitive(self.0, PhantomData)
     }
 }
+
 ```
 
 ## 分布式系统认证与验证
@@ -1017,6 +1033,7 @@ enum TokenValidationStrategy {
         background_validator: Box<dyn BackgroundValidator>,
     },
 }
+
 ```
 
 ### 共识算法形式化
@@ -1071,6 +1088,7 @@ struct DilithiumSignature;
 impl PostQuantumSignature for DilithiumSignature {
     // 实现具体算法
 }
+
 ```
 
 ## 高级Rust实现模式
@@ -1104,6 +1122,7 @@ impl AuthStateTransition<AuthState::Unauthenticated, AuthState::AwaitingCredenti
 
 // 禁止非法转换 - 不实现对应的转换函数
 // 例如: Authenticated -> Unauthenticated 需要先注销
+
 ```
 
 ### 所有权模型与安全
@@ -1143,6 +1162,7 @@ fn secure_process() {
     // 使用session
     session.do_authenticated_action();
 }
+
 ```
 
 ### 类型系统安全保障
@@ -1189,6 +1209,7 @@ impl<State> Drop for AuthSession<State> {
         // 安全清理会话资源
     }
 }
+
 ```
 
 ## 形式化演算与推理系统
@@ -1208,6 +1229,7 @@ let result = (hash == stored);
 
 // 后置条件: 结果为真当且仅当密码正确
 {result = true ⟺ correct_password(u, password)}
+
 ```
 
 ### 依赖类型与精确规约
@@ -1230,6 +1252,7 @@ fn access_resource(
     user: User,
     resource: Resource
 ) -> Result<(), {e: Error | e.is_err() ⟺ !authorized(user, resource)}>
+
 ```
 
 ### 精确并发模型
@@ -1260,6 +1283,7 @@ fn server_protocol() -> Session<?Credentials.!Token.?Request.!Response.End> {
     send(response);
     end_session()
 }
+
 ```
 
 ## 静态与动态安全保障的统一
@@ -1301,6 +1325,7 @@ fn secure_auth_with_hybrid_verification() {
     
     // 处理认证后逻辑
 }
+
 ```
 
 ### 验证连续体
@@ -1319,6 +1344,7 @@ $$VerificationContinuum = \{Static, Hybrid, Dynamic\}$$
 不变量          |     ✓     |     ✓     |
 授权策略        |           |     ✓     |     ✓
 运行时条件      |           |           |     ✓
+
 ```
 
 ### 全栈安全保障
@@ -1362,6 +1388,7 @@ impl SecurityStack {
         }
     }
 }
+
 ```
 
 ## **思维导图**
@@ -1411,4 +1438,5 @@ impl SecurityStack {
     ├── 混合验证框架
     ├── 验证连续体: {Static,Hybrid,Dynamic}
     └── 全栈安全保障
+
 ```

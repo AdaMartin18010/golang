@@ -95,19 +95,6 @@
     - [2.5.4 16. 参考文献](#16-参考文献)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>
 我需要创建一个更全面的目录结构，从范畴论视角分析OpenTelemetry的设计模式、设计思路、部署思路和架构思路。
@@ -122,6 +109,7 @@
 
 我将构建一个包含标题、目录和各节内容的完整Markdown文档架构。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -340,7 +328,9 @@ OpenTelemetry与Kubernetes等云原生技术的集成可以被视为不同技术
 让我继续从范畴论视角深入分析OpenTelemetry的每个章节内容，为每个目录项补充详细内容。
 我将遵循之前的结构，为未展开的章节提供更多细节和分析。
 </think>
+
 # 2 2 2 2 2 2 2 从范畴论视角分析OpenTelemetry：设计模式、思路与架构
+
 ```
 
 ## 2.1 *第一部分：基础理论*
@@ -461,6 +451,7 @@ OpenTelemetry的数据模型（SpanData、MetricData等）可以被视为对象�
 f: RawData → ProcessedData
 g: ProcessedData → ExportableData
 h: ExportableData → StoredData
+
 ```
 
 整个处理链可以表示为态射组合：h ∘ g ∘ f
@@ -627,6 +618,7 @@ agent和collector之间的关系可以用函子对（adjunction）描述：
 F: A → B（应用到agent）
 G: B → C（agent到collector）
 H: C → D（collector到后端）
+
 ```
 
 整个数据流是组合函子H∘G∘F，表示了多级处理的级联效果。

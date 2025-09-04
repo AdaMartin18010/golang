@@ -85,6 +85,7 @@ fn main() {
     let value = instance.into_value();
     println!("consumed value: {}", value);
 }
+
 ```
 
 ---
@@ -150,12 +151,12 @@ fn main() {
       fn into_tuple(self) -> (f64, f64) {
           (self.x, self.y)
       }
-      
+  
       // 以不可变引用方式接收 self
       fn display(&self) {
           println!("Point({}, {})", self.x, self.y);
       }
-      
+  
       // 以可变引用方式接收 self
       fn translate(&mut self, dx: f64, dy: f64) {
           self.x += dx;
@@ -177,7 +178,7 @@ fn main() {
       fn new(x: f64, y: f64) -> Self {
           Self { x, y } // 此处与写 Point { x, y } 效果相同
       }
-      
+  
       // 使用关联返回值
       fn origin() -> Self {
           Self::new(0.0, 0.0)
@@ -261,6 +262,7 @@ fn main() {
     let origin = Point::origin();
     origin.display();
 }
+
 ```
 
 在这个例子中：

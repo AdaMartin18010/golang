@@ -29,19 +29,6 @@
   - [1.7 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>这个请求要求我从同伦类型论的角度分析工作流引擎系统的工作原理和形式证明，特别是分析工作流的各种模式（控制流、数据流、资源模式、异常处理模式）及其之间的组合关系。我需要使用最新的理念如无限范畴论、控制论、模型论、Petri网等来阐述，并在必要时使用Rust代码作为示例。最后，要以Markdown格式输出，包含目录和可能的思维导图。
 
@@ -60,6 +47,7 @@
 
 我将以中文回答，因为自定义指令要求使用中文。下面开始准备具体内容。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -111,6 +99,7 @@ fn sequence(s: State) -> State {
     let intermediate = task_a(s);
     task_b(intermediate)
 }
+
 ```
 
 在同伦类型论中，这相当于路径组合 `p · q`。
@@ -125,6 +114,7 @@ fn parallel_split<A, B>(s: State) -> (A, B) {
     let b = task_b(s);
     (a, b)
 }
+
 ```
 
 这对应于同伦类型论中的积类型构造。
@@ -138,6 +128,7 @@ fn synchronize<A, B>(results: (A, B)) -> State {
     let (a, b) = results;
     combine(a, b)
 }
+
 ```
 
 这对应于同伦类型论中的依赖函数类型。
@@ -159,6 +150,7 @@ fn exclusive_choice(s: State) -> Choice<PathA, PathB> {
         Choice::Right(path_b(s))
     }
 }
+
 ```
 
 这对应于同伦类型论中的和类型构造。
@@ -185,6 +177,7 @@ fn data_passing<T, U>(input: TaskInput<T>) -> TaskInput<U> {
         task_specific: new_specific,
     }
 }
+
 ```
 
 #### 1.4.2.2 2. 数据转换模式 (Data Transformation)
@@ -202,6 +195,7 @@ impl DataTransformer<Json, Xml> for JsonToXmlTransformer {
         // 实现JSON到XML的转换
     }
 }
+
 ```
 
 这在同伦类型论中可以表示为类型家族间的自然变换。
@@ -232,6 +226,7 @@ fn allocate<T>(r: &mut Resource<T>) -> Result<&T, Error> {
 fn release<T>(r: &mut Resource<T>) {
     r.allocated = false;
 }
+
 ```
 
 在同伦类型论中，这可以通过线性类型或依赖类型来保证资源的正确使用。
@@ -250,6 +245,7 @@ where
     let mut guard = resource.lock().unwrap();
     f(&mut *guard)
 }
+
 ```
 
 这在同伦类型论中可以使用状态依赖类型表示。
@@ -275,6 +271,7 @@ fn task_with_error(s: State) -> Result<State, Error> {
         Result::Ok(transform(s))
     }
 }
+
 ```
 
 在同伦类型论中，这可以通过高阶归纳类型（Higher Inductive Types, HITs）表示。
@@ -297,6 +294,7 @@ fn with_compensation<S>(state: S, action: CompensableAction<S>) -> S {
         new_state
     }
 }
+
 ```
 
 在同伦类型论中，这可以通过路径反转（path inversion）或高阶路径（higher paths）概念来表示。
@@ -339,6 +337,7 @@ fn prove_composition_validity<A, B, C>(
 ) -> impl Fn(A) -> C {
     move |a| g(f(a))
 }
+
 ```
 
 ## 1.6 形式证明与逻辑推理

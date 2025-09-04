@@ -76,6 +76,7 @@ graph TD
     D --> D2[本地存储]
     E --> E1[云同步]
     E --> E2[集中管理]
+
 ```
 
 ## 3. 边缘计算基础
@@ -151,6 +152,7 @@ graph TD
      Priority   int
      Status     TaskStatus
  }
+
 ```
 
 ### 5.2 典型数据流
@@ -163,6 +165,7 @@ graph LR
     B --> E[本地处理]
     C --> F[协议转换]
     D --> G[集中管理]
+
 ```
 
 ## 6. 分布式挑战
@@ -196,6 +199,7 @@ graph TD
     A[终端层] --> B[边缘节点层]
     B --> C[边缘网关层]
     C --> D[云平台层]
+
 ```
 
 ### 7.2 任务调度与协同
@@ -239,6 +243,7 @@ graph TD
      AuthToken string
      Trusted   bool
  }
+
 ```
 
 ### 8.2 任务调度与执行
@@ -258,6 +263,7 @@ graph TD
      }
      return "", fmt.Errorf("no available node")
  }
+
 ```
 
 ### 8.3 边云协同通信
@@ -273,6 +279,7 @@ graph TD
      // 伪代码：通过安全通道同步数据到云
      return SecureSend(eci.CloudAPI, data)
  }
+
 ```
 
 ## 9. 形式化建模
@@ -328,4 +335,4 @@ graph TD
 
 ---
 
-*本文档为边缘计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*
+* 本文档为边缘计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*

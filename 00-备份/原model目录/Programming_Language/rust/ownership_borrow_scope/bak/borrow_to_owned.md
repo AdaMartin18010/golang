@@ -26,6 +26,7 @@ pub trait ToOwned {
     /// 从当前借用实例创建一个拥有所有权的数据
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 ## 使用示例
@@ -40,6 +41,7 @@ fn main() {
 
     println!("{}", owned);
 }
+
 ```
 
 在这个例子中，`s.to_owned()` 会返回一个 `String`，即拥有独立所有权的数据，从而使得这个字符串数据可以自由地传递和修改，而不依赖原始的借用数据。
@@ -63,6 +65,7 @@ pub trait ToOwned {
     type Owned: Borrow<Self>;
     fn to_owned(&self) -> Self::Owned;
 }
+
 ```
 
 可以看到，`to_owned` 方法的签名是接受一个 `&self`（不可变引用），返回一个拥有所有权的值。也就是说，**ToOwned** trait 的设计就是基于不可变借用的。
@@ -91,6 +94,7 @@ fn main() {
     let owned_string: String = s.to_owned();
     println!("Owned string: {}", owned_string);
 }
+
 ```
 
 ### 示例 2：从可变引用调用 `to_owned()`
@@ -106,6 +110,7 @@ fn main() {
     let owned_string = (&s).to_owned();
     println!("Owned string: {}", owned_string);
 }
+
 ```
 
 在这个例子中，即使 `s` 是可变的，但调用 `(&s).to_owned()` 实际上是对 `&s`（不可变引用）的操作。**ToOwned** 本身不会区分 `&T` 和 `&mut T`；它只关心不可变借用。

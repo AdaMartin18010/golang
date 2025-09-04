@@ -53,6 +53,7 @@ impl Message {
         }
     }
 }
+
 ```
 
 ### 1.2.1 2. trait（特征）和泛型的关系
@@ -87,6 +88,7 @@ where
 {
     // 可以同时使用Display和Clone特征的方法
 }
+
 ```
 
 ### 1.2.2 3. 类型组合的方式
@@ -137,6 +139,7 @@ impl Author for Article {
         self.author_name.clone()
     }
 }
+
 ```
 
 核心概念总结：

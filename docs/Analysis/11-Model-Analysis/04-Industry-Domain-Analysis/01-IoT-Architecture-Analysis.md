@@ -40,19 +40,6 @@
   - [11.4.1.10 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.4.1.1 概述
 
 本文档对物联网(IoT)架构进行深度分析，基于Rust和WebAssembly技术栈在物联网行业中的应用，提供形式化定义、Golang实现和最佳实践。通过系统性梳理，我们建立了完整的IoT架构分析体系。
@@ -166,6 +153,7 @@ type SecurityContext struct {
     AuthMethod  AuthMethod
     CertPath    string
 }
+
 ```
 
 #### 11.4.1.3.1.2 边缘网关设备
@@ -223,6 +211,7 @@ type Service struct {
     Status      ServiceStatus
     Metrics     Metrics
 }
+
 ```
 
 ### 11.4.1.3.2 网络层架构
@@ -280,6 +269,7 @@ type ApplicationLayer struct {
     Security    SecurityLevel
     Compression CompressionType
 }
+
 ```
 
 #### 11.4.1.3.2.2 网络拓扑
@@ -340,6 +330,7 @@ type Route struct {
     Cost        float64
     Path        []string
 }
+
 ```
 
 ### 11.4.1.3.3 数据处理层架构
@@ -401,6 +392,7 @@ type StreamQoS struct {
     Reliability float64
     Priority    Priority
 }
+
 ```
 
 #### 11.4.1.3.3.2 数据聚合
@@ -449,6 +441,7 @@ type DataQuality struct {
     Consistency float64
     Timeliness  time.Duration
 }
+
 ```
 
 ## 11.4.1.4 3. 安全架构
@@ -516,6 +509,7 @@ type EncryptionAlgorithm struct {
     BlockSize     uint32
     Mode          Mode
 }
+
 ```
 
 ### 11.4.1.4.2 密钥管理
@@ -561,6 +555,7 @@ type KeyRotation struct {
     Algorithm    RotationAlgorithm
     Notification NotificationPolicy
 }
+
 ```
 
 ## 11.4.1.5 4. 性能优化
@@ -618,6 +613,7 @@ type OptimizationStrategy struct {
     Network      NetworkOptimization
     Power        PowerOptimization
 }
+
 ```
 
 ### 11.4.1.5.2 算法优化
@@ -657,6 +653,7 @@ type ConvergenceCriteria struct {
     Timeout      time.Duration
     Condition    ConvergenceCondition
 }
+
 ```
 
 ## 11.4.1.6 5. 部署架构
@@ -740,6 +737,7 @@ type ResourceScaling struct {
     Step         uint64
     Threshold    float64
 }
+
 ```
 
 ### 11.4.1.6.2 容器化部署
@@ -786,6 +784,7 @@ type ContainerStorage struct {
     Persistence  PersistenceConfig
     Backup       BackupConfig
 }
+
 ```
 
 ## 11.4.1.7 6. 监控与运维
@@ -880,6 +879,7 @@ type AlertRule struct {
     Actions      []Action
     Cooldown     time.Duration
 }
+
 ```
 
 ### 11.4.1.7.2 运维自动化
@@ -946,6 +946,7 @@ type ScalingRule struct {
     Operator     Operator
     Action       ScalingAction
 }
+
 ```
 
 ## 11.4.1.8 7. 最佳实践
@@ -1014,4 +1015,4 @@ type ScalingRule struct {
 
 ---
 
-*本文档将持续更新，反映最新的IoT技术发展和最佳实践。*
+* 本文档将持续更新，反映最新的IoT技术发展和最佳实践。*

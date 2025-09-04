@@ -159,6 +159,7 @@ func (c *ConcreteClassB) PrimitiveOperation2() {
 func (c *ConcreteClassB) Hook() bool {
     return false
 }
+
 ```
 
 ### 3.3.1.4.2 数据处理器模板方法
@@ -335,6 +336,7 @@ func (j *JSONProcessor) ValidateData(data []interface{}) bool {
     fmt.Println("Validating JSON data")
     return len(data) > 0
 }
+
 ```
 
 ### 3.3.1.4.3 构建器模板方法
@@ -501,6 +503,7 @@ func (s *StoneHouseBuilder) SetDoors() {
     fmt.Println("Setting stone doors")
     s.house.Doors = "Stone"
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -650,6 +653,7 @@ func (a *AdminRequestProcessor) ProcessRequest() interface{} {
         "permissions": []string{"read", "write", "delete"},
     }
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

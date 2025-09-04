@@ -55,6 +55,7 @@ fn main() {
     draw1(&x);
     draw1(&y);
 }
+
 ```
 
 在上面的代码中，`downcast_ref` 方法用于尝试将 trait object 转换为具体的类型。
@@ -100,6 +101,7 @@ fn main() {
         widget.render();
     }
 }
+
 ```
 
 在上面的代码中，`Widget` 枚举可以存储不同类型的值，通过 `match` 语句可以对这些值进行模式匹配和处理。
@@ -146,6 +148,7 @@ fn main() {
     };
     screen.run();
 }
+
 ```
 
 在上面的代码中，`Screen` 结构体使用泛型和 trait bound 来存储和处理实现了 `Draw` trait 的组件。
@@ -177,6 +180,7 @@ async fn main() {
     let result = obj.example_func().await;
     println!("Result: {}", result);
 }
+
 ```
 
 在上面的代码中，`async-trait` crate 允许定义异步方法的 trait，并将其转换为可以以 `dyn Trait` 形式访问的动态 trait 对象。

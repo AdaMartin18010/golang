@@ -23,19 +23,6 @@
   - [11.4.1.8 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.4.1.1 目录
 
 1. [概述](#概述)
@@ -261,6 +248,7 @@ func (sm *SecurityMonitor) AddResponder(name string, responder ResponseHandler) 
     sm.responders[name] = responder
     sm.mu.Unlock()
 }
+
 ```
 
 ### 11.4.1.4.2 访问控制系统
@@ -490,6 +478,7 @@ func (acl *AccessControlList) AddPolicy(policy *Policy) error {
     acl.policies[policy.ID] = policy
     return nil
 }
+
 ```
 
 ## 11.4.1.5 威胁检测
@@ -691,6 +680,7 @@ func (abd *AnomalyBasedDetector) calculateStatistics(baseline *Baseline) {
     }
     baseline.StdDev = math.Sqrt(variance / float64(len(baseline.Samples)))
 }
+
 ```
 
 ### 11.4.1.5.2 恶意软件检测
@@ -899,6 +889,7 @@ type DetectionResult struct {
     Score    float64
     Details  []string
 }
+
 ```
 
 ## 11.4.1.6 加密系统
@@ -1054,6 +1045,7 @@ func (em *EncryptionManager) AddAlgorithm(name string, algorithm EncryptionAlgor
     em.algorithms[name] = algorithm
     em.mu.Unlock()
 }
+
 ```
 
 ## 11.4.1.7 最佳实践
@@ -1106,6 +1098,7 @@ func HandleCybersecurityError(err error, eventID, userID string) *CybersecurityE
         }
     }
 }
+
 ```
 
 ### 11.4.1.7.2 2. 监控和日志
@@ -1183,6 +1176,7 @@ func (l *CybersecurityLogger) LogAccessAttempt(userID, resourceID string, allowe
         zap.Bool("allowed", allowed),
     )
 }
+
 ```
 
 ### 11.4.1.7.3 3. 测试策略
@@ -1287,6 +1281,7 @@ func BenchmarkMalwareDetector_DetectFile(b *testing.B) {
         }
     }
 }
+
 ```
 
 ---

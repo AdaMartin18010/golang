@@ -313,6 +313,7 @@ MetaModel DataFlow {
         Resource: "展示资源使用和分配"
     }
 }
+
 ```
 
 ### 1.5.2 从元模型到领域模型
@@ -342,6 +343,7 @@ Model RealTimeDataFlow extends DataFlow {
         DR2: "传感器采样率必须符合奈奎斯特定理"
     }
 }
+
 ```
 
 1. **大数据流处理模型**：
@@ -367,6 +369,7 @@ Model BigDataFlow extends DataFlow {
         DR2: "状态性转换操作需要保证一致性约束"
     }
 }
+
 ```
 
 ### 1.5.3 从模型到实现的映射
@@ -411,6 +414,7 @@ enriched.setParallelism(10);  // 设置并行度满足吞吐量需求
 // Sink节点实现
 enriched.addSink(new AlertSink())  // 对应模型中的Sink节点
     .name("Alert Publisher");
+
 ```
 
 ### 1.5.4 跨层次一致性保障
@@ -1083,7 +1087,7 @@ enriched.addSink(new AlertSink())  // 对应模型中的Sink节点
    struct Raw(Vec<u8>);
    struct Validated(Vec<u8>);
    struct Processed(Vec<u8>);
-   
+  
    fn validate(data: Raw) -> Result<Validated, Error> {
        // 验证逻辑
        if is_valid(&data.0) {
@@ -1092,17 +1096,17 @@ enriched.addSink(new AlertSink())  // 对应模型中的Sink节点
            Err(Error::InvalidData)
        }
    }
-   
+  
    fn process(data: Validated) -> Processed {
        // 处理逻辑，只接受已验证的数据
        Processed(transform(data.0))
    }
-   
+  
    fn consume(data: Processed) {
        // 只接受已处理的数据
        output(data.0);
    }
-   
+  
    // 流程保证类型安全
    fn pipeline(raw_data: Raw) -> Result<(), Error> {
        let validated = validate(raw_data)?;
@@ -1530,4 +1534,5 @@ enriched.addSink(new AlertSink())  // 对应模型中的Sink节点
     ├── 整合多元理论：跨学科知识应用
     ├── 弥合理论与实践：双向桥梁建立
     └── 指导系统演化：优化现有系统与规划未来
+
 ```

@@ -60,6 +60,7 @@ graph LR
     GW -- Logs/Metrics/Traces --> Logging & Metrics & Tracing
 
     CICD -- 部署 --> GW & Orchestrator & Worker
+
 ```
 
 **核心组件设计 (Core Component Design):**

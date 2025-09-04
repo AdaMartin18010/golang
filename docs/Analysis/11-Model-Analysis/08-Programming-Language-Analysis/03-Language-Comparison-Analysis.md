@@ -36,19 +36,6 @@
   - [11.8.2.4 10. 参考与交叉引用](#10-参考与交叉引用)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.8.1.1 1. 概述
 
 本文件系统性分析主流编程语言的核心特性、适用场景、性能特征与架构影响，建立形式化比较框架，为技术选型与系统设计提供理论基础。
@@ -196,6 +183,7 @@ $\mathcal{F}_{FFI} = (L_1, L_2, B, T)$
 pub extern "C" fn add(a: i32, b: i32) -> i32 {
     a + b
 }
+
 ```
 
 **Go FFI 示例**：
@@ -210,6 +198,7 @@ import "unsafe"
 func Add(a, b int) int {
     return int(C.add(C.int(a), C.int(b)))
 }
+
 ```
 
 ### 11.8.1.6.2 微服务多语言架构
@@ -231,6 +220,7 @@ graph TD
     A --> C[User Service - Java]
     A --> D[Data Service - Python]
     A --> E[Analytics - Node.js]
+
 ```
 
 ### 11.8.1.6.3 容器化多语言部署
@@ -238,7 +228,9 @@ graph TD
 **Dockerfile 示例**：
 
 ```dockerfile
+
 # 11.8.2 Multi-stage build for Rust service
+
 FROM rust:1.70 as builder
 WORKDIR /app
 COPY . .
@@ -247,6 +239,7 @@ RUN cargo build --release
 FROM debian:bullseye-slim
 COPY --from=builder /app/target/release/service /usr/local/bin/
 CMD ["service"]
+
 ```
 
 ---
@@ -364,4 +357,4 @@ CMD ["service"]
 
 ---
 
-*本文件持续更新，确保与工程最佳实践和学术规范一致。*
+* 本文件持续更新，确保与工程最佳实践和学术规范一致。*

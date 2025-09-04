@@ -23,19 +23,6 @@
   - [1.3 *总结*](#*总结*)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 1. 含义
 
 RPIT（Reference-Passing In Trait）是指在 Rust 中，当使用 `impl Trait` 作为返回类型时，如何捕获和传递生命周期参数的规则。
@@ -54,6 +41,7 @@ RPIT（Reference-Passing In Trait）是指在 Rust 中，当使用 `impl Trait` 
 fn process<'d>(data: &'d Vec<u8>) -> impl Iterator<Item = u8> + 'd {
     data.iter().map(|v| *v + 1)
 }
+
 ```
 
 这里，`'d` 是一个生命周期参数，表示返回的迭代器的生命周期与 `data` 的生命周期相同。
@@ -66,6 +54,7 @@ fn process<'d>(data: &'d Vec<u8>) -> impl Iterator<Item = u8> + 'd {
 fn process(data: &Vec<u8>) -> impl Iterator<Item = u8> {
     data.iter().map(|v| *v + 1)
 }
+
 ```
 
 编译器会自动推断返回的迭代器的生命周期与 `data` 的生命周期相同，无需显式声明。
@@ -85,6 +74,7 @@ async fn fetch_data() -> impl Future<Output = String> {
         "Hello, world!".to_string()
     }
 }
+
 ```
 
 这里，`async move` 块返回一个 `Future`，编译器会自动处理生命周期问题。
@@ -98,6 +88,7 @@ RPIT 的改进也简化了泛型函数的编写。
 fn get_data<'a, T>(data: &'a [T]) -> impl Iterator<Item = &'a T> {
     data.iter()
 }
+
 ```
 
 这里，`data.iter()` 返回一个迭代器，编译器会自动捕获 `data` 的生命周期参数 `'a`。
@@ -114,6 +105,7 @@ fn main() {
         println!("{}", value);
     }
 }
+
 ```
 
 这里，`process` 函数返回一个迭代器，编译器会自动处理生命周期问题，无需显式声明。
@@ -126,6 +118,7 @@ Rust 2024 提供了 `cargo fix` 工具，可以帮助自动迁移代码：
 
 ```bash
 cargo fix --edition
+
 ```
 
 这个命令会自动应用一些常见的迁移，包括 RPIT 的改进。
@@ -140,6 +133,7 @@ cargo fix --edition
 fn f<'a>(x: &'a ()) -> impl Sized + use<'a> {
     *x
 }
+
 ```
 
 这里，`use<'a>` 约束明确指定了捕获的生命周期参数。
@@ -170,6 +164,7 @@ fn main() {
 
     handle.await.unwrap();
 }
+
 ```
 
 在 Rust 2024 之前，这种用法需要复杂的类型标注和额外的包装，而现在可以直接使用 `async` 关键字，代码更加简洁和易读。
@@ -186,6 +181,7 @@ async fn fetch_data() -> Result<String, std::io::Error> {
     let data = tokio::fs::read_to_string("data.txt").await?;
     Ok(data)
 }
+
 ```
 
 这种改进使得异步函数的错误处理与同步函数更加一致，提升了开发体验。
@@ -210,6 +206,7 @@ impl AsyncProcessor for MyProcessor {
         Ok(())
     }
 }
+
 ```
 
 这种改进使得开发者可以更方便地定义和实现异步 trait 方法，提升了异步代码的可复用性和可维护性。
@@ -227,6 +224,7 @@ async fn fetch_data() -> impl Future<Output = String> {
         "Hello, world!".to_string()
     }
 }
+
 ```
 
 这种改进使得异步代码更加简洁，开发者可以更专注于业务逻辑。
@@ -242,6 +240,7 @@ Rust 2024 改进了 RPIT（Reference-Passing In Trait）的生命周期捕获规
 async fn process<'a>(data: &'a [u8]) -> impl Iterator<Item = &'a u8> {
     data.iter()
 }
+
 ```
 
 这种改进使得异步代码中的生命周期管理更加自然，减少了开发者的负担。

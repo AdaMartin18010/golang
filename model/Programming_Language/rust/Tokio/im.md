@@ -13,19 +13,6 @@
 - [2 2 2 2 2 2 2 设置环境变量](#2-2-2-2-2-2-2-设置环境变量)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个基于 Rust 2024 + Tokio + Raft + P2P 的分布式 IM 系统实现。
 
 ## 1.1 目录
@@ -54,6 +41,7 @@ serde_json = "1.0"
 async-trait = "0.1"
 uuid = { version = "1.0", features = ["v4"] }
 tracing = "0.1"
+
 ```
 
 ### 1.2.1 2. P2P 网络层实现
@@ -136,6 +124,7 @@ impl P2PNetwork {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.2 3. Raft 状态机实现
@@ -219,6 +208,7 @@ impl RaftIMNode {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.3 4. IM 消息处理
@@ -289,6 +279,7 @@ impl IMHandler {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.4 5. 消息处理器实现
@@ -371,6 +362,7 @@ impl MessageProcessor {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.5 6. 存储层实现
@@ -438,6 +430,7 @@ impl MessageStorage {
         }
     }
 }
+
 ```
 
 ### 1.2.6 7. 主程序实现
@@ -481,6 +474,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了以下特性：
@@ -565,6 +559,7 @@ blake3 = "1.5"
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite"] }
 tokio-util = "0.7"
 bytes = "1.5"
+
 ```
 
 主要实现代码：
@@ -915,6 +910,7 @@ async fn main() -> Result<(), IMError> {
     
     Ok(())
 }
+
 ```
 
 这个实现包含以下主要特性：
@@ -987,14 +983,18 @@ async fn main() -> Result<(), IMError> {
 
 ```bash
 cargo run
+
 ```
 
 1. 配置节点：
 
 ```bash
+
 # 2 2 2 2 2 2 2 设置环境变量
+
 export P2P_PORT=8000
 export P2P_BOOTSTRAP_NODES="..."
+
 ```
 
 这个实现提供了一个基础的 P2P IM 系统框架，您可以根据实际需求进行扩展和优化。建议关注：

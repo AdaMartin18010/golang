@@ -13,19 +13,6 @@
     - [1.2.7 8. 主程序实现](#8-主程序实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个基于 Rust 2024 + Tokio + OpenTelemetry 实现的分布式工作流系统，使用 Petri 网模型进行工作流控制。
 
 ## 1.1 目录
@@ -59,6 +46,7 @@ redis = { version = "0.23", features = ["tokio-comp", "connection-manager"] }
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-native-tls"] }
 tracing = "0.1"
 tracing-opentelemetry = "0.22"
+
 ```
 
 ### 1.2.1 2. Petri 网模型实现
@@ -192,6 +180,7 @@ impl PetriNet {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.2 3. 分布式工作流执行器
@@ -291,6 +280,7 @@ impl WorkflowExecutor {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.3 4. 分布式状态存储
@@ -386,6 +376,7 @@ impl StateStore {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.4 5. 分布式锁实现
@@ -474,6 +465,7 @@ impl Drop for LockGuard {
         span.end();
     }
 }
+
 ```
 
 ### 1.2.5 6. 分布式事件总线
@@ -570,6 +562,7 @@ impl EventBus {
         Ok(())
     }
 }
+
 ```
 
 ### 1.2.6 7. 工作流定义示例
@@ -624,6 +617,7 @@ fn create_workflow() -> PetriNet {
 
     net
 }
+
 ```
 
 ### 1.2.7 8. 主程序实现
@@ -672,6 +666,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了一个完整的分布式工作流系统，具有以下特点：

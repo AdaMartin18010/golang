@@ -23,19 +23,6 @@
   - [14.1.6 6. Conclusion](#6-conclusion)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 14.1.1 1. Formal Pattern Theory
 
 ### 14.1.1.1 Pattern Definition Framework
@@ -144,6 +131,7 @@ func ExampleSingleton() {
     // db1 and db2 are the same instance
     fmt.Printf("Same instance: %v\n", &db1 == &db2)
 }
+
 ```
 
 ### 14.1.2.2 Factory Method Pattern
@@ -251,6 +239,7 @@ func ExampleFactoryMethod() {
     fmt.Println(genericCreatorA.SomeOperation())
     fmt.Println(genericCreatorB.SomeOperation())
 }
+
 ```
 
 ### 14.1.2.3 Abstract Factory Pattern
@@ -391,6 +380,7 @@ func ExampleAbstractFactory() {
     genericFactory1 := NewGenericConcreteFactory(createA1, createB1)
     ClientCode(genericFactory1)
 }
+
 ```
 
 ### 14.1.2.4 Builder Pattern
@@ -566,6 +556,7 @@ func ExampleBuilder() {
     product5 := Build(&Product{}, setPartA, setPartB)
     fmt.Println("Product 5:", product5)
 }
+
 ```
 
 ### 14.1.2.5 Prototype Pattern
@@ -775,6 +766,7 @@ func ExamplePrototype() {
     fmt.Printf("Original person: %+v\n", genericProto.GetValue())
     fmt.Printf("Cloned person: %+v\n", clonedPerson.GetValue())
 }
+
 ```
 
 ## 14.1.3 3. Structural Patterns
@@ -863,6 +855,7 @@ func ExampleAdapter() {
     result2 := client.ClientMethod(genericAdapter)
     fmt.Println(result2)
 }
+
 ```
 
 ### 14.1.3.2 Bridge Pattern
@@ -968,6 +961,7 @@ func ExampleBridge() {
     fmt.Println(genericAbstractionA.Operation())
     fmt.Println(genericAbstractionB.Operation())
 }
+
 ```
 
 ## 14.1.4 4. Behavioral Patterns
@@ -1176,6 +1170,7 @@ func ExampleObserver() {
     close(ch1)
     close(ch2)
 }
+
 ```
 
 ## 14.1.5 5. Pattern Composition and Analysis
@@ -1237,6 +1232,7 @@ func (pc *PatternComposer) Compose(patterns ...string) interface{} {
     // Implementation for pattern composition
     return nil
 }
+
 ```
 
 ## 14.1.6 6. Conclusion

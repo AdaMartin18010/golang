@@ -43,6 +43,7 @@
 
 我将按照这个结构组织内容，强调两类模式之间的关系，并使用范畴论进行形式化描述。
 </think>
+
 ```
 
 ## 目录
@@ -465,6 +466,7 @@ impl EventBasedWorkflow {
         }
     }
 }
+
 ```
 
 **策略模式与条件路由**：
@@ -548,6 +550,7 @@ pub fn map_state_pattern_to_workflow(context: &Context) -> WorkflowStateMachine 
         actions: HashMap::new(),
     }
 }
+
 ```
 
 **命令模式与工作流活动**：
@@ -650,6 +653,7 @@ impl<'a> Activity for HandlerAdapter<'a> {
         self.handler.handle(&request)
     }
 }
+
 ```
 
 **迭代器模式与多实例活动**：
@@ -741,6 +745,7 @@ pub fn convert_component_to_activity(component: &dyn Component) -> Box<dyn Workf
         action: Box::new(|_| Ok(())),
     })
 }
+
 ```
 
 **模板方法模式与结构化工作流**：
@@ -835,6 +840,7 @@ impl MediatorBasedWorkflowEngine {
         self.current_state = state.to_string();
     }
 }
+
 ```
 
 **观察者模式与事件驱动工作流**：
@@ -899,6 +905,7 @@ pub trait Functor<C: Category, D: Category> {
 pub trait NaturalTransformation<F: Functor<C, D>, G: Functor<C, D>, C: Category, D: Category> {
     fn component<A: C::Object>() -> D::Morphism<F::map_object(A), G::map_object(A)>;
 }
+
 ```
 
 ### 5.2 设计模式的范畴表示
@@ -964,6 +971,7 @@ impl<'a> Context<'a> {
 
 // 从范畴论角度看，Context::execute_strategy 是一个态射
 // Context × Strategy → Result
+
 ```
 
 ### 5.3 工作流模式的范畴表示
@@ -1033,6 +1041,7 @@ impl SequenceWorkflow {
 
 // 从范畴论角度，execute方法实现了态射组合
 // f_n ∘ ... ∘ f_2 ∘ f_1
+
 ```
 
 ### 5.4 关系的范畴论表达
@@ -1082,6 +1091,7 @@ pub fn prove_isomorphism<F: StatePatternMorphism, G: WorkflowMorphism>(
     
     id_preserving && id_preserving2
 }
+
 ```
 
 **等价关系范畴表示**：
@@ -1229,6 +1239,7 @@ pub fn verify_state_workflow_isomorphism() -> bool {
     
     result1.name == result2.name && result1.data == result2.data
 }
+
 ```
 
 **命令模式与工作流活动等价证明**：
@@ -1298,6 +1309,7 @@ pub trait Activity {
     // 活动执行时可修改上下文
     fn execute(&self, context: &mut WorkflowContext) -> Result<(), ActivityError>;
 }
+
 ```
 
 **Trait系统**：
@@ -1366,6 +1378,7 @@ impl AsyncWorkflowEngine {
         Ok(())
     }
 }
+
 ```
 
 ### 6.2 设计模式的Rust实现
@@ -1473,6 +1486,7 @@ impl Order {
         Ok(())
     }
 }
+
 ```
 
 **策略模式的Rust实现**：
@@ -1553,6 +1567,7 @@ impl DynPaymentProcessor {
         self.strategy.process_payment(amount)
     }
 }
+
 ```
 
 **观察者模式的Rust实现**：
@@ -1630,6 +1645,7 @@ impl<T: Clone> EventEmitter<T> {
         self.emit(&self.data);
     }
 }
+
 ```
 
 **命令模式的Rust实现**：
@@ -1792,6 +1808,7 @@ impl CommandInvoker {
         }
     }
 }
+
 ```
 
 ### 6.3 工作流模式的Rust实现
@@ -1853,6 +1870,7 @@ impl Activity for ValidateOrderActivity {
         Ok(())
     }
 }
+
 ```
 
 **并行分支工作流的Rust实现**：
@@ -1920,6 +1938,7 @@ pub fn merge_contexts(contexts: Vec<WorkflowContext>) -> WorkflowContext {
     
     result
 }
+
 ```
 
 **选择分支工作流的Rust实现**：
@@ -2013,6 +2032,7 @@ fn create_order_workflow() -> Box<dyn Workflow> {
     
     Box::new(workflow)
 }
+
 ```
 
 **状态机工作流的Rust实现**：
@@ -2122,6 +2142,7 @@ fn create_order_state_machine() -> StateMachineWorkflow<OrderState> {
     
     workflow
 }
+
 ```
 
 ### 6.4 关系映射的Rust示例
@@ -2218,6 +2239,7 @@ pub fn verify_isomorphism(context: &Context) -> bool {
     std::any::type_name_of_val(&*context.state) == std::any::type_name_of_val(&*mapped_context.state)
         && context.data == mapped_context.data
 }
+
 ```
 
 **命令模式与工作流活动的等价映射**：
@@ -2296,6 +2318,7 @@ pub fn verify_equivalence<T: Command + Send + Sync>(command: &T) -> bool {
     // 比较结果（简化版）
     result1.is_ok() == result2.is_ok()
 }
+
 ```
 
 **责任链与顺序工作流的等价映射**：
@@ -2396,6 +2419,7 @@ impl<'a> Activity for HandlerActivityAdapter<'a> {
             .map_err(|e| ActivityError::ExecutionFailed(e))
     }
 }
+
 ```
 
 ## 7. 案例分析
@@ -2642,6 +2666,7 @@ fn process_payment(method: &str, order_id: &str, amount: f64) -> Result<PaymentR
         _ => Err(ActivityError::UnsupportedPaymentMethod(method.to_string())),
     }
 }
+
 ```
 
 ### 7.2 数据处理管道
@@ -3001,6 +3026,7 @@ fn create_db_connection() -> Arc<dyn DatabaseConnection> {
     // 创建数据库连接...
     Arc::new(SqliteConnection::new("data.db"))
 }
+
 ```
 
 ## 8. 总结与展望

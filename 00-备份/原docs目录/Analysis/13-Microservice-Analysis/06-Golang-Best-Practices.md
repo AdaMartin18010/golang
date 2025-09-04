@@ -57,6 +57,7 @@ project/
 ├── docker-compose.yml    // Docker编排
 ├── Makefile              // 构建脚本
 └── README.md             // 项目说明
+
 ```
 
 ### 模块化设计
@@ -202,6 +203,7 @@ func (ma *MicroserviceApp) topologicalSort(
     visited[name] = true
     *order = append(*order, module)
 }
+
 ```
 
 ## 代码组织
@@ -444,6 +446,7 @@ func (uds *UserDomainService) Authenticate(email, password string) (*User, error
     
     return user, nil
 }
+
 ```
 
 ## 错误处理
@@ -591,6 +594,7 @@ func ErrorMiddleware(logger *zap.Logger) gin.HandlerFunc {
         }
     }
 }
+
 ```
 
 ## 并发编程
@@ -789,6 +793,7 @@ func (cm *ConcurrentMap) Keys() []string {
     }
     return keys
 }
+
 ```
 
 ## 性能优化
@@ -969,6 +974,7 @@ func (c *Cache) evictLRU() {
         delete(c.data, lruKey)
     }
 }
+
 ```
 
 ### 算法优化
@@ -1112,6 +1118,7 @@ func (sm *StringMatcher) Search(text string) []int {
     
     return matches
 }
+
 ```
 
 ## 总结

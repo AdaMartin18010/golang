@@ -288,6 +288,7 @@ type Queue struct {
     messages chan Message
     mutex    sync.RWMutex
 }
+
 ```
 
 #### 3.5.1.6.1.2 一致性模式
@@ -318,6 +319,7 @@ type GSet struct {
     elements map[string]bool
     mutex    sync.RWMutex
 }
+
 ```
 
 #### 3.5.1.6.1.3 容错模式
@@ -348,6 +350,7 @@ type BackpressureController struct {
     mutex      sync.RWMutex
     stats      BackpressureStats
 }
+
 ```
 
 ## 3.5.1.7 性能指标参考
@@ -513,4 +516,4 @@ A: 根据场景选择：
 
 ---
 
-*本索引文件帮助快速定位和查找分布式系统设计模式的相关内容。建议结合主文档一起使用，以获得完整的理解和实现指导。*
+* 本索引文件帮助快速定位和查找分布式系统设计模式的相关内容。建议结合主文档一起使用，以获得完整的理解和实现指导。*

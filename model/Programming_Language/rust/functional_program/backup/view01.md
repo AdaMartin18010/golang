@@ -24,19 +24,6 @@
   - [1.8 结论](#结论)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Revised Critical Analysis: Rust Functional, Async Programming \& Category Theory Aspects](#revised-critical-analysis-rust-functional-async-programming--category-theory-aspects)
@@ -202,6 +189,7 @@ Revised Analysis: Rust FP, Async & Category Theory
     └── Correcting Potential Misleading Aspects
         ├── Category Theory Support: Clarify limitations vs. Haskell
         └── Async Ease-of-Use: Acknowledge underlying complexity & learning curve
+
 ```
 
 ## 1.8 结论

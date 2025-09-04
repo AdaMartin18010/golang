@@ -291,6 +291,7 @@ type Condition struct {
     Expression string `json:"expression"`
     Language   string `json:"language,omitempty"` // 默认为CEL表达式
 }
+
 ```
 
 ### 1.1.7.2 执行状态模型
@@ -320,6 +321,7 @@ type WorkflowExecution struct {
     Context      context.Context
     Cancel       context.CancelFunc
 }
+
 ```
 
 ## 1.1.8 3. 架构设计
@@ -343,6 +345,7 @@ type WorkflowExecution struct {
 ├─────────────────────────────────────┤
 │ 事件引擎 │ 状态管理 │ 调度引擎 │ 持久化组件 │
 └─────────────────────────────────────┘
+
 ```
 
 ### 1.1.8.2 核心层设计
@@ -410,6 +413,7 @@ func (s *ExecutionService) StartWorkflow(ctx context.Context, request StartWorkf
     
     return execution, nil
 }
+
 ```
 
 ## 1.1.9 4. 关键机制
@@ -466,6 +470,7 @@ func (s *ExecutionService) scheduleTask(ctx context.Context, execution *Workflow
     // 提交到任务执行器
     s.taskExecutor.Submit(ctx, taskExecution)
 }
+
 ```
 
 ### 1.1.9.3 数据流机制
@@ -536,6 +541,7 @@ func (dc *DataContext) GetData(taskID, key string) (interface{}, bool) {
     
     return nil, false
 }
+
 ```
 
 ## 1.1.10 5. 形式化验证
@@ -615,6 +621,7 @@ func (v *WorkflowValidator) validateStructure(workflow *WorkflowDefinition, repo
     
     return nil
 }
+
 ```
 
 ### 1.1.10.2 终止性与活性证明
@@ -664,6 +671,7 @@ func (a *TerminationAnalyzer) Analyze(workflow *WorkflowDefinition) (*Terminatio
         }, nil
     }
 }
+
 ```
 
 ### 1.1.10.3 并发安全性证明
@@ -718,6 +726,7 @@ func (a *ConcurrencyAnalyzer) AnalyzeConflicts(workflow *WorkflowDefinition) []C
     
     return conflicts
 }
+
 ```
 
 ## 1.1.11 6. Golang实现
@@ -869,6 +878,7 @@ func (w *Worker) executeTask(ctx context.Context, task *TaskInstance) {
     // 任务成功完成
     w.queue.CompleteTask(ctx, task.ID, result)
 }
+
 ```
 
 ### 1.1.11.2 状态管理
@@ -959,6 +969,7 @@ func (m *EventSourcedStateManager) applyEvent(event WorkflowEvent, snapshot *Wor
     
     return nil
 }
+
 ```
 
 ## 1.1.12 7. 最佳实践

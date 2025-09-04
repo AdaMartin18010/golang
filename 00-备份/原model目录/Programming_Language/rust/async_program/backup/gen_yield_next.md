@@ -13,6 +13,7 @@ let nums = gen {
     yield 2;
     yield 3;
 }
+
 ```
 
 ## 2. 异步编程中的应用
@@ -31,6 +32,7 @@ async fn process_stream() {
         println!("Got value: {}", value);
     }
 }
+
 ```
 
 ### 2. **异步迭代器模式**
@@ -58,6 +60,7 @@ let new_async_iterator = gen async {
         tokio::time::sleep(Duration::from_secs(1)).await;
     }
 };
+
 ```
 
 ### 3. 函数式编程增强
@@ -72,6 +75,7 @@ fn transform_stream<T, U>(input: impl Iterator<Item = T>, f: impl Fn(T) -> U) ->
         }
     }
 }
+
 ```
 
 #### 2. **惰性求值**
@@ -86,6 +90,7 @@ fn lazy_fibonacci() -> impl Iterator<Item = u64> {
         }
     }
 }
+
 ```
 
 #### 3. **函数式流处理**
@@ -104,6 +109,7 @@ async fn process_data<T>(
         }
     }
 }
+
 ```
 
 ### 4. 高级使用技巧
@@ -121,6 +127,7 @@ fn fallible_generator() -> impl Iterator<Item = Result<i32, Error>> {
         }
     }
 }
+
 ```
 
 #### 2. **异步资源管理**
@@ -135,6 +142,7 @@ async fn managed_resource() -> impl Stream<Item = Result<Data, Error>> {
         connection.close().await?;
     }
 }
+
 ```
 
 #### 3. **并发控制模式**
@@ -164,6 +172,7 @@ where
         }
     }
 }
+
 ```
 
 ### 5. 实践建议
@@ -181,6 +190,7 @@ fn optimized_generator(size: usize) -> impl Iterator<Item = Vec<u8>> {
         }
     }
 }
+
 ```
 
 #### 2. **组合多个生成器**
@@ -199,6 +209,7 @@ fn combined_generators<T>(
         }
     }
 }
+
 ```
 
 总结：
@@ -235,6 +246,7 @@ let iterator = gen {
 let async_stream = gen async {
     // 异步生成器体
 };
+
 ```
 
 ##### 2. **yield**
@@ -252,6 +264,7 @@ let computed = gen {
         yield i * 2;
     }
 };
+
 ```
 
 ##### 3. **next**
@@ -266,6 +279,7 @@ while let Some(value) = iterator.next() {
 while let Some(value) = stream.next().await {
     println!("{}", value);
 }
+
 ```
 
 #### 2. 高级特性组合
@@ -280,6 +294,7 @@ fn generic_generator<T>(items: Vec<T>) -> impl Iterator<Item = T> {
         }
     }
 }
+
 ```
 
 ##### 2. **与生命周期结合**
@@ -292,6 +307,7 @@ fn borrowed_generator<'a>(data: &'a [i32]) -> impl Iterator<Item = &'a i32> {
         }
     }
 }
+
 ```
 
 ##### 3. **与trait bounds结合**
@@ -304,6 +320,7 @@ fn bounded_generator<T: Display + Clone>(item: T) -> impl Iterator<Item = T> {
         yield item;
     }
 }
+
 ```
 
 ### *3. 异步编程模式*
@@ -323,6 +340,7 @@ async fn process_stream<T: AsyncRead>(reader: T) -> impl Stream<Item = Result<Ve
         }
     }
 }
+
 ```
 
 #### 2. **并发控制**
@@ -345,6 +363,7 @@ async fn controlled_stream<T>(
         }
     }
 }
+
 ```
 
 ### -4. 函数式编程模式-
@@ -364,6 +383,7 @@ fn transform_stream<T, U>(
         }
     }
 }
+
 ```
 
 #### 2. **组合器模式**-
@@ -382,6 +402,7 @@ fn combine_streams<T>(
         }
     }
 }
+
 ```
 
 ### *5. 错误处理模式*
@@ -399,6 +420,7 @@ fn fallible_generator() -> impl Iterator<Item = Result<i32, Error>> {
         }
     }
 }
+
 ```
 
 #### 2. **Option处理**
@@ -415,6 +437,7 @@ fn optional_generator() -> impl Iterator<Item = Option<i32>> {
         }
     }
 }
+
 ```
 
 ### *6. 资源管理模式*
@@ -435,6 +458,7 @@ impl<T> ManagedResource<T> {
         }
     }
 }
+
 ```
 
 #### 2. *异步资源管理*
@@ -449,6 +473,7 @@ async fn managed_async_stream() -> impl Stream<Item = Result<Data, Error>> {
         connection.close().await?;
     }
 }
+
 ```
 
 ### *7. 最佳实践建议*
@@ -466,6 +491,7 @@ fn optimized_generator() -> impl Iterator<Item = Vec<u8>> {
         }
     }
 }
+
 ```
 
 #### 2. **调试辅助**
@@ -480,6 +506,7 @@ fn debuggable_generator() -> impl Iterator<Item = i32> {
         }
     }
 }
+
 ```
 
 ### 8. 编程建议

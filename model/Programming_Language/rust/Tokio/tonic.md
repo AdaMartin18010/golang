@@ -15,19 +15,6 @@
     - [1.2.9 10. 使用示例](#10-使用示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面是一个使用 Rust 2024 和 Tonic 全特性实现的分布式系统示例：
 
 ## 1.1 目录
@@ -64,6 +51,7 @@ anyhow = "1.0"
 
 [build-dependencies]
 tonic-build = { version = "0.10", features = ["prost"] }
+
 ```
 
 ### 1.2.1 2. Proto 定义
@@ -194,6 +182,7 @@ message Task {
     google.protobuf.Timestamp created_at = 5;
     google.protobuf.Timestamp updated_at = 6;
 }
+
 ```
 
 ### 1.2.2 3. 服务实现
@@ -364,6 +353,7 @@ impl NodeService for DistributedNode {
         Ok(Response::new(state))
     }
 }
+
 ```
 
 ### 1.2.3 4. 集群管理器实现
@@ -423,6 +413,7 @@ impl ClusterManager {
         Ok(metrics)
     }
 }
+
 ```
 
 ### 1.2.4 5. 任务管理器实现
@@ -458,6 +449,7 @@ impl TaskManager {
         })
     }
 }
+
 ```
 
 ### 1.2.5 6. 文件管理器实现
@@ -489,6 +481,7 @@ impl FileManager {
         Ok(file_id)
     }
 }
+
 ```
 
 ### 1.2.6 7. 客户端实现
@@ -584,6 +577,7 @@ impl DistributedClient {
         Ok(response.into_inner())
     }
 }
+
 ```
 
 ### 1.2.7 8. 服务器启动
@@ -609,6 +603,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 ```
 
 ### 1.2.8 9. 中间件实现
@@ -670,6 +665,7 @@ where
         future::ready(Err(Status::unauthenticated("Invalid API key")))
     }
 }
+
 ```
 
 ### 1.2.9 10. 使用示例
@@ -719,6 +715,7 @@ async fn example() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个完整的示例展示了如何使用 Tonic 的所有主要特性来构建一个分布式系统，包括：

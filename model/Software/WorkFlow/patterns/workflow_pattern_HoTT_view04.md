@@ -105,19 +105,6 @@
   - [1.10 思维导图：工作流形式模式与程序语言模型关系](#思维导图：工作流形式模式与程序语言模型关系)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>
 我需要在深度和广度上更加完整地覆盖工作流形式模式与程序语言模型之间的关系，
@@ -133,6 +120,7 @@
 
 我将保持用中文回答，并增加内容的深度和广度。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -400,6 +388,7 @@ fn consume(v: Vec<i32>) -> i32 {
     let sum = v.iter().sum();
     sum // v被消费后不能再使用
 }
+
 ```
 
 ### 1.5.2 变量与状态
@@ -461,6 +450,7 @@ fn calculate_length(s: &String) -> usize {
 fn change(s: &mut String) {
     s.push_str(", world");
 }
+
 ```
 
 ### 1.5.3 控制流结构
@@ -528,6 +518,7 @@ fn control_flow_example(numbers: Vec<i32>) -> i32 {
     
     result
 }
+
 ```
 
 ### 1.5.4 资源管理机制
@@ -601,6 +592,7 @@ fn resource_example() {
     
     // 当所有Rc引用都超出作用域时，数据被清理
 }
+
 ```
 
 ### 1.5.5 代码组织模式
@@ -673,6 +665,7 @@ fn organization_example() {
     println!("Area: {}", circle.area());
     circle.draw();
 }
+
 ```
 
 ## 1.6 模式间的相容性与等价性分析
@@ -810,6 +803,7 @@ impl Workflow {
         println!("Workflow completed with data: {:?}", self.data);
     }
 }
+
 ```
 
 #### 1.6.2.2 高阶等价性
@@ -1081,6 +1075,7 @@ fn create_workflow_net() -> PetriNet {
     
     net
 }
+
 ```
 
 ### 1.7.2 基于π演算的证明
@@ -1344,4 +1339,5 @@ fn create_workflow_net() -> PetriNet {
     └── 模型论视角
         ├── 逻辑模型表示
         └── 模型等价性证明
+
 ```

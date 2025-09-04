@@ -28,6 +28,7 @@
 fn create_iterator() -> impl Iterator<Item = i32> {
     vec![1, 2, 3].into_iter() // 返回一个实现了Iterator特征的类型
 }
+
 ```
 
 ## 1.2 2. 是否可以将`impl Trait`定义为新类型或类型别名
@@ -50,6 +51,7 @@ impl<T: Iterator<Item = i32>> MyIterator<T> {
 fn create_iterator() -> MyIterator<impl Iterator<Item = i32>> {
     MyIterator(vec![1, 2, 3].into_iter())
 }
+
 ```
 
 ### 1.2.2 类型别名
@@ -60,6 +62,7 @@ fn create_iterator() -> MyIterator<impl Iterator<Item = i32>> {
 
 ```rust
 type MyIterator = impl Iterator<Item = i32>; // 编译错误：不能将impl Trait用作类型别名
+
 ```
 
 ## 1.3 3. 结论

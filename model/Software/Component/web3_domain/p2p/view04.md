@@ -83,6 +83,7 @@ P2P设计框架
     ├── 底层协议：TCP/IP, UDP, QUIC
     ├── 中间件：libp2p, IPFS
     └── 应用：区块链, 分布式存储, 文件共享
+
 ```
 
 ## 1.3 1. 元模型与理论基础
@@ -199,6 +200,7 @@ P2P设计框架（扩展）
     ├── 比特币：工作量证明与网络传播
     ├── IPFS：内容寻址与持久化存储
     └── 以太坊：DevP2P协议与发现机制
+
 ```
 
 ## 1.9 6. 安全性分析
@@ -325,6 +327,7 @@ P2P设计框架（进一步扩展）
     ├── 物联网：设备直接通信
     ├── DeFi：无中介金融服务
     └── 社交网络：用户控制数据
+
 ```
 
 ## 1.13 10. 理论前沿
@@ -342,6 +345,7 @@ P2P网络展现出显著的自组织特性，遵循复杂系统科学原理：
 ```math
 max S(G)
 s.t. C(G) ≤ Cmax
+
 ```
 
 其中G表示网络拓扑图。
@@ -389,6 +393,7 @@ func (p *PeerActor) Start() {
         p.handleMessage(msg)
     }
 }
+
 ```
 
 ### 1.14.2 通信协议栈
@@ -443,6 +448,7 @@ DID文档示例：
     "publicKeyBase58": "H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
   }]
 }
+
 ```
 
 ### 1.15.3 边缘计算融合
@@ -484,6 +490,7 @@ function swap(tokenA, tokenB, amountIn) {
     amountOut = (reserveB * amountIn) / (reserveA + amountIn);
     return amountOut;
 }
+
 ```
 
 ### 1.16.3 社交网络重构

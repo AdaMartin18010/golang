@@ -223,6 +223,7 @@ classDiagram
     +string Data
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -257,6 +258,7 @@ sequenceDiagram
   CL->>L: 日志采集
   U->>V: 用户操作
   T->>V: 任务下发
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -350,6 +352,7 @@ type Log struct {
     Data   string
     Time   time.Time
 }
+
 ```
 
 ---
@@ -451,6 +454,7 @@ graph TD
   L --> V
   L --> CL
   L --> E
+
 ```
 
 ### 5.5 Golang代码示例
@@ -459,6 +463,7 @@ graph TD
 // 车辆数量Prometheus监控
 var vehicleCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "vehicle_total"})
 vehicleCount.Set(1000000)
+
 ```
 
 ---
@@ -490,6 +495,7 @@ automotive-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -516,6 +522,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

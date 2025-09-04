@@ -179,6 +179,7 @@ type Iterator[T any] interface {
     Value() T
     Reset()
 }
+
 ```
 
 ### 2. 错误处理规范
@@ -198,6 +199,7 @@ func (e *DataStructureError) Error() string {
 func (e *DataStructureError) Unwrap() error {
     return e.Err
 }
+
 ```
 
 ### 3. 测试规范
@@ -230,6 +232,7 @@ func TestDataStructureConcurrency(t *testing.T) {
     wg.Wait()
     // 验证结果
 }
+
 ```
 
 ## 性能分析框架

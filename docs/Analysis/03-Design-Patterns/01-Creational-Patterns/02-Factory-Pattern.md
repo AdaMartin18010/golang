@@ -146,6 +146,7 @@ func NewProduct(productType string) (Product, error) {
     factory := &SimpleFactory{}
     return factory.CreateProduct(productType)
 }
+
 ```
 
 ### 3.1.1.4.2 工厂方法模式
@@ -214,6 +215,7 @@ func (p *ConcreteProductB) Use() string {
 func (p *ConcreteProductB) GetName() string {
     return p.name
 }
+
 ```
 
 ### 3.1.1.4.3 抽象工厂模式
@@ -300,6 +302,7 @@ func NewFactory(factoryType string) (AbstractFactory, error) {
         return nil, fmt.Errorf("unknown factory type: %s", factoryType)
     }
 }
+
 ```
 
 ## 3.1.1.5 4. 工程案例
@@ -394,6 +397,7 @@ func (f *DatabaseFactory) CreateDatabase(dbType, dsn string) (Database, error) {
         return nil, fmt.Errorf("unsupported database type: %s", dbType)
     }
 }
+
 ```
 
 ### 3.1.1.5.2 日志工厂
@@ -481,6 +485,7 @@ func (f *LoggerFactory) CreateLogger(loggerType, filename string) (Logger, error
         return nil, fmt.Errorf("unsupported logger type: %s", loggerType)
     }
 }
+
 ```
 
 ## 3.1.1.6 5. 批判性分析

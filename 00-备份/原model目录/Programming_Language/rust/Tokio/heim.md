@@ -37,6 +37,7 @@ dashmap = "5.5"
 metrics = "0.21"
 metrics-exporter-prometheus = "0.12"
 chrono = { version = "0.4", features = ["serde"] }
+
 ```
 
 ## 2. 系统指标收集器实现
@@ -177,6 +178,7 @@ impl MetricsCollector {
         Ok(())
     }
 }
+
 ```
 
 ## 3. 分布式追踪实现
@@ -233,6 +235,7 @@ impl DistributedTracer {
         result
     }
 }
+
 ```
 
 ## 4. 指标控制器实现
@@ -297,6 +300,7 @@ impl MetricsController {
         }).await
     }
 }
+
 ```
 
 ## 5. gRPC 服务实现
@@ -367,6 +371,7 @@ impl metrics_service_server::MetricsService for MetricsService {
         }))
     }
 }
+
 ```
 
 ## 6. 指标聚合器实现
@@ -415,6 +420,7 @@ impl MetricsAggregator {
 
     // Similar implementations for memory, disk, and network stats...
 }
+
 ```
 
 ## 7. 告警系统实现
@@ -479,6 +485,7 @@ impl AlertRule {
         }
     }
 }
+
 ```
 
 ## 8. 存储系统实现
@@ -536,6 +543,7 @@ impl MetricsStorage {
         }).await
     }
 }
+
 ```
 
 ## 9. 主程序实现
@@ -575,6 +583,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 ## 10. 配置文件示例
@@ -615,6 +624,7 @@ tracing:
 metrics:
   endpoint: http://localhost:4318
   export_interval: 15s
+
 ```
 
 这个完整的示例展示了如何构建一个分布式监控系统，包括：

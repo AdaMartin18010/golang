@@ -109,6 +109,7 @@ impl Device {
         }
     }
 }
+
 ```
 
 #### 1.2.1.2 传感器数据聚合根
@@ -159,6 +160,7 @@ impl SensorData {
         (self.value - mean).abs() > 3.0 * std_dev
     }
 }
+
 ```
 
 #### 1.2.1.3 规则聚合根
@@ -277,6 +279,7 @@ impl Rule {
         }
     }
 }
+
 ```
 
 ### 1.2.2 值对象
@@ -322,6 +325,7 @@ impl TimeOfDay {
         }
     }
 }
+
 ```
 
 ## 1.3 2. 数据建模
@@ -371,6 +375,7 @@ CREATE TABLE device_configurations (
     FOREIGN KEY (device_id) REFERENCES devices(id),
     UNIQUE(device_id, config_key)
 );
+
 ```
 
 #### 1.3.1.2 传感器数据表
@@ -420,6 +425,7 @@ CREATE TABLE sensor_data_daily (
     FOREIGN KEY (device_id) REFERENCES devices(id),
     UNIQUE(device_id, sensor_type, day_start)
 );
+
 ```
 
 #### 1.3.1.3 规则和告警表
@@ -466,6 +472,7 @@ CREATE TABLE alert_history (
     notes TEXT,
     FOREIGN KEY (alert_id) REFERENCES alerts(id)
 );
+
 ```
 
 ### 1.3.2 时间序列数据存储
@@ -558,6 +565,7 @@ impl InfluxDBStorage {
         Ok(vec![])
     }
 }
+
 ```
 
 ## 1.4 3. 流程建模
@@ -574,6 +582,7 @@ graph TD
     F --> G[分配设备配置]
     G --> H[开始数据采集]
     H --> I[定期心跳]
+
 ```
 
 ### 1.4.2 数据处理流程
@@ -591,6 +600,7 @@ graph TD
     H --> I[云端处理]
     I --> J[数据存储]
     J --> K[分析报告]
+
 ```
 
 ### 1.4.3 告警处理流程
@@ -615,6 +625,7 @@ graph TD
     N --> Q[标记解决]
     O --> Q
     P --> Q
+
 ```
 
 ### 1.4.4 流程实现
@@ -685,6 +696,7 @@ impl DataProcessingWorkflow {
         Ok(())
     }
 }
+
 ```
 
 ## 1.5 4. 规则引擎
@@ -748,6 +760,7 @@ impl RuleEngine {
         Ok(results)
     }
 }
+
 ```
 
 ## 1.6 5. 事件系统
@@ -782,6 +795,7 @@ pub struct RuleTriggeredEvent {
     pub actions_executed: Vec<Action>,
     pub timestamp: DateTime<Utc>,
 }
+
 ```
 
 ### 1.6.2 事件处理器
@@ -831,6 +845,7 @@ impl DataAnalyticsEventHandler {
         Ok(())
     }
 }
+
 ```
 
 ## 1.7 总结

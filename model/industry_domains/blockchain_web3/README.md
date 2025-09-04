@@ -45,32 +45,40 @@
 
 ```toml
 [dependencies]
+
 # 2 2 2 2 2 2 2 区块链框架
+
 substrate = "0.9"
 solana-program = "1.17"
 near-sdk = "4.0"
 
 # 3 3 3 3 3 3 3 密码学
+
 secp256k1 = "0.28"
 ed25519 = "2.2"
 sha2 = "0.10"
 ripemd = "0.1"
 
 # 4 4 4 4 4 4 4 网络通信
+
 libp2p = "0.53"
 tokio = { version = "1.35", features = ["full"] }
 
 # 5 5 5 5 5 5 5 序列化
+
 serde = { version = "1.0", features = ["derive"] }
 bincode = "1.3"
 
 # 6 6 6 6 6 6 6 数据库
+
 sled = "0.34"
 rocksdb = "0.21"
 
 # 7 7 7 7 7 7 7 Web3集成
+
 web3 = "0.19"
 ethers = "2.0"
+
 ```
 
 ## 7.1 架构模式
@@ -105,6 +113,7 @@ impl BlockchainNode {
         }
     }
 }
+
 ```
 
 ### 7.1.2 2. 智能合约架构
@@ -137,6 +146,7 @@ pub fn process_instruction(
     msg!("Hello, Solana!");
     Ok(())
 }
+
 ```
 
 ## 7.2 业务领域建模
@@ -173,6 +183,7 @@ pub struct SmartContract {
     pub storage: HashMap<Hash, Vec<u8>>,
     pub balance: Amount,
 }
+
 ```
 
 ## 7.3 数据建模
@@ -210,6 +221,7 @@ impl BlockchainStorage for RocksDBStorage {
         }
     }
 }
+
 ```
 
 ## 7.4 组件建模
@@ -249,6 +261,7 @@ impl ConsensusEngine for ProofOfStake {
         Ok(block)
     }
 }
+
 ```
 
 ### 7.4.2 钱包系统
@@ -291,6 +304,7 @@ impl Wallet {
         Ok(signed_tx.hash)
     }
 }
+
 ```
 
 ## 7.5 性能优化
@@ -335,6 +349,7 @@ impl ParallelTransactionProcessor {
         }
     }
 }
+
 ```
 
 ## 7.6 安全机制
@@ -366,6 +381,7 @@ impl CryptoService {
         Hash::from_slice(&hasher.finalize())
     }
 }
+
 ```
 
 ## 7.7 测试策略
@@ -406,6 +422,7 @@ mod tests {
         assert!(is_valid);
     }
 }
+
 ```
 
 ## 7.8 部署和运维
@@ -413,7 +430,9 @@ mod tests {
 ### 7.8.1 节点部署
 
 ```yaml
+
 # 8 8 8 8 8 8 8 docker-compose.yml
+
 version: '3.8'
 services:
   blockchain-node:
@@ -439,6 +458,7 @@ services:
 
 volumes:
   blockchain_data:
+
 ```
 
 ## 8.1 总结

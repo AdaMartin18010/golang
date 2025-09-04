@@ -111,6 +111,7 @@ type TechnologyEvaluation struct {
     CommunitySupport  float64
     MaturityLevel     MaturityLevel
 }
+
 ```
 
 ## 1.3 2. Web框架选型
@@ -149,6 +150,7 @@ func NewHighPerformanceAPI() *HighPerformanceAPI {
         Router: engine.Group("/api/v1"),
     }
 }
+
 ```
 
 **选型理由**:
@@ -179,6 +181,7 @@ func NewGeneralWebApp() *GeneralWebApp {
         App: app,
     }
 }
+
 ```
 
 **选型理由**:
@@ -211,6 +214,7 @@ func NewLightweightMicroservice() *LightweightMicroservice {
         Services: make(map[string]Service),
     }
 }
+
 ```
 
 **选型理由**:
@@ -265,6 +269,7 @@ func NewPostgreSQLConnection(config *PostgreSQLConfig) (*sql.DB, error) {
     
     return db, nil
 }
+
 ```
 
 **适用场景**:
@@ -301,6 +306,7 @@ func NewMySQLConnection(config *MySQLConfig) (*sql.DB, error) {
     
     return db, nil
 }
+
 ```
 
 **适用场景**:
@@ -336,6 +342,7 @@ func NewMongoDBConnection(config *MongoDBConfig) (*mongo.Client, error) {
     
     return client, nil
 }
+
 ```
 
 **适用场景**:
@@ -372,6 +379,7 @@ func NewRedisConnection(config *RedisConfig) (*redis.Client, error) {
     
     return client, nil
 }
+
 ```
 
 **适用场景**:
@@ -423,6 +431,7 @@ func NewKafkaProducer(brokers []string) (*KafkaProducer, error) {
         Config:   config,
     }, nil
 }
+
 ```
 
 **选型理由**:
@@ -473,6 +482,7 @@ func NewRabbitMQProducer(url, exchange string) (*RabbitMQProducer, error) {
         Exchange:   exchange,
     }, nil
 }
+
 ```
 
 **选型理由**:
@@ -507,6 +517,7 @@ func NewNATSProducer(url string) (*NATSProducer, error) {
         JetStream:  js,
     }, nil
 }
+
 ```
 
 **选型理由**:
@@ -544,6 +555,7 @@ type RedisCache struct {
 type DatabaseCache struct {
     db *sql.DB
 }
+
 ```
 
 ### 1.6.2 缓存策略选型
@@ -601,6 +613,7 @@ func (c *InMemoryCache) Get(key string) (interface{}, bool) {
     
     return item.Value, true
 }
+
 ```
 
 **适用场景**:
@@ -645,6 +658,7 @@ func (rc *RedisCache) Get(key string) (interface{}, error) {
     fullKey := rc.prefix + ":" + key
     return rc.client.Get(context.Background(), fullKey).Result()
 }
+
 ```
 
 **适用场景**:
@@ -691,6 +705,7 @@ func (pm *PrometheusMetrics) RegisterCounter(name, help string) prometheus.Count
     
     return counter
 }
+
 ```
 
 #### 1.7.1.2 日志收集
@@ -734,6 +749,7 @@ func (sl *StructuredLogger) Info(msg string, fields ...zap.Field) {
 func (sl *StructuredLogger) Error(msg string, fields ...zap.Field) {
     sl.logger.Error(msg, fields...)
 }
+
 ```
 
 #### 1.7.1.3 链路追踪
@@ -775,6 +791,7 @@ func NewTracingSystem(endpoint string) (*TracingSystem, error) {
 func (ts *TracingSystem) StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
     return ts.tracer.Start(ctx, name)
 }
+
 ```
 
 ## 1.8 7. 安全组件选型
@@ -839,6 +856,7 @@ func (ja *JWTAuthenticator) ValidateToken(tokenString string) (*jwt.Token, error
     
     return token, nil
 }
+
 ```
 
 #### 1.8.1.2 OAuth2认证
@@ -875,6 +893,7 @@ func (oa *OAuth2Authenticator) GetAuthURL() string {
 func (oa *OAuth2Authenticator) ExchangeCode(code string) (*oauth2.Token, error) {
     return oa.config.Exchange(context.Background(), code)
 }
+
 ```
 
 ### 1.8.2 数据加密
@@ -949,6 +968,7 @@ func (ae *AESEncryptor) Decrypt(ciphertext []byte) ([]byte, error) {
     
     return plaintext, nil
 }
+
 ```
 
 ## 1.9 8. 部署和运维选型
@@ -958,22 +978,28 @@ func (ae *AESEncryptor) Decrypt(ciphertext []byte) ([]byte, error) {
 #### 1.9.1.1 Docker
 
 ```dockerfile
+
 # 2 2 2 2 2 2 2 多阶段构建
+
 FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
 # 3 3 3 3 3 3 3 复制依赖文件
+
 COPY go.mod go.sum ./
 RUN go mod download
 
 # 4 4 4 4 4 4 4 复制源代码
+
 COPY . .
 
 # 5 5 5 5 5 5 5 构建应用
+
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 # 6 6 6 6 6 6 6 运行阶段
+
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
@@ -981,19 +1007,25 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 # 7 7 7 7 7 7 7 复制二进制文件
+
 COPY --from=builder /app/main .
 
 # 8 8 8 8 8 8 8 暴露端口
+
 EXPOSE 8080
 
 # 9 9 9 9 9 9 9 运行应用
+
 CMD ["./main"]
+
 ```
 
 #### 9 9 9 9 9 9 9 Kubernetes
 
 ```yaml
+
 # 10 10 10 10 10 10 10 部署配置
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1053,6 +1085,7 @@ spec:
     port: 80
     targetPort: 8080
   type: LoadBalancer
+
 ```
 
 ### 10 10 10 10 10 10 10 CI/CD
@@ -1125,6 +1158,7 @@ jobs:
     - name: Deploy to Kubernetes
       run: |
         kubectl set image deployment/my-app my-app=my-app:${{ github.sha }}
+
 ```
 
 ## 10.1 9. 性能测试工具选型
@@ -1163,6 +1197,7 @@ func BenchmarkDatabaseQuery(b *testing.B) {
         rows.Close()
     }
 }
+
 ```
 
 #### 10.1.1.2 压力测试
@@ -1206,6 +1241,7 @@ func (st *StressTest) Run() error {
     
     return nil
 }
+
 ```
 
 ## 10.2 10. 选型决策矩阵
@@ -1254,6 +1290,7 @@ func (ts *TechnologyScore) CalculateTotalScore(weights map[string]float64) float
     
     return totalScore / totalWeight
 }
+
 ```
 
 ### 10.2.2 场景化选型建议
@@ -1281,6 +1318,7 @@ func GetHighConcurrencyStack() *HighConcurrencyStack {
         Deployment:   "Kubernetes",
     }
 }
+
 ```
 
 #### 10.2.2.2 微服务架构
@@ -1308,6 +1346,7 @@ func GetMicroservicesStack() *MicroservicesStack {
         Deployment:       "Docker + Kubernetes",
     }
 }
+
 ```
 
 #### 10.2.2.3 数据密集型应用
@@ -1337,6 +1376,7 @@ func GetDataIntensiveStack() *DataIntensiveStack {
         Deployment:     "Kubernetes",
     }
 }
+
 ```
 
 ## 10.3 11. 实施建议
@@ -1382,6 +1422,7 @@ func GetAdoptionPhases() []*TechnologyAdoptionPhase {
         },
     }
 }
+
 ```
 
 ### 10.3.2 风险管理
@@ -1432,6 +1473,7 @@ func GetTechnologyRisks() []*TechnologyRisk {
         },
     }
 }
+
 ```
 
 ## 10.4 12. 结论

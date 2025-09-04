@@ -252,6 +252,7 @@ async fn main() {
         Err(e) => println!("Early exit due to error: {}", e),
     }
 }
+
 ```
 
 ## 1.1 代码说明
@@ -291,6 +292,7 @@ flowchart TD
     D --> D1[使用 try_join / try_join_all]
     D1 --> D2[任一任务失败 -> 整体失败]
     D2 --> D3[fail-fast 模式及时退出]
+
 ```
 
 ---
@@ -390,6 +392,7 @@ async fn main() {
 
     println!("Final counter value: {}", *counter.lock().await);
 }
+
 ```
 
 > **说明：**  
@@ -416,6 +419,7 @@ flowchart TD
     C --> C2[协作式任务切换]
     C2 --> C2a[任务主动让出 (await)]
     C2 --> C2b[降低抢占式多线程风险]
+
 ```
 
 ## 1.8 5. 总结

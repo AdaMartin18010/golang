@@ -32,6 +32,7 @@ func (bf *BenchmarkFramework) RunBenchmark(test *BenchmarkTest, iterations int) 
         AverageTime:    end.Sub(start) / time.Duration(iterations),
     }
 }
+
 ```
 
 **性能指标收集**:
@@ -57,6 +58,7 @@ func (m *Metric) Record(value float64) {
     m.Sum += value
     m.Average = m.Sum / float64(m.Count)
 }
+
 ```
 
 ### 2. 性能分析技术
@@ -77,6 +79,7 @@ func (cp *CPUProfiler) Stop() {
     pprof.StopCPUProfile()
     cp.file.Close()
 }
+
 ```
 
 **内存性能分析**:
@@ -90,6 +93,7 @@ type MemoryProfiler struct {
 func (mp *MemoryProfiler) WriteHeapProfile() error {
     return pprof.WriteHeapProfile(mp.file)
 }
+
 ```
 
 ### 3. 内存管理优化
@@ -123,6 +127,7 @@ func (op *ObjectPool[T]) Put(obj T) {
         // 池已满，丢弃对象
     }
 }
+
 ```
 
 **内存预分配**:
@@ -150,6 +155,7 @@ func (pa *PreAllocator) GetBuffer(size int) []byte {
         return make([]byte, size)
     }
 }
+
 ```
 
 ### 4. CPU优化策略
@@ -175,6 +181,7 @@ func (lo *LoopOptimizer) OptimizeLoop(data []int) int {
     
     return sum
 }
+
 ```
 
 **并发优化**:
@@ -211,6 +218,7 @@ func (pp *ParallelProcessor) ProcessParallel(data []interface{}, processor func(
     wg.Wait()
     return results
 }
+
 ```
 
 ### 5. 网络性能优化
@@ -240,6 +248,7 @@ func (cp *ConnectionPool) Put(conn net.Conn) {
         conn.Close()
     }
 }
+
 ```
 
 **批量请求处理**:
@@ -273,6 +282,7 @@ func (brp *BatchRequestProcessor) ProcessBatch(requests []Request) []Response {
     wg.Wait()
     return responses
 }
+
 ```
 
 ### 6. 数据库性能优化
@@ -302,6 +312,7 @@ func (qc *QueryCache) Get(query string) (interface{}, bool) {
     
     return cached.Result, true
 }
+
 ```
 
 **批量查询优化**:
@@ -335,6 +346,7 @@ func (bqo *BatchQueryOptimizer) ExecuteBatch(queries []string) [][]interface{} {
     wg.Wait()
     return results
 }
+
 ```
 
 ## 性能监控
@@ -371,6 +383,7 @@ func (pm *PerformanceMonitor) MonitorMetric(name string, value float64, threshol
         pm.alerts = append(pm.alerts, alert)
     }
 }
+
 ```
 
 ## 性能指标

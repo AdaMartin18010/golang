@@ -123,6 +123,7 @@ func MapExample() {
     })
     fmt.Println("Indexed:", indexed) // ["0: hello", "1: world", "2: golang"]
 }
+
 ```
 
 ### 3.2 Filter模式
@@ -192,6 +193,7 @@ func FilterExample() {
     })
     fmt.Println("Indexed:", indexed) // [1, 3, 5, 7, 9]
 }
+
 ```
 
 ### 3.3 Reduce模式
@@ -271,6 +273,7 @@ func ReduceExample() {
     })
     fmt.Println("Indexed:", indexed) // "0:1, 1:2, 2:3, 3:4, 4:5"
 }
+
 ```
 
 ## 4. 函数组合模式
@@ -362,6 +365,7 @@ func ComposeExample() {
     result = uncurriedAdd(5, 3) // 8
     fmt.Println("Uncurried result:", result)
 }
+
 ```
 
 ### 4.2 部分应用
@@ -413,6 +417,7 @@ func PartialExample() {
     message := greet("World") // "Hello, World!"
     fmt.Println("Greet:", message)
 }
+
 ```
 
 ## 5. 不可变数据结构模式
@@ -527,6 +532,7 @@ func ImmutableSliceExample() {
     sliced := immutable.Slice(1, 4)
     fmt.Println("Sliced:", sliced.ToSlice()) // [2, 3, 4]
 }
+
 ```
 
 ### 5.2 不可变映射
@@ -607,6 +613,7 @@ func (im *ImmutableMap[K, V]) ToMap() map[K]V {
 func (im *ImmutableMap[K, V]) Len() int {
     return len(im.data)
 }
+
 ```
 
 ## 6. 惰性求值模式
@@ -734,6 +741,7 @@ func LazyListExample() {
     skipped := naturals.Drop(5).Take(5)
     fmt.Println("Skip 5, take 5:", skipped.ToSlice()) // [6, 7, 8, 9, 10]
 }
+
 ```
 
 ### 6.2 惰性求值器
@@ -787,6 +795,7 @@ func LazyExample() {
     value2 := expensive.Force()
     fmt.Println("Value again:", value2) // 42 (no computation)
 }
+
 ```
 
 ## 7. 函子与单子模式
@@ -900,6 +909,7 @@ func OptionExample() {
         fmt.Println("Result:", result.Unwrap()) // "Large: 52"
     }
 }
+
 ```
 
 ### 7.2 单子模式
@@ -1024,6 +1034,7 @@ func ResultExample() {
         fmt.Println(result3.Unwrap()) // "Final result: 20"
     }
 }
+
 ```
 
 ### 7.3 applicative函子
@@ -1150,6 +1161,7 @@ func ValidationExample() {
         }
     }
 }
+
 ```
 
 ## 8. 模式匹配
@@ -1272,6 +1284,7 @@ func PatternMatchExample() {
     fmt.Println(matcher.Match(15))  // "large: 15"
     fmt.Println(matcher.Match(5))   // "other: 5"
 }
+
 ```
 
 ## 9. 最佳实践
@@ -1356,6 +1369,7 @@ func DataProcessingExample() {
     fmt.Println("Input:", input)
     fmt.Println("Output:", result) // [16, 36, 64, 100]
 }
+
 ```
 
 ### 10.2 配置构建器
@@ -1427,6 +1441,7 @@ func ConfigBuilderExample() {
     
     fmt.Printf("Config: %+v\n", config)
 }
+
 ```
 
 ---

@@ -82,6 +82,7 @@ impl ServiceRegistry for ConsulServiceRegistry {
         Ok(service_infos)
     }
 }
+
 ```
 
 ### 1.2.2 负载均衡
@@ -130,6 +131,7 @@ impl LoadBalancer for HealthCheckLoadBalancer {
         Ok(healthy_services[index].clone())
     }
 }
+
 ```
 
 ## 1.3 2. 事件驱动架构模式
@@ -196,6 +198,7 @@ impl EventBus {
         }
     }
 }
+
 ```
 
 ### 1.3.2 事件溯源
@@ -247,6 +250,7 @@ impl<T: Aggregate> EventSourcedAggregate<T> {
         Ok(aggregate)
     }
 }
+
 ```
 
 ## 1.4 3. CQRS模式
@@ -284,6 +288,7 @@ impl CommandBus {
         }
     }
 }
+
 ```
 
 ### 1.4.2 查询处理
@@ -321,6 +326,7 @@ impl QueryBus {
         }
     }
 }
+
 ```
 
 ## 1.5 4. 仓储模式
@@ -340,6 +346,7 @@ pub trait Aggregate {
     fn id(&self) -> &Self::Id;
     fn version(&self) -> u64;
 }
+
 ```
 
 ### 1.5.2 缓存仓储
@@ -378,6 +385,7 @@ impl<T: Aggregate> Repository<T> for CachedRepository<T> {
         }
     }
 }
+
 ```
 
 ## 1.6 5. 工厂模式
@@ -407,6 +415,7 @@ impl AbstractFactory for ConcreteFactory1 {
         ConcreteProductB1::new()
     }
 }
+
 ```
 
 ### 1.6.2 对象池
@@ -447,6 +456,7 @@ impl<T> ObjectPool<T> {
         }
     }
 }
+
 ```
 
 ## 1.7 6. 观察者模式
@@ -484,6 +494,7 @@ impl Subject {
         Ok(())
     }
 }
+
 ```
 
 ## 1.8 7. 策略模式
@@ -516,6 +527,7 @@ impl Context {
         self.strategy.execute(self).await
     }
 }
+
 ```
 
 ## 1.9 8. 装饰器模式
@@ -553,6 +565,7 @@ impl Component for Decorator {
         Ok(format!("Decorated({})", result))
     }
 }
+
 ```
 
 ## 1.10 9. 适配器模式
@@ -588,6 +601,7 @@ impl Target for Adapter {
         self.adaptee.specific_request().await
     }
 }
+
 ```
 
 ## 1.11 10. 模板方法模式
@@ -625,6 +639,7 @@ impl AlgorithmTemplate for ConcreteAlgorithm {
         Ok("Concrete step 3".to_string())
     }
 }
+
 ```
 
 ## 1.12 总结

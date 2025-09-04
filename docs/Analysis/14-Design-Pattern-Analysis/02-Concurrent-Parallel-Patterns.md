@@ -47,19 +47,6 @@
     - [14.1.12.2 成功要素](#成功要素)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 14.1.1 概述
 
 并发并行模式是处理多线程、异步编程和分布式计算的重要设计模式。本文档基于Golang技术栈，深入分析各种并发并行模式的设计、实现和性能特征。
@@ -207,6 +194,7 @@ func (ao *ActiveObject) Shutdown() {
 func generateID() string {
     return fmt.Sprintf("req_%d", time.Now().UnixNano())
 }
+
 ```
 
 ### 14.1.2.4 性能分析
@@ -304,6 +292,7 @@ func (m *Monitor) Snapshot() map[string]interface{} {
     }
     return snapshot
 }
+
 ```
 
 ## 14.1.4 3. 线程池模式 (Thread Pool)
@@ -525,6 +514,7 @@ func (p *ThreadPool) Shutdown() {
 func (p *ThreadPool) GetStats() map[string]interface{} {
     return p.stats.GetStats()
 }
+
 ```
 
 ## 14.1.5 4. 生产者-消费者模式 (Producer-Consumer)
@@ -775,6 +765,7 @@ func (s *ProducerConsumerSystem) Stop() {
 func (s *ProducerConsumerSystem) GetStats() map[string]interface{} {
     return s.buffer.stats.GetStats()
 }
+
 ```
 
 ## 14.1.6 5. 读写锁模式 (Readers-Writer Lock)
@@ -935,6 +926,7 @@ func (r *RWLock) Snapshot() map[string]interface{} {
 func (r *RWLock) GetStats() map[string]interface{} {
     return r.stats.GetStats()
 }
+
 ```
 
 ## 14.1.7 6. Future/Promise模式
@@ -1147,6 +1139,7 @@ func (p *FutureExecutor) Any(futures []*Future) *Future {
     
     return resultFuture
 }
+
 ```
 
 ## 14.1.8 7. Actor模型
@@ -1374,6 +1367,7 @@ func (a *ExampleActor) handleMessage(message Message) {
         fmt.Printf("Actor %s: Unknown message type %s\n", a.ID, message.GetType())
     }
 }
+
 ```
 
 ## 14.1.9 8. 性能分析

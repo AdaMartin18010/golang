@@ -55,7 +55,9 @@
 跨语言集成架构（Cross-language Integration Architecture）是指在同一系统中，多个编程语言协同工作，通过标准化接口、协议和数据格式实现互操作、资源共享和系统协同。
 
 - **gRPC 官方定义**：
+
   > gRPC 是一个高性能、开源和通用的远程过程调用（RPC）框架，基于 HTTP/2 协议，支持多语言互通。
+
   > ——[gRPC Documentation](https://grpc.io/docs/)
 
 - **国际主流协议/工具**：gRPC、Protocol Buffers、OpenAPI/Swagger、Thrift、GraphQL、Apache Arrow、Kafka、NATS。
@@ -144,6 +146,7 @@ classDiagram
     +string Version
     +string Transport
   }
+
 ```
 
 ### 1.3.3 典型数据流
@@ -169,6 +172,7 @@ sequenceDiagram
   S2->>MQ: 消费消息（ProtoBuf）
   S2-->>GW: 结果响应
   GW-->>C: 返回结果
+
 ```
 
 ### 1.3.4 Golang 领域模型代码示例
@@ -204,6 +208,7 @@ type Protocol struct {
     Version   string
     Transport string
 }
+
 ```
 
 ---
@@ -223,6 +228,7 @@ type Protocol struct {
 service UserService {
   rpc GetUser (GetUserRequest) returns (UserResponse);
 }
+
 ```
 
 ### 1.4.2 数据序列化与兼容性
@@ -239,6 +245,7 @@ message User {
   string id = 1;
   string name = 2;
 }
+
 ```
 
 ### 1.4.3 性能与延迟
@@ -254,6 +261,7 @@ message User {
 conn, _ := grpc.Dial("service:50051", grpc.WithInsecure())
 client := pb.NewUserServiceClient(conn)
 resp, err := client.GetUser(ctx, &pb.GetUserRequest{Id: "123"})
+
 ```
 
 ### 1.4.4 类型系统差异
@@ -271,6 +279,7 @@ enum Status {
   ACTIVE = 1;
   INACTIVE = 2;
 }
+
 ```
 
 ### 1.4.5 服务发现与治理
@@ -287,6 +296,7 @@ import consulapi "github.com/hashicorp/consul/api"
 client, _ := consulapi.NewClient(consulapi.DefaultConfig())
 reg := &consulapi.AgentServiceRegistration{Name: "user-service", Address: "127.0.0.1", Port: 8080}
 client.Agent().ServiceRegister(reg)
+
 ```
 
 ### 1.4.6 安全与认证
@@ -313,6 +323,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 }
+
 ```
 
 ---
@@ -333,6 +344,7 @@ import pb "github.com/yourorg/yourproto"
 func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
     // ...
 }
+
 ```
 
 ### 1.5.2 数据格式与序列化
@@ -345,6 +357,7 @@ func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
 // ProtoBuf 序列化
 user := &pb.User{Id: "123", Name: "Alice"}
 data, _ := proto.Marshal(user)
+
 ```
 
 ### 1.5.3 服务注册与发现
@@ -358,6 +371,7 @@ data, _ := proto.Marshal(user)
 import clientv3 "go.etcd.io/etcd/client/v3"
 cli, _ := clientv3.New(clientv3.Config{Endpoints: []string{"localhost:2379"}})
 cli.Put(context.Background(), "/services/user/instance1", "127.0.0.1:8080")
+
 ```
 
 ### 1.5.4 消息队列与事件流
@@ -371,6 +385,7 @@ cli.Put(context.Background(), "/services/user/instance1", "127.0.0.1:8080")
 import "github.com/segmentio/kafka-go"
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "events"})
 writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("event data")})
+
 ```
 
 ### 1.5.5 安全与认证
@@ -384,6 +399,7 @@ writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("event da
 import "golang.org/x/oauth2"
 conf := &oauth2.Config{ClientID: "id", ClientSecret: "secret", Endpoint: oauth2.Endpoint{TokenURL: "https://provider.com/token"}}
 token, err := conf.PasswordCredentialsToken(ctx, "user", "pass")
+
 ```
 
 ### 1.5.6 案例分析：gRPC+Kafka 跨语言微服务集成
@@ -415,6 +431,7 @@ crosslang-demo/
 ├── scripts/            # 部署与运维脚本
 ├── build/              # Dockerfile、CI/CD配置
 └── README.md
+
 ```
 
 ### 1.6.2 关键代码片段
@@ -437,6 +454,7 @@ message UserResponse {
   string id = 1;
   string name = 2;
 }
+
 ```
 
 ```go
@@ -449,6 +467,7 @@ func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
     // 业务逻辑...
     return &pb.UserResponse{Id: req.Id, Name: "Alice"}, nil
 }
+
 ```
 
 #### 1.6.2.2 Kafka 消息发布与消费
@@ -462,6 +481,7 @@ writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("UserCrea
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "user-events", GroupID: "user-group"})
 msg, _ := reader.ReadMessage(context.Background())
 processEvent(msg.Value)
+
 ```
 
 #### 1.6.2.3 Prometheus 监控埋点
@@ -470,12 +490,15 @@ processEvent(msg.Value)
 import "github.com/prometheus/client_golang/prometheus"
 var userCount = prometheus.NewCounter(prometheus.CounterOpts{Name: "user_created_total"})
 userCount.Inc()
+
 ```
 
 ### 1.6.3 CI/CD 配置（GitHub Actions 示例）
 
 ```yaml
+
 # 2 2 2 2 2 2 2 .github/workflows/ci.yml
+
 name: Go CI
 on:
   push:
@@ -493,6 +516,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

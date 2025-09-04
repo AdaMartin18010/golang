@@ -38,6 +38,7 @@ quinn = "0.10"  # QUIC 协议支持
 parking_lot = "0.12"
 backoff = { version = "0.4", features = ["tokio"] }
 metrics = "0.21"
+
 ```
 
 ## 2. 消息协议定义
@@ -125,6 +126,7 @@ impl Decoder for MessageCodec {
         }
     }
 }
+
 ```
 
 ## 3. TCP 服务端实现
@@ -279,6 +281,7 @@ impl ImServer {
         });
     }
 }
+
 ```
 
 ## 4. TCP 客户端实现
@@ -436,6 +439,7 @@ impl ImClient {
         });
     }
 }
+
 ```
 
 ## 5. UDP 消息广播实现
@@ -516,6 +520,7 @@ impl BroadcastClient {
         Ok(stream)
     }
 }
+
 ```
 
 ## 6. 消息存储实现
@@ -556,6 +561,7 @@ impl MessageStore {
         Ok(())
     }
 }
+
 ```
 
 ## 7. 错误处理实现
@@ -590,6 +596,7 @@ impl From<ImError> for backoff::Error<ImError> {
         }
     }
 }
+
 ```
 
 ## 8. 指标收集实现
@@ -632,6 +639,7 @@ impl ImMetrics {
         self.message_latency.observe(latency.as_millis() as f64);
     }
 }
+
 ```
 
 ## 9. 主程序实现
@@ -674,6 +682,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 ## 10. 测试实现
@@ -723,6 +732,7 @@ mod tests {
         Ok(())
     }
 }
+
 ```
 
 这个完整的示例展示了如何构建一个功能完整的 IM 系统，包括：

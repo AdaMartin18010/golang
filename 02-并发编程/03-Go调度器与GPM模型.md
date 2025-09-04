@@ -37,6 +37,7 @@ Go源码（runtime/proc.go）核心结构体：
 type G struct { /* ... */ }
 type M struct { /* ... */ }
 type P struct { /* ... */ }
+
 ```
 
 调度主循环：
@@ -45,6 +46,7 @@ type P struct { /* ... */ }
 func schedule() {
     // 取出可运行G，分配给M
 }
+
 ```
 
 ---
@@ -65,6 +67,7 @@ graph TD
     G1["Goroutine"] -->|入队| P["Processor"]
     P -->|分配| M["Machine(Thread)"]
     M -->|执行| G1
+
 ```
 
 ---

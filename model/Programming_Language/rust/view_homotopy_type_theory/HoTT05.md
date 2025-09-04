@@ -51,6 +51,7 @@
 
 我将从HoTT的角度分析这三个领域，尝试找出它们之间的数学联系和概念对应关系。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -119,6 +120,7 @@
     ├── 分布式一致性 ↔ 高阶归纳类型
     ├── 工作流并发 ↔ 路径空间
     └── 三者统一：计算的空间-时间结构
+
 ```
 
 ## 1.3 引言
@@ -141,6 +143,7 @@ enum Circle {
     Base,
     Loop(Path<Base, Base>), // 概念性：从Base到Base的路径
 }
+
 ```
 
 ### 1.4.3 同伦层次结构
@@ -164,6 +167,7 @@ fn main() {
     let s2 = s1; // 所有权转移，s1不再有效
     // println!("{}", s1); // 编译错误：使用已移动的值
 }
+
 ```
 
 从HoTT角度看，这种所有权转移构成了一种路径，表明了计算过程中的"状态变化"。
@@ -176,6 +180,7 @@ Rust的生命周期标注可以视为依赖类型的一种受限形式：
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 这里的`'a`可以理解为一个指代内存区域"生存期"的索引，类似于HoTT中的参数空间。
@@ -194,6 +199,7 @@ struct Pair<A, B> {
     first: A,
     second: B,
 }
+
 ```
 
 这些类型构造器可以被看作是HoTT中的类型构造器，形成了复杂类型的构建规则。
@@ -220,6 +226,7 @@ trait Monotonic<T: PartialOrd> {
         }
     }
 }
+
 ```
 
 ### 1.6.3 状态空间作为类型空间
@@ -247,6 +254,7 @@ enum Protocol<A, B> {
     Receive(B, Box<Protocol<A, B>>),
     End,
 }
+
 ```
 
 ### 1.7.3 时间逻辑与同伦逻辑
@@ -271,6 +279,7 @@ impl<T: Serialize + Deserialize> Message<T> {
     fn serialize(&self) -> Vec<u8> { /* ... */ }
     fn deserialize(bytes: &[u8]) -> Result<Self, Error> { /* ... */ }
 }
+
 ```
 
 从HoTT角度，这种类型安全性可以理解为保证系统状态转换的路径只能沿着类型允许的方向进行。
@@ -293,6 +302,7 @@ impl<I, O, E> Workflow<I, O, E> {
         // 执行工作流步骤...
     }
 }
+
 ```
 
 ## 1.9 同构与等价关系

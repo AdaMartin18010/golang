@@ -7,19 +7,6 @@
     - [1.1.2 区别和联系](#区别和联系)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`Cell` 和 `RefCell` 是两种不同的类型，它们都用于封装数据并提供运行时借用检查。
 它们是 Rust 标准库中 `std::cell` 模块的一部分，用于在借用规则之外进行数据借用。
 
@@ -31,6 +18,7 @@
 struct Cell<T> {
     value: T,
 }
+
 ```
 
 `Cell` 提供了一种方式来存储一个值，并能够修改这个值，即使它被固定为不可变借用。
@@ -48,6 +36,7 @@ println!("Initial value: {}", c.get()); // 获取当前值
 
 c.set(10); // 修改值
 println!("After modification: {}", c.get());
+
 ```
 
 ### 1.1.1 RefCell
@@ -58,6 +47,7 @@ println!("After modification: {}", c.get());
 struct RefCell<T> {
     value: T,
 }
+
 ```
 
 `RefCell` 允许你获取对内部数据的可变借用，即使在不可变借用的上下文中。
@@ -75,6 +65,7 @@ println!("Initial value: {}", *c.borrow()); // 获取当前值
 
 *c.borrow_mut() = 10; // 修改值
 println!("After modification: {}", *c.borrow());
+
 ```
 
 ### 1.1.2 区别和联系

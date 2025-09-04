@@ -20,19 +20,6 @@
   - [1.5 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 针对您描述的场景,我将从形式理论、架构设计到Rust实现为您提供分析。
 
 ## 1.1 一、适用的形式理论基础
@@ -101,6 +88,7 @@ enum OrderEvent {
     Reject(String),
     // ... 其他事件
 }
+
 ```
 
 - **类型状态模式(Typestate)**: 编译时强制状态转换合法性
@@ -129,6 +117,7 @@ impl Order<Created> {
         // ...
     }
 }
+
 ```
 
 - **特质(Trait)系统**: 抽象接口和行为
@@ -142,6 +131,7 @@ trait WorkflowStep {
     async fn execute(&self, input: Self::Input) -> Result<Self::Output, Self::Error>;
     async fn compensate(&self, input: Self::Input) -> Result<(), Self::Error>;
 }
+
 ```
 
 ### 1.3.2 2. 异步处理与Actor模式
@@ -165,6 +155,7 @@ impl Handler<ProcessOrder> for OrderProcessor {
         // 实现处理逻辑
     }
 }
+
 ```
 
 ### 1.3.3 3. 错误处理策略
@@ -186,6 +177,7 @@ enum OrderError {
     #[error("超时: {0}")]
     Timeout(String),
 }
+
 ```
 
 - **Result与Option组合**: 优雅处理错误和可选值
@@ -209,6 +201,7 @@ impl<E: Event> EventStore<E> {
         // 实现事件读取逻辑
     }
 }
+
 ```
 
 - **CQRS实现**: 读写分离模型
@@ -235,6 +228,7 @@ impl ErpSystem for SapErpAdapter {
         // SAP特定实现
     }
 }
+
 ```
 
 - **断路器实现**: 使用failsafe-rs库
@@ -286,6 +280,7 @@ impl<S: State, E: Event> WorkflowEngine<S, E> {
         Ok(new_state)
     }
 }
+
 ```
 
 ## 1.5 总结

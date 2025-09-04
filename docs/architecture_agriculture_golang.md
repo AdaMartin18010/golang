@@ -172,6 +172,7 @@ classDiagram
     +float Value
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -198,6 +199,7 @@ sequenceDiagram
   J->>E: 事件采集
   E->>DA: 数据分析
   U->>J: 智能决策
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -272,6 +274,7 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
+
 ```
 
 ---
@@ -338,6 +341,7 @@ graph TD
   C --> DA
   F --> EN
   C --> EN
+
 ```
 
 ### 5.5 Golang代码示例
@@ -348,6 +352,7 @@ graph TD
 // Prometheus 监控
 var machineCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "machine_online_total"})
 machineCount.Set(100)
+
 ```
 
 ---
@@ -375,6 +380,7 @@ agriculture-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -401,6 +407,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

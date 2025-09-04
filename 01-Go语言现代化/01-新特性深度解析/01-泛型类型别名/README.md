@@ -44,6 +44,7 @@ type AliasName[T1, T2 any] = OriginalType[T1, T2]
 
 // 为一个完全实例化的泛型类型创建别名
 type ConcreteAlias = OriginalType[int, string]
+
 ```
 
 ## 1.1.1.1.4 💡 **典型应用场景**

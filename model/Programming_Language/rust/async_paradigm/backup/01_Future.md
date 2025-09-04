@@ -9,19 +9,6 @@
     - [1.1.3 解释](#解释)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`Future` 是一个核心的异步编程概念。
 它代表了一个可能尚未完成的异步操作，但最终会返回一个结果。
 `Future` trait 定义了 `Future` 类型必须实现的方法，使得它们可以被异步运行时管理和调度。
@@ -40,6 +27,7 @@ trait Future {
     type Output;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 - **`type Output`**：这是一个关联类型，定义了 `Future` 完成时返回的结果类型。
@@ -83,6 +71,7 @@ fn main() {
     let result = future.await;
     println!("Future 的结果是：{}", result);
 }
+
 ```
 
 在这个示例中：

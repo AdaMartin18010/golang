@@ -27,19 +27,6 @@
   - [8.2.4 6. 交叉引用与目录导航](#6-交叉引用与目录导航)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ---
 
 ## 8.1.1 目录
@@ -89,12 +76,15 @@
   \item 轻量级: 共享主机内核
   \item 快速启动: 秒级启动时间
 \end{itemize}
+
 ```
 
 ### 8.1.3.2 Kubernetes编排
 
 ```yaml
+
 # 8.2 典型的Kubernetes部署配置
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -114,6 +104,7 @@ spec:
         image: golang-app:latest
         ports:
         - containerPort: 8080
+
 ```
 
 ### 8.2 Golang容器化实践
@@ -132,6 +123,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/main .
 CMD ["./main"]
+
 ```
 
 ---
@@ -150,6 +142,7 @@ CMD ["./main"]
   \item 技术多样性: 不同服务可以使用不同技术栈
   \item 数据自治: 每个服务管理自己的数据
 \end{itemize}
+
 ```
 
 ### 8.2.1.2 服务网格
@@ -161,6 +154,7 @@ graph TD;
     B --> D;
     B --> E[控制平面];
     D --> E;
+
 ```
 
 ### 8.2.1.3 Golang微服务实现
@@ -195,6 +189,7 @@ func main() {
     // 运行服务
     service.Run()
 }
+
 ```
 
 ---
@@ -223,6 +218,7 @@ func readinessCheck(c *gin.Context) {
     
     c.JSON(200, gin.H{"status": "ready"})
 }
+
 ```
 
 ### 8.2.2.2 配置管理
@@ -242,6 +238,7 @@ func loadConfig() (*Config, error) {
     }
     return &cfg, nil
 }
+
 ```
 
 ### 8.2.2.3 日志和监控
@@ -268,6 +265,7 @@ func setupLogging() *zap.Logger {
     defer logger.Sync()
     return logger
 }
+
 ```
 
 ---
@@ -290,6 +288,7 @@ graph TB;
     E[控制平面] --> B
     E --> D
     F[监控系统] --> E
+
 ```
 
 ### 8.2.3.2 性能模型
@@ -305,6 +304,7 @@ P(container) = P(app) + P(container_runtime) + P(overhead)
   \item P(container_runtime): 容器运行时开销
   \item P(overhead): 容器化额外开销
 \end{itemize}
+
 ```
 
 ### 8.2.3.3 扩展性分析
@@ -315,6 +315,7 @@ P(container) = P(app) + P(container_runtime) + P(overhead)
 Scalability(S) = \frac{Throughput(S_n)}{Throughput(S_1)} \times \frac{1}{n}
 
 其中n是实例数量，S_n是n个实例的系统。
+
 ```
 
 ---

@@ -129,6 +129,7 @@ fn main() {
     let circle = Circle { radius: 5.0 };
     print_area(circle); // 这里的函数调用链是 main -> print_area -> Circle::area
 }
+
 ```
 
 ### 1.3.2 推理执行流的可能性
@@ -222,6 +223,7 @@ fn double(x: i32) -> i32 {
 
 // 霍尔逻辑可以描述如下：
 // { x >= 0 } double(x) { result == x * 2 }
+
 ```
 
 ### 1.11.3 依赖类型
@@ -248,6 +250,7 @@ impl Shape for Circle {
         std::f64::consts::PI * self.radius * self.radius
     }
 }
+
 ```
 
 ### 1.11.4 形式化验证工具
@@ -321,7 +324,7 @@ Rust 生态系统中有一些工具和库可以帮助实现形式化验证和提
 
   ```rust
   /// 计算圆的面积
-  /// 
+  ///
   /// # Arguments
   ///
   /// * `radius` - 圆的半径

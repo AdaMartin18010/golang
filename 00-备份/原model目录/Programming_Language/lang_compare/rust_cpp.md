@@ -223,6 +223,7 @@ public:
         counter++; // 即使在 const 方法中也可以修改 mutable 成员
     }
 };
+
 ```
 
 ### 2. 协变
@@ -259,6 +260,7 @@ public:
     // 返回类型从 Animal* 协变为 Dog*
     Dog* clone() override { return new Dog(); }
 };
+
 ```
 
 ### 3. 逆变
@@ -293,6 +295,7 @@ void example() {
             takeDerived(d);
     };
 }
+
 ```
 
 ### 4. 不变性
@@ -320,6 +323,7 @@ void example() {
     int* pi = new int(5);
     // double* pd = pi; // 错误：不同类型的指针之间不能转换
 }
+
 ```
 
 ## 三、Rust 中的变体性
@@ -349,7 +353,9 @@ let r = &x;
 
 // 可变引用
 let mr = &mut y;
+
 *mr = 10; // 正确：可以通过可变引用修改值
+
 ```
 
 ### 2. rust协变
@@ -388,6 +394,7 @@ fn main() {
 fn process_str<'a>(s: &'a str) {
     println!("{}", s);
 }
+
 ```
 
 ### 3. rust逆变
@@ -414,6 +421,7 @@ fn main() {
     // 调用函数
     func_for_static("静态字符串");
 }
+
 ```
 
 ### 4. rust不变性
@@ -444,6 +452,7 @@ fn main() {
     // 下面的代码会编译错误，因为 Cell<T> 是不变的
     // let _: Cell<i64> = cell_i32;
 }
+
 ```
 
 ## 四、C++ 与 Rust 对比
@@ -552,10 +561,10 @@ fn main() {
        std::vector<Derived*> derivedPtrs;
        // 不能直接将 vector<Derived*> 赋值给 vector<Base*>
        // std::vector<Base*> basePtrs = derivedPtrs; // 错误
-       
+  
        // 但可以通过算法转换
        std::vector<Base*> basePtrs;
-       std::transform(derivedPtrs.begin(), derivedPtrs.end(), 
+       std::transform(derivedPtrs.begin(), derivedPtrs.end(),
                      std::back_inserter(basePtrs),
                      [](Derived* d) { return static_cast<Base*>(d); });
    }
@@ -572,7 +581,7 @@ fn main() {
    int main() {
        std::shared_ptr<Derived> derivedPtr = std::make_shared<Derived>();
        std::shared_ptr<Base> basePtr = derivedPtr; // 协变：shared_ptr<Derived> -> shared_ptr<Base>
-       
+  
        // 但 unique_ptr 需要显式转换
        std::unique_ptr<Derived> uniqueDerived = std::make_unique<Derived>();
        std::unique_ptr<Base> uniqueBase = std::move(uniqueDerived); // 需要移动语义
@@ -617,7 +626,7 @@ fn main() {
    fn main() {
        let static_str: &'static str = "静态字符串";
        let container = Container { data: static_str };
-       
+  
        // 协变：Container<'static> 可以在需要 Container<'a> 的地方使用
        process(container);
    }
@@ -633,13 +642,13 @@ fn main() {
    fn main() {
        // 函数参数的逆变
        let func: fn(&'static str) = process_any_str;
-       
+  
        // 闭包捕获和生命周期
        let owned_string = String::from("Hello");
        let closure = |s: &str| {
            println!("{} {}", owned_string, s);
        };
-       
+  
        // 可以将接受任何生命周期的闭包用在需要接受静态生命周期的地方
        takes_fn_for_static(closure);
    }
@@ -654,21 +663,21 @@ fn main() {
    ```rust
    fn main() {
        let mut data = vec![1, 2, 3];
-       
+  
        // 可变引用的不变性防止数据竞争
        let ref1 = &mut data;
        // let ref2 = &mut data; // 错误：不能同时有两个可变引用
-       
+  
        ref1.push(4);
-       
+  
        // 内部可变性
        use std::cell::RefCell;
        let cell = RefCell::new(5);
-       
+  
        // RefCell 允许在运行时检查借用规则
        let borrow1 = cell.borrow();
        // let borrow_mut = cell.borrow_mut(); // 运行时会 panic
-       
+  
        println!("值: {}", *borrow1);
    }
    ```
@@ -809,6 +818,7 @@ flowchart TD
     E --- H
     F --- K
     B --- G
+
 ```
 
 ---

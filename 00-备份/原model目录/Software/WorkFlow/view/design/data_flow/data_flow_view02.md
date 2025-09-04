@@ -137,6 +137,7 @@
 
 ```math
 EF = Φ(CF, DF)
+
 ```
 
 其中Φ是一个映射函数，表示控制流和数据流如何共同决定执行流。
@@ -286,6 +287,7 @@ EF = Φ(CF, DF)
 
 ```math
 P, Q ::= 0 | x<y>.P | x(z).P | P|Q | !P | (νx)P | P+Q
+
 ```
 
 其中：
@@ -537,6 +539,7 @@ fn main() {
     
     block_on(handle_signals);
 }
+
 ```
 
 ### 5.2 基于反应器的并发模型
@@ -595,6 +598,7 @@ async fn process_socket(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
         socket.write_all(&buffer[0..n]).await?;
     }
 }
+
 ```
 
 **形式化特性**：
@@ -672,14 +676,15 @@ async fn main() {
     // 创建多个并行流并合并
     let stream1 = stream::iter(vec![1, 2, 3]);
     let stream2 = stream::iter(vec![4, 5, 6]);
-    
+  
     // 合并流
     let merged = stream::select(stream1, stream2);
-    
+  
     // 收集并打印结果
     let merged_results: Vec<_> = merged.collect().await;
     println!("Merged results: {:?}", merged_results);
 }
+
 ```
 
 **数据流DSL的形式化基础**：
@@ -707,6 +712,7 @@ pub trait Iterator {
     fn next(&mut self) -> Option<Self::Item>;
     // 默认方法：map, filter, fold 等
 }
+
 ```
 
 **Stream Trait**：
@@ -717,6 +723,7 @@ pub trait Stream {
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>>;
     // 默认方法：map, filter, fold 等（异步版本）
 }
+
 ```
 
 **通道（Channel）示例**：
@@ -725,11 +732,12 @@ pub trait Stream {
 use tokio::sync::mpsc;
 use futures::stream::StreamExt;
 
-#[tokio::main]
+# [tokio::main]
+
 async fn main() {
     // 创建有界通道，缓冲区大小为5
     let (tx, mut rx) = mpsc::channel(5);
-    
+  
     // 生产者任务
     let producer = tokio::spawn(async move {
         for i in 1..=10 {
@@ -741,7 +749,7 @@ async fn main() {
             println!("Sent: {}", i);
         }
     });
-    
+  
     // 消费者任务
     let consumer = tokio::spawn(async move {
         // 将接收端转换为流
@@ -751,10 +759,11 @@ async fn main() {
             tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
         }
     });
-    
+  
     // 等待任务完成
     tokio::try_join!(producer, consumer).unwrap();
 }
+
 ```
 
 **数据流组合子**：通过组合子模式构建复杂数据流处理管道。
@@ -764,29 +773,31 @@ use futures::stream::{self, StreamExt};
 use futures::channel::mpsc;
 use futures::SinkExt;
 
-#[tokio::main]
+# [tokio::main]
+
 async fn main() {
     // 创建流和接收器
     let (mut tx, rx) = mpsc::channel(10);
-    
+  
     // 发送数据
     tokio::spawn(async move {
         for i in 1..=5 {
             tx.send(i).await.unwrap();
         }
     });
-    
+  
     // 构建处理管道
     let processed = rx
         .map(|x| x * 2)                      // 2, 4, 6, 8, 10
         .filter(|x| futures::future::ready(*x > 5))  // 6, 8, 10
         .map(|x| format!("Item: {}", x));    // "Item: 6", "Item: 8", "Item: 10"
-    
+  
     // 消费流
     processed.for_each(|item| async move {
         println!("{}", item);
     }).await;
 }
+
 ```
 
 **形式化特性**：
@@ -876,8 +887,11 @@ use actix::{Actor, Context, Handler, Message, System};
 use serde::{Deserialize, Serialize};
 
 // 定义事件消息
-#[derive(Message, Serialize, Deserialize)]
-#[rtype(result = "()")]
+
+# [derive(Message, Serialize, Deserialize)]
+
+# [rtype(result = "()")]
+
 struct OrderCreated {
     order_id: String,
     customer_id: String,
@@ -939,6 +953,7 @@ fn main() {
         billing.do_send(order_event);
     });
 }
+
 ```
 
 ### 6.3 数据密集型应用设计
@@ -1031,17 +1046,17 @@ impl EdgeProcessor {
             window_size,
         }
     }
-    
+  
     // 处理新的传感器数据
     fn process(&mut self, data: SensorData) -> Option<SensorData> {
         // 策略1: 阈值过滤 - 只关注高于阈值的温度
         if data.temperature <= self.temperature_threshold {
             return None; // 过滤掉低于阈值的数据
         }
-        
+  
         // 将新数据添加到缓冲区
         self.buffer.push_back(data);
-        
+  
         // 策略2: 清理过期数据
         let now = Instant::now();
         while let Some(front) = self.buffer.front() {
@@ -1051,29 +1066,29 @@ impl EdgeProcessor {
                 break;
             }
         }
-        
+  
         // 策略3: 如果缓冲区已满，执行聚合和上传
         if self.buffer.len() >= self.max_buffer_size {
             return self.aggregate_and_send();
         }
-        
+  
         None
     }
-    
+  
     // 聚合数据并准备发送到云端
     fn aggregate_and_send(&mut self) -> Option<SensorData> {
         if self.buffer.is_empty() {
             return None;
         }
-        
+  
         // 简单聚合：计算平均值
         let count = self.buffer.len() as f32;
         let sum_temp: f32 = self.buffer.iter().map(|d| d.temperature).sum();
         let sum_humidity: f32 = self.buffer.iter().map(|d| d.humidity).sum();
-        
+  
         // 使用第一个元素的ID和时间戳
         let first = self.buffer.front().unwrap();
-        
+  
         // 创建聚合数据
         let aggregated = SensorData {
             sensor_id: first.sensor_id.clone(),
@@ -1081,10 +1096,10 @@ impl EdgeProcessor {
             temperature: sum_temp / count,
             humidity: sum_humidity / count,
         };
-        
+  
         // 清空缓冲区
         self.buffer.clear();
-        
+  
         Some(aggregated)
     }
 }
@@ -1096,7 +1111,7 @@ fn main() {
         30.0,                         // 温度阈值(°C)
         Duration::from_secs(60),      // 1分钟滑动窗口
     );
-    
+  
     // 模拟传感器数据
     let data = SensorData {
         sensor_id: "temp-sensor-01".to_string(),
@@ -1104,7 +1119,7 @@ fn main() {
         temperature: 32.5,
         humidity: 45.0,
     };
-    
+  
     // 处理数据
     if let Some(aggregated) = processor.process(data) {
         println!("发送聚合数据到云端: 传感器 {}, 平均温度 {:.1}°C, 平均湿度 {:.1}%",
@@ -1113,6 +1128,7 @@ fn main() {
         println!("数据已缓存或已过滤");
     }
 }
+
 ```
 
 **形式化关注点**：
@@ -1187,16 +1203,17 @@ use tokio::sync::mpsc;
 use std::time::Duration;
 use tokio::time::sleep;
 
-#[tokio::main]
+# [tokio::main]
+
 async fn main() {
     // 创建一个容量为5的通道（有界缓冲区）
     let (mut tx, mut rx) = mpsc::channel::<i32>(5);
-    
+  
     // 快速生产者
     let producer = tokio::spawn(async move {
         for i in 1..=20 {
             println!("尝试发送: {}", i);
-            
+  
             // send()会等待接收方处理，实现背压
             match tx.send(i).await {
                 Ok(_) => println!("成功发送: {}", i),
@@ -1205,25 +1222,26 @@ async fn main() {
                     break;
                 }
             }
-            
+  
             // 快速生产数据
             sleep(Duration::from_millis(10)).await;
         }
     });
-    
+  
     // 慢速消费者
     let consumer = tokio::spawn(async move {
         while let Some(item) = rx.recv().await {
             println!("接收到: {}", item);
-            
+  
             // 模拟慢速处理
             sleep(Duration::from_millis(100)).await;
         }
     });
-    
+  
     // 等待任务完成
     tokio::try_join!(producer, consumer).unwrap();
 }
+
 ```
 
 **背压的形式化模型**：
@@ -1277,7 +1295,9 @@ use tokio::time;
 use tracing::{info, error, instrument};
 
 // 数据结构
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 struct SensorReading {
     id: String,
     timestamp: Instant,
@@ -1285,7 +1305,9 @@ struct SensorReading {
 }
 
 // 错误类型
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 enum ProcessingError {
     InvalidReading,
     ProcessingFailed(String),
@@ -1293,7 +1315,9 @@ enum ProcessingError {
 }
 
 // 生成模拟数据
-#[instrument(skip(interval))]
+
+# [instrument(skip(interval))]
+
 async fn generate_data(interval: Duration) -> impl stream::Stream<Item = SensorReading> {
     stream::unfold(0, move |state| async move {
         let id = format!("sensor-{}", state % 3 + 1);
@@ -1302,39 +1326,43 @@ async fn generate_data(interval: Duration) -> impl stream::Stream<Item = SensorR
             timestamp: Instant::now(),
             value: (state as f64).sin() * 10.0 + 20.0, // 模拟温度值
         };
-        
+  
         time::sleep(interval).await;
         info!(sensor_id = %reading.id, value = %reading.value, "生成数据");
-        
+  
         Some((reading, state + 1))
     })
 }
 
 // 验证数据
-#[instrument(skip(reading))]
+
+# [instrument(skip(reading))]
+
 async fn validate_reading(reading: SensorReading) -> Result<SensorReading, ProcessingError> {
     // 简单验证：值在合理范围内
     if reading.value < -30.0 || reading.value > 80.0 {
         error!(sensor_id = %reading.id, value = %reading.value, "无效读数");
         return Err(ProcessingError::InvalidReading);
     }
-    
+  
     Ok(reading)
 }
 
 // 处理数据
-#[instrument(skip(reading))]
+
+# [instrument(skip(reading))]
+
 async fn process_reading(reading: SensorReading) -> Result<SensorReading, ProcessingError> {
     // 模拟处理：添加一些噪声过滤
     let processed_value = reading.value; // 简化示例，实际应用中会有更复杂的处理
-    
+  
     info!(sensor_id = %reading.id, original = %reading.value, processed = %processed_value, "处理数据");
-    
+  
     // 模拟随机处理错误
     if rand::random::<f64>() < 0.05 {
         return Err(ProcessingError::ProcessingFailed("随机处理错误".into()));
     }
-    
+  
     Ok(SensorReading {
         id: reading.id,
         timestamp: reading.timestamp,
@@ -1343,29 +1371,32 @@ async fn process_reading(reading: SensorReading) -> Result<SensorReading, Proces
 }
 
 // 保存到数据库
-#[instrument(skip(reading))]
+
+# [instrument(skip(reading))]
+
 async fn save_to_database(reading: SensorReading) -> Result<(), ProcessingError> {
     // 模拟数据库操作
     time::sleep(Duration::from_millis(50)).await;
-    
+  
     info!(sensor_id = %reading.id, value = %reading.value, "保存到数据库");
-    
+  
     // 模拟随机数据库错误
     if rand::random::<f64>() < 0.01 {
         return Err(ProcessingError::DatabaseError("数据库连接错误".into()));
     }
-    
+  
     Ok(())
 }
 
-#[tokio::main]
+# [tokio::main]
+
 async fn main() {
     // 初始化跟踪订阅者
     tracing_subscriber::fmt::init();
-    
+  
     // 生成数据流，每100毫秒一个读数
     let readings = generate_data(Duration::from_millis(100));
-    
+  
     // 构建处理管道
     let processed = readings
         // 并发处理最多10个项目
@@ -1382,25 +1413,26 @@ async fn main() {
                             Ok(r2)
                         }
                     });
-                
+  
                 // 计算处理时间
                 let elapsed = start.elapsed();
                 info!(duration_ms = %elapsed.as_millis(), "处理完成");
-                
+  
                 result
             }
         })
         .buffer_unordered(10) // 限制并发度，提供背压
         .inspect_err(|e| error!(?e, "处理错误"));
-    
+  
     // 收集成功处理的结果
     let results: Vec<_> = processed
         .try_collect()
         .await
         .unwrap_or_else(|_| vec![]);
-    
+  
     info!(count = results.len(), "总处理成功数");
 }
+
 ```
 
 **关键工程实践**：
@@ -1614,7 +1646,7 @@ async fn main() {
 ```text
 数据流视角下的软件与系统形式化建模
 │
-├── 基本概念与分类 
+├── 基本概念与分类
 │   ├── 定义：系统中数据的移动、转换和处理路径
 │   ├── 时间特性分类: 同步/异步/周期性/突发性
 │   ├── 数据量特性: 恒定/变速率/有界/无界
@@ -1787,6 +1819,7 @@ async fn main() {
         ├── 跨边界数据流: 设备-边缘-云
         ├── 自适应形式化: 动态调整
         └── 可解释数据流: 不仅验证还解释
+
 ```
 
 ## 11. 参考文献

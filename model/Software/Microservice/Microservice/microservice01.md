@@ -71,6 +71,7 @@
 不包含外部链接，使用文本思维导图表示微服务架构的关系。
 如果需要代码示例，我将使用Rust。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -147,6 +148,7 @@
 
 ```text
 单体架构 → 模块化单体 → 分布式单体 → 面向服务架构(SOA) → 微服务架构 → 云原生微服务
+
 ```
 
 这种演化体现了系统复杂性增长与架构解耦需求的递进关系。
@@ -197,6 +199,7 @@ trait ServiceRegistry {
     fn get_instances(&self, service_name: &str) -> Result<Vec<ServiceInstance>, Error>;
     fn get_services(&self) -> Result<Vec<String>, Error>;
 }
+
 ```
 
 ### 1.3.2 负载均衡与服务路由
@@ -233,6 +236,7 @@ impl LoadBalancingAlgorithm for RoundRobinAlgorithm {
         Some(&instances[current % instances.len()])
     }
 }
+
 ```
 
 ### 1.3.3 容错与弹性设计
@@ -318,6 +322,7 @@ impl CircuitBreaker {
         self.failure_count.store(0, Ordering::SeqCst);
     }
 }
+
 ```
 
 ### 1.3.4 分布式事务处理
@@ -360,6 +365,7 @@ impl<T, E> Saga<T, E> {
         Ok(())
     }
 }
+
 ```
 
 ## 1.4 3. 微服务架构模式与关系
@@ -380,6 +386,7 @@ impl<T, E> Saga<T, E> {
 其中：
 - S₁到Sₙ是参与组合的服务
 - R表示服务间关系（可以是调用关系、数据流关系等）
+
 ```
 
 ### 1.4.2 服务聚合模式
@@ -414,6 +421,7 @@ impl MobileAppBFF {
         })
     }
 }
+
 ```
 
 ### 1.4.3 领域驱动设计与上下文界定
@@ -436,6 +444,7 @@ impl MobileAppBFF {
   "大泥球", // 边界不清晰的遗留系统
   "分离方式" // 完全独立的两个上下文
 }
+
 ```
 
 ### 1.4.4 微服务粒度与边界决策
@@ -454,6 +463,7 @@ impl MobileAppBFF {
 服务耦合度 = (跨服务调用次数) / (服务总调用次数)
 
 理想状态：高内聚（接近1），低耦合（接近0）
+
 ```
 
 ## 1.5 4. 微服务通信模式
@@ -491,6 +501,7 @@ pub trait UserService {
         request: tonic::Request<UserRequest>,
     ) -> Result<tonic::Response<UserResponse>, tonic::Status>;
 }
+
 ```
 
 ### 1.5.2 异步通信模式
@@ -544,6 +555,7 @@ impl OrderProcessingService {
         }).await;
     }
 }
+
 ```
 
 ### 1.5.3 反应式模式
@@ -586,6 +598,7 @@ async fn reactive_order_processing() {
     // 等待任务完成
     let _ = tokio::join!(producer, consumer);
 }
+
 ```
 
 ## 1.6 5. 现代微服务架构演进
@@ -618,6 +631,7 @@ async fn reactive_order_processing() {
   "服务发现聚合",
   "策略控制"
 }
+
 ```
 
 ### 1.6.2 无服务器架构(Serverless)与微服务融合
@@ -644,6 +658,7 @@ async fn main(event: LambdaEvent<OrderEvent>) -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 ### 1.6.3 云原生微服务架构
@@ -659,6 +674,7 @@ async fn main(event: LambdaEvent<OrderEvent>) -> Result<(), Error> {
 
 ```text
 云原生 = 容器化 + 动态编排 + 微服务 + DevOps + 持续交付 + 声明式API
+
 ```
 
 ### 1.6.4 微服务的形式验证与保障
@@ -677,6 +693,7 @@ async fn main(event: LambdaEvent<OrderEvent>) -> Result<(), Error> {
   "无死锁",    // 系统不会进入无法继续执行的状态
   "一致性模型" // 系统保证数据一致性的方式
 }
+
 ```
 
 ## 1.7 6. 微服务架构形式逻辑建模
@@ -693,6 +710,7 @@ async fn main(event: LambdaEvent<OrderEvent>) -> Result<(), Error> {
 - O = {o₁, o₂, ..., oₖ} 是系统可能的输出集合
 - C ⊆ S × S 表示服务间的通信关系
 - TS: S × I → S × O 表示系统的转移函数
+
 ```
 
 此模型可用于验证系统行为，如检查不同输入序列下系统是否输出预期结果。
@@ -711,6 +729,7 @@ Order(orderId) = νreq.(inventory⟨req, orderId⟩.req(result).
 Inventory(items) = inventory(req, orderId).
                   if checkStock(orderId, items) then req⟨true⟩.Inventory(updateItems(items, orderId))
                   else req⟨false⟩.Inventory(items)
+
 ```
 
 这种形式化描述有助于进行死锁检测、活锁分析和并发行为验证。
@@ -777,6 +796,7 @@ impl Microservice {
         Ok(())
     }
 }
+
 ```
 
 ### 1.8.2 服务注册与发现实现
@@ -872,6 +892,7 @@ impl RegistryClient for ConsulRegistry {
         Ok(instances)
     }
 }
+
 ```
 
 ### 1.8.3 微服务间通信实现
@@ -989,6 +1010,7 @@ impl EventBus {
         })).await
     }
 }
+
 ```
 
 ### 1.8.4 分布式追踪与监控实现
@@ -1064,6 +1086,7 @@ impl Middleware for MetricsMiddleware {
         response
     }
 }
+
 ```
 
 ### 1.8.5 配置管理与特性开关
@@ -1162,6 +1185,7 @@ impl FeatureFlag {
         self.enabled.load(Ordering::SeqCst)
     }
 }
+
 ```
 
 ## 1.9 8. 微服务架构验证与测试策略
@@ -1180,6 +1204,7 @@ impl FeatureFlag {
     "性能测试",       // 测试系统在负载下的表现
     "混沌测试"        // 通过故障注入测试系统弹性
 }
+
 ```
 
 ### 1.9.2 契约测试实现
@@ -1230,6 +1255,7 @@ mod contract_tests {
         mock_server.verify().await;
     }
 }
+
 ```
 
 ### 1.9.3 混沌工程实践
@@ -1270,6 +1296,7 @@ impl Middleware for ChaosMidleware {
         next.run(request).await
     }
 }
+
 ```
 
 ## 1.10 9. 微服务架构模式总结与最佳实践
@@ -1295,6 +1322,7 @@ impl Middleware for ChaosMidleware {
 - D ⊆ S × S 表示服务间的数据依赖关系
 - C ⊆ S × S 表示服务间的通信关系
 - O ⊆ S × S 表示服务间的组织关系
+
 ```
 
 通过这种形式化表示，可以分析系统中的依赖结构、通信模式和组织边界。
@@ -1345,6 +1373,7 @@ impl Middleware for ChaosMidleware {
     "更细粒度的安全控制",
     "资源占用更少"
 }
+
 ```
 
 ### 1.11.3 人工智能辅助的微服务设计

@@ -89,6 +89,7 @@
 定义1：系统边界 B 是一个三元组 B = (S₁, S₂, R)，其中：
 - S₁ 和 S₂ 是两个不同的系统或子系统
 - R 是从 S₁ 到 S₂ 的关系集合，描述数据和控制如何在系统间传递
+
 ```
 
 边界的形式化描述有助于我们精确理解系统的分割与交互模式。
@@ -108,6 +109,7 @@ class SystemBoundary b where
   -- 边界特性
   encapsulation :: Component → EncapsulationDegree
   information_hiding :: Component → InformationHidingLevel
+
 ```
 
 ### 1.3.2 形式化证明方法
@@ -131,6 +133,7 @@ class SystemBoundary b where
 3. 由边界 Bᵢ 的完整性条件 C 可知，任何通过 Bᵢ 的转换都保持 I
 4. 这与假设矛盾
 5. 因此，不存在违反系统不变量的状态转换
+
 ```
 
 ### 1.3.3 代数数据类型与边界表示
@@ -169,6 +172,7 @@ enum Protocol {
     MessageBased(MessageProtocol),
     StreamBased(StreamProtocol),
 }
+
 ```
 
 这种形式化表示有助于在设计阶段发现边界设计中的潜在问题，并提供严格的理论基础。
@@ -199,6 +203,7 @@ struct ConcreteModel {
     boundary_instances: Vec<BoundaryInstance>,
     interaction_instances: Vec<InteractionInstance>,
 }
+
 ```
 
 ### 1.4.2 模型转换与边界穿越
@@ -233,6 +238,7 @@ impl<S, T> ModelTransformer<S, T> for BoundaryTransformer<S, T> {
     
     // ...其他方法实现
 }
+
 ```
 
 ### 1.4.3 多级模型架构
@@ -245,6 +251,7 @@ impl<S, T> ModelTransformer<S, T> for BoundaryTransformer<S, T> {
 3. 逻辑模型层：设计系统的模块结构和交互方式
 4. 物理模型层：规划系统的部署架构和资源分配
 5. 实现模型层：编码和配置的具体实现细节
+
 ```
 
 每一层之间存在着映射关系，上层模型为下层模型提供指导，下层模型则是上层模型的具体化。
@@ -278,6 +285,7 @@ enum DependencyRule {
     DependencyInversion, // 依赖倒置原则
     Arbitrary,           // 任意依赖（不推荐）
 }
+
 ```
 
 分层架构中的边界关注点主要包括：
@@ -314,6 +322,7 @@ struct CrossingConcern {
     affected_dimensions: Vec<DimensionType>,
     tradeoffs: Vec<Tradeoff>,
 }
+
 ```
 
 维度交叉区域的关键特性：
@@ -353,6 +362,7 @@ struct ContextMapping {
     relationship: ContextRelationship,
     integration_strategy: IntegrationStrategy,
 }
+
 ```
 
 领域边界的特点：
@@ -394,6 +404,7 @@ impl<S, T> DataTransformer<S, T> {
         // ...
     }
 }
+
 ```
 
 ### 1.6.2 边界通信协议
@@ -426,6 +437,7 @@ impl<S, T> ProtocolAdapter<S, T> {
         // ...
     }
 }
+
 ```
 
 ### 1.6.3 边界一致性保障
@@ -461,6 +473,7 @@ impl ConsistencyManager {
         // ...
     }
 }
+
 ```
 
 ## 1.7 静态分析与动态分析
@@ -505,6 +518,7 @@ impl StaticBoundaryAnalyzer {
         // ...
     }
 }
+
 ```
 
 静态分析工具可以检测：
@@ -568,6 +582,7 @@ impl DynamicBoundaryMonitor {
         // ...
     }
 }
+
 ```
 
 动态监控能够捕获：
@@ -618,6 +633,7 @@ impl FormalVerifier {
         // ...
     }
 }
+
 ```
 
 形式化验证能够证明：
@@ -669,6 +685,7 @@ fn usage_example() {
     // 所有权转移（完全控制权）
     let resource = owner_mut.transfer_ownership();
 }
+
 ```
 
 所有权系统建立的边界特点：
@@ -711,6 +728,7 @@ fn cross_boundary<B: BoundaryProtocol>(
 ) -> B::OutputData {
     boundary.process(data)
 }
+
 ```
 
 类型系统保障的边界特性：
@@ -920,6 +938,7 @@ struct PaymentRequest {
     user_id: String,
     amount: f64,
 }
+
 ```
 
 这个示例展示了如何使用Rust实现一个灵活的边界管理系统，支持不同类型的边界定义和安全的边界穿越。
@@ -1079,6 +1098,7 @@ graph TD
     
     H2 --> H21[形式化价值]
     H2 --> H22[实用需求]
+
 ```
 
 通过这个思维导图，我们可以清晰地看到系统边界在不同维度和层次的结构与关联。

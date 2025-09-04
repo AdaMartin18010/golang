@@ -44,19 +44,6 @@
   - [1.22 *4. 总结*](#*4-总结*)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 Embedded-HAL 当前生态支持情况
 
 `embedded-hal` 是 Rust 嵌入式开发中最为关键的硬件抽象标准之一。该库定义了一系列硬件接口（如 GPIO、I2C、SPI、UART、PWM、ADC 等），使得驱动代码能够跨平台重用。目前，`embedded-hal` 的生态支持情况总体上是积极的，但也面临着一些版本演进和兼容性上的挑战。
@@ -146,6 +133,7 @@ cortex-m-rt = "0.7"
 embedded-hal = "0.2"
 rp2040-hal = "0.5"    # 请根据最新版本调整
 panic-halt = "0.2"
+
 ```
 
 ---
@@ -208,6 +196,7 @@ fn main() -> ! {
         cortex_m::asm::delay(5_000_000);
     }
 }
+
 ```
 
 在这个例子中，`into_push_pull_output()` 的返回类型实现了 embedded-hal 的 `OutputPin` trait，使得我们可以直接调用 `set_high()` 和 `set_low()` 来控制 LED 状态。
@@ -240,6 +229,7 @@ let i2c = I2C::i2c0(
     &mut peripherals.RESETS,
     clocks.system_clock.freq(),
 );
+
 ```
 
 通过 `i2c` 对象，你可以调用基于 embedded-hal 定义的 `Read`、`Write` 和 `WriteRead` trait 方法，实现与外设的数据交互。

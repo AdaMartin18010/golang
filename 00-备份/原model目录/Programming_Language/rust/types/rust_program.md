@@ -41,6 +41,7 @@ fn largest<T: PartialOrd>(list: &[T]) -> &T {
     }
     largest
 }
+
 ```
 
 在这个示例中，函数 `largest` 使用了泛型参数 `T`，并且要求 `T` 实现了 `PartialOrd` Trait。
@@ -63,6 +64,7 @@ fn main() {
     println!("integer_point: ({}, {})", integer_point.x, integer_point.y);
     println!("float_point: ({}, {})", float_point.x, float_point.y);
 }
+
 ```
 
 在这个例子中，`Point` 结构体使用泛型参数 `T`，
@@ -112,6 +114,7 @@ fn main() {
     print_item(book);
     print_item(person);
 }
+
 ```
 
 在这个例子中，`Printable` Trait 定义了一个 `print` 方法，可以对不同类型进行打印操作。
@@ -160,6 +163,7 @@ fn main() {
     display_item(person);
     display_item(book);
 }
+
 ```
 
 在这个例子中，`Display` Trait 定义了一个 `display` 方法，
@@ -186,6 +190,7 @@ Rust 的 Trait 机制能够与其他语言特性（如泛型和关联类型）�
 fn compare<T: Comparable<MyType>>(a: &MyType, b: &T) {
     // 使用 is_equal 和 is_not_equal 方法
 }
+
 ```
 
 在这个例子中，我们指定了泛型参数 `T` 必须实现 `Comparable<MyType>` Trait。
@@ -212,6 +217,7 @@ impl<T: Display> Display for Box<T> {
         self.content.display();
     }
 }
+
 ```
 
 在这个例子中，`Box` 结构体是一个泛型结构体，它接受一个类型参数 `T`。

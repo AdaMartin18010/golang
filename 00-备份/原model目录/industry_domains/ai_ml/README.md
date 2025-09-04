@@ -19,65 +19,82 @@
 
 ```toml
 [dependencies]
+
 # 异步运行时
+
 tokio = { version = "1.35", features = ["full"] }
 
 # 机器学习框架
+
 tch = "0.13"  # PyTorch绑定
 burn = "0.12" # 纯Rust ML框架
 candle = "0.3" # Hugging Face Rust实现
 
 # 数据处理
+
 polars = "0.35"
 arrow = "50.0"
 datafusion = "35.0"
 
 # 数值计算
+
 ndarray = "0.15"
 nalgebra = "0.32"
 rust-bert = "0.21"
 
 # 序列化
+
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 bincode = "1.3"
 
 # 数据库
+
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-rustls"] }
 redis = { version = "0.24", features = ["tokio-comp"] }
 
 # 消息队列
+
 lapin = "2.3"
 kafka = "0.9"
 
 # 配置管理
+
 config = "0.14"
 toml = "0.8"
 
 # 日志和监控
+
 tracing = "0.1"
 tracing-subscriber = "0.3"
 prometheus = "0.13"
+
 ```
 
 ### 行业特定库
 
 ```toml
 [dependencies]
+
 # 特征工程
+
 feather = "0.1"
 feature-store = "0.1"
 
 # 模型服务
+
 mlflow = "0.1"
 model-registry = "0.1"
 
 # 分布式计算
+
 rayon = "1.8"
 crossbeam = "0.8"
 
 # 可视化
+
 plotters = "0.3"
+
 ```
 
 ## 架构模式
@@ -115,6 +132,7 @@ plotters = "0.3"
 │  │ 性能监控    │ │ 数据漂移    │ │ 异常检测    │           │
 │  └─────────────┘ └─────────────┘ └─────────────┘           │
 └─────────────────────────────────────────────────────────────┘
+
 ```
 
 ### 2. 微服务架构
@@ -214,6 +232,7 @@ impl InferenceService {
         Ok(prediction)
     }
 }
+
 ```
 
 ### 3. 事件驱动架构
@@ -266,6 +285,7 @@ impl EventHandler for ModelPerformanceMonitor {
         Ok(())
     }
 }
+
 ```
 
 ## 业务领域建模
@@ -341,6 +361,7 @@ pub struct Prediction {
     pub timestamp: DateTime<Utc>,
     pub processing_time: Duration,
 }
+
 ```
 
 ### 值对象
@@ -369,6 +390,7 @@ pub struct PredictionValue {
     pub values: Vec<f64>,
     pub feature_names: Vec<String>,
 }
+
 ```
 
 ## 数据建模
@@ -444,6 +466,7 @@ CREATE TABLE predictions (
     FOREIGN KEY (request_id) REFERENCES prediction_requests(id),
     FOREIGN KEY (model_id) REFERENCES models(id)
 );
+
 ```
 
 ### 特征存储
@@ -501,6 +524,7 @@ impl FeatureStore for RedisFeatureStore {
         Ok(feature_vector)
     }
 }
+
 ```
 
 ## 流程建模
@@ -521,6 +545,7 @@ graph TD
     H -->|是| J[模型注册]
     J --> K[模型部署]
     K --> L[性能监控]
+
 ```
 
 ### 推理服务流程
@@ -535,6 +560,7 @@ graph TD
     F --> G[缓存结果]
     G --> H[返回响应]
     H --> I[记录指标]
+
 ```
 
 ## 组件建模
@@ -608,6 +634,7 @@ impl PipelineStage for FeatureEngineeringStage {
         Ok(enriched_data)
     }
 }
+
 ```
 
 ### 模型训练引擎
@@ -732,6 +759,7 @@ impl LinearRegression {
         prediction
     }
 }
+
 ```
 
 ### 推理引擎
@@ -832,6 +860,7 @@ impl ModelLoader {
         }
     }
 }
+
 ```
 
 ## 性能优化
@@ -894,6 +923,7 @@ impl BatchInferenceEngine {
         Ok(predictions)
     }
 }
+
 ```
 
 ### 模型缓存
@@ -925,6 +955,7 @@ impl ModelCache {
         self.cache.invalidate(model_id).await;
     }
 }
+
 ```
 
 ## 监控和可观测性
@@ -990,6 +1021,7 @@ impl DataDriftDetector {
         0.1
     }
 }
+
 ```
 
 ## 测试策略
@@ -1040,6 +1072,7 @@ mod tests {
         assert!(prediction.processing_time.as_millis() < 100);
     }
 }
+
 ```
 
 ### 集成测试
@@ -1081,6 +1114,7 @@ mod integration_tests {
         assert!(prediction.confidence > 0.0);
     }
 }
+
 ```
 
 ## 部署和运维
@@ -1088,7 +1122,9 @@ mod integration_tests {
 ### 容器化部署
 
 ```dockerfile
+
 # Dockerfile for ML Inference Service
+
 FROM rust:1.75 as builder
 WORKDIR /app
 COPY . .
@@ -1107,12 +1143,15 @@ COPY config/ config/
 
 EXPOSE 8080
 CMD ["./ml-inference-service"]
+
 ```
 
 ### Kubernetes部署
 
 ```yaml
+
 # ml-inference-deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1156,6 +1195,7 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
+
 ```
 
 ## 总结

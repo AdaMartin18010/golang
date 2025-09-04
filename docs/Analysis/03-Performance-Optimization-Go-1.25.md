@@ -23,19 +23,6 @@
   - [1.5 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Go 1.25 性能优化与最佳实践](#go-125-性能优化与最佳实践)
@@ -116,6 +103,7 @@ func processData() {
     // 使用 buffer
     buffer.Reset()
 }
+
 ```
 
 #### 1.2.1.2 连接池
@@ -188,6 +176,7 @@ func (cp *ConnectionPool) Put(conn *Connection) {
         // 池已满，丢弃连接
     }
 }
+
 ```
 
 ### 1.2.2 内存对齐优化
@@ -220,6 +209,7 @@ type CompactStruct struct {
     Priority uint8  // 8位优先级
     Reserved uint16 // 16位保留
 }
+
 ```
 
 #### 1.2.2.2 切片优化
@@ -251,6 +241,7 @@ func zeroCopySlice(data []byte) []byte {
     // 使用切片操作，避免复制数据
     return data[1:len(data)-1]
 }
+
 ```
 
 ## 1.3 并发性能优化
@@ -327,6 +318,7 @@ func (q *LockFreeQueue) Dequeue() (interface{}, bool) {
         }
     }
 }
+
 ```
 
 #### 1.3.1.2 原子操作优化
@@ -369,6 +361,7 @@ func (af *AtomicFlag) IsSet() bool {
 func (af *AtomicFlag) TrySet() bool {
     return atomic.CompareAndSwapInt32(&af.flag, 0, 1)
 }
+
 ```
 
 ### 1.3.2 工作池优化
@@ -474,6 +467,7 @@ func (dwp *DynamicWorkerPool) adjustWorkerCount() {
         dwp.workers = max(currentWorkers-1, dwp.minWorkers)
     }
 }
+
 ```
 
 ## 1.4 算法与数据结构优化
@@ -545,6 +539,7 @@ func insertionSort(arr []int) []int {
     }
     return arr
 }
+
 ```
 
 #### 1.4.1.2 缓存友好的数据结构
@@ -631,6 +626,7 @@ func nextPowerOfTwo(n int) int {
     n++
     return n
 }
+
 ```
 
 ## 1.5 总结

@@ -30,6 +30,7 @@ opentelemetry-prometheus = "0.11"
 prometheus = "0.13"
 console = "0.15"
 chrono = "0.4"
+
 ```
 
 ### 2. 度量收集器实现
@@ -90,6 +91,7 @@ impl Metrics {
         })
     }
 }
+
 ```
 
 ### 3. 异步跟踪器实现
@@ -132,6 +134,7 @@ impl Drop for AsyncTracer {
         );
     }
 }
+
 ```
 
 ### 4. 请求上下文实现
@@ -171,6 +174,7 @@ impl RequestContext {
         f().await
     }
 }
+
 ```
 
 ### 5. 业务服务实现
@@ -213,6 +217,7 @@ impl UserService {
         .await
     }
 }
+
 ```
 
 ### 6. HTTP 服务器实现
@@ -262,6 +267,7 @@ async fn metrics_handler(
     let metric_families = state.metrics.registry.gather();
     encoder.encode_to_string(&metric_families).unwrap()
 }
+
 ```
 
 ### 7. 主程序入口
@@ -318,6 +324,7 @@ fn init_tracing() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 ```
 
 ### 8. 使用示例
@@ -345,22 +352,29 @@ async fn example_operation(ctx: &RequestContext) -> Result<(), String> {
     })
     .await
 }
+
 ```
 
 ### 9. Prometheus 查询示例
 
 ```promql
+
 # 请求总数
+
 rate(request_total[5m])
 
 # 请求持续时间
+
 histogram_quantile(0.95, rate(request_duration_seconds_bucket[5m]))
 
 # 活跃请求数
+
 active_requests
 
 # 错误率
+
 rate(errors_total[5m])
+
 ```
 
 ### 10. Grafana 仪表板配置
@@ -412,6 +426,7 @@ rate(errors_total[5m])
     ]
   }
 }
+
 ```
 
 这个完整的示例展示了如何：

@@ -75,6 +75,7 @@ fn divide(a: f64, b: f64) -> Result<f64, String> {
 fn find_element(vec: &Vec<i32>, index: usize) -> Option<&i32> {
     vec.get(index)
 }
+
 ```
 
 通过使用 `Result` 和 `Option`，Rust 鼓励开发者以安全和显式的方式处理潜在的问题，从而减少运行时错误。

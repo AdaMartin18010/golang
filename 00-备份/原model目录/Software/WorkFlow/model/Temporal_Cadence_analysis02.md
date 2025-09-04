@@ -33,7 +33,7 @@
 
 ### 1.1 工作流基础模型对比
 
--**基础概念映射**
+- **基础概念映射**
 
 | 概念 | Temporal | Cadence | 对比分析 |
 |------|----------|---------|---------|
@@ -42,7 +42,7 @@
 | 通信模型 | 异步消息传递 | 异步消息传递 | 基础通信范式相同 |
 | 时间处理 | 确定性时间提供器 | 确定性时间提供器 | 处理时间的方法相似 |
 
--**思维导图：基础概念模型**
+- **思维导图：基础概念模型**
 
 ```text
 工作流基础模型
@@ -80,13 +80,14 @@
     ├── 术语变化 (Task Queue vs Task List)
     ├── Temporal具有更完整的Schedule功能
     └── Temporal父子工作流控制更细粒度
+
 ```
 
 Temporal和Cadence的基础工作流模型高度相似，这不足为奇，因为Temporal是从Cadence分支而来。两者都采用了事件溯源结合确定性重放的状态管理方式，都实现了相似的工作流和活动分离模型。主要不同体现在术语变化（如Task Queue vs Task List）和一些高级功能的实现上。
 
 ### 1.2 工作流组合能力
 
--**子工作流模式**
+- **子工作流模式**
 
 Temporal提供了三种父子工作流管理策略：
 
@@ -99,6 +100,7 @@ childOptions := workflow.ChildWorkflowOptions{
     RetryPolicy:           &temporal.RetryPolicy{...},
 }
 ctx = workflow.WithChildOptions(ctx, childOptions)
+
 ```
 
 Cadence的子工作流控制相对简单：
@@ -111,6 +113,7 @@ childOptions := workflow.ChildWorkflowOptions{
     RetryPolicy:                  &cadence.RetryPolicy{...},
 }
 ctx = workflow.WithChildOptions(ctx, childOptions)
+
 ```
 
 **关键对比**：
@@ -119,7 +122,7 @@ ctx = workflow.WithChildOptions(ctx, childOptions)
 - Temporal支持更完善的子工作流查询和监控机制
 - 两者都支持子工作流的错误传播和处理
 
--**工作流组合模式**
+- **工作流组合模式**
 
 1. **编排 vs 协作模式**
 
@@ -182,13 +185,14 @@ impl OrderWorkflow {
         Ok(())
     }
 }
+
 ```
 
 Cadence和Temporal都支持状态机风格的工作流实现，但Temporal的Rust SDK提供了更好的类型安全保证。
 
 ### 1.3 工作流状态管理
 
--**持久化机制**
+- **持久化机制**
 
 两个系统都使用事件溯源作为持久化机制，但实现细节有差异：
 
@@ -200,7 +204,7 @@ Cadence和Temporal都支持状态机风格的工作流实现，但Temporal的Rus
    - Temporal实现了更高效的部分历史加载机制
    - Cadence需要加载完整历史以恢复状态
 
--**继续执行（Continue-As-New）模式**
+- **继续执行（Continue-As-New）模式**
 
 这是两个系统共有的关键状态管理模式，用于处理长时间运行的工作流：
 
@@ -220,13 +224,14 @@ func MyWorkflow(ctx workflow.Context, param string) error {
     // 达到某个条件后，继续为新的执行
     return workflow.NewContinueAsNewError(ctx, newParam)
 }
+
 ```
 
 继续执行模式允许工作流保持概念上的连续性，同时避免历史记录无限增长。两个系统的实现几乎相同，只有API细节差异。
 
 ### 1.4 工作流管理与编排
 
--**工作流查询与可见性**
+- **工作流查询与可见性**
 
 Temporal的查询能力更强大：
 
@@ -236,6 +241,7 @@ query := `WorkflowType = 'OrderWorkflow' and (Status = 'RUNNING' or Status = 'CO
 response, err := client.ListWorkflow(ctx, &workflowservice.ListWorkflowExecutionsRequest{
     Query: query,
 })
+
 ```
 
 Cadence的查询相对简单：
@@ -248,6 +254,7 @@ workflows, err := client.ListOpenWorkflow(ctx, &shared.ListOpenWorkflowExecution
         WorkflowId: &workflowID,
     },
 })
+
 ```
 
 **关键差异**：
@@ -256,7 +263,7 @@ workflows, err := client.ListOpenWorkflow(ctx, &shared.ListOpenWorkflowExecution
 - Temporal能同时查询运行中和已关闭的工作流
 - Temporal的搜索属性更灵活
 
--**批处理操作**
+- **批处理操作**
 
 Temporal引入了系统级批处理能力：
 
@@ -271,6 +278,7 @@ request := &workflowservice.BatchOperationRequest{
     Query: "WorkflowType = 'OrderWorkflow' and Status = 'RUNNING'",
 }
 response, err := client.BatchOperation(ctx, request)
+
 ```
 
 而Cadence需要客户端逐个操作工作流。
@@ -279,7 +287,7 @@ response, err := client.BatchOperation(ctx, request)
 
 ### 2.1 数据流设计
 
--**工作流输入/输出模型**
+- **工作流输入/输出模型**
 
 Temporal支持更复杂的数据类型：
 
@@ -297,11 +305,12 @@ pub struct OrderDetails {
 pub async fn order_workflow(ctx: workflow::Context, details: OrderDetails) -> Result<OrderResult, Error> {
     // 工作流实现
 }
+
 ```
 
 Cadence同样支持复杂数据类型，但序列化机制可能有限制。
 
--**数据流穿透特性**
+- **数据流穿透特性**
 
 1. **信号机制**
 
@@ -314,6 +323,7 @@ err := client.SignalWorkflow(ctx, workflowID, runID, "payment-received", payment
 var paymentReceived PaymentDetails
 signalChan := workflow.GetSignalChannel(ctx, "payment-received")
 signalChan.Receive(ctx, &paymentReceived)
+
 ```
 
 1. **查询机制**
@@ -327,11 +337,12 @@ workflow.SetQueryHandler(ctx, "get-status", func() (string, error) {
 
 // 客户端发起查询
 response, err := client.QueryWorkflow(ctx, workflowID, runID, "get-status")
+
 ```
 
 两个系统的信号和查询机制在概念上基本一致，但Temporal在信号处理的稳定性和查询超时处理上有改进。
 
--**数据序列化与版本控制**
+- **数据序列化与版本控制**
 
 Temporal支持更灵活的数据编码方式：
 
@@ -340,13 +351,14 @@ Temporal支持更灵活的数据编码方式：
 client, err := client.NewClient(client.Options{
     DataConverter: myCustomDataConverter,
 })
+
 ```
 
 Cadence依赖gogo/protobuf，而Temporal默认使用JSON但支持多种数据转换器。
 
 ### 2.2 执行流控制
 
--**执行控制模型**
+- **执行控制模型**
 
 1. **等待与超时控制**
 
@@ -368,6 +380,7 @@ selector.AddReceive(signalChan, func(ch workflow.ReceiveChannel, more bool) {
 
 // 等待任一事件发生
 selector.Select(ctx)
+
 ```
 
 两个系统都提供类似的执行控制原语，但Temporal的超时控制更细粒度。
@@ -384,6 +397,7 @@ future3 := workflow.ExecuteActivity(ctx, activity3, param3)
 err1 := future1.Get(ctx, &result1)
 err2 := future2.Get(ctx, &result2)
 err3 := future3.Get(ctx, &result3)
+
 ```
 
 1. **动态执行决策**
@@ -408,13 +422,14 @@ schedule := &scheduleproto.Schedule{
 }
 
 _, err := client.CreateSchedule(ctx, scheduleID, schedule)
+
 ```
 
 这是Cadence不具备的原生功能。
 
 ### 2.3 容错机制
 
--**重试策略设计**
+- **重试策略设计**
 
 两个系统都提供类似的重试机制，但Temporal增加了更多控制选项：
 
@@ -432,9 +447,10 @@ activityOptions := workflow.ActivityOptions{
     StartToCloseTimeout: time.Minute,
     RetryPolicy:         retryPolicy,
 }
+
 ```
 
--**错误处理模式**
+- **错误处理模式**
 
 1. **活动失败处理**
 
@@ -468,6 +484,7 @@ async fn order_workflow(ctx: workflow::Context, order: Order) -> Result<(), Erro
     
     Ok(())
 }
+
 ```
 
 1. **补偿事务模式**
@@ -492,13 +509,14 @@ func SagaWorkflow(ctx workflow.Context, input SagaInput) error {
     
     return nil
 }
+
 ```
 
 Temporal和Cadence都支持Saga模式，但Temporal提供了更成熟的辅助库。
 
 ### 2.4 一致性保证
 
--**事件一致性模型**
+- **事件一致性模型**
 
 两个系统都采用了事件溯源设计，但在历史事件处理上有差异：
 
@@ -526,11 +544,12 @@ func WorkflowWithChildAndSignal(ctx workflow.Context) error {
     // 向子工作流发送信号，确保子工作流已启动
     return workflow.SignalExternalWorkflow(ctx, childExecution.ID, childExecution.RunID, "signal-name", signalArg).Get(ctx, nil)
 }
+
 ```
 
 两个系统都保证了工作流执行的因果一致性，但Temporal增强了跨命名空间的一致性保证。
 
--**状态持久性保证**
+- **状态持久性保证**
 
 Temporal增强了存储层的可靠性：
 
@@ -551,11 +570,12 @@ persistenceConfig := &config.Persistence{
         },
     },
 }
+
 ```
 
 ### 2.5 分布式运行时架构
 
--**服务组件架构**
+- **服务组件架构**
 
 Temporal采用了更模块化的服务架构：
 
@@ -575,11 +595,12 @@ Temporal服务架构
 └── Worker Service
     ├── 系统工作流执行
     └── 系统任务处理
+
 ```
 
 Cadence的服务架构相似但合并程度更高。
 
--**扩展性与分区策略**
+- **扩展性与分区策略**
 
 1. **分片与分区策略**
 
@@ -609,6 +630,7 @@ request := &workflowservice.RegisterNamespaceRequest{
     WorkflowExecutionRetentionPeriod: &duration.Duration{Seconds: 7 * 24 * 3600},
     Config:                           namespaceConfig,
 }
+
 ```
 
 Temporal的命名空间提供了更强的资源隔离能力，而Cadence的域(domain)隔离相对较弱。
@@ -617,7 +639,7 @@ Temporal的命名空间提供了更强的资源隔离能力，而Cadence的域(d
 
 ### 3.1 Go与Rust SDK对比
 
--**Go SDK比较**
+- **Go SDK比较**
 
 Temporal的Go SDK提供了更多改进：
 
@@ -640,9 +662,10 @@ func MyWorkflow(ctx workflow.Context, input string) (string, error) {
     
     return result, err
 }
+
 ```
 
--**Rust SDK 创新**
+- **Rust SDK 创新**
 
 Temporal的Rust SDK利用Rust类型系统提供更强的安全保证：
 
@@ -684,11 +707,12 @@ pub async fn order_processing(ctx: WfContext, order: Order) -> Result<OrderResul
         status: "COMPLETED".to_string(),
     })
 }
+
 ```
 
 Cadence没有官方支持的Rust SDK，而Temporal的Rust支持更加深入利用了Rust的类型系统提供额外安全保证。
 
--**SDK特性对比**
+- **SDK特性对比**
 
 | 特性 | Temporal Go SDK | Cadence Go SDK |
 |------|----------------|---------------|
@@ -698,7 +722,7 @@ Cadence没有官方支持的Rust SDK，而Temporal的Rust支持更加深入利�
 | 调试能力 | ✓✓ (Replay Debugger) | ✓ |
 | 版本化支持 | ✓✓ (更完善) | ✓ |
 
--**Rust优势**
+- **Rust优势**
 
 Temporal的Rust SDK提供了额外优势：
 
@@ -708,7 +732,7 @@ Temporal的Rust SDK提供了额外优势：
 
 ### 3.2 协议设计与演化
 
--**API设计哲学**
+- **API设计哲学**
 
 1. **gRPC服务接口**
 
@@ -740,6 +764,7 @@ service WorkflowService {
     };
   }
 }
+
 ```
 
 1. **协议向后兼容性**
@@ -750,7 +775,7 @@ Temporal在协议设计上更强调兼容性：
 - 遵循兼容性最佳实践
 - 提供更完善的协议版本控制
 
--**接口演化策略**
+- **接口演化策略**
 
 1. **破坏性变更处理**
 
@@ -770,6 +795,7 @@ func MyWorkflow(ctx workflow.Context, input string) (string, error) {
         return newImplementation(ctx, input)
     }
 }
+
 ```
 
 1. **API版本管理**
@@ -786,32 +812,40 @@ client, err := client.NewClient(client.Options{
     ),
     CompatibilityMode: client.CompatibilityModeV1_0, // 向后兼容模式
 })
+
 ```
 
 ### 3.3 开发体验与测试框架
 
--**开发工具链**
+- **开发工具链**
 
 1. **本地开发环境**
 
 Temporal提供了更完善的本地开发体验：
 
 ```bash
+
 # Temporal本地开发服务器启动
+
 temporal server start-dev
 
 # 启动特定服务
+
 temporal server start \
   --namespace default \
   --db-filename sqlite.db \
   --service frontend,history,matching,worker
+
 ```
 
 Cadence本地开发相对复杂：
 
 ```bash
+
 # Cadence本地开发通常需要Docker Compose
+
 docker-compose -f docker/docker-compose.yml up
+
 ```
 
 1. **命令行工具对比**
@@ -819,20 +853,25 @@ docker-compose -f docker/docker-compose.yml up
 Temporal的CLI工具更强大且用户友好：
 
 ```bash
+
 # Temporal CLI示例
+
 temporal workflow start \
   --task-queue "order-processing" \
   --type "OrderWorkflow" \
   --input '{"orderId":"12345","items":[{"id":"item1","quantity":2}]}'
 
 # 获取工作流状态
+
 temporal workflow show --workflow-id "order-12345"
 
 # 查询工作流
+
 temporal workflow query --workflow-id "order-12345" --query-type "getStatus"
+
 ```
 
--**测试框架与模拟能力**
+- **测试框架与模拟能力**
 
 1. **单元测试支持**
 
@@ -867,6 +906,7 @@ func TestOrderWorkflow(t *testing.T) {
     // 验证活动调用
     env.AssertExpectations(t)
 }
+
 ```
 
 Rust SDK的测试支持更具类型安全性：
@@ -903,6 +943,7 @@ mod tests {
         assert_eq!(result.status, "COMPLETED");
     }
 }
+
 ```
 
 1. **集成测试支持**
@@ -936,9 +977,10 @@ func TestIntegrationOrderWorkflow(t *testing.T) {
     // 验证结果
     assert.Equal(t, "COMPLETED", result.Status)
 }
+
 ```
 
--**开发反馈循环**
+- **开发反馈循环**
 
 1. **调试能力对比**
 
@@ -962,6 +1004,7 @@ func DebugWorkflow(historyFile string) error {
     err = replayer.ReplayWorkflowHistory(nil, history)
     return err
 }
+
 ```
 
 1. **可观察性工具**
@@ -975,14 +1018,16 @@ Temporal的Web UI提供了更现代化的可视化界面，包括：
 
 ### 3.4 部署模型与运维考量
 
--**部署架构对比**
+- **部署架构对比**
 
 1. **服务发现机制**
 
 Temporal支持多种服务发现模式：
 
 ```yaml
+
 # Temporal服务发现配置示例
+
 services:
   frontend:
     rpc:
@@ -1008,6 +1053,7 @@ services:
       grpc:
         port: 7239
       membershipPort: 6939
+
 ```
 
 1. **多集群部署**
@@ -1015,7 +1061,9 @@ services:
 Temporal提供了更成熟的多集群部署支持：
 
 ```yaml
+
 # Temporal多集群配置示例
+
 clusterMetadata:
   enableGlobalNamespace: true
   replicationConsumer:
@@ -1032,16 +1080,19 @@ clusterMetadata:
       enabled: true
       initialFailoverVersion: 1
       rpcAddress: "127.0.0.1:8233"
+
 ```
 
--**可扩展性与弹性**
+- **可扩展性与弹性**
 
 1. **资源自动扩展**
 
 Temporal提供了更好的自动扩展指南：
 
 ```yaml
+
 # Temporal Kubernetes HPA配置示例
+
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -1060,6 +1111,7 @@ spec:
       target:
         type: Utilization
         averageUtilization: 70
+
 ```
 
 1. **资源隔离策略**
@@ -1078,20 +1130,24 @@ request := &workflowservice.UpdateNamespaceRequest{
         TaskQueueUserQuota: &wrapperspb.Int32Value{Value: 50},
     },
 }
+
 ```
 
--**操作监控与管理**
+- **操作监控与管理**
 
 1. **监控指标**
 
 Temporal提供了更全面的监控指标：
 
 ```yaml
+
 # Temporal Prometheus配置示例
+
 metrics:
   prometheus:
     timerType: "histogram"
     listenAddress: "127.0.0.1:8000"
+
 ```
 
 典型监控指标对比：
@@ -1115,7 +1171,7 @@ Temporal提供了更完善的版本管理策略：
 
 ### 4.1 生态系统成熟度
 
--**工具集与集成**
+- **工具集与集成**
 
 1. **SDK多样性**
 
@@ -1156,9 +1212,10 @@ func setupTracing() {
         Tracer:    tp.Tracer("temporal-client"),
     })
 }
+
 ```
 
--**社区资源**
+- **社区资源**
 
 1. **文档质量**
 
@@ -1174,13 +1231,16 @@ Temporal的文档更全面且现代化：
 Temporal提供了更多现成的模板和示例：
 
 ```bash
+
 # Temporal示例项目
+
 git clone https://github.com/temporalio/samples-go.git
+
 ```
 
 ### 4.2 应用场景契合度
 
--**场景适配性分析**
+- **场景适配性分析**
 
 思维导图：场景适配性对比
 
@@ -1226,9 +1286,10 @@ git clone https://github.com/temporalio/samples-go.git
     └── Cadence: 一般
         ├── 资源隔离有限
         └── 历史处理效率较低
+
 ```
 
--**实际案例比较**
+- **实际案例比较**
 
 1. **电商订单处理**
 
@@ -1303,6 +1364,7 @@ func OrderProcessingWorkflow(ctx workflow.Context, orderID string) error {
     
     return nil
 }
+
 ```
 
 Cadence的实现类似，但在补偿模式的细节和查询处理方面不如Temporal灵活。
@@ -1362,11 +1424,12 @@ pub async fn device_management_workflow(
         }
     }
 }
+
 ```
 
 ### 4.3 社区活跃度与支持
 
--**社区指标对比**
+- **社区指标对比**
 
 | 指标 | Temporal | Cadence |
 |------|----------|---------|
@@ -1376,7 +1439,7 @@ pub async fn device_management_workflow(
 | Stack Overflow问题 | 增长迅速 | 稳定但增长较慢 |
 | Slack/Discord用户 | 10,000+ | 3,000+ |
 
--**商业支持模型**
+- **商业支持模型**
 
 1. **开源与商业版本**
 
@@ -1461,6 +1524,7 @@ Temporal Cloud提供更完善的SLA承诺：
     └── 风险偏好 [保守 ↔ 前沿]
         └── 偏保守 → Cadence历史更长
         └── 偏前沿 → Temporal发展更快
+
 ```
 
 ### 5.3 未来发展趋势

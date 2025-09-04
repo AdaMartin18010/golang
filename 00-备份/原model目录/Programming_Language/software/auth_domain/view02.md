@@ -81,6 +81,7 @@
 └── 代码示例 (Rust/Go - Conceptual)
     ├── Go: 使用 `crypto/bcrypt` 哈希密码, `net/http` 中间件实现认证/授权
     └── Rust: 使用 `ring` 或 `rustls` 进行加密/TLS, `actix-web`/`axum` 中间件实现认证/授权, `serde` 处理令牌
+
 ```
 
 ## 目录
@@ -245,7 +246,7 @@
 
 ### 2.5. 代码示例 (概念)
 
--**Go (概念 - 密码哈希与验证)**
+- **Go (概念 - 密码哈希与验证)**
 
 ```go
 package main
@@ -299,9 +300,10 @@ func main() {
     // 作用域: hashedPassword 和 storedHash 的作用域限制在 main 函数内
     //          userPasswordHashes 的作用域是包级别 (在这个简单例子中)
 }
+
 ```
 
--**Rust (概念 - 权限检查)**
+- **Rust (概念 - 权限检查)**
 
 ```rust
 use std::collections::HashSet;
@@ -404,7 +406,7 @@ fn main() {
 
 ### 3.4. 代码示例 (概念)
 
--**Go (概念 - HTTP 中间件进行认证)**
+- **Go (概念 - HTTP 中间件进行认证)**
 
 ```go
 package main
@@ -471,6 +473,7 @@ func main() {
   fmt.Println("Server error:", err)
  }
 }
+
 ```
 
 **Rust (概念 - `async/await` 处理异步权限检查)**
@@ -522,6 +525,7 @@ async fn main() {
 
     println!("All tasks finished.");
 }
+
 ```
 
 ---
@@ -952,9 +956,10 @@ func main() {
   fmt.Println("Server error:", err)
  }
 }
+
 ```
 
-*注意：此示例仅为演示目的，省略了实际的密码验证、错误处理细节和上下文传递。在生产环境中，密钥管理、错误处理、日志记录和更健壮的授权逻辑至关重要。*
+* 注意：此示例仅为演示目的，省略了实际的密码验证、错误处理细节和上下文传递。在生产环境中，密钥管理、错误处理、日志记录和更健壮的授权逻辑至关重要。*
 
 ---
 
@@ -1158,11 +1163,12 @@ func CheckPasswordHash(password, hash string) bool {
  err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
  return err == nil // 简洁，但错误本身被丢弃 (除非需要日志记录)
 }
+
 ```
 
 - **特点**: API 简洁直接。错误处理依赖 Go 的标准 `error` 返回模式。类型是 `[]byte` 或 `string`，没有特定的类型来区分密码明文和哈希值。
 
--**Rust (使用 `bcrypt` crate)**
+- **Rust (使用 `bcrypt` crate)**
 
 ```rust
 use bcrypt::{hash, verify, DEFAULT_COST, BcryptError};
@@ -1187,6 +1193,7 @@ fn check_password_hash(password: &str, hash: &str) -> Result<bool, BcryptError> 
 //     Ok(false) => println!("No Match!"), // 明确区分匹配失败
 //     Err(e) => println!("Error during verification: {}", e), // 处理可能的错误，如哈希格式无效
 // }
+
 ```
 
 - **特点**: 使用 `Result` 强制进行错误处理。`verify` 的 `Result<bool, BcryptError>` 能够更清晰地区分“密码不匹配”（`Ok(false)`）和“验证过程中发生错误”（`Err(...)`）。类型是 `&str`，同样没有特定类型区分明文和哈希，但可以通过 Newtype 模式添加。
@@ -1206,6 +1213,7 @@ fn check_password_hash(password: &str, hash: &str) -> Result<bool, BcryptError> 
 //     return jwtKey, nil // 返回 interface{}
 // })
 // // 后续需要检查 err != nil 和 token.Valid
+
 ```
 
 - **特点**: 回调函数返回 `interface{}`，类型检查（如 `alg` 验证）需要在运行时手动完成。错误处理分散在多个检查点 (`err != nil`, `!token.Valid`)。
@@ -1245,6 +1253,7 @@ match decode::<Claims>(&token_string, &decoding_key, &validation) {
         eprintln!("JWT validation error: {}", e);
     }
 }
+
 ```
 
 - **特点**: 使用专门的 `EncodingKey` 和 `DecodingKey` 类型。`Validation` 结构体集中配置验证参数，类型安全。`decode` 函数一步完成多种验证（签名、过期、`alg` 匹配等），返回 `Result`，错误类型更具体。将 JWT 验证的多个步骤封装得更好，减少了手动检查点。
@@ -1272,6 +1281,7 @@ import "crypto/tls"
 // }
 // // server := &http.Server{ Addr: ":443", TLSConfig: config }
 // // server.ListenAndServeTLS("cert.pem", "key.pem")
+
 ```
 
 - **特点**: 标准库提供全面支持。配置通过结构体字段进行，灵活性高。需要开发者了解安全的默认值和推荐配置（例如，显式设置 `MinVersion` 和 `CipherSuites`）。
@@ -1304,6 +1314,7 @@ use std::io::BufReader;
 // let server_config = Arc::new(config);
 
 // // 后续将 server_config 用于 TLS Acceptor (e.g., with tokio-rustls)
+
 ```
 
 - **特点**: `rustls` 是内存安全的 TLS 实现。配置通常使用构建器模式，`.with_safe_defaults()` 提供了一个很好的起点，减少了配置错误的风险。类型系统用于区分证书 (`Certificate`) 和私钥 (`PrivateKey`)。错误处理使用 `Result`。需要与异步运行时（如 Tokio）或 Web 框架集成。

@@ -193,6 +193,7 @@ func (f *FlyweightFactory) ListFlyweights() []string {
     }
     return keys
 }
+
 ```
 
 ### 3.2.1.4.2 字符享元模式
@@ -314,6 +315,7 @@ func (t *TextEditor) GetUniqueCharacterCount() int {
 func (t *TextEditor) GetTotalCharacterCount() int {
     return len(t.characters)
 }
+
 ```
 
 ### 3.2.1.4.3 图形享元模式
@@ -546,6 +548,7 @@ func (d *DrawingCanvas) GetUniqueShapeCount() int {
 func (d *DrawingCanvas) GetTotalShapeCount() int {
     return len(d.shapes)
 }
+
 ```
 
 ## 3.2.1.5 4. 工程案例
@@ -737,6 +740,7 @@ func (p *ConnectionPool) CloseAll() error {
     
     return nil
 }
+
 ```
 
 ### 3.2.1.5.2 缓存享元模式
@@ -963,6 +967,7 @@ func (f *CacheFactory) ListCaches() []string {
     }
     return names
 }
+
 ```
 
 ## 3.2.1.6 5. 批判性分析

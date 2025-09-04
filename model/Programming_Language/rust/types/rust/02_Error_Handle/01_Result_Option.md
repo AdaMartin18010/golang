@@ -9,19 +9,6 @@
   - [2.1.5 示例](#示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`Result` 和 `Option` 是两种枚举类型，它们在错误处理和可选值的表示中扮演着关键角色。
 
 ## 2.1.1 Result 类型
@@ -97,6 +84,7 @@ fn divide(a: f64, b: f64) -> Result<f64, String> {
 fn find_element(vec: &Vec<i32>, index: usize) -> Option<&i32> {
     vec.get(index)
 }
+
 ```
 
 通过使用 `Result` 和 `Option`，Rust 鼓励开发者以安全和显式的方式处理潜在的问题，从而减少运行时错误。

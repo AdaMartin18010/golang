@@ -322,6 +322,7 @@ import (
     "github.com/go-redis/redis/v8" // Redis客户端
     "github.com/patrickmn/go-cache" // 内存缓存
 )
+
 ```
 
 #### 1.8.1.2 微服务技术栈
@@ -344,6 +345,7 @@ import (
     "github.com/prometheus/client_golang/prometheus" // Prometheus指标
     "go.uber.org/zap"              // 结构化日志
 )
+
 ```
 
 ### 1.8.2 2. 前端技术栈
@@ -359,6 +361,7 @@ const wasmModule = await WebAssembly.instantiateStreaming(
 
 // 调用WASM函数
 const result = wasmModule.instance.exports.add(1, 2);
+
 ```
 
 #### 1.8.2.2 现代前端框架
@@ -373,6 +376,7 @@ import { ref, onMounted } from 'vue';
 
 // Svelte
 import { onMount } from 'svelte';
+
 ```
 
 ### 1.8.3 3. 基础设施技术栈
@@ -380,7 +384,9 @@ import { onMount } from 'svelte';
 #### 1.8.3.1 容器化
 
 ```dockerfile
+
 # 2 2 2 2 2 2 2 多阶段构建
+
 FROM golang:1.21-alpine AS builder
 WORKDIR /app
 COPY . .
@@ -391,6 +397,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/main .
 CMD ["./main"]
+
 ```
 
 #### 2 2 2 2 2 2 2 Kubernetes部署
@@ -415,6 +422,7 @@ spec:
         image: myapp:latest
         ports:
         - containerPort: 8080
+
 ```
 
 ## 2.1 最佳实践总结

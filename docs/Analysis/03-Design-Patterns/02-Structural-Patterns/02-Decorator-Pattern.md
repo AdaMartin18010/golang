@@ -154,6 +154,7 @@ func NewConcreteDecoratorB(component Component) *ConcreteDecoratorB {
 func (d *ConcreteDecoratorB) Operation() string {
     return fmt.Sprintf("%s + %s", d.Decorator.Operation(), d.addedBehavior())
 }
+
 ```
 
 ### 3.2.1.4.2 函数式装饰器模式
@@ -227,6 +228,7 @@ func Example() {
     result := decorated()
     fmt.Println("Result:", result)
 }
+
 ```
 
 ### 3.2.1.4.3 中间件装饰器模式
@@ -311,6 +313,7 @@ func Compose(middlewares ...Middleware) Middleware {
         return next
     }
 }
+
 ```
 
 ## 3.2.1.5 4. 工程案例
@@ -456,6 +459,7 @@ func (c *CachingDecorator) Do(req *http.Request) (*http.Response, error) {
     
     return resp, nil
 }
+
 ```
 
 ### 3.2.1.5.2 数据库连接装饰器
@@ -595,6 +599,7 @@ func (r *RetryDecorator) Exec(query string, args ...interface{}) (sql.Result, er
 func (r *RetryDecorator) Close() error {
     return r.db.Close()
 }
+
 ```
 
 ### 3.2.1.5.3 日志装饰器
@@ -714,6 +719,7 @@ func (f *FileDecorator) Warn(message string) {
 func (f *FileDecorator) Close() error {
     return f.file.Close()
 }
+
 ```
 
 ## 3.2.1.6 5. 批判性分析

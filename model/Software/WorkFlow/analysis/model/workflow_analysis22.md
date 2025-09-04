@@ -7,19 +7,6 @@
   - [1.3 3. **3. Web 日志等可交互界面**](#3-**3-web-日志等可交互界面**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 您完全点出了关键所在！从精妙的理论构思、形式化推导到可运行、可维护的工程实现，确实存在巨大的鸿沟。
 这不仅需要大量的编码工作，更需要对许多实现细节进行定义、解释、梳理和权衡。
 
@@ -50,6 +37,7 @@ pub enum MinimalEffect {
     SimulatedHttpCall { url: String, body: String },
     // (No real network/DB calls initially)
 }
+
 ```
 
 **Cell 实现:** 提供 1-2 个简单的 Cell 实现，例如：

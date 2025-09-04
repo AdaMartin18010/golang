@@ -196,6 +196,7 @@ classDiagram
     +float Value
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -222,6 +223,7 @@ sequenceDiagram
   A->>R: 应用规则
   R->>E: 触发事件
   E->>DA: 数据分析
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -307,6 +309,7 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
+
 ```
 
 ---
@@ -389,6 +392,7 @@ graph TD
   T --> P
   EN --> D
   EN --> P
+
 ```
 
 ### 5.5 Golang代码示例
@@ -397,6 +401,7 @@ graph TD
 // 设备数量Prometheus监控
 var deviceCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "device_total"})
 deviceCount.Set(1000000)
+
 ```
 
 ---
@@ -427,6 +432,7 @@ iot-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -453,6 +459,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

@@ -67,15 +67,16 @@
 
 基本边界概念的三层表达：
 
-*基础层*：
+* 基础层*：
 
 ```math
 边界是系统与环境的分界线，具有过滤和控制功能。
 边界可以合并、相交，形成新的边界。
 边界有不同程度的开放性和控制性。
+
 ```
 
-*标准层*：
+* 标准层*：
 
 ```math
 系统S的边界B(S)满足:
@@ -83,9 +84,10 @@
 - B(S) = B(Universe \ S)（对偶性）
 - B(S₁ ∪ S₂) ⊆ B(S₁) ∪ B(S₂)（组合性）
 - 存在渗透函数P: Interactions × B(S) → [0,1]
+
 ```
 
-*高级层*：
+* 高级层*：
 
 ```math
 B: Sys → TopSpace，是反变函子，满足：
@@ -93,6 +95,7 @@ B: Sys → TopSpace，是反变函子，满足：
 - 对任意态射f: S₁ → S₂，有B(f): B(S₂) → B(S₁)
 - 渗透函数P是可测映射，满足分布律...
 （完整形式化定义）
+
 ```
 
 ### 1.2 应用导向的理论重构
@@ -119,7 +122,7 @@ B: Sys → TopSpace，是反变函子，满足：
 
 **示例实现**：
 
-*软件系统边界识别模式*：
+* 软件系统边界识别模式*：
 
 ```math
 应用问题：识别复杂软件系统中的自然边界
@@ -143,6 +146,7 @@ B: Sys → TopSpace，是反变函子，满足：
 - 适用于具有50-10000个组件的系统
 - 要求组件间依赖关系可清晰定义
 - 不适用于高度动态变化的系统
+
 ```
 
 ### 1.3 实用知识桥梁构建
@@ -169,7 +173,7 @@ B: Sys → TopSpace，是反变函子，满足：
 
 **示例实现**：
 
-*边界控制器设计模式*：
+* 边界控制器设计模式*：
 
 ```math
 理论基础：边界交互公理（4.2节）
@@ -195,6 +199,7 @@ B: Sys → TopSpace，是反变函子，满足：
 - 上下文评估 → 适应性公理（4.3.1）
 
 实现代码框架：
+
 ```rust
 pub trait BoundaryController<I, O> {
     fn process_interaction(&self, interaction: I) -> Result<O, BoundaryViolation>;
@@ -215,6 +220,7 @@ where
         // 实现边界控制逻辑
     }
 }
+
 ```
 
 ### 1.4 理论实践循环机制
@@ -262,13 +268,14 @@ where
    - 小型修正：澄清定义、添加约束条件
    - 中型扩展：增加新的定理或应用模式
    - 大型重构：修改基本公理或框架结构
-   
+  
    每次修正遵循：
    - 提出修正假设
    - 验证与现有理论的一致性
    - 实施理论更新
    - 验证更新解决了原问题
    - 评估对已有应用的影响
+
 ```
 
 ## 2. 实证研究与案例验证
@@ -331,6 +338,7 @@ where
 1. 扩展边界交互公理，增加异步交互模型
 2. 修正边界演化公理中的适应速率参数
 3. 开发新的微服务特定边界度量指标
+
 ```
 
 ### 2.2 比较分析研究设计
@@ -394,6 +402,7 @@ where
 - 回报：缺陷减少(约减少52个缺陷)，维护工作减少(约260工时)
 - 盈亏平衡点：约4个月后形式化方法的总成本低于传统方法
 - 适用条件：对于预期运行3年以上的系统，形式化方法更具成本效益
+
 ```
 
 ### 2.3 预测验证实验设计
@@ -469,6 +478,7 @@ where
    - 校准后在验证数据集上重新测试：
      * 精确度提升至79.5%
      * 召回率提升至63.1%
+
 ```
 
 ### 2.4 失败案例分析与改进
@@ -541,6 +551,7 @@ where
    - 开发轻量级应用方法，降低应用门槛
    - 设计增量式应用路径，提供渐进收益
    - 创建自动化工具支持，减少手动工作
+
 ```
 
 ## 3. 理论内部一致性增强
@@ -578,11 +589,11 @@ where
    - 集合 S ↔ Set范畴中的对象
    - 映射 f: A → B ↔ Set范畴中的态射
    - 边界b(S) ↔ 边界函子B应用于对象S
-   
+  
    转换规则：
    - 集合论中的边界b(S) = S̄ ∩ (X\S)̄
    - 范畴论中的边界B(S) = lim(关系图S→X←X\S)
-   
+  
    一致性条件：
    - ∀S∈Set，将S视为Set中对象，然后B(S)=b(S)
 
@@ -590,11 +601,11 @@ where
    - 拓扑空间(X,τ) ↔ Top范畴中的对象
    - 连续映射f ↔ Top范畴中的态射
    - 边界点集bd(A) ↔ 边界函子应用于子空间
-   
+  
    转换规则：
    - 拓扑空间中边界bd(A) = cl(A) ∩ cl(X\A)
    - 范畴论中边界B(i: A↪X) = Eq(cl∘i, cl∘c)，其中c是补集包含
-   
+  
    一致性条件：
    - 对任何拓扑子空间A⊆X，有B(i_A) ≅ bd(A)
 
@@ -602,11 +613,11 @@ where
    - 代数系统(S,⊕,⊗) ↔ 代数范畴中的对象
    - 同态h ↔ 代数范畴中的态射
    - 边界运算◇ ↔ 边界函子在代数上的作用
-   
+  
    转换规则：
    - 代数中的边界◇(a,b) = (a⊕b)⊗(a⊗b')
    - 范畴论中的B(A) = F(A)×G(A)，其中F,G是特定函子
-   
+  
    一致性条件：
    - 对任何代数元素a,b，有B(a,b) ≅ ◇(a,b)
 
@@ -632,7 +643,7 @@ where
 
 **示例实现**：
 
-*边界理论核心符号统一标准*：
+* 边界理论核心符号统一标准*：
 
 ```math
 基本符号体系：
@@ -663,6 +674,7 @@ where
 - 边界操作结果默认返回边界，除非特别说明
 - 系统映射使用小写罗马字母f,g,h表示
 - 边界映射使用希腊字母φ,ψ,θ表示
+
 ```
 
 ### 3.3 概念层次一致性
@@ -687,7 +699,7 @@ where
 
 **示例实现**：
 
-*三层次概念映射框架*：
+* 三层次概念映射框架*：
 
 ```math
 1. 层次定义：
@@ -720,6 +732,7 @@ where
 5. 一致性条件：
    - 垂直一致性：∀b₁∈B₁, I₂₃(I₁₂(b₁)) ⊨ B₃
    - 水平一致性：∀b₂,b₂'∈B₂, b₂≡b₂' ⟹ G₂₁(b₂)≡G₂₁(b₂')
+
 ```
 
 ### 3.4 公理体系完备性
@@ -744,7 +757,7 @@ where
 
 **示例实现**：
 
-*边界理论公理体系审查*：
+* 边界理论公理体系审查*：
 
 ```math
 1. 公理独立性分析：
@@ -786,6 +799,7 @@ where
    - 所有模型同时满足扩展公理集{A₁,...,A₇}
    - 未发现公理间的逻辑矛盾
    - 基于模型的反例搜索未找到反例
+
 ```
 
 ### 3.5 定理证明的严格化
@@ -810,7 +824,7 @@ where
 
 **示例实现**：
 
-*边界组合定理的形式化证明*：
+* 边界组合定理的形式化证明*：
 
 ```math
 定理：对于任何两个系统S和T，若S和T满足边界最小化条件，则存在系统R，使得B(R)=B(S)⊕B(T)且R也满足边界最小化条件。
@@ -876,6 +890,7 @@ where
 5. 结论：
    对于满足边界最小化条件的系统S和T，存在系统R使得
    B(R)=B(S)⊕B(T)且R满足边界最小化条件。
+
 ```
 
 ### 3.6 模型检验与验证
@@ -900,7 +915,7 @@ where
 
 **示例实现**：
 
-*边界理论模型检验框架*：
+* 边界理论模型检验框架*：
 
 ```math
 1. 形式化模型表示：
@@ -1049,6 +1064,7 @@ where
   * 《边界理论高级研究》专著
   * 研究论文精选集
   * 理论模拟与验证工具
+
 ```
 
 ### 4.2 直观模型和可视化
@@ -1102,6 +1118,7 @@ where
    - 边界控制强度κ(B) ↔ 线条粗细
    - 边界熵H(B) ↔ 线条复杂度
    - 边界交互强度I(B₁,B₂) ↔ 连接线数量和粗细
+
 ```
 
 ### 4.3 实例驱动学习
@@ -1178,6 +1195,7 @@ where
 - 系统调用 → 高控制性渗透点
 - 内存保护 → 物理边界实现
 - 模块化 → 子系统边界原理
+
 ```
 
 ### 4.4 交互式学习工具
@@ -1249,6 +1267,7 @@ where
    - 学习进度跟踪
    - 个性化学习路径建议
    - 社区共享和讨论功能
+
 ```
 
 ### 4.5 应用模板和指南
@@ -1354,6 +1373,7 @@ where
      * 区分运行时和开发时边界
      * 引入适配层减少直接依赖
      * 根据系统优先级设置权衡策略
+
 ```
 
 ## 5. 跨领域适用性扩展
@@ -1391,14 +1411,14 @@ where
      dependencies: <dep_list>
      boundary_control: <control_policy>
    }
-   
+  
    // 组件定义
    component <name> {
      functions: <func_list>
      attributes: <attr_list>
      interfaces: <interface_list>
    }
-   
+  
    // 边界定义
    boundary <name> {
      internal: <comp_list>
@@ -1406,7 +1426,7 @@ where
      crossing_points: <interface_list>
      permeability: <perm_spec>
    }
-   
+  
    // 边界分析
    analyze boundary <name> {
      metrics: [cohesion, coupling, stability, entropy]
@@ -1424,7 +1444,7 @@ where
    boundary → 边界B(S)
    crossing_points → 边界渗透点{p∈B(S)}
    permeability → 渗透函数P:B(S)→[0,1]
-   
+  
    analyze boundary → 边界分析函数A(B)
    cohesion → 内聚度函数C(S)
    coupling → 耦合度函数K(S,T)
@@ -1470,6 +1490,7 @@ analyze boundary CoreBusinessBoundary {
     min_cohesion: 0.7
   ]
 }
+
 ```
 
 1. 转换器实现：
@@ -1509,7 +1530,7 @@ analyze boundary CoreBusinessBoundary {
 
 **示例实现**：
 
-*系统边界领域映射框架*：
+* 系统边界领域映射框架*：
 
 ```math
 1. 映射模板结构：
@@ -1575,6 +1596,7 @@ analyze boundary CoreBusinessBoundary {
    - 边界渗透性P(B) → 跨部门协作频率
    - 边界控制强度κ(B) → 决策自主性指标
    - 边界稳定性λ(B) → 组织结构稳定性指标
+
 ```
 
 ### 5.3 跨领域试验与验证
@@ -1599,7 +1621,7 @@ analyze boundary CoreBusinessBoundary {
 
 **示例实现**：
 
-*跨领域验证框架*：
+* 跨领域验证框架*：
 
 ```math
 1. 跨领域实验设计：
@@ -1662,6 +1684,7 @@ analyze boundary CoreBusinessBoundary {
    - 基于各维度得分识别关键调整需求
    - 提供针对性的理论调整或扩展建议
    - 给出应用过程中的注意事项和最佳实践
+
 ```
 
 ### 5.4 通用工具与特定扩展
@@ -1686,7 +1709,7 @@ analyze boundary CoreBusinessBoundary {
 
 **示例实现**：
 
-*边界分析工具架构*：
+* 边界分析工具架构*：
 
 ```math
 1. 核心架构设计：
@@ -1790,7 +1813,7 @@ analyze boundary CoreBusinessBoundary {
 
 **示例实现**：
 
-*软件系统边界模式库*：
+* 软件系统边界模式库*：
 
 ```math
 1. 模式描述框架：
@@ -1948,17 +1971,17 @@ analyze boundary CoreBusinessBoundary {
    领域定义：
    - D_软件: 软件系统领域
    - D_组织: 组织结构领域
-   
+  
    跨领域关系：
    - 软件模块 ↔ 开发团队（康威定律映射）
    - 软件接口 ↔ 团队协作接口
    - 代码所有权 ↔ 组织责任边界
-   
+  
    边界协调问题：
    - 软件边界与组织边界不一致导致的沟通成本
    - 边界变更传播：软件架构变化vs组织调整
    - 跨边界知识传递和保留
-   
+  
    集成分析方法：
 
    ```java
@@ -1974,10 +1997,10 @@ analyze boundary CoreBusinessBoundary {
      // 2. 识别边界
      const softwareBoundaries = detectBoundaries(softwareModel);
      const orgBoundaries = detectBoundaries(orgModel);
-     
+  
      // 3. 建立映射关系
      const crossDomainMap = mapBoundaries(
-       softwareBoundaries, 
+       softwareBoundaries,
        orgBoundaries,
        {
          mapFunction: conwayLawMapping,
@@ -1987,10 +2010,10 @@ analyze boundary CoreBusinessBoundary {
          }
        }
      );
-     
+  
      // 4. 一致性评估
      const consistencyMetrics = evaluateConsistency(crossDomainMap);
-     
+  
      // 5. 识别改进机会
      const improvementOpportunities = findMisalignments(
        crossDomainMap,
@@ -2002,7 +2025,7 @@ analyze boundary CoreBusinessBoundary {
          }
        }
      );
-     
+  
      // 6. 生成优化建议
      return generateOptimizationRecommendations(
        improvementOpportunities,
@@ -2073,7 +2096,7 @@ analyze boundary CoreBusinessBoundary {
 
 **示例实现**：
 
-*边界分析工具链*：
+* 边界分析工具链*：
 
 1. 工具链架构：
 
@@ -2255,7 +2278,7 @@ analyze boundary CoreBusinessBoundary {
        console.log("Analysis completed successfully");
        console.log(`Identified ${results.boundaries.length} system boundaries`);
        console.log(`Generated ${results.optimizations.length} optimization recommendations`);
-       
+  
        // 导出结果
        results.exportVisualization("./output/visualizations");
        results.exportReport("./output/reports/ecommerce-boundary-analysis.pdf");
@@ -2276,10 +2299,10 @@ analyze boundary CoreBusinessBoundary {
        this.algorithms = options.algorithms || ["entropy-minimization"];
        this.parameters = options.parameters || {};
      }
-     
+  
      detectBoundaries(systemModel) {
        const results = {};
-       
+  
        // 运行每种算法
        for (const algorithm of this.algorithms) {
          switch (algorithm) {
@@ -2294,34 +2317,34 @@ analyze boundary CoreBusinessBoundary {
              break;
          }
        }
-       
+  
        // 如果配置了比较分析，合并结果
        if (this.algorithms.length > 1) {
          results.consensus = this.mergeResults(results, systemModel);
        }
-       
+  
        return results;
      }
-     
+  
      detectBoundariesByEntropy(model) {
        // 实现熵最小化边界检测算法
        const graph = model.toDependencyGraph();
        const components = graph.getNodes();
-       
+  
        // 初始边界：每个组件一个边界
        let boundaries = components.map(c => new Boundary([c]));
-       
+  
        // 边界合并过程，直到达到停止条件
        let iterations = 0;
        let improving = true;
-       
+  
        while (improving && iterations < this.parameters.maxIterations) {
          iterations++;
          improving = false;
-         
+  
          // 计算所有可能的边界合并
          const mergeOptions = this.generateMergeOptions(boundaries);
-         
+  
          // 评估每个合并选项的熵变化
          const entropyChanges = mergeOptions.map(option => {
            const newBoundaries = this.simulateMerge(boundaries, option);
@@ -2332,17 +2355,17 @@ analyze boundary CoreBusinessBoundary {
              entropyChange: newEntropy - currentEntropy
            };
          });
-         
+  
          // 找到最佳合并选项
          entropyChanges.sort((a, b) => a.entropyChange - b.entropyChange);
-         
+  
          // 如果有熵减少的选项，执行合并
          if (entropyChanges[0].entropyChange < -this.parameters.convergenceThreshold) {
            boundaries = this.simulateMerge(boundaries, entropyChanges[0].option);
            improving = true;
          }
        }
-       
+  
        return {
          boundaries,
          metrics: this.calculateBoundaryMetrics(boundaries, graph),
@@ -2350,7 +2373,7 @@ analyze boundary CoreBusinessBoundary {
          convergence: !improving
        };
      }
-     
+  
      // 其他方法实现...
    }
    ```
@@ -2365,53 +2388,53 @@ analyze boundary CoreBusinessBoundary {
          coupling: true
        };
      }
-     
+  
      analyzeBoundaries(boundaries, systemModel) {
        const results = {
          overall: {},
          boundaries: {}
        };
-       
+  
        // 计算整体系统指标
        if (this.metrics.cohesion) {
          results.overall.cohesion = this.calculateSystemCohesion(boundaries, systemModel);
        }
-       
+  
        if (this.metrics.coupling) {
          results.overall.coupling = this.calculateSystemCoupling(boundaries, systemModel);
        }
-       
+  
        if (this.metrics.stability) {
          results.overall.stability = this.calculateSystemStability(boundaries, systemModel);
        }
-       
+  
        // 计算每个边界的指标
        for (const boundary of boundaries) {
          results.boundaries[boundary.id] = {};
-         
+  
          if (this.metrics.cohesion) {
-           results.boundaries[boundary.id].cohesion = 
+           results.boundaries[boundary.id].cohesion =
              this.calculateBoundaryCohesion(boundary, systemModel);
          }
-         
+  
          if (this.metrics.permeability) {
-           results.boundaries[boundary.id].permeability = 
+           results.boundaries[boundary.id].permeability =
              this.calculateBoundaryPermeability(boundary, systemModel);
          }
-         
+  
          if (this.metrics.control) {
-           results.boundaries[boundary.id].controlStrength = 
+           results.boundaries[boundary.id].controlStrength =
              this.calculateControlStrength(boundary, systemModel);
          }
-         
+  
          if (this.metrics.complexity) {
-           results.boundaries[boundary.id].complexity = 
+           results.boundaries[boundary.id].complexity =
              this.calculateBoundaryComplexity(boundary, systemModel);
          }
-         
+  
          // 边界间关系分析
          results.boundaries[boundary.id].interactions = {};
-         
+  
          for (const otherBoundary of boundaries) {
            if (boundary.id !== otherBoundary.id) {
              results.boundaries[boundary.id].interactions[otherBoundary.id] = {
@@ -2422,13 +2445,12 @@ analyze boundary CoreBusinessBoundary {
            }
          }
        }
-       
+  
        return results;
      }
-     
+  
      // 具体指标计算方法...
    }
-
 
 ### 6.2 数据收集与处理
 
@@ -2452,7 +2474,7 @@ analyze boundary CoreBusinessBoundary {
 
 **示例实现**：
 
-*软件系统数据收集框架*：
+* 软件系统数据收集框架*：
 
 ```math
 1. 数据收集器设计：

@@ -20,6 +20,7 @@ fn main() {
 fn take_a_peek(s: &str) {
     println!("{}", s);
 }
+
 ```
 
 在这个例子中，`&s` 创建了 `s` 的不可变引用，`take_a_peek` 函数接受一个对 `str` 类型的不可变引用。
@@ -34,6 +35,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 `Deref` trait 的 `deref` 方法返回一个对 `Target` 类型的引用。
@@ -46,6 +48,7 @@ fn main() {
     let b = Box::new(5);
     println!("{}", *b); // 使用 * 操作符自动解引用
 }
+
 ```
 
 在这个例子中，`*b` 触发了 `Box` 的 `deref` 方法，返回了它包含的值 `5` 的引用。
@@ -67,6 +70,7 @@ fn change_it(s: &mut String) {
     s.push_str(" Rust is awesome!");
     println!("{}", s);
 }
+
 ```
 
 在这个例子中，`&mut s` 创建了 `s` 的可变引用，`change_it` 函数接受一个对 `String` 类型的可变引用。

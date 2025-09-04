@@ -85,19 +85,6 @@
   - [1.21 20. 思维导图补充](#20-思维导图补充)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust 异步编程综合分析与批判性评估（修订版）](#rust-异步编程综合分析与批判性评估修订版)
@@ -212,6 +199,7 @@ pub trait Future {
     type Output;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
 }
+
 ```
 
 这种设计的关键特点是：
@@ -239,6 +227,7 @@ async fn process_data(data: &[u8]) -> Result<Vec<u8>, Error> {
     let result2 = step2(&result1).await?;
     Ok(result2)
 }
+
 ```
 
 **编译器的魔法**：这段看似简单的代码在编译时被转换为：
@@ -262,6 +251,7 @@ pub trait Stream {
     type Item;
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>>;
 }
+
 ```
 
 处理 `Stream` 的常见模式：
@@ -271,6 +261,7 @@ pub trait Stream {
 while let Some(item) = stream.next().await {
     process_item(item).await;
 }
+
 ```
 
 **批判性分析**：`Stream` 概念虽然合理，但其当前状态有多项不足：
@@ -291,6 +282,7 @@ Rust 2024 版通过 `gen async` 语法极大地改善了这一点，但 `Stream`
 ```rust
 // Pin 的核心作用
 fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
+
 ```
 
 - **`Waker`**：通过 `Context` 传递，允许 `Future` 在变为就绪状态时通知执行器。这种机制避免了轮询开销，使执行器知道何时重新 `poll` 任务。
@@ -342,6 +334,7 @@ impl Future for ExampleFuture {
         // ...
     }
 }
+
 ```
 
 **批判性分析**：
@@ -360,6 +353,7 @@ async fn process<'a>(data: &'a [u8]) -> Vec<u8> {
     // ...
 }
 // 返回的 Future 类型带有生命周期约束：impl Future<Output = Vec<u8>> + 'a
+
 ```
 
 关键机制：
@@ -385,6 +379,7 @@ impl Drop for AsyncResource {
         // 只能进行同步清理或信号其他任务清理
     }
 }
+
 ```
 
 核心问题：
@@ -420,6 +415,7 @@ async fn ticker() -> impl Stream<Item = u32> {
         }
     }
 }
+
 ```
 
 **优势分析**：
@@ -448,6 +444,7 @@ fn process<'a>(data: &'a Vec<u8>) -> impl Iterator<Item = &'a u8> + 'a {
 fn process(data: &Vec<u8>) -> impl Iterator<Item = &u8> {
     data.iter()
 }
+
 ```
 
 **优势**：
@@ -477,6 +474,7 @@ trait DataProcessor {
 trait DataProcessor {
     async fn process(&self, data: &[u8]) -> Result<(), Error>;
 }
+
 ```
 
 **优势**：
@@ -505,6 +503,7 @@ let handler = |req| async move {
 let handler = async |req| {
     process_request(req).await
 };
+
 ```
 
 **优势**：
@@ -574,6 +573,7 @@ async fn handle_client(socket: TcpStream) -> Result<()> {
     }
     Ok(())
 }
+
 ```
 
 **批判性分析**：
@@ -648,6 +648,7 @@ match handle.await {
     Ok(Err(e)) => println!("任务返回错误: {}", e),
     Err(e) => println!("任务执行失败: {}", e),
 }
+
 ```
 
 **关键特性**：
@@ -700,6 +701,7 @@ match task_handle.await {
     },
     Err(join_err) => println!("任务执行失败: {}", join_err),
 }
+
 ```
 
 **错误组合模式**：
@@ -759,6 +761,7 @@ tx.send(work_item).await?;
 while let Some(item) = rx.recv().await {
     process_item(item).await;
 }
+
 ```
 
 **批判性分析**：
@@ -794,6 +797,7 @@ async fn process_shared_data(data: Arc<Mutex<Vec<u32>>>) -> Result<(), Error> {
     vec.push(42);
     Ok(())
 }
+
 ```
 
 **批判性分析**：
@@ -819,6 +823,7 @@ let result = tokio::task::spawn_blocking(move || {
     // 在这里执行 CPU 密集型计算或阻塞 I/O
     compute_hash(large_data)
 }).await?;
+
 ```
 
 **线程中运行异步代码**：
@@ -1376,6 +1381,7 @@ Rust异步编程综合分析与批判性评估
         ├── 库生态成熟度
         ├── 工具链改进方向
         └── 企业采用扩展
+
 ```
 
 ## 1.12 11. 异步性能优化实践
@@ -1409,6 +1415,7 @@ async fn process_all(items: &[Item]) -> Result<(), Error> {
     }
     Ok(())
 }
+
 ```
 
 - **`Stream` 替代大型集合**：处理大量数据时使用 `Stream` 避免全量加载。
@@ -1449,6 +1456,7 @@ let all_data = futures::future::join_all(futures).await;
 for data in all_data {
     process_data(data?).await?;
 }
+
 ```
 
 - **任务优先级**：为关键路径任务分配更高优先级。
@@ -1492,6 +1500,7 @@ loop {
         Err(e) => return Err(e.into()),
     }
 }
+
 ```
 
 - **向量化 I/O**：使用 `readv`/`writev` 等批量操作。
@@ -1533,6 +1542,7 @@ fn process(item: Box<dyn Data>) -> BoxFuture<'static, Result<(), Error>> {
         Ok(())
     })
 }
+
 ```
 
 - **模块隔离**：将大型异步函数拆分为多个模块，利用增量编译。
@@ -1590,6 +1600,7 @@ async fn test_with_timing_control() {
     
     assert_eq!(result, "expected");
 }
+
 ```
 
 **测试工具**：
@@ -1643,6 +1654,7 @@ async fn process_request(id: UserId, database: &Database) -> Result<Response, Er
     tracing::debug!("请求成功完成");
     Ok(Response::new(result))
 }
+
 ```
 
 - **`tokio-console`**：运行时任务检查工具。
@@ -1704,6 +1716,7 @@ async fn consume_jobs(mut rx: mpsc::Receiver<Job>) {
         process_job(job).await;
     }
 }
+
 ```
 
 - **信号量控制**：限制并发任务数量。
@@ -1790,6 +1803,7 @@ async fn handle_connection(
 ) {
     // 连接处理逻辑...
 }
+
 ```
 
 **关键模式**：
@@ -1870,6 +1884,7 @@ impl UserServiceClient {
         }).await
     }
 }
+
 ```
 
 **关键模式**：
@@ -1966,6 +1981,7 @@ async fn process_sensor_data() {
         send_alert(&alert).await;
     }
 }
+
 ```
 
 **流处理模式**：
@@ -2023,6 +2039,7 @@ async fn main(_spawner: Spawner) {
         Timer::after(Duration::from_millis(500)).await;
     }
 }
+
 ```
 
 **嵌入式异步方案**：
@@ -2097,6 +2114,7 @@ impl AsyncFile {
         }
     }
 }
+
 ```
 
 **系统集成模式**：
@@ -2161,6 +2179,7 @@ async fn compute_async(input: &[u8]) -> Result<Vec<u8>, i32> {
         Err(status)
     }
 }
+
 ```
 
 **集成模式**：
@@ -2270,6 +2289,7 @@ async fn parse_http<T: AsyncRead + Unpin>(
         }
     }
 }
+
 ```
 
 **协议实现模式**：
@@ -2361,6 +2381,7 @@ async fn process_data(data: &[u8]) -> Result<Vec<u8>, Error> {
     
     // ...
 }
+
 ```
 
 - **`async` 的不必要使用**：过度使用异步。
@@ -2642,6 +2663,7 @@ impl Executor {
         }
     }
 }
+
 ```
 
 **批判性分析**：
@@ -2697,6 +2719,7 @@ struct TokioAllocator {
     // 大对象直接使用系统分配器
     large_objects: SystemAllocator,
 }
+
 ```
 
 **批判性分析**：
@@ -2768,6 +2791,7 @@ struct IocpDriver {
 impl EventDriver for IocpDriver {
     // 相应的Windows特定实现...
 }
+
 ```
 
 **批判性分析**：
@@ -2837,6 +2861,7 @@ fn on_task_complete(metrics: &RuntimeMetrics, duration: Duration) {
     metrics.tasks_completed.fetch_add(1, Ordering::Relaxed);
     metrics.poll_durations.record(duration);
 }
+
 ```
 
 **批判性分析**：
@@ -3044,4 +3069,5 @@ Rust异步编程全面分析与评估
     ├── 执行器内部原理
     ├── 语言演进预测
     └── 未来应用领域
+
 ```

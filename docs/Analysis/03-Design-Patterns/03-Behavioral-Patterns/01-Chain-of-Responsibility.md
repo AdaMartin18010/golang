@@ -150,6 +150,7 @@ classDiagram
     BaseHandler <|-- ConcreteHandlerB
     Handler --> Request
     Handler --> Response
+
 ```
 
 ### 3.3.1.4.2 时序图
@@ -176,6 +177,7 @@ sequenceDiagram
             HandlerC->>Client: Response
         end
     end
+
 ```
 
 ### 3.3.1.4.3 状态转换图
@@ -193,6 +195,7 @@ stateDiagram-v2
     NoMoreHandlers --> ErrorResponse
     ResponseSent --> [*]
     ErrorResponse --> [*]
+
 ```
 
 ## 3.3.1.5 4. Golang实现
@@ -243,6 +246,7 @@ func (h *BaseHandler) HandleNext(request Request) Response {
         Error:   fmt.Errorf("no handler available"),
     }
 }
+
 ```
 
 ### 3.3.1.5.2 具体处理者实现
@@ -402,6 +406,7 @@ func (h *ProcessingHandler) Handle(request Request) Response {
         Handler: h.name,
     }
 }
+
 ```
 
 ### 3.3.1.5.3 并发安全实现
@@ -457,6 +462,7 @@ func (h *ConcurrentHandler) Handle(request Request) Response {
     
     return h.HandleNext(request)
 }
+
 ```
 
 ### 3.3.1.5.4 链构建器
@@ -535,6 +541,7 @@ func ExampleChainBuilder() {
     response := chain.Handle(request)
     fmt.Printf("Response: %+v\n", response)
 }
+
 ```
 
 ## 3.3.1.6 5. 性能分析
@@ -611,6 +618,7 @@ func (p *HandlerPool) Put(h *BaseHandler) {
     h.next = nil // 清理引用
     p.pool.Put(h)
 }
+
 ```
 
 ### 3.3.1.6.3 并发性能分析
@@ -681,6 +689,7 @@ func BenchmarkConcurrentChain(b *testing.B) {
         }
     })
 }
+
 ```
 
 ## 3.3.1.7 6. 应用场景
@@ -714,6 +723,7 @@ func (m *AuthMiddleware) Process(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 }
+
 ```
 
 ### 3.3.1.7.2 审批流程
@@ -746,6 +756,7 @@ func (h *ApprovalHandler) Handle(request Request) Response {
         Handler: h.name,
     }
 }
+
 ```
 
 ### 3.3.1.7.3 异常处理
@@ -779,6 +790,7 @@ func (h *ExceptionHandler) Handle(request Request) Response {
         Handler: h.name,
     }
 }
+
 ```
 
 ## 3.3.1.8 7. 最佳实践
@@ -840,6 +852,7 @@ func LogProcessingSystem() {
         chain.Handle(request)
     }
 }
+
 ```
 
 ### 3.3.1.9.2 数据验证系统
@@ -877,6 +890,7 @@ func DataValidationSystem() {
         fmt.Printf("Validation result: %+v\n", response)
     }
 }
+
 ```
 
 ---

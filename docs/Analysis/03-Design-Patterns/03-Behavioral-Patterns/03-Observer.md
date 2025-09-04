@@ -162,6 +162,7 @@ classDiagram
     Subject --> Observer
     Subject --> Event
     Observer --> Event
+
 ```
 
 ### 3.3.1.4.2 时序图
@@ -194,6 +195,7 @@ sequenceDiagram
     Subject->>Subject: Notify()
     Subject->>Observer1: Update(event)
     Subject->>Observer3: Update(event)
+
 ```
 
 ### 3.3.1.4.3 状态转换图
@@ -208,6 +210,7 @@ stateDiagram-v2
     Processing --> Unsubscribed
     Unsubscribed --> [*]
     Notified --> Unsubscribed
+
 ```
 
 ## 3.3.1.5 4. Golang实现
@@ -249,6 +252,7 @@ type EventBus interface {
     Publish(event Event) error
     GetSubscribers(eventType string) []Observer
 }
+
 ```
 
 ### 3.3.1.5.2 基础事件实现
@@ -309,6 +313,7 @@ func NewConcreteEvent(eventType string, data interface{}, source Subject, metada
 func (e *ConcreteEvent) GetMetadata() map[string]interface{} {
     return e.metadata
 }
+
 ```
 
 ### 3.3.1.5.3 主题实现
@@ -441,6 +446,7 @@ func NewConcreteSubject(name string) *ConcreteSubject {
 func (s *ConcreteSubject) GetName() string {
     return s.name
 }
+
 ```
 
 ### 3.3.1.5.4 观察者实现
@@ -563,6 +569,7 @@ func (o *AsyncObserver) processEvents() {
 func (o *AsyncObserver) Stop() {
     close(o.done)
 }
+
 ```
 
 ### 3.3.1.5.5 事件总线实现
@@ -713,6 +720,7 @@ func (b *EventBus) notifySubscribers(event Event) {
 func (b *EventBus) Stop() {
     close(b.done)
 }
+
 ```
 
 ### 3.3.1.5.6 具体应用实现
@@ -818,6 +826,7 @@ func (o *StockPriceObserver) Update(event Event) error {
     
     return nil
 }
+
 ```
 
 ## 3.3.1.6 5. 性能分析
@@ -911,6 +920,7 @@ func (p *ObserverPool) Put(observer *BaseObserver) {
     observer.subject = nil
     p.pool.Put(observer)
 }
+
 ```
 
 ### 3.3.1.6.3 并发性能分析
@@ -1009,6 +1019,7 @@ func BenchmarkAsyncObserver(b *testing.B) {
     
     observer.Stop()
 }
+
 ```
 
 ## 3.3.1.7 6. 应用场景
@@ -1095,6 +1106,7 @@ func (o *UIObserver) Update(event Event) error {
     
     return o.renderer(event.GetType(), data)
 }
+
 ```
 
 ### 3.3.1.7.2 配置管理系统
@@ -1175,6 +1187,7 @@ func (o *ConfigObserver) Update(event Event) error {
     
     return handler(oldValue, newValue)
 }
+
 ```
 
 ### 3.3.1.7.3 日志系统
@@ -1282,6 +1295,7 @@ func (h *LogHandler) shouldLog(level string) bool {
     
     return messageLevel >= currentLevel
 }
+
 ```
 
 ## 3.3.1.8 7. 最佳实践
@@ -1356,6 +1370,7 @@ func StockMonitoringSystem() {
     // 模拟Google价格变化
     googl.SetPrice(2800.0)
 }
+
 ```
 
 ### 3.3.1.9.2 事件驱动架构
@@ -1468,6 +1483,7 @@ func (s *AuditService) GetObserver() Observer {
         },
     )
 }
+
 ```
 
 ---

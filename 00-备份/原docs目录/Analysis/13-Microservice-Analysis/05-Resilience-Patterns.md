@@ -211,6 +211,7 @@ func (cb *CircuitBreaker) ForceClose() {
     cb.FailureCount = 0
     cb.SuccessCount = 0
 }
+
 ```
 
 ### 断路器管理器
@@ -271,6 +272,7 @@ func (cbm *CircuitBreakerManager) GetAllStates() map[string]CircuitState {
     
     return states
 }
+
 ```
 
 ## 重试模式
@@ -462,6 +464,7 @@ func (tre *TimeoutRetryExecutor) Execute(operation func() error) error {
     
     return fmt.Errorf("operation failed after %d attempts: %v", tre.policy.MaxRetries, lastErr)
 }
+
 ```
 
 ## 超时模式
@@ -608,6 +611,7 @@ func (tm *TimeoutManager) Execute(operation string, fn func() error) error {
     executor := NewTimeoutExecutor(policy)
     return executor.Execute(operation, fn)
 }
+
 ```
 
 ## 降级模式
@@ -788,6 +792,7 @@ func (fe *FallbackExecutor) ExecuteWithCache(
     
     return result, err
 }
+
 ```
 
 ## 舱壁模式
@@ -1012,6 +1017,7 @@ func (bm *BulkheadManager) GetAllPoolStatus() map[string]*PoolStatus {
     
     return status
 }
+
 ```
 
 ## 总结

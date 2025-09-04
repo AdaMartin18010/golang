@@ -54,13 +54,6 @@
   - [1.12 11. 思维导图：Rust语言全景分析](#11-思维导图：rust语言全景分析)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 Rust语言全面分析：优势、挑战与发展趋势
 
 ## 1.1 目录
@@ -236,6 +229,7 @@ fn main() {
     
     println!("z: {}", z); // 输出11
 }
+
 ```
 
 **批判性分析**：
@@ -275,6 +269,7 @@ let x = match opt {
     Some(v) => v,
     None => never_returns(),  // 合法，因为!可以隐式转换为任何类型
 };
+
 ```
 
 **批判性分析**：
@@ -318,6 +313,7 @@ struct Point {
     x: i32,
     y: i32,
 }
+
 ```
 
 **批判性分析**：
@@ -360,6 +356,7 @@ fn analyze_number(num: i32) {
 
 // 结构体解构
 let Point { x, y } = point;  // 将point的x和y字段绑定到同名变量
+
 ```
 
 **批判性分析**：
@@ -400,6 +397,7 @@ fn ownership_example() {
 fn borrow_example(s: &String) -> usize {  // 借用参数，不获取所有权
     s.len()
 }  // 函数结束后，借用结束，但原字符串未被销毁
+
 ```
 
 **批判性分析**：
@@ -441,6 +439,7 @@ fn first<T>(slice: &[T]) -> Option<&T> {
 fn process<T: AsRef<str> + Send + 'static>(item: T) -> usize {
     item.as_ref().len()
 }
+
 ```
 
 **批判性分析**：
@@ -486,6 +485,7 @@ fn pointer_examples() {
         println!("Raw pointer: {}", *raw); // 使用unsafe解引用
     }
 }
+
 ```
 
 **批判性分析**：
@@ -519,6 +519,7 @@ struct MyWrapper(Vec<i32>);
 impl ExternalTrait for MyWrapper {
     // 实现方法...
 }
+
 ```
 
 **批判性分析**：
@@ -560,6 +561,7 @@ fn use_division() -> Result<(), String> {
     println!("Result: {}", result);
     Ok(())
 }
+
 ```
 
 **批判性分析**：
@@ -602,6 +604,7 @@ fn main() {
     
     println!("Program continues");
 }
+
 ```
 
 **批判性分析**：
@@ -649,6 +652,7 @@ fn read_username_concise() -> Result<String, io::Error> {
     file.read_to_string(&mut username)?;
     Ok(username)
 }
+
 ```
 
 **批判性分析**：
@@ -699,6 +703,7 @@ fn process_data() -> Result<()> {
     // 更多处理...
     Ok(())
 }
+
 ```
 
 **批判性分析**：
@@ -765,14 +770,15 @@ fn nll_
 ```rust
 fn nll_example() {
     let mut v = vec![1, 2, 3];
-    
+  
     let r = &v[0];    // 不可变借用开始
     println!("{}", r); // 不可变借用最后使用
-    
+  
     // 在NLL之前，这里会报错，因为r的借用被认为持续到作用域结束
     // 有了NLL，编译器识别到r不再使用，允许后续的可变借用
     v.push(4);        // 可变借用开始并结束
 }
+
 ```
 
 **批判性分析**：
@@ -808,6 +814,7 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
 struct Excerpt<'a> {
     part: &'a str,
 }
+
 ```
 
 **批判性分析**：
@@ -869,7 +876,7 @@ use std::sync::{Arc, Mutex};
 fn thread_safety_example() {
     let counter = Arc::new(Mutex::new(0));
     let mut handles = vec![];
-    
+  
     for _ in 0..10 {
         let counter_clone = Arc::clone(&counter);
         let handle = thread::spawn(move || {
@@ -878,13 +885,14 @@ fn thread_safety_example() {
         });
         handles.push(handle);
     }
-    
+  
     for handle in handles {
         handle.join().unwrap();
     }
-    
+  
     println!("Final count: {}", *counter.lock().unwrap());
 }
+
 ```
 
 **批判性分析**：
@@ -922,13 +930,15 @@ async fn fetch_data(url: &str) -> Result<String, reqwest::Error> {
     Ok(body)
 }
 
-#[tokio::main]
+# [tokio::main]
+
 async fn main() {
     match fetch_data("https://example.com").await {
         Ok(data) => println!("Received: {}", data),
         Err(e) => eprintln!("Error: {}", e),
     }
 }
+
 ```
 
 **批判性分析**：
@@ -960,6 +970,7 @@ fn process<'d>(data: &'d Vec<u8>) -> impl Iterator<Item = u8> + 'd {
 fn process(data: &Vec<u8>) -> impl Iterator<Item = u8> {
     data.iter().map(|v| *v + 1)
 }
+
 ```
 
 **异步编程改进**：
@@ -998,7 +1009,9 @@ Rust没有内置异步运行时，而是依赖第三方库提供异步执行环�
 
 ```rust
 // tokio运行时示例
-#[tokio::main]
+
+# [tokio::main]
+
 async fn main() {
     // 使用tokio的异步功能
     let result = tokio::fs::read_to_string("data.txt").await;
@@ -1013,11 +1026,12 @@ fn custom_runtime() {
         .enable_time()
         .build()
         .unwrap();
-    
+  
     runtime.block_on(async {
         // 异步代码
     });
 }
+
 ```
 
 **批判性分析**：
@@ -1063,6 +1077,7 @@ cc = "1.0"
 [profile.release]
 opt-level = 3
 lto = true
+
 ```
 
 **工作空间(Workspace)**：
@@ -1102,6 +1117,7 @@ project/
 ├── benches/             # 基准测试
 ├── build.rs             # 构建脚本
 └── Cargo.toml           # 项目配置
+
 ```
 
 **项目组织模式**：
@@ -1142,6 +1158,7 @@ use crate::networking::Client;
 
 // 重导出API
 pub use self::internal::helper;  // 内部项重导出为公开API
+
 ```
 
 **路径解析规则**：
@@ -1189,6 +1206,7 @@ fn use_config() {
     // 首次访问时CONFIG会被初始化
     println!("Config value: {}", CONFIG.value);
 }
+
 ```
 
 **批判性分析**：
@@ -1716,4 +1734,5 @@ Rust语言全景分析
         ├── 学习曲线优化可能性
         ├── 与竞争语言的对比优势
         └── 长期生态系统可持续性
+
 ```

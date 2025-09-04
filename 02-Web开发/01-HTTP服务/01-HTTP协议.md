@@ -49,6 +49,7 @@ Content-Type: text/html; charset=UTF-8
 Content-Length: 1024
 
 <html>...</html>
+
 ```
 
 ### 2.1.1.1.3 **常用HTTP方法**
@@ -93,6 +94,7 @@ func main() {
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(string(body))
 }
+
 ```
 
 ### 2.1.1.2.2 **解析HTTP请求（服务器）**
@@ -110,6 +112,7 @@ func main() {
     http.HandleFunc("/", handler)
     http.ListenAndServe(":8080", nil)
 }
+
 ```
 
 ## 2.1.1.3 🎯 **最佳实践**

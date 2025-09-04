@@ -44,19 +44,6 @@
     - [1.9.4 高阶抽象的类型代数](#高阶抽象的类型代数)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>
 用户要求专注于类型代数（Type Algebra）相关内容及其形式化推理、定理、证明等。
@@ -72,6 +59,7 @@
 
 我将按照这个结构重新组织内容，注重形式定义、推理规则、定理及其证明，以及在编程语言理论中的应用。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -581,6 +569,7 @@
 type family Map (f :: * -> *) (xs :: [*]) :: [*] where
   Map f '[] = '[]
   Map f (x ': xs) = f x ': Map f xs
+
 ```
 
 **定理 8.1.3**（类型族的代数性质）：类型族可以满足函子、应用函子和单子的代数法则，形成类型级代数结构。
@@ -599,6 +588,7 @@ type family Map (f :: * -> *) (xs :: [*]) :: [*] where
 ```haskell
 class Functor f where
   fmap :: (a -> b) -> f a -> f b
+
 ```
 
 并满足函子法则：
@@ -612,6 +602,7 @@ class Functor f where
 class Monad m where
   return :: a -> m a
   (>>=) :: m a -> (a -> m b) -> m b
+
 ```
 
 并满足单子法则：
@@ -639,6 +630,7 @@ effect State s where
   get(); put(s) = λx. put(s); return s
   put(s); get() = λx. put(s); return s
   put(s); put(s') = λx. put(s')
+
 ```
 
 **定理 8.3.4**（效应组合）：不同的代数效应可以通过自由模型组合，形成复合效应系统，满足特定的代数法则。
@@ -659,6 +651,7 @@ def compose[F[_], G[_]](implicit F: Functor[F], G: Functor[G]): Functor[λ[α =>
     def map[A, B](f: A => B)(fa: F[G[A]]): F[G[B]] =
       F.map(fa)(ga => G.map(ga)(f))
   }
+
 ```
 
 **定理 8.4.5**（高阶抽象的表达能力）：高阶类型抽象增强了类型系统的表达能力，允许捕获复杂的代数结构和模式，实现高度模块化和可重用的组件。

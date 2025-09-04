@@ -267,6 +267,7 @@ func (s *SortContext) GetCurrentStrategy() string {
     }
     return s.strategy.GetName()
 }
+
 ```
 
 ### 3.3.1.4.2 支付策略模式
@@ -527,6 +528,7 @@ func (p *PaymentProcessor) GetSupportedCurrencies() []string {
     }
     return p.strategy.GetSupportedCurrencies()
 }
+
 ```
 
 ### 3.3.1.4.3 压缩策略模式
@@ -732,6 +734,7 @@ func (c *CompressionContext) GetCurrentStrategy() string {
     }
     return c.strategy.GetName()
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -1047,6 +1050,7 @@ func (r *RoutingContext) GetStrategyDescription() string {
     }
     return r.strategy.GetDescription()
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

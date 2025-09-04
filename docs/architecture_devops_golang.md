@@ -124,6 +124,7 @@ classDiagram
     Pipeline "1" -- "many" Stage
     Stage "1" -- "many" Job
     Job "1" -- "many" Step
+
 ```
 
 ---
@@ -242,6 +243,7 @@ func (pe *PipelineEngine) ExecuteStage(ctx context.Context, execution *PipelineE
         return pe.executeJobsSequential(ctx, execution, stage)
     }
 }
+
 ```
 
 ### 6.2 多环境部署策略
@@ -325,6 +327,7 @@ func (cd *CanaryDeployment) Deploy(ctx context.Context, app *Application, target
     // 3. 完全切换到新版本
     return cd.TrafficManager.SetTrafficSplit(ctx, target.Stable, canaryDeployment, 1.0)
 }
+
 ```
 
 ## 7. 基础设施即代码（IaC）
@@ -424,6 +427,7 @@ func (im *InfrastructureManager) Apply(ctx context.Context, plan *Infrastructure
     // 3. 更新状态
     return im.StateManager.UpdateState(ctx, plan.Resources)
 }
+
 ```
 
 ### 7.2 多云资源管理
@@ -486,6 +490,7 @@ func (p *GCPProvider) CreateResource(ctx context.Context, resource *ResourceDefi
         return fmt.Errorf("unsupported resource type: %s", resource.Type)
     }
 }
+
 ```
 
 ## 8. 可观测性与监控 (Observability & Monitoring)
@@ -518,6 +523,7 @@ graph TD
         G --> H;
         E --> I(Alertmanager);
     end
+
 ```
 
 **实现概览**:
@@ -541,7 +547,9 @@ Chaos Mesh是一个云原生的混沌工程平台，可以在Kubernetes环境中
 **Pod Kill实验**: 模拟随机杀死一个Pod的场景，以验证应用的自愈能力（如Deployment是否能自动拉起新Pod）。
 
 ```yaml
+
 # 2 2 2 2 2 2 2 pod-kill-chaos.yaml
+
 apiVersion: chaos-mesh.org/v1alpha1
 kind: PodChaos
 metadata:
@@ -560,6 +568,7 @@ spec:
   duration: '10m'
   scheduler:
     cron: '@every 1m' # 每分钟执行一次
+
 ```
 
 通过`kubectl apply -f pod-kill-chaos.yaml`应用后，Chaos Mesh会每分钟随机杀死一个带有`app: my-golang-app`标签的Pod，持续10分钟。运维团队可以借此观察应用的响应时间、错误率以及恢复速度。
@@ -666,6 +675,7 @@ func (shs *SelfHealingSystem) executeHealingPolicy(ctx context.Context, policy *
     
     return nil
 }
+
 ```
 
 ### 10.2 配置管理与自动化
@@ -737,6 +747,7 @@ func (cm *ConfigurationManager) RollbackConfig(ctx context.Context, configID str
     // 2. 执行回滚
     return cm.RollbackManager.Rollback(ctx, version)
 }
+
 ```
 
 ## 11. 安全合规与治理
@@ -830,6 +841,7 @@ func (scm *SecurityComplianceManager) CheckCompliance(ctx context.Context, frame
     // 执行合规检查
     return frameworkImpl.CheckCompliance(ctx)
 }
+
 ```
 
 ### 11.2 访问控制与审计
@@ -893,6 +905,7 @@ func (acm *AccessControlManager) CheckAccess(ctx context.Context, req *AccessReq
         Timestamp: time.Now(),
     }, nil
 }
+
 ```
 
 ## 12. 性能优化与资源管理
@@ -953,6 +966,7 @@ func (ro *ResourceOptimizer) AnalyzeAndOptimize(ctx context.Context) error {
     
     return nil
 }
+
 ```
 
 ### 12.2 容量规划
@@ -1004,6 +1018,7 @@ func (cp *CapacityPlanner) ForecastCapacity(ctx context.Context, resource string
         Factors:    factors,
     }, nil
 }
+
 ```
 
 ## 13. 实际案例分析
@@ -1075,6 +1090,7 @@ func (sm *ServiceManager) scaleUp(ctx context.Context, service *Service, targetR
     
     return nil
 }
+
 ```
 
 ### 13.2 云原生DevOps实践
@@ -1127,6 +1143,7 @@ func (gw *GitOpsWorkflow) SyncInfrastructure(ctx context.Context) error {
     // 4. 应用变更
     return gw.argocd.Sync(ctx, resources)
 }
+
 ```
 
 ## 14. 相关架构主题
@@ -1146,4 +1163,4 @@ func (gw *GitOpsWorkflow) SyncInfrastructure(ctx context.Context) error {
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

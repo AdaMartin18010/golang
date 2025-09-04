@@ -94,6 +94,7 @@ impl ServiceApi for MicroService {
         Ok(Response::new(ServiceResponse::default()))
     }
 }
+
 ```
 
 #### 1.2.2.2 事件驱动架构
@@ -127,6 +128,7 @@ impl EventBus {
         Ok(())
     }
 }
+
 ```
 
 ## 1.3 业务领域概念建模
@@ -164,6 +166,7 @@ pub enum ResourceStatus {
     Failed,
     Terminating,
 }
+
 ```
 
 #### 1.3.1.2 服务发现
@@ -186,6 +189,7 @@ pub enum HealthStatus {
     Unhealthy,
     Unknown,
 }
+
 ```
 
 #### 1.3.1.3 配置管理
@@ -201,6 +205,7 @@ pub struct Configuration {
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
+
 ```
 
 ## 1.4 数据建模
@@ -234,6 +239,7 @@ impl DistributedKVStore {
         Ok(data.get(key).cloned())
     }
 }
+
 ```
 
 #### 1.4.1.2 配置数据库
@@ -281,6 +287,7 @@ impl ConfigDatabase {
         }))
     }
 }
+
 ```
 
 ## 1.5 流程建模
@@ -330,6 +337,7 @@ impl DeploymentManager {
         })
     }
 }
+
 ```
 
 #### 1.5.1.2 自动扩缩容流程
@@ -365,6 +373,7 @@ impl AutoScaler {
         Ok(())
     }
 }
+
 ```
 
 ## 1.6 组件建模
@@ -423,6 +432,7 @@ impl ApiGateway {
         Ok(response)
     }
 }
+
 ```
 
 #### 1.6.1.2 服务网格代理
@@ -483,6 +493,7 @@ impl ServiceMeshProxy {
         }
     }
 }
+
 ```
 
 ## 1.7 运维运营
@@ -534,6 +545,7 @@ impl MetricsCollector {
         self.error_counter.inc();
     }
 }
+
 ```
 
 #### 1.7.1.2 日志聚合
@@ -566,6 +578,7 @@ pub struct LogEntry {
     pub message: String,
     pub metadata: HashMap<String, String>,
 }
+
 ```
 
 ### 1.7.2 部署和CI/CD
@@ -573,7 +586,9 @@ pub struct LogEntry {
 #### 1.7.2.1 容器化部署
 
 ```dockerfile
+
 # 2 2 2 2 2 2 2 Dockerfile for Rust cloud service
+
 FROM rust:1.75 as builder
 WORKDIR /usr/src/app
 COPY . .
@@ -584,12 +599,15 @@ RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/
 COPY --from=builder /usr/src/app/target/release/cloud-service /usr/local/bin/
 EXPOSE 8080
 CMD ["cloud-service"]
+
 ```
 
 #### 2 2 2 2 2 2 2 Kubernetes部署配置
 
 ```yaml
+
 # 3 3 3 3 3 3 3 deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -634,6 +652,7 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
+
 ```
 
 ### 3 3 3 3 3 3 3 安全最佳实践
@@ -672,6 +691,7 @@ impl SecretManager {
         Ok(String::from_utf8(decrypted.plaintext().unwrap().to_vec())?)
     }
 }
+
 ```
 
 ## 3.1 性能优化
@@ -714,6 +734,7 @@ impl MemoryPool {
         }
     }
 }
+
 ```
 
 ### 3.1.2 并发优化
@@ -752,6 +773,7 @@ impl ConnectionPool {
         }
     }
 }
+
 ```
 
 ## 3.2 总结

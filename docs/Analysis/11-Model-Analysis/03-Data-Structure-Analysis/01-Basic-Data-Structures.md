@@ -53,19 +53,6 @@
   - [11.3.1.10 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.3.1.1 目录
 
 1. [概述](#概述)
@@ -174,6 +161,7 @@ func (a *Array[T]) Clear() {
         a.data[i] = zero
     }
 }
+
 ```
 
 ### 11.3.1.3.3 性能分析
@@ -355,6 +343,7 @@ func (l *LinkedList[T]) Clear() {
     l.tail = nil
     l.size = 0
 }
+
 ```
 
 ### 11.3.1.4.3 性能分析
@@ -468,6 +457,7 @@ func (s *Stack[T]) Clear() {
         s.data[i] = zero
     }
 }
+
 ```
 
 ### 11.3.1.5.3 性能分析
@@ -592,6 +582,7 @@ func (q *Queue[T]) Clear() {
         q.data[i] = zero
     }
 }
+
 ```
 
 ### 11.3.1.6.3 性能分析
@@ -754,6 +745,7 @@ func (d *Deque[T]) Clear() {
         d.data[i] = zero
     }
 }
+
 ```
 
 ### 11.3.1.7.3 性能分析
@@ -869,6 +861,7 @@ func getNode() *Node {
 func putNode(node *Node) {
     nodePool.Put(node)
 }
+
 ```
 
 #### 11.3.1.9.2.2 并发优化
@@ -889,6 +882,7 @@ func (s *AtomicStack[T]) Push(element T) {
         }
     }
 }
+
 ```
 
 #### 11.3.1.9.2.3 缓存优化
@@ -900,6 +894,7 @@ type CacheFriendlyNode[T any] struct {
     Next *CacheFriendlyNode[T]
     _    [64 - unsafe.Sizeof(T) - unsafe.Sizeof(unsafe.Pointer(nil))]byte // 填充到64字节
 }
+
 ```
 
 ### 11.3.1.9.3 3. 错误处理
@@ -913,6 +908,7 @@ func (a *Array[T]) boundsCheck(index int) error {
     }
     return nil
 }
+
 ```
 
 #### 11.3.1.9.3.2 空值检查
@@ -924,6 +920,7 @@ func (l *LinkedList[T]) nullCheck() error {
     }
     return nil
 }
+
 ```
 
 ### 11.3.1.9.4 4. 测试策略
@@ -948,6 +945,7 @@ func TestArrayOperations(t *testing.T) {
         t.Errorf("Expected value 2 at index 1, got %d", val)
     }
 }
+
 ```
 
 #### 11.3.1.9.4.2 性能测试
@@ -970,6 +968,7 @@ func BenchmarkLinkedListAppend(b *testing.B) {
         list.InsertAtTail(i)
     }
 }
+
 ```
 
 #### 11.3.1.9.4.3 并发测试
@@ -995,6 +994,7 @@ func TestConcurrentStack(t *testing.T) {
         t.Errorf("Expected size 1000, got %d", stack.Size())
     }
 }
+
 ```
 
 ---

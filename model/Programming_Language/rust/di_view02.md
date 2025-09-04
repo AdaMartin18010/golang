@@ -40,19 +40,6 @@
     - [1.2.12 12. 扩展思维导图 (Text)](#12-扩展思维导图-text)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [依赖注入 (DI) 机制深度解析](#依赖注入-di-机制深度解析)
@@ -207,6 +194,7 @@ fn main() {
     generic_email_notifier.notify("Charlie", "Generic email notification.");
 
 }
+
 ```
 
 ##### 1.2.1.4.2 1.5.2. Setter 方法注入 (Setter Injection)
@@ -265,6 +253,7 @@ fn main() {
     runner.set_logger(console_logger); // 注入 Logger
     runner.run_task("Task B"); // 现在有 Logger 了
 }
+
 ```
 
 ##### 1.2.1.4.3 1.5.3. 接口注入 (Interface Injection)
@@ -461,6 +450,7 @@ DI 是构建现代、松耦合架构模式的关键技术。
 │
 └── 6. 总结
     └── 核心关联: DI ←(实现) IoC →(遵循) DIP; DI + 设计模式; DI 支撑架构模式; DI 有利于形式化验证; DI 贯穿不同抽象层次.
+
 ```
 
 ### 1.2.7 7. DI 容器与框架 (尤其在 Rust 中)
@@ -796,4 +786,5 @@ Rust 生态中有许多库可以帮助进行配置管理，例如：
 │   └── 代码演进/重构: (优点: 易替换/测试/隔离; 挑战: 核心接口变更, 理解依赖图)
 │
 └── (接上文...)
+
 ```

@@ -59,6 +59,7 @@ fn main() {
     let point = Point { x: 3.0, y: 4.0 };
     point.print(); // 输出: Point coordinates: (3.0, 4.0)
 }
+
 ```
 
 在这个示例中，`Point` 是一个结构体，`Printable` 是一个特质，`impl` 块为 `Point` 提供了 `Printable` 特质的具体实现。这样，`Point` 类型的实例就能够调用 `print` 方法来打印它们自己的坐标。

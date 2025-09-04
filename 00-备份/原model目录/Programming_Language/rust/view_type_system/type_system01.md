@@ -251,6 +251,7 @@ int a = 5;
 int *p = &a;
 // 错误：不能将整数与指针相加
 int result = p + a; 
+
 ```
 
 #### 7.1.2 **Python中的动态类型系统**
@@ -264,6 +265,7 @@ print(x)
 
 x = "Hello"  # x 现在是字符串
 print(x)
+
 ```
 
 虽然这种灵活性使得开发更快速，但也可能导致运行时错误：
@@ -271,8 +273,11 @@ print(x)
 ```python
 x = 10
 y = "5"
+
 # 运行时错误：TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
 result = x + y
+
 ```
 
 #### 7.1.3 **Haskell中的强类型系统**
@@ -289,6 +294,7 @@ result = add 5 10  -- 返回 15
 
 -- 错误调用
 -- result = add 5 "10"  -- 编译错误：类型不匹配
+
 ```
 
 Haskell的类型系统在编译时捕获了类型错误，确保了程序的安全性。
@@ -306,6 +312,7 @@ fn main() {
     // println!("{}", s1); // 编译错误：s1 的值已被移动
     println!("{}", s2); // 正常输出
 }
+
 ```
 
 Rust的类型系统通过所有权和借用机制，确保了内存安全和数据竞争的避免。

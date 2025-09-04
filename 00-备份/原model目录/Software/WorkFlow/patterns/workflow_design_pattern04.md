@@ -127,6 +127,7 @@ pub struct Asset {
     pub properties: HashMap<String, PropertyValue>,// 资产属性
     pub metadata: HashMap<String, Value>,         // 元数据
 }
+
 ```
 
 ### 2. IOT行业规范整合
@@ -152,6 +153,7 @@ pub enum MqttVersion {
     V3_1_1,                    // MQTT 3.1.1
     V5_0,                      // MQTT 5.0
 }
+
 ```
 
 #### 2.2 行业标准
@@ -180,6 +182,7 @@ pub enum DataModelStandard {
     W3C_WoT_TD,               // W3C WoT Thing Description
     Custom(String),           // 自定义数据模型
 }
+
 ```
 
 ## II. IOT工作流系统领域模型设计
@@ -335,6 +338,7 @@ pub mod iot_workflow_domain {
         pub tags: HashMap<String, String>,
     }
 }
+
 ```
 
 ### 2. IOT设备管理与集成
@@ -416,6 +420,7 @@ pub mod device_management {
         },
     }
 }
+
 ```
 
 ### 3. 数字孪生与资产建模
@@ -495,6 +500,7 @@ pub mod digital_twin {
         },
     }
 }
+
 ```
 
 ## III. IOT工作流系统架构设计
@@ -537,6 +543,7 @@ pub mod digital_twin {
 │  │ 安全服务     │  │ 监控与遥测   │  │ 分布式锁             │  │
 │  └──────────────┘  └──────────────┘  └──────────────────────┘  │
 └───────────────────────────────────────────────────────────────┘
+
 ```
 
 ### 2. 组件间通信与集成
@@ -669,6 +676,7 @@ impl IotWorkflowIntegration {
         }
     }
 }
+
 ```
 
 ### 3. 设备数据持久化策略
@@ -792,6 +800,7 @@ pub enum LifecyclePolicy {
 }
 
 ///
+
 # Rust实现IOT工作流系统的全面设计与分析（续）
 
 ## III. IOT工作流系统架构设计（续）
@@ -847,6 +856,7 @@ pub enum CompressionAlgorithm {
     RLE,
     Custom(String),
 }
+
 ```
 
 ### 4. 边缘计算与云端协同
@@ -866,28 +876,28 @@ pub mod edge_computing {
         pub network_info: NetworkInfo,
         pub location: Option<GeoLocation>,
     }
-    
+  
     /// 边缘工作流引擎
     pub struct EdgeWorkflowEngine {
         /// 本地工作流定义存储
         local_workflow_repository: EdgeWorkflowRepository,
-        
+  
         /// 限制版工作流执行器
         workflow_executor: LimitedWorkflowExecutor,
-        
+  
         /// 遥测预处理器
         telemetry_preprocessor: TelemetryPreprocessor,
-        
+  
         /// 本地规则引擎
         local_rule_engine: EdgeRuleEngine,
-        
+  
         /// 边云同步管理器
         sync_manager: EdgeCloudSyncManager,
-        
+  
         /// 边缘安全模块
         security_manager: EdgeSecurityManager,
     }
-    
+  
     /// 边云协同策略
     pub enum EdgeCloudCollaborationStrategy {
         /// 离线优先 - 边缘节点优先本地处理
@@ -895,20 +905,20 @@ pub mod edge_computing {
             sync_interval: Duration,
             max_offline_period: Duration,
         },
-        
+  
         /// 云端优先 - 优先将数据发送到云端处理
         CloudFirst {
             local_buffer_size: usize,
             retry_strategy: RetryStrategy,
         },
-        
+  
         /// 自适应策略 - 根据网络状况和负载动态调整
         Adaptive {
             network_quality_threshold: f64,
             load_threshold: f64,
             decision_rules: Vec<AdaptiveRule>,
         },
-        
+  
         /// 分流策略 - 明确定义哪些工作流在边缘执行，哪些在云端执行
         Partitioned {
             edge_workflows: Vec<String>,
@@ -916,7 +926,7 @@ pub mod edge_computing {
             hybrid_workflows: Vec<HybridWorkflowConfig>,
         },
     }
-    
+  
     /// 混合工作流配置
     pub struct HybridWorkflowConfig {
         pub workflow_id: String,
@@ -924,14 +934,14 @@ pub mod edge_computing {
         pub cloud_steps: Vec<String>,
         pub decision_points: Vec<HybridDecisionPoint>,
     }
-    
+  
     /// 混合决策点
     pub struct HybridDecisionPoint {
         pub step_id: String,
         pub decision_logic: String,
         pub fallback_location: ExecutionLocation,
     }
-    
+  
     /// 边缘云同步管理器
     pub struct EdgeCloudSyncManager {
         pub node_id: EdgeNodeId,
@@ -941,21 +951,21 @@ pub mod edge_computing {
         pub data_buffer: CircularBuffer<SyncItem>,
         pub last_sync_status: SyncStatus,
     }
-    
+  
     impl EdgeCloudSyncManager {
         /// 同步遥测数据
         pub async fn sync_telemetry(&mut self, data: &[Telemetry]) -> Result<SyncResult, Error> {
             // 1. 应用压缩和批处理
             let compressed_batch = self.compress_telemetry_batch(data)?;
-            
+  
             // 2. 根据网络状态决定同步策略
             let network_status = self.connection_manager.get_network_status().await?;
-            
+  
             match network_status.connectivity {
                 Connectivity::Connected => {
                     // 有网络连接，尝试立即同步
                     match self.connection_manager.send_data(
-                        "telemetry", 
+                        "telemetry",
                         &compressed_batch,
                         QoSLevel::AtLeastOnce
                     ).await {
@@ -982,33 +992,33 @@ pub mod edge_computing {
                 }
             }
         }
-        
+  
         /// 同步工作流结果
         pub async fn sync_workflow_results(&mut self, results: &[EdgeWorkflowResult]) -> Result<SyncResult, Error> {
             // 类似遥测同步的处理逻辑...
             Ok(SyncResult::Synced { count: results.len() })
         }
-        
+  
         /// 启动后台同步任务
         pub fn start_background_sync(&self) -> JoinHandle<()> {
             let sync_manager = self.clone();
-            
+  
             tokio::spawn(async move {
                 let mut interval = tokio::time::interval(sync_manager.sync_strategy.interval);
-                
+  
                 loop {
                     interval.tick().await;
-                    
+  
                     // 尝试同步缓冲区中的数据
                     if let Err(e) = sync_manager.try_sync_buffered_data().await {
                         log::error!("同步缓冲数据失败: {}", e);
                     }
-                    
+  
                     // 尝试同步工作流状态
                     if let Err(e) = sync_manager.sync_workflow_states().await {
                         log::error!("同步工作流状态失败: {}", e);
                     }
-                    
+  
                     // 尝试同步配置和定义
                     if let Err(e) = sync_manager.sync_configurations().await {
                         log::error!("同步配置失败: {}", e);
@@ -1018,6 +1028,7 @@ pub mod edge_computing {
         }
     }
 }
+
 ```
 
 ### 5. 安全与隐私设计
@@ -1033,7 +1044,7 @@ pub mod security {
         pub policy_enforcer: Arc<dyn SecurityPolicyEnforcer>,
         pub anomaly_detector: Arc<dyn AnomalyDetector>,
     }
-    
+  
     /// 工作流安全策略
     pub struct WorkflowSecurityPolicy {
         pub id: String,
@@ -1044,7 +1055,7 @@ pub mod security {
         pub command_restrictions: Vec<CommandRestriction>,
         pub audit_requirements: AuditRequirements,
     }
-    
+  
     /// 工作流权限
     pub struct WorkflowPermission {
         pub action: WorkflowAction,
@@ -1052,7 +1063,7 @@ pub mod security {
         pub resource_id_pattern: String,
         pub conditions: Option<PermissionCondition>,
     }
-    
+  
     /// 数据访问控制
     pub struct DataAccessControl {
         pub data_category: DataCategory,
@@ -1060,7 +1071,7 @@ pub mod security {
         pub field_restrictions: Option<FieldLevelSecurity>,
         pub retention_requirement: Option<RetentionRequirement>,
     }
-    
+  
     /// 字段级安全
     pub struct FieldLevelSecurity {
         pub included_fields: Option<Vec<String>>,
@@ -1068,14 +1079,14 @@ pub mod security {
         pub masking_rules: Vec<DataMaskingRule>,
         pub encryption_rules: Vec<FieldEncryptionRule>,
     }
-    
+  
     /// 数据掩码规则
     pub struct DataMaskingRule {
         pub field_pattern: String,
         pub masking_type: MaskingType,
         pub exemption_roles: Vec<String>,
     }
-    
+  
     /// 掩码类型
     pub enum MaskingType {
         FullMask,                // 完全掩码
@@ -1084,7 +1095,7 @@ pub mod security {
         Tokenize,                // 令牌化
         Redact,                  // 编辑
     }
-    
+  
     /// 设备命令限制
     pub struct CommandRestriction {
         pub command_type: String,
@@ -1093,7 +1104,7 @@ pub mod security {
         pub approval_required: bool,
         pub rate_limit: Option<RateLimit>,
     }
-    
+  
     /// 审计需求
     pub struct AuditRequirements {
         pub audit_level: AuditLevel,
@@ -1101,7 +1112,7 @@ pub mod security {
         pub retention_period: Duration,
         pub data_sovereignty: Option<DataSovereignty>,
     }
-    
+  
     /// 审计级别
     pub enum AuditLevel {
         None,       // 无审计
@@ -1110,7 +1121,7 @@ pub mod security {
         Detailed,   // 详细审计
         Forensic,   // 取证级审计
     }
-    
+  
     /// 安全事件处理工作流
     pub struct SecurityEventHandler {
         pub event_categorizer: SecurityEventCategorizer,
@@ -1118,19 +1129,19 @@ pub mod security {
         pub response_orchestrator: ResponseOrchestrator,
         pub notification_dispatcher: NotificationDispatcher,
     }
-    
+  
     impl SecurityEventHandler {
         /// 处理安全事件
         pub async fn handle_security_event(&self, event: SecurityEvent) -> Result<SecurityResponse, Error> {
             // 1. 对事件进行分类
             let category = self.event_categorizer.categorize(&event).await?;
-            
+  
             // 2. 评估风险级别
             let risk_assessment = self.risk_assessor.assess_risk(&event, &category).await?;
-            
+  
             // 3. 记录安全事件
             self.log_security_event(&event, &category, &risk_assessment).await?;
-            
+  
             // 4. 根据风险级别确定响应策略
             let response_actions = match risk_assessment.risk_level {
                 RiskLevel::Critical | RiskLevel::High => {
@@ -1146,7 +1157,7 @@ pub mod security {
                     self.response_orchestrator.orchestrate_monitoring_response(&event, &risk_assessment).await?
                 },
             };
-            
+  
             // 5. 发送通知
             if risk_assessment.risk_level >= RiskLevel::Medium {
                 self.notification_dispatcher.dispatch_security_notification(
@@ -1155,7 +1166,7 @@ pub mod security {
                     &response_actions
                 ).await?;
             }
-            
+  
             // 6. 返回响应结果
             Ok(SecurityResponse {
                 event_id: event.id,
@@ -1167,6 +1178,7 @@ pub mod security {
         }
     }
 }
+
 ```
 
 ## IV. IOT工作流系统设计模式与实现
@@ -1178,16 +1190,16 @@ pub mod security {
 pub struct DeviceStateManager {
     /// 设备状态存储
     state_store: Arc<dyn DeviceStateStore>,
-    
+  
     /// 状态变更处理器
     state_change_handlers: Vec<Box<dyn StateChangeHandler>>,
-    
+  
     /// 工作流引擎
     workflow_engine: Arc<HighPerformanceWorkflowEngine>,
-    
+  
     /// 数字孪生服务
     digital_twin_service: Arc<dyn DigitalTwinService>,
-    
+  
     /// 状态更新节流设置
     throttle_settings: HashMap<DeviceType, ThrottleSettings>,
 }
@@ -1202,14 +1214,14 @@ impl DeviceStateManager {
     ) -> Result<StateUpdateResult, Error> {
         // 1. 获取当前设备状态
         let current_state = self.state_store.get_device_state(device_id).await?;
-        
+  
         // 2. 应用节流策略
         let throttled_updates = self.apply_throttling(
             device_id,
             &current_state,
             property_updates,
         )?;
-        
+  
         if throttled_updates.is_empty() {
             return Ok(StateUpdateResult {
                 device_id: device_id.clone(),
@@ -1219,29 +1231,29 @@ impl DeviceStateManager {
                 timestamp: Utc::now(),
             });
         }
-        
+  
         // 3. 构建新状态
         let mut new_state = current_state.clone();
         new_state.properties.extend(throttled_updates.clone());
         new_state.last_updated = Utc::now();
         new_state.version += 1;
         new_state.update_source = source;
-        
+  
         // 4. 保存新状态
         self.state_store.save_device_state(&new_state).await?;
-        
+  
         // 5. 触发状态变更事件
         let changes = self.calculate_state_changes(&current_state, &new_state);
         self.trigger_state_change_events(device_id, &changes).await?;
-        
+  
         // 6. 更新数字孪生
         if let Err(e) = self.update_digital_twin(device_id, &throttled_updates).await {
             log::warn!("更新数字孪生失败: {}", e);
         }
-        
+  
         // 7. 触发状态变更工作流
         self.trigger_state_change_workflows(device_id, &changes).await?;
-        
+  
         // 8. 返回结果
         Ok(StateUpdateResult {
             device_id: device_id.clone(),
@@ -1251,7 +1263,7 @@ impl DeviceStateManager {
             timestamp: new_state.last_updated,
         })
     }
-    
+  
     /// 触发状态变更工作流
     async fn trigger_state_change_workflows(
         &self,
@@ -1261,10 +1273,10 @@ impl DeviceStateManager {
         if changes.is_empty() {
             return Ok(());
         }
-        
+  
         // 查找与状态变更相关的工作流
         let state_workflows = self.find_state_change_workflows(device_id, changes).await?;
-        
+  
         for workflow_def in state_workflows {
             // 创建工作流输入
             let input_data = json!({
@@ -1272,7 +1284,7 @@ impl DeviceStateManager {
                 "state_changes": changes,
                 "timestamp": Utc::now(),
             });
-            
+  
             // 启动工作流
             let options = StartWorkflowOptions {
                 workflow_id: None,
@@ -1285,17 +1297,17 @@ impl DeviceStateManager {
                 priority: Some(ExecutionPriority::Normal),
                 execution_deadline: None,
             };
-            
+  
             self.workflow_engine.start_workflow(
                 &workflow_def.id,
                 input_data,
                 options,
             ).await?;
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 查找与状态变更相关的工作流
     async fn find_state_change_workflows(
         &self,
@@ -1304,12 +1316,12 @@ impl DeviceStateManager {
     ) -> Result<Vec<WorkflowDefinition>, Error> {
         // 获取设备信息
         let device = self.state_store.get_device(device_id).await?;
-        
+  
         // 准备匹配条件
         let change_properties: HashSet<String> = changes.iter()
             .map(|c| c.property_name.clone())
             .collect();
-        
+  
         // 查询匹配的工作流
         self.workflow_engine.query_workflow_definitions(|def| {
             // 检查工作流是否包含状态变更触发器
@@ -1325,13 +1337,13 @@ impl DeviceStateManager {
                                         continue;
                                     }
                                 }
-                                
+  
                                 // 检查属性是否匹配
                                 if let Some(properties) = trigger_obj.get("properties").and_then(|p| p.as_array()) {
                                     let trigger_props: HashSet<String> = properties.iter()
                                         .filter_map(|p| p.as_str().map(|s| s.to_string()))
                                         .collect();
-                                    
+  
                                     // 如果有交集，则匹配
                                     if !trigger_props.is_empty() && trigger_props.intersection(&change_properties).count() > 0 {
                                         return true;
@@ -1345,7 +1357,7 @@ impl DeviceStateManager {
                     }
                 }
             }
-            
+  
             false
         }).await
     }
@@ -1375,6 +1387,7 @@ pub enum StateUpdateSource {
     ExternalSystem,   // 外部系统更新
     Rule,             // 规则引擎更新
 }
+
 ```
 
 ### 2. 设备命令处理工作流
@@ -1384,16 +1397,16 @@ pub enum StateUpdateSource {
 pub struct DeviceCommandWorkflow {
     /// 命令管理器
     command_manager: Arc<dyn DeviceCommandManager>,
-    
+  
     /// 设备状态管理器
     state_manager: Arc<DeviceStateManager>,
-    
+  
     /// 工作流引擎
     workflow_engine: Arc<HighPerformanceWorkflowEngine>,
-    
+  
     /// 设备认证服务
     auth_service: Arc<dyn DeviceAuthService>,
-    
+  
     /// 规则引擎
     rule_engine: Arc<dyn RuleEngine>,
 }
@@ -1403,14 +1416,14 @@ impl DeviceCommandWorkflow {
     pub async fn create_command_workflow(&self, device_type: &DeviceType) -> Result<WorkflowDefinition, Error> {
         // 获取设备类型的命令能力
         let command_capabilities = self.get_device_type_commands(device_type).await?;
-        
+  
         // 构建工作流定义
         let mut workflow_def = WorkflowDefinition::new(
             format!("device_command_workflow_{}", device_type),
             format!("{}设备命令工作流", device_type),
             SemanticVersion { major: 1, minor: 0, patch: 0 },
         );
-        
+  
         // 添加起始节点
         workflow_def.add_node(WorkflowNode {
             id: "start".to_string(),
@@ -1420,7 +1433,7 @@ impl DeviceCommandWorkflow {
                 "event_type": "start"
             }),
         });
-        
+  
         // 添加设备验证节点
         workflow_def.add_node(WorkflowNode {
             id: "validate_device".to_string(),
@@ -1432,7 +1445,7 @@ impl DeviceCommandWorkflow {
                 "retry_count": 3,
             }),
         });
-        
+  
         // 添加命令授权节点
         workflow_def.add_node(WorkflowNode {
             id: "authorize_command".to_string(),
@@ -1444,7 +1457,7 @@ impl DeviceCommandWorkflow {
                 "fail_on_unauthorized": true,
             }),
         });
-        
+  
         // 为每个命令能力添加命令节点
         for (idx, capability) in command_capabilities.iter().enumerate() {
             // 添加命令选择网关
@@ -1458,7 +1471,7 @@ impl DeviceCommandWorkflow {
                     }),
                 });
             }
-            
+  
             // 添加命令执行节点
             let command_id = format!("execute_{}", capability.command_name.to_lowercase());
             workflow_def.add_node(WorkflowNode {
@@ -1478,7 +1491,7 @@ impl DeviceCommandWorkflow {
                     "optional_parameters": capability.optional_parameters,
                 }),
             });
-            
+  
             // 添加命令结果处理节点
             workflow_def.add_node(WorkflowNode {
                 id: format!("{}_result_handler", command_id),
@@ -1490,21 +1503,21 @@ impl DeviceCommandWorkflow {
                     "result_mapping": capability.result_mapping,
                 }),
             });
-            
+  
             // 添加从命令选择器到命令执行的转换
             workflow_def.add_transition(Transition {
                 source_id: "command_selector".to_string(),
                 target_id: command_id.clone(),
                 condition: Some(format!("{{{{ command_type == '{}' }}}}", capability.command_name)),
             });
-            
+  
             // 添加从命令执行到结果处理的转换
             workflow_def.add_transition(Transition {
                 source_id: command_id,
                 target_id: format!("{}_result_handler", command_id),
                 condition: None,
             });
-            
+  
             // 从结果处理到结束节点的转换
             workflow_def.add_transition(Transition {
                 source_id: format!("{}_result_handler", command_id),
@@ -1512,7 +1525,7 @@ impl DeviceCommandWorkflow {
                 condition: None,
             });
         }
-        
+  
         // 添加结束节点
         workflow_def.add_node(WorkflowNode {
             id: "end".to_string(),
@@ -1522,34 +1535,34 @@ impl DeviceCommandWorkflow {
                 "event_type": "end"
             }),
         });
-        
+  
         // 添加从开始到设备验证的转换
         workflow_def.add_transition(Transition {
             source_id: "start".to_string(),
             target_id: "validate_device".to_string(),
             condition: None,
         });
-        
+  
         // 添加从设备验证到命令授权的转换
         workflow_def.add_transition(Transition {
             source_id: "validate_device".to_string(),
             target_id: "authorize_command".to_string(),
             condition: None,
         });
-        
+  
         // 添加从命令授权到命令选择器的转换
         workflow_def.add_transition(Transition {
             source_id: "authorize_command".to_string(),
             target_id: "command_selector".to_string(),
             condition: None,
         });
-        
+  
         // 保存工作流定义
         self.workflow_engine.save_workflow_definition(&workflow_def).await?;
-        
+  
         Ok(workflow_def)
     }
-    
+  
     /// 处理设备命令请求
     pub async fn process_command_request(
         &self,
@@ -1557,14 +1570,14 @@ impl DeviceCommandWorkflow {
     ) -> Result<CommandRequestResponse, Error> {
         // 1. 验证请求
         self.validate_command_request(&request).await?;
-        
+  
         // 2. 创建命令ID
         let command_id = Uuid::new_v4().to_string();
-        
+  
         // 3. 确定对应的工作流类型
         let device = self.state_manager.get_device(&request.device_id).await?;
         let workflow_type = format!("device_command_workflow_{}", device.device_type);
-        
+  
         // 4. 构建工作流输入数据
         let input_data = json!({
             "command_id": command_id,
@@ -1576,11 +1589,12 @@ impl DeviceCommandWorkflow {
             "priority": request.priority,
             "timeout": request.timeout.map(|t| t.as_secs()),
         });
-        
+  
         // 5. 启动命令工作流
         let options = StartWorkflowOptions {
             workflow_id: Some(format!("cmd_{}_{}", request.device_id, command_id)),
             created_by: request.user_id.
+
 # Rust实现IOT工作流系统的全面设计与分析（续）
 
 ## IV. IOT工作流系统设计模式与实现（续）
@@ -1762,6 +1776,7 @@ pub struct CommandRequestResponse {
     pub estimated_completion: Option<DateTime<Utc>>,
     pub tracking_url: Option<String>,
 }
+
 ```
 
 ### 3. 遥测数据处理与异常检测
@@ -2247,6 +2262,7 @@ pub enum AnomalyDetectionAlgorithm {
         parameters: HashMap<String, Value>,
     },
 }
+
 ```
 
 ### 4. 固件更新工作流实现
@@ -2344,6 +2360,7 @@ impl FirmwareUpdateWorkflow {
         // 添加设备预更新准备
         workflow_def.add_node(WorkflowNode {
             id: "prepare_device".to_string(),
+
 ```
 
 ## 设备预更新准备流程设计
@@ -2436,6 +2453,7 @@ pub fn create_device_pre_update_workflow() -> WorkflowDefinition {
 
     workflow
 }
+
 ```
 
 ## 设备预更新准备功能实现
@@ -2681,6 +2699,7 @@ pub async fn notify_preparation_error(context: &WorkflowContext) -> Result<NodeO
     
     Ok(output)
 }
+
 ```
 
 ## 工作流调用集成
@@ -2753,6 +2772,7 @@ pub async fn initiate_firmware_update(
     // 返回工作流实例ID
     Ok(workflow_instance_id)
 }
+
 ```
 
 ## 设备预更新准备工作流的好处
@@ -2843,6 +2863,7 @@ pub enum StepStatus {
     Failed,
     Skipped,
 }
+
 ```
 
 ## 更新状态管理服务
@@ -3263,6 +3284,7 @@ impl UpdateStatusService {
         Ok(())
     }
 }
+
 ```
 
 ## 更新后验证流程
@@ -3405,6 +3427,7 @@ pub fn create_post_update_verification_workflow() -> WorkflowDefinition {
 
     workflow
 }
+
 ```
 
 ## 更新后验证功能实现
@@ -4007,6 +4030,7 @@ pub async fn initiate_rollback(context: &WorkflowContext) -> Result<NodeOutput, 
     
     Ok(output)
 }
+
 ```
 
 ## 固件回滚流程设计
@@ -4138,12 +4162,13 @@ impl RollbackService {
             node_type: NodeType::Function,
             function: "check_device_recovery_mode".to_string(),
             next_nodes: vec!["restore_previous_firmware".to_string(), "
+
 ```rust
             next_nodes: vec!["restore_previous_firmware".to_string(), "force_recovery_mode".to_string()],
             error_node: Some("handle_recovery_check_error".to_string()),
             timeout_seconds: 120,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "force_recovery_mode".to_string(),
             name: "强制进入恢复模式".to_string(),
@@ -4153,7 +4178,7 @@ impl RollbackService {
             error_node: Some("handle_recovery_mode_error".to_string()),
             timeout_seconds: 300,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "restore_previous_firmware".to_string(),
             name: "恢复之前的固件".to_string(),
@@ -4163,7 +4188,7 @@ impl RollbackService {
             error_node: Some("handle_restore_error".to_string()),
             timeout_seconds: 600,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "wait_for_device_reboot".to_string(),
             name: "等待设备重启".to_string(),
@@ -4173,7 +4198,7 @@ impl RollbackService {
             error_node: Some("handle_reboot_timeout".to_string()),
             timeout_seconds: 300,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "restore_device_settings".to_string(),
             name: "恢复设备设置".to_string(),
@@ -4183,7 +4208,7 @@ impl RollbackService {
             error_node: Some("handle_settings_restore_error".to_string()),
             timeout_seconds: 180,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "verify_rollback".to_string(),
             name: "验证回滚结果".to_string(),
@@ -4193,7 +4218,7 @@ impl RollbackService {
             error_node: Some("handle_verification_error".to_string()),
             timeout_seconds: 180,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "finalize_rollback".to_string(),
             name: "完成回滚流程".to_string(),
@@ -4203,7 +4228,7 @@ impl RollbackService {
             error_node: None,
             timeout_seconds: 60,
         });
-        
+  
         // 添加错误处理节点
         workflow.add_node(WorkflowNode {
             id: "handle_preparation_error".to_string(),
@@ -4214,9 +4239,9 @@ impl RollbackService {
             error_node: None,
             timeout_seconds: 60,
         });
-        
+  
         // 其他错误处理节点...
-        
+  
         workflow.add_node(WorkflowNode {
             id: "assess_recovery_options".to_string(),
             name: "评估恢复选项".to_string(),
@@ -4226,7 +4251,7 @@ impl RollbackService {
             error_node: None,
             timeout_seconds: 60,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "attempt_emergency_recovery".to_string(),
             name: "尝试紧急恢复".to_string(),
@@ -4236,7 +4261,7 @@ impl RollbackService {
             error_node: Some("notify_manual_intervention".to_string()),
             timeout_seconds: 300,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "notify_manual_intervention".to_string(),
             name: "通知手动干预".to_string(),
@@ -4246,7 +4271,7 @@ impl RollbackService {
             error_node: None,
             timeout_seconds: 60,
         });
-        
+  
         workflow.add_node(WorkflowNode {
             id: "end".to_string(),
             name: "结束".to_string(),
@@ -4256,10 +4281,11 @@ impl RollbackService {
             error_node: None,
             timeout_seconds: 0,
         });
-        
+  
         workflow
     }
 }
+
 ```
 
 ## 回滚工作流功能实现
@@ -4269,13 +4295,13 @@ impl RollbackService {
 pub async fn prepare_device_for_rollback(context: &WorkflowContext) -> Result<NodeOutput, WorkflowError> {
     let device_id = context.get_param("device_id")
         .ok_or_else(|| WorkflowError::MissingParameter("device_id".to_string()))?;
-    
+  
     log::info!("准备设备 {} 进行固件回滚", device_id);
-    
+  
     // 获取设备信息
     let device = device_repository::get_device_by_id(device_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取设备信息: {}", e)))?;
-    
+  
     // 尝试通知设备准备回滚
     let prep_result = match device_command_service::send_prepare_rollback_command(device_id).await {
         Ok(_) => {
@@ -4287,31 +4313,31 @@ pub async fn prepare_device_for_rollback(context: &WorkflowContext) -> Result<No
             false
         }
     };
-    
+  
     // 停止所有设备上的关键任务
     let stop_result = task_service::stop_device_tasks(device_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法停止设备任务: {}", e)))?;
-    
+  
     log::info!("已停止设备 {} 上的 {} 个任务", device_id, stop_result.stopped_tasks_count);
-    
+  
     // 更新设备状态
     device_repository::update_device_status(
         device_id,
         DeviceStatus::Maintenance,
         Some("正在进行固件回滚".to_string()),
     ).await.map_err(|e| WorkflowError::ExecutionError(format!("无法更新设备状态: {}", e)))?;
-    
+  
     // 更新更新记录状态
     let update_id = context.get_param("update_id")
         .ok_or_else(|| WorkflowError::MissingParameter("update_id".to_string()))?;
-    
+  
     let update_service = UpdateStatusService::new(
         Arc::new(update_repository::get_repository()),
         Arc::new(device_repository::get_repository()),
         Arc::new(notification_service::get_service()),
         Arc::new(telemetry_service::get_service()),
     );
-    
+  
     update_service.update_status(
         update_id,
         UpdateStatus::RollingBack,
@@ -4319,12 +4345,12 @@ pub async fn prepare_device_for_rollback(context: &WorkflowContext) -> Result<No
         Some("正在准备设备进行回滚".to_string()),
         None,
     ).await.map_err(|e| WorkflowError::ExecutionError(format!("无法更新更新状态: {}", e)))?;
-    
+  
     let mut output = NodeOutput::new();
     output.add_data("device_notified", prep_result);
     output.add_data("tasks_stopped", stop_result.stopped_tasks_count);
     output.add_data("preparation_time", Utc::now().to_rfc3339());
-    
+  
     Ok(output)
 }
 
@@ -4332,13 +4358,13 @@ pub async fn prepare_device_for_rollback(context: &WorkflowContext) -> Result<No
 pub async fn check_device_recovery_mode(context: &WorkflowContext) -> Result<DecisionOutput, WorkflowError> {
     let device_id = context.get_param("device_id")
         .ok_or_else(|| WorkflowError::MissingParameter("device_id".to_string()))?;
-    
+  
     log::info!("检查设备 {} 是否处于恢复模式", device_id);
-    
+  
     // 检查设备模式
     let device_mode = device_command_service::check_device_mode(device_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法检查设备模式: {}", e)))?;
-    
+  
     match device_mode {
         DeviceMode::Normal => {
             log::info!("设备 {} 处于正常模式，需要切换到恢复模式", device_id);
@@ -4359,13 +4385,13 @@ pub async fn check_device_recovery_mode(context: &WorkflowContext) -> Result<Dec
 pub async fn force_device_recovery_mode(context: &WorkflowContext) -> Result<NodeOutput, WorkflowError> {
     let device_id = context.get_param("device_id")
         .ok_or_else(|| WorkflowError::MissingParameter("device_id".to_string()))?;
-    
+  
     log::info!("强制设备 {} 进入恢复模式", device_id);
-    
+  
     // 获取设备信息
     let device = device_repository::get_device_by_id(device_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取设备信息: {}", e)))?;
-    
+  
     // 根据设备类型选择进入恢复模式的方法
     let method = if device.supports_remote_recovery_mode {
         RecoveryMethod::RemoteCommand
@@ -4374,36 +4400,36 @@ pub async fn force_device_recovery_mode(context: &WorkflowContext) -> Result<Nod
     } else {
         RecoveryMethod::SoftwareReboot
     };
-    
+  
     // 执行进入恢复模式的操作
     let recovery_result = device_command_service::enter_recovery_mode(device_id, method).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法进入恢复模式: {}", e)))?;
-    
+  
     if !recovery_result.success {
         return Err(WorkflowError::ExecutionError(format!(
             "无法使设备进入恢复模式: {}",
             recovery_result.error_message.unwrap_or_default()
         )));
     }
-    
+  
     // 等待设备重新连接并确认模式
     log::info!("等待设备 {} 在恢复模式下重新连接", device_id);
-    
+  
     let max_attempts = 10;
     let retry_interval_seconds = 15;
-    
+  
     for attempt in 1..=max_attempts {
         tokio::time::sleep(Duration::from_secs(retry_interval_seconds)).await;
-        
+  
         match device_command_service::check_device_mode(device_id).await {
             Ok(mode) if mode == DeviceMode::Recovery || mode == DeviceMode::Bootloader || mode == DeviceMode::DFU => {
                 log::info!("设备 {} 已成功进入 {:?} 模式", device_id, mode);
-                
+  
                 let mut output = NodeOutput::new();
                 output.add_data("recovery_mode", format!("{:?}", mode));
                 output.add_data("recovery_method", format!("{:?}", method));
                 output.add_data("attempts", attempt);
-                
+  
                 return Ok(output);
             },
             Ok(mode) => {
@@ -4415,7 +4441,7 @@ pub async fn force_device_recovery_mode(context: &WorkflowContext) -> Result<Nod
             }
         }
     }
-    
+  
     Err(WorkflowError::ExecutionError(format!(
         "在 {} 次尝试后，设备 {} 未能进入恢复模式",
         max_attempts, device_id
@@ -4426,30 +4452,30 @@ pub async fn force_device_recovery_mode(context: &WorkflowContext) -> Result<Nod
 pub async fn restore_previous_firmware(context: &WorkflowContext) -> Result<NodeOutput, WorkflowError> {
     let device_id = context.get_param("device_id")
         .ok_or_else(|| WorkflowError::MissingParameter("device_id".to_string()))?;
-    
+  
     let update_id = context.get_param("update_id")
         .ok_or_else(|| WorkflowError::MissingParameter("update_id".to_string()))?;
-    
+  
     log::info!("开始为设备 {} 恢复先前的固件", device_id);
-    
+  
     // 获取更新记录以找到先前的固件版本
     let update_record = update_repository::get_update_record(update_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取更新记录: {}", e)))?;
-    
+  
     // 获取设备的更新历史
     let update_history = update_repository::get_device_update_history(device_id, 5, 0).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取设备更新历史: {}", e)))?;
-    
+  
     // 找到当前更新之前的成功更新记录
     let previous_successful_update = update_history.iter()
-        .filter(|record| 
-            record.id != update_id && 
+        .filter(|record|
+            record.id != update_id &&
             record.status == UpdateStatus::UpdateSuccessful &&
             record.completed_at.is_some() &&
             record.completed_at.unwrap() < update_record.started_at
         )
         .max_by_key(|record| record.completed_at);
-    
+  
     // 获取要恢复的固件版本
     let firmware_id = if let Some(prev_update) = previous_successful_update {
         log::info!("从之前的成功更新中恢复固件版本 {}", prev_update.firmware_id);
@@ -4457,22 +4483,22 @@ pub async fn restore_previous_firmware(context: &WorkflowContext) -> Result<Node
     } else {
         // 如果没有找到之前的成功更新，尝试获取设备的出厂固件
         log::warn!("没有找到之前的成功更新记录，尝试恢复到出厂固件");
-        
+  
         let device = device_repository::get_device_by_id(device_id).await
             .map_err(|e| WorkflowError::ExecutionError(format!("无法获取设备信息: {}", e)))?;
-        
-        device.factory_firmware_id.ok_or_else(|| 
+  
+        device.factory_firmware_id.ok_or_else(||
             WorkflowError::ExecutionError("无法确定要恢复的固件版本".to_string())
         )?
     };
-    
+  
     // 获取固件二进制文件
     let firmware = firmware_repository::get_firmware(&firmware_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取固件信息: {}", e)))?;
-    
+  
     let firmware_binary = firmware_repository::get_firmware_binary(&firmware_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取固件二进制文件: {}", e)))?;
-    
+  
     // 更新恢复进度
     let update_service = UpdateStatusService::new(
         Arc::new(update_repository::get_repository()),
@@ -4480,7 +4506,7 @@ pub async fn restore_previous_firmware(context: &WorkflowContext) -> Result<Node
         Arc::new(notification_service::get_service()),
         Arc::new(telemetry_service::get_service()),
     );
-    
+  
     update_service.update_status(
         update_id,
         UpdateStatus::RollingBack,
@@ -4488,10 +4514,10 @@ pub async fn restore_previous_firmware(context: &WorkflowContext) -> Result<Node
         Some(format!("正在恢复到固件版本 {}", firmware.version)),
         None,
     ).await.map_err(|e| WorkflowError::ExecutionError(format!("无法更新更新状态: {}", e)))?;
-    
+  
     // 发送固件到设备
     log::info!("开始将固件 {} 发送到设备 {}", firmware_id, device_id);
-    
+  
     let flash_result = device_command_service::flash_firmware(
         device_id,
         &firmware_binary,
@@ -4501,21 +4527,21 @@ pub async fn restore_previous_firmware(context: &WorkflowContext) -> Result<Node
             timeout_seconds: 600,
         }
     ).await.map_err(|e| WorkflowError::ExecutionError(format!("固件闪存失败: {}", e)))?;
-    
+  
     if !flash_result.success {
         return Err(WorkflowError::ExecutionError(format!(
             "固件恢复失败: {}",
             flash_result.error_message.unwrap_or_default()
         )));
     }
-    
+  
     log::info!("固件 {} 已成功闪存到设备 {}", firmware_id, device_id);
-    
+  
     let mut output = NodeOutput::new();
     output.add_data("firmware_id", firmware_id);
     output.add_data("firmware_version", firmware.version);
     output.add_data("flash_time", Utc::now().to_rfc3339());
-    
+  
     Ok(output)
 }
 
@@ -4523,12 +4549,12 @@ pub async fn restore_previous_firmware(context: &WorkflowContext) -> Result<Node
 pub async fn wait_for_device_reboot(context: &WorkflowContext) -> Result<NodeOutput, WorkflowError> {
     let device_id = context.get_param("device_id")
         .ok_or_else(|| WorkflowError::MissingParameter("device_id".to_string()))?;
-    
+  
     let update_id = context.get_param("update_id")
         .ok_or_else(|| WorkflowError::MissingParameter("update_id".to_string()))?;
-    
+  
     log::info!("等待设备 {} 重启", device_id);
-    
+  
     // 更新更新状态
     let update_service = UpdateStatusService::new(
         Arc::new(update_repository::get_repository()),
@@ -4536,7 +4562,7 @@ pub async fn wait_for_device_reboot(context: &WorkflowContext) -> Result<NodeOut
         Arc::new(notification_service::get_service()),
         Arc::new(telemetry_service::get_service()),
     );
-    
+  
     update_service.update_status(
         update_id,
         UpdateStatus::RollingBack,
@@ -4544,19 +4570,19 @@ pub async fn wait_for_device_reboot(context: &WorkflowContext) -> Result<NodeOut
         Some("等待设备重启".to_string()),
         None,
     ).await.map_err(|e| WorkflowError::ExecutionError(format!("无法更新更新状态: {}", e)))?;
-    
+  
     // 重启设备（如果尚未自动重启）
     match device_command_service::reboot_device(device_id).await {
         Ok(_) => log::info!("已发送重启命令到设备 {}", device_id),
         Err(e) => log::info!("无法发送重启命令，设备可能已在重启: {}", e),
     }
-    
+  
     // 等待设备离线（重启过程的一部分）
     log::info!("等待设备 {} 离线（重启过程）", device_id);
-    
+  
     let offline_timeout = Duration::from_secs(60);
     let offline_start = Instant::now();
-    
+  
     while offline_start.elapsed() < offline_timeout {
         match device_service::check_device_online(device_id).await {
             Ok(false) => {
@@ -4571,33 +4597,33 @@ pub async fn wait_for_device_reboot(context: &WorkflowContext) -> Result<NodeOut
                 break;
             }
         }
-        
+  
         tokio::time::sleep(Duration::from_secs(5)).await;
     }
-    
+  
     // 等待设备重新上线
     log::info!("等待设备 {} 重新上线", device_id);
-    
+  
     let max_attempts = 20;
     let retry_interval_seconds = 15;
-    
+  
     for attempt in 1..=max_attempts {
         log::info!("尝试 {}/{} 检查设备 {} 是否已上线", attempt, max_attempts, device_id);
-        
+  
         match device_service::check_device_online(device_id).await {
             Ok(true) => {
                 log::info!("设备 {} 已重新上线", device_id);
-                
+  
                 // 检查设备是否已退出恢复模式
                 match device_command_service::check_device_mode(device_id).await {
                     Ok(DeviceMode::Normal) => {
                         log::info!("设备 {} 已恢复到正常模式", device_id);
-                        
+  
                         let mut output = NodeOutput::new();
                         output.add_data("reboot_success", true);
                         output.add_data("reboot_attempts", attempt);
                         output.add_data("reboot_time", Utc::now().to_rfc3339());
-                        
+  
                         return Ok(output);
                     },
                     Ok(mode) => {
@@ -4615,12 +4641,12 @@ pub async fn wait_for_device_reboot(context: &WorkflowContext) -> Result<NodeOut
                 log::warn!("检查设备 {} 在线状态时发生错误: {}", device_id, e);
             }
         }
-        
+  
         if attempt < max_attempts {
             tokio::time::sleep(Duration::from_secs(retry_interval_seconds)).await;
         }
     }
-    
+  
     Err(WorkflowError::ExecutionError(format!(
         "在 {} 次尝试后，设备 {} 未能成功重启并上线",
         max_attempts, device_id
@@ -4631,16 +4657,16 @@ pub async fn wait_for_device_reboot(context: &WorkflowContext) -> Result<NodeOut
 pub async fn verify_rollback(context: &WorkflowContext) -> Result<NodeOutput, WorkflowError> {
     let device_id = context.get_param("device_id")
         .ok_or_else(|| WorkflowError::MissingParameter("device_id".to_string()))?;
-    
+  
     let update_id = context.get_param("update_id")
         .ok_or_else(|| WorkflowError::MissingParameter("update_id".to_string()))?;
-    
+  
     let firmware_id = context.get_data("firmware_id")
         .ok_or_else(|| WorkflowError::MissingParameter("firmware_id".to_string()))?
         .clone();
-    
+  
     log::info!("验证设备 {} 的回滚结果", device_id);
-    
+  
     // 更新回滚状态
     let update_service = UpdateStatusService::new(
         Arc::new(update_repository::get_repository()),
@@ -4648,7 +4674,7 @@ pub async fn verify_rollback(context: &WorkflowContext) -> Result<NodeOutput, Wo
         Arc::new(notification_service::get_service()),
         Arc::new(telemetry_service::get_service()),
     );
-    
+  
     update_service.update_status(
         update_id,
         UpdateStatus::RollingBack,
@@ -4656,39 +4682,39 @@ pub async fn verify_rollback(context: &WorkflowContext) -> Result<NodeOutput, Wo
         Some("验证回滚结果".to_string()),
         None,
     ).await.map_err(|e| WorkflowError::ExecutionError(format!("无法更新更新状态: {}", e)))?;
-    
+  
     // 验证设备固件版本
     let device_info = device_command_service::get_device_info(device_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取设备信息: {}", e)))?;
-    
+  
     // 获取预期的固件版本
     let firmware = firmware_repository::get_firmware(&firmware_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取固件信息: {}", e)))?;
-    
+  
     if device_info.firmware_version != firmware.version {
         return Err(WorkflowError::ExecutionError(format!(
             "固件版本不匹配。预期: {}，实际: {}",
             firmware.version, device_info.firmware_version
         )));
     }
-    
+  
     // 验证设备基本功能
     let basic_check_result = device_verification_service::perform_basic_functionality_check(device_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("基本功能检查失败: {}", e)))?;
-    
+  
     if !basic_check_result.success {
         return Err(WorkflowError::ExecutionError(format!(
             "设备基本功能检查失败: {}",
             basic_check_result.error_message.unwrap_or_default()
         )));
     }
-    
+  
     log::info!("设备 {} 回滚验证成功", device_id);
-    
+  
     let mut output = NodeOutput::new();
     output.add_data("rollback_verified", true);
     output.add_data("verification_time", Utc::now().to_rfc3339());
-    
+  
     Ok(output)
 }
 
@@ -4696,19 +4722,19 @@ pub async fn verify_rollback(context: &WorkflowContext) -> Result<NodeOutput, Wo
 pub async fn finalize_rollback(context: &WorkflowContext) -> Result<NodeOutput, WorkflowError> {
     let device_id = context.get_param("device_id")
         .ok_or_else(|| WorkflowError::MissingParameter("device_id".to_string()))?;
-    
+  
     let update_id = context.get_param("update_id")
         .ok_or_else(|| WorkflowError::MissingParameter("update_id".to_string()))?;
-    
+  
     log::info!("完成设备 {} 的回滚流程", device_id);
-    
+  
     // 恢复设备到正常状态
     device_repository::update_device_status(
         device_id,
         DeviceStatus::Online,
         None,
     ).await.map_err(|e| WorkflowError::ExecutionError(format!("无法更新设备状态: {}", e)))?;
-    
+  
     // 更新更新记录状态
     let update_service = UpdateStatusService::new(
         Arc::new(update_repository::get_repository()),
@@ -4716,7 +4742,7 @@ pub async fn finalize_rollback(context: &WorkflowContext) -> Result<NodeOutput, 
         Arc::new(notification_service::get_service()),
         Arc::new(telemetry_service::get_service()),
     );
-    
+  
     update_service.update_status(
         update_id,
         UpdateStatus::RollbackSuccessful,
@@ -4724,18 +4750,18 @@ pub async fn finalize_rollback(context: &WorkflowContext) -> Result<NodeOutput, 
         Some("回滚完成".to_string()),
         None,
     ).await.map_err(|e| WorkflowError::ExecutionError(format!("无法更新更新状态: {}", e)))?;
-    
+  
     // 发送回滚成功通知
     let firmware_id = context.get_data("firmware_id")
         .ok_or_else(|| WorkflowError::MissingParameter("firmware_id".to_string()))?
         .clone();
-    
+  
     let firmware = firmware_repository::get_firmware(&firmware_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取固件信息: {}", e)))?;
-    
+  
     let device = device_repository::get_device_by_id(device_id).await
         .map_err(|e| WorkflowError::ExecutionError(format!("无法获取设备信息: {}", e)))?;
-    
+  
     let notification = NotificationRequest {
         level: NotificationLevel::Success,
         category: NotificationCategory::DeviceUpdate,
@@ -4747,6 +4773,7 @@ pub async fn finalize_rollback(context: &WorkflowContext) -> Result<NodeOutput, 
         related_entity: Some(EntityReference {
             entity_type: EntityType::Device,
             entity_id: device_id.to_string(),
+
 ```rust
             entity_id: device_id.to_string(),
         }),
@@ -5054,6 +5081,7 @@ pub async fn notify_manual_intervention(context: &WorkflowContext) -> Result<Nod
     
     Ok(output)
 }
+
 ```
 
 ## 总结

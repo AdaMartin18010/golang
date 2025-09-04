@@ -131,6 +131,7 @@ let opt2: Option<i32> = None;
 assert!(opt1.contains(&5));
 assert!(!opt1.contains(&6));
 assert!(!opt2.contains(&0)); // 对于 None，总是返回 false
+
 ```
 
 - **论证:** 提供了一种更简洁、更易读的方式来检查 `Option` 是否包含特定值，替代了常见的 `map_or(false, |v| v == expected)` 模式。
@@ -191,6 +192,7 @@ Rust 1.86.0
 └── 其他改进
     ├── 编译器性能/错误信息
     └── Cargo 功能增强
+
 ```
 
 ## 总结

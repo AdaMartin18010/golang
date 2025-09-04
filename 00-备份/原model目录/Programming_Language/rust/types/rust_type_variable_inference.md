@@ -311,6 +311,7 @@ fn lifetime_example() {
     let static_str: &'static str = "hello";
     process(static_str);  // 协变允许 &'static str -> &'a str
 }
+
 ```
 
 ### 二、变体性规则的推理与证明
@@ -336,6 +337,7 @@ fn covariance_proof<'long, 'short, T>(long_ref: &'long T)
     // 如果 &T 对生命周期是协变的，那么应该可以传递
     takes_ref::<'short, T>(long_ref);  // 编译成功，证明协变
 }
+
 ```
 
 #### 2. 逆变性推理
@@ -359,6 +361,7 @@ fn contravariance_proof<'long, 'short>()
     // 函数类型 fn(&'short i32) 应该是 fn(&'long i32) 的子类型
     let f: fn(&'short i32) = short_lived::<'long>;  // 编译成功，证明逆变
 }
+
 ```
 
 #### 3. 不变性推理
@@ -382,6 +385,7 @@ fn invariance_proof<'long, 'short, T>(long_ref: &'long mut T)
     // 如果 &mut T 对生命周期是不变的，那么下面应该编译失败
     // takes_mut_ref::<'short, T>(long_ref);  // 编译失败，证明不变性
 }
+
 ```
 
 ### 三、变体性如何保证类型安全和内存安全
@@ -410,6 +414,7 @@ fn demonstrate_safety() {
     // 这保证了引用在使用期间一定有效
     safety_example(&long_lived);
 }
+
 ```
 
 #### 2. 逆变与安全保证
@@ -437,6 +442,7 @@ fn demonstrate_contravariance() {
     // 所以一定能处理静态生命周期
     specific_fn(&[1, 2, 3]);
 }
+
 ```
 
 #### 3. 不变性与安全保证
@@ -472,6 +478,7 @@ fn demonstrate_invariance() {
     // 现在可以安全地使用 long_data
     long_data.push(4);
 }
+
 ```
 
 ### 四、运行时安全与变体性
@@ -493,6 +500,7 @@ fn prevent_dangling_references() {
     // 如果上面的赋值被允许，这里会访问已释放的内存
     // println!("{}", r);
 }
+
 ```
 
 #### 2. 防止数据竞争
@@ -509,6 +517,7 @@ fn prevent_data_races() {
     r1.push(4);
     // r2.push(5);  // 如果这行被允许，将导致未定义行为
 }
+
 ```
 
 #### 3. 保证 trait 对象安全
@@ -535,6 +544,7 @@ impl Canvas {
         }
     }
 }
+
 ```
 
 ### 五、形式化证明示例
@@ -561,6 +571,7 @@ fn covariance_safety_proof<'long, 'short, T>(long_ref: &'long T)
     // 在 'short 的作用域内使用 short_ref 是安全的
     // 因为 long_ref 保证在整个 'short 期间有效
 }
+
 ```
 
 #### 2. 逆变安全性证明
@@ -592,6 +603,7 @@ fn contravariance_safety_proof<'long, 'short>()
     let static_data: &'static [u8] = &[1, 2, 3];
     long_fn(static_data);
 }
+
 ```
 
 #### 3. 不变性安全性证明
@@ -605,11 +617,11 @@ fn contravariance_safety_proof<'long, 'short>()
 3. 这将允许以下不安全操作：
 
    ```rust
-   fn unsafe_operation<'long, 'short, T>(long_ref: &'long mut T) 
+   fn unsafe_operation<'long, 'short, T>(long_ref: &'long mut T)
        where 'long: 'short
    {
        let short_ref: &'short mut T = long_ref;  // 假设这是合法的
-       
+  
        // 现在 short_ref 和 long_ref 都指向同一数据
        // 当 'short 结束但 'long 仍然有效时：
        // - short_ref 已失效
@@ -629,6 +641,7 @@ fn invariance_safety_proof<'long, 'short, T>(long_ref: &'long mut T)
     
     // 如果上面的代码被允许，将导致潜在的内存不安全
 }
+
 ```
 
 ### 六、变体性与多态的实际应用
@@ -662,6 +675,7 @@ fn flexible_api_example() {
     
     println!("原始数据仍然可用: {:?}", long_lived_data);
 }
+
 ```
 
 #### 2. 实现类型安全的回调系统
@@ -698,6 +712,7 @@ fn callback_system_example() {
     let dynamic_message = String::from("动态消息");
     system.notify(&dynamic_message);
 }
+
 ```
 
 #### 3. 保证容器类型的安全
@@ -736,6 +751,7 @@ fn container_safety_example() {
         *value = 100;
     }
 }
+
 ```
 
 ### 七、总结

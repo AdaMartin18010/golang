@@ -187,6 +187,7 @@ func (i *Invoker) UndoLast() {
         i.history = i.history[:len(i.history)-1]
     }
 }
+
 ```
 
 ### 3.3.1.4.2 文本编辑器命令模式
@@ -354,6 +355,7 @@ func (t *TextEditor) Redo() {
 func (t *TextEditor) GetContent() string {
     return t.document.GetContent()
 }
+
 ```
 
 ### 3.3.1.4.3 遥控器命令模式
@@ -570,6 +572,7 @@ func (r *RemoteControl) PressUndoButton() {
         r.undoCommand.Undo()
     }
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -771,6 +774,7 @@ func (t *Transaction) rollback() {
     }
     t.executed = make([]TransactionCommand, 0)
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

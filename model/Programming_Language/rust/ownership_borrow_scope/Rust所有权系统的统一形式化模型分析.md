@@ -30,19 +30,6 @@
   - [1.9 结论与展望](#结论与展望)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust所有权系统的统一形式化模型分析](#rust所有权系统的统一形式化模型分析)
@@ -126,6 +113,7 @@ fn main() {
     let v2 = transfer_ownership(v1);
     // 现在v2拥有这个向量，v1不再有效
 }
+
 ```
 
 用分离逻辑形式化描述为：
@@ -182,6 +170,7 @@ fn example() -> Result<(), Error> {
     println!("File size: {}", file.metadata()?.len());
     Ok(())
 }
+
 ```
 
 类型状态形式化：
@@ -203,6 +192,7 @@ impl<T> Drop for Wrapper<T> {
         println!("Dropping wrapper");
     }
 }
+
 ```
 
 ## 1.5 线性-会话类型统一
@@ -231,6 +221,7 @@ impl<T> Drop for Wrapper<T> {
 type Sender<T> = Chan<Send<T, End>>;
 // 接收类型
 type Receiver<T> = Chan<Recv<T, End>>;
+
 ```
 
 ### 1.5.3 资源协议模型在Rust中的实现
@@ -256,6 +247,7 @@ async fn protocol_example() {
     
     join!(producer, consumer);
 }
+
 ```
 
 形式化表示：
@@ -293,6 +285,7 @@ fn process_data<'a>(data: &'a mut Vec<i32>) -> impl Iterator<Item = &'a i32> {
     // 在Rust 2024中，能力的生命周期分析更加精确
     data.iter()
 }
+
 ```
 
 1. **改进的trait系统**：通过trait bounds更精确地表达能力要求
@@ -307,6 +300,7 @@ fn with_capability<T: ResourceUser>(user: &T, resource: &Resource) {
     // 只有实现ResourceUser trait的类型才有使用resource的能力
     user.use_resource(resource);
 }
+
 ```
 
 形式化表示：
@@ -347,6 +341,7 @@ fn process() -> Result<(), Error> {
     
     Ok(())
 }
+
 ```
 
 形式化表示：
@@ -394,6 +389,7 @@ fn main() -> Result<(), Error> {
     println!("Processed: {:?}", processed);
     Ok(())
 }
+
 ```
 
 综合形式化证明：

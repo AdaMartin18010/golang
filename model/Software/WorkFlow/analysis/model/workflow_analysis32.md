@@ -4,19 +4,6 @@
 - [1 1 1 1 1 1 1 MVP架构](#1-1-1-1-1-1-1-mvp架构)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 非常好！这个类比非常深刻，您希望将 Rust 类型系统处理**内存资源**的严谨性（所有权、借用、生命周期）
 **映射**到工作流架构中对某种**广义“资源”或“能力”**的管理上。
 这不仅仅是技术模仿，而是试图在架构层面引入一种**资源访问的静态（或至少是结构化）推理机制**，
@@ -61,6 +48,7 @@ enum ResourceId {
     ApiRateLimit(String),   // e.g., "external_service_X"
     // ... 其他需要控制的资源类型
 }
+
 ```
 
 1. **增强 `Effect` 定义以包含访问模式:**
@@ -106,6 +94,7 @@ impl MinimalEffect {
         }
     }
 }
+
 ```
 
 1. **设计 `Fabric` 的运行时访问控制器 (`CapabilityManager`):**
@@ -205,6 +194,7 @@ impl CapabilityManager {
         }
     }
 }
+
 ```
 
 `Fabric` 结构将包含 `capability_manager: Arc<Mutex<CapabilityManager>>`。
@@ -244,7 +234,6 @@ impl EffectGuard<'_> {
         self.result_receiver.await.unwrap_or_else(|_| Err("Effect handler channel closed unexpectedly".to_string()))
     }
 }
-
 
 impl Drop for EffectGuard<'_> {
     fn drop(&mut self) {
@@ -394,6 +383,7 @@ impl EffectfulCell for MyResourceUsingCell {
         fn state(&self) -> Vec<u8> { self.state.to_be_bytes().to_vec() }
         fn load_state(&mut self, state: &[u8]) { /* ... */ self.id = Uuid::new_v4(); /* Assign ID on load */ } // simplified
 }
+
 ```
 
 **MVP 语义映射总结:**

@@ -55,6 +55,7 @@
 - 自然演绎: Γ ⊢ φ 表示从假设集Γ可推导出结论φ
 - 序贯演算: Γ ⊢ Δ 表示从假设集Γ至少能证明Δ中的一个结论
 - 希尔伯特系统: 有限公理集合和推理规则
+
 ```
 
 Rust代码示例（实现简单的数学结构）：
@@ -119,6 +120,7 @@ impl<T: Clone + PartialEq> FiniteGroup<T> {
         true
     }
 }
+
 ```
 
 ### 1.2.2 物理世界形式模型
@@ -144,6 +146,7 @@ impl<T: Clone + PartialEq> FiniteGroup<T> {
 - 一致性检验: ModelPrediction(P) ≈ Measurement(P)
 - 误差分析: |ModelPrediction(P) - Measurement(P)| < ε
 - 有效范围: P ∈ Domain(Model)
+
 ```
 
 Rust代码示例（物理粒子系统模拟）：
@@ -220,6 +223,7 @@ impl ParticleSystem {
         (current_total - initial_energy).abs() / initial_energy < 1e-6
     }
 }
+
 ```
 
 ### 1.2.3 计算形式模型
@@ -240,6 +244,7 @@ impl ParticleSystem {
 - 操作语义: ⟨P,σ⟩ → ⟨P',σ'⟩ 表示程序P在状态σ下执行一步得到P'和σ'
 - 指称语义: ⟦P⟧ : State → State 程序P解释为状态转换函数
 - 公理语义: {P}Q{R} 表示若前条件P成立，执行Q后，后条件R成立
+
 ```
 
 Rust代码示例（简化的λ演算解释器）：
@@ -312,6 +317,7 @@ impl Term {
         result
     }
 }
+
 ```
 
 ### 1.2.4 元模型通用结构
@@ -333,6 +339,7 @@ impl Term {
 - 反射能力：MetaOf(O) → M 获取对象的元模型
 - 自我检查：Introspect(O) → P 获取对象属性
 - 动态演化：Evolve(M,Changes) → M' 元模型演化
+
 ```
 
 Rust代码示例（元模型框架）：
@@ -511,6 +518,7 @@ struct Violation {
     message: String,
     severity: ConstraintSeverity,
 }
+
 ```
 
 ## 1.3 元模型-模型推理层次结构
@@ -538,6 +546,7 @@ struct Violation {
 - 全局约束: ∀x ∈ Domain: P(x)
 - 局部约束: ∀x ∈ C: P(x)
 - 时态约束: □P (始终P), ◇P (最终P)
+
 ```
 
 Rust代码示例（概念推理引擎）：
@@ -659,6 +668,7 @@ impl ConceptReasoner {
         }
     }
 }
+
 ```
 
 ### 1.3.2 推断(Inference)层次
@@ -684,6 +694,7 @@ impl ConceptReasoner {
 - 结果到原因: Effects → Causes
 - 诊断推理: 从症状推测疾病
 - 最佳解释: 寻找能解释观察结果的最佳假设
+
 ```
 
 Rust代码示例（规则推理引擎）：
@@ -820,6 +831,7 @@ impl InferenceEngine {
         self.explanation.get(fact)
     }
 }
+
 ```
 
 ### 1.3.3 层次间映射关系
@@ -845,6 +857,7 @@ impl InferenceEngine {
 - 双向追踪: Trace(a, b) ∧ Trace(b, a)
 - 精化正确性: Refinement(a, b) ⇒ ∀p ∈ Properties(a): p(a) → p(b)
 - 语义保持: Semantics(Map(x)) = Map(Semantics(x))
+
 ```
 
 Rust代码示例（模型映射框架）：
@@ -1029,6 +1042,7 @@ impl MappingManager {
         Ok(())
     }
 }
+
 ```
 
 ### 1.3.4 形式化证明体系
@@ -1056,6 +1070,7 @@ impl MappingManager {
 - 类型检查: 检查证明步骤类型正确性
 - 完整性检查: 检查证明是否覆盖所有情况
 - 正确性检查: 检查每个推理步骤是否有效
+
 ```
 
 Rust代码示例（简单的证明验证器）：
@@ -1209,6 +1224,7 @@ impl ProofVerifier {
         self.current_assumptions.is_empty()
     }
 }
+
 ```
 
 ## 1.4 流结构与级联分析
@@ -1245,6 +1261,7 @@ impl ProofVerifier {
 - CF-EF一致性: ∀p∈Paths(CF): ∃e∈Executions(EF): Corresponds(p,e)
 - EF-DF一致性: ∀e∈Executions(EF): DataFlow(e) = DF
 - CF-DF一致性: ∀v∈V, ∀u∈Uses(v): ReachingDef(v,u) ∈ Defs(v)
+
 ```
 
 Rust代码示例（流一致性分析）：
@@ -1491,6 +1508,7 @@ impl FlowConsistencyAnalyzer {
         reaching_defs
     }
 }
+
 ```
 
 ### 1.4.2 流依赖分析
@@ -1518,6 +1536,7 @@ impl FlowConsistencyAnalyzer {
 - 存储资源: 内存, 缓存, 文件
 - 通信资源: 网络带宽, 总线带宽
 - 形式表示: RD(X,Y) ⇔ Resources(X) ∩ Resources(Y) ≠ ∅
+
 ```
 
 Rust代码示例（流依赖分析）：
@@ -1807,6 +1826,7 @@ impl DependencyGraph {
         (path, dist[&end_node])
     }
 }
+
 ```
 
 ### 1.4.3 流级联结构
@@ -1836,6 +1856,7 @@ impl DependencyGraph {
 - 缓冲控制: 减弱传播过程中的影响
 - 分流控制: 将影响分散到多个路径
 - 预防控制: 预先防止级联失效
+
 ```
 
 Rust代码示例（级联分析）：
@@ -2101,6 +2122,7 @@ enum CascadeControlStrategy {
     ThresholdIncrease(usize, f64),    // 提高失效阈值
     PropagationReduction(usize, f64), // 减少失效传播因子（百分比）
 }
+
 ```
 
 ### 1.4.4 流一致性证明
@@ -2129,6 +2151,7 @@ enum CascadeControlStrategy {
 - 并发正确性: 验证并发程序的行为正确
 - 安全性验证: 验证程序没有不一致行为
 - 协议一致性: 验证实现符合协议规范
+
 ```
 
 Rust代码示例（流一致性证明器）：
@@ -2532,6 +2555,7 @@ impl FlowConsistencyProver {
         true
     }
 }
+
 ```
 
 ## 1.5 物理层容错与设计模式
@@ -2563,6 +2587,7 @@ impl FlowConsistencyProver {
 - 预测性维护: 基于监测数据预测失效
 - 响应性维护: 失效后修复
 - 主动维护: 设计改进以消除失效根源
+
 ```
 
 Rust代码示例（物理设备容错系统）：
@@ -2680,12 +2705,12 @@ impl PhysicalSystem {
             Some(d) => d,
             None => return false,
         };
-        
+  
         // 记录失效
         let now = Instant::now();
         device.failure_history.push((now, mode));
         device.last_failure = Some(now);
-        
+  
         // 更新设备状态
         match mode {
             FailureMode::Transient => {
@@ -2701,15 +2726,15 @@ impl PhysicalSystem {
                 // 性能降级，但仍可部分工作
             },
         }
-        
+  
         // 检查是否影响系统功能
         self.propagate_failure_effects(device_id)
     }
-    
+  
     // 传播失效影响
     fn propagate_failure_effects(&mut self, failed_device_id: &str) -> bool {
         let mut system_affected = false;
-        
+  
         // 找出所有依赖于失效设备的设备
         let mut dependent_devices = Vec::new();
         for (id, deps) in &self.dependencies {
@@ -2717,7 +2742,7 @@ impl PhysicalSystem {
                 dependent_devices.push(id.clone());
             }
         }
-        
+  
         // 检查冗余组，确定是否有足够的冗余设备
         let mut healthy_redundancy = true;
         for (group_id, (config, devices)) in &self.redundancy_groups {
@@ -2726,11 +2751,11 @@ impl PhysicalSystem {
                 let healthy_count = devices.iter()
                     .filter(|&id| {
                         let device = &self.devices[id];
-                        device.status == DeviceStatus::Normal || 
+                        device.status == DeviceStatus::Normal ||
                         device.status == DeviceStatus::Degraded
                     })
                     .count();
-                
+  
                 if healthy_count < config.k {
                     healthy_redundancy = false;
                     // 冗余系统失效，传播影响
@@ -2746,7 +2771,7 @@ impl PhysicalSystem {
                 }
             }
         }
-        
+  
         // 传播影响到依赖设备
         if !healthy_redundancy {
             system_affected = true;
@@ -2758,38 +2783,38 @@ impl PhysicalSystem {
                 }
             }
         }
-        
+  
         system_affected
     }
-    
+  
     // 修复设备
     fn repair_device(&mut self, device_id: &str) -> bool {
         let device = match self.devices.get_mut(device_id) {
             Some(d) => d,
             None => return false,
         };
-        
+  
         // 执行修复
         device.status = DeviceStatus::Maintenance;
-        
+  
         // 模拟修复时间（实际应用中可能是异步的）
         // 这里简化处理
         std::thread::sleep(device.repair_time);
-        
+  
         // 修复完成
         device.status = DeviceStatus::Normal;
-        
+  
         // 更新上次维护时间
         device.last_maintenance = Instant::now();
-        
+  
         true
     }
-    
+  
     // 计算系统可靠性
     fn calculate_system_reliability(&self, time_hours: f64) -> f64 {
         // 计算各个冗余组的可靠性
         let mut group_reliabilities = HashMap::new();
-        
+  
         for (group_id, (config, devices)) in &self.redundancy_groups {
             let reliability = match &config.strategy {
                 RedundancyStrategy::NModularRedundancy => {
@@ -2803,12 +2828,12 @@ impl PhysicalSystem {
                             (-failure_rate * time_hours).exp()
                         })
                         .sum::<f64>() / devices.len() as f64; // 平均设备可靠性
-                    
+  
                     let mut reliability = 0.0;
                     for i in k..=n {
                         let combinations = self.binomial(n, i);
-                        reliability += combinations as f64 * 
-                                      device_r.powi(i as i32) * 
+                        reliability += combinations as f64 *
+                                      device_r.powi(i as i32) *
                                       (1.0 - device_r).powi((n - i) as i32);
                     }
                     reliability
@@ -2820,7 +2845,7 @@ impl PhysicalSystem {
                         .iter()
                         .map(|id| self.devices[id].failure_rate)
                         .collect();
-                    
+  
                     // 根据备用类型调整故障率
                     match standby_type {
                         StandbyType::Cold => {
@@ -2837,7 +2862,7 @@ impl PhysicalSystem {
                             // 热备份故障率与主设备相同，无需调整
                         },
                     }
-                    
+  
                     // 备用冗余可靠性计算（简化模型）
                     let mut reliability = primary_r;
                     for (i, &rate) in standby_failure_rates.iter().enumerate() {
@@ -2852,10 +2877,10 @@ impl PhysicalSystem {
                     // 混合冗余可靠性计算（简化）
                     // 实际应用中需要更复杂的计算
                     let mut sub_reliabilities = Vec::new();
-                    
+  
                     // 假设每个子配置负责设备子集
                     let devices_per_config = devices.len() / configs.len();
-                    
+  
                     for (i, sub_config) in configs.iter().enumerate() {
                         let start = i * devices_per_config;
                         let end = start + devices_per_config;
@@ -2863,7 +2888,7 @@ impl PhysicalSystem {
                             .iter()
                             .cloned()
                             .collect();
-                        
+  
                         // 递归计算子配置可靠性
                         let sub_system = PhysicalSystem {
                             devices: self.devices.clone(),
@@ -2873,23 +2898,23 @@ impl PhysicalSystem {
                             )].iter().cloned().collect(),
                             dependencies: self.dependencies.clone(),
                         };
-                        
+  
                         sub_reliabilities.push(sub_system.calculate_system_reliability(time_hours));
                     }
-                    
+  
                     // 组合子系统可靠性
                     sub_reliabilities.iter().product()
                 },
             };
-            
+  
             group_reliabilities.insert(group_id.clone(), reliability);
         }
-        
+  
         // 计算整个系统的可靠性（考虑依赖关系）
         // 简化：假设所有冗余组串联
         group_reliabilities.values().product()
     }
-    
+  
     // 二项式系数计算（组合数）
     fn binomial(&self, n: u32, k: u32) -> u64 {
         let mut res = 1;
@@ -2898,45 +2923,45 @@ impl PhysicalSystem {
         }
         res as u64
     }
-    
+  
     // 计算设备的平均无故障时间（MTBF）
     fn calculate_device_mtbf(&self, device_id: &str) -> Option<Duration> {
         let device = self.devices.get(device_id)?;
-        
+  
         if device.failure_history.len() < 2 {
             return None; // 不足以计算MTBF
         }
-        
+  
         let total_operating_time = device.failure_history.windows(2)
             .map(|w| w[1].0.duration_since(w[0].0))
             .sum::<Duration>();
-        
+  
         let failure_count = device.failure_history.len() as u32 - 1;
         let mtbf = total_operating_time / failure_count;
-        
+  
         Some(mtbf)
     }
-    
+  
     // 推荐维护计划
     fn recommend_maintenance(&self) -> Vec<(String, Instant)> {
         let now = Instant::now();
         let mut recommendations = Vec::new();
-        
+  
         for (id, device) in &self.devices {
             let time_since_last_maintenance = now.duration_since(device.last_maintenance);
-            
+  
             // 检查是否接近维护间隔
             if time_since_last_maintenance >= device.maintenance_interval.mul_f32(0.8) {
                 let recommended_time = device.last_maintenance + device.maintenance_interval;
                 recommendations.push((id.clone(), recommended_time));
             }
         }
-        
+  
         // 按推荐时间排序
         recommendations.sort_by_key(|r| r.1);
         recommendations
     }
-    
+  
     // 评估系统可用性
     fn calculate_system_availability(&self) -> f64 {
         // 计算各个设备的可用性
@@ -2945,31 +2970,31 @@ impl PhysicalSystem {
                 let mtbf = self.calculate_device_mtbf(id)
                     .unwrap_or(Duration::from_secs(3600 * 24 * 365)); // 默认1年
                 let mttr = device.repair_time;
-                
+  
                 let availability = mtbf.as_secs_f64() / (mtbf.as_secs_f64() + mttr.as_secs_f64());
                 (id.clone(), availability)
             })
             .collect();
-        
+  
         // 计算各个冗余组的可用性
         let mut group_availabilities = HashMap::new();
-        
+  
         for (group_id, (config, devices)) in &self.redundancy_groups {
             let availability = match &config.strategy {
                 RedundancyStrategy::NModularRedundancy => {
                     // 计算N中取K的可用性
                     let n = config.n as u32;
                     let k = config.k as u32;
-                    
+  
                     let device_a: f64 = devices.iter()
                         .map(|id| device_availabilities[id])
                         .sum::<f64>() / devices.len() as f64; // 平均设备可用性
-                    
+  
                     let mut availability = 0.0;
                     for i in k..=n {
                         let combinations = self.binomial(n, i);
-                        availability += combinations as f64 * 
-                                      device_a.powi(i as i32) * 
+                        availability += combinations as f64 *
+                                      device_a.powi(i as i32) *
                                       (1.0 - device_a).powi((n - i) as i32);
                     }
                     availability
@@ -2987,14 +3012,15 @@ impl PhysicalSystem {
                         .product::<f64>()
                 },
             };
-            
+  
             group_availabilities.insert(group_id.clone(), availability);
         }
-        
+  
         // 系统整体可用性（假设串联关系）
         group_availabilities.values().product()
     }
 }
+
 ```
 
 ### 1.5.2 冗余设计模式
@@ -3024,6 +3050,7 @@ impl PhysicalSystem {
 - 错误检测重启: 检测错误后重新执行
 - 交错执行: 交错执行操作以避免共因故障
 - 重试机制: 失败操作自动重试
+
 ```
 
 Rust代码示例（冗余设计模式实现）：
@@ -3042,7 +3069,9 @@ trait RedundantSystem<T, U> {
 }
 
 // 系统状态
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+
+# [derive(PartialEq, Eq, Clone, Copy, Debug)]
+
 enum SystemStatus {
     Operational,
     Degraded,
@@ -3050,7 +3079,9 @@ enum SystemStatus {
 }
 
 // 错误类型
-#[derive(Debug)]
+
+# [derive(Debug)]
+
 enum SystemError {
     ExecutionError(String),
     ValidationError(String),
@@ -3060,7 +3091,7 @@ enum SystemError {
 }
 
 // N模冗余系统
-struct NModularRedundancy<T, U> 
+struct NModularRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3072,7 +3103,7 @@ where
     health_status: Vec<SystemStatus>,
 }
 
-impl<T, U> NModularRedundancy<T, U> 
+impl<T, U> NModularRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3092,20 +3123,20 @@ where
             health_status: vec![SystemStatus::Operational; n],
         }
     }
-    
+  
     // 创建多数表决验证器
     fn majority_voter() -> Box<dyn Fn(&[U]) -> Option<U> + Send + Sync> {
         Box::new(|results: &[U]| {
             if results.is_empty() {
                 return None;
             }
-            
+  
             // 计算每个结果的出现次数
             let mut counts = HashMap::new();
             for result in results {
                 *counts.entry(result).or_insert(0) += 1;
             }
-            
+  
             // 找出出现次数最多的结果
             counts.iter()
                 .max_by_key(|(_, &count)| count)
@@ -3122,7 +3153,7 @@ where
     }
 }
 
-impl<T, U> RedundantSystem<T, U> for NModularRedundancy<T, U> 
+impl<T, U> RedundantSystem<T, U> for NModularRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3132,38 +3163,38 @@ where
         let operational_count = self.health_status.iter()
             .filter(|&&status| status == SystemStatus::Operational)
             .count();
-        
+  
         if operational_count < self.min_agreement {
             return Err(SystemError::ResourceError(
                 "Insufficient operational processors".to_string()
             ));
         }
-        
+  
         // 并行执行所有处理器
         let processors = self.processors.clone();
         let health_status = self.health_status.clone();
         let timeout = self.timeout;
-        
+  
         let results = Arc::new(Mutex::new(Vec::new()));
         let errors = Arc::new(Mutex::new(Vec::new()));
-        
+  
         let mut handles = Vec::new();
-        
+  
         for (i, processor) in processors.iter().enumerate() {
             // 跳过失效的处理器
             if health_status[i] == SystemStatus::Failed {
                 continue;
             }
-            
+  
             let input_clone = input.clone();
             let processor_clone = processor.clone();
             let results_clone = Arc::clone(&results);
             let errors_clone = Arc::clone(&errors);
-            
+  
             // 启动处理线程
             let handle = thread::spawn(move || {
                 let result = processor_clone(input_clone);
-                
+  
                 match result {
                     Ok(output) => {
                         results_clone.lock().unwrap().push((i, output));
@@ -3173,10 +3204,10 @@ where
                     },
                 }
             });
-            
+  
             handles.push(handle);
         }
-        
+  
         // 等待所有处理完成或超时
         let start = Instant::now();
         for handle in handles {
@@ -3188,19 +3219,19 @@ where
                 return Err(SystemError::TimeoutError);
             }
         }
-        
+  
         // 收集所有结果
         let results = results.lock().unwrap();
-        
+  
         if results.len() < self.min_agreement {
             return Err(SystemError::ValidationError(
                 format!("Only {} results available, need {}", results.len(), self.min_agreement)
             ));
         }
-        
+  
         // 提取结果值
         let result_values: Vec<U> = results.iter().map(|(_, v)| v.clone()).collect();
-        
+  
         // 使用验证器选择最终结果
         if let Some(final_result) = (self.validator)(&result_values) {
             Ok(final_result)
@@ -3208,13 +3239,13 @@ where
             Err(SystemError::VoterError("Validator could not determine result".to_string()))
         }
     }
-    
+  
     fn status(&self) -> SystemStatus {
         // 计算系统整体状态
         let operational_count = self.health_status.iter()
             .filter(|&&status| status == SystemStatus::Operational)
             .count();
-            
+  
         if operational_count >= self.min_agreement {
             if operational_count == self.health_status.len() {
                 SystemStatus::Operational
@@ -3225,7 +3256,7 @@ where
             SystemStatus::Failed
         }
     }
-    
+  
     fn reset(&mut self) {
         // 重置所有处理器状态
         for status in &mut self.health_status {
@@ -3235,7 +3266,7 @@ where
 }
 
 // 备用冗余系统
-struct StandbyRedundancy<T, U> 
+struct StandbyRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + Send + 'static,
@@ -3248,7 +3279,7 @@ where
     switch_count: usize, // 切换次数统计
 }
 
-impl<T, U> StandbyRedundancy<T, U> 
+impl<T, U> StandbyRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + Send + 'static,
@@ -3268,7 +3299,7 @@ where
             switch_count: 0,
         }
     }
-    
+  
     // 切换到下一个可用处理器
     fn switch_to_next(&mut self) -> bool {
         if self.current_active < self.backups.len() {
@@ -3281,7 +3312,7 @@ where
     }
 }
 
-impl<T, U> RedundantSystem<T, U> for StandbyRedundancy<T, U> 
+impl<T, U> RedundantSystem<T, U> for StandbyRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + Send + 'static,
@@ -3293,13 +3324,13 @@ where
         } else {
             &self.backups[self.current_active - 1]
         };
-        
+  
         // 执行处理，带超时
         let input_clone = input.clone();
         let processor_clone = processor.clone();
-        
+  
         let result = processor_clone(input_clone);
-        
+  
         match result {
             Ok(output) => {
                 // 验证结果
@@ -3315,7 +3346,7 @@ where
             }
         }
     }
-    
+  
     fn status(&self) -> SystemStatus {
         if self.current_active == 0 {
             SystemStatus::Operational
@@ -3325,7 +3356,7 @@ where
             SystemStatus::Failed
         }
     }
-    
+  
     fn reset(&mut self) {
         self.current_active = 0;
         self.switch_count = 0;
@@ -3333,7 +3364,7 @@ where
 }
 
 // N版本编程实现
-struct NVersionProgramming<T, U> 
+struct NVersionProgramming<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3345,7 +3376,7 @@ where
     version_status: Vec<SystemStatus>,
 }
 
-impl<T, U> NVersionProgramming<T, U> 
+impl<T, U> NVersionProgramming<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3367,7 +3398,7 @@ where
     }
 }
 
-impl<T, U> RedundantSystem<T, U> for NVersionProgramming<T, U> 
+impl<T, U> RedundantSystem<T, U> for NVersionProgramming<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3377,36 +3408,36 @@ where
         let available_versions = self.version_status.iter()
             .filter(|&&status| status != SystemStatus::Failed)
             .count();
-            
+  
         if available_versions < self.min_versions {
             return Err(SystemError::ResourceError(
                 "Insufficient operational versions".to_string()
             ));
         }
-        
+  
         // 并行执行所有版本
         let versions = self.versions.clone();
         let version_status = self.version_status.clone();
         let timeout = self.timeout;
-        
+  
         let results = Arc::new(Mutex::new(Vec::new()));
         let errors = Arc::new(Mutex::new(Vec::new()));
-        
+  
         let mut handles = Vec::new();
-        
+  
         for (i, version) in versions.iter().enumerate() {
             if version_status[i] == SystemStatus::Failed {
                 continue;
             }
-            
+  
             let input_clone = input.clone();
             let version_clone = version.clone();
             let results_clone = Arc::clone(&results);
             let errors_clone = Arc::clone(&errors);
-            
+  
             let handle = thread::spawn(move || {
                 let result = version_clone(input_clone);
-                
+  
                 match result {
                     Ok(output) => {
                         results_clone.lock().unwrap().push(output);
@@ -3416,10 +3447,10 @@ where
                     },
                 }
             });
-            
+  
             handles.push(handle);
         }
-        
+  
         // 等待所有版本完成或超时
         let start = Instant::now();
         for handle in handles {
@@ -3431,17 +3462,17 @@ where
                 return Err(SystemError::TimeoutError);
             }
         }
-        
+  
         // 收集结果
         let results = results.lock().unwrap();
-        
+  
         if results.len() < self.min_versions {
             return Err(SystemError::ValidationError(
-                format!("Only {} versions produced results, need {}", 
+                format!("Only {} versions produced results, need {}",
                         results.len(), self.min_versions)
             ));
         }
-        
+  
         // 使用接受性测试选择结果
         if let Some(final_result) = (self.acceptance_test)(&results) {
             Ok(final_result)
@@ -3449,13 +3480,13 @@ where
             Err(SystemError::ValidationError("No result passed acceptance test".to_string()))
         }
     }
-    
+  
     fn status(&self) -> SystemStatus {
         // 计算系统整体状态
         let operational_count = self.version_status.iter()
             .filter(|&&status| status == SystemStatus::Operational)
             .count();
-            
+  
         if operational_count >= self.min_versions {
             if operational_count == self.version_status.len() {
                 SystemStatus::Operational
@@ -3466,7 +3497,7 @@ where
             SystemStatus::Failed
         }
     }
-    
+  
     fn reset(&mut self) {
         // 重置所有版本状态
         for status in &mut self.version_status {
@@ -3476,7 +3507,7 @@ where
 }
 
 // 时间冗余实现
-struct TimeRedundancy<T, U> 
+struct TimeRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3489,7 +3520,7 @@ where
     consecutive_failures: usize,
 }
 
-impl<T, U> TimeRedundancy<T, U> 
+impl<T, U> TimeRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3512,7 +3543,7 @@ where
     }
 }
 
-impl<T, U> RedundantSystem<T, U> for TimeRedundancy<T, U> 
+impl<T, U> RedundantSystem<T, U> for TimeRedundancy<T, U>
 where
     T: Clone + Send + 'static,
     U: Clone + PartialEq + Send + 'static,
@@ -3520,40 +3551,40 @@ where
     fn process(&self, input: T) -> Result<U, SystemError> {
         let mut results = Vec::new();
         let mut errors = Vec::new();
-        
+  
         // 执行多次，收集结果
         for _ in 0..=self.retry_count {
             let input_clone = input.clone();
             let processor_clone = self.processor.clone();
-            
+  
             let start = Instant::now();
             let result = processor_clone(input_clone);
-            
+  
             // 检查超时
             if start.elapsed() > self.execution_timeout {
                 errors.push(SystemError::TimeoutError);
                 continue;
             }
-            
+  
             match result {
                 Ok(output) => results.push(output),
                 Err(err) => errors.push(err),
             }
-            
+  
             // 如果已经有足够的结果，提前结束
             if results.len() >= self.min_consistent_results {
                 break;
             }
         }
-        
+  
         // 检查是否有足够的结果
         if results.len() < self.min_consistent_results {
             return Err(SystemError::ValidationError(
-                format!("Only got {} successful results, need {}", 
+                format!("Only got {} successful results, need {}",
                         results.len(), self.min_consistent_results)
             ));
         }
-        
+  
         // 使用比较器选择最终结果
         if let Some(final_result) = (self.result_comparator)(&results) {
             Ok(final_result)
@@ -3561,7 +3592,7 @@ where
             Err(SystemError::ValidationError("Results inconsistent".to_string()))
         }
     }
-    
+  
     fn status(&self) -> SystemStatus {
         if self.consecutive_failures == 0 {
             SystemStatus::Operational
@@ -3571,11 +3602,12 @@ where
             SystemStatus::Failed
         }
     }
-    
+  
     fn reset(&mut self) {
         self.consecutive_failures = 0;
     }
 }
+
 ```
 
 ### 1.5.3 失效检测与恢复
@@ -3605,6 +3637,7 @@ where
 - 性能监控: 监测性能指标的异常
 - 资源监控: 监控计算、存储、网络资源
 - 趋势分析: 分析监测数据预测潜在故障
+
 ```
 
 Rust代码示例（失效检测与恢复）：
@@ -3624,7 +3657,9 @@ enum DeviceType {
 }
 
 // 健康状态
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+
+# [derive(PartialEq, Eq, Clone, Copy, Debug)]
+
 enum HealthStatus {
     Healthy,
     Degraded,
@@ -4146,6 +4181,7 @@ impl SelfTestSystem {
         });
     }
 }
+
 ```
 
 ### 1.5.4 物理-逻辑容错映射
@@ -4175,6 +4211,7 @@ impl SelfTestSystem {
 - 优先级: 物理恢复优先级 -> 逻辑服务优先级
 - 时效性: 物理恢复时间 -> 逻辑恢复时间
 - 依赖恢复: 物理依赖恢复 -> 逻辑服务恢复
+
 ```
 
 Rust代码示例（物理-逻辑容错映射）：
@@ -4662,12 +4699,11 @@ impl PhysicalLogicalMapper {
             HealthStatus::Degraded(degradation)
         } else {
             
-
 ```rust
             HealthStatus::Failed
         }
     }
-    
+  
     // 生成故障影响报告
     fn generate_impact_report(&self, failed_device_id: &str) -> FailureImpactReport {
         let mut report = FailureImpactReport {
@@ -4678,7 +4714,7 @@ impl PhysicalLogicalMapper {
             service_impact: 0,
             estimated_recovery_time: Duration::from_secs(0),
         };
-        
+  
         // 获取设备信息
         if let Some(device) = self.physical_devices.get(failed_device_id) {
             report.device_type = Some(match device.device_type {
@@ -4690,7 +4726,7 @@ impl PhysicalLogicalMapper {
                 PhysicalDeviceType::Storage => "Storage".to_string(),
             });
             report.estimated_recovery_time = device.recovery_time;
-            
+  
             // 分析影响的逻辑组件
             if let Some(logical_ids) = self.physical_to_logical.get(failed_device_id) {
                 for logical_id in logical_ids {
@@ -4706,7 +4742,7 @@ impl PhysicalLogicalMapper {
                                 HealthStatus::Unknown => 100,
                             },
                         });
-                        
+  
                         // 分析影响的系统功能
                         if let Some(function_ids) = self.logical_to_function.get(logical_id) {
                             for function_id in function_ids {
@@ -4726,28 +4762,28 @@ impl PhysicalLogicalMapper {
                     }
                 }
             }
-            
+  
             // 计算整体服务影响
             let total_priority: u32 = report.affected_system_functions.iter()
                 .map(|f| f.priority as u32)
                 .sum();
-            
+  
             let impact_sum: u32 = report.affected_system_functions.iter()
                 .map(|f| (f.priority as u32) * (100 - f.service_level as u32) / 100)
                 .sum();
-            
+  
             if total_priority > 0 {
                 report.service_impact = (impact_sum * 100 / total_priority) as u8;
             }
         }
-        
+  
         report
     }
-    
+  
     // 分析冗余设计有效性
     fn analyze_redundancy_effectiveness(&self) -> HashMap<String, RedundancyAnalysis> {
         let mut results = HashMap::new();
-        
+  
         // 收集冗余组
         let mut redundancy_groups = HashMap::new();
         for (id, device) in &self.physical_devices {
@@ -4757,7 +4793,7 @@ impl PhysicalLogicalMapper {
                     .push(id.clone());
             }
         }
-        
+  
         // 分析每个冗余组
         for (group_id, device_ids) in redundancy_groups {
             let mut analysis = RedundancyAnalysis {
@@ -4770,7 +4806,7 @@ impl PhysicalLogicalMapper {
                 critical_components: HashSet::new(),
                 single_points_of_failure: Vec::new(),
             };
-            
+  
             // 统计设备状态
             for device_id in &device_ids {
                 if let Some(device) = self.physical_devices.get(device_id) {
@@ -4782,7 +4818,7 @@ impl PhysicalLogicalMapper {
                     }
                 }
             }
-            
+  
             // 收集关键组件
             let mut all_logical_components = HashSet::new();
             for device_id in &device_ids {
@@ -4792,13 +4828,13 @@ impl PhysicalLogicalMapper {
                     }
                 }
             }
-            
+  
             // 识别单点故障
             for logical_id in &all_logical_components {
                 if let Some(component) = self.logical_components.get(logical_id) {
                     if component.criticality > 70 { // 高关键性组件
                         analysis.critical_components.insert(logical_id.clone());
-                        
+  
                         // 检查是否是单点故障
                         let mut device_mapping_count = 0;
                         for device_id in &device_ids {
@@ -4806,7 +4842,7 @@ impl PhysicalLogicalMapper {
                                 device_mapping_count += 1;
                             }
                         }
-                        
+  
                         if device_mapping_count <= 1 {
                             analysis.single_points_of_failure.push(
                                 SinglePointOfFailure {
@@ -4820,7 +4856,7 @@ impl PhysicalLogicalMapper {
                     }
                 }
             }
-            
+  
             // 计算有效性评分
             let healthy_ratio = analysis.healthy_count as f64 / analysis.device_count as f64;
             let redundancy_ratio = if analysis.single_points_of_failure.is_empty() {
@@ -4828,15 +4864,15 @@ impl PhysicalLogicalMapper {
             } else {
                 1.0 - (analysis.single_points_of_failure.len() as f64 / all_logical_components.len() as f64)
             };
-            
+  
             analysis.effectiveness_score = ((healthy_ratio * 0.7 + redundancy_ratio * 0.3) * 100.0) as u8;
-            
+  
             results.insert(group_id, analysis);
         }
-        
+  
         results
     }
-    
+  
     // 生成最佳恢复计划
     fn generate_recovery_plan(&self) -> RecoveryPlan {
         let mut plan = RecoveryPlan {
@@ -4844,10 +4880,10 @@ impl PhysicalLogicalMapper {
             estimated_total_time: Duration::from_secs(0),
             service_impact_reduction: 0,
         };
-        
+  
         // 获取优先级排序的设备
         let prioritized_devices = self.prioritize_recovery();
-        
+  
         // 过滤出失效的设备
         let failed_devices: Vec<_> = prioritized_devices.into_iter()
             .filter(|(id, _)| {
@@ -4855,29 +4891,29 @@ impl PhysicalLogicalMapper {
                     .map_or(false, |d| d.health_status == HealthStatus::Failed)
             })
             .collect();
-        
+  
         if failed_devices.is_empty() {
             return plan;
         }
-        
+  
         // 当前系统状态的服务水平
         let current_service_levels: HashMap<_, _> = self.system_functions.iter()
             .map(|(id, func)| (id.clone(), func.service_level))
             .collect();
-        
+  
         // 为每个失效设备创建恢复步骤
         let mut accumulated_time = Duration::from_secs(0);
-        
+  
         for (device_id, priority) in failed_devices {
             if let Some(device) = self.physical_devices.get(&device_id) {
                 // 创建恢复步骤
                 let recovery_time = device.recovery_time;
                 accumulated_time += recovery_time;
-                
+  
                 // 模拟恢复此设备后的系统状态
                 let mut simulator = self.clone();
                 simulator.update_physical_device_status(&device_id, HealthStatus::Healthy);
-                
+  
                 // 计算服务水平改善
                 let mut service_improvements = HashMap::new();
                 for (func_id, current_level) in &current_service_levels {
@@ -4888,7 +4924,7 @@ impl PhysicalLogicalMapper {
                         }
                     }
                 }
-                
+  
                 // 计算该步骤的总体服务改善
                 let total_improvement: u32 = service_improvements.iter()
                     .map(|(func_id, improvement)| {
@@ -4899,17 +4935,17 @@ impl PhysicalLogicalMapper {
                         }
                     })
                     .sum();
-                
+  
                 let total_priority: u32 = self.system_functions.values()
                     .map(|f| f.priority as u32)
                     .sum();
-                
+  
                 let step_impact_reduction = if total_priority > 0 {
                     (total_improvement * 100 / total_priority) as u8
                 } else {
                     0
                 };
-                
+  
                 // 添加恢复步骤
                 plan.steps.push(RecoveryStep {
                     device_id: device_id.clone(),
@@ -4928,10 +4964,10 @@ impl PhysicalLogicalMapper {
                 });
             }
         }
-        
+  
         // 设置总恢复时间
         plan.estimated_total_time = accumulated_time;
-        
+  
         // 计算总体服务影响减少
         if !plan.steps.is_empty() {
             plan.service_impact_reduction = plan.steps.iter()
@@ -4939,10 +4975,10 @@ impl PhysicalLogicalMapper {
                 .max()
                 .unwrap_or(0);
         }
-        
+  
         plan
     }
-    
+  
     // 用于实现 clone
     fn clone(&self) -> Self {
         PhysicalLogicalMapper {
@@ -5099,6 +5135,7 @@ impl Clone for DegradationPolicy {
         }
     }
 }
+
 ```
 
 ## 1.6 物理规律与电子电路形式化
@@ -5130,6 +5167,7 @@ impl Clone for DegradationPolicy {
 - 频域模型: 传递函数, 滤波特性, 增益-相位
 - 数字模型: 状态机, 时序图, HDL描述
 - 混合模型: 模拟-数字交互, 物理-电气耦合
+
 ```
 
 Rust代码示例（电子电路模拟）：
@@ -5141,7 +5179,9 @@ use std::ops::{Add, Mul};
 use num_complex::Complex64;
 
 // 电压和电流可以是实数(直流)或复数(交流)
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 enum Quantity {
     DC(f64),
     AC(Complex64),
@@ -5151,28 +5191,28 @@ impl Quantity {
     fn dc(value: f64) -> Self {
         Quantity::DC(value)
     }
-    
+  
     fn ac(magnitude: f64, phase_rad: f64) -> Self {
         Quantity::AC(Complex64::new(
             magnitude * phase_rad.cos(),
             magnitude * phase_rad.sin()
         ))
     }
-    
+  
     fn value(&self) -> Complex64 {
         match self {
             Quantity::DC(v) => Complex64::new(*v, 0.0),
             Quantity::AC(c) => *c,
         }
     }
-    
+  
     fn magnitude(&self) -> f64 {
         match self {
             Quantity::DC(v) => v.abs(),
             Quantity::AC(c) => c.norm(),
         }
     }
-    
+  
     fn phase(&self) -> f64 {
         match self {
             Quantity::DC(v) => if *v >= 0.0 { 0.0 } else { PI },
@@ -5183,7 +5223,7 @@ impl Quantity {
 
 impl Add for Quantity {
     type Output = Self;
-    
+  
     fn add(self, other: Self) -> Self {
         match (self, other) {
             (Quantity::DC(a), Quantity::DC(b)) => Quantity::DC(a + b),
@@ -5194,7 +5234,7 @@ impl Add for Quantity {
 
 impl Mul for Quantity {
     type Output = Self;
-    
+  
     fn mul(self, other: Self) -> Self {
         match (self, other) {
             (Quantity::DC(a), Quantity::DC(b)) => Quantity::DC(a * b),
@@ -5204,7 +5244,9 @@ impl Mul for Quantity {
 }
 
 // 电路元件类型
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 enum ComponentType {
     Resistor,
     Capacitor,
@@ -5220,12 +5262,14 @@ enum ComponentType {
     Node,
 }
 
-#[derive(Clone, Debug)]
+# [derive(Clone, Debug)]
+
 enum LogicType {
     AND, OR, NOT, NAND, NOR, XOR, XNOR,
 }
 
-#[derive(Clone, Debug)]
+# [derive(Clone, Debug)]
+
 enum ControlledSourceType {
     VCVS, // 压控压源
     VCCS, // 压控流源
@@ -5234,7 +5278,9 @@ enum ControlledSourceType {
 }
 
 // 电路元件
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 struct Component {
     id: String,
     component_type: ComponentType,
@@ -5244,14 +5290,18 @@ struct Component {
 }
 
 // 电路连接关系
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 struct Connection {
     node_id: String,
     connected_pins: Vec<(String, String)>, // (组件ID, 引脚)
 }
 
 // 电路状态
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 struct CircuitState {
     node_voltages: HashMap<String, Quantity>,
     branch_currents: HashMap<(String, String), Quantity>, // (组件ID, 引脚) -> 电流
@@ -5259,7 +5309,9 @@ struct CircuitState {
 }
 
 // 组件内部状态
-#[derive(Clone, Debug)]
+
+# [derive(Clone, Debug)]
+
 enum ComponentState {
     Linear,
     NonLinear {
@@ -5272,7 +5324,8 @@ enum ComponentState {
     },
 }
 
-#[derive(Clone, Debug, PartialEq)]
+# [derive(Clone, Debug, PartialEq)]
+
 enum LogicState {
     Low,
     High,
@@ -5299,28 +5352,28 @@ impl CircuitModel {
             time_step,
         }
     }
-    
+  
     // 添加组件
     fn add_component(&mut self, component: Component) {
         self.components.insert(component.id.clone(), component);
     }
-    
+  
     // 添加连接
     fn add_connection(&mut self, connection: Connection) {
         self.connections.insert(connection.node_id.clone(), connection);
     }
-    
+  
     // 连接两个组件的引脚
-    fn connect_pins(&mut self, 
-                   comp1_id: &str, pin1: &str, 
-                   comp2_id: &str, pin2: &str, 
+    fn connect_pins(&mut self,
+                   comp1_id: &str, pin1: &str,
+                   comp2_id: &str, pin2: &str,
                    node_id: &str) {
         // 确保组件存在
-        if !self.components.contains_key(comp1_id) || 
+        if !self.components.contains_key(comp1_id) ||
            !self.components.contains_key(comp2_id) {
             return;
         }
-        
+  
         // 创建或更新节点连接
         if let Some(connection) = self.connections.get_mut(node_id) {
             connection.connected_pins.push((comp1_id.to_string(), pin1.to_string()));
@@ -5336,19 +5389,19 @@ impl CircuitModel {
             self.connections.insert(node_id.to_string(), connection);
         }
     }
-    
+  
     // 设置AC分析频率
     fn set_ac_frequency(&mut self, frequency: f64) {
         self.analysis_frequency = Some(frequency);
     }
-    
+  
     // 获取元件的阻抗
     fn get_component_impedance(&self, comp_id: &str) -> Complex64 {
         let component = match self.components.get(comp_id) {
             Some(c) => c,
             None => return Complex64::new(0.0, 0.0),
         };
-        
+  
         match component.component_type {
             ComponentType::Resistor => {
                 let r = component.parameters.get("resistance").cloned().unwrap_or(0.0);
@@ -5383,7 +5436,7 @@ impl CircuitModel {
             _ => Complex64::new(0.0, 0.0), // 其他元件需要更复杂的处理
         }
     }
-    
+  
     // 进行直流分析
     fn dc_analysis(&mut self) -> CircuitState {
         // 简化的DC分析（实际电路分析需要解线性方程组）
@@ -5392,15 +5445,15 @@ impl CircuitModel {
             branch_currents: HashMap::new(),
             component_states: HashMap::new(),
         };
-        
+  
         // 设置地节点电压为0
         state.node_voltages.insert(self.ground_node.clone(), Quantity::dc(0.0));
-        
+  
         // 对于电压源，直接设置节点电压
         for (id, component) in &self.components {
             if let ComponentType::VoltageSource = component.component_type {
                 let voltage = component.parameters.get("voltage").cloned().unwrap_or(0.0);
-                
+  
                 // 查找与该电压源连接的节点
                 for (_, connection) in &self.connections {
                     for &(comp_id, ref pin) in &connection.connected_pins {
@@ -5411,37 +5464,37 @@ impl CircuitModel {
                 }
             }
         }
-        
+  
         // 这里应该包含完整的节点分析算法，但为了简化，我们只进行了部分处理
-        
+  
         state
     }
-    
+  
     // 进行交流分析
     fn ac_analysis(&mut self, frequency: f64) -> CircuitState {
         self.set_ac_frequency(frequency);
-        
+  
         // 简化的AC分析（实际需要解复数线性方程组）
         let mut state = CircuitState {
             node_voltages: HashMap::new(),
             branch_currents: HashMap::new(),
             component_states: HashMap::new(),
         };
-        
+  
         // 设置地节点电压为0
         state.node_voltages.insert(self.ground_node.clone(), Quantity::ac(0.0, 0.0));
-        
+  
         // 对于AC电压源，设置节点电压
         for (id, component) in &self.components {
             if let ComponentType::VoltageSource = component.component_type {
                 let magnitude = component.parameters.get("magnitude").cloned().unwrap_or(0.0);
                 let phase = component.parameters.get("phase").cloned().unwrap_or(0.0) * PI / 180.0; // 转换为弧度
-                
+  
                 for (_, connection) in &self.connections {
                     for &(comp_id, ref pin) in &connection.connected_pins {
                         if comp_id == *id && *pin == "p" {
                             state.node_voltages.insert(
-                                connection.node_id.clone(), 
+                                connection.node_id.clone(),
                                 Quantity::ac(magnitude, phase)
                             );
                         }
@@ -5449,12 +5502,12 @@ impl CircuitModel {
                 }
             }
         }
-        
+  
         // 这里应该包含完整的交流分析算法
-        
+  
         state
     }
-    
+  
     // 进行瞬态分析（简化版）
     fn transient_analysis(&mut self, end_time: f64, initial_state: Option<CircuitState>) -> Vec<CircuitState> {
         let mut states = Vec::new();
@@ -5462,22 +5515,22 @@ impl CircuitModel {
             // 如果没有初始状态，从DC分析开始
             self.dc_analysis()
         });
-        
+  
         states.push(current_state.clone());
-        
+  
         // 瞬态分析的简化实现
         let mut time = 0.0;
         while time < end_time {
             time += self.time_step;
-            
+  
             // 为每个时间步更新状态
             current_state = self.update_state(current_state.clone(), time);
             states.push(current_state.clone());
         }
-        
+  
         states
     }
-    
+  
     // 更新电路状态（用于瞬态分析）
     fn update_state(&self, previous_state: CircuitState, time: f64) -> CircuitState {
         let mut new_state = CircuitState {
@@ -5485,11 +5538,11 @@ impl CircuitModel {
             branch_currents: HashMap::new(),
             component_states: HashMap::new(),
         };
-        
+  
         // 复制上一个状态的基本信息
         new_state.node_voltages = previous_state.node_voltages.clone();
         new_state.branch_currents = previous_state.branch_currents.clone();
-        
+  
         // 更新每个组件的状态
         for (id, component) in &self.components {
             match component.component_type {
@@ -5500,7 +5553,7 @@ impl CircuitModel {
                         // 找到与电容相连的两个节点
                         let mut node1 = None;
                         let mut node2 = None;
-                        
+  
                         for (_, connection) in &self.connections {
                             for &(comp_id, ref pin) in &connection.connected_pins {
                                 if comp_id == *id {
@@ -5512,23 +5565,23 @@ impl CircuitModel {
                                 }
                             }
                         }
-                        
+  
                         if let (Some(n1), Some(n2)) = (node1, node2) {
                             // 获取之前的电流
                             let current_key = (id.clone(), "1".to_string());
                             let current = previous_state.branch_currents.get(&current_key)
                                 .map_or(Quantity::dc(0.0), |q| q.clone());
-                            
+  
                             // 获取之前的电压
                             let v1 = previous_state.node_voltages.get(&n1)
                                 .map_or(Quantity::dc(0.0), |q| q.clone());
                             let v2 = previous_state.node_voltages.get(&n2)
                                 .map_or(Quantity::dc(0.0), |q| q.clone());
-                            
+  
                             // 简化的电容更新方程（实际应使用微分方程）
                             let i_value = current.value();
                             let dv = i_value * (self.time_step / c);
-                            
+  
                             // 更新电压
                             let v_diff = (v1.value() - v2.value()) + dv;
                             new_state.node_voltages.insert(n1.clone(), Quantity::DC(v_diff.re + v2.value().re));
@@ -5542,7 +5595,7 @@ impl CircuitModel {
                         // 找到与电感相连的两个节点
                         let mut node1 = None;
                         let mut node2 = None;
-                        
+  
                         for (_, connection) in &self.connections {
                             for &(comp_id, ref pin) in &connection.connected_pins {
                                 if comp_id == *id {
@@ -5554,29 +5607,29 @@ impl CircuitModel {
                                 }
                             }
                         }
-                        
+  
                         if let (Some(n1), Some(n2)) = (node1, node2) {
                             // 获取节点电压
                             let v1 = previous_state.node_voltages.get(&n1)
                                 .map_or(Quantity::dc(0.0), |q| q.clone());
                             let v2 = previous_state.node_voltages.get(&n2)
                                 .map_or(Quantity::dc(0.0), |q| q.clone());
-                            
+  
                             // 获取之前的电流
                             let current_key = (id.clone(), "1".to_string());
                             let current = previous_state.branch_currents.get(&current_key)
                                 .map_or(Quantity::dc(0.0), |q| q.clone());
-                            
+  
                             // 计算电压差
                             let v_diff = v1.value() - v2.value();
-                            
+  
                             // 简化的电感更新方程（实际应使用微分方程）
                             let di = v_diff * (self.time_step / l);
                             let new_current = current.value() + di;
-                            
+  
                             // 更新电流
                             new_state.branch_currents.insert(
-                                current_key, 
+                                current_key,
                                 Quantity::DC(new_current.re)
                             );
                         }
@@ -5591,10 +5644,11 @@ impl CircuitModel {
                 }
             }
         }
-        
+  
         new_state
     }
 }
+
 ```
 
 ### 1.6.2 物理规律形式表达
@@ -5628,6 +5682,7 @@ impl CircuitModel {
 - 泡利不相容原理: 两个电子不能占据相同量子态
 - 量子纠缠: 粒子状态相互依赖，无法单独描述
 - 量子比特: |ψ⟩ = α|0⟩ + β|1⟩，量子信息的基本单位
+
 ```
 
 Rust代码示例（物理规律实现）：
@@ -5650,7 +5705,7 @@ impl PhysicalConstants {
     fn new() -> Self {
         let vacuum_permittivity = 8.85418782e-12; // ε₀ (F/m)
         let vacuum_permeability = 4.0 * PI * 1e-7; // μ₀ (H/m)
-        
+  
         PhysicalConstants {
             vacuum_permittivity,
             vacuum_permeability,
@@ -5673,91 +5728,91 @@ impl CircuitLaws {
             constants: PhysicalConstants::new(),
         }
     }
-    
+  
     // 欧姆定律
     fn ohms_law(&self, resistance: f64, current: f64) -> f64 {
         // V = IR
         resistance * current
     }
-    
+  
     // 检查KCL（基尔霍夫电流定律）是否满足
     fn check_kcl(&self, currents: &[f64]) -> bool {
         // ∑I = 0
         let sum: f64 = currents.iter().sum();
         sum.abs() < 1e-9 // 允许一定的数值误差
     }
-    
+  
     // 检查KVL（基尔霍夫电压定律）是否满足
     fn check_kvl(&self, voltages: &[f64]) -> bool {
         // ∑V = 0
         let sum: f64 = voltages.iter().sum();
         sum.abs() < 1e-9 // 允许一定的数值误差
     }
-    
+  
     // 焦耳定律计算功率
     fn power_joule(&self, voltage: f64, current: f64) -> f64 {
         // P = VI
         voltage * current
     }
-    
+  
     // 电阻串联
     fn series_resistance(&self, resistances: &[f64]) -> f64 {
         // R_total = R₁ + R₂ + ... + Rₙ
         resistances.iter().sum()
     }
-    
+  
     // 电阻并联
     fn parallel_resistance(&self, resistances: &[f64]) -> f64 {
         // 1/R_total = 1/R₁ + 1/R₂ + ... + 1/Rₙ
         let sum_of_reciprocals: f64 = resistances.iter()
             .map(|&r| 1.0 / r)
             .sum();
-        
+  
         1.0 / sum_of_reciprocals
     }
-    
+  
     // 分压器计算
     fn voltage_divider(&self, vin: f64, r1: f64, r2: f64) -> f64 {
         // Vout = Vin * (R2 / (R1 + R2))
         vin * (r2 / (r1 + r2))
     }
-    
+  
     // RC电路时间常数
     fn rc_time_constant(&self, resistance: f64, capacitance: f64) -> f64 {
         // τ = RC
         resistance * capacitance
     }
-    
+  
     // RC充电电压
     fn rc_charging_voltage(&self, v0: f64, time: f64, tau: f64) -> f64 {
         // V(t) = V₀(1 - e^(-t/τ))
         v0 * (1.0 - (-time / tau).exp())
     }
-    
+  
     // RC放电电压
     fn rc_discharging_voltage(&self, v0: f64, time: f64, tau: f64) -> f64 {
         // V(t) = V₀e^(-t/τ)
         v0 * (-time / tau).exp()
     }
-    
+  
     // RL电路时间常数
     fn rl_time_constant(&self, resistance: f64, inductance: f64) -> f64 {
         // τ = L/R
         inductance / resistance
     }
-    
+  
     // RL电流增长
     fn rl_current_growth(&self, i0: f64, time: f64, tau: f64) -> f64 {
         // I(t) = I₀(1 - e^(-t/τ))
         i0 * (1.0 - (-time / tau).exp())
     }
-    
+  
     // RLC电路共振频率
     fn rlc_resonance_frequency(&self, inductance: f64, capacitance: f64) -> f64 {
         // f₀ = 1/(2π√(LC))
         1.0 / (2.0 * PI * (inductance * capacitance).sqrt())
     }
-    
+  
     // RLC品质因数
     fn rlc_quality_factor(&self, resistance: f64, inductance: f64, capacitance: f64) -> f64 {
         // Q = (1/R)√(L/C)
@@ -5776,50 +5831,50 @@ impl MagneticLaws {
             constants: PhysicalConstants::new(),
         }
     }
-    
+  
     // 法拉第电磁感应定律计算感应电动势
     fn induced_emf(&self, d_flux: f64, d_time: f64) -> f64 {
         // e = -dΦ/dt
         -d_flux / d_time
     }
-    
+  
     // 安培环路定律计算磁场
     fn ampere_law(&self, current: f64, loop_length: f64) -> f64 {
         // B = μ₀I/(2πr) for a straight wire
         self.constants.vacuum_permeability * current / (2.0 * PI * loop_length)
     }
-    
+  
     // 毕奥-萨伐尔定律计算直线电流元在某点产生的磁场
     fn biot_savart_law(&self, current: f64, dl: f64, distance: f64, angle_rad: f64) -> f64 {
         // dB = (μ₀/4π) × (I dl sin θ / r²)
-        (self.constants.vacuum_permeability / (4.0 * PI)) * 
+        (self.constants.vacuum_permeability / (4.0 * PI)) *
             (current * dl * angle_rad.sin() / (distance * distance))
     }
-    
+  
     // 圆线圈中心的磁场
     fn magnetic_field_loop_center(&self, current: f64, radius: f64) -> f64 {
         // B = μ₀I/(2r)
         self.constants.vacuum_permeability * current / (2.0 * radius)
     }
-    
+  
     // 螺线管内部磁场（理想情况）
     fn magnetic_field_solenoid(&self, current: f64, turns_per_length: f64) -> f64 {
         // B = μ₀nI
         self.constants.vacuum_permeability * current * turns_per_length
     }
-    
+  
     // 计算电磁铁吸引力
     fn electromagnet_force(&self, b_field: f64, area: f64) -> f64 {
         // F = B²A/(2μ₀)
         b_field * b_field * area / (2.0 * self.constants.vacuum_permeability)
     }
-    
+  
     // 计算互感
     fn mutual_inductance(&self, flux_linkage: f64, current: f64) -> f64 {
         // M = Φ/I
         flux_linkage / current
     }
-    
+  
     // 计算自感
     fn self_inductance_solenoid(&self, turns: f64, area: f64, length: f64) -> f64 {
         // L = μ₀N²A/l
@@ -5838,38 +5893,38 @@ impl WavePropagationLaws {
             constants: PhysicalConstants::new(),
         }
     }
-    
+  
     // 计算波长
     fn wavelength(&self, frequency: f64, velocity: f64) -> f64 {
         // λ = v/f
         velocity / frequency
     }
-    
+  
     // 电磁波波长（在真空中）
     fn em_wavelength(&self, frequency: f64) -> f64 {
         // λ = c/f
         self.constants.speed_of_light / frequency
     }
-    
+  
     // 传输线特性阻抗
     fn characteristic_impedance(&self, inductance_per_length: f64, capacitance_per_length: f64) -> f64 {
         // Z₀ = √(L/C)
         (inductance_per_length / capacitance_per_length).sqrt()
     }
-    
+  
     // 计算反射系数
     fn reflection_coefficient(&self, load_impedance: f64, line_impedance: f64) -> f64 {
         // Γ = (Z_L - Z₀)/(Z_L + Z₀)
         (load_impedance - line_impedance) / (load_impedance + line_impedance)
     }
-    
+  
     // 计算驻波比(VSWR)
     fn vswr(&self, reflection_coefficient: f64) -> f64 {
         // VSWR = (1 + |Γ|)/(1 - |Γ|)
         let abs_gamma = reflection_coefficient.abs();
         (1.0 + abs_gamma) / (1.0 - abs_gamma)
     }
-    
+  
     // 传输线上的电压分布（使用复数表示）
     fn voltage_distribution(&self, v_plus: Complex64, gamma: Complex64, beta: f64, z: f64) -> Complex64 {
         // V(z) = V⁺(e^(-jβz) + Γe^(jβz))
@@ -5877,32 +5932,32 @@ impl WavePropagationLaws {
         let backward = Complex64::new(0.0, beta * z).exp();
         v_plus * (forward + gamma * backward)
     }
-    
+  
     // 计算相位速度
     fn phase_velocity(&self, omega: f64, beta: f64) -> f64 {
         // v_p = ω/β
         omega / beta
     }
-    
+  
     // 计算群速度
     fn group_velocity(&self, d_omega: f64, d_beta: f64) -> f64 {
         // v_g = dω/dβ
         d_omega / d_beta
     }
-    
+  
     // 天线增益
     fn antenna_gain(&self, efficiency: f64, directivity: f64) -> f64 {
         // G = ηD
         efficiency * directivity
     }
-    
+  
     // 自由空间路径损耗
     fn free_space_path_loss(&self, distance: f64, frequency: f64) -> f64 {
         // FSPL(dB) = 20log₁₀(d) + 20log₁₀(f) + 20log₁₀(4π/c)
         let log_distance = 20.0 * distance.log10();
         let log_frequency = 20.0 * frequency.log10();
         let constant = 20.0 * (4.0 * PI / self.constants.speed_of_light).log10();
-        
+  
         log_distance + log_frequency + constant
     }
 }
@@ -5918,84 +5973,85 @@ impl QuantumEffectsLaws {
             constants: PhysicalConstants::new(),
         }
     }
-    
+  
     // 计算粒子能量
     fn particle_energy(&self, frequency: f64) -> f64 {
         // E = hf
         self.constants.planck_constant * frequency
     }
-    
+  
     // 计算光子动量
     fn photon_momentum(&self, wavelength: f64) -> f64 {
         // p = h/λ
         self.constants.planck_constant / wavelength
     }
-    
+  
     // 计算德布罗意波长
     fn de_broglie_wavelength(&self, mass: f64, velocity: f64) -> f64 {
         // λ = h/(mv)
         self.constants.planck_constant / (mass * velocity)
     }
-    
+  
     // 一维势阱中的能级
     fn energy_level_1d_well(&self, n: u32, mass: f64, well_width: f64) -> f64 {
         // E_n = n²h²/(8mL²)
         let n_squared = n as f64 * n as f64;
         let h_squared = self.constants.planck_constant * self.constants.planck_constant;
-        
+  
         n_squared * h_squared / (8.0 * mass * well_width * well_width)
     }
-    
+  
     // 计算隧穿概率（简化模型）
-    fn tunneling_probability(&self, barrier_height: f64, barrier_width: f64, 
+    fn tunneling_probability(&self, barrier_height: f64, barrier_width: f64,
                            particle_energy: f64, particle_mass: f64) -> f64 {
         // P ∝ e^(-2kd), where k = √(2m(V-E))/ħ
         let energy_diff = barrier_height - particle_energy;
         if energy_diff <= 0.0 {
             return 1.0; // 能量高于势垒，没有隧穿效应
         }
-        
+  
         let h_bar = self.constants.planck_constant / (2.0 * PI);
         let k = (2.0 * particle_mass * energy_diff).sqrt() / h_bar;
-        
+  
         (-2.0 * k * barrier_width).exp()
     }
-    
+  
     // 计算费米能级（简化模型）
     fn fermi_level(&self, electron_density: f64, temperature: f64) -> f64 {
         // E_F ≈ (h²/2m)(3π²n)^(2/3)
         let h_squared = self.constants.planck_constant * self.constants.planck_constant;
         let electron_mass = 9.10938356e-31; // 电子质量 (kg)
-        
+  
         let term = 3.0 * PI * PI * electron_density;
         let term_pow = term.powf(2.0/3.0);
-        
+  
         (h_squared / (2.0 * electron_mass)) * term_pow
     }
-    
+  
     // 计算半导体中的本征载流子浓度
     fn intrinsic_carrier_concentration(&self, band_gap: f64, temperature: f64) -> f64 {
         // n_i ∝ T^(3/2)exp(-E_g/(2kT))
         let t_pow = temperature.powf(1.5);
         let exp_term = (-band_gap / (2.0 * self.constants.boltzmann_constant * temperature)).exp();
-        
+  
         // 常数因子简化了
         let constant = 2.5e19; // 简化常数
         constant * t_pow * exp_term
     }
-    
+  
     // 单电子晶体管阈值电压（库仑阻塞效应）
     fn single_electron_transistor_threshold(&self, capacitance: f64) -> f64 {
         // V_th = e/(2C)
         self.constants.elementary_charge / (2.0 * capacitance)
     }
-    
+  
     // 约瑟夫森结临界电流
     fn josephson_critical_current(&self, gap_energy: f64, resistance: f64) -> f64 {
         // I_c = (π·Δ)/(2e·R)
         PI * gap_energy / (2.0 * self.constants.elementary_charge * resistance)
     }
 }
+
 ```
 
 ### 1.6.3 电路-软件映射形式化
@@ -6025,6 +6081,7 @@ impl QuantumEffectsLaws {
 - 时钟→调度: 时钟信号映射为任务调度
 - 同步→并发控制: 电路同步映射为线程同步
 - 时序约束→实时要求: 电路时序约束映射为软件时序要求
+
 ```
 
 Rust代码示例（电路-软件映射）：
@@ -6061,22 +6118,22 @@ impl CircuitComponent for Resistor {
         if inputs.len() < 2 {
             return vec![0.0];
         }
-        
+  
         // 输入: [电压, 电流]
         let voltage = inputs[0];
         let current = inputs[1];
-        
+  
         // 计算功率
         self.current_power = voltage * current;
-        
+  
         // 输出: [电阻值]
         vec![self.resistance]
     }
-    
+  
     fn get_type(&self) -> &str {
         "Resistor"
     }
-    
+  
     fn get_parameters(&self) -> HashMap<String, f64> {
         let mut params = HashMap::new();
         params.insert("resistance".to_string(), self.resistance);
@@ -6098,17 +6155,17 @@ impl SoftwareModule for DataTransformer {
         if inputs.is_empty() {
             return vec![0.0];
         }
-        
+  
         // 应用变换
         inputs.iter()
             .map(|&x| x * self.scale_factor + self.offset)
             .collect()
     }
-    
+  
     fn get_type(&self) -> &str {
         "DataTransformer"
     }
-    
+  
     fn get_properties(&self) -> HashMap<String, String> {
         let mut props = HashMap::new();
         props.insert("scale_factor".to_string(), self.scale_factor.to_string());
@@ -6142,29 +6199,29 @@ impl CircuitComponent for Capacitor {
         if inputs.is_empty() {
             return vec![self.voltage];
         }
-        
+  
         // 输入: [电流]
         let current = inputs[0];
-        
+  
         // 计算时间增量
         let now = Instant::now();
         let dt = now.duration_since(self.last_update).as_secs_f64();
         self.last_update = now;
-        
+  
         // 更新电荷
         self.charge += current * dt;
-        
+  
         // 更新电压
         self.voltage = self.charge / self.capacitance;
-        
+  
         // 输出: [电压]
         vec![self.voltage]
     }
-    
+  
     fn get_type(&self) -> &str {
         "Capacitor"
     }
-    
+  
     fn get_parameters(&self) -> HashMap<String, f64> {
         let mut params = HashMap::new();
         params.insert("capacitance".to_string(), self.capacitance);
@@ -6191,26 +6248,26 @@ impl<T: Clone + Default> StateStore<T> {
             last_update: Instant::now(),
         }
     }
-    
+  
     fn update_state(&mut self, new_state: T) {
         let now = Instant::now();
-        
+  
         // 添加当前状态到历史
         self.history.push_back((self.current_state.clone(), self.last_update));
-        
+  
         // 如果历史过长，移除最旧的
         if self.history.len() > self.max_history_size {
             self.history.pop_front();
         }
-        
+  
         self.current_state = new_state;
         self.last_update = now;
     }
-    
+  
     fn get_state(&self) -> &T {
         &self.current_state
     }
-    
+  
     fn get_state_at(&self, time: Instant) -> Option<T> {
         // 找到最接近指定时间的历史状态
         self.history.iter()
@@ -6232,18 +6289,18 @@ impl SoftwareModule for StateStore<f64> {
         if inputs.is_empty() {
             return vec![*self.get_state()];
         }
-        
+  
         // 更新状态
         self.update_state(inputs[0]);
-        
+  
         // 返回当前状态
         vec![*self.get_state()]
     }
-    
+  
     fn get_type(&self) -> &str {
         "StateStore"
     }
-    
+  
     fn get_properties(&self) -> HashMap<String, String> {
         let mut props = HashMap::new();
         props.insert("current_state".to_string(), self.current_state.to_string());
@@ -6266,21 +6323,21 @@ impl CircuitComponent for Switch {
             // 使用输入作为控制信号
             self.is_closed = inputs[0] > 0.5;
         }
-        
+  
         // 输出当前电阻值
         let resistance = if self.is_closed {
             self.resistance_closed
         } else {
             self.resistance_open
         };
-        
+  
         vec![resistance]
     }
-    
+  
     fn get_type(&self) -> &str {
         "Switch"
     }
-    
+  
     fn get_parameters(&self) -> HashMap<String, f64> {
         let mut params = HashMap::new();
         params.insert("is_closed".to_string(), if self.is_closed { 1.0 } else { 0.0 });
@@ -6310,7 +6367,7 @@ impl<T: Clone + 'static> ConditionalBranch<T> {
             false_path: Box::new(false_path),
         }
     }
-    
+  
     fn evaluate(&self, input: &T) -> T {
         if (self.condition)(input) {
             (self.true_path)(input)
@@ -6326,15 +6383,15 @@ impl SoftwareModule for ConditionalBranch<f64> {
         if inputs.is_empty() {
             return Vec::new();
         }
-        
+  
         let result = self.evaluate(&inputs[0]);
         vec![result]
     }
-    
+  
     fn get_type(&self) -> &str {
         "ConditionalBranch"
     }
-    
+  
     fn get_properties(&self) -> HashMap<String, String> {
         let mut props = HashMap::new();
         props.insert("type".to_string(), "numerical".to_string());
@@ -6354,20 +6411,20 @@ impl CircuitComponent for FeedbackLoop {
         if inputs.is_empty() {
             return vec![self.current_output];
         }
-        
+  
         let input = inputs[0];
         let feedback = self.current_output * self.feedback_ratio;
-        
+  
         // 计算新输出
         self.current_output = self.forward_gain * (input - feedback);
-        
+  
         vec![self.current_output]
     }
-    
+  
     fn get_type(&self) -> &str {
         "FeedbackLoop"
     }
-    
+  
     fn get_parameters(&self) -> HashMap<String, f64> {
         let mut params = HashMap::new();
         params.insert("forward_gain".to_string(), self.forward_gain);
@@ -6405,31 +6462,31 @@ impl SoftwareModule for IterativeProcessor {
         if inputs.is_empty() {
             return Vec::new();
         }
-        
+  
         let input = inputs[0];
         let mut output = input;
         let mut prev_output = output;
-        
+  
         // 迭代处理直到收敛或达到最大迭代次数
         for _ in 0..self.max_iterations {
             let feedback = (self.feedback_fn)(output);
             output = (self.process_fn)(input, feedback);
-            
+  
             // 检查收敛
             if (output - prev_output).abs() < self.convergence_threshold {
                 break;
             }
-            
+  
             prev_output = output;
         }
-        
+  
         vec![output]
     }
-    
+  
     fn get_type(&self) -> &str {
         "IterativeProcessor"
     }
-    
+  
     fn get_properties(&self) -> HashMap<String, String> {
         let mut props = HashMap::new();
         props.insert("max_iterations".to_string(), self.max_iterations.to_string());
@@ -6453,7 +6510,7 @@ impl CircuitSoftwareMapper {
         default_mappings.insert("Capacitor".to_string(), "StateStore".to_string());
         default_mappings.insert("Switch".to_string(), "ConditionalBranch".to_string());
         default_mappings.insert("FeedbackLoop".to_string(), "IterativeProcessor".to_string());
-        
+  
         CircuitSoftwareMapper {
             component_mappings: default_mappings,
             circuit_components: HashMap::new(),
@@ -6461,17 +6518,17 @@ impl CircuitSoftwareMapper {
             connection_mappings: HashMap::new(),
         }
     }
-    
+  
     // 添加电路元件
     fn add_circuit_component(&mut self, id: &str, component: Box<dyn CircuitComponent>) {
         self.circuit_components.insert(id.to_string(), component);
     }
-    
+  
     // 添加软件模块
     fn add_software_module(&mut self, id: &str, module: Box<dyn SoftwareModule>) {
         self.software_modules.insert(id.to_string(), module);
     }
-    
+  
     // 添加连接映射
     fn add_connection_
 
@@ -7007,6 +7064,7 @@ impl MappingVerifier {
         valid_count as f64 / self.circuit_components.len() as f64
     }
 }
+
 ```
 
 ### 1.6.4 物理量子效应映射形式化
@@ -7032,6 +7090,7 @@ impl MappingVerifier {
 - 门操作误差: 量子门实现中的不完美操作
 - 初始化误差: 量子态准备时的偏差
 - 读出误差: 测量结果转换为经典信息时的错误
+
 ```
 
 Rust代码示例（量子计算模型）：
@@ -7361,7 +7420,7 @@ impl QuantumGates {
             Complex64::new(0.0, -sin), Complex64::new(cos, 0.0)
         )
     }
-    
+  
     // 旋转Y门
     fn ry(theta: f64) -> Matrix2<Complex64> {
         let cos = (theta/2.0).cos();
@@ -7371,7 +7430,7 @@ impl QuantumGates {
             Complex64::new(sin, 0.0), Complex64::new(cos, 0.0)
         )
     }
-    
+  
     // 旋转Z门
     fn rz(theta: f64) -> Matrix2<Complex64> {
         let phase_p = Complex64::new(0.0, -theta/2.0).exp();
@@ -7398,7 +7457,7 @@ impl QuantumCircuit {
             gates_history: Vec::new(),
         }
     }
-    
+  
     // 应用H门（阿达马门）
     fn h(&mut self, qubit: usize) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::hadamard(), qubit);
@@ -7407,7 +7466,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用X门（NOT门）
     fn x(&mut self, qubit: usize) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::pauli_x(), qubit);
@@ -7416,7 +7475,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用Y门
     fn y(&mut self, qubit: usize) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::pauli_y(), qubit);
@@ -7425,7 +7484,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用Z门
     fn z(&mut self, qubit: usize) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::pauli_z(), qubit);
@@ -7434,7 +7493,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用相位门
     fn phase(&mut self, qubit: usize, phi: f64) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::phase(phi), qubit);
@@ -7443,7 +7502,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用T门
     fn t(&mut self, qubit: usize) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::t_gate(), qubit);
@@ -7452,7 +7511,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用CNOT门
     fn cx(&mut self, control: usize, target: usize) -> Result<(), String> {
         let result = self.state.apply_cnot(control, target);
@@ -7461,7 +7520,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用旋转X门
     fn rx(&mut self, qubit: usize, theta: f64) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::rx(theta), qubit);
@@ -7470,7 +7529,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用旋转Y门
     fn ry(&mut self, qubit: usize, theta: f64) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::ry(theta), qubit);
@@ -7479,7 +7538,7 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 应用旋转Z门
     fn rz(&mut self, qubit: usize, theta: f64) -> Result<(), String> {
         let result = self.state.apply_single_qubit_gate(&QuantumGates::rz(theta), qubit);
@@ -7488,94 +7547,94 @@ impl QuantumCircuit {
         }
         result
     }
-    
+  
     // 创建Bell态 (|00⟩ + |11⟩)/√2
     fn create_bell_state(&mut self, qubit1: usize, qubit2: usize) -> Result<(), String> {
         // 将第一个量子比特放在叠加态
         self.h(qubit1)?;
         // 应用CNOT，将叠加态纠缠起来
         self.cx(qubit1, qubit2)?;
-        
+  
         Ok(())
     }
-    
+  
     // 创建GHZ态 (|000...0⟩ + |111...1⟩)/√2
     fn create_ghz_state(&mut self) -> Result<(), String> {
         if self.num_qubits < 2 {
             return Err("创建GHZ态至少需要2个量子比特".to_string());
         }
-        
+  
         // 将第一个量子比特放在叠加态
         self.h(0)?;
-        
+  
         // 用CNOT门将叠加态传播到所有其他量子比特
         for i in 1..self.num_qubits {
             self.cx(0, i)?;
         }
-        
+  
         Ok(())
     }
-    
+  
     // 创建W态
     fn create_w_state(&mut self) -> Result<(), String> {
         if self.num_qubits < 2 {
             return Err("创建W态至少需要2个量子比特".to_string());
         }
-        
+  
         // 实现W态需要更复杂的门序列
         // 这里给出一个简化实现，仅用于演示
         // 实际量子计算机上的实现会有所不同
-        
+  
         // 对于3量子比特W态: (|001⟩ + |010⟩ + |100⟩)/√3
         if self.num_qubits == 3 {
             // 先创建|000⟩态
             // 然后创建|100⟩态的叠加
             self.ry(0, 2.0 * (1.0/3.0_f64).asin())?;
-            
+  
             // |100⟩ + √2|000⟩
-            
+  
             // 在|000⟩分量上操作，创建|010⟩和|001⟩的叠加
             self.cx(0, 1)?;
             self.h(0)?;
             self.cx(0, 2)?;
-            
+  
             // 最终应该得到接近W态的量子态
         } else {
             return Err("目前只支持3量子比特W态的创建".to_string());
         }
-        
+  
         Ok(())
     }
-    
+  
     // 对所有量子比特进行测量
     fn measure_all(&mut self) -> Result<String, String> {
         let mut result = String::new();
-        
+  
         // 为了避免测量影响其他量子比特的状态，
         // 我们需要复制当前状态进行模拟
         let mut state_copy = self.state.clone();
-        
+  
         for i in 0..self.num_qubits {
             let bit = state_copy.measure(i)?;
             result.push(if bit == 0 { '0' } else { '1' });
         }
-        
+  
         // 实际应用测量结果到电路状态
         self.state = state_copy;
-        
+  
         Ok(result)
     }
-    
+  
     // 获取当前量子态的字符串表示
     fn get_state_string(&self) -> String {
         self.state.to_string()
     }
-    
+  
     // 获取概率分布
     fn get_probabilities(&self) -> HashMap<String, f64> {
         self.state.get_probabilities()
     }
-    
+  
     // 打印电路历史
     fn print_history(&self) -> String {
         self.gates_history.join(" -> ")
@@ -7597,94 +7656,94 @@ impl QuantumClassicalInterface {
             measurement_results: HashMap::new(),
         }
     }
-    
+  
     // 测量量子比特并存储到经典比特中
     fn measure_to_bit(&mut self, qubit: usize, bit: usize) -> Result<u8, String> {
         if bit >= self.classical_bits.len() {
             return Err(format!("经典比特索引 {} 超出范围", bit));
         }
-        
+  
         // 测量量子比特
         let result = self.circuit.state.measure(qubit)?;
-        
+  
         // 存储到经典比特
         self.classical_bits[bit] = result;
-        
+  
         // 记录测量结果
         if let Some(results) = self.measurement_results.get_mut(&qubit) {
             results.push(result);
         } else {
             self.measurement_results.insert(qubit, vec![result]);
         }
-        
+  
         Ok(result)
     }
-    
+  
     // 基于经典比特值有条件地应用量子门
     fn c_if_x(&mut self, qubit: usize, bit: usize) -> Result<(), String> {
         if bit >= self.classical_bits.len() {
             return Err(format!("经典比特索引 {} 超出范围", bit));
         }
-        
+  
         // 如果经典比特为1，则应用X门
         if self.classical_bits[bit] == 1 {
             self.circuit.x(qubit)?;
         }
-        
+  
         Ok(())
     }
-    
+  
     // 进行量子电路的电信号传输模拟
     fn simulate_quantum_transmission(&mut self, noise_level: f64) -> Result<f64, String> {
         // 创建Bell态
         self.circuit.create_bell_state(0, 1)?;
-        
+  
         // 模拟发送方测量
         let alice_result = self.measure_to_bit(0, 0)?;
-        
+  
         // 模拟噪声干扰（随机翻转接收方的量子比特）
         if rand::random::<f64>() < noise_level {
             self.circuit.x(1)?;
         }
-        
+  
         // 模拟接收方测量
         let bob_result = self.measure_to_bit(1, 1)?;
-        
+  
         // 计算测量结果的相关性 (0,0或1,1为相关)
         let correlation = if alice_result == bob_result { 1.0 } else { 0.0 };
-        
+  
         Ok(correlation)
     }
-    
+  
     // 量子传态实验模拟
     fn simulate_teleportation(&mut self, state_to_teleport: &[f64]) -> Result<f64, String> {
-        if state_to_teleport.len() != 2 || 
+        if state_to_teleport.len() != 2 ||
            (state_to_teleport[0].powi(2) + state_to_teleport[1].powi(2) - 1.0).abs() > 1e-5 {
             return Err("输入必须是一个标准化的量子比特状态 [alpha, beta]".to_string());
         }
-        
+  
         if self.circuit.num_qubits < 3 {
             return Err("量子传态需要至少3个量子比特".to_string());
         }
-        
+  
         // 准备要传送的状态在量子比特0上
         let alpha = state_to_teleport[0];
         let beta = state_to_teleport[1];
         let theta = 2.0 * (beta / alpha).atan();
-        
+  
         self.circuit.ry(0, theta)?;
-        
+  
         // 创建Bell态作为量子通道（量子比特1和2）
         self.circuit.create_bell_state(1, 2)?;
-        
+  
         // 执行传态协议
         self.circuit.cx(0, 1)?;
         self.circuit.h(0)?;
-        
+  
         // 测量并存储结果
         let m1 = self.measure_to_bit(0, 0)?;
         let m2 = self.measure_to_bit(1, 1)?;
-        
+  
         // 基于测量结果应用校正操作
         if m2 == 1 {
             self.circuit.x(2)?;
@@ -7692,20 +7751,20 @@ impl QuantumClassicalInterface {
         if m1 == 1 {
             self.circuit.z(2)?;
         }
-        
+  
         // 测量最终状态并计算保真度
         // 这里简化为直接返回理论保真度1.0
         Ok(1.0)
     }
-    
+  
     // 模拟量子计算中的退相干效应
     fn simulate_decoherence(&mut self, decoherence_rate: f64, steps: usize) -> Result<f64, String> {
         // 创建一个叠加态
         self.circuit.h(0)?;
-        
+  
         // 初始量子态的熵
         let initial_entropy = self.circuit.state.entropy();
-        
+  
         // 模拟退相干过程
         for _ in 0..steps {
             // 以一定概率执行随机相位扰动
@@ -7717,10 +7776,10 @@ impl QuantumClassicalInterface {
                 }
             }
         }
-        
+  
         // 计算退相干后的熵
         let final_entropy = self.circuit.state.entropy();
-        
+  
         // 返回熵的变化，衡量退相干程度
         Ok(final_entropy - initial_entropy)
     }
@@ -7741,12 +7800,12 @@ impl QuantumErrorCorrection {
             correction_enabled: false,
         }
     }
-    
+  
     // 启用错误纠正
     fn enable_correction(&mut self, enabled: bool) {
         self.correction_enabled = enabled;
     }
-    
+  
     // 应用位翻转错误模型
     fn apply_bit_flip_error(&mut self) -> Result<(), String> {
         for qubit in 0..self.circuit.num_qubits {
@@ -7757,7 +7816,7 @@ impl QuantumErrorCorrection {
         }
         Ok(())
     }
-    
+  
     // 应用相位翻转错误模型
     fn apply_phase_flip_error(&mut self) -> Result<(), String> {
         for qubit in 0..self.circuit.num_qubits {
@@ -7768,14 +7827,14 @@ impl QuantumErrorCorrection {
         }
         Ok(())
     }
-    
+  
     // 应用退相干错误模型
     fn apply_depolarizing_error(&mut self) -> Result<(), String> {
         for qubit in 0..self.circuit.num_qubits {
             if rand::random::<f64>() < self.error_rate {
                 // 随机选择错误类型: X, Y, 或 Z
                 let error_type = rand::random::<u8>() % 3;
-                
+  
                 match error_type {
                     0 => self.circuit.x(qubit)?, // X错误
                     1 => self.circuit.y(qubit)?, // Y错误
@@ -7785,109 +7844,109 @@ impl QuantumErrorCorrection {
         }
         Ok(())
     }
-    
+  
     // 创建3量子比特位翻转码
     fn encode_bit_flip(&mut self, qubit: usize) -> Result<(), String> {
         if qubit + 2 >= self.circuit.num_qubits {
             return Err("编码需要3个连续的量子比特".to_string());
         }
-        
+  
         // 使用CNOT将信息从源量子比特复制到两个辅助量子比特
         self.circuit.cx(qubit, qubit + 1)?;
         self.circuit.cx(qubit, qubit + 2)?;
-        
+  
         Ok(())
     }
-    
+  
     // 创建3量子比特相位翻转码
     fn encode_phase_flip(&mut self, qubit: usize) -> Result<(), String> {
         if qubit + 2 >= self.circuit.num_qubits {
             return Err("编码需要3个连续的量子比特".to_string());
         }
-        
+  
         // 将所有量子比特置于叠加态
         self.circuit.h(qubit)?;
         self.circuit.h(qubit + 1)?;
         self.circuit.h(qubit + 2)?;
-        
+  
         // 创建GHZ态的变体
         self.circuit.cx(qubit, qubit + 1)?;
         self.circuit.cx(qubit, qubit + 2)?;
-        
+  
         // 再次应用H门
         self.circuit.h(qubit)?;
         self.circuit.h(qubit + 1)?;
         self.circuit.h(qubit + 2)?;
-        
+  
         Ok(())
     }
-    
+  
     // 使用3量子比特码纠正位翻转错误
     fn correct_bit_flip(&mut self, qubit_base: usize) -> Result<(), String> {
         if !self.correction_enabled {
             return Ok(());
         }
-        
+  
         if qubit_base + 2 >= self.circuit.num_qubits {
             return Err("纠正需要3个连续的量子比特".to_string());
         }
-        
+  
         // 创建辅助量子比特来存储错误症状
         let syndrome_0 = self.circuit.num_qubits - 2;
         let syndrome_1 = self.circuit.num_qubits - 1;
-        
+  
         // 检测错误症状
         self.circuit.cx(qubit_base, syndrome_0)?;
         self.circuit.cx(qubit_base + 1, syndrome_0)?;
-        
+  
         self.circuit.cx(qubit_base, syndrome_1)?;
         self.circuit.cx(qubit_base + 2, syndrome_1)?;
-        
+  
         // 根据症状修正错误
         // 在实际量子计算机上，这需要基于经典测量结果的条件操作
         // 在这个模拟中，我们简化处理
-        
+  
         // 直接恢复为正确状态（简化）
         // 在实际中，这需要更复杂的逻辑
         self.circuit.cx(qubit_base, qubit_base + 1)?;
         self.circuit.cx(qubit_base, qubit_base + 2)?;
-        
+  
         Ok(())
     }
-    
+  
     // 运行量子错误纠正实验
     fn run_error_correction_experiment(&mut self, trials: usize) -> Result<f64, String> {
         let mut success_count = 0;
-        
+  
         for _ in 0..trials {
             // 重置电路
             self.circuit = QuantumCircuit::new(self.circuit.num_qubits);
-            
+  
             // 创建要保护的量子态（|0⟩和|1⟩的叠加）
             self.circuit.h(0)?;
-            
+  
             if self.correction_enabled {
                 // 使用纠错码编码
                 self.encode_bit_flip(0)?;
             }
-            
+  
             // 应用错误
             self.apply_bit_flip_error()?;
-            
+  
             if self.correction_enabled {
                 // 应用错误纠正
                 self.correct_bit_flip(0)?;
             }
-            
+  
             // 测量结果
             let result = self.circuit.measure_all()?;
-            
+  
             // 检查是否成功保护量子信息
             if result.chars().next().unwrap() == '0' || result.chars().next().unwrap() == '1' {
                 success_count += 1;
             }
         }
-        
+  
         // 返回成功率
         Ok(success_count as f64 / trials as f64)
     }
@@ -7908,20 +7967,20 @@ impl QuantumSoftwareInterface {
             classical_interface: QuantumClassicalInterface::new(num_qubits, num_classical_bits),
         }
     }
-    
+  
     // 实现量子软件与物理硬件的统一接口
     // 这里提供一些典型的量子算法示例
-    
+  
     // Deutsch算法：判断函数是常数还是平衡
     fn run_deutsch_algorithm(&mut self, f_type: u8) -> Result<bool, String> {
         // 重置电路
         self.circuit_simulator = QuantumCircuit::new(2);
-        
+  
         // 准备输入状态
         self.circuit_simulator.x(1)?;
         self.circuit_simulator.h(0)?;
         self.circuit_simulator.h(1)?;
-        
+  
         // 应用oracle （0=常数0函数，1=常数1函数，2=恒等函数，3=取反函数）
         match f_type {
             0 => {}, // 常数0函数，什么都不做
@@ -7937,31 +7996,31 @@ impl QuantumSoftwareInterface {
             },
             _ => return Err("无效的函数类型".to_string()),
         }
-        
+  
         // 应用H门准备测量
         self.circuit_simulator.h(0)?;
-        
+  
         // 测量第一个量子比特
         let result = self.circuit_simulator.state.measure(0)?;
-        
+  
         // 返回函数是否为常数函数
         // 如果测量结果为0，则函数是常数函数；如果为1，则函数是平衡函数
         Ok(result == 0)
     }
-    
+  
     // Grover搜索算法（简化版，仅搜索2量子比特空间）
     fn run_grover_search(&mut self, marked_state: u8) -> Result<u8, String> {
         if marked_state > 3 {
             return Err("在2量子比特系统中，标记状态必须是0-3之间的整数".to_string());
         }
-        
+  
         // 重置电路
         self.circuit_simulator = QuantumCircuit::new(2);
-        
+  
         // 准备初始叠加态
         self.circuit_simulator.h(0)?;
         self.circuit_simulator.h(1)?;
-        
+  
         // 实现Grover迭代
         // 1. Oracle操作：标记目标状态
         // 对于2量子比特系统，我们只需要一次迭代
@@ -7996,7 +8055,7 @@ impl QuantumSoftwareInterface {
             },
             _ => {},
         }
-        
+  
         // 2. 振幅放大
         self.circuit_simulator.h(0)?;
         self.circuit_simulator.h(1)?;
@@ -8009,40 +8068,40 @@ impl QuantumSoftwareInterface {
         self.circuit_simulator.x(1)?;
         self.circuit_simulator.h(0)?;
         self.circuit_simulator.h(1)?;
-        
+  
         // 测量结果
         let result_str = self.circuit_simulator.measure_all()?;
-        
+  
         // 将二进制字符串转换为整数
         let result = u8::from_str_radix(&result_str, 2).unwrap_or(0);
-        
+  
         Ok(result)
     }
-    
+  
     // 量子相位估计算法（简化版）
     fn run_phase_estimation(&mut self, phase: f64) -> Result<f64, String> {
         // 相位估计需要更多量子比特，这里使用简化版本
         if self.circuit_simulator.num_qubits < 3 {
             return Err("相位估计至少需要3个量子比特".to_string());
         }
-        
+  
         // 重置电路
         self.circuit_simulator = QuantumCircuit::new(self.circuit_simulator.num_qubits);
-        
+  
         // 准备目标量子比特（最后一个）
         let target_qubit = self.circuit_simulator.num_qubits - 1;
         self.circuit_simulator.x(target_qubit)?;
-        
+  
         // 设置控制寄存器为叠加态
         for i in 0..target_qubit {
             self.circuit_simulator.h(i)?;
         }
-        
+  
         // 应用受控相位旋转
         // 在实际电路中，这是一系列的受控U^(2^j)操作
         for i in 0..target_qubit {
             let controlled_phase = phase * 2.0_f64.powi(i as i32);
-            
+  
             // 在这个简化模型中，我们直接应用受控相位门
             if i == 0 {
                 self.circuit_simulator.phase(target_qubit, controlled_phase)?;
@@ -8051,17 +8110,17 @@ impl QuantumSoftwareInterface {
                 self.circuit_simulator.phase(target_qubit, controlled_phase)?;
             }
         }
-        
+  
         // 应用逆量子傅里叶变换
         // 这里简化为仅应用H门
         for i in 0..target_qubit {
             self.circuit_simulator.h(i)?;
         }
-        
+  
         // 测量控制寄存器
         let mut estimated_phase = 0.0;
         let mut denominator = 1;
-        
+  
         for i in (0..target_qubit).rev() {
             let bit = self.circuit_simulator.state.measure(i)?;
             if bit == 1 {
@@ -8069,7 +8128,7 @@ impl QuantumSoftwareInterface {
             }
             denominator *= 2;
         }
-        
+  
         Ok(estimated_phase)
     }
 }
@@ -8091,88 +8150,89 @@ impl QuantumClassicalMapping {
             algorithm_mappings: HashMap::new(),
             error_mappings: HashMap::new(),
         };
-        
+  
         // 初始化概念映射
         qc_mapping.concept_mappings.insert("量子叠加".to_string(), "概率分布/并行计算".to_string());
         qc_mapping.concept_mappings.insert("量子纠缠".to_string(), "全局状态/相关性".to_string());
         qc_mapping.concept_mappings.insert("量子测量".to_string(), "随机抽样/不确定性".to_string());
         qc_mapping.concept_mappings.insert("量子干涉".to_string(), "波相消/相长干涉".to_string());
         qc_mapping.concept_mappings.insert("量子退相干".to_string(), "噪声/信息损失".to_string());
-        
+  
         // 初始化算法映射
         qc_mapping.algorithm_mappings.insert("Grover搜索".to_string(), "经典搜索算法".to_string());
         qc_mapping.algorithm_mappings.insert("Shor因数分解".to_string(), "素数筛选法".to_string());
         qc_mapping.algorithm_mappings.insert("量子隐形传态".to_string(), "安全通信".to_string());
         qc_mapping.algorithm_mappings.insert("量子傅里叶变换".to_string(), "快速傅里叶变换".to_string());
         qc_mapping.algorithm_mappings.insert("变分量子求解器".to_string(), "优化算法".to_string());
-        
+  
         // 初始化错误映射
         qc_mapping.error_mappings.insert("位翻转错误".to_string(), "比特错误".to_string());
         qc_mapping.error_mappings.insert("相位错误".to_string(), "定时/同步错误".to_string());
         qc_mapping.error_mappings.insert("测量错误".to_string(), "采样误差".to_string());
         qc_mapping.error_mappings.insert("退相干".to_string(), "信息泄漏".to_string());
         qc_mapping.error_mappings.insert("控制错误".to_string(), "执行偏差".to_string());
-        
+  
         qc_mapping
     }
-    
+  
     // 获取量子概念对应的经典概念
     fn get_classical_concept(&self, quantum_concept: &str) -> Option<&String> {
         self.concept_mappings.get(quantum_concept)
     }
-    
+  
     // 获取量子算法对应的经典算法
     fn get_classical_algorithm(&self, quantum_algorithm: &str) -> Option<&String> {
         self.algorithm_mappings.get(quantum_algorithm)
     }
-    
+  
     // 获取量子错误对应的经典错误
     fn get_classical_error(&self, quantum_error: &str) -> Option<&String> {
         self.error_mappings.get(quantum_error)
     }
-    
+  
     // 添加新的概念映射
     fn add_concept_mapping(&mut self, quantum_concept: &str, classical_concept: &str) {
         self.concept_mappings.insert(quantum_concept.to_string(), classical_concept.to_string());
     }
-    
+  
     // 添加新的算法映射
     fn add_algorithm_mapping(&mut self, quantum_algorithm: &str, classical_algorithm: &str) {
         self.algorithm_mappings.insert(quantum_algorithm.to_string(), classical_algorithm.to_string());
     }
-    
+  
     // 添加新的错误映射
     fn add_error_mapping(&mut self, quantum_error: &str, classical_error: &str) {
         self.error_mappings.insert(quantum_error.to_string(), classical_error.to_string());
     }
-    
+  
     // 生成量子-经典映射报告
     fn generate_mapping_report(&self) -> String {
         let mut report = String::new();
-        
+  
         report.push_str("=== 量子-经典映射报告 ===\n\n");
-        
+  
         // 概念映射
         report.push_str("概念映射:\n");
         for (q_concept, c_concept) in &self.concept_mappings {
             report.push_str(&format!("  {} -> {}\n", q_concept, c_concept));
         }
-        
+  
         // 算法映射
         report.push_str("\n算法映射:\n");
         for (q_algorithm, c_algorithm) in &self.algorithm_mappings {
             report.push_str(&format!("  {} -> {}\n", q_algorithm, c_algorithm));
         }
-        
+  
         // 错误映射
         report.push_str("\n错误映射:\n");
         for (q_error, c_error) in &self.error_mappings {
             report.push_str(&format!("  {} -> {}\n", q_error, c_error));
         }
-        
+  
         report
     }
 }
+
 ```
 
 ### 1.6.5 量子电路-物理实现映射形式化
@@ -8204,6 +8264,7 @@ impl QuantumClassicalMapping {
 - 读取误差: 测量过程中的状态判别错误
 - 串扰: 物理量子比特间的非预期相互作用
 - 初始化误差: 量子态准备不完美
+
 ```
 
 Rust代码示例（量子电路物理映射）：
@@ -8215,7 +8276,9 @@ use std::fmt;
 use rand::Rng;
 
 // 物理实现类型
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+
+# [derive(Debug, Clone, PartialEq, Eq, Hash)]
+
 enum PhysicalImplementation {
     Superconducting,
     IonTrap,
@@ -8267,7 +8330,7 @@ impl NoiseModel {
         params.insert("single_gate_error".to_string(), 0.001); // 单量子比特门错误率
         params.insert("two_gate_error".to_string(), 0.01);  // 双量子比特门错误率
         params.insert("crosstalk_strength".to_string(), 0.005); // 串扰强度
-        
+  
         NoiseModel {
             t1_noise_enabled: true,
             t2_noise_enabled: true,
@@ -8277,81 +8340,81 @@ impl NoiseModel {
             noise_parameters: params,
         }
     }
-    
+  
     fn apply_t1_noise(&self, coherence_time: f64, evolution_time: f64) -> f64 {
         if !self.t1_noise_enabled {
             return 1.0;
         }
-        
+  
         // T1弛豫导致的衰减 (|1⟩→|0⟩)
         let decay_probability = 1.0 - (-evolution_time / coherence_time).exp();
-        
+  
         // 返回保持在|1⟩态的概率
         1.0 - decay_probability
     }
-    
+  
     fn apply_t2_noise(&self, coherence_time: f64, evolution_time: f64) -> f64 {
         if !self.t2_noise_enabled {
             return 1.0;
         }
-        
+  
         // T2相干性损失导致的相位随机化
         let dephasing_factor = (-evolution_time / coherence_time).exp();
-        
+  
         dephasing_factor
     }
-    
+  
     fn apply_measurement_noise(&self, true_state: u8) -> u8 {
         if !self.measurement_noise_enabled {
             return true_state;
         }
-        
+  
         let error_rate = self.noise_parameters.get("readout_error").unwrap_or(&0.0);
         let mut rng = rand::thread_rng();
-        
+  
         if rng.gen::<f64>() < *error_rate {
             // 测量结果翻转
             return true_state ^ 1;
         }
-        
+  
         true_state
     }
-    
+  
     fn apply_gate_noise(&self, is_two_qubit_gate: bool) -> bool {
         if !self.gate_noise_enabled {
             return false;
         }
-        
+  
         let error_param = if is_two_qubit_gate {
             "two_gate_error"
         } else {
             "single_gate_error"
         };
-        
+  
         let error_rate = self.noise_parameters.get(error_param).unwrap_or(&0.0);
         let mut rng = rand::thread_rng();
-        
+  
         // 返回是否发生了错误
         rng.gen::<f64>() < *error_rate
     }
-    
-    fn apply_crosstalk(&self, active_qubits: &HashSet<usize>, all_qubits: &HashSet<usize>) 
+  
+    fn apply_crosstalk(&self, active_qubits: &HashSet<usize>, all_qubits: &HashSet<usize>)
         -> HashSet<usize> {
         if !self.crosstalk_enabled {
             return HashSet::new();
         }
-        
+  
         let crosstalk_strength = self.noise_parameters.get("crosstalk_strength").unwrap_or(&0.0);
         let mut rng = rand::thread_rng();
         let mut affected_qubits = HashSet::new();
-        
+  
         // 计算每个非活动量子比特是否受到串扰影响
         for &qubit in all_qubits {
             if !active_qubits.contains(&qubit) && rng.gen::<f64>() < *crosstalk_strength {
                 affected_qubits.insert(qubit);
             }
         }
-        
+  
         affected_qubits
     }
 }
@@ -8374,7 +8437,7 @@ impl QuantumHardwareAbstraction {
         let mut two_qubit_gates = HashMap::new();
         let mut qubit_positions = HashMap::new();
         let mut connectivity = HashMap::new();
-        
+  
         // 根据实现类型设置默认特性
         match implementation {
             PhysicalImplementation::Superconducting => {
@@ -8387,12 +8450,12 @@ impl QuantumHardwareAbstraction {
                         readout_fidelity: 0.97 + rand::thread_rng().gen::<f64>() * 0.02, // 97-99%
                         initialization_error: 0.005 + rand::thread_rng().gen::<f64>() * 0.005, // 0.5-1%
                     });
-                    
+  
                     // 2D网格拓扑结构
                     let row = i / (num_qubits as f64).sqrt().ceil() as usize;
                     let col = i % (num_qubits as f64).sqrt().ceil() as usize;
                     qubit_positions.insert(i, (row as f64, col as f64, 0.0));
-                    
+  
                     let mut neighbors = HashSet::new();
                     if row > 0 {
                         neighbors.insert(i - (num_qubits as f64).sqrt().ceil() as usize);
@@ -8400,7 +8463,7 @@ impl QuantumHardwareAbstraction {
                     if col > 0 {
                         neighbors.insert(i - 1);
                     }
-                    if row < (num_qubits as f64).sqrt().ceil() as usize - 1 
+                    if row < (num_qubits as f64).sqrt().ceil() as usize - 1
                        && i + (num_qubits as f64).sqrt().ceil() as usize < num_qubits {
                         neighbors.insert(i + (num_qubits as f64).sqrt().ceil() as usize);
                     }
@@ -8409,7 +8472,7 @@ impl QuantumHardwareAbstraction {
                     }
                     connectivity.insert(i, neighbors);
                 }
-                
+  
                 // 超导量子计算机的门特性
                 single_gates.insert("X".to_string(), GateCharacteristics {
                     fidelity: 0.9995, duration: 25.0, error_channel: "振幅衰减".to_string()
@@ -8434,10 +8497,10 @@ impl QuantumHardwareAbstraction {
                         readout_fidelity: 0.99 + rand::thread_rng().gen::<f64>() * 0.01, // 99-100%
                         initialization_error: 0.001 + rand::thread_rng().gen::<f64>() * 0.001, // 0.1-0.2%
                     });
-                    
+  
                     // 线性链拓扑结构
                     qubit_positions.insert(i, (0.0, i as f64, 0.0));
-                    
+  
                     let mut neighbors = HashSet::new();
                     // 离子阱通常有全连接拓扑
                     for j in 0..num_qubits {
@@ -8447,7 +8510,7 @@ impl QuantumHardwareAbstraction {
                     }
                     connectivity.insert(i, neighbors);
                 }
-                
+  
                 // 离子阱量子计算机的门特性
                 single_gates.insert("X".to_string(), GateCharacteristics {
                     fidelity: 0.9998, duration: 10.0, error_channel: "激光强度波动".to_string()
@@ -8472,10 +8535,10 @@ impl QuantumHardwareAbstraction {
                         readout_fidelity: 0.95,
                         initialization_error: 0.01,
                     });
-                    
+  
                     // 默认线性拓扑
                     qubit_positions.insert(i, (0.0, i as f64, 0.0));
-                    
+  
                     let mut neighbors = HashSet::new();
                     if i > 0 {
                         neighbors.insert(i - 1);
@@ -8485,7 +8548,7 @@ impl QuantumHardwareAbstraction {
                     }
                     connectivity.insert(i, neighbors);
                 }
-                
+  
                 // 默认门特性
                 single_gates.insert("X".to_string(), GateCharacteristics {
                     fidelity: 0.99, duration: 40.0, error_channel: "控制误差".to_string()
@@ -8498,21 +8561,21 @@ impl QuantumHardwareAbstraction {
                 });
             }
         }
-        
+  
         // 创建拓扑描述
         let dimension = match implementation {
             PhysicalImplementation::Superconducting => 2,
             PhysicalImplementation::IonTrap => 1,
             _ => 1,
         };
-        
+  
         let topology = TopologyDescription {
             qubit_positions,
             connectivity,
             max_distance: (num_qubits as f64).sqrt(),
             dimension,
         };
-        
+  
         QuantumHardwareAbstraction {
             implementation,
             num_qubits,
@@ -8523,54 +8586,54 @@ impl QuantumHardwareAbstraction {
             noise_model: NoiseModel::new(),
         }
     }
-    
+  
     // 检查两个量子比特是否直接相连
     fn are_qubits_connected(&self, qubit1: usize, qubit2: usize) -> bool {
         if qubit1 >= self.num_qubits || qubit2 >= self.num_qubits {
             return false;
         }
-        
+  
         if let Some(neighbors) = self.topology.connectivity.get(&qubit1) {
             neighbors.contains(&qubit2)
         } else {
             false
         }
     }
-    
+  
     // 获取两个量子比特之间的最短路径
     fn shortest_path(&self, qubit1: usize, qubit2: usize) -> Option<Vec<usize>> {
         if qubit1 == qubit2 {
             return Some(vec![qubit1]);
         }
-        
+  
         if self.are_qubits_connected(qubit1, qubit2) {
             return Some(vec![qubit1, qubit2]);
         }
-        
+  
         // 使用广度优先搜索找最短路径
         let mut queue = std::collections::VecDeque::new();
         let mut visited = HashSet::new();
         let mut predecessor = HashMap::new();
-        
+  
         queue.push_back(qubit1);
         visited.insert(qubit1);
-        
+  
         while let Some(current) = queue.pop_front() {
             if current == qubit2 {
                 // 重建路径
                 let mut path = Vec::new();
                 let mut current = qubit2;
                 path.push(current);
-                
+  
                 while current != qubit1 {
                     current = *predecessor.get(&current).unwrap();
                     path.push(current);
                 }
-                
+  
                 path.reverse();
                 return Some(path);
             }
-            
+  
             if let Some(neighbors) = self.topology.connectivity.get(&current) {
                 for &neighbor in neighbors {
                     if !visited.contains(&neighbor) {
@@ -8581,14 +8644,14 @@ impl QuantumHardwareAbstraction {
                 }
             }
         }
-        
+  
         None
     }
-    
+  
     // 估计执行门操作的时间
-    fn estimate_gate_time(&self, gate_name: &str, control_qubit: Option<usize>, target_qubit: usize) 
+    fn estimate_gate_time(&self, gate_name: &str, control_qubit: Option<usize>, target_qubit: usize)
         -> Result<f64, String> {
-        
+  
         match control_qubit {
             None => {
                 // 单量子比特门
@@ -8615,7 +8678,7 @@ impl QuantumHardwareAbstraction {
                                 // 默认SWAP时间估计
                                 300.0
                             };
-                            
+  
                             Ok(gate.duration + (path.len() as f64 - 2.0) * swap_time)
                         } else {
                             Err(format!("量子比特 {} 和 {} 之间没有有效路径", control, target_qubit))
@@ -8627,23 +8690,23 @@ impl QuantumHardwareAbstraction {
             }
         }
     }
-    
+  
     // 估计电路深度对应的执行时间
     fn estimate_circuit_time(&self, gate_sequence: &[(String, Option<usize>, usize)]) -> Result<f64, String> {
         let mut total_time = 0.0;
-        
+  
         for (gate_name, control, target) in gate_sequence {
             let gate_time = self.estimate_gate_time(gate_name, *control, *target)?;
             total_time += gate_time;
         }
-        
+  
         Ok(total_time)
     }
-    
+  
     // 估计电路在给定硬件上的保真度
     fn estimate_circuit_fidelity(&self, gate_sequence: &[(String, Option<usize>, usize)]) -> Result<f64, String> {
         let mut total_fidelity = 1.0;
-        
+  
         for (gate_name, control, target) in gate_sequence {
             match control {
                 None => {
@@ -8671,7 +8734,7 @@ impl QuantumHardwareAbstraction {
                                     // 默认SWAP保真度估计
                                     0.95
                                 };
-                                
+  
                                 // 应用 path.len() - 2 次SWAP
                                 total_fidelity *= gate.fidelity * swap_fidelity.powi((path.len() - 2) as i32);
                             } else {
@@ -8684,69 +8747,69 @@ impl QuantumHardwareAbstraction {
                 }
             }
         }
-        
+  
         // 考虑退相干效应
         let circuit_time = self.estimate_circuit_time(gate_sequence)? * 1e-9; // 转换为秒
         let avg_t2 = self.qubit_characteristics.values()
             .map(|qc| qc.coherence_time_t2)
             .sum::<f64>() / self.qubit_characteristics.len() as f64 * 1e-6; // 转换为秒
-        
+  
         let decoherence_factor = (-circuit_time / avg_t2).exp();
-        
+  
         Ok(total_fidelity * decoherence_factor)
     }
-    
+  
     // 生成硬件描述报告
     fn generate_hardware_report(&self) -> String {
         let mut report = String::new();
-        
+  
         report.push_str(&format!("=== 量子硬件抽象层报告 ===\n\n"));
         report.push_str(&format!("物理实现: {:?}\n", self.implementation));
         report.push_str(&format!("量子比特数量: {}\n", self.num_qubits));
         report.push_str(&format!("拓扑结构维度: {}\n", self.topology.dimension));
-        
+  
         // 量子比特特性摘要
         let avg_t1 = self.qubit_characteristics.values()
             .map(|qc| qc.coherence_time_t1)
             .sum::<f64>() / self.qubit_characteristics.len() as f64;
-        
+  
         let avg_t2 = self.qubit_characteristics.values()
             .map(|qc| qc.coherence_time_t2)
             .sum::<f64>() / self.qubit_characteristics.len() as f64;
-        
+  
         let avg_readout = self.qubit_characteristics.values()
             .map(|qc| qc.readout_fidelity)
             .sum::<f64>() / self.qubit_characteristics.len() as f64;
-        
+  
         report.push_str(&format!("\n量子比特特性摘要:\n"));
         report.push_str(&format!("  平均T1时间: {:.2} 微秒\n", avg_t1));
         report.push_str(&format!("  平均T2时间: {:.2} 微秒\n", avg_t2));
         report.push_str(&format!("  平均读取保真度: {:.4}\n", avg_readout));
-        
+  
         // 门操作特性
         report.push_str(&format!("\n单量子比特门:\n"));
         for (name, gate) in &self.single_gates {
-            report.push_str(&format!("  {}: 保真度={:.6}, 时间={:.1}ns, 错误类型={}\n", 
+            report.push_str(&format!("  {}: 保真度={:.6}, 时间={:.1}ns, 错误类型={}\n",
                 name, gate.fidelity, gate.duration, gate.error_channel));
         }
-        
+  
         report.push_str(&format!("\n双量子比特门:\n"));
         for (name, gate) in &self.two_qubit_gates {
-            report.push_str(&format!("  {}: 保真度={:.6}, 时间={:.1}ns, 错误类型={}\n", 
+            report.push_str(&format!("  {}: 保真度={:.6}, 时间={:.1}ns, 错误类型={}\n",
                 name, gate.fidelity, gate.duration, gate.error_channel));
         }
-        
+  
         // 连接性分析
         let mut avg_connectivity = 0.0;
         for neighbors in self.topology.connectivity.values() {
             avg_connectivity += neighbors.len() as f64;
         }
         avg_connectivity /= self.topology.connectivity.len() as f64;
-        
+  
         report.push_str(&format!("\n拓扑连接性:\n"));
         report.push_str(&format!("  平均连接度: {:.2}\n", avg_connectivity));
         report.push_str(&format!("  最大连接距离: {:.2}\n", self.topology.max_distance));
-        
+  
         report
     }
 }
@@ -8762,12 +8825,12 @@ struct QuantumCircuitMapper {
 impl QuantumCircuitMapper {
     fn new(hardware: QuantumHardwareAbstraction) -> Self {
         let mut initial_mapping = HashMap::new();
-        
+  
         // 初始映射: 逻辑量子比特i -> 物理量子比特i
         for i in 0..hardware.num_qubits {
             initial_mapping.insert(i, i);
         }
-        
+  
         QuantumCircuitMapper {
             hardware,
             logical_to_physical: initial_mapping,
@@ -8775,15 +8838,15 @@ impl QuantumCircuitMapper {
             total_scheduled_time: 0.0,
         }
     }
-    
+  
     // 优化逻辑到物理量子比特的映射
     fn optimize_mapping(&mut self, circuit: &[(String, Option<usize>, usize)]) -> Result<(), String> {
         // 这里使用简化的贪心策略来优化映射
         // 实际量子编译器会使用更复杂的算法
-        
+  
         // 统计每对量子比特之间的交互次数
         let mut interaction_counts = HashMap::new();
-        
+  
         for (_, control, target) in circuit {
             if let Some(control_qubit) = control {
                 let key = if control_qubit < target {
@@ -8791,38 +8854,38 @@ impl QuantumCircuitMapper {
                 } else {
                     (*target, *control_qubit)
                 };
-                
+  
                 *interaction_counts.entry(key).or_insert(0) += 1;
             }
         }
-        
+  
         // 对交互进行排序
         let mut interactions: Vec<_> = interaction_counts.into_iter().collect();
         interactions.sort_by(|a, b| b.1.cmp(&a.1));
-        
+  
         // 尝试将频繁交互的逻辑量子比特映射到相邻的物理量子比特
         let mut physical_used = HashSet::new();
         let mut logical_mapped = HashSet::new();
         let mut new_mapping = HashMap::new();
-        
+  
         for ((logical1, logical2), _) in interactions {
             if logical_mapped.contains(&logical1) && logical_mapped.contains(&logical2) {
                 continue;
             }
-            
+  
             // 尝试找到相邻的物理量子比特对
             let mut found = false;
-            
+  
             for phys1 in 0..self.hardware.num_qubits {
                 if physical_used.contains(&phys1) {
                     continue;
                 }
-                
+  
                 for phys2 in 0..self.hardware.num_qubits {
                     if physical_used.contains(&phys2) || phys1 == phys2 {
                         continue;
                     }
-                    
+  
                     if self.hardware.are_qubits_connected(phys1, phys2) {
                         // 找到相邻的物理量子比特对
                         if !logical_mapped.contains(&logical1) && !logical_mapped.contains(&logical2) {
@@ -8849,18 +8912,18 @@ impl QuantumCircuitMapper {
                         }
                     }
                 }
-                
+  
                 if found {
                     break;
                 }
             }
         }
-        
+  
         // 将剩余的逻辑量子比特映射到未使用的物理量子比特
         let mut unused_physical: Vec<_> = (0..self.hardware.num_qubits)
             .filter(|i| !physical_used.contains(i))
             .collect();
-        
+  
         for logical in 0..self.hardware.num_qubits {
             if !logical_mapped.contains(&logical) {
                 if let Some(physical) = unused_physical.pop() {
@@ -8870,28 +8933,28 @@ impl QuantumCircuitMapper {
                 }
             }
         }
-        
+  
         self.logical_to_physical = new_mapping;
         Ok(())
     }
-    
+  
     // 转换逻辑电路到物理电路
     fn transpile_circuit(&mut self, circuit: &[(String, Option<usize>, usize)]) -> Result<Vec<(String, Option<usize>, usize)>, String> {
         // 优化映射
         self.optimize_mapping(circuit)?;
-        
+  
         let mut physical_circuit = Vec::new();
-        
+  
         for (gate_name, control, target) in circuit {
             let physical_target = *self.logical_to_physical.get(target)
                 .ok_or_else(|| format!("逻辑量子比特 {} 没有物理映射", target))?;
-            
+  
             let physical_control = match control {
                 Some(c) => Some(*self.logical_to_physical.get(c)
                     .ok_or_else(|| format!("逻辑量子比特 {} 没有物理映射", c))?),
                 None => None,
             };
-            
+  
             // 检查双量子比特门的连接性
             if let Some(phys_control) = physical_control {
                 if !self.hardware.are_qubits_connected(phys_control, physical_target) {
@@ -8901,12 +8964,12 @@ impl QuantumCircuitMapper {
                         for i in 0..path.len() - 1 {
                             let swap_a = path[i];
                             let swap_b = path[i + 1];
-                            
+  
                             // 每个SWAP由3个CNOT组成
                             physical_circuit.push(("CNOT".to_string(), Some(swap_a), swap_b));
                             physical_circuit.push(("CNOT".to_string(), Some(swap_b), swap_a));
                             physical_circuit.push(("CNOT".to_string(), Some(swap_a), swap_b));
-                            
+  
                             // 更新映射
                             for (logical, physical) in self.logical_to_physical.iter_mut() {
                                 if *physical == swap_a {
@@ -8921,31 +8984,31 @@ impl QuantumCircuitMapper {
                     }
                 }
             }
-            
+  
             // 添加转换后的门
             physical_circuit.push((gate_name.clone(), physical_control, physical_target));
         }
-        
+  
         Ok(physical_circuit)
     }
-    
+  
     // 生成电路调度（考虑并行性）
     fn schedule_circuit(&mut self, circuit: &[(String, Option<usize>, usize)]) -> Result<(), String> {
         let physical_circuit = self.transpile_circuit(circuit)?;
-        
+  
         // 跟踪每个量子比特的最后操作时间
         let mut qubit_ready_time = vec![0.0; self.hardware.num_qubits];
         self.scheduled_gates.clear();
         self.total_scheduled_time = 0.0;
-        
+  
         for (gate_name, control, target) in physical_circuit {
             // 确定此门操作可以开始的最早时间
             let mut start_time = qubit_ready_time[target];
-            
+  
             if let Some(ctrl) = control {
                 start_time = start_time.max(qubit_ready_time[ctrl]);
             }
-            
+  
             // 获取门操作时间
             let gate_duration = self.hardware.estimate_gate_
 
@@ -9493,6 +9556,7 @@ impl PhysicalToQuantumErrorMapper {
         None
     }
 }
+
 ```
 
 ### 1.6.6 物理层量子计算模型形式化
@@ -9522,6 +9586,7 @@ impl PhysicalToQuantumErrorMapper {
 - 非马尔可夫噪声: 环境记忆效应
 - 相干噪声: 系统保持相干性的噪声
 - 热噪声: 环境热扰动导致的退相干
+
 ```
 
 ```rust
@@ -10386,23 +10451,22 @@ impl LindbladSolver {
             if trace > 0.0 {
                 rho.matrix /= Complex64::new(trace, 0.0);
             
-
 ```rust
             }
         }
-        
+  
         rho
     }
-    
+  
     // 计算冯诺依曼熵的变化率
     fn entropy_production_rate(&self, rho: &DensityMatrix, gamma: &[f64]) -> f64 {
         // 计算密度矩阵的导数
         let d_rho = self.apply_lindblad_superoperator(rho, gamma);
-        
+  
         // 对于熵生成率的精确计算，需要更复杂的方法
         // 这里使用简化的近似计算
         let mut entropy_rate = 0.0;
-        
+  
         // 仅考虑对角元素的贡献
         for i in 0..self.dimension {
             let p_i = rho.matrix[(i, i)].re;
@@ -10410,7 +10474,7 @@ impl LindbladSolver {
                 entropy_rate -= d_rho[(i, i)].re * (1.0 + p_i.ln());
             }
         }
-        
+  
         entropy_rate
     }
 }
@@ -10427,68 +10491,68 @@ impl POVMMeasurement {
         if effects.is_empty() {
             return Err("POVM效应算子列表不能为空");
         }
-        
+  
         let dimension = effects[0].nrows();
-        
+  
         // 检查所有效应算子的维度一致性
         for effect in &effects {
             if effect.nrows() != dimension || effect.ncols() != dimension {
                 return Err("所有POVM效应算子必须具有相同的维度");
             }
         }
-        
+  
         // 检查POVM完备性：Σᵢ Eᵢ = I
         let mut sum = DMatrix::zeros(dimension, dimension);
         for effect in &effects {
             sum += effect;
         }
-        
+  
         let identity = DMatrix::<Complex64>::identity(dimension, dimension);
         let diff = (sum - identity).map(|x| x.norm());
         let error = diff.iter().map(|&x| x * x).sum::<f64>().sqrt();
-        
+  
         if error > 1e-10 {
             return Err("POVM效应算子不满足完备性条件");
         }
-        
+  
         Ok(POVMMeasurement {
             effects,
             dimension,
         })
     }
-    
+  
     // 创建标准的投影测量
     fn projection_measurement(basis_vectors: Vec<DVector<Complex64>>) -> Result<Self, &'static str> {
         if basis_vectors.is_empty() {
             return Err("基向量列表不能为空");
         }
-        
+  
         let dimension = basis_vectors[0].nrows();
         let mut effects = Vec::new();
-        
+  
         // 创建投影算子
         for vector in basis_vectors {
             if vector.nrows() != dimension {
                 return Err("所有基向量必须具有相同的维度");
             }
-            
+  
             // 创建投影算子 |ψ⟩⟨ψ|
             effects.push(vector.clone() * vector.adjoint());
         }
-        
+  
         POVMMeasurement::new(effects)
     }
-    
+  
     // 执行POVM测量
     fn measure(&self, state: &DensityMatrix) -> (usize, DensityMatrix) {
         let mut probabilities = Vec::new();
-        
+  
         // 计算每个测量结果的概率
         for effect in &self.effects {
             let prob = (effect * &state.matrix).trace().re;
             probabilities.push(prob.max(0.0));  // 确保概率非负
         }
-        
+  
         // 归一化概率
         let total_prob: f64 = probabilities.iter().sum();
         if total_prob > 0.0 {
@@ -10502,14 +10566,14 @@ impl POVMMeasurement {
                 *prob = 1.0 / num_outcomes as f64;
             }
         }
-        
+  
         // 随机选择测量结果
         let mut rng = rand::thread_rng();
         let random_value = rng.gen::<f64>();
-        
+  
         let mut cumulative_prob = 0.0;
         let mut outcome = 0;
-        
+  
         for (i, &prob) in probabilities.iter().enumerate() {
             cumulative_prob += prob;
             if random_value <= cumulative_prob {
@@ -10517,26 +10581,26 @@ impl POVMMeasurement {
                 break;
             }
         }
-        
+  
         // 计算测量后的状态
         // 对于POVM测量，后续状态通常是根据具体的测量实现来确定的
         // 这里我们采用一种常见的更新规则：Lᵢ ρ Lᵢ† / Tr(Eᵢ ρ)
         // 其中Lᵢ是满足Eᵢ = Lᵢ†Lᵢ的算子
-        
+  
         // 简化处理：我们假设Eᵢ = Lᵢ†Lᵢ，其中Lᵢ = √Eᵢ
         // 注意：实际实现可能更复杂，需要计算效应算子的平方根
         let sqrt_effect = self.effects[outcome].clone(); // 这里简化，实际应计算平方根
-        
+  
         let post_state = sqrt_effect.clone() * &state.matrix * sqrt_effect.adjoint();
         let trace = post_state.trace().re;
-        
+  
         let normalized_state = if trace > 1e-10 {
             post_state / Complex64::new(trace, 0.0)
         } else {
             // 退化情况
             DMatrix::<Complex64>::identity(self.dimension, self.dimension) / Complex64::new(self.dimension as f64, 0.0)
         };
-        
+  
         (outcome, DensityMatrix {
             matrix: normalized_state,
             dimension: self.dimension,
@@ -10560,78 +10624,78 @@ impl WeakMeasurement {
             dimension: observable.nrows(),
         }
     }
-    
+  
     // 执行单步弱测量，返回测量结果和更新的状态
     fn measure_step(&self, state: &DensityMatrix) -> (f64, DensityMatrix) {
         // 计算可观测量的期望值
         let expectation = (&self.observable * &state.matrix).trace().re;
-        
+  
         // 计算测量噪声
         let mut rng = rand::thread_rng();
         let noise_scale = (1.0 / (4.0 * self.measurement_strength)).sqrt();
         let noise = rng.sample(rand::distributions::StandardNormal) * noise_scale;
-        
+  
         // 计算测量结果
         let result = expectation + noise;
-        
+  
         // 更新密度矩阵
         // dρ = -i[H,ρ]dt + γ(Oρ + ρO - 2⟨O⟩ρ)dt + √γ(Oρ + ρO - 2⟨O⟩ρ)dW
         // 这里简化为仅考虑测量反作用
-        
-        let update_term = &self.observable * &state.matrix + &state.matrix * &self.observable - 
+  
+        let update_term = &self.observable * &state.matrix + &state.matrix * &self.observable -
                            2.0 * expectation * &state.matrix;
-                           
+  
         let measurement_update = update_term * Complex64::new(self.measurement_strength * (result - expectation), 0.0);
-        
+  
         let new_matrix = &state.matrix + measurement_update;
         let trace = new_matrix.trace().re;
-        
+  
         let normalized_matrix = if trace > 1e-10 {
             new_matrix / Complex64::new(trace, 0.0)
         } else {
             state.matrix.clone()
         };
-        
+  
         (result, DensityMatrix {
             matrix: normalized_matrix,
             dimension: self.dimension,
         })
     }
-    
+  
     // 执行多步弱测量，返回测量结果序列和最终状态
     fn measure_trajectory(&self, initial_state: &DensityMatrix, steps: usize) -> (Vec<f64>, DensityMatrix) {
         let mut state = initial_state.clone();
         let mut results = Vec::with_capacity(steps);
-        
+  
         for _ in 0..steps {
             let (result, new_state) = self.measure_step(&state);
             results.push(result);
             state = new_state;
         }
-        
+  
         (results, state)
     }
-    
+  
     // 估计信号的频谱
     fn estimate_spectrum(&self, measurement_record: &[f64], sampling_rate: f64) -> Vec<f64> {
         // 简化的频谱估计算法
         let n = measurement_record.len();
         let mut spectrum = Vec::with_capacity(n / 2);
-        
+  
         // 计算功率谱密度（简化）
         for k in 0..n/2 {
             let freq = k as f64 * sampling_rate / n as f64;
             let mut power = 0.0;
-            
+  
             for t in 0..n {
                 let phase = 2.0 * PI * k as f64 * t as f64 / n as f64;
                 power += measurement_record[t] * phase.cos();
             }
-            
+  
             power = power.powi(2) / n as f64;
             spectrum.push((freq, power));
         }
-        
+  
         // 返回频率对应的功率
         spectrum.into_iter().map(|(_, power)| power).collect()
     }
@@ -10651,16 +10715,16 @@ impl AdaptiveMeasurement {
         if base_measurements.is_empty() {
             return Err("基础测量序列不能为空");
         }
-        
+  
         let dimension = base_measurements[0].dimension;
-        
+  
         // 检查所有测量的维度一致性
         for povm in &base_measurements {
             if povm.dimension != dimension {
                 return Err("所有POVM测量必须具有相同的维度");
             }
         }
-        
+  
         Ok(AdaptiveMeasurement {
             base_measurements,
             current_strategy: 0,
@@ -10668,29 +10732,29 @@ impl AdaptiveMeasurement {
             dimension,
         })
     }
-    
+  
     // 重置测量序列
     fn reset(&mut self) {
         self.current_strategy = 0;
         self.prior_outcomes.clear();
     }
-    
+  
     // 执行下一步测量
     fn next_measurement(&mut self, state: &DensityMatrix) -> (usize, DensityMatrix) {
         // 选择当前测量策略
         let strategy = self.select_strategy();
         let povm = &self.base_measurements[strategy];
-        
+  
         // 执行测量
         let (outcome, post_state) = povm.measure(state);
-        
+  
         // 更新历史和策略
         self.prior_outcomes.push(outcome);
         self.update_strategy(outcome);
-        
+  
         (outcome, post_state)
     }
-    
+  
     // 选择测量策略（可根据历史结果调整）
     fn select_strategy(&self) -> usize {
         // 简单实现：基于先前结果选择策略
@@ -10698,64 +10762,64 @@ impl AdaptiveMeasurement {
             // 首次测量使用默认策略
             return 0;
         }
-        
+  
         // 使用最近测量结果来选择策略
         let last_outcome = self.prior_outcomes.last().unwrap();
-        
+  
         // 简单映射：使用最后结果作为索引（取模以确保有效）
         *last_outcome % self.base_measurements.len()
     }
-    
+  
     // 更新策略
     fn update_strategy(&mut self, outcome: usize) {
         // 简单策略更新规则
         self.current_strategy = (self.current_strategy + outcome) % self.base_measurements.len();
     }
-    
+  
     // 执行完整的适应性测量序列
     fn execute_adaptive_sequence(&mut self, initial_state: &DensityMatrix, steps: usize) -> (Vec<usize>, DensityMatrix) {
         let mut state = initial_state.clone();
         let mut outcomes = Vec::with_capacity(steps);
-        
+  
         self.reset();
-        
+  
         for _ in 0..steps {
             let (outcome, new_state) = self.next_measurement(&state);
             outcomes.push(outcome);
             state = new_state;
         }
-        
+  
         (outcomes, state)
     }
-    
+  
     // 基于贝叶斯推断的最佳下一步测量
     fn bayesian_next_measurement(&self, belief_state: &DensityMatrix) -> usize {
         // 简化的贝叶斯决策过程
         // 选择最大化信息增益的测量
-        
+  
         let mut max_info_gain = -1.0;
         let mut best_strategy = 0;
-        
+  
         for (i, povm) in self.base_measurements.iter().enumerate() {
             // 计算每个可能结果的概率和后续状态
             let mut info_gain = 0.0;
-            
+  
             for (j, effect) in povm.effects.iter().enumerate() {
                 // 计算结果概率
                 let prob = (effect * &belief_state.matrix).trace().re;
-                
+  
                 if prob > 1e-10 {
                     // 简化：使用香农熵作为信息量度
                     info_gain -= prob * prob.ln();
                 }
             }
-            
+  
             if info_gain > max_info_gain {
                 max_info_gain = info_gain;
                 best_strategy = i;
             }
         }
-        
+  
         best_strategy
     }
 }
@@ -10773,58 +10837,58 @@ impl QuantumNoiseModel {
             channels: HashMap::new(),
             environment_params: HashMap::new(),
         };
-        
+  
         // 设置默认环境参数
         model.environment_params.insert("temperature".to_string(), 20.0);  // 摄氏度
         model.environment_params.insert("magnetic_field".to_string(), 0.0);  // 特斯拉
         model.environment_params.insert("pressure".to_string(), 1.0);  // 标准大气压
-        
+  
         // 创建常见噪声通道
         let depolarizing = QuantumChannel::depolarizing_channel(1, 0.01);
         let amplitude_damping = QuantumChannel::amplitude_damping_channel(0.05);
         let phase_damping = QuantumChannel::phase_damping_channel(0.03);
-        
+  
         model.channels.insert("depolarizing".to_string(), depolarizing);
         model.channels.insert("amplitude_damping".to_string(), amplitude_damping);
         model.channels.insert("phase_damping".to_string(), phase_damping);
-        
+  
         model
     }
-    
+  
     // 设置环境参数
     fn set_environment_parameter(&mut self, param: &str, value: f64) {
         self.environment_params.insert(param.to_string(), value);
-        
+  
         // 更新噪声通道参数
         self.update_noise_channels();
     }
-    
+  
     // 基于环境参数更新噪声通道
     fn update_noise_channels(&mut self) {
         let temp = self.environment_params.get("temperature").unwrap_or(&20.0);
-        
+  
         // 温度对退相干的影响（简化模型）
         let depolarizing_rate = 0.01 * (1.0 + (*temp - 20.0) / 100.0);
         let amplitude_damping_rate = 0.05 * (1.0 + (*temp - 20.0) / 50.0);
         let phase_damping_rate = 0.03 * (1.0 + (*temp - 20.0) / 70.0);
-        
+  
         // 更新通道
         self.channels.insert(
             "depolarizing".to_string(),
             QuantumChannel::depolarizing_channel(1, depolarizing_rate.max(0.0).min(1.0))
         );
-        
+  
         self.channels.insert(
             "amplitude_damping".to_string(),
             QuantumChannel::amplitude_damping_channel(amplitude_damping_rate.max(0.0).min(1.0))
         );
-        
+  
         self.channels.insert(
             "phase_damping".to_string(),
             QuantumChannel::phase_damping_channel(phase_damping_rate.max(0.0).min(1.0))
         );
     }
-    
+  
     // 应用多个噪声通道
     fn apply_noise(&self, state: &mut DensityMatrix, channel_names: &[String]) {
         for name in channel_names {
@@ -10833,19 +10897,19 @@ impl QuantumNoiseModel {
             }
         }
     }
-    
+  
     // 模拟随时间演化的噪声
-    fn simulate_noise_evolution(&self, initial_state: &DensityMatrix, 
+    fn simulate_noise_evolution(&self, initial_state: &DensityMatrix,
                               time: f64, steps: usize) -> DensityMatrix {
         let dt = time / steps as f64;
         let mut state = initial_state.clone();
-        
+  
         for _ in 0..steps {
             // 应用所有噪声通道，按比例缩放
             for channel in self.channels.values() {
                 let mut step_state = state.clone();
                 channel.apply(&mut step_state);
-                
+  
                 // 线性插值
                 for i in 0..state.dimension {
                     for j in 0..state.dimension {
@@ -10853,69 +10917,69 @@ impl QuantumNoiseModel {
                     }
                 }
             }
-            
+  
             // 确保密度矩阵保持有效
             let trace = state.matrix.trace().re;
             if trace > 0.0 {
                 state.matrix /= Complex64::new(trace, 0.0);
             }
         }
-        
+  
         state
     }
-    
+  
     // 估计系统的相干时间
     fn estimate_coherence_time(&self, qubit_state: &DensityMatrix) -> f64 {
         // 初始相干性
         let initial_purity = qubit_state.purity();
-        
+  
         // 模拟退相干过程
         let mut state = qubit_state.clone();
         let mut time = 0.0;
         let dt = 0.1;  // 时间步长
-        
+  
         while state.purity() > initial_purity / 2.0 && time < 1000.0 {
             // 应用相位阻尼
             if let Some(channel) = self.channels.get("phase_damping") {
                 channel.apply(&mut state);
             }
-            
+  
             time += dt;
         }
-        
+  
         time
     }
-    
+  
     // 生成噪声报告
     fn generate_noise_report(&self) -> String {
         let mut report = String::new();
-        
+  
         report.push_str("=== 量子噪声模型报告 ===\n\n");
-        
+  
         // 环境参数
         report.push_str("环境参数:\n");
         for (param, value) in &self.environment_params {
             report.push_str(&format!("  {}: {}\n", param, value));
         }
-        
+  
         // 噪声通道
         report.push_str("\n噪声通道:\n");
         for (name, _) in &self.channels {
             report.push_str(&format!("  {}\n", name));
         }
-        
+  
         // 退相干估计
         report.push_str("\n退相干估计:\n");
-        
+  
         // 初始状态 |+⟩ = (|0⟩ + |1⟩)/√2
         let mut plus_state = DensityMatrix::new_zero_state(1);
         plus_state.matrix[(0, 1)] = Complex64::new(0.5, 0.0);
         plus_state.matrix[(1, 0)] = Complex64::new(0.5, 0.0);
         plus_state.matrix[(1, 1)] = Complex64::new(0.5, 0.0);
-        
+  
         let t2_time = self.estimate_coherence_time(&plus_state);
         report.push_str(&format!("  估计T2时间: {} 微秒\n", t2_time));
-        
+  
         report
     }
 }
@@ -10946,7 +11010,7 @@ impl QuantumDeviceModel {
             coupling_graph: HashMap::new(),
             noise_model: QuantumNoiseModel::new(),
         };
-        
+  
         // 基于设备类型初始化量子比特特性
         for i in 0..num_qubits {
             let properties = match device_type {
@@ -10957,7 +11021,7 @@ impl QuantumDeviceModel {
                     gate_times.insert("Z".to_string(), 0.0);  // 虚拟Z门
                     gate_times.insert("H".to_string(), 40.0);
                     gate_times.insert("CNOT".to_string(), 300.0);
-                    
+  
                     QubitProperties {
                         frequency: 5.0 + rand::thread_rng().gen::<f64>() * 0.2,  // 4.9-5.1 GHz
                         anharmonicity: -300.0 - rand::thread_rng().gen::<f64>() * 20.0,  // -300 to -320 MHz
@@ -10973,7 +11037,7 @@ impl QuantumDeviceModel {
                     gate_times.insert("Z".to_string(), 10.0);
                     gate_times.insert("H".to_string(), 15.0);
                     gate_times.insert("XX".to_string(), 200.0);  // Mølmer–Sørensen门
-                    
+  
                     QubitProperties {
                         frequency: 12.6 + rand::thread_rng().gen::<f64>() * 0.1,  // GHz范围的跃迁
                         anharmonicity: 0.0,  // 离子通常没有明显的非谐性
@@ -10989,7 +11053,7 @@ impl QuantumDeviceModel {
                     gate_times.insert("Z".to_string(), 50.0);
                     gate_times.insert("H".to_string(), 100.0);
                     gate_times.insert("CNOT".to_string(), 500.0);
-                    
+  
                     QubitProperties {
                         frequency: 4.0,
                         anharmonicity: -200.0,
@@ -10999,21 +11063,21 @@ impl QuantumDeviceModel {
                     }
                 }
             };
-            
+  
             device.qubits.insert(i, properties);
         }
-        
+  
         // 初始化耦合拓扑
         match device_type {
             "superconducting" => {
                 // 创建2D网格拓扑
                 for i in 0..num_qubits {
                     let mut neighbors = Vec::new();
-                    
+  
                     let row = i / (num_qubits as f64).sqrt().ceil() as usize;
                     let col = i % (num_qubits as f64).sqrt().ceil() as usize;
                     let grid_size = (num_qubits as f64).sqrt().ceil() as usize;
-                    
+  
                     // 检查四个方向的邻居
                     if row > 0 {
                         neighbors.push((i - grid_size, 10.0 + rand::thread_rng().gen::<f64>() * 2.0));
@@ -11027,7 +11091,7 @@ impl QuantumDeviceModel {
                     if col < grid_size - 1 && i + 1 < num_qubits {
                         neighbors.push((i + 1, 10.0 + rand::thread_rng().gen::<f64>() * 2.0));
                     }
-                    
+  
                     device.coupling_graph.insert(i, neighbors);
                 }
             },
@@ -11035,7 +11099,7 @@ impl QuantumDeviceModel {
                 // 离子阱通常是全连接拓扑
                 for i in 0..num_qubits {
                     let mut neighbors = Vec::new();
-                    
+  
                     for j in 0..num_qubits {
                         if i != j {
                             // 耦合强度随距离减弱
@@ -11044,7 +11108,7 @@ impl QuantumDeviceModel {
                             neighbors.push((j, coupling));
                         }
                     }
-                    
+  
                     device.coupling_graph.insert(i, neighbors);
                 }
             },
@@ -11052,41 +11116,41 @@ impl QuantumDeviceModel {
                 // 默认为线性链
                 for i in 0..num_qubits {
                     let mut neighbors = Vec::new();
-                    
+  
                     if i > 0 {
                         neighbors.push((i - 1, 5.0));
                     }
                     if i < num_qubits - 1 {
                         neighbors.push((i + 1, 5.0));
                     }
-                    
+  
                     device.coupling_graph.insert(i, neighbors);
                 }
             }
         }
-        
+  
         device
     }
-    
+  
     // 估计量子门操作的保真度
     fn estimate_gate_fidelity(&self, gate: &str, qubits: &[usize]) -> f64 {
         if qubits.is_empty() {
             return 0.0;
         }
-        
+  
         // 单量子比特门
         if qubits.len() == 1 {
             let qubit = qubits[0];
-            
+  
             if let Some(properties) = self.qubits.get(&qubit) {
                 // 基于T1、T2和门时间估计保真度
                 if let Some(gate_time) = properties.gate_times.get(gate) {
                     let gate_time_us = gate_time / 1000.0;  // 转换为微秒
-                    
+  
                     // 简化模型: F ≈ e^(-t/T1) * e^(-t/T2)
                     let t1_factor = (-gate_time_us / properties.t1).exp();
                     let t2_factor = (-gate_time_us / properties.t2).exp();
-                    
+  
                     return t1_factor * t2_factor;
                 }
             }
@@ -11095,7 +11159,7 @@ impl QuantumDeviceModel {
         else if qubits.len() == 2 {
             let q1 = qubits[0];
             let q2 = qubits[1];
-            
+  
             // 检查是否直接相连
             if let Some(neighbors) = self.coupling_graph.get(&q1) {
                 if !neighbors.iter().any(|(q, _)| *q == q2) {
@@ -11105,50 +11169,50 @@ impl QuantumDeviceModel {
             } else {
                 return 0.8;
             }
-            
+  
             // 基于两个量子比特的特性估计保真度
             if let (Some(p1), Some(p2)) = (self.qubits.get(&q1), self.qubits.get(&q2)) {
                 if let (Some(time1), Some(time2)) = (p1.gate_times.get(gate), p2.gate_times.get(gate)) {
                     let gate_time_us = time1.max(time2) / 1000.0;  // 使用较长的时间
-                    
+  
                     // 双量子比特门的保真度通常低于单量子比特门
                     let base_fidelity = 0.99;
-                    
+  
                     // 考虑退相干
                     let t1_factor = (-(gate_time_us / p1.t1) - (gate_time_us / p2.t1)).exp();
                     let t2_factor = (-(gate_time_us / p1.t2) - (gate_time_us / p2.t2)).exp();
-                    
+  
                     return base_fidelity * t1_factor * t2_factor;
                 }
             }
         }
-        
+  
         // 默认返回较低保真度
         0.9
     }
-    
+  
     // 模拟物理量子电路执行
-    fn simulate_physical_circuit(&self, circuit: &[(String, Vec<usize>)], initial_state: &DensityMatrix) 
+    fn simulate_physical_circuit(&self, circuit: &[(String, Vec<usize>)], initial_state: &DensityMatrix)
         -> DensityMatrix {
         let mut state = initial_state.clone();
-        
+  
         for (gate, qubits) in circuit {
             // 应用门操作
             self.apply_physical_gate(&gate, &qubits, &mut state);
-            
+  
             // 应用噪声
             let noise_channels = match gate.as_str() {
                 "X" | "Y" | "Z" | "H" => vec!["phase_damping".to_string()],
                 "CNOT" | "CZ" => vec!["depolarizing".to_string(), "phase_damping".to_string()],
                 _ => vec!["depolarizing".to_string()]
             };
-            
+  
             self.noise_model.apply_noise(&mut state, &noise_channels);
         }
-        
+  
         state
     }
-    
+  
     // 应用物理门操作
     fn apply_physical_gate(&self, gate: &str, qubits: &[usize], state: &mut DensityMatrix) {
         // 创建适当的门矩阵
@@ -11158,7 +11222,7 @@ impl QuantumDeviceModel {
                 let mut x_gate = DMatrix::zeros(2, 2);
                 x_gate[(0, 1)] = Complex64::new(1.0, 0.0);
                 x_gate[(1, 0)] = Complex64::new(1.0, 0.0);
-                
+  
                 // 扩展到多量子比特系统
                 let expanded_gate = self.expand_gate_to_system(&x_gate, qubits[0], state.dimension);
                 state.apply_unitary(&expanded_gate);
@@ -11168,7 +11232,7 @@ impl QuantumDeviceModel {
                 let mut z_gate = DMatrix::zeros(2, 2);
                 z_gate[(0, 0)] = Complex64::new(1.0, 0.0);
                 z_gate[(1, 1)] = Complex64::new(-1.0, 0.0);
-                
+  
                 let expanded_gate = self.expand_gate_to_system(&z_gate, qubits[0], state.dimension);
                 state.apply_unitary(&expanded_gate);
             },
@@ -11180,7 +11244,7 @@ impl QuantumDeviceModel {
                 h_gate[(0, 1)] = Complex64::new(factor, 0.0);
                 h_gate[(1, 0)] = Complex64::new(factor, 0.0);
                 h_gate[(1, 1)] = Complex64::new(-factor, 0.0);
-                
+  
                 let expanded_gate = self.expand_gate_to_system(&h_gate, qubits[0], state.dimension);
                 state.apply_unitary(&expanded_gate);
             },
@@ -11191,7 +11255,7 @@ impl QuantumDeviceModel {
                 cnot_gate[(1, 1)] = Complex64::new(1.0, 0.0);
                 cnot_gate[(2, 3)] = Complex64::new(1.0, 0.0);
                 cnot_gate[(3, 2)] = Complex64::new(1.0, 0.0);
-                
+  
                 let expanded_gate = self.expand_two_qubit_gate(&cnot_gate, qubits[0], qubits[1], state.dimension);
                 state.apply_unitary(&expanded_gate);
             },
@@ -11202,7 +11266,7 @@ impl QuantumDeviceModel {
                 cz_gate[(1, 1)] = Complex64::new(1.0, 0.0);
                 cz_gate[(2, 2)] = Complex64::new(1.0, 0.0);
                 cz_gate[(3, 3)] = Complex64::new(-1.0, 0.0);
-                
+  
                 let expanded_gate = self.expand_two_qubit_gate(&cz_gate, qubits[0], qubits[1], state.dimension);
                 state.apply_unitary(&expanded_gate);
             },
@@ -11210,8 +11274,7 @@ impl QuantumDeviceModel {
                 // 其他门...
             }
         }
-    
-
+  
 ```rust
     }
     
@@ -11772,6 +11835,7 @@ impl EnvironmentController {
         (t1, t2)
     }
 }
+
 ```
 
 ### 1.6.7 量子软件栈抽象
@@ -11801,6 +11865,7 @@ impl EnvironmentController {
 - 资源分配: 量子比特和内存管理
 - 测量处理: 结果采样和统计
 - 反馈控制: 条件执行和调整
+
 ```
 
 Rust代码示例（量子软件栈抽象）：
@@ -12074,7 +12139,7 @@ impl QuantumCircuit {
                             circuit_str.push_str(&format!("┤{}├", gate.name));
                         }
                     }
-                    
+  
                     position += gate.name.len() + 2;
                 } else {
                     // 此量子比特不参与这个门操作
@@ -12082,34 +12147,34 @@ impl QuantumCircuit {
                     position += 3;
                 }
             }
-            
+  
             // 添加测量符号
             if self.measurements.contains_key(&i) {
                 circuit_str.push_str("┤M├");
             }
-            
+  
             circuit_str.push_str("\n");
         }
-        
+  
         circuit_str
     }
-    
+  
     // 合并电路
     fn merge(&mut self, other: &QuantumCircuit) -> Result<(), String> {
         if other.num_qubits > self.num_qubits {
             return Err("合并的电路量子比特数量超出范围".to_string());
         }
-        
+  
         // 添加所有门
         for gate in &other.gates {
             self.add_gate(gate.clone())?;
         }
-        
+  
         // 合并测量
         for (&qubit, &classical_bit) in &other.measurements {
             self.measurements.insert(qubit, classical_bit);
         }
-        
+  
         Ok(())
     }
 }
@@ -12129,57 +12194,57 @@ impl QuantumCompiler {
             target_device: None,
         }
     }
-    
+  
     // 设置目标设备
     fn set_target_device(&mut self, device: QuantumDeviceDescription) {
         self.target_device = Some(device);
     }
-    
+  
     // 编译电路
     fn compile(&self) -> Result<QuantumCircuit, String> {
         let mut optimized = self.circuit.clone();
-        
+  
         // 应用优化，根据优化级别
         if self.optimization_level >= 1 {
             self.remove_redundant_gates(&mut optimized);
         }
-        
+  
         if self.optimization_level >= 2 {
             self.merge_adjacent_gates(&mut optimized);
         }
-        
+  
         // 如果有目标设备，执行硬件特定优化
         if let Some(device) = &self.target_device {
             if self.optimization_level >= 3 {
                 self.map_to_device(&mut optimized, device)?;
             }
         }
-        
+  
         Ok(optimized)
     }
-    
+  
     // 优化: 移除冗余门
     fn remove_redundant_gates(&self, circuit: &mut QuantumCircuit) {
         let mut i = 0;
         while i < circuit.gates.len() {
             let mut redundant = false;
-            
+  
             // 检测简单的冗余模式
             if i + 1 < circuit.gates.len() {
                 let gate1 = &circuit.gates[i];
                 let gate2 = &circuit.gates[i + 1];
-                
+  
                 // 例: X门接X门可以移除
-                if gate1.name == "X" && gate2.name == "X" && 
+                if gate1.name == "X" && gate2.name == "X" &&
                    gate1.qubits == gate2.qubits {
                     redundant = true;
                     circuit.gates.remove(i);
                     circuit.gates.remove(i);
                     continue;
                 }
-                
+  
                 // 例: H门接H门可以移除
-                if gate1.name == "H" && gate2.name == "H" && 
+                if gate1.name == "H" && gate2.name == "H" &&
                    gate1.qubits == gate2.qubits {
                     redundant = true;
                     circuit.gates.remove(i);
@@ -12187,42 +12252,42 @@ impl QuantumCompiler {
                     continue;
                 }
             }
-            
+  
             if !redundant {
                 i += 1;
             }
         }
     }
-    
+  
     // 优化: 合并相邻门
     fn merge_adjacent_gates(&self, circuit: &mut QuantumCircuit) {
         let mut i = 0;
         while i < circuit.gates.len() - 1 {
             let gate1 = &circuit.gates[i];
             let gate2 = &circuit.gates[i + 1];
-            
+  
             // 例: 合并旋转门
-            if gate1.name.starts_with("R") && gate2.name == gate1.name && 
+            if gate1.name.starts_with("R") && gate2.name == gate1.name &&
                gate1.qubits == gate2.qubits {
-                
+  
                 let axis = &gate1.name[1..2]; // 提取轴 (X, Y, Z)
                 let angle1 = gate1.parameters[0];
                 let angle2 = gate2.parameters[0];
-                
+  
                 // 合并为单个旋转
                 let new_gate = QuantumGate::rotation(axis, gate1.qubits[0], angle1 + angle2);
-                
+  
                 circuit.gates.remove(i);
                 circuit.gates.remove(i);
                 circuit.gates.insert(i, new_gate);
-                
+  
                 continue;
             }
-            
+  
             i += 1;
         }
     }
-    
+  
     // 优化: 映射到设备
     fn map_to_device(&self, circuit: &mut QuantumCircuit, device: &QuantumDeviceDescription) -> Result<(), String> {
         // 检查电路是否适合设备
@@ -12230,10 +12295,10 @@ impl QuantumCompiler {
             return Err(format!("电路需要{}个量子比特，但设备只有{}个",
                              circuit.num_qubits, device.num_qubits));
         }
-        
+  
         // 针对设备支持的门集转换电路
         let mut converted_circuit = QuantumCircuit::new(circuit.num_qubits);
-        
+  
         for gate in &circuit.gates {
             // 将门转换为设备支持的门集
             if device.supported_gates.contains(&gate.name) {
@@ -12247,7 +12312,7 @@ impl QuantumCompiler {
                             // 使用3个CNOT实现SWAP
                             let control = gate.qubits[0];
                             let target = gate.qubits[1];
-                            
+  
                             converted_circuit.cnot(control, target)?;
                             converted_circuit.cnot(target, control)?;
                             converted_circuit.cnot(control, target)?;
@@ -12262,32 +12327,32 @@ impl QuantumCompiler {
                 }
             }
         }
-        
+  
         // 应用连接拓扑映射
         if device.connectivity.is_some() {
             self.map_to_connectivity(&mut converted_circuit, device)?;
         }
-        
+  
         *circuit = converted_circuit;
-        
+  
         Ok(())
     }
-    
+  
     // 应用连接拓扑映射
     fn map_to_connectivity(&self, circuit: &mut QuantumCircuit, device: &QuantumDeviceDescription) -> Result<(), String> {
         if let Some(connectivity) = &device.connectivity {
             // 简化版拓扑映射，真实编译器会使用更复杂的算法
-            
+  
             // 检测违反连接拓扑的双量子比特门
             let mut new_circuit = QuantumCircuit::new(circuit.num_qubits);
-            
+  
             for gate in &circuit.gates {
                 if gate.is_two_qubit_gate() {
                     let control = gate.qubits[0];
                     let target = gate.qubits[1];
-                    
+  
                     // 检查这两个量子比特是否直接相连
-                    if connectivity.contains(&(control, target)) || 
+                    if connectivity.contains(&(control, target)) ||
                        connectivity.contains(&(target, control)) {
                         // 直接相连，保持原样
                         new_circuit.add_gate(gate.clone())?;
@@ -12295,16 +12360,16 @@ impl QuantumCompiler {
                         // 不直接相连，需要插入SWAP操作
                         // 这里使用一个简化的路径寻找方法
                         let path = self.find_shortest_path(control, target, connectivity);
-                        
+  
                         if let Some(path) = path {
                             // 沿路径执行SWAP操作移动量子比特
                             // (这只是一个演示，真实编译器会更智能地选择SWAP)
-                            
+  
                             // 从路径中的第二个量子比特开始，向目标方向移动
                             let mut current = control;
-                            
+  
                             for &next in path.iter().skip(1).take(path.len() - 2) {
-                                if connectivity.contains(&(current, next)) || 
+                                if connectivity.contains(&(current, next)) ||
                                    connectivity.contains(&(next, current)) {
                                     // 执行SWAP以移动量子状态
                                     new_circuit.add_gate(QuantumGate::new("SWAP", vec![current, next], vec![]))?;
@@ -12313,15 +12378,15 @@ impl QuantumCompiler {
                                     return Err(format!("无法沿连接拓扑从量子比特{}移动到{}", current, next));
                                 }
                             }
-                            
+  
                             // 执行转换后的门操作
                             let new_control = current;
                             let new_target = path[path.len() - 1];
-                            
+  
                             new_circuit.add_gate(
                                 QuantumGate::new(&gate.name, vec![new_control, new_target], gate.parameters.clone())
                             )?;
-                            
+  
                             // 如果必要，通过反向SWAP恢复状态
                             // (简化版本省略了这一步)
                         } else {
@@ -12333,52 +12398,52 @@ impl QuantumCompiler {
                     new_circuit.add_gate(gate.clone())?;
                 }
             }
-            
+  
             // 保持测量
             for (&qubit, &classical_bit) in &circuit.measurements {
                 new_circuit.measure(qubit, classical_bit)?;
             }
-            
+  
             *circuit = new_circuit;
         }
-        
+  
         Ok(())
     }
-    
+  
     // 寻找两个量子比特之间的最短路径
     fn find_shortest_path(&self, start: usize, end: usize, connectivity: &Vec<(usize, usize)>) -> Option<Vec<usize>> {
         // 构建邻接表
         let mut adjacency_list: HashMap<usize, Vec<usize>> = HashMap::new();
-        
+  
         for &(a, b) in connectivity {
             adjacency_list.entry(a).or_insert_with(Vec::new).push(b);
             adjacency_list.entry(b).or_insert_with(Vec::new).push(a);  // 假设是无向图
         }
-        
+  
         // 广度优先搜索
         let mut queue = VecDeque::new();
         let mut visited = HashSet::new();
         let mut predecessors: HashMap<usize, usize> = HashMap::new();
-        
+  
         queue.push_back(start);
         visited.insert(start);
-        
+  
         while let Some(current) = queue.pop_front() {
             if current == end {
                 // 重建路径
                 let mut path = Vec::new();
                 let mut curr = current;
                 path.push(curr);
-                
+  
                 while curr != start {
                     curr = *predecessors.get(&curr).unwrap();
                     path.push(curr);
                 }
-                
+  
                 path.reverse();
                 return Some(path);
             }
-            
+  
             if let Some(neighbors) = adjacency_list.get(&current) {
                 for &neighbor in neighbors {
                     if !visited.contains(&neighbor) {
@@ -12389,70 +12454,72 @@ impl QuantumCompiler {
                 }
             }
         }
-        
+  
         None  // 没有找到路径
     }
-    
+  
     // 生成编译报告
     fn generate_compilation_report(&self, original: &QuantumCircuit, optimized: &QuantumCircuit) -> String {
         let mut report = String::new();
-        
+  
         report.push_str("=== 量子编译报告 ===\n\n");
-        
+  
         // 基本统计
         report.push_str(&format!("原始电路统计:\n"));
         report.push_str(&format!("  量子比特数量: {}\n", original.num_qubits));
         report.push_str(&format!("  门操作数量: {}\n", original.gates.len()));
         report.push_str(&format!("  电路深度: {}\n", original.depth()));
-        
+  
         report.push_str(&format!("\n优化后电路统计:\n"));
         report.push_str(&format!("  量子比特数量: {}\n", optimized.num_qubits));
         report.push_str(&format!("  门操作数量: {}\n", optimized.gates.len()));
         report.push_str(&format!("  电路深度: {}\n", optimized.depth()));
-        
+  
         // 门操作分布
         let mut original_gates = HashMap::new();
         let mut optimized_gates = HashMap::new();
-        
+  
         for gate in &original.gates {
             *original_gates.entry(gate.name.clone()).or_insert(0) += 1;
         }
-        
+  
         for gate in &optimized.gates {
             *optimized_gates.entry(gate.name.clone()).or_insert(0) += 1;
         }
-        
+  
         report.push_str("\n门操作分布:\n");
         report.push_str("  原始    优化后    门类型\n");
-        
+  
         let all_gates: HashSet<String> = original_gates.keys()
             .chain(optimized_gates.keys())
             .cloned()
             .collect();
-        
+  
         for gate in all_gates {
             let orig_count = original_gates.get(&gate).cloned().unwrap_or(0);
             let opt_count = optimized_gates.get(&gate).cloned().unwrap_or(0);
-            
+  
             report.push_str(&format!("  {:<8} {:<10} {}\n", orig_count, opt_count, gate));
         }
-        
+  
         // 编译优化级别
         report.push_str(&format!("\n优化级别: {}\n", self.optimization_level));
-        
+  
         // 目标设备信息
         if let Some(device) = &self.target_device {
             report.push_str(&format!("\n目标设备: {}\n", device.name));
             report.push_str(&format!("  量子比特数量: {}\n", device.num_qubits));
             report.push_str(&format!("  支持的门集: {:?}\n", device.supported_gates));
         }
-        
+  
         report
     }
 }
 
 // 量子设备描述
-#[derive(Clone)]
+
+# [derive(Clone)]
+
 struct QuantumDeviceDescription {
     name: String,
     num_qubits: usize,
@@ -12472,33 +12539,33 @@ impl QuantumDeviceDescription {
         supported_gates.insert("Z".to_string());
         supported_gates.insert("H".to_string());
         supported_gates.insert("CNOT".to_string());
-        
+  
         let mut gate_times = HashMap::new();
         gate_times.insert("X".to_string(), 50.0);
         gate_times.insert("Y".to_string(), 50.0);
         gate_times.insert("Z".to_string(), 50.0);
         gate_times.insert("H".to_string(), 70.0);
         gate_times.insert("CNOT".to_string(), 300.0);
-        
+  
         let mut coherence_times = HashMap::new();
         for i in 0..num_qubits {
             coherence_times.insert(i, (100.0, 50.0)); // T1=100µs, T2=50µs
         }
-        
+  
         let mut error_rates = HashMap::new();
         error_rates.insert("X".to_string(), 0.001);
         error_rates.insert("Y".to_string(), 0.001);
         error_rates.insert("Z".to_string(), 0.001);
         error_rates.insert("H".to_string(), 0.002);
         error_rates.insert("CNOT".to_string(), 0.01);
-        
+  
         // 创建一个简单的连接拓扑（环形）
         let mut connectivity = Vec::new();
         for i in 0..num_qubits {
             connectivity.push((i, (i + 1) % num_qubits));
             connectivity.push(((i + 1) % num_qubits, i));
         }
-        
+  
         QuantumDeviceDescription {
             name: name.to_string(),
             num_qubits,
@@ -12509,7 +12576,7 @@ impl QuantumDeviceDescription {
             error_rates,
         }
     }
-    
+  
     // 创建超导量子计算机设备描述
     fn superconducting_device(name: &str, num_qubits: usize) -> Self {
         let mut supported_gates = HashSet::new();
@@ -12517,50 +12584,50 @@ impl QuantumDeviceDescription {
         supported_gates.insert("SX".to_string());  // sqrt(X)
         supported_gates.insert("RZ".to_string());
         supported_gates.insert("CZ".to_string());
-        
+  
         let mut gate_times = HashMap::new();
         gate_times.insert("X".to_string(), 50.0);
         gate_times.insert("SX".to_string(), 40.0);
         gate_times.insert("RZ".to_string(), 0.0);  // 虚拟Z旋转
         gate_times.insert("CZ".to_string(), 250.0);
-        
+  
         let mut coherence_times = HashMap::new();
         let mut rng = rand::thread_rng();
-        
+  
         for i in 0..num_qubits {
             // 有一些随机变化
             let t1 = 70.0 + rng.gen::<f64>() * 30.0;  // 70-100µs
             let t2 = 40.0 + rng.gen::<f64>() * 30.0;  // 40-70µs (始终 <= T1)
             coherence_times.insert(i, (t1, t2.min(t1)));
         }
-        
+  
         let mut error_rates = HashMap::new();
         error_rates.insert("X".to_string(), 0.0005);
         error_rates.insert("SX".to_string(), 0.0004);
         error_rates.insert("RZ".to_string(), 0.0001);
         error_rates.insert("CZ".to_string(), 0.008);
-        
+  
         // 创建一个2D网格拓扑
         let mut connectivity = Vec::new();
         let grid_size = (num_qubits as f64).sqrt().ceil() as usize;
-        
+  
         for i in 0..num_qubits {
             let row = i / grid_size;
             let col = i % grid_size;
-            
+  
             // 添加水平连接
             if col < grid_size - 1 && i + 1 < num_qubits {
                 connectivity.push((i, i + 1));
                 connectivity.push((i + 1, i));
             }
-            
+  
             // 添加垂直连接
             if row < grid_size - 1 && i + grid_size < num_qubits {
                 connectivity.push((i, i + grid_size));
                 connectivity.push((i + grid_size, i));
             }
         }
-        
+  
         QuantumDeviceDescription {
             name: name.to_string(),
             num_qubits,
@@ -12571,14 +12638,14 @@ impl QuantumDeviceDescription {
             error_rates,
         }
     }
-    
+  
     // 生成设备报告
     fn generate_device_report(&self) -> String {
         let mut report = String::new();
-        
+  
         report.push_str(&format!("=== 量子设备报告: {} ===\n\n", self.name));
         report.push_str(&format!("量子比特数量: {}\n", self.num_qubits));
-        
+  
         // 支持的门集
         report.push_str("\n支持的门集:\n");
         for gate in &self.supported_gates {
@@ -12586,7 +12653,7 @@ impl QuantumDeviceDescription {
             let error = self.error_rates.get(gate).cloned().unwrap_or(0.0);
             report.push_str(&format!("  {}: 时间={:.1}ns, 错误率={:.6}\n", gate, time, error));
         }
-        
+  
         // 相干时间
         report.push_str("\n量子比特相干时间:\n");
         report.push_str("  量子比特    T1 (µs)    T2 (µs)\n");
@@ -12595,27 +12662,27 @@ impl QuantumDeviceDescription {
                 report.push_str(&format!("  {:<12} {:<11.2} {:<11.2}\n", i, t1, t2));
             }
         }
-        
+  
         // 连接拓扑
         if let Some(connectivity) = &self.connectivity {
             report.push_str("\n连接拓扑:\n");
-            
+  
             // 创建邻接列表
             let mut adjacency = vec![Vec::new(); self.num_qubits];
             for &(a, b) in connectivity {
                 adjacency[a].push(b);
             }
-            
+  
             // 打印每个量子比特的连接
             for i in 0..self.num_qubits {
                 let neighbors: Vec<String> = adjacency[i].iter().map(|n| n.to_string()).collect();
                 report.push_str(&format!("  {}: {}\n", i, neighbors.join(", ")));
             }
         }
-        
+  
         report
     }
-    
+  
     // 检查电路是否可以在此设备上运行
     fn can_execute_circuit(&self, circuit: &QuantumCircuit) -> Result<(), String> {
         // 检查量子比特数量
@@ -12623,26 +12690,26 @@ impl QuantumDeviceDescription {
             return Err(format!("电路需要{}个量子比特，但设备只有{}个",
                              circuit.num_qubits, self.num_qubits));
         }
-        
+  
         // 检查门操作兼容性
         for gate in &circuit.gates {
             if !self.supported_gates.contains(&gate.name) {
                 return Err(format!("设备不支持{}门", gate.name));
             }
-            
+  
             // 检查双量子比特门的连接拓扑
             if gate.is_two_qubit_gate() {
                 if let Some(connectivity) = &self.connectivity {
                     let q1 = gate.qubits[0];
                     let q2 = gate.qubits[1];
-                    
+  
                     if !connectivity.contains(&(q1, q2)) && !connectivity.contains(&(q2, q1)) {
                         return Err(format!("量子比特{}和{}之间没有直接连接", q1, q2));
                     }
                 }
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -12662,56 +12729,56 @@ impl QuantumProgram {
             classical_registers: HashMap::new(),
         }
     }
-    
+  
     // 添加电路
     fn add_circuit(&mut self, name: &str, circuit: QuantumCircuit) {
         self.circuits.insert(name.to_string(), circuit);
     }
-    
+  
     // 设置变量
     fn set_variable(&mut self, name: &str, value: f64) {
         self.variables.insert(name.to_string(), value);
     }
-    
+  
     // 创建经典寄存器
     fn create_register(&mut self, name: &str, size: usize) {
         self.classical_registers.insert(name.to_string(), vec![0; size]);
     }
-    
+  
     // 编译程序
     fn compile(&self, compiler: &QuantumCompiler) -> Result<QuantumProgram, String> {
         let mut compiled = QuantumProgram::new();
-        
+  
         // 编译每个电路
         for (name, circuit) in &self.circuits {
             let optimized = compiler.compile()?;
             compiled.add_circuit(name, optimized);
         }
-        
+  
         // 复制变量和寄存器
         compiled.variables = self.variables.clone();
         compiled.classical_registers = self.classical_registers.clone();
-        
+  
         Ok(compiled)
     }
-    
+  
     // 估计程序执行时间
     fn estimate_execution_time(&self, device: &QuantumDeviceDescription) -> f64 {
         let mut total_time = 0.0;
-        
+  
         for circuit in self.circuits.values() {
             total_time += circuit.estimate_execution_time(&device.gate_times);
         }
-        
+  
         total_time
     }
-    
+  
     // 生成程序报告
     fn generate_program_report(&self) -> String {
         let mut report = String::new();
-        
+  
         report.push_str("=== 量子程序报告 ===\n\n");
-        
+  
         // 电路信息
         report.push_str(&format!("电路数量: {}\n", self.circuits.len()));
         for (name, circuit) in &self.circuits {
@@ -12720,7 +12787,7 @@ impl QuantumProgram {
             report.push_str(&format!("  门操作数量: {}\n", circuit.gates.len()));
             report.push_str(&format!("  电路深度: {}\n", circuit.depth()));
         }
-        
+  
         // 变量信息
         if !self.variables.is_empty() {
             report.push_str("\n变量:\n");
@@ -12728,7 +12795,7 @@ impl QuantumProgram {
                 report.push_str(&format!("  {} = {}\n", name, value));
             }
         }
-        
+  
         // 经典寄存器信息
         if !self.classical_registers.is_empty() {
             report.push_str("\n经典寄存器:\n");
@@ -12736,7 +12803,7 @@ impl QuantumProgram {
                 report.push_str(&format!("  {}: 大小={}\n", name, register.len()));
             }
         }
-        
+  
         report
     }
 }
@@ -12774,11 +12841,11 @@ impl QuantumExecutionEngine {
             completed_jobs: HashMap::new(),
         }
     }
-    
+  
     // 提交作业
     fn submit_job(&mut self, program: QuantumProgram, shots: usize, priority: usize) -> String {
         let job_id = format!("job-{}", rand::thread_rng().gen::<u64>());
-        
+  
         let job = QuantumJob {
             id: job_id.clone(),
             program,
@@ -12786,31 +12853,31 @@ impl QuantumExecutionEngine {
             priority,
             creation_time: Instant::now(),
         };
-        
+  
         self.current_jobs.insert(job_id.clone(), job);
         job_id
     }
-    
+  
     // 执行所有等待的作业
     fn execute_jobs(&mut self) {
         // 按优先级对作业排序
         let mut jobs: Vec<_> = self.current_jobs.drain().collect();
         jobs.sort_by_key(|(_, job)| std::cmp::Reverse(job.priority));
-        
+  
         // 执行每个作业
         for (job_id, job) in jobs {
             let result = self.execute_job(&job);
             self.completed_jobs.insert(job_id, result);
         }
     }
-    
+  
     // 执行单个作业
     fn execute_job(&self, job: &QuantumJob) -> QuantumResult {
         let start_time = Instant::now();
         let mut results = HashMap::new();
         let mut success = true;
         let mut error_message = None;
-        
+  
         // 对每个电路执行模拟
         for (circuit_name, circuit) in &job.program.circuits {
             // 检查电路是否可以在设备上执行
@@ -12819,21 +12886,21 @@ impl QuantumExecutionEngine {
                 error_message = Some(e);
                 break;
             }
-            
+  
             // 模拟执行
             let mut circuit_results = HashMap::new();
-            
+  
             for _ in 0..job.shots {
                 // 简化的模拟逻辑
                 let measurement = self.simulate_circuit_execution(circuit);
                 *circuit_results.entry(measurement).or_insert(0) += 1;
             }
-            
+  
             results.insert(circuit_name.clone(), circuit_results);
         }
-        
+  
         let execution_time = start_time.elapsed();
-        
+  
         QuantumResult {
             job_id: job.id.clone(),
             results,
@@ -12842,12 +12909,12 @@ impl QuantumExecutionEngine {
             error_message,
         }
     }
-    
+  
     // 简化的电路执行模拟
     fn simulate_circuit_execution(&self, circuit: &QuantumCircuit) -> String {
         let mut rng = rand::thread_rng();
         let mut result = vec![0u8; circuit.num_qubits];
-        
+  
         // 极度简化的模拟，只考虑了最基本的H和X门效果
         for gate in &circuit.gates {
             match gate.name.as_str() {
@@ -12876,7 +12943,7 @@ impl QuantumExecutionEngine {
                 }
             }
         }
-        
+  
         // 考虑设备误差
         for i in 0..result.len() {
             if let Some(&error_rate) = self.device.error_rates.get("readout") {
@@ -12886,51 +12953,51 @@ impl QuantumExecutionEngine {
                 }
             }
         }
-        
+  
         // 将结果转换为二进制字符串
         result.iter().map(|&bit| if bit == 0 { '0' } else { '1' }).collect()
     }
-    
+  
     // 获取作业结果
     fn get_result(&self, job_id: &str) -> Option<&QuantumResult> {
         self.completed_jobs.get(job_id)
     }
-    
+  
     // 取消作业
     fn cancel_job(&mut self, job_id: &str) -> bool {
         self.current_jobs.remove(job_id).is_some()
     }
-    
+  
     // 生成引擎状态报告
     fn generate_status_report(&self) -> String {
         let mut report = String::new();
-        
+  
         report.push_str("=== 量子执行引擎状态报告 ===\n\n");
-        
+  
         // 设备信息
         report.push_str(&format!("设备: {}\n", self.device.name));
         report.push_str(&format!("量子比特数量: {}\n", self.device.num_qubits));
-        
+  
         // 当前作业
         report.push_str(&format!("\n当前作业数量: {}\n", self.current_jobs.len()));
         if !self.current_jobs.is_empty() {
             for (job_id, job) in &self.current_jobs {
                 let wait_time = job.creation_time.elapsed();
-                report.push_str(&format!("  {}: 优先级={}, 等待时间={:.2}s\n", 
+                report.push_str(&format!("  {}: 优先级={}, 等待时间={:.2}s\n",
                                        job_id, job.priority, wait_time.as_secs_f64()));
             }
         }
-        
+  
         // 已完成作业
         report.push_str(&format!("\n已完成作业数量: {}\n", self.completed_jobs.len()));
         if !self.completed_jobs.is_empty() {
             for (job_id, result) in &self.completed_jobs {
                 let status = if result.success { "成功" } else { "失败" };
-                report.push_str(&format!("  {}: 状态={}, 执行时间={:.2}ms\n", 
+                report.push_str(&format!("  {}: 状态={}, 执行时间={:.2}ms\n",
                                        job_id, status, result.execution_time.as_millis()));
             }
         }
-        
+  
         report
     }
 }
@@ -12947,20 +13014,20 @@ impl QuantumSoftwareStack {
         let empty_circuit = QuantumCircuit::new(0);
         let compiler = QuantumCompiler::new(empty_circuit, 2);
         let execution_engine = QuantumExecutionEngine::new(device.clone());
-        
+  
         QuantumSoftwareStack {
             compiler,
             execution_engine,
             current_program: QuantumProgram::new(),
         }
     }
-    
+  
     // 创建新电路
     fn create_circuit(&mut self, name: &str, num_qubits: usize) {
         let circuit = QuantumCircuit::new(num_qubits);
         self.current_program.add_circuit(name, circuit);
     }
-    
+  
     // 添加门操作到指定电路
     fn add_gate(&mut self, circuit_name: &str, gate: QuantumGate) -> Result<(), String> {
         if let Some(circuit) = self.current_program.circuits.get_mut(circuit_name) {
@@ -12969,21 +13036,21 @@ impl QuantumSoftwareStack {
             Err(format!("电路'{}'不存在", circuit_name))
         }
     }
-    
+  
     // 编译当前程序
     fn compile(&mut self, optimization_level: usize) -> Result<(), String> {
         // 为每个电路创建单独的编译器
         for (name, circuit) in self.current_program.circuits.iter() {
             let mut compiler = QuantumCompiler::new(circuit.clone(), optimization_level);
             compiler.set_target_device(self.execution_engine.device.clone());
-            
+  
             let optimized = compiler.compile()?;
             self.current_program.circuits.insert(name.clone(), optimized);
         }
-        
+  
         Ok(())
     }
-    
+  
     // 执行当前程序
     fn execute(&mut self, shots: usize) -> Result<String, String> {
         // 提交作业
@@ -12992,10 +13059,10 @@ impl QuantumSoftwareStack {
             shots,
             1  // 默认优先级
         );
-        
+  
         // 执行作业
         self.execution_engine.execute_jobs();
-        
+  
         // 获取结果
         if let Some(result) = self.execution_engine.get_result(&job_id) {
             if result.success {
@@ -13007,87 +13074,87 @@ impl QuantumSoftwareStack {
             Err("作业执行失败".to_string())
         }
     }
-    
+  
     // 获取结果
     fn get_results(&self, job_id: &str) -> Option<HashMap<String, HashMap<String, usize>>> {
         self.execution_engine.get_result(job_id)
             .map(|result| result.results.clone())
     }
-    
+  
     // 生成量子软件栈状态报告
     fn generate_status_report(&self) -> String {
         let mut report = String::new();
-        
+  
         report.push_str("=== 量子软件栈状态报告 ===\n\n");
-        
+  
         // 当前程序
         report.push_str("当前程序:\n");
         report.push_str(&self.current_program.generate_program_report());
-        
+  
         // 执行引擎状态
         report.push_str("\n");
         report.push_str(&self.execution_engine.generate_status_report());
-        
+  
         report
     }
-    
+  
     // 预设算法：贝尔态制备
     fn create_bell_state(&mut self) -> Result<(), String> {
         self.create_circuit("bell_state", 2);
-        
+  
         let circuit_name = "bell_state";
         self.add_gate(circuit_name, QuantumGate::new("H", vec![0], vec![]))?;
         self.add_gate(circuit_name, QuantumGate::new("CNOT", vec![0, 1], vec![]))?;
-        
+  
         // 添加测量
         if let Some(circuit) = self.current_program.circuits.get_mut(circuit_name) {
             circuit.measure(0, 0)?;
             circuit.measure(1, 1)?;
         }
-        
+  
         Ok(())
     }
-    
+  
     // 预设算法：GHZ态制备
     fn create_ghz_state(&mut self, num_qubits: usize) -> Result<(), String> {
         if num_qubits < 3 {
             return Err("GHZ态需要至少3个量子比特".to_string());
         }
-        
+  
         self.create_circuit("ghz_state", num_qubits);
-        
+  
         let circuit_name = "ghz_state";
         self.add_gate(circuit_name, QuantumGate::new("H", vec![0], vec![]))?;
-        
+  
         for i in 1..num_qubits {
             self.add_gate(circuit_name, QuantumGate::new("CNOT", vec![0, i], vec![]))?;
         }
-        
+  
         // 添加测量
         if let Some(circuit) = self.current_program.circuits.get_mut(circuit_name) {
             for i in 0..num_qubits {
                 circuit.measure(i, i)?;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 预设算法：量子傅里叶变换
     fn create_qft_circuit(&mut self, num_qubits: usize) -> Result<(), String> {
         if num_qubits > 10 {
             return Err("量子比特数量过多，可能导致电路过于复杂".to_string());
         }
-        
+  
         self.create_circuit("qft", num_qubits);
-        
+  
         let circuit_name = "qft";
-        
+  
         // 实现QFT
         for i in 0..num_qubits {
             // H门
             self.add_gate(circuit_name, QuantumGate::new("H", vec![i], vec![]))?;
-            
+  
             // 受控旋转门
             for j in i+1..num_qubits {
                 let angle = std::f64::consts::PI / (1 << (j - i));
@@ -13095,44 +13162,44 @@ impl QuantumSoftwareStack {
                 self.add_gate(circuit_name, rotation_gate)?;
             }
         }
-        
+  
         // SWAP操作以反转量子比特顺序
         for i in 0..num_qubits/2 {
             self.add_gate(circuit_name, QuantumGate::new("SWAP", vec![i, num_qubits-i-1], vec![]))?;
         }
-        
+  
         Ok(())
     }
-    
+  
     // 预设算法：量子相位估计
     fn create_phase_estimation(&mut self, num_precision_qubits: usize) -> Result<(), String> {
         if num_precision_qubits > 8 {
             return Err("精度量子比特数量过多，可能导致电路过于复杂".to_string());
         }
-        
+  
         // 总量子比特数 = 精度量子比特 + 1个辅助量子比特
         let total_qubits = num_precision_qubits + 1;
         self.create_circuit("phase_estimation", total_qubits);
-        
+  
         let circuit_name = "phase_estimation";
-        
+  
         // 初始化辅助量子比特为|1⟩
         self.add_gate(circuit_name, QuantumGate::new("X", vec![num_precision_qubits], vec![]))?;
-        
+  
         // 对所有精度量子比特应用H门
         for i in 0..num_precision_qubits {
             self.add_gate(circuit_name, QuantumGate::new("H", vec![i], vec![]))?;
         }
-        
+  
         // 应用受控-U^(2^j)操作
         // 这里我们使用相位门作为U，实际应用中可能会使用其他幺正操作
         for j in 0..num_precision_qubits {
             let angle = 2.0 * std::f64::consts::PI / (1 << (num_precision_qubits - j));
-            
+  
             // 受控相位旋转
             let control = j;
             let target = num_precision_qubits;
-            
+  
             // 模拟受控-U^(2^j)操作
             for _ in 0..(1 << j) {
                 // 这里使用CPHASE门，在实际硬件上可能需要分解为更基本的门
@@ -13140,13 +13207,13 @@ impl QuantumSoftwareStack {
                 self.add_gate(circuit_name, controlled_phase)?;
             }
         }
-        
+  
         // 应用逆QFT到精度寄存器
         // 先实现QFT
         for i in 0..num_precision_qubits {
             // H门
             self.add_gate(circuit_name, QuantumGate::new("H", vec![i], vec![]))?;
-            
+  
             // 受控旋转门
             for j in i+1..num_precision_qubits {
                 let angle = std::f64::consts::PI / (1 << (j - i));
@@ -13154,44 +13221,44 @@ impl QuantumSoftwareStack {
                 self.add_gate(circuit_name, rotation_gate)?;
             }
         }
-        
+  
         // SWAP操作以反转量子比特顺序（完成逆QFT）
         for i in 0..num_precision_qubits/2 {
             self.add_gate(circuit_name, QuantumGate::new("SWAP", vec![i, num_precision_qubits-i-1], vec![]))?;
         }
-        
+  
         // 测量精度寄存器
         if let Some(circuit) = self.current_program.circuits.get_mut(circuit_name) {
             for i in 0..num_precision_qubits {
                 circuit.measure(i, i)?;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 预设算法：Grover搜索
     fn create_grover_search(&mut self, num_qubits: usize, marked_state: usize) -> Result<(), String> {
         if num_qubits > 10 {
             return Err("量子比特数量过多，可能导致电路过于复杂".to_string());
         }
-        
+  
         if marked_state >= (1 << num_qubits) {
             return Err(format!("标记状态{}超出了{}量子比特的范围", marked_state, num_qubits));
         }
-        
+  
         self.create_circuit("grover", num_qubits);
-        
+  
         let circuit_name = "grover";
-        
+  
         // 步骤1: 初始化为均匀叠加态
         for i in 0..num_qubits {
             self.add_gate(circuit_name, QuantumGate::new("H", vec![i], vec![]))?;
         }
-        
+  
         // 计算迭代次数
         let num_iterations = (std::f64::consts::PI / 4.0 * (1 << num_qubits) as f64).sqrt() as usize;
-        
+  
         for _ in 0..num_iterations {
             // 步骤2: 应用Oracle（标记状态反转相位）
             // 构建标记状态的X门序列
@@ -13201,19 +13268,19 @@ impl QuantumSoftwareStack {
                     x_gates.push(QuantumGate::new("X", vec![i], vec![]));
                 }
             }
-            
+  
             // 应用X门
             for gate in &x_gates {
                 self.add_gate(circuit_name, gate.clone())?;
             }
-            
+  
             // 多控制Z门（简化为Toffoli门序列）
             if num_qubits >= 3 {
                 // 对于多于2个量子比特的情况，使用辅助量子比特和Toffoli门链
                 // 这里简化处理，使用CPHASE门代替
                 let controls = (0..num_qubits-1).collect::<Vec<_>>();
                 let target = num_qubits - 1;
-                
+  
                 let multi_controlled_z = QuantumGate::new("MCZ", controls, vec![]);
                 self.add_gate(circuit_name, multi_controlled_z)?;
             } else if num_qubits == 2 {
@@ -13223,29 +13290,29 @@ impl QuantumSoftwareStack {
                 // 对于1个量子比特，使用Z门
                 self.add_gate(circuit_name, QuantumGate::new("Z", vec![0], vec![]))?;
             }
-            
+  
             // 应用反向X门
             for gate in x_gates.iter().rev() {
                 self.add_gate(circuit_name, gate.clone())?;
             }
-            
+  
             // 步骤3: 应用扩散算子
-            
+  
             // 对所有量子比特应用H门
             for i in 0..num_qubits {
                 self.add_gate(circuit_name, QuantumGate::new("H", vec![i], vec![]))?;
             }
-            
+  
             // 应用X门
             for i in 0..num_qubits {
                 self.add_gate(circuit_name, QuantumGate::new("X", vec![i], vec![]))?;
             }
-            
+  
             // 多控制Z门
             if num_qubits >= 3 {
                 let controls = (0..num_qubits-1).collect::<Vec<_>>();
                 let target = num_qubits - 1;
-                
+  
                 let multi_controlled_z = QuantumGate::new("MCZ", controls, vec![]);
                 self.add_gate(circuit_name, multi_controlled_z)?;
             } else if num_qubits == 2 {
@@ -13253,41 +13320,41 @@ impl QuantumSoftwareStack {
             } else {
                 self.add_gate(circuit_name, QuantumGate::new("Z", vec![0], vec![]))?;
             }
-            
+  
             // 应用反向X门
             for i in 0..num_qubits {
                 self.add_gate(circuit_name, QuantumGate::new("X", vec![i], vec![]))?;
             }
-            
+  
             // 对所有量子比特应用H门
             for i in 0..num_qubits {
                 self.add_gate(circuit_name, QuantumGate::new("H", vec![i], vec![]))?;
             }
         }
-        
+  
         // 最后测量所有量子比特
         if let Some(circuit) = self.current_program.circuits.get_mut(circuit_name) {
             for i in 0..num_qubits {
                 circuit.measure(i, i)?;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 预设算法：变分量子特征求解器 (VQE) 简化版
     fn create_vqe_circuit(&mut self, num_qubits: usize, layers: usize) -> Result<(), String> {
         if num_qubits > 6 {
             return Err("量子比特数量过多，可能导致电路过于复杂".to_string());
         }
-        
+  
         self.create_circuit("vqe", num_qubits);
-        
+  
         let circuit_name = "vqe";
-        
+  
         // 初始化为|0⟩态
         // 在实际VQE中，可能会根据具体问题设置不同的初始态
-        
+  
         // 构建参数化量子电路
         for layer in 0..layers {
             // 单量子比特旋转门
@@ -13296,75 +13363,75 @@ impl QuantumSoftwareStack {
                 let rx_param_name = format!("rx_{}_{}", layer, i);
                 let ry_param_name = format!("ry_{}_{}", layer, i);
                 let rz_param_name = format!("rz_{}_{}", layer, i);
-                
+  
                 // 设置初始参数值
                 self.current_program.set_variable(&rx_param_name, 0.01);
                 self.current_program.set_variable(&ry_param_name, 0.01);
                 self.current_program.set_variable(&rz_param_name, 0.01);
-                
+  
                 // 添加参数化旋转门
                 self.add_gate(circuit_name, QuantumGate::rotation("X", i, 0.01))?;
                 self.add_gate(circuit_name, QuantumGate::rotation("Y", i, 0.01))?;
                 self.add_gate(circuit_name, QuantumGate::rotation("Z", i, 0.01))?;
             }
-            
+  
             // 纠缠门
             for i in 0..num_qubits-1 {
                 self.add_gate(circuit_name, QuantumGate::new("CNOT", vec![i, i+1], vec![]))?;
             }
-            
+  
             // 如果量子比特数大于2，添加一个额外的CNOT连接首尾
             if num_qubits > 2 {
                 self.add_gate(circuit_name, QuantumGate::new("CNOT", vec![num_qubits-1, 0], vec![]))?;
             }
         }
-        
+  
         // 测量
         if let Some(circuit) = self.current_program.circuits.get_mut(circuit_name) {
             for i in 0..num_qubits {
                 circuit.measure(i, i)?;
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 使用QAOA求解MaxCut问题
     fn create_qaoa_maxcut(&mut self, edges: &[(usize, usize)], layers: usize) -> Result<(), String> {
         if edges.is_empty() {
             return Err("边集为空".to_string());
         }
-        
+  
         // 确定需要的量子比特数量
         let max_node = edges.iter()
             .flat_map(|&(a, b)| vec![a, b])
             .max()
             .unwrap_or(0);
-        
+  
         let num_qubits = max_node + 1;
         if num_qubits > 10 {
             return Err("节点数量过多，可能导致电路过于复杂".to_string());
         }
-        
+  
         self.create_circuit("qaoa_maxcut", num_qubits);
-        
+  
         let circuit_name = "qaoa_maxcut";
-        
+  
         // 初始化为均匀叠加态
         for i in 0..num_qubits {
             self.add_gate(circuit_name, QuantumGate::new("H", vec![i], vec![]))?;
         }
-        
+  
         // QAOA层
         for layer in 0..layers {
             // 问题哈密顿量 - ZZ交互
             for &(a, b) in edges {
                 // 使用变量名来表示参数
                 let gamma_name = format!("gamma_{}", layer);
-                
+  
                 // 设置初始参数值
                 self.current_program.set_variable(&gamma_name, 0.01);
-                
+  
                 // 实现ZZ交互
                 // 在某些量子硬件上，可以直接实现ZZ交互
                 // 这里使用CNOT+RZ+CNOT来模拟
@@ -13372,27 +13439,27 @@ impl QuantumSoftwareStack {
                 self.add_gate(circuit_name, QuantumGate::rotation("Z", b, 0.01))?;
                 self.add_gate(circuit_name, QuantumGate::new("CNOT", vec![a, b], vec![]))?;
             }
-            
+  
             // 混合哈密顿量 - X旋转
             for i in 0..num_qubits {
                 // 使用变量名来表示参数
                 let beta_name = format!("beta_{}", layer);
-                
+  
                 // 设置初始参数值
                 self.current_program.set_variable(&beta_name, 0.01);
-                
+  
                 // 添加X旋转
                 self.add_gate(circuit_name, QuantumGate::rotation("X", i, 0.01))?;
             }
         }
-        
+  
         // 测量
         if let Some(circuit) = self.current_program.circuits.get_mut(circuit_name) {
             for i in 0..num_qubits {
                 circuit.measure(i, i)?;
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -13424,26 +13491,26 @@ impl PulseSequence {
             duration: 0,
         }
     }
-    
+  
     // 添加脉冲到指定通道
     fn add_pulse(&mut self, channel: &str, pulse: Pulse) {
         let end_time = pulse.start_time + pulse.duration;
         self.duration = self.duration.max(end_time);
-        
+  
         self.channels.entry(channel.to_string())
             .or_insert_with(Vec::new)
             .push(pulse);
     }
-    
+  
     // 从量子门生成脉冲序列
     fn from_gate(gate: &QuantumGate, qubit_frequencies: &HashMap<usize, f64>) -> Result<Self, String> {
         let mut sequence = PulseSequence::new();
-        
+  
         match gate.name.as_str() {
             "X" => {
                 if let Some(&freq) = qubit_frequencies.get(&gate.qubits[0]) {
                     let channel = format!("d{}", gate.qubits[0]);
-                    
+  
                     // X门：π脉冲
                     let pi_pulse = Pulse {
                         waveform: generate_gaussian_pulse(50, 1.0),
@@ -13452,7 +13519,7 @@ impl PulseSequence {
                         frequency: freq,
                         phase: 0.0,
                     };
-                    
+  
                     sequence.add_pulse(&channel, pi_pulse);
                 } else {
                     return Err(format!("缺少量子比特{}的频率信息", gate.qubits[0]));
@@ -13461,7 +13528,7 @@ impl PulseSequence {
             "H" => {
                 if let Some(&freq) = qubit_frequencies.get(&gate.qubits[0]) {
                     let channel = format!("d{}", gate.qubits[0]);
-                    
+  
                     // H门：先π/2(Y)，再π(X)
                     let pi_half_y_pulse = Pulse {
                         waveform: generate_gaussian_pulse(30, 0.5),
@@ -13470,7 +13537,7 @@ impl PulseSequence {
                         frequency: freq,
                         phase: std::f64::consts::PI / 2.0,  // Y轴
                     };
-                    
+  
                     let pi_x_pulse = Pulse {
                         waveform: generate_gaussian_pulse(30, 1.0),
                         start_time: 40,  // 间隔10ns
@@ -13478,7 +13545,7 @@ impl PulseSequence {
                         frequency: freq,
                         phase: 0.0,  // X轴
                     };
-                    
+  
                     sequence.add_pulse(&channel, pi_half_y_pulse);
                     sequence.add_pulse(&channel, pi_x_pulse);
                 } else {
@@ -13489,17 +13556,17 @@ impl PulseSequence {
                 if gate.qubits.len() != 2 {
                     return Err("CNOT门需要两个量子比特".to_string());
                 }
-                
+  
                 let control = gate.qubits[0];
                 let target = gate.qubits[1];
-                
-                if let (Some(&freq_c), Some(&freq_t)) = 
+  
+                if let (Some(&freq_c), Some(&freq_t)) =
                    (qubit_frequencies.get(&control), qubit_frequencies.get(&target)) {
                     // CNOT实现依赖于特定硬件
                     // 这里使用一个简化的CR (Cross-Resonance) 脉冲序列
-                    
+  
                     let cr_channel = format!("u{}_{}", control, target);
-                    
+  
                     // CR脉冲
                     let cr_pulse = Pulse {
                         waveform: generate_square_pulse(200, 0.5),
@@ -13508,7 +13575,7 @@ impl PulseSequence {
                         frequency: freq_t,  // 目标量子比特频率
                         phase: 0.0,
                     };
-                    
+  
                     // 目标量子比特的修正脉冲
                     let channel_t = format!("d{}", target);
                     let correction_pulse = Pulse {
@@ -13518,7 +13585,7 @@ impl PulseSequence {
                         frequency: freq_t,
                         phase: std::f64::consts::PI / 2.0,  // Y轴
                     };
-                    
+  
                     sequence.add_pulse(&cr_channel, cr_pulse);
                     sequence.add_pulse(&channel_t, correction_pulse);
                 } else {
@@ -13529,32 +13596,32 @@ impl PulseSequence {
                 return Err(format!("不支持的门类型: {}", gate.name));
             }
         }
-        
+  
         Ok(sequence)
     }
-    
+  
     // 优化脉冲序列
     fn optimize(&mut self) {
         // 简单的优化：合并同一通道上的相邻同类型脉冲
         for pulses in self.channels.values_mut() {
             // 按开始时间排序
             pulses.sort_by_key(|p| p.start_time);
-            
+  
             // 尝试合并
             let mut i = 0;
             while i < pulses.len() - 1 {
                 let current = &pulses[i];
                 let next = &pulses[i + 1];
-                
+  
                 // 如果脉冲相邻且频率和相位相同
                 if current.start_time + current.duration == next.start_time &&
                    (current.frequency - next.frequency).abs() < 1e-6 &&
                    (current.phase - next.phase).abs() < 1e-6 {
-                    
+  
                     // 创建合并的脉冲
                     let mut merged_waveform = current.waveform.clone();
                     merged_waveform.extend_from_slice(&next.waveform);
-                    
+  
                     let merged_pulse = Pulse {
                         waveform: merged_waveform,
                         start_time: current.start_time,
@@ -13562,7 +13629,7 @@ impl PulseSequence {
                         frequency: current.frequency,
                         phase: current.phase,
                     };
-                    
+  
                     // 替换当前脉冲并移除下一个
                     pulses[i] = merged_pulse;
                     pulses.remove(i + 1);
@@ -13571,14 +13638,14 @@ impl PulseSequence {
                 }
             }
         }
-        
+  
         // 重新计算总持续时间
         self.duration = self.channels.values()
             .flat_map(|pulses| pulses.iter().map(|p| p.start_time + p.duration))
             .max()
             .unwrap_or(0);
     }
-    
+  
     // 将脉冲序列转换为适合特定硬件的格式
     fn to_hardware_format(&self, hardware_type: &str) -> String {
         match hardware_type {
@@ -13587,30 +13654,30 @@ impl PulseSequence {
                 let mut qasm = String::new();
                 qasm.push_str("OPENQASM 3.0;\n");
                 qasm.push_str("include \"stdgates.inc\";\n\n");
-                
+  
                 // 定义量子比特和波形
                 for (channel, pulses) in &self.channels {
                     qasm.push_str(&format!("// Channel: {}\n", channel));
-                    
+  
                     for (i, pulse) in pulses.iter().enumerate() {
                         qasm.push_str(&format!("waveform wf_{}_{};\n", channel, i));
-                        qasm.push_str(&format!("// Duration: {} ns, Frequency: {} GHz, Phase: {} rad\n", 
+                        qasm.push_str(&format!("// Duration: {} ns, Frequency: {} GHz, Phase: {} rad\n",
                                              pulse.duration, pulse.frequency, pulse.phase));
                     }
-                    
+  
                     qasm.push_str("\n");
                 }
-                
+  
                 // 定义脉冲操作
                 qasm.push_str("// Pulse Sequence\n");
-                
+  
                 for (channel, pulses) in &self.channels {
                     for (i, pulse) in pulses.iter().enumerate() {
-                        qasm.push_str(&format!("play(wf_{}_{}, {}, {});\n", 
+                        qasm.push_str(&format!("play(wf_{}_{}, {}, {});\n",
                                              channel, i, pulse.start_time, pulse.frequency));
                     }
                 }
-                
+  
                 qasm
             },
             "qiskit" => {
@@ -13618,10 +13685,10 @@ impl PulseSequence {
                 let mut qiskit = String::new();
                 qiskit.push_str("from qiskit import pulse\n");
                 qiskit.push_str("from qiskit.pulse import Schedule\n\n");
-                
+  
                 qiskit.push_str("# Create schedule\n");
                 qiskit.push_str("schedule = Schedule()\n\n");
-                
+  
                 // 定义通道
                 qiskit.push_str("# Define channels\n");
                 for channel in self.channels.keys() {
@@ -13631,47 +13698,47 @@ impl PulseSequence {
                     } else if channel.contains('_') {
                         let parts: Vec<&str> = channel.split('_').collect();
                         if parts.len() == 2 {
-                            qiskit.push_str(&format!("{} = pulse.ControlChannel({}, {})\n", 
+                            qiskit.push_str(&format!("{} = pulse.ControlChannel({}, {})\n",
                                                    channel, parts[0], parts[1]));
                         }
                     }
                 }
                 qiskit.push_str("\n");
-                
+  
                 // 定义脉冲
                 qiskit.push_str("# Define pulses and add to schedule\n");
                 for (channel, pulses) in &self.channels {
                     for (i, pulse) in pulses.iter().enumerate() {
                         qiskit.push_str(&format!("# Pulse {}\n", i));
-                        
+  
                         // 创建波形
                         if pulse.waveform.len() <= 5 {
                             // 对于简单波形，直接列出所有点
                             let samples: Vec<String> = pulse.waveform.iter()
                                 .map(|c| format!("({:.4}, {:.4})", c.real, c.imag))
                                 .collect();
-                            qiskit.push_str(&format!("wf_{}_{} = pulse.Waveform(samples=[{}])\n", 
+                            qiskit.push_str(&format!("wf_{}_{} = pulse.Waveform(samples=[{}])\n",
                                    channel, i, samples.join(", ")));
                         } else {
                             // 对于复杂波形，使用函数生成
                             if pulse.waveform.iter().all(|c| c.imag == 0.0) {
                                 // 纯实数波形，可能是高斯脉冲
-                                qiskit.push_str(&format!("wf_{}_{} = pulse.Gaussian(duration={}, amp={:.4}, sigma={})\n", 
+                                qiskit.push_str(&format!("wf_{}_{} = pulse.Gaussian(duration={}, amp={:.4}, sigma={})\n",
                                                channel, i, pulse.duration, pulse.waveform[0].real, pulse.duration / 4));
                             } else {
                                 // 复杂波形，使用一般形式
-                                qiskit.push_str(&format!("wf_{}_{} = pulse.Waveform(samples=[complex(1.0, 0.0)] * {}, name='pulse_{}_{}')\n", 
+                                qiskit.push_str(&format!("wf_{}_{} = pulse.Waveform(samples=[complex(1.0, 0.0)] * {}, name='pulse_{}_{}')\n",
                                                channel, i, pulse.duration, channel, i));
                             }
                         }
-                        
+  
                         // 添加到调度中
-                        qiskit.push_str(&format!("schedule += pulse.Play(wf_{}_{}, {}, start={})\n", 
+                        qiskit.push_str(&format!("schedule += pulse.Play(wf_{}_{}, {}, start={})\n",
                                                channel, i, channel, pulse.start_time));
                     }
                     qiskit.push_str("\n");
                 }
-                
+  
                 qiskit
             },
             _ => format!("Unsupported hardware format: {}", hardware_type)
@@ -13684,24 +13751,24 @@ fn generate_gaussian_pulse(duration: usize, amplitude: f64) -> Vec<Complex> {
     let mut waveform = Vec::with_capacity(duration);
     let sigma = duration as f64 / 4.0;
     let center = duration as f64 / 2.0;
-    
+  
     for i in 0..duration {
         let t = i as f64;
         let value = amplitude * (-((t - center).powi(2) / (2.0 * sigma.powi(2)))).exp();
         waveform.push(Complex { real: value, imag: 0.0 });
     }
-    
+  
     waveform
 }
 
 // 生成方波脉冲
 fn generate_square_pulse(duration: usize, amplitude: f64) -> Vec<Complex> {
     let mut waveform = Vec::with_capacity(duration);
-    
+  
     for _ in 0..duration {
         waveform.push(Complex { real: amplitude, imag: 0.0 });
     }
-    
+  
     waveform
 }
 
@@ -13714,29 +13781,29 @@ impl OpenQASMConverter {
     fn new(circuit: QuantumCircuit) -> Self {
         OpenQASMConverter { circuit }
     }
-    
+  
     // 将电路转换为OpenQASM 2.0格式
     fn to_qasm2(&self) -> String {
         let mut qasm = String::new();
-        
+  
         // 添加头部
         qasm.push_str("OPENQASM 2.0;\ninclude \"qelib1.inc\";\n\n");
-        
+  
         // 声明量子寄存器
         qasm.push_str(&format!("qreg q[{}];\n", self.circuit.num_qubits));
-        
+  
         // 声明经典寄存器（基于测量情况）
         if !self.circuit.measurements.is_empty() {
             let max_classical_bit = self.circuit.measurements.values()
                 .cloned()
                 .max()
                 .unwrap_or(0);
-            
+  
             qasm.push_str(&format!("creg c[{}];\n\n", max_classical_bit + 1));
         } else {
             qasm.push_str("\n");
         }
-        
+  
         // 转换门操作
         for gate in &self.circuit.gates {
             match gate.name.as_str() {
@@ -13782,37 +13849,37 @@ impl OpenQASMConverter {
                 }
             }
         }
-        
+  
         // 添加测量操作
         for (&qubit, &classical_bit) in &self.circuit.measurements {
             qasm.push_str(&format!("measure q[{}] -> c[{}];\n", qubit, classical_bit));
         }
-        
+  
         qasm
     }
-    
+  
     // 将电路转换为OpenQASM 3.0格式
     fn to_qasm3(&self) -> String {
         let mut qasm = String::new();
-        
+  
         // 添加头部
         qasm.push_str("OPENQASM 3.0;\ninclude \"stdgates.inc\";\n\n");
-        
+  
         // 声明量子寄存器
         qasm.push_str(&format!("qubit[{}] q;\n", self.circuit.num_qubits));
-        
+  
         // 声明经典寄存器（基于测量情况）
         if !self.circuit.measurements.is_empty() {
             let max_classical_bit = self.circuit.measurements.values()
                 .cloned()
                 .max()
                 .unwrap_or(0);
-            
+  
             qasm.push_str(&format!("bit[{}] c;\n\n", max_classical_bit + 1));
         } else {
             qasm.push_str("\n");
         }
-        
+  
         // 转换门操作
         for gate in &self.circuit.gates {
             match gate.name.as_str() {
@@ -13854,7 +13921,7 @@ impl OpenQASMConverter {
                 },
                 "CPHASE" => {
                     if !gate.parameters.is_empty() {
-                        qasm.push_str(&format!("cp({:.6}) q[{}], q[{}];\n", 
+                        qasm.push_str(&format!("cp({:.6}) q[{}], q[{}];\n",
                                              gate.parameters[0], gate.qubits[0], gate.qubits[1]));
                     }
                 },
@@ -13864,12 +13931,12 @@ impl OpenQASMConverter {
                 }
             }
         }
-        
+  
         // 添加测量操作
         for (&qubit, &classical_bit) in &self.circuit.measurements {
             qasm.push_str(&format!("c[{}] = measure q[{}];\n", classical_bit, qubit));
         }
-        
+  
         qasm
     }
 }
@@ -13892,7 +13959,7 @@ impl QuantumErrorCorrection {
             distance,
         }
     }
-    
+  
     // 创建常见纠错码
     fn create_standard_code(code_type: &str) -> Result<Self, String> {
         match code_type {
@@ -13923,38 +13990,38 @@ impl QuantumErrorCorrection {
             _ => Err(format!("未知的错误纠正码: {}", code_type))
         }
     }
-    
+  
     // 将逻辑电路转换为使用错误纠正的物理电路
     fn encode_circuit(&self, logical_circuit: &QuantumCircuit) -> Result<QuantumCircuit, String> {
         if logical_circuit.num_qubits > self.logical_qubits {
-            return Err(format!("逻辑电路需要{}个量子比特，但码只支持{}个", 
+            return Err(format!("逻辑电路需要{}个量子比特，但码只支持{}个",
                              logical_circuit.num_qubits, self.logical_qubits));
         }
-        
+  
         // 创建物理电路
         let physical_num_qubits = self.physical_qubits * logical_circuit.num_qubits;
         let mut physical_circuit = QuantumCircuit::new(physical_num_qubits);
-        
+  
         // 根据码类型添加编码电路
         match self.code_type.as_str() {
             "bit_flip" => {
                 // 对每个逻辑量子比特应用比特翻转码
                 for logical_qubit in 0..logical_circuit.num_qubits {
                     let base_idx = logical_qubit * 3;
-                    
+  
                     // 编码|0⟩ -> |000⟩ 或 |1⟩ -> |111⟩
                     // 使用CNOT从第一个量子比特复制到其他量子比特
                     physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_idx, base_idx + 1], vec![]))?;
                     physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_idx, base_idx + 2], vec![]))?;
                 }
-                
+  
                 // 对于逻辑门，需要在每个编码块上应用
                 for gate in &logical_circuit.gates {
                     if gate.is_single_qubit_gate() {
                         // 单量子比特门应用于每个物理量子比特
                         let logical_qubit = gate.qubits[0];
                         let base_idx = logical_qubit * 3;
-                        
+  
                         // 应用相同的门到所有3个物理量子比特
                         physical_circuit.add_gate(QuantumGate::new(&gate.name, vec![base_idx], gate.parameters.clone()))?;
                         physical_circuit.add_gate(QuantumGate::new(&gate.name, vec![base_idx + 1], gate.parameters.clone()))?;
@@ -13964,54 +14031,54 @@ impl QuantumErrorCorrection {
                         // 简化：使用瞬态逻辑门实现
                         let logical_control = gate.qubits[0];
                         let logical_target = gate.qubits[1];
-                        
+  
                         let base_control = logical_control * 3;
                         let base_target = logical_target * 3;
-                        
+  
                         // 在第一组物理量子比特上应用门
-                        physical_circuit.add_gate(QuantumGate::new(&gate.name, 
-                                                                 vec![base_control, base_target], 
+                        physical_circuit.add_gate(QuantumGate::new(&gate.name,
+                                                                 vec![base_control, base_target],
                                                                  gate.parameters.clone()))?;
-                        
+  
                         // 同步到其他物理量子比特（简化模型）
                         physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_target, base_target + 1], vec![]))?;
                         physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_target, base_target + 2], vec![]))?;
                     }
-                    
+  
                     // 错误检测和纠正电路
                     // 对每个编码块应用纠错
                     for logical_qubit in 0..logical_circuit.num_qubits {
                         let base_idx = logical_qubit * 3;
-                        
+  
                         // 综合错误 - 使用辅助量子比特进行syndrome测量
                         let aux1 = physical_num_qubits;     // 假设有额外的辅助量子比特
                         let aux2 = physical_num_qubits + 1;
-                        
+  
                         // 为简化，忽略辅助量子比特的实际创建
                         // 在实际实现中，应扩展电路并创建辅助量子比特
-                        
+  
                         // 比特翻转错误检测
                         physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_idx, aux1], vec![]))?;
                         physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_idx + 1, aux1], vec![]))?;
-                        
+  
                         physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_idx, aux2], vec![]))?;
                         physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_idx + 2, aux2], vec![]))?;
-                        
+  
                         // 测量辅助量子比特并根据结果应用纠正
                         // 简化：假设测量结果可以用于条件操作
                     }
                 }
-                
+  
                 // 处理测量
                 for (&logical_qubit, &classical_bit) in &logical_circuit.measurements {
                     let base_idx = logical_qubit * 3;
-                    
+  
                     // 测量所有3个物理量子比特
                     // 使用majority vote确定结果
                     physical_circuit.measure(base_idx, classical_bit * 3)?;
                     physical_circuit.measure(base_idx + 1, classical_bit * 3 + 1)?;
                     physical_circuit.measure(base_idx + 2, classical_bit * 3 + 2)?;
-                    
+  
                     // 注意：需要经典后处理来确定最终结果
                 }
             },
@@ -14019,23 +14086,23 @@ impl QuantumErrorCorrection {
                 // 对每个逻辑量子比特应用相位翻转码
                 for logical_qubit in 0..logical_circuit.num_qubits {
                     let base_idx = logical_qubit * 3;
-                    
+  
                     // 编码|+⟩ -> |+++⟩ 或 |-⟩ -> |---⟩
                     // 首先对所有比特应用H门
                     physical_circuit.add_gate(QuantumGate::new("H", vec![base_idx], vec![]))?;
                     physical_circuit.add_gate(QuantumGate::new("H", vec![base_idx + 1], vec![]))?;
                     physical_circuit.add_gate(QuantumGate::new("H", vec![base_idx + 2], vec![]))?;
-                    
+  
                     // 使用CNOT从第一个量子比特复制到其他量子比特
                     physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_idx, base_idx + 1], vec![]))?;
                     physical_circuit.add_gate(QuantumGate::new("CNOT", vec![base_idx, base_idx + 2], vec![]))?;
-                    
+  
                     // 再次应用H门
                     physical_circuit.add_gate(QuantumGate::new("H", vec![base_idx], vec![]))?;
                     physical_circuit.add_gate(QuantumGate::new("H", vec![base_idx + 1], vec![]))?;
                     physical_circuit.add_gate(QuantumGate::new("H", vec![base_idx + 2], vec![]))?;
                 }
-                
+  
                 // 剩余类似比特翻转码的处理...简化代码示例
             },
             "shor" => {
@@ -14054,17 +14121,17 @@ impl QuantumErrorCorrection {
                 return Err(format!("未知的错误纠正码类型: {}", self.code_type));
             }
         }
-        
+  
         Ok(physical_circuit)
     }
-    
+  
     // 估计逻辑错误率
     fn estimate_logical_error_rate(&self, physical_error_rate: f64) -> f64 {
         match self.code_type.as_str() {
             "bit_flip" | "phase_flip" => {
                 // 比特翻转或相位翻转码，距离3
                 // 逻辑错误发生在2个或更多物理错误时
-                3.0 * physical_error_rate.powi(2) * (1.0 - physical_error_rate) + 
+                3.0 * physical_error_rate.powi(2) * (1.0 - physical_error_rate) +
                 physical_error_rate.powi(3)
             },
             "shor" => {
@@ -14097,34 +14164,35 @@ impl QuantumErrorCorrection {
             _ => physical_error_rate, // 未知码，保守估计
         }
     }
-    
+  
     // 生成错误纠正码的特性报告
     fn generate_report(&self, physical_error_rate: f64) -> String {
         let mut report = String::new();
-        
+  
         report.push_str(&format!("=== 量子错误纠正码报告 ===\n\n"));
         report.push_str(&format!("码类型: {}\n", self.code_type));
         report.push_str(&format!("物理量子比特数量: {}\n", self.physical_qubits));
         report.push_str(&format!("逻辑量子比特数量: {}\n", self.logical_qubits));
         report.push_str(&format!("码距: {}\n", self.distance));
         report.push_str(&format!("编码率: {:.6}\n", self.logical_qubits as f64 / self.physical_qubits as f64));
-        
+  
         report.push_str(&format!("\n错误率分析:\n"));
         report.push_str(&format!("物理错误率: {:.6}\n", physical_error_rate));
-        
+  
         let logical_error_rate = self.estimate_logical_error_rate(physical_error_rate);
         report.push_str(&format!("逻辑错误率估计: {:.6}\n", logical_error_rate));
-        
+  
         if logical_error_rate < physical_error_rate {
             let improvement = physical_error_rate / logical_error_rate;
             report.push_str(&format!("错误率改进: {:.2}倍\n", improvement));
         } else {
             report.push_str("警告: 逻辑错误率高于物理错误率，此错误纠正在当前物理错误率下无效\n");
         }
-        
+  
         report
     }
 }
+
 ```
 
 ### 1.6.8 量子元编程模型
@@ -14154,6 +14222,7 @@ impl QuantumErrorCorrection {
 - 电路模板: 可重用的电路片段
 - 跨平台接口: 硬件无关的规范
 - 程序组合: 量子子程序的组合规则
+
 ```
 
 ```rust
@@ -14172,39 +14241,39 @@ impl ParameterizedCircuit {
             parameter_mapping: HashMap::new(),
         }
     }
-    
+  
     // 添加参数化门
-    fn add_parametrized_gate(&mut self, name: &str, qubits: Vec<usize>, 
+    fn add_parametrized_gate(&mut self, name: &str, qubits: Vec<usize>,
                              parameter_name: &str) -> Result<(), String> {
         // 检查参数是否存在，如果不存在则初始化为0
         if !self.parameters.contains_key(parameter_name) {
             self.parameters.insert(parameter_name.to_string(), 0.0);
         }
-        
+  
         // 获取参数值
         let param_value = self.parameters.get(parameter_name).unwrap();
-        
+  
         // 添加门到电路
         let gate_index = self.circuit.gates.len();
         self.circuit.add_gate(QuantumGate::new(name, qubits, vec![*param_value]))?;
-        
+  
         // 更新参数映射
         let entry = self.parameter_mapping.entry(parameter_name.to_string())
                                          .or_insert_with(Vec::new);
         entry.push((gate_index, 0)); // 假设参数是门的第一个参数
-        
+  
         Ok(())
     }
-    
+  
     // 更新参数值
     fn update_parameter(&mut self, name: &str, value: f64) -> Result<(), String> {
         if !self.parameters.contains_key(name) {
             return Err(format!("参数'{}'不存在", name));
         }
-        
+  
         // 更新参数值
         self.parameters.insert(name.to_string(), value);
-        
+  
         // 更新相关门的参数
         if let Some(gate_params) = self.parameter_mapping.get(name) {
             for &(gate_index, param_index) in gate_params {
@@ -14215,48 +14284,48 @@ impl ParameterizedCircuit {
                 }
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 计算参数梯度 - 使用参数移位法
-    fn calculate_gradient(&self, parameter_name: &str, 
-                          simulator: &mut dyn QuantumSimulator, 
-                          observable: &Observable, 
+    fn calculate_gradient(&self, parameter_name: &str,
+                          simulator: &mut dyn QuantumSimulator,
+                          observable: &Observable,
                           shift: f64) -> Result<f64, String> {
         if !self.parameters.contains_key(parameter_name) {
             return Err(format!("参数'{}'不存在", parameter_name));
         }
-        
+  
         // 克隆当前电路状态
         let mut forward_circuit = self.clone();
         let mut backward_circuit = self.clone();
-        
+  
         // 获取当前参数值
         let current_value = *self.parameters.get(parameter_name).unwrap();
-        
+  
         // 正向移位
         forward_circuit.update_parameter(parameter_name, current_value + shift)?;
-        
+  
         // 反向移位
         backward_circuit.update_parameter(parameter_name, current_value - shift)?;
-        
+  
         // 执行正向电路并测量期望值
         simulator.load_circuit(&forward_circuit.circuit)?;
         simulator.run()?;
         let forward_expectation = simulator.expectation_value(observable)?;
-        
+  
         // 执行反向电路并测量期望值
         simulator.load_circuit(&backward_circuit.circuit)?;
         simulator.run()?;
         let backward_expectation = simulator.expectation_value(observable)?;
-        
+  
         // 计算有限差分梯度
         let gradient = (forward_expectation - backward_expectation) / (2.0 * shift);
-        
+  
         Ok(gradient)
     }
-    
+  
     // 克隆电路
     fn clone(&self) -> Self {
         ParameterizedCircuit {
@@ -14265,23 +14334,23 @@ impl ParameterizedCircuit {
             parameter_mapping: self.parameter_mapping.clone(),
         }
     }
-    
+  
     // 创建特定的参数化电路
     fn create_ansatz(num_qubits: usize, layers: usize) -> Result<Self, String> {
         let mut circuit = ParameterizedCircuit::new(num_qubits);
-        
+  
         for layer in 0..layers {
             // 添加旋转层
             for qubit in 0..num_qubits {
                 let rx_param = format!("rx_{}_{}", layer, qubit);
                 let ry_param = format!("ry_{}_{}", layer, qubit);
                 let rz_param = format!("rz_{}_{}", layer, qubit);
-                
+  
                 circuit.add_parametrized_gate("RX", vec![qubit], &rx_param)?;
                 circuit.add_parametrized_gate("RY", vec![qubit], &ry_param)?;
                 circuit.add_parametrized_gate("RZ", vec![qubit], &rz_param)?;
             }
-            
+  
             // 添加纠缠层
             for q in 0..num_qubits-1 {
                 circuit.circuit.add_gate(QuantumGate::new("CNOT", vec![q, q+1], vec![]))?;
@@ -14291,7 +14360,7 @@ impl ParameterizedCircuit {
                 circuit.circuit.add_gate(QuantumGate::new("CNOT", vec![num_qubits-1, 0], vec![]))?;
             }
         }
-        
+  
         Ok(circuit)
     }
 }
@@ -14305,7 +14374,7 @@ struct VariationalQuantumAlgorithm {
 }
 
 impl VariationalQuantumAlgorithm {
-    fn new(circuit: ParameterizedCircuit, 
+    fn new(circuit: ParameterizedCircuit,
            observable: Observable,
            optimizer: Box<dyn Optimizer>,
            simulator: Box<dyn QuantumSimulator>) -> Self {
@@ -14316,72 +14385,72 @@ impl VariationalQuantumAlgorithm {
             simulator: simulator,
         }
     }
-    
+  
     // 计算当前参数下的期望值
     fn evaluate_expectation(&mut self) -> Result<f64, String> {
         self.simulator.load_circuit(&self.parametrized_circuit.circuit)?;
         self.simulator.run()?;
         self.simulator.expectation_value(&self.observable)
     }
-    
+  
     // 优化变分电路的参数
     fn optimize(&mut self, iterations: usize, tolerance: f64) -> Result<(f64, HashMap<String, f64>), String> {
         let mut best_value = std::f64::MAX;
         let mut best_params = self.parametrized_circuit.parameters.clone();
-        
+  
         for iter in 0..iterations {
             // 计算当前期望值
             let current_value = self.evaluate_expectation()?;
-            
+  
             // 更新最佳值
             if current_value < best_value {
                 best_value = current_value;
                 best_params = self.parametrized_circuit.parameters.clone();
             }
-            
+  
             // 检查收敛
             if iter > 0 && (best_value - current_value).abs() < tolerance {
                 println!("优化在第{}次迭代收敛", iter);
                 break;
             }
-            
+  
             // 计算所有参数的梯度
             let mut gradients = HashMap::new();
             for param_name in self.parametrized_circuit.parameters.keys() {
                 let gradient = self.parametrized_circuit.calculate_gradient(
-                    param_name, 
-                    self.simulator.as_mut(), 
+                    param_name,
+                    self.simulator.as_mut(),
                     &self.observable,
                     0.01 // 移位值
                 )?;
                 gradients.insert(param_name.clone(), gradient);
             }
-            
+  
             // 使用优化器更新参数
             let updated_params = self.optimizer.step(&self.parametrized_circuit.parameters, &gradients)?;
-            
+  
             // 应用新参数
             for (name, value) in &updated_params {
                 self.parametrized_circuit.update_parameter(name, *value)?;
             }
         }
-        
+  
         Ok((best_value, best_params))
     }
-    
+  
     // 创建VQE实例
-    fn create_vqe(num_qubits: usize, 
+    fn create_vqe(num_qubits: usize,
                   hamiltonian: Observable,
                   layers: usize) -> Result<Self, String> {
         // 创建参数化电路
         let circuit = ParameterizedCircuit::create_ansatz(num_qubits, layers)?;
-        
+  
         // 创建模拟器
         let simulator = Box::new(StateVectorSimulator::new(num_qubits));
-        
+  
         // 创建优化器 (例如梯度下降)
         let optimizer = Box::new(GradientDescentOptimizer::new(0.1)); // 学习率0.1
-        
+  
         Ok(VariationalQuantumAlgorithm::new(
             circuit,
             hamiltonian,
@@ -14389,47 +14458,47 @@ impl VariationalQuantumAlgorithm {
             simulator
         ))
     }
-    
+  
     // 创建QAOA实例
-    fn create_qaoa(num_qubits: usize, 
+    fn create_qaoa(num_qubits: usize,
                    cost_hamiltonian: Observable,
                    mixer_hamiltonian: Observable,
                    p: usize) -> Result<Self, String> {
         let mut circuit = ParameterizedCircuit::new(num_qubits);
-        
+  
         // 初始化状态: 所有量子比特都处于|+⟩态
         for q in 0..num_qubits {
             circuit.circuit.add_gate(QuantumGate::new("H", vec![q], vec![]))?;
         }
-        
+  
         // 添加p层QAOA
         for layer in 0..p {
             // 成本Unitary: e^(-i*gamma*H_C)
             let gamma_param = format!("gamma_{}", layer);
             circuit.parameters.insert(gamma_param.clone(), std::f64::consts::PI / 4.0); // 初始化为π/4
-            
+  
             // 在这里应实现特定的成本Unitary，这取决于具体问题
             // 简化: 为每个量子比特添加RZ门
             for q in 0..num_qubits {
                 circuit.add_parametrized_gate("RZ", vec![q], &gamma_param)?;
             }
-            
+  
             // 混合Unitary: e^(-i*beta*H_M)
             let beta_param = format!("beta_{}", layer);
             circuit.parameters.insert(beta_param.clone(), std::f64::consts::PI / 2.0); // 初始化为π/2
-            
+  
             // 标准混合器是X算符的和
             for q in 0..num_qubits {
                 circuit.add_parametrized_gate("RX", vec![q], &beta_param)?;
             }
         }
-        
+  
         // 创建模拟器
         let simulator = Box::new(StateVectorSimulator::new(num_qubits));
-        
+  
         // 创建优化器
         let optimizer = Box::new(GradientDescentOptimizer::new(0.05)); // 学习率0.05
-        
+  
         Ok(VariationalQuantumAlgorithm::new(
             circuit,
             cost_hamiltonian,
@@ -14448,13 +14517,13 @@ struct QuantumNeuralNetwork {
 }
 
 impl QuantumNeuralNetwork {
-    fn new(num_qubits: usize, 
-           num_classes: usize, 
+    fn new(num_qubits: usize,
+           num_classes: usize,
            layers: usize,
            encoding_strategy: fn(&Vec<f64>, &mut ParameterizedCircuit) -> Result<(), String>) -> Result<Self, String> {
         // 创建参数化电路
         let circuit = ParameterizedCircuit::create_ansatz(num_qubits, layers)?;
-        
+  
         Ok(QuantumNeuralNetwork {
             circuit,
             input_encoding: encoding_strategy,
@@ -14462,139 +14531,139 @@ impl QuantumNeuralNetwork {
             num_classes,
         })
     }
-    
+  
     // 对输入数据进行预测
     fn predict(&mut self, input: &Vec<f64>, simulator: &mut dyn QuantumSimulator) -> Result<Vec<f64>, String> {
         // 编码输入数据
         (self.input_encoding)(input, &mut self.circuit)?;
-        
+  
         // 执行电路
         simulator.load_circuit(&self.circuit.circuit)?;
         simulator.run()?;
-        
+  
         // 获取输出概率
         let mut probabilities = Vec::with_capacity(self.num_classes);
-        
+  
         // 简化: 使用前log2(num_classes)个量子比特的测量结果作为类别
         let num_class_qubits = (self.num_classes as f64).log2().ceil() as usize;
-        
+  
         // 对所有可能的类别计算概率
         for class in 0..self.num_classes {
             // 将类别转换为比特串
             let mut class_bitstring = Vec::with_capacity(num_class_qubits);
             let mut class_value = class;
-            
+  
             for _ in 0..num_class_qubits {
                 class_bitstring.push(class_value % 2);
                 class_value /= 2;
             }
-            
+  
             // 计算测量到此类别的概率
             let prob = simulator.measure_probability_for_bitstring(&class_bitstring)?;
             probabilities.push(prob);
         }
-        
+  
         Ok(probabilities)
     }
-    
+  
     // 训练网络
-    fn train(&mut self, 
+    fn train(&mut self,
              training_data: &Vec<(Vec<f64>, usize)>,  // (特征, 标签)
              simulator: &mut dyn QuantumSimulator,
              optimizer: &mut dyn Optimizer,
              epochs: usize,
              batch_size: usize) -> Result<Vec<f64>, String> {
-        
+  
         let mut loss_history = Vec::with_capacity(epochs);
-        
+  
         for epoch in 0..epochs {
             let mut epoch_loss = 0.0;
-            
+  
             // 打乱训练数据
             let mut shuffled_indices: Vec<usize> = (0..training_data.len()).collect();
             shuffled_indices.shuffle(&mut rand::thread_rng());
-            
+  
             // 批量训练
             for batch_start in (0..training_data.len()).step_by(batch_size) {
                 let batch_end = std::cmp::min(batch_start + batch_size, training_data.len());
                 let batch_indices = &shuffled_indices[batch_start..batch_end];
-                
+  
                 let mut gradients = HashMap::new();
                 let mut batch_loss = 0.0;
-                
+  
                 // 计算批次中每个样本的梯度
                 for &idx in batch_indices {
                     let (features, label) = &training_data[idx];
-                    
+  
                     // 前向传播
                     let predictions = self.predict(features, simulator)?;
-                    
+  
                     // 计算损失 (交叉熵)
                     let true_prob = predictions[*label];
                     let loss = -true_prob.ln();
                     batch_loss += loss;
-                    
+  
                     // 对每个参数计算梯度
                     for param_name in self.circuit.parameters.keys() {
                         // 计算参数梯度
                         let observable = self.create_loss_observable(*label);
                         let gradient = self.circuit.calculate_gradient(
-                            param_name, 
-                            simulator, 
+                            param_name,
+                            simulator,
                             &observable,
                             0.01
                         )?;
-                        
+  
                         // 累加梯度
                         *gradients.entry(param_name.clone()).or_insert(0.0) += gradient;
                     }
                 }
-                
+  
                 // 计算平均梯度
                 for gradient in gradients.values_mut() {
                     *gradient /= batch_indices.len() as f64;
                 }
-                
+  
                 // 使用优化器更新参数
                 let updated_params = optimizer.step(&self.circuit.parameters, &gradients)?;
-                
+  
                 // 应用新参数
                 for (name, value) in &updated_params {
                     self.circuit.update_parameter(name, *value)?;
                 }
-                
+  
                 // 更新批次损失
                 batch_loss /= batch_indices.len() as f64;
                 epoch_loss += batch_loss * batch_indices.len() as f64;
             }
-            
+  
             // 计算平均周期损失
             epoch_loss /= training_data.len() as f64;
             loss_history.push(epoch_loss);
-            
+  
             println!("第{}周期，损失: {:.6}", epoch + 1, epoch_loss);
         }
-        
+  
         Ok(loss_history)
     }
-    
+  
     // 创建用于计算损失函数梯度的可观测量
     fn create_loss_observable(&self, target_class: usize) -> Observable {
         // 简化: 创建一个测量特定类别概率的可观测量
         // 在实际实现中，这应该是基于具体问题的
-        
+  
         let mut observable = Observable::new(self.num_qubits);
-        
+  
         // 为目标类别添加投影算符
         let num_class_qubits = (self.num_classes as f64).log2().ceil() as usize;
         let mut projector = DMatrix::<Complex64>::zeros(2usize.pow(self.num_qubits as u32), 2usize.pow(self.num_qubits as u32));
-        
+  
         // 为目标类别的基矢设置投影
         let class_state_idx = target_class;
         projector[(class_state_idx, class_state_idx)] = Complex64::new(1.0, 0.0);
-        
+  
         observable.add_operator("projector", projector, 1.0);
-        
+  
         observable
     }
 }
@@ -14604,13 +14673,13 @@ fn angle_encoding(features: &Vec<f64>, circuit: &mut ParameterizedCircuit) -> Re
     // 数据归一化
     let max_val = features.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
     let min_val = features.iter().cloned().fold(f64::INFINITY, f64::min);
-    
+  
     // 确保有足够的量子比特
     if features.len() > circuit.circuit.num_qubits {
-        return Err(format!("特征数量({})超过量子比特数量({})", 
+        return Err(format!("特征数量({})超过量子比特数量({})",
                          features.len(), circuit.circuit.num_qubits));
     }
-    
+  
     // 对每个特征应用旋转
     for (i, &feature) in features.iter().enumerate() {
         // 归一化到[0, π]
@@ -14619,11 +14688,11 @@ fn angle_encoding(features: &Vec<f64>, circuit: &mut ParameterizedCircuit) -> Re
         } else {
             0.0
         };
-        
+  
         // 应用RY旋转
         circuit.circuit.gates.insert(0, QuantumGate::new("RY", vec![i], vec![normalized])?);
     }
-    
+  
     Ok(())
 }
 
@@ -14631,16 +14700,16 @@ fn amplitude_encoding(features: &Vec<f64>, circuit: &mut ParameterizedCircuit) -
     // 需要2^n个量子比特来编码2^n个特征
     let num_qubits = circuit.circuit.num_qubits;
     let max_features = 1 << num_qubits;
-    
+  
     if features.len() > max_features {
-        return Err(format!("特征数量({})超过最大可编码数量({})", 
+        return Err(format!("特征数量({})超过最大可编码数量({})",
                          features.len(), max_features));
     }
-    
+  
     // 复制特征并填充到2^n
     let mut padded_features = features.clone();
     padded_features.resize(max_features, 0.0);
-    
+  
     // 正则化
     let norm = padded_features.iter().map(|x| x.powi(2)).sum::<f64>().sqrt();
     if norm > 0.0 {
@@ -14648,13 +14717,13 @@ fn amplitude_encoding(features: &Vec<f64>, circuit: &mut ParameterizedCircuit) -
             *feature /= norm;
         }
     }
-    
+  
     // 修改当前电路以实现这种编码是复杂的
     // 这里简化为添加注释，在实际实现中需要量子态准备电路
-    circuit.circuit.gates.insert(0, QuantumGate::new("CUSTOM", 
-                                                   (0..num_qubits).collect(), 
+    circuit.circuit.gates.insert(0, QuantumGate::new("CUSTOM",
+                                                   (0..num_qubits).collect(),
                                                    vec![])?);
-    
+  
     Ok(())
 }
 
@@ -14668,9 +14737,9 @@ struct QuantumModule {
 }
 
 impl QuantumModule {
-    fn new(name: &str, 
-           circuit: ParameterizedCircuit, 
-           input_qubits: Vec<usize>, 
+    fn new(name: &str,
+           circuit: ParameterizedCircuit,
+           input_qubits: Vec<usize>,
            output_qubits: Vec<usize>,
            required_ancilla: usize) -> Self {
         QuantumModule {
@@ -14681,10 +14750,10 @@ impl QuantumModule {
             required_ancilla,
         }
     }
-    
+  
     // 将模块应用到更大的电路中
-    fn apply_to_circuit(&self, 
-                        target_circuit: &mut QuantumCircuit, 
+    fn apply_to_circuit(&self,
+                        target_circuit: &mut QuantumCircuit,
                         qubit_mapping: &HashMap<usize, usize>) -> Result<(), String> {
         // 验证映射中的输入输出量子比特
         for &qubit in &self.input_qubits {
@@ -14692,17 +14761,17 @@ impl QuantumModule {
                 return Err(format!("模块'{}'的输入量子比特{}未在映射中指定", self.name, qubit));
             }
         }
-        
+  
         for &qubit in &self.output_qubits {
             if !qubit_mapping.contains_key(&qubit) {
                 return Err(format!("模块'{}'的输出量子比特{}未在映射中指定", self.name, qubit));
             }
         }
-        
+  
         // 将模块的每个门添加到目标电路，使用映射的量子比特
         for gate in &self.circuit.circuit.gates {
             let mut mapped_qubits = Vec::with_capacity(gate.qubits.len());
-            
+  
             for &q in &gate.qubits {
                 if let Some(&mapped_q) = qubit_mapping.get(&q) {
                     mapped_qubits.push(mapped_q);
@@ -14710,25 +14779,25 @@ impl QuantumModule {
                     return Err(format!("模块'{}'中的量子比特{}未在映射中指定", self.name, q));
                 }
             }
-            
+  
             // 添加映射后的门到目标电路
             target_circuit.add_gate(QuantumGate::new(&gate.name, mapped_qubits, gate.parameters.clone()))?;
         }
-        
+  
         Ok(())
     }
-    
+  
     // 创建常用的量子模块
     fn create_qft_module(num_qubits: usize) -> Self {
         // 创建QFT电路
         let mut circuit = ParameterizedCircuit::new(num_qubits);
-        
+  
         // QFT实现
         for i in 0..num_qubits {
             // H门在当前量子比特上
             circuit.circuit.add_gate(QuantumGate::new("H", vec![i], vec![]))
                           .expect("添加H门失败");
-            
+  
             // 受控旋转
             for j in (i+1)..num_qubits {
                 let phase = std::f64::consts::PI / 2.0f64.powi((j - i) as i32);
@@ -14736,16 +14805,16 @@ impl QuantumModule {
                               .expect("添加CPHASE门失败");
             }
         }
-        
+  
         // SWAP以反转比特顺序
         for i in 0..num_qubits/2 {
             circuit.circuit.add_gate(QuantumGate::new("SWAP", vec![i, num_qubits-i-1], vec![]))
                           .expect("添加SWAP门失败");
         }
-        
+  
         // 创建模块，输入和输出是所有量子比特
         let qubits: Vec<usize> = (0..num_qubits).collect();
-        
+  
         QuantumModule::new(
             &format!("QFT{}", num_qubits),
             circuit,
@@ -14754,22 +14823,22 @@ impl QuantumModule {
             0 // 不需要辅助量子比特
         )
     }
-    
+  
     fn create_adder_module(bits: usize) -> Self {
         // 创建量子加法器电路
         let mut circuit = ParameterizedCircuit::new(2 * bits + 1); // a, b, 和进位
-        
+  
         // 量子加法器实现 (简化版)
         let a_qubits: Vec<usize> = (0..bits).collect();
         let b_qubits: Vec<usize> = (bits..(2*bits)).collect();
         let carry_qubit = 2 * bits;
-        
+  
         // 第一组MAJ (majority) 门
         for i in 0..bits {
             // MAJ门实现: c -> c⊕a, a -> a⊕b, b -> b⊕(c⊕a)
             if i > 0 {
                 let prev_carry = if i == 1 { carry_qubit } else { bits + i - 1 };
-                
+  
                 // MAJ: c, a, b -> c', a', b'
                 circuit.circuit.add_gate(QuantumGate::new("CNOT", vec![a_qubits[i], prev_carry], vec![]))
                               .expect("添加CNOT门失败");
@@ -14779,16 +14848,16 @@ impl QuantumModule {
                               .expect("添加TOFFOLI门失败");
             }
         }
-        
+  
         // 最高位进位
         circuit.circuit.add_gate(QuantumGate::new("CNOT", vec![a_qubits[bits-1], b_qubits[bits-1]], vec![]))
                       .expect("添加CNOT门失败");
-        
+  
         // UMA (unmajority and add) 门
         for i in (0..bits).rev() {
             if i > 0 {
                 let prev_carry = if i == 1 { carry_qubit } else { bits + i - 1 };
-                
+  
                 // UMA: c', a', b' -> c, a, b ⊕ a
                 circuit.circuit.add_gate(QuantumGate::new("TOFFOLI", vec![prev_carry, b_qubits[i], a_qubits[i]], vec![]))
                               .expect("添加TOFFOLI门失败");
@@ -14798,11 +14867,11 @@ impl QuantumModule {
                               .expect("添加CNOT门失败");
             }
         }
-        
+  
         // 创建模块
         let input_qubits: Vec<usize> = (0..(2*bits)).collect();
         let output_qubits = b_qubits;
-        
+  
         QuantumModule::new(
             &format!("Adder{}", bits),
             circuit,
@@ -14828,45 +14897,46 @@ impl QuantumMetaProgramming {
             num_qubits,
         }
     }
-    
+  
     // 注册模块
     fn register_module(&mut self, module: QuantumModule) -> Result<(), String> {
         if self.modules.contains_key(&module.name) {
             return Err(format!("模块'{}'已存在", module.name));
         }
-        
+  
         self.modules.insert(module.name.clone(), module);
         Ok(())
     }
-    
+  
     // 应用模块到主电路
-    fn apply_module(&mut self, 
-                    module_name: &str, 
+    fn apply_module(&mut self,
+                    module_name: &str,
                     qubit_mapping: HashMap<usize, usize>) -> Result<(), String> {
         if !self.modules.contains_key(module_name) {
             return Err(format!("模块'{}'不存在", module_name));
         }
-        
+  
         // 检查映射中的量子比特是否在电路范围内
         for &q in qubit_mapping.values() {
             if q >= self.num_qubits {
                 return Err(format!("映射中的量子比特{}超出电路范围({})", q, self.num_qubits));
             }
         }
-        
+  
         // 应用模块
         let module = self.modules.get(module_name).unwrap();
         module.apply_to_circuit(&mut self.main_circuit, &qubit_mapping)?;
-        
+  
         Ok(())
     }
-    
+  
     // 生成可执行电路
     fn generate_executable_circuit(&self) -> Result<QuantumCircuit, String> {
         // 在这里可以添加优化、布局等处理
         Ok(self.main_circuit.clone())
     }
 }
+
 ```
 
 ## 1.7 量子元编程实现解析

@@ -93,6 +93,7 @@ L2: 元模型 (Meta-Model)
 L1: 模型 (Model)
     ↓ 实例化
 L0: 实例 (Instance)
+
 ```
 
 各层次解释：
@@ -172,6 +173,7 @@ enum SemanticRule {
     Inference(Box<dyn Fn(&DataFlowModel) -> Vec<Fact>>),
     Validation(Box<dyn Fn(&DataFlowModel) -> ValidationResult>),
 }
+
 ```
 
 ## 3. 数据流的多维语义表征
@@ -296,6 +298,7 @@ enum TransferType {
     Broadcast(BroadcastScope),
     Route(RoutingPolicy),
 }
+
 ```
 
 ### 3.3 数据流的状态与转换语义
@@ -384,6 +387,7 @@ enum InstructionType {
     BitwiseXor,
     // 其他指令...
 }
+
 ```
 
 ### 4.2 编程语言层数据流模型
@@ -433,6 +437,7 @@ enum LanguageFlowType {
     Capture,              // 闭包捕获
     Reference,            // 引用
 }
+
 ```
 
 ### 4.3 算法设计层数据流模型
@@ -488,6 +493,7 @@ struct ComplexityMetric {
     time_complexity: String,  // 如 "O(n)"
     space_complexity: String, // 如 "O(1)"
 }
+
 ```
 
 ### 4.4 软件设计层数据流模型
@@ -550,6 +556,7 @@ struct DataContract {
     invariants: Vec<Invariant>,
     exceptions: Vec<ExceptionType>,
 }
+
 ```
 
 ### 4.5 系统设计层数据流模型
@@ -605,6 +612,7 @@ enum ProtocolType {
 enum ConsistencyLevel {
     Strong, Eventual, Causal, ReadYourWrites, MonotonicReads, // 其他...
 }
+
 ```
 
 ### 4.6 架构设计层数据流模型
@@ -660,6 +668,7 @@ enum QualityAttribute {
     Security(SecurityMetric),
     // 其他...
 }
+
 ```
 
 ### 4.7 业务模型层数据流模型
@@ -712,6 +721,7 @@ struct BusinessContext {
     stakeholders: Vec<Stakeholder>,
     strategic_importance: StrategicLevel,
 }
+
 ```
 
 ### 4.8 概念模型层数据流模型
@@ -762,6 +772,7 @@ enum SemanticRelationType {
     Generalization, Specialization, Aggregation, Composition,
     Association, Realization, Dependency, // 其他...
 }
+
 ```
 
 ## 5. 模型内关系的多维分析
@@ -956,6 +967,7 @@ impl<T: Clone + PartialEq> RelationshipAnalyzer<T> {
         communities
     }
 }
+
 ```
 
 ## 6. 跨层次映射与关联
@@ -1112,6 +1124,7 @@ fn compose_mappings<S, M, T>(
         }
     }
 }
+
 ```
 
 ### 6.4 互操作性与语义整合
@@ -1298,6 +1311,7 @@ impl<T: Clone> DataFlowVerifier<T> {
             .collect()
     }
 }
+
 ```
 
 ### 7.3 跨层次属性推导
@@ -1464,6 +1478,7 @@ impl<T> DataFlowInvariant<T> for CompletenessInvariant {
         "未找到不完整的连接，但不变量检查失败".to_string()
     }
 }
+
 ```
 
 ## 8. 概念模型的贯穿作用
@@ -1652,6 +1667,7 @@ impl ConceptualModel {
         term_conflicts
     }
 }
+
 ```
 
 ### 8.3 演化与稳定性平衡
@@ -1917,6 +1933,7 @@ impl DataFlowDesignFramework {
     
     // 其他辅助方法...
 }
+
 ```
 
 ### 9.3 数据流优化模式
@@ -2110,6 +2127,7 @@ impl CircuitBreaker {
         }
     }
 }
+
 ```
 
 ### 9.4 行业案例与最佳实践
@@ -2332,6 +2350,7 @@ impl OrderProcessor {
     
     // 其他辅助方法...
 }
+
 ```
 
 ## 10. 结论与未来展望
@@ -2506,4 +2525,5 @@ impl OrderProcessor {
   ├─研究与实践的挑战
   ├─未来研究方向
   └─总结与展望
+
 ```

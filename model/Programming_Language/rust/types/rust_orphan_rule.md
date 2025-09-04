@@ -72,6 +72,7 @@
 pub struct MyStruct {
     pub data: i32,
 }
+
 ```
 
 **文件：src/mytrait.rs**  
@@ -81,6 +82,7 @@ pub struct MyStruct {
 pub trait MyTrait {
     fn do_something(&self);
 }
+
 ```
 
 ### 1.2.2 分离实现 trait
@@ -97,6 +99,7 @@ impl MyTrait for MyStruct {
         println!("Processing data: {}", self.data);
     }
 }
+
 ```
 
 ### 1.2.3 入口文件调用
@@ -115,6 +118,7 @@ fn main() {
     let instance = MyStruct { data: 42 };
     instance.do_something();
 }
+
 ```
 
 在这个示例中：

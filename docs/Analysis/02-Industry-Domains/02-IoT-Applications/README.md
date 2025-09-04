@@ -290,6 +290,7 @@ func (c *IoTWorkflowConverter) convertRuleToCondition(rule *Rule) Condition {
         Language:   "cel",
     }
 }
+
 ```
 
 ## 2.2.1.5 4. 架构设计
@@ -311,6 +312,7 @@ IoT工作流系统架构图:
 ├─────────────────────────────────────────────────────────┤
 │  MQTT  │  CoAP  │  HTTP  │  WebSocket  │  自定义协议    │
 └─────────────────────────────────────────────────────────┘
+
 ```
 
 ### 2.2.1.5.2 核心组件设计
@@ -476,6 +478,7 @@ func (e *IoTWorkflowEngine) DeployIoTWorkflow(iotSystem *IoTSystem) error {
     
     return nil
 }
+
 ```
 
 ## 2.2.1.6 5. Golang实现
@@ -574,6 +577,7 @@ func (a *ActuatorActivities) ControlActuator(ctx context.Context, deviceID, comm
     
     return nil
 }
+
 ```
 
 ### 2.2.1.6.2 智能家居工作流
@@ -736,6 +740,7 @@ func (w *SmartHomeWorkflow) isWithinSchedule(schedule *Schedule) bool {
     currentTime := now.Format("15:04")
     return currentTime >= schedule.StartTime && currentTime <= schedule.EndTime
 }
+
 ```
 
 ## 2.2.1.7 6. 最佳实践

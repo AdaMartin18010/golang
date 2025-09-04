@@ -84,6 +84,7 @@ Workflow System Architecture Analysis
     ├── Emphasize engineering practices
     ├── Focus formalism on critical core
     ├── Leverage language features (Rust)
+
 ```
 
 ## I. 工作流架构的核心挑战与形式化表述
@@ -254,6 +255,7 @@ fn apply(state: WorkflowState, event: &WorkflowEvent) -> WorkflowState {
     }
     // 注意：这里没有 IO, 没有随机数, 没有访问外部状态, 结果只依赖输入
 }
+
 ```
 
 ### D. 形式证明的局限性与批判

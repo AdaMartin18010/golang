@@ -10,19 +10,6 @@
   - [1.6 5. 通知（Notify）](#5-通知（notify）)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 以下是关于 Tokio 同步机制 的详细介绍，包括定义、概念、示例代码以及思维导图。内容以 Markdown 格式输出。
 Tokio 同步机制
 Tokio 提供了多种同步机制，用于在异步任务之间进行同步和通信。
@@ -70,6 +57,7 @@ async fn main() {
 
     println!("Result: {}", *mutex.lock().await);
 }
+
 ```
 
 ## 1.3 2. 信号量（Semaphore）
@@ -105,6 +93,7 @@ async fn main() {
             handle.await.unwrap();
         }
     }
+
 ```
 
 ## 1.4 3. 屏障（Barrier）
@@ -138,6 +127,7 @@ async fn main() {
             handle.await.unwrap();
         }
     }
+
 ```
 
 ## 1.5 4. 通道（Channel）
@@ -172,6 +162,7 @@ MPSC 通道
             println!("Received: {}", msg);
         }
     }
+
 ```
 
 ## 1.6 5. 通知（Notify）
@@ -199,6 +190,7 @@ Notify：用于任务间的通知，不携带数据。
         notify.notify_one();
         handle.await.unwrap();
     }
+
 ```
 
 思维导图
@@ -233,6 +225,7 @@ graph TD
     F --> F1[通知]
     F --> F2[任务间通知]
     F --> F3[唤醒机制]
+
 ```
 
 Tokio 同步机制

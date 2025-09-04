@@ -105,6 +105,7 @@ type Credential struct {
     Value       interface{}
     Encrypted   bool
 }
+
 ```
 
 #### 2.1.2 触发节点
@@ -170,6 +171,7 @@ type Webhook struct {
     Body        interface{}
     Validation  WebhookValidation
 }
+
 ```
 
 #### 2.1.3 操作节点
@@ -223,6 +225,7 @@ type ProcessingLogic struct {
     ErrorHandling ErrorHandling
     Retry       RetryPolicy
 }
+
 ```
 
 ### 2.2 连接系统
@@ -294,6 +297,7 @@ type ConnectionMetadata struct {
     Style       string
     Animated    bool
 }
+
 ```
 
 #### 2.2.2 连接管理
@@ -341,6 +345,7 @@ const (
     IPHash
     Random
 )
+
 ```
 
 ### 2.3 执行引擎
@@ -413,6 +418,7 @@ type ExecutionContext struct {
     Variables   map[string]interface{}
     Trace       []TraceEvent
 }
+
 ```
 
 #### 2.3.2 执行控制
@@ -503,6 +509,7 @@ const (
     DoWhileLoop
     ForEachLoop
 )
+
 ```
 
 ### 2.4 数据管理
@@ -576,6 +583,7 @@ const (
     Null
     Binary
 )
+
 ```
 
 #### 2.4.2 数据流
@@ -629,6 +637,7 @@ type DataMapping struct {
 
 // TransformFunction represents transformation logic
 type TransformFunction func(interface{}) (interface{}, error)
+
 ```
 
 ## 3. 工作流模式
@@ -690,6 +699,7 @@ func (se *SequentialExecutor) checkDependencies(nodeID string, dependencies map[
     
     return true
 }
+
 ```
 
 ### 3.2 并行模式
@@ -767,6 +777,7 @@ func (pe *ParallelExecutor) executeGroup(ctx context.Context, nodes []string, da
     
     return results, nil
 }
+
 ```
 
 ### 3.3 条件模式
@@ -857,6 +868,7 @@ func (ce *ConditionalExecutor) executeBranch(ctx context.Context, nodes []string
     
     return result, nil
 }
+
 ```
 
 ### 3.4 循环模式
@@ -946,6 +958,7 @@ func (le *LoopExecutor) executeBody(ctx context.Context, nodes []string, data Da
     
     return result, nil
 }
+
 ```
 
 ## 4. 错误处理与恢复
@@ -1015,6 +1028,7 @@ type FallbackCondition struct {
     Threshold   int
     TimeWindow  time.Duration
 }
+
 ```
 
 ### 4.2 恢复机制
@@ -1073,6 +1087,7 @@ type CompensationAction struct {
     Parameters  map[string]interface{}
     Condition   Condition
 }
+
 ```
 
 ## 5. 性能优化
@@ -1138,6 +1153,7 @@ type CPUOptimization struct {
     Affinity    Affinity
     Throttling  Throttling
 }
+
 ```
 
 ### 5.2 监控与分析
@@ -1193,6 +1209,7 @@ type Profiling struct {
     Duration    time.Duration
     Output      ProfilingOutput
 }
+
 ```
 
 ## 6. 最佳实践
@@ -1261,4 +1278,4 @@ type Profiling struct {
 
 ---
 
-*本文档将持续更新，反映最新的工作流编排技术发展和最佳实践。*
+* 本文档将持续更新，反映最新的工作流编排技术发展和最佳实践。*

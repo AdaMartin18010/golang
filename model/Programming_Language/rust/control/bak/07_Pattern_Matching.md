@@ -11,19 +11,6 @@
     - [1.2.5 范围模式](#范围模式)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，模式匹配（Pattern Matching）是一种强大的控制流结构，它允许你检查数据的结构，并根据数据的不同形式（模式）来执行不同的代码。
 模式匹配最常用于 `match` 表达式，但也可以在其他上下文中使用，比如 `if let` 和 `while let` 表达式。
 
@@ -55,6 +42,7 @@ match x {
     3..=5 => println!("Three to Five"),
     _ => println!("Something else"),
 }
+
 ```
 
 ### 1.2.2 解构模式
@@ -69,6 +57,7 @@ match point {
     (x, y) if x < y => println!("y is greater than x"),
     _ => println!("It's a tie"),
 }
+
 ```
 
 ### 1.2.3 `if let` 表达式
@@ -81,6 +70,7 @@ let some_value = Some(10);
 if let Some(x) = some_value {
     println!("The value is: {}", x);
 }
+
 ```
 
 ### 1.2.4 `while let` 表达式
@@ -94,6 +84,7 @@ while let Some(x) = optional_value {
     println!("The value is: {}", x);
     optional_value = None; // Break the loop
 }
+
 ```
 
 ### 1.2.5 范围模式
@@ -108,6 +99,7 @@ match num {
     6..=10 => println!("It's between 6 and 10"),
     _ => println!("It's out of the range"),
 }
+
 ```
 
 模式匹配是 Rust 编程中非常强大和灵活的工具，它不仅可以提高代码的可读性，还可以在编译时提供类型安全保证。

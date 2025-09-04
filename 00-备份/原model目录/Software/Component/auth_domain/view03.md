@@ -102,6 +102,7 @@ impl User<Verified> {
         format!("用户 {} 正在访问受保护资源", self.username)
     }
 }
+
 ```
 
 ### 1.2 变量控制模型
@@ -147,6 +148,7 @@ fn authenticate(creds: &str) -> bool {
     // 验证逻辑
     creds.contains("user:password")
 }
+
 ```
 
 ### 1.3 安全性形式化定义
@@ -219,6 +221,7 @@ impl ApprovalToken {
         self.valid
     }
 }
+
 ```
 
 ## 2. 控制流与数据流分析
@@ -310,6 +313,7 @@ impl AuthStateMachine {
         matches!(self.state, AuthState::Authenticated)
     }
 }
+
 ```
 
 ### 2.2 数据流形式化验证
@@ -382,6 +386,7 @@ impl<T: Clone> DataNode<T> {
         &self.id
     }
 }
+
 ```
 
 ### 2.3 执行流与并发安全
@@ -440,6 +445,7 @@ fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
     }
     result == 0
 }
+
 ```
 
 ## 3. 验证与鉴权模型
@@ -542,6 +548,7 @@ enum TemporalLogicExpr {
     Until(Box<TemporalLogicExpr>, Box<TemporalLogicExpr>),
     Next(Box<TemporalLogicExpr>),
 }
+
 ```
 
 ### 3.2 鉴权系统形式化模型
@@ -648,6 +655,7 @@ impl AbacSystem {
         }
     }
 }
+
 ```
 
 ### 3.3 密码系统安全证明
@@ -743,6 +751,7 @@ enum OperationType {
     Validate,
     Generate,
 }
+
 ```
 
 ## 4. 模型与层次关联
@@ -865,6 +874,7 @@ enum Severity {
     High,
     Critical,
 }
+
 ```
 
 ### 4.2 层次间映射与转换
@@ -1021,6 +1031,7 @@ impl<S, T> SecurityMapping<S, T> {
         }
     }
 }
+
 ```
 
 ### 4.3 综合安全框架
@@ -1225,39 +1236,39 @@ impl SecurityFramework {
             verifiers: HashMap::new(),
         }
     }
-    
+  
     // 添加安全模型
     fn add_model(&mut self, name: String, model: Box<dyn SecurityModel>) {
         self.models.insert(name, model);
     }
-    
+  
     // 添加安全实现
     fn add_implementation(&mut self, name: String, implementation: Box<dyn SecurityImplementation>) {
         self.implementations.insert(name, implementation);
     }
-    
+  
     // 添加安全映射
     fn add_mapping(&mut self, mapping: Box<dyn SecurityMappingTrait>) {
         self.mappings.push(mapping);
     }
-    
+  
     // 添加安全策略
     fn add_policy(&mut self, name: String, policy: SecurityPolicy) {
         self.policies.insert(name, policy);
     }
-    
+  
     // 添加安全验证器
     fn add_verifier(&mut self, name: String, verifier: Box<dyn SecurityVerifier>) {
         self.verifiers.insert(name, verifier);
     }
-    
+  
     // 执行安全验证
     fn verify(&self, context: &SecurityContext) -> VerificationResults {
         let mut results = VerificationResults {
             overall_result: true,
             individual_results: HashMap::new(),
         };
-        
+  
         // 执行所有验证器的验证
         for (name, verifier) in &self.verifiers {
             let result = verifier.verify(context);
@@ -1266,17 +1277,17 @@ impl SecurityFramework {
             }
             results.individual_results.insert(name.clone(), result);
         }
-        
+  
         results
     }
-    
+  
     // 应用安全策略
     fn apply_policies(&self, context: &mut SecurityContext) -> PolicyApplicationResult {
         let mut results = PolicyApplicationResult {
             overall_success: true,
             policy_results: HashMap::new(),
         };
-        
+  
         // 按优先级排序策略
         let mut sorted_policies: Vec<(&String, &SecurityPolicy)> = self.policies.iter().collect();
         sorted_policies.sort_by(|a, b| {
@@ -1284,12 +1295,12 @@ impl SecurityFramework {
             let b_priority = b.1.rules.iter().map(|r| r.priority).max().unwrap_or(0);
             b_priority.cmp(&a_priority) // 高优先级在前
         });
-        
+  
         // 应用每个策略
         for (name, policy) in sorted_policies {
             let mut policy_success = true;
             let mut rule_results = HashMap::new();
-            
+  
             // 应用符合范围的策略
             if policy_applies_to_context(&policy.scope, context) {
                 // 应用策略规则
@@ -1313,32 +1324,32 @@ impl SecurityFramework {
             } else {
                 rule_results.insert("policy_scope".to_string(), RuleResult::NotApplicable);
             }
-            
+  
             // 记录策略应用结果
             if !policy_success {
                 results.overall_success = false;
             }
-            
+  
             results.policy_results.insert(name.clone(), PolicyResult {
                 success: policy_success,
                 rule_results,
             });
         }
-        
+  
         results
     }
-    
+  
     // 验证安全映射
     fn validate_mappings(&self) -> MappingValidationResults {
         let mut results = MappingValidationResults {
             overall_result: true,
             mapping_results: HashMap::new(),
         };
-        
+  
         // 验证每个映射
         for (index, mapping) in self.mappings.iter().enumerate() {
             let mapping_key = format!("{}_{}", mapping.source_model(), mapping.target_model());
-            
+  
             match mapping.validate() {
                 Ok(validation_result) => {
                     results.mapping_results.insert(mapping_key, MappingResult::Valid(validation_result));
@@ -1349,7 +1360,7 @@ impl SecurityFramework {
                 }
             }
         }
-        
+  
         results
     }
 }
@@ -1430,6 +1441,7 @@ enum SecurityScope {
     ByAction(Vec<String>),
     Custom(Box<dyn Fn(&SecurityContext) -> bool>),
 }
+
 ```
 
 ## 思维导图：加密、验证与鉴权的形式化分析
@@ -1489,6 +1501,7 @@ enum SecurityScope {
         ├── 安全组合性定理
         ├── 策略与机制分离
         └── 多层次安全验证
+
 ```
 
 ## 5. 实际应用场景分析
@@ -1520,27 +1533,27 @@ where
     fn new(prover: P, verifier: V, setup: S) -> Self {
         Self { prover, verifier, setup }
     }
-    
+  
     // 生成证明
     fn prove(&self, witness: &Witness, statement: &Statement) -> Result<Proof, ProofError> {
         self.prover.generate_proof(witness, statement, &self.setup)
     }
-    
+  
     // 验证证明
     fn verify(&self, proof: &Proof, statement: &Statement) -> Result<bool, VerificationError> {
         self.verifier.verify_proof(proof, statement, &self.setup)
     }
-    
+  
     // 执行认证流程
     fn authenticate(&self, identity: &Identity) -> Result<AuthToken, AuthError> {
         // 1. 生成挑战
         let challenge = self.verifier.generate_challenge();
-        
+  
         // 2. 用户使用私密信息(witness)生成响应
         let witness = identity.derive_witness();
         let statement = Statement::new(identity.public_id(), challenge);
         let proof = self.prove(&witness, &statement)?;
-        
+  
         // 3. 验证响应
         if self.verify(&proof, &statement)? {
             // 认证成功，生成令牌
@@ -1598,7 +1611,7 @@ impl Identity {
     fn public_id(&self) -> String {
         self.public_id.clone()
     }
-    
+  
     fn derive_witness(&self) -> Witness {
         // 使用私钥派生证明所需的witness
         // 简化实现
@@ -1613,6 +1626,7 @@ impl AuthToken {
         Self { subject, expiry, signature }
     }
 }
+
 ```
 
 ### 5.2 形式化验证的微服务架构
@@ -1719,12 +1733,12 @@ impl DistributedAuthSystem {
             last_sync: Utc::now(),
             sync_strategy: SyncStrategy::Periodic(sync_interval),
         };
-        
+  
         let distributed_cache = Arc::new(DistributedCache {
             cache: RwLock::new(HashMap::new()),
             ttl: Duration::from_secs(300), // 5分钟TTL
         });
-        
+  
         Self {
             local_authorizer,
             remote_authorizers,
@@ -1733,18 +1747,18 @@ impl DistributedAuthSystem {
             distributed_cache,
         }
     }
-    
+  
     // 授权请求
     async fn authorize(&self, principal: &Principal, resource: &Resource, action: &str) -> AuthResult {
         let start_time = Instant::now();
-        
+  
         // 1. 检查缓存
         let cache_key = CacheKey {
             principal_id: principal.id.clone(),
             resource_id: resource.id.clone(),
             action: action.to_string(),
         };
-        
+  
         if let Some(cached_result) = self.check_cache(&cache_key) {
             return AuthResult {
                 decision: cached_result.decision,
@@ -1753,31 +1767,31 @@ impl DistributedAuthSystem {
                 policies_evaluated: Vec::new(),
             };
         }
-        
+  
         // 2. 本地授权检查
         let local_result = self.local_authorizer.authorize(principal, resource, action);
-        
+  
         // 3. 如果本地结果不确定，则咨询远程授权服务
         let final_decision = if matches!(local_result.decision, AuthDecision::NotApplicable) {
             let mut remote_decisions = Vec::new();
-            
+  
             // 并行查询所有远程授权服务
             let remote_futures: Vec<_> = self.remote_authorizers.iter()
                 .map(|ra| ra.client.authorize(principal, resource, action))
                 .collect();
-            
+  
             let remote_results = futures::future::join_all(remote_futures).await;
             remote_decisions.extend(remote_results.into_iter().map(|r| r.decision));
-            
+  
             // 解决冲突并得出最终决策
             self.resolve_decision(local_result.decision, remote_decisions)
         } else {
             local_result.decision
         };
-        
+  
         // 4. 更新缓存
         self.update_cache(&cache_key, final_decision.clone());
-        
+  
         // 5. 返回结果
         AuthResult {
             decision: final_decision,
@@ -1786,34 +1800,34 @@ impl DistributedAuthSystem {
             policies_evaluated: local_result.policies_evaluated,
         }
     }
-    
+  
     // 检查缓存
     fn check_cache(&self, key: &CacheKey) -> Option<CacheValue> {
         let cache = self.distributed_cache.cache.read().unwrap();
-        
+  
         if let Some(value) = cache.get(key) {
             // 检查是否过期
             if Utc::now() < value.timestamp + value.ttl {
                 return Some(value.clone());
             }
         }
-        
+  
         None
     }
-    
+  
     // 更新缓存
     fn update_cache(&self, key: &CacheKey, decision: AuthDecision) {
         let mut cache = self.distributed_cache.cache.write().unwrap();
-        
+  
         let value = CacheValue {
             decision,
             timestamp: Utc::now(),
             ttl: self.distributed_cache.ttl,
         };
-        
+  
         cache.insert(key.clone(), value);
     }
-    
+  
     // 解决多个决策之间的冲突
     fn resolve_decision(&self, local: AuthDecision, remote: Vec<AuthDecision>) -> AuthDecision {
         // 拒绝优先策略
@@ -1825,16 +1839,16 @@ impl DistributedAuthSystem {
                 }
             }
         }
-        
+  
         // 如果有任何允许且没有拒绝，则允许
         if remote.iter().any(|d| matches!(d, AuthDecision::Allow)) {
             return AuthDecision::Allow;
         }
-        
+  
         // 如果所有都不适用，使用本地决策
         local
     }
-    
+  
     // 同步策略
     async fn sync_policies(&mut self) -> Result<(), PolicySyncError> {
         // 只有当需要同步时才执行
@@ -1847,7 +1861,7 @@ impl DistributedAuthSystem {
                 // 检查是否到达同步间隔
                 let now = Utc::now();
                 let elapsed = now - self.policy_synchronizer.last_sync;
-                
+  
                 if elapsed >= interval {
                     self.perform_policy_sync().await?;
                     self.policy_synchronizer.last_sync = now;
@@ -1857,39 +1871,40 @@ impl DistributedAuthSystem {
                 // 事件触发时才同步，此处不执行同步
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 执行策略同步
     async fn perform_policy_sync(&mut self) -> Result<(), PolicySyncError> {
         // 1. 收集所有节点的策略
         let mut all_policies = Vec::new();
-        
+  
         // 获取本地策略
         let local_policies = self.local_authorizer.get_policies();
         all_policies.push(local_policies);
-        
+  
         // 获取远程策略
         for remote in &self.remote_authorizers {
             let remote_policies = remote.client.get_policies().await?;
             all_policies.push(remote_policies);
         }
-        
+  
         // 2. 解决冲突
         let merged_policies = self.conflict_resolver.resolve_conflicts(all_policies);
-        
+  
         // 3. 更新本地策略
         self.local_authorizer.update_policies(merged_policies.clone())?;
-        
+  
         // 4. 更新远程策略
         for remote in &self.remote_authorizers {
             remote.client.update_policies(merged_policies.clone()).await?;
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ### 5.3 可验证计算与安全多方计算
@@ -1935,18 +1950,18 @@ where
     fn new(function: F, prover: P, verifier: Box<dyn ResultVerifier<R>>) -> Self {
         Self { function, prover, verifier }
     }
-    
+  
     // 执行并证明计算
     fn compute_and_prove(&self, input: &ComputationInput) -> (R, ComputationProof) {
         // 执行计算
         let result = (self.function)(input);
-        
+  
         // 生成证明
         let proof = self.prover.generate_proof(&self.function, input, &result);
-        
+  
         (result, proof)
     }
-    
+  
     // 验证计算结果
     fn verify(&self, input: &ComputationInput, result: &R, proof: &ComputationProof) -> bool {
         self.verifier.verify(input, result, proof)
@@ -2032,13 +2047,13 @@ where
             protocol,
         }
     }
-    
+  
     // 执行安全计算
     async fn compute(&self) -> Result<T, MpcError> {
         // 使用协议执行多方计算
         self.protocol.execute(&self.party_id, &self.local_secret, &self.other_parties)
     }
-    
+  
     // 生成秘密共享
     fn share_secret<D>(&self, secret: &D, threshold: usize) -> Vec<Vec<u8>>
     where
@@ -2046,11 +2061,11 @@ where
     {
         // 序列化秘密
         let serialized = bincode::serialize(secret).unwrap_or_default();
-        
+  
         // 生成秘密共享
         self.crypto.secret_sharing.share(&serialized, self.other_parties.len() + 1, threshold)
     }
-    
+  
     // 从共享重建秘密
     fn reconstruct_secret<D>(&self, shares: &[Vec<u8>], threshold: usize) -> Result<D, MpcError>
     where
@@ -2058,11 +2073,12 @@ where
     {
         // 重建秘密
         let serialized = self.crypto.secret_sharing.reconstruct(shares, threshold);
-        
+  
         // 反序列化秘密
         bincode::deserialize(&serialized).map_err(|_| MpcError::DeserializationError)
     }
 }
+
 ```
 
 ## 6. 高级形式化证明技术
@@ -2125,7 +2141,7 @@ impl AuthProtocol<Initial> {
             _phantom: PhantomData,
         }
     }
-    
+  
     // 尝试认证，返回新状态
     fn authenticate(self, credentials: &Credentials) -> Either<AuthProtocol<Authenticated>, AuthProtocol<Failed>> {
         if verify_credentials(credentials) {
@@ -2169,6 +2185,7 @@ impl ProtectedResource {
         Self
     }
 }
+
 ```
 
 ### 6.2 精化类型与规约验证
@@ -2205,13 +2222,13 @@ impl Account {
             None
         }
     }
-    
+  
     // 存款操作，确保金额为正
     fn deposit(&mut self, amount: NonNegInt) {
         // 这里不需要运行时检查，因为类型系统保证amount非负
         self.balance += amount as f64;
     }
-    
+  
     // 取款操作，确保余额充足
     fn withdraw(&mut self, amount: NonNegInt) -> Result<(), &'static str> {
         let new_balance = self.balance - amount as f64;
@@ -2222,7 +2239,7 @@ impl Account {
             Err("余额不足")
         }
     }
-    
+  
     // 转账操作，确保所有条件都满足
     fn transfer(&mut self, to: &mut Account, amount: NonNegInt) -> Result<(), &'static str> {
         self.withdraw(amount)?;
@@ -2236,8 +2253,10 @@ struct AccountSystem {
     accounts: HashMap<String, Account>,
 }
 
-#[requires(amount >= 0)]
-#[ensures(result.is_ok() ==> forall a in accounts, a.balance >= 0)]
+# [requires(amount >= 0)]
+
+# [ensures(result.is_ok() ==> forall a in accounts, a.balance >= 0)]
+
 fn process_transaction(
     accounts: &mut HashMap<String, Account>,
     from_id: &str,
@@ -2248,16 +2267,17 @@ fn process_transaction(
     if amount < 0 {
         return Err("交易金额必须为正");
     }
-    
+  
     // 获取账户
     let from_account = accounts.get_mut(from_id).ok_or("发送账户不存在")?;
     let to_account = accounts.get_mut(to_id).ok_or("接收账户不存在")?;
-    
+  
     // 执行转账
     from_account.transfer(to_account, amount)?;
-    
+  
     Ok(())
 }
+
 ```
 
 ### 6.3 模型检查与时态逻辑
@@ -2301,10 +2321,10 @@ impl AuthStateMachine {
             transition_history: Vec::new(),
         }
     }
-    
+  
     fn process_event(&mut self, event: AuthEvent) -> Result<(), &'static str> {
         let old_state = std::mem::replace(&mut self.current_state, AuthState::LoggedOut);
-        
+  
         // 状态转换逻辑
         let new_state = match (old_state, &event) {
             (AuthState::LoggedOut, AuthEvent::EnterCredentials) => AuthState::CredentialsEntered,
@@ -2329,14 +2349,14 @@ impl AuthStateMachine {
             },
             _ => return Err("无效状态转换"),
         };
-        
+  
         // 记录转换历史
         self.transition_history.push((old_state, event, new_state.clone()));
         self.current_state = new_state;
-        
+  
         Ok(())
     }
-    
+  
     // 检查时态逻辑属性
     fn check_property(&self, property: &TemporalProperty) -> bool {
         match property {
@@ -2353,18 +2373,18 @@ impl AuthStateMachine {
             TemporalProperty::Until(pred1, pred2) => {
                 // 检查是否从满足pred1的状态一直到满足pred2的状态
                 let mut found_p2 = false;
-                
+  
                 for (_, _, state) in &self.transition_history {
                     if pred2(state) {
                         found_p2 = true;
                         break;
                     }
-                    
+  
                     if !pred1(state) {
                         return false;
                     }
                 }
-                
+  
                 found_p2
             },
             TemporalProperty::Next(state_pred) => {
@@ -2372,7 +2392,7 @@ impl AuthStateMachine {
                 if self.transition_history.len() < 2 {
                     return false;
                 }
-                
+  
                 let last_idx = self.transition_history.len() - 1;
                 state_pred(&self.transition_history[last_idx].2)
             },
@@ -2410,6 +2430,7 @@ fn locked_requires_credentials_property() -> TemporalProperty {
         })
     )
 }
+
 ```
 
 ## 思维导图：加密、验证与鉴权的实际应用与高级技术
@@ -2455,4 +2476,5 @@ fn locked_requires_credentials_property() -> TemporalProperty {
         ├── 动态威胁模型
         ├── 安全策略演化
         └── 自适应验证机制
+
 ```

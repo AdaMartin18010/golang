@@ -202,6 +202,7 @@ classDiagram
     +string Value
     +time.Time Time
   }
+
 ```
 
 ### 1.3.3 典型数据流
@@ -230,6 +231,7 @@ sequenceDiagram
   S->>AC: 参与活动
   S->>EV: 事件记录
   EV->>DA: 数据分析
+
 ```
 
 ### 1.3.4 Golang 领域模型代码示例
@@ -311,6 +313,7 @@ type User struct {
     Name string
     Role string
 }
+
 ```
 
 ---
@@ -389,6 +392,7 @@ graph TD
   EV --> C
   D --> S
   D --> C
+
 ```
 
 ### 1.5.5 Golang代码示例
@@ -397,6 +401,7 @@ graph TD
 // 学生数量Prometheus监控
 var studentCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "student_total"})
 studentCount.Set(100000)
+
 ```
 
 ---
@@ -426,6 +431,7 @@ education-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 1.6.2 关键代码片段
@@ -452,6 +458,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

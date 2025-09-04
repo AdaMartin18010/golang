@@ -169,6 +169,7 @@ flowchart TD
     D --> D1[Span 记录函数调用上下文]
     D --> D2[#[instrument] 自动生成 Span]
     D --> D3[Subscriber 格式化显示层级调用关系]
+
 ```
 
 ## 1.5 5. 总结

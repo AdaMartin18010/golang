@@ -195,6 +195,7 @@ func (c *Composite) GetChildren() []Component {
 func (c *Composite) IsLeaf() bool {
     return false
 }
+
 ```
 
 ### 3.2.1.4.2 文件系统组合模式
@@ -407,6 +408,7 @@ func (fs *FileSystem) listRecursive(item FileSystemItem, depth int) string {
     
     return result
 }
+
 ```
 
 ### 3.2.1.4.3 UI组件组合模式
@@ -688,6 +690,7 @@ func (w *Window) HandleEvent(event string) bool {
     }
     return w.Container.HandleEvent(event)
 }
+
 ```
 
 ## 3.2.1.5 4. 工程案例
@@ -1012,6 +1015,7 @@ func (o *Organization) FindEmployee(id string) Employee {
     }
     return nil
 }
+
 ```
 
 ### 3.2.1.5.2 表达式树组合模式
@@ -1366,6 +1370,7 @@ func sqrt(x float64) float64 {
     // 简化的sqrt实现
     return x // 实际应用中应使用math.Sqrt
 }
+
 ```
 
 ## 3.2.1.6 5. 批判性分析

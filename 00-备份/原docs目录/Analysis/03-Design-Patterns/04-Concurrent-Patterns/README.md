@@ -51,6 +51,7 @@ func main() {
     go consumer(ch)
     time.Sleep(2 * time.Second)
 }
+
 ```
 
 ## 2. Golang并发原语
@@ -93,6 +94,7 @@ func main() {
         <-results
     }
 }
+
 ```
 
 ### 2.2 Channel
@@ -163,6 +165,7 @@ func (c *bufferedChannel[T]) Close() error {
     close(c.buffer)
     return nil
 }
+
 ```
 
 ### 2.3 Select语句
@@ -208,6 +211,7 @@ func timeoutExample() {
         fmt.Println("Timeout!")
     }
 }
+
 ```
 
 ## 3. 并发设计模式
@@ -309,6 +313,7 @@ func main() {
     
     pool.Stop()
 }
+
 ```
 
 ### 3.2 Pipeline模式
@@ -386,6 +391,7 @@ func main() {
         fmt.Println(result)
     }
 }
+
 ```
 
 ### 3.3 Fan-Out/Fan-In模式
@@ -461,6 +467,7 @@ func main() {
         fmt.Printf("Result: %d\n", value)
     }
 }
+
 ```
 
 ## 4. 同步机制
@@ -511,6 +518,7 @@ func (oc *OptimizedCounter) GetValue() int {
     defer oc.mutex.RUnlock()
     return oc.value
 }
+
 ```
 
 ### 4.2 WaitGroup
@@ -539,6 +547,7 @@ func processItem(item string) {
     time.Sleep(100 * time.Millisecond)
     fmt.Printf("Processed: %s\n", item)
 }
+
 ```
 
 ### 4.3 Once
@@ -564,6 +573,7 @@ func GetInstance() *Singleton {
     })
     return instance
 }
+
 ```
 
 ## 5. 并发数据结构
@@ -612,6 +622,7 @@ func (cm *ConcurrentMap[K, V]) Range(f func(K, V) bool) {
         }
     }
 }
+
 ```
 
 ### 5.2 并发队列
@@ -656,6 +667,7 @@ func (cq *ConcurrentQueue[T]) Size() int {
     defer cq.mutex.Unlock()
     return len(cq.data)
 }
+
 ```
 
 ## 6. 性能优化
@@ -724,6 +736,7 @@ func main() {
     // 归还对象
     pool.Put(buf)
 }
+
 ```
 
 ### 6.2 工作窃取
@@ -777,6 +790,7 @@ func (d *Deque) PopBack() (interface{}, bool) {
     d.data = d.data[:len(d.data)-1]
     return item, true
 }
+
 ```
 
 ## 7. 错误处理
@@ -807,6 +821,7 @@ func processItemWithError(item string) error {
     fmt.Printf("Processed: %s\n", item)
     return nil
 }
+
 ```
 
 ### 7.2 超时控制
@@ -846,6 +861,7 @@ func main() {
         fmt.Printf("Result: %s\n", result)
     }
 }
+
 ```
 
 ## 8. 最佳实践
@@ -871,6 +887,7 @@ func (sc *SafeCounter) Increment() {
     defer sc.mutex.Unlock()
     sc.value++
 }
+
 ```
 
 ### 8.2 避免死锁
@@ -917,6 +934,7 @@ func safeExample() {
     defer mu2.Unlock()
     // ...
 }
+
 ```
 
 ### 8.3 资源管理
@@ -958,6 +976,7 @@ func (rm *ResourceManager) Release(resource *Resource) {
         // 池已满，丢弃资源
     }
 }
+
 ```
 
 ## 9. 案例分析
@@ -1033,6 +1052,7 @@ func (l *singleConnListener) Close() error {
 func (l *singleConnListener) Addr() net.Addr {
     return l.conn.LocalAddr()
 }
+
 ```
 
 ### 9.2 数据处理管道
@@ -1116,6 +1136,7 @@ func TransformationStage(input <-chan Data) <-chan Data {
     
     return output
 }
+
 ```
 
 ---
@@ -1130,4 +1151,4 @@ func TransformationStage(input <-chan Data) <-chan Data {
 
 ---
 
-*本文档涵盖了Golang并发编程的核心概念、设计模式和最佳实践，为构建高性能并发应用提供指导。*
+* 本文档涵盖了Golang并发编程的核心概念、设计模式和最佳实践，为构建高性能并发应用提供指导。*

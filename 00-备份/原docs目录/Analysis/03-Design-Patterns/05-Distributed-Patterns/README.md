@@ -147,6 +147,7 @@ func (h *RequestResponseHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
     resp.Timestamp = time.Now()
     json.NewEncoder(w).Encode(resp)
 }
+
 ```
 
 #### 优缺点分析
@@ -174,6 +175,7 @@ sequenceDiagram
     Handler->>Handler: Process Request
     Handler-->>Server: Response(id, status, data)
     Server-->>Client: Response
+
 ```
 
 #### 相关开源组件
@@ -310,6 +312,7 @@ func (s *SimpleSubscriber) OnMessage(msg Message) {
     // 处理接收到的消息
     fmt.Printf("Subscriber %s received message on topic %s: %+v\n", s.id, msg.Topic, msg.Data)
 }
+
 ```
 
 #### 优缺点分析
@@ -335,6 +338,7 @@ graph TD
     T1 --> S2[Subscriber 2]
     T2 --> S2
     T2 --> S3[Subscriber 3]
+
 ```
 
 #### 相关开源组件
@@ -477,6 +481,7 @@ func (c *Consumer) worker(ctx context.Context, id int) {
 func (c *Consumer) Stop() {
     close(c.stopChan)
 }
+
 ```
 
 #### 优缺点分析
@@ -500,6 +505,7 @@ flowchart LR
     Q --> C1[Consumer 1]
     Q --> C2[Consumer 2]
     Q --> C3[Consumer 3]
+
 ```
 
 #### 相关开源组件
@@ -680,6 +686,7 @@ func (s *SlaveNode) Replicate(entry LogEntry) error {
     s.log = append(s.log, entry)
     return nil
 }
+
 ```
 
 #### 优缺点分析
@@ -705,6 +712,7 @@ graph TD
     Master --> Slave3[Slave Node 3]
     Client3[Client 3] --> Slave1
     Client4[Client 4] --> Slave2
+
 ```
 
 #### 相关开源组件
@@ -965,6 +973,7 @@ func min(a, b int64) int64 {
     }
     return b
 }
+
 ```
 
 #### 优缺点分析
@@ -989,6 +998,7 @@ stateDiagram-v2
     Candidate --> Follower : 发现更高任期
     Leader --> Follower : 发现更高任期
     Leader --> Follower : 选举超时
+
 ```
 
 #### 相关开源组件
@@ -1038,9 +1048,11 @@ $$\text{Consistency} \land \text{Availability} \land \text{Partition Tolerance} 
 ### 10.1 核心开源组件
 
 #### etcd
+
 - **用途**：分布式键值存储，服务发现
 - **特点**：基于Raft算法，强一致性
 - **Golang集成**：
+
 ```go
 import "go.etcd.io/etcd/client/v3"
 
@@ -1050,12 +1062,15 @@ func connectEtcd() (*clientv3.Client, error) {
         DialTimeout: 5 * time.Second,
     })
 }
+
 ```
 
 #### Consul
+
 - **用途**：服务发现、配置管理、健康检查
 - **特点**：支持多数据中心
 - **Golang集成**：
+
 ```go
 import "github.com/hashicorp/consul/api"
 
@@ -1064,12 +1079,15 @@ func connectConsul() (*api.Client, error) {
         Address: "localhost:8500",
     })
 }
+
 ```
 
 #### gRPC
+
 - **用途**：高性能RPC框架
 - **特点**：基于HTTP/2，支持流式传输
 - **Golang集成**：
+
 ```go
 import (
     "google.golang.org/grpc"
@@ -1081,11 +1099,13 @@ func createGRPCServer() *grpc.Server {
     pb.RegisterServiceServer(server, &MyService{})
     return server
 }
+
 ```
 
 ### 10.2 性能优化最佳实践
 
 #### 连接池管理
+
 ```go
 type ConnectionPool struct {
     connections chan net.Conn
@@ -1110,9 +1130,11 @@ func (p *ConnectionPool) Put(conn net.Conn) {
         conn.Close()
     }
 }
+
 ```
 
 #### 负载均衡
+
 ```go
 type LoadBalancer struct {
     servers []string
@@ -1128,6 +1150,7 @@ func (lb *LoadBalancer) Next() string {
     lb.current = (lb.current + 1) % len(lb.servers)
     return server
 }
+
 ```
 
 ## 11. 性能分析与最佳实践
@@ -1135,16 +1158,19 @@ func (lb *LoadBalancer) Next() string {
 ### 11.1 性能指标
 
 #### 延迟（Latency）
+
 - **定义**：请求从发送到接收响应的时间
 - **测量**：使用histogram统计分布
 - **优化**：连接复用、异步处理、缓存
 
 #### 吞吐量（Throughput）
+
 - **定义**：单位时间内处理的请求数量
 - **测量**：QPS（Queries Per Second）
 - **优化**：并发处理、负载均衡、资源池化
 
 #### 可用性（Availability）
+
 - **定义**：系统正常运行时间的比例
 - **测量**：$A = \frac{MTBF}{MTBF + MTTR}$
 - **优化**：冗余设计、故障转移、监控告警
@@ -1152,6 +1178,7 @@ func (lb *LoadBalancer) Next() string {
 ### 11.2 监控与可观测性
 
 #### 指标收集
+
 ```go
 import "github.com/prometheus/client_golang/prometheus"
 
@@ -1172,9 +1199,11 @@ var (
         []string{"method", "endpoint", "status"},
     )
 )
+
 ```
 
 #### 分布式追踪
+
 ```go
 import "go.opentelemetry.io/otel/trace"
 
@@ -1185,11 +1214,13 @@ func tracedHandler(ctx context.Context, req Request) (Response, error) {
     // 处理请求
     return processRequest(ctx, req)
 }
+
 ```
 
 ### 11.3 错误处理策略
 
 #### 重试机制
+
 ```go
 func retryWithBackoff(operation func() error, maxRetries int) error {
     for i := 0; i < maxRetries; i++ {
@@ -1203,9 +1234,11 @@ func retryWithBackoff(operation func() error, maxRetries int) error {
     }
     return fmt.Errorf("operation failed after %d retries", maxRetries)
 }
+
 ```
 
 #### 熔断器模式
+
 ```go
 type CircuitBreaker struct {
     state       State
@@ -1256,31 +1289,36 @@ func (cb *CircuitBreaker) Execute(operation func() error) error {
     cb.state = Closed
     return nil
 }
+
 ```
 
 ## 12. 参考文献与外部链接
 
 ### 12.1 学术论文
+
 - [Raft论文](https://raft.github.io/raft.pdf)
 - [Paxos论文](https://lamport.azurewebsites.net/pubs/paxos-simple.pdf)
 - [CAP定理论文](https://www.glassbeam.com/sites/all/themes/glassbeam/images/blog/10.1.1.67.6951.pdf)
 
 ### 12.2 开源项目
+
 - [etcd](https://github.com/etcd-io/etcd)
 - [Consul](https://github.com/hashicorp/consul)
 - [gRPC](https://github.com/grpc/grpc-go)
 - [NATS](https://github.com/nats-io/nats.go)
 
 ### 12.3 技术文档
+
 - [Go官方文档](https://golang.org/doc/)
 - [Kubernetes文档](https://kubernetes.io/docs/)
 - [Docker文档](https://docs.docker.com/)
 
 ### 12.4 最佳实践指南
+
 - [Google SRE](https://sre.google/)
 - [Netflix Chaos Engineering](https://netflixtechblog.com/tagged/chaos-engineering)
 - [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
 
 ---
 
-*本文档持续更新，反映分布式系统设计模式的最新发展和Golang生态系统的最佳实践。* 
+* 本文档持续更新，反映分布式系统设计模式的最新发展和Golang生态系统的最佳实践。*

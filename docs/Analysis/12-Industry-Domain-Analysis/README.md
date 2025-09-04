@@ -48,19 +48,6 @@
     - [12.1.7.3 应用场景](#应用场景)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 12.1.1 目录
 
 1. [概述](#概述)
@@ -152,6 +139,7 @@ var RecommendedFinTechStack = FinTechStack{
     Testing:      "Testify",
     Security:     "JWT",
 }
+
 ```
 
 #### 12.1.3.2.2 架构模式
@@ -199,6 +187,7 @@ type AuditService struct {
     analyzer   *AuditAnalyzer
     reporter   *AuditReporter
 }
+
 ```
 
 ### 12.1.3.3 业务领域建模
@@ -249,6 +238,7 @@ func (pp *PaymentProcessor) ProcessPayment(payment *Payment) error {
     
     return nil
 }
+
 ```
 
 #### 12.1.3.3.2 风控系统模型
@@ -288,6 +278,7 @@ func (re *RiskEngine) CheckRisk(payment *Payment) error {
     
     return nil
 }
+
 ```
 
 ### 12.1.3.4 性能优化
@@ -321,6 +312,7 @@ func (hcp *HighConcurrencyProcessor) worker() {
         }
     }
 }
+
 ```
 
 ## 12.1.4 游戏开发 (Game Development)
@@ -353,6 +345,7 @@ var RecommendedGameDevStack = GameDevStack{
     Database:     "SQLite",
     AssetManager: "Custom",
 }
+
 ```
 
 #### 12.1.4.2.2 游戏服务器架构
@@ -396,6 +389,7 @@ type NetworkManager struct {
     clients       map[string]*GameClient
     mu            sync.RWMutex
 }
+
 ```
 
 ### 12.1.4.3 游戏逻辑实现
@@ -445,6 +439,7 @@ func (pc *PhysicsComponent) Update(deltaTime float64) {
 func (pc *PhysicsComponent) GetType() string {
     return "physics"
 }
+
 ```
 
 #### 12.1.4.3.2 游戏循环
@@ -493,6 +488,7 @@ func (gw *GameWorld) Update(deltaTime float64) {
     // 更新物理引擎
     gw.physics.Update(deltaTime)
 }
+
 ```
 
 ## 12.1.5 物联网 (IoT)
@@ -525,6 +521,7 @@ var RecommendedIoTStack = IoTStack{
     DeviceManager: "Custom",
     Monitoring:    "Prometheus",
 }
+
 ```
 
 #### 12.1.5.2.2 IoT平台架构
@@ -583,6 +580,7 @@ type SensorData struct {
     Timestamp    time.Time
     Location     string
 }
+
 ```
 
 ### 12.1.5.3 设备管理实现
@@ -647,6 +645,7 @@ func (mdm *MQTTDeviceManager) handleMessage(client *mqtt.Client, msg *mqtt.Messa
     // 发送到数据队列
     mdm.dataQueue <- &sensorData
 }
+
 ```
 
 #### 12.1.5.3.2 边缘计算
@@ -711,6 +710,7 @@ func (tp *ThresholdProcessor) Process(data *SensorData) (*ProcessedData, error) 
 func (tp *ThresholdProcessor) GetType() string {
     return "threshold"
 }
+
 ```
 
 ## 12.1.6 人工智能/机器学习 (AI/ML)
@@ -743,6 +743,7 @@ var RecommendedAIMLStack = AIMLStack{
     MLOps:          "Custom",
     Monitoring:     "Prometheus",
 }
+
 ```
 
 #### 12.1.6.2.2 AI/ML平台架构
@@ -788,6 +789,7 @@ type FeatureStore struct {
     cache        *redis.Client
     storage      *FeatureStorage
 }
+
 ```
 
 ### 12.1.6.3 模型训练实现
@@ -889,6 +891,7 @@ func (mt *ModelTrainer) Train() error {
     
     return nil
 }
+
 ```
 
 #### 12.1.6.3.2 模型服务
@@ -966,6 +969,7 @@ func (p *Predictor) BatchPredict(inputs []interface{}) ([]interface{}, error) {
     
     return results, nil
 }
+
 ```
 
 ## 12.1.7 总结
@@ -993,4 +997,4 @@ func (p *Predictor) BatchPredict(inputs []interface{}) ([]interface{}, error) {
 - **物联网**: 大规模设备管理和数据处理
 - **AI/ML**: 高效的模型训练和推理服务
 
-通过合理应用行业领域分析框架，可以构建出更加适合特定行业需求的Golang系统。 
+通过合理应用行业领域分析框架，可以构建出更加适合特定行业需求的Golang系统。

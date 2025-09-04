@@ -30,19 +30,6 @@
   - [1.5 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>
 这是一个关于工作流模式的分析请求，
@@ -92,6 +79,7 @@
 
 我会确保所有内容都是用中文表达的。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -190,6 +178,7 @@ fn main() {
     workflow.execute_task_b();
     workflow.complete();
 }
+
 ```
 
 #### 1.3.1.2 2. 并行分支（Parallel Split）
@@ -227,6 +216,7 @@ fn main() {
     
     println!("最终结果: {}", *shared_data.lock().unwrap());
 }
+
 ```
 
 #### 1.3.1.3 3. 同步（Synchronization）
@@ -267,6 +257,7 @@ fn main() {
     
     println!("所有分支同步完成后的工作");
 }
+
 ```
 
 #### 1.3.1.4 4. 排他选择（Exclusive Choice）
@@ -307,6 +298,7 @@ fn main() {
     execute_workflow(0);
     execute_workflow(10);
 }
+
 ```
 
 #### 1.3.1.5 5. 简单合并（Simple Merge）
@@ -353,6 +345,7 @@ fn main() {
     handle1.join().unwrap();
     handle2.join().unwrap();
 }
+
 ```
 
 ### 1.3.2 高级分支与同步模式
@@ -405,6 +398,7 @@ fn main() {
     multi_choice(15); // 将执行任务A
     multi_choice(0);  // 将执行任务B, C
 }
+
 ```
 
 #### 1.3.2.2 7. 同步合并（Synchronizing Merge）
@@ -479,6 +473,7 @@ fn main() {
         handle.join().unwrap();
     }
 }
+
 ```
 
 ### 1.3.3 多实例模式
@@ -536,6 +531,7 @@ fn main() {
     
     println!("所有任务实例已完成");
 }
+
 ```
 
 #### 1.3.3.2 9. 多实例同步（Multiple Instances With Synchronization）
@@ -613,6 +609,7 @@ fn main() {
     let sum: i32 = final_results.iter().sum();
     println!("所有任务实例已同步完成，结果总和: {}", sum);
 }
+
 ```
 
 ### 1.3.4 基于状态的模式
@@ -678,6 +675,7 @@ fn main() {
         Choice::None => println!("没有做出选择，工作流终止"),
     }
 }
+
 ```
 
 #### 1.3.4.2 11. 里程碑（Milestone）
@@ -748,6 +746,7 @@ fn main() {
     
     handle2.join().unwrap();
 }
+
 ```
 
 ### 1.3.5 取消与强制完成模式
@@ -824,6 +823,7 @@ fn main() {
     handle.join().unwrap();
     println!("工作流程完成");
 }
+
 ```
 
 #### 1.3.5.2 13. 取消区域（Cancel Region）
@@ -941,6 +941,7 @@ fn main() {
     handle.join().unwrap();
     println!("工作流程完成");
 }
+
 ```
 
 ## 1.4 模式之间的范畴关系

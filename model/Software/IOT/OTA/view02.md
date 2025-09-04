@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 OTA设计框架和综合分析
+# OTA设计框架和综合分析
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 OTA设计框架和综合分析](#1-1-1-1-1-1-1-ota设计框架和综合分析)
+- [OTA设计框架和综合分析](#ota设计框架和综合分析)
   - [1.1 目录](#11-目录)
   - [1.2 思维导图](#12-思维导图)
   - [1.3 1. 元模型-模型 元理论-理论](#13-1-元模型-模型-元理论-理论)
@@ -147,7 +147,7 @@
 
 ## 1.1 目录
 
-- [1 1 1 1 1 1 1 OTA设计框架和综合分析](#1-1-1-1-1-1-1-ota设计框架和综合分析)
+- [OTA设计框架和综合分析](#ota设计框架和综合分析)
   - [1.1 目录](#11-目录)
   - [1.2 思维导图](#12-思维导图)
   - [1.3 1. 元模型-模型 元理论-理论](#13-1-元模型-模型-元理论-理论)
@@ -360,6 +360,7 @@ OTA设计框架
         ├── 引导加载程序
         ├── 运行时环境
         └── 安全存储区
+
 ```
 
 ## 1.3 1. 元模型-模型 元理论-理论
@@ -711,12 +712,12 @@ OTA升级的标准执行流程：
          update_stages: HashMap<DeviceGroup, UpdateStage>,
          risk_assessment: RiskAnalyzer,
      }
-     
+  
      impl GatewayOtaManager {
          pub fn schedule_staged_update(&mut self) {
              // 风险评估
              let risk_groups = self.risk_assessment.categorize_devices();
-             
+  
              // 低风险设备先更新
              self.update_stages.insert(risk_groups.low_risk, UpdateStage::Immediate);
              // 中风险设备次更新
@@ -860,10 +861,10 @@ OTA升级的标准执行流程：
    fn test_ota_state_machine_transitions() {
        let mut state_machine = create_test_state_machine();
        assert_eq!(state_machine.state, OtaState::Idle);
-       
+  
        state_machine.process_event(OtaEvent::CheckForUpdate);
        assert_eq!(state_machine.state, OtaState::CheckingForUpdates);
-       
+  
        // 模拟更新可用情况
        state_machine.process_event(OtaEvent::UpdateAvailable {
            version: 2,
@@ -924,7 +925,7 @@ OTA升级的标准执行流程：
    每批次数量 = batch_size
    批次间隔 = interval
    成功率阈值 = success_threshold
-   
+  
    for batch in divide_into_batches(devices, batch_size):
        deploy_update(batch)
        wait(interval)
@@ -1172,7 +1173,7 @@ OTA升级的标准执行流程：
        fn download(&mut self, resource: &str, callback: ProgressCallback) -> Result<Vec<u8>, TransportError>;
        fn disconnect(&mut self) -> Result<(), TransportError>;
    }
-   
+  
    pub struct OtaSystem<T, V, S>
    where
        T: OtaTransport,
@@ -1477,7 +1478,7 @@ OTA升级的标准执行流程：
 3. **投资回报计算模型**
 
    ```math
-   ROI = (减少的现场维修成本 + 避免的召回成本 + 额外功能创收) / 
+   ROI = (减少的现场维修成本 + 避免的召回成本 + 额外功能创收) /
         (OTA基础设施成本 + 开发成本 + 运营成本)
    ```
 

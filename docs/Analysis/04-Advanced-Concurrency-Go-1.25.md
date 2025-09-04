@@ -122,6 +122,7 @@ type P struct {
     gcFractionalMarkTime int64 // GC分式标记时间
     gcController gcControllerState // GC控制器状态
 }
+
 ```
 
 #### 1.2.1.2 调度器状态机
@@ -189,6 +190,7 @@ type Scheduler struct {
     procresizetime int64 // 处理器调整时间
     totaltime   int64   // 总时间
 }
+
 ```
 
 ### 1.2.2 调度算法深度分析
@@ -264,6 +266,7 @@ func (ws *WorkStealingScheduler) selectVictim() *Processor {
     
     return nil
 }
+
 ```
 
 #### 1.2.2.2 抢占式调度
@@ -322,6 +325,7 @@ func (ps *PreemptiveScheduler) preempt(p *Processor) {
     // 重新调度任务
     ps.reschedule(p)
 }
+
 ```
 
 ### 1.2.3 性能优化策略
@@ -384,6 +388,7 @@ func (cfs *CacheFriendlyScheduler) getNeighborNUMATask() *Task {
     
     return nil
 }
+
 ```
 
 #### 1.2.3.2 负载均衡优化
@@ -448,6 +453,7 @@ func (lbs *LoadBalancedScheduler) shouldMigrate(overloaded, underloaded *Process
     
     return false
 }
+
 ```
 
 ## 1.3 Channel高级用法
@@ -560,6 +566,7 @@ func aggregateStage(input chan interface{}) chan interface{} {
     
     return output
 }
+
 ```
 
 #### 1.3.1.2 扇入扇出模式
@@ -642,6 +649,7 @@ func FanInOutExample() {
         fmt.Printf("Received: %d\n", result)
     }
 }
+
 ```
 
 #### 1.3.1.3 超时和取消模式
@@ -708,6 +716,7 @@ func TimeoutAndCancel() {
         fmt.Println("Timeout or cancelled!")
     }
 }
+
 ```
 
 ### 1.3.2 Channel性能优化
@@ -773,6 +782,7 @@ func (dbc *DynamicBufferChannel) Receive() (interface{}, bool) {
     item, ok := <-dbc.ch
     return item, ok
 }
+
 ```
 
 #### 1.3.2.2 批量处理优化
@@ -850,6 +860,7 @@ func BatchProcessingExample() {
         fmt.Printf("Batch %d: %v\n", i, batch)
     }
 }
+
 ```
 
 ## 1.4 总结

@@ -6,19 +6,6 @@
   - [1.2 联系和解释](#联系和解释)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，解引用是通过 `Deref` trait 来实现的。
 `Deref` trait 允许一个类型表现得像引用，这样当一个值需要被当作引用处理时，编译器会自动调用 `Deref` trait 的 `deref` 方法来进行解引用。
 
@@ -29,6 +16,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 - `Target` 关联类型表示解引用后的目标类型。
@@ -78,6 +66,7 @@ impl<T> Deref for MyBox<T> {
 
 let x = MyBox(10);
 let y: &i32 = &x; // 自动解引用，通过 `Deref` 实现
+
 ```
 
 **可变解引用**: 类似地，`Deref` trait 也可以用于可变解引用。
@@ -95,6 +84,7 @@ impl DerefMut for MyBox {
         &mut self.0
     }
 }
+
 ```
 
 通过 `Deref` trait，Rust 能够在需要时自动将智能指针转换为引用，
@@ -109,6 +99,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 这里的 `Target` 是 `Deref` 所返回引用的类型，

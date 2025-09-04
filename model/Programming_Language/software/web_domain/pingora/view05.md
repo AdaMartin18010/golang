@@ -26,19 +26,6 @@
   - [1.7 6. 思维导图](#6-思维导图)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Pingora设计框架与综合分析](#pingora设计框架与综合分析)
@@ -143,6 +130,7 @@ foreach middleware in reverse(chain):
 endfor
 
 return response
+
 ```
 
 ### 1.4.2 执行流
@@ -157,6 +145,7 @@ return response
   创建监听套接字
   分派接受连接任务到工作线程
   监听信号处理热重载/关闭
+
 ```
 
 **工作线程执行流**：
@@ -172,6 +161,7 @@ return response
     调度异步任务执行
   结束循环(关闭信号)
   清理资源
+
 ```
 
 **请求处理异步执行流**：
@@ -188,6 +178,7 @@ async fn handle_request():
   处理响应
   应用响应中间件
   返回客户端
+
 ```
 
 ### 1.4.3 数据流
@@ -199,6 +190,7 @@ async fn handle_request():
 ```math
 客户端 -> TCP缓冲区 -> HTTP解析器 -> 请求对象构建 -> 中间件处理 -> 
 可能的请求体转换 -> 上游请求构建 -> 上游服务
+
 ```
 
 关键优化点：
@@ -213,6 +205,7 @@ async fn handle_request():
 ```math
 上游服务 -> 响应对象构建 -> 可能的响应体转换 -> 中间件处理 -> 
 HTTP序列化 -> TCP缓冲区 -> 客户端
+
 ```
 
 关键优化点：
@@ -404,4 +397,5 @@ Pingora设计分析
         ├── vs Nginx
         ├── vs Envoy
         └── vs HAProxy
+
 ```

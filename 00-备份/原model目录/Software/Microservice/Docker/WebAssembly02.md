@@ -171,6 +171,7 @@ pub fn safe_memory_access(ptr: u32, len: u32) -> Result<u32, String> {
     
     Ok(sum)
 }
+
 ```
 
 ### 2.3 资源管理模型
@@ -222,6 +223,7 @@ M(fd_write) = write
 M(path_open) = open
 M(fd_close) = close
 ...
+
 ```
 
 **安全性约束**：
@@ -252,6 +254,7 @@ fn wasi_file_example() -> io::Result<()> {
     println!("Read from file: {}", contents);
     Ok(())
 }
+
 ```
 
 ### 3.2 内核交互模型
@@ -330,6 +333,7 @@ fn capability_example() {
 
 // 编译命令：rustc --target wasm32-wasi -o capability_example.wasm capability_example.rs
 // 运行命令：wasmtime --dir=./authorized_dir capability_example.wasm
+
 ```
 
 ## 4. 编程语言到WebAssembly的形式化映射
@@ -352,6 +356,7 @@ T_Rust(bool) = i32 // 0 = false, 1 = true
 T_Rust(&T) = i32 // 内存地址
 T_Rust(String) = (i32, i32) // 指针和长度对
 T_Rust(Vec<T>) = (i32, i32, i32) // 指针、长度和容量三元组
+
 ```
 
 **Go类型映射示例**：
@@ -364,6 +369,7 @@ T_Go(string) = (i32, i32) // 指针和长度对
 T_Go([]T) = (i32, i32, i32) // 指针、长度和容量三元组
 T_Go(map[K]V) = i32 // 映射到运行时结构的指针
 T_Go(interface{}) = (i32, i32) // 类型ID和数据指针对
+
 ```
 
 **类型安全性定理**：
@@ -387,6 +393,7 @@ $M_{Rust} = (Stack, Heap, Static) \mapsto M_W = LinearMemory$
 φ(Stack(v)) = LinearMemory[stack_ptr + offset(v)]
 φ(Heap(v)) = LinearMemory[heap_ptr + offset(v)]
 φ(Static(v)) = LinearMemory[static_ptr + offset(v)]
+
 ```
 
 **Go内存模型映射**：
@@ -443,6 +450,7 @@ func main() {
 //   ;; 计算校验和
 //   (call $println_int (call $calculateChecksum (local.get $data) (i32.const 1024)))
 // )
+
 ```
 
 ### 4.3 控制流表示
@@ -461,6 +469,7 @@ C(if e then s1 else s2) =
     (then C(s1))
     (else C(s2))
   )
+
 ```
 
 **循环映射**：
@@ -475,6 +484,7 @@ C(while e do s) =
       (br $continue)
     )
   )
+
 ```
 
 **异常处理映射**：
@@ -500,6 +510,7 @@ C(try s1 catch(e) s2) =
     (call $get_exception) ;; 获取异常对象
     C(s2)
   )
+
 ```
 
 ## 5. 实际应用与代码示例
@@ -600,6 +611,7 @@ fn invert_filter(pixels: &mut [Pixel]) {
         pixel.b = 255 - pixel.b;
     }
 }
+
 ```
 
 **与JavaScript交互**：
@@ -648,6 +660,7 @@ async function processImage() {
         ctx.putImageData(newImageData, 0, 0);
     }
 }
+
 ```
 
 ### 5.2 Go与WebAssembly
@@ -732,6 +745,7 @@ func main() {
     // 阻止程序退出
     select {}
 }
+
 ```
 
 **与JavaScript交互**：
@@ -777,6 +791,7 @@ async function initGoWasm() {
 
 // 初始化
 initGoWasm().catch(console.error);
+
 ```
 
 ### 5.3 混合部署架构
@@ -1175,6 +1190,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 6. 未来发展的形式化模型
@@ -1234,6 +1250,7 @@ interface text-analysis {
 }
 
 export text-analysis
+
 */
 
 // 实现组件接口
@@ -1286,6 +1303,7 @@ impl exports::text_analysis::Guest for TextAnalyzer {
         results
     }
 }
+
 ```
 
 ### 6.2 分布式执行理论
@@ -1459,6 +1477,7 @@ impl Node {
         }
     }
 }
+
 ```
 
 ### 6.3 形式化验证前景
@@ -1540,6 +1559,7 @@ fn main() {
         println!("函数 {} 终止性: {}", function.name, terminates);
     }
 }
+
 ```
 
 ## 7. 思维导图
@@ -1626,4 +1646,5 @@ mindmap
         规范形式化
         属性验证
         验证工具链
+
 ```

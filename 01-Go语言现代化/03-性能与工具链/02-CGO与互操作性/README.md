@@ -35,10 +35,12 @@ package main
 void my_c_function(const char* s) {
     printf("Message from C: %s\n", s);
 }
+
 */
 import "C"
 
 // ...
+
 ```
 
 **2. 类型映射 (Type Mapping)**
@@ -74,6 +76,7 @@ CGO 虽然功能强大，但并非没有代价。**每一次 Go 到 C 的函数�
 func MyFastCgoCall(p *C.char, size C.int) {
     C.c_function_process(p, size)
 }
+
 ```
 
 ## 1.3.2.1.4 🧠 **内存管理最佳实践**
@@ -89,6 +92,7 @@ cString := C.CString(goString)
 defer C.free(unsafe.Pointer(cString)) // 确保 C 字符串被释放
 
 C.my_c_function(cString)
+
 ```
 
 ## 1.3.2.1.5 💡 **何时使用 CGO？**

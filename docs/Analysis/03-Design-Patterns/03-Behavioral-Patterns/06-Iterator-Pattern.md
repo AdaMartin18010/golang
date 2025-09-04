@@ -178,6 +178,7 @@ func (c *ConcreteAggregate) GetItem(index int) interface{} {
     }
     return nil
 }
+
 ```
 
 ### 3.3.1.4.2 图书管理迭代器
@@ -379,6 +380,7 @@ func (a *AuthorBookIterator) Current() *Book {
 func (a *AuthorBookIterator) Reset() {
     a.index = 0
 }
+
 ```
 
 ### 3.3.1.4.3 文件系统迭代器
@@ -629,6 +631,7 @@ func (r *RecursiveFileSystemIterator) Current() *FileNode {
 func (r *RecursiveFileSystemIterator) Reset() {
     r.index = 0
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -751,6 +754,7 @@ func (q *QueryExecutor) ExecuteQuery(query string, args ...interface{}) (RowIter
     
     return NewDatabaseIterator(rows)
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

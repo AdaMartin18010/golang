@@ -25,19 +25,6 @@
     - [1.5.4 操作系统抽象层的所有权](#操作系统抽象层的所有权)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust 所有权系统的资源管理视角（续八）](#rust-所有权系统的资源管理视角续八)
@@ -287,6 +274,7 @@ impl<T: Clone + Default> ComputeGraph<T> {
         Ok(output)
     }
 }
+
 ```
 
 ### 1.2.2 梯度计算中的资源管理
@@ -484,6 +472,7 @@ impl<T: Clone + Default> Layer<T> {
         Tensor::new(vec![1, 1], Device::CPU)
     }
 }
+
 ```
 
 ### 1.2.3 模型训练与推理优化
@@ -716,6 +705,7 @@ impl<T: Clone + Default> ModelLayer<T> {
         // 更新参数
     }
 }
+
 ```
 
 ### 1.2.4 自动微分与所有权转换
@@ -1152,6 +1142,7 @@ fn ml_ownership_example() {
     
     println!("计算完成");
 }
+
 ```
 
 ## 1.3 所有权与图形编程深度探索
@@ -1557,6 +1548,7 @@ fn graphics_resource_example() {
     
     // 所有资源会在作用域结束时自动释放
 }
+
 ```
 
 ### 1.3.2 场景图所有权层次
@@ -1873,6 +1865,7 @@ impl SceneManager {
         });
     }
 }
+
 ```
 
 ### 1.3.3 实体组件系统中的所有权深析
@@ -2228,6 +2221,7 @@ fn ecs_ownership_example() {
         }
     }
 }
+
 ```
 
 ### 1.3.4 物理与碰撞系统中的借用模型
@@ -2721,6 +2715,7 @@ fn physics_system_example() {
         }
     }
 }
+
 ```
 
 ## 1.4 所有权与形式方法学
@@ -2883,6 +2878,7 @@ fn borrow_checker_as_proof_system() {
     // 借用结束后可以再次访问原始数据
     println!("修改后: {:?}", data);
 }
+
 ```
 
 ### 1.4.2 分离逻辑扩展
@@ -3074,6 +3070,7 @@ fn frame_rule_example() {
     
     println!("再次转换后: {:?}, 元数据: {}", resource.core, resource.metadata);
 }
+
 ```
 
 ### 1.4.3 程序验证与所有权证明
@@ -3352,6 +3349,7 @@ fn contract_verification_example() {
         println!("搜索结果: {:?}", result);
     }
 }
+
 ```
 
 ### 1.4.4 智能合约与所有权安全
@@ -3801,6 +3799,7 @@ fn smart_contract_example() {
     // 现在交易应该已执行，因为有两个确认
     println!("多签交易示例完成");
 }
+
 ```
 
 ## 1.5 操作系统与所有权系统
@@ -4228,6 +4227,7 @@ fn kernel_resource_example() {
         println!("警告：检测到 {} 个资源泄漏", kernel.active_resources.len());
     }
 }
+
 ```
 
 ### 1.5.2 驱动开发安全模型
@@ -4582,6 +4582,7 @@ fn driver_development_example() {
     // 关闭所有设备
     driver_mgr.shutdown_all();
 }
+
 ```
 
 ### 1.5.3 权限系统与所有权映射
@@ -4905,6 +4906,7 @@ fn permission_system_example() {
         None => println!("Bob 无法获得文档访问权限"),
     }
 }
+
 ```
 
 ### 1.5.4 操作系统抽象层的所有权
@@ -5349,4 +5351,5 @@ fn os_abstraction_example() {
     
     println!("\n操作系统抽象层示例完成");
 }
+
 ```

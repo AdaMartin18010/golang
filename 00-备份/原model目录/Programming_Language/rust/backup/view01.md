@@ -55,6 +55,7 @@ let s2 = s1; // s1的所有权转移给s2
 fn calculate_length(s: &String) -> usize { // 借用，不获取所有权
     s.len()
 }
+
 ```
 
 ### 2.2 特殊符号与语言结构
@@ -78,6 +79,7 @@ match some_value {
     Some(value) => println!("Got {}", value),
     _ => println!("Got nothing"), // 通配符匹配所有其他情况
 }
+
 ```
 
 ### 2.3 错误处理机制
@@ -106,6 +108,7 @@ fn read_username() -> Result<String, io::Error> {
     file.read_to_string(&mut username)?;
     Ok(username)
 }
+
 ```
 
 ### 2.4 指针类型系统
@@ -124,6 +127,7 @@ let x = 5;
 let r = &x;           // 不可变引用
 let b = Box::new(x);  // 智能指针，堆分配
 let raw = &x as *const i32; // 原始指针，需要unsafe使用
+
 ```
 
 ### 2.5 属性系统
@@ -151,6 +155,7 @@ mod tests {
         assert_eq!(2 + 2, 4);
     }
 }
+
 ```
 
 ## 3. 编译器与类型系统
@@ -180,6 +185,7 @@ Rust的类型系统结合了静态类型、强类型、类型推导和高级类�
 fn process<T: AsRef<str> + Send + 'static>(data: T) -> impl Iterator<Item = char> {
     data.as_ref().chars()
 }
+
 ```
 
 ### 3.3 RPIT与异步编程
@@ -197,6 +203,7 @@ Rust 2024中的RPIT（Reference-Passing In Trait）引入了改进的生命周�
 async fn process(data: &Vec<u8>) -> impl Iterator<Item = u8> {
     data.iter().map(|v| *v + 1)
 }
+
 ```
 
 ## 4. 生态系统与项目组织
@@ -238,6 +245,7 @@ mod database {
         // 数据库连接管理
     }
 }
+
 ```
 
 ### 4.3 学习路径与挑战
@@ -410,4 +418,5 @@ Rust语言全面分析
         ├── 新手学习路径
         ├── 进阶技能发展
         └── 团队采用策略
+
 ```

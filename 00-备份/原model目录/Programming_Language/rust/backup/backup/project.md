@@ -16,6 +16,7 @@ my_binary_project/
 ├── Cargo.toml           # 项目的配置文件
 ├── benches/             # 基准测试文件
 └── tests/               # 集成测试文件
+
 ```
 
 ### 1.1 特点
@@ -37,6 +38,7 @@ my_library/
 │   └── example.rs       # 库的使用示例
 ├── Cargo.toml
 └── tests/               # 集成测试
+
 ```
 
 ### 2.1 特点
@@ -56,6 +58,7 @@ my_project/
 │   └── tests/
 │       └── test_file.rs # 集成测试文件
 └── Cargo.toml
+
 ```
 
 ### 3.1 特点
@@ -74,6 +77,7 @@ version = "0.1.0"
 edition = "2021"
 
 # 依赖管理
+
 [dependencies]
 serde = "1.0"
 tokio = { version = "1.0", features = ["full"] }
@@ -81,6 +85,7 @@ tokio = { version = "1.0", features = ["full"] }
 [[bin]]
 name = "my_binary"
 path = "src/bin/my_binary.rs"
+
 ```
 
 ### 4.1 特点
@@ -110,6 +115,7 @@ my_project/
 │       └── mod.rs
 │       └── config.rs
 └── Cargo.toml
+
 ```
 
 ### 5.1 特点
@@ -146,6 +152,7 @@ impl Drawable for Square {
 fn render(shape: &dyn Drawable) {
     shape.draw();
 }
+
 ```
 
 ### 6.1 特点
@@ -165,6 +172,7 @@ fn main() {
     let squares: Vec<_> = numbers.iter().map(|x| x * x).collect();
     println!("{:?}", squares);
 }
+
 ```
 
 ### 7.1 特点
@@ -198,6 +206,7 @@ fn main() {
     let person = Person::new("Alice".to_string(), 30);
     person.greet();
 }
+
 ```
 
 ### 8.1 特点

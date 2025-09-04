@@ -186,6 +186,7 @@ async fn main() {
     // 启动网络服务（例如 TCP/HTTP 服务器）
     server::start(&config.network).await.expect("网络服务启动失败");
 }
+
 ```
 
 ### 1.7.2 网络与 I/O 层
@@ -218,6 +219,7 @@ pub async fn start_tcp_listener(addr: &str) -> std::io::Result<()> {
         });
     }
 }
+
 ```
 
 ### 1.7.3 协议解析层
@@ -267,6 +269,7 @@ impl Encoder<MyProtocolMessage> for MyProtocolCodec {
         Ok(())
     }
 }
+
 ```
 
 ### 1.7.4 业务处理层
@@ -302,6 +305,7 @@ pub async fn handle_connection(stream: TcpStream) -> Result<(), Box<dyn std::err
     }
     Ok(())
 }
+
 ```
 
 ### 1.7.5 数据存储层

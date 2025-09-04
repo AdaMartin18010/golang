@@ -45,13 +45,6 @@
     - [1.11.3 未来研究方向](#未来研究方向)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 CI/CD与分布式技术融合：P2P、区块链与工作流的形式化分析
 
 ## 1.1 目录
@@ -221,6 +214,7 @@ mindmap
         开源实践
         企业转型经验
         性能与效益分析
+
 ```
 
 ## 1.3 1. 引言
@@ -527,6 +521,7 @@ contract DeploymentGate {
         emit DeploymentApproved(deploymentId);
     }
 }
+
 ```
 
 ### 1.6.3 分布式信任模型与共识机制
@@ -647,6 +642,7 @@ pipeline:
     deploymentId:
       type: string
       from: ${deploy.metadata.uid}
+
 ```
 
 ### 1.7.2 工作流编排与动态调整
@@ -885,6 +881,7 @@ $$\forall i \in I: Execute(w_1, i) = Execute(w_2, i)$$
 ```math
 LocalUpdate(model, local_data) → encrypted_gradients
 SecureAggregate(encrypted_gradients_1, ..., encrypted_gradients_n) → global_update
+
 ```
 
 ### 1.9.2 CI/CD与零信任安全
@@ -927,6 +924,7 @@ $$Access(subject, resource, action) = Eval(I(subject) \wedge A(subject, resource
 │  └───────────────────────────────────────────────┘  │
 │                                                     │
 └─────────────────────────────────────────────────────┘
+
 ```
 
 ### 1.9.3 CI/CD与量子计算
@@ -1021,6 +1019,7 @@ $$R = w_1 \cdot speed + w_2 \cdot reliability - w_3 \cdot cost$$
   集成度  │  █  │  █  │     │     │     │
           └─────┴─────┴─────┴─────┴─────┘
            L1    L2    L3    L4    L5
+
 ```
 
 ### 1.10.2 架构演进路径与模式
@@ -1053,7 +1052,7 @@ $$R = w_1 \cdot speed + w_2 \cdot reliability - w_3 \cdot cost$$
 
 ### 1.10.3 行业案例与经验教训
 
--**案例研究1：金融行业P2P与区块链融合CI/CD**
+- **案例研究1：金融行业P2P与区块链融合CI/CD**
 
 大型银行如摩根大通探索区块链技术与P2P网络相结合用于金融软件CI/CD，主要收益：
 
@@ -1061,7 +1060,7 @@ $$R = w_1 \cdot speed + w_2 \cdot reliability - w_3 \cdot cost$$
 - 合规证明自动化，审计时间缩短80%
 - 部署验证的多方共识，降低操作风险
 
--**案例研究2：电信行业分布式边缘CI/CD**
+- **案例研究2：电信行业分布式边缘CI/CD**
 
 爱立信实施了基于P2P的边缘CI/CD系统，用于5G网络功能部署：
 
@@ -1069,7 +1068,7 @@ $$R = w_1 \cdot speed + w_2 \cdot reliability - w_3 \cdot cost$$
 - 地理分布式构建缓存
 - 就近部署策略，减少90%部署时间
 
--**关键经验教训**：
+- **关键经验教训**：
 
 1. **复杂性管理**：
    - 最小化新技术采用范围，从关键痛点出发
@@ -1091,19 +1090,19 @@ $$R = w_1 \cdot speed + w_2 \cdot reliability - w_3 \cdot cost$$
 
 分布式技术与CI/CD的融合尚处于早期阶段，但已显示出巨大潜力：
 
--**P2P技术融合**：
+- **P2P技术融合**：
 
 - 产品化系统如Uber的Kraken和Bazel分布式构建系统
 - 开源项目如BuildGrid和BuildBarn提供分布式执行
 - 理论研究主要集中在调度优化和缓存策略
 
--**区块链技术融合**：
+- **区块链技术融合**：
 
 - 初创公司如CodeNotary提供不可篡改构建验证
 - Linux基金会的Hyperledger Fabric用于供应链验证
 - 研究集中在智能合约驱动的CI/CD流程自动化
 
--**工作流技术融合**：
+- **工作流技术融合**：
 
 - Argo、Tekton等Kubernetes原生工作流引擎
 - GitHub Actions、GitLab CI等支持声明式工作流

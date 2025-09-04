@@ -30,19 +30,6 @@
     - [1.6.4 形式化验证与类型安全](#形式化验证与类型安全)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust泛型全面解析](#rust泛型全面解析)
@@ -90,6 +77,7 @@ struct Wrapper<'a, T> {
 fn longest<'a, T: PartialOrd>(x: &'a T, y: &'a T) -> &'a T {
     if x >= y { x } else { y }
 }
+
 ```
 
 生命周期参数本质上也是一种泛型参数，但专门用于处理引用的有效期。二者结合时需要注意：
@@ -105,6 +93,7 @@ trait Iterator {
     type Item<'a> where Self: 'a;
     fn next<'a>(&'a mut self) -> Option<Self::Item<'a>>;
 }
+
 ```
 
 ### 1.2.2 泛型与trait系统
@@ -124,6 +113,7 @@ fn process_dynamic(items: Vec<Box<dyn Display>>) {
         println!("{}", item);
     }
 }
+
 ```
 
 泛型与trait系统结合的关键点：
@@ -165,6 +155,7 @@ where
 {
     // ...
 }
+
 ```
 
 泛型与类型系统的高级特性：
@@ -197,6 +188,7 @@ macro_rules! impl_display_for {
 struct GenericStruct<T: Clone> {
     data: Vec<T>,
 }
+
 ```
 
 宏系统增强泛型的方式：
@@ -223,6 +215,7 @@ fn identity_i32(x: i32) -> i32 { x }
 fn identity_str(x: &str) -> &str { x }
 let a = identity_i32(1);
 let b = identity_str("hello");
+
 ```
 
 单态化的优缺点：
@@ -267,6 +260,7 @@ impl Connection<Uninitialized> {
 impl Connection<Initialized> {
     fn send_data(&self, data: &[u8]) { /* ... */ }
 }
+
 ```
 
 常见编译期设计模式：
@@ -292,6 +286,7 @@ where
 
 // 编译后性能与手写循环相当
 let result = sum_squares(0..1000);
+
 ```
 
 零成本抽象原理：
@@ -339,6 +334,7 @@ impl<T: Nat> Nat for Succ<T> {
 
 // 使用类型计算斐波那契数
 type Fib<N> = /* 复杂的类型级计算 */;
+
 ```
 
 编译期计算的价值：
@@ -364,6 +360,7 @@ fn process<T: Display>(x: T) {
 fn process_dyn(x: &dyn Display) {
     println!("{}", x);
 }
+
 ```
 
 两种分发方式的对比：
@@ -406,6 +403,7 @@ where
 {
     // ...
 }
+
 ```
 
 泛型在并发编程中的优势：
@@ -446,6 +444,7 @@ impl<T> Future for MyFuture<T> {
         // ...
     }
 }
+
 ```
 
 异步Rust的泛型应用：
@@ -480,6 +479,7 @@ where
     let bytes = data.as_ref();
     // ...
 }
+
 ```
 
 性能优化策略：
@@ -539,6 +539,7 @@ impl Post<Published> {
         &self.content
     }
 }
+
 ```
 
 类型状态模式的优势：
@@ -581,6 +582,7 @@ struct StrWrapper<'a> {
     data: String,
     _phantom: PhantomData<&'a str>,
 }
+
 ```
 
 应用场景：
@@ -611,6 +613,7 @@ where
 trait Parser {
     fn parse<'a>(&self, input: &'a str) -> Result<&'a str, &'a str>;
 }
+
 ```
 
 HRTB应用场景：
@@ -645,6 +648,7 @@ enum Expr<T> {
     Mul(Box<Expr<T>>, Box<Expr<T>>),
     // ...
 }
+
 ```
 
 递归泛型应用：
@@ -677,6 +681,7 @@ where
     let content = std::fs::read_to_string(path.as_ref())?;
     content.parse().map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))
 }
+
 ```
 
 API设计最佳实践：
@@ -716,6 +721,7 @@ where
 {
     items.iter().map(f).collect()
 }
+
 ```
 
 平衡策略：
@@ -768,6 +774,7 @@ trait IterableContent {
     
     fn items(&self) -> impl Iterator<Item = &Self::Item>;
 }
+
 ```
 
 可维护性最佳实践：
@@ -831,6 +838,7 @@ where
 {
     a / b.get()
 }
+
 ```
 
 形式化验证应用：

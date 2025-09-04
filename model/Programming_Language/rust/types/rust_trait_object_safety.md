@@ -134,6 +134,7 @@ fn main() {
     let obj: &dyn ObjectSafe = &instance;
     obj.foo();
 }
+
 ```
 
 在这个示例中，所有方法都采用 `&self` 作为接收者，没有使用泛型，并且返回值类型均满足限制，
@@ -147,6 +148,7 @@ trait NonObjectSafe {
     // 返回裸露的 Self 会导致对象安全性问题
     fn duplicate(&self) -> Self;
 }
+
 ```
 
 在这个例子中，由于方法 `duplicate` 直接返回 `Self`（即调用者的具体类型），
@@ -195,6 +197,7 @@ trait NonObjectSafe {
 trait Cloneable {
     fn clone_box(&self) -> Self;
 }
+
 ```
 
 对于具体类型来说，实现 `clone_box` 方法返回一个与自身相同的实例没有问题；  
@@ -205,6 +208,7 @@ fn clone_it(item: &dyn Cloneable) -> Box<dyn Cloneable> {
     // 如何从 &dyn Cloneable 得到正确的返回类型？无法确定
     Box::new(item.clone_box())
 }
+
 ```
 
 在上面的代码中，我们无法确定 `clone_box` 返回的具体类型是什么，因此不能安全地进行动态分派。
@@ -230,6 +234,7 @@ fn clone_it(item: &dyn Cloneable) -> Box<dyn Cloneable> {
 trait Transformer {
     fn transform<T>(&self, value: T) -> T;
 }
+
 ```
 
 在这个 trait 中，`transform` 方法有一个未固定的泛型参数 `T`。  
@@ -240,6 +245,7 @@ fn use_transformer(t: &dyn Transformer) {
     // 编译器无法通过虚表确定 transform 方法具体调用哪种实例化
     let result = t.transform(123);
 }
+
 ```
 
 上面的代码无法正常工作，因为 `transform` 方法的签名在不同 `T` 的具体化时是不一样的，
@@ -302,6 +308,7 @@ trait NonObjectSafe {
     fn do_something(&self);
     fn make_self() -> Self;
 }
+
 ```
 
 如果尝试对其创建 trait 对象，如 `Box<dyn NonObjectSafe>`，编译器会报错，提示 trait 不满足对象安全要求。
@@ -315,6 +322,7 @@ trait GenericMethod {
     // 泛型方法导致 trait 不能作为 trait 对象
     fn do_generic<T>(&self, data: T);
 }
+
 ```
 
 由于 `do_generic` 方法在调用时需要确定具体类型参数，所以编译器无法在动态分派时生成一个统一的调用接口，这也会使得该 trait 无法被转成 trait 对象。
@@ -350,6 +358,7 @@ fn call_it(obj: &dyn ObjectSafe) {
     obj.do_something();
     println!("{}", obj.describe());
 }
+
 ```
 
 在这个例子中，`ObjectSafe` 满足所有要求，因此可以安全转换为 trait 对象进行动态调用。
@@ -385,6 +394,7 @@ flowchart TD
     
     A --> H[对象安全示例]
     H --> H1[只包含 &self 方法且返回固定类型]
+
 ```
 
 ## 1.14 5. 总结
@@ -421,6 +431,7 @@ trait MyTrait {
     // 含有泛型参数的方法
     fn generic_method<T>(&self, value: T);
 }
+
 ```
 
 这种方法会在编译时根据不同的 `T` 生成多个版本（单态化）。
@@ -457,6 +468,7 @@ fn use_trait_object(obj: &dyn NonObjectSafe) {
     // 无法调用 generic_method，因为泛型参数 T 无法确定
     // obj.generic_method(42);
 }
+
 ```
 
 编译器会指出 `generic_method` 使用了泛型参数，不符合对象安全要求。
@@ -489,6 +501,7 @@ fn use_object_safe(obj: &dyn ObjectSafe) {
     obj.do_something();
     println!("{}", obj.describe());
 }
+
 ```
 
 在这个例子中，所有方法的签名都不带额外泛型参数，而且返回类型固定，
@@ -514,6 +527,7 @@ flowchart TD
     A --> D[结果]
     D --> D1[含泛型方法的 trait 不能制作为 trait 对象]
     D --> D2[必须移除或改写泛型方法，使其对象安全]
+
 ```
 
 ## 1.19 --总结
@@ -562,16 +576,16 @@ flowchart TD
        // 方法签名没有额外泛型参数
        fn get(&self) -> T;
    }
-   
+  
    // 实现该 trait
    pub struct MyStruct;
-   
+  
    impl ObjectSafeTrait<u32> for MyStruct {
        fn get(&self) -> u32 {
            42
        }
    }
-   
+  
    // 指定了具体类型后的 trait 对象使用：
    fn use_object_safe(obj: &dyn ObjectSafeTrait<u32>) {
        println!("value: {}", obj.get());
@@ -600,12 +614,12 @@ flowchart TD
        A[泛型 Trait 定义]
        A --> B[外部泛型参数]
        B --> B1[如 MyTrait<T>]
-       
+  
        A --> C[对象安全要求]
        C --> C1[方法不含额外泛型参数]
        C --> C2[方法不返回 Self]
        C --> C3[接收者为 &self / &mut self / Box<Self>]
-       
+  
        A --> D[指定具体类型后的 trait]
        D --> D1[示例：dyn MyTrait<u32>]
        D1 --> E[对象安全？]

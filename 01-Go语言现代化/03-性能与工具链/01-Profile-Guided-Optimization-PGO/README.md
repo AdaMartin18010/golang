@@ -50,14 +50,18 @@ func main() {
     go http.ListenAndServe("localhost:6060", nil)
     // ...
 }
+
 ```
 
 **第二步：采集 CPU Profile**
 在服务运行并承受负载时，使用 `curl` 或 `go tool pprof` 采集 profile。
 
 ```bash
+
 # 1.3.1.2 采集一个 30 秒的 CPU profile
+
 curl -o cpu.pprof "http://localhost:6060/debug/pprof/cpu?seconds=30"
+
 ```
 
 这会生成一个 `cpu.pprof` 文件。
@@ -67,6 +71,7 @@ curl -o cpu.pprof "http://localhost:6060/debug/pprof/cpu?seconds=30"
 
 ```bash
 mv cpu.pprof path/to/your/project/main/default.pgo
+
 ```
 
 **完成！**

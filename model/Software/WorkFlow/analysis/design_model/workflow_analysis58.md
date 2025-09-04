@@ -15,19 +15,6 @@
     - [1.1.10 10. 思维导图 (Text Format)](#10-思维导图-text-format)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 好的，我们来梳理一下 Rust 生态中用于构建分布式系统的开源框架和关键库，并进行评价。
 
 需要明确一点：相比于 Java (Spring Cloud, Akka, Vert.x) 或 Go (go-micro, go-kit,原生库支持良好)，Rust 在**“开箱即用”、“大而全”**的分布式系统*框架*方面，生态系统**相对年轻**，成熟度不一。Rust 社区更倾向于提供**高质量、模块化的基础库**，开发者通常需要组合这些库来构建自己的分布式系统，而不是依赖一个单一的、包罗万象的框架。
@@ -202,4 +189,5 @@ Rust Distributed Systems Frameworks & Libraries Evaluation
 |   |-- More integration effort needed than "batteries-included" frameworks
 |   |-- Choose based on team skill, performance needs, tolerance for ecosystem gaps
 |   |-- Ecosystem is rapidly evolving
+
 ```

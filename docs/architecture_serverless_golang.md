@@ -89,6 +89,7 @@ graph TD
     end
 
     A --> B;
+
 ```
 
 ---
@@ -130,6 +131,7 @@ func main() {
  // 启动Lambda处理器
  lambda.Start(HandleRequest)
 }
+
 ```
 
 **构建和部署**:
@@ -168,6 +170,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
  }
  fmt.Fprintf(w, "Hello, %s!", d.Name)
 }
+
 ```
 
 **部署**:
@@ -230,6 +233,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 └── .github/
     └── workflows/
         └── ci-cd.yml           # GitHub Actions工作流
+
 ```
 
 ### 6.2 配置文件 (serverless.yml)
@@ -237,7 +241,9 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 此文件定义了服务、函数、触发事件和所需的基础设施资源。
 
 ```yaml
+
 # 2 2 2 2 2 2 2 serverless.yml
+
 service: my-golang-service
 
 frameworkVersion: '3'
@@ -284,16 +290,20 @@ functions:
           method: put
 
 # 3 3 3 3 3 3 3 自定义构建过程
+
 custom:
   build:
     # 构建命令，在部署前执行
     command: make build 
+
 ```
 
 ### 6.3 CI/CD工作流 (GitHub Actions)
 
 ```yaml
+
 # 4 4 4 4 4 4 4 .github/workflows/ci-cd.yml
+
 name: Deploy Serverless Go App
 
 on:
@@ -342,4 +352,4 @@ jobs:
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

@@ -16,6 +16,7 @@
 我会从系统理论和控制论的角度解释程序语言的设计理念，
 展示如何通过这三个基本要素实现对计算过程的控制和保障。
 </think>
+
 ```
 
 ## 目录
@@ -89,6 +90,7 @@ fn example() {
         println!("计数器超过10");
     }
 }
+
 ```
 
 ### 1.2 形式逻辑在程序语言中的体现
@@ -109,6 +111,7 @@ fn logical_proposition() -> bool {
     
     true // 其他情况下P→Q成立
 }
+
 ```
 
 ## 2. 类型系统：程序的静态控制机制
@@ -127,6 +130,7 @@ fn find_value(data: &[i32], target: i32) -> Option<usize> {
     }
     None // 表明无法证明"值存在"
 }
+
 ```
 
 ### 2.2 类型安全与系统边界控制
@@ -145,6 +149,7 @@ fn type_safety_example() {
     let z = x as f64 + y;
     println!("z = {}", z);
 }
+
 ```
 
 ### 2.3 代数数据类型的控制论解读
@@ -190,6 +195,7 @@ fn control_system(state: &mut SystemState, mode: SystemMode) {
         },
     }
 }
+
 ```
 
 ### 2.4 参数化多态与系统通用性
@@ -230,6 +236,7 @@ fn generic_control_demo() {
     
     println!("整数控制结果: {}, 浮点控制结果: {}", result1, result2);
 }
+
 ```
 
 ### 2.5 子类型与系统适应性
@@ -293,6 +300,7 @@ fn control_components(components: &mut [&mut dyn Component]) {
         println!("状态: {}", component.status());
     }
 }
+
 ```
 
 ## 3. 变量管理：系统状态的守卫者
@@ -323,6 +331,7 @@ fn system_state_variables() {
     // 系统状态报告
     println!("系统状态：温度 {}°C, 湿度 {}%", temperature, humidity);
 }
+
 ```
 
 ### 3.2 所有权模型：状态转移的控制理论
@@ -368,6 +377,7 @@ fn borrow_state(state: &String) {
     println!("借用状态: {}", state);
     // 函数结束，仅借用结束，原资源不受影响
 }
+
 ```
 
 ### 3.3 借用规则：资源共享的控制策略
@@ -401,6 +411,7 @@ fn borrowing_control_system() {
     let final_reader = &system_state;
     println!("最终状态: {}", final_reader);
 }
+
 ```
 
 ### 3.4 可变性约束：状态改变的自律机制
@@ -438,6 +449,7 @@ fn mutability_constraints() {
     system_variable = 100.0;
     println!("最终系统状态: {}", system_variable);
 }
+
 ```
 
 ### 3.5 生命周期：时空约束的形式化
@@ -470,6 +482,7 @@ fn lifetime_system_control() {
     // 但Rust的生命周期系统通过限制返回值的生命周期与参数一致，防止了这种情况
     println!("仍然有效的系统: {}", result); // 安全：result引用的是system_a
 }
+
 ```
 
 ## 4. 控制流：系统演化的路径规划
@@ -497,6 +510,7 @@ fn sequential_system_evolution() {
     // 最终系统状态
     println!("最终状态: {}", system_state);
 }
+
 ```
 
 ### 4.2 条件分支：状态空间分割与决策
@@ -532,6 +546,7 @@ fn conditional_system_control(input: i32) {
     
     println!("系统控制完成");
 }
+
 ```
 
 ### 4.3 循环结构：系统迭代与稳定状态
@@ -565,6 +580,7 @@ fn iterative_system_stabilization() {
     
     println!("系统稳定于状态 {} 经过 {} 次迭代", state, iterations);
 }
+
 ```
 
 ### 4.4 模式匹配：基于类型的控制流分派
@@ -615,6 +631,7 @@ fn pattern_matching_control() {
         }
     }
 }
+
 ```
 
 ### 4.5 错误处理：异常状态的控制策略
@@ -673,6 +690,7 @@ fn error_handling_control_system() {
     
     println!("所有操作完成");
 }
+
 ```
 
 ## 5. 三元素的系统集成与互动
@@ -715,6 +733,7 @@ fn type_driven_variable_control() {
     
     println!("位置: {}, 进度: {}%", position, progress.value());
 }
+
 ```
 
 ### 5.2 变量状态影响控制流向
@@ -773,6 +792,7 @@ fn state_driven_control_flow() {
     
     println!("系统终止，最终温度: {}", system_temperature);
 }
+
 ```
 
 ### 5.3 控制流影响类型检查与变量生命周期
@@ -821,6 +841,7 @@ fn control_flow_affects_variables() {
         println!("迭代 {}: 值 = {}", i, iteration_value);
     } // iteration_value的生命周期在每次循环迭代后结束
 }
+
 ```
 
 ### 5.4 三元素协同的形式化解释
@@ -957,6 +978,7 @@ fn integrated_system_control() -> Result<(), String> {
     
     Ok(())
 }
+
 ```
 
 上述综合示例展示了类型、变量和控制流的协同作用：
@@ -1016,6 +1038,7 @@ fn process_and_consume(mut vec: Vec<i32>) {
     println!("处理后: {:?}", vec);
     // vec在函数结束时自动释放 - 不需要手动内存管理
 }
+
 ```
 
 ### 6.2 并发控制：类型系统对并发访问的管理
@@ -1069,6 +1092,7 @@ fn concurrency_control_system() {
     // 2. Arc确保引用计数是线程安全的
     // 3. 类型系统验证Send和Sync特征，确保跨线程安全
 }
+
 ```
 
 ### 6.3 资源管理：RAII模式的形式化分析
@@ -1131,6 +1155,7 @@ fn resource_management_system() {
     
     println!("系统退出");
 }
+
 ```
 
 ### 6.4 错误传播：?操作符的控制流形式化
@@ -1202,6 +1227,7 @@ fn error_propagation_demo() {
         Err(e) => println!("系统启动失败: {:?}", e),
     }
 }
+
 ```
 
 ## 7. 形式推理与系统正确性验证
@@ -1237,6 +1263,7 @@ fn type_inference_as_proof() {
     println!("推导和证明完成: {} + {} = {}", x, y, z);
     println!("1 + 2 = {}, 1.0 + 2.0 = {}", sum1, sum2);
 }
+
 ```
 
 ### 7.2 不变量维护：系统状态的恒定约束
@@ -1362,6 +1389,7 @@ fn invariant_maintenance_demo() {
     
     println!("最终余额: {:.2}", account.balance as f64 / 100.0);
 }
+
 ```
 
 ### 7.3 形式化验证：从形式推理到程序验证
@@ -1430,6 +1458,7 @@ fn formal_verification_demo() {
     
     println!("所有验证通过");
 }
+
 ```
 
 ### 7.4 柯里-霍华德同构：程序与证明的统一
@@ -1478,6 +1507,7 @@ fn curry_howard_isomorphism() {
     
     println!("柯里-霍华德同构展示了程序即证明的深层联系");
 }
+
 ```
 
 ## 8. 结论与展望
@@ -1512,6 +1542,7 @@ fn next_state(current: TrafficLightState) -> TrafficLightState {
         TrafficLightState::Green => TrafficLightState::Yellow,
     }
 }
+
 ```
 
 #### 8.2.2 **状态不可变性优先**：尽量减少可变状态，使用不可变数据结构和函数式转换
@@ -1524,6 +1555,7 @@ fn process_data(data: &[i32]) -> Vec<i32> {
         .map(|&x| x * 2)
         .collect()
 }
+
 ```
 
 #### 8.2.3 **显式控制流**：使错误处理和分支逻辑清晰可见，避免隐式控制流转换
@@ -1542,6 +1574,7 @@ fn process_file(path: &str) -> Result<String, String> {
         Err(e) => Err(format!("无法读取文件内容: {}", e)),
     }
 }
+
 ```
 
 ### 8.3 未来发展：形式方法与程序语言的融合
@@ -1576,7 +1609,9 @@ fn array_concat<const N: usize, const M: usize>(
     
     result
 }
+
 */
+
 ```
 
 ## 总结

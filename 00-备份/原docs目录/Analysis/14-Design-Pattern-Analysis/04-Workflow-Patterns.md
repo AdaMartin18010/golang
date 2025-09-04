@@ -260,6 +260,7 @@ func (s *OrderState) Handle(ctx context.Context, event Event) (State, error) {
     // 默认处理，实际应该根据具体状态实现
     return nil, fmt.Errorf("not implemented")
 }
+
 ```
 
 ## 2. 工作流引擎模式 (Workflow Engine)
@@ -656,6 +657,7 @@ func (e *WorkflowEngine) GetWorkflow(workflowID string) (*Workflow, bool) {
 func (e *WorkflowEngine) Shutdown() {
     e.cancel()
 }
+
 ```
 
 ## 3. 任务队列模式 (Task Queue)
@@ -1093,6 +1095,7 @@ func (tq *TaskQueue) Shutdown() {
     close(tq.resultChan)
     tq.wg.Wait()
 }
+
 ```
 
 ## 4. 编排vs协同模式 (Orchestration vs Choreography)
@@ -1284,6 +1287,7 @@ func (s *Service) ProcessEvent(event *Event) error {
     
     return s.eventBus.Publish(newEvent)
 }
+
 ```
 
 ## 5. 性能分析

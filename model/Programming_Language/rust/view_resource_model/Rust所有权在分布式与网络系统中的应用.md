@@ -28,19 +28,6 @@
   - [1.7 6. 结论与展望](#6-结论与展望)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust所有权在分布式与网络系统中的应用](#rust所有权在分布式与网络系统中的应用)
@@ -120,6 +107,7 @@ impl<T> Drop for RemoteHandle<T> {
         self.endpoint.send_release(self.resource_id);
     }
 }
+
 ```
 
 这种模式通过在本地代理对象被丢弃时自动通知远程端释放资源，将Rust的RAII模式扩展到网络环境。
@@ -164,6 +152,7 @@ enum RemoteBorrow<T> {
     },
     _phantom: PhantomData<T>,
 }
+
 ```
 
 这种方式结合了Rust的借用概念和分布式系统中的租约机制。
@@ -215,6 +204,7 @@ impl<T> DistributedOwnershipToken<T> {
         Ok(())
     }
 }
+
 ```
 
 ### 1.4.2 跨节点资源协调
@@ -265,6 +255,7 @@ impl<T> FaultTolerantOwnership<T> {
         }
     }
 }
+
 ```
 
 ### 1.4.4 分布式所有权的形式化模型
@@ -310,6 +301,7 @@ impl<T> Capability<T> {
         }
     }
 }
+
 ```
 
 ### 1.5.2 跨域访问控制模式
@@ -358,6 +350,7 @@ impl<T> DelegatedCapability<T> {
         self.expiration.map_or(false, |exp| exp < Instant::now())
     }
 }
+
 ```
 
 ### 1.5.4 形式化安全证明
@@ -411,6 +404,7 @@ struct AsymmetryHandler {
     trust_levels: HashMap<NodeId, TrustLevel>,
     capability_constraints: HashMap<NodeId, Vec<CapabilityConstraint>>,
 }
+
 ```
 
 ### 1.6.3 统一形式模型

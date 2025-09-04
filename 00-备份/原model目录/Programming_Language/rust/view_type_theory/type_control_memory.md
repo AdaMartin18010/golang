@@ -347,20 +347,20 @@ Rust 的借用检查器在编译时保证不会同时存在可变与不可变引
         A --> B[所有权 (Ownership)]
         B --> B1[每个值唯一所有者]
         B --> B2[移动语义]
-        
+  
         A --> C[借用 (Borrowing)]
         C --> C1[不可变引用 (&T)]
         C --> C2[可变引用 (&mut T)]
         C --> C3[借用检查器]
-        
+  
         A --> D[生命周期 (Lifetimes)]
         D --> D1[确保引用有效期]
         D --> D2[显式生命周期标注]
-        
+  
         A --> E[RAII 与 Drop]
         E --> E1[离开作用域自动释放]
         E --> E2[Drop trait 析构函数]
-        
+  
         A --> F[智能指针]
         F --> F1[Box 独占所有权]
         F --> F2[Rc / Arc 共享所有权]
@@ -399,13 +399,13 @@ RAII 与 Drop: 资源在对象创建时获取，在离开作用域时自动释�
         // 在堆上分配一个整数
         let boxed_number = Box::new(5);
         println!("Box contains: {}", boxed_number);
-        
+  
         // 用于递归类型的例子
         enum List {
             Cons(i32, Box<List>),
             Nil,
         }
-        
+  
         use List::*;
         let list = Cons(1, Box::new(Cons(2, Box::new(Nil))));
         // 此处 list 就是一个链式结构，数据存储在堆上，通过 Box 连接
@@ -435,18 +435,18 @@ RAII 与 Drop: 资源在对象创建时获取，在离开作用域时自动释�
     fn main() {
         // 创建一个 Rc 包装的字符串
         let greeting = Rc::new(String::from("Hello, Rc"));
-        
+  
         // 克隆 Rc 会增加引用计数，不存在实际数据拷贝
         let greeting_clone = Rc::clone(&greeting);
-        
+  
         // 输出当前的引用计数（预期为 2）
         println!("Reference count: {}", Rc::strong_count(&greeting));
-        
+  
         // 两个 Rc 均指向同一块内存，当所有 Rc 离开后，内存自动释放
     }
     ```
 
-    调用 `Rc::clone(&greeting)` 只会增加引用计数，而不拷贝底层数据。 
+    调用 `Rc::clone(&greeting)` 只会增加引用计数，而不拷贝底层数据。
     编译器在编译时无法验证引用计数的增加和减少，但运行时会保证当计数变为 0 时调用析构函数释放内存。
 
 ## 3. `Arc<T>`
@@ -479,12 +479,12 @@ RAII 与 Drop: 资源在对象创建时获取，在离开作用域时自动释�
             });
             handles.push(handle);
         }
-        
+  
         // 等待所有线程结束
         for handle in handles {
             handle.join().unwrap();
         }
-        
+  
         // 当所有线程结束后，引用计数归零，自动释放资源
     }
     ```

@@ -13,6 +13,7 @@ pub trait Deref {
     type Target: ?Sized;
     fn deref(&self) -> &Self::Target;
 }
+
 ```
 
 `Deref` trait 允许类型表现得像引用，通过自定义解引用的行为。

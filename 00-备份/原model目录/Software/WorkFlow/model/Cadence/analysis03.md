@@ -235,6 +235,7 @@ func ReserveInventoryActivity(ctx context.Context, items []OrderItem) error {
     
     return nil
 }
+
 ```
 
 **关键工作流组件**：
@@ -246,7 +247,7 @@ func ReserveInventoryActivity(ctx context.Context, items []OrderItem) error {
 
 ### 2.3 实施难度
 
--**中等难度**
+- **中等难度**
 
 实施过程中的主要挑战：
 
@@ -288,7 +289,7 @@ func ReserveInventoryActivity(ctx context.Context, items []OrderItem) error {
            return errors.New("failed to acquire inventory lock")
        }
        defer lock.Release(ctx)
-       
+  
        // 预留库存逻辑...
    }
    ```
@@ -597,6 +598,7 @@ func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) 
     logger.Info("Loan application workflow completed", "applicationId", application.ID, "status", decision.Status)
     return decision, nil
 }
+
 ```
 
 **关键实现特性**：
@@ -627,7 +629,7 @@ func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) 
        Documents          *LoanDocuments
        FinalDecision      *LoanDecision
    }
-   
+  
    // 每次状态变更时记录
    func recordStateTransition(state *LoanApplicationState, newStage string, reason string) {
        state.StageHistory = append(state.StageHistory, StageTransition{
@@ -651,7 +653,7 @@ func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) 
    func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) (LoanDecision, error) {
        // 获取当前工作流版本
        version := workflow.GetVersion(ctx, "LoanApplicationChange", workflow.DefaultVersion, 1)
-       
+  
        if version == workflow.DefaultVersion {
            // 旧版本逻辑
            return oldLoanApplicationImpl(ctx, application)
@@ -669,11 +671,11 @@ func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) 
    func PerformCreditCheckActivity(ctx context.Context, applicantID string) (CreditCheckResult, error) {
        // 获取信用服务客户端
        creditClient := services.GetCreditBureauClient()
-       
+  
        // 添加超时控制
        timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
        defer cancel()
-       
+  
        // 调用外部信用检查服务
        response, err := creditClient.CheckCredit(timeoutCtx, applicantID)
        if err != nil {
@@ -694,7 +696,7 @@ func LoanApplicationWorkflow(ctx workflow.Context, application LoanApplication) 
            }
            // 其他错误处理...
        }
-       
+  
        // 处理响应...
        return mapToCreditCheckResult(response), nil
    }
@@ -1024,6 +1026,7 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
     
     return result, nil
 }
+
 ```
 
 **关键实现特性**：
@@ -1036,7 +1039,7 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
 
 ### 4.3 实施难度
 
--**中高难度**
+- **中高难度**
 
 实施过程中的主要挑战：
 
@@ -1047,50 +1050,50 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
    func ExtractDataActivity(ctx context.Context, source DataSource, etlContext ETLContext) (ExtractResult, error) {
        // 获取数据源客户端
        client := getDataSourceClient(source)
-       
+  
        // 创建结果收集器
        result := ExtractResult{
            SourceID: source.SourceID,
            Batches:  make([]DataBatch, 0),
        }
-       
+  
        // 实现批量提取逻辑
        batchSize := 10000 // 每批处理的记录数
        offset := 0
-       
+  
        for {
            // 使用心跳机制报告进度
            activity.RecordHeartbeat(ctx, offset)
-           
+  
            // 提取一批数据
            batch, err := client.FetchData(source.Query, batchSize, offset)
            if err != nil {
                return result, err
            }
-           
+  
            // 保存批次数据到临时存储
            batchLocation, err := saveBatchToStorage(etlContext.TempStoragePath, source.SourceID, offset, batch)
            if err != nil {
                return result, err
            }
-           
+  
            // 添加批次信息（不是数据本身）
            result.Batches = append(result.Batches, DataBatch{
                BatchID:  fmt.Sprintf("%s-%d", source.SourceID, offset),
                Location: batchLocation,
                Records:  len(batch),
            })
-           
+  
            result.RecordCount += len(batch)
-           
+  
            // 检查是否已处理完所有数据
            if len(batch) < batchSize {
                break
            }
-           
+  
            offset += len(batch)
        }
-       
+  
        return result, nil
    }
    ```
@@ -1124,7 +1127,7 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
        result := DataValidationResult{
            Errors: make([]ValidationError, 0),
        }
-       
+  
        // 批次处理以避免内存问题
        for _, batch := range data.Batches {
            // 加载批次数据
@@ -1132,14 +1135,14 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
            if err != nil {
                return result, err
            }
-           
+  
            // 对每条记录应用验证规则
            for i, record := range records {
                // 记录验证进度心跳
                if i%1000 == 0 {
                    activity.RecordHeartbeat(ctx, fmt.Sprintf("Batch %s: %d/%d", batch.BatchID, i, len(records)))
                }
-               
+  
                // 应用所有验证规则
                for _, rule := range rules {
                    if err := applyValidationRule(record, rule); err != nil {
@@ -1149,7 +1152,7 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
                            Rule:     rule.Name,
                            Message:  err.Error(),
                        })
-                       
+  
                        // 检查是否超过最大错误记录数
                        if len(result.Errors) > 10000 {
                            // 返回部分结果以避免过大
@@ -1160,7 +1163,7 @@ func ProcessDataSourceWorkflow(ctx workflow.Context, request DataSourceRequest) 
                }
            }
        }
-       
+  
        return result, nil
    }
    ```
@@ -1459,6 +1462,7 @@ func handleServiceError(err error) error {
         return err
     }
 }
+
 ```
 
 **关键实现特性**：
@@ -1471,7 +1475,7 @@ func handleServiceError(err error) error {
 
 ### 5.3 实施难度
 
--**高难度**
+- **高难度**
 
 实施过程中的主要挑战：
 
@@ -1484,7 +1488,7 @@ func handleServiceError(err error) error {
        mutex       sync.RWMutex
        config      ServiceConfig
    }
-   
+  
    func (f *ServiceClientFactory) GetOrderServiceClient() (OrderServiceClient, error) {
        f.mutex.RLock()
        if client, ok := f.clientCache["order"]; ok {
@@ -1492,17 +1496,17 @@ func handleServiceError(err error) error {
            return client.(OrderServiceClient), nil
        }
        f.mutex.RUnlock()
-       
+  
        // 创建新客户端
        f.mutex.Lock()
        defer f.mutex.Unlock()
-       
+  
        // 检查当前使用的服务版本
        version := f.config.GetServiceVersion("order")
-       
+  
        var client OrderServiceClient
        var err error
-       
+  
        switch version {
        case "v1":
            client, err = orderserviceV1.NewClient(f.config.GetServiceEndpoint("order"))
@@ -1511,11 +1515,11 @@ func handleServiceError(err error) error {
        default:
            return nil, fmt.Errorf("unsupported order service version: %s", version)
        }
-       
+  
        if err != nil {
            return nil, err
        }
-       
+  
        f.clientCache["order"] = client
        return client, nil
    }
@@ -1528,15 +1532,15 @@ func handleServiceError(err error) error {
    func PaymentService_ProcessPayment(ctx context.Context, request PaymentRequest) (PaymentResult, error) {
        // 创建带有熔断器的客户端
        client := getPaymentServiceClient()
-       
+  
        // 记录活动开始
        logger := activity.GetLogger(ctx)
        logger.Info("Processing payment", "orderId", request.OrderID, "amount", request.Amount)
-       
+  
        // 使用熔断器包装服务调用
        var response *paymentservice.PaymentResponse
        var err error
-       
+  
        // 熔断器配置
        cb := gobreaker.NewCircuitBreaker(gobreaker.Settings{
            Name:        "PaymentService",
@@ -1555,42 +1559,42 @@ func handleServiceError(err error) error {
                ).Inc(1)
            },
        })
-       
+  
        // 执行受熔断器保护的调用
        result, cbErr := cb.Execute(func() (interface{}, error) {
            // 设置超时
            callCtx, cancel := context.WithTimeout(ctx, time.Second*30)
            defer cancel()
-           
+  
            resp, err := client.ProcessPayment(callCtx, &paymentservice.PaymentRequest{
                OrderID:     request.OrderID,
                Amount:      request.Amount,
                CustomerID:  request.CustomerID,
                PaymentInfo: convertToServicePaymentInfo(request.PaymentInfo),
            })
-           
+  
            return resp, err
        })
-       
+  
        if cbErr != nil {
            if errors.Is(cbErr, gobreaker.ErrOpenState) {
                return PaymentResult{}, temporal.NewNonRetryableApplicationError(
-                   "Payment service circuit breaker open", 
-                   "ServiceUnavailableError", 
+                   "Payment service circuit breaker open",
+                   "ServiceUnavailableError",
                    cbErr,
                )
            }
-           
+  
            return PaymentResult{}, handleServiceError(cbErr)
        }
-       
+  
        response = result.(*paymentservice.PaymentResponse)
-       
+  
        // 记录支付成功
-       logger.Info("Payment processed successfully", 
+       logger.Info("Payment processed successfully",
            "orderId", request.OrderID,
            "paymentId", response.PaymentID)
-       
+  
        // 返回处理结果
        return PaymentResult{
            PaymentID:     response.PaymentID,
@@ -1608,7 +1612,7 @@ func handleServiceError(err error) error {
    func OrderTransactionWorkflow(ctx workflow.Context, orderRequest OrderRequest) (OrderResult, error) {
        logger := workflow.GetLogger(ctx)
        logger.Info("Order transaction workflow started", "orderId", orderRequest.OrderID)
-       
+  
        // 活动选项
        activityOptions := workflow.ActivityOptions{
            ScheduleToStartTimeout: time.Minute,
@@ -1620,21 +1624,21 @@ func handleServiceError(err error) error {
                MaximumAttempts:    3,
            },
        }
-       
+  
        ctx = workflow.WithActivityOptions(ctx, activityOptions)
-       
+  
        // Saga定义 - 将每个步骤与其对应的补偿步骤关联起来
        saga := workflow.NewSaga(
            workflow.SagaOptions{
                Parallelism: 1, // 按顺序执行补偿
            },
        )
-       
+  
        var orderDetails OrderDetails
        var inventoryResult InventoryResult
        var paymentResult PaymentResult
        var shippingResult ShippingResult
-       
+  
        // 步骤1: 创建订单
        err := workflow.ExecuteActivity(ctx, "OrderService_CreateOrder", orderRequest).Get(ctx, &orderDetails)
        if err != nil {
@@ -1644,19 +1648,19 @@ func handleServiceError(err error) error {
                Error:   fmt.Sprintf("Failed to create order: %v", err),
            }, err
        }
-       
+  
        // 注册订单创建的补偿操作
        saga.AddCompensation(func(ctx workflow.Context) error {
            return workflow.ExecuteActivity(
                ctx, "OrderService_CancelOrder", orderDetails.OrderID,
            ).Get(ctx, nil)
        })
-       
+  
        // 步骤2: 库存预留
-       err = workflow.ExecuteActivity(ctx, 
+       err = workflow.ExecuteActivity(ctx,
            "InventoryService_ReserveInventory", orderDetails,
        ).Get(ctx, &inventoryResult)
-       
+  
        if err != nil {
            return OrderResult{
                OrderID:      orderRequest.OrderID,
@@ -1665,16 +1669,16 @@ func handleServiceError(err error) error {
                OrderDetails: &orderDetails,
            }, saga.Compensate(ctx)
        }
-       
+  
        // 注册库存预留的补偿操作
        saga.AddCompensation(func(ctx workflow.Context) error {
            return workflow.ExecuteActivity(
                ctx, "InventoryService_ReleaseInventory", inventoryResult.ReservationID,
            ).Get(ctx, nil)
        })
-       
+  
        // 步骤3: 处理支付
-       err = workflow.ExecuteActivity(ctx, "PaymentService_ProcessPayment", 
+       err = workflow.ExecuteActivity(ctx, "PaymentService_ProcessPayment",
            PaymentRequest{
                OrderID:     orderDetails.OrderID,
                Amount:      orderDetails.TotalAmount,
@@ -1682,7 +1686,7 @@ func handleServiceError(err error) error {
                PaymentInfo: orderRequest.PaymentInfo,
            },
        ).Get(ctx, &paymentResult)
-       
+  
        if err != nil {
            return OrderResult{
                OrderID:         orderRequest.OrderID,
@@ -1692,16 +1696,16 @@ func handleServiceError(err error) error {
                InventoryResult: &inventoryResult,
            }, saga.Compensate(ctx)
        }
-       
+  
        // 注册支付的补偿操作
        saga.AddCompensation(func(ctx workflow.Context) error {
            return workflow.ExecuteActivity(
                ctx, "PaymentService_RefundPayment", paymentResult.PaymentID,
            ).Get(ctx, nil)
        })
-       
+  
        // 步骤4: 创建物流
-       err = workflow.ExecuteActivity(ctx, "ShippingService_CreateShipment", 
+       err = workflow.ExecuteActivity(ctx, "ShippingService_CreateShipment",
            ShippingRequest{
                OrderID:  orderDetails.OrderID,
                Items:    orderDetails.Items,
@@ -1709,7 +1713,7 @@ func handleServiceError(err error) error {
                Priority: orderRequest.ShippingPriority,
            },
        ).Get(ctx, &shippingResult)
-       
+  
        if err != nil {
            return OrderResult{
                OrderID:         orderRequest.OrderID,
@@ -1720,7 +1724,7 @@ func handleServiceError(err error) error {
                PaymentDetails:  &paymentResult,
            }, saga.Compensate(ctx)
        }
-       
+  
        // 交易成功
        return OrderResult{
            OrderID:         orderRequest.OrderID,
@@ -1740,20 +1744,20 @@ func handleServiceError(err error) error {
    func getServiceEndpoint(serviceName string) (string, error) {
        // 从服务发现系统(如Consul、etcd等)获取服务端点
        discoveryClient := getDiscoveryClient()
-       
+  
        // 查询健康的服务实例
        instances, err := discoveryClient.GetService(serviceName)
        if err != nil {
            return "", fmt.Errorf("service discovery failed for %s: %w", serviceName, err)
        }
-       
+  
        if len(instances) == 0 {
            return "", fmt.Errorf("no healthy instances found for service %s", serviceName)
        }
-       
+  
        // 简单的负载均衡 - 随机选择一个实例
        selectedInstance := instances[rand.Intn(len(instances))]
-       
+  
        // 构建服务URL
        return fmt.Sprintf("http://%s:%d", selectedInstance.Address, selectedInstance.Port), nil
    }
@@ -1766,7 +1770,7 @@ func handleServiceError(err error) error {
    type OrderServiceV2Adapter struct {
        clientV2 *orderservicev2.Client
    }
-   
+  
    func (a *OrderServiceV2Adapter) CreateOrder(ctx context.Context, request *orderservice.CreateOrderRequest) (*orderservice.CreateOrderResponse, error) {
        // 将v1请求转换为v2请求
        v2Request := &orderservicev2.OrderCreationRequest{
@@ -1776,7 +1780,7 @@ func handleServiceError(err error) error {
            LineItems: make([]*orderservicev2.LineItem, len(request.Items)),
            Metadata:  request.Metadata,
        }
-       
+  
        for i, item := range request.Items {
            v2Request.LineItems[i] = &orderservicev2.LineItem{
                ProductID:   item.ProductID,
@@ -1785,13 +1789,13 @@ func handleServiceError(err error) error {
                Description: item.Description,
            }
        }
-       
+  
        // 调用v2服务
        v2Response, err := a.clientV2.CreateOrder(ctx, v2Request)
        if err != nil {
            return nil, err
        }
-       
+  
        // 将v2响应转换为v1响应
        return &orderservice.CreateOrderResponse{
            OrderID:     v2Response.Order.ID,
@@ -2193,6 +2197,7 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
     // 返回任务ID和信号名称组合，以便工作流等待正确的信号
     return task.SignalName, nil
 }
+
 ```
 
 **关键实现特性**：
@@ -2205,7 +2210,7 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
 
 ### 6.3 实施难度
 
--**高难度**
+- **高难度**
 
 实施过程中的主要挑战：
 
@@ -2217,7 +2222,7 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
        workflowClient   client.Client
        taskDataStore    TaskDataStore
    }
-   
+  
    // 处理审核任务的完成
    func (h *WorkflowTaskHandler) HandleTaskCompletion(w http.ResponseWriter, r *http.Request) {
        // 从请求中解析任务数据
@@ -2226,37 +2231,37 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
            http.Error(w, "Invalid request body", http.StatusBadRequest)
            return
        }
-       
+  
        // 验证请求
        if err := validateTaskCompletionRequest(request); err != nil {
            http.Error(w, err.Error(), http.StatusBadRequest)
            return
        }
-       
+  
        // 获取任务详细信息
        task, err := h.taskDataStore.GetTask(r.Context(), request.TaskID)
        if err != nil {
            http.Error(w, fmt.Sprintf("Failed to retrieve task: %v", err), http.StatusInternalServerError)
            return
        }
-       
+  
        if task.Status == "COMPLETED" {
            http.Error(w, "Task already completed", http.StatusConflict)
            return
        }
-       
+  
        // 更新任务状态
        task.Status = "COMPLETED"
        task.CompletedBy = request.ReviewerID
        task.CompletedAt = time.Now()
        task.Decision = request.Decision
        task.Comments = request.Comments
-       
+  
        if err := h.taskDataStore.UpdateTask(r.Context(), task); err != nil {
            http.Error(w, fmt.Sprintf("Failed to update task: %v", err), http.StatusInternalServerError)
            return
        }
-       
+  
        // 将完成信息发送回工作流
        reviewResult := ManualReviewResult{
            TaskID:         request.TaskID,
@@ -2268,19 +2273,19 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
            Term:           request.Term,
            RequestedInfo:  request.RequestedInfo,
        }
-       
+  
        // 向工作流发送信号
        err = h.workflowClient.SignalWorkflow(r.Context(),
            task.WorkflowID, task.RunID, task.SignalName, reviewResult)
-       
+  
        if err != nil {
            // 记录错误但不回滚任务状态
            log.Printf("Failed to signal workflow: %v", err)
-           http.Error(w, fmt.Sprintf("Task completed but failed to notify workflow: %v", err), 
+           http.Error(w, fmt.Sprintf("Task completed but failed to notify workflow: %v", err),
                http.StatusInternalServerError)
            return
        }
-       
+  
        // 返回成功响应
        w.WriteHeader(http.StatusOK)
        json.NewEncoder(w).Encode(map[string]string{
@@ -2296,10 +2301,10 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
    // 实现额外信息收集子工作流
    func AdditionalInfoCollectionWorkflow(ctx workflow.Context, request AdditionalInfoWorkflowRequest) (LoanApprovalResult, error) {
        logger := workflow.GetLogger(ctx)
-       logger.Info("Additional info collection workflow started", 
+       logger.Info("Additional info collection workflow started",
            "applicationId", request.ApplicationID,
            "infoRequestId", request.InfoRequestID)
-       
+  
        // 设置查询处理器
        currentState := InfoCollectionState{
            ApplicationID: request.ApplicationID,
@@ -2307,13 +2312,13 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
            RequestID:     request.InfoRequestID,
            StartedAt:     workflow.Now(ctx),
        }
-       
+  
        if err := workflow.SetQueryHandler(ctx, "getInfoCollectionState", func() (InfoCollectionState, error) {
            return currentState, nil
        }); err != nil {
            logger.Error("Failed to set query handler", "error", err)
        }
-       
+  
        // 更新状态的辅助函数
        updateState := func(status string, comment string) {
            currentState.Status = status
@@ -2325,23 +2330,23 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                Comment:   comment,
            })
        }
-       
+  
        // 等待收到额外信息信号或超时
        infoSignalName := fmt.Sprintf("additional_info_received_%s", request.InfoRequestID)
        infoSignalChan := workflow.GetSignalChannel(ctx, infoSignalName)
-       
+  
        var additionalInfo ApplicantAdditionalInfo
        var infoReceived bool
-       
+  
        // 设置超时期限
        selector := workflow.NewSelector(ctx)
-       
+  
        selector.AddReceive(infoSignalChan, func(c workflow.ReceiveChannel, more bool) {
            c.Receive(ctx, &additionalInfo)
            infoReceived = true
            updateState("INFO_RECEIVED", "Additional information received from applicant")
        })
-       
+  
        // 设置7天提醒
        selector.AddFuture(workflow.NewTimer(ctx, 7*24*time.Hour), func(f workflow.Future) {
            // 发送提醒给申请人
@@ -2354,14 +2359,14 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                    DaysElapsed:   7,
                },
            ).Get(ctx, nil)
-           
+  
            if reminderErr != nil {
                logger.Error("Failed to send reminder", "error", reminderErr)
            }
-           
+  
            updateState("WAITING_FOR_INFO", "Sent 7-day reminder to applicant")
        })
-       
+  
        // 设置14天提醒
        selector.AddFuture(workflow.NewTimer(ctx, 14*24*time.Hour), func(f workflow.Future) {
            // 发送最后提醒给申请人
@@ -2375,19 +2380,19 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                    IsFinal:       true,
                },
            ).Get(ctx, nil)
-           
+  
            if reminderErr != nil {
                logger.Error("Failed to send final reminder", "error", reminderErr)
            }
-           
+  
            updateState("WAITING_FOR_INFO", "Sent 14-day (final) reminder to applicant")
        })
-       
+  
        // 设置21天超时
        selector.AddFuture(workflow.NewTimer(ctx, 21*24*time.Hour), func(f workflow.Future) {
            // 如果超时，则自动拒绝申请
            updateState("TIMED_OUT", "No response received after 21 days")
-           
+  
            // 通知申请人
            _ = workflow.ExecuteActivity(
                workflow.WithActivityOptions(ctx, activityOptions),
@@ -2399,12 +2404,12 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                },
            ).Get(ctx, nil)
        })
-       
+  
        // 循环等待信号或超时
        for !infoReceived && currentState.Status != "TIMED_OUT" {
            selector.Select(ctx)
        }
-       
+  
        // 如果超时，自动拒绝
        if currentState.Status == "TIMED_OUT" {
            return LoanApprovalResult{
@@ -2413,10 +2418,10 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                Reason:        "Application rejected due to failure to provide requested information",
            }, nil
        }
-       
+  
        // 已收到信息，更新申请并重新评估
        updateState("PROCESSING", "Updating application with additional information")
-       
+  
        var updatedApplication LoanApplication
        err := workflow.ExecuteActivity(
            workflow.WithActivityOptions(ctx, activityOptions),
@@ -2426,7 +2431,7 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                AdditionalInfo:      additionalInfo,
            },
        ).Get(ctx, &updatedApplication)
-       
+  
        if err != nil {
            updateState("ERROR", fmt.Sprintf("Failed to update application: %v", err))
            return LoanApprovalResult{
@@ -2435,13 +2440,13 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                Reason:        fmt.Sprintf("Failed to process additional information: %v", err),
            }, err
        }
-       
+  
        updateState("REASSESSING", "Additional information processed, reassessing application")
-       
+  
        // 重新启动审批流程，但使用更新的申请信息
        var result LoanApprovalResult
        err = workflow.ExecuteChildWorkflow(ctx, "LoanApprovalWorkflow", updatedApplication).Get(ctx, &result)
-       
+  
        if err != nil {
            updateState("ERROR", fmt.Sprintf("Failed to restart approval process: %v", err))
            return LoanApprovalResult{
@@ -2450,11 +2455,11 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                Reason:        fmt.Sprintf("Failed to reassess application: %v", err),
            }, err
        }
-       
+  
        // 返回审批结果
-       updateState(fmt.Sprintf("COMPLETED_%s", result.Status), 
+       updateState(fmt.Sprintf("COMPLETED_%s", result.Status),
            fmt.Sprintf("Application reassessment completed with status: %s", result.Status))
-       
+  
        return result, nil
    }
    ```
@@ -2466,16 +2471,16 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
    func AssessLoanRiskActivity(ctx context.Context, request RiskAssessmentRequest) (RiskAssessmentResult, error) {
        logger := activity.GetLogger(ctx)
        logger.Info("Assessing loan risk", "applicationId", request.ApplicationID)
-       
+  
        // 获取规则引擎客户端
        rulesClient := getRulesEngineClient()
-       
+  
        // 从规则服务获取当前适用的规则集
        ruleSet, err := rulesClient.GetActiveRuleSet(ctx, "LOAN_RISK_ASSESSMENT")
        if err != nil {
            return RiskAssessmentResult{}, fmt.Errorf("failed to retrieve risk assessment rules: %w", err)
        }
-       
+  
        // 准备规则执行上下文
        ruleContext := map[string]interface{}{
            "applicationId":      request.ApplicationID,
@@ -2492,24 +2497,24 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
            "previousBankruptcy": request.ApplicationData.HasPreviousBankruptcy,
            "loanPurpose":        request.ApplicationData.LoanPurpose,
        }
-       
+  
        // 执行规则评估
        result, err := rulesClient.EvaluateRules(ctx, ruleSet.ID, ruleContext)
        if err != nil {
            return RiskAssessmentResult{}, fmt.Errorf("rule evaluation failed: %w", err)
        }
-       
+  
        // 解析结果
        riskScore, ok := result["riskScore"].(int)
        if !ok {
            return RiskAssessmentResult{}, fmt.Errorf("rule result missing risk score")
        }
-       
+  
        riskLevel, ok := result["riskLevel"].(string)
        if !ok {
            return RiskAssessmentResult{}, fmt.Errorf("rule result missing risk level")
        }
-       
+  
        // 记录详细的风险因素
        var riskDetails []RiskFactor
        if riskFactors, ok := result["riskFactors"].([]interface{}); ok {
@@ -2524,15 +2529,15 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                }
            }
        }
-       
+  
        // 记录审计日志
        _ = recordRiskAssessmentAudit(ctx, request, riskScore, riskLevel, riskDetails)
-       
-       logger.Info("Risk assessment completed", 
+  
+       logger.Info("Risk assessment completed",
            "applicationId", request.ApplicationID,
            "riskScore", riskScore,
            "riskLevel", riskLevel)
-       
+  
        return RiskAssessmentResult{
            ApplicationID: request.ApplicationID,
            RiskScore:     riskScore,
@@ -2551,7 +2556,7 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
    // 审计日志记录
    func recordApprovalAudit(ctx context.Context, action string, application LoanApplication, details interface{}, userID string) error {
        auditClient := getAuditClient()
-       
+  
        auditEvent := AuditEvent{
            Timestamp:     time.Now(),
            Action:        action,
@@ -2565,18 +2570,18 @@ func CreateReviewTaskActivity(ctx context.Context, request ReviewTaskRequest) (s
                RunID:      activity.GetInfo(ctx).WorkflowExecution.RunID,
            },
        }
-       
+  
        // 记录不可篡改的审计日志
        if err := auditClient.RecordAuditEvent(ctx, auditEvent); err != nil {
            activity.GetLogger(ctx).Error("Failed to record audit event",
                "action", action,
                "applicationId", application.ApplicationID,
                "error", err)
-           
+  
            // 记录审计失败但不中断处理
            return err
        }
-       
+  
        return nil
    }
    ```
@@ -2670,6 +2675,7 @@ func handleActivityError(ctx workflow.Context, err error, activityName string) (
     logger.Warn("Unknown error occurred", "activity", activityName, "error", err)
     return true, nil
 }
+
 ```
 
 ### 7.2 常见陷阱和解决方案
@@ -2772,6 +2778,7 @@ func StoreAndProcessLargeDataActivity(ctx context.Context, inputData []byte) (Da
         Created:  time.Now(),
     }, nil
 }
+
 ```
 
 ### 7.3 运维考量
@@ -2846,6 +2853,7 @@ func OrderWorkflow(ctx workflow.Context, orderRequest OrderRequest) (OrderResult
     
     return result, nil
 }
+
 ```
 
 ## 8. 总结与最佳实践
@@ -3126,6 +3134,7 @@ func (s *WorkflowTestSuite) TestOrderWorkflow_PaymentFailure() {
 func TestOrderWorkflowSuite(t *testing.T) {
     suite.Run(t, new(WorkflowTestSuite))
 }
+
 ```
 
 ### Cadence与领域驱动设计(DDD)集成模式
@@ -3203,6 +3212,7 @@ func mapDomainError(err error) error {
         return err
     }
 }
+
 ```
 
 ### Cadence部署基础设施示例
@@ -3257,6 +3267,7 @@ services:
 
 volumes:
   cassandra-data:
+
 ```
 
 ### 性能监控与指标收集配置
@@ -3280,6 +3291,7 @@ scrape_configs:
   - job_name: 'applications'
     static_configs:
       - targets: ['app:8080']
+
 ```
 
 Grafana 仪表盘示例：
@@ -3404,6 +3416,7 @@ Grafana 仪表盘示例：
   },
   "version": 1
 }
+
 ```
 
 这些资源和模板可以帮助团队更快地采用和实施Cadence，并遵循行业最佳实践。通过正确使用这些工具和模式，可以充分发挥Cadence在解决复杂业务流程编排问题方面的优势。

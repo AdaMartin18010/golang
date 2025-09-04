@@ -233,6 +233,7 @@ func (o *ObjectStructure) Accept(visitor Visitor) {
 func (o *ObjectStructure) GetElementCount() int {
     return len(o.elements)
 }
+
 ```
 
 ### 3.3.1.4.2 文档结构访问者模式
@@ -540,6 +541,7 @@ func (d *Document) Accept(visitor DocumentVisitor) {
 func (d *Document) GetElementCount() int {
     return len(d.elements)
 }
+
 ```
 
 ### 3.3.1.4.3 编译器访问者模式
@@ -872,6 +874,7 @@ func (t *TypeCheckerVisitor) GetName() string {
 func (t *TypeCheckerVisitor) GetErrors() []string {
     return t.errors
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -1107,6 +1110,7 @@ func (c *Canvas) Accept(visitor GraphicsVisitor) {
 func (c *Canvas) GetShapeCount() int {
     return len(c.shapes)
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

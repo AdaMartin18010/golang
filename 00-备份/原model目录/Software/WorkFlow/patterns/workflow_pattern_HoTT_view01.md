@@ -14,6 +14,7 @@
 
 我会保持内容的结构化和系统性，使用markdown格式，并按照用户的要求用中文回答。
 </think>
+
 ```
 
 ## 目录
@@ -145,6 +146,7 @@ impl<'a> Path<'a> {
         })
     }
 }
+
 ```
 
 ### 2.2 同伦等价与工作流等价
@@ -180,6 +182,7 @@ impl<'a> WorkflowEquivalence<'a> {
         (self.proof)(state)
     }
 }
+
 ```
 
 ### 2.3 从范畴论到工作流模型
@@ -239,6 +242,7 @@ impl<S: Clone, A: Fn(S) -> S> WorkflowCategory<S, A> {
         move |s| if predicate(&s) { f(s) } else { g(s) }
     }
 }
+
 ```
 
 ## 3. 工作流模式的形式模型分类
@@ -264,6 +268,7 @@ fn sequence<S>(
 fn sequence_n<S>(activities: Vec<Box<dyn Fn(S) -> S>>) -> impl Fn(S) -> S {
     move |s| activities.iter().fold(s, |state, activity| activity(state))
 }
+
 ```
 
 **形式定义**：设`f: A → B`和`g: B → C`是两个活动，则序列组合`g ◦ f: A → C`是通过先执行`f`再执行`g`得到的活动。
@@ -298,6 +303,7 @@ fn parallel_execute<S: Clone + Send + 'static>(
     
     handles.into_iter().map(|h| h.join().unwrap()).collect()
 }
+
 ```
 
 **形式定义**：设`f: A → B`和`g: A → C`是两个活动，则并行分支`⟨f, g⟩: A → B × C`是通过并行执行`f`和`g`得到的活动。
@@ -330,6 +336,7 @@ fn merge_states<S: Clone>(s1: S, s2: S) -> S {
     // ...
     s1 // 示例返回，实际实现会更复杂
 }
+
 ```
 
 **形式定义**：设`f: A → B × C`是并行分支活动，`g: B × C → D`是合并活动，则同步合并`g ◦ f: A → D`是通过先执行`f`再执行`g`得到的活动。
@@ -373,6 +380,7 @@ fn multi_choice<S, R>(
         None
     }
 }
+
 ```
 
 **形式定义**：设`f: A → B`和`g: A → C`是两个活动，`p: A → Bool`是条件，则排他选择`[p, f, g]: A → B + C`是通过根据`p`选择执行`f`或`g`得到的活动。
@@ -394,6 +402,7 @@ fn simple_merge<A, B, R>(
         }
     }
 }
+
 ```
 
 **形式定义**：设`f: A → B + C`是排他选择活动，`g: B → D`和`h: C → D`是两个活动，则简单合并`[g, h] ◦ f: A → D`是通过先执行`f`，然后根据结果执行`g`或`h`得到的活动。
@@ -429,6 +438,7 @@ fn implicit_data_passing<S: Clone, T>(
         inject(s, result)
     }
 }
+
 ```
 
 **形式定义**：设`f: A → B`是活动，`g: C → A`和`h: B → D`是数据转换函数，则数据传递`h ◦ f ◦ g: C → D`是通过先准备数据`g`，执行活动`f`，再处理结果`h`得到的活动。
@@ -456,6 +466,7 @@ fn data_pipeline<A, B, C>(
 ) -> impl Fn(A) -> C {
     move |a| transformer2(transformer1(a))
 }
+
 ```
 
 **形式定义**：设`f: A → B`是数据转换函数，它定义了从数据类型`A`到`B`的转换。
@@ -477,6 +488,7 @@ fn data_based_routing<T, R>(
         }
     }
 }
+
 ```
 
 **形式定义**：设`r: A → N`是路由函数，`f₁, f₂, ..., fₙ: A → B`是活动，则数据路由`route(r, [f₁, f₂, ..., fₙ]): A → B`是通过根据`r`选择执行哪个`fᵢ`得到的活动。
@@ -531,6 +543,7 @@ where
         Err(e) => Err(e)
     }
 }
+
 ```
 
 **形式定义**：设`alloc: S → S × R`是资源分配函数，`release: S × R → S`是资源释放函数，则资源使用模式`use(f) = release ◦ (id_S × f) ◦ alloc: S → S`，其中`f: R → R`是使用资源的活动。
@@ -579,6 +592,7 @@ where
     let mut refs = guards.iter_mut().map(|g| &mut **g).collect();
     Ok(operation(refs))
 }
+
 ```
 
 **形式定义**：设`lock: S → S × L`是获取锁的函数，`unlock: S × L → S`是释放锁的函数，则互斥访问模式`mutex(f) = unlock ◦ (id_S × f) ◦ lock: S → S`，其中`f: L → L`是在锁保护下执行的活动。
@@ -634,6 +648,7 @@ where
         }
     }
 }
+
 ```
 
 **形式定义**：设`f: A → B + E`是可能失败的活动，`h: E → B`是错误处理函数，则错误处理模式`try(f, h): A → B`是通过执行`f`，如果成功则返回结果，如果失败则执行`h`得到的活动。
@@ -697,6 +712,7 @@ impl<S: Clone> CompensationScope<S> {
         state
     }
 }
+
 ```
 
 **形式定义**：设`f: A → B`是正向活动，`f⁻¹: B → A`是其补偿活动，则补偿模式`comp(f, f⁻¹): A → A + B`是通过执行`f`，如果需要补偿则执行`f⁻¹`得到的活动。
@@ -752,6 +768,7 @@ fn prove_parallel_equivalence<S: Eq + Clone + Send + 'static>(
         seq_result == parallel_merged
     })
 }
+
 ```
 
 ## 4. 模式组合理论
@@ -814,6 +831,7 @@ where
         a
     }
 }
+
 ```
 
 ### 4.2 组合有效性的形式证明
@@ -933,6 +951,7 @@ fn check_deadlock_freedom(
     
     Ok(())
 }
+
 ```
 
 ### 4.3 模式组合的类型安全保证
@@ -1003,6 +1022,7 @@ where
         (t, u)
     }
 }
+
 ```
 
 ## 5. 高级理论视角
@@ -1107,6 +1127,7 @@ enum WorkflowPattern {
     Choice(Box<dyn Fn() -> bool>, Box<WorkflowPattern>, Box<WorkflowPattern>),
     // 其他模式...
 }
+
 ```
 
 ### 5.2 无限范畴论与无限状态工作流
@@ -1159,6 +1180,7 @@ where
         })
     }
 }
+
 ```
 
 ### 5.3 控制论视角：反馈与自适应工作流
@@ -1242,6 +1264,7 @@ where
         next_state
     }
 }
+
 ```
 
 ### 5.4 模型论与工作流语义
@@ -1314,6 +1337,7 @@ impl<S: Clone> WorkflowInterpreter<S> {
         }
     }
 }
+
 ```
 
 ## 6. 工作流系统性质的形式验证
@@ -1394,6 +1418,7 @@ where
         }
     }
 }
+
 ```
 
 ### 6.2 无死锁与活性
@@ -1522,6 +1547,7 @@ where
     
     false
 }
+
 ```
 
 ### 6.3 确定性与一致性
@@ -1615,6 +1641,7 @@ impl<S> ConsistencyChecker<S> {
         }
     }
 }
+
 ```
 
 ### 6.4 使用依赖类型的工作流验证
@@ -1677,6 +1704,7 @@ where
         (self.second)(intermediate)
     }
 }
+
 ```
 
 ## 7. 实现与应用
@@ -1792,6 +1820,7 @@ impl WorkflowActivity<ApprovalState, ApprovalState> for ApproveRequest {
         "approve_request"
     }
 }
+
 ```
 
 ### 7.2 形式化工作流引擎架构
@@ -2089,6 +2118,7 @@ impl SecurityContext {
         }
     }
 }
+
 ```
 
 ## 8. 总结与展望

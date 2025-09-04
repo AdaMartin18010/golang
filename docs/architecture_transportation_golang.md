@@ -178,6 +178,7 @@ classDiagram
     +string Status
     +string Location
   }
+
 ```
 
 ### 1.3.3 典型数据流
@@ -202,6 +203,7 @@ sequenceDiagram
   T->>E: 事件采集
   E->>DA: 数据分析
   U->>T: 查询服务
+
 ```
 
 ### 1.3.4 Golang 领域模型代码示例
@@ -269,6 +271,7 @@ type Device struct {
     Status   string
     Location string
 }
+
 ```
 
 ---
@@ -335,6 +338,7 @@ graph TD
   L --> DA
   DE --> V
   DE --> S
+
 ```
 
 ### 1.5.5 Golang代码示例
@@ -345,6 +349,7 @@ graph TD
 // Prometheus 监控
 var vehicleCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "vehicle_online_total"})
 vehicleCount.Set(500)
+
 ```
 
 ---
@@ -371,6 +376,7 @@ transportation-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 1.6.2 关键代码片段
@@ -397,6 +403,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

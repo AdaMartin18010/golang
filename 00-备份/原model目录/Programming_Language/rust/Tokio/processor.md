@@ -30,6 +30,7 @@ parking_lot = "0.12"
 dashmap = "5.5"
 crossbeam = "0.8"
 signal-hook = "0.3"
+
 ```
 
 ### 2. 共享内存管理器实现
@@ -85,6 +86,7 @@ impl SharedMemoryManager {
         Ok(buffer)
     }
 }
+
 ```
 
 ### 3. 内存池实现
@@ -161,6 +163,7 @@ impl MemoryBlock {
         Ok(&self.data[offset..offset + length])
     }
 }
+
 ```
 
 ### 4. 进程管理器实现
@@ -253,6 +256,7 @@ impl ProcessManager {
         worker.run();
     }
 }
+
 ```
 
 ### 5. 工作进程实现
@@ -328,6 +332,7 @@ impl Worker {
             .expect("Failed to register SIGUSR2 handler");
     }
 }
+
 ```
 
 ### 6. 进程间通信实现
@@ -380,6 +385,7 @@ impl IpcChannel {
         })
     }
 }
+
 ```
 
 ### 7. 主从同步实现
@@ -423,6 +429,7 @@ impl SyncManager {
         self.state.read().get(key).cloned()
     }
 }
+
 ```
 
 ### 8. 主程序实现
@@ -469,6 +476,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
     }
 }
+
 ```
 
 这个实现提供了以下功能：

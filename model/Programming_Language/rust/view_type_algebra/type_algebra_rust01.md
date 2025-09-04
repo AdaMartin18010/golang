@@ -22,19 +22,6 @@
     - [1.5.3 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 以下是对 Rust 的类型机制、法则和特性，以及类型代数的定义、解释和法则的全面对比。
 每个部分都包含详细的示例代码，以便于理解。
 
@@ -74,6 +61,7 @@
 // 整数类型
 let x: i32 = 10; // x 是 i32 类型
 let y: f64 = 3.14; // y 是 f64 类型
+
 ```
 
 ### 1.2.2 积类型
@@ -92,6 +80,7 @@ struct Point {
 // 使用结构体
 let p = Point { x: 10, y: 20 };
 println!("Point coordinates: ({}, {})", p.x, p.y);
+
 ```
 
 ### 1.2.3 和类型
@@ -113,6 +102,7 @@ match shape {
     Shape::Circle(radius) => println!("Circle with radius: {}", radius),
     Shape::Rectangle(width, height) => println!("Rectangle {} x {}", width, height),
 }
+
 ```
 
 ### 1.2.4 指数类型
@@ -130,6 +120,7 @@ fn add_one(x: i32) -> i32 {
 // 使用函数
 let result = add_one(5);
 println!("Result: {}", result);
+
 ```
 
 ---
@@ -147,6 +138,7 @@ let a: i32 = 10; // 整数
 let b: f64 = 3.14; // 浮点数
 let c: bool = true; // 布尔值
 let d: char = 'A'; // 字符
+
 ```
 
 ### 1.3.2 复合类型
@@ -163,6 +155,7 @@ println!("Tuple: ({}, {})", tuple.0, tuple.1);
 // 数组
 let array: [i32; 3] = [1, 2, 3];
 println!("Array: {:?}", array);
+
 ```
 
 ### 1.3.3 泛型
@@ -180,6 +173,7 @@ fn print_value<T: std::fmt::Debug>(value: T) {
 // 使用泛型函数
 print_value(42); // 整数
 print_value("Hello, world!"); // 字符串
+
 ```
 
 ### 1.3.4 Trait
@@ -208,6 +202,7 @@ impl Shape for Circle {
 // 使用 trait
 let circle = Circle { radius: 5.0 };
 println!("Circle area: {}", circle.area());
+
 ```
 
 ---
@@ -236,6 +231,7 @@ struct Container {
 
 // 使用 Container
 let container = Container { shape: Shape::Circle(5.0) };
+
 ```
 
 ### 1.4.2 结合法则
@@ -256,6 +252,7 @@ struct Pair<T, U> {
 
 // 使用 Pair
 let pair = Pair { first: 10, second: 20.5 };
+
 ```
 
 ---
@@ -304,6 +301,7 @@ fn main() {
     let circle = Circle { radius: 5.0 };
     print_area(circle); // 输出：Area: 78.53981633974483
 }
+
 ```
 
 ---

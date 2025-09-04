@@ -102,6 +102,7 @@ for num in &numbers {
 // 容量管理
 numbers.reserve(10);  // 预留空间
 numbers.shrink_to_fit();  // 收缩到实际大小
+
 ```
 
 **使用场景**：
@@ -134,6 +135,7 @@ queue.swap(0, 1);     // 交换两个索引的元素
 // 旋转
 queue.rotate_left(2);  // 左旋2个位置
 queue.rotate_right(1); // 右旋1个位置
+
 ```
 
 **使用场景**：
@@ -166,6 +168,7 @@ list.append(&mut other);  // 合并两个链表
 for item in &list {
     println!("{}", item);
 }
+
 ```
 
 **使用场景**：
@@ -191,6 +194,7 @@ let mut scores = HashMap::from([
 // 插入与更新
 scores.insert("Yellow".to_string(), 30);
 scores.entry("Blue".to_string()).or_insert(15);  // 不存在时插入
+
 *scores.entry("Blue".to_string()).or_insert(0) += 5;  // 更新现有值
 
 // 访问
@@ -210,6 +214,7 @@ for (key, value) in &scores {
 // 容量管理
 scores.reserve(10);
 scores.shrink_to_fit();
+
 ```
 
 **使用场景**：
@@ -251,6 +256,7 @@ if let Some((key, value)) = map.last_key_value() {
 
 // 分割
 let mut upper = map.split_off(&3);  // 键>=3的部分
+
 ```
 
 **使用场景**：
@@ -289,6 +295,7 @@ let sym_difference: HashSet<_> = set.symmetric_difference(&set2).cloned().collec
 if set.is_subset(&union) {
     println!("set是union的子集");
 }
+
 ```
 
 **使用场景**：
@@ -326,6 +333,7 @@ if let Some(value) = set.last() {
 
 // 分割
 let mut upper = set.split_off(&4);  // 值>=4的部分
+
 ```
 
 **使用场景**：
@@ -364,6 +372,7 @@ min_heap.push(Reverse(10));
 if let Some(Reverse(min)) = min_heap.pop() {
     println!("最小元素: {}", min);  // 输出1
 }
+
 ```
 
 **使用场景**：
@@ -404,6 +413,7 @@ for c in s.chars() {
 for b in s.bytes() {
     println!("{}", b);
 }
+
 ```
 
 **使用场景**：
@@ -431,6 +441,7 @@ let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
 
 // 解引用
 let value = *b;  // 如果T实现了Copy trait
+
 ```
 
 **使用场景**：
@@ -457,6 +468,7 @@ println!("引用计数: {}", Rc::strong_count(&data));  // 输出3
 
 // 访问数据
 println!("第一个元素: {}", data[0]);
+
 ```
 
 **使用场景**：
@@ -488,6 +500,7 @@ let thread2 = thread::spawn(move || {
 
 thread1.join().unwrap();
 thread2.join().unwrap();
+
 ```
 
 **使用场景**：
@@ -511,6 +524,7 @@ let ref_cell = RefCell::new(vec![1, 2, 3]);
 ref_cell.borrow_mut().push(4);  // 可变借用
 let v = ref_cell.borrow();  // 不可变借用
 println!("长度: {}", v.len());
+
 ```
 
 **使用场景**：
@@ -548,6 +562,7 @@ for handle in handles {
 }
 
 println!("结果: {}", *counter.lock().unwrap());
+
 ```
 
 **使用场景**：
@@ -582,6 +597,7 @@ let writer = thread::spawn(move || {
 
 reader.join().unwrap();
 writer.join().unwrap();
+
 ```
 
 **使用场景**：
@@ -616,6 +632,7 @@ for handle in handles {
 }
 
 println!("结果: {}", counter.load(Ordering::SeqCst));
+
 ```
 
 **使用场景**：
@@ -650,6 +667,7 @@ let value = some_value.expect("没有值!");  // 自定义panic消息
 // 转换
 let mapped = some_value.map(|x| x * 2);  // Option<i32> -> Option<i32>
 let result = some_value.ok_or("没有值");  // Option<T> -> Result<T, E>
+
 ```
 
 **使用场景**：
@@ -689,6 +707,7 @@ fn read_file() -> Result<String, io::Error> {
     file.read_to_string(&mut content)?;
     Ok(content)
 }
+
 ```
 
 **使用场景**：
@@ -754,7 +773,7 @@ fn read_file() -> Result<String, io::Error> {
 | 查找 | O(n) | O(n) | O(n) | O(1)* | O(log n) | O(1)* | O(log n) | O(n) |
 | 最大/最小元素 | O(n) | O(n) | O(n) | O(n) | O(log n) | O(n) | O(log n) | O(1) |
 
-*平均情况，最坏O(n)
+* 平均情况，最坏O(n)
 **需要先找到位置，查找是O(n)
 
 ## 1.12 内存使用考虑

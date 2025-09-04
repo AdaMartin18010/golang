@@ -16,19 +16,6 @@
     - [1.1.8 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Rust 2024 版本引入的 `gen`、`async`、`yield`、`next` 和 `await` 等特性，虽然增强了 Rust 的异步编程能力，
 但要实现类似于 Haskell 的范畴论（Category Theory）支持的所有函数式编程特性，仍然存在一些差异。
 Haskell 是一种纯函数式编程语言，天然支持范畴论的概念，如函子（Functor）、单子（Monad）、应用函子（Applicative Functor）等，
@@ -94,6 +81,7 @@ async fn example() {
     let result = monad.bind(|x| AsyncMonad::new(x + 1)).await;
     // 使用 result
 }
+
 ```
 
 #### 1.1.1.2 示例：异步函子
@@ -113,6 +101,7 @@ async fn example_map() {
     let result = monad.map(|x| x * 2).await;
     // 使用 result
 }
+
 ```
 
 ### 1.1.2 总结与思维导图
@@ -143,6 +132,7 @@ Rust 2024 Edition
     ├── 异步单子
     ├── 异步函子
     └── 编程建议
+
 ```
 
 ### 1.1.3 编程建议
@@ -320,6 +310,7 @@ Rust 2024 Core Library
     ├── 通道
     ├── 互斥锁
     └── 读写锁
+
 ```
 
 ### 1.1.8 总结

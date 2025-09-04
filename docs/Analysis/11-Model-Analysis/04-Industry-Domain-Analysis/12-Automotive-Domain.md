@@ -27,19 +27,6 @@
   - [11.4.1.9 9. 总结](#9-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.4.1.1 1. 概述
 
 ### 11.4.1.1.1 领域定义
@@ -418,6 +405,7 @@ func (ps *PlanningSystem) PlanPath(perceptionData *PerceptionData, vehicleState 
         Timestamp:     time.Now(),
     }, nil
 }
+
 ```
 
 ### 11.4.1.2.2 传感器融合架构
@@ -617,6 +605,7 @@ func (ekf *ExtendedKalmanFilter) calculateKalmanGain(predictedCovariance *Matrix
     
     return kalmanGain, nil
 }
+
 ```
 
 ## 11.4.1.3 3. 控制系统
@@ -780,6 +769,7 @@ func (sa *SteeringActuator) GetAngle() float64 {
     
     return sa.currentAngle
 }
+
 ```
 
 ### 11.4.1.3.2 安全系统
@@ -905,6 +895,7 @@ func (fs *FailSafe) CheckSafety() (*SafetyStatus, error) {
     
     return safetyStatus, nil
 }
+
 ```
 
 ## 11.4.1.4 4. 通信系统
@@ -1007,6 +998,7 @@ const (
     SSM                        // Signal Status Message
     RSM                        // Road Side Information
 )
+
 ```
 
 ### 11.4.1.4.2 车载网络
@@ -1113,6 +1105,7 @@ type NetworkEndpoint struct {
     IP       string
     mutex    sync.RWMutex
 }
+
 ```
 
 ## 11.4.1.5 5. 诊断系统
@@ -1247,6 +1240,7 @@ func (uds *UDSSystem) ProcessRequest(request *UDSRequest) (*UDSResponse, error) 
     
     return service.Handler(request)
 }
+
 ```
 
 ## 11.4.1.6 6. 性能优化
@@ -1367,6 +1361,7 @@ func (mm *MemoryManager) Free(poolID string, memory []byte) error {
     
     return nil
 }
+
 ```
 
 ## 11.4.1.7 7. 最佳实践
@@ -1483,6 +1478,7 @@ func (ac *AccessControl) CheckAccess(userID, resource, action string) bool {
     
     return false
 }
+
 ```
 
 ## 11.4.1.8 8. 案例分析

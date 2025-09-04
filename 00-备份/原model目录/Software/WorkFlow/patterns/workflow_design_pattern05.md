@@ -130,6 +130,7 @@ pub fn create_equipment_calibration_workflow(equipment_id: &str) -> Manufacturin
     
     workflow
 }
+
 ```
 
 ### 2. 数据流视角
@@ -261,6 +262,7 @@ pub fn create_energy_monitoring_dataflow(building_id: &str) -> IoTDataFlow {
     
     dataflow
 }
+
 ```
 
 ### 3. 控制流视角
@@ -403,6 +405,7 @@ pub fn create_smart_agriculture_control_flow(farm_id: &str) -> IoTControlFlow {
     
     control_flow
 }
+
 ```
 
 ### 4. 容错层视角
@@ -628,6 +631,7 @@ pub fn create_industrial_fault_tolerance_layer(plant_id: &str) -> IoTFaultTolera
     
     fault_tolerance
 }
+
 ```
 
 ## 不同行业的IoT工作流应用模型
@@ -790,6 +794,7 @@ fn create_manufacturing_execution_workflow() -> WorkflowDefinition {
     
     workflow
 }
+
 ```
 
 ### 2. 智能家居模型
@@ -952,6 +957,7 @@ fn create_evening_routine_workflow(home_id: &str) -> WorkflowDefinition {
     
     workflow
 }
+
 ```
 
 ### 3. 智慧城市模型
@@ -1186,6 +1192,7 @@ fn create_traffic_incident_response_workflow(city_id: &str) -> WorkflowDefinitio
     
     workflow
 }
+
 ```
 
 ## 自动化运维与容错能力设计
@@ -1326,6 +1333,7 @@ fn create_device_recovery_procedure(device_type: &str) -> RecoveryProcedure {
         maximum_daily_recovery_attempts: 5,
     }
 }
+
 ```
 
 ### 高级调度与负载均衡系统
@@ -1595,6 +1603,7 @@ fn create_energy_aware_scheduler() -> EnergyAwareConfig {
         },
     }
 }
+
 ```
 
 ## IoT工作流架构的关键考量
@@ -2098,6 +2107,7 @@ fn create_multi_tier_workflow_architecture() -> ScalableIoTWorkflowArchitecture 
         },
     }
 }
+
 ```
 
 ## 总结：IoT工作流架构的设计原则

@@ -93,6 +93,7 @@ graph TB
     F --> F1[GDPR合规]
     F --> F2[数据主权]
     F --> F3[跨境合规]
+
 ```
 
 ## 1.3 2. 隐私计算基础
@@ -257,6 +258,7 @@ type PrivacyTask struct {
     Config       PrivacyConfig
     Status       TaskStatus
 }
+
 ```
 
 ### 1.5.2 系统架构
@@ -278,6 +280,7 @@ graph TB
     D --> D1[结果验证]
     D --> D2[审计追踪]
     D --> D3[访问控制]
+
 ```
 
 ## 1.6 5. 分布式挑战
@@ -314,7 +317,7 @@ graph TB
 
 ---
 
-*后续将补充设计方案、Golang实现、形式化建模等内容。*
+* 后续将补充设计方案、Golang实现、形式化建模等内容。*
 
 ## 1.7 6. 设计解决方案
 
@@ -326,6 +329,7 @@ graph TD
     B --> C[密码学层]
     C --> D[可信执行层]
     D --> E[基础设施层]
+
 ```
 
 ### 1.7.2 混合隐私保护
@@ -398,6 +402,7 @@ func (pce *PrivacyComputingEngine) ExecuteTask(task *PrivacyTask) (*PrivacyResul
     
     return result, nil
 }
+
 ```
 
 ### 1.8.2 同态加密实现
@@ -449,6 +454,7 @@ func (hem *HomomorphicEncryptionManager) ExecuteComputation(task *PrivacyTask, d
         Timestamp: time.Now(),
     }, nil
 }
+
 ```
 
 ### 1.8.3 安全多方计算
@@ -509,6 +515,7 @@ func (mpcm *SecureMultiPartyManager) ExecuteComputation(task *PrivacyTask, data 
         Timestamp: time.Now(),
     }, nil
 }
+
 ```
 
 ## 1.9 8. 形式化建模
@@ -585,4 +592,4 @@ func (mpcm *SecureMultiPartyManager) ExecuteComputation(task *PrivacyTask, data 
 
 ---
 
-*本文档为隐私计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*
+* 本文档为隐私计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*

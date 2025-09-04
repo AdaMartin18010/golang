@@ -166,6 +166,7 @@ classDiagram
     Invoker --> Command
     Client --> Command
     Client --> Receiver
+
 ```
 
 ### 3.3.1.4.2 时序图
@@ -191,6 +192,7 @@ sequenceDiagram
     Receiver->>Command: Result
     Command->>Invoker: Success
     Invoker->>Client: Undo Complete
+
 ```
 
 ### 3.3.1.4.3 状态转换图
@@ -209,6 +211,7 @@ stateDiagram-v2
     CommandUndoing --> UndoFailed
     CommandUndone --> [*]
     UndoFailed --> CommandUndoReady
+
 ```
 
 ## 3.3.1.5 4. Golang实现
@@ -249,6 +252,7 @@ type CommandResult struct {
     Timestamp time.Time
     Duration  time.Duration
 }
+
 ```
 
 ### 3.3.1.5.2 基础命令实现
@@ -315,6 +319,7 @@ func (c *ConcreteCommand) Undo() error {
     
     return c.receiver.ReverseAction(c.params)
 }
+
 ```
 
 ### 3.3.1.5.3 复合命令实现
@@ -381,6 +386,7 @@ func NewMacroCommand(name string, commands ...Command) *MacroCommand {
 func (m *MacroCommand) GetName() string {
     return m.name
 }
+
 ```
 
 ### 3.3.1.5.4 调用者实现
@@ -493,6 +499,7 @@ func (i *CommandInvoker) logResults(results []CommandResult) {
         }
     }
 }
+
 ```
 
 ### 3.3.1.5.5 异步命令实现
@@ -553,6 +560,7 @@ func (c *AsyncCommand) GetResult() CommandResult {
 func (c *AsyncCommand) Cancel() {
     close(c.done)
 }
+
 ```
 
 ### 3.3.1.5.6 具体接收者实现
@@ -698,6 +706,7 @@ func (r *FileReceiver) copyFile(params map[string]interface{}) error {
     _, err = io.Copy(destFile, sourceFile)
     return err
 }
+
 ```
 
 ## 3.3.1.6 5. 性能分析
@@ -789,6 +798,7 @@ func (p *CommandPool) Put(cmd *BaseCommand) {
     cmd.params = nil
     p.pool.Put(cmd)
 }
+
 ```
 
 ### 3.3.1.6.3 并发性能分析
@@ -868,6 +878,7 @@ func BenchmarkAsyncCommand(b *testing.B) {
         }
     })
 }
+
 ```
 
 ## 3.3.1.7 6. 应用场景
@@ -912,6 +923,7 @@ func (c *TextEditCommand) getTextAtPosition() string {
     // 获取指定位置的文本
     return ""
 }
+
 ```
 
 ### 3.3.1.7.2 数据库事务
@@ -954,6 +966,7 @@ func (c *DatabaseCommand) generateRollbackSQL() string {
     // 根据SQL类型生成回滚语句
     return ""
 }
+
 ```
 
 ### 3.3.1.7.3 网络请求
@@ -993,6 +1006,7 @@ func (c *HTTPCommand) Undo() error {
     // HTTP请求通常不可撤销，但可以记录日志
     return fmt.Errorf("HTTP requests cannot be undone")
 }
+
 ```
 
 ## 3.3.1.8 7. 最佳实践
@@ -1126,6 +1140,7 @@ func (e *TextEditor) GetText() string {
     defer e.mu.RUnlock()
     return e.text
 }
+
 ```
 
 ### 3.3.1.9.2 文件操作管理器
@@ -1170,6 +1185,7 @@ func FileManagerExample() {
     
     fmt.Println("Setup undone successfully")
 }
+
 ```
 
 ---

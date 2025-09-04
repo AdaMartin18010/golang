@@ -214,6 +214,7 @@ classDiagram
     +float Value
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -244,6 +245,7 @@ sequenceDiagram
   U->>C: 合同管理
   U->>EV: 事件采集
   EV->>DA: 数据分析
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -336,6 +338,7 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
+
 ```
 
 ---
@@ -414,6 +417,7 @@ graph TD
   DA --> U2
   EN --> DV
   EN --> U2
+
 ```
 
 ### 5.5 Golang代码示例
@@ -422,6 +426,7 @@ graph TD
 // 用户数量Prometheus监控
 var userCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "user_total"})
 userCount.Set(1000000)
+
 ```
 
 ---
@@ -453,6 +458,7 @@ energy-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -479,6 +485,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

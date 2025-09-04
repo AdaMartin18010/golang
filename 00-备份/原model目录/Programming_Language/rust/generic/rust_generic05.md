@@ -15,6 +15,7 @@
 
 我会保持原有的结构框架，但在这些方面进行加强和扩展。所有内容仍然要用中文编写。
 </think>
+
 ```
 
 ## 目录
@@ -71,6 +72,7 @@ fn identity<T>(x: T) -> T {
 struct Container<T> {
     value: T,
 }
+
 ```
 
 **形式化表示**：
@@ -104,6 +106,7 @@ fn borrow_identity<'a, T>(x: &'a T) -> &'a T {
 struct Reference<'a, T: 'a> {
     reference: &'a T,
 }
+
 ```
 
 **形式化解释**：
@@ -134,6 +137,7 @@ impl PointerFamily for RefPointer {
         value
     }
 }
+
 ```
 
 GAT的形式化表达可以看作是一阶类型系统向更高阶类型系统的扩展，允许类型构造器接受生命周期参数。
@@ -158,6 +162,7 @@ trait Display {
 fn describe<T: Display>(item: T) -> String {
     format!("Item: {}", item.display())
 }
+
 ```
 
 **形式化表示**：
@@ -184,6 +189,7 @@ trait Collection<T> {
     fn add(&mut self, item: T);
     fn contains(&self, item: &T) -> bool;
 }
+
 ```
 
 关联类型在逻辑上等价于带有功能依赖的泛型参数：
@@ -216,6 +222,7 @@ struct Pair<A, B> {
     first: A,  // A
     second: B, // B
 }
+
 ```
 
 **代数数据类型的形式化理解**：
@@ -243,6 +250,7 @@ enum List<T> {
     Cons(T, Box<List<T>>),
     Nil,
 }
+
 ```
 
 **类型层次结构的逻辑证明**：
@@ -278,6 +286,7 @@ struct Point<T> {
     x: T,
     y: T,
 }
+
 ```
 
 **形式化理解**：
@@ -318,6 +327,7 @@ fn max_i32(a: i32, b: i32) -> i32 {
 fn max_str(a: &str, b: &str) -> &str {
     if a > b { a } else { b }
 }
+
 ```
 
 **形式化模型**：
@@ -388,6 +398,7 @@ impl Process<Completed> {
         self.data
     }
 }
+
 ```
 
 **形式化分析**：
@@ -439,6 +450,7 @@ fn process_data_manual(data: &[u64]) -> u64 {
     }
     sum
 }
+
 ```
 
 **形式化证明**：
@@ -515,6 +527,7 @@ where
 {
     type Product = B::Sum;  // (N+1) * B = B + (N * B)
 }
+
 ```
 
 **形式化分析**：
@@ -584,6 +597,7 @@ where
 {
     a / b.get()
 }
+
 ```
 
 **形式化证明**：
@@ -625,6 +639,7 @@ fn process_static<T: Display>(value: T) {
 fn process_dynamic(value: &dyn Display) {
     println!("{}", value);
 }
+
 ```
 
 **形式化模型**：
@@ -716,6 +731,7 @@ impl<'a, T> Drop for MutexGuard<'a, T> {
         // ...
     }
 }
+
 ```
 
 **形式化线程安全保证**：
@@ -777,6 +793,7 @@ impl<'a, R: AsyncRead + Unpin> Future for ReadDataFuture<'a, R> {
         // ...
     }
 }
+
 ```
 
 **Future的形式化模型**：
@@ -848,6 +865,7 @@ trait DataProcessor {
     
     fn process(&self, input: &[Self::Input]) -> Self::Output;
 }
+
 ```
 
 **形式化分析**：
@@ -928,6 +946,7 @@ impl<T: Display> Tree<T> {
         }
     }
 }
+
 ```
 
 **递归与迭代的形式化对比**：
@@ -1061,6 +1080,7 @@ impl Resource<Terminated> {
         self.data
     }
 }
+
 ```
 
 **命题逻辑映射**：
@@ -1153,6 +1173,7 @@ struct BorrowedPointer<'a, T> {
     ptr: *mut T,
     _borrow: PhantomData<&'a T>,  // &'a T表示借用T
 }
+
 ```
 
 **代数数据类型理论**：
@@ -1227,6 +1248,7 @@ fn use_parser<P: Parser>(parser: P, input: &str) -> Result<String, String> {
         Err(error) => Err(error.to_string()),
     }
 }
+
 ```
 
 **高阶类型理论表示**：
@@ -1298,6 +1320,7 @@ trait Coalgebra<F> {
     type Carrier;
     fn unapply(carrier: Self::Carrier) -> F;
 }
+
 ```
 
 **代数数据类型的方程表示**：
@@ -1343,6 +1366,7 @@ where
 {
     // ...
 }
+
 ```
 
 ### 4.5 关联类型与功能依赖
@@ -1386,6 +1410,7 @@ trait Collection {
 
     fn iter<'a>(&'a self) -> Self::Iterator<'a>;
 }
+
 ```
 
 **功能依赖的形式化表示**：
@@ -1405,6 +1430,7 @@ Rust的关联类型等价于Haskell带有功能依赖的类型类：
 class Iterator i | i -> item where
   type Item i
   next :: i -> Maybe (Item i, i)
+
 ```
 
 **关联类型的数学模型**：
@@ -1458,6 +1484,7 @@ where
 {
     items.iter().map(map_fn).collect()
 }
+
 ```
 
 **API设计的形式化原则**：
@@ -1481,6 +1508,7 @@ trait Sortable {
 fn sort<T: Sortable>(items: &mut [T]) {
     // 实现依赖Sortable契约
 }
+
 ```
 
 这种设计可以用前置条件和后置条件形式化：
@@ -1514,6 +1542,7 @@ where
     }
     total
 }
+
 ```
 
 **抽象惩罚的形式化模型**：
@@ -1601,6 +1630,7 @@ where
         (self.validator)(intermediate)
     }
 }
+
 ```
 
 **复杂度量化**：
@@ -1682,6 +1712,7 @@ fn register_user(name: String, email: Email<Verified>) -> Result<User, Registrat
     // 编译器确保只有已验证的邮箱可传入
     // ...
 }
+
 ```
 
 **形式化证明**：
@@ -1741,6 +1772,7 @@ impl<T> NonEmpty<T> {
         })
     }
 }
+
 ```
 
 这些精确类型在形式上对应于依赖类型(dependent types)的简化版本。
@@ -1777,6 +1809,7 @@ impl IsTrue for True {}
 
 struct Assert<const CHECK: bool>;
 impl IsTrue for Assert<true> {}
+
 ```
 
 **不变量的形式化表达**：
@@ -1842,6 +1875,7 @@ trait HigherKinded<T> {
 impl<T, U> HigherKinded<U> for Vec<T> {
     type Applied = Vec<U>;
 }
+
 ```
 
 **形式化系统的扩展**：

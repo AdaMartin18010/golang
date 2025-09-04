@@ -19,6 +19,7 @@
 // Sized 用于指明类型在编译期具有确定大小
 #[lang = "sized"]
 pub trait Sized { }
+
 ```
 
 而 `Send` 与 `Sync` 则是“自动 trait”（auto trait）。它们的定义大致如下：
@@ -33,6 +34,7 @@ pub unsafe auto trait Send { }
 #[stable(feature = "rust1", since = "1.0.0")]
 #[lang = "sync"]
 pub unsafe auto trait Sync { }
+
 ```
 
 **说明：**  

@@ -57,65 +57,82 @@
 
 ```toml
 [dependencies]
+
 # 2 2 2 2 2 2 2 异步运行时
+
 tokio = { version = "1.35", features = ["full"] }
 
 # 3 3 3 3 3 3 3 机器学习框架
+
 tch = "0.13"  # PyTorch绑定
 burn = "0.12" # 纯Rust ML框架
 candle = "0.3" # Hugging Face Rust实现
 
 # 4 4 4 4 4 4 4 数据处理
+
 polars = "0.35"
 arrow = "50.0"
 datafusion = "35.0"
 
 # 5 5 5 5 5 5 5 数值计算
+
 ndarray = "0.15"
 nalgebra = "0.32"
 rust-bert = "0.21"
 
 # 6 6 6 6 6 6 6 序列化
+
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 bincode = "1.3"
 
 # 7 7 7 7 7 7 7 数据库
+
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-rustls"] }
 redis = { version = "0.24", features = ["tokio-comp"] }
 
 # 8 8 8 8 8 8 8 消息队列
+
 lapin = "2.3"
 kafka = "0.9"
 
 # 9 9 9 9 9 9 9 配置管理
+
 config = "0.14"
 toml = "0.8"
 
 # 10 10 10 10 10 10 10 日志和监控
+
 tracing = "0.1"
 tracing-subscriber = "0.3"
 prometheus = "0.13"
+
 ```
 
 ### 10 10 10 10 10 10 10 行业特定库
 
 ```toml
 [dependencies]
+
 # 11 11 11 11 11 11 11 特征工程
+
 feather = "0.1"
 feature-store = "0.1"
 
 # 12 12 12 12 12 12 12 模型服务
+
 mlflow = "0.1"
 model-registry = "0.1"
 
 # 13 13 13 13 13 13 13 分布式计算
+
 rayon = "1.8"
 crossbeam = "0.8"
 
 # 14 14 14 14 14 14 14 可视化
+
 plotters = "0.3"
+
 ```
 
 ## 14.1 架构模式
@@ -153,6 +170,7 @@ plotters = "0.3"
 │  │ 性能监控    │ │ 数据漂移    │ │ 异常检测    │           │
 │  └─────────────┘ └─────────────┘ └─────────────┘           │
 └─────────────────────────────────────────────────────────────┘
+
 ```
 
 ### 14.1.2 2. 微服务架构
@@ -252,6 +270,7 @@ impl InferenceService {
         Ok(prediction)
     }
 }
+
 ```
 
 ### 14.1.3 3. 事件驱动架构
@@ -304,6 +323,7 @@ impl EventHandler for ModelPerformanceMonitor {
         Ok(())
     }
 }
+
 ```
 
 ## 14.2 业务领域建模
@@ -379,6 +399,7 @@ pub struct Prediction {
     pub timestamp: DateTime<Utc>,
     pub processing_time: Duration,
 }
+
 ```
 
 ### 14.2.2 值对象
@@ -407,6 +428,7 @@ pub struct PredictionValue {
     pub values: Vec<f64>,
     pub feature_names: Vec<String>,
 }
+
 ```
 
 ## 14.3 数据建模
@@ -482,6 +504,7 @@ CREATE TABLE predictions (
     FOREIGN KEY (request_id) REFERENCES prediction_requests(id),
     FOREIGN KEY (model_id) REFERENCES models(id)
 );
+
 ```
 
 ### 14.3.2 特征存储
@@ -539,6 +562,7 @@ impl FeatureStore for RedisFeatureStore {
         Ok(feature_vector)
     }
 }
+
 ```
 
 ## 14.4 流程建模
@@ -559,6 +583,7 @@ graph TD
     H -->|是| J[模型注册]
     J --> K[模型部署]
     K --> L[性能监控]
+
 ```
 
 ### 14.4.2 推理服务流程
@@ -573,6 +598,7 @@ graph TD
     F --> G[缓存结果]
     G --> H[返回响应]
     H --> I[记录指标]
+
 ```
 
 ## 14.5 组件建模
@@ -646,6 +672,7 @@ impl PipelineStage for FeatureEngineeringStage {
         Ok(enriched_data)
     }
 }
+
 ```
 
 ### 14.5.2 模型训练引擎
@@ -770,6 +797,7 @@ impl LinearRegression {
         prediction
     }
 }
+
 ```
 
 ### 14.5.3 推理引擎
@@ -870,6 +898,7 @@ impl ModelLoader {
         }
     }
 }
+
 ```
 
 ## 14.6 性能优化
@@ -932,6 +961,7 @@ impl BatchInferenceEngine {
         Ok(predictions)
     }
 }
+
 ```
 
 ### 14.6.2 模型缓存
@@ -963,6 +993,7 @@ impl ModelCache {
         self.cache.invalidate(model_id).await;
     }
 }
+
 ```
 
 ## 14.7 监控和可观测性
@@ -1028,6 +1059,7 @@ impl DataDriftDetector {
         0.1
     }
 }
+
 ```
 
 ## 14.8 测试策略
@@ -1078,6 +1110,7 @@ mod tests {
         assert!(prediction.processing_time.as_millis() < 100);
     }
 }
+
 ```
 
 ### 14.8.2 集成测试
@@ -1119,6 +1152,7 @@ mod integration_tests {
         assert!(prediction.confidence > 0.0);
     }
 }
+
 ```
 
 ## 14.9 部署和运维
@@ -1126,7 +1160,9 @@ mod integration_tests {
 ### 14.9.1 容器化部署
 
 ```dockerfile
+
 # 15 15 15 15 15 15 15 Dockerfile for ML Inference Service
+
 FROM rust:1.75 as builder
 WORKDIR /app
 COPY . .
@@ -1145,12 +1181,15 @@ COPY config/ config/
 
 EXPOSE 8080
 CMD ["./ml-inference-service"]
+
 ```
 
 ### 15 15 15 15 15 15 15 Kubernetes部署
 
 ```yaml
+
 # 16 16 16 16 16 16 16 ml-inference-deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1194,6 +1233,7 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
+
 ```
 
 ## 16.1 总结

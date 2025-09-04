@@ -9,19 +9,6 @@
     - [1.2.3 **总结**](#**总结**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，创建递归的 trait 通常涉及到定义一个 trait，其中的方法可以递归地调用自身或其他方法。
 以下是一个简单的例子，展示如何创建一个递归的 trait：
 
@@ -48,6 +35,7 @@ fn main() {
 
     println!("Result: {}", node1.recursive_method()); // 输出: Result: 6
 }
+
 ```
 
 在这个例子中，`Recursive` trait 定义了一个方法 `recursive_method`，它在 `Node` 结构体中被实现为递归调用自身的方法。

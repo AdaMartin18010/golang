@@ -60,6 +60,7 @@ fn main() {
     let c_int = c as i32;
     println!("Color::Green as i32: {}", c_int);
 }
+
 ```
 
 ## 3. 基于 `From` / `Into` Trait 的转换
@@ -76,6 +77,7 @@ fn main() {
     let my_string: String = String::from(my_str);
     println!("Using From: {}", my_string);
 }
+
 ```
 
 ### 示例二：使用 `Into` 进行转换
@@ -87,6 +89,7 @@ fn main() {
     let my_string: String = my_str.into();
     println!("Using Into: {}", my_string);
 }
+
 ```
 
 ## 4. 基于 `TryFrom` / `TryInto` Trait 的转换
@@ -106,6 +109,7 @@ fn main() {
         Err(e) => println!("Conversion failed: {}", e),
     }
 }
+
 ```
 
 ## 5. `AsRef` / `AsMut` 的引用转换
@@ -127,6 +131,7 @@ fn main() {
     let s_slice: &str = "Hello from &str";
     print_message(s_slice);
 }
+
 ```
 
 ## 6. 自动解引用（Deref Coercion）
@@ -151,6 +156,7 @@ fn main() {
     // boxed_str 自动解引用为 &String，再通过 AsRef 转换为 &str
     print_str(&boxed_str);
 }
+
 ```
 
 ## 7. 总结

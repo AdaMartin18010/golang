@@ -159,6 +159,7 @@ func allocate(size uintptr) unsafe.Pointer {
     // 大对象 (>32KB) 直接从堆分配
     return mheap.allocLarge(size)
 }
+
 ```
 
 ### 垃圾回收器
@@ -224,6 +225,7 @@ func writeBarrier(obj *Object, field *Object, value *Object) {
         greyObject(value)
     }
 }
+
 ```
 
 ### 内存管理关键指标
@@ -263,6 +265,7 @@ func analyzeMemoryUsage() MemoryAnalysis {
         GCCPUFraction: stats.GCCPUFraction, // GC占用CPU的比例
     }
 }
+
 ```
 
 ## 内存优化技术
@@ -305,6 +308,7 @@ func ProcessData(data []byte) error {
     
     return processBuffer(buffer)
 }
+
 ```
 
 注意事项：
@@ -390,6 +394,7 @@ func ProcessRequest(data []byte) {
     buffer.Write(data)
     // 处理buffer...
 }
+
 ```
 
 优点：
@@ -436,6 +441,7 @@ func BenchmarkSliceAllocation(b *testing.B) {
 // 输出示例:
 // BenchmarkSliceAllocationBad-8    10000    120000 ns/op    392544 B/op    12 allocs/op
 // BenchmarkSliceAllocationGood-8   50000     30000 ns/op     81920 B/op     1 allocs/op
+
 ```
 
 #### 2.2 map预分配
@@ -458,6 +464,7 @@ func BuildMapGood(n int) map[int]string {
     }
     return result
 }
+
 ```
 
 #### 2.3 字符串拼接
@@ -489,6 +496,7 @@ func ConcatStringsGood(items []string) string {
     
     return builder.String()
 }
+
 ```
 
 ### 3. 内存对齐优化
@@ -557,6 +565,7 @@ func ResetBuffer(buf Buffer) Buffer {
 
 // 创建缓冲区池
 bufferPool := NewObjectPool(NewBuffer, ResetBuffer, 100)
+
 ```
 
 ### 连接池
@@ -607,6 +616,7 @@ func (p *ConnectionPool) Put(conn *Connection) {
         conn.conn.Close()
     }
 }
+
 ```
 
 ## 内存池技术
@@ -692,6 +702,7 @@ func (p *TieredMemoryPool) Free(data []byte) {
     tier.pool.Put(data)
     atomic.AddUint64(&tier.stats.Frees, 1)
 }
+
 ```
 
 ### 内存对齐优化
@@ -726,6 +737,7 @@ type Data struct {
     Counter  int64
     Flag     bool
 }
+
 ```
 
 ## 零拷贝技术
@@ -760,6 +772,7 @@ func (zcs *ZeroCopySlice) ProcessWithPool(data []byte) []byte {
     copy(buffer, data)
     return buffer[:len(data)]
 }
+
 ```
 
 ### 字符串优化
@@ -800,6 +813,7 @@ func (so *StringOptimizer) ProcessBytes(data []byte) []byte {
     
     return result
 }
+
 ```
 
 ## 内存对齐优化
@@ -840,6 +854,7 @@ func (cfa *CacheFriendlyArray) Process() {
         cfa.data[i].data.Value *= 2.0
     }
 }
+
 ```
 
 ## 垃圾回收优化
@@ -890,6 +905,7 @@ func (gco *GCOptimizer) logGCStats() {
         gco.stats.PauseTotalNs/1e6,
         gco.stats.HeapAlloc/1024/1024)
 }
+
 ```
 
 ### 内存泄漏检测
@@ -947,6 +963,7 @@ func (mld *MemoryLeakDetector) ReportLeaks() []AllocationInfo {
     
     return leaks
 }
+
 ```
 
 ## 性能分析与测试
@@ -998,6 +1015,7 @@ func preallocAllocation() {
     defer putPreallocBuffer(buffer)
     _ = buffer
 }
+
 ```
 
 ### 内存分析工具
@@ -1044,6 +1062,7 @@ func (mp MemoryProfile) String() string {
         mp.PauseTotalNs/1e6,
     )
 }
+
 ```
 
 ## 最佳实践
@@ -1097,6 +1116,7 @@ func (mbp *MemoryBestPractices) ReuseObjects() {
         pool.Put(buffer)
     }
 }
+
 ```
 
 ### 2. 数据结构优化
@@ -1134,6 +1154,7 @@ func (ods *OptimizedDataStructures) PreallocateMap() {
         m[fmt.Sprintf("key%d", i)] = i
     }
 }
+
 ```
 
 ## 案例分析
@@ -1192,6 +1213,7 @@ func (s *OptimizedHTTPServer) putBuffer(buffer []byte) {
         // 缓冲区池已满，丢弃
     }
 }
+
 ```
 
 ### 案例2：数据库连接池优化
@@ -1257,6 +1279,7 @@ func (p *OptimizedDBPool) Put(conn *DBConnection) {
         conn.conn.Close()
     }
 }
+
 ```
 
 ## 总结

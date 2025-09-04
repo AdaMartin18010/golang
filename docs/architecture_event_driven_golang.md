@@ -105,6 +105,7 @@ type EventHandler interface {
     Handle(ctx context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
+
 ```
 
 ### 3.2 事件溯源模式
@@ -140,6 +141,7 @@ func (esa *EventSourcedAggregate) LoadFromHistory(events []*Event) {
     esa.Version = len(events)
     esa.RebuildState()
 }
+
 ```
 
 ### 3.3 CQRS模式
@@ -178,6 +180,7 @@ type QueryHandler interface {
     Handle(ctx context.Context, query Query) (interface{}, error)
     CanHandle(queryType string) bool
 }
+
 ```
 
 ### 3.4 发布/订阅模式 (Publish/Subscribe)
@@ -209,6 +212,7 @@ graph TD
     style C1 fill:#d5e8d4,stroke:#82b366
     style C2 fill:#d5e8d4,stroke:#82b366
     style C3 fill:#d5e8d4,stroke:#82b366
+
 ```
 
 ### 3.5 事件溯源 (Event Sourcing) 与 CQRS 组合模式
@@ -238,6 +242,7 @@ graph LR
     style ES fill:#f5f5f5,stroke:#666
     style Proj fill:#dae8fc,stroke:#6c8ebf
     style RM fill:#d5e8d4,stroke:#82b366
+
 ```
 
 ---
@@ -281,6 +286,7 @@ func NewOrderAggregate(id string) *OrderAggregate {
     
     return oa
 }
+
 ```
 
 ---
@@ -377,6 +383,7 @@ func main() {
   log.Fatalf("event validation failed: %v", err)
  }
 }
+
 ```
 
 ### 7.2 Kafka 生产者与消费者示例 (使用 sarama)
@@ -456,7 +463,7 @@ func main() {
 
 ```
 
-*注意: 运行此示例需要一个可用的Kafka实例，并且`sarama`库需要被安装: `go get github.com/Shopify/sarama`*
+* 注意: 运行此示例需要一个可用的Kafka实例，并且`sarama`库需要被安装: `go get github.com/Shopify/sarama`*
 
 ---
 
@@ -498,6 +505,7 @@ func (h *OrderEventHandler) HandleOrderCreated(event *Event) error {
 
     return tx.Commit()
 }
+
 ```
 
 ### 8.2 死信队列 (Dead-Letter Queue)
@@ -542,6 +550,7 @@ type EventHandler interface {
     Handle(ctx context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
+
 ```
 
 ### 9.2 CI/CD实践
@@ -588,6 +597,7 @@ type EventHandler interface {
     Handle(ctx context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
+
 ```
 
 ### 10.2 事件溯源模式数学表达
@@ -623,6 +633,7 @@ func (esa *EventSourcedAggregate) LoadFromHistory(events []*Event) {
     esa.Version = len(events)
     esa.RebuildState()
 }
+
 ```
 
 ## 11. 相关架构主题
@@ -633,4 +644,4 @@ func (esa *EventSourcedAggregate) LoadFromHistory(events []*Event) {
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

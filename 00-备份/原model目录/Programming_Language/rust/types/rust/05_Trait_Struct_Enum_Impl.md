@@ -71,6 +71,7 @@ impl Display for Color {
         }
     }
 }
+
 ```
 
 在这个示例中，`Animal` 是一个 trait，`Dog` 是一个 struct，我们为 `Dog` 实现了 `Animal` trait。

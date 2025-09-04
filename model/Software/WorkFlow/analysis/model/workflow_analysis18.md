@@ -11,19 +11,6 @@
   - [1.7 **总结:**](#**总结**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 好的，我理解您需要更深入、更具体的阐述，
 使用形式化方法的语言和示例来论证该架构的关键方面，
 特别是 TLA+、模型检查和类型系统（以 Rust 为例）。
@@ -256,6 +243,7 @@ impl EffectfulCell for MyCell {
         fn state(&self) -> Vec<u8> { self.state_data.to_be_bytes().to_vec() }
         fn load_state(&mut self, state: &[u8]) { /* ... */ }
 }
+
 ```
 
 **保证:**
@@ -283,6 +271,7 @@ impl EffectfulCell for MyCell {
             // Only available when awaiting
         async fn provide_outcome(self, outcome: Outcome) -> Result<CellHandle<StateReady>, CellHandle<StateFailed>> { /* ... */ }
     }
+
 ```
 
 **保证:** 编译时防止调用在当前状态下无效的操作。

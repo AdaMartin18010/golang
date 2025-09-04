@@ -58,13 +58,6 @@
     - [1.14.3 控制流与类型系统的统一前景](#控制流与类型系统的统一前景)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 Rust控制流系统：多维深度解析与逻辑推理
 
 ```text
@@ -88,6 +81,7 @@
 
 每个部分将包含严格的逻辑推理、形式化示例和实际代码案例。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -156,6 +150,7 @@
 
 - **命题即类型**：根据Curry-Howard同构，Rust类型系统可视为直觉主义逻辑系统
 - **形式化断言**：
+
   > 断言：如果值`v`具有类型`T`，则`v`满足由`T`表达的所有约束。
   
   **证明**：考虑一个类型`Option<T>`。根据代数数据类型定义，值必须是`Some(t)`或`None`。因此，任何类型为`Option<T>`的值必然存在于这两种状态之一。这是一个逻辑分类，通过枚举穷举实现，形成逻辑完备性。
@@ -296,7 +291,7 @@
           let y = x;  // 所有权转移到y
           // x不再有效
       } // 如果condition为true，y在此释放
-      
+  
       // 若condition为true，x已无所有权
       // 若condition为false，x仍有所有权
   } // x在适当情况下释放
@@ -419,11 +414,11 @@
   ```rust
   fn example() {
       let mut vec = vec![1, 2, 3];
-      
+  
       let mut adjacent_pairs = vec.windows(2)
           .map(|pair| (pair[0], pair[1]))
           .collect::<Vec<_>>();
-          
+  
       // 为什么可行？vec被不可变借用多次
   }
   ```
@@ -554,7 +549,7 @@
   trait Iterator {
       type Item;
       fn next(&mut self) -> Option<Self::Item>;
-      
+  
       // 默认方法可以递归使用自身
       fn count(mut self) -> usize
       where
@@ -1165,7 +1160,7 @@
   async fn process(x: String) -> usize {
       let len = x.len();  
       // x的所有权在状态机中保存
-      delay().await;      
+      delay().await;  
       // 暂停点
       x.len()
       // x在恢复后仍然可用
@@ -1191,9 +1186,9 @@
       *x += 1;
       let reference = &*x;  
       // 创建共享引用
-      delay().await;        
+      delay().await;  
       // 暂停点
-      reference             
+      reference  
       // 返回引用，必须在'a内有效
   }
   ```
@@ -1254,9 +1249,9 @@
   
   // CPS转换
   fn cps_style<F: FnOnce(i32)> (
-    condition: bool, 
-    a: i32, 
-    b: i32, 
+    condition: bool,
+    a: i32,
+    b: i32,
     continuation: F) {
       if condition {
           continuation(a)
@@ -1265,9 +1260,9 @@
       }
   }
   cps_style(
-    condition, 
-    a, 
-    b, 
+    condition,
+    a,
+    b,
     |result| use_result(result));
   ```
   
@@ -1462,7 +1457,7 @@
   ```rust
   async fn complex() -> Result<(), Error> {
       let mut handles = vec![];
-      
+  
       for i in 0..10 {
           if i % 2 == 0 {
               let handle = tokio::spawn(async move {
@@ -1475,14 +1470,14 @@
               handles.push(handle);
           }
       }
-      
+  
       for handle in handles {
           match handle.await {
               Ok(Ok(val)) => println!("Success: {}", val),
               Ok(Err(_)) | Err(_) => return Err(Error::new()),
           }
       }
-      
+  
       Ok(())
   }
   ```

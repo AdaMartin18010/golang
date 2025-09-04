@@ -94,6 +94,7 @@ impl Money {
         self.amount
     }
 }
+
 ```
 
 **实体实现**:
@@ -129,6 +130,7 @@ impl Order {
         Ok(())
     }
 }
+
 ```
 
 **映射分析**:
@@ -208,6 +210,7 @@ impl PaymentMethod {
         }
     }
 }
+
 ```
 
 **映射分析**:
@@ -274,6 +277,7 @@ pub trait OrderRepository {
     async fn find_by_id(&self, id: &OrderId) -> Result<Option<Order>, RepositoryError>;
     async fn find_by_customer(&self, customer_id: &CustomerId) -> Result<Vec<Order>, RepositoryError>;
 }
+
 ```
 
 **映射分析**:
@@ -348,6 +352,7 @@ impl Specification<Customer> for ActiveCustomerSpecification {
         customer.status() == CustomerStatus::Active
     }
 }
+
 ```
 
 **映射分析**:
@@ -401,6 +406,7 @@ pub fn apply_discount(price: &mut Money, discount: Percentage) {
     let factor = 1.0 - (discount.value() as f64 / 100.0);
     *price = price.multiply(factor);
 }
+
 ```
 
 **映射分析**:
@@ -460,6 +466,7 @@ impl AggregateRoot for Order {
         self.version += 1;
     }
 }
+
 ```
 
 **映射分析**:
@@ -504,6 +511,7 @@ impl Money {
         self.amount > 0
     }
 }
+
 ```
 
 **映射分析**:
@@ -554,6 +562,7 @@ impl OrderProcessor {
         Ok(())
     }
 }
+
 ```
 
 **映射分析**:
@@ -644,6 +653,7 @@ pub fn example_usage() {
     // 比较两个地址
     assert_ne!(address, new_address);
 }
+
 ```
 
 **映射分析**:
@@ -728,6 +738,7 @@ impl CustomerService {
         Ok(())
     }
 }
+
 ```
 
 **映射分析**:
@@ -800,6 +811,7 @@ impl Order {
         self.total = total;
     }
 }
+
 ```
 
 **映射分析**:
@@ -868,6 +880,7 @@ impl<'a> OrderProcessor<'a> {
         Ok(())
     }
 }
+
 ```
 
 **映射分析**:
@@ -946,6 +959,7 @@ impl InventoryService {
         Ok(reservation_id)
     }
 }
+
 ```
 
 **映射分析**:
@@ -976,15 +990,14 @@ impl Order {
             return Err(DomainError::InvalidOrderStatus);
         }
         
-
 ```rust
         if self.status != OrderStatus::Draft {
             return Err(DomainError::InvalidOrderStatus);
         }
-        
+  
         self.status = OrderStatus::Placed;
         self.updated_at = Utc::now();
-        
+  
         // 创建事件 - 所有权转移给调用者
         let event = OrderPlacedEvent {
             order_id: self.id.clone(),
@@ -992,7 +1005,7 @@ impl Order {
             total_amount: self.total.clone(),
             timestamp: Utc::now(),
         };
-        
+  
         Ok(event)
     }
 }
@@ -1008,24 +1021,24 @@ impl DomainEventDispatcher {
             handlers: HashMap::new(),
         }
     }
-    
+  
     // 注册事件处理器
     pub fn register<E: 'static + Send + Sync>(&mut self, handler: impl Fn(&E) + Send + Sync + 'static) {
         let type_id = TypeId::of::<E>();
-        
+  
         let boxed_handler = Box::new(move |event: &dyn Any| {
             if let Some(typed_event) = event.downcast_ref::<E>() {
                 handler(typed_event);
             }
         });
-        
+  
         self.handlers.entry(type_id).or_insert_with(Vec::new).push(boxed_handler);
     }
-    
+  
     // 分发事件 - 获取事件的所有权
     pub fn dispatch<E: 'static + Send + Sync>(&self, event: E) {
         let type_id = TypeId::of::<E>();
-        
+  
         if let Some(handlers) = self.handlers.get(&type_id) {
             for handler in handlers {
                 handler(&event);
@@ -1045,19 +1058,20 @@ impl OrderService {
         // 获取聚合
         let mut order = self.repository.find_by_id(order_id).await?
             .ok_or(ServiceError::OrderNotFound)?;
-            
+  
         // 领域逻辑 - 产生事件
         let event = order.place().map_err(ServiceError::DomainError)?;
-        
+  
         // 保存聚合
         self.repository.save(&order).await?;
-        
+  
         // 分发事件 - 所有权转移给分发器
         self.event_dispatcher.dispatch(event);
-        
+  
         Ok(())
     }
 }
+
 ```
 
 **映射分析**:
@@ -1082,10 +1096,10 @@ pub fn process_order_action(order: &mut Order, action: OrderAction) -> Result<()
         (OrderStatus::Submitted, OrderAction::Pay { payment_id }) => order.mark_as_paid(payment_id),
         (OrderStatus::Paid { .. }, OrderAction::Ship { tracking_code }) => order.ship(tracking_code),
         (OrderStatus::Shipped { .. }, OrderAction::Deliver) => order.deliver(),
-        
+  
         // 允许在多种状态下执行的操作
         (status, OrderAction::Cancel { reason }) if status.can_be_cancelled() => order.cancel(reason),
-        
+  
         // 拒绝其他组合
         (status, action) => Err(BusinessError::InvalidStateTransition {
             entity: "Order".to_string(),
@@ -1104,7 +1118,7 @@ pub fn calculate_shipping_cost(order: &Order, shipping_options: &ShippingOptions
             ShippingMethod::Express => Money::new_usd(15.99),
             ShippingMethod::Overnight => Money::new_usd(29.99),
         },
-        
+  
         // 国际订单，基于区域和重量
         country => {
             let region = shipping_options.get_region_for_country(country);
@@ -1114,7 +1128,7 @@ pub fn calculate_shipping_cost(order: &Order, shipping_options: &ShippingOptions
                 Region::AsiaPacific => Money::new_usd(25.99),
                 Region::Other => Money::new_usd(35.99),
             };
-            
+  
             // 基于重量增加费用
             match order.calculate_total_weight() {
                 weight if weight <= Weight::new(1.0, WeightUnit::Kg) => base_rate,
@@ -1129,6 +1143,7 @@ pub fn calculate_shipping_cost(order: &Order, shipping_options: &ShippingOptions
         }
     }
 }
+
 ```
 
 **映射分析**:
@@ -1144,36 +1159,40 @@ Rust的错误处理机制适合表达业务异常和结果：
 
 ```rust
 // 领域错误定义
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum DomainError {
     #[error("验证错误: {0}")]
     ValidationError(String),
-    
+  
     #[error("实体未找到: {0}")]
     EntityNotFound(String),
-    
+  
     #[error("无效状态转换: {0}")]
     InvalidStateTransition(String),
-    
+  
     #[error("业务规则冲突: {0}")]
     BusinessRuleViolation(String),
-    
+  
     #[error("乐观锁冲突")]
     ConcurrencyConflict,
 }
 
 // 应用层错误
-#[derive(Debug, thiserror::Error)]
+
+# [derive(Debug, thiserror::Error)]
+
 pub enum ApplicationError {
     #[error("领域错误: {0}")]
     DomainError(#[from] DomainError),
-    
+  
     #[error("数据访问错误: {0}")]
     DataAccessError(String),
-    
+  
     #[error("授权错误: {0}")]
     AuthorizationError(String),
-    
+  
     #[error("外部服务错误: {0}")]
     ExternalServiceError(String),
 }
@@ -1187,17 +1206,17 @@ impl Customer {
                 "信用额度减少不能超过50%".to_string()
             ));
         }
-        
+  
         // 业务规则：不能为锁定客户提高额度
         if self.status == CustomerStatus::Locked && new_limit > self.credit_limit {
             return Err(DomainError::BusinessRuleViolation(
                 "锁定客户不能提高信用额度".to_string()
             ));
         }
-        
+  
         self.credit_limit = new_limit;
         self.updated_at = Utc::now();
-        
+  
         Ok(())
     }
 }
@@ -1208,12 +1227,12 @@ pub async fn process_payment(payment: Payment) -> Result<PaymentReceipt, Applica
     if payment.amount().is_zero() {
         return Err(DomainError::ValidationError("支付金额不能为零".into()).into());
     }
-    
+  
     // 外部服务调用
     let receipt = payment_gateway.process(&payment)
         .await
         .map_err(|e| ApplicationError::ExternalServiceError(format!("支付网关错误: {}", e)))?;
-        
+  
     Ok(receipt)
 }
 
@@ -1232,17 +1251,18 @@ pub async fn update_order_status(
             return Err(ApplicationError::DataAccessError(format!("数据库错误: {}", e)));
         }
     };
-    
+  
     // 尝试更新状态
     order.update_status(new_status)
         .map_err(ApplicationError::DomainError)?;
-        
+  
     // 保存更新
     order_repository.save(&order).await
         .map_err(|e| ApplicationError::DataAccessError(format!("保存失败: {}", e)))?;
-        
+  
     Ok(())
 }
+
 ```
 
 **映射分析**:
@@ -1268,10 +1288,10 @@ impl ShoppingCart {
                 acc.add(&subtotal).unwrap()
             })
     }
-    
+  
     pub fn apply_discounts(&self, discounts: &[Discount]) -> Money {
         let total = self.calculate_total();
-        
+  
         // 计算总折扣
         let total_discount = discounts
             .iter()
@@ -1280,7 +1300,7 @@ impl ShoppingCart {
             .fold(Money::zero(Currency::USD), |acc, amount| {
                 acc.add(&amount).unwrap()
             });
-            
+  
         // 确保折扣不超过总价
         if total_discount > total {
             total
@@ -1296,7 +1316,7 @@ pub fn analyze_customer_orders(customer_id: &CustomerId, orders: &[Order]) -> Cu
         .iter()
         .filter(|order| order.customer_id() == customer_id)
         .collect::<Vec<_>>();
-        
+  
     // 计算总消费
     let total_spent = all_customer_orders
         .iter()
@@ -1304,20 +1324,20 @@ pub fn analyze_customer_orders(customer_id: &CustomerId, orders: &[Order]) -> Cu
         .fold(Money::zero(Currency::USD), |acc, total| {
             acc.add(total).unwrap()
         });
-        
+  
     // 找出最大订单
     let largest_order = all_customer_orders
         .iter()
         .max_by(|a, b| a.total().partial_cmp(b.total()).unwrap())
         .cloned();
-        
+  
     // 计算平均订单金额
     let average_order_value = if all_customer_orders.is_empty() {
         Money::zero(Currency::USD)
     } else {
         total_spent.divide(all_customer_orders.len() as f64).unwrap()
     };
-    
+  
     // 按月统计订单
     let orders_by_month = all_customer_orders
         .iter()
@@ -1326,7 +1346,7 @@ pub fn analyze_customer_orders(customer_id: &CustomerId, orders: &[Order]) -> Cu
             (month, order)
         })
         .into_group_map();
-        
+  
     CustomerAnalysis {
         customer_id: customer_id.clone(),
         order_count: all_customer_orders.len(),
@@ -1336,6 +1356,7 @@ pub fn analyze_customer_orders(customer_id: &CustomerId, orders: &[Order]) -> Cu
         orders_by_month: orders_by_month.into_iter().collect(),
     }
 }
+
 ```
 
 **映射分析**:
@@ -1356,13 +1377,13 @@ type DiscountStrategy = Box<dyn Fn(&Order) -> Money + Send + Sync>;
 // 创建不同的折扣策略
 pub fn create_discount_strategies() -> HashMap<String, DiscountStrategy> {
     let mut strategies = HashMap::new();
-    
+  
     // 固定金额折扣
     strategies.insert(
         "FIXED_10".to_string(),
         Box::new(|_| Money::new_usd(10.0)) as DiscountStrategy
     );
-    
+  
     // 百分比折扣
     strategies.insert(
         "PERCENT_15".to_string(),
@@ -1371,7 +1392,7 @@ pub fn create_discount_strategies() -> HashMap<String, DiscountStrategy> {
             order.total().multiply(discount_rate)
         }) as DiscountStrategy
     );
-    
+  
     // 阶梯折扣
     strategies.insert(
         "TIERED".to_string(),
@@ -1388,7 +1409,7 @@ pub fn create_discount_strategies() -> HashMap<String, DiscountStrategy> {
             }
         }) as DiscountStrategy
     );
-    
+  
     // 返回所有策略
     strategies
 }
@@ -1402,11 +1423,11 @@ impl DiscountService {
     pub fn new(strategies: HashMap<String, DiscountStrategy>) -> Self {
         Self { strategies }
     }
-    
+  
     pub fn apply_discount(&self, code: &str, order: &Order) -> Result<Money, DiscountError> {
         let strategy = self.strategies.get(code)
             .ok_or_else(|| DiscountError::InvalidCode(code.to_string()))?;
-            
+  
         Ok(strategy(order))
     }
 }
@@ -1424,11 +1445,11 @@ impl TaxCalculator {
             special_rules: Vec::new(),
         }
     }
-    
+  
     pub fn add_special_rule(&mut self, rule: impl Fn(&Product) -> Option<f64> + Send + Sync + 'static) {
         self.special_rules.push(Box::new(rule));
     }
-    
+  
     pub fn calculate_tax(&self, product: &Product, region: &str) -> Money {
         // 查找特殊规则
         for rule in &self.special_rules {
@@ -1436,12 +1457,13 @@ impl TaxCalculator {
                 return product.price().multiply(rate);
             }
         }
-        
+  
         // 使用区域税率
         let rate = self.tax_rates.get(region).copied().unwrap_or(0.0);
         product.price().multiply(rate)
     }
 }
+
 ```
 
 **映射分析**:
@@ -1470,27 +1492,27 @@ impl OrderProcessor {
         // 获取订单
         let mut order = self.repository.find_by_id(order_id).await?
             .ok_or(ProcessingError::OrderNotFound(order_id.clone()))?;
-            
+  
         // 验证订单
         self.validate_order(&order).await?;
-        
+  
         // 预留库存
         self.reserve_inventory(&order).await?;
-        
+  
         // 处理支付
         let payment_result = self.process_payment(&order).await;
-        
+  
         match payment_result {
             Ok(payment_id) => {
                 // 支付成功，更新订单状态
                 order.mark_as_paid(payment_id)?;
-                
+  
                 // 保存订单
                 self.repository.save(&order).await?;
-                
+  
                 // 发送确认通知
                 self.notification_service.send_order_confirmation(&order).await?;
-                
+  
                 Ok(OrderProcessingResult::Success {
                     order_id: order_id.clone(),
                     payment_id,
@@ -1499,11 +1521,11 @@ impl OrderProcessor {
             Err(e) => {
                 // 支付失败，释放库存
                 self.release_inventory(&order).await?;
-                
+  
                 // 更新订单状态
                 order.mark_as_payment_failed(e.to_string())?;
                 self.repository.save(&order).await?;
-                
+  
                 Ok(OrderProcessingResult::PaymentFailed {
                     order_id: order_id.clone(),
                     reason: e.to_string(),
@@ -1511,7 +1533,7 @@ impl OrderProcessor {
             }
         }
     }
-    
+  
     // 异步验证订单
     async fn validate_order(&self, order: &Order) -> Result<(), ProcessingError> {
         // 并发执行多个验证
@@ -1519,14 +1541,14 @@ impl OrderProcessor {
             self.validate_customer(order.customer_id()),
             self.validate_products(order.items())
         );
-        
+  
         // 处理验证结果
         customer_result?;
         product_results?;
-        
+  
         Ok(())
     }
-    
+  
     // 异步验证产品是否可购买
     async fn validate_products(&self, items: &[OrderItem]) -> Result<(), ProcessingError> {
         // 并发验证所有商品
@@ -1535,28 +1557,29 @@ impl OrderProcessor {
             .map(|item| {
                 let inventory_service = self.inventory_service.clone();
                 let product_id = item.product_id().clone();
-                
+  
                 async move {
                     inventory_service.validate_product_availability(&product_id).await
                 }
             })
             .collect::<Vec<_>>();
-            
+  
         // 等待所有验证完成
         let results = futures::future::join_all(validation_futures).await;
-        
+  
         // 检查结果
         for result in results {
             if let Err(e) = result {
                 return Err(ProcessingError::ProductValidationFailed(e.to_string()));
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 其他异步方法...
 }
+
 ```
 
 **映射分析**:
@@ -1572,7 +1595,9 @@ Rust的宏系统支持领域特定语言(DSL)和元建模：
 
 ```rust
 // 声明式实体定义宏
-#[macro_export]
+
+# [macro_export]
+
 macro_rules! define_entity {
     (
         $entity:ident {
@@ -1591,7 +1616,7 @@ macro_rules! define_entity {
             updated_at: chrono::DateTime<chrono::Utc>,
             version: u64,
         }
-        
+  
         impl $entity {
             #[allow(clippy::too_many_arguments)]
             pub fn new(
@@ -1608,7 +1633,7 @@ macro_rules! define_entity {
                         }
                     )?
                 )*
-                
+  
                 Ok(Self {
                     id,
                     $(
@@ -1619,41 +1644,41 @@ macro_rules! define_entity {
                     version: 0,
                 })
             }
-            
+  
             pub fn id(&self) -> &$id_type {
                 &self.id
             }
-            
+  
             $(
                 pub fn $field(&self) -> &$field_type {
                     &self.$field
                 }
             )*
-            
+  
             pub fn version(&self) -> u64 {
                 self.version
             }
-            
+  
             pub fn created_at(&self) -> chrono::DateTime<chrono::Utc> {
                 self.created_at
             }
-            
+  
             pub fn updated_at(&self) -> chrono::DateTime<chrono::Utc> {
                 self.updated_at
             }
         }
-        
+  
         impl $crate::domain::AggregateRoot for $entity {
             type Id = $id_type;
-            
+  
             fn id(&self) -> &Self::Id {
                 &self.id
             }
-            
+  
             fn version(&self) -> u64 {
                 self.version
             }
-            
+  
             fn increment_version(&mut self) {
                 self.version += 1;
                 self.updated_at = chrono::Utc::now();
@@ -1687,7 +1712,9 @@ define_entity!(
 );
 
 // 值对象比较宏
-#[macro_export]
+
+# [macro_export]
+
 macro_rules! impl_value_object {
     ($name:ident) => {
         impl PartialEq for $name {
@@ -1698,13 +1725,15 @@ macro_rules! impl_value_object {
                 self_json == other_json
             }
         }
-        
+  
         impl Eq for $name {}
     };
 }
 
 // 使用宏实现值对象
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct Address {
     street: String,
     city: String,
@@ -1714,6 +1743,7 @@ pub struct Address {
 }
 
 impl_value_object!(Address);
+
 ```
 
 **映射分析**:
@@ -1746,16 +1776,16 @@ impl PaymentProcessorType {
                 config.stripe_api_key.clone(),
                 config.stripe_webhook_secret.clone(),
             )),
-            
+  
             #[cfg(feature = "paypal")]
             Self::PayPal => Box::new(PayPalProcessor::new(
                 config.paypal_client_id.clone(),
                 config.paypal_secret.clone(),
             )),
-            
+  
             #[cfg(feature = "mock")]
             Self::Mock => Box::new(MockProcessor::new()),
-            
+  
             #[allow(unreachable_patterns)]
             _ => panic!("不支持的支付处理器类型"),
         }
@@ -1765,7 +1795,7 @@ impl PaymentProcessorType {
 // 特定区域税收规则
 pub fn calculate_tax(product: &Product, address: &Address) -> Money {
     let base_price = product.price();
-    
+  
     #[cfg(feature = "eu_tax")]
     {
         if eu_countries().contains(&address.country()) {
@@ -1773,7 +1803,7 @@ pub fn calculate_tax(product: &Product, address: &Address) -> Money {
             return apply_eu_vat(product, address);
         }
     }
-    
+  
     #[cfg(feature = "us_tax")]
     {
         if address.country() == "USA" {
@@ -1781,7 +1811,7 @@ pub fn calculate_tax(product: &Product, address: &Address) -> Money {
             return apply_us_sales_tax(product, address);
         }
     }
-    
+  
     // 默认税收逻辑
     base_price
 }
@@ -1791,7 +1821,7 @@ pub struct OrderProcessingStrategy {
     // 配置选项
     #[cfg(feature = "async_processing")]
     queue_service: Option<Arc<dyn MessageQueue>>,
-    
+  
     #[cfg(feature = "transaction_retry")]
     max_retries: u32,
 }
@@ -1805,10 +1835,10 @@ impl OrderProcessingStrategy {
                 return self.send_to_queue(order, queue);
             }
         }
-        
+  
         // 同步处理逻辑
         let result = self.process_synchronously(order);
-        
+  
         #[cfg(feature = "transaction_retry")]
         {
             if let Err(ProcessingError::Transient(_)) = &result {
@@ -1816,12 +1846,13 @@ impl OrderProcessingStrategy {
                 return self.retry_processing(order);
             }
         }
-        
+  
         result
     }
-    
+  
     // 实现方法...
 }
+
 ```
 
 **映射分析**:
@@ -1844,7 +1875,9 @@ pub struct OrderId(Uuid);
 pub struct ProductId(Uuid);
 
 // 2. 用类型捕获约束条件
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct Email(String);
 
 impl Email {
@@ -1853,10 +1886,10 @@ impl Email {
         if !is_valid_email(&value) {
             return Err(ValidationError::InvalidEmail(value));
         }
-        
+  
         Ok(Self(value))
     }
-    
+  
     pub fn value(&self) -> &str {
         &self.0
     }
@@ -1872,18 +1905,18 @@ impl<T> NonEmptyList<T> {
         if items.is_empty() {
             return Err(ValidationError::EmptyCollection);
         }
-        
+  
         Ok(Self { items })
     }
-    
+  
     pub fn add(&mut self, item: T) {
         self.items.push(item);
     }
-    
+  
     pub fn items(&self) -> &[T] {
         &self.items
     }
-    
+  
     // 永远不会返回None，因为结构保证了至少有一个元素
     pub fn first(&self) -> &T {
         &self.items[0]
@@ -1907,14 +1940,14 @@ impl OrderState {
             _ => Err(DomainError::InvalidStateTransition("只有草稿订单可以提交".into())),
         }
     }
-    
+  
     pub fn mark_as_paid(self, payment_id: PaymentId) -> Result<OrderState, DomainError> {
         match self {
             Self::Submitted(submitted) => Ok(Self::Paid(submitted.pay(payment_id)?)),
             _ => Err(DomainError::InvalidStateTransition("只有已提交订单可以标记为已支付".into())),
         }
     }
-    
+  
     // 其他状态转换...
 }
 
@@ -1931,11 +1964,11 @@ impl ShoppingCart {
         if self.items.is_empty() {
             return Err(CheckoutError::EmptyCart);
         }
-        
+  
         let customer_id = self.customer_id
             .as_ref()
             .ok_or(CheckoutError::CustomerNotLoggedIn)?;
-            
+  
         Ok(CheckoutProcess::new(
             self.items.clone(),
             customer_id.clone(),
@@ -1960,11 +1993,11 @@ pub fn allocate_inventory<T: InventoryItem>(
         let item = items.iter()
             .find(|item| item.sku() == sku)
             .ok_or_else(|| AllocationError::ItemNotFound(sku.clone()))?;
-            
+  
         if !item.is_available() {
             return Err(AllocationError::ItemNotAvailable(sku.clone()));
         }
-        
+  
         if item.quantity() < *quantity {
             return Err(AllocationError::InsufficientQuantity {
                 sku: sku.clone(),
@@ -1973,10 +2006,11 @@ pub fn allocate_inventory<T: InventoryItem>(
             });
         }
     }
-    
+  
     // 创建分配记录
     Ok(Allocation::new(allocation.clone()))
 }
+
 ```
 
 **最佳实践**:
@@ -2004,20 +2038,19 @@ impl PaymentMethod {
         if !is_valid_card_number(&card_number) {
             return Err(ValidationError::InvalidCardNumber);
         }
-        
+  
         // 验证CVV
         if !is_valid_cvv(&cvv) {
             return Err(ValidationError::InvalidCvv);
         }
-        
+  
         // 验证过期日期
         if expiry_date.is_expired() {
             return Err(ValidationError::ExpiredCard);
         }
-        
+  
         // 创建有效的支付方式
-        
-
+  
 ```rust
         // 创建有效的支付方式
         Ok(Self::CreditCard {
@@ -2247,6 +2280,7 @@ impl DiscountStrategy for FixedAmountDiscount {
         order.total() >= self.minimum_order_amount
     }
 }
+
 ```
 
 **最佳实践**:
@@ -2463,6 +2497,7 @@ impl IntegrationEventMapper {
         }
     }
 }
+
 ```
 
 **最佳实践**:
@@ -2741,6 +2776,7 @@ impl OrderQueryService {
         Ok(order)
     }
 }
+
 ```
 
 **最佳实践**:
@@ -2770,6 +2806,7 @@ pub struct Customer {
     orders: Vec<Order>,  // 直接引用订单
     // ...
 }
+
 */
 
 // 更好的设计 - 通过ID引用
@@ -2977,6 +3014,7 @@ impl InventoryManager {
         }
     }
 }
+
 ```
 
 **最佳实践**:
@@ -3241,6 +3279,7 @@ impl OrderCheckoutCoordinator {
     
     // 辅助方法...
 }
+
 ```
 
 ### 6.3 使用领域事件解耦聚合
@@ -3290,6 +3329,7 @@ impl DomainEventSubscriber<OrderPlacedEvent> for OrderPlacedHandler {
         });
     }
 }
+
 ```
 
 ### 6.4 分布式系统与一致性保证
@@ -3388,6 +3428,7 @@ impl<T: Clone + Send + Sync + 'static> CompensatingTransaction<T> {
         Ok(())
     }
 }
+
 ```
 
 ## 7. 结论与展望（扩展）

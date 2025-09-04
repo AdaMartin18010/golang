@@ -18,6 +18,7 @@
 
 这些主题可以帮助更全面地理解 Rust 所有权系统的深度和广度。
 </think>
+
 ```
 
 ## 目录
@@ -89,6 +90,7 @@ fn borrow_checker_example() {
     // 在 NLL 之前，这会报错，因为不可变借用仍然活跃
     // 在 NLL 之后，这是合法的，因为不可变借用已经结束
 }
+
 ```
 
 ### MIR 与所有权
@@ -126,7 +128,9 @@ bb0: {
     call println(z);
     return;
 }
+
 */
+
 ```
 
 ### 优化与所有权分析
@@ -161,6 +165,7 @@ fn process_exclusive(x: &mut i32) -> i32 {
     // 编译器知道 x 是唯一的可变引用，可以优化为一次加法
     *x
 }
+
 ```
 
 ### 编译错误诊断技术
@@ -201,6 +206,7 @@ fn error_diagnostics_example() {
     //    |
     //    = note: consider using a `let` binding to create a longer lived value
 }
+
 ```
 
 ## 所有权与特定领域应用
@@ -262,6 +268,7 @@ impl Led {
         // 安全地修改硬件状态，需要可变引用
     }
 }
+
 ```
 
 ### 所有权在异步编程中的应用
@@ -299,6 +306,7 @@ async fn handle_connection(socket: TcpStream, data: Arc<Vec<u8>>) {
     // 所有权系统确保资源被正确释放
     socket.write_all(&response).await.unwrap();
 } // socket 在这里释放，buf 也被释放
+
 ```
 
 ### 所有权在数据库系统中的应用
@@ -352,6 +360,7 @@ impl BufferPool {
         f(&mut data) // 传递可变借用给回调函数
     }
 }
+
 ```
 
 ### 所有权在图形编程中的应用
@@ -423,6 +432,7 @@ fn render_scene() {
     
     // shader 和 texture 在这里仍然有效
 } // shader 和 texture 在这里销毁，GPU 资源被释放
+
 ```
 
 ## 数据结构设计与所有权模式
@@ -485,6 +495,7 @@ impl Graph {
             .collect()
     }
 }
+
 ```
 
 ### 缓存与池化资源
@@ -550,6 +561,7 @@ impl<'a, T> Drop for PooledResource<'a, T> {
         // 实际实现会更复杂，这里简化处理
     }
 }
+
 ```
 
 ### 索引与间接引用
@@ -631,6 +643,7 @@ impl World {
         self.positions[entity.id].as_ref()
     }
 }
+
 ```
 
 ### 低成本分配技术
@@ -688,6 +701,7 @@ fn reuse_allocation() {
         println!("当前字符串: {}", buf);
     }
 } // 只有一次分配和释放
+
 ```
 
 ## 异步编程与所有权
@@ -735,6 +749,7 @@ where
     let result = f(&data).await;
     println!("结果: {}", result);
 } // data 在这里被释放
+
 ```
 
 ### Future 特性与所有权传递
@@ -793,6 +808,7 @@ async fn process_chain() {
         Err(e) => println!("错误: {}", e),
     }
 }
+
 ```
 
 ### 异步借用问题
@@ -844,6 +860,7 @@ impl AsyncProcessor {
         self.config.len()
     }
 }
+
 ```
 
 ### 固定（Pin）与自引用结构
@@ -907,6 +924,7 @@ fn use_self_ref() {
     let pinned = SelfReferential::new(String::from("自引用数据"));
     println!("引用: {}", SelfReferential::get_self_ref(pinned.as_ref()));
 }
+
 ```
 
 ## 跨语言所有权
@@ -972,6 +990,7 @@ fn use_c_resource() {
     let resource = CResource::new();
     resource.use_with_name("Rust 调用");
 } // 资源自动释放
+
 ```
 
 ### 所有权边界安全
@@ -1048,6 +1067,7 @@ pub extern "C" fn rust_process_data(ptr: *mut c_void) {
     borrowed.use_data();
     // 不会释放资源，因为 owned = false
 }
+
 ```
 
 ### 跨语言资源管理策略
@@ -1116,6 +1136,7 @@ fn adopt_from_c() {
     let resource = AdoptedResource::adopt(ptr);
     // Rust 现在负责释放资源
 } // resource 在这里自动释放
+
 ```
 
 ### FFI 中的所有权模式
@@ -1213,6 +1234,7 @@ fn perform_async_operation() {
     
     // 注意：必须确保 C 代码不会在 state 释放后使用它
 }
+
 ```
 
 ## 总结：所有权系统的统一视角
@@ -1334,6 +1356,7 @@ fn resource_examples() {
     
     // 所有资源在作用域结束时自动释放
 }
+
 ```
 
 ## 结论

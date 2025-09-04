@@ -250,7 +250,6 @@ func (c TokenCredential) Identity() string {
     return "user_from_token"
 }
 
-
 // 接收 Credential 接口，实现多态
 func authenticate(cred Credential) (string, error) {
     if cred.Validate() {
@@ -397,6 +396,7 @@ fn main() {
          Err(e) => eprintln!("Try access failed: {}", e), // 会输出 Access error
     }
 }
+
 ```
 
 - **Go (if err != nil 和 defer)**:
@@ -470,6 +470,7 @@ func main() {
 fmt.Printf("Access granted: %s\n", data)
     // defer 语句在函数返回前执行
 }
+
 ```
 
 ### 1.4.3 作用域 (Scope)
@@ -571,6 +572,7 @@ fn main() {
     handle_request_path2(normal_user, true); // !! 调用了有风险的路径
     handle_request_path2(admin_user, true);
 }
+
 ```
 
 - **CFA 分析会**:
@@ -663,7 +665,6 @@ func main() {
         // 故意插入一个可能导致注入的名字
   _, err = db.Exec("INSERT INTO users (username, data) VALUES ('admin'' --', 'Malicious data')")
   if err != nil { http.Error(w, "DB insert failed", http.StatusInternalServerError); return; }
-
 
   // !! Propagation: userInput (tainted) 被传递给 getUserData
   rows, err := getUserData(db, userInput)
@@ -861,7 +862,6 @@ func main() {
     // 观察 /unsafe 的最终计数是否总是等于请求数 (通常不是)
     // 观察 /safe 的最终计数是否等于请求数 (应该是)
 
-
  // --- 演示 TOCTOU ---
     fmt.Println("\n--- TOCTOU Demo ---")
     var wg sync.WaitGroup
@@ -902,6 +902,7 @@ func main() {
     // 观察 Unsafe 访问是否在 isAuthenticated 变为 false 后仍然发生
     // 观察 Safe 访问是否正确地在 isAuthenticated 变为 false 后被拒绝
 }
+
 ```
 
 - **执行流分析会**:
@@ -1090,4 +1091,5 @@ func main() {
         └── 层次关联: 自顶向下设计, 自底向上反馈, 验证与实现一致性
 
 总结: 多维度、多层次、系统性思考是构建安全系统的关键
+
 ```

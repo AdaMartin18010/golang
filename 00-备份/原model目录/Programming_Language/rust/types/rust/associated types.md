@@ -16,6 +16,7 @@ pub trait Iterator {
 
     fn next(&mut self) -> Option<Self::Item>;
 }
+
 ```
 
 在这里，`Item` 就是一个关联类型；不同类型的迭代器在实现该 trait 时，会将 `Item` 指定为不同的类型。
@@ -119,6 +120,7 @@ fn main() {
     print_area(&circle);
     print_area(&rectangle);
 }
+
 ```
 
 **说明：**
@@ -157,6 +159,7 @@ pub trait Iterator {
     // 返回下一个元素
     fn next(&mut self) -> Option<Self::Item>;
 }
+
 ```
 
 在这个例子中，`Iterator` trait 定义了一个关联类型 `Item`，当你为一个类型实现 `Iterator` trait 时，就必须指定具体的 `Item` 类型。
@@ -174,6 +177,7 @@ pub trait Iterator {
 pub trait Iterator<T> {
     fn next(&mut self) -> Option<T>;
 }
+
 ```
 
 这种方式的缺点在于：
@@ -190,6 +194,7 @@ pub trait Iterator {
     type Item;
     fn next(&mut self) -> Option<Self::Item>;
 }
+
 ```
 
 这种方式将某个类型与 trait 的关联信息直接绑定，能帮助编译器更好地进行类型推导，同时使接口约定更自然。
@@ -242,6 +247,7 @@ fn main() {
         println!("Current count: {}", val);
     }
 }
+
 ```
 
 在这个示例中：

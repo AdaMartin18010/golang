@@ -94,6 +94,7 @@
     \item $M = \{m_1, m_2, \ldots, m_q\}$ 是消息集合
     \item $T = \{t_1, t_2, \ldots, t_r\}$ 是时间戳集合
 \end{itemize}
+
 ```
 
 ### 11.1.1.4.2 2. 服务定义
@@ -108,6 +109,7 @@
     \item $behavior$ 是服务的行为函数
     \item $config$ 是服务的配置参数
 \end{itemize}
+
 ```
 
 ### 11.1.1.4.3 3. 服务通信定义
@@ -120,6 +122,7 @@
     \item $receiver \in S$ 是接收方服务
     \item $message \in M$ 是通信消息
 \end{itemize}
+
 ```
 
 ### 11.1.1.4.4 4. 系统一致性定理
@@ -135,6 +138,7 @@
 \end{enumerate}
 
 则微服务系统 $\mathcal{MS}$ 是一致的。
+
 ```
 
 **证明**: 通过归纳法证明每个条件都保证了系统的一致性。
@@ -151,6 +155,7 @@ graph TB
     D --> E[注册中心]
     E --> F[负载均衡器]
     F --> G[客户端]
+
 ```
 
 **形式化定义**:
@@ -164,6 +169,7 @@ graph TB
     \item $health: S \rightarrow \{healthy, unhealthy\}$ 是健康检查函数
     \item $update: S \times N \rightarrow N$ 是服务更新函数
 \end{itemize}
+
 ```
 
 ### 11.1.1.5.2 2. API网关模式
@@ -175,6 +181,7 @@ graph TB
     B --> D[业务服务A]
     B --> E[业务服务B]
     B --> F[业务服务C]
+
 ```
 
 **形式化定义**:
@@ -189,6 +196,7 @@ graph TB
     \item $transform: Request \rightarrow Request$ 是请求转换函数
     \item $monitor: Request \rightarrow Metrics$ 是监控函数
 \end{itemize}
+
 ```
 
 ### 11.1.1.5.3 3. 熔断器模式
@@ -201,6 +209,7 @@ stateDiagram-v2
     半开 --> 关闭: 成功
     半开 --> 开启: 失败
     开启 --> 开启: 失败
+
 ```
 
 **形式化定义**:
@@ -214,6 +223,7 @@ stateDiagram-v2
     \item $timeout \in \mathbb{R}^+$ 是超时时间
     \item $counter: \mathbb{N} \rightarrow \mathbb{N}$ 是失败计数器
 \end{itemize}
+
 ```
 
 ## 11.1.1.6 Golang实现
@@ -343,6 +353,7 @@ func (s *BaseService) healthHandler(w http.ResponseWriter, r *http.Request) {
 func (s *BaseService) AddEndpoint(endpoint Endpoint) {
     s.endpoints = append(s.endpoints, endpoint)
 }
+
 ```
 
 ### 11.1.1.6.2 2. 服务发现实现
@@ -474,6 +485,7 @@ func (r *ServiceRegistry) cleanupExpiredServices() {
         r.mutex.Unlock()
     }
 }
+
 ```
 
 ### 11.1.1.6.3 3. API网关实现
@@ -639,6 +651,7 @@ func (g *Gateway) forwardRequest(w http.ResponseWriter, r *http.Request, route *
     
     return http.StatusOK
 }
+
 ```
 
 ### 11.1.1.6.4 4. 熔断器实现
@@ -752,6 +765,7 @@ func (cb *CircuitBreaker) GetFailureCount() int {
     defer cb.mutex.RUnlock()
     return cb.failureCount
 }
+
 ```
 
 ## 11.1.1.7 性能分析
@@ -810,6 +824,7 @@ func (r *OptimizedRegistry) Register(service *ServiceInfo) error {
     defer r.mutex.Unlock()
     // 写入操作
 }
+
 ```
 
 #### 11.1.1.7.3.2 连接池优化
@@ -832,6 +847,7 @@ func NewHTTPClient() *HTTPClient {
         },
     }
 }
+
 ```
 
 ## 11.1.1.8 最佳实践
@@ -906,6 +922,7 @@ graph TB
     E --> M[消息队列]
     F --> M
     G --> M
+
 ```
 
 #### 11.1.1.9.1.1 服务拆分策略
@@ -942,6 +959,7 @@ graph TB
     E --> M[消息队列]
     F --> M
     G --> M
+
 ```
 
 #### 11.1.1.9.2.1 安全设计
@@ -958,4 +976,4 @@ graph TB
 
 ---
 
-*本文档将持续更新，确保微服务架构分析的完整性和准确性。*
+* 本文档将持续更新，确保微服务架构分析的完整性和准确性。*

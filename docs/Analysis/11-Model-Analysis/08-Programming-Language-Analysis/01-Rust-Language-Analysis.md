@@ -20,19 +20,6 @@
   - [11.8.1.7 7. 参考与交叉引用](#7-参考与交叉引用)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.8.1.1 1. 概述
 
 本文件系统性梳理 Rust 编程语言的核心语义、类型系统、所有权与生命周期机制，并与 Golang 进行对比，采用数学、代码、图示等多表征方式，强调工程与架构实践。
@@ -57,10 +44,12 @@ $\mathcal{T}_{Rust} = (T, S, R, L, C)$
 
 ```rust
 struct Point { x: f64, y: f64 }
+
 ```
 
 ```go
 type Point struct { X float64; Y float64 }
+
 ```
 
 ### 11.8.1.2.2 所有权与借用
@@ -85,6 +74,7 @@ $\mathcal{O} = (O, B, L)$
 let mut s = String::from("hello");
 let r1 = &s; // 不可变借用
 let r2 = &mut s; // 编译错误：不能同时有可变和不可变借用
+
 ```
 
 ### 11.8.1.2.3 生命周期
@@ -101,6 +91,7 @@ $\mathcal{L} = (V, S, \prec)$
 
 ```rust
 fn foo<'a>(x: &'a str) -> &'a str { x }
+
 ```
 
 ---
@@ -123,6 +114,7 @@ fn foo<'a>(x: &'a str) -> &'a str { x }
 use std::thread;
 let handle = thread::spawn(|| println!("Hello from thread!"));
 handle.join().unwrap();
+
 ```
 
 ### 11.8.1.3.3 内存安全
@@ -146,6 +138,7 @@ graph TD
   A[所有者A] --move--> B[所有者B]
   B --&借用(不可变)--> C[借用者C]
   B --&借用(可变)--> D[借用者D]
+
 ```
 
 ### 11.8.1.4.2 生命周期关系
@@ -159,6 +152,7 @@ graph TD
     Y1[变量y: &'b T]
   end
   X1 -- 'a: 'b --> Y1
+
 ```
 
 ---
@@ -194,4 +188,4 @@ graph TD
 
 ---
 
-*本文件持续更新，确保与工程最佳实践和学术规范一致。*
+* 本文件持续更新，确保与工程最佳实践和学术规范一致。*

@@ -223,6 +223,7 @@ func (e *HybridExecutor) Close(ctx context.Context) error {
     
     return nil
 }
+
 ```
 
 ### 1.2 融合架构的批判性思考
@@ -362,6 +363,7 @@ interface ComplexityHotspot {
   interaction: InteractionPoint;
   score: number;
 }
+
 ```
 
 ### 1.3 混合部署架构形式化分析
@@ -748,6 +750,7 @@ impl ArchitectureOptimizer {
             .collect()
     }
 }
+
 ```
 
 ### 1.4 融合模式演进路径
@@ -982,6 +985,7 @@ interface TechnologyDecision {
   score: number;
   reasoning: string;
 }
+
 ```
 
 ## 2. 形式化安全模型日益重要
@@ -1391,6 +1395,7 @@ fn validate_module(
         Err(errors)
     }
 }
+
 ```
 
 ### 2.2 沙盒隔离的数学证明与边界分析
@@ -1780,6 +1785,7 @@ enum ViolationSeverity: Int {
     case high = 3
     case critical = 4
 }
+
 ```
 
 ### 2.3 安全模型的不足与挑战
@@ -1848,41 +1854,40 @@ class WasmResourceGuard {
             this.recordViolation('memory', `Memory limit exceeded: ${newMemoryUsed} > ${limitBytes} bytes`);
             throw new Error(`Memory limit exceeded: tried to allocate ${pages} pages`);
           
-
 ```javascript
           this.monitoring.memoryUsed = newMemoryUsed;
           return pages; // 返回请求的页数
         },
-        
+  
         // CPU时间监控
         __resource_timer_now: () => {
-          return performance.now() - this.startTime; 
+          return performance.now() - this.startTime;
         },
-        
+  
         // 指令计数器
         __resource_instruction_count: (increment = 1) => {
           this.monitoring.instructionsExecuted += increment;
-          
+  
           if (this.monitoring.instructionsExecuted > this.options.instructionLimit) {
             this.recordViolation('cpu', `Instruction limit exceeded: ${this.monitoring.instructionsExecuted} > ${this.options.instructionLimit}`);
             throw new Error('Instruction limit exceeded');
           }
-          
+  
           return this.monitoring.instructionsExecuted;
         },
-        
+  
         // 异步操作限制
         __resource_async_begin: () => {
           this.monitoring.asyncOperations++;
-          
+  
           if (this.monitoring.asyncOperations > this.options.asyncLimit) {
             this.recordViolation('async', `Async operation limit exceeded: ${this.monitoring.asyncOperations} > ${this.options.asyncLimit}`);
             throw new Error('Too many concurrent async operations');
           }
-          
+  
           return this.monitoring.asyncOperations;
         },
-        
+  
         __resource_async_end: () => {
           this.monitoring.asyncOperations = Math.max(0, this.monitoring.asyncOperations - 1);
           return this.monitoring.asyncOperations;
@@ -1896,13 +1901,13 @@ class WasmResourceGuard {
     this.monitoring.running = true;
     this.startTime = performance.now();
     this.monitoring.violations = [];
-    
+  
     // 设置总体CPU超时
     this.timeoutId = setTimeout(() => {
       this.recordViolation('cpu', `Overall execution timeout: exceeded ${this.options.cpuTimeoutMs}ms`);
       this.stopMonitoring();
     }, this.options.cpuTimeoutMs);
-    
+  
     return this;
   }
   
@@ -1910,12 +1915,12 @@ class WasmResourceGuard {
   stopMonitoring() {
     this.monitoring.running = false;
     this.monitoring.cpuTimeUsed = performance.now() - this.startTime;
-    
+  
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
     }
-    
+  
     return this.getReport();
   }
   
@@ -1948,13 +1953,13 @@ class WasmResourceGuard {
   async runGuarded(wasmModule, functionName, ...args) {
     // 创建资源限制的导入对象
     const guardedImports = this.createImports();
-    
+  
     // 实例化模块
     const instance = await WebAssembly.instantiate(wasmModule, guardedImports);
-    
+  
     // 开始资源监控
     this.startMonitoring();
-    
+  
     try {
       // 调用指定函数
       const result = instance.exports[functionName](...args);
@@ -1977,16 +1982,16 @@ class WasmResourceGuard {
   applyTimingProtection(importObject) {
     // 包装所有导入函数以添加随机延迟
     const protected = { ...importObject };
-    
+  
     for (const namespace in protected) {
       for (const funcName in protected[namespace]) {
         if (typeof protected[namespace][funcName] === 'function') {
           const originalFunc = protected[namespace][funcName];
-          
+  
           protected[namespace][funcName] = function(...args) {
             // 添加少量随机延迟以防止时序攻击
             const jitter = Math.random() * 0.1; // 0-0.1ms随机抖动
-            
+  
             if (jitter > 0) {
               return new Promise(resolve => {
                 setTimeout(() => {
@@ -2000,10 +2005,11 @@ class WasmResourceGuard {
         }
       }
     }
-    
+  
     return protected;
   }
 }
+
 ```
 
 ### 2.4 未来安全模型演进方向
@@ -2030,7 +2036,9 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 // 权限类型定义
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+
+# [derive(Debug, Clone, PartialEq, Eq, Hash)]
+
 pub enum PermissionType {
     FileRead,
     FileWrite,
@@ -2050,7 +2058,9 @@ pub enum PermissionType {
 }
 
 // 资源匹配器
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub enum ResourceMatcher {
     Exact(String),
     Prefix(String),
@@ -2069,12 +2079,12 @@ impl ResourceMatcher {
                 if pattern == "*" {
                     return true;
                 }
-                
+  
                 if pattern.ends_with("*") {
                     let prefix = &pattern[0..pattern.len()-1];
                     return resource.starts_with(prefix);
                 }
-                
+  
                 resource == pattern
             },
             ResourceMatcher::Any => true,
@@ -2083,7 +2093,9 @@ impl ResourceMatcher {
 }
 
 // 具体权限
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct Permission {
     pub permission_type: PermissionType,
     pub resource: ResourceMatcher,
@@ -2091,7 +2103,9 @@ pub struct Permission {
 }
 
 // 一组权限
-#[derive(Debug, Clone, Default)]
+
+# [derive(Debug, Clone, Default)]
+
 pub struct PermissionSet {
     permissions: HashSet<Permission>,
 }
@@ -2102,12 +2116,12 @@ impl PermissionSet {
             permissions: HashSet::new(),
         }
     }
-    
+  
     // 添加权限
     pub fn add(&mut self, permission: Permission) {
         self.permissions.insert(permission);
     }
-    
+  
     // 检查是否有权限
     pub fn has_permission(&self, perm_type: PermissionType, resource: &str) -> bool {
         for perm in &self.permissions {
@@ -2117,7 +2131,7 @@ impl PermissionSet {
         }
         false
     }
-    
+  
     // 检查是否有权限并受到限制
     pub fn check_with_limit(&self, perm_type: PermissionType, resource: &str, limit_name: &str, value: i64) -> bool {
         for perm in &self.permissions {
@@ -2142,33 +2156,33 @@ impl PermissionValidator {
     pub fn new(permission_set: PermissionSet) -> Self {
         PermissionValidator { permission_set }
     }
-    
+  
     // 验证文件操作
     pub fn validate_file_access(&self, path: &Path, perm_type: PermissionType) -> Result<(), String> {
         let path_str = path.to_string_lossy().to_string();
-        
+  
         if self.permission_set.has_permission(perm_type, &path_str) {
             Ok(())
         } else {
             Err(format!("Access denied: {:?} operation on '{}'", perm_type, path_str))
         }
     }
-    
+  
     // 验证网络操作
     pub fn validate_network_access(&self, host: &str, port: u16, perm_type: PermissionType) -> Result<(), String> {
         let resource = format!("{}:{}", host, port);
-        
+  
         if self.permission_set.has_permission(perm_type, &resource) {
             Ok(())
         } else {
             Err(format!("Access denied: {:?} operation on '{}'", perm_type, resource))
         }
     }
-    
+  
     // 验证文件读取并应用大小限制
     pub fn validate_file_read_size(&self, path: &Path, size: i64) -> Result<(), String> {
         let path_str = path.to_string_lossy().to_string();
-        
+  
         if self.permission_set.check_with_limit(PermissionType::FileRead, &path_str, "max_size", size) {
             Ok(())
         } else {
@@ -2190,24 +2204,24 @@ impl ComponentPermissionManager {
             default_permissions: PermissionSet::new(),
         }
     }
-    
+  
     // 设置默认权限
     pub fn set_default_permissions(&mut self, permissions: PermissionSet) {
         self.default_permissions = permissions;
     }
-    
+  
     // 为组件添加权限集
     pub fn add_component_permissions(&mut self, component_id: &str, permissions: PermissionSet) {
         self.components.insert(component_id.to_string(), permissions);
     }
-    
+  
     // 为组件添加单个权限
     pub fn add_component_permission(&mut self, component_id: &str, permission: Permission) {
         let entry = self.components.entry(component_id.to_string())
             .or_insert_with(PermissionSet::new);
         entry.add(permission);
     }
-    
+  
     // 获取组件的权限验证器
     pub fn get_validator(&self, component_id: &str) -> PermissionValidator {
         let permissions = if let Some(perms) = self.components.get(component_id) {
@@ -2215,7 +2229,7 @@ impl ComponentPermissionManager {
         } else {
             self.default_permissions.clone()
         };
-        
+  
         PermissionValidator::new(permissions)
     }
 }
@@ -2234,32 +2248,32 @@ impl EnhancedWasiCtx {
             preopens: HashMap::new(),
         }
     }
-    
+  
     // 添加预打开目录
     pub fn add_preopen_dir(&mut self, fd: i32, path: PathBuf) -> Result<(), String> {
         // 验证是否有列出目录的权限
         self.permission_validator.validate_file_access(&path, PermissionType::DirectoryList)?;
-        
+  
         self.preopens.insert(fd, path);
         Ok(())
     }
-    
+  
     // WASI fd_read实现
     pub fn fd_read(&self, fd: i32, iovs: &[IoVec], read_len: &mut usize) -> Result<(), String> {
         // 获取文件路径
         let path = self.get_path_from_fd(fd)?;
-        
+  
         // 预估读取大小
         let size = iovs.iter().map(|iov| iov.buf_len).sum::<usize>() as i64;
-        
+  
         // 验证读取权限和大小限制
         self.permission_validator.validate_file_read_size(&path, size)?;
-        
+  
         // 实际读取实现...
-        
+  
         Ok(())
     }
-    
+  
     // 获取文件描述符对应的路径
     fn get_path_from_fd(&self, fd: i32) -> Result<PathBuf, String> {
         self.preopens.get(&fd)
@@ -2277,7 +2291,7 @@ pub struct IoVec {
 // 创建一组常用的权限配置
 pub fn create_typical_permissions() -> HashMap<String, PermissionSet> {
     let mut profiles = HashMap::new();
-    
+  
     // 1. 只读文件系统
     let mut readonly_fs = PermissionSet::new();
     readonly_fs.add(Permission {
@@ -2295,7 +2309,7 @@ pub fn create_typical_permissions() -> HashMap<String, PermissionSet> {
         limits: HashMap::new(),
     });
     profiles.insert("readonly_fs".to_string(), readonly_fs);
-    
+  
     // 2. 网络客户端
     let mut network_client = PermissionSet::new();
     network_client.add(Permission {
@@ -2308,12 +2322,13 @@ pub fn create_typical_permissions() -> HashMap<String, PermissionSet> {
         },
     });
     profiles.insert("network_client".to_string(), network_client);
-    
+  
     // 3. 完全隔离
     profiles.insert("isolated".to_string(), PermissionSet::new());
-    
+  
     profiles
 }
+
 ```
 
 ## 3. 资源效率成为关键优势
@@ -2343,7 +2358,9 @@ $$
 实验表明：$R_{base}^{wasm} < R_{base}^{container} \ll R_{base}^{VM}$ 且 $R_{runtime}^{wasm} \approx R_{runtime}^{container} < R_{runtime}^{VM}$
 
 ```python
+
 # Python: 资源效率比较和预测模型
+
 import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
@@ -2357,7 +2374,7 @@ class ResourceMetrics:
     startup_ms: float
     instances: int
     instance_overhead_mb: float
-    
+  
 @dataclass
 class WorkloadProfile:
     """工作负载特征"""
@@ -2366,10 +2383,10 @@ class WorkloadProfile:
     io_intensity: float       # 0-1, IO密集度
     startup_frequency: float  # 每小时启动次数
     instance_count: int       # 实例数量
-    
+  
 class ResourceEfficiencyModel:
     """资源效率分析与建模"""
-    
+  
     def __init__(self):
         # 基础开销模型参数
         self.base_overhead = {
@@ -2389,31 +2406,31 @@ class ResourceEfficiencyModel:
                 'startup_ms': 5000.0
             }
         }
-        
+  
         # 每增加一个实例的边际成本模型参数
         self.instance_overhead = {
             'wasm': 0.2,       # MB/实例
             'container': 8.0,   # MB/实例
             'vm': 50.0          # MB/实例
         }
-        
+  
         # 记录训练数据
         self.training_data: List[Tuple[WorkloadProfile, Dict[str, ResourceMetrics]]] = []
-    
-    def predict_resource_usage(self, workload: WorkloadProfile, 
+  
+    def predict_resource_usage(self, workload: WorkloadProfile,
                              technology: str) -> ResourceMetrics:
         """预测给定工作负载使用特定技术的资源使用情况"""
-        
+  
         if technology not in ['wasm', 'container', 'vm']:
             raise ValueError(f"不支持的技术: {technology}")
-        
+  
         # 获取基础开销
         base = self.base_overhead[technology]
-        
+  
         # 计算实例开销
         instance_memory = workload.memory_usage_mb + self.instance_overhead[technology]
         total_instance_memory = instance_memory * workload.instance_count
-        
+  
         # 计算CPU使用率
         # CPU使用率受计算密集度和IO密集度影响
         compute_factor = 1.0
@@ -2423,14 +2440,14 @@ class ResourceEfficiencyModel:
         elif technology == 'vm':
             # VM在计算密集型任务上有额外开销
             compute_factor = 1.2
-            
-        cpu_percent = (base['cpu_percent'] + 
+  
+        cpu_percent = (base['cpu_percent'] +
                       workload.compute_intensity * 10.0 * compute_factor +
                       workload.io_intensity * 5.0) * workload.instance_count
-        
+  
         # 计算启动时间
         startup_ms = base['startup_ms'] * (1 + 0.05 * workload.memory_usage_mb / 10)
-        
+  
         return ResourceMetrics(
             memory_mb = base['memory_mb'] + total_instance_memory,
             cpu_percent = cpu_percent,
@@ -2438,53 +2455,53 @@ class ResourceEfficiencyModel:
             instances = workload.instance_count,
             instance_overhead_mb = self.instance_overhead[technology]
         )
-    
-    def train_model(self, measurements: List[Tuple[WorkloadProfile, 
+  
+    def train_model(self, measurements: List[Tuple[WorkloadProfile,
                                                 Dict[str, ResourceMetrics]]]):
         """使用实际测量数据训练模型参数"""
         self.training_data.extend(measurements)
-        
+  
         # 提取每种技术的基础开销
         wasm_base_memory = []
         container_base_memory = []
         vm_base_memory = []
-        
+  
         for workload, metrics in measurements:
             if 'wasm' in metrics:
                 estimated_base = metrics['wasm'].memory_mb - workload.memory_usage_mb * workload.instance_count
                 wasm_base_memory.append(max(0.1, estimated_base))
-                
+  
             if 'container' in metrics:
                 estimated_base = metrics['container'].memory_mb - workload.memory_usage_mb * workload.instance_count
                 container_base_memory.append(max(1.0, estimated_base))
-                
+  
             if 'vm' in metrics:
                 estimated_base = metrics['vm'].memory_mb - workload.memory_usage_mb * workload.instance_count
                 vm_base_memory.append(max(10.0, estimated_base))
-        
+  
         # 更新模型参数（如有足够数据）
         if wasm_base_memory:
             self.base_overhead['wasm']['memory_mb'] = np.median(wasm_base_memory)
-        
+  
         if container_base_memory:
             self.base_overhead['container']['memory_mb'] = np.median(container_base_memory)
-            
+  
         if vm_base_memory:
             self.base_overhead['vm']['memory_mb'] = np.median(vm_base_memory)
-            
+  
         # 类似地更新其他参数...
-    
+  
     def calculate_efficiency_ratio(self, workload: WorkloadProfile) -> Dict[str, float]:
         """计算不同技术的效率比率"""
         wasm_metrics = self.predict_resource_usage(workload, 'wasm')
         container_metrics = self.predict_resource_usage(workload, 'container')
         vm_metrics = self.predict_resource_usage(workload, 'vm')
-        
+  
         # 计算有效工作与总资源的比率
         wasm_efficiency = workload.memory_usage_mb * workload.instance_count / wasm_metrics.memory_mb
         container_efficiency = workload.memory_usage_mb * workload.instance_count / container_metrics.memory_mb
         vm_efficiency = workload.memory_usage_mb * workload.instance_count / vm_metrics.memory_mb
-        
+  
         return {
             'wasm': wasm_efficiency,
             'container': container_efficiency,
@@ -2492,11 +2509,11 @@ class ResourceEfficiencyModel:
             'wasm_vs_container': wasm_efficiency / container_efficiency,
             'wasm_vs_vm': wasm_efficiency / vm_efficiency
         }
-    
+  
     def density_analysis(self, memory_limit_mb: float, workload: WorkloadProfile) -> Dict[str, int]:
         """计算在给定内存限制下能部署的最大实例数"""
         result = {}
-        
+  
         for tech in ['wasm', 'container', 'vm']:
             # 计算单个实例的内存消耗
             single_instance = WorkloadProfile(
@@ -2506,18 +2523,18 @@ class ResourceEfficiencyModel:
                 startup_frequency=workload.startup_frequency,
                 instance_count=1
             )
-            
+  
             metrics = self.predict_resource_usage(single_instance, tech)
-            
+  
             # 计算可容纳的实例数
             base_overhead = self.base_overhead[tech]['memory_mb']
             instance_memory = workload.memory_usage_mb + self.instance_overhead[tech]
-            
+  
             max_instances = int((memory_limit_mb - base_overhead) / instance_memory)
             result[tech] = max(0, max_instances)
-        
+  
         return result
-    
+  
     def visualize_efficiency(self, memory_range_mb: List[float]):
         """可视化不同内存使用量下的效率比较"""
         workloads = []
@@ -2529,28 +2546,28 @@ class ResourceEfficiencyModel:
                 startup_frequency=1.0,
                 instance_count=1
             ))
-        
+  
         wasm_efficiency = []
         container_efficiency = []
         vm_efficiency = []
-        
+  
         for workload in workloads:
             ratios = self.calculate_efficiency_ratio(workload)
             wasm_efficiency.append(ratios['wasm'])
             container_efficiency.append(ratios['container'])
             vm_efficiency.append(ratios['vm'])
-        
+  
         plt.figure(figsize=(10, 6))
         plt.plot(memory_range_mb, wasm_efficiency, 'b-', label='WebAssembly')
         plt.plot(memory_range_mb, container_efficiency, 'g-', label='Container')
         plt.plot(memory_range_mb, vm_efficiency, 'r-', label='VM')
-        
+  
         plt.xlabel('工作负载内存 (MB)')
         plt.ylabel('内存效率 (有效工作/总内存)')
         plt.title('不同技术的内存效率比较')
         plt.legend()
         plt.grid(True)
-        
+  
         return plt
 
     def visualize_density(self, host_memory_mb: float, instance_memory_range: List[float]):
@@ -2560,7 +2577,7 @@ class ResourceEfficiencyModel:
             'container': [],
             'vm': []
         }
-        
+  
         for mem in instance_memory_range:
             workload = WorkloadProfile(
                 compute_intensity=0.5,
@@ -2569,25 +2586,25 @@ class ResourceEfficiencyModel:
                 startup_frequency=1.0,
                 instance_count=1
             )
-            
+  
             density = self.density_analysis(host_memory_mb, workload)
-            
+  
             for tech, count in density.items():
                 results[tech].append(count)
-        
+  
         plt.figure(figsize=(10, 6))
         plt.plot(instance_memory_range, results['wasm'], 'b-', label='WebAssembly')
         plt.plot(instance_memory_range, results['container'], 'g-', label='Container')
         plt.plot(instance_memory_range, results['vm'], 'r-', label='VM')
-        
+  
         plt.xlabel('实例内存需求 (MB)')
         plt.ylabel('最大实例数')
         plt.title(f'主机内存{host_memory_mb}MB下的最大密度')
         plt.legend()
         plt.grid(True)
-        
+  
         return plt
-    
+  
     def startup_time_analysis(self, instance_count_range: List[int]) -> Dict[str, List[float]]:
         """分析不同实例数下的启动时间"""
         results = {
@@ -2595,7 +2612,7 @@ class ResourceEfficiencyModel:
             'container': [],
             'vm': []
         }
-        
+  
         base_workload = WorkloadProfile(
             compute_intensity=0.5,
             memory_usage_mb=50,
@@ -2603,7 +2620,7 @@ class ResourceEfficiencyModel:
             startup_frequency=10.0,
             instance_count=1
         )
-        
+  
         for count in instance_count_range:
             workload = WorkloadProfile(
                 compute_intensity=base_workload.compute_intensity,
@@ -2612,20 +2629,21 @@ class ResourceEfficiencyModel:
                 startup_frequency=base_workload.startup_frequency,
                 instance_count=count
             )
-            
+  
             for tech in ['wasm', 'container', 'vm']:
                 metrics = self.predict_resource_usage(workload, tech)
-                
+  
                 # 假设串行启动
                 total_startup_ms = metrics.startup_ms * count
                 results[tech].append(total_startup_ms)
-        
+  
         return results
 
 # 使用示例
+
 def efficiency_analysis_example():
     model = ResourceEfficiencyModel()
-    
+  
     # 定义工作负载
     workload = WorkloadProfile(
         compute_intensity=0.7,    # 计算密集
@@ -2634,23 +2652,23 @@ def efficiency_analysis_example():
         startup_frequency=5.0,    # 中等启动频率
         instance_count=10         # 10个实例
     )
-    
+  
     # 计算资源使用
     wasm_metrics = model.predict_resource_usage(workload, 'wasm')
     container_metrics = model.predict_resource_usage(workload, 'container')
     vm_metrics = model.predict_resource_usage(workload, 'vm')
-    
+  
     print("预计资源使用:")
     print(f"WebAssembly: {wasm_metrics.memory_mb:.1f} MB, {wasm_metrics.cpu_percent:.1f}% CPU, {wasm_metrics.startup_ms:.1f} ms启动")
     print(f"容器: {container_metrics.memory_mb:.1f} MB, {container_metrics.cpu_percent:.1f}% CPU, {container_metrics.startup_ms:.1f} ms启动")
     print(f"虚拟机: {vm_metrics.memory_mb:.1f} MB, {vm_metrics.cpu_percent:.1f}% CPU, {vm_metrics.startup_ms:.1f} ms启动")
-    
+  
     # 计算效率比率
     efficiency = model.calculate_efficiency_ratio(workload)
     print("\n效率比率:")
     print(f"WebAssembly vs 容器: {efficiency['wasm_vs_container']:.2f}x")
     print(f"WebAssembly vs 虚拟机: {efficiency['wasm_vs_vm']:.2f}x")
-    
+  
     # 密度分析
     host_memory = 1024  # 1GB主机内存
     density = model.density_analysis(host_memory, WorkloadProfile(
@@ -2660,34 +2678,35 @@ def efficiency_analysis_example():
         startup_frequency=1.0,
         instance_count=1
     ))
-    
+  
     print(f"\n在{host_memory}MB主机内存下的最大实例数:")
     print(f"WebAssembly: {density['wasm']}")
     print(f"容器: {density['container']}")
     print(f"虚拟机: {density['vm']}")
-    
+  
     # 启动时间分析
     instance_counts = [1, 5, 10, 20, 50]
     startup_times = model.startup_time_analysis(instance_counts)
-    
+  
     print("\n启动时间 (ms):")
     for i, count in enumerate(instance_counts):
         print(f"{count}个实例 - WebAssembly: {startup_times['wasm'][i]:.1f}, 容器: {startup_times['container'][i]:.1f}, 虚拟机: {startup_times['vm'][i]:.1f}")
-    
+  
     # 可视化效率
     memory_range = [5, 10, 20, 50, 100, 200, 500]
     plt = model.visualize_efficiency(memory_range)
     plt.savefig('memory_efficiency.png')
-    
+  
     # 可视化密度
     instance_memory_range = [1, 5, 10, 20, 50, 100]
     plt = model.visualize_density(1024, instance_memory_range)
     plt.savefig('instance_density.png')
-    
+  
     return model
 
 if __name__ == "__main__":
     efficiency_analysis_example()
+
 ```
 
 ### 3.2 与容器技术的资源消耗对比
@@ -2722,7 +2741,7 @@ public class ResourceComparisonBenchmark {
     private static final int WARMUP_ITERATIONS = 5;
     private static final int BENCHMARK_ITERATIONS = 20;
     private static final int INSTANCE_COUNTS[] = {1, 10, 100, 1000};
-    
+  
     // 测量结果
     private static class Measurement {
         String technology;
@@ -2731,54 +2750,54 @@ public class ResourceComparisonBenchmark {
         double startupTimeMs;
         double cpuUsagePercent;
         double storageUsageMB;
-        
+  
         @Override
         public String toString() {
             return String.format("%s (实例数: %d) - 内存: %.2f MB, 启动: %.2f ms, CPU: %.2f%%, 存储: %.2f MB",
                 technology, instanceCount, memoryUsageMB, startupTimeMs, cpuUsagePercent, storageUsageMB);
         }
     }
-    
+  
     // 内存使用测量
     private static double measureMemoryUsage() {
         System.gc(); // 提示GC
-        
+  
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage heapUsage = memoryBean.getHeapMemoryUsage();
         MemoryUsage nonHeapUsage = memoryBean.getNonHeapMemoryUsage();
         double usedMemoryMB = (heapUsage.getUsed() + nonHeapUsage.getUsed()) / (1024.0 * 1024.0);
         return usedMemoryMB;
     }
-    
+  
     // CPU使用测量
     private static double measureCPUUsage(Runnable task, int durationSeconds) {
         ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        
+  
         long startCpuTime = 0;
         if (threadBean.isCurrentThreadCpuTimeSupported()) {
             startCpuTime = threadBean.getCurrentThreadCpuTime();
         }
-        
+  
         long startTime = System.nanoTime();
-        
+  
         // 执行任务
         task.run();
-        
+  
         long endTime = System.nanoTime();
         long endCpuTime = 0;
         if (threadBean.isCurrentThreadCpuTimeSupported()) {
             endCpuTime = threadBean.getCurrentThreadCpuTime();
         }
-        
+  
         double cpuTime = (endCpuTime - startCpuTime) / 1_000_000.0; // 转为毫秒
         double elapsedTime = (endTime - startTime) / 1_000_000.0; // 转为毫秒
-        
+  
         // CPU使用百分比
         double cpuUsage = (cpuTime / elapsedTime) * 100.0 * osBean.getAvailableProcessors();
         return cpuUsage;
     }
-    
+  
     // 存储使用测量
     private static double measureStorageUsage(String path) {
         try {
@@ -2793,7 +2812,7 @@ public class ResourceComparisonBenchmark {
             return -1;
         }
     }
-    
+  
     private static long calculateDirectorySize(File directory) {
         long size = 0;
         for (File file : directory.listFiles()) {
@@ -2805,19 +2824,19 @@ public class ResourceComparisonBenchmark {
         }
         return size;
     }
-    
+  
     // WebAssembly实例启动和测量
     private static Measurement benchmarkWasm(int instanceCount) {
         Measurement result = new Measurement();
         result.technology = "WebAssembly";
         result.instanceCount = instanceCount;
-        
+  
         // 记录启动前的内存使用
         double beforeMemory = measureMemoryUsage();
-        
+  
         // 测量启动时间
         long startTime = System.nanoTime();
-        
+  
         // 创建并启动WebAssembly实例
         List<AutoCloseable> instances = new ArrayList<>();
         try {
@@ -2828,14 +2847,14 @@ public class ResourceComparisonBenchmark {
         } catch (Exception e) {
             System.err.println("WebAssembly实例创建失败: " + e.getMessage());
         }
-        
+  
         long endTime = System.nanoTime();
         result.startupTimeMs = (endTime - startTime) / 1_000_000.0; // 转为毫秒
-        
+  
         // 记录启动后的内存使用
         double afterMemory = measureMemoryUsage();
         result.memoryUsageMB = afterMemory - beforeMemory;
-        
+  
         // 测量CPU使用
         result.cpuUsagePercent = measureCPUUsage(() -> {
             // 执行WebAssembly函数
@@ -2847,10 +2866,10 @@ public class ResourceComparisonBenchmark {
                 }
             }
         }, 5);
-        
+  
         // 测量存储使用
         result.storageUsageMB = measureStorageUsage("test-module.wasm");
-        
+  
         // 清理资源
         for (AutoCloseable instance : instances) {
             try {
@@ -2859,22 +2878,22 @@ public class ResourceComparisonBenchmark {
                 System.err.println("WebAssembly实例关闭失败: " + e.getMessage());
             }
         }
-        
+  
         return result;
     }
-    
+  
     // 容器实例启动和测量
     private static Measurement benchmarkContainer(int instanceCount) {
         Measurement result = new Measurement();
         result.technology = "Container";
         result.instanceCount = instanceCount;
-        
+  
         // 记录启动前的资源使用
         double beforeMemory = measureMemoryUsage();
-        
+  
         // 测量启动时间
         long startTime = System.nanoTime();
-        
+  
         // 创建并启动容器实例
         List<String> containerIds = new ArrayList<>();
         try {
@@ -2886,14 +2905,14 @@ public class ResourceComparisonBenchmark {
         } catch (Exception e) {
             System.err.println("容器实例创建失败: " + e.getMessage());
         }
-        
+  
         long endTime = System.nanoTime();
         result.startupTimeMs = (endTime - startTime) / 1_000_000.0; // 转为毫秒
-        
+  
         // 记录启动后的内存使用
         double afterMemory = measureMemoryUsage();
         result.memoryUsageMB = afterMemory - beforeMemory;
-        
+  
         // 测量CPU使用
         result.cpuUsagePercent = measureCPUUsage(() -> {
             // 在容器中执行命令
@@ -2905,10 +2924,10 @@ public class ResourceComparisonBenchmark {
                 }
             }
         }, 5);
-        
+  
         // 测量存储使用 (容器镜像大小)
         result.storageUsageMB = measureStorageUsage("test-image-directory");
-        
+  
         // 清理资源
         for (String containerId : containerIds) {
             try {
@@ -2917,10 +2936,10 @@ public class ResourceComparisonBenchmark {
                 System.err.println("容器停止失败: " + e.getMessage());
             }
         }
-        
+  
         return result;
     }
-    
+  
     // 模拟创建WebAssembly实例 (实际使用时替换为真实实现)
     private static AutoCloseable createWasmInstance(String modulePath) {
         // 模拟WebAssembly实例
@@ -2931,7 +2950,7 @@ public class ResourceComparisonBenchmark {
             }
         };
     }
-    
+  
     // 模拟执行WebAssembly函数 (实际使用时替换为真实实现)
     private static void executeWasmFunction(AutoCloseable instance) {
         // 模拟执行WebAssembly函数
@@ -2941,7 +2960,7 @@ public class ResourceComparisonBenchmark {
             Thread.currentThread().interrupt();
         }
     }
-    
+  
     // 模拟启动容器 (实际使用时替换为真实实现)
     private static String startContainer(String image) {
         // 模拟容器启动
@@ -2952,7 +2971,7 @@ public class ResourceComparisonBenchmark {
         }
         return UUID.randomUUID().toString();
     }
-    
+  
     // 模拟在容器中执行命令 (实际使用时替换为真实实现)
     private static void executeContainerCommand(String containerId, String command) {
         // 模拟容器命令执行
@@ -2962,7 +2981,7 @@ public class ResourceComparisonBenchmark {
             Thread.currentThread().interrupt();
         }
     }
-    
+  
     // 模拟停止容器 (实际使用时替换为真实实现)
     private static void stopContainer(String containerId) {
         // 模拟容器停止
@@ -2972,115 +2991,116 @@ public class ResourceComparisonBenchmark {
             Thread.currentThread().interrupt();
         }
     }
-    
+  
     // 运行基准测试
     public static void main(String[] args) {
         System.out.println("WebAssembly vs Container 资源消耗基准测试");
         System.out.println("=======================================");
-        
+  
         // 预热
         System.out.println("预热中...");
         for (int i = 0; i < WARMUP_ITERATIONS; i++) {
             benchmarkWasm(1);
             benchmarkContainer(1);
         }
-        
+  
         // 运行基准测试
         List<Measurement> results = new ArrayList<>();
-        
+  
         for (int instanceCount : INSTANCE_COUNTS) {
             System.out.println("\n测试 " + instanceCount + " 个实例:");
-            
+  
             // WebAssembly测试
             for (int i = 0; i < BENCHMARK_ITERATIONS; i++) {
                 results.add(benchmarkWasm(instanceCount));
             }
-            
+  
             // 容器测试 (对于大量实例，减少迭代次数以避免过长等待)
-            int containerIterations = instanceCount >= 100 ? 
+            int containerIterations = instanceCount >= 100 ?
                     Math.min(BENCHMARK_ITERATIONS, 5) : BENCHMARK_ITERATIONS;
-            
+  
             for (int i = 0; i < containerIterations; i++) {
                 results.add(benchmarkContainer(instanceCount));
             }
         }
-        
+  
         // 分析和报告结果
         reportResults(results);
     }
-    
+  
     // 汇总和报告结果
     private static void reportResults(List<Measurement> measurements) {
         System.out.println("\n测试结果汇总");
         System.out.println("=======================");
-        
+  
         // 按技术和实例数分组
         Map<String, Map<Integer, List<Measurement>>> groupedResults = new HashMap<>();
-        
+  
         for (Measurement m : measurements) {
             groupedResults
                 .computeIfAbsent(m.technology, k -> new HashMap<>())
                 .computeIfAbsent(m.instanceCount, k -> new ArrayList<>())
                 .add(m);
         }
-        
+  
         // 计算统计数据并输出
         for (String tech : groupedResults.keySet()) {
             System.out.println("\n" + tech + " 技术:");
-            
+  
             for (int count : INSTANCE_COUNTS) {
                 List<Measurement> group = groupedResults.get(tech).getOrDefault(count, Collections.emptyList());
                 if (group.isEmpty()) continue;
-                
+  
                 // 计算平均值
                 double avgMemory = group.stream().mapToDouble(m -> m.memoryUsageMB).average().orElse(0);
                 double avgStartup = group.stream().mapToDouble(m -> m.startupTimeMs).average().orElse(0);
                 double avgCpu = group.stream().mapToDouble(m -> m.cpuUsagePercent).average().orElse(0);
                 double avgStorage = group.stream().mapToDouble(m -> m.storageUsageMB).filter(s -> s > 0).average().orElse(0);
-                
+  
                 // 计算每实例平均值
                 double avgMemoryPerInstance = avgMemory / count;
                 double avgStartupPerInstance = avgStartup / count;
-                
+  
                 System.out.printf("  实例数 %d: 内存 %.2f MB (每实例 %.2f MB), 启动 %.2f ms (每实例 %.2f ms), " +
                         "CPU %.2f%%, 存储 %.2f MB\n",
                         count, avgMemory, avgMemoryPerInstance, avgStartup, avgStartupPerInstance, avgCpu, avgStorage);
             }
         }
-        
+  
         // 计算比率
         System.out.println("\n技术对比 (WebAssembly : Container)");
         System.out.println("================================");
-        
+  
         for (int count : INSTANCE_COUNTS) {
             List<Measurement> wasmGroup = groupedResults.getOrDefault("WebAssembly", Collections.emptyMap())
                     .getOrDefault(count, Collections.emptyList());
-            
+  
             List<Measurement> containerGroup = groupedResults.getOrDefault("Container", Collections.emptyMap())
                     .getOrDefault(count, Collections.emptyList());
-            
+  
             if (wasmGroup.isEmpty() || containerGroup.isEmpty()) continue;
-            
+  
             // 计算平均值
             double wasmMemory = wasmGroup.stream().mapToDouble(m -> m.memoryUsageMB).average().orElse(0);
             double containerMemory = containerGroup.stream().mapToDouble(m -> m.memoryUsageMB).average().orElse(0);
-            
+  
             double wasmStartup = wasmGroup.stream().mapToDouble(m -> m.startupTimeMs).average().orElse(0);
             double containerStartup = containerGroup.stream().mapToDouble(m -> m.startupTimeMs).average().orElse(0);
-            
+  
             double wasmStorage = wasmGroup.stream().mapToDouble(m -> m.storageUsageMB).filter(s -> s > 0).average().orElse(0);
             double containerStorage = containerGroup.stream().mapToDouble(m -> m.storageUsageMB).filter(s -> s > 0).average().orElse(0);
-            
+  
             // 计算比率
             double memoryRatio = containerMemory > 0 ? wasmMemory / containerMemory : 0;
             double startupRatio = containerStartup > 0 ? wasmStartup / containerStartup : 0;
             double storageRatio = containerStorage > 0 ? wasmStorage / containerStorage : 0;
-            
+  
             System.out.printf("  实例数 %d: 内存 1:%.1f, 启动时间 1:%.1f, 存储 1:%.1f\n",
                     count, 1/memoryRatio, 1/startupRatio, 1/storageRatio);
         }
     }
 }
+
 ```
 
 ### 3.3 资源约束环境下的优化策略
@@ -3112,13 +3132,20 @@ public class ResourceComparisonBenchmark {
 
 ```c
 // C: 适用于资源受限设备的WebAssembly运行时优化
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <time.h>
-#include <assert.h>
+
+# include <stdio.h>
+
+# include <stdlib.h>
+
+# include <string.h>
+
+# include <stdint.h>
+
+# include <stdbool.h>
+
+# include <time.h>
+
+# include <assert.h>
 
 // 内存块头
 typedef struct MemoryBlockHeader {
@@ -3175,44 +3202,47 @@ typedef struct CompilationCache {
 } CompilationCache;
 
 // 内存标志
-#define MEM_FLAG_USED        0x0001   // 块已使用
-#define MEM_FLAG_EXTERNAL    0x0002   // 外部分配的块
-#define MEM_FLAG_PERMANENT   0x0004   // 永久块，不回收
+
+# define MEM_FLAG_USED        0x0001   // 块已使用
+
+# define MEM_FLAG_EXTERNAL    0x0002   // 外部分配的块
+
+# define MEM_FLAG_PERMANENT   0x0004   // 永久块，不回收
 
 // 创建内存管理器
 MemoryManager* create_memory_manager(uint16_t pool_count) {
     MemoryManager* manager = (MemoryManager*)malloc(sizeof(MemoryManager));
     if (!manager) return NULL;
-    
+  
     manager->pools = (MemoryPool*)malloc(sizeof(MemoryPool) * pool_count);
     if (!manager->pools) {
         free(manager);
         return NULL;
     }
-    
+  
     manager->pool_count = pool_count;
     manager->total_allocated = 0;
     manager->peak_allocated = 0;
-    
+  
     return manager;
 }
 
 // 初始化内存池
 bool init_memory_pool(MemoryManager* manager, uint16_t pool_id, MemoryPoolConfig config) {
     if (pool_id >= manager->pool_count) return false;
-    
+  
     MemoryPool* pool = &manager->pools[pool_id];
     pool->pool_id = pool_id;
     pool->config = config;
     pool->free_blocks = NULL;
     pool->total_blocks = config.initial_blocks;
     pool->used_blocks = 0;
-    
+  
     // 分配池内存
     uint32_t pool_size = config.initial_blocks * (config.block_size + sizeof(MemoryBlockHeader));
     pool->pool_memory = (uint8_t*)malloc(pool_size);
     if (!pool->pool_memory) return false;
-    
+  
     // 初始化所有块并放入空闲链表
     uint8_t* current = pool->pool_memory;
     for (uint32_t i = 0; i < config.initial_blocks; i++) {
@@ -3222,19 +3252,19 @@ bool init_memory_pool(MemoryManager* manager, uint16_t pool_id, MemoryPoolConfig
         header->pool_id = pool_id;
         header->next = pool->free_blocks;
         pool->free_blocks = header;
-        
+  
         current += config.block_size + sizeof(MemoryBlockHeader);
     }
-    
+  
     return true;
 }
 
 // 从池中分配块
 void* pool_alloc(MemoryManager* manager, uint16_t pool_id) {
     if (pool_id >= manager->pool_count) return NULL;
-    
+  
     MemoryPool* pool = &manager->pools[pool_id];
-    
+  
     // 检查是否有空闲块
     if (!pool->free_blocks) {
         // 如果允许增长，分配新块
@@ -3242,36 +3272,36 @@ void* pool_alloc(MemoryManager* manager, uint16_t pool_id) {
             // 分配单个新块
             MemoryBlockHeader* new_block = (MemoryBlockHeader*)malloc(
                 pool->config.block_size + sizeof(MemoryBlockHeader));
-            
+  
             if (!new_block) return NULL;
-            
+  
             new_block->size = pool->config.block_size;
             new_block->flags = MEM_FLAG_EXTERNAL; // 外部分配
             new_block->pool_id = pool_id;
             new_block->next = NULL;
-            
+  
             pool->free_blocks = new_block;
             pool->total_blocks++;
         } else {
             return NULL; // 无空闲块且不能增长
         }
     }
-    
+  
     // 获取空闲块
     MemoryBlockHeader* block = pool->free_blocks;
     pool->free_blocks = block->next;
-    
+  
     // 标记为已使用
     block->flags |= MEM_FLAG_USED;
     block->next = NULL;
-    
+  
     // 更新统计信息
     pool->used_blocks++;
     manager->total_allocated += block->size;
     if (manager->total_allocated > manager->peak_allocated) {
         manager->peak_allocated = manager->total_allocated;
     }
-    
+  
     // 返回块数据区域
     return (void*)(((uint8_t*)block) + sizeof(MemoryBlockHeader));
 }
@@ -3279,23 +3309,23 @@ void* pool_alloc(MemoryManager* manager, uint16_t pool_id) {
 // 释放块
 void pool_free(MemoryManager* manager, void* ptr) {
     if (!ptr) return;
-    
+  
     // 获取块头
     MemoryBlockHeader* block = (MemoryBlockHeader*)(((uint8_t*)ptr) - sizeof(MemoryBlockHeader));
-    
+  
     // 检查有效性
     if (!(block->flags & MEM_FLAG_USED) || block->pool_id >= manager->pool_count) {
         fprintf(stderr, "Invalid free: block not in use or invalid pool ID\n");
         return;
     }
-    
+  
     // 获取对应池
     MemoryPool* pool = &manager->pools[block->pool_id];
-    
+  
     // 更新统计信息
     pool->used_blocks--;
     manager->total_allocated -= block->size;
-    
+  
     // 检查是否外部分配
     if (block->flags & MEM_FLAG_EXTERNAL) {
         free(block); // 释放外部分配的块
@@ -3312,39 +3342,39 @@ void* optimized_malloc(MemoryManager* manager, size_t size) {
     // 查找最匹配的内存池
     uint16_t best_pool_id = 0;
     uint32_t best_fit = UINT32_MAX;
-    
+  
     for (uint16_t i = 0; i < manager->pool_count; i++) {
         MemoryPool* pool = &manager->pools[i];
-        
+  
         if (pool->config.block_size >= size && pool->config.block_size < best_fit) {
             best_pool_id = i;
             best_fit = pool->config.block_size;
         }
     }
-    
+  
     // 如果没有合适的池或最佳池已满，则直接使用malloc
-    if (best_fit == UINT32_MAX || 
-        (manager->pools[best_pool_id].free_blocks == NULL && 
+    if (best_fit == UINT32_MAX ||
+        (manager->pools[best_pool_id].free_blocks == NULL &&
          !manager->pools[best_pool_id].config.allow_growth)) {
-        
+  
         // 创建外部块
         MemoryBlockHeader* block = (MemoryBlockHeader*)malloc(size + sizeof(MemoryBlockHeader));
         if (!block) return NULL;
-        
+  
         block->size = size;
         block->flags = MEM_FLAG_USED | MEM_FLAG_EXTERNAL;
         block->pool_id = UINT16_MAX; // 特殊标记
         block->next = NULL;
-        
+  
         // 更新统计
         manager->total_allocated += size;
         if (manager->total_allocated > manager->peak_allocated) {
             manager->peak_allocated = manager->total_allocated;
         }
-        
+  
         return (void*)(((uint8_t*)block) + sizeof(MemoryBlockHeader));
     }
-    
+  
     // 使用内存池分配
     return pool_alloc(manager, best_pool_id);
 }
@@ -3352,15 +3382,15 @@ void* optimized_malloc(MemoryManager* manager, size_t size) {
 // 通用释放函数
 void optimized_free(MemoryManager* manager, void* ptr) {
     if (!ptr) return;
-    
+  
     // 获取块头
     MemoryBlockHeader* block = (MemoryBlockHeader*)(((uint8_t*)ptr) - sizeof(MemoryBlockHeader));
-    
+  
     // 检查是否是永久块
     if (block->flags & MEM_FLAG_PERMANENT) {
         return; // 不释放永久块
     }
-    
+  
     // 检查是否是外部块
     if (block->pool_id == UINT16_MAX) {
         // 外部分配的大块
@@ -3368,7 +3398,7 @@ void optimized_free(MemoryManager* manager, void* ptr) {
         free(block);
         return;
     }
-    
+  
     // 使用池释放
     pool_free(manager, ptr);
 }
@@ -3377,20 +3407,20 @@ void optimized_free(MemoryManager* manager, void* ptr) {
 CompilationCache* create_compilation_cache(uint32_t max_entries, uint32_t memory_limit) {
     CompilationCache* cache = (CompilationCache*)malloc(sizeof(CompilationCache));
     if (!cache) return NULL;
-    
+  
     cache->entries = NULL;
     cache->entry_count = 0;
     cache->max_entries = max_entries;
     cache->total_memory = 0;
     cache->memory_limit = memory_limit;
-    
+  
     return cache;
 }
 
 // 查找缓存条目
 ModuleCacheEntry* find_cache_entry(CompilationCache* cache, const char* module_name) {
     ModuleCacheEntry* entry = cache->entries;
-    
+  
     while (entry) {
         if (strcmp(entry->module_name, module_name) == 0) {
             // 更新访问时间
@@ -3399,64 +3429,64 @@ ModuleCacheEntry* find_cache_entry(CompilationCache* cache, const char* module_n
         }
         entry = entry->next;
     }
-    
+  
     return NULL;
 }
 
 // 添加缓存条目
-ModuleCacheEntry* add_cache_entry(CompilationCache* cache, const char* module_name, 
-                                 uint8_t* module_bytes, uint32_t module_size, 
+ModuleCacheEntry* add_cache_entry(CompilationCache* cache, const char* module_name,
+                                 uint8_t* module_bytes, uint32_t module_size,
                                  void* compiled_module) {
     // 检查是否已存在
     ModuleCacheEntry* existing = find_cache_entry(cache, module_name);
     if (existing) return existing;
-    
+  
     // 计算所需内存
     uint32_t name_size = strlen(module_name) + 1;
     uint32_t entry_size = sizeof(ModuleCacheEntry) + name_size + module_size;
-    
+  
     // 检查内存限制
     if (cache->total_memory + entry_size > cache->memory_limit) {
         // 需要腾出空间 - 使用LRU策略
         evict_cache_entries(cache, entry_size);
     }
-    
+  
     // 如果仍然超过限制，不能添加
     if (cache->total_memory + entry_size > cache->memory_limit) {
         return NULL;
     }
-    
+  
     // 创建新条目
     ModuleCacheEntry* entry = (ModuleCacheEntry*)malloc(sizeof(ModuleCacheEntry));
     if (!entry) return NULL;
-    
+  
     entry->module_name = strdup(module_name);
     if (!entry->module_name) {
         free(entry);
         return NULL;
     }
-    
+  
     entry->module_bytes = (uint8_t*)malloc(module_size);
     if (!entry->module_bytes) {
         free(entry->module_name);
         free(entry);
         return NULL;
     }
-    
+  
     // 复制数据
     memcpy(entry->module_bytes, module_bytes, module_size);
-    
+  
     entry->module_size = module_size;
     entry->compiled_module = compiled_module;
     entry->reference_count = 1;
     entry->last_accessed = time(NULL);
-    
+  
     // 添加到链表
     entry->next = cache->entries;
     cache->entries = entry;
     cache->entry_count++;
     cache->total_memory += entry_size;
-    
+  
     return entry;
 }
 
@@ -3464,14 +3494,14 @@ ModuleCacheEntry* add_cache_entry(CompilationCache* cache, const char* module_na
 void evict_cache_entries(CompilationCache* cache, uint32_t required_size) {
     // 如果没有条目，无法腾出空间
     if (!cache->entries) return;
-    
+  
     // 找出最久未使用的条目
     time_t oldest_time = time(NULL);
     ModuleCacheEntry* oldest_entry = NULL;
     ModuleCacheEntry* prev_to_oldest = NULL;
     ModuleCacheEntry* current = cache->entries;
     ModuleCacheEntry* prev = NULL;
-    
+  
     while (current) {
         // 跳过有引用的条目
         if (current->reference_count == 0 && current->last_accessed < oldest_time) {
@@ -3479,11 +3509,11 @@ void evict_cache_entries(CompilationCache* cache, uint32_t required_size) {
             oldest_entry = current;
             prev_to_oldest = prev;
         }
-        
+  
         prev = current;
         current = current->next;
     }
-    
+  
     // 如果找到可逐出的条目
     if (oldest_entry) {
         // 从链表中移除
@@ -3492,21 +3522,21 @@ void evict_cache_entries(CompilationCache* cache, uint32_t required_size) {
         } else {
             cache->entries = oldest_entry->next;
         }
-        
+  
         // 计算释放的内存
         uint32_t name_size = strlen(oldest_entry->module_name) + 1;
         uint32_t entry_size = sizeof(ModuleCacheEntry) + name_size + oldest_entry->module_size;
-        
+  
         // 更新统计
         cache->entry_count--;
         cache->total_memory -= entry_size;
-        
+  
         // 释放资源
         free(oldest_entry->module_name);
         free(oldest_entry->module_bytes);
         // 注意：compiled_module可能需要特定释放函数
         free(oldest_entry);
-        
+  
         // 如果释放的空间不足，递归继续释放
         if (cache->total_memory + required_size > cache->memory_limit) {
             evict_cache_entries(cache, required_size);
@@ -3531,9 +3561,9 @@ typedef struct FunctionProfile {
 // 收集性能指标并决定升级编译层级
 void update_compilation_tier(FunctionProfile* profile) {
     // 简单的分层编译策略
-    uint64_t avg_time = profile->call_count > 0 ? 
+    uint64_t avg_time = profile->call_count > 0 ?
         profile->total_time_ns / profile->call_count : 0;
-    
+  
     // 基于调用频率和平均执行时间的决策
     if (profile->current_tier == TIER_INTERPRETER) {
         if (profile->call_count >= 10) {
@@ -3556,7 +3586,7 @@ void update_compilation_tier(FunctionProfile* profile) {
 void create_optimized_runtime() {
     // 创建内存管理器
     MemoryManager* memory_manager = create_memory_manager(3);
-    
+  
     // 配置三个内存池：小对象、中对象、大对象
     MemoryPoolConfig small_config = {
         .block_size = 64,
@@ -3564,35 +3594,36 @@ void create_optimized_runtime() {
         .max_blocks = 1000,
         .allow_growth = true
     };
-    
+  
     MemoryPoolConfig medium_config = {
         .block_size = 1024,
         .initial_blocks = 20,
         .max_blocks = 100,
         .allow_growth = true
     };
-    
+  
     MemoryPoolConfig large_config = {
         .block_size = 16384,
         .initial_blocks = 5,
         .max_blocks = 20,
         .allow_growth = false
     };
-    
+  
     init_memory_pool(memory_manager, 0, small_config);
     init_memory_pool(memory_manager, 1, medium_config);
     init_memory_pool(memory_manager, 2, large_config);
-    
+  
     // 创建编译缓存 (最多20个模块，最大10MB内存)
     CompilationCache* cache = create_compilation_cache(20, 10 * 1024 * 1024);
-    
+  
     // 在实际应用中，这里会初始化WebAssembly引擎
     printf("Optimized WebAssembly runtime initialized with custom memory pools and compilation cache\n");
-    
+  
     // 清理资源 (实际应用中在程序结束时)
     // free_compilation_cache(cache);
     // free_memory_manager(memory_manager);
 }
+
 ```
 
 ### 3.4 资源效率争议与局限性
@@ -3608,7 +3639,9 @@ void create_optimized_runtime() {
 资源效率的争议可以通过实验数据和案例研究进行分析：
 
 ```python
+
 # Python: 不同场景下的资源效率争议分析
+
 import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
@@ -3629,14 +3662,14 @@ class ScenarioResult:
 
 class ResourceEfficiencyAnalyzer:
     """资源效率争议分析器"""
-    
+  
     def __init__(self):
         self.scenario_results: List[ScenarioResult] = []
-        
+  
     def add_scenario_result(self, result: ScenarioResult):
         """添加场景结果"""
         self.scenario_results.append(result)
-        
+  
     def load_sample_data(self):
         """加载一组示例数据用于分析"""
         # 计算密集型场景
@@ -3651,7 +3684,7 @@ class ResourceEfficiencyAnalyzer:
             container_startup=850.0,
             notes="1000x1000矩阵乘法，计算密集型"
         ))
-        
+  
         self.add_scenario_result(ScenarioResult(
             scenario_name="图像处理",
             wasm_performance=0.78,
@@ -3663,7 +3696,7 @@ class ResourceEfficiencyAnalyzer:
             container_startup=780.0,
             notes="4K图像模糊处理，SIMD优化"
         ))
-        
+  
         # 内存密集型场景
         self.add_scenario_result(ScenarioResult(
             scenario_name="大数据排序",
@@ -3676,7 +3709,7 @@ class ResourceEfficiencyAnalyzer:
             container_startup=920.0,
             notes="1000万整数排序，内存密集型"
         ))
-        
+  
         # IO密集型场景
         self.add_scenario_result(ScenarioResult(
             scenario_name="文件解析",
@@ -3689,7 +3722,7 @@ class ResourceEfficiencyAnalyzer:
             container_startup=810.0,
             notes="100MB JSON解析，IO密集型"
         ))
-        
+  
         # 微服务场景
         self.add_scenario_result(ScenarioResult(
             scenario_name="HTTP路由",
@@ -3702,7 +3735,7 @@ class ResourceEfficiencyAnalyzer:
             container_startup=650.0,
             notes="简单HTTP请求路由，高并发"
         ))
-        
+  
         # 边缘设备场景
         self.add_scenario_result(ScenarioResult(
             scenario_name="传感器数据处理",
@@ -3715,7 +3748,7 @@ class ResourceEfficiencyAnalyzer:
             container_startup=720.0,
             notes="IoT传感器数据过滤和聚合"
         ))
-        
+  
         # 浏览器场景
         self.add_scenario_result(ScenarioResult(
             scenario_name="浏览器游戏",
@@ -3728,7 +3761,7 @@ class ResourceEfficiencyAnalyzer:
             container_startup=None,  # 不适用
             notes="基于Canvas的2D游戏，JS对比"
         ))
-        
+  
         # 多实例场景
         self.add_scenario_result(ScenarioResult(
             scenario_name="多实例微服务",
@@ -3741,107 +3774,107 @@ class ResourceEfficiencyAnalyzer:
             container_startup=580.0,
             notes="100个并发实例，每个处理最小HTTP请求"
         ))
-        
+  
     def analyze_performance_tradeoffs(self):
         """分析性能与其他资源的权衡"""
         scenarios = [r.scenario_name for r in self.scenario_results]
         perf_ratios = [r.wasm_performance for r in self.scenario_results]
-        memory_ratios = [r.wasm_memory / r.native_memory if r.native_memory else 0 
+        memory_ratios = [r.wasm_memory / r.native_memory if r.native_memory else 0
                         for r in self.scenario_results]
-        startup_ratios = [r.wasm_startup / r.native_startup if r.native_startup else 0 
+        startup_ratios = [r.wasm_startup / r.native_startup if r.native_startup else 0
                          for r in self.scenario_results]
-        
+  
         # 按性能排序
         sorted_indices = np.argsort(perf_ratios)
         sorted_scenarios = [scenarios[i] for i in sorted_indices]
         sorted_perf = [perf_ratios[i] for i in sorted_indices]
         sorted_memory = [memory_ratios[i] for i in sorted_indices]
         sorted_startup = [startup_ratios[i] for i in sorted_indices]
-        
+  
         plt.figure(figsize=(12, 6))
-        
+  
         x = np.arange(len(sorted_scenarios))
         width = 0.25
-        
+  
         plt.bar(x - width, sorted_perf, width, label='性能比例 (相对原生)')
         plt.bar(x, sorted_memory, width, label='内存比例 (Wasm/原生)')
         plt.bar(x + width, sorted_startup, width, label='启动时间比例 (Wasm/原生)')
-        
+  
         plt.xlabel('场景')
         plt.ylabel('比例')
         plt.title('WebAssembly各场景性能与资源权衡')
         plt.xticks(x, sorted_scenarios, rotation=45, ha='right')
         plt.legend()
         plt.tight_layout()
-        
+  
         return plt
-    
+  
     def analyze_memory_efficiency(self):
         """分析内存效率"""
         # 过滤掉不适用的场景
-        valid_results = [r for r in self.scenario_results 
+        valid_results = [r for r in self.scenario_results
                           if r.native_memory and r.container_memory]
-        
+  
         scenarios = [r.scenario_name for r in valid_results]
         wasm_memory = [r.wasm_memory for r in valid_results]
         native_memory = [r.native_memory for r in valid_results]
         container_memory = [r.container_memory for r in valid_results]
-        
+  
         # 计算内存效率 (原生内存/实际使用内存)
         wasm_efficiency = [native / wasm for native, wasm in zip(native_memory, wasm_memory)]
         container_efficiency = [native / container for native, container in zip(native_memory, container_memory)]
-        
+  
         plt.figure(figsize=(12, 6))
-        
+  
         x = np.arange(len(scenarios))
         width = 0.35
-        
+  
         plt.bar(x - width/2, wasm_efficiency, width, label='WebAssembly内存效率')
         plt.bar(x + width/2, container_efficiency, width, label='容器内存效率')
-        
+  
         plt.axhline(y=1.0, color='r', linestyle='-', alpha=0.3, label='原生基准线')
-        
+  
         plt.xlabel('场景')
         plt.ylabel('内存效率 (原生内存/技术内存)')
         plt.title('WebAssembly与容器的内存效率对比')
         plt.xticks(x, scenarios, rotation=45, ha='right')
         plt.legend()
         plt.tight_layout()
-        
+  
         return plt
-    
+  
     def analyze_startup_comparison(self):
         """分析启动时间"""
         # 过滤掉不适用的场景
-        valid_results = [r for r in self.scenario_results 
+        valid_results = [r for r in self.scenario_results
                           if r.native_startup and r.container_startup]
-        
+  
         scenarios = [r.scenario_name for r in valid_results]
         wasm_startup = [r.wasm_startup for r in valid_results]
         native_startup = [r.native_startup for r in valid_results]
         container_startup = [r.container_startup for r in valid_results]
-        
+  
         plt.figure(figsize=(12, 6))
-        
+  
         # 使用对数刻度
         plt.semilogy()
-        
+  
         x = np.arange(len(scenarios))
         width = 0.25
-        
+  
         plt.bar(x - width, native_startup, width, label='原生代码')
         plt.bar(x, wasm_startup, width, label='WebAssembly')
         plt.bar(x + width, container_startup, width, label='容器')
-        
+  
         plt.xlabel('场景')
         plt.ylabel('启动时间 (ms, 对数刻度)')
         plt.title('启动时间对比 (越低越好)')
         plt.xticks(x, scenarios, rotation=45, ha='right')
         plt.legend()
         plt.tight_layout()
-        
+  
         return plt
-    
+  
     def export_controversy_table(self):
         """导出争议点表格"""
         controversy_data = [
@@ -3881,47 +3914,49 @@ class ResourceEfficiencyAnalyzer:
                 "解决方向": "生态建设、移植工具、标准接口"
             }
         ]
-        
+  
         # 在实际应用中可输出为Markdown表格或其他格式
         print("## WebAssembly资源效率争议分析")
         print("\n| 争议点 | 主张 | 数据支持 | 影响场景 | 解决方向 |")
         print("| ------ | ---- | -------- | -------- | -------- |")
-        
+  
         for row in controversy_data:
             print(f"| {row['争议点']} | {row['主张']} | {row['数据支持']} | {row['影响场景']} | {row['解决方向']} |")
-        
+  
         return controversy_data
-    
+  
     def get_avg_performance(self):
         """获取平均性能比例"""
         perf_values = [r.wasm_performance for r in self.scenario_results]
         return sum(perf_values) / len(perf_values)
-    
+  
     def get_memory_overhead(self):
         """获取内存开销比例"""
         valid_results = [r for r in self.scenario_results if r.native_memory]
         ratios = [(r.wasm_memory / r.native_memory - 1.0) for r in valid_results]
         return sum(ratios) / len(ratios)
-    
+  
     def analyze_all(self):
         """执行所有分析"""
         self.analyze_performance_tradeoffs().savefig('performance_tradeoffs.png')
         self.analyze_memory_efficiency().savefig('memory_efficiency.png')
         self.analyze_startup_comparison().savefig('startup_comparison.png')
         self.export_controversy_table()
-        
+  
         print("\n分析完成，图表已保存")
 
 # 使用示例
+
 def run_analysis():
     analyzer = ResourceEfficiencyAnalyzer()
     analyzer.load_sample_data()
     analyzer.analyze_all()
-    
+  
     return analyzer
 
 if __name__ == "__main__":
     run_analysis()
+
 ```
 
 ## 4. 组件模型标准化加速生态繁荣
@@ -3957,7 +3992,9 @@ use std::fmt;
 use std::rc::Rc;
 
 // 值类型
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+
+# [derive(Debug, Clone, PartialEq, Eq, Hash)]
+
 enum ValueType {
     Bool,
     S8, S16, S32, S64,
@@ -3976,14 +4013,18 @@ enum ValueType {
 }
 
 // 函数类型
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+
+# [derive(Debug, Clone, PartialEq, Eq, Hash)]
+
 struct FunctionType {
     params: Vec<(String, ValueType)>,
     results: Vec<ValueType>,
 }
 
 // 类型定义
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 enum TypeDefinition {
     Record {
         name: String,
@@ -4008,7 +4049,9 @@ enum TypeDefinition {
 }
 
 // 接口
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 struct Interface {
     name: String,
     types: Vec<Rc<TypeDefinition>>,
@@ -4016,7 +4059,9 @@ struct Interface {
 }
 
 // 导入项
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 enum ImportItem {
     Function {
         name: String,
@@ -4029,7 +4074,9 @@ enum ImportItem {
 }
 
 // 导出项
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 enum ExportItem {
     Function {
         name: String,
@@ -4044,7 +4091,9 @@ enum ExportItem {
 }
 
 // 函数实现（简化）
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 enum FunctionImplementation {
     Core {
         module_index: usize,
@@ -4057,13 +4106,17 @@ enum FunctionImplementation {
 }
 
 // 接口实现（简化）
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 struct InterfaceImplementation {
     function_mapping: HashMap<String, FunctionImplementation>,
 }
 
 // 链接指令
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 enum LinkInstruction {
     BindImport {
         import_name: String,
@@ -4076,7 +4129,9 @@ enum LinkInstruction {
 }
 
 // 依赖描述
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 struct Dependency {
     name: String,
     interface: Rc<Interface>,
@@ -4084,7 +4139,9 @@ struct Dependency {
 }
 
 // 组件定义
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 struct Component {
     imports: HashMap<String, ImportItem>,
     exports: HashMap<String, ExportItem>,
@@ -4098,7 +4155,9 @@ struct Component {
 }
 
 // 组件验证错误
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 enum ComponentError {
     DuplicateTypeName(String),
     DuplicateImportName(String),
@@ -4124,26 +4183,26 @@ enum ComponentError {
 impl fmt::Display for ComponentError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ComponentError::DuplicateTypeName(name) => 
+            ComponentError::DuplicateTypeName(name) =>
                 write!(f, "Duplicate type name: {}", name),
-            ComponentError::DuplicateImportName(name) => 
+            ComponentError::DuplicateImportName(name) =>
                 write!(f, "Duplicate import name: {}", name),
-            ComponentError::DuplicateExportName(name) => 
+            ComponentError::DuplicateExportName(name) =>
                 write!(f, "Duplicate export name: {}", name),
-            ComponentError::TypeNotFound(name) => 
+            ComponentError::TypeNotFound(name) =>
                 write!(f, "Type not found: {}", name),
-            ComponentError::ImportNotFound(name) => 
+            ComponentError::ImportNotFound(name) =>
                 write!(f, "Import not found: {}", name),
-            ComponentError::ExportNotFound(name) => 
+            ComponentError::ExportNotFound(name) =>
                 write!(f, "Export not found: {}", name),
-            ComponentError::TypeMismatch { expected, found } => 
+            ComponentError::TypeMismatch { expected, found } =>
                 write!(f, "Type mismatch: expected {:?}, found {:?}", expected, found),
-            ComponentError::FunctionTypeMismatch { expected, found } => 
+            ComponentError::FunctionTypeMismatch { expected, found } =>
                 write!(f, "Function type mismatch: expected {:?}, found {:?}", expected, found),
-            ComponentError::InterfaceNotImplemented { interface_name, missing_functions } => 
-                write!(f, "Interface '{}' not fully implemented. Missing functions: {:?}", 
+            ComponentError::InterfaceNotImplemented { interface_name, missing_functions } =>
+                write!(f, "Interface '{}' not fully implemented. Missing functions: {:?}",
                        interface_name, missing_functions),
-            ComponentError::CyclicDependency(path) => 
+            ComponentError::CyclicDependency(path) =>
                 write!(f, "Cyclic dependency detected: {}", path.join(" -> ")),
         }
     }
@@ -4163,27 +4222,27 @@ impl Component {
             sub_components: Vec::new(),
         }
     }
-    
+  
     // 添加类型
     fn add_type(&mut self, type_def: TypeDefinition) -> Result<Rc<TypeDefinition>, ComponentError> {
         // 检查类型名是否已存在
         let name = match &type_def {
             TypeDefinition::Record { name, .. } => name,
             TypeDefinition::Variant { name, .. } => name,
-            TypeDefinition::Enum { name, .. } => name, 
+            TypeDefinition::Enum { name, .. } => name,
             TypeDefinition::Resource { name, .. } => name,
             TypeDefinition::Function { name, .. } => name,
         };
-        
+  
         if self.find_type_by_name(name).is_some() {
             return Err(ComponentError::DuplicateTypeName(name.clone()));
         }
-        
+  
         let type_rc = Rc::new(type_def);
         self.types.push(type_rc.clone());
         Ok(type_rc)
     }
-    
+  
     // 查找类型
     fn find_type_by_name(&self, name: &str) -> Option<Rc<TypeDefinition>> {
         self.types.iter()
@@ -4196,89 +4255,89 @@ impl Component {
             })
             .cloned()
     }
-    
+  
     // 添加导入
     fn add_import(&mut self, name: String, item: ImportItem) -> Result<(), ComponentError> {
         if self.imports.contains_key(&name) {
             return Err(ComponentError::DuplicateImportName(name));
         }
-        
+  
         self.imports.insert(name, item);
         Ok(())
     }
-    
+  
     // 添加导出
     fn add_export(&mut self, name: String, item: ExportItem) -> Result<(), ComponentError> {
         if self.exports.contains_key(&name) {
             return Err(ComponentError::DuplicateExportName(name));
         }
-        
+  
         self.exports.insert(name, item);
         Ok(())
     }
-    
+  
     // 添加链接指令
     fn add_link(&mut self, link: LinkInstruction) {
         self.links.push(link);
     }
-    
+  
     // 添加依赖
     fn add_dependency(&mut self, dependency: Dependency) {
         self.dependencies.push(dependency);
     }
-    
+  
     // 添加核心模块
     fn add_core_module(&mut self, wasm_bytes: Vec<u8>) -> usize {
         let index = self.core_modules.len();
         self.core_modules.push(wasm_bytes);
         index
     }
-    
+  
     // 添加子组件
     fn add_sub_component(&mut self, component: Component) -> usize {
         let index = self.sub_components.len();
         self.sub_components.push(Rc::new(component));
         index
     }
-    
+  
     // 验证组件
     fn validate(&self) -> Result<(), Vec<ComponentError>> {
         let mut errors = Vec::new();
-        
+  
         // 验证类型一致性
         self.validate_types(&mut errors);
-        
+  
         // 验证导入项
         self.validate_imports(&mut errors);
-        
+  
         // 验证导出项
         self.validate_exports(&mut errors);
-        
+  
         // 验证链接指令
         self.validate_links(&mut errors);
-        
+  
         // 验证依赖关系
         self.validate_dependencies(&mut errors);
-        
+  
         // 验证子组件
         for component in &self.sub_components {
             if let Err(component_errors) = component.validate() {
                 errors.extend(component_errors);
             }
         }
-        
+  
         if errors.is_empty() {
             Ok(())
         } else {
             Err(errors)
         }
     }
-    
+  
     // 验证类型定义
     fn validate_types(&self, errors: &mut Vec<ComponentError>) {
         // 检查类型名称唯一性
         let mut type_names = HashSet::new();
-        
+  
         for type_def in &self.types {
             let name = match &**type_def {
                 TypeDefinition::Record { name, .. } => name,
@@ -4287,35 +4346,35 @@ impl Component {
                 TypeDefinition::Resource { name, .. } => name,
                 TypeDefinition::Function { name, .. } => name,
             };
-            
+  
             if !type_names.insert(name.clone()) {
                 errors.push(ComponentError::DuplicateTypeName(name.clone()));
             }
         }
     }
-    
+  
     // 验证导入项
     fn validate_imports(&self, errors: &mut Vec<ComponentError>) {
         // 检查导入名称唯一性
         let mut import_names = HashSet::new();
-        
+  
         for (name, _) in &self.imports {
             if !import_names.insert(name.clone()) {
                 errors.push(ComponentError::DuplicateImportName(name.clone()));
             }
         }
     }
-    
+  
     // 验证导出项
     fn validate_exports(&self, errors: &mut Vec<ComponentError>) {
         // 检查导出名称唯一性
         let mut export_names = HashSet::new();
-        
+  
         for (name, export) in &self.exports {
             if !export_names.insert(name.clone()) {
                 errors.push(ComponentError::DuplicateExportName(name.clone()));
             }
-            
+  
             // 如果是接口导出，验证接口实现
             if let ExportItem::Interface { interface, implementation, .. } = export {
                 // 验证所有函数都已实现
@@ -4330,7 +4389,7 @@ impl Component {
             }
         }
     }
-    
+  
     // 验证链接指令
     fn validate_links(&self, errors: &mut Vec<ComponentError>) {
         for link in &self.links {
@@ -4340,11 +4399,11 @@ impl Component {
                     if !self.imports.contains_key(import_name) {
                         errors.push(ComponentError::ImportNotFound(import_name.clone()));
                     }
-                    
+  
                     if !self.exports.contains_key(export_name) {
                         errors.push(ComponentError::ExportNotFound(export_name.clone()));
                     }
-                    
+  
                     // 验证类型兼容性
                     if let (Some(import), Some(export)) = (
                         self.imports.get(import_name),
@@ -4361,7 +4420,7 @@ impl Component {
                             format!("Module index out of bounds: {}", module_index)
                         ));
                     }
-                    
+  
                     // 检查绑定的导入项是否存在
                     for (_, export_name) in import_bindings {
                         if !self.exports.contains_key(export_name) {
@@ -4372,23 +4431,23 @@ impl Component {
             }
         }
     }
-    
+  
     // 验证依赖关系
     fn validate_dependencies(&self, errors: &mut Vec<ComponentError>) {
         // 检查循环依赖
         // 简化实现，实际需要更复杂的图分析
         let mut visited = HashSet::new();
         let mut path = Vec::new();
-        
+  
         for dep in &self.dependencies {
             if self.has_cyclic_dependency(dep.name.clone(), &mut visited, &mut path) {
                 errors.push(ComponentError::CyclicDependency(path.clone()));
             }
         }
     }
-    
+  
     // 检测循环依赖
-    fn has_cyclic_dependency(&self, name: String, visited: &mut HashSet<String>, 
+    fn has_cyclic_dependency(&self, name: String, visited: &mut HashSet<String>,
                           path: &mut Vec<String>) -> bool {
         // 简化实现
         // 实际需要递归检查整个依赖图
@@ -4396,38 +4455,38 @@ impl Component {
             path.push(name);
             return true;
         }
-        
+  
         if !visited.insert(name.clone()) {
             return false; // 已访问但不在当前路径中
         }
-        
+  
         path.push(name.clone());
-        
+  
         // 检查此依赖的进一步依赖
         // 简化实现
-        
+  
         path.pop();
         false
     }
-    
+  
     // 组合两个组件
     fn compose(self, other: Component) -> Result<Component, Vec<ComponentError>> {
         let mut result = Component::new();
         let mut errors = Vec::new();
-        
+  
         // 合并类型定义
         for type_def in self.types {
             if let Err(e) = result.add_type((*type_def).clone()) {
                 errors.push(e);
             }
         }
-        
+  
         for type_def in other.types {
             if let Err(e) = result.add_type((*type_def).clone()) {
                 errors.push(e);
             }
         }
-        
+  
         // 合并导入
         // 如果两个组件都导入同名项，保留在结果组件中
         for (name, import) in self.imports {
@@ -4437,7 +4496,7 @@ impl Component {
                 }
             }
         }
-        
+  
         for (name, import) in other.imports {
             if !self.exports.contains_key(&name) {
                 if let Err(e) = result.add_import(name, import) {
@@ -4445,7 +4504,7 @@ impl Component {
                 }
             }
         }
-        
+  
         // 合并导出
         // 如果两个组件导出同名项，优先使用right组件的导出
         for (name, export) in self.exports {
@@ -4455,35 +4514,35 @@ impl Component {
                 }
             }
         }
-        
+  
         for (name, export) in other.exports {
             if let Err(e) = result.add_export(name, export) {
                 errors.push(e);
             }
         }
-        
+  
         // 合并核心模块
         result.core_modules.extend(self.core_modules);
         result.core_modules.extend(other.core_modules);
-        
+  
         // 合并子组件
         for component in self.sub_components {
             result.sub_components.push(component);
         }
-        
+  
         for component in other.sub_components {
             result.sub_components.push(component);
         }
-        
+  
         // 添加链接指令，连接两个组件的导入和导出
         // 这里需要更复杂的匹配逻辑
-        
+  
         // 合并其他链接指令和依赖
         result.links.extend(self.links);
         result.links.extend(other.links);
         result.dependencies.extend(self.dependencies);
         result.dependencies.extend(other.dependencies);
-        
+  
         if errors.is_empty() {
             Ok(result)
         } else {
@@ -4500,7 +4559,7 @@ fn component_model_example() {
         types: Vec::new(),
         functions: HashMap::new(),
     };
-    
+  
     // 添加HTTP请求类型
     let request_type = TypeDefinition::Record {
         name: "Request".to_string(),
@@ -4508,32 +4567,32 @@ fn component_model_example() {
             let mut fields = HashMap::new();
             fields.insert("method".to_string(), ValueType::String);
             fields.insert("uri".to_string(), ValueType::String);
-            fields.insert("headers".to_string(), 
+            fields.insert("headers".to_string(),
                        ValueType::List(Box::new(
                            ValueType::Tuple(vec![ValueType::String, ValueType::String])
                        )));
-            fields.insert("body".to_string(), 
+            fields.insert("body".to_string(),
                        ValueType::Option(Box::new(ValueType::List(Box::new(ValueType::U8)))));
             fields
         },
     };
-    
+  
     // 添加HTTP响应类型
     let response_type = TypeDefinition::Record {
         name: "Response".to_string(),
         fields: {
             let mut fields = HashMap::new();
             fields.insert("status".to_string(), ValueType::U16);
-            fields.insert("headers".to_string(), 
+            fields.insert("headers".to_string(),
                        ValueType::List(Box::new(
                            ValueType::Tuple(vec![ValueType::String, ValueType::String])
                        )));
-            fields.insert("body".to_string(), 
+            fields.insert("body".to_string(),
                        ValueType::Option(Box::new(ValueType::List(Box::new(ValueType::U8)))));
             fields
         },
     };
-    
+  
     // 添加处理请求的函数类型
     let handle_request_type = FunctionType {
         params: vec![("request".to_string(), ValueType::Record(
@@ -4541,11 +4600,11 @@ fn component_model_example() {
                 let mut fields = HashMap::new();
                 fields.insert("method".to_string(), ValueType::String);
                 fields.insert("uri".to_string(), ValueType::String);
-                fields.insert("headers".to_string(), 
+                fields.insert("headers".to_string(),
                            ValueType::List(Box::new(
                                ValueType::Tuple(vec![ValueType::String, ValueType::String])
                            )));
-                fields.insert("body".to_string(), 
+                fields.insert("body".to_string(),
                            ValueType::Option(Box::new(ValueType::List(Box::new(ValueType::U8)))));
                 fields
             }
@@ -4554,11 +4613,11 @@ fn component_model_example() {
             {
                 let mut fields = HashMap::new();
                 fields.insert("status".to_string(), ValueType::U16);
-                fields.insert("headers".to_string(), 
+                fields.insert("headers".to_string(),
                            ValueType::List(Box::new(
                                ValueType::Tuple(vec![ValueType::String, ValueType::String])
                            )));
-                fields.insert("body".to_string(), 
+                fields.insert("body".to_string(),
                            ValueType::Option(Box::new(ValueType::List(Box::new(
 
 ```rust
@@ -4672,6 +4731,7 @@ fn component_model_example() {
         }
     }
 }
+
 ```
 
 ### 4.2 模块接口标准的技术演进
@@ -5163,6 +5223,7 @@ function demonstrateWitUsage() {
   console.log("Generated Rust bindings:\n");
   console.log(rustBindings);
 }
+
 ```
 
 ### 4.3 组件模型生态系统展望
@@ -6161,6 +6222,7 @@ func main() {
  
  fmt.Println("Successfully created component!")
 }
+
 ```
 
 ### 4.4 标准化过程中的挑战
@@ -6631,6 +6693,7 @@ async function runCompatibilityTests() {
   
   console.log(report);
 }
+
 ```
 
 ## 5. AI与WebAssembly深度融合
@@ -6656,7 +6719,6 @@ use std::time::{Duration, Instant};
 pub enum AIOperationType {
     MatrixMultiply,
     
-
 ```rust
     MatrixMultiply,
     Convolution,
@@ -6671,7 +6733,9 @@ pub enum AIOperationType {
 }
 
 /// 性能测量结果
-#[derive(Debug, Clone)]
+
+# [derive(Debug, Clone)]
+
 pub struct PerformanceMeasurement {
     pub operation_type: AIOperationType,
     pub input_size: usize,
@@ -6703,7 +6767,7 @@ impl WasmAIPerformanceAnalyzer {
             runtime_name: runtime_name.to_string(),
         }
     }
-    
+  
     /// 记录性能测量
     pub fn record_measurement(&mut self, measurement: PerformanceMeasurement) {
         // 按操作类型归类
@@ -6711,21 +6775,21 @@ impl WasmAIPerformanceAnalyzer {
             .entry(measurement.operation_type)
             .or_insert_with(Vec::new)
             .push(measurement.clone());
-        
+  
         // 保存总体记录
         self.measurements.push(measurement);
     }
-    
+  
     /// 测量矩阵乘法性能
     pub fn measure_matrix_multiply(&mut self, size: usize) -> PerformanceMeasurement {
         println!("测量 {}x{} 矩阵乘法性能", size, size);
-        
+  
         // 记录编译时间（如果可用）
         let compilation_time = Some(Duration::from_millis(25)); // 模拟值
-        
+  
         // 测量执行时间
         let start_time = Instant::now();
-        
+  
         // 模拟执行
         // 在实际实现中，这里会调用WebAssembly函数
         let estimated_flops = 2 * size * size * size;
@@ -6734,18 +6798,18 @@ impl WasmAIPerformanceAnalyzer {
         } else {
             (estimated_flops as f64) / 1_000_000_000.0 * 1000.0 // 假设1 GFLOPS
         };
-        
+  
         // 模拟执行时间
         std::thread::sleep(Duration::from_millis(expected_time_ms as u64));
-        
+  
         let execution_time = start_time.elapsed();
-        
+  
         // 估计内存使用（字节）
         let memory_usage = 3 * size * size * std::mem::size_of::<f32>();
-        
+  
         // 计算吞吐量（每秒处理的元素数）
         let throughput = (estimated_flops as f64) / execution_time.as_secs_f64();
-        
+  
         let measurement = PerformanceMeasurement {
             operation_type: AIOperationType::MatrixMultiply,
             input_size: size,
@@ -6754,22 +6818,22 @@ impl WasmAIPerformanceAnalyzer {
             throughput,
             compilation_time,
         };
-        
+  
         self.record_measurement(measurement.clone());
         measurement
     }
-    
+  
     /// 测量卷积操作性能
     pub fn measure_convolution(&mut self, input_size: usize, kernel_size: usize) -> PerformanceMeasurement {
-        println!("测量 {}x{} 输入，{}x{} 核心的卷积性能", 
+        println!("测量 {}x{} 输入，{}x{} 核心的卷积性能",
                  input_size, input_size, kernel_size, kernel_size);
-        
+  
         // 记录编译时间（如果可用）
         let compilation_time = Some(Duration::from_millis(30)); // 模拟值
-        
+  
         // 测量执行时间
         let start_time = Instant::now();
-        
+  
         // 模拟执行
         // 在实际实现中，这里会调用WebAssembly函数
         let output_size = input_size - kernel_size + 1;
@@ -6779,19 +6843,19 @@ impl WasmAIPerformanceAnalyzer {
         } else {
             (estimated_ops as f64) / 500_000_000.0 * 1000.0 // 假设500 MOPS
         };
-        
+  
         // 模拟执行时间
         std::thread::sleep(Duration::from_millis(expected_time_ms as u64));
-        
+  
         let execution_time = start_time.elapsed();
-        
+  
         // 估计内存使用（字节）
-        let memory_usage = (input_size * input_size + kernel_size * kernel_size + output_size * output_size) 
+        let memory_usage = (input_size * input_size + kernel_size * kernel_size + output_size * output_size)
                           * std::mem::size_of::<f32>();
-        
+  
         // 计算吞吐量（每秒处理的元素数）
         let throughput = (estimated_ops as f64) / execution_time.as_secs_f64();
-        
+  
         let measurement = PerformanceMeasurement {
             operation_type: AIOperationType::Convolution,
             input_size,
@@ -6800,38 +6864,38 @@ impl WasmAIPerformanceAnalyzer {
             throughput,
             compilation_time,
         };
-        
+  
         self.record_measurement(measurement.clone());
         measurement
     }
-    
+  
     /// 统计操作类型的平均性能
     pub fn get_average_performance(&self, op_type: AIOperationType) -> Option<PerformanceMeasurement> {
         let measurements = self.operation_stats.get(&op_type)?;
-        
+  
         if measurements.is_empty() {
             return None;
         }
-        
+  
         let count = measurements.len();
         let total_time: Duration = measurements.iter()
             .map(|m| m.execution_time)
             .sum();
-        
+  
         let avg_time = total_time / count as u32;
-        
+  
         let avg_memory: usize = measurements.iter()
             .map(|m| m.memory_usage)
             .sum::<usize>() / count;
-        
+  
         let avg_throughput: f64 = measurements.iter()
             .map(|m| m.throughput)
             .sum::<f64>() / count as f64;
-        
+  
         let avg_size: usize = measurements.iter()
             .map(|m| m.input_size)
             .sum::<usize>() / count;
-        
+  
         Some(PerformanceMeasurement {
             operation_type: op_type,
             input_size: avg_size,
@@ -6841,7 +6905,7 @@ impl WasmAIPerformanceAnalyzer {
             compilation_time: None,
         })
     }
-    
+  
     /// 生成性能报告
     pub fn generate_report(&self) -> String {
         let mut report = format!("# WebAssembly AI性能分析报告\n\n");
@@ -6850,13 +6914,13 @@ impl WasmAIPerformanceAnalyzer {
         report.push_str(&format!("- SIMD支持: {}\n", if self.simd_enabled { "是" } else { "否" }));
         report.push_str(&format!("- 线程支持: {}\n", if self.threads_enabled { "是" } else { "否" }));
         report.push_str(&format!("- 内存模型: {}\n\n", self.memory_model));
-        
+  
         report.push_str(&format!("## 性能摘要\n\n"));
-        
+  
         // 按操作类型生成摘要
         report.push_str("| 操作类型 | 平均执行时间 (ms) | 平均内存使用 (KB) | 平均吞吐量 (OPS) |\n");
         report.push_str("|---------|-----------------|-----------------|----------------|\n");
-        
+  
         for op_type in [
             AIOperationType::MatrixMultiply,
             AIOperationType::Convolution,
@@ -6877,18 +6941,18 @@ impl WasmAIPerformanceAnalyzer {
                     AIOperationType::Attention => "注意力机制",
                     _ => "其他操作",
                 };
-                
-                report.push_str(&format!("| {} | {:.2} | {:.2} | {:.2e} |\n", 
+  
+                report.push_str(&format!("| {} | {:.2} | {:.2} | {:.2e} |\n",
                                         op_name,
                                         avg.execution_time.as_secs_f64() * 1000.0,
                                         avg.memory_usage as f64 / 1024.0,
                                         avg.throughput));
             }
         }
-        
+  
         // 添加详细测量结果
         report.push_str("\n## 详细测量结果\n\n");
-        
+  
         for (i, measurement) in self.measurements.iter().enumerate() {
             let op_name = match measurement.operation_type {
                 AIOperationType::MatrixMultiply => "矩阵乘法",
@@ -6900,23 +6964,23 @@ impl WasmAIPerformanceAnalyzer {
                 AIOperationType::Attention => "注意力机制",
                 _ => "其他操作",
             };
-            
+  
             report.push_str(&format!("### 测量 #{}: {}\n\n", i+1, op_name));
             report.push_str(&format!("- 输入大小: {}\n", measurement.input_size));
-            report.push_str(&format!("- 执行时间: {:.2} ms\n", 
+            report.push_str(&format!("- 执行时间: {:.2} ms\n",
                                    measurement.execution_time.as_secs_f64() * 1000.0));
-            
+  
             if let Some(comp_time) = measurement.compilation_time {
-                report.push_str(&format!("- 编译时间: {:.2} ms\n", 
+                report.push_str(&format!("- 编译时间: {:.2} ms\n",
                                        comp_time.as_secs_f64() * 1000.0));
             }
-            
-            report.push_str(&format!("- 内存使用: {:.2} KB\n", 
+  
+            report.push_str(&format!("- 内存使用: {:.2} KB\n",
                                    measurement.memory_usage as f64 / 1024.0));
-            report.push_str(&format!("- 吞吐量: {:.2e} OPS\n\n", 
+            report.push_str(&format!("- 吞吐量: {:.2e} OPS\n\n",
                                    measurement.throughput));
         }
-        
+  
         // SIMD加速比分析
         if self.simd_enabled {
             report.push_str("## SIMD加速分析\n\n");
@@ -6925,14 +6989,14 @@ impl WasmAIPerformanceAnalyzer {
             report.push_str("2. **卷积操作**: 理论上可达到4-8倍加速\n");
             report.push_str("3. **向量化激活函数**: 理论上可达到4倍加速\n\n");
         }
-        
+  
         report
     }
-    
+  
     /// 生成优化建议
     pub fn generate_optimization_recommendations(&self) -> String {
         let mut recommendations = String::from("# WebAssembly AI工作负载优化建议\n\n");
-        
+  
         // 检查SIMD支持
         if !self.simd_enabled {
             recommendations.push_str("## 启用SIMD指令\n\n");
@@ -6941,7 +7005,7 @@ impl WasmAIPerformanceAnalyzer {
             recommendations.push_str("2. 在编译时启用SIMD支持 (例如Rust中使用 `-C target-feature=+simd128`)\n");
             recommendations.push_str("3. 使用专为SIMD优化的数学库\n\n");
         }
-        
+  
         // 检查线程支持
         if !self.threads_enabled {
             recommendations.push_str("## 启用多线程支持\n\n");
@@ -6950,7 +7014,7 @@ impl WasmAIPerformanceAnalyzer {
             recommendations.push_str("2. 在支持的环境中使用共享内存和原子操作\n");
             recommendations.push_str("3. 考虑将大型矩阵运算分成较小的任务并行处理\n\n");
         }
-        
+  
         // 内存布局优化
         recommendations.push_str("## 内存布局优化\n\n");
         recommendations.push_str("WebAssembly的线性内存模型要求特别注意内存布局以获得最佳性能：\n\n");
@@ -6958,18 +7022,18 @@ impl WasmAIPerformanceAnalyzer {
         recommendations.push_str("2. 使用适合WebAssembly的内存分配策略，避免频繁的小块分配\n");
         recommendations.push_str("3. 考虑使用内存池和预分配策略\n");
         recommendations.push_str("4. 对于矩阵运算，使用适合缓存的平铺策略\n\n");
-        
+  
         // 量化技术
         recommendations.push_str("## 使用量化技术\n\n");
         recommendations.push_str("在WebAssembly环境中，量化技术可以显著减少内存使用并提高性能：\n\n");
         recommendations.push_str("1. 考虑使用INT8或UINT8量化模型，特别是在边缘和浏览器环境\n");
         recommendations.push_str("2. 对于移动端和边缘设备，F16半精度浮点数可以提供良好的精度/性能平衡\n");
         recommendations.push_str("3. 实施量化感知训练以最小化精度损失\n\n");
-        
+  
         // 具体操作的优化
         if let Some(matrix_mult) = self.get_average_performance(AIOperationType::MatrixMultiply) {
             recommendations.push_str("## 矩阵乘法优化\n\n");
-            
+  
             // 基于测量结果给出具体建议
             if matrix_mult.execution_time.as_millis() > 100 {
                 recommendations.push_str("当前矩阵乘法性能存在优化空间：\n\n");
@@ -6978,10 +7042,10 @@ impl WasmAIPerformanceAnalyzer {
                 recommendations.push_str("3. 重新排列内存访问模式以最小化缓存未命中\n\n");
             }
         }
-        
+  
         if let Some(conv) = self.get_average_performance(AIOperationType::Convolution) {
             recommendations.push_str("## 卷积操作优化\n\n");
-            
+  
             // 基于测量结果给出具体建议
             if conv.execution_time.as_millis() > 200 {
                 recommendations.push_str("卷积操作性能可以通过以下方式提升：\n\n");
@@ -6990,7 +7054,7 @@ impl WasmAIPerformanceAnalyzer {
                 recommendations.push_str("3. 实施直接卷积的SIMD优化版本\n\n");
             }
         }
-        
+  
         // 编译和AOT优化
         recommendations.push_str("## 编译与AOT优化\n\n");
         recommendations.push_str("WebAssembly的性能可以通过编译策略优化：\n\n");
@@ -6998,7 +7062,7 @@ impl WasmAIPerformanceAnalyzer {
         recommendations.push_str("2. 启用编译器的所有优化选项，如Rust中的`-O3`\n");
         recommendations.push_str("3. 使用链接时优化(LTO)减少模块体积和提高内联机会\n");
         recommendations.push_str("4. 避免不必要的边界检查和调试信息\n\n");
-        
+  
         recommendations
     }
 }
@@ -7011,26 +7075,27 @@ pub fn demonstrate_ai_performance_analysis() {
         false,  // 线程未启用
         "linear"
     );
-    
+  
     // 执行一系列测量
     for size in [128, 256, 512, 1024].iter() {
         analyzer.measure_matrix_multiply(*size);
     }
-    
+  
     for input_size in [28, 56, 112, 224].iter() {
         for kernel_size in [3, 5, 7].iter() {
             analyzer.measure_convolution(*input_size, *kernel_size);
         }
     }
-    
+  
     // 生成报告
     let report = analyzer.generate_report();
     println!("{}", report);
-    
+  
     // 生成优化建议
     let recommendations = analyzer.generate_optimization_recommendations();
     println!("{}", recommendations);
 }
+
 ```
 
 WebAssembly在AI工作负载中特别适用于以下场景：
@@ -7041,7 +7106,9 @@ WebAssembly在AI工作负载中特别适用于以下场景：
 4. **安全敏感的AI应用**：在沙盒环境中安全执行第三方AI模型
 
 ```python
+
 # Python: WebAssembly vs 原生AI性能对比和场景适用性分析
+
 import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
@@ -7073,20 +7140,20 @@ class DeviceInfo:
     has_gpu: bool
     browser: Optional[str] = None
     os: Optional[str] = None
-    
+  
 class AIPerformanceAnalyzer:
     def __init__(self):
         self.performance_data: List[PerformanceData] = []
         self.devices: Dict[str, DeviceInfo] = {}
-        
+  
     def add_measurement(self, data: PerformanceData):
         """添加性能测量"""
         self.performance_data.append(data)
-        
+  
     def add_device(self, device_id: str, info: DeviceInfo):
         """添加设备"""
         self.devices[device_id] = info
-        
+  
     def load_sample_data(self):
         """加载示例数据"""
         # 添加设备
@@ -7097,7 +7164,7 @@ class AIPerformanceAnalyzer:
         self.add_device("mobile_mid", DeviceInfo("中端手机", "mobile", "Snapdragon 765G", 6.0, True, None, "Android 11"))
         self.add_device("mobile_low", DeviceInfo("入门手机", "mobile", "Snapdragon 662", 4.0, False, None, "Android 10"))
         self.add_device("edge_device", DeviceInfo("边缘设备", "edge", "ARM Cortex-A72", 2.0, False, None, "Linux"))
-        
+  
         # MobileNet模型 - WebAssembly (WASM)
         self.add_measurement(PerformanceData(
             model_name="MobileNetV2",
@@ -7112,7 +7179,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=65.3,
             ops_count=300.0
         ))
-        
+  
         # MobileNet模型 - 原生
         self.add_measurement(PerformanceData(
             model_name="MobileNetV2",
@@ -7127,7 +7194,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=12.5,
             ops_count=300.0
         ))
-        
+  
         # MobileNet模型 - WebAssembly (WASM) - INT8量化
         self.add_measurement(PerformanceData(
             model_name="MobileNetV2-INT8",
@@ -7142,7 +7209,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=40.2,
             ops_count=300.0
         ))
-        
+  
         # MobileNet模型 - 原生 - INT8量化
         self.add_measurement(PerformanceData(
             model_name="MobileNetV2-INT8",
@@ -7157,7 +7224,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=8.1,
             ops_count=300.0
         ))
-        
+  
         # ResNet模型 - WebAssembly (WASM)
         self.add_measurement(PerformanceData(
             model_name="ResNet50",
@@ -7172,7 +7239,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=280.1,
             ops_count=3800.0
         ))
-        
+  
         # ResNet模型 - 原生
         self.add_measurement(PerformanceData(
             model_name="ResNet50",
@@ -7187,7 +7254,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=35.8,
             ops_count=3800.0
         ))
-        
+  
         # BERT模型 - WebAssembly (WASM) - FP16
         self.add_measurement(PerformanceData(
             model_name="BERT-Base",
@@ -7202,7 +7269,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=320.1,
             ops_count=5500.0
         ))
-        
+  
         # BERT模型 - 原生 - FP16
         self.add_measurement(PerformanceData(
             model_name="BERT-Base",
@@ -7217,7 +7284,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=50.5,
             ops_count=5500.0
         ))
-        
+  
         # 轻量级NLP模型 - WebAssembly (WASM)
         self.add_measurement(PerformanceData(
             model_name="DistilBERT",
@@ -7232,7 +7299,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=120.5,
             ops_count=1800.0
         ))
-        
+  
         # 轻量级NLP模型 - 原生
         self.add_measurement(PerformanceData(
             model_name="DistilBERT",
@@ -7247,7 +7314,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=25.3,
             ops_count=1800.0
         ))
-        
+  
         # 图像分类小型模型 - WebAssembly (WASM) - INT8
         self.add_measurement(PerformanceData(
             model_name="EfficientNet-Lite0",
@@ -7262,7 +7329,7 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=25.8,
             ops_count=195.0
         ))
-        
+  
         # 图像分类小型模型 - 原生 - INT8
         self.add_measurement(PerformanceData(
             model_name="EfficientNet-Lite0",
@@ -7277,30 +7344,30 @@ class AIPerformanceAnalyzer:
             warmup_time_ms=5.2,
             ops_count=195.0
         ))
-    
+  
     def analyze_performance_ratio(self) -> pd.DataFrame:
         """分析WebAssembly与原生的性能比率"""
         # 按模型名称和精度分组
         model_groups = {}
-        
+  
         for data in self.performance_data:
             key = (data.model_name, data.precision)
             if key not in model_groups:
                 model_groups[key] = {}
-            
+  
             model_groups[key][data.runtime] = data
-        
+  
         # 计算比率
         results = []
         for (model_name, precision), runtimes in model_groups.items():
             if 'WASM' in runtimes and 'Native' in runtimes:
                 wasm_data = runtimes['WASM']
                 native_data = runtimes['Native']
-                
+  
                 inference_ratio = wasm_data.inference_time_ms / native_data.inference_time_ms
                 memory_ratio = wasm_data.memory_mb / native_data.memory_mb
                 warmup_ratio = wasm_data.warmup_time_ms / native_data.warmup_time_ms
-                
+  
                 results.append({
                     'Model': model_name,
                     'Precision': precision,
@@ -7312,9 +7379,9 @@ class AIPerformanceAnalyzer:
                     'WASM Memory (MB)': wasm_data.memory_mb,
                     'Native Memory (MB)': native_data.memory_mb,
                 })
-        
+  
         return pd.DataFrame(results)
-    
+  
     def visualize_performance_comparison(self):
         """可视化WebAssembly与原生性能对比"""
         # 提取数据
@@ -7324,17 +7391,17 @@ class AIPerformanceAnalyzer:
         wasm_memory = []
         native_memory = []
         precision_labels = []
-        
+  
         # 按模型名称和精度分组
         model_groups = {}
-        
+  
         for data in self.performance_data:
             key = (data.model_name, data.precision)
             if key not in model_groups:
                 model_groups[key] = {}
-            
+  
             model_groups[key][data.runtime] = data
-        
+  
         # 整理数据
         for (model_name, precision), runtimes in model_groups.items():
             if 'WASM' in runtimes and 'Native' in runtimes:
@@ -7344,50 +7411,50 @@ class AIPerformanceAnalyzer:
                 native_inference.append(runtimes['Native'].inference_time_ms)
                 wasm_memory.append(runtimes['WASM'].memory_mb)
                 native_memory.append(runtimes['Native'].memory_mb)
-        
+  
         # 创建图表
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-        
+  
         # 推理时间对比
         x = np.arange(len(models))
         width = 0.35
-        
+  
         ax1.bar(x - width/2, native_inference, width, label='原生')
         ax1.bar(x + width/2, wasm_inference, width, label='WebAssembly')
-        
+  
         # 添加比率标签
         for i, (wasm, native) in enumerate(zip(wasm_inference, native_inference)):
             ratio = wasm / native
-            ax1.text(i, max(wasm, native) + 5, f'{ratio:.1f}x', 
+            ax1.text(i, max(wasm, native) + 5, f'{ratio:.1f}x',
                      ha='center', va='bottom', fontweight='bold')
-        
+  
         ax1.set_xticks(x)
         ax1.set_xticklabels([f"{m}\n({p})" for m, p in zip(models, precision_labels)])
         ax1.set_ylabel('推理时间 (ms)')
         ax1.set_title('WebAssembly vs 原生推理时间')
         ax1.legend()
         ax1.grid(True, axis='y', linestyle='--', alpha=0.7)
-        
+  
         # 内存使用对比
         ax2.bar(x - width/2, native_memory, width, label='原生')
         ax2.bar(x + width/2, wasm_memory, width, label='WebAssembly')
-        
+  
         # 添加比率标签
         for i, (wasm, native) in enumerate(zip(wasm_memory, native_memory)):
             ratio = wasm / native
-            ax2.text(i, max(wasm, native) + 5, f'{ratio:.1f}x', 
+            ax2.text(i, max(wasm, native) + 5, f'{ratio:.1f}x',
                      ha='center', va='bottom', fontweight='bold')
-        
+  
         ax2.set_xticks(x)
         ax2.set_xticklabels([f"{m}\n({p})" for m, p in zip(models, precision_labels)])
         ax2.set_ylabel('内存使用 (MB)')
         ax2.set_title('WebAssembly vs 原生内存使用')
         ax2.legend()
         ax2.grid(True, axis='y', linestyle='--', alpha=0.7)
-        
+  
         plt.tight_layout()
         return plt
-    
+  
     def analyze_operation_efficiency(self) -> pd.DataFrame:
         """分析不同操作类型的WebAssembly执行效率"""
         # 这里简化实现，实际应用中需要更详细的操作分解
@@ -7400,18 +7467,18 @@ class AIPerformanceAnalyzer:
             "归一化",
             "Embedding查找",
         ]
-        
+  
         # 相对效率 (WASM vs Native)
         relative_efficiency_fp32 = [0.75, 0.70, 0.90, 0.80, 0.85, 0.78, 0.95]
         relative_efficiency_int8 = [0.82, 0.75, 0.95, 0.85, 0.90, 0.80, 0.97]
-        
+  
         # 相对内存占用
         relative_memory_fp32 = [1.15, 1.10, 1.05, 1.20, 1.10, 1.15, 1.05]
         relative_memory_int8 = [1.10, 1.08, 1.02, 1.15, 1.05, 1.10, 1.02]
-        
+  
         # SIMD加速倍数
         simd_speedup = [4.5, 3.8, 2.2, 4.2, 1.8, 2.5, 1.5]
-        
+  
         # 创建DataFrame
         result = pd.DataFrame({
             '操作类型': operation_types
@@ -7676,6 +7743,7 @@ class AIPerformanceAnalyzer:
         return framework
 
 # 使用示例
+
 def run_analysis():
     analyzer = AIPerformanceAnalyzer()
     analyzer.load_sample_data()
@@ -7711,6 +7779,7 @@ def run_analysis():
 
 if __name__ == "__main__":
     run_analysis()
+
 ```
 
 WebAssembly在AI领域的主要优势是提供了跨平台、安全且可移植的执行环境。

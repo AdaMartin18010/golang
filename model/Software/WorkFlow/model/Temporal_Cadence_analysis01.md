@@ -32,19 +32,6 @@
   - [1.8 7. 理论结论](#7-理论结论)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Temporal和Cadence工作流引擎的形式理论分析](#temporal和cadence工作流引擎的形式理论分析)
@@ -102,6 +89,7 @@ s₀ ∈ S: 初始状态
 F ⊆ S: 终止状态集合
 C: 补偿操作映射
 H: 执行历史追踪函数
+
 ```
 
 ## 1.3 2. Temporal与Cadence的基础形式模型
@@ -119,6 +107,7 @@ D: 决策点集合
 T: 定时器操作集合
 V: 版本集合
 P: 策略集合
+
 ```
 
 ### 1.3.2 基本操作语义
@@ -129,6 +118,7 @@ P: 策略集合
 执行规则 R₁: (s, StartWorkflow(w)) → (s', WorkflowStarted(id))
 执行规则 R₂: (s, CompleteActivity(id,result)) → (s', ActivityCompleted(id,result))
 执行规则 R₃: (s, TimeoutOccurred(timer)) → (s', HandleTimeout(timer))
+
 ```
 
 ## 1.4 3. 工作流模式形式分析与对比
@@ -140,6 +130,7 @@ P: 策略集合
 ```rust
 PersistentExecution(w) := ∀e ∈ Execution(w), ∀f ∈ Failures,
   State(w,t) ⋀ Occurs(f,t) ⋀ Recover(t') → ∃t" > t', State(w,t") = State(w,t)
+
 ```
 
 **Temporal实现**：
@@ -148,6 +139,7 @@ PersistentExecution(w) := ∀e ∈ Execution(w), ∀f ∈ Failures,
 PersistentExecution_Temporal(w) := 
   ∀a ∈ Activities(w), HistoryEvent(a,t) ∈ EventHistory → 
   ∃Replay(a) ∧ State(w) = Derive(EventHistory)
+
 ```
 
 **Cadence实现**：
@@ -156,6 +148,7 @@ PersistentExecution_Temporal(w) :=
 PersistentExecution_Cadence(w) := 
   ∀a ∈ Activities(w), HistoryEvent(a,t) ∈ EventHistory → 
   ∃Replay(a) ∧ State(w) = Derive(EventHistory)
+
 ```
 
 **形式等价性证明**：
@@ -168,6 +161,7 @@ PersistentExecution_Cadence(w) :=
 ```rust
 ActivityRetry(a,policy) := Failure(a,t) ∧ RetryPolicy(policy) → 
   ∃t' > t, Retry(a,t') ∧ SatisfiesPolicy(t'-t, policy)
+
 ```
 
 **Temporal实现**：
@@ -177,6 +171,7 @@ ActivityRetry_Temporal(a,policy) := Failure(a,t) →
   (RetryOptions(a).MaxAttempts > AttemptCount(a)) ∧
   BackoffInterval = CalculateBackoff(RetryOptions(a), AttemptCount(a)) ∧
   ScheduleRetry(a, t + BackoffInterval)
+
 ```
 
 **Cadence实现**：
@@ -186,6 +181,7 @@ ActivityRetry_Cadence(a,policy) := Failure(a,t) →
   (RetryPolicy(a).MaxAttempts > AttemptCount(a)) ∧
   BackoffInterval = CalculateBackoff(RetryPolicy(a), AttemptCount(a)) ∧
   ScheduleRetry(a, t + BackoffInterval)
+
 ```
 
 **形式差异**：
@@ -193,6 +189,7 @@ ActivityRetry_Cadence(a,policy) := Failure(a,t) →
 
 ```rust
 ∃p ∈ RetryOptions_Temporal, ¬∃p' ∈ RetryPolicy_Cadence, Equivalent(p, p')
+
 ```
 
 ### 1.4.3 可查询性与信号模式
@@ -205,6 +202,7 @@ Queryable(w) := ∀q ∈ Queries, ∀s ∈ States(w),
 
 Signalable(w) := ∀sig ∈ Signals, ∀s ∈ States(w),
   ∃δ: States(w) × Signals → States(w), Valid(δ(s, sig))
+
 ```
 
 **Temporal实现**：
@@ -217,6 +215,7 @@ Query_Temporal(w, q) := ∃Handler(q) ∈ w,
 Signal_Temporal(w, sig, data) := ∃Handler(sig) ∈ w,
   NewState = Handler(sig)(CurrentState(w), data) ∧
   UpdateWorkflowState(w, NewState)
+
 ```
 
 **Cadence实现**：
@@ -229,6 +228,7 @@ Query_Cadence(w, q) := ∃Handler(q) ∈ w,
 Signal_Cadence(w, sig, data) := ∃Handler(sig) ∈ w,
   NewState = Handler(sig)(CurrentState(w), data) ∧
   UpdateWorkflowState(w, NewState)
+
 ```
 
 **形式等价性**：
@@ -243,6 +243,7 @@ SubWorkflow(parent, child) := ∃Start: Workflows → WorkflowRuns,
   ∃Complete: WorkflowRuns → Results,
   ∃parent_state ∈ States(parent), child_run = Start(child),
   parent_state' = Update(parent_state, Complete(child_run))
+
 ```
 
 **Temporal实现**：
@@ -252,6 +253,7 @@ SubWorkflow_Temporal(parent, child, childId) :=
   ExecuteChild(parent, child, options) ∧
   ∃option ∈ options, ParentClosePolicy(option) ∈ {Terminate, Abandon, RequestCancel} ∧
   (Completed(parent) → ApplyPolicy(child, ParentClosePolicy))
+
 ```
 
 **Cadence实现**：
@@ -260,6 +262,7 @@ SubWorkflow_Temporal(parent, child, childId) :=
 SubWorkflow_Cadence(parent, child, childId) := 
   ExecuteChild(parent, child, options) ∧
   (Completed(parent) → Terminate(child))  // 简化版本
+
 ```
 
 **形式差异**：
@@ -267,6 +270,7 @@ Temporal在父工作流终止时提供了更丰富的子工作流处理策略，
 
 ```rust
 |ParentClosePolicies_Temporal| > |ParentClosePolicies_Cadence|
+
 ```
 
 ### 1.4.5 版本控制模式
@@ -277,6 +281,7 @@ Temporal在父工作流终止时提供了更丰富的子工作流处理策略，
 VersionControl(w, change) := ∃GetVersion: Workflows × Changes → Versions,
   v = GetVersion(w, change) ∧
   ExecutionPath(w) = Select(Paths(w), v)
+
 ```
 
 **Temporal实现**：
@@ -285,6 +290,7 @@ VersionControl(w, change) := ∃GetVersion: Workflows × Changes → Versions,
 VersionControl_Temporal(w, change, id) := 
   v = workflow.GetVersion(changeId, defaultVersion, maxVersion) ∧
   Branch(v, defaultVersion, maxVersion)
+
 ```
 
 **Cadence实现**：
@@ -293,6 +299,7 @@ VersionControl_Temporal(w, change, id) :=
 VersionControl_Cadence(w, change, id) := 
   v = workflow.GetVersion(changeId, defaultVersion, maxVersion) ∧
   Branch(v, defaultVersion, maxVersion)
+
 ```
 
 **形式等价性**：
@@ -307,6 +314,7 @@ VersionControl_Cadence(w, change, id) :=
 ```rust
 Saga(w) := ∀a ∈ Activities(w), ∃comp_a ∈ CompensatingActivities,
   Failure(a_i) → Execute(comp_a_i) ∧ ... ∧ Execute(comp_a_1)
+
 ```
 
 **Temporal实现**：
@@ -316,6 +324,7 @@ Saga_Temporal(w) :=
   CreateSagaActivities(activities, compensations) ∧
   ∀i, Failure(activities[i]) → 
     ∀j ∈ [i-1, 0], Execute(compensations[j])
+
 ```
 
 **Cadence实现**：
@@ -325,6 +334,7 @@ Saga_Cadence(w) :=
   CreateSagaActivities(activities, compensations) ∧
   ∀i, Failure(activities[i]) → 
     ∀j ∈ [i-1, 0], Execute(compensations[j])
+
 ```
 
 **形式等价性**：
@@ -337,6 +347,7 @@ Saga_Cadence(w) :=
 ```rust
 Schedule(spec) := ∀t ∈ Time, Matches(t, spec) → 
   Start(targetWorkflow, t)
+
 ```
 
 **Temporal实现**：
@@ -347,6 +358,7 @@ Schedule_Temporal(spec, action) :=
   ∀t, Matches(t, spec.Calendar || spec.Interval) →
     Execute(action) ∧
     UpdateScheduleState(t, result)
+
 ```
 
 **Cadence缺失**：
@@ -356,6 +368,7 @@ Cadence没有内置的调度功能，需要通过外部调度器实现类似功�
 Schedule_Cadence_External(spec, action) :=
   ∃ExternalScheduler, ExternalScheduler.Schedule(spec, 
     () => CadenceClient.StartWorkflow(action))
+
 ```
 
 **形式差异**：
@@ -364,6 +377,7 @@ Schedule_Cadence_External(spec, action) :=
 ```rust
 Schedule ∈ FirstClassConcepts_Temporal ∧
 Schedule ∉ FirstClassConcepts_Cadence
+
 ```
 
 ### 1.5.3 继续执行（Continue-As-New）模式
@@ -374,6 +388,7 @@ Schedule ∉ FirstClassConcepts_Cadence
 ContinueAsNew(w, state) := ∃NewExecution: Workflows × States → Executions,
   Terminate(w) ∧ e' = NewExecution(w, state) ∧
   InitialState(e') = state
+
 ```
 
 **Temporal实现**：
@@ -383,6 +398,7 @@ ContinueAsNew_Temporal(w, args) :=
   workflow.ContinueAsNew(workflow.GetInfo().WorkflowType, args) ∧
   TerminateCurrent(w) ∧
   StartNew(w.Type, args)
+
 ```
 
 **Cadence实现**：
@@ -392,6 +408,7 @@ ContinueAsNew_Cadence(w, args) :=
   workflow.ContinueAsNew(args) ∧
   TerminateCurrent(w) ∧
   StartNew(w.Type, args)
+
 ```
 
 **形式等价性**：
@@ -405,6 +422,7 @@ ContinueAsNew_Cadence(w, args) :=
 SearchVisibility(w) := ∃Index: Workflows → SearchAttributes,
   ∃Query: SearchAttributes → WorkflowSet,
   ∀attr ∈ SearchAttributes(w), Query(attr) ⊇ {w}
+
 ```
 
 **Temporal实现**：
@@ -413,6 +431,7 @@ SearchVisibility(w) := ∃Index: Workflows → SearchAttributes,
 SearchVisibility_Temporal(w, attr) := 
   workflow.UpsertSearchAttributes(attr) ∧
   ∀q ∈ Queries(attr), ListWorkflows(q) ⊇ {w}
+
 ```
 
 **Cadence实现**：
@@ -421,6 +440,7 @@ SearchVisibility_Temporal(w, attr) :=
 SearchVisibility_Cadence(w, attr) := 
   workflow.UpsertSearchAttributes(attr) ∧
   ∀q ∈ Queries(attr), ListOpenWorkflows(q) ⊇ {w if Open(w)}
+
 ```
 
 **形式差异**：
@@ -429,6 +449,7 @@ Temporal的搜索可见性更强大，支持对已关闭的工作流执行高级
 ```rust
 ∃q ∈ Queries_Temporal, ClosedWorkflows ∩ Query(q) ≠ ∅ ∧
 ∀q' ∈ Queries_Cadence, ClosedWorkflows ∩ Query(q') = ∅
+
 ```
 
 ## 1.6 5. 形式化属性与保证
@@ -441,6 +462,7 @@ Temporal的搜索可见性更强大，支持对已关闭的工作流执行高级
 ```rust
 Theorem: ∀w ∈ Workflows, ∀H ∈ Histories,
   Replay(w, H) = Replay(w, H)
+
 ```
 
 **证明**：
@@ -459,6 +481,7 @@ Theorem: ∀w ∈ Workflows, ∀H ∈ Histories,
 ```rust
 Theorem: ∀w ∈ Workflows, ∀f ∈ Failures, ∃cp ∈ ConsistencyPoints,
   State(w, After(f)) = State(w, cp) 其中cp是中断前最后一个一致点
+
 ```
 
 **证明**：
@@ -476,6 +499,7 @@ Theorem: ∀w ∈ Workflows, ∀f ∈ Failures, ∃cp ∈ ConsistencyPoints,
 ```rust
 Theorem: ∀a ∈ Activities, ∀w ∈ Workflows,
   LogicalExecution(a, w) = 1 ∨ (LogicalExecution(a, w) > 1 ∧ Idempotent(a))
+
 ```
 
 **证明**：
@@ -493,6 +517,7 @@ Theorem: ∀a ∈ Activities, ∀w ∈ Workflows,
 
 ```rust
 ExprCom(System) = |{p ∈ Patterns | System ⊢ p}| / |Patterns|
+
 ```
 
 其中Patterns是工作流模式全集，System ⊢ p表示系统能原生表达模式p。
@@ -511,6 +536,7 @@ Temporal的表达能力形式上更完备，特别是在调度和高级父子工
 ```rust
 Safety(System) = ∀w ∈ Workflows, ∀e ∈ Executions(w), 
   ∀s ∈ States(e), Invariants(w) → Safe(s)
+
 ```
 
 **分析**：
@@ -529,6 +555,7 @@ Safety(System) = ∀w ∈ Workflows, ∀e ∈ Executions(w),
 Liveness(System) = ∀w ∈ Workflows, ∀e ∈ Executions(w),
   (∀f ∈ Failures, ∃r ∈ Recovery, Occurs(f) → Eventually(r)) ∧
   (Progress(w) → Eventually(Complete(w) ∨ Continue(w)))
+
 ```
 
 **分析**：
@@ -542,6 +569,7 @@ Temporal在调度方面的活性保证更强。
 ```rust
 Composability(System) = ∀w₁,w₂ ∈ Workflows, ∃op ∈ CompositionOperators,
   Valid(w₁) ∧ Valid(w₂) → Valid(op(w₁,w₂))
+
 ```
 
 **分析**：

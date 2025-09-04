@@ -231,6 +231,7 @@ classDiagram
     +float Value
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -260,6 +261,7 @@ sequenceDiagram
   P->>E: 事件记录
   P->>L: 日志采集
   D->>P: 数据分析
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -363,6 +365,7 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
+
 ```
 
 ---
@@ -466,6 +469,7 @@ graph TD
   EN --> A
   EN --> P
   EN --> CL
+
 ```
 
 ### 5.5 Golang代码示例
@@ -474,6 +478,7 @@ graph TD
 // 支付交易Prometheus监控
 var paymentCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "payment_total"})
 paymentCount.Set(1000000)
+
 ```
 
 ---
@@ -506,6 +511,7 @@ fintech-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -532,6 +538,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

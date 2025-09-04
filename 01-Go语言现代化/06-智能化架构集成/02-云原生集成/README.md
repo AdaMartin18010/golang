@@ -44,19 +44,6 @@
     - [1.6.2.10.4.4 **4. 运维自动化**](#**4-运维自动化**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.6.2.1.1 🎯 **核心概念**
 
 云原生集成是2025年软件架构的重要趋势，它将Go语言应用与云原生技术栈深度集成，包括Kubernetes Operator、Service Mesh、容器化部署等。通过云原生集成，我们能够构建高可用、可扩展、自管理的分布式系统。
@@ -126,6 +113,7 @@ spec:
                   type: string
                 resources:
                   type: object
+
 ```
 
 #### 1.6.2.1.3.1.2 **Operator控制器**
@@ -180,6 +168,7 @@ func (r *GoApplicationController) Reconcile(ctx context.Context, req ctrl.Reques
 
     return ctrl.Result{}, nil
 }
+
 ```
 
 ### 1.6.2.1.3.2 **2. Service Mesh集成**
@@ -223,6 +212,7 @@ spec:
       consecutiveErrors: 5
       interval: 10s
       baseEjectionTime: 30s
+
 ```
 
 #### 1.6.2.1.3.2.2 **Go应用集成**
@@ -356,6 +346,7 @@ func main() {
     app := NewGoApp()
     log.Fatal(app.Run(":8080"))
 }
+
 ```
 
 ### 1.6.2.1.3.3 **3. 容器化配置**
@@ -363,22 +354,28 @@ func main() {
 #### 1.6.2.1.3.3.1 **Dockerfile**
 
 ```dockerfile
+
 # 1.6.2.2 多阶段构建
+
 FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
 # 1.6.2.3 复制go mod文件
+
 COPY go.mod go.sum ./
 RUN go mod download
 
 # 1.6.2.4 复制源代码
+
 COPY . .
 
 # 1.6.2.5 构建应用
+
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 # 1.6.2.6 运行阶段
+
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
@@ -386,17 +383,22 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 # 1.6.2.7 从builder阶段复制二进制文件
+
 COPY --from=builder /app/main .
 
 # 1.6.2.8 暴露端口
+
 EXPOSE 8080
 
 # 1.6.2.9 健康检查
+
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
 # 1.6.2.10 运行应用
+
 CMD ["./main"]
+
 ```
 
 #### 1.6.2.10 **Kubernetes部署配置**
@@ -464,6 +466,7 @@ spec:
     port: 80
     targetPort: 8080
   type: ClusterIP
+
 ```
 
 ### 1.6.2.10 **4. Helm Chart结构**
@@ -482,6 +485,7 @@ go-app/
 │   ├── hpa.yaml
 │   └── serviceaccount.yaml
 └── charts/
+
 ```
 
 #### 1.6.2.10 **values.yaml**
@@ -530,6 +534,7 @@ istio:
     enabled: true
   destinationRule:
     enabled: true
+
 ```
 
 ## 1.6.2.10.1 🔧 **配置管理**
@@ -556,6 +561,7 @@ data:
     logging:
       level: info
       format: json
+
 ```
 
 ### 1.6.2.10.1.2 **2. Secret管理**
@@ -570,6 +576,7 @@ data:
   database-password: <base64-encoded-password>
   api-key: <base64-encoded-api-key>
   jwt-secret: <base64-encoded-jwt-secret>
+
 ```
 
 ## 1.6.2.10.2 📊 **监控和可观测性**
@@ -604,6 +611,7 @@ func init() {
     prometheus.MustRegister(httpRequestsTotal)
     prometheus.MustRegister(httpRequestDuration)
 }
+
 ```
 
 ### 1.6.2.10.2.2 **2. Jaeger追踪**
@@ -630,6 +638,7 @@ func initTracer() {
     )
     otel.SetTracerProvider(tp)
 }
+
 ```
 
 ## 1.6.2.10.3 🚀 **CI/CD流水线**
@@ -683,6 +692,7 @@ jobs:
     - name: Deploy to Kubernetes
       run: |
         kubectl set image deployment/go-app go-app=registry.example.com/go-app:${{ github.sha }}
+
 ```
 
 ## 1.6.2.10.4 🎯 **最佳实践**

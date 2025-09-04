@@ -39,6 +39,7 @@ impl<T> Vec<T> {
         // ...
     }
 }
+
 ```
 
 这里的 `new` 方法是一个态射，它从无类型（`()`）映射到 `Vec<T>` 类型。
@@ -57,6 +58,7 @@ impl Clone for MyStruct {
         MyStruct
     }
 }
+
 ```
 
 ### （四）Impl 作为态射实现
@@ -78,6 +80,7 @@ Impl 块用于为类型实现 Trait 中定义的态射规则。
 fn max<T: Ord>(x: T, y: T) -> T {
     if x > y { x } else { y }
 }
+
 ```
 
 这里的 `max` 函数接受两个实现了 `Ord` Trait 的参数，并返回较大的那个。
@@ -112,6 +115,7 @@ impl Draw for TextBox {
 fn draw_item(item: &dyn Draw) {
     item.draw();
 }
+
 ```
 
 这里的 `draw_item` 函数接受一个实现了 `Draw` Trait 的对象，并调用其 `draw` 方法。
@@ -128,6 +132,7 @@ fn draw_item(item: &dyn Draw) {
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
+
 ```
 
 这里的 `'a` 是一个生命周期参数，它确保了返回的引用与输入引用具有相同的生命周期。

@@ -209,6 +209,7 @@ func (fp *FactoryProducer) GetFactory(factoryType string) (AbstractFactory, erro
         return nil, fmt.Errorf("unknown factory type: %s", factoryType)
     }
 }
+
 ```
 
 ### 3.1.1.4.2 数据库抽象工厂
@@ -461,6 +462,7 @@ func (dfp *DatabaseFactoryProducer) GetFactory(dbType string) (DatabaseFactory, 
         return nil, fmt.Errorf("unsupported database type: %s", dbType)
     }
 }
+
 ```
 
 ### 3.1.1.4.3 UI组件抽象工厂
@@ -653,6 +655,7 @@ func (uifp *UIFactoryProducer) GetFactory(platform string) (UIFactory, error) {
         return nil, fmt.Errorf("unsupported platform: %s", platform)
     }
 }
+
 ```
 
 ## 3.1.1.5 4. 工程案例
@@ -902,6 +905,7 @@ func (mfp *MicroserviceFactoryProducer) GetFactory(domain string) (MicroserviceF
         return nil, fmt.Errorf("unsupported domain: %s", domain)
     }
 }
+
 ```
 
 ## 3.1.1.6 5. 批判性分析

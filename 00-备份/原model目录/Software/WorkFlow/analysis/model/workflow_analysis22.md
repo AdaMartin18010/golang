@@ -30,6 +30,7 @@ pub enum MinimalEffect {
     SimulatedHttpCall { url: String, body: String },
     // (No real network/DB calls initially)
 }
+
 ```
 
 **Cell 实现:** 提供 1-2 个简单的 Cell 实现，例如：

@@ -219,6 +219,7 @@ graph TD
     M --> T[1..=5]
     N --> U[&value]
     O --> V[n if n > 0]
+
 ```
 
 This comprehensive summary covers the syntax and usage of Rust's pattern matching,
@@ -408,6 +409,7 @@ fn main() {
     draw2(&x);
     draw2(&y);
 }
+
 ```
 
 在上面的代码中，`draw1` 和 `draw2` 函数接受 `Box<dyn Draw>` 和 `&dyn Draw` 形式的 trait object。
@@ -424,6 +426,7 @@ match x {
     SomeType => { /* 处理 SomeType */ },
     _ => { /* 处理其他类型 */ },
 }
+
 ```
 
 在上面的代码中，`SomeType` 是一个具体的类型，而 trait object 的具体类型在编译时是未知的，因此不能直接使用解构语法来匹配 trait object。
@@ -469,6 +472,7 @@ fn main() {
     draw1(&x);
     draw1(&y);
 }
+
 ```
 
 在上面的代码中，`downcast_ref` 方法用于尝试将 trait object 转换为具体的类型。

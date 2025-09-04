@@ -28,19 +28,6 @@
     - [11.4.1.8.3 技术栈](#技术栈)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.4.1.1 1. 概述
 
 大数据和数据分析领域对性能、内存效率和并发处理有极高要求，这正是Golang的优势所在。本分析涵盖数据仓库、流处理、数据湖、实时分析等核心领域。
@@ -208,6 +195,7 @@ func (la *LambdaArchitecture) Query(ctx context.Context, query *Query) (*QueryRe
     // 合并结果
     return la.servingLayer.MergeResults(speedResult, batchResult)
 }
+
 ```
 
 ### 11.4.1.3.2 Kappa架构
@@ -309,6 +297,7 @@ func (ka *KappaArchitecture) ReplayEvents(ctx context.Context, fromTimestamp tim
     
     return nil
 }
+
 ```
 
 ### 11.4.1.3.3 数据管道架构
@@ -459,6 +448,7 @@ func (dp *DataPipeline) executeGraph(ctx context.Context, graph *ExecutionGraph)
     
     return nil
 }
+
 ```
 
 ## 11.4.1.4 4. 核心组件实现
@@ -575,6 +565,7 @@ func (sp *StreamProcessor) processWindow(ctx context.Context, events []*DataEven
     
     return nil
 }
+
 ```
 
 ### 11.4.1.4.2 数据湖存储
@@ -730,6 +721,7 @@ func (dl *DataLake) ReadDataset(ctx context.Context, dataset string, filters []F
     
     return batches, nil
 }
+
 ```
 
 ### 11.4.1.4.3 查询引擎
@@ -843,6 +835,7 @@ func (qe *QueryEngine) analyzeQuery(ast *ASTNode) (*LogicalPlan, error) {
     analyzer := NewQueryAnalyzer(qe.catalog)
     return analyzer.Analyze(ast)
 }
+
 ```
 
 ## 11.4.1.5 5. 数据质量监控
@@ -1001,6 +994,7 @@ func (dqm *DataQualityMonitor) checkCompleteness(rule *DataQualityRule, data *Re
         CheckedAt:  time.Now(),
     }, nil
 }
+
 ```
 
 ## 11.4.1.6 6. 性能优化
@@ -1086,6 +1080,7 @@ func (op *ObjectPool) Get() interface{} {
 func (op *ObjectPool) Put(obj interface{}) {
     op.pool.Put(obj)
 }
+
 ```
 
 ### 11.4.1.6.2 并行处理优化
@@ -1204,6 +1199,7 @@ type ProcessResult[T any] struct {
     ChunkIndex int
     Results    []T
 }
+
 ```
 
 ## 11.4.1.7 7. 监控和可观测性
@@ -1290,6 +1286,7 @@ func (dpm *DataProcessingMetrics) SetQueueSize(size float64) {
 func (dpm *DataProcessingMetrics) SetThroughput(throughput float64) {
     dpm.throughput.Set(throughput)
 }
+
 ```
 
 ## 11.4.1.8 8. 总结

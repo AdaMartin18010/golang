@@ -17,6 +17,7 @@ anyhow = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 async-stream = "0.3"
+
 ```
 
 以下是完整的示例代码：
@@ -273,6 +274,7 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个示例展示了以下主要功能：
@@ -303,6 +305,7 @@ async fn main() -> anyhow::Result<()> {
 
 ```bash
 docker run --name redis-server -d -p 6379:6379 redis
+
 ```
 
 使用建议：

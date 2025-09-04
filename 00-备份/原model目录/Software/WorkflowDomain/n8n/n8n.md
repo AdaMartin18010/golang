@@ -29,6 +29,7 @@
 我将使用markdown格式，创建一个结构清晰的文档，
 包含标题、小标题、代码块、列表等。
 </think>
+
 ```
 
 ## 目录
@@ -84,6 +85,7 @@ n8n是一个功能强大的开源工作流自动化平台，采用现代化的�
 │              存储层                     │
 │     (SQLite/PostgreSQL/MySQL等)         │
 └────────────────────────────────────────┘
+
 ```
 
 n8n采用TypeScript编写，架构模式上结合了微服务与事件驱动设计，以实现高度可扩展性和灵活性。系统分为前端UI层、后端服务层、核心引擎和存储层，实现了关注点分离和模块化设计。
@@ -105,6 +107,7 @@ interface IWorkflow {
   createdAt: Date;
   updatedAt: Date;
 }
+
 ```
 
 工作流包含触发节点(Trigger)和操作节点(Action)，定义了数据从输入到输出的完整处理过程。
@@ -125,6 +128,7 @@ interface INode {
   disabled?: boolean;
   notes?: string;
 }
+
 ```
 
 节点类型分为:
@@ -148,6 +152,7 @@ interface IConnections {
     }>;
   };
 }
+
 ```
 
 连接定义了源节点、目标节点以及数据传递的方式，是工作流图结构的边(Edge)。
@@ -168,6 +173,7 @@ interface IExecutionData {
   data: IRunExecutionData;
   status: ExecutionStatus;
 }
+
 ```
 
 执行状态包括：等待中、运行中、已成功、已失败等，系统会记录每个节点的输入输出数据和执行时间。
@@ -187,6 +193,7 @@ n8n采用"流水线"式的数据处理模型，数据从触发节点开始，按
 ┌──────────────────────────────────────────┐
 │              数据项(items)                │
 └──────────────────────────────────────────┘
+
 ```
 
 数据项(items)是n8n中基本的数据传递单位，采用JSON格式，在节点间传递并被转换。
@@ -197,6 +204,7 @@ interface INodeExecutionData {
   binary?: IBinaryData;
   pairedItem?: IPairedItemData;
 }
+
 ```
 
 ### 3.2 状态管理
@@ -214,6 +222,7 @@ interface IExecutionContext {
   sessionId?: string;
   executionId?: string;
 }
+
 ```
 
 ### 3.3 错误处理机制
@@ -231,6 +240,7 @@ interface INodeErrorHandling {
   maxTries?: number;
   retryDelay?: number;
 }
+
 ```
 
 ## 4. 组合与嵌套关系
@@ -252,6 +262,7 @@ const workflow = {
     'node2': { main: [{ node: 'node3', type: 'main', index: 0 }] }
   }
 };
+
 ```
 
 ### 4.2 并行执行
@@ -278,6 +289,7 @@ const workflow = {
     'node2B': { main: [{ node: 'node3', type: 'main', index: 1 }] }
   }
 };
+
 ```
 
 ### 4.3 条件分支
@@ -303,6 +315,7 @@ const workflow = {
     }
   }
 };
+
 ```
 
 ### 4.4 循环结构
@@ -325,6 +338,7 @@ const workflow = {
     'node2': { main: [{ node: 'node4', type: 'main', index: 1 }] } // 循环完成后连接
   }
 };
+
 ```
 
 ### 4.5 子工作流
@@ -354,6 +368,7 @@ const mainWorkflow = {
   ],
   connections: {/* ... */}
 };
+
 ```
 
 ## 5. 代码实现示例
@@ -451,6 +466,7 @@ const workflow = {
     timezone: 'Asia/Shanghai'
   }
 };
+
 ```
 
 ### 5.2 自定义节点开发
@@ -533,6 +549,7 @@ export class MyCustomNode implements INodeType {
     return [returnData];
   }
 }
+
 ```
 
 ### 5.3 工作流执行
@@ -577,6 +594,7 @@ async function executeWorkflow() {
 }
 
 executeWorkflow();
+
 ```
 
 ## 6. 工作流形式转换
@@ -591,6 +609,7 @@ n8n的可视化编辑器和JSON定义之间存在双向映射：
 │   可视化编辑器    │ ←─────→ │    JSON定义      │
 │                  │         │                  │
 └──────────────────┘         └──────────────────┘
+
 ```
 
 用户在可视化编辑器中的每一次操作都会转换为对应的JSON定义变更，反之亦然。这种双向映射保证了两种表达形式的一致性。
@@ -627,6 +646,7 @@ function visualToJson(visualElements) {
   
   return { nodes, connections };
 }
+
 ```
 
 ### 6.2 跨平台工作流迁移
@@ -692,6 +712,7 @@ function mapZapierTriggerType(zapierType) {
   
   return typeMap[zapierType] || 'n8n-nodes-base.noOp';
 }
+
 ```
 
 ## 7. 高级特性与模式
@@ -720,6 +741,7 @@ const eventDrivenWorkflow = {
   ],
   connections: {/* ... */}
 };
+
 ```
 
 事件驱动模式的优势在于实时响应和松耦合架构，适合构建反应式系统。
@@ -768,6 +790,7 @@ const asyncWorkflow = {
   ],
   connections: {/* ... */}
 };
+
 ```
 
 异步执行模式允许工作流在长时间运行的任务完成后继续执行，而不会阻塞系统资源。
@@ -864,6 +887,7 @@ const dataTransformWorkflow = {
     'merge': { main: [{ node: 'aggregate', type: 'main', index: 0 }] }
   }
 };
+
 ```
 
 这种模式特别适合需要从多个来源收集、转换和聚合数据的场景，如数据集成和报表生成。
@@ -890,6 +914,7 @@ n8n的架构模型正在朝着以下方向演化：
 ├─────────────┴─────────────┴─────────────────┤
 │              混合模式支持                     │
 └─────────────────────────────────────────────┘
+
 ```
 
 n8n作为一个现代工作流编排平台，通过其灵活的架构和强大的扩展性，

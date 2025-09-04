@@ -41,19 +41,6 @@
     - [11.6.1.13.4 应用场景](#应用场景)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.6.1.1 目录
 
 1. [概述](#概述)
@@ -255,6 +242,7 @@ func partitionThreeWay(arr []int, pivot int) ([]int, []int) {
     }
     return left, right
 }
+
 ```
 
 ### 11.6.1.5.2 搜索算法优化
@@ -350,6 +338,7 @@ func min(a, b int) int {
     }
     return b
 }
+
 ```
 
 ## 11.6.1.6 数据结构优化
@@ -490,6 +479,7 @@ func (h *OptimizedHashMap) resize() {
         }
     }
 }
+
 ```
 
 ### 11.6.1.6.2 树结构优化
@@ -666,6 +656,7 @@ func compare(a, b interface{}) int {
     }
     return 0
 }
+
 ```
 
 ## 11.6.1.7 缓存优化
@@ -782,6 +773,7 @@ func merge(left, right []int) []int {
     
     return result
 }
+
 ```
 
 ## 11.6.1.8 并行算法
@@ -951,6 +943,7 @@ func parallelMerge(left, right []int) []int {
     
     return result
 }
+
 ```
 
 ### 11.6.1.8.2 并行矩阵算法
@@ -1060,6 +1053,7 @@ func ParallelPrefixSum(arr []int) []int {
     wg.Wait()
     return result
 }
+
 ```
 
 ## 11.6.1.9 Golang实现
@@ -1135,6 +1129,7 @@ func (ao *AlgorithmOptimizer) GetReport() *OptimizationReport {
     
     return report
 }
+
 ```
 
 ## 11.6.1.10 性能分析与测试
@@ -1264,6 +1259,7 @@ func BenchmarkHashMap(b *testing.B) {
         }
     })
 }
+
 ```
 
 ## 11.6.1.11 最佳实践
@@ -1291,6 +1287,7 @@ func SmartAlgorithmChoice(data []int, size int) []int {
         return ParallelQuickSort(data)
     }
 }
+
 ```
 
 ### 11.6.1.11.2 2. 缓存优化原则
@@ -1338,6 +1335,7 @@ func processBlock(arr [][]int, startI, startJ, blockSize int) {
         }
     }
 }
+
 ```
 
 ### 11.6.1.11.3 3. 并行化原则
@@ -1381,6 +1379,7 @@ func ParallelizationBestPractices() {
         }()
     }
 }
+
 ```
 
 ## 11.6.1.12 案例分析
@@ -1624,6 +1623,7 @@ func (pq *PriorityQueue) heapifyDown(index int) {
         index = smallest
     }
 }
+
 ```
 
 ## 11.6.1.13 总结

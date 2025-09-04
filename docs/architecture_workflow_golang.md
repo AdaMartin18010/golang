@@ -71,7 +71,9 @@
 工作流架构（Workflow Architecture）是一种用于自动化、编排和管理业务流程的系统架构。它将复杂业务流程拆解为一系列可编排的任务（Task/Activity），通过引擎自动调度、状态管理和容错恢复。
 
 - **Workflow Management Coalition (WfMC) 定义**：
+
   > 工作流是指部分或全部自动化的业务过程，在其中，文档、信息或任务在参与者之间根据一组预定义的规则进行传递。
+
   > ——[WfMC Reference Model](https://www.wfmc.org/)
 
 - **国际主流引擎**：Temporal、Cadence、Apache Airflow、Argo Workflows、Netflix Conductor。
@@ -155,6 +157,7 @@ classDiagram
     +string Value
     +time.Time Time
   }
+
 ```
 
 ### 1.3.3 典型数据流
@@ -178,6 +181,7 @@ sequenceDiagram
   T-->>WF: 任务执行结果
   WF->>S: 更新状态
   WF-->>E: 事件通知
+
 ```
 
 ### 1.3.4 Golang 领域模型代码示例
@@ -210,6 +214,7 @@ type State struct {
     Value string
     Time  time.Time
 }
+
 ```
 
 ---
@@ -229,6 +234,7 @@ type State struct {
 // Kafka 任务分发
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "workflow-tasks"})
 writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("TaskCreated")})
+
 ```
 
 ### 1.4.2 状态一致性与持久化
@@ -247,6 +253,7 @@ func SaveState(db *sql.DB, state *State) error {
     _, err := db.Exec("INSERT INTO workflow_state (id, value, time) VALUES (?, ?, ?)", state.ID, state.Value, state.Time)
     return err
 }
+
 ```
 
 ### 1.4.3 容错与恢复
@@ -267,6 +274,7 @@ for i := 0; i < maxRetry; i++ {
     }
     time.Sleep(backoff(i))
 }
+
 ```
 
 ### 1.4.4 可观测性与监控
@@ -283,6 +291,7 @@ for i := 0; i < maxRetry; i++ {
 import "github.com/prometheus/client_golang/prometheus"
 var taskCount = prometheus.NewCounter(prometheus.CounterOpts{Name: "workflow_task_total"})
 taskCount.Inc()
+
 ```
 
 ---
@@ -303,6 +312,7 @@ graph TD
   B --> E[Monitoring (Prometheus/Grafana)]
   C --> F[Worker Pool]
   F --> G[External Systems]
+
 ```
 
 - **Golang代码示例**：
@@ -314,6 +324,7 @@ func SampleWorkflow(ctx workflow.Context, input string) error {
     err := workflow.ExecuteActivity(ctx, SampleActivity, input).Get(ctx, nil)
     return err
 }
+
 ```
 
 ### 1.5.2 任务队列与Worker池
@@ -327,6 +338,7 @@ func SampleWorkflow(ctx workflow.Context, input string) error {
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "workflow-tasks", GroupID: "worker-group"})
 msg, _ := reader.ReadMessage(context.Background())
 processTask(msg.Value)
+
 ```
 
 ### 1.5.3 状态管理与一致性
@@ -341,6 +353,7 @@ func SaveSnapshot(state *State) error {
     // 序列化并持久化到存储
     return storage.Save(state)
 }
+
 ```
 
 ### 1.5.4 可观测性与监控
@@ -355,6 +368,7 @@ import "go.opentelemetry.io/otel"
 tracer := otel.Tracer("workflow-service")
 ctx, span := tracer.Start(context.Background(), "ExecuteTask")
 defer span.End()
+
 ```
 
 ### 1.5.5 案例分析：Temporal 工作流平台
@@ -384,6 +398,7 @@ workflow-demo/
 ├── scripts/            # 部署与运维脚本
 ├── build/              # Dockerfile、CI/CD配置
 └── README.md
+
 ```
 
 ### 1.6.2 关键代码片段
@@ -396,6 +411,7 @@ func SampleWorkflow(ctx workflow.Context, input string) error {
     err := workflow.ExecuteActivity(ctx, SampleActivity, input).Get(ctx, nil)
     return err
 }
+
 ```
 
 #### 1.6.2.2 Kafka 任务分发与消费
@@ -409,6 +425,7 @@ writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("TaskCrea
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "workflow-tasks", GroupID: "worker-group"})
 msg, _ := reader.ReadMessage(context.Background())
 processTask(msg.Value)
+
 ```
 
 #### 1.6.2.3 Prometheus 监控埋点
@@ -417,12 +434,15 @@ processTask(msg.Value)
 import "github.com/prometheus/client_golang/prometheus"
 var workflowCount = prometheus.NewCounter(prometheus.CounterOpts{Name: "workflow_started_total"})
 workflowCount.Inc()
+
 ```
 
 ### 1.6.3 CI/CD 配置（GitHub Actions 示例）
 
 ```yaml
+
 # 2 2 2 2 2 2 2 .github/workflows/ci.yml
+
 name: Go CI
 on:
   push:
@@ -440,6 +460,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---
@@ -549,6 +570,7 @@ func (sm *StateManager) RestoreFromCheckpoint(ctx context.Context, workflowID st
     
     return checkpoint.State, nil
 }
+
 ```
 
 ### 2.2.2 工作流编排与任务调度
@@ -662,6 +684,7 @@ func (we *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflow *Workflo
     
     return nil
 }
+
 ```
 
 ### 2.2.3 故障恢复与补偿机制
@@ -729,6 +752,7 @@ func (cm *CompensationManager) ExecuteCompensation(ctx context.Context, workflow
     
     return nil
 }
+
 ```
 
 ## 2.3 8. 相关架构主题
@@ -748,4 +772,4 @@ func (cm *CompensationManager) ExecuteCompensation(ctx context.Context, workflow
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

@@ -35,6 +35,7 @@ fn main() {
     let some_value: Option<i32> = Option::Some(10);
     let none_value: Option<i32> = Option::None;
 }
+
 ```
 
 如上所示，`Option<T>` 是一个泛型 `enum`，其中 `T` 是一个泛型类型参数。`Some(T)` 变体可以包含任何类型的值，而 `None` 表示没有值。
@@ -76,6 +77,7 @@ fn main() {
     text_msg.show(); // 输出: Message: Hello, world!
     num_msg.show();  // 输出: Number: 42
 }
+
 ```
 
 如上所示，我们为 `Message` `enum` 实现了 `Display` trait，使其能够通过 `show` 方法展示不同类型的消息。
@@ -96,6 +98,7 @@ enum Option<T> {
     Some(T),
     None,
 }
+
 ```
 
 在这个例子中，`Option<T>` 是一个泛型枚举，`T` 是一个泛型类型参数。`Some(T)` 变体可以包含任何类型的值，而 `None` 表示没有值。
@@ -105,6 +108,7 @@ enum Option<T> {
 ```rust
 let some_value: Option<i32> = Option::Some(10);
 let none_value: Option<i32> = Option::None;
+
 ```
 
 ### 支持 `impl Trait` 吗？
@@ -130,6 +134,7 @@ fn main() {
     let callback = Callback::DoSomething(|x| x * 2);
     println!("Result: {}", callback.invoke(5)); // 输出: Result: 10
 }
+
 ```
 
 在上面的例子中，`Callback` 的 `DoSomething` 变体接受一个实现了 `Fn(i32) -> i32` 的闭包或函数，而不需要显式指定具体的闭包类型。
@@ -153,6 +158,7 @@ enum Option<T> {
     Some(T),
     None,
 }
+
 ```
 
 这个 `Option<T>` 是一个泛型枚举，其中 `T` 是一个泛型类型参数，可用于表示任何类型。`Some(T)` 变体包含一个 `T` 类型的值，而 `None` 表示没有值。
@@ -166,6 +172,7 @@ enum Result<T, E> {
     Ok(T),
     Err(E),
 }
+
 ```
 
 这个 `Result<T, E>` 枚举是一个泛型枚举，`T` 表示成功时的值类型，`E` 表示错误类型。
@@ -188,6 +195,7 @@ fn main() {
         println!("Result message: {}", message);
     }
 }
+
 ```
 
 ### **总结

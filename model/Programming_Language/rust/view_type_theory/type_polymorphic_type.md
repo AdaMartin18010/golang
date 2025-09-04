@@ -46,19 +46,6 @@
     - [1.12.2 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [类型理论对于多态类型的定义和解释](#类型理论对于多态类型的定义和解释)
@@ -136,6 +123,7 @@ fn main() {
     print_value(42); // T为i32
     print_value("Hello"); // T为&str
 }
+
 ```
 
 在这个示例中，`print_value`函数可以接受任何实现了`Display`特征的类型。
@@ -168,6 +156,7 @@ public class Main {
         myDog.speak(); // 输出 "Dog barks"
     }
 }
+
 ```
 
 在这个示例中，`myDog`是`Animal`类型的引用，但它指向一个`Dog`对象，表现出子类型多态性。
@@ -195,6 +184,7 @@ int main() {
     printValue(3.14); // T为double
     printValue("Hello"); // T为const char*
 }
+
 ```
 
 在这个示例中，`printValue`函数可以接受任何类型的参数，表现出泛型多态性。
@@ -255,6 +245,7 @@ int main() {
     cout << add(5, 10) << endl; // 输出 15
     cout << add(3.5, 2.5) << endl; // 输出 6.0
 }
+
 ```
 
 在这个示例中，`add`函数是一个模板函数，可以接受不同类型的参数，编译器会为每种类型生成相应的代码。
@@ -294,6 +285,7 @@ public class Main {
         myCat.speak(); // 输出 "Cat meows"
     }
 }
+
 ```
 
 在这个示例中，`speak`方法的具体实现取决于对象的实际类型，表现出动态多态性。
@@ -311,6 +303,7 @@ public class Main {
 fn print_value<T: std::fmt::Display>(value: T) {
     println!("{}", value);
 }
+
 ```
 
 ### 1.9.2 避免过度使用多态
@@ -366,6 +359,7 @@ int main() {
     cout << max(3.5, 2.5) << endl; // 输出 3.5
     cout << max("apple", "banana") << endl; // 输出 "banana"
 }
+
 ```
 
 在这个示例中，`max`函数可以接受不同类型的参数，编译器会为每种类型生成相应的代码。
@@ -409,6 +403,7 @@ public class Main {
         System.out.println("Rectangle area: " + rectangle.area()); // 输出 Rectangle area: 24.0
     }
 }
+
 ```
 
 在这个示例中，`Shape`接口定义了一个`area`方法，`Circle`和`Rectangle`类实现了这个接口，表现出动态多态性。
@@ -435,6 +430,7 @@ dog = Dog()
 
 make_it_quack(duck)  # 输出 "Quack!"
 make_it_quack(dog)   # 输出 "Woof!"
+
 ```
 
 在这个示例中，`make_it_quack`函数接受任何具有`quack`方法的对象，表现出多态性。

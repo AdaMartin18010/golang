@@ -206,6 +206,7 @@ classDiagram
     +string Data
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -240,6 +241,7 @@ sequenceDiagram
   B->>D: 数据分析
   B->>L: 日志采集
   API->>N: API调用
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -328,6 +330,7 @@ type Event struct {
     Data string
     Time time.Time
 }
+
 ```
 
 ---
@@ -419,6 +422,7 @@ graph TD
   ES --> BS
   ES --> TS
   ES --> CTS
+
 ```
 
 ### 5.5 Golang代码示例
@@ -427,6 +431,7 @@ graph TD
 // 区块高度Prometheus监控
 var blockHeight = prometheus.NewGauge(prometheus.GaugeOpts{Name: "block_height"})
 blockHeight.Set(1234567)
+
 ```
 
 ---
@@ -456,6 +461,7 @@ blockchain-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -482,6 +488,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

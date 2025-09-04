@@ -196,6 +196,7 @@
 - R：关系集合，R ⊆ E × E
 - B：边界集合，B ⊆ P(E)，定义系统与环境的分界
 - F：功能映射，F: E → Operations
+
 ```
 
 系统的集合论表示提供了一个基础框架，但难以表达动态行为和时间维度。
@@ -210,6 +211,7 @@
 
 系统路径：Path(v₁, vₙ) = {(v₁, v₂), (v₂, v₃), ..., (vₙ₋₁, vₙ)}
 连通性：Connected(S) ⟺ ∀v₁,v₂ ∈ V, ∃Path(v₁, v₂)
+
 ```
 
 图论表示能够直观地描述系统组件间的拓扑关系和信息流动路径。
@@ -226,6 +228,7 @@
 - 封闭性：∀s₁,s₂ ∈ S: s₁ ⊕ s₂ ∈ S 且 s₁ ⊗ s₂ ∈ S
 - 结合性：∀s₁,s₂,s₃ ∈ S: (s₁ ⊕ s₂) ⊕ s₃ = s₁ ⊕ (s₂ ⊕ s₃)
 - 分配性：∀s₁,s₂,s₃ ∈ S: s₁ ⊗ (s₂ ⊕ s₃) = (s₁ ⊗ s₂) ⊕ (s₁ ⊗ s₃)
+
 ```
 
 代数结构为系统操作提供了形式化基础，便于分析系统的组合性质和演化规律。
@@ -243,6 +246,7 @@
 
 子系统关系：SubSys(S₁, S₂) ⟺ ∃i: S₁ → S₂，使得 i 是单态射（单射）
 系统同构：Iso(S₁, S₂) ⟺ ∃f: S₁ → S₂, g: S₂ → S₁，使得 g ∘ f = id_{S₁} 且 f ∘ g = id_{S₂}
+
 ```
 
 范畴论视角尤其适合描述系统的层次结构和变换关系：
@@ -255,6 +259,7 @@
 - 保持组合：F(f ∘ g) = F(f) ∘ F(g)
 
 自然变换：η: F ⇒ G，定义了两个函子间的系统变换关系
+
 ```
 
 #### 1.2.1 **交换图示例**
@@ -268,6 +273,7 @@ SysCat₁ -------> SysCat₂
  f |                | F(f)
    v                v
    S₁ -------> F(S₁)
+
 ```
 
 范畴论的抽象性使其特别适合描述系统的一般性质和通用模式，而不受具体实现细节的影响。
@@ -278,6 +284,7 @@ SysCat₁ -------> SysCat₂
 
 ```math
 P ::= 0 | a.P | P + P | P∥P | P\a | P[f] | X
+
 ```
 
 其中：
@@ -295,6 +302,7 @@ P ::= 0 | a.P | P + P | P∥P | P\a | P[f] | X
 ```math
 - 跟踪等价：Traces(P) = Traces(Q)
 - 双模拟等价：P ∼ Q ⟺ ∀a, P' 如果 P --a--> P' 则 ∃Q' 使得 Q --a--> Q' 且 P' ∼ Q'，反之亦然
+
 ```
 
 #### 1.3.2 **通信顺序过程(CSP)示例**
@@ -305,6 +313,7 @@ P ::= 0 | a.P | P + P | P∥P | P\a | P[f] | X
 Producer = produce.channel!item → Producer
 Consumer = channel?item.consume → Consumer
 System = (Producer ∥ Consumer) \ {channel}
+
 ```
 
 过程代数为系统行为提供了精确的操作语义，便于分析系统的并发性、死锁和活锁等性质。
@@ -317,6 +326,7 @@ System = (Producer ∥ Consumer) \ {channel}
 
 ```math
 φ ::= p | ¬φ | φ ∧ φ | φ ∨ φ | Xφ | Fφ | Gφ | φUφ
+
 ```
 
 其中：
@@ -331,6 +341,7 @@ System = (Producer ∥ Consumer) \ {channel}
 
 ```math
 φ ::= p | ¬φ | φ ∧ φ | φ ∨ φ | AXφ | EXφ | AFφ | EFφ | AGφ | EGφ | A[φUφ] | E[φUφ]
+
 ```
 
 其中A表示"所有路径"，E表示"存在路径"。
@@ -341,6 +352,7 @@ System = (Producer ∥ Consumer) \ {channel}
 - 安全性：AG(¬deadlock) - 系统永远不会死锁
 - 活性：AF(request → AF response) - 每个请求最终会得到响应
 - 公平性：AG(enabled → AF executed) - 如果动作持续可执行，最终会被执行
+
 ```
 
 时序逻辑为系统的时间性质提供了严格的形式化表达，是验证系统动态行为的强大工具。
@@ -364,6 +376,7 @@ System = (Producer ∥ Consumer) \ {channel}
 边界定义：Boundary(A) = Closure(A) ∩ Closure(S\A)
 内部定义：Interior(A) = {x ∈ A | ∃U ∈ 𝒯, x ∈ U ⊆ A}
 外部定义：Exterior(A) = Interior(S\A)
+
 ```
 
 #### 2.1.2 **边界代数**
@@ -379,6 +392,7 @@ System = (Producer ∥ Consumer) \ {channel}
 - complement(b) = 系统边界减去b
 - restrict(b, r) = 基于约束r缩小边界b
 - extend(b, e) = 基于扩展e增大边界b
+
 ```
 
 #### 2.1.3 **边界矩阵表示**
@@ -395,6 +409,7 @@ b_{ij} =
 - 对称性：B是对称矩阵 ⟺ 边界关系是无向的
 - 连通性：矩阵B的传递闭包表示可达性
 - 边界强度：可以用加权矩阵表示，B = [w_{ij}]_{n×n}，w_{ij}表示边界强度
+
 ```
 
 ### 2.2 边界映射与函子转换
@@ -410,6 +425,7 @@ b_{ij} =
 
 边界增强映射g满足：
 ∀b ∈ B₁, ∃b' ∈ B₂: g(b) ⊇ b'
+
 ```
 
 #### 2.2.2 **边界函子**
@@ -422,6 +438,7 @@ b_{ij} =
 函子性质：
 - F(id_S) = id_{F(S)}
 - F(g ∘ f) = F(g) ∘ F(f)
+
 ```
 
 #### 2.2.3 **边界自然变换**
@@ -430,6 +447,7 @@ b_{ij} =
 自然变换η: F ⇒ G，其中F和G是边界函子：
 - 对每个系统S，有边界映射η_S: F(S) → G(S)
 - 对每个系统映射f: S₁ → S₂，下图交换：
+
 ```
 
 ```math
@@ -438,6 +456,7 @@ b_{ij} =
     F(f)|                     |G(f)
        v                      v
      F(S₂) -----η_{S₂}----> G(S₂)
+
 ```
 
 自然变换表达了不同边界抽象层次之间的一致性关系。
@@ -456,6 +475,7 @@ b_{ij} =
 - 渗透率：PR(B) = Information_out / Information_in
 - 过滤率：FR(B) = 1 - PR(B)
 - 选择性：SL(B) = H(filtered) / H(total)
+
 ```
 
 #### 2.3.2 **马尔可夫边界模型**
@@ -469,6 +489,7 @@ b_{ij} =
 E[Permeability] = ∑_{i,j} π_i p_{ij} v_j，其中：
 - π_i是状态i的稳态概率
 - v_j是状态j允许通过的信息值
+
 ```
 
 #### 2.3.3 **连续边界渗透模型**
@@ -481,6 +502,7 @@ dp(t)/dt = α(t)p(t) + β(t)[1-p(t)]，其中：
 - β(t)是渗透衰减因子
 
 渗透性演化：p(t) = p(0)e^{∫α(t)dt} + ∫β(t)e^{∫α(τ)dτ}dt
+
 ```
 
 ### 2.4 多重边界的交叉复杂性
@@ -497,6 +519,7 @@ dp(t)/dt = α(t)p(t) + β(t)[1-p(t)]，其中：
 交叉复杂度：
 - 局部复杂度：LCD(b) = |{b' ∈ B | b' ∩ b ≠ ∅}|
 - 全局复杂度：GCD(B) = |E_{cross}| / (|B| choose 2)
+
 ```
 
 #### 2.4.2 **边界交叉代数**
@@ -510,6 +533,7 @@ dp(t)/dt = α(t)p(t) + β(t)[1-p(t)]，其中：
 交叉特性：
 - 传输能力：TC(b₁, b₂) = ∫_{Interface(b₁,b₂)} TransferRate(x) dx
 - 冲突度：CD(b₁, b₂) = |Contradictions(b₁, b₂)| / |Constraints(b₁) ∪ Constraints(b₂)|
+
 ```
 
 #### 2.4.3 **边界网络理论**
@@ -524,6 +548,7 @@ dp(t)/dt = α(t)p(t) + β(t)[1-p(t)]，其中：
 - 中心性：Centrality(b) = ∑_{b' ∈ B} W(b, b')
 - 聚类系数：Clustering(b) = |{(b', b'') ∈ E | b' ∈ N(b), b'' ∈ N(b), (b', b'') ∈ E}| / (|N(b)| choose 2)
 - 社区结构：Communities(BN) = Partition(B)最大化模块度
+
 ```
 
 ## 3. 多层次系统形式化模型
@@ -541,6 +566,7 @@ dp(t)/dt = α(t)p(t) + β(t)[1-p(t)]，其中：
 - MConst：元约束集合，MConst: P(MC) → {True, False}
 
 元模型定义了系统建模的基本概念、关系和约束规则。
+
 ```
 
 #### 3.1.2 **模型层**
@@ -554,6 +580,7 @@ dp(t)/dt = α(t)p(t) + β(t)[1-p(t)]，其中：
 
 满足一致性条件：
 ∀c₁,c₂ ∈ C, (c₁,c₂) ∈ R ⇒ (μ(c₁),μ(c₂)) ∈ MR
+
 ```
 
 #### 3.1.3 **实例层**
@@ -567,6 +594,7 @@ dp(t)/dt = α(t)p(t) + β(t)[1-p(t)]，其中：
 
 满足一致性条件：
 ∀e₁,e₂ ∈ E, (e₁,e₂) ∈ Rel ⇒ (ι(e₁),ι(e₂)) ∈ R
+
 ```
 
 #### 3.1.4 **形式化示例**
@@ -589,6 +617,7 @@ E = {NginxServer, MySQLDB}
 Rel = {(NginxServer, MySQLDB)}
 ι(NginxServer) = WebServer
 ι(MySQLDB) = Database
+
 ```
 
 ### 3.2 层次间形式化映射
@@ -606,6 +635,7 @@ Rel = {(NginxServer, MySQLDB)}
 模型到实例映射 ι⁻: Model → P(Instance)
 - 概念映射：ι⁻(c) = {e ∈ E | ι(e) = c}
 - 关系映射：ι⁻(r) = {rel ∈ Rel | ι(rel) = r}
+
 ```
 
 #### 3.2.2 **映射特性**
@@ -618,6 +648,7 @@ Rel = {(NginxServer, MySQLDB)}
 一致性：Consistency(μ) = (C, R, Const)符合Meta定义的所有约束
 - 完全一致：Consistency(μ) = True
 - 部分一致：存在违反的约束
+
 ```
 
 #### 3.2.3 **复合映射**
@@ -628,6 +659,7 @@ Rel = {(NginxServer, MySQLDB)}
 
 可换性条件：
 ∀mc ∈ MC, e ∈ E: e ∈ (ι⁻ ∘ μ⁻)(mc) ⟺ μ(ι(e)) = mc
+
 ```
 
 #### 3.2.4 **双向映射**
@@ -640,6 +672,7 @@ Rel = {(NginxServer, MySQLDB)}
 双向一致性：
 ∀e ∈ E, c ∈ C: ι(e) = c ⇒ e ∈ ι⁻(c)
 ∀c ∈ C, mc ∈ MC: μ(c) = mc ⇒ c ∈ μ⁻(mc)
+
 ```
 
 ### 3.3 层次转换的信息保持与损失
@@ -666,6 +699,7 @@ IPR(Instance→Model) = I(Instance;Model) / H(Instance)
 
 信息损失率：
 ILR(Instance→Model) = 1 - IPR(Instance→Model) = H(Instance|Model) / H(Instance)
+
 ```
 
 #### 3.3.2 **形式化转换度量**
@@ -674,6 +708,7 @@ ILR(Instance→Model) = 1 - IPR(Instance→Model) = H(Instance|Model) / H(Instan
 精确度：Precision(F) = |{e ∈ Range(F) | e是正确变换}| / |Range(F)|
 完备度：Recall(F) = |{e ∈ Domain(F) | F(e)是正确变换}| / |Domain(F)|
 F1分数：F1(F) = 2 * Precision(F) * Recall(F) / (Precision(F) + Recall(F))
+
 ```
 
 #### 3.3.3 **转换保真度**
@@ -682,6 +717,7 @@ F1分数：F1(F) = 2 * Precision(F) * Recall(F) / (Precision(F) + Recall(F))
 结构保真度：StructFidelity(F) = |{(a,b) ∈ Rel | (F(a),F(b)) ∈ Rel'}| / |Rel|
 属性保真度：AttrFidelity(F) = Avg_{e∈Domain(F), a∈Attr(e)} Similarity(Val(e,a), Val'(F(e),a'))
 语义保真度：SemFidelity(F) = Semantic_similarity(Domain(F), Range(F))
+
 ```
 
 #### 3.3.4 **示例**
@@ -699,6 +735,7 @@ R = {(LoadBalancer,WebServer), (WebServer,Database)}
 
 信息损失：具体服务器数量和复制关系丢失了
 结构保真度：所有关系类型都得到保存，但实例级互连细节丢失
+
 ```
 
 ### 3.4 多层次系统的一致性验证
@@ -715,6 +752,7 @@ R = {(LoadBalancer,WebServer), (WebServer,Database)}
 模型-实例一致性：Cons_{I-M}(Instance,Model) ⟺
 ∀e₁,e₂ ∈ E, (e₁,e₂) ∈ Rel ⇒ (ι(e₁),ι(e₂)) ∈ R ∧
 ∀e ∈ E, Val(e)满足ι(e)定义的所有约束
+
 ```
 
 #### 3.4.2 **形式化验证方法**
@@ -728,6 +766,7 @@ SV(Instance,Model) ⟺ ∀e₁,e₂ ∈ E, (e₁,e₂) ∈ Rel ⇒ (ι(e₁),ι(
 
 约束满足性：
 CS(Instance,Model) ⟺ ∀const ∈ Const, Instance满足ι⁻(const)
+
 ```
 
 #### 3.4.3 **多层次一致性定理**
@@ -739,6 +778,7 @@ CS(Instance,Model) ⟺ ∀const ∈ Const, Instance满足ι⁻(const)
 Cons_{M-MM}(Model,Meta) ∧ Cons_{I-M}(Instance,Model) ⇒ Cons_{I-MM}(Instance,Meta)
 
 证明归纳：通过映射函数的传递性和一致性定义可以证明
+
 ```
 
 #### 3.4.4 **一致性维护机制**
@@ -751,6 +791,7 @@ Cons_{M-MM}(Model,Meta) ∧ Cons_{I-M}(Instance,Model) ⇒ Cons_{I-MM}(Instance,
 1. 更新所有依赖项：UpdateDep(e) = {e' ∈ E | Depends(e',e)}
 2. 验证模型一致性：Verify(ι(e),Model)
 3. 如必要，传播到模型：PropagateToModel(e,ι(e))
+
 ```
 
 ## 4. 多维度系统形式化表达
@@ -772,6 +813,7 @@ Cons_{M-MM}(Model,Meta) ∧ Cons_{I-M}(Instance,Model) ⇒ Cons_{I-MM}(Instance,
 
 连接关系：
 Connect ⊆ Ports × Roles，表示端口和角色的连接
+
 ```
 
 #### 4.1.2 **结构代数**
@@ -786,6 +828,7 @@ Connect ⊆ Ports × Roles，表示端口和角色的连接
 组合规则：
 Compose(S₁, S₂) = (Comp₁ ∪ Comp₂, Conn₁ ∪ Conn₂, Ports₁ ∪ Ports₂, Roles₁ ∪ Roles₂, Attach₁ ∪ Attach₂, Binds₁ ∪ Binds₂, Connect₁ ∪ Connect₂ ∪ NewConnect)
 其中NewConnect是基于接口匹配的新连接
+
 ```
 
 #### 4.1.3 **结构特性形式化**
@@ -795,6 +838,7 @@ Compose(S₁, S₂) = (Comp₁ ∪ Comp₂, Conn₁ ∪ Conn₂, Ports₁ ∪ Po
 内聚度：Cohesion(c) = |InternalConnect(c)| / (|Ports(c)| * (|Ports(c)|-1)/2)
 模块化程度：Modularity(S) = Avg_{c∈Comp} (Cohesion(c) / Coupling(c))
 分层度：Layering(S) = |{(c₁,c₂) | c₁,c₂ ∈ Comp, Layer(c₁) > Layer(c₂), Depends(c₁,c₂)}| / |Depends|
+
 ```
 
 #### 4.1.4 **拓扑性质**
@@ -804,6 +848,7 @@ Compose(S₁, S₂) = (Comp₁ ∪ Comp₂, Conn₁ ∪ Conn₂, Ports₁ ∪ Po
 直径：Diameter(S) = max_{c₁,c₂ ∈ Comp} ShortestPathLength(c₁,c₂)
 集中度：Centrality(c) = |{c' ∈ Comp | Depends(c',c)}| / (|Comp|-1)
 冗余度：Redundancy(S) = 1 - |MinCut(S)| / |Connect|
+
 ```
 
 ### 4.2 行为维度的形式化
@@ -823,6 +868,7 @@ Compose(S₁, S₂) = (Comp₁ ∪ Comp₂, Conn₁ ∪ Conn₂, Ports₁ ∪ Po
 
 转换表示：
 s --e--> s' ⟺ (s,e,s') ∈ Trans
+
 ```
 
 #### 4.2.2 **并发行为模型**
@@ -834,6 +880,7 @@ s --e--> s' ⟺ (s,e,s') ∈ Trans
 
 - 同步并行：B₁ ||_A B₂ = (States₁ × States₂, Init₁ × Init₂, Events₁ ∪ Events₂, Trans_||)
   其中A是同步事件集，Trans_|| 包含共同事件需同步进行的转换
+
 ```
 
 #### 4.2.3 **行为等价关系**
@@ -843,6 +890,7 @@ s --e--> s' ⟺ (s,e,s') ∈ Trans
 仿真关系：B₁ ≤_sim B₂ ⟺ ∀s₁∈States₁, ∃s₂∈States₂, s₁ sim s₂
 双模拟等价：B₁ ≈_bisim B₂ ⟺ ∃R⊆States₁×States₂, R是双模拟关系
 观察等价：B₁ ≈_obs B₂ ⟺ ∀o∈Observations, Prob(o|B₁) = Prob(o|B₂)
+
 ```
 
 #### 4.2.4 **时间行为形式化**
@@ -858,6 +906,7 @@ s --e--> s' ⟺ (s,e,s') ∈ Trans
 - 响应时间：RT(e₁,e₂) = sup{t₂-t₁ | s --e₁,t₁--> s' --e₂,t₂--> s''}
 - 吞吐量：TP(B) = lim_{T→∞} |Events_T| / T
 - 并发度：CD(B) = Avg_{t} |ActiveComponents(t)|
+
 ```
 
 ### 4.3 属性维度的形式化
@@ -877,6 +926,7 @@ s --e--> s' ⟺ (s,e,s') ∈ Trans
 Eval(S,a) = Metrics_a(S)，表示系统S关于属性a的评估值
 约束满足：Satisfies(S,c) ⟺ c(Eval(S,a)) = True
 整体效用：TotalUtil(S) = Util({Eval(S,a) | a ∈ Attr})
+
 ```
 
 #### 4.3.2 **资源模型**
@@ -891,6 +941,7 @@ Eval(S,a) = Metrics_a(S)，表示系统S关于属性a的评估值
 资源约束：
 ∀r ∈ Res, ∑_{c∈Comp} Allocate(c,r) ≤ Provide(Env,r)
 ∀c ∈ Comp, r ∈ Res, Allocate(c,r) ≥ Require(c,r)
+
 ```
 
 #### 4.3.3 **属性传播模型**
@@ -903,6 +954,7 @@ Eval(Compose(S₁,S₂),a) = Combine_a(Eval(S₁,a), Eval(S₂,a))
 - 可靠性：Combine_reliability(r₁,r₂) = r₁ * r₂ (串行) 或 1-(1-r₁)(1-r₂) (并行)
 - 响应时间：Combine_response(t₁,t₂) = t₁ + t₂ (串行) 或 max(t₁,t₂) (并行)
 - 安全性：Combine_security(s₁,s₂) = min(s₁,s₂) (最弱环节)
+
 ```
 
 #### 4.3.4 **属性权衡分析**
@@ -914,6 +966,7 @@ P_opt = {S ∈ SysSpace | ¬∃S'∈SysSpace, ∀a∈Attr, Eval(S',a) ≥ Eval(S
 多属性决策：
 MAUT(S) = ∑_{a∈Attr} w_a × Util_a(Eval(S,a))
 最优选择：S* = argmax_{S∈SysSpace} MAUT(S)
+
 ```
 
 ### 4.4 维度交叉空间的形式化表达
@@ -933,6 +986,7 @@ MAUT(S) = ∑_{a∈Attr} w_a × Util_a(Eval(S,a))
 
 交叉一致性：
 Consistent(s,b,q) ⟺ ∀c ∈ π(s,b,q), c得到满足
+
 ```
 
 #### 4.4.2 **维度协同关系**
@@ -945,6 +999,7 @@ Consistent(s,b,q) ⟺ ∀c ∈ π(s,b,q), c得到满足
 协同性条件：
 CoherencyTriangle ⟺ ∀s ∈ S, BQ(SB(s)) ≈ SQ(s)
 其中≈表示属性空间中的近似等价
+
 ```
 
 #### 4.4.3 **交叉属性推导**
@@ -958,6 +1013,7 @@ Quality(b) = {q ∈ Q | BehaviorImplies(b,q)}
 
 传递推导：
 Quality(s) = {q ∈ Q | ∃b ∈ Behavior(s), q ∈ Quality(b)}
+
 ```
 
 #### 4.4.4 **维度交叉冲突**
@@ -970,6 +1026,7 @@ Conflict(s,b,q) = {(c₁,c₂) | c₁,c₂ ∈ π(s,b,q), Contradictory(c₁,c�
 - 优先级解决：Priority(c₁) > Priority(c₂) ⇒ Choose(c₁)
 - 折衷解决：Compromise(c₁,c₂) = c'，c'是c₁和c₂的中间约束
 - 重构解决：Restructure(s,b,q) = (s',b',q')，使得Conflict(s',b',q') = ∅
+
 ```
 
 #### 4.4.5 **形式化示例**
@@ -992,6 +1049,7 @@ c₂：串行服务器处理限制响应时间
 
 解决方案：
 重构为s' = 增加服务器集群和负载均衡器
+
 ```
 
 ## 5. 系统边界的跨维度映射
@@ -1012,6 +1070,7 @@ c₂：串行服务器处理限制响应时间
 - 保持性：Preserving(f) ⟺ ∀b₁,b₂, Relation(b₁,b₂) ⇒ Relation(f(b₁),f(b₂))
 - 反射性：Reflective(f) ⟺ f(BoundaryOf(x)) = BoundaryOf(f(x))
 - 合成性：Compositional(f,g) ⟺ g ∘ f = DirectMap
+
 ```
 
 #### 5.1.2 **映射范畴**
@@ -1026,6 +1085,7 @@ c₂：串行服务器处理限制响应时间
 函子特性：
 - 维度函子F_D: SysCat → BoundCat_D将系统映射到特定维度的边界
 - 自然变换η: F_{D₁} ⇒ F_{D₂}表示维度间的边界转换
+
 ```
 
 #### 5.1.3 **边界相容性**
@@ -1039,6 +1099,7 @@ CompatibilityDegree(b_S, b_B) = Similarity(b_B, BoundaryMap_{S→B}(b_S))
 
 全局相容性：
 GlobalCompatibility = Avg_{(b_S,b_B)} CompatibilityDegree(b_S, b_B)
+
 ```
 
 ### 5.2 映射的保持性与变换性
@@ -1053,6 +1114,7 @@ GlobalCompatibility = Avg_{(b_S,b_B)} CompatibilityDegree(b_S, b_B)
 
 同态程度：
 HomomorphismDegree(f) = |{(x,y) ∈ B₁×B₁ | f(Operation(x,y)) = Operation'(f(x),f(y))}| / |B₁×B₁|
+
 ```
 
 #### 5.2.2 **结构保持特性**
@@ -1066,6 +1128,7 @@ ConnPreserving(f) ⟺ ∀x,y∈Domain(f), Connected(x,y) ⇒ Connected(f(x),f(y)
 
 层次保持：
 HierPreserving(f) ⟺ ∀x,y∈Domain(f), Level(x) < Level(y) ⇒ Level(f(x)) < Level(f(y))
+
 ```
 
 #### 5.2.3 **变换特性**
@@ -1079,6 +1142,7 @@ Abstracting(f) ⟺ ∀x∈Domain(f), Abstraction(f(x)) > Abstraction(x)
 
 重解释变换：
 Reinterpretation(f) ⟺ ∀x∈Domain(f), Domain(x) ≠ Domain(f(x))
+
 ```
 
 #### 5.2.4 **形式化示例**
@@ -1099,6 +1163,7 @@ BoundaryMap_{S→B}(b_S) = 基于接口定义的协议状态机
 变换特性：
 - 添加时间和并发约束
 - 添加状态依赖关系
+
 ```
 
 ### 5.3 多维映射的组合复杂性
@@ -1113,6 +1178,7 @@ BoundaryMap_{S→Q} = BoundaryMap_{B→Q} ∘ BoundaryMap_{S→B}
 
 一致性公理：
 ∀x, ||BoundaryMap_{S→Q}(x) - (BoundaryMap_{B→Q} ∘ BoundaryMap_{S→B})(x)|| < ε
+
 ```
 
 #### 5.3.2 **组合复杂度**
@@ -1125,6 +1191,7 @@ Complexity(g ∘ f) ≤ Complexity(g) + Complexity(f) + InteractionComplexity(g,
 
 交互复杂度：
 InteractionComplexity(g,f) = 函数g和f的交互复杂度
+
 ```
 
 #### 5.3.3 **映射网络**
@@ -1139,6 +1206,7 @@ Path(D₁, D₂) = 从D₁到D₂的映射序列
 
 最优映射路径：
 OptimalPath(D₁, D₂) = argmin_{p∈Path(D₁,D₂)} Complexity(p)
+
 ```
 
 #### 5.3.4 **多维组合分析**
@@ -1152,6 +1220,7 @@ Loss(g ∘ f) ≤ Loss(g) + Loss(f) - Overlap(Loss(g), Loss(f))
 
 映射链鲁棒性：
 Robustness(f₁ ∘ f₂ ∘ ... ∘ fₙ) = min_{i∈[1,n]} Robustness(fᵢ)
+
 ```
 
 ### 5.4 边界穿越的形式化证明
@@ -1169,6 +1238,7 @@ Postcondition(e, b) 表示实体e穿越边界b后的状态条件
 
 穿越规则：
 CrossingRule(e, b): Precondition(e, b) ⇒ Postcondition(e, b)
+
 ```
 
 #### 5.4.2 **穿越证明框架**
@@ -1181,6 +1251,7 @@ Hoare逻辑形式：
 1. 前提建立：⊢ InitialState(e) ⇒ Precondition(e, b)
 2. 规则应用：⊢ {Precondition(e, b)} Cross(e, b) {Postcondition(e, b)}
 3. 后验检查：⊢ Postcondition(e, b) ⇒ DesiredProperty
+
 ```
 
 #### 5.4.3 **穿越性质定理**
@@ -1193,6 +1264,7 @@ Conservative(b) ∧ Invariant(S) ∧ {Invariant(S)} Cross(e, b) {Postcondition(e
 ⇒ Invariant(S')
 
 其中S'是穿越后的系统状态
+
 ```
 
 #### 5.4.4 **多重边界穿越**
@@ -1209,6 +1281,7 @@ Conservative(b) ∧ Invariant(S) ∧ {Invariant(S)} Cross(e, b) {Postcondition(e
 
 复合边界穿越：
 {P} Cross(e, Compose(b₁, b₂, ..., bₙ)) {Q}
+
 ```
 
 #### 5.4.5 **形式化证明示例**
@@ -1233,6 +1306,7 @@ Postcondition(data, UI_Domain_Boundary) = IsValidEntity(entity) ∧ MeetsBusines
 1. 前提建立：输入验证确保WellFormedDTO和ValidatedInput
 2. 规则应用：映射逻辑和业务规则验证确保转换正确性
 3. 后验检查：验证实体满足所有领域规则和约束
+
 ```
 
 ## 6. 系统形式化的Rust实现
@@ -1248,10 +1322,10 @@ Rust的类型系统为系统边界的形式化实现提供了直接支持：
 trait BoundaryMapper<From, To> {
     // 跨越边界的转换函数
     fn map(&self, from: From) -> Result<To, BoundaryError>;
-    
+  
     // 判断值是否可以跨越边界
     fn can_cross(&self, from: &From) -> bool;
-    
+  
     // 获取边界描述
     fn boundary_description(&self) -> BoundaryDescription;
 }
@@ -1279,15 +1353,16 @@ impl<S, B> BoundaryMapper<S, B> for StructToBehaviorMapper<S, B> {
         }
         (self.behavior_generator)(from)
     }
-    
+  
     fn can_cross(&self, from: &S) -> bool {
         (self.structure_validator)(from)
     }
-    
+  
     fn boundary_description(&self) -> BoundaryDescription {
         self.description.clone()
     }
 }
+
 ```
 
 #### 6.1.2 **泛型约束作为边界守卫**
@@ -1295,6 +1370,7 @@ impl<S, B> BoundaryMapper<S, B> for StructToBehaviorMapper<S, B> {
 ```rust
 // 使用泛型约束实现系统边界的形式化
 trait StructureDomain
+
 ```rust
 // 使用泛型约束实现系统边界的形式化
 trait StructureDomain {}
@@ -1354,6 +1430,7 @@ trait BoundaryConstraint<T> {
     fn verify(value: &T) -> bool;
     fn description() -> &'static str;
 }
+
 ```
 
 ### 6.2 所有权模型与边界控制
@@ -1457,6 +1534,7 @@ trait CrossDomain<Source, Target> {
     
     fn current_domain(&self) -> TypeId;
 }
+
 ```
 
 ### 6.3 特质系统与系统接口形式化
@@ -1559,6 +1637,7 @@ impl<S, T> SystemBoundary<S, T> for DimensionalBoundary<S, T> {
         self.properties.clone()
     }
 }
+
 ```
 
 ### 6.4 代码示例：多层次系统模型
@@ -1905,6 +1984,7 @@ fn main() {
         println!("Successfully mapped instance to model");
     }
 }
+
 ```
 
 ## 7. 系统静态与动态分析的形式化方法
@@ -1924,6 +2004,7 @@ fn main() {
 
 静态分析的形式化表示：
 SA: Target × Properties → Results
+
 ```
 
 #### 7.1.2 **形式化验证技术**
@@ -1937,6 +2018,7 @@ TP(Axioms, Theorem) = Derivation 或 Counter-example
 
 抽象解释：
 AI(P, α) = α(Semantics(P))，其中α是抽象函数
+
 ```
 
 #### 7.1.3 **结构性质分析**
@@ -1950,6 +2032,7 @@ Cycles(S) = {c ⊆ Components | ∀a,b ∈ c, a →* b ∧ b →* a}
 
 层次违规检测：
 LayerViolations(S) = {(a,b) | Layer(a) > Layer(b) ∧ a依赖b}
+
 ```
 
 #### 7.1.4 **静态跨维度分析**
@@ -1963,6 +2046,7 @@ Compliance(S, Patterns) = {p ∈ Patterns | S matches p} / |Patterns|
 
 质量属性预测：
 QualityPredictor(S) = {(q, EstimatedValue(S,q)) | q ∈ QualityAttributes}
+
 ```
 
 ### 7.2 动态分析的形式化模型
@@ -1981,6 +2065,7 @@ QualityPredictor(S) = {(q, EstimatedValue(S,q)) | q ∈ QualityAttributes}
 
 动态分析表示：
 DA: System × Input → Observation → Evaluation
+
 ```
 
 #### 7.2.2 **执行跟踪形式化**
@@ -1997,6 +2082,7 @@ Paths(S) = {Trace(S, I) | I ∈ Inputs}
 
 覆盖率度量：
 Coverage(Paths, Target) = |{t ∈ Target | ∃p ∈ Paths, t在p中被覆盖}| / |Target|
+
 ```
 
 #### 7.2.3 **动态性能分析**
@@ -2010,6 +2096,7 @@ RU(S, I) = {(r, Usage(S, I, r, t)) | r ∈ Resources, t ∈ TimePoints}
 
 可扩展性分析：
 Scalability(S) = {(l, Performance(S, l)) | l ∈ LoadLevels}
+
 ```
 
 #### 7.2.4 **动态边界分析**
@@ -2023,6 +2110,7 @@ DataFlow(S, I) = {(d, path) | d是数据项，path是d在S中的传播路径}
 
 异常边界行为：
 AnomalyDetection(S, I) = {(b, a) | b是边界，a是在b处检测到的异常}
+
 ```
 
 ### 7.3 静态-动态分析的协同验证
@@ -2040,6 +2128,7 @@ AnomalyDetection(S, I) = {(b, a) | b是边界，a是在b处检测到的异常}
 
 集成函数：
 Integrate: Results_SA × Results_DA → IntegratedResults
+
 ```
 
 #### 7.3.2 **互补性原理**
@@ -2053,6 +2142,7 @@ Coverage(SA ∪ DA) ≥ max(Coverage(SA), Coverage(DA))
 
 误报减少：
 FalsePositives(SA ∩ DA) ≤ min(FalsePositives(SA), FalsePositives(DA))
+
 ```
 
 #### 7.3.3 **验证策略优化**
@@ -2065,6 +2155,7 @@ Schedule(P, Resources) = (SA_tasks, DA_tasks)，优化覆盖率和资源使用
 IterativeVerify(S, P) = S'，其中S'是经过迭代验证和修改的系统版本
 
 Evidence(S, p) = {(method, confidence) | method验证了性质p，confidence是可信度}
+
 ```
 
 #### 7.3.4 **形式化反例利用**
@@ -2078,6 +2169,7 @@ Localize(Issue_DA, S) = {locations | locations可能导致Issue_DA}
 
 修复验证：
 VerifyFix(S, fix, Issue) = SA(S') ∧ DA(S')，其中S'是应用fix后的系统
+
 ```
 
 ### 7.4 形式化分析的可靠性证明
@@ -2095,6 +2187,7 @@ Complete(A) ⟺ ∀p ∈ Properties, S满足p ⇒ A(S, p) = True
 
 终止性(Termination)：
 Terminates(A) ⟺ ∀S, p, A(S, p)在有限时间内完成
+
 ```
 
 #### 7.4.2 **可靠性证明框架**
@@ -2108,6 +2201,7 @@ Reliability(A) = P(A给出正确结果)
 
 不确定性量化：
 Uncertainty(A, S, p) = Confidence interval for A(S, p)
+
 ```
 
 #### 7.4.3 **错误界限理论**
@@ -2121,6 +2215,7 @@ AcceptableError(p) = 性质p允许的最大误差
 
 可靠性保证：
 ReliabilityGuarantee(A, ε) = P(|TrueValue(p) - A(S, p)| ≤ ε)
+
 ```
 
 #### 7.4.4 **方法验证与验证方法**
@@ -2134,6 +2229,7 @@ EmpiricalValidation(A) = 在基准系统集上评估A的性能
 
 验证方法的闭环：
 ValidationLoop = 设计 → 形式化 → 验证 → 改进 → 设计
+
 ```
 
 ## 8. 案例研究：形式化分析系统边界
@@ -2156,6 +2252,7 @@ Cluster(S, similarity) = {B₁, B₂, ..., Bₙ}，其中每个B是相似元素�
 
 结构边界识别：
 StructuralBoundaries(S) = {(C₁, C₂) | Connectivity(C₁, C₂) < Threshold}
+
 ```
 
 #### 8.1.2 **信息流边界**
@@ -2169,6 +2266,7 @@ FlowBoundaries(S) = {cut(S) | cut将S分为最小化跨边界流的子系统}
 
 边界阻抗：
 Impedance(B) = IncomingFlow(B) / OutgoingFlow(B)
+
 ```
 
 #### 8.1.3 **语义边界识别**
@@ -2182,6 +2280,7 @@ SemanticDistance(a, b) = 元素a和b之间的语义差异度量
 
 语义边界：
 SemanticBoundaries(S) = {(D₁, D₂) | SemanticDistance(D₁, D₂) > Threshold}
+
 ```
 
 #### 8.1.4 **多维边界协调**
@@ -2195,6 +2294,7 @@ BoundaryConsistency(S) = 跨维度边界的一致性度量
 
 协调边界集：
 CoordinatedBoundaries(S) = MaxConsistencySet(DimBoundaryMap(S))
+
 ```
 
 ### 8.2 形式化边界评估与优化
@@ -2212,6 +2312,7 @@ BoundaryCoupling(B₁, B₂) = CrossBoundaryConnections(B₁, B₂) / MaxPossibl
 
 边界稳定性：
 BoundaryStability(B, Changes) = 1 - |AffectedByChanges(B, Changes)| / |B|
+
 ```
 
 #### 8.2.2 **边界优化算法**
@@ -2225,6 +2326,7 @@ Adjust(B, Metrics) = B'，其中B'是基于质量度量调整的边界
 
 渐进式优化：
 ProgressiveOptimize(S, B, Steps) = 边界优化的渐进过程
+
 ```
 
 #### 8.2.3 **权衡分析**
@@ -2238,6 +2340,7 @@ MultiObjectiveOpt(S, B, Objectives) = ParetoOptimalBoundaries(S)
 
 边界敏感性：
 BoundarySensitivity(B, Parameter) = ∂Quality(B) / ∂Parameter
+
 ```
 
 #### 8.2.4 **演化分析**
@@ -2251,6 +2354,7 @@ StabilityForecast(B, Changes) = 预测B在预期变化下的稳定性
 
 适应性边界：
 AdaptiveBoundary(B, Context) = 随环境变化自适应调整的边界
+
 ```
 
 ### 8.3 边界控制与执行机制
@@ -2268,6 +2372,7 @@ AdaptiveBoundary(B, Context) = 随环境变化自适应调整的边界
 
 访问控制矩阵：
 ACM[i, j] = 组件i对边界j的访问权限级别
+
 ```
 
 #### 8.3.2 **编译时边界检查**
@@ -2281,6 +2386,7 @@ CompileTimeCheck(S, B) = {violations | violations是编译时检测到的边界�
 
 静态边界保证：
 StaticBoundaryGuarantee(S, B) = 边界B在系统S中静态验证的保证级别
+
 ```
 
 #### 8.3.3 **运行时边界监控**
@@ -2294,6 +2400,7 @@ ViolationDetect(S, B, Execution) = {(t, e, violation) | 在时间t检测到实�
 
 边界自适应：
 BoundaryAdapt(B, Context) = 基于运行时上下文调整边界B的策略
+
 ```
 
 #### 8.3.4 **形式化契约**
@@ -2307,6 +2414,7 @@ ContractVerify(S, C) = 验证系统S是否满足契约C
 
 契约驱动开发：
 ContractDrivenDevelopment = 基于形式化边界契约的开发方法
+
 ```
 
 ### 8.4 跨边界通信与协作模式
@@ -2325,6 +2433,7 @@ ContractDrivenDevelopment = 基于形式化边界契约的开发方法
 
 通信形式化：
 Communicate(s, r, d) = s经由适当通道向r发送d的过程
+
 ```
 
 #### 8.4.2 **边界连接器**
@@ -2338,6 +2447,7 @@ ConnectorSemantics(C) = 连接器C的形式化交互语义
 
 连接器合成：
 ComposeConnectors(C₁, C₂, ..., Cₙ) = 复合连接器的行为语义
+
 ```
 
 #### 8.4.3 **边界协议**
@@ -2351,6 +2461,7 @@ Compliance(S, P) = 系统S对协议P的遵从程度
 
 协议兼容性：
 Compatible(P₁, P₂) = 协议P₁和P₂是否兼容
+
 ```
 
 #### 8.4.4 **跨层次交互**
@@ -2364,6 +2475,7 @@ CrossingRules(L₁, L₂) = {rules | rules定义L₁和L₂之间的转换}
 
 层次适配器：
 LevelAdapter(L₁, L₂) = 在层次L₁和L₂之间转换的适配器
+
 ```
 
 ### 8.5 边界安全性和隐私保障
@@ -2381,6 +2493,7 @@ LevelAdapter(L₁, L₂) = 在层次L₁和L₂之间转换的适配器
 
 风险评估：
 Risk(a, t) = P(t) × Impact(t, a)，t是威胁，a是资产
+
 ```
 
 #### 8.5.2 **边界渗透分析**
@@ -2394,6 +2507,7 @@ BoundaryStrength(B, Attacks) = 边界B抵抗攻击集的能力度量
 
 渗透概率：
 PenetrationProb(B, a) = 攻击a穿透边界B的概率
+
 ```
 
 #### 8.5.3 **形式化隐私边界**
@@ -2407,6 +2521,7 @@ InfoFlowControl(PD, Flows) = 控制包含PD的信息流
 
 隐私保证：
 PrivacyGuarantee(S, P) = 系统S提供隐私策略P的保证级别
+
 ```
 
 #### 8.5.4 **可证明安全**
@@ -2420,6 +2535,7 @@ QuantifiedAssurance(B) = 边界B提供的可量化安全保证
 
 验证链：
 VerificationChain(S, P) = 从形式化规范到实现的验证步骤链
+
 ```
 
 ### 8.6 边界演化与适应性分析
@@ -2435,6 +2551,7 @@ VerificationChain(S, P) = 从形式化规范到实现的验证步骤链
 
 演化距离：
 EvolDistance(S₁, S₂) = 系统状态S₁和S₂之间的演化距离
+
 ```
 
 #### 8.6.2 **边界稳定性分析**
@@ -2448,6 +2565,7 @@ ChangeImpact(B, C) = {affected | affected受边界B变化C影响的元素}
 
 稳定区识别：
 StableRegions(S) = {R ⊆ S | ChangeRate(R) < Threshold}
+
 ```
 
 #### 8.6.3 **适应性边界模型**
@@ -2461,6 +2579,7 @@ SelfAdaptiveBoundary(B) = (Monitor, Analyze, Plan, Execute)，实现MAPE-K循环
 
 适应性度量：
 Adaptability(B) = 边界B适应变化的能力度量
+
 ```
 
 #### 8.6.4 **长期演化规律**
@@ -2474,6 +2593,7 @@ BoundaryEvolutionPredict(B, History) = 基于历史预测边界B的未来演化
 
 可持续边界设计：
 SustainableBoundaryDesign = 考虑长期演化的边界设计方法
+
 ```
 
 ### 8.7 综合案例：多层次分布式系统的边界形式化
@@ -2495,6 +2615,7 @@ SustainableBoundaryDesign = 考虑长期演化的边界设计方法
 - 平台层：运行环境和中间件
 - 应用层：业务服务和接口
 - 用户层：用户交互和体验
+
 ```
 
 #### 8.7.2 **边界识别与形式化**
@@ -2511,6 +2632,7 @@ DimensionalBoundaries(D) = {B₁, B₂, ...}，维度D的边界集合
 
 综合边界模型：
 ComprehensiveBoundaryModel = Union of all boundary types
+
 ```
 
 #### 8.7.3 **边界分析与验证**
@@ -2527,6 +2649,7 @@ ComprehensiveBoundaryModel = Union of all boundary types
 协同验证：
 - 安全性验证：SecurityVerify(DS) = 静态分析与动态测试结合的安全验证
 - 可靠性评估：ReliabilityAssess(DS) = 基于形式化边界的可靠性分析
+
 ```
 
 #### 8.7.4 **边界优化与演化**
@@ -2543,6 +2666,7 @@ ComprehensiveBoundaryModel = Union of all boundary types
 长期策略：
 - 边界演化路线图：EvolutionRoadmap(DS) = 系统边界的长期演化计划
 - 可持续性评估：SustainabilityAssess(Boundaries) = 评估边界设计的可持续性
+
 ```
 
 #### 8.7.5 **实施与治理**
@@ -2559,6 +2683,7 @@ ComprehensiveBoundaryModel = Union of all boundary types
 持续改进：
 - 边界评审：BoundaryReview(DS) = 定期的边界设计评审
 - 适应性调整：AdaptiveGovernance = 根据系统演化调整治理方法
+
 ```
 
 ## 9. 结论：系统边界形式化的意义与展望

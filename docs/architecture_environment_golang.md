@@ -161,6 +161,7 @@ classDiagram
     +string Status
     +time.Time Time
   }
+
 ```
 
 ### 3.3 典型数据流
@@ -187,6 +188,7 @@ sequenceDiagram
   D->>G: 治理执行
   G->>DA: 数据分析
   U->>M: 查询服务
+
 ```
 
 ### 3.4 Golang 领域模型代码示例
@@ -254,6 +256,7 @@ type Governance struct {
     Status string
     Time   time.Time
 }
+
 ```
 
 ---
@@ -316,6 +319,7 @@ graph TD
   EV --> G
   D --> EV
   D --> DE
+
 ```
 
 ### 5.5 Golang代码示例
@@ -326,6 +330,7 @@ graph TD
 // Prometheus 监控
 var sensorCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "sensor_online_total"})
 sensorCount.Set(10000)
+
 ```
 
 ---
@@ -352,6 +357,7 @@ environment-demo/
 ├── scripts/
 ├── build/
 └── README.md
+
 ```
 
 ### 6.2 关键代码片段
@@ -378,6 +384,7 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
+
 ```
 
 ---

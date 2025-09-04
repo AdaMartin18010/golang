@@ -31,19 +31,6 @@
     - [1.2.10 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust 语言基础](#rust-语言基础)
@@ -107,6 +94,7 @@ fn add(a: i32, b: i32) -> i32 {
 
 // 常量定义
 const PI: f64 = 3.14159;
+
 ```
 
 ### 1.2.2 2. 表达式（Expressions）
@@ -122,6 +110,7 @@ const PI: f64 = 3.14159;
 let x = 5; // 赋值表达式
 let y = x + 2; // 计算表达式
 let z = add(x, y); // 函数调用表达式
+
 ```
 
 ### 1.2.3 3. 语句（Statements）
@@ -137,6 +126,7 @@ let z = add(x, y); // 函数调用表达式
 let x = 5; // 变量声明语句
 let y = 10; // 变量声明语句
 let sum = add(x, y); // 函数调用语句
+
 ```
 
 ### 1.2.4 4. 控制流
@@ -157,6 +147,7 @@ if x > y {
 } else {
     println!("x is equal to y");
 }
+
 ```
 
 #### 1.2.4.3 循环
@@ -184,6 +175,7 @@ while count < 10 {
 for i in 0..5 {
     println!("{}", i);
 }
+
 ```
 
 ### 1.2.5 5. 模块和作用域
@@ -203,6 +195,7 @@ mod my_module {
 fn main() {
     my_module::my_function(); // 调用模块中的函数
 }
+
 ```
 
 ### 1.2.6 6. 错误处理
@@ -219,6 +212,7 @@ Rust 提供了两种主要的错误处理机制：`panic!` 和 `Result`。
 fn main() {
     panic!("This is a panic!");
 }
+
 ```
 
 #### 1.2.6.3 `Result`
@@ -242,6 +236,7 @@ fn main() {
         Err(e) => println!("Error: {}", e),
     }
 }
+
 ```
 
 ### 1.2.7 7. 所有权、借用和生命周期
@@ -261,6 +256,7 @@ fn main() {
     let s = String::from("Hello");
     borrow_example(&s); // 借用
 }
+
 ```
 
 ### 1.2.8 8. 特征（Traits）
@@ -283,6 +279,7 @@ impl Shape for Circle {
         std::f64::consts::PI * self.radius * self.radius
     }
 }
+
 ```
 
 ### 1.2.9 9. 泛型
@@ -299,6 +296,7 @@ fn generic_function<T>(value: T) {
 struct GenericStruct<T> {
     value: T,
 }
+
 ```
 
 ### 1.2.10 总结

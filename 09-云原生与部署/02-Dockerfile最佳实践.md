@@ -42,6 +42,7 @@ WORKDIR /root/
 COPY --from=builder /app/app .
 EXPOSE 8080
 ENTRYPOINT ["./app"]
+
 ```
 
 ### 9.1.3.2 **健康检查与非root用户**
@@ -50,6 +51,7 @@ ENTRYPOINT ["./app"]
 HEALTHCHECK CMD curl --fail http://localhost:8080/health || exit 1
 RUN adduser -D appuser
 USER appuser
+
 ```
 
 ## 9.1.4 🎯 **最佳实践**

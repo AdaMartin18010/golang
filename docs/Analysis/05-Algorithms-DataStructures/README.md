@@ -212,6 +212,7 @@ func ConcurrentQuickSort(arr []int) []int {
     
     return append(append(left, middle...), right...)
 }
+
 ```
 
 #### 5.1.3.1.2 归并排序
@@ -287,6 +288,7 @@ func ConcurrentMergeSort(arr []int) []int {
     
     return merge(left, right)
 }
+
 ```
 
 ### 5.1.3.2 搜索算法
@@ -361,6 +363,7 @@ func BinarySearchLast(arr []int, target int) int {
     
     return result
 }
+
 ```
 
 ### 5.1.3.3 图算法
@@ -422,6 +425,7 @@ func DFSIterative(root *Node) {
         }
     }
 }
+
 ```
 
 #### 5.1.3.3.2 广度优先搜索 (BFS)
@@ -505,6 +509,7 @@ func ConcurrentBFS(root *Node, maxWorkers int) {
     close(queue)
     wg.Wait()
 }
+
 ```
 
 ## 5.1.4 4. 并发算法
@@ -575,6 +580,7 @@ func generateItems(start, end int) []interface{} {
     }
     return items
 }
+
 ```
 
 ### 5.1.4.2 读者-写者问题
@@ -675,6 +681,7 @@ func (sr *SharedResource) Write(key string, value interface{}) {
     
     sr.data[key] = value
 }
+
 ```
 
 ### 5.1.4.3 哲学家进餐问题
@@ -758,6 +765,7 @@ func (p *Philosopher) EatWithHierarchy() {
     p.rightFork.Unlock()
     fmt.Printf("Philosopher %d put down forks\n", p.id)
 }
+
 ```
 
 ## 5.1.5 5. 分布式算法
@@ -844,6 +852,7 @@ func (ch *ConsistentHash) hash(key string) uint32 {
     h.Write([]byte(key))
     return h.Sum32()
 }
+
 ```
 
 ### 5.1.5.2 Raft 共识算法
@@ -975,6 +984,7 @@ func (rn *RaftNode) AppendEntry(command interface{}) bool {
     
     return true
 }
+
 ```
 
 ## 5.1.6 6. 算法优化
@@ -1110,6 +1120,7 @@ func (lru *LRUCache) removeLRU() {
     lru.removeNode(lruNode)
     delete(lru.cache, lruNode.key)
 }
+
 ```
 
 ### 5.1.6.2 并行优化
@@ -1185,6 +1196,7 @@ func ParallelMatrixMultiply(a, b [][]int, maxWorkers int) [][]int {
     wg.Wait()
     return result
 }
+
 ```
 
 ## 5.1.7 7. 算法分析
@@ -1273,6 +1285,7 @@ func (sp *StreamProcessor) ProcessStream(input <-chan DataItem) <-chan Processed
     
     return output
 }
+
 ```
 
 ### 5.1.9.2 实时推荐系统
@@ -1322,6 +1335,7 @@ func (re *RecommendationEngine) calculateRecommendations(userID int, limit int) 
     // 排序并返回top-k推荐
     return re.getTopK(scores, limit)
 }
+
 ```
 
 ## 5.1.10 10. 总结

@@ -15,6 +15,7 @@
 
 使用markdown格式，并继续使用学术和系统的方式来分析。
 </think>
+
 ```
 
 ## 目录
@@ -134,6 +135,7 @@ fn main() {
     handle2.join().unwrap();
     println!("最终计数: {}", *counter.lock().unwrap());
 }
+
 ```
 
 ## 2. 高级所有权模式
@@ -181,6 +183,7 @@ impl User {
         greeting
     }
 }
+
 ```
 
 ### 自引用结构
@@ -229,6 +232,7 @@ impl SelfRef {
         unsafe { &(*self.pointer) }
     }
 }
+
 ```
 
 ### 零成本抽象与所有权
@@ -283,6 +287,7 @@ fn main() {
     
     println!("{} 今年 {} 岁", name, age);
 }
+
 ```
 
 ## 3. 所有权系统的边界
@@ -318,6 +323,7 @@ fn split_at_mut<T>(slice: &mut [T], mid: usize) -> (&mut [T], &mut [T]) {
         )
     }
 }
+
 ```
 
 ### 所有权回避模式
@@ -358,6 +364,7 @@ fn main() {
     
     println!("最终数据: {:?}", state.data.borrow());
 }
+
 ```
 
 ### 所有权系统的限制
@@ -473,6 +480,7 @@ fn main() {
         // 使用 GPIO 引脚
     } // pin 在这里自动释放
 }
+
 ```
 
 ### Web 开发中的应用
@@ -524,6 +532,7 @@ fn main() {
     println!("原始: {:?}", data);
     println!("结果: {:?}", result);
 }
+
 ```
 
 通过系统性地分析 Rust 所有权系统在这些不同领域的应用，

@@ -30,19 +30,6 @@
     - [13.1.8.3 应用场景](#应用场景)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 13.1.1 目录
 
 1. [概述](#概述)
@@ -228,6 +215,7 @@ func (cv *ConfigValidator) validateServiceConfig(config *ServiceConfig) error {
     
     return nil
 }
+
 ```
 
 ## 13.1.4 状态机理论
@@ -394,6 +382,7 @@ func (msm *MicroserviceStateMachine) ProcessInputWithOutput(symbolID string) (st
     
     return "", nil
 }
+
 ```
 
 ## 13.1.5 分布式一致性
@@ -653,6 +642,7 @@ const (
     Equal
     Concurrent
 )
+
 ```
 
 ## 13.1.6 性能建模
@@ -844,6 +834,7 @@ func LinearRegressionPredictor(parameters map[string]float64) func(map[string]fl
         return result
     }
 }
+
 ```
 
 ## 13.1.7 可靠性分析
@@ -1051,6 +1042,7 @@ func (edm *ExponentialDecayModel) GetDecayRate() float64 {
     
     return edm.DecayRate
 }
+
 ```
 
 ## 13.1.8 总结

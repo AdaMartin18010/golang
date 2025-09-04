@@ -80,6 +80,7 @@ fn main() {
     check_type(&x);
     check_type(&y);
 }
+
 ```
 
 ### 输出
@@ -87,6 +88,7 @@ fn main() {
 ```shell
 It's a f64
 It's a u8
+
 ```
 
 ## 示例 2：使用 `Any` trait 获取具体的类型
@@ -132,6 +134,7 @@ fn main() {
     handle_draw(x);
     handle_draw(y);
 }
+
 ```
 
 ### *输出*
@@ -139,6 +142,7 @@ fn main() {
 ```shell
 Handling f64: 1.1
 Handling u8: 8
+
 ```
 
 ### 示例 3：`Any` trait 和结构体
@@ -170,6 +174,7 @@ fn main() {
         println!("Found MyStruct with value: {}", my_struct.value);
     }
 }
+
 ```
 
 ### -输出
@@ -177,6 +182,7 @@ fn main() {
 ```shell
 Type name: MyStruct
 Found MyStruct with value: 42
+
 ```
 
 ### 总结
@@ -230,6 +236,7 @@ fn main() {
         }
     }
 }
+
 ```
 
 ### 2. 基本类型和容器类型
@@ -261,6 +268,7 @@ fn main() {
         println!("List: {:?}", l);
     }
 }
+
 ```
 
 ### 3. 实现 `Any` trait 的必要条件
@@ -417,6 +425,7 @@ fn main() {
     let string_value = value.downcast_ref::<String>().unwrap();
     println!("The value is: {}", string_value);
 }
+
 ```
 
 ### 示例说明
@@ -501,6 +510,7 @@ fn main() {
         println!("The stored value is not an i32!");
     }
 }
+
 ```
 
 ### --输出
@@ -508,6 +518,7 @@ fn main() {
 ```shell
 The value is: Hello, Rust!
 The stored value is not an i32!
+
 ```
 
 ### --总结

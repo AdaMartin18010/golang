@@ -117,6 +117,7 @@ fn encrypt_data(data: &[u8], key: &[u8]) -> Result<Vec<u8>, CryptoError> {
     let ciphertext = cipher.encrypt(data)?;
     Ok(ciphertext)
 }
+
 ```
 
 ### 1.2.2 验证与鉴权概念
@@ -141,6 +142,7 @@ async fn authenticate_user(username: &str, password: &str) -> Result<AuthToken, 
     let token = generate_token(username, &user.roles)?;
     Ok(token)
 }
+
 ```
 
 ### 1.2.3 形式化证明基础
@@ -154,6 +156,7 @@ async fn authenticate_user(username: &str, password: &str) -> Result<AuthToken, 
 ```rust
 // 霍尔逻辑示例（概念表示）
 // { token != null } verify_token(token) { 返回用户数据或错误 }
+
 ```
 
 ## 1.3 2. 类型安全与形式验证
@@ -183,6 +186,7 @@ fn get_protected_resource(token: VerifiedToken) -> Resource {
     // 安全地访问资源，因为令牌已验证
     Resource::new()
 }
+
 ```
 
 ### 1.3.2 依赖类型与证明
@@ -203,6 +207,7 @@ where
 {
     // 编译时保证向量长度为N
 }
+
 ```
 
 ## 1.4 3. 验证与鉴权模型
@@ -229,6 +234,7 @@ enum FormalProperty {
     Deadline(String, Duration), // 实时性约束
     Fairness(String),    // 公平性
 }
+
 ```
 
 ### 1.4.2 行为验证
@@ -260,6 +266,7 @@ impl BoundaryValidator {
         Ok(Validated::new(processed))
     }
 }
+
 ```
 
 ## 1.5 4. 密码学协议形式化
@@ -302,6 +309,7 @@ struct Protocol {
     messages: Vec<Message>,
     security_goals: Vec<SecurityGoal>,
 }
+
 ```
 
 ### 1.5.2 协议安全性证明
@@ -334,6 +342,7 @@ fn verify_quantum_security_proof(protocol: &Protocol, proof: &SecurityProof) -> 
         }
     }
 }
+
 ```
 
 ## 1.6 5. 多级安全模型
@@ -360,6 +369,7 @@ struct ApplicationSecurity {
     output_encoding: OutputEncodingStrategy,
     session_management: SessionManagementStrategy,
 }
+
 ```
 
 ### 1.6.2 跨层验证
@@ -392,6 +402,7 @@ impl CrossLayerVerifier {
         VerificationResult::new()
     }
 }
+
 ```
 
 ## 1.7 6. 形式化验证工具与技术
@@ -423,6 +434,7 @@ impl ModelChecker {
         PropertyResult::new()
     }
 }
+
 ```
 
 ### 1.7.2 定理证明
@@ -452,6 +464,7 @@ impl TheoremProver {
         ProofResult::new(proof)
     }
 }
+
 ```
 
 ## 1.8 7. 高级验证技术
@@ -485,6 +498,7 @@ impl<T: Clone> VerifiableComputation<T> {
         self.verifier.verify(input, result, proof)
     }
 }
+
 ```
 
 ### 1.8.2 形式化差分隐私
@@ -513,6 +527,7 @@ impl<T, R> DifferentialPrivacyMechanism<T, R> {
         (self.mechanism)(data)
     }
 }
+
 ```
 
 ## 1.9 思维导图
@@ -589,6 +604,7 @@ impl<T, R> DifferentialPrivacyMechanism<T, R> {
         ├── 隐私保证验证
         ├── 敏感度计算
         └── 噪声机制验证
+
 ```
 
 ## 1.10 8. 形式化方法在系统设计中的应用
@@ -625,6 +641,7 @@ struct SecureArchitecture {
     data_flows: Vec<DataFlow>,
     threat_mitigations: HashMap<ThreatID, Vec<Mitigation>>,
 }
+
 ```
 
 ### 1.10.2 形式化规范
@@ -661,7 +678,9 @@ Authenticate == [ΔAuthSystem; u?: USER; p?: PASSWORD;
                 s! ∉ sessions ∧
                 sessions' = sessions ∪ {s!} ∧
                 authenticated' = authenticated ∪ {u? ↦ s!}]
+
 */
+
 ```
 
 ## 1.11 9. 形式化证明高级方法
@@ -704,6 +723,7 @@ impl ProtocolProperty for AuthenticationProperty {
         "∀s. (s.counter > 0 ∧ valid_nonce(s.nonce)) → s.authenticated".to_string()
     }
 }
+
 ```
 
 ### 1.11.2 归纳证明
@@ -736,7 +756,9 @@ fn prove_merkle_tree_integrity<H: HashFunction>(tree: &MerkleTree<H>) -> ProofRe
 归纳步骤：高度为k+1的树 = 根节点 + 两棵高度为k的子树
           节点数 = 1 + 2*(2^(k+1)-1) = 1 + 2^(k+2)-2 = 2^(k+2)-1
           满足2^((k+1)+1)-1
+
 */
+
 ```
 
 ## 1.12 10. 元理论与元模型
@@ -779,6 +801,7 @@ impl MetaTheory {
         }
     }
 }
+
 ```
 
 ### 1.12.2 元模型验证
@@ -824,6 +847,7 @@ impl MetaModel {
         }
     }
 }
+
 ```
 
 ## 1.13 11. 复合安全性与组合性质
@@ -870,6 +894,7 @@ impl ProtocolComposition {
         }
     }
 }
+
 ```
 
 ### 1.13.2 组合证明技术
@@ -909,6 +934,7 @@ impl CompositionTheorem for ParallelCompositionTheorem {
         Ok(Proof::new())
     }
 }
+
 ```
 
 ## 1.14 12. 量子环境下的形式化验证
@@ -958,6 +984,7 @@ impl PostQuantumVerifier {
         }
     }
 }
+
 ```
 
 ### 1.14.2 量子协议形式化
@@ -1007,6 +1034,7 @@ impl QuantumProtocolVerifier {
         QuantumSecurityVerificationResult::new()
     }
 }
+
 ```
 
 ## 1.15 13. 形式化方法与法规遵从
@@ -1072,6 +1100,7 @@ impl ComplianceFramework {
         }
     }
 }
+
 ```
 
 ### 1.15.2 可审计验证
@@ -1125,6 +1154,7 @@ impl AuditableSystem {
         }
     }
 }
+
 ```
 
 ## 1.16 14. 前沿研究与未来方向
@@ -1181,6 +1211,7 @@ impl AutomatedFormalVerifier {
         }
     }
 }
+
 ```
 
 ### 1.16.2 形式化方法与人工智能
@@ -1237,6 +1268,7 @@ impl AIAssistedVerifier {
         }
     }
 }
+
 ```
 
 ## 1.17 思维导图（续）
@@ -1306,4 +1338,5 @@ impl AIAssistedVerifier {
         ├── 学习模型
         ├── AI辅助证明
         └── 知识库构建
+
 ```

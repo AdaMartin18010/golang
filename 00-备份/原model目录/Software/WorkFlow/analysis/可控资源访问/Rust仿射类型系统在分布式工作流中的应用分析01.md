@@ -59,6 +59,7 @@ ResourceState(r, t) = {
   Owned(component, AccessRight),
   Borrowed(set<component, AccessRight>)
 }
+
 ```
 
 #### 2.1.2 理论保证
@@ -87,6 +88,7 @@ BorrowChecker = {
   releaseAccess: (AccessToken) → Result<(), Error>,
   validateAccess: (Component, Resource, AccessRight) → Boolean
 }
+
 ```
 
 #### 2.2.2 强制执行的规则
@@ -122,7 +124,7 @@ BorrowChecker = {
          access_right: AccessRight,
          expiration: Instant,
      }
-     
+  
      impl Drop for ResourceGuard {
          fn drop(&mut self) {
              orchestrator.release_resource(self.resource_id, self.access_right);
@@ -149,6 +151,7 @@ Lifetime关系 = {
   Contains: l1 contains l2 ⇔ l1.start ≤ l2.start ∧ l2.end ≤ l1.end
   Overlaps: l1 overlaps l2 ⇔ !(l1.end < l2.start ∨ l2.end < l1.start)
 }
+
 ```
 
 #### 2.3.2 应用机制
@@ -184,6 +187,7 @@ impl<'resource> WorkflowComponent<'resource> {
         // 处理逻辑，自动继承生命周期约束
     }
 }
+
 ```
 
 ### 2.4 分布式"移动语义"与移动检查
@@ -197,6 +201,7 @@ MoveSemantics = {
   移动资源控制权: 从一个组件到另一个组件，且原组件失去控制权
   移动数据所有权: 数据流在组件间传递，每次只有一个组件拥有数据
 }
+
 ```
 
 #### 2.4.2 实现机制
@@ -236,6 +241,7 @@ Rust通过特征(traits)表达类型能力和约束。对应到工作流：
 Capability = 组件可以执行的操作或提供的服务
 Requirement = 组件需要外部提供的能力
 CapabilityCheck = 验证组件的需求能被系统中其他组件的能力满足
+
 ```
 
 #### 2.5.2 实现机制
@@ -278,6 +284,7 @@ impl<S: DataSource, T: DataSink> DataProcessor<S, T> {
         // 实现处理逻辑
     }
 }
+
 ```
 
 ## 3. 理论优势与实际实现考量
@@ -327,13 +334,13 @@ impl<S: DataSource, T: DataSink> DataProcessor<S, T> {
    struct WfUnit<'lifetime, Resource> {
        // 拥有的资源
        owned_resources: Vec<OwnedResource>,
-       
+  
        // 借用的资源（带生命周期标注）
        borrowed_resources: Vec<BorrowedResource<'lifetime>>,
-       
+  
        // 定义处理逻辑
        handlers: HashMap<EventType, Handler>,
-       
+  
        // 声明的能力和需求
        capabilities: HashSet<Capability>,
        requirements: HashSet<Requirement>,
@@ -345,15 +352,15 @@ impl<S: DataSource, T: DataSink> DataProcessor<S, T> {
    ```rust
    impl WfOrchestrator {
        // 请求资源访问
-       fn request_access<'a>(&self, 
+       fn request_access<'a>(&self,
                            unit: &WfUnitId,
                            resource: ResourceId,
                            access_mode: AccessMode) -> Result<ResourceGuard<'a>, AccessError> {
            // 实现分布式借用检查逻辑
        }
-       
+  
        // 资源访问验证
-       fn validate_access(&self, 
+       fn validate_access(&self,
                          unit: &WfUnitId,
                          resource: ResourceId,
                          access_mode: AccessMode) -> bool {
@@ -368,11 +375,11 @@ impl<S: DataSource, T: DataSink> DataProcessor<S, T> {
    struct WfInteraction<'resource> {
        // 交互可能依赖于特定生命周期的资源
        resource_dependencies: Vec<ResourceDependency<'resource>>,
-       
+  
        // 交互定义
        effect_type: EffectType,
        parameters: Parameters,
-       
+  
        // 访问模式声明
        access_pattern: AccessPattern,
    }

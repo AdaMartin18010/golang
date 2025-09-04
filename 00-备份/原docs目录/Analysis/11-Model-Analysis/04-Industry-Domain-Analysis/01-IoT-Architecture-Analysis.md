@@ -113,6 +113,7 @@ type SecurityContext struct {
     AuthMethod  AuthMethod
     CertPath    string
 }
+
 ```
 
 #### 2.1.2 边缘网关设备
@@ -170,6 +171,7 @@ type Service struct {
     Status      ServiceStatus
     Metrics     Metrics
 }
+
 ```
 
 ### 2.2 网络层架构
@@ -227,6 +229,7 @@ type ApplicationLayer struct {
     Security    SecurityLevel
     Compression CompressionType
 }
+
 ```
 
 #### 2.2.2 网络拓扑
@@ -287,6 +290,7 @@ type Route struct {
     Cost        float64
     Path        []string
 }
+
 ```
 
 ### 2.3 数据处理层架构
@@ -348,6 +352,7 @@ type StreamQoS struct {
     Reliability float64
     Priority    Priority
 }
+
 ```
 
 #### 2.3.2 数据聚合
@@ -396,6 +401,7 @@ type DataQuality struct {
     Consistency float64
     Timeliness  time.Duration
 }
+
 ```
 
 ## 3. 安全架构
@@ -463,6 +469,7 @@ type EncryptionAlgorithm struct {
     BlockSize     uint32
     Mode          Mode
 }
+
 ```
 
 ### 3.2 密钥管理
@@ -508,6 +515,7 @@ type KeyRotation struct {
     Algorithm    RotationAlgorithm
     Notification NotificationPolicy
 }
+
 ```
 
 ## 4. 性能优化
@@ -565,6 +573,7 @@ type OptimizationStrategy struct {
     Network      NetworkOptimization
     Power        PowerOptimization
 }
+
 ```
 
 ### 4.2 算法优化
@@ -604,6 +613,7 @@ type ConvergenceCriteria struct {
     Timeout      time.Duration
     Condition    ConvergenceCondition
 }
+
 ```
 
 ## 5. 部署架构
@@ -687,6 +697,7 @@ type ResourceScaling struct {
     Step         uint64
     Threshold    float64
 }
+
 ```
 
 ### 5.2 容器化部署
@@ -733,6 +744,7 @@ type ContainerStorage struct {
     Persistence  PersistenceConfig
     Backup       BackupConfig
 }
+
 ```
 
 ## 6. 监控与运维
@@ -827,6 +839,7 @@ type AlertRule struct {
     Actions      []Action
     Cooldown     time.Duration
 }
+
 ```
 
 ### 6.2 运维自动化
@@ -893,6 +906,7 @@ type ScalingRule struct {
     Operator     Operator
     Action       ScalingAction
 }
+
 ```
 
 ## 7. 最佳实践
@@ -961,4 +975,4 @@ type ScalingRule struct {
 
 ---
 
-*本文档将持续更新，反映最新的IoT技术发展和最佳实践。*
+* 本文档将持续更新，反映最新的IoT技术发展和最佳实践。*

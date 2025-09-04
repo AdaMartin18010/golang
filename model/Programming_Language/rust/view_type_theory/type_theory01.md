@@ -55,19 +55,6 @@
   - [1.20 19. 参考文献](#19-参考文献)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [类型论 (Type Theory) 的核心定义与概念](#类型论-type-theory-的核心定义与概念)
@@ -237,6 +224,7 @@
 data Vec : Nat -> * -> * where
   VNil  : Vec 0 a
   VCons : a -> Vec n a -> Vec (n + 1) a
+
 ```
 
 在这个示例中，`Vec`的类型依赖于自然数`Nat`，表示向量的长度。
@@ -259,6 +247,7 @@ struct Circle {
     center: Point,
     radius: f64,
 }
+
 ```
 
 在这个示例中，`Point`和`Circle`都是通过类型构造子定义的新类型。
@@ -272,6 +261,7 @@ struct Circle {
 ```haskell
 class Eq a where
     (==) :: a -> a -> Bool
+
 ```
 
 在这个示例中，`Eq`是一个类型类，定义了相等操作`==`，可以在实现了`Eq`的任何类型上使用。

@@ -31,6 +31,7 @@ thiserror = "1.0"
 async-graphql = "6.0"
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-native-tls"] }
 redis = { version = "0.23", features = ["tokio-comp"] }
+
 ```
 
 ## 2. 基础工作流模式定义
@@ -104,6 +105,7 @@ impl WorkflowPattern for ParallelPattern {
         Ok(())
     }
 }
+
 ```
 
 ## 3. 高级工作流模式实现
@@ -193,6 +195,7 @@ impl WorkflowPattern for DiscriminatorPattern {
         self.next_pattern.execute(context).await
     }
 }
+
 ```
 
 ## 4. 工作流状态和上下文管理
@@ -266,6 +269,7 @@ impl WorkflowStorage {
         Ok(())
     }
 }
+
 ```
 
 ## 5. 工作流模式组合示例
@@ -362,6 +366,7 @@ pub fn create_document_approval_workflow() -> Box<dyn WorkflowPattern> {
         ],
     })
 }
+
 ```
 
 ## 6. 工作流执行引擎
@@ -447,6 +452,7 @@ impl WorkflowExecutor {
         Ok(())
     }
 }
+
 ```
 
 ## 7. 工作流监控和指标收集
@@ -490,6 +496,7 @@ impl WorkflowMetrics {
         self.task_duration.observe(duration.as_secs_f64());
     }
 }
+
 ```
 
 ## 8. 主程序实现
@@ -516,6 +523,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了一个完整的分布式工作流系统，支持以下工作流模式：

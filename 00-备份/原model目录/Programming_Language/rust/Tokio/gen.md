@@ -29,6 +29,7 @@ tokio = { version = "1.0", features = ["full"] }
 futures = "0.3"
 async-stream = "0.3"
 pin-project = "1.0"
+
 ```
 
 ## 2. 基本的 Generator 实现
@@ -57,6 +58,7 @@ fn main() {
         }
     }
 }
+
 ```
 
 ## 3. 结合 Tokio 的异步 Generator
@@ -106,6 +108,7 @@ async fn main() {
     let result = gen.await;
     println!("Result: {}", result);
 }
+
 ```
 
 ## 4. 异步流生成器
@@ -132,6 +135,7 @@ async fn main() {
         println!("Generated: {}", number);
     }
 }
+
 ```
 
 ## 5. 带状态的异步生成器
@@ -166,6 +170,7 @@ async fn main() {
         println!("State: {}", value);
     }
 }
+
 ```
 
 ## 6. 错误处理与生成器
@@ -199,6 +204,7 @@ async fn main() {
         }
     }
 }
+
 ```
 
 ## 7. 并发生成器
@@ -237,6 +243,7 @@ async fn concurrent_generator() {
 async fn main() {
     concurrent_generator().await;
 }
+
 ```
 
 ## 8. 资源管理生成器
@@ -276,6 +283,7 @@ async fn main() {
         resource.cleanup().await;
     }
 }
+
 ```
 
 ## 9. 带超时的生成器
@@ -304,6 +312,7 @@ async fn generator_with_timeout() {
 async fn main() {
     generator_with_timeout().await;
 }
+
 ```
 
 ## 10. 可取消的生成器
@@ -340,6 +349,7 @@ async fn cancellable_generator() {
 async fn main() {
     cancellable_generator().await;
 }
+
 ```
 
 ## 11. 组合多个生成器
@@ -372,6 +382,7 @@ async fn main() {
         println!("Combined value: {}", value);
     }
 }
+
 ```
 
 这些示例展示了如何在 Rust 2024 版本中使用 `gen` 与 Tokio 结合，实现各种异步生成器模式。主要特点包括：

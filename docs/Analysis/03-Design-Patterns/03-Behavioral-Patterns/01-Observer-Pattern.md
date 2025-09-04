@@ -212,6 +212,7 @@ func (o *ConcreteObserver) GetID() string {
 func (o *ConcreteObserver) GetName() string {
     return o.name
 }
+
 ```
 
 ### 3.3.1.4.2 事件驱动观察者模式
@@ -409,6 +410,7 @@ func (n *NotificationHandler) GetID() string {
 func (n *NotificationHandler) GetName() string {
     return n.name
 }
+
 ```
 
 ### 3.3.1.4.3 股票价格观察者模式
@@ -673,6 +675,7 @@ func (c *ChartObserver) GetID() string {
 func (c *ChartObserver) GetName() string {
     return c.name
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -934,6 +937,7 @@ func (c *CacheConfigObserver) GetID() string {
 func (c *CacheConfigObserver) GetName() string {
     return c.name
 }
+
 ```
 
 ### 3.3.1.5.2 用户状态观察者模式
@@ -1215,6 +1219,7 @@ func (s *SecurityObserver) GetID() string {
 func (s *SecurityObserver) GetName() string {
     return s.name
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

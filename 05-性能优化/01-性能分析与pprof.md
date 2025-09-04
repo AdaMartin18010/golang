@@ -39,6 +39,7 @@ pprof是Go官方性能分析工具，支持CPU、内存、阻塞、Goroutine等�
 
 ```go
 import _ "net/http/pprof"
+
 ```
 
 **2. 启动pprof服务**:
@@ -46,15 +47,21 @@ import _ "net/http/pprof"
 ```go
 import "net/http"
 go func() { http.ListenAndServe(":6060", nil) }()
+
 ```
 
 **3. 运行程序并采集Profile**:
 
 ```sh
+
 # 5.2 采集30秒CPU profile
+
 go tool pprof http://localhost:6060/debug/pprof/profile?seconds=30
+
 # 5.3 采集内存profile
+
 go tool pprof http://localhost:6060/debug/pprof/heap
+
 ```
 
 **4. 分析Profile数据**:
@@ -63,6 +70,7 @@ go tool pprof http://localhost:6060/debug/pprof/heap
 (pprof) top
 (pprof) list <func>
 (pprof) web  # 生成火焰图
+
 ```
 
 ### 5.3 常用分析命令

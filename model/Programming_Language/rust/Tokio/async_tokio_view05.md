@@ -29,13 +29,6 @@
   - [1.10 总结与展望](#总结与展望)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 Rust异步编程的形式化研究：未来方向深度探索
 
 ## 1.1 目录
@@ -182,6 +175,7 @@ impl<S: Eq + Hash + Clone, AP: Eq + Hash + Clone> AsyncModelChecker<S, AP> {
         true
     }
 }
+
 ```
 
 ### 1.3.2 死锁检测形式化
@@ -313,6 +307,7 @@ enum NodeId {
 
 type TaskId = usize;
 type ResourceId = usize;
+
 ```
 
 ### 1.3.3 活锁与饥饿分析
@@ -474,6 +469,7 @@ impl<S: Eq + Hash + Clone> LivelockDetector<S> {
         }
     }
 }
+
 ```
 
 ### 1.3.4 并发问题验证工具原型
@@ -665,6 +661,7 @@ struct VerificationResult {
 }
 
 /// 各种类型的并发问题定义略...
+
 ```
 
 ## 1.4 静态类型状态分析
@@ -756,6 +753,7 @@ enum TypeStateError {
     InvalidOperation,
     InvalidFinalState,
 }
+
 ```
 
 ### 1.4.2 异步状态机验证
@@ -880,19 +878,22 @@ impl<S: Eq + Hash + Clone> AsyncStateMachineVerifier<S> {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+# [derive(Debug, Clone, Copy, PartialEq, Eq)]
+
 enum PollState {
     Ready,
     Pending,
 }
 
-#[derive(Debug)]
+# [derive(Debug)]
+
 enum StateMachineError {
     ReadyNonTerminal(S),       // Ready状态不是终止状态
     TerminalNotReady(S),       // 终止状态未标记为Ready
     ReadyToPending(S, S),      // 从Ready状态转移到Pending状态
     UnreachableStates(HashSet<S>), // 不可达状态集合
 }
+
 ```
 
 ### 1.4.3 类型驱动异步编程
@@ -950,12 +951,12 @@ impl TcpStream<Closed> {
             _state: PhantomData,
         }
     }
-    
+  
     /// 连接到远程地址，改变状态为Connecting
     async fn connect(self, addr: SocketAddr) -> Result<TcpStream<Connecting>, io::Error> {
         // 底层连接逻辑
         self.socket.start_connect(addr)?;
-        
+  
         // 返回新状态的流
         Ok(TcpStream {
             socket: self.socket,
@@ -969,7 +970,7 @@ impl TcpStream<Connecting> {
     async fn wait_connected(self) -> Result<TcpStream<Connected>, io::Error> {
         // 等待连接完成
         self.socket.wait_connect().await?;
-        
+  
         // 返回已连接的流
         Ok(TcpStream {
             socket: self.socket,
@@ -986,7 +987,7 @@ impl TcpStream<Connected> {
             _state: PhantomData,
         }
     }
-    
+  
     /// 开始写入，转换到Writing状态
     fn start_write(self) -> TcpStream<Writing> {
         TcpStream {
@@ -994,12 +995,12 @@ impl TcpStream<Connected> {
             _state: PhantomData,
         }
     }
-    
+  
     /// 关闭连接，转换回Closed状态
     async fn close(self) -> Result<TcpStream<Closed>, io::Error> {
         // 关闭底层连接
         self.socket.close().await?;
-        
+  
         // 返回关闭状态的流
         Ok(TcpStream {
             socket: self.socket,
@@ -1013,7 +1014,7 @@ impl TcpStream<Reading> {
     async fn read(&mut self, buf: &mut [u8]) -> Result<usize, io::Error> {
         self.socket.read(buf).await
     }
-    
+  
     /// 完成读取，转回Connected状态
     fn done_reading(self) -> TcpStream<Connected> {
         TcpStream {
@@ -1028,7 +1029,7 @@ impl TcpStream<Writing> {
     async fn write(&mut self, buf: &[u8]) -> Result<usize, io::Error> {
         self.socket.write(buf).await
     }
-    
+  
     /// 完成写入，转回Connected状态
     fn done_writing(self) -> TcpStream<Connected> {
         TcpStream {
@@ -1042,38 +1043,39 @@ impl TcpStream<Writing> {
 async fn type_driven_client() -> Result<(), io::Error> {
     // 创建新的TCP流（Closed状态）
     let stream = TcpStream::new();
-    
+  
     // 连接到远程服务器（Connecting状态）
     let stream = stream.connect("127.0.0.1:8080".parse().unwrap()).await?;
-    
+  
     // 等待连接完成（Connected状态）
     let stream = stream.wait_connected().await?;
-    
+  
     // 开始写入（Writing状态）
     let mut stream = stream.start_write();
-    
+  
     // 发送数据
     stream.write(b"GET / HTTP/1.1\r\n\r\n").await?;
-    
+  
     // 完成写入（回到Connected状态）
     let stream = stream.done_writing();
-    
+  
     // 开始读取（Reading状态）
     let mut stream = stream.start_read();
-    
+  
     // 读取响应
     let mut buf = [0u8; 1024];
     let n = stream.read(&mut buf).await?;
     println!("Read {} bytes", n);
-    
+  
     // 完成读取（回到Connected状态）
     let stream = stream.done_reading();
-    
+  
     // 关闭连接（回到Closed状态）
     let _stream = stream.close().await?;
-    
+  
     Ok(())
 }
+
 ```
 
 ### 1.4.4 会话类型与通信安全
@@ -1107,7 +1109,9 @@ async fn type_driven_client() -> Result<(), io::Error> {
 
 ```rust
 /// 异步会话类型系统
-#[derive(Clone)]
+
+# [derive(Clone)]
+
 enum SessionType {
     Send(TypeId, Box<SessionType>),  // !T.S
     Recv(TypeId, Box<SessionType>),  // ?T.S
@@ -1141,32 +1145,32 @@ impl SessionType {
             SessionType::Var(x) => SessionType::Var(x.clone()),
         }
     }
-    
+  
     /// 检查两个会话类型是否对偶
     fn is_dual_of(&self, other: &SessionType) -> bool {
         // 实现会话类型对偶性检查
         match (self, other) {
             (SessionType::Send(t1, s1), SessionType::Recv(t2, s2)) =>
                 t1 == t2 && s1.is_dual_of(s2),
-                
+  
             (SessionType::Recv(t1, s1), SessionType::Send(t2, s2)) =>
                 t1 == t2 && s1.is_dual_of(s2),
-                
+  
             (SessionType::Choice(opts1), SessionType::Offer(opts2)) =>
                 opts1.len() == opts2.len() &&
                 opts1.iter().zip(opts2.iter()).all(|(s1, s2)| s1.is_dual_of(s2)),
-                
+  
             (SessionType::Offer(opts1), SessionType::Choice(opts2)) =>
                 opts1.len() == opts2.len() &&
                 opts1.iter().zip(opts2.iter()).all(|(s1, s2)| s1.is_dual_of(s2)),
-                
+  
             (SessionType::End, SessionType::End) => true,
-            
+  
             (SessionType::Rec(x1, s1), SessionType::Rec(x2, s2)) =>
                 x1 == x2 && s1.is_dual_of(s2),
-                
+  
             (SessionType::Var(x1), SessionType::Var(x2)) => x1 == x2,
-            
+  
             _ => false,
         }
     }
@@ -1186,22 +1190,22 @@ impl<S: SessionType + Send + 'static> TypedChannel<S> {
     fn new(session_type: SessionType) -> (TypedChannel<S>, TypedChannel<S>) {
         let (tx1, rx1) = mpsc::channel(10);
         let (tx2, rx2) = mpsc::channel(10);
-        
+  
         let channel1 = TypedChannel {
             session_type: session_type.clone(),
             sender: tx1,
             receiver: rx2,
         };
-        
+  
         let channel2 = TypedChannel {
             session_type: session_type.dual(),
             sender: tx2,
             receiver: rx1,
         };
-        
+  
         (channel1, channel2)
     }
-    
+  
     /// 发送消息，会话类型为!T.S
     async fn send<T: 'static + Send>(&mut self, msg: T) -> Result<(), ChannelError> {
         match &self.session_type {
@@ -1210,20 +1214,20 @@ impl<S: SessionType + Send + 'static> TypedChannel<S> {
                 if *type_id != TypeId::of::<T>() {
                     return Err(ChannelError::TypeMismatch);
                 }
-                
+  
                 // 发送消息
                 self.sender.send(Box::new(msg)).await
                     .map_err(|_| ChannelError::SendError)?;
-                
+  
                 // 更新会话类型
                 self.session_type = (**next_session).clone();
-                
+  
                 Ok(())
             },
             _ => Err(ChannelError::InvalidSessionState),
         }
     }
-    
+  
     /// 接收消息，会话类型为?T.S
     async fn recv<T: 'static + Send>(&mut self) -> Result<T, ChannelError> {
         match &self.session_type {
@@ -1232,24 +1236,24 @@ impl<S: SessionType + Send + 'static> TypedChannel<S> {
                 if *type_id != TypeId::of::<T>() {
                     return Err(ChannelError::TypeMismatch);
                 }
-                
+  
                 // 接收消息
                 let msg = self.receiver.recv().await
                     .ok_or(ChannelError::RecvError)?;
-                
+  
                 // 尝试转换类型
                 let typed_msg = msg.downcast::<T>()
                     .map_err(|_| ChannelError::DowncastError)?;
-                
+  
                 // 更新会话类型
                 self.session_type = (**next_session).clone();
-                
+  
                 Ok(*typed_msg)
             },
             _ => Err(ChannelError::InvalidSessionState),
         }
     }
-    
+  
     /// 选择一个分支，会话类型为S₁ ⊕ S₂ ⊕ ...
     async fn select(&mut self, choice: usize) -> Result<(), ChannelError> {
         match &self.session_type {
@@ -1257,20 +1261,20 @@ impl<S: SessionType + Send + 'static> TypedChannel<S> {
                 if choice >= options.len() {
                     return Err(ChannelError::InvalidChoice);
                 }
-                
+  
                 // 发送选择标记
                 self.sender.send(Box::new(choice)).await
                     .map_err(|_| ChannelError::SendError)?;
-                
+  
                 // 更新会话类型为选择的分支
                 self.session_type = options[choice].clone();
-                
+  
                 Ok(())
             },
             _ => Err(ChannelError::InvalidSessionState),
         }
     }
-    
+  
     /// 提供分支选择，会话类型为S₁ & S₂ & ...
     async fn offer(&mut self) -> Result<usize, ChannelError> {
         match &self.session_type {
@@ -1278,19 +1282,19 @@ impl<S: SessionType + Send + 'static> TypedChannel<S> {
                 // 接收选择标记
                 let msg = self.receiver.recv().await
                     .ok_or(ChannelError::RecvError)?;
-                
+  
                 // 转换为选择索引
                 let choice = msg.downcast::<usize>()
                     .map_err(|_| ChannelError::DowncastError)?;
-                
+  
                 // 检查选择有效性
                 if *choice >= options.len() {
                     return Err(ChannelError::InvalidChoice);
                 }
-                
+  
                 // 更新会话类型为选择的分支
                 self.session_type = options[*choice].clone();
-                
+  
                 Ok(*choice)
             },
             _ => Err(ChannelError::InvalidSessionState),
@@ -1306,6 +1310,7 @@ enum ChannelError {
     RecvError,
     DowncastError,
 }
+
 ```
 
 ## 1.5 异步执行器形式化设计
@@ -1349,22 +1354,22 @@ impl<T: Eq + Hash + Clone, S: Eq + Hash + Clone> FormalExecutor<T, S> {
     fn verify_starvation_free(&self, initial_state: S) -> bool {
         // 追踪每个任务的最大等待时间
         let mut max_wait_times = HashMap::new();
-        
+  
         // 使用BFS遍历状态空间
         let mut visited = HashSet::new();
         let mut queue = VecDeque::new();
-        
+  
         // 初始状态
         queue.push_back((initial_state.clone(), 0));
         visited.insert(initial_state);
-        
+  
         while let Some((state, steps)) = queue.pop_front() {
             // 获取当前可调度任务集合
             let schedulable = self.get_schedulable_tasks(&state);
-            
+  
             // 选择任务进行调度
             let selected = (self.select)(&state, &schedulable);
-            
+  
             // 更新其他任务的等待时间
             for task in &schedulable {
                 if *task != selected {
@@ -1372,7 +1377,7 @@ impl<T: Eq + Hash + Clone, S: Eq + Hash + Clone> FormalExecutor<T, S> {
                     *wait_time = std::cmp::max(*wait_time, steps + 1);
                 }
             }
-            
+  
             // 状态转移
             if let Some(next_state) = self.transitions.get(&(state, selected.clone())) {
                 if !visited.contains(next_state) {
@@ -1381,50 +1386,50 @@ impl<T: Eq + Hash + Clone, S: Eq + Hash + Clone> FormalExecutor<T, S> {
                 }
             }
         }
-        
+  
         // 检查是否所有任务都有有限的等待时间
-        max_wait_times.len() == self.tasks.len() && 
+        max_wait_times.len() == self.tasks.len() &&
         max_wait_times.values().all(|&time| time < usize::MAX)
     }
-    
+  
     /// 验证执行器是否满足公平性
     fn verify_fairness(&self, initial_state: S) -> bool {
         // 对于每个任务，计算最长的调度间隔
         let mut max_intervals = HashMap::new();
-        
+  
         // 使用BFS遍历状态空间
         let mut visited = HashSet::new();
         let mut queue = VecDeque::new();
-        
+  
         // 跟踪每个任务的上次调度时间
         let mut last_scheduled = HashMap::new();
         for task in &self.tasks {
             last_scheduled.insert(task.clone(), 0);
         }
-        
+  
         // 初始状态
         queue.push_back((initial_state.clone(), 0, last_scheduled.clone()));
         visited.insert(initial_state);
-        
+  
         while let Some((state, steps, last)) = queue.pop_front() {
             // 获取当前可调度任务集合
             let schedulable = self.get_schedulable_tasks(&state);
-            
+  
             // 选择任务进行调度
             let selected = (self.select)(&state, &schedulable);
-            
+  
             // 计算调度间隔
             let last_step = *last.get(&selected).unwrap_or(&0);
             let interval = steps - last_step;
-            
+  
             // 更新最大间隔
             let max_interval = max_intervals.entry(selected.clone()).or_insert(0);
             *max_interval = std::cmp::max(*max_interval, interval);
-            
+  
             // 更新上次调度时间
             let mut new_last = last.clone();
             new_last.insert(selected.clone(), steps);
-            
+  
             // 状态转移
             if let Some(next_state) = self.transitions.get(&(state, selected.clone())) {
                 if !visited.contains(next_state) {
@@ -1433,12 +1438,12 @@ impl<T: Eq + Hash + Clone, S: Eq + Hash + Clone> FormalExecutor<T, S> {
                 }
             }
         }
-        
+  
         // 检查是否所有任务都有有限的调度间隔
-        max_intervals.len() == self.tasks.len() && 
+        max_intervals.len() == self.tasks.len() &&
         max_intervals.values().all(|&interval| interval < usize::MAX)
     }
-    
+  
     /// 获取在给定状态下可调度的任务集合
     fn get_schedulable_tasks(&self, state: &S) -> HashSet<T> {
         // 简化版：这里应该根据状态确定哪些任务可被调度
@@ -1461,20 +1466,20 @@ impl<T: Eq + Hash + Clone> PriorityPollScheduler<T> {
         for priority in min_priority..=max_priority {
             queues.insert(priority, VecDeque::new());
         }
-        
+  
         Self {
             queues,
             min_priority,
             max_priority,
         }
     }
-    
+  
     /// 添加任务到调度器
     fn add_task(&mut self, task: T, priority: usize) {
         let priority = priority.clamp(self.min_priority, self.max_priority);
         self.queues.get_mut(&priority).unwrap().push_back(task);
     }
-    
+  
     /// 选择下一个任务
     fn select_next_task(&mut self) -> Option<T> {
         // 从高优先级到低优先级遍历队列
@@ -1485,10 +1490,11 @@ impl<T: Eq + Hash + Clone> PriorityPollScheduler<T> {
                 }
             }
         }
-        
+  
         None
     }
 }
+
 ```
 
 ### 1.5.2 性能模型与分析
@@ -1507,6 +1513,7 @@ impl<T: Eq + Hash + Clone> PriorityPollScheduler<T> {
 
 ```math
 ∑_{t∈T} [C(t) + S(t) + W(t)] / L(t)
+
 ```
 
 **证明**:
@@ -1539,22 +1546,22 @@ impl<T: Eq + Hash + Clone> ExecutorPerformanceAnalyzer<T> {
         if task_count == 0 {
             return 0.0;
         }
-        
+  
         // 计算总处理时间
         let total_processing_time: f64 = self.tasks.iter().map(|task| {
             let compute = (self.compute_cost)(task);
             let overhead = (self.scheduling_overhead)(task);
             let wait = (self.wait_time)(task);
             let locality = (self.locality)(task);
-            
+  
             // 计算有效处理时间
             (compute + overhead + wait) / locality
         }).sum();
-        
+  
         // 计算平均吞吐量
         task_count as f64 / total_processing_time
     }
-    
+  
     /// 分析调度效率
     fn analyze_scheduling_efficiency(&self) -> SchedulingEfficiency {
         // 计算各项指标总和
@@ -1562,23 +1569,23 @@ impl<T: Eq + Hash + Clone> ExecutorPerformanceAnalyzer<T> {
         let mut total_overhead = 0.0;
         let mut total_wait = 0.0;
         let mut total_locality_loss = 0.0;
-        
+  
         for task in &self.tasks {
             total_compute += (self.compute_cost)(task);
             total_overhead += (self.scheduling_overhead)(task);
             total_wait += (self.wait_time)(task);
             total_locality_loss += 1.0 - (self.locality)(task);
         }
-        
+  
         // 计算总处理时间
         let total_time = total_compute + total_overhead + total_wait;
-        
+  
         // 计算各项开销占比
         let compute_ratio = total_compute / total_time;
         let overhead_ratio = total_overhead / total_time;
         let wait_ratio = total_wait / total_time;
         let locality_loss_ratio = total_locality_loss / self.tasks.len() as f64;
-        
+  
         SchedulingEfficiency {
             compute_ratio,
             overhead_ratio,
@@ -1587,38 +1594,38 @@ impl<T: Eq + Hash + Clone> ExecutorPerformanceAnalyzer<T> {
             total_tasks: self.tasks.len(),
         }
     }
-    
+  
     /// 识别性能瓶颈
     fn identify_bottlenecks(&self) -> Vec<PerformanceBottleneck> {
         let mut bottlenecks = Vec::new();
-        
+  
         // 检查调度开销
         let avg_overhead: f64 = self.tasks.iter()
             .map(|t| (self.scheduling_overhead)(t))
             .sum::<f64>() / self.tasks.len() as f64;
-            
+  
         if avg_overhead > 0.1 { // 如果调度开销超过10%
             bottlenecks.push(PerformanceBottleneck::HighSchedulingOverhead(avg_overhead));
         }
-        
+  
         // 检查等待时间
         let avg_wait: f64 = self.tasks.iter()
             .map(|t| (self.wait_time)(t))
             .sum::<f64>() / self.tasks.len() as f64;
-            
+  
         if avg_wait > 0.2 { // 如果等待时间超过20%
             bottlenecks.push(PerformanceBottleneck::HighWaitTime(avg_wait));
         }
-        
+  
         // 检查缓存亲和度
         let avg_locality: f64 = self.tasks.iter()
             .map(|t| (self.locality)(t))
             .sum::<f64>() / self.tasks.len() as f64;
-            
+  
         if avg_locality < 0.7 { // 如果缓存亲和度低于70%
             bottlenecks.push(PerformanceBottleneck::PoorCacheLocality(avg_locality));
         }
-        
+  
         bottlenecks
     }
 }
@@ -1638,6 +1645,7 @@ enum PerformanceBottleneck {
     HighWaitTime(f64),           // 高等待时间
     PoorCacheLocality(f64),      // 低缓存亲和度
 }
+
 ```
 
 ### 1.5.3 形式化验证的执行器
@@ -1693,7 +1701,7 @@ impl<T: Send + 'static> VerifiedExecutor<T> {
             invariant_checker: Box::new(invariant_checker),
         }
     }
-    
+  
     /// 添加任务到执行器
     fn spawn<F>(&mut self, future: F, priority: usize) -> Result<TaskId, ExecutorError>
     where
@@ -1708,13 +1716,13 @@ impl<T: Send + 'static> VerifiedExecutor<T> {
             created_at: Instant::now(),
             last_polled: None,
         };
-        
+  
         // 添加任务到队列
         self.task_queue.push_back(task);
-        
+  
         // 添加到运行中任务集合
         self.running_tasks.insert(task_id);
-        
+  
         // 检查不变量
         if !(self.invariant_checker)(self) {
             // 回滚更改
@@ -1722,25 +1730,25 @@ impl<T: Send + 'static> VerifiedExecutor<T> {
             self.running_tasks.remove(&task_id);
             return Err(ExecutorError::InvariantViolation);
         }
-        
+  
         Ok(task_id)
     }
-    
+  
     /// 运行执行器，直到所有任务完成
     async fn run(&mut self) -> Result<(), ExecutorError> {
         while !self.task_queue.is_empty() {
             // 轮询一个任务
             self.poll_once().await?;
-            
+  
             // 检查不变量
             if !(self.invariant_checker)(self) {
                 return Err(ExecutorError::InvariantViolation);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 轮询一个任务
     async fn poll_once(&mut self) -> Result<(), ExecutorError> {
         // 获取下一个任务
@@ -1748,11 +1756,11 @@ impl<T: Send + 'static> VerifiedExecutor<T> {
             // 创建唤醒器
             let waker = self.create_waker(task.id);
             let mut context = Context::from_waker(&waker);
-            
+  
             // 轮询任务
             task.last_polled = Some(Instant::now());
             let poll_result = task.future.as_mut().poll(&mut context);
-            
+  
             match poll_result {
                 Poll::Ready(_) => {
                     // 任务完
@@ -1916,6 +1924,7 @@ impl TaskId {
         unsafe { Waker::from_raw(raw) }
     }
 }
+
 ```
 
 ### 1.5.4 工作窃取调度证明
@@ -2160,6 +2169,7 @@ fn simulate_work_stealing(num_processors: usize, total_work: usize, critical_pat
     
     theoretical + variation
 }
+
 ```
 
 ## 1.6 异步分布式算法证明
@@ -2473,6 +2483,7 @@ enum ProofError {
     NoProofFound,
     InvalidProof,
 }
+
 ```
 
 ### 1.6.2 共识算法形式化验证
@@ -2746,7 +2757,7 @@ impl PaxosModel {
         if learned_nodes.len() <= self.num_nodes - self.max_failures {
             return false; // 未达到多数派
         }
-        
+  
         // 检查所有节点是否学习到相同的值
         if let Some(first_value) = learned_nodes.first().and_then(|n| n.learned_value.as_ref()) {
             learned_nodes.iter()
@@ -2755,7 +2766,7 @@ impl PaxosModel {
             false
         }
     }
-    
+  
     /// 验证安全性属性
     fn verify_safety(&self) -> bool {
         // 检查所有非失败节点是否决定相同的值
@@ -2763,34 +2774,34 @@ impl PaxosModel {
             .filter(|n| !n.failed && n.learned_value.is_some())
             .map(|n| n.learned_value.as_ref().unwrap())
             .collect();
-            
+  
         learned_values.len() <= 1
     }
-    
+  
     /// 验证一致性属性
     fn verify_consistency(&self) -> bool {
         // 如果所有节点提议相同的值，则决定值应该是该值
         let initial_value = Value(42); // 假设所有节点最初提议相同的值
-        
+  
         // 检查是否有节点学习到不同的值
         for node in &self.node_states {
-            if !node.failed && 
-               node.learned_value.is_some() && 
+            if !node.failed &&
+               node.learned_value.is_some() &&
                *node.learned_value.as_ref().unwrap() != initial_value {
                 return false;
             }
         }
-        
+  
         true
     }
-    
+  
     /// 模拟节点失败
     fn simulate_node_failure(&mut self, node_id: usize) {
         if node_id < self.num_nodes {
             self.node_states[node_id].failed = true;
         }
     }
-    
+  
     /// 模拟消息丢失
     fn simulate_message_loss(&mut self, loss_probability: f64) {
         // 按概率丢弃消息
@@ -2805,28 +2816,29 @@ impl PaxosModel {
 fn test_paxos_safety() {
     // 创建5节点系统
     let mut paxos = PaxosModel::new(5);
-    
+  
     // 启动提案
     paxos.start_proposal(0, Value(42));
-    
+  
     // 模拟节点失败（不超过容错限制）
     paxos.simulate_node_failure(4);
     paxos.simulate_node_failure(3);
-    
+  
     // 模拟部分消息丢失
     paxos.simulate_message_loss(0.1);
-    
+  
     // 运行直到稳定
     let consensus_reached = paxos.run_until_stable(1000);
-    
+  
     // 验证安全性
     assert!(paxos.verify_safety(), "安全性属性被违反！");
-    
+  
     // 验证一致性（如果达成共识）
     if consensus_reached {
         assert!(paxos.verify_consistency(), "一致性属性被违反！");
     }
 }
+
 ```
 
 ## 1.7 形式化方法与类型理论
@@ -2907,14 +2919,14 @@ impl Context {
             variables: HashMap::new(),
         }
     }
-    
+  
     /// 添加变量绑定
     fn extend(&self, name: String, ty: Type) -> Self {
         let mut new_ctx = self.clone();
         new_ctx.variables.insert(name, ty);
         new_ctx
     }
-    
+  
     /// 查找变量类型
     fn lookup(&self, name: &str) -> Option<&Type> {
         self.variables.get(name)
@@ -2931,7 +2943,7 @@ impl TypeChecker {
             Expr::Var(name) => {
                 // 检查变量是否在上下文中定义
                 let var_type = ctx.lookup(name).ok_or(TypeError::UndefinedVariable(name.clone()))?;
-                
+  
                 // 检查类型是否匹配
                 if self.type_eq(var_type, expected_type) {
                     Ok(())
@@ -2953,10 +2965,10 @@ impl TypeChecker {
                                 actual: (**param_type).clone(),
                             });
                         }
-                        
+  
                         // 计算输出类型（替换形式参数为实际参数）
                         let output_type = self.subst_var_in_expr(output_type_expr, x, &Expr::Var(name.clone()));
-                        
+  
                         // 在扩展上下文中检查函数体
                         let extended_ctx = ctx.extend(name.clone(), (**param_type).clone());
                         self.check(&extended_ctx, body, &self.eval_type(&output_type))
@@ -2967,16 +2979,16 @@ impl TypeChecker {
             Expr::App(f, arg) => {
                 // 推导函数类型
                 let f_type = self.infer(ctx, f)?;
-                
+  
                 // 函数类型应该是Pi类型
                 match f_type {
                     Type::Pi(x, input_type, output_type_expr) => {
                         // 检查参数类型
                         self.check(ctx, arg, &input_type)?;
-                        
+  
                         // 计算输出类型（替换形式参数为实际参数）
                         let output_type = self.subst_var_in_expr(&output_type_expr, &x, arg);
-                        
+  
                         // 检查输出类型与期望类型匹配
                         let eval_output_type = self.eval_type(&output_type);
                         if self.type_eq(&eval_output_type, expected_type) {
@@ -3004,7 +3016,7 @@ impl TypeChecker {
             Expr::Succ(e) => {
                 // 检查表达式类型是否为Nat
                 self.check(ctx, e, &Type::Base(BaseType::Nat))?;
-                
+  
                 // 检查期望类型是否为Nat
                 match expected_type {
                     Type::Base(BaseType::Nat) => Ok(()),
@@ -3017,10 +3029,10 @@ impl TypeChecker {
             Expr::Rec(target, base_case, step_case) => {
                 // 检查目标表达式是否为Nat
                 self.check(ctx, target, &Type::Base(BaseType::Nat))?;
-                
+  
                 // 检查基础情况类型与期望类型匹配
                 self.check(ctx, base_case, expected_type)?;
-                
+  
                 // 构造步进情况的期望类型: (n: Nat) -> (rec: ExpectedType) -> ExpectedType
                 let n_var = Expr::Var("n".to_string());
                 let rec_var = Expr::Var("rec".to_string());
@@ -3033,7 +3045,7 @@ impl TypeChecker {
                         Box::new(Expr::Var("result".to_string())), // 这里应该是期望类型，简化处理
                     )),
                 );
-                
+  
                 // 检查步进情况类型
                 self.check(ctx, step_case, &step_expected)
             }
@@ -3049,10 +3061,10 @@ impl TypeChecker {
                                 actual: (**first_type).clone(),
                             });
                         }
-                        
+  
                         // 计算第二分量期望类型（替换形式参数为第一分量）
                         let second_expected = self.subst_var_in_expr(second_expected_expr, x, first);
-                        
+  
                         // 检查第二分量类型
                         let second_type = self.subst_var_in_expr(second_type_expr, x, first);
                         if !self.type_eq(&self.eval_type(&second_type), &self.eval_type(&second_expected)) {
@@ -3061,7 +3073,7 @@ impl TypeChecker {
                                 actual: self.eval_type(&second_type),
                             });
                         }
-                        
+  
                         // 检查第二分量值
                         self.check(ctx, second, &self.eval_type(&second_type))
                     }
@@ -3071,7 +3083,7 @@ impl TypeChecker {
             Expr::Fst(pair) => {
                 // 推导对的类型
                 let pair_type = self.infer(ctx, pair)?;
-                
+  
                 // 对的类型应该是Sigma类型
                 match pair_type {
                     Type::Sigma(_, first_type, _) => {
@@ -3091,14 +3103,14 @@ impl TypeChecker {
             Expr::Snd(pair) => {
                 // 推导对的类型
                 let pair_type = self.infer(ctx, pair)?;
-                
+  
                 // 对的类型应该是Sigma类型
                 match pair_type {
                     Type::Sigma(x, _, second_type_expr) => {
                         // 计算第二分量类型（替换形式参数为第一分量）
                         let fst_expr = Expr::Fst(pair.clone());
                         let second_type = self.subst_var_in_expr(&second_type_expr, &x, &fst_expr);
-                        
+  
                         // 检查第二分量类型与期望类型匹配
                         let eval_second_type = self.eval_type(&second_type);
                         if self.type_eq(&eval_second_type, expected_type) {
@@ -3120,11 +3132,11 @@ impl TypeChecker {
                         // 检查a和b是否规范等价
                         let a_norm = self.normalize(a);
                         let b_norm = self.normalize(b);
-                        
+  
                         if !self.expr_eq(&a_norm, &b_norm) {
                             return Err(TypeError::EqualityTypeMismatch);
                         }
-                        
+  
                         // 检查expr的类型是否与ty匹配
                         let expr_type = self.infer(ctx, expr)?;
                         if self.type_eq(&expr_type, ty) {
@@ -3141,7 +3153,7 @@ impl TypeChecker {
             }
         }
     }
-    
+  
     /// 推导表达式类型
     fn infer(&self, ctx: &Context, expr: &Expr) -> Result<Type, TypeError> {
         match expr {
@@ -3155,7 +3167,7 @@ impl TypeChecker {
                 // 在扩展上下文中推导函数体类型
                 let extended_ctx = ctx.extend(name.clone(), (**param_type).clone());
                 let body_type = self.infer(&extended_ctx, body)?;
-                
+  
                 // 构造Pi类型
                 Ok(Type::Pi(
                     name.clone(),
@@ -3166,16 +3178,16 @@ impl TypeChecker {
             Expr::App(f, arg) => {
                 // 推导函数类型
                 let f_type = self.infer(ctx, f)?;
-                
+  
                 // 函数类型应该是Pi类型
                 match f_type {
                     Type::Pi(x, input_type, output_type_expr) => {
                         // 检查参数类型
                         self.check(ctx, arg, &input_type)?;
-                        
+  
                         // 计算输出类型（替换形式参数为实际参数）
                         let output_type = self.subst_var_in_expr(&output_type_expr, &x, arg);
-                        
+  
                         Ok(self.eval_type(&output_type))
                     }
                     _ => Err(TypeError::ExpectedPiType(f_type)),
@@ -3188,17 +3200,17 @@ impl TypeChecker {
             Expr::Succ(e) => {
                 // 检查表达式类型是否为Nat
                 self.check(ctx, e, &Type::Base(BaseType::Nat))?;
-                
+  
                 // 后继函数的类型是Nat -> Nat
                 Ok(Type::Base(BaseType::Nat))
             }
             Expr::Rec(target, base_case, step_case) => {
                 // 检查目标表达式是否为Nat
                 self.check(ctx, target, &Type::Base(BaseType::Nat))?;
-                
+  
                 // 推导基础情况类型
                 let base_type = self.infer(ctx, base_case)?;
-                
+  
                 // 构造步进情况的期望类型: (n: Nat) -> (rec: BaseType) -> BaseType
                 let step_expected = Type::Pi(
                     "n".to_string(),
@@ -3209,23 +3221,23 @@ impl TypeChecker {
                         Box::new(self.type_to_expr(&base_type)),
                     )),
                 );
-                
+  
                 // 检查步进情况类型
                 self.check(ctx, step_case, &step_expected)?;
-                
+  
                 // 递归表达式的类型与基础情况类型相同
                 Ok(base_type)
             }
             Expr::Pair(first, second, first_type, second_type_expr) => {
                 // 检查第一分量类型
                 self.check(ctx, first, first_type)?;
-                
+  
                 // 计算第二分量类型
                 let second_type = self.subst_var_in_expr(second_type_expr, &"x".to_string(), first);
-                
+  
                 // 检查第二分量类型
                 self.check(ctx, second, &self.eval_type(&second_type))?;
-                
+  
                 // 构造Sigma类型
                 Ok(Type::Sigma(
                     "x".to_string(),
@@ -3236,7 +3248,7 @@ impl TypeChecker {
             Expr::Fst(pair) => {
                 // 推导对的类型
                 let pair_type = self.infer(ctx, pair)?;
-                
+  
                 // 对的类型应该是Sigma类型
                 match pair_type {
                     Type::Sigma(_, first_type, _) => Ok((**first_type).clone()),
@@ -3246,14 +3258,14 @@ impl TypeChecker {
             Expr::Snd(pair) => {
                 // 推导对的类型
                 let pair_type = self.infer(ctx, pair)?;
-                
+  
                 // 对的类型应该是Sigma类型
                 match pair_type {
                     Type::Sigma(x, _, second_type_expr) => {
                         // 计算第二分量类型（替换形式参数为第一分量）
                         let fst_expr = Expr::Fst(pair.clone());
                         let second_type = self.subst_var_in_expr(&second_type_expr, &x, &fst_expr);
-                        
+  
                         Ok(self.eval_type(&second_type))
                     }
                     _ => Err(TypeError::ExpectedSigmaType(pair_type)),
@@ -3262,7 +3274,7 @@ impl TypeChecker {
             Expr::Refl(expr) => {
                 // 推导表达式类型
                 let expr_type = self.infer(ctx, expr)?;
-                
+  
                 // 构造相等类型
                 Ok(Type::Eq(
                     expr.clone(),
@@ -3272,7 +3284,7 @@ impl TypeChecker {
             }
         }
     }
-    
+  
     /// 检查两个类型是否等价
     fn type_eq(&self, ty1: &Type, ty2: &Type) -> bool {
         match (ty1, ty2) {
@@ -3297,13 +3309,13 @@ impl TypeChecker {
             _ => false,
         }
     }
-    
+  
     /// 检查两个表达式是否等价
     fn expr_eq(&self, e1: &Expr, e2: &Expr) -> bool {
         // 简化实现：归一化后比较
         let e1_norm = self.normalize(e1);
         let e2_norm = self.normalize(e2);
-        
+  
         match (&e1_norm, &e2_norm) {
             (Expr::Var(x1), Expr::Var(x2)) => x1 == x2,
             (Expr::Lam(x1, t1, e1), Expr::Lam(x2, t2, e2)) => {
@@ -3322,7 +3334,7 @@ impl TypeChecker {
                 self.expr_eq(t1, t2) && self.expr_eq(b1, b2) && self.expr_eq(s1, s2)
             }
             (Expr::Pair(a1, b1, t1, e1), Expr::Pair(a2, b2, t2, e2)) => {
-                self.expr_eq(a1, a2) && self.expr_eq(b1, b2) && 
+                self.expr_eq(a1, a2) && self.expr_eq(b1, b2) &&
                 self.type_eq(t1, t2) && self.expr_eq(e1, e2)
             }
             (Expr::Fst(p1), Expr::Fst(p2)) => self.expr_eq(p1, p2),
@@ -3331,7 +3343,7 @@ impl TypeChecker {
             _ => false,
         }
     }
-    
+  
     /// 评估类型表达式
     fn eval_type(&self, expr: &Expr) -> Type {
         // 简化实现：假设表达式已经是类型形式
@@ -3350,7 +3362,7 @@ impl TypeChecker {
             _ => panic!("Cannot evaluate non-type expression as type"),
         }
     }
-    
+  
     /// 将类型转换为表达式
     fn type_to_expr(&self, ty: &Type) -> Expr {
         match ty {
@@ -3360,7 +3372,7 @@ impl TypeChecker {
             _ => panic!("Cannot convert complex type to expression"),
         }
     }
-    
+  
     /// 表达式规范化
     fn normalize(&self, expr: &Expr) -> Expr {
         // 简化实现：仅处理基本情况
@@ -3368,7 +3380,7 @@ impl TypeChecker {
             Expr::App(f, arg) => {
                 let f_norm = self.normalize(f);
                 let arg_norm = self.normalize(arg);
-                
+  
                 match f_norm {
                     Expr::Lam(x, _, body) => {
                         // Beta归约
@@ -3380,7 +3392,7 @@ impl TypeChecker {
             }
             Expr::Fst(pair) => {
                 let pair_norm = self.normalize(pair);
-                
+  
                 match pair_norm {
                     Expr::Pair(a, _, _, _) => (**a).clone(),
                     _ => Expr::Fst(Box::new(pair_norm)),
@@ -3388,7 +3400,7 @@ impl TypeChecker {
             }
             Expr::Snd(pair) => {
                 let pair_norm = self.normalize(pair);
-                
+  
                 match pair_norm {
                     Expr::Pair(_, b, _, _) => (**b).clone(),
                     _ => Expr::Snd(Box::new(pair_norm)),
@@ -3396,7 +3408,7 @@ impl TypeChecker {
             }
             Expr::Rec(target, base, step) => {
                 let target_norm = self.normalize(target);
-                
+  
                 match target_norm {
                     Expr::Nat(0) => {
                         // 基础情况
@@ -3426,7 +3438,7 @@ impl TypeChecker {
             _ => expr.clone(),
         }
     }
-    
+  
     /// 在表达式中替换变量
     fn subst_var_in_expr(&self, expr: &Expr, var: &str, replacement: &Expr) -> Expr {
         match expr {
@@ -3457,7 +3469,7 @@ impl TypeChecker {
             _ => expr.clone(),
         }
     }
-    
+  
     /// 在类型中替换变量
     fn subst_var_in_type(&self, ty: &Type, var: &str, replacement: &Expr) -> Type {
         match ty {
@@ -3491,6 +3503,7 @@ enum TypeError {
     ExpectedEqualityType(Type),
     EqualityTypeMismatch,
 }
+
 ```
 
 ### 1.7.2 使用依赖类型进行程序验证
@@ -3517,17 +3530,18 @@ impl<T, const N: usize> DVector<T, N> {
 // 使用示例
 fn use_dependent_vector() {
     let vec = DVector { elements: [1, 2, 3, 4, 5] };
-    
+  
     // 有效索引
     let idx1 = DIndex::<5, 0> {};
     let idx2 = DIndex::<5, 4> {};
-    
+  
     let v1 = vec.get(idx1);
     let v2 = vec.get(idx2);
-    
+  
     // 编译错误：索引超出范围
     // let idx_invalid = DIndex::<5, 5> {}; // 编译失败，违反 I < N
 }
+
 ```
 
 ## 1.8 分布式系统模型验证
@@ -3901,6 +3915,7 @@ fn verify_thermostat() {
         }
     }
 }
+
 ```
 
 ## 1.9 混合系统验证
@@ -4311,6 +4326,7 @@ fn verify_bouncing_ball() {
         }
     }
 }
+
 ```
 
 ## 1.10 总结与展望

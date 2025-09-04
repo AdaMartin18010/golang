@@ -27,19 +27,6 @@
   - [3.1.9 *Trait*](#*trait*)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，泛型（Generics）是一种允许函数、结构体、枚举、trait和方法接受任意类型作为参数的功能。
 使用泛型可以编写更灵活、可重用的代码。
 以下是泛型的定义和使用方式的解释：
@@ -53,6 +40,7 @@
 struct MyGenericStruct<T> {
     value: T,
 }
+
 ```
 
 这里的 `T` 是一个类型参数，它可以是任何类型。
@@ -66,6 +54,7 @@ fn main() {
     let my_int = MyGenericStruct { value: 10 };
     let my_float = MyGenericStruct { value: 10.5 };
 }
+
 ```
 
 在这个例子中，`my_int` 的类型是 `MyGenericStruct<i32>`，而 `my_float` 的类型是 `MyGenericStruct<f64>`。
@@ -78,6 +67,7 @@ fn main() {
 fn print_value<T>(value: T) {
     println!("Value: {}", value);
 }
+
 ```
 
 这个函数 `print_value` 可以接受任何类型的参数，并尝试打印它。
@@ -97,6 +87,7 @@ fn longest<T: std::fmt::Display>(list: &[T]) -> T {
     }
     longest
 }
+
 ```
 
 在这个例子中，`T` 必须实现 `std::fmt::Display` 特征，以便可以使用 `to_string()` 方法。
@@ -110,6 +101,7 @@ trait Iterator {
     type Item;
     fn next(&mut self) -> Option<Self::Item>;
 }
+
 ```
 
 ## 3.1.6 泛型生命周期
@@ -125,6 +117,7 @@ fn longest_with_an_announcement<'a, T>(x: &'a T, y: &'a T, ann: &'a str) -> &'a 
         y
     }
 }
+
 ```
 
 在这个例子中，`'a` 是一个生命周期参数，它指定了 `x` 和 `y` 引用的生命周期。
@@ -281,6 +274,7 @@ fn main() {
     let result = largest(&strings);
     println!("The longest string is {}", result);
 }
+
 ```
 
 在这个例子中，`largest` 函数使用泛型 `T`，它约束 `T` 必须实现了 `PartialOrd` 和 `Copy` trait。这样，`largest` 函数就可以接受任何可以比较和复制的类型的切片，并返回其中的最大值。

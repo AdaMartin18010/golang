@@ -158,6 +158,7 @@ classDiagram
     Context --> Strategy
     StrategyFactory --> Strategy
     Context --> StrategyFactory
+
 ```
 
 ### 3.3.1.4.2 时序图
@@ -186,6 +187,7 @@ sequenceDiagram
     Context->>StrategyB: Execute(input)
     StrategyB->>Context: Result
     Context->>Client: Result
+
 ```
 
 ### 3.3.1.4.3 状态转换图
@@ -200,6 +202,7 @@ stateDiagram-v2
     Executing --> Error
     Error --> StrategySelected
     Error --> NoStrategy
+
 ```
 
 ## 3.3.1.5 4. Golang实现
@@ -240,6 +243,7 @@ type StrategyResult struct {
     Duration     time.Duration
     Timestamp    time.Time
 }
+
 ```
 
 ### 3.3.1.5.2 基础策略实现
@@ -299,6 +303,7 @@ func (s *ConcreteStrategy) CanHandle(input interface{}) bool {
     }
     return s.matcher(input)
 }
+
 ```
 
 ### 3.3.1.5.3 上下文实现
@@ -420,6 +425,7 @@ func (c *StrategyContext) logStrategyResult(strategy Strategy, input, output int
         log.Printf("Strategy %s succeeded (duration: %v)", result.StrategyName, duration)
     }
 }
+
 ```
 
 ### 3.3.1.5.4 策略工厂实现
@@ -497,6 +503,7 @@ func (f *StrategyFactory) GetAvailableStrategies() []string {
     
     return strategies
 }
+
 ```
 
 ### 3.3.1.5.5 复合策略实现
@@ -595,6 +602,7 @@ func (c *ChainStrategy) CanHandle(input interface{}) bool {
     }
     return false
 }
+
 ```
 
 ### 3.3.1.5.6 具体策略实现
@@ -752,6 +760,7 @@ func (c *CacheStrategy) CanHandle(input interface{}) bool {
     _, ok := input.(string)
     return ok
 }
+
 ```
 
 ## 3.3.1.6 5. 性能分析
@@ -847,6 +856,7 @@ func (p *StrategyPool) Put(strategy *BaseStrategy) {
     strategy.priority = 0
     p.pool.Put(strategy)
 }
+
 ```
 
 ### 3.3.1.6.3 并发性能分析
@@ -957,6 +967,7 @@ func BenchmarkCompositeStrategy(b *testing.B) {
         composite.Execute("test input")
     }
 }
+
 ```
 
 ## 3.3.1.7 6. 应用场景
@@ -1018,6 +1029,7 @@ func (a *AlgorithmSelector) Sort(data []interface{}, algorithm string) ([]interf
     
     return result.([]interface{}), nil
 }
+
 ```
 
 ### 3.3.1.7.2 支付策略系统
@@ -1104,6 +1116,7 @@ func (p *PaymentProcessor) ProcessPayment(amount float64, method string) error {
     _, err = strategy.Execute(amount)
     return err
 }
+
 ```
 
 ### 3.3.1.7.3 压缩策略系统
@@ -1209,6 +1222,7 @@ func (c *CompressionManager) Compress(data []byte, method string) ([]byte, error
     
     return result.([]byte), nil
 }
+
 ```
 
 ## 3.3.1.8 7. 最佳实践
@@ -1302,6 +1316,7 @@ func PerformanceComparisonExample() {
         fmt.Printf("Strategy result: %v (duration: %v)\n", result, duration)
     }
 }
+
 ```
 
 ### 3.3.1.9.2 智能路由系统
@@ -1404,6 +1419,7 @@ func RoutingExample() {
         }
     }
 }
+
 ```
 
 ---

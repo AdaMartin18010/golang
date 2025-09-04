@@ -8,19 +8,6 @@
   - [1.4 注意事项](#注意事项)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中实现自引用（Self-referential structure）
 需要使用 `Box` 或 `Rc`（Reference Counted）智能指针，
 因为 Rust 的所有权规则不允许直接在结构体中包含对自身的直接引用。
@@ -43,6 +30,7 @@ fn main() {
         Box::new(List::Cons(2, Box::new(List::Nil))));
     // 这里创建了一个自引用的链表
 }
+
 ```
 
 在这个例子中，`List` 是一个枚举，它可以是 `Cons`，包含一个 `i32` 和一个 `Box<List>`，或者 `Nil`，表示列表的结束。
@@ -66,6 +54,7 @@ fn main() {
     let node2 = Rc::new(Node { value: 2, next: Some(Rc::clone(&node1)) });
     // node2 的 next 指针引用了 node1，实现了自引用
 }
+
 ```
 
 在这个例子中，我们使用 `Rc` 来创建一个链表，`node2` 的 `next` 指针引用了 `node1`，从而实现了自引用。
@@ -88,6 +77,7 @@ fn main() {
     let inner = Circle { radius: 3.0, parent: RefCell::new(Some(outer)) };
     // 通过 RefCell 实现自引用
 }
+
 ```
 
 在这个例子中，`Circle` 结构体使用 `RefCell` 来包装其 `parent` 字段，允许在运行时改变其内部的值，即使 `Circle` 实例已经被借用。

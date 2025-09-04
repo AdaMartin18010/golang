@@ -50,18 +50,23 @@
 ### 示例
 
 ```python
+
 # 控制流示例
+
 x = 10
 
 # 条件分支
+
 if x > 5:
     print("x 大于 5")
 else:
     print("x 小于或等于 5")
 
 # 循环
+
 for i in range(5):
     print(i)
+
 ```
 
 ## 2. 类型
@@ -80,16 +85,21 @@ for i in range(5):
 ### 2.3 示例
 
 ```python
+
 # 类型示例
+
 # 基本类型
+
 a = 10          # 整数类型
 b = 3.14        # 浮点数类型
 c = True        # 布尔类型
 d = "Hello"     # 字符串类型
 
 # 复合类型
+
 my_list = [1, 2, 3]  # 列表类型
 my_dict = {"key": "value"}  # 字典类型
+
 ```
 
 ## 3. 控制流与类型的关系和区别
@@ -193,17 +203,22 @@ my_dict = {"key": "value"}  # 字典类型
 ### 5 举例说明 (Python)
 
 ```python
+
 # 类型: int (整数)
+
 age = 30
 
 # 变量: age
+
 # 存储年龄的值
 
 # 控制: if-else
+
 if age >= 18:
     print("成年人")
 else:
     print("未成年人")
+
 ```
 
 在这个例子中：

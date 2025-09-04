@@ -310,6 +310,7 @@ Wasm 的核心类型系统形成的范畴 `Cat(Wasm)` 结构相对简单：
     return
   )
 )
+
 ```
 
 这个例子展示了 Wasm 的 `local`, `block`, `loop`, `if`, `br` 指令如何协同工作，实现基本的控制逻辑。
@@ -357,6 +358,7 @@ enum Message {
     Write(String),
     ChangeColor(i32, i32, i32),
 }
+
 ```
 
 编译到 Wasm (概念性，忽略 String 和内存管理细节，假设 String/Color 映射为 i32)：
@@ -413,6 +415,7 @@ enum Message {
 
   ;; ... 后续代码 ...
 )
+
 ```
 
 这个例子展示了和类型如何通过标签和条件跳转 (`br_table`) 在 Wasm 中模拟。
@@ -469,6 +472,7 @@ public:
     float area() override { return 3.14159 * r * r; }
 };
 // ... VTable for Circle contains pointer to Circle::area ...
+
 ```
 
 Wasm 调用 `shape_ptr->area()` 的概念性代码：
@@ -524,6 +528,7 @@ Wasm 调用 `shape_ptr->area()` 的概念性代码：
 
   ;; (需要初始化 table $vtable, e.g., (elem (i32.const 0) $Circle_area))
 )
+
 ```
 
 这个例子展示了 `call_indirect` 如何用于实现动态分发，这是面向对象多态在 Wasm 中的典型实现方式。
@@ -622,6 +627,7 @@ async function fetchData(url: string): Promise<string> {
   console.log("Done.");
   return text;
 }
+
 ```
 
 编译后的 Wasm 状态机 (概念性伪代码/WAT 风格):
@@ -692,6 +698,7 @@ async function fetchData(url: string): Promise<string> {
   call $fetchData_resume
   ;; ... 处理 $fetchData_resume 的返回值 (启动等待等) ...
 )
+
 ```
 
 这个伪代码展示了 `async` 函数如何被分解为状态 (`$fetchData_state`) 和基于状态的跳转。
@@ -798,4 +805,5 @@ WebAssembly 与源语言对比分析
     ├── 4.2 抽象层级差异与权衡 (结构丢失, 性能 vs 抽象, 运行时开销)
     ├── 4.3 各形式化视角洞见总结 (HoTT:维度; Cat:遗忘函子; Cyber:控制层级)
     └── 4.4 未来展望 (Wasm 提案: GC, EH, 线程, 接口类型...)
+
 ```

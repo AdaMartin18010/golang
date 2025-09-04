@@ -21,6 +21,7 @@ Trait 是 Rust 中用于定义共享行为的抽象机制，类似于其他语�
 trait Draw {
     fn draw(&self);
 }
+
 ```
 
 在这个例子中，Draw Trait 定义了一个 draw 方法，任何实现了 Draw Trait 的类型都必须提供 draw 方法的具体实现。
@@ -36,6 +37,7 @@ Trait Object 的语法形式为 dyn Trait，通常需要与指针类型（如 & 
 fn render(scene: &dyn Draw) {
     scene.draw();
 }
+
 ```
 
 在这个例子中，render 函数接受一个实现了 Draw Trait 的 Trait Object，而具体的类型在运行时确定。
@@ -75,6 +77,7 @@ Rust 的特征（Trait）概念、定义、解释和用例
 trait Summary {
     fn summarize(&self) -> String;
 }
+
 ```
 
 在这个例子中，Summary 特征定义了一个方法 summarize，任何实现该特征的类型都必须提供该方法的具体实现。
@@ -101,6 +104,7 @@ impl Printable for Person {
         println!("Person: {}", self.name);
     }
 }
+
 ```
 
 在这个例子中，Printable 特征提供了一个默认的 print 方法，而 Person 结构体实现了 Printable 特征并覆盖了默认的 print 方法。
@@ -113,6 +117,7 @@ impl Printable for Person {
 trait Add<Output = Self> {
     fn add(self, other: Self) -> Output;
 }
+
 ```
 
 在这个例子中，Add 特征定义了一个泛型方法 add，允许不同类型实现该特征并定义自己的加法行为。
@@ -125,6 +130,7 @@ trait Iterator {
     type Item;
     fn next(&mut self) -> Option<Self::Item>;
 }
+
 ```
 
 在这个例子中，Iterator 特征定义了一个关联类型 Item，表示迭代器的元素类型。
@@ -137,6 +143,7 @@ trait Iterator {
 fn output<T: Summary>(item: T) {
     println!("Summary: {}", item.summarize());
 }
+
 ```
 
 在这个例子中，output 函数接受任何实现了 Summary 特征的类型作为参数。
@@ -170,6 +177,7 @@ impl Summary for Weibo {
         format!("Summary: {}", self.content)
     }
 }
+
 ```
 
 在这个例子中，Post 和 Weibo 都实现了 Summary 特征，可以使用 summarize 方法生成摘要。
@@ -200,6 +208,7 @@ impl Printable for Book {
 fn print_item<T: Printable>(item: T) {
     item.print();
 }
+
 ```
 
 在这个例子中，print_item 函数可以接受任何实现了 Printable 特征的类型作为参数，并调用其 print 方法。
@@ -220,6 +229,7 @@ impl Printable for Person {
         println!("Person: {}", self.name);
     }
 }
+
 ```
 
 在这个例子中，Printable 特征提供了一个默认的 print 方法，而 Person 结构体实现了 Printable 特征并覆盖了默认的 print 方法。

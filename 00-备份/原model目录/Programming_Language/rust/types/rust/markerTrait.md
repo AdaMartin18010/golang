@@ -64,7 +64,7 @@
    ```rust:src/lib.rs
    /// 自定义一个标记 trait，表示某种特性
    pub trait MyMarker {}
-   
+  
    // 为结构体实现标记 trait
    pub struct MyType;
    impl MyMarker for MyType {}
@@ -133,6 +133,7 @@ fn main() {
     // i32 自动实现了 Send，因此可以跨线程传递
     run_in_thread(value);
 }
+
 ```
 
 ---
@@ -178,6 +179,7 @@ fn main() {
 
     println!("Result: {}", *counter.lock().unwrap());
 }
+
 ```
 
 在这个示例中：
@@ -243,6 +245,7 @@ fn main() {
     assert_send::<MyStruct>();
     assert_sync::<MyStruct>();
 }
+
 ```
 
 在上面的示例中，使用了两个辅助函数 `assert_send` 和 `assert_sync` 来断言泛型参数是否实现了 `Send` 与 `Sync`。对于基础类型以及只包含基础类型的组合类型，由于它们都满足线程安全条件，因此编译器会自动为它们实现这两个自动 trait，从而使得这些断言通过编译。
@@ -327,6 +330,7 @@ fn main() {
     assert_send_sync::<bool>();
     assert_send_sync::<MyStruct>();
 }
+
 ```
 
 在这个例子中：  

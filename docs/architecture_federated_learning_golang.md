@@ -92,6 +92,7 @@ graph TB
     F --> F1[同步通信]
     F --> F2[异步通信]
     F --> F3[压缩传输]
+
 ```
 
 ## 3. 联邦学习基础
@@ -260,6 +261,7 @@ type ModelAggregator struct {
     Threshold    float64
     Timeout      time.Duration
 }
+
 ```
 
 ### 5.2 训练流程
@@ -274,6 +276,7 @@ graph LR
     F --> G{是否收敛}
     G -->|否| B
     G -->|是| H[完成训练]
+
 ```
 
 ## 6. 分布式挑战
@@ -318,6 +321,7 @@ graph TD
     B --> C[通信层]
     C --> D[隐私保护层]
     D --> E[基础设施层]
+
 ```
 
 ### 7.2 通信优化策略
@@ -404,6 +408,7 @@ func (fc *FederatedCoordinator) executeTrainingRound(task *FederatedTask, global
     
     return nil
 }
+
 ```
 
 ### 8.2 模型聚合器
@@ -467,6 +472,7 @@ func (was *WeightedAggregationStrategy) Aggregate(models []*Model, weights []flo
     // 使用基础策略聚合
     return was.baseStrategy.Aggregate(models, dynamicWeights)
 }
+
 ```
 
 ### 8.3 隐私保护机制
@@ -539,6 +545,7 @@ func (hem *HomomorphicEncryptionManager) SecureAggregate(encryptedModels []*Encr
     
     return aggregatedModel, nil
 }
+
 ```
 
 ### 8.4 参与方管理
@@ -614,6 +621,7 @@ func (pm *ParticipantManager) SelectParticipants(task *FederatedTask) []string {
     
     return selected
 }
+
 ```
 
 ## 9. 形式化建模
@@ -690,4 +698,4 @@ func (pm *ParticipantManager) SelectParticipants(task *FederatedTask) []string {
 
 ---
 
-*本文档为联邦学习架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*
+* 本文档为联邦学习架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*

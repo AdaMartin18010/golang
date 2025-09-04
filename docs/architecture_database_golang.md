@@ -176,6 +176,7 @@ func (dm *DatabaseManager) reconnectPool(pool *ConnectionPool) error {
     pool.pool = db
     return nil
 }
+
 ```
 
 ### 3.5 事务管理
@@ -228,6 +229,7 @@ func (t *Transaction) executeQuery(query Query) error {
         return fmt.Errorf("unsupported query type: %s", query.Type)
     }
 }
+
 ```
 
 ---
@@ -294,6 +296,7 @@ func (rs *RangeSharding) GetShard(key interface{}) (*Shard, error) {
     }
     return nil, fmt.Errorf("no shard found for key: %v", key)
 }
+
 ```
 
 ### 4.2 一致性协议
@@ -386,6 +389,7 @@ func (rp *RaftProtocol) replicateLog(entry *LogEntry) error {
     
     return nil
 }
+
 ```
 
 ## 5. 查询优化与性能调优
@@ -473,6 +477,7 @@ func (qo *QueryOptimizer) generateCandidatePlans(ast *AST) []*ExecutionPlan {
     
     return plans
 }
+
 ```
 
 ### 5.2 索引管理
@@ -547,6 +552,7 @@ func (im *IndexManager) RecommendIndexes(queries []string) []*IndexRecommendatio
     
     return recommendations
 }
+
 ```
 
 ## 6. Golang主流实现与代码示例
@@ -624,6 +630,7 @@ func main() {
   panic(err)
  }
 }
+
 ```
 
 ## 7. 分布式挑战与主流解决方案
@@ -646,6 +653,7 @@ graph TD
     C -- Inventory Not Available --> F(Cancel Order - Failed);
     D -- Payment Failed --> G(Release Inventory);
     G --> F;
+
 ```
 
 **优点**: 高可用性，松耦合，无锁，扩展性好。
@@ -678,6 +686,7 @@ func (r *ReadWriteRouter) selectReplica() *sql.DB {
  // 实现负载均衡策略，如随机或轮询
  return r.Replicas[0]
 }
+
 ```
 
 #### 7.2.2 数据库故障转移 (Database Failover)
@@ -729,4 +738,4 @@ func (r *ReadWriteRouter) selectReplica() *sql.DB {
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

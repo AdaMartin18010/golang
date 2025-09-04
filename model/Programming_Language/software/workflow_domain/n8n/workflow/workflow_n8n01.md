@@ -61,6 +61,7 @@
 
 我将在这个框架下，使用范畴论的语言来描述n8n工作流，分析其结构和功能特性，并提供具体示例。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -296,6 +297,7 @@ function switch(item, expression) {
     default: return outputToDefaultPath(item);
   }
 }
+
 ```
 
 ## 1.4 3. 同构关系：n8n与抽象工作流
@@ -366,12 +368,14 @@ n8n工作流:
 
 ```text
 HTTP请求节点 → JSON解析节点 → 过滤节点 → 数据映射节点 → 数据库插入节点
+
 ```
 
 抽象工作流:
 
 ```text
 数据获取活动 → 数据解析活动 → 数据过滤活动 → 数据转换活动 → 数据存储活动
+
 ```
 
 同构映射代码示例:
@@ -431,6 +435,7 @@ function mapNodeTypeToActivityType(nodeType) {
   };
   return mappings[nodeType] || "GenericActivity";
 }
+
 ```
 
 **示例3.3.2**：客户通知流程同构映射
@@ -529,6 +534,7 @@ function mapNodeToAction(n8nNode) {
     config: mapNodeConfigToActionConfig(n8nNode)
   };
 }
+
 ```
 
 ## 1.6 5. 组合关系：n8n工作流的函子保存性
@@ -601,6 +607,7 @@ function parallelComposition(nodeA, nodeB, nodeC, nodeD) {
     }
   };
 }
+
 ```
 
 ### 1.6.3 组合应用实例
@@ -639,6 +646,7 @@ const completeWorkflow = combineWorkflows([
   customerSegmentationFlow,
   vipCustomerFlow
 ]);
+
 ```
 
 **示例5.3.2**：数据监控与警报工作流
@@ -672,6 +680,7 @@ const completeMonitoring = subWorkflowExecution(
   alertSubWorkflow,
   createNode("LogResults", "n8n-nodes-base.function")
 );
+
 ```
 
 ## 1.7 6. 聚合关系：n8n工作流的余极限表示
@@ -761,6 +770,7 @@ function workflowColimit(subWorkflows, connections) {
   
   return aggregatedWorkflow;
 }
+
 ```
 
 ### 1.7.3 聚合实例分析
@@ -820,6 +830,7 @@ const ecommerceOrderSystem = workflowColimit(
    shippingWorkflow, notificationWorkflow],
   workflowConnections
 );
+
 ```
 
 **示例6.3.2**：多渠道市场活动管理
@@ -866,6 +877,7 @@ const marketingCampaignSystem = workflowColimit(
    emailWorkflow, smsWorkflow, analyticsWorkflow],
   marketingConnections
 );
+
 ```
 
 这两个示例展示了如何使用范畴论中的余极限概念来组织和聚合n8n工作流，创建模块化、可维护的复杂系统。
@@ -1002,6 +1014,7 @@ n8n工作流以JSON格式存储，包含节点定义和连接关系：
     }
   }
 }
+
 ```
 
 **范畴论分析**：
@@ -1120,6 +1133,7 @@ class WorkflowExecutor {
   processNodeFunction(node, inputData) { /* ... */ }
   getInputConnections(nodeId) { /* ... */ }
 }
+
 ```
 
 ### 1.8.3 实际应用示例
@@ -1230,6 +1244,7 @@ const websiteMonitoringWorkflow = {
     }
   }
 };
+
 ```
 
 **范畴论分析**：
@@ -1380,6 +1395,7 @@ const dataIntegrationWorkflow = {
     }
   }
 };
+
 ```
 
 **范畴论分析**：

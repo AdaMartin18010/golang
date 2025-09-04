@@ -13,19 +13,6 @@
   - [1.9 8. 使用示例](#8-使用示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个使用 Rust 2024 + Tokio + Generator 特性实现的完整数据结构和算法集合。
 
 ## 1.1 目录
@@ -50,6 +37,7 @@ futures = "0.3"
 async-trait = "0.1"
 async-stream = "0.3"
 pin-project = "1.0"
+
 ```
 
 ## 1.3 2. 异步迭代器和生成器基础实现
@@ -100,6 +88,7 @@ macro_rules! async_generator {
         }
     };
 }
+
 ```
 
 ## 1.4 3. 异步排序算法实现
@@ -198,6 +187,7 @@ pub async fn async_mergesort<T: Ord + Send + Clone>(arr: Vec<T>) -> Vec<T> {
 
     result
 }
+
 ```
 
 ## 1.5 4. 异步树结构实现
@@ -268,6 +258,7 @@ impl<T: Ord + Send + Clone> AsyncBinaryTree<T> {
         })
     }
 }
+
 ```
 
 ## 1.6 5. 异步图算法实现
@@ -337,6 +328,7 @@ impl AsyncGraph {
         })
     }
 }
+
 ```
 
 ## 1.7 6. 异步查找算法实现
@@ -401,6 +393,7 @@ impl<T: Ord + Clone> AsyncSkipList<T> {
         final_pos
     }
 }
+
 ```
 
 ## 1.8 7. 异步分治算法实现
@@ -449,6 +442,7 @@ pub async fn async_max_subarray(arr: &[i32]) -> i32 {
 
     left_max.max(right_max).max(max_crossing)
 }
+
 ```
 
 ## 1.9 8. 使用示例
@@ -491,6 +485,7 @@ async fn main() {
     let max_sum = async_max_subarray(&arr).await;
     println!("Maximum subarray sum: {}", max_sum);
 }
+
 ```
 
 这个实现提供了以下特性：

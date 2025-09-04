@@ -192,6 +192,7 @@ func (f *Facade) ComplexOperation() string {
     
     return fmt.Sprintf("Complex: %s | %s", result1, result2)
 }
+
 ```
 
 ### 3.2.1.4.2 配置外观模式
@@ -391,6 +392,7 @@ func (f *ConfigFacade) initializeServer() error {
     fmt.Printf("Initializing server: %s:%d (%s mode)\n", config.Host, config.Port, config.Mode)
     return nil
 }
+
 ```
 
 ### 3.2.1.4.3 服务外观模式
@@ -599,6 +601,7 @@ func (f *ECommerceFacade) calculateTotal(items []OrderItem) float64 {
     }
     return total
 }
+
 ```
 
 ## 3.2.1.5 4. 工程案例
@@ -769,6 +772,7 @@ func (g *GatewayFacade) HealthCheck() map[string]bool {
     
     return health
 }
+
 ```
 
 ### 3.2.1.5.2 数据库连接池外观
@@ -929,6 +933,7 @@ func (d *DatabaseFacade) Close() error {
         }
     }
 }
+
 ```
 
 ## 3.2.1.6 5. 批判性分析

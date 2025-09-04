@@ -62,6 +62,7 @@ Temporal工作流系统形式化架构分析
         ├── 工作流模型到状态机转换
         ├── Temporal到BPMN转换
         └── 代码到模型提取
+
 ```
 
 ## 1. 引言
@@ -87,6 +88,7 @@ pub struct WorkflowExecutionState {
     state_machines: HashMap<String, StateMachine>,
     event_history: Vec<HistoryEvent>,
 }
+
 ```
 
 #### 2.1.2 确定性重放
@@ -104,6 +106,7 @@ pub fn replay_workflow(history: Vec<HistoryEvent>, workflow_code: WorkflowFn) ->
     // 从恢复的状态继续执行
     workflow_code(&mut workflow_state)
 }
+
 ```
 
 #### 2.1.3 故障恢复机制
@@ -125,6 +128,7 @@ func ActivityOptions() {
         },
     }
 }
+
 ```
 
 ### 2.2 控制流构建
@@ -144,6 +148,7 @@ pub async fn sequential_workflow(ctx: Context) -> Result<()> {
     
     Ok(())
 }
+
 ```
 
 #### 2.2.2 并行执行
@@ -171,6 +176,7 @@ func ParallelExecution(ctx workflow.Context) error {
     
     return nil
 }
+
 ```
 
 #### 2.2.3 条件分支
@@ -187,6 +193,7 @@ pub async fn conditional_workflow(ctx: Context, condition: bool) -> Result<()> {
     
     Ok(())
 }
+
 ```
 
 #### 2.2.4 循环结构
@@ -208,6 +215,7 @@ func LoopWorkflow(ctx workflow.Context, iterations int) error {
     }
     return nil
 }
+
 ```
 
 ### 2.3 组合构建
@@ -228,6 +236,7 @@ pub async fn parent_workflow(ctx: Context) -> Result<String> {
     
     Ok(format!("Parent completed with child result: {}", child_result))
 }
+
 ```
 
 #### 2.3.2 信号机制
@@ -248,6 +257,7 @@ func SignalWorkflow(ctx workflow.Context) error {
         paymentInfo,
     ).Get(ctx, nil)
 }
+
 ```
 
 #### 2.3.3 查询机制
@@ -275,6 +285,7 @@ impl OrderWorkflow {
         Ok(())
     }
 }
+
 ```
 
 #### 2.3.4 动态工作流
@@ -301,6 +312,7 @@ func DynamicWorkflow(ctx workflow.Context, workflowType string, input interface{
         input,
     ).Get(ctx, nil)
 }
+
 ```
 
 ## 3. 完备性分析和形式证明
@@ -345,6 +357,7 @@ impl WorkflowStateMachine {
         self.final_states.contains(&self.current_state)
     }
 }
+
 ```
 
 #### 3.1.2 Petri网表示
@@ -388,6 +401,7 @@ impl PetriNet {
         Ok(())
     }
 }
+
 ```
 
 #### 3.1.3 进程代数表达
@@ -403,6 +417,7 @@ enum Process {
     Parallel(Box<Process>, Box<Process>), // 并行
     Restriction(HashSet<Channel>, Box<Process>), // 限制
 }
+
 ```
 
 ### 3.2 完备性证明
@@ -463,6 +478,7 @@ pub async fn simulate_turing_machine(ctx: Context, machine: TuringMachine) -> Re
     
     Ok(())
 }
+
 ```
 
 由此可证明Temporal工作流系统可以模拟任意图灵机，因此具有图灵完备性。
@@ -518,6 +534,7 @@ pub async fn non_deterministic_workflow(ctx: Context) -> Result<()> {
     
     Ok(())
 }
+
 ```
 
 #### 3.3.2 状态大小限制
@@ -544,6 +561,7 @@ func LargeStateWorkflow(ctx workflow.Context) error {
     
     return nil
 }
+
 ```
 
 #### 3.3.3 时间相关限制
@@ -580,6 +598,7 @@ func TimeConstrainedWorkflow(ctx workflow.Context) error {
         // 可以考虑在适当时机终止并创建新工作流
     }
 }
+
 ```
 
 ### 3.4 使用场景与对应方案
@@ -629,6 +648,7 @@ pub async fn loan_approval_workflow(ctx: Context, application: LoanApplication) 
         }
     }
 }
+
 ```
 
 #### 3.4.2 微服务编排
@@ -698,6 +718,7 @@ func OrderFulfillmentWorkflow(ctx workflow.Context, order Order) error {
     // 4. 客户通知
     return workflow.ExecuteActivity(ctx, NotificationService, order, shipmentResult).Get(ctx, nil)
 }
+
 ```
 
 #### 3.4.3 分布式事务
@@ -769,6 +790,7 @@ pub async fn saga_transaction_workflow(ctx: Context, transaction_data: Transacti
     
     Ok(result)
 }
+
 ```
 
 ## 4. 模型转换与等价关系
@@ -790,6 +812,7 @@ pub struct DataFlow {
 
 // 执行流表示
 pub struct ExecutionFlow {
+
 ### 4.1 数据流-执行流-调度-控制流等价关系（续）
 
 #### 4.1.1 数据流与执行流映射（续）
@@ -807,7 +830,7 @@ pub fn data_flow_to_execution_flow(data_flow: &DataFlow) -> ExecutionFlow {
         tasks: Vec::new(),
         dependencies: HashMap::new(),
     };
-    
+  
     // 为每个数据节点创建任务
     for (node_id, node) in &data_flow.nodes {
         let task = Task {
@@ -816,20 +839,21 @@ pub fn data_flow_to_execution_flow(data_flow: &DataFlow) -> ExecutionFlow {
         };
         execution_flow.tasks.push(task);
     }
-    
+  
     // 根据数据边建立依赖关系
     for (source, target) in &data_flow.edges {
         let source_task = TaskId::new(source);
         let target_task = TaskId::new(target);
-        
+  
         execution_flow.dependencies
             .entry(target_task)
             .or_insert_with(Vec::new)
             .push(source_task);
     }
-    
+  
     execution_flow
 }
+
 ```
 
 #### 4.1.2 执行流与调度关系
@@ -853,72 +877,73 @@ pub fn execution_flow_to_scheduling_plan(
         estimated_start_times: HashMap::new(),
         priority_levels: HashMap::new(),
     };
-    
+  
     // 拓扑排序任务
     let sorted_tasks = topological_sort(&execution_flow);
-    
+  
     // 计算最早开始时间
     let earliest_start_times = compute_earliest_start_times(&execution_flow, &sorted_tasks);
-    
+  
     // 为每个任务分配工作器
     for task in sorted_tasks {
         // 找到能处理此任务的适合工作器
         let required_capabilities = task_requirements.get(&task.id)
             .unwrap_or(&Vec::new());
-        
+  
         let suitable_workers: Vec<_> = worker_capabilities.iter()
             .filter(|(_, caps)| required_capabilities.iter()
                 .all(|req| caps.contains(req)))
             .collect();
-        
+  
         // 简单策略：选择第一个合适的工作器
         if let Some((worker_id, _)) = suitable_workers.first() {
             plan.task_assignments.insert(task.id.clone(), worker_id.clone());
-            plan.estimated_start_times.insert(task.id.clone(), 
+            plan.estimated_start_times.insert(task.id.clone(),
                 earliest_start_times.get(&task.id).cloned().unwrap_or_default());
-            
+  
             // 设置优先级 - 这里根据依赖数量计算
             let deps_count = execution_flow.dependencies
                 .get(&task.id).map_or(0, |deps| deps.len());
             plan.priority_levels.insert(task.id.clone(), Priority::from(deps_count));
         }
     }
-    
+  
     plan
 }
 
 // 将调度计划转换为Temporal的实际调度
 pub fn scheduling_plan_to_temporal_tasks(plan: &SchedulingPlan) -> Vec<TemporalTaskQueue> {
     let mut task_queues = HashMap::new();
-    
+  
     // 根据工作器分组任务
     for (task_id, worker_id) in &plan.task_assignments {
         task_queues.entry(worker_id.clone())
             .or_insert_with(Vec::new)
             .push(task_id.clone());
     }
-    
+  
     // 为每个工作器创建任务队列
     task_queues.into_iter()
         .map(|(worker_id, tasks)| {
             let mut queue = TemporalTaskQueue::new(worker_id.to_string());
-            
+  
             // 按估计开始时间排序任务
             let mut sorted_tasks = tasks;
-            sorted_tasks.sort_by_key(|task_id| 
+            sorted_tasks.sort_by_key(|task_id|
                 plan.estimated_start_times.get(task_id).cloned().unwrap_or_default());
-            
+  
             for task in sorted_tasks {
                 queue.add_task(
                     task.to_string(),
                     plan.priority_levels.get(&task).cloned().unwrap_or_default()
                 );
             }
-            
+  
             queue
         })
         .collect()
 }
+
 ```
 
 #### 4.1.3 控制流抽象
@@ -949,7 +974,7 @@ func ControlFlowToExecutionFlow(cfg *ControlFlowGraph) *ExecutionFlow {
         Tasks: make([]*Task, 0),
         Dependencies: make(map[string][]string),
     }
-    
+  
     // 处理每种控制节点类型
     for _, node := range cfg.Nodes {
         switch node.Type {
@@ -960,7 +985,7 @@ func ControlFlowToExecutionFlow(cfg *ControlFlowGraph) *ExecutionFlow {
                 Operation: node.Operation,
             }
             executionFlow.Tasks = append(executionFlow.Tasks, task)
-            
+  
         case Decision:
             // 决策节点映射为条件任务
             task := &Task{
@@ -970,7 +995,7 @@ func ControlFlowToExecutionFlow(cfg *ControlFlowGraph) *ExecutionFlow {
                 },
             }
             executionFlow.Tasks = append(executionFlow.Tasks, task)
-            
+  
         case Fork:
             // 并行分支节点映射为并行启动器任务
             task := &Task{
@@ -978,7 +1003,7 @@ func ControlFlowToExecutionFlow(cfg *ControlFlowGraph) *ExecutionFlow {
                 Operation: &ParallelOperation{},
             }
             executionFlow.Tasks = append(executionFlow.Tasks, task)
-            
+  
         case Join:
             // 合并节点映射为等待任务
             task := &Task{
@@ -988,20 +1013,21 @@ func ControlFlowToExecutionFlow(cfg *ControlFlowGraph) *ExecutionFlow {
             executionFlow.Tasks = append(executionFlow.Tasks, task)
         }
     }
-    
+  
     // 根据控制边创建依赖关系
     for _, edge := range cfg.Edges {
         sourceTask := getTaskIDForControlNode(edge.Source)
         targetTask := getTaskIDForControlNode(edge.Target)
-        
+  
         executionFlow.Dependencies[targetTask] = append(
-            executionFlow.Dependencies[targetTask], 
+            executionFlow.Dependencies[targetTask],
             sourceTask,
         )
     }
-    
+  
     return executionFlow
 }
+
 ```
 
 ### 4.2 模型转换方法
@@ -1025,13 +1051,13 @@ pub fn workflow_to_state_machine(workflow_code: &str) -> Result<WorkflowStateMac
         initial_state: State::new("Initial"),
         final_states: HashSet::new(),
     };
-    
+  
     // 分析工作流代码，提取状态和转换
     let ast = parse_workflow(workflow_code)?;
-    
+  
     // 添加初始状态
     sm.states.insert(sm.initial_state.clone());
-    
+  
     // 活动提取
     let mut current_state = sm.initial_state.clone();
     for node in ast.traverse() {
@@ -1040,23 +1066,23 @@ pub fn workflow_to_state_machine(workflow_code: &str) -> Result<WorkflowStateMac
                 // 活动生成一个新状态
                 let next_state = State::new(format!("After_{}", activity.name));
                 sm.states.insert(next_state.clone());
-                
+  
                 // 添加转换：当前状态 --(活动完成)--> 下一状态
                 sm.transitions.insert(
                     (current_state.clone(), Event::ActivityCompleted(activity.name.clone())),
                     next_state.clone(),
                 );
-                
+  
                 current_state = next_state;
             },
             AstNode::Condition(condition) => {
                 // 条件分支创建多个可能的转换
                 let true_state = State::new(format!("{}_{}_true", current_state.name, condition.name));
                 let false_state = State::new(format!("{}_{}_false", current_state.name, condition.name));
-                
+  
                 sm.states.insert(true_state.clone());
                 sm.states.insert(false_state.clone());
-                
+  
                 // 添加条件转换
                 sm.transitions.insert(
                     (current_state.clone(), Event::ConditionTrue(condition.name.clone())),
@@ -1066,7 +1092,7 @@ pub fn workflow_to_state_machine(workflow_code: &str) -> Result<WorkflowStateMac
                     (current_state.clone(), Event::ConditionFalse(condition.name.clone())),
                     false_state.clone(),
                 );
-                
+  
                 // 处理条件分支中的代码...
                 // ...
             },
@@ -1077,9 +1103,10 @@ pub fn workflow_to_state_machine(workflow_code: &str) -> Result<WorkflowStateMac
             // 处理其他节点类型...
         }
     }
-    
+  
     Ok(sm)
 }
+
 ```
 
 #### 4.2.2 Temporal到BPMN转换
@@ -1108,7 +1135,7 @@ func (c *TemporalToBPMNConverter) Convert() (*BPMNModel, error) {
     if err != nil {
         return nil, err
     }
-    
+  
     // 创建BPMN起始事件
     startEvent := &BPMNElement{
         ID:   "start",
@@ -1116,11 +1143,11 @@ func (c *TemporalToBPMNConverter) Convert() (*BPMNModel, error) {
         Name: "Start",
     }
     c.BPMNElements = append(c.BPMNElements, startEvent)
-    
+  
     // 转换工作流主体
     lastElementID := "start"
     c.convertWorkflowBody(ast.Body, &lastElementID)
-    
+  
     // 创建BPMN结束事件
     endEvent := &BPMNElement{
         ID:   "end",
@@ -1128,13 +1155,13 @@ func (c *TemporalToBPMNConverter) Convert() (*BPMNModel, error) {
         Name: "End",
     }
     c.BPMNElements = append(c.BPMNElements, endEvent)
-    
+  
     // 连接最后一个元素到结束事件
     c.BPMNConnections = append(c.BPMNConnections, &BPMNConnection{
         SourceRef: lastElementID,
         TargetRef: "end",
     })
-    
+  
     // 创建最终BPMN模型
     return &BPMNModel{
         Elements: c.BPMNElements,
@@ -1156,15 +1183,15 @@ func (c *TemporalToBPMNConverter) convertWorkflowBody(body *WorkflowBody, lastEl
                 },
             }
             c.BPMNElements = append(c.BPMNElements, activity)
-            
+  
             // 连接前一个元素到此活动
             c.BPMNConnections = append(c.BPMNConnections, &BPMNConnection{
                 SourceRef: *lastElementID,
                 TargetRef: activity.ID,
             })
-            
+  
             *lastElementID = activity.ID
-            
+  
         case *IfNode:
             // 创建BPMN排他网关（决策）
             gateway := &BPMNElement{
@@ -1173,23 +1200,23 @@ func (c *TemporalToBPMNConverter) convertWorkflowBody(body *WorkflowBody, lastEl
                 Name: "Decision",
             }
             c.BPMNElements = append(c.BPMNElements, gateway)
-            
+  
             // 连接前一个元素到网关
             c.BPMNConnections = append(c.BPMNConnections, &BPMNConnection{
                 SourceRef: *lastElementID,
                 TargetRef: gateway.ID,
             })
-            
+  
             // 转换true分支
             truePathLastID := gateway.ID
             c.convertWorkflowBody(n.ThenBody, &truePathLastID)
-            
+  
             // 转换false分支
             falsePathLastID := gateway.ID
             if n.ElseBody != nil {
                 c.convertWorkflowBody(n.ElseBody, &falsePathLastID)
             }
-            
+  
             // 创建合并网关
             mergeGateway := &BPMNElement{
                 ID:   fmt.Sprintf("merge_%d", len(c.BPMNElements)),
@@ -1197,7 +1224,7 @@ func (c *TemporalToBPMNConverter) convertWorkflowBody(body *WorkflowBody, lastEl
                 Name: "Merge",
             }
             c.BPMNElements = append(c.BPMNElements, mergeGateway)
-            
+  
             // 连接两个分支到合并网关
             c.BPMNConnections = append(c.BPMNConnections, &BPMNConnection{
                 SourceRef: truePathLastID,
@@ -1207,13 +1234,14 @@ func (c *TemporalToBPMNConverter) convertWorkflowBody(body *WorkflowBody, lastEl
                 SourceRef: falsePathLastID,
                 TargetRef: mergeGateway.ID,
             })
-            
+  
             *lastElementID = mergeGateway.ID
-            
+  
         // 处理其他节点类型：循环、并行等
         }
     }
 }
+
 ```
 
 #### 4.2.3 代码到模型提取
@@ -1235,10 +1263,10 @@ pub fn extract_model_from_code(code: &str) -> Result<WorkflowModel> {
         data_dependencies: Vec::new(),
         error_handlers: Vec::new(),
     };
-    
+  
     // 解析代码为AST
     let ast = parse_code(code)?;
-    
+  
     // 提取活动
     for activity_call in ast.find_all_activity_calls() {
         model.activities.push(Activity {
@@ -1249,7 +1277,7 @@ pub fn extract_model_from_code(code: &str) -> Result<WorkflowModel> {
             retry_policy: extract_retry_policy(&activity_call),
         });
     }
-    
+  
     // 提取控制结构
     for control_flow in ast.find_all_control_flows() {
         match control_flow.kind {
@@ -1284,7 +1312,7 @@ pub fn extract_model_from_code(code: &str) -> Result<WorkflowModel> {
             },
         }
     }
-    
+  
     // 提取数据依赖
     for assignment in ast.find_all_assignments() {
         if let Some(activity_result) = assignment.right_side.as_activity_result() {
@@ -1295,7 +1323,7 @@ pub fn extract_model_from_code(code: &str) -> Result<WorkflowModel> {
             });
         }
     }
-    
+  
     // 提取错误处理
     for error_handler in ast.find_all_error_handlers() {
         model.error_handlers.push(ErrorHandler {
@@ -1304,9 +1332,10 @@ pub fn extract_model_from_code(code: &str) -> Result<WorkflowModel> {
             error_type: error_handler.error_type.clone(),
         });
     }
-    
+  
     Ok(model)
 }
+
 ```
 
 ## 5. 结论

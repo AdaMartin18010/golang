@@ -84,6 +84,7 @@ pub fn fibonacci(n: i32) -> i32 {
     }
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
+
 ```
 
 编译后的 WebAssembly 指令更接近机器语言，执行效率更高。
@@ -113,6 +114,7 @@ WebAssembly.instantiateStreaming(fetch('module.wasm'), importObject)
     const result = obj.instance.exports.processMemory();
     console.log(result);
   });
+
 ```
 
 ## 1.3 2. WebAssembly 在前端架构中的定位
@@ -185,6 +187,7 @@ class ImageProcessor {
     );
   }
 }
+
 ```
 
 ### 1.3.2 前端分层架构中的 WebAssembly
@@ -206,6 +209,7 @@ class ImageProcessor {
 ├─────────────────────────────────┤
 │         工具与服务层             │ 网络、存储、环境API
 └─────────────────────────────────┘
+
 ```
 
 这种架构实现了责任分离和性能优化的平衡。
@@ -280,6 +284,7 @@ async function processImage() {
   const outputCtx = document.getElementById('output').getContext('2d');
   outputCtx.putImageData(blurredData, 0, 0);
 }
+
 ```
 
 这种模式适用于计算密集型的独立功能，如图像处理、物理模拟等。
@@ -341,6 +346,7 @@ class DataProcessor {
   
   // 其他数据处理方法...
 }
+
 ```
 
 这种模式保持了 API 一致性，同时提供了性能优化，适合渐进式引入 WebAssembly。
@@ -392,6 +398,7 @@ impl Component for Counter {
 fn main() {
     yew::start_app::<Counter>();
 }
+
 ```
 
 这种架构在性能要求极高或需要复用现有非 JavaScript 代码库的场景中适用。
@@ -481,6 +488,7 @@ async function initWasm() {
 function processDataWithWasm(data) {
   // 使用 WebAssembly 处理数据...
 }
+
 ```
 
 多线程架构适用于数据处理、模拟和渲染等场景，能充分利用多核心处理器。
@@ -542,6 +550,7 @@ async function processUserRequest(requestType, data) {
       throw new Error(`未知请求类型: ${requestType}`);
   }
 }
+
 ```
 
 这种架构能减少初始加载时间，实现更好的资源利用。
@@ -667,6 +676,7 @@ function App() {
     </WasmProvider>
   );
 }
+
 ```
 
 ### 1.6.2 Vue 集成架构
@@ -746,6 +756,7 @@ export default defineComponent({
     </div>
   `
 });
+
 ```
 
 ## 1.7 6. 案例分析：大规模前端 WebAssembly 应用
@@ -773,6 +784,7 @@ AutoCAD Web 版是 WebAssembly 在复杂前端应用中的典型案例：
 ├───────────────────────────────────────────────────────────┤
 │                     浏览器 API 层                          │
 └───────────────────────────────────────────────────────────┘
+
 ```
 
 关键架构特点：
@@ -894,6 +906,7 @@ class ImageEditor {
   
   // 其他方法...
 }
+
 ```
 
 ## 1.8 7. 前端 WebAssembly 架构挑战与解决方案
@@ -934,6 +947,7 @@ class WasmMemoryManager {
   // 分配内存并跟踪
   alloc(bytes) {
     const ptr = this.allocate(bytes
+
 ```javascript
   // 分配内存并跟踪
   alloc(bytes) {
@@ -948,7 +962,7 @@ class WasmMemoryManager {
       this.allocations.set(newPtr, bytes);
       return newPtr;
     }
-    
+  
     this.allocations.set(ptr, bytes);
     return ptr;
   }
@@ -959,7 +973,7 @@ class WasmMemoryManager {
       console.warn(`尝试释放未跟踪的内存地址: ${ptr}`);
       return false;
     }
-    
+  
     this.deallocate(ptr);
     this.allocations.delete(ptr);
     return true;
@@ -969,19 +983,19 @@ class WasmMemoryManager {
   copyToWasm(array, type = Uint8Array) {
     const bytes = array.length * type.BYTES_PER_ELEMENT;
     const ptr = this.alloc(bytes);
-    
+  
     let view;
     if (type === Uint8Array) view = this.u8;
     else if (type === Int32Array) view = this.i32;
     else if (type === Float32Array) view = this.f32;
     else if (type === Float64Array) view = this.f64;
     else throw new Error(`不支持的类型: ${type.name}`);
-    
+  
     const offset = ptr / type.BYTES_PER_ELEMENT;
     for (let i = 0; i < array.length; i++) {
       view[offset + i] = array[i];
     }
-    
+  
     return {
       ptr,
       bytes,
@@ -997,14 +1011,14 @@ class WasmMemoryManager {
     else if (type === Float32Array) view = this.f32;
     else if (type === Float64Array) view = this.f64;
     else throw new Error(`不支持的类型: ${type.name}`);
-    
+  
     const offset = ptr / type.BYTES_PER_ELEMENT;
     const result = new type(length);
-    
+  
     for (let i = 0; i < length; i++) {
       result[i] = view[offset + i];
     }
-    
+  
     return result;
   }
   
@@ -1018,7 +1032,7 @@ class WasmMemoryManager {
   readString(ptr) {
     let end = ptr;
     while (this.u8[end] !== 0) end++;
-    
+  
     return new TextDecoder().decode(this.u8.slice(ptr, end));
   }
   
@@ -1030,6 +1044,7 @@ class WasmMemoryManager {
     this.allocations.clear();
   }
 }
+
 ```
 
 ### 1.8.2 加载优化与缓存策略
@@ -1055,15 +1070,15 @@ class WasmLoader {
     if (!await this.isCacheSupported()) {
       return null;
     }
-    
+  
     try {
       const cache = await caches.open('wasm-cache-v1');
       const response = await cache.match(url);
-      
+  
       if (response && response.ok) {
         return await response.arrayBuffer();
       }
-      
+  
       return null;
     } catch (err) {
       console.warn('从缓存加载 WebAssembly 失败:', err);
@@ -1076,7 +1091,7 @@ class WasmLoader {
     if (!await this.isCacheSupported()) {
       return false;
     }
-    
+  
     try {
       const cache = await caches.open('wasm-cache-v1');
       const response = new Response(buffer);
@@ -1094,36 +1109,36 @@ class WasmLoader {
     if (this.moduleCache.has(url)) {
       return this.moduleCache.get(url);
     }
-    
+  
     // 检查正在加载的承诺
     if (this.loadingPromises.has(url)) {
       return this.loadingPromises.get(url);
     }
-    
+  
     // 创建加载承诺
     const loadPromise = (async () => {
       try {
         // 尝试从缓存加载
         let buffer = await this.loadFromCache(url);
-        
+  
         // 如果缓存中没有，从网络加载
         if (!buffer) {
           console.log(`从网络加载 WebAssembly 模块: ${url}`);
           const response = await fetch(url);
           buffer = await response.arrayBuffer();
-          
+  
           // 保存到缓存
           await this.saveToCache(url, buffer);
         } else {
           console.log(`从缓存加载 WebAssembly 模块: ${url}`);
         }
-        
+  
         // 编译模块
         const module = await WebAssembly.compile(buffer);
-        
+  
         // 存入模块缓存
         this.moduleCache.set(url, module);
-        
+  
         return module;
       } catch (err) {
         console.error(`加载 WebAssembly 模块失败: ${url}`, err);
@@ -1133,10 +1148,10 @@ class WasmLoader {
         this.loadingPromises.delete(url);
       }
     })();
-    
+  
     // 记录加载承诺
     this.loadingPromises.set(url, loadPromise);
-    
+  
     return loadPromise;
   }
   
@@ -1147,17 +1162,17 @@ class WasmLoader {
     if (this.instanceCache.has(cacheKey)) {
       return this.instanceCache.get(cacheKey);
     }
-    
+  
     try {
       // 加载模块
       const module = await this.loadModule(url);
-      
+  
       // 实例化
       const instance = await WebAssembly.instantiate(module, importObject);
-      
+  
       // 存入实例缓存
       this.instanceCache.set(cacheKey, instance);
-      
+  
       return instance;
     } catch (err) {
       console.error(`实例化 WebAssembly 模块失败: ${url}`, err);
@@ -1174,7 +1189,7 @@ class WasmLoader {
   async clearCache() {
     this.moduleCache.clear();
     this.instanceCache.clear();
-    
+  
     if (await this.isCacheSupported()) {
       try {
         const cache = await caches.open('wasm-cache-v1');
@@ -1187,10 +1202,11 @@ class WasmLoader {
         return false;
       }
     }
-    
+  
     return false;
   }
 }
+
 ```
 
 ### 1.8.3 调试和性能分析工具
@@ -1207,7 +1223,7 @@ class WasmPerformanceMonitor {
       memoryUsage: new Map(),
       callCount: new Map()
     };
-    
+  
     this.observers = [];
   }
   
@@ -1235,7 +1251,7 @@ class WasmPerformanceMonitor {
   instrumentModule(instance, moduleName) {
     const wrappedExports = {};
     const exports = instance.exports;
-    
+  
     // 遍历所有导出
     for (const [name, exportedFunction] of Object.entries(exports)) {
       // 只包装函数
@@ -1244,34 +1260,34 @@ class WasmPerformanceMonitor {
         if (!this.metrics.callCount.has(name)) {
           this.metrics.callCount.set(name, 0);
         }
-        
+  
         // 包装函数以记录性能指标
         wrappedExports[name] = (...args) => {
           // 增加调用计数
           const currentCount = this.metrics.callCount.get(name) || 0;
           this.metrics.callCount.set(name, currentCount + 1);
-          
+  
           // 记录内存使用
           const memoryBefore = exports.memory ? exports.memory.buffer.byteLength : 0;
-          
+  
           // 记录执行时间
           const startTime = performance.now();
           const result = exportedFunction(...args);
           const endTime = performance.now();
-          
+  
           // 计算指标
           const executionTime = endTime - startTime;
           this.metrics.executionTime.set(name, executionTime);
-          
+  
           // 记录内存使用变化
           if (exports.memory) {
             const memoryAfter = exports.memory.buffer.byteLength;
             this.metrics.memoryUsage.set(name, memoryAfter - memoryBefore);
           }
-          
+  
           // 通知观察者
           this.notify('executionTime', `${moduleName}.${name}`, executionTime);
-          
+  
           return result;
         };
       } else {
@@ -1279,7 +1295,7 @@ class WasmPerformanceMonitor {
         wrappedExports[name] = exportedFunction;
       }
     }
-    
+  
     return wrappedExports;
   }
   
@@ -1307,7 +1323,7 @@ class WasmPerformancePanel {
   constructor(monitor) {
     this.monitor = monitor;
     this.container = null;
-    
+  
     // 注册为观察者
     this.monitor.addObserver(this);
   }
@@ -1331,36 +1347,36 @@ class WasmPerformancePanel {
       z-index: 10000;
       border-top-left-radius: 5px;
     `;
-    
+  
     // 创建标题
     const title = document.createElement('h3');
     title.textContent = 'WebAssembly 性能监控';
     title.style.margin = '0 0 10px 0';
     this.container.appendChild(title);
-    
+  
     // 创建指标容器
     this.metricsContainer = document.createElement('div');
     this.container.appendChild(this.metricsContainer);
-    
+  
     // 创建控制按钮
     const controls = document.createElement('div');
     controls.style.marginTop = '10px';
-    
+  
     const resetButton = document.createElement('button');
     resetButton.textContent = '重置指标';
     resetButton.onclick = () => this.monitor.resetMetrics();
-    
+  
     const toggleButton = document.createElement('button');
     toggleButton.textContent = '隐藏面板';
     toggleButton.onclick = () => this.toggle();
-    
+  
     controls.appendChild(resetButton);
     controls.appendChild(toggleButton);
     this.container.appendChild(controls);
-    
+  
     // 添加到文档
     document.body.appendChild(this.container);
-    
+  
     // 初始更新
     this.updateView();
   }
@@ -1368,10 +1384,10 @@ class WasmPerformancePanel {
   // 更新视图
   updateView() {
     const report = this.monitor.getPerformanceReport();
-    
+  
     // 清空容器
     this.metricsContainer.innerHTML = '';
-    
+  
     // 创建各指标部分
     this.createMetricSection('模块加载时间 (ms)', report.loadTime);
     this.createMetricSection('函数执行时间 (ms)', report.executionTime);
@@ -1383,16 +1399,16 @@ class WasmPerformancePanel {
   createMetricSection(title, metrics) {
     const section = document.createElement('div');
     section.style.marginBottom = '10px';
-    
+  
     const sectionTitle = document.createElement('h4');
     sectionTitle.textContent = title;
     sectionTitle.style.margin = '5px 0';
     section.appendChild(sectionTitle);
-    
+  
     const table = document.createElement('table');
     table.style.width = '100%';
     table.style.borderCollapse = 'collapse';
-    
+  
     // 添加表头
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
@@ -1405,26 +1421,26 @@ class WasmPerformancePanel {
     });
     thead.appendChild(headerRow);
     table.appendChild(thead);
-    
+  
     // 添加表体
     const tbody = document.createElement('tbody');
     for (const [name, value] of Object.entries(metrics)) {
       const row = document.createElement('tr');
-      
+  
       const nameCell = document.createElement('td');
       nameCell.textContent = name;
       nameCell.style.padding = '2px 5px';
       row.appendChild(nameCell);
-      
+  
       const valueCell = document.createElement('td');
       valueCell.textContent = typeof value === 'number' ? value.toFixed(2) : value;
       valueCell.style.padding = '2px 5px';
       row.appendChild(valueCell);
-      
+  
       tbody.appendChild(row);
     }
     table.appendChild(tbody);
-    
+  
     section.appendChild(table);
     this.metricsContainer.appendChild(section);
   }
@@ -1440,6 +1456,7 @@ class WasmPerformancePanel {
     this.updateView();
   }
 }
+
 ```
 
 ## 1.9 8. 未来趋势与发展方向
@@ -1476,50 +1493,50 @@ class ComponentBasedApp {
     if (this.loadedComponents.has(name)) {
       return this.loadedComponents.get(name);
     }
-    
+  
     const componentInfo = this.componentRegistry.get(name);
     if (!componentInfo) {
       throw new Error(`未知组件: ${name}`);
     }
-    
+  
     // 先加载依赖
     const dependencies = {};
     for (const dep of componentInfo.dependencies) {
       dependencies[dep] = await this.loadComponent(dep);
     }
-    
+  
     // 加载组件模块
     console.log(`加载组件: ${name} 从 ${componentInfo.url}`);
-    
+  
     // 使用新的组件模型 API
     const component = await WebAssembly.compileComponent(
       await fetch(componentInfo.url).then(r => r.arrayBuffer())
     );
-    
+  
     // 构建导入对象
     const importObject = {};
     for (const [depName, depInstance] of Object.entries(dependencies)) {
       importObject[depName] = depInstance.exports;
     }
-    
+  
     // 实例化组件
     const instance = await WebAssembly.instantiateComponent(component, importObject);
-    
+  
     // 存储加载的组件
     componentInfo.loaded = true;
     this.loadedComponents.set(name, instance);
-    
+  
     return instance;
   }
   
   // 使用组件导出的功能
   async callComponentFunction(componentName, functionName, ...args) {
     const component = await this.loadComponent(componentName);
-    
+  
     if (!component.exports[functionName]) {
       throw new Error(`组件 ${componentName} 未导出函数 ${functionName}`);
     }
-    
+  
     return component.exports[functionName](...args);
   }
 }
@@ -1544,13 +1561,14 @@ async function initializeApp() {
   
   // 调用组件功能
   const result = await app.callComponentFunction(
-    'api', 
-    'handleRequest', 
+    'api',
+    'handleRequest',
     { path: '/users', method: 'GET' }
   );
   
   console.log('API响应:', result);
 }
+
 ```
 
 ### 1.9.2 跨平台 WebAssembly 架构
@@ -1588,11 +1606,11 @@ class CrossPlatformApp {
       exceptionHandling: false,
       storage: false
     };
-    
+  
     // 检测 WebAssembly 特性支持
     if (typeof WebAssembly !== 'undefined') {
       capabilities.threading = typeof SharedArrayBuffer !== 'undefined';
-      
+  
       // 检测 SIMD 支持
       if (WebAssembly.validate) {
         const simdTest = new Uint8Array([
@@ -1604,33 +1622,33 @@ class CrossPlatformApp {
         ]);
         capabilities.simd = WebAssembly.validate(simdTest);
       }
-      
+  
       // 检测其他特性...
     }
-    
+  
     // 检测存储能力
     capabilities.storage = (
       typeof localStorage !== 'undefined' ||
       typeof indexedDB !== 'undefined' ||
       (this.platform === 'node' && typeof require !== 'undefined')
     );
-    
+  
     return capabilities;
   }
   
   // 初始化应用
   async initialize() {
     if (this.isInitialized) return;
-    
+  
     console.log(`正在初始化平台: ${this.platform}`);
     console.log('平台能力:', this.platformCapabilities);
-    
+  
     // 加载平台特定的适配器
     await this.loadPlatformAdapter();
-    
+  
     // 加载核心模块
     await this.loadCoreModules();
-    
+  
     this.isInitialized = true;
     console.log('应用初始化完成');
   }
@@ -1638,11 +1656,11 @@ class CrossPlatformApp {
   // 加载平台适配器
   async loadPlatformAdapter() {
     const adapterUrl = `/adapters/${this.platform}-adapter.wasm`;
-    
+  
     try {
       const adapter = await this.loadWasmModule('platform-adapter', adapterUrl);
       this.modules.set('platform-adapter', adapter);
-      
+  
       console.log(`已加载平台适配器: ${this.platform}`);
     } catch (err) {
       console.error(`加载平台适配器失败:`, err);
@@ -1654,13 +1672,13 @@ class CrossPlatformApp {
   async loadCoreModules() {
     // 根据平台能力选择合适的模块变体
     const variant = this.platformCapabilities.threading ? 'threaded' : 'single';
-    
+  
     const coreModules = [
       { name: 'core-runtime', url: `/core/runtime-${variant}.wasm` },
       { name: 'core-storage', url: `/core/storage-${this.platform}.wasm` },
       { name: 'core-ui', url: `/core/ui-${this.platform}.wasm` }
     ];
-    
+  
     for (const module of coreModules) {
       try {
         const instance = await this.loadWasmModule(
@@ -1678,9 +1696,9 @@ class CrossPlatformApp {
   // 加载 WebAssembly 模块
   async loadWasmModule(name, url) {
     console.log(`加载模块: ${name} 从 ${url}`);
-    
+  
     const importObject = this.createImportObject(name);
-    
+  
     if (this.platform === 'web') {
       // Web 平台使用 instantiateStreaming
       const { instance } = await WebAssembly.instantiateStreaming(
@@ -1703,24 +1721,24 @@ class CrossPlatformApp {
     const importObject = {
       env: {}
     };
-    
+  
     // 添加平台适配器
     if (moduleName !== 'platform-adapter' && this.modules.has('platform-adapter')) {
       importObject.platform = this.modules.get('platform-adapter').exports;
     }
-    
+  
     // 添加核心运行时
     if (moduleName !== 'core-runtime' && this.modules.has('core-runtime')) {
       importObject.runtime = this.modules.get('core-runtime').exports;
     }
-    
+  
     // 添加其他已加载模块
     for (const [name, module] of this.modules.entries()) {
       if (name !== moduleName && name !== 'platform-adapter' && name !== 'core-runtime') {
         importObject[name.replace('core-', '')] = module.exports;
       }
     }
-    
+  
     return importObject;
   }
   
@@ -1729,10 +1747,10 @@ class CrossPlatformApp {
     if (!this.isInitialized) {
       await this.initialize();
     }
-    
+  
     // 获取核心运行时
     const runtime = this.modules.get('core-runtime');
-    
+  
     // 调用入口点
     if (typeof runtime.exports[entryPoint] === 'function') {
       return runtime.exports[entryPoint]();
@@ -1748,6 +1766,7 @@ async function startApplication() {
   await app.initialize();
   await app.run();
 }
+
 ```
 
 ## 1.10 9. 总结与最佳实践

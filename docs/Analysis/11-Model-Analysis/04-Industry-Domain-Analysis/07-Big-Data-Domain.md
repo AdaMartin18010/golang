@@ -22,19 +22,6 @@
   - [11.4.1.8 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.4.1.1 目录
 
 1. [概述](#概述)
@@ -413,6 +400,7 @@ func (tf *TransformFunction) calculateAggregate(records []*Record, aggregate, fi
         return 0.0
     }
 }
+
 ```
 
 ### 11.4.1.4.2 数据处理引擎
@@ -594,6 +582,7 @@ func (pe *ProcessingEngine) CancelTask(taskID string) error {
     
     return nil
 }
+
 ```
 
 ## 11.4.1.5 分布式计算
@@ -826,6 +815,7 @@ func (w *MapReduceWorker) executeReducePhase(job *MapReduceJob) error {
     
     return nil
 }
+
 ```
 
 ## 11.4.1.6 流处理
@@ -993,6 +983,7 @@ func (s *Stream) Stop() error {
     
     return nil
 }
+
 ```
 
 ## 11.4.1.7 最佳实践
@@ -1044,6 +1035,7 @@ func HandleBigDataError(err error, taskID, jobID string) *BigDataError {
         }
     }
 }
+
 ```
 
 ### 11.4.1.7.2 2. 监控和日志
@@ -1111,6 +1103,7 @@ func (l *BigDataLogger) LogDataProcessed(records []*Record, duration time.Durati
         zap.Duration("duration", duration),
     )
 }
+
 ```
 
 ### 11.4.1.7.3 3. 测试策略
@@ -1224,6 +1217,7 @@ func BenchmarkTransformFunction_Process(b *testing.B) {
         }
     }
 }
+
 ```
 
 ---

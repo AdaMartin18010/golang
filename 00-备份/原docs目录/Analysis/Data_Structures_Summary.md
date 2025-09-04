@@ -13,6 +13,7 @@ type ADT[T any] interface {
     IsEmpty() bool
     Clear()
 }
+
 ```
 
 ### Complexity Analysis
@@ -31,6 +32,7 @@ type Array[T any] struct {
 }
 
 // Operations: O(1) access, O(n) search/insert/delete
+
 ```
 
 ### Linked List
@@ -47,6 +49,7 @@ type LinkedList[T any] struct {
 }
 
 // Operations: O(n) access/search, O(1) insert front, O(n) insert back
+
 ```
 
 ### Stack (LIFO)
@@ -58,6 +61,7 @@ type Stack[T any] struct {
 }
 
 // Operations: O(1) push/pop/peek
+
 ```
 
 ### Queue (FIFO)
@@ -70,6 +74,7 @@ type Queue[T any] struct {
 }
 
 // Operations: O(1) enqueue/dequeue/front
+
 ```
 
 ## Tree Data Structures
@@ -84,6 +89,7 @@ type TreeNode[T any] struct {
 }
 
 // Traversals: O(n) inorder/preorder/postorder
+
 ```
 
 ### Binary Search Tree
@@ -96,6 +102,7 @@ type BinarySearchTree[T comparable] struct {
 
 // Operations: O(h) where h is height
 // Average case: O(log n), Worst case: O(n)
+
 ```
 
 ## Hash Table
@@ -108,6 +115,7 @@ type HashTable[K comparable, V any] struct {
 }
 
 // Operations: O(1) average case, O(n) worst case
+
 ```
 
 ## Graph
@@ -119,6 +127,7 @@ type Graph[T comparable] struct {
 }
 
 // Operations: O(1) add vertex/edge, O(V+E) traversal
+
 ```
 
 ## Key Theorems

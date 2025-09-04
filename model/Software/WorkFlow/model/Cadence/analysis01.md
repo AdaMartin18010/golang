@@ -24,19 +24,6 @@
     - [1.6.2 多层嵌套工作流示例](#多层嵌套工作流示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Cadence工作流系统的形式化架构分析](#cadence工作流系统的形式化架构分析)
@@ -77,6 +64,7 @@ E: 事件集合
 s₀ ∈ S: 初始状态
 F ⊆ S: 终止状态集合
 H: 历史事件序列
+
 ```
 
 从形式化角度，Cadence工作流系统是一个基于事件驱动的确定性状态机，其主要特点是通过历史记录重建状态。
@@ -88,6 +76,7 @@ C = (W, R, O) 其中：
 W: 工作流集合
 R: 关系集合，定义工作流间的组合关系
 O: 操作集合，定义工作流间的交互操作
+
 ```
 
 这个模型将Cadence表示为一个工作流构成的代数系统，支持各种组合操作。
@@ -102,12 +91,14 @@ Cadence的执行语义可以通过以下规则集形式化表示：
 ExecutionStep: (s, e) → (s', e') 其中
 s, s' ∈ S: 前后状态
 e, e' ∈ E: 触发事件和产生事件
+
 ```
 
 **2. 决定性原则：**
 
 ```rust
 ∀s ∈ S, ∀e ∈ E, |{s' | (s,e) → (s',e')}| ≤ 1
+
 ```
 
 即给定状态和事件，下一状态是唯一确定的（如果存在）。
@@ -116,6 +107,7 @@ e, e' ∈ E: 触发事件和产生事件
 
 ```rust
 s_current = Replay(s₀, H)
+
 ```
 
 当前状态可以通过从初始状态重放历史事件序列完全重建。这是Cadence的核心机制，确保即使在失败后也能恢复正确的状态。
@@ -128,6 +120,7 @@ Cadence工作流的组合性可以形式化为以下特性：
 
 ```rust
 ∀w₁, w₂ ∈ W, ∃op ∈ O: op(w₁, w₂) ∈ W
+
 ```
 
 任意两个工作流的组合仍然是一个有效工作流。
@@ -137,6 +130,7 @@ Cadence工作流的组合性可以形式化为以下特性：
 ```rust
 ∀w_parent, w_child ∈ W, ∃r_parent_child ∈ R:
 Hierarchy(w_parent, w_child, r_parent_child) ∈ W
+
 ```
 
 父子工作流形成的层次结构构成一个复合工作流。
@@ -146,6 +140,7 @@ Hierarchy(w_parent, w_child, r_parent_child) ∈ W
 ```rust
 ∀w₁, w₂ ∈ W, ∃signal ∈ Signals:
 Interaction(w₁, w₂, signal) ∈ ValidExecutions
+
 ```
 
 工作流间可通过信号机制进行交互。
@@ -166,6 +161,7 @@ SubWorkflow(parent, child) :=
   child.Execute(): S_child × I_child → S_child × O_child,
   ∃trigger: S_parent → I_child,
   ∃update: S_parent × O_child → S_parent
+
 ```
 
 此模型显示父工作流可以启动子工作流，并根据子工作流的结果更新自身状态。
@@ -195,6 +191,7 @@ func ParentWorkflow(ctx workflow.Context, input string) (string, error) {
     
     return "Parent processed: " + childResult, nil
 }
+
 ```
 
 **多层嵌套能力验证：**
@@ -204,6 +201,7 @@ Cadence支持工作流的多层嵌套，可以形式化为：
 ```rust
 ∀n ∈ ℕ, ∃W = {w₁, w₂, ..., wₙ} ⊆ W:
   Hierarchy(w₁, w₂) ∧ Hierarchy(w₂, w₃) ∧ ... ∧ Hierarchy(wₙ₋₁, wₙ)
+
 ```
 
 这表明Cadence支持任意深度的工作流嵌套，理论上没有深度限制。
@@ -217,6 +215,7 @@ Cadence提供以下工作流组合规则：
 ```rust
 Sequential(w₁, w₂) := 
   Execute(): (I₁ → (O₁ → (I₂ → O₂)))
+
 ```
 
 **2. 并行组合：**
@@ -224,6 +223,7 @@ Sequential(w₁, w₂) :=
 ```rust
 Parallel(w₁, w₂) :=
   Execute(): ((I₁ × I₂) → (O₁ × O₂))
+
 ```
 
 **3. 条件组合：**
@@ -231,6 +231,7 @@ Parallel(w₁, w₂) :=
 ```rust
 Conditional(condition, w₁, w₂) :=
   Execute(): (I → (condition(I) ? O₁ : O₂))
+
 ```
 
 以下是Cadence Go SDK中组合模式示例：
@@ -282,6 +283,7 @@ func CompositeWorkflow(ctx workflow.Context, input Input) (Output, error) {
         AdditionalData: append(parallelResult1.Data, parallelResult2.Data...),
     }, nil
 }
+
 ```
 
 ### 1.3.3 嵌套边界与限制
@@ -292,6 +294,7 @@ func CompositeWorkflow(ctx workflow.Context, input Input) (Output, error) {
 
 ```rust
 ∀w ∈ W, |History(w)| ≤ HistorySizeLimit
+
 ```
 
 Cadence默认限制历史记录大小，这可能限制工作流的复杂性。
@@ -300,6 +303,7 @@ Cadence默认限制历史记录大小，这可能限制工作流的复杂性。
 
 ```rust
 ∀w_path ∈ ExecutionPaths(w), |w_path| ≤ MaxPathLength
+
 ```
 
 长执行路径可能受到超时设置的限制。
@@ -308,6 +312,7 @@ Cadence默认限制历史记录大小，这可能限制工作流的复杂性。
 
 ```rust
 NestingDepth(w) ≤ f(AvailableResources)
+
 ```
 
 嵌套深度受系统资源限制，特别是内存和存储。
@@ -325,6 +330,7 @@ func LongRunningWorkflow(ctx workflow.Context, param string, iteration int) erro
     // 历史记录增长过大时，继续为新的执行
     return workflow.NewContinueAsNewError(ctx, LongRunningWorkflow, param, iteration+1)
 }
+
 ```
 
 ## 1.4 3. 图结构工作流支持
@@ -340,6 +346,7 @@ GraphWorkflow := (V, E, δ) 其中：
 V: 顶点集合，表示工作流状态或活动
 E: 边集合，表示状态转换或活动依赖
 δ: V × E → V 转换函数
+
 ```
 
 Cadence提供的控制流原语使其能够表达任意有向图结构：
@@ -348,6 +355,7 @@ Cadence提供的控制流原语使其能够表达任意有向图结构：
 
 ```rust
 ∀G(V,E) 为DAG, ∃w ∈ W: StructureOf(w) ≅ G
+
 ```
 
 其中≅表示同构，即存在映射将工作流结构映射到图结构。
@@ -356,6 +364,7 @@ Cadence提供的控制流原语使其能够表达任意有向图结构：
 
 ```rust
 ∀G(V,E) 为有向图(可含环), ∃w ∈ W: StructureOf(w) ≅ G
+
 ```
 
 Cadence支持循环和条件分支，能够表达任意有向图。
@@ -393,6 +402,7 @@ func FanOutFanInWorkflow(ctx workflow.Context, inputs []string) ([]string, error
 
     return results, nil
 }
+
 ```
 
 **2. 动态分支模式：**
@@ -425,6 +435,7 @@ func DynamicBranchingWorkflow(ctx workflow.Context, input Input) (Output, error)
     // 合并所有分支结果
     return aggregateResults(results), nil
 }
+
 ```
 
 **3. 动态子工作流图：**
@@ -471,6 +482,7 @@ func DynamicGraphWorkflow(ctx workflow.Context, graphSpec GraphSpecification) (G
     
     return buildGraphResult(nodeResults, graphSpec), nil
 }
+
 ```
 
 ### 1.4.3 环路和反向边处理
@@ -501,6 +513,7 @@ func LoopWorkflow(ctx workflow.Context, iterations int) error {
     }
     return nil
 }
+
 ```
 
 **2. 递归工作流支持：**
@@ -529,6 +542,7 @@ func RecursiveWorkflow(ctx workflow.Context, state State) (Output, error) {
     
     return result, err
 }
+
 ```
 
 **3. 状态机实现：**
@@ -565,6 +579,7 @@ func StateMachineWorkflow(ctx workflow.Context, initialState State) (FinalState,
     
     return FinalState{State: currentState}, nil
 }
+
 ```
 
 ## 1.5 4. 工作流拓扑的完备性分析
@@ -622,6 +637,7 @@ func StateMachineWorkflow(ctx workflow.Context, initialState State) (FinalState,
 
 ```rust
 |History(w)| ≤ HistorySizeLimit (默认值有限)
+
 ```
 
 对于非常复杂的图结构，历史记录可能会超过此限制。
@@ -632,6 +648,7 @@ func StateMachineWorkflow(ctx workflow.Context, initialState State) (FinalState,
 
 ```rust
 ExecutionTime(w) ≤ WorkflowExecutionTimeout
+
 ```
 
 长时间运行的复杂拓扑可能受超时限制。
@@ -648,6 +665,7 @@ Cadence在处理大型历史记录时效率较低，这可能影响具有复杂�
 
 ```rust
 NestingDepth(w) ≤ f(AvailableResources)
+
 ```
 
 嵌套深度受可用资源限制。
@@ -808,6 +826,7 @@ func isEntryNode(nodeID string, entryNodes []string) bool {
     }
     return false
 }
+
 ```
 
 这个实现可以执行任意有向图结构，包括有环图（通过条件边处理循环）。

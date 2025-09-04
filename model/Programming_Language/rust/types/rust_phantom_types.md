@@ -279,6 +279,7 @@ fn main() {
     // high_priority_scheduler.schedule(low_task); // 错误：类型不匹配
     // low_priority_scheduler.schedule(high_task); // 错误：类型不匹配
 }
+
 ```
 
 ## 1.8 总结

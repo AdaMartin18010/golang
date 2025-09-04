@@ -47,6 +47,7 @@ async fn main() {
 
     println!("Result: {}", *mutex.lock().await);
 }
+
 ```
 
 ## 2. 信号量（Semaphore）
@@ -82,6 +83,7 @@ async fn main() {
             handle.await.unwrap();
         }
     }
+
 ```
 
 ## 3. 屏障（Barrier）
@@ -115,6 +117,7 @@ async fn main() {
             handle.await.unwrap();
         }
     }
+
 ```
 
 ## 4. 通道（Channel）
@@ -149,6 +152,7 @@ MPSC 通道
             println!("Received: {}", msg);
         }
     }
+
 ```
 
 ## 5. 通知（Notify）
@@ -176,6 +180,7 @@ Notify：用于任务间的通知，不携带数据。
         notify.notify_one();
         handle.await.unwrap();
     }
+
 ```
 
 思维导图
@@ -210,6 +215,7 @@ graph TD
     F --> F1[通知]
     F --> F2[任务间通知]
     F --> F3[唤醒机制]
+
 ```
 
 Tokio 同步机制

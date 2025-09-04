@@ -46,6 +46,7 @@ async fn async_function() {
 async fn main() {
     async_function().await;
 }
+
 ```
 
 在这个示例中：
@@ -87,6 +88,7 @@ async fn main() {
         Err(e) => println!("发生错误：{}", e),
     }
 }
+
 ```
 
 在这个示例中：

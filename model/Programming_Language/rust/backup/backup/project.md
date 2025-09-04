@@ -22,19 +22,6 @@
   - [2.5 9. 总结](#9-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Rust 项目结构没有严格的规范，但遵循了一些常见的模式，以下是常见的 Rust 项目结构模式：
 
 ## 1.1 1. 二进制项目模式
@@ -51,6 +38,7 @@ my_binary_project/
 ├── Cargo.toml           # 项目的配置文件
 ├── benches/             # 基准测试文件
 └── tests/               # 集成测试文件
+
 ```
 
 ### 1.1.1 特点
@@ -72,6 +60,7 @@ my_library/
 │   └── example.rs       # 库的使用示例
 ├── Cargo.toml
 └── tests/               # 集成测试
+
 ```
 
 ### 1.2.1 特点
@@ -91,6 +80,7 @@ my_project/
 │   └── tests/
 │       └── test_file.rs # 集成测试文件
 └── Cargo.toml
+
 ```
 
 ### 1.3.1 特点
@@ -109,6 +99,7 @@ version = "0.1.0"
 edition = "2021"
 
 # 2 2 2 2 2 2 2 依赖管理
+
 [dependencies]
 serde = "1.0"
 tokio = { version = "1.0", features = ["full"] }
@@ -116,6 +107,7 @@ tokio = { version = "1.0", features = ["full"] }
 [[bin]]
 name = "my_binary"
 path = "src/bin/my_binary.rs"
+
 ```
 
 ### 2 2 2 2 2 2 2 特点
@@ -145,6 +137,7 @@ my_project/
 │       └── mod.rs
 │       └── config.rs
 └── Cargo.toml
+
 ```
 
 ### 2.1.1 特点
@@ -181,6 +174,7 @@ impl Drawable for Square {
 fn render(shape: &dyn Drawable) {
     shape.draw();
 }
+
 ```
 
 ### 2.2.1 特点
@@ -200,6 +194,7 @@ fn main() {
     let squares: Vec<_> = numbers.iter().map(|x| x * x).collect();
     println!("{:?}", squares);
 }
+
 ```
 
 ### 2.3.1 特点
@@ -233,6 +228,7 @@ fn main() {
     let person = Person::new("Alice".to_string(), 30);
     person.greet();
 }
+
 ```
 
 ### 2.4.1 特点

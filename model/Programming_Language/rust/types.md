@@ -9,19 +9,6 @@
   - [1.5 Composite Data Types in Rust](#composite-data-types-in-rust)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 Compound Data Types
 
 - **Definition**: Compound data types, also known as complex data types, are data types that can store multiple values of different data types in a single structure. They are essentially a collection of primitive data types.

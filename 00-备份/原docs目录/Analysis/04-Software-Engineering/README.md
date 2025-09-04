@@ -38,6 +38,7 @@
   \item F: 功能集合
   \item Q: 质量属性集合
 \end{itemize}
+
 ```
 
 ### 2.2 形式化分析
@@ -67,6 +68,7 @@ project/
   |-- configs/
   |-- scripts/
   |-- test/
+
 ```
 
 ### 3.3 工程实践
@@ -88,6 +90,7 @@ graph TD;
   B --> C[编码实现];
   C --> D[测试验证];
   D --> E[部署运维];
+
 ```
 
 ### 4.2 质量属性数学表达
@@ -95,6 +98,7 @@ graph TD;
 ```latex
 \textbf{定理 4.1} (高内聚低耦合):
 \forall c_i, c_j \in C, Cohesion(c_i) \uparrow, Coupling(c_i, c_j) \downarrow \implies Q(S) \uparrow
+
 ```
 
 ---

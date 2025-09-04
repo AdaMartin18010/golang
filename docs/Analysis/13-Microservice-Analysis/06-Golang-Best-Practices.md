@@ -23,19 +23,6 @@
     - [13.1.8.3 应用场景](#应用场景)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 13.1.1 目录
 
 1. [概述](#概述)
@@ -93,6 +80,7 @@ project/
 ├── docker-compose.yml    // Docker编排
 ├── Makefile              // 构建脚本
 └── README.md             // 项目说明
+
 ```
 
 ### 13.1.3.2 模块化设计
@@ -238,6 +226,7 @@ func (ma *MicroserviceApp) topologicalSort(
     visited[name] = true
     *order = append(*order, module)
 }
+
 ```
 
 ## 13.1.4 代码组织
@@ -480,6 +469,7 @@ func (uds *UserDomainService) Authenticate(email, password string) (*User, error
     
     return user, nil
 }
+
 ```
 
 ## 13.1.5 错误处理
@@ -627,6 +617,7 @@ func ErrorMiddleware(logger *zap.Logger) gin.HandlerFunc {
         }
     }
 }
+
 ```
 
 ## 13.1.6 并发编程
@@ -825,6 +816,7 @@ func (cm *ConcurrentMap) Keys() []string {
     }
     return keys
 }
+
 ```
 
 ## 13.1.7 性能优化
@@ -1005,6 +997,7 @@ func (c *Cache) evictLRU() {
         delete(c.data, lruKey)
     }
 }
+
 ```
 
 ### 13.1.7.2 算法优化
@@ -1148,6 +1141,7 @@ func (sm *StringMatcher) Search(text string) []int {
     
     return matches
 }
+
 ```
 
 ## 13.1.8 总结

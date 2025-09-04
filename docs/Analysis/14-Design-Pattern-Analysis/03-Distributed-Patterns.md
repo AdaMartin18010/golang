@@ -35,19 +35,6 @@
     - [14.1.9.2 成功要素](#成功要素)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 14.1.1 概述
 
 分布式模式是构建大规模分布式系统的核心设计模式。本文档基于Golang技术栈，深入分析各种分布式模式的设计、实现和性能特征。
@@ -373,6 +360,7 @@ func (c *ServiceDiscoveryClient) ClearCache() {
     defer c.mu.Unlock()
     c.cache = make(map[string]*Service)
 }
+
 ```
 
 ## 14.1.3 2. 熔断器模式 (Circuit Breaker)
@@ -683,6 +671,7 @@ func (m *CircuitBreakerManager) GetAllStats() map[string]interface{} {
     }
     return stats
 }
+
 ```
 
 ## 14.1.4 3. API网关模式 (API Gateway)
@@ -941,6 +930,7 @@ func (s *GatewayServer) Start() error {
 func (s *GatewayServer) Shutdown(ctx context.Context) error {
     return s.server.Shutdown(ctx)
 }
+
 ```
 
 ## 14.1.5 4. Saga模式
@@ -1112,6 +1102,7 @@ func (m *SagaManager) ExecuteSaga(id string) error {
     
     return saga.Execute()
 }
+
 ```
 
 ## 14.1.6 5. 性能分析

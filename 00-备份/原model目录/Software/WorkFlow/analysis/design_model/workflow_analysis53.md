@@ -148,6 +148,7 @@
     ├── 5.4 实现路径与分层策略
     ├── 5.5 权衡决策框架
     └── 5.6 形式化验证方法
+
 ```
 
 ## 1. 从分布式系统工程实践中提炼代码模型
@@ -164,6 +165,7 @@ LoadBalancer<T> := {
   healthCheck: Resource → Boolean
   metrics: Resource → ResourceMetrics
 }
+
 ```
 
 **性质约束**：
@@ -195,6 +197,7 @@ RoundRobin<T> implements LoadBalancer<T> {
     return result
   }
 }
+
 ```
 
 **证明**：轮询策略满足公平性
@@ -211,6 +214,7 @@ RoundRobin<T> implements LoadBalancer<T> {
 4. 对于任意m个工作项，r₁被分配的次数为⌊m/n⌋ + (1 if m%n ≥ k₁+1 else 0)
 5. 对于任意m个工作项，r₂被分配的次数为⌊m/n⌋ + (1 if m%n ≥ k₂+1 else 0)
 6. 因此差值最大为1
+
 ```
 
 **最少连接策略 (Least Connections)**：
@@ -232,6 +236,7 @@ LeastConnections<T> implements LoadBalancer<T> {
     return result
   }
 }
+
 ```
 
 **一致性哈希策略 (Consistent Hashing)**：
@@ -272,6 +277,7 @@ ConsistentHashing<T> implements LoadBalancer<T> {
     return result
   }
 }
+
 ```
 
 **证明**：一致性哈希满足单调性
@@ -285,6 +291,7 @@ ConsistentHashing<T> implements LoadBalancer<T> {
 3. 在R'下，如果hash(w)到下一个资源节点的区间不包含r_new的任何虚拟节点，则w仍映射到r
 4. 只有当hash(w)到下一个资源节点的区间包含r_new的某个虚拟节点时，w才会被重新映射到r_new
 5. 由于hash函数的均匀性，受影响的工作项比例约为r_new的虚拟节点数除以环上总虚拟节点数
+
 ```
 
 #### 1.1.3 负载均衡高级策略
@@ -316,6 +323,7 @@ WeightedLoadBalancer<T> extends LoadBalancer<T> {
     return result
   }
 }
+
 ```
 
 **动态适应性负载均衡**：
@@ -336,6 +344,7 @@ AdaptiveLoadBalancer<T> extends LoadBalancer<T> {
     return result
   }
 }
+
 ```
 
 ### 1.2 容错策略模式化
@@ -371,6 +380,7 @@ CircuitBreakerPolicy := {
   recordFailure: () → Void
   canExecute: () → Boolean
 }
+
 ```
 
 **策略组合模型**：
@@ -408,6 +418,7 @@ CompositeErrorPolicy := {
     return compositeCB
   }
 }
+
 ```
 
 #### 1.2.2 容错策略实现与证明
@@ -430,6 +441,7 @@ ExponentialBackoffRetry implements ErrorPolicy {
     return delay + jitter
   }
 }
+
 ```
 
 **证明**：指数退避策略在高负载下的系统稳定性
@@ -446,6 +458,7 @@ ExponentialBackoffRetry implements ErrorPolicy {
 6. 系统总负载L'与初始负载L的关系为：L' = L·(1 + p·∑(1/2^i))，其中i从1到maxAttempts
 7. 由于∑(1/2^i)收敛到1，L'有上界L·(1+p)
 8. 因此，即使在高失败率下，系统负载也不会无限增长
+
 ```
 
 **熔断器模式形式验证**：
@@ -489,6 +502,7 @@ CircuitBreaker implements CircuitBreakerPolicy {
     return true
   }
 }
+
 ```
 
 **证明**：熔断器的安全性和活性
@@ -507,6 +521,7 @@ CircuitBreaker implements CircuitBreakerPolicy {
 1. 当系统处于Open状态时，经过recoveryTimeout后会自动转为HalfOpen状态
 2. 在HalfOpen状态下，如果下一个请求成功，系统将转为Closed状态
 3. 因此，只要底层系统最终恢复，熔断器也会恢复到Closed状态
+
 ```
 
 #### 1.2.3 超时控制与隔离舱
@@ -527,6 +542,7 @@ TimeoutPolicy<T> implements ErrorPolicy {
     }
   }
 }
+
 ```
 
 **隔离舱模式形式化**：
@@ -557,6 +573,7 @@ BulkheadPolicy<T> implements ErrorPolicy {
     }
   }
 }
+
 ```
 
 **证明**：隔舱模式的资源保护性
@@ -569,6 +586,7 @@ BulkheadPolicy<T> implements ErrorPolicy {
 2. 新操作只有在activeCount < maxConcurrency时才会立即执行
 3. 当activeCount = maxConcurrency时，新操作被放入队列或被拒绝
 4. 因此，目标组件同时处理的操作永远不会超过maxConcurrency
+
 ```
 
 ### 1.3 路由策略形式化
@@ -583,6 +601,7 @@ Route<T, Target> := {
   addRule: (Predicate<T>, Target) → Route
   priority: Integer  // 用于规则冲突解决
 }
+
 ```
 
 **路由规则组合**：
@@ -600,6 +619,7 @@ CompositeRoute<T, Target> implements Route<T, Target> {
     return Optional.empty()
   }
 }
+
 ```
 
 #### 1.3.2 典型路由策略形式化
@@ -620,6 +640,7 @@ ContentBasedRoute<T extends HasContent, Target> implements Route<T, Target> {
     return Optional.empty()
   }
 }
+
 ```
 
 **标签路由形式化**：
@@ -638,6 +659,7 @@ TagBasedRoute<T extends HasTags, Target> implements Route<T, Target> {
     return Optional.empty()
   }
 }
+
 ```
 
 **证明**：路由策略的确定性与完备性
@@ -658,6 +680,7 @@ TagBasedRoute<T extends HasTags, Target> implements Route<T, Target> {
 2. 此规则位于规则列表的末尾
 3. 如果前面的所有规则都不匹配，默认规则必定匹配
 4. 因此route(item)必定返回一个非空结果
+
 ```
 
 #### 1.3.3 高级路由技术
@@ -684,6 +707,7 @@ WeightedRoute<T, Target> implements Route<T, Target> {
     return Optional.empty()
   }
 }
+
 ```
 
 **动态路由**：
@@ -697,6 +721,7 @@ DynamicRoute<T, Target> implements Route<T, Target> {
     return currentRoute.route(item)
   }
 }
+
 ```
 
 ### 1.4 分布式锁和协调机制
@@ -712,6 +737,7 @@ DistributedLock := {
   refresh: (resourceId: String) → Boolean
   isAcquired: (resourceId: String) → Boolean
 }
+
 ```
 
 **基于Redis的分布式锁实现**：
@@ -753,6 +779,7 @@ RedisDistributedLock implements DistributedLock {
     return false
   }
 }
+
 ```
 
 **证明**：分布式锁的互斥性和无死锁性
@@ -773,6 +800,7 @@ RedisDistributedLock implements DistributedLock {
 2. 若持有锁的进程崩溃或网络分区，无法显式释放锁
 3. Redis会在过期时间后自动删除锁键
 4. 因此，即使在最坏情况下，锁也会在有限时间内被释放
+
 ```
 
 #### 1.4.2 Leader选举机制
@@ -787,6 +815,7 @@ LeaderElection := {
   onLeadershipAcquired: (handler: Function) → Void
   onLeadershipLost: (handler: Function) → Void
 }
+
 ```
 
 **基于ZooKeeper的Leader选举实现**：
@@ -834,6 +863,7 @@ ZooKeeperLeaderElection implements LeaderElection {
     }
   }
 }
+
 ```
 
 **证明**：Leader选举的安全性和活性
@@ -855,6 +885,7 @@ ZooKeeperLeaderElection implements LeaderElection {
 3. 该参与者重新检查子节点列表，若自己是序号最小的节点，则成为新Leader
 4. 这一过程会持续进行，直到有参与者成功成为Leader
 5. 只要有参与者存在，这一过程最终会成功
+
 ```
 
 ### 1.5 一致性协议抽象
@@ -876,6 +907,7 @@ Decision<T> := {
   round: Integer
   decidedBy: Set<String>  // 参与决策的节点集合
 }
+
 ```
 
 **性质要求**：
@@ -896,6 +928,7 @@ Message :=
   | Promise(proposalNumber, acceptedProposal, acceptedValue)
   | Accept(proposalNumber, value)
   | Accepted(proposalNumber, value)
+
 ```
 
 **Paxos状态和行为**：
@@ -1005,6 +1038,7 @@ PaxosNode<T> implements ConsensusProtocol<T> {
     }
   }
 }
+
 ```
 
 **证明**：Paxos的一致性
@@ -1022,6 +1056,7 @@ PaxosNode<T> implements ConsensusProtocol<T> {
 7. 按照Paxos规则，若提案者在Promise中发现任何已接受的值，必须选择编号最高的已接受值
 8. 因此，提案者只能提出v'=v，除非存在n<k<n'的提案(k,w)已被某些Acceptor接受
 9. 递归应用此论证，最终v'必然等于v，或等于某个中间提案的值，该值也递归地等于v
+
 ```
 
 #### 1.5.3 Raft算法抽象
@@ -1053,6 +1088,7 @@ LogEntry<T> := {
   index: Integer
   command: T
 }
+
 ```
 
 **Raft核心算法**：
@@ -1180,6 +1216,7 @@ RaftNode<T> {
     })
   }
 }
+
 ```
 
 **证明**：Raft的领导者完整性
@@ -1195,6 +1232,7 @@ RaftNode<T> {
 5. 根据Raft的投票限制，节点只会投票给日志至少与自己一样新的候选人
 6. 因此，任期T'的Leader候选人必然包含所有在任期T被提交的日志项
 7. 一旦当选，该Leader会确保其日志被复制到所有节点
+
 ```
 
 ## 2. 结合主流中间件特性的形式化模型
@@ -1238,6 +1276,7 @@ MessageMetadata := {
   headers: Map<String, Bytes>
   deliveryCount: Integer
 }
+
 ```
 
 #### 2.1.2 交付语义形式化
@@ -1282,6 +1321,7 @@ AtLeastOnceDelivery<T> implements MessageQueue<T> {
     })
   }
 }
+
 ```
 
 **最多一次交付**：
@@ -1312,6 +1352,7 @@ AtMostOnceDelivery<T> implements MessageQueue<T> {
     return Promise.resolved()
   }
 }
+
 ```
 
 **恰好一次交付**：
@@ -1366,6 +1407,7 @@ ExactlyOnceDelivery<T> implements MessageQueue<T> {
     })
   }
 }
+
 ```
 
 **证明**：消息交付语义正确性
@@ -1389,6 +1431,7 @@ ExactlyOnceDelivery<T> implements MessageQueue<T> {
 3. 消费者使用事务性确认机制，确保消息处理和确认是原子的
 4. 对于重复消费，消费者可通过检查幂等键判断是否已处理过
 5. 因此，每条消息恰好被处理一次，即使在各种故障情况下
+
 ```
 
 #### 2.1.3 消息队列高级特性
@@ -1414,6 +1457,7 @@ FilteringMessageQueue<T> extends MessageQueue<T> {
     return super.subscribe(topic, wrappedConsumer, options)
   }
 }
+
 ```
 
 **延迟和定时消息**：
@@ -1455,6 +1499,7 @@ ScheduledMessageQueue<T> extends MessageQueue<T> {
     }
   }
 }
+
 ```
 
 ### 2.2 服务网格特性抽象
@@ -1514,6 +1559,7 @@ ResiliencePolicy := {
   circuitBreaker: Optional<CircuitBreakerPolicy>
   bulkhead: Optional<BulkheadPolicy>
 }
+
 ```
 
 #### 2.2.2 代理注入和边车模式
@@ -1581,6 +1627,7 @@ SidecarProxy implements ServiceMesh {
     }
   }
 }
+
 ```
 
 **服务网格控制平面**：
@@ -1624,6 +1671,7 @@ ControlPlane implements ServiceMeshControl {
     }
   }
 }
+
 ```
 
 **证明**：服务网格的透明性和一致性
@@ -1646,6 +1694,7 @@ ControlPlane implements ServiceMeshControl {
 3. 控制平面使用版本标记，确保所有代理获得最新配置
 4. 代理使用相同的规则评估逻辑
 5. 因此，在配置完全分发后，所有代理对相同请求做出相同决策
+
 ```
 
 #### 2.2.3 追踪和指标收集
@@ -1676,6 +1725,7 @@ SpanContext := {
   parentSpanId: Optional<String>
   baggage: Map<String, String>
 }
+
 ```
 
 **指标收集形式化**：
@@ -8326,6 +8376,7 @@ VerificationMethod := {
   TESTING,           // 测试验证
   STATIC_ANALYSIS    // 静态分析
 }
+
 ```
 
 **关键系统性质定义**：
@@ -8414,6 +8465,7 @@ FairnessProperty implements SystemProperty {
     // 验证实现...
   }
 }
+
 ```
 
 ### 5.4 实现路径与分层策略
@@ -8584,6 +8636,7 @@ ImplementationTask := {
   // 任务验证
   validateTask: () → ValidationResult
 }
+
 ```
 
 **核心层实现细节**：
@@ -8768,6 +8821,7 @@ ApplicationLayer implements ImplementationLayer {
     }
   }
 }
+
 ```
 
 ### 5.5 权衡决策框架
@@ -8919,6 +8973,7 @@ RiskAssessment := {
   overallRiskLevel: RiskLevel
   mitigationStrategies: Set<MitigationStrategy>
 }
+
 ```
 
 **特定权衡决策示例**：
@@ -9034,6 +9089,7 @@ EventSourcingStorageOption implements DecisionOption {
     // 评估实现...
   }
 }
+
 ```
 
 ### 5.6 形式化验证方法
@@ -9220,6 +9276,7 @@ PropertyCoverage := {
   coverageBySignificance: Map<PropertySignificance, Double>
   coverageByType: Map<PropertyType, Double>
 }
+
 ```
 
 **具体验证方法实现**：
@@ -9333,6 +9390,7 @@ RuntimeVerificationMethod implements VerificationMethod {
     // 方法限制...
   }
 }
+
 ```
 
 **属性验证示例**：

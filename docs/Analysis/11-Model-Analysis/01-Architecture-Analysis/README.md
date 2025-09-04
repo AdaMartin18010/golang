@@ -152,6 +152,7 @@ const (
     StatusUnhealthy
     StatusUnknown
 )
+
 ```
 
 #### 11.1.1.3.1.3 API网关模式
@@ -210,6 +211,7 @@ func (g *APIGateway) HandleRequest(req *http.Request) (*http.Response, error) {
     // 4. 转发请求
     return g.forward(service, req)
 }
+
 ```
 
 ### 11.1.1.3.2 事件驱动架构
@@ -269,6 +271,7 @@ func (eb *EventBusImpl) Subscribe(eventType string, handler EventHandler) error 
     eb.handlers[eventType] = append(eb.handlers[eventType], handler)
     return nil
 }
+
 ```
 
 ### 11.1.1.3.3 分层架构
@@ -332,6 +335,7 @@ func (lm *LayerManager) ProcessRequest(req *http.Request) (*http.Response, error
     // 3. 格式化输出
     return lm.presentation.FormatOutput(result)
 }
+
 ```
 
 ## 11.1.1.4 3. 企业架构分析
@@ -415,6 +419,7 @@ const (
     UserTaskActivity
     ServiceTaskActivity
 )
+
 ```
 
 ## 11.1.1.5 4. 行业架构分析
@@ -461,6 +466,7 @@ type TransactionResult struct {
     Timestamp     time.Time              `json:"timestamp"`
     Metadata      map[string]interface{} `json:"metadata"`
 }
+
 ```
 
 #### 11.1.1.5.1.2 物联网架构
@@ -504,6 +510,7 @@ const (
     DeviceError
     DeviceMaintenance
 )
+
 ```
 
 ### 11.1.1.5.2 行业标准与规范
@@ -601,6 +608,7 @@ type Consequence struct {
     Description string                 `json:"description"`
     Mitigation  string                 `json:"mitigation"`
 }
+
 ```
 
 ## 11.1.1.7 6. 架构评估与优化
@@ -673,6 +681,7 @@ type Action struct {
     Condition   string                 `json:"condition"`
     Timeout     time.Duration          `json:"timeout"`
 }
+
 ```
 
 ## 11.1.1.8 7. 最佳实践与案例
@@ -715,6 +724,7 @@ type ArchitectureMonitor interface {
     MonitorSecurity(security *SecurityStatus) error
     Alert(alert *Alert) error
 }
+
 ```
 
 ### 11.1.1.8.2 案例分析

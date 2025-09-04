@@ -16,19 +16,6 @@
   - [1.11 10. 思维导图 (Text Format)](#10-思维导图-text-format)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 好的，我们现在基于 Rust 的生态系统来重新设计“阶段一：坚实基础 (Solid Foundation)”。我们将重点放在利用 Rust 的优势（性能、可靠性、内存安全）以及其生态系统中的常用库和模式。
 
 ## 1.1 目录
@@ -104,6 +91,7 @@ graph LR
     GW -- Logs/Metrics/Traces --> Logging & Metrics & Tracing
 
     CICD -- 部署 (cargo build, Docker) --> GW & Orchestrator & Worker
+
 ```
 
 ---
@@ -330,4 +318,5 @@ Rust Workflow - Phase 1: Solid Foundation
 |   |-- Build: Multi-stage Docker builds (optimize for size)
 |   |-- Deployment: Kubernetes / Cloud Services
 |-- Key Success Metrics (Same as before)
+
 ```

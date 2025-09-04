@@ -22,19 +22,6 @@
   - [1.7 思维导图 (Text)](#思维导图-text)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Temporal 工作流系统的形式化架构分析报告](#temporal-工作流系统的形式化架构分析报告)
@@ -337,4 +324,5 @@ Temporal 工作流系统形式化架构分析
     ├── 核心优势 (Code-centric, Durable, Reliable)
     ├── 关键概念回顾
     └── 定位 (Orchestration Platform vs. State Machine Engine)
+
 ```

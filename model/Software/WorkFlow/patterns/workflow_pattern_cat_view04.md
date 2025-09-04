@@ -31,19 +31,6 @@
   - [1.6 思维导图](#思维导图)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```text
 <think>
 这是一个复杂的请求，用户希望我从范畴论的角度分析工作流模式，
@@ -59,6 +46,7 @@
 让我构思一个合适的结构，包括目录和思维导图的内容。
 所有内容将用中文呈现，如果使用代码示例，将使用Rust。
 </think>
+
 ```
 
 ## 1.1 目录
@@ -117,6 +105,7 @@
 fn sequence<A, B, C>(f: impl Fn(A) -> B, g: impl Fn(B) -> C) -> impl Fn(A) -> C {
     move |a| g(f(a))
 }
+
 ```
 
 #### 1.3.1.2 2. 并行分支模式
@@ -133,6 +122,7 @@ enum Either<A, B> {
 fn parallel_split<A, B, C>(input: A, f: impl Fn(A) -> B, g: impl Fn(A) -> C) -> (B, C) {
     (f(input), g(input))
 }
+
 ```
 
 #### 1.3.1.3 3. 同步模式
@@ -144,6 +134,7 @@ fn parallel_split<A, B, C>(input: A, f: impl Fn(A) -> B, g: impl Fn(A) -> C) -> 
 fn synchronize<A, B, C>(a: A, b: B, sync_fn: impl Fn(A, B) -> C) -> C {
     sync_fn(a, b)
 }
+
 ```
 
 #### 1.3.1.4 4. 选择模式
@@ -160,6 +151,7 @@ fn exclusive_choice<A, B, C>(input: Either<A, B>,
         Either::Right(b) => g(b),
     }
 }
+
 ```
 
 **等价关系分析**：控制流模式间存在自然同构，例如多路选择可以被分解为二元选择的组合，体现了范畴中的普遍构造。
@@ -177,6 +169,7 @@ fn exclusive_choice<A, B, C>(input: Either<A, B>,
 fn pipe<A, B>(input: A, transform: impl Fn(A) -> B) -> B {
     transform(input)
 }
+
 ```
 
 #### 1.3.2.2 2. 数据变换模式
@@ -190,6 +183,7 @@ fn transform_data<F, G, A, B>(data: A,
                             natural_transform: impl Fn(B) -> B) -> B {
     natural_transform(f_transform(data))
 }
+
 ```
 
 #### 1.3.2.3 3. 数据路由模式
@@ -208,6 +202,7 @@ fn data_routing<A, B>(input: A,
         route_b(input)
     }
 }
+
 ```
 
 **关联分析**：数据流模式可以通过自然变换连接到控制流模式，体现了范畴间的函子关系。
@@ -227,6 +222,7 @@ struct Resource<T>(T);
 fn allocate_resource<T>(creator: impl Fn() -> T) -> Resource<T> {
     Resource(creator())
 }
+
 ```
 
 #### 1.3.3.2 2. 资源释放模式
@@ -238,6 +234,7 @@ fn allocate_resource<T>(creator: impl Fn() -> T) -> Resource<T> {
 fn release_resource<T>(resource: Resource<T>, finalizer: impl Fn(T)) {
     finalizer(resource.0);
 }
+
 ```
 
 #### 1.3.3.3 3. 资源锁定模式
@@ -255,6 +252,7 @@ fn lock_resource<T>(resource: Resource<T>) -> Locked<T> {
 fn with_locked<T, R>(locked: &Locked<T>, operation: impl Fn(&T) -> R) -> R {
     operation(&locked.0)
 }
+
 ```
 
 **组合聚合分析**：资源模式通常形成单子-余单子对，这在范畴论中对应于伴随关系。
@@ -281,6 +279,7 @@ fn propagate_cancellation<A, B>(input: Cancelled<A>,
         Cancelled::Cancelled => Cancelled::Cancelled,
     }
 }
+
 ```
 
 #### 1.3.4.2 2. 重试模式
@@ -301,6 +300,7 @@ fn retry<A, B>(input: A,
     }
     None
 }
+
 ```
 
 #### 1.3.4.3 3. 补偿模式
@@ -315,6 +315,7 @@ fn with_compensation<A, B>(input: A,
     let result = operation(input.clone());
     compensate(input, result)
 }
+
 ```
 
 **等价关系分析**：异常处理模式可以通过克莱斯利范畴(Kleisli category)的视角统一处理，体现了单子的普遍性。
@@ -332,6 +333,7 @@ fn with_compensation<A, B>(input: A,
 fn compose_vertical<A, B, C>(f: impl Fn(A) -> B, g: impl Fn(B) -> C) -> impl Fn(A) -> C {
     move |a| g(f(a))
 }
+
 ```
 
 1. **水平组合**：对应于函子的张量积
@@ -344,6 +346,7 @@ fn compose_horizontal<A, B, C, D>(
 ) -> impl Fn((A, C)) -> (B, D) {
     move |(a, c)| (f(a), g(c))
 }
+
 ```
 
 1. **嵌套组合**：对应于函子的复合
@@ -358,6 +361,7 @@ fn compose_nested<A, B, FA, FB>(
 ) -> impl Fn(A) -> B {
     move |a| lower(outer(lift(a)))
 }
+
 ```
 
 ### 1.4.2 组合有效性与自然变换
@@ -378,6 +382,7 @@ fn check_consistency<A, B, C, D>(
     // 在实际实现中需要测试等价性
     true // 简化返回
 }
+
 ```
 
 1. **兼容性条件**：通过自然变换表达
@@ -395,6 +400,7 @@ fn check_compatibility<F, G, A, B>(
     // 检查自然变换的交换性质
     true // 简化返回
 }
+
 ```
 
 ## 1.5 现代范畴论视角的扩展
@@ -422,6 +428,7 @@ fn evaluate_at<A: Clone, F: Fn(A) -> A>(
     }
     current
 }
+
 ```
 
 1. **固定点组合器**：表示递归工作流
@@ -435,6 +442,7 @@ fn fix<A, B>(f: impl Fn(Box<dyn Fn(A) -> B>, A) -> B) -> impl Fn(A) -> B {
         f(rec_fn, x)
     }
 }
+
 ```
 
 ### 1.5.2 同伦类型论视角
@@ -456,6 +464,7 @@ trait Homotopy<A, B> {
         self.at_time(input, 1.0)
     }
 }
+
 ```
 
 1. **工作流类型**：作为高阶类型表示
@@ -473,6 +482,7 @@ fn with_proof<A, B, P>(
 ) -> B {
     (workflow.execute)(input, proof)
 }
+
 ```
 
 ## 1.6 思维导图
@@ -514,6 +524,7 @@ fn with_proof<A, B, P>(
 └── 现代理论扩展
     ├── 无限范畴 → 连续函子
     └── 同伦类型 → 路径等价
+
 ```
 
 通过范畴论的视角，我们能够统一理解各种工作流模式，揭示它们之间的内在关联，并为组合规则提供形式化基础。特别是现代范畴论视角（如无限范畴和同伦类型论）能够帮助我们理解更复杂的工作流模式和等价性概念。

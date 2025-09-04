@@ -56,6 +56,7 @@ graph TD
     E --> E1[7x24运行]
     E --> E2[故障恢复]
     E --> E3[数据一致性]
+
 ```
 
 ---
@@ -135,6 +136,7 @@ func RiskDetection(transaction Transaction, user User) float64 {
     
     return totalRisk
 }
+
 ```
 
 ---
@@ -175,6 +177,7 @@ graph TB
     A --> B
     B --> C
     C --> D
+
 ```
 
 ### 3.2 事件驱动架构
@@ -205,6 +208,7 @@ const (
     RiskAlert          EventType = "risk_alert"
     ComplianceViolation EventType = "compliance_violation"
 )
+
 ```
 
 ---
@@ -257,6 +261,7 @@ graph TD
     TS --> MQ
     RS --> MQ
     CS --> MQ
+
 ```
 
 ### 4.2 服务实现
@@ -355,6 +360,7 @@ func (s *TransactionService) ProcessTransaction(ctx context.Context, req Process
     
     return transaction, nil
 }
+
 ```
 
 ---
@@ -449,6 +455,7 @@ func (ob *OrderBook) matchBuyOrder(buyOrder Order) []Trade {
     
     return trades
 }
+
 ```
 
 ### 5.2 风险控制算法
@@ -519,6 +526,7 @@ var FrequencyRule = RiskRule{
     },
     Priority: 2,
 }
+
 ```
 
 ---
@@ -567,6 +575,7 @@ fintech/
 ├── tests/
 ├── go.mod
 └── go.sum
+
 ```
 
 ### 6.2 核心实现
@@ -661,6 +670,7 @@ const (
     TransactionStatusFailed    TransactionStatus = "failed"
     TransactionStatusCancelled TransactionStatus = "cancelled"
 )
+
 ```
 
 ### 6.3 服务层实现
@@ -769,6 +779,7 @@ func (s *UserService) GetUser(ctx context.Context, userID domain.UserID) (*domai
     
     return user, nil
 }
+
 ```
 
 ---
@@ -820,6 +831,7 @@ func NewDBConnection(config DBConfig) (*sql.DB, error) {
     
     return db, nil
 }
+
 ```
 
 ### 7.2 缓存策略
@@ -858,6 +870,7 @@ func (cs *CacheStrategy) Get(key string) (interface{}, error) {
     
     return value, nil
 }
+
 ```
 
 ### 7.3 并发优化
@@ -915,6 +928,7 @@ func (p *LockFreeTransactionProcessor) ProcessTransaction(tx Transaction) error 
     
     return nil
 }
+
 ```
 
 ---
@@ -984,6 +998,7 @@ func (ae *AESEncryption) Decrypt(ciphertext []byte) ([]byte, error) {
     
     return plaintext, nil
 }
+
 ```
 
 ### 8.2 身份认证
@@ -1039,6 +1054,7 @@ func (ja *JWTAuthentication) ValidateToken(tokenString string) (*Claims, error) 
     
     return nil, ErrInvalidToken
 }
+
 ```
 
 ---
@@ -1090,6 +1106,7 @@ func ErrorHandlingMiddleware(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 }
+
 ```
 
 ### 9.2 日志记录
@@ -1141,6 +1158,7 @@ func (s *TransactionService) ProcessTransaction(ctx context.Context, req Process
     logger.Info("Transaction processed successfully", zap.String("transaction_id", transaction.ID))
     return transaction, nil
 }
+
 ```
 
 ### 9.3 监控指标
@@ -1191,6 +1209,7 @@ func (s *TransactionService) ProcessTransaction(ctx context.Context, req Process
     
     return transaction, nil
 }
+
 ```
 
 ---
@@ -1224,6 +1243,7 @@ graph TD
     C1 --> F[消息队列]
     F --> G[通知服务]
     F --> H[审计服务]
+
 ```
 
 **性能优化策略**：
@@ -1282,6 +1302,7 @@ func (e *LowLatencyMatchingEngine) ProcessOrder(order Order) {
         e.publisher.PublishAsync(trade)
     }
 }
+
 ```
 
 **性能优化**：

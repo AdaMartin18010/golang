@@ -37,6 +37,7 @@ ch := make(chan int)
 go func() { ch <- 42 }()
 val := <-ch
 fmt.Println(val)
+
 ```
 
 ### 2.1.2.2 2. 缓冲channel
@@ -47,6 +48,7 @@ ch <- "hello"
 ch <- "world"
 fmt.Println(<-ch)
 fmt.Println(<-ch)
+
 ```
 
 ### 2.1.2.3 3. 单向channel
@@ -54,6 +56,7 @@ fmt.Println(<-ch)
 ```go
 func send(ch chan<- int) { ch <- 1 }
 func recv(ch <-chan int) { fmt.Println(<-ch) }
+
 ```
 
 ### 2.1.2.4 4. select多路复用
@@ -67,6 +70,7 @@ case v := <-ch2:
 default:
     fmt.Println("no data")
 }
+
 ```
 
 ---

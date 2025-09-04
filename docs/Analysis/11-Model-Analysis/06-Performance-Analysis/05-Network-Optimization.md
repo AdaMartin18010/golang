@@ -31,19 +31,6 @@
     - [11.6.1.11.2 网络性能监控](#网络性能监控)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.6.1.1 目录
 
 1. [概述](#1-概述)
@@ -213,6 +200,7 @@ func HTTP2Example() {
     fmt.Printf("Protocol: %s\n", resp.Proto) // HTTP/2.0
     fmt.Printf("Status: %s\n", resp.Status)
 }
+
 ```
 
 ### 11.6.1.4.2 WebSocket优化
@@ -352,6 +340,7 @@ func (wsc *WebSocketClient) Close() error {
     wsc.closed = true
     return wsc.conn.Close()
 }
+
 ```
 
 ## 11.6.1.5 4. I/O模型优化
@@ -463,6 +452,7 @@ func NonBlockingIOExample() {
     
     fmt.Println("Data is ready to read")
 }
+
 ```
 
 ### 11.6.1.5.2 异步I/O
@@ -555,6 +545,7 @@ func (mr *MockReader) Read(p []byte) (n int, err error) {
     mr.pos += n
     return n, nil
 }
+
 ```
 
 ## 11.6.1.6 5. 连接池优化
@@ -767,6 +758,7 @@ func ConnectionPoolExample() {
     
     fmt.Println("Connection pool example completed")
 }
+
 ```
 
 ## 11.6.1.7 6. 负载均衡优化
@@ -951,6 +943,7 @@ func LoadBalancerExample() {
         fmt.Printf("Weighted Round Robin: %s\n", server.Address)
     }
 }
+
 ```
 
 ## 11.6.1.8 7. 缓存优化
@@ -1069,6 +1062,7 @@ func NetworkCacheExample() {
         fmt.Println("Cache entry deleted")
     }
 }
+
 ```
 
 ## 11.6.1.9 8. 压缩优化
@@ -1178,6 +1172,7 @@ func CompressionExample() {
     
     fmt.Printf("Decompressed: %s\n", string(decompressed))
 }
+
 ```
 
 ## 11.6.1.10 9. 最佳实践
@@ -1307,6 +1302,7 @@ func HighPerformanceClientExample() {
     fmt.Printf("Status: %s\n", resp.Status)
     fmt.Printf("Protocol: %s\n", resp.Proto)
 }
+
 ```
 
 ### 11.6.1.11.2 网络性能监控
@@ -1391,6 +1387,7 @@ func NetworkMonitorExample() {
         fmt.Printf("Latency: %v\n", metrics.Latency)
     }
 }
+
 ```
 
 ---

@@ -290,4 +290,5 @@ Temporal 分析 (架构、代码、实现、应用)
 │   └── 5.5. 常见反模式 (WF I/O, Big Payloads, Simple Req/Res, Complex Activities, No Versioning, Misuse SideEffect)
 │
 └── 6. 总结 (架构基础, 代码维护性, 实现保证, 应用价值)
+
 ```

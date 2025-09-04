@@ -21,19 +21,6 @@
   - [1.14 **总结**](#**总结**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面介绍 Rust 中如何将结构体定义与其 trait 实现分离，以及分离实现时需要注意的规则和示例。
 
 ## 1.1 1. 分离实现的基本情况
@@ -64,6 +51,7 @@
 pub struct MyStruct {
     pub data: i32,
 }
+
 ```
 
 **文件：src/mytrait.rs**  
@@ -73,6 +61,7 @@ pub struct MyStruct {
 pub trait MyTrait {
     fn do_something(&self);
 }
+
 ```
 
 ### 1.2.2 分离实现 trait
@@ -89,6 +78,7 @@ impl MyTrait for MyStruct {
         println!("Processing data: {}", self.data);
     }
 }
+
 ```
 
 ### 1.2.3 入口文件调用
@@ -107,6 +97,7 @@ fn main() {
     let instance = MyStruct { data: 42 };
     instance.do_something();
 }
+
 ```
 
 在这个示例中：

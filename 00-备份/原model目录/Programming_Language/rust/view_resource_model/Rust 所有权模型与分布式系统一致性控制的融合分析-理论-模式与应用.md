@@ -1693,6 +1693,7 @@ CRDT 技术将分布式一致性问题从"协调写入顺序"转变为"设计可
 {master: data(d, v) * replica: data(d, v')}
   synchronize()
 {master: data(d, v) * replica: data(d, v)}
+
 ```
 
 分离逻辑为分布式系统提供了强大的推理工具，特别适合处理资源分割、所有权转移和并发访问等核心问题。
@@ -1756,6 +1757,7 @@ Validity == ∀ n ∈ Nodes: decided[n] ≠ NULL => decided[n] ∈ proposed
 
 Termination == <>[]∀ n ∈ Nodes: decided[n] ≠ NULL
 ---------------------------
+
 ```
 
 时态逻辑为分布式系统提供了精确表达时间相关属性的工具，特别适合验证一致性、最终收敛性和活性等关键属性。
@@ -1803,6 +1805,7 @@ Termination == <>[]∀ n ∈ Nodes: decided[n] ≠ NULL
 Coordinator = Request → (Abort → STOP | Commit → STOP)
 Participant = Request → (Agree → Commit → STOP | Refuse → Abort → STOP)
 System = Coordinator || Participant
+
 ```
 
 1. **π演算示例**：表示动态服务发现和连接
@@ -1811,6 +1814,7 @@ System = Coordinator || Participant
 Register(service, registry) = registry<service>.0
 Lookup(registry, client) = registry(service).client<service>.0
 Client(client) = new(request).client(service).service<request>.service(response).0
+
 ```
 
 1. **工具支持**：
@@ -1881,6 +1885,7 @@ typestate DistributedLockProt {
         bool renew(NodeId owner): <success: Acquired, failure: Free>;
     }
 }
+
 ```
 
 1. **分布式应用验证**：
@@ -2173,6 +2178,7 @@ transaction {
     @node1 { withdraw(account, 100) }
     @node2 { deposit(other_account, 100) }
 }
+
 ```
 
 分布式所有权语言将Rust等现代语言的所有权概念扩展到分布式环境，
@@ -2270,6 +2276,7 @@ function processOrder(order: {id: string, items: any}): Result
 function processOrder(order: {id: string, items: Item[]}): Result
 // 最终完全类型化
 function processOrder(order: Order): Result<OrderConfirmation, OrderError>
+
 ```
 
 渐进式分布式类型系统允许团队从简单开始，逐步引入更严格的类型安全，适合分布式系统的复杂性和演化特性。
@@ -2327,6 +2334,7 @@ let result = deserialize<User>(data, options: {
     maxDepth: 10,
     allowedTypes: [User.self, Address.self]
 })
+
 ```
 
 序列化安全的类型设计确保数据可以安全地跨节点、跨服务、跨时间边界传输，同时维持类型安全性和数据完整性。
@@ -2385,6 +2393,7 @@ service UserService {
         // 自动处理分布式事务
     }
 }
+
 ```
 
 云原生编程语言通过将分布式所有权模型内置到语言核心，使开发人员能够自然地表达和管理云环境中的资源、状态和并发。

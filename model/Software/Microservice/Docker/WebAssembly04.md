@@ -78,6 +78,7 @@ WebAssembly采用基于栈的执行模型，指令操作隐式栈而非寄存器
   local.get $b    ;; 将第二个参数压入栈
   i32.add         ;; 弹出两个值，相加后结果压入栈
 )                 ;; 函数返回栈顶值
+
 ```
 
 **内存模型**：
@@ -140,6 +141,7 @@ async function initImageProcessor() {
     updateCanvas(resultPtr);
   });
 }
+
 ```
 
 **分层架构**：
@@ -158,6 +160,7 @@ async function initImageProcessor() {
 ├─────────────────────────────────┤
 │          数据访问层              │ 通过JavaScript访问Web API
 └─────────────────────────────────┘
+
 ```
 
 **互操作性技术**：
@@ -183,6 +186,7 @@ pub fn update_element() {
     let element = getElementById("output");
     element.set_inner_html("Updated by WebAssembly");
 }
+
 ```
 
 ### 1.3.2 桌面应用开发模式
@@ -216,6 +220,7 @@ app.whenReady().then(async () => {
   
   mainWindow.loadFile('index.html');
 });
+
 ```
 
 **Tauri架构**：
@@ -237,6 +242,7 @@ fn main() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
 ```
 
 **WebView2+WebAssembly**：
@@ -260,6 +266,7 @@ private async void InitializeWebView()
     
     webView.CoreWebView2.AddHostObjectToScript("hostBridge", new HostBridge());
 }
+
 ```
 
 ### 1.3.3 跨平台UI框架集成
@@ -313,6 +320,7 @@ impl UIRenderer {
     
     // 其他渲染方法...
 }
+
 ```
 
 **React Native集成**：
@@ -358,6 +366,7 @@ export default function WasmProcessor() {
     </View>
   );
 }
+
 ```
 
 **Flutter+WebAssembly**：
@@ -378,12 +387,14 @@ class WasmBindings {
   late final initRuntime = _lib.lookupFunction<
     IntPtr Function(Pointer<Utf8>),
     int Function(Pointer<Utf8>)
+
   >('init_wasm_runtime');
   
   // 调用WebAssembly函数
   late final callWasmFunction = _lib.lookupFunction<
     IntPtr Function(IntPtr, Pointer<Utf8>, Pointer<Void>, IntPtr),
     int Function(int, Pointer<Utf8>, Pointer<Void>, int)
+
   >('call_wasm_function');
   
   // 其他绑定...
@@ -414,6 +425,7 @@ void initializeWasm() async {
     calloc.free(wasmPath);
   }
 }
+
 ```
 
 ## 1.4 3. WebAssembly与虚拟机技术的对比与融合
@@ -445,6 +457,7 @@ JVM执行：$S_0 \xrightarrow{jvm} S_n$，状态包含类对象、异常处理�
 冷执行效率：WebAssembly ≈ AOT编译VM > JIT编译VM
 热执行效率：JIT编译VM ≥ WebAssembly ≈ AOT编译VM
 内存占用：WebAssembly < AOT编译VM < JIT编译VM
+
 ```
 
 ### 1.4.2 内存管理与资源利用
@@ -476,6 +489,7 @@ pub extern "C" fn dealloc(ptr: *mut u8, size: usize) {
         // Vec被销毁，内存被释放
     }
 }
+
 ```
 
 而JVM和.NET使用托管堆和垃圾回收机制：
@@ -492,6 +506,7 @@ public void processData() {
     
     // 无需手动释放内存，GC会处理
 }
+
 ```
 
 **资源利用效率形式化对比**：
@@ -509,6 +524,7 @@ WebAssembly的线性内存提供了天然的隔离，而传统VM依赖共享堆�
 ```math
 WebAssembly模块A内存 ⊥ WebAssembly模块B内存  // 完全隔离
 JVM应用A堆对象 ∩ JVM应用B堆对象 ≠ ∅         // 潜在共享（同一JVM实例内）
+
 ```
 
 ### 1.4.3 混合部署架构
@@ -530,6 +546,7 @@ WebAssembly与传统虚拟机技术可以在多种架构中协同工作：
 ├─────────────────────────────────┤
 │           操作系统             │
 └─────────────────────────────────┘
+
 ```
 
 **并行运行时架构**：
@@ -545,6 +562,7 @@ WebAssembly与传统VM并行运行，各自处理最适合的任务：
 ┌─────────────────────────────────┐
 │           操作系统             │
 └─────────────────────────────────┘
+
 ```
 
 **服务网格中的混合部署**：
@@ -577,6 +595,7 @@ public class ImageProcessingService {
         return processedImage;
     }
 }
+
 ```
 
 **VM内嵌入WebAssembly**：
@@ -601,6 +620,7 @@ public class WasmPluginExecutor {
         return result;
     }
 }
+
 ```
 
 ## 1.5 4. WebAssembly与容器技术协同模式
@@ -614,6 +634,7 @@ WebAssembly与容器技术(如Docker)在多个维度上具有互补性：
 ```math
 容器隔离：基于Linux命名空间和cgroups，操作系统级隔离
 WebAssembly隔离：基于语言级类型安全和内存边界检查，应用级隔离
+
 ```
 
 **资源利用效率**：
@@ -652,30 +673,39 @@ WebAssembly与容器技术可以协同工作，产生多种架构模式：
 在容器内运行WebAssembly模块，容器提供环境和依赖：
 
 ```dockerfile
+
 # 2 2 2 2 2 2 2 Dockerfile: 包含WebAssembly运行时的容器
+
 FROM ubuntu:20.04
 
 # 3 3 3 3 3 3 3 安装依赖
+
 RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # 4 4 4 4 4 4 4 安装WebAssembly运行时
+
 RUN curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash
 
 # 5 5 5 5 5 5 5 复制WebAssembly应用
+
 COPY app.wasm /app/app.wasm
 
 # 6 6 6 6 6 6 6 设置入口点
+
 ENTRYPOINT ["wasmedge", "/app/app.wasm"]
+
 ```
 
 **2. Container-orchestrated-WebAssembly模式**：
 使用容器编排系统(如Kubernetes)管理WebAssembly工作负载：
 
 ```yaml
+
 # 7 7 7 7 7 7 7 Kubernetes部署WebAssembly工作负载
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -705,6 +735,7 @@ spec:
       - name: wasm-modules
         configMap:
           name: wasm-modules
+
 ```
 
 **3. 混合微服务架构**：
@@ -726,6 +757,7 @@ spec:
 │  └─────────┘     └─────────┘    │
 │                                 │
 └─────────────────────────────────┘
+
 ```
 
 **决策模型**：
@@ -746,6 +778,7 @@ def select_technology(workload):
     else:
         # 默认容器
         return "container"
+
 ```
 
 ### 7 7 7 7 7 7 7 微服务架构中的应用
@@ -804,13 +837,16 @@ impl RequestFilter {
         json!({"allowed": true}).to_string()
     }
 }
+
 ```
 
 **服务网格边车模式**：
 在服务网格中使用WebAssembly扩展边车代理功能：
 
 ```yaml
+
 # 8 8 8 8 8 8 8 Istio服务网格WebAssembly扩展配置
+
 apiVersion: extensions.istio.io/v1alpha1
 kind: WasmPlugin
 metadata:
@@ -827,6 +863,7 @@ spec:
         issuer: https://example.auth0.com/
         audiences:
         - api.example.com
+
 ```
 
 **多环境部署**：
@@ -866,6 +903,7 @@ func processData(input io.Reader
     // 返回结果
     return []byte(`{"status": "success", "result": "..."}`)
 }
+
 ```
 
 **事件驱动架构**：
@@ -918,6 +956,7 @@ async function handleRequest(req, res) {
 }
 
 init().catch(console.error);
+
 ```
 
 ## 8.1 5. 边缘计算与IoT场景应用
@@ -988,6 +1027,7 @@ fail1:
     wasm_runtime_destroy();
     return 0;
 }
+
 ```
 
 **边缘设备资源利用分析**：
@@ -1049,6 +1089,7 @@ pub extern "C" fn process_sensor_data(data_ptr: *const u8, len: usize) -> i32 {
     
     0  // 正常信号
 }
+
 ```
 
 ### 8.1.2 安全隔离模型
@@ -1080,6 +1121,7 @@ fn secure_log_operation() -> io::Result<()> {
 // 编译命令: rustc --target wasm32-wasi -o sensor.wasm sensor.rs
 // 运行命令: wasmtime --dir=logs:logs sensor.wasm
 // 注意：只有logs目录被授权访问
+
 ```
 
 **安全性形式化表示**：
@@ -1171,6 +1213,7 @@ async function runAllTenants() {
 }
 
 runAllTenants().catch(console.error);
+
 ```
 
 ### 8.1.3 远程更新与管理
@@ -1325,6 +1368,7 @@ public:
         return true;
     }
 };
+
 ```
 
 **OTA更新系统**：
@@ -1475,6 +1519,7 @@ impl OtaUpdater {
         Ok(true)
     }
 }
+
 ```
 
 **远程监控与管理**：
@@ -1642,6 +1687,7 @@ app.listen(PORT, () => {
   console.log(`Edge device management system running on port ${PORT}`);
   loadModules();
 });
+
 ```
 
 ## 8.2 6. 形式化模型与技术验证
@@ -1736,6 +1782,7 @@ fn test_cross_platform_consistency(wasm_module: &str, iterations: usize) -> bool
     
     true
 }
+
 ```
 
 **确定性执行的数学证明**：
@@ -1811,6 +1858,7 @@ fn verify_wasm_safety(wasm_bytes: &[u8]) -> Result<SafetyReport, Error> {
     
     Ok(report)
 }
+
 ```
 
 ### 8.2.3 性能模型
@@ -1931,6 +1979,7 @@ impl PerformanceModel {
         container_mem / wasm_mem
     }
 }
+
 ```
 
 ## 8.3 7. 融合架构设计模式
@@ -2072,6 +2121,7 @@ async function loadMicroFrontends() {
     });
   }
 }
+
 ```
 
 **框架层融合**：
@@ -2234,6 +2284,7 @@ export default defineComponent({
     };
   }
 });
+
 ```
 
 **系统层融合**：
@@ -2450,6 +2501,7 @@ func main() {
     fmt.Println("Starting WebAssembly controller")
     controller.Run()
 }
+
 ```
 
 ### 8.3.2 混合执行环境
@@ -2515,10 +2567,12 @@ import wasmer
 import json
 
 # 9 9 9 9 9 9 9 加载WebAssembly模块
+
 module_bytes = open('analytics_processor.wasm', 'rb').read()
 instance = wasmer.Instance(wasmer.Module(module_bytes))
 
 # 10 10 10 10 10 10 10 准备输入数据
+
 data = {
     "user_id": "user123",
     "event_type": "purchase",
@@ -2531,10 +2585,12 @@ data = {
 }
 
 # 11 11 11 11 11 11 11 调用WebAssembly函数
+
 result_json = instance.exports.process_analytics_data(json.dumps(data))
 result = json.loads(result_json)
 print(f"User segment: {result['user_segment']}")
 print(f"Risk score: {result['risk_score']}")
+
 */
 
 // 同时从Java调用：
@@ -2562,7 +2618,9 @@ String resultJson = instance.exports.getFunction("process_analytics_data")
 JSONObject result = new JSONObject(resultJson);
 
 System.out.println("User segment: " + result.getString("user_segment"));
+
 */
+
 ```
 
 **安全边界模式**：
@@ -2725,6 +2783,7 @@ async function loadPlugins() {
     console.log("Plugin result:", result);
   }
 }
+
 ```
 
 **嵌入式系统边界**：
@@ -2948,7 +3007,7 @@ impl exports::image::processor::Guest for ImageProcessor {
             Err(e) => Err(format!("调整大小失败: {}", e)),
         }
     }
-    
+  
     fn apply_filter(image_data: Vec<u8>, filter_type: String, intensity: f32) -> Result<Vec<u8>, String> {
         // 滤镜应用实现
         match apply_image_filter(&image_data, &filter_type, intensity) {
@@ -2970,6 +3029,7 @@ fn apply_image_filter(data: &[u8], filter: &str, intensity: f32) -> Result<Vec<u
     // ...
     Ok(vec![])  // 示例返回
 }
+
 ```
 
 **WebAssembly细粒度垃圾回收提案**：
@@ -3036,6 +3096,7 @@ async function demoGCInterop() {
   
   // 对象由GC自动管理，无需手动释放内存
 }
+
 ```
 
 **加密原语和安全扩展**：
@@ -3047,18 +3108,20 @@ use sha2::{Sha256, Digest};
 use ed25519_dalek::{Keypair, Signer, Verifier, PublicKey, Signature};
 use rand::rngs::OsRng;
 
-#[wasm_bindgen]
+# [wasm_bindgen]
+
 pub struct CryptoContext {
     keypair: Option<Keypair>,
 }
 
-#[wasm_bindgen]
+# [wasm_bindgen]
+
 impl CryptoContext {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         CryptoContext { keypair: None }
     }
-    
+  
     // 生成密钥对
     pub fn generate_keypair(&mut self) -> Result<String, JsValue> {
         let mut csprng = OsRng{};
@@ -3071,7 +3134,7 @@ impl CryptoContext {
             Err(e) => Err(JsValue::from_str(&format!("密钥生成失败: {:?}", e))),
         }
     }
-    
+  
     // 签名消息
     pub fn sign(&self, message: &str) -> Result<String, JsValue> {
         if let Some(keypair) = &self.keypair {
@@ -3081,7 +3144,7 @@ impl CryptoContext {
             Err(JsValue::from_str("未初始化密钥对"))
         }
     }
-    
+  
     // 验证签名
     pub fn verify(&self, message: &str, signature_hex: &str, public_key_hex: &str) -> Result<bool, JsValue> {
         // 解析公钥
@@ -3089,30 +3152,30 @@ impl CryptoContext {
             Ok(bytes) => bytes,
             Err(e) => return Err(JsValue::from_str(&format!("无效的公钥格式: {:?}", e))),
         };
-        
+  
         let public_key = match PublicKey::from_bytes(&public_key_bytes) {
             Ok(pk) => pk,
             Err(e) => return Err(JsValue::from_str(&format!("解析公钥失败: {:?}", e))),
         };
-        
+  
         // 解析签名
         let signature_bytes = match hex::decode(signature_hex) {
             Ok(bytes) => bytes,
             Err(e) => return Err(JsValue::from_str(&format!("无效的签名格式: {:?}", e))),
         };
-        
+  
         let signature = match Signature::from_bytes(&signature_bytes) {
             Ok(sig) => sig,
             Err(e) => return Err(JsValue::from_str(&format!("解析签名失败: {:?}", e))),
         };
-        
+  
         // 验证签名
         match public_key.verify(message.as_bytes(), &signature) {
             Ok(_) => Ok(true),
             Err(_) => Ok(false),
         }
     }
-    
+  
     // SHA-256哈希
     pub fn sha256(message: &str) -> String {
         let mut hasher = Sha256::new();
@@ -3121,6 +3184,7 @@ impl CryptoContext {
         hex::encode(result)
     }
 }
+
 ```
 
 ### 11.1.2 跨平台能力提升
@@ -3131,15 +3195,22 @@ WebAssembly正在扩展其运行领域，从浏览器扩展到多种平台：
 
 ```c
 // C: 嵌入式设备上的WebAssembly优化示例
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <time.h>
-#include "wasm3.h"
 
-#define WASM_MEMORY_LIMIT 65536  // 64KB内存限制
-#define STACK_SIZE 4096          // 4KB栈大小
+# include <stdio.h>
+
+# include <stdlib.h>
+
+# include <stdint.h>
+
+# include <string.h>
+
+# include <time.h>
+
+# include "wasm3.h"
+
+# define WASM_MEMORY_LIMIT 65536  // 64KB内存限制
+
+# define STACK_SIZE 4096          // 4KB栈大小
 
 // 性能测量
 typedef struct {
@@ -3169,18 +3240,18 @@ void perf_end(PerfMetrics* metrics) {
 // 打印性能报告
 void perf_report(PerfMetrics* metrics, const char* name) {
     if (metrics->call_count == 0) return;
-    
+  
     double avg_ms = ((double)metrics->total_time / CLOCKS_PER_SEC * 1000) / metrics->call_count;
-    printf("性能报告 [%s]: 调用次数=%u, 平均时间=%.3fms\n", 
+    printf("性能报告 [%s]: 调用次数=%u, 平均时间=%.3fms\n",
            name, metrics->call_count, avg_ms);
 }
 
 // WebAssembly导入函数：打印消息
 m3ApiRawFunction(hostPrint) {
     m3ApiGetArgMem(const char*, message);
-    
+  
     printf("WASM消息: %s\n", message);
-    
+  
     m3ApiSuccess();
 }
 
@@ -3190,42 +3261,42 @@ int main(int argc, char** argv) {
         printf("用法: %s <wasm文件>\n", argv[0]);
         return 1;
     }
-    
+  
     // 加载WASM文件
     FILE* f = fopen(argv[1], "rb");
     if (!f) {
         printf("无法打开文件: %s\n", argv[1]);
         return 1;
     }
-    
+  
     fseek(f, 0, SEEK_END);
     size_t wasm_size = ftell(f);
     fseek(f, 0, SEEK_SET);
-    
+  
     uint8_t* wasm_bytes = (uint8_t*)malloc(wasm_size);
     if (!wasm_bytes) {
         printf("内存分配失败\n");
         fclose(f);
         return 1;
     }
-    
+  
     if (fread(wasm_bytes, 1, wasm_size, f) != wasm_size) {
         printf("读取失败\n");
         free(wasm_bytes);
         fclose(f);
         return 1;
     }
-    
+  
     fclose(f);
-    
+  
     // 性能测量
     PerfMetrics load_perf, exec_perf;
     perf_init(&load_perf);
     perf_init(&exec_perf);
-    
+  
     // 初始化WASM运行时
     perf_start(&load_perf);
-    
+  
     M3Result result = m3Err_none;
     IM3Environment env = m3_NewEnvironment();
     if (!env) {
@@ -3233,7 +3304,7 @@ int main(int argc, char** argv) {
         free(wasm_bytes);
         return 1;
     }
-    
+  
     // 优化设置：减少内存使用
     IM3Runtime runtime = m3_NewRuntime(env, WASM_MEMORY_LIMIT, NULL);
     if (!runtime) {
@@ -3242,10 +3313,10 @@ int main(int argc, char** argv) {
         free(wasm_bytes);
         return 1;
     }
-    
+  
     // 设置栈大小
     m3_SetStackSize(runtime, STACK_SIZE);
-    
+  
     // 解析模块
     IM3Module module;
     result = m3_ParseModule(env, &module, wasm_bytes, wasm_size);
@@ -3256,7 +3327,7 @@ int main(int argc, char** argv) {
         free(wasm_bytes);
         return 1;
     }
-    
+  
     // 加载模块
     result = m3_LoadModule(runtime, module);
     if (result) {
@@ -3267,7 +3338,7 @@ int main(int argc, char** argv) {
         free(wasm_bytes);
         return 1;
     }
-    
+  
     // 链接导入函数
     result = m3_LinkRawFunction(module, "env", "print", "v(*)", &hostPrint);
     if (result) {
@@ -3277,7 +3348,7 @@ int main(int argc, char** argv) {
         free(wasm_bytes);
         return 1;
     }
-    
+  
     // 查找入口点函数
     IM3Function process_func;
     result = m3_FindFunction(&process_func, runtime, "process");
@@ -3288,48 +3359,49 @@ int main(int argc, char** argv) {
         free(wasm_bytes);
         return 1;
     }
-    
+  
     perf_end(&load_perf);
-    
+  
     // 执行函数
     const int NUM_ITERATIONS = 100;
     for (int i = 0; i < NUM_ITERATIONS; i++) {
         perf_start(&exec_perf);
-        
+  
         // 示例：传递传感器数据
         const int32_t temperature = 220 + (rand() % 100);  // 模拟温度 (22.0-32.0)
         const int32_t humidity = 300 + (rand() % 400);     // 模拟湿度 (30-70%)
-        
+  
         result = m3_CallV(process_func, temperature, humidity);
-        
+  
         perf_end(&exec_perf);
-        
+  
         if (result) {
             printf("执行失败: %s\n", result);
             break;
         }
-        
+  
         // 减缓执行速度，模拟传感器采样
         struct timespec ts;
         ts.tv_sec = 0;
         ts.tv_nsec = 10 * 1000000; // 10ms
         nanosleep(&ts, NULL);
     }
-    
+  
     // 显示性能报告
     perf_report(&load_perf, "模块加载");
     perf_report(&exec_perf, "函数执行");
-    
+  
     // 内存使用报告
     printf("内存使用: %u 字节\n", m3_GetMemorySize(runtime));
-    
+  
     // 清理资源
     m3_FreeRuntime(runtime);
     m3_FreeEnvironment(env);
     free(wasm_bytes);
-    
+  
     return 0;
 }
+
 ```
 
 **WebAssembly集群编排**：
@@ -3346,7 +3418,7 @@ import (
     "net/http"
     "sync"
     "time"
-    
+  
     "github.com/tetratelabs/wazero"
     "github.com/tetratelabs/wazero/api"
 )
@@ -3400,11 +3472,11 @@ func NewClusterManager(maxInstances int) *ClusterManager {
 func (cm *ClusterManager) RegisterModule(moduleID string, wasmBytes []byte) error {
     cm.mu.Lock()
     defer cm.mu.Unlock()
-    
+  
     // 存储模块
     cm.modules[moduleID] = wasmBytes
     log.Printf("已注册模块: %s (%d字节)", moduleID, len(wasmBytes))
-    
+  
     return nil
 }
 
@@ -3412,13 +3484,13 @@ func (cm *ClusterManager) RegisterModule(moduleID string, wasmBytes []byte) erro
 func (cm *ClusterManager) CreateInstance(ctx context.Context, moduleID string, config InstanceConfig) (*WasmInstance, error) {
     cm.mu.Lock()
     defer cm.mu.Unlock()
-    
+  
     // 检查模块是否存在
     wasmBytes, ok := cm.modules[moduleID]
     if !ok {
         return nil, fmt.Errorf("未找到模块: %s", moduleID)
     }
-    
+  
     // 检查实例数限制
     if len(cm.instances) >= cm.maxInstances {
         // 尝试清理未使用的实例
@@ -3426,32 +3498,32 @@ func (cm *ClusterManager) CreateInstance(ctx context.Context, moduleID string, c
             return nil, fmt.Errorf("已达到最大实例数限制: %d", cm.maxInstances)
         }
     }
-    
+  
     // 创建唯一ID
     instanceID := fmt.Sprintf("%s-%d", moduleID, time.Now().UnixNano())
-    
+  
     // 创建运行时
     runtime := wazero.NewRuntime(ctx)
-    
+  
     // 编译模块
     compiledModule, err := runtime.CompileModule(ctx, wasmBytes)
     if err != nil {
         return nil, fmt.Errorf("编译模块失败: %v", err)
     }
-    
+  
     // 准备配置
     moduleConfig := wazero.NewModuleConfig().
         WithMemoryLimitPages(config.MemoryLimit)
-    
+  
     // 添加WASI支持
     // wasi_snapshot_preview1.MustInstantiate(ctx, runtime)
-    
+  
     // 实例化模块
     module, err := runtime.InstantiateModule(ctx, compiledModule, moduleConfig)
     if err != nil {
         return nil, fmt.Errorf("实例化模块失败: %v", err)
     }
-    
+  
     // 创建实例
     instance := &WasmInstance{
         ID:       instanceID,
@@ -3461,16 +3533,16 @@ func (cm *ClusterManager) CreateInstance(ctx context.Context, moduleID string, c
         Config:   config,
         LastUsed: time.Now(),
     }
-    
+  
     // 存储实例
     cm.instances[instanceID] = instance
     log.Printf("已创建实例: %s (模块: %s)", instanceID, moduleID)
-    
+  
     // 预热函数
     if len(config.PrewarmFuncs) > 0 {
         go cm.prewarmFunctions(ctx, instance)
     }
-    
+  
     return instance, nil
 }
 
@@ -3490,48 +3562,48 @@ func (cm *ClusterManager) InvokeFunction(ctx context.Context, instanceID, funcNa
     cm.mu.RLock()
     instance, ok := cm.instances[instanceID]
     cm.mu.RUnlock()
-    
+  
     if !ok {
         return nil, fmt.Errorf("未找到实例: %s", instanceID)
     }
-    
+  
     instance.mu.Lock()
     defer instance.mu.Unlock()
-    
+  
     // 更新最后使用时间
     instance.LastUsed = time.Now()
-    
+  
     // 获取导出函数
     fn := instance.Module.ExportedFunction(funcName)
     if fn == nil {
         return nil, fmt.Errorf("函数未导出: %s", funcName)
     }
-    
+  
     // 创建带超时的上下文
     var cancel context.CancelFunc
     if instance.Config.TimeoutMs > 0 {
         ctx, cancel = context.WithTimeout(ctx, time.Duration(instance.Config.TimeoutMs)*time.Millisecond)
         defer cancel()
     }
-    
+  
     // 记录开始时间
     startTime := time.Now()
-    
+  
     // 调用函数
     results, err := fn.Call(ctx, params...)
-    
+  
     // 记录执行时间
     execTime := time.Since(startTime).Nanoseconds()
-    
+  
     // 更新统计信息
     instance.Stats.Invocations++
     instance.Stats.TotalExecTime += execTime
-    
+  
     if err != nil {
         instance.Stats.Errors++
         return nil, fmt.Errorf("调用失败: %v", err)
     }
-    
+  
     // 记录内存使用
     if memory := instance.Module.Memory(); memory != nil {
         currentMemory := uint32(memory.Size())
@@ -3539,7 +3611,7 @@ func (cm *ClusterManager) InvokeFunction(ctx context.Context, instanceID, funcNa
             instance.Stats.PeakMemoryUsed = currentMemory
         }
     }
-    
+  
     return results, nil
 }
 
@@ -3548,7 +3620,7 @@ func (cm *ClusterManager) cleanupUnusedInstances() bool {
     now := time.Now()
     var oldestInstance *WasmInstance
     var oldestTime time.Time
-    
+  
     // 查找最旧的实例
     for _, instance := range cm.instances {
         if oldestInstance == nil || instance.LastUsed.Before(oldestTime) {
@@ -3556,20 +3628,20 @@ func (cm *ClusterManager) cleanupUnusedInstances() bool {
             oldestTime = instance.LastUsed
         }
     }
-    
+  
     // 如果最旧实例超过5分钟未使用，则清理
     if oldestInstance != nil && now.Sub(oldestTime) > 5*time.Minute {
-        log.Printf("清理未使用实例: %s (闲置时间: %v)", 
+        log.Printf("清理未使用实例: %s (闲置时间: %v)",
                    oldestInstance.ID, now.Sub(oldestTime))
-        
+  
         // 关闭实例
         oldestInstance.Runtime.Close(context.Background())
-        
+  
         // 从映射中删除
         delete(cm.instances, oldestInstance.ID)
         return true
     }
-    
+  
     return false
 }
 
@@ -3577,12 +3649,12 @@ func (cm *ClusterManager) cleanupUnusedInstances() bool {
 func (cm *ClusterManager) GetInstanceStats(instanceID string) (InstanceStats, error) {
     cm.mu.RLock()
     defer cm.mu.RUnlock()
-    
+  
     instance, ok := cm.instances[instanceID]
     if !ok {
         return InstanceStats{}, fmt.Errorf("未找到实例: %s", instanceID)
     }
-    
+  
     return instance.Stats, nil
 }
 
@@ -3590,9 +3662,9 @@ func (cm *ClusterManager) GetInstanceStats(instanceID string) (InstanceStats, er
 func (cm *ClusterManager) GetAllInstances() []map[string]interface{} {
     cm.mu.RLock()
     defer cm.mu.RUnlock()
-    
+  
     result := make([]map[string]interface{}, 0, len(cm.instances))
-    
+  
     for id, instance := range cm.instances {
         info := map[string]interface{}{
             "id":          id,
@@ -3603,7 +3675,7 @@ func (cm *ClusterManager) GetAllInstances() []map[string]interface{} {
         }
         result = append(result, info)
     }
-    
+  
     return result
 }
 
@@ -3613,25 +3685,25 @@ func (cm *ClusterManager) handleCreateInstance(w http.ResponseWriter, r *http.Re
         http.Error(w, "只支持POST请求", http.StatusMethodNotAllowed)
         return
     }
-    
+  
     // 解析请求
     var req struct {
         ModuleID  string         `json:"moduleId"`
         Config    InstanceConfig `json:"config"`
     }
-    
+  
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         http.Error(w, fmt.Sprintf("无法解析请求: %v", err), http.StatusBadRequest)
         return
     }
-    
+  
     // 创建实例
     instance, err := cm.CreateInstance(r.Context(), req.ModuleID, req.Config)
     if err != nil {
         http.Error(w, fmt.Sprintf("创建实例失败: %v", err), http.StatusInternalServerError)
         return
     }
-    
+  
     // 返回实例ID
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]string{
@@ -3645,26 +3717,26 @@ func (cm *ClusterManager) handleInvokeFunction(w http.ResponseWriter, r *http.Re
         http.Error(w, "只支持POST请求", http.StatusMethodNotAllowed)
         return
     }
-    
+  
     // 解析请求
     var req struct {
         InstanceID string   `json:"instanceId"`
         Function   string   `json:"function"`
         Params     []uint64 `json:"params"`
     }
-    
+  
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         http.Error(w, fmt.Sprintf("无法解析请求: %v", err), http.StatusBadRequest)
         return
     }
-    
+  
     // 调用函数
     results, err := cm.InvokeFunction(r.Context(), req.InstanceID, req.Function, req.Params...)
     if err != nil {
         http.Error(w, fmt.Sprintf("调用函数失败: %v", err), http.StatusInternalServerError)
         return
     }
-    
+  
     // 返回结果
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]interface{}{
@@ -3678,7 +3750,7 @@ func (cm *ClusterManager) handleGetStats(w http.ResponseWriter, r *http.Request)
         http.Error(w, "只支持GET请求", http.StatusMethodNotAllowed)
         return
     }
-    
+  
     // 获取实例ID
     instanceID := r.URL.Query().Get("instanceId")
     if instanceID == "" {
@@ -3691,14 +3763,14 @@ func (cm *ClusterManager) handleGetStats(w http.ResponseWriter, r *http.Request)
         })
         return
     }
-    
+  
     // 获取特定实例的统计信息
     stats, err := cm.GetInstanceStats(instanceID)
     if err != nil {
         http.Error(w, fmt.Sprintf("获取统计信息失败: %v", err), http.StatusNotFound)
         return
     }
-    
+  
     // 返回统计信息
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(stats)
@@ -3710,7 +3782,7 @@ func (cm *ClusterManager) StartHTTPServer(addr string) error {
     http.HandleFunc("/api/instances/create", cm.handleCreateInstance)
     http.HandleFunc("/api/instances/invoke", cm.handleInvokeFunction)
     http.HandleFunc("/api/instances/stats", cm.handleGetStats)
-    
+  
     log.Printf("HTTP服务器启动在: %s", addr)
     return http.ListenAndServe(addr, nil)
 }
@@ -3718,14 +3790,15 @@ func (cm *ClusterManager) StartHTTPServer(addr string) error {
 func main() {
     // 创建集群管理器
     manager := NewClusterManager(100)
-    
+  
     // TODO: 加载WebAssembly模块
-    
+  
     // 启动HTTP服务器
     if err := manager.StartHTTPServer(":8080"); err != nil {
         log.Fatalf("HTTP服务器错误: %v", err)
     }
 }
+
 ```
 
 ### 11.1.3 Web平台与人工智能集成
@@ -3751,19 +3824,19 @@ class WasmMLModelLoader {
         maximum: 1000,            // 最大内存大小
         shared: true              // 支持共享内存（用于多线程）
       }));
-      
+  
       // 获取模型二进制数据
       const response = await fetch(this.modelUrl);
       if (!response.ok) {
         throw new Error(`模型加载失败: ${response.statusText}`);
       }
-      
+  
       const modelBuffer = await response.arrayBuffer();
-      
+  
       // 编译WebAssembly模块
       this.modulePromise = WebAssembly.compile(modelBuffer);
       const module = await this.modulePromise;
-      
+  
       // 准备导入对象
       const memory = await this.memoryPromise;
       const importObject = {
@@ -3783,11 +3856,11 @@ class WasmMLModelLoader {
           time: () => Date.now(),
         }
       };
-      
+  
       // 实例化WebAssembly模块
       this.instancePromise = WebAssembly.instantiate(module, importObject);
       await this.instancePromise;
-      
+  
       console.log("AI模型加载成功");
       return true;
     } catch (error) {
@@ -3800,46 +3873,46 @@ class WasmMLModelLoader {
     if (!this.instancePromise || !this.memoryPromise) {
       throw new Error("模型未加载");
     }
-    
+  
     const instance = await this.instancePromise;
     const memory = await this.memoryPromise;
-    
+  
     // 获取导出函数
     const exports = instance.exports;
     const malloc = exports.malloc as CallableFunction;
     const free = exports.free as CallableFunction;
     const predict = exports.predict as CallableFunction;
-    
+  
     if (!malloc || !free || !predict) {
       throw new Error("模型缺少必要的导出函数");
     }
-    
+  
     // 分配输入内存
     const inputSize = inputTensor.length * Float32Array.BYTES_PER_ELEMENT;
     const inputPtr = malloc(inputSize);
-    
+  
     // 将输入数据写入WebAssembly内存
     const inputView = new Float32Array(memory.buffer, inputPtr, inputTensor.length);
     inputView.set(inputTensor);
-    
+  
     // 分配输出内存（假设我们知道输出大小）
     const outputLength = 10; // 例如，10个分类
     const outputSize = outputLength * Float32Array.BYTES_PER_ELEMENT;
     const outputPtr = malloc(outputSize);
-    
+  
     try {
       // 执行预测
       const startTime = performance.now();
       predict(inputPtr, inputTensor.length, outputPtr);
       const endTime = performance.now();
-      
+  
       console.log(`预测完成，耗时: ${(endTime - startTime).toFixed(2)}ms`);
-      
+  
       // 读取输出
       const outputTensor = new Float32Array(
         memory.buffer.slice(outputPtr, outputPtr + outputSize)
       );
-      
+  
       return outputTensor;
     } finally {
       // 释放内存
@@ -3852,28 +3925,28 @@ class WasmMLModelLoader {
     if (!this.instancePromise) {
       throw new Error("模型未加载");
     }
-    
+  
     const instance = await this.instancePromise;
-    
+  
     // 获取模型信息函数
     const getInfo = instance.exports.get_model_info as CallableFunction;
     if (!getInfo) {
       throw new Error("模型未提供信息函数");
     }
-    
+  
     const memory = await this.memoryPromise;
     const infoPtr = getInfo();
-    
+  
     // 假设返回的是以null结尾的JSON字符串指针
     if (infoPtr === 0) {
       return null;
     }
-    
+  
     // 读取字符串
     const bytes = new Uint8Array(memory.buffer, infoPtr);
     let length = 0;
     while (bytes[length] !== 0) length++;
-    
+  
     const infoStr = new TextDecoder().decode(bytes.slice(0, length));
     return JSON.parse(infoStr);
   }
@@ -3929,6 +4002,7 @@ console.log(`${className}: ${(value * 100).toFixed(2)}%`);
   // 卸载模型释放资源
   await modelLoader.unload();
 }
+
 ```
 
 **分布式AI处理框架**：
@@ -3940,7 +4014,9 @@ use serde::{Serialize, Deserialize};
 use ndarray::{Array, Array2, Axis};
 
 // 分片任务定义
-#[derive(Serialize, Deserialize)]
+
+# [derive(Serialize, Deserialize)]
+
 pub struct TaskShard {
     shard_id: usize,
     total_shards: usize,
@@ -3949,7 +4025,9 @@ pub struct TaskShard {
 }
 
 // 任务配置
-#[derive(Serialize, Deserialize)]
+
+# [derive(Serialize, Deserialize)]
+
 pub struct TaskConfig {
     model_type: String,
     parameters: Vec<f32>,
@@ -3957,7 +4035,9 @@ pub struct TaskConfig {
 }
 
 // 处理结果
-#[derive(Serialize, Deserialize)]
+
+# [derive(Serialize, Deserialize)]
+
 pub struct ShardResult {
     shard_id: usize,
     output_data: Vec<f32>,
@@ -3965,7 +4045,9 @@ pub struct ShardResult {
 }
 
 // 执行统计
-#[derive(Serialize, Deserialize)]
+
+# [derive(Serialize, Deserialize)]
+
 pub struct ExecutionStats {
     execution_time_ms: f64,
     memory_used_bytes: usize,
@@ -3973,21 +4055,23 @@ pub struct ExecutionStats {
 }
 
 // 主处理函数
-#[wasm_bindgen]
+
+# [wasm_bindgen]
+
 pub fn process_shard(task_json: &str) -> String {
     // 解析任务
     let task: TaskShard = match serde_json::from_str(task_json) {
         Ok(task) => task,
         Err(e) => return format!("{{\"error\": \"任务解析失败: {}\"}}", e),
     };
-    
+  
     // 开始计时
     let start_time = web_sys::window()
         .expect("缺少window对象")
         .performance()
         .expect("缺少performance API")
         .now();
-    
+  
     // 执行分片处理
     let result = match task.config.operation.as_str() {
         "matrix_multiply" => process_matrix_multiply(&task),
@@ -3995,28 +4079,28 @@ pub fn process_shard(task_json: &str) -> String {
         "feature_extraction" => process_feature_extraction(&task),
         _ => return format!("{{\"error\": \"不支持的操作: {}\"}}", task.config.operation),
     };
-    
+  
     // 计算执行时间
     let end_time = web_sys::window()
         .expect("缺少window对象")
         .performance()
         .expect("缺少performance API")
         .now();
-    
+  
     // 准备统计数据
     let stats = ExecutionStats {
         execution_time_ms: end_time - start_time,
         memory_used_bytes: result.len() * std::mem::size_of::<f32>(),
         operations_executed: result.len(),
     };
-    
+  
     // 准备结果
     let shard_result = ShardResult {
         shard_id: task.shard_id,
         output_data: result,
         execution_stats: stats,
     };
-    
+  
     // 序列化结果
     match serde_json::to_string(&shard_result) {
         Ok(json) => json,
@@ -4029,10 +4113,10 @@ fn process_matrix_multiply(task: &TaskShard) -> Vec<f32> {
     let input_data = &task.input_data;
     let shard_id = task.shard_id;
     let total_shards = task.total_shards;
-    
+  
     // 假设输入是一个矩阵，需要重塑
     let matrix_size = (input_data.len() as f64).sqrt() as usize;
-    
+  
     // 创建输入矩阵
     let mut matrix = Array2::zeros((matrix_size, matrix_size));
     for i in 0..matrix_size {
@@ -4040,7 +4124,7 @@ fn process_matrix_multiply(task: &TaskShard) -> Vec<f32> {
             matrix[[i, j]] = input_data[i * matrix_size + j];
         }
     }
-    
+  
     // 根据分片ID确定处理范围
     let rows_per_shard = matrix_size / total_shards;
     let start_row = shard_id * rows_per_shard;
@@ -4049,11 +4133,11 @@ fn process_matrix_multiply(task: &TaskShard) -> Vec<f32> {
     } else {
         start_row + rows_per_shard
     };
-    
+  
     // 执行矩阵乘法（这里简化为与自身相乘）
     let slice = matrix.slice(s![start_row..end_row, ..]);
     let result = slice.dot(&matrix.t());
-    
+  
     // 转换回一维向量
     result.iter().cloned().collect()
 }
@@ -4078,7 +4162,7 @@ class DistributedProcessor {
     this.workers = [];
     this.tasks = new Map();
     this.taskIdCounter = 0;
-    
+  
     // 创建WebAssembly工作线程
     for (let i = 0; i < workerCount; i++) {
       const worker = new Worker('wasm-worker.js');
@@ -4088,7 +4172,7 @@ class DistributedProcessor {
         busy: false
       });
     }
-    
+  
     console.log(`创建了${workerCount}个工作线程`);
   }
   
@@ -4096,12 +4180,12 @@ class DistributedProcessor {
   async submitTask(inputData, config) {
     return new Promise((resolve, reject) => {
       const taskId = this.taskIdCounter++;
-      
+  
       // 划分任务
       const shardCount = this.workers.length;
       const shardsComplete = new Map();
       const shardSize = Math.ceil(inputData.length / shardCount);
-      
+  
       // 创建任务
       this.tasks.set(taskId, {
         resolve,
@@ -4110,21 +4194,21 @@ class DistributedProcessor {
         shardCount,
         startTime: performance.now()
       });
-      
+  
       // 分发任务分片
       for (let i = 0; i < shardCount; i++) {
         const start = i * shardSize;
         const end = Math.min(start + shardSize, inputData.length);
-        
+  
         const shardData = inputData.slice(start, end);
-        
+  
         const shard = {
           shard_id: i,
           total_shards: shardCount,
           input_data: shardData,
           config
         };
-        
+  
         this.scheduleTask(taskId, i, shard);
       }
     });
@@ -4134,10 +4218,10 @@ class DistributedProcessor {
   scheduleTask(taskId, shardId, shard) {
     // 查找空闲工作线程
     const workerInfo = this.workers.find(w => !w.busy);
-    
+  
     if (workerInfo) {
       workerInfo.busy = true;
-      
+  
       workerInfo.worker.postMessage({
         type: 'process',
         taskId,
@@ -4153,32 +4237,32 @@ class DistributedProcessor {
   // 处理工作线程消息
   handleWorkerMessage(event) {
     const { taskId, shardId, result } = event.data;
-    
+  
     // 查找对应的任务
     const task = this.tasks.get(taskId);
     if (!task) return;
-    
+  
     // 解析结果
     const shardResult = JSON.parse(result);
-    
+  
     // 存储分片结果
     task.shardsComplete.set(shardId, shardResult);
-    
+  
     // 查找并标记工作线程为空闲
     const workerIndex = this.workers.findIndex(w => w.worker === event.target);
     if (workerIndex >= 0) {
       this.workers[workerIndex].busy = false;
     }
-    
+  
     // 检查任务是否完成
     if (task.shardsComplete.size === task.shardCount) {
       const endTime = performance.now();
       const executionTime = endTime - task.startTime;
-      
+  
       // 合并结果
       const results = Array.from(task.shardsComplete.values())
         .sort((a, b) => a.shard_id - b.shard_id);
-      
+  
       // 完成任务
       task.resolve({
         results,
@@ -4187,7 +4271,7 @@ class DistributedProcessor {
           shard_count: task.shardCount
         }
       });
-      
+  
       // 删除任务
       this.tasks.delete(taskId);
     }
@@ -4197,7 +4281,7 @@ class DistributedProcessor {
   terminate() {
     this.workers.forEach(({ worker }) => worker.terminate());
     this.workers = [];
-    
+  
     // 拒绝所有未完成的任务
     for (const [taskId, task] of this.tasks.entries()) {
       task.reject(new Error('处理器已终止'));
@@ -4205,13 +4289,16 @@ class DistributedProcessor {
     }
   }
 }
-*/
+* /
+
 ```
 
 **跨平台AI应用架构**：
 
 ```python
+
 # 12 12 12 12 12 12 12 Python: 跨平台AI应用架构（与WebAssembly集成）
+
 import json
 import asyncio
 import numpy as np
@@ -4240,45 +4327,45 @@ class InferenceResult:
 
 class WasmRuntime:
     """WebAssembly运行时接口"""
-    
+  
     def __init__(self, model_config: ModelConfig):
         self.model_config = model_config
         self.model_loaded = False
         self._js_runtime = None  # 保存JavaScript/WASM运行时引用
-        
+  
     async def initialize(self) -> bool:
         """初始化WebAssembly运行时"""
         try:
             # 在实际实现中，这会与JavaScript交互
             # 使用如pyodide或wasmer等库
             print(f"初始化WebAssembly运行时 (模型: {self.model_config.model_id})")
-            
+  
             # 模拟启动WebAssembly运行时
             await asyncio.sleep(0.5)
-            
+  
             # 模拟加载模型
             model_path = f"/models/{self.model_config.model_id}_{self.model_config.version}"
             if self.model_config.quantized:
                 model_path += "_quantized"
             model_path += ".wasm"
-            
+  
             print(f"加载WASM模型: {model_path}")
             # 模拟模型加载时间
             await asyncio.sleep(1.0)
-            
+  
             # 模拟内存分配
             print(f"分配{self.model_config.input_shape} x {self.model_config.output_shape}大小的模型缓冲区")
-            
+  
             # 设置加速选项
             if self.model_config.acceleration:
                 print(f"启用加速: {self.model_config.acceleration}")
-            
+  
             self.model_loaded = True
             return True
         except Exception as e:
             print(f"初始化WebAssembly运行时失败: {e}")
             return False
-    
+  
     async def run_inference(self, input_data: np.ndarray) -> InferenceResult:
         """使用WebAssembly模型运行推理"""
         if not self.model_loaded:
@@ -4289,7 +4376,7 @@ class WasmRuntime:
                 success=False,
                 error="模型未加载"
             )
-            
+  
         try:
             # 检查输入形状
             expected_shape = tuple(self.model_config.input_shape)
@@ -4301,25 +4388,25 @@ class WasmRuntime:
                     success=False,
                     error=f"输入形状不匹配: 期望{expected_shape}，收到{input_data.shape}"
                 )
-            
+  
             # 在实际实现中，这会调用WebAssembly函数
             print(f"运行WASM推理 (输入大小: {input_data.shape})")
-            
+  
             # 模拟处理时间
             start_time = asyncio.get_event_loop().time()
             await asyncio.sleep(0.1)  # 模拟计算时间
-            
+  
             # 模拟输出生成
             output_shape = tuple(self.model_config.output_shape)
             outputs = np.random.random(output_shape).astype(np.float32)
-            
+  
             # 计算延迟
             end_time = asyncio.get_event_loop().time()
             latency_ms = (end_time - start_time) * 1000
-            
+  
             # 模拟内存使用
             memory_usage = input_data.nbytes + outputs.nbytes + 1024 * 1024  # 基础内存 + 1MB
-            
+  
             return InferenceResult(
                 outputs=outputs,
                 latency_ms=latency_ms,
@@ -4334,7 +4421,7 @@ class WasmRuntime:
                 success=False,
                 error=f"推理失败: {e}"
             )
-    
+  
     async def release(self) -> None:
         """释放资源"""
         if self.model_loaded:
@@ -4345,18 +4432,18 @@ class WasmRuntime:
 
 class NativeRuntime:
     """本地运行时接口（用于比较）"""
-    
+  
     def __init__(self, model_config: ModelConfig):
         self.model_config = model_config
         self.model_loaded = False
-    
+  
     async def initialize(self) -> bool:
         """初始化本地运行时"""
         # 本地运行时实现...
         await asyncio.sleep(0.3)
         self.model_loaded = True
         return True
-    
+  
     async def run_inference(self, input_data: np.ndarray) -> InferenceResult:
         """使用本地模型运行推理"""
         # 本地推理实现...
@@ -4369,7 +4456,7 @@ class NativeRuntime:
             memory_usage_bytes=input_data.nbytes + outputs.nbytes + 2 * 1024 * 1024,
             success=True
         )
-    
+  
     async def release(self) -> None:
         """释放资源"""
         # 释放资源实现...
@@ -4378,7 +4465,7 @@ class NativeRuntime:
 
 class HybridRuntime:
     """混合运行时（Web/本地动态选择）"""
-    
+  
     def __init__(self, model_config: ModelConfig):
         self.model_config = model_config
         self.wasm_runtime = WasmRuntime(model_config)
@@ -4388,7 +4475,7 @@ class HybridRuntime:
             "wasm": {"count": 0, "total_latency": 0},
             "native": {"count": 0, "total_latency": 0}
         }
-    
+  
     async def initialize(self) -> bool:
         """初始化最佳可用运行时"""
         # 尝试初始化WebAssembly运行时
@@ -4396,16 +4483,16 @@ class HybridRuntime:
             self.active_runtime = self.wasm_runtime
             print("已选择WebAssembly运行时")
             return True
-        
+  
         # 回退到本地运行时
         if await self.native_runtime.initialize():
             self.active_runtime = self.native_runtime
             print("已选择本地运行时")
             return True
-        
+  
         print("无法初始化任何运行时")
         return False
-    
+  
     async def run_inference(self, input_data: np.ndarray) -> InferenceResult:
         """运行推理，动态选择最佳运行时"""
         if self.active_runtime is None:
@@ -4416,35 +4503,35 @@ class HybridRuntime:
                 success=False,
                 error="未初始化运行时"
             )
-        
+  
         # 执行推理
         result = await self.active_runtime.run_inference(input_data)
-        
+  
         # 更新性能统计
         runtime_type = "wasm" if isinstance(self.active_runtime, WasmRuntime) else "native"
         if result.success:
             self.performance_stats[runtime_type]["count"] += 1
             self.performance_stats[runtime_type]["total_latency"] += result.latency_ms
-        
+  
         # 动态运行时选择（每10次推理后评估）
         total_count = sum(stats["count"] for stats in self.performance_stats.values())
         if total_count > 0 and total_count % 10 == 0:
             await self._evaluate_runtimes()
-        
+  
         return result
-    
+  
     async def _evaluate_runtimes(self) -> None:
         """评估性能并选择最佳运行时"""
         wasm_stats = self.performance_stats["wasm"]
         native_stats = self.performance_stats["native"]
-        
+  
         # 如果有足够的样本，计算平均延迟
         if wasm_stats["count"] > 0 and native_stats["count"] > 0:
             wasm_avg = wasm_stats["total_latency"] / wasm_stats["count"]
             native_avg = native_stats["total_latency"] / native_stats["count"]
-            
+  
             print(f"性能比较: WebAssembly={wasm_avg:.2f}ms, 本地={native_avg:.2f}ms")
-            
+  
             # 如果差异显著，切换运行时
             if wasm_avg < native_avg * 0.8 and not isinstance(self.active_runtime, WasmRuntime):
                 print("切换到WebAssembly运行时（更快）")
@@ -4452,7 +4539,7 @@ class HybridRuntime:
             elif native_avg < wasm_avg * 0.8 and not isinstance(self.active_runtime, NativeRuntime):
                 print("切换到本地运行时（更快）")
                 self.active_runtime = self.native_runtime
-    
+  
     async def release(self) -> None:
         """释放所有资源"""
         await self.wasm_runtime.release()
@@ -4461,16 +4548,16 @@ class HybridRuntime:
 
 class AIManager:
     """AI应用管理器"""
-    
+  
     def __init__(self):
         self.models = {}
-    
+  
     async def load_model(self, config: ModelConfig) -> bool:
         """加载AI模型"""
         if config.model_id in self.models:
             print(f"模型已加载: {config.model_id}")
             return True
-            
+  
         # 创建适当的运行时
         if config.runtime == "wasm":
             runtime = WasmRuntime(config)
@@ -4481,15 +4568,15 @@ class AIManager:
         else:
             print(f"不支持的运行时: {config.runtime}")
             return False
-        
+  
         # 初始化运行时
         success = await runtime.initialize()
         if success:
             self.models[config.model_id] = runtime
             print(f"模型加载成功: {config.model_id}")
-        
+  
         return success
-    
+  
     async def infer(self, model_id: str, input_data: np.ndarray) -> InferenceResult:
         """使用指定模型运行推理"""
         if model_id not in self.models:
@@ -4500,21 +4587,21 @@ class AIManager:
                 success=False,
                 error=f"模型未加载: {model_id}"
             )
-        
+  
         runtime = self.models[model_id]
         return await runtime.run_inference(input_data)
-    
+  
     async def unload_model(self, model_id: str) -> bool:
         """卸载指定模型"""
         if model_id not in self.models:
             return False
-        
+  
         runtime = self.models[model_id]
         await runtime.release()
         del self.models[model_id]
         print(f"模型已卸载: {model_id}")
         return True
-    
+  
     async def unload_all(self) -> None:
         """卸载所有模型"""
         model_ids = list(self.models.keys())
@@ -4522,10 +4609,11 @@ class AIManager:
             await self.unload_model(model_id)
 
 # 13 13 13 13 13 13 13 演示WebAssembly与本地模型比较
+
 async def main():
     # 创建AI管理器
     ai_manager = AIManager()
-    
+  
     # 配置图像分类模型
     image_model_config = ModelConfig(
         model_id="image_classifier",
@@ -4536,19 +4624,19 @@ async def main():
         runtime="wasm",                 # 使用WebAssembly运行时
         acceleration="simd"             # 使用SIMD加速
     )
-    
+  
     # 加载模型
     await ai_manager.load_model(image_model_config)
-    
+  
     # 创建示例输入
     input_data = np.random.random((1, 224, 224, 3)).astype(np.float32)
-    
+  
     # 运行推理
     print("\n运行WebAssembly推理")
     wasm_result = await ai_manager.infer("image_classifier", input_data)
     print(f"WebAssembly推理结果: 延迟={wasm_result.latency_ms:.2f}ms, "
           f"内存={wasm_result.memory_usage_bytes/1024/1024:.2f}MB")
-    
+  
     # 配置相同模型的本地版本
     native_model_config = ModelConfig(
         model_id="image_classifier_native",
@@ -4558,16 +4646,16 @@ async def main():
         output_shape=[1, 1000],
         runtime="native"
     )
-    
+  
     # 加载本地模型
     await ai_manager.load_model(native_model_config)
-    
+  
     # 运行本地推理
     print("\n运行本地推理")
     native_result = await ai_manager.infer("image_classifier_native", input_data)
     print(f"本地推理结果: 延迟={native_result.latency_ms:.2f}ms, "
           f"内存={native_result.memory_usage_bytes/1024/1024:.2f}MB")
-    
+  
     # 配置混合运行时模型
     hybrid_model_config = ModelConfig(
         model_id="image_classifier_hybrid",
@@ -4577,21 +4665,22 @@ async def main():
         output_shape=[1, 1000],
         runtime="hybrid"
     )
-    
+  
     # 加载混合模型
     await ai_manager.load_model(hybrid_model_config)
-    
+  
     # 运行多次推理，让混合运行时评估性能
     print("\n运行混合推理（多次）")
     for i in range(15):
         result = await ai_manager.infer("image_classifier_hybrid", input_data)
         print(f"混合推理 #{i+1}: 延迟={result.latency_ms:.2f}ms")
-    
+  
     # 卸载所有模型
     await ai_manager.unload_all()
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 ```
 
 ## 13.1 9. 全局技术架构图（思维导图）
@@ -4703,6 +4792,7 @@ WebAssembly技术融合架构
         ├── 浏览器端ML加速
         ├── 分布式AI处理框架
         └── 跨平台AI应用架构
+
 ```
 
 ## 13.2 总结与展望

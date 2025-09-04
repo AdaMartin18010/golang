@@ -37,6 +37,7 @@ Kubernetes系统架构与工作流模式之间的关系。
 - 嵌入性
 - 组合关系
 </think>
+
 ```
 
 ## 目录
@@ -79,6 +80,7 @@ Kubernetes系统架构与工作流模式之间的关系。
       ├─── 同伦等价 ────── 架构语义 ⟷ 模式语义
       │
       └─── 依赖类型 ────── 资源约束 ⟷ 资源模式
+
 ```
 
 ## Docker与Kubernetes架构模型分析
@@ -112,6 +114,7 @@ type Pod = Vec<Container> * PodSpec * PodStatus;
 // 协议交互作为路径（path）定义
 type Reconciliation = Path<ActualState, DesiredState>;
 type ControlLoop<T> = (ObserveState<T> -> DiffState<T> -> ActState<T>) * Loop;
+
 ```
 
 ## 工作流模式的形式化描述
@@ -155,6 +158,7 @@ enum ControlFlowPattern {
 // 数据流作为函数类型（泛函）定义
 type DataTransformation<A, B> = Fn(A) -> B;
 type DataRouting<T> = Fn(T, Condition) -> Endpoint;
+
 ```
 
 ## 架构模型与工作流模式的对应关系
@@ -261,6 +265,7 @@ fn workflow_engine<T: Activity>() {
 
 // 两者间的同伦等价可以表示为：
 // Path(controller_loop, workflow_engine) ≃ Refl(ExecutionModel)
+
 ```
 
 ### 2. 资源约束作为依赖类型
@@ -281,6 +286,7 @@ type ActivityWithResources = Activity where {
 
 // 形式等价性：
 // Π(r: Resource).PodWithResources(r) ≃ Π(r: Resource).ActivityWithResources(r)
+
 ```
 
 ### 3. 组合有效性证明
@@ -307,6 +313,7 @@ fn validate_workflow_composition<T: Activity>(activities: Vec<T>) -> bool {
 }
 
 // 两者验证机制存在同构关系
+
 ```
 
 ## 总结与展望
@@ -346,4 +353,5 @@ fn validate_workflow_composition<T: Activity>(activities: Vec<T>) -> bool {
            ├── Pod Termination ⟷ Cancel Activity
            ├── Finalizers ⟷ Compensation
            └── Probes/Restart Policy ⟷ Exception Handling
+
 ```

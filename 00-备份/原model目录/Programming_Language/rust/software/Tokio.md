@@ -152,6 +152,7 @@ pub fn get_cpu_usage() -> f32 {
         .sum::<f32>() / system.get_processors().len() as f32;
     cpu_usage
 }
+
 ```
 
 ### 1.2 定时采集指标并监控
@@ -202,6 +203,7 @@ pub async fn monitor_and_adjust() {
         // 可根据实际需求扩展更多调整策略
     }
 }
+
 ```
 
 ---

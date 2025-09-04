@@ -21,19 +21,6 @@
     - [1.8.6 **总结**](#**总结**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 下面介绍下 Rust 中关于引用（&T 和 &mut T）以及所谓“接引用”（即先解引用再取引用，如 `&*r`）的定义、等价形式和它们之间的等价关系。
 
 ## 1.1 1. 引用与借用的基本概念
@@ -53,12 +40,14 @@
 
 ```text
 r \equiv &*r
+
 ```
 
 同样，对于可变引用也成立：
 
 ```text
 r \equiv &mut *r
+
 ```
 
 ### 1.2.1 原理说明
@@ -86,6 +75,7 @@ fn main() {
     let r2: &i32 = &*r;
     assert_eq!(r, r2);
 }
+
 ```
 
 在上面的例子中，`r` 是一个 `&i32` 类型的引用，`&*r` 先解引用后取引用，仍然是一个指向 `x` 的 `&i32` 类型引用，与 `r` 完全等价。
@@ -101,6 +91,7 @@ fn main() {
     *r2 += 1;
     assert_eq!(x, 43);
 }
+
 ```
 
 这里，`r` 是一个可变引用，通过 `&mut *r` 得到的 `r2` 与 `r` 等价，同样指向变量 `x`。
@@ -126,6 +117,7 @@ fn main() {
     // s.as_str() 返回的是 &str，而这里编译器也允许将 &String 自动转换为 &str，其中也涉及了自动解引用
     print_str(&s);
 }
+
 ```
 
 ## 1.5 5. 等价关系总结
@@ -163,6 +155,7 @@ fn main() {
     // **rrx 等价于 *(*rrx)，即先解引用一次得到 &i32，再解引用得到 i32
     assert_eq!(x, **rrx);
 }
+
 ```
 
 在上面的代码中：
@@ -194,6 +187,7 @@ fn main() {
     // *boxed 得到 MyBox<i32>，对其再解引用 **boxed 则得到 i32，即 x 的值
     assert_eq!(x, **boxed);
 }
+
 ```
 
 在这个例子中：
@@ -224,6 +218,7 @@ fn main() {
 
     let value = *c;    // 错误：只解引用了一次
 }
+
 ```
 
 **错误信息**：
@@ -234,6 +229,7 @@ error[E0614]: type `&&i32` cannot be dereferenced
   |
 6 |     let value = *c;
   |               ^^
+
 ```
 
 **解决方案**：确保解引用的层数与引用的层数匹配。在这个例子中，需要两次解引用：
@@ -247,6 +243,7 @@ fn main() {
     let value = **c;   // 正确：解引用两次
     println!("{}", value);
 }
+
 ```
 
 ### 1.8.2 **2. 生命周期不匹配**
@@ -258,6 +255,7 @@ fn process_data<'a>(data: &'a str) {
     let ref_to_data = data; // 这里 data 的生命周期与 ref_to_data 不匹配
     // ...
 }
+
 ```
 
 **错误信息**：
@@ -268,6 +266,7 @@ error[E0495]: cannot infer an appropriate lifetime for borrow expression due to 
   |
 2 |     let ref_to_data = data;
   |                     ^^^^^^
+
 ```
 
 **解决方案**：使用相同的生命周期注解来确保引用的生命周期一致：
@@ -277,6 +276,7 @@ fn process_data<'a>(data: &'a str) {
     let ref_to_data: &'a str = data; // 使用相同的生命周期注解
     // ...
 }
+
 ```
 
 ### 1.8.3 **3. 可变引用与不可变引用冲突**
@@ -291,6 +291,7 @@ fn main() {
     let r2 = &mut s;    // 可变引用
     println!("{}", r1);
 }
+
 ```
 
 **错误信息**：
@@ -305,6 +306,7 @@ error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immuta
   |              ^^^^^^ mutable borrow occurs here
 6 |     println!("{}", r1);
   |                    -- immutable borrow later used here
+
 ```
 
 **解决方案**：确保在同一作用域内不同时存在可变引用和不可变引用：
@@ -319,6 +321,7 @@ fn main() {
     let r2 = &mut s;    // 可变引用
     println!("{}", r2);
 }
+
 ```
 
 ### 1.8.4 **4. 多级引用的错误使用**
@@ -334,6 +337,7 @@ fn main() {
 
     *d = 20;              // 错误：只解引用了一次
 }
+
 ```
 
 **错误信息**：
@@ -344,6 +348,7 @@ error[E0614]: type `&&&i32` cannot be dereferenced
   |
 9 |     *d = 20;
   |     ^^
+
 ```
 
 **解决方案**：确保解引用的层数与引用的层数匹配。在这个例子中，需要三次解引用：
@@ -358,6 +363,7 @@ fn main() {
     ***d = 20;            // 正确：解引用三次
     println!("{}", a);    // 输出 20
 }
+
 ```
 
 ### 1.8.5 **5. 生命周期结束前的错误引用**
@@ -373,6 +379,7 @@ fn main() {
     let r2 = &mut s;    // 可变引用
     println!("{}", r1); // 错误：r1 的作用域尚未结束
 }
+
 ```
 
 **错误信息**：
@@ -386,6 +393,7 @@ error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immuta
 5 |     let r2 = &mut s;    // 可变引用
   |              ^^^^^^ mutable borrow occurs here
 6 |     println!("{}", r1); // immutable borrow later used here
+
 ```
 
 **解决方案**：确保引用的作用域不重叠：
@@ -400,6 +408,7 @@ fn main() {
     let r2 = &mut s;    // 可变引用
     println!("{}", r2); // 使用 r2
 }
+
 ```
 
 ### 1.8.6 **总结**

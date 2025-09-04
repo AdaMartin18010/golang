@@ -65,6 +65,7 @@ async fn example() {
     let result = monad.bind(|x| AsyncMonad::new(x + 1)).await;
     // 使用 result
 }
+
 ```
 
 #### 示例：异步函子
@@ -84,6 +85,7 @@ async fn example_map() {
     let result = monad.map(|x| x * 2).await;
     // 使用 result
 }
+
 ```
 
 ### 总结与思维导图
@@ -114,6 +116,7 @@ Rust 2024 Edition
     ├── 异步单子
     ├── 异步函子
     └── 编程建议
+
 ```
 
 ### 编程建议
@@ -291,6 +294,7 @@ Rust 2024 Core Library
     ├── 通道
     ├── 互斥锁
     └── 读写锁
+
 ```
 
 ### 总结

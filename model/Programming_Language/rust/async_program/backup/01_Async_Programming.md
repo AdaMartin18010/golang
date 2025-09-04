@@ -6,19 +6,6 @@
   - [1.2 并发编程 (Concurrency Programming)](#并发编程-concurrency-programming)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Rust 语言在异步编程和并发编程方面提供了强大的原生支持，这些机制使得 Rust 能够有效地处理高并发和高性能的系统编程任务。
 以下是 Rust 中异步编程和并发编程的关键概念和机制：
 

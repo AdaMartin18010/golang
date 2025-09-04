@@ -25,6 +25,7 @@
 
 我还需要考虑IOT系统特有的挑战，如设备异构性、资源受限、连接不稳定、大规模管理和安全问题。
 </think>
+
 ```
 
 ## 目录
@@ -162,6 +163,7 @@ Rust语言为实现这些目标提供了独特优势：
 │ │协议适配  │ │设备管理  │ │安全通信  │  │
 │ └─────────┘ └─────────┘ └──────────┘  │
 └───────────────────────────────────────┘
+
 ```
 
 ### 核心设计原则
@@ -302,6 +304,7 @@ impl ProtocolFactory {
         }
     }
 }
+
 ```
 
 #### 安全通信模块
@@ -410,6 +413,7 @@ impl TlsConfigBuilder {
         // 构建TLS服务器配置
     }
 }
+
 ```
 
 #### 设备注册与发现
@@ -588,6 +592,7 @@ impl DeviceDiscoveryService {
         Ok(devices)
     }
 }
+
 ```
 
 ### 数据处理层
@@ -749,6 +754,7 @@ impl TelemetryTransformer for UnitConversionTransformer {
         "unit-conversion"
     }
 }
+
 ```
 
 #### 事件处理引擎
@@ -1044,6 +1050,7 @@ impl ActionHandler for CommandHandler {
         "command"
     }
 }
+
 ```
 
 #### 时序数据管理
@@ -1323,6 +1330,7 @@ impl TimeSeriesDownsampler {
         Utc.timestamp_opt(window_start_secs, 0).unwrap()
     }
 }
+
 ```
 
 ### 工作流引擎
@@ -1771,6 +1779,7 @@ pub fn create_device_monitoring_workflow() -> WorkflowDefinition {
         metadata: HashMap::new(),
     }
 }
+
 ```
 
 #### 有状态处理器
@@ -2250,6 +2259,7 @@ impl Clone for WorkflowEngine {
         }
     }
 }
+
 ```
 
 #### 触发器系统
@@ -2726,6 +2736,7 @@ impl WorkflowManager {
         self.instance_store.get(instance_id).await
     }
 }
+
 ```
 
 ### 分布式协调
@@ -3616,6 +3627,7 @@ pub trait StateMachine: Send + Sync {
     async fn snapshot(&self) -> Result<Vec<u8>, StateMachineError>;
     async fn restore(&self, snapshot: &[u8]) -> Result<(), StateMachineError>;
 }
+
 ```
 
 #### 状态同步
@@ -4070,6 +4082,7 @@ impl StateSerializer for JsonSerializer {
         serde_json::from_slice(data).map_err(|e| StateError::DeserializationError(e.to_string()))
     }
 }
+
 ```
 
 #### 分区策略
@@ -6193,6 +6206,7 @@ pub struct AppConfig {
 }
 
 // 结束
+
 ```
 
 ## 结论与未来方向
@@ -6304,6 +6318,7 @@ pub struct AppConfig {
                             ┌─────────▼─────────┐
                             │   分布式跟踪系统   │
                             └───────────────────┘
+
 ```
 
 该框架通过这些紧密集成的组件，

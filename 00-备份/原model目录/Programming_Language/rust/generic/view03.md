@@ -129,6 +129,7 @@ struct Container<T> { item: T }
 
 // 泛型枚举
 enum Option<T> { Some(T), None }
+
 ```
 
 这种统一的泛型语法提供了强大的一致性，但也意味着开发者需要理解泛型在不同上下文中的应用。
@@ -154,6 +155,7 @@ Rust强大的类型推导系统通常能自动确定泛型参数的具体类型�
 ```rust
 let numbers: Vec<i32> = (0..5).collect();
 let number = "42".parse::<i32>().unwrap();
+
 ```
 
 类型推导简化了代码，但有时过于“魔法”可能让新手困惑；显式指定虽然冗长，但更清晰。
@@ -166,6 +168,7 @@ let number = "42".parse::<i32>().unwrap();
 struct ArrayBuffer<T, const SIZE: usize> {
     data: [T; SIZE],
 }
+
 ```
 
 这使得在类型层面编码固定大小成为可能，避免了运行时检查或动态分配的开销，是Rust向更强大的编译期计算迈出的重要一步。
@@ -182,6 +185,7 @@ Trait是Rust实现ad-hoc多态（特定多态）的核心。它定义了一组�
 trait Summary {
     fn summarize(&self) -> String;
 }
+
 ```
 
 #### 3.1.2 `impl Trait for Type`：行为实现
@@ -191,6 +195,7 @@ struct NewsArticle { headline: String }
 impl Summary for NewsArticle {
     fn summarize(&self) -> String { format!("Article: {}", self.headline) }
 }
+
 ```
 
 #### 3.1.3 与OOP多态的对比：设计理念差异
@@ -211,6 +216,7 @@ Trait约束用于限定泛型参数必须实现哪些Trait，确保泛型代码�
 
 ```rust
 fn notify<T: Summary + Display>(item: &T) { /* ... */ }
+
 ```
 
 #### 3.2.2 `where` 子句：提升复杂约束可读性
@@ -221,6 +227,7 @@ where
     T: Display + Clone,
     U: Clone + Debug,
 { /* ... */ }
+
 ```
 
 Trait约束是静态类型检查的关键，但在复杂场景下会使签名变得冗长。
@@ -240,6 +247,7 @@ trait Iterator {
     type Item; // 迭代器产生的元素类型
     fn next(&mut self) -> Option<Self::Item>;
 }
+
 ```
 
 #### 3.3.2 与泛型参数 (`Trait<T>`) 的对比与选择
@@ -290,6 +298,7 @@ Trait对象提供了运行时多态的灵活性（如存储异构集合），但
 
 ```rust
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str { /* ... */ }
+
 ```
 
 ### 4.4 生命周期约束 (`'a: 'b`, `T: 'a`)
@@ -302,6 +311,7 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str { /* ... */ }
 
 ```rust
 fn process<F>(f: F) where F: for<'x> Fn(&'x i32) -> &'x i32 { /* ... */ }
+
 ```
 
 ### 4.6 批判：生命周期标注的复杂性与学习曲线
@@ -345,6 +355,7 @@ Rust标准库大量使用泛型构建核心数据结构。`Option<T>`和`Result<
 impl<T> List<T> {
     fn map<U, F>(self, f: F) -> List<U> where F: Fn(T) -> U { /* ... */ }
 }
+
 ```
 
 ## 6. 编译期与运行时行为：静态与动态的权衡
@@ -574,4 +585,5 @@ Rust泛型与多态机制深度解析 (修订版)
     ├── 10.1 核心价值与权衡
     ├── 10.2 语言演进方向 (GATs, 特化等)
     └── 10.3 对开发者与项目的影响
+
 ```

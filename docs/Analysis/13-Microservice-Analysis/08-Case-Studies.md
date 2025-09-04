@@ -20,19 +20,6 @@
     - [13.1.6.3 应用场景](#应用场景)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 13.1.1 目录
 
 1. [概述](#概述)
@@ -442,6 +429,7 @@ func (is *InventoryService) ReleaseStock(productID string, quantity int) error {
     
     return nil
 }
+
 ```
 
 ## 13.1.4 金融微服务架构
@@ -820,6 +808,7 @@ func (as *AuditService) LogAction(userID, action, resource, resourceID string, d
     
     return nil
 }
+
 ```
 
 ## 13.1.5 社交网络微服务架构
@@ -1206,6 +1195,7 @@ func (rs *RecommendationService) CollaborativeFiltering(userID string) ([]string
     // 排序并返回推荐用户ID
     return rs.sortByCount(recommendations), nil
 }
+
 ```
 
 ## 13.1.6 总结

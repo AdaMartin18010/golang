@@ -36,6 +36,7 @@ anyhow = "1.0"
 
 [build-dependencies]
 tonic-build = { version = "0.10", features = ["prost"] }
+
 ```
 
 ### 2. Proto 定义
@@ -166,6 +167,7 @@ message Task {
     google.protobuf.Timestamp created_at = 5;
     google.protobuf.Timestamp updated_at = 6;
 }
+
 ```
 
 ### 3. 服务实现
@@ -336,6 +338,7 @@ impl NodeService for DistributedNode {
         Ok(Response::new(state))
     }
 }
+
 ```
 
 ### 4. 集群管理器实现
@@ -395,6 +398,7 @@ impl ClusterManager {
         Ok(metrics)
     }
 }
+
 ```
 
 ### 5. 任务管理器实现
@@ -430,6 +434,7 @@ impl TaskManager {
         })
     }
 }
+
 ```
 
 ### 6. 文件管理器实现
@@ -461,6 +466,7 @@ impl FileManager {
         Ok(file_id)
     }
 }
+
 ```
 
 ### 7. 客户端实现
@@ -556,6 +562,7 @@ impl DistributedClient {
         Ok(response.into_inner())
     }
 }
+
 ```
 
 ### 8. 服务器启动
@@ -581,6 +588,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 ```
 
 ### 9. 中间件实现
@@ -642,6 +650,7 @@ where
         future::ready(Err(Status::unauthenticated("Invalid API key")))
     }
 }
+
 ```
 
 ### 10. 使用示例
@@ -691,6 +700,7 @@ async fn example() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个完整的示例展示了如何使用 Tonic 的所有主要特性来构建一个分布式系统，包括：

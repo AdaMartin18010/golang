@@ -284,4 +284,5 @@ Temporal 代码实现分析 (Go 视角)
 │   └── 3.5. 可测试性设计 (Mocks via Interfaces, SDK `testsuite`)
 │
 └── 4. 结论：健壮实现支撑强大功能 (工程实践, Go 特性利用, 可靠性来源)
+
 ```

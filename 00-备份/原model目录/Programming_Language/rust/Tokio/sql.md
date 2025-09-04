@@ -35,6 +35,7 @@ serde_json = "1.0"
 async-trait = "0.1"
 thiserror = "1.0"
 tracing = "0.1"
+
 ```
 
 ## 2. 数据库连接池管理
@@ -95,6 +96,7 @@ impl DbPoolManager {
         }
     }
 }
+
 ```
 
 ## 3. 事务管理器
@@ -165,6 +167,7 @@ impl<'a> TransactionManager<'a> {
         Ok(())
     }
 }
+
 ```
 
 ## 4. 锁管理器
@@ -214,6 +217,7 @@ impl<'a> LockManager<'a> {
         Ok(())
     }
 }
+
 ```
 
 ## 5. JSON 操作管理器
@@ -288,6 +292,7 @@ impl<'a> JsonManager<'a> {
         }
     }
 }
+
 ```
 
 ## 6. 存储过程管理器
@@ -355,6 +360,7 @@ impl<'a> ProcedureManager<'a> {
         }
     }
 }
+
 ```
 
 ## 7. 异常处理
@@ -403,6 +409,7 @@ impl DatabaseError {
         }
     }
 }
+
 ```
 
 ## 8. 使用示例
@@ -487,6 +494,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了：

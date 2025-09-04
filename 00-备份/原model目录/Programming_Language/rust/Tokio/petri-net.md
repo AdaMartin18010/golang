@@ -33,6 +33,7 @@ redis = { version = "0.23", features = ["tokio-comp", "connection-manager"] }
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-native-tls"] }
 tracing = "0.1"
 tracing-opentelemetry = "0.22"
+
 ```
 
 ### 2. Petri 网模型实现
@@ -166,6 +167,7 @@ impl PetriNet {
         Ok(())
     }
 }
+
 ```
 
 ### 3. 分布式工作流执行器
@@ -265,6 +267,7 @@ impl WorkflowExecutor {
         Ok(())
     }
 }
+
 ```
 
 ### 4. 分布式状态存储
@@ -360,6 +363,7 @@ impl StateStore {
         Ok(())
     }
 }
+
 ```
 
 ### 5. 分布式锁实现
@@ -448,6 +452,7 @@ impl Drop for LockGuard {
         span.end();
     }
 }
+
 ```
 
 ### 6. 分布式事件总线
@@ -544,6 +549,7 @@ impl EventBus {
         Ok(())
     }
 }
+
 ```
 
 ### 7. 工作流定义示例
@@ -598,6 +604,7 @@ fn create_workflow() -> PetriNet {
 
     net
 }
+
 ```
 
 ### 8. 主程序实现
@@ -646,6 +653,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
 ```
 
 这个实现提供了一个完整的分布式工作流系统，具有以下特点：

@@ -57,6 +57,7 @@
 5. 未来发展方向
 
 让我开始构建这个文档的框架和内容。</think>
+
 ```
 
 ## 1.1 目录
@@ -134,6 +135,7 @@ fn compute_ratio(x: f64, y: f64, z: f64) -> Option<f64> {
         safe_division(xy_ratio, z).map(|result| result * 100.0)
     )
 }
+
 ```
 
 这里，`Option<T>`类型可以看作是命题"存在类型T的值"，`Some(value)`是该命题成立的证据，而`None`表示命题不成立。函数组合对应着逻辑推理的组合。
@@ -186,6 +188,7 @@ fn flatten_isomorphism<T>() -> impl Fn(Option<Option<T>>) -> Option<T> {
 fn elevate_isomorphism<T>() -> impl Fn(Option<T>) -> Option<Option<T>> {
     |x| Some(x)
 }
+
 ```
 
 虽然Rust没有直接支持路径类型，但我们可以通过类型系统和函数来模拟某些同伦概念，如上例展示了类型间关系的表示方法。
@@ -226,6 +229,7 @@ impl Interval {
         self.0 == 0.0 || self.0 == 1.0
     }
 }
+
 ```
 
 虽然Rust无法直接表示HoTT中的高阶归纳类型，但我们可以通过常规数据类型和函数来模拟一些概念，尽管这些模拟丢失了HoTT中的一些重要性质。
@@ -278,6 +282,7 @@ where
     }
     result
 }
+
 ```
 
 这个例子展示了如何在Rust中使用常量泛型来表示具有固定维度的向量和矩阵，并在编译时保证维度匹配。
@@ -331,6 +336,7 @@ fn main() {
         println!("{} is negative, can't compute square root", NEGATIVE);
     }
 }
+
 ```
 
 这个例子展示了如何使用Rust的常量泛型和运行时检查来模拟某些依赖类型的功能，虽然这只是真正依赖类型系统的一个有限模拟。
@@ -366,6 +372,7 @@ fn main() {
 fn process<T: std::fmt::Display>(items: Vec<T>) -> impl Iterator<Item = String> {
     items.into_iter().map(|x| format!("Item: {}", x))
 }
+
 ```
 
 Rust的类型推导系统是Hindley-Milner类型系统的一个变种，它支持局部类型推导和部分类型信息。
@@ -418,6 +425,7 @@ impl<T> Container for BoxedValue<T> {
         Some(&self.0)
     }
 }
+
 ```
 
 这些例子展示了Rust的类型系统如何作为约束求解器工作，验证代码是否满足特定的逻辑条件。
@@ -476,6 +484,7 @@ where
 // 辅助特质
 trait SameAs<T> {}
 impl SameAs<True> for True {}
+
 ```
 
 这个例子尝试使用Rust的类型系统来表示类型级的数学证明，尽管完整实现有一定困难。在更强大的依赖类型系统中，这种模式可以更自然地表达。
@@ -524,6 +533,7 @@ fn main() {
     let s2 = String::from("temp move");
     let s3 = takes_and_returns(s2);  // s2的所有权移动后又返回给s3
 }
+
 ```
 
 这个例子展示了Rust所有权系统如何实现线性逻辑的资源管理，确保每个值在任意时刻只有一个所有者。
@@ -578,6 +588,7 @@ fn is_empty<T>(tree: &BinaryTree<T>) -> bool {
         // 如果不处理所有情况，编译器会报错
     }
 }
+
 ```
 
 这个例子展示了Rust如何使用代数数据类型和模式匹配来表达复杂的数据结构和算法，编译器的穷尽性检查确保所有可能的情况都被处理。
@@ -652,6 +663,7 @@ impl Shape for Rectangle {
         "Rectangle"
     }
 }
+
 ```
 
 Rust的特质系统是实现多态性和代码重用的主要机制，它类似于Haskell的类型类，但有更多的实现细节和限制。
@@ -692,6 +704,7 @@ fn main() {
     
     println!("{}", e.part);
 }
+
 ```
 
 Rust的生命周期系统确保引用永远不会比它们引用的数据存活更长时间，避免悬垂引用问题。
@@ -747,6 +760,7 @@ fn main() {
     // 自然变换的应用
     let result = option_to_result(opt, || "Value not found".to_string());
 }
+
 ```
 
 这个例子展示了如何在Rust中模拟范畴论中的函子和自然变换概念，尽管Rust不直接使用这些术语。
@@ -822,6 +836,7 @@ where
 {
     vector.0.get(/* 运行时索引值 */)
 }
+
 ```
 
 这个例子展示了在Rust类型系统中进行类型级编程的一些技术，尽管受限于Rust的类型系统能力，完整实现更复杂的类型级算法会比较困难。
@@ -908,6 +923,7 @@ impl File<Open> {
         }
     }
 }
+
 ```
 
 这个例子展示了如何使用幻影类型来增强类型安全性，防止类型混淆，并在编译时强制执行正确的API使用顺序。
@@ -975,6 +991,7 @@ fn main() {
     // let v3: Vector<i32, 4> = Vector { elements: [1, 2, 3, 4] };
     // let invalid_product = dot_product(&v1, &v3);
 }
+
 ```
 
 这个例子展示了Rust的常量泛型如何用于在编译时表达和验证一些通常需要依赖类型的约束，特别是与维度相关的约束。
@@ -1050,6 +1067,7 @@ fn main() {
         Err(msg) => println!("Error: {}", msg),
     }
 }
+
 ```
 
 这个例子展示了如何结合Rust的类型系统和运行时检查来实现合约编程的概念，确保程序满足特定的前置条件和后置条件。
@@ -1154,6 +1172,7 @@ fn main() {
     // new_conn.send_data("Invalid state"); // 只有Established状态可以发送数据
     // new_conn.receive_syn(); // 只有Listen状态可以接收SYN
 }
+
 ```
 
 这个例子展示了如何使用Rust的类型系统来建模状态机，并在编译时确保状态转换的正确性。
@@ -1260,6 +1279,7 @@ fn main() {
         println!("Array is not sorted");
     }
 }
+
 ```
 
 这个例子展示了如何使用Rust的类型系统、构造器模式和断言来表达和验证程序的前置条件、后置条件和不变量，与霍尔逻辑的理念相对应。
@@ -1342,6 +1362,7 @@ fn main() {
         }
     }
 }
+
 ```
 
 这个例子尝试展示如何在类型系统中表达计算的停机属性，尽管实际上停机问题是无法通用求解的。
@@ -1464,6 +1485,7 @@ fn main() {
     println!("BST contains 4: {}", bst.contains(&4));
     println!("BST contains 9: {}", bst.contains(&9));
 }
+
 ```
 
 这个例子展示了如何结合形式化思想和测试方法来验证数据结构的基本属性，这是形式化方法在实际编程中应用的一种方式。
@@ -1540,6 +1562,7 @@ fn main() {
         None => println!("Division by zero"),
     }
 }
+
 ```
 
 这个例子展示了未来编译器可能如何作为定理证明器工作的概念，尽管当前的Rust编译器不具备这种能力。
@@ -1565,6 +1588,7 @@ fn main() {
 
 我将创建这些新章节，并提供相关的Rust代码示例。
 </think># 同伦类型理论与推理编程语言设计（续）
+
 ```
 
 ## 1.10 高级应用场景与未来发展
@@ -1624,6 +1648,7 @@ fn run_server(channel: Channel<ServerProtocol>) {
     let _channel = channel.send(Response("响应数据".to_string()));
     // 通信完成
 }
+
 ```
 
 这个例子展示了如何使用类型系统编码通信协议，确保并发进程按照预期的顺序进行通信，避免死锁和竞争条件。
@@ -1694,6 +1719,7 @@ fn main() {
     //    .select::<Column<StrLit<"invalid_column">, String>>() // 错误：表中没有此列
     //    .execute();
 }
+
 ```
 
 这个例子展示了如何使用Rust的类型系统设计一个类型安全的SQL查询构建器，在编译时捕获列名错误和类型不匹配问题。
@@ -1787,6 +1813,7 @@ fn quantum_teleportation() {
     // 注意：在真正的量子编程中，我们希望编译器确保每个量子比特只使用一次
     // Rust的所有权系统部分实现了这一点，但不足以完全捕获量子计算的需求
 }
+
 ```
 
 这个例子展示了如何使用Rust的类型系统模拟量子计算中的线性资源管理，尽管完整的量子类型系统需要更专门的支持。
@@ -1941,6 +1968,7 @@ fn main() {
         }
     }
 }
+
 ```
 
 这个例子展示了工业界如何逐步采用形式化方法的思想，特别是通过类型系统来防止单位混淆错误和使用状态机模型来确保系统状态转换的正确性。
@@ -2090,6 +2118,7 @@ fn main() {
         Err(msg) => println!("极端输入验证失败: {}", msg),
     }
 }
+
 ```
 
 这个例子展示了如何使用形式化方法思想来验证机器学习模型的关键属性，确保模型在各种输入条件下的行为符合预期。

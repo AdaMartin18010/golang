@@ -46,6 +46,7 @@
   \item 可验证性: 假设可以被实验验证
   \item 可量化性: 结果可以被量化分析
 \end{itemize}
+
 ```
 
 ### 2.2 实验设计
@@ -60,6 +61,7 @@
   \item 控制变量: 保持不变的变量
   \item 随机化: 减少偏差的方法
 \end{itemize}
+
 ```
 
 ### 2.3 统计分析方法
@@ -74,6 +76,7 @@
   \item 回归分析: 分析变量关系
   \item 卡方检验: 分析分类变量
 \end{itemize}
+
 ```
 
 ---
@@ -92,6 +95,7 @@
   \item 抽象解释: 近似分析程序行为
   \item 类型系统: 静态分析程序正确性
 \end{itemize}
+
 ```
 
 ### 3.2 程序正确性证明
@@ -113,6 +117,7 @@
 & \text{序列规则: } \frac{\{P\} C_1 \{R\} \quad \{R\} C_2 \{Q\}}{\{P\} C_1; C_2 \{Q\}} \\
 & \text{条件规则: } \frac{\{P \land B\} C_1 \{Q\} \quad \{P \land \neg B\} C_2 \{Q\}}{\{P\} \text{if } B \text{ then } C_1 \text{ else } C_2 \{Q\}}
 \end{align}
+
 ```
 
 ### 3.3 算法复杂度分析
@@ -136,6 +141,7 @@
   \item 如果 f(n) = Θ(n^{log_b a}), 则 T(n) = Θ(n^{log_b a} log n)
   \item 如果 f(n) = Ω(n^{log_b a + ε}), 则 T(n) = Θ(f(n))
 \end{itemize}
+
 ```
 
 ---
@@ -194,6 +200,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
         allocateMemory()
     }
 }
+
 ```
 
 ### 4.2 性能分析
@@ -231,6 +238,7 @@ func expensiveOperation() {
     // 模拟耗时操作
     time.Sleep(1 * time.Microsecond)
 }
+
 ```
 
 ### 4.3 实验设计框架
@@ -335,6 +343,7 @@ func calculatePValue(data []float64) float64 {
 func sqrt(x float64) float64 {
     return x * x // 简化实现
 }
+
 ```
 
 ---
@@ -354,6 +363,7 @@ graph TD;
     G --> H[论文撰写];
     H --> I[同行评议];
     I --> J[发表];
+
 ```
 
 ### 5.2 实验设计图
@@ -368,6 +378,7 @@ graph LR;
     E --> F;
     F --> G[统计分析];
     G --> H[结果解释];
+
 ```
 
 ### 5.3 统计模型
@@ -378,6 +389,7 @@ graph LR;
 \bar{X} = \frac{1}{n}\sum_{i=1}^{n} X_i \sim N(\mu, \frac{\sigma^2}{n})
 
 其中 μ 是总体均值，σ² 是总体方差。
+
 ```
 
 ### 5.4 假设检验框架
@@ -400,6 +412,7 @@ graph LR;
   \item 第一类错误: 拒绝真原假设 (α)
   \item 第二类错误: 接受假原假设 (β)
 \end{itemize}
+
 ```
 
 ---

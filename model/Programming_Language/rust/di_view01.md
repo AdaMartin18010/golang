@@ -53,19 +53,6 @@
   - [1.15 思维导图（续）](#思维导图（续）)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [依赖注入机制与设计模式的形式化分析](#依赖注入机制与设计模式的形式化分析)
@@ -167,6 +154,7 @@ fn main() {
     let service = UserService::new(logger);
     service.create_user("张三");
 }
+
 ```
 
 ### 1.2.2 设计模式与架构模式的形式化表示
@@ -231,6 +219,7 @@ where
         Ok(user)
     }
 }
+
 ```
 
 **定理2.1**: 特征基础依赖注入在编译时保证类型安全，消除了运行时类型错误的可能性。
@@ -255,6 +244,7 @@ impl<L: Logger, D: Database> UserService<L, D> {
         self.database.query(&format!("SELECT * FROM users WHERE id = {}", id))
     }
 }
+
 ```
 
 **推论2.1**: 泛型依赖注入使组件配置更加灵活，同时保持了编译时类型检查的优势。
@@ -287,6 +277,7 @@ impl ServiceLocator {
             .and_then(|boxed| boxed.downcast_ref::<T>())
     }
 }
+
 ```
 
 **命题2.1**: 服务定位器提供运行时灵活性，但牺牲了编译时类型安全性，可能导致运行时错误。
@@ -328,6 +319,7 @@ impl FormalVerifier {
         }
     }
 }
+
 ```
 
 **定理3.1**: 在一个没有循环依赖的依赖图中，依赖解析总是能够终止。
@@ -400,6 +392,7 @@ impl DIContainerState {
         Ok(instance_id)
     }
 }
+
 ```
 
 **引理3.1**: 对于状态机模型中的任意有效状态转换序列，如果不存在循环依赖，则解析过程一定会终止。
@@ -441,6 +434,7 @@ fn all_dependencies_eventually_resolved() -> TemporalLogicFormula {
         )
     ))
 }
+
 ```
 
 **定理3.2**: 依赖注入系统满足活性属性当且仅当对于任意组件，如果开始解析，则最终会完成解析或失败。
@@ -486,6 +480,7 @@ impl Container {
         Ok(factory_fn(self))
     }
 }
+
 ```
 
 **定理4.1**: IoC容器可以视为工厂模式的扩展，为每个组件提供工厂函数，并管理依赖解析。
@@ -527,6 +522,7 @@ impl<T: Service> Service for LoggingProxy<T> {
         result
     }
 }
+
 ```
 
 **推论4.1**: 代理模式与依赖注入结合可以在不修改原始组件的情况下增强其功能，实现横切关注点的分离。
@@ -585,6 +581,7 @@ impl<State> Application<State> {
             .and_then(|boxed| boxed.downcast_ref::<T>())
     }
 }
+
 ```
 
 **定理4.2**: 类型状态模式与依赖注入结合可以在编译时强制执行组件生命周期约束。
@@ -678,6 +675,7 @@ impl DependencyGraph {
         None
     }
 }
+
 ```
 
 **引理5.1**: 在依赖图中，拓扑排序提供了一个有效的依赖解析顺序当且仅当图中没有循环。
@@ -719,6 +717,7 @@ impl VerificationFunctor {
         }
     }
 }
+
 ```
 
 **定理5.2**: 验证函子保持范畴结构，即对于规范转换 $f: A \to B$，有 $F(f): F(A) \to F(B)$，其中 $F$ 是验证函子，$F(A)$ 和 $F(B)$ 是验证结果。
@@ -787,6 +786,7 @@ impl LayerDependencyRules {
         }
     }
 }
+
 ```
 
 **定理6.1**: 在多层架构中，依赖关系应当遵循层次规则，即每层仅依赖于允许的目标层。
@@ -835,6 +835,7 @@ impl BoundaryValidator {
         }
     }
 }
+
 ```
 
 **引理6.1**: 一个系统满足层次依赖规则当且仅当所有组件的所有依赖都符合层次依赖规则。
@@ -876,6 +877,7 @@ impl<R: UserRepository> UserService<R> {
         self.repository.find_by_id(id)
     }
 }
+
 ```
 
 **定理6.2**: 依赖反转原则使高层模块可以依赖低层模块的抽象而非具体实现，从而避免违反层次依赖规则。
@@ -905,6 +907,7 @@ impl<R: UserRepository> UserService<R> {
 ```text
 依赖注入与设计模式关联分析
 |
+
 +-- 基本概念与定义
 |   |-- 依赖注入的形式化定义
 |   |   |-- 三元组 (C, S, I)：组件、服务、注入机制
@@ -914,6 +917,7 @@ impl<R: UserRepository> UserService<R> {
 |       |-- 三元组 (P, S, C)：问题、解决方案、上下文
 |       |-- 架构模式 (C, R, P)：组件集、关系、属性约束
 |
+
 +-- 依赖注入机制实现
 |   |-- 特征基础依赖注入
 |   |   |-- 编译时类型安全
@@ -927,6 +931,7 @@ impl<R: UserRepository> UserService<R> {
 |       |-- 运行时依赖解析
 |       |-- 动态注册和查找服务
 |
+
 +-- 形式化验证框架
 |   |-- 属性规约与验证
 |   |   |-- 安全性属性：不好的事情不会发生
@@ -940,6 +945,7 @@ impl<R: UserRepository> UserService<R> {
 |       |-- LTL/CTL表示系统属性
 |       |-- 验证依赖图无循环
 |
+
 +-- 依赖注入与设计模式关联
 |   |-- IoC容器与工厂模式
 |   |   |-- 工厂函数管理组件创建
@@ -953,6 +959,7 @@ impl<R: UserRepository> UserService<R> {
 |       |-- 编译期强制初始化流程
 |       |-- 类型系统保证正确配置
 |
+
 +-- 元模型与元理论
 |   |-- 依赖注入的范畴论解释
 |   |   |-- 对象：组件和服务
@@ -966,6 +973,7 @@ impl<R: UserRepository> UserService<R> {
 |       |-- 验证函子映射规范到结果
 |       |-- 保持结构的转换
 |
+
 +-- 多层次架构与依赖注入
 |   |-- 层次化依赖注入
 |   |   |-- 层次规则定义
@@ -979,6 +987,7 @@ impl<R: UserRepository> UserService<R> {
 |       |-- 依赖反转原则
 |       |-- 抽象接口位于高层模块
 |
+
 +-- 实践与形式化验证权衡
     |-- 成本效益分析
     |   |-- 验证成本与潜在收益
@@ -987,6 +996,7 @@ impl<R: UserRepository> UserService<R> {
     +-- 选择性应用
         |-- 关键属性验证
         |-- 风险驱动的验证策略
+
 ```
 
 ## 1.10 依赖注入的高级实现技术
@@ -1040,6 +1050,7 @@ impl DIContainer<Resolved> {
             .ok_or_else(|| "内部类型错误".to_string())
     }
 }
+
 ```
 
 **定理8.1**: 使用类型状态模式的依赖注入容器可以在编译时保证只有经过验证的容器才能解析组件。
@@ -1097,6 +1108,7 @@ impl ServiceRegistry {
         self.services.get(name).cloned()
     }
 }
+
 ```
 
 **定理8.2**: 特征对象实现的依赖注入允许在运行时动态替换服务实现，但牺牲了编译时类型安全和静态分发的性能优势。
@@ -1147,6 +1159,7 @@ impl<'a> ScopeContainer<'a> {
         None
     }
 }
+
 ```
 
 **定理8.3**: 生命周期参数确保子作用域不会比其父作用域活得更久，从而防止悬垂引用。
@@ -1222,6 +1235,7 @@ fn get_user_info(id: u64) -> Reader<Environment, (String, String), impl Fn(&Envi
         (name, email)
     })
 }
+
 ```
 
 **定理9.1**: Reader Monad提供一种纯函数式的依赖注入方法，通过函数组合而非对象组合管理依赖。
@@ -1273,6 +1287,7 @@ fn main() {
         println!("用户不存在");
     }
 }
+
 ```
 
 **定理9.2**: 函数组合可以实现无状态的依赖注入，简化了系统的理解和测试。
@@ -1317,6 +1332,7 @@ fn create_user_with_logging(
     (services.logger)(&format!("创建用户: {} (ID: {})", name, id));
     create_user(state, id, name)
 }
+
 ```
 
 **定理9.3**: 纯函数架构通过分离状态和操作，使系统更易于测试和推理。
@@ -1398,6 +1414,7 @@ impl DependencyGraph<Validated> {
         DIContainer::new()
     }
 }
+
 ```
 
 **定理10.1**: 类型系统可以静态保证依赖图的无循环性，防止运行时出现解析死锁。
@@ -1464,6 +1481,7 @@ impl FormalGraph {
         visited_count == self.nodes.len()
     }
 }
+
 ```
 
 **引理10.1**: 依赖图是无环的当且仅当存在一个有效的拓扑排序。
@@ -1518,6 +1536,7 @@ fn prove_acyclicity() -> Proposition {
         ))
     )
 }
+
 ```
 
 **定理10.3**: 依赖注入系统的正确性可以通过以下属性形式化验证：
@@ -1596,6 +1615,7 @@ impl<B: EventBus> Application<B> {
             .and_then(|s| s.downcast_ref::<S>())
     }
 }
+
 ```
 
 **定理11.1**: 依赖注入与事件驱动架构结合可以实现组件间松耦合通信，同时保持依赖关系的显式性。
@@ -1661,6 +1681,7 @@ impl CqrsBus {
         typed_handler.handle(query)
     }
 }
+
 ```
 
 **定理11.2**: CQRS与依赖注入结合可以实现命令和查询责任的清晰分离，同时维持系统组件间的显式依赖关系。
@@ -1714,6 +1735,7 @@ struct MicroserviceComponent<SD: ServiceDiscovery> {
     service_client: RemoteServiceClient<SD>,
     local_repository: Box<dyn Repository>,
 }
+
 ```
 
 **定理11.3**: 依赖注入在微服务架构中有助于管理服务发现、负载均衡和断路器等横切关注点。
@@ -1732,6 +1754,7 @@ struct Service<R: Repository> { repository: R }
 
 // 不推荐
 struct Service { repository: ConcreteRepository }
+
 ```
 
 1. **构造函数注入**:
@@ -1743,6 +1766,7 @@ impl<L: Logger, R: Repository> Service<L, R> {
         Service { logger, repository }
     }
 }
+
 ```
 
 1. **使依赖显式可见**:
@@ -1753,6 +1777,7 @@ fn process<L: Logger>(&self, logger: &L, data: &Data)
 
 // 不推荐
 fn process(&self, data: &Data) // 隐藏了Logger依赖
+
 ```
 
 1. **遵循单一责任原则**:
@@ -1767,6 +1792,7 @@ struct UserService<R, V> { repository: R, validator: V }
 struct UserService {
     // 直接包含数据访问和验证逻辑
 }
+
 ```
 
 **定理12.1**: 遵循依赖注入最佳实践的系统具有更高的可测试性、可维护性和可扩展性。
@@ -1783,6 +1809,7 @@ fn process(&self) {
     let service = ServiceLocator::get::<Service>();
     service.do_something();
 }
+
 ```
 
 1. **构造函数过度注入**:
@@ -1792,6 +1819,7 @@ fn process(&self) {
 struct Service<A, B, C, D, E, F, G, H, I, J> {
     // 10个不同的依赖参数
 }
+
 ```
 
 1. **隐式依赖**:
@@ -1803,6 +1831,7 @@ fn process(&self) {
     let logger = ConsoleLogger::new();
     logger.log("处理数据");
 }
+
 ```
 
 1. **循环依赖**:
@@ -1811,6 +1840,7 @@ fn process(&self) {
 // 反模式
 struct A<B> { b: B }
 struct B<A> { a: A } // 互相依赖
+
 ```
 
 **定理12.2**: 依赖注入反模式会导致可测试性降低、组件耦合增加和系统复杂性提高。
@@ -1859,6 +1889,7 @@ fn test_get_user_calls_repository() {
     assert_eq!(service.repository.find_called.borrow().len(), 1);
     assert_eq!(service.repository.find_called.borrow()[0], 1);
 }
+
 ```
 
 **定理12.3**: 通过依赖注入实现的系统可以独立测试每个组件，而无需创建完整的依赖图。
@@ -1868,6 +1899,7 @@ fn test_get_user_calls_repository() {
 ```text
 依赖注入与设计模式高级分析
 |
+
 +-- 高级实现技术
 |   |-- 编译时依赖验证
 |   |   |-- 类型状态模式
@@ -1881,6 +1913,7 @@ fn test_get_user_calls_repository() {
 |       |-- 基于生命周期的作用域管理
 |       |-- 层次化容器实现
 |
+
 +-- 函数式依赖注入
 |   |-- Reader Monad模式
 |   |   |-- 环境参数抽象
@@ -1894,6 +1927,7 @@ fn test_get_user_calls_repository() {
 |       |-- 状态与操作分离
 |       |-- 显式依赖传递
 |
+
 +-- 形式化验证与证明
 |   |-- 类型系统保证
 |   |   |-- 静态类型检查
@@ -1907,6 +1941,7 @@ fn test_get_user_calls_repository() {
 |       |-- 命题逻辑表达
 |       |-- 归纳证明方法
 |
+
 +-- 架构模式结合
 |   |-- 事件驱动架构
 |   |   |-- 事件总线注入
@@ -1920,6 +1955,7 @@ fn test_get_user_calls_repository() {
 |       |-- 服务发现注入
 |       |-- 断路器模式集成
 |
+
 +-- 实践模式与反模式
     |-- 最佳实践
     |   |-- 依赖接口原则
@@ -1935,4 +1971,5 @@ fn test_get_user_calls_repository() {
         |-- 模拟对象模式
         |-- 测试替身应用
         |-- 集成测试策略
+
 ```

@@ -218,6 +218,7 @@ type HardwareLayer struct {
     Actuators  []Actuator
     Gateway    *Gateway
 }
+
 ```
 
 ### 2.3.1.4.2 边缘计算架构
@@ -281,6 +282,7 @@ func (en *EdgeNode) processCycle() error {
     
     return nil
 }
+
 ```
 
 ### 2.3.1.4.3 事件驱动架构
@@ -350,6 +352,7 @@ func (eb *EventBus) Publish(event IoTEvent) error {
     }
     return nil
 }
+
 ```
 
 ## 2.3.1.5 技术栈与Golang实现
@@ -412,6 +415,7 @@ func (mc *MQTTClient) Publish(topic string, payload interface{}) error {
     }
     return nil
 }
+
 ```
 
 ### 2.3.1.5.2 设备管理
@@ -490,6 +494,7 @@ func (dm *DeviceManager) CollectData() ([]SensorData, error) {
     
     return allData, nil
 }
+
 ```
 
 ### 2.3.1.5.3 数据处理管道
@@ -581,6 +586,7 @@ func (dp *DataPipeline) Start() {
         }
     }()
 }
+
 ```
 
 ## 2.3.1.6 边缘计算
@@ -647,6 +653,7 @@ func (ls *LocalStorage) Retrieve(key string) ([]byte, error) {
     }
     return data, nil
 }
+
 ```
 
 ### 2.3.1.6.2 任务调度
@@ -751,6 +758,7 @@ func (ts *TaskScheduler) executeTask(task Task) TaskResult {
         Completed: time.Now(),
     }
 }
+
 ```
 
 ## 2.3.1.7 设备管理
@@ -837,6 +845,7 @@ func (dr *DeviceRegistry) ListDevices() []*DeviceInfo {
     
     return devices
 }
+
 ```
 
 ### 2.3.1.7.2 设备监控
@@ -918,6 +927,7 @@ func (dm *DeviceMonitor) checkDevices() {
         }
     }
 }
+
 ```
 
 ## 2.3.1.8 数据流处理
@@ -1031,6 +1041,7 @@ func (p *Pipeline) Start() {
         }
     }()
 }
+
 ```
 
 ### 2.3.1.8.2 实时分析
@@ -1135,6 +1146,7 @@ func (da *DataAnalyzer) Analyze(result AggregationResult) error {
     
     return nil
 }
+
 ```
 
 ## 2.3.1.9 安全机制
@@ -1184,6 +1196,7 @@ func (da *DeviceAuthenticator) generateResponse(challenge []byte, publicKey []by
     h.Write(publicKey)
     return h.Sum(nil)
 }
+
 ```
 
 ### 2.3.1.9.2 数据加密
@@ -1250,6 +1263,7 @@ func (de *DataEncryptor) encryptAES(data []byte) ([]byte, error) {
     
     return gcm.Seal(nonce, nonce, data, nil), nil
 }
+
 ```
 
 ## 2.3.1.10 最佳实践
@@ -1286,6 +1300,7 @@ func ErrorHandler(next func() error) func() error {
         return next()
     }
 }
+
 ```
 
 ### 2.3.1.10.2 配置管理
@@ -1341,6 +1356,7 @@ func (cm *ConfigManager) GetConfig() *IoTConfig {
     defer cm.mutex.RUnlock()
     return cm.config
 }
+
 ```
 
 ### 2.3.1.10.3 日志系统
@@ -1389,6 +1405,7 @@ func (il *IoTLogger) Log(level LogLevel, deviceID string, format string, args ..
     message := fmt.Sprintf(format, args...)
     il.logger.Printf("[%s] [Device: %s] %s", levelStr, deviceID, message)
 }
+
 ```
 
 ## 2.3.1.11 案例分析
@@ -1492,6 +1509,7 @@ func (shs *SmartHomeSystem) executeAction(action Action) {
     topic := fmt.Sprintf("home/%s/command", action.DeviceID)
     shs.mqttClient.Publish(topic, data)
 }
+
 ```
 
 ### 2.3.1.11.2 工业物联网监控
@@ -1606,6 +1624,7 @@ func (iim *IndustrialIoTMonitor) checkDeviceParameters(device *DeviceInfo) {
         }
     }
 }
+
 ```
 
 ## 2.3.1.12 参考资料
@@ -1618,4 +1637,4 @@ func (iim *IndustrialIoTMonitor) checkDeviceParameters(device *DeviceInfo) {
 
 ---
 
-*本文档提供了物联网领域的完整架构分析，包含形式化定义、Golang实现和最佳实践。所有代码示例都经过验证，可直接在Golang环境中运行。*
+* 本文档提供了物联网领域的完整架构分析，包含形式化定义、Golang实现和最佳实践。所有代码示例都经过验证，可直接在Golang环境中运行。*

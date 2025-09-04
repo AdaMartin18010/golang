@@ -166,6 +166,7 @@ func TestSingleton() {
         panic("Singleton pattern failed")
     }
 }
+
 ```
 
 ### 3.1.1.4.3 性能分析
@@ -283,6 +284,7 @@ func ExampleFactoryMethod() {
     fmt.Println(ClientCode(creatorA))
     fmt.Println(ClientCode(creatorB))
 }
+
 ```
 
 ### 3.1.1.5.3 性能分析
@@ -401,6 +403,7 @@ func ClientCode(factory AbstractFactory) {
     fmt.Println(productB.UsefulFunctionB())
     fmt.Println(productB.AnotherUsefulFunctionB(productA))
 }
+
 ```
 
 ## 3.1.1.7 建造者模式 (Builder)
@@ -523,6 +526,7 @@ func ExampleBuilder() {
     product2 := director.Construct(builder2)
     fmt.Println(product2.Show())
 }
+
 ```
 
 ## 3.1.1.8 原型模式 (Prototype)
@@ -595,6 +599,7 @@ func ExamplePrototype() {
     fmt.Println("Original:", original.GetInfo())
     fmt.Println("Clone:", clone.GetInfo())
 }
+
 ```
 
 ## 3.1.1.9 性能分析与优化
@@ -653,6 +658,7 @@ func ValidateProduct(p Product) error {
     }
     return nil
 }
+
 ```
 
 ### 3.1.1.10.3 3. 测试策略
@@ -670,6 +676,7 @@ func TestFactoryMethod(t *testing.T) {
         t.Errorf("Expected ProductA, got %s", product.GetType())
     }
 }
+
 ```
 
 ## 3.1.1.11 参考资料
@@ -682,4 +689,4 @@ func TestFactoryMethod(t *testing.T) {
 
 ---
 
-*本文档遵循学术规范，包含形式化定义、数学证明和完整的代码示例。所有内容都与 Golang 相关，并符合最新的软件架构和设计模式最佳实践。*
+* 本文档遵循学术规范，包含形式化定义、数学证明和完整的代码示例。所有内容都与 Golang 相关，并符合最新的软件架构和设计模式最佳实践。*

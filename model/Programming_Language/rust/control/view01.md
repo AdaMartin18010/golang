@@ -59,19 +59,6 @@
   - [1.15 XIII. 思维导图](#xiii-思维导图)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust 控制流与核心语言机制：综合深度解析（修订版）](#rust-控制流与核心语言机制综合深度解析修订版)
@@ -287,6 +274,7 @@ match msg {
     Message::Value(other) => println!("Other value: {}", other),
     _ => (),
 }
+
 ```
 
 ### 1.6.3 C. 引用模式 (`ref`, `ref mut`)
@@ -303,6 +291,7 @@ match x {
     None => (),
 }
 println!("{:?}", x); // Output: Some(6)
+
 ```
 
 ### 1.6.4 D. 匹配守卫 (Match Guards)
@@ -318,6 +307,7 @@ match num {
     None => (),
     _ => (), // 对于 Some(x) where x==0 需要这个，因为守卫可能不满足
 }
+
 ```
 
 ### 1.6.5 E. 解构 `if let` 与 `while let`
@@ -334,6 +324,7 @@ let mut stack = vec![1, 2, 3];
 while let Some(top) = stack.pop() { // 循环直到 pop 返回 None
     println!("{}", top);
 }
+
 ```
 
 ## 1.7 V. 函数式编程范式融合
@@ -629,4 +620,5 @@ Rust控制流与核心机制 (修订版)
 │   ├── `_` (通配符/忽略)
 │
 └── XII. 结论 (立体多维系统, 核心原则总结)
+
 ```

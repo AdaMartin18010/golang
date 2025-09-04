@@ -12,19 +12,6 @@
     - [1.3.5 7. 主程序实现](#7-主程序实现)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 我将为您展示一个基于 Rust 2024 + Actor 模式的算法和数据结构实现。
 
 ## 1.1 目录
@@ -50,6 +37,7 @@ futures = "0.3"
 dashmap = "5.5"
 parking_lot = "0.12"
 tracing = "0.1"
+
 ```
 
 ## 1.3 2. Actor 基础结构实现
@@ -114,6 +102,7 @@ pub trait DataStructureActor<T>: Actor {
     async fn remove(&mut self, item: T) -> Result<(), ActorError>;
     async fn contains(&self, item: &T) -> Result<bool, ActorError>;
 }
+
 ```
 
 ### 1.3.1 3. 树结构 Actor 实现
@@ -217,6 +206,7 @@ impl<T: Ord> BinaryTreeActor<T> {
         }
     }
 }
+
 ```
 
 ### 1.3.2 4. 图结构 Actor 实现
@@ -324,6 +314,7 @@ impl<T: Eq> GraphActor<T> {
         }
     }
 }
+
 ```
 
 ### 1.3.3 5. 排序算法 Actor 实现
@@ -385,6 +376,7 @@ impl<T: Ord> SortingActor<T> {
         }
     }
 }
+
 ```
 
 ### 1.3.4 6. 搜索算法 Actor 实现
@@ -449,6 +441,7 @@ impl<T: Ord> SearchActor<T> {
         }
     }
 }
+
 ```
 
 ### 1.3.5 7. 主程序实现
@@ -500,6 +493,7 @@ async fn main() -> Result<(), ActorError> {
     system.run()?;
     Ok(())
 }
+
 ```
 
 这个实现提供了以下特性：

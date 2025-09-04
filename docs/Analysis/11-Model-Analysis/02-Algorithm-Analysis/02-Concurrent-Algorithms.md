@@ -58,19 +58,6 @@
       - [11.2.1.9.2.2 容错机制](#容错机制)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.2.1.1 概述
 
 本文档基于 `/model` 目录中的并发相关内容，对并发算法进行深入的形式化分析和Golang实现。并发算法是处理多线程、多进程环境下资源共享和同步的核心算法，在Golang中通过goroutine和channel实现。
@@ -137,6 +124,7 @@
     \item $T = \{t_1, t_2, \ldots, t_p\}$ 是时间戳集合
     \item $R = \{r_1, r_2, \ldots, r_q\}$ 是资源集合
 \end{itemize}
+
 ```
 
 ### 11.2.1.4.2 2. 进程定义
@@ -150,6 +138,7 @@
     \item $behavior: S \times E \rightarrow S$ 是进程的行为函数
     \item $resources \subseteq R$ 是进程占用的资源
 \end{itemize}
+
 ```
 
 ### 11.2.1.4.3 3. 通道定义
@@ -164,6 +153,7 @@
     \item $send: P \times type \rightarrow bool$ 是发送操作
     \item $receive: P \rightarrow (type, bool)$ 是接收操作
 \end{itemize}
+
 ```
 
 ### 11.2.1.4.4 4. 死锁检测定理
@@ -175,6 +165,7 @@
     \item $V = P \cup R$ 是顶点集合（进程和资源）
     \item $E$ 是边集合，表示进程请求资源或资源分配给进程
 \end{itemize}
+
 ```
 
 **证明**: 通过图论中的环检测算法可以检测死锁。
@@ -191,6 +182,7 @@ graph LR
     B --> E[空信号]
     A --> F[生产信号]
     C --> G[消费信号]
+
 ```
 
 **形式化定义**:
@@ -204,6 +196,7 @@ graph LR
     \item $buffer: [item]$ 是缓冲区
     \item $semaphore: (full, empty)$ 是信号量对
 \end{itemize}
+
 ```
 
 ### 11.2.1.5.2 2. 读者-写者算法
@@ -216,6 +209,7 @@ stateDiagram-v2
     读者 --> 读者: 读者到达
     读者 --> 空闲: 读者离开
     写者 --> 空闲: 写者离开
+
 ```
 
 **形式化定义**:
@@ -230,6 +224,7 @@ stateDiagram-v2
     \item $wrt$ 是写者信号量
     \item $readcount$ 是读者计数器
 \end{itemize}
+
 ```
 
 ### 11.2.1.5.3 3. 哲学家进餐算法
@@ -246,6 +241,7 @@ graph TB
     H --> I[筷子5]
     J[哲学家5] --> I
     J --> B
+
 ```
 
 **形式化定义**:
@@ -258,6 +254,7 @@ graph TB
     \item $chopsticks = \{c_1, c_2, \ldots, c_n\}$ 是筷子集合
     \item $states: philosophers \rightarrow \{thinking, hungry, eating\}$ 是状态函数
 \end{itemize}
+
 ```
 
 ## 11.2.1.6 Golang实现
@@ -370,6 +367,7 @@ func RunProducerConsumerExample() {
     time.Sleep(5 * time.Second)
     pc.Stop()
 }
+
 ```
 
 ### 11.2.1.6.2 2. 读者-写者实现
@@ -454,6 +452,7 @@ func RunReaderWriterExample() {
     time.Sleep(3 * time.Second)
     fmt.Println("Reader-Writer example completed")
 }
+
 ```
 
 ### 11.2.1.6.3 3. 哲学家进餐实现
@@ -578,6 +577,7 @@ func RunDiningPhilosophersExample() {
     dp := NewDiningPhilosophers(5)
     dp.Start(3)
 }
+
 ```
 
 ### 11.2.1.6.4 4. 无锁算法实现
@@ -753,6 +753,7 @@ func RunLockFreeExample() {
     time.Sleep(2 * time.Second)
     fmt.Println("Lock-free example completed")
 }
+
 ```
 
 ## 11.2.1.7 性能分析
@@ -818,6 +819,7 @@ func (lca *LockContentionAnalyzer) AnalyzeLockContention() {
     // 计算竞争率
     lca.contention = float64(lca.waitTime) / float64(time.Millisecond)
 }
+
 ```
 
 #### 11.2.1.7.3.2 内存分配分析
@@ -844,6 +846,7 @@ func (ma *MemoryAllocator) TrackAllocation(size int64) {
         }
     }
 }
+
 ```
 
 ## 11.2.1.8 最佳实践
@@ -916,6 +919,7 @@ graph TB
     D --> G[缓存]
     D --> H[响应生成器]
     H --> I[HTTP响应]
+
 ```
 
 #### 11.2.1.9.1.1 架构设计
@@ -941,6 +945,7 @@ graph LR
     C --> D[数据存储]
     C --> E[数据转发]
     E --> F[下游系统]
+
 ```
 
 #### 11.2.1.9.2.1 并发设计
@@ -959,4 +964,4 @@ graph LR
 
 ---
 
-*本文档将持续更新，确保并发算法分析的完整性和准确性。*
+* 本文档将持续更新，确保并发算法分析的完整性和准确性。*

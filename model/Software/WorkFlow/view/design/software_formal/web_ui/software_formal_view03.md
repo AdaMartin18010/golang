@@ -142,6 +142,7 @@ Web UI架构未来研究方向
         ├── 内容消费应用
         ├── 创作型应用
         └── 企业工作流系统
+
 ```
 
 ## 1.3 1. 引言
@@ -244,7 +245,7 @@ $S(AS_{gradual}) > S(AS_{abrupt})$
 
 ### 1.4.4 代码示例与实践应用
 
--**示例 2.4.1：自适应布局系统**
+- **示例 2.4.1：自适应布局系统**
 
 ```jsx
 // 自适应布局系统的形式化实现
@@ -318,9 +319,10 @@ function AdaptiveComponent() {
     </div>
   );
 }
+
 ```
 
--**示例 2.4.2：上下文感知主题系统**
+- **示例 2.4.2：上下文感知主题系统**
 
 ```jsx
 // 上下文感知主题系统形式化实现
@@ -463,6 +465,7 @@ function calculateThemeFitness(theme, environment) {
     weights.preferenceWeight * preferenceScore
   );
 }
+
 ```
 
 ### 1.4.5 场景适配性分析
@@ -568,6 +571,7 @@ class AbstractButton extends StatelessWidget {
     );
   }
 }
+
 ```
 
 React Native则使用JavaScript描述UI，通过桥接机制映射到原生组件：
@@ -581,6 +585,7 @@ const AbstractButton = ({ text, onPress }) => {
     </TouchableOpacity>
   );
 };
+
 ```
 
 ### 1.5.3 映射关系与等价性证明
@@ -619,7 +624,7 @@ $|P(c_1) - P(c_2)| \leq \delta(p_1, p_2)$
 
 ### 1.5.4 代码示例与平台对比
 
--**示例 3.4.1：React Native跨平台组件**
+- **示例 3.4.1：React Native跨平台组件**
 
 ```jsx
 // 抽象UI组件定义
@@ -635,6 +640,7 @@ class CrossPlatformCard extends React.Component {
         // 抽象行为映射
         accessibilityRole="button"
         accessibilityLabel={title}
+
       >
         <Image 
           source={image} 
@@ -751,9 +757,10 @@ const enhanceWithPlatformBehavior = (Component) => {
 
 // 导出增强组件
 export default enhanceWithPlatformBehavior(CrossPlatformCard);
+
 ```
 
--**示例 3.4.2：Flutter跨平台实现**
+- **示例 3.4.2：Flutter跨平台实现**
 
 ```dart
 // Flutter中的跨平台卡片组件
@@ -907,9 +914,10 @@ class CardExample extends StatelessWidget {
     );
   }
 }
+
 ```
 
--**示例 3.4.3：跨平台统一接口示例**
+- **示例 3.4.3：跨平台统一接口示例**
 
 ```typescript
 // 抽象UI接口定义
@@ -1116,6 +1124,7 @@ class ReactNativePlatformAdapter implements AbstractUI {
     // 其他方法实现...
   };
 }
+
 ```
 
 ### 1.5.5 场景适配性分析
@@ -1264,7 +1273,7 @@ $AQ^* = \arg\max_{AQ \in \mathcal{AQ}} M_{UX}(\mu(AQ))$
 
 ### 1.6.4 代码示例与实际应用
 
--**示例 4.4.1：架构-体验监测框架**
+- **示例 4.4.1：架构-体验监测框架**
 
 ```javascript
 // 架构-体验监测框架
@@ -1542,9 +1551,10 @@ setInterval(() => {
   // 可以将报告保存到数据库或发送到分析服务
   saveReportToDatabase(report);
 }, 3600000); // 每小时生成一次报告
+
 ```
 
--**示例 4.4.2：React应用中的用户体验追踪**
+- **示例 4.4.2：React应用中的用户体验追踪**
 
 ```jsx
 // 用户体验追踪高阶组件
@@ -1755,6 +1765,7 @@ class SearchComponent extends React.Component {
           <button 
             onClick={this.handleSearch}
             disabled={loading || !query.trim()}
+
           >
             {loading ? 'Searching...' : 'Search'}
           </button>
@@ -1813,9 +1824,10 @@ function App() {
     </div>
   );
 }
+
 ```
 
--**示例 4.4.3：基于架构-体验映射的A/B测试系统**
+- **示例 4.4.3：基于架构-体验映射的A/B测试系统**
 
 ```javascript
 // 架构-体验A/B测试系统
@@ -2301,6 +2313,7 @@ const experiment = new ArchitectureUXExperiment({
 experiment.start().then(activeVariant => {
   console.log(`User assigned to variant: ${activeVariant.id}`);
 });
+
 ```
 
 ### 1.6.5 场景适配性分析
@@ -2590,6 +2603,7 @@ class IntegratedArchitectureFramework {
     return 0.8; // 示例值
   }
 }
+
 ```
 
 ### 1.7.3 未来展望

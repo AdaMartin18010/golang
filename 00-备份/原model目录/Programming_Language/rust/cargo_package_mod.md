@@ -105,6 +105,7 @@ Workspace
     └── Crate 3 (bin)
         ├── mod e
         └── mod f
+
 ```
 
 ### 2. 包含关系
@@ -141,6 +142,7 @@ Workspace
 │ │ └───────────┘   │                         │
 │ └─────────────────┘                         │
 └─────────────────────────────────────────────┘
+
 ```
 
 ## 三、详细解释与示例
@@ -171,6 +173,7 @@ mod my_module {
         println!("Called my_function");
     }
 }
+
 ```
 
 ```rust
@@ -185,6 +188,7 @@ pub fn public_api_function() {
     println!("Public API function called");
     utils::helper_function();
 }
+
 ```
 
 ### 2. Package 详解
@@ -224,6 +228,7 @@ path = "src/bin/tool.rs"
 [lib]
 name = "my_lib"
 path = "src/lib.rs"
+
 ```
 
 ### 3. Module 详解
@@ -269,6 +274,7 @@ fn main() {
     inline_module::public_function();
     inline_module::nested::nested_function();
 }
+
 ```
 
 **文件模块示例**：
@@ -277,6 +283,7 @@ fn main() {
 src/
 ├── main.rs
 └── my_module.rs
+
 ```
 
 ```rust
@@ -286,6 +293,7 @@ mod my_module; // 声明模块，内容在 my_module.rs 文件中
 fn main() {
     my_module::public_function();
 }
+
 ```
 
 ```rust
@@ -298,6 +306,7 @@ pub fn public_function() {
 fn private_function() {
     println!("This is private to my_module");
 }
+
 ```
 
 ### 4. Workspace 详解
@@ -320,6 +329,7 @@ my_workspace/
     ├── Cargo.toml
     └── src/
         └── main.rs
+
 ```
 
 **顶层 `Cargo.toml`**：
@@ -334,6 +344,7 @@ members = [
 [workspace.dependencies]
 serde = "1.0"
 log = "0.4"
+
 ```
 
 **`package_a/Cargo.toml`**：
@@ -347,6 +358,7 @@ edition = "2021"
 [dependencies]
 serde = { workspace = true }
 log = { workspace = true }
+
 ```
 
 **`package_b/Cargo.toml`**：
@@ -360,6 +372,7 @@ edition = "2021"
 [dependencies]
 package_a = { path = "../package_a" }
 serde = { workspace = true }
+
 ```
 
 ## 四、路径与引用
@@ -383,6 +396,7 @@ fn main() {
     // 相对路径
     front_of_house::hosting::add_to_waitlist();
 }
+
 ```
 
 ### 2. `use` 关键字
@@ -406,6 +420,7 @@ fn main() {
     // 或者直接调用
     // add_to_waitlist();
 }
+
 ```
 
 ### 3. 重导出
@@ -425,6 +440,7 @@ pub use crate::front_of_house::hosting;
 fn main() {
     hosting::add_to_waitlist();
 }
+
 ```
 
 ### 4. 外部 Crate 引用
@@ -434,6 +450,7 @@ fn main() {
 ```toml
 [dependencies]
 rand = "0.8"
+
 ```
 
 ```rust
@@ -444,6 +461,7 @@ fn main() {
     let random_number = rand::thread_rng().gen_range(1..=100);
     println!("Random number: {}", random_number);
 }
+
 ```
 
 ## 五、标准工程实践
@@ -466,6 +484,7 @@ my_library/
 │   └── integration_test.rs
 └── benches/          # 基准测试
     └── benchmark.rs
+
 ```
 
 **二进制 Crate 结构**：
@@ -483,6 +502,7 @@ my_app/
 │       └── remove.rs
 └── tests/            # 集成测试
     └── cli_tests.rs
+
 ```
 
 ### 2. 模块组织最佳实践
@@ -498,6 +518,7 @@ pub mod errors;
 // 重导出主要 API
 pub use models::{User, Product};
 pub use errors::Error;
+
 ```
 
 **层次结构**：适用于大型项目
@@ -513,6 +534,7 @@ pub mod utils;
 pub use api::Client;
 pub use models::User;
 pub use database::Connection;
+
 ```
 
 ### 3. Workspace 最佳实践
@@ -527,6 +549,7 @@ my_project/
 ├── server/          # 服务器实现
 ├── client/          # 客户端库
 └── common/          # 共享代码
+
 ```
 
 **按层划分**：
@@ -538,6 +561,7 @@ my_project/
 ├── application/     # 应用服务
 ├── infrastructure/  # 基础设施代码
 └── presentation/    # 表示层（CLI、API 等）
+
 ```
 
 ### 4. 可见性控制最佳实践
@@ -560,6 +584,7 @@ pub use models::{User, Product};
 pub(crate) fn internal_function() {
     // 实现细节
 }
+
 ```
 
 **内部模块**：
@@ -575,6 +600,7 @@ pub(crate) fn helper_function() {
 pub(super) fn super_only_function() {
     // 实现细节
 }
+
 ```
 
 ## 六、深入分析与推理
@@ -629,6 +655,7 @@ pub mod api {
         }
     }
 }
+
 ```
 
 ### 2. Crate 编译模型分析
@@ -662,6 +689,7 @@ Rust 的编译模型基于 Crate 作为编译单元，这带来几个重要特�
        │                   │
        │    依赖关系        │
        └───────────────────┘
+
 ```
 
 ### 3. Workspace 依赖管理分析
@@ -697,6 +725,7 @@ Workspace 通过共享依赖和构建缓存优化大型项目的开发体验：
 │                                         │
 │ Cargo.lock                              │
 └─────────────────────────────────────────┘
+
 ```
 
 ### 4. 模块可见性机制推理
@@ -766,6 +795,7 @@ fn main() {
     // 可以调用 crate 可见的函数
     outer::crate_visible();
 }
+
 ```
 
 ## 七、实际案例分析
@@ -783,6 +813,7 @@ std/
 ├── sync/          // 同步原语
 ├── thread/        // 线程功能
 └── ...
+
 ```
 
 **关键特点**：
@@ -810,6 +841,7 @@ pub mod io {
 
 // 用户代码
 use std::io::{BufReader, Error};
+
 ```
 
 ### 2. 大型开源项目分析
@@ -824,6 +856,7 @@ tokio/
 ├── tokio-stream/    // 流处理
 ├── tokio-test/      // 测试工具
 └── ...
+
 ```
 
 **关键特点**：
@@ -834,7 +867,9 @@ tokio/
 - 独立版本但协调发布
 
 ```toml
+
 # tokio/Cargo.toml (Workspace 配置)
+
 [workspace]
 members = [
     "tokio",
@@ -843,6 +878,7 @@ members = [
     "tokio-test",
     # ...
 ]
+
 ```
 
 ### 3. 微服务架构示例
@@ -857,6 +893,7 @@ my_service/
 ├── domain/          // 领域模型
 ├── infrastructure/  // 基础设施代码
 └── cli/             // 命令行工具
+
 ```
 
 **模块组织**：
@@ -881,6 +918,7 @@ mod health;
 pub use auth::AuthHandler;
 pub use users::UsersHandler;
 pub use health::HealthHandler;
+
 ```
 
 ### 4. 插件系统设计
@@ -896,6 +934,7 @@ plugin_system/
 │   ├── plugin_b/
 │   └── plugin_c/
 └── host/           // 加载和运行插件的宿主应用
+
 ```
 
 **插件 API 设计**：
@@ -942,6 +981,7 @@ impl Plugin for PluginA {
 
 // 注册插件
 register_plugin!(PluginA);
+
 ```
 
 ## 八、总结与最佳实践

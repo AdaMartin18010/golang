@@ -102,19 +102,6 @@
   - [1.10 9. 思维导图](#9-思维导图)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust语言基础概念深度剖析](#rust语言基础概念深度剖析)
@@ -282,6 +269,7 @@ Rust的编译单元是crate，由多个项组成。项是编译器处理的基�
 // 类型推导示例
 let v = vec![1, 2, 3]; // 编译器推导v为Vec<i32>
 let square = |x| x * x; // 上下文决定x的类型
+
 ```
 
 ### 1.3.3 语句(Statement)的角色与限制
@@ -304,6 +292,7 @@ let x = {
     let y = 5; // 语句，无返回值
     y + 1      // 表达式，返回值为6
 };             // x的值为6
+
 ```
 
 #### 1.3.3.3 与其他语言的对比
@@ -336,6 +325,7 @@ let s2 = s1;                    // 所有权从s1转移到s2
 let x = 5;                      // 整数实现了Copy特征
 let y = x;                      // x被复制到y
 println!("{}", x);              // 仍然有效，因为x的值被复制而非移动
+
 ```
 
 #### 1.4.1.3 所有权与函数参数
@@ -363,6 +353,7 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
 // 生命周期注解'a表明返回引用的寿命不会超过任一输入参数
+
 ```
 
 #### 1.4.2.3 内部可变性模式
@@ -403,6 +394,7 @@ let value = {
         x - 1
     }
 }; // value为10
+
 ```
 
 #### 1.5.1.2 块与作用域管理
@@ -423,6 +415,7 @@ Rust的流程控制结构也是表达式，可以产生值并嵌入更大的表�
 
 ```rust
 let max = if a > b { a } else { b };
+
 ```
 
 #### 1.5.2.2 循环表达式
@@ -436,6 +429,7 @@ let result = loop {
         break counter * 2;
     }
 };
+
 ```
 
 #### 1.5.2.3 Match表达式的强大性
@@ -454,6 +448,7 @@ let sum: i32 = numbers.iter()
                      .filter(|&x| x % 2 == 0)
                      .map(|&x| x * x)
                      .sum();
+
 ```
 
 #### 1.5.3.2 迭代器与组合子
@@ -490,6 +485,7 @@ match optional_value {
     Some(value) => println!("Got a value: {}", value),
     None => println!("No value"),
 }
+
 ```
 
 #### 1.6.1.3 绑定模式与@符号
@@ -501,6 +497,7 @@ match value {
     x @ 1..=5 => println!("Got a small number: {}", x),
     _ => println!("Something else"),
 }
+
 ```
 
 ### 1.6.2 高级模式匹配技术
@@ -512,6 +509,7 @@ match value {
 ```rust
 let point = Point { x: 0, y: 1 };
 let Point { x, y } = point;
+
 ```
 
 #### 1.6.2.2 匹配守卫的应用
@@ -524,6 +522,7 @@ match number {
     n if n % 2 == 1 => println!("Odd"),
     _ => unreachable!(),
 }
+
 ```
 
 #### 1.6.2.3 部分移动模式
@@ -564,6 +563,7 @@ macro_rules! vec {
         }
     };
 }
+
 ```
 
 #### 1.7.1.2 卫生性与变量捕获
@@ -600,6 +600,7 @@ Rust宏是卫生的，宏内部定义的变量不会与调用环境中的变量�
 
 ```rust
 sql!(SELECT * FROM users WHERE name = "John")
+
 ```
 
 #### 1.7.3.2 自动实现特征
@@ -642,6 +643,7 @@ fn largest<T: PartialOrd>(list: &[T]) -> &T {
     }
     largest
 }
+
 ```
 
 #### 1.8.2.2 特征与动态分发
@@ -652,6 +654,7 @@ fn largest<T: PartialOrd>(list: &[T]) -> &T {
 fn process(stream: &mut dyn Write) {
     // 可以处理任何实现了Write特征的类型
 }
+
 ```
 
 #### 1.8.2.3 特征约束与关联类型
@@ -686,6 +689,7 @@ match file_content {
     Some(content) => println!("File content: {}", content),
     None => println!("File not found or could not be read"),
 }
+
 ```
 
 #### 1.9.1.2 Result类型
@@ -699,6 +703,7 @@ fn divide(a: i32, b: i32) -> Result<i32, &'static str> {
     }
     Ok(a / b)
 }
+
 ```
 
 ### 1.9.2 错误传播机制
@@ -714,6 +719,7 @@ fn read_username_from_file() -> Result<String, io::Error> {
     file.read_to_string(&mut username)?; // 错误时立即返回
     Ok(username)
 }
+
 ```
 
 #### 1.9.2.2 错误转换与From特征
@@ -1116,4 +1122,5 @@ Rust语言基础概念深度剖析
             ├── 构建器模式
             ├── 迭代器适配
             └── 资源管理模式
+
 ```

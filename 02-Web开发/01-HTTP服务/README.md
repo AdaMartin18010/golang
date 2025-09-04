@@ -117,6 +117,7 @@ func main() {
     fmt.Println("Server starting on :8080")
     http.ListenAndServe(":8080", nil)
 }
+
 ```
 
 ### 2.1.1.4.2 **使用Gin框架**
@@ -141,6 +142,7 @@ func main() {
     
     r.Run(":8080")
 }
+
 ```
 
 ## 2.1.1.5 📊 **学习进度**
@@ -323,6 +325,7 @@ flowchart TD
   style L fill:#e0f7fa,stroke:#333,stroke-width:2px
   style M fill:#e0f7fa,stroke:#333,stroke-width:2px
   style N fill:#e0f7fa,stroke:#333,stroke-width:2px
+
 ```
 
 ## 2.1.1.14 ❓ **常见FAQ与工程问题解决方案**

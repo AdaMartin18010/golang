@@ -105,6 +105,7 @@ WebAssembly的核心特性在于其二进制格式设计为可被快速解码、
   )
   (export "add" (func $add))
 )
+
 ```
 
 ### 基础语义结构
@@ -153,6 +154,7 @@ WebAssembly的计算模型可形式化为一个有限状态机(FSM)，定义为�
 状态转换示例(栈式)：
 δ(q₁, i32.add) = q₂
 其中q₁的栈为[5, 3]，q₂的栈为[8]
+
 ```
 
 ### 状态转换系统
@@ -201,6 +203,7 @@ WebAssembly的操作语义可以通过小步语义(Small-step Semantics)形式�
 e₁ → e₁'
 ─────────────────
 e₁ e₂ → e₁' e₂
+
 ```
 
 **定理 3.1 (进度定理)**: 任何非终止的良类型配置都可以进一步约简。形式上，如果Γ ⊢ c : τ且c不是终态，则存在c'使得c → c'。
@@ -270,6 +273,7 @@ WebAssembly的结构化控制流为编译器提供了优化机会：
   )
   ;; outer块内代码
 )
+
 ```
 
 ### 数据流模型与内存管理
@@ -287,6 +291,7 @@ WebAssembly的数据流模型基于以下组件：
 数据流分析示例：
 i32.const 5   → i32.add  → local.set $x
 i32.const 3   ↗
+
 ```
 
 **命题 4.1 (内存安全保证)**: WebAssembly的内存访问模型确保：
@@ -347,6 +352,7 @@ WebAssembly的二进制格式采用紧凑的字节码设计：
 ```math
 二进制表示示例（十六进制）：
 0061 736d 0100 0000  // 魔数 "\0asm" 和版本号 1
+
 ```
 
 ### 文本格式(WAT)
@@ -370,6 +376,7 @@ WebAssembly的文本格式(WAT)提供了面向人类的表示：
     i32.add
   )
 )
+
 ```
 
 ### 指令编码优化
@@ -458,6 +465,7 @@ WebAssembly与宿主环境的交互基于导入/导出机制：
     call $log  ;; 调用导入的函数
   )
 )
+
 ```
 
 ### 线程模型与并发
@@ -489,6 +497,7 @@ WebAssembly编译工具链包括多层次转换：
 ```math
 编译流程示例：
 Rust源码 → rustc前端 → LLVM IR → LLVM WebAssembly后端 → Wasm二进制
+
 ```
 
 ### 运行时实现
@@ -547,6 +556,7 @@ fetch('module.wasm')
     const result = instance.exports.computeIntensive(1000);
     console.log(result);
   });
+
 ```
 
 ### 跨平台应用部署
@@ -622,6 +632,7 @@ fn add<T: std::ops::Add<Output=T>>(a: T, b: T) -> T {
 }
 
 // 编译为WebAssembly后，泛型被单态化，无运行时开销
+
 ```
 
 ### 语义保留挑战
@@ -653,6 +664,7 @@ fn add<T: std::ops::Add<Output=T>>(a: T, b: T) -> T {
 
 ```math
 [|i32.add|](s, vs) = (s, (v₁ + v₂) :: vs')，其中vs = v₁ :: v₂ :: vs'
+
 ```
 
 **命题 10.2 (指令合成)**: WebAssembly指令序列的语义可以通过组合单个指令的语义得到：
@@ -685,6 +697,7 @@ fn add<T: std::ops::Add<Output=T>>(a: T, b: T) -> T {
   
   ;; 其他代码无法直接访问文件系统
 )
+
 ```
 
 ## 技术规范关键设计决策
@@ -751,6 +764,7 @@ MVP包含的核心功能：
 (i32.load offset=0 align=4
   (i32.const 100)  ;; 地址
 )
+
 ```
 
 **定理 11.2 (内存安全保证)**: WebAssembly的线性内存模型保证了内存安全，同时支持接近原生性能的内存操作。
@@ -778,6 +792,7 @@ MVP包含的核心功能：
 (call_indirect (type $sig)
   (i32.const 1)  ;; 表索引，调用$func2
 )
+
 ```
 
 **定理 11.3 (间接调用安全性)**: WebAssembly的表间接调用机制保证了类型安全的间接调用，不允许调用类型不匹配的函数或非法索引。
@@ -856,6 +871,7 @@ crate-type = ["cdylib"]
 
 // 可使用wasm-pack构建
 // wasm-pack build --target web
+
 ```
 
 **命题 12.5 (采用障碍)**: WebAssembly广泛采用的主要障碍是开发流程集成难度和开发者经验不足，而非技术能力限制。
@@ -915,6 +931,7 @@ crate-type = ["cdylib"]
   
   (export "greet" (func $impl "greet"))
 )
+
 ```
 
 **定理 13.1 (组件组合性)**: WebAssembly组件模型提供了可组合性保证：任何两个兼容接口的组件可以无缝组合，保持类型安全和内存安全。
@@ -944,6 +961,7 @@ GC类型示例：
     (f64.const 20.3)
   )
 )
+
 ```
 
 **定理 13.2 (GC效率)**: WebAssembly GC提案的设计使运行时能够实现比嵌入式语言特定GC更高效的内存管理，同时保持内存安全保证。
@@ -971,6 +989,7 @@ GC类型示例：
     ;; 异常处理代码
   )
 )
+
 ```
 
 **定理 13.3 (异常处理性能)**: 原生异常处理可以显著减少异常情况下的性能开销，同时保持正常执行路径的零开销特性。
@@ -992,6 +1011,7 @@ SIMD示例：
 (func $add_vectors (param $a v128) (param $b v128) (result v128)
   (v128.add (local.get $a) (local.get $b))
 )
+
 ```
 
 **定理 13.4 (并行扩展)**: WebAssembly的并行扩展可以实现近乎线性的性能扩展，对于适合数据并行处理的工作负载。
@@ -1211,4 +1231,5 @@ WebAssembly技术全面分析
         ├── SIMD提案定义
         ├── 并行计算价值命题
         └── 并行扩展定理
+
 ```

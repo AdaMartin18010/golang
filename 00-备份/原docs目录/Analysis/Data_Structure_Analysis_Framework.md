@@ -19,6 +19,7 @@ where:
 - V = set of possible values
 - O = set of operations
 - A = set of axioms defining behavior
+
 ```
 
 **Golang Interface Definition:**
@@ -44,6 +45,7 @@ type Iterator[T any] interface {
     Current() T
     Reset()
 }
+
 ```
 
 ### 1.2 Complexity Analysis Framework
@@ -59,6 +61,7 @@ The space complexity of an algorithm is a function describing the amount of memo
 ```text
 T(n) = O(f(n)) if ∃c > 0, n₀ > 0 : ∀n ≥ n₀, T(n) ≤ c·f(n)
 S(n) = O(f(n)) if ∃c > 0, n₀ > 0 : ∀n ≥ n₀, S(n) ≤ c·f(n)
+
 ```
 
 ## 2. Linear Data Structures
@@ -72,6 +75,7 @@ An array is a collection of elements identified by array index or key.
 
 ```text
 Array[n] = {a₀, a₁, ..., a_{n-1}} where aᵢ ∈ T for all i ∈ [0, n-1]
+
 ```
 
 **Golang Implementation:**
@@ -114,6 +118,7 @@ func (a *Array[T]) Set(index int, value T) error {
 // - Search: O(n)
 // - Insert: O(n) (shifting required)
 // - Delete: O(n) (shifting required)
+
 ```
 
 ### 2.2 Linked List Analysis
@@ -127,6 +132,7 @@ A singly linked list is a linear data structure where each element points to the
 LinkedList = (head, nodes)
 where nodes = {node₁, node₂, ..., nodeₙ}
 and nodeᵢ = (dataᵢ, nextᵢ) where nextᵢ points to node_{i+1}
+
 ```
 
 **Golang Implementation:**
@@ -223,6 +229,7 @@ func (l *LinkedList[T]) Delete(data T) bool {
 // - Insert Front: O(1)
 // - Insert Back: O(n)
 // - Delete: O(n)
+
 ```
 
 ### 2.3 Stack Analysis
@@ -239,6 +246,7 @@ Operations:
 - Push(e): elements[top+1] = e, top = top + 1
 - Pop(): if top > 0 then return elements[top], top = top - 1
 - Peek(): if top > 0 then return elements[top]
+
 ```
 
 **Golang Implementation:**
@@ -301,6 +309,7 @@ func (s *Stack[T]) Size() int {
 // - Pop: O(1)
 // - Peek: O(1)
 // - IsEmpty: O(1)
+
 ```
 
 ### 2.4 Queue Analysis
@@ -317,6 +326,7 @@ Operations:
 - Enqueue(e): elements[rear+1] = e, rear = rear + 1
 - Dequeue(): if front < rear then return elements[front], front = front + 1
 - Front(): if front < rear then return elements[front]
+
 ```
 
 **Golang Implementation:**
@@ -381,6 +391,7 @@ func (q *Queue[T]) Size() int {
 // - Dequeue: O(1)
 // - Front: O(1)
 // - IsEmpty: O(1)
+
 ```
 
 ## 3. Tree Data Structures
@@ -397,6 +408,7 @@ BinaryTree = (root, nodes)
 where nodes = {node₁, node₂, ..., nodeₙ}
 and nodeᵢ = (dataᵢ, leftᵢ, rightᵢ)
 where leftᵢ, rightᵢ ∈ nodes ∪ {nil}
+
 ```
 
 **Golang Implementation:**
@@ -511,6 +523,7 @@ func (t *BinaryTree[T]) heightHelper(node *TreeNode[T]) int {
 // - Search: O(n) worst case
 // - Traversal: O(n)
 // - Height: O(n)
+
 ```
 
 ### 3.2 Binary Search Tree Analysis
@@ -524,6 +537,7 @@ A binary search tree is a binary tree where for each node, all elements in the l
 BST = (root, nodes) where ∀nodeᵢ ∈ nodes:
 - ∀nodeⱼ in left subtree of nodeᵢ: dataⱼ < dataᵢ
 - ∀nodeⱼ in right subtree of nodeᵢ: dataⱼ > dataᵢ
+
 ```
 
 **Golang Implementation:**
@@ -637,6 +651,7 @@ func (bst *BinarySearchTree[T]) findMin(node *TreeNode[T]) *TreeNode[T] {
 // - Delete: O(h) where h is height
 // - Average case: O(log n) for balanced tree
 // - Worst case: O(n) for unbalanced tree
+
 ```
 
 ## 4. Hash Table Analysis
@@ -650,6 +665,7 @@ A hash table is a data structure that implements an associative array abstract d
 HashTable = (array, hash_function, size)
 where array[i] = (keyᵢ, valueᵢ) or nil
 and hash_function: key → [0, size-1]
+
 ```
 
 **Golang Implementation:**
@@ -765,6 +781,7 @@ func (ht *HashTable[K, V]) Size() int {
 // - Insert: O(1) average, O(n) worst case
 // - Get: O(1) average, O(n) worst case
 // - Delete: O(1) average, O(n) worst case
+
 ```
 
 ## 5. Graph Data Structures
@@ -780,6 +797,7 @@ A graph is a data structure consisting of a finite set of vertices (nodes) toget
 Graph = (V, E)
 where V = {v₁, v₂, ..., vₙ} is the set of vertices
 and E = {(vᵢ, vⱼ) | vᵢ, vⱼ ∈ V} is the set of edges
+
 ```
 
 **Golang Implementation:**
@@ -904,6 +922,7 @@ func (g *Graph[T]) BFS(start T) []T {
 // - Get Neighbors: O(1)
 // - DFS: O(V + E)
 // - BFS: O(V + E)
+
 ```
 
 ## 6. Performance Analysis and Optimization
@@ -945,6 +964,7 @@ var memoryAnalysis = map[string]MemoryAnalyzer{
         overhead:    32, // hash table overhead
     },
 }
+
 ```
 
 ### 6.2 Cache Performance Analysis
@@ -974,6 +994,7 @@ func (ca *CacheAnalyzer) CalculateCacheHitRate() float64 {
 func (ca *CacheAnalyzer) CalculateCacheMissRate() float64 {
     return 1.0 - ca.CalculateCacheHitRate()
 }
+
 ```
 
 ### 6.3 Benchmarking Framework
@@ -1027,6 +1048,7 @@ func BenchmarkDataStructure[T any](
     
     return results
 }
+
 ```
 
 ## 7. Best Practices and Design Patterns
@@ -1063,6 +1085,7 @@ type Collection[T any] interface {
     RetainAll(elements []T) bool
     ToSlice() []T
 }
+
 ```
 
 ### 7.2 Thread-Safe Data Structures
@@ -1105,6 +1128,7 @@ func (ts *ThreadSafeStack[T]) Size() int {
     defer ts.mutex.RUnlock()
     return ts.stack.Size()
 }
+
 ```
 
 ### 7.3 Error Handling and Validation
@@ -1149,6 +1173,7 @@ func (vc *ValidatedContainer[T]) Add(element T) error {
     }
     return nil
 }
+
 ```
 
 ## 8. Mathematical Proofs and Theorems
@@ -1165,6 +1190,7 @@ Let S be a stack with elements [e₁, e₂, ..., eₙ] where eₙ is the top ele
 After Push(e), the stack becomes [e₁, e₂, ..., eₙ, e].
 After Pop(), the stack becomes [e₁, e₂, ..., eₙ] and e is returned.
 Therefore, the last element pushed is the first element popped (LIFO).
+
 ```
 
 **Theorem 8.1.2 (Queue FIFO Property)**
@@ -1178,6 +1204,7 @@ After Enqueue(e₁), the queue becomes [e₁, e₂, ..., eₙ, e₁].
 After Enqueue(e₂), the queue becomes [e₁, e₂, ..., eₙ, e₁, e₂].
 After Dequeue(), the queue becomes [e₂, ..., eₙ, e₁, e₂] and e₁ is returned.
 Therefore, the first element enqueued is the first element dequeued (FIFO).
+
 ```
 
 ### 8.2 Complexity Analysis Proofs
@@ -1197,6 +1224,7 @@ For successful search, the expected number of probes is:
 E[probes] = (1/2) * (1 + 1/(1-α)).
 
 When α is bounded by a constant (e.g., α ≤ 0.75), both expressions are O(1).
+
 ```
 
 **Theorem 8.2.2 (Binary Search Tree Height)**
@@ -1211,6 +1239,7 @@ the minimum height is ⌊log₂(n+1)⌋.
 
 Upper bound: In the worst case, the tree degenerates into a linked list,
 where each node has at most one child. In this case, the height is n-1.
+
 ```
 
 ## 9. Implementation Guidelines
@@ -1235,6 +1264,7 @@ const (
     MinTestCoverage         = 0.80
     MinDocumentationCoverage = 0.90
 )
+
 ```
 
 ### 9.2 Testing Framework
@@ -1303,6 +1333,7 @@ func testBasicOperations[T comparable](t *testing.T, ds ADT[T]) {
         t.Error("Data structure should be empty after deletion")
     }
 }
+
 ```
 
 ## 10. Conclusion

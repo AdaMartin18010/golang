@@ -366,6 +366,7 @@ fn multiply(x: i32, y: i32) -> i32 {
 fn add_and_multiply(x: i32, y: i32, z: i32) -> i32 {
     multiply(add(x, y), z) // 复合态射
 }
+
 ```
 
 ### 1.6.2 高阶函数
@@ -387,6 +388,7 @@ fn main() {
     let result = apply_function(|x| x + 1, 5); // 使用高阶函数
     println!("Result: {}", result); // 输出: Result: 6
 }
+
 ```
 
 ## 1.7 6. 错误处理与控制流
@@ -413,6 +415,7 @@ fn main() {
         Err(e) => println!("Error: {}", e),
     }
 }
+
 ```
 
 ### 1.7.2 控制流
@@ -430,6 +433,7 @@ fn process_value(value: i32) {
         println!("Non-positive: {}", value);
     }
 }
+
 ```
 
 ## 1.8 7. 运行时的状态管理
@@ -454,6 +458,7 @@ fn recursive_function(n: i32) -> i32 {
     }
     n + recursive_function(n - 1) // 递归调用
 }
+
 ```
 
 ## 1.9 8. 总结
@@ -489,6 +494,7 @@ fn main() {
     let closure = |y| x + y; // 捕获外部变量 x
     println!("Result: {}", closure(5)); // 输出: Result: 15
 }
+
 ```
 
 ### 1.10.2 闭包的类型
@@ -526,6 +532,7 @@ async fn async_operation() {
 async fn main() {
     async_operation().await; // 调用异步函数
 }
+
 ```
 
 ## 1.12 11. 生命周期与所有权
@@ -593,6 +600,7 @@ fn main() {
     my_module::public_function(); // 可以访问
     // my_module::private_function(); // 编译错误，无法访问
 }
+
 ```
 
 ## 1.14 14. 类型系统与范畴
@@ -629,6 +637,7 @@ impl Shape for Circle {
 fn print_area<T: Shape>(shape: T) {
     println!("Area: {}", shape.area());
 }
+
 ```
 
 ## 1.15 15. 性能与优化
@@ -703,6 +712,7 @@ create_function!(foo);
 fn main() {
     foo(); // 输出: Function "foo" is called
 }
+
 ```
 
 ### 1.18.2 元编程的态射
@@ -759,6 +769,7 @@ fn main() {
     println!("Add: {}", execute_strategy(add, 5, 3)); // 输出: Add: 8
     println!("Subtract: {}", execute_strategy(subtract, 5, 3)); // 输出: Subtract: 2
 }
+
 ```
 
 ## 1.20 20. 性能分析与优化
@@ -1078,6 +1089,7 @@ pub fn hello_world(input: TokenStream) -> TokenStream {
     };
     output.into()
 }
+
 ```
 
 ### 1.28.9 37. 反射与动态特性
@@ -1113,6 +1125,7 @@ impl Shape for Circle {
 fn print_area(shape: &dyn Shape) {
     println!("Area: {}", shape.area());
 }
+
 ```
 
 ### 1.28.10 38. 未来的方向与挑战
@@ -1191,6 +1204,7 @@ impl Describable for Person {
         format!("{} is {} years old.", self.name, self.age)
     }
 }
+
 ```
 
 ### 1.28.13 41. 代码的可测试性
@@ -1420,6 +1434,7 @@ fn main() {
     let result = combined(3); // 结果是 (3 * 2) + 1 = 7
     println!("Result: {}", result);
 }
+
 ```
 
 ### 1.28.24 52. 语言的适应性
@@ -1535,8 +1550,11 @@ Rust 允许开发者为特定的目标平台配置编译选项。这种灵活性
 - **示例**：
 
 ```bash
+
 # 为 ARM 架构编译
+
 cargo build --target=arm-unknown-linux-gnueabi
+
 ```
 
 ### 58. 语言的可扩展性
@@ -2163,6 +2181,7 @@ fn get_singleton() -> i32 {
 fn main() {
     println!("Singleton value: {}", get_singleton()); // 输出: Singleton value: 1
 }
+
 ```
 
 #### 策略模式
@@ -2202,6 +2221,7 @@ fn main() {
     println!("Add: {}", execute_strategy(add, 5, 3)); // 输出: Add: 8
     println!("Subtract: {}", execute_strategy(subtract, 5, 3)); // 输出: Subtract: 2
 }
+
 ```
 
 ### 91. 分布式系统中的设计模式
@@ -2251,6 +2271,7 @@ fn main() {
     subject.register("Observer1".to_string(), Box::new(ConcreteObserver));
     subject.notify("Hello, Observers!"); // 输出: Received message: Hello, Observers!
 }
+
 ```
 
 #### 适配器模式
@@ -2287,6 +2308,7 @@ fn main() {
     let adapter = NewServiceAdapter::new(old_service);
     println!("{}", adapter.new_method()); // 输出: Old service response
 }
+
 ```
 
 ### 92. 总结
@@ -2353,6 +2375,7 @@ fn main() {
         Err(e) => println!("Error: {}", e), // 输出: Error: Operation failed after retries
     }
 }
+
 ```
 
 ### 94. 设计模式在分布式系统中的应用
@@ -2394,6 +2417,7 @@ fn main() {
     proxy.request(); // 输出: Proxy: Forwarding request to real service
                      // 输出: Real service request
 }
+
 ```
 
 #### 工厂模式
@@ -2442,6 +2466,7 @@ fn main() {
     let service_b = ServiceFactory::create_service("B");
     service_b.execute(); // 输出: Executing Service B
 }
+
 ```
 
 ### 95. 分布式系统中的数据管理
@@ -2489,6 +2514,7 @@ fn main() {
         println!("Retrieved: {}", value); // 输出: Retrieved: value1
     }
 }
+
 ```
 
 ### 96. 总结
@@ -2560,6 +2586,7 @@ fn main() {
         println!("ServiceA is available at: {}", address); // 输出: ServiceA is available at: 192.168.1.1
     }
 }
+
 ```
 
 ### 98. 设计模式在分布式系统中的应用
@@ -2615,6 +2642,7 @@ fn main() {
     mediator.notify("Hello, Services!"); // 输出: ServiceA received: Hello, Services!
 // 输出: ServiceB received: Hello, Services!
 }
+
 ```
 
 #### 责任链模式
@@ -2689,6 +2717,7 @@ fn main() {
     handler_a.handle("B"); // 输出: ConcreteHandlerB handled request B
     handler_a.handle("C"); // 输出: No handler for request: C
 }
+
 ```
 
 ### 99. 分布式系统中的监控与日志
@@ -2715,6 +2744,7 @@ fn main() {
     info!("This is an info message");
     error!("This is an error message");
 }
+
 ```
 
 ### 100. 总结
@@ -2788,6 +2818,7 @@ fn main() {
     println!("User access: {}", user_access.authorize("user")); // 输出: User access: true
     println!("Guest access: {}", user_access.authorize("guest")); // 输出: User access: false
 }
+
 ```
 
 #### 适配器模式与安全适配
@@ -2834,6 +2865,7 @@ fn main() {
         println!("Authentication failed!");
     }
 }
+
 ```
 
 ### 103. 分布式系统中的性能优化
@@ -2882,6 +2914,7 @@ fn main() {
         println!("Redirecting to: {}", lb.get_next_server());
     }
 }
+
 ```
 
 ### 104. 设计模式在性能优化中的应用
@@ -2936,6 +2969,7 @@ fn main() {
     let flyweight2 = factory.get_flyweight("SharedState1");
     flyweight2.operation("UniqueState2"); // 共享状态
 }
+
 ```
 
 #### 代理模式与性能优化
@@ -2990,6 +3024,7 @@ fn main() {
     proxy.load(); // 输出: Loading resource... Resource loaded and cached.
     proxy.load(); // 输出: Using cached resource.
 }
+
 ```
 
 ### 105. 总结

@@ -146,6 +146,7 @@ crud-app/
 ├── go.mod                       # Go模块文件
 ├── go.sum                       # 依赖校验
 └── README.md                    # 项目文档
+
 ```
 
 ## 7.1.1.4 🚀 **快速开始**
@@ -160,33 +161,44 @@ crud-app/
 ### 7.1.1.4.2 **安装依赖**
 
 ```bash
+
 # 7.1.2 克隆项目
+
 git clone <repository-url>
 cd crud-app
 
 # 7.1.3 安装依赖
+
 go mod download
 
 # 7.1.4 设置环境变量
+
 export DATABASE_URL="postgres://user:password@localhost:5432/crud_app"
 export REDIS_URL="redis://localhost:6379"
 export JWT_SECRET="your-secret-key"
+
 ```
 
 ### 7.1.4 **运行项目**
 
 ```bash
+
 # 7.1.5 开发模式
+
 go run cmd/server/main.go
 
 # 7.1.6 构建项目
+
 go build -o bin/server cmd/server/main.go
 
 # 7.1.7 运行测试
+
 go test ./...
 
 # 7.1.8 使用Docker
+
 docker-compose up -d
+
 ```
 
 ## 7.1.8.1 📊 **API接口**
@@ -274,6 +286,7 @@ func setupRoutes(r *gin.Engine, db *gorm.DB) {
         }
     }
 }
+
 ```
 
 ## 7.1.8.3 🧪 **测试示例**
@@ -308,6 +321,7 @@ func TestUserService_CreateUser(t *testing.T) {
     assert.NotNil(t, user)
     assert.Equal(t, req.Username, user.Username)
 }
+
 ```
 
 ## 7.1.8.4 🚀 **部署指南**
@@ -315,7 +329,9 @@ func TestUserService_CreateUser(t *testing.T) {
 ### 7.1.8.4.1 **Docker部署**
 
 ```dockerfile
+
 # 7.1.9 Dockerfile
+
 FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
@@ -334,6 +350,7 @@ COPY --from=builder /app/configs ./configs
 
 EXPOSE 8080
 CMD ["./main"]
+
 ```
 
 ## 7.1.9.1 📊 **性能优化**
@@ -381,6 +398,7 @@ func main() {
     handler.RegisterRoutes(r)
     r.Run(":8080")
 }
+
 ```
 
 ### 7.1.9.3.2 internal/handler/user.go
@@ -421,6 +439,7 @@ func GetUser(c *gin.Context) {
     }
     c.JSON(200, gin.H{"user": user})
 }
+
 ```
 
 ### 7.1.9.3.3 internal/service/user.go
@@ -439,6 +458,7 @@ func GetUserByID(id string) (*model.User, error) {
     // 调用repo查询
     return &model.User{}, nil
 }
+
 ```
 
 ### 7.1.9.3.4 internal/model/user.go
@@ -450,6 +470,7 @@ type User struct {
     ID   string `json:"id"`
     Name string `json:"name"`
 }
+
 ```
 
 ### 7.1.9.3.5 internal/repo/user.go
@@ -468,6 +489,7 @@ func FindUserByID(id string) (*model.User, error) {
     // 从数据库查询
     return &model.User{}, nil
 }
+
 ```
 
 ## 7.1.9.4 7. 工程规范与可测试性
@@ -495,6 +517,7 @@ func TestCreateUser(t *testing.T) {
         t.Errorf("CreateUser failed: %v", err)
     }
 }
+
 ```
 
 ### 7.1.9.5.2 Mock实现建议
@@ -520,6 +543,7 @@ r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 // 数据库迁移
 db.AutoMigrate(&model.User{})
+
 ```
 
 ## 7.1.9.7 10. 工程细节与最佳实践
@@ -547,6 +571,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 // 路由注册
 r.Use(AuthMiddleware())
+
 ```
 
 ## 7.1.9.9 12. 性能优化建议
@@ -587,6 +612,7 @@ logger.Info("service started")
 // Prometheus指标暴露
 import "github.com/prometheus/client_golang/prometheus/promhttp"
 r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
 ```
 
 ## 7.1.9.13 16. 容错与降级
@@ -600,7 +626,9 @@ r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 ### 7.1.9.14.1 GitHub Actions示例
 
 ```yaml
+
 # 7.1.10 .github/workflows/ci.yml
+
 name: Go CI
 on:
   push:
@@ -618,6 +646,7 @@ jobs:
         run: go build -v ./...
       - name: Test
         run: go test -v ./...
+
 ```
 
 ### 7.1.10 Dockerfile
@@ -632,6 +661,7 @@ FROM alpine:latest
 WORKDIR /root/
 COPY --from=builder /app/crud-app .
 CMD ["./crud-app"]
+
 ```
 
 ### 7.1.10 Kubernetes部署yaml
@@ -668,6 +698,7 @@ spec:
   ports:
   - port: 80
     targetPort: 8080
+
 ```
 
 ## 7.1.10.1 18. 实战案例与总结
@@ -691,6 +722,7 @@ viper.SetConfigName("config")
 viper.AddConfigPath("./configs")
 viper.ReadInConfig()
 port := viper.GetString("server.port")
+
 ```
 
 ## 7.1.10.3 20. 自动化回滚与高可用
@@ -719,6 +751,7 @@ grpcServer.Serve(lis)
 conn, _ := grpc.Dial("server:50051", grpc.WithInsecure())
 defer conn.Close()
 client := pb.NewUserServiceClient(conn)
+
 ```
 
 ## 7.1.10.5 22. API网关与服务治理
@@ -762,6 +795,7 @@ client := pb.NewUserServiceClient(conn)
 go test -cover ./...
 go test -bench=. ./...
 go tool pprof ./main.test cpu.prof
+
 ```
 
 ## 7.1.10.11 28. 工程最佳实践清单
@@ -853,6 +887,7 @@ flowchart TD
   style M fill:#e0f7fa,stroke:#333,stroke-width:2px
   style N fill:#e0f7fa,stroke:#333,stroke-width:2px
   style O fill:#e0f7fa,stroke:#333,stroke-width:2px
+
 ```
 
 ---

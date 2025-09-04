@@ -29,13 +29,6 @@
   - [1.16 5. 总结与展望](#5-总结与展望)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
 # 1 1 1 1 1 1 1 Rust 的 RTIC (Real-Time Interrupt-driven Concurrency) 主要应用
 
 RTIC（Real-Time Interrupt-driven Concurrency）是一种专为嵌入式系统设计的并发框架，
@@ -167,11 +160,15 @@ mod app {
         }
     }
 }
+
 ```
 
 > **说明**：  
+
 >
+
 > 1. 本示例借用 STM32F4 的 HAL 库，展示如何通过 RTIC 定义初始化函数（`init`）、定时任务（`blink`）和空闲任务（`idle`）。  
+
 > 2. `blink` 任务根据预设时间调度定时切换 LED 状态，从而实现实时任务调度的示例。
 
 ---

@@ -137,6 +137,7 @@ classDiagram
     StreamProcessor "1" *-- "1" StateStore
     StreamProcessor "1" *-- "1" WindowManager
     StreamProcessor --> DataStream : consumes
+
 ```
 
 ### 4.2 数据流处理架构
@@ -196,6 +197,7 @@ graph LR
     style MQ fill:#e1f5fe
     style SS fill:#f3e5f5
     style CP fill:#fff3e0
+
 ```
 
 ---
@@ -233,6 +235,7 @@ graph TD
     style L_Batch fill:#ffcdd2
     style L_Stream fill:#c8e6c9
     style K_Stream fill:#c8e6c9
+
 ```
 
 ### 5.2 流处理核心概念
@@ -416,6 +419,7 @@ func (dp *DataflowPipeline) Stop() {
     close(dp.outputChan)
     close(dp.errorChan)
 }
+
 ```
 
 ### 6.2 窗口聚合处理示例
@@ -608,6 +612,7 @@ func main() {
     time.Sleep(10 * time.Second)
     pipeline.Stop()
 }
+
 ```
 
 ---
@@ -688,6 +693,7 @@ func (cm *CheckpointManager) calculateChecksum(state map[string]interface{}) str
     data, _ := json.Marshal(state)
     return fmt.Sprintf("%x", sha256.Sum256(data))
 }
+
 ```
 
 ### 7.2 背压控制与流量整形
@@ -766,6 +772,7 @@ func (bpc *BackpressureController) AdaptiveAdjust(processingLatency time.Duratio
         bpc.rateLimiter.SetLimit(newLimit)
     }
 }
+
 ```
 
 ### 7.3 事件时间处理与水位线机制
@@ -845,6 +852,7 @@ func (wm *WatermarkManager) GetGlobalWatermark() time.Time {
 func (wm *WatermarkManager) IsEventLate(eventTime time.Time) bool {
     return eventTime.Before(wm.GetGlobalWatermark())
 }
+
 ```
 
 ---
@@ -874,12 +882,15 @@ dataflow-service/
 │   └── pipeline.yaml    # 管道配置
 └── scripts/
     └── start.sh         # 启动脚本
+
 ```
 
 ### 8.2 容器化部署
 
 ```dockerfile
+
 # 2 2 2 2 2 2 2 Dockerfile
+
 FROM golang:1.19-alpine AS builder
 
 WORKDIR /app
@@ -897,6 +908,7 @@ COPY --from=builder /app/dataflow-processor .
 COPY --from=builder /app/configs ./configs
 
 CMD ["./dataflow-processor"]
+
 ```
 
 ---
@@ -937,4 +949,4 @@ CMD ["./dataflow-processor"]
 
 ---
 
-*本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

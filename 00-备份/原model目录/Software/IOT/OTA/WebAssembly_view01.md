@@ -62,6 +62,7 @@ WebAssembly自动升级与异构技术融合
     ├── AI驱动自适应部署
     ├── 零信任安全架构
     └── 资源感知调度优化
+
 ```
 
 ## 1. 引言
@@ -116,6 +117,7 @@ impl ModuleManager {
         Ok(())
     }
 }
+
 ```
 
 ### 2.2 虚拟机与容器技术
@@ -160,6 +162,7 @@ class WasmContainerManager {
     return new HybridDeployment(container, mountedModules);
   }
 }
+
 ```
 
 ### 2.3 边缘计算与IoT部署模型
@@ -208,6 +211,7 @@ func (m *EdgeNodeManager) DeployApplication(app *Application) (*Deployment, erro
     
     return deployment, nil
 }
+
 ```
 
 ### 2.4 OTA更新技术
@@ -266,6 +270,7 @@ impl OtaManager {
         }
     }
 }
+
 ```
 
 ## 3. 自动升级技术形式化模型
@@ -284,7 +289,7 @@ impl OtaManager {
 
 **定理 3.1** (状态一致性) 若升级转换 $T$ 满足原子性和隔离性，则系统在升级前后保持一致状态。
 
-*证明*：假设 $S_1$ 是一致状态，且升级转换 $T$ 满足原子性。根据原子性，转换要么完全成功要么完全失败。若成功，则 $S_2 = T(S_1)$ 按定义满足代码一致性和数据迁移条件；若失败，系统状态保持为 $S_1$。在两种情况下，系统都处于一致状态。
+* 证明*：假设 $S_1$ 是一致状态，且升级转换 $T$ 满足原子性。根据原子性，转换要么完全成功要么完全失败。若成功，则 $S_2 = T(S_1)$ 按定义满足代码一致性和数据迁移条件；若失败，系统状态保持为 $S_1$。在两种情况下，系统都处于一致状态。
 
 ```java
 /**
@@ -330,6 +335,7 @@ public class AtomicUpgradeTransaction {
         }
     }
 }
+
 ```
 
 ### 3.2 一致性与安全性证明
@@ -338,7 +344,7 @@ public class AtomicUpgradeTransaction {
 
 **定理 3.2** (安全升级) 若升级系统实现了以下三个机制：(1)版本验证，(2)完整性校验，(3)回滚能力，则可以保证升级过程的安全性。
 
-*证明*：
+* 证明*：
 
 1. 版本验证确保了升级的单向性和版本兼容性
 2. 完整性校验保证了升级包未被篡改
@@ -393,6 +399,7 @@ class SecurityVerifier {
     return { valid: true };
   }
 }
+
 ```
 
 ### 3.3 升级策略优化定理
@@ -401,7 +408,7 @@ class SecurityVerifier {
 
 **定理 3.3** (最优升级策略) 在满足安全约束的条件下，最小化升级成本的最优策略是增量式分层更新。
 
-*证明*：
+* 证明*：
 考虑完全更新的成本为 $C_{full}$，增量更新的成本为 $C_{diff}$。
 显然，$C_{diff} \leq C_{full}$，因为 $C_{diff}$ 只传输变更部分。
 通过分层更新，可以将系统分解为 $n$ 个独立层 $L = \{L_1, L_2, ..., L_n\}$。
@@ -409,7 +416,9 @@ class SecurityVerifier {
 由于通常情况下 $\sum_{i=1}^{n} P(L_i) < 1$（不是所有层都需要更新），因此 $C_{total} < C_{diff} \leq C_{full}$。
 
 ```python
+
 # 增量分层更新策略实现
+
 class LayeredUpdateStrategy:
     def __init__(self, system_layers):
         self.layers = system_layers  # 系统的不同层
@@ -474,6 +483,7 @@ class LayeredUpdateStrategy:
         # 拓扑排序实现
         # ...
         return sorted_layers
+
 ```
 
 ## 4. 技术融合架构方案
@@ -600,6 +610,7 @@ class WasmKubernetesIntegrator {
     return this.monitorUpdateJob(updateJob.metadata.name);
   }
 }
+
 ```
 
 ### 4.2 多层次边缘计算架构
@@ -710,6 +721,7 @@ class MultiTierEdgeFramework {
     return this.monitorUpdateProgress(updatePackage.updateId);
   }
 }
+
 ```
 
 ### 4.3 模块化IoT设备管理框架
@@ -832,6 +844,7 @@ public class ModularIoTFramework {
         return new UpdateResult(deviceId, moduleId, status);
     }
 }
+
 ```
 
 ### 4.4 跨平台OTA统一协议
@@ -954,6 +967,7 @@ impl UnifiedOtaProtocol {
     
     // 其他协议方法...
 }
+
 ```
 
 ## 5. 架构演化路径与技术推演
@@ -976,7 +990,9 @@ impl UnifiedOtaProtocol {
 设备集合 $D = \{d_1, d_2, ..., d_n\}$，每个设备的连接状态函数 $C(d_i, t)$ 表示设备 $d_i$ 在时间 $t$ 是否连接。更新一致性要求对所有设备 $d_i$，存在时间 $t_i$ 使得设备完成更新。挑战在于找到一个更新策略 $S$，使得在连接函数 $C$ 的约束下，最小化所有设备完成更新的时间上界 $\max_i(t_i)$。
 
 ```python
+
 # 网络不稳定环境中的更新一致性分析
+
 class UpdateConsistencyAnalyzer:
     def __init__(self, devices, connection_model):
         self.devices = devices
@@ -1049,6 +1065,7 @@ class UpdateConsistencyAnalyzer:
             }
             
         return results
+
 ```
 
 ### 5.2 近期演化方向
@@ -1158,6 +1175,7 @@ class HybridRuntimeCoordinator implements RuntimeCoordinator {
   
   // 其他方法实现...
 }
+
 ```
 
 ### 5.3 长期技术融合路径
@@ -1252,6 +1270,7 @@ public class AIAdaptiveDeploymentSystem {
                     
                     // 如果新策略明显更好，执行迁移
                     if (model.compareStrategies(newStrategy, deployment.getStrategy()) 
+
                         > Constants.MIGRATION_THRESHOLD) {
                         logger.info("为部署 " + deployment.getId() + " 执行策略迁移");
                         executor.migrateDeployment(deployment.getId(), newStrategy);
@@ -1307,6 +1326,7 @@ public class AIAdaptiveDeploymentSystem {
         }
     }
 }
+
 ```
 
 ## 6. 实现示例与参考代码
@@ -1450,6 +1470,7 @@ impl WasmUpgradeManager {
     
     // 其他辅助方法...
 }
+
 ```
 
 ### 6.2 容器与WebAssembly桥接
@@ -1673,6 +1694,7 @@ class WasmContainerBridge {
     };
   }
 }
+
 ```
 
 ### 6.3 边缘设备更新协议
@@ -1835,14 +1857,14 @@ func (p *EdgeOtaProtocol) DownloadAndApplyUpdate(
     if err := p.reportUpdateResult(ctx, updateInfo, result); err != nil {
         p.Logger.Printf("报告更新结果失败: %v", err)
     }
-    
+  
     p.Logger.Printf("更新成功应用: %s v%s", updateInfo.ModuleID, updateInfo.Version)
     return result, nil
 }
 
 // 创建下载会话
 func (p *EdgeOtaProtocol) createDownloadSession(
-    ctx context.Context, 
+    ctx context.Context,
     updateInfo UpdateInfo,
 ) (string, error) {
     // 准备会话请求
@@ -1857,21 +1879,21 @@ func (p *EdgeOtaProtocol) createDownloadSession(
         },
         "timestamp": time.Now().Unix(),
     }
-    
+  
     // 签名请求
     signature, err := p.Crypto.Sign(sessionRequest)
     if err != nil {
         return "", err
     }
     sessionRequest["signature"] = signature
-    
+  
     // 发送请求
     requestBytes, _ := json.Marshal(sessionRequest)
     responseBytes, err := p.Transport.Send(ctx, p.UpdateServer+"/create_session", requestBytes)
     if err != nil {
         return "", err
     }
-    
+  
     // 解析响应
     var response struct {
         SessionID      string `json:"session_id"`
@@ -1883,7 +1905,7 @@ func (p *EdgeOtaProtocol) createDownloadSession(
     if err := json.Unmarshal(responseBytes, &response); err != nil {
         return "", err
     }
-    
+  
     // 验证响应
     responseData := map[string]interface{}{
         "session_id":   response.SessionID,
@@ -1894,14 +1916,14 @@ func (p *EdgeOtaProtocol) createDownloadSession(
     if !p.Crypto.Verify(responseData, response.Signature) {
         return "", fmt.Errorf("会话响应签名验证失败")
     }
-    
+  
     p.Logger.Printf("创建下载会话成功: %s, 共 %d 个分块", response.SessionID, response.TotalChunks)
     return response.SessionID, nil
 }
 
 // 下载更新包
 func (p *EdgeOtaProtocol) downloadUpdatePackage(
-    ctx context.Context, 
+    ctx context.Context,
     sessionID string,
     updateInfo UpdateInfo,
 ) (*UpdatePackage, error) {
@@ -1910,50 +1932,50 @@ func (p *EdgeOtaProtocol) downloadUpdatePackage(
     if err != nil {
         return nil, err
     }
-    
+  
     // 准备临时存储
     tempFile, err := p.Storage.CreateTempFile()
     if err != nil {
         return nil, err
     }
     defer tempFile.Close()
-    
+  
     // 下载所有分块
     totalBytes := 0
     hasher := sha256.New()
-    
+  
     for i := 0; i < sessionInfo.TotalChunks; i++ {
         p.Logger.Printf("下载分块 %d/%d", i+1, sessionInfo.TotalChunks)
-        
+  
         // 下载分块
         chunk, err := p.downloadChunk(ctx, sessionID, i)
         if err != nil {
             return nil, fmt.Errorf("下载分块 %d 失败: %w", i, err)
         }
-        
+  
         // 写入临时文件
         if _, err := tempFile.Write(chunk.Data); err != nil {
             return nil, err
         }
-        
+  
         // 更新哈希
         hasher.Write(chunk.Data)
-        
+  
         totalBytes += len(chunk.Data)
-        
+  
         // 报告进度
         if i % 5 == 0 || i == sessionInfo.TotalChunks-1 {
             progress := float64(i+1) / float64(sessionInfo.TotalChunks) * 100
             p.Logger.Printf("下载进度: %.1f%%", progress)
         }
     }
-    
+  
     // 验证下载完整性
     calculatedHash := fmt.Sprintf("%x", hasher.Sum(nil))
     if calculatedHash != updateInfo.Hash {
         return nil, fmt.Errorf("哈希验证失败: 期望 %s, 计算得 %s", updateInfo.Hash, calculatedHash)
     }
-    
+  
     // 创建更新包
     updatePackage := &UpdatePackage{
         ModuleID:  updateInfo.ModuleID,
@@ -1963,20 +1985,20 @@ func (p *EdgeOtaProtocol) downloadUpdatePackage(
         Hash:      calculatedHash,
         Timestamp: time.Now(),
     }
-    
-    p.Logger.Printf("更新包下载完成: %s v%s (大小: %d 字节)", 
+  
+    p.Logger.Printf("更新包下载完成: %s v%s (大小: %d 字节)",
         updateInfo.ModuleID, updateInfo.Version, totalBytes)
-    
+  
     return updatePackage, nil
 }
 
 // 应用更新
 func (p *EdgeOtaProtocol) applyUpdate(
-    updatePackage *UpdatePackage, 
+    updatePackage *UpdatePackage,
     updateInfo UpdateInfo,
 ) (*UpdateResult, error) {
     p.Logger.Printf("准备应用更新...")
-    
+  
     // 根据模块类型选择不同的安装方法
     var installer Installer
     switch updateInfo.ModuleType {
@@ -1989,18 +2011,18 @@ func (p *EdgeOtaProtocol) applyUpdate(
     default:
         return nil, fmt.Errorf("不支持的模块类型: %s", updateInfo.ModuleType)
     }
-    
+  
     // 安装更新
     installResult, err := installer.Install(updatePackage)
     if err != nil {
         return nil, fmt.Errorf("安装失败: %w", err)
     }
-    
+  
     // 更新配置
     if err := p.updateConfiguration(updateInfo); err != nil {
         p.Logger.Printf("更新配置警告: %v", err)
     }
-    
+  
     // 创建更新结果
     result := &UpdateResult{
         ModuleID:     updateInfo.ModuleID,
@@ -2010,7 +2032,7 @@ func (p *EdgeOtaProtocol) applyUpdate(
         Status:       "success",
         PreviousVersion: p.CurrentVersions[updateInfo.ModuleID],
     }
-    
+  
     return result, nil
 }
 
@@ -2032,18 +2054,18 @@ func (p *EdgeOtaProtocol) reportUpdateResult(
         "telemetry":        p.collectTelemetry(),
         "timestamp":        time.Now().Unix(),
     }
-    
+  
     // 签名报告
     signature, err := p.Crypto.Sign(report)
     if err != nil {
         return err
     }
     report["signature"] = signature
-    
+  
     // 发送报告
     reportBytes, _ := json.Marshal(report)
     _, err = p.Transport.Send(ctx, p.UpdateServer+"/report_result", reportBytes)
-    
+  
     return err
 }
 
@@ -2053,7 +2075,7 @@ func (p *EdgeOtaProtocol) getDeviceCapabilities() map[string]interface{} {
     memory, _ := mem.VirtualMemory()
     cpu := cpu.Info()
     disk, _ := disk.Usage("/")
-    
+  
     return map[string]interface{}{
         "hardware": map[string]interface{}{
             "cpu":      cpu,
@@ -2075,6 +2097,7 @@ func (p *EdgeOtaProtocol) getDeviceCapabilities() map[string]interface{} {
 }
 
 // 其他实现方法...
+
 ```
 
 ## 7. 结论与前景展望

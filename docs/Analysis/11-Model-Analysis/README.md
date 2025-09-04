@@ -38,19 +38,6 @@
   - [11.1.6 5. 总结](#5-总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.1.1 概述
 
 本文档建立了基于 `/model` 目录的Golang架构分析框架，采用系统性梳理、形式化重构、多表征组织的方法论，将原始材料转换为符合学术标准的Golang架构知识体系。
@@ -105,6 +92,7 @@ func (ra *RecursiveAnalyzer) analyzeDirectory(path string, depth int) error {
     }
     return nil
 }
+
 ```
 
 #### 11.1.2.1.2 内容识别与分类
@@ -178,6 +166,7 @@ type Proof struct {
     Invariant     string
     Termination   string
 }
+
 ```
 
 ### 11.1.2.3 多表征组织策略
@@ -233,6 +222,7 @@ func (dd *DuplicateDetector) DetectDuplicates(contents []Content) []DuplicateGro
     
     return groups
 }
+
 ```
 
 #### 11.1.2.4.2 内容合并策略
@@ -346,6 +336,7 @@ func (dd *DuplicateDetector) DetectDuplicates(contents []Content) []DuplicateGro
     ├── 01-Memory-Optimization.md
     ├── 02-Concurrent-Optimization.md
     └── ...
+
 ```
 
 #### 11.1.4.2.2 内容格式
@@ -365,6 +356,7 @@ func (dd *DuplicateDetector) DetectDuplicates(contents []Content) []DuplicateGro
 算法 $A$ 在满足前置条件 $P$ 的情况下，
 执行后满足后置条件 $Q$。
 \end{theorem}
+
 ```
 
 **代码示例格式**:
@@ -395,6 +387,7 @@ type Complexity struct {
     BestCase        string
     WorstCase       string
 }
+
 ```
 
 ## 11.1.5 4. 持续改进机制

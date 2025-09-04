@@ -16,19 +16,6 @@
   - [2.1.12 *示例*](#*示例*)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 中，`panic` 是一个术语，用来描述程序在遇到无法恢复的错误时的非正常终止行为。以下是 `panic` 的定义和解释：
 
 ## 2.1.1 定义
@@ -68,6 +55,7 @@ fn main() {
     // 这行代码不会被执行，因为上面的代码会触发 panic
     println!("Value at index {}: {}", index, value);
 }
+
 ```
 
 在上面的示例中，尝试访问 `v` 的索引 `5` 将触发 panic，因为索引超出了 `v` 的有效范围。
@@ -119,6 +107,7 @@ fn main() {
         Err(e) => println!("Failed to read file: {}", e),
     }
 }
+
 ```
 
 在上面的示例中，`read_file_contents` 函数尝试读取文件内容并返回一个 `Result` 类型。

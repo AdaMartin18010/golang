@@ -9,33 +9,46 @@
 ![系统架构图](架构设计)
 
 ```text
+
 +-----------------------------------------------------+
 |                   前端应用层                          |
+
 +-----------------------------------------------------+
                         ↓
+
 +-----------------------------------------------------+
 |                 API网关 (actix-web)                  |
+
 +-----------------------------------------------------+
             ↙          ↓           ↘
+
 +---------------+ +---------------+ +---------------+
 |  命令服务      | |   查询服务     | |   集成服务     |
 | (处理写操作)   | | (处理读操作)   | | (外部系统集成)  |
+
 +---------------+ +---------------+ +---------------+
       ↓    ↑                ↑               ↑   ↓
+
 +---------------+           |               |   |
 |  事件总线      |-----------|---------------|---|
 | (rdkafka)     |                                   
+
 +---------------+                               
       ↓                                    ↓   ↑
+
 +---------------+                     +---------------+
 |  工作流引擎    |                     |  外部系统适配器 |
 | (temporal)    |                     | (tonic clients)|
+
 +---------------+                     +---------------+
       ↓    ↑                                ↓   ↑
+
 +---------------+ +---------------+ +---------------+
 |  事件存储      | |   读模型存储   | |   集成存储     |
 | (sqlx+Postgres)| | (sqlx+MongoDB) | | (redis-rs)    |
+
 +---------------+ +---------------+ +---------------+
+
 ```
 
 ### 2. 核心层次与组件
@@ -144,6 +157,7 @@ impl CommandBus {
         Ok(events)
     }
 }
+
 ```
 
 #### 1.2 代表性命令处理器实现
@@ -228,6 +242,7 @@ impl CommandHandler<CreateOrderCommand> for CreateOrderHandler {
         Ok(events)
     }
 }
+
 ```
 
 ### 2. 事件处理子系统
@@ -390,6 +405,7 @@ impl EventConsumer {
         Ok(())
     }
 }
+
 ```
 
 #### 2.2 订单创建事件处理
@@ -524,6 +540,7 @@ impl EventHandler<OrderCreatedEvent> for InventoryReserver {
         }
     }
 }
+
 ```
 
 ### 3. 工作流子系统
@@ -626,6 +643,7 @@ pub async fn order_processing_workflow(ctx: WfContext, input: OrderProcessingWor
         
     Ok(WfExitValue::Normal(format!("订单 {} 处理完成", input.order_id)))
 }
+
 ```
 
 #### 3.2 工作流活动实现
@@ -764,6 +782,7 @@ pub async fn process_payment(ctx: ActivityContext, input: ProcessPaymentInput) -
         }
     }
 }
+
 ```
 
 ### 4. 外部系统集成子系统
@@ -783,6 +802,7 @@ use resilient::{CircuitBreaker, CircuitBreakerConfig};
 pub trait InventoryService: Send + Sync + 'static {
     /// 检查库存可用性
     async fn check_availability(&self, items: &
+
 # 复杂分布式系统架构设计与实现方案（续）
 
 ### 4. 外部系统集成子系统（续）
@@ -798,26 +818,31 @@ use tracing::{info, error, instrument};
 use resilient::{CircuitBreaker, CircuitBreakerConfig};
 
 /// 库存服务客户端特质
-#[async_trait]
+
+# [async_trait]
+
 pub trait InventoryService: Send + Sync + 'static {
     /// 检查库存可用性
     async fn check_availability(&self, items: &[OrderItem]) -> Result<InventoryCheckResult, ServiceError>;
-    
+  
     /// 预留库存
     async fn reserve_inventory(&self, request: ReserveInventoryRequest) -> Result<ReserveInventoryResponse, ServiceError>;
-    
+  
     /// 释放库存
     async fn release_inventory(&self, order_id: &str) -> Result<(), ServiceError>;
 }
 
 /// 库存检查结果
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct InventoryCheckResult {
     pub all_available: bool,
     pub unavailable_items: Vec<UnavailableItem>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct UnavailableItem {
     pub product_id: String,
     pub requested_quantity: u32,
@@ -825,20 +850,25 @@ pub struct UnavailableItem {
 }
 
 /// 预留库存请求
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct ReserveInventoryRequest {
     pub order_id: String,
     pub items: Vec<InventoryItem>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct InventoryItem {
     pub product_id: String,
     pub quantity: u32,
 }
 
 /// 预留库存响应
-#[derive(Debug, Clone, Serialize, Deserialize)]
+
+# [derive(Debug, Clone, Serialize, Deserialize)]
+
 pub struct ReserveInventoryResponse {
     pub reservation_id: String,
     pub status: String,
@@ -857,18 +887,18 @@ impl GrpcInventoryServiceClient {
             .timeout(Duration::from_secs(5))
             .connect()
             .await?;
-            
+  
         let inner_client = inventory_proto::inventory_client::InventoryClient::new(channel);
-        
+  
         let breaker_config = CircuitBreakerConfig {
             failure_threshold: 5,
             success_threshold: 2,
             open_duration: Duration::from_secs(30),
             ..Default::default()
         };
-        
+  
         let circuit_breaker = CircuitBreaker::new("inventory_service", breaker_config);
-        
+  
         Ok(Self {
             inner_client,
             circuit_breaker,
@@ -876,7 +906,8 @@ impl GrpcInventoryServiceClient {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl InventoryService for GrpcInventoryServiceClient {
     #[instrument(skip(self, items), fields(items_count = items.len()))]
     async fn check_availability(&self, items: &[OrderItem]) -> Result<InventoryCheckResult, ServiceError> {
@@ -888,10 +919,10 @@ impl InventoryService for GrpcInventoryServiceClient {
                     quantity: item.quantity,
                 }).collect(),
             };
-            
+  
             let response = self.inner_client.clone().check_availability(request).await?;
             let result = response.into_inner();
-            
+  
             Ok(InventoryCheckResult {
                 all_available: result.all_available,
                 unavailable_items: result.unavailable_items.into_iter().map(|item| UnavailableItem {
@@ -905,7 +936,7 @@ impl InventoryService for GrpcInventoryServiceClient {
             resilient::Error::OperationError(inner) => inner,
         })
     }
-    
+  
     #[instrument(skip(self, request), fields(order_id = %request.order_id, items_count = request.items.len()))]
     async fn reserve_inventory(&self, request: ReserveInventoryRequest) -> Result<ReserveInventoryResponse, ServiceError> {
         self.circuit_breaker.execute(|| async {
@@ -916,13 +947,13 @@ impl InventoryService for GrpcInventoryServiceClient {
                     quantity: item.quantity,
                 }).collect(),
             };
-            
+  
             let response = self.inner_client.clone().reserve_inventory(proto_request).await?;
             let result = response.into_inner();
-            
+  
             let reserved_at = DateTime::<Utc>::from_str(&result.reserved_at)
                 .map_err(|e| ServiceError::ParsingError(format!("日期解析错误: {}", e)))?;
-                
+  
             Ok(ReserveInventoryResponse {
                 reservation_id: result.reservation_id,
                 status: result.status,
@@ -933,14 +964,14 @@ impl InventoryService for GrpcInventoryServiceClient {
             resilient::Error::OperationError(inner) => inner,
         })
     }
-    
+  
     #[instrument(skip(self), fields(order_id = %order_id))]
     async fn release_inventory(&self, order_id: &str) -> Result<(), ServiceError> {
         self.circuit_breaker.execute(|| async {
             let request = inventory_proto::ReleaseInventoryRequest {
                 order_id: order_id.to_string(),
             };
-            
+  
             let _response = self.inner_client.clone().release_inventory(request).await?;
             Ok(())
         }).await.map_err(|e| match e {
@@ -949,6 +980,7 @@ impl InventoryService for GrpcInventoryServiceClient {
         })
     }
 }
+
 ```
 
 #### 4.2 外部系统适配器工厂
@@ -978,21 +1010,21 @@ impl ExternalServiceFactory {
             notification_client: RwLock::new(None),
         }
     }
-    
+  
     /// 获取库存服务客户端
     pub async fn get_inventory_service(&self) -> Arc<dyn InventoryService> {
         let mut client = self.inventory_client.write().await;
-        
+  
         if let Some(ref c) = *client {
             return c.clone();
         }
-        
+  
         // 从服务注册表获取服务地址
         let service_url = match self.service_registry.get_service_url("inventory-service").await {
             Ok(url) => url,
             Err(_) => self.config.inventory_service_fallback_url.clone(),
         };
-        
+  
         // 创建新客户端
         let new_client: Arc<dyn InventoryService> = match self.config.inventory_service_type.as_str() {
             "grpc" => Arc::new(GrpcInventoryServiceClient::new(&service_url).await
@@ -1001,25 +1033,25 @@ impl ExternalServiceFactory {
                 .expect("无法创建库存服务客户端")),
             _ => panic!("不支持的库存服务类型: {}", self.config.inventory_service_type),
         };
-        
+  
         *client = Some(new_client.clone());
         new_client
     }
-    
+  
     /// 获取支付服务客户端
     pub async fn get_payment_service(&self) -> Arc<dyn PaymentService> {
         let mut client = self.payment_client.write().await;
-        
+  
         if let Some(ref c) = *client {
             return c.clone();
         }
-        
+  
         // 从服务注册表获取服务地址
         let service_url = match self.service_registry.get_service_url("payment-service").await {
             Ok(url) => url,
             Err(_) => self.config.payment_service_fallback_url.clone(),
         };
-        
+  
         // 创建新客户端
         let new_client: Arc<dyn PaymentService> = match self.config.payment_service_type.as_str() {
             "grpc" => Arc::new(GrpcPaymentServiceClient::new(&service_url).await
@@ -1028,13 +1060,14 @@ impl ExternalServiceFactory {
                 .expect("无法创建支付服务客户端")),
             _ => panic!("不支持的支付服务类型: {}", self.config.payment_service_type),
         };
-        
+  
         *client = Some(new_client.clone());
         new_client
     }
-    
+  
     // 其他服务的获取方法类似...
 }
+
 ```
 
 ### 5. 查询服务子系统
@@ -1063,41 +1096,41 @@ impl OrderQueryService {
             metrics,
         }
     }
-    
+  
     /// 获取订单详情
     #[instrument(skip(self), fields(order_id = %order_id))]
     pub async fn get_order(&self, order_id: &str) -> Result<Option<OrderDetailsDto>, QueryError> {
         let timer = self.metrics.start_timer("order_query_get_order");
-        
+  
         // 尝试从缓存获取
         let mut redis_conn = self.redis_client.get_async_connection().await
             .map_err(|e| QueryError::CacheError(e.to_string()))?;
-            
+  
         let cache_key = format!("order:{}", order_id);
-        
+  
         if let Ok(cached_data) = redis_conn.get::<_, String>(&cache_key).await {
             info!("从缓存获取订单");
             self.metrics.increment_counter("order_query_cache_hit");
-            
+  
             return serde_json::from_str(&cached_data)
                 .map(Some)
                 .map_err(|e| QueryError::DeserializationError(e.to_string()));
         }
-        
+  
         self.metrics.increment_counter("order_query_cache_miss");
-        
+  
         // 从数据库获取订单基本信息
         let order = sqlx::query_as::<_, OrderDetails>(
             r#"
-            SELECT 
+            SELECT
                 o.id, o.customer_id, o.status, o.total_amount, o.created_at,
                 c.first_name, c.last_name, c.email,
                 a.street, a.city, a.state, a.country, a.postal_code
-            FROM 
+            FROM
                 order_view o
                 LEFT JOIN customer c ON o.customer_id = c.id
                 LEFT JOIN address a ON o.shipping_address_id = a.id
-            WHERE 
+            WHERE
                 o.id = $1
             "#
         )
@@ -1105,7 +1138,7 @@ impl OrderQueryService {
         .fetch_optional(&self.db_pool)
         .await
         .map_err(|e| QueryError::DatabaseError(e.to_string()))?;
-        
+  
         if let Some(order) = order {
             // 获取订单项
             let items = sqlx::query_as::<_, OrderItemDto>(
@@ -1115,7 +1148,7 @@ impl OrderQueryService {
             .fetch_all(&self.db_pool)
             .await
             .map_err(|e| QueryError::DatabaseError(e.to_string()))?;
-            
+  
             // 获取支付信息
             let payment = sqlx::query_as::<_, PaymentInfoDto>(
                 "SELECT transaction_id, status, amount, processed_at FROM order_payment WHERE order_id = $1"
@@ -1124,7 +1157,7 @@ impl OrderQueryService {
             .fetch_optional(&self.db_pool)
             .await
             .map_err(|e| QueryError::DatabaseError(e.to_string()))?;
-            
+  
             // 获取配送信息
             let shipment = sqlx::query_as::<_, ShipmentInfoDto>(
                 "SELECT shipment_id, carrier, tracking_number, status, estimated_delivery FROM order_shipment WHERE order_id = $1"
@@ -1133,7 +1166,7 @@ impl OrderQueryService {
             .fetch_optional(&self.db_pool)
             .await
             .map_err(|e| QueryError::DatabaseError(e.to_string()))?;
-            
+  
             let result = OrderDetailsDto {
                 id: order.id,
                 customer: CustomerDto {
@@ -1156,32 +1189,32 @@ impl OrderQueryService {
                 total_amount: order.total_amount,
                 created_at: order.created_at,
             };
-            
+  
             // 缓存结果
             if let Ok(json) = serde_json::to_string(&result) {
                 let _: Result<(), _> = redis_conn.set_ex(&cache_key, json, 300).await; // 5分钟过期
             }
-            
+  
             info!("成功获取订单详情");
             timer.observe_duration();
-            
+  
             Ok(Some(result))
         } else {
             timer.observe_duration();
             Ok(None)
         }
     }
-    
+  
     /// 获取客户订单列表
     #[instrument(skip(self), fields(customer_id = %customer_id))]
     pub async fn get_customer_orders(
-        &self, 
+        &self,
         customer_id: &str,
         page: i64,
         page_size: i64
     ) -> Result<CustomerOrdersResult, QueryError> {
         let offset = (page - 1) * page_size;
-        
+  
         // 获取总订单数
         let total_count: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM order_view WHERE customer_id = $1"
@@ -1190,18 +1223,18 @@ impl OrderQueryService {
         .fetch_one(&self.db_pool)
         .await
         .map_err(|e| QueryError::DatabaseError(e.to_string()))?;
-        
+  
         // 获取分页订单列表
         let orders = sqlx::query_as::<_, CustomerOrderDto>(
             r#"
-            SELECT 
+            SELECT
                 id, status, total_amount, created_at,
                 (SELECT COUNT(*) FROM order_item_view WHERE order_id = order_view.id) as item_count
-            FROM 
-                order_view 
-            WHERE 
+            FROM
+                order_view
+            WHERE
                 customer_id = $1
-            ORDER BY 
+            ORDER BY
                 created_at DESC
             LIMIT $2 OFFSET $3
             "#
@@ -1212,7 +1245,7 @@ impl OrderQueryService {
         .fetch_all(&self.db_pool)
         .await
         .map_err(|e| QueryError::DatabaseError(e.to_string()))?;
-        
+  
         Ok(CustomerOrdersResult {
             customer_id: customer_id.to_string(),
             orders,
@@ -1222,21 +1255,21 @@ impl OrderQueryService {
             total_pages: (total_count + page_size - 1) / page_size,
         })
     }
-    
+  
     /// 搜索订单
     #[instrument(skip(self), fields(query = %query))]
     pub async fn search_orders(&self, query: &str, page: i64, page_size: i64) -> Result<OrderSearchResult, QueryError> {
         let offset = (page - 1) * page_size;
-        
+  
         // 使用全文检索搜索订单
         let search_query = format!("%{}%", query);
-        
+  
         // 获取匹配订单总数
         let total_count: i64 = sqlx::query_scalar(
             r#"
             SELECT COUNT(*) FROM order_view o
             LEFT JOIN customer c ON o.customer_id = c.id
-            WHERE 
+            WHERE
                 o.id::text ILIKE $1 OR
                 c.email ILIKE $1 OR
                 c.first_name ILIKE $1 OR
@@ -1247,17 +1280,17 @@ impl OrderQueryService {
         .fetch_one(&self.db_pool)
         .await
         .map_err(|e| QueryError::DatabaseError(e.to_string()))?;
-        
+  
         // 获取分页搜索结果
         let orders = sqlx::query_as::<_, SearchOrderDto>(
             r#"
-            SELECT 
+            SELECT
                 o.id, o.status, o.total_amount, o.created_at,
                 c.id as customer_id, c.first_name, c.last_name, c.email
-            FROM 
+            FROM
                 order_view o
                 LEFT JOIN customer c ON o.customer_id = c.id
-            WHERE 
+            WHERE
                 o.id::text ILIKE $1 OR
                 c.email ILIKE $1 OR
                 c.first_name ILIKE $1 OR
@@ -1273,7 +1306,7 @@ impl OrderQueryService {
         .fetch_all(&self.db_pool)
         .await
         .map_err(|e| QueryError::DatabaseError(e.to_string()))?;
-        
+  
         Ok(OrderSearchResult {
             query: query.to_string(),
             orders,
@@ -1284,6 +1317,7 @@ impl OrderQueryService {
         })
     }
 }
+
 ```
 
 #### 5.2 API端点
@@ -1320,7 +1354,9 @@ pub fn register_routes(config: &mut web::ServiceConfig, controller: Arc<OrderCon
 }
 
 /// 创建订单请求
-#[derive(Serialize, Deserialize)]
+
+# [derive(Serialize, Deserialize)]
+
 struct CreateOrderRequest {
     customer_id: String,
     items: Vec<OrderItemRequest>,
@@ -1328,7 +1364,9 @@ struct CreateOrderRequest {
 }
 
 /// 创建订单端点
-#[instrument(skip(req, data), fields(customer_id = %req.customer_id))]
+
+# [instrument(skip(req, data), fields(customer_id = %req.customer_id))]
+
 async fn create_order(
     req: web::Json<CreateOrderRequest>,
     data: web::Data<Arc<OrderController>>,
@@ -1350,7 +1388,7 @@ async fn create_order(
         },
         correlation_id: None,
     };
-    
+  
     match data.command_bus.dispatch(command).await {
         Ok(events) => {
             // 从事件中提取订单ID
@@ -1363,21 +1401,21 @@ async fn create_order(
                     }));
                 }
             }
-            
+  
             HttpResponse::InternalServerError().json(json!({
                 "error": "处理订单创建失败"
             }))
         },
         Err(e) => {
             error!(error = %e, "订单创建失败");
-            
+  
             let status_code = match e {
                 CommandError::ValidationError(_) => StatusCode::BAD_REQUEST,
                 CommandError::NotFound(_) => StatusCode::NOT_FOUND,
                 CommandError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
                 _ => StatusCode::INTERNAL_SERVER_ERROR,
             };
-            
+  
             HttpResponse::build(status_code).json(json!({
                 "error": e.to_string()
             }))
@@ -1386,7 +1424,9 @@ async fn create_order(
 }
 
 /// 获取订单端点
-#[instrument(skip(data), fields(order_id = %id))]
+
+# [instrument(skip(data), fields(order_id = %id))]
+
 async fn get_order(
     id: web::Path<String>,
     data: web::Data<Arc<OrderController>>,
@@ -1405,6 +1445,7 @@ async fn get_order(
         }
     }
 }
+
 ```
 
 ### 6. 监控与可观测性子系统
@@ -1425,7 +1466,7 @@ use tracing_subscriber::layer::Layer;
 pub fn init_tracer(service_name: &str, jaeger_endpoint: &str) -> Result<(), Box<dyn Error>> {
     // 设置全局传播器
     global::set_text_map_propagator(TraceContextPropagator::new());
-    
+  
     // 创建Jaeger导出器
     let tracer = new_pipeline()
         .with_service_name(service_name)
@@ -1441,26 +1482,26 @@ pub fn init_tracer(service_name: &str, jaeger_endpoint: &str) -> Result<(), Box<
                 ]))
         )
         .install_batch(opentelemetry::runtime::Tokio)?;
-    
+  
     // 创建OpenTelemetry tracing层
     let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
-    
+  
     // 创建格式化日志层
     let fmt_layer = tracing_subscriber::fmt::layer()
         .with_ansi(true)
         .with_target(true);
-    
+  
     // 创建EnvFilter层
     let filter_layer = tracing_subscriber::EnvFilter::try_from_default_env()
         .or_else(|_| tracing_subscriber::EnvFilter::try_new("info"))?;
-    
+  
     // 注册订阅者
     Registry::default()
         .with(filter_layer)
         .with(fmt_layer)
         .with(telemetry)
         .init();
-    
+  
     Ok(())
 }
 
@@ -1469,9 +1510,9 @@ pub fn extract_tracing_context(req: &HttpRequest) -> tracing::Span {
     let parent_cx = global::get_text_map_propagator(|propagator| {
         propagator.extract(&RequestHeaderCarrier(req.headers()))
     });
-    
+  
     tracing::span!(
-        tracing::Level::INFO, 
+        tracing::Level::INFO,
         "http_request",
         method = %req.method(),
         uri = %req.uri(),
@@ -1492,11 +1533,12 @@ impl<'a> Extractor for RequestHeaderCarrier<'a> {
     fn get(&self, key: &str) -> Option<&str> {
         self.0.get(key).and_then(|v| v.to_str().ok())
     }
-    
+  
     fn keys(&self) -> Vec<&str> {
         self.0.keys().map(|k| k.as_str()).collect()
     }
 }
+
 ```
 
 #### 6.2 指标监控实现
@@ -1519,37 +1561,38 @@ impl Metrics {
         let handle = builder
             .install()
             .expect("无法安装Prometheus导出器");
-            
+  
         Self {
             prometheus_handle: handle,
         }
     }
-    
+  
     /// 获取Prometheus指标导出点
     pub fn get_prometheus_handler(&self) -> PrometheusHandle {
         self.prometheus_handle.clone()
     }
-    
+  
     /// 递增计数器
     pub fn increment_counter(&self, name: &str) {
         counter!(name, 1);
     }
-    
+  
     /// 递增带标签的计数器
     pub fn increment_counter_with_labels(&self, name: &str, labels: &[(&str, &str)]) {
         let labels: Vec<(String, String)> = labels.iter()
             .map(|(k, v)| (k.to_string(), v.to_string()))
             .collect();
-            
+  
         counter!(name, 1, &labels);
     }
-    
+  
     /// 记录数值
     pub fn set_gauge(&self, name: &str, value: f64) {
         gauge!(name, value);
     }
-    
+  
     /// 记录直方图数据
+
 # 复杂分布式系统架构设计与实现方案（续）
 
 ### 6. 监控与可观测性子系统（续）
@@ -1787,6 +1830,7 @@ struct ComponentHealth {
     details: Option<String>,
     response_time_ms: u64,
 }
+
 ```
 
 ### 7. 配置与服务发现子系统
@@ -2007,6 +2051,7 @@ impl ConfigSource for ConsulConfigSource {
         })
     }
 }
+
 ```
 
 #### 7.2 服务注册与发现
@@ -2258,6 +2303,7 @@ pub enum ServiceDiscoveryError {
     #[error("服务发现暂时不可用: {0}")]
     ServiceUnavailable(String),
 }
+
 ```
 
 ## 三、数据模型设计
@@ -2294,6 +2340,7 @@ CREATE TABLE aggregate_snapshots (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     UNIQUE(aggregate_id, aggregate_type, version)
 );
+
 ```
 
 ### 2. 读模型表结构
@@ -2351,6 +2398,7 @@ CREATE INDEX idx_order_view_status ON order_view(status);
 CREATE INDEX idx_order_view_created_at ON order_view(created_at);
 CREATE INDEX idx_order_payment_status ON order_payment(status);
 CREATE INDEX idx_order_shipment_status ON order_shipment(status);
+
 ```
 
 ## 四、部署架构
@@ -2459,7 +2507,7 @@ services:
         delay: 10s
       restart_policy:
         condition: on-failure
-        
+  
   # 数据库
   postgres:
     image: postgres:14-alpine
@@ -2480,7 +2528,7 @@ services:
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
-      
+  
   # Kafka消息队列
   zookeeper:
     image: confluentinc/cp-zookeeper:7.2.1
@@ -2488,7 +2536,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
     volumes:
       - zookeeper-data:/var/lib/zookeeper/data
-      
+  
   kafka:
     image: confluentinc/cp-kafka:7.2.1
     depends_on:
@@ -2502,7 +2550,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
       - kafka-data:/var/lib/kafka/data
-      
+  
   # Temporal工作流引擎
   temporal:
     image: temporalio/auto-setup:1.16.2
@@ -2516,7 +2564,7 @@ services:
       - "7233:7233"
     depends_on:
       - postgres
-      
+  
   temporal-web:
     image: temporalio/web:1.15.0
     environment:
@@ -2525,7 +2573,7 @@ services:
       - "8088:8088"
     depends_on:
       - temporal
-      
+  
   # Consul服务发现
   consul:
     image: hashicorp/consul:1.12.3
@@ -2534,14 +2582,14 @@ services:
     volumes:
       - consul-data:/consul/data
     command: agent -server -bootstrap-expect=1 -ui -client=0.0.0.0
-      
+  
   # Jaeger分布式追踪
   jaeger:
     image: jaegertracing/all-in-one:1.36
     ports:
       - "16686:16686"  # UI
       - "14268:14268"  # Collector HTTP
-      
+  
   # Prometheus监控
   prometheus:
     image: prom/prometheus:v2.36.1
@@ -2555,7 +2603,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
-      
+  
   # Grafana可视化
   grafana:
     image: grafana/grafana:9.0.4
@@ -2579,12 +2627,15 @@ volumes:
   consul-data:
   prometheus-data:
   grafana-data:
+
 ```
 
 ### 2. Prometheus配置
 
 ```yaml
+
 # prometheus.yml
+
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -2595,11 +2646,11 @@ scrape_configs:
       - server: 'consul:8500'
         services: ['order-service']
     metrics_path: /metrics
-    
+  
   - job_name: 'temporal'
     static_configs:
       - targets: ['temporal:9090']
-        
+  
   - job_name: 'node-exporter'
     static_configs:
       - targets: ['node-exporter:9100']
@@ -2607,12 +2658,15 @@ scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+
 ```
 
 ### 3. Kubernetes部署配置
 
 ```yaml
+
 # order-service-deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -2691,7 +2745,9 @@ spec:
       terminationGracePeriodSeconds: 60
 
 ---
+
 # order-service-service.yaml
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -2708,7 +2764,9 @@ spec:
   type: ClusterIP
 
 ---
+
 # order-service-hpa.yaml
+
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -2733,6 +2791,7 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
+
 ```
 
 ## 五、系统启动与集成
@@ -2746,19 +2805,20 @@ use sqlx::postgres::PgPoolOptions;
 use rdkafka::config::ClientConfig;
 use opentelemetry::global;
 
-#[actix_web::main]
+# [actix_web::main]
+
 async fn main() -> std::io::Result<()> {
     // 1. 加载配置
     let config_manager = ConfigManager::from_file("config/config.toml")
         .expect("无法加载配置");
     let config = config_manager.get_config();
-    
+  
     // 2. 初始化日志和追踪
     init_tracer(&config.tracing.service_name, &config.tracing.jaeger_endpoint)
         .expect("无法初始化分布式追踪");
-    
+  
     tracing::info!("应用启动中...");
-    
+  
     // 3. 创建数据库连接池
     let db_pool = PgPoolOptions::new()
         .max_connections(config.database.max_connections)
@@ -2768,24 +2828,24 @@ async fn main() -> std::io::Result<()> {
         .connect(&config.database.url)
         .await
         .expect("无法连接到数据库");
-        
+  
     // 执行迁移
     sqlx::migrate!("./migrations")
         .run(&db_pool)
         .await
         .expect("无法执行数据库迁移");
-    
+  
     // 4. 创建Redis客户端
     let redis_client = redis::Client::open(config.redis.url.as_str())
         .expect("无法创建Redis客户端");
-        
+  
     // 5. 创建Kafka生产者
     let kafka_producer = EventProducer::new(
         &config.kafka.brokers,
         &config.kafka.topic,
     ).expect("无法创建Kafka生产者");
     let kafka_producer = Arc::new(kafka_producer);
-    
+  
     // 6. 设置服务注册
     let service_registration = ServiceRegistration::new(
         &config.consul.url,
@@ -2795,10 +2855,10 @@ async fn main() -> std::io::Result<()> {
         "/health",
         "15s",
     ).expect("无法创建服务注册");
-    
+  
     service_registration.register().await
         .expect("无法注册服务");
-        
+  
     // 注册关闭钩子,确保服务优雅退出
     let service_registration_clone = service_registration.clone();
     ctrlc::set_handler(move || {
@@ -2815,60 +2875,60 @@ async fn main() -> std::io::Result<()> {
                 std::process::exit(0);
             });
     }).expect("无法设置Ctrl-C处理器");
-    
+  
     // 7. 创建服务发现
     let service_discovery = Arc::new(ServiceDiscovery::new(&config.consul.url)
         .expect("无法创建服务发现"));
-        
+  
     // 启动缓存刷新任务
     service_discovery.clone().start_cache_refresh(std::time::Duration::from_secs(60)).await;
-    
+  
     // 8. 创建外部服务工厂
     let external_service_factory = Arc::new(ExternalServiceFactory::new(
         config.external_services.clone(),
         service_discovery.clone(),
     ));
-    
+  
     // 9. 初始化命令总线
     let command_bus = Arc::new(CommandBus::new(kafka_producer.clone()));
-    
+  
     // 注册命令处理器
     let mut command_handlers = CommandHandlerRegistry::new();
-    
+  
     let create_order_handler = CreateOrderHandler::new(
         db_pool.clone(),
         external_service_factory.clone(),
     );
     command_handlers.register_handler(Box::new(create_order_handler));
-    
+  
     let cancel_order_handler = CancelOrderHandler::new(
         db_pool.clone(),
         external_service_factory.clone(),
     );
     command_handlers.register_handler(Box::new(cancel_order_handler));
-    
+  
     // 将处理器注册到命令总线
     command_bus.register_handlers(command_handlers).await;
-    
+  
     // 10. 初始化事件消费者
     let event_consumer = EventConsumer::new();
-    
+  
     // 注册事件处理器
     let order_read_model_updater = OrderReadModelUpdater::new(db_pool.clone());
     event_consumer.register_handler("order_created", Box::new(order_read_model_updater));
-    
+  
     let order_workflow_starter = OrderWorkflowStarter::new(
         TemporalClientFactory::new_client(&config.temporal.url)
             .await
             .expect("无法创建Temporal客户端")
     );
     event_consumer.register_handler("order_created", Box::new(order_workflow_starter));
-    
+  
     let inventory_reserver = InventoryReserver::new(
         external_service_factory.clone(),
     );
     event_consumer.register_handler("order_created", Box::new(inventory_reserver));
-    
+  
     // 启动事件消费
     let event_consumer_clone = event_consumer.clone();
     tokio::spawn(async move {
@@ -2880,35 +2940,35 @@ async fn main() -> std::io::Result<()> {
             tracing::error!("事件消费者启动失败: {:?}", e);
         }
     });
-    
+  
     // 11. 初始化查询服务
     let metrics = Arc::new(Metrics::new());
-    
+  
     let order_query_service = Arc::new(OrderQueryService::new(
         db_pool.clone(),
         redis_client.clone(),
         metrics.clone(),
     ));
-    
+  
     // 12. 启动指标收集
     metrics.start_system_metrics_collector().await;
-    
+  
     // 13. 创建API控制器
     let order_controller = Arc::new(OrderController::new(
         order_query_service.clone(),
         command_bus.clone(),
     ));
-    
+  
     // 14. 创建健康检查服务
     let health_check_service = Arc::new(HealthCheckService::new(
         db_pool.clone(),
         redis_client.clone(),
         kafka_producer.clone(),
     ));
-    
+  
     // 15. 启动HTTP服务器
     tracing::info!("启动HTTP服务器在 {}:{}", config.server.host, config.server.port);
-    
+  
     HttpServer::new(move || {
         App::new()
             // 中间件
@@ -2918,18 +2978,18 @@ async fn main() -> std::io::Result<()> {
             .wrap(TracingMiddleware)
             .wrap(ErrorHandlerMiddleware)
             .wrap(RequestMetricsMiddleware::new(metrics.clone()))
-            
+  
             // 应用状态
             .app_data(web::Data::new(order_controller.clone()))
             .app_data(web::Data::new(health_check_service.clone()))
             .app_data(web::Data::new(config.clone()))
-            
+  
             // 路由
             .configure(|cfg| register_routes(cfg, order_controller.clone()))
-            
+  
             // 健康检查
             .route("/health", web::get().to(health_check))
-            
+  
             // 指标端点
             .route("/metrics", web::get().to(metrics_handler))
     })
@@ -2962,6 +3022,7 @@ async fn metrics_handler(
         .content_type("text/plain")
         .body(handle.render())
 }
+
 ```
 
 ### 2. Dockerfile
@@ -2970,51 +3031,65 @@ async fn metrics_handler(
 FROM rust:1.62 as builder
 
 # 创建新的空项目
+
 WORKDIR /usr/src/app
 RUN USER=root cargo new --bin order-service
 WORKDIR /usr/src/app/order-service
 
 # 复制项目清单
+
 COPY Cargo.toml Cargo.lock ./
 
 # 构建依赖项
+
 RUN cargo build --release
 RUN rm src/*.rs
 
 # 复制源代码
+
 COPY src ./src
 COPY migrations ./migrations
 COPY config ./config
 
 # 构建应用
+
 RUN cargo build --release
 
 # 运行阶段
+
 FROM debian:bullseye-slim
 
 # 安装依赖
+
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # 设置用户
+
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # 创建工作目录
+
 WORKDIR /app
 
 # 复制二进制文件和配置
+
 COPY --from=builder /usr/src/app/order-service/target/release/order-service /app/
 COPY --from=builder /usr/src/app/order-service/config /app/config
 COPY --from=builder /usr/src/app/order-service/migrations /app/migrations
 
 # 设置权限
+
 RUN chown -R appuser:appuser /app
 USER appuser
 
 # 暴露端口
+
 EXPOSE 8080
 
 # 启动命令
+
 CMD ["/app/order-service"]
+
 ```
 
 ## 六、总结与最佳实践

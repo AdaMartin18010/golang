@@ -125,6 +125,7 @@ func (a *Adapter) Request() string {
     result := a.SpecificRequest()
     return fmt.Sprintf("Adapter: %s", result)
 }
+
 ```
 
 ### 3.2.1.4.2 对象适配器模式
@@ -162,6 +163,7 @@ func (a *Adapter) Request() string {
     result := a.adaptee.SpecificRequest()
     return fmt.Sprintf("Adapter: %s", result)
 }
+
 ```
 
 ### 3.2.1.4.3 函数适配器模式
@@ -207,6 +209,7 @@ func Example() {
     result := targetFunc(5)
     fmt.Println(result) // 输出: Adapted: 10
 }
+
 ```
 
 ## 3.2.1.5 4. 工程案例
@@ -309,6 +312,7 @@ func (s *StripeAdapter) GetPaymentStatus(paymentID string) (string, error) {
         return "unknown", nil
     }
 }
+
 ```
 
 ### 3.2.1.5.2 数据库适配器
@@ -467,6 +471,7 @@ func (df *DatabaseFactory) CreateDatabase(dbType string) (DatabaseInterface, err
         return nil, fmt.Errorf("unsupported database type: %s", dbType)
     }
 }
+
 ```
 
 ### 3.2.1.5.3 日志适配器
@@ -558,6 +563,7 @@ func (s *StructuredLoggerAdapter) Debug(message string) {
 func (s *StructuredLoggerAdapter) Warn(message string) {
     s.logger.Log("WARN", message)
 }
+
 ```
 
 ## 3.2.1.6 5. 批判性分析

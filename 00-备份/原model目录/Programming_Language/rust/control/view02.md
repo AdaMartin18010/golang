@@ -82,6 +82,7 @@ fn read_file_sync(path: &str) -> Result<String, std::io::Error> {
     println!("文件读取完成");
     Ok(content)
 }
+
 ```
 
 ### 1.3 异步编程范式
@@ -100,6 +101,7 @@ async fn read_file_async(path: &str) -> Result<String, std::io::Error> {
     println!("文件读取完成");
     Ok(content)
 }
+
 ```
 
 ### 1.4 Future特征的核心设计
@@ -116,6 +118,7 @@ pub enum Poll<T> {
     Ready(T),
     Pending,
 }
+
 ```
 
 - **惰性执行**：Future创建后不会自动执行，需要被轮询（poll）
@@ -151,6 +154,7 @@ impl Future for ExampleStateMachine {
         // ...
     }
 }
+
 ```
 
 这种转换可表示为函数 $Transform: AsyncFn \rightarrow StateMachine$，使得对任意异步函数f，$Transform(f)$是行为等价的状态机。
@@ -227,6 +231,7 @@ fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         Poll::Pending
     }
 }
+
 ```
 
 ### 3.3 工作窃取与负载均衡
@@ -259,6 +264,7 @@ let result = tokio::task::spawn_blocking(|| {
     // 同步阻塞操作，在专门的线程池中执行
     std::fs::read_to_string("large_file.txt")
 }).await?;
+
 ```
 
 ## 4. 异步与同步控制流的关系
@@ -312,6 +318,7 @@ fn cps_style<F: FnOnce(String)>(x: i32, continuation: F) {
 async fn async_fn(x: i32) -> String {
     x.to_string()
 }
+
 ```
 
 ### 4.4 与并发模型的关联
@@ -380,6 +387,7 @@ stream::iter(1..100)
     .buffer_unordered(10) // 控制并发度
     .collect::<Vec<_>>()
     .await
+
 ```
 
 背压系统可以建模为带有负反馈的控制系统：
@@ -406,6 +414,7 @@ match result {
     Ok(value) => println!("操作成功: {:?}", value),
     Err(_) => println!("操作超时"),
 }
+
 ```
 
 ### 5.4 错误处理策略
@@ -439,6 +448,7 @@ where
         }
     }
 }
+
 ```
 
 ## 6. 异步编程的挑战与陷阱
@@ -480,6 +490,7 @@ fn sync_caller() -> i32 {
         .unwrap()
         .block_on(async_operation())
 }
+
 ```
 
 ### 6.3 调试与追踪难点
@@ -515,6 +526,7 @@ let results = futures::stream::iter(tasks)
     .buffer_unordered(OPTIMAL_CONCURRENCY) // 限制并发数
     .collect::<Vec<_>>()
     .await;
+
 ```
 
 ## 7. 与所有权系统的交互
@@ -543,6 +555,7 @@ async fn borrow_challenge(data: &mut Vec<i32>) -> i32 {
     
     value
 }
+
 ```
 
 ### 7.2 异步闭包与所有权
@@ -561,6 +574,7 @@ let async_closure = move |x: i32| async move {
     let result = some_async_operation(x).await;
     result * multiplier
 };
+
 ```
 
 ### 7.3 静态与动态分发
@@ -595,6 +609,7 @@ async fn self_reference() {
     // Pin类型防止这种情况发生
     println!("{}", self_ref);
 }
+
 ```
 
 ## 8. 实践模式与应用场景
@@ -624,6 +639,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         });
     }
 }
+
 ```
 
 ### 8.2 事件驱动架构
@@ -659,6 +675,7 @@ impl EventBus {
         rx
     }
 }
+
 ```
 
 ### 8.3 Actor模型实现
@@ -694,6 +711,7 @@ impl Actor {
         }
     }
 }
+
 ```
 
 ### 8.4 响应式编程
@@ -724,6 +742,7 @@ let processed = stream::unfold(initial_state, |state| async move {
 })
 .collect::<Vec<_>>()
 .await;
+
 ```
 
 ## 9. 异步生态系统与运行时
@@ -755,6 +774,7 @@ async fn main() {
         // 异步操作
     });
 }
+
 ```
 
 Tokio支持多种运行模式，适应不同场景：
@@ -845,6 +865,7 @@ impl Future for MyFuture {
         Poll::Ready(42)
     }
 }
+
 ```
 
 ## 10. 未来发展与趋势
@@ -860,7 +881,7 @@ impl Future for MyFuture {
   trait AsyncService {
       // 使用关联类型返回Future
       type FuturePing: Future<Output = bool> + Send;
-      
+  
       fn ping(&self) -> Self::FuturePing;
   }
   
@@ -877,7 +898,7 @@ impl Future for MyFuture {
       type Output<'a>: Future<Output = Vec<T>> + 'a
       where
           Self: 'a;
-          
+  
       fn process<'a>(&'a self, input: &'a [T]) -> Self::Output<'a>;
   }
   ```
@@ -906,6 +927,7 @@ let read_future = ring.read(file, buf, 0);
 // 等待完成
 let (res, buf) = read_future.await?;
 println!("Read {} bytes", res);
+
 ```
 
 io_uring可以提供显著性能提升：
@@ -1025,4 +1047,5 @@ Rust异步编程与控制流
     ├── io_uring集成
     ├── 编译器优化方向
     └── 生态系统成熟度
+
 ```

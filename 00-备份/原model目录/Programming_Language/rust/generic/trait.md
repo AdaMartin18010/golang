@@ -26,6 +26,7 @@ fn main() {
 
     println!("Result: {}", node1.recursive_method()); // 输出: Result: 6
 }
+
 ```
 
 在这个例子中，`Recursive` trait 定义了一个方法 `recursive_method`，它在 `Node` 结构体中被实现为递归调用自身的方法。

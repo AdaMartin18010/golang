@@ -1129,18 +1129,18 @@ impl WebOfTrust {
             // 如果所有路径都不可信，返回平均值
             let avg_trust = path_trusts.iter().map(|(t, _)| t).sum::<f64>() / path_trusts.len() as f64;
             let avg_uncertainty = path_trusts.iter().map(|(_, u)| u).sum::<f64>() / path_trusts.len() as f64;
-            
+  
             Some((avg_trust, avg_uncertainty))
         }
     }
-    
+  
     // 获取一组节点之间的信任关系
     fn get_trust_network(&self, nodes: &[NodeId]) -> TrustNetwork {
         let mut network = TrustNetwork {
             nodes: Vec::new(),
             edges: Vec::new(),
         };
-        
+  
         // 添加节点
         for node_id in nodes {
             if let Some(&idx) = self.node_indices.get(node_id) {
@@ -1150,7 +1150,7 @@ impl WebOfTrust {
                 });
             }
         }
-        
+  
         // 添加边
         for source in nodes {
             if let Some(&src_idx) = self.node_indices.get(source) {
@@ -1158,11 +1158,11 @@ impl WebOfTrust {
                     if source == target {
                         continue;
                     }
-                    
+  
                     if let Some(&tgt_idx) = self.node_indices.get(target) {
                         if let Some(edge_idx) = self.trust_graph.find_edge(src_idx, tgt_idx) {
                             let edge = self.trust_graph.edge_weight(edge_idx).unwrap();
-                            
+  
                             network.edges.push(TrustEdge {
                                 source: source.clone(),
                                 target: target.clone(),
@@ -1174,46 +1174,46 @@ impl WebOfTrust {
                 }
             }
         }
-        
+  
         network
     }
-    
+  
     // 计算节点的整体声誉
     fn calculate_node_reputation(&self, node_idx: NodeIndex) -> f64 {
         // 基于入边计算节点的声誉
         let mut weighted_sum = 0.0;
         let mut weight_sum = 0.0;
-        
+  
         for edge in self.trust_graph.edges_directed(node_idx, Incoming) {
             let source_idx = edge.source();
             let edge_data = edge.weight();
-            
+  
             // 对信任者的声誉也考虑在内
             let source_rep = self.calculate_node_local_reputation(source_idx);
             let weight = source_rep * (1.0 - edge_data.uncertainty);
-            
+  
             weighted_sum += edge_data.trust * weight;
             weight_sum += weight;
         }
-        
+  
         if weight_sum > 0.0 {
             weighted_sum / weight_sum
         } else {
             0.5 // 默认中性评价
         }
     }
-    
+  
     // 计算节点的本地声誉（仅基于直接连接）
     fn calculate_node_local_reputation(&self, node_idx: NodeIndex) -> f64 {
         let mut in_edges = 0;
         let mut trust_sum = 0.0;
-        
+  
         for edge in self.trust_graph.edges_directed(node_idx, Incoming) {
             let edge_data = edge.weight();
             trust_sum += edge_data.trust;
             in_edges += 1;
         }
-        
+  
         if in_edges > 0 {
             trust_sum / in_edges as f64
         } else {
@@ -1342,7 +1342,7 @@ impl BlockchainReputationSystem {
             signer,
         }
     }
-    
+  
     // 获取节点声誉
     async fn get_node_reputation(&mut self, node_id: &NodeId) -> Result<ReputationData, ReputationError> {
         // 检查缓存
@@ -1352,7 +1352,7 @@ impl BlockchainReputationSystem {
                 return Ok(cached.data.clone());
             }
         }
-        
+  
         // 从区块链获取声誉数据
         match self.chain_interface.get_reputation(node_id) {
             Ok(data) => {
@@ -1362,13 +1362,13 @@ impl BlockchainReputationSystem {
                     cached_at: Instant::now(),
                     pending_updates: Vec::new(),
                 });
-                
+  
                 Ok(data)
             },
             Err(e) => Err(ReputationError::BlockchainError(e)),
         }
     }
-    
+  
     // 提交声誉更新
     async fn submit_reputation_update(
         &mut self,
@@ -1376,48 +1376,48 @@ impl BlockchainReputationSystem {
     ) -> Result<TransactionId, ReputationError> {
         // 验证更新
         self.validate_update(&update)?;
-        
+  
         // 签名更新
         let update_data = serialize_update(&update)?;
         let signature = self.signer.sign(&update_data)?;
-        
+  
         // 添加到待处理更新
         if let Some(cached) = self.local_cache.get_mut(&update.node_id) {
             cached.pending_updates.push(update.clone());
         }
-        
+  
         // 提交到区块链
         match self.chain_interface.submit_reputation_update(&update.node_id, update, signature) {
             Ok(tx_id) => Ok(tx_id),
             Err(e) => Err(ReputationError::BlockchainError(e)),
         }
     }
-    
+  
     // 验证更新
     fn validate_update(&self, update: &ReputationUpdate) -> Result<(), ReputationError> {
         // 检查评分范围
         if update.rating < 0.0 || update.rating > 1.0 {
             return Err(ReputationError::InvalidRating);
         }
-        
+  
         // 检查时间戳（不能太旧或太新）
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap_or_default()
             .as_secs();
-        
+  
         if update.timestamp > now + 300 || now > update.timestamp + 86400 {
             return Err(ReputationError::InvalidTimestamp);
         }
-        
+  
         // 检查是否对自己评价
         if update.rater == update.node_id {
             return Err(ReputationError::SelfRating);
         }
-        
+  
         Ok(())
     }
-    
+  
     // 从历史数据计算声誉
     fn calculate_reputation_from_history(
         &self,
@@ -1426,70 +1426,70 @@ impl BlockchainReputationSystem {
         if history.is_empty() {
             return Ok(0.5); // 默认中性评价
         }
-        
+  
         match &self.consensus_strategy {
             ConsensusStrategy::WeightedAverage { min_ratings, rater_weight_factor } => {
                 if history.len() < *min_ratings {
                     return Ok(0.5); // 不足最小评价数
                 }
-                
+  
                 let mut weighted_sum = 0.0;
                 let mut weight_sum = 0.0;
-                
+  
                 for entry in history {
                     // 计算评价者权重
                     let rater_weight = 1.0; // 简化版，实际中应该考虑评价者自身的声誉
-                    
+  
                     // 计算时间衰减
                     let age = now() - entry.timestamp;
                     let time_weight = (-0.0001 * age as f64).exp(); // 指数衰减
-                    
+  
                     // 总权重
                     let weight = rater_weight * time_weight * rater_weight_factor;
-                    
+  
                     weighted_sum += entry.rating * weight;
                     weight_sum += weight;
                 }
-                
+  
                 if weight_sum > 0.0 {
                     Ok((weighted_sum / weight_sum).clamp(0.0, 1.0))
                 } else {
                     Ok(0.5)
                 }
             },
-            
+  
             ConsensusStrategy::Median { min_ratings, outlier_threshold } => {
                 if history.len() < *min_ratings {
                     return Ok(0.5); // 不足最小评价数
                 }
-                
+  
                 // 收集评分
                 let mut ratings: Vec<f64> = history.iter()
                     .map(|e| e.rating)
                     .collect();
-                
+  
                 // 排序
                 ratings.sort_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
-                
+  
                 // 移除异常值
                 if *outlier_threshold > 0.0 {
                     let q1_idx = ratings.len() / 4;
                     let q3_idx = ratings.len() * 3 / 4;
-                    
+  
                     let q1 = ratings[q1_idx];
                     let q3 = ratings[q3_idx];
-                    
+  
                     let iqr = q3 - q1;
                     let lower_bound = q1 - iqr * outlier_threshold;
                     let upper_bound = q3 + iqr * outlier_threshold;
-                    
+  
                     ratings.retain(|&r| r >= lower_bound && r <= upper_bound);
                 }
-                
+  
                 if ratings.is_empty() {
                     return Ok(0.5);
                 }
-                
+  
                 // 计算中位数
                 let mid = ratings.len() / 2;
                 if ratings.len() % 2 == 0 {
@@ -1498,50 +1498,50 @@ impl BlockchainReputationSystem {
                     Ok(ratings[mid].clamp(0.0, 1.0))
                 }
             },
-            
+  
             ConsensusStrategy::SubjectiveLogic { prior_uncertainty } => {
                 // 使用Subjective Logic计算
                 let mut belief = 0.0;
                 let mut disbelief = 0.0;
                 let mut uncertainty = *prior_uncertainty;
-                
+  
                 for entry in history {
                     // 将评分转换为信念三元组
                     let rating_belief = entry.rating;
                     let rating_disbelief = 1.0 - entry.rating;
                     let rating_uncertainty = 0.2; // 简化，实际应该根据证据强度计算
-                    
+  
                     // 应用主观逻辑的合并规则
                     let u_sum = uncertainty + rating_uncertainty - uncertainty * rating_uncertainty;
-                    
+  
                     if u_sum == 1.0 {
                         continue; // 避免除以零
                     }
-                    
+  
                     let b_new = (belief * rating_uncertainty + rating_belief * uncertainty) / (1.0 - uncertainty * rating_uncertainty);
                     let d_new = (disbelief * rating_uncertainty + rating_disbelief * uncertainty) / (1.0 - uncertainty * rating_uncertainty);
                     let u_new = (uncertainty * rating_uncertainty) / (1.0 - uncertainty * rating_uncertainty);
-                    
+  
                     belief = b_new;
                     disbelief = d_new;
                     uncertainty = u_new;
                 }
-                
+  
                 // 计算期望值
                 let reputation = belief + uncertainty * 0.5;
                 Ok(reputation.clamp(0.0, 1.0))
             },
-            
+  
             ConsensusStrategy::WeightedMajority { threshold } => {
                 let total_entries = history.len();
-                
+  
                 // 计算正面评价占比
                 let positive_count = history.iter()
                     .filter(|e| e.rating >= *threshold)
                     .count();
-                
+  
                 let positive_ratio = positive_count as f64 / total_entries as f64;
-                
+  
                 Ok(positive_ratio.clamp(0.0, 1.0))
             },
         }
@@ -1555,12 +1555,12 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
         client: EthereumClient,
         contract_address: Address,
     }
-    
+  
     impl BlockchainInterface for EthereumReputationInterface {
         fn get_reputation(&self, node_id: &NodeId) -> Result<ReputationData, BlockchainError> {
             // 调用智能合约获取声誉数据
             let call_data = encode_get_reputation(node_id);
-            
+  
             match self.client.call(self.contract_address, call_data) {
                 Ok(result) => {
                     // 解码结果
@@ -1569,7 +1569,7 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
                 Err(e) => Err(BlockchainError::ChainError(e.to_string())),
             }
         }
-        
+  
         fn submit_reputation_update(
             &self,
             node_id: &NodeId,
@@ -1578,7 +1578,7 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
         ) -> Result<TransactionId, BlockchainError> {
             // 编码交易数据
             let tx_data = encode_reputation_update(&update, &signature);
-            
+  
             // 发送交易
             match self.client.send_transaction(
                 self.contract_address,
@@ -1589,7 +1589,7 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
                 Err(e) => Err(BlockchainError::ChainError(e.to_string())),
             }
         }
-        
+  
         fn get_reputation_history(
             &self,
             node_id: &NodeId,
@@ -1597,7 +1597,7 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
         ) -> Result<Vec<ReputationHistoryEntry>, BlockchainError> {
             // 调用合约获取历史
             let call_data = encode_get_history(node_id, limit);
-            
+  
             match self.client.call(self.contract_address, call_data) {
                 Ok(result) => {
                     // 解码结果
@@ -1606,7 +1606,7 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
                 Err(e) => Err(BlockchainError::ChainError(e.to_string())),
             }
         }
-        
+  
         fn verify_reputation_update(
             &self,
             node_id: &NodeId,
@@ -1614,7 +1614,7 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
         ) -> Result<bool, BlockchainError> {
             // 调用合约验证更新
             let call_data = encode_verify_update(node_id, update);
-            
+  
             match self.client.call(self.contract_address, call_data) {
                 Ok(result) => {
                     // 解码结果
@@ -1625,29 +1625,29 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
             }
         }
     }
-    
+  
     // 创建以太坊客户端
     let ethereum_client = EthereumClient::new(
         "https://mainnet.infura.io/v3/your-project-id",
     );
-    
+  
     // 创建区块链接口
     let chain_interface = Box::new(EthereumReputationInterface {
         client: ethereum_client,
         contract_address: Address::from_str("0x1234567890123456789012345678901234567890").unwrap(),
     });
-    
+  
     // 创建签名器
     let signer = Box::new(EthereumSigner::new(
         PrivateKey::from_str("your-private-key").unwrap(),
     ));
-    
+  
     // 选择共识策略
     let consensus_strategy = ConsensusStrategy::WeightedAverage {
         min_ratings: 5,
         rater_weight_factor: 0.8,
     };
-    
+  
     // 创建区块链声誉系统
     BlockchainReputationSystem::new(
         chain_interface,
@@ -1655,6 +1655,7 @@ fn create_blockchain_reputation_system() -> BlockchainReputationSystem {
         signer,
     )
 }
+
 ```
 
 ## 11. P2P网络中的去中心化决策
@@ -1854,7 +1855,7 @@ impl VotingMechanism {
             secret_voting,
         }
     }
-    
+  
     // 投票
     fn cast_vote(
         &mut self,
@@ -1865,20 +1866,20 @@ impl VotingMechanism {
     ) -> Result<VoteReceipt, VotingError> {
         // 验证投票者资格
         self.validate_voter(voter, proposal_id)?;
-        
+  
         // 检查提案是否在投票期
         if !self.is_proposal_in_voting_period(proposal_id)? {
             return Err(VotingError::VotingPeriodEnded);
         }
-        
+  
         // 检查是否已投票且不允许修改
         if self.has_voted(voter, proposal_id)? && !self.voting_rules.allow_vote_changes {
             return Err(VotingError::AlreadyVoted);
         }
-        
+  
         // 计算投票权重
         let weight = self.calculate_vote_weight(voter, proposal_id)?;
-        
+  
         // 创建加权投票
         let weighted_vote = WeightedVote {
             voter: voter.clone(),
@@ -1888,23 +1889,23 @@ impl VotingMechanism {
             timestamp: Instant::now(),
             justification,
         };
-        
+  
         // 如果是秘密投票，加密投票内容
         let stored_vote = if let Some(scheme) = &self.secret_voting {
             scheme.encrypt_vote(&weighted_vote)?
         } else {
             weighted_vote.clone()
         };
-        
+  
         // 存储投票
         self.vote_storage.store_vote(proposal_id, voter, stored_vote)?;
-        
+  
         // 更新投票计数
         self.vote_counter.update_count(proposal_id, &weighted_vote)?;
-        
+  
         // 检查是否满足提前终止条件
         self.check_early_termination(proposal_id)?;
-        
+  
         // 创建投票回执
         let receipt = VoteReceipt {
             voter: voter.clone(),
@@ -1912,10 +1913,10 @@ impl VotingMechanism {
             vote_hash: hash_vote(&weighted_vote),
             timestamp: Instant::now(),
         };
-        
+  
         Ok(receipt)
     }
-    
+  
     // 验证投票者资格
     fn validate_voter(&self, voter: &NodeId, proposal_id: &ProposalId) -> Result<(), VotingError> {
         match &self.weight_strategy {
@@ -1923,49 +1924,49 @@ impl VotingMechanism {
                 // 任何节点都可以投票
                 Ok(())
             },
-            
+  
             VoteWeightStrategy::ReputationBased { min_reputation, .. } => {
                 // 检查声誉是否达到最低要求
                 let reputation = get_node_reputation(voter)?;
                 if reputation < *min_reputation {
                     return Err(VotingError::InsufficientReputation);
                 }
-                
+  
                 Ok(())
             },
-            
+  
             VoteWeightStrategy::ResourceBased { resource_type, min_contribution, .. } => {
                 // 检查资源贡献是否达到最低要求
                 let contribution = get_resource_contribution(voter, resource_type)?;
                 if contribution < *min_contribution {
                     return Err(VotingError::InsufficientContribution);
                 }
-                
+  
                 Ok(())
             },
-            
+  
             VoteWeightStrategy::TokenBased { token_id, min_tokens } => {
                 // 检查代币持有量是否达到最低要求
                 let balance = get_token_balance(voter, token_id)?;
                 if balance < *min_tokens {
                     return Err(VotingError::InsufficientTokens);
                 }
-                
+  
                 Ok(())
             },
-            
+  
             VoteWeightStrategy::QuadraticVoting { base_resource, .. } => {
                 // 检查是否有基础资源
                 let resource = get_resource_contribution(voter, base_resource)?;
                 if resource <= 0 {
                     return Err(VotingError::InsufficientResources);
                 }
-                
+  
                 Ok(())
             },
         }
     }
-    
+  
     // 计算投票权重
     fn calculate_vote_weight(&self, voter: &NodeId, proposal_id: &ProposalId) -> Result<f64, VotingError> {
         match &self.weight_strategy {
@@ -1973,11 +1974,11 @@ impl VotingMechanism {
                 // 每个节点权重相同
                 Ok(1.0)
             },
-            
+  
             VoteWeightStrategy::ReputationBased { weight_function, .. } => {
                 // 获取节点声誉
                 let reputation = get_node_reputation(voter)?;
-                
+  
                 // 计算权重
                 match weight_function {
                     WeightFunction::Linear => Ok(reputation),
@@ -1987,12 +1988,12 @@ impl VotingMechanism {
                     WeightFunction::Custom(f) => f.calculate_weight(reputation),
                 }
             },
-            
+  
             VoteWeightStrategy::ResourceBased { resource_type, weight_function, .. } => {
                 // 获取资源贡献
                 let contribution = get_resource_contribution(voter, resource_type)?;
                 let contribution_f64 = contribution as f64;
-                
+  
                 // 计算权重
                 match weight_function {
                     WeightFunction::Linear => Ok(contribution_f64),
@@ -2002,49 +2003,49 @@ impl VotingMechanism {
                     WeightFunction::Custom(f) => f.calculate_weight(contribution_f64),
                 }
             },
-            
+  
             VoteWeightStrategy::TokenBased { token_id, .. } => {
                 // 获取代币余额
                 let balance = get_token_balance(voter, token_id)?;
-                
+  
                 // 权重等于余额
                 Ok(balance as f64)
             },
-            
+  
             VoteWeightStrategy::QuadraticVoting { base_resource, cost_function } => {
                 // 获取可用资源
                 let available = get_resource_contribution(voter, base_resource)?;
-                
+  
                 // 用户投入多少资源
                 let commitment = get_voting_commitment(voter, proposal_id)?;
-                
+  
                 if commitment > available {
                     return Err(VotingError::InsufficientResources);
                 }
-                
+  
                 // 计算权重 (二次投票：权重 = sqrt(投入))
                 let weight = match cost_function {
                     CostFunction::Quadratic => (commitment as f64).sqrt(),
                     CostFunction::Linear => commitment as f64,
                     CostFunction::Custom(f) => f.calculate_weight(commitment as f64),
                 };
-                
+  
                 Ok(weight)
             },
         }
     }
-    
+  
     // 检查提案投票结果
     fn check_proposal_result(&self, proposal_id: &ProposalId) -> Result<VotingResult, VotingError> {
         // 获取投票计数
         let counts = self.vote_counter.get_counts(proposal_id)?;
-        
+  
         // 检查是否达到法定人数
         let quorum_reached = self.is_quorum_reached(proposal_id, &counts)?;
         if !quorum_reached {
             return Ok(VotingResult::NoQuorum);
         }
-        
+  
         // 检查是否达到通过阈值
         match &self.voting_rules.approval_threshold {
             Threshold::SimpleMajority => {
@@ -2054,18 +2055,18 @@ impl VotingMechanism {
                     Ok(VotingResult::Rejected)
                 }
             },
-            
+  
             Threshold::Supermajority(threshold) => {
                 let total = counts.approve_weight + counts.reject_weight + counts.abstain_weight;
                 let approval_ratio = counts.approve_weight / total;
-                
+  
                 if approval_ratio >= *threshold {
                     Ok(VotingResult::Approved)
                 } else {
                     Ok(VotingResult::Rejected)
                 }
             },
-            
+  
             Threshold::Unanimous => {
                 if counts.reject_weight > 0.0 {
                     Ok(VotingResult::Rejected)
@@ -2075,28 +2076,28 @@ impl VotingMechanism {
                     Ok(VotingResult::InProgress)
                 }
             },
-            
+  
             Threshold::WeightedRatio(threshold) => {
                 let total_weight = counts.approve_weight + counts.reject_weight;
                 if total_weight == 0.0 {
                     return Ok(VotingResult::InProgress);
                 }
-                
+  
                 let approve_ratio = counts.approve_weight / total_weight;
-                
+  
                 if approve_ratio >= *threshold {
                     Ok(VotingResult::Approved)
                 } else {
                     Ok(VotingResult::Rejected)
                 }
             },
-            
+  
             Threshold::Custom(calculator) => {
                 calculator.is_threshold_reached(&counts)
             },
         }
     }
-    
+  
     // 检查是否达到法定人数
     fn is_quorum_reached(
         &self,
@@ -2108,23 +2109,23 @@ impl VotingMechanism {
                 let total_votes = counts.approve_count + counts.reject_count + counts.abstain_count;
                 Ok(total_votes >= *min_votes)
             },
-            
+  
             Quorum::Percentage(percentage) => {
                 let total_voters = get_eligible_voter_count(proposal_id)?;
                 let total_votes = counts.approve_count + counts.reject_count + counts.abstain_count;
                 let vote_percentage = total_votes as f64 / total_voters as f64;
-                
+  
                 Ok(vote_percentage >= *percentage)
             },
-            
+  
             Quorum::WeightedPercentage(percentage) => {
                 let total_weight = get_total_eligible_weight(proposal_id)?;
                 let vote_weight = counts.approve_weight + counts.reject_weight + counts.abstain_weight;
                 let weight_percentage = vote_weight / total_weight;
-                
+  
                 Ok(weight_percentage >= *percentage)
             },
-            
+  
             Quorum::Dynamic(calculator) => {
                 calculator.is_quorum_reached(proposal_id, counts)
             },
@@ -3182,6 +3183,7 @@ fn example_usage() {
     
     // 使用框架的决策流程...
 }
+
 ```
 
 ## 12. P2P网络中的数据存储与检索系统
@@ -3277,7 +3279,7 @@ impl FileSystemStorage {
     fn new(root_path: PathBuf, cache_size: Option<usize>) -> Result<Self, StorageError> {
         // 确保目录存在
         fs::create_dir_all(&root_path)?;
-        
+  
         // 初始化统计信息
         let stats = StorageStats {
             total_capacity: fs_total_capacity(&root_path)?,
@@ -3294,58 +3296,58 @@ impl FileSystemStorage {
                 avg_write_latency: Duration::new(0, 0),
             },
         };
-        
+  
         // 创建缓存（如果需要）
         let cache = if let Some(size) = cache_size {
             Some(StorageCache::new(size))
         } else {
             None
         };
-        
+  
         Ok(FileSystemStorage {
             root_path,
             stats: Arc::new(RwLock::new(stats)),
             cache,
         })
     }
-    
+  
     // 获取块文件路径
     fn get_block_path(&self, id: &BlockId) -> PathBuf {
         // 使用哈希的前两个字符作为子目录，防止单目录文件过多
         let id_str = id.to_hex_string();
         let prefix = &id_str[0..2];
         let subdir = self.root_path.join(prefix);
-        
+  
         // 确保子目录存在
         if !subdir.exists() {
             let _ = fs::create_dir_all(&subdir);
         }
-        
+  
         subdir.join(id_str)
     }
-    
+  
     // 更新IO统计信息
     fn update_read_stats(&self, bytes: u64, latency: Duration) {
         if let Ok(mut stats) = self.stats.write() {
             stats.io_stats.read_count += 1;
             stats.io_stats.bytes_read += bytes;
-            
+  
             // 更新平均延迟
             let total_latency = stats.io_stats.avg_read_latency.mul_f64(stats.io_stats.read_count as f64 - 1.0);
             stats.io_stats.avg_read_latency = (total_latency + latency) / stats.io_stats.read_count as f64;
         }
     }
-    
+  
     // 更新写入统计信息
     fn update_write_stats(&self, bytes: u64, latency: Duration) {
         if let Ok(mut stats) = self.stats.write() {
             stats.io_stats.write_count += 1;
             stats.io_stats.bytes_written += bytes;
-            
+  
             // 更新平均延迟
             let total_latency = stats.io_stats.avg_write_latency.mul_f64(stats.io_stats.write_count as f64 - 1.0);
             stats.io_stats.avg_write_latency = (total_latency + latency) / stats.io_stats.write_count as f64;
-            
+  
             // 更新空间使用
             stats.used_space = fs_used_space(&self.root_path).unwrap_or(stats.used_space);
             stats.available_space = fs_available_space(&self.root_path).unwrap_or(stats.available_space);
@@ -3356,28 +3358,28 @@ impl FileSystemStorage {
 impl StorageBackend for FileSystemStorage {
     fn store_block(&self, id: &BlockId, data: &[u8]) -> Result<(), StorageError> {
         let start_time = Instant::now();
-        
+  
         // 获取文件路径
         let path = self.get_block_path(id);
-        
+  
         // 写入文件
         fs::write(&path, data)?;
-        
+  
         // 更新缓存
         if let Some(cache) = &self.cache {
             cache.put(id.clone(), data.to_vec());
         }
-        
+  
         // 更新统计信息
         let latency = start_time.elapsed();
         self.update_write_stats(data.len() as u64, latency);
-        
+  
         Ok(())
     }
-    
+  
     fn get_block(&self, id: &BlockId) -> Result<Vec<u8>, StorageError> {
         let start_time = Instant::now();
-        
+  
         // 检查缓存
         if let Some(cache) = &self.cache {
             if let Some(data) = cache.get(id) {
@@ -3386,25 +3388,25 @@ impl StorageBackend for FileSystemStorage {
                 return Ok(data);
             }
         }
-        
+  
         // 获取文件路径
         let path = self.get_block_path(id);
-        
+  
         // 读取文件
         let data = fs::read(&path)?;
-        
+  
         // 更新缓存
         if let Some(cache) = &self.cache {
             cache.put(id.clone(), data.clone());
         }
-        
+  
         // 更新统计信息
         let latency = start_time.elapsed();
         self.update_read_stats(data.len() as u64, latency);
-        
+  
         Ok(data)
     }
-    
+  
     fn has_block(&self, id: &BlockId) -> Result<bool, StorageError> {
         // 检查缓存
         if let Some(cache) = &self.cache {
@@ -3412,45 +3414,45 @@ impl StorageBackend for FileSystemStorage {
                 return Ok(true);
             }
         }
-        
+  
         // 检查文件存在
         let path = self.get_block_path(id);
         Ok(path.exists())
     }
-    
+  
     fn delete_block(&self, id: &BlockId) -> Result<(), StorageError> {
         // 获取文件路径
         let path = self.get_block_path(id);
-        
+  
         // 如果文件存在，删除它
         if path.exists() {
             fs::remove_file(path)?;
         }
-        
+  
         // 从缓存中删除
         if let Some(cache) = &self.cache {
             cache.remove(id);
         }
-        
+  
         // 更新统计信息
         if let Ok(mut stats) = self.stats.write() {
             stats.block_count = stats.block_count.saturating_sub(1);
             stats.used_space = fs_used_space(&self.root_path).unwrap_or(stats.used_space);
             stats.available_space = fs_available_space(&self.root_path).unwrap_or(stats.available_space);
         }
-        
+  
         Ok(())
     }
-    
+  
     fn list_blocks(&self) -> Result<Vec<BlockId>, StorageError> {
         let mut blocks = Vec::new();
-        
+  
         // 遍历根目录下的所有子目录
         for entry in fs::read_dir(&self.root_path)? {
             let entry = entry?;
             if entry.file_type()?.is_dir() {
                 let subdir = entry.path();
-                
+  
                 // 遍历子目录中的所有文件
                 for file in fs::read_dir(subdir)? {
                     let file = file?;
@@ -3465,10 +3467,10 @@ impl StorageBackend for FileSystemStorage {
                 }
             }
         }
-        
+  
         Ok(blocks)
     }
-    
+  
     fn get_block_size(&self, id: &BlockId) -> Result<usize, StorageError> {
         // 检查缓存
         if let Some(cache) = &self.cache {
@@ -3476,15 +3478,15 @@ impl StorageBackend for FileSystemStorage {
                 return Ok(data.len());
             }
         }
-        
+  
         // 获取文件路径
         let path = self.get_block_path(id);
-        
+  
         // 获取文件大小
         let metadata = fs::metadata(path)?;
         Ok(metadata.len() as usize)
     }
-    
+  
     fn get_storage_stats(&self) -> Result<StorageStats, StorageError> {
         // 返回当前统计信息的克隆
         if let Ok(stats) = self.stats.read() {
@@ -3493,7 +3495,7 @@ impl StorageBackend for FileSystemStorage {
             Err(StorageError::StatisticsUnavailable)
         }
     }
-    
+  
     fn clear_all(&self) -> Result<(), StorageError> {
         // 删除所有文件和子目录
         for entry in fs::read_dir(&self.root_path)? {
@@ -3504,12 +3506,12 @@ impl StorageBackend for FileSystemStorage {
                 fs::remove_file(entry.path())?;
             }
         }
-        
+  
         // 清空缓存
         if let Some(cache) = &self.cache {
             cache.clear();
         }
-        
+  
         // 重置统计信息
         if let Ok(mut stats) = self.stats.write() {
             stats.block_count = 0;
@@ -3523,7 +3525,7 @@ impl StorageBackend for FileSystemStorage {
             stats.io_stats.avg_read_latency = Duration::new(0, 0);
             stats.io_stats.avg_write_latency = Duration::new(0, 0);
         }
-        
+  
         Ok(())
     }
 }
@@ -3559,18 +3561,18 @@ impl DataStore {
             encryption,
         }
     }
-    
+  
     // 存储数据块
     async fn store_block(&self, id: &BlockId, data: &[u8]) -> Result<(), StorageError> {
         // 验证块
         self.validator.validate_block(id, data)?;
-        
+  
         // 处理数据（压缩和加密）
         let processed_data = self.process_for_storage(data)?;
-        
+  
         // 存储到主存储
         self.primary.store_block(id, &processed_data)?;
-        
+  
         // 存储到二级存储（如果有）
         if let Some(secondary) = &self.secondary {
             // 使用fire-and-forget方式，不等待完成
@@ -3582,10 +3584,10 @@ impl DataStore {
                 }
             });
         }
-        
+  
         Ok(())
     }
-    
+  
     // 获取数据块
     async fn get_block(&self, id: &BlockId) -> Result<Vec<u8>, StorageError> {
         // 先尝试从二级存储获取（通常更快）
@@ -3595,7 +3597,7 @@ impl DataStore {
                 Err(_) => {
                     // 从主存储获取
                     let primary_data = self.primary.get_block(id)?;
-                    
+  
                     // 异步更新二级存储
                     let secondary_storage = secondary.clone();
                     let secondary_id = id.clone();
@@ -3605,7 +3607,7 @@ impl DataStore {
                             log::warn!("Failed to update secondary storage: {:?}", e);
                         }
                     });
-                    
+  
                     primary_data
                 }
             }
@@ -3613,16 +3615,16 @@ impl DataStore {
             // 仅有主存储
             self.primary.get_block(id)?
         };
-        
+  
         // 处理数据（解密和解压缩）
         let original_data = self.process_for_retrieval(&data)?;
-        
+  
         // 验证获取的数据
         self.validator.validate_block(id, &original_data)?;
-        
+  
         Ok(original_data)
     }
-    
+  
     // 检查块是否存在
     async fn has_block(&self, id: &BlockId) -> Result<bool, StorageError> {
         // 检查二级存储
@@ -3631,16 +3633,16 @@ impl DataStore {
                 return Ok(true);
             }
         }
-        
+  
         // 检查主存储
         self.primary.has_block(id)
     }
-    
+  
     // 删除数据块
     async fn delete_block(&self, id: &BlockId) -> Result<(), StorageError> {
         // 从主存储删除
         self.primary.delete_block(id)?;
-        
+  
         // 从二级存储删除（如果有）
         if let Some(secondary) = &self.secondary {
             // 异步删除，不等待结果
@@ -3652,41 +3654,41 @@ impl DataStore {
                 }
             });
         }
-        
+  
         Ok(())
     }
-    
+  
     // 处理数据用于存储（压缩和加密）
     fn process_for_storage(&self, data: &[u8]) -> Result<Vec<u8>, StorageError> {
         let mut processed = data.to_vec();
-        
+  
         // 压缩
         if let Some(compression) = &self.compression {
             processed = compression.compress(&processed)?;
         }
-        
+  
         // 加密
         if let Some(encryption) = &self.encryption {
             processed = encryption.encrypt(&processed)?;
         }
-        
+  
         Ok(processed)
     }
-    
+  
     // 处理数据用于检索（解密和解压缩）
     fn process_for_retrieval(&self, data: &[u8]) -> Result<Vec<u8>, StorageError> {
         let mut processed = data.to_vec();
-        
+  
         // 解密
         if let Some(encryption) = &self.encryption {
             processed = encryption.decrypt(&processed)?;
         }
-        
+  
         // 解压缩
         if let Some(compression) = &self.compression {
             processed = compression.decompress(&processed)?;
         }
-        
+  
         Ok(processed)
     }
 }
@@ -3730,30 +3732,30 @@ impl LocationMap {
             lock: RwLock::new(()),
         }
     }
-    
+  
     // 添加块位置
     async fn add_location(&self, block_id: &BlockId, node_id: &NodeId) -> Result<(), MapError> {
         let _lock = self.lock.write().await;
-        
+  
         // 更新块位置映射
         self.block_locations
             .entry(block_id.clone())
             .or_insert_with(Vec::new)
             .push(node_id.clone());
-        
+  
         // 更新节点块映射
         self.node_blocks
             .entry(node_id.clone())
             .or_insert_with(HashSet::new)
             .insert(block_id.clone());
-        
+  
         Ok(())
     }
-    
+  
     // 移除块位置
     async fn remove_location(&self, block_id: &BlockId, node_id: &NodeId) -> Result<(), MapError> {
         let _lock = self.lock.write().await;
-        
+  
         // 更新块位置映射
         if let Some(nodes) = self.block_locations.get_mut(block_id) {
             nodes.retain(|n| n != node_id);
@@ -3761,7 +3763,7 @@ impl LocationMap {
                 self.block_locations.remove(block_id);
             }
         }
-        
+  
         // 更新节点块映射
         if let Some(blocks) = self.node_blocks.get_mut(node_id) {
             blocks.remove(block_id);
@@ -3769,38 +3771,38 @@ impl LocationMap {
                 self.node_blocks.remove(node_id);
             }
         }
-        
+  
         Ok(())
     }
-    
+  
     // 获取块的所有位置
     async fn get_locations(&self, block_id: &BlockId) -> Result<Vec<NodeId>, MapError> {
         let _lock = self.lock.read().await;
-        
+  
         if let Some(nodes) = self.block_locations.get(block_id) {
             Ok(nodes.clone())
         } else {
             Ok(Vec::new())
         }
     }
-    
+  
     // 获取节点上的所有块
     async fn get_node_blocks(&self, node_id: &NodeId) -> Result<Vec<BlockId>, MapError> {
         let _lock = self.lock.read().await;
-        
+  
         if let Some(blocks) = self.node_blocks.get(node_id) {
             Ok(blocks.iter().cloned().collect())
         } else {
             Ok(Vec::new())
         }
     }
-    
+  
     // 更新节点状态
     async fn update_node_status(&self, node_id: &NodeId, is_online: bool) -> Result<(), MapError> {
         if !is_online {
             // 节点离线，移除所有块位置记录
             let _lock = self.lock.write().await;
-            
+  
             if let Some(blocks) = self.node_blocks.remove(node_id) {
                 for block_id in blocks {
                     if let Some(nodes) = self.block_locations.get_mut(&block_id) {
@@ -3812,7 +3814,7 @@ impl LocationMap {
                 }
             }
         }
-        
+  
         Ok(())
     }
 }
@@ -3862,17 +3864,17 @@ impl BlockIndex {
             lock: RwLock::new(()),
         }
     }
-    
+  
     // 添加块元数据
     async fn add_block(&self, block_id: &BlockId, metadata: BlockMetadata) -> Result<(), IndexError> {
         let _lock = self.lock.write().await;
-        
+  
         // 添加前缀索引
         self.prefix_index
             .entry(metadata.prefix.clone())
             .or_insert_with(HashSet::new)
             .insert(block_id.clone());
-        
+  
         // 添加标签索引
         for tag in &metadata.tags {
             self.tag_index
@@ -3880,26 +3882,26 @@ impl BlockIndex {
                 .or_insert_with(HashSet::new)
                 .insert(block_id.clone());
         }
-        
+  
         // 添加大小索引
         self.size_index
             .entry(metadata.size)
             .or_insert_with(HashSet::new)
             .insert(block_id.clone());
-        
+  
         // 存储元数据
         self.metadata.insert(block_id.clone(), metadata);
-        
+  
         Ok(())
     }
-    
+  
     // 获取块元数据
     async fn get_metadata(&self, block_id: &BlockId) -> Result<Option<BlockMetadata>, IndexError> {
         let _lock = self.lock.read().await;
-        
+  
         Ok(self.metadata.get(block_id).cloned())
     }
-    
+  
     // 更新块元数据
     async fn update_metadata(
         &self,
@@ -3907,16 +3909,16 @@ impl BlockIndex {
         update_fn: impl FnOnce(&mut BlockMetadata),
     ) -> Result<(), IndexError> {
         let _lock = self.lock.write().await;
-        
+  
         if let Some(metadata) = self.metadata.get_mut(block_id) {
             // 保存旧值用于更新索引
             let old_prefix = metadata.prefix.clone();
             let old_tags = metadata.tags.clone();
             let old_size = metadata.size;
-            
+  
             // 应用更新
             update_fn(metadata);
-            
+  
             // 如果前缀改变，更新前缀索引
             if metadata.prefix != old_prefix {
                 if let Some(blocks) = self.prefix_index.get_mut(&old_prefix) {
@@ -3927,24 +3929,24 @@ impl BlockIndex {
                     .or_insert_with(HashSet::new)
                     .insert(block_id.clone());
             }
-            
+  
             // 如果标签改变，更新标签索引
             let removed_tags: HashSet<_> = old_tags.difference(&metadata.tags).collect();
             let added_tags: HashSet<_> = metadata.tags.difference(&old_tags).collect();
-            
+  
             for tag in removed_tags {
                 if let Some(blocks) = self.tag_index.get_mut(tag) {
                     blocks.remove(block_id);
                 }
             }
-            
+  
             for tag in added_tags {
                 self.tag_index
                     .entry(tag.clone())
                     .or_insert_with(HashSet::new)
                     .insert(block_id.clone());
             }
-            
+  
             // 如果大小改变，更新大小索引
             if metadata.size != old_size {
                 if let Some(blocks) = self.size_index.get_mut(&old_size) {
@@ -3958,17 +3960,17 @@ impl BlockIndex {
                     .or_insert_with(HashSet::new)
                     .insert(block_id.clone());
             }
-            
+  
             Ok(())
         } else {
             Err(IndexError::BlockNotFound)
         }
     }
-    
+  
     // 删除块元数据
     async fn delete_block(&self, block_id: &BlockId) -> Result<(), IndexError> {
         let _lock = self.lock.write().await;
-        
+  
         if let Some(metadata) = self.metadata.remove(block_id) {
             // 从前缀索引中删除
             if let Some(blocks) = self.prefix_index.get_mut(&metadata.prefix) {
@@ -3977,7 +3979,7 @@ impl BlockIndex {
                     self.prefix_index.remove(&metadata.prefix);
                 }
             }
-            
+  
             // 从标签索引中删除
             for tag in &metadata.tags {
                 if let Some(blocks) = self.tag_index.get_mut(tag) {
@@ -3987,7 +3989,7 @@ impl BlockIndex {
                     }
                 }
             }
-            
+  
             // 从大小索引中删除
             if let Some(blocks) = self.size_index.get_mut(&metadata.size) {
                 blocks.remove(block_id);
@@ -3995,36 +3997,36 @@ impl BlockIndex {
                     self.size_index.remove(&metadata.size);
                 }
             }
-            
+  
             Ok(())
         } else {
             Err(IndexError::BlockNotFound)
         }
     }
-    
+  
     // 查找块（按前缀）
     async fn find_by_prefix(&self, prefix: &str) -> Result<Vec<BlockId>, IndexError> {
         let _lock = self.lock.read().await;
-        
+  
         let matching_blocks: Vec<BlockId> = self.prefix_index.iter()
             .filter(|(p, _)| p.starts_with(prefix))
             .flat_map(|(_, blocks)| blocks.iter().cloned())
             .collect();
-        
+  
         Ok(matching_blocks)
     }
-    
+  
     // 查找块（按标签）
     async fn find_by_tags(&self, tags: &[String], match_all: bool) -> Result<Vec<BlockId>, IndexError> {
         let _lock = self.lock.read().await;
-        
+  
         if tags.is_empty() {
             return Ok(Vec::new());
         }
-        
+  
         let mut result = HashSet::new();
         let mut is_first = true;
-        
+  
         for tag in tags {
             if let Some(blocks) = self.tag_index.get(tag) {
                 if is_first {
@@ -4044,25 +4046,25 @@ impl BlockIndex {
                 return Ok(Vec::new());
             }
         }
-        
+  
         Ok(result.into_iter().collect())
     }
-    
+  
     // 查找块（按大小范围）
     async fn find_by_size_range(&self, min_size: usize, max_size: usize) -> Result<Vec<BlockId>, IndexError> {
         let _lock = self.lock.read().await;
-        
+  
         let matching_blocks: Vec<BlockId> = self.size_index.range(min_size..=max_size)
             .flat_map(|(_, blocks)| blocks.iter().cloned())
             .collect();
-        
+  
         Ok(matching_blocks)
     }
-    
+  
     // 高级查询（组合条件）
     async fn query(&self, query: &BlockQuery) -> Result<Vec<BlockId>, IndexError> {
         let _lock = self.lock.read().await;
-        
+  
         // 根据查询条件过滤所有块
         let matching_blocks: Vec<BlockId> = self.metadata.iter()
             .filter(|(_, metadata)| {
@@ -4072,7 +4074,7 @@ impl BlockIndex {
                         return false;
                     }
                 }
-                
+  
                 // 标签匹配
                 if let Some(tags) = &query.tags {
                     if query.match_all_tags {
@@ -4087,40 +4089,40 @@ impl BlockIndex {
                         }
                     }
                 }
-                
+  
                 // 大小范围匹配
                 if let Some(min_size) = query.min_size {
                     if metadata.size < min_size {
                         return false;
                     }
                 }
-                
+  
                 if let Some(max_size) = query.max_size {
                     if metadata.size > max_size {
                         return false;
                     }
                 }
-                
+  
                 // 时间范围匹配
                 if let Some(min_created) = query.min_created_at {
                     if metadata.created_at < min_created {
                         return false;
                     }
                 }
-                
+  
                 if let Some(max_created) = query.max_created_at {
                     if metadata.created_at > max_created {
                         return false;
                     }
                 }
-                
+  
                 // 自定义元数据匹配
                 if let Some(custom) = &query.custom_metadata {
                     for (key, value) in custom {
                         if !metadata.custom.contains_key(key) {
                             return false;
                         }
-                        
+  
                         if let Some(expected) = value {
                             if metadata.custom.get(key) != Some(expected) {
                                 return false;
@@ -4128,12 +4130,12 @@ impl BlockIndex {
                         }
                     }
                 }
-                
+  
                 true
             })
             .map(|(id, _)| id.clone())
             .collect();
-        
+  
         Ok(matching_blocks)
     }
 }
@@ -4242,7 +4244,7 @@ impl ShardManager {
             location_map,
         }
     }
-    
+  
     // 存储分片
     async fn store_shard(&self, shard: &Shard) -> Result<(), ShardingError> {
         // 验证分片校验和
@@ -4250,19 +4252,19 @@ impl ShardManager {
         if calculated_checksum != shard.checksum {
             return Err(ShardingError::ChecksumMismatch);
         }
-        
+  
         // 存储分片数据
         self.data_store.store_block(&shard.id.into(), &shard.data).await?;
-        
+  
         // 更新位置映射
         self.location_map
             .add_location(&shard.id.into(), &get_local_node_id())
             .await
             .map_err(|e| ShardingError::LocationMapError(e.to_string()))?;
-        
+  
         Ok(())
     }
-    
+  
     // 获取分片
     async fn get_shard(&self, shard_id: &ShardId) -> Result<Shard, ShardingError> {
         // 从
@@ -4959,6 +4961,7 @@ enum ContentPriority {
     Low,
     Archival,
 }
+
 ```
 
 上述代码完成了分片管理、副本管理和健康监控系统的实现。这些组件共同构成了P2P分布式存储系统的核心功能，可以确保数据的可用性和持久性。

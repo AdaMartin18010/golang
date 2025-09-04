@@ -13,19 +13,6 @@
   - [1.5 四、总结](#四、总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.1 目录
 
 - [Rust 中的泛型类：使用方法、解释和示例](#rust-中的泛型类使用方法解释和示例)
@@ -48,6 +35,7 @@
 
 ```rust
 fn foo<T>(arg: T) { ... }
+
 ```
 
 在这里，`T` 是一个泛型类型参数，表示任意类型。
@@ -83,6 +71,7 @@ fn main() {
     let result = largest(&char_list);
     println!("The largest char is {}", result);
 }
+
 ```
 
 在这个例子中，`largest` 函数使用了泛型参数 `T`，并且要求 `T` 实现了 `PartialOrd` 特性，以支持大小比较操作。
@@ -106,6 +95,7 @@ fn main() {
     println!("integer_point: ({}, {})", integer_point.x, integer_point.y);
     println!("float_point: ({}, {})", float_point.x, float_point.y);
 }
+
 ```
 
 在上面的代码中，`Point` 结构体使用泛型参数 `T`，因此我们可以创建包含不同类型数据的实例。
@@ -127,6 +117,7 @@ enum Result<T, E> {
     Ok(T),
     Err(E),
 }
+
 ```
 
 `Option` 和 `Result` 是 Rust 标准库中的泛型枚举，它们非常有用。
@@ -146,6 +137,7 @@ fn print_vec<T: std::fmt::Debug>(vec: Vec<T>) {
         println!("{:?}", item);
     }
 }
+
 ```
 
 此函数接受一个 `Vec<T>` 类型的参数，

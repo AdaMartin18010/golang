@@ -46,6 +46,7 @@ impl<G: Generator> Future for GenWrapper<G> {
         }
     }
 }
+
 ```
 
 ## 2. 排序算法实现
@@ -138,6 +139,7 @@ impl<T: Ord> QuickSortGen<T> {
         i
     }
 }
+
 ```
 
 ## 3. 二叉树实现
@@ -206,6 +208,7 @@ impl<T: Clone> Generator for TreeTraversalGen<T> {
         Poll::Ready(None)
     }
 }
+
 ```
 
 ## 4. 图算法实现
@@ -313,6 +316,7 @@ impl<T> DijkstraGen<T> {
         path
     }
 }
+
 ```
 
 ## 5. 搜索算法实现
@@ -366,6 +370,7 @@ impl<T: Ord> Generator for BinarySearchGen<T> {
         Poll::Ready(None)
     }
 }
+
 ```
 
 ## 6. 堆实现
@@ -431,6 +436,7 @@ impl<T: Ord> MaxHeapGen<T> {
         }
     }
 }
+
 ```
 
 ## 7. 使用示例
@@ -488,6 +494,7 @@ fn main() {
         println!("{:?}", heap);
     }
 }
+
 ```
 
 这个实现提供了：

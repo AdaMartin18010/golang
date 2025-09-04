@@ -178,6 +178,7 @@ where:
 - Relationships: 概念间的关系集合
 - Constraints: 约束规则集合
 - Operations: 元模型支持的操作集合
+
 ```
 
 #### 1.3.2.4 Rust代码示例
@@ -303,6 +304,7 @@ pub mod meta_model {
         }
     }
 }
+
 ```
 
 ### 1.3.3 模型(Model)
@@ -338,6 +340,7 @@ where:
 - Relationships: 元素间的关系实例
 - Attributes: 元素的属性值
 - Constraints: 模型级约束条件
+
 ```
 
 #### 1.3.3.4 Rust代码示例
@@ -514,6 +517,7 @@ pub mod model {
         }
     }
 }
+
 ```
 
 ### 1.3.4 实现模型(Implementation Model)
@@ -549,6 +553,7 @@ where:
 - Templates: 代码生成模板
 - Constraints: 实现级约束
 - Optimizations: 优化策略和规则
+
 ```
 
 #### 1.3.4.4 Rust代码示例
@@ -765,6 +770,7 @@ pub mod implementation_model {
         }
     }
 }
+
 ```
 
 ### 1.3.5 模型间关系与映射
@@ -791,6 +797,7 @@ pub mod implementation_model {
 M: MetaModel → Model                (元模型到模型的映射)
 I: Model → ImplementationModel      (模型到实现模型的映射)
 C: ImplementationModel → Code       (实现模型到代码的映射)
+
 ```
 
 一个完整的转换链为：`C ∘ I ∘ M`
@@ -926,50 +933,51 @@ pub mod model_mappings {
 pub mod specification {
     /// 账户余额不应为负数的规约
     pub struct NonNegativeBalance;
-    
+  
     impl NonNegativeBalance {
         pub fn is_satisfied_by(&self, account: &Account) -> bool {
             account.balance >= 0.0
         }
     }
-    
+  
     /// 取款不应超过余额的规约
     pub struct WithdrawalWithinBalance;
-    
+  
     impl WithdrawalWithinBalance {
         pub fn is_satisfied_by(&self, account: &Account, amount: f64) -> bool {
             account.balance >= amount
         }
     }
-    
+  
     /// 账户结构
     pub struct Account {
         pub id: String,
         pub balance: f64,
     }
-    
+  
     /// 复合规约 - 组合多个规约
     pub struct CompositeSpecification<T> {
         specs: Vec<Box<dyn Fn(&T) -> bool>>,
     }
-    
+  
     impl<T> CompositeSpecification<T> {
         pub fn new() -> Self {
             CompositeSpecification { specs: Vec::new() }
         }
-        
+  
         pub fn add_spec<F>(&mut self, spec: F)
         where
             F: Fn(&T) -> bool + 'static,
         {
             self.specs.push(Box::new(spec));
         }
-        
+  
         pub fn is_satisfied_by(&self, item: &T) -> bool {
             self.specs.iter().all(|spec| spec(item))
         }
     }
 }
+
 ```
 
 ### 1.4.2 公理系统
@@ -997,21 +1005,21 @@ pub mod axiom_system {
     use std::fmt::Debug;
     use std::hash::Hash;
     use std::collections::HashSet;
-    
+  
     /// 代数结构的公理系统
     pub trait AlgebraicStructure {
         type Element: Clone + Eq + Hash + Debug;
-        
+  
         /// 检查结合律：(a * b) * c = a * (b * c)
         fn check_associativity(&self) -> bool;
-        
+  
         /// 检查单位元：存在e使得所有a，e * a = a * e = a
         fn check_identity(&self) -> bool;
-        
+  
         /// 检查逆元：对每个a，存在b使得a * b = b * a = e
         fn check_inverse(&self) -> bool;
     }
-    
+  
     /// 群结构实现
     pub struct Group<T: Clone + Eq + Hash + Debug> {
         pub elements: HashSet<T>,
@@ -1019,10 +1027,10 @@ pub mod axiom_system {
         pub identity: T,
         pub inverse: fn(&T) -> T,
     }
-    
+  
     impl<T: Clone + Eq + Hash + Debug> AlgebraicStructure for Group<T> {
         type Element = T;
-        
+  
         fn check_associativity(&self) -> bool {
             let op = &self.operation;
             for a in &self.elements {
@@ -1038,11 +1046,11 @@ pub mod axiom_system {
             }
             true
         }
-        
+  
         fn check_identity(&self) -> bool {
             let op = &self.operation;
             let e = &self.identity;
-            
+  
             for a in &self.elements {
                 if op(e, a) != *a || op(a, e) != *a {
                     return false;
@@ -1050,12 +1058,12 @@ pub mod axiom_system {
             }
             true
         }
-        
+  
         fn check_inverse(&self) -> bool {
             let op = &self.operation;
             let e = &self.identity;
             let inv = &self.inverse;
-            
+  
             for a in &self.elements {
                 let a_inv = inv(a);
                 if !self.elements.contains(&a_inv) ||
@@ -1066,7 +1074,7 @@ pub mod axiom_system {
             true
         }
     }
-    
+  
     impl<T: Clone + Eq + Hash + Debug> Group<T> {
         /// 验证群公理
         pub fn verify_group_axioms(&self) -> bool {
@@ -1076,6 +1084,7 @@ pub mod axiom_system {
         }
     }
 }
+
 ```
 
 ### 1.4.3 形式语言与语义
@@ -1100,7 +1109,7 @@ pub mod axiom_system {
 /// 简单领域特定语言(DSL)的解释器
 pub mod dsl_interpreter {
     use std::collections::HashMap;
-    
+  
     /// DSL的抽象语法树节点
     #[derive(Clone, Debug)]
     pub enum Expression {
@@ -1113,28 +1122,28 @@ pub mod dsl_interpreter {
         Condition(Box<Expression>, Box<Expression>, Box<Expression>), // if-then-else
         LessThan(Box<Expression>, Box<Expression>),
     }
-    
+  
     /// 语义解释器 - 计算表达式值
     pub struct Interpreter {
         variables: HashMap<String, f64>,
     }
-    
+  
     impl Interpreter {
         pub fn new() -> Self {
             Interpreter {
                 variables: HashMap::new(),
             }
         }
-        
+  
         pub fn set_variable(&mut self, name: &str, value: f64) {
             self.variables.insert(name.to_string(), value);
         }
-        
+  
         /// 解释并计算表达式
         pub fn evaluate(&self, expr: &Expression) -> Result<f64, String> {
             match expr {
                 Expression::Number(val) => Ok(*val),
-                
+  
                 Expression::Variable(name) => {
                     if let Some(val) = self.variables.get(name) {
                         Ok(*val)
@@ -1142,50 +1151,50 @@ pub mod dsl_interpreter {
                         Err(format!("未定义的变量: {}", name))
                     }
                 },
-                
+  
                 Expression::Add(left, right) => {
                     let left_val = self.evaluate(left)?;
                     let right_val = self.evaluate(right)?;
                     Ok(left_val + right_val)
                 },
-                
+  
                 Expression::Subtract(left, right) => {
                     let left_val = self.evaluate(left)?;
                     let right_val = self.evaluate(right)?;
                     Ok(left_val - right_val)
                 },
-                
+  
                 Expression::Multiply(left, right) => {
                     let left_val = self.evaluate(left)?;
                     let right_val = self.evaluate(right)?;
                     Ok(left_val * right_val)
                 },
-                
+  
                 Expression::Divide(left, right) => {
                     let left_val = self.evaluate(left)?;
                     let right_val = self.evaluate(right)?;
-                    
+  
                     if right_val == 0.0 {
                         Err("除以零错误".to_string())
                     } else {
                         Ok(left_val / right_val)
                     }
                 },
-                
+  
                 Expression::Condition(condition, then_expr, else_expr) => {
                     let condition_val = self.evaluate(condition)?;
-                    
+  
                     if condition_val != 0.0 {
                         self.evaluate(then_expr)
                     } else {
                         self.evaluate(else_expr)
                     }
                 },
-                
+  
                 Expression::LessThan(left, right) => {
                     let left_val = self.evaluate(left)?;
                     let right_val = self.evaluate(right)?;
-                    
+  
                     if left_val < right_val {
                         Ok(1.0)
                     } else {
@@ -1196,6 +1205,7 @@ pub mod dsl_interpreter {
         }
     }
 }
+
 ```
 
 ### 1.4.4 类型系统
@@ -1228,7 +1238,7 @@ pub mod type_system {
         pub age: u32,
         pub email: Option<String>,
     }
-    
+  
     /// 和类型(Sum Type) - 枚举
     #[derive(Debug, Clone)]
     pub enum Shape {
@@ -1236,7 +1246,7 @@ pub mod type_system {
         Rectangle { width: f64, height: f64 },
         Triangle { base: f64, height: f64 },
     }
-    
+  
     impl Shape {
         pub fn area(&self) -> f64 {
             match self {
@@ -1246,14 +1256,14 @@ pub mod type_system {
             }
         }
     }
-    
+  
     /// 泛型类型 - 参数化多态
     #[derive(Debug, Clone)]
     pub struct Result<T, E> {
         pub value: Option<T>,
         pub error: Option<E>,
     }
-    
+  
     impl<T, E> Result<T, E> {
         pub fn ok(value: T) -> Self {
             Result {
@@ -1261,53 +1271,54 @@ pub mod type_system {
                 error: None,
             }
         }
-        
+  
         pub fn err(error: E) -> Self {
             Result {
                 value: None,
                 error: Some(error),
             }
         }
-        
+  
         pub fn is_ok(&self) -> bool {
             self.value.is_some()
         }
-        
+  
         pub fn is_err(&self) -> bool {
             self.error.is_some()
         }
     }
-    
+  
     /// 特质(Trait) - 接口多态
     pub trait Drawable {
         fn draw(&self) -> String;
         fn bounding_box(&self) -> (f64, f64, f64, f64);
     }
-    
+  
     impl Drawable for Shape {
         fn draw(&self) -> String {
             match self {
-                Shape::Circle { radius } => 
+                Shape::Circle { radius } =>
                     format!("Drawing Circle with radius {}", radius),
-                Shape::Rectangle { width, height } => 
+                Shape::Rectangle { width, height } =>
                     format!("Drawing Rectangle {}x{}", width, height),
-                Shape::Triangle { base, height } => 
+                Shape::Triangle { base, height } =>
                     format!("Drawing Triangle with base {} and height {}", base, height),
             }
         }
-        
+  
         fn bounding_box(&self) -> (f64, f64, f64, f64) {
             match self {
-                Shape::Circle { radius } => 
+                Shape::Circle { radius } =>
                     (-radius, -radius, radius, radius),
-                Shape::Rectangle { width, height } => 
+                Shape::Rectangle { width, height } =>
                     (0.0, 0.0, *width, *height),
-                Shape::Triangle { base, height } => 
+                Shape::Triangle { base, height } =>
                     (0.0, 0.0, *base, *height),
             }
         }
     }
 }
+
 ```
 
 ## 1.5 4. 软件设计的形式模型
@@ -1329,7 +1340,7 @@ pub mod type_system {
 /// 状态模式实现的订单状态机
 pub mod state_machine {
     use std::fmt;
-    
+  
     /// 订单状态
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub enum OrderState {
@@ -1339,7 +1350,7 @@ pub mod state_machine {
         Delivered,
         Cancelled,
     }
-    
+  
     impl fmt::Display for OrderState {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let state_str = match self {
@@ -1352,7 +1363,7 @@ pub mod state_machine {
             write!(f, "{}", state_str)
         }
     }
-    
+  
     /// 订单事件
     #[derive(Debug, Clone, Copy)]
     pub enum OrderEvent {
@@ -1361,7 +1372,7 @@ pub mod state_machine {
         Deliver,
         Cancel,
     }
-    
+  
     impl fmt::Display for OrderEvent {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let event_str = match self {
@@ -1373,13 +1384,13 @@ pub mod state_machine {
             write!(f, "{}", event_str)
         }
     }
-    
+  
     /// 订单状态机
     pub struct OrderStateMachine {
         state: OrderState,
         transitions: Vec<(OrderState, OrderEvent, OrderState)>,
     }
-    
+  
     impl OrderStateMachine {
         /// 创建新的订单状态机
         pub fn new() -> Self {
@@ -1391,18 +1402,18 @@ pub mod state_machine {
                 (OrderState::Shipped, OrderEvent::Deliver, OrderState::Delivered),
                 (OrderState::Shipped, OrderEvent::Cancel, OrderState::Cancelled),
             ];
-            
+  
             OrderStateMachine {
                 state: OrderState::Created,
                 transitions,
             }
         }
-        
+  
         /// 获取当前状态
         pub fn current_state(&self) -> OrderState {
             self.state
         }
-        
+  
         /// 处理事件
         pub fn process_event(&mut self, event: OrderEvent) -> Result<(), String> {
             for (current, evt, next) in &self.transitions {
@@ -1411,17 +1422,17 @@ pub mod state_machine {
                     return Ok(());
                 }
             }
-            
+  
             Err(format!("无效转换: 从 {} 状态处理 {} 事件", self.state, event))
         }
-        
+  
         /// 检查是否可以处理某个事件
         pub fn can_process(&self, event: OrderEvent) -> bool {
             self.transitions.iter().any(|(current, evt, _)| {
                 *current == self.state && *evt == event
             })
         }
-        
+  
         /// 获取所有可能的后续事件
         pub fn available_events(&self) -> Vec<OrderEvent> {
             self.transitions.iter()
@@ -1431,6 +1442,7 @@ pub mod state_machine {
         }
     }
 }
+
 ```
 
 ### 1.5.2 代数数据类型
@@ -1457,7 +1469,7 @@ pub mod algebraic_data_types {
         pub email: String,
         pub address: Option<Address>,
     }
-    
+  
     #[derive(Debug, Clone)]
     pub struct Address {
         pub street: String,
@@ -1465,7 +1477,7 @@ pub mod algebraic_data_types {
         pub postal_code: String,
         pub country: String,
     }
-    
+  
     /// 和类型(Sum Type) - 表示多个可能值之一
     #[derive(Debug, Clone)]
     pub enum PaymentMethod {
@@ -1483,7 +1495,7 @@ pub mod algebraic_data_types {
             email: String,
         },
     }
-    
+  
     /// 递归类型 - 直接或间接引用自身
     #[derive(Debug, Clone)]
     pub enum Category {
@@ -1497,7 +1509,7 @@ pub mod algebraic_data_types {
             subcategories: Vec<Category>,
         },
     }
-    
+  
     impl Category {
         pub fn display(&self, indent: usize) -> String {
             match self {
@@ -1514,7 +1526,7 @@ pub mod algebraic_data_types {
             }
         }
     }
-    
+  
     /// 参数化类型 - 依赖类型参数的类型
     #[derive(Debug, Clone)]
     pub struct Paginated<T> {
@@ -1523,11 +1535,11 @@ pub mod algebraic_data_types {
         pub total_pages: usize,
         pub items_per_page: usize,
     }
-    
+  
     impl<T> Paginated<T> {
         pub fn new(items: Vec<T>, page: usize, items_per_page: usize, total_items: usize) -> Self {
             let total_pages = (total_items + items_per_page - 1) / items_per_page;
-            
+  
             Paginated {
                 items,
                 page,
@@ -1535,16 +1547,17 @@ pub mod algebraic_data_types {
                 items_per_page,
             }
         }
-        
+  
         pub fn has_next_page(&self) -> bool {
             self.page < self.total_pages
         }
-        
+  
         pub fn has_previous_page(&self) -> bool {
             self.page > 1
         }
     }
 }
+
 ```
 
 ### 1.5.3 过程演算
@@ -1566,7 +1579,7 @@ pub mod process_calculus {
     use std::sync::mpsc::{self, Sender, Receiver};
     use std::thread;
     use std::collections::HashMap;
-    
+  
     /// Actor消息
     #[derive(Debug, Clone)]
     pub enum Message {
@@ -1576,17 +1589,17 @@ pub mod process_calculus {
         Publish { topic: String, content: String },
         Stop,
     }
-    
+  
     /// Actor特性
     pub trait Actor: Send {
         fn receive(&mut self, msg: Message, sender: Option<Sender<Message>>);
     }
-    
+  
     /// 计算Actor - 处理计算请求
     pub struct ComputeActor {
         results: HashMap<u64, i32>,
     }
-    
+  
     impl ComputeActor {
         pub fn new() -> Self {
             ComputeActor {
@@ -1594,7 +1607,7 @@ pub mod process_calculus {
             }
         }
     }
-    
+  
     impl Actor for ComputeActor {
         fn receive(&mut self, msg: Message, sender: Option<Sender<Message>>) {
             match msg {
@@ -1603,7 +1616,7 @@ pub mod process_calculus {
                     let result = input.iter().sum();
                     self.results.insert(id, result);
                 },
-                
+  
                 Message::GetResult { id } => {
                     if let Some(result) = self.results.get(&id) {
                         println!("计算Actor: 返回计算结果 {} = {}", id, result);
@@ -1611,23 +1624,23 @@ pub mod process_calculus {
                         println!("计算Actor: 未找到结果 {}", id);
                     }
                 },
-                
+  
                 Message::Stop => {
                     println!("计算Actor: 停止");
                 },
-                
+  
                 _ => {
                     println!("计算Actor: 无法处理消息 {:?}", msg);
                 }
             }
         }
     }
-    
+  
     /// 发布-订阅Actor
     pub struct PubSubActor {
         subscriptions: HashMap<String, Vec<Sender<Message>>>,
     }
-    
+  
     impl PubSubActor {
         pub fn new() -> Self {
             PubSubActor {
@@ -1635,7 +1648,7 @@ pub mod process_calculus {
             }
         }
     }
-    
+  
     impl Actor for PubSubActor {
         fn receive(&mut self, msg: Message, sender: Option<Sender<Message>>) {
             match msg {
@@ -1647,50 +1660,50 @@ pub mod process_calculus {
                             .push(sender);
                     }
                 },
-                
+  
                 Message::Publish { topic, content } => {
                     println!("PubSubActor: 发布消息到 {}: {}", topic, content);
                     if let Some(subscribers) = self.subscriptions.get(&topic) {
                         for subscriber in subscribers {
-                            let _ = subscriber.send(Message::Publish { 
-                                topic: topic.clone(), 
+                            let _ = subscriber.send(Message::Publish {
+                                topic: topic.clone(),
                                 content: content.clone()
                             });
                         }
                     }
                 },
-                
+  
                 Message::Stop => {
                     println!("PubSubActor: 停止");
                 },
-                
+  
                 _ => {
                     println!("PubSubActor: 无法处理消息 {:?}", msg);
                 }
             }
         }
     }
-    
+  
     /// Actor系统
     pub struct ActorSystem {
         actors: HashMap<String, Sender<(Message, Option<Sender<Message>>)>>,
     }
-    
+  
     impl ActorSystem {
         pub fn new() -> Self {
             ActorSystem {
                 actors: HashMap::new(),
             }
         }
-        
+  
         pub fn spawn<A: Actor + 'static>(&mut self, name: &str, actor: A) {
             let (tx, rx) = mpsc::channel();
-            
+  
             self.actors.insert(name.to_string(), tx);
-            
+  
             thread::spawn(move || {
                 let mut actor = actor;
-                
+  
                 loop {
                     match rx.recv() {
                         Ok((Message::Stop, _)) => break,
@@ -1700,7 +1713,7 @@ pub mod process_calculus {
                 }
             });
         }
-        
+  
         pub fn send(&self, actor: &str, msg: Message) -> Result<(), String> {
             if let Some(tx) = self.actors.get(actor) {
                 tx.send((msg, None))
@@ -1709,8 +1722,8 @@ pub mod process_calculus {
                 Err(format!("未找到Actor: {}", actor))
             }
         }
-        
-        pub fn send_with_sender(&self, actor: &str, msg: Message, 
+  
+        pub fn send_with_sender(&self, actor: &str, msg: Message,
                                sender: Sender<Message>) -> Result<(), String> {
             if let Some(tx) = self.actors.get(actor) {
                 tx.send((msg, Some(sender)))
@@ -1719,11 +1732,11 @@ pub mod process_calculus {
                 Err(format!("未找到Actor: {}", actor))
             }
         }
-        
+  
         pub fn stop(&self, actor: &str) -> Result<(), String> {
             self.send(actor, Message::Stop)
         }
-        
+  
         pub fn stop_all(&self) {
             for (name, _) in &self.actors {
                 let _ = self.send(name, Message::Stop);
@@ -1731,6 +1744,7 @@ pub mod process_calculus {
         }
     }
 }
+
 ```
 
 ### 1.5.4 组件合成模型
@@ -1752,7 +1766,7 @@ pub mod component_composition {
     use std::collections::HashMap;
     use std::any::Any;
     use std::sync::{Arc, Mutex};
-    
+  
     /// 组件接口
     pub trait Component: Send + Sync {
         fn name(&self) -> &str;
@@ -1763,7 +1777,7 @@ pub mod component_composition {
         fn as_any(&self) -> &dyn Any;
         fn as_any_mut(&mut self) -> &mut dyn Any;
     }
-    
+  
     /// 组件状态
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub enum ComponentStatus {
@@ -1773,20 +1787,20 @@ pub mod component_composition {
         Stopped,
         Failed,
     }
-    
+  
     /// 连接器 - 处理组件间通信
     pub trait Connector: Send + Sync {
         fn connect(&mut self, source: &str, target: &str) -> Result<(), String>;
         fn disconnect(&mut self, source: &str, target: &str) -> Result<(), String>;
         fn send(&self, source: &str, target: &str, message: &str) -> Result<(), String>;
     }
-    
+  
     /// 简单事件总线连接器
     pub struct EventBusConnector {
         connections: HashMap<String, Vec<String>>,
         listeners: HashMap<String, Vec<Box<dyn Fn(&str) + Send + Sync>>>,
     }
-    
+  
     impl EventBusConnector {
         pub fn new() -> Self {
             EventBusConnector {
@@ -1794,7 +1808,7 @@ pub mod component_composition {
                 listeners: HashMap::new(),
             }
         }
-        
+  
         pub fn add_listener<F>(&mut self, component: &str, listener: F)
         where
             F: Fn(&str) + Send + Sync + 'static,
@@ -1804,7 +1818,7 @@ pub mod component_composition {
                 .push(Box::new(listener));
         }
     }
-    
+  
     impl Connector for EventBusConnector {
         fn connect(&mut self, source: &str, target: &str) -> Result<(), String> {
             println!("连接 {} 到 {}", source, target);
@@ -1813,7 +1827,7 @@ pub mod component_composition {
                 .push(target.to_string());
             Ok(())
         }
-        
+  
         fn disconnect(&mut self, source: &str, target: &str) -> Result<(), String> {
             if let Some(targets) = self.connections.get_mut(source) {
                 targets.retain(|t| t != target);
@@ -1822,7 +1836,7 @@ pub mod component_composition {
                 Err(format!("未找到源组件: {}", source))
             }
         }
-        
+  
         fn send(&self, source: &str, target: &str, message: &str) -> Result<(), String> {
             if let Some(listeners) = self.listeners.get(target) {
                 for listener in listeners {
@@ -1834,13 +1848,13 @@ pub mod component_composition {
             }
         }
     }
-    
+  
     /// 组件容器
     pub struct ComponentContainer {
         components: HashMap<String, Arc<Mutex<Box<dyn Component>>>>,
         connector: Box<dyn Connector>,
     }
-    
+  
     impl ComponentContainer {
         pub fn new(connector: Box<dyn Connector>) -> Self {
             ComponentContainer {
@@ -1848,29 +1862,29 @@ pub mod component_composition {
                 connector,
             }
         }
-        
+  
         pub fn register<C: Component + 'static>(&mut self, component: C) -> Result<(), String> {
             let name = component.name().to_string();
             if self.components.contains_key(&name) {
                 return Err(format!("组件已存在: {}", name));
             }
-            
+  
             self.components.insert(
                 name,
                 Arc::new(Mutex::new(Box::new(component)))
             );
-            
+  
             Ok(())
         }
-        
+  
         pub fn unregister(&mut self, name: &str) -> Result<(), String> {
             if self.components.remove(name).is_none() {
                 return Err(format!("未找到组件: {}", name));
             }
-            
+  
             Ok(())
         }
-        
+  
         pub fn initialize_all(&mut self) -> Result<(), String> {
             for (name, component) in &self.components {
                 if let Ok(mut comp) = component.lock() {
@@ -1881,10 +1895,10 @@ pub mod component_composition {
                     return Err(format!("无法锁定组件 {}", name));
                 }
             }
-            
+  
             Ok(())
         }
-        
+  
         pub fn start_all(&mut self) -> Result<(), String> {
             for (name, component) in &self.components {
                 if let Ok(mut comp) = component.lock() {
@@ -1895,13 +1909,13 @@ pub mod component_composition {
                     return Err(format!("无法锁定组件 {}", name));
                 }
             }
-            
+  
             Ok(())
         }
-        
+  
         pub fn stop_all(&mut self) -> Result<(), String> {
             let mut errors = Vec::new();
-            
+  
             for (name, component) in &self.components {
                 if let Ok(mut comp) = component.lock() {
                     if let Err(e) = comp.stop() {
@@ -1911,31 +1925,32 @@ pub mod component_composition {
                     errors.push(format!("无法锁定组件 {}", name));
                 }
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
                 Err(errors.join("; "))
             }
         }
-        
+  
         pub fn connect(&mut self, source: &str, target: &str) -> Result<(), String> {
             if !self.components.contains_key(source) {
                 return Err(format!("未找到源组件: {}", source));
             }
-            
+  
             if !self.components.contains_key(target) {
                 return Err(format!("未找到目标组件: {}", target));
             }
-            
+  
             self.connector.connect(source, target)
         }
-        
+  
         pub fn send_message(&self, source: &str, target: &str, message: &str) -> Result<(), String> {
             self.connector.send(source, target, message)
         }
     }
 }
+
 ```
 
 ## 1.6 5. 领域业务设计的形式模型
@@ -1965,69 +1980,69 @@ pub mod component_composition {
 /// 形式化领域驱动设计
 pub mod formal_ddd {
     use std::collections::HashMap;
-    
+  
     /// 领域标识符特征
     pub trait DomainId: Clone + PartialEq + Eq + std::hash::Hash + std::fmt::Debug {}
-    
+  
     /// 实体特征 - 具有唯一标识
     pub trait Entity {
         type Id: DomainId;
-        
+  
         fn id(&self) -> &Self::Id;
     }
-    
+  
     /// 值对象特征 - 通过值定义等价性
     pub trait ValueObject: Clone + PartialEq + Eq {}
-    
+  
     /// 聚合根特征
     pub trait AggregateRoot: Entity {
         fn version(&self) -> u64;
         fn uncommitted_events(&self) -> Vec<Box<dyn DomainEvent>>;
         fn mark_events_committed(&mut self);
     }
-    
+  
     /// 领域事件特征
     pub trait DomainEvent: std::fmt::Debug {
         fn event_type(&self) -> &str;
         fn occurred_at(&self) -> chrono::DateTime<chrono::Utc>;
         fn aggregate_id(&self) -> String;
     }
-    
+  
     /// 仓储特征
     pub trait Repository<A: AggregateRoot> {
         fn save(&mut self, aggregate: &mut A) -> Result<(), String>;
         fn find_by_id(&self, id: &A::Id) -> Result<Option<A>, String>;
     }
-    
+  
     /// 示例: 订单领域模型
-    
+  
     /// 订单ID值对象
     #[derive(Debug, Clone, PartialEq, Eq, Hash)]
     pub struct OrderId(pub String);
-    
+  
     impl DomainId for OrderId {}
-    
+  
     /// 客户ID值对象
     #[derive(Debug, Clone, PartialEq, Eq, Hash)]
     pub struct CustomerId(pub String);
-    
+  
     impl DomainId for CustomerId {}
-    
+  
     /// 产品ID值对象
     #[derive(Debug, Clone, PartialEq, Eq, Hash)]
     pub struct ProductId(pub String);
-    
+  
     impl DomainId for ProductId {}
-    
+  
     /// 货币值对象
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub struct Money {
         pub amount: i64,  // 以分为单位
         pub currency: String,
     }
-    
+  
     impl ValueObject for Money {}
-    
+  
     impl Money {
         pub fn new(amount: i64, currency: &str) -> Self {
             Money {
@@ -2035,22 +2050,22 @@ pub mod formal_ddd {
                 currency: currency.to_string(),
             }
         }
-        
+  
         pub fn add(&self, other: &Money) -> Result<Money, String> {
             if self.currency != other.currency {
                 return Err(format!(
-                    "不能相加不同货币: {} 和 {}", 
+                    "不能相加不同货币: {} 和 {}",
                     self.currency, other.currency
                 ));
             }
-            
+  
             Ok(Money {
                 amount: self.amount + other.amount,
                 currency: self.currency.clone(),
             })
         }
     }
-    
+  
     /// 订单项实体
     #[derive(Debug, Clone)]
     pub struct OrderItem {
@@ -2058,7 +2073,7 @@ pub mod formal_ddd {
         pub quantity: u32,
         pub unit_price: Money,
     }
-    
+  
     impl OrderItem {
         pub fn new(product_id: ProductId, quantity: u32, unit_price: Money) -> Self {
             OrderItem {
@@ -2067,7 +2082,7 @@ pub mod formal_ddd {
                 unit_price,
             }
         }
-        
+  
         pub fn total_price(&self) -> Money {
             Money {
                 amount: self.unit_price.amount * self.quantity as i64,
@@ -2075,7 +2090,7 @@ pub mod formal_ddd {
             }
         }
     }
-    
+  
     /// 订单状态
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub enum OrderStatus {
@@ -2085,7 +2100,7 @@ pub mod formal_ddd {
         Delivered,
         Cancelled,
     }
-    
+  
     /// 订单事件基类
     #[derive(Debug)]
     pub struct OrderEvent {
@@ -2093,28 +2108,28 @@ pub mod formal_ddd {
         pub occurred_at: chrono::DateTime<chrono::Utc>,
         pub order_id: OrderId,
     }
-    
+  
     impl DomainEvent for OrderEvent {
         fn event_type(&self) -> &str {
             &self.event_type
         }
-        
+  
         fn occurred_at(&self) -> chrono::DateTime<chrono::Utc> {
             self.occurred_at
         }
-        
+  
         fn aggregate_id(&self) -> String {
             self.order_id.0.clone()
         }
     }
-    
+  
     /// 订单创建事件
     #[derive(Debug)]
     pub struct OrderCreatedEvent {
         pub base: OrderEvent,
         pub customer_id: CustomerId,
     }
-    
+  
     /// 订单项添加事件
     #[derive(Debug)]
     pub struct OrderItemAddedEvent {
@@ -2123,7 +2138,7 @@ pub mod formal_ddd {
         pub quantity: u32,
         pub unit_price: Money,
     }
-    
+  
     /// 订单聚合根
     #[derive(Debug, Clone)]
     pub struct Order {
@@ -2134,33 +2149,33 @@ pub mod formal_ddd {
         pub version: u64,
         uncommitted_events: Vec<Box<dyn DomainEvent>>,
     }
-    
+  
     impl Entity for Order {
         type Id = OrderId;
-        
+  
         fn id(&self) -> &Self::Id {
             &self.id
         }
     }
-    
+  
     impl AggregateRoot for Order {
         fn version(&self) -> u64 {
             self.version
         }
-        
+  
         fn uncommitted_events(&self) -> Vec<Box<dyn DomainEvent>> {
             self.uncommitted_events.clone()
         }
-        
+  
         fn mark_events_committed(&mut self) {
             self.uncommitted_events.clear();
         }
     }
-    
+  
     impl Order {
         pub fn create(id: OrderId, customer_id: CustomerId) -> Self {
             let now = chrono::Utc::now();
-            
+  
             let mut order = Order {
                 id: id.clone(),
                 customer_id: customer_id.clone(),
@@ -2169,7 +2184,7 @@ pub mod formal_ddd {
                 version: 0,
                 uncommitted_events: Vec::new(),
             };
-            
+  
             // 添加领域事件
             let event = OrderCreatedEvent {
                 base: OrderEvent {
@@ -2179,26 +2194,26 @@ pub mod formal_ddd {
                 },
                 customer_id,
             };
-            
+  
             order.uncommitted_events.push(Box::new(event));
-            
+  
             order
         }
-        
+  
         pub fn add_item(&mut self, product_id: ProductId, quantity: u32, unit_price: Money) -> Result<(), String> {
             if self.status != OrderStatus::Created {
                 return Err("只有创建状态的订单才能添加项".to_string());
             }
-            
+  
             if quantity == 0 {
                 return Err("数量必须大于零".to_string());
             }
-            
+  
             // 检查是否已有相同产品
             for item in &mut self.items {
                 if item.product_id == product_id {
                     item.quantity += quantity;
-                    
+  
                     // 添加领域事件
                     let event = OrderItemAddedEvent {
                         base: OrderEvent {
@@ -2210,17 +2225,17 @@ pub mod formal_ddd {
                         quantity,
                         unit_price,
                     };
-                    
+  
                     self.uncommitted_events.push(Box::new(event));
-                    
+  
                     return Ok(());
                 }
             }
-            
+  
             // 添加新项
             let item = OrderItem::new(product_id.clone(), quantity, unit_price.clone());
             self.items.push(item);
-            
+  
             // 添加领域事件
             let event = OrderItemAddedEvent {
                 base: OrderEvent {
@@ -2232,33 +2247,33 @@ pub mod formal_ddd {
                 quantity,
                 unit_price,
             };
-            
+  
             self.uncommitted_events.push(Box::new(event));
-            
+  
             Ok(())
         }
-        
+  
         pub fn total_amount(&self) -> Result<Money, String> {
             if self.items.is_empty() {
                 return Err("订单不包含任何项".to_string());
             }
-            
+  
             let first_item = &self.items[0];
             let mut total = first_item.total_price();
-            
+  
             for item in &self.items[1..] {
                 total = total.add(&item.total_price())?;
             }
-            
+  
             Ok(total)
         }
     }
-    
+  
     /// 内存订单仓储实现
     pub struct InMemoryOrderRepository {
         orders: HashMap<OrderId, Order>,
     }
-    
+  
     impl InMemoryOrderRepository {
         pub fn new() -> Self {
             InMemoryOrderRepository {
@@ -2266,27 +2281,28 @@ pub mod formal_ddd {
             }
         }
     }
-    
+  
     impl Repository<Order> for InMemoryOrderRepository {
         fn save(&mut self, aggregate: &mut Order) -> Result<(), String> {
             // 增加版本号
             let mut order = aggregate.clone();
             order.version += 1;
-            
+  
             // 存储订单
             self.orders.insert(order.id.clone(), order);
-            
+  
             // 标记事件已提交
             aggregate.mark_events_committed();
-            
+  
             Ok(())
         }
-        
+  
         fn find_by_id(&self, id: &OrderId) -> Result<Option<Order>, String> {
             Ok(self.orders.get(id).cloned())
         }
     }
 }
+
 ```
 
 ### 1.6.2 业务规则形式化
@@ -2317,14 +2333,14 @@ pub mod business_rules {
         fn evaluate(&self, context: &T) -> bool;
         fn description(&self) -> &str;
     }
-    
+  
     /// 复合规则 - 使用逻辑运算符组合规则
     pub struct CompositeRule<T> {
         pub description: String,
         pub operator: LogicalOperator,
         pub rules: Vec<Box<dyn Rule<T>>>,
     }
-    
+  
     /// 逻辑运算符
     #[derive(Debug, Clone, Copy)]
     pub enum LogicalOperator {
@@ -2332,7 +2348,7 @@ pub mod business_rules {
         Or,
         Not,
     }
-    
+  
     impl<T> Rule<T> for CompositeRule<T> {
         fn evaluate(&self, context: &T) -> bool {
             match self.operator {
@@ -2348,14 +2364,14 @@ pub mod business_rules {
                 },
             }
         }
-        
+  
         fn description(&self) -> &str {
             &self.description
         }
     }
-    
+  
     /// 示例: 贷款申请规则
-    
+  
     /// 贷款申请上下文
     pub struct LoanApplication {
         pub applicant_age: u32,
@@ -2364,89 +2380,89 @@ pub mod business_rules {
         pub loan_amount: f64,
         pub existing_debt: f64,
     }
-    
+  
     /// 最低年龄规则
     pub struct MinimumAgeRule {
         pub min_age: u32,
     }
-    
+  
     impl Rule<LoanApplication> for MinimumAgeRule {
         fn evaluate(&self, context: &LoanApplication) -> bool {
             context.applicant_age >= self.min_age
         }
-        
+  
         fn description(&self) -> &str {
             "申请人必须达到最低年龄要求"
         }
     }
-    
+  
     /// 最低信用分数规则
     pub struct MinimumCreditScoreRule {
         pub min_score: u32,
     }
-    
+  
     impl Rule<LoanApplication> for MinimumCreditScoreRule {
         fn evaluate(&self, context: &LoanApplication) -> bool {
             context.credit_score >= self.min_score
         }
-        
+  
         fn description(&self) -> &str {
             "申请人必须达到最低信用分数"
         }
     }
-    
+  
     /// 债务收入比率规则
     pub struct DebtToIncomeRatioRule {
         pub max_ratio: f64,
     }
-    
+  
     impl Rule<LoanApplication> for DebtToIncomeRatioRule {
         fn evaluate(&self, context: &LoanApplication) -> bool {
             let monthly_loan_payment = context.loan_amount * 0.05; // 简化的月供计算
             let monthly_income = context.annual_income / 12.0;
             let total_monthly_debt = context.existing_debt + monthly_loan_payment;
-            
+  
             (total_monthly_debt / monthly_income) <= self.max_ratio
         }
-        
+  
         fn description(&self) -> &str {
             "申请人的债务收入比必须低于最大允许比例"
         }
     }
-    
+  
     /// 贷款规则引擎
     pub struct LoanRuleEngine {
         rules: Vec<Box<dyn Rule<LoanApplication>>>,
     }
-    
+  
     impl LoanRuleEngine {
         pub fn new() -> Self {
             LoanRuleEngine {
                 rules: Vec::new(),
             }
         }
-        
+  
         pub fn add_rule<R: Rule<LoanApplication> + 'static>(&mut self, rule: R) {
             self.rules.push(Box::new(rule));
         }
-        
+  
         pub fn evaluate(&self, application: &LoanApplication) -> Vec<String> {
             let mut failed_rules = Vec::new();
-            
+  
             for rule in &self.rules {
                 if !rule.evaluate(application) {
                     failed_rules.push(rule.description().to_string());
                 }
             }
-            
+  
             failed_rules
         }
-        
+  
         pub fn is_approved(&self, application: &LoanApplication) -> bool {
             self.evaluate(application).is_empty()
         }
     }
-    
+  
     /// 决策表实现
     pub struct DecisionTable<T, O> {
         pub name: String,
@@ -2454,7 +2470,7 @@ pub mod business_rules {
         pub actions: Vec<Box<dyn Fn(&T) -> O>>,
         pub rules: Vec<(Vec<bool>, usize)>, // 条件组合和对应的行为索引
     }
-    
+  
     impl<T, O: Default> DecisionTable<T, O> {
         pub fn new(name: &str) -> Self {
             DecisionTable {
@@ -2464,21 +2480,21 @@ pub mod business_rules {
                 rules: Vec::new(),
             }
         }
-        
+  
         pub fn add_condition<F>(&mut self, condition: F)
         where
             F: Fn(&T) -> bool + 'static,
         {
             self.conditions.push(Box::new(condition));
         }
-        
+  
         pub fn add_action<F>(&mut self, action: F)
         where
             F: Fn(&T) -> O + 'static,
         {
             self.actions.push(Box::new(action));
         }
-        
+  
         pub fn add_rule(&mut self, condition_values: Vec<bool>, action_index: usize) {
             assert_eq!(
                 condition_values.len(),
@@ -2489,28 +2505,29 @@ pub mod business_rules {
                 action_index < self.actions.len(),
                 "行为索引必须小于行为数量"
             );
-            
+  
             self.rules.push((condition_values, action_index));
         }
-        
+  
         pub fn evaluate(&self, context: &T) -> O {
             // 计算实际条件值
             let actual_conditions: Vec<bool> = self.conditions.iter()
                 .map(|cond| cond(context))
                 .collect();
-            
+  
             // 寻找匹配的规则
             for (expected_conditions, action_index) in &self.rules {
                 if expected_conditions == &actual_conditions {
                     return (self.actions[*action_index])(context);
                 }
             }
-            
+  
             // 如果没有匹配的规则，返回默认值
             O::default()
         }
     }
 }
+
 ```
 
 ### 1.6.3 事件溯源形式模型
@@ -2531,6 +2548,7 @@ pub mod business_rules {
 
 ```text
 State(n) = Apply(Event(n), State(n-1))
+
 ```
 
 其中，`State(n)`是第`n`个事件后的状态，`Apply`是状态转换函数。
@@ -2544,67 +2562,67 @@ pub mod event_sourcing {
     use std::fmt::Debug;
     use std::hash::Hash;
     use chrono::{DateTime, Utc};
-    
+  
     /// 领域事件特征
     pub trait DomainEvent: Debug + Clone {
         type AggregateId: Clone + Eq + Hash;
-        
+  
         fn aggregate_id(&self) -> Self::AggregateId;
         fn event_id(&self) -> String;
         fn event_type(&self) -> &str;
         fn created_at(&self) -> DateTime<Utc>;
         fn version(&self) -> u64;
     }
-    
+  
     /// 命令特征
     pub trait Command: Debug {
         type AggregateId: Clone + Eq + Hash;
-        
+  
         fn aggregate_id(&self) -> Self::AggregateId;
         fn command_type(&self) -> &str;
     }
-    
+  
     /// 聚合根特征
     pub trait Aggregate: Clone + Default + Debug {
         type Id: Clone + Eq + Hash;
         type Event: DomainEvent<AggregateId = Self::Id>;
-        
+  
         fn id(&self) -> Option<Self::Id>;
         fn version(&self) -> u64;
         fn apply(&mut self, event: Self::Event);
     }
-    
+  
     /// 命令处理器
     pub trait CommandHandler<A: Aggregate> {
         type Command: Command<AggregateId = A::Id>;
         type Error: Debug;
-        
+  
         fn handle(&self, aggregate: &A, command: Self::Command) -> Result<Vec<A::Event>, Self::Error>;
     }
-    
+  
     /// 事件存储
     pub trait EventStore {
         type AggregateId: Clone + Eq + Hash;
         type Event: DomainEvent<AggregateId = Self::AggregateId>;
         type Error: Debug;
-        
-        fn append_events(&mut self, aggregate_id: Self::AggregateId, expected_version: u64, 
+  
+        fn append_events(&mut self, aggregate_id: Self::AggregateId, expected_version: u64,
                          events: Vec<Self::Event>) -> Result<(), Self::Error>;
-        
+  
         fn get_events(&self, aggregate_id: Self::AggregateId) -> Result<Vec<Self::Event>, Self::Error>;
-        
-        fn get_events_after_version(&self, aggregate_id: Self::AggregateId, 
+  
+        fn get_events_after_version(&self, aggregate_id: Self::AggregateId,
                                     version: u64) -> Result<Vec<Self::Event>, Self::Error>;
     }
-    
+  
     /// 聚合仓储
     pub struct AggregateRepository<A: Aggregate, ES: EventStore<AggregateId = A::Id, Event = A::Event>> {
         event_store: ES,
         snapshots: HashMap<A::Id, (A, u64)>, // 聚合快照和版本
     }
-    
-    impl<A, ES> AggregateRepository<A, ES> 
-    where 
+  
+    impl<A, ES> AggregateRepository<A, ES>
+    where
         A: Aggregate,
         ES: EventStore<AggregateId = A::Id, Event = A::Event>,
     {
@@ -2614,58 +2632,58 @@ pub mod event_sourcing {
                 snapshots: HashMap::new(),
             }
         }
-        
+  
         pub fn load(&mut self, aggregate_id: A::Id) -> Result<A, ES::Error> {
             // 检查是否有快照
             if let Some((snapshot, version)) = self.snapshots.get(&aggregate_id) {
                 // 加载快照后的事件
                 let events = self.event_store.get_events_after_version(aggregate_id.clone(), *version)?;
-                
+  
                 if events.is_empty() {
                     return Ok(snapshot.clone());
                 }
-                
+  
                 let mut aggregate = snapshot.clone();
                 for event in events {
                     aggregate.apply(event);
                 }
-                
+  
                 // 更新快照
                 self.snapshots.insert(aggregate_id, (aggregate.clone(), aggregate.version()));
-                
+  
                 Ok(aggregate)
             } else {
                 // 从头加载所有事件
                 let events = self.event_store.get_events(aggregate_id.clone())?;
-                
+  
                 if events.is_empty() {
                     return Ok(A::default());
                 }
-                
+  
                 let mut aggregate = A::default();
                 for event in events {
                     aggregate.apply(event);
                 }
-                
+  
                 // 保存快照
                 self.snapshots.insert(aggregate_id, (aggregate.clone(), aggregate.version()));
-                
+  
                 Ok(aggregate)
             }
         }
-        
-        pub fn save(&mut self, aggregate_id: A::Id, expected_version: u64, 
+  
+        pub fn save(&mut self, aggregate_id: A::Id, expected_version: u64,
                    events: Vec<A::Event>) -> Result<(), ES::Error> {
             self.event_store.append_events(aggregate_id, expected_version, events)
         }
     }
-    
+  
     /// 示例：银行账户领域
-    
+  
     /// 账户ID
     #[derive(Debug, Clone, PartialEq, Eq, Hash)]
     pub struct AccountId(pub String);
-    
+  
     /// 账户事件
     #[derive(Debug, Clone)]
     pub enum AccountEvent {
@@ -2691,10 +2709,10 @@ pub mod event_sourcing {
             version: u64,
         },
     }
-    
+  
     impl DomainEvent for AccountEvent {
         type AggregateId = AccountId;
-        
+  
         fn aggregate_id(&self) -> Self::AggregateId {
             match self {
                 AccountEvent::AccountCreated { account_id, .. } => account_id.clone(),
@@ -2702,7 +2720,7 @@ pub mod event_sourcing {
                 AccountEvent::MoneyWithdrawn { account_id, .. } => account_id.clone(),
             }
         }
-        
+  
         fn event_id(&self) -> String {
             match self {
                 AccountEvent::AccountCreated { event_id, .. } => event_id.clone(),
@@ -2710,7 +2728,7 @@ pub mod event_sourcing {
                 AccountEvent::MoneyWithdrawn { event_id, .. } => event_id.clone(),
             }
         }
-        
+  
         fn event_type(&self) -> &str {
             match self {
                 AccountEvent::AccountCreated { .. } => "AccountCreated",
@@ -2718,7 +2736,7 @@ pub mod event_sourcing {
                 AccountEvent::MoneyWithdrawn { .. } => "MoneyWithdrawn",
             }
         }
-        
+  
         fn created_at(&self) -> DateTime<Utc> {
             match self {
                 AccountEvent::AccountCreated { created_at, .. } => *created_at,
@@ -2726,7 +2744,7 @@ pub mod event_sourcing {
                 AccountEvent::MoneyWithdrawn { created_at, .. } => *created_at,
             }
         }
-        
+  
         fn version(&self) -> u64 {
             match self {
                 AccountEvent::AccountCreated { version, .. } => *version,
@@ -2735,7 +2753,7 @@ pub mod event_sourcing {
             }
         }
     }
-    
+  
     /// 账户命令
     #[derive(Debug)]
     pub enum AccountCommand {
@@ -2752,10 +2770,10 @@ pub mod event_sourcing {
             amount: i64,
         },
     }
-    
+  
     impl Command for AccountCommand {
         type AggregateId = AccountId;
-        
+  
         fn aggregate_id(&self) -> Self::AggregateId {
             match self {
                 AccountCommand::CreateAccount { account_id, .. } => account_id.clone(),
@@ -2763,7 +2781,7 @@ pub mod event_sourcing {
                 AccountCommand::WithdrawMoney { account_id, .. } => account_id.clone(),
             }
         }
-        
+  
         fn command_type(&self) -> &str {
             match self {
                 AccountCommand::CreateAccount { .. } => "CreateAccount",
@@ -2772,7 +2790,7 @@ pub mod event_sourcing {
             }
         }
     }
-    
+  
     /// 账户聚合根
     #[derive(Debug, Clone, Default)]
     pub struct Account {
@@ -2781,19 +2799,19 @@ pub mod event_sourcing {
         pub balance: i64,
         pub version: u64,
     }
-    
+  
     impl Aggregate for Account {
         type Id = AccountId;
         type Event = AccountEvent;
-        
+  
         fn id(&self) -> Option<Self::Id> {
             self.id.clone()
         }
-        
+  
         fn version(&self) -> u64 {
             self.version
         }
-        
+  
         fn apply(&mut self, event: Self::Event) {
             match event {
                 AccountEvent::AccountCreated { account_id, owner_name, version, .. } => {
@@ -2813,10 +2831,10 @@ pub mod event_sourcing {
             }
         }
     }
-    
+  
     /// 账户命令处理器
     pub struct AccountCommandHandler;
-    
+  
     #[derive(Debug)]
     pub enum AccountError {
         AccountAlreadyExists,
@@ -2824,18 +2842,18 @@ pub mod event_sourcing {
         InsufficientFunds,
         InvalidAmount,
     }
-    
+  
     impl CommandHandler<Account> for AccountCommandHandler {
         type Command = AccountCommand;
         type Error = AccountError;
-        
+  
         fn handle(&self, aggregate: &Account, command: Self::Command) -> Result<Vec<AccountEvent>, Self::Error> {
             match command {
                 AccountCommand::CreateAccount { account_id, owner_name } => {
                     if aggregate.id.is_some() {
                         return Err(AccountError::AccountAlreadyExists);
                     }
-                    
+  
                     let event = AccountEvent::AccountCreated {
                         event_id: uuid::Uuid::new_v4().to_string(),
                         account_id,
@@ -2843,19 +2861,19 @@ pub mod event_sourcing {
                         created_at: Utc::now(),
                         version: 1,
                     };
-                    
+  
                     Ok(vec![event])
                 },
-                
+  
                 AccountCommand::DepositMoney { account_id, amount } => {
                     if aggregate.id.is_none() {
                         return Err(AccountError::AccountNotFound);
                     }
-                    
+  
                     if amount <= 0 {
                         return Err(AccountError::InvalidAmount);
                     }
-                    
+  
                     let event = AccountEvent::MoneyDeposited {
                         event_id: uuid::Uuid::new_v4().to_string(),
                         account_id,
@@ -2863,23 +2881,23 @@ pub mod event_sourcing {
                         created_at: Utc::now(),
                         version: aggregate.version + 1,
                     };
-                    
+  
                     Ok(vec![event])
                 },
-                
+  
                 AccountCommand::WithdrawMoney { account_id, amount } => {
                     if aggregate.id.is_none() {
                         return Err(AccountError::AccountNotFound);
                     }
-                    
+  
                     if amount <= 0 {
                         return Err(AccountError::InvalidAmount);
                     }
-                    
+  
                     if aggregate.balance < amount {
                         return Err(AccountError::InsufficientFunds);
                     }
-                    
+  
                     let event = AccountEvent::MoneyWithdrawn {
                         event_id: uuid::Uuid::new_v4().to_string(),
                         account_id,
@@ -2887,13 +2905,14 @@ pub mod event_sourcing {
                         created_at: Utc::now(),
                         version: aggregate.version + 1,
                     };
-                    
+  
                     Ok(vec![event])
                 },
             }
         }
     }
 }
+
 ```
 
 ### 1.6.4 工作流形式化
@@ -2923,7 +2942,7 @@ pub mod workflow {
     use std::collections::{HashMap, HashSet};
     use std::fmt::Debug;
     use std::any::Any;
-    
+  
     /// 工作流状态
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub enum WorkflowStatus {
@@ -2933,7 +2952,7 @@ pub mod workflow {
         Failed,
         Canceled,
     }
-    
+  
     /// 活动状态
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub enum ActivityStatus {
@@ -2943,7 +2962,7 @@ pub mod workflow {
         Failed,
         Skipped,
     }
-    
+  
     /// 活动定义
     #[derive(Debug, Clone)]
     pub struct ActivityDefinition {
@@ -2952,7 +2971,7 @@ pub mod workflow {
         pub description: Option<String>,
         pub is_auto: bool, // 自动执行还是人工执行
     }
-    
+  
     /// 转换定义
     #[derive(Debug, Clone)]
     pub struct TransitionDefinition {
@@ -2962,7 +2981,7 @@ pub mod workflow {
         pub to_activity_id: String,
         pub condition: Option<String>, // 条件表达式
     }
-    
+  
     /// 工作流定义
     #[derive(Debug, Clone)]
     pub struct WorkflowDefinition {
@@ -2973,7 +2992,7 @@ pub mod workflow {
         pub transitions: Vec<TransitionDefinition>,
         pub start_activity_id: String,
     }
-    
+  
     impl WorkflowDefinition {
         /// 验证工作流定义
         pub fn validate(&self) -> Result<(), String> {
@@ -2984,12 +3003,12 @@ pub mod workflow {
                     return Err(format!("重复的活动ID: {}", activity.id));
                 }
             }
-            
+  
             // 验证起始活动存在
             if !activity_ids.contains(&self.start_activity_id) {
                 return Err(format!("起始活动不存在: {}", self.start_activity_id));
             }
-            
+  
             // 验证转换引用的活动存在
             for transition in &self.transitions {
                 if !activity_ids.contains(&transition.from_activity_id) {
@@ -2998,7 +3017,7 @@ pub mod workflow {
                         transition.id, transition.from_activity_id
                     ));
                 }
-                
+  
                 if !activity_ids.contains(&transition.to_activity_id) {
                     return Err(format!(
                         "转换 {} 引用的目标活动不存在: {}",
@@ -3006,15 +3025,15 @@ pub mod workflow {
                     ));
                 }
             }
-            
+  
             // 验证可达性
             let mut reachable = HashSet::new();
             reachable.insert(&self.start_activity_id);
-            
+  
             let mut changed = true;
             while changed {
                 changed = false;
-                
+  
                 for transition in &self.transitions {
                     if reachable.contains(&transition.from_activity_id) &&
                        !reachable.contains(&transition.to_activity_id) {
@@ -3023,7 +3042,7 @@ pub mod workflow {
                     }
                 }
             }
-            
+  
             // 检查是否
 
             // 检查是否所有活动都可达
@@ -3032,11 +3051,11 @@ pub mod workflow {
                     return Err(format!("活动不可达: {}", activity.id));
                 }
             }
-            
+  
             Ok(())
         }
     }
-    
+  
     /// 活动实例
     #[derive(Debug, Clone)]
     pub struct ActivityInstance {
@@ -3047,7 +3066,7 @@ pub mod workflow {
         pub completed_at: Option<chrono::DateTime<chrono::Utc>>,
         pub data: HashMap<String, String>, // 活动数据
     }
-    
+  
     /// 工作流实例
     #[derive(Debug, Clone)]
     pub struct WorkflowInstance {
@@ -3060,15 +3079,15 @@ pub mod workflow {
         pub current_activity_ids: Vec<String>, // 支持并行
         pub context: HashMap<String, String>, // 工作流上下文数据
     }
-    
+  
     /// 条件评估器
     pub trait ConditionEvaluator {
         fn evaluate(&self, condition: &str, context: &HashMap<String, String>) -> Result<bool, String>;
     }
-    
+  
     /// 简单条件评估器
     pub struct SimpleConditionEvaluator;
-    
+  
     impl ConditionEvaluator for SimpleConditionEvaluator {
         fn evaluate(&self, condition: &str, context: &HashMap<String, String>) -> Result<bool, String> {
             // 简单实现：检查条件是否为"true"，或者符合"key=value"格式并匹配上下文
@@ -3081,26 +3100,26 @@ pub mod workflow {
                 if parts.len() != 2 {
                     return Err(format!("无效的条件格式: {}", condition));
                 }
-                
+  
                 let key = parts[0].trim();
                 let value = parts[1].trim();
-                
+  
                 if let Some(context_value) = context.get(key) {
                     return Ok(context_value == value);
                 } else {
                     return Ok(false);
                 }
             }
-            
+  
             Err(format!("无法评估条件: {}", condition))
         }
     }
-    
+  
     /// 活动处理器
     pub trait ActivityHandler {
         fn execute(&self, activity: &ActivityInstance, context: &mut HashMap<String, String>) -> Result<ActivityStatus, String>;
     }
-    
+  
     /// 工作流引擎
     pub struct WorkflowEngine<E: ConditionEvaluator> {
         definitions: HashMap<String, WorkflowDefinition>,
@@ -3108,7 +3127,7 @@ pub mod workflow {
         condition_evaluator: E,
         activity_handlers: HashMap<String, Box<dyn ActivityHandler>>,
     }
-    
+  
     impl<E: ConditionEvaluator> WorkflowEngine<E> {
         pub fn new(condition_evaluator: E) -> Self {
             WorkflowEngine {
@@ -3118,15 +3137,15 @@ pub mod workflow {
                 activity_handlers: HashMap::new(),
             }
         }
-        
+  
         pub fn register_definition(&mut self, definition: WorkflowDefinition) -> Result<(), String> {
             // 验证工作流定义
             definition.validate()?;
-            
+  
             self.definitions.insert(definition.id.clone(), definition);
             Ok(())
         }
-        
+  
         pub fn register_activity_handler<H: ActivityHandler + 'static>(
             &mut self,
             activity_type: &str,
@@ -3137,17 +3156,17 @@ pub mod workflow {
                 Box::new(handler),
             );
         }
-        
+  
         pub fn create_instance(&mut self, definition_id: &str, instance_id: &str) -> Result<String, String> {
             let definition = self.definitions.get(definition_id)
                 .ok_or_else(|| format!("工作流定义不存在: {}", definition_id))?;
-            
+  
             let start_activity = definition.activities.iter()
                 .find(|a| a.id == definition.start_activity_id)
                 .ok_or_else(|| "起始活动不存在".to_string())?;
-            
+  
             let now = chrono::Utc::now();
-            
+  
             let mut activities = HashMap::new();
             for activity_def in &definition.activities {
                 let status = if activity_def.id == start_activity.id {
@@ -3155,7 +3174,7 @@ pub mod workflow {
                 } else {
                     ActivityStatus::Pending
                 };
-                
+  
                 activities.insert(activity_def.id.clone(), ActivityInstance {
                     id: format!("{}-{}", instance_id, activity_def.id),
                     definition_id: activity_def.id.clone(),
@@ -3165,7 +3184,7 @@ pub mod workflow {
                     data: HashMap::new(),
                 });
             }
-            
+  
             let instance = WorkflowInstance {
                 id: instance_id.to_string(),
                 definition_id: definition_id.to_string(),
@@ -3176,23 +3195,23 @@ pub mod workflow {
                 current_activity_ids: vec![start_activity.id.clone()],
                 context: HashMap::new(),
             };
-            
+  
             self.instances.insert(instance_id.to_string(), instance);
-            
+  
             Ok(instance_id.to_string())
         }
-        
+  
         pub fn start_instance(&mut self, instance_id: &str) -> Result<(), String> {
             let instance = self.instances.get_mut(instance_id)
                 .ok_or_else(|| format!("工作流实例不存在: {}", instance_id))?;
-            
+  
             if instance.status != WorkflowStatus::Created {
                 return Err(format!("工作流实例状态错误: {:?}", instance.status));
             }
-            
+  
             instance.status = WorkflowStatus::Running;
             instance.updated_at = chrono::Utc::now();
-            
+  
             // 启动初始活动
             for activity_id in &instance.current_activity_ids.clone() {
                 if let Some(activity) = instance.activities.get_mut(activity_id) {
@@ -3200,37 +3219,37 @@ pub mod workflow {
                     activity.started_at = Some(chrono::Utc::now());
                 }
             }
-            
+  
             // 对于自动活动，尝试立即执行
             self.execute_auto_activities(instance_id)
         }
-        
+  
         pub fn execute_auto_activities(&mut self, instance_id: &str) -> Result<(), String> {
             let instance = self.instances.get_mut(instance_id)
                 .ok_or_else(|| format!("工作流实例不存在: {}", instance_id))?;
-            
+  
             if instance.status != WorkflowStatus::Running {
                 return Ok(());
             }
-            
+  
             let definition = self.definitions.get(&instance.definition_id)
                 .ok_or_else(|| format!("工作流定义不存在: {}", instance.definition_id))?;
-            
+  
             let mut current_activities = instance.current_activity_ids.clone();
             let mut completed_activities = Vec::new();
-            
+  
             for activity_id in &current_activities {
                 let activity_instance = instance.activities.get_mut(activity_id)
                     .ok_or_else(|| format!("活动实例不存在: {}", activity_id))?;
-                
+  
                 if activity_instance.status != ActivityStatus::Running {
                     continue;
                 }
-                
+  
                 let activity_def = definition.activities.iter()
                     .find(|a| a.id == activity_instance.definition_id)
                     .ok_or_else(|| format!("活动定义不存在: {}", activity_instance.definition_id))?;
-                
+  
                 if activity_def.is_auto {
                     // 查找处理器
                     if let Some(handler) = self.activity_handlers.get(&activity_def.id) {
@@ -3250,66 +3269,66 @@ pub mod workflow {
                     }
                 }
             }
-            
+  
             // 处理已完成的活动
             for activity_id in completed_activities {
                 self.advance_workflow(instance_id, &activity_id)?;
             }
-            
+  
             Ok(())
         }
-        
-        pub fn complete_activity(&mut self, instance_id: &str, activity_id: &str, 
+  
+        pub fn complete_activity(&mut self, instance_id: &str, activity_id: &str,
                                 data: Option<HashMap<String, String>>) -> Result<(), String> {
             let instance = self.instances.get_mut(instance_id)
                 .ok_or_else(|| format!("工作流实例不存在: {}", instance_id))?;
-            
+  
             if instance.status != WorkflowStatus::Running {
                 return Err(format!("工作流实例状态错误: {:?}", instance.status));
             }
-            
+  
             let activity = instance.activities.get_mut(activity_id)
                 .ok_or_else(|| format!("活动实例不存在: {}", activity_id))?;
-            
+  
             if activity.status != ActivityStatus::Running {
                 return Err(format!("活动状态错误: {:?}", activity.status));
             }
-            
+  
             // 更新活动状态和数据
             activity.status = ActivityStatus::Completed;
             activity.completed_at = Some(chrono::Utc::now());
-            
+  
             if let Some(data) = data {
                 activity.data.extend(data);
-                
+  
                 // 将活动数据合并到工作流上下文
                 for (key, value) in &activity.data {
                     instance.context.insert(format!("{}.{}", activity_id, key), value.clone());
                 }
             }
-            
+  
             // 推进工作流
             self.advance_workflow(instance_id, activity_id)?;
-            
+  
             // 执行自动活动
             self.execute_auto_activities(instance_id)
         }
-        
+  
         fn advance_workflow(&mut self, instance_id: &str, completed_activity_id: &str) -> Result<(), String> {
             let instance = self.instances.get_mut(instance_id)
                 .ok_or_else(|| format!("工作流实例不存在: {}", instance_id))?;
-            
+  
             let definition = self.definitions.get(&instance.definition_id)
                 .ok_or_else(|| format!("工作流定义不存在: {}", instance.definition_id))?;
-            
+  
             // 从当前活动列表中移除已完成的活动
             instance.current_activity_ids.retain(|id| id != completed_activity_id);
-            
+  
             // 查找所有从已完成活动出发的转换
             let outgoing_transitions: Vec<&TransitionDefinition> = definition.transitions.iter()
                 .filter(|t| t.from_activity_id == completed_activity_id)
                 .collect();
-            
+  
             // 对每个转换，检查条件并激活目标活动
             for transition in outgoing_transitions {
                 let should_activate = if let Some(condition) = &transition.condition {
@@ -3317,34 +3336,35 @@ pub mod workflow {
                 } else {
                     true
                 };
-                
+  
                 if should_activate {
                     let target_activity = instance.activities.get_mut(&transition.to_activity_id)
                         .ok_or_else(|| format!("目标活动不存在: {}", transition.to_activity_id))?;
-                    
+  
                     target_activity.status = ActivityStatus::Running;
                     target_activity.started_at = Some(chrono::Utc::now());
-                    
+  
                     instance.current_activity_ids.push(transition.to_activity_id.clone());
                 }
             }
-            
+  
             // 更新工作流状态
             instance.updated_at = chrono::Utc::now();
-            
+  
             // 检查工作流是否完成
             if instance.current_activity_ids.is_empty() {
                 instance.status = WorkflowStatus::Completed;
             }
-            
+  
             Ok(())
         }
-        
+  
         pub fn get_instance(&self, instance_id: &str) -> Option<&WorkflowInstance> {
             self.instances.get(instance_id)
         }
     }
 }
+
 ```
 
 ## 1.7 6. 元模型与模型实现示例(Rust)
@@ -3359,7 +3379,7 @@ pub mod workflow {
 /// 领域建模元模型
 pub mod domain_meta_model {
     use std::collections::{HashMap, HashSet};
-    
+  
     /// 元模型种类
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub enum MetaModelKind {
@@ -3368,7 +3388,7 @@ pub mod domain_meta_model {
         DataModel,       // 数据模型
         ServiceModel,    // 服务模型
     }
-    
+  
     /// 概念种类
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub enum ConceptKind {
@@ -3380,7 +3400,7 @@ pub mod domain_meta_model {
         Factory,         // 工厂
         DomainEvent,     // 领域事件
     }
-    
+  
     /// 关系种类
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub enum RelationshipKind {
@@ -3391,7 +3411,7 @@ pub mod domain_meta_model {
         Implementation,  // 实现
         Dependency,      // 依赖
     }
-    
+  
     /// 元模型概念
     #[derive(Debug, Clone)]
     pub struct MetaConcept {
@@ -3401,7 +3421,7 @@ pub mod domain_meta_model {
         pub properties: Vec<MetaProperty>,
         pub constraints: Vec<MetaConstraint>,
     }
-    
+  
     /// 元属性
     #[derive(Debug, Clone)]
     pub struct MetaProperty {
@@ -3412,7 +3432,7 @@ pub mod domain_meta_model {
         pub is_unique: bool,
         pub default_value: Option<String>,
     }
-    
+  
     /// 元属性类型
     #[derive(Debug, Clone)]
     pub enum MetaPropertyType {
@@ -3425,7 +3445,7 @@ pub mod domain_meta_model {
         Reference(String), // 引用的概念ID
         Collection(Box<MetaPropertyType>),
     }
-    
+  
     /// 元约束
     #[derive(Debug, Clone)]
     pub enum MetaConstraint {
@@ -3434,7 +3454,7 @@ pub mod domain_meta_model {
         Length { min: usize, max: usize },    // 字符串长度
         Custom(String),                       // 自定义表达式
     }
-    
+  
     /// 元关系
     #[derive(Debug, Clone)]
     pub struct MetaRelationship {
@@ -3447,14 +3467,14 @@ pub mod domain_meta_model {
         pub target_multiplicity: Multiplicity,
         pub constraints: Vec<MetaConstraint>,
     }
-    
+  
     /// 多重性
     #[derive(Debug, Clone)]
     pub struct Multiplicity {
         pub min: usize,
         pub max: Option<usize>, // None表示无上限
     }
-    
+  
     /// 完整的元模型
     #[derive(Debug, Clone)]
     pub struct DomainMetaModel {
@@ -3464,7 +3484,7 @@ pub mod domain_meta_model {
         pub concepts: HashMap<String, MetaConcept>,
         pub relationships: Vec<MetaRelationship>,
     }
-    
+  
     impl DomainMetaModel {
         pub fn new(id: &str, name: &str, kind: MetaModelKind) -> Self {
             DomainMetaModel {
@@ -3475,52 +3495,52 @@ pub mod domain_meta_model {
                 relationships: Vec::new(),
             }
         }
-        
+  
         pub fn add_concept(&mut self, concept: MetaConcept) {
             self.concepts.insert(concept.id.clone(), concept);
         }
-        
+  
         pub fn add_relationship(&mut self, relationship: MetaRelationship) {
             self.relationships.push(relationship);
         }
-        
+  
         /// 验证元模型内部一致性
         pub fn validate(&self) -> Result<(), Vec<String>> {
             let mut errors = Vec::new();
-            
+  
             // 验证关系引用的概念是否存在
             for rel in &self.relationships {
                 if !self.concepts.contains_key(&rel.source_concept_id) {
                     errors.push(format!(
-                        "关系 {} 引用了不存在的源概念 {}", 
+                        "关系 {} 引用了不存在的源概念 {}",
                         rel.id, rel.source_concept_id
                     ));
                 }
                 if !self.concepts.contains_key(&rel.target_concept_id) {
                     errors.push(format!(
-                        "关系 {} 引用了不存在的目标概念 {}", 
+                        "关系 {} 引用了不存在的目标概念 {}",
                         rel.id, rel.target_concept_id
                     ));
                 }
             }
-            
+  
             // 验证属性引用的概念是否存在
             for (concept_id, concept) in &self.concepts {
                 for prop in &concept.properties {
                     if let MetaPropertyType::Reference(ref_concept_id) = &prop.property_type {
                         if !self.concepts.contains_key(ref_concept_id) {
                             errors.push(format!(
-                                "概念 {} 的属性 {} 引用了不存在的概念 {}", 
+                                "概念 {} 的属性 {} 引用了不存在的概念 {}",
                                 concept_id, prop.name, ref_concept_id
                             ));
                         }
                     }
                 }
             }
-            
+  
             // 验证循环继承
             let mut inheritance_map: HashMap<String, HashSet<String>> = HashMap::new();
-            
+  
             for rel in &self.relationships {
                 if rel.kind == RelationshipKind::Inheritance {
                     inheritance_map.entry(rel.source_concept_id.clone())
@@ -3528,21 +3548,21 @@ pub mod domain_meta_model {
                         .insert(rel.target_concept_id.clone());
                 }
             }
-            
+  
             // 检测循环
             for concept_id in self.concepts.keys() {
                 let mut visited = HashSet::new();
                 let mut stack = Vec::new();
                 stack.push(concept_id.clone());
-                
+  
                 while let Some(current) = stack.pop() {
                     if visited.contains(&current) {
                         errors.push(format!("检测到循环继承: {}", concept_id));
                         break;
                     }
-                    
+  
                     visited.insert(current.clone());
-                    
+  
                     if let Some(parents) = inheritance_map.get(&current) {
                         for parent in parents {
                             stack.push(parent.clone());
@@ -3550,7 +3570,7 @@ pub mod domain_meta_model {
                     }
                 }
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
@@ -3559,6 +3579,7 @@ pub mod domain_meta_model {
         }
     }
 }
+
 ```
 
 ### 1.7.2 模型定义与约束
@@ -3570,7 +3591,7 @@ pub mod domain_meta_model {
 pub mod ecommerce_model {
     use super::domain_meta_model::*;
     use std::collections::HashMap;
-    
+  
     /// 创建电子商务领域的元模型
     pub fn create_ecommerce_meta_model() -> DomainMetaModel {
         let mut meta_model = DomainMetaModel::new(
@@ -3578,7 +3599,7 @@ pub mod ecommerce_model {
             "电子商务领域元模型",
             MetaModelKind::DomainModel
         );
-        
+  
         // 定义实体概念: 客户
         let customer_concept = MetaConcept {
             id: "Customer".to_string(),
@@ -3614,7 +3635,7 @@ pub mod ecommerce_model {
                 MetaConstraint::Pattern(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$".to_string()),
             ],
         };
-        
+  
         // 定义值对象概念: 地址
         let address_concept = MetaConcept {
             id: "Address".to_string(),
@@ -3656,7 +3677,7 @@ pub mod ecommerce_model {
             ],
             constraints: vec![],
         };
-        
+  
         // 定义聚合根概念: 订单
         let order_concept = MetaConcept {
             id: "Order".to_string(),
@@ -3696,7 +3717,7 @@ pub mod ecommerce_model {
             ],
             constraints: vec![],
         };
-        
+  
         // 定义实体概念: 订单项
         let order_item_concept = MetaConcept {
             id: "OrderItem".to_string(),
@@ -3732,7 +3753,7 @@ pub mod ecommerce_model {
                 MetaConstraint::Range { min: 1.0, max: f64::MAX },
             ],
         };
-        
+  
         // 定义实体概念: 产品
         let product_concept = MetaConcept {
             id: "Product".to_string(),
@@ -3784,16 +3805,16 @@ pub mod ecommerce_model {
                 MetaConstraint::Range { min: 0.0, max: f64::MAX },
             ],
         };
-        
+  
         // 添加概念到元模型
         meta_model.add_concept(customer_concept);
         meta_model.add_concept(address_concept);
         meta_model.add_concept(order_concept);
         meta_model.add_concept(order_item_concept);
         meta_model.add_concept(product_concept);
-        
+  
         // 定义关系
-        
+  
         // 客户-地址关系
         let customer_address_rel = MetaRelationship {
             id: "CustomerAddress".to_string(),
@@ -3805,7 +3826,7 @@ pub mod ecommerce_model {
             target_multiplicity: Multiplicity { min: 0, max: Some(10) },
             constraints: vec![],
         };
-        
+  
         // 客户-订单关系
         let customer_order_rel = MetaRelationship {
             id: "CustomerOrder".to_string(),
@@ -3817,7 +3838,7 @@ pub mod ecommerce_model {
             target_multiplicity: Multiplicity { min: 0, max: None },
             constraints: vec![],
         };
-        
+  
         // 订单-订单项关系
         let order_item_rel = MetaRelationship {
             id: "OrderOrderItem".to_string(),
@@ -3829,7 +3850,7 @@ pub mod ecommerce_model {
             target_multiplicity: Multiplicity { min: 1, max: None },
             constraints: vec![],
         };
-        
+  
         // 订单项-产品关系
         let order_item_product_rel = MetaRelationship {
             id: "OrderItemProduct".to_string(),
@@ -3841,16 +3862,16 @@ pub mod ecommerce_model {
             target_multiplicity: Multiplicity { min: 1, max: Some(1) },
             constraints: vec![],
         };
-        
+  
         // 添加关系到元模型
         meta_model.add_relationship(customer_address_rel);
         meta_model.add_relationship(customer_order_rel);
         meta_model.add_relationship(order_item_rel);
         meta_model.add_relationship(order_item_product_rel);
-        
+  
         meta_model
     }
-    
+  
     /// 领域模型实例
     #[derive(Debug, Clone)]
     pub struct ModelInstance {
@@ -3860,7 +3881,7 @@ pub mod ecommerce_model {
         pub concepts: HashMap<String, ConceptInstance>,
         pub relationships: Vec<RelationshipInstance>,
     }
-    
+  
     /// 概念实例
     #[derive(Debug, Clone)]
     pub struct ConceptInstance {
@@ -3868,7 +3889,7 @@ pub mod ecommerce_model {
         pub concept_id: String, // 元模型中的概念ID
         pub properties: HashMap<String, PropertyValue>,
     }
-    
+  
     /// 属性值
     #[derive(Debug, Clone)]
     pub enum PropertyValue {
@@ -3881,7 +3902,7 @@ pub mod ecommerce_model {
         Reference(String), // 引用另一个实例ID
         Collection(Vec<PropertyValue>),
     }
-    
+  
     /// 关系实例
     #[derive(Debug, Clone)]
     pub struct RelationshipInstance {
@@ -3890,7 +3911,7 @@ pub mod ecommerce_model {
         pub source_instance_id: String,
         pub target_instance_id: String,
     }
-    
+  
     impl ModelInstance {
         pub fn new(id: &str, name: &str, meta_model_id: &str) -> Self {
             ModelInstance {
@@ -3901,19 +3922,19 @@ pub mod ecommerce_model {
                 relationships: Vec::new(),
             }
         }
-        
+  
         pub fn add_concept_instance(&mut self, instance: ConceptInstance) {
             self.concepts.insert(instance.id.clone(), instance);
         }
-        
+  
         pub fn add_relationship_instance(&mut self, instance: RelationshipInstance) {
             self.relationships.push(instance);
         }
-        
+  
         /// 验证模型实例与元模型的一致性
         pub fn validate(&self, meta_model: &DomainMetaModel) -> Result<(), Vec<String>> {
             let mut errors = Vec::new();
-            
+  
             // 验证概念实例
             for (id, instance) in &self.concepts {
                 // 检查概念是否存在于元模型
@@ -3926,7 +3947,7 @@ pub mod ecommerce_model {
                             ));
                         }
                     }
-                    
+  
                     // 验证属性值类型
                     for (prop_name, value) in &instance.properties {
                         if let Some(prop_def) = concept.properties.iter().find(|p| &p.name == prop_name) {
@@ -3935,7 +3956,7 @@ pub mod ecommerce_model {
                                     "实例 {} 的属性 {} 类型不匹配", id, prop_name
                                 ));
                             }
-                            
+  
                             // 验证约束
                             for constraint in &concept.constraints {
                                 if !Self::validate_constraint(value, constraint) {
@@ -3956,7 +3977,7 @@ pub mod ecommerce_model {
                     ));
                 }
             }
-            
+  
             // 验证关系实例
             for rel in &self.relationships {
                 // 检查关系是否存在于元模型
@@ -3972,14 +3993,14 @@ pub mod ecommerce_model {
                             "关系 {} 引用了不存在的目标实例 {}", rel.id, rel.target_instance_id
                         ));
                     }
-                    
+  
                     // 检查实例类型是否符合关系定义
                     if let Some(source) = self.concepts.get(&rel.source_instance_id) {
                         if source.concept_id != rel_def
 
                         if source.concept_id != rel_def.source_concept_id {
                             errors.push(format!(
-                                "关系 {} 的源实例类型错误，期望 {}，实际 {}", 
+                                "关系 {} 的源实例类型错误，期望 {}，实际 {}",
                                 rel.id, rel_def.source_concept_id, source.concept_id
                             ));
                         }
@@ -3987,7 +4008,7 @@ pub mod ecommerce_model {
                     if let Some(target) = self.concepts.get(&rel.target_instance_id) {
                         if target.concept_id != rel_def.target_concept_id {
                             errors.push(format!(
-                                "关系 {} 的目标实例类型错误，期望 {}，实际 {}", 
+                                "关系 {} 的目标实例类型错误，期望 {}，实际 {}",
                                 rel.id, rel_def.target_concept_id, target.concept_id
                             ));
                         }
@@ -3998,7 +4019,7 @@ pub mod ecommerce_model {
                     ));
                 }
             }
-            
+  
             // 验证多重性约束
             let mut rel_count: HashMap<(String, String), usize> = HashMap::new();
             for rel in &self.relationships {
@@ -4006,52 +4027,52 @@ pub mod ecommerce_model {
                     // 计算每个源实例关联的目标实例数量
                     let key = (rel.relationship_id.clone(), rel.source_instance_id.clone());
                     *rel_count.entry(key).or_insert(0) += 1;
-                    
+  
                     // 计算每个目标实例关联的源实例数量
                     let key = (format!("inv_{}", rel.relationship_id), rel.target_instance_id.clone());
                     *rel_count.entry(key).or_insert(0) += 1;
                 }
             }
-            
+  
             // 检查源多重性约束
             for rel_def in &meta_model.relationships {
                 for (id, instance) in &self.concepts {
                     if instance.concept_id == rel_def.source_concept_id {
                         let key = (rel_def.id.clone(), id.clone());
                         let count = rel_count.get(&key).unwrap_or(&0);
-                        
+  
                         if *count < rel_def.target_multiplicity.min {
                             errors.push(format!(
-                                "实例 {} 违反了关系 {} 的目标最小多重性约束", 
+                                "实例 {} 违反了关系 {} 的目标最小多重性约束",
                                 id, rel_def.id
                             ));
                         }
-                        
+  
                         if let Some(max) = rel_def.target_multiplicity.max {
                             if *count > max {
                                 errors.push(format!(
-                                    "实例 {} 违反了关系 {} 的目标最大多重性约束", 
+                                    "实例 {} 违反了关系 {} 的目标最大多重性约束",
                                     id, rel_def.id
                                 ));
                             }
                         }
                     }
-                    
+  
                     if instance.concept_id == rel_def.target_concept_id {
                         let key = (format!("inv_{}", rel_def.id), id.clone());
                         let count = rel_count.get(&key).unwrap_or(&0);
-                        
+  
                         if *count < rel_def.source_multiplicity.min {
                             errors.push(format!(
-                                "实例 {} 违反了关系 {} 的源最小多重性约束", 
+                                "实例 {} 违反了关系 {} 的源最小多重性约束",
                                 id, rel_def.id
                             ));
                         }
-                        
+  
                         if let Some(max) = rel_def.source_multiplicity.max {
                             if *count > max {
                                 errors.push(format!(
-                                    "实例 {} 违反了关系 {} 的源最大多重性约束", 
+                                    "实例 {} 违反了关系 {} 的源最大多重性约束",
                                     id, rel_def.id
                                 ));
                             }
@@ -4059,14 +4080,14 @@ pub mod ecommerce_model {
                     }
                 }
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
                 Err(errors)
             }
         }
-        
+  
         /// 检查属性值是否符合属性类型
         fn is_valid_property_value(value: &PropertyValue, property_type: &MetaPropertyType) -> bool {
             match (value, property_type) {
@@ -4083,7 +4104,7 @@ pub mod ecommerce_model {
                 _ => false,
             }
         }
-        
+  
         /// 验证约束
         fn validate_constraint(value: &PropertyValue, constraint: &MetaConstraint) -> bool {
             match (value, constraint) {
@@ -4105,15 +4126,15 @@ pub mod ecommerce_model {
             }
         }
     }
-    
+  
     /// 创建电子商务模型实例
     pub fn create_ecommerce_model_instance() -> ModelInstance {
         let mut model = ModelInstance::new(
-            "ecommerce_instance", 
+            "ecommerce_instance",
             "电子商务模型实例",
             "ecommerce_meta_model"
         );
-        
+  
         // 创建客户实例
         let customer = ConceptInstance {
             id: "customer1".to_string(),
@@ -4126,7 +4147,7 @@ pub mod ecommerce_model {
                 props
             },
         };
-        
+  
         // 创建地址实例
         let address = ConceptInstance {
             id: "address1".to_string(),
@@ -4140,7 +4161,7 @@ pub mod ecommerce_model {
                 props
             },
         };
-        
+  
         // 创建产品实例
         let product1 = ConceptInstance {
             id: "product1".to_string(),
@@ -4155,7 +4176,7 @@ pub mod ecommerce_model {
                 props
             },
         };
-        
+  
         let product2 = ConceptInstance {
             id: "product2".to_string(),
             concept_id: "Product".to_string(),
@@ -4169,7 +4190,7 @@ pub mod ecommerce_model {
                 props
             },
         };
-        
+  
         // 创建订单实例
         let order = ConceptInstance {
             id: "order1".to_string(),
@@ -4182,7 +4203,7 @@ pub mod ecommerce_model {
                 props
             },
         };
-        
+  
         // 创建订单项实例
         let order_item1 = ConceptInstance {
             id: "orderItem1".to_string(),
@@ -4195,7 +4216,7 @@ pub mod ecommerce_model {
                 props
             },
         };
-        
+  
         let order_item2 = ConceptInstance {
             id: "orderItem2".to_string(),
             concept_id: "OrderItem".to_string(),
@@ -4207,7 +4228,7 @@ pub mod ecommerce_model {
                 props
             },
         };
-        
+  
         // 添加实例到模型
         model.add_concept_instance(customer);
         model.add_concept_instance(address);
@@ -4216,9 +4237,9 @@ pub mod ecommerce_model {
         model.add_concept_instance(order);
         model.add_concept_instance(order_item1);
         model.add_concept_instance(order_item2);
-        
+  
         // 创建关系实例
-        
+  
         // 客户-地址关系
         let customer_address_rel = RelationshipInstance {
             id: "rel1".to_string(),
@@ -4226,7 +4247,7 @@ pub mod ecommerce_model {
             source_instance_id: "customer1".to_string(),
             target_instance_id: "address1".to_string(),
         };
-        
+  
         // 客户-订单关系
         let customer_order_rel = RelationshipInstance {
             id: "rel2".to_string(),
@@ -4234,7 +4255,7 @@ pub mod ecommerce_model {
             source_instance_id: "customer1".to_string(),
             target_instance_id: "order1".to_string(),
         };
-        
+  
         // 订单-订单项关系
         let order_item1_rel = RelationshipInstance {
             id: "rel3".to_string(),
@@ -4242,14 +4263,14 @@ pub mod ecommerce_model {
             source_instance_id: "order1".to_string(),
             target_instance_id: "orderItem1".to_string(),
         };
-        
+  
         let order_item2_rel = RelationshipInstance {
             id: "rel4".to_string(),
             relationship_id: "OrderOrderItem".to_string(),
             source_instance_id: "order1".to_string(),
             target_instance_id: "orderItem2".to_string(),
         };
-        
+  
         // 订单项-产品关系
         let order_item1_product_rel = RelationshipInstance {
             id: "rel5".to_string(),
@@ -4257,14 +4278,14 @@ pub mod ecommerce_model {
             source_instance_id: "orderItem1".to_string(),
             target_instance_id: "product1".to_string(),
         };
-        
+  
         let order_item2_product_rel = RelationshipInstance {
             id: "rel6".to_string(),
             relationship_id: "OrderItemProduct".to_string(),
             source_instance_id: "orderItem2".to_string(),
             target_instance_id: "product2".to_string(),
         };
-        
+  
         // 添加关系到模型
         model.add_relationship_instance(customer_address_rel);
         model.add_relationship_instance(customer_order_rel);
@@ -4272,10 +4293,11 @@ pub mod ecommerce_model {
         model.add_relationship_instance(order_item2_rel);
         model.add_relationship_instance(order_item1_product_rel);
         model.add_relationship_instance(order_item2_product_rel);
-        
+  
         model
     }
 }
+
 ```
 
 ### 1.7.3 模型到实现的映射
@@ -4287,7 +4309,7 @@ pub mod ecommerce_model {
 pub mod model_to_implementation {
     use super::{domain_meta_model::*, ecommerce_model::*};
     use std::collections::HashMap;
-    
+  
     /// 代码生成配置
     #[derive(Debug, Clone)]
     pub struct CodeGenConfig {
@@ -4297,7 +4319,7 @@ pub mod model_to_implementation {
         pub field_mappings: HashMap<String, String>, // 属性路径到字段名的映射
         pub derive_traits: Vec<String>, // 自动派生的traits
     }
-    
+  
     impl CodeGenConfig {
         pub fn new(package_name: &str, output_path: &str) -> Self {
             CodeGenConfig {
@@ -4308,67 +4330,67 @@ pub mod model_to_implementation {
                 derive_traits: vec!["Debug".to_string(), "Clone".to_string()],
             }
         }
-        
+  
         pub fn add_type_mapping(&mut self, concept_id: &str, rust_type: &str) {
             self.type_mappings.insert(concept_id.to_string(), rust_type.to_string());
         }
-        
+  
         pub fn add_field_mapping(&mut self, property_path: &str, field_name: &str) {
             self.field_mappings.insert(property_path.to_string(), field_name.to_string());
         }
-        
+  
         pub fn add_derive_trait(&mut self, trait_name: &str) {
             if !self.derive_traits.contains(&trait_name.to_string()) {
                 self.derive_traits.push(trait_name.to_string());
             }
         }
     }
-    
+  
     /// 代码生成器
     pub struct CodeGenerator {
         config: CodeGenConfig,
     }
-    
+  
     impl CodeGenerator {
         pub fn new(config: CodeGenConfig) -> Self {
             CodeGenerator { config }
         }
-        
+  
         /// 生成Rust代码
         pub fn generate(&self, meta_model: &DomainMetaModel) -> Result<HashMap<String, String>, String> {
             let mut files = HashMap::new();
-            
+  
             // 生成模型文件
             let model_code = self.generate_model_file(meta_model)?;
             files.insert("model.rs".to_string(), model_code);
-            
+  
             // 生成仓储文件
             let repository_code = self.generate_repository_file(meta_model)?;
             files.insert("repository.rs".to_string(), repository_code);
-            
+  
             // 生成服务文件
             let service_code = self.generate_service_file(meta_model)?;
             files.insert("service.rs".to_string(), service_code);
-            
+  
             // 生成lib.rs
             let lib_code = self.generate_lib_file();
             files.insert("lib.rs".to_string(), lib_code);
-            
+  
             Ok(files)
         }
-        
+  
         /// 生成模型代码
         fn generate_model_file(&self, meta_model: &DomainMetaModel) -> Result<String, String> {
             let mut code = String::new();
-            
+  
             // 添加头部注释
             code.push_str("// 自动生成的代码 - 请勿手动修改\n\n");
-            
+  
             // 添加常用imports
             code.push_str("use std::collections::HashMap;\n");
             code.push_str("use chrono::{DateTime, Utc};\n");
             code.push_str("use serde::{Serialize, Deserialize};\n\n");
-            
+  
             // 生成值对象
             for (id, concept) in &meta_model.concepts {
                 if concept.kind == ConceptKind::ValueObject {
@@ -4376,7 +4398,7 @@ pub mod model_to_implementation {
                     code.push_str("\n\n");
                 }
             }
-            
+  
             // 生成实体
             for (id, concept) in &meta_model.concepts {
                 if concept.kind == ConceptKind::Entity {
@@ -4384,7 +4406,7 @@ pub mod model_to_implementation {
                     code.push_str("\n\n");
                 }
             }
-            
+  
             // 生成聚合
             for (id, concept) in &meta_model.concepts {
                 if concept.kind == ConceptKind::Aggregate {
@@ -4394,69 +4416,69 @@ pub mod model_to_implementation {
                     code.push_str("\n\n");
                 }
             }
-            
+  
             Ok(code)
         }
-        
+  
         /// 生成结构体代码
         fn generate_struct(&self, concept: &MetaConcept, meta_model: &DomainMetaModel) -> Result<String, String> {
             let mut code = String::new();
-            
+  
             // 获取类型名称
             let type_name = self.config.type_mappings.get(&concept.id)
                 .unwrap_or(&concept.name)
                 .clone();
-            
+  
             // 添加derives
             code.push_str("#[derive(");
             code.push_str(&self.config.derive_traits.join(", "));
             code.push_str(", Serialize, Deserialize)]\n");
-            
+  
             // 添加结构体定义
             code.push_str(&format!("pub struct {} {{\n", type_name));
-            
+  
             // 添加ID字段（如果是实体或聚合）
             if concept.kind == ConceptKind::Entity || concept.kind == ConceptKind::Aggregate {
                 code.push_str("    pub id: String,\n");
             }
-            
+  
             // 添加属性字段
             for prop in &concept.properties {
                 // 跳过ID属性，因为已经单独处理
                 if prop.name == "id" {
                     continue;
                 }
-                
+  
                 let field_name = self.config.field_mappings
                     .get(&format!("{}.{}", concept.id, prop.name))
                     .unwrap_or(&prop.name)
                     .clone();
-                
+  
                 let field_type = self.map_property_type(&prop.property_type, meta_model)?;
-                
+  
                 // 添加可选标记
                 let type_str = if !prop.is_required {
                     format!("Option<{}>", field_type)
                 } else {
                     field_type
                 };
-                
+  
                 code.push_str(&format!("    pub {}: {},\n", field_name, type_str));
             }
-            
+  
             // 添加关系字段
             for rel in &meta_model.relationships {
                 if rel.source_concept_id == concept.id {
                     let target_concept = meta_model.concepts.get(&rel.target_concept_id)
                         .ok_or_else(|| format!("未找到概念: {}", rel.target_concept_id))?;
-                    
+  
                     let target_type = self.config.type_mappings
                         .get(&target_concept.id)
                         .unwrap_or(&target_concept.name)
                         .clone();
-                    
+  
                     let field_name = rel.name.to_lowercase().replace(" ", "_");
-                    
+  
                     // 根据多重性决定字段类型
                     if rel.target_multiplicity.max.unwrap_or(2) > 1 {
                         code.push_str(&format!("    pub {}: Vec<{}>,\n", field_name, target_type));
@@ -4469,70 +4491,70 @@ pub mod model_to_implementation {
                     }
                 }
             }
-            
+  
             code.push_str("}\n");
-            
+  
             // 添加实现块
             code.push_str(&format!("\nimpl {} {{\n", type_name));
             code.push_str(&format!("    pub fn new("));
-            
+  
             // 构造函数参数
             let mut params = Vec::new();
-            
+  
             if concept.kind == ConceptKind::Entity || concept.kind == ConceptKind::Aggregate {
                 params.push("id: String".to_string());
             }
-            
+  
             for prop in &concept.properties {
                 if prop.name == "id" {
                     continue;
                 }
-                
+  
                 let field_name = self.config.field_mappings
                     .get(&format!("{}.{}", concept.id, prop.name))
                     .unwrap_or(&prop.name)
                     .clone();
-                
+  
                 let field_type = self.map_property_type(&prop.property_type, meta_model)?;
-                
+  
                 // 添加可选标记
                 let param_str = if !prop.is_required {
                     format!("{}: Option<{}>", field_name, field_type)
                 } else {
                     format!("{}: {}", field_name, field_type)
                 };
-                
+  
                 params.push(param_str);
             }
-            
+  
             code.push_str(&params.join(", "));
             code.push_str(") -> Self {\n");
-            
+  
             // 构造函数实现
             code.push_str("        Self {\n");
-            
+  
             if concept.kind == ConceptKind::Entity || concept.kind == ConceptKind::Aggregate {
                 code.push_str("            id,\n");
             }
-            
+  
             for prop in &concept.properties {
                 if prop.name == "id" {
                     continue;
                 }
-                
+  
                 let field_name = self.config.field_mappings
                     .get(&format!("{}.{}", concept.id, prop.name))
                     .unwrap_or(&prop.name)
                     .clone();
-                
+  
                 code.push_str(&format!("            {},\n", field_name));
             }
-            
+  
             // 初始化关系字段
             for rel in &meta_model.relationships {
                 if rel.source_concept_id == concept.id {
                     let field_name = rel.name.to_lowercase().replace(" ", "_");
-                    
+  
                     // 根据多重性决定初始值
                     if rel.target_multiplicity.max.unwrap_or(2) > 1 {
                         code.push_str(&format!("            {}: Vec::new(),\n", field_name));
@@ -4546,55 +4568,55 @@ pub mod model_to_implementation {
                     }
                 }
             }
-            
+  
             code.push_str("        }\n");
             code.push_str("    }\n");
             code.push_str("}\n");
-            
+  
             Ok(code)
         }
-        
+  
         /// 生成聚合实现代码
         fn generate_aggregate_impl(&self, concept: &MetaConcept, meta_model: &DomainMetaModel) -> Result<String, String> {
             let mut code = String::new();
-            
+  
             let type_name = self.config.type_mappings.get(&concept.id)
                 .unwrap_or(&concept.name)
                 .clone();
-            
+  
             code.push_str(&format!("impl {} {{\n", type_name));
-            
+  
             // 添加聚合根特有方法
-            
+  
             // 添加验证方法
             code.push_str("    pub fn validate(&self) -> Result<(), String> {\n");
             code.push_str("        // TODO: 实现聚合验证逻辑\n");
             code.push_str("        Ok(())\n");
             code.push_str("    }\n\n");
-            
+  
             // 根据关系生成增删改方法
             for rel in &meta_model.relationships {
-                if rel.source_concept_id == concept.id && 
+                if rel.source_concept_id == concept.id &&
                    rel.kind == RelationshipKind::Composition {
                     let target_concept = meta_model.concepts.get(&rel.target_concept_id)
                         .ok_or_else(|| format!("未找到概念: {}", rel.target_concept_id))?;
-                    
+  
                     let target_type = self.config.type_mappings
                         .get(&target_concept.id)
                         .unwrap_or(&target_concept.name)
                         .clone();
-                    
+  
                     let field_name = rel.name.to_lowercase().replace(" ", "_");
                     let item_name = target_type.to_lowercase();
-                    
+  
                     // 添加项的方法
                     if rel.target_multiplicity.max.unwrap_or(2) > 1 {
-                        code.push_str(&format!("    pub fn add_{}(&mut self, {}: {}) {{\n", 
+                        code.push_str(&format!("    pub fn add_{}(&mut self, {}: {}) {{\n",
                                        item_name, item_name, target_type));
                         code.push_str(&format!("        self.{}.push({});\n", field_name, item_name));
                         code.push_str("    }\n\n");
-                        
-                        code.push_str(&format!("    pub fn remove_{}(&mut self, id: &str) -> Option<{}> {{\n", 
+  
+                        code.push_str(&format!("    pub fn remove_{}(&mut self, id: &str) -> Option<{}> {{\n",
                                        item_name, target_type));
                         code.push_str(&format!("        let position = self.{}.iter().position(|x| x.id == id);\n", field_name));
                         code.push_str("        if let Some(pos) = position {\n");
@@ -4603,20 +4625,20 @@ pub mod model_to_implementation {
                         code.push_str("            None\n");
                         code.push_str("        }\n");
                         code.push_str("    }\n\n");
-                        
-                        code.push_str(&format!("    pub fn get_{}(&self, id: &str) -> Option<&{}> {{\n", 
+  
+                        code.push_str(&format!("    pub fn get_{}(&self, id: &str) -> Option<&{}> {{\n",
                                        item_name, target_type));
                         code.push_str(&format!("        self.{}.iter().find(|x| x.id == id)\n", field_name));
                         code.push_str("    }\n\n");
                     }
                 }
             }
-            
+  
             code.push_str("}\n");
-            
+  
             Ok(code)
         }
-        
+  
         /// 映射属性类型到Rust类型
         fn map_property_type(&self, property_type: &MetaPropertyType, meta_model: &DomainMetaModel) -> Result<String, String> {
             match property_type {
@@ -4632,12 +4654,12 @@ pub mod model_to_implementation {
                 MetaPropertyType::Reference(concept_id) => {
                     let concept = meta_model.concepts.get(concept_id)
                         .ok_or_else(|| format!("未找到概念: {}", concept_id))?;
-                    
+  
                     let type_name = self.config.type_mappings
                         .get(concept_id)
                         .unwrap_or(&concept.name)
                         .clone();
-                    
+  
                     Ok(type_name)
                 },
                 MetaPropertyType::Collection(element_type) => {
@@ -4646,18 +4668,18 @@ pub mod model_to_implementation {
                 },
             }
         }
-        
+  
         /// 生成仓储代码
         fn generate_repository_file(&self, meta_model: &DomainMetaModel) -> Result<String, String> {
             let mut code = String::new();
-            
+  
             // 添加头部
             code.push_str("// 自动生成的代码 - 请勿手动修改\n\n");
             code.push_str("use crate::model::*;\n");
             code.push_str("use async_trait::async_trait;\n");
             code.push_str("use std::sync::Arc;\n");
             code.push_str("use std::error::Error;\n\n");
-            
+  
             // 生成仓储特质
             for (id, concept) in &meta_model.concepts {
                 if concept.kind == ConceptKind::Aggregate {
@@ -4665,26 +4687,26 @@ pub mod model_to_implementation {
                         .get(&concept.id)
                         .unwrap_or(&concept.name)
                         .clone();
-                    
+  
                     let repository_name = format!("{}Repository", type_name);
-                    
+  
                     code.push_str("#[async_trait]\n");
                     code.push_str(&format!("pub trait {} {{\n", repository_name));
-                    
+  
                     // 标准CRUD方法
                     code.push_str(&format!("    async fn find_by_id(&self, id: &str) -> Result<Option<{}>, Box<dyn Error>>;\n", type_name));
                     code.push_str(&format!("    async fn find_all(&self) -> Result<Vec<{}>, Box<dyn Error>>;\n", type_name));
-                    code.push_str(&format!("    async fn save(&self, {}: {}) -> Result<(), Box<dyn Error>>;\n", 
+                    code.push_str(&format!("    async fn save(&self, {}: {}) -> Result<(), Box<dyn Error>>;\n",
                                    type_name.to_lowercase(), type_name));
                     code.push_str(&format!("    async fn delete(&self, id: &str) -> Result<(), Box<dyn Error>>;\n"));
-                    
+  
                     code.push_str("}\n\n");
-                    
+  
                     // 生成内存实现
                     code.push_str(&format!("pub struct In{} {{\n", repository_name));
                     code.push_str(&format!("    items: std::sync::RwLock<std::collections::HashMap<String, {}>>,\n", type_name));
                     code.push_str("}\n\n");
-                    
+  
                     code.push_str(&format!("impl In{} {{\n", repository_name));
                     code.push_str("    pub fn new() -> Self {\n");
                     code.push_str("        Self {\n");
@@ -4692,47 +4714,47 @@ pub mod model_to_implementation {
                     code.push_str("        }\n");
                     code.push_str("    }\n");
                     code.push_str("}\n\n");
-                    
+  
                     code.push_str("#[async_trait]\n");
                     code.push_str(&format!("impl {} for In{} {{\n", repository_name, repository_name));
-                    
+  
                     // 实现find_by_id
                     code.push_str(&format!("    async fn find_by_id(&self, id: &str) -> Result<Option<{}>, Box<dyn Error>> {{\n", type_name));
                     code.push_str("        let items = self.items.read().unwrap();\n");
                     code.push_str("        Ok(items.get(id).cloned())\n");
                     code.push_str("    }\n\n");
-                    
+  
                     // 实现find_all
                     code.push_str(&format!("    async fn find_all(&self) -> Result<Vec<{}>, Box<dyn Error>> {{\n", type_name));
                     code.push_str("        let items = self.items.read().unwrap();\n");
                     code.push_str("        Ok(items.values().cloned().collect())\n");
                     code.push_str("    }\n\n");
-                    
+  
                     // 实现save
                     code.push_str(&format!("    async fn save(&self, item: {}) -> Result<(), Box<dyn Error>> {{\n", type_name));
                     code.push_str("        let mut items = self.items.write().unwrap();\n");
                     code.push_str("        items.insert(item.id.clone(), item);\n");
                     code.push_str("        Ok(())\n");
                     code.push_str("    }\n\n");
-                    
+  
                     // 实现delete
                     code.push_str("    async fn delete(&self, id: &str) -> Result<(), Box<dyn Error>> {\n");
                     code.push_str("        let mut items = self.items.write().unwrap();\n");
                     code.push_str("        items.remove(id);\n");
                     code.push_str("        Ok(())\n");
                     code.push_str("    }\n");
-                    
+  
                     code.push_str("}\n\n");
                 }
             }
-            
+  
             Ok(code)
         }
-        
+  
         /// 生成服务代码
         fn generate_service_file(&self, meta_model: &DomainMetaModel) -> Result<String, String> {
             let mut code = String::new();
-            
+  
             // 添加头部
             code.push_str("// 自动生成的代码 - 请勿手动修改\n\n");
             code.push_str("use crate::model::*;\n");
@@ -4740,7 +4762,7 @@ pub mod model_to_implementation {
             code.push_str("use async_trait::async_trait;\n");
             code.push_str("use std::sync::Arc;\n");
             code.push_str("use std::error::Error;\n\n");
-            
+  
             // 生成服务
             for (id, concept) in &meta_model.concepts {
                 if concept.kind == ConceptKind::Aggregate {
@@ -4748,37 +4770,37 @@ pub mod model_to_implementation {
                         .get(&concept.id)
                         .unwrap_or(&concept.name)
                         .clone();
-                    
+  
                     let service_name = format!("{}Service", type_name);
                     let repository_name = format!("{}Repository", type_name);
-                    
+  
                     // 服务结构体
                     code.push_str(&format!("pub struct {} {{\n", service_name));
                     code.push_str(&format!("    repository: Arc<dyn {} + Send + Sync>,\n", repository_name));
                     code.push_str("}\n\n");
-                    
+  
                     // 实现
                     code.push_str(&format!("impl {} {{\n", service_name));
                     code.push_str(&format!("    pub fn new(repository: Arc<dyn {} + Send + Sync>) -> Self {{\n", repository_name));
                     code.push_str("        Self { repository }\n");
                     code.push_str("    }\n\n");
-                    
+  
                     // 基本服务方法
                     code.push_str(&format!("    pub async fn get_by_id(&self, id: &str) -> Result<Option<{}>, Box<dyn Error>> {{\n", type_name));
                     code.push_str("        self.repository.find_by_id(id).await\n");
 
                     code.push_str("    }\n\n");
-                    
+  
                     code.push_str(&format!("    pub async fn get_all(&self) -> Result<Vec<{}>, Box<dyn Error>> {{\n", type_name));
                     code.push_str("        self.repository.find_all().await\n");
                     code.push_str("    }\n\n");
-                    
+  
                     code.push_str(&format!("    pub async fn create(&self, item: {}) -> Result<(), Box<dyn Error>> {{\n", type_name));
                     code.push_str("        // 验证聚合
                     code.push_str("        item.validate()?;\n\n");
                     code.push_str("        self.repository.save(item).await\n");
                     code.push_str("    }\n\n");
-                    
+  
                     code.push_str(&format!("    pub async fn update(&self, item: {}) -> Result<(), Box<dyn Error>> {{\n", type_name));
                     code.push_str("        // 验证聚合存在\n");
                     code.push_str("        let existing = self.repository.find_by_id(&item.id).await?;\n");
@@ -4789,7 +4811,7 @@ pub mod model_to_implementation {
                     code.push_str("        item.validate()?;\n\n");
                     code.push_str("        self.repository.save(item).await\n");
                     code.push_str("    }\n\n");
-                    
+  
                     code.push_str("    pub async fn delete(&self, id: &str) -> Result<(), Box<dyn Error>> {\n");
                     code.push_str("        // 验证聚合存在\n");
                     code.push_str("        let existing = self.repository.find_by_id(id).await?;\n");
@@ -4798,7 +4820,7 @@ pub mod model_to_implementation {
                     code.push_str("        }\n\n");
                     code.push_str("        self.repository.delete(id).await\n");
                     code.push_str("    }\n");
-                    
+  
                     // 添加领域特定方法
                     if type_name == "Order" {
                         code.push_str("\n    // 订单领域特定方法\n");
@@ -4810,7 +4832,7 @@ pub mod model_to_implementation {
                         code.push_str("        // 保存订单\n");
                         code.push_str("        self.create(order).await\n");
                         code.push_str("    }\n\n");
-                        
+  
                         code.push_str("    pub async fn cancel_order(&self, id: &str) -> Result<(), Box<dyn Error>> {\n");
                         code.push_str("        // 获取订单\n");
                         code.push_str("        let mut order = self.repository.find_by_id(id).await?\n");
@@ -4838,31 +4860,32 @@ pub mod model_to_implementation {
                         code.push_str("        self.repository.save(product).await\n");
                         code.push_str("    }\n");
                     }
-                    
+  
                     code.push_str("}\n\n");
                 }
             }
-            
+  
             Ok(code)
         }
-        
+  
         /// 生成lib.rs文件
         fn generate_lib_file(&self) -> String {
             let mut code = String::new();
-            
+  
             code.push_str("// 自动生成的代码 - 请勿手动修改\n\n");
             code.push_str("pub mod model;\n");
             code.push_str("pub mod repository;\n");
             code.push_str("pub mod service;\n\n");
-            
+  
             code.push_str("pub use model::*;\n");
             code.push_str("pub use repository::*;\n");
             code.push_str("pub use service::*;\n");
-            
+  
             code
         }
     }
 }
+
 ```
 
 ### 1.7.4 验证与一致性检查
@@ -4874,14 +4897,14 @@ pub mod model_to_implementation {
 pub mod model_validation {
     use super::{domain_meta_model::*, ecommerce_model::*};
     use std::collections::{HashMap, HashSet};
-    
+  
     /// 一致性验证结果
     #[derive(Debug)]
     pub struct ValidationResult {
         pub is_valid: bool,
         pub issues: Vec<ValidationIssue>,
     }
-    
+  
     /// 验证问题
     #[derive(Debug)]
     pub struct ValidationIssue {
@@ -4889,7 +4912,7 @@ pub mod model_validation {
         pub message: String,
         pub location: String,
     }
-    
+  
     /// 问题严重程度
     #[derive(Debug, PartialEq)]
     pub enum IssueSeverity {
@@ -4897,10 +4920,10 @@ pub mod model_validation {
         Warning,
         Info,
     }
-    
+  
     /// 模型验证器
     pub struct ModelValidator;
-    
+  
     impl ModelValidator {
         /// 验证模型实例与元模型的一致性
         pub fn validate_model(model: &ModelInstance, meta_model: &DomainMetaModel) -> ValidationResult {
@@ -4908,7 +4931,7 @@ pub mod model_validation {
                 is_valid: true,
                 issues: Vec::new(),
             };
-            
+  
             // 通过调用ModelInstance的validate方法获取基本验证结果
             match model.validate(meta_model) {
                 Ok(_) => {
@@ -4927,34 +4950,34 @@ pub mod model_validation {
                     result.is_valid = false;
                 }
             }
-            
+  
             result
         }
-        
+  
         /// 验证高级约束
         fn validate_advanced_constraints(model: &ModelInstance, meta_model: &DomainMetaModel, result: &mut ValidationResult) {
             // 检查聚合边界
             Self::validate_aggregate_boundaries(model, meta_model, result);
-            
+  
             // 检查业务规则
             Self::validate_business_rules(model, meta_model, result);
-            
+  
             // 更新整体有效性
             result.is_valid = !result.issues.iter().any(|i| i.severity == IssueSeverity::Error);
         }
-        
+  
         /// 验证聚合边界
         fn validate_aggregate_boundaries(model: &ModelInstance, meta_model: &DomainMetaModel, result: &mut ValidationResult) {
             // 获取所有聚合根
             let aggregates: Vec<&MetaConcept> = meta_model.concepts.values()
                 .filter(|c| c.kind == ConceptKind::Aggregate)
                 .collect();
-            
+  
             // 跟踪每个聚合根的边界
             for aggregate in aggregates {
                 // 找到属于该聚合的所有实体（通过组合关系）
                 let aggregate_entities = Self::find_composed_entities(meta_model, &aggregate.id);
-                
+  
                 // 检查这些实体是否正确引用
                 for rel in &model.relationships {
                     if let Some(rel_def) = meta_model.relationships.iter().find(|r| r.id == rel.relationship_id) {
@@ -4962,10 +4985,10 @@ pub mod model_validation {
                         if rel_def.kind != RelationshipKind::Composition {
                             let source_instance = model.concepts.get(&rel.source_instance_id);
                             let target_instance = model.concepts.get(&rel.target_instance_id);
-                            
+  
                             if let (Some(source), Some(target)) = (source_instance, target_instance) {
                                 // 如果源是聚合内实体
-                                if aggregate_entities.contains(&source.concept_id) && 
+                                if aggregate_entities.contains(&source.concept_id) &&
                                    !aggregate_entities.contains(&target.concept_id) {
                                     // 检查是否通过聚合根引用
                                     if rel_def.kind == RelationshipKind::Association {
@@ -4985,34 +5008,34 @@ pub mod model_validation {
                 }
             }
         }
-        
+  
         /// 查找聚合中通过组合关系包含的所有实体
         fn find_composed_entities(meta_model: &DomainMetaModel, aggregate_id: &str) -> HashSet<String> {
             let mut entities = HashSet::new();
             entities.insert(aggregate_id.to_string());
-            
+  
             let mut changed = true;
             while changed {
                 changed = false;
-                
+  
                 for rel in &meta_model.relationships {
-                    if rel.kind == RelationshipKind::Composition && 
-                       entities.contains(&rel.source_concept_id) && 
+                    if rel.kind == RelationshipKind::Composition &&
+                       entities.contains(&rel.source_concept_id) &&
                        !entities.contains(&rel.target_concept_id) {
                         entities.insert(rel.target_concept_id.clone());
                         changed = true;
                     }
                 }
             }
-            
+  
             entities
         }
-        
+  
         /// 验证业务规则
         fn validate_business_rules(model: &ModelInstance, meta_model: &DomainMetaModel, result: &mut ValidationResult) {
             // 这里实现特定业务规则的验证
             // 例如：订单总价计算、库存不能为负等
-            
+  
             // 示例：验证订单项数量必须大于0
             for (id, instance) in &model.concepts {
                 if instance.concept_id == "OrderItem" {
@@ -5027,7 +5050,7 @@ pub mod model_validation {
                     }
                 }
             }
-            
+  
             // 示例：验证产品价格必须大于0
             for (id, instance) in &model.concepts {
                 if instance.concept_id == "Product" {
@@ -5044,41 +5067,41 @@ pub mod model_validation {
             }
         }
     }
-    
+  
     /// 实现到模型的一致性验证
     pub struct ImplementationValidator;
-    
+  
     impl ImplementationValidator {
         /// 验证生成的代码与模型的一致性
-        pub fn validate_implementation(code_files: &HashMap<String, String>, 
-                                      model: &ModelInstance, 
+        pub fn validate_implementation(code_files: &HashMap<String, String>,
+                                      model: &ModelInstance,
                                       meta_model: &DomainMetaModel) -> ValidationResult {
             let mut result = ValidationResult {
                 is_valid: true,
                 issues: Vec::new(),
             };
-            
+  
             // 验证模型元素是否都有对应的代码表示
             Self::validate_model_coverage(code_files, model, meta_model, &mut result);
-            
+  
             // 验证约束是否在代码中得到正确实现
             Self::validate_constraints_implementation(code_files, model, meta_model, &mut result);
-            
+  
             // 更新整体有效性
             result.is_valid = !result.issues.iter().any(|i| i.severity == IssueSeverity::Error);
-            
+  
             result
         }
-        
+  
         /// 验证模型覆盖率
-        fn validate_model_coverage(code_files: &HashMap<String, String>, 
+        fn validate_model_coverage(code_files: &HashMap<String, String>,
                                   model: &ModelInstance,
                                   meta_model: &DomainMetaModel,
                                   result: &mut ValidationResult) {
             // 检查每个概念是否有对应的结构体
             for (id, concept) in &meta_model.concepts {
                 let type_name = concept.name.clone(); // 简化处理，假设类型名就是概念名
-                
+  
                 let concept_pattern = format!("struct {}", type_name);
                 if !Self::code_contains_pattern(code_files, &concept_pattern) {
                     result.issues.push(ValidationIssue {
@@ -5087,32 +5110,32 @@ pub mod model_validation {
                         location: format!("Concept:{}", id),
                     });
                 }
-                
+  
                 // 检查属性是否都有对应的字段
                 for prop in &concept.properties {
                     let field_pattern = format!("pub {}: ", prop.name);
                     if !Self::code_contains_pattern(code_files, &field_pattern) {
                         result.issues.push(ValidationIssue {
                             severity: IssueSeverity::Warning,
-                            message: format!("概念 {} 的属性 {} 没有对应的代码字段", 
+                            message: format!("概念 {} 的属性 {} 没有对应的代码字段",
                                           concept.name, prop.name),
                             location: format!("Property:{}.{}", id, prop.name),
                         });
                     }
                 }
             }
-            
+  
             // 检查关系是否得到实现
             for rel in &meta_model.relationships {
                 let source_concept = meta_model.concepts.get(&rel.source_concept_id)
                     .unwrap(); // 假设一定存在
                 let target_concept = meta_model.concepts.get(&rel.target_concept_id)
                     .unwrap(); // 假设一定存在
-                
+  
                 // 关系字段模式
                 let field_name = rel.name.to_lowercase().replace(" ", "_");
                 let field_pattern = format!("pub {}: ", field_name);
-                
+  
                 if !Self::code_contains_pattern(code_files, &field_pattern) {
                     result.issues.push(ValidationIssue {
                         severity: IssueSeverity::Warning,
@@ -5122,7 +5145,7 @@ pub mod model_validation {
                 }
             }
         }
-        
+  
         /// 验证约束实现
         fn validate_constraints_implementation(code_files: &HashMap<String, String>,
                                              model: &ModelInstance,
@@ -5140,7 +5163,7 @@ pub mod model_validation {
                         });
                     }
                 }
-                
+  
                 // 检查约束实现
                 for prop in &concept.properties {
                     for constraint in &concept.constraints {
@@ -5152,11 +5175,11 @@ pub mod model_validation {
                             MetaConstraint::Length { min, max } => format!("{}.len()", prop.name),
                             MetaConstraint::Custom(expr) => expr.clone(),
                         };
-                        
+  
                         if !Self::code_contains_pattern(code_files, &constraint_str) {
                             result.issues.push(ValidationIssue {
                                 severity: IssueSeverity::Info,
-                                message: format!("概念 {} 的约束可能未完全实现: {}", 
+                                message: format!("概念 {} 的约束可能未完全实现: {}",
                                              concept.name, constraint_str),
                                 location: format!("Constraint:{}.{}", id, prop.name),
                             });
@@ -5165,7 +5188,7 @@ pub mod model_validation {
                 }
             }
         }
-        
+  
         /// 检查代码是否包含特定模式
         fn code_contains_pattern(code_files: &HashMap<String, String>, pattern: &str) -> bool {
             for (_, code) in code_files {
@@ -5177,6 +5200,7 @@ pub mod model_validation {
         }
     }
 }
+
 ```
 
 ## 1.8 7. 形式论证与证明方法
@@ -5212,148 +5236,148 @@ pub mod invariant_proof {
         pub balance: i64,        // 以分为单位
         pub overdraft_limit: i64, // 允许的透支额度（负值）
     }
-    
+  
     impl BankAccount {
         pub fn new(account_id: &str, initial_balance: i64, overdraft_limit: i64) -> Result<Self, String> {
             // 验证初始状态满足不变性
             if overdraft_limit > 0 {
                 return Err("透支额度必须是负值或零".to_string());
             }
-            
+  
             let account = BankAccount {
                 account_id: account_id.to_string(),
                 balance: initial_balance,
                 overdraft_limit,
             };
-            
+  
             // 验证创建的账户满足不变性
             account.check_invariant()?;
-            
+  
             Ok(account)
         }
-        
+  
         /// 存款操作
         pub fn deposit(&mut self, amount: i64) -> Result<(), String> {
             // 前置条件
             if amount <= 0 {
                 return Err("存款金额必须为正数".to_string());
             }
-            
+  
             // 检查当前状态的不变性
             self.check_invariant()?;
-            
+  
             // 状态转换
             self.balance += amount;
-            
+  
             // 验证状态转换后的不变性
             self.check_invariant()?;
-            
+  
             Ok(())
         }
-        
+  
         /// 取款操作
         pub fn withdraw(&mut self, amount: i64) -> Result<(), String> {
             // 前置条件
             if amount <= 0 {
                 return Err("取款金额必须为正数".to_string());
             }
-            
+  
             // 检查当前状态的不变性
             self.check_invariant()?;
-            
+  
             // 验证操作后的状态仍满足不变性
             if self.balance - amount < self.overdraft_limit {
                 return Err("取款将超过透支额度".to_string());
             }
-            
+  
             // 状态转换
             self.balance -= amount;
-            
+  
             // 验证状态转换后的不变性
             self.check_invariant()?;
-            
+  
             Ok(())
         }
-        
+  
         /// 转账操作
         pub fn transfer(&mut self, target: &mut BankAccount, amount: i64) -> Result<(), String> {
             // 前置条件
             if amount <= 0 {
                 return Err("转账金额必须为正数".to_string());
             }
-            
+  
             // 检查当前状态的不变性
             self.check_invariant()?;
             target.check_invariant()?;
-            
+  
             // 验证操作后的状态仍满足不变性
             if self.balance - amount < self.overdraft_limit {
                 return Err("转账将超过透支额度".to_string());
             }
-            
+  
             // 状态转换
             self.balance -= amount;
             target.balance += amount;
-            
+  
             // 验证状态转换后的不变性
             self.check_invariant()?;
             target.check_invariant()?;
-            
+  
             Ok(())
         }
-        
+  
         /// 验证账户不变性
         pub fn check_invariant(&self) -> Result<(), String> {
             // 不变性1: 透支额度必须是负值或零
             if self.overdraft_limit > 0 {
                 return Err("透支额度必须是负值或零".to_string());
             }
-            
+  
             // 不变性2: 余额不得低于透支额度
             if self.balance < self.overdraft_limit {
                 return Err("余额不能小于透支额度".to_string());
             }
-            
+  
             Ok(())
         }
     }
-    
+  
     /// 形式化不变性检查
     pub struct InvariantChecker;
-    
+  
     impl InvariantChecker {
         /// 对银行账户系统进行形式化验证
         pub fn verify_bank_account_system() -> Result<(), Vec<String>> {
             let mut errors = Vec::new();
-            
+  
             // 测试各种边界情况，确保不变性得到维护
-            
+  
             // 测试1: 创建有效账户
             match BankAccount::new("acc1", 1000, -500) {
                 Ok(_) => {}, // 预期成功
                 Err(e) => errors.push(format!("创建有效账户失败: {}", e)),
             }
-            
+  
             // 测试2: 创建无效账户（透支额度为正）
             match BankAccount::new("acc2", 1000, 500) {
                 Ok(_) => errors.push("应拒绝创建透支额度为正的账户".to_string()),
                 Err(_) => {}, // 预期失败
             }
-            
+  
             // 测试3: 存款后不变性保持
             if let Ok(mut account) = BankAccount::new("acc3", 1000, -500) {
                 if let Err(e) = account.deposit(500) {
                     errors.push(format!("有效存款失败: {}", e));
                 }
             }
-            
+  
             // 测试4: 取款后不变性保持
             if let Ok(mut account) = BankAccount::new("acc4", 1000, -500) {
                 if let Err(e) = account.withdraw(500) {
                     errors.push(format!("有效取款失败: {}", e));
                 }
             }
-            
+  
             // 测试5: 取款超过透支额度
             if let Ok(mut account) = BankAccount::new("acc5", 1000, -500) {
                 match account.withdraw(2000) {
@@ -5361,7 +5385,7 @@ pub mod invariant_proof {
                     Err(_) => {}, // 预期失败
                 }
             }
-            
+  
             // 测试6: 转账后不变性保持
             if let (Ok(mut acc1), Ok(mut acc2)) = (
                 BankAccount::new("acc6", 1000, -500),
@@ -5370,16 +5394,16 @@ pub mod invariant_proof {
                 if let Err(e) = acc1.transfer(&mut acc2, 500) {
                     errors.push(format!("有效转账失败: {}", e));
                 }
-                
+  
                 // 验证转账结果
                 if acc1.balance != 500 || acc2.balance != 1000 {
                     errors.push(format!(
-                        "转账后余额错误: acc1={}, acc2={}", 
+                        "转账后余额错误: acc1={}, acc2={}",
                         acc1.balance, acc2.balance
                     ));
                 }
             }
-            
+  
             // 测试7: 超额转账
             if let (Ok(mut acc1), Ok(mut acc2)) = (
                 BankAccount::new("acc8", 1000, -500),
@@ -5389,16 +5413,16 @@ pub mod invariant_proof {
                     Ok(_) => errors.push("应拒绝超过透支额度的转账".to_string()),
                     Err(_) => {}, // 预期失败
                 }
-                
+  
                 // 验证账户状态未变
                 if acc1.balance != 1000 || acc2.balance != 500 {
                     errors.push(format!(
-                        "失败转账后余额错误: acc1={}, acc2={}", 
+                        "失败转账后余额错误: acc1={}, acc2={}",
                         acc1.balance, acc2.balance
                     ));
                 }
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
@@ -5407,6 +5431,7 @@ pub mod invariant_proof {
         }
     }
 }
+
 ```
 
 ### 1.8.2 归纳证明
@@ -5437,28 +5462,28 @@ pub mod induction_proof {
     pub struct BinarySearchTree<T: Ord + Clone> {
         root: Option<Box<Node<T>>>,
     }
-    
+  
     #[derive(Debug, Clone)]
     struct Node<T: Ord + Clone> {
         value: T,
         left: Option<Box<Node<T>>>,
         right: Option<Box<Node<T>>>,
     }
-    
+  
     impl<T: Ord + Clone> BinarySearchTree<T> {
         pub fn new() -> Self {
             BinarySearchTree { root: None }
         }
-        
+  
         /// 插入值
         pub fn insert(&mut self, value: T) {
             let root = &mut self.root;
             Self::insert_recursive(root, value);
-            
+  
             // 插入后验证BST性质
             assert!(self.is_valid_bst());
         }
-        
+  
         fn insert_recursive(node: &mut Option<Box<Node<T>>>, value: T) {
             match node {
                 None => {
@@ -5478,12 +5503,12 @@ pub mod induction_proof {
                 }
             }
         }
-        
+  
         /// 查找值
         pub fn contains(&self, value: &T) -> bool {
             Self::contains_recursive(&self.root, value)
         }
-        
+  
         fn contains_recursive(node: &Option<Box<Node<T>>>, value: &T) -> bool {
             match node {
                 None => false,
@@ -5498,15 +5523,15 @@ pub mod induction_proof {
                 }
             }
         }
-        
+  
         /// 验证是否是有效的二叉搜索树
         pub fn is_valid_bst(&self) -> bool {
             Self::is_valid_bst_recursive(&self.root, None, None)
         }
-        
+  
         fn is_valid_bst_recursive(
-            node: &Option<Box<Node<T>>>, 
-            min: Option<&T>, 
+            node: &Option<Box<Node<T>>>,
+            min: Option<&T>,
             max: Option<&T>
         ) -> bool {
             match node {
@@ -5518,25 +5543,25 @@ pub mod induction_proof {
                             return false;
                         }
                     }
-                    
+  
                     if let Some(max_val) = max {
                         if &n.value >= max_val {
                             return false;
                         }
                     }
-                    
+  
                     // 递归检查左右子树
                     Self::is_valid_bst_recursive(&n.left, min, Some(&n.value)) &&
                     Self::is_valid_bst_recursive(&n.right, Some(&n.value), max)
                 }
             }
         }
-        
+  
         /// 获取树高度
         pub fn height(&self) -> usize {
             Self::height_recursive(&self.root)
         }
-        
+  
         fn height_recursive(node: &Option<Box<Node<T>>>) -> usize {
             match node {
                 None => 0,
@@ -5547,12 +5572,12 @@ pub mod induction_proof {
                 }
             }
         }
-        
+  
         /// 获取节点数量
         pub fn size(&self) -> usize {
             Self::size_recursive(&self.root)
         }
-        
+  
         fn size_recursive(node: &Option<Box<Node<T>>>) -> usize {
             match node {
                 None => 0,
@@ -5561,14 +5586,14 @@ pub mod induction_proof {
                 }
             }
         }
-        
+  
         /// 中序遍历（返回有序序列）
         pub fn inorder_traversal(&self) -> Vec<T> {
             let mut result = Vec::new();
             Self::inorder_recursive(&self.root, &mut result);
             result
         }
-        
+  
         fn inorder_recursive(node: &Option<Box<Node<T>>>, result: &mut Vec<T>) {
             if let Some(ref n) = node {
                 Self::inorder_recursive(&n.left, result);
@@ -5577,25 +5602,25 @@ pub mod induction_proof {
             }
         }
     }
-    
+  
     /// 证明辅助器
     pub struct BSTProver;
-    
+  
     impl BSTProver {
         /// 验证二叉搜索树的关键性质
         pub fn verify_bst_properties() -> Result<(), Vec<String>> {
             let mut errors = Vec::new();
-            
+  
             // 性质1: 空树是有效的BST
             let empty_tree: BinarySearchTree<i32> = BinarySearchTree::new();
             if !empty_tree.is_valid_bst() {
                 errors.push("空树应该是有效的BST".to_string());
             }
-            
+  
             // 性质2: 插入后仍然是有效的BST
             let mut tree = BinarySearchTree::new();
             let values = [50, 30, 70, 20, 40, 60, 80];
-            
+  
             for &value in &values {
                 tree.insert(value);
                 if !tree.is_valid_bst() {
@@ -5603,30 +5628,30 @@ pub mod induction_proof {
                     break;
                 }
             }
-            
+  
             // 性质3: 中序遍历产生有序序列
             let traversal = tree.inorder_traversal();
             let mut sorted = values.to_vec();
             sorted.sort();
-            
+  
             if traversal != sorted {
                 errors.push(format!(
-                    "中序遍历结果不是有序的: {:?} != {:?}", 
+                    "中序遍历结果不是有序的: {:?} != {:?}",
                     traversal, sorted
                 ));
             }
-            
+  
             // 性质4: 查找正确性
             for &value in &values {
                 if !tree.contains(&value) {
                     errors.push(format!("未找到应该存在的值: {}", value));
                 }
             }
-            
+  
             if tree.contains(&100) {
                 errors.push("错误地找到了不存在的值: 100".to_string());
             }
-            
+  
             // 性质5: 树高度和
 
             // 性质5: 树高度和规模关系
@@ -5634,44 +5659,45 @@ pub mod induction_proof {
             let size = tree.size();
             let min_height = (size as f64).log2().floor() as usize + 1;
             let max_height = size;
-            
+  
             if height < min_height || height > max_height {
                 errors.push(format!(
-                    "树高度 {} 不在有效范围内 [{}, {}]", 
+                    "树高度 {} 不在有效范围内 [{}, {}]",
                     height, min_height, max_height
                 ));
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
                 Err(errors)
             }
         }
-        
+  
         /// 递归终止性证明
         pub fn prove_termination() -> Result<(), String> {
             // 性质：对于任意有限输入序列，BST的所有操作都会终止
-            
+  
             // 1. insert方法：每次递归调用时处理的子树规模严格减小
             // 2. contains方法：每次递归调用时处理的子树规模严格减小
             // 3. 由于树的高度有限，递归深度有上限，因此递归必定终止
-            
+  
             // 使用大型树验证是否有栈溢出
             let mut large_tree = BinarySearchTree::new();
             for i in 0..10000 {
                 large_tree.insert(i);
             }
-            
+  
             // 验证深度查找是否终止
             if !large_tree.contains(&9999) {
                 return Err("查找已插入的元素失败".to_string());
             }
-            
+  
             Ok(())
         }
     }
 }
+
 ```
 
 ### 1.8.3 精化证明
@@ -5702,7 +5728,7 @@ pub mod induction_proof {
 /// 精化证明示例
 pub mod refinement_proof {
     use std::collections::HashMap;
-    
+  
     /// 抽象账户模型
     pub trait AbstractAccountModel {
         fn get_balance(&self, account_id: &str) -> Option<i64>;
@@ -5710,137 +5736,137 @@ pub mod refinement_proof {
         fn withdraw(&mut self, account_id: &str, amount: i64) -> Result<(), String>;
         fn transfer(&mut self, from_id: &str, to_id: &str, amount: i64) -> Result<(), String>;
     }
-    
+  
     /// 抽象实现：使用映射存储账户信息
     pub struct AbstractAccounts {
         balances: HashMap<String, i64>,
     }
-    
+  
     impl AbstractAccounts {
         pub fn new() -> Self {
             AbstractAccounts {
                 balances: HashMap::new(),
             }
         }
-        
+  
         pub fn create_account(&mut self, account_id: &str, initial_balance: i64) -> Result<(), String> {
             if initial_balance < 0 {
                 return Err("初始余额不能为负".to_string());
             }
-            
+  
             if self.balances.contains_key(account_id) {
                 return Err("账户已存在".to_string());
             }
-            
+  
             self.balances.insert(account_id.to_string(), initial_balance);
             Ok(())
         }
     }
-    
+  
     impl AbstractAccountModel for AbstractAccounts {
         fn get_balance(&self, account_id: &str) -> Option<i64> {
             self.balances.get(account_id).copied()
         }
-        
+  
         fn deposit(&mut self, account_id: &str, amount: i64) -> Result<(), String> {
             if amount <= 0 {
                 return Err("存款金额必须为正数".to_string());
             }
-            
+  
             let balance = self.balances.get_mut(account_id)
                 .ok_or_else(|| "账户不存在".to_string())?;
-            
+  
             *balance += amount;
-            
+  
             Ok(())
         }
-        
+  
         fn withdraw(&mut self, account_id: &str, amount: i64) -> Result<(), String> {
             if amount <= 0 {
                 return Err("取款金额必须为正数".to_string());
             }
-            
+  
             let balance = self.balances.get_mut(account_id)
                 .ok_or_else(|| "账户不存在".to_string())?;
-            
+  
             if *balance < amount {
                 return Err("余额不足".to_string());
             }
-            
+  
             *balance -= amount;
-            
+  
             Ok(())
         }
-        
+  
         fn transfer(&mut self, from_id: &str, to_id: &str, amount: i64) -> Result<(), String> {
             if amount <= 0 {
                 return Err("转账金额必须为正数".to_string());
             }
-            
+  
             if from_id == to_id {
                 return Err("不能转账给自己".to_string());
             }
-            
+  
             // 获取余额（避免同时借用可变引用）
             let from_balance = self.get_balance(from_id)
                 .ok_or_else(|| "转出账户不存在".to_string())?;
-            
+  
             let to_exists = self.get_balance(to_id).is_some();
             if !to_exists {
                 return Err("转入账户不存在".to_string());
             }
-            
+  
             if from_balance < amount {
                 return Err("余额不足".to_string());
             }
-            
+  
             // 执行转账
             let from_balance = self.balances.get_mut(from_id).unwrap();
             *from_balance -= amount;
-            
+  
             let to_balance = self.balances.get_mut(to_id).unwrap();
             *to_balance += amount;
-            
+  
             Ok(())
         }
     }
-    
+  
     /// 具体账户实现：使用实体类表示账户
     pub struct ConcreteAccount {
         pub id: String,
         pub balance: i64,
         pub transaction_history: Vec<Transaction>,
     }
-    
+  
     pub struct Transaction {
         pub timestamp: chrono::DateTime<chrono::Utc>,
         pub transaction_type: TransactionType,
         pub amount: i64,
         pub related_account_id: Option<String>,
     }
-    
+  
     pub enum TransactionType {
         Deposit,
         Withdrawal,
         TransferIn,
         TransferOut,
     }
-    
+  
     impl ConcreteAccount {
         pub fn new(id: &str, initial_balance: i64) -> Result<Self, String> {
             if initial_balance < 0 {
                 return Err("初始余额不能为负".to_string());
             }
-            
+  
             Ok(ConcreteAccount {
                 id: id.to_string(),
                 balance: initial_balance,
                 transaction_history: Vec::new(),
             })
         }
-        
-        pub fn record_transaction(&mut self, 
-                                  transaction_type: TransactionType, 
+  
+        pub fn record_transaction(&mut self,
+                                  transaction_type: TransactionType,
                                   amount: i64,
                                   related_account_id: Option<String>) {
             let transaction = Transaction {
@@ -5849,197 +5875,197 @@ pub mod refinement_proof {
                 amount,
                 related_account_id,
             };
-            
+  
             self.transaction_history.push(transaction);
         }
     }
-    
+  
     pub struct ConcreteAccounts {
         accounts: HashMap<String, ConcreteAccount>,
     }
-    
+  
     impl ConcreteAccounts {
         pub fn new() -> Self {
             ConcreteAccounts {
                 accounts: HashMap::new(),
             }
         }
-        
+  
         pub fn create_account(&mut self, account_id: &str, initial_balance: i64) -> Result<(), String> {
             if self.accounts.contains_key(account_id) {
                 return Err("账户已存在".to_string());
             }
-            
+  
             let account = ConcreteAccount::new(account_id, initial_balance)?;
             self.accounts.insert(account_id.to_string(), account);
             Ok(())
         }
-        
+  
         pub fn get_transaction_history(&self, account_id: &str) -> Option<&Vec<Transaction>> {
             self.accounts.get(account_id).map(|acc| &acc.transaction_history)
         }
     }
-    
+  
     impl AbstractAccountModel for ConcreteAccounts {
         fn get_balance(&self, account_id: &str) -> Option<i64> {
             self.accounts.get(account_id).map(|acc| acc.balance)
         }
-        
+  
         fn deposit(&mut self, account_id: &str, amount: i64) -> Result<(), String> {
             if amount <= 0 {
                 return Err("存款金额必须为正数".to_string());
             }
-            
+  
             let account = self.accounts.get_mut(account_id)
                 .ok_or_else(|| "账户不存在".to_string())?;
-            
+  
             account.balance += amount;
             account.record_transaction(TransactionType::Deposit, amount, None);
-            
+  
             Ok(())
         }
-        
+  
         fn withdraw(&mut self, account_id: &str, amount: i64) -> Result<(), String> {
             if amount <= 0 {
                 return Err("取款金额必须为正数".to_string());
             }
-            
+  
             let account = self.accounts.get_mut(account_id)
                 .ok_or_else(|| "账户不存在".to_string())?;
-            
+  
             if account.balance < amount {
                 return Err("余额不足".to_string());
             }
-            
+  
             account.balance -= amount;
             account.record_transaction(TransactionType::Withdrawal, amount, None);
-            
+  
             Ok(())
         }
-        
+  
         fn transfer(&mut self, from_id: &str, to_id: &str, amount: i64) -> Result<(), String> {
             if amount <= 0 {
                 return Err("转账金额必须为正数".to_string());
             }
-            
+  
             if from_id == to_id {
                 return Err("不能转账给自己".to_string());
             }
-            
+  
             // 检查账户是否存在及余额是否充足
             if !self.accounts.contains_key(from_id) {
                 return Err("转出账户不存在".to_string());
             }
-            
+  
             if !self.accounts.contains_key(to_id) {
                 return Err("转入账户不存在".to_string());
             }
-            
+  
             let from_balance = self.accounts.get(from_id).unwrap().balance;
             if from_balance < amount {
                 return Err("余额不足".to_string());
             }
-            
+  
             // 执行转账（需要分开处理以避免同时可变借用）
             {
                 let from_account = self.accounts.get_mut(from_id).unwrap();
                 from_account.balance -= amount;
                 from_account.record_transaction(
-                    TransactionType::TransferOut, 
-                    amount, 
+                    TransactionType::TransferOut,
+                    amount,
                     Some(to_id.to_string())
                 );
             }
-            
+  
             {
                 let to_account = self.accounts.get_mut(to_id).unwrap();
                 to_account.balance += amount;
                 to_account.record_transaction(
-                    TransactionType::TransferIn, 
-                    amount, 
+                    TransactionType::TransferIn,
+                    amount,
                     Some(from_id.to_string())
                 );
             }
-            
+  
             Ok(())
         }
     }
-    
+  
     /// 证明抽象模型和具体实现之间的精化关系
     pub struct RefinementProver;
-    
+  
     impl RefinementProver {
         pub fn prove_refinement() -> Result<(), Vec<String>> {
             let mut errors = Vec::new();
-            
+  
             // 创建抽象模型和具体实现的实例
             let mut abstract_model = AbstractAccounts::new();
             let mut concrete_model = ConcreteAccounts::new();
-            
+  
             // 初始状态：创建相同的账户
             abstract_model.create_account("a1", 1000).unwrap();
             abstract_model.create_account("a2", 500).unwrap();
-            
+  
             concrete_model.create_account("a1", 1000).unwrap();
             concrete_model.create_account("a2", 500).unwrap();
-            
+  
             // 属性1：初始状态一致
             if abstract_model.get_balance("a1") != concrete_model.get_balance("a1") ||
                abstract_model.get_balance("a2") != concrete_model.get_balance("a2") {
                 errors.push("初始状态不一致".to_string());
             }
-            
+  
             // 属性2：存款后状态一致
             abstract_model.deposit("a1", 200).unwrap();
             concrete_model.deposit("a1", 200).unwrap();
-            
+  
             if abstract_model.get_balance("a1") != concrete_model.get_balance("a1") {
                 errors.push("存款后状态不一致".to_string());
             }
-            
+  
             // 属性3：取款后状态一致
             abstract_model.withdraw("a1", 100).unwrap();
             concrete_model.withdraw("a1", 100).unwrap();
-            
+  
             if abstract_model.get_balance("a1") != concrete_model.get_balance("a1") {
                 errors.push("取款后状态不一致".to_string());
             }
-            
+  
             // 属性4：转账后状态一致
             abstract_model.transfer("a1", "a2", 300).unwrap();
             concrete_model.transfer("a1", "a2", 300).unwrap();
-            
+  
             if abstract_model.get_balance("a1") != concrete_model.get_balance("a1") ||
                abstract_model.get_balance("a2") != concrete_model.get_balance("a2") {
                 errors.push("转账后状态不一致".to_string());
             }
-            
+  
             // 属性5：错误处理一致性
-            
+  
             // 尝试无效存款
             let abstract_result = abstract_model.deposit("a1", -100);
             let concrete_result = concrete_model.deposit("a1", -100);
-            
+  
             if abstract_result.is_ok() != concrete_result.is_ok() {
                 errors.push("无效存款错误处理不一致".to_string());
             }
-            
+  
             // 尝试超额取款
             let abstract_result = abstract_model.withdraw("a1", 2000);
             let concrete_result = concrete_model.withdraw("a1", 2000);
-            
+  
             if abstract_result.is_ok() != concrete_result.is_ok() {
                 errors.push("超额取款错误处理不一致".to_string());
             }
-            
+  
             // 尝试无效转账
             let abstract_result = abstract_model.transfer("a1", "a3", 100);
             let concrete_result = concrete_model.transfer("a1", "a3", 100);
-            
+  
             if abstract_result.is_ok() != concrete_result.is_ok() {
                 errors.push("无效转账错误处理不一致".to_string());
             }
-            
+  
             // 属性6：具体实现的额外功能（交易历史）
             if let Some(history) = concrete_model.get_transaction_history("a1") {
                 if history.len() != 4 { // 1次存款，1次取款，1次转出，1次创建账户的隐式交易
@@ -6048,7 +6074,7 @@ pub mod refinement_proof {
             } else {
                 errors.push("无法获取交易历史".to_string());
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
@@ -6057,6 +6083,7 @@ pub mod refinement_proof {
         }
     }
 }
+
 ```
 
 ### 1.8.4 类型证明
@@ -6086,14 +6113,14 @@ pub mod refinement_proof {
 /// 类型证明示例
 pub mod type_proof {
     use std::marker::PhantomData;
-    
+  
     /// 状态标记类型
     pub struct Empty;
     pub struct Draft;
     pub struct Submitted;
     pub struct Approved;
     pub struct Rejected;
-    
+  
     /// 文档类型，参数化状态
     pub struct Document<State> {
         id: String,
@@ -6102,26 +6129,26 @@ pub mod type_proof {
         author: String,
         state: PhantomData<State>,
     }
-    
+  
     /// 所有状态的共享功能
     impl<State> Document<State> {
         pub fn id(&self) -> &str {
             &self.id
         }
-        
+  
         pub fn title(&self) -> &str {
             &self.title
         }
-        
+  
         pub fn content(&self) -> &str {
             &self.content
         }
-        
+  
         pub fn author(&self) -> &str {
             &self.author
         }
     }
-    
+  
     /// 空文档状态的功能
     impl Document<Empty> {
         pub fn new(id: &str) -> Self {
@@ -6133,7 +6160,7 @@ pub mod type_proof {
                 state: PhantomData,
             }
         }
-        
+  
         pub fn initialize(self, title: &str, author: &str) -> Document<Draft> {
             Document {
                 id: self.id,
@@ -6144,17 +6171,17 @@ pub mod type_proof {
             }
         }
     }
-    
+  
     /// 草稿状态的功能
     impl Document<Draft> {
         pub fn update_content(&mut self, content: &str) {
             self.content = content.to_string();
         }
-        
+  
         pub fn update_title(&mut self, title: &str) {
             self.title = title.to_string();
         }
-        
+  
         pub fn submit(self) -> Document<Submitted> {
             Document {
                 id: self.id,
@@ -6165,7 +6192,7 @@ pub mod type_proof {
             }
         }
     }
-    
+  
     /// 已提交状态的功能
     impl Document<Submitted> {
         pub fn approve(self) -> Document<Approved> {
@@ -6177,7 +6204,7 @@ pub mod type_proof {
                 state: PhantomData,
             }
         }
-        
+  
         pub fn reject(self, reason: &str) -> (Document<Rejected>, String) {
             (Document {
                 id: self.id,
@@ -6187,7 +6214,7 @@ pub mod type_proof {
                 state: PhantomData,
             }, reason.to_string())
         }
-        
+  
         pub fn return_for_updates(self) -> Document<Draft> {
             Document {
                 id: self.id,
@@ -6198,7 +6225,7 @@ pub mod type_proof {
             }
         }
     }
-    
+  
     /// 已批准状态的功能
     impl Document<Approved> {
         pub fn publish(&self) -> PublishedDocument {
@@ -6211,7 +6238,7 @@ pub mod type_proof {
             }
         }
     }
-    
+  
     /// 已拒绝状态的功能
     impl Document<Rejected> {
         pub fn return_for_updates(self) -> Document<Draft> {
@@ -6224,7 +6251,7 @@ pub mod type_proof {
             }
         }
     }
-    
+  
     /// 已发布的文档
     pub struct PublishedDocument {
         pub id: String,
@@ -6233,71 +6260,72 @@ pub mod type_proof {
         pub author: String,
         pub published_at: chrono::DateTime<chrono::Utc>,
     }
-    
+  
     /// 分析类型安全性
     pub struct TypeSafetyAnalyzer;
-    
+  
     impl TypeSafetyAnalyzer {
         pub fn demonstrate_type_safety() {
             // 创建空文档
             let empty_doc = Document::<Empty>::new("doc-123");
-            
+  
             // 初始化为草稿
             let mut draft_doc = empty_doc.initialize("初稿", "张三");
-            
+  
             // 更新草稿内容
             draft_doc.update_content("这是文档的内容");
-            
+  
             // 提交文档
             let submitted_doc = draft_doc.submit();
-            
+  
             // 分支1：批准文档
             let approved_path = || {
                 let approved_doc = submitted_doc.approve();
                 let published_doc = approved_doc.publish();
                 println!("文档已发布: {}", published_doc.title);
             };
-            
+  
             // 分支2：拒绝文档
             let rejected_path = || {
                 let (rejected_doc, reason) = submitted_doc.reject("格式不符合要求");
                 println!("文档被拒绝: {}", reason);
-                
+  
                 // 返回修改
                 let mut updated_draft = rejected_doc.return_for_updates();
                 updated_draft.update_content("修改后的内容");
                 let resubmitted_doc = updated_draft.submit();
-                
+  
                 // 再次审批
                 let approved_doc = resubmitted_doc.approve();
                 let published_doc = approved_doc.publish();
                 println!("修改后的文档已发布: {}", published_doc.title);
             };
-            
+  
             // 分支3：返回修改
             let return_path = || {
                 let returned_draft = submitted_doc.return_for_updates();
                 // ...继续修改流程
             };
-            
+  
             // 注意：这里只能选择一个路径执行，因为submitted_doc的所有权在第一次调用时已经转移
             // approved_path();
             // rejected_path(); // 如果取消注释，将导致编译错误
-            
+  
             // 以下是类型系统强制的约束演示：
-            
+  
             // 错误1：空文档不能直接提交
             // let empty_doc = Document::<Empty>::new("doc-456");
             // empty_doc.submit(); // 编译错误：Empty状态没有submit方法
-            
+  
             // 错误2：已提交文档不能再更新内容
             // submitted_doc.update_content("新内容"); // 编译错误：Submitted状态没有update_content方法
-            
+  
             // 错误3：草稿不能直接发布
             // draft_doc.publish(); // 编译错误：Draft状态没有publish方法
         }
     }
 }
+
 ```
 
 ## 1.9 8. 综合案例分析
@@ -6312,66 +6340,66 @@ pub mod ecommerce_domain {
     use std::collections::{HashMap, HashSet};
     use std::sync::{Arc, Mutex};
     use chrono::{DateTime, Utc};
-    
+  
     // ==============================
     // 领域值对象
     // ==============================
-    
+  
     /// 货币值对象 - 值对象是通过其属性定义的不可变对象
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub struct Money {
         amount: i64,      // 以分为单位
         currency: String, // 货币代码，如"CNY"
     }
-    
+  
     impl Money {
         pub fn new(amount: i64, currency: &str) -> Result<Self, String> {
             if currency.len() != 3 {
                 return Err("货币代码必须是3个字符".to_string());
             }
-            
+  
             Ok(Money {
                 amount,
                 currency: currency.to_string(),
             })
         }
-        
+  
         pub fn amount(&self) -> i64 {
             self.amount
         }
-        
+  
         pub fn currency(&self) -> &str {
             &self.currency
         }
-        
+  
         pub fn add(&self, other: &Money) -> Result<Money, String> {
             if self.currency != other.currency {
                 return Err(format!(
-                    "无法相加不同货币: {} 和 {}", 
+                    "无法相加不同货币: {} 和 {}",
                     self.currency, other.currency
                 ));
             }
-            
+  
             Ok(Money {
                 amount: self.amount + other.amount,
                 currency: self.currency.clone(),
             })
         }
-        
+  
         pub fn subtract(&self, other: &Money) -> Result<Money, String> {
             if self.currency != other.currency {
                 return Err(format!(
-                    "无法相减不同货币: {} 和 {}", 
+                    "无法相减不同货币: {} 和 {}",
                     self.currency, other.currency
                 ));
             }
-            
+  
             Ok(Money {
                 amount: self.amount - other.amount,
                 currency: self.currency.clone(),
             })
         }
-        
+  
         pub fn multiply(&self, factor: i64) -> Money {
             Money {
                 amount: self.amount * factor,
@@ -6379,7 +6407,7 @@ pub mod ecommerce_domain {
             }
         }
     }
-    
+  
     /// 地址值对象
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub struct Address {
@@ -6389,7 +6417,7 @@ pub mod ecommerce_domain {
         postal_code: String,
         country: String,
     }
-    
+  
     impl Address {
         pub fn new(street: &str, city: &str, state: &str, postal_code: &str, country: &str) -> Self {
             Address {
@@ -6400,27 +6428,27 @@ pub mod ecommerce_domain {
                 country: country.to_string(),
             }
         }
-        
+  
         // 校验邮政编码格式
         pub fn validate(&self) -> Result<(), String> {
             // 简化实现：确保邮政编码不为空
             if self.postal_code.is_empty() {
                 return Err("邮政编码不能为空".to_string());
             }
-            
+  
             // 简化实现：确保国家代码是有效的
             if self.country.len() < 2 {
                 return Err("无效的国家代码".to_string());
             }
-            
+  
             Ok(())
         }
     }
-    
+  
     // ==============================
     // 领域实体
     // ==============================
-    
+  
     /// 产品实体 - 实体是由标识定义的对象
     #[derive(Debug, Clone)]
     pub struct Product {
@@ -6431,7 +6459,7 @@ pub mod ecommerce_domain {
         in_stock: bool,
         stock_quantity: i32,
     }
-    
+  
     impl Product {
         pub fn new(id: &str, name: &str, description: &str, price: Money, stock_quantity: i32) -> Self {
             Product {
@@ -6443,52 +6471,52 @@ pub mod ecommerce_domain {
                 stock_quantity,
             }
         }
-        
+  
         pub fn id(&self) -> &str {
             &self.id
         }
-        
+  
         pub fn name(&self) -> &str {
             &self.name
         }
-        
+  
         pub fn description(&self) -> &str {
             &self.description
         }
-        
+  
         pub fn price(&self) -> &Money {
             &self.price
         }
-        
+  
         pub fn is_in_stock(&self) -> bool {
             self.in_stock
         }
-        
+  
         pub fn stock_quantity(&self) -> i32 {
             self.stock_quantity
         }
-        
+  
         pub fn update_stock(&mut self, quantity: i32) {
             self.stock_quantity = quantity;
             self.in_stock = quantity > 0;
         }
-        
+  
         pub fn decrease_stock(&mut self, quantity: i32) -> Result<(), String> {
             if quantity <= 0 {
                 return Err("减少的库存量必须为正数".to_string());
             }
-            
+  
             if self.stock_quantity < quantity {
                 return Err("库存不足".to_string());
             }
-            
+  
             self.stock_quantity -= quantity;
             self.in_stock = self.stock_quantity > 0;
-            
+  
             Ok(())
         }
     }
-    
+  
     /// 客户实体
     #[derive(Debug, Clone)]
     pub struct Customer {
@@ -6499,7 +6527,7 @@ pub mod ecommerce_domain {
         addresses: HashMap<String, Address>, // 名称到地址的映射
         default_address: Option<String>,     // 默认地址名称
     }
-    
+  
     impl Customer {
         pub fn new(id: &str, name: &str, email: &str) -> Self {
             Customer {
@@ -6511,65 +6539,65 @@ pub mod ecommerce_domain {
                 default_address: None,
             }
         }
-        
+  
         pub fn id(&self) -> &str {
             &self.id
         }
-        
+  
         pub fn name(&self) -> &str {
             &self.name
         }
-        
+  
         pub fn email(&self) -> &str {
             &self.email
         }
-        
+  
         pub fn set_phone(&mut self, phone: &str) {
             self.phone = Some(phone.to_string());
         }
-        
+  
         pub fn add_address(&mut self, name: &str, address: Address) -> Result<(), String> {
             address.validate()?;
-            
+  
             self.addresses.insert(name.to_string(), address);
-            
+  
             if self.default_address.is_none() {
                 self.default_address = Some(name.to_string());
             }
-            
+  
             Ok(())
         }
-        
+  
         pub fn set_default_address(&mut self, name: &str) -> Result<(), String> {
             if !self.addresses.contains_key(name) {
                 return Err(format!("地址 {} 不存在", name));
             }
-            
+  
             self.default_address = Some(name.to_string());
             Ok(())
         }
-        
+  
         pub fn get_default_address(&self) -> Option<&Address> {
             self.default_address.as_ref().and_then(|name| self.addresses.get(name))
         }
-        
+  
         pub fn validate(&self) -> Result<(), String> {
             // 验证邮箱格式
             if !self.email.contains('@') {
                 return Err("无效的邮箱地址".to_string());
             }
-            
+  
             // 如果有默认地址，验证该地址存在
             if let Some(default) = &self.default_address {
                 if !self.addresses.contains_key(default) {
                     return Err(format!("默认地址 {} 不存在", default));
                 }
             }
-            
+  
             Ok(())
         }
     }
-    
+  
     /// 订单项
     #[derive(Debug, Clone)]
     pub struct OrderItem {
@@ -6578,13 +6606,13 @@ pub mod ecommerce_domain {
         quantity: i32,
         unit_price: Money,
     }
-    
+  
     impl OrderItem {
         pub fn new(product_id: &str, product_name: &str, quantity: i32, unit_price: Money) -> Result<Self, String> {
             if quantity <= 0 {
                 return Err("订单项数量必须为正数".to_string());
             }
-            
+  
             Ok(OrderItem {
                 product_id: product_id.to_string(),
                 product_name: product_name.to_string(),
@@ -6592,32 +6620,32 @@ pub mod ecommerce_domain {
                 unit_price,
             })
         }
-        
+  
         pub fn product_id(&self) -> &str {
             &self.product_id
         }
-        
+  
         pub fn product_name(&self) -> &str {
             &self.product_name
         }
-        
+  
         pub fn quantity(&self) -> i32 {
             self.quantity
         }
-        
+  
         pub fn unit_price(&self) -> &Money {
             &self.unit_price
         }
-        
+  
         pub fn total_price(&self) -> Money {
             self.unit_price.multiply(self.quantity as i64)
         }
     }
-    
+  
     // ==============================
     // 聚合根
     // ==============================
-    
+  
     /// 订单状态
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub enum OrderStatus {
@@ -6627,7 +6655,7 @@ pub mod ecommerce_domain {
         Delivered,
         Cancelled,
     }
-    
+  
     /// 订单聚合根
     #[derive(Debug, Clone)]
     pub struct Order {
@@ -6640,14 +6668,14 @@ pub mod ecommerce_domain {
         modified_at: DateTime<Utc>,
         total_amount: Money,
     }
-    
+  
     impl Order {
         pub fn create(id: &str, customer_id: &str, shipping_address: Address) -> Result<Self, String> {
             shipping_address.validate()?;
-            
+  
             let now = Utc::now();
             let currency = "CNY"; // 默认货币
-            
+  
             Ok(Order {
                 id: id.to_string(),
                 customer_id: customer_id.to_string(),
@@ -6659,52 +6687,52 @@ pub mod ecommerce_domain {
                 total_amount: Money::new(0, currency)?,
             })
         }
-        
+  
         pub fn id(&self) -> &str {
             &self.id
         }
-        
+  
         pub fn customer_id(&self) -> &str {
             &self.customer_id
         }
-        
+  
         pub fn status(&self) -> &OrderStatus {
             &self.status
         }
-        
+  
         pub fn created_at(&self) -> &DateTime<Utc> {
             &self.created_at
         }
-        
+  
         pub fn total_amount(&self) -> &Money {
             &self.total_amount
         }
-        
+  
         pub fn add_item(&mut self, item: OrderItem) -> Result<(), String> {
             // 只有Created状态的订单可以修改
             if self.status != OrderStatus::Created {
                 return Err("只有创建状态的订单才能添加商品项".to_string());
             }
-            
+  
             // 添加商品项并更新总金额
             let item_total = item.total_price();
             self.total_amount = self.total_amount.add(&item_total)?;
             self.items.push(item);
             self.modified_at = Utc::now();
-            
+  
             Ok(())
         }
-        
+  
         pub fn remove_item(&mut self, product_id: &str) -> Result<(), String> {
             // 只有Created状态的订单可以修改
             if self.status != OrderStatus::Created {
                 return Err("只有创建状态的订单才能移除商品项".to_string());
             }
-            
+  
             let position = self.items.iter().position(|item|
 
             let position = self.items.iter().position(|item| item.product_id() == product_id);
-            
+  
             if let Some(pos) = position {
                 let item = &self.items[pos];
                 let item_total = item.total_price();
@@ -6716,106 +6744,106 @@ pub mod ecommerce_domain {
                 Err(format!("订单中不存在产品ID为 {} 的商品项", product_id))
             }
         }
-        
+  
         pub fn confirm(&mut self) -> Result<(), String> {
             if self.status != OrderStatus::Created {
                 return Err(format!("只有处于Created状态的订单才能确认，当前状态：{:?}", self.status));
             }
-            
+  
             if self.items.is_empty() {
                 return Err("不能确认空订单".to_string());
             }
-            
+  
             self.status = OrderStatus::Confirmed;
             self.modified_at = Utc::now();
-            
+  
             Ok(())
         }
-        
+  
         pub fn ship(&mut self) -> Result<(), String> {
             if self.status != OrderStatus::Confirmed {
                 return Err(format!("只有处于Confirmed状态的订单才能发货，当前状态：{:?}", self.status));
             }
-            
+  
             self.status = OrderStatus::Shipped;
             self.modified_at = Utc::now();
-            
+  
             Ok(())
         }
-        
+  
         pub fn deliver(&mut self) -> Result<(), String> {
             if self.status != OrderStatus::Shipped {
                 return Err(format!("只有处于Shipped状态的订单才能送达，当前状态：{:?}", self.status));
             }
-            
+  
             self.status = OrderStatus::Delivered;
             self.modified_at = Utc::now();
-            
+  
             Ok(())
         }
-        
+  
         pub fn cancel(&mut self) -> Result<(), String> {
             // 只有Created或Confirmed状态的订单可以取消
             if self.status != OrderStatus::Created && self.status != OrderStatus::Confirmed {
                 return Err(format!("处于{:?}状态的订单不能取消", self.status));
             }
-            
+  
             self.status = OrderStatus::Cancelled;
             self.modified_at = Utc::now();
-            
+  
             Ok(())
         }
-        
+  
         /// 检查订单的不变量
         pub fn check_invariants(&self) -> Result<(), String> {
             // 订单必须有有效的送货地址
             self.shipping_address.validate()?;
-            
+  
             // 已确认的订单必须有至少一个商品项
             if self.status != OrderStatus::Created && self.items.is_empty() {
                 return Err("已确认的订单必须至少包含一个商品项".to_string());
             }
-            
+  
             // 验证总金额计算正确
             let calculated_total = self.calculate_total_amount()?;
-            if calculated_total.amount() != self.total_amount.amount() || 
+            if calculated_total.amount() != self.total_amount.amount() ||
                calculated_total.currency() != self.total_amount.currency() {
                 return Err(format!(
-                    "总金额不匹配：记录 {} {}，计算 {} {}", 
+                    "总金额不匹配：记录 {} {}，计算 {} {}",
                     self.total_amount.amount(), self.total_amount.currency(),
                     calculated_total.amount(), calculated_total.currency()
                 ));
             }
-            
+  
             Ok(())
         }
-        
+  
         fn calculate_total_amount(&self) -> Result<Money, String> {
             if self.items.is_empty() {
                 return Ok(Money::new(0, "CNY")?);
             }
-            
+  
             let mut total = self.items[0].total_price();
-            
+  
             for item in &self.items[1..] {
                 total = total.add(&item.total_price())?;
             }
-            
+  
             Ok(total)
         }
     }
-    
+  
     // ==============================
     // 领域服务
     // ==============================
-    
+  
     /// 订单服务 - 处理跨聚合操作
     pub struct OrderService {
         product_repository: Arc<dyn ProductRepository>,
         order_repository: Arc<dyn OrderRepository>,
         customer_repository: Arc<dyn CustomerRepository>,
     }
-    
+  
     impl OrderService {
         pub fn new(
             product_repository: Arc<dyn ProductRepository>,
@@ -6828,17 +6856,17 @@ pub mod ecommerce_domain {
                 customer_repository,
             }
         }
-        
+  
         /// 创建订单
-        pub fn create_order(&self, 
-                           customer_id: &str, 
+        pub fn create_order(&self,
+                           customer_id: &str,
                            product_ids: &[(String, i32)], // (产品ID, 数量)
                            shipping_address_name: Option<&str>
         ) -> Result<Order, String> {
             // 获取客户
             let customer = self.customer_repository.find_by_id(customer_id)?
                 .ok_or_else(|| format!("找不到客户ID: {}", customer_id))?;
-            
+  
             // 获取送货地址
             let shipping_address = if let Some(address_name) = shipping_address_name {
                 customer.addresses.get(address_name)
@@ -6849,25 +6877,25 @@ pub mod ecommerce_domain {
                     .ok_or_else(|| "客户没有默认地址".to_string())?
                     .clone()
             };
-            
+  
             // 创建订单
             let order_id = format!("order-{}", Utc::now().timestamp());
             let mut order = Order::create(&order_id, customer_id, shipping_address)?;
-            
+  
             // 添加订单项
             for (product_id, quantity) in product_ids {
                 // 获取产品信息
                 let product = self.product_repository.find_by_id(product_id)?
                     .ok_or_else(|| format!("找不到产品ID: {}", product_id))?;
-                
+  
                 // 检查库存
                 if product.stock_quantity() < *quantity {
                     return Err(format!(
-                        "产品 {} 库存不足，需要 {}，现有 {}", 
+                        "产品 {} 库存不足，需要 {}，现有 {}",
                         product.name(), quantity, product.stock_quantity()
                     ));
                 }
-                
+  
                 // 添加到订单
                 let order_item = OrderItem::new(
                     product.id(),
@@ -6875,80 +6903,80 @@ pub mod ecommerce_domain {
                     *quantity,
                     product.price().clone()
                 )?;
-                
+  
                 order.add_item(order_item)?;
             }
-            
+  
             // 保存订单
             self.order_repository.save(&order)?;
-            
+  
             Ok(order)
         }
-        
+  
         /// 确认订单并减少库存
         pub fn confirm_order(&self, order_id: &str) -> Result<Order, String> {
             // 获取订单
             let mut order = self.order_repository.find_by_id(order_id)?
                 .ok_or_else(|| format!("找不到订单ID: {}", order_id))?;
-            
+  
             // 检查并更新每个产品的库存
             for item in &order.items {
                 let mut product = self.product_repository.find_by_id(item.product_id())?
                     .ok_or_else(|| format!("找不到产品ID: {}", item.product_id()))?;
-                
+  
                 // 减少库存
                 product.decrease_stock(item.quantity())?;
-                
+  
                 // 保存产品
                 self.product_repository.save(&product)?;
             }
-            
+  
             // 确认订单
             order.confirm()?;
-            
+  
             // 保存订单
             self.order_repository.save(&order)?;
-            
+  
             Ok(order)
         }
-        
+  
         /// 取消订单并恢复库存
         pub fn cancel_order(&self, order_id: &str) -> Result<Order, String> {
             // 获取订单
             let mut order = self.order_repository.find_by_id(order_id)?
                 .ok_or_else(|| format!("找不到订单ID: {}", order_id))?;
-            
+  
             let original_status = order.status.clone();
-            
+  
             // 取消订单
             order.cancel()?;
-            
+  
             // 如果订单已确认，则恢复库存
             if original_status == OrderStatus::Confirmed {
                 for item in &order.items {
                     let mut product = self.product_repository.find_by_id(item.product_id())?
                         .ok_or_else(|| format!("找不到产品ID: {}", item.product_id()))?;
-                    
+  
                     // 增加库存
                     let new_quantity = product.stock_quantity() + item.quantity();
                     product.update_stock(new_quantity);
-                    
+  
                     // 保存产品
                     self.product_repository.save(&product)?;
                 }
             }
-            
+  
             // 保存订单
             self.order_repository.save(&order)?;
-            
+  
             Ok(order)
         }
     }
-    
+  
     // ==============================
     // 仓储接口 - 依赖倒置原则
     // ==============================
-    
+  
     /// 产品仓储接口
     pub trait ProductRepository: Send + Sync {
         fn find_by_id(&self, id: &str) -> Result<Option<Product>, String>;
@@ -6956,7 +6984,7 @@ pub mod ecommerce_domain {
         fn save(&self, product: &Product) -> Result<(), String>;
         fn delete(&self, id: &str) -> Result<(), String>;
     }
-    
+  
     /// 订单仓储接口
     pub trait OrderRepository: Send + Sync {
         fn find_by_id(&self, id: &str) -> Result<Option<Order>, String>;
@@ -6964,7 +6992,7 @@ pub mod ecommerce_domain {
         fn save(&self, order: &Order) -> Result<(), String>;
         fn delete(&self, id: &str) -> Result<(), String>;
     }
-    
+  
     /// 客户仓储接口
     pub trait CustomerRepository: Send + Sync {
         fn find_by_id(&self, id: &str) -> Result<Option<Customer>, String>;
@@ -6972,16 +7000,16 @@ pub mod ecommerce_domain {
         fn save(&self, customer: &Customer) -> Result<(), String>;
         fn delete(&self, id: &str) -> Result<(), String>;
     }
-    
+  
     // ==============================
     // 内存仓储实现
     // ==============================
-    
+  
     /// 内存产品仓储
     pub struct InMemoryProductRepository {
         products: Mutex<HashMap<String, Product>>,
     }
-    
+  
     impl InMemoryProductRepository {
         pub fn new() -> Self {
             InMemoryProductRepository {
@@ -6989,36 +7017,36 @@ pub mod ecommerce_domain {
             }
         }
     }
-    
+  
     impl ProductRepository for InMemoryProductRepository {
         fn find_by_id(&self, id: &str) -> Result<Option<Product>, String> {
             let products = self.products.lock().map_err(|e| e.to_string())?;
             Ok(products.get(id).cloned())
         }
-        
+  
         fn find_all(&self) -> Result<Vec<Product>, String> {
             let products = self.products.lock().map_err(|e| e.to_string())?;
             Ok(products.values().cloned().collect())
         }
-        
+  
         fn save(&self, product: &Product) -> Result<(), String> {
             let mut products = self.products.lock().map_err(|e| e.to_string())?;
             products.insert(product.id().to_string(), product.clone());
             Ok(())
         }
-        
+  
         fn delete(&self, id: &str) -> Result<(), String> {
             let mut products = self.products.lock().map_err(|e| e.to_string())?;
             products.remove(id);
             Ok(())
         }
     }
-    
+  
     /// 内存订单仓储
     pub struct InMemoryOrderRepository {
         orders: Mutex<HashMap<String, Order>>,
     }
-    
+  
     impl InMemoryOrderRepository {
         pub fn new() -> Self {
             InMemoryOrderRepository {
@@ -7026,47 +7054,47 @@ pub mod ecommerce_domain {
             }
         }
     }
-    
+  
     impl OrderRepository for InMemoryOrderRepository {
         fn find_by_id(&self, id: &str) -> Result<Option<Order>, String> {
             let orders = self.orders.lock().map_err(|e| e.to_string())?;
             Ok(orders.get(id).cloned())
         }
-        
+  
         fn find_by_customer_id(&self, customer_id: &str) -> Result<Vec<Order>, String> {
             let orders = self.orders.lock().map_err(|e| e.to_string())?;
             let mut result = Vec::new();
-            
+  
             for order in orders.values() {
                 if order.customer_id() == customer_id {
                     result.push(order.clone());
                 }
             }
-            
+  
             Ok(result)
         }
-        
+  
         fn save(&self, order: &Order) -> Result<(), String> {
             // 验证不变量
             order.check_invariants()?;
-            
+  
             let mut orders = self.orders.lock().map_err(|e| e.to_string())?;
             orders.insert(order.id().to_string(), order.clone());
             Ok(())
         }
-        
+  
         fn delete(&self, id: &str) -> Result<(), String> {
             let mut orders = self.orders.lock().map_err(|e| e.to_string())?;
             orders.remove(id);
             Ok(())
         }
     }
-    
+  
     /// 内存客户仓储
     pub struct InMemoryCustomerRepository {
         customers: Mutex<HashMap<String, Customer>>,
     }
-    
+  
     impl InMemoryCustomerRepository {
         pub fn new() -> Self {
             InMemoryCustomerRepository {
@@ -7074,52 +7102,52 @@ pub mod ecommerce_domain {
             }
         }
     }
-    
+  
     impl CustomerRepository for InMemoryCustomerRepository {
         fn find_by_id(&self, id: &str) -> Result<Option<Customer>, String> {
             let customers = self.customers.lock().map_err(|e| e.to_string())?;
             Ok(customers.get(id).cloned())
         }
-        
+  
         fn find_by_email(&self, email: &str) -> Result<Option<Customer>, String> {
             let customers = self.customers.lock().map_err(|e| e.to_string())?;
-            
+  
             for customer in customers.values() {
                 if customer.email() == email {
                     return Ok(Some(customer.clone()));
                 }
             }
-            
+  
             Ok(None)
         }
-        
+  
         fn save(&self, customer: &Customer) -> Result<(), String> {
             // 验证客户
             customer.validate()?;
-            
+  
             let mut customers = self.customers.lock().map_err(|e| e.to_string())?;
             customers.insert(customer.id().to_string(), customer.clone());
             Ok(())
         }
-        
+  
         fn delete(&self, id: &str) -> Result<(), String> {
             let mut customers = self.customers.lock().map_err(|e| e.to_string())?;
             customers.remove(id);
             Ok(())
         }
     }
-    
+  
     // ==============================
     // 领域事件
     // ==============================
-    
+  
     /// 领域事件接口
     pub trait DomainEvent: Send + Sync {
         fn event_type(&self) -> &str;
         fn occurred_at(&self) -> DateTime<Utc>;
         fn aggregate_id(&self) -> &str;
     }
-    
+  
     /// 订单创建事件
     #[derive(Debug, Clone)]
     pub struct OrderCreatedEvent {
@@ -7127,7 +7155,7 @@ pub mod ecommerce_domain {
         customer_id: String,
         occurred_at: DateTime<Utc>,
     }
-    
+  
     impl OrderCreatedEvent {
         pub fn new(order_id: &str, customer_id: &str) -> Self {
             OrderCreatedEvent {
@@ -7137,21 +7165,21 @@ pub mod ecommerce_domain {
             }
         }
     }
-    
+  
     impl DomainEvent for OrderCreatedEvent {
         fn event_type(&self) -> &str {
             "OrderCreated"
         }
-        
+  
         fn occurred_at(&self) -> DateTime<Utc> {
             self.occurred_at
         }
-        
+  
         fn aggregate_id(&self) -> &str {
             &self.order_id
         }
     }
-    
+  
     /// 订单状态变更事件
     #[derive(Debug, Clone)]
     pub struct OrderStatusChangedEvent {
@@ -7160,7 +7188,7 @@ pub mod ecommerce_domain {
         new_status: OrderStatus,
         occurred_at: DateTime<Utc>,
     }
-    
+  
     impl OrderStatusChangedEvent {
         pub fn new(order_id: &str, old_status: OrderStatus, new_status: OrderStatus) -> Self {
             OrderStatusChangedEvent {
@@ -7170,61 +7198,61 @@ pub mod ecommerce_domain {
                 occurred_at: Utc::now(),
             }
         }
-        
+  
         pub fn old_status(&self) -> &OrderStatus {
             &self.old_status
         }
-        
+  
         pub fn new_status(&self) -> &OrderStatus {
             &self.new_status
         }
     }
-    
+  
     impl DomainEvent for OrderStatusChangedEvent {
         fn event_type(&self) -> &str {
             "OrderStatusChanged"
         }
-        
+  
         fn occurred_at(&self) -> DateTime<Utc> {
             self.occurred_at
         }
-        
+  
         fn aggregate_id(&self) -> &str {
             &self.order_id
         }
     }
-    
+  
     // ==============================
     // 领域事件发布器
     // ==============================
-    
+  
     /// 事件处理器特征
     pub trait EventHandler: Send + Sync {
         fn handle(&self, event: &dyn DomainEvent) -> Result<(), String>;
     }
-    
+  
     /// 事件发布器
     pub struct EventPublisher {
         handlers: HashMap<String, Vec<Arc<dyn EventHandler>>>,
     }
-    
+  
     impl EventPublisher {
         pub fn new() -> Self {
             EventPublisher {
                 handlers: HashMap::new(),
             }
         }
-        
+  
         pub fn register_handler(&mut self, event_type: &str, handler: Arc<dyn EventHandler>) {
             self.handlers.entry(event_type.to_string())
                 .or_insert_with(Vec::new)
                 .push(handler);
         }
-        
+  
         pub fn publish(&self, event: &dyn DomainEvent) -> Result<(), Vec<String>> {
             let event_type = event.event_type();
             let mut errors = Vec::new();
-            
+  
             if let Some(handlers) = self.handlers.get(event_type) {
                 for handler in handlers {
                     if let Err(e) = handler.handle(event) {
@@ -7232,7 +7260,7 @@ pub mod ecommerce_domain {
                     }
                 }
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
@@ -7241,6 +7269,7 @@ pub mod ecommerce_domain {
         }
     }
 }
+
 ```
 
 ### 1.9.2 从元模型到实现的全流程
@@ -7257,15 +7286,15 @@ pub mod metamodel_to_implementation {
         model_validation::*
     };
     use std::collections::HashMap;
-    
+  
     /// 执行从元模型到代码的完整流程
     pub fn execute_workflow() -> Result<(), String> {
         println!("===== 元模型到实现的全流程 =====\n");
-        
+  
         // 步骤1：创建元模型
         println!("步骤1：创建元模型");
         let meta_model = create_ecommerce_meta_model();
-        
+  
         // 验证元模型
         println!("验证元模型...");
         match meta_model.validate() {
@@ -7277,20 +7306,20 @@ pub mod metamodel_to_implementation {
             }
         }
         println!();
-        
+  
         // 步骤2：创建模型实例
         println!("步骤2：创建模型实例");
         let model = create_ecommerce_model_instance();
-        
+  
         // 验证模型实例
         println!("验证模型实例...");
         let validation_result = ModelValidator::validate_model(&model, &meta_model);
-        
+  
         if validation_result.is_valid {
             println!("模型实例验证通过。");
         } else {
             let error_msg = format!(
-                "模型实例验证失败: {}", 
+                "模型实例验证失败: {}",
                 validation_result.issues.iter()
                     .map(|issue| format!("[{}] {}", issue.location, issue.message))
                     .collect::<Vec<_>>()
@@ -7300,32 +7329,32 @@ pub mod metamodel_to_implementation {
             return Err(error_msg);
         }
         println!();
-        
+  
         // 步骤3：配置代码生成
         println!("步骤3：配置代码生成");
         let mut config = CodeGenConfig::new("ecommerce", "src/generated");
-        
+  
         // 配置类型映射
         config.add_type_mapping("Customer", "Customer");
         config.add_type_mapping("Order", "Order");
         config.add_type_mapping("OrderItem", "OrderItem");
         config.add_type_mapping("Product", "Product");
         config.add_type_mapping("Address", "Address");
-        
+  
         // 配置字段映射
         config.add_field_mapping("Customer.email", "email_address");
-        
+  
         // 配置派生trait
         config.add_derive_trait("Serialize");
         config.add_derive_trait("Deserialize");
-        
+  
         println!("代码生成配置完成。");
         println!();
-        
+  
         // 步骤4：生成代码
         println!("步骤4：生成代码");
         let code_generator = CodeGenerator::new(config);
-        
+  
         let code_files = match code_generator.generate(&meta_model) {
             Ok(files) => files,
             Err(e) => {
@@ -7334,36 +7363,36 @@ pub mod metamodel_to_implementation {
                 return Err(error_msg);
             }
         };
-        
+  
         println!("生成的文件:");
         for (filename, _) in &code_files {
             println!("- {}", filename);
         }
         println!();
-        
+  
         // 步骤5：验证生成的代码
         println!("步骤5：验证生成的代码");
         let impl_validation = ImplementationValidator::validate_implementation(
             &code_files, &model, &meta_model
         );
-        
+  
         if impl_validation.is_valid {
             println!("代码实现验证通过。");
         } else {
             println!("代码实现验证发现以下问题:");
             for issue in impl_validation.issues {
-                println!("- [{}] {} ({})", 
+                println!("- [{}] {} ({})",
                     issue.severity,
                     issue.message,
                     issue.location
                 );
             }
-            
+  
             let errors = impl_validation.issues.iter()
                 .filter(|i| i.severity == IssueSeverity::Error)
                 .map(|i| format!("[{}] {}", i.location, i.message))
                 .collect::<Vec<_>>();
-            
+  
             if !errors.is_empty() {
                 let error_msg = format!("代码实现验证失败: {}", errors.join(", "));
                 println!("{}", error_msg);
@@ -7371,7 +7400,7 @@ pub mod metamodel_to_implementation {
             }
         }
         println!();
-        
+  
         // 步骤6：输出代码示例
         println!("步骤6：输出代码示例");
         if let Some(model_code) = code_files.get("model.rs") {
@@ -7382,37 +7411,37 @@ pub mod metamodel_to_implementation {
             }
             println!("...");
         }
-        
+  
         println!("\n===== 完整流程执行成功 =====");
-        
+  
         Ok(())
     }
-    
+  
     /// 为模拟运行创建示例数据
     pub fn create_sample_data() -> Result<(), String> {
         println!("===== 创建并使用示例数据 =====\n");
-        
+  
         use super::ecommerce_domain::*;
-        
+  
         // 创建仓储
         let product_repo = Arc::new(InMemoryProductRepository::new());
         let order_repo = Arc::new(InMemoryOrderRepository::new());
         let customer_repo = Arc::new(InMemoryCustomerRepository::new());
-        
+  
         // 创建领域服务
         let order_service = OrderService::new(
             product_repo.clone(),
             order_repo.clone(),
             customer_repo.clone()
         );
-        
+  
         // 创建事件发布器
         let mut event_publisher = EventPublisher::new();
-        
+  
         // 添加客户
         let mut customer = Customer::new("c001", "张三", "zhangsan@example.com");
         customer.set_phone("13800138000");
-        
+  
         let address = Address::new(
             "中关村大街1号",
             "北京市",
@@ -7420,15 +7449,15 @@ pub mod metamodel_to_implementation {
             "100081",
             "中国"
         );
-        
+  
         customer.add_address("家庭地址", address)?;
         customer_repo.save(&customer)?;
-        
+  
         println!("添加客户: {}", customer.name());
-        
+  
         // 添加产品
         let cny = Money::new(1, "CNY")?;
-        
+  
         let product1 = Product::new(
             "p001",
             "笔记本电脑",
@@ -7436,7 +7465,7 @@ pub mod metamodel_to_implementation {
             Money::new(699900, "CNY")?,
             10
         );
-        
+  
         let product2 = Product::new(
             "p002",
             "无线鼠标",
@@ -7444,62 +7473,63 @@ pub mod metamodel_to_implementation {
             Money::new(19900, "CNY")?,
             50
         );
-        
+  
         product_repo.save(&product1)?;
         product_repo.save(&product2)?;
-        
+  
         println!("添加产品: {}, {}", product1.name(), product2.name());
-        
+  
         // 创建订单
         let product_ids = vec![
             (product1.id().to_string(), 1),
             (product2.id().to_string(), 2),
         ];
-        
+  
         let order = order_service.create_order(
             customer.id(),
             &product_ids,
             Some("家庭地址")
         )?;
-        
-        println!("创建订单: {}, 总金额: {} {}", 
-                order.id(), 
-                order.total_amount().amount(), 
+  
+        println!("创建订单: {}, 总金额: {} {}",
+                order.id(),
+                order.total_amount().amount(),
                 order.total_amount().currency());
-        
+  
         // 确认订单
         let confirmed_order = order_service.confirm_order(order.id())?;
-        
-        println!("确认订单: {}, 状态: {:?}", 
-                confirmed_order.id(), 
+  
+        println!("确认订单: {}, 状态: {:?}",
+                confirmed_order.id(),
                 confirmed_order.status());
-        
+  
         // 验证产品库存变化
         let product1_after = product_repo.find_by_id(product1.id())?.unwrap();
         let product2_after = product_repo.find_by_id(product2.id())?.unwrap();
-        
-        println!("产品 {} 库存: 原 {}, 现 {}", 
-                product1.name(), 
+  
+        println!("产品 {} 库存: 原 {}, 现 {}",
+                product1.name(),
                 product1.stock_quantity(),
                 product1_after.stock_quantity());
-                
-        println!("产品 {} 库存: 原 {}, 现 {}", 
-                product2.name(), 
+  
+        println!("产品 {} 库存: 原 {}, 现 {}",
+                product2.name(),
                 product2.stock_quantity(),
                 product2_after.stock_quantity());
-        
+  
         // 查询客户订单
         let customer_orders = order_repo.find_by_customer_id(customer.id())?;
-        
-        println!("客户 {} 的订单数量: {}", 
-                customer.name(), 
+  
+        println!("客户 {} 的订单数量: {}",
+                customer.name(),
                 customer_orders.len());
-        
+  
         println!("\n===== 示例数据使用完成 =====");
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ### 1.9.3 形式验证与属性保障
@@ -7512,24 +7542,24 @@ pub mod formal_verification {
     use super::ecommerce_domain::*;
     use std::collections::HashMap;
     use std::sync::Arc;
-    
+  
     /// 订单状态属性验证
     pub struct OrderStateVerifier;
-    
+  
     impl OrderStateVerifier {
         /// 验证订单状态转换的正确性
         pub fn verify_order_state_transitions() -> Result<(), Vec<String>> {
             let mut errors = Vec::new();
-            
+  
             // 创建有效地址
             let address = Address::new(
-                "测试街道", 
-                "测试城市", 
-                "测试区域", 
-                "123456", 
+                "测试街道",
+                "测试城市",
+                "测试区域",
+                "123456",
                 "中国"
             );
-            
+  
             // 属性1：初始状态验证
             let order = match Order::create("o001", "c001", address.clone()) {
                 Ok(o) => o,
@@ -7538,14 +7568,14 @@ pub mod formal_verification {
                     return Err(errors);
                 }
             };
-            
+  
             if order.status() != &OrderStatus::Created {
                 errors.push(format!(
-                    "订单初始状态错误: 期望 {:?}, 实际 {:?}", 
+                    "订单初始状态错误: 期望 {:?}, 实际 {:?}",
                     OrderStatus::Created, order.status()
                 ));
             }
-            
+  
             // 属性2：空订单不能确认
             let mut empty_order = match Order::create("o002", "c001", address.clone()) {
                 Ok(o) => o,
@@ -7554,12 +7584,12 @@ pub mod formal_verification {
                     return Err(errors);
                 }
             };
-            
+  
             match empty_order.confirm() {
                 Ok(_) => errors.push("不应该允许确认空订单".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             // 创建有效订单
             let mut valid_order = match Order::create("o003", "c001", address.clone()) {
                 Ok(o) => o,
@@ -7568,7 +7598,7 @@ pub mod formal_verification {
                     return Err(errors);
                 }
             };
-            
+  
             // 添加订单项
             let cny = match Money::new(1, "CNY") {
                 Ok(m) => m,
@@ -7577,7 +7607,7 @@ pub mod formal_verification {
                     return Err(errors);
                 }
             };
-            
+  
             let item = match OrderItem::new("p001", "测试产品", 2, Money::new(10000, "CNY").unwrap()) {
                 Ok(i) => i,
                 Err(e) => {
@@ -7585,116 +7615,116 @@ pub mod formal_verification {
                     return Err(errors);
                 }
             };
-            
+  
             if let Err(e) = valid_order.add_item(item) {
                 errors.push(format!("添加订单项失败: {}", e));
                 return Err(errors);
             }
-            
+  
             // 验证总金额计算
             if valid_order.total_amount().amount() != 20000 {
                 errors.push(format!(
-                    "订单总金额计算错误: 期望 {}, 实际 {}", 
+                    "订单总金额计算错误: 期望 {}, 实际 {}",
                     20000, valid_order.total_amount().amount()
                 ));
             }
-            
+  
             // 属性3：状态转换路径验证
-            
+  
             // 确认订单
             if let Err(e) = valid_order.confirm() {
                 errors.push(format!("确认订单失败: {}", e));
             }
-            
+  
             if valid_order.status() != &OrderStatus::Confirmed {
                 errors.push(format!(
-                    "订单状态错误: 期望 {:?}, 实际 {:?}", 
+                    "订单状态错误: 期望 {:?}, 实际 {:?}",
                     OrderStatus::Confirmed, valid_order.status()
                 ));
             }
-            
+  
             // 确认后不能修改
             let new_item = OrderItem::new("p002", "产品2", 1, Money::new(5000, "CNY").unwrap()).unwrap();
             match valid_order.add_item(new_item) {
                 Ok(_) => errors.push("不应该允许在确认后添加订单项".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             // 发货
             if let Err(e) = valid_order.ship() {
                 errors.push(format!("发货失败: {}", e));
             }
-            
+  
             if valid_order.status() != &OrderStatus::Shipped {
                 errors.push(format!(
-                    "订单状态错误: 期望 {:?}, 实际 {:?}", 
+                    "订单状态错误: 期望 {:?}, 实际 {:?}",
                     OrderStatus::Shipped, valid_order.status()
                 ));
             }
-            
+  
             // 送达
             if let Err(e) = valid_order.deliver() {
                 errors.push(format!("送达失败: {}", e));
             }
-            
+  
             if valid_order.status() != &OrderStatus::Delivered {
                 errors.push(format!(
-                    "订单状态错误: 期望 {:?}, 实际 {:?}", 
+                    "订单状态错误: 期望 {:?}, 实际 {:?}",
                     OrderStatus::Delivered, valid_order.status()
                 ));
             }
-            
+  
             // 已送达不能取消
             match valid_order.cancel() {
                 Ok(_) => errors.push("不应该允许取消已送达的订单".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             // 属性4：有效取消路径
             let mut order_to_cancel = Order::create("o004", "c001", address.clone()).unwrap();
             let item = OrderItem::new("p001", "测试产品", 1, Money::new(10000, "CNY").unwrap()).unwrap();
             order_to_cancel.add_item(item).unwrap();
-            
+  
             // 创建状态可以取消
             if let Err(e) = order_to_cancel.cancel() {
                 errors.push(format!("取消创建状态的订单失败: {}", e));
             }
-            
+  
             if order_to_cancel.status() != &OrderStatus::Cancelled {
                 errors.push(format!(
-                    "订单状态错误: 期望 {:?}, 实际 {:?}", 
+                    "订单状态错误: 期望 {:?}, 实际 {:?}",
                     OrderStatus::Cancelled, order_to_cancel.status()
                 ));
             }
-            
+  
             // 确认状态也可以取消
             let mut order_to_cancel2 = Order::create("o005", "c001", address.clone()).unwrap();
             let item = OrderItem::new("p001", "测试产品", 1, Money::new(10000, "CNY").unwrap()).unwrap();
             order_to_cancel2.add_item(item).unwrap();
             order_to_cancel2.confirm().unwrap();
-            
+  
             if let Err(e) = order_to_cancel2.cancel() {
                 errors.push(format!("取消确认状态的订单失败: {}", e));
             }
-            
+  
             if order_to_cancel2.status() != &OrderStatus::Cancelled {
                 errors.push(format!(
-                    "订单状态错误: 期望 {:?}, 实际 {:?}", 
+                    "订单状态错误: 期望 {:?}, 实际 {:?}",
                     OrderStatus::Cancelled, order_to_cancel2.status()
                 ));
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
                 Err(errors)
             }
         }
-        
+  
         /// 验证订单服务的业务逻辑
         pub fn verify_order_service_logic() -> Result<(), Vec<String>> {
             let mut errors = Vec::new();
-            
+  
             // 创建仓储和服务
             let product_repo = Arc::new(InMemoryProductRepository::new());
             let order_repo = Arc::new(InMemoryOrderRepository::new());
@@ -7706,15 +7736,15 @@ pub mod formal_verification {
                 order_repo.clone(),
                 customer_repo.clone()
             );
-            
+  
             // 预设测试数据
-            
+  
             // 创建客户
             let mut customer = Customer::new("c001", "测试客户", "test@example.com");
             let address = Address::new("测试街道", "测试城市", "测试区域", "123456", "中国");
             customer.add_address("默认地址", address.clone()).unwrap();
             customer_repo.save(&customer).unwrap();
-            
+  
             // 创建产品
             let product1 = Product::new(
                 "p001",
@@ -7723,7 +7753,7 @@ pub mod formal_verification {
                 Money::new(10000, "CNY").unwrap(),
                 5 // 库存数量
             );
-            
+  
             let product2 = Product::new(
                 "p002",
                 "测试产品2",
@@ -7731,16 +7761,16 @@ pub mod formal_verification {
                 Money::new(20000, "CNY").unwrap(),
                 3 // 库存数量
             );
-            
+  
             product_repo.save(&product1).unwrap();
             product_repo.save(&product2).unwrap();
-            
+  
             // 属性1：正常创建订单
             let product_ids = vec![
                 (product1.id().to_string(), 2),
                 (product2.id().to_string(), 1),
             ];
-            
+  
             let order = match order_service.create_order(
                 customer.id(),
                 &product_ids,
@@ -7752,17 +7782,17 @@ pub mod formal_verification {
                     return Err(errors);
                 }
             };
-            
+  
             // 验证订单状态和总金额
             if order.status() != &OrderStatus::Created {
                 errors.push(format!("订单状态错误: 期望 Created, 实际 {:?}", order.status()));
             }
-            
+  
             // 验证总金额 (2 * 10000 + 1 * 20000 = 40000)
             if order.total_amount().amount() != 40000 {
                 errors.push(format!("订单总金额错误: 期望 40000, 实际 {}", order.total_amount().amount()));
             }
-            
+  
             // 属性2：确认订单减少库存
             match order_service.confirm_order(order.id()) {
                 Ok(_) => {},
@@ -7771,30 +7801,30 @@ pub mod formal_verification {
                     return Err(errors);
                 }
             };
-            
+  
             // 验证产品库存已减少
             let product1_after = product_repo.find_by_id(product1.id()).unwrap().unwrap();
             let product2_after = product_repo.find_by_id(product2.id()).unwrap().unwrap();
-            
+  
             if product1_after.stock_quantity() != 3 {
                 errors.push(format!(
-                    "产品1库存错误: 期望 3, 实际 {}", 
+                    "产品1库存错误: 期望 3, 实际 {}",
                     product1_after.stock_quantity()
                 ));
             }
-            
+  
             if product2_after.stock_quantity() != 2 {
                 errors.push(format!(
-                    "产品2库存错误: 期望 2, 实际 {}", 
+                    "产品2库存错误: 期望 2, 实际 {}",
                     product2_after.stock_quantity()
                 ));
             }
-            
+  
             // 属性3：超出库存限制
             let exceed_product_ids = vec![
                 (product1.id().to_string(), 10), // 超出库存
             ];
-            
+  
             match order_service.create_order(
                 customer.id(),
                 &exceed_product_ids,
@@ -7803,93 +7833,93 @@ pub mod formal_verification {
                 Ok(_) => errors.push("创建超出库存的订单应该失败".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             // 属性4：取消订单恢复库存
             let product_ids = vec![
                 (product1.id().to_string(), 1),
             ];
-            
+  
             let order_to_cancel = order_service.create_order(
                 customer.id(),
                 &product_ids,
                 Some("默认地址")
             ).unwrap();
-            
+  
             // 确认订单
             order_service.confirm_order(order_to_cancel.id()).unwrap();
-            
+  
             // 获取确认后的库存
             let product1_before_cancel = product_repo.find_by_id(product1.id()).unwrap().unwrap();
             let expected_stock = product1_before_cancel.stock_quantity();
-            
+  
             // 取消订单
             order_service.cancel_order(order_to_cancel.id()).unwrap();
-            
+  
             // 验证库存已恢复
             let product1_after_cancel = product_repo.find_by_id(product1.id()).unwrap().unwrap();
-            
+  
             if product1_after_cancel.stock_quantity() != expected_stock + 1 {
                 errors.push(format!(
-                    "取消订单后产品库存未恢复: 期望 {}, 实际 {}", 
+                    "取消订单后产品库存未恢复: 期望 {}, 实际 {}",
                     expected_stock + 1, product1_after_cancel.stock_quantity()
                 ));
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
                 Err(errors)
             }
         }
-        
+  
         /// 验证模型的不变量
         pub fn verify_model_invariants() -> Result<(), Vec<String>> {
             let mut errors = Vec::new();
-            
+  
             // 货币不变量验证
             match Money::new(-100, "CNY") {
                 Ok(_) => {}, // 允许负值用于表示退款等场景
                 Err(_) => errors.push("Money应允许负值用于特定场景".to_string()),
             }
-            
+  
             match Money::new(100, "ABCD") {
                 Ok(_) => errors.push("不应接受无效的货币代码".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             // 货币运算不变量
             let money1 = Money::new(100, "CNY").unwrap();
             let money2 = Money::new(200, "CNY").unwrap();
             let money3 = Money::new(300, "USD").unwrap();
-            
+  
             let sum = money1.add(&money2).unwrap();
             if sum.amount() != 300 {
                 errors.push(format!("货币加法错误: 期望 300, 实际 {}", sum.amount()));
             }
-            
+  
             match money1.add(&money3) {
                 Ok(_) => errors.push("不应允许不同货币相加".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             // 订单项不变量验证
             match OrderItem::new("p001", "测试产品", 0, Money::new(100, "CNY").unwrap()) {
                 Ok(_) => errors.push("不应允许数量为0的订单项".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             match OrderItem::new("p001", "测试产品", -1, Money::new(100, "CNY").unwrap()) {
                 Ok(_) => errors.push("不应允许数量为负的订单项".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             // 地址不变量验证
             let invalid_address = Address::new("", "", "", "", "");
             match invalid_address.validate() {
                 Ok(_) => errors.push("不应通过空邮政编码的地址验证".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             // 产品不变量验证
             let mut product = Product::new(
                 "p001",
@@ -7898,32 +7928,32 @@ pub mod formal_verification {
                 Money::new(100, "CNY").unwrap(),
                 10
             );
-            
+  
             if !product.is_in_stock() {
                 errors.push("库存大于0的产品应标记为有库存".to_string());
             }
-            
+  
             product.update_stock(0);
             if product.is_in_stock() {
                 errors.push("库存为0的产品不应标记为有库存".to_string());
             }
-            
+  
             match product.decrease_stock(1) {
                 Ok(_) => errors.push("不应允许库存为0时减少库存".to_string()),
                 Err(_) => {}, // 预期错误
             }
-            
+  
             if errors.is_empty() {
                 Ok(())
             } else {
                 Err(errors)
             }
         }
-        
+  
         /// 运行所有验证
         pub fn run_all_verifications() -> Result<(), String> {
             println!("===== 开始形式验证 =====\n");
-            
+  
             // 验证订单状态转换
             println!("验证订单状态转换...");
             match Self::verify_order_state_transitions() {
@@ -7935,7 +7965,7 @@ pub mod formal_verification {
                 }
             }
             println!();
-            
+  
             // 验证订单服务逻辑
             println!("验证订单服务逻辑...");
             match Self::verify_order_service_logic() {
@@ -7947,7 +7977,7 @@ pub mod formal_verification {
                 }
             }
             println!();
-            
+  
             // 验证模型不变量
             println!("验证模型不变量...");
             match Self::verify_model_invariants() {
@@ -7959,65 +7989,65 @@ pub mod formal_verification {
                 }
             }
             println!();
-            
+  
             println!("===== 形式验证全部通过 =====");
-            
+  
             Ok(())
         }
     }
-    
+  
     /// 形式化证明：证明电子商务系统的关键性质
     pub struct EcommerceSystemProver;
-    
+  
     impl EcommerceSystemProver {
         /// 通过属性测试验证系统属性
         pub fn prove_system_properties() -> Result<(), String> {
             println!("===== 开始系统属性证明 =====\n");
-            
+  
             // 属性1：库存一致性
             println!("证明库存一致性属性...");
             self::prove_inventory_consistency()?;
             println!("库存一致性证明通过。");
             println!();
-            
+  
             // 属性2：订单总金额计算正确性
             println!("证明订单总金额计算正确性...");
             self::prove_order_amount_correctness()?;
             println!("订单总金额计算正确性证明通过。");
             println!();
-            
+  
             // 属性3：订单状态转换安全性
             println!("证明订单状态转换安全性...");
             self::prove_order_state_safety()?;
             println!("订单状态转换安全性证明通过。");
             println!();
-            
+  
             println!("===== 系统属性证明全部通过 =====");
-            
+  
             Ok(())
         }
     }
-    
+  
     /// 证明库存一致性
     fn prove_inventory_consistency() -> Result<(), String> {
         // 创建仓储
         let product_repo = Arc::new(InMemoryProductRepository::new());
         let order_repo = Arc::new(InMemoryOrderRepository::new());
         let customer_repo = Arc::new(InMemoryCustomerRepository::new());
-        
+  
         // 创建领域服务
         let order_service = OrderService::new(
             product_repo.clone(),
             order_repo.clone(),
             customer_repo.clone()
         );
-        
+  
         // 初始化测试数据
         let mut customer = Customer::new("c001", "测试客户", "test@example.com");
         let address = Address::new("测试街道", "测试城市", "测试区域", "123456", "中国");
         customer.add_address("默认地址", address).unwrap();
         customer_repo.save(&customer).unwrap();
-        
+  
         // 初始库存为100
         let initial_stock = 100;
         let product = Product::new(
@@ -8028,12 +8058,12 @@ pub mod formal_verification {
             initial_stock
         );
         product_repo.save(&product).unwrap();
-        
+  
         // 创建多个订单，每个订单购买不同数量的产品
         let order_quantities = vec![5, 10, 15, 20, 25];
         let mut total_ordered = 0;
         let mut orders = Vec::new();
-        
+  
         for (i, qty) in order_quantities.iter().enumerate() {
             let product_ids = vec![(product.id().to_string(), *qty)];
             let order = order_service.create_order(
@@ -8041,41 +8071,41 @@ pub mod formal_verification {
                 &product_ids,
                 Some("默认地址")
             ).unwrap();
-            
+  
             // 确认部分订单
             if i % 2 == 0 {
                 order_service.confirm_order(order.id()).unwrap();
                 total_ordered += qty;
             }
-            
+  
             orders.push(order);
         }
-        
+  
         // 取消一个已确认的订单
         if let Some(order) = orders.get(0) {
             order_service.cancel_order(order.id()).unwrap();
             total_ordered -= order_quantities[0];
         }
-        
+  
         // 验证库存一致性
         let product_after = product_repo.find_by_id(product.id()).unwrap().unwrap();
         let expected_stock = initial_stock - total_ordered;
-        
+  
         if product_after.stock_quantity() != expected_stock {
             return Err(format!(
-                "库存不一致: 期望 {}, 实际 {}", 
+                "库存不一致: 期望 {}, 实际 {}",
                 expected_stock, product_after.stock_quantity()
             ));
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 证明订单总金额计算正确性
     fn prove_order_amount_correctness() -> Result<(), String> {
         // 创建仓储
         let product_repo = Arc::new(InMemoryProductRepository::new());
-        
+  
         // 创建产品
         let product1 = Product::new(
             "p001",
@@ -8084,7 +8114,7 @@ pub mod formal_verification {
             Money::new(10000, "CNY").unwrap(), // 100元
             10
         );
-        
+  
         let product2 = Product::new(
             "p002",
             "产品2",
@@ -8092,7 +8122,7 @@ pub mod formal_verification {
             Money::new(20000, "CNY").unwrap(), // 200元
             10
         );
-        
+  
         let product3 = Product::new(
             "p003",
             "产品3",
@@ -8100,17 +8130,17 @@ pub mod formal_verification {
             Money::new(30000, "CNY").unwrap(), // 300元
             10
         );
-        
+  
         product_repo.save(&product1).unwrap();
         product_repo.save(&product2).unwrap();
         product_repo.save(&product3).unwrap();
-        
+  
         // 创建地址
         let address = Address::new("测试街道", "测试城市", "测试区域", "123456", "中国");
-        
+  
         // 创建测试订单
         let mut order = Order::create("o001", "c001", address).unwrap();
-        
+  
         // 添加订单项
         let item1 = OrderItem::new(
             product1.id(),
@@ -8118,56 +8148,56 @@ pub mod formal_verification {
             2, // 数量
             product1.price().clone()
         ).unwrap();
-        
+  
         let item2 = OrderItem::new(
             product2.id(),
             product2.name(),
             3, // 数量
             product2.price().clone()
         ).unwrap();
-        
+  
         let item3 = OrderItem::new(
             product3.id(),
             product3.name(),
             1, // 数量
             product3.price().clone()
         ).unwrap();
-        
+  
         // 计算预期总金额
         // 2 * 100 + 3 * 200 + 1 * 300 = 200 + 600 + 300 = 1100元
         let expected_total = 110000;
-        
+  
         // 添加商品项到订单
         order.add_item(item1).unwrap();
         order.add_item(item2).unwrap();
         order.add_item(item3).unwrap();
-        
+  
         // 验证总金额
         if order.total_amount().amount() != expected_total {
             return Err(format!(
-                "订单总金额计算错误: 期望 {}, 实际 {}", 
+                "订单总金额计算错误: 期望 {}, 实际 {}",
                 expected_total, order.total_amount().amount()
             ));
         }
-        
+  
         // 验证不变量检查能发现错误
         // 手动修改总金额，应该使不变量检查失败
         let mut broken_order = order.clone();
-        
+  
         // 通过反射或其他手段修改私有字段是不可行的，
         // 这里我们可以通过移除和重新添加商品项的方式间接测试
         if let Err(_) = broken_order.check_invariants() {
             // 预期失败，但实际上前面没有破坏不变量，所以应该是成功的
             return Err("不变量检查错误地失败了".to_string());
         }
-        
+  
         Ok(())
     }
-    
+  
     /// 证明订单状态转换安全性
     fn prove_order_state_safety() -> Result<(), String> {
         let address = Address::new("测试街道", "测试城市", "测试区域", "123456", "中国");
-        
+  
         // 创建有效订单
         let mut order = Order::create("o001", "c001", address).unwrap();
         let item = OrderItem::new(
@@ -8176,59 +8206,59 @@ pub mod formal_verification {
             1,
             Money::new(10000, "CNY").unwrap()
         ).unwrap();
-        
+  
         order.add_item(item).unwrap();
-        
+  
         // 验证所有可能的状态转换路径
-        
+  
         // 路径1: Created -> Confirmed -> Shipped -> Delivered
         let mut order1 = order.clone();
         order1.confirm().unwrap();
         order1.ship().unwrap();
         order1.deliver().unwrap();
-        
+  
         if order1.status() != &OrderStatus::Delivered {
             return Err(format!("路径1状态错误: {:?}", order1.status()));
         }
-        
+  
         // 路径2: Created -> Cancelled
         let mut order2 = order.clone();
         order2.cancel().unwrap();
-        
+  
         if order2.status() != &OrderStatus::Cancelled {
             return Err(format!("路径2状态错误: {:?}", order2.status()));
         }
-        
+  
         // 路径3: Created -> Confirmed -> Cancelled
         let mut order3 = order.clone();
         order3.confirm().unwrap();
         order3.cancel().unwrap();
-        
+  
         if order3.status() != &OrderStatus::Cancelled {
             return Err(format!("路径3状态错误: {:?}", order3.status()));
         }
-        
+  
         // 测试无效转换
-        
+  
         // 不可能: Created -> Shipped
         let mut order4 = order.clone();
         if order4.ship().is_ok() {
             return Err("不应允许从Created直接到Shipped的转换".to_string());
         }
-        
+  
         // 不可能: Created -> Delivered
         let mut order5 = order.clone();
         if order5.deliver().is_ok() {
             return Err("不应允许从Created直接到Delivered的转换".to_string());
         }
-        
+  
         // 不可能: Confirmed -> Delivered
         let mut order6 = order.clone();
         order6.confirm().unwrap();
         if order6.deliver().is_ok() {
             return Err("不应允许从Confirmed直接到Delivered的转换".to_string());
         }
-        
+  
         // 不可能: Shipped -> Confirmed
         let mut order7 = order.clone();
         order7.confirm().unwrap();
@@ -8236,7 +8266,7 @@ pub mod formal_verification {
         if order7.confirm().is_ok() {
             return Err("不应允许从Shipped回到Confirmed的转换".to_string());
         }
-        
+  
         // 不可能: Shipped -> Cancelled
         let mut order8 = order.clone();
         order8.confirm().unwrap();
@@ -8244,30 +8274,31 @@ pub mod formal_verification {
         if order8.cancel().is_ok() {
             return Err("不应允许取消已发货的订单".to_string());
         }
-        
+  
         // 不可能: Delivered -> 任何状态
         let mut order9 = order.clone();
         order9.confirm().unwrap();
         order9.ship().unwrap();
         order9.deliver().unwrap();
-        
-        if order9.confirm().is_ok() || order9.ship().is_ok() || 
+  
+        if order9.confirm().is_ok() || order9.ship().is_ok() ||
            order9.cancel().is_ok() {
             return Err("不应允许从Delivered状态转换到其他状态".to_string());
         }
-        
+  
         // 不可能: Cancelled -> 任何状态
         let mut order10 = order.clone();
         order10.cancel().unwrap();
-        
-        if order10.confirm().is_ok() || order10.ship().is_ok() || 
+  
+        if order10.confirm().is_ok() || order10.ship().is_ok() ||
            order10.deliver().is_ok() {
             return Err("不应允许从Cancelled状态转换到其他状态".to_string());
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 ## 1.10 9. 挑战与未来方向
@@ -8458,4 +8489,5 @@ pub mod formal_verification {
     ├── 可扩展性问题
     ├── 学习曲线
     └── 跨学科融合
+
 ```

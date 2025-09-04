@@ -186,6 +186,7 @@ func (c *ConcreteColleagueB) GetName() string {
 func (c *ConcreteColleagueB) SetMediator(mediator Mediator) {
     c.mediator = mediator
 }
+
 ```
 
 ### 3.3.1.4.2 聊天室中介者模式
@@ -345,6 +346,7 @@ func (u *User) SetOnline(online bool) {
 func (u *User) IsOnline() bool {
     return u.online
 }
+
 ```
 
 ### 3.3.1.4.3 航空交通管制中介者模式
@@ -561,6 +563,7 @@ func NewAirspace() *Airspace {
 func (a *Airspace) IsAltitudeAvailable(altitude int, position Position) bool {
     return altitude >= a.minAltitude && altitude <= a.maxAltitude
 }
+
 ```
 
 ## 3.3.1.5 4. 工程案例
@@ -705,6 +708,7 @@ func (c *ConcreteSubscriber) HandleEvent(event *Event) {
 func (c *ConcreteSubscriber) GetName() string {
     return c.name
 }
+
 ```
 
 ## 3.3.1.6 5. 批判性分析

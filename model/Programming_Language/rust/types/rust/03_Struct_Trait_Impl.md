@@ -9,19 +9,6 @@
   - [1.5 示例](#示例)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 在 Rust 编程语言中，`struct`（结构体）、`trait`（特质）和 `impl`（实现）是三个核心概念，它们共同构成了 Rust 的类型系统和面向对象编程特性的基础。
 
 以下是它们的定义和关系：
@@ -81,6 +68,7 @@ fn main() {
     let point = Point { x: 3.0, y: 4.0 };
     point.print(); // 输出: Point coordinates: (3.0, 4.0)
 }
+
 ```
 
 在这个示例中，`Point` 是一个结构体，`Printable` 是一个特质，`impl` 块为 `Point` 提供了 `Printable` 特质的具体实现。这样，`Point` 类型的实例就能够调用 `print` 方法来打印它们自己的坐标。

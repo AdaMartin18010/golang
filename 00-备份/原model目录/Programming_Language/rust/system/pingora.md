@@ -26,6 +26,7 @@ Let me organize my thoughts on implementing a distributed HTTP cluster service u
    - Event subscription and processing
 
 For a 2025 version, I'll need to extrapolate current Rust ecosystem trends, especially for Pingora which is still evolving. I'll base this on realistic projections of where these technologies might be by 2025.
+
 ```
 
 ## 系统架构概览
@@ -56,6 +57,7 @@ For a 2025 version, I'll need to extrapolate current Rust ecosystem trends, espe
 │  │  业务服务B          │  │     │  │  用户行为跟踪处理    │ │
 │  └─────────────────────┘  │     │  └──────────────────────┘ │
 └───────────────────────────┘     └───────────────────────────┘
+
 ```
 
 ## 一、核心HTTP网关服务实现
@@ -70,7 +72,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+
 # Pingora 2025版本核心组件
+
 pingora = { version = "0.10", features = ["full"] }
 pingora-core = "0.10"
 pingora-http = "0.10"
@@ -83,9 +87,11 @@ pingora-quic = "0.10"
 pingora-grpc = "0.10"  # gRPC支持组件
 
 # 异步运行时
+
 tokio = { version = "2.0", features = ["full", "tracing"] }
 
 # 观测和监控
+
 opentelemetry = { version = "2.0", features = ["trace", "metrics"] }
 opentelemetry-otlp = { version = "1.0", features = ["trace", "metrics"] }
 tracing = "1.0"
@@ -95,21 +101,25 @@ metrics = "1.0"
 metrics-exporter-prometheus = "1.0"
 
 # gRPC 和协议
+
 tonic = "1.0"
 tonic-build = "1.0"
 prost = "1.0"
 prost-types = "1.0"
 
 # 认证与会话
+
 jsonwebtoken = "10.0"
 session = "1.0"
 uuid = { version = "2.0", features = ["v4", "serde"] }
 
 # 消息队列
+
 rdkafka = { version = "1.0", features = ["ssl", "sasl", "dynamic-linking"] }
 async-nats = "1.0"
 
 # 实用工具
+
 serde = { version = "2.0", features = ["derive"] }
 serde_json = "2.0"
 futures = "1.0"
@@ -121,6 +131,7 @@ config = "1.0"
 tower = "1.0"
 http = "1.0"
 bytes = "2.0"
+
 ```
 
 ### 主应用服务器实现
@@ -466,6 +477,7 @@ async fn main() -> Result<()> {
     
     Ok(())
 }
+
 ```
 
 ## 二、配置、监控和日志模块
@@ -735,6 +747,7 @@ pub fn setup_metrics(config: &MetricsConfig) -> Result<PrometheusHandle> {
     tracing::info!("Metrics server started on {}", config.prometheus_endpoint);
     Ok(handle)
 }
+
 ```
 
 ## 三、认证和授权中间件
@@ -943,6 +956,7 @@ impl AuthManager {
 /*
 Looks like the code was cut off in the middle of the session authentication method in the auth.rs file. 
 Let me continue from where it left off, starting with completing the session authentication method, then finish the auth module, and move on to the middleware and gRPC modules.
+
 */
 
         // 解析会话数据
@@ -1005,6 +1019,7 @@ Let me continue from where it left off, starting with completing the session aut
             .map_err(|e| AuthError::BackendError(format!("Session store error: {}", e)))
     }
 }
+
 ```
 
 ## 四、中间件实现
@@ -1462,6 +1477,7 @@ impl RequestMiddleware for SessionManager {
         Ok(None)
     }
 }
+
 ```
 
 ## 五、gRPC服务集成
@@ -1831,6 +1847,7 @@ impl GrpcServiceManager {
         Ok(http_response)
     }
 }
+
 ```
 
 ## 六、消息队列集成和用户行为跟踪
@@ -1999,6 +2016,7 @@ impl EventPublisher {
 /*
 我将继续完成MQ事件发布器的代码，
 然后实现用户行为跟踪器，最后进行主应用的组装以完成整个系统。
+
 */
                 Ok(_) => info!("Published event to NATS: {}", event_type),
                 Err(e) => error!("Failed to publish event to NATS: {}", e),
@@ -2332,12 +2350,15 @@ impl UserBehaviorTracker {
         Ok(())
     }
 }
+
 ```
 
 ## 七、配置文件示例
 
 ```toml
+
 # config/default.toml
+
 [server]
 listen_addr = "0.0.0.0:8080"
 listen_addr_tls = "0.0.0.0:8443"
@@ -2438,6 +2459,7 @@ use_nats = true
 nats_server_url = "nats://localhost:4222"
 
 # 上游服务配置
+
 [upstreams.api]
 servers = ["127.0.0.1:3000", "127.0.0.1:3001"]
 health_check_interval_secs = 5
@@ -2449,17 +2471,21 @@ health_check_interval_secs = 5
 [upstreams.admin]
 servers = ["127.0.0.1:3020", "127.0.0.1:3021"]
 health_check_interval_secs = 10
+
 ```
 
 ## 八、部署与Docker配置
 
 ```dockerfile
+
 # Dockerfile
+
 FROM rust:1.75 as builder
 
 WORKDIR /app
 
 # 安装构建依赖
+
 RUN apt-get update && \
     apt-get install -y \
     protobuf-compiler \
@@ -2469,18 +2495,22 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制项目文件
+
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src/
 COPY proto ./proto/
 COPY build.rs ./
 
 # 构建应用
+
 RUN cargo build --release
 
 # 创建最终镜像
+
 FROM debian:bookworm-slim
 
 # 安装运行时依赖
+
 RUN apt-get update && \
     apt-get install -y \
     ca-certificates \
@@ -2488,38 +2518,49 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # 创建非root用户
+
 RUN groupadd -r pingora && useradd -r -g pingora pingora
 
 WORKDIR /app
 
 # 从构建阶段复制二进制文件
+
 COPY --from=builder /app/target/release/pingora-gateway /app/pingora-gateway
 
 # 复制配置文件
+
 COPY config /app/config/
 COPY certs /app/certs/
 
 # 设置权限
+
 RUN chown -R pingora:pingora /app && \
     chmod -R 755 /app
 
 # 切换到非root用户
+
 USER pingora
 
 # 设置环境变量
+
 ENV RUST_LOG=info
 
 # 暴露端口
+
 EXPOSE 8080 8443 9090 9091
 
 # 启动应用
+
 CMD ["/app/pingora-gateway", "--config", "/app/config/default.toml"]
+
 ```
 
 使用Docker Compose进行部署：
 
 ```yaml
+
 # docker-compose.yml
+
 version: '3.8'
 
 services:
@@ -2627,6 +2668,7 @@ volumes:
   zookeeper-data:
   kafka-data:
   prometheus-data:
+
 ```
 
 ## 九、总结与功能概览

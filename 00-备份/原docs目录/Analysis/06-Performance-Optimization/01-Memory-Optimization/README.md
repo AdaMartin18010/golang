@@ -63,6 +63,7 @@ func memoryExample() {
     // 逃逸分析
     escapeVar := make([]int, 1000) // 可能逃逸到堆
 }
+
 ```
 
 ### 2.2 逃逸分析
@@ -100,6 +101,7 @@ func noEscape() int {
     x := 42
     return x // 不逃逸，在栈上分配
 }
+
 ```
 
 ### 2.3 内存分配器
@@ -175,6 +177,7 @@ func (sa *SimpleAllocator) Free(ptr []byte) error {
     
     return nil
 }
+
 ```
 
 ## 3. 垃圾回收机制
@@ -254,6 +257,7 @@ func (gc *GarbageCollector) sweep() {
         }
     }
 }
+
 ```
 
 ### 3.2 GC调优
@@ -280,6 +284,7 @@ func gcTuning() {
     fmt.Printf("总暂停时间: %v\n", stats.PauseTotal)
     fmt.Printf("最大暂停时间: %v\n", stats.PauseMax)
 }
+
 ```
 
 ## 4. 内存优化策略
@@ -356,6 +361,7 @@ func main() {
     // 归还缓冲区
     pool.Put(buf)
 }
+
 ```
 
 ### 4.2 内存对齐
@@ -385,6 +391,7 @@ func alignmentExample() {
     fmt.Printf("Unoptimized size: %d\n", unsafe.Sizeof(u))
     fmt.Printf("Optimized size: %d\n", unsafe.Sizeof(o))
 }
+
 ```
 
 ### 4.3 零拷贝技术
@@ -424,6 +431,7 @@ func memoryMapExample() {
     // 直接操作内存
     copy(data, []byte("Hello"))
 }
+
 ```
 
 ## 5. 内存池技术
@@ -483,6 +491,7 @@ func (mp *MemoryPool) Free(buf []byte) {
     
     // 不在池中，丢弃
 }
+
 ```
 
 ### 5.2 线程本地存储
@@ -535,6 +544,7 @@ func (tlp *ThreadLocalPool) Put(buf []byte) {
         pool.Put(buf)
     }
 }
+
 ```
 
 ## 6. 内存泄漏检测
@@ -613,6 +623,7 @@ func (ld *LeakDetector) ReportLeaks() []*Allocation {
     
     return leaks
 }
+
 ```
 
 ### 6.2 性能分析
@@ -679,6 +690,7 @@ func (mp *MemoryProfiler) GetStats() map[string]*MemoryStats {
     
     return result
 }
+
 ```
 
 ## 7. 性能监控
@@ -763,6 +775,7 @@ func (mm *MemoryMonitor) collectMetrics() {
 func (mm *MemoryMonitor) GetMetrics() <-chan MemoryMetrics {
     return mm.metrics
 }
+
 ```
 
 ### 7.2 性能基准测试
@@ -805,6 +818,7 @@ func BenchmarkMemoryPool(b *testing.B) {
         pool.Free(buf)
     }
 }
+
 ```
 
 ## 8. 最佳实践
@@ -837,6 +851,7 @@ func memoryBestPractices() {
         },
     }
 }
+
 ```
 
 ### 8.2 内存使用优化
@@ -862,6 +877,7 @@ func memoryUsageOptimization() {
     // 4. 合理设置内存限制
     debug.SetMemoryLimit(1 << 30) // 1GB
 }
+
 ```
 
 ## 9. 案例分析
@@ -909,6 +925,7 @@ func (s *OptimizedHTTPServer) Shutdown() {
         fmt.Printf("Memory metrics: %+v\n", metrics)
     }
 }
+
 ```
 
 ### 9.2 数据处理管道
@@ -951,6 +968,7 @@ func (p *MemoryOptimizedPipeline) processData(data []byte) []byte {
     copy(result, buf)
     return result
 }
+
 ```
 
 ---
@@ -965,4 +983,4 @@ func (p *MemoryOptimizedPipeline) processData(data []byte) []byte {
 
 ---
 
-*本文档涵盖了Golang内存优化的核心概念、技术和最佳实践，为构建高性能应用提供指导。*
+* 本文档涵盖了Golang内存优化的核心概念、技术和最佳实践，为构建高性能应用提供指导。*

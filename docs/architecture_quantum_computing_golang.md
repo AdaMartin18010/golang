@@ -84,6 +84,7 @@ graph TB
     E --> E1[经典控制]
     E --> E2[量子执行]
     E --> E3[结果处理]
+
 ```
 
 ## 1.3 2. 量子计算基础
@@ -94,6 +95,7 @@ graph TB
 
 ```text
 |ψ⟩ = α|0⟩ + β|1⟩
+
 ```
 
 其中 |α|² + |β|² = 1
@@ -179,6 +181,7 @@ type QuantumAlgorithm struct {
     Parameters map[string]interface{}
     ClassicalPostProcessor func([]float64) interface{}
 }
+
 ```
 
 ### 1.5.2 量子-经典混合系统
@@ -200,6 +203,7 @@ type QuantumClassicalInterface struct {
     DataConverter   DataConverter
     ResultAggregator ResultAggregator
 }
+
 ```
 
 ## 1.6 5. 分布式挑战
@@ -232,6 +236,7 @@ type QuantumRepeater struct {
     BellStateMeasurement BellStateMeasurement
     ErrorCorrection  QuantumErrorCorrection
 }
+
 ```
 
 ### 1.6.2 量子纠错
@@ -276,6 +281,7 @@ graph TB
     
     B --> E[结果聚合器]
     E --> F[输出层]
+
 ```
 
 ### 1.7.2 量子算法优化
@@ -320,6 +326,7 @@ func (qcb *QuantumClassicalBridge) ExecuteHybridTask(task HybridTask) (interface
     
     return finalResult, nil
 }
+
 ```
 
 ## 1.8 7. Golang实现
@@ -399,6 +406,7 @@ func (qs *QuantumState) Measure() (int, float64) {
     measuredState := qs.simulateMeasurement(probabilities)
     return measuredState, probabilities[measuredState]
 }
+
 ```
 
 ### 1.8.2 量子算法实现
@@ -471,6 +479,7 @@ func (vqe *VQEAlgorithm) Execute() (float64, []float64, error) {
     finalEnergy, _ := vqe.computeExpectation(params)
     return finalEnergy, params, nil
 }
+
 ```
 
 ### 1.8.3 量子-经典混合系统
@@ -522,6 +531,7 @@ func (hce *HybridComputingEngine) ExecuteHybridTask(task HybridTask) (interface{
     
     return finalResult, nil
 }
+
 ```
 
 ## 1.9 8. 形式化建模
@@ -532,18 +542,21 @@ func (hce *HybridComputingEngine) ExecuteHybridTask(task HybridTask) (interface{
 
 ```text
 H = C^2 ⊗ C^2 ⊗ ... ⊗ C^2 (n个量子比特)
+
 ```
 
 **量子门操作：**
 
 ```text
 U: H → H, U†U = UU† = I
+
 ```
 
 **测量操作：**
 
 ```text
 M: H → {0,1}^n × R
+
 ```
 
 ### 1.9.2 量子算法复杂度
@@ -626,4 +639,4 @@ M: H → {0,1}^n × R
 
 ---
 
-*本文档提供了量子计算架构的全面指南，包括理论基础、实现方法和最佳实践。通过Golang实现，展示了量子-经典混合系统的构建方法。*
+* 本文档提供了量子计算架构的全面指南，包括理论基础、实现方法和最佳实践。通过Golang实现，展示了量子-经典混合系统的构建方法。*

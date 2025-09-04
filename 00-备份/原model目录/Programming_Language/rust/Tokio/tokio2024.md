@@ -23,6 +23,7 @@ futures = "0.3"
 pin-project = "1.1"
 async-stream = "0.3"
 tracing = "0.1"
+
 ```
 
 ## 2. Tokio 运行时与生成器集成
@@ -86,6 +87,7 @@ impl<F: Future> TaskGenerator<F> {
         }
     }
 }
+
 ```
 
 ### 3. Tokio 时间特性与生成器
@@ -131,6 +133,7 @@ impl IntervalGenerator {
         }
     }
 }
+
 ```
 
 ### 4. Tokio 同步原语与生成器
@@ -201,6 +204,7 @@ impl SyncGenerator {
         }
     }
 }
+
 ```
 
 ### 5. Tokio 通道与生成器
@@ -244,6 +248,7 @@ impl<T: Send + 'static> ChannelGenerator<T> {
         }
     }
 }
+
 ```
 
 ### 6. Tokio IO 与生成器
@@ -303,6 +308,7 @@ impl IoGenerator {
         }
     }
 }
+
 ```
 
 ### 7. 完整使用示例
@@ -367,6 +373,7 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
+
 ```
 
 这个实现展示了：

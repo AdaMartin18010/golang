@@ -11,6 +11,7 @@
 pub struct NonNull<T> {
     pointer: *const T,
 }
+
 ```
 
 这里，`NonNull<T>` 包含一个 `pointer` 字段，它是一个指向 `T` 类型的不可变引用的裸指针。
@@ -49,6 +50,7 @@ use std::ptr::NonNull;
 
 let data = Box::new(42);
 let non_null: NonNull<i32> = unsafe { NonNull::new_unchecked(Box::into_raw(data)) };
+
 ```
 
 在这个例子中，我们使用 `Box::into_raw` 将 `Box` 转换为裸指针，然后使用 `NonNull::new_unchecked` 来创建 `NonNull` 实例。
@@ -60,6 +62,7 @@ let non_null: NonNull<i32> = unsafe { NonNull::new_unchecked(Box::into_raw(data)
 
 ```rust
 let data_ref: &i32 = non_null.as_ref();
+
 ```
 
 这里，`as_ref` 方法将 `NonNull<i32>` 转换为 `&i32`。这个过程是安全的，因为 `NonNull` 保证了指针非空。

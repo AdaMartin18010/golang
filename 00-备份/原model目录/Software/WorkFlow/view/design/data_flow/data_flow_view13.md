@@ -123,7 +123,7 @@ Rust语言在解决这一挑战上具有独特优势：
    ```rust
    #[derive(Debug, Clone, PartialEq, Eq)]
    pub struct Email(String);
-   
+  
    impl Email {
        pub fn new(address: &str) -> Result<Self, EmailError> {
            // 验证邮箱格式
@@ -132,7 +132,7 @@ Rust语言在解决这一挑战上具有独特优势：
            }
            Ok(Email(address.to_string()))
        }
-       
+  
        pub fn value(&self) -> &str {
            &self.0
        }
@@ -157,7 +157,7 @@ Rust语言在解决这一挑战上具有独特优势：
    pub struct PaymentService {
        // 依赖
    }
-   
+  
    impl PaymentService {
        pub fn process_payment(&self, order: &Order, payment_method: &PaymentMethod) -> Result<PaymentReceipt, PaymentError> {
            // 支付处理逻辑
@@ -230,6 +230,7 @@ impl User {
         self.email = email;
     }
 }
+
 ```
 
 **值对象映射策略**:
@@ -279,6 +280,7 @@ impl Address {
     
     // 其他getter方法
 }
+
 ```
 
 **ID类型的Newtype模式**:
@@ -294,6 +296,7 @@ pub struct ProductId(Uuid);
 
 // 即使OrderId和ProductId内部都是Uuid，它们是不同的类型
 // 编译器会防止误用
+
 ```
 
 ### 聚合与边界的表达
@@ -372,6 +375,7 @@ impl OrderItem {
         self.unit_price.multiply(self.quantity as f64)
     }
 }
+
 ```
 
 注意OrderItem没有公共可见性，只能通过Order访问，这强化了聚合边界。
@@ -391,6 +395,7 @@ pub struct ShoppingCart {
     items: Vec<CartItem>, // 直接拥有CartItem
     created_at: DateTime<Utc>,
 }
+
 ```
 
 **2. 引用关系（借用）**:
@@ -401,6 +406,7 @@ pub struct ShoppingCart {
 pub fn calculate_discount(customer: &Customer, order: &Order) -> Money {
     // 使用不可变引用访问但不拥有Customer和Order
 }
+
 ```
 
 **3. 标识引用（ID关系）**:
@@ -413,6 +419,7 @@ pub struct Order {
     customer_id: CustomerId, // 引用Customer，但只存储ID
     // ...
 }
+
 ```
 
 **4. 复杂关系（智能指针）**:
@@ -435,6 +442,7 @@ use std::sync::{Arc, Mutex};
 pub struct SharedResource {
     data: Arc<Mutex<ResourceData>>, // 线程安全的共享可变状态
 }
+
 ```
 
 ### 领域规则与不变量实现
@@ -452,6 +460,7 @@ impl Email {
         Ok(Email(address.to_string()))
     }
 }
+
 ```
 
 **2. 方法前置条件检查**:
@@ -473,6 +482,7 @@ impl Order {
         Ok(())
     }
 }
+
 ```
 
 **3. 类型系统强制不变量**:
@@ -497,6 +507,7 @@ impl PositiveAmount {
         Ok(Self { amount, currency })
     }
 }
+
 ```
 
 **4. 私有字段和受控访问**:
@@ -531,6 +542,7 @@ impl Inventory {
         Ok(())
     }
 }
+
 ```
 
 ### Rust类型映射的优劣分析
@@ -647,6 +659,7 @@ impl Order {
         }
     }
 }
+
 ```
 
 **类型状态模式**:
@@ -724,6 +737,7 @@ impl SubmittedOrder {
         // 实现取消逻辑
     }
 }
+
 ```
 
 类型状态模式使非法状态在编译时就无法表示，但代价是代码冗余增加。
@@ -800,6 +814,7 @@ impl OrderProcessingService {
         })
     }
 }
+
 ```
 
 领域服务应该：
@@ -849,6 +864,7 @@ impl OrderEventHandler {
         self.inventory_service.reserve_inventory(event.order_id)
     }
 }
+
 ```
 
 在完整的系统中，事件处理通常与消息队列或事件总线集成，实现跨服务通信。
@@ -907,6 +923,7 @@ impl AsyncOrderService {
         // 异步版本的支付处理
     }
 }
+
 ```
 
 **异步编程的领域模型考量**:
@@ -996,6 +1013,7 @@ mod tests {
         }
     }
 }
+
 ```
 
 **状态不变量验证**:
@@ -1041,6 +1059,7 @@ fn order_maintains_invariants_after_operations() {
     order.remove_item(0).unwrap();
     assert!(order.ensure_invariants().is_ok());
 }
+
 ```
 
 **模型检查**:
@@ -1083,6 +1102,7 @@ src/
       ├── rest/       # REST API控制器
       ├── cli/        # 命令行接口
       └── grpc/       # gRPC服务实现
+
 ```
 
 ### 领域层：业务核心的纯粹表达
@@ -1125,6 +1145,7 @@ pub trait OrderRepository {
     fn find_by_id(&self, id: &OrderId) -> Result<Option<Order>, RepositoryError>;
     // 其他查询/修改方法
 }
+
 ```
 
 领域层的关键特点：
@@ -1236,6 +1257,7 @@ pub struct OrderItemCommand {
     pub quantity: u32,
     pub unit_price: Money,
 }
+
 ```
 
 应用层的关键特点：
@@ -1310,6 +1332,7 @@ impl NotificationService for EmailNotificationService {
         todo!()
     }
 }
+
 ```
 
 基础设施层的关键特点：
@@ -1380,6 +1403,7 @@ pub enum OrderError {
     
     // 其他错误...
 }
+
 ```
 
 ### 应用层技术选择
@@ -1485,6 +1509,7 @@ impl UserService for UserServiceImpl {
     
     // 其他方法实现...
 }
+
 ```
 
 ### 基础设施层技术栈全景
@@ -1621,6 +1646,7 @@ impl OrderRepository for SqlxOrderRepository {
         todo!()
     }
 }
+
 ```
 
 #### Web与网络框架
@@ -1761,6 +1787,7 @@ impl IntoResponse for AppError {
         (status, json).into_response()
     }
 }
+
 ```
 
 #### 序列化与通信
@@ -1926,6 +1953,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ## 7. 高级架构模式与Rust实现
@@ -2107,6 +2135,7 @@ impl ProductQueryService {
         Ok(product)
     }
 }
+
 ```
 
 **CQRS最佳实践**:
@@ -2392,6 +2421,7 @@ impl OrderRepository for EventSourcedOrderRepository {
         Ok(Some(order))
     }
 }
+
 ```
 
 **事件溯源最佳实践**:
@@ -2657,6 +2687,7 @@ impl<T: ProductCatalogService + Send + Sync> ProductCatalogService for CircuitBr
     
     // 实现其他方法...
 }
+
 ```
 
 **微服务最佳实践**:
@@ -2745,6 +2776,7 @@ impl OrderSaga {
         Ok(())
     }
 }
+
 ```
 
 **更高级的基于事件的Saga实现**:
@@ -2827,28 +2859,28 @@ impl EventDrivenSagaCoordinator {
         let saga_id = format!("order-{}", event.order_id);
         let saga = self.saga_repository.find_by_id(&saga_id).await?
             .ok_or(SagaError::SagaNotFound(saga_id.clone()))?;
-            
+  
         // 更新saga状态
         match saga {
             OrderProcessSaga::Started { order_id, step, mut compensation_steps } => {
                 if step != OrderSagaStep::ValidateOrder {
                     return Err(SagaError::UnexpectedStep(format!(
-                        "Expected step {:?}, got {:?}", 
-                        OrderSagaStep::ValidateOrder, 
+                        "Expected step {:?}, got {:?}",
+                        OrderSagaStep::ValidateOrder,
                         step
                     )));
                 }
-                
+  
                 // 更新状态为下一步
                 let updated_saga = OrderProcessSaga::Started {
                     order_id,
                     step: OrderSagaStep::ReserveInventory,
                     compensation_steps,
                 };
-                
+  
                 // 保存更新后的saga
                 self.saga_repository.save(&updated_saga).await?;
-                
+  
                 // 发布库存预留事件
                 self.event_publisher.publish(
                     "inventory-commands",
@@ -2858,7 +2890,7 @@ impl EventDrivenSagaCoordinator {
                         items: event.items.clone(),
                     }
                 ).await?;
-                
+  
                 Ok(())
             },
             OrderProcessSaga::Completed { .. } => {
@@ -2869,7 +2901,7 @@ impl EventDrivenSagaCoordinator {
             }
         }
     }
-    
+  
     // 处理库存预留事件
     pub async fn handle_inventory_reserved_event(
         &self,
@@ -2879,31 +2911,31 @@ impl EventDrivenSagaCoordinator {
         let saga_id = event.saga_id.clone();
         let saga = self.saga_repository.find_by_id(&saga_id).await?
             .ok_or(SagaError::SagaNotFound(saga_id.clone()))?;
-            
+  
         // 更新saga状态
         match saga {
             OrderProcessSaga::Started { order_id, step, mut compensation_steps } => {
                 if step != OrderSagaStep::ReserveInventory {
                     return Err(SagaError::UnexpectedStep(format!(
-                        "Expected step {:?}, got {:?}", 
-                        OrderSagaStep::ReserveInventory, 
+                        "Expected step {:?}, got {:?}",
+                        OrderSagaStep::ReserveInventory,
                         step
                     )));
                 }
-                
+  
                 // 添加补偿步骤
                 compensation_steps.push(OrderSagaCompensationStep::ReleaseInventory);
-                
+  
                 // 更新状态为下一步
                 let updated_saga = OrderProcessSaga::Started {
                     order_id: order_id.clone(),
                     step: OrderSagaStep::ProcessPayment,
                     compensation_steps,
                 };
-                
+  
                 // 保存更新后的saga
                 self.saga_repository.save(&updated_saga).await?;
-                
+  
                 // 发布支付处理事件
                 self.event_publisher.publish(
                     "payment-commands",
@@ -2913,7 +2945,7 @@ impl EventDrivenSagaCoordinator {
                         amount: event.total_amount.clone(),
                     }
                 ).await?;
-                
+  
                 Ok(())
             },
             OrderProcessSaga::Completed { .. } => {
@@ -2924,7 +2956,7 @@ impl EventDrivenSagaCoordinator {
             }
         }
     }
-    
+  
     // 处理库存预留失败事件
     pub async fn handle_inventory_reservation_failed_event(
         &self,
@@ -2934,7 +2966,7 @@ impl EventDrivenSagaCoordinator {
         let saga_id = event.saga_id.clone();
         let saga = self.saga_repository.find_by_id(&saga_id).await?
             .ok_or(SagaError::SagaNotFound(saga_id.clone()))?;
-            
+  
         // 更新saga状态为失败
         match saga {
             OrderProcessSaga::Started { order_id, .. } => {
@@ -2942,20 +2974,21 @@ impl EventDrivenSagaCoordinator {
                     order_id,
                     error: format!("库存预留失败: {}", event.reason),
                 };
-                
+  
                 // 保存失败状态
                 self.saga_repository.save(&failed_saga).await?;
-                
+  
                 // 不需要补偿操作，因为这是第一步失败
-                
+  
                 Ok(())
             },
             _ => Ok(()) // 已经完成或失败，忽略
         }
     }
-    
+  
     // 其他事件处理方法...
 }
+
 ```
 
 **分布式事务最佳实践**:
@@ -2977,10 +3010,13 @@ impl EventDrivenSagaCoordinator {
 
 ```rust
 // src/domain/model/product.rs
-#[derive(Debug, Clone, PartialEq, Eq)]
+
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub struct ProductId(Uuid);
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 pub struct Product {
     id: ProductId,
     name: String,
@@ -2991,13 +3027,15 @@ pub struct Product {
     category_id: CategoryId,
 }
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 pub struct InventoryInfo {
     available_quantity: u32,
     reserved_quantity: u32,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub enum ProductStatus {
     Draft,
     Active,
@@ -3017,11 +3055,11 @@ impl Product {
         if name.is_empty() {
             return Err(DomainError::ValidationError("Product name cannot be empty".into()));
         }
-        
+  
         if price.is_zero() || price.is_negative() {
             return Err(DomainError::ValidationError("Product price must be positive".into()));
         }
-        
+  
         Ok(Self {
             id,
             name,
@@ -3035,7 +3073,7 @@ impl Product {
             category_id,
         })
     }
-    
+  
     pub fn activate(&mut self) -> Result<(), DomainError> {
         match self.status {
             ProductStatus::Draft => {
@@ -3048,90 +3086,93 @@ impl Product {
             }
         }
     }
-    
+  
     pub fn update_price(&mut self, new_price: Money) -> Result<(), DomainError> {
         if new_price.is_zero() || new_price.is_negative() {
             return Err(DomainError::ValidationError("Product price must be positive".into()));
         }
-        
+  
         self.price = new_price;
         Ok(())
     }
-    
+  
     pub fn reserve_inventory(&mut self, quantity: u32) -> Result<(), DomainError> {
         if self.status != ProductStatus::Active {
             return Err(DomainError::InvalidStateForOperation(
                 "Only active products can be reserved".into()
             ));
         }
-        
+  
         if quantity > self.inventory.available_quantity {
             return Err(DomainError::InsufficientInventory {
                 requested: quantity,
                 available: self.inventory.available_quantity,
             });
         }
-        
+  
         self.inventory.available_quantity -= quantity;
         self.inventory.reserved_quantity += quantity;
-        
+  
         Ok(())
     }
-    
+  
     pub fn commit_reservation(&mut self, quantity: u32) -> Result<(), DomainError> {
         if quantity > self.inventory.reserved_quantity {
             return Err(DomainError::ValidationError(
-                format!("Cannot commit more than reserved: {} > {}", 
+                format!("Cannot commit more than reserved: {} > {}",
                         quantity, self.inventory.reserved_quantity)
             ));
         }
-        
+  
         self.inventory.reserved_quantity -= quantity;
-        
+  
         Ok(())
     }
-    
+  
     pub fn cancel_reservation(&mut self, quantity: u32) -> Result<(), DomainError> {
         if quantity > self.inventory.reserved_quantity {
             return Err(DomainError::ValidationError(
-                format!("Cannot cancel more than reserved: {} > {}", 
+                format!("Cannot cancel more than reserved: {} > {}",
                         quantity, self.inventory.reserved_quantity)
             ));
         }
-        
+  
         self.inventory.reserved_quantity -= quantity;
         self.inventory.available_quantity += quantity;
-        
+  
         Ok(())
     }
-    
+  
     // Getters
     pub fn id(&self) -> &ProductId {
         &self.id
     }
-    
+  
     pub fn name(&self) -> &str {
         &self.name
     }
-    
+  
     pub fn price(&self) -> &Money {
         &self.price
     }
-    
+  
     pub fn available_quantity(&self) -> u32 {
         self.inventory.available_quantity
     }
-    
+  
     pub fn status(&self) -> &ProductStatus {
         &self.status
     }
 }
 
 // src/domain/model/order.rs
-#[derive(Debug, Clone, PartialEq, Eq)]
+
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub struct OrderId(Uuid);
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 pub struct Order {
     id: OrderId,
     customer_id: CustomerId,
@@ -3143,7 +3184,8 @@ pub struct Order {
     last_modified_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone)]
+# [derive(Debug, Clone)]
+
 pub struct OrderItem {
     product_id: ProductId,
     product_name: String,
@@ -3151,7 +3193,8 @@ pub struct OrderItem {
     unit_price: Money,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+# [derive(Debug, Clone, PartialEq, Eq)]
+
 pub enum OrderStatus {
     Draft,
     Submitted,
@@ -3179,7 +3222,7 @@ impl Order {
             last_modified_at: now,
         }
     }
-    
+  
     pub fn add_item(
         &mut self,
         product_id: ProductId,
@@ -3192,11 +3235,11 @@ impl Order {
                 "Items can only be added to draft orders".into()
             ));
         }
-        
+  
         if quantity == 0 {
             return Err(DomainError::ValidationError("Quantity must be greater than zero".into()));
         }
-        
+  
         // 检查是否已存在该商品
         for item in &mut self.items {
             if item.product_id == product_id {
@@ -3207,7 +3250,7 @@ impl Order {
                 return Ok(());
             }
         }
-        
+  
         // 添加新商品
         let item = OrderItem {
             product_id,
@@ -3215,64 +3258,64 @@ impl Order {
             quantity,
             unit_price,
         };
-        
+  
         self.items.push(item);
         self.recalculate_total();
         self.last_modified_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn remove_item(&mut self, product_id: &ProductId) -> Result<(), DomainError> {
         if self.status != OrderStatus::Draft {
             return Err(DomainError::InvalidStateForOperation(
                 "Items can only be removed from draft orders".into()
             ));
         }
-        
+  
         let original_len = self.items.len();
         self.items.retain(|item| item.product_id != *product_id);
-        
+  
         if self.items.len() == original_len {
             return Err(DomainError::EntityNotFound(format!("Product not found in order: {:?}", product_id)));
         }
-        
+  
         self.recalculate_total();
         self.last_modified_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn submit(&mut self) -> Result<(), DomainError> {
         if self.status != OrderStatus::Draft {
             return Err(DomainError::InvalidStateTransition(
                 format!("Cannot submit order in status: {:?}", self.status)
             ));
         }
-        
+  
         if self.items.is_empty() {
             return Err(DomainError::ValidationError("Cannot submit empty order".into()));
         }
-        
+  
         self.status = OrderStatus::Submitted;
         self.last_modified_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn mark_as_paid(&mut self) -> Result<(), DomainError> {
         if self.status != OrderStatus::Submitted {
             return Err(DomainError::InvalidStateTransition(
                 format!("Cannot mark as paid order in status: {:?}", self.status)
             ));
         }
-        
+  
         self.status = OrderStatus::Paid;
         self.last_modified_at = Utc::now();
-        
+  
         Ok(())
     }
-    
+  
     pub fn cancel(&mut self, reason: &str) -> Result<(), DomainError> {
         match self.status {
             OrderStatus::Draft | OrderStatus::Submitted | OrderStatus::Paid => {
@@ -3285,40 +3328,41 @@ impl Order {
             )),
         }
     }
-    
+  
     fn recalculate_total(&mut self) {
         let mut total = Money::zero(Currency::USD);
-        
+  
         for item in &self.items {
             // 计算每个商品小计
             let subtotal = item.unit_price.multiply(item.quantity as f64)
                 .expect("Multiplication should not fail with positive quantities");
-                
+  
             // 累加到总金额
             total = total.add(&subtotal)
                 .expect("Addition of same currency should not fail");
         }
-        
+  
         self.total_amount = total;
     }
-    
+  
     // Getters
     pub fn id(&self) -> &OrderId {
         &self.id
     }
-    
+  
     pub fn status(&self) -> &OrderStatus {
         &self.status
     }
-    
+  
     pub fn items(&self) -> &[OrderItem] {
         &self.items
     }
-    
+  
     pub fn total_amount(&self) -> &Money {
         &self.total_amount
     }
 }
+
 ```
 
 **应用服务层**:
@@ -3340,7 +3384,7 @@ impl ProductService {
             event_publisher,
         }
     }
-    
+  
     pub async fn create_product(
         &self,
         command: CreateProductCommand,
@@ -3349,16 +3393,16 @@ impl ProductService {
         if command.name.is_empty() {
             return Err(ApplicationError::ValidationError("Product name cannot be empty".into()));
         }
-        
+  
         // 创建领域对象
         let product_id = ProductId::new();
-        
+  
         let price = Money::new(command.price, Currency::USD)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         let category_id = CategoryId::from_string(&command.category_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         let product = Product::new(
             product_id.clone(),
             command.name,
@@ -3367,11 +3411,11 @@ impl ProductService {
             command.initial_quantity,
             category_id,
         ).map_err(ApplicationError::from)?;
-        
+  
         // 持久化
         self.product_repository.save(&product).await
             .map_err(ApplicationError::from)?;
-            
+  
         // 发布事件
         let event = ProductCreatedEvent {
             product_id: product_id.to_string(),
@@ -3379,13 +3423,13 @@ impl ProductService {
             price: product.price().value(),
             timestamp: Utc::now(),
         };
-        
+  
         self.event_publisher.publish("product-events", &event).await
             .map_err(|e| ApplicationError::EventPublishingError(e.to_string()))?;
-            
+  
         Ok(product_id)
     }
-    
+  
     pub async fn update_product_price(
         &self,
         command: UpdateProductPriceCommand,
@@ -3393,22 +3437,22 @@ impl ProductService {
         // 获取产品
         let product_id = ProductId::from_string(&command.product_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         let mut product = self.product_repository.find_by_id(&product_id).await
             .map_err(ApplicationError::from)?
             .ok_or(ApplicationError::EntityNotFound(format!("Product not found: {}", command.product_id)))?;
-            
+  
         // 更新价格
         let new_price = Money::new(command.new_price, Currency::USD)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         product.update_price(new_price)
             .map_err(ApplicationError::from)?;
-            
+  
         // 持久化
         self.product_repository.save(&product).await
             .map_err(ApplicationError::from)?;
-            
+  
         // 发布事件
         let event = ProductPriceUpdatedEvent {
             product_id: product_id.to_string(),
@@ -3416,13 +3460,13 @@ impl ProductService {
             new_price: command.new_price,
             timestamp: Utc::now(),
         };
-        
+  
         self.event_publisher.publish("product-events", &event).await
             .map_err(|e| ApplicationError::EventPublishingError(e.to_string()))?;
-            
+  
         Ok(())
     }
-    
+  
     // 其他产品服务方法...
 }
 
@@ -3445,7 +3489,7 @@ impl OrderService {
             event_publisher,
         }
     }
-    
+  
     pub async fn create_order(
         &self,
         command: CreateOrderCommand,
@@ -3453,12 +3497,12 @@ impl OrderService {
         // 验证客户ID
         let customer_id = CustomerId::from_string(&command.customer_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         // 验证地址
         if command.shipping_address.is_empty() {
             return Err(ApplicationError::ValidationError("Shipping address cannot be empty".into()));
         }
-        
+  
         // 创建订单
         let order_id = OrderId::new();
         let address = Address::new(
@@ -3468,26 +3512,26 @@ impl OrderService {
             command.shipping_address.country,
             command.shipping_address.postal_code,
         ).map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-        
+  
         let mut order = Order::new(order_id.clone(), customer_id, address);
-        
+  
         // 持久化
         self.order_repository.save(&order).await
             .map_err(ApplicationError::from)?;
-            
+  
         // 发布事件
         let event = OrderCreatedEvent {
             order_id: order_id.to_string(),
             customer_id: customer_id.to_string(),
             timestamp: Utc::now(),
         };
-        
+  
         self.event_publisher.publish("order-events", &event).await
             .map_err(|e| ApplicationError::EventPublishingError(e.to_string()))?;
-            
+  
         Ok(order_id)
     }
-    
+  
     pub async fn add_order_item(
         &self,
         command: AddOrderItemCommand,
@@ -3495,27 +3539,27 @@ impl OrderService {
         // 获取订单
         let order_id = OrderId::from_string(&command.order_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         let mut order = self.order_repository.find_by_id(&order_id).await
             .map_err(ApplicationError::from)?
             .ok_or(ApplicationError::EntityNotFound(format!("Order not found: {}", command.order_id)))?;
-            
+  
         // 获取产品信息
         let product_id = ProductId::from_string(&command.product_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         let product = self.product_repository.find_by_id(&product_id).await
             .map_err(ApplicationError::from)?
             .ok_or(ApplicationError::EntityNotFound(format!("Product not found: {}", command.product_id)))?;
-            
+  
         // 验证库存
         if product.available_quantity() < command.quantity {
             return Err(ApplicationError::BusinessRuleViolation(
-                format!("Insufficient inventory: requested {}, available {}", 
+                format!("Insufficient inventory: requested {}, available {}",
                         command.quantity, product.available_quantity())
             ));
         }
-        
+  
         // 添加订单项
         order.add_item(
             product_id,
@@ -3523,11 +3567,11 @@ impl OrderService {
             command.quantity,
             product.price().clone(),
         ).map_err(ApplicationError::from)?;
-        
+  
         // 持久化订单
         self.order_repository.save(&order).await
             .map_err(ApplicationError::from)?;
-            
+  
         // 发布事件
         let event = OrderItemAddedEvent {
             order_id: order_id.to_string(),
@@ -3537,13 +3581,13 @@ impl OrderService {
             unit_price: product.price().value(),
             timestamp: Utc::now(),
         };
-        
+  
         self.event_publisher.publish("order-events", &event).await
             .map_err(|e| ApplicationError::EventPublishingError(e.to_string()))?;
-            
+  
         Ok(())
     }
-    
+  
     pub async fn submit_order(
         &self,
         command: SubmitOrderCommand,
@@ -3551,33 +3595,34 @@ impl OrderService {
         // 获取订单
         let order_id = OrderId::from_string(&command.order_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         let mut order = self.order_repository.find_by_id(&order_id).await
             .map_err(ApplicationError::from)?
             .ok_or(ApplicationError::EntityNotFound(format!("Order not found: {}", command.order_id)))?;
-            
+  
         // 提交订单
         order.submit().map_err(ApplicationError::from)?;
-        
+  
         // 持久化
         self.order_repository.save(&order).await
             .map_err(ApplicationError::from)?;
-            
+  
         // 发布事件
         let event = OrderSubmittedEvent {
             order_id: order_id.to_string(),
             total_amount: order.total_amount().value(),
             timestamp: Utc::now(),
         };
-        
+  
         self.event_publisher.publish("order-events", &event).await
             .map_err(|e| ApplicationError::EventPublishingError(e.to_string()))?;
-            
+  
         Ok(())
     }
-    
+  
     // 其他订单服务方法...
 }
+
 ```
 
 **接口层（HTTP API）**:
@@ -3592,7 +3637,7 @@ impl ProductController {
     pub fn new(product_service: Arc<ProductService>) -> Self {
         Self { product_service }
     }
-    
+  
     pub async fn create_product(
         &self,
         req: HttpRequest,
@@ -3606,66 +3651,66 @@ impl ProductController {
             initial_quantity: body.initial_quantity,
             category_id: body.category_id.clone(),
         };
-        
+  
         // 处理命令
         let product_id = self.product_service.create_product(command).await
             .map_err(ApiError::from)?;
-            
+  
         // 构建响应
         let response = CreateProductResponse {
             product_id: product_id.to_string(),
             message: "Product created successfully".to_string(),
         };
-        
+  
         Ok(HttpResponse::Created().json(response))
     }
-    
+  
     pub async fn update_product_price(
         &self,
         path: web::Path<String>,
         body: web::Json<UpdateProductPriceRequest>,
     ) -> Result<HttpResponse, ApiError> {
         let product_id = path.into_inner();
-        
+  
         // 检查价格是否真的变化了
         if body.old_price == body.new_price {
             return Ok(HttpResponse::Ok().json(ApiResponse {
                 message: "No price change detected".to_string(),
             }));
         }
-        
+  
         // 转换请求到命令
         let command = UpdateProductPriceCommand {
             product_id,
             old_price: body.old_price,
             new_price: body.new_price,
         };
-        
+  
         // 处理命令
         self.product_service.update_product_price(command).await
             .map_err(ApiError::from)?;
-            
+  
         // 构建响应
         Ok(HttpResponse::Ok().json(ApiResponse {
             message: "Product price updated successfully".to_string(),
         }))
     }
-    
+  
     pub async fn get_product(
         &self,
         path: web::Path<String>,
     ) -> Result<HttpResponse, ApiError> {
         let product_id = path.into_inner();
-        
+  
         // 转换为领域ID
         let domain_id = ProductId::from_string(&product_id)
             .map_err(|e| ApiError::ValidationError(e.to_string()))?;
-            
+  
         // 查询产品
         let product = self.product_service.get_product(&domain_id).await
             .map_err(ApiError::from)?
             .ok_or_else(|| ApiError::ResourceNotFound(format!("Product not found: {}", product_id)))?;
-            
+  
         // 转换为响应DTO
         let response = ProductResponse {
             id: product.id().to_string(),
@@ -3675,10 +3720,10 @@ impl ProductController {
             available_quantity: product.available_quantity(),
             status: format!("{:?}", product.status()),
         };
-        
+  
         Ok(HttpResponse::Ok().json(response))
     }
-    
+  
     // 其他控制器方法...
 }
 
@@ -3691,6 +3736,7 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
             .route("/{id}/price", web::put().to(ProductController::update_product_price))
     );
 }
+
 ```
 
 **基础设施层（数据存储）**:
@@ -3707,13 +3753,14 @@ impl PostgresProductRepository {
     }
 }
 
-#[async_trait]
+# [async_trait]
+
 impl ProductRepository for PostgresProductRepository {
     async fn save(&self, product: &Product) -> Result<(), RepositoryError> {
         // 开始事务
         let mut tx = self.pool.begin().await
             .map_err(|e| RepositoryError::ConnectionError(e.to_string()))?;
-            
+  
         // 检查是否已存在（决定是更新还是插入）
         let exists = sqlx::query!(
             "SELECT 1 FROM products WHERE id = $1",
@@ -3723,15 +3770,15 @@ impl ProductRepository for PostgresProductRepository {
         .await
         .map_err(|e| RepositoryError::QueryError(e.to_string()))?
         .is_some();
-        
+  
         if exists {
             // 更新
             sqlx::query!(
                 r#"
-                UPDATE products 
-                SET name = $1, 
-                    description = $2, 
-                    price = $3, 
+                UPDATE products
+                SET name = $1,
+                    description = $2,
+                    price = $3,
                     available_quantity = $4,
                     reserved_quantity = $5,
                     status = $6,
@@ -3756,8 +3803,8 @@ impl ProductRepository for PostgresProductRepository {
             sqlx::query!(
                 r#"
                 INSERT INTO products (
-                    id, name, description, price, 
-                    available_quantity, reserved_quantity, 
+                    id, name, description, price,
+                    available_quantity, reserved_quantity,
                     status, category_id, created_at, updated_at
                 ) VALUES (
                     $1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW()
@@ -3776,23 +3823,23 @@ impl ProductRepository for PostgresProductRepository {
             .await
             .map_err(|e| RepositoryError::QueryError(e.to_string()))?;
         }
-        
+  
         // 提交事务
         tx.commit().await
             .map_err(|e| RepositoryError::ConnectionError(e.to_string()))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn find_by_id(&self, id: &ProductId) -> Result<Option<Product>, RepositoryError> {
         let row = sqlx::query!(
             r#"
-            SELECT 
-                id, name, description, price, 
-                available_quantity, reserved_quantity, 
-                status, category_id, 
+            SELECT
+                id, name, description, price,
+                available_quantity, reserved_quantity,
+                status, category_id,
                 created_at, updated_at
-            FROM products 
+            FROM products
             WHERE id = $1
             "#,
             id.to_string()
@@ -3800,19 +3847,19 @@ impl ProductRepository for PostgresProductRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| RepositoryError::QueryError(e.to_string()))?;
-        
+  
         match row {
             Some(row) => {
                 // 将数据库记录映射到领域对象
                 let product_id = ProductId::from_string(&row.id)
                     .map_err(|e| RepositoryError::DataError(e.to_string()))?;
-                    
+  
                 let category_id = CategoryId::from_string(&row.category_id)
                     .map_err(|e| RepositoryError::DataError(e.to_string()))?;
-                    
+  
                 let price = Money::new(row.price as f64, Currency::USD)
                     .map_err(|e| RepositoryError::DataError(e.to_string()))?;
-                    
+  
                 let status = match row.status.as_str() {
                     "Draft" => ProductStatus::Draft,
                     "Active" => ProductStatus::Active,
@@ -3821,7 +3868,7 @@ impl ProductRepository for PostgresProductRepository {
                         format!("Unknown product status: {}", row.status)
                     )),
                 };
-                
+  
                 let product = Product::from_persistence(
                     product_id,
                     row.name,
@@ -3832,39 +3879,42 @@ impl ProductRepository for PostgresProductRepository {
                     status,
                     category_id,
                 );
-                
+  
                 Ok(Some(product))
             },
             None => Ok(None),
         }
     }
-    
+  
     // 其他仓储方法...
 }
+
 ```
 
 **主应用组装**:
 
 ```rust
 // src/main.rs
-#[tokio::main]
+
+# [tokio::main]
+
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 加载配置
     let config = AppConfig::load()?;
-    
+  
     // 初始化日志
     init_logging(&config.logging)?;
-    
+  
     // 数据库连接
     let db_pool = PgPoolOptions::new()
         .max_connections(config.database.max_connections)
         .connect(&config.database.url)
         .await?;
-        
+  
     // 初始化仓储
     let product_repository = Arc::new(PostgresProductRepository::new(db_pool.clone()));
     let order_repository = Arc::new(PostgresOrderRepository::new(db_pool.clone()));
-    
+  
     // 初始化消息发布者
     let event_publisher = match config.event_publisher.kind.as_str() {
         "kafka" => {
@@ -3882,23 +3932,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         _ => Arc::new(InMemoryEventPublisher::new()),
     };
-    
+  
     // 初始化应用服务
     let product_service = Arc::new(ProductService::new(
         product_repository.clone(),
         event_publisher.clone(),
     ));
-    
+  
     let order_service = Arc::new(OrderService::new(
         order_repository.clone(),
         product_repository.clone(),
         event_publisher.clone(),
     ));
-    
+  
     // 初始化控制器
     let product_controller = web::Data::new(ProductController::new(product_service.clone()));
     let order_controller = web::Data::new(OrderController::new(order_service.clone()));
-    
+  
     // 启动HTTP服务器
     tracing::info!(
         address =
@@ -3931,6 +3981,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
+
 ```
 
 ### 实时库存管理系统
@@ -4119,6 +4170,7 @@ pub struct Location {
     latitude: Option<f64>,
     longitude: Option<f64>,
 }
+
 ```
 
 **应用服务与并发控制**:
@@ -4260,6 +4312,7 @@ impl InventoryService {
     
     // 其他库存服务方法...
 }
+
 ```
 
 **存储层与乐观并发控制**:
@@ -4392,6 +4445,7 @@ impl InventoryRepository for PostgresInventoryRepository {
         }
     }
 }
+
 ```
 
 **分布式锁实现**:
@@ -4474,6 +4528,7 @@ impl RedisLock {
         }
     }
 }
+
 ```
 
 **实时通知系统**:
@@ -4613,6 +4668,7 @@ impl InventoryWebSocketServer {
         }
     }
 }
+
 ```
 
 **基于Redis的发布订阅机制**:
@@ -4698,6 +4754,7 @@ impl RedisInventoryNotifier {
         Ok(())
     }
 }
+
 ```
 
 ### 事件驱动微服务架构
@@ -4748,6 +4805,7 @@ pub struct OrderItemAddedEvent {
 }
 
 // 其他事件结构体...
+
 ```
 
 **事件发布者**:
@@ -4811,6 +4869,7 @@ impl EventPublisher for KafkaEventPublisher {
         Ok(())
     }
 }
+
 ```
 
 **事件消费者**:
@@ -4883,6 +4942,7 @@ impl KafkaEventConsumer {
         Ok(())
     }
 }
+
 ```
 
 **订单服务中的事件处理**:
@@ -4951,68 +5011,69 @@ impl OrderEventHandlers {
             Err(e) => {
                 // 库存预留失败，更新订单状态
                 self.order_service.mark_order_failed(
-                    &order_id, 
+                    &order_id,
                     &format!("Failed to reserve inventory: {}", e)
                 ).await?;
-                
+  
                 Err(ApplicationError::ExternalServiceError(format!("Inventory reservation failed: {}", e)))
             }
         }
     }
-    
+  
     async fn handle_payment_processed(&self, event: PaymentProcessedEvent) -> Result<(), ApplicationError> {
         // 1. 获取订单ID
         let order_id = OrderId::from_string(&event.order_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         // 2. 更新订单状态为已支付
         self.order_service.mark_order_paid(&order_id, &event.transaction_id).await?;
-        
+  
         // 3. 请求确认库存（从预留状态转为已消费）
         let order = self.order_service.get_order(&order_id).await?
             .ok_or(ApplicationError::EntityNotFound(format!("Order not found: {}", event.order_id)))?;
-            
+  
         self.inventory_service_client.commit_inventory(&order).await
             .map_err(|e| ApplicationError::ExternalServiceError(format!("Inventory commit failed: {}", e)))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn handle_payment_failed(&self, event: PaymentFailedEvent) -> Result<(), ApplicationError> {
         // 1. 获取订单ID
         let order_id = OrderId::from_string(&event.order_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         // 2. 更新订单状态为支付失败
         self.order_service.mark_order_payment_failed(
-            &order_id, 
+            &order_id,
             &event.error_message
         ).await?;
-        
+  
         // 3. 释放预留的库存
         let order = self.order_service.get_order(&order_id).await?
             .ok_or(ApplicationError::EntityNotFound(format!("Order not found: {}", event.order_id)))?;
-            
+  
         self.inventory_service_client.release_inventory(&order).await
             .map_err(|e| ApplicationError::ExternalServiceError(format!("Inventory release failed: {}", e)))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn handle_inventory_committed(&self, event: InventoryCommittedEvent) -> Result<(), ApplicationError> {
         // 1. 获取订单ID
         let order_id = OrderId::from_string(&event.order_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         // 2. 更新订单状态为处理中
         self.order_service.mark_order_processing(&order_id).await?;
-        
+  
         // 3. 初始化物流流程
         // 在实际应用中，这里可能会调用物流服务API或发布物流相关事件
-        
+  
         Ok(())
     }
 }
+
 ```
 
 **库存服务中的事件处理**:
@@ -5034,7 +5095,7 @@ impl InventoryEventHandlers {
             event_publisher,
         }
     }
-    
+  
     pub async fn handle_event(&self, event: DomainEvent) -> Result<(), ApplicationError> {
         match event {
             DomainEvent::InventoryReserved(event) => {
@@ -5050,7 +5111,7 @@ impl InventoryEventHandlers {
             _ => Ok(()),
         }
     }
-    
+  
     async fn handle_inventory_reserved(&self, event: InventoryReservedEvent) -> Result<(), ApplicationError> {
         // 记录库存预留事件（可用于审计或报告）
         tracing::info!(
@@ -5059,7 +5120,7 @@ impl InventoryEventHandlers {
             quantity = %event.quantity,
             "Inventory successfully reserved"
         );
-        
+  
         // 发布库存状态更新事件（用于其他服务可能需要了解库存状态）
         let stock_event = ProductStockChangedEvent {
             product_id: event.product_id.clone(),
@@ -5069,21 +5130,21 @@ impl InventoryEventHandlers {
             change_amount: event.quantity,
             timestamp: Utc::now(),
         };
-        
+  
         self.event_publisher.publish("inventory-events", &stock_event).await
             .map_err(|e| ApplicationError::EventPublishingError(e.to_string()))?;
-            
+  
         Ok(())
     }
-    
+  
     async fn handle_order_cancelled(&self, event: OrderCancelledEvent) -> Result<(), ApplicationError> {
         // 获取订单详情，释放预留的库存
         let order_id = OrderId::from_string(&event.order_id)
             .map_err(|e| ApplicationError::ValidationError(e.to_string()))?;
-            
+  
         // 获取订单中的预留库存信息
         let reserved_items = self.inventory_service.get_reserved_items_for_order(&order_id).await?;
-        
+  
         // 释放每个预留项
         for item in reserved_items {
             let command = ReleaseInventoryCommand {
@@ -5092,22 +5153,22 @@ impl InventoryEventHandlers {
                 product_id: item.product_id.to_string(),
                 quantity: item.quantity,
             };
-            
+  
             self.inventory_service.release_inventory(command).await?;
         }
-        
+  
         tracing::info!(
             order_id = %event.order_id,
             "Released inventory for cancelled order"
         );
-        
+  
         Ok(())
     }
-    
+  
     async fn handle_product_stock_changed(&self, event: ProductStockChangedEvent) -> Result<(), ApplicationError> {
         // 更新实时库存缓存或通知订阅系统
         // 这可能涉及更新缓存、发送WebSocket通知等
-        
+  
         // 例如，向所有关注该产品的客户端发送实时更新
         let inventory_update = InventoryUpdate {
             product_id: event.product_id.clone(),
@@ -5115,16 +5176,17 @@ impl InventoryEventHandlers {
             available_quantity: event.new_available_quantity,
             timestamp: event.timestamp,
         };
-        
+  
         // 如果存在实时通知组件，调用它
         if let Some(notifier) = &self.real_time_notifier {
             notifier.notify_inventory_change(&inventory_update).await
                 .map_err(|e| ApplicationError::NotificationError(e.to_string()))?;
         }
-        
+  
         Ok(())
     }
 }
+
 ```
 
 **微服务通信客户端**:
@@ -5140,14 +5202,14 @@ impl InventoryServiceClient {
         let channel = tonic::transport::Channel::from_shared(address.to_string())?
             .connect()
             .await?;
-            
+  
         Ok(Self { client: channel })
     }
-    
+  
     pub async fn reserve_inventory(&self, order: &Order) -> Result<(), ServiceError> {
         // 创建gRPC客户端
         let mut client = inventory_proto::inventory_client::InventoryClient::new(self.client.clone());
-        
+  
         // 构建请求
         let mut items = Vec::new();
         for item in order.items() {
@@ -5156,12 +5218,12 @@ impl InventoryServiceClient {
                 quantity: item.quantity() as u32,
             });
         }
-        
+  
         let request = tonic::Request::new(inventory_proto::ReserveInventoryRequest {
             order_id: order.id().to_string(),
             items,
         });
-        
+  
         // 发送请求
         match client.reserve_inventory(request).await {
             Ok(_) => Ok(()),
@@ -5170,16 +5232,16 @@ impl InventoryServiceClient {
             )),
         }
     }
-    
+  
     pub async fn commit_inventory(&self, order: &Order) -> Result<(), ServiceError> {
         // 创建gRPC客户端
         let mut client = inventory_proto::inventory_client::InventoryClient::new(self.client.clone());
-        
+  
         // 构建请求
         let request = tonic::Request::new(inventory_proto::CommitInventoryRequest {
             order_id: order.id().to_string(),
         });
-        
+  
         // 发送请求
         match client.commit_inventory(request).await {
             Ok(_) => Ok(()),
@@ -5188,16 +5250,16 @@ impl InventoryServiceClient {
             )),
         }
     }
-    
+  
     pub async fn release_inventory(&self, order: &Order) -> Result<(), ServiceError> {
         // 创建gRPC客户端
         let mut client = inventory_proto::inventory_client::InventoryClient::new(self.client.clone());
-        
+  
         // 构建请求
         let request = tonic::Request::new(inventory_proto::ReleaseInventoryRequest {
             order_id: order.id().to_string(),
         });
-        
+  
         // 发送请求
         match client.release_inventory(request).await {
             Ok(_) => Ok(()),
@@ -5218,14 +5280,14 @@ impl PaymentServiceClient {
         let channel = tonic::transport::Channel::from_shared(address.to_string())?
             .connect()
             .await?;
-            
+  
         Ok(Self { client: channel })
     }
-    
+  
     pub async fn process_payment(&self, order: &Order) -> Result<(), ServiceError> {
         // 创建gRPC客户端
         let mut client = payment_proto::payment_client::PaymentClient::new(self.client.clone());
-        
+  
         // 构建请求
         let request = tonic::Request::new(payment_proto::ProcessPaymentRequest {
             order_id: order.id().to_string(),
@@ -5233,7 +5295,7 @@ impl PaymentServiceClient {
             amount: order.total_amount().value(),
             currency: order.total_amount().currency().to_string(),
         });
-        
+  
         // 发送请求
         match client.process_payment(request).await {
             Ok(_) => Ok(()),
@@ -5243,6 +5305,7 @@ impl PaymentServiceClient {
         }
     }
 }
+
 ```
 
 **API 网关实现**:
@@ -5270,7 +5333,7 @@ impl ApiGateway {
             auth_service,
         }
     }
-    
+  
     // API 路由配置
     pub fn configure_routes(cfg: &mut web::ServiceConfig) {
         cfg.service(
@@ -5303,9 +5366,9 @@ impl ApiGateway {
                 )
         );
     }
-    
+  
     // 实现API endpoint处理函数
-    
+  
     async fn get_products(
         data: web::Data<Arc<Self>>,
         query: web::Query<ProductQuery>,
@@ -5325,16 +5388,16 @@ impl ApiGateway {
                 message: e.to_string(),
             })
         })?;
-        
+  
         Ok(HttpResponse::Ok().json(products))
     }
-    
+  
     async fn get_product(
         data: web::Data<Arc<Self>>,
         path: web::Path<String>,
     ) -> Result<HttpResponse, Error> {
         let product_id = path.into_inner();
-        
+  
         // 调用产品服务获取单个产品
         let product = data.product_service.get_product_by_id(&product_id).await
             .map_err(|e| {
@@ -5344,7 +5407,7 @@ impl ApiGateway {
                     message: e.to_string(),
                 })
             })?;
-            
+  
         match product {
             Some(p) => Ok(HttpResponse::Ok().json(p)),
             None => Ok(HttpResponse::NotFound().json(ErrorResponse {
@@ -5353,7 +5416,7 @@ impl ApiGateway {
             })),
         }
     }
-    
+  
     async fn create_order(
         data: web::Data<Arc<Self>>,
         jwt: JwtToken,
@@ -5367,13 +5430,13 @@ impl ApiGateway {
                     message: e.to_string(),
                 })
             })?;
-            
+  
         // 创建订单命令
         let command = CreateOrderCommand {
             customer_id: claims.sub, // 从JWT中获取客户ID
             shipping_address: body.shipping_address.clone(),
         };
-        
+  
         // 调用订单服务创建订单
         let order_id = data.order_service.create_order(command).await
             .map_err(|e| {
@@ -5383,15 +5446,16 @@ impl ApiGateway {
                     message: e.to_string(),
                 })
             })?;
-            
+  
         Ok(HttpResponse::Created().json(CreateOrderResponse {
             order_id: order_id.to_string(),
             message: "Order created successfully".into(),
         }))
     }
-    
+  
     // 其他API endpoint处理函数...
 }
+
 ```
 
 **服务注册与发现**:
@@ -5427,10 +5491,10 @@ impl ConsulServiceRegistry {
             health_check_interval,
         }
     }
-    
+  
     pub async fn register(&self) -> Result<(), DiscoveryError> {
         let register_url = format!("{}/v1/agent/service/register", self.consul_url);
-        
+  
         // 构建注册请求
         let registration = json!({
             "ID": self.service_id,
@@ -5445,72 +5509,72 @@ impl ConsulServiceRegistry {
             },
             "Tags": ["rust", &self.service_name]
         });
-        
+  
         // 发送注册请求
         let response = self.client.put(&register_url)
             .json(&registration)
             .send()
             .await
             .map_err(|e| DiscoveryError::RegistrationError(e.to_string()))?;
-            
+  
         if !response.status().is_success() {
             let error_text = response.text().await
                 .unwrap_or_else(|_| "Unknown error".to_string());
-                
+  
             return Err(DiscoveryError::RegistrationError(format!(
                 "Failed to register service: {}", error_text
             )));
         }
-        
+  
         tracing::info!("Service registered successfully with Consul");
         Ok(())
     }
-    
+  
     pub async fn deregister(&self) -> Result<(), DiscoveryError> {
         let deregister_url = format!("{}/v1/agent/service/deregister/{}", self.consul_url, self.service_id);
-        
+  
         // 发送注销请求
         let response = self.client.put(&deregister_url)
             .send()
             .await
             .map_err(|e| DiscoveryError::DeregistrationError(e.to_string()))?;
-            
+  
         if !response.status().is_success() {
             let error_text = response.text().await
                 .unwrap_or_else(|_| "Unknown error".to_string());
-                
+  
             return Err(DiscoveryError::DeregistrationError(format!(
                 "Failed to deregister service: {}", error_text
             )));
         }
-        
+  
         tracing::info!("Service deregistered successfully from Consul");
         Ok(())
     }
-    
+  
     pub async fn discover_service(&self, service_name: &str) -> Result<Vec<ServiceEndpoint>, DiscoveryError> {
         let discover_url = format!("{}/v1/health/service/{}", self.consul_url, service_name);
-        
+  
         // 发送服务发现请求
         let response = self.client.get(&discover_url)
             .query(&[("passing", "true")])  // 只返回健康检查通过的服务
             .send()
             .await
             .map_err(|e| DiscoveryError::DiscoveryError(e.to_string()))?;
-            
+  
         if !response.status().is_success() {
             let error_text = response.text().await
                 .unwrap_or_else(|_| "Unknown error".to_string());
-                
+  
             return Err(DiscoveryError::DiscoveryError(format!(
                 "Failed to discover service: {}", error_text
             )));
         }
-        
+  
         // 解析响应
         let services: Vec<ConsulService> = response.json().await
             .map_err(|e| DiscoveryError::ResponseParsingError(e.to_string()))?;
-            
+  
         // 转换为服务端点列表
         let endpoints = services.into_iter()
             .map(|service| {
@@ -5521,22 +5585,25 @@ impl ConsulServiceRegistry {
                 }
             })
             .collect();
-            
+  
         Ok(endpoints)
     }
 }
 
-#[derive(Debug, Deserialize)]
+# [derive(Debug, Deserialize)]
+
 struct ConsulService {
     Service: ConsulServiceDetails,
 }
 
-#[derive(Debug, Deserialize)]
+# [derive(Debug, Deserialize)]
+
 struct ConsulServiceDetails {
     ID: String,
     Address: String,
     Port: u16,
 }
+
 ```
 
 ## 9. 工程化最佳实践
@@ -5549,12 +5616,14 @@ struct ConsulServiceDetails {
 
 ```rust
 // src/domain/model/product_tests.rs
-#[cfg(test)]
+
+# [cfg(test)]
+
 mod tests {
     use super::*;
     use crate::domain::model::money::Money;
     use crate::domain::model::product::{Product, ProductId, ProductStatus};
-    
+  
     #[test]
     fn test_create_product_with_valid_data() {
         // Arrange
@@ -5563,7 +5632,7 @@ mod tests {
         let description = "A test product".to_string();
         let price = Money::new(29.99, Currency::USD).unwrap();
         let initial_quantity = 100;
-        
+  
         // Act
         let product = Product::new(
             id.clone(),
@@ -5573,7 +5642,7 @@ mod tests {
             initial_quantity,
             CategoryId::new(),
         );
-        
+  
         // Assert
         assert!(product.is_ok());
         let product = product.unwrap();
@@ -5584,7 +5653,7 @@ mod tests {
         assert_eq!(product.available_quantity(), initial_quantity);
         assert_eq!(product.status(), &ProductStatus::Draft);
     }
-    
+  
     #[test]
     fn test_create_product_with_empty_name() {
         // Arrange
@@ -5593,7 +5662,7 @@ mod tests {
         let description = "A test product".to_string();
         let price = Money::new(29.99, Currency::USD).unwrap();
         let initial_quantity = 100;
-        
+  
         // Act
         let result = Product::new(
             id,
@@ -5603,7 +5672,7 @@ mod tests {
             initial_quantity,
             CategoryId::new(),
         );
-        
+  
         // Assert
         assert!(result.is_err());
         match result {
@@ -5613,30 +5682,30 @@ mod tests {
             _ => panic!("Expected ValidationError"),
         }
     }
-    
+  
     #[test]
     fn test_update_price() {
         // Arrange
         let mut product = create_test_product();
         let new_price = Money::new(39.99, Currency::USD).unwrap();
-        
+  
         // Act
         let result = product.update_price(new_price.clone());
-        
+  
         // Assert
         assert!(result.is_ok());
         assert_eq!(product.price(), &new_price);
     }
-    
+  
     #[test]
     fn test_update_price_with_zero_value() {
         // Arrange
         let mut product = create_test_product();
         let new_price = Money::new(0.0, Currency::USD).unwrap();
-        
+  
         // Act
         let result = product.update_price(new_price);
-        
+  
         // Assert
         assert!(result.is_err());
         match result {
@@ -5646,31 +5715,31 @@ mod tests {
             _ => panic!("Expected ValidationError"),
         }
     }
-    
+  
     #[test]
     fn test_activate_product() {
         // Arrange
         let mut product = create_test_product();
         assert_eq!(product.status(), &ProductStatus::Draft);
-        
+  
         // Act
         let result = product.activate();
-        
+  
         // Assert
         assert!(result.is_ok());
         assert_eq!(product.status(), &ProductStatus::Active);
     }
-    
+  
     #[test]
     fn test_cannot_activate_discontinued_product() {
         // Arrange
         let mut product = create_test_product();
         product.discontinue().unwrap();
         assert_eq!(product.status(), &ProductStatus::Discontinued);
-        
+  
         // Act
         let result = product.activate();
-        
+  
         // Assert
         assert!(result.is_err());
         match result {
@@ -5680,7 +5749,7 @@ mod tests {
             _ => panic!("Expected InvalidStateTransition"),
         }
     }
-    
+  
     // Helper function to create a test product
     fn create_test_product() -> Product {
         Product::new(
@@ -5693,6 +5762,7 @@ mod tests {
         ).unwrap()
     }
 }
+
 ```
 
 **集成测试示例**:
@@ -5702,14 +5772,15 @@ mod tests {
 use crate::helpers::{spawn_app, TestApp};
 use uuid::Uuid;
 
-#[tokio::test]
+# [tokio::test]
+
 async fn create_product_returns_201_for_valid_data() {
     // Arrange
     let app = spawn_app().await;
     let client = reqwest::Client::new();
-    
+  
     let auth_token = app.get_admin_token().await;
-    
+  
     let test_cases = vec![
         (
             "Basic product",
@@ -5732,7 +5803,7 @@ async fn create_product_returns_201_for_valid_data() {
             }),
         ),
     ];
-    
+  
     for (test_name, body) in test_cases {
         // Act
         let response = client
@@ -5743,35 +5814,36 @@ async fn create_product_returns_201_for_valid_data() {
             .send()
             .await
             .expect(&format!("Failed to execute request for {}", test_name));
-            
+  
         // Assert
         assert_eq!(
-            201, 
+            201,
             response.status().as_u16(),
             "Test case '{}' failed with status {}",
             test_name,
             response.status()
         );
-        
+  
         // Verify response structure
         let json_response = response.json::<serde_json::Value>().await
             .expect(&format!("Failed to parse response for {}", test_name));
-            
-        assert!(json_response.get("product_id").is_some(), 
+  
+        assert!(json_response.get("product_id").is_some(),
             "Test case '{}' response missing product_id", test_name);
-        assert!(json_response.get("message").is_some(), 
+        assert!(json_response.get("message").is_some(),
             "Test case '{}' response missing message", test_name);
     }
 }
 
-#[tokio::test]
+# [tokio::test]
+
 async fn create_product_returns_400_for_invalid_data() {
     // Arrange
     let app = spawn_app().await;
     let client = reqwest::Client::new();
-    
+  
     let auth_token = app.get_admin_token().await;
-    
+  
     let test_cases = vec![
         (
             "Empty name",
@@ -5804,7 +5876,7 @@ async fn create_product_returns_400_for_invalid_data() {
             }),
         ),
     ];
-    
+  
     for (test_name, body) in test_cases {
         // Act
         let response = client
@@ -5815,68 +5887,71 @@ async fn create_product_returns_400_for_invalid_data() {
             .send()
             .await
             .expect(&format!("Failed to execute request for {}", test_name));
-            
+  
         // Assert
         assert_eq!(
-            400, 
+            400,
             response.status().as_u16(),
             "Test case '{}' failed with status {}",
             test_name,
             response.status()
         );
-        
+  
         // Verify response contains error information
         let json_response = response.json::<serde_json::Value>().await
             .expect(&format!("Failed to parse response for {}", test_name));
-            
-        assert!(json_response.get("error").is_some(), 
+  
+        assert!(json_response.get("error").is_some(),
             "Test case '{}' response missing error field", test_name);
     }
 }
 
-#[tokio::test]
+# [tokio::test]
+
 async fn get_product_returns_200_for_existing_product() {
     // Arrange
     let app = spawn_app().await;
     let product_id = app.create_test_product().await;
     let client = reqwest::Client::new();
-    
+  
     // Act
     let response = client
         .get(&format!("{}/api/products/{}", &app.address, product_id))
         .send()
         .await
         .expect("Failed to execute request");
-        
+  
     // Assert
     assert_eq!(200, response.status().as_u16());
-    
+  
     let product = response.json::<serde_json::Value>().await
         .expect("Failed to parse response");
-        
+  
     assert_eq!(product["id"], product_id);
     assert!(product.get("name").is_some());
     assert!(product.get("price").is_some());
     assert!(product.get("available_quantity").is_some());
 }
 
-#[tokio::test]
+# [tokio::test]
+
 async fn get_product_returns_404_for_nonexistent_product() {
     // Arrange
     let app = spawn_app().await;
     let client = reqwest::Client::new();
     let nonexistent_id = Uuid::new_v4().to_string();
-    
+  
     // Act
     let response = client
         .get(&format!("{}/api/products/{}", &app.address, nonexistent_id))
         .send()
         .await
         .expect("Failed to execute request");
-        
+  
     // Assert
     assert_eq!(404, response.status().as_u16());
 }
+
 ```
 
 **性能测试示例**:
@@ -5895,9 +5970,9 @@ use your_crate::infrastructure::persistence::in_memory::InMemoryInventoryReposit
 
 fn inventory_reservation_benchmark(c: &mut Criterion) {
     let rt = Runtime::new().unwrap();
-    
+  
     let mut group = c.benchmark_group("inventory_operations");
-    
+  
     for concurrent_requests in [1, 10, 50, 100].iter() {
         group.throughput(Throughput::Elements(*concurrent_requests as u64));
         group.bench_with_input(
@@ -5908,49 +5983,50 @@ fn inventory_reservation_benchmark(c: &mut Criterion) {
                     let repository = Arc::new(InMemoryInventoryRepository::new());
                     let event_publisher = Arc::new(NullEventPublisher::new());
                     let service = InventoryService::new(repository.clone(), event_publisher);
-                    
+  
                     // 准备测试数据
                     let inventory_id = InventoryItemId::new();
                     let product_id = ProductId::new();
                     let warehouse_id = WarehouseId::new();
-                    
+  
                     let inventory_item = InventoryItem::new(
                         inventory_id.clone(),
                         product_id,
                         warehouse_id,
                         1000, // 足够大的初始库存
                     );
-                    
+  
                     repository.save(&inventory_item).await.unwrap();
-                    
+  
                     // 并发执行多个预留请求
                     let futures = (0..concurrent_requests)
                         .map(|_| {
                             let service = service.clone();
                             let inventory_id = inventory_id.clone();
-                            
+  
                             async move {
                                 let command = ReserveInventoryCommand {
                                     inventory_id: inventory_id.to_string(),
                                     quantity: 1,
                                 };
-                                
+  
                                 service.reserve_inventory(command).await
                             }
                         })
                         .collect::<Vec<_>>();
-                        
+  
                     futures::future::join_all(futures).await
                 })
             },
         );
     }
-    
+  
     group.finish();
 }
 
 criterion_group!(benches, inventory_reservation_benchmark);
 criterion_main!(benches);
+
 ```
 
 **属性测试示例**:
@@ -5987,7 +6063,7 @@ fn order_strategy() -> impl Strategy<Value = Order> {
             "US".to_string(),
             "12345".to_string(),
         ).unwrap();
-        
+  
         let mut order = Order::new(order_id, customer_id, address
 
 ```rust
@@ -6089,12 +6165,15 @@ proptest! {
         }
     }
 }
+
 ```
 
 ### CI/CD 配置示例
 
 ```yaml
+
 # .github/workflows/ci.yml
+
 name: Rust CI Pipeline
 
 on:
@@ -6267,43 +6346,56 @@ jobs:
             cd /opt/services
             docker-compose pull
             docker-compose up -d
+
 ```
 
 ### Dockerfile示例
 
 ```dockerfile
+
 # Dockerfile
+
 FROM debian:bullseye-slim
 
 # 添加非root用户
+
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # 创建应用目录
+
 WORKDIR /app
 
 # 复制编译好的二进制文件
+
 COPY your-service-name /app/
 COPY config/ /app/config/
 
 # 设置权限
+
 RUN chown -R appuser:appuser /app && \
     chmod +x /app/your-service-name
 
 # 暴露应用端口
+
 EXPOSE 8080
 
 # 定义健康检查
+
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
 # 使用非root用户运行应用
+
 USER appuser
 
 # 设置环境变量
+
 ENV APP_ENV=production
 
 # 运行应用
+
 CMD ["/app/your-service-name"]
+
 ```
 
 ### 监控与可观测性配置
@@ -6366,6 +6458,7 @@ macro_rules! trace_fn {
         let _span = tracing::info_span!($name, $($key = $value),+).entered();
     };
 }
+
 ```
 
 ### 自动化容量测试
@@ -6426,6 +6519,7 @@ async fn main() -> Result<(), GooseError> {
         
     Ok(())
 }
+
 ```
 
 ## 10. 总结与展望
@@ -6517,6 +6611,7 @@ async fn main() -> Result<(), GooseError> {
     ├── 实践经验总结
     ├── 方法论提炼
     └── 未来发展方向
+
 ```
 
 希望本文对您理解如何从概念模型到Rust工程实现的全过程有所帮助！

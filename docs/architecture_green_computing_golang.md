@@ -93,6 +93,7 @@ graph TB
     F --> F1[监控告警]
     F --> F2[自动化运维]
     F --> F3[容量规划]
+
 ```
 
 ## 1.3 2. 绿色计算基础
@@ -265,6 +266,7 @@ type EnergyPolicy struct {
     Actions      []EnergyAction
     Schedule     SchedulePolicy
 }
+
 ```
 
 ### 1.5.2 系统架构
@@ -287,6 +289,7 @@ graph TB
     D --> D2[内存]
     D --> D3[存储]
     D --> D4[网络]
+
 ```
 
 ## 1.6 5. 分布式挑战
@@ -325,6 +328,7 @@ graph TD
     B --> C[资源层]
     C --> D[硬件层]
     D --> E[能源层]
+
 ```
 
 ### 1.7.2 智能调度策略
@@ -396,6 +400,7 @@ func (em *EnergyMonitor) updateMetrics() {
         em.checkEnergyPolicies(nodeID, metrics)
     }
 }
+
 ```
 
 ### 1.8.2 绿色调度器
@@ -464,6 +469,7 @@ func (gs *GreenScheduler) calculateNodeScore(task *Task, node *ResourceNode) flo
     // 加权计算总分
     return 0.4*performanceScore + 0.4*energyScore + 0.2*loadScore
 }
+
 ```
 
 ### 1.8.3 动态功耗管理
@@ -536,6 +542,7 @@ func (pm *PowerManager) executePowerAction(node *ResourceNode, action PowerActio
         return fmt.Errorf("unknown action type: %s", action.Type)
     }
 }
+
 ```
 
 ### 1.8.4 可再生能源管理
@@ -601,6 +608,7 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
     
     return nil
 }
+
 ```
 
 ## 1.9 8. 形式化建模
@@ -677,4 +685,4 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 
 ---
 
-*本文档为绿色计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*
+* 本文档为绿色计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*

@@ -16,6 +16,7 @@ fn main() {
 
     let value = *c;    // 错误：只解引用了一次
 }
+
 ```
 
 **错误信息**：
@@ -26,6 +27,7 @@ error[E0614]: type `&&i32` cannot be dereferenced
   |
 6 |     let value = *c;
   |               ^^
+
 ```
 
 **解决方案**：确保解引用的层数与引用的层数匹配。在这个例子中，需要两次解引用：
@@ -39,6 +41,7 @@ fn main() {
     let value = **c;   // 正确：解引用两次
     println!("{}", value);
 }
+
 ```
 
 ## **2. 生命周期不匹配**
@@ -50,6 +53,7 @@ fn process_data<'a>(data: &'a str) {
     let ref_to_data = data; // 这里 data 的生命周期与 ref_to_data 不匹配
     // ...
 }
+
 ```
 
 **错误信息**：
@@ -60,6 +64,7 @@ error[E0495]: cannot infer an appropriate lifetime for borrow expression due to 
   |
 2 |     let ref_to_data = data;
   |                     ^^^^^^
+
 ```
 
 **解决方案**：使用相同的生命周期注解来确保引用的生命周期一致[^106^]：
@@ -69,6 +74,7 @@ fn process_data<'a>(data: &'a str) {
     let ref_to_data: &'a str = data; // 使用相同的生命周期注解
     // ...
 }
+
 ```
 
 ## **3. 可变引用与不可变引用冲突**
@@ -83,6 +89,7 @@ fn main() {
     let r2 = &mut s;    // 可变引用
     println!("{}", r1);
 }
+
 ```
 
 **错误信息**：
@@ -97,6 +104,7 @@ error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immuta
   |              ^^^^^^ mutable borrow occurs here
 6 |     println!("{}", r1);
   |                    -- immutable borrow later used here
+
 ```
 
 **解决方案**：确保在同一作用域内不同时存在可变引用和不可变引用[^105^]：
@@ -111,6 +119,7 @@ fn main() {
     let r2 = &mut s;    // 可变引用
     println!("{}", r2);
 }
+
 ```
 
 ## **4. 多级引用的错误使用**
@@ -126,6 +135,7 @@ fn main() {
 
     *d = 20;              // 错误：只解引用了一次
 }
+
 ```
 
 **错误信息**：
@@ -136,6 +146,7 @@ error[E0614]: type `&&&i32` cannot be dereferenced
   |
 9 |     *d = 20;
   |     ^^
+
 ```
 
 **解决方案**：确保解引用的层数与引用的层数匹配。在这个例子中，需要三次解引用：
@@ -150,6 +161,7 @@ fn main() {
     ***d = 20;            // 正确：解引用三次
     println!("{}", a);    // 输出 20
 }
+
 ```
 
 ## **5. 生命周期结束前的错误引用**
@@ -164,6 +176,7 @@ fn main() {
     let r2 = &mut s;    // 可变引用
     println!("{}", r1); // 错误：r1 的作用域尚未结束
 }
+
 ```
 
 **错误信息**：
@@ -177,6 +190,7 @@ error[E0502]: cannot borrow `s` as mutable because it is also borrowed as immuta
 5 |     let r2 = &mut s;    // 可变引用
   |              ^^^^^^ mutable borrow occurs here
 6 |     println!("{}", r1); // immutable borrow later used here
+
 ```
 
 **解决方案**：确保引用的作用域不重叠[^105^]：
@@ -191,6 +205,7 @@ fn main() {
     let r2 = &mut s;    // 可变引用
     println!("{}", r2); // 使用 r2
 }
+
 ```
 
 ## **总结**
@@ -213,6 +228,7 @@ Rust 的多级引用在使用时需要注意以下几点：
 
 ```rust
 let x = 5; // x 是不可变的
+
 ```
 
 可变引用：指的是对某个变量的可变引用，允许通过引用修改变量的值。例如：
@@ -220,7 +236,9 @@ let x = 5; // x 是不可变的
 ```rust
 let mut y = 10;
 let y_ref = &mut y; // y_ref 是对 y 的可变引用
+
 *y_ref += 1; // 通过可变引用修改 y 的值
+
 ```
 
 1. 为什么不可变类型不能创建可变引用
@@ -242,6 +260,7 @@ fn main() {
     let x_mut = &mut x; // 错误：不能对不可变类型创建可变引用
     *x_mut += 1;
 }
+
 ```
 
 编译错误：
@@ -258,6 +277,7 @@ help: consider changing this to be mutable
 1 | let mut x = 5;
   |     +++
 For more information about this error, try `rustc --explain E0596`.
+
 ```
 
 1. 解决方案
@@ -271,6 +291,7 @@ fn main() {
     *x_mut += 1; // 通过可变引用修改 x 的值
     println!("x: {}", x); // 输出: x: 6
 }
+
 ```
 
 1. 特殊情况：内部可变性
@@ -291,6 +312,7 @@ fn main() {
     } // x_mut 的作用域结束，借用结束
     println!("x: {:?}", x); // 输出: x: RefCell { value: 6 }
 }
+
 ```
 
 1. 总结
@@ -379,6 +401,7 @@ fn main() {
     let n = 40;
     println!("fibonacci({}) = {}", n, fibonacci(n)); // 输出结果
 }
+
 ```
 
 代码解析
@@ -438,6 +461,7 @@ fn main() {
 
     println!("Final value: {}", shared_data.lock().unwrap().borrow());
 }
+
 ```
 
 在这个例子中：
@@ -475,6 +499,7 @@ fn main() {
         println!("Final value: {}", data.borrow());
     });
 }
+
 ```
 
 在这个例子中：

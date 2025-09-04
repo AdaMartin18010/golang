@@ -60,19 +60,6 @@
     - [11.2.1.9.3 总结](#总结)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 11.2.1.1 概述
 
 本文档建立了Golang算法分析的完整框架，涵盖基础算法、并发算法、分布式算法和图算法四个维度，通过形式化定义、复杂度分析和Golang实现，为构建高效、可靠的算法提供全面的指导。
@@ -210,6 +197,7 @@ func partition(arr []int, low, high int) int {
     arr[i+1], arr[high] = arr[high], arr[i+1]
     return i + 1
 }
+
 ```
 
 #### 11.2.1.3.1.2 归并排序
@@ -263,6 +251,7 @@ func merge(left, right []int) []int {
     
     return result
 }
+
 ```
 
 ### 11.2.1.3.2 搜索算法
@@ -274,7 +263,7 @@ func merge(left, right []int) []int {
 \text{mid} & \text{if } A[\text{mid}] = x \\
 \text{BinarySearch}(A[:\text{mid}], x) & \text{if } A[\text{mid}] > x \\
 \text{BinarySearch}(A[\text{mid}+1:], x) & \text{if } A[\text{mid}] < x \\
--1 & \text{if } \text{not found}
+- 1 & \text{if } \text{not found}
 \end{cases} \]
 
 **复杂度分析**:
@@ -320,6 +309,7 @@ func BinarySearchRecursive(arr []int, target, left, right int) int {
         return BinarySearchRecursive(arr, target, left, mid-1)
     }
 }
+
 ```
 
 ### 11.2.1.3.3 动态规划算法
@@ -376,6 +366,7 @@ func fibonacciMemoHelper(n int, memo map[int]int) int {
     memo[n] = fibonacciMemoHelper(n-1, memo) + fibonacciMemoHelper(n-2, memo)
     return memo[n]
 }
+
 ```
 
 ## 11.2.1.4 3. 并发算法分析
@@ -450,6 +441,7 @@ func (c *Channel) Receive() (interface{}, error) {
     c.buffer = c.buffer[1:]
     return value, nil
 }
+
 ```
 
 ### 11.2.1.4.2 经典并发问题
@@ -521,6 +513,7 @@ func (pc *ProducerConsumer) consumer(id int) {
         time.Sleep(time.Millisecond * 200)
     }
 }
+
 ```
 
 #### 11.2.1.4.2.2 读者-写者问题
@@ -598,6 +591,7 @@ func ReaderWriterExample() {
     
     time.Sleep(time.Second * 5)
 }
+
 ```
 
 #### 11.2.1.4.2.3 哲学家进餐问题
@@ -697,6 +691,7 @@ func (p *Philosopher) eat() {
     p.rightChop.mutex.Unlock()
     p.leftChop.mutex.Unlock()
 }
+
 ```
 
 ### 11.2.1.4.3 无锁算法
@@ -783,6 +778,7 @@ func (q *LockFreeQueue) Dequeue() (interface{}, bool) {
         }
     }
 }
+
 ```
 
 ## 11.2.1.5 4. 分布式算法分析
@@ -887,6 +883,7 @@ func (r *RaftNode) RequestVote(candidateID, term, lastLogIndex, lastLogTerm int)
     
     return false
 }
+
 ```
 
 ### 11.2.1.5.2 分布式哈希表
@@ -963,6 +960,7 @@ func (ch *ConsistentHash) hash(key string) uint32 {
     h.Write([]byte(key))
     return h.Sum32()
 }
+
 ```
 
 ## 11.2.1.6 5. 图算法分析
@@ -1056,6 +1054,7 @@ func (g *Graph) AddEdge(from, to int, weight float64) {
         g.vertices[to].neighbors[from] = reverseEdge
     }
 }
+
 ```
 
 ### 11.2.1.6.2 图遍历算法
@@ -1128,6 +1127,7 @@ func (g *Graph) DFSIterative(startID int) []int {
     
     return result
 }
+
 ```
 
 #### 11.2.1.6.2.2 广度优先搜索 (BFS)
@@ -1177,6 +1177,7 @@ func (g *Graph) BFS(startID int) []int {
     
     return result
 }
+
 ```
 
 ### 11.2.1.6.3 最短路径算法
@@ -1241,6 +1242,7 @@ func (g *Graph) Dijkstra(startID int) map[int]float64 {
     
     return distances
 }
+
 ```
 
 ## 11.2.1.7 6. 算法优化策略
@@ -1294,6 +1296,7 @@ func min(a, b int) int {
     }
     return b
 }
+
 ```
 
 ### 11.2.1.7.2 并行算法
@@ -1385,6 +1388,7 @@ func mergeInPlace(arr []int, mid int) {
         k++
     }
 }
+
 ```
 
 ## 11.2.1.8 7. 性能分析与基准测试
@@ -1464,6 +1468,7 @@ func generateRandomArray(size int) []int {
     }
     return arr
 }
+
 ```
 
 ## 11.2.1.9 8. 最佳实践与总结

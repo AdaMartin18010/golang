@@ -158,6 +158,7 @@ func (rlf *RateLimitFilter) GetOrder() int {
 func (rlf *RateLimitFilter) GetName() string {
     return "rate_limit"
 }
+
 ```
 
 ### 服务发现模式
@@ -267,6 +268,7 @@ func (sd *ServiceDiscovery) Discover(serviceName string) ([]*ServiceInstance, er
     
     return instances, nil
 }
+
 ```
 
 ### 断路器模式
@@ -347,6 +349,7 @@ func (cb *CircuitBreaker) Execute(operation func() error) error {
     
     return err
 }
+
 ```
 
 ## 通信模式
@@ -422,6 +425,7 @@ func (gc *GRPCClient) Call(ctx context.Context, method string, req, resp interfa
     // 使用断路器执行
     return gc.circuitBreaker.Execute(operation)
 }
+
 ```
 
 ### 异步通信模式
@@ -539,6 +543,7 @@ func (c *Consumer) worker() {
         message.Ack()
     }
 }
+
 ```
 
 ### 事件驱动模式
@@ -635,6 +640,7 @@ func (es *EventSubscriber) handleEvent(eventType string, data []byte) error {
     
     return nil
 }
+
 ```
 
 ## 数据模式
@@ -696,6 +702,7 @@ func (bm *BackupManager) CreateBackup() error {
     cmd := exec.Command("pg_dump", "-h", "localhost", "-U", "user", "-d", "database", "-f", filename)
     return cmd.Run()
 }
+
 ```
 
 ### Saga模式
@@ -806,6 +813,7 @@ func (sc *SagaCoordinator) compensate(failedIndex int) error {
     
     return nil
 }
+
 ```
 
 ## 部署模式
@@ -894,6 +902,7 @@ func (bg *BlueGreenDeployment) switchTraffic(targetEnv *Environment) error {
     
     return nil
 }
+
 ```
 
 ### 滚动部署
@@ -1019,6 +1028,7 @@ func (rd *RollingDeployment) waitForInstanceReady(instance *Instance) error {
     
     return fmt.Errorf("instance not ready within deadline")
 }
+
 ```
 
 ## 总结

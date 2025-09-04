@@ -69,19 +69,6 @@
   - [1.7.3.25.2 📚 **总结**](#📚-**总结**)
 <!-- TOC END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 1.7.3.1.1 🎯 **概述**
 
 GitOps流水线自动化模块基于Git作为单一真实数据源(SSOT)，实现了云原生应用的自动化部署、配置管理和版本控制。该模块集成了ArgoCD、Flux等主流GitOps工具，提供了完整的声明式部署和持续交付解决方案。
@@ -102,6 +89,7 @@ GitOps流水线自动化模块基于Git作为单一真实数据源(SSOT)，实�
 │  │  Pipeline Engine│  │  Config Manager │  │  Sync Manager│ │
 │  └─────────────────┘  └─────────────────┘  └──────────────┘ │
 └─────────────────────────────────────────────────────────────┘
+
 ```
 
 ### 1.7.3.1.2.2 **设计原则**
@@ -138,6 +126,7 @@ func (am *ArgoCDManager) SyncApplication(ctx context.Context, appName string) er
 func (am *ArgoCDManager) GetApplicationStatus(ctx context.Context, appName string) (*ApplicationStatus, error) {
     // 实现状态获取逻辑
 }
+
 ```
 
 #### 1.7.3.1.3.1.2 **应用配置**
@@ -166,6 +155,7 @@ spec:
     - PrunePropagationPolicy=foreground
     - PruneLast=true
   revisionHistoryLimit: 10
+
 ```
 
 ### 1.7.3.1.3.2 **2. Flux集成**
@@ -187,6 +177,7 @@ func (fm *FluxManager) CreateGitRepository(ctx context.Context, repo *GitReposit
 func (fm *FluxManager) CreateKustomization(ctx context.Context, kustomization *Kustomization) error {
     // 实现Kustomization创建逻辑
 }
+
 ```
 
 #### 1.7.3.1.3.2.2 **Flux配置**
@@ -218,6 +209,7 @@ spec:
     kind: GitRepository
     name: my-repo
   targetNamespace: default
+
 ```
 
 ### 1.7.3.1.3.3 **3. 流水线引擎**
@@ -256,6 +248,7 @@ func (pe *PipelineEngine) ExecuteDeploymentPipeline(ctx context.Context, pipelin
     // 5. 触发同步
     return pe.triggerSync(ctx, pipeline)
 }
+
 ```
 
 #### 1.7.3.1.3.3.2 **流水线配置**
@@ -308,6 +301,7 @@ spec:
     workspaces:
     - name: source
       workspace: shared-workspace
+
 ```
 
 ### 1.7.3.1.3.4 **4. 配置管理**
@@ -354,6 +348,7 @@ func (cm *ConfigManager) SyncConfigFromGit(ctx context.Context, repoURL, path st
     // 3. 应用到集群
     return cm.applyConfigToCluster(ctx, config)
 }
+
 ```
 
 ## 1.7.3.1.4 🚀 **使用指南**
@@ -361,44 +356,57 @@ func (cm *ConfigManager) SyncConfigFromGit(ctx context.Context, repoURL, path st
 ### 1.7.3.1.4.1 **1. 安装ArgoCD**
 
 ```bash
+
 # 1.7.3.2 安装ArgoCD
+
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 # 1.7.3.3 获取管理员密码
+
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
 # 1.7.3.4 端口转发
+
 kubectl port-forward svc/argocd-server -n argocd 8080:443
+
 ```
 
 ### 1.7.3.4 **2. 安装Flux**
 
 ```bash
+
 # 1.7.3.5 安装Flux CLI
+
 curl -s https://fluxcd.io/install.sh | sudo bash
 
 # 1.7.3.6 安装Flux到集群
+
 flux install
 
 # 1.7.3.7 创建GitRepository
+
 flux create source git my-repo \
   --url=https://github.com/my-org/my-repo \
   --branch=main \
   --interval=1m
 
 # 1.7.3.8 创建Kustomization
+
 flux create kustomization my-app \
   --source=my-repo \
   --path="./k8s/my-app" \
   --prune=true \
   --interval=10m
+
 ```
 
 ### 1.7.3.8 **3. 配置GitOps流水线**
 
 ```yaml
+
 # 1.7.3.9 应用配置
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -422,6 +430,7 @@ spec:
     - PrunePropagationPolicy=foreground
     - PruneLast=true
   revisionHistoryLimit: 10
+
 ```
 
 ## 1.7.3.9.1 📊 **监控和调试**
@@ -429,46 +438,63 @@ spec:
 ### 1.7.3.9.1.1 **1. ArgoCD监控**
 
 ```bash
+
 # 1.7.3.10 查看应用状态
+
 argocd app list
 
 # 1.7.3.11 查看应用详情
+
 argocd app get my-app
 
 # 1.7.3.12 查看应用日志
+
 argocd app logs my-app
 
 # 1.7.3.13 同步应用
+
 argocd app sync my-app
+
 ```
 
 ### 1.7.3.13 **2. Flux监控**
 
 ```bash
+
 # 1.7.3.14 查看GitRepository状态
+
 flux get sources git
 
 # 1.7.3.15 查看Kustomization状态
+
 flux get kustomizations
 
 # 1.7.3.16 查看同步状态
+
 flux get kustomizations my-app
 
 # 1.7.3.17 强制同步
+
 flux reconcile kustomization my-app
+
 ```
 
 ### 1.7.3.17 **3. 流水线监控**
 
 ```bash
+
 # 1.7.3.18 查看流水线运行状态
+
 kubectl get pipelineruns
 
 # 1.7.3.19 查看任务运行状态
+
 kubectl get taskruns
 
 # 1.7.3.20 查看流水线日志
+
 kubectl logs -f pipelinerun/deployment-pipeline-run-xyz
+
 ```
 
 ## 1.7.3.20.1 🔧 **高级功能**
@@ -476,7 +502,9 @@ kubectl logs -f pipelinerun/deployment-pipeline-run-xyz
 ### 1.7.3.20.1.1 **1. 多环境管理**
 
 ```yaml
+
 # 1.7.3.21 开发环境
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -489,7 +517,9 @@ spec:
   destination:
     namespace: dev
 ---
+
 # 1.7.3.22 生产环境
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -501,6 +531,7 @@ spec:
     path: k8s/my-app/overlays/prod
   destination:
     namespace: prod
+
 ```
 
 ### 1.7.3.22 **2. 配置漂移检测**
@@ -544,6 +575,7 @@ func (dd *DriftDetector) AutoFixDrift(ctx context.Context, appName string) error
     
     return nil
 }
+
 ```
 
 ### 1.7.3.22 **3. 回滚管理**
@@ -569,6 +601,7 @@ func (rm *RollbackManager) Rollback(ctx context.Context, appName, revision strin
 func (rm *RollbackManager) GetRollbackHistory(ctx context.Context, appName string) ([]Revision, error) {
     return rm.argocdClient.GetApplicationHistory(ctx, appName)
 }
+
 ```
 
 ## 1.7.3.22.1 🔒 **安全最佳实践**
@@ -600,12 +633,15 @@ roleRef:
   kind: ClusterRole
   name: gitops-manager
   apiGroup: rbac.authorization.k8s.io
+
 ```
 
 ### 1.7.3.22.1.2 **2. 密钥管理**
 
 ```yaml
+
 # 1.7.3.23 使用Sealed Secrets
+
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
@@ -615,7 +651,9 @@ spec:
     database-url: AgBy...
     api-key: AgBy...
 ---
+
 # 1.7.3.24 使用External Secrets
+
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
@@ -634,6 +672,7 @@ spec:
   - secretKey: api-key
     remoteRef:
       key: my-app/api-key
+
 ```
 
 ### 1.7.3.24 **3. 网络策略**
@@ -666,6 +705,7 @@ spec:
     ports:
     - protocol: TCP
       port: 443
+
 ```
 
 ## 1.7.3.24.1 📈 **性能优化**
@@ -673,7 +713,9 @@ spec:
 ### 1.7.3.24.1.1 **1. 同步优化**
 
 ```yaml
+
 # 1.7.3.25 批量同步
+
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -699,6 +741,7 @@ spec:
         automated:
           prune: true
           selfHeal: true
+
 ```
 
 ### 1.7.3.25 **2. 缓存优化**
@@ -726,6 +769,7 @@ func (cm *CacheManager) GetCachedStatus(appName string) (*ApplicationStatus, boo
     }
     return status.(*ApplicationStatus), true
 }
+
 ```
 
 ### 1.7.3.25 **3. 并发控制**
@@ -745,6 +789,7 @@ func (cm *ConcurrencyManager) SyncWithLimit(ctx context.Context, syncFunc func()
         return ctx.Err()
     }
 }
+
 ```
 
 ## 1.7.3.25.1 🔧 **扩展开发**
@@ -770,6 +815,7 @@ func (css *CustomSyncStrategy) ShouldSync(ctx context.Context, app *Application)
 func (css *CustomSyncStrategy) AddRule(rule SyncRule) {
     css.rules = append(css.rules, rule)
 }
+
 ```
 
 ### 1.7.3.25.1.2 **2. 自定义通知**
@@ -791,6 +837,7 @@ func (nm *NotificationManager) NotifySync(ctx context.Context, event *SyncEvent)
 func (nm *NotificationManager) AddNotifier(notifier Notifier) {
     nm.notifiers = append(nm.notifiers, notifier)
 }
+
 ```
 
 ### 1.7.3.25.1.3 **3. 自定义验证**
@@ -812,6 +859,7 @@ func (vm *ValidationManager) ValidateApplication(ctx context.Context, app *Appli
 func (vm *ValidationManager) AddValidator(validator Validator) {
     vm.validators = append(vm.validators, validator)
 }
+
 ```
 
 ## 1.7.3.25.2 📚 **总结**

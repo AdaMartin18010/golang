@@ -109,6 +109,7 @@ impl LambdaArchitecture {
         Ok(QueryResult::merge(speed_result, batch_result))
     }
 }
+
 ```
 
 #### 1.2.2.2 Kappa架构
@@ -145,6 +146,7 @@ impl KappaArchitecture {
         Ok(())
     }
 }
+
 ```
 
 ## 1.3 业务领域概念建模
@@ -193,6 +195,7 @@ pub enum PipelineStatus {
     Failed,
     Completed,
 }
+
 ```
 
 #### 1.3.1.2 数据质量
@@ -235,6 +238,7 @@ pub struct QualityCheckResult {
     pub details: Vec<QualityIssue>,
     pub checked_at: DateTime<Utc>,
 }
+
 ```
 
 #### 1.3.1.3 数据血缘
@@ -262,6 +266,7 @@ pub struct Dataset {
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
+
 ```
 
 ## 1.4 数据建模
@@ -319,6 +324,7 @@ impl ColumnarStorage {
         todo!()
     }
 }
+
 ```
 
 #### 1.4.1.2 流式数据处理
@@ -375,6 +381,7 @@ impl StreamProcessor {
         Ok(())
     }
 }
+
 ```
 
 #### 1.4.1.3 数据湖存储
@@ -440,6 +447,7 @@ impl DataLake {
         Ok(batches)
     }
 }
+
 ```
 
 ## 1.5 流程建模
@@ -493,6 +501,7 @@ impl ETLPipeline {
         })
     }
 }
+
 ```
 
 #### 1.5.1.2 实时数据处理
@@ -543,6 +552,7 @@ impl RealTimeProcessor {
         Ok(())
     }
 }
+
 ```
 
 ## 1.6 组件建模
@@ -592,6 +602,7 @@ impl QueryEngine {
         Ok(ast.into_iter().next().unwrap())
     }
 }
+
 ```
 
 #### 1.6.1.2 数据可视化服务
@@ -654,6 +665,7 @@ impl VisualizationService {
         })
     }
 }
+
 ```
 
 ## 1.7 运维运营
@@ -728,6 +740,7 @@ impl DataProcessingMetrics {
         self.throughput.set(throughput);
     }
 }
+
 ```
 
 #### 1.7.1.2 数据质量监控
@@ -774,6 +787,7 @@ impl DataQualityMonitor {
         }
     }
 }
+
 ```
 
 ### 1.7.2 性能优化
@@ -820,6 +834,7 @@ impl MemoryManager {
         }
     }
 }
+
 ```
 
 #### 1.7.2.2 并行处理优化
@@ -861,6 +876,7 @@ impl ParallelProcessor {
         })
     }
 }
+
 ```
 
 ## 1.8 总结

@@ -224,6 +224,7 @@
         ├── 标准化进展
         ├── 新应用领域
         └── 理论研究前沿
+
 ```
 
 ## 1. 引言
@@ -708,7 +709,7 @@ $Health(F) = w_1 \cdot Stars(F) + w_2 \cdot Contributors(F) + w_3 \cdot Activity
 
 智能制造是边缘计算的核心应用场景，各框架在此领域有不同的应用模式。
 
--**案例1：KubeEdge在大型制造企业的应用**
+- **案例1：KubeEdge在大型制造企业的应用**
 
 某汽车制造企业采用KubeEdge构建工厂边缘计算平台，主要特点：
 
@@ -730,7 +731,7 @@ $Benefit = \Delta Efficiency + \Delta Availability - \Delta Cost$
 - 设备响应延迟降低67%
 - 运维成本降低25%
 
--**案例2：EdgeX在离散制造业应用**
+- **案例2：EdgeX在离散制造业应用**
 
 某电子组装厂采用EdgeX作为设备接入网关：
 
@@ -748,7 +749,7 @@ $Benefit = \Delta Efficiency + \Delta Availability - \Delta Cost$
 
 智慧城市场景特点是设备多样、分布广泛、数据量大。
 
--**案例3：OpenYurt在城市交通管理中的应用**
+- **案例3：OpenYurt在城市交通管理中的应用**
 
 某大型城市智能交通系统基于OpenYurt构建：
 
@@ -769,7 +770,7 @@ $TrafficEfficiency = f(ResponseTime, DataLocality)$
 - 交通拥堵率降低25%
 - 系统维护窗口减少60%
 
--**案例4：EMQX Edge在环境监测中的应用**
+- **案例4：EMQX Edge在环境监测中的应用**
 
 某城市环境监测网络基于EMQX Edge构建：
 
@@ -787,7 +788,7 @@ $TrafficEfficiency = f(ResponseTime, DataLocality)$
 
 能源行业边缘计算特点是地理分布广、安全要求高、设备寿命长。
 
--**案例5：KubeEdge在智能电网中的应用**
+- **案例5：KubeEdge在智能电网中的应用**
 
 某区域电网采用KubeEdge构建配电自动化系统：
 
@@ -808,7 +809,7 @@ $SecurityLevel = Integrity \times Availability \times Confidentiality$
 - 故障检测时间缩短65%
 - 维护成本降低30%
 
--**案例6：StreamPipes在风电场监控中的应用**
+- **案例6：StreamPipes在风电场监控中的应用**
 
 某风力发电场采用StreamPipes构建实时监控分析平台：
 
@@ -826,7 +827,7 @@ $SecurityLevel = Integrity \times Availability \times Confidentiality$
 
 零售场景特点是客户体验敏感、数据实时性要求高。
 
--**案例7：EdgeX在智能商店中的应用**
+- **案例7：EdgeX在智能商店中的应用**
 
 某连锁零售商采用EdgeX构建智能店铺系统：
 
@@ -847,7 +848,7 @@ $CustomerExperience = f(ResponseTime, Accuracy, Personalization)$
 - 客户等待时间减少47%
 - 数据传输成本降低58%
 
--**案例8：EMQX Edge在商超物联网中的应用**
+- **案例8：EMQX Edge在商超物联网中的应用**
 
 某大型超市链采用EMQX Edge构建冷链管理系统：
 
@@ -865,7 +866,7 @@ $CustomerExperience = f(ResponseTime, Accuracy, Personalization)$
 
 医疗场景特点是数据敏感、可靠性要求极高、实时性关键。
 
--**案例9：KubeEdge在医院系统中的应用**
+- **案例9：KubeEdge在医院系统中的应用**
 
 某三甲医院采用KubeEdge构建患者监护系统：
 
@@ -886,7 +887,7 @@ $Reliability = MTBF/(MTBF+MTTR)$，其中MTBF为平均故障间隔时间，MTTR�
 - 数据隐私合规性提升100%
 - 系统可用性达到99.999%
 
--**案例10：StreamPipes在远程医疗中的应用**
+- **案例10：StreamPipes在远程医疗中的应用**
 
 某远程医疗服务提供商采用StreamPipes构建患者监测分析平台：
 
@@ -910,6 +911,7 @@ KubeEdge负责基础设施和应用编排，EdgeX负责设备连接和数据处�
 
 ```math
 KubeEdge CloudCore --> KubeEdge EdgeCore --> EdgeX (容器化) --> 设备
+
 ```
 
 **形式化集成模型**：
@@ -922,7 +924,7 @@ $Integration(KE, EF) = (KE_{infra} \cup EF_{device}) \setminus (KE_{device} \cap
 3. 监控和日志系统统一
 4. 云边协同控制策略
 
--**案例11：制造业集成应用**
+- **案例11：制造业集成应用**
 
 某工业机器人制造商采用KubeEdge+EdgeX构建工厂自动化平台：
 
@@ -941,6 +943,7 @@ OpenYurt提供基础设施管理，EMQX提供高性能消息传输，形成轻�
 
 ```math
 Kubernetes API Server --> YurtHub --> EMQX Edge(容器) --> 设备
+
 ```
 
 **形式化集成模型**：
@@ -953,7 +956,7 @@ $Integration(OY, EM) = OY_{infra} \circ EM_{messaging}$
 3. 单集群管理简化运维
 4. 消息驱动应用模型
 
--**案例12：智慧农业集成应用**
+- **案例12：智慧农业集成应用**
 
 某大型农业企业采用OpenYurt+EMQX构建智能农场管理系统：
 
@@ -978,7 +981,7 @@ $Integration(OY, EM) = OY_{infra} \circ EM_{messaging}$
 **形式化协同模型**：
 $Collaboration = Infrastructure \circ Connectivity \circ Processing \circ Application$
 
--**案例13：智慧城市多框架协同**
+- **案例13：智慧城市多框架协同**
 
 某大型智慧城市项目采用多框架协同架构：
 
@@ -1018,7 +1021,7 @@ $DeploymentComplexity = f(Steps, Dependencies, Resources, Expertise)$
 
 **定理13**：部署复杂度与框架功能丰富度呈正相关，与框架集成度呈负相关。
 
--**案例14：KubeEdge部署实践**
+- **案例14：KubeEdge部署实践**
 
 某电信运营商部署KubeEdge经验：
 
@@ -1046,7 +1049,7 @@ $MaintenanceCost = f(UpdateFrequency, MonitoringEffort, TroubleshootingComplexit
 
 **定理14**：分布式组件越多，系统运维复杂度越高；监控覆盖度越好，问题排查成本越低。
 
--**案例15：EdgeX运维实践**
+- **案例15：EdgeX运维实践**
 
 某智能楼宇管理系统EdgeX运维经验：
 
@@ -1099,7 +1102,7 @@ $UpgradeStrategy = Zero-downtime \cap Rollback \cap Compatibility$
 
 **定理16**：基于容器编排的框架通常提供更完善的升级策略。
 
--**案例16：KubeEdge灰度升级实践**
+- **案例16：KubeEdge灰度升级实践**
 
 某电商平台边缘节点升级实践：
 
@@ -1133,10 +1136,12 @@ $BuildPipeline = MultiArch \cap DependencyManagement \cap TestAutomation \cap Ar
 - Docker Buildx跨平台镜像构建
 - 自动化版本管理和制品发布
 
--**案例17：KubeEdge多架构构建流水线**
+- **案例17：KubeEdge多架构构建流水线**
 
 ```yaml
+
 # GitHub Actions工作流示例
+
 name: Multi-arch Build
 
 on:
@@ -1168,6 +1173,7 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           push: true
           tags: kubeedge/edge-${{ matrix.arch }}:${{ github.ref_name }}
+
 ```
 
 ### 9.2 测试自动化支持
@@ -1217,7 +1223,7 @@ $DeploymentAutomation = \{TargetDiscovery, ConfigManagement, StateVerification, 
 - 基于K8s的边缘系统：ArgoCD/Flux GitOps部署
 - 传统边缘系统：Ansible+自定义脚本
 
--**案例18：OpenYurt GitOps部署流程**
+- **案例18：OpenYurt GitOps部署流程**
 
 某零售集团采用Flux CD部署OpenYurt应用：
 
@@ -1386,7 +1392,7 @@ $Efficiency(framework) = Functionality / ResourceConsumption$
 
 **定理22**：资源消耗与框架功能复杂度呈非线性正相关，与优化程度呈负相关。
 
--**案例19：EMQX资源优化实践**
+- **案例19：EMQX资源优化实践**
 
 某物联网项目采用EMQX Edge部署在资源受限网关：
 
@@ -1417,7 +1423,7 @@ $ScalabilityLimit(framework) = min_{i \in Resources}(MaxCapacity_i / UnitConsump
 
 **定理23**：在边缘环境中，网络连接性通常是扩展性的主要瓶颈，而非计算或存储资源。
 
--**案例20：KubeEdge大规模部署**
+- **案例20：KubeEdge大规模部署**
 
 某电信运营商KubeEdge部署：
 
@@ -1448,7 +1454,7 @@ $Performance(Load) = BasePerformance \times ImpactFunction(Load / Threshold)$
 
 **定理24**：分布式架构设计的框架在负载增加时表现出更好的扩展性，但协调开销也相应增加。
 
--**案例21：EdgeX性能瓶颈突破**
+- **案例21：EdgeX性能瓶颈突破**
 
 某工业监控系统EdgeX优化：
 
@@ -1512,7 +1518,7 @@ $DeveloperProductivity = Expressiveness \times Abstraction / LearningCurve$
 
 **定理26**：低代码/声明式模型在初始生产力方面优于命令式模型，但在复杂场景灵活性可能受限。
 
--**案例22：StreamPipes低代码效率**
+- **案例22：StreamPipes低代码效率**
 
 某能源公司使用StreamPipes经验：
 
@@ -1572,7 +1578,7 @@ $DocQuality = Coverage \times Accuracy \times Freshness \times Accessibility$
 
 **定理28**：文档质量与项目成熟度和社区规模呈正相关。
 
--**案例23：EdgeX文档最佳实践**
+- **案例23：EdgeX文档最佳实践**
 
 EdgeX文档特色：
 
@@ -1744,7 +1750,7 @@ $CaseAnalysis = \{CaseSelection, FactorExtraction, PatternIdentification, Applic
    - 风险因素评估
    - 价值实现路径
 
--**案例24：制造业边缘框架选型**
+- **案例24：制造业边缘框架选型**
 
 某汽车零部件制造商选型过程：
 
@@ -1761,21 +1767,21 @@ $CaseAnalysis = \{CaseSelection, FactorExtraction, PatternIdentification, Applic
 
 边缘云框架未来将融合多种新兴技术。
 
--**趋势1：边缘AI集成**
+- **趋势1：边缘AI集成**
 
 - 框架内置轻量级AI推理引擎
 - 模型优化和自动部署能力
 - 联邦学习支持
 - 示例：KubeEdge已引入Sedna项目，专注边缘AI场景
 
--**趋势2：WebAssembly集成**
+- **趋势2：WebAssembly集成**
 
 - WASM作为轻量级执行环境
 - 安全沙箱隔离
 - 跨平台可移植性
 - 示例：EdgeX社区正探索WASM作为轻量级替代方案
 
--**趋势3：5G与边缘计算融合**
+- **趋势3：5G与边缘计算融合**
 
 - 5G网络切片与边缘计算协同
 - MEC(多接入边缘计算)集成
@@ -1788,19 +1794,19 @@ $CaseAnalysis = \{CaseSelection, FactorExtraction, PatternIdentification, Applic
 
 行业标准化是边缘计算成熟的关键指标。
 
--**标准化方向1：边缘管理接口**
+- **标准化方向1：边缘管理接口**
 
 - LF Edge正推进边缘管理API标准化
 - Kubernetes边缘扩展SIG工作组
 - 设备模型标准化
 
--**标准化方向2：互操作性协议**
+- **标准化方向2：互操作性协议**
 
 - 云边协同协议统一
 - 跨框架互操作接口
 - 边缘设备语义标准
 
--**标准化方向3：安全与合规**
+- **标准化方向3：安全与合规**
 
 - 边缘安全基准定义
 - 合规认证框架
@@ -1812,21 +1818,21 @@ $CaseAnalysis = \{CaseSelection, FactorExtraction, PatternIdentification, Applic
 
 边缘计算将拓展到新的应用领域。
 
--**新兴方向1：自主系统**
+- **新兴方向1：自主系统**
 
 - 无人驾驶车辆边缘系统
 - 自主机器人控制
 - 无人机集群管理
 - 示例：OpenYurt在自动导引车(AGV)集群中的应用
 
--**新兴方向2：空间边缘计算**
+- **新兴方向2：空间边缘计算**
 
 - 卫星边缘节点
 - 太空设备互联
 - 极端环境通信
 - 示例：NASA探索使用改进的EdgeX Foundry用于太空应用
 
--**新兴方向3：边缘元宇宙基础设施**
+- **新兴方向3：边缘元宇宙基础设施**
 
 - AR/VR实时渲染
 - 分布式物理引擎
@@ -1839,19 +1845,19 @@ $CaseAnalysis = \{CaseSelection, FactorExtraction, PatternIdentification, Applic
 
 理论研究将指导边缘云架构演进。
 
--**研究方向1：形式化验证模型**
+- **研究方向1：形式化验证模型**
 
 - 分布式系统一致性证明
 - 自适应系统正确性验证
 - 失效模式形式化分析
 
--**研究方向2：优化理论**
+- **研究方向2：优化理论**
 
 - 多目标约束下资源优化
 - 边缘智能决策理论
 - 能效与性能平衡模型
 
--**研究方向3：弹性理论**
+- **研究方向3：弹性理论**
 
 - 系统自愈机制形式化
 - 边缘韧性量化方法

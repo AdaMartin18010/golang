@@ -216,6 +216,7 @@ fn main() {
 
     let _ = order.change_status(OrderStatus::Processing);
 }
+
 ```
 
 ### 1.3.3 优势与局限
@@ -273,7 +274,6 @@ impl std::fmt::Display for OrderError {
 }
 
 impl std::error::Error for OrderError {}
-
 
 // Assume Order struct exists as defined before
 impl Order {
@@ -355,6 +355,7 @@ fn main() {
          Err(e) => println!("Error adding item: {}", e), // Expected error
      }
 }
+
 ```
 
 ### 1.4.3 挑战：复杂性与验证
@@ -395,7 +396,6 @@ pub mod prelude { // Common exports
     pub use super::order::{Order, OrderItem, OrderStatus, OrderError, OrderRepository};
 }
 
-
 // src/customer.rs
 #[derive(Debug, Clone, PartialEq, Eq, Hash)] // Added Hash for potential use as key
 pub struct CustomerId(u64);
@@ -413,7 +413,6 @@ impl Customer {
      pub fn email(&self) -> &str { &self.email } // Controlled access
 }
 
-
 // src/product.rs
 // ... Product definition ...
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -425,7 +424,6 @@ pub struct Product {
      pub price: f64,
 }
 // ... impl Product ...
-
 
 // src/order.rs
 use crate::customer::CustomerId;
@@ -475,7 +473,6 @@ pub trait OrderRepository {
     fn find_by_id(&self, order_id: &str) -> Result<Option<Order>, OrderError>;
     // other methods like find_by_customer, etc.
 }
-
 
 // --- Crate: application (Uses Domain) ---
 // Depends on the `domain` crate
@@ -682,6 +679,7 @@ fn main() {
 │       └── 教育与推广
 └── 5. 结论
     └── 价值巨大但挑战并存，需权衡与持续改进
+
 ```
 
 ## 1.8 7. 结论
