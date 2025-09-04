@@ -1,47 +1,34 @@
 # 1 1 1 1 1 1 1 软件行业领域知识库 - Rust架构与设计指南
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 软件行业领域知识库 - Rust架构与设计指南](#1-1-1-1-1-1-1-软件行业领域知识库-rust架构与设计指南)
-  - [1.1 概述](#概述)
-  - [1.2 行业领域指南](#行业领域指南)
-    - [1.2.1 1. [金融科技 (FinTech)](./fintech/README.md)](#1-金融科技-fintechfintechreadmemd)
-    - [1.2.2 2. [游戏开发 (Game Development)](./game_development/README.md)](#2-游戏开发-game-developmentgame_developmentreadmemd)
-    - [1.2.3 3. [物联网 (IoT)](./iot/README.md)](#3-物联网-iotiotreadmemd)
-    - [1.2.4 4. [人工智能/机器学习 (AI/ML)](./ai_ml/README.md)](#4-人工智能机器学习-aimlai_mlreadmemd)
-    - [1.2.5 5. [区块链/Web3](./blockchain_web3/README.md)](#5-区块链web3blockchain_web3readmemd)
-    - [1.2.6 6. [云计算/基础设施 (Cloud Infrastructure)](./cloud_infrastructure/README.md)](#6-云计算基础设施-cloud-infrastructurecloud_infrastructurereadmemd)
-    - [1.2.7 7. [大数据/数据分析 (Big Data Analytics)](./big_data_analytics/README.md)](#7-大数据数据分析-big-data-analyticsbig_data_analyticsreadmemd)
-    - [1.2.8 8. [网络安全 (Cybersecurity)](./cybersecurity/README.md)](#8-网络安全-cybersecuritycybersecurityreadmemd)
-    - [1.2.9 9. [医疗健康 (Healthcare)](./healthcare/README.md)](#9-医疗健康-healthcarehealthcarereadmemd)
-    - [1.2.10 10. [教育科技 (Education Technology)](./education_tech/README.md)](#10-教育科技-education-technologyeducation_techreadmemd)
-    - [1.2.11 11. [汽车/自动驾驶 (Automotive/Autonomous Driving)](./automotive/README.md)](#11-汽车自动驾驶-automotiveautonomous-drivingautomotivereadmemd)
-    - [1.2.12 12. [电子商务 (E-commerce)](./ecommerce/README.md)](#12-电子商务-e-commerceecommercereadmemd)
-    - [1.2.13 13. [社交媒体 (Social Media)](./social_media/README.md)](#13-社交媒体-social-mediasocial_mediareadmemd)
-    - [1.2.14 14. [企业软件 (Enterprise Software)](./enterprise/README.md)](#14-企业软件-enterprise-softwareenterprisereadmemd)
-    - [1.2.15 15. [移动应用 (Mobile Applications)](./mobile/README.md)](#15-移动应用-mobile-applicationsmobilereadmemd)
-  - [1.3 通用设计原则](#通用设计原则)
-    - [1.3.1 Rust特定原则](#rust特定原则)
-    - [1.3.2 架构设计原则](#架构设计原则)
-    - [1.3.3 业务建模原则](#业务建模原则)
-  - [1.4 技术栈参考](#技术栈参考)
-    - [1.4.1 核心框架](#核心框架)
-    - [1.4.2 行业特定工具](#行业特定工具)
-  - [1.5 贡献指南](#贡献指南)
-  - [1.6 更新日志](#更新日志)
+- [1 1 1 1 1 1 1 软件行业领域知识库 - Rust架构与设计指南](#1-1-1-1-1-1-1-软件行业领域知识库---rust架构与设计指南)
+  - [1.1 概述](#11-概述)
+  - [1.2 行业领域指南](#12-行业领域指南)
+    - [1.2.1 1. 金融科技 (FinTech)](#121-1-金融科技-fintech)
+    - [1.2.2 2. 游戏开发 (Game Development)](#122-2-游戏开发-game-development)
+    - [1.2.3 3. 物联网 (IoT)](#123-3-物联网-iot)
+    - [1.2.4 4. 人工智能/机器学习 (AI/ML)](#124-4-人工智能机器学习-aiml)
+    - [1.2.5 5. 区块链/Web3](#125-5-区块链web3)
+    - [1.2.6 6. 云计算/基础设施 (Cloud Infrastructure)](#126-6-云计算基础设施-cloud-infrastructure)
+    - [1.2.7 7. 大数据/数据分析 (Big Data Analytics)](#127-7-大数据数据分析-big-data-analytics)
+    - [1.2.8 8. 网络安全 (Cybersecurity)](#128-8-网络安全-cybersecurity)
+    - [1.2.9 9. 医疗健康 (Healthcare)](#129-9-医疗健康-healthcare)
+    - [1.2.10 10. 教育科技 (Education Technology)](#1210-10-教育科技-education-technology)
+    - [1.2.11 11. 汽车/自动驾驶 (Automotive/Autonomous Driving)](#1211-11-汽车自动驾驶-automotiveautonomous-driving)
+    - [1.2.12 12. 电子商务 (E-commerce)](#1212-12-电子商务-e-commerce)
+    - [1.2.13 13. 社交媒体 (Social Media)](#1213-13-社交媒体-social-media)
+    - [1.2.14 14. 企业软件 (Enterprise Software)](#1214-14-企业软件-enterprise-software)
+    - [1.2.15 15. 移动应用 (Mobile Applications)](#1215-15-移动应用-mobile-applications)
+  - [1.3 通用设计原则](#13-通用设计原则)
+    - [1.3.1 Rust特定原则](#131-rust特定原则)
+    - [1.3.2 架构设计原则](#132-架构设计原则)
+    - [1.3.3 业务建模原则](#133-业务建模原则)
+  - [1.4 技术栈参考](#14-技术栈参考)
+    - [1.4.1 核心框架](#141-核心框架)
+    - [1.4.2 行业特定工具](#142-行业特定工具)
+  - [1.5 贡献指南](#15-贡献指南)
+  - [1.6 更新日志](#16-更新日志)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 1.1 概述
 

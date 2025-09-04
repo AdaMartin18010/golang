@@ -1,40 +1,24 @@
 # 1 1 1 1 1 1 1 无服务器架构（Serverless Architecture）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 无服务器架构（Serverless Architecture）](#1-1-1-1-1-1-1-无服务器架构（serverless-architecture）)
-  - [1.1 目录](#目录)
-  - [1.2 1. 国际标准与发展历程](#1-国际标准与发展历程)
-    - [1.2.1 主流技术与平台](#主流技术与平台)
-    - [1.2.2 发展历程](#发展历程)
-    - [1.2.3 国际权威链接](#国际权威链接)
-  - [1.3 2. 核心架构模式与设计原则](#2-核心架构模式与设计原则)
-    - [1.3.1 函数即服务 (Function as a Service - FaaS)](#函数即服务-function-as-a-service-faas)
-    - [1.3.2 后端即服务 (Backend as a Service - BaaS)](#后端即服务-backend-as-a-service-baas)
-  - [1.4 3. Golang主流实现与代码示例](#3-golang主流实现与代码示例)
-    - [1.4.1 AWS Lambda with Golang](#aws-lambda-with-golang)
-    - [1.4.2 Google Cloud Functions with Golang](#google-cloud-functions-with-golang)
-  - [1.5 4. 分布式挑战与主流解决方案](#4-分布式挑战与主流解决方案)
-  - [1.6 5. 工程结构与CI/CD实践](#5-工程结构与cicd实践)
-    - [1.6.1 项目结构建议 (Serverless Framework)](#项目结构建议-serverless-framework)
-    - [1.6.2 配置文件 (serverless.yml)](#配置文件-serverlessyml)
-- [2 2 2 2 2 2 2 serverless.yml](#2-2-2-2-2-2-2-serverlessyml)
-- [3 3 3 3 3 3 3 自定义构建过程](#3-3-3-3-3-3-3-自定义构建过程)
+- [1 1 1 1 1 1 1 无服务器架构（Serverless Architecture）](#1-1-1-1-1-1-1-无服务器架构serverless-architecture)
+  - [1.1 目录](#11-目录)
+  - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
+    - [1.2.1 主流技术与平台](#121-主流技术与平台)
+    - [1.2.2 发展历程](#122-发展历程)
+    - [1.2.3 国际权威链接](#123-国际权威链接)
+  - [1.3 2. 核心架构模式与设计原则](#13-2-核心架构模式与设计原则)
+    - [1.3.1 函数即服务 (Function as a Service - FaaS)](#131-函数即服务-function-as-a-service---faas)
+    - [1.3.2 后端即服务 (Backend as a Service - BaaS)](#132-后端即服务-backend-as-a-service---baas)
+  - [1.4 3. Golang主流实现与代码示例](#14-3-golang主流实现与代码示例)
+    - [1.4.1 AWS Lambda with Golang](#141-aws-lambda-with-golang)
+    - [1.4.2 Google Cloud Functions with Golang](#142-google-cloud-functions-with-golang)
+  - [1.5 4. 分布式挑战与主流解决方案](#15-4-分布式挑战与主流解决方案)
+  - [1.6 5. 工程结构与CI/CD实践](#16-5-工程结构与cicd实践)
+    - [1.6.1 项目结构建议 (Serverless Framework)](#161-项目结构建议-serverless-framework)
+    - [1.6.2 配置文件 (serverless.yml)](#162-配置文件-serverlessyml)
     - [3 3 3 3 3 3 3 CI/CD工作流 (GitHub Actions)](#3-3-3-3-3-3-3-cicd工作流-github-actions)
-- [4 4 4 4 4 4 4 .github/workflows/ci-cd.yml](#4-4-4-4-4-4-4-githubworkflowsci-cdyml)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 1.1 目录
 

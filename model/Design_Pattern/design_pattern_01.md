@@ -1,61 +1,48 @@
 # 1 1 1 1 1 1 1 Rust 2024 设计模式实现指南：创建型、结构型与行为型模式
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 2024 设计模式实现指南：创建型、结构型与行为型模式](#1-1-1-1-1-1-1-rust-2024-设计模式实现指南：创建型、结构型与行为型模式)
-  - [1.1 一、创建型设计模式在 Rust 2024 中的实现](#一、创建型设计模式在-rust-2024-中的实现)
-    - [1.1.1 1. 单例模式（Singleton Pattern）](#1-单例模式（singleton-pattern）)
-    - [1.1.2 2. 工厂方法模式（Factory Method Pattern）](#2-工厂方法模式（factory-method-pattern）)
-    - [1.1.3 3. 抽象工厂模式（Abstract Factory Pattern）](#3-抽象工厂模式（abstract-factory-pattern）)
-    - [1.1.4 4. 建造者模式（Builder Pattern）](#4-建造者模式（builder-pattern）)
-    - [1.1.5 5. 原型模式（Prototype Pattern）](#5-原型模式（prototype-pattern）)
-  - [1.2 二、结构型设计模式在 Rust 2024 中的实现](#二、结构型设计模式在-rust-2024-中的实现)
-    - [1.2.1 1. 适配器模式（Adapter Pattern）](#1-适配器模式（adapter-pattern）)
-    - [1.2.2 2. 桥接模式（Bridge Pattern）](#2-桥接模式（bridge-pattern）)
-    - [1.2.3 3. 组合模式（Composite Pattern）](#3-组合模式（composite-pattern）)
-    - [1.2.4 4. 装饰器模式（Decorator Pattern）](#4-装饰器模式（decorator-pattern）)
-    - [1.2.5 5. 外观模式（Facade Pattern）](#5-外观模式（facade-pattern）)
-    - [1.2.6 6. 享元模式（Flyweight Pattern）](#6-享元模式（flyweight-pattern）)
-    - [1.2.7 7. 代理模式（Proxy Pattern）](#7-代理模式（proxy-pattern）)
-  - [1.3 三、行为型设计模式在 Rust 2024 中的实现](#三、行为型设计模式在-rust-2024-中的实现)
-    - [1.3.1 1. 责任链模式（Chain of Responsibility Pattern）](#1-责任链模式（chain-of-responsibility-pattern）)
-    - [1.3.2 2. 命令模式（Command Pattern）](#2-命令模式（command-pattern）)
-    - [1.3.3 3. 解释器模式（Interpreter Pattern）](#3-解释器模式（interpreter-pattern）)
-    - [1.3.4 4. 迭代器模式（Iterator Pattern）](#4-迭代器模式（iterator-pattern）)
-    - [1.3.5 5. 中介者模式（Mediator Pattern）](#5-中介者模式（mediator-pattern）)
-    - [1.3.6 6. 备忘录模式（Memento Pattern）](#6-备忘录模式（memento-pattern）)
-    - [1.3.7 7. 观察者模式（Observer Pattern）](#7-观察者模式（observer-pattern）)
-    - [1.3.8 8. 状态模式（State Pattern）](#8-状态模式（state-pattern）)
-    - [1.3.9 9. 策略模式（Strategy Pattern）](#9-策略模式（strategy-pattern）)
-    - [1.3.10 10. 模板方法模式（Template Method Pattern）](#10-模板方法模式（template-method-pattern）)
-    - [1.3.11 11. 访问者模式（Visitor Pattern）](#11-访问者模式（visitor-pattern）)
-  - [1.4 四、Rust 2024 设计模式的表达能力分析](#四、rust-2024-设计模式的表达能力分析)
-    - [1.4.1 1. Rust 设计模式的独特优势](#1-rust-设计模式的独特优势)
-    - [1.4.2 2. 与传统面向对象语言的设计模式对比](#2-与传统面向对象语言的设计模式对比)
-    - [1.4.3 3. Rust 2024 设计模式的表达能力分析](#3-rust-2024-设计模式的表达能力分析)
-    - [1.4.4 4. 多种等效设计方式的对比](#4-多种等效设计方式的对比)
-  - [1.5 五、Rust 2024 设计模式的最佳实践](#五、rust-2024-设计模式的最佳实践)
-    - [1.5.1 1. 设计模式选择指南](#1-设计模式选择指南)
-    - [1.5.2 2. 设计模式实现建议](#2-设计模式实现建议)
-    - [1.5.3 3. 设计模式性能考量](#3-设计模式性能考量)
-    - [1.5.4 4. 设计模式与 Rust 2024 新特性的结合](#4-设计模式与-rust-2024-新特性的结合)
-  - [1.6 六、结论：Rust 2024 设计模式的未来展望](#六、结论：rust-2024-设计模式的未来展望)
-    - [1.6.1 1. Rust 设计模式的演进趋势](#1-rust-设计模式的演进趋势)
-    - [1.6.2 2. Rust 与其他语言设计模式的比较总结](#2-rust-与其他语言设计模式的比较总结)
-    - [1.6.3 3. 最终建议](#3-最终建议)
+- [1 1 1 1 1 1 1 Rust 2024 设计模式实现指南：创建型、结构型与行为型模式](#1-1-1-1-1-1-1-rust-2024-设计模式实现指南创建型结构型与行为型模式)
+  - [1.1 一、创建型设计模式在 Rust 2024 中的实现](#11-一创建型设计模式在-rust-2024-中的实现)
+    - [1.1.1 1. 单例模式（Singleton Pattern）](#111-1-单例模式singleton-pattern)
+    - [1.1.2 2. 工厂方法模式（Factory Method Pattern）](#112-2-工厂方法模式factory-method-pattern)
+    - [1.1.3 3. 抽象工厂模式（Abstract Factory Pattern）](#113-3-抽象工厂模式abstract-factory-pattern)
+    - [1.1.4 4. 建造者模式（Builder Pattern）](#114-4-建造者模式builder-pattern)
+    - [1.1.5 5. 原型模式（Prototype Pattern）](#115-5-原型模式prototype-pattern)
+  - [1.2 二、结构型设计模式在 Rust 2024 中的实现](#12-二结构型设计模式在-rust-2024-中的实现)
+    - [1.2.1 1. 适配器模式（Adapter Pattern）](#121-1-适配器模式adapter-pattern)
+    - [1.2.2 2. 桥接模式（Bridge Pattern）](#122-2-桥接模式bridge-pattern)
+    - [1.2.3 3. 组合模式（Composite Pattern）](#123-3-组合模式composite-pattern)
+    - [1.2.4 4. 装饰器模式（Decorator Pattern）](#124-4-装饰器模式decorator-pattern)
+    - [1.2.5 5. 外观模式（Facade Pattern）](#125-5-外观模式facade-pattern)
+    - [1.2.6 6. 享元模式（Flyweight Pattern）](#126-6-享元模式flyweight-pattern)
+    - [1.2.7 7. 代理模式（Proxy Pattern）](#127-7-代理模式proxy-pattern)
+  - [1.3 三、行为型设计模式在 Rust 2024 中的实现](#13-三行为型设计模式在-rust-2024-中的实现)
+    - [1.3.1 1. 责任链模式（Chain of Responsibility Pattern）](#131-1-责任链模式chain-of-responsibility-pattern)
+    - [1.3.2 2. 命令模式（Command Pattern）](#132-2-命令模式command-pattern)
+    - [1.3.3 3. 解释器模式（Interpreter Pattern）](#133-3-解释器模式interpreter-pattern)
+    - [1.3.4 4. 迭代器模式（Iterator Pattern）](#134-4-迭代器模式iterator-pattern)
+    - [1.3.5 5. 中介者模式（Mediator Pattern）](#135-5-中介者模式mediator-pattern)
+    - [1.3.6 6. 备忘录模式（Memento Pattern）](#136-6-备忘录模式memento-pattern)
+    - [1.3.7 7. 观察者模式（Observer Pattern）](#137-7-观察者模式observer-pattern)
+    - [1.3.8 8. 状态模式（State Pattern）](#138-8-状态模式state-pattern)
+    - [1.3.9 9. 策略模式（Strategy Pattern）](#139-9-策略模式strategy-pattern)
+    - [1.3.10 10. 模板方法模式（Template Method Pattern）](#1310-10-模板方法模式template-method-pattern)
+    - [1.3.11 11. 访问者模式（Visitor Pattern）](#1311-11-访问者模式visitor-pattern)
+  - [1.4 四、Rust 2024 设计模式的表达能力分析](#14-四rust-2024-设计模式的表达能力分析)
+    - [1.4.1 1. Rust 设计模式的独特优势](#141-1-rust-设计模式的独特优势)
+    - [1.4.2 2. 与传统面向对象语言的设计模式对比](#142-2-与传统面向对象语言的设计模式对比)
+    - [1.4.3 3. Rust 2024 设计模式的表达能力分析](#143-3-rust-2024-设计模式的表达能力分析)
+    - [1.4.4 4. 多种等效设计方式的对比](#144-4-多种等效设计方式的对比)
+  - [1.5 五、Rust 2024 设计模式的最佳实践](#15-五rust-2024-设计模式的最佳实践)
+    - [1.5.1 1. 设计模式选择指南](#151-1-设计模式选择指南)
+    - [1.5.2 2. 设计模式实现建议](#152-2-设计模式实现建议)
+    - [1.5.3 3. 设计模式性能考量](#153-3-设计模式性能考量)
+    - [1.5.4 4. 设计模式与 Rust 2024 新特性的结合](#154-4-设计模式与-rust-2024-新特性的结合)
+  - [1.6 六、结论：Rust 2024 设计模式的未来展望](#16-六结论rust-2024-设计模式的未来展望)
+    - [1.6.1 1. Rust 设计模式的演进趋势](#161-1-rust-设计模式的演进趋势)
+    - [1.6.2 2. Rust 与其他语言设计模式的比较总结](#162-2-rust-与其他语言设计模式的比较总结)
+    - [1.6.3 3. 最终建议](#163-3-最终建议)
 <!-- TOC END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 1.1 一、创建型设计模式在 Rust 2024 中的实现
 
