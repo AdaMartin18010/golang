@@ -1,38 +1,37 @@
 # API网关架构（API Gateway Architecture）
 
 <!-- TOC START -->
-- [API网关架构（API Gateway Architecture）](#api网关架构api-gateway-architecture)
-  - [1.1 目录](#11-目录)
-  - [1.2 1. 国际标准与发展历程](#12-1-国际标准与发展历程)
-    - [1.2.1 主流API网关与标准](#121-主流api网关与标准)
-    - [1.2.2 发展历程](#122-发展历程)
-    - [1.2.3 国际权威链接](#123-国际权威链接)
-  - [1.3 2. 核心架构模式](#13-2-核心架构模式)
-    - [1.3.1 API网关基础架构](#131-api网关基础架构)
-    - [1.3.2 路由管理](#132-路由管理)
-    - [1.3.3 中间件系统](#133-中间件系统)
-  - [1.4 3. 认证与授权](#14-3-认证与授权)
-    - [1.4.1 认证系统](#141-认证系统)
-    - [1.4.2 授权系统](#142-授权系统)
-  - [1.5 4. 限流与熔断](#15-4-限流与熔断)
-    - [1.5.1 限流系统](#151-限流系统)
-    - [1.5.2 熔断系统](#152-熔断系统)
-  - [1.6 5. 监控与可观测性](#16-5-监控与可观测性)
-    - [1.6.1 网关监控](#161-网关监控)
-    - [1.6.2 分布式追踪](#162-分布式追踪)
-  - [1.7 6. 实际案例分析](#17-6-实际案例分析)
-    - [1.7.1 微服务API网关](#171-微服务api网关)
-    - [1.7.2 GraphQL网关](#172-graphql网关)
-  - [1.8 7. 未来趋势与国际前沿](#18-7-未来趋势与国际前沿)
-  - [1.9 8. 国际权威资源与开源组件引用](#19-8-国际权威资源与开源组件引用)
-    - [1.9.1 API网关](#191-api网关)
-    - [1.9.2 云原生API服务](#192-云原生api服务)
-    - [1.9.3 API规范](#193-api规范)
-  - [1.10 9. 相关架构主题](#110-9-相关架构主题)
-  - [1.11 10. 扩展阅读与参考文献](#111-10-扩展阅读与参考文献)
+1. 目录
+1. 国际标准与发展历程
+   1. 主流API网关与标准
+   1. 发展历程
+   1. 国际权威链接
+1. 核心架构模式
+   1. API网关基础架构
+   1. 路由管理
+   1. 中间件系统
+1. 认证与授权
+   1. 认证系统
+   1. 授权系统
+1. 限流与熔断
+   1. 限流系统
+   1. 熔断系统
+1. 监控与可观测性
+   1. 网关监控
+   1. 分布式追踪
+1. 实际案例分析
+   1. 微服务API网关
+   1. GraphQL网关
+1. 未来趋势与国际前沿
+1. 国际权威资源与开源组件引用
+   1. API网关
+   1. 云原生API服务
+   1. API规范
+1. 相关架构主题
+1. 扩展阅读与参考文献
 <!-- TOC END -->
 
-## 1.1 目录
+## 1. 目录
 
 1. 国际标准与发展历程
 2. 典型应用场景与需求分析
@@ -48,9 +47,9 @@
 
 ---
 
-## 1.2 1. 国际标准与发展历程
+## 2. 国际标准与发展历程
 
-### 1.2.1 主流API网关与标准
+### 2.1 主流API网关与标准
 
 - **Kong**: 云原生API网关
 - **Envoy**: 高性能代理
@@ -60,14 +59,14 @@
 - **OpenAPI/Swagger**: API规范标准
 - **GraphQL**: 查询语言与运行时
 
-### 1.2.2 发展历程
+### 2.2 发展历程
 
 - **2000s**: 传统API管理、SOA网关
 - **2010s**: RESTful API、API文档标准化
 - **2015s**: 微服务网关、服务网格兴起
 - **2020s**: 云原生网关、GraphQL、gRPC
 
-### 1.2.3 国际权威链接
+### 2.3 国际权威链接
 
 - [Kong](https://konghq.com/)
 - [Envoy](https://www.envoyproxy.io/)
@@ -77,9 +76,9 @@
 
 ---
 
-## 1.3 2. 核心架构模式
+## 3. 核心架构模式
 
-### 1.3.1 API网关基础架构
+### 3.1 API网关基础架构
 
 ```go
 type APIGateway struct {
@@ -184,7 +183,7 @@ func (ag *APIGateway) forwardRequest(ctx context.Context, req *Request, endpoint
 }
 ```
 
-### 1.3.2 路由管理
+### 3.2 路由管理
 
 ```go
 type RouteManager struct {
@@ -313,7 +312,7 @@ func (t *Trie) Search(path string) *Route {
 }
 ```
 
-### 1.3.3 中间件系统
+### 3.3 中间件系统
 
 ```go
 type MiddlewareManager struct {
@@ -408,9 +407,9 @@ func (cm *CachingMiddleware) Process(ctx context.Context, req *Request) (context
 }
 ```
 
-## 1.4 3. 认证与授权
+## 4. 认证与授权
 
-### 1.4.1 认证系统
+### 4.1 认证系统
 
 ```go
 type AuthenticationSystem struct {
@@ -511,7 +510,7 @@ func (op *OAuthProvider) exchangeCodeForToken(ctx context.Context, code string) 
 }
 ```
 
-### 1.4.2 授权系统
+### 4.2 授权系统
 
 ```go
 type AuthorizationSystem struct {
@@ -597,9 +596,9 @@ func (pe *PolicyEngine) evaluateCondition(ctx context.Context, condition *Condit
 }
 ```
 
-## 1.5 4. 限流与熔断
+## 5. 限流与熔断
 
-### 1.5.1 限流系统
+### 5.1 限流系统
 
 ```go
 type RateLimitSystem struct {
@@ -692,7 +691,7 @@ func (rls *RateLimitSystem) refillTokens(limiter *RateLimiter) {
 }
 ```
 
-### 1.5.2 熔断系统
+### 5.2 熔断系统
 
 ```go
 type CircuitBreaker struct {
@@ -797,9 +796,9 @@ func (cb *CircuitBreaker) checkStateTransition() {
 }
 ```
 
-## 1.6 5. 监控与可观测性
+## 6. 监控与可观测性
 
-### 1.6.1 网关监控
+### 6.1 网关监控
 
 ```go
 type GatewayMonitor struct {
@@ -908,7 +907,7 @@ func (gm *GatewayMonitor) checkAlerts(req *Request, resp *Response, duration tim
 }
 ```
 
-### 1.6.2 分布式追踪
+### 6.2 分布式追踪
 
 ```go
 type TracingSystem struct {
@@ -1017,9 +1016,9 @@ func (ts *TracingSystem) Extract(ctx context.Context, headers map[string]string)
 }
 ```
 
-## 1.7 6. 实际案例分析
+## 7. 实际案例分析
 
-### 1.7.1 微服务API网关
+### 7.1 微服务API网关
 
 **场景**: 大规模微服务架构的统一入口
 
@@ -1108,7 +1107,7 @@ func (mg *MicroserviceGateway) filterHealthyEndpoints(endpoints []*Endpoint) []*
 }
 ```
 
-### 1.7.2 GraphQL网关
+### 7.2 GraphQL网关
 
 **场景**: 统一数据查询接口
 
@@ -1224,7 +1223,7 @@ func (gg *GraphQLGateway) executeQuery(ctx context.Context, query *ParsedQuery, 
 }
 ```
 
-## 1.8 7. 未来趋势与国际前沿
+## 8. 未来趋势与国际前沿
 
 - **云原生API网关**
 - **AI/ML驱动的API管理**
@@ -1233,35 +1232,35 @@ func (gg *GraphQLGateway) executeQuery(ctx context.Context, query *ParsedQuery, 
 - **API治理与生命周期管理**
 - **实时API分析**
 
-## 1.9 8. 国际权威资源与开源组件引用
+## 9. 国际权威资源与开源组件引用
 
-### 1.9.1 API网关
+### 9.1 API网关
 
 - [Kong](https://konghq.com/) - 云原生API网关
 - [Envoy](https://www.envoyproxy.io/) - 高性能代理
 - [Istio](https://istio.io/) - 服务网格
 - [Tyk](https://tyk.io/) - 开源API网关
 
-### 1.9.2 云原生API服务
+### 9.2 云原生API服务
 
 - [AWS API Gateway](https://aws.amazon.com/api-gateway/) - 全托管API管理
 - [Google Cloud Endpoints](https://cloud.google.com/endpoints) - API管理平台
 - [Azure API Management](https://azure.microsoft.com/services/api-management/) - API管理服务
 
-### 1.9.3 API规范
+### 9.3 API规范
 
 - [OpenAPI](https://www.openapis.org/) - API规范标准
 - [GraphQL](https://graphql.org/) - 查询语言
 - [gRPC](https://grpc.io/) - 高性能RPC框架
 
-## 1.10 9. 相关架构主题
+## 10. 相关架构主题
 
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): API网关是微服务架构中的关键入口组件。
 - [**服务网格架构 (Service Mesh Architecture)**](./architecture_service_mesh_golang.md): API网关（特别是边缘网关/Ingress Gateway）常与服务网格协同工作，处理南北向流量。
 - [**安全架构 (Security Architecture)**](./architecture_security_golang.md): API网关是实现认证、授权和速率限制等安全策略的核心防线。
 - [**无服务器架构 (Serverless Architecture)**](./architecture_serverless_golang.md): API网关是触发FaaS（如AWS Lambda）函数的主要方式。
 
-## 1.11 10. 扩展阅读与参考文献
+## 11. 扩展阅读与参考文献
 
 1. "Building Microservices" - Sam Newman
 2. "API Design Patterns" - JJ Geewax
