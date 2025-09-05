@@ -1,5 +1,7 @@
 # 工作流架构（Golang国际主流实践）
 
+## 1.1 目录
+
 <!-- TOC START -->
 - [工作流架构（Golang国际主流实践）](#工作流架构golang国际主流实践)
   - [1.1 目录](#11-目录)
@@ -48,20 +50,6 @@
   - [2.4 9. 扩展阅读与参考文献](#24-9-扩展阅读与参考文献)
 <!-- TOC END -->
 
-## 1.1 目录
-
-1. 工作流架构概述
-    1.1 国际标准定义
-    1.2 发展历程与核心思想
-    1.3 典型应用场景
-    1.4 与传统调度/编排系统对比
-2. 信息概念架构
-3. 分布式系统挑战
-4. 架构设计解决方案
-5. Golang国际主流实现范例
-6. 形式化建模与证明
-7. 参考与外部链接
-
 ---
 
 ## 1.2 1. 工作流架构概述
@@ -73,7 +61,6 @@
 - **Workflow Management Coalition (WfMC) 定义**：
 
   > 工作流是指部分或全部自动化的业务过程，在其中，文档、信息或任务在参与者之间根据一组预定义的规则进行传递。
-
   > ——[WfMC Reference Model](https://www.wfmc.org/)
 
 - **国际主流引擎**：Temporal、Cadence、Apache Airflow、Argo Workflows、Netflix Conductor。
@@ -772,4 +759,4 @@ func (cm *CompensationManager) ExecuteCompensation(ctx context.Context, workflow
 
 ---
 
-* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+- 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

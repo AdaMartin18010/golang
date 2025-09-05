@@ -1,12 +1,12 @@
-# 1 1 1 1 1 1 1 人工智能/机器学习 (AI/ML) - Rust架构指南
+# 人工智能/机器学习 (AI/ML) - Rust架构指南
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 人工智能/机器学习 (AI/ML) - Rust架构指南](#1-1-1-1-1-1-1-人工智能机器学习-aiml---rust架构指南)
+- [人工智能/机器学习 (AI/ML) - Rust架构指南](#人工智能机器学习-aiml---rust架构指南)
   - [1.1 概述](#11-概述)
   - [1.2 核心挑战](#12-核心挑战)
   - [1.3 技术栈选型](#13-技术栈选型)
     - [1.3.1 核心框架](#131-核心框架)
-    - [10 10 10 10 10 10 10 行业特定库](#10-10-10-10-10-10-10-行业特定库)
+    - [行业特定库](#行业特定库)
   - [14.1 架构模式](#141-架构模式)
     - [14.1.1 1. MLOps架构](#1411-1-mlops架构)
     - [14.1.2 2. 微服务架构](#1412-2-微服务架构)
@@ -34,13 +34,14 @@
     - [14.8.2 集成测试](#1482-集成测试)
   - [14.9 部署和运维](#149-部署和运维)
     - [14.9.1 容器化部署](#1491-容器化部署)
-    - [15 15 15 15 15 15 15 Kubernetes部署](#15-15-15-15-15-15-15-kubernetes部署)
+    - [Kubernetes部署](#kubernetes部署)
   - [16.1 总结](#161-总结)
 <!-- TOC END -->
 
 ## 1.1 概述
 
-人工智能和机器学习行业需要处理大规模数据、复杂模型训练、高性能推理和实时预测。Rust的内存安全、并发性能和与Python生态的互操作性使其成为AI/ML系统的理想选择。
+人工智能和机器学习行业需要处理大规模数据、复杂模型训练、高性能推理和实时预测。
+Rust的内存安全、并发性能和与Python生态的互操作性使其成为AI/ML系统的理想选择。
 
 ## 1.2 核心挑战
 
@@ -58,50 +59,50 @@
 ```toml
 [dependencies]
 
-# 2 2 2 2 2 2 2 异步运行时
+# 异步运行时
 
 tokio = { version = "1.35", features = ["full"] }
 
-# 3 3 3 3 3 3 3 机器学习框架
+# 机器学习框架
 
 tch = "0.13"  # PyTorch绑定
 burn = "0.12" # 纯Rust ML框架
 candle = "0.3" # Hugging Face Rust实现
 
-# 4 4 4 4 4 4 4 数据处理
+#  数据处理
 
 polars = "0.35"
 arrow = "50.0"
 datafusion = "35.0"
 
-# 5 5 5 5 5 5 5 数值计算
+#  数值计算
 
 ndarray = "0.15"
 nalgebra = "0.32"
 rust-bert = "0.21"
 
-# 6 6 6 6 6 6 6 序列化
+#  序列化
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 bincode = "1.3"
 
-# 7 7 7 7 7 7 7 数据库
+#  数据库
 
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-rustls"] }
 redis = { version = "0.24", features = ["tokio-comp"] }
 
-# 8 8 8 8 8 8 8 消息队列
+#  消息队列
 
 lapin = "2.3"
 kafka = "0.9"
 
-# 9 9 9 9 9 9 9 配置管理
+#  配置管理
 
 config = "0.14"
 toml = "0.8"
 
-# 10 10 10 10 10 10 10 日志和监控
+# 日志和监控
 
 tracing = "0.1"
 tracing-subscriber = "0.3"
@@ -109,27 +110,27 @@ prometheus = "0.13"
 
 ```
 
-### 10 10 10 10 10 10 10 行业特定库
+### 行业特定库
 
 ```toml
 [dependencies]
 
-# 11 11 11 11 11 11 11 特征工程
+#  特征工程
 
 feather = "0.1"
 feature-store = "0.1"
 
-# 12 12 12 12 12 12 12 模型服务
+#  模型服务
 
 mlflow = "0.1"
 model-registry = "0.1"
 
-# 13 13 13 13 13 13 13 分布式计算
+#  分布式计算
 
 rayon = "1.8"
 crossbeam = "0.8"
 
-# 14 14 14 14 14 14 14 可视化
+# 可视化
 
 plotters = "0.3"
 
@@ -1161,7 +1162,7 @@ mod integration_tests {
 
 ```dockerfile
 
-# 15 15 15 15 15 15 15 Dockerfile for ML Inference Service
+# Dockerfile for ML Inference Service
 
 FROM rust:1.75 as builder
 WORKDIR /app
@@ -1184,7 +1185,7 @@ CMD ["./ml-inference-service"]
 
 ```
 
-### 15 15 15 15 15 15 15 Kubernetes部署
+### Kubernetes部署
 
 ```yaml
 

@@ -1,4 +1,4 @@
-package testing_system
+package main
 
 import (
 	"context"
@@ -53,20 +53,20 @@ const (
 
 // TestEnvironment 测试环境
 type TestEnvironment struct {
-	Name       string
-	Config     map[string]interface{}
-	Resources  map[string]interface{}
-	Cleanup    []func() error
-	mu         sync.RWMutex
+	Name         string
+	Config       map[string]interface{}
+	Resources    map[string]interface{}
+	CleanupFuncs []func() error
+	mu           sync.RWMutex
 }
 
 // TestExecutor 测试执行器
 type TestExecutor struct {
-	suites     map[string]*TestSuite
+	suites       map[string]*TestSuite
 	environments map[string]*TestEnvironment
-	results    []TestResult
-	config     *TestConfig
-	mu         sync.RWMutex
+	results      []TestResult
+	config       *TestConfig
+	mu           sync.RWMutex
 }
 
 // TestConfig 测试配置
@@ -189,10 +189,10 @@ func NewTestExecutor(config *TestConfig) *TestExecutor {
 	}
 
 	return &TestExecutor{
-		suites:      make(map[string]*TestSuite),
+		suites:       make(map[string]*TestSuite),
 		environments: make(map[string]*TestEnvironment),
-		results:     make([]TestResult, 0),
-		config:      config,
+		results:      make([]TestResult, 0),
+		config:       config,
 	}
 }
 
@@ -308,7 +308,7 @@ func (te *TestExecutor) runTest(ctx context.Context, test *Test) TestResult {
 func (te *TestExecutor) GetResults() []TestResult {
 	te.mu.RLock()
 	defer te.mu.RUnlock()
-	
+
 	results := make([]TestResult, len(te.results))
 	copy(results, te.results)
 	return results
@@ -413,7 +413,7 @@ func (te *TestEnvironment) GetResource(name string) (interface{}, bool) {
 func (te *TestEnvironment) AddCleanup(cleanup func() error) {
 	te.mu.Lock()
 	defer te.mu.Unlock()
-	te.Cleanup = append(te.Cleanup, cleanup)
+	te.CleanupFuncs = append(te.CleanupFuncs, cleanup)
 }
 
 // Cleanup 执行清理
@@ -422,7 +422,7 @@ func (te *TestEnvironment) Cleanup() error {
 	defer te.mu.Unlock()
 
 	var lastErr error
-	for _, cleanup := range te.Cleanup {
+	for _, cleanup := range te.CleanupFuncs {
 		if err := cleanup(); err != nil {
 			lastErr = err
 		}

@@ -1,4 +1,4 @@
-package testing_system
+package main
 
 import (
 	"context"
@@ -29,10 +29,10 @@ type DashboardConfig struct {
 
 // MetricsCollector 指标收集器
 type MetricsCollector struct {
-	metrics   map[string]*Metric
-	history   map[string][]MetricPoint
-	config    *MetricsConfig
-	mu        sync.RWMutex
+	metrics map[string]*Metric
+	history map[string][]MetricPoint
+	config  *MetricsConfig
+	mu      sync.RWMutex
 }
 
 // MetricsConfig 指标配置
@@ -67,17 +67,17 @@ const (
 
 // MetricPoint 指标数据点
 type MetricPoint struct {
-	Value     float64   `json:"value"`
-	Timestamp time.Time `json:"timestamp"`
+	Value     float64           `json:"value"`
+	Timestamp time.Time         `json:"timestamp"`
 	Tags      map[string]string `json:"tags"`
 }
 
 // AlertManager 告警管理器
 type AlertManager struct {
-	alerts    map[string]*Alert
-	rules     map[string]*AlertRule
-	config    *AlertConfig
-	mu        sync.RWMutex
+	alerts map[string]*Alert
+	rules  map[string]*AlertRule
+	config *AlertConfig
+	mu     sync.RWMutex
 }
 
 // AlertConfig 告警配置
@@ -90,17 +90,17 @@ type AlertConfig struct {
 
 // Alert 告警
 type Alert struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	Severity    AlertSeverity     `json:"severity"`
-	Status      AlertStatus       `json:"status"`
-	Message     string            `json:"message"`
-	Metric      string            `json:"metric"`
-	Threshold   float64           `json:"threshold"`
-	Current     float64           `json:"current"`
-	CreatedAt   time.Time         `json:"created_at"`
-	ResolvedAt  *time.Time        `json:"resolved_at"`
-	Tags        map[string]string `json:"tags"`
+	ID         string            `json:"id"`
+	Name       string            `json:"name"`
+	Severity   AlertSeverity     `json:"severity"`
+	Status     AlertStatus       `json:"status"`
+	Message    string            `json:"message"`
+	Metric     string            `json:"metric"`
+	Threshold  float64           `json:"threshold"`
+	Current    float64           `json:"current"`
+	CreatedAt  time.Time         `json:"created_at"`
+	ResolvedAt *time.Time        `json:"resolved_at"`
+	Tags       map[string]string `json:"tags"`
 }
 
 // AlertSeverity 告警严重程度
@@ -116,19 +116,19 @@ const (
 type AlertStatus string
 
 const (
-	AlertStatusActive   AlertStatus = "active"
-	AlertStatusResolved AlertStatus = "resolved"
+	AlertStatusActive       AlertStatus = "active"
+	AlertStatusResolved     AlertStatus = "resolved"
 	AlertStatusAcknowledged AlertStatus = "acknowledged"
 )
 
 // AlertRule 告警规则
 type AlertRule struct {
-	Name      string       `json:"name"`
-	Metric    string       `json:"metric"`
+	Name      string         `json:"name"`
+	Metric    string         `json:"metric"`
 	Condition AlertCondition `json:"condition"`
-	Threshold float64      `json:"threshold"`
-	Severity  AlertSeverity `json:"severity"`
-	Enabled   bool         `json:"enabled"`
+	Threshold float64        `json:"threshold"`
+	Severity  AlertSeverity  `json:"severity"`
+	Enabled   bool           `json:"enabled"`
 }
 
 // AlertCondition 告警条件
@@ -160,24 +160,24 @@ type VisualizerConfig struct {
 
 // Chart 图表
 type Chart struct {
-	ID          string                 `json:"id"`
-	Name        string                 `json:"name"`
-	Type        ChartType              `json:"type"`
-	Data        []ChartDataPoint       `json:"data"`
-	Config      map[string]interface{} `json:"config"`
-	CreatedAt   time.Time              `json:"created_at"`
-	UpdatedAt   time.Time              `json:"updated_at"`
+	ID        string                 `json:"id"`
+	Name      string                 `json:"name"`
+	Type      ChartType              `json:"type"`
+	Data      []ChartDataPoint       `json:"data"`
+	Config    map[string]interface{} `json:"config"`
+	CreatedAt time.Time              `json:"created_at"`
+	UpdatedAt time.Time              `json:"updated_at"`
 }
 
 // ChartType 图表类型
 type ChartType string
 
 const (
-	ChartTypeLine    ChartType = "line"
-	ChartTypeBar     ChartType = "bar"
-	ChartTypePie     ChartType = "pie"
-	ChartTypeGauge   ChartType = "gauge"
-	ChartTypeTable   ChartType = "table"
+	ChartTypeLine  ChartType = "line"
+	ChartTypeBar   ChartType = "bar"
+	ChartTypePie   ChartType = "pie"
+	ChartTypeGauge ChartType = "gauge"
+	ChartTypeTable ChartType = "table"
 )
 
 // ChartDataPoint 图表数据点
@@ -352,10 +352,10 @@ func (mc *MetricsCollector) updateMetrics() {
 
 	// 更新系统指标
 	mc.updateSystemMetrics()
-	
+
 	// 更新应用指标
 	mc.updateApplicationMetrics()
-	
+
 	// 清理历史数据
 	mc.cleanupHistory()
 }
@@ -364,13 +364,13 @@ func (mc *MetricsCollector) updateMetrics() {
 func (mc *MetricsCollector) updateSystemMetrics() {
 	// CPU使用率
 	mc.setMetric("system.cpu.usage", MetricTypeGauge, getCPUUsage(), "%", "CPU使用率", nil)
-	
+
 	// 内存使用率
 	mc.setMetric("system.memory.usage", MetricTypeGauge, getMemoryUsage(), "%", "内存使用率", nil)
-	
+
 	// 磁盘使用率
 	mc.setMetric("system.disk.usage", MetricTypeGauge, getDiskUsage(), "%", "磁盘使用率", nil)
-	
+
 	// 网络流量
 	mc.setMetric("system.network.bytes_sent", MetricTypeCounter, getNetworkBytesSent(), "bytes", "网络发送字节数", nil)
 	mc.setMetric("system.network.bytes_recv", MetricTypeCounter, getNetworkBytesRecv(), "bytes", "网络接收字节数", nil)
@@ -380,10 +380,10 @@ func (mc *MetricsCollector) updateSystemMetrics() {
 func (mc *MetricsCollector) updateApplicationMetrics() {
 	// 应用响应时间
 	mc.setMetric("app.response_time", MetricTypeHistogram, getResponseTime(), "ms", "应用响应时间", nil)
-	
+
 	// 应用吞吐量
 	mc.setMetric("app.throughput", MetricTypeGauge, getThroughput(), "req/s", "应用吞吐量", nil)
-	
+
 	// 错误率
 	mc.setMetric("app.error_rate", MetricTypeGauge, getErrorRate(), "%", "应用错误率", nil)
 }
@@ -425,7 +425,7 @@ func (mc *MetricsCollector) setMetric(name string, metricType MetricType, value 
 func (mc *MetricsCollector) GetMetrics() map[string]*Metric {
 	mc.mu.RLock()
 	defer mc.mu.RUnlock()
-	
+
 	metrics := make(map[string]*Metric)
 	for k, v := range mc.metrics {
 		metrics[k] = v
@@ -436,7 +436,7 @@ func (mc *MetricsCollector) GetMetrics() map[string]*Metric {
 // cleanupHistory 清理历史数据
 func (mc *MetricsCollector) cleanupHistory() {
 	cutoff := time.Now().Add(-mc.config.RetentionPeriod)
-	
+
 	for _, metric := range mc.metrics {
 		var filtered []MetricPoint
 		for _, point := range metric.History {
@@ -505,7 +505,7 @@ func (am *AlertManager) evaluateRules() {
 
 		// 获取指标值
 		value := am.getMetricValue(rule.Metric)
-		
+
 		// 检查条件
 		if am.evaluateCondition(value, rule.Condition, rule.Threshold) {
 			am.createAlert(rule, value)
@@ -534,18 +534,18 @@ func (am *AlertManager) evaluateCondition(value float64, condition AlertConditio
 // createAlert 创建告警
 func (am *AlertManager) createAlert(rule *AlertRule, currentValue float64) {
 	alertID := fmt.Sprintf("%s_%d", rule.Name, time.Now().Unix())
-	
+
 	alert := &Alert{
-		ID:         alertID,
-		Name:       rule.Name,
-		Severity:   rule.Severity,
-		Status:     AlertStatusActive,
-		Message:    fmt.Sprintf("Metric %s violated rule: %s %.2f (current: %.2f)", rule.Metric, rule.Condition, rule.Threshold, currentValue),
-		Metric:     rule.Metric,
-		Threshold:  rule.Threshold,
-		Current:    currentValue,
-		CreatedAt:  time.Now(),
-		Tags:       make(map[string]string),
+		ID:        alertID,
+		Name:      rule.Name,
+		Severity:  rule.Severity,
+		Status:    AlertStatusActive,
+		Message:   fmt.Sprintf("Metric %s violated rule: %s %.2f (current: %.2f)", rule.Metric, rule.Condition, rule.Threshold, currentValue),
+		Metric:    rule.Metric,
+		Threshold: rule.Threshold,
+		Current:   currentValue,
+		CreatedAt: time.Now(),
+		Tags:      make(map[string]string),
 	}
 
 	am.alerts[alertID] = alert
@@ -573,7 +573,7 @@ func (am *AlertManager) getMetricValue(metricName string) float64 {
 func (am *AlertManager) GetAlerts() map[string]*Alert {
 	am.mu.RLock()
 	defer am.mu.RUnlock()
-	
+
 	alerts := make(map[string]*Alert)
 	for k, v := range am.alerts {
 		alerts[k] = v
@@ -625,7 +625,7 @@ func (dv *DataVisualizer) CreateChart(id, name string, chartType ChartType, data
 func (dv *DataVisualizer) GetCharts() map[string]*Chart {
 	dv.mu.RLock()
 	defer dv.mu.RUnlock()
-	
+
 	charts := make(map[string]*Chart)
 	for k, v := range dv.charts {
 		charts[k] = v
@@ -659,7 +659,7 @@ func (da *DashboardAPI) Start(ctx context.Context) error {
 
 	// 注册API处理器
 	da.registerHandlers()
-	
+
 	// 启动HTTP服务器
 	return da.server.Start()
 }
@@ -679,13 +679,13 @@ func (da *DashboardAPI) registerHandlers() {
 		Path:    "/api/metrics",
 		Handler: da.getMetricsHandler,
 	}
-	
+
 	da.handlers["GET /api/alerts"] = APIHandler{
 		Method:  "GET",
 		Path:    "/api/alerts",
 		Handler: da.getAlertsHandler,
 	}
-	
+
 	da.handlers["GET /api/charts"] = APIHandler{
 		Method:  "GET",
 		Path:    "/api/charts",
@@ -697,7 +697,7 @@ func (da *DashboardAPI) registerHandlers() {
 func (da *DashboardAPI) getMetricsHandler(ctx context.Context, req interface{}) (interface{}, error) {
 	// 返回指标数据
 	return map[string]interface{}{
-		"metrics": []string{},
+		"metrics":   []string{},
 		"timestamp": time.Now(),
 	}, nil
 }
@@ -706,7 +706,7 @@ func (da *DashboardAPI) getMetricsHandler(ctx context.Context, req interface{}) 
 func (da *DashboardAPI) getAlertsHandler(ctx context.Context, req interface{}) (interface{}, error) {
 	// 返回告警数据
 	return map[string]interface{}{
-		"alerts": []string{},
+		"alerts":    []string{},
 		"timestamp": time.Now(),
 	}, nil
 }
@@ -715,7 +715,7 @@ func (da *DashboardAPI) getAlertsHandler(ctx context.Context, req interface{}) (
 func (da *DashboardAPI) getChartsHandler(ctx context.Context, req interface{}) (interface{}, error) {
 	// 返回图表数据
 	return map[string]interface{}{
-		"charts": []string{},
+		"charts":    []string{},
 		"timestamp": time.Now(),
 	}, nil
 }
@@ -724,7 +724,7 @@ func (da *DashboardAPI) getChartsHandler(ctx context.Context, req interface{}) (
 func (hs *HTTPServer) Start() error {
 	hs.mu.Lock()
 	defer hs.mu.Unlock()
-	
+
 	hs.running = true
 	// 启动HTTP服务器的具体实现
 	return nil
@@ -733,17 +733,17 @@ func (hs *HTTPServer) Start() error {
 func (hs *HTTPServer) Stop() {
 	hs.mu.Lock()
 	defer hs.mu.Unlock()
-	
+
 	hs.running = false
 	// 停止HTTP服务器的具体实现
 }
 
 // 模拟系统指标获取函数
-func getCPUUsage() float64 { return 0.0 }
-func getMemoryUsage() float64 { return 0.0 }
-func getDiskUsage() float64 { return 0.0 }
+func getCPUUsage() float64         { return 0.0 }
+func getMemoryUsage() float64      { return 0.0 }
+func getDiskUsage() float64        { return 0.0 }
 func getNetworkBytesSent() float64 { return 0.0 }
 func getNetworkBytesRecv() float64 { return 0.0 }
-func getResponseTime() float64 { return 0.0 }
-func getThroughput() float64 { return 0.0 }
-func getErrorRate() float64 { return 0.0 }
+func getResponseTime() float64     { return 0.0 }
+func getThroughput() float64       { return 0.0 }
+func getErrorRate() float64        { return 0.0 }

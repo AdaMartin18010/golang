@@ -57,7 +57,6 @@
 - **gRPC 官方定义**：
 
   > gRPC 是一个高性能、开源和通用的远程过程调用（RPC）框架，基于 HTTP/2 协议，支持多语言互通。
-
   > ——[gRPC Documentation](https://grpc.io/docs/)
 
 - **国际主流协议/工具**：gRPC、Protocol Buffers、OpenAPI/Swagger、Thrift、GraphQL、Apache Arrow、Kafka、NATS。

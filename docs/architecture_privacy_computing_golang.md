@@ -317,7 +317,7 @@ graph TB
 
 ---
 
-* 后续将补充设计方案、Golang实现、形式化建模等内容。*
+- 后续将补充设计方案、Golang实现、形式化建模等内容。*
 
 ## 1.7 6. 设计解决方案
 
@@ -592,4 +592,4 @@ func (mpcm *SecureMultiPartyManager) ExecuteComputation(task *PrivacyTask, data 
 
 ---
 
-* 本文档为隐私计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*
+- 本文档为隐私计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*

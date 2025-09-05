@@ -1,4 +1,4 @@
-package testing_system
+package main
 
 import (
 	"context"
@@ -18,34 +18,35 @@ type PerformanceBenchmark struct {
 	Warmup      int
 	Threshold   float64
 	Baseline    *BenchmarkResult
+	Metadata    map[string]interface{}
 	mu          sync.RWMutex
 }
 
 // BenchmarkResult 基准测试结果
 type BenchmarkResult struct {
-	Name           string            `json:"name"`
-	Duration       time.Duration     `json:"duration"`
-	Operations     int64             `json:"operations"`
-	Throughput     float64           `json:"throughput"`
-	MemoryUsage    MemoryUsage       `json:"memory_usage"`
-	CPUUsage       CPUUsage          `json:"cpu_usage"`
-	Iterations     int               `json:"iterations"`
-	MinDuration    time.Duration     `json:"min_duration"`
-	MaxDuration    time.Duration     `json:"max_duration"`
-	AvgDuration    time.Duration     `json:"avg_duration"`
-	StdDev         float64           `json:"std_dev"`
-	Percentiles    map[int]time.Duration `json:"percentiles"`
-	Timestamp      time.Time         `json:"timestamp"`
-	Metadata       map[string]interface{} `json:"metadata"`
+	Name        string                 `json:"name"`
+	Duration    time.Duration          `json:"duration"`
+	Operations  int64                  `json:"operations"`
+	Throughput  float64                `json:"throughput"`
+	MemoryUsage MemoryUsage            `json:"memory_usage"`
+	CPUUsage    CPUUsage               `json:"cpu_usage"`
+	Iterations  int                    `json:"iterations"`
+	MinDuration time.Duration          `json:"min_duration"`
+	MaxDuration time.Duration          `json:"max_duration"`
+	AvgDuration time.Duration          `json:"avg_duration"`
+	StdDev      float64                `json:"std_dev"`
+	Percentiles map[int]time.Duration  `json:"percentiles"`
+	Timestamp   time.Time              `json:"timestamp"`
+	Metadata    map[string]interface{} `json:"metadata"`
 }
 
 // MemoryUsage 内存使用情况
 type MemoryUsage struct {
-	Allocated uint64  `json:"allocated"`
-	Total     uint64  `json:"total"`
-	Heap      uint64  `json:"heap"`
-	Stack     uint64  `json:"stack"`
-	GC        uint64  `json:"gc"`
+	Allocated uint64 `json:"allocated"`
+	Total     uint64 `json:"total"`
+	Heap      uint64 `json:"heap"`
+	Stack     uint64 `json:"stack"`
+	GC        uint64 `json:"gc"`
 }
 
 // CPUUsage CPU使用情况
@@ -67,23 +68,23 @@ type PerformanceMonitor struct {
 
 // PerformanceConfig 性能测试配置
 type PerformanceConfig struct {
-	DefaultTimeout   time.Duration
-	DefaultIterations int
-	DefaultWarmup    int
+	DefaultTimeout      time.Duration
+	DefaultIterations   int
+	DefaultWarmup       int
 	RegressionThreshold float64
-	OutputDir         string
-	ReportFormat      string
-	EnableProfiling   bool
-	ProfilingDir      string
+	OutputDir           string
+	ReportFormat        string
+	EnableProfiling     bool
+	ProfilingDir        string
 }
 
 // RegressionDetector 回归检测器
 type RegressionDetector struct {
-	baseline    map[string]BenchmarkResult
-	current     map[string]BenchmarkResult
-	threshold   float64
-	alerts      []RegressionAlert
-	mu          sync.RWMutex
+	baseline  map[string]BenchmarkResult
+	current   map[string]BenchmarkResult
+	threshold float64
+	alerts    []RegressionAlert
+	mu        sync.RWMutex
 }
 
 // RegressionAlert 回归告警
@@ -170,11 +171,11 @@ func (pb *PerformanceBenchmark) RunBenchmark(ctx context.Context) (BenchmarkResu
 
 	// 计算平均资源使用
 	avgMemory := MemoryUsage{
-		Allocated: totalMemory.Allocated / int64(pb.Iterations),
-		Total:     totalMemory.Total / int64(pb.Iterations),
-		Heap:      totalMemory.Heap / int64(pb.Iterations),
-		Stack:     totalMemory.Stack / int64(pb.Iterations),
-		GC:        totalMemory.GC / int64(pb.Iterations),
+		Allocated: totalMemory.Allocated / uint64(pb.Iterations),
+		Total:     totalMemory.Total / uint64(pb.Iterations),
+		Heap:      totalMemory.Heap / uint64(pb.Iterations),
+		Stack:     totalMemory.Stack / uint64(pb.Iterations),
+		GC:        totalMemory.GC / uint64(pb.Iterations),
 	}
 
 	avgCPU := CPUUsage{
@@ -206,14 +207,14 @@ func (pb *PerformanceBenchmark) RunBenchmark(ctx context.Context) (BenchmarkResu
 func NewPerformanceMonitor(config *PerformanceConfig) *PerformanceMonitor {
 	if config == nil {
 		config = &PerformanceConfig{
-			DefaultTimeout:        60 * time.Second,
-			DefaultIterations:     100,
-			DefaultWarmup:         10,
-			RegressionThreshold:   0.1,
-			OutputDir:             "./performance-results",
-			ReportFormat:          "json",
-			EnableProfiling:       false,
-			ProfilingDir:          "./profiles",
+			DefaultTimeout:      60 * time.Second,
+			DefaultIterations:   100,
+			DefaultWarmup:       10,
+			RegressionThreshold: 0.1,
+			OutputDir:           "./performance-results",
+			ReportFormat:        "json",
+			EnableProfiling:     false,
+			ProfilingDir:        "./profiles",
 		}
 	}
 
@@ -284,7 +285,7 @@ func (pm *PerformanceMonitor) RunAllBenchmarks(ctx context.Context) (map[string]
 func (pm *PerformanceMonitor) GetResults() []BenchmarkResult {
 	pm.mu.RLock()
 	defer pm.mu.RUnlock()
-	
+
 	results := make([]BenchmarkResult, len(pm.results))
 	copy(results, pm.results)
 	return results
@@ -352,7 +353,7 @@ func (rd *RegressionDetector) DetectRegression(name string, current BenchmarkRes
 func (rd *RegressionDetector) GetAlerts() []RegressionAlert {
 	rd.mu.RLock()
 	defer rd.mu.RUnlock()
-	
+
 	alerts := make([]RegressionAlert, len(rd.alerts))
 	copy(alerts, rd.alerts)
 	return alerts
@@ -432,7 +433,7 @@ func calculatePercentiles(durations []time.Duration) map[int]time.Duration {
 	// 排序
 	sorted := make([]time.Duration, len(durations))
 	copy(sorted, durations)
-	
+
 	// 简单的冒泡排序
 	for i := 0; i < len(sorted)-1; i++ {
 		for j := 0; j < len(sorted)-i-1; j++ {

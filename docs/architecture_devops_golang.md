@@ -1163,4 +1163,4 @@ func (gw *GitOpsWorkflow) SyncInfrastructure(ctx context.Context) error {
 
 ---
 
-* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+- 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*

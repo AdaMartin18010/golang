@@ -1,8 +1,8 @@
-# 1 1 1 1 1 1 1 Pingora：Cloudflare的Rust高性能代理框架分析
+# Pingora：Cloudflare的Rust高性能代理框架分析
 
 ## 1.1 目录
 
-- [1 1 1 1 1 1 1 Pingora：Cloudflare的Rust高性能代理框架分析](#1-1-1-1-1-1-1-pingoracloudflare的rust高性能代理框架分析)
+- [Pingora：Cloudflare的Rust高性能代理框架分析](#pingoracloudflare的rust高性能代理框架分析)
   - [1.1 目录](#11-目录)
   - [1.2 思维导图](#12-思维导图)
   - [1.3 引言](#13-引言)

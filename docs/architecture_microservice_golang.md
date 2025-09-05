@@ -74,13 +74,11 @@
 - **Martin Fowler（微服务权威定义）**：
 
   > 微服务是一种架构风格，将单一应用开发为一组小服务，每个服务运行在其独立的进程中，服务之间通过轻量级机制通信，服务围绕业务能力构建，由小团队独立开发和维护。
-
   > ——[Microservices - a definition of this new architectural term](https://martinfowler.com/articles/microservices.html)
 
 - **Sam Newman（微服务实践专家）**：
 
   > 微服务架构强调服务自治、独立部署、技术多样性和弹性伸缩。
-
   > ——《Building Microservices》
 
 ### 2.2 发展历程与核心思想
@@ -661,4 +659,4 @@ jobs:
 1. "Building Microservices" - Sam Newman
 2. ... (existing content) ...
 
-* 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+- 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
