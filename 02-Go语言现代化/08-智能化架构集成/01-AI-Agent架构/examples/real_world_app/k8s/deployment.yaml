@@ -1,0 +1,287 @@
+# Kubernetes部署文件
+# Kubernetes Deployment for Smart Customer Service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smart-customer-service
+  namespace: default
+  labels:
+    app: smart-customer-service
+    version: v1.0.0
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: smart-customer-service
+  template:
+    metadata:
+      labels:
+        app: smart-customer-service
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: smart-customer-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+      - name: smart-customer-service
+        image: smart-customer-service:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 9090
+          name: metrics
+          protocol: TCP
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: DATABASE_HOST
+          value: "postgres-service"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: AI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-secrets
+              key: api-key
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config.yaml
+          subPath: config.yaml
+          readOnly: true
+      volumes:
+      - name: config-volume
+        configMap:
+          name: smart-customer-service-config
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+
+---
+# 服务配置
+apiVersion: v1
+kind: Service
+metadata:
+  name: smart-customer-service
+  namespace: default
+  labels:
+    app: smart-customer-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: metrics
+  selector:
+    app: smart-customer-service
+
+---
+# 配置映射
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smart-customer-service-config
+  namespace: default
+data:
+  config.yaml: |
+    server:
+      port: "8080"
+      read_timeout: "30s"
+      write_timeout: "30s"
+    
+    database:
+      host: "postgres-service"
+      port: 5432
+      database: "customer_service"
+      username: "postgres"
+      password: "password"
+    
+    redis:
+      host: "redis-service"
+      port: 6379
+      password: ""
+      db: 0
+    
+    ai:
+      model_endpoint: "https://api.openai.com/v1/chat/completions"
+      max_tokens: 1000
+      temperature: 0.7
+    
+    metrics:
+      enabled: true
+      port: "9090"
+
+---
+# 服务账户
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: smart-customer-service
+  namespace: default
+
+---
+# 角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: smart-customer-service
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+
+---
+# 角色绑定
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: smart-customer-service
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: smart-customer-service
+  namespace: default
+roleRef:
+  kind: Role
+  name: smart-customer-service
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# 水平Pod自动扩缩容
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: smart-customer-service-hpa
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: smart-customer-service
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Max
+
+---
+# 网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smart-customer-service-netpol
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: smart-customer-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: istio-system
+    - podSelector:
+        matchLabels:
+          app: smart-customer-service
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 9090
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80

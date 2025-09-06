@@ -1,0 +1,133 @@
+# 智能客服系统配置文件
+# Smart Customer Service Configuration
+
+server:
+  port: "8080"
+  read_timeout: "30s"
+  write_timeout: "30s"
+  max_connections: 1000
+  keep_alive: "60s"
+
+database:
+  host: "localhost"
+  port: 5432
+  database: "customer_service"
+  username: "postgres"
+  password: "password"
+  ssl_mode: "disable"
+  max_connections: 100
+  connection_timeout: "30s"
+  query_timeout: "10s"
+
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 100
+  min_idle_conns: 10
+  max_retries: 3
+  dial_timeout: "5s"
+  read_timeout: "3s"
+  write_timeout: "3s"
+
+ai:
+  model_endpoint: "https://api.openai.com/v1/chat/completions"
+  api_key: "your-openai-api-key"
+  max_tokens: 1000
+  temperature: 0.7
+  timeout: "30s"
+  retry_count: 3
+  models:
+    chat: "gpt-4"
+    analysis: "gpt-3.5-turbo"
+    sentiment: "text-davinci-003"
+
+metrics:
+  enabled: true
+  port: "9090"
+  path: "/metrics"
+  interval: "15s"
+  retention: "7d"
+  exporters:
+    - "prometheus"
+    - "jaeger"
+
+logging:
+  level: "info"
+  format: "json"
+  output: "stdout"
+  file:
+    enabled: false
+    path: "/var/log/customer-service.log"
+    max_size: "100MB"
+    max_backups: 3
+    max_age: 28
+
+security:
+  jwt:
+    secret: "your-jwt-secret"
+    expiration: "24h"
+    issuer: "customer-service"
+  cors:
+    enabled: true
+    origins: ["http://localhost:3000", "https://yourdomain.com"]
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    headers: ["Content-Type", "Authorization"]
+  rate_limit:
+    enabled: true
+    requests_per_minute: 100
+    burst: 20
+
+features:
+  ai_chat: true
+  ai_analysis: true
+  ai_suggestions: true
+  auto_categorization: true
+  sentiment_analysis: true
+  multi_language: true
+  voice_support: false
+  video_support: false
+
+performance:
+  cache:
+    enabled: true
+    ttl: "1h"
+    max_size: "100MB"
+  compression:
+    enabled: true
+    level: 6
+  connection_pooling: true
+  query_optimization: true
+
+monitoring:
+  health_check:
+    enabled: true
+    interval: "30s"
+    timeout: "5s"
+  alerts:
+    enabled: true
+    channels:
+      - "email"
+      - "slack"
+    thresholds:
+      response_time: "500ms"
+      error_rate: "5%"
+      cpu_usage: "80%"
+      memory_usage: "80%"
+
+deployment:
+  environment: "development"
+  version: "1.0.0"
+  replicas: 1
+  resources:
+    cpu: "500m"
+    memory: "512Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+  scaling:
+    min_replicas: 1
+    max_replicas: 10
+    target_cpu: "70%"
+    target_memory: "80%"
