@@ -1,4 +1,4 @@
-package basic_examples
+package main
 
 import "fmt"
 
@@ -31,8 +31,8 @@ func Add[T Number](a, b T) T {
 	return a + b
 }
 
-// PrintUsage 函数演示了如何使用上面定义的别名。
-func PrintUsage() {
+// main 函数演示了如何使用上面定义的别名。
+func main() {
 	// 使用 StringMap 别名
 	strToIntMap := StringMap[int]{"one": 1, "two": 2}
 	fmt.Printf("StringMap[int]: %v\n", strToIntMap)
