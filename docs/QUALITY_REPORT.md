@@ -1,4 +1,15 @@
-# Golang架构知识库质量报告
+---
+title: Golang架构知识库质量报告
+slug: quality-report
+topic: governance
+level: overview
+goVersion: 
+lastReviewed: 2025-09-15
+owner: core-team
+status: active
+---
+
+## Golang架构知识库质量报告
 
 <!-- TOC START -->
 - [Golang架构知识库质量报告](#golang架构知识库质量报告)

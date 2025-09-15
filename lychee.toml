@@ -1,0 +1,16 @@
+# 基础链接检查配置
+exclude = [
+  "^mailto:",
+  "^tel:",
+]
+max_retries = 2
+retry_wait_time = 2
+user_agent = "lychee/0.15 (+https://github.com/lycheeverse/lychee)"
+
+# 忽略临时不稳定站点
+exclude_domain = [
+  "example.com",
+]
+
+# 超时（秒）
+timeout = 10

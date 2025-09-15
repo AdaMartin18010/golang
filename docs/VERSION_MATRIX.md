@@ -1,0 +1,29 @@
+---
+title: Go 特性与内容版本矩阵
+slug: version-matrix
+topic: governance
+level: overview
+goVersion: 1.21–1.25+
+lastReviewed: 2025-09-15
+owner: core-team
+status: active
+---
+
+## Go 特性与内容版本矩阵
+
+> 说明：列出关键专题与适配的 Go 版本、差异点与示例位置。矩阵每月复审一次。
+
+| 专题 | 适配版本 | 关键差异/注意事项 | 示例 | 基准/报告 |
+|---|---|---|---|---|
+| ServeMux 新路由 | 1.22+ | 路由匹配语义变更、通配优先级 | `examples/servemux/` | 待补 |
+| slog 结构化日志 | 1.21+ | Handler/Attr API、性能与 JSON 输出 | `examples/slog/` | 待补 |
+| PGO | 1.20+ | `-pgo` 指令与 profile 生成流程 | `examples/pgo/` | 待补 |
+| for 变量语义 | 1.22+ | 闭包捕获变量行为修正 | `02-Go语言现代化/01-新特性深度解析/05-for循环变量语义变更/` | 待补 |
+| WASM/WASI | 1.21+ | `wasip1` 目标与限制 | `02-Go语言现代化/01-新特性深度解析/04-WASM与WASI/` | 待补 |
+| 并发测试最佳实践 | 1.25.1 | `-race`、`t.Parallel` 使用规范 | `examples/concurrency/` | 待补 |
+
+### 提交流程
+
+1. 新增专题时补充本表两列：示例路径、报告链接。
+2. 当 Go 小版本发布后，开启一轮回归复审，更新“适配版本/差异”。
+3. 基准报告以 `reports/bench-YYYYMM` 命名归档并在此引用。

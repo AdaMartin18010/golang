@@ -1,4 +1,15 @@
-# Golang 架构文档总目录（国际主流实践）
+---
+title: Golang 架构文档总目录（国际主流实践）
+slug: architecture-index
+topic: architecture
+level: overview
+goVersion: 1.21–1.25+
+lastReviewed: 2025-09-15
+owner: core-team
+status: active
+---
+
+## Golang 架构文档总目录（国际主流实践）
 
 <!-- TOC START -->
 - [Golang 架构文档总目录（国际主流实践）](#golang-架构文档总目录国际主流实践)

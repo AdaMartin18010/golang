@@ -1,4 +1,15 @@
-# 1.3.1.1 Go 1.21+ 性能优化利器：PGO (Profile-Guided Optimization)
+---
+title: 1.3.1.1 Go 1.21+ 性能优化利器：PGO
+slug: pgo-optimization
+topic: toolchain
+level: intermediate
+goVersion: 1.21+
+lastReviewed: 2025-09-15
+owner: module-performance
+status: active
+---
+
+## 1.3.1.1 Go 1.21+ 性能优化利器：PGO (Profile-Guided Optimization)
 
 <!-- TOC START -->
 - [1.3.1.1 Go 1.21+ 性能优化利器：PGO (Profile-Guided Optimization)](#1311-go-121-性能优化利器pgo-profile-guided-optimization)

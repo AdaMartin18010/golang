@@ -1,3 +1,17 @@
+## v2025.09-P1
+
+### Added
+
+- SITE_INDEX 与 VERSION_MATRIX，统一发布源导航
+- examples 模块（concurrency/servemux/pgo/slog）
+- 文档元数据模板 `_META_TEMPLATE.md`
+- 交叉链接计划 `CROSSLINK_PLAN.md` 与去重报告 `DEDUPE_REPORT.md`
+
+### Changed
+
+- 多处 README 增加元数据与相关链接
+- 索引与矩阵指向主线与示例
+
 # 变更日志
 
 本文档记录了 Go语言现代化项目 的所有重要变更。

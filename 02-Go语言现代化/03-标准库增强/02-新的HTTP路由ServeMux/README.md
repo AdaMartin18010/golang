@@ -1,4 +1,15 @@
-# 1.2.2.1 Go 1.22 标准库增强：全新的 HTTP 路由 `ServeMux`
+---
+title: 1.2.2.1 Go 1.22 标准库增强：全新的 HTTP 路由 ServeMux
+slug: std-servemux-122
+topic: stdlib
+level: intermediate
+goVersion: 1.22+
+lastReviewed: 2025-09-15
+owner: module-stdlib
+status: active
+---
+
+## 1.2.2.1 Go 1.22 标准库增强：全新的 HTTP 路由 `ServeMux`
 
 <!-- TOC START -->
 - [1.2.2.1 Go 1.22 标准库增强：全新的 HTTP 路由 `ServeMux`](#1221-go-122-标准库增强全新的-http-路由-servemux)

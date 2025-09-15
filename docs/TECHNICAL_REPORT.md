@@ -1,4 +1,15 @@
-# Golang架构知识库技术报告
+---
+title: Golang架构知识库技术报告
+slug: technical-report
+topic: governance
+level: overview
+goVersion: 
+lastReviewed: 2025-09-15
+owner: core-team
+status: active
+---
+
+## Golang架构知识库技术报告
 
 <!-- TOC START -->
 - [Golang架构知识库技术报告](#golang架构知识库技术报告)
