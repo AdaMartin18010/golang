@@ -318,7 +318,7 @@ $$\text{subject to } g_i(x) \leq 0, i = 1, ..., m$$
 2. 保持：每次迭代后 $I$ 仍为真
 3. 终止：循环终止时 $I$ 蕴含后置条件
 
-**示例 1.1 (快速排序正确性)**
+**示例 1.1 (快速排序正确性)**:
 
 ```go
 func QuickSort(arr []int, low, high int) {
@@ -400,7 +400,7 @@ $$T(n) = 2T(n/2) + O(n)$$
 
 #### 1.5.1.1 类型系统实践
 
-**实践 1.1 (泛型设计)**
+**实践 1.1 (泛型设计)**:
 
 ```go
 // 理论：泛型类型 G[T] where T satisfies Constraint
@@ -431,7 +431,7 @@ func (bt *BinaryTree[T]) Insert(value T) {
 
 #### 1.5.1.2 并发模型实践
 
-**实践 1.2 (CSP模型实现)**
+**实践 1.2 (CSP模型实现)**:
 
 ```go
 // 理论：CSP (Communicating Sequential Processes)
@@ -463,7 +463,7 @@ func (wp *WorkerPool[T]) worker() {
 
 #### 1.5.2.1 高性能Web服务器
 
-**案例 1.1 (零拷贝文件传输)**
+**案例 1.1 (零拷贝文件传输)**:
 
 ```go
 // 理论基础：零拷贝技术减少内存拷贝次数
@@ -488,7 +488,7 @@ func (s *FileServer) sendFileZeroCopy(conn net.Conn, file *os.File, size int64) 
 
 #### 1.5.2.2 分布式系统设计
 
-**案例 1.2 (一致性哈希)**
+**案例 1.2 (一致性哈希)**:
 
 ```go
 // 理论基础：一致性哈希算法保证负载均衡
@@ -539,7 +539,7 @@ func (ch *ConsistentHash) GetNode(key string) string {
 
 #### 1.5.3.1 类型安全实践
 
-**实践指导 1.1**
+**实践指导 1.1**:
 
 1. 使用强类型系统避免运行时错误
 2. 利用泛型提高代码复用性
@@ -548,7 +548,7 @@ func (ch *ConsistentHash) GetNode(key string) string {
 
 #### 1.5.3.2 并发安全实践
 
-**实践指导 1.2**
+**实践指导 1.2**:
 
 1. 优先使用Channel进行通信
 2. 避免共享内存，通过通信共享
@@ -557,7 +557,7 @@ func (ch *ConsistentHash) GetNode(key string) string {
 
 #### 1.5.3.3 性能优化实践
 
-**实践指导 1.3**
+**实践指导 1.3**:
 
 1. 使用pprof进行性能分析
 2. 避免不必要的内存分配

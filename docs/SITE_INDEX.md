@@ -35,6 +35,8 @@ status: active
 - FAQ 汇总 → `FAQ.md`
 - 报表与度量 → `reports/README.md`
 - 可观测性（OTel 方案） → `docs/observability/OTel-方案.md`
+  - Go 接入规范 → `docs/observability/Go-接入规范.md`
+  - SLO 与成本策略 → `docs/observability/SLO-与成本策略.md`
 - Examples（可运行示例） → `examples/README.md`
   - 并发 → `examples/concurrency/`
   - ServeMux（1.22+） → `examples/servemux/`

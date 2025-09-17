@@ -9,6 +9,19 @@ processors:
     check_interval: 5s
     limit_percentage: 80
     spike_limit_percentage: 25
+  tail_sampling:
+    decision_wait: 5s
+    num_traces: 10000
+    expected_new_traces_per_sec: 100
+    policies:
+      - name: errors
+        type: status_code
+        status_code:
+          status_codes: [ERROR]
+      - name: long_latency
+        type: latency
+        latency:
+          threshold_ms: 200
 exporters:
   otlp/tempo:
     endpoint: tempo:4317
@@ -22,7 +35,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, tail_sampling, batch]
       exporters: [otlp/tempo]
     metrics:
       receivers: [otlp]
@@ -32,4 +45,3 @@ service:
       receivers: [otlp]
       processors: [memory_limiter, batch]
       exporters: [loki]
-
