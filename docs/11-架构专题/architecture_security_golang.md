@@ -2,55 +2,11 @@
 
 ## 1. 目录
 
-<!-- TOC START -->
-- [安全架构（Security Architecture）](#安全架构security-architecture)
-  - [1. 目录](#1-目录)
-  - [2. 国际标准与发展历程](#2-国际标准与发展历程)
-    - [1.2.1 主流标准与框架](#121-主流标准与框架)
-    - [1.2.2 发展历程](#122-发展历程)
-    - [1.2.3 国际权威链接](#123-国际权威链接)
-  - [3. 核心安全模型与设计原则](#3-核心安全模型与设计原则)
-    - [1.3.1 核心原则](#131-核心原则)
-    - [1.3.2 零信任安全模型](#132-零信任安全模型)
-    - [1.3.3 安全策略引擎](#133-安全策略引擎)
-  - [4. 认证与授权架构](#4-认证与授权架构)
-    - [1.4.1 多因素认证（MFA）](#141-多因素认证mfa)
-    - [1.4.2 OAuth 2.0 与 OpenID Connect](#142-oauth-20-与-openid-connect)
-  - [5. 密码学应用](#5-密码学应用)
-    - [1.5.1 加密与签名服务](#151-加密与签名服务)
-    - [1.5.2 密钥管理服务](#152-密钥管理服务)
-  - [6. Golang主流实现与代码示例](#6-golang主流实现与代码示例)
-    - [1.6.1 安全的HTTP响应头](#161-安全的http响应头)
-    - [1.6.2 输入验证与输出编码 (OWASP Top 10)](#162-输入验证与输出编码-owasp-top-10)
-      - [1.6.2.1 跨站脚本 (XSS) 防护](#1621-跨站脚本-xss-防护)
-      - [1.6.2.2 SQL注入防护](#1622-sql注入防护)
-    - [1.6.3 密钥管理 (Secrets Management)](#163-密钥管理-secrets-management)
-  - [7. 容器与云原生安全](#7-容器与云原生安全)
-    - [1.7.1 容器安全扫描](#171-容器安全扫描)
-    - [1.7.2 运行时安全监控](#172-运行时安全监控)
-  - [8. 工程结构与CI/CD实践](#8-工程结构与cicd实践)
-    - [1.8.1 CI/CD 安全流水线 (DevSecOps)](#181-cicd-安全流水线-devsecops)
-    - [1.8.2 安全监控与响应](#182-安全监控与响应)
-      - [1.8.2.1 安全事件监控与告警](#1821-安全事件监控与告警)
-      - [1.8.2.2 自动化响应与SOAR](#1822-自动化响应与soar)
-      - [1.8.2.3 威胁情报集成](#1823-威胁情报集成)
-  - [9. 合规与审计](#9-合规与审计)
-    - [1.9.1 合规性检查](#191-合规性检查)
-    - [1.9.2 审计日志与取证](#192-审计日志与取证)
-  - [10. 未来趋势与国际前沿](#10-未来趋势与国际前沿)
-  - [11. 国际权威资源与开源组件引用](#11-国际权威资源与开源组件引用)
-    - [1.11.1 安全框架与标准](#1111-安全框架与标准)
-    - [1.11.2 开源安全工具](#1112-开源安全工具)
-    - [1.11.3 云原生安全](#1113-云原生安全)
-  - [12. 相关架构主题](#12-相关架构主题)
-  - [13. 扩展阅读与参考文献](#13-扩展阅读与参考文献)
-<!-- TOC END -->
-
 ---
 
 ## 2. 国际标准与发展历程
 
-### 1.2.1 主流标准与框架
+### 2.1 主流标准与框架
 
 - **NIST Cybersecurity Framework**
 - **ISO/IEC 27001:2022**
@@ -59,7 +15,7 @@
 - **Zero Trust Architecture**
 - **GDPR/CCPA合规框架**
 
-### 1.2.2 发展历程
+### 2.2 发展历程
 
 - **2013**: NIST网络安全框架发布
 - **2016**: Zero Trust概念普及
@@ -67,7 +23,7 @@
 - **2020**: 云原生安全框架
 - **2023**: AI安全与隐私计算
 
-### 1.2.3 国际权威链接
+### 2.3 国际权威链接
 
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
 - [OWASP](https://owasp.org/)
@@ -75,14 +31,14 @@
 
 ## 3. 核心安全模型与设计原则
 
-### 1.3.1 核心原则
+### 3.1 核心原则
 
 - **深度防御 (Defense in Depth)**: 采用多层、冗余的安全措施。即使一层防御被攻破，其他层次的防御依然能够提供保护。
 - **最小权限原则 (Principle of Least Privilege)**: 任何用户、程序或进程只应拥有其执行授权功能所必需的最小权限。
 - **零信任架构 (Zero Trust Architecture)**: 从不信任，始终验证。默认网络内部和外部的所有流量都不可信，要求对所有访问请求进行严格的身份验证和授权。
 - **安全左移 (Shift-Left Security)**: 在软件开发生命周期（SDLC）的早期阶段就集成安全实践，而不是在部署后才考虑安全问题。
 
-### 1.3.2 零信任安全模型
+### 3.2 零信任安全模型
 
 ```go
 type ZeroTrustEngine struct {
@@ -143,7 +99,7 @@ func (zt *ZeroTrustEngine) EvaluateAccess(ctx context.Context, request AccessReq
 
 ```
 
-### 1.3.3 安全策略引擎
+### 3.3 安全策略引擎
 
 ```go
 type PolicyEngine struct {
@@ -194,7 +150,7 @@ func (pe *PolicyEngine) EvaluateRequest(ctx context.Context, request *AccessRequ
 
 ## 4. 认证与授权架构
 
-### 1.4.1 多因素认证（MFA）
+### 4.1 多因素认证（MFA）
 
 ```go
 type MFAService struct {
@@ -272,7 +228,7 @@ func (mfa *MFAService) AuthenticateUser(ctx context.Context, credentials map[str
 
 ```
 
-### 1.4.2 OAuth 2.0 与 OpenID Connect
+### 4.2 OAuth 2.0 与 OpenID Connect
 
 ```go
 type OAuthServer struct {
@@ -349,7 +305,7 @@ func (ts *TokenService) handleAuthorizationCode(ctx context.Context, request *To
 
 ## 5. 密码学应用
 
-### 1.5.1 加密与签名服务
+### 5.1 加密与签名服务
 
 ```go
 type CryptoService struct {
@@ -408,7 +364,7 @@ func (cs *CryptoService) Encrypt(ctx context.Context, req *EncryptionRequest) (*
 
 ```
 
-### 1.5.2 密钥管理服务
+### 5.2 密钥管理服务
 
 ```go
 type KeyManager struct {
@@ -483,7 +439,7 @@ func (km *KeyManager) CreateKey(ctx context.Context, req *CreateKeyRequest) (*Ke
 
 ## 6. Golang主流实现与代码示例
 
-### 1.6.1 安全的HTTP响应头
+### 6.1 安全的HTTP响应头
 
 在Web应用中设置安全的HTTP头是防止点击劫持、XSS等攻击的第一道防线。
 
@@ -511,7 +467,7 @@ func SecureHeadersMiddleware(next http.Handler) http.Handler {
 
 ```
 
-### 1.6.2 输入验证与输出编码 (OWASP Top 10)
+### 6.2 输入验证与输出编码 (OWASP Top 10)
 
 #### 1.6.2.1 跨站脚本 (XSS) 防护
 
@@ -562,7 +518,7 @@ func queryUser(db *sql.DB, username string) (*User, error) {
 
 ```
 
-### 1.6.3 密钥管理 (Secrets Management)
+### 6.3 密钥管理 (Secrets Management)
 
 使用专业的密钥管理工具（如HashiCorp Vault）来管理数据库密码、API密钥等敏感信息，而不是硬编码在代码或配置文件中。
 
@@ -607,7 +563,7 @@ func getDatabasePasswordFromVault() (string, error) {
 
 ## 7. 容器与云原生安全
 
-### 1.7.1 容器安全扫描
+### 7.1 容器安全扫描
 
 ```go
 type ContainerScanner struct {
@@ -707,7 +663,7 @@ func (cs *ContainerScanner) ScanImage(ctx context.Context, imageRef string) (*Sc
 
 ```
 
-### 1.7.2 运行时安全监控
+### 7.2 运行时安全监控
 
 ```go
 type RuntimeSecurityMonitor struct {

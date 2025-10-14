@@ -1,16 +1,16 @@
-# 1 1 1 1 1 1 1 Rust Pattern Matching Syntax
+#  Rust Pattern Matching Syntax
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust Pattern Matching Syntax](#1-1-1-1-1-1-1-rust-pattern-matching-syntax)
-  - [1.1 1. Match Expressions](#1-match-expressions)
-  - [1.2 2. Pattern Types](#2-pattern-types)
-  - [1.3 3. Pattern Matching Examples](#3-pattern-matching-examples)
-  - [1.4 4. Mind Map](#4-mind-map)
-    - [1.4.1 1. 错误处理](#1-错误处理)
-    - [1.4.2 2. 可选值处理](#2-可选值处理)
-    - [1.4.3 3. 循环和流处理](#3-循环和流处理)
-    - [1.4.4 4. 特定业务逻辑](#4-特定业务逻辑)
-    - [1.4.5 5. 数据解析](#5-数据解析)
+- [ ](#1-1-1-1-1-1-1-rust-pattern-matching-syntax)
+  - [1. ](#1-match-expressions)
+  - [2. ](#2-pattern-types)
+  - [3. ](#3-pattern-matching-examples)
+  - [4. ](#4-mind-map)
+    - [4.1 ](#1-错误处理)
+    - [4.2 ](#2-可选值处理)
+    - [4.3 ](#3-循环和流处理)
+    - [4.4 ](#4-特定业务逻辑)
+    - [4.5 ](#5-数据解析)
     - [1.4.6 总结](#总结)
     - [1.4.7 解释](#解释)
       - [1.4.7.1 Trait Object 的定义和使用](#trait-object-的定义和使用)

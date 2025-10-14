@@ -4985,7 +4985,7 @@ func (st *StreamingTelemetry) RecordMetricWithStreaming(
 
 ```yaml
 
-# 2 2 2 2 2 2 2 otel-config.yaml - 统一配置文件
+# otel-config.yaml - 统一配置文件
 
 global:
   service_namespace: "example-corp"

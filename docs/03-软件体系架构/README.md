@@ -1,13 +1,3 @@
----
-title: Go语言软件体系架构
-slug: software-system-architecture
-topic: architecture
-level: overview
-goVersion: 1.21+
-lastReviewed: 2025-01-15
-owner: core-team
-status: active
----
 
 # Go语言软件体系架构
 

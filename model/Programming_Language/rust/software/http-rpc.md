@@ -1,17 +1,17 @@
-# 1 1 1 1 1 1 1 HTTP/RPC API 自动生成
+# HTTP/RPC API 自动生成
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 HTTP/RPC API 自动生成](#1-1-1-1-1-1-1-httprpc-api-自动生成)
-  - [1.1 1. 基于 OpenAPI/Swagger 的 REST API 自动生成](#1-基于-openapiswagger-的-rest-api-自动生成)
-    - [1.1.1 Paperclip](#paperclip)
-    - [1.1.2 utoipa](#utoipa)
-  - [1.2 2. gRPC API 自动生成](#2-grpc-api-自动生成)
-    - [1.2.1 Tonic](#tonic)
-    - [1.2.2 grpcio](#grpcio)
-  - [1.3 3. GraphQL API 自动生成](#3-graphql-api-自动生成)
-    - [1.3.1 async-graphql](#async-graphql)
-  - [1.4 4. 思维导图](#4-思维导图)
-  - [1.5 小结](#小结)
+- [HTTP/RPC API 自动生成](#httprpc-api-自动生成)
+  - [1.1 1. 基于 OpenAPI/Swagger 的 REST API 自动生成](#11-1-基于-openapiswagger-的-rest-api-自动生成)
+    - [1.1.1 Paperclip](#111-paperclip)
+    - [1.1.2 utoipa](#112-utoipa)
+  - [1.2 2. gRPC API 自动生成](#12-2-grpc-api-自动生成)
+    - [1.2.1 Tonic](#121-tonic)
+    - [1.2.2 grpcio](#122-grpcio)
+  - [1.3 3. GraphQL API 自动生成](#13-3-graphql-api-自动生成)
+    - [1.3.1 async-graphql](#131-async-graphql)
+  - [1.4 4. 思维导图](#14-4-思维导图)
+  - [1.5 小结](#15-小结)
 <!-- TOC END -->
 
 下面介绍在 Rust 开源生态系统中，能够根据 API 规范自动生成代码的几种著名实现，

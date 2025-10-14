@@ -136,7 +136,7 @@ Collector是一个独立的服务，负责接收、处理和导出遥测数据�
 
 ```yaml
 
-# 2 2 2 2 2 2 2 Collector配置示例
+# Collector配置示例
 
 receivers:
   otlp:

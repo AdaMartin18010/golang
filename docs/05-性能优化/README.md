@@ -1,13 +1,3 @@
----
-title: Go性能优化模块总览
-slug: go-performance-optimization
-topic: performance
-level: overview
-goVersion: 1.21+
-lastReviewed: 2025-01-15
-owner: core-team
-status: active
----
 
 # Go性能优化模块总览
 

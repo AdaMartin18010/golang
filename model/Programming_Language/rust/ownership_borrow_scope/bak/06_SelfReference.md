@@ -1,11 +1,11 @@
-# 1 1 1 1 1 1 1 Rust 中的自引用（Self-referential structure）
+# Rust 中的自引用（Self-referential structure）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 中的自引用（Self-referential structure）](#1-1-1-1-1-1-1-rust-中的自引用（self-referential-structure）)
-  - [1.1 使用 `Box`](#使用-box)
-  - [1.2 使用 `Rc`](#使用-rc)
-  - [1.3 使用 `RefCell`](#使用-refcell)
-  - [1.4 注意事项](#注意事项)
+- [Rust 中的自引用（Self-referential structure）](#rust-中的自引用self-referential-structure)
+  - [1.1 使用 `Box`](#11-使用-box)
+  - [1.2 使用 `Rc`](#12-使用-rc)
+  - [1.3 使用 `RefCell`](#13-使用-refcell)
+  - [1.4 注意事项](#14-注意事项)
 <!-- TOC END -->
 
 在 Rust 中实现自引用（Self-referential structure）

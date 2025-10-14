@@ -1,13 +1,3 @@
----
-title: 5.1 Go性能分析与pprof
-slug: pprof-guide
-topic: performance
-level: intermediate
-goVersion: 1.21+
-lastReviewed: 2025-09-15
-owner: module-performance
-status: active
----
 
 ## 5.1 Go性能分析与pprof
 

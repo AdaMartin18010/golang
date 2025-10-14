@@ -1,11 +1,11 @@
-# 1.1 Pin
+﻿# 1.1 Pin
 
 <!-- TOC START -->
-- [1.1 Pin](#pin)
-  - [1.1.1 `Pin` trait 的定义](#pin-trait-的定义)
-  - [1.1.2 `Unpin` trait](#unpin-trait)
-  - [1.1.3 `Pin` 的应用](#pin-的应用)
-    - [1.1.3.1 使用 `Pin`](#使用-pin)
+- [1.1 Pin](#11-pin)
+  - [1.1.1 `Pin` trait 的定义](#111-pin-trait-的定义)
+  - [1.1.2 `Unpin` trait](#112-unpin-trait)
+  - [1.1.3 `Pin` 的应用](#113-pin-的应用)
+    - [1.1.3.1 使用 `Pin`](#1131-使用-pin)
 <!-- TOC END -->
 
 在 Rust 中，`Pin` trait 属于 `std::marker` 模块，它用于指示某个值的内存位置不应该被移动。

@@ -1,35 +1,4 @@
-# 1 1 1 1 1 1 1 Temporal 分析
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 Temporal 分析](#1-1-1-1-1-1-1-temporal-分析)
-  - [1.1 目录](#目录)
-  - [1.2 1. 引言](#1-引言)
-  - [1.3 2. 架构分析 (Architecture Analysis)](#2-架构分析-architecture-analysis)
-    - [1.3.1 2.1. 核心服务组件](#21-核心服务组件)
-    - [1.3.2 2.2. 核心交互流程](#22-核心交互流程)
-    - [1.3.3 2.3. 设计原则：可伸缩、可靠、持久](#23-设计原则：可伸缩、可靠、持久)
-    - [1.3.4 2.4. 依赖与横切关注点](#24-依赖与横切关注点)
-  - [1.4 3. 代码结构分析 (Code Structure Analysis)](#3-代码结构分析-code-structure-analysis)
-    - [1.4.1 3.1. Temporal Server (`temporalio/temporal`)](#31-temporal-server-temporaliotemporal)
-    - [1.4.2 3.2. Go SDK (`temporalio/sdk-go`)](#32-go-sdk-temporaliosdk-go)
-    - [1.4.3 3.3. 主要设计模式](#33-主要设计模式)
-  - [1.5 4. 实现分析 (Implementation Analysis)](#4-实现分析-implementation-analysis)
-    - [1.5.1 4.1. 事件溯源与确定性重放](#41-事件溯源与确定性重放)
-    - [1.5.2 4.2. 任务队列与调度 (Matching & Task Queues)](#42-任务队列与调度-matching-&-task-queues)
-    - [1.5.3 4.3. 持久化层抽象与实现](#43-持久化层抽象与实现)
-    - [1.5.4 4.4. 可靠定时器管理](#44-可靠定时器管理)
-    - [1.5.5 4.5. 活动(Activity)的重试与错误处理](#45-活动activity的重试与错误处理)
-    - [1.5.6 4.6. 查询(Query)的路由与一致性](#46-查询query的路由与一致性)
-    - [1.5.7 4.7. 分片、成员关系与故障转移 (Sharding & Membership)](#47-分片、成员关系与故障转移-sharding-&-membership)
-  - [1.6 5. 应用分析 (Application Analysis)](#5-应用分析-application-analysis)
-    - [1.6.1 5.1. 常见工作流设计模式](#51-常见工作流设计模式)
-    - [1.6.2 5.2. 活动(Activity)设计最佳实践](#52-活动activity设计最佳实践)
-    - [1.6.3 5.3. 工作流(Workflow)设计最佳实践](#53-工作流workflow设计最佳实践)
-    - [1.6.4 5.4. 集成模式与用例](#54-集成模式与用例)
-    - [1.6.5 5.5. 常见反模式](#55-常见反模式)
-  - [1.7 6. 总结](#6-总结)
-  - [1.8 思维导图 (Text)](#思维导图-text)
-<!-- TOC END -->
+#  Temporal 分析
 
 Temporal 是一个分布式工作流编排平台，它提供了一种灵活的方式来构建和运行复杂的分布式应用程序。
 本分析将深入探讨 Temporal 的架构、代码结构、实现细节和应用实践这四个维度。

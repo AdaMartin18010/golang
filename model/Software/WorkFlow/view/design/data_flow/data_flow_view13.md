@@ -6171,7 +6171,7 @@ proptest! {
 
 ```yaml
 
-# 2 2 2 2 2 2 2 .github/workflows/ci.yml
+# .github/workflows/ci.yml
 
 name: Rust CI Pipeline
 
@@ -6352,46 +6352,46 @@ jobs:
 
 ```dockerfile
 
-# 3 3 3 3 3 3 3 Dockerfile
+# Dockerfile
 
 FROM debian:bullseye-slim
 
-# 4 4 4 4 4 4 4 添加非root用户
+# 添加非root用户
 
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# 5 5 5 5 5 5 5 创建应用目录
+# 创建应用目录
 
 WORKDIR /app
 
-# 6 6 6 6 6 6 6 复制编译好的二进制文件
+# 复制编译好的二进制文件
 
 COPY your-service-name /app/
 COPY config/ /app/config/
 
-# 7 7 7 7 7 7 7 设置权限
+# 设置权限
 
 RUN chown -R appuser:appuser /app && \
     chmod +x /app/your-service-name
 
-# 8 8 8 8 8 8 8 暴露应用端口
+# 暴露应用端口
 
 EXPOSE 8080
 
-# 9 9 9 9 9 9 9 定义健康检查
+# 定义健康检查
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
-# 10 10 10 10 10 10 10 使用非root用户运行应用
+# 使用非root用户运行应用
 
 USER appuser
 
-# 11 11 11 11 11 11 11 设置环境变量
+# 设置环境变量
 
 ENV APP_ENV=production
 
-# 12 12 12 12 12 12 12 运行应用
+# 运行应用
 
 CMD ["/app/your-service-name"]
 

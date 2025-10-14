@@ -1,12 +1,12 @@
-# 1 1 1 1 1 1 1 软件架构设计的多维思考模型
+#  软件架构设计的多维思考模型
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 软件架构设计的多维思考模型](#1-1-1-1-1-1-1-软件架构设计的多维思考模型)
-  - [1.1 软件架构设计：融合形式理论与现实约束的综合框架-修订](#11-软件架构设计融合形式理论与现实约束的综合框架-修订)
-  - [1.2 摘要 (Abstract)](#12-摘要-abstract)
-  - [1.3 引言 (Introduction)](#13-引言-introduction)
-  - [1.4 第一部分：架构设计的核心维度 (Core Dimensions of Architectural Design)](#14-第一部分架构设计的核心维度-core-dimensions-of-architectural-design)
-    - [1.4.1 维度一：形式与计算基础 (Formal \& Computational Foundation)](#141-维度一形式与计算基础-formal--computational-foundation)
+- [ ](#1-1-1-1-1-1-1-软件架构设计的多维思考模型)
+  - [1. ](#11-软件架构设计融合形式理论与现实约束的综合框架-修订)
+  - [2. ](#12-摘要-abstract)
+  - [3. ](#13-引言-introduction)
+  - [4. ](#14-第一部分架构设计的核心维度-core-dimensions-of-architectural-design)
+    - [4.1 ](#141-维度一形式与计算基础-formal--computational-foundation)
       - [1.4.1.1 **1.1 计算模型层 (Computational Models)**](#1411-11-计算模型层-computational-models)
         - [1.4.1.1.1 **λ演算与函数式思想**](#14111-λ演算与函数式思想)
         - [1.4.1.1.2 **图灵机与过程式思想**](#14112-图灵机与过程式思想)
@@ -30,7 +30,7 @@
         - [1.4.1.6.1 **一致性模型**](#14161-一致性模型)
         - [1.4.1.6.2 **分区容错**](#14162-分区容错)
         - [1.4.1.6.3 **时间与顺序**](#14163-时间与顺序)
-    - [1.4.2 **维度二：现实世界背景与约束 (Real-World Context \& Constraints)**](#142-维度二现实世界背景与约束-real-world-context--constraints)
+    - [4.2 ](#142-维度二现实世界背景与约束-real-world-context--constraints)
       - [1.4.2.1 **2.1 人类认知因素 (Human Cognitive Factors)**](#1421-21-人类认知因素-human-cognitive-factors)
         - [1.4.2.1.1 **抽象与理解**](#14211-抽象与理解)
         - [1.4.2.1.2 **认知负荷**](#14212-认知负荷)
@@ -47,7 +47,7 @@
         - [1.4.2.4.1 **成本效益分析**](#14241-成本效益分析)
         - [1.4.2.4.2 **风险管理与合规**](#14242-风险管理与合规)
         - [1.4.2.4.3 **规模经济与瓶颈**](#14243-规模经济与瓶颈)
-    - [1.4.3 **维度三：连接理论与实践 - 综合与权衡 (Bridging Theory \& Practice - Synthesis \& Trade-offs)**](#143-维度三连接理论与实践---综合与权衡-bridging-theory--practice---synthesis--trade-offs)
+    - [4.3 ](#143-维度三连接理论与实践---综合与权衡-bridging-theory--practice---synthesis--trade-offs)
       - [1.4.3.1 **3.1 融合设计原则 (Fusion Design Principles)**](#1431-31-融合设计原则-fusion-design-principles)
         - [1.4.3.1.1 **形式-现实映射**](#14311-形式-现实映射)
         - [1.4.3.1.2 **能力-边界平衡**](#14312-能力-边界平衡)
@@ -58,8 +58,8 @@
         - [1.4.3.2.3 **模式与反模式**](#14323-模式与反模式)
       - [1.4.3.3 **3.3 形式化方法与验证 (Formal Methods \& Verification)** (视情况可选，强调适用场景)](#1433-33-形式化方法与验证-formal-methods--verification-视情况可选强调适用场景)
       - [1.4.3.4 **3.4 实践决策框架 (Practical Decision Frameworks)**](#1434-34-实践决策框架-practical-decision-frameworks)
-  - [1.5 第二部分：应用多维模型进行架构设计 (Applying the Multi-Dimensional Model)](#15-第二部分应用多维模型进行架构设计-applying-the-multi-dimensional-model)
-    - [1.5.1 **4.1 核心理念回顾**](#151-41-核心理念回顾)
+  - [5. ](#15-第二部分应用多维模型进行架构设计-applying-the-multi-dimensional-model)
+    - [5.1 ](#151-41-核心理念回顾)
       - [1.5.1.1 **4.2 一个实用的设计工作流 (A Practical Design Workflow)**](#1511-42-一个实用的设计工作流-a-practical-design-workflow)
       - [1.5.1.2 **4.3 案例研究 (Case Study - 可选)**](#1512-43-案例研究-case-study---可选)
 <!-- TOC END -->

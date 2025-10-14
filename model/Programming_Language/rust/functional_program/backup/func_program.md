@@ -1,13 +1,13 @@
-# 1 1 1 1 1 1 1 Rust 的函数式编程模式
+#  Rust 的函数式编程模式
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 的函数式编程模式](#1-1-1-1-1-1-1-rust-的函数式编程模式)
-  - [1.1 热门的 Rust 函数式编程库](#热门的-rust-函数式编程库)
-    - [1.1.1 2025 年更新的软件库](#2025-年更新的软件库)
-    - [1.1.2 思维总结](#思维总结)
-    - [1.1.3 1. 闭包 (Closures)](#1-闭包-closures)
-    - [1.1.4 2. 迭代器 (Iterators)](#2-迭代器-iterators)
-    - [1.1.5 3. 高阶函数 (Higher-order Functions)](#3-高阶函数-higher-order-functions)
+- [ ](#1-1-1-1-1-1-1-rust-的函数式编程模式)
+  - [1. ](#热门的-rust-函数式编程库)
+    - [1.1 ](#2025-年更新的软件库)
+    - [1.2 ](#思维总结)
+    - [1.3 ](#1-闭包-closures)
+    - [1.4 ](#2-迭代器-iterators)
+    - [1.5 ](#3-高阶函数-higher-order-functions)
     - [1.1.6 4. 不可变性 (Immutability)](#4-不可变性-immutability)
     - [1.1.7 5. 纯函数 (Pure Functions)](#5-纯函数-pure-functions)
     - [1.1.8 6. 模式匹配 (Pattern Matching)](#6-模式匹配-pattern-matching)

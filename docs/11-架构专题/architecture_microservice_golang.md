@@ -201,38 +201,888 @@ sequenceDiagram
 ### 3.4 Golang 领域模型代码示例
 
 ```go
-// 用户实体
- type User struct {
-     ID    string
-     Name  string
-     Email string
- }
+package microservice
 
-// 订单实体
- type Order struct {
-     ID        string
-     UserID    string
-     Items     []OrderItem
-     Status    OrderStatus
-     CreatedAt time.Time
- }
+import (
+    "context"
+    "time"
+    "errors"
+    "sync"
+    "encoding/json"
+    "net/http"
+    "google.golang.org/grpc"
+    "github.com/go-kit/kit/endpoint"
+    "github.com/go-kit/kit/transport/grpc"
+    "github.com/go-kit/kit/transport/http"
+)
 
-// 商品实体
- type Product struct {
-     ID    string
-     Name  string
-     Price float64
-     Stock int
- }
+// 用户服务实体
+type User struct {
+    ID          string            `json:"id"`
+    Name        string            `json:"name"`
+    Email       string            `json:"email"`
+    Phone       string            `json:"phone"`
+    Role        UserRole          `json:"role"`
+    Status      UserStatus        `json:"status"`
+    Profile     UserProfile       `json:"profile"`
+    Preferences UserPreferences   `json:"preferences"`
+    CreatedAt   time.Time         `json:"created_at"`
+    UpdatedAt   time.Time         `json:"updated_at"`
+    LastLoginAt *time.Time        `json:"last_login_at"`
+}
 
-// 支付实体
- type Payment struct {
-     ID      string
-     OrderID string
-     Amount  float64
-     Status  PaymentStatus
- }
+type UserRole string
 
+const (
+    UserRoleAdmin    UserRole = "admin"
+    UserRoleManager  UserRole = "manager"
+    UserRoleEmployee UserRole = "employee"
+    UserRoleCustomer UserRole = "customer"
+)
+
+type UserStatus string
+
+const (
+    UserStatusActive   UserStatus = "active"
+    UserStatusInactive UserStatus = "inactive"
+    UserStatusSuspended UserStatus = "suspended"
+    UserStatusDeleted  UserStatus = "deleted"
+)
+
+type UserProfile struct {
+    Avatar      string `json:"avatar"`
+    Bio         string `json:"bio"`
+    Location    string `json:"location"`
+    Timezone    string `json:"timezone"`
+    Language    string `json:"language"`
+    DateOfBirth *time.Time `json:"date_of_birth"`
+}
+
+type UserPreferences struct {
+    Theme        string            `json:"theme"`
+    Notifications map[string]bool  `json:"notifications"`
+    Privacy      map[string]bool   `json:"privacy"`
+    Settings     map[string]string `json:"settings"`
+}
+
+// 订单服务实体
+type Order struct {
+    ID            string            `json:"id"`
+    UserID        string            `json:"user_id"`
+    Items         []OrderItem       `json:"items"`
+    Status        OrderStatus       `json:"status"`
+    TotalAmount   float64           `json:"total_amount"`
+    Currency      string            `json:"currency"`
+    Shipping      ShippingInfo      `json:"shipping"`
+    Billing       BillingInfo       `json:"billing"`
+    Payment       PaymentInfo       `json:"payment"`
+    Metadata      map[string]interface{} `json:"metadata"`
+    CreatedAt     time.Time         `json:"created_at"`
+    UpdatedAt     time.Time         `json:"updated_at"`
+    ShippedAt     *time.Time        `json:"shipped_at"`
+    DeliveredAt   *time.Time        `json:"delivered_at"`
+}
+
+type OrderItem struct {
+    ID          string  `json:"id"`
+    ProductID   string  `json:"product_id"`
+    ProductName string  `json:"product_name"`
+    Quantity    int     `json:"quantity"`
+    UnitPrice   float64 `json:"unit_price"`
+    TotalPrice  float64 `json:"total_price"`
+    SKU         string  `json:"sku"`
+    Variant     string  `json:"variant"`
+}
+
+type OrderStatus string
+
+const (
+    OrderStatusPending    OrderStatus = "pending"
+    OrderStatusConfirmed  OrderStatus = "confirmed"
+    OrderStatusProcessing OrderStatus = "processing"
+    OrderStatusShipped    OrderStatus = "shipped"
+    OrderStatusDelivered  OrderStatus = "delivered"
+    OrderStatusCancelled  OrderStatus = "cancelled"
+    OrderStatusRefunded   OrderStatus = "refunded"
+)
+
+type ShippingInfo struct {
+    Method      string    `json:"method"`
+    Address     Address   `json:"address"`
+    Tracking    string    `json:"tracking"`
+    EstimatedDelivery *time.Time `json:"estimated_delivery"`
+    ActualDelivery    *time.Time `json:"actual_delivery"`
+}
+
+type BillingInfo struct {
+    Address Address `json:"address"`
+    TaxID   string  `json:"tax_id"`
+}
+
+type PaymentInfo struct {
+    Method     PaymentMethod `json:"method"`
+    Status     PaymentStatus `json:"status"`
+    TransactionID string     `json:"transaction_id"`
+    Amount     float64       `json:"amount"`
+    Currency   string        `json:"currency"`
+    ProcessedAt *time.Time   `json:"processed_at"`
+}
+
+type Address struct {
+    Street     string `json:"street"`
+    City       string `json:"city"`
+    State      string `json:"state"`
+    PostalCode string `json:"postal_code"`
+    Country    string `json:"country"`
+}
+
+type PaymentMethod string
+
+const (
+    PaymentMethodCreditCard PaymentMethod = "credit_card"
+    PaymentMethodDebitCard  PaymentMethod = "debit_card"
+    PaymentMethodPayPal     PaymentMethod = "paypal"
+    PaymentMethodBankTransfer PaymentMethod = "bank_transfer"
+    PaymentMethodCrypto     PaymentMethod = "crypto"
+)
+
+type PaymentStatus string
+
+const (
+    PaymentStatusPending   PaymentStatus = "pending"
+    PaymentStatusProcessing PaymentStatus = "processing"
+    PaymentStatusCompleted PaymentStatus = "completed"
+    PaymentStatusFailed    PaymentStatus = "failed"
+    PaymentStatusRefunded  PaymentStatus = "refunded"
+)
+
+// 商品服务实体
+type Product struct {
+    ID            string            `json:"id"`
+    Name          string            `json:"name"`
+    Description   string            `json:"description"`
+    SKU           string            `json:"sku"`
+    Category      string            `json:"category"`
+    Brand         string            `json:"brand"`
+    Price         float64           `json:"price"`
+    Currency      string            `json:"currency"`
+    Stock         int               `json:"stock"`
+    MinStock      int               `json:"min_stock"`
+    MaxStock      int               `json:"max_stock"`
+    Weight        float64           `json:"weight"`
+    Dimensions    Dimensions        `json:"dimensions"`
+    Images        []string          `json:"images"`
+    Attributes    map[string]string `json:"attributes"`
+    Variants      []ProductVariant  `json:"variants"`
+    Status        ProductStatus     `json:"status"`
+    CreatedAt     time.Time         `json:"created_at"`
+    UpdatedAt     time.Time         `json:"updated_at"`
+}
+
+type Dimensions struct {
+    Length float64 `json:"length"`
+    Width  float64 `json:"width"`
+    Height float64 `json:"height"`
+    Unit   string  `json:"unit"`
+}
+
+type ProductVariant struct {
+    ID       string            `json:"id"`
+    Name     string            `json:"name"`
+    SKU      string            `json:"sku"`
+    Price    float64           `json:"price"`
+    Stock    int               `json:"stock"`
+    Attributes map[string]string `json:"attributes"`
+}
+
+type ProductStatus string
+
+const (
+    ProductStatusActive   ProductStatus = "active"
+    ProductStatusInactive ProductStatus = "inactive"
+    ProductStatusDiscontinued ProductStatus = "discontinued"
+    ProductStatusOutOfStock ProductStatus = "out_of_stock"
+)
+
+// 库存服务实体
+type Inventory struct {
+    ID            string            `json:"id"`
+    ProductID     string            `json:"product_id"`
+    SKU           string            `json:"sku"`
+    Location      string            `json:"location"`
+    Quantity      int               `json:"quantity"`
+    Reserved      int               `json:"reserved"`
+    Available     int               `json:"available"`
+    MinLevel      int               `json:"min_level"`
+    MaxLevel      int               `json:"max_level"`
+    ReorderPoint  int               `json:"reorder_point"`
+    ReorderQuantity int             `json:"reorder_quantity"`
+    Status        InventoryStatus   `json:"status"`
+    LastUpdated   time.Time         `json:"last_updated"`
+}
+
+type InventoryStatus string
+
+const (
+    InventoryStatusInStock    InventoryStatus = "in_stock"
+    InventoryStatusLowStock   InventoryStatus = "low_stock"
+    InventoryStatusOutOfStock InventoryStatus = "out_of_stock"
+    InventoryStatusBackorder  InventoryStatus = "backorder"
+)
+
+// 服务注册与发现实体
+type Service struct {
+    ID            string            `json:"id"`
+    Name          string            `json:"name"`
+    Version       string            `json:"version"`
+    Endpoint      string            `json:"endpoint"`
+    HealthCheck   string            `json:"health_check"`
+    Metadata      map[string]string `json:"metadata"`
+    Tags          []string          `json:"tags"`
+    Status        ServiceStatus     `json:"status"`
+    LastHeartbeat time.Time         `json:"last_heartbeat"`
+    RegisteredAt  time.Time         `json:"registered_at"`
+    UpdatedAt     time.Time         `json:"updated_at"`
+}
+
+type ServiceStatus string
+
+const (
+    ServiceStatusHealthy   ServiceStatus = "healthy"
+    ServiceStatusUnhealthy ServiceStatus = "unhealthy"
+    ServiceStatusUnknown   ServiceStatus = "unknown"
+)
+
+// 配置管理实体
+type Configuration struct {
+    ID          string            `json:"id"`
+    Service     string            `json:"service"`
+    Environment string            `json:"environment"`
+    Key         string            `json:"key"`
+    Value       interface{}       `json:"value"`
+    Type        ConfigType        `json:"type"`
+    Encrypted   bool              `json:"encrypted"`
+    Version     int               `json:"version"`
+    CreatedAt   time.Time         `json:"created_at"`
+    UpdatedAt   time.Time         `json:"updated_at"`
+}
+
+type ConfigType string
+
+const (
+    ConfigTypeString  ConfigType = "string"
+    ConfigTypeNumber  ConfigType = "number"
+    ConfigTypeBoolean ConfigType = "boolean"
+    ConfigTypeJSON    ConfigType = "json"
+    ConfigTypeYAML    ConfigType = "yaml"
+)
+
+// 服务间通信实体
+type ServiceCall struct {
+    ID            string            `json:"id"`
+    FromService   string            `json:"from_service"`
+    ToService     string            `json:"to_service"`
+    Method        string            `json:"method"`
+    Endpoint      string            `json:"endpoint"`
+    Request       interface{}       `json:"request"`
+    Response      interface{}       `json:"response"`
+    Status        CallStatus        `json:"status"`
+    Duration      time.Duration     `json:"duration"`
+    Error         string            `json:"error"`
+    Timestamp     time.Time         `json:"timestamp"`
+}
+
+type CallStatus string
+
+const (
+    CallStatusSuccess CallStatus = "success"
+    CallStatusFailed  CallStatus = "failed"
+    CallStatusTimeout CallStatus = "timeout"
+    CallStatusError   CallStatus = "error"
+)
+
+// 断路器实体
+type CircuitBreaker struct {
+    ID              string            `json:"id"`
+    Service         string            `json:"service"`
+    State           CircuitState      `json:"state"`
+    FailureCount    int               `json:"failure_count"`
+    SuccessCount    int               `json:"success_count"`
+    LastFailureTime *time.Time        `json:"last_failure_time"`
+    LastSuccessTime *time.Time        `json:"last_success_time"`
+    Config          CircuitConfig     `json:"config"`
+    Statistics      CircuitStatistics `json:"statistics"`
+}
+
+type CircuitState string
+
+const (
+    CircuitStateClosed   CircuitState = "closed"
+    CircuitStateOpen     CircuitState = "open"
+    CircuitStateHalfOpen CircuitState = "half_open"
+)
+
+type CircuitConfig struct {
+    FailureThreshold int           `json:"failure_threshold"`
+    SuccessThreshold int           `json:"success_threshold"`
+    Timeout          time.Duration `json:"timeout"`
+    MaxRequests      int           `json:"max_requests"`
+}
+
+type CircuitStatistics struct {
+    TotalRequests    int64     `json:"total_requests"`
+    SuccessfulRequests int64   `json:"successful_requests"`
+    FailedRequests   int64     `json:"failed_requests"`
+    TimeoutRequests  int64     `json:"timeout_requests"`
+    AverageResponseTime time.Duration `json:"average_response_time"`
+    LastResetTime    time.Time `json:"last_reset_time"`
+}
+
+// 服务网格实体
+type ServiceMesh struct {
+    ID            string            `json:"id"`
+    Name          string            `json:"name"`
+    Type          MeshType          `json:"type"`
+    Services      []string          `json:"services"`
+    Policies      []MeshPolicy      `json:"policies"`
+    Config        MeshConfig        `json:"config"`
+    Status        MeshStatus        `json:"status"`
+    Metrics       MeshMetrics       `json:"metrics"`
+}
+
+type MeshType string
+
+const (
+    MeshTypeIstio   MeshType = "istio"
+    MeshTypeLinkerd MeshType = "linkerd"
+    MeshTypeConsul  MeshType = "consul"
+)
+
+type MeshPolicy struct {
+    ID          string            `json:"id"`
+    Name        string            `json:"name"`
+    Type        PolicyType        `json:"type"`
+    Rules       []PolicyRule      `json:"rules"`
+    Targets     []string          `json:"targets"`
+    Status      PolicyStatus      `json:"status"`
+}
+
+type PolicyType string
+
+const (
+    PolicyTypeTraffic    PolicyType = "traffic"
+    PolicyTypeSecurity   PolicyType = "security"
+    PolicyTypeObservability PolicyType = "observability"
+)
+
+type PolicyRule struct {
+    ID          string                 `json:"id"`
+    Type        RuleType               `json:"type"`
+    Conditions  []RuleCondition        `json:"conditions"`
+    Actions     []RuleAction           `json:"actions"`
+    Parameters  map[string]interface{} `json:"parameters"`
+}
+
+type RuleType string
+
+const (
+    RuleTypeRouting    RuleType = "routing"
+    RuleTypeLoadBalance RuleType = "load_balance"
+    RuleTypeCircuitBreaker RuleType = "circuit_breaker"
+    RuleTypeRetry      RuleType = "retry"
+    RuleTypeTimeout    RuleType = "timeout"
+    RuleTypeRateLimit  RuleType = "rate_limit"
+)
+
+type RuleCondition struct {
+    Field    string      `json:"field"`
+    Operator string      `json:"operator"`
+    Value    interface{} `json:"value"`
+}
+
+type RuleAction struct {
+    Type       string                 `json:"type"`
+    Parameters map[string]interface{} `json:"parameters"`
+}
+
+type PolicyStatus string
+
+const (
+    PolicyStatusActive   PolicyStatus = "active"
+    PolicyStatusInactive PolicyStatus = "inactive"
+    PolicyStatusError    PolicyStatus = "error"
+)
+
+type MeshConfig struct {
+    SidecarProxy SidecarProxyConfig `json:"sidecar_proxy"`
+    ControlPlane ControlPlaneConfig `json:"control_plane"`
+    DataPlane    DataPlaneConfig    `json:"data_plane"`
+}
+
+type SidecarProxyConfig struct {
+    Image           string            `json:"image"`
+    Resources       ResourceRequirements `json:"resources"`
+    EnvoyConfig     map[string]interface{} `json:"envoy_config"`
+    LogLevel        string            `json:"log_level"`
+}
+
+type ControlPlaneConfig struct {
+    PilotConfig     map[string]interface{} `json:"pilot_config"`
+    CitadelConfig   map[string]interface{} `json:"citadel_config"`
+    GalleyConfig    map[string]interface{} `json:"galley_config"`
+}
+
+type DataPlaneConfig struct {
+    ProxyConfig     map[string]interface{} `json:"proxy_config"`
+    NetworkConfig   map[string]interface{} `json:"network_config"`
+    SecurityConfig  map[string]interface{} `json:"security_config"`
+}
+
+type MeshStatus string
+
+const (
+    MeshStatusHealthy   MeshStatus = "healthy"
+    MeshStatusDegraded  MeshStatus = "degraded"
+    MeshStatusUnhealthy MeshStatus = "unhealthy"
+)
+
+type MeshMetrics struct {
+    TotalServices     int     `json:"total_services"`
+    ConnectedServices int     `json:"connected_services"`
+    TotalPolicies     int     `json:"total_policies"`
+    ActivePolicies    int     `json:"active_policies"`
+    RequestRate       float64 `json:"request_rate"`
+    ErrorRate         float64 `json:"error_rate"`
+    LatencyP50        float64 `json:"latency_p50"`
+    LatencyP95        float64 `json:"latency_p95"`
+    LatencyP99        float64 `json:"latency_p99"`
+}
+
+// 领域服务接口
+type UserService interface {
+    CreateUser(ctx context.Context, user *User) error
+    GetUser(ctx context.Context, id string) (*User, error)
+    UpdateUser(ctx context.Context, user *User) error
+    DeleteUser(ctx context.Context, id string) error
+    GetUsersByRole(ctx context.Context, role UserRole) ([]*User, error)
+    AuthenticateUser(ctx context.Context, email, password string) (*User, error)
+    UpdateUserStatus(ctx context.Context, id string, status UserStatus) error
+}
+
+type OrderService interface {
+    CreateOrder(ctx context.Context, order *Order) error
+    GetOrder(ctx context.Context, id string) (*Order, error)
+    UpdateOrder(ctx context.Context, order *Order) error
+    CancelOrder(ctx context.Context, id string) error
+    GetOrdersByUser(ctx context.Context, userID string) ([]*Order, error)
+    UpdateOrderStatus(ctx context.Context, id string, status OrderStatus) error
+    ProcessOrder(ctx context.Context, orderID string) error
+}
+
+type ProductService interface {
+    CreateProduct(ctx context.Context, product *Product) error
+    GetProduct(ctx context.Context, id string) (*Product, error)
+    UpdateProduct(ctx context.Context, product *Product) error
+    DeleteProduct(ctx context.Context, id string) error
+    GetProductsByCategory(ctx context.Context, category string) ([]*Product, error)
+    SearchProducts(ctx context.Context, query string) ([]*Product, error)
+    UpdateProductStock(ctx context.Context, id string, quantity int) error
+}
+
+type InventoryService interface {
+    GetInventory(ctx context.Context, productID string) (*Inventory, error)
+    UpdateInventory(ctx context.Context, productID string, quantity int) error
+    ReserveInventory(ctx context.Context, productID string, quantity int) error
+    ReleaseInventory(ctx context.Context, productID string, quantity int) error
+    GetLowStockItems(ctx context.Context) ([]*Inventory, error)
+    ReorderProduct(ctx context.Context, productID string) error
+}
+
+type ServiceRegistry interface {
+    RegisterService(ctx context.Context, service *Service) error
+    DeregisterService(ctx context.Context, serviceID string) error
+    GetService(ctx context.Context, name string) (*Service, error)
+    ListServices(ctx context.Context, tags []string) ([]*Service, error)
+    HealthCheck(ctx context.Context, serviceID string) error
+    UpdateServiceStatus(ctx context.Context, serviceID string, status ServiceStatus) error
+}
+
+type ConfigurationService interface {
+    GetConfig(ctx context.Context, service, key string) (*Configuration, error)
+    SetConfig(ctx context.Context, config *Configuration) error
+    DeleteConfig(ctx context.Context, service, key string) error
+    ListConfigs(ctx context.Context, service string) ([]*Configuration, error)
+    WatchConfig(ctx context.Context, service, key string, handler ConfigChangeHandler) error
+}
+
+type ServiceDiscovery interface {
+    DiscoverService(ctx context.Context, name string) ([]*Service, error)
+    GetServiceEndpoints(ctx context.Context, name string) ([]string, error)
+    WatchService(ctx context.Context, name string, handler ServiceChangeHandler) error
+    GetServiceHealth(ctx context.Context, name string) (ServiceStatus, error)
+}
+
+// 微服务平台核心实现
+type MicroservicePlatform struct {
+    userService        UserService
+    orderService       OrderService
+    productService     ProductService
+    inventoryService   InventoryService
+    serviceRegistry    ServiceRegistry
+    configService      ConfigurationService
+    serviceDiscovery   ServiceDiscovery
+    circuitBreakers    map[string]*CircuitBreaker
+    serviceMesh        *ServiceMesh
+    eventBus           EventBus
+    logger             Logger
+    metrics            MetricsCollector
+    tracer             Tracer
+    mu                 sync.RWMutex
+}
+
+func (platform *MicroservicePlatform) ProcessOrder(ctx context.Context, orderRequest *CreateOrderRequest) (*Order, error) {
+    // 验证用户
+    user, err := platform.userService.GetUser(ctx, orderRequest.UserID)
+    if err != nil {
+        return nil, err
+    }
+    
+    if user.Status != UserStatusActive {
+        return nil, errors.New("user is not active")
+    }
+    
+    // 验证商品和库存
+    var totalAmount float64
+    var orderItems []OrderItem
+    
+    for _, item := range orderRequest.Items {
+        // 获取商品信息
+        product, err := platform.productService.GetProduct(ctx, item.ProductID)
+        if err != nil {
+            return nil, err
+        }
+        
+        // 检查库存
+        inventory, err := platform.inventoryService.GetInventory(ctx, item.ProductID)
+        if err != nil {
+            return nil, err
+        }
+        
+        if inventory.Available < item.Quantity {
+            return nil, errors.New("insufficient stock")
+        }
+        
+        // 计算总价
+        itemTotal := product.Price * float64(item.Quantity)
+        totalAmount += itemTotal
+        
+        orderItems = append(orderItems, OrderItem{
+            ID:          generateID(),
+            ProductID:   product.ID,
+            ProductName: product.Name,
+            Quantity:    item.Quantity,
+            UnitPrice:   product.Price,
+            TotalPrice:  itemTotal,
+            SKU:         product.SKU,
+        })
+    }
+    
+    // 创建订单
+    order := &Order{
+        ID:          generateID(),
+        UserID:      orderRequest.UserID,
+        Items:       orderItems,
+        Status:      OrderStatusPending,
+        TotalAmount: totalAmount,
+        Currency:    "USD",
+        Shipping:    orderRequest.Shipping,
+        Billing:     orderRequest.Billing,
+        CreatedAt:   time.Now(),
+        UpdatedAt:   time.Now(),
+    }
+    
+    if err := platform.orderService.CreateOrder(ctx, order); err != nil {
+        return nil, err
+    }
+    
+    // 预留库存
+    for _, item := range orderItems {
+        if err := platform.inventoryService.ReserveInventory(ctx, item.ProductID, item.Quantity); err != nil {
+            // 如果预留失败，取消订单
+            platform.orderService.CancelOrder(ctx, order.ID)
+            return nil, err
+        }
+    }
+    
+    // 发布订单创建事件
+    platform.eventBus.Publish(&OrderCreatedEvent{
+        OrderID:     order.ID,
+        UserID:      order.UserID,
+        TotalAmount: order.TotalAmount,
+        Items:       order.Items,
+        Timestamp:   time.Now(),
+    })
+    
+    return order, nil
+}
+
+func (platform *MicroservicePlatform) CallService(ctx context.Context, serviceName, method, endpoint string, request interface{}) (interface{}, error) {
+    // 获取服务实例
+    services, err := platform.serviceDiscovery.DiscoverService(ctx, serviceName)
+    if err != nil {
+        return nil, err
+    }
+    
+    if len(services) == 0 {
+        return nil, errors.New("service not found")
+    }
+    
+    // 负载均衡选择服务实例
+    service := platform.selectServiceInstance(services)
+    
+    // 检查断路器状态
+    circuitBreaker := platform.getCircuitBreaker(serviceName)
+    if circuitBreaker.State == CircuitStateOpen {
+        return nil, errors.New("circuit breaker is open")
+    }
+    
+    // 执行服务调用
+    startTime := time.Now()
+    response, err := platform.executeServiceCall(ctx, service, method, endpoint, request)
+    duration := time.Since(startTime)
+    
+    // 更新断路器状态
+    platform.updateCircuitBreaker(circuitBreaker, err == nil, duration)
+    
+    // 记录调用指标
+    platform.recordServiceCall(&ServiceCall{
+        ID:          generateID(),
+        FromService: "order-service",
+        ToService:   serviceName,
+        Method:      method,
+        Endpoint:    endpoint,
+        Request:     request,
+        Response:    response,
+        Status:      platform.getCallStatus(err),
+        Duration:    duration,
+        Error:       platform.getErrorMessage(err),
+        Timestamp:   time.Now(),
+    })
+    
+    return response, err
+}
+
+func (platform *MicroservicePlatform) executeServiceCall(ctx context.Context, service *Service, method, endpoint string, request interface{}) (interface{}, error) {
+    // 构建请求URL
+    url := service.Endpoint + endpoint
+    
+    // 序列化请求
+    requestBody, err := json.Marshal(request)
+    if err != nil {
+        return nil, err
+    }
+    
+    // 创建HTTP请求
+    req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(requestBody))
+    if err != nil {
+        return nil, err
+    }
+    
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("X-Service-Name", "order-service")
+    req.Header.Set("X-Request-ID", generateID())
+    
+    // 执行请求
+    client := &http.Client{
+        Timeout: 30 * time.Second,
+    }
+    
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+    
+    // 解析响应
+    var response interface{}
+    if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+        return nil, err
+    }
+    
+    if resp.StatusCode >= 400 {
+        return nil, errors.New("service call failed")
+    }
+    
+    return response, nil
+}
+
+func (platform *MicroservicePlatform) selectServiceInstance(services []*Service) *Service {
+    // 简单的轮询负载均衡
+    // 在实际应用中可以使用更复杂的算法
+    healthyServices := make([]*Service, 0)
+    for _, service := range services {
+        if service.Status == ServiceStatusHealthy {
+            healthyServices = append(healthyServices, service)
+        }
+    }
+    
+    if len(healthyServices) == 0 {
+        return services[0] // 如果没有健康服务，返回第一个
+    }
+    
+    return healthyServices[0] // 简化实现，实际应该使用负载均衡算法
+}
+
+func (platform *MicroservicePlatform) getCircuitBreaker(serviceName string) *CircuitBreaker {
+    platform.mu.RLock()
+    cb, exists := platform.circuitBreakers[serviceName]
+    platform.mu.RUnlock()
+    
+    if !exists {
+        platform.mu.Lock()
+        cb = &CircuitBreaker{
+            ID:     generateID(),
+            Service: serviceName,
+            State:  CircuitStateClosed,
+            Config: CircuitConfig{
+                FailureThreshold: 5,
+                SuccessThreshold: 3,
+                Timeout:          60 * time.Second,
+                MaxRequests:      10,
+            },
+            Statistics: CircuitStatistics{
+                LastResetTime: time.Now(),
+            },
+        }
+        platform.circuitBreakers[serviceName] = cb
+        platform.mu.Unlock()
+    }
+    
+    return cb
+}
+
+func (platform *MicroservicePlatform) updateCircuitBreaker(cb *CircuitBreaker, success bool, duration time.Duration) {
+    platform.mu.Lock()
+    defer platform.mu.Unlock()
+    
+    cb.Statistics.TotalRequests++
+    cb.Statistics.AverageResponseTime = (cb.Statistics.AverageResponseTime + duration) / 2
+    
+    if success {
+        cb.SuccessCount++
+        cb.LastSuccessTime = &[]time.Time{time.Now()}[0]
+        cb.Statistics.SuccessfulRequests++
+        
+        if cb.State == CircuitStateHalfOpen && cb.SuccessCount >= cb.Config.SuccessThreshold {
+            cb.State = CircuitStateClosed
+            cb.FailureCount = 0
+            cb.SuccessCount = 0
+        }
+    } else {
+        cb.FailureCount++
+        cb.LastFailureTime = &[]time.Time{time.Now()}[0]
+        cb.Statistics.FailedRequests++
+        
+        if cb.FailureCount >= cb.Config.FailureThreshold {
+            cb.State = CircuitStateOpen
+            cb.FailureCount = 0
+            cb.SuccessCount = 0
+        }
+    }
+}
+
+func (platform *MicroservicePlatform) getCallStatus(err error) CallStatus {
+    if err == nil {
+        return CallStatusSuccess
+    }
+    
+    if errors.Is(err, context.DeadlineExceeded) {
+        return CallStatusTimeout
+    }
+    
+    return CallStatusFailed
+}
+
+func (platform *MicroservicePlatform) getErrorMessage(err error) string {
+    if err == nil {
+        return ""
+    }
+    return err.Error()
+}
+
+func (platform *MicroservicePlatform) recordServiceCall(call *ServiceCall) {
+    // 记录服务调用指标
+    platform.metrics.RecordServiceCall(call)
+    
+    // 记录链路追踪
+    platform.tracer.RecordSpan(&Span{
+        TraceID:   call.ID,
+        SpanID:    generateID(),
+        Service:   call.FromService,
+        Operation: call.Method + " " + call.Endpoint,
+        StartTime: call.Timestamp,
+        Duration:  call.Duration,
+        Status:    call.Status,
+        Tags: map[string]string{
+            "service": call.ToService,
+            "method":  call.Method,
+            "endpoint": call.Endpoint,
+        },
+    })
+}
+
+// 请求和响应结构
+type CreateOrderRequest struct {
+    UserID  string        `json:"user_id"`
+    Items   []OrderItemRequest `json:"items"`
+    Shipping ShippingInfo `json:"shipping"`
+    Billing BillingInfo   `json:"billing"`
+}
+
+type OrderItemRequest struct {
+    ProductID string `json:"product_id"`
+    Quantity  int    `json:"quantity"`
+}
+
+type OrderCreatedEvent struct {
+    OrderID     string      `json:"order_id"`
+    UserID      string      `json:"user_id"`
+    TotalAmount float64     `json:"total_amount"`
+    Items       []OrderItem `json:"items"`
+    Timestamp   time.Time   `json:"timestamp"`
+}
+
+// 辅助类型
+type ConfigChangeHandler func(config *Configuration) error
+type ServiceChangeHandler func(services []*Service) error
+type EventBus interface {
+    Publish(event interface{}) error
+    Subscribe(eventType string, handler EventHandler) error
+}
+type EventHandler func(event interface{}) error
+type Logger interface {
+    Info(msg string, fields ...interface{})
+    Error(msg string, fields ...interface{})
+    Debug(msg string, fields ...interface{})
+}
+type MetricsCollector interface {
+    RecordServiceCall(call *ServiceCall)
+    RecordMetric(name string, value float64, tags map[string]string)
+}
+type Tracer interface {
+    RecordSpan(span *Span)
+    StartSpan(name string) *Span
+}
+type Span struct {
+    TraceID   string            `json:"trace_id"`
+    SpanID    string            `json:"span_id"`
+    Service   string            `json:"service"`
+    Operation string            `json:"operation"`
+    StartTime time.Time         `json:"start_time"`
+    Duration  time.Duration     `json:"duration"`
+    Status    CallStatus        `json:"status"`
+    Tags      map[string]string `json:"tags"`
+}
 ```
 
 ---
@@ -547,7 +1397,7 @@ orderCount.Inc()
 
 ```yaml
 
-# 2 2 2 2 2 2 2 .github/workflows/ci.yml
+# .github/workflows/ci.yml
 
 name: Go CI
 on:

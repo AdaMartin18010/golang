@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 rust redis
+﻿# rust redis
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 rust redis](#1-1-1-1-1-1-1-rust-redis)
+- [rust redis](#rust-redis)
 <!-- TOC END -->
 
 我将展示如何使用 Rust 和 tokio 与 Redis 进行交互的详细示例。我们将使用 `redis` crate 并展示各种功能。

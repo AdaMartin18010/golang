@@ -1,12 +1,12 @@
-# 1 1 1 1 1 1 1 rust Future
+# rust Future
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 rust Future](#1-1-1-1-1-1-1-rust-future)
-  - [1.1 `Future` Trait 定义](#future-trait-定义)
-    - [1.1.1 `Context` 和 `Poll`](#context-和-poll)
-    - [1.1.2 使用 `Future`](#使用-future)
-      - [1.1.2.1 示例：实现一个简单的 `Future`](#示例：实现一个简单的-future)
-    - [1.1.3 解释](#解释)
+- [rust Future](#rust-future)
+  - [1.1 `Future` Trait 定义](#11-future-trait-定义)
+    - [1.1.1 `Context` 和 `Poll`](#111-context-和-poll)
+    - [1.1.2 使用 `Future`](#112-使用-future)
+      - [1.1.2.1 示例：实现一个简单的 `Future`](#1121-示例实现一个简单的-future)
+    - [1.1.3 解释](#113-解释)
 <!-- TOC END -->
 
 在 Rust 中，`Future` 是一个核心的异步编程概念。

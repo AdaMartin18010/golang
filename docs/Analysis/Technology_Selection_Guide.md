@@ -979,26 +979,26 @@ func (ae *AESEncryptor) Decrypt(ciphertext []byte) ([]byte, error) {
 
 ```dockerfile
 
-# 2 2 2 2 2 2 2 多阶段构建
+# 多阶段构建
 
 FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-# 3 3 3 3 3 3 3 复制依赖文件
+# 复制依赖文件
 
 COPY go.mod go.sum ./
 RUN go mod download
 
-# 4 4 4 4 4 4 4 复制源代码
+# 复制源代码
 
 COPY . .
 
-# 5 5 5 5 5 5 5 构建应用
+# 构建应用
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-# 6 6 6 6 6 6 6 运行阶段
+# 运行阶段
 
 FROM alpine:latest
 
@@ -1006,15 +1006,15 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
-# 7 7 7 7 7 7 7 复制二进制文件
+# 复制二进制文件
 
 COPY --from=builder /app/main .
 
-# 8 8 8 8 8 8 8 暴露端口
+# 暴露端口
 
 EXPOSE 8080
 
-# 9 9 9 9 9 9 9 运行应用
+# 运行应用
 
 CMD ["./main"]
 
@@ -1024,7 +1024,7 @@ CMD ["./main"]
 
 ```yaml
 
-# 10 10 10 10 10 10 10 部署配置
+# 部署配置
 
 apiVersion: apps/v1
 kind: Deployment

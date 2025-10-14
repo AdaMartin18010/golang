@@ -1,15 +1,15 @@
-# 1 1 1 1 1 1 1 Rust 语言的所有权（Ownership）、移动（Move）和生命周期（Lifetime）模型是其核心概念，共同确保了内存安全和并发安全，而无需垃圾收集器
+# Rust 语言的所有权（Ownership）、移动（Move）和生命周期（Lifetime）模型是其核心概念，共同确保了内存安全和并发安全，而无需垃圾收集器
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 语言的所有权（Ownership）、移动（Move）和生命周期（Lifetime）模型是其核心概念，共同确保了内存安全和并发安全，而无需垃圾收集器](#1-1-1-1-1-1-1-rust-语言的所有权（ownership）、移动（move）和生命周期（lifetime）模型是其核心概念，共同确保了内存安全和并发安全，而无需垃圾收集器)
-  - [1.1 所有权（Ownership）](#所有权（ownership）)
-  - [1.2 移动（Move）](#移动（move）)
-  - [1.3 生命周期（Lifetime）](#生命周期（lifetime）)
-  - [1.4 Deref Trait](#deref-trait)
-  - [1.5 Drop Trait](#drop-trait)
-  - [1.6 Clone Trait](#clone-trait)
-  - [1.7 Copy Trait](#copy-trait)
-  - [1.8 解释和联系](#解释和联系)
+- [Rust 语言的所有权（Ownership）、移动（Move）和生命周期（Lifetime）模型是其核心概念，共同确保了内存安全和并发安全，而无需垃圾收集器](#rust-语言的所有权ownership移动move和生命周期lifetime模型是其核心概念共同确保了内存安全和并发安全而无需垃圾收集器)
+  - [1.1 所有权（Ownership）](#11-所有权ownership)
+  - [1.2 移动（Move）](#12-移动move)
+  - [1.3 生命周期（Lifetime）](#13-生命周期lifetime)
+  - [1.4 Deref Trait](#14-deref-trait)
+  - [1.5 Drop Trait](#15-drop-trait)
+  - [1.6 Clone Trait](#16-clone-trait)
+  - [1.7 Copy Trait](#17-copy-trait)
+  - [1.8 解释和联系](#18-解释和联系)
 <!-- TOC END -->
 
 ## 1.1 所有权（Ownership）

@@ -1,11 +1,4 @@
-# 1 1 1 1 1 1 1 基于 Rust 2024 + Generator 的 gRPC 流式处理与多数据库集成项目
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 基于 Rust 2024 + Generator 的 gRPC 流式处理与多数据库集成项目](#1-1-1-1-1-1-1-基于-rust-2024-+-generator-的-grpc-流式处理与多数据库集成项目)
-- [2 2 2 2 2 2 2 PostgreSQL](#2-2-2-2-2-2-2-postgresql)
-- [3 3 3 3 3 3 3 Redis](#3-3-3-3-3-3-3-redis)
-- [4 4 4 4 4 4 4 Jaeger](#4-4-4-4-4-4-4-jaeger)
-<!-- TOC END -->
+# 基于 Rust 2024 + Generator 的 gRPC 流式处理与多数据库集成项目
 
 我将展示如何使用 Rust、tokio 和 gRPC 实现一个完整的分布式微服务系统示例。
 我们将使用 `tonic` 作为 gRPC 框架。
@@ -874,15 +867,15 @@ metrics:
 
 ```bash
 
-# 2 2 2 2 2 2 2 PostgreSQL
+# PostgreSQL
 
 docker run -d --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 postgres
 
-# 3 3 3 3 3 3 3 Redis
+# Redis
 
 docker run -d --name redis -p 6379:6379 redis
 
-# 4 4 4 4 4 4 4 Jaeger
+# Jaeger
 
 docker run -d --name jaeger -p 16686:16686 -p 6831:6831/udp jaegertracing/all-in-one
 

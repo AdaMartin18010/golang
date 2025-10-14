@@ -1,12 +1,12 @@
-# 1 1 1 1 1 1 1 如何创建递归的 trait
+# 如何创建递归的 trait
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 如何创建递归的 trait](#1-1-1-1-1-1-1-如何创建递归的-trait)
-  - [1.1 Rust 中的 trait 有哪些相关的限制](#rust-中的-trait-有哪些相关的限制)
-  - [1.2 Trait 与 Struct 和 Enum 的对比](#trait-与-struct-和-enum-的对比)
-    - [1.2.1 Trait 与 Struct 的对比](#trait-与-struct-的对比)
-    - [1.2.2 Trait 与 Enum 的对比](#trait-与-enum-的对比)
-    - [1.2.3 **总结**](#**总结**)
+- [如何创建递归的 trait](#如何创建递归的-trait)
+  - [1.1 Rust 中的 trait 有哪些相关的限制](#11-rust-中的-trait-有哪些相关的限制)
+  - [1.2 Trait 与 Struct 和 Enum 的对比](#12-trait-与-struct-和-enum-的对比)
+    - [1.2.1 Trait 与 Struct 的对比](#121-trait-与-struct-的对比)
+    - [1.2.2 Trait 与 Enum 的对比](#122-trait-与-enum-的对比)
+    - [1.2.3 **总结**](#123-总结)
 <!-- TOC END -->
 
 在 Rust 中，创建递归的 trait 通常涉及到定义一个 trait，其中的方法可以递归地调用自身或其他方法。

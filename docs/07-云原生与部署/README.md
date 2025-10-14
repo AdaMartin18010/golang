@@ -1,13 +1,3 @@
----
-title: Go与云原生部署
-slug: go-cloud-native-deployment
-topic: cloud-native
-level: overview
-goVersion: 1.21+
-lastReviewed: 2025-01-15
-owner: core-team
-status: active
----
 
 # Go与云原生部署
 

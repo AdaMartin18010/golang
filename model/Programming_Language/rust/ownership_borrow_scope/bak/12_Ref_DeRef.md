@@ -1,11 +1,11 @@
-# 1 1 1 1 1 1 1 Rust 中的 ref 和 deref
+# Rust 中的 ref 和 deref
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 中的 ref 和 deref](#1-1-1-1-1-1-1-rust-中的-ref-和-deref)
-  - [1.1 ref (借用)](#ref-借用)
-  - [1.2 Deref (解引用)](#deref-解引用)
-  - [1.3 ref mut (可变借用)](#ref-mut-可变借用)
-  - [1.4 解释和联系](#解释和联系)
+- [Rust 中的 ref 和 deref](#rust-中的-ref-和-deref)
+  - [1.1 ref (借用)](#11-ref-借用)
+  - [1.2 Deref (解引用)](#12-deref-解引用)
+  - [1.3 ref mut (可变借用)](#13-ref-mut-可变借用)
+  - [1.4 解释和联系](#14-解释和联系)
 <!-- TOC END -->
 
 在 Rust 中，`ref` 和 `deref` 是两个与借用和解引用相关的概念，

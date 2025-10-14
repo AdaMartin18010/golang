@@ -1,34 +1,4 @@
-# 1 1 1 1 1 1 1 WebAssembly: A Comprehensive Formal and Critical Analysis
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 WebAssembly: A Comprehensive Formal and Critical Analysis](#1-1-1-1-1-1-1-webassembly-a-comprehensive-formal-and-critical-analysis)
-  - [1.1 目录](#目录)
-  - [1.2 引言](#引言)
-  - [1.3 形式化分析：元模型与元理论](#形式化分析：元模型与元理论)
-    - [1.3.1 元模型 → 模型：Wasm虚拟机抽象](#元模型-→-模型：wasm虚拟机抽象)
-    - [1.3.2 元理论 → 理论：Wasm 的核心保证](#元理论-→-理论：wasm-的核心保证)
-  - [1.4 核心机制的形式化分析](#核心机制的形式化分析)
-    - [1.4.1 1. 控制流 (Control Flow)](#1-控制流-control-flow)
-    - [1.4.2 2. 数据流 (Data Flow)](#2-数据流-data-flow)
-    - [1.4.3 3. 执行流 (Execution Flow)](#3-执行流-execution-flow)
-    - [1.4.4 4. 表示 (Representation)](#4-表示-representation)
-  - [1.5 技术规范与技术栈](#技术规范与技术栈)
-    - [1.5.1 核心规范 (Core Specification)](#核心规范-core-specification)
-    - [1.5.2 JavaScript API](#javascript-api)
-    - [1.5.3 WebAssembly System Interface (WASI)](#webassembly-system-interface-wasi)
-    - [1.5.4 未来提案 (Future Proposals)](#未来提案-future-proposals)
-  - [1.6 执行环境](#执行环境)
-  - [1.7 语言互操作性与等价关系](#语言互操作性与等价关系)
-  - [1.8 应用场景](#应用场景)
-    - [1.8.1 Web 应用](#web-应用)
-    - [1.8.2 非 Web 应用](#非-web-应用)
-  - [1.9 批判性分析](#批判性分析)
-    - [1.9.1 优势 (Strengths)](#优势-strengths)
-    - [1.9.2 劣势与挑战 (Weaknesses & Challenges)](#劣势与挑战-weaknesses-&-challenges)
-    - [1.9.3 发展趋势](#发展趋势)
-  - [1.10 结论](#结论)
-  - [1.11 思维导图](#思维导图)
-<!-- TOC END -->
+#  WebAssembly: A Comprehensive Formal and Critical Analysis
 
 ## 1.1 目录
 

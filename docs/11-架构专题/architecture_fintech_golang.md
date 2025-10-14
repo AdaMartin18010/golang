@@ -269,48 +269,439 @@ sequenceDiagram
 ### 3.4 Golang 领域模型代码示例
 
 ```go
+package fintech
+
+import (
+    "context"
+    "time"
+    "errors"
+    "sync"
+    "math/big"
+    "crypto/rand"
+)
+
 // 用户实体
 type User struct {
-    ID     string
-    Name   string
-    Role   string
-    Status string
+    ID          string            `json:"id"`
+    Name        string            `json:"name"`
+    Email       string            `json:"email"`
+    Phone       string            `json:"phone"`
+    Role        UserRole          `json:"role"`
+    Status      UserStatus        `json:"status"`
+    KYCStatus   KYCStatus         `json:"kyc_status"`
+    Accounts    []string          `json:"accounts"`
+    CreatedAt   time.Time         `json:"created_at"`
+    UpdatedAt   time.Time         `json:"updated_at"`
+    LastLoginAt time.Time         `json:"last_login_at"`
 }
+
+type UserRole string
+
+const (
+    UserRoleCustomer UserRole = "customer"
+    UserRoleMerchant UserRole = "merchant"
+    UserRoleAdmin    UserRole = "admin"
+    UserRoleSupport  UserRole = "support"
+)
+
+type UserStatus string
+
+const (
+    UserStatusActive   UserStatus = "active"
+    UserStatusInactive UserStatus = "inactive"
+    UserStatusSuspended UserStatus = "suspended"
+    UserStatusBlocked  UserStatus = "blocked"
+)
+
+type KYCStatus string
+
+const (
+    KYCStatusPending   KYCStatus = "pending"
+    KYCStatusVerified  KYCStatus = "verified"
+    KYCStatusRejected  KYCStatus = "rejected"
+    KYCStatusExpired   KYCStatus = "expired"
+)
+
 // 账户实体
 type Account struct {
-    ID     string
-    User   string
-    Type   string
-    Status string
+    ID            string        `json:"id"`
+    UserID        string        `json:"user_id"`
+    Type          AccountType   `json:"type"`
+    Currency      string        `json:"currency"`
+    Balance       *big.Float    `json:"balance"`
+    AvailableBalance *big.Float `json:"available_balance"`
+    FrozenBalance *big.Float    `json:"frozen_balance"`
+    Status        AccountStatus `json:"status"`
+    CreatedAt     time.Time     `json:"created_at"`
+    UpdatedAt     time.Time     `json:"updated_at"`
 }
+
+type AccountType string
+
+const (
+    AccountTypeSavings    AccountType = "savings"
+    AccountTypeCurrent    AccountType = "current"
+    AccountTypeInvestment AccountType = "investment"
+    AccountTypeCredit     AccountType = "credit"
+)
+
+type AccountStatus string
+
+const (
+    AccountStatusActive   AccountStatus = "active"
+    AccountStatusInactive AccountStatus = "inactive"
+    AccountStatusFrozen   AccountStatus = "frozen"
+    AccountStatusClosed   AccountStatus = "closed"
+)
+
 // 支付实体
 type Payment struct {
-    ID      string
-    Account string
-    Amount  float64
-    Time    time.Time
+    ID            string        `json:"id"`
+    AccountID     string        `json:"account_id"`
+    UserID        string        `json:"user_id"`
+    Amount        *big.Float    `json:"amount"`
+    Currency      string        `json:"currency"`
+    Type          PaymentType   `json:"type"`
+    Status        PaymentStatus `json:"status"`
+    Method        PaymentMethod `json:"method"`
+    Reference     string        `json:"reference"`
+    Description   string        `json:"description"`
+    Metadata      map[string]interface{} `json:"metadata"`
+    CreatedAt     time.Time     `json:"created_at"`
+    UpdatedAt     time.Time     `json:"updated_at"`
+    ProcessedAt   *time.Time    `json:"processed_at"`
+    FailedAt      *time.Time    `json:"failed_at"`
 }
-// 清算实体
-type Clearing struct {
-    ID      string
-    Payment string
-    Status  string
-    Time    time.Time
+
+type PaymentType string
+
+const (
+    PaymentTypeTransfer   PaymentType = "transfer"
+    PaymentTypeDeposit    PaymentType = "deposit"
+    PaymentTypeWithdrawal PaymentType = "withdrawal"
+    PaymentTypeRefund     PaymentType = "refund"
+    PaymentTypeFee        PaymentType = "fee"
+)
+
+type PaymentStatus string
+
+const (
+    PaymentStatusPending   PaymentStatus = "pending"
+    PaymentStatusProcessing PaymentStatus = "processing"
+    PaymentStatusCompleted PaymentStatus = "completed"
+    PaymentStatusFailed    PaymentStatus = "failed"
+    PaymentStatusCancelled PaymentStatus = "cancelled"
+    PaymentStatusRefunded  PaymentStatus = "refunded"
+)
+
+type PaymentMethod string
+
+const (
+    PaymentMethodCard     PaymentMethod = "card"
+    PaymentMethodBank     PaymentMethod = "bank"
+    PaymentMethodWallet   PaymentMethod = "wallet"
+    PaymentMethodCrypto   PaymentMethod = "crypto"
+    PaymentMethodCash     PaymentMethod = "cash"
+)
+
+// 交易实体
+type Transaction struct {
+    ID              string            `json:"id"`
+    PaymentID       string            `json:"payment_id"`
+    AccountID       string            `json:"account_id"`
+    UserID          string            `json:"user_id"`
+    Amount          *big.Float        `json:"amount"`
+    Currency        string            `json:"currency"`
+    Type            TransactionType   `json:"type"`
+    Status          TransactionStatus `json:"status"`
+    Reference       string            `json:"reference"`
+    Description     string            `json:"description"`
+    Fee             *big.Float        `json:"fee"`
+    ExchangeRate    *big.Float        `json:"exchange_rate"`
+    Metadata        map[string]interface{} `json:"metadata"`
+    CreatedAt       time.Time         `json:"created_at"`
+    UpdatedAt       time.Time         `json:"updated_at"`
+    ProcessedAt     *time.Time        `json:"processed_at"`
 }
+
+type TransactionType string
+
+const (
+    TransactionTypeDebit  TransactionType = "debit"
+    TransactionTypeCredit TransactionType = "credit"
+)
+
+type TransactionStatus string
+
+const (
+    TransactionStatusPending   TransactionStatus = "pending"
+    TransactionStatusCompleted TransactionStatus = "completed"
+    TransactionStatusFailed    TransactionStatus = "failed"
+    TransactionStatusReversed  TransactionStatus = "reversed"
+)
+
 // 风控实体
-type Risk struct {
-    ID     string
-    Type   string
-    Rule   string
-    Status string
+type RiskAssessment struct {
+    ID              string            `json:"id"`
+    UserID          string            `json:"user_id"`
+    PaymentID       string            `json:"payment_id"`
+    RiskScore       float64           `json:"risk_score"`
+    RiskLevel       RiskLevel         `json:"risk_level"`
+    Factors         []RiskFactor      `json:"factors"`
+    Decision        RiskDecision      `json:"decision"`
+    Reason          string            `json:"reason"`
+    CreatedAt       time.Time         `json:"created_at"`
+    UpdatedAt       time.Time         `json:"updated_at"`
 }
+
+type RiskLevel string
+
+const (
+    RiskLevelLow      RiskLevel = "low"
+    RiskLevelMedium   RiskLevel = "medium"
+    RiskLevelHigh     RiskLevel = "high"
+    RiskLevelCritical RiskLevel = "critical"
+)
+
+type RiskFactor struct {
+    Type        string  `json:"type"`
+    Score       float64 `json:"score"`
+    Weight      float64 `json:"weight"`
+    Description string  `json:"description"`
+}
+
+type RiskDecision string
+
+const (
+    RiskDecisionApprove  RiskDecision = "approve"
+    RiskDecisionReview   RiskDecision = "review"
+    RiskDecisionReject   RiskDecision = "reject"
+    RiskDecisionBlock    RiskDecision = "block"
+)
+
 // 合规实体
 type Compliance struct {
-    ID     string
-    Type   string
-    Rule   string
-    Status string
+    ID            string              `json:"id"`
+    UserID        string              `json:"user_id"`
+    PaymentID     string              `json:"payment_id"`
+    Type          ComplianceType      `json:"type"`
+    Status        ComplianceStatus    `json:"status"`
+    Rules         []ComplianceRule    `json:"rules"`
+    Violations    []ComplianceViolation `json:"violations"`
+    CreatedAt     time.Time           `json:"created_at"`
+    UpdatedAt     time.Time           `json:"updated_at"`
 }
+
+type ComplianceType string
+
+const (
+    ComplianceTypeAML      ComplianceType = "aml"
+    ComplianceTypeKYC      ComplianceType = "kyc"
+    ComplianceTypeSanctions ComplianceType = "sanctions"
+    ComplianceTypeFraud    ComplianceType = "fraud"
+)
+
+type ComplianceStatus string
+
+const (
+    ComplianceStatusPassed   ComplianceStatus = "passed"
+    ComplianceStatusFailed   ComplianceStatus = "failed"
+    ComplianceStatusPending  ComplianceStatus = "pending"
+    ComplianceStatusReview   ComplianceStatus = "review"
+)
+
+type ComplianceRule struct {
+    ID          string `json:"id"`
+    Name        string `json:"name"`
+    Description string `json:"description"`
+    Status      string `json:"status"`
+}
+
+type ComplianceViolation struct {
+    RuleID      string `json:"rule_id"`
+    Description string `json:"description"`
+    Severity    string `json:"severity"`
+}
+
+// 清算实体
+type Clearing struct {
+    ID            string          `json:"id"`
+    PaymentID     string          `json:"payment_id"`
+    TransactionID string          `json:"transaction_id"`
+    Status        ClearingStatus  `json:"status"`
+    Amount        *big.Float      `json:"amount"`
+    Currency      string          `json:"currency"`
+    ExchangeRate  *big.Float      `json:"exchange_rate"`
+    Fee           *big.Float      `json:"fee"`
+    SettlementDate *time.Time     `json:"settlement_date"`
+    CreatedAt     time.Time       `json:"created_at"`
+    UpdatedAt     time.Time       `json:"updated_at"`
+}
+
+type ClearingStatus string
+
+const (
+    ClearingStatusPending   ClearingStatus = "pending"
+    ClearingStatusProcessing ClearingStatus = "processing"
+    ClearingStatusCompleted ClearingStatus = "completed"
+    ClearingStatusFailed    ClearingStatus = "failed"
+    ClearingStatusReversed  ClearingStatus = "reversed"
+)
+
+// 领域服务接口
+type PaymentService interface {
+    CreatePayment(ctx context.Context, payment *Payment) error
+    ProcessPayment(ctx context.Context, paymentID string) error
+    GetPayment(ctx context.Context, id string) (*Payment, error)
+    UpdatePaymentStatus(ctx context.Context, id string, status PaymentStatus) error
+    RefundPayment(ctx context.Context, paymentID string, amount *big.Float) error
+}
+
+type AccountService interface {
+    CreateAccount(ctx context.Context, account *Account) error
+    GetAccount(ctx context.Context, id string) (*Account, error)
+    UpdateBalance(ctx context.Context, accountID string, amount *big.Float, transactionType TransactionType) error
+    FreezeAccount(ctx context.Context, accountID string) error
+    UnfreezeAccount(ctx context.Context, accountID string) error
+}
+
+type RiskService interface {
+    AssessRisk(ctx context.Context, userID string, payment *Payment) (*RiskAssessment, error)
+    GetRiskScore(ctx context.Context, userID string) (float64, error)
+    UpdateRiskRules(ctx context.Context, rules []RiskRule) error
+    GetRiskHistory(ctx context.Context, userID string) ([]*RiskAssessment, error)
+}
+
+type ComplianceService interface {
+    CheckCompliance(ctx context.Context, userID string, payment *Payment) (*Compliance, error)
+    VerifyKYC(ctx context.Context, userID string, documents []KYCDocument) error
+    CheckSanctions(ctx context.Context, userID string) (bool, error)
+    GetComplianceStatus(ctx context.Context, userID string) (*Compliance, error)
+}
+
+type ClearingService interface {
+    ProcessClearing(ctx context.Context, paymentID string) error
+    SettlePayment(ctx context.Context, clearingID string) error
+    GetClearingStatus(ctx context.Context, paymentID string) (*Clearing, error)
+    ReverseClearing(ctx context.Context, clearingID string) error
+}
+
+// 支付处理服务实现
+type PaymentProcessor struct {
+    accountService  AccountService
+    riskService     RiskService
+    complianceService ComplianceService
+    clearingService ClearingService
+    eventBus        EventBus
+    logger          Logger
+}
+
+func (pp *PaymentProcessor) ProcessPayment(ctx context.Context, paymentID string) error {
+    // 获取支付信息
+    payment, err := pp.getPayment(ctx, paymentID)
+    if err != nil {
+        return err
+    }
+    
+    // 更新状态为处理中
+    payment.Status = PaymentStatusProcessing
+    if err := pp.updatePayment(ctx, payment); err != nil {
+        return err
+    }
+    
+    // 风控评估
+    riskAssessment, err := pp.riskService.AssessRisk(ctx, payment.UserID, payment)
+    if err != nil {
+        return err
+    }
+    
+    if riskAssessment.Decision == RiskDecisionReject || riskAssessment.Decision == RiskDecisionBlock {
+        payment.Status = PaymentStatusFailed
+        pp.updatePayment(ctx, payment)
+        return errors.New("payment rejected by risk assessment")
+    }
+    
+    // 合规检查
+    compliance, err := pp.complianceService.CheckCompliance(ctx, payment.UserID, payment)
+    if err != nil {
+        return err
+    }
+    
+    if compliance.Status == ComplianceStatusFailed {
+        payment.Status = PaymentStatusFailed
+        pp.updatePayment(ctx, payment)
+        return errors.New("payment failed compliance check")
+    }
+    
+    // 账户余额检查
+    account, err := pp.accountService.GetAccount(ctx, payment.AccountID)
+    if err != nil {
+        return err
+    }
+    
+    if account.AvailableBalance.Cmp(payment.Amount) < 0 {
+        payment.Status = PaymentStatusFailed
+        pp.updatePayment(ctx, payment)
+        return errors.New("insufficient balance")
+    }
+    
+    // 执行支付
+    if err := pp.executePayment(ctx, payment); err != nil {
+        payment.Status = PaymentStatusFailed
+        pp.updatePayment(ctx, payment)
+        return err
+    }
+    
+    // 更新状态为完成
+    payment.Status = PaymentStatusCompleted
+    now := time.Now()
+    payment.ProcessedAt = &now
+    if err := pp.updatePayment(ctx, payment); err != nil {
+        return err
+    }
+    
+    // 触发清算
+    go pp.clearingService.ProcessClearing(context.Background(), paymentID)
+    
+    // 发布事件
+    pp.eventBus.Publish(&PaymentCompletedEvent{
+        PaymentID: paymentID,
+        UserID:    payment.UserID,
+        Amount:    payment.Amount,
+        Timestamp: time.Now(),
+    })
+    
+    return nil
+}
+
+func (pp *PaymentProcessor) executePayment(ctx context.Context, payment *Payment) error {
+    // 扣除账户余额
+    if err := pp.accountService.UpdateBalance(ctx, payment.AccountID, payment.Amount, TransactionTypeDebit); err != nil {
+        return err
+    }
+    
+    // 创建交易记录
+    transaction := &Transaction{
+        ID:          generateID(),
+        PaymentID:   payment.ID,
+        AccountID:   payment.AccountID,
+        UserID:      payment.UserID,
+        Amount:      payment.Amount,
+        Currency:    payment.Currency,
+        Type:        TransactionTypeDebit,
+        Status:      TransactionStatusCompleted,
+        Reference:   payment.Reference,
+        Description: payment.Description,
+        CreatedAt:   time.Now(),
+        UpdatedAt:   time.Now(),
+    }
+    
+    now := time.Now()
+    transaction.ProcessedAt = &now
+    
+    return pp.createTransaction(ctx, transaction)
+}
+
 // 交易实体
 type Transaction struct {
     ID      string

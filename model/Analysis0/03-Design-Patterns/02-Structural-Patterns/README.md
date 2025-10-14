@@ -2,18 +2,43 @@
 
 ## 目录
 
-1. [概述](#概述)
-2. [形式化定义](#形式化定义)
-3. [适配器模式 (Adapter)](#适配器模式-adapter)
-4. [桥接模式 (Bridge)](#桥接模式-bridge)
-5. [组合模式 (Composite)](#组合模式-composite)
-6. [装饰器模式 (Decorator)](#装饰器模式-decorator)
-7. [外观模式 (Facade)](#外观模式-facade)
-8. [享元模式 (Flyweight)](#享元模式-flyweight)
-9. [代理模式 (Proxy)](#代理模式-proxy)
-10. [性能分析与优化](#性能分析与优化)
-11. [最佳实践](#最佳实践)
-12. [参考资料](#参考资料)
+- [Golang 结构型设计模式分析](#golang-结构型设计模式分析)
+  - [目录](#目录)
+  - [概述](#概述)
+    - [核心概念](#核心概念)
+  - [形式化定义](#形式化定义)
+    - [结构型模式的数学表示](#结构型模式的数学表示)
+    - [模式分类的数学表示](#模式分类的数学表示)
+  - [适配器模式 (Adapter)](#适配器模式-adapter)
+    - [形式化定义1](#形式化定义1)
+    - [Golang 实现](#golang-实现)
+    - [性能分析](#性能分析)
+  - [桥接模式 (Bridge)](#桥接模式-bridge)
+    - [形式化定义2](#形式化定义2)
+    - [Golang 实现2](#golang-实现2)
+  - [组合模式 (Composite)](#组合模式-composite)
+    - [形式化定义3](#形式化定义3)
+    - [Golang 实现3](#golang-实现3)
+  - [装饰器模式 (Decorator)](#装饰器模式-decorator)
+    - [形式化定义4](#形式化定义4)
+    - [Golang 实现4](#golang-实现4)
+  - [外观模式 (Facade)](#外观模式-facade)
+    - [形式化定义5](#形式化定义5)
+    - [Golang 实现5](#golang-实现5)
+  - [享元模式 (Flyweight)](#享元模式-flyweight)
+    - [形式化定义6](#形式化定义6)
+    - [Golang 实现6](#golang-实现6)
+  - [代理模式 (Proxy)](#代理模式-proxy)
+    - [形式化定义7](#形式化定义7)
+    - [Golang 实现7](#golang-实现7)
+  - [性能分析与优化](#性能分析与优化)
+    - [性能对比](#性能对比)
+    - [优化建议](#优化建议)
+  - [最佳实践](#最佳实践)
+    - [1. 选择原则](#1-选择原则)
+    - [2. 实现规范](#2-实现规范)
+    - [3. 测试策略](#3-测试策略)
+  - [参考资料](#参考资料)
 
 ## 概述
 
@@ -59,7 +84,7 @@ $$SP = \{Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy\}$$
 
 ## 适配器模式 (Adapter)
 
-### 形式化定义
+### 形式化定义1
 
 **定义 2.1** (适配器模式): 适配器模式将一个类的接口转换成客户期望的另一个接口，使不兼容的接口可以一起工作。
 
@@ -140,7 +165,7 @@ func ExampleAdapter() {
 
 ## 桥接模式 (Bridge)
 
-### 形式化定义
+### 形式化定义2
 
 **定义 3.1** (桥接模式): 桥接模式将抽象部分与实现部分分离，使它们都可以独立地变化。
 
@@ -156,7 +181,7 @@ $$Bridge: Abstraction \times Implementation \rightarrow System$$
 **定理 3.1** (桥接的独立性): 桥接模式确保抽象和实现的独立性：
 $$\forall a \in Abstraction, \forall i \in Implementation: Bridge(a, i) \in System$$
 
-### Golang 实现
+### Golang 实现2
 
 ```go
 package bridge
@@ -237,7 +262,7 @@ func ExampleBridge() {
 
 ## 组合模式 (Composite)
 
-### 形式化定义
+### 形式化定义3
 
 **定义 4.1** (组合模式): 组合模式将对象组合成树形结构以表示"部分-整体"的层次结构，使得用户对单个对象和组合对象的使用具有一致性。
 
@@ -249,7 +274,7 @@ $$Composite: Tree(Component) \rightarrow Component$$
 **定理 4.1** (组合的一致性): 组合模式确保叶子节点和组合节点的一致性：
 $$\forall c \in Component: Operation(c) \text{ is defined}$$
 
-### Golang 实现
+### Golang 实现3
 
 ```go
 package composite
@@ -357,7 +382,7 @@ func ExampleComposite() {
 
 ## 装饰器模式 (Decorator)
 
-### 形式化定义
+### 形式化定义4
 
 **定义 5.1** (装饰器模式): 装饰器模式动态地给对象添加额外的职责，而不改变其接口。
 
@@ -369,7 +394,7 @@ $$Decorator: Component \times Behavior \rightarrow Component$$
 **定理 5.1** (装饰器的可组合性): 装饰器支持行为的组合：
 $$\forall c \in Component, \forall b_1, b_2 \in Behavior: Decorator(Decorator(c, b_1), b_2) = Decorator(c, b_1 \circ b_2)$$
 
-### Golang 实现
+### Golang 实现4
 
 ```go
 package decorator
@@ -455,7 +480,7 @@ func ExampleDecorator() {
 
 ## 外观模式 (Facade)
 
-### 形式化定义
+### 形式化定义5
 
 **定义 6.1** (外观模式): 外观模式为子系统中的一组接口提供一个统一的高层接口，使得子系统更容易使用。
 
@@ -467,7 +492,7 @@ $$Facade: \prod_{i=1}^{n} Subsystem_i \rightarrow Interface$$
 **定理 6.1** (外观的简化性): 外观模式简化了系统接口：
 $$Complexity(Facade) < \sum_{i=1}^{n} Complexity(Subsystem_i)$$
 
-### Golang 实现
+### Golang 实现5
 
 ```go
 package facade
@@ -555,7 +580,7 @@ func ExampleFacade() {
 
 ## 享元模式 (Flyweight)
 
-### 形式化定义
+### 形式化定义6
 
 **定义 7.1** (享元模式): 享元模式通过共享技术有效地支持大量细粒度对象的复用。
 
@@ -567,7 +592,7 @@ $$Flyweight: State \times IntrinsicState \rightarrow Object$$
 **定理 7.1** (享元的内存效率): 享元模式减少内存使用：
 $$Memory(Flyweight) < Memory(Traditional)$$
 
-### Golang 实现
+### Golang 实现6
 
 ```go
 package flyweight
@@ -656,7 +681,7 @@ func ExampleFlyweight() {
 
 ## 代理模式 (Proxy)
 
-### 形式化定义
+### 形式化定义7
 
 **定义 8.1** (代理模式): 代理模式为其他对象提供一种代理以控制对这个对象的访问。
 
@@ -668,7 +693,7 @@ $$Proxy: Subject \times AccessControl \rightarrow Subject$$
 **定理 8.1** (代理的访问控制): 代理模式提供访问控制：
 $$\forall s \in Subject, \forall a \in AccessControl: Proxy(s, a) \subseteq s$$
 
-### Golang 实现
+### Golang 实现7
 
 ```go
 package proxy

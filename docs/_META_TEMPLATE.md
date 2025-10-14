@@ -1,13 +1,3 @@
----
-title: 
-slug: 
-topic: 
-level: intro|intermediate|advanced|overview
-goVersion: 
-lastReviewed: YYYY-MM-DD
-owner: 
-status: draft|active|deprecated
----
 
 ## 标题
 

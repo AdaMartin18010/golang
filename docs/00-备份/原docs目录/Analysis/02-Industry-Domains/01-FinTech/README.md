@@ -714,4 +714,4 @@ func (ps *PaymentSystem) ProcessPayment(ctx context.Context, req *PaymentRequest
 
 ---
 
-* 本文档持续更新，反映最新的金融科技发展趋势和最佳实践。*
+- 本文档持续更新，反映最新的金融科技发展趋势和最佳实践。*

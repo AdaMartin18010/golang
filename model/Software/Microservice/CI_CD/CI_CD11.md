@@ -170,7 +170,7 @@ $$|\Psi_{\text{build}}\rangle = \sum_{i=0}^{2^n-1} \alpha_i |i\rangle$$
 
 ```python
 
-# 2 2 2 2 2 2 2 量子CI/CD测试框架伪代码
+# 量子CI/CD测试框架伪代码
 
 import qiskit
 from qiskit import QuantumCircuit, Aer, execute

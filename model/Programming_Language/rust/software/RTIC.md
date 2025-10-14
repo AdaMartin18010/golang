@@ -1,35 +1,4 @@
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 的 RTIC (Real-Time Interrupt-driven Concurrency) 主要应用](#1-1-1-1-1-1-1-rust-的-rtic-real-time-interrupt-driven-concurrency-主要应用)
-  - [1.1 1. RTIC 的关键特性](#1-rtic-的关键特性)
-  - [1.2 2. 主要应用领域](#2-主要应用领域)
-    - [1.2.1 实时控制系统](#实时控制系统)
-    - [1.2.2 安全关键系统](#安全关键系统)
-    - [1.2.3 物联网 (IoT) 设备](#物联网-iot-设备)
-    - [1.2.4 多任务嵌入式系统](#多任务嵌入式系统)
-  - [1.3 3. 示例代码](#3-示例代码)
-  - [1.4 4. 总结](#4-总结)
-  - [1.5 *RTIC 与 embedded-hal 的关系及当前 Rust 嵌入式生态图景*](#*rtic-与-embedded-hal-的关系及当前-rust-嵌入式生态图景*)
-  - [1.6 1. embedded-hal —— 硬件抽象层](#1-embedded-hal-——-硬件抽象层)
-  - [1.7 2. RTIC —— 实时任务调度与并发管理](#2-rtic-——-实时任务调度与并发管理)
-  - [1.8 3. 二者之间的关系和协同工作](#3-二者之间的关系和协同工作)
-  - [1.9 4. 当前 Rust 嵌入式生态图景](#4-当前-rust-嵌入式生态图景)
-  - [1.10 5. 总结](#5-总结)
-  - [1.11 *Rust 的 IoT 控制框架*](#*rust-的-iot-控制框架*)
-  - [1.12 1. 嵌入式操作系统与实时控制](#1-嵌入式操作系统与实时控制)
-    - [1.12.1 Tock OS](#tock-os)
-    - [1.12.2 RTIC（Real-Time Interrupt-driven Concurrency）](#rtic（real-time-interrupt-driven-concurrency）)
-  - [1.13 2. 硬件抽象与设备驱动](#2-硬件抽象与设备驱动)
-    - [1.13.1 embedded-hal](#embedded-hal)
-  - [1.14 3. 网络通信与协议支持](#3-网络通信与协议支持)
-    - [1.14.1 MQTT 客户端库](#mqtt-客户端库)
-    - [1.14.2 CoAP 库](#coap-库)
-  - [1.15 4. 边缘计算与微服务架构](#4-边缘计算与微服务架构)
-    - [1.15.1 异步运行时（Tokio / async-std）](#异步运行时（tokio-async-std）)
-    - [1.15.2 Web 框架（Actix、Warp 等）](#web-框架（actix、warp-等）)
-  - [1.16 5. 总结与展望](#5-总结与展望)
-<!-- TOC END -->
-
-# 1 1 1 1 1 1 1 Rust 的 RTIC (Real-Time Interrupt-driven Concurrency) 主要应用
+# Rust 的 RTIC (Real-Time Interrupt-driven Concurrency) 主要应用
 
 RTIC（Real-Time Interrupt-driven Concurrency）是一种专为嵌入式系统设计的并发框架，
 其核心思路是利用中断的优先级机制来管理任务调度和资源共享，从而实现高效、确定性和安全的实时系统。
@@ -37,6 +6,37 @@ RTIC（Real-Time Interrupt-driven Concurrency）是一种专为嵌入式系统�
 下面将介绍 RTIC 的关键特性以及它在实际项目中的主要应用场景。
 
 ---
+
+<!-- TOC START -->
+- [Rust 的 RTIC (Real-Time Interrupt-driven Concurrency) 主要应用](#rust-的-rtic-real-time-interrupt-driven-concurrency-主要应用)
+  - [1.1 1. RTIC 的关键特性](#11-1-rtic-的关键特性)
+  - [1.2 2. 主要应用领域](#12-2-主要应用领域)
+    - [1.2.1 实时控制系统](#121-实时控制系统)
+    - [1.2.2 安全关键系统](#122-安全关键系统)
+    - [1.2.3 物联网 (IoT) 设备](#123-物联网-iot-设备)
+    - [1.2.4 多任务嵌入式系统](#124-多任务嵌入式系统)
+  - [1.3 3. 示例代码](#13-3-示例代码)
+  - [1.4 4. 总结](#14-4-总结)
+  - [1.5 *RTIC 与 embedded-hal 的关系及当前 Rust 嵌入式生态图景*](#15-rtic-与-embedded-hal-的关系及当前-rust-嵌入式生态图景)
+  - [1.6 1. embedded-hal —— 硬件抽象层](#16-1-embedded-hal--硬件抽象层)
+  - [1.7 2. RTIC —— 实时任务调度与并发管理](#17-2-rtic--实时任务调度与并发管理)
+  - [1.8 3. 二者之间的关系和协同工作](#18-3-二者之间的关系和协同工作)
+  - [1.9 4. 当前 Rust 嵌入式生态图景](#19-4-当前-rust-嵌入式生态图景)
+  - [1.10 5. 总结](#110-5-总结)
+  - [1.11 *Rust 的 IoT 控制框架*](#111-rust-的-iot-控制框架)
+  - [1.12 1. 嵌入式操作系统与实时控制](#112-1-嵌入式操作系统与实时控制)
+    - [1.12.1 Tock OS](#1121-tock-os)
+    - [1.12.2 RTIC（Real-Time Interrupt-driven Concurrency）](#1122-rticreal-time-interrupt-driven-concurrency)
+  - [1.13 2. 硬件抽象与设备驱动](#113-2-硬件抽象与设备驱动)
+    - [1.13.1 embedded-hal](#1131-embedded-hal)
+  - [1.14 3. 网络通信与协议支持](#114-3-网络通信与协议支持)
+    - [1.14.1 MQTT 客户端库](#1141-mqtt-客户端库)
+    - [1.14.2 CoAP 库](#1142-coap-库)
+  - [1.15 4. 边缘计算与微服务架构](#115-4-边缘计算与微服务架构)
+    - [1.15.1 异步运行时（Tokio / async-std）](#1151-异步运行时tokio--async-std)
+    - [1.15.2 Web 框架（Actix、Warp 等）](#1152-web-框架actixwarp-等)
+  - [1.16 5. 总结与展望](#116-5-总结与展望)
+<!-- TOC END -->
 
 ## 1.1 1. RTIC 的关键特性
 
@@ -164,11 +164,8 @@ mod app {
 ```
 
 > **说明**：  
-
 >
-
 > 1. 本示例借用 STM32F4 的 HAL 库，展示如何通过 RTIC 定义初始化函数（`init`）、定时任务（`blink`）和空闲任务（`idle`）。  
-
 > 2. `blink` 任务根据预设时间调度定时切换 LED 状态，从而实现实时任务调度的示例。
 
 ---

@@ -722,27 +722,27 @@ WebAssembly编译和开发工具链概览：
 
 ```bash
 
-# 2 2 2 2 2 2 2 安装工具链
+# 安装工具链
 
 rustup target add wasm32-unknown-unknown
 cargo install wasm-pack
 
-# 3 3 3 3 3 3 3 创建项目
+# 创建项目
 
 cargo new --lib wasm-example
 cd wasm-example
 
-# 4 4 4 4 4 4 4 添加wasm-bindgen依赖到Cargo.toml
+# 添加wasm-bindgen依赖到Cargo.toml
 
-# 5 5 5 5 5 5 5 [dependencies]
+# [dependencies]
 
-# 6 6 6 6 6 6 6 wasm-bindgen = "0.2"
+# wasm-bindgen = "0.2"
 
-# 7 7 7 7 7 7 7 构建WebAssembly模块
+# 构建WebAssembly模块
 
 wasm-pack build --target web
 
-# 8 8 8 8 8 8 8 优化（可选）
+# 优化（可选）
 
 wasm-opt -O3 -o optimized.wasm pkg/wasm_example_bg.wasm
 

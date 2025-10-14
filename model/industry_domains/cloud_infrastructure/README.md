@@ -588,7 +588,7 @@ pub struct LogEntry {
 
 ```dockerfile
 
-# 2 2 2 2 2 2 2 Dockerfile for Rust cloud service
+# Dockerfile for Rust cloud service
 
 FROM rust:1.75 as builder
 WORKDIR /usr/src/app
@@ -607,7 +607,7 @@ CMD ["cloud-service"]
 
 ```yaml
 
-# 3 3 3 3 3 3 3 deployment.yaml
+# deployment.yaml
 
 apiVersion: apps/v1
 kind: Deployment

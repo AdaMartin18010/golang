@@ -2,6 +2,100 @@
 
 ## 目录
 
+- [性能优化分析](#性能优化分析)
+  - [目录](#目录)
+  - [概述](#概述)
+    - [性能优化的形式化基础](#性能优化的形式化基础)
+      - [定义 1.1 (性能指标)](#定义-11-性能指标)
+      - [定义 1.2 (性能目标)](#定义-12-性能目标)
+      - [定义 1.3 (性能瓶颈)](#定义-13-性能瓶颈)
+    - [性能分析框架](#性能分析框架)
+      - [1.1 性能测量](#11-性能测量)
+        - [定义 1.4 (性能测量)](#定义-14-性能测量)
+        - [Golang实现](#golang实现)
+      - [1.2 基准测试](#12-基准测试)
+        - [1.2.1 定义 1.5 (基准测试)](#121-定义-15-基准测试)
+        - [1.2.2 Golang实现](#122-golang实现)
+    - [内存优化](#内存优化)
+      - [2.1 内存分配优化](#21-内存分配优化)
+        - [定义 2.1 (内存分配)](#定义-21-内存分配)
+        - [2.1.1 对象池模式](#211-对象池模式)
+          - [2.1.1 定义 2.2 (对象池)](#211-定义-22-对象池)
+          - [2.1.2 Golang实现](#212-golang实现)
+        - [2.1.2 内存预分配](#212-内存预分配)
+          - [2.1.2.1 定义 2.3 (内存预分配)](#2121-定义-23-内存预分配)
+          - [2.1.2.2 Golang实现](#2122-golang实现)
+      - [2.2 垃圾回收优化](#22-垃圾回收优化)
+        - [2.2.1 定义 2.4 (垃圾回收)](#221-定义-24-垃圾回收)
+        - [2.2.1 GC调优](#221-gc调优)
+          - [2.2.1.1 Golang实现](#2211-golang实现)
+        - [2.2.2 内存泄漏检测](#222-内存泄漏检测)
+          - [2.2.2.1 Golang实现](#2221-golang实现)
+    - [并发优化](#并发优化)
+      - [3.1 Goroutine优化](#31-goroutine优化)
+        - [定义 3.1 (Goroutine)](#定义-31-goroutine)
+        - [3.1.1 Goroutine池](#311-goroutine池)
+          - [3.1.1.1 定义 3.2 (Goroutine池)](#3111-定义-32-goroutine池)
+          - [3.1.1.2 Golang实现](#3112-golang实现)
+        - [3.1.2 工作窃取调度](#312-工作窃取调度)
+          - [3.1.2.1 Golang实现](#3121-golang实现)
+      - [3.2 锁优化](#32-锁优化)
+        - [定义 3.3 (锁)](#定义-33-锁)
+        - [3.2.1 读写锁优化](#321-读写锁优化)
+          - [3.2.1.1 Golang实现](#3211-golang实现)
+        - [3.2.2 无锁数据结构](#322-无锁数据结构)
+          - [3.2.2.1 Golang实现](#3221-golang实现)
+    - [网络优化](#网络优化)
+      - [4.1 连接池优化](#41-连接池优化)
+        - [4.1.1 定义 4.1 (连接池)](#411-定义-41-连接池)
+        - [4.1.2 Golang实现](#412-golang实现)
+      - [4.2 HTTP优化](#42-http优化)
+        - [4.2.1 HTTP客户端优化](#421-http客户端优化)
+          - [4.2.1.1 Golang实现](#4211-golang实现)
+        - [4.2.2 HTTP服务器优化](#422-http服务器优化)
+          - [4.2.2.1 Golang实现](#4221-golang实现)
+    - [算法优化](#算法优化)
+      - [5.1 缓存优化](#51-缓存优化)
+        - [定义 5.1 (缓存)](#定义-51-缓存)
+        - [5.1.1 LRU缓存](#511-lru缓存)
+          - [5.1.1.1 Golang实现](#5111-golang实现)
+        - [5.1.2 分布式缓存](#512-分布式缓存)
+          - [5.1.2.1 Golang实现](#5121-golang实现)
+      - [5.2 算法复杂度优化](#52-算法复杂度优化)
+        - [5.2.1 动态规划优化](#521-动态规划优化)
+          - [5.2.1.1 Golang实现](#5211-golang实现)
+        - [5.2.2 并行算法优化](#522-并行算法优化)
+          - [5.2.2.1 Golang实现](#5221-golang实现)
+    - [系统优化](#系统优化)
+      - [6.1 系统资源优化](#61-系统资源优化)
+        - [定义 6.1 (系统资源)](#定义-61-系统资源)
+        - [6.1.1 CPU优化](#611-cpu优化)
+          - [6.1.1.1 Golang实现](#6111-golang实现)
+        - [6.1.2 内存优化](#612-内存优化)
+          - [6.1.2.1 Golang实现](#6121-golang实现)
+      - [6.2 操作系统优化](#62-操作系统优化)
+        - [6.2.1 文件描述符优化](#621-文件描述符优化)
+          - [6.2.1.1 Golang实现](#6211-golang实现)
+        - [6.2.2 网络优化](#622-网络优化)
+          - [6.2.2.1 Golang实现](#6221-golang实现)
+    - [监控与分析](#监控与分析)
+      - [7.1 性能监控](#71-性能监控)
+        - [定义 7.1 (性能监控)](#定义-71-性能监控)
+        - [7.1.1 实时监控](#711-实时监控)
+          - [7.1.1.1 Golang实现](#7111-golang实现)
+        - [7.1.2 性能分析](#712-性能分析)
+          - [7.1.2.1 Golang实现](#7121-golang实现)
+      - [7.2 性能报告](#72-性能报告)
+        - [7.2.1 性能报告生成](#721-性能报告生成)
+          - [7.2.1.1 Golang实现](#7211-golang实现)
+    - [最佳实践](#最佳实践)
+      - [8.1 性能优化原则](#81-性能优化原则)
+      - [8.2 优化策略](#82-优化策略)
+      - [8.3 监控指标](#83-监控指标)
+    - [持续更新](#持续更新)
+
+----
+
 1. [内存优化 (Memory Optimization)](01-Memory-Optimization/README.md)
 2. [并发优化 (Concurrent Optimization)](02-Concurrent-Optimization/README.md)
 3. [网络优化 (Network Optimization)](03-Network-Optimization/README.md)
@@ -84,12 +178,12 @@ func (pp *PerformanceProfiler) MeasureMemory() {
 
 #### 1.2 基准测试
 
-##### 定义 1.5 (基准测试)
+##### 1.2.1 定义 1.5 (基准测试)
 
 基准测试函数：
 $$Benchmark: Function \times Input \rightarrow PerformanceMetrics$$
 
-##### Golang实现
+##### 1.2.2 Golang实现
 
 ```go
 func BenchmarkFunction(b *testing.B) {
@@ -130,12 +224,12 @@ $$Allocate: Size \rightarrow Memory_{block}$$
 
 ##### 2.1.1 对象池模式
 
-###### 定义 2.2 (对象池)
+###### 2.1.1 定义 2.2 (对象池)
 
 对象池是一个缓存对象的数据结构：
 $$ObjectPool = (Pool, Get, Put)$$
 
-###### Golang实现
+###### 2.1.2 Golang实现
 
 ```go
 type ObjectPool[T any] struct {
@@ -196,12 +290,12 @@ var bufferPool = NewObjectPool(100, NewBuffer, ResetBuffer)
 
 ##### 2.1.2 内存预分配
 
-###### 定义 2.3 (内存预分配)
+###### 2.1.2.1 定义 2.3 (内存预分配)
 
 内存预分配函数：
 $$PreAllocate: ExpectedSize \rightarrow Memory_{block}$$
 
-###### Golang实现
+###### 2.1.2.2 Golang实现
 
 ```go
 type PreAllocatedSlice[T any] struct {
@@ -239,14 +333,14 @@ func (pas *PreAllocatedSlice[T]) Reset() {
 
 #### 2.2 垃圾回收优化
 
-##### 定义 2.4 (垃圾回收)
+##### 2.2.1 定义 2.4 (垃圾回收)
 
 垃圾回收函数：
 $$GC: Memory_{heap} \rightarrow Memory_{free}$$
 
 ##### 2.2.1 GC调优
 
-###### Golang实现
+###### 2.2.1.1 Golang实现
 
 ```go
 type GCOptimizer struct {
@@ -282,7 +376,7 @@ func (gco *GCOptimizer) GetGCStats() runtime.MemStats {
 
 ##### 2.2.2 内存泄漏检测
 
-###### Golang实现
+###### 2.2.2.1 Golang实现
 
 ```go
 type MemoryLeakDetector struct {
@@ -343,12 +437,12 @@ $$Goroutine = (Function, Stack, Channel)$$
 
 ##### 3.1.1 Goroutine池
 
-###### 定义 3.2 (Goroutine池)
+###### 3.1.1.1 定义 3.2 (Goroutine池)
 
 Goroutine池管理一组可重用的Goroutine：
 $$GoroutinePool = (Workers, Tasks, LoadBalancer)$$
 
-###### Golang实现
+###### 3.1.1.2 Golang实现
 
 ```go
 type WorkerPool struct {
@@ -431,7 +525,7 @@ func (wp *WorkerPool) Stop() {
 
 ##### 3.1.2 工作窃取调度
 
-###### Golang实现
+###### 3.1.2.1 Golang实现
 
 ```go
 type WorkStealingScheduler struct {
@@ -526,7 +620,7 @@ $$Lock = (Acquire, Release, Wait)$$
 
 ##### 3.2.1 读写锁优化
 
-###### Golang实现
+###### 3.2.1.1 Golang实现
 
 ```go
 type OptimizedRWMutex struct {
@@ -571,7 +665,7 @@ func (rwm *OptimizedRWMutex) Unlock() {
 
 ##### 3.2.2 无锁数据结构
 
-###### Golang实现
+###### 3.2.2.1 Golang实现
 
 ```go
 type LockFreeStack[T any] struct {
@@ -631,12 +725,12 @@ func (lfs *LockFreeStack[T]) Pop() (T, bool) {
 
 #### 4.1 连接池优化
 
-##### 定义 4.1 (连接池)
+##### 4.1.1 定义 4.1 (连接池)
 
 连接池管理网络连接：
 $$ConnectionPool = (Connections, Acquire, Release)$$
 
-##### Golang实现
+##### 4.1.2 Golang实现
 
 ```go
 type ConnectionPool struct {
@@ -745,7 +839,7 @@ func (pc *PooledConn) Close() error {
 
 ##### 4.2.1 HTTP客户端优化
 
-###### Golang实现
+###### 4.2.1.1 Golang实现
 
 ```go
 type OptimizedHTTPClient struct {
@@ -802,7 +896,7 @@ func (ohc *OptimizedHTTPClient) Post(url string, body io.Reader) (*http.Response
 
 ##### 4.2.2 HTTP服务器优化
 
-###### Golang实现
+###### 4.2.2.1 Golang实现
 
 ```go
 type OptimizedHTTPServer struct {
@@ -870,7 +964,7 @@ $$Cache = (Key, Value, TTL, EvictionPolicy)$$
 
 ##### 5.1.1 LRU缓存
 
-###### Golang实现
+###### 5.1.1.1 Golang实现
 
 ```go
 type LRUCache[K comparable, V any] struct {
@@ -931,7 +1025,7 @@ func (lru *LRUCache[K, V]) Put(key K, value V) {
 
 ##### 5.1.2 分布式缓存
 
-###### Golang实现
+###### 5.1.2.1 Golang实现
 
 ```go
 type DistributedCache struct {
@@ -1011,7 +1105,7 @@ func (dc *DistributedCache) Set(key string, value interface{}, expiration time.D
 
 ##### 5.2.1 动态规划优化
 
-###### Golang实现
+###### 5.2.1.1 Golang实现
 
 ```go
 type DPOptimizer struct {
@@ -1061,7 +1155,7 @@ func (dpo *DPOptimizer) ClearCache() {
 
 ##### 5.2.2 并行算法优化
 
-###### Golang实现
+###### 5.2.2.1 Golang实现
 
 ```go
 type ParallelAlgorithm struct {
@@ -1165,7 +1259,7 @@ $$SystemResources = (CPU, Memory, Disk, Network)$$
 
 ##### 6.1.1 CPU优化
 
-###### Golang实现
+###### 6.1.1.1 Golang实现
 
 ```go
 type CPUOptimizer struct {
@@ -1209,7 +1303,7 @@ func (co *CPUOptimizer) getSystemLoad() float64 {
 
 ##### 6.1.2 内存优化
 
-###### Golang实现
+###### 6.1.2.1 Golang实现
 
 ```go
 type MemoryOptimizer struct {
@@ -1257,7 +1351,7 @@ func (mo *MemoryOptimizer) MonitorMemory() {
 
 ##### 6.2.1 文件描述符优化
 
-###### Golang实现
+###### 6.2.1.1 Golang实现
 
 ```go
 type FileDescriptorOptimizer struct {
@@ -1297,7 +1391,7 @@ func (fdo *FileDescriptorOptimizer) GetCurrentFDCount() (int, error) {
 
 ##### 6.2.2 网络优化
 
-###### Golang实现
+###### 6.2.2.1 Golang实现
 
 ```go
 type NetworkOptimizer struct {
@@ -1352,7 +1446,7 @@ $$Monitor: System \rightarrow Metrics$$
 
 ##### 7.1.1 实时监控
 
-###### Golang实现
+###### 7.1.1.1 Golang实现
 
 ```go
 type PerformanceMonitor struct {
@@ -1455,7 +1549,7 @@ func (pm *PerformanceMonitor) GetAllMetrics() map[string]Metric {
 
 ##### 7.1.2 性能分析
 
-###### Golang实现
+###### 7.1.2.1 Golang实现
 
 ```go
 type PerformanceAnalyzer struct {
@@ -1539,7 +1633,7 @@ func (pa *PerformanceAnalyzer) GetAlerts() []Alert {
 
 ##### 7.2.1 性能报告生成
 
-###### Golang实现
+###### 7.2.1.1 Golang实现
 
 ```go
 type PerformanceReport struct {
@@ -1639,8 +1733,6 @@ func groupMetricsByTime(metrics map[string]Metric, startTime, endTime time.Time)
 ### 持续更新
 
 本文档将根据性能优化理论的发展和Golang语言特性的变化持续更新。
-
----
 
 *最后更新时间: 2024-01-XX*
 *版本: 1.0.0*

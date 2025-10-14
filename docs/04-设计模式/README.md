@@ -1,14 +1,3 @@
----
-title: Go设计模式模块总览
-slug: go-design-patterns
-topic: design-patterns
-level: overview
-goVersion: 1.21+
-lastReviewed: 2025-01-15
-owner: core-team
-status: active
----
-
 # Go设计模式模块总览
 
 ## 📚 理论基础与分类体系

@@ -1,8 +1,8 @@
-# 1 1 1 1 1 1 1 Docker与Kubernetes在CI/CD中的组合形式化分析与实践
+﻿# Docker与Kubernetes在CI/CD中的组合形式化分析与实践
 
 ## 1.1 目录
 
-- [1 1 1 1 1 1 1 Docker与Kubernetes在CI/CD中的组合形式化分析与实践](#1-1-1-1-1-1-1-docker与kubernetes在cicd中的组合形式化分析与实践)
+- [Docker与Kubernetes在CI/CD中的组合形式化分析与实践](#docker与kubernetes在cicd中的组合形式化分析与实践)
   - [1.1 目录](#11-目录)
   - [1.2 思维导图](#12-思维导图)
   - [1.3 1. 容器化CI/CD的形式化基础](#13-1-容器化cicd的形式化基础)

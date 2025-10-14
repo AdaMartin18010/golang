@@ -932,4 +932,4 @@ func (p *Predictor) BatchPredict(inputs []interface{}) ([]interface{}, error) {
 - **物联网**: 大规模设备管理和数据处理
 - **AI/ML**: 高效的模型训练和推理服务
 
-通过合理应用行业领域分析框架，可以构建出更加适合特定行业需求的Golang系统。 
+通过合理应用行业领域分析框架，可以构建出更加适合特定行业需求的Golang系统。

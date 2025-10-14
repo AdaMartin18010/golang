@@ -202,7 +202,7 @@ $$\forall s \in Reach(ACICD), \forall i \in I: s \models i$$
 
 ```math
 
-# 2 2 2 2 2 2 2 CI/CD流水线的时间约束规约
+# CI/CD流水线的时间约束规约
 
 pipeline TimedPipeline {
   stage Build {

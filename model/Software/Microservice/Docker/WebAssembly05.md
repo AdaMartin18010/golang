@@ -2358,7 +2358,7 @@ $$
 
 ```python
 
-# 2 2 2 2 2 2 2 Python: 资源效率比较和预测模型
+# Python: 资源效率比较和预测模型
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -2638,7 +2638,7 @@ class ResourceEfficiencyModel:
   
         return results
 
-# 3 3 3 3 3 3 3 使用示例
+# 使用示例
 
 def efficiency_analysis_example():
     model = ResourceEfficiencyModel()
@@ -3639,7 +3639,7 @@ void create_optimized_runtime() {
 
 ```python
 
-# 4 4 4 4 4 4 4 Python: 不同场景下的资源效率争议分析
+# Python: 不同场景下的资源效率争议分析
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -3944,7 +3944,7 @@ class ResourceEfficiencyAnalyzer:
   
         print("\n分析完成，图表已保存")
 
-# 5 5 5 5 5 5 5 使用示例
+# 使用示例
 
 def run_analysis():
     analyzer = ResourceEfficiencyAnalyzer()
@@ -7106,7 +7106,7 @@ WebAssembly在AI工作负载中特别适用于以下场景：
 
 ```python
 
-# 6 6 6 6 6 6 6 Python: WebAssembly vs 原生AI性能对比和场景适用性分析
+# Python: WebAssembly vs 原生AI性能对比和场景适用性分析
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7741,7 +7741,7 @@ class AIPerformanceAnalyzer:
 """
         return framework
 
-# 7 7 7 7 7 7 7 使用示例
+# 使用示例
 
 def run_analysis():
     analyzer = AIPerformanceAnalyzer()

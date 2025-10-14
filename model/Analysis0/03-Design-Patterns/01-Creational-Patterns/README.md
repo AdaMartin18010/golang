@@ -10,22 +10,22 @@
     - [创建型模式的数学表示](#创建型模式的数学表示)
     - [模式分类的数学表示](#模式分类的数学表示)
   - [单例模式 (Singleton)](#单例模式-singleton)
-    - [形式化定义](#形式化定义-1)
+    - [形式化定义1](#形式化定义1)
     - [Golang 实现](#golang-实现)
     - [性能分析](#性能分析)
   - [工厂方法模式 (Factory Method)](#工厂方法模式-factory-method)
-    - [形式化定义](#形式化定义-2)
-    - [Golang 实现](#golang-实现-1)
-    - [性能分析](#性能分析-1)
+    - [形式化定义2](#形式化定义2)
+    - [Golang 实现1](#golang-实现1)
+    - [性能分析1](#性能分析1)
   - [抽象工厂模式 (Abstract Factory)](#抽象工厂模式-abstract-factory)
-    - [形式化定义](#形式化定义-3)
-    - [Golang 实现](#golang-实现-2)
+    - [形式化定义3](#形式化定义3)
+    - [Golang 实现3](#golang-实现3)
   - [建造者模式 (Builder)](#建造者模式-builder)
-    - [形式化定义](#形式化定义-4)
-    - [Golang 实现](#golang-实现-3)
+    - [形式化定义4](#形式化定义4)
+    - [Golang 实现4](#golang-实现4)
   - [原型模式 (Prototype)](#原型模式-prototype)
-    - [形式化定义](#形式化定义-5)
-    - [Golang 实现](#golang-实现-4)
+    - [形式化定义5](#形式化定义5)
+    - [Golang 实现5](#golang-实现5)
   - [性能分析与优化](#性能分析与优化)
     - [性能对比](#性能对比)
     - [优化建议](#优化建议)
@@ -76,7 +76,7 @@ $$CP = \{Singleton, FactoryMethod, AbstractFactory, Builder, Prototype\}$$
 
 ## 单例模式 (Singleton)
 
-### 形式化定义
+### 形式化定义1
 
 **定义 2.1** (单例模式): 单例模式确保一个类只有一个实例，并提供全局访问点。
 
@@ -177,7 +177,7 @@ func TestSingleton() {
 
 ## 工厂方法模式 (Factory Method)
 
-### 形式化定义
+### 形式化定义2
 
 **定义 3.1** (工厂方法模式): 工厂方法模式定义一个创建对象的接口，让子类决定实例化哪一个类。
 
@@ -192,7 +192,7 @@ $$FactoryMethod: Creator \times ProductType \rightarrow Product$$
 
 **定理 3.1** (工厂方法的可扩展性): 工厂方法模式支持开闭原则，对扩展开放，对修改封闭。
 
-### Golang 实现
+### Golang 实现1
 
 ```go
 package factory
@@ -283,7 +283,7 @@ func ExampleFactoryMethod() {
 }
 ```
 
-### 性能分析
+### 性能分析1
 
 **定理 3.2** (工厂方法性能): 工厂方法模式的时间复杂度为 $O(1)$，但增加了内存开销。
 
@@ -294,7 +294,7 @@ func ExampleFactoryMethod() {
 
 ## 抽象工厂模式 (Abstract Factory)
 
-### 形式化定义
+### 形式化定义3
 
 **定义 4.1** (抽象工厂模式): 抽象工厂模式提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类。
 
@@ -305,7 +305,7 @@ $$AbstractFactory: FactoryType \rightarrow \prod_{i=1}^{n} Product_i$$
 
 **定理 4.1** (抽象工厂的产品族一致性): 抽象工厂确保同一工厂创建的所有产品都是兼容的。
 
-### Golang 实现
+### Golang 实现3
 
 ```go
 package abstractfactory
@@ -403,7 +403,7 @@ func ClientCode(factory AbstractFactory) {
 
 ## 建造者模式 (Builder)
 
-### 形式化定义
+### 形式化定义4
 
 **定义 5.1** (建造者模式): 建造者模式将一个复杂对象的构建与其表示分离，使得同样的构建过程可以创建不同的表示。
 
@@ -414,7 +414,7 @@ $$Builder: \prod_{i=1}^{n} Part_i \rightarrow ComplexObject$$
 
 **定理 5.1** (建造者的组合性): 建造者模式支持分步构建，每个步骤都是可选的。
 
-### Golang 实现
+### Golang 实现4
 
 ```go
 package builder
@@ -525,7 +525,7 @@ func ExampleBuilder() {
 
 ## 原型模式 (Prototype)
 
-### 形式化定义
+### 形式化定义5
 
 **定义 6.1** (原型模式): 原型模式用原型实例指定创建对象的种类，并且通过拷贝这些原型创建新的对象。
 
@@ -537,7 +537,7 @@ $$\forall x \in Object: Clone(x) \neq x \land Type(Clone(x)) = Type(x)$$
 
 **定理 6.1** (原型克隆性质): 原型克隆产生的新对象与原对象类型相同但地址不同。
 
-### Golang 实现
+### Golang 实现5
 
 ```go
 package prototype

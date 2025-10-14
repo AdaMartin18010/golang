@@ -1,23 +1,23 @@
-# 1 1 1 1 1 1 1 工作流架构分析和分层设计
+#  工作流架构分析和分层设计
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 工作流架构分析和分层设计](#1-1-1-1-1-1-1-工作流架构分析和分层设计)
-  - [1.1 1. **第一层：结构形式化基础 (`Architecture_Structural`)**](#1-**第一层：结构形式化基础-architecture_structural**)
-    - [1.1.1 **目标:**](#**目标**)
-    - [1.1.2 **1. 核心对象 (Structural Objects):**](#**1-核心对象-structural-objects**)
-  - [1.2 **2. 核心态射/规则 (Structural Rules):**](#**2-核心态射规则-structural-rules**)
-  - [1.3 **3. 核心不变性 (Structural Invariants):**](#**3-核心不变性-structural-invariants**)
-  - [1.4 2. **第二层：语义形式化增强 (`Architecture_Semantic`)**](#2-**第二层：语义形式化增强-architecture_semantic**)
-    - [1.4.1 **1. 基础设定 (Semantic Layer):**](#**1-基础设定-semantic-layer**)
-    - [1.4.2 **2. 核心对象 (Semantic Objects):**](#**2-核心对象-semantic-objects**)
-    - [1.4.3 **3. 核心态射/规则 (Semantic Rules):**](#**3-核心态射规则-semantic-rules**)
-    - [1.4.4 **4. 核心不变性 (Semantic Invariants):**](#**4-核心不变性-semantic-invariants**)
-  - [1.5 3. **两层架构的协同与 AI 集成:**](#3-**两层架构的协同与-ai-集成**)
-    - [1.5.1 **基础与增强:**](#**基础与增强**)
+- [ ](#1-1-1-1-1-1-1-工作流架构分析和分层设计)
+  - [1. ](#1-**第一层：结构形式化基础-architecture_structural**)
+    - [1.1 ](#**目标**)
+    - [1.2 ](#**1-核心对象-structural-objects**)
+  - [2. ](#**2-核心态射规则-structural-rules**)
+  - [3. ](#**3-核心不变性-structural-invariants**)
+  - [4. ](#2-**第二层：语义形式化增强-architecture_semantic**)
+    - [4.1 ](#**1-基础设定-semantic-layer**)
+    - [4.2 ](#**2-核心对象-semantic-objects**)
+    - [4.3 ](#**3-核心态射规则-semantic-rules**)
+    - [4.4 ](#**4-核心不变性-semantic-invariants**)
+  - [5. ](#3-**两层架构的协同与-ai-集成**)
+    - [5.1 ](#**基础与增强**)
       - [1.5.1.1 **Fabric 的角色:**](#**fabric-的角色**)
       - [1.5.1.2 **AI 的交互:**](#**ai-的交互**)
       - [1.5.1.3 **演化:**](#**演化**)
-  - [1.6 4. **结论性论证:**](#4-**结论性论证**)
+  - [6. ](#4-**结论性论证**)
 <!-- TOC END -->
 
 ```text

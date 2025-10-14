@@ -1,12 +1,12 @@
-# 1 1 1 1 1 1 1 Rust 中与所有权相关的主要 trait
+# Rust 中与所有权相关的主要 trait
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 中与所有权相关的主要 trait](#1-1-1-1-1-1-1-rust-中与所有权相关的主要-trait)
-  - [1.1 Deref Trait](#deref-trait)
-  - [1.2 Drop Trait](#drop-trait)
-  - [1.3 Clone Trait](#clone-trait)
-  - [1.4 Copy Trait](#copy-trait)
-  - [1.5 解释和联系](#解释和联系)
+- [Rust 中与所有权相关的主要 trait](#rust-中与所有权相关的主要-trait)
+  - [1.1 Deref Trait](#11-deref-trait)
+  - [1.2 Drop Trait](#12-drop-trait)
+  - [1.3 Clone Trait](#13-clone-trait)
+  - [1.4 Copy Trait](#14-copy-trait)
+  - [1.5 解释和联系](#15-解释和联系)
 <!-- TOC END -->
 
 Rust 中与所有权相关的主要 trait 包括 `Deref` 和 `Drop`。

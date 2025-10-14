@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 物联网 (IoT) - Rust架构指南
+# 物联网 (IoT) - Rust架构指南
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 物联网 (IoT) - Rust架构指南](#1-1-1-1-1-1-1-物联网-iot---rust架构指南)
+- [物联网 (IoT) - Rust架构指南](#物联网-iot---rust架构指南)
   - [1.1 概述](#11-概述)
   - [1.2 核心挑战](#12-核心挑战)
   - [1.3 技术栈选型](#13-技术栈选型)
@@ -62,42 +62,42 @@
 ```toml
 [dependencies]
 
-# 2 2 2 2 2 2 2 异步运行时
+# 异步运行时
 
 tokio = { version = "1.35", features = ["full"] }
 async-std = "1.35"
 
-# 3 3 3 3 3 3 3 网络通信
+# 网络通信
 
 tokio-mqtt = "0.8"
 rumqttc = "0.24"
 coap = "0.3"
 reqwest = { version = "0.11", features = ["json"] }
 
-# 4 4 4 4 4 4 4 序列化
+# 序列化
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 bincode = "1.3"
 
-# 5 5 5 5 5 5 5 数据库
+# 数据库
 
 sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio-rustls"] }
 rusqlite = "0.29"
 sled = "0.34"
 
-# 6 6 6 6 6 6 6 加密和安全
+# 加密和安全
 
 ring = "0.17"
 rustls = "0.21"
 webpki-roots = "0.25"
 
-# 7 7 7 7 7 7 7 配置管理
+# 配置管理
 
 config = "0.14"
 toml = "0.8"
 
-# 8 8 8 8 8 8 8 日志
+# 日志
 
 tracing = "0.1"
 tracing-subscriber = "0.3"
@@ -110,28 +110,28 @@ log = "0.4"
 ```toml
 [dependencies]
 
-# 9 9 9 9 9 9 9 硬件抽象
+# 硬件抽象
 
 embedded-hal = "0.2"
 cortex-m = "0.7"
 cortex-m-rt = "0.7"
 
-# 10 10 10 10 10 10 10 传感器支持
+# 传感器支持
 
 embedded-sensors = "0.1"
 dht-sensor = "0.1"
 
-# 11 11 11 11 11 11 11 时间处理
+# 时间处理
 
 chrono = { version = "0.4", features = ["serde"] }
 time = "0.3"
 
-# 12 12 12 12 12 12 12 消息队列
+# 消息队列
 
 lapin = "2.3"
 redis = { version = "0.24", features = ["tokio-comp"] }
 
-# 13 13 13 13 13 13 13 缓存
+# 缓存
 
 moka = "0.12"
 
@@ -1067,7 +1067,7 @@ mod integration_tests {
 
 ```dockerfile
 
-# 14 14 14 14 14 14 14 Dockerfile for IoT Edge Node
+# Dockerfile for IoT Edge Node
 
 FROM rust:1.75 as builder
 WORKDIR /app
@@ -1092,7 +1092,7 @@ CMD ["./iot-edge-node"]
 
 ```toml
 
-# 15 15 15 15 15 15 15 config.toml
+# config.toml
 
 [device]
 id = "edge-node-001"

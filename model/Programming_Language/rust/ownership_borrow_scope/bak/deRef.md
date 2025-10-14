@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 deref
+﻿# deref
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 deref](#1-1-1-1-1-1-1-deref)
+- [deref](#deref)
 <!-- TOC END -->
 
 在 Rust 中，解引用操作符 `*` 用于从引用中取得其指向的值。

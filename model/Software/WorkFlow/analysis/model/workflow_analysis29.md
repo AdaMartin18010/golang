@@ -1,23 +1,23 @@
-# 1 1 1 1 1 1 1 控制流-执行流-数据流-工程视角
+#  控制流-执行流-数据流-工程视角
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 控制流-执行流-数据流-工程视角](#1-1-1-1-1-1-1-控制流-执行流-数据流-工程视角)
-  - [1.1 1. **I. 控制流 (Control Flow) 在工程实践中的模型与特征**](#1-**i-控制流-control-flow-在工程实践中的模型与特征**)
-    - [1.1.1 **控制流图 (Control Flow Graph - CFG):**](#**控制流图-control-flow-graph-cfg**)
-    - [1.1.2 **状态机 (State Machines - FSM, HSM):**](#**状态机-state-machines-fsm-hsm**)
-    - [1.1.3 **BPMN / Workflow DSLs:**](#**bpmn-workflow-dsls**)
-  - [1.2 2. **II. 执行流 (Execution Flow) 在工程实践中的模型与特征**](#2-**ii-执行流-execution-flow-在工程实践中的模型与特征**)
-    - [1.2.1 **调用栈 (Call Stack) / 堆栈跟踪 (Stack Trace):**](#**调用栈-call-stack-堆栈跟踪-stack-trace**)
-    - [1.2.2 **执行轨迹/日志 (Execution Trace / Logs):**](#**执行轨迹日志-execution-trace-logs**)
-    - [1.2.3 **分布式追踪 (Distributed Tracing):**](#**分布式追踪-distributed-tracing**)
-    - [1.2.4 **并发模型 (Concurrency Models):**](#**并发模型-concurrency-models**)
-    - [1.2.5 **动态特征:** **核心特征就是动态性。**](#**动态特征**-**核心特征就是动态性。**)
-  - [1.3 3. **III. 数据流 (Data Flow) 在工程实践中的模型与特征**](#3-**iii-数据流-data-flow-在工程实践中的模型与特征**)
-    - [1.3.1 **数据流图 (Data Flow Diagrams - DFDs):**](#**数据流图-data-flow-diagrams-dfds**)
-    - [1.3.2 **程序依赖图 (Program Dependence Graph - PDG):**](#**程序依赖图-program-dependence-graph-pdg**)
-    - [1.3.3 **信息流控制 / 污点分析 (Information Flow Control / Taint Analysis):**](#**信息流控制-污点分析-information-flow-control-taint-analysis**)
-    - [1.3.4 **变量/内存检查 (Debuggers, Memory Analyzers):**](#**变量内存检查-debuggers-memory-analyzers**)
-  - [1.4 4. **总结与工程实践关联:**](#4-**总结与工程实践关联**)
+- [ ](#1-1-1-1-1-1-1-控制流-执行流-数据流-工程视角)
+  - [1. ](#1-**i-控制流-control-flow-在工程实践中的模型与特征**)
+    - [1.1 ](#**控制流图-control-flow-graph-cfg**)
+    - [1.2 ](#**状态机-state-machines-fsm-hsm**)
+    - [1.3 ](#**bpmn-workflow-dsls**)
+  - [2. ](#2-**ii-执行流-execution-flow-在工程实践中的模型与特征**)
+    - [2.1 ](#**调用栈-call-stack-堆栈跟踪-stack-trace**)
+    - [2.2 ](#**执行轨迹日志-execution-trace-logs**)
+    - [2.3 ](#**分布式追踪-distributed-tracing**)
+    - [2.4 ](#**并发模型-concurrency-models**)
+    - [2.5 ](#**动态特征**-**核心特征就是动态性。**)
+  - [3. ](#3-**iii-数据流-data-flow-在工程实践中的模型与特征**)
+    - [3.1 ](#**数据流图-data-flow-diagrams-dfds**)
+    - [3.2 ](#**程序依赖图-program-dependence-graph-pdg**)
+    - [3.3 ](#**信息流控制-污点分析-information-flow-control-taint-analysis**)
+    - [3.4 ](#**变量内存检查-debuggers-memory-analyzers**)
+  - [4. ](#4-**总结与工程实践关联**)
 <!-- TOC END -->
 
 ```text

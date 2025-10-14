@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 Cell 和 RefCell
+﻿# Cell 和 RefCell
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Cell 和 RefCell](#1-1-1-1-1-1-1-cell-和-refcell)
+- [Cell 和 RefCell](#cell-和-refcell)
 <!-- TOC END -->
 
 在 Rust 中，`std::cell` 模块提供了几种 trait，

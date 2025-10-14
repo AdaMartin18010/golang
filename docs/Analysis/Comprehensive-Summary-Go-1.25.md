@@ -1,4 +1,4 @@
-# 1 1 1 1 1 1 1 Go 1.25 全面分析工作总结
+# Go 1.25 全面分析工作总结
 
 <!-- TOC START -->
 - [1 1 1 1 1 1 1 Go 1.25 全面分析工作总结](#1-1-1-1-1-1-1-go-125-全面分析工作总结)
@@ -329,11 +329,11 @@ type CodeReviewService struct {
 // 多阶段Docker构建
 FROM golang:1.25-alpine AS builder
 
-# 2 2 2 2 2 2 2 构建阶段配置
+# 构建阶段配置
 
 FROM alpine:latest AS runtime
 
-# 3 3 3 3 3 3 3 运行阶段配置
+# 运行阶段配置
 
 ```
 

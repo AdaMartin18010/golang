@@ -1,13 +1,3 @@
----
-title: Go语言系统架构设计
-slug: system-architecture
-topic: architecture
-level: overview
-goVersion: 
-lastReviewed: 2025-09-15
-owner: module-architecture
-status: active
----
 
 ## Go语言系统架构设计
 

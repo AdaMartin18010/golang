@@ -1,54 +1,14 @@
-# 1 1 1 1 1 1 1 Temporal 与 Cadence 的多维对比分析
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 Temporal 与 Cadence 的多维对比分析](#1-1-1-1-1-1-1-temporal-与-cadence-的多维对比分析)
-  - [1.1 目录](#目录)
-  - [1.2 1. 工作流模型与组合](#1-工作流模型与组合)
-    - [1.2.1 工作流基础模型对比](#工作流基础模型对比)
-    - [1.2.2 工作流组合能力](#工作流组合能力)
-    - [1.2.3 工作流状态管理](#工作流状态管理)
-    - [1.2.4 工作流管理与编排](#工作流管理与编排)
-  - [1.3 2. 数据流与执行模型](#2-数据流与执行模型)
-    - [1.3.1 数据流设计](#数据流设计)
-    - [1.3.2 执行流控制](#执行流控制)
-    - [1.3.3 容错机制](#容错机制)
-    - [1.3.4 一致性保证](#一致性保证)
-    - [1.3.5 分布式运行时架构](#分布式运行时架构)
-  - [1.4 3. 开发模型与语言支持](#3-开发模型与语言支持)
-    - [1.4.1 Go与Rust SDK对比](#go与rust-sdk对比)
-    - [1.4.2 协议设计与演化](#协议设计与演化)
-    - [1.4.3 开发体验与测试框架](#开发体验与测试框架)
-- [2 2 2 2 2 2 2 Temporal本地开发服务器启动](#2-2-2-2-2-2-2-temporal本地开发服务器启动)
-- [3 3 3 3 3 3 3 启动特定服务](#3-3-3-3-3-3-3-启动特定服务)
-- [4 4 4 4 4 4 4 Cadence本地开发通常需要Docker Compose](#4-4-4-4-4-4-4-cadence本地开发通常需要docker-compose)
-- [5 5 5 5 5 5 5 Temporal CLI示例](#5-5-5-5-5-5-5-temporal-cli示例)
-- [6 6 6 6 6 6 6 获取工作流状态](#6-6-6-6-6-6-6-获取工作流状态)
-- [7 7 7 7 7 7 7 查询工作流](#7-7-7-7-7-7-7-查询工作流)
-    - [7 7 7 7 7 7 7 部署模型与运维考量](#7-7-7-7-7-7-7-部署模型与运维考量)
-- [8 8 8 8 8 8 8 Temporal服务发现配置示例](#8-8-8-8-8-8-8-temporal服务发现配置示例)
-- [9 9 9 9 9 9 9 Temporal多集群配置示例](#9-9-9-9-9-9-9-temporal多集群配置示例)
-- [10 10 10 10 10 10 10 Temporal Kubernetes HPA配置示例](#10-10-10-10-10-10-10-temporal-kubernetes-hpa配置示例)
-- [11 11 11 11 11 11 11 Temporal Prometheus配置示例](#11-11-11-11-11-11-11-temporal-prometheus配置示例)
-  - [11.1 4. 生态系统与实际应用](#4-生态系统与实际应用)
-    - [11.1.1 生态系统成熟度](#生态系统成熟度)
-- [12 12 12 12 12 12 12 Temporal示例项目](#12-12-12-12-12-12-12-temporal示例项目)
-    - [12 12 12 12 12 12 12 应用场景契合度](#12-12-12-12-12-12-12-应用场景契合度)
-    - [12 12 12 12 12 12 12 社区活跃度与支持](#12-12-12-12-12-12-12-社区活跃度与支持)
-  - [12.1 5. 总结与展望](#5-总结与展望)
-    - [12.1.1 核心优劣势总结](#核心优劣势总结)
-    - [12.1.2 选择决策框架](#选择决策框架)
-    - [12.1.3 未来发展趋势](#未来发展趋势)
-<!-- TOC END -->
+#  Temporal 与 Cadence 的多维对比分析
 
 ## 1.1 目录
 
 - [Temporal 与 Cadence 的多维对比分析](#temporal-与-cadence-的多维对比分析)
   - [目录](#目录)
   - [1. 工作流模型与组合](#1-工作流模型与组合)
-    - [1.1 工作流基础模型对比](#11-工作流基础模型对比)
-    - [1.2 工作流组合能力](#12-工作流组合能力)
-    - [1.3 工作流状态管理](#13-工作流状态管理)
-    - [1.4 工作流管理与编排](#14-工作流管理与编排)
+    - [1. ](#11-工作流基础模型对比)
+    - [2. ](#12-工作流组合能力)
+    - [3. ](#13-工作流状态管理)
+    - [4. ](#14-工作流管理与编排)
   - [2. 数据流与执行模型](#2-数据流与执行模型)
     - [2.1 数据流设计](#21-数据流设计)
     - [2.2 执行流控制](#22-执行流控制)
@@ -865,11 +825,11 @@ Temporal提供了更完善的本地开发体验：
 
 ```bash
 
-# 2 2 2 2 2 2 2 Temporal本地开发服务器启动
+# Temporal本地开发服务器启动
 
 temporal server start-dev
 
-# 3 3 3 3 3 3 3 启动特定服务
+# 启动特定服务
 
 temporal server start \
   --namespace default \
@@ -882,7 +842,7 @@ Cadence本地开发相对复杂：
 
 ```bash
 
-# 4 4 4 4 4 4 4 Cadence本地开发通常需要Docker Compose
+# Cadence本地开发通常需要Docker Compose
 
 docker-compose -f docker/docker-compose.yml up
 
@@ -894,18 +854,18 @@ Temporal的CLI工具更强大且用户友好：
 
 ```bash
 
-# 5 5 5 5 5 5 5 Temporal CLI示例
+# Temporal CLI示例
 
 temporal workflow start \
   --task-queue "order-processing" \
   --type "OrderWorkflow" \
   --input '{"orderId":"12345","items":[{"id":"item1","quantity":2}]}'
 
-# 6 6 6 6 6 6 6 获取工作流状态
+# 获取工作流状态
 
 temporal workflow show --workflow-id "order-12345"
 
-# 7 7 7 7 7 7 7 查询工作流
+# 查询工作流
 
 temporal workflow query --workflow-id "order-12345" --query-type "getStatus"
 
@@ -1066,7 +1026,7 @@ Temporal支持多种服务发现模式：
 
 ```yaml
 
-# 8 8 8 8 8 8 8 Temporal服务发现配置示例
+# Temporal服务发现配置示例
 
 services:
   frontend:
@@ -1102,7 +1062,7 @@ Temporal提供了更成熟的多集群部署支持：
 
 ```yaml
 
-# 9 9 9 9 9 9 9 Temporal多集群配置示例
+# Temporal多集群配置示例
 
 clusterMetadata:
   enableGlobalNamespace: true
@@ -1131,7 +1091,7 @@ Temporal提供了更好的自动扩展指南：
 
 ```yaml
 
-# 10 10 10 10 10 10 10 Temporal Kubernetes HPA配置示例
+# Temporal Kubernetes HPA配置示例
 
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
@@ -1181,7 +1141,7 @@ Temporal提供了更全面的监控指标：
 
 ```yaml
 
-# 11 11 11 11 11 11 11 Temporal Prometheus配置示例
+# Temporal Prometheus配置示例
 
 metrics:
   prometheus:
@@ -1272,7 +1232,7 @@ Temporal提供了更多现成的模板和示例：
 
 ```bash
 
-# 12 12 12 12 12 12 12 Temporal示例项目
+# Temporal示例项目
 
 git clone https://github.com/temporalio/samples-go.git
 

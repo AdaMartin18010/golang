@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 Category Design Pattern
+﻿# Category Design Pattern
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Category Design Pattern](#1-1-1-1-1-1-1-category-design-pattern)
+- [Category Design Pattern](#category-design-pattern)
   - [1.1 1. 创建型设计模式（Creational Patterns）](#11-1-创建型设计模式creational-patterns)
     - [1.1.1 范畴论视角下的创建型模式](#111-范畴论视角下的创建型模式)
     - [1.1.2 2. 结构型设计模式（Structural Patterns）](#112-2-结构型设计模式structural-patterns)

@@ -1,13 +1,3 @@
----
-title: 可观测性 SLO 与成本控制策略
-slug: observability-slo-and-cost
-topic: observability
-level: operations
-goVersion: 1.21+
-lastReviewed: 2025-09-17
-owner: sre-team
-status: active
----
 
 ## 指标体系与基线
 

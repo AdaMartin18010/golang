@@ -643,7 +643,7 @@ def calculate_critical_path(workflow):
                 )
             latest_start_times[task.id] = min_successor_start_time - task.duration
     
-# 2 2 2 2 2 2 2 确定临界路径上的
+# 确定临界路径上的
 
 def calculate_critical_path(workflow):
     """计算工作流的临界路径
@@ -777,7 +777,7 @@ $\forall j_1, j_2 \in J: |ServiceRate(j_1) - ServiceRate(j_2)| \leq \epsilon$
 
 ```ruby
 
-# 3 3 3 3 3 3 3 资源优化算法的伪代码实现
+# 资源优化算法的伪代码实现
 
 def optimize_resources(jobs, resources, constraints, objective_weights)
   # 初始解 - 贪心分配
@@ -821,7 +821,7 @@ def optimize_resources(jobs, resources, constraints, objective_weights)
   return current_allocation
 end
 
-# 4 4 4 4 4 4 4 计算多目标加权和
+# 计算多目标加权和
 
 def weighted_sum(objectives, weights)
   sum = 0
@@ -831,7 +831,7 @@ def weighted_sum(objectives, weights)
   return sum
 end
 
-# 5 5 5 5 5 5 5 校验资源分配是否满足约束
+# 校验资源分配是否满足约束
 
 def satisfies_constraints(allocation, constraints)
   constraints.all? do |constraint|
@@ -1548,7 +1548,7 @@ $CIM \xrightarrow{T_{C2P}} PIM \xrightarrow{T_{P2S}} PSM \xrightarrow{T_{S2C}} C
 
 ```yaml
 
-# 6 6 6 6 6 6 6 平台独立模型 (PIM) 示例 - 使用抽象语法
+# 平台独立模型 (PIM) 示例 - 使用抽象语法
 
 ---
 pipeline:
@@ -1586,7 +1586,7 @@ pipeline:
           strategy: "rolling"
           dependencies: ["单元测试", "集成测试"]
 
-# 7 7 7 7 7 7 7 平台特定模型 (PSM) 示例 - 转换为GitHub Actions语法
+# 平台特定模型 (PSM) 示例 - 转换为GitHub Actions语法
 
 ---
 name: "通用Web应用CI/CD"
@@ -3421,7 +3421,7 @@ class VerificationReport {
 
 ```yaml
 
-# 8 8 8 8 8 8 8 GitHub Actions工作流示例
+# GitHub Actions工作流示例
 
 name: CI/CD Pipeline
 

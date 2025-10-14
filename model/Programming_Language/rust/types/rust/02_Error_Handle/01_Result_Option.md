@@ -1,12 +1,12 @@
-# 2.1 Result 和 Option
+﻿# 2.1 Result 和 Option
 
 <!-- TOC START -->
-- [2.1 Result 和 Option](#result-和-option)
-  - [2.1.1 Result 类型](#result-类型)
-  - [2.1.2 Option 类型](#option-类型)
-  - [2.1.3 联系和区别](#联系和区别)
-  - [2.1.4 使用场景](#使用场景)
-  - [2.1.5 示例](#示例)
+- [2.1 Result 和 Option](#21-result-和-option)
+  - [2.1.1 Result 类型](#211-result-类型)
+  - [2.1.2 Option 类型](#212-option-类型)
+  - [2.1.3 联系和区别](#213-联系和区别)
+  - [2.1.4 使用场景](#214-使用场景)
+  - [2.1.5 示例](#215-示例)
 <!-- TOC END -->
 
 在 Rust 中，`Result` 和 `Option` 是两种枚举类型，它们在错误处理和可选值的表示中扮演着关键角色。

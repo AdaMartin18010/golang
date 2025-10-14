@@ -1,28 +1,16 @@
-# 1 1 1 1 1 1 1 Rust 1.86.0 特性分析
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 1.86.0 特性分析](#1-1-1-1-1-1-1-rust-1860-特性分析)
-  - [1.1 目录](#目录)
-  - [1.2 引言](#引言)
-  - [1.3 主要特性](#主要特性)
-    - [1.3.1 `impl Trait` in Associated Types](#impl-trait-in-associated-types)
-    - [1.3.2 新的 Lint: `INCOMPATIBLE_FRAGMENT_MATCH`](#新的-lint-incompatible_fragment_match)
-    - [1.3.3 稳定的 API](#稳定的-api)
-  - [1.4 思维导图](#思维导图)
-  - [1.5 总结](#总结)
-<!-- TOC END -->
+﻿# Rust 1.86.0 特性分析
 
 ## 1.1 目录
 
 - [Rust 1.86.0 特性分析](#rust-1860-特性分析)
-  - [目录](#目录)
-  - [引言](#引言)
-  - [主要特性](#主要特性)
-    - [`impl Trait` in Associated Types](#impl-trait-in-associated-types)
-    - [新的 Lint: `INCOMPATIBLE_FRAGMENT_MATCH`](#新的-lint-incompatible_fragment_match)
-    - [稳定的 API](#稳定的-api)
-  - [思维导图](#思维导图)
-  - [总结](#总结)
+  - [1.1 目录](#11-目录)
+  - [1.2 引言](#12-引言)
+  - [1.3 主要特性](#13-主要特性)
+    - [1.3.1 `impl Trait` in Associated Types](#131-impl-trait-in-associated-types)
+    - [1.3.2 新的 Lint: `INCOMPATIBLE_FRAGMENT_MATCH`](#132-新的-lint-incompatible_fragment_match)
+    - [1.3.3 稳定的 API](#133-稳定的-api)
+  - [1.4 思维导图](#14-思维导图)
+  - [1.5 总结](#15-总结)
 
 ## 1.2 引言
 

@@ -1,13 +1,3 @@
----
-title: Go测试最佳实践
-slug: go-testing-best-practices
-topic: testing
-level: overview
-goVersion: 1.21+
-lastReviewed: 2025-01-15
-owner: core-team
-status: active
----
 
 # Go测试最佳实践
 

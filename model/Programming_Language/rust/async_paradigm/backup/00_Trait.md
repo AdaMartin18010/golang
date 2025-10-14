@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 Rust 的异步编程机制
+﻿# Rust 的异步编程机制
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 的异步编程机制](#1-1-1-1-1-1-1-rust-的异步编程机制)
+- [Rust 的异步编程机制](#rust-的异步编程机制)
 <!-- TOC END -->
 
 Rust 的异步编程机制主要依赖于 `Future`、`async/await`、`Stream` 以及异步运行时（如 Tokio）等概念。

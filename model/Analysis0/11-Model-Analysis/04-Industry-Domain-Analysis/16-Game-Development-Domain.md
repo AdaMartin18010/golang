@@ -1485,4 +1485,4 @@ func (a *Analytics) TrackEvent(eventType string, data map[string]interface{}) {
 - [Amethyst游戏引擎](https://amethyst.rs/)
 - [WGPU图形API](https://wgpu.rs/)
 - [Rapier物理引擎](https://rapier.rs/)
-- [Tokio异步运行时](https://tokio.rs/) 
+- [Tokio异步运行时](https://tokio.rs/)

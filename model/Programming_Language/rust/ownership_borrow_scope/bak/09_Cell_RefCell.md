@@ -1,10 +1,10 @@
-# 1 1 1 1 1 1 1 Cell 和 RefCell
+# Cell 和 RefCell
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Cell 和 RefCell](#1-1-1-1-1-1-1-cell-和-refcell)
-  - [1.1 Cell](#cell)
-    - [1.1.1 RefCell](#refcell)
-    - [1.1.2 区别和联系](#区别和联系)
+- [Cell 和 RefCell](#cell-和-refcell)
+  - [1.1 Cell](#11-cell)
+    - [1.1.1 RefCell](#111-refcell)
+    - [1.1.2 区别和联系](#112-区别和联系)
 <!-- TOC END -->
 
 在 Rust 中，`Cell` 和 `RefCell` 是两种不同的类型，它们都用于封装数据并提供运行时借用检查。

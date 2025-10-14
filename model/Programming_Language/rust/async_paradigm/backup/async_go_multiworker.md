@@ -1,24 +1,24 @@
-# 1 1 1 1 1 1 1 Rust async 多任务调度机制与 Tokio 与 async-std 对比与使用场景
+# Rust async 多任务调度机制与 Tokio 与 async-std 对比与使用场景
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust async 多任务调度机制与 Tokio 与 async-std 对比与使用场景](#1-1-1-1-1-1-1-rust-async-多任务调度机制与-tokio-与-async-std-对比与使用场景)
-  - [1.1 1. Rust async 多任务调度机制](#1-rust-async-多任务调度机制)
-    - [1.1.1 核心原理](#核心原理)
-    - [1.1.2 关键组件与工具](#关键组件与工具)
-  - [1.2 2. 框架对比：Tokio 与 async-std](#2-框架对比：tokio-与-async-std)
-    - [1.2.1 Tokio](#tokio)
-    - [1.2.2 async-std](#async-std)
-  - [1.3 3. 示例代码](#3-示例代码)
-    - [1.3.1 Tokio 示例代码](#tokio-示例代码)
-    - [1.3.2 async-std 示例代码](#async-std-示例代码)
-    - [1.3.3 实现类似 Golang 的并行机制](#实现类似-golang-的并行机制)
-      - [1.3.3.1 异步取消（类似 Go 的 context）](#异步取消（类似-go-的-context）)
-      - [1.3.3.2 类似 WaitGroup、Chan、Select 和 Goroutine 池化](#类似-waitgroup、chan、select-和-goroutine-池化)
-  - [1.4 4. Rust async 与 Golang 并发模型对比](#4-rust-async-与-golang-并发模型对比)
-    - [1.4.1 相似点](#相似点)
-    - [1.4.2 不同点及优缺点](#不同点及优缺点)
-  - [1.5 5. 思维导图总结](#5-思维导图总结)
-  - [1.6 6. 总结](#6-总结)
+- [Rust async 多任务调度机制与 Tokio 与 async-std 对比与使用场景](#rust-async-多任务调度机制与-tokio-与-async-std-对比与使用场景)
+  - [1.1 1. Rust async 多任务调度机制](#11-1-rust-async-多任务调度机制)
+    - [1.1.1 核心原理](#111-核心原理)
+    - [1.1.2 关键组件与工具](#112-关键组件与工具)
+  - [1.2 2. 框架对比：Tokio 与 async-std](#12-2-框架对比tokio-与-async-std)
+    - [1.2.1 Tokio](#121-tokio)
+    - [1.2.2 async-std](#122-async-std)
+  - [1.3 3. 示例代码](#13-3-示例代码)
+    - [1.3.1 Tokio 示例代码](#131-tokio-示例代码)
+    - [1.3.2 async-std 示例代码](#132-async-std-示例代码)
+    - [1.3.3 实现类似 Golang 的并行机制](#133-实现类似-golang-的并行机制)
+      - [1.3.3.1 异步取消（类似 Go 的 context）](#1331-异步取消类似-go-的-context)
+      - [1.3.3.2 类似 WaitGroup、Chan、Select 和 Goroutine 池化](#1332-类似-waitgroupchanselect-和-goroutine-池化)
+  - [1.4 4. Rust async 与 Golang 并发模型对比](#14-4-rust-async-与-golang-并发模型对比)
+    - [1.4.1 相似点](#141-相似点)
+    - [1.4.2 不同点及优缺点](#142-不同点及优缺点)
+  - [1.5 5. 思维导图总结](#15-5-思维导图总结)
+  - [1.6 6. 总结](#16-6-总结)
 <!-- TOC END -->
 
 下面给出一个详细的说明，涵盖了 Rust async 如何全面支持多任务调度的机制、示例代码、以及 Tokio 与 async-std 这两个运行时的对比与使用场景，

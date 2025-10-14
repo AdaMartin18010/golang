@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 to_owned
+﻿# to_owned
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 to_owned](#1-1-1-1-1-1-1-to_owned)
+- [to\_owned](#to_owned)
 <!-- TOC END -->
 
 在 Rust 中，`to_owned` 是一个方法，通常与 `Borrow` trait 配合使用。

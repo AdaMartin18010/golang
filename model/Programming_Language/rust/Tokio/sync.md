@@ -1,14 +1,4 @@
-# 1 1 1 1 1 1 1 rust Tokio 同步机制
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 rust Tokio 同步机制](#1-1-1-1-1-1-1-rust-tokio-同步机制)
-  - [1.1 目录](#目录)
-  - [1.2 1. 互斥锁（Mutex）](#1-互斥锁（mutex）)
-  - [1.3 2. 信号量（Semaphore）](#2-信号量（semaphore）)
-  - [1.4 3. 屏障（Barrier）](#3-屏障（barrier）)
-  - [1.5 4. 通道（Channel）](#4-通道（channel）)
-  - [1.6 5. 通知（Notify）](#5-通知（notify）)
-<!-- TOC END -->
+# rust Tokio 同步机制
 
 以下是关于 Tokio 同步机制 的详细介绍，包括定义、概念、示例代码以及思维导图。内容以 Markdown 格式输出。
 Tokio 同步机制
@@ -18,12 +8,12 @@ Tokio 提供了多种同步机制，用于在异步任务之间进行同步和�
 ## 1.1 目录
 
 - [rust Tokio 同步机制](#rust-tokio-同步机制)
-  - [目录](#目录)
-  - [1. 互斥锁（Mutex）](#1-互斥锁mutex)
-  - [2. 信号量（Semaphore）](#2-信号量semaphore)
-  - [3. 屏障（Barrier）](#3-屏障barrier)
-  - [4. 通道（Channel）](#4-通道channel)
-  - [5. 通知（Notify）](#5-通知notify)
+  - [1.1 目录](#11-目录)
+  - [1.2 1. 互斥锁（Mutex）](#12-1-互斥锁mutex)
+  - [1.3 2. 信号量（Semaphore）](#13-2-信号量semaphore)
+  - [1.4 3. 屏障（Barrier）](#14-3-屏障barrier)
+  - [1.5 4. 通道（Channel）](#15-4-通道channel)
+  - [1.6 5. 通知（Notify）](#16-5-通知notify)
 
 ## 1.2 1. 互斥锁（Mutex）
 

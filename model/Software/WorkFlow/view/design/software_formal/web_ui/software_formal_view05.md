@@ -1496,7 +1496,7 @@ public class ProductServiceImpl implements ProductService {
 
 ```yaml
 
-# 2 2 2 2 2 2 2 application.yml
+# application.yml
 
 spring:
   application:
@@ -1510,17 +1510,17 @@ spring:
         healthCheckPath: /actuator/health
         healthCheckInterval: 15s
 
-# 3 3 3 3 3 3 3 配置中心集成
+# 配置中心集成
 
   config:
     import: optional:configserver:http://config-server:8888
 
-# 4 4 4 4 4 4 4 分布式追踪
+# 分布式追踪
 
   zipkin:
     base-url: http://zipkin:9411
   
-# 5 5 5 5 5 5 5 消息队列配置
+# 消息队列配置
 
   kafka:
     bootstrap-servers: kafka:9092
@@ -1697,7 +1697,7 @@ export class ItemsServiceStack extends cdk.Stack {
 
 ```yaml
 
-# 6 6 6 6 6 6 6 serverless.yml
+# serverless.yml
 
 service: items-service
 
@@ -2253,78 +2253,78 @@ Redis作为高性能键值存储和多功能数据结构服务器：
 
 ```bash
 
-# 7 7 7 7 7 7 7 Redis数据结构和命令示例
+# Redis数据结构和命令示例
 
-# 8 8 8 8 8 8 8 字符串操作 - 计数器和缓存
+# 字符串操作 - 计数器和缓存
 
 SET pageviews:homepage 1000
 INCR pageviews:homepage
 GET pageviews:homepage
 
-# 9 9 9 9 9 9 9 带过期时间的缓存
+# 带过期时间的缓存
 
 SET user:profile:1001 "{\"name\":\"John\",\"email\":\"john@example.com\"}" EX 3600
 GET user:profile:1001
 
-# 10 10 10 10 10 10 10 哈希表 - 存储对象
+# 哈希表 - 存储对象
 
 HSET product:10001 name "Smartphone X" price 699.99 category "electronics" stock 124
 HINCRBY product:10001 stock -1
 HGETALL product:10001
 
-# 11 11 11 11 11 11 11 列表 - 最新动态、消息队列
+# 列表 - 最新动态、消息队列
 
 LPUSH latest:news "{\"id\":1,\"title\":\"New Feature Launch\"}"
 LPUSH latest:news "{\"id\":2,\"title\":\"System Maintenance\"}"
 LRANGE latest:news 0 4
 
-# 12 12 12 12 12 12 12 任务队列
+# 任务队列
 
 RPUSH tasks:email "{\"type\":\"welcome\",\"user_id\":1001}"
 LPOP tasks:email
 
-# 13 13 13 13 13 13 13 集合 - 唯一元素集合、标签系统
+# 集合 - 唯一元素集合、标签系统
 
 SADD product:10001:tags "smartphone" "5g" "android"
 SADD product:10002:tags "smartphone" "5g" "ios"
 SINTER product:10001:tags product:10002:tags  # 共同标签
 
-# 14 14 14 14 14 14 14 用户在线状态
+# 用户在线状态
 
 SADD online:users 1001 1002 1003
 SISMEMBER online:users 1001  # 检查用户是否在线
 
-# 15 15 15 15 15 15 15 有序集合 - 排行榜、权重列表
+# 有序集合 - 排行榜、权重列表
 
 ZADD leaderboard:monthly 1220 "user:1001"
 ZADD leaderboard:monthly 940 "user:1002"
 ZADD leaderboard:monthly 1500 "user:1003"
 ZREVRANGE leaderboard:monthly 0 9 WITHSCORES  # 前10名
 
-# 16 16 16 16 16 16 16 位图操作 - 用户活跃统计
+# 位图操作 - 用户活跃统计
 
 SETBIT user:1001:active:2023-08 0 1  # 8月1日活跃
 SETBIT user:1001:active:2023-08 5 1  # 8月6日活跃
 BITCOUNT user:1001:active:2023-08  # 活跃天数
 
-# 17 17 17 17 17 17 17 地理空间 - 位置服务
+# 地理空间 - 位置服务
 
 GEOADD locations 13.361389 38.115556 "store:1001" 15.087269 37.502669 "store:1002"
 GEODIST locations "store:1001" "store:1002" km
 GEORADIUS locations 15.0 37.0 50 km
 
-# 18 18 18 18 18 18 18 流 - 事件处理、日志
+# 流 - 事件处理、日志
 
 XADD events:purchases * product_id 10001 user_id 1001 quantity 2
 XADD events:purchases * product_id 10002 user_id 1002 quantity 1
 XREAD COUNT 10 STREAMS events:purchases 0-0
 
-# 19 19 19 19 19 19 19 发布订阅
+# 发布订阅
 
 SUBSCRIBE notifications:global
 PUBLISH notifications:global "{\"type\":\"alert\",\"message\":\"System update\"}"
 
-# 20 20 20 20 20 20 20 Lua脚本 - 原子操作
+# Lua脚本 - 原子操作
 
 EVAL "
 local current = tonumber(redis.call('get', KEYS[1])) or 0
@@ -2807,7 +2807,7 @@ SQLAlchemy核心API展示数据映射器模式：
 
 ```python
 
-# 21 21 21 21 21 21 21 SQLAlchemy数据映射器示例
+# SQLAlchemy数据映射器示例
 
 from sqlalchemy import (
     create_engine, MetaData, Table, Column, Integer, String,
@@ -2816,12 +2816,12 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
-# 22 22 22 22 22 22 22 创建数据库连接
+# 创建数据库连接
 
 engine = create_engine('postgresql://user:password@localhost:5432/mydb')
 metadata = MetaData()
 
-# 23 23 23 23 23 23 23 使用核心API定义表
+# 使用核心API定义表
 
 users = Table(
     'users', metadata,
@@ -2860,11 +2860,11 @@ products = Table(
     Column('created_at', DateTime, default=datetime.utcnow)
 )
 
-# 24 24 24 24 24 24 24 创建表
+# 创建表
 
 metadata.create_all(engine)
 
-# 25 25 25 25 25 25 25 数据访问类
+# 数据访问类
 
 class UserRepository:
     def __init__(self, connection):
@@ -2959,7 +2959,7 @@ class OrderRepository:
             # 返回完整订单
             return self.find_with_items(order_id)
 
-# 26 26 26 26 26 26 26 使用示例
+# 使用示例
 
 with engine.connect() as conn:
     user_repo = UserRepository(conn)
@@ -3937,7 +3937,7 @@ export default async function handler(req, res) {
 
 ```toml
 
-# 27 27 27 27 27 27 27 netlify.toml
+# netlify.toml
 
 [build]
   command = "npm run build"
@@ -3948,19 +3948,19 @@ export default async function handler(req, res) {
   NODE_VERSION = "16"
   NPM_FLAGS = "--silent"
 
-# 28 28 28 28 28 28 28 增量静态重新生成处理
+# 增量静态重新生成处理
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# 29 29 29 29 29 29 29 重定向和重写
+# 重定向和重写
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
-# 30 30 30 30 30 30 30 缓存控制
+# 缓存控制
 
 [[headers]]
   for = "/_next/static/*"
@@ -3972,7 +3972,7 @@ export default async function handler(req, res) {
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
-# 31 31 31 31 31 31 31 环境变量根据部署环境
+# 环境变量根据部署环境
 
 [context.production.environment]
   NEXT_PUBLIC_API_URL = "https://api.example.com"
@@ -5036,9 +5036,9 @@ module.exports = router;
 
 ```yaml
 
-# 32 32 32 32 32 32 32 Kubernetes配置示例 - 电子商务微服务应用
+# Kubernetes配置示例 - 电子商务微服务应用
 
-# 33 33 33 33 33 33 33 产品服务部署
+# 产品服务部署
 
 apiVersion: apps/v1
 kind: Deployment
@@ -5112,7 +5112,7 @@ spec:
       imagePullSecrets:
       - name: registry-credentials
 
-# 34 34 34 34 34 34 34 产品服务 Service
+# 产品服务 Service
 
 apiVersion: v1
 kind: Service
@@ -5127,7 +5127,7 @@ spec:
     targetPort: 8080
   type: ClusterIP
 
-# 35 35 35 35 35 35 35 API Gateway
+# API Gateway
 
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -5145,7 +5145,7 @@ spec:
     hosts:
     - "api.ecommerce.example.com"
   
-# 36 36 36 36 36 36 36 路由配置
+# 路由配置
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -5191,7 +5191,7 @@ spec:
         port:
           number: 80
 
-# 37 37 37 37 37 37 37 服务网格策略 - 熔断
+# 服务网格策略 - 熔断
 
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -5213,7 +5213,7 @@ spec:
       baseEjectionTime: 30s
       maxEjectionPercent: 100
 
-# 38 38 38 38 38 38 38 HorizontalPodAutoscaler
+# HorizontalPodAutoscaler
 
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -5248,7 +5248,7 @@ spec:
         value: 100
         periodSeconds: 15
 
-# 39 39 39 39 39 39 39 存储配置 - PVC
+# 存储配置 - PVC
 
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -5263,7 +5263,7 @@ spec:
       storage: 10Gi
   storageClassName: standard
 
-# 40 40 40 40 40 40 40 定时任务 - 库存检查
+# 定时任务 - 库存检查
 
 apiVersion: batch/v1
 kind: CronJob
@@ -5290,7 +5290,7 @@ spec:
               value: "http://notification-service"
           restartPolicy: OnFailure
 
-# 41 41 41 41 41 41 41 配置映射
+# 配置映射
 
 apiVersion: v1
 kind: ConfigMap
@@ -5304,7 +5304,7 @@ data:
   redis.host: "redis-master.cache"
   kafka.bootstrap.servers: "kafka-headless.messaging:9092"
 
-# 42 42 42 42 42 42 42 密钥
+# 密钥
 
 apiVersion: v1
 kind: Secret
@@ -5334,9 +5334,9 @@ data:
 
 ```yaml
 
-# 43 43 43 43 43 43 43 Istio服务网格配置示例
+# Istio服务网格配置示例
 
-# 44 44 44 44 44 44 44 全局网络策略
+# 全局网络策略
 
 apiVersion: networking.istio.io/v1beta1
 kind: Sidecar
@@ -5349,7 +5349,7 @@ spec:
     - "./*"
     - "istio-system/*"
 
-# 45 45 45 45 45 45 45 互相TLS策略
+# 互相TLS策略
 
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
@@ -5360,7 +5360,7 @@ spec:
   mtls:
     mode: STRICT
 
-# 46 46 46 46 46 46 46 流量管理 - 金丝雀发布
+# 流量管理 - 金丝雀发布
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -5386,7 +5386,7 @@ spec:
         host: product-service
         subset: v1
 
-# 47 47 47 47 47 47 47 服务版本定义
+# 服务版本定义
 
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -5403,7 +5403,7 @@ spec:
     labels:
       version: v2
 
-# 48 48 48 48 48 48 48 请求路由 - 基于权重的流量分拆
+# 请求路由 - 基于权重的流量分拆
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -5424,7 +5424,7 @@ spec:
         subset: v2
       weight: 10
 
-# 49 49 49 49 49 49 49 服务容错 - 熔断器
+# 服务容错 - 熔断器
 
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -5446,7 +5446,7 @@ spec:
       baseEjectionTime: 30s
       maxEjectionPercent: 100
 
-# 50 50 50 50 50 50 50 超时配置
+# 超时配置
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -5462,7 +5462,7 @@ spec:
         host: payment-service
     timeout: 3s
 
-# 51 51 51 51 51 51 51 重试策略
+# 重试策略
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -5483,7 +5483,7 @@ spec:
       perTryTimeout: 500ms
       retryOn: connect-failure,refused-stream,unavailable,cancelled,deadline-exceeded,5xx
 
-# 52 52 52 52 52 52 52 故障注入 - 用于测试恢复能力
+# 故障注入 - 用于测试恢复能力
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -5507,7 +5507,7 @@ spec:
     - destination:
         host: shipping-service
 
-# 53 53 53 53 53 53 53 认证策略
+# 认证策略
 
 apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
@@ -5519,7 +5519,7 @@ spec:
   - issuer: "https://auth.ecommerce.example.com"
     jwksUri: "https://auth.ecommerce.example.com/.well-known/jwks.json"
 
-# 54 54 54 54 54 54 54 授权策略
+# 授权策略
 
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -5546,7 +5546,7 @@ spec:
         methods: ["GET"]
         paths: ["/api/payments/*"]
 
-# 55 55 55 55 55 55 55 遥测配置
+# 遥测配置
 
 apiVersion: telemetry.istio.io/v1alpha1
 kind: Telemetry
@@ -5571,9 +5571,9 @@ spec:
 
 ```yaml
 
-# 56 56 56 56 56 56 56 Kubernetes高级配置示例
+# Kubernetes高级配置示例
 
-# 57 57 57 57 57 57 57 StatefulSet示例 - 数据库
+# StatefulSet示例 - 数据库
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -5623,7 +5623,7 @@ spec:
         requests:
           storage: 100Gi
 
-# 58 58 58 58 58 58 58 Network Policies - 零信任网络模型
+# Network Policies - 零信任网络模型
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -5682,7 +5682,7 @@ spec:
     - protocol: TCP
       port: 9090
 
-# 59 59 59 59 59 59 59 Pod Security Context
+# Pod Security Context
 
 apiVersion: v1
 kind: Pod
@@ -5704,7 +5704,7 @@ spec:
         drop:
           - ALL
 
-# 60 60 60 60 60 60 60 Pod Disruption Budget - 确保高可用性
+# Pod Disruption Budget - 确保高可用性
 
 apiVersion: policy/v1
 kind: PodDisruptionBudget
@@ -5717,7 +5717,7 @@ spec:
     matchLabels:
       app: product-service
 
-# 61 61 61 61 61 61 61 资源配额
+# 资源配额
 
 apiVersion: v1
 kind: ResourceQuota
@@ -5734,7 +5734,7 @@ spec:
     services: "30"
     persistentvolumeclaims: "20"
 
-# 62 62 62 62 62 62 62 自定义资源定义 - Redis集群操作符
+# 自定义资源定义 - Redis集群操作符
 
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -5785,7 +5785,7 @@ spec:
                       cpu:
                         type: string
 
-# 63 63 63 63 63 63 63 使用自定义资源
+# 使用自定义资源
 
 apiVersion: cache.example.com/v1
 kind: RedisCluster

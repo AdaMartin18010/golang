@@ -3727,7 +3727,7 @@ CI/CD安全集成:
 
 ```yaml
 
-# 2 2 2 2 2 2 2 AWS CloudFormation示例
+# AWS CloudFormation示例
 
 Resources:
   MyDatabaseSecret:

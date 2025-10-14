@@ -1,10 +1,10 @@
-# 1 1 1 1 1 1 1 生命周期（Lifetime）
+﻿# 生命周期（Lifetime）
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 生命周期（Lifetime）](#1-1-1-1-1-1-1-生命周期（lifetime）)
-  - [1.1 Deref Trait](#deref-trait)
-    - [1.1.1 生命周期注解](#生命周期注解)
-  - [1.2 解释和联系](#解释和联系)
+- [生命周期（Lifetime）](#生命周期lifetime)
+  - [1.1 Deref Trait](#11-deref-trait)
+    - [1.1.1 生命周期注解](#111-生命周期注解)
+  - [1.2 解释和联系](#12-解释和联系)
 <!-- TOC END -->
 
 在 Rust 中，生命周期（Lifetime）是一个关键概念，用于确保引用和借用的内存安全。

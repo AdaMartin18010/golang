@@ -1139,7 +1139,7 @@ $BuildPipeline = MultiArch \cap DependencyManagement \cap TestAutomation \cap Ar
 
 ```yaml
 
-# 2 2 2 2 2 2 2 GitHub Actions工作流示例
+# GitHub Actions工作流示例
 
 name: Multi-arch Build
 

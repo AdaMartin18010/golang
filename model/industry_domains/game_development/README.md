@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 游戏开发 (Game Development) - Rust架构指南
+# 游戏开发 (Game Development) - Rust架构指南
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 游戏开发 (Game Development) - Rust架构指南](#1-1-1-1-1-1-1-游戏开发-game-development---rust架构指南)
+- [游戏开发 (Game Development) - Rust架构指南](#游戏开发-game-development---rust架构指南)
   - [1.1 概述](#11-概述)
   - [1.2 核心挑战](#12-核心挑战)
   - [1.3 技术栈选型](#13-技术栈选型)
@@ -40,7 +40,8 @@
 
 ## 1.1 概述
 
-游戏开发行业需要高性能、低延迟的实时系统，Rust的内存安全和零成本抽象特性使其成为游戏开发的理想选择。从游戏引擎到网络服务器，Rust都能提供卓越的性能表现。
+游戏开发行业需要高性能、低延迟的实时系统，Rust的内存安全和零成本抽象特性使其成为游戏开发的理想选择。
+从游戏引擎到网络服务器，Rust都能提供卓越的性能表现。
 
 ## 1.2 核心挑战
 
@@ -57,37 +58,37 @@
 ```toml
 [dependencies]
 
-# 2 2 2 2 2 2 2 游戏引擎
+# 游戏引擎
 
 bevy = "0.12"
 amethyst = "0.20"
 ggez = "0.9"
 
-# 3 3 3 3 3 3 3 图形渲染
+# 图形渲染
 
 wgpu = "0.18"
 vulkano = "0.34"
 glium = "0.32"
 
-# 4 4 4 4 4 4 4 音频
+# 音频
 
 rodio = "0.17"
 cpal = "0.15"
 kira = "0.8"
 
-# 5 5 5 5 5 5 5 物理引擎
+# 物理引擎
 
 rapier2d = "0.17"
 rapier3d = "0.17"
 nphysics3d = "0.16"
 
-# 6 6 6 6 6 6 6 网络
+# 网络
 
 tokio = { version = "1.35", features = ["full"] }
 quinn = "0.10"
 webrtc = "0.8"
 
-# 7 7 7 7 7 7 7 序列化
+# 序列化
 
 serde = { version = "1.0", features = ["derive"] }
 bincode = "1.3"
@@ -99,23 +100,23 @@ bincode = "1.3"
 ```toml
 [dependencies]
 
-# 8 8 8 8 8 8 8 数学库
+# 数学库
 
 glam = "0.25"
 nalgebra = "0.32"
 cgmath = "0.18"
 
-# 9 9 9 9 9 9 9 资源管理
+# 资源管理
 
 asset = "0.1"
 notify = "6.1"
 
-# 10 10 10 10 10 10 10 输入处理
+# 输入处理
 
 winit = "0.29"
 gilrs = "0.9"
 
-# 11 11 11 11 11 11 11 调试和性能
+# 调试和性能
 
 tracy-client = "0.20"
 perf-event = "0.4"
@@ -1003,7 +1004,7 @@ mod performance_tests {
 
 ```toml
 
-# 12 12 12 12 12 12 12 Cargo.toml
+# Cargo.toml
 
 [package]
 name = "my-game"
@@ -1023,7 +1024,7 @@ debug = true
 
 [dependencies]
 
-# 13 13 13 13 13 13 13 开发依赖
+# 开发依赖
 
 [dev-dependencies]
 criterion = "0.5"

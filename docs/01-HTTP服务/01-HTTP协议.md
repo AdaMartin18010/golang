@@ -1,13 +1,3 @@
----
-title: HTTP协议基础
-slug: http-protocol-basics
-topic: http
-level: intro
-goVersion: 1.21+
-lastReviewed: 2025-01-15
-owner: core-team
-status: active
----
 
 # 2.1.1 HTTP协议基础
 

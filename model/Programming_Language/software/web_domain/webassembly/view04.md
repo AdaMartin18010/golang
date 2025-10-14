@@ -1,37 +1,4 @@
-# 1 1 1 1 1 1 1 WebAssembly 未来趋势的批判性分析与形式化论证
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 WebAssembly 未来趋势的批判性分析与形式化论证](#1-1-1-1-1-1-1-webassembly-未来趋势的批判性分析与形式化论证)
-  - [1.1 目录](#目录)
-  - [1.2 引言](#引言)
-  - [1.3 1. 趋势一：组件模型成熟 (Component Model Maturation)](#1-趋势一：组件模型成熟-component-model-maturation)
-    - [1.3.1 定义与目标](#定义与目标)
-    - [1.3.2 形式化视角](#形式化视角)
-    - [1.3.3 推理：潜在收益 (Inference: Potential Benefits)](#推理：潜在收益-inference-potential-benefits)
-    - [1.3.4 批判性分析与挑战 (Critical Analysis & Challenges)](#批判性分析与挑战-critical-analysis-&-challenges)
-  - [1.4 2. 趋势二：高级特性普及 (Advanced Feature Proliferation - GC, Threads, Exceptions)](#2-趋势二：高级特性普及-advanced-feature-proliferation-gc-threads-exceptions)
-    - [1.4.1 定义与目标](#定义与目标)
-    - [1.4.2 形式化视角](#形式化视角)
-    - [1.4.3 推理：潜在收益](#推理：潜在收益)
-    - [1.4.4 批判性分析与挑战](#批判性分析与挑战)
-  - [1.5 3. 趋势三：WASI 扩展 (WASI Expansion - Networking, Async IO)](#3-趋势三：wasi-扩展-wasi-expansion-networking-async-io)
-    - [1.5.1 定义与目标](#定义与目标)
-    - [1.5.2 形式化视角](#形式化视角)
-    - [1.5.3 推理：潜在收益](#推理：潜在收益)
-    - [1.5.4 批判性分析与挑战](#批判性分析与挑战)
-  - [1.6 4. 趋势四：工具链完善 (Toolchain Perfection)](#4-趋势四：工具链完善-toolchain-perfection)
-    - [1.6.1 定义与目标](#定义与目标)
-    - [1.6.2 形式化视角](#形式化视角)
-    - [1.6.3 推理：潜在收益](#推理：潜在收益)
-    - [1.6.4 批判性分析与挑战](#批判性分析与挑战)
-  - [1.7 5. 趋势五：超越 Web (Beyond the Web)](#5-趋势五：超越-web-beyond-the-web)
-    - [1.7.1 定义与目标](#定义与目标)
-    - [1.7.2 形式化视角](#形式化视角)
-    - [1.7.3 推理：潜在收益](#推理：潜在收益)
-    - [1.7.4 批判性分析与挑战](#批判性分析与挑战)
-  - [1.8 6. 综合结论与展望](#6-综合结论与展望)
-  - [1.9 思维导图](#思维导图)
-<!-- TOC END -->
+#  WebAssembly 未来趋势的批判性分析与形式化论证
 
 ## 1.1 目录
 
@@ -39,10 +6,10 @@
   - [目录](#目录)
   - [引言](#引言)
   - [1. 趋势一：组件模型成熟 (Component Model Maturation)](#1-趋势一组件模型成熟-component-model-maturation)
-    - [1.1 定义与目标](#11-定义与目标)
-    - [1.2 形式化视角](#12-形式化视角)
-    - [1.3 推理：潜在收益 (Inference: Potential Benefits)](#13-推理潜在收益-inference-potential-benefits)
-    - [1.4 批判性分析与挑战 (Critical Analysis \& Challenges)](#14-批判性分析与挑战-critical-analysis--challenges)
+    - [1. ](#11-定义与目标)
+    - [2. ](#12-形式化视角)
+    - [3. ](#13-推理潜在收益-inference-potential-benefits)
+    - [4. ](#14-批判性分析与挑战-critical-analysis--challenges)
   - [2. 趋势二：高级特性普及 (Advanced Feature Proliferation - GC, Threads, Exceptions)](#2-趋势二高级特性普及-advanced-feature-proliferation---gc-threads-exceptions)
     - [2.1 定义与目标](#21-定义与目标)
     - [2.2 形式化视角](#22-形式化视角)

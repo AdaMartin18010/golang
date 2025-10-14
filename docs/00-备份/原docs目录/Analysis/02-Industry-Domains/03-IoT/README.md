@@ -1591,4 +1591,4 @@ func (iim *IndustrialIoTMonitor) checkDeviceParameters(device *DeviceInfo) {
 
 ---
 
-* 本文档提供了物联网领域的完整架构分析，包含形式化定义、Golang实现和最佳实践。所有代码示例都经过验证，可直接在Golang环境中运行。*
+- 本文档提供了物联网领域的完整架构分析，包含形式化定义、Golang实现和最佳实践。所有代码示例都经过验证，可直接在Golang环境中运行。*

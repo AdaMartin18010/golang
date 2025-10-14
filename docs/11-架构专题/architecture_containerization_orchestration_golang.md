@@ -64,59 +64,59 @@
 
 ```dockerfile
 
-# 2 2 2 2 2 2 2 1. 使用官方、精简的基础镜像 (多阶段构建)
+# 1. 使用官方、精简的基础镜像 (多阶段构建)
 
 FROM golang:1.19-alpine AS builder
 
-# 3 3 3 3 3 3 3 2. 设置工作目录
+# 2. 设置工作目录
 
 WORKDIR /app
 
-# 4 4 4 4 4 4 4 3. 优化依赖缓存
+# 3. 优化依赖缓存
 
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-# 5 5 5 5 5 5 5 4. 拷贝源代码
+# 4. 拷贝源代码
 
 COPY . .
 
-# 6 6 6 6 6 6 6 5. 构建应用，使用静态编译以减少依赖
+# 5. 构建应用，使用静态编译以减少依赖
 
-# 7 7 7 7 7 7 7 CGO_ENABLED=0 禁用CGO
+# CGO_ENABLED=0 禁用CGO
 
-# 8 8 8 8 8 8 8 GOOS=linux 指定目标操作系统
+# GOOS=linux 指定目标操作系统
 
-# 9 9 9 9 9 9 9 -a 强制重新构建
+# -a 强制重新构建
 
-# 10 10 10 10 10 10 10 -ldflags "-w -s" 移除调试信息，减小体积
+# -ldflags "-w -s" 移除调试信息，减小体积
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-w -s" -o /app/main .
 
-# 11 11 11 11 11 11 11 --- 创建一个最小化的生产镜像 ---
+# --- 创建一个最小化的生产镜像 ---
 
 FROM alpine:latest
 
-# 12 12 12 12 12 12 12 6. 设置工作目录
+# 6. 设置工作目录
 
 WORKDIR /app
 
-# 13 13 13 13 13 13 13 7. 从构建阶段拷贝编译好的二进制文件
+# 7. 从构建阶段拷贝编译好的二进制文件
 
 COPY --from=builder /app/main .
 COPY --from=builder /app/config.yaml . # 拷贝配置文件
 
-# 14 14 14 14 14 14 14 8. （安全实践）添加非root用户
+# 8. （安全实践）添加非root用户
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
-# 15 15 15 15 15 15 15 9. 暴露端口
+# 9. 暴露端口
 
 EXPOSE 8080
 
-# 16 16 16 16 16 16 16 10. 定义启动命令
+# 10. 定义启动命令
 
 CMD ["./main"]
 
@@ -140,7 +140,7 @@ CMD ["./main"]
 
 ```yaml
 
-# 17 17 17 17 17 17 17 deployment.yaml
+# deployment.yaml
 
 apiVersion: apps/v1
 kind: Deployment
@@ -184,7 +184,7 @@ spec:
           periodSeconds: 10
 ---
 
-# 18 18 18 18 18 18 18 service.yaml
+# service.yaml
 
 apiVersion: v1
 kind: Service
@@ -395,7 +395,7 @@ func main() {
 
 ```yaml
 
-# 19 19 19 19 19 19 19 .github/workflows/ci-cd.yml
+# .github/workflows/ci-cd.yml
 
 name: Go CI/CD Pipeline
 

@@ -1,28 +1,4 @@
-# 1 1 1 1 1 1 1 Rust 异步编程相关文档分析
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 Rust 异步编程相关文档分析](#1-1-1-1-1-1-1-rust-异步编程相关文档分析)
-  - [1.1 目录](#目录)
-  - [1.2 1. 思维导图](#1-思维导图)
-  - [1.3 2. 综合分析](#2-综合分析)
-    - [1.3.1 核心概念与模式](#核心概念与模式)
-      - [1.3.1.1 Tokio 核心机制](#tokio-核心机制)
-      - [1.3.1.2 异步生成器](#异步生成器)
-      - [1.3.1.3 Actor 模式 (`actor.md`)](#actor-模式-actormd)
-      - [1.3.1.4 工作者/任务池模式 (`workers.md`, `processor.md`)](#工作者任务池模式-workersmd-processormd)
-      - [1.3.1.5 观察者模式 (`workers.md`)](#观察者模式-workersmd)
-      - [1.3.1.6 同步原语与通道 (`sync.md`, `channel.md`)](#同步原语与通道-syncmd-channelmd)
-    - [1.3.2 数据处理与算法 (`algorithm.md`, `gen_algorithm.md`, `actor.md`)](#数据处理与算法-algorithmmd-gen_algorithmmd-actormd)
-    - [1.3.3 网络与协议 (`tcp.md`, `http.md`, `grpc.md`, `grpc_stream.md`, `tonic.md`, `mqtt.md`, `modbus.md`)](#网络与协议-tcpmd-httpmd-grpcmd-grpc_streammd-tonicmd-mqttmd-modbusmd)
-    - [1.3.4 存储与数据库 (`sql.md`, `reids.md`, `etcd.md`)](#存储与数据库-sqlmd-reidsmd-etcdmd)
-    - [1.3.5 分布式系统 (`raft.md`, `raft-nats.md`, `etcd.md`, `processor.md`)](#分布式系统-raftmd-raft-natsmd-etcdmd-processormd)
-    - [1.3.6 可观测性与工具 (`metric.md`, `trace.md`, `log.md`, `tui.md`, `heim.md`)](#可观测性与工具-metricmd-tracemd-logmd-tuimd-heimmd)
-    - [1.3.7 代码生成 (`openapi.md`, `asyncapi.md`)](#代码生成-openapimd-asyncapimd)
-  - [1.4 3. 总体评价](#3-总体评价)
-    - [1.4.1 优势](#优势)
-    - [1.4.2 批判性审视与潜在问题](#批判性审视与潜在问题)
-    - [1.4.3 潜在改进方向](#潜在改进方向)
-<!-- TOC END -->
+# Rust 异步编程相关文档分析
 
 好的，我们来对您提供的所有 Rust 异步编程相关文档进行一次全面且带有批判性的分析。
 
@@ -31,26 +7,26 @@
 ## 1.1 目录
 
 - [Rust 异步编程相关文档分析](#rust-异步编程相关文档分析)
-  - [目录](#目录)
-  - [1. 思维导图](#1-思维导图)
-  - [2. 综合分析](#2-综合分析)
-    - [2.1 核心概念与模式](#21-核心概念与模式)
-      - [2.1.1 Tokio 核心机制](#211-tokio-核心机制)
-      - [2.1.2 异步生成器](#212-异步生成器)
-      - [2.1.3 Actor 模式 (`actor.md`)](#213-actor-模式-actormd)
-      - [2.1.4 工作者/任务池模式 (`workers.md`, `processor.md`)](#214-工作者任务池模式-workersmd-processormd)
-      - [2.1.5 观察者模式 (`workers.md`)](#215-观察者模式-workersmd)
-      - [2.1.6 同步原语与通道 (`sync.md`, `channel.md`)](#216-同步原语与通道-syncmd-channelmd)
-    - [2.2 数据处理与算法 (`algorithm.md`, `gen_algorithm.md`, `actor.md`)](#22-数据处理与算法-algorithmmd-gen_algorithmmd-actormd)
-    - [2.3 网络与协议 (`tcp.md`, `http.md`, `grpc.md`, `grpc_stream.md`, `tonic.md`, `mqtt.md`, `modbus.md`)](#23-网络与协议-tcpmd-httpmd-grpcmd-grpc_streammd-tonicmd-mqttmd-modbusmd)
-    - [2.4 存储与数据库 (`sql.md`, `reids.md`, `etcd.md`)](#24-存储与数据库-sqlmd-reidsmd-etcdmd)
-    - [2.5 分布式系统 (`raft.md`, `raft-nats.md`, `etcd.md`, `processor.md`)](#25-分布式系统-raftmd-raft-natsmd-etcdmd-processormd)
-    - [2.6 可观测性与工具 (`metric.md`, `trace.md`, `log.md`, `tui.md`, `heim.md`)](#26-可观测性与工具-metricmd-tracemd-logmd-tuimd-heimmd)
-    - [2.7 代码生成 (`openapi.md`, `asyncapi.md`)](#27-代码生成-openapimd-asyncapimd)
-  - [3. 总体评价](#3-总体评价)
-    - [3.1 优势](#31-优势)
-    - [3.2 批判性审视与潜在问题](#32-批判性审视与潜在问题)
-    - [3.3 潜在改进方向](#33-潜在改进方向)
+  - [1.1 目录](#11-目录)
+  - [1.2 1. 思维导图](#12-1-思维导图)
+  - [1.3 2. 综合分析](#13-2-综合分析)
+    - [1.3.1 核心概念与模式](#131-核心概念与模式)
+      - [1.3.1.1 Tokio 核心机制](#1311-tokio-核心机制)
+      - [1.3.1.2 异步生成器](#1312-异步生成器)
+      - [1.3.1.3 Actor 模式 (`actor.md`)](#1313-actor-模式-actormd)
+      - [1.3.1.4 工作者/任务池模式 (`workers.md`, `processor.md`)](#1314-工作者任务池模式-workersmd-processormd)
+      - [1.3.1.5 观察者模式 (`workers.md`)](#1315-观察者模式-workersmd)
+      - [1.3.1.6 同步原语与通道 (`sync.md`, `channel.md`)](#1316-同步原语与通道-syncmd-channelmd)
+    - [1.3.2 数据处理与算法 (`algorithm.md`, `gen_algorithm.md`, `actor.md`)](#132-数据处理与算法-algorithmmd-gen_algorithmmd-actormd)
+    - [1.3.3 网络与协议 (`tcp.md`, `http.md`, `grpc.md`, `grpc_stream.md`, `tonic.md`, `mqtt.md`, `modbus.md`)](#133-网络与协议-tcpmd-httpmd-grpcmd-grpc_streammd-tonicmd-mqttmd-modbusmd)
+    - [1.3.4 存储与数据库 (`sql.md`, `reids.md`, `etcd.md`)](#134-存储与数据库-sqlmd-reidsmd-etcdmd)
+    - [1.3.5 分布式系统 (`raft.md`, `raft-nats.md`, `etcd.md`, `processor.md`)](#135-分布式系统-raftmd-raft-natsmd-etcdmd-processormd)
+    - [1.3.6 可观测性与工具 (`metric.md`, `trace.md`, `log.md`, `tui.md`, `heim.md`)](#136-可观测性与工具-metricmd-tracemd-logmd-tuimd-heimmd)
+    - [1.3.7 代码生成 (`openapi.md`, `asyncapi.md`)](#137-代码生成-openapimd-asyncapimd)
+  - [1.4 3. 总体评价](#14-3-总体评价)
+    - [1.4.1 优势](#141-优势)
+    - [1.4.2 批判性审视与潜在问题](#142-批判性审视与潜在问题)
+    - [1.4.3 潜在改进方向](#143-潜在改进方向)
 
 ## 1.2 1. 思维导图
 

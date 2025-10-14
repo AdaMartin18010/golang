@@ -1189,7 +1189,7 @@ CMD ["./ml-inference-service"]
 
 ```yaml
 
-# 16 16 16 16 16 16 16 ml-inference-deployment.yaml
+# ml-inference-deployment.yaml
 
 apiVersion: apps/v1
 kind: Deployment

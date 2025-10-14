@@ -1,43 +1,4 @@
-# 1 1 1 1 1 1 1 Temporal 的代码实现层面
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 Temporal 的代码实现层面](#1-1-1-1-1-1-1-temporal-的代码实现层面)
-  - [1.1 目录](#目录)
-  - [1.2 1. 引言：深入代码实现](#1-引言：深入代码实现)
-  - [1.3 2. 核心机制的代码实现 (Go 语言视角)](#2-核心机制的代码实现-go-语言视角)
-    - [1.3.1 2.1. 事件溯源与确定性重放引擎 (SDK `internal/workflow`)](#21-事件溯源与确定性重放引擎-sdk-internalworkflow)
-      - [1.3.1.1 2.1.1. Workflow Task 处理循环](#211-workflow-task-处理循环)
-      - [1.3.1.2 2.1.2. 重放状态机 (`workflowExecutionEventHandler`)](#212-重放状态机-workflowexecutioneventhandler)
-      - [1.3.1.3 2.1.3. 命令与事件的转换](#213-命令与事件的转换)
-      - [1.3.1.4 2.1.4. 确定性保障的实现 (`DetRand`, `Now`, `SideEffect` API)](#214-确定性保障的实现-detrand-now-sideeffect-api)
-    - [1.3.2 2.2. 任务轮询与处理 (SDK `internal/worker`)](#22-任务轮询与处理-sdk-internalworker)
-      - [1.3.2.1 2.2.1. 长轮询实现 (`TaskPoller`)](#221-长轮询实现-taskpoller)
-      - [1.3.2.2 2.2.2. 任务分发与并发控制 (`WorkflowWorker`, `ActivityWorker`)](#222-任务分发与并发控制-workflowworker-activityworker)
-      - [1.3.2.3 2.2.3. 粘性队列处理 (`StickyWorkflowTaskPoller`)](#223-粘性队列处理-stickyworkflowtaskpoller)
-    - [1.3.3 2.3. 任务匹配与调度 (Server `service/matching`)](#23-任务匹配与调度-server-servicematching)
-      - [1.3.3.1 2.3.1. 任务队列数据结构 (`TaskQueueManager`, `DBTaskQueue`)](#231-任务队列数据结构-taskqueuemanager-dbtaskqueue)
-      - [1.3.3.2 2.3.2. 匹配引擎 (`matchingEngine`)](#232-匹配引擎-matchingengine)
-      - [1.3.3.3 2.3.3. 同步/异步匹配模式](#233-同步异步匹配模式)
-    - [1.3.4 2.4. 工作流状态管理 (Server `service/history`)](#24-工作流状态管理-server-servicehistory)
-      - [1.3.4.1 2.4.1. 历史分片 (`historyEngine`, `shardController`)](#241-历史分片-historyengine-shardcontroller)
-      - [1.3.4.2 2.4.2. 工作流上下文 (`workflowContext`, `mutableState`)](#242-工作流上下文-workflowcontext-mutablestate)
-      - [1.3.4.3 2.4.3. 事件持久化 (`historyEventNotifier`, `persistence.ExecutionManager`)](#243-事件持久化-historyeventnotifier-persistenceexecutionmanager)
-    - [1.3.5 2.5. 可靠定时器实现 (Server `service/history`)](#25-可靠定时器实现-server-servicehistory)
-      - [1.3.5.1 2.5.1. 定时器队列处理器 (`timerQueueProcessorBase`)](#251-定时器队列处理器-timerqueueprocessorbase)
-      - [1.3.5.2 2.5.2. 定时器任务的持久化与加载](#252-定时器任务的持久化与加载)
-    - [1.3.6 2.6. 活动心跳与取消 (SDK `internal/activity` & Server `service/history`)](#26-活动心跳与取消-sdk-internalactivity-&-server-servicehistory)
-      - [1.3.6.1 2.6.1. SDK 心跳发送 (`RecordHeartbeat`)](#261-sdk-心跳发送-recordheartbeat)
-      - [1.3.6.2 2.6.2. Server 心跳处理与超时检测](#262-server-心跳处理与超时检测)
-      - [1.3.6.3 2.6.3. 取消请求的传递 (`RequestCancelActivityTask`)](#263-取消请求的传递-requestcancelactivitytask)
-  - [1.4 3. 代码组织与设计原则体现](#3-代码组织与设计原则体现)
-    - [1.4.1 3.1. 清晰的职责边界 (Service vs. Common vs. SDK)](#31-清晰的职责边界-service-vs-common-vs-sdk)
-    - [1.4.2 3.2. 接口与依赖注入](#32-接口与依赖注入)
-    - [1.4.3 3.3. 并发原语的应用 (Goroutines, Channels, Mutex)](#33-并发原语的应用-goroutines-channels-mutex)
-    - [1.4.4 3.4. 错误处理模式](#34-错误处理模式)
-    - [1.4.5 3.5. 可测试性设计](#35-可测试性设计)
-  - [1.5 4. 结论：健壮实现支撑强大功能](#4-结论：健壮实现支撑强大功能)
-  - [1.6 思维导图 (Text)](#思维导图-text)
-<!-- TOC END -->
+#  Temporal 的代码实现层面
 
 深入探讨其关键机制是如何在 Go 语言实现的 Server 和 SDK 中具体落地的。
 我们将侧重于核心逻辑的实现方式、关键数据结构、并发模型以及代码组织原则。

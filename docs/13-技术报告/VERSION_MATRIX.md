@@ -1,13 +1,3 @@
----
-title: Go 特性与内容版本矩阵
-slug: version-matrix
-topic: governance
-level: overview
-goVersion: 1.21–1.25+
-lastReviewed: 2025-09-15
-owner: core-team
-status: active
----
 
 ## Go 特性与内容版本矩阵
 

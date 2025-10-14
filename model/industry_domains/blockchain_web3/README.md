@@ -47,35 +47,35 @@ Rust的内存安全、零成本抽象和高性能特性使其成为区块链开�
 ```toml
 [dependencies]
 
-# 2 2 2 2 2 2 2 区块链框架
+# 区块链框架
 
 substrate = "0.9"
 solana-program = "1.17"
 near-sdk = "4.0"
 
-# 3 3 3 3 3 3 3 密码学
+# 密码学
 
 secp256k1 = "0.28"
 ed25519 = "2.2"
 sha2 = "0.10"
 ripemd = "0.1"
 
-# 4 4 4 4 4 4 4 网络通信
+# 网络通信
 
 libp2p = "0.53"
 tokio = { version = "1.35", features = ["full"] }
 
-# 5 5 5 5 5 5 5 序列化
+# 序列化
 
 serde = { version = "1.0", features = ["derive"] }
 bincode = "1.3"
 
-# 6 6 6 6 6 6 6 数据库
+# 数据库
 
 sled = "0.34"
 rocksdb = "0.21"
 
-# 7 7 7 7 7 7 7 Web3集成
+# Web3集成
 
 web3 = "0.19"
 ethers = "2.0"
@@ -432,7 +432,7 @@ mod tests {
 
 ```yaml
 
-# 8 8 8 8 8 8 8 docker-compose.yml
+# docker-compose.yml
 
 version: '3.8'
 services:

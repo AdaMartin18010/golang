@@ -2,56 +2,63 @@
 
 ## 目录
 
-1. [分布式通信模式](#1-分布式通信模式)
-   1.1 [请求-响应模式](#11-请求-响应模式)
-   1.2 [发布-订阅模式](#12-发布-订阅模式)
-   1.3 [消息队列模式](#13-消息队列模式)
-   1.4 [RPC模式](#14-rpc模式)
-   1.5 [流处理模式](#15-流处理模式)
-
-2. [一致性与复制模式](#2-一致性与复制模式)
-   2.1 [主从复制](#21-主从复制)
-   2.2 [多主复制](#22-多主复制)
-   2.3 [无主复制](#23-无主复制)
-   2.4 [分布式共识（Raft）](#24-分布式共识raft)
-   2.5 [CRDT（无冲突复制数据类型）](#25-crdt无冲突复制数据类型)
-
-3. [分区与扩展模式](#3-分区与扩展模式)
-   3.1 [一致性哈希](#31-一致性哈希)
-   3.2 [分片模式](#32-分片模式)
-   3.3 [副本分布](#33-副本分布)
-
-4. [容错与弹性模式](#4-容错与弹性模式)
-   4.1 [熔断器模式](#41-熔断器模式)
-   4.2 [舱壁模式](#42-舱壁模式)
-   4.3 [超时与重试](#43-超时与重试)
-   4.4 [背压模式](#44-背压模式)
-
-5. [事务与一致性模式](#5-事务与一致性模式)
-   5.1 [两阶段提交](#51-两阶段提交)
-   5.2 [三阶段提交](#52-三阶段提交)
-   5.3 [SAGA模式](#53-saga模式)
-   5.4 [TCC模式](#54-tcc模式)
-
-6. [缓存模式](#6-缓存模式)
-   6.1 [本地缓存](#61-本地缓存)
-   6.2 [分布式缓存](#62-分布式缓存)
-   6.3 [缓存穿透/击穿防御](#63-缓存穿透击穿防御)
-
-7. [服务发现与配置](#7-服务发现与配置)
-   7.1 [服务注册与发现](#71-服务注册与发现)
-   7.2 [配置中心](#72-配置中心)
-   7.3 [边车模式](#73-边车模式)
-
-8. [调度与负载均衡](#8-调度与负载均衡)
-   8.1 [负载均衡模式](#81-负载均衡模式)
-   8.2 [服务网格](#82-服务网格)
-   8.3 [任务调度](#83-任务调度)
-
-9. [形式化定义与数学证明](#9-形式化定义与数学证明)
-10. [Golang实现与开源组件](#10-golang实现与开源组件)
-11. [性能分析与最佳实践](#11-性能分析与最佳实践)
-12. [参考文献与外部链接](#12-参考文献与外部链接)
+- [分布式系统设计模式 - Golang实现与分析](#分布式系统设计模式---golang实现与分析)
+  - [目录](#目录)
+  - [1. 分布式通信模式](#1-分布式通信模式)
+    - [1.1 请求-响应模式](#11-请求-响应模式)
+      - [概念定义](#概念定义)
+      - [优缺点分析](#优缺点分析)
+      - [时序图](#时序图)
+      - [相关开源组件](#相关开源组件)
+    - [1.2 发布-订阅模式](#12-发布-订阅模式)
+      - [1.2.1 概念定义](#121-概念定义)
+      - [1.2.2 优缺点分析](#122-优缺点分析)
+      - [架构图](#架构图)
+      - [1.2.3 相关开源组件](#123-相关开源组件)
+    - [1.3 消息队列模式](#13-消息队列模式)
+      - [1.3.1 概念定义](#131-概念定义)
+      - [1.3.2 优缺点分析](#132-优缺点分析)
+      - [流程图](#流程图)
+      - [1.3.3 相关开源组件](#133-相关开源组件)
+  - [2. 一致性与复制模式](#2-一致性与复制模式)
+    - [2.1 主从复制](#21-主从复制)
+      - [2.1.1 概念定义](#211-概念定义)
+      - [2.1.2 优缺点分析](#212-优缺点分析)
+      - [2.1.3 架构图](#213-架构图)
+      - [2.1.4 相关开源组件](#214-相关开源组件)
+    - [2.4 分布式共识（Raft）](#24-分布式共识raft)
+      - [2.4.1 概念定义](#241-概念定义)
+      - [2.4.2 优缺点分析](#242-优缺点分析)
+      - [2.4.3 状态转换图](#243-状态转换图)
+      - [2.4.4 相关开源组件](#244-相关开源组件)
+  - [9. 形式化定义与数学证明](#9-形式化定义与数学证明)
+    - [9.1 分布式系统形式化模型](#91-分布式系统形式化模型)
+    - [9.2 最终一致性形式化定义](#92-最终一致性形式化定义)
+    - [9.3 CAP定理形式化](#93-cap定理形式化)
+  - [10. Golang实现与开源组件](#10-golang实现与开源组件)
+    - [10.1 核心开源组件](#101-核心开源组件)
+      - [etcd](#etcd)
+      - [Consul](#consul)
+      - [gRPC](#grpc)
+    - [10.2 性能优化最佳实践](#102-性能优化最佳实践)
+      - [连接池管理](#连接池管理)
+      - [负载均衡](#负载均衡)
+  - [11. 性能分析与最佳实践](#11-性能分析与最佳实践)
+    - [11.1 性能指标](#111-性能指标)
+      - [延迟（Latency）](#延迟latency)
+      - [吞吐量（Throughput）](#吞吐量throughput)
+      - [可用性（Availability）](#可用性availability)
+    - [11.2 监控与可观测性](#112-监控与可观测性)
+      - [指标收集](#指标收集)
+      - [分布式追踪](#分布式追踪)
+    - [11.3 错误处理策略](#113-错误处理策略)
+      - [重试机制](#重试机制)
+      - [熔断器模式](#熔断器模式)
+  - [12. 参考文献与外部链接](#12-参考文献与外部链接)
+    - [12.1 学术论文](#121-学术论文)
+    - [12.2 开源项目](#122-开源项目)
+    - [12.3 技术文档](#123-技术文档)
+    - [12.4 最佳实践指南](#124-最佳实践指南)
 
 ## 1. 分布式通信模式
 
@@ -152,11 +159,13 @@ func (h *RequestResponseHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 #### 优缺点分析
 
 **优点**：
+
 - 简单直观，易于实现和理解
 - 适合请求-响应类型的交互
 - 可以集成重试、超时等机制
 
 **缺点**：
+
 - 紧耦合：客户端必须等待响应
 - 可能导致阻塞
 - 难以扩展到复杂的交互模式
@@ -184,7 +193,7 @@ sequenceDiagram
 
 ### 1.2 发布-订阅模式
 
-#### 概念定义
+#### 1.2.1 概念定义
 
 **定义**：发布者将消息发送到主题，订阅者接收感兴趣主题的消息，实现松耦合的异步通信。
 
@@ -312,14 +321,16 @@ func (s *SimpleSubscriber) OnMessage(msg Message) {
 }
 ```
 
-#### 优缺点分析
+#### 1.2.2 优缺点分析
 
 **优点**：
+
 - 松耦合：发布者和订阅者互不依赖
 - 可扩展：易于添加新的发布者和订阅者
 - 异步通信：提高系统响应性
 
 **缺点**：
+
 - 消息可能丢失
 - 难以保证消息顺序
 - 调试和测试复杂
@@ -337,7 +348,7 @@ graph TD
     T2 --> S3[Subscriber 3]
 ```
 
-#### 相关开源组件
+#### 1.2.3 相关开源组件
 
 - **NATS**: 轻量级消息系统
 - **Redis Pub/Sub**: Redis发布订阅
@@ -345,7 +356,7 @@ graph TD
 
 ### 1.3 消息队列模式
 
-#### 概念定义
+#### 1.3.1 概念定义
 
 **定义**：生产者将消息发送到队列，消费者从队列中获取消息进行处理，实现异步消息传递。
 
@@ -479,14 +490,16 @@ func (c *Consumer) Stop() {
 }
 ```
 
-#### 优缺点分析
+#### 1.3.2 优缺点分析
 
 **优点**：
+
 - 异步处理：提高系统响应性
 - 削峰填谷：处理流量波动
 - 解耦：生产者和消费者独立
 
 **缺点**：
+
 - 增加系统复杂性
 - 消息可能重复或丢失
 - 需要处理死信队列
@@ -502,7 +515,7 @@ flowchart LR
     Q --> C3[Consumer 3]
 ```
 
-#### 相关开源组件
+#### 1.3.3 相关开源组件
 
 - **RabbitMQ**: 消息代理
 - **Apache ActiveMQ**: 消息中间件
@@ -512,7 +525,7 @@ flowchart LR
 
 ### 2.1 主从复制
 
-#### 概念定义
+#### 2.1.1 概念定义
 
 **定义**：一个主节点处理写操作，多个从节点复制主节点的数据，处理读操作。
 
@@ -682,19 +695,21 @@ func (s *SlaveNode) Replicate(entry LogEntry) error {
 }
 ```
 
-#### 优缺点分析
+#### 2.1.2 优缺点分析
 
 **优点**：
+
 - 读写分离：提高读性能
 - 高可用：主节点故障时可切换
 - 简单易实现
 
 **缺点**：
+
 - 单点故障：主节点故障影响写操作
 - 数据一致性：主从延迟可能导致数据不一致
 - 扩展性限制：写操作仍受主节点限制
 
-#### 架构图
+#### 2.1.3 架构图
 
 ```mermaid
 graph TD
@@ -707,7 +722,7 @@ graph TD
     Client4[Client 4] --> Slave2
 ```
 
-#### 相关开源组件
+#### 2.1.4 相关开源组件
 
 - **MySQL**: 主从复制
 - **PostgreSQL**: 流复制
@@ -715,7 +730,7 @@ graph TD
 
 ### 2.4 分布式共识（Raft）
 
-#### 概念定义
+#### 2.4.1 概念定义
 
 **定义**：Raft是一种分布式一致性算法，通过领导者选举和日志复制保证多个节点间的一致性。
 
@@ -725,6 +740,7 @@ graph TD
 $$\text{Raft} = \{\text{LeaderElection}, \text{LogReplication}, \text{Safety}\}$$
 
 其中：
+
 - $\text{LeaderElection}: N \rightarrow N \times T$
 - $\text{LogReplication}: L \times N \rightarrow L$
 - $\text{Safety}: \forall i, j \in N, \text{Log}_i = \text{Log}_j$
@@ -967,19 +983,21 @@ func min(a, b int64) int64 {
 }
 ```
 
-#### 优缺点分析
+#### 2.4.2 优缺点分析
 
 **优点**：
+
 - 易于理解：比Paxos更简单
 - 工程实现成熟：etcd、Consul等广泛使用
 - 强一致性保证
 
 **缺点**：
+
 - 对网络分区敏感
 - 领导者选举可能产生脑裂
 - 性能受领导者限制
 
-#### 状态转换图
+#### 2.4.3 状态转换图
 
 ```mermaid
 stateDiagram-v2
@@ -991,7 +1009,7 @@ stateDiagram-v2
     Leader --> Follower : 选举超时
 ```
 
-#### 相关开源组件
+#### 2.4.4 相关开源组件
 
 - **etcd**: 分布式键值存储
 - **Consul**: 服务发现和配置
@@ -1002,6 +1020,7 @@ stateDiagram-v2
 ### 9.1 分布式系统形式化模型
 
 **定义**：分布式系统是一个五元组 $(N, S, M, T, \delta)$，其中：
+
 - $N$ 是节点集合
 - $S$ 是状态集合
 - $M$ 是消息集合
@@ -1009,6 +1028,7 @@ stateDiagram-v2
 - $\delta: N \times S \times M \rightarrow S$ 是状态转换函数
 
 **定理**：在异步网络中，不可能同时满足以下三个属性：
+
 1. 终止性（Termination）
 2. 一致性（Agreement）
 3. 有效性（Validity）
@@ -1026,6 +1046,7 @@ $$\forall i, j \in N, \lim_{t \to \infty} S_i(t) = S_j(t)$$
 ### 9.3 CAP定理形式化
 
 **定理**：分布式系统最多只能同时满足CAP中的两个属性：
+
 - 一致性（Consistency）
 - 可用性（Availability）
 - 分区容错性（Partition tolerance）
@@ -1038,9 +1059,11 @@ $$\text{Consistency} \land \text{Availability} \land \text{Partition Tolerance} 
 ### 10.1 核心开源组件
 
 #### etcd
+
 - **用途**：分布式键值存储，服务发现
 - **特点**：基于Raft算法，强一致性
 - **Golang集成**：
+
 ```go
 import "go.etcd.io/etcd/client/v3"
 
@@ -1053,9 +1076,11 @@ func connectEtcd() (*clientv3.Client, error) {
 ```
 
 #### Consul
+
 - **用途**：服务发现、配置管理、健康检查
 - **特点**：支持多数据中心
 - **Golang集成**：
+
 ```go
 import "github.com/hashicorp/consul/api"
 
@@ -1067,9 +1092,11 @@ func connectConsul() (*api.Client, error) {
 ```
 
 #### gRPC
+
 - **用途**：高性能RPC框架
 - **特点**：基于HTTP/2，支持流式传输
 - **Golang集成**：
+
 ```go
 import (
     "google.golang.org/grpc"
@@ -1086,6 +1113,7 @@ func createGRPCServer() *grpc.Server {
 ### 10.2 性能优化最佳实践
 
 #### 连接池管理
+
 ```go
 type ConnectionPool struct {
     connections chan net.Conn
@@ -1113,6 +1141,7 @@ func (p *ConnectionPool) Put(conn net.Conn) {
 ```
 
 #### 负载均衡
+
 ```go
 type LoadBalancer struct {
     servers []string
@@ -1135,16 +1164,19 @@ func (lb *LoadBalancer) Next() string {
 ### 11.1 性能指标
 
 #### 延迟（Latency）
+
 - **定义**：请求从发送到接收响应的时间
 - **测量**：使用histogram统计分布
 - **优化**：连接复用、异步处理、缓存
 
 #### 吞吐量（Throughput）
+
 - **定义**：单位时间内处理的请求数量
 - **测量**：QPS（Queries Per Second）
 - **优化**：并发处理、负载均衡、资源池化
 
 #### 可用性（Availability）
+
 - **定义**：系统正常运行时间的比例
 - **测量**：$A = \frac{MTBF}{MTBF + MTTR}$
 - **优化**：冗余设计、故障转移、监控告警
@@ -1152,6 +1184,7 @@ func (lb *LoadBalancer) Next() string {
 ### 11.2 监控与可观测性
 
 #### 指标收集
+
 ```go
 import "github.com/prometheus/client_golang/prometheus"
 
@@ -1175,6 +1208,7 @@ var (
 ```
 
 #### 分布式追踪
+
 ```go
 import "go.opentelemetry.io/otel/trace"
 
@@ -1190,6 +1224,7 @@ func tracedHandler(ctx context.Context, req Request) (Response, error) {
 ### 11.3 错误处理策略
 
 #### 重试机制
+
 ```go
 func retryWithBackoff(operation func() error, maxRetries int) error {
     for i := 0; i < maxRetries; i++ {
@@ -1206,6 +1241,7 @@ func retryWithBackoff(operation func() error, maxRetries int) error {
 ```
 
 #### 熔断器模式
+
 ```go
 type CircuitBreaker struct {
     state       State
@@ -1261,26 +1297,30 @@ func (cb *CircuitBreaker) Execute(operation func() error) error {
 ## 12. 参考文献与外部链接
 
 ### 12.1 学术论文
+
 - [Raft论文](https://raft.github.io/raft.pdf)
 - [Paxos论文](https://lamport.azurewebsites.net/pubs/paxos-simple.pdf)
 - [CAP定理论文](https://www.glassbeam.com/sites/all/themes/glassbeam/images/blog/10.1.1.67.6951.pdf)
 
 ### 12.2 开源项目
+
 - [etcd](https://github.com/etcd-io/etcd)
 - [Consul](https://github.com/hashicorp/consul)
 - [gRPC](https://github.com/grpc/grpc-go)
 - [NATS](https://github.com/nats-io/nats.go)
 
 ### 12.3 技术文档
+
 - [Go官方文档](https://golang.org/doc/)
 - [Kubernetes文档](https://kubernetes.io/docs/)
 - [Docker文档](https://docs.docker.com/)
 
 ### 12.4 最佳实践指南
+
 - [Google SRE](https://sre.google/)
 - [Netflix Chaos Engineering](https://netflixtechblog.com/tagged/chaos-engineering)
 - [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
 
 ---
 
-*本文档持续更新，反映分布式系统设计模式的最新发展和Golang生态系统的最佳实践。* 
+*本文档持续更新，反映分布式系统设计模式的最新发展和Golang生态系统的最佳实践。*

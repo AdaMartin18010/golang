@@ -1,13 +1,3 @@
----
-title: 可观测性方案（OTel：Trace → Metrics → Logs → Profile）
-slug: observability-otel-plan
-topic: observability
-level: architecture
-goVersion: 1.21+
-lastReviewed: 2025-09-15
-owner: core-team
-status: active
----
 
 ## 目标与范围
 

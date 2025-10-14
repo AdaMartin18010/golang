@@ -1,12 +1,12 @@
-# 1 1 1 1 1 1 1 Compound and Composite Data Types
+﻿# Compound and Composite Data Types
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 Compound and Composite Data Types](#1-1-1-1-1-1-1-compound-and-composite-data-types)
-  - [1.1 Compound Data Types](#compound-data-types)
-  - [1.2 Composite Data Types](#composite-data-types)
-  - [1.3 Key Differences](#key-differences)
-  - [1.4 Compound Data Types in Rust](#compound-data-types-in-rust)
-  - [1.5 Composite Data Types in Rust](#composite-data-types-in-rust)
+- [Compound and Composite Data Types](#compound-and-composite-data-types)
+  - [1.1 Compound Data Types](#11-compound-data-types)
+  - [1.2 Composite Data Types](#12-composite-data-types)
+  - [1.3 Key Differences](#13-key-differences)
+  - [1.4 Compound Data Types in Rust](#14-compound-data-types-in-rust)
+  - [1.5 Composite Data Types in Rust](#15-composite-data-types-in-rust)
 <!-- TOC END -->
 
 ## 1.1 Compound Data Types

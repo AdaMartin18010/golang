@@ -674,26 +674,26 @@ WebAssembly与容器技术可以协同工作，产生多种架构模式：
 
 ```dockerfile
 
-# 2 2 2 2 2 2 2 Dockerfile: 包含WebAssembly运行时的容器
+# Dockerfile: 包含WebAssembly运行时的容器
 
 FROM ubuntu:20.04
 
-# 3 3 3 3 3 3 3 安装依赖
+# 安装依赖
 
 RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# 4 4 4 4 4 4 4 安装WebAssembly运行时
+# 安装WebAssembly运行时
 
 RUN curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash
 
-# 5 5 5 5 5 5 5 复制WebAssembly应用
+# 复制WebAssembly应用
 
 COPY app.wasm /app/app.wasm
 
-# 6 6 6 6 6 6 6 设置入口点
+# 设置入口点
 
 ENTRYPOINT ["wasmedge", "/app/app.wasm"]
 
@@ -704,7 +704,7 @@ ENTRYPOINT ["wasmedge", "/app/app.wasm"]
 
 ```yaml
 
-# 7 7 7 7 7 7 7 Kubernetes部署WebAssembly工作负载
+# Kubernetes部署WebAssembly工作负载
 
 apiVersion: apps/v1
 kind: Deployment
@@ -845,7 +845,7 @@ impl RequestFilter {
 
 ```yaml
 
-# 8 8 8 8 8 8 8 Istio服务网格WebAssembly扩展配置
+# Istio服务网格WebAssembly扩展配置
 
 apiVersion: extensions.istio.io/v1alpha1
 kind: WasmPlugin
@@ -2566,12 +2566,12 @@ struct ProcessedResult {
 import wasmer
 import json
 
-# 9 9 9 9 9 9 9 加载WebAssembly模块
+# 加载WebAssembly模块
 
 module_bytes = open('analytics_processor.wasm', 'rb').read()
 instance = wasmer.Instance(wasmer.Module(module_bytes))
 
-# 10 10 10 10 10 10 10 准备输入数据
+# 准备输入数据
 
 data = {
     "user_id": "user123",
@@ -2584,7 +2584,7 @@ data = {
     ]
 }
 
-# 11 11 11 11 11 11 11 调用WebAssembly函数
+# 调用WebAssembly函数
 
 result_json = instance.exports.process_analytics_data(json.dumps(data))
 result = json.loads(result_json)
@@ -4297,7 +4297,7 @@ class DistributedProcessor {
 
 ```python
 
-# 12 12 12 12 12 12 12 Python: 跨平台AI应用架构（与WebAssembly集成）
+# Python: 跨平台AI应用架构（与WebAssembly集成）
 
 import json
 import asyncio
@@ -4608,7 +4608,7 @@ class AIManager:
         for model_id in model_ids:
             await self.unload_model(model_id)
 
-# 13 13 13 13 13 13 13 演示WebAssembly与本地模型比较
+# 演示WebAssembly与本地模型比较
 
 async def main():
     # 创建AI管理器

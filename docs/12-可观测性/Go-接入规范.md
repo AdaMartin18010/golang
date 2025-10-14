@@ -1,13 +1,3 @@
----
-title: Go 接入规范（OpenTelemetry）
-slug: observability-otel-go-guideline
-topic: observability
-level: implementation
-goVersion: 1.21+
-lastReviewed: 2025-09-17
-owner: core-team
-status: active
----
 
 ## 接入原则
 

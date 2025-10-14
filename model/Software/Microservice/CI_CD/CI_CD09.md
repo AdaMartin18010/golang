@@ -814,7 +814,7 @@ GitFlow模型与CI/CD的整合可形式化为：
 
 ```yaml
 
-# 2 2 2 2 2 2 2 GitFlow CI/CD 配置示例
+# GitFlow CI/CD 配置示例
 
 name: GitFlow CI/CD
 
@@ -895,7 +895,7 @@ $FeatureFlags = \{(f, env, state) | f \in Features, env \in Environments, state 
 
 ```yaml
 
-# 3 3 3 3 3 3 3 主干开发 CI/CD 配置示例
+# 主干开发 CI/CD 配置示例
 
 name: Trunk-Based CI/CD
 
@@ -1132,15 +1132,15 @@ $Deterministic(Build) \iff \forall input: Build(input, t_1) = Build(input, t_2)$
 
 ```dockerfile
 
-# 4 4 4 4 4 4 4 确定性构建的Dockerfile示例
+# 确定性构建的Dockerfile示例
 
 FROM debian:buster-20210721@sha256:e8aa10cf8261246577d984be2873ddaa50c7232ba91e182c13d61720bae40aa5
 
-# 5 5 5 5 5 5 5 设置时区为UTC避免时间相关性
+# 设置时区为UTC避免时间相关性
 
 ENV TZ=UTC
 
-# 6 6 6 6 6 6 6 安装固定版本的依赖
+# 安装固定版本的依赖
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -1149,19 +1149,19 @@ RUN apt-get update && \
     libssl-dev=1.1.1n-0+deb10u3 && \
     rm -rf /var/lib/apt/lists/*
 
-# 7 7 7 7 7 7 7 设置固定的工作目录
+# 设置固定的工作目录
 
 WORKDIR /build
 
-# 8 8 8 8 8 8 8 复制源代码
+# 复制源代码
 
 COPY . .
 
-# 9 9 9 9 9 9 9 使用固定的编译参数
+# 使用固定的编译参数
 
 RUN make CFLAGS="-O2" LDFLAGS="-Wl,--strip-all" build
 
-# 10 10 10 10 10 10 10 生成确定性构建制品
+# 生成确定性构建制品
 
 RUN find . -type f -name "*.o" -delete && \
     tar --sort=name \
@@ -1221,7 +1221,7 @@ $GitOpsLoop = \{(Observe, Diff, Reconcile) | t \in Time\}$
 
 ```yaml
 
-# 11 11 11 11 11 11 11 Kubernetes声明式配置示例
+# Kubernetes声明式配置示例
 
 apiVersion: apps/v1
 kind: Deployment
@@ -1305,7 +1305,7 @@ $\forall s_{initial} \in S, \exists t_{convergence} > 0: State(System, t_{conver
 
 ```yaml
 
-# 12 12 12 12 12 12 12 ArgoCD应用定义示例
+# ArgoCD应用定义示例
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -1400,7 +1400,7 @@ $\forall t > t_{rotation}: \nexists process: Access(process, S_{old})$
 
 ```yaml
 
-# 13 13 13 13 13 13 13 GitHub Actions密钥使用示例
+# GitHub Actions密钥使用示例
 
 name: Deploy with Secrets
 
@@ -1478,7 +1478,7 @@ $Verify: SignedArtifact \times PublicKey \to \{Valid, Invalid\}$
 
 ```yaml
 
-# 14 14 14 14 14 14 14 Dependabot配置示例
+# Dependabot配置示例
 
 version: 2
 updates:
@@ -1524,7 +1524,7 @@ GitHub Actions提供与GitHub深度集成的CI/CD能力：
 
 ```yaml
 
-# 15 15 15 15 15 15 15 完整CI/CD工作流示例
+# 完整CI/CD工作流示例
 
 name: CI/CD Pipeline
 
@@ -1631,7 +1631,7 @@ jobs:
 
 ```yaml
 
-# 16 16 16 16 16 16 16 矩阵构建示例
+# 矩阵构建示例
 
 jobs:
   test:
@@ -1827,7 +1827,7 @@ GitLab提供了与其Git仓库深度整合的CI/CD功能：
 
 ```yaml
 
-# 17 17 17 17 17 17 17 GitLab CI/CD配置示例
+# GitLab CI/CD配置示例
 
 stages:
   - validate
@@ -1913,7 +1913,7 @@ deploy-production:
 
 ```yaml
 
-# 18 18 18 18 18 18 18 GitLab CI与合并请求集成
+# GitLab CI与合并请求集成
 
 merge_request_pipeline:
   rules:
@@ -1923,7 +1923,7 @@ merge_request_pipeline:
     - echo "Running merge request pipeline"
     - ./ci/validate_mr.sh
 
-# 19 19 19 19 19 19 19 动态环境部署
+# 动态环境部署
 
 review:
   stage: deploy
@@ -1993,22 +1993,22 @@ $Efficiency(GitLabIntegrated) > Efficiency(ExternalIntegration)$，其中效率�
 
 ```bash
 
-# 20 20 20 20 20 20 20 浅克隆
+# 浅克隆
 
 git clone --depth=1 https://github.com/large-org/large-repo.git
 
-# 21 21 21 21 21 21 21 稀疏检出
+# 稀疏检出
 
 git clone --no-checkout https://github.com/large-org/large-repo.git
 cd large-repo
 git sparse-checkout init --cone
 git sparse-checkout set apps/myapp
 
-# 22 22 22 22 22 22 22 部分克隆（需要服务端支持）
+# 部分克隆（需要服务端支持）
 
 git clone --filter=blob:none https://github.com/large-org/large-repo.git
 
-# 23 23 23 23 23 23 23 历史压缩
+# 历史压缩
 
 git checkout --orphan new-main
 git add .
@@ -2110,7 +2110,7 @@ $Diff(c_{current}, c_{previous})$ 是两次提交之间的差异
 
 ```yaml
 
-# 24 24 24 24 24 24 24 GitHub Actions缓存示例
+# GitHub Actions缓存示例
 
 - name: Cache Node.js modules
   uses: actions/cache@v3
@@ -2122,7 +2122,7 @@ $Diff(c_{current}, c_{previous})$ 是两次提交之间的差异
     restore-keys: |
       ${{ runner.os }}-node-
 
-# 25 25 25 25 25 25 25 Gradle增量构建缓存
+# Gradle增量构建缓存
 
 - name: Cache Gradle packages
   uses: actions/cache@v3

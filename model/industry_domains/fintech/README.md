@@ -1,22 +1,23 @@
-# 1 1 1 1 1 1 1 金融科技 (FinTech) - Rust架构指南
+# 金融科技 (FinTech) - Go架构指南
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 金融科技 (FinTech) - Rust架构指南](#1-1-1-1-1-1-1-金融科技-fintech---rust架构指南)
-  - [1.1 概述](#11-概述)
-  - [1.2 核心挑战](#12-核心挑战)
-  - [1.3 技术栈选型](#13-技术栈选型)
-    - [1.3.1 核心框架](#131-核心框架)
-    - [9 9 9 9 9 9 9 行业特定库](#9-9-9-9-9-9-9-行业特定库)
-  - [13.1 架构模式](#131-架构模式)
-    - [13.1.1 1. 微服务架构](#1311-1-微服务架构)
-    - [13.1.2 2. 事件驱动架构](#1312-2-事件驱动架构)
-    - [13.1.3 3. CQRS模式](#1313-3-cqrs模式)
-  - [13.2 业务领域建模](#132-业务领域建模)
-    - [13.2.1 核心领域概念](#1321-核心领域概念)
-    - [13.2.2 值对象](#1322-值对象)
-  - [13.3 数据建模](#133-数据建模)
-    - [13.3.1 数据库设计](#1331-数据库设计)
-    - [13.3.2 仓储模式](#1332-仓储模式)
+- [金融科技 (FinTech) - Go架构指南](#金融科技-fintech---go架构指南)
+  - [1. 概述](#1-概述)
+    - [1.1 定义](#11-定义)
+    - [1.2 核心挑战](#12-核心挑战)
+    - [1.3 技术选型](#13-技术选型)
+      - [1.3.1 核心框架](#131-核心框架)
+      - [1.3.2 行业特定库](#132-行业特定库)
+  - [2. 架构设计](#2-架构设计)
+    - [2.1 微服务架构](#21-微服务架构)
+    - [2.2 事件驱动架构](#22-事件驱动架构)
+    - [2.3 CQRS模式](#23-cqrs模式)
+  - [3. 业务建模](#3-业务建模)
+    - [3.1 核心领域概念](#31-核心领域概念)
+    - [3.2 值对象设计](#32-值对象设计)
+  - [4. 数据管理](#4-数据管理)
+    - [4.1 数据库设计](#41-数据库设计)
+    - [4.2 仓储模式](#42-仓储模式)
   - [13.4 流程建模](#134-流程建模)
     - [13.4.1 支付处理流程](#1341-支付处理流程)
     - [13.4.2 交易执行流程](#1342-交易执行流程)
@@ -39,11 +40,15 @@
   - [14.4 总结](#144-总结)
 <!-- TOC END -->
 
-## 1.1 概述
+## 1. 概述
 
-金融科技行业对系统性能、安全性、可靠性和合规性有极高要求。Rust的内存安全、零成本抽象和高性能特性使其成为金融系统的理想选择。
+### 1.1 定义
 
-## 1.2 核心挑战
+**定义 1.1** (金融科技): 金融科技(FinTech)是将现代信息技术应用于金融服务领域的创新技术，旨在提高金融服务的效率、安全性和可访问性。
+
+金融科技行业对系统性能、安全性、可靠性和合规性有极高要求。Go语言的并发性能、内存安全和简洁语法使其成为金融系统的理想选择。
+
+### 1.2 核心挑战
 
 - **性能要求**: 高频交易、实时结算
 - **安全要求**: 资金安全、数据加密、防攻击
@@ -51,90 +56,79 @@
 - **可靠性**: 7x24小时运行、故障恢复
 - **扩展性**: 处理大规模并发交易
 
-## 1.3 技术栈选型
+### 1.3 技术选型
 
-### 1.3.1 核心框架
-
-```toml
-[dependencies]
-
-# 2 2 2 2 2 2 2 Web框架 - 高性能HTTP服务
-
-actix-web = "4.4"
-axum = "0.7"
-
-# 3 3 3 3 3 3 3 异步运行时
-
-tokio = { version = "1.35", features = ["full"] }
-
-# 4 4 4 4 4 4 4 数据库
-
-sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-rustls"] }
-diesel = { version = "2.1", features = ["postgres"] }
-
-# 5 5 5 5 5 5 5 加密和安全
-
-ring = "0.17"
-rust-crypto = "0.2"
-secp256k1 = "0.28"
-
-# 6 6 6 6 6 6 6 序列化
-
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-
-# 7 7 7 7 7 7 7 配置管理
-
-config = "0.14"
-dotenv = "0.15"
-
-# 8 8 8 8 8 8 8 日志和监控
-
-tracing = "0.1"
-tracing-subscriber = "0.3"
-prometheus = "0.13"
-
-# 9 9 9 9 9 9 9 测试
-
-tokio-test = "0.4"
-mockall = "0.12"
-
-```
-
-### 9 9 9 9 9 9 9 行业特定库
+#### 1.3.1 核心框架
 
 ```toml
 [dependencies]
 
-# 10 10 10 10 10 10 10 金融计算
+# Web框架 - 高性能HTTP服务
+gin = "1.9"
+echo = "4.11"
+fiber = "2.50"
 
-decimal = "2.1"
-rust_decimal = "1.32"
+# 异步运行时
+go = "1.21"
 
-# 11 11 11 11 11 11 11 时间处理
+# 数据库
+gorm = "1.25"
+sqlx = "0.3"
+redis = "9.3"
 
-chrono = { version = "0.4", features = ["serde"] }
-time = "0.3"
+# 加密和安全
+crypto = "0.0.0-20230824173033-c7dbe520a4e1"
+golang.org/x/crypto = "0.17"
 
-# 12 12 12 12 12 12 12 消息队列
+# 序列化
+json = "encoding/json"
+yaml = "gopkg.in/yaml.v3"
 
-lapin = "2.3"
-redis = { version = "0.24", features = ["tokio-comp"] }
+# 配置管理
+viper = "1.18"
+env = "1.5"
 
-# 13 13 13 13 13 13 13 缓存
+# 日志和监控
+log = "log/slog"
+prometheus = "github.com/prometheus/client_golang"
 
-moka = "0.12"
+# 测试
+testing = "testing"
+testify = "1.8"
 
 ```
 
-## 13.1 架构模式
+#### 1.3.2 行业特定库
 
-### 13.1.1 1. 微服务架构
+```toml
+[dependencies]
+
+# 金融计算
+shopspring/decimal = "1.3"
+golang.org/x/text/currency = "0.14"
+
+# 时间处理
+time = "time"
+golang.org/x/time/rate = "0.5"
+
+# 消息队列
+github.com/rabbitmq/amqp091-go = "1.9"
+github.com/nats-io/nats.go = "1.31"
+
+# 缓存
+github.com/redis/go-redis/v9 = "9.3"
+github.com/patrickmn/go-cache = "2.1"
+
+```
+
+## 2. 架构设计
+
+### 2.1 微服务架构
 
 ```text
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   API Gateway   │    │  Authentication │    │   User Service  │
-│   (Axum)        │    │   Service       │    │                 │
+│   (Gin)          │    │   Service       │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
@@ -146,102 +140,183 @@ moka = "0.12"
 
 ```
 
-### 13.1.2 2. 事件驱动架构
+### 2.2 事件驱动架构
 
-```rust
+```go
 // 事件定义
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum FinancialEvent {
-    PaymentProcessed(PaymentEvent),
-    TradeExecuted(TradeEvent),
-    RiskAlert(RiskEvent),
-    ComplianceViolation(ComplianceEvent),
+type FinancialEvent interface {
+    EventType() string
+    EventData() interface{}
+}
+
+type PaymentProcessedEvent struct {
+    PaymentID string    `json:"payment_id"`
+    Amount    float64   `json:"amount"`
+    Timestamp time.Time `json:"timestamp"`
+}
+
+func (e PaymentProcessedEvent) EventType() string {
+    return "payment.processed"
+}
+
+func (e PaymentProcessedEvent) EventData() interface{} {
+    return e
+}
+
+type TradeExecutedEvent struct {
+    TradeID   string    `json:"trade_id"`
+    Symbol    string    `json:"symbol"`
+    Quantity  float64   `json:"quantity"`
+    Price     float64   `json:"price"`
+    Timestamp time.Time `json:"timestamp"`
+}
+
+func (e TradeExecutedEvent) EventType() string {
+    return "trade.executed"
+}
+
+func (e TradeExecutedEvent) EventData() interface{} {
+    return e
 }
 
 // 事件处理器
-pub trait EventHandler {
-    async fn handle(&self, event: &FinancialEvent) -> Result<(), Box<dyn Error>>;
+type EventHandler interface {
+    Handle(ctx context.Context, event FinancialEvent) error
 }
 
 ```
 
-### 13.1.3 3. CQRS模式
+### 2.3 CQRS模式
 
-```rust
+```go
 // 命令
-#[derive(Debug, Clone)]
-pub struct ProcessPaymentCommand {
-    pub payment_id: PaymentId,
-    pub amount: Decimal,
-    pub currency: Currency,
-    pub from_account: AccountId,
-    pub to_account: AccountId,
+type ProcessPaymentCommand struct {
+    PaymentID   string  `json:"payment_id"`
+    Amount      float64 `json:"amount"`
+    Currency    string  `json:"currency"`
+    FromAccount string  `json:"from_account"`
+    ToAccount   string  `json:"to_account"`
 }
 
 // 查询
-#[derive(Debug, Clone)]
-pub struct GetAccountBalanceQuery {
-    pub account_id: AccountId,
+type GetAccountBalanceQuery struct {
+    AccountID string `json:"account_id"`
 }
 
 // 命令处理器
-pub trait CommandHandler<C> {
-    async fn handle(&self, command: C) -> Result<(), Box<dyn Error>>;
+type CommandHandler interface {
+    Handle(ctx context.Context, command interface{}) error
 }
 
 // 查询处理器
-pub trait QueryHandler<Q, R> {
-    async fn handle(&self, query: Q) -> Result<R, Box<dyn Error>>;
+type QueryHandler interface {
+    Handle(ctx context.Context, query interface{}) (interface{}, error)
+}
+
+// 支付命令处理器
+type ProcessPaymentHandler struct {
+    paymentRepo PaymentRepository
+    eventBus    EventBus
+}
+
+func (h *ProcessPaymentHandler) Handle(ctx context.Context, command interface{}) error {
+    cmd, ok := command.(ProcessPaymentCommand)
+    if !ok {
+        return fmt.Errorf("invalid command type")
+    }
+    
+    // 处理支付逻辑
+    payment := &Payment{
+        ID:          cmd.PaymentID,
+        Amount:      cmd.Amount,
+        Currency:    cmd.Currency,
+        FromAccount: cmd.FromAccount,
+        ToAccount:   cmd.ToAccount,
+        Status:      PaymentStatusPending,
+        CreatedAt:   time.Now(),
+    }
+    
+    if err := h.paymentRepo.Save(ctx, payment); err != nil {
+        return fmt.Errorf("failed to save payment: %w", err)
+    }
+    
+    // 发布事件
+    event := PaymentProcessedEvent{
+        PaymentID: payment.ID,
+        Amount:    payment.Amount,
+        Timestamp: time.Now(),
+    }
+    
+    return h.eventBus.Publish(ctx, event)
 }
 
 ```
 
-## 13.2 业务领域建模
+## 3. 业务建模
 
-### 13.2.1 核心领域概念
+### 3.1 核心领域概念
 
-```rust
+```go
 // 账户聚合根
-#[derive(Debug, Clone)]
-pub struct Account {
-    pub id: AccountId,
-    pub customer_id: CustomerId,
-    pub account_type: AccountType,
-    pub balance: Money,
-    pub status: AccountStatus,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+type Account struct {
+    ID          string        `json:"id" gorm:"primaryKey"`
+    CustomerID  string        `json:"customer_id"`
+    AccountType AccountType   `json:"account_type"`
+    Balance     Money         `json:"balance"`
+    Status      AccountStatus `json:"status"`
+    CreatedAt   time.Time     `json:"created_at"`
+    UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 // 支付聚合根
-#[derive(Debug, Clone)]
-pub struct Payment {
-    pub id: PaymentId,
-    pub from_account: AccountId,
-    pub to_account: AccountId,
-    pub amount: Money,
-    pub status: PaymentStatus,
-    pub payment_method: PaymentMethod,
-    pub created_at: DateTime<Utc>,
-    pub processed_at: Option<DateTime<Utc>>,
+type Payment struct {
+    ID            string        `json:"id" gorm:"primaryKey"`
+    FromAccount   string        `json:"from_account"`
+    ToAccount     string        `json:"to_account"`
+    Amount        Money         `json:"amount"`
+    Status        PaymentStatus `json:"status"`
+    PaymentMethod PaymentMethod `json:"payment_method"`
+    CreatedAt     time.Time     `json:"created_at"`
+    ProcessedAt   *time.Time    `json:"processed_at,omitempty"`
 }
 
 // 交易聚合根
-#[derive(Debug, Clone)]
-pub struct Trade {
-    pub id: TradeId,
-    pub account_id: AccountId,
-    pub instrument: Instrument,
-    pub side: TradeSide,
-    pub quantity: Decimal,
-    pub price: Money,
-    pub status: TradeStatus,
-    pub executed_at: Option<DateTime<Utc>>,
+type Trade struct {
+    ID          string      `json:"id" gorm:"primaryKey"`
+    AccountID   string      `json:"account_id"`
+    Instrument  string      `json:"instrument"`
+    Side        TradeSide   `json:"side"`
+    Quantity    float64     `json:"quantity"`
+    Price       Money       `json:"price"`
+    Status      TradeStatus `json:"status"`
+    ExecutedAt  *time.Time  `json:"executed_at,omitempty"`
 }
+
+// 值对象
+type Money struct {
+    Amount   float64 `json:"amount"`
+    Currency string  `json:"currency"`
+}
+
+type AccountType string
+
+const (
+    AccountTypeSavings  AccountType = "savings"
+    AccountTypeChecking AccountType = "checking"
+    AccountTypeCredit   AccountType = "credit"
+)
+
+type PaymentStatus string
+
+const (
+    PaymentStatusPending   PaymentStatus = "pending"
+    PaymentStatusCompleted PaymentStatus = "completed"
+    PaymentStatusFailed    PaymentStatus = "failed"
+)
 
 ```
 
-### 13.2.2 值对象
+### 3.2 值对象设计
 
 ```rust
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -261,9 +336,9 @@ pub struct TradeId(String);
 
 ```
 
-## 13.3 数据建模
+## 4. 数据管理
 
-### 13.3.1 数据库设计
+### 4.1 数据库设计
 
 ```sql
 -- 账户表
@@ -310,7 +385,7 @@ CREATE TABLE trades (
 
 ```
 
-### 13.3.2 仓储模式
+### 4.2 仓储模式
 
 ```rust
 pub trait AccountRepository {
@@ -443,7 +518,7 @@ impl EventPublisher for RabbitMQEventPublisher {
 
 ```yaml
 
-# 14 14 14 14 14 14 14 docker-compose.yml
+# docker-compose.yml
 
 version: '3.8'
 services:

@@ -212,15 +212,15 @@ WebAssembly模块构建后的优化和打包是CI过程的关键阶段：
 
 ```bash
 
-# 3 3 3 3 3 3 3 大小优化
+# 大小优化
 
 wasm-opt -Oz input.wasm -o output.wasm
 
-# 4 4 4 4 4 4 4 速度优化
+# 速度优化
 
 wasm-opt -O3 input.wasm -o output.wasm
 
-# 5 5 5 5 5 5 5 平衡优化
+# 平衡优化
 
 wasm-opt -O2 input.wasm -o output.wasm
 
@@ -258,7 +258,7 @@ BuildMatrix = Platforms × Features
 
 ```yaml
 
-# 7 7 7 7 7 7 7 跨平台构建与测试
+# 跨平台构建与测试
 
 jobs:
   build-test-matrix:
@@ -812,11 +812,11 @@ WebAssembly的安全模型基于沙箱执行，CI/CD系统需要确保权限配�
 
 ```bash
 
-# 12 12 12 12 12 12 12 限制文件系统访问
+# 限制文件系统访问
 
 wasmtime --dir=/data:/data app.wasm
 
-# 13 13 13 13 13 13 13 不允许网络访问
+# 不允许网络访问
 
 wasmtime --deny-net app.wasm
 
@@ -953,7 +953,7 @@ class ComplianceChecker {
 
 ```yaml
 
-# 15 15 15 15 15 15 15 合规检查CI步骤
+# 合规检查CI步骤
 
 - name: Compliance verification
   run: |
@@ -1237,7 +1237,7 @@ WebAssembly微服务架构需要精心设计服务边界和通信模式：
 
 ```yaml
 
-# 18 18 18 18 18 18 18 服务网格配置
+# 服务网格配置
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -1690,7 +1690,7 @@ class WasmVersionRouter {
 
 ```yaml
 
-# 20 20 20 20 20 20 20 金丝雀部署配置
+# 金丝雀部署配置
 
 apiVersion: rollout.argoproj.io/v1alpha1
 kind: Rollout
@@ -1903,7 +1903,7 @@ fn test_processor_component_contract() {
 
 ```python
 
-# 21 21 21 21 21 21 21 AI驱动的WebAssembly优化流水线
+# AI驱动的WebAssembly优化流水线
 
 class AIWasmOptimizer:
     def __init__(self, model_path):
@@ -2084,7 +2084,7 @@ class EdgeCloudWorkloadManager {
 
 ```yaml
 
-# 23 23 23 23 23 23 23 边缘设备群管理配置
+# 边缘设备群管理配置
 
 edge_fleet:
   device_groups:

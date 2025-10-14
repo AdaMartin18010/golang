@@ -7,6 +7,217 @@ import (
 	"time"
 )
 
+// 简化的类型定义
+type AgentConfig struct {
+	Name         string                 `json:"name"`
+	Type         string                 `json:"type"`
+	MaxLoad      float64                `json:"max_load"`
+	Timeout      time.Duration          `json:"timeout"`
+	Retries      int                    `json:"retries"`
+	Capabilities []string               `json:"capabilities"`
+	Parameters   map[string]interface{} `json:"parameters"`
+}
+
+type Input struct {
+	ID       string                 `json:"id"`
+	Type     string                 `json:"type"`
+	Data     map[string]interface{} `json:"data"`
+	Priority int                    `json:"priority"`
+	Timeout  time.Duration          `json:"timeout"`
+}
+
+type Output struct {
+	ID       string                 `json:"id"`
+	Success  bool                   `json:"success"`
+	Data     map[string]interface{} `json:"data"`
+	Error    string                 `json:"error,omitempty"`
+	Duration time.Duration          `json:"duration"`
+}
+
+type Status struct {
+	State     string             `json:"state"`
+	Metrics   map[string]float64 `json:"metrics"`
+	LastSeen  time.Time          `json:"last_seen"`
+	Load      float64            `json:"load"`
+	Processed int64              `json:"processed"`
+	Errors    int64              `json:"errors"`
+}
+
+type Experience struct {
+	Input     Input     `json:"input"`
+	Output    Output    `json:"output"`
+	Feedback  float64   `json:"feedback"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+// 简化的接口定义
+type Agent interface {
+	ID() string
+	Start(ctx context.Context) error
+	Stop() error
+	Process(ctx context.Context, input Input) (Output, error)
+	Learn(experience Experience) error
+	GetStatus() Status
+	GetCapabilities() []string
+}
+
+type LearningEngine interface {
+	UpdateModel(experience Experience) error
+}
+
+type DecisionEngine interface {
+	MakeDecision(ctx context.Context, input Input) (map[string]interface{}, error)
+}
+
+type MetricsCollector interface {
+	RecordProcess(duration time.Duration, success bool)
+	GetMetrics() map[string]float64
+}
+
+// 简化的实现
+type SimpleLearningEngine struct{}
+
+func NewSimpleLearningEngine() *SimpleLearningEngine {
+	return &SimpleLearningEngine{}
+}
+
+func (s *SimpleLearningEngine) UpdateModel(experience Experience) error {
+	return nil
+}
+
+type SimpleDecisionEngine struct{}
+
+func NewSimpleDecisionEngine() *SimpleDecisionEngine {
+	return &SimpleDecisionEngine{}
+}
+
+func (s *SimpleDecisionEngine) MakeDecision(ctx context.Context, input Input) (map[string]interface{}, error) {
+	return map[string]interface{}{
+		"decision":   "processed",
+		"confidence": 0.9,
+	}, nil
+}
+
+type SimpleMetricsCollector struct {
+	metrics map[string]float64
+}
+
+func NewSimpleMetricsCollector() *SimpleMetricsCollector {
+	return &SimpleMetricsCollector{
+		metrics: make(map[string]float64),
+	}
+}
+
+func (s *SimpleMetricsCollector) RecordProcess(duration time.Duration, success bool) {
+	s.metrics["total_processed"]++
+	if !success {
+		s.metrics["total_errors"]++
+	}
+}
+
+func (s *SimpleMetricsCollector) GetMetrics() map[string]float64 {
+	return s.metrics
+}
+
+// 简化的BaseAgent实现
+type BaseAgent struct {
+	id          string
+	state       string
+	config      AgentConfig
+	learning    LearningEngine
+	decision    DecisionEngine
+	metrics     MetricsCollector
+	experiences []Experience
+	lastSeen    time.Time
+}
+
+func NewBaseAgent(id string, config AgentConfig) *BaseAgent {
+	return &BaseAgent{
+		id:          id,
+		state:       "idle",
+		config:      config,
+		experiences: make([]Experience, 0),
+	}
+}
+
+func (a *BaseAgent) ID() string {
+	return a.id
+}
+
+func (a *BaseAgent) Start(ctx context.Context) error {
+	a.state = "running"
+	a.lastSeen = time.Now()
+	return nil
+}
+
+func (a *BaseAgent) Stop() error {
+	a.state = "stopped"
+	return nil
+}
+
+func (a *BaseAgent) Process(ctx context.Context, input Input) (Output, error) {
+	start := time.Now()
+
+	// 模拟处理
+	time.Sleep(100 * time.Millisecond)
+
+	output := Output{
+		ID:      input.ID,
+		Success: true,
+		Data: map[string]interface{}{
+			"processed_by": a.id,
+			"input_type":   input.Type,
+			"timestamp":    time.Now(),
+		},
+		Duration: time.Since(start),
+	}
+
+	// 记录经验
+	experience := Experience{
+		Input:     input,
+		Output:    output,
+		Feedback:  1.0,
+		Timestamp: time.Now(),
+	}
+
+	a.Learn(experience)
+
+	// 更新指标
+	if a.metrics != nil {
+		a.metrics.RecordProcess(output.Duration, true)
+	}
+
+	return output, nil
+}
+
+func (a *BaseAgent) Learn(experience Experience) error {
+	a.experiences = append(a.experiences, experience)
+	if len(a.experiences) > 1000 {
+		a.experiences = a.experiences[len(a.experiences)-1000:]
+	}
+	return nil
+}
+
+func (a *BaseAgent) GetStatus() Status {
+	metrics := make(map[string]float64)
+	if a.metrics != nil {
+		metrics = a.metrics.GetMetrics()
+	}
+
+	return Status{
+		State:     a.state,
+		Metrics:   metrics,
+		LastSeen:  a.lastSeen,
+		Load:      0.5,
+		Processed: int64(len(a.experiences)),
+		Errors:    0,
+	}
+}
+
+func (a *BaseAgent) GetCapabilities() []string {
+	return a.config.Capabilities
+}
+
 func main() {
 	fmt.Println("=== Go语言AI-Agent架构演示 ===")
 	fmt.Println()
@@ -17,15 +228,6 @@ func main() {
 
 	// 演示基础代理功能
 	demoBasicAgent(ctx)
-
-	// 演示多代理协作
-	demoMultiAgentCollaboration(ctx)
-
-	// 演示智能协调器
-	demoSmartCoordinator(ctx)
-
-	// 演示专业代理类型
-	demoSpecializedAgents(ctx)
 
 	fmt.Println("\n=== 演示完成 ===")
 }

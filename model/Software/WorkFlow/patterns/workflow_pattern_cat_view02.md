@@ -1,34 +1,4 @@
-# 1 1 1 1 1 1 1 工作流的23+模式从范畴论视角的分析
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 工作流的23+模式从范畴论视角的分析](#1-1-1-1-1-1-1-工作流的23+模式从范畴论视角的分析)
-  - [1.1 目录](#目录)
-  - [1.2 引言：工作流模式与范畴论](#引言：工作流模式与范畴论)
-  - [1.3 工作流模式的范畴论视角](#工作流模式的范畴论视角)
-    - [1.3.1 基本控制流模式](#基本控制流模式)
-      - [1.3.1.1 1. 顺序模式（Sequence Pattern）](#1-顺序模式（sequence-pattern）)
-      - [1.3.1.2 2. 并行分支（Parallel Split）](#2-并行分支（parallel-split）)
-      - [1.3.1.3 3. 同步（Synchronization）](#3-同步（synchronization）)
-      - [1.3.1.4 4. 排他选择（Exclusive Choice）](#4-排他选择（exclusive-choice）)
-      - [1.3.1.5 5. 简单合并（Simple Merge）](#5-简单合并（simple-merge）)
-    - [1.3.2 高级分支与同步模式](#高级分支与同步模式)
-      - [1.3.2.1 6. 多选（Multi-Choice）](#6-多选（multi-choice）)
-      - [1.3.2.2 7. 同步合并（Synchronizing Merge）](#7-同步合并（synchronizing-merge）)
-    - [1.3.3 多实例模式](#多实例模式)
-      - [1.3.3.1 8. 多实例并行（Multiple Instances Without Synchronization）](#8-多实例并行（multiple-instances-without-synchronization）)
-      - [1.3.3.2 9. 多实例同步（Multiple Instances With Synchronization）](#9-多实例同步（multiple-instances-with-synchronization）)
-    - [1.3.4 基于状态的模式](#基于状态的模式)
-      - [1.3.4.1 10. 延迟选择（Deferred Choice）](#10-延迟选择（deferred-choice）)
-      - [1.3.4.2 11. 里程碑（Milestone）](#11-里程碑（milestone）)
-    - [1.3.5 取消与强制完成模式](#取消与强制完成模式)
-      - [1.3.5.1 12. 取消任务（Cancel Task）](#12-取消任务（cancel-task）)
-      - [1.3.5.2 13. 取消区域（Cancel Region）](#13-取消区域（cancel-region）)
-  - [1.4 模式之间的范畴关系](#模式之间的范畴关系)
-    - [1.4.1 等价关系](#等价关系)
-    - [1.4.2 对偶关系](#对偶关系)
-    - [1.4.3 自然变换](#自然变换)
-  - [1.5 总结](#总结)
-<!-- TOC END -->
+#  工作流的23+模式从范畴论视角的分析
 
 ```text
 <think>
@@ -110,7 +80,7 @@
     - [等价关系](#等价关系)
     - [对偶关系](#对偶关系)
     - [自然变换](#自然变换)
-  - [总结](#总结)
+  - [7. 总结](#总结)
 
 ## 1.2 引言：工作流模式与范畴论
 

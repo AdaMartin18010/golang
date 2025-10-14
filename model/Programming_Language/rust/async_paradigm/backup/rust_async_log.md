@@ -1,7 +1,7 @@
-# 1 1 1 1 1 1 1 rust_async_log
+# rust_async_log
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 rust\_async\_log](#1-1-1-1-1-1-1-rust_async_log)
+- [rust\_async\_log](#rust_async_log)
   - [1.1 1. 开源日志堆栈](#11-1-开源日志堆栈)
     - [1.1.1 基于传统日志接口](#111-基于传统日志接口)
     - [1.1.2 基于结构化日志与追踪](#112-基于结构化日志与追踪)

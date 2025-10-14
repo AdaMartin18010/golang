@@ -1,11 +1,11 @@
-# 1 1 1 1 1 1 1 panic
+#  panic
 
 <!-- TOC START -->
-- [1 1 1 1 1 1 1 panic](#1-1-1-1-1-1-1-panic)
-  - [1.1 1. 引发 panic](#1-引发-panic)
-  - [1.2 2. 栈展开（Stack Unwinding）](#2-栈展开（stack-unwinding）)
-  - [1.3 3. panic=abort 策略](#3-panic=abort-策略)
-- [2 2 2 2 2 2 2 Cargo.toml](#2-2-2-2-2-2-2-cargotoml)
+- [ ](#1-1-1-1-1-1-1-panic)
+  - [1. ](#1-引发-panic)
+  - [2. ](#2-栈展开（stack-unwinding）)
+  - [3. ](#3-panic=abort-策略)
+- [ ](#2-2-2-2-2-2-2-cargotoml)
   - [2.1 4. 捕获 panic](#4-捕获-panic)
   - [2.2 小结](#小结)
 <!-- TOC END -->
@@ -62,7 +62,7 @@ fn main() {
 
 ```toml
 
-# 2 2 2 2 2 2 2 Cargo.toml
+# Cargo.toml
 
 [profile.release]
 panic = "abort"

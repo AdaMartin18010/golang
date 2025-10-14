@@ -2,50 +2,11 @@
 
 ## 1. 目录
 
-<!-- TOC START -->
-- [消息队列架构（Golang国际主流实践）](#消息队列架构golang国际主流实践)
-  - [1. 目录](#1-目录)
-  - [2. 国际标准与发展历程](#2-国际标准与发展历程)
-    - [1.2.1 主流消息队列系统](#121-主流消息队列系统)
-    - [1.2.2 发展历程](#122-发展历程)
-    - [1.2.3 国际权威链接](#123-国际权威链接)
-  - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
-    - [1.3.1 消息队列基础架构模式](#131-消息队列基础架构模式)
-    - [1.3.2 消息交付保证 (Message Delivery Guarantees)](#132-消息交付保证-message-delivery-guarantees)
-      - [1.3.2.1 At-most-once (最多一次)](#1321-at-most-once-最多一次)
-      - [1.3.2.2 At-least-once (至少一次)](#1322-at-least-once-至少一次)
-      - [1.3.2.3 Exactly-once (精确一次)](#1323-exactly-once-精确一次)
-    - [1.3.3 分区与并行处理](#133-分区与并行处理)
-  - [4. 可靠性保证](#4-可靠性保证)
-    - [1.4.1 消息持久化](#141-消息持久化)
-    - [1.4.2 消息确认机制](#142-消息确认机制)
-  - [5. 性能优化](#5-性能优化)
-    - [1.5.1 批量处理](#151-批量处理)
-    - [1.5.2 消息压缩](#152-消息压缩)
-  - [6. 监控与可观测性](#6-监控与可观测性)
-    - [1.6.1 消息队列监控](#161-消息队列监控)
-  - [7. 分布式挑战与主流解决方案](#7-分布式挑战与主流解决方案)
-    - [1.7.1 消息重试与退避策略](#171-消息重试与退避策略)
-    - [1.7.2 消息去重与重复检测](#172-消息去重与重复检测)
-    - [1.7.3 背压控制 (Backpressure Control)](#173-背压控制-backpressure-control)
-    - [1.7.4 消息序列化与压缩](#174-消息序列化与压缩)
-  - [8. 实际案例分析](#8-实际案例分析)
-    - [1.8.1 高并发电商消息系统](#181-高并发电商消息系统)
-    - [1.8.2 实时日志处理系统](#182-实时日志处理系统)
-  - [9. 未来趋势与国际前沿](#9-未来趋势与国际前沿)
-  - [10. 国际权威资源与开源组件引用](#10-国际权威资源与开源组件引用)
-    - [1.10.1 消息队列系统](#1101-消息队列系统)
-    - [1.10.2 云原生消息服务](#1102-云原生消息服务)
-    - [1.10.3 消息处理框架](#1103-消息处理框架)
-  - [11. 相关架构主题](#11-相关架构主题)
-  - [12. 扩展阅读与参考文献](#12-扩展阅读与参考文献)
-<!-- TOC END -->
-
 ---
 
 ## 2. 国际标准与发展历程
 
-### 1.2.1 主流消息队列系统
+### 2.1 主流消息队列系统
 
 - **Apache Kafka**: 分布式流处理平台
 - **RabbitMQ**: 企业级消息代理
@@ -54,7 +15,7 @@
 - **Amazon SQS/SNS**: 云原生消息服务
 - **Google Cloud Pub/Sub**: 实时消息服务
 
-### 1.2.2 发展历程
+### 2.2 发展历程
 
 - **1980s**: 早期消息队列系统（IBM MQ）
 - **2000s**: JMS标准、ActiveMQ兴起
@@ -62,7 +23,7 @@
 - **2015s**: 云原生消息服务
 - **2020s**: 实时流处理、事件驱动架构
 
-### 1.2.3 国际权威链接
+### 2.3 国际权威链接
 
 - [Apache Kafka](https://kafka.apache.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
@@ -73,7 +34,7 @@
 
 ## 3. 核心架构模式与设计原则
 
-### 1.3.1 消息队列基础架构模式
+### 3.1 消息队列基础架构模式
 
 消息队列采用**生产者-消费者**模式，通过中间的消息代理（Message Broker）实现异步通信和解耦。
 
@@ -124,11 +85,11 @@ graph LR
 
 ```
 
-### 1.3.2 消息交付保证 (Message Delivery Guarantees)
+### 3.2 消息交付保证 (Message Delivery Guarantees)
 
 不同的消息队列系统提供不同级别的可靠性保证：
 
-#### 1.3.2.1 At-most-once (最多一次)
+#### 3.2.1 At-most-once (最多一次)
 
 消息可能会丢失，但绝不会重复。适用于对数据丢失容忍、但不能接受重复处理的场景（如日志记录）。
 
@@ -183,7 +144,7 @@ func (ic *IdempotentConsumer) hasProcessed(messageID string) bool {
 
 ```
 
-### 1.3.3 分区与并行处理
+### 3.3 分区与并行处理
 
 为了处理大规模消息流，现代消息队列采用**分区 (Partitioning)** 策略，允许并行处理。
 
@@ -216,7 +177,7 @@ graph TD
 
 ## 4. 可靠性保证
 
-### 1.4.1 消息持久化
+### 4.1 消息持久化
 
 ```go
 type MessageStorage struct {
@@ -301,7 +262,7 @@ func (ms *MessageStorage) Fetch(topic string, partition int, offset int64) (*Mes
 
 ```
 
-### 1.4.2 消息确认机制
+### 4.2 消息确认机制
 
 ```go
 type MessageAcknowledgment struct {
@@ -376,7 +337,7 @@ func (ma *MessageAcknowledgment) HandleFailure(ctx context.Context, messageID st
 
 ## 5. 性能优化
 
-### 1.5.1 批量处理
+### 5.1 批量处理
 
 ```go
 type BatchProcessor struct {
@@ -466,7 +427,7 @@ func (bp *BatchProcessor) processBatchParallel(ctx context.Context, batch *Batch
 
 ```
 
-### 1.5.2 消息压缩
+### 5.2 消息压缩
 
 ```go
 type MessageCompressor struct {
@@ -567,7 +528,7 @@ func (mc *MessageCompressor) CompressMessage(message *Message) error {
 
 ## 6. 监控与可观测性
 
-### 1.6.1 消息队列监控
+### 6.1 消息队列监控
 
 ```go
 type QueueMonitor struct {
@@ -686,7 +647,7 @@ func (qm *QueueMonitor) checkAlerts(metrics *QueueMetrics) {
 
 ## 7. 分布式挑战与主流解决方案
 
-### 1.7.1 消息重试与退避策略
+### 7.1 消息重试与退避策略
 
 当消息处理失败时，需要智能的重试机制来提高系统的韧性。
 
@@ -755,7 +716,7 @@ func (rp *RetryProcessor) calculateBackoff(attempt int) time.Duration {
 
 ```
 
-### 1.7.2 消息去重与重复检测
+### 7.2 消息去重与重复检测
 
 在分布式系统中，网络故障可能导致消息重复。需要实现消息去重机制。
 

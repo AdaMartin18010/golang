@@ -1,13 +1,3 @@
----
-title: Go行业应用模块总览
-slug: go-industry-applications
-topic: industry-applications
-level: overview
-goVersion: 1.21+
-lastReviewed: 2025-01-15
-owner: core-team
-status: active
----
 
 # Go行业应用模块总览
 

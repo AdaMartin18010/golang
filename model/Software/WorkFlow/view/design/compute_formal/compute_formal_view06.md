@@ -1,36 +1,4 @@
-# 1 1 1 1 1 1 1 对计算系统与软件架构形式化框架的批判性分析
-
-<!-- TOC START -->
-- [1 1 1 1 1 1 1 对计算系统与软件架构形式化框架的批判性分析](#1-1-1-1-1-1-1-对计算系统与软件架构形式化框架的批判性分析)
-  - [1.1 目录](#目录)
-  - [1.2 思维导图：批判性分析要点](#思维导图：批判性分析要点)
-  - [1.3 框架的优势与贡献（判断）](#框架的优势与贡献（判断）)
-    - [1.3.1 理论的系统性与全面性](#理论的系统性与全面性)
-    - [1.3.2 结构化与分层思想](#结构化与分层思想)
-    - [1.3.3 强调形式化与精确性](#强调形式化与精确性)
-    - [1.3.4 多视角方法论](#多视角方法论)
-  - [1.4 框架的局限与挑战（批判性分析）](#框架的局限与挑战（批判性分析）)
-    - [1.4.1 理想主义与实践鸿沟（形式化鸿沟）](#理想主义与实践鸿沟（形式化鸿沟）)
-    - [1.4.2 复杂性与可理解性](#复杂性与可理解性)
-    - [1.4.3 可扩展性问题](#可扩展性问题)
-    - [1.4.4 工具链的挑战](#工具链的挑战)
-    - [1.4.5 集成难度与一致性维护](#集成难度与一致性维护)
-    - [1.4.6 对演化与维护的支持不足](#对演化与维护的支持不足)
-    - [1.4.7 忽略非形式化因素](#忽略非形式化因素)
-    - [1.4.8 代码示例的局限性](#代码示例的局限性)
-  - [1.5 总体判断与分析](#总体判断与分析)
-  - [1.6 总结](#总结)
-  - [1.7 软件架构设计中工程与形式化的实用交集](#软件架构设计中工程与形式化的实用交集)
-    - [1.7.1 1. 强类型系统与表达力强的语言 (Mature Practice + Mature Formal Model + Flexibility)](#1-强类型系统与表达力强的语言-mature-practice-+-mature-formal-model-+-flexibility)
-    - [1.7.2 2. 基于契约的设计 (Design by Contract - DbC) (Mature Practice + Formal Model Integration + Flexibility)](#2-基于契约的设计-design-by-contract-dbc-mature-practice-+-formal-model-integration-+-flexibility)
-    - [1.7.3 3. 有限状态机 (Finite State Machines - FSM) 与协议建模 (Mature Practice + Formal Model + Targeted Application)](#3-有限状态机-finite-state-machines-fsm-与协议建模-mature-practice-+-formal-model-+-targeted-application)
-    - [1.7.4 4. 领域驱动设计 (Domain-Driven Design - DDD) 与限界上下文 (Mature Practice + Structure for Formalism + Flexibility)](#4-领域驱动设计-domain-driven-design-ddd-与限界上下文-mature-practice-+-structure-for-formalism-+-flexibility)
-    - [1.7.5 5. 属性化测试 (Property-Based Testing - PBT) (Mature Practice + Formal Idea + Flexibility)](#5-属性化测试-property-based-testing-pbt-mature-practice-+-formal-idea-+-flexibility)
-    - [1.7.6 6. 声明式配置与基础设施即代码 (IaC) (Mature Practice + Formal Idea + Flexibility)](#6-声明式配置与基础设施即代码-iac-mature-practice-+-formal-idea-+-flexibility)
-    - [1.7.7 7. 高级静态分析与 Linter (Mature Practice + Formal Technique + Flexibility)](#7-高级静态分析与-linter-mature-practice-+-formal-technique-+-flexibility)
-  - [1.8 融合的关键原则](#融合的关键原则)
-  - [1.9 总结续](#总结续)
-<!-- TOC END -->
+#  对计算系统与软件架构形式化框架的批判性分析
 
 好的，我们来对您提供的文档 (`workflow_design_view09.md`, `workflow_design_view11.md`, `workflow_design_view13.md`) 进行批判性分析。
 
@@ -60,7 +28,7 @@
     - [4.7 忽略非形式化因素](#47-忽略非形式化因素)
     - [4.8 代码示例的局限性](#48-代码示例的局限性)
   - [总体判断与分析](#总体判断与分析)
-  - [总结](#总结)
+  - [7. 总结](#总结)
   - [软件架构设计中工程与形式化的实用交集](#软件架构设计中工程与形式化的实用交集)
     - [1. 强类型系统与表达力强的语言 (Mature Practice + Mature Formal Model + Flexibility)](#1-强类型系统与表达力强的语言-mature-practice--mature-formal-model--flexibility)
     - [2. 基于契约的设计 (Design by Contract - DbC) (Mature Practice + Formal Model Integration + Flexibility)](#2-基于契约的设计-design-by-contract---dbc-mature-practice--formal-model-integration--flexibility)

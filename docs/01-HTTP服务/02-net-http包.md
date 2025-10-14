@@ -1,13 +1,3 @@
----
-title: Go标准库net/http包
-slug: go-net-http-package
-topic: http
-level: intro
-goVersion: 1.21+
-lastReviewed: 2025-01-15
-owner: core-team
-status: active
----
 
 # 2.1.1 Go标准库 net/http 包
 
