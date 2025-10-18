@@ -1,4 +1,5 @@
 // HTTP/3 Server示例：使用QUIC协议的高性能服务器
+// 依赖：go get github.com/quic-go/quic-go/http3
 package main
 
 import (

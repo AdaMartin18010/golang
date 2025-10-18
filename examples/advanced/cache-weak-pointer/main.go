@@ -1,4 +1,5 @@
 // Weak Pointer Cache示例：使用weak.Pointer避免内存泄漏
+// 注意：weak包在Go 1.22+可用
 package main
 
 import (

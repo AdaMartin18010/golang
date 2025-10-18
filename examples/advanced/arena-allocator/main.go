@@ -1,4 +1,6 @@
 // Arena Allocator示例：批量内存管理
+// 注意：arena包在Go 1.25是实验性特性
+// 构建时需要：GOEXPERIMENT=arenas go build
 package main
 
 import (
