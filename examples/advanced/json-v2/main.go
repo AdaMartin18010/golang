@@ -36,7 +36,7 @@ type Settings struct {
 
 // demoBasicUsage 基本使用示例
 func demoBasicUsage() {
-	fmt.Println("=== 1. Basic Usage ===\n")
+	fmt.Println("=== 1. Basic Usage ===")
 
 	user := User{
 		ID:        1,
@@ -77,7 +77,7 @@ func demoBasicUsage() {
 
 // demoStreamProcessing 流式处理示例
 func demoStreamProcessing() {
-	fmt.Println("=== 2. Stream Processing ===\n")
+	fmt.Println("=== 2. Stream Processing ===")
 
 	// 创建大量数据
 	users := make([]User, 1000)
@@ -153,7 +153,7 @@ func demoStreamProcessing() {
 
 // demoComments JSON with comments（JSON v2特性）
 func demoComments() {
-	fmt.Println("=== 3. JSON with Comments ===\n")
+	fmt.Println("=== 3. JSON with Comments ===")
 
 	// JSON with comments
 	jsonWithComments := `
@@ -193,7 +193,7 @@ func demoComments() {
 
 // demoPerformance 性能对比
 func demoPerformance() {
-	fmt.Println("=== 4. Performance Comparison ===\n")
+	fmt.Println("=== 4. Performance Comparison ===")
 
 	// 准备测试数据
 	users := make([]User, 1000)
@@ -266,7 +266,7 @@ func demoPerformance() {
 
 // demoCustomMarshal 自定义序列化
 func demoCustomMarshal() {
-	fmt.Println("=== 5. Custom Marshaling ===\n")
+	fmt.Println("=== 5. Custom Marshaling ===")
 
 	type Event struct {
 		Type      string    `json:"type"`
@@ -295,7 +295,7 @@ func demoCustomMarshal() {
 
 // demoErrorHandling 错误处理
 func demoErrorHandling() {
-	fmt.Println("=== 6. Error Handling ===\n")
+	fmt.Println("=== 6. Error Handling ===")
 
 	// 错误的JSON
 	badJSON := `{
@@ -315,7 +315,7 @@ func demoErrorHandling() {
 
 // demoStreaming 大文件流式处理
 func demoStreaming() {
-	fmt.Println("=== 7. Large File Streaming ===\n")
+	fmt.Println("=== 7. Large File Streaming ===")
 
 	// 模拟大文件
 	fmt.Println("💡 For large JSON files:")
@@ -352,8 +352,8 @@ func demoStreaming() {
 }
 
 func main() {
-	fmt.Println("🔬 JSON v2 Demo (Go 1.25)\n")
-	fmt.Println("=" + strings.Repeat("=", 40) + "\n")
+	fmt.Println("🔬 JSON v2 Demo (Go 1.25)")
+	fmt.Println("=" + strings.Repeat("=", 40))
 
 	// 运行所有示例
 	demoBasicUsage()

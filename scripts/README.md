@@ -6,7 +6,7 @@
 
 ## 📋 工具列表
 
-### 1. 项目统计工具 (project_stats.go)
+### 1. 项目统计工具 (project_stats)
 
 **功能**: 自动分析和统计项目信息
 
@@ -14,11 +14,11 @@
 
 ```bash
 # 在项目根目录运行
-cd scripts
-go run project_stats.go
+cd scripts/project_stats
+go run main.go
 
 # 或指定目录
-go run project_stats.go /path/to/project
+go run main.go /path/to/project
 ```
 
 **输出内容**:
@@ -32,18 +32,18 @@ go run project_stats.go /path/to/project
 
 ---
 
-### 2. 变更日志生成器 (gen_changelog.go)
+### 2. 变更日志生成器 (gen_changelog)
 
 **功能**: 自动生成项目变更日志
 
 **使用方法**:
 
 ```bash
-cd scripts
+cd scripts/gen_changelog
 go mod tidy
 
 # 生成变更日志
-echo "Added PGO example" | VERSION=v2025.09-P1 go run ./gen_changelog.go
+echo "Added PGO example" | VERSION=v2025.09-P1 go run main.go
 ```
 
 ---
@@ -53,14 +53,15 @@ echo "Added PGO example" | VERSION=v2025.09-P1 go run ./gen_changelog.go
 ### 初始化
 
 ```bash
-cd scripts
+cd scripts/project_stats
 go mod tidy
 ```
 
 ### 运行项目统计
 
 ```bash
-go run project_stats.go
+cd scripts/project_stats
+go run main.go
 ```
 
 示例输出:
@@ -93,10 +94,11 @@ go run project_stats.go
 
 ### 工具开发指南
 
-1. 在 `scripts/` 目录创建新的 `.go` 文件
-2. 实现工具逻辑
-3. 更新本 README
-4. 提交 PR
+1. 在 `scripts/` 目录创建新的子目录 (如 `my_tool/`)
+2. 在子目录中创建 `main.go` 和 `go.mod` 文件
+3. 实现工具逻辑
+4. 更新本 README
+5. 提交 PR
 
 ### 工具规范
 

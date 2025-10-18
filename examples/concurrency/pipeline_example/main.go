@@ -229,8 +229,7 @@ func dynamicPipeline() {
 	}
 
 	// 构建管道
-	var pipeline func(<-chan int) <-chan int
-	pipeline = func(in <-chan int) <-chan int {
+	pipeline := func(in <-chan int) <-chan int {
 		for _, stage := range stages {
 			in = stage(in)
 		}
@@ -252,8 +251,8 @@ func dynamicPipeline() {
 }
 
 func main() {
-	// 设置随机种子
-	rand.Seed(time.Now().UnixNano())
+	// Note: rand.Seed is deprecated in Go 1.20+
+	// Random number generator is now automatically seeded
 
 	fmt.Println("Go Pipeline Patterns Examples")
 	fmt.Println("==============================")

@@ -1,5 +1,11 @@
 // HTTP/3 Server示例：使用QUIC协议的高性能服务器
-// 依赖：go get github.com/quic-go/quic-go/http3
+// 注意：本示例展示HTTP/3的概念和API使用方式
+//
+// 要运行完整的HTTP/3服务器，需要安装依赖：
+// go get github.com/quic-go/quic-go/http3
+//
+// 当前版本：展示HTTP/2服务器（无需额外依赖）
+
 package main
 
 import (
@@ -9,8 +15,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/quic-go/quic-go/http3"
 )
 
 // Response API响应结构
@@ -114,8 +118,11 @@ func generateCert() {
 }
 
 func main() {
-	fmt.Println("🚀 HTTP/3 Server with QUIC")
-	fmt.Println("==========================\n")
+	fmt.Println("🚀 HTTP/2 Server Demo (HTTP/3 Concept)")
+	fmt.Println("======================================")
+	fmt.Println("⚠️  Note: This demo runs HTTP/2.")
+	fmt.Println("    For HTTP/3, install: go get github.com/quic-go/quic-go/http3")
+	fmt.Println()
 
 	generateCert()
 
@@ -142,13 +149,14 @@ func main() {
 	}
 	server.TLSConfig = tlsConfig
 
-	// HTTP/3配置
-	http3Server := &http3.Server{
-		Handler:    mux,
-		Addr:       ":8443",
-		TLSConfig:  tlsConfig,
-		QUICConfig: nil, // 使用默认配置
-	}
+	// HTTP/3配置（需要 github.com/quic-go/quic-go/http3）
+	// 示例代码：
+	// http3Server := &http3.Server{
+	// 	Handler:    mux,
+	// 	Addr:       ":8443",
+	// 	TLSConfig:  tlsConfig,
+	// 	QUICConfig: nil,
+	// }
 
 	fmt.Println("📝 Endpoints:")
 	fmt.Println("  GET  /        - Welcome message")
@@ -157,46 +165,37 @@ func main() {
 	fmt.Println("  GET  /data    - Sample data")
 	fmt.Println()
 
-	fmt.Println("🌐 Server starting...")
-	fmt.Println("  HTTP/2: https://localhost:8443")
-	fmt.Println("  HTTP/3: https://localhost:8443 (QUIC/UDP)")
+	fmt.Println("🌐 Server configuration:")
+	fmt.Println("  Address: https://localhost:8443")
+	fmt.Println("  Protocol: HTTP/2 (TLS)")
 	fmt.Println()
 
 	fmt.Println("💡 Test with:")
-	fmt.Println("  curl --http3 https://localhost:8443")
-	fmt.Println("  curl https://localhost:8443 (HTTP/2)")
+	fmt.Println("  curl -k https://localhost:8443")
+	fmt.Println("  curl -k https://localhost:8443/stats")
+	fmt.Println("  curl -k https://localhost:8443/health")
 	fmt.Println()
 
-	// 启动HTTP/2服务器（TCP）
-	go func() {
-		log.Println("Starting HTTP/2 server...")
-		// 注意：需要证书文件
-		// if err := server.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
-		// 	log.Fatal(err)
-		// }
-		log.Println("Note: HTTP/2 requires cert.pem and key.pem")
-	}()
-
-	// 启动HTTP/3服务器（UDP + QUIC）
-	log.Println("Starting HTTP/3 server...")
-	// 注意：需要证书文件
-	// if err := http3Server.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	fmt.Println("⚠️  Certificate files required:")
-	fmt.Println("   Generate with: openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes")
+	// 启动HTTP/2服务器（示例）
+	fmt.Println("⚠️  To actually start the server, uncomment the following:")
+	fmt.Println()
+	fmt.Println("  // Generate certificate first:")
+	fmt.Println("  // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes")
+	fmt.Println()
+	fmt.Println("  // Then uncomment:")
+	fmt.Println("  // log.Fatal(server.ListenAndServeTLS(\"cert.pem\", \"key.pem\"))")
 	fmt.Println()
 
-	fmt.Println("🎯 Features:")
-	fmt.Println("  ✅ HTTP/3 over QUIC")
+	fmt.Println("🎯 HTTP/3 Features (when enabled):")
+	fmt.Println("  ✅ HTTP/3 over QUIC (UDP-based)")
 	fmt.Println("  ✅ 0-RTT connection resumption")
 	fmt.Println("  ✅ Connection migration")
 	fmt.Println("  ✅ Better performance on lossy networks")
-	fmt.Println("  ✅ Fallback to HTTP/2")
+	fmt.Println("  ✅ No head-of-line blocking")
+	fmt.Println()
 
-	// 保持运行（示例代码）
-	select {}
+	// 示例：如何启动服务器（需要证书）
+	// log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
 }
 
 /*

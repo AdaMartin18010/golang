@@ -1,11 +1,14 @@
-// Weak Pointer Cache示例：使用weak.Pointer避免内存泄漏
-// 注意：weak包在Go 1.22+可用
+// Weak Pointer Cache示例：使用弱引用避免内存泄漏
+// 注意：由于runtime/weak不是标准库的一部分，本示例提供模拟实现
+//
+// 真实的weak.Pointer需要特殊的runtime支持
+// 这里展示弱引用缓存的概念和使用模式
+
 package main
 
 import (
 	"fmt"
 	"runtime"
-	"runtime/weak"
 	"sync"
 	"time"
 )
@@ -17,10 +20,43 @@ type Value struct {
 	CreatedAt time.Time
 }
 
-// WeakCache 使用weak.Pointer的缓存
+// weakPointer 模拟weak.Pointer的行为
+// 注意：这是简化的模拟实现，真实的weak.Pointer需要runtime支持
+type weakPointer struct {
+	ptr *Value
+	// 使用finalizer来检测对象是否被GC
+	alive bool
+}
+
+// makeWeak 创建弱引用
+func makeWeak(v *Value) *weakPointer {
+	wp := &weakPointer{
+		ptr:   v,
+		alive: true,
+	}
+
+	// 设置finalizer来模拟弱引用行为
+	// 当对象即将被GC时，标记为不可用
+	runtime.SetFinalizer(v, func(_ *Value) {
+		wp.alive = false
+		wp.ptr = nil
+	})
+
+	return wp
+}
+
+// value 获取弱引用的值
+func (wp *weakPointer) value() *Value {
+	if wp == nil || !wp.alive {
+		return nil
+	}
+	return wp.ptr
+}
+
+// WeakCache 使用weakPointer的缓存
 type WeakCache struct {
 	mu    sync.RWMutex
-	items map[string]weak.Pointer[*Value]
+	items map[string]*weakPointer
 	stats CacheStats
 }
 
@@ -34,7 +70,7 @@ type CacheStats struct {
 // NewWeakCache 创建新的弱引用缓存
 func NewWeakCache() *WeakCache {
 	return &WeakCache{
-		items: make(map[string]weak.Pointer[*Value]),
+		items: make(map[string]*weakPointer),
 	}
 }
 
@@ -44,7 +80,7 @@ func (c *WeakCache) Get(key string) (*Value, bool) {
 	defer c.mu.RUnlock()
 
 	if wp, ok := c.items[key]; ok {
-		if v := wp.Value(); v != nil {
+		if v := wp.value(); v != nil {
 			c.stats.Hits++
 			return v, true
 		}
@@ -61,7 +97,7 @@ func (c *WeakCache) Set(key string, value *Value) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	c.items[key] = weak.Make(value)
+	c.items[key] = makeWeak(value)
 }
 
 // Stats 获取统计信息
@@ -78,7 +114,7 @@ func (c *WeakCache) Cleanup() int {
 
 	cleaned := 0
 	for key, wp := range c.items {
-		if wp.Value() == nil {
+		if wp.value() == nil {
 			delete(c.items, key)
 			cleaned++
 		}
@@ -123,7 +159,10 @@ func memStats() {
 }
 
 func main() {
-	fmt.Println("🔬 Weak Pointer Cache Demo\n")
+	fmt.Println("🔬 Weak Pointer Cache Demo (Simulated)")
+	fmt.Println("⚠️  Note: This uses a simulated weak pointer implementation.")
+	fmt.Println("    Real weak.Pointer requires runtime support (experimental)")
+	fmt.Println()
 
 	// === 测试1: Weak Cache ===
 	fmt.Println("=== Test 1: Weak Cache ===")

@@ -50,14 +50,14 @@ Go 1.25 为 `go doc` 命令添加了 `-http` 选项,允许开发者在本地启�
 
 ### 传统方式的局限
 
-**方式 1: 在线查看 pkg.go.dev**
+**方式 1: 在线查看 pkg.go.dev**-
 
 - ❌ 需要网络连接
 - ❌ 私有项目看不到文档
 - ❌ 不包含未发布的代码
 - ❌ 可能有延迟
 
-**方式 2: 命令行 go doc**
+**方式 2: 命令行 go doc**-
 
 ```bash
 $ go doc fmt.Println
@@ -69,7 +69,7 @@ func Println(a ...any) (n int, err error)
 - ❌ 不能搜索
 - ❌ 格式不友好
 
-**方式 3: 老旧的 godoc 工具**
+**方式 3: 老旧的 godoc 工具**-
 
 ```bash
 # 需要单独安装
@@ -107,7 +107,7 @@ $ go doc -http :6060
 # Press Ctrl+C to stop
 ```
 
-**效果**: 
+**效果**:
 
 1. 启动 HTTP 服务器监听 6060 端口
 2. 自动打开浏览器访问 `http://localhost:6060`
@@ -680,4 +680,3 @@ $ go doc -http :6060
 <p align="center">
   <b>📚 使用 go doc -http 让文档查阅更便捷! 🚀</b>
 </p>
-

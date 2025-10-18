@@ -8,7 +8,7 @@
 
 ### 1. Pipeline - 管道模式
 
-**文件**: `pipeline.go`
+**目录**: `pipeline_example/`
 
 **功能**:
 - 生成器模式
@@ -19,14 +19,15 @@
 
 **运行**:
 ```bash
-go run pipeline.go
+cd pipeline_example
+go run main.go
 ```
 
 ---
 
 ### 2. Worker Pool - 工作池模式
 
-**文件**: `worker_pool.go`
+**目录**: `worker_pool_example/`
 
 **功能**:
 - Worker池实现
@@ -36,7 +37,8 @@ go run pipeline.go
 
 **运行**:
 ```bash
-go run worker_pool.go
+cd worker_pool_example
+go run main.go
 ```
 
 ---

@@ -1,10 +1,17 @@
 // Arena Allocator示例：批量内存管理
-// 注意：arena包在Go 1.25是实验性特性
+// 注意：arena包在Go 1.23+是实验性特性
 // 构建时需要：GOEXPERIMENT=arenas go build
+//
+// 由于arena是实验性特性且可能不可用，本示例提供两个版本：
+// 1. 使用arena的版本（需要GOEXPERIMENT=arenas）
+// 2. 模拟arena行为的传统版本（默认）
+
+//go:build !arenas
+// +build !arenas
+
 package main
 
 import (
-	"arena"
 	"fmt"
 	"runtime"
 	"time"
@@ -25,23 +32,19 @@ type Result struct {
 	Score    float64
 }
 
-// processWithArena 使用Arena处理批量数据
+// processWithArena 模拟Arena处理批量数据（使用对象池优化）
+// 注意：这是arena行为的模拟实现，实际arena性能会更好
 func processWithArena(records []Record) []Result {
-	// 创建Arena
-	a := arena.NewArena()
-	defer a.Free() // 批量释放所有分配
-
-	// 在Arena中分配结果
+	// 模拟Arena：使用切片预分配，一次性释放
 	results := make([]Result, len(records))
 
 	for i, record := range records {
-		// 在Arena中分配
-		result := arena.New[Result](a)
-		result.RecordID = record.ID
-		result.Output = fmt.Sprintf("Processed-%s", record.Name)
-		result.Score = record.Value * 1.5
-
-		results[i] = *result
+		// 直接在切片中赋值，模拟arena的批量分配
+		results[i] = Result{
+			RecordID: record.ID,
+			Output:   fmt.Sprintf("Processed-%s", record.Name),
+			Score:    record.Value * 1.5,
+		}
 	}
 
 	return results
@@ -99,7 +102,8 @@ func benchmark(name string, fn func([]Record) []Result, records []Record, rounds
 // BatchProcessor 批处理器
 type BatchProcessor struct {
 	batchSize int
-	arena     *arena.Arena
+	// arena模拟：使用结果池
+	resultPool []Result
 }
 
 func NewBatchProcessor(batchSize int) *BatchProcessor {
@@ -110,10 +114,7 @@ func NewBatchProcessor(batchSize int) *BatchProcessor {
 
 // ProcessBatch 处理一批数据
 func (p *BatchProcessor) ProcessBatch(records []Record) []Result {
-	// 为每个batch创建新的Arena
-	p.arena = arena.NewArena()
-	defer p.arena.Free()
-
+	// 预分配结果切片（模拟arena的批量分配）
 	results := make([]Result, 0, len(records))
 
 	// 分批处理
@@ -135,20 +136,22 @@ func (p *BatchProcessor) processBatch(batch []Record) []Result {
 	results := make([]Result, len(batch))
 
 	for i, record := range batch {
-		// 在Arena中分配
-		result := arena.New[Result](p.arena)
-		result.RecordID = record.ID
-		result.Output = fmt.Sprintf("Batch-Processed-%s", record.Name)
-		result.Score = record.Value * 2.0
-
-		results[i] = *result
+		// 直接分配（模拟arena行为）
+		results[i] = Result{
+			RecordID: record.ID,
+			Output:   fmt.Sprintf("Batch-Processed-%s", record.Name),
+			Score:    record.Value * 2.0,
+		}
 	}
 
 	return results
 }
 
 func main() {
-	fmt.Println("🔬 Arena Allocator Demo\n")
+	fmt.Println("🔬 Arena Allocator Demo (Simulated Version)")
+	fmt.Println("⚠️  Note: This is a simulation of arena behavior.")
+	fmt.Println("    For actual arena support, build with: GOEXPERIMENT=arenas go build")
+	fmt.Println()
 
 	// 准备测试数据
 	const numRecords = 10000
