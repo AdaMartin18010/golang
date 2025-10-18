@@ -29,15 +29,15 @@ type Profile struct {
 
 // Settings 设置
 type Settings struct {
-	Theme       string `json:"theme"`
-	Language    string `json:"language"`
-	Notifications bool `json:"notifications"`
+	Theme         string `json:"theme"`
+	Language      string `json:"language"`
+	Notifications bool   `json:"notifications"`
 }
 
 // demoBasicUsage 基本使用示例
 func demoBasicUsage() {
 	fmt.Println("=== 1. Basic Usage ===\n")
-	
+
 	user := User{
 		ID:        1,
 		Username:  "alice",
@@ -54,16 +54,16 @@ func demoBasicUsage() {
 			},
 		},
 	}
-	
+
 	// 编码
 	data, err := json.Marshal(user)
 	if err != nil {
 		fmt.Printf("❌ Marshal error: %v\n", err)
 		return
 	}
-	
+
 	fmt.Printf("✅ Encoded JSON (%d bytes):\n%s\n\n", len(data), string(data))
-	
+
 	// 解码
 	var decoded User
 	err = json.Unmarshal(data, &decoded)
@@ -71,14 +71,14 @@ func demoBasicUsage() {
 		fmt.Printf("❌ Unmarshal error: %v\n", err)
 		return
 	}
-	
+
 	fmt.Printf("✅ Decoded: %s <%s>\n\n", decoded.Username, decoded.Email)
 }
 
 // demoStreamProcessing 流式处理示例
 func demoStreamProcessing() {
 	fmt.Println("=== 2. Stream Processing ===\n")
-	
+
 	// 创建大量数据
 	users := make([]User, 1000)
 	for i := 0; i < 1000; i++ {
@@ -89,7 +89,7 @@ func demoStreamProcessing() {
 			CreatedAt: time.Now(),
 		}
 	}
-	
+
 	// 流式编码到文件
 	file, err := os.Create("users.json")
 	if err != nil {
@@ -97,13 +97,13 @@ func demoStreamProcessing() {
 		return
 	}
 	defer file.Close()
-	
+
 	start := time.Now()
 	encoder := json.NewEncoder(file)
-	
+
 	// 写入数组开始
 	file.WriteString("[\n")
-	
+
 	for i, user := range users {
 		if i > 0 {
 			file.WriteString(",\n")
@@ -114,25 +114,25 @@ func demoStreamProcessing() {
 			return
 		}
 	}
-	
+
 	file.WriteString("]\n")
-	
+
 	encodeDuration := time.Since(start)
 	fmt.Printf("✅ Encoded %d users in %v\n", len(users), encodeDuration)
-	
+
 	// 流式解码
 	file.Seek(0, 0)
-	
+
 	start = time.Now()
 	decoder := json.NewDecoder(file)
-	
+
 	// 跳过数组开始
 	_, err = decoder.Token()
 	if err != nil {
 		fmt.Printf("❌ Token error: %v\n", err)
 		return
 	}
-	
+
 	count := 0
 	for decoder.More() {
 		var user User
@@ -143,10 +143,10 @@ func demoStreamProcessing() {
 		}
 		count++
 	}
-	
+
 	decodeDuration := time.Since(start)
 	fmt.Printf("✅ Decoded %d users in %v\n\n", count, decodeDuration)
-	
+
 	// 清理
 	os.Remove("users.json")
 }
@@ -154,7 +154,7 @@ func demoStreamProcessing() {
 // demoComments JSON with comments（JSON v2特性）
 func demoComments() {
 	fmt.Println("=== 3. JSON with Comments ===\n")
-	
+
 	// JSON with comments
 	jsonWithComments := `
 	{
@@ -171,15 +171,15 @@ func demoComments() {
 		}
 	}
 	`
-	
+
 	fmt.Println("📄 JSON with comments:")
 	fmt.Println(jsonWithComments)
-	
+
 	// Go 1.25 JSON v2 supports comments (with option)
 	// Note: This is示例代码，实际API可能不同
 	decoder := json.NewDecoder(strings.NewReader(jsonWithComments))
 	// decoder.AllowComments(true) // 启用注释支持（如果支持）
-	
+
 	var user User
 	err := decoder.Decode(&user)
 	if err != nil {
@@ -194,7 +194,7 @@ func demoComments() {
 // demoPerformance 性能对比
 func demoPerformance() {
 	fmt.Println("=== 4. Performance Comparison ===\n")
-	
+
 	// 准备测试数据
 	users := make([]User, 1000)
 	for i := 0; i < 1000; i++ {
@@ -215,14 +215,14 @@ func demoPerformance() {
 			},
 		}
 	}
-	
+
 	// 测试编码
 	const rounds = 100
-	
+
 	var totalEncodeTime time.Duration
 	var totalDecodeTime time.Duration
 	var totalSize int64
-	
+
 	for i := 0; i < rounds; i++ {
 		// 编码
 		start := time.Now()
@@ -232,7 +232,7 @@ func demoPerformance() {
 		}
 		totalEncodeTime += time.Since(start)
 		totalSize += int64(len(data))
-		
+
 		// 解码
 		start = time.Now()
 		var decoded []User
@@ -242,20 +242,20 @@ func demoPerformance() {
 		}
 		totalDecodeTime += time.Since(start)
 	}
-	
+
 	avgEncodeTime := totalEncodeTime / rounds
 	avgDecodeTime := totalDecodeTime / rounds
 	avgSize := totalSize / rounds
-	
+
 	fmt.Printf("📊 Results (%d rounds, %d objects each):\n", rounds, len(users))
 	fmt.Printf("  Average encode time: %v\n", avgEncodeTime)
 	fmt.Printf("  Average decode time: %v\n", avgDecodeTime)
 	fmt.Printf("  Average size: %d bytes (%.2f KB)\n", avgSize, float64(avgSize)/1024)
-	fmt.Printf("  Encode throughput: %.2f MB/s\n", 
+	fmt.Printf("  Encode throughput: %.2f MB/s\n",
 		float64(avgSize)/avgEncodeTime.Seconds()/1024/1024)
-	fmt.Printf("  Decode throughput: %.2f MB/s\n", 
+	fmt.Printf("  Decode throughput: %.2f MB/s\n",
 		float64(avgSize)/avgDecodeTime.Seconds()/1024/1024)
-	
+
 	fmt.Println("\n💡 Go 1.25 JSON v2 improvements:")
 	fmt.Println("  - 20-30% faster encoding")
 	fmt.Println("  - 15-25% faster decoding")
@@ -267,13 +267,13 @@ func demoPerformance() {
 // demoCustomMarshal 自定义序列化
 func demoCustomMarshal() {
 	fmt.Println("=== 5. Custom Marshaling ===\n")
-	
+
 	type Event struct {
 		Type      string    `json:"type"`
 		Timestamp time.Time `json:"timestamp"`
 		Data      any       `json:"data"`
 	}
-	
+
 	event := Event{
 		Type:      "user.created",
 		Timestamp: time.Now(),
@@ -283,27 +283,27 @@ func demoCustomMarshal() {
 			"email":    "bob@example.com",
 		},
 	}
-	
+
 	data, err := json.MarshalIndent(event, "", "  ")
 	if err != nil {
 		fmt.Printf("❌ Marshal error: %v\n", err)
 		return
 	}
-	
+
 	fmt.Printf("✅ Pretty JSON:\n%s\n\n", string(data))
 }
 
 // demoErrorHandling 错误处理
 func demoErrorHandling() {
 	fmt.Println("=== 6. Error Handling ===\n")
-	
+
 	// 错误的JSON
 	badJSON := `{
 		"id": 1,
 		"username": "alice"
 		"email": "missing comma here"
 	}`
-	
+
 	var user User
 	err := json.Unmarshal([]byte(badJSON), &user)
 	if err != nil {
@@ -316,7 +316,7 @@ func demoErrorHandling() {
 // demoStreaming 大文件流式处理
 func demoStreaming() {
 	fmt.Println("=== 7. Large File Streaming ===\n")
-	
+
 	// 模拟大文件
 	fmt.Println("💡 For large JSON files:")
 	fmt.Println("  - Use json.Decoder for reading")
@@ -324,17 +324,17 @@ func demoStreaming() {
 	fmt.Println("  - Process items one by one")
 	fmt.Println("  - Low memory footprint")
 	fmt.Println()
-	
+
 	// 示例：逐行处理
 	reader := strings.NewReader(`
 		{"id": 1, "username": "alice"}
 		{"id": 2, "username": "bob"}
 		{"id": 3, "username": "charlie"}
 	`)
-	
+
 	decoder := json.NewDecoder(reader)
 	count := 0
-	
+
 	for {
 		var user User
 		err := decoder.Decode(&user)
@@ -347,14 +347,14 @@ func demoStreaming() {
 		count++
 		fmt.Printf("  Processed: %s\n", user.Username)
 	}
-	
+
 	fmt.Printf("\n✅ Processed %d users\n\n", count)
 }
 
 func main() {
 	fmt.Println("🔬 JSON v2 Demo (Go 1.25)\n")
 	fmt.Println("=" + strings.Repeat("=", 40) + "\n")
-	
+
 	// 运行所有示例
 	demoBasicUsage()
 	demoStreamProcessing()
@@ -363,7 +363,7 @@ func main() {
 	demoCustomMarshal()
 	demoErrorHandling()
 	demoStreaming()
-	
+
 	fmt.Println("✅ All demos completed!")
 	fmt.Println("\n📚 Key Features:")
 	fmt.Println("  ✅ Better performance")
@@ -372,4 +372,3 @@ func main() {
 	fmt.Println("  ✅ Better error messages")
 	fmt.Println("  ✅ Backward compatible")
 }
-

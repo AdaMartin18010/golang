@@ -41,7 +41,7 @@ func NewWeakCache() *WeakCache {
 func (c *WeakCache) Get(key string) (*Value, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	
+
 	if wp, ok := c.items[key]; ok {
 		if v := wp.Value(); v != nil {
 			c.stats.Hits++
@@ -50,7 +50,7 @@ func (c *WeakCache) Get(key string) (*Value, bool) {
 		// 对象已被GC回收
 		c.stats.GCCleared++
 	}
-	
+
 	c.stats.Misses++
 	return nil, false
 }
@@ -59,7 +59,7 @@ func (c *WeakCache) Get(key string) (*Value, bool) {
 func (c *WeakCache) Set(key string, value *Value) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	c.items[key] = weak.Make(value)
 }
 
@@ -74,7 +74,7 @@ func (c *WeakCache) Stats() CacheStats {
 func (c *WeakCache) Cleanup() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	cleaned := 0
 	for key, wp := range c.items {
 		if wp.Value() == nil {
@@ -82,7 +82,7 @@ func (c *WeakCache) Cleanup() int {
 			cleaned++
 		}
 	}
-	
+
 	return cleaned
 }
 
@@ -101,7 +101,7 @@ func NewStrongCache() *StrongCache {
 func (c *StrongCache) Get(key string) (*Value, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	
+
 	v, ok := c.items[key]
 	return v, ok
 }
@@ -109,7 +109,7 @@ func (c *StrongCache) Get(key string) (*Value, bool) {
 func (c *StrongCache) Set(key string, value *Value) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	c.items[key] = value
 }
 
@@ -123,11 +123,11 @@ func memStats() {
 
 func main() {
 	fmt.Println("🔬 Weak Pointer Cache Demo\n")
-	
+
 	// === 测试1: Weak Cache ===
 	fmt.Println("=== Test 1: Weak Cache ===")
 	weakCache := NewWeakCache()
-	
+
 	// 填充缓存
 	for i := 0; i < 1000; i++ {
 		key := fmt.Sprintf("key-%d", i)
@@ -138,10 +138,10 @@ func main() {
 		}
 		weakCache.Set(key, value)
 	}
-	
+
 	fmt.Println("✅ Cached 1000 items")
 	memStats()
-	
+
 	// 访问一些值（创建强引用）
 	activeValues := make([]*Value, 0)
 	for i := 0; i < 100; i++ {
@@ -151,25 +151,25 @@ func main() {
 		}
 	}
 	fmt.Printf("✅ Active references: %d\n", len(activeValues))
-	
+
 	// 触发GC
 	fmt.Println("⚡ Triggering GC...")
 	runtime.GC()
 	time.Sleep(100 * time.Millisecond)
 	memStats()
-	
+
 	// 检查缓存
 	cleaned := weakCache.Cleanup()
 	fmt.Printf("🧹 Cleaned up %d entries\n", cleaned)
-	
+
 	stats := weakCache.Stats()
 	fmt.Printf("📈 Cache stats: Hits=%d, Misses=%d, GC Cleared=%d\n\n",
 		stats.Hits, stats.Misses, stats.GCCleared)
-	
+
 	// === 测试2: Strong Cache（对比）===
 	fmt.Println("=== Test 2: Strong Cache (for comparison) ===")
 	strongCache := NewStrongCache()
-	
+
 	// 填充缓存
 	for i := 0; i < 1000; i++ {
 		key := fmt.Sprintf("key-%d", i)
@@ -180,28 +180,28 @@ func main() {
 		}
 		strongCache.Set(key, value)
 	}
-	
+
 	fmt.Println("✅ Cached 1000 items")
 	memStats()
-	
+
 	// 触发GC
 	fmt.Println("⚡ Triggering GC...")
 	runtime.GC()
 	time.Sleep(100 * time.Millisecond)
 	memStats()
-	
+
 	fmt.Println("\n💡 Notice: Strong cache prevents GC, weak cache allows it!")
-	
+
 	// === 测试3: 实际场景 - 图片缓存 ===
 	fmt.Println("\n=== Test 3: Image Cache Scenario ===")
-	
+
 	type Image struct {
 		ID     int
 		Pixels []byte // 模拟图片数据
 	}
-	
+
 	imageCache := NewWeakCache()
-	
+
 	// 加载图片
 	loadImage := func(id int) *Value {
 		img := &Image{
@@ -214,34 +214,33 @@ func main() {
 			CreatedAt: time.Now(),
 		}
 	}
-	
+
 	// 场景：用户浏览图片
 	for round := 1; round <= 3; round++ {
 		fmt.Printf("\n📷 Round %d: User browsing...\n", round)
-		
+
 		// 加载一些图片
 		for i := 0; i < 10; i++ {
 			key := fmt.Sprintf("img-%d", i)
 			img := loadImage(i)
 			imageCache.Set(key, img)
 		}
-		
+
 		memStats()
-		
+
 		// 触发GC（模拟内存压力）
 		runtime.GC()
 		time.Sleep(50 * time.Millisecond)
-		
+
 		cleaned = imageCache.Cleanup()
 		fmt.Printf("🧹 Cleaned %d unused images\n", cleaned)
 	}
-	
+
 	finalStats := imageCache.Stats()
 	fmt.Printf("\n🎯 Final stats: Hits=%d, Misses=%d, GC Cleared=%d\n",
 		finalStats.Hits, finalStats.Misses, finalStats.GCCleared)
-	
+
 	fmt.Println("\n✅ Demo completed!")
 	fmt.Println("💡 Key takeaway: weak.Pointer allows GC to reclaim unused cache entries,")
 	fmt.Println("   preventing memory leaks while maintaining good cache hit rates.")
 }
-

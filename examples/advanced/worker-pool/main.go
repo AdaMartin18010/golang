@@ -54,17 +54,17 @@ func (p *WorkerPool) Start() {
 func (p *WorkerPool) worker(id int) {
 	for task := range p.tasks {
 		start := time.Now()
-		
+
 		// 模拟工作
 		output := p.processTask(task)
-		
+
 		p.results <- Result{
 			TaskID:   task.ID,
 			Output:   output,
 			Duration: time.Since(start),
 		}
-		
-		log.Printf("[Worker %d] Completed task %d in %v", 
+
+		log.Printf("[Worker %d] Completed task %d in %v",
 			id, task.ID, time.Since(start))
 	}
 }
@@ -97,7 +97,7 @@ func main() {
 	// 创建工作池（4个worker）
 	pool := NewWorkerPool(4)
 	pool.Start()
-	
+
 	// 提交任务
 	go func() {
 		for i := 1; i <= 20; i++ {
@@ -110,18 +110,18 @@ func main() {
 		}
 		pool.Shutdown()
 	}()
-	
+
 	// 收集结果
 	var totalDuration time.Duration
 	count := 0
-	
+
 	for result := range pool.Results() {
-		fmt.Printf("✅ Task %d: %s (took %v)\n", 
+		fmt.Printf("✅ Task %d: %s (took %v)\n",
 			result.TaskID, result.Output, result.Duration)
 		totalDuration += result.Duration
 		count++
 	}
-	
+
 	// 统计
 	avgDuration := totalDuration / time.Duration(count)
 	fmt.Printf("\n📊 Statistics:\n")
@@ -130,4 +130,3 @@ func main() {
 	fmt.Printf("  Average time: %v\n", avgDuration)
 	fmt.Printf("  Workers: %d\n", pool.maxWorkers)
 }
-
