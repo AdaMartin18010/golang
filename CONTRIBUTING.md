@@ -1,56 +1,71 @@
 # 贡献指南
 
-感谢您对 Go语言现代化项目 的关注！我们欢迎所有形式的贡献。
+> **欢迎加入 Go 1.25 学习项目！**  
+> 感谢您对项目的关注！我们欢迎所有形式的贡献，无论是文档改进、代码示例、问题反馈还是功能建议。
 
-## 🤝 如何贡献
+---
 
-### 1. 报告问题
+## 🎯 贡献方式
 
-- 使用 [GitHub Issues](https://github.com/your-repo/issues) 报告bug
-- 提供详细的错误描述和复现步骤
-- 包含系统环境信息
+我们欢迎以下类型的贡献：
 
-### 2. 功能建议
+### 📝 文档贡献
 
-- 在 Issues 中提出新功能建议
-- 描述功能的使用场景和价值
-- 讨论技术实现方案
+- **修正错误**: 修正文档中的错别字、语法错误
+- **补充内容**: 添加缺失的说明、示例或最佳实践
+- **改进结构**: 优化文档组织和可读性
+- **翻译工作**: 帮助翻译成其他语言
 
-### 3. 代码贡献
+### 💻 代码贡献
 
-- Fork 项目仓库
-- 创建功能分支
-- 提交 Pull Request
+- **代码示例**: 添加实用的代码示例和用例
+- **性能测试**: 提供基准测试和性能数据
+- **工具开发**: 开发辅助工具和脚本
+- **问题修复**: 修复代码中的 bug
+
+### 🐛 问题反馈
+
+- **Bug 报告**: 报告文档或代码中的问题
+- **功能建议**: 提出新功能或改进建议
+- **使用反馈**: 分享使用经验和心得
+
+### 🌟 社区贡献
+
+- **项目推广**: 在社交媒体分享项目
+- **问题解答**: 帮助其他用户解决问题
+- **案例分享**: 分享实际使用案例
 
 ## 🚀 开发环境设置
 
 ### 前置要求
 
-- Go 1.24+
-- Git
-- 代码编辑器 (推荐 VS Code)
+- **Go 1.25+** (必需)
+- **Git** (必需)
+- 代码编辑器 (推荐 VS Code 或 GoLand)
+- Markdown 编辑器 (可选)
 
 ### 本地开发
 
 ```bash
+# 1. Fork 并克隆仓库
+git clone https://github.com/your-username/golang.git
+cd golang
 
-# 克隆仓库
+# 2. 创建功能分支
+git checkout -b feature/your-feature-name
 
-git clone https://github.com/your-username/golang-modernization.git
-cd golang-modernization
+# 3. 运行示例代码
+cd docs/02-Go语言现代化/12-Go-1.25运行时优化/examples/gc_optimization
+go test -bench=. -benchmem
 
-# 安装依赖
+# 4. 运行项目统计工具
+cd scripts
+go run project_stats.go ..
 
-go mod download
-
-# 运行测试
-
-go test ./...
-
-# 运行基准测试
-
-go test -bench=. ./...
-
+# 5. 提交更改
+git add .
+git commit -m "feat: 添加新功能"
+git push origin feature/your-feature-name
 ```
 
 ## 📝 代码规范
