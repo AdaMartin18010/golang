@@ -619,32 +619,32 @@ time go build ./...  # 11.2s (提升 10%)
 
 **A**: **5 个实用技巧**
 
-**1. 并行构建**
+**1. 并行构建**:
 
 ```bash
 go build -p 8 ./...  # 使用 8 个并行任务
 ```
 
-**2. 详细输出**
+**2. 详细输出**:
 
 ```bash
 go build -x ./...  # 显示所有执行的命令
 ```
 
-**3. 构建缓存**
+**3. 构建缓存**:
 
 ```bash
 go env GOCACHE  # 查看缓存位置
 go clean -cache  # 清理缓存
 ```
 
-**4. 交叉编译**
+**4. 交叉编译**:
 
 ```bash
 GOOS=windows GOARCH=amd64 go build -o app.exe
 ```
 
-**5. 构建标签**
+**5. 构建标签**:
 
 ```bash
 go build -tags="prod,mysql" ./...
@@ -656,32 +656,32 @@ go build -tags="prod,mysql" ./...
 
 **A**: **多种方法组合**
 
-**1. 使用构建缓存**
+**1. 使用构建缓存**:
 
 ```bash
 # 默认已启用
 go env GOCACHE
 ```
 
-**2. 增加并行度**
+**2. 增加并行度**:
 
 ```bash
 go build -p $(nproc) ./...
 ```
 
-**3. 只构建必要的**
+**3. 只构建必要的**:
 
 ```bash
 go build -o bin/ ./cmd/...  # 只构建 cmd
 ```
 
-**4. 使用 go install**
+**4. 使用 go install**:
 
 ```bash
 go install ./cmd/...  # 直接安装到 GOBIN
 ```
 
-**5. 分层 Docker 构建**
+**5. 分层 Docker 构建**:
 
 ```dockerfile
 # 缓存依赖层
