@@ -131,7 +131,7 @@ xcode-select --install
 
 **示例错误**:
 
-```
+```text
 ==12345==ERROR: AddressSanitizer: heap-use-after-free
 READ of size 4 at 0x... 
     #0 in myFunction main.go:42
@@ -278,14 +278,14 @@ exclude github.com/problematic/pkg v1.2.3
 
 如果测试代码需要被 ignore 的包：
 
-**方案 1: 条件忽略**
+**方案 1: 条件忽略**:
 
 ```go
 // go.mod
 ignore github.com/test/tool  // +build !integration
 ```
 
-**方案 2: 分离测试**
+**方案 2: 分离测试**:
 
 ```bash
 # 单元测试（不需要该依赖）
@@ -590,18 +590,18 @@ time go build ./...  # 11.2s (提升 10%)
 
 1. **确认是 bug**:
 
-```bash
-# 尝试最小复现
-go version  # 确认版本
-go build -v ./...  # 详细输出
-```
+    ```bash
+    # 尝试最小复现
+    go version  # 确认版本
+    go build -v ./...  # 详细输出
+    ```
 
 2. **收集信息**:
 
-```bash
-go env  # 环境信息
-go version -m ./binary  # 构建信息
-```
+    ```bash
+    go env  # 环境信息
+    go version -m ./binary  # 构建信息
+    ```
 
 3. **提交 Issue**:
 <https://github.com/golang/go/issues/new>

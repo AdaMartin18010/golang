@@ -137,7 +137,7 @@ module github.com/username/project  // 模块路径
 
 **模块根目录**: 包含 `go.mod` 文件的目录
 
-```
+```text
 myproject/
 ├── go.mod          ← 模块根目录
 ├── go.sum
@@ -439,7 +439,7 @@ import "github.com/username/project/pkg/utils"
 
 #### 3.2.1 项目结构
 
-```
+```text
 project/
 ├── go.mod              # 根模块
 ├── main.go
