@@ -5,12 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/util/wait"
-	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -88,6 +85,78 @@ type ApplicationList struct {
 	Items           []Application `json:"items"`
 }
 
+// DeepCopyInto copies all properties of this object into another object of the same type
+func (in *Application) DeepCopyInto(out *Application) {
+	*out = *in
+	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
+	out.Spec = in.Spec
+	if in.Spec.Environment != nil {
+		in, out := &in.Spec.Environment, &out.Spec.Environment
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
+	if in.Status.Conditions != nil {
+		in, out := &in.Status.Conditions, &out.Status.Conditions
+		*out = make([]metav1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+}
+
+// DeepCopy creates a deep copy of the Application
+func (in *Application) DeepCopy() *Application {
+	if in == nil {
+		return nil
+	}
+	out := new(Application)
+	in.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyObject returns a deep copy of the Application as a runtime.Object
+func (in *Application) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}
+
+// DeepCopyInto copies all properties of this object into another object of the same type
+func (in *ApplicationList) DeepCopyInto(out *ApplicationList) {
+	*out = *in
+	out.TypeMeta = in.TypeMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
+	if in.Items != nil {
+		in, out := &in.Items, &out.Items
+		*out = make([]Application, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+}
+
+// DeepCopy creates a deep copy of the ApplicationList
+func (in *ApplicationList) DeepCopy() *ApplicationList {
+	if in == nil {
+		return nil
+	}
+	out := new(ApplicationList)
+	in.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyObject returns a deep copy of the ApplicationList as a runtime.Object
+func (in *ApplicationList) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}
+
 // ApplicationController 应用控制器
 type ApplicationController struct {
 	client   client.Client
@@ -140,7 +209,7 @@ func (ac *ApplicationController) setupEventHandlers(mgr manager.Manager) error {
 
 	// 设置事件源
 	if err := c.Watch(
-		&source.Kind{Type: &Application{}},
+		source.Kind(mgr.GetCache(), &Application{}),
 		&handler.EnqueueRequestForObject{},
 		predicate.Funcs{
 			CreateFunc: func(e event.CreateEvent) bool {
@@ -435,7 +504,7 @@ func (ac *ApplicationController) createHPA(ctx context.Context, app *Application
 	return nil
 }
 
-func (ac *ApplicationController) getDeployment(ctx context.Context, app *Application) (interface{}, error) {
+func (ac *ApplicationController) getDeployment(ctx context.Context, app *Application) (*appsv1.Deployment, error) {
 	// 实现获取Deployment逻辑
 	return nil, nil
 }

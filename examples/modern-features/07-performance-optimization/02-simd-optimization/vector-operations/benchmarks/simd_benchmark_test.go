@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"vector_operations"
+	vector_operations "performance-optimization-examples/02-simd-optimization/vector-operations"
 )
 
 // 测试数据准备

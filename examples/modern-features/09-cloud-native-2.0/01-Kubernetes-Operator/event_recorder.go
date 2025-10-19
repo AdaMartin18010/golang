@@ -41,10 +41,34 @@ func (er *EventRecorder) RecordApplicationCreated(app *Application) {
 		fmt.Sprintf("Application %s created successfully", app.ObjectMeta.Name))
 }
 
+// RecordApplicationRunning 记录应用运行事件
+func (er *EventRecorder) RecordApplicationRunning(app *Application) {
+	er.Event(app, corev1.EventTypeNormal, "ApplicationRunning",
+		fmt.Sprintf("Application %s is now running", app.ObjectMeta.Name))
+}
+
+// RecordApplicationHealthy 记录应用健康事件
+func (er *EventRecorder) RecordApplicationHealthy(app *Application) {
+	er.Event(app, corev1.EventTypeNormal, "ApplicationHealthy",
+		fmt.Sprintf("Application %s is healthy", app.ObjectMeta.Name))
+}
+
+// RecordApplicationUnhealthy 记录应用不健康事件
+func (er *EventRecorder) RecordApplicationUnhealthy(app *Application, message string) {
+	er.Eventf(app, corev1.EventTypeWarning, "ApplicationUnhealthy",
+		"Application %s is unhealthy: %s", app.ObjectMeta.Name, message)
+}
+
 // RecordApplicationUpdated 记录应用更新事件
-func (er *EventRecorder) RecordApplicationUpdated(app *Application) {
-	er.Event(app, corev1.EventTypeNormal, "ApplicationUpdated",
-		fmt.Sprintf("Application %s updated successfully", app.ObjectMeta.Name))
+func (er *EventRecorder) RecordApplicationUpdated(app *Application, message string) {
+	er.Eventf(app, corev1.EventTypeNormal, "ApplicationUpdated",
+		"Application %s updated: %s", app.ObjectMeta.Name, message)
+}
+
+// RecordApplicationUpdating 记录应用更新中事件
+func (er *EventRecorder) RecordApplicationUpdating(app *Application, message string) {
+	er.Eventf(app, corev1.EventTypeNormal, "ApplicationUpdating",
+		"Application %s updating: %s", app.ObjectMeta.Name, message)
 }
 
 // RecordApplicationDeleted 记录应用删除事件
@@ -53,10 +77,22 @@ func (er *EventRecorder) RecordApplicationDeleted(app *Application) {
 		fmt.Sprintf("Application %s deleted successfully", app.ObjectMeta.Name))
 }
 
-// RecordApplicationScaled 记录应用扩缩容事件
-func (er *EventRecorder) RecordApplicationScaled(app *Application, oldReplicas, newReplicas int32) {
+// RecordApplicationDeleting 记录应用删除中事件
+func (er *EventRecorder) RecordApplicationDeleting(app *Application) {
+	er.Event(app, corev1.EventTypeNormal, "ApplicationDeleting",
+		fmt.Sprintf("Application %s is being deleted", app.ObjectMeta.Name))
+}
+
+// RecordApplicationScaling 记录应用扩缩容中事件
+func (er *EventRecorder) RecordApplicationScaling(app *Application, message string) {
+	er.Eventf(app, corev1.EventTypeNormal, "ApplicationScaling",
+		"Application %s scaling: %s", app.ObjectMeta.Name, message)
+}
+
+// RecordApplicationScaled 记录应用扩缩容完成事件
+func (er *EventRecorder) RecordApplicationScaled(app *Application, message string) {
 	er.Eventf(app, corev1.EventTypeNormal, "ApplicationScaled",
-		"Application %s scaled from %d to %d replicas", app.ObjectMeta.Name, oldReplicas, newReplicas)
+		"Application %s scaled: %s", app.ObjectMeta.Name, message)
 }
 
 // RecordApplicationFailed 记录应用失败事件
@@ -69,6 +105,12 @@ func (er *EventRecorder) RecordApplicationFailed(app *Application, reason, messa
 func (er *EventRecorder) RecordApplicationRecovered(app *Application) {
 	er.Event(app, corev1.EventTypeNormal, "ApplicationRecovered",
 		fmt.Sprintf("Application %s recovered from failure", app.ObjectMeta.Name))
+}
+
+// RecordApplicationRecovery 记录应用恢复中事件
+func (er *EventRecorder) RecordApplicationRecovery(app *Application, message string) {
+	er.Eventf(app, corev1.EventTypeNormal, "ApplicationRecovery",
+		"Application %s recovering: %s", app.ObjectMeta.Name, message)
 }
 
 // RecordDeploymentCreated 记录Deployment创建事件

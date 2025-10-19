@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"memorypool"
+	memorypool "performance-optimization-examples/01-zero-copy/memory-pool"
 )
 
 // 测试数据结构
@@ -224,7 +224,7 @@ func TestPoolStats(t *testing.T) {
 	// 获取一些对象
 	obj1 := pool.Get()
 	obj2 := pool.Get()
-	obj3 := pool.Get()
+	_ = pool.Get() // obj3 - 获取但不归还，用于测试
 
 	// 归还一些对象
 	pool.Put(obj1)

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"matrix_computation"
+	matrix_computation "performance-optimization-examples/02-simd-optimization/matrix-computation"
 )
 
 // 测试数据准备

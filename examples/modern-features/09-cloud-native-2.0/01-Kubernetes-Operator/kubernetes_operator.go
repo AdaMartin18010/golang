@@ -13,7 +13,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/utils/pointer"
@@ -158,12 +157,98 @@ type ApplicationCondition struct {
 	Message string `json:"message,omitempty"`
 }
 
+// DeepCopyObject 实现 runtime.Object 接口
+func (a *Application) DeepCopyObject() runtime.Object {
+	if a == nil {
+		return nil
+	}
+	out := new(Application)
+	a.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyInto 深度复制到目标对象
+func (a *Application) DeepCopyInto(out *Application) {
+	*out = *a
+	out.TypeMeta = a.TypeMeta
+	a.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
+	a.Spec.DeepCopyInto(&out.Spec)
+	a.Status.DeepCopyInto(&out.Status)
+}
+
+// DeepCopy 创建深度副本
+func (a *Application) DeepCopy() *Application {
+	if a == nil {
+		return nil
+	}
+	out := new(Application)
+	a.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyInto 深度复制应用规格
+func (as *ApplicationSpec) DeepCopyInto(out *ApplicationSpec) {
+	*out = *as
+	if as.Environment != nil {
+		out.Environment = make([]corev1.EnvVar, len(as.Environment))
+		for i := range as.Environment {
+			as.Environment[i].DeepCopyInto(&out.Environment[i])
+		}
+	}
+	as.Resources.DeepCopyInto(&out.Resources)
+	if as.HealthCheck.LivenessProbe != nil {
+		out.HealthCheck.LivenessProbe = as.HealthCheck.LivenessProbe.DeepCopy()
+	}
+	if as.HealthCheck.ReadinessProbe != nil {
+		out.HealthCheck.ReadinessProbe = as.HealthCheck.ReadinessProbe.DeepCopy()
+	}
+	if as.HealthCheck.StartupProbe != nil {
+		out.HealthCheck.StartupProbe = as.HealthCheck.StartupProbe.DeepCopy()
+	}
+	if as.Scaling.CustomMetrics != nil {
+		out.Scaling.CustomMetrics = make([]autoscalingv2.MetricSpec, len(as.Scaling.CustomMetrics))
+		for i := range as.Scaling.CustomMetrics {
+			as.Scaling.CustomMetrics[i].DeepCopyInto(&out.Scaling.CustomMetrics[i])
+		}
+	}
+	if as.Storage.PersistentVolumeClaims != nil {
+		out.Storage.PersistentVolumeClaims = make([]PersistentVolumeClaimSpec, len(as.Storage.PersistentVolumeClaims))
+		copy(out.Storage.PersistentVolumeClaims, as.Storage.PersistentVolumeClaims)
+	}
+	if as.Storage.EphemeralStorage != nil {
+		out.Storage.EphemeralStorage = new(corev1.ResourceRequirements)
+		as.Storage.EphemeralStorage.DeepCopyInto(out.Storage.EphemeralStorage)
+	}
+	if as.Security.SecurityContext != nil {
+		out.Security.SecurityContext = as.Security.SecurityContext.DeepCopy()
+	}
+	if as.Security.PodSecurityContext != nil {
+		out.Security.PodSecurityContext = as.Security.PodSecurityContext.DeepCopy()
+	}
+	if as.Security.ImagePullSecrets != nil {
+		out.Security.ImagePullSecrets = make([]corev1.LocalObjectReference, len(as.Security.ImagePullSecrets))
+		copy(out.Security.ImagePullSecrets, as.Security.ImagePullSecrets)
+	}
+}
+
+// DeepCopyInto 深度复制应用状态
+func (as *ApplicationStatus) DeepCopyInto(out *ApplicationStatus) {
+	*out = *as
+	if as.Conditions != nil {
+		out.Conditions = make([]ApplicationCondition, len(as.Conditions))
+		copy(out.Conditions, as.Conditions)
+	}
+	if as.ServiceEndpoints != nil {
+		out.ServiceEndpoints = make([]string, len(as.ServiceEndpoints))
+		copy(out.ServiceEndpoints, as.ServiceEndpoints)
+	}
+}
+
 // ApplicationController 应用控制器
 type ApplicationController struct {
 	client   client.Client
 	scheme   *runtime.Scheme
 	queue    workqueue.RateLimitingInterface
-	informer cache.SharedIndexInformer
 	recorder *EventRecorder
 	metrics  *MetricsCollector
 }
@@ -179,11 +264,10 @@ func NewApplicationController(mgr manager.Manager) (*ApplicationController, erro
 	}
 
 	// 设置informer
-	informer, err := mgr.GetCache().GetInformer(&Application{})
+	informer, err := mgr.GetCache().GetInformer(context.Background(), &Application{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get informer: %w", err)
 	}
-	controller.informer = informer
 
 	// 添加事件处理器
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
@@ -235,7 +319,7 @@ func (ac *ApplicationController) Reconcile(ctx context.Context, req reconcile.Re
 	if err := ac.client.Get(ctx, req.NamespacedName, app); err != nil {
 		if errors.IsNotFound(err) {
 			// 应用已删除，清理相关资源
-			return ac.cleanupResources(ctx, req.NamespacedName)
+			return reconcile.Result{}, ac.cleanupResources(ctx, req.NamespacedName)
 		}
 		ac.metrics.RecordReconcileError(req.Name)
 		ac.recorder.RecordReconcileError(app, err.Error())
@@ -258,7 +342,7 @@ func (ac *ApplicationController) Reconcile(ctx context.Context, req reconcile.Re
 // reconcileApplication 调和应用
 func (ac *ApplicationController) reconcileApplication(ctx context.Context, app *Application) (reconcile.Result, error) {
 	// 检查应用是否被标记为删除
-	if app.DeletionTimestamp != nil {
+	if app.ObjectMeta.DeletionTimestamp != nil {
 		return ac.handleDeletion(ctx, app)
 	}
 
@@ -338,8 +422,8 @@ func (ac *ApplicationController) handleRunning(ctx context.Context, app *Applica
 	// 检查Deployment状态
 	deployment := &appsv1.Deployment{}
 	err := ac.client.Get(ctx, types.NamespacedName{
-		Namespace: app.Namespace,
-		Name:      app.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Name:      app.ObjectMeta.Name,
 	}, deployment)
 
 	if err != nil {
@@ -358,7 +442,7 @@ func (ac *ApplicationController) handleRunning(ctx context.Context, app *Applica
 	app.Status.LastUpdateTime = metav1.Now()
 
 	// 检查是否需要扩缩容
-	if app.Spec.Replicas != deployment.Spec.Replicas {
+	if deployment.Spec.Replicas == nil || app.Spec.Replicas != *deployment.Spec.Replicas {
 		app.Status.Phase = "Scaling"
 		return ac.handleScaling(ctx, app)
 	}
@@ -390,8 +474,8 @@ func (ac *ApplicationController) handleScaling(ctx context.Context, app *Applica
 	// 更新Deployment副本数
 	deployment := &appsv1.Deployment{}
 	err := ac.client.Get(ctx, types.NamespacedName{
-		Namespace: app.Namespace,
-		Name:      app.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Name:      app.ObjectMeta.Name,
 	}, deployment)
 
 	if err != nil {
@@ -423,8 +507,8 @@ func (ac *ApplicationController) handleUpdating(ctx context.Context, app *Applic
 	// 更新Deployment镜像
 	deployment := &appsv1.Deployment{}
 	err := ac.client.Get(ctx, types.NamespacedName{
-		Namespace: app.Namespace,
-		Name:      app.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Name:      app.ObjectMeta.Name,
 	}, deployment)
 
 	if err != nil {
@@ -465,8 +549,8 @@ func (ac *ApplicationController) handleDeletion(ctx context.Context, app *Applic
 
 	// 删除相关资源
 	if err := ac.cleanupResources(ctx, types.NamespacedName{
-		Namespace: app.Namespace,
-		Name:      app.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Name:      app.ObjectMeta.Name,
 	}); err != nil {
 		return reconcile.Result{}, err
 	}
@@ -482,21 +566,21 @@ func (ac *ApplicationController) handleDeletion(ctx context.Context, app *Applic
 
 // 辅助方法
 func (ac *ApplicationController) addFinalizer(ctx context.Context, app *Application) error {
-	if !containsString(app.Finalizers, "application.finalizers.example.com") {
-		app.Finalizers = append(app.Finalizers, "application.finalizers.example.com")
+	if !containsString(app.ObjectMeta.Finalizers, "application.finalizers.example.com") {
+		app.ObjectMeta.Finalizers = append(app.ObjectMeta.Finalizers, "application.finalizers.example.com")
 		return ac.client.Update(ctx, app)
 	}
 	return nil
 }
 
 func (ac *ApplicationController) removeFinalizer(ctx context.Context, app *Application) error {
-	app.Finalizers = removeString(app.Finalizers, "application.finalizers.example.com")
+	app.ObjectMeta.Finalizers = removeString(app.ObjectMeta.Finalizers, "application.finalizers.example.com")
 	return ac.client.Update(ctx, app)
 }
 
 func (ac *ApplicationController) getLabels(app *Application) map[string]string {
 	return map[string]string{
-		"app":        app.Name,
+		"app":        app.ObjectMeta.Name,
 		"managed-by": "application-controller",
 	}
 }

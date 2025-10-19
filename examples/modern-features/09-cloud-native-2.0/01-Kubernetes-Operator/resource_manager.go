@@ -8,7 +8,6 @@ import (
 	autoscalingv2 "k8s.io/api/autoscaling/v2"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -34,7 +33,7 @@ func (rm *ResourceManager) createPersistentVolumeClaims(ctx context.Context, app
 		pvc := &corev1.PersistentVolumeClaim{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      pvcSpec.Name,
-				Namespace: app.Namespace,
+				Namespace: app.ObjectMeta.Namespace,
 				Labels:    getLabels(app),
 				OwnerReferences: []metav1.OwnerReference{
 					*metav1.NewControllerRef(app, app.GroupVersionKind()),
@@ -43,7 +42,7 @@ func (rm *ResourceManager) createPersistentVolumeClaims(ctx context.Context, app
 			Spec: corev1.PersistentVolumeClaimSpec{
 				AccessModes:      pvcSpec.AccessModes,
 				StorageClassName: pvcSpec.StorageClassName,
-				Resources: corev1.ResourceRequirements{
+				Resources: corev1.VolumeResourceRequirements{
 					Requests: corev1.ResourceList{
 						corev1.ResourceStorage: pvcSpec.Size,
 					},
@@ -62,8 +61,8 @@ func (rm *ResourceManager) createPersistentVolumeClaims(ctx context.Context, app
 func (rm *ResourceManager) createOrUpdateDeployment(ctx context.Context, app *Application) error {
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      app.Name,
-			Namespace: app.Namespace,
+			Name:      app.ObjectMeta.Name,
+			Namespace: app.ObjectMeta.Namespace,
 			Labels:    getLabels(app),
 			OwnerReferences: []metav1.OwnerReference{
 				*metav1.NewControllerRef(app, app.GroupVersionKind()),
@@ -81,7 +80,7 @@ func (rm *ResourceManager) createOrUpdateDeployment(ctx context.Context, app *Ap
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:  app.Name,
+							Name:  app.ObjectMeta.Name,
 							Image: app.Spec.Image,
 							Ports: []corev1.ContainerPort{
 								{
@@ -131,8 +130,8 @@ func (rm *ResourceManager) createOrUpdateDeployment(ctx context.Context, app *Ap
 
 	existing := &appsv1.Deployment{}
 	err := rm.client.Get(ctx, types.NamespacedName{
-		Namespace: app.Namespace,
-		Name:      app.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Name:      app.ObjectMeta.Name,
 	}, existing)
 
 	if err != nil {
@@ -151,8 +150,8 @@ func (rm *ResourceManager) createOrUpdateDeployment(ctx context.Context, app *Ap
 func (rm *ResourceManager) createOrUpdateService(ctx context.Context, app *Application) error {
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      app.Name,
-			Namespace: app.Namespace,
+			Name:      app.ObjectMeta.Name,
+			Namespace: app.ObjectMeta.Namespace,
 			Labels:    getLabels(app),
 			OwnerReferences: []metav1.OwnerReference{
 				*metav1.NewControllerRef(app, app.GroupVersionKind()),
@@ -161,7 +160,7 @@ func (rm *ResourceManager) createOrUpdateService(ctx context.Context, app *Appli
 		Spec: corev1.ServiceSpec{
 			Type: app.Spec.Network.ServiceType,
 			Selector: map[string]string{
-				"app": app.Name,
+				"app": app.ObjectMeta.Name,
 			},
 			Ports: []corev1.ServicePort{
 				{
@@ -181,8 +180,8 @@ func (rm *ResourceManager) createOrUpdateService(ctx context.Context, app *Appli
 
 	existing := &corev1.Service{}
 	err := rm.client.Get(ctx, types.NamespacedName{
-		Namespace: app.Namespace,
-		Name:      app.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Name:      app.ObjectMeta.Name,
 	}, existing)
 
 	if err != nil {
@@ -201,8 +200,8 @@ func (rm *ResourceManager) createOrUpdateService(ctx context.Context, app *Appli
 func (rm *ResourceManager) createOrUpdateHPA(ctx context.Context, app *Application) error {
 	hpa := &autoscalingv2.HorizontalPodAutoscaler{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      app.Name,
-			Namespace: app.Namespace,
+			Name:      app.ObjectMeta.Name,
+			Namespace: app.ObjectMeta.Namespace,
 			Labels:    getLabels(app),
 			OwnerReferences: []metav1.OwnerReference{
 				*metav1.NewControllerRef(app, app.GroupVersionKind()),
@@ -212,7 +211,7 @@ func (rm *ResourceManager) createOrUpdateHPA(ctx context.Context, app *Applicati
 			ScaleTargetRef: autoscalingv2.CrossVersionObjectReference{
 				APIVersion: "apps/v1",
 				Kind:       "Deployment",
-				Name:       app.Name,
+				Name:       app.ObjectMeta.Name,
 			},
 			MinReplicas: pointer.Int32(app.Spec.Scaling.MinReplicas),
 			MaxReplicas: app.Spec.Scaling.MaxReplicas,
@@ -249,8 +248,8 @@ func (rm *ResourceManager) createOrUpdateHPA(ctx context.Context, app *Applicati
 
 	existing := &autoscalingv2.HorizontalPodAutoscaler{}
 	err := rm.client.Get(ctx, types.NamespacedName{
-		Namespace: app.Namespace,
-		Name:      app.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Name:      app.ObjectMeta.Name,
 	}, existing)
 
 	if err != nil {
@@ -309,7 +308,7 @@ func (rm *ResourceManager) cleanupResources(ctx context.Context, namespacedName 
 // getLabels 获取标签
 func getLabels(app *Application) map[string]string {
 	return map[string]string{
-		"app":        app.Name,
+		"app":        app.ObjectMeta.Name,
 		"managed-by": "application-controller",
 	}
 }

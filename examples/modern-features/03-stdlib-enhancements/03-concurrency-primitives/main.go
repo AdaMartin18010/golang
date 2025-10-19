@@ -36,7 +36,7 @@ func demonstrateAfterFunc() {
 	if !stop() {
 		fmt.Println("The cleanup function had already been called.")
 	}
-	fmt.Println("--- End of AfterFunc ---\n")
+	fmt.Println("--- End of AfterFunc ---")
 }
 
 // --- 2. context.WithoutCancel (Go 1.21+) ---
@@ -60,7 +60,7 @@ func demonstrateWithoutCancel() {
 	if childCtx.Err() == nil {
 		fmt.Println("Child context (created with WithoutCancel) is NOT canceled.")
 	}
-	fmt.Println("--- End of WithoutCancel ---\n")
+	fmt.Println("--- End of WithoutCancel ---")
 }
 
 // --- 3. sync.OnceFunc (Go 1.21+) ---
@@ -89,7 +89,7 @@ func demonstrateOnceFunc() {
 	wg.Wait()
 
 	fmt.Printf("The setup function was called %d time(s).\n", setupCount)
-	fmt.Println("--- End of OnceFunc ---\n")
+	fmt.Println("--- End of OnceFunc ---")
 }
 
 // --- 4. atomic Types (Go 1.19+) ---
@@ -113,5 +113,5 @@ func demonstrateAtomicTypes() {
 	// var regularInt int32
 	// regularInt.Add(1) // COMPILE ERROR
 
-	fmt.Println("--- End of atomic Types ---\n")
+	fmt.Println("--- End of atomic Types ---")
 }
