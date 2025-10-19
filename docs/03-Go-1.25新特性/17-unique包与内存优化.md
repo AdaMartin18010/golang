@@ -19,6 +19,7 @@
 值规范化是将多个相等的值映射到单个共享实例的过程，类似于字符串池（String Interning）。
 
 **传统方式**:
+
 ```go
 s1 := "hello"
 s2 := "hello"
@@ -26,6 +27,7 @@ s2 := "hello"
 ```
 
 **unique包**:
+
 ```go
 import "unique"
 
@@ -41,6 +43,7 @@ h2 := unique.Make("hello")
 ### unique.Handle[T]
 
 **类型定义**:
+
 ```go
 type Handle[T comparable] struct {
     // 包含已过滤或未导出的字段
@@ -48,6 +51,7 @@ type Handle[T comparable] struct {
 ```
 
 **核心方法**:
+
 ```go
 // Make 创建或获取规范化的值
 func Make[T comparable](value T) Handle[T]
@@ -160,7 +164,8 @@ func main() {
 ```
 
 **输出示例**:
-```
+
+```text
 Without unique: 24 MB
 With unique: 8 MB
 
@@ -376,7 +381,8 @@ func BenchmarkMapUniqueKey(b *testing.B) {
 ```
 
 **基准测试结果**:
-```
+
+```text
 BenchmarkMapStringKey-8     10000000    150 ns/op    32 B/op    1 allocs/op
 BenchmarkMapUniqueKey-8     20000000     75 ns/op     0 B/op    0 allocs/op
 
@@ -561,4 +567,3 @@ func (s *StringSet) Contains(str string) bool {
 **最后更新**: 2025年10月20日  
 **Go版本**: 1.25.3  
 **文档状态**: ✅ 已验证
-
