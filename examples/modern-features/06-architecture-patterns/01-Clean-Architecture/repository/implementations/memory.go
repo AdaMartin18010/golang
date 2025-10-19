@@ -109,7 +109,7 @@ func (r *MemoryUserRepository) Update(user *domain.User) error {
 		return errors.New("user ID cannot be empty")
 	}
 
-	existingUser, exists := r.users[user.ID]
+	_, exists := r.users[user.ID]
 	if !exists {
 		return domain.ErrUserNotFound
 	}

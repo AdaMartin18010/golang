@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"hash"
 	"runtime"
+	"time"
 	"unsafe"
 )
 
@@ -373,5 +374,5 @@ func AlignedBytes(size int) []byte {
 	ptr := uintptr(unsafe.Pointer(&aligned[0]))
 	offset := (32 - ptr%32)
 
-	return aligned[offset : offset+size]
+	return aligned[offset : offset+uintptr(size)]
 }

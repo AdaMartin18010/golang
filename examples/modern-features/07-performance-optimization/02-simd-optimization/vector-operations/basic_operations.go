@@ -324,7 +324,7 @@ func AlignedFloat32Slice(size int) []float32 {
 		aligned := make([]float32, size+8)
 		ptr = uintptr(unsafe.Pointer(&aligned[0]))
 		offset := (32 - ptr%32) / unsafe.Sizeof(float32(0))
-		return aligned[offset : offset+size]
+		return aligned[offset : offset+uintptr(size)]
 	}
 
 	return data

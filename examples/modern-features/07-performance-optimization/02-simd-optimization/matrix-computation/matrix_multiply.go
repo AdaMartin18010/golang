@@ -319,7 +319,7 @@ func AlignedMatrix(rows, cols int) *Matrix {
 	offset := (32 - ptr%32) / unsafe.Sizeof(float32(0))
 
 	return &Matrix{
-		Data:   aligned[offset : offset+totalSize],
+		Data:   aligned[offset : offset+uintptr(totalSize)],
 		Rows:   rows,
 		Cols:   cols,
 		Stride: stride,

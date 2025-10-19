@@ -501,7 +501,7 @@ func AlignedImage(width, height int) *Image {
 	offset := (32 - ptr%32) / unsafe.Sizeof(Pixel{})
 
 	return &Image{
-		Pixels: aligned[offset : offset+totalPixels],
+		Pixels: aligned[offset : offset+uintptr(totalPixels)],
 		Width:  width,
 		Height: height,
 	}

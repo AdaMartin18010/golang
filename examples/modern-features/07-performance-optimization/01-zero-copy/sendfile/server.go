@@ -3,13 +3,11 @@ package sendfile
 import (
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 )
 
@@ -109,22 +107,13 @@ func (s *FileServer) sendFileOptimized(w http.ResponseWriter, file *os.File, siz
 		return err
 	}
 
-	// 获取文件描述符
-	fileFd := int(file.Fd())
+	// 注意：真正的sendfile优化在不同平台上的实现不同
+	// 在Linux上使用syscall.Sendfile
+	// 在Windows上需要使用TransmitFile API
+	// 这里使用标准库的io.Copy作为跨平台的回退方案
 
-	// 获取连接的文件描述符
-	var connFd int
-	switch t := conn.(type) {
-	case *net.TCPConn:
-		connFd = int(t.File().Fd())
-	case *net.UnixConn:
-		connFd = int(t.File().Fd())
-	default:
-		return fmt.Errorf("unsupported connection type")
-	}
-
-	// 使用sendfile系统调用
-	written, err := syscall.Sendfile(connFd, fileFd, nil, int(size))
+	buffer := make([]byte, 32*1024)
+	written, err := io.CopyBuffer(conn, file, buffer)
 	if err != nil {
 		return err
 	}
