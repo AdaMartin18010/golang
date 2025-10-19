@@ -149,18 +149,17 @@ cd golang
 ### Run Examples
 
 ```bash
-# 1. WaitGroup.Go() example
-cd docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go
-go run basic_example.go
-go test -v .
-
-# 2. Concurrency patterns
+# 1. Concurrency patterns
 cd examples/concurrency
 go test -v .
 
-# 3. AI-Agent architecture
-cd docs/02-Go语言现代化/08-智能化架构集成/01-AI-Agent架构
+# 2. AI-Agent architecture
+cd examples/advanced/ai-agent
 go test -v ./...
+
+# 3. Go 1.25 runtime
+cd examples/go125/runtime/gc_optimization
+go test -v
 ```
 
 ### Run All Tests
@@ -211,7 +210,7 @@ func main() {
 }
 ```
 
-**Test**: `cd docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go && go test -v .`
+**Test**: `cd examples/concurrency && go test -v .`
 
 ### Pipeline Concurrency Pattern
 

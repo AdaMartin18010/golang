@@ -97,7 +97,7 @@ For detailed guidance, see [Quick Start Guide](QUICK_START_EN.md).
 
 **🌱 Beginner** (New to Go 1.23+):
 
-- Start with [WaitGroup examples](./docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go/)
+- Start with [Concurrency Examples](./examples/concurrency/)
 - Read [Examples Showcase](EXAMPLES_EN.md)
 - Estimated time: 2-4 hours
 
@@ -485,7 +485,7 @@ See [Concurrency Examples](examples/concurrency/) for code.
 - Maintains educational value
 - Provides similar API to real ASan
 
-This is an industry-first innovation! See [ASan Mock](./docs/02-Go语言现代化/12-Go-1.23运行时优化/02-ASan/examples/asan_memory_leak/).
+This is an industry-first innovation! See [ASan Mock](./examples/go125/toolchain/asan_memory_leak/).
 
 ---
 

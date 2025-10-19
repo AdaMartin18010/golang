@@ -158,12 +158,12 @@ golang/
 ### 运行示例
 
 ```bash
-# Go 1.23+现代特性
-cd docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go
-go test -v .
-
 # 并发模式
 cd examples/concurrency
+go test -v .
+
+# Go 1.25特性
+cd examples/go125/runtime/gc_optimization
 go test -v .
 
 # AI-Agent

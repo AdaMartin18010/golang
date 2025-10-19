@@ -109,7 +109,7 @@ go run main.go
 
 ```bash
 # 运行性能测试
-cd docs/02-Go语言现代化/12-Go-1.23运行时优化/examples/gc_optimization
+cd examples/go125/runtime/gc_optimization
 go test -bench=. -benchmem
 
 # 查看 GC 优化效果

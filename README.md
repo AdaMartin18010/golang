@@ -226,7 +226,7 @@ func main() {
 }
 ```
 
-**测试**: `cd docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go && go test -v .`
+**测试**: `cd examples/concurrency && go test -v .`
 
 ### Pipeline并发模式
 

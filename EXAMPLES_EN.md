@@ -1,52 +1,32 @@
-﻿# 📚 Examples Showcase
+﻿# 📚 Go Examples Showcase
 
-> **Complete Go 1.23+ and Concurrency Pattern Example Collection**  
-> **45 Test Cases | 100% Pass Rate | Production Ready**
-
-**Languages**: [中文](EXAMPLES.md) | **English**
+> **Complete Go 1.23-1.25 Features and Architecture Patterns Collection**  
+> **100+ Test Cases | Production-Ready Code | Best Practices**
 
 ---
 
-## 🎯 Example Categories
+## 🎯 Quick Navigation
 
 <table>
 <tr>
 <td width="50%">
 
-### 🆕 Go 1.23+ New Features
+### 🔥 Most Popular
 
-- [WaitGroup.Go()](#waitgroupgo-examples) (16 tests)
-- [Concurrency Safety](#concurrency-safety)
-- [Panic Recovery](#panic-recovery)
-
-</td>
-<td width="50%">
-
-### 🎭 Concurrency Patterns
-
-- [Pipeline Pattern](#pipeline-pattern) (6 tests)
-- [Worker Pool Pattern](#worker-pool-pattern) (7 tests)
-- [Fan-out/Fan-in](#fan-outfan-in)
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 🤖 AI-Agent Architecture
-
-- [DecisionEngine](#decision-engine) (7 tests)
-- [LearningEngine](#learning-engine) (9 tests)
-- [BaseAgent](#base-agent) (2 tests)
+- [AI-Agent Architecture](#ai-agent-architecture) ⭐⭐⭐⭐⭐
+- [Go 1.25 Runtime Optimizations](#go-125-runtime-optimizations) ⭐⭐⭐⭐⭐  
+- [Concurrency Patterns](#concurrency-patterns) ⭐⭐⭐⭐
+- [Modern Features Collection](#modern-features) ⭐⭐⭐⭐
 
 </td>
 <td width="50%">
 
-### 🔬 Advanced Features
+### 📖 Browse by Topic
 
-- [ASan Memory Detection](#asan-examples)
-- [Integration Test Framework](#test-framework)
-- [Performance Benchmarks](#benchmarks)
+- [Advanced Features](#advanced-features)
+- [Performance Optimization](#performance-optimization)
+- [Cloud Native](#cloud-native)
+- [Testing Framework](#testing-framework)
 
 </td>
 </tr>
@@ -54,634 +34,454 @@
 
 ---
 
-## 🆕 Go 1.23+ New Feature Examples
+## ⭐ Featured Examples
 
-### WaitGroup.Go() Examples
+### AI-Agent Architecture
 
-> **Location**: `docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go/`  
-> **Difficulty**: ⭐⭐ Beginner  
-> **Tests**: 16 test cases
+> **Complete Production-Grade AI Agent Implementation** | 18 Test Cases | 100% Coverage
 
-#### Basic Usage
-
-```go
-package main
-
-import (
-    "fmt"
-    "sync"
-    "time"
-)
-
-func main() {
-    var wg sync.WaitGroup
-    
-    // Launch 5 goroutines
-    for i := 0; i < 5; i++ {
-        wg.Add(1)
-        go func(id int) {
-            defer wg.Done()
-            fmt.Printf("Worker %d: Processing...\n", id)
-            time.Sleep(time.Second)
-            fmt.Printf("Worker %d: Done!\n", id)
-        }(i)
-    }
-    
-    // Wait for all goroutines to complete
-    wg.Wait()
-    fmt.Println("All workers completed!")
-}
-```
-
-**Run Example**:
+**Location**: [`examples/advanced/ai-agent/`](./examples/advanced/ai-agent/)
 
 ```bash
-cd docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go
-go run basic_example.go
+cd examples/advanced/ai-agent
+go test -v ./...
 ```
 
-**Run Tests**:
+**Core Features**:
 
-```bash
-go test -v .
-# Output: 13 tests all pass ✅
-```
+- ✅ Decision Engine - Intelligent decision processing
+- ✅ Learning Engine - Experience learning & optimization
+- ✅ Base Agent - Complete lifecycle management
+- ✅ Multi-Agent Coordination - Distributed collaboration
+- ✅ Multimodal Interface - Unified interaction abstraction
 
-#### Concurrent Slice Processing
+**Test Coverage**:
 
-```go
-func processSliceConcurrently(data []int) []int {
-    var wg sync.WaitGroup
-    results := make([]int, len(data))
-    
-    for i, val := range data {
-        wg.Add(1)
-        go func(index, value int) {
-            defer wg.Done()
-            // Process data (e.g., square)
-            results[index] = value * value
-        }(i, val)
-    }
-    
-    wg.Wait()
-    return results
-}
-
-// Usage
-data := []int{1, 2, 3, 4, 5}
-results := processSliceConcurrently(data)
-fmt.Println(results) // [1, 4, 9, 16, 25]
-```
-
-#### Limiting Concurrency
-
-```go
-func processWithLimit(items []int, maxConcurrent int) {
-    var wg sync.WaitGroup
-    semaphore := make(chan struct{}, maxConcurrent)
-    
-    for _, item := range items {
-        wg.Add(1)
-        go func(val int) {
-            defer wg.Done()
-            
-            // Acquire semaphore
-            semaphore <- struct{}{}
-            defer func() { <-semaphore }()
-            
-            // Process task
-            fmt.Printf("Processing %d\n", val)
-            time.Sleep(100 * time.Millisecond)
-        }(item)
-    }
-    
-    wg.Wait()
-}
-
-// Max 3 concurrent goroutines
-processWithLimit([]int{1, 2, 3, 4, 5, 6}, 3)
-```
-
-**Complete Test Coverage**:
-
-- ✅ Basic usage
-- ✅ Slice processing
-- ✅ Concurrency limiting
-- ✅ Result collection
-- ✅ Error handling
-- ✅ Panic recovery
-- ✅ Concurrency safety
-- ✅ Nested WaitGroups
+- Decision Engine: 7 test cases
+- Learning Engine: 9 test cases  
+- Base Agent: 2 test cases
 
 ---
 
-## 🎭 Concurrency Pattern Examples
+### Go 1.25 Runtime Optimizations
 
-### Pipeline Pattern
+> **Latest Go Runtime Features** | Greentea GC | Container-Aware
 
-> **Location**: `examples/concurrency/pipeline_test.go`  
-> **Difficulty**: ⭐⭐⭐ Intermediate  
-> **Tests**: 6 tests + 1 benchmark
+**Location**: [`examples/go125/runtime/`](./examples/go125/runtime/)
 
-#### Simple Pipeline
+```bash
+# Greentea GC Optimization
+cd examples/go125/runtime/gc_optimization
+go test -v
 
-```go
-// Stage 1: Generate numbers
-func generator(nums ...int) <-chan int {
-    out := make(chan int)
-    go func() {
-        defer close(out)
-        for _, n := range nums {
-            out <- n
-        }
-    }()
-    return out
-}
+# Container-Aware Scheduling
+cd examples/go125/runtime/container_scheduling
+go run main.go
 
-// Stage 2: Calculate square
-func square(in <-chan int) <-chan int {
-    out := make(chan int)
-    go func() {
-        defer close(out)
-        for n := range in {
-            out <- n * n
-        }
-    }()
-    return out
-}
-
-// Stage 3: Double
-func double(in <-chan int) <-chan int {
-    out := make(chan int)
-    go func() {
-        defer close(out)
-        for n := range in {
-            out <- n * 2
-        }
-    }()
-    return out
-}
-
-// Use Pipeline
-func main() {
-    // Build Pipeline: generate -> square -> double
-    nums := generator(1, 2, 3, 4, 5)
-    squared := square(nums)
-    doubled := double(squared)
-    
-    // Consume results
-    for result := range doubled {
-        fmt.Println(result)
-    }
-    // Output: 2, 8, 18, 32, 50
-}
+# Memory Allocator Enhancements
+cd examples/go125/runtime/memory_allocator
+go test -bench=.
 ```
 
-#### Fan-out/Fan-in Pattern
+**Core Features**:
 
-```go
-func fanOut(in <-chan int, numWorkers int) []<-chan int {
-    workers := make([]<-chan int, numWorkers)
-    
-    for i := 0; i < numWorkers; i++ {
-        workers[i] = worker(in)
-    }
-    
-    return workers
-}
+- ✅ Greentea GC - Next-generation garbage collector
+- ✅ Container Scheduling - Adaptive container environment
+- ✅ Memory Optimization - High-performance allocation
 
-func fanIn(workers ...<-chan int) <-chan int {
-    out := make(chan int)
-    var wg sync.WaitGroup
-    
-    for _, worker := range workers {
-        wg.Add(1)
-        go func(c <-chan int) {
-            defer wg.Done()
-            for n := range c {
-                out <- n
-            }
-        }(worker)
-    }
-    
-    go func() {
-        wg.Wait()
-        close(out)
-    }()
-    
-    return out
-}
+---
 
-// Usage
-input := generator(1, 2, 3, 4, 5)
-workers := fanOut(input, 3) // 3 parallel workers
-output := fanIn(workers...)  // Merge results
+### Concurrency Patterns
 
-for result := range output {
-    fmt.Println(result)
-}
-```
+> **Classic Concurrency Patterns & Best Practices** | 15+ Test Cases
 
-**Run Tests**:
+**Location**: [`examples/concurrency/`](./examples/concurrency/)
 
 ```bash
 cd examples/concurrency
-go test -v . -run Pipeline
-# 6 Pipeline tests all pass ✅
+go test -v
+```
+
+**Core Patterns**:
+
+- ✅ Pipeline Pattern - Stream processing
+- ✅ Worker Pool Pattern - Concurrent worker pool
+- ✅ Fan-Out/Fan-In - Distribution and aggregation
+- ✅ Context Pattern - Context propagation & cancellation
+
+**Example Programs**:
+
+```bash
+# Run Pipeline example
+cd examples/concurrency/pipeline_example
+go run main.go
+
+# Run Worker Pool example
+cd examples/concurrency/worker_pool_example
+go run main.go
 ```
 
 ---
 
-### Worker Pool Pattern
+### Modern Features
 
-> **Location**: `examples/concurrency/worker_pool_test.go`  
-> **Difficulty**: ⭐⭐⭐ Intermediate  
-> **Tests**: 7 tests + 1 benchmark
+> **Go 1.23-1.25 Modern Features Collection** | 95 Code Files
 
-#### Basic Worker Pool
+**Location**: [`examples/modern-features/`](./examples/modern-features/)
 
-```go
-type WorkerPool struct {
-    workers    int
-    jobs       chan Job
-    results    chan Result
-    wg         sync.WaitGroup
-}
+**Complete Directory**:
 
-type Job struct {
-    ID   int
-    Data interface{}
-}
+#### 1. New Features Deep Dive
 
-type Result struct {
-    JobID int
-    Value interface{}
-    Error error
-}
+📁 `01-new-features/`
 
-func NewWorkerPool(numWorkers int) *WorkerPool {
-    return &WorkerPool{
-        workers: numWorkers,
-        jobs:    make(chan Job, 100),
-        results: make(chan Result, 100),
-    }
-}
+- Generic Type Aliases - Advanced generics
+- Swiss Table Optimization - High-performance Map
+- Testing Enhancements - Loop variable semantics
+- WASM & WASI - WebAssembly support
 
-func (wp *WorkerPool) Start() {
-    for i := 0; i < wp.workers; i++ {
-        wp.wg.Add(1)
-        go wp.worker(i)
-    }
-}
+#### 2. Concurrency 2.0
 
-func (wp *WorkerPool) worker(id int) {
-    defer wp.wg.Done()
-    
-    for job := range wp.jobs {
-        // Process task
-        result := Result{
-            JobID: job.ID,
-            Value: process(job.Data),
-        }
-        wp.results <- result
-    }
-}
+📁 `02-concurrency-2.0/`
 
-func (wp *WorkerPool) Submit(job Job) {
-    wp.jobs <- job
-}
+- Advanced Worker Pool patterns
+- Concurrency safety best practices
 
-func (wp *WorkerPool) Stop() {
-    close(wp.jobs)
-    wp.wg.Wait()
-    close(wp.results)
-}
+#### 3. Standard Library Enhancements
 
-// Usage
-func main() {
-    pool := NewWorkerPool(5) // 5 workers
-    pool.Start()
-    
-    // Submit tasks
-    for i := 0; i < 20; i++ {
-        pool.Submit(Job{ID: i, Data: i * 2})
-    }
-    
-    // Collect results
-    go func() {
-        for result := range pool.Results() {
-            fmt.Printf("Job %d: %v\n", result.JobID, result.Value)
-        }
-    }()
-    
-    pool.Stop()
-}
-```
+📁 `03-stdlib-enhancements/`
 
-**Run Tests**:
+- `slog` - Structured logging
+- `ServeMux` - New HTTP router
+- Concurrency primitives enhancements
+
+#### 4. Performance & Toolchain
+
+📁 `05-performance-toolchain/`
+
+- PGO - Profile-Guided Optimization
+- CGO & Interoperability
+- Compiler & linker optimizations
+
+#### 5. Modern Architecture Patterns
+
+📁 `06-architecture-patterns/`
+
+- Clean Architecture
+- Hexagonal Architecture
+
+#### 6. Performance Optimization 2.0
+
+📁 `07-performance-optimization/`
+
+- Zero-Copy techniques
+- SIMD optimization
+
+#### 7. Cloud Native 2.0
+
+📁 `09-cloud-native-2.0/`
+
+- Kubernetes Operator
+- Service Mesh integration
+- GitOps pipeline
 
 ```bash
+# View complete documentation
+cat examples/modern-features/README.md
+
+# Run all tests
+cd examples/modern-features
+go test ./... -v
+```
+
+---
+
+## 📋 Complete Examples Catalog
+
+### 🔥 Advanced Features
+
+| Example | Description | Location | Tests |
+|---------|-------------|----------|-------|
+| AI-Agent | Intelligent agent architecture | `advanced/ai-agent/` | ✅ 18 |
+| HTTP/3 Server | HTTP/3 and QUIC | `advanced/http3-server/` | ✅ |
+| Weak Pointer Cache | Memory optimization | `advanced/cache-weak-pointer/` | ✅ |
+| Arena Allocator | Custom allocation | `advanced/arena-allocator/` | ✅ |
+| Worker Pool | Concurrent worker pool | `advanced/worker-pool/` | ✅ |
+
+### 🚀 Go 1.25 Features
+
+| Example | Description | Location | Tests |
+|---------|-------------|----------|-------|
+| Greentea GC | New garbage collector | `go125/runtime/gc_optimization/` | ✅ |
+| Container Scheduling | Container awareness | `go125/runtime/container_scheduling/` | ✅ |
+| Memory Optimization | Allocator enhancements | `go125/runtime/memory_allocator/` | ✅ |
+| ASan Detection | Memory safety | `go125/toolchain/asan_memory_leak/` | ✅ |
+
+### 🆕 Modern Features (95 Files)
+
+| Category | Examples | Location |
+|----------|----------|----------|
+| New Features Deep Dive | 6 topics | `modern-features/01-new-features/` |
+| Concurrency 2.0 | 1 topic | `modern-features/02-concurrency-2.0/` |
+| Stdlib Enhancements | 3 topics | `modern-features/03-stdlib-enhancements/` |
+| Performance & Toolchain | 3 topics | `modern-features/05-performance-toolchain/` |
+| Architecture Patterns | 2 topics | `modern-features/06-architecture-patterns/` |
+| Performance Optimization | 2 topics | `modern-features/07-performance-optimization/` |
+| Cloud Native 2.0 | 3 topics | `modern-features/09-cloud-native-2.0/` |
+
+### 🔄 Concurrency Programming
+
+| Example | Description | Tests |
+|---------|-------------|-------|
+| Pipeline | Pipeline pattern | ✅ 6 |
+| Worker Pool | Worker pool pattern | ✅ 7 |
+| Fan-Out/Fan-In | Distribution pattern | ✅ |
+| Context | Context management | ✅ |
+
+### 🧪 Testing Framework
+
+| Example | Description | Location |
+|---------|-------------|----------|
+| Integration Test Framework | Complete test system | `testing-framework/` |
+| Performance Regression | Automated monitoring | `testing-framework/` |
+
+### 📊 Observability
+
+| Example | Description | Location |
+|---------|-------------|----------|
+| OpenTelemetry | Complete observability | `observability/` |
+| Prometheus | Metrics monitoring | `observability/prometheus/` |
+| Grafana | Visualization dashboard | `observability/grafana/` |
+
+---
+
+## 🚀 Quick Start
+
+### 1️⃣ Run All Tests
+
+```bash
+# From project root
+go test ./examples/... -v
+```
+
+### 2️⃣ Recommended Learning Path
+
+#### Beginner (1-2 hours)
+
+```bash
+# Step 1: Concurrency Basics
 cd examples/concurrency
-go test -v . -run WorkerPool
-# 7 WorkerPool tests all pass ✅
+go test -v
+
+# Step 2: View example programs
+cd pipeline_example
+go run main.go
 ```
 
-**Complete Test Coverage**:
-
-- ✅ Basic Worker Pool
-- ✅ Context cancellation
-- ✅ Load balancing
-- ✅ Error handling
-- ✅ Graceful shutdown
-- ✅ Dynamic worker adjustment
-- ✅ Performance benchmarks
-
----
-
-## 🤖 AI-Agent Architecture Examples
-
-### Decision Engine
-
-> **Location**: `docs/02-Go语言现代化/08-智能化架构集成/01-AI-Agent架构/core/`  
-> **Difficulty**: ⭐⭐⭐⭐ Advanced  
-> **Tests**: 7 tests + 1 benchmark
-
-#### Basic Decision
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "ai-agent-architecture/core"
-)
-
-func main() {
-    // Create decision engine
-    engine := core.NewDecisionEngine(nil)
-    
-    // Create and register agent
-    agent := createAgent("agent-1")
-    engine.RegisterAgent(&agent)
-    
-    // Create task
-    task := &core.Task{
-        ID:       "task-1",
-        Type:     "analysis",
-        Priority: 1,
-        Input:    map[string]interface{}{"data": "sample"},
-    }
-    
-    // Make decision
-    ctx := context.Background()
-    decision, err := engine.MakeDecision(ctx, task)
-    if err != nil {
-        panic(err)
-    }
-    
-    fmt.Printf("Decision: %+v\n", decision)
-}
-```
-
-**Run Tests**:
+#### Intermediate (3-5 hours)
 
 ```bash
-cd docs/02-Go语言现代化/08-智能化架构集成/01-AI-Agent架构
-go test -v ./core -run Decision
-# 7 DecisionEngine tests all pass ✅
-```
-
----
-
-### Learning Engine
-
-> **Location**: `docs/02-Go语言现代化/08-智能化架构集成/01-AI-Agent架构/core/`  
-> **Difficulty**: ⭐⭐⭐⭐ Advanced  
-> **Tests**: 9 tests + 1 benchmark
-
-#### Basic Learning
-
-```go
-func main() {
-    // Create learning engine
-    engine := core.NewLearningEngine(nil)
-    
-    // Create experience
-    experience := core.Experience{
-        Input: core.Input{
-            ID:   "input-1",
-            Type: "training",
-            Data: map[string]interface{}{"x": 10},
-        },
-        Output: core.Output{
-            ID:   "output-1",
-            Type: "prediction",
-            Data: map[string]interface{}{"y": 20},
-        },
-        Reward:    0.85, // High reward
-        Timestamp: time.Now(),
-    }
-    
-    // Learn
-    ctx := context.Background()
-    err := engine.Learn(ctx, experience)
-    if err != nil {
-        panic(err)
-    }
-    
-    fmt.Println("Learning completed!")
-}
-```
-
-**Run Tests**:
-
-```bash
-cd docs/02-Go语言现代化/08-智能化架构集成/01-AI-Agent架构
-go test -v ./core -run Learning
-# 9 LearningEngine tests all pass ✅
-```
-
----
-
-## 📊 Test Statistics
-
-### Complete Test Coverage
-
-```text
-=== Test Module Statistics ===
-
-✅ WaitGroup.Go        16 tests  100% pass
-✅ Pipeline Pattern     6 tests  100% pass  
-✅ Worker Pool Pattern  7 tests  100% pass
-✅ DecisionEngine       7 tests  100% pass
-✅ LearningEngine       9 tests  100% pass
-✅ BaseAgent            2 tests  100% pass
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📈 Total               45 tests  100% pass
-```
-
-### Run All Tests
-
-```bash
-# Use test summary script
-powershell -ExecutionPolicy Bypass -File scripts/test_summary.ps1
-
-# Or run manually
+# Step 1: AI-Agent Architecture
+cd examples/advanced/ai-agent
 go test -v ./...
 
-# With race detection
-go test -v -race ./...
+# Step 2: Modern Features
+cd examples/modern-features/03-stdlib-enhancements
+go test -v ./...
+```
 
-# Generate coverage report
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
+#### Advanced (5-10 hours)
+
+```bash
+# Step 1: Go 1.25 Runtime
+cd examples/go125/runtime
+go test -v ./...
+
+# Step 2: Performance Optimization
+cd examples/modern-features/07-performance-optimization
+go test -bench=. -benchmem
+```
+
+### 3️⃣ Use by Scenario
+
+#### Scenario 1: Learning Concurrency
+
+```bash
+# 1. Read documentation
+cat docs/03-并发编程/README.md
+
+# 2. Run examples
+cd examples/concurrency
+go test -v
+
+# 3. View real-world cases
+cd examples/advanced/ai-agent/coordination
+go test -v
+```
+
+#### Scenario 2: Learning Go 1.25 Features
+
+```bash
+# 1. Read documentation
+cat docs/02-Go语言现代化/12-Go-1.25运行时优化/README.md
+
+# 2. Run runtime examples
+cd examples/go125/runtime/gc_optimization
+go test -v
+
+# 3. Test toolchain enhancements
+cd examples/go125/toolchain/asan_memory_leak
+go test -v
+```
+
+#### Scenario 3: Performance Optimization
+
+```bash
+# 1. View PGO examples
+cd examples/modern-features/05-performance-toolchain/01-Profile-Guided-Optimization-PGO
+go test -bench=.
+
+# 2. Learn Zero-Copy
+cd examples/modern-features/07-performance-optimization/01-zero-copy
+go test -bench=.
+
+# 3. SIMD Optimization
+cd examples/modern-features/07-performance-optimization/02-simd-optimization
+go test -bench=.
 ```
 
 ---
 
-## 📖 Learning Path
+## 📊 Examples Statistics
 
-### 🌱 Beginner (1-2 hours)
+### Overall Stats
 
-1. **WaitGroup Basics** ⭐⭐
-   - Run `waitgroup_go/basic_example.go`
-   - Read tests: `waitgroup_go_test.go`
-   - Exercise: Modify worker count
+| Metric | Count |
+|--------|-------|
+| Total Examples | 50+ |
+| Code Files | 150+ |
+| Test Cases | 100+ |
+| Topics Covered | 10+ |
 
-2. **Simple Pipeline** ⭐⭐
-   - Run `concurrency/pipeline_test.go`
-   - Understand channel communication
-   - Exercise: Add new processing stage
+### By Category
 
-### 🌿 Intermediate (3-5 hours)
+```text
+🔥 Advanced Features    : 5 examples
+🚀 Go 1.25 Features     : 4 examples
+🆕 Modern Features      : 95 files, 20+ subtopics
+🔄 Concurrency          : 4 core patterns
+🧪 Testing Framework    : 1 complete system
+📊 Observability        : 1 integrated solution
+```
 
-1. **Worker Pool Pattern** ⭐⭐⭐
-   - Study `worker_pool_test.go`
-   - Understand load balancing
-   - Exercise: Implement dynamic workers
+### Test Coverage
 
-2. **Advanced Pipeline** ⭐⭐⭐
-   - Fan-out/fan-in patterns
-   - Timeout and cancellation
-   - Error handling
-
-### 🌳 Advanced (1-2 days)
-
-1. **AI-Agent Architecture** ⭐⭐⭐⭐⭐
-   - DecisionEngine deep dive
-   - LearningEngine principles
-   - BaseAgent integration
-
-2. **Performance Optimization** ⭐⭐⭐⭐
-   - Benchmark analysis
-   - Concurrency safety verification
-   - Memory optimization
+```text
+✅ AI-Agent          : 18 test cases
+✅ Concurrency       : 15+ test cases
+✅ Runtime           : 10+ test cases
+✅ Toolchain         : 5+ test cases
+```
 
 ---
 
-## 🎯 Best Practices
+## 📖 Related Documentation
 
-### Concurrency Pattern Selection
-
-| Scenario | Recommended Pattern | Example |
-|----------|-------------------|---------|
-| Simple parallel tasks | WaitGroup | Slice processing |
-| Stream data processing | Pipeline | Data transformation |
-| Task queue processing | Worker Pool | Batch tasks |
-| Complex decisions | AI-Agent | Intelligent systems |
-
-### Testing Strategy
-
-1. **Unit Tests**: Test each function independently
-2. **Concurrency Tests**: Use `-race` to detect races
-3. **Benchmark Tests**: Performance comparison and optimization
-4. **Integration Tests**: End-to-end verification
+| Document | Description | Location |
+|----------|-------------|----------|
+| **Complete Examples Index** | Detailed examples list | [examples/README.md](./examples/README.md) |
+| **Modern Features Guide** | 95 files explained | [examples/modern-features/README.md](./examples/modern-features/README.md) |
+| **Concurrency Documentation** | Theory + Practice | [docs/03-并发编程/](./docs/03-并发编程/) |
+| **Go 1.25 Documentation** | New features explained | [docs/02-Go语言现代化/](./docs/02-Go语言现代化/) |
+| **Quick Reference** | One-page cheatsheet | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) |
 
 ---
 
-## 📞 Quick Reference
+## 🔧 Development Tools
 
-### Common Commands
+### Verify Project Structure
 
 ```bash
-# Run specific test
-go test -v ./path/to/package -run TestName
+# Windows
+powershell -ExecutionPolicy Bypass -File scripts/verify_structure.ps1
 
-# Benchmark
-go test -bench=. -benchmem
+# Linux/macOS
+bash scripts/verify_structure.sh
+```
 
-# Race detection
-go test -race ./...
+### Code Quality Check
 
-# Coverage report
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
+```bash
+# Quality scan
+powershell -ExecutionPolicy Bypass -File scripts/scan_code_quality.ps1
 
 # Test statistics
 powershell -ExecutionPolicy Bypass -File scripts/test_summary.ps1
 ```
 
-### Important Documentation
+### Project Statistics
 
-- [README](README_EN.md) - Project overview
-- [Quick Start](QUICK_START_EN.md) - 5-minute guide
-- [Contributing](CONTRIBUTING_EN.md) - How to contribute
-- [FAQ](FAQ.md) - Frequently asked questions
+```bash
+cd scripts/project_stats
+go run main.go
+```
 
 ---
 
-## 💡 Tips
+## ❓ FAQ
 
-### Before Running
+**Q: How to run all examples?**
 
 ```bash
-# Check Go version
-go version  # Recommended 1.23+
-
-# Download dependencies
-go mod download
-
-# Verify environment
-go build ./...
+go test ./examples/... -v
 ```
 
-### Debugging Tips
+**Q: Can examples be used in production?**
+A: Yes, AI-Agent, concurrency patterns, and performance optimization examples are production-grade code.
 
-```go
-// 1. Print debugging
-fmt.Printf("Debug: %+v\n", value)
+**Q: Can't find an old example?**
+A: All code has been reorganized to `examples/` directory. See [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
 
-// 2. Use log package
-log.Printf("Processing: %v", data)
+**Q: How to contribute new examples?**
+A: See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-// 3. pprof performance analysis
-import _ "net/http/pprof"
-go func() {
-    log.Println(http.ListenAndServe("localhost:6060", nil))
-}()
-```
+---
+
+## 🎯 Learning Recommendations
+
+### By Difficulty
+
+1. **Beginner** ⭐: Concurrency basic patterns
+2. **Intermediate** ⭐⭐: Stdlib enhancements, ServeMux
+3. **Advanced** ⭐⭐⭐: AI-Agent, performance optimization
+4. **Expert** ⭐⭐⭐⭐: Go 1.25 runtime, SIMD
+
+### By Time
+
+- **1 hour**: Quick overview → Run `concurrency` examples
+- **Half day**: Deep dive → AI-Agent complete tests
+- **1-2 days**: Comprehensive → All modern-features
+- **1 week**: Expert level → Go 1.25 + performance
+
+---
+
+## 📞 Get Help
+
+- 📖 See [FAQ.md](./FAQ.md)
+- 📝 Read [CONTRIBUTING.md](./CONTRIBUTING.md)  
+- 🐛 Submit [GitHub Issues](../../issues)
+- 💬 Join [Discussions](../../discussions)
 
 ---
 
 <div align="center">
 
-## 🎉 Start Exploring
-
-**45 Examples | 100% Test Pass | Production Ready**-
-
-Choose an example to start your Go concurrency journey!
+**Examples Version**: 2.0.0  
+**Last Updated**: October 19, 2025  
+**Go Version Required**: 1.23+ (Recommended 1.25+)
 
 ---
 
-**Feedback**: [GitHub Issues](../../issues)  
-**Contribute**: [Contributing Guide](CONTRIBUTING_EN.md)  
-**Last Updated**: October 19, 2025
-
-**Languages**: [中文](EXAMPLES.md) | **English**
-
----
-
-Made with ❤️ for Go Community
+[Complete Documentation](./docs/) | [Quick Start](./QUICK_START.md) | [Contributing](./CONTRIBUTING.md) | [Back to Home](./README.md)
 
 </div>

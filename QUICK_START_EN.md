@@ -35,9 +35,9 @@ If your version is lower, visit [Go official website](https://go.dev/dl/) to dow
 1. **Start**: [README_EN.md](./README_EN.md) - Project overview
 2. **Basics**: Review Go fundamentals if needed
 3. **New Features**: Choose an interesting module:
-   - [WaitGroup.Go() Examples](./docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go/)
    - [Concurrency Patterns](./examples/concurrency/)
-   - [Testing Framework](./docs/02-Go语言现代化/10-建立完整测试体系/)
+   - [AI-Agent Architecture](./examples/advanced/ai-agent/)
+   - [Go 1.25 Features](./examples/go125/)
 
 **Estimated Time**: 2-4 hours
 
@@ -98,13 +98,14 @@ ls
 
 ```bash
 # Navigate to example directory
-cd docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go
-
-# Run basic example
-go run basic_example.go
+cd examples/concurrency
 
 # Run all tests
 go test -v .
+
+# Run pipeline example
+cd pipeline_example
+go run main.go
 
 # Expected output:
 # === RUN   TestBasicWaitGroup
@@ -250,7 +251,7 @@ go tool cover -html=coverage.out
 
 **Concurrency**:
 
-- [WaitGroup.Go() Examples](./docs/02-Go语言现代化/14-Go-1.23并发和网络/examples/waitgroup_go/)
+- [Concurrency Examples](./examples/concurrency/)
 - [Pipeline Pattern](./examples/concurrency/pipeline_test.go)
 - [Worker Pool Pattern](./examples/concurrency/worker_pool_test.go)
 
@@ -363,7 +364,7 @@ go mod tidy
 **For ASan example**: Use the mock version
 
 ```bash
-cd docs/02-Go语言现代化/13-Go-1.23工具链增强/examples/asan_memory_leak
+cd examples/go125/toolchain/asan_memory_leak
 go run main_mock.go  # Use mock version instead
 ```
 
