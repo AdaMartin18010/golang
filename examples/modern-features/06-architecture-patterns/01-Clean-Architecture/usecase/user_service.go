@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"domain"
-	"repository"
+	"clean-architecture-example/domain"
+	"clean-architecture-example/repository"
 )
 
 // UserService 用户服务用例层

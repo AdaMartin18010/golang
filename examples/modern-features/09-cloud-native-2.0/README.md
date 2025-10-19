@@ -89,7 +89,7 @@ kubectl apply -f config/manager/
 
 ### 1.3.2 Service Mesh集成
 
-**路径**: `02-Service-Mesh集成/`
+**路径**: `02-service-mesh-integration/`
 
 **内容**:
 
@@ -111,13 +111,13 @@ kubectl apply -f config/manager/
 **快速体验**:
 
 ```bash
-cd 02-Service-Mesh集成
+cd 02-service-mesh-integration
 kubectl apply -f istio/
 ```
 
 ### 1.3.3 GitOps流水线
 
-**路径**: `03-GitOps流水线/`
+**路径**: `03-gitops-pipeline/`
 
 **内容**:
 
@@ -140,7 +140,7 @@ kubectl apply -f istio/
 **快速体验**:
 
 ```bash
-cd 03-GitOps流水线
+cd 03-gitops-pipeline
 kubectl apply -f argocd/
 ```
 
@@ -178,11 +178,11 @@ kubectl apply -f config/crd/
 kubectl apply -f config/manager/
 
 # 部署Service Mesh
-cd 02-Service-Mesh集成
+cd 02-service-mesh-integration
 kubectl apply -f istio/
 
 # 部署GitOps流水线
-cd 03-GitOps流水线
+cd 03-gitops-pipeline
 kubectl apply -f argocd/
 ```
 
@@ -202,8 +202,8 @@ kubectl apply -f argocd/
 ### 1.6.1 初学者路径
 
 1. **Kubernetes基础** → `01-Kubernetes-Operator/` 基础概念
-2. **Service Mesh基础** → `02-Service-Mesh集成/` 基础概念
-3. **GitOps基础** → `03-GitOps流水线/` 基础概念
+2. **Service Mesh基础** → `02-service-mesh-integration/` 基础概念
+3. **GitOps基础** → `03-gitops-pipeline/` 基础概念
 4. **简单部署** → 运行基础示例
 
 ### 1.6.2 进阶路径

@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"delivery/http"
-	"repository/implementations"
-	"usecase"
+	httpdelivery "clean-architecture-example/delivery/http"
+	"clean-architecture-example/repository/implementations"
+	"clean-architecture-example/usecase"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 	userService := usecase.NewUserService(userRepo)
 
 	// 3. 创建HTTP处理器
-	userHandler := http.NewUserHandler(userService)
+	userHandler := httpdelivery.NewUserHandler(userService)
 
 	// 4. 设置路由
 	setupRoutes(userHandler)
@@ -38,7 +38,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func setupRoutes(handler *http.UserHandler) {
+func setupRoutes(handler *httpdelivery.UserHandler) {
 	// 用户管理路由
 	http.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {

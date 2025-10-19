@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"domain"
-	"usecase"
+	"clean-architecture-example/domain"
+	"clean-architecture-example/usecase"
 )
 
 // UserHandler HTTP处理器

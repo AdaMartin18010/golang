@@ -86,7 +86,7 @@ go test -bench=.
 
 ### 1.3.2 CGO与互操作性
 
-**路径**: `02-CGO与互操作性/`
+**路径**: `02-cgo-interop/`
 
 **内容**:
 
@@ -122,14 +122,14 @@ func ZeroCopyCGO(data []byte) ([]byte, error) {
 **快速体验**:
 
 ```bash
-cd 02-CGO与互操作性
+cd 02-cgo-interop
 go run basic/main.go
 go run performance/performance_test.go
 ```
 
 ### 1.3.3 链接器与编译器优化
 
-**路径**: `03-链接器与编译器优化/`
+**路径**: `03-linker-compiler-optimization/`
 
 **内容**:
 
@@ -169,7 +169,7 @@ func BranchPredictionOptimized(data []int) int {
 **快速体验**:
 
 ```bash
-cd 03-链接器与编译器优化
+cd 03-linker-compiler-optimization
 go run main.go
 go build -ldflags="-s -w" main.go
 ```
@@ -210,11 +210,11 @@ go run main.go
 go test -bench=.
 
 # 运行CGO示例
-cd 02-CGO与互操作性
+cd 02-cgo-interop
 go run basic/main.go
 
 # 运行编译器优化示例
-cd 03-链接器与编译器优化
+cd 03-linker-compiler-optimization
 go run main.go
 ```
 
@@ -234,8 +234,8 @@ go run main.go
 ### 1.6.1 初学者路径
 
 1. **PGO基础** → `01-Profile-Guided-Optimization-PGO/`
-2. **CGO入门** → `02-CGO与互操作性/`
-3. **编译器基础** → `03-链接器与编译器优化/`
+2. **CGO入门** → `02-cgo-interop/`
+3. **编译器基础** → `03-linker-compiler-optimization/`
 4. **简单示例** → 运行基础示例
 
 ### 1.6.2 进阶路径

@@ -43,7 +43,7 @@
 
 ### 1.3.1 泛型类型别名
 
-**路径**: `01-泛型类型别名/`
+**路径**: `01-generic-type-alias/`
 
 **内容**:
 
@@ -57,13 +57,13 @@
 **快速体验**:
 
 ```bash
-cd 01-泛型类型别名
+cd 01-generic-type-alias
 go run basic_examples/basic.go
 ```
 
 ### 1.3.2 Swiss Table优化
 
-**路径**: `02-Swiss-Table优化/`
+**路径**: `02-swiss-table-optimization/`
 
 **内容**:
 
@@ -76,13 +76,13 @@ go run basic_examples/basic.go
 **快速体验**:
 
 ```bash
-cd 02-Swiss-Table优化
+cd 02-swiss-table-optimization
 go test -bench=.
 ```
 
 ### 1.3.3 测试增强
 
-**路径**: `03-测试增强/`
+**路径**: `03-testing-enhancement/`
 
 **内容**:
 
@@ -95,13 +95,13 @@ go test -bench=.
 **快速体验**:
 
 ```bash
-cd 03-测试增强
+cd 03-testing-enhancement
 go test -bench=.
 ```
 
 ### 1.3.4 WASM与WASI
 
-**路径**: `04-WASM与WASI/`
+**路径**: `04-wasm-and-wasi/`
 
 **内容**:
 
@@ -115,13 +115,13 @@ go test -bench=.
 **快速体验**:
 
 ```bash
-cd 04-WASM与WASI
+cd 04-wasm-and-wasi
 go run basic-export/main.go
 ```
 
 ### 1.3.5 for循环变量语义变更
 
-**路径**: `05-for循环变量语义变更/`
+**路径**: `05-for-loop-semantics/`
 
 **内容**:
 
@@ -134,13 +134,13 @@ go run basic-export/main.go
 **快速体验**:
 
 ```bash
-cd 05-for循环变量语义变更
+cd 05-for-loop-semantics
 go run main.go
 ```
 
 ### 1.3.6 WASM导出
 
-**路径**: `06-WASM导出/`
+**路径**: `06-wasm-export/`
 
 **内容**:
 
@@ -155,7 +155,7 @@ go run main.go
 **快速体验**:
 
 ```bash
-cd 06-WASM导出
+cd 06-wasm-export
 go run main.go
 ```
 
@@ -186,15 +186,15 @@ go test ./...
 
 ```bash
 # 运行泛型类型别名示例
-cd 01-泛型类型别名
+cd 01-generic-type-alias
 go run basic_examples/basic.go
 
 # 运行Swiss Table性能测试
-cd 02-Swiss-Table优化
+cd 02-swiss-table-optimization
 go test -bench=.
 
 # 运行WASM示例
-cd 04-WASM与WASI
+cd 04-wasm-and-wasi
 go run basic-export/main.go
 ```
 
@@ -211,15 +211,15 @@ go run basic-export/main.go
 
 ### 1.6.1 初学者路径
 
-1. **基础语法** → `01-泛型类型别名/`
-2. **性能优化** → `02-Swiss-Table优化/`
-3. **测试增强** → `03-测试增强/`
-4. **WASM基础** → `04-WASM与WASI/`
+1. **基础语法** → `01-generic-type-alias/`
+2. **性能优化** → `02-swiss-table-optimization/`
+3. **测试增强** → `03-testing-enhancement/`
+4. **WASM基础** → `04-wasm-and-wasi/`
 
 ### 1.6.2 进阶路径
 
-1. **循环优化** → `05-for循环变量语义变更/`
-2. **WASM高级** → `06-WASM导出/`
+1. **循环优化** → `05-for-loop-semantics/`
+2. **WASM高级** → `06-wasm-export/`
 3. **性能分析** → 各模块的性能测试
 4. **实际应用** → 各模块的实际案例
 

@@ -89,7 +89,7 @@ Go版本: 1.21+ (部分示例需要 1.22-1.25)
 
 ```bash
 # 泛型示例
-cd examples/modern-features/01-new-features/01-泛型类型别名
+cd examples/modern-features/01-new-features/01-generic-type-alias
 go test -v ./...
 
 # PGO优化

@@ -40,7 +40,7 @@
 
 ### 1.3.1 结构化日志slog
 
-**路径**: `01-结构化日志slog/`
+**路径**: `01-structured-logging-slog/`
 
 **内容**:
 
@@ -71,13 +71,13 @@ logger.Info("用户登录",
 **快速体验**:
 
 ```bash
-cd 01-结构化日志slog
+cd 01-structured-logging-slog
 go run main.go
 ```
 
 ### 1.3.2 新的HTTP路由ServeMux
 
-**路径**: `02-新的HTTP路由ServeMux/`
+**路径**: `02-http-servemux/`
 
 **内容**:
 
@@ -105,13 +105,13 @@ handler := loggingMiddleware(authMiddleware(mux))
 **快速体验**:
 
 ```bash
-cd 02-新的HTTP路由ServeMux
+cd 02-http-servemux
 go run main.go
 ```
 
 ### 1.3.3 并发原语与模式
 
-**路径**: `03-并发原语与模式/`
+**路径**: `03-concurrency-primitives/`
 
 **内容**:
 
@@ -142,7 +142,7 @@ func (em *EnhancedMutex) Lock() {
 **快速体验**:
 
 ```bash
-cd 03-并发原语与模式
+cd 03-concurrency-primitives
 go run main.go
 ```
 
@@ -173,15 +173,15 @@ go test ./...
 
 ```bash
 # 运行结构化日志示例
-cd 01-结构化日志slog
+cd 01-structured-logging-slog
 go run main.go
 
 # 运行HTTP路由示例
-cd 02-新的HTTP路由ServeMux
+cd 02-http-servemux
 go run main.go
 
 # 运行并发原语示例
-cd 03-并发原语与模式
+cd 03-concurrency-primitives
 go run main.go
 ```
 
@@ -200,9 +200,9 @@ go run main.go
 
 ### 1.6.1 初学者路径
 
-1. **结构化日志** → `01-结构化日志slog/`
-2. **HTTP路由** → `02-新的HTTP路由ServeMux/`
-3. **并发基础** → `03-并发原语与模式/`
+1. **结构化日志** → `01-structured-logging-slog/`
+2. **HTTP路由** → `02-http-servemux/`
+3. **并发基础** → `03-concurrency-primitives/`
 4. **简单示例** → 运行基础示例
 
 ### 1.6.2 进阶路径

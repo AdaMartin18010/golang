@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"domain"
+	"clean-architecture-example/domain"
 )
 
 // MemoryUserRepository 内存实现的用户仓储

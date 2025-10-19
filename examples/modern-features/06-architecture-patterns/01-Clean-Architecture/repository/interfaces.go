@@ -1,6 +1,6 @@
 package repository
 
-import "domain"
+import "clean-architecture-example/domain"
 
 // UserRepository 定义用户数据访问接口
 type UserRepository interface {
