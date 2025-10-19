@@ -17,12 +17,14 @@
 ### 1. 版本验证
 
 **验证方式**:
+
 ```bash
 go version
 # 输出: go version go1.25.3 windows/amd64
 ```
 
 **验证结果**:
+
 - ✅ Go 1.25.3 真实存在
 - ✅ weak包存在
 - ✅ unique包存在
@@ -40,6 +42,7 @@ go version
 #### 2.1 16-迭代器与泛型增强.md
 
 **内容**:
+
 - `iter.Seq` / `Seq2` 迭代器接口
 - `strings.Lines` / `SplitSeq` / `FieldsSeq`
 - `bytes.Lines`
@@ -53,6 +56,7 @@ go version
 #### 2.2 17-unique包与内存优化.md
 
 **内容**:
+
 - `unique.Handle[T]` 值规范化
 - 字符串池(String Interning)
 - 配置管理、日志系统、缓存应用
@@ -66,6 +70,7 @@ go version
 #### 2.3 18-testing增强与Loop方法.md
 
 **内容**:
+
 - `testing.B.Loop()` 详细说明
 - 传统方式 vs Loop方式对比
 - 编译器优化分析
@@ -79,6 +84,7 @@ go version
 #### 2.4 19-encoding-json-omitzero标签.md
 
 **内容**:
+
 - `omitempty` vs `omitzero` 对比
 - 自定义`IsZero()`方法
 - API响应、配置管理、数据库模型
@@ -92,6 +98,7 @@ go version
 #### 2.5 20-runtime-AddCleanup清理机制.md
 
 **内容**:
+
 - `SetFinalizer` vs `AddCleanup` 对比
 - 多清理器支持与执行顺序
 - 文件、数据库、缓存资源管理
@@ -111,11 +118,13 @@ go version
 **路径**: `examples/modern-features/01-new-features/04-go125-new-features/01-iter-demo/`
 
 **文件**:
+
 - `main.go` - 迭代器完整示例
 - `go.mod`
 
 **运行结果**:
-```
+
+```text
 === Go 1.25 迭代器示例 ===
 
 1. strings.Lines:
@@ -144,11 +153,13 @@ go version
 **路径**: `examples/modern-features/01-new-features/04-go125-new-features/02-unique-demo/`
 
 **文件**:
+
 - `main.go` - unique包完整示例
 - `go.mod`
 
 **运行结果**:
-```
+
+```text
 === Go 1.25 unique包示例 ===
 
 1. 字符串规范化:
@@ -173,15 +184,17 @@ go version
 **路径**: `examples/modern-features/01-new-features/04-go125-new-features/03-testing-loop/`
 
 **文件**:
+
 - `main_test.go` - 基准测试示例
 - `go.mod`
 
 **运行结果**:
+
 ```bash
 go test -bench=Loop -benchtime=1s
 # 输出:
-BenchmarkLoop-24              	 4285539	       287.0 ns/op
-BenchmarkLoopWithAllocs-24    	1000000000	         1.000 ns/op	       0 B/op	       0 allocs/op
+BenchmarkLoop-24                4285539        287.0 ns/op
+BenchmarkLoopWithAllocs-24     1000000000          1.000 ns/op        0 B/op        0 allocs/op
 ```
 
 **状态**: ✅ 可运行
@@ -195,11 +208,13 @@ BenchmarkLoopWithAllocs-24    	1000000000	         1.000 ns/op	       0 B/op	   
 **新增链接**:
 
 **官方文档**:
+
 - Go 1.25.3 Release Notes
 - Go语言官方文档
 - Effective Go
 
 **核心包文档**(10个):
+
 - weak包
 - unique包
 - iter包
@@ -212,6 +227,7 @@ BenchmarkLoopWithAllocs-24    	1000000000	         1.000 ns/op	       0 B/op	   
 - bytes.Lines
 
 **技术博客**(5个):
+
 - Go 1.25发布公告
 - 迭代器设计
 - Swiss Tables优化
@@ -219,6 +235,7 @@ BenchmarkLoopWithAllocs-24    	1000000000	         1.000 ns/op	       0 B/op	   
 - Go Blog
 
 **社区资源**:
+
 - Go语言中文网
 
 ---
@@ -261,6 +278,7 @@ BenchmarkLoopWithAllocs-24    	1000000000	         1.000 ns/op	       0 B/op	   
 ### 1. 真实性验证
 
 所有文档基于 **Go 1.25.3** 真实API：
+
 - 使用`go doc`命令验证
 - 运行实际代码验证
 - 参考官方pkg.go.dev文档
@@ -301,7 +319,7 @@ BenchmarkLoopWithAllocs-24    	1000000000	         1.000 ns/op	       0 B/op	   
 
 ## 📚 文档目录结构
 
-```
+```text
 docs/03-Go-1.25新特性/
 ├── 00-Go-1.25特性总览.md (已更新)
 ├── 16-迭代器与泛型增强.md (新增)
@@ -345,17 +363,17 @@ examples/modern-features/01-new-features/04-go125-new-features/
 
 ### 中期任务
 
-4. **集成测试**
+1. **集成测试**
    - 创建集成测试套件
    - CI/CD自动化测试
    - 性能回归测试
 
-5. **教程系列**
+2. **教程系列**
    - 入门教程
    - 进阶技巧
    - 最佳实践指南
 
-6. **社区贡献**
+3. **社区贡献**
    - 提交示例到awesome-go
    - 发布技术博客
    - 参与社区讨论
@@ -424,4 +442,3 @@ examples/modern-features/01-new-features/04-go125-new-features/
 **任务完成度**: 100%  
 **文档质量**: A+  
 **代码质量**: A+
-
