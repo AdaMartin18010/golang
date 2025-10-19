@@ -1,6 +1,6 @@
-# HTTP/3 和 QUIC 支持（Go 1.25）
+﻿# HTTP/3 和 QUIC 支持（Go 1.23+）
 
-> **版本要求**: Go 1.25+  
+> **版本要求**: Go 1.23++  
 > **包路径**: `net/http`, `crypto/tls`  
 > **实验性**: 否（正式特性）  
 > **最后更新**: 2025年10月18日
@@ -24,7 +24,7 @@
 
 ## 概述
 
-Go 1.25 正式支持 HTTP/3 和 QUIC 协议,为 Go 应用提供更快、更可靠的网络通信能力。
+Go 1.23+ 正式支持 HTTP/3 和 QUIC 协议,为 Go 应用提供更快、更可靠的网络通信能力。
 
 ### 什么是 HTTP/3?
 
@@ -164,7 +164,7 @@ func main() {
         w.Write([]byte("Hello HTTP/3!"))
     })
     
-    // Go 1.25 自动支持 HTTP/3
+    // Go 1.23+ 自动支持 HTTP/3
     // 需要提供 TLS 证书
     log.Fatal(http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil))
 }
@@ -219,7 +219,7 @@ import (
 )
 
 func main() {
-    // Go 1.25 客户端自动支持 HTTP/3
+    // Go 1.23+ 客户端自动支持 HTTP/3
     client := &http.Client{}
     
     resp, err := client.Get("https://example.com")
@@ -316,7 +316,7 @@ client := &http.Client{
 ```go
 import "net/http"
 
-// Go 1.25 QUIC 配置 (实验性 API)
+// Go 1.23+ QUIC 配置 (实验性 API)
 transport := &http.Transport{
     QUICConfig: &quic.Config{
         MaxIncomingStreams:    100,     // 最大并发流
@@ -466,7 +466,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 ### 案例 3: WebSocket over HTTP/3
 
 ```go
-// Go 1.25 支持 WebSocket over HTTP/3
+// Go 1.23+ 支持 WebSocket over HTTP/3
 func wsHandler(w http.ResponseWriter, r *http.Request) {
     upgrader := websocket.Upgrader{
         CheckOrigin: func(r *http.Request) bool {
@@ -537,9 +537,9 @@ func main() {
 #### 步骤 1: 更新 Go 版本
 
 ```bash
-# 升级到 Go 1.25
-go install golang.org/dl/go1.25.0@latest
-go1.25.0 download
+# 升级到 Go 1.23+
+go install golang.org/dl/go1.23.0@latest
+go1.23.0 download
 ```
 
 #### 步骤 2: 更新代码 (几乎无需修改)
@@ -558,7 +558,7 @@ server := &http.Server{
     Handler: mux,
 }
 server.ListenAndServeTLS("cert.pem", "key.pem")
-// Go 1.25 自动支持 HTTP/3!
+// Go 1.23+ 自动支持 HTTP/3!
 ```
 
 #### 步骤 3: 验证 HTTP/3
@@ -631,7 +631,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 **A**: ❌ 几乎不需要!
 
-Go 1.25 的 HTTP/3 支持是透明的:
+Go 1.23+ 的 HTTP/3 支持是透明的:
 
 - 服务端: 无需修改 (自动支持)
 - 客户端: 无需修改 (自动协商)
@@ -705,14 +705,14 @@ GODEBUG=http3debug=2 ./myapp
 
 ### 官方文档
 
-- 📘 [Go 1.25 Release Notes](https://go.dev/doc/go1.25#http3)
+- 📘 [Go 1.23+ Release Notes](https://go.dev/doc/go1.23#http3)
 - 📘 [net/http](https://pkg.go.dev/net/http)
 - 📘 [HTTP/3 RFC](https://www.rfc-editor.org/rfc/rfc9114.html)
 - 📘 [QUIC RFC](https://www.rfc-editor.org/rfc/rfc9000.html)
 
 ### 相关章节
 
-- 🔗 [Go 1.25 并发和网络](./README.md)
+- 🔗 [Go 1.23+ 并发和网络](./README.md)
 - 🔗 [HTTP 编程](../../07-网络编程/HTTP编程.md)
 
 ---

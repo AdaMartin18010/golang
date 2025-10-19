@@ -1,4 +1,4 @@
-# Go 1.25 安全最佳实践
+﻿# Go 1.23+ 安全最佳实践
 
 ## 1.1 目录
 
@@ -632,7 +632,7 @@ func (ad *AnomalyDetector) IsAccountLocked(userID string) bool {
 
 ## 1.6 总结
 
-本文档介绍了Go 1.25的安全最佳实践，包括：
+本文档介绍了Go 1.23+的安全最佳实践，包括：
 
 1. **加密与认证**：AES加密、密码哈希、JWT认证
 2. **安全编码规范**：输入验证、SQL注入防护、XSS防护

@@ -1,0 +1,108 @@
+name: Code Runability Scan
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 每周一早上8点运行
+    - cron: '0 8 * * 1'
+
+jobs:
+  scan-and-report:
+    name: Scan Go Code Runability
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Scan all Go files
+        id: scan
+        run: |
+          echo "Scanning all Go files..."
+          find . -name "*.go" -not -path "*/vendor/*" > go_files.txt
+          echo "Total Go files found: $(wc -l < go_files.txt)"
+          
+          echo "go_files_count=$(wc -l < go_files.txt)" >> $GITHUB_OUTPUT
+
+      - name: Check compilation
+        id: compile
+        run: |
+          echo "Checking compilation for all packages..."
+          
+          success_count=0
+          fail_count=0
+          
+          # 查找所有包含go.mod的目录
+          for dir in $(find . -name "go.mod" -exec dirname {} \;); do
+            echo "Checking $dir..."
+            if (cd "$dir" && go build ./... 2>&1); then
+              ((success_count++))
+            else
+              ((fail_count++))
+              echo "$dir" >> failed_builds.txt
+            fi
+          done
+          
+          echo "success_count=$success_count" >> $GITHUB_OUTPUT
+          echo "fail_count=$fail_count" >> $GITHUB_OUTPUT
+          
+          if [ -f failed_builds.txt ]; then
+            echo "Failed builds:"
+            cat failed_builds.txt
+          fi
+
+      - name: Generate report
+        run: |
+          cat > scan_report.md << EOF
+          # Code Runability Scan Report
+          
+          **Date**: $(date)
+          **Go Version**: $(go version)
+          
+          ## Summary
+          
+          - Total Go files: ${{ steps.scan.outputs.go_files_count }}
+          - Successful builds: ${{ steps.compile.outputs.success_count }}
+          - Failed builds: ${{ steps.compile.outputs.fail_count }}
+          
+          ## Status
+          
+          EOF
+          
+          if [ -f failed_builds.txt ]; then
+            echo "### ⚠️ Failed Builds" >> scan_report.md
+            echo "" >> scan_report.md
+            cat failed_builds.txt >> scan_report.md
+          else
+            echo "### ✅ All builds successful!" >> scan_report.md
+          fi
+
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: scan-report
+          path: |
+            scan_report.md
+            go_files.txt
+            failed_builds.txt
+
+      - name: Comment PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('scan_report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+

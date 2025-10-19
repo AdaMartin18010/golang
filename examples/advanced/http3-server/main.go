@@ -54,7 +54,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		Message:   "Welcome to HTTP/3 Server!",
 		Timestamp: time.Now(),
 		Protocol:  protocol,
-		Server:    "Go 1.25",
+		Server:    "Go 1.23+",
 	}
 
 	w.Header().Set("Content-Type", "application/json")

@@ -1,4 +1,4 @@
-# HTTP/3 Server 示例
+﻿# HTTP/3 Server 示例
 
 ## 说明
 
@@ -135,6 +135,6 @@ sudo ufw allow 8443/udp
 
 ## 更多信息
 
-- [HTTP/3和QUIC文档](../../../docs/02-Go语言现代化/14-Go-1.25并发和网络/03-HTTP3-和-QUIC支持.md)
+- [HTTP/3和QUIC文档](../../../docs/02-Go语言现代化/14-Go-1.23并发和网络/03-HTTP3-和-QUIC支持.md)
 - [网络优化指南](../../../docs/02-Go语言现代化/性能优化实战指南.md)
 

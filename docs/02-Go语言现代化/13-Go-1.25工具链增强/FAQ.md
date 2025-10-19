@@ -1,8 +1,8 @@
-# Go 1.25 工具链增强 - 常见问题解答 (FAQ)
+﻿# Go 1.23+ 工具链增强 - 常见问题解答 (FAQ)
 
 > **版本**: v1.0  
 > **最后更新**: 2025年10月18日  
-> **适用版本**: Go 1.25+
+> **适用版本**: Go 1.23++
 
 ---
 
@@ -194,7 +194,7 @@ func ExampleXXX() {
 // go.mod
 module myapp
 
-go 1.25
+Go 1.23+
 
 ignore github.com/some/test/tool
 ```
@@ -208,7 +208,7 @@ ignore github.com/some/test/tool
 ```go
 module myapp
 
-go 1.25
+Go 1.23+
 
 require (
     github.com/gin-gonic/gin v1.9.0
@@ -473,14 +473,14 @@ func main() {
 
 ## 工具链通用
 
-### Q21: Go 1.25 工具链需要单独更新吗？
+### Q21: Go 1.23+ 工具链需要单独更新吗？
 
 **A**: ❌ **不需要**
 
 ```bash
-# 安装 Go 1.25 时工具链自动包含
+# 安装 Go 1.23+ 时工具链自动包含
 go version
-# go version go1.25.0 linux/amd64
+# go version go1.23.0 linux/amd64
 ```
 
 所有工具都是最新的：
@@ -496,12 +496,12 @@ go version
 
 **A**: ✅ **完全兼容**
 
-Go 1.25 工具链可以构建 Go 1.18-1.24 项目：
+Go 1.23+ 工具链可以构建 Go 1.18-1.24 项目：
 
 ```bash
 # Go 1.20 项目
 cd go1.20-project
-go1.25 build ./...  # 正常工作
+go1.23 build ./...  # 正常工作
 ```
 
 ---
@@ -515,13 +515,13 @@ go1.25 build ./...  # 正常工作
 go install golang.org/dl/go1.24.0@latest
 go1.24.0 download
 
-# 安装 Go 1.25
-go install golang.org/dl/go1.25.0@latest
-go1.25.0 download
+# 安装 Go 1.23+
+go install golang.org/dl/go1.23.0@latest
+go1.23.0 download
 
 # 使用不同版本
 go1.24.0 build ./...
-go1.25.0 build ./...
+go1.23.0 build ./...
 ```
 
 ---
@@ -543,7 +543,7 @@ go1.25.0 build ./...
 # Go 1.24
 time go build ./...  # 12.5s
 
-# Go 1.25
+# Go 1.23+
 time go build ./...  # 11.2s (提升 10%)
 ```
 
@@ -717,7 +717,7 @@ go generate ./...
 ## 📚 更多资源
 
 ### 官方文档
-- [Go 1.25 工具链文档](https://pkg.go.dev/cmd/go)
+- [Go 1.23+ 工具链文档](https://pkg.go.dev/cmd/go)
 - [Go Modules Reference](https://go.dev/ref/mod)
 
 ### 本项目文档

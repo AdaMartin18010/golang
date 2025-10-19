@@ -1,6 +1,6 @@
-# Go 1.25 并发和网络增强
+﻿# Go 1.23+ 并发和网络增强
 
-> **版本要求**: Go 1.25+  
+> **版本要求**: Go 1.23++  
 > **最后更新**: 2025年10月18日  
 > **状态**: ✅ 生产就绪 (部分实验性)
 
@@ -20,7 +20,7 @@
 
 ## 模块概述
 
-Go 1.25 在并发和网络层面带来了重大改进,包括并发编程简化、测试增强、HTTP/3 正式支持和 JSON v2 预览。
+Go 1.23+ 在并发和网络层面带来了重大改进,包括并发编程简化、测试增强、HTTP/3 正式支持和 JSON v2 预览。
 
 ### 核心特性一览
 
@@ -360,7 +360,7 @@ fmt.Println(string(data))
 
 ### 综合性能对比
 
-| 特性 | Go 1.24 | Go 1.25 | 提升 | 适用场景 |
+| 特性 | Go 1.24 | Go 1.23+ | 提升 | 适用场景 |
 |------|---------|---------|------|----------|
 | **WaitGroup.Go()** | 基准 | 代码简化 | 可维护性 ⬆️ | 所有并发 |
 | **synctest** | 不确定 | 确定性 | 测试可靠性 ⬆️ | 并发测试 |
@@ -378,7 +378,7 @@ Go 1.24:
   - QPS: 10,000
   - P99: 100ms
 
-Go 1.25:
+Go 1.23+:
   - HTTP/3 (移动网络)
   - JSON v2
   - QPS: 15,000 (+50%)
@@ -393,7 +393,7 @@ Go 1.24:
   - JSON v1
   - 处理速度: 1M 条/分钟
 
-Go 1.25:
+Go 1.23+:
   - WaitGroup.Go()
   - JSON v2 流式
   - 处理速度: 1.5M 条/分钟 (+50%)
@@ -442,7 +442,7 @@ Go 1.25:
 
 ```bash
 # 1. 更新 Go
-go install golang.org/dl/go1.25.0@latest
+go install golang.org/dl/go1.23.0@latest
 
 # 2. 更新 go.mod
 go mod edit -go=1.25
@@ -472,7 +472,7 @@ go mod edit -go=1.25
 
 ### 官方文档
 
-- 📘 [Go 1.25 Release Notes](https://go.dev/doc/go1.25)
+- 📘 [Go 1.23+ Release Notes](https://go.dev/doc/go1.23)
 - 📘 [sync Package](https://pkg.go.dev/sync)
 - 📘 [testing/synctest](https://pkg.go.dev/testing/synctest)
 - 📘 [net/http](https://pkg.go.dev/net/http)
@@ -480,8 +480,8 @@ go mod edit -go=1.25
 
 ### 相关章节
 
-- 🔗 [Go 1.25 运行时优化](../12-Go-1.25运行时优化/README.md)
-- 🔗 [Go 1.25 工具链增强](../13-Go-1.25工具链增强/README.md)
+- 🔗 [Go 1.23+ 运行时优化](../12-Go-1.23运行时优化/README.md)
+- 🔗 [Go 1.23+ 工具链增强](../13-Go-1.23工具链增强/README.md)
 - 🔗 [并发编程](../../03-并发编程/README.md)
 - 🔗 [网络编程](../../07-网络编程/README.md)
 
@@ -527,5 +527,5 @@ go mod edit -go=1.25
 ---
 
 <p align="center">
-  <b>🚀 使用 Go 1.25 并发和网络增强,让应用更快更强! 🌟</b>
+  <b>🚀 使用 Go 1.23+ 并发和网络增强,让应用更快更强! 🌟</b>
 </p>

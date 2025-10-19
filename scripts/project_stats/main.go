@@ -24,7 +24,7 @@ type ProjectStats struct {
 }
 
 func main() {
-	fmt.Println("🔍 Go 1.25 项目统计分析")
+	fmt.Println("🔍 Go 1.23+ 项目统计分析")
 	fmt.Println("=" + strings.Repeat("=", 70))
 	fmt.Println()
 
@@ -161,10 +161,10 @@ func categorizeDoc(path string, stats *ProjectStats) {
 	pathLower := strings.ToLower(path)
 
 	categories := map[string][]string{
-		"运行时优化": {"12-go-1.25运行时优化", "runtime", "gc", "memory"},
-		"工具链增强": {"13-go-1.25工具链增强", "toolchain", "build"},
-		"并发和网络": {"14-go-1.25并发和网络", "concurrency", "network", "http"},
-		"行业应用":  {"15-go-1.25行业应用", "industry"},
+		"运行时优化": {"12-Go-1.23运行时优化", "runtime", "gc", "memory"},
+		"工具链增强": {"13-Go-1.23工具链增强", "toolchain", "build"},
+		"并发和网络": {"14-Go-1.23并发和网络", "concurrency", "network", "http"},
+		"行业应用":  {"15-Go-1.23行业应用", "industry"},
 		"基础文档":  {"01-go语言基础", "basics"},
 	}
 

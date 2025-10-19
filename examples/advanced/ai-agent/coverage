@@ -1,0 +1,17 @@
+mode: set
+ai-agent-architecture/main.go:12.13,42.41 10 0
+ai-agent-architecture/main.go:42.41,44.3 1 0
+ai-agent-architecture/main.go:45.2,65.16 5 0
+ai-agent-architecture/main.go:65.16,67.3 1 0
+ai-agent-architecture/main.go:67.8,71.25 4 0
+ai-agent-architecture/main.go:71.25,73.4 1 0
+ai-agent-architecture/main.go:77.2,81.29 5 0
+ai-agent-architecture/main.go:81.29,83.36 2 0
+ai-agent-architecture/main.go:83.36,85.4 1 0
+ai-agent-architecture/main.go:89.2,98.48 3 0
+ai-agent-architecture/main.go:98.48,100.3 1 0
+ai-agent-architecture/main.go:100.8,102.3 1 0
+ai-agent-architecture/main.go:105.2,106.37 2 0
+ai-agent-architecture/main.go:106.37,108.3 1 0
+ai-agent-architecture/main.go:108.8,110.3 1 0
+ai-agent-architecture/main.go:112.2,112.34 1 0

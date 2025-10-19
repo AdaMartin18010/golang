@@ -1,98 +1,59 @@
 # Pull Request
 
-## 📝 变更描述
+## 📝 Description / 描述
 
-简要描述这个 PR 的变更内容
+Please include a summary of the changes and the related issue.
+请包括更改摘要和相关issue。
 
-## 🎯 变更类型
+Fixes # (issue)
 
-选择适用的类型：
+## 🔄 Type of Change / 更改类型
 
-- [ ] 📝 文档更新 (修正错误、补充内容、改进结构)
-- [ ] 💻 代码更新 (新增示例、修复 bug、性能优化)
-- [ ] ✨ 新功能 (添加新模块、新特性说明)
-- [ ] 🐛 Bug 修复 (修复文档或代码中的问题)
-- [ ] 🔧 工具更新 (脚本、自动化工具)
-- [ ] 🎨 格式调整 (不影响内容的格式修改)
-- [ ] 📦 依赖更新 (go.mod 或其他依赖)
+Please delete options that are not relevant.
+请删除不相关的选项。
 
-## 🔗 关联 Issue
+- [ ] 🐛 Bug fix (non-breaking change which fixes an issue) / 错误修复
+- [ ] ✨ New feature (non-breaking change which adds functionality) / 新功能
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected) / 破坏性更改
+- [ ] 📚 Documentation update / 文档更新
+- [ ] 🎨 Code style update (formatting, renaming) / 代码风格更新
+- [ ] ♻️ Code refactoring / 代码重构
+- [ ] ⚡ Performance improvement / 性能改进
+- [ ] ✅ Test update / 测试更新
 
-Fixes #(issue 编号)
-Relates to #(issue 编号)
+## 🧪 Testing / 测试
 
-## 📋 变更清单
+Please describe the tests that you ran to verify your changes.
+请描述你运行的测试来验证你的更改。
 
-### 新增
-- 新增内容 1
-- 新增内容 2
+- [ ] Unit tests / 单元测试
+- [ ] Integration tests / 集成测试
+- [ ] Benchmark tests / 基准测试
+- [ ] Manual testing / 手动测试
 
-### 修改
-- 修改内容 1
-- 修改内容 2
+**Test Configuration / 测试配置:**
 
-### 删除
-- 删除内容 1
+- Go version:
+- OS:
+- Hardware:
 
-## 🧪 测试
+## ✅ Checklist / 检查清单
 
-描述如何测试这些变更：
+- [ ] My code follows the style guidelines of this project / 我的代码遵循项目的代码风格
+- [ ] I have performed a self-review of my code / 我已对代码进行自查
+- [ ] I have commented my code, particularly in hard-to-understand areas / 我已对代码添加注释，特别是难以理解的部分
+- [ ] I have made corresponding changes to the documentation / 我已对文档进行相应更改
+- [ ] My changes generate no new warnings / 我的更改没有产生新的警告
+- [ ] I have added tests that prove my fix is effective or that my feature works / 我已添加证明修复有效或功能工作的测试
+- [ ] New and existing unit tests pass locally with my changes / 新的和现有的单元测试在本地通过
+- [ ] Any dependent changes have been merged and published / 任何依赖的更改已合并和发布
 
-- [ ] 代码示例已测试运行
-- [ ] 基准测试已验证
-- [ ] 文档链接已检查
-- [ ] Markdown 格式已验证
-- [ ] 拼写检查已完成
+## 📸 Screenshots / 截图 (if applicable)
 
-### 测试命令
-```bash
-# 粘贴用于测试的命令
-```
+Add screenshots to help explain your changes.
+添加截图帮助解释你的更改。
 
-### 测试结果
-```
-# 粘贴测试输出
-```
+## 📚 Additional Notes / 附加说明
 
-## 📷 截图
-
-如果适用，添加截图来展示变更效果
-
-## ✅ 检查清单
-
-### 文档变更
-- [ ] 文档格式符合规范
-- [ ] 代码示例可以运行
-- [ ] 链接都有效
-- [ ] 没有错别字
-- [ ] 添加了必要的说明
-
-### 代码变更
-- [ ] 代码遵循项目规范
-- [ ] 添加了必要的注释
-- [ ] 代码已经测试
-- [ ] 性能影响已评估
-- [ ] 文档已更新
-
-### 通用检查
-- [ ] PR 标题清晰明确
-- [ ] 变更说明详细
-- [ ] 关联了相关 Issue
-- [ ] 没有不相关的变更
-- [ ] Commit 信息符合规范
-
-## 📝 附加说明
-
-添加任何其他相关信息
-
-## 🤝 贡献者
-
-感谢 @[用户名] 的帮助和建议
-
----
-
-**提交者声明**: 
-- [ ] 我确认这些变更是我的原创工作
-- [ ] 我同意遵守项目的 [行为准则](../CODE_OF_CONDUCT.md)
-- [ ] 我同意项目的 [MIT 许可证](../LICENSE)
-
+Add any additional notes about the PR here.
+在这里添加关于PR的任何附加说明。

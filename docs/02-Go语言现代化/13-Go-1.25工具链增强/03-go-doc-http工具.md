@@ -1,6 +1,6 @@
-# go doc -http 本地文档服务器（Go 1.25）
+﻿# go doc -http 本地文档服务器（Go 1.23+）
 
-> **版本要求**: Go 1.25+  
+> **版本要求**: Go 1.23++  
 > **平台支持**: 所有平台  
 > **实验性**: 否（正式特性）  
 > **最后更新**: 2025年10月18日
@@ -24,7 +24,7 @@
 
 ## 概述
 
-Go 1.25 为 `go doc` 命令添加了 `-http` 选项,允许开发者在本地启动一个文档服务器,类似于 pkg.go.dev,但完全离线且自动包含项目代码。
+Go 1.23+ 为 `go doc` 命令添加了 `-http` 选项,允许开发者在本地启动一个文档服务器,类似于 pkg.go.dev,但完全离线且自动包含项目代码。
 
 ### 什么是 go doc -http?
 
@@ -81,7 +81,7 @@ $ godoc -http=:6060
 - ❌ 不再维护
 - ❌ 功能有限
 
-### Go 1.25 的解决方案
+### Go 1.23+ 的解决方案
 
 ```bash
 # 一条命令启动文档服务器
@@ -652,13 +652,13 @@ $ go doc -http :6060
 
 ### 官方文档
 
-- 📘 [Go 1.25 Release Notes](https://go.dev/doc/go1.25#godoc)
+- 📘 [Go 1.23+ Release Notes](https://go.dev/doc/go1.23#godoc)
 - 📘 [go doc command](https://pkg.go.dev/cmd/go#hdr-Show_documentation_for_package_or_symbol)
 - 📘 [How to Write Go Code](https://go.dev/doc/code)
 
 ### 相关章节
 
-- 🔗 [Go 1.25 工具链增强](./README.md)
+- 🔗 [Go 1.23+ 工具链增强](./README.md)
 - 🔗 [文档编写最佳实践](../../最佳实践/文档编写.md)
 
 ---

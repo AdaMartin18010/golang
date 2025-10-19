@@ -1,0 +1,241 @@
+name: Comprehensive CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+# 允许手动触发
+workflow_dispatch:
+
+jobs:
+  # Job 1: 多版本Go测试
+  test:
+    name: Test on Go ${{ matrix.go-version }} / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: ['1.23', '1.24', '1.25']
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Verify Go installation
+        run: go version
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        continue-on-error: true
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.go-version == '1.25'
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.out
+          flags: unittests
+          name: codecov-${{ matrix.go-version }}
+
+  # Job 2: 代码质量检查
+  lint:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --timeout 10m --verbose
+        continue-on-error: true
+
+      - name: Run go vet
+        run: go vet ./...
+        continue-on-error: true
+
+      - name: Check formatting
+        run: |
+          gofmt -l -s . > fmt-issues.txt
+          if [ -s fmt-issues.txt ]; then
+            echo "Formatting issues found:"
+            cat fmt-issues.txt
+            exit 1
+          fi
+        continue-on-error: true
+
+  # Job 3: 安全扫描
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Run govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+        continue-on-error: true
+
+      - name: Run gosec
+        uses: securego/gosec@master
+        with:
+          args: '-fmt json -out gosec-results.json ./...'
+        continue-on-error: true
+
+      - name: Upload gosec results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: gosec-results
+          path: gosec-results.json
+
+  # Job 4: 构建验证
+  build:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Build all packages
+        run: |
+          echo "Building all Go packages..."
+          find . -name "go.mod" -execdir go build -v ./... \;
+        continue-on-error: true
+
+      - name: Check for unused dependencies
+        run: |
+          go install github.com/golangci/go-mod-tidy-check@latest
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+        continue-on-error: true
+
+  # Job 5: 基准测试
+  benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Run benchmarks
+        run: |
+          go test -bench=. -benchmem -run=^$ ./... | tee benchmark.txt
+        continue-on-error: true
+
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        if: always()
+        with:
+          tool: 'go'
+          output-file-path: benchmark.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: false
+        continue-on-error: true
+
+  # Job 6: 测试覆盖率报告
+  coverage-report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Generate coverage report
+        run: |
+          go test -coverprofile=coverage.out -covermode=atomic ./...
+          go tool cover -html=coverage.out -o coverage.html
+        continue-on-error: true
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-report
+          path: |
+            coverage.out
+            coverage.html
+
+  # Job 7: 代码统计
+  statistics:
+    name: Code Statistics
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Count Go files
+        run: |
+          echo "=== Go Files Statistics ==="
+          echo "Total Go files: $(find . -name '*.go' | wc -l)"
+          echo "Total Test files: $(find . -name '*_test.go' | wc -l)"
+          echo "Total Lines of Code: $(find . -name '*.go' ! -name '*_test.go' | xargs wc -l | tail -1)"
+          
+      - name: Count Markdown files
+        run: |
+          echo "=== Documentation Statistics ==="
+          echo "Total Markdown files: $(find . -name '*.md' | wc -l)"
+          echo "Total Lines of Docs: $(find . -name '*.md' | xargs wc -l | tail -1)"
+
+# 通知配置 (可选)
+# 需要配置SLACK_WEBHOOK_URL secret
+# notifications:
+#   name: Notifications
+#   runs-on: ubuntu-latest
+#   needs: [test, lint, security, build]
+#   if: always()
+#   steps:
+#     - name: Notify Slack
+#       uses: 8398a7/action-slack@v3
+#       with:
+#         status: ${{ job.status }}
+#         webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+

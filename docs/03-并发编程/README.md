@@ -1,6 +1,6 @@
-# Go并发编程模块总览 (Go 1.25.1优化版)
+﻿# Go并发编程模块总览 (Go 1.23+优化版)
 
-## 🚀 Go 1.25.1 并发编程新特性概览
+## 🚀 Go 1.23+ 并发编程新特性概览
 
 ### 核心特性更新
 
@@ -44,12 +44,12 @@
 - **06-sync包与并发安全模式** - 同步原语和并发安全
 - **07-原子操作与并发安全容器** - 无锁编程
 
-### Go 1.25.1增强章节
+### Go 1.23+增强章节
 
-- **08-Go 1.25.1并发测试最佳实践** - testing/synctest包使用
-- **09-Go 1.25.1运行时优化** - 并发清理和性能提升
-- **10-Go 1.25.1调度器优化** - GPM模型性能改进
-- **11-Go 1.25.1内存模型增强** - 并发安全性提升
+- **08-Go 1.23+并发测试最佳实践** - testing/synctest包使用
+- **09-Go 1.23+运行时优化** - 并发清理和性能提升
+- **10-Go 1.23+调度器优化** - GPM模型性能改进
+- **11-Go 1.23+内存模型增强** - 并发安全性提升
 
 ### 实践与总结章节
 
@@ -69,7 +69,7 @@
 - **内存模型**: 保证并发安全的内存访问规则
 - **并发原语**: 丰富的同步和通信原语
 
-### Go 1.25.1增强价值
+### Go 1.23+增强价值
 
 - **并发测试革命**: `testing/synctest`包解决并发测试的时序问题，提供稳定的测试环境
 - **运行时性能提升**: 并发清理函数优化内存管理，提升整体性能
@@ -86,13 +86,13 @@
 3. **实践阶段**: 学习并发安全模式和最佳实践
 4. **专家阶段**: 深入理解内存模型和无锁编程
 
-### Go 1.25.1优化学习路径
+### Go 1.23+优化学习路径
 
 1. **新特性掌握**: 学习`testing/synctest`并发测试框架
 2. **性能优化**: 掌握运行时优化和调度器改进
 3. **安全增强**: 理解内存模型增强和并发安全提升
 4. **实战应用**: 将新特性应用到实际项目中
-5. **最佳实践**: 建立基于Go 1.25.1的并发编程最佳实践
+5. **最佳实践**: 建立基于Go 1.23+的并发编程最佳实践
 
 ## 📚 参考文献与资源
 
@@ -100,14 +100,14 @@
 
 - [Go官方并发教程](https://golang.org/doc/effective_go.html#concurrency)
 - [Go内存模型](https://golang.org/ref/mem)
-- [Go 1.25.1 Release Notes](https://golang.org/doc/go1.25)
+- [Go 1.23+ Release Notes](https://golang.org/doc/go1.23)
 
-### Go 1.25.1新特性资源
+### Go 1.23+新特性资源
 
 - [testing/synctest包文档](https://pkg.go.dev/testing/synctest)
-- [Go 1.25.1并发测试指南](https://golang.org/doc/go1.25#testing)
-- [运行时优化说明](https://golang.org/doc/go1.25#runtime)
-- [调度器改进文档](https://golang.org/doc/go1.25#scheduler)
+- [Go 1.23+并发测试指南](https://golang.org/doc/go1.23#testing)
+- [运行时优化说明](https://golang.org/doc/go1.23#runtime)
+- [调度器改进文档](https://golang.org/doc/go1.23#scheduler)
 - [Go并发模式](https://blog.golang.org/pipelines)
 - [Go调度器设计](https://morsmachine.dk/go-scheduler)
 

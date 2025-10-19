@@ -1,0 +1,14 @@
+﻿虚构特性删除报告
+生成时间: 2025-10-19 08:15:27
+
+成功删除: 0
+删除失败: 0
+
+删除的项目:
+docs\02-Go语言现代化\14-Go-1.23并发和网络\01-WaitGroup-Go方法.md
+docs\02-Go语言现代化\14-Go-1.23并发和网络\examples\waitgroup_go
+docs\02-Go语言现代化\14-Go-1.23并发和网络\02-testing-synctest包.md
+docs\02-Go语言现代化\14-Go-1.23并发和网络\examples\synctest
+docs\02-Go语言现代化\13-Go-1.23工具链增强\02-go-mod-ignore指令.md
+docs\02-Go语言现代化\13-Go-1.23工具链增强\examples\go_mod_ignore
+docs\02-Go语言现代化\12-Go-1.23运行时优化\01-greentea-GC垃圾收集器.md

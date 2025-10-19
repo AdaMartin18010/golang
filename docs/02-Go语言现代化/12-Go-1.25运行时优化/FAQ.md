@@ -1,8 +1,8 @@
-# Go 1.25 运行时优化 - 常见问题解答 (FAQ)
+﻿# Go 1.23+ 运行时优化 - 常见问题解答 (FAQ)
 
 > **版本**: v1.0  
 > **最后更新**: 2025年10月18日  
-> **适用版本**: Go 1.25+
+> **适用版本**: Go 1.23++
 
 ---
 
@@ -21,7 +21,7 @@
 
 ## 基础问题
 
-### Q1: Go 1.25 的运行时优化是否向后兼容？
+### Q1: Go 1.23+ 的运行时优化是否向后兼容？
 
 **A**: ✅ **完全兼容！**
 
@@ -41,7 +41,7 @@ GOEXPERIMENT=greentea go run main.go
 
 ---
 
-### Q2: 我需要升级到 Go 1.25 吗？
+### Q2: 我需要升级到 Go 1.23+ 吗？
 
 **A**: 取决于您的需求
 
@@ -58,15 +58,15 @@ GOEXPERIMENT=greentea go run main.go
 
 ---
 
-### Q3: 升级到 Go 1.25 需要多长时间？
+### Q3: 升级到 Go 1.23+ 需要多长时间？
 
 **A**: 通常 **1-2 小时**
 
 **升级步骤** (30分钟):
 ```bash
-# 1. 安装 Go 1.25
-go install golang.org/dl/go1.25.0@latest
-go1.25.0 download
+# 1. 安装 Go 1.23+
+go install golang.org/dl/go1.23.0@latest
+go1.23.0 download
 
 # 2. 更新项目
 go mod edit -go=1.25
@@ -83,7 +83,7 @@ go build ./...
 
 ---
 
-### Q4: Go 1.25 运行时优化会增加内存使用吗？
+### Q4: Go 1.23+ 运行时优化会增加内存使用吗？
 
 **A**: ❌ **不会，反而可能降低**
 
@@ -104,7 +104,7 @@ fmt.Printf("Sys: %v MB\n", m.Sys / 1024 / 1024)
 
 ---
 
-### Q5: 我可以在生产环境使用 Go 1.25 吗？
+### Q5: 我可以在生产环境使用 Go 1.23+ 吗？
 
 **A**: ✅ **可以，但建议分阶段**
 
@@ -132,7 +132,7 @@ fmt.Printf("Sys: %v MB\n", m.Sys / 1024 / 1024)
 
 **A**: **预计 Go 1.26 或 1.27**
 
-**当前状态** (Go 1.25):
+**当前状态** (Go 1.23+):
 - 🔬 实验性特性
 - ✅ 功能完整
 - ⚠️ 需要显式启用
@@ -257,7 +257,7 @@ resources:
     cpu: "2"
 ```
 
-Go 1.25 会自动设置 `GOMAXPROCS=2`
+Go 1.23+ 会自动设置 `GOMAXPROCS=2`
 
 ---
 
@@ -276,7 +276,7 @@ GOMAXPROCS=8 ./myapp  # 环境变量优先级最高
 
 **建议**:
 - ✅ 对于容器部署，删除手动 GOMAXPROCS 设置
-- ✅ 让 Go 1.25 自动检测
+- ✅ 让 Go 1.23+ 自动检测
 - ✅ 只在特殊情况下手动设置
 
 ---
@@ -299,14 +299,14 @@ GOMAXPROCS=8 ./myapp  # 环境变量优先级最高
 
 **Docker**:
 ```bash
-docker run --cpus=2 myapp  # Go 1.25 自动设置 GOMAXPROCS=2
+docker run --cpus=2 myapp  # Go 1.23+ 自动设置 GOMAXPROCS=2
 ```
 
 **Kubernetes**:
 ```yaml
 resources:
   limits:
-    cpu: "2"  # Go 1.25 自动设置 GOMAXPROCS=2
+    cpu: "2"  # Go 1.23+ 自动设置 GOMAXPROCS=2
 ```
 
 **支持的容器运行时**:
@@ -351,14 +351,14 @@ docker run --cpus=2 myapp
 **A**: **自动生效，无需配置**
 
 **生效条件**:
-- Go 1.25+
+- Go 1.23++
 - Map 大小超过一定阈值（通常 >1000 个键）
 - 键类型为基本类型或字符串
 
 **验证方法**:
 ```go
 m := make(map[string]int, 1000000)  // 大 Map
-// Go 1.25 自动使用 Swiss Tables 实现
+// Go 1.23+ 自动使用 Swiss Tables 实现
 ```
 
 ---
@@ -442,7 +442,7 @@ type Cache struct {
 
 ## 性能优化
 
-### Q21: Go 1.25 能提升多少性能？
+### Q21: Go 1.23+ 能提升多少性能？
 
 **A**: **取决于应用类型**
 
@@ -460,7 +460,7 @@ type Cache struct {
 # Go 1.24
 go test -bench=. -benchmem > old.txt
 
-# Go 1.25
+# Go 1.23+
 go test -bench=. -benchmem > new.txt
 
 # 对比
@@ -469,7 +469,7 @@ benchstat old.txt new.txt
 
 ---
 
-### Q22: 如何最大化 Go 1.25 的性能收益？
+### Q22: 如何最大化 Go 1.23+ 的性能收益？
 
 **A**: **组合使用多个优化**
 
@@ -607,7 +607,7 @@ GOMAXPROCS=4 ./myapp
 
 推荐路径：
 1. Go 1.21 → Go 1.23 (稳定版本)
-2. Go 1.23 → Go 1.25
+2. Go 1.23 → Go 1.23+
 
 **原因**:
 - 累积了 4 个版本的变化
@@ -618,7 +618,7 @@ GOMAXPROCS=4 ./myapp
 
 ## 最佳实践
 
-### Q29: Go 1.25 运行时优化的最佳实践？
+### Q29: Go 1.23+ 运行时优化的最佳实践？
 
 **A**: **5 条黄金法则**
 
@@ -701,7 +701,7 @@ benchstat bench.txt
 ## 📚 更多资源
 
 ### 官方文档
-- [Go 1.25 Release Notes](https://go.dev/doc/go1.25)
+- [Go 1.23+ Release Notes](https://go.dev/doc/go1.23)
 - [Go Runtime Documentation](https://pkg.go.dev/runtime)
 
 ### 本项目文档

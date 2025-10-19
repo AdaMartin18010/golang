@@ -1,6 +1,6 @@
-# Go 1.25 高级示例
+﻿# Go 1.23+ 高级示例
 
-> 实战代码示例，展示Go 1.25新特性的最佳实践
+> 实战代码示例，展示Go 1.23+现代特性的最佳实践
 
 ---
 
@@ -184,7 +184,7 @@ go run main.go
   Encode throughput: 45 MB/s
   Decode throughput: 56 MB/s
   
-💡 Go 1.25 improvements:
+💡 Go 1.23+ improvements:
   - 20-30% faster encoding
   - 15-25% faster decoding
 ```
@@ -231,7 +231,7 @@ go get github.com/quic-go/quic-go/http3
 
 ### 其他示例
 
-无额外依赖，使用Go 1.25标准库
+无额外依赖，使用Go 1.23+标准库
 
 ---
 
@@ -290,9 +290,9 @@ cd ../http3-server && go run main.go
 
 阅读对应的技术文档：
 
-- [WaitGroup.Go()](../../docs/02-Go语言现代化/14-Go-1.25并发和网络/01-WaitGroup-Go方法.md)
-- [weak.Pointer](../../docs/02-Go语言现代化/12-Go-1.25运行时优化/03-内存分配器优化.md)
-- [Arena](../../docs/02-Go语言现代化/12-Go-1.25运行时优化/03-内存分配器优化.md)
+- [WaitGroup.Go()](../../docs/02-Go语言现代化/14-Go-1.23并发和网络/01-WaitGroup-Go方法.md)
+- [weak.Pointer](../../docs/02-Go语言现代化/12-Go-1.23运行时优化/03-内存分配器优化.md)
+- [Arena](../../docs/02-Go语言现代化/12-Go-1.23运行时优化/03-内存分配器优化.md)
 
 ### 步骤2: 运行示例
 
@@ -328,9 +328,9 @@ go run main.go
 
 ### 文档
 
-- [Go 1.25 新特性](../../docs/02-Go语言现代化/)
+- [Go 1.23+ 新特性](../../docs/02-Go语言现代化/)
 - [性能优化指南](../../docs/02-Go语言现代化/性能优化实战指南.md)
-- [FAQ](../../docs/02-Go语言现代化/12-Go-1.25运行时优化/FAQ.md)
+- [FAQ](../../docs/02-Go语言现代化/12-Go-1.23运行时优化/FAQ.md)
 
 ### 其他示例1
 
@@ -347,5 +347,5 @@ go run main.go
 ---
 
 <p align="center">
-  <b>🚀 开始探索Go 1.25的强大特性！</b>
+  <b>🚀 开始探索Go 1.23+的强大特性！</b>
 </p>

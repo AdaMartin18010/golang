@@ -175,7 +175,7 @@ func demoComments() {
 	fmt.Println("📄 JSON with comments:")
 	fmt.Println(jsonWithComments)
 
-	// Go 1.25 JSON v2 supports comments (with option)
+	// Go 1.23+ JSON v2 supports comments (with option)
 	// Note: This is示例代码，实际API可能不同
 	decoder := json.NewDecoder(strings.NewReader(jsonWithComments))
 	// decoder.AllowComments(true) // 启用注释支持（如果支持）
@@ -256,7 +256,7 @@ func demoPerformance() {
 	fmt.Printf("  Decode throughput: %.2f MB/s\n",
 		float64(avgSize)/avgDecodeTime.Seconds()/1024/1024)
 
-	fmt.Println("\n💡 Go 1.25 JSON v2 improvements:")
+	fmt.Println("\n💡 Go 1.23+ JSON v2 improvements:")
 	fmt.Println("  - 20-30% faster encoding")
 	fmt.Println("  - 15-25% faster decoding")
 	fmt.Println("  - 10-15% less memory usage")
@@ -352,7 +352,7 @@ func demoStreaming() {
 }
 
 func main() {
-	fmt.Println("🔬 JSON v2 Demo (Go 1.25)")
+	fmt.Println("🔬 JSON v2 Demo (Go 1.23+)")
 	fmt.Println("=" + strings.Repeat("=", 40))
 
 	// 运行所有示例

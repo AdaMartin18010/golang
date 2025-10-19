@@ -1,6 +1,6 @@
-# JSON v2 库（Go 1.25）
+﻿# JSON v2 库（Go 1.23+）
 
-> **版本要求**: Go 1.25+  
+> **版本要求**: Go 1.23++  
 > **包路径**: `encoding/json/v2`  
 > **实验性**: 是（预览版）  
 > **最后更新**: 2025年10月18日
@@ -23,7 +23,7 @@
 
 ## 概述
 
-`encoding/json/v2` 是 Go 1.25 引入的全新 JSON 库,解决了 v1 的诸多限制,提供更好的性能和更灵活的 API。
+`encoding/json/v2` 是 Go 1.23+ 引入的全新 JSON 库,解决了 v1 的诸多限制,提供更好的性能和更灵活的 API。
 
 ### 核心优势
 
@@ -446,7 +446,7 @@ if resp.Status == "user" {
 
 ### Q4: v2 稳定吗?
 
-**A**: ⚠️ 实验性 (Go 1.25)
+**A**: ⚠️ 实验性 (Go 1.23+)
 
 - 当前: 实验性特性
 - 预计: Go 1.26/1.27 稳定
@@ -458,13 +458,13 @@ if resp.Status == "user" {
 
 ### 官方文档
 
-- 📘 [Go 1.25 Release Notes](https://go.dev/doc/go1.25#json)
+- 📘 [Go 1.23+ Release Notes](https://go.dev/doc/go1.23#json)
 - 📘 [encoding/json/v2](https://pkg.go.dev/encoding/json/v2)
 - 📘 [JSON v2 提案](https://github.com/golang/go/discussions/63397)
 
 ### 相关章节
 
-- 🔗 [Go 1.25 并发和网络](./README.md)
+- 🔗 [Go 1.23+ 并发和网络](./README.md)
 - 🔗 [JSON 处理](../../数据处理/JSON.md)
 
 ---

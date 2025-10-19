@@ -1,8 +1,8 @@
-# Go 1.25 云原生架构深度分析
+﻿# Go 1.23+ 云原生架构深度分析
 
 ## 1.1 目录
 
-- [Go 1.25 云原生架构深度分析](#go-125-云原生架构深度分析)
+- [Go 1.23+ 云原生架构深度分析](#go-125-云原生架构深度分析)
   - [目录](#目录)
   - [Kubernetes生态系统](#kubernetes生态系统)
     - [1.1 Kubernetes Operator模式](#11-kubernetes-operator模式)
@@ -781,7 +781,7 @@ func (lb *LoadBalancer) SelectService(serviceName string) (*ServiceInfo, error) 
 
 ## 1.4 总结
 
-本文档深入分析了Go 1.25在云原生架构中的应用，包括：
+本文档深入分析了Go 1.23+在云原生架构中的应用，包括：
 
 1. **Kubernetes生态系统**：Operator模式、自定义资源定义、动态客户端、资源监控
 2. **Service Mesh实现**：Istio集成、流量管理、服务发现、负载均衡

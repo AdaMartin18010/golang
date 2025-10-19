@@ -1,0 +1,112 @@
+# golangci-lint configuration
+# https://golangci-lint.run/usage/configuration/
+
+run:
+  timeout: 10m
+  tests: true
+  modules-download-mode: readonly
+  allow-parallel-runners: true
+
+linters:
+  enable:
+    - errcheck      # 检查未处理的错误
+    - gosimple      # 简化代码
+    - govet         # 报告可疑的构造
+    - ineffassign   # 检测无效的赋值
+    - staticcheck   # 静态分析
+    - unused        # 检查未使用的常量、变量、函数和类型
+    - gofmt         # 检查代码格式
+    - goimports     # 检查导入格式
+    - misspell      # 拼写检查
+    - revive        # 快速、可配置、可扩展的 linter
+    - typecheck     # 类型检查
+    - gosec         # 安全检查
+    - goconst       # 查找可以用常量替换的重复字符串
+    - gocyclo       # 计算并检查函数的圈复杂度
+    - dupl          # 检查重复代码
+    - unparam       # 检查未使用的函数参数
+    - prealloc      # 查找可能预分配的切片
+    - gocritic      # 提供诊断检查
+    
+  disable:
+    - exhaustive    # 检查是否穷举所有枚举值（可能过于严格）
+    - exhaustruct   # 检查结构体初始化（可能过于严格）
+    - nlreturn      # 返回语句前的空行要求（风格偏好）
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  
+  govet:
+    check-shadowing: true
+    enable-all: true
+  
+  gocyclo:
+    min-complexity: 15
+  
+  dupl:
+    threshold: 100
+  
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  
+  misspell:
+    locale: US
+  
+  revive:
+    severity: warning
+    rules:
+      - name: exported
+        severity: warning
+        disabled: false
+      - name: package-comments
+        severity: warning
+        disabled: false
+      - name: indent-error-flow
+        severity: warning
+        disabled: false
+  
+  gosec:
+    severity: medium
+    confidence: medium
+    excludes:
+      - G104  # 审计未检查的错误（由errcheck处理）
+      - G204  # 审计命令执行（在某些情况下是必需的）
+  
+  staticcheck:
+    checks: ["all"]
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  
+  exclude-rules:
+    # 排除测试文件的某些检查
+    - path: _test\.go
+      linters:
+        - dupl
+        - gosec
+        - goconst
+    
+    # 排除生成的文件
+    - path: \.gen\.go
+      linters:
+        - all
+    
+    # 排除示例代码的某些检查
+    - path: examples/
+      linters:
+        - errcheck
+        - gosec
+        - gocritic
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  sort-results: true
+

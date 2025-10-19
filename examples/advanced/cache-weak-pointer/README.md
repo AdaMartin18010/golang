@@ -1,4 +1,4 @@
-# Weak Pointer Cache 示例
+﻿# Weak Pointer Cache 示例
 
 ## 说明
 
@@ -80,6 +80,6 @@ var weakRef = weak.Make(&Value{Data: "data"})
 
 ## 更多信息
 
-- [内存分配器优化文档](../../../docs/02-Go语言现代化/12-Go-1.25运行时优化/03-内存分配器优化.md)
-- [FAQ](../../../docs/02-Go语言现代化/12-Go-1.25运行时优化/FAQ.md)
+- [内存分配器优化文档](../../../docs/02-Go语言现代化/12-Go-1.23运行时优化/03-内存分配器优化.md)
+- [FAQ](../../../docs/02-Go语言现代化/12-Go-1.23运行时优化/FAQ.md)
 

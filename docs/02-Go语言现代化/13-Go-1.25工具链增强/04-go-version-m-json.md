@@ -1,6 +1,6 @@
-# go version -m -json 构建信息（Go 1.25）
+﻿# go version -m -json 构建信息（Go 1.23+）
 
-> **版本要求**: Go 1.25+  
+> **版本要求**: Go 1.23++  
 > **平台支持**: 所有平台  
 > **实验性**: 否（正式特性）  
 > **最后更新**: 2025年10月18日
@@ -25,7 +25,7 @@
 
 ## 概述
 
-Go 1.25 为 `go version -m` 命令添加了 `-json` 选项,允许以 JSON 格式输出二进制文件的构建信息,极大简化了自动化处理和构建审计。
+Go 1.23+ 为 `go version -m` 命令添加了 `-json` 选项,允许以 JSON 格式输出二进制文件的构建信息,极大简化了自动化处理和构建审计。
 
 ### 什么是 go version -m -json?
 
@@ -55,7 +55,7 @@ Go 1.25 为 `go version -m` 命令添加了 `-json` 选项,允许以 JSON 格式
 
 ```bash
 $ go version -m ./myapp
-./myapp: go1.25.0
+./myapp: go1.23.0
  path   example.com/myapp
  mod    example.com/myapp v1.0.0
  dep    github.com/gin-gonic/gin v1.9.1 h1:abc123...
@@ -72,7 +72,7 @@ $ go version -m ./myapp
 - ❌ **易出错**: 格式变化导致解析失败
 - ❌ **批量处理困难**: 处理多个二进制文件复杂
 
-### Go 1.25 的解决方案
+### Go 1.23+ 的解决方案
 
 ```bash
 $ go version -m -json ./myapp
@@ -156,7 +156,7 @@ github.com/stretchr/testify
 ```bash
 # 提取 Go 版本
 $ go version -m -json ./myapp | jq -r '.GoVersion'
-go1.25.0
+go1.23.0
 ```
 
 ---
@@ -168,7 +168,7 @@ go1.25.0
 ```json
 {
   "Path": "example.com/myapp",
-  "GoVersion": "go1.25.0",
+  "GoVersion": "go1.23.0",
   "Main": {
     "Path": "example.com/myapp",
     "Version": "v1.0.0",
@@ -302,7 +302,7 @@ $ go version -m -json ./myapp | jq '{
 {
   "name": "example.com/myapp",
   "version": "v1.0.0",
-  "goVersion": "go1.25.0",
+  "goVersion": "go1.23.0",
   "dependencies": [
     {
       "name": "github.com/gin-gonic/gin",
@@ -703,13 +703,13 @@ go version -m -json ./myapp | jq '{
 
 ### 官方文档
 
-- 📘 [Go 1.25 Release Notes](https://go.dev/doc/go1.25)
+- 📘 [Go 1.23+ Release Notes](https://go.dev/doc/go1.23)
 - 📘 [go version command](https://pkg.go.dev/cmd/go#hdr-Print_Go_version)
 - 📘 [Build Info](https://pkg.go.dev/runtime/debug#BuildInfo)
 
 ### 相关章节
 
-- 🔗 [Go 1.25 工具链增强](./README.md)
+- 🔗 [Go 1.23+ 工具链增强](./README.md)
 - 🔗 [CI/CD 最佳实践](../../最佳实践/CI-CD.md)
 
 ---

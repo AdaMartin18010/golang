@@ -1,51 +1,62 @@
 ---
-name: Bug 报告
-about: 报告项目中的问题或错误
+name: Bug Report / 错误报告
+about: Create a report to help us improve / 创建错误报告帮助我们改进
 title: '[BUG] '
 labels: bug
 assignees: ''
 ---
 
-## 🐛 Bug 描述
+## 🐛 Bug Description / 错误描述
 
-简要描述遇到的问题
+A clear and concise description of what the bug is.
+清晰简洁地描述这个bug。
 
-## 📍 问题位置
+## 🔄 To Reproduce / 复现步骤
 
-- **文档/文件**: [例如: `docs/02-Go语言现代化/12-Go-1.25运行时优化/01-greentea-GC垃圾收集器.md`]
-- **章节/行号**: [例如: 第 5 章节，第 123 行]
+Steps to reproduce the behavior:
+复现该行为的步骤：
 
-## 🔍 问题详情
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
-### 当前行为
-描述当前的错误行为
+## ✅ Expected Behavior / 预期行为
 
-### 期望行为
-描述期望的正确行为
+A clear and concise description of what you expected to happen.
+清晰简洁地描述你期望发生什么。
 
-### 复现步骤
-1. 打开文档...
-2. 滚动到...
-3. 点击...
-4. 看到错误...
+## 📸 Screenshots / 截图
 
-## 📷 截图
+If applicable, add screenshots to help explain your problem.
+如果适用，添加截图来帮助解释你的问题。
 
-如果适用，添加截图来帮助说明问题
+## 🖥️ Environment / 环境信息
 
-## 🖥️ 环境信息
+**Desktop (please complete the following information):**
+**桌面环境 (请完成以下信息):**
 
-- **操作系统**: [例如: Windows 11, macOS 14, Ubuntu 22.04]
-- **Go 版本**: [运行 `go version`]
-- **浏览器** (如果相关): [例如: Chrome 120, Firefox 121]
+- OS: [e.g. Windows 11, macOS 14, Ubuntu 22.04]
+- Go Version: [e.g. 1.25.0]
+- Project Version: [e.g. v2.0.0]
 
-## 📝 附加信息
+**Code Example / 代码示例:**
 
-添加任何其他关于问题的信息
+```go
+// Paste your code here
+// 在这里粘贴你的代码
+```
 
-## ✅ 检查清单
+## 📝 Additional Context / 附加信息
 
-- [ ] 我已经搜索了现有的 Issues
-- [ ] 我已经检查了最新版本
-- [ ] 我提供了足够的信息来复现问题
+Add any other context about the problem here.
+在这里添加关于问题的任何其他上下文。
 
+## ✅ Checklist / 检查清单
+
+- [ ] I have read the [FAQ](../../FAQ.md)
+- [ ] I have searched existing issues
+- [ ] I have provided a minimal reproducible example
+- [ ] 我已阅读FAQ
+- [ ] 我已搜索现有issues
+- [ ] 我已提供最小可复现示例
