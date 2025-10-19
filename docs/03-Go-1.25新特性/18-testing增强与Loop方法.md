@@ -55,16 +55,19 @@ func BenchmarkNew(b *testing.B) {
 ### testing.B.Loop()
 
 **函数签名**:
+
 ```go
 func (b *B) Loop() bool
 ```
 
 **功能**:
+
 - 返回`true`表示应继续执行基准测试
 - 返回`false`表示基准测试应该停止
 - 自动管理循环计数器
 
 **优势**:
+
 1. ✅ **更简洁**: 不需要手动管理循环变量`i`
 2. ✅ **更安全**: 避免循环变量捕获问题
 3. ✅ **更精确**: 编译器可以更好地优化
@@ -96,6 +99,7 @@ func BenchmarkExpensive(b *testing.B) {
 ```
 
 **运行**:
+
 ```bash
 go test -bench=BenchmarkExpensive -benchtime=1s
 ```
@@ -183,6 +187,7 @@ func BenchmarkLoop(b *testing.B) {
 ```
 
 **基准测试结果**:
+
 ```bash
 BenchmarkTraditional-8    1000000000    0.25 ns/op
 BenchmarkLoop-8           2000000000    0.20 ns/op
@@ -215,7 +220,8 @@ func BenchmarkAllocation(b *testing.B) {
 ```
 
 **输出**:
-```
+
+```text
 BenchmarkAllocation-8    1000000    1200 ns/op    1024 B/op    1 allocs/op
 ```
 
@@ -279,6 +285,7 @@ func BenchmarkStringOperations(b *testing.B) {
 ```
 
 **运行**:
+
 ```bash
 go test -bench=BenchmarkStringOperations -benchmem
 
@@ -584,4 +591,3 @@ Go 1.25的`testing.B.Loop()`方法带来了：
 **最后更新**: 2025年10月20日  
 **Go版本**: 1.25.3  
 **文档状态**: ✅ 已验证
-

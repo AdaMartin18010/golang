@@ -273,7 +273,8 @@ func BenchmarkOmitZero(b *testing.B) {
 ```
 
 **结果**:
-```
+
+```text
 BenchmarkOmitEmpty-8    1000000    1200 ns/op    256 B/op    4 allocs/op
 BenchmarkOmitZero-8     1000000    1250 ns/op    256 B/op    4 allocs/op
 
@@ -573,4 +574,3 @@ Go 1.25的`omitzero`标签提供了：
 **最后更新**: 2025年10月20日  
 **Go版本**: 1.25.3  
 **文档状态**: ✅ 已验证
-
