@@ -99,7 +99,7 @@ go mod init github.com/username/project
 
 **功能**: 整理 go.mod 和 go.sum，添加缺失的依赖，删除未使用的依赖
 
-#### 基本用法
+#### 基本用法1
 
 ```bash
 go mod tidy
@@ -162,7 +162,7 @@ go mod tidy
 
 **功能**: 下载依赖到本地缓存，但不修改 go.mod
 
-#### 基本用法
+#### 基本用法2
 
 ```bash
 # 下载所有依赖
@@ -229,7 +229,7 @@ RUN go build -o myapp
 
 **功能**: 验证依赖的完整性，检查缓存中的依赖是否被篡改
 
-#### 基本用法
+#### 基本用法3
 
 ```bash
 go mod verify
@@ -285,7 +285,7 @@ go build
 
 **功能**: 打印模块依赖图
 
-#### 基本用法
+#### 基本用法4
 
 ```bash
 go mod graph
@@ -334,7 +334,7 @@ go mod graph | grep "github.com/specific/package"
 
 **功能**: 解释为什么需要某个依赖
 
-#### 基本用法
+#### 基本用法5
 
 ```bash
 # 查看为什么需要某个包
@@ -438,7 +438,7 @@ go mod edit -exclude=github.com/broken/pkg@v1.2.3
 go mod edit -dropexclude=github.com/broken/pkg@v1.2.3
 ```
 
-#### JSON 输出
+#### JSON 输出1
 
 ```bash
 # 以 JSON 格式打印 go.mod
@@ -485,7 +485,7 @@ go mod tidy
 
 **功能**: 将依赖复制到 vendor 目录
 
-#### 基本用法
+#### 基本用法7
 
 ```bash
 # 创建 vendor 目录
