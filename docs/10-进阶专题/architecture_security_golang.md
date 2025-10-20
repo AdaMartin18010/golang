@@ -1,4 +1,4 @@
-# 安全架构（Security Architecture）
+﻿# 安全架构（Security Architecture）
 
 ## 1. 目录
 
@@ -6,7 +6,7 @@
 
 ## 2. 国际标准与发展历程
 
-### 2.1 主流标准与框架
+### 主流标准与框架
 
 - **NIST Cybersecurity Framework**
 - **ISO/IEC 27001:2022**
@@ -15,7 +15,7 @@
 - **Zero Trust Architecture**
 - **GDPR/CCPA合规框架**
 
-### 2.2 发展历程
+### 发展历程
 
 - **2013**: NIST网络安全框架发布
 - **2016**: Zero Trust概念普及
@@ -23,7 +23,7 @@
 - **2020**: 云原生安全框架
 - **2023**: AI安全与隐私计算
 
-### 2.3 国际权威链接
+### 国际权威链接
 
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
 - [OWASP](https://owasp.org/)
@@ -31,14 +31,14 @@
 
 ## 3. 核心安全模型与设计原则
 
-### 3.1 核心原则
+### 核心原则
 
 - **深度防御 (Defense in Depth)**: 采用多层、冗余的安全措施。即使一层防御被攻破，其他层次的防御依然能够提供保护。
 - **最小权限原则 (Principle of Least Privilege)**: 任何用户、程序或进程只应拥有其执行授权功能所必需的最小权限。
 - **零信任架构 (Zero Trust Architecture)**: 从不信任，始终验证。默认网络内部和外部的所有流量都不可信，要求对所有访问请求进行严格的身份验证和授权。
 - **安全左移 (Shift-Left Security)**: 在软件开发生命周期（SDLC）的早期阶段就集成安全实践，而不是在部署后才考虑安全问题。
 
-### 3.2 零信任安全模型
+### 零信任安全模型
 
 ```go
 type ZeroTrustEngine struct {
@@ -99,7 +99,7 @@ func (zt *ZeroTrustEngine) EvaluateAccess(ctx context.Context, request AccessReq
 
 ```
 
-### 3.3 安全策略引擎
+### 安全策略引擎
 
 ```go
 type PolicyEngine struct {
@@ -150,7 +150,7 @@ func (pe *PolicyEngine) EvaluateRequest(ctx context.Context, request *AccessRequ
 
 ## 4. 认证与授权架构
 
-### 4.1 多因素认证（MFA）
+### 多因素认证（MFA）
 
 ```go
 type MFAService struct {
@@ -228,7 +228,7 @@ func (mfa *MFAService) AuthenticateUser(ctx context.Context, credentials map[str
 
 ```
 
-### 4.2 OAuth 2.0 与 OpenID Connect
+### OAuth 2.0 与 OpenID Connect
 
 ```go
 type OAuthServer struct {
@@ -305,7 +305,7 @@ func (ts *TokenService) handleAuthorizationCode(ctx context.Context, request *To
 
 ## 5. 密码学应用
 
-### 5.1 加密与签名服务
+### 加密与签名服务
 
 ```go
 type CryptoService struct {
@@ -364,7 +364,7 @@ func (cs *CryptoService) Encrypt(ctx context.Context, req *EncryptionRequest) (*
 
 ```
 
-### 5.2 密钥管理服务
+### 密钥管理服务
 
 ```go
 type KeyManager struct {
@@ -439,7 +439,7 @@ func (km *KeyManager) CreateKey(ctx context.Context, req *CreateKeyRequest) (*Ke
 
 ## 6. Golang主流实现与代码示例
 
-### 6.1 安全的HTTP响应头
+### 安全的HTTP响应头
 
 在Web应用中设置安全的HTTP头是防止点击劫持、XSS等攻击的第一道防线。
 
@@ -467,9 +467,9 @@ func SecureHeadersMiddleware(next http.Handler) http.Handler {
 
 ```
 
-### 6.2 输入验证与输出编码 (OWASP Top 10)
+### 输入验证与输出编码 (OWASP Top 10)
 
-#### 1.6.2.1 跨站脚本 (XSS) 防护
+#### 跨站脚本 (XSS) 防护
 
 对所有用户输入进行清理，对所有输出到HTML的动态内容进行编码。
 
@@ -497,7 +497,7 @@ func renderTemplate(w http.ResponseWriter, data interface{}) {
 
 ```
 
-#### 1.6.2.2 SQL注入防护
+#### SQL注入防护
 
 始终使用参数化查询（Prepared Statements），绝不手动拼接SQL字符串。
 
@@ -518,7 +518,7 @@ func queryUser(db *sql.DB, username string) (*User, error) {
 
 ```
 
-### 6.3 密钥管理 (Secrets Management)
+### 密钥管理 (Secrets Management)
 
 使用专业的密钥管理工具（如HashiCorp Vault）来管理数据库密码、API密钥等敏感信息，而不是硬编码在代码或配置文件中。
 
@@ -563,7 +563,7 @@ func getDatabasePasswordFromVault() (string, error) {
 
 ## 7. 容器与云原生安全
 
-### 7.1 容器安全扫描
+### 容器安全扫描
 
 ```go
 type ContainerScanner struct {
@@ -663,7 +663,7 @@ func (cs *ContainerScanner) ScanImage(ctx context.Context, imageRef string) (*Sc
 
 ```
 
-### 7.2 运行时安全监控
+### 运行时安全监控
 
 ```go
 type RuntimeSecurityMonitor struct {
@@ -761,7 +761,7 @@ func (rsm *RuntimeSecurityMonitor) handleSecurityEvent(ctx context.Context, even
 
 ## 8. 工程结构与CI/CD实践
 
-### 1.8.1 CI/CD 安全流水线 (DevSecOps)
+### CI/CD 安全流水线 (DevSecOps)
 
 在CI/CD流程中嵌入自动化安全检查。
 
@@ -789,9 +789,9 @@ graph TD
 - **DAST (Dynamic Application Security Testing)**: 在应用运行时进行黑盒测试，模拟攻击。工具: OWASP ZAP.
 - **Container Scanning**: 扫描Docker镜像，查找操作系统和应用依赖中的漏洞。工具: Trivy, Clair.
 
-### 1.8.2 安全监控与响应
+### 安全监控与响应
 
-#### 1.8.2.1 安全事件监控与告警
+#### 安全事件监控与告警
 
 ```go
 type SecurityEventMonitor struct {
@@ -821,7 +821,7 @@ func (sem *SecurityEventMonitor) ProcessEvent(event SecurityEvent) {
 
 ```
 
-#### 1.8.2.2 自动化响应与SOAR
+#### 自动化响应与SOAR
 
 ```go
 type SOAREngine struct {
@@ -852,7 +852,7 @@ func (se *SOAREngine) ExecutePlaybook(playbookID string, event SecurityEvent) er
 
 ```
 
-#### 1.8.2.3 威胁情报集成
+#### 威胁情报集成
 
 - **IOC（Indicator of Compromise）自动拉取与匹配**
 - **与国际主流威胁情报平台（如MISP、AlienVault OTX、VirusTotal）对接**
@@ -878,13 +878,13 @@ func (tii *ThreatIntelIntegrator) SyncAndMatch(event SecurityEvent) bool {
 
 ## 9. 合规与审计
 
-### 1.9.1 合规性检查
+### 合规性检查
 
 - **自动化合规扫描**：如CIS Benchmarks、PCI DSS、GDPR、ISO 27001等
 - **合规报告生成**：定期输出合规性报告，支持PDF/JSON等格式
 - **国际主流工具**：OpenSCAP、Cloud Custodian、AWS Config、GCP Security Command Center
 
-### 1.9.2 审计日志与取证
+### 审计日志与取证
 
 ```go
 type AuditLogger struct {
@@ -918,21 +918,21 @@ type AuditEvent struct {
 
 ## 11. 国际权威资源与开源组件引用
 
-### 1.11.1 安全框架与标准
+### 安全框架与标准
 
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [CIS Controls](https://www.cisecurity.org/controls/)
 - [ISO/IEC 27001](https://www.iso.org/isoiec-27001-information-security.html)
 
-### 1.11.2 开源安全工具
+### 开源安全工具
 
 - [OpenSCAP](https://www.open-scap.org/)
 - [Clair](https://github.com/quay/clair) - 容器漏洞扫描
 - [Falco](https://falco.org/) - 运行时安全监控
 - [Trivy](https://github.com/aquasecurity/trivy) - 漏洞扫描器
 
-### 1.11.3 云原生安全
+### 云原生安全
 
 - [Cloud Native Security](https://www.cncf.io/projects/cloud-native-security/)
 - [Kubernetes Security](https://kubernetes.io/docs/concepts/security/)
@@ -955,3 +955,10 @@ type AuditEvent struct {
 ---
 
 - 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

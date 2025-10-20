@@ -1,14 +1,11 @@
-# 数据库架构（Golang国际主流实践）
+﻿# 数据库架构（Golang国际主流实践）
 
 ## 1. 目录
 
 ---
-
----
-
 ## 2. 数据库架构概述
 
-### 2.1 主流数据库类型与标准
+### 主流数据库类型与标准
 
 - **关系型数据库**: PostgreSQL, MySQL, Oracle, SQL Server
 - **NoSQL数据库**: MongoDB, Cassandra, Redis, DynamoDB
@@ -16,7 +13,7 @@
 - **图数据库**: Neo4j, ArangoDB, Amazon Neptune
 - **向量数据库**: Pinecone, Weaviate, Milvus
 
-### 2.2 发展历程
+### 发展历程
 
 - **1970s**: 关系型数据库理论（Codd）
 - **1980s**: ACID事务模型
@@ -24,7 +21,7 @@
 - **2010s**: 分布式数据库、NewSQL
 - **2020s**: 云原生数据库、AI/ML集成
 
-### 2.3 国际权威链接
+### 国际权威链接
 
 - [PostgreSQL](https://www.postgresql.org/)
 - [MongoDB](https://www.mongodb.com/)
@@ -35,7 +32,7 @@
 
 ## 3. 核心架构模式与设计原则
 
-### 3.1 数据库选型: SQL vs. NoSQL
+### 数据库选型: SQL vs. NoSQL
 
 | 特性 | SQL (如 PostgreSQL) | NoSQL (如 MongoDB, Redis) |
 | --- | --- | --- |
@@ -45,7 +42,7 @@
 | **事务** | 强大的多行、多表事务支持 | 事务支持有限（通常在单个文档或实体级别） |
 | **适用场景** | 金融系统、ERP、需要复杂查询和事务完整性的业务 | 大数据、高并发社交网络、物联网、实时分析、缓存 |
 
-### 3.2 CAP理论与权衡
+### CAP理论与权衡
 
 CAP理论指出，任何分布式数据存储最多只能同时满足以下三项中的两项：
 
@@ -58,7 +55,7 @@ CAP理论指出，任何分布式数据存储最多只能同时满足以下三�
 - **CP**: (如 CockroachDB, etcd) 保证强一致性，但在网络分区时可能会牺牲可用性。
 - **AP**: (如 Cassandra, DynamoDB) 保证高可用性，但在网络分区时可能会返回旧数据，实现最终一致性。
 
-### 3.3 CQRS (命令查询职责分离)
+### CQRS (命令查询职责分离)
 
 CQRS是一种将读操作（查询）模型与写操作（命令）模型分离的模式。
 
@@ -66,7 +63,7 @@ CQRS是一种将读操作（查询）模型与写操作（命令）模型分离�
 - **查询 (Queries)**: 读取系统状态的操作，不改变状态，返回DTO。
 **优势**: 可以针对读、写负载分别进行优化和扩展。写模型可以采用规范化的关系型数据库保证一致性，读模型可以采用反规范化的NoSQL数据库或搜索引擎提升查询性能。
 
-### 3.4 数据库连接池管理
+### 数据库连接池管理
 
 ```go
 type DatabaseManager struct {
@@ -144,7 +141,7 @@ func (dm *DatabaseManager) reconnectPool(pool *ConnectionPool) error {
 
 ```
 
-### 3.5 事务管理
+### 事务管理
 
 ```go
 type TransactionManager struct {
@@ -201,7 +198,7 @@ func (t *Transaction) executeQuery(query Query) error {
 
 ## 4. 分布式数据库架构
 
-### 4.1 分片与复制
+### 分片与复制
 
 ```go
 type DistributedDatabase struct {
@@ -264,7 +261,7 @@ func (rs *RangeSharding) GetShard(key interface{}) (*Shard, error) {
 
 ```
 
-### 4.2 一致性协议
+### 一致性协议
 
 ```go
 type ConsistencyManager struct {
@@ -359,7 +356,7 @@ func (rp *RaftProtocol) replicateLog(entry *LogEntry) error {
 
 ## 5. 查询优化与性能调优
 
-### 5.1 查询计划优化器
+### 查询计划优化器
 
 ```go
 type QueryOptimizer struct {
@@ -445,7 +442,7 @@ func (qo *QueryOptimizer) generateCandidatePlans(ast *AST) []*ExecutionPlan {
 
 ```
 
-### 5.2 索引管理
+### 索引管理
 
 ```go
 type IndexManager struct {
@@ -522,7 +519,7 @@ func (im *IndexManager) RecommendIndexes(queries []string) []*IndexRecommendatio
 
 ## 6. Golang主流实现与代码示例
 
-### 6.1 database/sql 库最佳实践
+### database/sql 库最佳实践
 
 标准库 `database/sql` 提供了一套通用的SQL接口，但使用时需要注意一些关键实践。
 
@@ -600,11 +597,11 @@ func main() {
 
 ## 7. 分布式挑战与主流解决方案
 
-### 7.1 分布式事务
+### 分布式事务
 
 在微服务架构中，单个业务操作可能跨越多个数据库，需要分布式事务来保证数据一致性。
 
-#### 7.1.1 Saga模式
+#### Saga模式
 
 Saga是一种通过**异步消息**来协调一系列本地事务的设计模式。每个本地事务完成後会发布一个事件，触发下一个本地事务。如果任何一个事务失败，Saga会执行一系列**补偿事务（Compensating Transactions）**来撤销已经完成的操作。
 
@@ -624,9 +621,9 @@ graph TD
 **优点**: 高可用性，松耦合，无锁，扩展性好。
 **缺点**: 实现复杂，需要保证补偿事务的幂等性，不提供隔离性。
 
-### 7.2 数据库高可用性
+### 数据库高可用性
 
-#### 7.2.1 读写分离 (Read/Write Splitting)
+#### 读写分离 (Read/Write Splitting)
 
 通过主从复制（Primary-Replica）的模式，将写操作路由到主数据库，将读操作路由到多个从数据库，从而分摊负载，提高读取性能。
 
@@ -654,7 +651,7 @@ func (r *ReadWriteRouter) selectReplica() *sql.DB {
 
 ```
 
-#### 7.2.2 数据库故障转移 (Database Failover)
+#### 数据库故障转移 (Database Failover)
 
 当主数据库发生故障时，自动或手动将一个从数据库提升为新的主数据库，以保证服务的持续可用性。这通常需要一个外部的协调器或集群管理工具（如 Patroni for PostgreSQL）来实现。
 
@@ -664,25 +661,25 @@ func (r *ReadWriteRouter) selectReplica() *sql.DB {
 
 ## 10. 国际权威资源与开源组件引用
 
-### 10.1 关系型数据库
+### 关系型数据库
 
 - [PostgreSQL](https://www.postgresql.org/) - 最先进的开源关系型数据库
 - [MySQL](https://www.mysql.com/) - 最流行的开源数据库
 - [SQLite](https://www.sqlite.org/) - 轻量级嵌入式数据库
 
-### 10.2 NoSQL数据库
+### NoSQL数据库
 
 - [MongoDB](https://www.mongodb.com/) - 文档数据库
 - [Redis](https://redis.io/) - 内存数据库
 - [Cassandra](https://cassandra.apache.org/) - 分布式NoSQL数据库
 
-### 10.3 时序数据库
+### 时序数据库
 
 - [InfluxDB](https://www.influxdata.com/) - 时序数据库
 - [TimescaleDB](https://www.timescale.com/) - 基于PostgreSQL的时序数据库
 - [Prometheus](https://prometheus.io/) - 监控时序数据库
 
-### 10.4 图数据库
+### 图数据库
 
 - [Neo4j](https://neo4j.com/) - 图数据库
 - [ArangoDB](https://www.arangodb.com/) - 多模型数据库
@@ -704,3 +701,10 @@ func (r *ReadWriteRouter) selectReplica() *sql.DB {
 ---
 
 - 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

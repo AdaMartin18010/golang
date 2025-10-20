@@ -1,7 +1,7 @@
 ﻿# Go 1.23+ 运行时优化 - 常见问题解答 (FAQ)
 
 > **版本**: v1.0  
-> **最后更新**: 2025年10月18日  
+> 
 > **适用版本**: Go 1.23++
 
 ---
@@ -726,7 +726,7 @@ benchstat bench.txt
 ---
 
 **FAQ 维护者**: AI Assistant  
-**最后更新**: 2025年10月18日  
+
 **版本**: v1.0
 
 ---
@@ -737,3 +737,9 @@ benchstat bench.txt
   <a href="https://github.com/AdaMartin18010/golang/discussions">参与讨论</a>
 </p>
 
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

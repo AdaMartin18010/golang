@@ -1,4 +1,4 @@
-# 数据流架构（Dataflow Architecture）
+﻿# 数据流架构（Dataflow Architecture）
 
 ## 1. 目录
 
@@ -39,7 +39,7 @@
 
 ## 2. 国际标准与发展历程
 
-### 2.1 主流数据流处理平台
+### 主流数据流处理平台
 
 - **Apache Flink**: 流批一体的分布式处理引擎
 - **Apache Beam**: 统一的流批处理编程模型
@@ -49,14 +49,14 @@
 - **Amazon Kinesis**: 实时数据流处理服务
 - **Azure Stream Analytics**: 云端实时分析服务
 
-### 2.2 发展历程
+### 发展历程
 
 - **2000s**: 传统批处理（Hadoop MapReduce）为主
 - **2010s**: 流处理引擎兴起（Storm, Kafka, Flink）
 - **2015s**: 流批一体化架构成熟
 - **2020s**: 云原生、Serverless流处理普及
 
-### 2.3 国际权威链接
+### 国际权威链接
 
 - [Apache Flink](https://flink.apache.org/)
 - [Apache Beam](https://beam.apache.org/)
@@ -67,17 +67,17 @@
 
 ## 3. 典型应用场景与需求分析
 
-### 3.1 实时数据分析
+### 实时数据分析
 
 - **用例**: 用户行为分析、实时推荐系统
 - **需求**: 毫秒级延迟、高吞吐量、复杂窗口计算
 
-### 3.2 监控与告警
+### 监控与告警
 
 - **用例**: 系统监控、欺诈检测、异常检测
 - **需求**: 流式CEP（复杂事件处理）、实时阈值检测
 
-### 3.3 实时ETL
+### 实时ETL
 
 - **用例**: 数据湖实时入湖、数据仓库实时更新
 - **需求**: 数据格式转换、质量检查、容错恢复
@@ -86,7 +86,7 @@
 
 ## 4. 领域建模与UML类图
 
-### 4.1 核心实体建模
+### 核心实体建模
 
 ```mermaid
 classDiagram
@@ -140,7 +140,7 @@ classDiagram
 
 ```
 
-### 4.2 数据流处理架构
+### 数据流处理架构
 
 ```mermaid
 graph LR
@@ -204,14 +204,14 @@ graph LR
 
 ## 5. 架构模式与设计原则
 
-### 5.1 Lambda架构 vs Kappa架构
+### Lambda架构 vs Kappa架构
 
-#### 5.1.1 Lambda架构 (批处理 + 流处理)
+#### Lambda架构 (批处理 + 流处理)
 
 - **优势**: 高精度批处理 + 低延迟流处理
 - **劣势**: 代码重复、维护复杂
 
-#### 5.1.2 Kappa架构 (纯流处理)
+#### Kappa架构 (纯流处理)
 
 - **优势**: 统一的流处理范式，简化架构
 - **劣势**: 对流处理引擎要求高
@@ -238,15 +238,15 @@ graph TD
 
 ```
 
-### 5.2 流处理核心概念
+### 流处理核心概念
 
-#### 5.2.1 时间语义 (Time Semantics)
+#### 时间语义 (Time Semantics)
 
 - **Event Time**: 事件实际发生的时间
 - **Processing Time**: 系统处理事件的时间
 - **Ingestion Time**: 事件进入系统的时间
 
-#### 5.2.2 窗口机制 (Windowing)
+#### 窗口机制 (Windowing)
 
 - **滚动窗口 (Tumbling Window)**: 固定大小，不重叠
 - **滑动窗口 (Sliding Window)**: 固定大小，有重叠
@@ -256,7 +256,7 @@ graph TD
 
 ## 6. Golang主流实现与代码示例
 
-### 6.1 基础数据流处理框架
+### 基础数据流处理框架
 
 ```go
 package main
@@ -422,7 +422,7 @@ func (dp *DataflowPipeline) Stop() {
 
 ```
 
-### 6.2 窗口聚合处理示例
+### 窗口聚合处理示例
 
 ```go
 // WindowManager 窗口管理器
@@ -619,7 +619,7 @@ func main() {
 
 ## 7. 分布式挑战与主流解决方案
 
-### 7.1 状态一致性与检查点机制
+### 状态一致性与检查点机制
 
 在分布式流处理中，维护状态一致性是一个关键挑战。需要实现分布式快照和容错恢复机制。
 
@@ -696,7 +696,7 @@ func (cm *CheckpointManager) calculateChecksum(state map[string]interface{}) str
 
 ```
 
-### 7.2 背压控制与流量整形
+### 背压控制与流量整形
 
 当下游处理能力不足时，需要背压机制保护系统稳定性。
 
@@ -775,7 +775,7 @@ func (bpc *BackpressureController) AdaptiveAdjust(processingLatency time.Duratio
 
 ```
 
-### 7.3 事件时间处理与水位线机制
+### 事件时间处理与水位线机制
 
 处理乱序事件和延迟数据是流处理的核心挑战。
 
@@ -859,7 +859,7 @@ func (wm *WatermarkManager) IsEventLate(eventTime time.Time) bool {
 
 ## 8. 工程结构与CI/CD实践
 
-### 8.1 典型项目结构
+### 典型项目结构
 
 ```text
 dataflow-service/
@@ -885,7 +885,7 @@ dataflow-service/
 
 ```
 
-### 8.2 容器化部署
+### 容器化部署
 
 ```dockerfile
 
@@ -915,7 +915,7 @@ CMD ["./dataflow-processor"]
 
 ## 9. 形式化建模与数学表达
 
-### 9.1 流处理数学模型
+### 流处理数学模型
 
 **数据流定义**：
 \[ S = \{(e_i, t_i) | i \in \mathbb{N}, t_i \leq t_{i+1}\} \]
@@ -950,3 +950,10 @@ CMD ["./dataflow-processor"]
 ---
 
 - 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

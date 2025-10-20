@@ -1,4 +1,4 @@
-# 云原生架构（Golang国际主流实践）
+﻿# 云原生架构（Golang国际主流实践）
 
 ## 1. 目录
 
@@ -1409,3 +1409,10 @@ graph TD
 - [CNCF Cloud Native Definition](https://github.com/cncf/toc/blob/main/DEFINITION.md)
 - [Kubernetes Official Docs](https://kubernetes.io/)
 - [Service Mesh Landscape](https://landscape.cncf.io/category=service-mesh)
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

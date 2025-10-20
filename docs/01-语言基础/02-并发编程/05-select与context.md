@@ -1,4 +1,4 @@
-# 2.1 select与context高级用法
+﻿# select与context高级用法
 
 <!-- TOC START -->
 - [2.1 select与context高级用法](#21-select与context高级用法)
@@ -16,9 +16,9 @@
   - [2.1.6 6. 参考文献](#216-6-参考文献)
 <!-- TOC END -->
 
-## 2.1.1 1. 理论基础
+## 1. 理论基础
 
-### 2.1.1.1 select语句
+### select语句
 
 select语句用于监听多个channel操作，实现多路复用、超时、取消等高级控制。
 
@@ -28,7 +28,7 @@ select语句用于监听多个channel操作，实现多路复用、超时、取�
   \]
   表示等待多个channel中的任意一个可用。
 
-### 2.1.1.2 context包
+### context包
 
 context用于跨Goroutine传递取消信号、超时、元数据，是Go并发控制的标准方式。
 
@@ -40,9 +40,9 @@ context用于跨Goroutine传递取消信号、超时、元数据，是Go并发�
 
 ---
 
-## 2.1.2 2. 典型用法
+## 2. 典型用法
 
-### 2.1.2.1 select实现超时控制
+### select实现超时控制
 
 ```go
 ch := make(chan int)
@@ -55,7 +55,7 @@ case <-time.After(time.Second):
 
 ```
 
-### 2.1.2.2 select实现多路复用
+### select实现多路复用
 
 ```go
 select {
@@ -67,7 +67,7 @@ case v2 := <-ch2:
 
 ```
 
-### 2.1.2.3 context实现取消
+### context实现取消
 
 ```go
 ctx, cancel := context.WithCancel(context.Background())
@@ -79,7 +79,7 @@ cancel()
 
 ```
 
-### 2.1.2.4 context实现超时
+### context实现超时
 
 ```go
 ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -93,7 +93,7 @@ case <-ctx.Done():
 
 ---
 
-## 2.1.3 3. 工程分析与最佳实践
+## 3. 工程分析与最佳实践
 
 - select可优雅处理channel超时、取消、优先级等复杂场景。
 - context应作为函数参数首选，便于链式传递。
@@ -103,7 +103,7 @@ case <-ctx.Done():
 
 ---
 
-## 2.1.4 4. 常见陷阱
+## 4. 常见陷阱
 
 - 忘记cancel context会导致资源泄漏。
 - select所有分支都阻塞时会死锁。
@@ -111,15 +111,22 @@ case <-ctx.Done():
 
 ---
 
-## 2.1.5 5. 单元测试建议
+## 5. 单元测试建议
 
 - 测试超时、取消、并发场景下的正确性。
 - 覆盖边界与异常情况。
 
 ---
 
-## 2.1.6 6. 参考文献
+## 6. 参考文献
 
 - Go官方文档：<https://golang.org/doc/>
 - Go Blog: <https://blog.golang.org/context>
 - 《Go语言高级编程》
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

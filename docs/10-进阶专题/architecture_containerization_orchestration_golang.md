@@ -1,4 +1,4 @@
-# 容器化与编排架构（Containerization and Orchestration Architecture）
+﻿# 容器化与编排架构（Containerization and Orchestration Architecture）
 
 ## 1. 目录
 
@@ -24,7 +24,7 @@
 
 ## 2. 国际标准与发展历程
 
-### 2.1 主流技术与标准
+### 主流技术与标准
 
 - **Docker**: 领先的容器化平台。
 - **Kubernetes (K8s)**: 事实上的容器编排标准。
@@ -35,7 +35,7 @@
 - **Prometheus**: 云原生监控和告警系统。
 - **CNCF (Cloud Native Computing Foundation)**: 云原生计算基金会，托管了大量关键开源项目。
 
-### 2.2 发展历程
+### 发展历程
 
 - **2000s**: 虚拟化技术的成熟 (VMware, Xen)。
 - **2008**: LXC (Linux Containers) 发布，为现代容器技术奠定基础。
@@ -45,7 +45,7 @@
 - **2017**: Kubernetes赢得容器编排战争，成为主导平台。
 - **2020s**: Serverless容器 (Knative), Service Mesh (Istio, Linkerd), FinOps等云原生技术进一步发展。
 
-### 2.3 国际权威链接
+### 国际权威链接
 
 - [Docker](https://www.docker.com/)
 - [Kubernetes](https://kubernetes.io/)
@@ -58,7 +58,7 @@
 
 ## 3. 核心架构模式与设计原则
 
-### 3.1 容器化架构 (Docker)
+### 容器化架构 (Docker)
 
 **Dockerfile 最佳实践**:
 
@@ -122,7 +122,7 @@ CMD ["./main"]
 
 ```
 
-### 3.2 容器编排架构 (Kubernetes)
+### 容器编排架构 (Kubernetes)
 
 **Kubernetes核心组件**:
 
@@ -245,7 +245,7 @@ spec:
 
 ## 4. Golang与云原生生态
 
-### 4.1 使用Go开发Kubernetes原生应用
+### 使用Go开发Kubernetes原生应用
 
 - **Client-go**: 官方的Go客户端库，用于与Kubernetes API交互。
 - **Operator Framework & Kubebuilder**: 用于构建Kubernetes Operator的流行框架。Operator将人类的运维知识编码到软件中，实现自动化管理。
@@ -296,7 +296,7 @@ func main() {
 
 ```
 
-### 4.2 可观测性 (Observability)
+### 可观测性 (Observability)
 
 - **Prometheus**: 用于指标收集和告警。Go应用可以通过[prometheus/client_golang](https://github.com/prometheus/client_golang)库暴露`/metrics`端点。
 - **Grafana**: 用于指标的可视化。
@@ -362,7 +362,7 @@ func main() {
 
 ## 6. 工程结构与CI/CD实践
 
-### 6.1 目录结构建议
+### 目录结构建议
 
 ```text
 .
@@ -391,7 +391,7 @@ func main() {
 
 ```
 
-### 6.2 CI/CD工作流 (GitHub Actions)
+### CI/CD工作流 (GitHub Actions)
 
 ```yaml
 
@@ -462,3 +462,10 @@ jobs:
 ---
 
 - 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

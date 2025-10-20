@@ -1,4 +1,4 @@
-# API网关架构（Golang国际主流实践）
+﻿# API网关架构（Golang国际主流实践）
 
 ## 1. 目录
 
@@ -6,13 +6,13 @@
 
 ## 2. API网关架构概述
 
-### 2.1 国际标准定义
+### 国际标准定义
 
 API网关架构是指以统一入口、路由管理、安全控制、监控追踪为核心，支持微服务、API管理、服务治理等场景的分布式系统架构。
 
 - **国际主流参考**：Kong、Envoy、Istio、AWS API Gateway、Google Cloud Endpoints、OpenAPI/Swagger、GraphQL、gRPC、OAuth2、JWT。
 
-### 2.2 发展历程与核心思想
+### 发展历程与核心思想
 
 - 2000s：传统API管理、SOA网关、ESB。
 - 2010s：RESTful API、API文档标准化、API版本管理。
@@ -20,11 +20,11 @@ API网关架构是指以统一入口、路由管理、安全控制、监控追�
 - 2020s：云原生网关、GraphQL、gRPC、服务网格。
 - 核心思想：统一入口、路由管理、安全控制、监控追踪、服务治理。
 
-### 2.3 典型应用场景
+### 典型应用场景
 
 - 微服务网关、API管理、服务治理、安全控制、监控追踪、负载均衡、限流熔断等。
 
-### 2.4 与传统网关对比
+### 与传统网关对比
 
 | 维度         | 传统网关         | API网关架构           |
 |--------------|-------------------|----------------------|
@@ -38,12 +38,12 @@ API网关架构是指以统一入口、路由管理、安全控制、监控追�
 
 ## 3. 信息概念架构
 
-### 3.1 领域建模方法
+### 领域建模方法
 
 - 采用分层建模（接入层、网关层、服务层、数据层）、UML、ER图。
 - 核心实体：网关、路由、服务、客户端、认证、授权、监控、配置、插件、中间件。
 
-### 3.2 核心实体与关系
+### 核心实体与关系
 
 | 实体    | 属性                        | 关系           |
 |---------|-----------------------------|----------------|
@@ -58,7 +58,7 @@ API网关架构是指以统一入口、路由管理、安全控制、监控追�
 | 插件    | ID, Name, Config, Status   | 扩展网关/路由   |
 | 中间件  | ID, Name, Order, Config    | 处理请求/响应   |
 
-#### 3.2.1 UML 类图（Mermaid）
+#### UML 类图（Mermaid）
 
 ```mermaid
 classDiagram
@@ -141,11 +141,11 @@ classDiagram
   }
 ```
 
-### 3.3 典型数据流
+### 典型数据流
 
 1. 客户端请求→网关接收→路由匹配→认证授权→限流熔断→服务调用→响应处理→监控记录→日志输出。
 
-#### 3.3.1 数据流时序图（Mermaid）
+#### 数据流时序图（Mermaid）
 
 ```mermaid
 sequenceDiagram
@@ -167,7 +167,7 @@ sequenceDiagram
   G->>C: 返回响应
 ```
 
-### 3.4 Golang 领域模型代码示例
+### Golang 领域模型代码示例
 
 ```go
 // 网关实体
@@ -247,17 +247,17 @@ type Middleware struct {
 
 ## 4. 分布式系统挑战
 
-### 4.1 性能与可扩展性
+### 性能与可扩展性
 
 - 高并发处理、毫秒级响应、负载均衡、水平扩展。
 - 国际主流：Kubernetes、Prometheus、云服务、CDN。
 
-### 4.2 安全与认证授权
+### 安全与认证授权
 
 - 身份认证、权限控制、数据加密、安全审计。
 - 国际主流：OAuth2、JWT、TLS、RBAC。
 
-### 4.3 监控与可观测性
+### 监控与可观测性
 
 - 全链路追踪、指标采集、日志聚合、异常检测。
 - 国际主流：OpenTelemetry、Prometheus、ELK Stack。
@@ -266,22 +266,22 @@ type Middleware struct {
 
 ## 5. 架构设计解决方案
 
-### 5.1 路由管理与负载均衡
+### 路由管理与负载均衡
 
 - 动态路由、智能负载均衡、服务发现、健康检查。
 - 采用REST、gRPC、GraphQL等协议，支持多协议转换。
 
-### 5.2 中间件与插件系统
+### 中间件与插件系统
 
 - 插件化架构、中间件链、动态配置、热更新。
 - 支持认证、授权、限流、熔断、监控等插件。
 
-### 5.3 限流熔断与容错
+### 限流熔断与容错
 
 - 令牌桶算法、滑动窗口、熔断器模式、重试机制。
 - 支持多种限流策略和容错机制。
 
-### 5.4 架构图（Mermaid）
+### 架构图（Mermaid）
 
 ```mermaid
 graph TD
@@ -301,7 +301,7 @@ graph TD
   CONFIG --> CONFIG_DB[Config DB]
 ```
 
-### 5.5 Golang代码示例
+### Golang代码示例
 
 ```go
 // API网关核心结构
@@ -345,7 +345,7 @@ type ConfigService struct {
 
 ## 6. Golang实现范例
 
-### 6.1 工程结构示例
+### 工程结构示例
 
 ```text
 api-gateway-demo/
@@ -370,11 +370,11 @@ api-gateway-demo/
 └── README.md
 ```
 
-### 6.2 关键代码片段
+### 关键代码片段
 
 // 见1.5.5
 
-### 6.3 CI/CD 配置（GitHub Actions 示例）
+### CI/CD 配置（GitHub Actions 示例）
 
 ```yaml
 name: API Gateway CI
@@ -402,20 +402,20 @@ jobs:
 
 ## 7. 形式化建模与证明
 
-### 7.1 网关-服务-客户端建模
+### 网关-服务-客户端建模
 
 - 网关集合 $G = \{g_1, ..., g_n\}$，服务集合 $S = \{s_1, ..., s_k\}$，客户端集合 $C = \{c_1, ..., c_l\}$。
 - 路由函数 $f: (g, c) \rightarrow s$，认证函数 $a: (c, g) \rightarrow bool$。
 
-#### 7.1.1 性质1：路由一致性
+#### 性质1：路由一致性
 
 - 所有客户端 $c$ 通过网关 $g$ 访问服务 $s$，路由结果一致。
 
-#### 7.1.2 性质2：安全隔离性
+#### 性质2：安全隔离性
 
 - 所有客户端 $c$ 必须通过认证 $a$ 才能访问服务 $s$，即 $\forall c, \exists a, a(c) = true$。
 
-### 7.2 符号说明
+### 符号说明
 
 - $G$：网关集合
 - $S$：服务集合
@@ -450,20 +450,20 @@ jobs:
 
 ## 9. 国际权威资源与开源组件引用
 
-### 9.1 API网关
+### API网关
 
 - [Kong](https://konghq.com/) - 云原生API网关
 - [Envoy](https://www.envoyproxy.io/) - 高性能代理
 - [Istio](https://istio.io/) - 服务网格
 - [Tyk](https://tyk.io/) - 开源API网关
 
-### 9.2 云原生API服务
+### 云原生API服务
 
 - [AWS API Gateway](https://aws.amazon.com/api-gateway/) - 全托管API管理
 - [Google Cloud Endpoints](https://cloud.google.com/endpoints) - API管理平台
 - [Azure API Management](https://azure.microsoft.com/services/api-management/) - API管理服务
 
-### 9.3 API规范
+### API规范
 
 - [OpenAPI](https://www.openapis.org/) - API规范标准
 - [GraphQL](https://graphql.org/) - 查询语言
@@ -487,3 +487,10 @@ jobs:
 ---
 
 **本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。**
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

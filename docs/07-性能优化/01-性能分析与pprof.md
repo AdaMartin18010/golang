@@ -1,6 +1,6 @@
-# Go性能优化与pprof深度实战指南
+﻿# Go性能优化与pprof深度实战指南
 
-**文档状态**: ✅ 深度重写完成 (v2.0)  
+
 **字数**: ~15,000字  
 **代码示例**: 30+个  
 **实战案例**: 3个完整案例  
@@ -44,7 +44,7 @@
 
 ## 第一部分：性能优化理论基础
 
-### 1.1 性能优化的核心原则
+### 性能优化的核心原则
 
 #### 原则1：度量驱动优化（Measure-Driven Optimization）
 
@@ -150,7 +150,7 @@ Total: 1000ms
 
 ---
 
-### 1.2 性能指标体系
+### 性能指标体系
 
 #### 核心指标（The Four Golden Signals）
 
@@ -195,7 +195,7 @@ func monitorMemory() {
 
 ---
 
-### 1.3 性能优化流程
+### 性能优化流程
 
 #### 标准流程（6步法）
 
@@ -272,7 +272,7 @@ type UserOptimized struct {
 
 ## 第二部分：pprof工具原理深入
 
-### 2.1 pprof架构与实现
+### pprof架构与实现
 
 #### pprof工作流程
 
@@ -341,7 +341,7 @@ func WriteHeapProfile(w io.Writer) error {
 
 ---
 
-### 2.2 采样算法详解
+### 采样算法详解
 
 #### CPU采样算法
 
@@ -414,7 +414,7 @@ func mallocSample(size uintptr) bool {
 
 ---
 
-### 2.3 Profile类型详解
+### Profile类型详解
 
 #### 1. CPU Profile
 
@@ -643,7 +643,7 @@ Total: 500ms (等待锁的总时长)
 
 ## 第三部分：pprof完整工具链
 
-### 3.1 pprof命令行用法
+### pprof命令行用法
 
 #### 基础命令
 
@@ -714,7 +714,7 @@ Showing nodes accounting for 7.20s, 24.00% of 30.00s total
 
 ---
 
-### 3.2 火焰图生成与分析
+### 火焰图生成与分析
 
 #### 什么是火焰图？
 
@@ -785,7 +785,7 @@ $ go-torch http://localhost:6060/debug/pprof/profile
 
 ---
 
-### 3.3 go tool trace时间线分析
+### go tool trace时间线分析
 
 #### trace vs pprof
 
@@ -903,7 +903,7 @@ func processItemsFixed(items []Item) {
 
 ---
 
-### 3.4 benchstat性能对比
+### benchstat性能对比
 
 #### 为什么需要benchstat？
 
@@ -980,7 +980,7 @@ $ benchstat v1.txt v2.txt v3.txt
 
 ## 第四部分：实战案例
 
-### 4.1 案例1：QPS下降10倍问题排查
+### 案例1：QPS下降10倍问题排查
 
 #### 问题背景
 
@@ -1115,9 +1115,9 @@ benchstat -delta-test=ttest baseline.txt bench.txt | \
 
 ---
 
-### 4.2 案例2：内存泄漏排查与修复
+### 案例2：内存泄漏排查与修复
 
-#### 4.2.1 问题背景
+#### 问题背景
 
 ```text
 场景：推荐服务
@@ -1347,9 +1347,9 @@ func monitorMemory() {
 
 ---
 
-### 4.3 案例3：GC压力优化实战
+### 案例3：GC压力优化实战
 
-#### 4.3.1 问题背景
+#### 问题背景
 
 ```text
 场景：实时计算服务
@@ -1587,7 +1587,7 @@ func monitorGC() {
 
 ## 第五部分：进阶主题
 
-### 5.1 逃逸分析与优化
+### 逃逸分析与优化
 
 #### 什么是逃逸分析？
 
@@ -1711,7 +1711,7 @@ func makeHugeSlice() []int {
 
 ---
 
-### 5.2 内存对齐与CPU缓存
+### 内存对齐与CPU缓存
 
 #### 什么是内存对齐？
 
@@ -1773,7 +1773,7 @@ type CounterOptimized struct {
 
 ---
 
-### 5.3 零拷贝技术
+### 零拷贝技术
 
 #### 什么是零拷贝？
 
@@ -1836,7 +1836,7 @@ BenchmarkRead/mmap-8         5    300ms/op
 
 ---
 
-### 5.4 SIMD优化
+### SIMD优化
 
 #### 什么是SIMD？
 
@@ -1896,7 +1896,7 @@ BenchmarkSum/SIMD-8    1000    1500000 ns/op
 
 ## 第六部分：最佳实践
 
-### 6.1 性能优化Checklist
+### 性能优化Checklist
 
 #### 开发阶段
 
@@ -1984,7 +1984,7 @@ groups:
 
 ---
 
-### 6.2 常见陷阱
+### 常见陷阱
 
 #### 陷阱1：过度使用`defer`
 
@@ -2070,7 +2070,7 @@ go func() { m.Load("key") }()
 
 ---
 
-### 6.3 性能预算
+### 性能预算
 
 #### 什么是性能预算？
 
@@ -2112,7 +2112,7 @@ r.Use(PerformanceBudget(100 * time.Millisecond))
 
 ---
 
-### 6.4 持续性能监控
+### 持续性能监控
 
 #### 建立性能监控体系
 
@@ -2253,8 +2253,8 @@ echo "✅ 性能检测通过"
 ---
 
 **文档版本**: v2.0  
-**最后更新**: 2025-10-20  
-**维护者**: Go Performance Team  
+
+
 **反馈**: 欢迎提Issue或PR
 
 ---
@@ -2266,3 +2266,10 @@ Made with ❤️ for Go Performance Engineers
 [⬆ 回到顶部](#go性能优化与pprof深度实战指南)
 
 </div>
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

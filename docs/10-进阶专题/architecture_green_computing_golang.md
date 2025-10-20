@@ -1,10 +1,10 @@
-# 绿色计算架构 - Golang实现指南
+﻿# 绿色计算架构 - Golang实现指南
 
 ## 1. 目录
 
 ## 2. 概述
 
-### 2.1 定义与发展历程
+### 定义与发展历程
 
 绿色计算（Green Computing）是一种以减少环境影响为目标的计算范式，通过优化硬件设计、软件算法、系统架构和运维管理，实现计算资源的高效利用和能源消耗的最小化。
 
@@ -16,7 +16,7 @@
 - 2015年：可再生能源在数据中心应用
 - 2020年后：碳中和目标推动绿色计算普及
 
-### 2.2 核心特征
+### 核心特征
 
 ```mermaid
 graph TB
@@ -50,7 +50,7 @@ graph TB
 
 ## 3. 绿色计算基础
 
-### 3.1 核心指标
+### 核心指标
 
 **能效指标：**
 
@@ -65,7 +65,7 @@ graph TB
 - 每焦耳计算量（Computations per Joule）
 - 能源效率比（Energy Efficiency Ratio）
 
-### 3.2 技术领域
+### 技术领域
 
 **硬件层面：**
 
@@ -88,7 +88,7 @@ graph TB
 - 自动化运维
 - 智能监控
 
-### 3.3 应用场景
+### 应用场景
 
 **数据中心：**
 
@@ -113,7 +113,7 @@ graph TB
 
 ## 4. 国际标准与主流框架
 
-### 4.1 国际标准
+### 国际标准
 
 **能效标准：**
 
@@ -135,7 +135,7 @@ graph TB
 - Carbon Aware Computing：碳感知计算
 - Sustainable Software Engineering：可持续软件工程
 
-### 4.2 主流开源框架
+### 主流开源框架
 
 **监控工具：**
 
@@ -158,7 +158,7 @@ graph TB
 - RAPL：运行时平均功耗限制
 - PAPI：性能API
 
-### 4.3 商业解决方案
+### 商业解决方案
 
 **云服务商：**
 
@@ -176,7 +176,7 @@ graph TB
 
 ## 5. 领域建模
 
-### 5.1 核心实体
+### 核心实体
 
 ```go
 // 能源监控
@@ -221,7 +221,7 @@ type EnergyPolicy struct {
 
 ```
 
-### 5.2 系统架构
+### 系统架构
 
 ```mermaid
 graph TB
@@ -246,25 +246,25 @@ graph TB
 
 ## 6. 分布式挑战
 
-### 6.1 能源管理复杂性
+### 能源管理复杂性
 
 - 多节点能源消耗监控
 - 动态负载分布优化
 - 可再生能源集成管理
 
-### 6.2 性能与能效平衡
+### 性能与能效平衡
 
 - 服务质量保证
 - 能效优化策略
 - 资源利用率最大化
 
-### 6.3 异构环境适配
+### 异构环境适配
 
 - 不同硬件架构
 - 多样化能源来源
 - 环境条件变化
 
-### 1.6.4 实时性要求
+### 实时性要求
 
 - 能源监控实时性
 - 负载调整响应时间
@@ -272,7 +272,7 @@ graph TB
 
 ## 7. 设计解决方案
 
-### 7.1 分层能源管理
+### 分层能源管理
 
 ```mermaid
 graph TD
@@ -283,19 +283,19 @@ graph TD
 
 ```
 
-### 7.2 智能调度策略
+### 智能调度策略
 
 - 基于负载的调度
 - 能源感知调度
 - 预测性调度
 
-### 1.7.3 动态功耗管理
+### 动态功耗管理
 
 - CPU频率调节
 - 内存功耗控制
 - 存储节能策略
 
-### 1.7.4 可再生能源集成
+### 可再生能源集成
 
 - 太阳能、风能接入
 - 能源存储管理
@@ -303,7 +303,7 @@ graph TD
 
 ## 8. Golang实现
 
-### 1.8.1 能源监控系统
+### 能源监控系统
 
 ```go
 // 能源监控器
@@ -355,7 +355,7 @@ func (em *EnergyMonitor) updateMetrics() {
 
 ```
 
-### 1.8.2 绿色调度器
+### 绿色调度器
 
 ```go
 // 绿色调度器
@@ -424,7 +424,7 @@ func (gs *GreenScheduler) calculateNodeScore(task *Task, node *ResourceNode) flo
 
 ```
 
-### 1.8.3 动态功耗管理
+### 动态功耗管理
 
 ```go
 // 功耗管理器
@@ -497,7 +497,7 @@ func (pm *PowerManager) executePowerAction(node *ResourceNode, action PowerActio
 
 ```
 
-### 1.8.4 可再生能源管理
+### 可再生能源管理
 
 ```go
 // 可再生能源管理器
@@ -565,20 +565,20 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 
 ## 9. 形式化建模
 
-### 1.9.1 能源系统形式化
+### 能源系统形式化
 
 - 节点集合 N = {n1, n2, ..., nn}
 - 任务集合 T = {t1, t2, ..., tm}
 - 能源约束 E(n, t)
 - 调度函数 S: T → N
 
-### 1.9.2 能效优化模型
+### 能效优化模型
 
 - 目标函数：min Σ E(n) × P(n)
 - 约束条件：C(n) ≥ R(t)
 - 能效比：η = P(n) / E(n)
 
-### 1.9.3 可再生能源集成
+### 可再生能源集成
 
 - 能源平衡：Σ E_renewable + Σ E_storage = Σ E_demand
 - 存储效率：E_stored = η × E_input
@@ -586,25 +586,25 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 
 ## 10. 最佳实践
 
-### 1.10.1 架构设计原则
+### 架构设计原则
 
 - 能源感知设计
 - 分层优化策略
 - 自适应调整机制
 
-### 1.10.2 监控与优化
+### 监控与优化
 
 - 实时能源监控
 - 预测性维护
 - 自动化优化
 
-### 1.10.3 可持续发展
+### 可持续发展
 
 - 可再生能源使用
 - 碳足迹跟踪
 - 循环经济原则
 
-### 1.10.4 性能保证
+### 性能保证
 
 - 服务质量保证
 - 故障恢复机制
@@ -612,25 +612,25 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 
 ## 11. 参考资源
 
-### 1.11.1 标准与规范
+### 标准与规范
 
 - ENERGY STAR: <https://www.energystar.gov/>
 - 80 PLUS: <https://80plus.org/>
 - ASHRAE TC 9.9: <https://tc0909.ashraetcs.org/>
 
-### 1.11.2 开源项目
+### 开源项目
 
 - Prometheus: <https://prometheus.io/>
 - Grafana: <https://grafana.com/>
 - Kubernetes: <https://kubernetes.io/>
 
-### 1.11.3 研究机构
+### 研究机构
 
 - Green Software Foundation: <https://greensoftware.foundation/>
 - Carbon Aware Computing: <https://carbon-aware-computing.com/>
 - Sustainable Software Engineering: <https://sustainable-software-engineering.com/>
 
-### 1.11.4 书籍与论文
+### 书籍与论文
 
 - Green Computing: A Comprehensive Guide (Springer)
 - Energy-Efficient Computing and Networking (IEEE)
@@ -638,3 +638,10 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 ---
 
 - 本文档为绿色计算架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

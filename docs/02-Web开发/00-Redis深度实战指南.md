@@ -1,6 +1,5 @@
-# Redis深度实战指南
+﻿# Redis深度实战指南
 
-**文档状态**: ✅ 深度重写完成 (v17.0)  
 **字数**: ~48,000字  
 **代码示例**: 170+个完整示例  
 **实战案例**: 15个端到端案例  
@@ -55,18 +54,18 @@
 
 ## 第一部分：Redis核心原理
 
-### 1.1 Redis架构
+### Redis架构
 
 ```text
 ┌─────────────────────────────────────────────────┐
-│              Redis架构                           │
+│              Redis架构                          │
 └─────────────────────────────────────────────────┘
 
 Client
   │
   ▼
 ┌─────────────────────────────────────────────────┐
-│              Redis Server                        │
+│              Redis Server                       │
 │  ┌───────────────────────────────────────────┐  │
 │  │         Memory (内存数据库)                │  │
 │  │  ┌─────────────────────────────────────┐  │  │
@@ -74,11 +73,11 @@ Client
 │  │  │  Bitmap | HyperLogLog | Geo | Stream│  │  │
 │  │  └─────────────────────────────────────┘  │  │
 │  └───────────────────────────────────────────┘  │
-│                     ↓                            │
+│                     ↓                           │
 │  ┌───────────────────────────────────────────┐  │
-│  │         持久化 (Persistence)               │  │
-│  │  - RDB (快照)                              │  │
-│  │  - AOF (追加文件)                          │  │
+│  │         持久化 (Persistence)              │  │
+│  │  - RDB (快照)                             │  │
+│  │  - AOF (追加文件)                         │  │
 │  └───────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────┘
          ↓                    ↓
@@ -99,7 +98,7 @@ Client
 
 ---
 
-### 1.2 为什么使用Redis？
+### 为什么使用Redis？
 
 ```text
 使用场景:
@@ -144,7 +143,7 @@ Client
 
 ## 第二部分：Go连接Redis
 
-### 2.1 实战案例1：基础连接（go-redis）
+### 实战案例1：基础连接（go-redis）
 
 ```go
 package main
@@ -271,7 +270,7 @@ func main() {
 
 ## 第三部分：五大数据结构
 
-### 3.1 实战案例2：String（字符串）
+### 实战案例2：String（字符串）
 
 ```go
 package main
@@ -444,7 +443,7 @@ func main() {
 
 ---
 
-### 3.2 实战案例3：Hash（哈希表）
+### 实战案例3：Hash（哈希表）
 
 ```go
 package main
@@ -684,7 +683,7 @@ func main() {
 
 ## 第五部分：缓存策略
 
-### 5.1 实战案例4：缓存穿透/击穿/雪崩
+### 实战案例4：缓存穿透/击穿/雪崩
 
 ```go
 package main
@@ -875,7 +874,7 @@ func (m *MultiLevelCache) Get(ctx context.Context, key string, loader func() (in
 
 ---
 
-### 3.3 实战案例5：List/Set/ZSet操作
+### 实战案例5：List/Set/ZSet操作
 
 ```go
 package main
@@ -986,7 +985,7 @@ func (z *ZSetOps) Leaderboard(ctx context.Context) {
 
 ## 第四部分：高级数据结构
 
-### 4.1 实战案例6：Bitmap/HyperLogLog/Geo
+### 实战案例6：Bitmap/HyperLogLog/Geo
 
 ```go
 package main
@@ -1086,7 +1085,7 @@ func (g *GeoOps) NearbyLocations(ctx context.Context) {
 
 ## 第六部分：分布式锁
 
-### 6.1 实战案例7：Redis分布式锁
+### 实战案例7：Redis分布式锁
 
 ```go
 package main
@@ -1235,7 +1234,7 @@ func (r *ReentrantLock) Unlock(ctx context.Context) error {
 
 ## 第七部分：消息队列
 
-### 7.1 实战案例8：List实现消息队列
+### 实战案例8：List实现消息队列
 
 ```go
 package main
@@ -1366,7 +1365,7 @@ func (d *DelayQueue) PopReady(ctx context.Context) ([]*Task, error) {
 
 ## 第十部分：事务与管道
 
-### 10.1 实战案例9：Redis事务
+### 实战案例9：Redis事务
 
 ```go
 package main
@@ -1449,7 +1448,7 @@ func UsePipeline(ctx context.Context, rdb *redis.Client) {
 
 ## 第十一部分：Lua脚本
 
-### 11.1 实战案例10：Lua脚本原子操作
+### 实战案例10：Lua脚本原子操作
 
 ```go
 package main
@@ -1531,7 +1530,7 @@ func IncrWithLimit(ctx context.Context, rdb *redis.Client, key string, limit int
 
 ## 第八部分：Stream流处理
 
-### 8.1 实战案例11：Redis Stream消费者组
+### 实战案例11：Redis Stream消费者组
 
 ```go
 package main
@@ -1627,7 +1626,7 @@ func (c *StreamConsumer) Consume(ctx context.Context) {
 
 ## 第九部分：发布订阅
 
-### 9.1 实战案例12：Pub/Sub模式
+### 实战案例12：Pub/Sub模式
 
 ```go
 package main
@@ -1718,7 +1717,7 @@ func PubSubExample() {
 
 ## 第十二部分：持久化与高可用
 
-### 12.1 持久化配置
+### 持久化配置
 
 ```go
 // ===== RDB持久化 =====
@@ -1755,7 +1754,7 @@ func RewriteAOF(ctx context.Context, rdb *redis.Client) error {
 
 ## 第十三部分：性能优化
 
-### 13.1 实战案例13：性能优化技巧
+### 实战案例13：性能优化技巧
 
 ```go
 package main
@@ -1845,7 +1844,7 @@ func ScanKeys(ctx context.Context, rdb *redis.Client, pattern string) []string {
 
 ## 第十四部分：监控与运维
 
-### 14.1 实战案例14：Redis监控
+### 实战案例14：Redis监控
 
 ```go
 package main
@@ -1930,7 +1929,7 @@ func HealthCheck(ctx context.Context, rdb *redis.Client) error {
 
 ## 第十六部分：完整项目实战
 
-### 16.1 实战案例15：电商库存系统
+### 实战案例15：电商库存系统
 
 ```go
 package main
@@ -2128,7 +2127,6 @@ func InventoryExample() {
 ---
 
 **文档版本**: v17.0  
-**最后更新**: 2025-10-20
 
 <div align="center">
 
@@ -2137,3 +2135,10 @@ Made with ❤️ for High-Performance System Developers
 [⬆ 回到顶部](#redis深度实战指南)
 
 </div>
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

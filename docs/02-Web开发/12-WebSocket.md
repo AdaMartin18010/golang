@@ -1,4 +1,4 @@
-# 2.1.1 WebSocket 实时通信
+﻿# WebSocket 实时通信
 
 <!-- TOC START -->
 - [2.1.1 WebSocket 实时通信](#211-websocket-实时通信)
@@ -17,28 +17,28 @@
   - [2.1.1.6 📚 **扩展阅读**](#2116--扩展阅读)
 <!-- TOC END -->
 
-## 2.1.1.1 📚 **理论分析**
+## 📚 **理论分析**
 
-### 2.1.1.1.1 **WebSocket原理**
+### **WebSocket原理**
 
 - WebSocket是一种全双工、持久化的网络通信协议，基于TCP。
 - 通过HTTP/1.1升级握手（Upgrade: websocket），建立后可双向实时通信。
 - 适合聊天室、实时推送、在线协作等场景。
 
-### 2.1.1.1.2 **协议流程**
+### **协议流程**
 
 - 客户端发起HTTP请求，包含`Upgrade: websocket`头
 - 服务器响应101 Switching Protocols，升级为WebSocket
 - 后续数据以帧（frame）方式双向传输
 
-### 2.1.1.1.3 **安全与性能**
+### **安全与性能**
 
 - 建议使用wss（TLS加密）
 - 需做连接数、消息大小、心跳检测等限制
 
-## 2.1.1.2 💻 **代码示例**
+## 💻 **代码示例**
 
-### 2.1.1.2.1 **标准库+第三方库（gorilla/websocket）**
+### **标准库+第三方库（gorilla/websocket）**
 
 ```go
 package main
@@ -64,7 +64,7 @@ func main() {
 
 ```
 
-### 2.1.1.2.2 **Gin集成WebSocket**
+### **Gin集成WebSocket**
 
 ```go
 package main
@@ -91,7 +91,7 @@ func main() {
 
 ```
 
-### 2.1.1.2.3 **Echo集成WebSocket**
+### **Echo集成WebSocket**
 
 ```go
 package main
@@ -119,7 +119,7 @@ func main() {
 
 ```
 
-### 2.1.1.2.4 **Fiber集成WebSocket**
+### **Fiber集成WebSocket**
 
 ```go
 package main
@@ -142,21 +142,21 @@ func main() {
 
 ```
 
-## 2.1.1.3 🧪 **测试代码**
+## 🧪 **测试代码**
 
 ```go
 // 可用websocket客户端或浏览器测试
 
 ```
 
-## 2.1.1.4 🎯 **最佳实践**
+## 🎯 **最佳实践**
 
 - 限制最大连接数和消息大小，防止滥用
 - 定期心跳检测，及时断开无效连接
 - 生产环境建议用nginx反向代理wss
 - 合理处理异常和断线重连
 
-## 2.1.1.5 🔍 **常见问题**
+## 🔍 **常见问题**
 
 - Q: WebSocket和HTTP的区别？
   A: WebSocket为持久化双向通信，HTTP为短连接请求-响应
@@ -165,7 +165,7 @@ func main() {
 - Q: 如何广播消息？
   A: 维护连接池，遍历发送
 
-## 2.1.1.6 📚 **扩展阅读**
+## 📚 **扩展阅读**
 
 - [gorilla/websocket文档](https://pkg.go.dev/github.com/gorilla/websocket)
 - [MDN WebSocket协议](https://developer.mozilla.org/zh-CN/docs/Web/API/WebSockets_API)
@@ -173,6 +173,7 @@ func main() {
 
 ---
 
-**文档维护者**: AI Assistant  
-**最后更新**: 2024年6月27日  
-**文档状态**: 完成
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

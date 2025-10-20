@@ -1,11 +1,56 @@
+﻿# Go与云原生部署
 
-# Go与云原生部署
+> **简介**: 介绍Go语言在云原生环境下的部署实践，包括容器化、Kubernetes编排、CI/CD流水线等现代部署技术
 
-## 📚 模块概述
+<!-- TOC START -->
+- [Go与云原生部署](#go与云原生部署)
+  - [1. 📚 模块概述](#1--模块概述)
+  - [2. 🎯 学习目标](#2--学习目标)
+  - [3. 📋 内容结构](#3--内容结构)
+    - [容器化基础](#容器化基础)
+    - [云原生部署](#云原生部署)
+    - [CI/CD流水线](#cicd流水线)
+  - [4. 🚀 快速开始](#4--快速开始)
+    - [环境准备](#环境准备)
+    - [第一个容器化Go应用](#第一个容器化go应用)
+    - [构建和运行](#构建和运行)
+  - [5. 📊 学习进度](#5--学习进度)
+  - [🎯 实践项目](#-实践项目)
+    - [项目1: 简单Web服务容器化](#项目1-简单web服务容器化)
+    - [项目2: Kubernetes部署](#项目2-kubernetes部署)
+    - [项目3: CI/CD流水线](#项目3-cicd流水线)
+  - [📚 参考资料](#-参考资料)
+    - [官方文档](#官方文档)
+    - [在线教程](#在线教程)
+    - [书籍推荐](#书籍推荐)
+  - [🔧 工具推荐](#-工具推荐)
+    - [容器化工具](#容器化工具)
+    - [Kubernetes工具](#kubernetes工具)
+    - [CI/CD工具](#cicd工具)
+    - [监控工具](#监控工具)
+  - [🎯 学习建议](#-学习建议)
+    - [理论结合实践](#理论结合实践)
+    - [循序渐进](#循序渐进)
+    - [项目驱动](#项目驱动)
+  - [📝 重要概念](#-重要概念)
+    - [容器化优势](#容器化优势)
+    - [Kubernetes核心概念](#kubernetes核心概念)
+    - [云原生原则](#云原生原则)
+  - [🛠️ 最佳实践](#️-最佳实践)
+    - [Dockerfile最佳实践](#dockerfile最佳实践)
+    - [Kubernetes最佳实践](#kubernetes最佳实践)
+    - [CI/CD最佳实践](#cicd最佳实践)
+<!-- TOC END -->
+
+---
+
+## 1. 📚 模块概述
 
 本模块介绍Go语言在云原生环境下的部署实践，包括容器化、Kubernetes编排、CI/CD流水线等现代部署技术。通过理论分析与实际代码相结合的方式，帮助开发者掌握Go应用的云原生部署技能。
 
-## 🎯 学习目标
+---
+
+## 2. 🎯 学习目标
 
 - 掌握Go应用的容器化技术
 - 理解Dockerfile最佳实践
@@ -13,24 +58,31 @@
 - 掌握云原生部署策略
 - 了解CI/CD自动化部署
 
-## 📋 内容结构
+---
+
+## 3. 📋 内容结构
 
 ### 容器化基础
+
 - [01-Go与容器化基础](./01-Go与容器化基础.md) - Docker基础、多阶段构建
 - [02-Dockerfile最佳实践](./02-Dockerfile最佳实践.md) - 镜像优化、安全实践
 - [03-Go与Kubernetes入门](./03-Go与Kubernetes入门.md) - K8s基础、部署实践
 
 ### 云原生部署
+
 - [04-Kubernetes高级特性](./04-Kubernetes高级特性.md) - ConfigMap、Secret、Service
 - [05-服务网格集成](./05-服务网格集成.md) - Istio、Linkerd集成
 - [06-GitOps部署](./06-GitOps部署.md) - ArgoCD、Flux自动化部署
 
 ### CI/CD流水线
+
 - [07-GitHub Actions](./07-GitHub Actions.md) - GitHub CI/CD实践
 - [08-GitLab CI](./08-GitLab CI.md) - GitLab CI/CD配置
 - [09-多环境部署](./09-多环境部署.md) - 开发、测试、生产环境
 
-## 🚀 快速开始
+---
+
+## 4. 🚀 快速开始
 
 ### 环境准备
 
@@ -72,7 +124,9 @@ docker build -t go-app .
 docker run -p 8080:8080 go-app
 ```
 
-## 📊 学习进度
+---
+
+## 5. 📊 学习进度
 
 | 主题 | 状态 | 完成度 | 预计时间 |
 |------|------|--------|----------|
@@ -84,18 +138,21 @@ docker run -p 8080:8080 go-app
 ## 🎯 实践项目
 
 ### 项目1: 简单Web服务容器化
+
 - 创建Go Web服务
 - 编写Dockerfile
 - 构建和运行容器
 - 配置健康检查
 
 ### 项目2: Kubernetes部署
+
 - 创建Deployment配置
 - 配置Service和Ingress
 - 实现滚动更新
 - 配置资源限制
 
 ### 项目3: CI/CD流水线
+
 - 配置GitHub Actions
 - 自动化测试和构建
 - 自动部署到K8s
@@ -104,16 +161,19 @@ docker run -p 8080:8080 go-app
 ## 📚 参考资料
 
 ### 官方文档
+
 - [Docker官方文档](https://docs.docker.com/)
 - [Kubernetes官方文档](https://kubernetes.io/docs/)
 - [Go官方文档](https://golang.org/doc/)
 
 ### 在线教程
+
 - [Docker入门教程](https://docker-curriculum.com/)
 - [Kubernetes基础教程](https://kubernetes.io/docs/tutorials/)
 - [Go与Docker最佳实践](https://geektutu.com/post/hpg-golang-docker.html)
 
 ### 书籍推荐
+
 - 《Kubernetes权威指南》
 - 《Docker技术入门与实战》
 - 《云原生应用架构实践》
@@ -121,21 +181,25 @@ docker run -p 8080:8080 go-app
 ## 🔧 工具推荐
 
 ### 容器化工具
+
 - **Docker**: 容器运行时
 - **Podman**: 无守护进程容器工具
 - **Buildah**: 容器镜像构建工具
 
 ### Kubernetes工具
+
 - **kubectl**: K8s命令行工具
 - **helm**: K8s包管理器
 - **kustomize**: 配置管理工具
 
 ### CI/CD工具
+
 - **GitHub Actions**: GitHub CI/CD
 - **GitLab CI**: GitLab CI/CD
 - **Jenkins**: 开源CI/CD平台
 
 ### 监控工具
+
 - **Prometheus**: 指标监控
 - **Grafana**: 可视化面板
 - **Jaeger**: 分布式追踪
@@ -143,16 +207,19 @@ docker run -p 8080:8080 go-app
 ## 🎯 学习建议
 
 ### 理论结合实践
+
 - 每个概念都要通过实际操作验证
 - 理解容器化和编排的原理
 - 关注云原生技术的发展趋势
 
 ### 循序渐进
+
 - 从简单的容器化开始
 - 逐步学习Kubernetes概念
 - 最后掌握CI/CD自动化
 
 ### 项目驱动
+
 - 通过实际项目巩固知识
 - 尝试不同的部署策略
 - 关注性能和安全性
@@ -160,12 +227,14 @@ docker run -p 8080:8080 go-app
 ## 📝 重要概念
 
 ### 容器化优势
+
 - **一致性**: 开发、测试、生产环境一致
 - **可移植性**: 跨平台部署
 - **资源效率**: 更好的资源利用率
 - **快速部署**: 秒级启动时间
 
 ### Kubernetes核心概念
+
 - **Pod**: 最小部署单元
 - **Deployment**: 管理Pod的副本
 - **Service**: 服务发现和负载均衡
@@ -173,6 +242,7 @@ docker run -p 8080:8080 go-app
 - **Secret**: 敏感信息管理
 
 ### 云原生原则
+
 - **12-Factor App**: 应用开发原则
 - **微服务架构**: 服务拆分和治理
 - **DevOps文化**: 开发和运维协作
@@ -181,18 +251,21 @@ docker run -p 8080:8080 go-app
 ## 🛠️ 最佳实践
 
 ### Dockerfile最佳实践
+
 - 使用多阶段构建减小镜像体积
 - 合理使用缓存层
 - 避免在镜像中存储敏感信息
 - 使用非root用户运行应用
 
 ### Kubernetes最佳实践
+
 - 合理设置资源限制
 - 使用健康检查
 - 配置滚动更新策略
 - 实现服务网格
 
 ### CI/CD最佳实践
+
 - 自动化测试和构建
 - 实现蓝绿部署
 - 配置监控和告警
@@ -200,6 +273,7 @@ docker run -p 8080:8080 go-app
 
 ---
 
-**模块维护者**: AI Assistant  
-**最后更新**: 2025年1月  
-**模块状态**: 持续更新中
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

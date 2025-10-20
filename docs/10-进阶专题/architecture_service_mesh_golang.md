@@ -1,4 +1,4 @@
-# 服务网格架构（Service Mesh Architecture）
+﻿# 服务网格架构（Service Mesh Architecture）
 
 ## 1. 目录
 
@@ -38,7 +38,7 @@
 
 ## 2. 国际标准与发展历程
 
-### 2.1 主流服务网格平台与标准
+### 主流服务网格平台与标准
 
 - **Istio**: 开源服务网格平台
 - **Envoy**: 高性能代理
@@ -49,14 +49,14 @@
 - **Azure Service Fabric Mesh**: 托管服务网格
 - **Service Mesh Interface (SMI)**: 服务网格标准
 
-### 2.2 发展历程
+### 发展历程
 
 - **2010s**: 微服务架构兴起
 - **2015s**: 服务网格概念提出
 - **2017s**: Istio、Linkerd等平台发布
 - **2020s**: 云原生服务网格成熟
 
-### 2.3 国际权威链接
+### 国际权威链接
 
 - [Istio](https://istio.io/)
 - [Envoy](https://www.envoyproxy.io/)
@@ -68,7 +68,7 @@
 
 ## 3. 核心架构模式与设计原则
 
-### 3.1 控制平面与数据平面
+### 控制平面与数据平面
 
 服务网格架构在逻辑上分为 **数据平面（Data Plane）** 和 **控制平面（Control Plane）**。
 
@@ -106,7 +106,7 @@ graph TD
 
 ```
 
-### 3.2 Sidecar代理模式
+### Sidecar代理模式
 
 Sidecar模式是服务网格实现的基础。一个专用的代理（Sidecar）与主应用程序容器一起部署在同一个Pod中。它们共享网络命名空间和生命周期。
 
@@ -116,7 +116,7 @@ Sidecar模式是服务网格实现的基础。一个专用的代理（Sidecar）
 - **语言无关**: 由于功能在代理层实现，因此可以用任何语言编写应用服务。
 - **平滑升级**: 可以独立于主应用程序升级Sidecar代理，实现网络功能的快速迭代。
 
-### 3.3 服务发现与负载均衡
+### 服务发现与负载均衡
 
 ```go
 type ServiceDiscovery struct {
@@ -329,7 +329,7 @@ func (lc *LeastConnectionsStrategy) DecrementConnections(endpointID string) {
 
 ```
 
-### 3.4 流量管理与路由
+### 流量管理与路由
 
 ```go
 type TrafficManager struct {
@@ -713,7 +713,7 @@ func (tm *TrafficManager) calculateBackoffDelay(attempt int) time.Duration {
 
 ```
 
-### 3.5 安全与认证
+### 安全与认证
 
 ```go
 type SecurityManager struct {
@@ -1073,7 +1073,7 @@ func (sm *SecurityManager) evaluateCondition(authResult *AuthResult, condition *
 
 ## 4. 实际案例分析
 
-### 4.1 微服务通信
+### 微服务通信
 
 **场景**: 多服务间的可靠通信
 
@@ -1218,7 +1218,7 @@ func (sr *ServiceRegistry) updateEndpointStatus(endpoint *Endpoint, healthy bool
 
 ```
 
-### 4.2 金丝雀发布
+### 金丝雀发布
 
 ```go
 type CanaryDeploymentManager struct {
@@ -1526,20 +1526,20 @@ func (cdm *CanaryDeploymentManager) rollbackCanary(config *DeploymentConfig) err
 
 ## 6. 国际权威资源与开源组件引用
 
-### 6.1 服务网格平台
+### 服务网格平台
 
 - [Istio](https://istio.io/) - 开源服务网格平台
 - [Envoy](https://www.envoyproxy.io/) - 高性能代理
 - [Linkerd](https://linkerd.io/) - 轻量级服务网格
 - [Consul](https://www.consul.io/) - 服务网格解决方案
 
-### 6.2 云原生服务网格
+### 云原生服务网格
 
 - [AWS App Mesh](https://aws.amazon.com/app-mesh/) - 云原生服务网格
 - [Google Cloud Traffic Director](https://cloud.google.com/traffic-director) - 服务网格管理
 - [Azure Service Fabric Mesh](https://azure.microsoft.com/services/service-fabric-mesh/) - 托管服务网格
 
-### 6.3 服务网格标准
+### 服务网格标准
 
 - [Service Mesh Interface](https://smi-spec.io/) - 服务网格标准
 - [Open Service Mesh](https://openservicemesh.io/) - 开源服务网格
@@ -1555,7 +1555,7 @@ func (cdm *CanaryDeploymentManager) rollbackCanary(config *DeploymentConfig) err
 
 ## 8. Golang主流实现与代码示例
 
-### 8.1 与服务网格集成的Go应用
+### 与服务网格集成的Go应用
 
 服务网格的一个核心优势是 **对应用的透明性**。理想情况下，Go应用代码不需要任何特殊库或修改就能在服务网格中运行。应用只需通过标准HTTP或gRPC协议进行通信即可。
 
@@ -1627,9 +1627,9 @@ func main() {
 
 服务网格通过控制平面和数据平面提供了强大的流量管理和安全功能。
 
-### 9.1 流量管理 (Traffic Management)
+### 流量管理 (Traffic Management)
 
-#### 9.1.1 金丝雀发布 (Canary Release)
+#### 金丝雀发布 (Canary Release)
 
 金丝雀发布是一种渐进式发布策略，将一小部分用户流量（例如5%）引导到新版本，同时大部分流量仍访问稳定版本。如果新版本表现稳定，则逐步增加流量比例。
 
@@ -1656,7 +1656,7 @@ spec:
 
 ```
 
-#### 9.1.2 流量镜像 (Traffic Mirroring)
+#### 流量镜像 (Traffic Mirroring)
 
 流量镜像（或称影子流量）将实时流量的一个副本发送到镜像服务，通常用于在生产环境中测试新版本，而不影响最终用户。镜像流量的响应会被丢弃。
 
@@ -1684,9 +1684,9 @@ spec:
 
 ```
 
-### 9.2 安全 (Security)
+### 安全 (Security)
 
-#### 9.2.1 自动mTLS (Mutual TLS)
+#### 自动mTLS (Mutual TLS)
 
 服务网格可以在服务之间自动实现双向TLS加密和身份验证（mTLS），无需修改任何应用代码。
 
@@ -1726,3 +1726,10 @@ spec:
 ---
 
 - 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

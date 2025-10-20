@@ -1,4 +1,4 @@
-# 2.1.1 Fiber框架基础
+﻿# Fiber框架基础
 
 <!-- TOC START -->
 - [2.1.1 Fiber框架基础](#211-fiber框架基础)
@@ -17,29 +17,29 @@
   - [2.1.1.6 📚 **扩展阅读**](#2116--扩展阅读)
 <!-- TOC END -->
 
-## 2.1.1.1 📚 **理论分析**
+## 📚 **理论分析**
 
-### 2.1.1.1.1 **Fiber框架简介**
+### **Fiber框架简介**
 
 - Fiber是Go语言高性能Web框架，API风格类似Node.js的Express。
 - 基于`fasthttp`库，极致追求性能，适合高并发API服务和微服务。
 - 支持高效路由、中间件、分组、RESTful API、WebSocket、静态文件服务等。
 
-### 2.1.1.1.2 **核心原理**
+### **核心原理**
 
 - 路由基于树结构，支持参数、通配符、分组
 - 中间件采用链式调用，支持全局/分组/路由级中间件
 - Context对象贯穿请求生命周期，便于数据传递和响应
 
-### 2.1.1.1.3 **主要类型与接口**
+### **主要类型与接口**
 
 - `fiber.App`：应用实例，负责路由和中间件管理
 - `fiber.Ctx`：请求上下文，封装请求、响应、参数、状态等
 - `fiber.Handler`：处理函数类型
 
-## 2.1.1.2 💻 **代码示例**
+## 💻 **代码示例**
 
-### 2.1.1.2.1 **最小Fiber应用**
+### **最小Fiber应用**
 
 ```go
 package main
@@ -54,7 +54,7 @@ func main() {
 
 ```
 
-### 2.1.1.2.2 **路由与参数绑定**
+### **路由与参数绑定**
 
 ```go
 package main
@@ -74,7 +74,7 @@ func main() {
 
 ```
 
-### 2.1.1.2.3 **中间件用法**
+### **中间件用法**
 
 ```go
 package main
@@ -93,7 +93,7 @@ func main() {
 
 ```
 
-### 2.1.1.2.4 **分组与RESTful API**
+### **分组与RESTful API**
 
 ```go
 package main
@@ -112,7 +112,7 @@ func main() {
 
 ```
 
-## 2.1.1.3 🧪 **测试代码**
+## 🧪 **测试代码**
 
 ```go
 package main
@@ -135,7 +135,7 @@ func TestPingRoute(t *testing.T) {
 
 ```
 
-## 2.1.1.4 🎯 **最佳实践**
+## 🎯 **最佳实践**
 
 - 使用`fiber.New()`自动集成日志与恢复中间件
 - 路由分组便于模块化管理
@@ -143,7 +143,7 @@ func TestPingRoute(t *testing.T) {
 - 错误处理建议统一返回JSON结构
 - 生产环境关闭debug模式，合理配置日志
 
-## 2.1.1.5 🔍 **常见问题**
+## 🔍 **常见问题**
 
 - Q: Fiber和Gin/Echo有何区别？
   A: Fiber基于fasthttp，极致追求性能，API风格更接近Express
@@ -152,7 +152,7 @@ func TestPingRoute(t *testing.T) {
 - Q: 如何优雅关闭Fiber服务？
   A: 通过`app.Shutdown()`实现
 
-## 2.1.1.6 📚 **扩展阅读**
+## 📚 **扩展阅读**
 
 - [Fiber官方文档](https://docs.gofiber.io/)
 - [Fiber源码分析](https://github.com/gofiber/fiber)
@@ -160,6 +160,7 @@ func TestPingRoute(t *testing.T) {
 
 ---
 
-**文档维护者**: AI Assistant  
-**最后更新**: 2024年6月27日  
-**文档状态**: 完成
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

@@ -1,4 +1,4 @@
-# 2.1.1 Go HTTP服务器进阶
+﻿# Go HTTP服务器进阶
 
 <!-- TOC START -->
 - [2.1.1 Go HTTP服务器进阶](#211-go-http服务器进阶)
@@ -17,15 +17,15 @@
   - [2.1.1.6 📚 **扩展阅读**](#2116--扩展阅读)
 <!-- TOC END -->
 
-## 2.1.1.1 📚 **理论分析**
+## 📚 **理论分析**
 
-### 2.1.1.1.1 **HTTP服务器核心原理**
+### **HTTP服务器核心原理**
 
 - Go内置`http.Server`类型，支持高并发、可配置、易扩展。
 - 支持HTTP/1.1和HTTP/2，自动处理连接复用。
 - 服务器可通过自定义`Handler`、`ServeMux`实现复杂路由。
 
-### 2.1.1.1.2 **服务器配置参数**
+### **服务器配置参数**
 
 - `Addr`：监听地址（如":8080"）
 - `Handler`：请求处理器
@@ -33,20 +33,20 @@
 - `IdleTimeout`：空闲连接超时
 - `TLSConfig`：HTTPS支持
 
-### 2.1.1.1.3 **优雅关闭与重启**
+### **优雅关闭与重启**
 
 - 使用`http.Server.Shutdown(ctx)`实现平滑关闭，确保所有连接处理完毕
 - 可结合`signal.Notify`监听系统信号（如SIGINT、SIGTERM）
 
-### 2.1.1.1.4 **并发与性能优化**
+### **并发与性能优化**
 
 - 每个请求由独立Goroutine处理，天然高并发
 - 可通过连接池、对象池、限流等手段提升性能
 - 静态文件服务建议用`http.ServeContent`或`http.FileServer`
 
-## 2.1.1.2 💻 **代码示例**
+## 💻 **代码示例**
 
-### 2.1.1.2.1 **自定义HTTP服务器与超时配置**
+### **自定义HTTP服务器与超时配置**
 
 ```go
 package main
@@ -74,7 +74,7 @@ func main() {
 
 ```
 
-### 2.1.1.2.2 **优雅关闭服务器**
+### **优雅关闭服务器**
 
 ```go
 package main
@@ -108,7 +108,7 @@ func main() {
 
 ```
 
-### 2.1.1.2.3 **静态文件服务**
+### **静态文件服务**
 
 ```go
 package main
@@ -121,7 +121,7 @@ func main() {
 
 ```
 
-## 2.1.1.3 🧪 **测试代码**
+## 🧪 **测试代码**
 
 ```go
 package main
@@ -143,7 +143,7 @@ func TestCustomServer(t *testing.T) {
 
 ```
 
-## 2.1.1.4 🎯 **最佳实践**
+## 🎯 **最佳实践**
 
 - 合理设置超时，防止慢连接攻击
 - 使用优雅关闭，避免强制中断请求
@@ -151,7 +151,7 @@ func TestCustomServer(t *testing.T) {
 - 日志与监控集成，便于排查问题
 - 生产环境建议使用反向代理（如Nginx）
 
-## 2.1.1.5 🔍 **常见问题**
+## 🔍 **常见问题**
 
 - Q: 如何支持HTTPS？
   A: 使用`srv.ListenAndServeTLS(cert, key)`
@@ -160,7 +160,7 @@ func TestCustomServer(t *testing.T) {
 - Q: 如何实现健康检查？
   A: 提供`/healthz`等接口，返回200状态码
 
-## 2.1.1.6 📚 **扩展阅读**
+## 📚 **扩展阅读**
 
 - [Go官方文档-http.Server](https://golang.org/pkg/net/http/#Server)
 - [Go by Example: HTTP Servers](https://gobyexample.com/http-servers)
@@ -168,6 +168,7 @@ func TestCustomServer(t *testing.T) {
 
 ---
 
-**文档维护者**: AI Assistant  
-**最后更新**: 2024年6月27日  
-**文档状态**: 完成
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

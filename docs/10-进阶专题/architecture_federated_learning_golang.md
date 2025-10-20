@@ -1,4 +1,4 @@
-# 联邦学习架构 - Golang实现指南
+﻿# 联邦学习架构 - Golang实现指南
 
 ## 1. 目录
 
@@ -51,7 +51,7 @@
 
 ## 2. 概述
 
-### 2.1 定义与发展历程
+### 定义与发展历程
 
 联邦学习（Federated Learning）是一种分布式机器学习范式，允许多个参与方在不共享原始数据的情况下协作训练机器学习模型，通过模型参数的聚合来实现知识共享，同时保护数据隐私。
 
@@ -63,7 +63,7 @@
 - 2020年：隐私保护联邦学习技术成熟
 - 2022年后：跨域联邦学习、联邦学习即服务
 
-### 2.2 核心特征
+### 核心特征
 
 ```mermaid
 graph TB
@@ -97,7 +97,7 @@ graph TB
 
 ## 3. 联邦学习基础
 
-### 3.1 核心概念
+### 核心概念
 
 **参与方（Participants）：**
 
@@ -117,7 +117,7 @@ graph TB
 - 加权平均
 - 动态聚合策略
 
-### 3.2 联邦学习类型
+### 联邦学习类型
 
 **按数据分布分类：**
 
@@ -137,7 +137,7 @@ graph TB
 - 差分隐私联邦学习：添加噪声保护
 - 加密联邦学习：同态加密保护
 
-### 3.3 典型应用场景
+### 典型应用场景
 
 **金融行业：**
 
@@ -165,7 +165,7 @@ graph TB
 
 ## 4. 国际标准与主流框架
 
-### 4.1 国际标准
+### 国际标准
 
 **IEEE标准：**
 
@@ -183,7 +183,7 @@ graph TB
 - OpenMined：开源隐私保护标准
 - TensorFlow Federated：Google联邦学习标准
 
-### 4.2 主流开源框架
+### 主流开源框架
 
 **通用框架：**
 
@@ -204,7 +204,7 @@ graph TB
 - WeBank Federated Learning：微众银行平台
 - Intel OpenFL：英特尔联邦学习框架
 
-### 4.3 云服务商方案
+### 云服务商方案
 
 **商业平台：**
 
@@ -221,7 +221,7 @@ graph TB
 
 ## 5. 领域建模
 
-### 5.1 核心实体
+### 核心实体
 
 ```go
 // 参与方
@@ -264,7 +264,7 @@ type ModelAggregator struct {
 
 ```
 
-### 5.2 训练流程
+### 训练流程
 
 ```mermaid
 graph LR
@@ -281,31 +281,31 @@ graph LR
 
 ## 6. 分布式挑战
 
-### 6.1 通信开销
+### 通信开销
 
 - 大量模型参数传输
 - 网络带宽限制
 - 通信延迟影响
 
-### 6.2 异构性挑战
+### 异构性挑战
 
 - 参与方能力差异
 - 数据分布不均
 - 计算资源差异
 
-### 6.3 隐私安全
+### 隐私安全
 
 - 模型反演攻击
 - 成员推理攻击
 - 数据泄露风险
 
-### 6.4 系统容错
+### 系统容错
 
 - 参与方掉线
 - 恶意参与方
 - 网络故障
 
-### 6.5 收敛性保证
+### 收敛性保证
 
 - 异步更新影响
 - 局部最优问题
@@ -313,7 +313,7 @@ graph LR
 
 ## 7. 设计解决方案
 
-### 7.1 分层架构设计
+### 分层架构设计
 
 ```mermaid
 graph TD
@@ -324,19 +324,19 @@ graph TD
 
 ```
 
-### 7.2 通信优化策略
+### 通信优化策略
 
 - 模型压缩技术
 - 梯度量化
 - 选择性通信
 
-### 7.3 隐私保护机制
+### 隐私保护机制
 
 - 差分隐私
 - 同态加密
 - 安全多方计算
 
-### 7.4 容错机制
+### 容错机制
 
 - 参与方管理
 - 故障检测
@@ -344,7 +344,7 @@ graph TD
 
 ## 8. Golang实现
 
-### 8.1 联邦学习协调器
+### 联邦学习协调器
 
 ```go
 // 联邦学习协调器
@@ -411,7 +411,7 @@ func (fc *FederatedCoordinator) executeTrainingRound(task *FederatedTask, global
 
 ```
 
-### 8.2 模型聚合器
+### 模型聚合器
 
 ```go
 // 模型聚合器
@@ -475,7 +475,7 @@ func (was *WeightedAggregationStrategy) Aggregate(models []*Model, weights []flo
 
 ```
 
-### 8.3 隐私保护机制
+### 隐私保护机制
 
 ```go
 // 差分隐私管理器
@@ -548,7 +548,7 @@ func (hem *HomomorphicEncryptionManager) SecureAggregate(encryptedModels []*Encr
 
 ```
 
-### 8.4 参与方管理
+### 参与方管理
 
 ```go
 // 参与方管理器
@@ -626,20 +626,20 @@ func (pm *ParticipantManager) SelectParticipants(task *FederatedTask) []string {
 
 ## 9. 形式化建模
 
-### 9.1 联邦学习形式化
+### 联邦学习形式化
 
 - 参与方集合 P = {p1, p2, ..., pn}
 - 数据分布 D = {D1, D2, ..., Dn}
 - 目标函数 F(w) = Σ|Di|/|D| × Fi(w)
 - 聚合函数 A: {w1, w2, ..., wn} → w
 
-### 9.2 收敛性分析
+### 收敛性分析
 
 - 假设：函数Lipschitz连续
 - 收敛条件：η ≤ 1/L
 - 收敛速度：O(1/√T)
 
-### 9.3 隐私保护分析
+### 隐私保护分析
 
 - 差分隐私：Pr[M(D) ∈ S] ≤ e^ε × Pr[M(D') ∈ S] + δ
 - 隐私预算：Σεi ≤ ε_total
@@ -647,25 +647,25 @@ func (pm *ParticipantManager) SelectParticipants(task *FederatedTask) []string {
 
 ## 10. 最佳实践
 
-### 10.1 架构设计原则
+### 架构设计原则
 
 - 模块化设计，松耦合架构
 - 隐私优先，安全第一
 - 可扩展性，支持水平扩展
 
-### 10.2 性能优化
+### 性能优化
 
 - 通信压缩优化
 - 异步训练策略
 - 智能参与方选择
 
-### 10.3 隐私保护
+### 隐私保护
 
 - 差分隐私参数调优
 - 同态加密性能优化
 - 安全多方计算协议
 
-### 10.4 系统可靠性
+### 系统可靠性
 
 - 容错机制设计
 - 监控告警系统
@@ -673,25 +673,25 @@ func (pm *ParticipantManager) SelectParticipants(task *FederatedTask) []string {
 
 ## 11. 参考资源
 
-### 11.1 标准与规范
+### 标准与规范
 
 - IEEE P3652.1: <https://standards.ieee.org/project/3652_1.html>
 - ISO/IEC 23053: <https://www.iso.org/standard/75006.html>
 - FATE: <https://fate.fedai.org/>
 
-### 11.2 开源项目
+### 开源项目
 
 - TensorFlow Federated: <https://www.tensorflow.org/federated>
 - PySyft: <https://github.com/OpenMined/PySyft>
 - FedML: <https://fedml.ai/>
 
-### 11.3 研究机构
+### 研究机构
 
 - OpenMined: <https://www.openmined.org/>
 - WeBank: <https://www.webank.com/>
 - Google Research: <https://research.google/>
 
-### 11.4 书籍与论文
+### 书籍与论文
 
 - Federated Learning: Challenges, Methods, and Future Directions (ACM)
 - Advances and Open Problems in Federated Learning (Foundations and Trends)
@@ -699,3 +699,10 @@ func (pm *ParticipantManager) SelectParticipants(task *FederatedTask) []string {
 ---
 
 - 本文档为联邦学习架构的系统性指南，涵盖理论、设计、实现与最佳实践，适用于Golang开发者与架构师。*
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+

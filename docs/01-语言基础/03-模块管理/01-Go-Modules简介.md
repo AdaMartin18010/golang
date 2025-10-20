@@ -1,4 +1,4 @@
-# Go Modules 简介
+﻿# Go Modules 简介
 
 > **简介**: 全面介绍 Go Modules 依赖管理系统的由来、核心概念和工作原理，帮助开发者理解为什么需要 Go Modules 以及它如何解决传统 GOPATH 的问题。
 
@@ -61,7 +61,7 @@
 
 ## 1. 📚 理论分析
 
-### 1.1 什么是 Go Modules
+### 什么是 Go Modules
 
 **Go Modules** 是 Go 语言的官方依赖管理系统，从 Go 1.11 开始引入，在 Go 1.13 成为默认模式。它提供了：
 
@@ -75,9 +75,9 @@
 - `go.mod`: 定义模块路径和依赖版本
 - `go.sum`: 记录依赖包的哈希校验和
 
-### 1.2 为什么需要 Go Modules
+### 为什么需要 Go Modules
 
-#### 1.2.1 GOPATH 的痛点
+#### GOPATH 的痛点
 
 传统的 GOPATH 模式存在以下问题：
 
@@ -109,7 +109,7 @@
    同一项目在不同时间、不同环境构建可能得到不同结果
    ```
 
-#### 1.2.2 Go Modules 的解决方案
+#### Go Modules 的解决方案
 
 | 问题 | GOPATH 方式 | Go Modules 方式 |
 |------|------------|----------------|
@@ -119,9 +119,9 @@
 | 构建重现 | ❌ 不可重现 | ✅ go.sum 保证一致性 |
 | 私有仓库 | ❌ 配置复杂 | ✅ GOPRIVATE 简化配置 |
 
-### 1.3 核心概念
+### 核心概念
 
-#### 1.3.1 模块 (Module)
+#### 模块 (Module)
 
 **定义**: 模块是相关 Go 包的集合，作为一个单元进行版本化。
 
@@ -146,7 +146,7 @@ myproject/
     └── utils.go
 ```
 
-#### 1.3.2 go.mod 文件
+#### go.mod 文件
 
 `go.mod` 文件定义模块的属性和依赖：
 
@@ -176,7 +176,7 @@ exclude github.com/broken/pkg v1.2.3  // 排除特定版本
 - `exclude`: 排除依赖版本
 - `retract`: 收回已发布版本
 
-#### 1.3.3 go.sum 文件
+#### go.sum 文件
 
 `go.sum` 记录依赖包的校验和，确保依赖完整性：
 
@@ -193,9 +193,9 @@ github.com/gin-gonic/gin v1.9.1/go.mod h1:hPrL7YrpYKXt5YId3A/Tnip5kqbEAP+KLuI3SU
 - 确保团队成员使用相同的依赖
 - 防止供应链攻击
 
-### 1.4 工作原理
+### 工作原理
 
-#### 1.4.1 依赖解析流程
+#### 依赖解析流程
 
 ```mermaid
 graph TD
@@ -214,7 +214,7 @@ graph TD
     L --> M[结束]
 ```
 
-#### 1.4.2 最小版本选择 (MVS)
+#### 最小版本选择 (MVS)
 
 Go Modules 使用 **最小版本选择算法** (Minimal Version Selection)：
 
@@ -236,7 +236,7 @@ Go Modules 使用 **最小版本选择算法** (Minimal Version Selection)：
 - 稳定：不会自动升级到不需要的版本
 - 简单：算法清晰易懂
 
-#### 1.4.3 模块缓存
+#### 模块缓存
 
 **缓存位置**: `$GOPATH/pkg/mod`
 
@@ -264,9 +264,9 @@ $GOPATH/pkg/mod/
 
 ## 2. 💻 代码示例
 
-### 2.1 初始化模块
+### 初始化模块
 
-#### 2.1.1 创建新项目
+#### 创建新项目
 
 ```bash
 # 1. 创建项目目录
@@ -288,7 +288,7 @@ module github.com/username/hello-modules
 go 1.25
 ```
 
-#### 2.1.2 编写代码
+#### 编写代码
 
 ```go
 // main.go
@@ -301,7 +301,7 @@ func main() {
 }
 ```
 
-#### 2.1.3 运行程序
+#### 运行程序
 
 ```bash
 # 直接运行
@@ -312,9 +312,9 @@ go build
 ./hello-modules
 ```
 
-### 2.2 添加依赖
+### 添加依赖
 
-#### 2.2.1 在代码中使用依赖
+#### 在代码中使用依赖
 
 ```go
 // main.go
@@ -338,7 +338,7 @@ func main() {
 }
 ```
 
-#### 2.2.2 自动添加依赖
+#### 自动添加依赖
 
 ```bash
 # 方式1: go mod tidy (推荐)
@@ -364,9 +364,9 @@ require (
 )
 ```
 
-### 2.3 使用依赖
+### 使用依赖
 
-#### 2.3.1 指定版本
+#### 指定版本
 
 ```bash
 # 使用最新版本
@@ -382,7 +382,7 @@ go get github.com/gin-gonic/gin@abc1234
 go get github.com/gin-gonic/gin@master
 ```
 
-#### 2.3.2 更新依赖
+#### 更新依赖
 
 ```bash
 # 更新所有依赖到最新版本
@@ -399,9 +399,9 @@ go get -u=patch ./...
 
 ## 3. 🔧 实践应用
 
-### 3.1 从 GOPATH 迁移
+### 从 GOPATH 迁移
 
-#### 3.1.1 迁移步骤
+#### 迁移步骤
 
 ```bash
 # 1. 进入项目目录 (可以在任意位置)
@@ -421,7 +421,7 @@ git add go.mod go.sum
 git commit -m "Migrate to Go Modules"
 ```
 
-#### 3.1.2 处理内部包
+#### 处理内部包
 
 **GOPATH 方式**:
 
@@ -435,9 +435,9 @@ import "github.com/username/project/pkg/utils"
 import "github.com/username/project/pkg/utils"
 ```
 
-### 3.2 多模块项目
+### 多模块项目
 
-#### 3.2.1 项目结构
+#### 项目结构
 
 ```text
 project/
@@ -451,7 +451,7 @@ project/
     └── main.go
 ```
 
-#### 3.2.2 使用 Workspace (Go 1.18+)
+#### 使用 Workspace (Go 1.18+)
 
 ```bash
 # 1. 创建 workspace
@@ -476,7 +476,7 @@ use (
 
 ## 4. 📊 对比分析
 
-### 4.1 GOPATH vs Go Modules
+### GOPATH vs Go Modules
 
 | 特性 | GOPATH | Go Modules |
 |------|--------|-----------|
@@ -488,7 +488,7 @@ use (
 | **多版本共存** | ❌ 不支持 | ✅ 支持 |
 | **离线构建** | ❌ 困难 | ✅ vendor 支持 |
 
-### 4.2 与其他语言对比
+### 与其他语言对比
 
 | 语言 | 包管理器 | 配置文件 | 锁文件 |
 |------|---------|---------|--------|
@@ -556,7 +556,7 @@ use (
 
 ## 6. ⚠️ 常见陷阱
 
-### 6.1 忘记运行 go mod tidy
+### 忘记运行 go mod tidy
 
 **问题**: 添加或删除依赖后 go.mod 不同步
 
@@ -566,7 +566,7 @@ use (
 go mod tidy
 ```
 
-### 6.2 依赖版本冲突
+### 依赖版本冲突
 
 **问题**: 不同模块需要同一包的不同版本
 
@@ -577,7 +577,7 @@ go mod tidy
 go mod edit -replace=old@v1.0.0=new@v2.0.0
 ```
 
-### 6.3 私有仓库访问失败
+### 私有仓库访问失败
 
 **问题**: 无法下载私有 Git 仓库
 
@@ -591,7 +591,7 @@ go env -w GOPRIVATE=github.com/mycompany/*
 git config --global url."git@github.com:".insteadOf "https://github.com/"
 ```
 
-### 6.4 代理无法访问
+### 代理无法访问
 
 **问题**: 默认代理在某些地区无法访问
 
@@ -606,7 +606,7 @@ go env -w GOPROXY=https://goproxy.cn,direct
 
 ## 7. 🔍 常见问题
 
-### 7.1 Q: Go Modules 和 GOPATH 能同时使用吗？
+### Q: Go Modules 和 GOPATH 能同时使用吗？
 
 **A**: 可以，但不推荐。Go 1.16+ 默认启用 Go Modules。
 
@@ -619,7 +619,7 @@ go env GO111MODULE
 # auto: 自动判断 (不推荐)
 ```
 
-### 7.2 Q: 如何查看项目的所有依赖？
+### Q: 如何查看项目的所有依赖？
 
 **A**: 使用 `go list` 命令
 
@@ -634,7 +634,7 @@ go list -m -f '{{if not .Indirect}}{{.}}{{end}}' all
 go mod graph
 ```
 
-### 7.3 Q: 如何降级依赖版本？
+### Q: 如何降级依赖版本？
 
 **A**: 使用 `go get` 指定旧版本
 
@@ -646,7 +646,7 @@ go get github.com/gin-gonic/gin@v1.8.0
 go list -m -versions github.com/gin-gonic/gin
 ```
 
-### 7.4 Q: go.mod 中的 `// indirect` 是什么意思？
+### Q: go.mod 中的 `// indirect` 是什么意思？
 
 **A**: 表示间接依赖（传递依赖）
 
@@ -657,7 +657,7 @@ require (
 )
 ```
 
-### 7.5 Q: 如何强制重新下载依赖？
+### Q: 如何强制重新下载依赖？
 
 **A**: 清除缓存后重新下载
 
@@ -673,26 +673,26 @@ go mod download
 
 ## 8. 📚 扩展阅读
 
-### 8.1 官方文档
+### 官方文档
 
 - [Go Modules Reference](https://go.dev/ref/mod) - 官方参考文档
 - [Tutorial: Create a module](https://go.dev/doc/tutorial/create-module) - 创建模块教程
 - [Using Go Modules](https://go.dev/blog/using-go-modules) - 使用指南
 
-### 8.2 深入理解
+### 深入理解
 
 - [Minimal Version Selection](https://research.swtch.com/vgo-mvs) - MVS 算法详解
 - [The Principles of Versioning in Go](https://research.swtch.com/vgo-principles) - 版本控制原则
 - [Semantic Import Versioning](https://research.swtch.com/vgo-import) - 语义化导入版本
 
-### 8.3 相关文档
+### 相关文档
 
 - [go.mod文件详解](./02-go-mod文件详解.md)
 - [go.sum文件详解](./03-go-sum文件详解.md)
 - [语义化版本](./04-语义化版本.md)
 - [go mod命令](./05-go-mod命令.md)
 
-### 8.4 工具和资源
+### 工具和资源
 
 - [pkg.go.dev](https://pkg.go.dev/) - Go 包搜索和文档
 - [Go Proxy](https://goproxy.io/) - 模块代理服务
@@ -700,7 +700,7 @@ go mod download
 
 ---
 
-**文档维护者**: Go Modules Team  
-**最后更新**: 2025年10月19日  
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
 **文档状态**: 完成  
-**适用版本**: Go 1.11+，推荐 Go 1.25.3+
+**适用版本**: Go 1.21+

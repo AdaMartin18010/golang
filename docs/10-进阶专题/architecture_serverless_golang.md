@@ -1,4 +1,4 @@
-# 无服务器架构（Golang国际主流实践）
+﻿# 无服务器架构（Golang国际主流实践）
 
 ## 1. 目录
 
@@ -27,7 +27,7 @@
 
 ## 2. 无服务器架构概述
 
-### 2.1 主流技术与平台
+### 主流技术与平台
 
 - **AWS Lambda**: 市场领导者，最早普及FaaS（函数即服务）的平台。
 - **Google Cloud Functions**: Google Cloud的FaaS产品。
@@ -36,7 +36,7 @@
 - **OpenFaaS**: 一个流行的开源FaaS框架，可以部署在Kubernetes上。
 - **Serverless Framework**: 一个与云无关的框架，用于构建和部署无服务器应用。
 
-### 2.2 发展历程
+### 发展历程
 
 - **2014**: AWS Lambda发布，标志着商业FaaS时代的开启。
 - **2016**: Google Cloud Functions 和 Azure Functions 相继发布。
@@ -44,7 +44,7 @@
 - **2018**: Google联合多家公司发布Knative，将Serverless能力带入Kubernetes生态。
 - **2020s**: Serverless容器化（如AWS Fargate, Google Cloud Run）成为趋势，结合了Serverless的弹性和容器的灵活性。
 
-### 2.3 国际权威链接
+### 国际权威链接
 
 - [AWS Lambda](https://aws.amazon.com/lambda/)
 - [Google Cloud Functions](https://cloud.google.com/functions)
@@ -56,7 +56,7 @@
 
 ## 3. 核心架构模式与设计原则
 
-### 3.1 函数即服务 (Function as a Service - FaaS)
+### 函数即服务 (Function as a Service - FaaS)
 
 FaaS是Serverless的核心。开发者只需编写和部署独立的、短暂的、由事件触发的函数。底层的基础设施由云厂商完全管理。
 
@@ -67,7 +67,7 @@ FaaS是Serverless的核心。开发者只需编写和部署独立的、短暂的
 - **事件驱动**: 函数由事件触发，如HTTP请求、数据库更改、文件上传等。
 - **短暂性**: 函数实例的生命周期是短暂的，按需创建和销毁。
 
-### 3.2 后端即服务 (Backend as a Service - BaaS)
+### 后端即服务 (Backend as a Service - BaaS)
 
 BaaS利用第三方服务来处理后端逻辑，如认证、数据库管理、云存储等。开发者通过API与这些服务集成，无需自行开发和维护后端。
 
@@ -101,7 +101,7 @@ graph TD
 
 ## 4. Golang主流实现与代码示例
 
-### 4.1 AWS Lambda with Golang
+### AWS Lambda with Golang
 
 **Go函数示例 (aws-lambda-go)**:
 
@@ -145,7 +145,7 @@ func main() {
 2. **打包**: `zip function.zip main`
 3. **部署**: 通过AWS CLI或控制台上传`function.zip`并配置触发器（如API Gateway）。
 
-### 4.2 Google Cloud Functions with Golang
+### Google Cloud Functions with Golang
 
 **Go函数示例**:
 
@@ -216,7 +216,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 
 ## 6. 工程结构与CI/CD实践
 
-### 6.1 项目结构建议 (Serverless Framework)
+### 项目结构建议 (Serverless Framework)
 
 使用Monorepo（单一代码库）管理多个函数，便于共享代码和统一管理。
 
@@ -241,7 +241,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 
 ```
 
-### 6.2 配置文件 (serverless.yml)
+### 配置文件 (serverless.yml)
 
 此文件定义了服务、函数、触发事件和所需的基础设施资源。
 
@@ -300,7 +300,7 @@ custom:
 
 ```
 
-### 6.3 CI/CD工作流 (GitHub Actions)
+### CI/CD工作流 (GitHub Actions)
 
 ```yaml
 
@@ -356,7 +356,7 @@ jobs:
 
 ## 7. Golang 无服务器架构代码示例
 
-### 7.1 完整的无服务器平台实现
+### 完整的无服务器平台实现
 
 ```go
 package serverless
@@ -1209,7 +1209,7 @@ func generateID() string {
 }
 ```
 
-### 7.2 实际使用示例
+### 实际使用示例
 
 ```go
 // Lambda函数示例
@@ -1252,3 +1252,10 @@ func main() {
 ---
 
 - 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
+
+---
+
+**文档维护者**: Go Documentation Team  
+**最后更新**: 2025年10月20日  
+**文档状态**: 完成  
+**适用版本**: Go 1.21+
