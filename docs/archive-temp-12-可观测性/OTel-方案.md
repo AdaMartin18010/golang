@@ -1,4 +1,4 @@
-
+﻿
 ## 目标与范围
 
 - 覆盖端到端可观测性四要素：Trace、Metrics、Logs、Profile，统一以 OpenTelemetry（以下简称 OTel）为采集与标准层；Collector 作为汇聚与处理中心；下游可插拔（Prometheus/Tempo/Loki/Mimir/Jaeger/OTel-Collector/云厂商）。

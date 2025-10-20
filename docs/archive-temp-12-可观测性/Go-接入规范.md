@@ -1,4 +1,4 @@
-
+﻿
 ## 接入原则
 
 - 默认开启 Trace 与 Metrics；Logs 采用结构化（slog）并注入 trace_id/span_id。

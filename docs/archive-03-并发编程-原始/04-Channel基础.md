@@ -1,4 +1,4 @@
-# 2.1 Channel基础
+﻿# 2.1 Channel基础
 
 <!-- TOC START -->
 - [2.1 Channel基础](#21-channel基础)
