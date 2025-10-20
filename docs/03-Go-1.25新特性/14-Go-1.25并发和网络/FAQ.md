@@ -1,18 +1,53 @@
 ﻿# Go 1.23+ 并发和网络 - 常见问题解答 (FAQ)
 
 > **版本**: v1.0  
-> 
+>
 > **适用版本**: Go 1.23++
 
 ---
 
 ## 📑 目录
 
-- [WaitGroup.Go()](#waitgroupgo)
-- [testing/synctest](#testingsynctest)
-- [HTTP/3 和 QUIC](#http3-和-quic)
-- [JSON v2](#json-v2)
-- [并发最佳实践](#并发最佳实践)
+- [Go 1.23+ 并发和网络 - 常见问题解答 (FAQ)](#go-123-并发和网络---常见问题解答-faq)
+  - [📑 目录](#-目录)
+  - [WaitGroup.Go()](#waitgroupgo)
+    - [Q1: WaitGroup.Go() 解决什么问题？](#q1-waitgroupgo-解决什么问题)
+    - [Q2: WaitGroup.Go() 如何处理 panic？](#q2-waitgroupgo-如何处理-panic)
+    - [Q3: WaitGroup.Go() 支持返回值吗？](#q3-waitgroupgo-支持返回值吗)
+    - [Q4: WaitGroup.Go() 有并发数限制吗？](#q4-waitgroupgo-有并发数限制吗)
+    - [Q5: WaitGroup.Go() 性能如何？](#q5-waitgroupgo-性能如何)
+    - [Q6: 什么时候不应该用 WaitGroup.Go()？](#q6-什么时候不应该用-waitgroupgo)
+    - [Q7: WaitGroup.Go() 可以嵌套吗？](#q7-waitgroupgo-可以嵌套吗)
+  - [testing/synctest](#testingsynctest)
+    - [Q8: testing/synctest 是什么？](#q8-testingsynctest-是什么)
+    - [Q9: synctest 如何模拟时间？](#q9-synctest-如何模拟时间)
+    - [Q10: synctest 能检测死锁吗？](#q10-synctest-能检测死锁吗)
+    - [Q11: synctest 适合测试什么？](#q11-synctest-适合测试什么)
+    - [Q12: synctest 如何使用？](#q12-synctest-如何使用)
+  - [HTTP/3 和 QUIC](#http3-和-quic)
+    - [Q13: 如何启用 HTTP/3？](#q13-如何启用-http3)
+    - [Q14: HTTP/3 向后兼容吗？](#q14-http3-向后兼容吗)
+    - [Q15: HTTP/3 性能提升多少？](#q15-http3-性能提升多少)
+    - [Q16: HTTP/3 需要什么环境？](#q16-http3-需要什么环境)
+    - [Q17: 如何调试 HTTP/3？](#q17-如何调试-http3)
+    - [Q18: HTTP/3 支持 gRPC 吗？](#q18-http3-支持-grpc-吗)
+  - [JSON v2](#json-v2)
+    - [Q19: JSON v2 有什么改进？](#q19-json-v2-有什么改进)
+    - [Q20: 如何使用 JSON v2？](#q20-如何使用-json-v2)
+    - [Q21: JSON v2 向后兼容吗？](#q21-json-v2-向后兼容吗)
+    - [Q22: JSON v2 流式处理怎么用？](#q22-json-v2-流式处理怎么用)
+    - [Q23: JSON v2 支持注释吗？](#q23-json-v2-支持注释吗)
+    - [Q24: JSON v2 错误信息更好吗？](#q24-json-v2-错误信息更好吗)
+  - [并发最佳实践](#并发最佳实践)
+    - [Q25: 如何限制 goroutine 数量？](#q25-如何限制-goroutine-数量)
+    - [Q26: Channel 还是 Mutex？](#q26-channel-还是-mutex)
+    - [Q27: 如何优雅关闭 goroutine？](#q27-如何优雅关闭-goroutine)
+    - [Q28: 如何避免 goroutine 泄漏？](#q28-如何避免-goroutine-泄漏)
+    - [Q29: 并发编程的常见陷阱？](#q29-并发编程的常见陷阱)
+    - [Q30: 如何测试并发代码？](#q30-如何测试并发代码)
+  - [📚 更多资源](#-更多资源)
+    - [官方文档](#官方文档)
+    - [本项目文档](#本项目文档)
 
 ---
 
@@ -23,6 +58,7 @@
 **A**: **简化 goroutine 启动和等待**
 
 **传统方式**:
+
 ```go
 var wg sync.WaitGroup
 wg.Add(1)
@@ -34,6 +70,7 @@ wg.Wait()
 ```
 
 **Go 1.23+**:
+
 ```go
 var wg sync.WaitGroup
 wg.Go(doWork)
@@ -41,6 +78,7 @@ wg.Wait()
 ```
 
 **优势**:
+
 - ✅ 代码更简洁
 - ✅ 不会忘记 Add/Done
 - ✅ 自动处理 panic
@@ -66,6 +104,7 @@ if err != nil {
 ```
 
 **传统方式**需要手动处理：
+
 ```go
 var wg sync.WaitGroup
 wg.Add(1)
@@ -154,11 +193,13 @@ BenchmarkWaitGroupGo-8    1000000    1250 ns/op
 **A**: **需要精确控制的场景**
 
 **不推荐**:
+
 - 需要在 goroutine 启动前做复杂初始化
 - 需要有条件地启动 goroutine
 - 需要传递大量参数
 
 **这些情况用传统方式更清晰**:
+
 ```go
 var wg sync.WaitGroup
 if condition {
@@ -204,12 +245,14 @@ outerWg.Wait()
 **A**: **并发测试辅助工具**
 
 **用途**:
+
 - 测试并发代码
 - 模拟时间流逝
 - 确定性测试
 - 竞态条件检测
 
 **示例**:
+
 ```go
 func TestConcurrent(t *testing.T) {
     synctest.Run(func() {
@@ -239,6 +282,7 @@ func TestTimeout(t *testing.T) {
 ```
 
 **好处**:
+
 - ✅ 测试运行快
 - ✅ 不依赖实际时间
 - ✅ 可重复
@@ -264,7 +308,8 @@ func TestDeadlock(t *testing.T) {
 ```
 
 **输出**:
-```
+
+```text
 fatal error: all goroutines are asleep - deadlock!
 ```
 
@@ -275,6 +320,7 @@ fatal error: all goroutines are asleep - deadlock!
 **A**: **并发逻辑**
 
 **适合** ✅:
+
 - Channel 通信
 - 超时逻辑
 - 重试机制
@@ -282,6 +328,7 @@ fatal error: all goroutines are asleep - deadlock!
 - 竞态条件
 
 **不适合** ❌:
+
 - I/O 操作（文件、网络）
 - 外部系统集成
 - 真实时间依赖
@@ -324,6 +371,7 @@ func TestMyFunc(t *testing.T) {
 **A**: **只需要配置**
 
 **服务端**:
+
 ```go
 server := &http.Server{
     Addr:    ":443",
@@ -339,6 +387,7 @@ server.ListenAndServeQUIC("cert.pem", "key.pem")
 ```
 
 **客户端**:
+
 ```go
 client := &http.Client{
     Transport: &http3.Transport{},
@@ -354,11 +403,13 @@ resp, err := client.Get("https://example.com")
 **A**: ✅ **完全兼容**
 
 **协商过程**:
+
 1. 客户端首次连接使用 HTTP/1.1 或 HTTP/2
 2. 服务器通过 Alt-Svc 头告知支持 HTTP/3
 3. 后续请求升级到 HTTP/3
 
 **代码无需修改**:
+
 ```go
 // 相同的代码，自动协商最佳协议
 resp, err := http.Get("https://example.com")
@@ -371,15 +422,19 @@ resp, err := http.Get("https://example.com")
 **A**: **取决于网络条件**
 
 **理想条件**（低延迟，低丢包）:
+
 - 提升 5-10%
 
 **弱网条件**（高延迟，高丢包）:
+
 - 提升 30-50%
 
 **移动网络**:
+
 - 提升尤其明显
 
 **原因**:
+
 - 0-RTT 连接建立
 - 独立流，丢包不阻塞
 - 连接迁移
@@ -391,11 +446,13 @@ resp, err := http.Get("https://example.com")
 **A**: **HTTPS 和 UDP**
 
 **要求**:
+
 - ✅ HTTPS（必需）
 - ✅ UDP 端口 443 开放
 - ✅ 支持 QUIC 的客户端
 
 **防火墙配置**:
+
 ```bash
 # 允许 UDP 443
 iptables -A INPUT -p udp --dport 443 -j ACCEPT
@@ -418,6 +475,7 @@ server := &http3.Server{
 ```
 
 **Chrome DevTools**:
+
 - chrome://net-internals/#quic
 - 查看 QUIC 连接详情
 
@@ -436,7 +494,6 @@ server := grpc.NewServer(
 )
 ```
 
-
 - Go 1.23+: 实验性
 - 未来版本: 完全支持
 
@@ -449,11 +506,13 @@ server := grpc.NewServer(
 **A**: **性能和功能**
 
 **性能**:
+
 - 编码快 20-30%
 - 解码快 15-25%
 - 内存使用少 10-15%
 
 **功能**:
+
 - ✅ 流式处理
 - ✅ 自定义序列化
 - ✅ 更好的错误信息
@@ -538,6 +597,7 @@ err := decoder.Decode(&config)
 ```
 
 **JSON 文件**:
+
 ```json
 {
     // 这是注释
@@ -555,12 +615,14 @@ err := decoder.Decode(&config)
 **A**: ✅ **显著改进**
 
 **v1 错误**:
-```
+
+```text
 invalid character '}' looking for beginning of value
 ```
 
 **v2 错误**:
-```
+
+```text
 line 5, column 10: unexpected '}', expecting field name or '}'
 context: parsing object for type Config
 ```
@@ -601,18 +663,21 @@ func (p *WorkerPool) Submit(task func()) {
 **A**: **看场景**
 
 **使用 Channel** ✅:
+
 - 数据流动
 - 多生产者/消费者
 - 事件通知
 - "通过通信共享内存"
 
 **使用 Mutex** ✅:
+
 - 保护共享状态
 - 短期锁定
 - 简单计数器
 - "通过共享内存通信"
 
 **示例**:
+
 ```go
 // Channel: 数据流
 ch := make(chan Work)
@@ -664,6 +729,7 @@ cancel()  // 通知所有 worker 退出
 **A**: **4 个关键点**
 
 **1. 总是有退出条件**:
+
 ```go
 // ❌ 错误：永远运行
 go func() {
@@ -686,6 +752,7 @@ go func() {
 ```
 
 **2. Channel 接收者确保退出**:
+
 ```go
 // ✅ 发送者关闭 channel
 close(ch)
@@ -697,12 +764,14 @@ for item := range ch {
 ```
 
 **3. 使用 Context 超时**:
+
 ```go
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 defer cancel()
 ```
 
 **4. 工具检测**:
+
 ```bash
 go test -race ./...  # 检测竞态
 ```
@@ -714,6 +783,7 @@ go test -race ./...  # 检测竞态
 **A**: **5 大陷阱**
 
 **1. 循环变量捕获**:
+
 ```go
 // ❌ 错误
 for _, item := range items {
@@ -732,6 +802,7 @@ for _, item := range items {
 ```
 
 **2. 忘记 WaitGroup.Add**:
+
 ```go
 // ❌ 错误
 var wg sync.WaitGroup
@@ -750,6 +821,7 @@ go func() {
 ```
 
 **3. Channel 死锁**:
+
 ```go
 // ❌ 错误
 ch := make(chan int)
@@ -761,6 +833,7 @@ ch <- 42
 ```
 
 **4. 竞态条件**:
+
 ```go
 // ❌ 错误
 count := 0
@@ -780,6 +853,7 @@ for i := 0; i < 100; i++ {
 ```
 
 **5. Context 不传播**:
+
 ```go
 // ❌ 错误
 func handle(ctx context.Context) {
@@ -799,11 +873,13 @@ func handle(ctx context.Context) {
 **A**: **多种方法组合**
 
 **1. 单元测试 + 竞态检测**:
+
 ```bash
 go test -race ./...
 ```
 
 **2. 使用 testing/synctest**:
+
 ```go
 func TestConcurrent(t *testing.T) {
     synctest.Run(func() {
@@ -813,6 +889,7 @@ func TestConcurrent(t *testing.T) {
 ```
 
 **3. 压力测试**:
+
 ```go
 func TestStress(t *testing.T) {
     for i := 0; i < 1000; i++ {
@@ -824,6 +901,7 @@ func TestStress(t *testing.T) {
 ```
 
 **4. 基准测试**:
+
 ```go
 func BenchmarkConcurrent(b *testing.B) {
     b.RunParallel(func(pb *testing.PB) {
@@ -839,11 +917,13 @@ func BenchmarkConcurrent(b *testing.B) {
 ## 📚 更多资源
 
 ### 官方文档
+
 - [Go Concurrency Patterns](https://go.dev/blog/pipelines)
 - [HTTP/3 in Go](https://pkg.go.dev/net/http)
 - [JSON Package](https://pkg.go.dev/encoding/json)
 
 ### 本项目文档
+
 - [WaitGroup.Go() 详解](./01-WaitGroup-Go方法.md)
 - [testing/synctest 详解](./02-testing-synctest包.md)
 - [HTTP/3 和 QUIC 详解](./03-HTTP3-和-QUIC支持.md)

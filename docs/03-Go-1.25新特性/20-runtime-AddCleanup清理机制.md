@@ -31,6 +31,7 @@ Go 1.25引入了`runtime.AddCleanup`函数，作为`runtime.SetFinalizer`的现�
 ### runtime.AddCleanup
 
 **函数签名**:
+
 ```go
 func AddCleanup[T, S any](ptr *T, cleanup func(S), arg S) Cleanup
 
@@ -40,11 +41,13 @@ type Cleanup interface {
 ```
 
 **参数说明**:
+
 - `ptr *T`: 被跟踪的对象指针
 - `cleanup func(S)`: 清理函数
 - `arg S`: 传递给清理函数的参数
 
 **返回值**:
+
 - `Cleanup`: 清理器接口，可调用`Stop()`取消清理
 
 ---
@@ -587,7 +590,8 @@ func BenchmarkAddCleanup(b *testing.B) {
 ```
 
 **结果**:
-```
+
+```text
 BenchmarkSetFinalizer-8    1000000    1200 ns/op    1024 B/op    2 allocs/op
 BenchmarkAddCleanup-8      1000000    1250 ns/op    1024 B/op    2 allocs/op
 

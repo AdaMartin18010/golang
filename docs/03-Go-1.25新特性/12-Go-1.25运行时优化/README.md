@@ -1,8 +1,8 @@
 ﻿# Go 1.23+ 运行时优化
 
 > **版本要求**: Go 1.23++  
-> 
-> 
+>
+>
 
 ---
 
@@ -799,7 +799,6 @@ git push origin feature/your-feature
 
 **编写者**: AI Assistant  
 **审核者**: [待审核]  
-
 
 ---
 
