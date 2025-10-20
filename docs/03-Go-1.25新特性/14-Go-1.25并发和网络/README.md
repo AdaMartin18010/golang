@@ -468,7 +468,7 @@ go mod edit -go=1.25
 
 - 💻 [WaitGroup.Go() 示例](./examples/waitgroup_go/)
 - 💻 [synctest 示例](./examples/synctest/)
-- 💻 [HTTP/3 示例](./examples/http3/)
+- 💻 [HTTP/3 示例](03-HTTP3-和-QUIC支持.md)
 
 ### 官方文档
 

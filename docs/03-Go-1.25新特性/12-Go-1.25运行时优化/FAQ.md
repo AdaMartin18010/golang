@@ -705,7 +705,7 @@ benchstat bench.txt
 - [Go Runtime Documentation](https://pkg.go.dev/runtime)
 
 ### 本项目文档
-- [greentea GC 详解](./01-greentea-GC垃圾收集器.md)
+- [greentea GC 详解](./README.md)
 - [容器感知调度详解](./02-容器感知调度.md)
 - [内存分配器优化详解](./03-内存分配器优化.md)
 - [模块 README](./README.md)

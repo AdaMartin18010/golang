@@ -43,7 +43,7 @@ Go 1.23+ 在运行时层面引入了多项重要优化,显著提升了程序的�
 
 ### 1. greentea GC 垃圾收集器
 
-**📄 文档**: [01-greentea-GC垃圾收集器.md](./01-greentea-GC垃圾收集器.md)
+**📄 文档**: [01-greentea-GC垃圾收集器.md](./README.md)
 
 **核心优势**:
 

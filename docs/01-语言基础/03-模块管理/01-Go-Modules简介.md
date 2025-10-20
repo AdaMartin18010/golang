@@ -687,9 +687,9 @@ go mod download
 
 ### 相关文档
 
-- [go.mod文件详解](./02-go-mod文件详解.md)
-- [go.sum文件详解](./03-go-sum文件详解.md)
-- [语义化版本](./04-语义化版本.md)
+- [go.mod文件详解](02-go-mod文件详解.md)
+- [go.sum文件详解](03-go-sum文件详解.md)
+- [语义化版本](04-语义化版本.md)
 - [go mod命令](./05-go-mod命令.md)
 
 ### 工具和资源

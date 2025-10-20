@@ -890,8 +890,8 @@ go list -m -versions github.com/gin-gonic/gin
 ### 相关文档
 
 - [Go Modules简介](./01-Go-Modules简介.md)
-- [go.mod文件详解](./02-go-mod文件详解.md)
-- [依赖管理](./06-依赖管理.md)
+- [go.mod文件详解](02-go-mod文件详解.md)
+- [依赖管理](06-依赖管理.md)
 
 ### 工具和脚本
 
