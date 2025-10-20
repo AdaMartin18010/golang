@@ -80,14 +80,14 @@ module github.com/username/projectname
 指定Go语言版本：
 
 ```go
-go 1.21
+go 1.25.3
 ```
 
 **作用**:
 
 - 声明项目所需的最低Go版本
 - 影响语言特性的可用性
-- Go 1.21+支持更精确的工具链选择
+- Go 1.25.3+支持更精确的工具链选择
 
 ### 2.3 require指令
 
@@ -162,7 +162,7 @@ retract (
 ```go
 module github.com/mycompany/myproject
 
-go 1.21
+go 1.25.3
 
 require (
     github.com/gin-gonic/gin v1.9.1
@@ -176,7 +176,7 @@ require (
 ```go
 module github.com/mycompany/advanced-project
 
-go 1.21
+go 1.25.3
 
 require (
     github.com/gin-gonic/gin v1.9.1
@@ -264,7 +264,7 @@ go list -u -m all
 3. **明确指定Go版本**
 
    ```go
-   go 1.21
+   Go 1.25.3
    ```
 
 4. **使用replace进行本地开发**
@@ -339,4 +339,4 @@ replace github.com/myorg/pkg => ../local/pkg
 **文档维护者**: Go Documentation Team  
 **最后更新**: 2025年10月20日  
 **文档状态**: 完成  
-**适用版本**: Go 1.21+
+**适用版本**: Go 1.25.3+

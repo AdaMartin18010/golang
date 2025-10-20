@@ -1,4 +1,4 @@
-# 3.5.1 分布式系统设计模式 - Golang实现与分析
+﻿# 3.5.1 分布式系统设计模式 - Golang实现与分析
 
 ## 3.5.1.1 目录
 
@@ -11113,7 +11113,7 @@ func (sg *ScaffoldGenerator) generateService(serviceDir string, service ServiceC
 // 模板定义
 const goModTemplate = `module {{.Name}}
 
-go 1.21
+go 1.25.3
 
 require (
     github.com/gin-gonic/gin v1.9.1

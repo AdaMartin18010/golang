@@ -285,7 +285,7 @@ cat go.mod
 ```go
 module github.com/username/hello-modules
 
-go 1.25
+go 1.25.3
 ```
 
 #### 编写代码
@@ -356,7 +356,7 @@ go build
 ```go
 module github.com/username/hello-modules
 
-go 1.25
+go 1.25.3
 
 require (
     github.com/gin-gonic/gin v1.9.1
@@ -464,7 +464,7 @@ cat go.work
 **go.work 文件**:
 
 ```go
-go 1.25
+go 1.25.3
 
 use (
     ./service-a
@@ -703,4 +703,4 @@ go mod download
 **文档维护者**: Go Documentation Team  
 **最后更新**: 2025年10月20日  
 **文档状态**: 完成  
-**适用版本**: Go 1.21+
+**适用版本**: Go 1.25.3+

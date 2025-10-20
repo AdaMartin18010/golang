@@ -1,6 +1,6 @@
-﻿# Go 1.23+ 运行时优化
+﻿# Go 1.25.3+ 运行时优化
 
-> **版本要求**: Go 1.23++  
+> **版本要求**: Go 1.25.3++  
 >
 >
 
@@ -31,7 +31,7 @@ Go 1.23+ 在运行时层面引入了多项重要优化,显著提升了程序的�
 - ❌ **容器调度低效**: 容器内 GOMAXPROCS 设置不合理,资源浪费
 - ❌ **内存分配慢**: 大量对象分配导致性能瓶颈
 
-**Go 1.23+ 解决方案**:
+**Go 1.25.3+ 解决方案**:
 
 - ✅ **greentea GC**: 小对象优化,GC 开销降低 40%
 - ✅ **容器感知调度**: 自动检测 cgroup 限制,调度效率提升 30%
@@ -160,7 +160,7 @@ m := make(map[string]int, 1000000) // 100万键
 
 ### 🎯 初学者路径
 
-**目标**: 了解 Go 1.23+ 运行时优化的基本概念
+**目标**: 了解 Go 1.25.3+ 运行时优化的基本概念
 
 ```text
 1. 阅读模块概述 (本文档)
@@ -615,7 +615,7 @@ func (c *Cache) Set(key string, entry *Entry) {
 
 ## 常见问题
 
-### Q1: Go 1.23+ 运行时优化是否向后兼容?
+### Q1: Go 1.25.3+ 运行时优化是否向后兼容?
 
 **A**: ✅ 完全兼容!
 
@@ -626,7 +626,7 @@ func (c *Cache) Set(key string, entry *Entry) {
 
 ### Q2: greentea GC 何时稳定?
 
-**A**: 🔬 **实验性阶段** (Go 1.23+)
+**A**: 🔬 **实验性阶段** (Go 1.25.3+)
 
 - 当前状态: 实验性特性 (`GOEXPERIMENT=greentea`)
 - 预计稳定: Go 1.26 或 1.27
@@ -654,12 +654,12 @@ GODEBUG=schedtrace=1000 ./myapp
 
 **A**: ❌ 不需要!
 
-- Go 1.23+ 会**自动**在合适的场景使用 Swiss Tables Map
+- Go 1.25.3+ 会**自动**在合适的场景使用 Swiss Tables Map
 - 判断标准: Map 大小、键类型等
 - 无需修改代码,完全透明
 - 性能提升自动应用
 
-### Q5: 如何从 Go 1.24 迁移到 Go 1.23+?
+### Q5: 如何从 Go 1.25.3 迁移到 Go 1.25.3+?
 
 **A**: 📦 **零成本迁移**
 
@@ -731,7 +731,7 @@ go test -bench=. -benchmem ./...
 
 ### 官方文档
 
-- 📘 [Go 1.23+ Release Notes](https://go.dev/doc/go1.23)
+- 📘 [Go 1.25.3+ Release Notes](https://go.dev/doc/go1.23)
 - 📘 [Go Runtime Documentation](https://pkg.go.dev/runtime)
 - 📘 [Go Memory Model](https://go.dev/ref/mem)
 
@@ -803,7 +803,7 @@ git push origin feature/your-feature
 ---
 
 <p align="center">
-  <b>🎉 开始你的 Go 1.23+ 运行时优化之旅吧! 🚀</b>
+  <b>🎉 开始你的 Go 1.25.3+ 运行时优化之旅吧! 🚀</b>
 </p>
 
 ---
@@ -811,4 +811,4 @@ git push origin feature/your-feature
 **文档维护者**: Go Documentation Team  
 **最后更新**: 2025年10月20日  
 **文档状态**: 完成  
-**适用版本**: Go 1.21+
+**适用版本**: Go 1.25.3+

@@ -665,7 +665,7 @@ sqlite3 builds.db "INSERT INTO builds (date, commit, info) VALUES (datetime('now
 **A**: ✅ 可以,但信息可能不完整
 
 - Go 1.18+ 嵌入完整构建信息
-- Go 1.13-1.17 嵌入部分信息
+- Go 1.13-1.25.3 嵌入部分信息
 - Go <1.13 可能没有构建信息
 
 ---
@@ -728,4 +728,4 @@ go version -m -json ./myapp | jq '{
 **文档维护者**: Go Documentation Team  
 **最后更新**: 2025年10月20日  
 **文档状态**: 完成  
-**适用版本**: Go 1.21+
+**适用版本**: Go 1.25.3+
