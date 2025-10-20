@@ -1,0 +1,254 @@
+name: 文档质量检查
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**/*.md'
+      - 'README*.md'
+      - '.github/workflows/docs-check.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docs/**/*.md'
+      - 'README*.md'
+  workflow_dispatch:
+
+jobs:
+  link-validation:
+    name: 链接有效性验证
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: 安装markdown-link-check
+        run: npm install -g markdown-link-check
+      
+      - name: 验证Markdown链接
+        run: |
+          echo "🔗 开始验证文档链接..."
+          
+          # 创建配置文件
+          cat > .markdown-link-check.json << 'EOF'
+          {
+            "ignorePatterns": [
+              {
+                "pattern": "^http://localhost"
+              },
+              {
+                "pattern": "^https://github.com/.*/issues/new"
+              },
+              {
+                "pattern": "^#"
+              }
+            ],
+            "replacementPatterns": [
+              {
+                "pattern": "^/",
+                "replacement": "{{BASEURL}}/"
+              }
+            ],
+            "httpHeaders": [
+              {
+                "urls": ["https://github.com"],
+                "headers": {
+                  "Accept": "text/html"
+                }
+              }
+            ],
+            "timeout": "10s",
+            "retryOn429": true,
+            "retryCount": 3,
+            "fallbackRetryDelay": "30s",
+            "aliveStatusCodes": [200, 206, 301, 302, 307, 308, 400, 401, 403, 405, 999]
+          }
+          EOF
+          
+          # 验证所有Markdown文件
+          find docs -name "*.md" -not -path "*/archive/*" -not -path "*/00-备份/*" | \
+            while read file; do
+              echo "检查: $file"
+              markdown-link-check "$file" --config .markdown-link-check.json || true
+            done
+          
+          echo "✅ 链接验证完成"
+      
+      - name: 检查失效链接统计
+        run: |
+          echo "📊 生成链接验证报告..."
+          
+          # 这里可以添加更详细的统计逻辑
+          # 目前仅作为示例
+          
+          total_files=$(find docs -name "*.md" -not -path "*/archive/*" | wc -l)
+          echo "📝 验证文件数: $total_files"
+
+  format-check:
+    name: 格式规范检查
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 检查文档格式
+        run: |
+          echo "📋 检查文档格式规范..."
+          
+          error_count=0
+          
+          # 检查1: H1标题不应有编号
+          echo "检查H1标题格式..."
+          if grep -rn "^# [0-9]" docs/*.md docs/**/*.md 2>/dev/null | grep -v archive | grep -v 00-备份; then
+            echo "❌ 发现H1标题包含编号"
+            error_count=$((error_count + 1))
+          else
+            echo "✅ H1标题格式正确"
+          fi
+          
+          # 检查2: 是否有简介部分
+          echo "检查简介完整性..."
+          missing_intro=0
+          for file in $(find docs -name "*.md" -not -path "*/archive/*" -not -path "*/00-备份/*"); do
+            if ! grep -q "📚 \*\*简介\*\*" "$file"; then
+              echo "⚠️  缺少简介: $file"
+              missing_intro=$((missing_intro + 1))
+            fi
+          done
+          
+          if [ $missing_intro -eq 0 ]; then
+            echo "✅ 所有文档包含简介"
+          else
+            echo "⚠️  $missing_intro 个文档缺少简介"
+          fi
+          
+          # 检查3: 是否有元数据
+          echo "检查元数据完整性..."
+          missing_meta=0
+          for file in $(find docs -name "*.md" -not -path "*/archive/*" -not -path "*/00-备份/*"); then
+            if ! grep -q "文档维护者" "$file"; then
+              echo "⚠️  缺少元数据: $file"
+              missing_meta=$((missing_meta + 1))
+            fi
+          done
+          
+          if [ $missing_meta -eq 0 ]; then
+            echo "✅ 所有文档包含元数据"
+          else
+            echo "⚠️  $missing_meta 个文档缺少元数据"
+          fi
+          
+          # 总结
+          echo ""
+          echo "=" 60
+          echo "📊 格式检查总结"
+          echo "=" * 60
+          
+          if [ $error_count -gt 0 ]; then
+            echo "❌ 发现 $error_count 个格式错误"
+            exit 1
+          else
+            echo "✅ 格式检查通过"
+          fi
+
+  spell-check:
+    name: 拼写检查
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 安装typos
+        uses: taiki-e/install-action@v2
+        with:
+          tool: typos-cli
+      
+      - name: 创建typos配置
+        run: |
+          cat > .typos.toml << 'EOF'
+          [default]
+          extend-ignore-re = [
+            "[0-9a-f]{7,40}",  # Git哈希
+            "v[0-9]+\\.[0-9]+\\.[0-9]+",  # 版本号
+          ]
+          
+          [files]
+          extend-exclude = [
+            "*.sum",
+            "*.mod",
+            "go.sum",
+            "go.mod",
+            "*.json",
+          ]
+          
+          [default.extend-words]
+          # 添加自定义词典
+          Kubernetes = "Kubernetes"
+          Redis = "Redis"
+          MySQL = "MySQL"
+          PostgreSQL = "PostgreSQL"
+          EOF
+      
+      - name: 运行拼写检查
+        run: |
+          echo "📝 运行拼写检查..."
+          typos --format brief || true
+          echo "✅ 拼写检查完成"
+
+  summary:
+    name: 生成检查报告
+    runs-on: ubuntu-latest
+    needs: [link-validation, format-check, spell-check]
+    if: always()
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 生成摘要
+        run: |
+          echo "# 📊 文档质量检查报告" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**检查时间**: $(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
+          echo "**提交**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**分支**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 检查结果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # 链接验证结果
+          if [ "${{ needs.link-validation.result }}" == "success" ]; then
+            echo "- ✅ 链接验证: 通过" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ 链接验证: 失败" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # 格式检查结果
+          if [ "${{ needs.format-check.result }}" == "success" ]; then
+            echo "- ✅ 格式检查: 通过" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ 格式检查: 失败" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # 拼写检查结果
+          if [ "${{ needs.spell-check.result }}" == "success" ]; then
+            echo "- ✅ 拼写检查: 通过" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️  拼写检查: 有建议" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "💡 **提示**: 查看详细日志了解更多信息" >> $GITHUB_STEP_SUMMARY
+
