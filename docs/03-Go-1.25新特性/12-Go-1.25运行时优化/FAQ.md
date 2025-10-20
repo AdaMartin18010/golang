@@ -2,7 +2,7 @@
 
 > **版本**: v1.0  
 >
-> **适用版本**: Go 1.25.3++
+> **适用版本**: Go 1.23++
 
 ---
 
@@ -129,7 +129,7 @@ fmt.Printf("Sys: %v MB\n", m.Sys / 1024 / 1024)
 - 密切监控错误率
 - 对比性能数据
 
-**Phase 3: 全量上线**
+**Phase 3: 全量上线**:
 
 - 性能和稳定性达标后全量
 - 保留回滚方案
@@ -192,7 +192,7 @@ for _, item := range items {
 
 **A**: 3种验证方法
 
-**方法 1: 查看 GC 统计**
+**方法 1: 查看 GC 统计**:
 
 ```go
 import "runtime"
@@ -203,14 +203,14 @@ fmt.Printf("NumGC: %d\n", stats.NumGC)
 fmt.Printf("PauseTotal: %v\n", time.Duration(stats.PauseTotalNs))
 ```
 
-**方法 2: 使用 trace**
+**方法 2: 使用 trace**:
 
 ```bash
 go run -trace=trace.out main.go
 go tool trace trace.out
 ```
 
-**方法 3: 环境变量日志**
+**方法 3: 环境变量日志**:
 
 ```bash
 GODEBUG=gctrace=1 GOEXPERIMENT=greentea ./myapp
@@ -350,7 +350,7 @@ resources:
 
 **A**: 3种验证方法
 
-**方法 1: 代码检查**
+**方法 1: 代码检查**:
 
 ```go
 import "runtime"
@@ -359,13 +359,13 @@ fmt.Printf("GOMAXPROCS: %d\n", runtime.GOMAXPROCS(0))
 fmt.Printf("NumCPU: %d\n", runtime.NumCPU())
 ```
 
-**方法 2: 环境变量**
+**方法 2: 环境变量**:
 
 ```bash
 GODEBUG=schedtrace=1000 ./myapp
 ```
 
-**方法 3: 容器测试**
+**方法 3: 容器测试**:
 
 ```bash
 # 限制 2 核
@@ -562,7 +562,7 @@ services:
 
 **A**: **排查步骤**
 
-**Step 1: 检查 GOMAXPROCS**
+**Step 1: 检查 GOMAXPROCS**:
 
 ```go
 fmt.Println("GOMAXPROCS:", runtime.GOMAXPROCS(0))
@@ -570,20 +570,20 @@ fmt.Println("GOMAXPROCS:", runtime.GOMAXPROCS(0))
 
 可能原因：容器环境 CPU 限制过低
 
-**Step 2: 检查 GC 行为**
+**Step 2: 检查 GC 行为**:
 
 ```bash
 GODEBUG=gctrace=1 ./myapp
 ```
 
-**Step 3: 对比基准测试**
+**Step 3: 对比基准测试**:
 
 ```bash
 go test -bench=. -cpuprofile=cpu.prof
 go tool pprof cpu.prof
 ```
 
-**Step 4: 回滚方案**
+**Step 4: 回滚方案**:
 
 ```bash
 # 降级到 Go 1.24
@@ -677,7 +677,7 @@ GOMAXPROCS=4 ./myapp
 
 **A**: **5 条黄金法则**
 
-**1. 容器部署优化**
+**1. 容器部署优化**:
 
 ```yaml
 resources:
@@ -687,7 +687,7 @@ resources:
 # 不需要设置 GOMAXPROCS 环境变量
 ```
 
-**2. GC 调优**
+**2. GC 调优**:
 
 ```bash
 # 根据应用选择
@@ -698,7 +698,7 @@ GOEXPERIMENT=greentea go build
 go build
 ```
 
-**3. Map 优化**
+**3. Map 优化**:
 
 ```go
 // 预分配大 Map
@@ -706,7 +706,7 @@ m := make(map[string]int, 1000000)
 // 自动触发 Swiss Tables
 ```
 
-**4. 监控关键指标**
+**4. 监控关键指标**:
 
 ```go
 // 定期输出运行时指标
@@ -716,7 +716,7 @@ metrics.RecordGCPause(m.PauseTotalNs)
 metrics.RecordMemory(m.Alloc)
 ```
 
-**5. 版本管理**
+**5. 版本管理**:
 
 ```dockerfile
 FROM golang:1.25-alpine AS builder
@@ -729,7 +729,7 @@ FROM golang:1.25-alpine AS builder
 
 **A**: **建立性能基准体系**
 
-**Step 1: 建立基准**
+**Step 1: 建立基准**:
 
 ```go
 func BenchmarkCriticalPath(b *testing.B) {
@@ -739,7 +739,7 @@ func BenchmarkCriticalPath(b *testing.B) {
 }
 ```
 
-**Step 2: 自动化测试**
+**Step 2: 自动化测试**:
 
 ```bash
 # CI/CD 中运行
@@ -747,13 +747,13 @@ go test -bench=. -benchmem -count=10 > bench.txt
 benchstat bench.txt
 ```
 
-**Step 3: 性能回归检测**
+**Step 3: 性能回归检测**:
 
 - 每次提交运行基准测试
 - 对比历史数据
 - 性能下降超过 5% 需要审查
 
-**Step 4: 生产监控**
+**Step 4: 生产监控**:
 
 - 关键接口延迟
 - GC 暂停时间
@@ -809,4 +809,4 @@ benchstat bench.txt
 **文档维护者**: Go Documentation Team  
 **最后更新**: 2025年10月20日  
 **文档状态**: 完成  
-**适用版本**: Go 1.25.3+
+**适用版本**: Go 1.21+
