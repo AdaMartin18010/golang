@@ -72,7 +72,7 @@
 
 ### 文档体系
 
-```
+```text
 docs/
 ├── 01-Go语言基础/ (5个子目录)
 ├── 01-HTTP服务/ (16个文件)
@@ -94,7 +94,7 @@ docs/
 
 ### 代码示例
 
-```
+```text
 examples/
 ├── modern-features/
 │   ├── 01-new-features/
@@ -141,7 +141,7 @@ examples/
 
 ### 最近10次提交
 
-```
+```text
 58e7c53 Merge branch 'main' - 合并远程更改
 bfebaa6 📢 添加Go 1.25.3特性补充完成简报
 8380f23 🎉 Go 1.25.3特性补充完成最终报告
@@ -163,11 +163,13 @@ a9b487f 📊 创建docs目录重组完成报告
 ## 📚 官方文档链接
 
 ### Release Notes
+
 - [Go 1.25 Release Notes](https://go.dev/doc/go1.25)
 - [Go 1.25.1 Release Notes](https://go.dev/doc/go1.25.1)
 - [Go 1.25.3 Release Notes](https://go.dev/doc/go1.25.3)
 
 ### 核心包文档 (10个)
+
 - [weak包](https://pkg.go.dev/weak)
 - [unique包](https://pkg.go.dev/unique)
 - [iter包](https://pkg.go.dev/iter)
@@ -180,6 +182,7 @@ a9b487f 📊 创建docs目录重组完成报告
 - [bytes.Lines](https://pkg.go.dev/bytes#Lines)
 
 ### 技术博客 (5个)
+
 - [Go Blog](https://go.dev/blog/)
 - [Go 1.25发布公告](https://go.dev/blog/go1.25)
 - [迭代器设计](https://go.dev/blog/range-functions)
