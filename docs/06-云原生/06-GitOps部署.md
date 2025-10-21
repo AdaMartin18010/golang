@@ -1,9 +1,12 @@
-# 6. 🔄 GitOps部署
+# GitOps部署
 
-> 📚 **简介**：本文档从云原生视角探讨GitOps在Kubernetes持续部署中的应用。关于GitOps的详细内容，请参考[微服务/13-GitOps持续部署](../05-微服务/13-GitOps持续部署.md)。
+> **简介**: 从云原生视角探讨GitOps在Kubernetes持续部署中的应用
+> **版本**: Go 1.23+ / Kubernetes 1.28+  
+> **难度**: ⭐⭐⭐⭐  
+> **标签**: #GitOps #持续部署 #ArgoCD #FluxCD
 
 <!-- TOC START -->
-- [6. 🔄 GitOps部署](#6--gitops部署)
+- [GitOps部署](#gitops部署)
   - [6.1 📚 GitOps概述](#61--gitops概述)
   - [6.2 🎯 云原生GitOps架构](#62--云原生gitops架构)
     - [工具对比](#工具对比)

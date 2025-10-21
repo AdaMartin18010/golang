@@ -1,5 +1,10 @@
 ﻿# Dockerfile最佳实践
 
+> **简介**: Dockerfile编写最佳实践，优化镜像大小、构建速度和安全性
+> **版本**: Go 1.23+ / Docker 24+  
+> **难度**: ⭐⭐⭐  
+> **标签**: #Dockerfile #镜像优化 #安全 #最佳实践
+
 <!-- TOC START -->
 - [Dockerfile最佳实践](#dockerfile最佳实践)
   - [📚 **理论分析**](#-理论分析)
