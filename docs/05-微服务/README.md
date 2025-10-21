@@ -100,7 +100,7 @@
 - **gRPC**: google.golang.org/grpc
 - **消息队列**: NATS、Kafka、RabbitMQ
 
-### Go 1.23+增强1
+### Go 1.23+增强
 
 - **JSON处理**: encoding/json/v2 (30-50%性能提升)
 - **并发测试**: testing/synctest (稳定性提升)
