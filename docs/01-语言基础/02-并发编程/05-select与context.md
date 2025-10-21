@@ -1,7 +1,6 @@
 ﻿# select与context高级用法
 
 > **简介**: 掌握Go语言的select多路复用和context上下文管理，实现优雅的并发控制
-
 > **版本**: Go 1.23+  
 > **难度**: ⭐⭐⭐  
 > **标签**: #并发 #select #context #超时控制

@@ -1,7 +1,6 @@
 ﻿# sync包与并发安全模式
 
 > **简介**: 详解Go标准库sync包的并发原语，包括Mutex、RWMutex、WaitGroup、Once等
-
 > **版本**: Go 1.23+  
 > **难度**: ⭐⭐⭐  
 > **标签**: #并发 #sync #锁 #并发安全

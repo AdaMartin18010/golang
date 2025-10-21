@@ -1,7 +1,6 @@
 ﻿# Channel基础
 
 > **简介**: 系统讲解Go语言的Channel通信机制，包括有缓冲/无缓冲Channel、单向Channel和关闭Channel
-
 > **版本**: Go 1.23+  
 > **难度**: ⭐⭐⭐  
 > **标签**: #并发 #channel #通信 #CSP
