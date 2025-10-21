@@ -617,6 +617,6 @@ scripts/
 
 **🏆 项目圆满成功！感谢每一位贡献者！**
 
-**Go Documentation Project - Excellence in Technical Writing**
+**Go Documentation Project - Excellence in Technical Writing**-
 
 </div>
