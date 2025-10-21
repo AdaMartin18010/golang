@@ -1,6 +1,8 @@
 ﻿# 服务网格架构（Service Mesh Architecture）
 
-## 1. 目录
+> **简介**: Istio/Linkerd服务网格架构设计与实践，实现服务间通信治理、安全和可观测性
+
+## 目录
 
 - [服务网格架构（Service Mesh Architecture）](#服务网格架构service-mesh-architecture)
   - [1. 目录](#1-目录)
