@@ -430,7 +430,7 @@ func (pe *PredictionEngine) executePrediction(model *PredictionModel, input []fl
 - 数据安全保护
 - 数据生命周期管理
 
-### 模型管理
+### 模型管理1
 
 - 模型版本控制
 - 模型性能监控
