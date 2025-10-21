@@ -5,7 +5,7 @@
 ## 目录
 
 - [容器化与编排架构（Containerization and Orchestration Architecture）](#容器化与编排架构containerization-and-orchestration-architecture)
-  - [1. 目录](#1-目录)
+  - [目录](#目录)
   - [2. 国际标准与发展历程](#2-国际标准与发展历程)
     - [主流技术与标准](#主流技术与标准)
     - [发展历程](#发展历程)

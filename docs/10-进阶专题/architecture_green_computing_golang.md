@@ -426,7 +426,7 @@ func (gs *GreenScheduler) calculateNodeScore(task *Task, node *ResourceNode) flo
 
 ```
 
-### 动态功耗管理
+### 动态功耗管理1
 
 ```go
 // 功耗管理器
@@ -580,7 +580,7 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
 - 约束条件：C(n) ≥ R(t)
 - 能效比：η = P(n) / E(n)
 
-### 可再生能源集成
+### 可再生能源集成1
 
 - 能源平衡：Σ E_renewable + Σ E_storage = Σ E_demand
 - 存储效率：E_stored = η × E_input

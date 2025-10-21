@@ -440,7 +440,7 @@ func (vqe *VQEAlgorithm) Execute() (float64, []float64, error) {
 
 ```
 
-### 量子-经典混合系统
+### 量子-经典混合系统1
 
 ```go
 // 混合计算引擎

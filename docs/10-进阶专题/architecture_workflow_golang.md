@@ -297,7 +297,7 @@ func SaveSnapshot(state *State) error {
 
 ```
 
-### 可观测性与监控
+### 可观测性与监控1
 
 - **设计原则**：全链路追踪、指标采集、自动告警。
 - **主流工具**：Prometheus、Grafana、OpenTelemetry、Jaeger、Loki。

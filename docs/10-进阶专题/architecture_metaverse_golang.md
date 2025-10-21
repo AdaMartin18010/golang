@@ -598,7 +598,7 @@ func (cm *CommunicationManager) JoinRoom(userID, roomID string) error {
 - Polygon: <https://polygon.technology/>
 - Solana: <https://solana.com/>
 
-### 商业平台
+### 商业平台1
 
 - Meta Quest: <https://www.meta.com/quest/>
 - Decentraland: <https://decentraland.org/>

@@ -501,7 +501,7 @@ func (mpcm *SecureMultiPartyManager) ExecuteComputation(task *PrivacyTask, data 
 - 分层安全防护
 - 最小权限原则
 
-### 性能优化
+### 性能优化1
 
 - 硬件加速利用
 - 并行计算优化
@@ -513,7 +513,7 @@ func (mpcm *SecureMultiPartyManager) ExecuteComputation(task *PrivacyTask, data 
 - 恶意代码检测
 - 安全审计机制
 
-### 合规保障
+### 合规保障1
 
 - 数据主权保护
 - 跨境合规处理
