@@ -1,37 +1,36 @@
 ﻿# Golang架构知识库技术报告
 
 > **简介**: 技术分析报告，包含文档质量排名、统计数据和详细的优化建议
-
 > **版本**: Go 1.23+  
 > **难度**: ⭐⭐  
 > **标签**: #技术报告 #质量排名 #参考资料
 
 <!-- TOC START -->
 - [Golang架构知识库技术报告](#golang架构知识库技术报告)
-  - [1.1 📊 总体统计](#11--总体统计)
-  - [1.2 🏆 文档质量排名 (Top 15)](#12--文档质量排名-top-15)
-  - [1.3 💡 优化建议](#13--优化建议)
-    - [1.3.1 需要优化的文档 (20个)](#131-需要优化的文档-20个)
-      - [1.3.1.1 architecture\_education\_golang.md (评分: 60)](#1311-architecture_education_golangmd-评分-60)
-      - [1.3.1.2 architecture\_digital\_twin\_golang.md (评分: 60)](#1312-architecture_digital_twin_golangmd-评分-60)
-      - [1.3.1.3 architecture\_transportation\_golang.md (评分: 60)](#1313-architecture_transportation_golangmd-评分-60)
-      - [1.3.1.4 architecture\_iot\_golang.md (评分: 60)](#1314-architecture_iot_golangmd-评分-60)
-      - [1.3.1.5 architecture\_energy\_golang.md (评分: 60)](#1315-architecture_energy_golangmd-评分-60)
-      - [1.3.1.6 architecture\_manufacturing\_golang.md (评分: 60)](#1316-architecture_manufacturing_golangmd-评分-60)
-      - [1.3.1.7 architecture\_media\_golang.md (评分: 60)](#1317-architecture_media_golangmd-评分-60)
-      - [1.3.1.8 architecture\_tourism\_golang.md (评分: 60)](#1318-architecture_tourism_golangmd-评分-60)
-      - [1.3.1.9 architecture\_telecom\_golang.md (评分: 60)](#1319-architecture_telecom_golangmd-评分-60)
-      - [1.3.1.10 architecture\_environment\_golang.md (评分: 60)](#13110-architecture_environment_golangmd-评分-60)
-      - [1.3.1.11 architecture\_retail\_golang.md (评分: 60)](#13111-architecture_retail_golangmd-评分-60)
-      - [1.3.1.12 architecture\_agriculture\_golang.md (评分: 55)](#13112-architecture_agriculture_golangmd-评分-55)
-      - [1.3.1.13 architecture\_edge\_computing\_golang.md (评分: 50)](#13113-architecture_edge_computing_golangmd-评分-50)
-      - [1.3.1.14 architecture\_serverless\_golang.md (评分: 50)](#13114-architecture_serverless_golangmd-评分-50)
-      - [1.3.1.15 architecture\_containerization\_orchestration\_golang.md (评分: 45)](#13115-architecture_containerization_orchestration_golangmd-评分-45)
-      - [1.3.1.16 architecture\_edtech\_golang.md (评分: 25)](#13116-architecture_edtech_golangmd-评分-25)
-      - [1.3.1.17 architecture\_autonomous\_driving\_golang.md (评分: 25)](#13117-architecture_autonomous_driving_golangmd-评分-25)
-      - [1.3.1.18 architecture\_cloud\_native\_golang.md (评分: 25)](#13118-architecture_cloud_native_golangmd-评分-25)
-      - [1.3.1.19 architecture\_healthcare\_golang.md (评分: 25)](#13119-architecture_healthcare_golangmd-评分-25)
-      - [1.3.1.20 architecture\_README.md (评分: 0)](#13120-architecture_readmemd-评分-0)
+  - [📊 总体统计](#-总体统计)
+  - [🏆 文档质量排名 (Top 15)](#-文档质量排名-top-15)
+  - [💡 优化建议](#-优化建议)
+    - [需要优化的文档 (20个)](#需要优化的文档-20个)
+      - [architecture\_education\_golang.md (评分: 60)](#architecture_education_golangmd-评分-60)
+      - [architecture\_digital\_twin\_golang.md (评分: 60)](#architecture_digital_twin_golangmd-评分-60)
+      - [architecture\_transportation\_golang.md (评分: 60)](#architecture_transportation_golangmd-评分-60)
+      - [architecture\_iot\_golang.md (评分: 60)](#architecture_iot_golangmd-评分-60)
+      - [architecture\_energy\_golang.md (评分: 60)](#architecture_energy_golangmd-评分-60)
+      - [architecture\_manufacturing\_golang.md (评分: 60)](#architecture_manufacturing_golangmd-评分-60)
+      - [architecture\_media\_golang.md (评分: 60)](#architecture_media_golangmd-评分-60)
+      - [architecture\_tourism\_golang.md (评分: 60)](#architecture_tourism_golangmd-评分-60)
+      - [architecture\_telecom\_golang.md (评分: 60)](#architecture_telecom_golangmd-评分-60)
+      - [architecture\_environment\_golang.md (评分: 60)](#architecture_environment_golangmd-评分-60)
+      - [architecture\_retail\_golang.md (评分: 60)](#architecture_retail_golangmd-评分-60)
+      - [architecture\_agriculture\_golang.md (评分: 55)](#architecture_agriculture_golangmd-评分-55)
+      - [architecture\_edge\_computing\_golang.md (评分: 50)](#architecture_edge_computing_golangmd-评分-50)
+      - [architecture\_serverless\_golang.md (评分: 50)](#architecture_serverless_golangmd-评分-50)
+      - [architecture\_containerization\_orchestration\_golang.md (评分: 45)](#architecture_containerization_orchestration_golangmd-评分-45)
+      - [architecture\_edtech\_golang.md (评分: 25)](#architecture_edtech_golangmd-评分-25)
+      - [architecture\_autonomous\_driving\_golang.md (评分: 25)](#architecture_autonomous_driving_golangmd-评分-25)
+      - [architecture\_cloud\_native\_golang.md (评分: 25)](#architecture_cloud_native_golangmd-评分-25)
+      - [architecture\_healthcare\_golang.md (评分: 25)](#architecture_healthcare_golangmd-评分-25)
+      - [architecture\_README.md (评分: 0)](#architecture_readmemd-评分-0)
 <!-- TOC END -->
 
 ---

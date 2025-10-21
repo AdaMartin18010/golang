@@ -1,13 +1,12 @@
 # GitLab CI/CD
 
 > **简介**: 使用GitLab CI/CD构建Go微服务的完整流程，涵盖Pipeline配置、自动化测试和Kubernetes部署
-
 > **版本**: Go 1.23+  
 > **难度**: ⭐⭐⭐⭐  
 > **标签**: #CI/CD #GitLab-CI #Pipeline #DevOps
 
 <!-- TOC START -->
-- [8. 🦊 GitLab CI/CD](#8--gitlab-cicd)
+- [GitLab CI/CD](#gitlab-cicd)
   - [8.1 📚 GitLab CI/CD概述](#81--gitlab-cicd概述)
   - [8.2 🎯 Pipeline配置](#82--pipeline配置)
     - [基础Pipeline](#基础pipeline)
