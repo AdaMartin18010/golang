@@ -63,7 +63,6 @@ API网关架构是指以统一入口、路由管理、安全控制、监控追�
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   Gateway o-- Route
   Gateway o-- Service
   Gateway o-- Client
@@ -150,7 +149,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant C as Client
   participant G as Gateway
   participant R as Router
@@ -286,7 +284,6 @@ type Middleware struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   C[Client] --> GW[API Gateway]
   GW --> LB[Load Balancer]
   LB --> S1[Service 1]

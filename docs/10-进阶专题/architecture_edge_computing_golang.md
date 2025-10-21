@@ -22,7 +22,6 @@
 ### 核心特征
 
 ```mermaid
-graph TD
     A[边缘计算架构] --> B[边缘节点]
     A --> C[边缘网关]
     A --> D[本地处理]
@@ -35,7 +34,6 @@ graph TD
     D --> D2[本地存储]
     E --> E1[云同步]
     E --> E2[集中管理]
-
 ```
 
 ## 3. 边缘计算基础
@@ -111,20 +109,17 @@ graph TD
      Priority   int
      Status     TaskStatus
  }
-
 ```
 
 ### 典型数据流
 
 ```mermaid
-graph LR
     A[终端设备] --> B[边缘节点]
     B --> C[边缘网关]
     C --> D[云平台]
     B --> E[本地处理]
     C --> F[协议转换]
     D --> G[集中管理]
-
 ```
 
 ## 6. 分布式挑战
@@ -154,11 +149,9 @@ graph LR
 ### 分层架构设计
 
 ```mermaid
-graph TD
     A[终端层] --> B[边缘节点层]
     B --> C[边缘网关层]
     C --> D[云平台层]
-
 ```
 
 ### 任务调度与协同
@@ -202,7 +195,6 @@ graph TD
      AuthToken string
      Trusted   bool
  }
-
 ```
 
 ### 任务调度与执行
@@ -222,7 +214,6 @@ graph TD
      }
      return "", fmt.Errorf("no available node")
  }
-
 ```
 
 ### 边云协同通信
@@ -238,7 +229,6 @@ graph TD
      // 伪代码：通过安全通道同步数据到云
      return SecureSend(eci.CloudAPI, data)
  }
-
 ```
 
 ## 9. 形式化建模

@@ -117,7 +117,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   Service o-- API
   API o-- Message
   Message o-- Format
@@ -147,7 +146,6 @@ classDiagram
     +string Version
     +string Transport
   }
-
 ```
 
 ### 典型数据流
@@ -160,7 +158,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant C as Client
   participant GW as APIGateway
   participant S1 as GoService
@@ -173,7 +170,6 @@ sequenceDiagram
   S2->>MQ: 消费消息（ProtoBuf）
   S2-->>GW: 结果响应
   GW-->>C: 返回结果
-
 ```
 
 ### Golang 领域模型代码示例
@@ -209,7 +205,6 @@ type Protocol struct {
     Version   string
     Transport string
 }
-
 ```
 
 ---
@@ -229,7 +224,6 @@ type Protocol struct {
 service UserService {
   rpc GetUser (GetUserRequest) returns (UserResponse);
 }
-
 ```
 
 ### 数据序列化与兼容性
@@ -246,7 +240,6 @@ message User {
   string id = 1;
   string name = 2;
 }
-
 ```
 
 ### 性能与延迟
@@ -262,7 +255,6 @@ message User {
 conn, _ := grpc.Dial("service:50051", grpc.WithInsecure())
 client := pb.NewUserServiceClient(conn)
 resp, err := client.GetUser(ctx, &pb.GetUserRequest{Id: "123"})
-
 ```
 
 ### 类型系统差异
@@ -280,7 +272,6 @@ enum Status {
   ACTIVE = 1;
   INACTIVE = 2;
 }
-
 ```
 
 ### 服务发现与治理
@@ -297,7 +288,6 @@ import consulapi "github.com/hashicorp/consul/api"
 client, _ := consulapi.NewClient(consulapi.DefaultConfig())
 reg := &consulapi.AgentServiceRegistration{Name: "user-service", Address: "127.0.0.1", Port: 8080}
 client.Agent().ServiceRegister(reg)
-
 ```
 
 ### 安全与认证
@@ -324,7 +314,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 }
-
 ```
 
 ---
@@ -345,7 +334,6 @@ import pb "github.com/yourorg/yourproto"
 func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
     // ...
 }
-
 ```
 
 ### 数据格式与序列化
@@ -358,7 +346,6 @@ func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
 // ProtoBuf 序列化
 user := &pb.User{Id: "123", Name: "Alice"}
 data, _ := proto.Marshal(user)
-
 ```
 
 ### 服务注册与发现
@@ -372,7 +359,6 @@ data, _ := proto.Marshal(user)
 import clientv3 "go.etcd.io/etcd/client/v3"
 cli, _ := clientv3.New(clientv3.Config{Endpoints: []string{"localhost:2379"}})
 cli.Put(context.Background(), "/services/user/instance1", "127.0.0.1:8080")
-
 ```
 
 ### 消息队列与事件流
@@ -386,7 +372,6 @@ cli.Put(context.Background(), "/services/user/instance1", "127.0.0.1:8080")
 import "github.com/segmentio/kafka-go"
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "events"})
 writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("event data")})
-
 ```
 
 ### 安全与认证1
@@ -400,7 +385,6 @@ writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("event da
 import "golang.org/x/oauth2"
 conf := &oauth2.Config{ClientID: "id", ClientSecret: "secret", Endpoint: oauth2.Endpoint{TokenURL: "https://provider.com/token"}}
 token, err := conf.PasswordCredentialsToken(ctx, "user", "pass")
-
 ```
 
 ### 案例分析：gRPC+Kafka 跨语言微服务集成
@@ -432,7 +416,6 @@ crosslang-demo/
 ├── scripts/            # 部署与运维脚本
 ├── build/              # Dockerfile、CI/CD配置
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -455,7 +438,6 @@ message UserResponse {
   string id = 1;
   string name = 2;
 }
-
 ```
 
 ```go
@@ -468,7 +450,6 @@ func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
     // 业务逻辑...
     return &pb.UserResponse{Id: req.Id, Name: "Alice"}, nil
 }
-
 ```
 
 #### Kafka 消息发布与消费
@@ -482,7 +463,6 @@ writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("UserCrea
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "user-events", GroupID: "user-group"})
 msg, _ := reader.ReadMessage(context.Background())
 processEvent(msg.Value)
-
 ```
 
 #### Prometheus 监控埋点
@@ -491,7 +471,6 @@ processEvent(msg.Value)
 import "github.com/prometheus/client_golang/prometheus"
 var userCount = prometheus.NewCounter(prometheus.CounterOpts{Name: "user_created_total"})
 userCount.Inc()
-
 ```
 
 ### CI/CD 配置（GitHub Actions 示例）
@@ -517,7 +496,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

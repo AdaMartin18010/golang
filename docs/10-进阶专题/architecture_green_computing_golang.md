@@ -21,7 +21,6 @@
 ### 核心特征
 
 ```mermaid
-graph TB
     A[绿色计算架构] --> B[能源管理]
     A --> C[资源优化]
     A --> D[算法效率]
@@ -47,7 +46,6 @@ graph TB
     F --> F1[监控告警]
     F --> F2[自动化运维]
     F --> F3[容量规划]
-
 ```
 
 ## 3. 绿色计算基础
@@ -220,13 +218,11 @@ type EnergyPolicy struct {
     Actions      []EnergyAction
     Schedule     SchedulePolicy
 }
-
 ```
 
 ### 系统架构
 
 ```mermaid
-graph TB
     A[应用层] --> B[调度层]
     B --> C[资源层]
     C --> D[硬件层]
@@ -243,7 +239,6 @@ graph TB
     D --> D2[内存]
     D --> D3[存储]
     D --> D4[网络]
-
 ```
 
 ## 6. 分布式挑战
@@ -277,12 +272,10 @@ graph TB
 ### 分层能源管理
 
 ```mermaid
-graph TD
     A[应用层] --> B[调度层]
     B --> C[资源层]
     C --> D[硬件层]
     D --> E[能源层]
-
 ```
 
 ### 智能调度策略
@@ -354,7 +347,6 @@ func (em *EnergyMonitor) updateMetrics() {
         em.checkEnergyPolicies(nodeID, metrics)
     }
 }
-
 ```
 
 ### 绿色调度器
@@ -423,7 +415,6 @@ func (gs *GreenScheduler) calculateNodeScore(task *Task, node *ResourceNode) flo
     // 加权计算总分
     return 0.4*performanceScore + 0.4*energyScore + 0.2*loadScore
 }
-
 ```
 
 ### 动态功耗管理1
@@ -496,7 +487,6 @@ func (pm *PowerManager) executePowerAction(node *ResourceNode, action PowerActio
         return fmt.Errorf("unknown action type: %s", action.Type)
     }
 }
-
 ```
 
 ### 可再生能源管理
@@ -562,7 +552,6 @@ func (rem *RenewableEnergyManager) distributeExcessEnergy(excess float64) error 
     
     return nil
 }
-
 ```
 
 ## 9. 形式化建模

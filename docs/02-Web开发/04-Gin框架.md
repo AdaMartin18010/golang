@@ -56,7 +56,6 @@ func main() {
     })
     r.Run(":8080")
 }
-
 ```
 
 ### **路由与参数绑定**
@@ -76,7 +75,6 @@ func main() {
     })
     r.Run(":8080")
 }
-
 ```
 
 ### **中间件用法**
@@ -103,7 +101,6 @@ func main() {
     })
     r.Run(":8080")
 }
-
 ```
 
 ### **分组与RESTful API**
@@ -120,7 +117,6 @@ func main() {
     }
     r.Run(":8080")
 }
-
 ```
 
 ## 🧪 **测试代码**
@@ -146,7 +142,6 @@ func TestPingRoute(t *testing.T) {
         t.Errorf("unexpected response: %s", w.Body.String())
     }
 }
-
 ```
 
 ## 🎯 **最佳实践**

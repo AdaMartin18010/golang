@@ -119,7 +119,6 @@ func main() {
     fmt.Println("Server starting on :8080")
     http.ListenAndServe(":8080", nil)
 }
-
 ```
 
 ### **使用Gin框架**
@@ -144,7 +143,6 @@ func main() {
     
     r.Run(":8080")
 }
-
 ```
 
 ## 📊 **学习进度**
@@ -299,7 +297,6 @@ func main() {
 ## 📊 **HTTP服务开发知识体系图谱**
 
 ```mermaid
-flowchart TD
   A[HTTP协议基础] --> B[net/http包]
   B --> C[主流Web框架]
   C --> D[中间件与路由设计]
@@ -327,7 +324,6 @@ flowchart TD
   style L fill:#e0f7fa,stroke:#333,stroke-width:2px
   style M fill:#e0f7fa,stroke:#333,stroke-width:2px
   style N fill:#e0f7fa,stroke:#333,stroke-width:2px
-
 ```
 
 ## ❓ **常见FAQ与工程问题解决方案**

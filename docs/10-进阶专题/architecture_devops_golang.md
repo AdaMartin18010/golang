@@ -45,7 +45,6 @@
 ## 4. 领域建模与UML类图
 
 ```mermaid
-classDiagram
     class Pipeline {
         +string ID
         +string Name
@@ -71,7 +70,6 @@ classDiagram
     Pipeline "1" -- "many" Stage
     Stage "1" -- "many" Job
     Job "1" -- "many" Step
-
 ```
 
 ---
@@ -190,7 +188,6 @@ func (pe *PipelineEngine) ExecuteStage(ctx context.Context, execution *PipelineE
         return pe.executeJobsSequential(ctx, execution, stage)
     }
 }
-
 ```
 
 ### 多环境部署策略
@@ -274,7 +271,6 @@ func (cd *CanaryDeployment) Deploy(ctx context.Context, app *Application, target
     // 3. 完全切换到新版本
     return cd.TrafficManager.SetTrafficSplit(ctx, target.Stable, canaryDeployment, 1.0)
 }
-
 ```
 
 ## 7. 基础设施即代码（IaC）
@@ -374,7 +370,6 @@ func (im *InfrastructureManager) Apply(ctx context.Context, plan *Infrastructure
     // 3. 更新状态
     return im.StateManager.UpdateState(ctx, plan.Resources)
 }
-
 ```
 
 ### 多云资源管理
@@ -437,7 +432,6 @@ func (p *GCPProvider) CreateResource(ctx context.Context, resource *ResourceDefi
         return fmt.Errorf("unsupported resource type: %s", resource.Type)
     }
 }
-
 ```
 
 ## 8. 可观测性与监控 (Observability & Monitoring)
@@ -451,7 +445,6 @@ func (p *GCPProvider) CreateResource(ctx context.Context, resource *ResourceDefi
 ### Golang应用可观测性技术栈
 
 ```mermaid
-graph TD
     subgraph Go Application
         A[Handler/Service] -->|Records| B(Metrics - Prometheus Client);
         A -->|Writes| C(Logs - zap/logrus);
@@ -470,7 +463,6 @@ graph TD
         G --> H;
         E --> I(Alertmanager);
     end
-
 ```
 
 **实现概览**:
@@ -515,7 +507,6 @@ spec:
   duration: '10m'
   scheduler:
     cron: '@every 1m' # 每分钟执行一次
-
 ```
 
 通过`kubectl apply -f pod-kill-chaos.yaml`应用后，Chaos Mesh会每分钟随机杀死一个带有`app: my-golang-app`标签的Pod，持续10分钟。运维团队可以借此观察应用的响应时间、错误率以及恢复速度。
@@ -622,7 +613,6 @@ func (shs *SelfHealingSystem) executeHealingPolicy(ctx context.Context, policy *
     
     return nil
 }
-
 ```
 
 ### 配置管理与自动化
@@ -694,7 +684,6 @@ func (cm *ConfigurationManager) RollbackConfig(ctx context.Context, configID str
     // 2. 执行回滚
     return cm.RollbackManager.Rollback(ctx, version)
 }
-
 ```
 
 ## 11. 安全合规与治理
@@ -788,7 +777,6 @@ func (scm *SecurityComplianceManager) CheckCompliance(ctx context.Context, frame
     // 执行合规检查
     return frameworkImpl.CheckCompliance(ctx)
 }
-
 ```
 
 ### 访问控制与审计
@@ -852,7 +840,6 @@ func (acm *AccessControlManager) CheckAccess(ctx context.Context, req *AccessReq
         Timestamp: time.Now(),
     }, nil
 }
-
 ```
 
 ## 12. 性能优化与资源管理
@@ -913,7 +900,6 @@ func (ro *ResourceOptimizer) AnalyzeAndOptimize(ctx context.Context) error {
     
     return nil
 }
-
 ```
 
 ### 容量规划
@@ -965,7 +951,6 @@ func (cp *CapacityPlanner) ForecastCapacity(ctx context.Context, resource string
         Factors:    factors,
     }, nil
 }
-
 ```
 
 ## 13. 实际案例分析
@@ -1037,7 +1022,6 @@ func (sm *ServiceManager) scaleUp(ctx context.Context, service *Service, targetR
     
     return nil
 }
-
 ```
 
 ### 云原生DevOps实践
@@ -1090,7 +1074,6 @@ func (gw *GitOpsWorkflow) SyncInfrastructure(ctx context.Context) error {
     // 4. 应用变更
     return gw.argocd.Sync(ctx, resources)
 }
-
 ```
 
 ## 14. 相关架构主题

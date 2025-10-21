@@ -67,7 +67,6 @@ func main() {
     http.HandleFunc("/ws", wsHandler)
     http.ListenAndServe(":8080", nil)
 }
-
 ```
 
 ### **Gin集成WebSocket**
@@ -94,7 +93,6 @@ func main() {
     })
     r.Run(":8080")
 }
-
 ```
 
 ### **Echo集成WebSocket**
@@ -122,7 +120,6 @@ func main() {
     })
     e.Logger.Fatal(e.Start(":8080"))
 }
-
 ```
 
 ### **Fiber集成WebSocket**
@@ -145,14 +142,12 @@ func main() {
     }))
     app.Listen(":8080")
 }
-
 ```
 
 ## 🧪 **测试代码**
 
 ```go
 // 可用websocket客户端或浏览器测试
-
 ```
 
 ## 🎯 **最佳实践**

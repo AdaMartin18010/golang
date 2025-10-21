@@ -42,7 +42,6 @@
 - UML类图：
 
 ```mermaid
-classDiagram
   class Sensor
   class Perception
   class Planning
@@ -55,7 +54,6 @@ classDiagram
   Control --> VehicleController
   Communication --> Planning
   Communication --> Control
-
 ```
 
 ## 6. 典型数据流与时序图
@@ -63,7 +61,6 @@ classDiagram
 - 感知-决策-控制时序：
 
 ```mermaid
-sequenceDiagram
   participant Sensor as 传感器
   participant Perception as 感知
   participant Planning as 决策
@@ -73,7 +70,6 @@ sequenceDiagram
   Perception->>Planning: 目标识别/建图
   Planning->>Control: 路径规划/决策
   Control->>Vehicle: 执行控制指令
-
 ```
 
 ## 7. Golang领域模型代码示例
@@ -93,7 +89,6 @@ sequenceDiagram
  type Control struct {
    PlanningResult []float64
  }
-
 ```
 
 ## 8. 分布式系统挑战
@@ -105,7 +100,6 @@ sequenceDiagram
 - 架构图（分层解耦，车云协同）：
 
 ```mermaid
-graph TD
   Sensor-->Perception
   Perception-->Planning
   Planning-->Control
@@ -113,7 +107,6 @@ graph TD
   VehicleController-->Actuator[执行器]
   Planning-->Cloud[云端协同]
   Cloud-->Planning
-
 ```
 
 - 关键代码：Golang实现传感器数据采集、消息队列、决策算法接口。

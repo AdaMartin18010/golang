@@ -288,7 +288,6 @@ func monitorMemory() {
 #### 标准流程（6步法）
 
 ```mermaid
-graph TD
     A[1. 建立基线] --> B[2. 发现瓶颈]
     B --> C[3. 分析原因]
     C --> D[4. 制定方案]

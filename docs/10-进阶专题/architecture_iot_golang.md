@@ -65,7 +65,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Device
   User o-- Application
   Device o-- Sensor
@@ -161,7 +160,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -171,7 +169,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant D as Device
   participant S as Sensor
   participant G as Gateway
@@ -188,7 +185,6 @@ sequenceDiagram
   A->>R: 应用规则
   R->>E: 触发事件
   E->>DA: 数据分析
-
 ```
 
 ### Golang 领域模型代码示例
@@ -944,7 +940,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -987,7 +982,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> D[DeviceService]
   GW --> S[SensorService]
@@ -1027,7 +1021,6 @@ graph TD
   T --> P
   EN --> D
   EN --> P
-
 ```
 
 ### Golang代码示例
@@ -1036,7 +1029,6 @@ graph TD
 // 设备数量Prometheus监控
 var deviceCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "device_total"})
 deviceCount.Set(1000000)
-
 ```
 
 ---
@@ -1067,7 +1059,6 @@ iot-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -1094,7 +1085,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

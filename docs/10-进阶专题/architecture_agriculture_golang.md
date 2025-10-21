@@ -97,7 +97,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Job
   User o-- Dispatch
   Machine o-- Job
@@ -174,7 +173,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -184,7 +182,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant S as Sensor
   participant F as Field
   participant M as Machine
@@ -201,7 +198,6 @@ sequenceDiagram
   J->>E: 事件采集
   E->>DA: 数据分析
   U->>J: 智能决策
-
 ```
 
 ### Golang 领域模型代码示例
@@ -276,7 +272,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -319,7 +314,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> M[MachineService]
   GW --> C[CropService]
@@ -343,7 +337,6 @@ graph TD
   C --> DA
   F --> EN
   C --> EN
-
 ```
 
 ### Golang代码示例
@@ -354,7 +347,6 @@ graph TD
 // Prometheus 监控
 var machineCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "machine_online_total"})
 machineCount.Set(100)
-
 ```
 
 ---
@@ -382,7 +374,6 @@ agriculture-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -409,7 +400,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

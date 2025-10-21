@@ -40,7 +40,6 @@ var mu sync.Mutex
 mu.Lock()
 // 临界区
 mu.Unlock()
-
 ```
 
 ### 读写锁RWMutex
@@ -53,7 +52,6 @@ rw.RUnlock()
 rw.Lock()
 // 写区
 rw.Unlock()
-
 ```
 
 ### WaitGroup
@@ -70,7 +68,6 @@ go func() {
     // 任务2
 }()
 wg.Wait()
-
 ```
 
 ### Once
@@ -80,7 +77,6 @@ var once sync.Once
 once.Do(func() {
     // 只执行一次
 })
-
 ```
 
 ---

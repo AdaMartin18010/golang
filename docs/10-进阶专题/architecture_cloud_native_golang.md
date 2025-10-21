@@ -45,7 +45,6 @@
 - UML类图：
 
 ```mermaid
-classDiagram
   class Service
   class Container
   class Pod
@@ -59,7 +58,6 @@ classDiagram
   Cluster --> Node
   ServiceMesh --> Service
   CICDPipeline --> Service
-
 ```
 
 ## 6. 典型数据流与时序图
@@ -67,7 +65,6 @@ classDiagram
 - 服务部署与流量路由时序：
 
 ```mermaid
-sequenceDiagram
   participant Dev as 开发者
   participant CI as CI/CD
   participant K8s as Kubernetes
@@ -77,7 +74,6 @@ sequenceDiagram
   K8s->>Svc: 创建/更新服务
   User->>Svc: 访问服务流量
   Svc->>K8s: 服务发现与路由
-
 ```
 
 ## 7. Golang领域模型代码示例
@@ -1382,7 +1378,6 @@ func (platform *CloudNativePlatform) generateRecommendations(metrics *ClusterMet
 - 架构图（Kubernetes为核心，集成Service Mesh、CI/CD、监控）：
 
 ```mermaid
-graph TD
   DevOps-->CI/CD
   CI/CD-->K8s[Kubernetes]
   K8s-->Service
@@ -1391,7 +1386,6 @@ graph TD
   K8s-->ServiceMesh
   ServiceMesh-->Service
   K8s-->Monitor[监控/可观测]
-
 ```
 
 - 关键代码：Golang操作Kubernetes API、自动化部署、服务注册与发现。

@@ -103,7 +103,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   Player o-- Role
   Player o-- Task
   Player o-- Payment
@@ -238,7 +237,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -248,7 +246,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant P as Player
   participant R as Role
   participant S as Scene
@@ -273,7 +270,6 @@ sequenceDiagram
   P->>So: 社交互动
   P->>D: 数据分析
   P->>Log: 日志采集
-
 ```
 
 ### Golang 领域模型代码示例
@@ -381,7 +377,6 @@ type Environment struct {
     Value  float64
     Time   time.Time
 }
-
 ```
 
 ---
@@ -424,7 +419,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   P[Player] --> GW[API Gateway]
   GW --> PS[PlayerService]
   GW --> RS[RoleService]
@@ -486,7 +480,6 @@ graph TD
   LOG --> ES
   ENS --> SS
   ENS --> PH
-
 ```
 
 ### Golang代码示例
@@ -495,7 +488,6 @@ graph TD
 // 在线玩家数量Prometheus监控
 var onlinePlayerCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "online_player_total"})
 onlinePlayerCount.Set(1000000)
-
 ```
 
 ---
@@ -528,7 +520,6 @@ game-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -555,7 +546,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

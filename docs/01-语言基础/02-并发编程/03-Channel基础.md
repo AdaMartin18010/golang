@@ -40,7 +40,6 @@ ChannelType ::= 'chan' ElementType | 'chan' '<-' ElementType | '<-' 'chan' Eleme
 Send ::= ch <- value
 Receive ::= value := <-ch
 Close ::= close(ch)
-
 ```
 
 ### **Channel类型**
@@ -72,7 +71,6 @@ func main() {
     v := <-ch
     fmt.Println("received:", v)
 }
-
 ```
 
 ### **有缓冲Channel通信**
@@ -87,7 +85,6 @@ func main() {
     fmt.Println(<-ch)
     fmt.Println(<-ch)
 }
-
 ```
 
 ### **单向Channel用法**
@@ -102,7 +99,6 @@ func main() {
     send(ch)
     recv(ch)
 }
-
 ```
 
 ### **关闭Channel与检测**
@@ -119,7 +115,6 @@ func main() {
         fmt.Println(v)
     }
 }
-
 ```
 
 ## 📊 **性能分析**
@@ -149,7 +144,6 @@ func TestChannelClosed(t *testing.T) {
         t.Errorf("expected closed channel to return ok=false")
     }
 }
-
 ```
 
 ## 🎯 **最佳实践**

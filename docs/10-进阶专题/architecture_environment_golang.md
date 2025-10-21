@@ -96,7 +96,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Monitoring
   User o-- Dispatch
   Monitoring o-- Sensor
@@ -163,7 +162,6 @@ classDiagram
     +string Status
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -173,7 +171,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant S as Sensor
   participant M as Monitoring
   participant P as Platform
@@ -190,7 +187,6 @@ sequenceDiagram
   D->>G: 治理执行
   G->>DA: 数据分析
   U->>M: 查询服务
-
 ```
 
 ### Golang 领域模型代码示例
@@ -258,7 +254,6 @@ type Governance struct {
     Status string
     Time   time.Time
 }
-
 ```
 
 ---
@@ -301,7 +296,6 @@ type Governance struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> S[SensorService]
   GW --> M[MonitoringService]
@@ -321,7 +315,6 @@ graph TD
   EV --> G
   D --> EV
   D --> DE
-
 ```
 
 ### Golang代码示例
@@ -332,7 +325,6 @@ graph TD
 // Prometheus 监控
 var sensorCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "sensor_online_total"})
 sensorCount.Set(10000)
-
 ```
 
 ---
@@ -359,7 +351,6 @@ environment-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -386,7 +377,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

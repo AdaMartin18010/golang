@@ -21,7 +21,6 @@
 ### 核心特征
 
 ```mermaid
-graph TB
     A[元宇宙架构] --> B[虚拟世界]
     A --> C[用户身份]
     A --> D[数字资产]
@@ -47,7 +46,6 @@ graph TB
     F --> F1[虚拟货币]
     F --> F2[交易系统]
     F --> F3[经济模型]
-
 ```
 
 ## 3. 元宇宙基础
@@ -228,13 +226,11 @@ type VirtualAvatar struct {
     Customization map[string]interface{}
     Equipment   []Equipment
 }
-
 ```
 
 ### 系统架构
 
 ```mermaid
-graph TB
     A[客户端] --> B[网关层]
     B --> C[应用层]
     C --> D[服务层]
@@ -249,7 +245,6 @@ graph TB
     D --> D2[世界数据]
     D --> D3[资产数据]
     D --> D4[区块链]
-
 ```
 
 ## 6. 分布式挑战
@@ -289,12 +284,10 @@ graph TB
 ### 分层架构设计
 
 ```mermaid
-graph TD
     A[表现层] --> B[业务层]
     B --> C[服务层]
     C --> D[数据层]
     D --> E[基础设施层]
-
 ```
 
 ### 实时通信架构
@@ -371,7 +364,6 @@ func (um *UserManager) UpdateUserLocation(userID string, location Location3D) er
     
     return fmt.Errorf("user %s not found", userID)
 }
-
 ```
 
 ### 虚拟世界管理
@@ -420,7 +412,6 @@ func (wm *WorldManager) UpdateWorld(worldID string, deltaTime float64) error {
     
     return nil
 }
-
 ```
 
 ### 数字资产管理
@@ -477,7 +468,6 @@ func (am *AssetManager) CreateAsset(assetType AssetType, owner string, metadata 
     
     return asset, nil
 }
-
 ```
 
 ### 实时通信系统
@@ -528,7 +518,6 @@ func (cm *CommunicationManager) JoinRoom(userID, roomID string) error {
     
     return fmt.Errorf("user %s not connected", userID)
 }
-
 ```
 
 ## 9. 形式化建模

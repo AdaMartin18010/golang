@@ -56,7 +56,6 @@ func main() {
     })
     app.Listen(":8080")
 }
-
 ```
 
 ### **路由与参数绑定**
@@ -76,7 +75,6 @@ func main() {
     })
     app.Listen(":8080")
 }
-
 ```
 
 ### **中间件用法**
@@ -95,7 +93,6 @@ func main() {
     })
     app.Listen(":8080")
 }
-
 ```
 
 ### **分组与RESTful API**
@@ -114,7 +111,6 @@ func main() {
     })
     app.Listen(":8080")
 }
-
 ```
 
 ## 🧪 **测试代码**
@@ -137,7 +133,6 @@ func TestPingRoute(t *testing.T) {
         t.Errorf("unexpected status: %d", resp.StatusCode)
     }
 }
-
 ```
 
 ## 🎯 **最佳实践**

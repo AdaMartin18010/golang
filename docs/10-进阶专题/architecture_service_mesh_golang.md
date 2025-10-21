@@ -78,7 +78,6 @@
 - **控制平面**: 负责管理和配置所有的Sidecar代理，使其能正确地路由流量。它将运维人员定义的高级路由规则转换为代理可执行的具体配置，并下发到数据平面。它不直接接触流经系统的数据包。
 
 ```mermaid
-graph TD
     subgraph "控制平面 (Control Plane)"
         CP_API[配置API/CLI] --> CP_Config(配置中心);
         CP_Config --> CP_Discovery(服务发现);
@@ -105,7 +104,6 @@ graph TD
 
     style DataPlane fill:#e6f3ff,stroke:#a6cfff,stroke-width:2px
     style ControlPlane fill:#fffbe6,stroke:#ffe680,stroke-width:2px
-
 ```
 
 ### Sidecar代理模式
@@ -328,7 +326,6 @@ func (lc *LeastConnectionsStrategy) DecrementConnections(endpointID string) {
         lc.connectionCounts[endpointID]--
     }
 }
-
 ```
 
 ### 流量管理与路由
@@ -712,7 +709,6 @@ func (tm *TrafficManager) calculateBackoffDelay(attempt int) time.Duration {
         return policy.BaseDelay
     }
 }
-
 ```
 
 ### 安全与认证
@@ -1070,7 +1066,6 @@ func (sm *SecurityManager) evaluateCondition(authResult *AuthResult, condition *
         return true
     }
 }
-
 ```
 
 ## 4. 实际案例分析
@@ -1217,7 +1212,6 @@ func (sr *ServiceRegistry) updateEndpointStatus(endpoint *Endpoint, healthy bool
     
     endpoint.LastCheck = time.Now()
 }
-
 ```
 
 ### 金丝雀发布
@@ -1514,7 +1508,6 @@ func (cdm *CanaryDeploymentManager) rollbackCanary(config *DeploymentConfig) err
     
     return nil
 }
-
 ```
 
 ## 5. 未来趋势与国际前沿
@@ -1617,7 +1610,6 @@ func main() {
         log.Fatalf("Failed to start server: %v", err)
     }
 }
-
 ```
 
 **关键点**:
@@ -1655,7 +1647,6 @@ spec:
         host: reviews-service
         subset: v2
       weight: 5
-
 ```
 
 #### 流量镜像 (Traffic Mirroring)
@@ -1683,7 +1674,6 @@ spec:
       subset: v3
     mirrorPercentage:
       value: 100.0
-
 ```
 
 ### 安全 (Security)
@@ -1707,7 +1697,6 @@ metadata:
 spec:
   mtls:
     mode: STRICT
-
 ```
 
 ## 10. 相关架构主题

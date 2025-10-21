@@ -98,7 +98,6 @@ func (zt *ZeroTrustEngine) EvaluateAccess(ctx context.Context, request AccessReq
     
     return decision, nil
 }
-
 ```
 
 ### 安全策略引擎
@@ -147,7 +146,6 @@ func (pe *PolicyEngine) EvaluateRequest(ctx context.Context, request *AccessRequ
     
     return finalDecision, nil
 }
-
 ```
 
 ## 4. 认证与授权架构
@@ -227,7 +225,6 @@ func (mfa *MFAService) AuthenticateUser(ctx context.Context, credentials map[str
         Factors:  append([]string{"password"}, requiredFactors...),
     }, nil
 }
-
 ```
 
 ### OAuth 2.0 与 OpenID Connect
@@ -302,7 +299,6 @@ func (ts *TokenService) handleAuthorizationCode(ctx context.Context, request *To
         IDToken:      ts.generateIDToken(codeInfo.UserID, codeInfo.ClientID),
     }, nil
 }
-
 ```
 
 ## 5. 密码学应用
@@ -363,7 +359,6 @@ func (cs *CryptoService) Encrypt(ctx context.Context, req *EncryptionRequest) (*
         return nil, fmt.Errorf("unsupported algorithm: %s", req.Algorithm)
     }
 }
-
 ```
 
 ### 密钥管理服务
@@ -436,7 +431,6 @@ func (km *KeyManager) CreateKey(ctx context.Context, req *CreateKeyRequest) (*Ke
         Metadata:  key.Metadata,
     }, nil
 }
-
 ```
 
 ## 6. Golang主流实现与代码示例
@@ -466,7 +460,6 @@ func SecureHeadersMiddleware(next http.Handler) http.Handler {
 
 // 使用中间件
 // router.Use(SecureHeadersMiddleware)
-
 ```
 
 ### 输入验证与输出编码 (OWASP Top 10)
@@ -496,7 +489,6 @@ func renderTemplate(w http.ResponseWriter, data interface{}) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
     }
 }
-
 ```
 
 #### SQL注入防护
@@ -517,7 +509,6 @@ func queryUser(db *sql.DB, username string) (*User, error) {
     }
     return &user, nil
 }
-
 ```
 
 ### 密钥管理 (Secrets Management)
@@ -560,7 +551,6 @@ func getDatabasePasswordFromVault() (string, error) {
 
  return password, nil
 }
-
 ```
 
 ## 7. 容器与云原生安全
@@ -662,7 +652,6 @@ func (cs *ContainerScanner) ScanImage(ctx context.Context, imageRef string) (*Sc
     
     return result, nil
 }
-
 ```
 
 ### 运行时安全监控
@@ -758,7 +747,6 @@ func (rsm *RuntimeSecurityMonitor) handleSecurityEvent(ctx context.Context, even
         }
     }
 }
-
 ```
 
 ## 8. 工程结构与CI/CD实践
@@ -768,7 +756,6 @@ func (rsm *RuntimeSecurityMonitor) handleSecurityEvent(ctx context.Context, even
 在CI/CD流程中嵌入自动化安全检查。
 
 ```mermaid
-graph TD
     A[Code Commit] --> B{CI Pipeline};
     subgraph B
         C[Build] --> D[Unit & Integration Tests];
@@ -783,7 +770,6 @@ graph TD
         K[Deploy to Staging] --> L[Security & Pen Tests];
         L --> M[Deploy to Production];
     end
-
 ```
 
 - **SAST (Static Application Security Testing)**: 静态分析源代码，查找潜在漏洞。工具: `gosec`, SonarQube.
@@ -820,7 +806,6 @@ func (sem *SecurityEventMonitor) ProcessEvent(event SecurityEvent) {
     // 2. 上报SIEM
     sem.SIEMConnector.ForwardEvent(event)
 }
-
 ```
 
 #### 自动化响应与SOAR
@@ -851,7 +836,6 @@ func (se *SOAREngine) ExecutePlaybook(playbookID string, event SecurityEvent) er
     }
     return nil
 }
-
 ```
 
 #### 威胁情报集成
@@ -875,7 +859,6 @@ func (tii *ThreatIntelIntegrator) SyncAndMatch(event SecurityEvent) bool {
     }
     return false
 }
-
 ```
 
 ## 9. 合规与审计
@@ -907,7 +890,6 @@ type AuditEvent struct {
     Result      string
     Details     map[string]interface{}
 }
-
 ```
 
 ## 10. 未来趋势与国际前沿

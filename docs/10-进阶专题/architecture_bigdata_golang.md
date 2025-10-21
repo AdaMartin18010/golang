@@ -102,7 +102,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Data
   User o-- Job
   DataSource o-- Collection
@@ -213,7 +212,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -223,7 +221,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant DS as DataSource
   participant C as Collection
   participant S as Storage
@@ -246,7 +243,6 @@ sequenceDiagram
   G->>M: 元数据管理
   U->>E: 事件触发
   E->>DA: 数据追踪
-
 ```
 
 ### Golang 领域模型代码示例
@@ -1392,7 +1388,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -1435,7 +1430,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> DS[DataSourceService]
   GW --> C[CollectionService]
@@ -1466,7 +1460,6 @@ graph TD
   DA --> P
   EN --> P
   EN --> A
-
 ```
 
 ### Golang代码示例
@@ -1475,7 +1468,6 @@ graph TD
 // 数据处理作业Prometheus监控
 var jobCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "job_total"})
 jobCount.Set(1000000)
-
 ```
 
 ---
@@ -1508,7 +1500,6 @@ bigdata-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -1535,7 +1526,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

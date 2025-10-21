@@ -57,7 +57,6 @@ case v := <-ch:
 case <-time.After(time.Second):
     fmt.Println("timeout")
 }
-
 ```
 
 ### select实现多路复用
@@ -69,7 +68,6 @@ case v1 := <-ch1:
 case v2 := <-ch2:
     fmt.Println("ch2:", v2)
 }
-
 ```
 
 ### context实现取消
@@ -81,7 +79,6 @@ go func() {
     fmt.Println("cancelled")
 }()
 cancel()
-
 ```
 
 ### context实现超时
@@ -93,7 +90,6 @@ select {
 case <-ctx.Done():
     fmt.Println("timeout or cancelled")
 }
-
 ```
 
 ---

@@ -70,7 +70,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   Workflow o-- Task
   Task o-- Event
   Task --> State
@@ -98,7 +97,6 @@ classDiagram
     +string Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -111,7 +109,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant E as EventSource
   participant WF as WorkflowEngine
   participant T as TaskWorker
@@ -122,7 +119,6 @@ sequenceDiagram
   T-->>WF: 任务执行结果
   WF->>S: 更新状态
   WF-->>E: 事件通知
-
 ```
 
 ### Golang 领域模型代码示例
@@ -155,7 +151,6 @@ type State struct {
     Value string
     Time  time.Time
 }
-
 ```
 
 ---
@@ -175,7 +170,6 @@ type State struct {
 // Kafka 任务分发
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "workflow-tasks"})
 writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("TaskCreated")})
-
 ```
 
 ### 状态一致性与持久化
@@ -194,7 +188,6 @@ func SaveState(db *sql.DB, state *State) error {
     _, err := db.Exec("INSERT INTO workflow_state (id, value, time) VALUES (?, ?, ?)", state.ID, state.Value, state.Time)
     return err
 }
-
 ```
 
 ### 容错与恢复
@@ -215,7 +208,6 @@ for i := 0; i < maxRetry; i++ {
     }
     time.Sleep(backoff(i))
 }
-
 ```
 
 ### 可观测性与监控
@@ -232,7 +224,6 @@ for i := 0; i < maxRetry; i++ {
 import "github.com/prometheus/client_golang/prometheus"
 var taskCount = prometheus.NewCounter(prometheus.CounterOpts{Name: "workflow_task_total"})
 taskCount.Inc()
-
 ```
 
 ---
@@ -246,14 +237,12 @@ taskCount.Inc()
 - **架构图（Mermaid）**：
 
 ```mermaid
-graph TD
   A[API Gateway] --> B[Workflow Engine]
   B --> C[Task Queue (Kafka/NATS)]
   B --> D[State Store (DB/NoSQL)]
   B --> E[Monitoring (Prometheus/Grafana)]
   C --> F[Worker Pool]
   F --> G[External Systems]
-
 ```
 
 - **Golang代码示例**：
@@ -265,7 +254,6 @@ func SampleWorkflow(ctx workflow.Context, input string) error {
     err := workflow.ExecuteActivity(ctx, SampleActivity, input).Get(ctx, nil)
     return err
 }
-
 ```
 
 ### 任务队列与Worker池
@@ -279,7 +267,6 @@ func SampleWorkflow(ctx workflow.Context, input string) error {
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "workflow-tasks", GroupID: "worker-group"})
 msg, _ := reader.ReadMessage(context.Background())
 processTask(msg.Value)
-
 ```
 
 ### 状态管理与一致性
@@ -294,7 +281,6 @@ func SaveSnapshot(state *State) error {
     // 序列化并持久化到存储
     return storage.Save(state)
 }
-
 ```
 
 ### 可观测性与监控1
@@ -309,7 +295,6 @@ import "go.opentelemetry.io/otel"
 tracer := otel.Tracer("workflow-service")
 ctx, span := tracer.Start(context.Background(), "ExecuteTask")
 defer span.End()
-
 ```
 
 ### 案例分析：Temporal 工作流平台
@@ -339,7 +324,6 @@ workflow-demo/
 ├── scripts/            # 部署与运维脚本
 ├── build/              # Dockerfile、CI/CD配置
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -352,7 +336,6 @@ func SampleWorkflow(ctx workflow.Context, input string) error {
     err := workflow.ExecuteActivity(ctx, SampleActivity, input).Get(ctx, nil)
     return err
 }
-
 ```
 
 #### Kafka 任务分发与消费
@@ -366,7 +349,6 @@ writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("TaskCrea
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "workflow-tasks", GroupID: "worker-group"})
 msg, _ := reader.ReadMessage(context.Background())
 processTask(msg.Value)
-
 ```
 
 #### Prometheus 监控埋点
@@ -375,7 +357,6 @@ processTask(msg.Value)
 import "github.com/prometheus/client_golang/prometheus"
 var workflowCount = prometheus.NewCounter(prometheus.CounterOpts{Name: "workflow_started_total"})
 workflowCount.Inc()
-
 ```
 
 ### CI/CD 配置（GitHub Actions 示例）
@@ -401,7 +382,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---
@@ -511,7 +491,6 @@ func (sm *StateManager) RestoreFromCheckpoint(ctx context.Context, workflowID st
     
     return checkpoint.State, nil
 }
-
 ```
 
 ### 工作流编排与任务调度
@@ -625,7 +604,6 @@ func (we *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflow *Workflo
     
     return nil
 }
-
 ```
 
 ### 故障恢复与补偿机制
@@ -693,7 +671,6 @@ func (cm *CompensationManager) ExecuteCompensation(ctx context.Context, workflow
     
     return nil
 }
-
 ```
 
 ## 8. 相关架构主题

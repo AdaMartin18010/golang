@@ -63,7 +63,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Network
   User o-- Billing
   User o-- Service
@@ -159,7 +158,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -169,7 +167,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant U as User
   participant N as Network
   participant S as Service
@@ -190,7 +187,6 @@ sequenceDiagram
   N->>R: 资源分配
   N->>EV: 事件采集
   EV->>DA: 数据分析
-
 ```
 
 ### Golang 领域模型代码示例
@@ -273,7 +269,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -316,7 +311,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> N[NetworkService]
   GW --> S[ServiceService]
@@ -354,7 +348,6 @@ graph TD
   DA --> U
   EN --> N
   EN --> D
-
 ```
 
 ### Golang代码示例
@@ -363,7 +356,6 @@ graph TD
 // 用户数量Prometheus监控
 var userCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "user_total"})
 userCount.Set(1000000)
-
 ```
 
 ---
@@ -393,7 +385,6 @@ telecom-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -420,7 +411,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

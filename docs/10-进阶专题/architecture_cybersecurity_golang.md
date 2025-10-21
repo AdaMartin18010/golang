@@ -68,7 +68,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Identity
   User o-- Authentication
   User o-- Access
@@ -183,7 +182,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -193,7 +191,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant U as User
   participant I as Identity
   participant AU as Authentication
@@ -218,7 +215,6 @@ sequenceDiagram
   AL->>TA: 自动响应
   E->>L: 日志记录
   D->>C: 合规审计
-
 ```
 
 ### Golang 领域模型代码示例
@@ -321,7 +317,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -364,7 +359,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> I[IdentityService]
   GW --> AU[AuthenticationService]
@@ -410,7 +404,6 @@ graph TD
   TA --> E
   EN --> AS
   EN --> E
-
 ```
 
 ### Golang代码示例
@@ -419,7 +412,6 @@ graph TD
 // 告警数量Prometheus监控
 var alertCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "alert_total"})
 alertCount.Set(1000000)
-
 ```
 
 ---
@@ -452,7 +444,6 @@ cybersecurity-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -479,7 +470,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

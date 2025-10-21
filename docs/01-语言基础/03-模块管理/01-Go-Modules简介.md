@@ -198,7 +198,6 @@ github.com/gin-gonic/gin v1.9.1/go.mod h1:hPrL7YrpYKXt5YId3A/Tnip5kqbEAP+KLuI3SU
 #### 依赖解析流程
 
 ```mermaid
-graph TD
     A[开始] --> B{go.mod 存在?}
     B -->|否| C[go mod init]
     B -->|是| D[解析 go.mod]

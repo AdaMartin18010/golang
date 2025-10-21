@@ -121,7 +121,6 @@ EXPOSE 8080
 # 10. 定义启动命令
 
 CMD ["./main"]
-
 ```
 
 ### 容器编排架构 (Kubernetes)
@@ -201,7 +200,6 @@ spec:
     - protocol: TCP
       port: 80 # Service 端口
       targetPort: 8080 # Pod 端口
-
 ```
 
 **有状态应用部署 (StatefulSet)**:
@@ -240,7 +238,6 @@ spec:
       resources:
         requests:
           storage: 1Gi
-
 ```
 
 ---
@@ -295,7 +292,6 @@ func main() {
   fmt.Printf("Pod Name: %s, Status: %s\n", pod.Name, pod.Status.Phase)
  }
 }
-
 ```
 
 ### 可观测性 (Observability)
@@ -340,7 +336,6 @@ func main() {
  log.Println("Listening on :8080")
  log.Fatal(http.ListenAndServe(":8080", nil))
 }
-
 ```
 
 ---
@@ -390,7 +385,6 @@ func main() {
 │       └── ci-cd.yml       # GitHub Actions工作流
 ├── go.mod
 └── go.sum
-
 ```
 
 ### CI/CD工作流 (GitHub Actions)
@@ -451,7 +445,6 @@ jobs:
       run: |
         # 使用kubectl或kustomize进行部署
         kubectl apply -k deployments/overlays/production
-
 ```
 
 ## 7. 相关架构主题

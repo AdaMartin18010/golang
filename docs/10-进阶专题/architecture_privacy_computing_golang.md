@@ -21,7 +21,6 @@
 ### 核心特征
 
 ```mermaid
-graph TB
     A[隐私计算架构] --> B[数据隐私]
     A --> C[计算安全]
     A --> D[结果可信]
@@ -47,7 +46,6 @@ graph TB
     F --> F1[GDPR合规]
     F --> F2[数据主权]
     F --> F3[跨境合规]
-
 ```
 
 ## 3. 隐私计算基础
@@ -212,13 +210,11 @@ type PrivacyTask struct {
     Config       PrivacyConfig
     Status       TaskStatus
 }
-
 ```
 
 ### 系统架构
 
 ```mermaid
-graph TB
     A[数据层] --> B[隐私保护层]
     B --> C[计算层]
     C --> D[结果层]
@@ -234,7 +230,6 @@ graph TB
     D --> D1[结果验证]
     D --> D2[审计追踪]
     D --> D3[访问控制]
-
 ```
 
 ## 6. 分布式挑战
@@ -278,12 +273,10 @@ graph TB
 ### 分层隐私保护
 
 ```mermaid
-graph TD
     A[应用层] --> B[隐私计算层]
     B --> C[密码学层]
     C --> D[可信执行层]
     D --> E[基础设施层]
-
 ```
 
 ### 混合隐私保护
@@ -356,7 +349,6 @@ func (pce *PrivacyComputingEngine) ExecuteTask(task *PrivacyTask) (*PrivacyResul
     
     return result, nil
 }
-
 ```
 
 ### 同态加密实现
@@ -408,7 +400,6 @@ func (hem *HomomorphicEncryptionManager) ExecuteComputation(task *PrivacyTask, d
         Timestamp: time.Now(),
     }, nil
 }
-
 ```
 
 ### 安全多方计算
@@ -469,7 +460,6 @@ func (mpcm *SecureMultiPartyManager) ExecuteComputation(task *PrivacyTask, data 
         Timestamp: time.Now(),
     }, nil
 }
-
 ```
 
 ## 9. 形式化建模

@@ -41,7 +41,6 @@
 消息队列采用**生产者-消费者**模式，通过中间的消息代理（Message Broker）实现异步通信和解耦。
 
 ```mermaid
-graph LR
     subgraph "生产者 (Producers)"
         P1[服务 A]
         P2[服务 B]
@@ -84,7 +83,6 @@ graph LR
     style C3 fill:#f3e5f5
     style C4 fill:#f3e5f5
     style DLQ fill:#ffebee
-
 ```
 
 ### 消息交付保证 (Message Delivery Guarantees)
@@ -143,7 +141,6 @@ func (ic *IdempotentConsumer) hasProcessed(messageID string) bool {
     defer ic.mu.RUnlock()
     return ic.processedMessages[messageID]
 }
-
 ```
 
 ### 分区与并行处理
@@ -151,7 +148,6 @@ func (ic *IdempotentConsumer) hasProcessed(messageID string) bool {
 为了处理大规模消息流，现代消息队列采用**分区 (Partitioning)** 策略，允许并行处理。
 
 ```mermaid
-graph TD
     subgraph "主题: user-events (分区)"
         P0[分区 0<br/>用户 A, D, G...]
         P1[分区 1<br/>用户 B, E, H...]
@@ -174,7 +170,6 @@ graph TD
     style C0 fill:#fff8e1
     style C1 fill:#fff8e1
     style C2 fill:#fff8e1
-
 ```
 
 ## 4. 可靠性保证
@@ -261,7 +256,6 @@ func (ms *MessageStorage) Fetch(topic string, partition int, offset int64) (*Mes
     
     return nil, nil
 }
-
 ```
 
 ### 消息确认机制
@@ -334,7 +328,6 @@ func (ma *MessageAcknowledgment) HandleFailure(ctx context.Context, messageID st
     // 3. 发送到死信队列
     return ma.DeadLetterQueue.Send(messageID, consumerID, error)
 }
-
 ```
 
 ## 5. 性能优化
@@ -426,7 +419,6 @@ func (bp *BatchProcessor) processBatchParallel(ctx context.Context, batch *Batch
     
     return nil
 }
-
 ```
 
 ### 消息压缩
@@ -525,7 +517,6 @@ func (mc *MessageCompressor) CompressMessage(message *Message) error {
     
     return nil
 }
-
 ```
 
 ## 6. 监控与可观测性
@@ -644,7 +635,6 @@ func (qm *QueueMonitor) checkAlerts(metrics *QueueMetrics) {
         })
     }
 }
-
 ```
 
 ## 7. 分布式挑战与主流解决方案
@@ -715,7 +705,6 @@ func (rp *RetryProcessor) calculateBackoff(attempt int) time.Duration {
     
     return backoff
 }
-
 ```
 
 ### 消息去重与重复检测
@@ -768,7 +757,6 @@ func (dm *DeduplicationManager) calculateHash(msg *Message) string {
     
     return hex.EncodeToString(dm.hashFunction.Sum(nil))
 }
-
 ```
 
 ### 背压控制 (Backpressure Control)
@@ -811,7 +799,6 @@ func (bpc *BackpressureController) MessageReceived() {
 func (bpc *BackpressureController) MessageProcessed() {
     atomic.AddInt64(&bpc.currentQueueSize, -1)
 }
-
 ```
 
 ### 消息序列化与压缩
@@ -873,7 +860,6 @@ func (ms *MessageSerializer) compress(data []byte) ([]byte, error) {
     
     return buf.Bytes(), nil
 }
-
 ```
 
 ## 8. 实际案例分析
@@ -957,7 +943,6 @@ func (op *OrderProcessor) ProcessOrder(ctx context.Context, order *Order) error 
     
     return nil
 }
-
 ```
 
 ### 实时日志处理系统
@@ -1079,7 +1064,6 @@ func (lc *LogCollector) processLogFile(ctx context.Context, filepath string, sou
     
     return scanner.Err()
 }
-
 ```
 
 ## 9. 未来趋势与国际前沿

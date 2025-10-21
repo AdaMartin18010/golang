@@ -51,7 +51,6 @@ Program ::= PackageDeclaration ImportDeclaration* FunctionDeclaration*
 PackageDeclaration ::= "package" PackageName
 ImportDeclaration ::= "import" ImportPath
 FunctionDeclaration ::= "func" FunctionName "(" Parameters? ")" ReturnType? Block
-
 ```
 
 其中：
@@ -89,7 +88,6 @@ import "fmt"
 func main() {
     fmt.Println("Hello, World!")
 }
-
 ```
 
 ### **程序结构分析**
@@ -106,7 +104,6 @@ func main() {
     // 函数调用：使用fmt包的Println函数
     fmt.Println("Hello, World!")
 }
-
 ```
 
 ### **扩展版本：带参数的程序**
@@ -130,7 +127,6 @@ func main() {
         fmt.Println("Hello, World!")
     }
 }
-
 ```
 
 ### **带错误处理的版本**
@@ -159,7 +155,6 @@ func main() {
         fmt.Println("Hello, World!")
     }
 }
-
 ```
 
 ## 🔧 **编译和运行**
@@ -179,7 +174,6 @@ go run hello_advanced.go Alice
 # 运行带错误处理的程序
 
 go run hello_error.go Bob
-
 ```
 
 ### **使用go build命令**
@@ -197,7 +191,6 @@ go build hello.go
 # 在Windows上
 
 hello.exe
-
 ```
 
 ### **交叉编译**
@@ -215,7 +208,6 @@ GOOS=windows GOARCH=amd64 go build hello.go
 # 编译为macOS可执行文件
 
 GOOS=darwin GOARCH=amd64 go build hello.go
-
 ```
 
 ## 📊 **性能分析**
@@ -232,7 +224,6 @@ GOOS=darwin GOARCH=amd64 go build hello.go
 执行main函数
     ↓
 程序结束
-
 ```
 
 ### **内存使用分析**
@@ -260,7 +251,6 @@ func main() {
 func bToMb(b uint64) uint64 {
     return b / 1024 / 1024
 }
-
 ```
 
 ## 🧪 **测试代码**
@@ -288,7 +278,6 @@ func TestHelloOutput(t *testing.T) {
     // 实际测试中需要捕获输出进行比较
     t.Logf("Expected output: %s", expected)
 }
-
 ```
 
 ### **基准测试**
@@ -307,7 +296,6 @@ func BenchmarkHelloWorld(b *testing.B) {
         _ = "Hello, World!"
     }
 }
-
 ```
 
 ## 🎯 **最佳实践**
@@ -334,7 +322,6 @@ func run() error {
     // 程序逻辑
     return nil
 }
-
 ```
 
 ### **配置管理**
@@ -355,7 +342,6 @@ func main() {
     }
     fmt.Println(message)
 }
-
 ```
 
 ## 🔍 **常见问题**

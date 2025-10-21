@@ -99,7 +99,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   Node o-- Block
   Node o-- Consensus
   Node o-- Contract
@@ -208,7 +207,6 @@ classDiagram
     +string Data
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -218,7 +216,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant N as Node
   participant B as Block
   participant T as Transaction
@@ -243,7 +240,6 @@ sequenceDiagram
   B->>D: 数据分析
   B->>L: 日志采集
   API->>N: API调用
-
 ```
 
 ### Golang 领域模型代码示例
@@ -332,7 +328,6 @@ type Event struct {
     Data string
     Time time.Time
 }
-
 ```
 
 ---
@@ -375,7 +370,6 @@ type Event struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   N[Node] --> GW[API Gateway]
   GW --> NS[NodeService]
   GW --> BS[BlockService]
@@ -424,7 +418,6 @@ graph TD
   ES --> BS
   ES --> TS
   ES --> CTS
-
 ```
 
 ### Golang代码示例
@@ -433,7 +426,6 @@ graph TD
 // 区块高度Prometheus监控
 var blockHeight = prometheus.NewGauge(prometheus.GaugeOpts{Name: "block_height"})
 blockHeight.Set(1234567)
-
 ```
 
 ---
@@ -463,7 +455,6 @@ blockchain-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -490,7 +481,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

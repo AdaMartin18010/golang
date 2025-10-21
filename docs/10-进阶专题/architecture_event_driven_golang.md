@@ -107,7 +107,6 @@ type EventHandler interface {
     Handle(ctx context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
-
 ```
 
 ### 事件溯源模式
@@ -143,7 +142,6 @@ func (esa *EventSourcedAggregate) LoadFromHistory(events []*Event) {
     esa.Version = len(events)
     esa.RebuildState()
 }
-
 ```
 
 ### CQRS模式
@@ -182,7 +180,6 @@ type QueryHandler interface {
     Handle(ctx context.Context, query Query) (interface{}, error)
     CanHandle(queryType string) bool
 }
-
 ```
 
 ### 发布/订阅模式 (Publish/Subscribe)
@@ -190,7 +187,6 @@ type QueryHandler interface {
 发布/订阅是事件驱动架构最基础的模式。生产者（Publisher）发布事件到主题（Topic）或通道（Channel），而不直接发送给特定的接收者。消费者（Subscriber）订阅感兴趣的主题，并接收事件进行处理。生产者和消费者是解耦的。
 
 ```mermaid
-graph TD
     subgraph "生产者 (Publishers)"
         P1[服务 A]
         P2[服务 B]
@@ -214,7 +210,6 @@ graph TD
     style C1 fill:#d5e8d4,stroke:#82b366
     style C2 fill:#d5e8d4,stroke:#82b366
     style C3 fill:#d5e8d4,stroke:#82b366
-
 ```
 
 ### 事件溯源 (Event Sourcing) 与 CQRS 组合模式
@@ -222,7 +217,6 @@ graph TD
 当事件溯源与CQRS结合时，系统的数据流变得非常清晰。所有状态的变更都以事件的形式被捕获并存储在事件存储中。这些事件流同时用于更新专门为查询优化的"读模型"（Read Model）。
 
 ```mermaid
-graph LR
     subgraph "命令侧 (Write Side)"
         User[用户] -- 发送命令 --> CmdAPI(命令API);
         CmdAPI -- 处理命令 --> Agg(聚合根<br/>OrderAggregate);
@@ -244,7 +238,6 @@ graph LR
     style ES fill:#f5f5f5,stroke:#666
     style Proj fill:#dae8fc,stroke:#6c8ebf
     style RM fill:#d5e8d4,stroke:#82b366
-
 ```
 
 ---
@@ -288,7 +281,6 @@ func NewOrderAggregate(id string) *OrderAggregate {
     
     return oa
 }
-
 ```
 
 ---
@@ -385,7 +377,6 @@ func main() {
   log.Fatalf("event validation failed: %v", err)
  }
 }
-
 ```
 
 ### Kafka 生产者与消费者示例 (使用 sarama)
@@ -462,7 +453,6 @@ func main() {
         time.Sleep(10 * time.Second) 
     }
 }
-
 ```
 
 - 注意: 运行此示例需要一个可用的Kafka实例，并且`sarama`库需要被安装: `go get github.com/Shopify/sarama`*
@@ -507,7 +497,6 @@ func (h *OrderEventHandler) HandleOrderCreated(event *Event) error {
 
     return tx.Commit()
 }
-
 ```
 
 ### 死信队列 (Dead-Letter Queue)
@@ -552,7 +541,6 @@ type EventHandler interface {
     Handle(ctx context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
-
 ```
 
 ### CI/CD实践
@@ -599,7 +587,6 @@ type EventHandler interface {
     Handle(ctx context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
-
 ```
 
 ### 事件溯源模式数学表达
@@ -635,7 +622,6 @@ func (esa *EventSourcedAggregate) LoadFromHistory(events []*Event) {
     esa.Version = len(events)
     esa.RebuildState()
 }
-
 ```
 
 ## 11. 相关架构主题

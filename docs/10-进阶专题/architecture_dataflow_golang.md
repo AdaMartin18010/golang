@@ -91,7 +91,6 @@
 ### 核心实体建模
 
 ```mermaid
-classDiagram
     class DataStream {
         +string ID
         +string Topic
@@ -139,13 +138,11 @@ classDiagram
     StreamProcessor "1" *-- "1" StateStore
     StreamProcessor "1" *-- "1" WindowManager
     StreamProcessor --> DataStream : consumes
-
 ```
 
 ### 数据流处理架构
 
 ```mermaid
-graph LR
     subgraph "数据源 (Sources)"
         DS1[IoT设备]
         DS2[Web日志]
@@ -199,7 +196,6 @@ graph LR
     style MQ fill:#e1f5fe
     style SS fill:#f3e5f5
     style CP fill:#fff3e0
-
 ```
 
 ---
@@ -219,7 +215,6 @@ graph LR
 - **劣势**: 对流处理引擎要求高
 
 ```mermaid
-graph TD
     subgraph "Lambda架构"
         L_Data[数据源] --> L_Batch[批处理层<br/>Hadoop/Spark]
         L_Data --> L_Stream[流处理层<br/>Flink/Storm]
@@ -237,7 +232,6 @@ graph TD
     style L_Batch fill:#ffcdd2
     style L_Stream fill:#c8e6c9
     style K_Stream fill:#c8e6c9
-
 ```
 
 ### 流处理核心概念
@@ -421,7 +415,6 @@ func (dp *DataflowPipeline) Stop() {
     close(dp.outputChan)
     close(dp.errorChan)
 }
-
 ```
 
 ### 窗口聚合处理示例
@@ -614,7 +607,6 @@ func main() {
     time.Sleep(10 * time.Second)
     pipeline.Stop()
 }
-
 ```
 
 ---
@@ -695,7 +687,6 @@ func (cm *CheckpointManager) calculateChecksum(state map[string]interface{}) str
     data, _ := json.Marshal(state)
     return fmt.Sprintf("%x", sha256.Sum256(data))
 }
-
 ```
 
 ### 背压控制与流量整形
@@ -774,7 +765,6 @@ func (bpc *BackpressureController) AdaptiveAdjust(processingLatency time.Duratio
         bpc.rateLimiter.SetLimit(newLimit)
     }
 }
-
 ```
 
 ### 事件时间处理与水位线机制
@@ -854,7 +844,6 @@ func (wm *WatermarkManager) GetGlobalWatermark() time.Time {
 func (wm *WatermarkManager) IsEventLate(eventTime time.Time) bool {
     return eventTime.Before(wm.GetGlobalWatermark())
 }
-
 ```
 
 ---
@@ -884,7 +873,6 @@ dataflow-service/
 │   └── pipeline.yaml    # 管道配置
 └── scripts/
     └── start.sh         # 启动脚本
-
 ```
 
 ### 容器化部署
@@ -910,7 +898,6 @@ COPY --from=builder /app/dataflow-processor .
 COPY --from=builder /app/configs ./configs
 
 CMD ["./dataflow-processor"]
-
 ```
 
 ---

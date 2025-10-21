@@ -83,7 +83,6 @@ BaaS利用第三方服务来处理后端逻辑，如认证、数据库管理、�
 **架构图: FaaS + BaaS**:
 
 ```mermaid
-graph TD
     subgraph Client
         A[Web/Mobile App]
     end
@@ -96,7 +95,6 @@ graph TD
     end
 
     A --> B;
-
 ```
 
 ---
@@ -138,7 +136,6 @@ func main() {
  // 启动Lambda处理器
  lambda.Start(HandleRequest)
 }
-
 ```
 
 **构建和部署**:
@@ -177,7 +174,6 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
  }
  fmt.Fprintf(w, "Hello, %s!", d.Name)
 }
-
 ```
 
 **部署**:
@@ -240,7 +236,6 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 └── .github/
     └── workflows/
         └── ci-cd.yml           # GitHub Actions工作流
-
 ```
 
 ### 配置文件 (serverless.yml)
@@ -299,7 +294,6 @@ custom:
   build:
     # 构建命令，在部署前执行
     command: make build 
-
 ```
 
 ### CI/CD工作流 (GitHub Actions)
@@ -351,7 +345,6 @@ jobs:
       # Makefile会负责编译所有函数
       - name: Serverless Deploy
         run: serverless deploy --stage prod
-
 ```
 
 ---

@@ -91,7 +91,6 @@ func main() {
     time.Sleep(time.Millisecond * 100)
     fmt.Println("Hello from main!")
 }
-
 ```
 
 ### 使用Channel通信
@@ -112,7 +111,6 @@ func main() {
     msg := <-ch
     fmt.Println(msg)
 }
-
 ```
 
 ## 📊 学习进度

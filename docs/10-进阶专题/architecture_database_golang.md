@@ -141,7 +141,6 @@ func (dm *DatabaseManager) reconnectPool(pool *ConnectionPool) error {
     pool.pool = db
     return nil
 }
-
 ```
 
 ### 事务管理
@@ -194,7 +193,6 @@ func (t *Transaction) executeQuery(query Query) error {
         return fmt.Errorf("unsupported query type: %s", query.Type)
     }
 }
-
 ```
 
 ---
@@ -261,7 +259,6 @@ func (rs *RangeSharding) GetShard(key interface{}) (*Shard, error) {
     }
     return nil, fmt.Errorf("no shard found for key: %v", key)
 }
-
 ```
 
 ### 一致性协议
@@ -354,7 +351,6 @@ func (rp *RaftProtocol) replicateLog(entry *LogEntry) error {
     
     return nil
 }
-
 ```
 
 ## 5. 查询优化与性能调优
@@ -442,7 +438,6 @@ func (qo *QueryOptimizer) generateCandidatePlans(ast *AST) []*ExecutionPlan {
     
     return plans
 }
-
 ```
 
 ### 索引管理
@@ -517,7 +512,6 @@ func (im *IndexManager) RecommendIndexes(queries []string) []*IndexRecommendatio
     
     return recommendations
 }
-
 ```
 
 ## 6. Golang主流实现与代码示例
@@ -595,7 +589,6 @@ func main() {
   panic(err)
  }
 }
-
 ```
 
 ## 7. 分布式挑战与主流解决方案
@@ -609,7 +602,6 @@ func main() {
 Saga是一种通过**异步消息**来协调一系列本地事务的设计模式。每个本地事务完成後会发布一个事件，触发下一个本地事务。如果任何一个事务失败，Saga会执行一系列**补偿事务（Compensating Transactions）**来撤销已经完成的操作。
 
 ```mermaid
-graph TD
     A[Start Order] --> B(Create Order - Pending);
     B -- OrderCreated Event --> C(Reserve Inventory);
     C -- InventoryReserved Event --> D(Process Payment);
@@ -618,7 +610,6 @@ graph TD
     C -- Inventory Not Available --> F(Cancel Order - Failed);
     D -- Payment Failed --> G(Release Inventory);
     G --> F;
-
 ```
 
 **优点**: 高可用性，松耦合，无锁，扩展性好。
@@ -651,7 +642,6 @@ func (r *ReadWriteRouter) selectReplica() *sql.DB {
  // 实现负载均衡策略，如随机或轮询
  return r.Replicas[0]
 }
-
 ```
 
 #### 数据库故障转移 (Database Failover)

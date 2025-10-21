@@ -64,7 +64,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Tourist
   User o-- Order
   Tourist o-- Order
@@ -169,7 +168,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -179,7 +177,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant U as User
   participant T as Tourist
   participant S as Scenic
@@ -202,7 +199,6 @@ sequenceDiagram
   T->>G: 导览服务
   T->>EV: 事件采集
   EV->>DA: 数据分析
-
 ```
 
 ### Golang 领域模型代码示例
@@ -291,7 +287,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -334,7 +329,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> T[TouristService]
   GW --> S[ScenicService]
@@ -378,7 +372,6 @@ graph TD
   DA --> S
   EN --> S
   EN --> TR
-
 ```
 
 ### Golang代码示例
@@ -387,7 +380,6 @@ graph TD
 // 游客数量Prometheus监控
 var touristCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "tourist_total"})
 touristCount.Set(1000000)
-
 ```
 
 ---
@@ -418,7 +410,6 @@ tourism-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -445,7 +436,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

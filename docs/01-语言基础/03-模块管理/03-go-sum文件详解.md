@@ -131,7 +131,6 @@ github.com/go-playground/validator/v10 v10.14.0/go.mod h1:9iXMQijp/C/p+UdY+i1R9J
 当执行`go get`或`go mod tidy`时：
 
 ```mermaid
-graph LR
     A[下载依赖] --> B[计算SHA-256]
     B --> C[Base64编码]
     C --> D[写入go.sum]
@@ -149,7 +148,6 @@ graph LR
 每次构建时：
 
 ```mermaid
-graph TD
     A[读取go.sum] --> B{本地有缓存?}
     B -->|有| C[验证缓存校验和]
     B -->|无| D[下载依赖]

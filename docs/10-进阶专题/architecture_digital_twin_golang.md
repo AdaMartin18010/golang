@@ -20,7 +20,6 @@
 ### 核心特征
 
 ```mermaid
-graph TB
     A[数字孪生架构] --> B[物理实体]
     A --> C[数字模型]
     A --> D[数据连接]
@@ -41,7 +40,6 @@ graph TB
     E --> E1[监控分析]
     E --> E2[预测优化]
     E --> E3[控制决策]
-
 ```
 
 ## 3. 数字孪生基础
@@ -180,20 +178,17 @@ type DataConnector struct {
     DataFormat   string
     UpdateFrequency time.Duration
 }
-
 ```
 
 ### 数据流架构
 
 ```mermaid
-graph LR
     A[物理实体] --> B[数据采集]
     B --> C[数据处理]
     C --> D[数字模型]
     D --> E[分析预测]
     E --> F[控制决策]
     F --> G[物理实体]
-
 ```
 
 ## 6. 分布式挑战
@@ -227,12 +222,10 @@ graph LR
 ### 分层架构设计
 
 ```mermaid
-graph TD
     A[物理层] --> B[数据层]
     B --> C[模型层]
     C --> D[服务层]
     D --> E[应用层]
-
 ```
 
 ### 数据管理策略
@@ -289,7 +282,6 @@ type StateSnapshot struct {
     Variables map[string]interface{}
     Quality   float64
 }
-
 ```
 
 ### 数据连接与处理
@@ -348,7 +340,6 @@ func (rts *RealTimeSync) syncData() error {
     // 更新数字孪生状态
     return rts.updateTwinState(data)
 }
-
 ```
 
 ### 预测分析引擎
@@ -394,7 +385,6 @@ func (pe *PredictionEngine) executePrediction(model *PredictionModel, input []fl
         return nil, fmt.Errorf("unsupported algorithm: %s", model.Algorithm)
     }
 }
-
 ```
 
 ## 9. 形式化建模

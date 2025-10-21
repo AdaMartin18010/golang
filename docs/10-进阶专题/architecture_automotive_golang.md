@@ -102,7 +102,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   Vehicle o-- Sensor
   Vehicle o-- Controller
   Vehicle o-- User
@@ -225,7 +224,6 @@ classDiagram
     +string Data
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -235,7 +233,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant V as Vehicle
   participant S as Sensor
   participant C as Controller
@@ -260,7 +257,6 @@ sequenceDiagram
   CL->>L: 日志采集
   U->>V: 用户操作
   T->>V: 任务下发
-
 ```
 
 ### Golang 领域模型代码示例
@@ -354,7 +350,6 @@ type Log struct {
     Data   string
     Time   time.Time
 }
-
 ```
 
 ---
@@ -397,7 +392,6 @@ type Log struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> V[VehicleService]
   GW --> S[SensorService]
@@ -456,7 +450,6 @@ graph TD
   L --> V
   L --> CL
   L --> E
-
 ```
 
 ### Golang代码示例
@@ -465,7 +458,6 @@ graph TD
 // 车辆数量Prometheus监控
 var vehicleCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "vehicle_total"})
 vehicleCount.Set(1000000)
-
 ```
 
 ---
@@ -497,7 +489,6 @@ automotive-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -524,7 +515,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

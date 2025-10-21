@@ -104,14 +104,12 @@
 **国际主流参考**：Martin Fowler、Sam Newman、Google、Netflix、Uber 等。
 
 ```mermaid
-graph TD
   A["API Gateway (Kong/Traefik/Envoy)"] --> B["User Service (Go, Gin)"]
   A --> C["Order Service (Go, gRPC)"]
   A --> D["Payment Service (Go, REST)"]
   B --> E["PostgreSQL"]
   C --> F["Kafka"]
   D --> G["Stripe API"]
-
 ```
 
 ---
@@ -136,7 +134,6 @@ graph TD
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User <|-- Order
   Order o-- OrderItem
   OrderItem --> Product
@@ -170,7 +167,6 @@ classDiagram
     +float Amount
     +PaymentStatus Status
   }
-
 ```
 
 ### 典型数据流
@@ -182,7 +178,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant U as User
   participant OS as OrderService
   participant PS as PaymentService
@@ -197,7 +192,6 @@ sequenceDiagram
   PS->>OS: 通知支付结果
   OS->>LS: 通知发货
   LS-->>OS: 发货结果
-
 ```
 
 ### Golang 领域模型代码示例
@@ -1108,7 +1102,6 @@ resp, err := client.DoSomething(ctx, req)
 if err != nil {
     // 重试或熔断处理
 }
-
 ```
 
 ### 服务协调与编排
@@ -1125,7 +1118,6 @@ if err != nil {
 import clientv3 "go.etcd.io/etcd/client/v3"
 cli, _ := clientv3.New(clientv3.Config{Endpoints: []string{"localhost:2379"}})
 cli.Put(context.Background(), "/services/order/instance1", "127.0.0.1:8080")
-
 ```
 
 ### 数据一致性
@@ -1142,7 +1134,6 @@ cli.Put(context.Background(), "/services/order/instance1", "127.0.0.1:8080")
 import "github.com/segmentio/kafka-go"
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "order-events"})
 writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("OrderCreated")})
-
 ```
 
 ### 系统可靠性
@@ -1159,7 +1150,6 @@ writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("OrderCre
 import "github.com/prometheus/client_golang/prometheus"
 var reqCount = prometheus.NewCounter(prometheus.CounterOpts{Name: "http_requests_total"})
 reqCount.Inc()
-
 ```
 
 ---
@@ -1173,11 +1163,9 @@ reqCount.Inc()
 - **架构图（Mermaid）**：
 
 ```mermaid
-graph TD
   A["用户上下文"] -->|下单| B["订单上下文"]
   B -->|包含| C["商品上下文"]
   B -->|支付| D["支付上下文"]
-
 ```
 
 - **Golang代码示例**：
@@ -1188,7 +1176,6 @@ graph TD
      CreateOrder(ctx context.Context, order *Order) error
      GetOrder(ctx context.Context, id string) (*Order, error)
  }
-
 ```
 
 ### 服务组件定制
@@ -1198,7 +1185,6 @@ graph TD
 - **架构图（Mermaid）**：
 
 ```mermaid
-graph LR
   GW[API Gateway] --> US[User Service]
   GW --> OS[Order Service]
   GW --> PS[Payment Service]
@@ -1208,7 +1194,6 @@ graph LR
   US --> DB1[(UserDB)]
   OS --> DB2[(OrderDB)]
   PS --> DB3[(PaymentDB)]
-
 ```
 
 - **Golang代码示例**：
@@ -1219,7 +1204,6 @@ import "github.com/gin-gonic/gin"
 r := gin.Default()
 r.POST("/orders", orderHandler.CreateOrder)
 r.GET("/orders/:id", orderHandler.GetOrder)
-
 ```
 
 ### 同步与异步模型
@@ -1229,12 +1213,10 @@ r.GET("/orders/:id", orderHandler.GetOrder)
 - **架构图（Mermaid）**：
 
 ```mermaid
-graph TD
   Client -->|REST/gRPC| API[API Gateway]
   API -->|同步| S1[Order Service]
   S1 -->|异步事件| MQ[Kafka/NATS]
   MQ -->|事件消费| S2[Payment Service]
-
 ```
 
 - **Golang代码示例**：
@@ -1250,7 +1232,6 @@ func (p *OrderEventProcessor) ProcessEvent(ctx context.Context, event interface{
         return fmt.Errorf("unknown event type: %T", event)
     }
 }
-
 ```
 
 ### 生态适配与API网关
@@ -1260,12 +1241,10 @@ func (p *OrderEventProcessor) ProcessEvent(ctx context.Context, event interface{
 - **架构图（Mermaid）**：
 
 ```mermaid
-graph TD
   Client --> GW[API Gateway]
   GW --> S1[User Service]
   GW --> S2[Order Service]
   GW --> S3[Payment Service]
-
 ```
 
 - **Golang代码示例**：
@@ -1277,7 +1256,6 @@ route {
   service: order-service
   plugins: [auth, rate-limit, logging]
 }
-
 ```
 
 ### 案例分析：Netflix 微服务架构
@@ -1311,7 +1289,6 @@ microservice-demo/
 ├── scripts/            # 部署与运维脚本
 ├── build/              # Dockerfile、CI/CD配置
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -1340,7 +1317,6 @@ message OrderResponse {
   string order_id = 1;
   string status = 2;
 }
-
 ```
 
 ```go
@@ -1353,7 +1329,6 @@ func (s *OrderService) CreateOrder(ctx context.Context, req *pb.CreateOrderReque
     // 业务逻辑...
     return &pb.OrderResponse{OrderId: "123", Status: "CREATED"}, nil
 }
-
 ```
 
 #### REST API 示例（Gin）
@@ -1366,7 +1341,6 @@ func RegisterRoutes(r *gin.Engine, svc *OrderService) {
     r.POST("/orders", svc.CreateOrderHandler)
     r.GET("/orders/:id", svc.GetOrderHandler)
 }
-
 ```
 
 #### Kafka 消息发布与消费
@@ -1382,7 +1356,6 @@ writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("OrderCre
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "order-events", GroupID: "order-group"})
 msg, _ := reader.ReadMessage(context.Background())
 log.Printf("received: %s", string(msg.Value))
-
 ```
 
 #### Prometheus 监控埋点
@@ -1392,7 +1365,6 @@ import "github.com/prometheus/client_golang/prometheus"
 
 var orderCount = prometheus.NewCounter(prometheus.CounterOpts{Name: "order_created_total"})
 orderCount.Inc()
-
 ```
 
 ### CI/CD 配置（GitHub Actions 示例）
@@ -1418,7 +1390,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

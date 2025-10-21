@@ -66,7 +66,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Resource
   User o-- Task
   Compute o-- Storage
@@ -179,7 +178,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -189,7 +187,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant U as User
   participant API as API
   participant R as Resource
@@ -218,7 +215,6 @@ sequenceDiagram
   T->>S: 任务执行
   T->>N: 任务执行
   E->>R: 事件记录
-
 ```
 
 ### Golang 领域模型代码示例
@@ -312,7 +308,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -355,7 +350,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> C[ComputeService]
   GW --> S[StorageService]
@@ -406,7 +400,6 @@ graph TD
   EN --> C
   EN --> S
   EN --> N
-
 ```
 
 ### Golang代码示例
@@ -415,7 +408,6 @@ graph TD
 // 计算资源Prometheus监控
 var computeCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "compute_total"})
 computeCount.Set(1000000)
-
 ```
 
 ---
@@ -447,7 +439,6 @@ cloudinfra-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -474,7 +465,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

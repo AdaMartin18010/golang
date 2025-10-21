@@ -65,7 +65,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- PowerUsage
   User o-- Metering
   User o-- Contract
@@ -167,7 +166,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -177,7 +175,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant G as Generation
   participant T as Transmission
   participant D as Distribution
@@ -198,7 +195,6 @@ sequenceDiagram
   U->>C: 合同管理
   U->>EV: 事件采集
   EV->>DA: 数据分析
-
 ```
 
 ### Golang 领域模型代码示例
@@ -291,7 +287,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -334,7 +329,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> G[GenerationService]
   GW --> T[TransmissionService]
@@ -370,7 +364,6 @@ graph TD
   DA --> U2
   EN --> DV
   EN --> U2
-
 ```
 
 ### Golang代码示例
@@ -379,7 +372,6 @@ graph TD
 // 用户数量Prometheus监控
 var userCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "user_total"})
 userCount.Set(1000000)
-
 ```
 
 ---
@@ -411,7 +403,6 @@ energy-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -438,7 +429,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

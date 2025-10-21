@@ -53,7 +53,6 @@ spec:
         image: go-demo:latest
         ports:
         - containerPort: 8080
-
 ```
 
 ### **Service示例**
@@ -71,7 +70,6 @@ spec:
     port: 80
     targetPort: 8080
   type: ClusterIP
-
 ```
 
 ## 🎯 **最佳实践**

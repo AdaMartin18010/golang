@@ -44,7 +44,6 @@ GET /index.html HTTP/1.1
 Host: www.example.com
 User-Agent: curl/7.68.0
 Accept: */*
-
 ```
 
 #### **响应报文示例**
@@ -55,7 +54,6 @@ Content-Type: text/html; charset=UTF-8
 Content-Length: 1024
 
 <html>...</html>
-
 ```
 
 ### **常用HTTP方法**
@@ -100,7 +98,6 @@ func main() {
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(string(body))
 }
-
 ```
 
 ### **解析HTTP请求（服务器）**
@@ -118,7 +115,6 @@ func main() {
     http.HandleFunc("/", handler)
     http.ListenAndServe(":8080", nil)
 }
-
 ```
 
 ## 🎯 **最佳实践**

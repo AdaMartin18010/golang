@@ -68,7 +68,6 @@
 ### 核心特征
 
 ```mermaid
-graph TB
     A[联邦学习架构] --> B[参与方]
     A --> C[协调者]
     A --> D[模型聚合]
@@ -94,7 +93,6 @@ graph TB
     F --> F1[同步通信]
     F --> F2[异步通信]
     F --> F3[压缩传输]
-
 ```
 
 ## 3. 联邦学习基础
@@ -263,13 +261,11 @@ type ModelAggregator struct {
     Threshold    float64
     Timeout      time.Duration
 }
-
 ```
 
 ### 训练流程
 
 ```mermaid
-graph LR
     A[初始化模型] --> B[分发模型]
     B --> C[本地训练]
     C --> D[上传参数]
@@ -278,7 +274,6 @@ graph LR
     F --> G{是否收敛}
     G -->|否| B
     G -->|是| H[完成训练]
-
 ```
 
 ## 6. 分布式挑战
@@ -318,12 +313,10 @@ graph LR
 ### 分层架构设计
 
 ```mermaid
-graph TD
     A[应用层] --> B[联邦学习层]
     B --> C[通信层]
     C --> D[隐私保护层]
     D --> E[基础设施层]
-
 ```
 
 ### 通信优化策略
@@ -410,7 +403,6 @@ func (fc *FederatedCoordinator) executeTrainingRound(task *FederatedTask, global
     
     return nil
 }
-
 ```
 
 ### 模型聚合器
@@ -474,7 +466,6 @@ func (was *WeightedAggregationStrategy) Aggregate(models []*Model, weights []flo
     // 使用基础策略聚合
     return was.baseStrategy.Aggregate(models, dynamicWeights)
 }
-
 ```
 
 ### 隐私保护机制1
@@ -547,7 +538,6 @@ func (hem *HomomorphicEncryptionManager) SecureAggregate(encryptedModels []*Encr
     
     return aggregatedModel, nil
 }
-
 ```
 
 ### 参与方管理
@@ -623,7 +613,6 @@ func (pm *ParticipantManager) SelectParticipants(task *FederatedTask) []string {
     
     return selected
 }
-
 ```
 
 ## 9. 形式化建模

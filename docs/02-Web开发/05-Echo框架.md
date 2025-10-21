@@ -120,7 +120,6 @@ func main() {
     })
     e.Logger.Fatal(e.Start(":8080"))
 }
-
 ```
 
 ### **路由与参数绑定**
@@ -140,7 +139,6 @@ func main() {
     })
     e.Logger.Fatal(e.Start(":8080"))
 }
-
 ```
 
 ### **中间件用法**
@@ -160,7 +158,6 @@ func main() {
     })
     e.Logger.Fatal(e.Start(":8080"))
 }
-
 ```
 
 ### **分组与RESTful API**
@@ -179,7 +176,6 @@ func main() {
     })
     e.Logger.Fatal(e.Start(":8080"))
 }
-
 ```
 
 ### **Go 1.23+ JSON v2集成**

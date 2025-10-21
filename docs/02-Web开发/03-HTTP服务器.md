@@ -76,7 +76,6 @@ func main() {
         fmt.Println("Server stopped:", err)
     }
 }
-
 ```
 
 ### **优雅关闭服务器**
@@ -110,7 +109,6 @@ func main() {
     }
     fmt.Println("Server gracefully stopped")
 }
-
 ```
 
 ### **静态文件服务**
@@ -123,7 +121,6 @@ func main() {
     http.Handle("/static/", http.StripPrefix("/static/", fs))
     http.ListenAndServe(":8080", nil)
 }
-
 ```
 
 ## 🧪 **测试代码**
@@ -145,7 +142,6 @@ func TestCustomServer(t *testing.T) {
         t.Errorf("unexpected response: %s", w.Body.String())
     }
 }
-
 ```
 
 ## 🎯 **最佳实践**

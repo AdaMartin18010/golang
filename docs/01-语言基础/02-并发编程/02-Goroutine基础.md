@@ -37,7 +37,6 @@
 ```text
 Goroutine ::= go FunctionCall
 FunctionCall ::= identifier(arguments)
-
 ```
 
 ### **生命周期与调度**
@@ -71,7 +70,6 @@ func main() {
     fmt.Println("Hello from main!")
     time.Sleep(time.Millisecond * 50)
 }
-
 ```
 
 ### **Goroutine并发执行**
@@ -94,7 +92,6 @@ func main() {
     time.Sleep(time.Millisecond * 200)
     fmt.Println("All workers launched")
 }
-
 ```
 
 ### **使用sync.WaitGroup等待Goroutine完成**
@@ -117,7 +114,6 @@ func main() {
     wg.Wait()
     fmt.Println("All done")
 }
-
 ```
 
 ### **Goroutine泄漏示例与避免**
@@ -137,7 +133,6 @@ func main() {
     leak()
     // 正确做法：确保有接收方或关闭通道
 }
-
 ```
 
 ## 📊 **性能分析**
@@ -167,7 +162,6 @@ func TestGoroutine(t *testing.T) {
     wg.Wait()
     // 结果不确定，演示竞态
 }
-
 ```
 
 ## 🎯 **最佳实践**

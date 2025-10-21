@@ -59,7 +59,6 @@ func main() {
     })
     http.ListenAndServe(":8080", nil)
 }
-
 ```
 
 ### **自定义路由与多路复用**
@@ -82,7 +81,6 @@ func main() {
     mux.HandleFunc("/about", about)
     http.ListenAndServe(":8080", mux)
 }
-
 ```
 
 ### **中间件实现（日志）**
@@ -110,7 +108,6 @@ func main() {
     logged := logging(mux)
     http.ListenAndServe(":8080", logged)
 }
-
 ```
 
 ### **HTTP客户端请求**
@@ -131,7 +128,6 @@ func main() {
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(string(body))
 }
-
 ```
 
 ## 🧪 **测试代码**
@@ -153,7 +149,6 @@ func TestHelloHandler(t *testing.T) {
         t.Errorf("unexpected response: %s", w.Body.String())
     }
 }
-
 ```
 
 ## 🎯 **最佳实践**

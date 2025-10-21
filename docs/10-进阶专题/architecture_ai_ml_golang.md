@@ -100,7 +100,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   Dataset o-- Feature
   Dataset o-- Model
   Dataset o-- Training
@@ -224,7 +223,6 @@ classDiagram
     +string Data
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -234,7 +232,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant D as Dataset
   participant F as Feature
   participant M as Model
@@ -257,7 +254,6 @@ sequenceDiagram
   I->>Mon: 推理监控
   I->>L: 日志采集
   I->>Ev: 事件记录
-
 ```
 
 ### Golang 领域模型代码示例
@@ -358,7 +354,6 @@ type Event struct {
     Data string
     Time time.Time
 }
-
 ```
 
 ---
@@ -401,7 +396,6 @@ type Event struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> DS[DatasetService]
   GW --> FS[FeatureService]
@@ -452,7 +446,6 @@ graph TD
   EVS --> IS
   EVS --> TS
   EVS --> US
-
 ```
 
 ### Golang代码示例
@@ -461,7 +454,6 @@ graph TD
 // 推理请求数量Prometheus监控
 var inferenceRequestCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "inference_request_total"})
 inferenceRequestCount.Set(1000000)
-
 ```
 
 ---
@@ -491,7 +483,6 @@ ai-ml-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -518,7 +509,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

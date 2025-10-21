@@ -50,7 +50,6 @@ func main() {
     // 需提供证书
     http.ListenAndServeTLS(":8443", "cert.pem", "key.pem", nil)
 }
-
 ```
 
 ### **自定义HTTP/2服务器**
@@ -70,7 +69,6 @@ func main() {
     })
     srv.ListenAndServeTLS("cert.pem", "key.pem")
 }
-
 ```
 
 ### **Gin/Echo/Fiber等框架**

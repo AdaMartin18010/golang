@@ -54,7 +54,6 @@
 ## 📊 性能优化知识体系图谱
 
 ```mermaid
-flowchart TD
   A[性能分析与pprof] --> B[内存优化]
   B --> C[并发优化]
   C --> D[网络与I/O优化]

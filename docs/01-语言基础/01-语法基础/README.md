@@ -91,7 +91,6 @@ go version
 
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
-
 ```
 
 ### **第一个程序**
@@ -105,14 +104,12 @@ import "fmt"
 func main() {
     fmt.Println("Hello, Go!")
 }
-
 ```
 
 ### **运行程序**
 
 ```bash
 go run hello.go
-
 ```
 
 ## 📊 **学习进度**

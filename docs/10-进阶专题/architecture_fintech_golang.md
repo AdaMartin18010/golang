@@ -102,7 +102,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Account
   User o-- Payment
   User o-- Product
@@ -233,7 +232,6 @@ classDiagram
     +float Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -243,7 +241,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant U as User
   participant A as Account
   participant P as Payment
@@ -263,7 +260,6 @@ sequenceDiagram
   P->>E: 事件记录
   P->>L: 日志采集
   D->>P: 数据分析
-
 ```
 
 ### Golang 领域模型代码示例
@@ -758,7 +754,6 @@ type Environment struct {
     Value float64
     Time  time.Time
 }
-
 ```
 
 ---
@@ -801,7 +796,6 @@ type Environment struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> A[AccountService]
   GW --> P[PaymentService]
@@ -862,7 +856,6 @@ graph TD
   EN --> A
   EN --> P
   EN --> CL
-
 ```
 
 ### Golang代码示例
@@ -871,7 +864,6 @@ graph TD
 // 支付交易Prometheus监控
 var paymentCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "payment_total"})
 paymentCount.Set(1000000)
-
 ```
 
 ---
@@ -904,7 +896,6 @@ fintech-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -931,7 +922,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---

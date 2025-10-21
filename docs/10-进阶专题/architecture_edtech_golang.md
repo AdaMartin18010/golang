@@ -29,7 +29,6 @@
 - UML类图：
 
 ```mermaid
-classDiagram
   class Student
   class Teacher
   class Course
@@ -40,7 +39,6 @@ classDiagram
   Teacher --> Course
   Course --> LearningResource
   LearningRecord --> Assessment
-
 ```
 
 ## 典型数据流与时序图
@@ -48,7 +46,6 @@ classDiagram
 - 在线学习与评测时序：
 
 ```mermaid
-sequenceDiagram
   participant Student as 学生
   participant Course as 课程
   participant Resource as 资源
@@ -59,7 +56,6 @@ sequenceDiagram
   Student->>Record: 记录学习行为
   Record->>Assessment: 自动评测
   Assessment->>Student: 反馈结果
-
 ```
 
 ## Golang领域模型代码示例
@@ -657,13 +653,11 @@ func (sm *SystemMonitor) CollectMetrics() (*SystemMetrics, error) {
 - 架构图（LMS为核心，集成资源、评测、AI推荐）：
 
 ```mermaid
-graph TD
   Student-->LearningRecord
   Teacher-->Course
   Course-->LearningResource
   LearningRecord-->Assessment
   LearningRecord-->AI[AI推荐]
-
 ```
 
 - 关键代码：Golang实现LTI/xAPI接口、学习行为采集、评测自动化。

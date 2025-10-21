@@ -21,7 +21,6 @@
 ### 核心特征
 
 ```mermaid
-graph TB
     A[量子计算架构] --> B[量子比特]
     A --> C[量子门]
     A --> D[量子算法]
@@ -42,7 +41,6 @@ graph TB
     E --> E1[经典控制]
     E --> E2[量子执行]
     E --> E3[结果处理]
-
 ```
 
 ## 3. 量子计算基础
@@ -53,7 +51,6 @@ graph TB
 
 ```text
 |ψ⟩ = α|0⟩ + β|1⟩
-
 ```
 
 其中 |α|² + |β|² = 1
@@ -139,7 +136,6 @@ type QuantumAlgorithm struct {
     Parameters map[string]interface{}
     ClassicalPostProcessor func([]float64) interface{}
 }
-
 ```
 
 ### 量子-经典混合系统
@@ -161,7 +157,6 @@ type QuantumClassicalInterface struct {
     DataConverter   DataConverter
     ResultAggregator ResultAggregator
 }
-
 ```
 
 ## 6. 分布式挑战
@@ -194,7 +189,6 @@ type QuantumRepeater struct {
     BellStateMeasurement BellStateMeasurement
     ErrorCorrection  QuantumErrorCorrection
 }
-
 ```
 
 ### 量子纠错
@@ -224,7 +218,6 @@ type QuantumRepeater struct {
 ### 量子-经典混合架构
 
 ```mermaid
-graph TB
     A[应用层] --> B[混合调度器]
     B --> C[经典计算引擎]
     B --> D[量子计算引擎]
@@ -239,7 +232,6 @@ graph TB
     
     B --> E[结果聚合器]
     E --> F[输出层]
-
 ```
 
 ### 量子算法优化
@@ -284,7 +276,6 @@ func (qcb *QuantumClassicalBridge) ExecuteHybridTask(task HybridTask) (interface
     
     return finalResult, nil
 }
-
 ```
 
 ## 8. Golang实现
@@ -364,7 +355,6 @@ func (qs *QuantumState) Measure() (int, float64) {
     measuredState := qs.simulateMeasurement(probabilities)
     return measuredState, probabilities[measuredState]
 }
-
 ```
 
 ### 量子算法实现
@@ -437,7 +427,6 @@ func (vqe *VQEAlgorithm) Execute() (float64, []float64, error) {
     finalEnergy, _ := vqe.computeExpectation(params)
     return finalEnergy, params, nil
 }
-
 ```
 
 ### 量子-经典混合系统1
@@ -489,7 +478,6 @@ func (hce *HybridComputingEngine) ExecuteHybridTask(task HybridTask) (interface{
     
     return finalResult, nil
 }
-
 ```
 
 ## 9. 形式化建模
@@ -500,21 +488,18 @@ func (hce *HybridComputingEngine) ExecuteHybridTask(task HybridTask) (interface{
 
 ```text
 H = C^2 ⊗ C^2 ⊗ ... ⊗ C^2 (n个量子比特)
-
 ```
 
 **量子门操作：**
 
 ```text
 U: H → H, U†U = UU† = I
-
 ```
 
 **测量操作：**
 
 ```text
 M: H → {0,1}^n × R
-
 ```
 
 ### 量子算法复杂度

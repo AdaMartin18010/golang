@@ -44,7 +44,6 @@
 - UML类图：
 
 ```mermaid
-classDiagram
   class Patient
   class Doctor
   class EHR
@@ -56,7 +55,6 @@ classDiagram
   EHR --> Diagnosis
   EHR --> Compliance
   MedicalDevice --> EHR
-
 ```
 
 ## 6. 典型数据流与时序图
@@ -64,7 +62,6 @@ classDiagram
 - 远程医疗数据流时序：
 
 ```mermaid
-sequenceDiagram
   participant Patient as 患者
   participant Device as 医疗设备
   participant EHR as 电子健康记录
@@ -75,7 +72,6 @@ sequenceDiagram
   EHR->>Doctor: 医生查看
   EHR->>AI: 智能分析
   AI->>Doctor: 辅助诊断建议
-
 ```
 
 ## 7. Golang领域模型代码示例
@@ -94,7 +90,6 @@ sequenceDiagram
    PatientID string
    Records   []string
  }
-
 ```
 
 ## 8. 分布式系统挑战
@@ -106,14 +101,12 @@ sequenceDiagram
 - 架构图（EHR为核心，集成设备、AI、合规模块）：
 
 ```mermaid
-graph TD
   Patient-->EHR
   Doctor-->EHR
   MedicalDevice-->EHR
   EHR-->Diagnosis
   EHR-->Compliance
   EHR-->AI[AI诊断]
-
 ```
 
 - 关键代码：Golang实现FHIR接口、数据加密、设备数据采集。

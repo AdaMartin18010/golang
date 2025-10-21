@@ -318,7 +318,6 @@ go env -u GOPROXY
 ## 🎯 学习路线
 
 ```mermaid
-graph TD
     A[Go Modules 基础] --> B[go.mod 文件]
     B --> C[依赖管理命令]
     C --> D[语义化版本]

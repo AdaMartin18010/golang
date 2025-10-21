@@ -61,7 +61,6 @@
 #### UML 类图（Mermaid）
 
 ```mermaid
-classDiagram
   User o-- Student
   User o-- Course
   Student o-- Course
@@ -153,7 +152,6 @@ classDiagram
     +string Value
     +time.Time Time
   }
-
 ```
 
 ### 典型数据流
@@ -163,7 +161,6 @@ classDiagram
 #### 数据流时序图（Mermaid）
 
 ```mermaid
-sequenceDiagram
   participant S as Student
   participant C as Course
   participant T as Teacher
@@ -182,7 +179,6 @@ sequenceDiagram
   S->>AC: 参与活动
   S->>EV: 事件记录
   EV->>DA: 数据分析
-
 ```
 
 ### Golang 领域模型代码示例
@@ -264,7 +260,6 @@ type User struct {
     Name string
     Role string
 }
-
 ```
 
 ---
@@ -307,7 +302,6 @@ type User struct {
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TD
   U[User] --> GW[API Gateway]
   GW --> S[StudentService]
   GW --> T[TeacherService]
@@ -343,7 +337,6 @@ graph TD
   EV --> C
   D --> S
   D --> C
-
 ```
 
 ### Golang代码示例
@@ -352,7 +345,6 @@ graph TD
 // 学生数量Prometheus监控
 var studentCount = prometheus.NewGauge(prometheus.GaugeOpts{Name: "student_total"})
 studentCount.Set(100000)
-
 ```
 
 ---
@@ -382,7 +374,6 @@ education-demo/
 ├── scripts/
 ├── build/
 └── README.md
-
 ```
 
 ### 关键代码片段
@@ -409,7 +400,6 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-
 ```
 
 ---
