@@ -1,9 +1,11 @@
 ﻿# 自动驾驶架构（Autonomous Driving Architecture）
 
-## 1. 目录
+> **简介**: 自动驾驶系统架构设计，涵盖感知、决策、控制和V2X通信
+
+## 目录
 
 - [自动驾驶架构（Autonomous Driving Architecture）](#自动驾驶架构autonomous-driving-architecture)
-  - [1. 目录](#1-目录)
+  - [目录](#目录)
   - [2. 国际标准定义与发展历程](#2-国际标准定义与发展历程)
   - [3. 核心思想与典型应用场景](#3-核心思想与典型应用场景)
   - [4. 与传统方案对比](#4-与传统方案对比)
