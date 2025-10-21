@@ -1,5 +1,7 @@
 ﻿# HTTP服务开发
 
+> **简介**: Go语言HTTP服务开发完整指南，涵盖从基础net/http包到主流Web框架（Gin、Echo、Fiber）的实战应用，帮助开发者构建高性能Web服务
+
 <!-- TOC START -->
 - [HTTP服务开发](#http服务开发)
   - [📚 **模块概述**](#-模块概述)
