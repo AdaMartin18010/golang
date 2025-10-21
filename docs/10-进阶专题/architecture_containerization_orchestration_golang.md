@@ -1,6 +1,8 @@
 ﻿# 容器化与编排架构（Containerization and Orchestration Architecture）
 
-## 1. 目录
+> **简介**: Docker容器化和Kubernetes编排架构实践，构建可移植、可扩展的云原生应用
+
+## 目录
 
 - [容器化与编排架构（Containerization and Orchestration Architecture）](#容器化与编排架构containerization-and-orchestration-architecture)
   - [1. 目录](#1-目录)
