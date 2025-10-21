@@ -1,5 +1,11 @@
 ﻿# WebSocket 实时通信
 
+> **简介**: 全面掌握WebSocket实时通信技术，实现高效双向数据传输
+
+> **版本**: Go 1.23+  
+> **难度**: ⭐⭐⭐⭐  
+> **标签**: #Web #WebSocket #实时通信 #gorilla
+
 <!-- TOC START -->
 - [WebSocket 实时通信](#websocket-实时通信)
   - [📚 **理论分析**](#-理论分析)

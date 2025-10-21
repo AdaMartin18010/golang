@@ -1,5 +1,9 @@
-﻿
-# Go标准库 net/http 包
+﻿# Go标准库 net/http 包
+
+> **简介**: 深入解析Go标准库net/http包，掌握HTTP服务器和客户端开发的核心技术
+> **版本**: Go 1.23+  
+> **难度**: ⭐⭐⭐  
+> **标签**: #Web #net/http #HTTP服务器 #标准库
 
 <!-- TOC START -->
 - [Go标准库 net/http 包](#go标准库-nethttp-包)
