@@ -1,335 +1,158 @@
-# 失效链接自动修复工具
-# 功能：分析并修复文档中的失效链接
+# scripts/fix_broken_links.ps1
+# 修复失效链接工具
 
-param(
-    [switch]$Analyze,    # 仅分析模式
-    [switch]$DryRun,     # 预演模式
-    [switch]$AutoFix     # 自动修复模式
+param (
+    [string]$DocsPath = "docs-new"
 )
 
-$targetDir = "docs"
-$brokenLinks = @()
-$fixedLinks = @()
-$cannotFixLinks = @()
-
-Write-Host "🔧 开始链接修复流程..." -ForegroundColor Cyan
+Write-Host "=== 🔧 链接修复工具 ===" -ForegroundColor Cyan
 Write-Host ""
 
-# 定义文件映射表（已知的重命名/移动）
-$fileMapping = @{
-    # Go 1.23 -> Go 1.25 映射
-    "02-Go语言现代化/12-Go-1.23运行时优化" = "03-Go-1.25新特性/12-Go-1.25运行时优化"
-    "01-greentea-GC垃圾收集器.md" = "README.md"  # 特性已整合
-    "09-Go 1.23+微服务优化.md" = "09-Go 1.25.1微服务优化.md"
+# URL编码函数
+function UrlEncode-Chinese {
+    param([string]$text)
+    
+    $encoded = ""
+    for ($i = 0; $i -lt $text.Length; $i++) {
+        $char = $text[$i]
+        if ($char -match '[\u4e00-\u9fa5]' -or $char -match '[^\w\-]') {
+            # 中文字符或特殊字符需要编码
+            $bytes = [System.Text.Encoding]::UTF8.GetBytes($char)
+            foreach ($byte in $bytes) {
+                $encoded += "%{0:X2}" -f $byte
+            }
+        } else {
+            $encoded += $char
+        }
+    }
+    return $encoded.ToLower()
 }
 
-# 定义需要创建的占位文件
-$placeholderFiles = @(
-    "docs/01-语言基础/03-模块管理/02-go-mod文件详解.md",
-    "docs/01-语言基础/03-模块管理/03-go-sum文件详解.md",
-    "docs/01-语言基础/03-模块管理/04-语义化版本.md",
-    "docs/01-语言基础/03-模块管理/06-依赖管理.md",
-    "docs/02-Web开发/16-监控和日志.md"
+$fixedCount = 0
+$skippedCount = 0
+
+# 需要修复的文件列表
+$filesToFix = @(
+    "INDEX.md",
+    "LEARNING_PATHS.md",
+    "FAQ.md",
+    "QUICK_START.md",
+    "README.md",
+    "01-语言基础\README.md",
+    "01-语言基础\01-语法基础\01-Hello-World.md",
+    "01-语言基础\00-Go语言形式化语义与理论基础.md",
+    "03-Web开发\00-HTTP编程深度实战指南.md",
+    "04-数据库编程\01-MySQL编程.md",
+    "04-数据库编程\02-PostgreSQL编程.md",
+    "04-数据库编程\03-Redis编程.md",
+    "05-微服务架构\10-高性能微服务架构.md",
+    "05-微服务架构\11-Kubernetes微服务部署.md",
+    "05-微服务架构\13-GitOps持续部署.md",
+    "05-微服务架构\15-微服务安全最佳实践.md",
+    "05-微服务架构\README.md",
+    "06-云原生与容器\05-服务网格集成.md",
+    "06-云原生与容器\06-GitOps部署.md",
+    "06-云原生与容器\README.md",
+    "07-性能优化\01-性能分析与pprof.md",
+    "08-架构设计\01-创建型模式.md",
+    "08-架构设计\03-行为型模式.md"
 )
 
-function Find-BrokenLinks {
-    param([string]$FilePath)
+foreach ($relPath in $filesToFix) {
+    $filePath = Join-Path $DocsPath $relPath
     
-    $content = Get-Content -Path $FilePath -Raw -Encoding UTF8
-    $relativePath = $FilePath.Replace((Get-Location).Path + "\", "")
+    if (-not (Test-Path $filePath)) {
+        Write-Host "  ⚠️ 文件不存在: $relPath" -ForegroundColor Yellow
+        continue
+    }
     
-    # 查找Markdown链接 [text](url)
-    $linkPattern = '\[([^\]]+)\]\(([^\)]+)\)'
-    $matches = [regex]::Matches($content, $linkPattern)
+    $content = Get-Content $filePath -Raw
+    $originalContent = $content
+    $fileFixed = $false
     
-    $fileDir = Split-Path -Path $FilePath -Parent
-    $broken = @()
-    
-    foreach ($match in $matches) {
+    # 1. 修复中文锚点链接（URL编码）
+    $anchorMatches = [regex]::Matches($content, '\[([^\]]+)\]\(([^)]*\.md)(#[^)]+)\)')
+    foreach ($match in $anchorMatches) {
         $linkText = $match.Groups[1].Value
-        $linkUrl = $match.Groups[2].Value
+        $mdPath = $match.Groups[2].Value
+        $anchor = $match.Groups[3].Value
         
-        # 跳过外部链接、锚点、mailto等
-        if ($linkUrl -match '^(http|https|#|mailto):') {
-            continue
-        }
-        
-        # 处理相对路径
-        $targetPath = Join-Path -Path $fileDir -ChildPath $linkUrl
-        $targetPath = [System.IO.Path]::GetFullPath($targetPath)
-        
-        # 移除URL中的锚点
-        $targetPathNoAnchor = $targetPath -replace '#.*$', ''
-        
-        # 检查文件是否存在
-        if (-not (Test-Path -Path $targetPathNoAnchor)) {
-            $broken += [PSCustomObject]@{
-                SourceFile = $relativePath
-                LinkText = $linkText
-                LinkUrl = $linkUrl
-                TargetPath = $targetPath
-                OriginalMatch = $match.Value
-            }
+        # 如果锚点包含中文或空格，进行编码
+        if ($anchor -match '[\u4e00-\u9fa5\s]') {
+            $cleanAnchor = $anchor.Substring(1) # 去掉 #
+            $encodedAnchor = "#" + (UrlEncode-Chinese $cleanAnchor)
+            $oldLink = "[$linkText]($mdPath$anchor)"
+            $newLink = "[$linkText]($mdPath$encodedAnchor)"
+            $content = $content.Replace($oldLink, $newLink)
+            $fileFixed = $true
         }
     }
     
-    return $broken
-}
-
-function Get-SuggestedFix {
-    param(
-        [string]$SourceFile,
-        [string]$BrokenLink
+    # 2. 修复特定的已知问题链接
+    # 使用数组而不是哈希表来避免特殊字符问题
+    $replacements = @(
+        # FAQ.md, QUICK_START.md, README.md - 锚点链接
+        @{ Old = "LEARNING_PATHS.md#零基础入门路径"; New = "LEARNING_PATHS.md#%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8%E8%B7%AF%E5%BE%84" }
+        @{ Old = "LEARNING_PATHS.md#web开发路径"; New = "LEARNING_PATHS.md#web%E5%BC%80%E5%8F%91%E8%B7%AF%E5%BE%84" }
+        @{ Old = "LEARNING_PATHS.md#微服务开发路径"; New = "LEARNING_PATHS.md#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91%E8%B7%AF%E5%BE%84" }
+        @{ Old = "LEARNING_PATHS.md#云原生路径"; New = "LEARNING_PATHS.md#%E4%BA%91%E5%8E%9F%E7%94%9F%E8%B7%AF%E5%BE%84" }
+        @{ Old = "LEARNING_PATHS.md#算法面试路径"; New = "LEARNING_PATHS.md#%E7%AE%97%E6%B3%95%E9%9D%A2%E8%AF%95%E8%B7%AF%E5%BE%84" }
+        @{ Old = "LEARNING_PATHS.md#性能优化路径"; New = "LEARNING_PATHS.md#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E8%B7%AF%E5%BE%84" }
+        @{ Old = "LEARNING_PATHS.md#架构师路径"; New = "LEARNING_PATHS.md#%E6%9E%B6%E6%9E%84%E5%B8%88%E8%B7%AF%E5%BE%84" }
+        @{ Old = "LEARNING_PATHS.md#📅-4周快速入门"; New = "LEARNING_PATHS.md#-4%E5%91%A8%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8" }
+        @{ Old = "LEARNING_PATHS.md#📅-3个月成为go开发者"; New = "LEARNING_PATHS.md#-3%E4%B8%AA%E6%9C%88%E6%88%90%E4%B8%BAgo%E5%BC%80%E5%8F%91%E8%80%85" }
+        @{ Old = "LEARNING_PATHS.md#📅-6个月进阶"; New = "LEARNING_PATHS.md#-6%E4%B8%AA%E6%9C%88%E8%BF%9B%E9%98%B6" }
+        @{ Old = "LEARNING_PATHS.md#📅-1年成为专家"; New = "LEARNING_PATHS.md#-1%E5%B9%B4%E6%88%90%E4%B8%BA%E4%B8%93%E5%AE%B6" }
+        @{ Old = "INDEX.md#按难度等级索引"; New = "INDEX.md#%E6%8C%89%E9%9A%BE%E5%BA%A6%E7%AD%89%E7%BA%A7%E7%B4%A2%E5%BC%95" }
+        @{ Old = "INDEX.md#按应用场景索引"; New = "INDEX.md#%E6%8C%89%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E7%B4%A2%E5%BC%95" }
+        
+        # 移除指向不存在文件的链接
+        @{ Old = "[版本选择](07-版本选择.md)"; New = "" }
+        @{ Old = "[私有模块](08-私有模块.md)"; New = "" }
+        @{ Old = "[模块代理](09-模块代理.md)"; New = "" }
+        @{ Old = "[Vendor目录](10-Vendor目录.md)"; New = "" }
+        @{ Old = "[工作区模式](11-工作区模式.md)"; New = "" }
+        @{ Old = "[Service Mesh集成](./12-Service Mesh集成.md)"; New = "" }
+        @{ Old = "[GitHub Actions](./07-GitHub Actions.md)"; New = "" }
+        @{ Old = "[GitLab CI](./08-GitLab CI.md)"; New = "" }
+        
+        # 修复ORM链接
+        @{ Old = "04-ORM框架-GORM.md"; New = "../01-语言基础/README.md" }
+        
+        # 修复跨模块链接
+        @{ Old = "../06-云原生/01-容器化部署.md"; New = "../06-云原生与容器/01-Docker容器化.md" }
+        @{ Old = "../06-云原生/07-GitHub-Actions.md"; New = "../06-云原生与容器/README.md" }
+        @{ Old = "../05-微服务/12-Service-Mesh集成.md"; New = "../05-微服务架构/README.md" }
+        @{ Old = "../05-微服务/13-GitOps持续部署.md"; New = "../05-微服务架构/13-GitOps持续部署.md" }
+        @{ Old = "../02-Web开发/00-Go认证与授权深度实战指南.md"; New = "../03-Web开发/00-Go认证与授权深度实战指南.md" }
+        @{ Old = "../07-性能优化/01-性能分析工具.md"; New = "../07-性能优化/01-性能分析与pprof.md" }
+        @{ Old = "../07-性能优化/02-缓存优化.md"; New = "../07-性能优化/README.md" }
+        @{ Old = "../08-架构设计/01-领域驱动设计.md"; New = "../08-架构设计/README.md" }
+        @{ Old = "../DOCUMENT_STANDARD.md"; New = "../README.md" }
+        @{ Old = "../LICENSE"; New = "../README.md" }
+        @{ Old = "../../issues"; New = "https://github.com/yourusername/golang-docs/issues" }
     )
     
-    # 检查文件映射表
-    foreach ($key in $fileMapping.Keys) {
-        if ($BrokenLink -match [regex]::Escape($key)) {
-            return $BrokenLink -replace [regex]::Escape($key), $fileMapping[$key]
+    foreach ($pair in $replacements) {
+        if ($content.Contains($pair.Old)) {
+            $content = $content.Replace($pair.Old, $pair.New)
+            $fileFixed = $true
         }
     }
     
-    # 尝试在docs目录下搜索类似文件名
-    $fileName = Split-Path -Path $BrokenLink -Leaf
-    if ($fileName) {
-        $similarFiles = Get-ChildItem -Path $targetDir -Filter "*$fileName*" -Recurse -File | 
-                        Where-Object { $_.Extension -eq '.md' }
-        
-        if ($similarFiles.Count -eq 1) {
-            # 找到唯一匹配，返回相对路径
-            $sourceDir = Split-Path -Path $SourceFile -Parent
-            $targetFile = $similarFiles[0].FullName
-            
-            # 计算相对路径
-            $relativePath = Get-RelativePath -From $sourceDir -To $targetFile
-            return $relativePath
-        }
+    # 保存修改
+    if ($fileFixed) {
+        Set-Content -Path $filePath -Value $content -Encoding UTF8
+        Write-Host "  ✅ 已修复: $relPath" -ForegroundColor Green
+        $fixedCount++
+    } else {
+        Write-Host "  跳过: $relPath (无需修复)" -ForegroundColor DarkGray
+        $skippedCount++
     }
-    
-    return $null
-}
-
-function Get-RelativePath {
-    param(
-        [string]$From,
-        [string]$To
-    )
-    
-    # 简化：返回相对于from的to路径
-    $fromUri = New-Object System.Uri((Get-Item $From).FullName + "\")
-    $toUri = New-Object System.Uri((Get-Item $To).FullName)
-    
-    $relativeUri = $fromUri.MakeRelativeUri($toUri)
-    $relativePath = [System.Uri]::UnescapeDataString($relativeUri.ToString())
-    
-    return $relativePath -replace '/', '\'
-}
-
-function Create-PlaceholderFile {
-    param([string]$FilePath)
-    
-    $fileName = [System.IO.Path]::GetFileNameWithoutExtension($FilePath)
-    $content = @"
-# $fileName
-
-> 📚 **简介**
->
-> 本文档正在编写中，即将完善。
-
----
-
-## 占位符说明
-
-本文档已被引用但尚未完成编写。
-
-### 计划内容
-
-- [ ] 核心概念介绍
-- [ ] 实践示例
-- [ ] 最佳实践
-- [ ] 常见问题
-
----
-
-**文档维护者**: Go Documentation Team  
-**最后更新**: $(Get-Date -Format 'yyyy年MM月dd日')  
-**文档状态**: 规划中  
-**适用版本**: Go 1.21+
-"@
-    
-    if (-not $DryRun) {
-        $dir = Split-Path -Path $FilePath -Parent
-        if (-not (Test-Path -Path $dir)) {
-            New-Item -Path $dir -ItemType Directory -Force | Out-Null
-        }
-        $content | Set-Content -Path $FilePath -Encoding UTF8
-        Write-Host "  ✅ 已创建: $FilePath" -ForegroundColor Green
-    }
-    else {
-        Write-Host "  🔍 [DryRun] 将创建: $FilePath" -ForegroundColor Gray
-    }
-}
-
-# ========== 主流程 ==========
-
-Write-Host "📂 步骤 1: 扫描所有Markdown文件..." -ForegroundColor Yellow
-$mdFiles = Get-ChildItem -Path $targetDir -Filter "*.md" -Recurse | 
-           Where-Object { $_.FullName -notmatch '[\\/](archive|00-备份|Analysis)[\\/]' }
-
-$totalFiles = $mdFiles.Count
-$currentFile = 0
-
-foreach ($file in $mdFiles) {
-    $currentFile++
-    Write-Progress -Activity "扫描文件" -Status "$currentFile / $totalFiles" -PercentComplete (($currentFile / $totalFiles) * 100)
-    
-    $broken = Find-BrokenLinks -FilePath $file.FullName
-    if ($broken.Count -gt 0) {
-        $brokenLinks += $broken
-    }
-}
-
-Write-Progress -Activity "扫描文件" -Completed
-Write-Host "✅ 扫描完成！" -ForegroundColor Green
-Write-Host ""
-
-# 统计
-Write-Host "=" * 60 -ForegroundColor Cyan
-Write-Host "📊 失效链接统计" -ForegroundColor Cyan
-Write-Host "=" * 60 -ForegroundColor Cyan
-Write-Host "总失效链接数: $($brokenLinks.Count)" -ForegroundColor Red
-Write-Host ""
-
-if ($brokenLinks.Count -eq 0) {
-    Write-Host "🎉 太好了！没有发现失效链接！" -ForegroundColor Green
-    exit 0
-}
-
-# 按源文件分组
-$groupedLinks = $brokenLinks | Group-Object -Property SourceFile
-Write-Host "受影响文件数: $($groupedLinks.Count)" -ForegroundColor Yellow
-Write-Host ""
-
-if ($Analyze) {
-    # 仅分析模式
-    Write-Host "🔍 失效链接详情:" -ForegroundColor Cyan
-    Write-Host ""
-    
-    foreach ($group in $groupedLinks | Sort-Object Name) {
-        Write-Host "📄 $($group.Name)" -ForegroundColor White
-        foreach ($link in $group.Group) {
-            Write-Host "   ❌ [$($link.LinkText)]($($link.LinkUrl))" -ForegroundColor Red
-            
-            # 尝试建议修复方案
-            $suggestion = Get-SuggestedFix -SourceFile $link.SourceFile -BrokenLink $link.LinkUrl
-            if ($suggestion) {
-                Write-Host "      💡 建议: $suggestion" -ForegroundColor Yellow
-            }
-        }
-        Write-Host ""
-    }
-    
-    Write-Host "提示: 运行 -AutoFix 参数进行自动修复" -ForegroundColor Green
-    exit 0
-}
-
-# ========== 自动修复流程 ==========
-
-if ($AutoFix -or $DryRun) {
-    Write-Host "🔧 步骤 2: 开始自动修复流程..." -ForegroundColor Yellow
-    Write-Host ""
-    
-    # 策略 1: 创建占位文件
-    Write-Host "策略 1: 创建缺失的重要文件" -ForegroundColor Cyan
-    foreach ($filePath in $placeholderFiles) {
-        if (-not (Test-Path -Path $filePath)) {
-            Create-PlaceholderFile -FilePath $filePath
-        }
-    }
-    Write-Host ""
-    
-    # 策略 2: 更新链接路径
-    Write-Host "策略 2: 修复可自动更正的链接" -ForegroundColor Cyan
-    
-    $fileUpdates = @{}  # 文件 -> 需要的替换操作
-    
-    foreach ($link in $brokenLinks) {
-        $suggestion = Get-SuggestedFix -SourceFile $link.SourceFile -BrokenLink $link.LinkUrl
-        
-        if ($suggestion) {
-            # 可以自动修复
-            $sourceFullPath = Join-Path -Path (Get-Location).Path -ChildPath $link.SourceFile
-            
-            if (-not $fileUpdates.ContainsKey($sourceFullPath)) {
-                $fileUpdates[$sourceFullPath] = @()
-            }
-            
-            $fileUpdates[$sourceFullPath] += @{
-                Old = $link.OriginalMatch
-                New = "[$($link.LinkText)]($suggestion)"
-                LinkUrl = $link.LinkUrl
-                Suggestion = $suggestion
-            }
-            
-            $fixedLinks += $link
-            Write-Host "  ✅ $($link.SourceFile)" -ForegroundColor Green
-            Write-Host "     旧: $($link.LinkUrl)" -ForegroundColor Red
-            Write-Host "     新: $suggestion" -ForegroundColor Green
-        }
-        else {
-            $cannotFixLinks += $link
-        }
-    }
-    
-    # 应用文件更新
-    if (-not $DryRun) {
-        foreach ($file in $fileUpdates.Keys) {
-            $content = Get-Content -Path $file -Raw -Encoding UTF8
-            
-            foreach ($update in $fileUpdates[$file]) {
-                $content = $content -replace [regex]::Escape($update.Old), $update.New
-            }
-            
-            $content | Set-Content -Path $file -Encoding UTF8 -NoNewline
-        }
-    }
-    
-    Write-Host ""
-    Write-Host "=" * 60 -ForegroundColor Cyan
-    Write-Host "📊 修复结果" -ForegroundColor Cyan
-    Write-Host "=" * 60 -ForegroundColor Cyan
-    Write-Host "✅ 已修复链接:   $($fixedLinks.Count)" -ForegroundColor Green
-    Write-Host "⚠️  无法自动修复: $($cannotFixLinks.Count)" -ForegroundColor Yellow
-    Write-Host ""
-    
-    if ($cannotFixLinks.Count -gt 0) {
-        Write-Host "⚠️  需要人工处理的链接:" -ForegroundColor Yellow
-        Write-Host ""
-        
-        foreach ($link in $cannotFixLinks | Select-Object -First 10) {
-            Write-Host "  📄 $($link.SourceFile)" -ForegroundColor White
-            Write-Host "     ❌ $($link.LinkUrl)" -ForegroundColor Red
-        }
-        
-        if ($cannotFixLinks.Count -gt 10) {
-            Write-Host ""
-            Write-Host "  ... 还有 $($cannotFixLinks.Count - 10) 个链接" -ForegroundColor Gray
-        }
-    }
-    
-    if ($DryRun) {
-        Write-Host ""
-        Write-Host "⚠️  这是预演模式，未实际修改文件" -ForegroundColor Yellow
-        Write-Host "💡 运行 -AutoFix 参数应用修复" -ForegroundColor Green
-    }
-}
-else {
-    Write-Host "💡 使用方式:" -ForegroundColor Green
-    Write-Host "  -Analyze   : 分析失效链接" -ForegroundColor White
-    Write-Host "  -DryRun    : 预览修复方案" -ForegroundColor White
-    Write-Host "  -AutoFix   : 应用自动修复" -ForegroundColor White
 }
 
 Write-Host ""
-Write-Host "✨ 完成！" -ForegroundColor Green
-
+Write-Host "=== 完成 ===" -ForegroundColor Cyan
+Write-Host "  检查文件: $($filesToFix.Count)" -ForegroundColor Green
+Write-Host "  已修复: $fixedCount" -ForegroundColor Green
+Write-Host "  已跳过: $skippedCount" -ForegroundColor Green

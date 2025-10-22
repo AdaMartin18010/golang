@@ -1,0 +1,260 @@
+{
+  "version": "1.0",
+  "created": "2025-10-22",
+  "description": "文档迁移映射配置",
+  "mappings": {
+    "01-语言基础": {
+      "target": "01-语言基础",
+      "action": "direct",
+      "priority": "high",
+      "files": [
+        {
+          "source": "01-语法基础/*.md",
+          "target": "01-语法基础/",
+          "notes": "直接迁移，保持结构"
+        },
+        {
+          "source": "02-并发编程/*.md",
+          "target": "02-并发编程/",
+          "notes": "直接迁移，保持结构"
+        },
+        {
+          "source": "03-模块管理/*.md",
+          "target": "03-模块管理/",
+          "notes": "直接迁移，保持结构"
+        }
+      ]
+    },
+    "02-Web开发": {
+      "target": "03-Web开发",
+      "action": "reorganize",
+      "priority": "high",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "01-基础/",
+          "filter": ["HTTP", "net-http", "服务器"],
+          "notes": "HTTP基础内容归类"
+        },
+        {
+          "source": "*.md",
+          "target": "02-框架/",
+          "filter": ["Gin", "Echo", "Fiber"],
+          "notes": "框架相关内容"
+        },
+        {
+          "source": "*.md",
+          "target": "03-实战/",
+          "filter": ["实战", "案例", "项目"],
+          "notes": "实战案例"
+        }
+      ]
+    },
+    "03-Go新特性": {
+      "target": "10-Go版本特性",
+      "action": "direct",
+      "priority": "medium",
+      "files": [
+        {
+          "source": "01-Go-1.21特性/*.md",
+          "target": "01-Go-1.21/",
+          "notes": "版本特性"
+        },
+        {
+          "source": "02-Go-1.22特性/*.md",
+          "target": "02-Go-1.22/",
+          "notes": "版本特性"
+        },
+        {
+          "source": "03-Go-1.23特性/*.md",
+          "target": "03-Go-1.23/",
+          "notes": "版本特性"
+        },
+        {
+          "source": "04-Go-1.24特性/*.md",
+          "target": "04-Go-1.24/",
+          "notes": "版本特性"
+        },
+        {
+          "source": "05-Go-1.25特性/*.md",
+          "target": "05-Go-1.25/",
+          "notes": "版本特性"
+        }
+      ]
+    },
+    "05-微服务": {
+      "target": "05-微服务架构",
+      "action": "direct",
+      "priority": "high",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "./",
+          "notes": "直接迁移，添加'架构'后缀"
+        }
+      ]
+    },
+    "06-云原生": {
+      "target": "06-云原生与容器",
+      "action": "direct",
+      "priority": "high",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "./",
+          "notes": "直接迁移，添加'与容器'后缀"
+        }
+      ]
+    },
+    "07-性能优化": {
+      "target": "07-性能优化",
+      "action": "direct",
+      "priority": "medium",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "./",
+          "notes": "直接迁移，保持结构"
+        }
+      ]
+    },
+    "08-架构设计": {
+      "target": "08-架构设计",
+      "action": "direct",
+      "priority": "medium",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "./",
+          "notes": "直接迁移，保持结构"
+        }
+      ]
+    },
+    "09-工程实践": {
+      "target": "09-工程实践",
+      "action": "direct",
+      "priority": "high",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "./",
+          "notes": "直接迁移，保持结构"
+        }
+      ]
+    },
+    "10-进阶专题": {
+      "target": "11-高级专题",
+      "action": "reorganize",
+      "priority": "medium",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "01-云原生/",
+          "filter": ["云原生", "容器", "K8s", "Service Mesh"],
+          "notes": "云原生相关主题"
+        },
+        {
+          "source": "*.md",
+          "target": "02-应用交付/",
+          "filter": ["CI/CD", "部署", "DevOps"],
+          "notes": "应用交付相关"
+        },
+        {
+          "source": "*.md",
+          "target": "03-数据集成/",
+          "filter": ["数据", "集成", "消息队列"],
+          "notes": "数据集成相关"
+        },
+        {
+          "source": "*.md",
+          "target": "04-其他/",
+          "filter": [],
+          "notes": "其他未分类主题"
+        }
+      ]
+    },
+    "11-行业应用": {
+      "target": "12-行业应用",
+      "action": "expand",
+      "priority": "low",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "./",
+          "notes": "扩展行业应用内容"
+        }
+      ]
+    },
+    "12-参考资料": {
+      "target": "13-参考资料",
+      "action": "direct",
+      "priority": "low",
+      "files": [
+        {
+          "source": "*.md",
+          "target": "./",
+          "notes": "直接迁移参考资料"
+        }
+      ]
+    }
+  },
+  "newModules": {
+    "02-数据结构与算法": {
+      "action": "create",
+      "priority": "high",
+      "description": "新增数据结构与算法模块",
+      "submodules": [
+        "01-基础数据结构",
+        "02-常用算法",
+        "03-算法模式",
+        "04-实战案例"
+      ]
+    },
+    "04-数据库编程": {
+      "action": "create",
+      "priority": "high",
+      "description": "新增数据库编程模块",
+      "submodules": [
+        "01-SQL数据库",
+        "02-NoSQL数据库",
+        "03-ORM框架",
+        "04-数据库优化"
+      ]
+    }
+  },
+  "skipPatterns": [
+    "**/00-备份/**",
+    "**/archive/**",
+    "**/temp/**",
+    "**/.git/**",
+    "**/node_modules/**"
+  ],
+  "linkReplacements": [
+    {
+      "from": "../02-Web开发/",
+      "to": "../03-Web开发/",
+      "description": "更新Web开发模块链接"
+    },
+    {
+      "from": "../03-Go新特性/",
+      "to": "../10-Go版本特性/",
+      "description": "更新Go新特性链接"
+    },
+    {
+      "from": "../05-微服务/",
+      "to": "../05-微服务架构/",
+      "description": "更新微服务链接"
+    },
+    {
+      "from": "../10-进阶专题/",
+      "to": "../11-高级专题/",
+      "description": "更新进阶专题链接"
+    },
+    {
+      "from": "../11-行业应用/",
+      "to": "../12-行业应用/",
+      "description": "更新行业应用链接"
+    }
+  ]
+}
+
