@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const version = "v1.0.0"
+const version = "v2.0.0"
 
 func main() {
 	if len(os.Args) < 2 {
@@ -21,6 +21,18 @@ func main() {
 	args := os.Args[2:]
 
 	switch command {
+	case "gen", "g":
+		runGen(args)
+	case "init", "i":
+		runInit(args)
+	case "config", "cfg":
+		runConfig(args)
+	case "doctor", "doc":
+		runDoctor(args)
+	case "bench", "b":
+		runBench(args)
+	case "deps", "dep":
+		runDeps(args)
 	case "quality", "q":
 		runQuality(args)
 	case "test", "t":
@@ -48,10 +60,18 @@ func main() {
 
 func printUsage() {
 	fmt.Println(`
-gox - Golang项目管理工具
+gox - Golang项目管理工具 v2.0
 
 使用方式:
   gox <command> [options]
+
+🆕 新增命令:
+  gen, g         代码生成 (handler, model, service, test)
+  init, i        项目初始化
+  config, cfg    配置管理
+  doctor, doc    健康检查
+  bench, b       基准测试
+  deps, dep      依赖管理
 
 常用命令:
   quality, q     代码质量检查
@@ -65,10 +85,11 @@ gox - Golang项目管理工具
   version        显示版本信息
 
 示例:
+  gox gen handler User  生成User处理器
+  gox init myapp        初始化新项目
+  gox doctor            系统健康检查
   gox quality           运行质量检查
-  gox test              运行所有测试
-  gox stats             查看项目统计
-  gox format --check    检查代码格式
+  gox test --coverage   运行测试并生成覆盖率
 
 详细帮助: gox help
 `)

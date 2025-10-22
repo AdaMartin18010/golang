@@ -1,361 +1,182 @@
-﻿# 🤝 贡献指南
+﻿# 贡献指南
 
-> **欢迎加入 Golang 知识体系项目！**  
-> 感谢您对项目的关注！我们欢迎所有形式的贡献。
-
-<div align="center">
-
-![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)
-![Code of Conduct](https://img.shields.io/badge/Code%20of-Conduct-blue.svg?style=flat)
-
-**[快速开始](#-快速开始) • [开发流程](#-开发流程) • [代码规范](#-代码规范) • [测试要求](#-测试要求) • [获取帮助](#-获取帮助)**
-
-</div>
+感谢您对本项目的关注！我们欢迎各种形式的贡献。
 
 ---
 
-## 🎯 贡献方式
+## 📋 目录
 
-我们欢迎以下类型的贡献：
-
-<table>
-<tr>
-<td width="50%">
-
-### 💻 代码贡献
-
-- ✅ 添加代码示例
-- ✅ 修复Bug
-- ✅ 性能优化
-- ✅ 新功能开发
-- ✅ 测试用例
-
-</td>
-<td width="50%">
-
-### 📝 文档贡献
-
-- ✅ 修正错误
-- ✅ 补充内容
-- ✅ 改进结构
-- ✅ 翻译工作
-- ✅ 示例说明
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 🐛 问题反馈
-
-- ✅ Bug报告
-- ✅ 功能建议
-- ✅ 使用反馈
-- ✅ 性能问题
-- ✅ 文档问题
-
-</td>
-<td width="50%">
-
-### 🌟 社区贡献
-
-- ✅ 项目推广
-- ✅ 问题解答
-- ✅ 案例分享
-- ✅ 博客文章
-- ✅ 视频教程
-
-</td>
-</tr>
-</table>
+- [贡献指南](#贡献指南)
+  - [📋 目录](#-目录)
+  - [🤝 行为准则](#-行为准则)
+    - [我们的承诺](#我们的承诺)
+    - [我们的标准](#我们的标准)
+  - [💡 如何贡献](#-如何贡献)
+    - [报告Bug](#报告bug)
+    - [建议新功能](#建议新功能)
+    - [改进文档](#改进文档)
+  - [🔄 开发流程](#-开发流程)
+    - [1. Fork和Clone](#1-fork和clone)
+    - [2. 创建分支](#2-创建分支)
+    - [3. 开发](#3-开发)
+    - [4. 提交更改](#4-提交更改)
+    - [5. 创建Pull Request](#5-创建pull-request)
+  - [📝 代码规范](#-代码规范)
+    - [Go代码风格](#go代码风格)
+    - [命名规范](#命名规范)
+    - [注释规范](#注释规范)
+    - [错误处理](#错误处理)
+  - [🎯 提交规范](#-提交规范)
+    - [格式](#格式)
+    - [Type类型](#type类型)
+    - [示例](#示例)
+  - [🧪 测试要求](#-测试要求)
+    - [单元测试](#单元测试)
+    - [基准测试](#基准测试)
+    - [覆盖率要求](#覆盖率要求)
+    - [运行测试](#运行测试)
+  - [🔍 代码审查](#-代码审查)
+    - [审查清单](#审查清单)
+    - [审查过程](#审查过程)
+  - [🎓 学习资源](#-学习资源)
+    - [Go语言](#go语言)
+    - [并发编程](#并发编程)
+    - [测试](#测试)
+  - [📞 获取帮助](#-获取帮助)
+  - [🏆 贡献者](#-贡献者)
 
 ---
 
-## 🚀 快速开始
+## 🤝 行为准则
 
-### 前置要求
+### 我们的承诺
 
-```text
-✅ Go 1.23+ (推荐1.25)
-✅ Git 2.x
-✅ 代码编辑器 (VS Code推荐)
-✅ golangci-lint (可选但推荐)
-```
+为了营造一个开放和友好的环境，我们作为贡献者和维护者承诺：无论年龄、体型、残疾、种族、性别认同和表达、经验水平、国籍、个人外貌、种族、宗教或性认同和性取向如何，参与我们的项目和社区对每个人来说都是无骚扰的体验。
 
-### 5分钟上手贡献
+### 我们的标准
+
+积极行为的例子：
+
+- ✅ 使用友好和包容的语言
+- ✅ 尊重不同的观点和经验
+- ✅ 优雅地接受建设性批评
+- ✅ 关注对社区最有利的事情
+- ✅ 对其他社区成员表示同情
+
+不可接受行为的例子：
+
+- ❌ 使用性化的语言或图像
+- ❌ 挑衅、侮辱/贬损性评论，以及人身或政治攻击
+- ❌ 公开或私下骚扰
+- ❌ 未经明确许可，发布他人的私人信息
+- ❌ 在专业环境中可能被认为不适当的其他行为
+
+---
+
+## 💡 如何贡献
+
+### 报告Bug
+
+如果您发现了bug，请：
+
+1. **检查已有Issue**: 确保该bug尚未被报告
+2. **创建新Issue**: 使用Bug报告模板
+3. **提供详细信息**:
+   - 清晰的标题和描述
+   - 重现步骤
+   - 预期行为和实际行为
+   - 环境信息（Go版本、OS等）
+   - 代码示例或错误日志
+
+### 建议新功能
+
+如果您有新功能的想法：
+
+1. **检查已有Issue**: 确保功能尚未被建议
+2. **创建Feature Request**: 描述功能和使用场景
+3. **讨论设计**: 等待维护者反馈
+4. **实现功能**: 获得批准后开始开发
+
+### 改进文档
+
+文档改进总是受欢迎的：
+
+- 修复拼写错误
+- 改进示例
+- 添加缺失的说明
+- 翻译文档
+
+---
+
+## 🔄 开发流程
+
+### 1. Fork和Clone
 
 ```bash
-# 1. Fork项目
+# Fork仓库
 # 在GitHub上点击Fork按钮
 
-# 2. 克隆你的Fork
-git clone https://github.com/YOUR_USERNAME/golang.git
+# Clone你的fork
+git clone https://github.com/your-username/golang.git
 cd golang
 
-# 3. 添加上游仓库
-git remote add upstream https://github.com/ORIGINAL_OWNER/golang.git
-
-# 4. 创建功能分支
-git checkout -b feature/amazing-feature
-
-# 5. 验证环境
-go version
-go test -v ./...
-
-# 🎉 环境就绪！开始贡献吧！
+# 添加upstream远程仓库
+git remote add upstream https://github.com/original-owner/golang.git
 ```
 
----
-
-## 🔧 本地开发设置
-
-### 完整开发环境
+### 2. 创建分支
 
 ```bash
-# 1. 安装依赖
-go mod download
-
-# 2. 安装开发工具
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-go install golang.org/x/tools/cmd/goimports@latest
-go install golang.org/x/vuln/cmd/govulncheck@latest
-
-# 3. 验证安装
-golangci-lint --version
-goimports --version
-govulncheck -h
-
-# 4. 配置Git Hooks (可选)
-cat > .git/hooks/pre-commit << 'EOF'
-#!/bin/sh
-echo "Running pre-commit checks..."
-go fmt ./...
-go vet ./...
-go test ./...
-EOF
-chmod +x .git/hooks/pre-commit
-```
-
-### 项目结构理解
-
-```text
-golang/
-├── .github/          # CI/CD和模板
-├── docs/             # 核心文档和代码
-│   └── 02-Go语言现代化/
-│       ├── 08-智能化架构集成/  # AI-Agent
-│       ├── 14-Go-1.23并发/     # 并发特性
-│       └── ...
-├── examples/         # 示例代码
-│   ├── concurrency/  # 并发模式
-│   └── ...
-├── scripts/          # 工具脚本
-├── EXAMPLES.md       # 示例展示页
-└── README.md         # 项目首页
-```
-
-### 运行示例
-
-```bash
-# 并发模式
-cd examples/concurrency
-go test -v .
-
-# Go 1.25特性
-cd examples/go125/runtime/gc_optimization
-go test -v .
-
-# AI-Agent
-cd docs/02-Go语言现代化/08-智能化架构集成/01-AI-Agent架构
-go test -v ./core/...
-
-# 所有测试
-powershell -ExecutionPolicy Bypass -File scripts/test_summary.ps1
-```
-
----
-
-## 💻 开发流程
-
-### 标准工作流
-
-```mermaid
-graph LR
-    A[Fork项目] --> B[创建分支]
-    B --> C[编写代码]
-    C --> D[本地测试]
-    D --> E[提交代码]
-    E --> F[创建PR]
-    F --> G[代码审查]
-    G --> H[合并代码]
-```
-
-### 详细步骤
-
-#### 1. 同步上游代码
-
-```bash
-# 定期同步上游更新
-git fetch upstream
-git checkout main
-git merge upstream/main
-git push origin main
-```
-
-#### 2. 创建功能分支
-
-```bash
-# 从最新的main分支创建
-git checkout main
-git pull upstream main
+# 从main创建新分支
 git checkout -b feature/your-feature-name
 
-# 分支命名规范
-# feature/功能名称  - 新功能
-# fix/问题描述     - Bug修复
-# docs/文档类型    - 文档更新
-# refactor/描述    - 代码重构
-# test/测试描述    - 测试相关
+# 或者
+git checkout -b fix/your-bug-fix
 ```
 
-#### 3. 编写代码
+分支命名规范：
 
-```go
-// 示例：添加新的并发模式
-package concurrency
+- `feature/` - 新功能
+- `fix/` - Bug修复
+- `docs/` - 文档更新
+- `refactor/` - 代码重构
+- `test/` - 测试相关
 
-import (
-    "context"
-    "sync"
-)
-
-// RateLimiter 速率限制器示例
-type RateLimiter struct {
-    rate     int
-    interval time.Duration
-    tokens   chan struct{}
-    done     chan struct{}
-}
-
-// NewRateLimiter 创建速率限制器
-func NewRateLimiter(rate int, interval time.Duration) *RateLimiter {
-    rl := &RateLimiter{
-        rate:     rate,
-        interval: interval,
-        tokens:   make(chan struct{}, rate),
-        done:     make(chan struct{}),
-    }
-    
-    // 初始化令牌
-    for i := 0; i < rate; i++ {
-        rl.tokens <- struct{}{}
-    }
-    
-    return rl
-}
-
-// Wait 等待获取令牌
-func (rl *RateLimiter) Wait(ctx context.Context) error {
-    select {
-    case <-ctx.Done():
-        return ctx.Err()
-    case <-rl.tokens:
-        return nil
-    }
-}
-```
-
-#### 4. 编写测试
-
-```go
-// rate_limiter_test.go
-package concurrency
-
-import (
-    "context"
-    "testing"
-    "time"
-)
-
-func TestRateLimiter(t *testing.T) {
-    rl := NewRateLimiter(10, time.Second)
-    
-    start := time.Now()
-    for i := 0; i < 10; i++ {
-        if err := rl.Wait(context.Background()); err != nil {
-            t.Fatalf("Wait failed: %v", err)
-        }
-    }
-    
-    elapsed := time.Since(start)
-    if elapsed > 100*time.Millisecond {
-        t.Errorf("Expected fast completion, got %v", elapsed)
-    }
-}
-
-func BenchmarkRateLimiter(b *testing.B) {
-    rl := NewRateLimiter(1000, time.Second)
-    ctx := context.Background()
-    
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        rl.Wait(ctx)
-    }
-}
-```
-
-#### 5. 运行质量检查
+### 3. 开发
 
 ```bash
-# 格式化代码
-go fmt ./...
-goimports -w .
-
-# 静态分析
-go vet ./...
-golangci-lint run
+# 安装依赖
+go mod download
 
 # 运行测试
-go test -v ./...
-go test -race ./...
-go test -cover ./...
+go test ./...
 
-# 安全扫描
-govulncheck ./...
-
-# 使用项目脚本（Windows）
-powershell -ExecutionPolicy Bypass -File scripts/scan_code_quality.ps1
+# 运行质量检查
+go fmt ./...
+go vet ./...
+golangci-lint run
 ```
 
-#### 6. 提交代码
+### 4. 提交更改
 
 ```bash
-# 添加更改
+# 暂存更改
 git add .
 
-# 提交（遵循Conventional Commits）
-git commit -m "feat(concurrency): add rate limiter pattern
+# 提交（遵循提交规范）
+git commit -m "feat: add new concurrency pattern"
 
-- Implement token bucket rate limiter
-- Add comprehensive tests
-- Include usage examples in EXAMPLES.md"
-
-# 推送到你的Fork
+# 推送到你的fork
 git push origin feature/your-feature-name
 ```
 
-#### 7. 创建Pull Request
+### 5. 创建Pull Request
 
-1. 访问你的Fork页面
-2. 点击 "New Pull Request"
-3. 选择正确的分支
-4. 填写PR模板：
-   - 清晰的标题
-   - 详细的描述
-   - 相关的Issue编号
-   - 测试结果截图（如适用）
-5. 提交PR
+1. 访问GitHub上的原始仓库
+2. 点击"New Pull Request"
+3. 选择你的分支
+4. 填写PR模板
+5. 等待审查
 
 ---
 
@@ -363,495 +184,254 @@ git push origin feature/your-feature-name
 
 ### Go代码风格
 
-**必须遵守**:
+遵循官方Go代码风格：
 
 ```go
 // ✅ 好的示例
-package mypackage
-
-import (
-    "context"
-    "fmt"
-    "time"
-)
-
-// ProcessData 处理数据并返回结果
-// 参数:
-//   - ctx: 上下文
-//   - data: 要处理的数据
-// 返回:
-//   - result: 处理结果
-//   - error: 错误信息
-func ProcessData(ctx context.Context, data []byte) (result string, err error) {
-    if len(data) == 0 {
-        return "", fmt.Errorf("data cannot be empty")
+func CalculateSum(numbers []int) int {
+    sum := 0
+    for _, n := range numbers {
+        sum += n
     }
-    
-    // 使用defer确保资源清理
-    defer func() {
-        if r := recover(); r != nil {
-            err = fmt.Errorf("panic: %v", r)
-        }
-    }()
-    
-    // 实际处理逻辑
-    result = string(data)
-    return result, nil
+    return sum
 }
-```
 
-**避免这样**:
-
-```go
 // ❌ 不好的示例
-func processData(d []byte) string {  // 未导出函数应小写，但导出的应大写
-    return string(d)  // 缺少错误处理
-}  // 缺少注释
-```
-
-### 提交信息规范
-
-**格式**: `<type>(<scope>): <subject>`
-
-**类型**:
-
-- `feat`: 新功能
-- `fix`: Bug修复
-- `docs`: 文档更新
-- `style`: 代码格式（不影响功能）
-- `refactor`: 重构
-- `test`: 测试相关
-- `chore`: 构建/工具链
-- `perf`: 性能优化
-
-**示例**:
-
-```bash
-# 好的提交信息
-feat(agent): add decision consensus mechanism
-
-- Implement multi-agent voting
-- Add confidence calculation
-- Include comprehensive tests
-
-Closes #123
-
-# 坏的提交信息
-fix bug        # 太简略
-Update code    # 不明确
+func calculate_sum(numbers []int) int {
+    Sum := 0
+    for i := 0; i < len(numbers); i++ {
+        Sum = Sum + numbers[i]
+    }
+    return Sum
+}
 ```
 
 ### 命名规范
 
+- **包名**: 小写，简短，不使用下划线
+- **导出函数**: 大写开头，驼峰命名
+- **私有函数**: 小写开头，驼峰命名
+- **常量**: 驼峰命名（不是全大写）
+- **接口**: 以`-er`结尾（如`Reader`, `Writer`）
+
+### 注释规范
+
 ```go
-// 包名：小写，单个单词
-package ratelimiter
+// Package patterns provides common concurrency patterns.
+package patterns
 
-// 常量：大写，下划线分隔
-const MAX_RETRIES = 3
+// RateLimiter implements a token bucket rate limiter.
+// It allows controlling the rate of operations.
+type RateLimiter struct {
+    rate     int
+    capacity int
+}
 
-// 变量：驼峰命名
-var maxConnections int
-var defaultTimeout = 30 * time.Second
+// NewRateLimiter creates a new rate limiter with the given rate and capacity.
+// rate is the number of tokens added per second.
+// capacity is the maximum number of tokens the bucket can hold.
+func NewRateLimiter(rate, capacity int) *RateLimiter {
+    return &RateLimiter{
+        rate:     rate,
+        capacity: capacity,
+    }
+}
+```
 
-// 函数：驼峰命名，导出的首字母大写
-func NewClient() *Client
-func processRequest() error
+### 错误处理
 
-// 接口：通常以-er结尾
-type Reader interface
-type Processor interface
+```go
+// ✅ 好的示例
+func ProcessData(data []byte) error {
+    if len(data) == 0 {
+        return fmt.Errorf("empty data")
+    }
+    
+    result, err := parseData(data)
+    if err != nil {
+        return fmt.Errorf("parse data: %w", err)
+    }
+    
+    return saveResult(result)
+}
 
-// 结构体：驼峰命名，导出的首字母大写
-type HTTPClient struct
-type requestConfig struct
+// ❌ 不好的示例
+func ProcessData(data []byte) error {
+    result, _ := parseData(data) // 忽略错误
+    saveResult(result)
+    return nil
+}
+```
+
+---
+
+## 🎯 提交规范
+
+使用[Conventional Commits](https://www.conventionalcommits.org/)规范：
+
+### 格式
+
+```text
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Type类型
+
+- `feat`: 新功能
+- `fix`: Bug修复
+- `docs`: 文档更新
+- `style`: 代码格式（不影响代码运行）
+- `refactor`: 代码重构
+- `test`: 测试相关
+- `chore`: 构建过程或辅助工具的变动
+- `perf`: 性能优化
+
+### 示例
+
+```text
+feat(concurrency): add rate limiter pattern
+
+Implement a token bucket rate limiter with the following features:
+- Configurable rate and capacity
+- Thread-safe operations
+- Context support for cancellation
+
+Closes #123
 ```
 
 ---
 
 ## 🧪 测试要求
 
-### 测试覆盖率
+### 单元测试
 
-- **最低要求**: 80%
-- **推荐目标**: 90%+
-- **当前项目**: 45-50%
-
-```bash
-# 生成覆盖率报告
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
-
-# 查看覆盖率
-go test -cover ./...
-```
-
-### 测试类型
-
-#### 1. 单元测试
+所有新代码必须包含测试：
 
 ```go
-func TestUserValidation(t *testing.T) {
-    tests := []struct {
-        name    string
-        input   User
-        wantErr bool
-    }{
-        {
-            name:    "valid user",
-            input:   User{Name: "John", Age: 25},
-            wantErr: false,
-        },
-        {
-            name:    "empty name",
-            input:   User{Name: "", Age: 25},
-            wantErr: true,
-        },
+func TestRateLimiter(t *testing.T) {
+    rl := NewRateLimiter(10, 20)
+    
+    // 测试基本功能
+    if !rl.Allow() {
+        t.Error("First request should be allowed")
     }
     
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            err := tt.input.Validate()
-            if (err != nil) != tt.wantErr {
-                t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
-            }
-        })
+    // 测试边界条件
+    for i := 0; i < 20; i++ {
+        rl.Allow()
+    }
+    
+    if rl.Allow() {
+        t.Error("Should reject when bucket is empty")
     }
 }
 ```
 
-#### 2. 并发测试
+### 基准测试
+
+性能关键代码需要基准测试：
 
 ```go
-func TestConcurrentAccess(t *testing.T) {
-    cache := NewCache()
-    
-    var wg sync.WaitGroup
-    for i := 0; i < 100; i++ {
-        wg.Add(1)
-        go func(id int) {
-            defer wg.Done()
-            cache.Set(fmt.Sprintf("key-%d", id), id)
-            cache.Get(fmt.Sprintf("key-%d", id))
-        }(i)
-    }
-    
-    wg.Wait()
-}
-```
-
-#### 3. 基准测试
-
-```go
-func BenchmarkCacheSet(b *testing.B) {
-    cache := NewCache()
+func BenchmarkRateLimiter(b *testing.B) {
+    rl := NewRateLimiter(10000, 10000)
     
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
-        cache.Set("key", i)
-    }
-}
-
-func BenchmarkCacheGet(b *testing.B) {
-    cache := NewCache()
-    cache.Set("key", 123)
-    
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        cache.Get("key")
+        rl.Allow()
     }
 }
 ```
 
-#### 4. 示例测试
+### 覆盖率要求
 
-```go
-func ExampleRateLimiter() {
-    rl := NewRateLimiter(10, time.Second)
-    ctx := context.Background()
-    
-    for i := 0; i < 10; i++ {
-        if err := rl.Wait(ctx); err != nil {
-            fmt.Printf("Error: %v\n", err)
-            return
-        }
-        fmt.Printf("Request %d processed\n", i+1)
-    }
-    // Output:
-    // Request 1 processed
-    // Request 2 processed
-    // ...
-}
-```
+- 新代码覆盖率 > 80%
+- 核心包覆盖率 > 70%
+- 整体项目覆盖率 > 60%
 
-### 测试命令
+### 运行测试
 
 ```bash
 # 运行所有测试
-go test -v ./...
+go test ./...
 
-# 竞态检测
-go test -race ./...
+# 运行特定包
+go test ./pkg/concurrency/...
 
-# 覆盖率
+# 生成覆盖率报告
 go test -cover ./...
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
 
-# 基准测试
+# 运行基准测试
 go test -bench=. -benchmem ./...
-
-# 特定测试
-go test -v ./... -run TestName
-
-# 使用项目脚本
-powershell -ExecutionPolicy Bypass -File scripts/test_summary.ps1
 ```
 
 ---
 
-## 📚 文档要求
+## 🔍 代码审查
 
-### 代码注释
+### 审查清单
 
-```go
-// Package concurrency 提供常见的并发模式实现
-//
-// 本包包含以下模式:
-//   - Pipeline: 流水线模式
-//   - Worker Pool: 工作池模式
-//   - Rate Limiter: 速率限制模式
-package concurrency
+在提交PR前，请确保：
 
-// RateLimiter 实现令牌桶算法的速率限制器
-//
-// 使用示例:
-//   rl := NewRateLimiter(100, time.Second) // 每秒100个请求
-//   err := rl.Wait(ctx)
-type RateLimiter struct {
-    // 未导出字段无需注释（除非很复杂）
-    tokens chan struct{}
-}
+- [ ] 代码遵循Go规范
+- [ ] 所有测试通过
+- [ ] 新代码有测试覆盖
+- [ ] 文档已更新
+- [ ] 提交消息规范
+- [ ] 无linter警告
+- [ ] 性能无退化
 
-// NewRateLimiter 创建新的速率限制器
-//
-// 参数:
-//   - rate: 每个时间间隔的最大请求数
-//   - interval: 时间间隔
-//
-// 返回:
-//   - *RateLimiter: 速率限制器实例
-func NewRateLimiter(rate int, interval time.Duration) *RateLimiter {
-    // 实现...
-}
-```
+### 审查过程
 
-### README模板
-
-```markdown
-# 模块名称
-
-> 简短描述（一句话）
-
-## 功能特性
-
-- 特性1
-- 特性2
-
-## 安装
-
-\`\`\`bash
-go get github.com/yourrepo/module
-\`\`\`
-
-## 快速开始
-
-\`\`\`go
-// 代码示例
-\`\`\`
-
-## API文档
-
-### 函数名
-
-描述...
-
-## 测试
-
-\`\`\`bash
-go test -v .
-\`\`\`
-
-## 许可证
-
-MIT
-```
+1. **自动检查**: CI会自动运行测试和linter
+2. **人工审查**: 维护者会审查代码
+3. **反馈修改**: 根据反馈进行修改
+4. **合并**: 审查通过后合并
 
 ---
 
-## 🔄 Pull Request流程
+## 🎓 学习资源
 
-### PR检查清单
+### Go语言
 
-提交PR前确保：
+- [Go官方文档](https://golang.org/doc/)
+- [Effective Go](https://golang.org/doc/effective_go.html)
+- [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
 
-- [ ] ✅ 代码通过 `go fmt`
-- [ ] ✅ 代码通过 `go vet`
-- [ ] ✅ 代码通过 `golangci-lint`
-- [ ] ✅ 所有测试通过
-- [ ] ✅ 新代码有测试覆盖
-- [ ] ✅ 更新了相关文档
-- [ ] ✅ 提交信息符合规范
-- [ ] ✅ PR描述清晰完整
-- [ ] ✅ 关联了相关Issue
+### 并发编程
 
-### PR模板
+- [Go Concurrency Patterns](https://go.dev/blog/pipelines)
+- [Advanced Go Concurrency Patterns](https://go.dev/blog/io2013-talk-concurrency)
 
-PR会自动使用项目模板，包含：
+### 测试
 
-1. **变更类型**: 功能/修复/文档等
-2. **变更描述**: 详细说明
-3. **测试情况**: 测试方法和结果
-4. **检查清单**: 自检项目
-5. **相关Issue**: 关联的问题
-
-### 代码审查
-
-**审查关注点**:
-
-- 代码质量和可读性
-- 测试覆盖是否充分
-- 文档是否完整
-- 是否遵循项目规范
-- 性能是否有影响
-
-**审查响应**:
-
-- 及时回复审查意见
-- 修改后推送更新
-- 感谢审查者的反馈
-
----
-
-## 🏷️ 版本发布
-
-### 语义化版本
-
-格式: `MAJOR.MINOR.PATCH`
-
-- **MAJOR**: 不兼容的API变更
-- **MINOR**: 向后兼容的功能新增
-- **PATCH**: 向后兼容的问题修复
-
-### 发布流程
-
-维护者负责发布，贡献者无需担心。
-
----
-
-## 🎯 贡献者指南
-
-### 首次贡献
-
-**推荐起点**:
-
-1. 查看 [good first issue](../../labels/good%20first%20issue) 标签
-2. 改进文档或注释
-3. 添加测试用例
-4. 修复明显的Bug
-
-### 高级贡献
-
-**适合有经验的贡献者**:
-
-1. 新功能开发
-2. 性能优化
-3. 架构改进
-4. 复杂Bug修复
+- [Testing in Go](https://golang.org/pkg/testing/)
+- [Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/)
 
 ---
 
 ## 📞 获取帮助
 
-### 社区资源
+遇到问题？可以：
 
-- 💬 [GitHub Discussions](../../discussions) - 提问和讨论
-- 🐛 [GitHub Issues](../../issues) - Bug报告和功能请求
-- 📖 [项目文档](README.md) - 完整文档
-- 📚 [示例展示](EXAMPLES.md) - 代码示例
-
-### 提问指南
-
-**好的问题**:
-
-```text
-标题: [模块名] 具体问题描述
-
-内容:
-1. 问题描述：详细说明遇到的问题
-2. 环境信息：Go版本、操作系统等
-3. 复现步骤：如何重现问题
-4. 期望行为：期望的结果
-5. 实际行为：实际的结果
-6. 错误日志：相关错误信息
-```
-
-**寻求帮助的方式**:
-
-1. 先搜索已有Issues
-2. 查看文档和FAQ
-3. 创建新Issue并详细描述
-4. 在Discussions中讨论
+- 📖 查看[文档](docs/)
+- 💬 在[Discussions](https://github.com/yourusername/golang/discussions)提问
+- 🐛 提交[Issue](https://github.com/yourusername/golang/issues)
+- 📧 联系维护者
 
 ---
 
-## 🌟 贡献者名单
+## 🏆 贡献者
 
 感谢所有贡献者！
 
-<!-- ALL-CONTRIBUTORS-LIST:START -->
-<!-- 贡献者列表将自动生成 -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-### 如何加入
-
-完成首次PR合并后，您的名字将被添加到贡献者列表！
+[贡献者列表](https://github.com/yourusername/golang/graphs/contributors)
 
 ---
 
-## 📜 行为准则
-
-### 我们的承诺
-
-- 尊重所有贡献者
-- 接纳不同观点
-- 提供建设性反馈
-- 关注社区利益
-
-详见 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
-
----
-
-## 📄 许可证
-
-贡献代码即表示您同意在 [MIT License](LICENSE) 下授权您的贡献。
-
----
-
-<div align="center">
-
-## 🎉 开始贡献
-
-**感谢您考虑为项目做贡献！**
-
-每一个贡献都让项目变得更好 💚
-
-[Fork项目](../../fork) • [创建Issue](../../issues/new) • [查看示例](EXAMPLES.md)
-
----
-
-**有问题？** [提问](../../discussions/new) | **发现Bug？** [报告](../../issues/new?template=bug_report.md) | **有想法？** [建议](../../issues/new?template=feature_request.md)
-
----
-
-Made with ❤️ by the Community
-
-</div>
+**感谢您的贡献！** 🎉
