@@ -76,8 +76,8 @@
 
 ### CI/CD流水线
 
-- [07-GitHub Actions](./07-GitHub Actions.md) - GitHub CI/CD实践
-- [08-GitLab CI](./08-GitLab CI.md) - GitLab CI/CD配置
+- [07-GitHub Actions](./07-GitHub-Actions.md) - GitHub CI/CD实践
+- [08-GitLab CI](./08-GitLab-CI.md) - GitLab CI/CD配置
 - [09-多环境部署](./09-多环境部署.md) - 开发、测试、生产环境
 
 ---

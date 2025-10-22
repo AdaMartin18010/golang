@@ -60,7 +60,7 @@
 ### 云原生集成
 
 - [11-Kubernetes微服务部署](./11-Kubernetes微服务部署.md) - K8s原生微服务架构
-- [12-Service Mesh集成](./12-Service Mesh集成.md) - Istio/Linkerd服务网格
+- [12-Service Mesh集成](./12-Service-Mesh集成.md) - Istio/Linkerd服务网格
 - [13-GitOps持续部署](./13-GitOps持续部署.md) - 基于Git的持续部署
 - [14-多集群服务治理](./14-多集群服务治理.md) - 跨集群服务管理
 

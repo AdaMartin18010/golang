@@ -973,7 +973,7 @@ kubectl delete deployment user-service-blue
 
 - [10-高性能微服务架构.md](./10-高性能微服务架构.md)
 - [12-Service Mesh集成.md](./12-Service-Mesh集成.md)
-- [../06-云原生与容器/01-Docker容器化.md](../06-云原生与容器/01-Docker容器化.md)
+- [../06-云原生与容器/01-Go与容器化基础.md](../06-云原生与容器/01-Go与容器化基础.md)
 
 ### 工具推荐
 
@@ -988,4 +988,3 @@ kubectl delete deployment user-service-blue
 **最后更新**: 2025年10月20日  
 **文档状态**: 完成  
 **适用版本**: Kubernetes 1.27+, Go 1.21+
-

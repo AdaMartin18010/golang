@@ -399,7 +399,7 @@ func main() {
 
 **A**: 分层测试策略：
 
-**Level 1: 编译测试**
+**Level 1: 编译测试**:
 
 ```powershell
 # 测试所有.go文件能否编译
@@ -408,14 +408,14 @@ Get-ChildItem -Path "docs" -Filter "*.go" -Recurse | ForEach-Object {
 }
 ```
 
-**Level 2: 单元测试**
+**Level 2: 单元测试**:
 
 ```powershell
 # 运行测试文件
 go test ./...
 ```
 
-**Level 3: 示例测试**
+**Level 3: 示例测试**:
 
 ```go
 // 在文档中添加可测试示例
