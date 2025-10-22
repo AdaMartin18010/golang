@@ -1,0 +1,93 @@
+{
+	"Golang errors": {},
+	"Issues": [
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "22",
+				"url": "https://cwe.mitre.org/data/definitions/22.html"
+			},
+			"rule_id": "G304",
+			"details": "Potential file inclusion via variable",
+			"file": "E:\\_src\\golang\\pkg\\observability\\logger.go",
+			"code": "335: func NewFileHook(filename string, minLevel LogLevel) (*FileHook, error) {\n336: \tfile, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)\n337: \tif err != nil {\n",
+			"line": "336",
+			"column": "15",
+			"nosec": false,
+			"suppressions": null,
+			"autofix": "Consider using os.Root to scope file access under a fixed root (Go \u003e=1.24). Prefer root.Open/root.Stat over os.Open/os.Stat to prevent directory traversal."
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "276",
+				"url": "https://cwe.mitre.org/data/definitions/276.html"
+			},
+			"rule_id": "G302",
+			"details": "Expect file permissions to be 0600 or less",
+			"file": "E:\\_src\\golang\\pkg\\observability\\logger.go",
+			"code": "335: func NewFileHook(filename string, minLevel LogLevel) (*FileHook, error) {\n336: \tfile, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)\n337: \tif err != nil {\n",
+			"line": "336",
+			"column": "15",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "E:\\_src\\golang\\pkg\\observability\\metrics.go",
+			"code": "389: \thistogram := NewHistogram(name, help, buckets, labels)\n390: \tRegister(histogram)\n391: \treturn histogram\n",
+			"line": "390",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "E:\\_src\\golang\\pkg\\observability\\metrics.go",
+			"code": "382: \tgauge := NewGauge(name, help, labels)\n383: \tRegister(gauge)\n384: \treturn gauge\n",
+			"line": "383",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "E:\\_src\\golang\\pkg\\observability\\metrics.go",
+			"code": "375: \tcounter := NewCounter(name, help, labels)\n376: \tRegister(counter)\n377: \treturn counter\n",
+			"line": "376",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		}
+	],
+	"Stats": {
+		"files": 4,
+		"lines": 1429,
+		"nosec": 0,
+		"found": 5
+	},
+	"GosecVersion": "dev"
+}
