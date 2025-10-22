@@ -96,4 +96,3 @@ flux bootstrap github \
 **最后更新**: 2025年10月20日  
 **文档状态**: 完成  
 **适用版本**: Kubernetes 1.27+, ArgoCD 2.9+, Flux 2.2+
-

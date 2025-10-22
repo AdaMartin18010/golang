@@ -174,7 +174,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 ### 追踪架构
 
-```
+```text
 Tracer
   ├── Sampler (采样策略)
   ├── IDGenerator (ID生成)
@@ -187,7 +187,7 @@ Tracer
 
 ### 指标架构
 
-```
+```text
 MetricsRegistry
   ├── Counter (只增不减)
   ├── Gauge (可增可减)
@@ -197,7 +197,7 @@ MetricsRegistry
 
 ### 日志架构
 
-```
+```text
 Logger
   ├── Level (日志级别)
   ├── Hooks (钩子系统)
