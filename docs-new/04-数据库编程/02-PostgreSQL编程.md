@@ -15,6 +15,8 @@
       - [使用pq驱动](#使用pq驱动)
   - [2. pgx驱动使用](#2-pgx驱动使用)
     - [2.1 连接池配置](#21-连接池配置)
+      - [pgx连接池架构可视化](#pgx连接池架构可视化)
+      - [连接获取与释放流程](#连接获取与释放流程)
     - [2.2 基本查询](#22-基本查询)
   - [3. CRUD操作](#3-crud操作)
     - [3.1 插入数据](#31-插入数据)
@@ -98,6 +100,112 @@ func main() {
 
 ### 2.1 连接池配置
 
+#### pgx连接池架构可视化
+
+```mermaid
+graph TB
+    subgraph "应用层"
+        App1[Goroutine 1]
+        App2[Goroutine 2]
+        App3[Goroutine 3]
+        App4[Goroutine 4]
+    end
+    
+    subgraph "pgxpool连接池"
+        Pool[连接池管理器<br/>MaxConns=25<br/>MinConns=5]
+        
+        subgraph "空闲连接"
+            Idle1[Conn 1]
+            Idle2[Conn 2]
+            Idle3[Conn 3]
+        end
+        
+        subgraph "使用中连接"
+            Busy1[Conn 4 - 查询中]
+            Busy2[Conn 5 - 事务中]
+        end
+        
+        WaitQueue[等待队列<br/>Goroutine Queue]
+    end
+    
+    subgraph "PostgreSQL服务器"
+        PG[(PostgreSQL<br/>Database)]
+    end
+    
+    App1 -->|获取连接| Pool
+    App2 -->|获取连接| Pool
+    App3 -->|请求连接| WaitQueue
+    App4 -->|请求连接| WaitQueue
+    
+    Pool -->|分配| Idle1
+    Pool -->|分配| Idle2
+    Pool -->|连接满，加入队列| WaitQueue
+    
+    Busy1 -->|释放| Idle1
+    Busy2 -->|释放| Idle2
+    
+    Idle1 -.TCP连接.-> PG
+    Idle2 -.TCP连接.-> PG
+    Idle3 -.TCP连接.-> PG
+    Busy1 -.TCP连接.-> PG
+    Busy2 -.TCP连接.-> PG
+    
+    style Pool fill:#e1ffe1
+    style WaitQueue fill:#ffe1e1
+    style PG fill:#e1f5ff
+    style Idle1 fill:#fff4e1
+    style Idle2 fill:#fff4e1
+    style Idle3 fill:#fff4e1
+    style Busy1 fill:#ffe1e1
+    style Busy2 fill:#ffe1e1
+```
+
+#### 连接获取与释放流程
+
+```mermaid
+sequenceDiagram
+    participant App as 应用Goroutine
+    participant Pool as pgxpool.Pool
+    participant Conn as pgx.Conn
+    participant PG as PostgreSQL
+    
+    Note over App,PG: 连接获取流程
+    
+    App->>Pool: pool.Acquire(ctx)
+    
+    alt 有空闲连接
+        Pool->>Conn: 分配空闲连接
+        Pool-->>App: 返回连接
+        Note over Conn: 状态: 使用中
+    else 无空闲连接但未达MaxConns
+        Pool->>PG: 创建新连接
+        PG-->>Pool: 连接建立
+        Pool-->>App: 返回新连接
+    else 连接池已满
+        Note over App: 等待其他连接释放
+        Pool->>App: 阻塞等待
+    end
+    
+    Note over App,PG: 执行查询
+    
+    App->>Conn: Query(sql, args)
+    Conn->>PG: 发送SQL
+    PG-->>Conn: 返回结果集
+    Conn-->>App: Rows
+    
+    App->>App: 处理结果
+    
+    Note over App,PG: 连接释放流程
+    
+    App->>Conn: conn.Release()
+    Conn->>Pool: 归还连接
+    Note over Conn: 状态: 空闲
+    
+    opt 有等待的Goroutine
+        Pool->>App: 唤醒等待者
+    end
+```
+
 ```go
 package main
 
@@ -120,8 +228,8 @@ func initDB() *pgxpool.Pool {
     }
     
     // 设置连接池参数
-    config.MaxConns = 25
-    config.MinConns = 5
+    config.MaxConns = 25  // 最大连接数
+    config.MinConns = 5   // 最小连接数（预热）
     
     // 创建连接池
     pool, err := pgxpool.NewWithConfig(context.Background(), config)

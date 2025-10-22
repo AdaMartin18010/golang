@@ -124,6 +124,83 @@ func initDB() *sql.DB {
 }
 ```
 
+**连接池状态机可视化**:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle: 创建连接
+    
+    Idle --> InUse: 应用请求连接
+    InUse --> Idle: 释放连接
+    
+    Idle --> CheckHealth: 定期健康检查
+    CheckHealth --> Idle: 检查通过
+    CheckHealth --> Closed: 连接失效
+    
+    Idle --> Closed: 空闲超时<br/>(ConnMaxIdleTime)
+    Idle --> Closed: 生命周期到期<br/>(ConnMaxLifetime)
+    
+    InUse --> Closed: 连接错误
+    InUse --> Closed: 执行超时
+    
+    Closed --> [*]: 销毁连接
+    
+    state Idle {
+        [*] --> Available
+        Available --> Waiting: 达到MaxOpenConns
+        Waiting --> Available: 有连接释放
+    }
+    
+    state InUse {
+        [*] --> Executing
+        Executing --> Executing: 执行SQL
+    }
+```
+
+**连接池管理流程**:
+
+```mermaid
+flowchart TD
+    Start([应用请求连接]) --> CheckIdle{有空闲连接?}
+    
+    CheckIdle -->|是| GetIdle[获取空闲连接]
+    CheckIdle -->|否| CheckMax{达到MaxOpenConns?}
+    
+    CheckMax -->|否| CreateNew[创建新连接]
+    CheckMax -->|是| Wait[等待连接释放]
+    
+    GetIdle --> Validate{连接有效?}
+    Validate -->|是| Use[使用连接]
+    Validate -->|否| Remove[移除连接]
+    Remove --> CheckMax
+    
+    CreateNew --> Use
+    Wait --> CheckIdle
+    
+    Use --> Execute[执行SQL]
+    Execute --> Done{执行完成?}
+    
+    Done -->|成功| Return[返回连接池]
+    Done -->|失败| Close[关闭连接]
+    
+    Return --> CheckLife{超过MaxLifetime?}
+    CheckLife -->|是| Close
+    CheckLife -->|否| CheckIdle2{空闲数 > MaxIdleConns?}
+    
+    CheckIdle2 -->|是| Close
+    CheckIdle2 -->|否| BackToPool[放回空闲池]
+    
+    BackToPool --> End([结束])
+    Close --> End
+    
+    style Start fill:#e1f5ff
+    style Use fill:#e1ffe1
+    style Execute fill:#fff4e1
+    style Close fill:#ffe1e1
+    style BackToPool fill:#e1ffe1
+    style End fill:#e1f5ff
+```
+
 ---
 
 ## 3. CRUD操作

@@ -20,11 +20,15 @@
     - [2.5 有序集合](#25-有序集合)
   - [3. 高级特性](#3-高级特性)
     - [3.1 Pipeline](#31-pipeline)
+      - [Pipeline vs 普通命令对比](#pipeline-vs-普通命令对比)
+      - [Pipeline执行流程](#pipeline执行流程)
     - [3.2 事务](#32-事务)
     - [3.3 发布订阅](#33-发布订阅)
     - [3.4 Lua脚本](#34-lua脚本)
   - [4. 实战应用](#4-实战应用)
     - [4.1 缓存实现](#41-缓存实现)
+      - [Cache-Aside模式可视化](#cache-aside模式可视化)
+      - [缓存更新策略](#缓存更新策略)
     - [4.2 分布式锁](#42-分布式锁)
     - [4.3 限流器](#43-限流器)
     - [4.4 排行榜](#44-排行榜)
@@ -328,16 +332,80 @@ func sortedSetOperations(rdb *redis.Client) {
 
 ### 3.1 Pipeline
 
+#### Pipeline vs 普通命令对比
+
+```mermaid
+sequenceDiagram
+    participant App as Go应用
+    participant Redis as Redis服务器
+    
+    Note over App,Redis: 普通命令 - 3次RTT (Round Trip Time)
+    
+    App->>Redis: SET key1 value1
+    Redis-->>App: OK (RTT 1)
+    
+    App->>Redis: SET key2 value2
+    Redis-->>App: OK (RTT 2)
+    
+    App->>Redis: INCR counter
+    Redis-->>App: 1 (RTT 3)
+    
+    Note over App,Redis: 总耗时 = 3 * RTT
+    
+    rect rgb(240, 240, 240)
+        Note over App,Redis: Pipeline批量命令 - 1次RTT
+        
+        App->>App: pipe.Set("key1", "value1")
+        App->>App: pipe.Set("key2", "value2")
+        App->>App: pipe.Incr("counter")
+        
+        App->>Redis: 批量发送 (SET, SET, INCR)
+        Redis->>Redis: 执行命令1
+        Redis->>Redis: 执行命令2
+        Redis->>Redis: 执行命令3
+        Redis-->>App: 批量返回 [OK, OK, 1]
+        
+        Note over App,Redis: 总耗时 = 1 * RTT + 处理时间
+    end
+    
+    Note over App,Redis: 性能提升: ~3倍
+```
+
+#### Pipeline执行流程
+
+```mermaid
+flowchart LR
+    Start([开始]) --> CreatePipe[创建Pipeline<br/>pipe = rdb.Pipeline]
+    CreatePipe --> AddCmd1[添加命令1<br/>pipe.Set]
+    AddCmd1 --> AddCmd2[添加命令2<br/>pipe.Get]
+    AddCmd2 --> AddCmd3[添加命令3<br/>pipe.Incr]
+    AddCmd3 --> QueuedCmds{命令队列<br/>已缓存}
+    
+    QueuedCmds -->|pipe.Exec| SendBatch[批量发送到Redis]
+    SendBatch --> RedisExec[Redis顺序执行]
+    RedisExec --> BatchResp[批量返回结果]
+    BatchResp --> ParseResp[解析各命令结果]
+    ParseResp --> End([结束])
+    
+    style CreatePipe fill:#e1ffe1
+    style QueuedCmds fill:#fff4e1
+    style SendBatch fill:#e1f5ff
+    style BatchResp fill:#ffe1ff
+```
+
 ```go
 // Pipeline批量操作
 func pipelineExample(rdb *redis.Client) {
+    // 创建Pipeline
     pipe := rdb.Pipeline()
     
-    // 添加多个命令
+    // 添加多个命令（仅缓存，不发送）
     incr := pipe.Incr(ctx, "pipeline_counter")
     pipe.Expire(ctx, "pipeline_counter", time.Hour)
+    pipe.Set(ctx, "key1", "value1", 0)
+    pipe.Get(ctx, "key1")
     
-    // 执行Pipeline
+    // 一次性执行所有命令
     _, err := pipe.Exec(ctx)
     if err != nil {
         panic(err)
@@ -345,6 +413,25 @@ func pipelineExample(rdb *redis.Client) {
     
     // 获取结果
     fmt.Println("counter:", incr.Val())
+}
+
+// Pipeline性能对比
+func pipelinePerformance(rdb *redis.Client) {
+    // 普通方式：1000次SET - 1000次RTT
+    start := time.Now()
+    for i := 0; i < 1000; i++ {
+        rdb.Set(ctx, fmt.Sprintf("key%d", i), i, 0)
+    }
+    fmt.Println("普通方式耗时:", time.Since(start)) // ~100ms (假设RTT=0.1ms)
+    
+    // Pipeline方式：1000次SET - 1次RTT
+    start = time.Now()
+    pipe := rdb.Pipeline()
+    for i := 0; i < 1000; i++ {
+        pipe.Set(ctx, fmt.Sprintf("key%d", i), i, 0)
+    }
+    pipe.Exec(ctx)
+    fmt.Println("Pipeline耗时:", time.Since(start)) // ~1ms (1次RTT)
 }
 ```
 
@@ -454,12 +541,73 @@ func luaScriptExample(rdb *redis.Client) {
 
 ### 4.1 缓存实现
 
+#### Cache-Aside模式可视化
+
+```mermaid
+flowchart TB
+    Start([用户请求]) --> Query[查询GetUser id=123]
+    Query --> CheckCache{检查Redis缓存<br/>key: user:123}
+    
+    CheckCache -->|缓存命中| ReturnCache[返回缓存数据<br/>⚡ 快速响应]
+    ReturnCache --> End1([结束])
+    
+    CheckCache -->|缓存未命中| QueryDB[查询MySQL数据库<br/>SELECT * FROM users<br/>WHERE id = 123]
+    QueryDB --> DBResult{数据库返回}
+    
+    DBResult -->|查询成功| WriteCache[写入Redis缓存<br/>SET user:123 {data}<br/>EX 1800]
+    WriteCache --> ReturnDB[返回数据库数据<br/>🐢 较慢响应]
+    ReturnDB --> End2([结束])
+    
+    DBResult -->|未找到| ReturnNull[返回空/错误]
+    ReturnNull --> End3([结束])
+    
+    style CheckCache fill:#fff4e1
+    style ReturnCache fill:#e1ffe1
+    style QueryDB fill:#e1f5ff
+    style WriteCache fill:#ffe1ff
+```
+
+#### 缓存更新策略
+
+```mermaid
+sequenceDiagram
+    participant App as 应用
+    participant Redis as Redis缓存
+    participant DB as MySQL数据库
+    
+    Note over App,DB: 场景1: 读取数据 (Cache-Aside)
+    
+    App->>Redis: GET user:123
+    
+    alt 缓存命中
+        Redis-->>App: 返回数据
+        Note over App: ✅ 快速响应 (~1ms)
+    else 缓存未命中
+        Redis-->>App: nil
+        App->>DB: SELECT * FROM users WHERE id=123
+        DB-->>App: 返回数据
+        Note over App: 🐢 较慢响应 (~10ms)
+        App->>Redis: SET user:123 {data} EX 1800
+        Redis-->>App: OK
+    end
+    
+    Note over App,DB: 场景2: 更新数据
+    
+    App->>DB: UPDATE users SET name='Alice' WHERE id=123
+    DB-->>App: OK
+    
+    App->>Redis: DEL user:123
+    Redis-->>App: OK
+    Note over Redis: 删除缓存，下次读取时重建
+```
+
 ```go
 package main
 
 import (
     "context"
     "encoding/json"
+    "fmt"
     "time"
     
     "github.com/redis/go-redis/v9"
@@ -496,7 +644,7 @@ func (c *Cache) Get(key string, dest interface{}) error {
     return json.Unmarshal(data, dest)
 }
 
-// Cache-Aside模式
+// Cache-Aside模式（旁路缓存）
 func (c *Cache) GetUser(id int) (*User, error) {
     // 1. 尝试从缓存获取
     cacheKey := fmt.Sprintf("user:%d", id)
@@ -504,7 +652,7 @@ func (c *Cache) GetUser(id int) (*User, error) {
     
     err := c.Get(cacheKey, &user)
     if err == nil {
-        return &user, nil
+        return &user, nil // 缓存命中
     }
     
     // 2. 缓存未命中，从数据库查询
@@ -513,10 +661,16 @@ func (c *Cache) GetUser(id int) (*User, error) {
         return nil, err
     }
     
-    // 3. 写入缓存
+    // 3. 写入缓存（异步写入可进一步优化）
     c.Set(cacheKey, user, 30*time.Minute)
     
     return &user, nil
+}
+
+// 模拟数据库查询
+func queryUserFromDB(id int) (User, error) {
+    // SELECT * FROM users WHERE id = ?
+    return User{ID: id, Username: "Alice", Email: "alice@example.com"}, nil
 }
 ```
 
