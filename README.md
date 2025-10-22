@@ -12,7 +12,7 @@
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/AdaMartin18010/golang)](https://github.com/AdaMartin18010/golang/pulls)
 [![Last Commit](https://img.shields.io/github/last-commit/AdaMartin18010/golang)](https://github.com/AdaMartin18010/golang/commits/main)
 
-**全面的Golang知识体系 | Go 1.25.3最新特性 | AI-Agent架构 | 100%编译成功**
+**全面的Golang知识体系 | Go 1.25.3最新特性 | AI-Agent架构 | 100%编译成功**-
 
 [快速开始](#-快速开始) • [示例展示](EXAMPLES.md) • [核心特性](#-核心特性) • [文档](#-文档) • [贡献指南](#-贡献指南)
 
@@ -20,11 +20,11 @@
 
 ---
 
-> ### 🎉 Workspace 模式已启用！
-> 
+>
 > 本项目已配置 **Go 1.25.3 Workspace** 模式，所有模块统一管理，开发效率提升 50%+！
-> 
+>
 > **立即开始**：
+>
 > - 📖 [START_HERE.md](START_HERE.md) - 从这里开始 ⭐
 > - 🚀 [3分钟快速上手](🚀-立即开始-3分钟上手.md) - 最快上手
 > - ✅ 运行 `./scripts/verify-workspace.ps1` - 验证环境
