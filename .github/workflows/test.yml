@@ -1,0 +1,106 @@
+name: Test and Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        go: ['1.23.x', '1.25.x']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go }}
+    
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    
+    - name: Download dependencies
+      run: |
+        go work sync
+        go mod download
+      working-directory: ./
+    
+    - name: Run tests - pkg/agent
+      run: go test -v -race -coverprofile=coverage-agent.out ./...
+      working-directory: ./pkg/agent
+    
+    - name: Run tests - pkg/concurrency
+      run: go test -v -race -coverprofile=coverage-concurrency.out ./...
+      working-directory: ./pkg/concurrency
+    
+    - name: Run tests - pkg/http3
+      run: go test -v -race -coverprofile=coverage-http3.out ./...
+      working-directory: ./pkg/http3
+    
+    - name: Run tests - pkg/memory
+      run: go test -v -race -coverprofile=coverage-memory.out ./...
+      working-directory: ./pkg/memory
+    
+    - name: Run tests - examples
+      run: go test -v -race ./...
+      working-directory: ./examples
+      continue-on-error: true  # 示例代码测试失败不中断CI
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      if: matrix.os == 'ubuntu-latest' && matrix.go == '1.25.x'
+      with:
+        files: ./pkg/agent/coverage-agent.out,./pkg/concurrency/coverage-concurrency.out,./pkg/http3/coverage-http3.out,./pkg/memory/coverage-memory.out
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25.x'
+    
+    - name: Build CLI tool
+      run: go build -v -o gox ./cmd/gox
+    
+    - name: Build examples (Arena)
+      run: go build -v -o arena-demo ./pkg/memory/arena.go
+      continue-on-error: true
+    
+    - name: Build examples (Weak Pointer)
+      run: go build -v -o weak-demo ./pkg/memory/weak_pointer.go
+      continue-on-error: true
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: binaries
+        path: |
+          gox
+          *-demo
+        retention-days: 7
+

@@ -1,0 +1,70 @@
+name: Security
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0'  # 每周日运行
+
+jobs:
+  govulncheck:
+    name: Go Vulnerability Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25.x'
+    
+    - name: Install govulncheck
+      run: go install golang.org/x/vuln/cmd/govulncheck@latest
+    
+    - name: Run govulncheck - pkg/agent
+      run: govulncheck ./...
+      working-directory: ./pkg/agent
+      continue-on-error: true
+    
+    - name: Run govulncheck - pkg/concurrency
+      run: govulncheck ./...
+      working-directory: ./pkg/concurrency
+      continue-on-error: true
+    
+    - name: Run govulncheck - pkg/http3
+      run: govulncheck ./...
+      working-directory: ./pkg/http3
+      continue-on-error: true
+    
+    - name: Run govulncheck - pkg/memory
+      run: govulncheck ./...
+      working-directory: ./pkg/memory
+      continue-on-error: true
+
+  gosec:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25.x'
+    
+    - name: Run Gosec Security Scanner
+      uses: securego/gosec@master
+      with:
+        args: '-no-fail -fmt sarif -out results.sarif ./...'
+    
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: results.sarif
+

@@ -4,26 +4,26 @@ go 1.25.3
 // 使用 workspace 模式统一管理多个模块
 
 use (
-
-	// CLI工具 (新增)
+	// CLI工具
 	./cmd/gox
-	// 当前的示例模块
+
+	// 示例模块
 	./examples
 
-// AI Agent 模块（需要迁移后启用）
-// ./pkg/agent
+	// AI Agent 模块（已迁移）
+	./pkg/agent
 
-// 并发模块（需要迁移后启用）
-// ./pkg/concurrency
+	// 并发模块（已迁移）
+	./pkg/concurrency
 
-// HTTP3 模块（需要迁移后启用）
-// ./pkg/http3
+	// HTTP3 模块（已迁移）
+	./pkg/http3
 
-// 内存管理模块（需要迁移后启用）
-// ./pkg/memory
+	// 内存管理模块（已迁移）
+	./pkg/memory
 
-// 可观测性模块（需要迁移后启用）
-// ./pkg/observability
+	// 可观测性模块（已迁移）
+	./pkg/observability
 )
 
 // 本地替换（开发时使用）
