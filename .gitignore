@@ -1,3 +1,6 @@
+# Go workspace
+go.work.sum
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -10,91 +13,43 @@
 
 # Output of the go coverage tool
 *.out
-coverage.out
+coverage
 coverage.html
+coverage.txt
 
 # Dependency directories
 vendor/
 
-# Go workspace file
-go.work
-go.work.sum
+# Go workspace file (optional - comment out if you want to track it)
+# go.work
 
-# IDE directories
+# IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
-# Temporary files
-*.tmp
-*.log
-*_output.txt
-vet_output.txt
-test_output.txt
-
-# Build artifacts
+# Build output
 bin/
 dist/
 build/
 
-# Reports
-*_report_*.md
-scan_report.md
-go_files.txt
-failed_builds.txt
-fmt-issues.txt
-gosec-results.json
-benchmark.txt
+# Temporary files
+tmp/
+temp/
 
-# Generated files
-*.gen.go
+# Log files
+*.log
 
-# Cache directories
-.cache/
-.test_cache/
-
-# Profiling data
-*.pprof
+# Profile files
 *.prof
-cpu.prof
-mem.prof
+*.pprof
 
-# Documentation generated files
-docs/_build/
-site/
-
-# Backup files
-*.bak
-*.backup
-
-# Local environment files
-.env
-.env.local
-.env.*.local
-
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Certificates and keys
-*.pem
-*.key
-*.crt
-*.cer
-*.p12
-*.pfx
-
-# Archives
-*.zip
-*.tar
-*.tar.gz
-*.tgz
-*.rar
-*.7z
+# Benchmark results
+benchmarks/
+*.bench

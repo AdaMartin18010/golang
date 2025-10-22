@@ -1,0 +1,30 @@
+go 1.25.3
+
+// Go Workspace 配置
+// 使用 workspace 模式统一管理多个模块
+
+use (
+	// 当前的示例模块
+	./examples
+
+// AI Agent 模块（需要迁移后启用）
+// ./pkg/agent
+
+// 并发模块（需要迁移后启用）
+// ./pkg/concurrency
+
+// HTTP3 模块（需要迁移后启用）
+// ./pkg/http3
+
+// 内存管理模块（需要迁移后启用）
+// ./pkg/memory
+
+// 可观测性模块（需要迁移后启用）
+// ./pkg/observability
+)
+
+// 本地替换（开发时使用）
+// replace (
+//     example.com/agent => ./pkg/agent
+//     example.com/concurrency => ./pkg/concurrency
+// )
