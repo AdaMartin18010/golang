@@ -1,277 +1,204 @@
-﻿# 贡献指南
+﻿# Contributing to Go Formal Verification
 
-感谢您对本项目的关注！我们欢迎各种形式的贡献。
+First off, thank you for considering contributing to the Go Formal Verification project! It's people like you that make this project better.
 
----
+## 🌟 Table of Contents
 
-## 📋 目录
+- [Code of Conduct](#code-of-conduct)
+- [How Can I Contribute?](#how-can-i-contribute)
+- [Development Setup](#development-setup)
+- [Coding Guidelines](#coding-guidelines)
+- [Commit Guidelines](#commit-guidelines)
+- [Pull Request Process](#pull-request-process)
+- [Project Structure](#project-structure)
+- [Testing Guidelines](#testing-guidelines)
+- [Documentation Guidelines](#documentation-guidelines)
 
-- [贡献指南](#贡献指南)
-  - [📋 目录](#-目录)
-  - [🤝 行为准则](#-行为准则)
-    - [我们的承诺](#我们的承诺)
-    - [我们的标准](#我们的标准)
-  - [💡 如何贡献](#-如何贡献)
-    - [报告Bug](#报告bug)
-    - [建议新功能](#建议新功能)
-    - [改进文档](#改进文档)
-  - [🔄 开发流程](#-开发流程)
-    - [1. Fork和Clone](#1-fork和clone)
-    - [2. 创建分支](#2-创建分支)
-    - [3. 开发](#3-开发)
-    - [4. 提交更改](#4-提交更改)
-    - [5. 创建Pull Request](#5-创建pull-request)
-  - [📝 代码规范](#-代码规范)
-    - [Go代码风格](#go代码风格)
-    - [命名规范](#命名规范)
-    - [注释规范](#注释规范)
-    - [错误处理](#错误处理)
-  - [🎯 提交规范](#-提交规范)
-    - [格式](#格式)
-    - [Type类型](#type类型)
-    - [示例](#示例)
-  - [🧪 测试要求](#-测试要求)
-    - [单元测试](#单元测试)
-    - [基准测试](#基准测试)
-    - [覆盖率要求](#覆盖率要求)
-    - [运行测试](#运行测试)
-  - [🔍 代码审查](#-代码审查)
-    - [审查清单](#审查清单)
-    - [审查过程](#审查过程)
-  - [🎓 学习资源](#-学习资源)
-    - [Go语言](#go语言)
-    - [并发编程](#并发编程)
-    - [测试](#测试)
-  - [📞 获取帮助](#-获取帮助)
-  - [🏆 贡献者](#-贡献者)
+## Code of Conduct
 
----
+This project and everyone participating in it is governed by our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
-## 🤝 行为准则
+## How Can I Contribute?
 
-### 我们的承诺
+### 🐛 Reporting Bugs
 
-为了营造一个开放和友好的环境，我们作为贡献者和维护者承诺：无论年龄、体型、残疾、种族、性别认同和表达、经验水平、国籍、个人外貌、种族、宗教或性认同和性取向如何，参与我们的项目和社区对每个人来说都是无骚扰的体验。
+Before creating bug reports, please check the existing issues to avoid duplicates. When creating a bug report, include as many details as possible:
 
-### 我们的标准
+- Use a clear and descriptive title
+- Describe the exact steps to reproduce the problem
+- Provide specific examples
+- Describe the behavior you observed and what you expected
+- Include screenshots if relevant
+- Note your environment (OS, Go version, tool version)
 
-积极行为的例子：
+Use the [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.yml) when filing issues.
 
-- ✅ 使用友好和包容的语言
-- ✅ 尊重不同的观点和经验
-- ✅ 优雅地接受建设性批评
-- ✅ 关注对社区最有利的事情
-- ✅ 对其他社区成员表示同情
+### ✨ Suggesting Enhancements
 
-不可接受行为的例子：
+Enhancement suggestions are tracked as GitHub issues. When creating an enhancement suggestion:
 
-- ❌ 使用性化的语言或图像
-- ❌ 挑衅、侮辱/贬损性评论，以及人身或政治攻击
-- ❌ 公开或私下骚扰
-- ❌ 未经明确许可，发布他人的私人信息
-- ❌ 在专业环境中可能被认为不适当的其他行为
+- Use a clear and descriptive title
+- Provide a detailed description of the proposed feature
+- Explain why this enhancement would be useful
+- List examples of how the feature would be used
 
----
+Use the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.yml).
 
-## 💡 如何贡献
+### 📝 Improving Documentation
 
-### 报告Bug
+Documentation improvements are always welcome! This includes:
 
-如果您发现了bug，请：
+- Fixing typos or grammatical errors
+- Adding examples or clarifications
+- Translating documentation
+- Writing tutorials or blog posts
 
-1. **检查已有Issue**: 确保该bug尚未被报告
-2. **创建新Issue**: 使用Bug报告模板
-3. **提供详细信息**:
-   - 清晰的标题和描述
-   - 重现步骤
-   - 预期行为和实际行为
-   - 环境信息（Go版本、OS等）
-   - 代码示例或错误日志
+### 💻 Contributing Code
 
-### 建议新功能
+#### Good First Issues
 
-如果您有新功能的想法：
+Look for issues labeled `good first issue` - these are great for newcomers!
 
-1. **检查已有Issue**: 确保功能尚未被建议
-2. **创建Feature Request**: 描述功能和使用场景
-3. **讨论设计**: 等待维护者反馈
-4. **实现功能**: 获得批准后开始开发
+#### Areas for Contribution
 
-### 改进文档
+1. **Formal Verifier**
+   - New verification algorithms
+   - Performance improvements
+   - Bug fixes
+   - Test coverage
 
-文档改进总是受欢迎的：
+2. **Pattern Generator**
+   - New concurrency patterns
+   - Pattern combinations
+   - Code generation improvements
+   - Template enhancements
 
-- 修复拼写错误
-- 改进示例
-- 添加缺失的说明
-- 翻译文档
+3. **Examples**
+   - Real-world use cases
+   - Best practices demonstrations
+   - Performance benchmarks
 
----
+4. **Tools**
+   - IDE plugins
+   - Web UI
+   - CLI improvements
 
-## 🔄 开发流程
+## Development Setup
 
-### 1. Fork和Clone
+### Prerequisites
+
+- Go 1.21 or higher
+- Git
+- Make (optional but recommended)
+
+### Setting Up Your Development Environment
+
+1. **Fork the repository**
+
+   Click the 'Fork' button on GitHub.
+
+2. **Clone your fork**
+
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/golang-formal-verification.git
+   cd golang-formal-verification
+   ```
+
+3. **Add upstream remote**
+
+   ```bash
+   git remote add upstream https://github.com/ORIGINAL-OWNER/golang-formal-verification.git
+   ```
+
+4. **Install dependencies**
+
+   ```bash
+   # For Formal Verifier
+   cd tools/formal-verifier
+   go mod download
+   
+   # For Pattern Generator
+   cd ../concurrency-pattern-generator
+   go mod download
+   ```
+
+5. **Build the tools**
+
+   ```bash
+   # Formal Verifier
+   cd tools/formal-verifier
+   go build ./cmd/fv
+   
+   # Pattern Generator
+   cd ../concurrency-pattern-generator
+   go build ./cmd/cpg
+   ```
+
+6. **Run tests**
+
+   ```bash
+   # Test all
+   go test ./...
+   
+   # Test with coverage
+   go test -cover ./...
+   
+   # Test with race detector
+   go test -race ./...
+   ```
+
+## Coding Guidelines
+
+### Go Style
+
+We follow the official [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments) and [Effective Go](https://golang.org/doc/effective_go).
+
+### Key Principles
+
+1. **Clarity over Cleverness**
+   - Write clear, readable code
+   - Add comments for complex logic
+   - Use meaningful variable names
+
+2. **Error Handling**
+   - Always check errors
+   - Provide context in error messages
+   - Use `fmt.Errorf` with `%w` for error wrapping
+
+3. **Testing**
+   - Write tests for new features
+   - Maintain or improve test coverage
+   - Use table-driven tests when appropriate
+
+### Code Formatting
 
 ```bash
-# Fork仓库
-# 在GitHub上点击Fork按钮
-
-# Clone你的fork
-git clone https://github.com/your-username/golang.git
-cd golang
-
-# 添加upstream远程仓库
-git remote add upstream https://github.com/original-owner/golang.git
-```
-
-### 2. 创建分支
-
-```bash
-# 从main创建新分支
-git checkout -b feature/your-feature-name
-
-# 或者
-git checkout -b fix/your-bug-fix
-```
-
-分支命名规范：
-
-- `feature/` - 新功能
-- `fix/` - Bug修复
-- `docs/` - 文档更新
-- `refactor/` - 代码重构
-- `test/` - 测试相关
-
-### 3. 开发
-
-```bash
-# 安装依赖
-go mod download
-
-# 运行测试
-go test ./...
-
-# 运行质量检查
+# Format code
 go fmt ./...
-go vet ./...
+
+# Run linter
 golangci-lint run
+
+# Run all checks
+make lint  # if Makefile is available
 ```
 
-### 4. 提交更改
+### Naming Conventions
 
-```bash
-# 暂存更改
-git add .
+- **Files**: Use lowercase with underscores (`data_flow.go`)
+- **Packages**: Use lowercase, single word if possible
+- **Exported names**: Use `CamelCase`
+- **Private names**: Use `camelCase`
+- **Constants**: Use `CamelCase` or `ALL_CAPS` for package-level
+- **Interfaces**: Use `er` suffix when appropriate (`Reader`, `Writer`)
 
-# 提交（遵循提交规范）
-git commit -m "feat: add new concurrency pattern"
+## Commit Guidelines
 
-# 推送到你的fork
-git push origin feature/your-feature-name
+### Commit Message Format
+
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
 ```
-
-### 5. 创建Pull Request
-
-1. 访问GitHub上的原始仓库
-2. 点击"New Pull Request"
-3. 选择你的分支
-4. 填写PR模板
-5. 等待审查
-
----
-
-## 📝 代码规范
-
-### Go代码风格
-
-遵循官方Go代码风格：
-
-```go
-// ✅ 好的示例
-func CalculateSum(numbers []int) int {
-    sum := 0
-    for _, n := range numbers {
-        sum += n
-    }
-    return sum
-}
-
-// ❌ 不好的示例
-func calculate_sum(numbers []int) int {
-    Sum := 0
-    for i := 0; i < len(numbers); i++ {
-        Sum = Sum + numbers[i]
-    }
-    return Sum
-}
-```
-
-### 命名规范
-
-- **包名**: 小写，简短，不使用下划线
-- **导出函数**: 大写开头，驼峰命名
-- **私有函数**: 小写开头，驼峰命名
-- **常量**: 驼峰命名（不是全大写）
-- **接口**: 以`-er`结尾（如`Reader`, `Writer`）
-
-### 注释规范
-
-```go
-// Package patterns provides common concurrency patterns.
-package patterns
-
-// RateLimiter implements a token bucket rate limiter.
-// It allows controlling the rate of operations.
-type RateLimiter struct {
-    rate     int
-    capacity int
-}
-
-// NewRateLimiter creates a new rate limiter with the given rate and capacity.
-// rate is the number of tokens added per second.
-// capacity is the maximum number of tokens the bucket can hold.
-func NewRateLimiter(rate, capacity int) *RateLimiter {
-    return &RateLimiter{
-        rate:     rate,
-        capacity: capacity,
-    }
-}
-```
-
-### 错误处理
-
-```go
-// ✅ 好的示例
-func ProcessData(data []byte) error {
-    if len(data) == 0 {
-        return fmt.Errorf("empty data")
-    }
-    
-    result, err := parseData(data)
-    if err != nil {
-        return fmt.Errorf("parse data: %w", err)
-    }
-    
-    return saveResult(result)
-}
-
-// ❌ 不好的示例
-func ProcessData(data []byte) error {
-    result, _ := parseData(data) // 忽略错误
-    saveResult(result)
-    return nil
-}
-```
-
----
-
-## 🎯 提交规范
-
-使用[Conventional Commits](https://www.conventionalcommits.org/)规范：
-
-### 格式
-
-```text
 <type>(<scope>): <subject>
 
 <body>
@@ -279,159 +206,266 @@ func ProcessData(data []byte) error {
 <footer>
 ```
 
-### Type类型
+### Types
 
-- `feat`: 新功能
-- `fix`: Bug修复
-- `docs`: 文档更新
-- `style`: 代码格式（不影响代码运行）
-- `refactor`: 代码重构
-- `test`: 测试相关
-- `chore`: 构建过程或辅助工具的变动
-- `perf`: 性能优化
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+- `ci`: CI/CD changes
 
-### 示例
+### Examples
 
-```text
-feat(concurrency): add rate limiter pattern
+```
+feat(verifier): add deadlock detection algorithm
 
-Implement a token bucket rate limiter with the following features:
-- Configurable rate and capacity
-- Thread-safe operations
-- Context support for cancellation
+Implement a new deadlock detection algorithm based on
+resource allocation graphs. This improves detection
+accuracy by 25% compared to the previous approach.
 
 Closes #123
 ```
 
----
+```
+fix(generator): correct mutex pattern generation
 
-## 🧪 测试要求
+The previous implementation had a race condition in the
+mutex unlock logic. This fix ensures proper synchronization.
 
-### 单元测试
+Fixes #456
+```
 
-所有新代码必须包含测试：
+### Scope
+
+Use appropriate scope tags:
+
+- `verifier`: Formal Verifier
+- `generator`: Pattern Generator
+- `docs`: Documentation
+- `examples`: Example code
+- `ci`: CI/CD
+- `test`: Tests
+
+## Pull Request Process
+
+### Before Submitting
+
+1. **Update your branch**
+
+   ```bash
+   git fetch upstream
+   git rebase upstream/main
+   ```
+
+2. **Run tests**
+
+   ```bash
+   go test ./...
+   go test -race ./...
+   ```
+
+3. **Check formatting**
+
+   ```bash
+   go fmt ./...
+   golangci-lint run
+   ```
+
+4. **Update documentation**
+   - Update README if needed
+   - Add/update code comments
+   - Update CHANGELOG.md
+
+### Submitting the PR
+
+1. **Push to your fork**
+
+   ```bash
+   git push origin your-branch-name
+   ```
+
+2. **Create Pull Request**
+   - Use the PR template
+   - Fill in all sections
+   - Link related issues
+
+3. **Description Guidelines**
+   - Describe what changes you made
+   - Explain why you made these changes
+   - Include screenshots if UI changes
+   - List any breaking changes
+
+### Review Process
+
+1. **Automated Checks**
+   - CI tests must pass
+   - Code coverage should not decrease
+   - Linting must pass
+
+2. **Code Review**
+   - At least one approval required
+   - Address review comments
+   - Update PR as needed
+
+3. **Merging**
+   - Squash commits before merging
+   - Use meaningful commit message
+   - Delete branch after merge
+
+## Project Structure
+
+```
+.
+├── docs/                          # Documentation
+│   ├── 01-语言基础/              # Core theory
+│   └── 04-高级特性/              # Advanced topics
+├── tools/
+│   ├── formal-verifier/          # Verification tool
+│   │   ├── cmd/fv/              # CLI entry
+│   │   ├── pkg/                 # Core packages
+│   │   │   ├── cfg/            # Control flow
+│   │   │   ├── ssa/            # SSA
+│   │   │   ├── concurrency/    # Concurrency checks
+│   │   │   └── types/          # Type verification
+│   │   └── README.md
+│   └── concurrency-pattern-generator/  # Pattern generator
+│       ├── cmd/cpg/             # CLI entry
+│       ├── pkg/
+│       │   ├── generator/       # Code generator
+│       │   └── patterns/        # Pattern implementations
+│       └── README.md
+├── examples/                     # Example projects
+├── scripts/                      # Utility scripts
+├── .github/                      # GitHub config
+│   ├── workflows/               # CI/CD
+│   └── ISSUE_TEMPLATE/          # Issue templates
+├── CONTRIBUTING.md              # This file
+├── CODE_OF_CONDUCT.md           # Code of conduct
+└── README.md                    # Main README
+```
+
+## Testing Guidelines
+
+### Unit Tests
+
+- Place tests in `*_test.go` files
+- Use `testing` package
+- Follow table-driven test pattern
+- Test edge cases and error conditions
 
 ```go
-func TestRateLimiter(t *testing.T) {
-    rl := NewRateLimiter(10, 20)
-    
-    // 测试基本功能
-    if !rl.Allow() {
-        t.Error("First request should be allowed")
+func TestWorkerPool(t *testing.T) {
+    tests := []struct {
+        name     string
+        workers  int
+        jobs     int
+        expected int
+    }{
+        {"basic", 5, 10, 10},
+        {"edge", 0, 10, 0},
     }
     
-    // 测试边界条件
-    for i := 0; i < 20; i++ {
-        rl.Allow()
-    }
-    
-    if rl.Allow() {
-        t.Error("Should reject when bucket is empty")
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            // Test implementation
+        })
     }
 }
 ```
 
-### 基准测试
+### Integration Tests
 
-性能关键代码需要基准测试：
+- Test component interactions
+- Use realistic test data
+- Clean up resources in tests
+
+### Benchmarks
+
+- Add benchmarks for performance-critical code
+- Use `testing.B`
+- Include in PR description
 
 ```go
-func BenchmarkRateLimiter(b *testing.B) {
-    rl := NewRateLimiter(10000, 10000)
-    
-    b.ResetTimer()
+func BenchmarkVerifier(b *testing.B) {
     for i := 0; i < b.N; i++ {
-        rl.Allow()
+        // Benchmark code
     }
 }
 ```
 
-### 覆盖率要求
+### Coverage
 
-- 新代码覆盖率 > 80%
-- 核心包覆盖率 > 70%
-- 整体项目覆盖率 > 60%
-
-### 运行测试
+- Aim for 80%+ coverage
+- Focus on critical paths
+- Don't sacrifice quality for coverage
 
 ```bash
-# 运行所有测试
-go test ./...
-
-# 运行特定包
-go test ./pkg/concurrency/...
-
-# 生成覆盖率报告
-go test -cover ./...
+# Generate coverage report
 go test -coverprofile=coverage.out ./...
 go tool cover -html=coverage.out
-
-# 运行基准测试
-go test -bench=. -benchmem ./...
 ```
 
----
+## Documentation Guidelines
 
-## 🔍 代码审查
+### Code Comments
 
-### 审查清单
+```go
+// Package cfg implements control flow graph generation.
+package cfg
 
-在提交PR前，请确保：
+// Node represents a node in the control flow graph.
+// Each node corresponds to a statement or expression in the source code.
+type Node struct {
+    // ID is the unique identifier for this node
+    ID int
+    
+    // Stmt is the AST node this CFG node represents
+    Stmt ast.Stmt
+}
 
-- [ ] 代码遵循Go规范
-- [ ] 所有测试通过
-- [ ] 新代码有测试覆盖
-- [ ] 文档已更新
-- [ ] 提交消息规范
-- [ ] 无linter警告
-- [ ] 性能无退化
+// NewGraph creates a new control flow graph from the given function.
+// It returns an error if the function body is invalid.
+func NewGraph(fn *ast.FuncDecl) (*Graph, error) {
+    // Implementation
+}
+```
 
-### 审查过程
+### Documentation Files
 
-1. **自动检查**: CI会自动运行测试和linter
-2. **人工审查**: 维护者会审查代码
-3. **反馈修改**: 根据反馈进行修改
-4. **合并**: 审查通过后合并
+- Use Markdown format
+- Include code examples
+- Add diagrams when helpful
+- Keep examples up-to-date
 
----
+### Commit Documentation
 
-## 🎓 学习资源
+- Document user-facing changes in CHANGELOG.md
+- Update README for new features
+- Add examples for new APIs
 
-### Go语言
+## Getting Help
 
-- [Go官方文档](https://golang.org/doc/)
-- [Effective Go](https://golang.org/doc/effective_go.html)
-- [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
+- 💬 **GitHub Discussions**: Ask questions and share ideas
+- 🐛 **GitHub Issues**: Report bugs or request features
+- 📧 **Email**: team@go-formal-verification.org
+- 📝 **Documentation**: Check the `/docs` directory
 
-### 并发编程
+## Recognition
 
-- [Go Concurrency Patterns](https://go.dev/blog/pipelines)
-- [Advanced Go Concurrency Patterns](https://go.dev/blog/io2013-talk-concurrency)
+Contributors will be recognized in:
 
-### 测试
+- README.md
+- Release notes
+- Project documentation
 
-- [Testing in Go](https://golang.org/pkg/testing/)
-- [Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests/)
-
----
-
-## 📞 获取帮助
-
-遇到问题？可以：
-
-- 📖 查看[文档](docs/)
-- 💬 在[Discussions](https://github.com/yourusername/golang/discussions)提问
-- 🐛 提交[Issue](https://github.com/yourusername/golang/issues)
-- 📧 联系维护者
-
----
-
-## 🏆 贡献者
-
-感谢所有贡献者！
-
-[贡献者列表](https://github.com/yourusername/golang/graphs/contributors)
+Thank you for contributing! 🎉
 
 ---
 
-**感谢您的贡献！** 🎉
+## License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
