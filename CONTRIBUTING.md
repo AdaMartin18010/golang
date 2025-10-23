@@ -198,7 +198,7 @@ make lint  # if Makefile is available
 
 We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -220,7 +220,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 
 ### Examples
 
-```
+```text
 feat(verifier): add deadlock detection algorithm
 
 Implement a new deadlock detection algorithm based on
@@ -230,7 +230,7 @@ accuracy by 25% compared to the previous approach.
 Closes #123
 ```
 
-```
+```text
 fix(generator): correct mutex pattern generation
 
 The previous implementation had a race condition in the
@@ -318,7 +318,7 @@ Use appropriate scope tags:
 
 ## Project Structure
 
-```
+```text
 .
 ├── docs/                          # Documentation
 │   ├── 01-语言基础/              # Core theory
@@ -451,7 +451,7 @@ func NewGraph(fn *ast.FuncDecl) (*Graph, error) {
 
 - 💬 **GitHub Discussions**: Ask questions and share ideas
 - 🐛 **GitHub Issues**: Report bugs or request features
-- 📧 **Email**: team@go-formal-verification.org
+- 📧 **Email**: <team@go-formal-verification.org>
 - 📝 **Documentation**: Check the `/docs` directory
 
 ## Recognition
