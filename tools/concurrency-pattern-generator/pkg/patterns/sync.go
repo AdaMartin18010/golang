@@ -13,7 +13,7 @@ func GenerateRWMutexSimple(pkg string) string {
 	return fmt.Sprintf("package %s\n\nimport \"sync\"\n\ntype Cache struct {\n\tmu sync.RWMutex\n\tdata map[string]interface{}\n}\n\nfunc (c *Cache) Get(key string) interface{} {\n\tc.mu.RLock()\n\tdefer c.mu.RUnlock()\n\treturn c.data[key]\n}\n", pkg)
 }
 
-// GenerateWaitGroupSimple 生成简化的WaitGroup模式  
+// GenerateWaitGroupSimple 生成简化的WaitGroup模式
 func GenerateWaitGroupSimple(pkg string) string {
 	return fmt.Sprintf("package %s\n\nimport \"sync\"\n\nfunc ParallelTasks(tasks []func()) {\n\tvar wg sync.WaitGroup\n\tfor _, task := range tasks {\n\t\twg.Add(1)\n\t\tgo func(t func()) {\n\t\t\tdefer wg.Done()\n\t\t\tt()\n\t\t}(task)\n\t}\n\twg.Wait()\n}\n", pkg)
 }
@@ -42,4 +42,3 @@ func GenerateCountDownLatchSimple(pkg string) string {
 func GenerateCondSimple(pkg string) string {
 	return fmt.Sprintf("package %s\n\nimport \"sync\"\n\ntype BoundedQueue struct {\n\tmu sync.Mutex\n\tcond *sync.Cond\n\titems []interface{}\n\tmax int\n}\n\nfunc NewBoundedQueue(n int) *BoundedQueue {\n\tq := &BoundedQueue{max: n}\n\tq.cond = sync.NewCond(&q.mu)\n\treturn q\n}\n", pkg)
 }
-

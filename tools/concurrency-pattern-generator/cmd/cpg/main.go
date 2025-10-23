@@ -147,6 +147,60 @@ func generatePattern() error {
 	case generator.CountDownLatchPattern:
 		code = patterns.GenerateCountDownLatchSimple(config.PackageName)
 
+	// Control Flow Patterns
+	case generator.ContextCancelPattern:
+		code = patterns.GenerateContextCancellation(config.PackageName)
+
+	case generator.ContextTimeoutPattern:
+		code = patterns.GenerateContextTimeout(config.PackageName)
+
+	case generator.ContextValuePattern:
+		code = patterns.GenerateContextValue(config.PackageName)
+
+	case generator.GracefulShutdownPattern:
+		code = patterns.GenerateGracefulShutdown(config.PackageName)
+
+	case generator.RateLimitingPattern:
+		code = patterns.GenerateRateLimiting(config.PackageName)
+
+	// Data Flow Patterns
+	case generator.ProducerConsumerPattern:
+		code = patterns.GenerateProducerConsumer(config.PackageName)
+
+	case generator.BufferedChannelPattern:
+		code = patterns.GenerateBufferedChannel(config.PackageName)
+
+	case generator.UnbufferedChannelPattern:
+		code = patterns.GenerateUnbufferedChannel(config.PackageName)
+
+	case generator.SelectPattern:
+		code = patterns.GenerateSelectPattern(config.PackageName)
+
+	case generator.ForSelectLoopPattern:
+		code = patterns.GenerateForSelectLoop(config.PackageName)
+
+	case generator.DoneChannelPattern:
+		code = patterns.GenerateDoneChannel(config.PackageName)
+
+	case generator.ErrorChannelPattern:
+		code = patterns.GenerateErrorChannel(config.PackageName)
+
+	// Advanced Patterns
+	case generator.ActorModelPattern:
+		code = patterns.GenerateActorModel(config.PackageName)
+
+	case generator.FuturePromisePattern:
+		code = patterns.GenerateFuturePromise(config.PackageName)
+
+	case generator.MapReducePattern:
+		code = patterns.GenerateMapReduce(config.PackageName)
+
+	case generator.PubSubPattern:
+		code = patterns.GeneratePubSub(config.PackageName)
+
+	case generator.SessionTypesPattern:
+		code = patterns.GenerateSessionTypes(config.PackageName)
+
 	default:
 		return fmt.Errorf("pattern not yet implemented: %s", patternType)
 	}
