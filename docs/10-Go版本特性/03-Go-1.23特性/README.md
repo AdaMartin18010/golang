@@ -262,9 +262,7 @@ go tool pprof -alloc_objects  # 总分配对象数
 
 本目录包含Go 1.23各特性的详细文档：
 
-1. - range-over-func详解
-2. - go命令新特性
-3. - API变更详解
+1. [迭代器详解](./01-迭代器详解.md) - range-over-func（迭代器）完整指南
 
 ---
 

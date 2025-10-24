@@ -259,9 +259,8 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 
 本目录包含Go 1.22各特性的详细文档：
 
-1. - 语义变更详解
-2. - ServeMux新特性
-3. - 性能优化详解
+1. [for循环语义详解](./01-for循环语义详解.md) - 循环变量作用域改进详解
+2. [HTTP路由增强详解](./02-HTTP路由增强详解.md) - ServeMux新特性完整指南
 
 ---
 

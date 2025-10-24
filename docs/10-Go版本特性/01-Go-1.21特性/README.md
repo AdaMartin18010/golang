@@ -255,9 +255,9 @@ go work use ./moduleA ./moduleB
 
 本目录包含Go 1.21各特性的详细文档：
 
-1. - min/max/clear函数详解
-2. - PGO使用指南
-3. - slog/slices/maps详解
+1. [内置函数详解](./01-内置函数详解.md) - min/max/clear函数完整指南
+2. [PGO使用指南](./02-PGO使用指南.md) - Profile-Guided Optimization实战
+3. [标准库增强详解](./03-标准库增强详解.md) - log/slog、slices、maps、cmp包详解
 
 ---
 
