@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/your-org/formal-verifier/pkg/cfg"
 	"github.com/your-org/formal-verifier/pkg/concurrency"
 	"github.com/your-org/formal-verifier/pkg/dataflow"
 	"github.com/your-org/formal-verifier/pkg/optimization"
+	"github.com/your-org/formal-verifier/pkg/project"
 	fvtypes "github.com/your-org/formal-verifier/pkg/types"
 )
 
@@ -18,11 +20,21 @@ const version = "v1.0.0"
 
 func main() {
 	// 定义子命令
+	analyzeCmd := flag.NewFlagSet("analyze", flag.ExitOnError)
 	cfgCmd := flag.NewFlagSet("cfg", flag.ExitOnError)
 	concurrencyCmd := flag.NewFlagSet("concurrency", flag.ExitOnError)
 	dataflowCmd := flag.NewFlagSet("dataflow", flag.ExitOnError)
 	typesCmd := flag.NewFlagSet("types", flag.ExitOnError)
 	optimizerCmd := flag.NewFlagSet("optimizer", flag.ExitOnError)
+
+	// 项目分析命令参数
+	analyzeDir := analyzeCmd.String("dir", ".", "项目根目录路径")
+	analyzeRecursive := analyzeCmd.Bool("recursive", true, "递归扫描子目录")
+	analyzeOutput := analyzeCmd.String("output", "", "输出文件路径 (留空输出到stdout)")
+	analyzeFormat := analyzeCmd.String("format", "text", "输出格式: text, json, html, markdown")
+	analyzeExclude := analyzeCmd.String("exclude", "", "排除模式，逗号分隔 (例如: vendor/*,testdata/*)")
+	analyzeIncludeTests := analyzeCmd.Bool("include-tests", false, "包含测试文件")
+	analyzeFailOnError := analyzeCmd.Bool("fail-on-error", false, "发现错误时以非零退出码退出")
 
 	// CFG命令参数
 	cfgFile := cfgCmd.String("file", "", "Go源文件路径")
@@ -65,6 +77,18 @@ func main() {
 
 	// 解析子命令
 	switch os.Args[1] {
+	case "analyze":
+		analyzeCmd.Parse(os.Args[2:])
+		runProjectAnalysis(
+			*analyzeDir,
+			*analyzeRecursive,
+			*analyzeOutput,
+			*analyzeFormat,
+			*analyzeExclude,
+			*analyzeIncludeTests,
+			*analyzeFailOnError,
+		)
+
 	case "cfg":
 		cfgCmd.Parse(os.Args[2:])
 		if *cfgFile == "" {
@@ -124,6 +148,7 @@ func printUsage() {
   fv <command> [options]
 
 命令:
+  analyze      项目级分析 (NEW!)
   cfg          控制流图分析
   concurrency  并发安全检查
   dataflow     数据流分析
@@ -132,6 +157,22 @@ func printUsage() {
 
   version      显示版本信息
   help         显示帮助信息
+
+项目分析:
+  fv analyze [options]
+    --dir=<path>           项目根目录 (默认: .)
+    --recursive            递归扫描子目录 (默认: true)
+    --output=<path>        输出文件路径 (留空输出到stdout)
+    --format=<fmt>         输出格式: text, json, html, markdown (默认: text)
+    --exclude=<patterns>   排除模式，逗号分隔
+    --include-tests        包含测试文件
+    --fail-on-error        发现错误时以非零退出码退出
+
+  示例:
+    fv analyze --dir=./myproject
+    fv analyze --dir=. --format=html --output=report.html
+    fv analyze --dir=. --exclude="vendor/*,testdata/*"
+    fv analyze --dir=. --fail-on-error  # 适用于CI/CD
 
 CFG分析:
   fv cfg --file=<file> [options]
@@ -756,4 +797,190 @@ func printOptimizationTheory(check string) {
 	fmt.Println()
 	fmt.Println("📚 理论基础:")
 	fmt.Println("   - 文档15: Go编译器优化形式化证明")
+}
+
+// runProjectAnalysis 执行项目级分析
+func runProjectAnalysis(dir string, recursive bool, output, format, exclude string, includeTests, failOnError bool) {
+	fmt.Printf("🔍 项目分析: %s\n", dir)
+	fmt.Println()
+
+	// 创建分析器
+	analyzer := project.NewAnalyzer(dir)
+
+	// 配置扫描器
+	scanner := analyzer.Scanner
+	scanner.WithRecursive(recursive)
+	scanner.WithIncludeTests(includeTests)
+
+	// 处理排除模式
+	if exclude != "" {
+		patterns := strings.Split(exclude, ",")
+		for i := range patterns {
+			patterns[i] = strings.TrimSpace(patterns[i])
+		}
+		scanner.WithExcludePatterns(patterns)
+	}
+
+	// 执行分析
+	fmt.Println("📊 正在扫描和分析项目...")
+	result, err := analyzer.Analyze()
+	if err != nil {
+		fmt.Printf("❌ 分析失败: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("✅ 分析完成")
+	fmt.Println()
+
+	// 根据格式输出结果
+	switch format {
+	case "text":
+		outputTextReport(result, output)
+	case "json":
+		fmt.Println("JSON格式将在Week 3 Day 2实现")
+		outputTextReport(result, output)
+	case "html":
+		fmt.Println("HTML格式将在Week 3 Day 2实现")
+		outputTextReport(result, output)
+	case "markdown":
+		fmt.Println("Markdown格式将在Week 3 Day 2实现")
+		outputTextReport(result, output)
+	default:
+		fmt.Printf("未知的输出格式: %s\n", format)
+		os.Exit(1)
+	}
+
+	// 根据failOnError参数决定退出码
+	if failOnError && result.HasErrors() {
+		os.Exit(1)
+	}
+}
+
+// outputTextReport 输出文本格式报告
+func outputTextReport(result *project.AnalysisResult, output string) {
+	// 准备输出
+	var writer *os.File
+	if output != "" {
+		f, err := os.Create(output)
+		if err != nil {
+			fmt.Printf("❌ 无法创建输出文件: %v\n", err)
+			os.Exit(1)
+		}
+		defer f.Close()
+		writer = f
+	} else {
+		writer = os.Stdout
+	}
+
+	// 输出标题
+	fmt.Fprintln(writer, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Fprintln(writer, "       Go Formal Verifier - 项目分析报告")
+	fmt.Fprintln(writer, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Fprintln(writer)
+
+	// 输出摘要
+	fmt.Fprintln(writer, result.Summary)
+	fmt.Fprintln(writer)
+
+	// 输出统计
+	fmt.Fprintln(writer, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Fprintln(writer, "统计信息")
+	fmt.Fprintln(writer, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Fprintf(writer, "文件数: %d\n", result.Stats.TotalFiles)
+	fmt.Fprintf(writer, "代码行数: %d\n", result.Stats.TotalLines)
+	fmt.Fprintf(writer, "总问题数: %d\n", result.Stats.TotalIssues)
+	fmt.Fprintf(writer, "  - 错误: %d\n", result.Stats.ErrorCount)
+	fmt.Fprintf(writer, "  - 警告: %d\n", result.Stats.WarningCount)
+	fmt.Fprintf(writer, "  - 提示: %d\n", result.Stats.InfoCount)
+	fmt.Fprintln(writer)
+
+	// 按类别统计
+	fmt.Fprintln(writer, "问题分布:")
+	fmt.Fprintf(writer, "  - 并发问题: %d\n", result.Stats.ConcurrencyIssues)
+	fmt.Fprintf(writer, "  - 类型问题: %d\n", result.Stats.TypeIssues)
+	fmt.Fprintf(writer, "  - 数据流问题: %d\n", result.Stats.DataFlowIssues)
+	fmt.Fprintf(writer, "  - 优化建议: %d\n", result.Stats.OptimizationIssues)
+	fmt.Fprintln(writer)
+
+	// 如果没有问题，直接返回
+	if result.Stats.TotalIssues == 0 {
+		fmt.Fprintln(writer, "✅ 没有发现问题！代码质量优秀。")
+		return
+	}
+
+	// 输出详细问题
+	fmt.Fprintln(writer, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Fprintln(writer, "问题详情")
+	fmt.Fprintln(writer, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Fprintln(writer)
+
+	// 按严重程度输出
+	if result.Stats.ErrorCount > 0 {
+		fmt.Fprintln(writer, "❌ 错误:")
+		errors := result.GetIssuesBySeverity("error")
+		for _, issue := range errors {
+			printIssue(writer, issue)
+		}
+		fmt.Fprintln(writer)
+	}
+
+	if result.Stats.WarningCount > 0 {
+		fmt.Fprintln(writer, "⚠️  警告:")
+		warnings := result.GetIssuesBySeverity("warning")
+		// 限制显示数量
+		maxDisplay := 20
+		for i, issue := range warnings {
+			if i >= maxDisplay {
+				fmt.Fprintf(writer, "... 还有 %d 个警告（使用 --format=json 查看全部）\n", len(warnings)-maxDisplay)
+				break
+			}
+			printIssue(writer, issue)
+		}
+		fmt.Fprintln(writer)
+	}
+
+	if result.Stats.InfoCount > 0 && result.Stats.InfoCount <= 10 {
+		fmt.Fprintln(writer, "ℹ️  提示:")
+		infos := result.GetIssuesBySeverity("info")
+		for _, issue := range infos {
+			printIssue(writer, issue)
+		}
+		fmt.Fprintln(writer)
+	} else if result.Stats.InfoCount > 10 {
+		fmt.Fprintf(writer, "ℹ️  提示: %d 个（使用 --format=json 查看详情）\n\n", result.Stats.InfoCount)
+	}
+
+	// 输出总结
+	fmt.Fprintln(writer, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Fprintln(writer, "分析总结")
+	fmt.Fprintln(writer, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	fmt.Fprintf(writer, "质量评分: %d/100\n", result.Stats.QualityScore)
+
+	if result.Stats.QualityScore >= 90 {
+		fmt.Fprintln(writer, "✅ 代码质量优秀！")
+	} else if result.Stats.QualityScore >= 70 {
+		fmt.Fprintln(writer, "✓ 代码质量良好")
+	} else if result.Stats.QualityScore >= 50 {
+		fmt.Fprintln(writer, "⚠️  代码质量需要改进")
+	} else {
+		fmt.Fprintln(writer, "❌ 代码质量较差 - 需要立即关注")
+	}
+
+	if output != "" {
+		fmt.Printf("✅ 报告已保存到: %s\n", output)
+	}
+}
+
+// printIssue 打印单个问题
+func printIssue(writer *os.File, issue project.Issue) {
+	fmt.Fprintf(writer, "  [%s] %s:%d:%d\n",
+		issue.Category,
+		filepath.Base(issue.File),
+		issue.Line,
+		issue.Column)
+	fmt.Fprintf(writer, "    %s\n", issue.Message)
+	if issue.Suggestion != "" {
+		fmt.Fprintf(writer, "    💡 建议: %s\n", issue.Suggestion)
+	}
+	fmt.Fprintln(writer)
 }
