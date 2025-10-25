@@ -225,7 +225,7 @@ func generatePattern() error {
 }
 
 func listPatterns(category string) {
-	fmt.Println("🎯 Available Concurrency Patterns\n")
+	fmt.Println("🎯 Available Concurrency Patterns")
 
 	categories := map[string]string{
 		"":         "All Patterns",
