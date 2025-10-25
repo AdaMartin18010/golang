@@ -13,6 +13,7 @@ import (
 	"github.com/your-org/formal-verifier/pkg/dataflow"
 	"github.com/your-org/formal-verifier/pkg/optimization"
 	"github.com/your-org/formal-verifier/pkg/project"
+	"github.com/your-org/formal-verifier/pkg/report"
 	fvtypes "github.com/your-org/formal-verifier/pkg/types"
 )
 
@@ -837,14 +838,37 @@ func runProjectAnalysis(dir string, recursive bool, output, format, exclude stri
 	case "text":
 		outputTextReport(result, output)
 	case "json":
-		fmt.Println("JSON格式将在Week 3 Day 2实现")
-		outputTextReport(result, output)
+		if output == "" {
+			output = "analysis-report.json"
+		}
+		jsonReport := report.NewJSONReport(result)
+		if err := jsonReport.Generate(output); err != nil {
+			fmt.Printf("❌ 生成JSON报告失败: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("✅ JSON报告已保存到: %s\n", output)
 	case "html":
-		fmt.Println("HTML格式将在Week 3 Day 2实现")
-		outputTextReport(result, output)
+		if output == "" {
+			output = "analysis-report.html"
+		}
+		htmlReport := report.NewHTMLReport(result)
+		if err := htmlReport.Generate(output); err != nil {
+			fmt.Printf("❌ 生成HTML报告失败: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("✅ HTML报告已保存到: %s\n", output)
+		absPath, _ := filepath.Abs(output)
+		fmt.Printf("📊 在浏览器中打开: file://%s\n", absPath)
 	case "markdown":
-		fmt.Println("Markdown格式将在Week 3 Day 2实现")
-		outputTextReport(result, output)
+		if output == "" {
+			output = "analysis-report.md"
+		}
+		mdReport := report.NewMarkdownReport(result)
+		if err := mdReport.Generate(output); err != nil {
+			fmt.Printf("❌ 生成Markdown报告失败: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("✅ Markdown报告已保存到: %s\n", output)
 	default:
 		fmt.Printf("未知的输出格式: %s\n", format)
 		os.Exit(1)
