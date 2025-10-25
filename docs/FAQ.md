@@ -2,15 +2,154 @@
 
 > 解答Go学习和使用中的常见问题
 
-**版本**: v2.0  
-**更新日期**: 2025-10-22  
-**问题数**: 50+
+**版本**: v2.1  
+**更新日期**: 2025-10-25  
+**问题数**: 60+
+
+---
+
+## 🆕 工具相关问题 (2025-10-25新增)
+
+### Q26: 如何快速分析Go项目代码质量？
+
+**A**: 使用Formal Verifier工具：
+
+```bash
+# 1. 构建工具
+cd tools/formal-verifier
+go build -o fv ./cmd/fv
+
+# 2. 零配置分析
+./fv analyze --dir=.
+
+# 3. 生成HTML报告
+./fv analyze --format=html --output=report.html
+```
+
+**特点**:
+
+- ✅ 零配置，开箱即用
+- ✅ 多格式报告（HTML/JSON/Markdown）
+- ✅ CI/CD就绪
+
+**文档**: [快速入门](../tools/formal-verifier/docs/Quick-Start.md)
+
+---
+
+### Q27: 如何快速生成并发模式代码？
+
+**A**: 使用Pattern Generator工具：
+
+```bash
+# 1. 构建工具
+cd tools/concurrency-pattern-generator
+go build -o cpg ./cmd/cpg
+
+# 2. 查看所有模式
+./cpg --list
+
+# 3. 生成Worker Pool
+./cpg --pattern worker-pool --workers 5 --output pool.go
+```
+
+**支持30个模式**:
+
+- 经典模式 (5个)
+- 同步模式 (8个)
+- 控制流模式 (5个)
+- 数据流模式 (7个)
+- 高级模式 (5个)
+
+**文档**: [CPG README](../tools/concurrency-pattern-generator/README.md)
+
+---
+
+### Q28: 如何将FV集成到CI/CD？
+
+**A**: 三步快速集成：
+
+```bash
+# 1. 创建严格配置
+./fv init-config --strict > .fv-strict.yaml
+
+# 2. 复制GitHub Actions配置
+cp .github/workflows/fv-analysis.yml.example \
+   .github/workflows/fv-analysis.yml
+
+# 3. 提交并推送
+git add .fv-strict.yaml .github/workflows/
+git commit -m "Add FV CI/CD"
+```
+
+**支持平台**:
+
+- GitHub Actions ✓
+- GitLab CI ✓
+- Jenkins ✓
+
+**文档**: [CI/CD集成](../tools/formal-verifier/docs/CI-CD-Integration.md)
+
+---
+
+### Q29: FV分析速度慢怎么办？
+
+**A**: 优化配置：
+
+```yaml
+# .fv.yaml
+analysis:
+  workers: 8  # 增加并发数
+
+project:
+  exclude:    # 优化排除规则
+    - "vendor/*"
+    - "*/testdata/*"
+    - "*/mocks/*"
+```
+
+**其他建议**:
+
+- 使用SSD硬盘
+- 排除不必要的目录
+- 使用缓存
+
+---
+
+### Q30: 如何定制FV的检查规则？
+
+**A**: 修改配置文件：
+
+```yaml
+rules:
+  complexity:
+    cyclomatic_threshold: 10      # 圈复杂度
+    max_function_lines: 50        # 函数最大行数
+  
+  concurrency:
+    check_goroutine_leaks: true   # Goroutine泄露
+    check_channel_deadlocks: true # Channel死锁
+    check_data_races: true        # 数据竞争
+```
+
+**配置优先级**:
+
+```text
+命令行参数 > 配置文件 > 默认值
+```
+
+---
 
 ---
 
 ## 📑 目录
 
 - [❓ 常见问题解答 (FAQ)](#-常见问题解答-faq)
+  - [🆕 工具相关问题 (2025-10-25新增)](#-工具相关问题-2025-10-25新增)
+    - [Q26: 如何快速分析Go项目代码质量？](#q26-如何快速分析go项目代码质量)
+    - [Q27: 如何快速生成并发模式代码？](#q27-如何快速生成并发模式代码)
+    - [Q28: 如何将FV集成到CI/CD？](#q28-如何将fv集成到cicd)
+    - [Q29: FV分析速度慢怎么办？](#q29-fv分析速度慢怎么办)
+    - [Q30: 如何定制FV的检查规则？](#q30-如何定制fv的检查规则)
   - [📑 目录](#-目录)
   - [入门问题](#入门问题)
     - [Q1: 为什么选择Go语言？](#q1-为什么选择go语言)
