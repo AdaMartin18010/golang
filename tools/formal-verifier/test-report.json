@@ -1,0 +1,238 @@
+{
+  "errors": [],
+  "infos": [],
+  "issues": [
+    {
+      "Severity": "warning",
+      "Category": "concurrency",
+      "Message": "Potential goroutine leak: missing cleanup mechanism",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 114,
+      "Column": 3,
+      "Suggestion": "Add context cancellation or done channel"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 160,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "complexity",
+      "Message": "Function 'checkConcurrencyIssues' is too complex",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 196,
+      "Column": 1,
+      "Suggestion": "Consider refactoring into smaller functions"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 204,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 212,
+      "Column": 20,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 237,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 265,
+      "Column": 10,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 284,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 291,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "complexity",
+      "Message": "Function 'generateSummary' is too complex",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 376,
+      "Column": 1,
+      "Suggestion": "Consider refactoring into smaller functions"
+    },
+    {
+      "Severity": "warning",
+      "Category": "complexity",
+      "Message": "Function 'scanDirectory' is too complex",
+      "File": "pkg\\project\\scanner.go",
+      "Line": 132,
+      "Column": 1,
+      "Suggestion": "Consider refactoring into smaller functions"
+    },
+    {
+      "Severity": "warning",
+      "Category": "complexity",
+      "Message": "Function 'ScanWithFilter' is too complex",
+      "File": "pkg\\project\\scanner.go",
+      "Line": 231,
+      "Column": 1,
+      "Suggestion": "Consider refactoring into smaller functions"
+    }
+  ],
+  "stats": {
+    "TotalFiles": 2,
+    "TotalLines": 806,
+    "TotalIssues": 12,
+    "ErrorCount": 0,
+    "WarningCount": 12,
+    "InfoCount": 0,
+    "ConcurrencyIssues": 1,
+    "TypeIssues": 7,
+    "DataFlowIssues": 0,
+    "OptimizationIssues": 0,
+    "QualityScore": 37
+  },
+  "summary": "Analyzed 2 files (806 lines) and found 12 issues:\n  - Errors: 0\n  - Warnings: 12\n  - Info: 0\nQuality Score: 37/100\n❌ Poor code quality - immediate attention required\n",
+  "warnings": [
+    {
+      "Severity": "warning",
+      "Category": "concurrency",
+      "Message": "Potential goroutine leak: missing cleanup mechanism",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 114,
+      "Column": 3,
+      "Suggestion": "Add context cancellation or done channel"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 160,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "complexity",
+      "Message": "Function 'checkConcurrencyIssues' is too complex",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 196,
+      "Column": 1,
+      "Suggestion": "Consider refactoring into smaller functions"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 204,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 212,
+      "Column": 20,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 237,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 265,
+      "Column": 10,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 284,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "type",
+      "Message": "Type assertion without ok check",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 291,
+      "Column": 18,
+      "Suggestion": "Use v, ok := x.(Type) to check assertion"
+    },
+    {
+      "Severity": "warning",
+      "Category": "complexity",
+      "Message": "Function 'generateSummary' is too complex",
+      "File": "pkg\\project\\analyzer.go",
+      "Line": 376,
+      "Column": 1,
+      "Suggestion": "Consider refactoring into smaller functions"
+    },
+    {
+      "Severity": "warning",
+      "Category": "complexity",
+      "Message": "Function 'scanDirectory' is too complex",
+      "File": "pkg\\project\\scanner.go",
+      "Line": 132,
+      "Column": 1,
+      "Suggestion": "Consider refactoring into smaller functions"
+    },
+    {
+      "Severity": "warning",
+      "Category": "complexity",
+      "Message": "Function 'ScanWithFilter' is too complex",
+      "File": "pkg\\project\\scanner.go",
+      "Line": 231,
+      "Column": 1,
+      "Suggestion": "Consider refactoring into smaller functions"
+    }
+  ]
+}

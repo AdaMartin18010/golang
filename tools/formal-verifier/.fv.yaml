@@ -1,0 +1,108 @@
+# FV (Formal Verifier) 配置文件示例
+# 这是一个完整的配置文件示例，展示了所有可配置选项
+
+# 项目配置
+project:
+  # 项目根目录
+  root_dir: "."
+  
+  # 是否递归扫描子目录
+  recursive: true
+  
+  # 是否包含测试文件
+  include_tests: false
+  
+  # 排除模式列表（支持通配符）
+  exclude_patterns:
+    - "vendor"
+    - "testdata"
+    - ".git"
+    - "node_modules"
+    - "*.pb.go"
+  
+  # Go模块路径（可选，自动检测）
+  module_path: ""
+
+# 分析配置
+analysis:
+  # 是否启用并发分析
+  concurrent: true
+  
+  # 并发工作线程数（0表示使用CPU核心数）
+  workers: 0
+  
+  # 是否启用详细模式
+  verbose: false
+  
+  # 超时时间（秒）
+  timeout: 300
+  
+  # 最大文件大小（KB）
+  max_file_size: 1024
+
+# 报告配置
+report:
+  # 报告格式：text, html, json, markdown
+  format: "html"
+  
+  # 输出文件路径（留空输出到stdout）
+  output_path: "analysis-report.html"
+  
+  # 是否在浏览器中打开HTML报告
+  open_in_browser: true
+  
+  # 报告标题
+  title: "Go项目形式化验证报告"
+  
+  # 报告作者
+  author: ""
+
+# 规则配置
+rules:
+  # 并发规则
+  concurrency:
+    enabled: true
+    check_goroutine_leak: true
+    check_data_race: true
+    check_deadlock: true
+    check_channel: true
+  
+  # 类型规则
+  type:
+    enabled: true
+    check_nil_pointer: true
+    check_type_assertion: true
+    check_interface: true
+  
+  # 复杂度规则
+  complexity:
+    enabled: true
+    cyclomatic_threshold: 10      # 圈复杂度阈值
+    cognitive_threshold: 15       # 认知复杂度阈值
+    max_function_lines: 50        # 函数最大行数
+    max_parameters: 5             # 函数最大参数数量
+  
+  # 性能规则
+  performance:
+    enabled: true
+    check_allocation: true
+    check_string_concat: true
+    check_loop_optimization: true
+
+# 输出配置
+output:
+  # 是否使用彩色输出
+  color_output: true
+  
+  # 是否显示进度条
+  show_progress: true
+  
+  # 是否显示统计信息
+  show_stats: true
+  
+  # 发现错误时以非零退出码退出
+  fail_on_error: false
+  
+  # 最小质量分数（低于此分数视为失败，0-100）
+  min_quality_score: 0
+

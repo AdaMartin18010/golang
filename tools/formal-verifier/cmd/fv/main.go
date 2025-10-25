@@ -10,11 +10,13 @@ import (
 
 	"github.com/your-org/formal-verifier/pkg/cfg"
 	"github.com/your-org/formal-verifier/pkg/concurrency"
+	"github.com/your-org/formal-verifier/pkg/config"
 	"github.com/your-org/formal-verifier/pkg/dataflow"
 	"github.com/your-org/formal-verifier/pkg/optimization"
 	"github.com/your-org/formal-verifier/pkg/project"
 	"github.com/your-org/formal-verifier/pkg/report"
 	fvtypes "github.com/your-org/formal-verifier/pkg/types"
+	"github.com/your-org/formal-verifier/pkg/ui"
 )
 
 const version = "v1.0.0"
@@ -27,6 +29,8 @@ func main() {
 	dataflowCmd := flag.NewFlagSet("dataflow", flag.ExitOnError)
 	typesCmd := flag.NewFlagSet("types", flag.ExitOnError)
 	optimizerCmd := flag.NewFlagSet("optimizer", flag.ExitOnError)
+	interactiveCmd := flag.NewFlagSet("interactive", flag.ExitOnError)
+	initConfigCmd := flag.NewFlagSet("init-config", flag.ExitOnError)
 
 	// 项目分析命令参数
 	analyzeDir := analyzeCmd.String("dir", ".", "项目根目录路径")
@@ -36,6 +40,15 @@ func main() {
 	analyzeExclude := analyzeCmd.String("exclude", "", "排除模式，逗号分隔 (例如: vendor/*,testdata/*)")
 	analyzeIncludeTests := analyzeCmd.Bool("include-tests", false, "包含测试文件")
 	analyzeFailOnError := analyzeCmd.Bool("fail-on-error", false, "发现错误时以非零退出码退出")
+	analyzeConfig := analyzeCmd.String("config", "", "配置文件路径 (默认: .fv.yaml)")
+	analyzeNoColor := analyzeCmd.Bool("no-color", false, "禁用彩色输出")
+
+	// 交互式命令参数
+	interactiveConfig := interactiveCmd.String("config", "", "配置文件路径 (默认: .fv.yaml)")
+
+	// 初始化配置命令参数
+	initConfigOutput := initConfigCmd.String("output", ".fv.yaml", "配置文件输出路径")
+	initConfigStrict := initConfigCmd.Bool("strict", false, "生成严格模式配置")
 
 	// CFG命令参数
 	cfgFile := cfgCmd.String("file", "", "Go源文件路径")
@@ -80,6 +93,12 @@ func main() {
 	switch os.Args[1] {
 	case "analyze":
 		analyzeCmd.Parse(os.Args[2:])
+
+		// 设置颜色输出
+		if *analyzeNoColor {
+			ui.SetColorEnabled(false)
+		}
+
 		runProjectAnalysis(
 			*analyzeDir,
 			*analyzeRecursive,
@@ -88,7 +107,16 @@ func main() {
 			*analyzeExclude,
 			*analyzeIncludeTests,
 			*analyzeFailOnError,
+			*analyzeConfig,
 		)
+
+	case "interactive":
+		interactiveCmd.Parse(os.Args[2:])
+		runInteractiveMode(*interactiveConfig)
+
+	case "init-config":
+		initConfigCmd.Parse(os.Args[2:])
+		runInitConfig(*initConfigOutput, *initConfigStrict)
 
 	case "cfg":
 		cfgCmd.Parse(os.Args[2:])
@@ -149,7 +177,9 @@ func printUsage() {
   fv <command> [options]
 
 命令:
-  analyze      项目级分析 (NEW!)
+  analyze      项目级分析
+  interactive  交互式模式 (NEW!)
+  init-config  生成配置文件
   cfg          控制流图分析
   concurrency  并发安全检查
   dataflow     数据流分析
@@ -168,12 +198,33 @@ func printUsage() {
     --exclude=<patterns>   排除模式，逗号分隔
     --include-tests        包含测试文件
     --fail-on-error        发现错误时以非零退出码退出
+    --config=<path>        配置文件路径 (默认: .fv.yaml)
+    --no-color             禁用彩色输出
 
   示例:
     fv analyze --dir=./myproject
     fv analyze --dir=. --format=html --output=report.html
     fv analyze --dir=. --exclude="vendor/*,testdata/*"
     fv analyze --dir=. --fail-on-error  # 适用于CI/CD
+    fv analyze --config=.fv-strict.yaml  # 使用配置文件
+
+交互式模式:
+  fv interactive [options]
+    --config=<path>        配置文件路径 (可选)
+
+  示例:
+    fv interactive
+    fv interactive --config=.fv.yaml
+
+配置文件:
+  fv init-config [options]
+    --output=<path>        输出文件路径 (默认: .fv.yaml)
+    --strict               生成严格模式配置
+
+  示例:
+    fv init-config
+    fv init-config --output=.fv.yaml
+    fv init-config --output=.fv-strict.yaml --strict
 
 CFG分析:
   fv cfg --file=<file> [options]
@@ -801,81 +852,127 @@ func printOptimizationTheory(check string) {
 }
 
 // runProjectAnalysis 执行项目级分析
-func runProjectAnalysis(dir string, recursive bool, output, format, exclude string, includeTests, failOnError bool) {
-	fmt.Printf("🔍 项目分析: %s\n", dir)
-	fmt.Println()
+func runProjectAnalysis(dir string, recursive bool, output, format, exclude string, includeTests, failOnError bool, configPath string) {
+	// 加载配置
+	var cfg *config.Config
+	if configPath != "" {
+		var err error
+		cfg, err = config.Load(configPath)
+		if err != nil {
+			ui.PrintError("加载配置文件失败: %v", err)
+			os.Exit(1)
+		}
+		ui.PrintSuccess("已加载配置文件: %s", configPath)
+	} else {
+		// 尝试加载默认配置文件
+		cfg = config.LoadOrDefault(".fv.yaml")
+	}
 
-	// 创建分析器
-	analyzer := project.NewAnalyzer(dir)
-
-	// 配置扫描器
-	scanner := analyzer.Scanner
-	scanner.WithRecursive(recursive)
-	scanner.WithIncludeTests(includeTests)
-
-	// 处理排除模式
+	// 命令行参数覆盖配置文件
+	if dir != "." {
+		cfg.Project.RootDir = dir
+	}
+	if !recursive {
+		cfg.Project.Recursive = false
+	}
+	if output != "" {
+		cfg.Report.OutputPath = output
+	}
+	if format != "text" {
+		cfg.Report.Format = format
+	}
 	if exclude != "" {
 		patterns := strings.Split(exclude, ",")
 		for i := range patterns {
 			patterns[i] = strings.TrimSpace(patterns[i])
 		}
-		scanner.WithExcludePatterns(patterns)
+		cfg.Project.ExcludePatterns = patterns
+	}
+	if includeTests {
+		cfg.Project.IncludeTests = true
+	}
+	if failOnError {
+		cfg.Output.FailOnError = true
 	}
 
+	ui.PrintHeader("Go形式化验证工具")
+	ui.PrintInfo("项目分析: %s", cfg.Project.RootDir)
+	fmt.Println()
+
+	// 创建分析器
+	analyzer := project.NewAnalyzer(cfg.Project.RootDir)
+
+	// 配置扫描器
+	scanner := analyzer.Scanner
+	scanner.WithRecursive(cfg.Project.Recursive)
+	scanner.WithIncludeTests(cfg.Project.IncludeTests)
+	scanner.WithExcludePatterns(cfg.Project.ExcludePatterns)
+
 	// 执行分析
-	fmt.Println("📊 正在扫描和分析项目...")
+	ui.PrintProgress("正在扫描和分析项目...")
 	result, err := analyzer.Analyze()
 	if err != nil {
-		fmt.Printf("❌ 分析失败: %v\n", err)
+		ui.PrintError("分析失败: %v", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("✅ 分析完成")
+	ui.PrintSuccess("分析完成")
 	fmt.Println()
 
 	// 根据格式输出结果
-	switch format {
+	switch cfg.Report.Format {
 	case "text":
-		outputTextReport(result, output)
+		outputTextReport(result, cfg.Report.OutputPath)
 	case "json":
-		if output == "" {
-			output = "analysis-report.json"
+		outputPath := cfg.Report.OutputPath
+		if outputPath == "" {
+			outputPath = "analysis-report.json"
 		}
 		jsonReport := report.NewJSONReport(result)
-		if err := jsonReport.Generate(output); err != nil {
-			fmt.Printf("❌ 生成JSON报告失败: %v\n", err)
+		if err := jsonReport.Generate(outputPath); err != nil {
+			ui.PrintError("生成JSON报告失败: %v", err)
 			os.Exit(1)
 		}
-		fmt.Printf("✅ JSON报告已保存到: %s\n", output)
+		ui.PrintSuccess("JSON报告已保存到: %s", outputPath)
 	case "html":
-		if output == "" {
-			output = "analysis-report.html"
+		outputPath := cfg.Report.OutputPath
+		if outputPath == "" {
+			outputPath = "analysis-report.html"
 		}
 		htmlReport := report.NewHTMLReport(result)
-		if err := htmlReport.Generate(output); err != nil {
-			fmt.Printf("❌ 生成HTML报告失败: %v\n", err)
+		if err := htmlReport.Generate(outputPath); err != nil {
+			ui.PrintError("生成HTML报告失败: %v", err)
 			os.Exit(1)
 		}
-		fmt.Printf("✅ HTML报告已保存到: %s\n", output)
-		absPath, _ := filepath.Abs(output)
-		fmt.Printf("📊 在浏览器中打开: file://%s\n", absPath)
+		ui.PrintSuccess("HTML报告已保存到: %s", outputPath)
+		absPath, _ := filepath.Abs(outputPath)
+		ui.PrintInfo("在浏览器中打开: file://%s", absPath)
 	case "markdown":
-		if output == "" {
-			output = "analysis-report.md"
+		outputPath := cfg.Report.OutputPath
+		if outputPath == "" {
+			outputPath = "analysis-report.md"
 		}
 		mdReport := report.NewMarkdownReport(result)
-		if err := mdReport.Generate(output); err != nil {
-			fmt.Printf("❌ 生成Markdown报告失败: %v\n", err)
+		if err := mdReport.Generate(outputPath); err != nil {
+			ui.PrintError("生成Markdown报告失败: %v", err)
 			os.Exit(1)
 		}
-		fmt.Printf("✅ Markdown报告已保存到: %s\n", output)
+		ui.PrintSuccess("Markdown报告已保存到: %s", outputPath)
 	default:
-		fmt.Printf("未知的输出格式: %s\n", format)
+		ui.PrintError("未知的输出格式: %s", cfg.Report.Format)
 		os.Exit(1)
 	}
 
-	// 根据failOnError参数决定退出码
-	if failOnError && result.HasErrors() {
+	// 根据配置决定退出码
+	if cfg.Output.FailOnError && result.HasErrors() {
+		ui.PrintWarning("发现错误，退出码: 1")
+		os.Exit(1)
+	}
+
+	// 检查质量分数
+	if cfg.Output.MinQualityScore > 0 && result.Stats.QualityScore < cfg.Output.MinQualityScore {
+		ui.PrintWarning("质量分数 %d 低于最低要求 %d，退出码: 1",
+			result.Stats.QualityScore, cfg.Output.MinQualityScore)
 		os.Exit(1)
 	}
 }
@@ -1007,4 +1104,200 @@ func printIssue(writer *os.File, issue project.Issue) {
 		fmt.Fprintf(writer, "    💡 建议: %s\n", issue.Suggestion)
 	}
 	fmt.Fprintln(writer)
+}
+
+// runInteractiveMode 运行交互式模式
+func runInteractiveMode(configPath string) {
+	// 显示横幅
+	ui.Banner("FV", version, "Go语言形式化验证工具")
+
+	// 加载配置
+	cfg := config.LoadOrDefault(configPath)
+	if configPath != "" {
+		ui.PrintSuccess("已加载配置: %s", configPath)
+	}
+
+	// 创建主菜单
+	menu := ui.NewMenu("形式化验证工具主菜单")
+
+	// 添加菜单选项
+	menu.AddOption(
+		"项目分析",
+		"扫描并分析整个Go项目",
+		func() {
+			runInteractiveProjectAnalysis(cfg)
+		},
+	)
+
+	menu.AddOption(
+		"配置管理",
+		"查看或修改配置",
+		func() {
+			runInteractiveConfigManagement(cfg)
+		},
+	)
+
+	menu.AddOption(
+		"生成配置文件",
+		"生成默认配置文件模板",
+		func() {
+			output := ui.Prompt("配置文件路径", ".fv.yaml")
+			strict := ui.Confirm("使用严格模式", false)
+			runInitConfig(output, strict)
+		},
+	)
+
+	menu.AddOption(
+		"关于",
+		"查看工具信息",
+		func() {
+			ui.PrintHeader("关于 FV 工具")
+			fmt.Printf("版本: %s\n", ui.Bold(version))
+			fmt.Println("描述: Go语言形式化验证工具")
+			fmt.Println()
+			fmt.Println("功能:")
+			fmt.Println(ui.Bullet("项目级代码分析"))
+			fmt.Println(ui.Bullet("并发问题检测"))
+			fmt.Println(ui.Bullet("类型安全验证"))
+			fmt.Println(ui.Bullet("复杂度分析"))
+			fmt.Println(ui.Bullet("多格式报告生成"))
+			fmt.Println()
+		},
+	)
+
+	// 显示菜单
+	menu.Show()
+
+	ui.PrintSuccess("感谢使用形式化验证工具！")
+}
+
+// runInteractiveProjectAnalysis 交互式项目分析
+func runInteractiveProjectAnalysis(cfg *config.Config) {
+	ui.PrintHeader("项目分析")
+
+	// 获取项目路径
+	projectDir := ui.Prompt("项目根目录", cfg.Project.RootDir)
+	cfg.Project.RootDir = projectDir
+
+	// 选择报告格式
+	formatIdx := ui.Select("选择报告格式", []string{
+		"Text (文本)",
+		"HTML (网页)",
+		"JSON (机器可读)",
+		"Markdown (文档)",
+	})
+	formats := []string{"text", "html", "json", "markdown"}
+	cfg.Report.Format = formats[formatIdx]
+
+	// 其他选项
+	cfg.Project.IncludeTests = ui.Confirm("包含测试文件", cfg.Project.IncludeTests)
+	cfg.Output.FailOnError = ui.Confirm("发现错误时失败退出", cfg.Output.FailOnError)
+
+	fmt.Println()
+	ui.PrintProgress("开始分析...")
+
+	// 执行分析
+	runProjectAnalysis(
+		cfg.Project.RootDir,
+		cfg.Project.Recursive,
+		cfg.Report.OutputPath,
+		cfg.Report.Format,
+		"",
+		cfg.Project.IncludeTests,
+		cfg.Output.FailOnError,
+		"",
+	)
+}
+
+// runInteractiveConfigManagement 交互式配置管理
+func runInteractiveConfigManagement(cfg *config.Config) {
+	ui.PrintHeader("配置管理")
+
+	// 显示当前配置
+	fmt.Println(ui.Bold("当前配置:"))
+	fmt.Println()
+
+	table := ui.NewTable("配置项", "当前值")
+	table.AddRow("项目路径", cfg.Project.RootDir)
+	table.AddRow("递归扫描", fmt.Sprintf("%v", cfg.Project.Recursive))
+	table.AddRow("包含测试", fmt.Sprintf("%v", cfg.Project.IncludeTests))
+	table.AddRow("报告格式", cfg.Report.Format)
+	table.AddRow("圈复杂度阈值", fmt.Sprintf("%d", cfg.Rules.Complexity.CyclomaticThreshold))
+	table.AddRow("最大函数行数", fmt.Sprintf("%d", cfg.Rules.Complexity.MaxFunctionLines))
+	table.AddRow("失败时退出", fmt.Sprintf("%v", cfg.Output.FailOnError))
+	table.AddRow("最低质量分", fmt.Sprintf("%d", cfg.Output.MinQualityScore))
+	table.Print()
+
+	fmt.Println()
+
+	if ui.Confirm("修改配置", false) {
+		// 修改配置
+		cfg.Rules.Complexity.CyclomaticThreshold = promptInt(
+			"圈复杂度阈值",
+			cfg.Rules.Complexity.CyclomaticThreshold,
+		)
+
+		cfg.Rules.Complexity.MaxFunctionLines = promptInt(
+			"最大函数行数",
+			cfg.Rules.Complexity.MaxFunctionLines,
+		)
+
+		cfg.Output.MinQualityScore = promptInt(
+			"最低质量分数",
+			cfg.Output.MinQualityScore,
+		)
+
+		ui.PrintSuccess("配置已更新")
+
+		if ui.Confirm("保存配置到文件", true) {
+			path := ui.Prompt("配置文件路径", ".fv.yaml")
+			if err := cfg.Save(path); err != nil {
+				ui.PrintError("保存配置失败: %v", err)
+			} else {
+				ui.PrintSuccess("配置已保存: %s", path)
+			}
+		}
+	}
+}
+
+// promptInt 提示输入整数
+func promptInt(message string, defaultValue int) int {
+	input := ui.Prompt(message, fmt.Sprintf("%d", defaultValue))
+	var value int
+	if _, err := fmt.Sscanf(input, "%d", &value); err == nil {
+		return value
+	}
+	return defaultValue
+}
+
+// runInitConfig 初始化配置文件
+func runInitConfig(output string, strict bool) {
+	ui.PrintHeader("初始化配置文件")
+
+	var cfg *config.Config
+	if strict {
+		// 严格模式配置
+		cfg = config.Default()
+		cfg.Rules.Complexity.CyclomaticThreshold = 5
+		cfg.Rules.Complexity.CognitiveThreshold = 10
+		cfg.Rules.Complexity.MaxFunctionLines = 30
+		cfg.Rules.Complexity.MaxParameters = 3
+		cfg.Output.FailOnError = true
+		cfg.Output.MinQualityScore = 80
+		cfg.Report.Format = "json"
+		cfg.Project.IncludeTests = true
+		ui.PrintInfo("使用严格模式配置")
+	} else {
+		cfg = config.Default()
+		ui.PrintInfo("使用标准配置")
+	}
+
+	// 保存配置
+	if err := cfg.Save(output); err != nil {
+		ui.PrintError("保存配置文件失败: %v", err)
+		os.Exit(1)
+	}
+
+	ui.PrintSuccess("配置文件已创建: %s", output)
+	ui.PrintInfo("使用 'fv analyze --config=%s' 来使用此配置", output)
 }

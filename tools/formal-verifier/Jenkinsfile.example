@@ -1,0 +1,258 @@
+// FV Analysis Jenkins Pipeline
+// 复制此文件为 Jenkinsfile 并根据需要调整
+
+pipeline {
+    agent any
+    
+    environment {
+        FV_VERSION = 'v1.0.0'
+        GO_VERSION = '1.21'
+        GOPATH = "${WORKSPACE}/go"
+        PATH = "${GOPATH}/bin:/usr/local/go/bin:${PATH}"
+    }
+    
+    options {
+        // 保留最近10次构建
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        
+        // 构建超时
+        timeout(time: 30, unit: 'MINUTES')
+        
+        // 禁止并行构建
+        disableConcurrentBuilds()
+    }
+    
+    stages {
+        stage('Setup Environment') {
+            steps {
+                echo 'Setting up build environment...'
+                script {
+                    // 检查Go是否已安装
+                    sh '''
+                        if ! command -v go &> /dev/null; then
+                            echo "Installing Go ${GO_VERSION}..."
+                            wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
+                            tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+                        fi
+                        
+                        go version
+                        mkdir -p ${GOPATH}
+                    '''
+                }
+            }
+        }
+        
+        stage('Install FV Tool') {
+            steps {
+                echo 'Installing FV tool...'
+                script {
+                    sh '''
+                        # 克隆 FV 仓库
+                        if [ ! -d "formal-verifier" ]; then
+                            git clone https://github.com/your-org/formal-verifier.git
+                        fi
+                        
+                        # 构建 FV
+                        cd formal-verifier
+                        go build -o ${WORKSPACE}/fv ./cmd/fv
+                        chmod +x ${WORKSPACE}/fv
+                        ${WORKSPACE}/fv version
+                    '''
+                }
+            }
+        }
+        
+        stage('Initialize Configuration') {
+            steps {
+                echo 'Generating FV configuration...'
+                script {
+                    sh '''
+                        ${WORKSPACE}/fv init-config --output=.fv-ci.yaml --strict
+                        cat .fv-ci.yaml
+                    '''
+                }
+            }
+        }
+        
+        stage('Run FV Analysis') {
+            steps {
+                echo 'Running formal verification analysis...'
+                script {
+                    sh '''
+                        ${WORKSPACE}/fv analyze \
+                          --config=.fv-ci.yaml \
+                          --no-color \
+                          --format=json \
+                          --output=fv-report.json
+                    '''
+                }
+            }
+        }
+        
+        stage('Generate Reports') {
+            parallel {
+                stage('HTML Report') {
+                    steps {
+                        script {
+                            sh '''
+                                ${WORKSPACE}/fv analyze \
+                                  --dir=. \
+                                  --format=html \
+                                  --output=fv-report.html \
+                                  --no-color
+                            '''
+                        }
+                    }
+                }
+                
+                stage('Markdown Report') {
+                    steps {
+                        script {
+                            sh '''
+                                ${WORKSPACE}/fv analyze \
+                                  --dir=. \
+                                  --format=markdown \
+                                  --output=fv-report.md \
+                                  --no-color
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Quality Gate') {
+            steps {
+                echo 'Checking quality gate...'
+                script {
+                    def qualityScore = sh(
+                        script: 'jq -r .stats.quality_score fv-report.json',
+                        returnStdout: true
+                    ).trim().toInteger()
+                    
+                    echo "Quality Score: ${qualityScore}"
+                    
+                    if (qualityScore < 80) {
+                        error("Quality score ${qualityScore} is below minimum threshold of 80")
+                    }
+                    
+                    // 设置构建描述
+                    currentBuild.description = "Quality Score: ${qualityScore}"
+                }
+            }
+        }
+        
+        stage('Publish Reports') {
+            steps {
+                echo 'Publishing FV reports...'
+                script {
+                    // 发布HTML报告
+                    publishHTML([
+                        reportDir: '.',
+                        reportFiles: 'fv-report.html',
+                        reportName: 'FV Analysis Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true
+                    ])
+                    
+                    // 归档artifacts
+                    archiveArtifacts artifacts: 'fv-report.*,.fv-ci.yaml', 
+                                     fingerprint: true,
+                                     allowEmptyArchive: false
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'Cleaning up...'
+            // 始终清理工作空间
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true)
+        }
+        
+        success {
+            echo '✅ FV Analysis completed successfully!'
+            
+            // 发送成功通知
+            script {
+                def qualityScore = sh(
+                    script: 'jq -r .stats.quality_score fv-report.json',
+                    returnStdout: true
+                ).trim()
+                
+                emailext(
+                    subject: "FV Analysis Passed - Quality: ${qualityScore}",
+                    body: """
+                        FV Analysis completed successfully!
+                        
+                        Quality Score: ${qualityScore}
+                        Build: ${env.BUILD_URL}
+                        
+                        See the full report at: ${env.BUILD_URL}FV_20Analysis_20Report/
+                    """,
+                    to: "${env.CHANGE_AUTHOR_EMAIL}",
+                    recipientProviders: [developers(), requestor()]
+                )
+            }
+        }
+        
+        failure {
+            echo '❌ FV Analysis failed!'
+            
+            // 发送失败通知
+            emailext(
+                subject: "FV Analysis Failed - Build #${env.BUILD_NUMBER}",
+                body: """
+                    FV Analysis failed!
+                    
+                    Build: ${env.BUILD_URL}
+                    Console: ${env.BUILD_URL}console
+                    
+                    Please check the logs for details.
+                """,
+                to: "${env.CHANGE_AUTHOR_EMAIL}",
+                recipientProviders: [developers(), requestor()]
+            )
+        }
+        
+        unstable {
+            echo '⚠️  FV Analysis is unstable'
+        }
+    }
+}
+
+// Docker-based Pipeline Alternative
+// Uncomment below to use Docker agent
+/*
+pipeline {
+    agent {
+        docker {
+            image 'golang:1.21'
+            args '-v $HOME/.cache:/root/.cache'
+        }
+    }
+    
+    stages {
+        stage('FV Analysis') {
+            steps {
+                sh '''
+                    # 安装 FV
+                    git clone https://github.com/your-org/formal-verifier.git
+                    cd formal-verifier
+                    go build -o ../fv ./cmd/fv
+                    cd ..
+                    
+                    # 运行分析
+                    ./fv init-config --strict
+                    ./fv analyze --config=.fv.yaml --no-color
+                '''
+            }
+        }
+    }
+}
+*/
+

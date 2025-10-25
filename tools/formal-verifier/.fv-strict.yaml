@@ -1,0 +1,59 @@
+# FV 严格模式配置
+# 适用于CI/CD环境和高质量要求的项目
+
+project:
+  root_dir: "."
+  recursive: true
+  include_tests: true
+  exclude_patterns:
+    - "vendor"
+    - ".git"
+
+analysis:
+  concurrent: true
+  workers: 0
+  verbose: true
+  timeout: 600
+  max_file_size: 2048
+
+report:
+  format: "json"
+  output_path: "fv-report.json"
+  open_in_browser: false
+  title: "严格模式验证报告"
+  author: "CI/CD System"
+
+rules:
+  concurrency:
+    enabled: true
+    check_goroutine_leak: true
+    check_data_race: true
+    check_deadlock: true
+    check_channel: true
+  
+  type:
+    enabled: true
+    check_nil_pointer: true
+    check_type_assertion: true
+    check_interface: true
+  
+  complexity:
+    enabled: true
+    cyclomatic_threshold: 5       # 更严格的阈值
+    cognitive_threshold: 10
+    max_function_lines: 30
+    max_parameters: 3
+  
+  performance:
+    enabled: true
+    check_allocation: true
+    check_string_concat: true
+    check_loop_optimization: true
+
+output:
+  color_output: false             # CI环境不需要颜色
+  show_progress: false            # CI环境不需要进度条
+  show_stats: true
+  fail_on_error: true             # 发现错误立即失败
+  min_quality_score: 80           # 要求至少80分
+

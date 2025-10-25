@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Formal Verifier - 项目分析报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .score-card .value {
+            color: white;
+            font-size: 3em;
+        }
+
+        .score-excellent { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .score-good { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        .score-fair { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+        .score-poor { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .issue-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .issue-card {
+            background: white;
+            border-left: 4px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .issue-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transform: translateX(5px);
+        }
+
+        .severity-error {
+            border-left-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .severity-warning {
+            border-left-color: #f39c12;
+            background: #fffbf5;
+        }
+
+        .severity-info {
+            border-left-color: #3498db;
+            background: #f5f9ff;
+        }
+
+        .issue-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .issue-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .issue-location {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #666;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .issue-category {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            background: #667eea;
+            color: white;
+        }
+
+        .issue-message {
+            font-size: 1.05em;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .issue-suggestion {
+            background: #f0f7ff;
+            border-left: 3px solid #3498db;
+            padding: 12px 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        .issue-suggestion::before {
+            content: '💡 建议: ';
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .chart {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-item h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: width 0.3s ease;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            .issue-card:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Go Formal Verifier</h1>
+            <p>项目形式化分析报告</p>
+        </div>
+
+        <div class="summary">
+            <div class="stat-card">
+                <h3>文件数</h3>
+                <div class="value">2</div>
+            </div>
+            <div class="stat-card">
+                <h3>代码行数</h3>
+                <div class="value">806</div>
+            </div>
+            <div class="stat-card">
+                <h3>总问题</h3>
+                <div class="value">12</div>
+            </div>
+            <div class="stat-card score-card score-poor">
+                <h3>质量评分</h3>
+                <div class="value">37</div>
+                <p>较差</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>📊 统计信息</h2>
+                <div class="chart">
+                    <div class="chart-item">
+                        <h4>按严重程度分类</h4>
+                        
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%; background: #f39c12;">
+                                ⚠️  警告: 12
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+
+                    <div class="chart-item">
+                        <h4>按问题类别分类</h4>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%; background: #667eea;">
+                                ⚡ 并发: 1
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%; background: #764ba2;">
+                                🔤 类型: 7
+                            </div>
+                        </div>
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+
+            
+
+            
+            <div class="section">
+                <h2>⚠️ 警告</h2>
+                <div class="issue-list">
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">⚡</span>
+                            <span class="issue-category">concurrency</span>
+                            <span class="issue-location">pkg\project\analyzer.go:114:3</span>
+                        </div>
+                        <div class="issue-message">Potential goroutine leak: missing cleanup mechanism</div>
+                        
+                        <div class="issue-suggestion">Add context cancellation or done channel</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔤</span>
+                            <span class="issue-category">type</span>
+                            <span class="issue-location">pkg\project\analyzer.go:160:18</span>
+                        </div>
+                        <div class="issue-message">Type assertion without ok check</div>
+                        
+                        <div class="issue-suggestion">Use v, ok := x.(Type) to check assertion</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔀</span>
+                            <span class="issue-category">complexity</span>
+                            <span class="issue-location">pkg\project\analyzer.go:196:1</span>
+                        </div>
+                        <div class="issue-message">Function &#39;checkConcurrencyIssues&#39; is too complex</div>
+                        
+                        <div class="issue-suggestion">Consider refactoring into smaller functions</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔤</span>
+                            <span class="issue-category">type</span>
+                            <span class="issue-location">pkg\project\analyzer.go:204:18</span>
+                        </div>
+                        <div class="issue-message">Type assertion without ok check</div>
+                        
+                        <div class="issue-suggestion">Use v, ok := x.(Type) to check assertion</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔤</span>
+                            <span class="issue-category">type</span>
+                            <span class="issue-location">pkg\project\analyzer.go:212:20</span>
+                        </div>
+                        <div class="issue-message">Type assertion without ok check</div>
+                        
+                        <div class="issue-suggestion">Use v, ok := x.(Type) to check assertion</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔤</span>
+                            <span class="issue-category">type</span>
+                            <span class="issue-location">pkg\project\analyzer.go:237:18</span>
+                        </div>
+                        <div class="issue-message">Type assertion without ok check</div>
+                        
+                        <div class="issue-suggestion">Use v, ok := x.(Type) to check assertion</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔤</span>
+                            <span class="issue-category">type</span>
+                            <span class="issue-location">pkg\project\analyzer.go:265:10</span>
+                        </div>
+                        <div class="issue-message">Type assertion without ok check</div>
+                        
+                        <div class="issue-suggestion">Use v, ok := x.(Type) to check assertion</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔤</span>
+                            <span class="issue-category">type</span>
+                            <span class="issue-location">pkg\project\analyzer.go:284:18</span>
+                        </div>
+                        <div class="issue-message">Type assertion without ok check</div>
+                        
+                        <div class="issue-suggestion">Use v, ok := x.(Type) to check assertion</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔤</span>
+                            <span class="issue-category">type</span>
+                            <span class="issue-location">pkg\project\analyzer.go:291:18</span>
+                        </div>
+                        <div class="issue-message">Type assertion without ok check</div>
+                        
+                        <div class="issue-suggestion">Use v, ok := x.(Type) to check assertion</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔀</span>
+                            <span class="issue-category">complexity</span>
+                            <span class="issue-location">pkg\project\analyzer.go:376:1</span>
+                        </div>
+                        <div class="issue-message">Function &#39;generateSummary&#39; is too complex</div>
+                        
+                        <div class="issue-suggestion">Consider refactoring into smaller functions</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔀</span>
+                            <span class="issue-category">complexity</span>
+                            <span class="issue-location">pkg\project\scanner.go:132:1</span>
+                        </div>
+                        <div class="issue-message">Function &#39;scanDirectory&#39; is too complex</div>
+                        
+                        <div class="issue-suggestion">Consider refactoring into smaller functions</div>
+                        
+                    </div>
+                    
+                    <div class="issue-card severity-warning">
+                        <div class="issue-header">
+                            <span class="issue-icon">🔀</span>
+                            <span class="issue-category">complexity</span>
+                            <span class="issue-location">pkg\project\scanner.go:231:1</span>
+                        </div>
+                        <div class="issue-message">Function &#39;ScanWithFilter&#39; is too complex</div>
+                        
+                        <div class="issue-suggestion">Consider refactoring into smaller functions</div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+
+            
+        </div>
+
+        <div class="footer">
+            <p><strong>Go Formal Verifier</strong> - 基于 Go 1.25.3 形式化理论体系</p>
+            <p>文档位置: docs/01-语言基础/00-Go-1.25.3形式化理论体系/</p>
+            <p><a href="https://github.com/your-org/formal-verifier">GitHub</a> | 
+               <a href="https://github.com/your-org/formal-verifier/docs">文档</a></p>
+        </div>
+    </div>
+</body>
+</html>

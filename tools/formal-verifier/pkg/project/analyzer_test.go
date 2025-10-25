@@ -12,8 +12,8 @@ func TestNewAnalyzer(t *testing.T) {
 		t.Fatal("NewAnalyzer returned nil")
 	}
 
-	if analyzer.scanner == nil {
-		t.Error("Expected scanner to be initialized")
+	if analyzer.Scanner == nil {
+		t.Error("Expected Scanner to be initialized")
 	}
 
 	if analyzer.fset == nil {

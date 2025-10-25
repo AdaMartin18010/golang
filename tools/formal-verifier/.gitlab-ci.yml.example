@@ -1,0 +1,136 @@
+# FV Analysis GitLab CI Configuration
+# 复制此文件为 .gitlab-ci.yml 并根据需要调整
+
+image: golang:1.21
+
+stages:
+  - setup
+  - analyze
+  - report
+  - deploy
+
+variables:
+  FV_VERSION: "v1.0.0"
+  GO111MODULE: "on"
+  CGO_ENABLED: "0"
+
+.fv_install_script: &fv_install
+  - |
+    if [ ! -f "/usr/local/bin/fv" ]; then
+      git clone https://github.com/your-org/formal-verifier.git /tmp/fv-repo
+      cd /tmp/fv-repo
+      go build -o /usr/local/bin/fv ./cmd/fv
+      chmod +x /usr/local/bin/fv
+    fi
+
+# 安装 FV 工具
+install_fv:
+  stage: setup
+  script:
+    - *fv_install
+    - fv version
+  artifacts:
+    paths:
+      - /usr/local/bin/fv
+    expire_in: 1 hour
+  cache:
+    key: fv-${CI_COMMIT_REF_SLUG}
+    paths:
+      - /usr/local/bin/fv
+
+# 运行FV分析
+fv_analysis:
+  stage: analyze
+  before_script:
+    - *fv_install
+  script:
+    # 生成配置
+    - fv init-config --output=.fv-ci.yaml --strict
+    
+    # 运行分析
+    - |
+      fv analyze \
+        --config=.fv-ci.yaml \
+        --no-color \
+        --format=json \
+        --output=fv-report.json
+    
+    # 检查质量分数
+    - |
+      QUALITY=$(jq -r '.stats.quality_score' fv-report.json)
+      echo "Quality Score: $QUALITY"
+      if [ $QUALITY -lt 80 ]; then
+        echo "ERROR: Quality score $QUALITY is below threshold 80"
+        exit 1
+      fi
+  artifacts:
+    reports:
+      junit: fv-report.json
+    paths:
+      - fv-report.json
+      - .fv-ci.yaml
+    expire_in: 30 days
+  allow_failure: false
+
+# 生成各种格式的报告
+generate_reports:
+  stage: report
+  dependencies:
+    - fv_analysis
+  before_script:
+    - *fv_install
+  script:
+    # HTML 报告
+    - fv analyze --dir=. --format=html --output=fv-report.html --no-color
+    
+    # Markdown 报告
+    - fv analyze --dir=. --format=markdown --output=fv-report.md --no-color
+    
+    # 创建报告目录
+    - mkdir -p public
+    - cp fv-report.html public/index.html
+    - cp fv-report.json public/
+    - cp fv-report.md public/
+  artifacts:
+    paths:
+      - public
+      - fv-report.html
+      - fv-report.md
+    expire_in: 30 days
+
+# 在 MR 中添加评论
+fv_mr_comment:
+  stage: report
+  dependencies:
+    - fv_analysis
+    - generate_reports
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq curl jq
+  script:
+    - |
+      if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+        REPORT=$(cat fv-report.md)
+        COMMENT_BODY=$(jq -n --arg body "$REPORT" '{"body": $body}')
+        
+        curl --request POST \
+          --header "PRIVATE-TOKEN: ${CI_JOB_TOKEN}" \
+          --header "Content-Type: application/json" \
+          --data "$COMMENT_BODY" \
+          "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/notes"
+      fi
+  only:
+    - merge_requests
+
+# 部署报告到 GitLab Pages
+pages:
+  stage: deploy
+  dependencies:
+    - generate_reports
+  script:
+    - echo "Deploying FV reports to GitLab Pages"
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+
