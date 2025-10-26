@@ -46,6 +46,7 @@ type Agent interface {
 基础代理实现。
 
 **创建**:
+
 ```go
 config := core.AgentConfig{
     Name:         "MyAgent",
@@ -60,6 +61,7 @@ agent := core.NewBaseAgent("agent-1", config)
 ```
 
 **使用示例**:
+
 ```go
 ctx := context.Background()
 
@@ -116,7 +118,7 @@ learner.Learn(experience)
 
 ## 📦 pkg/concurrency - 并发模式
 
-### 导入
+### 导入1
 
 ```go
 import "github.com/yourusername/golang/pkg/concurrency/patterns"
@@ -187,7 +189,7 @@ for r := 1; r <= 10; r++ {
 
 ## 📦 pkg/http3 - HTTP/3服务器
 
-### 导入
+### 导入2
 
 ```go
 import "github.com/yourusername/golang/pkg/http3"
@@ -268,11 +270,13 @@ cache.Cleanup()
 项目使用OpenTelemetry进行可观测性。
 
 **环境变量**:
+
 - `OTEL_SERVICE_NAME`: 服务名称
 - `OTEL_EXPORTER_OTLP_ENDPOINT`: OTLP端点
 - `OTEL_EXPORTER_OTLP_INSECURE`: 是否使用不安全连接
 
 **示例**:
+
 ```bash
 export OTEL_SERVICE_NAME=my-service
 export OTEL_EXPORTER_OTLP_ENDPOINT=localhost:4317
@@ -377,4 +381,3 @@ godoc -http=:6060
 **生成时间**: 2025-10-22  
 **API版本**: v2.0  
 **Go版本**: 1.25.3+
-
