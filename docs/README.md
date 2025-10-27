@@ -1,6 +1,6 @@
 ﻿# Go 1.25.3 Documentation
 
-> **Last Updated:** 2025-10-27  
+> **Last Updated:** 2025-10-28  
 > **Go Version:** 1.25.3  
 > **Status:** ✅ Production Ready
 
@@ -12,68 +12,70 @@ Welcome to the Go 1.25.3 comprehensive documentation! This documentation is orga
 
 New to Go? Start here:
 
-- **[Getting Started](/docs-new/getting-started/)** - Installation, quick starts, and FAQs
-- **[Quick Start (3 min)](/docs-new/getting-started/quick-start-3min.md)** - Get up and running fast
-- **[Installation Guide](/docs-new/getting-started/installation.md)** - Setup your environment
-- **[FAQ](/docs-new/getting-started/faq.md)** - Common questions
+- **[Getting Started](./getting-started/)** - Installation, quick starts, and FAQs
+- **[Quick Start (3 min)](./getting-started/quick-start-3min.md)** - Get up and running fast
+- **[Installation Guide](./getting-started/installation.md)** - Setup your environment
+- **[FAQ](./getting-started/faq.md)** - Common questions
 
 ---
 
 ## 📚 Documentation Structure
 
-### 🎯 [Getting Started](/docs-new/getting-started/)
+### 🎯 [Getting Started](./getting-started/)
 Fast-track your Go journey with quick starts, installation guides, and essential FAQs.
 
-### 📖 [Fundamentals](/docs-new/fundamentals/)
+### 📖 [Fundamentals](./fundamentals/)
 Master the core concepts of Go 1.25.3:
-- **[Language](/docs-new/fundamentals/language/)** - Syntax, semantics, and formal theory
-- **[Concurrency](/docs-new/fundamentals/language/02-并发编程/)** - Goroutines, channels, and patterns
-- **[Standard Library](/docs-new/fundamentals/stdlib/)** - Core packages and APIs
-- **[Data Structures](/docs-new/fundamentals/data-structures/)** - Algorithms and data structures
+- **[Language](./fundamentals/language/)** - Syntax, semantics, and formal theory
+- **[Concurrency](./fundamentals/concurrency/)** - Goroutines, channels, and patterns ⭐ 新增
+- **[Modules](./fundamentals/language/03-模块管理/)** - Go Modules & Workspace ⭐ 2025最新
+- **[Standard Library](./fundamentals/stdlib/)** - Core packages and APIs
+- **[Data Structures](./fundamentals/data-structures/)** - Algorithms and data structures
 
-### 💻 [Development](/docs-new/development/)
+### 💻 [Development](./development/)
 Build production-ready applications:
-- **[Web](/docs-new/development/web/)** - HTTP, frameworks (Gin/Echo/Fiber), HTTP/3
-- **[Database](/docs-new/development/database/)** - SQL, NoSQL, and vector databases
-- **[Microservices](/docs-new/development/microservices/)** - gRPC, service mesh, API gateway
-- **[Cloud Native](/docs-new/development/cloud-native/)** - Kubernetes, Docker, GitOps
+- **[Web](./development/web/)** - HTTP, frameworks (Gin/Echo/Fiber), HTTP/3
+- **[Database](./development/database/)** - SQL, NoSQL, and vector databases
+- **[Microservices](./development/microservices/)** - gRPC, service mesh, API gateway
+- **[Cloud Native](./development/cloud-native/)** - Kubernetes, Docker, GitOps
 
-### 🚀 [Advanced](/docs-new/advanced/)
+### 🚀 [Advanced](./advanced/)
 Deep dive into advanced topics:
-- **[Performance](/docs-new/advanced/performance/)** - Optimization, profiling, and PGO
-- **[Architecture](/docs-new/advanced/architecture/)** - Design patterns and best practices
-- **[Distributed](/docs-new/advanced/distributed/)** - Distributed systems and tracing
-- **[AI & ML](/docs-new/advanced/ai-ml/)** - LLM, RAG, and AI agent development
-- **[Security](/docs-new/advanced/security/)** - Authentication, encryption, and hardening
-- **[Modern Web](/docs-new/advanced/modern-web/)** - WebAssembly, HTTP/3, GraphQL
+- **[Performance](./advanced/performance/)** - Optimization, profiling, and PGO
+- **[Architecture](./advanced/architecture/)** - Design patterns and best practices
+- **[Distributed](./advanced/distributed/)** - Distributed systems and tracing ⭐ 新增
+- **[AI & ML](./advanced/ai-ml/)** - LLM, RAG, and AI agent development ⭐ 新增
+- **[Security](./advanced/security/)** - Authentication, encryption, and hardening ⭐ 新增
+- **[Modern Web](./advanced/modern-web/)** - WebSocket, GraphQL, gRPC-Web ⭐ 新增
 
-### 🛠️ [Practices](/docs-new/practices/)
+### 🛠️ [Practices](./practices/)
 Engineering excellence:
-- **[Engineering](/docs-new/practices/engineering/)** - Code quality, structure, and tooling
-- **[Testing](/docs-new/practices/testing/)** - Unit, integration, and benchmark tests
-- **[Deployment](/docs-new/practices/deployment/)** - CI/CD and production deployment
-- **[Observability](/docs-new/practices/observability/)** - Logging, metrics, and tracing
+- **[Engineering](./practices/engineering/)** - Code quality, structure, and tooling
+- **[Testing](./practices/testing/)** - Unit, integration, and benchmark tests ⭐ 新增
+- **[Deployment](./practices/deployment/)** - CI/CD and production deployment ⭐ 新增
+- **[Observability](./practices/observability/)** - Logging, metrics, and tracing
 
-### 💡 [Projects](/docs-new/projects/)
+### 💡 [Projects](./projects/)
 Learn by building:
-- **[Tutorials](/docs-new/projects/tutorials/)** - Step-by-step guides
-- **[Examples](/docs-new/projects/examples/)** - Code samples and demos
-- **[Templates](/docs-new/projects/templates/)** - Project starter templates
+- **[Tutorials](./projects/tutorials/)** - Step-by-step guides
+- **[Examples](./projects/examples/)** - Code samples and demos
+- **[Templates](./projects/templates/)** - Project starter templates ⭐ 新增
 
-### 📚 [Reference](/docs-new/reference/)
+### 📚 [Reference](./reference/)
 Quick references and resources:
-- **[API](/docs-new/reference/api/)** - API documentation
-- **[Versions](/docs-new/reference/versions/)** - Go version features and migration
-- **[Guides](/docs-new/reference/guides/)** - Quick reference manuals
-- **[Resources](/docs-new/reference/resources/)** - External resources and tools
+- **[API](./reference/api/)** - API documentation ⭐ 新增
+- **[Versions](./reference/versions/)** - Go version features and migration
+- **[Guides](./reference/guides/)** - Quick reference manuals ⭐ 新增
+- **[Resources](./reference/resources/)** - External resources and tools
 
 ---
 
 ## 🔍 Find What You Need
 
-- **[Complete Index](/docs-new/INDEX.md)** - Full documentation index
-- **[Learning Paths](/docs-new/LEARNING_PATHS.md)** - Structured learning journeys
-- **[Document Index](/docs-new/getting-started/document-index.md)** - Detailed document catalog
+- **[Complete Index](./INDEX.md)** - Full documentation index
+- **[Learning Paths](./LEARNING_PATHS.md)** - Structured learning journeys
+- **[Document Index](./getting-started/document-index.md)** - Detailed document catalog
+- **[Glossary](./getting-started/glossary.md)** - Technical terms
 
 ---
 
@@ -83,17 +85,29 @@ Quick references and resources:
 ✅ **Modern Structure** - Functional organization for easy navigation  
 ✅ **Comprehensive** - From basics to advanced topics  
 ✅ **Production Ready** - Tested patterns and best practices  
-✅ **Well Maintained** - Regular updates and improvements
+✅ **Well Maintained** - Regular updates and improvements  
+✅ **2025最新** - 包含最新的Go Workspace系统梳理
 
 ---
 
 ## 📖 Popular Topics
 
-- [Go 1.25.3 New Features](/docs-new/reference/versions/05-Go-1.25特性/)
-- [Iterators Deep Dive](/docs-new/reference/versions/03-Go-1.23特性/01-迭代器详解.md)
-- [Performance Optimization](/docs-new/advanced/performance/)
-- [Microservices Architecture](/docs-new/development/microservices/)
-- [Cloud Native Development](/docs-new/development/cloud-native/)
+- [Go 1.25.3 New Features](./reference/versions/05-Go-1.25特性/)
+- [Go Workspace完整指南](./fundamentals/language/03-模块管理/07-Go-Workspace完整指南-Go1.25.3.md) ⭐ 2025最新
+- [Modules与Workspace对比](./fundamentals/language/03-模块管理/08-Go-Modules与Workspace完整对比-2025.md) ⭐ 新增
+- [Iterators Deep Dive](./reference/versions/03-Go-1.23特性/01-迭代器详解.md)
+- [Performance Optimization](./advanced/performance/)
+- [Microservices Architecture](./development/microservices/)
+- [Cloud Native Development](./development/cloud-native/)
+
+---
+
+## 🆕 最新更新 (2025-10-28)
+
+- ✅ **Go Workspace系统梳理** - 完整的go.work与go.mod文档
+- ✅ **空目录填充完成** - 11个新主题目录，65+篇文档
+- ✅ **文档格式统一** - 所有文档添加目录和章节编号
+- ✅ **项目文档归档** - 清理~70+历史文档
 
 ---
 
@@ -109,4 +123,4 @@ This documentation is part of the Go 1.25.3 learning project. See [LICENSE](../L
 
 ---
 
-> **Navigation:** [Home](/) | [Getting Started](/docs-new/getting-started/) | [Index](/docs-new/INDEX.md) | [FAQ](/docs-new/getting-started/faq.md)
+> **Navigation:** [Home](./) | [Getting Started](./getting-started/) | [Index](./INDEX.md) | [FAQ](./getting-started/faq.md)
