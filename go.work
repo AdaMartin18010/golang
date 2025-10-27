@@ -5,7 +5,7 @@ go 1.25.3
 
 use (
 	// CLI工具
-	./cmd/gox
+	//./cmd/gox
 
 	// 示例模块
 	./examples
