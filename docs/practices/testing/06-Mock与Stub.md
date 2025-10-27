@@ -4,15 +4,31 @@
 
 ---
 
-## 📖 概念介绍
+## 📋 目录
+
+- [1. 📖 概念介绍](#1--概念介绍)
+- [2. 🎯 核心知识点](#2--核心知识点)
+  - [2.1 手动Mock](#21-手动mock)
+  - [2.2 使用testify/mock](#22-使用testifymock)
+  - [2.3 使用gomock](#23-使用gomock)
+  - [2.4 HTTP Mock](#24-http-mock)
+  - [2.5 数据库Mock](#25-数据库mock)
+  - [2.6 Time Mock](#26-time-mock)
+- [3. 💡 最佳实践](#3--最佳实践)
+- [4. ⚠️ 常见问题](#4-️-常见问题)
+- [5. 📚 相关资源](#5--相关资源)
+
+---
+
+## 1. 📖 概念介绍
 
 Mock和Stub是测试中隔离依赖的技术。Mock用于验证交互行为，Stub用于提供预定义的响应。Go通过接口和工具实现优雅的Mock。
 
 ---
 
-## 🎯 核心知识点
+## 2. 🎯 核心知识点
 
-### 1. 手动Mock
+### 2.1 手动Mock
 
 ```go
 // 定义接口
@@ -63,7 +79,7 @@ func TestUserService(t *testing.T) {
 
 ---
 
-### 2. 使用testify/mock
+### 2.2 使用testify/mock
 
 ```bash
 go get github.com/stretchr/testify/mock
@@ -117,7 +133,7 @@ func TestUserService_GetUser(t *testing.T) {
 
 ---
 
-### 3. 使用gomock
+### 2.3 使用gomock
 
 ```bash
 go install github.com/golang/mock/mockgen@latest
@@ -182,7 +198,7 @@ func TestUserService_WithGomock(t *testing.T) {
 
 ---
 
-### 4. HTTP Mock
+### 2.4 HTTP Mock
 
 ```go
 package api
@@ -222,7 +238,7 @@ func TestFetchUser(t *testing.T) {
 
 ---
 
-### 5. 数据库Mock
+### 2.5 数据库Mock
 
 ```go
 package repository
@@ -269,7 +285,7 @@ func TestUserRepository_GetByID(t *testing.T) {
 
 ---
 
-### 6. Time Mock
+### 2.6 Time Mock
 
 ```go
 package service
@@ -327,9 +343,9 @@ func TestService_IsExpired(t *testing.T) {
 
 ---
 
-## 💡 最佳实践
+## 3. 💡 最佳实践
 
-### 1. 优先使用接口
+### 3.1 优先使用接口
 
 ```go
 // ✅ 好：基于接口
@@ -343,7 +359,7 @@ type Service struct {
 }
 ```
 
-### 2. Mock应该简单
+### 3.2 Mock应该简单
 
 ```go
 // ✅ 好：简单的Mock
@@ -359,7 +375,7 @@ type MockStorage struct {
 }
 ```
 
-### 3. 只Mock外部依赖
+### 3.3 只Mock外部依赖
 
 ```go
 // ✅ Mock：数据库、HTTP、文件系统
@@ -369,7 +385,7 @@ mockHTTP := httptest.NewServer(...)
 // ❌ 不要Mock：内部业务逻辑
 ```
 
-### 4. 验证交互
+### 3.4 验证交互
 
 ```go
 func TestService_Delete(t *testing.T) {
@@ -387,7 +403,7 @@ func TestService_Delete(t *testing.T) {
 
 ---
 
-## ⚠️ 常见问题
+## 4. ⚠️ 常见问题
 
 **Q1: Mock vs Stub区别？**
 - **Stub**: 提供预定义响应（关注状态）
@@ -410,7 +426,7 @@ func TestService_Delete(t *testing.T) {
 
 ---
 
-## 📚 相关资源
+## 5. 📚 相关资源
 
 - [testify/mock](https://github.com/stretchr/testify)
 - [gomock](https://github.com/golang/mock)
@@ -422,4 +438,3 @@ func TestService_Delete(t *testing.T) {
 ---
 
 **最后更新**: 2025-10-28
-

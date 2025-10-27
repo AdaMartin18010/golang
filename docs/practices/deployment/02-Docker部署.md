@@ -4,15 +4,29 @@
 
 ---
 
-## 📖 概念介绍
+## 📋 目录
+
+- [1. 📖 概念介绍](#1--概念介绍)
+- [2. 🎯 核心知识点](#2--核心知识点)
+  - [2.1 基础Dockerfile](#21-基础dockerfile)
+  - [2.2 多阶段构建优化](#22-多阶段构建优化)
+  - [2.3 Docker Compose](#23-docker-compose)
+  - [2.4 .dockerignore](#24-dockerignore)
+  - [2.5 健康检查](#25-健康检查)
+- [3. 💡 最佳实践](#3--最佳实践)
+- [4. 📚 相关资源](#4--相关资源)
+
+---
+
+## 1. 📖 概念介绍
 
 Docker容器化是现代Go应用部署的标准方式，提供了环境一致性、快速部署和易于扩展的优势。
 
 ---
 
-## 🎯 核心知识点
+## 2. 🎯 核心知识点
 
-### 1. 基础Dockerfile
+### 2.1 基础Dockerfile
 
 ```dockerfile
 # Dockerfile
@@ -52,7 +66,7 @@ docker run -p 8080:8080 myapp:latest
 
 ---
 
-### 2. 多阶段构建优化
+### 2.2 多阶段构建优化
 
 ```dockerfile
 # 优化的多阶段构建
@@ -95,7 +109,7 @@ ENTRYPOINT ["/main"]
 
 ---
 
-### 3. Docker Compose
+### 2.3 Docker Compose
 
 ```yaml
 # docker-compose.yml
@@ -150,7 +164,7 @@ docker-compose down
 
 ---
 
-### 4. .dockerignore
+### 2.4 .dockerignore
 
 ```
 # .dockerignore
@@ -180,7 +194,7 @@ vendor/
 
 ---
 
-### 5. 健康检查
+### 2.5 健康检查
 
 ```dockerfile
 FROM alpine:latest
@@ -204,9 +218,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-## 💡 最佳实践
+## 3. 💡 最佳实践
 
-### 1. 镜像体积优化
+### 3.1 镜像体积优化
 
 ```dockerfile
 # ✅ 好：使用alpine
@@ -219,7 +233,7 @@ FROM scratch
 FROM golang:1.21  # 太大
 ```
 
-### 2. 层缓存优化
+### 3.2 层缓存优化
 
 ```dockerfile
 # ✅ 好：先复制依赖文件
@@ -235,7 +249,7 @@ RUN go mod download
 RUN go build
 ```
 
-### 3. 安全实践
+### 3.3 安全实践
 
 ```dockerfile
 # ✅ 创建非root用户
@@ -251,7 +265,7 @@ COPY --chown=appuser:appgroup main /main
 CMD ["/main"]
 ```
 
-### 4. 构建参数
+### 3.4 构建参数
 
 ```dockerfile
 ARG VERSION=dev
@@ -272,7 +286,7 @@ docker build \
 
 ---
 
-## 📚 相关资源
+## 4. 📚 相关资源
 
 - [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
 - [Multi-stage Builds](https://docs.docker.com/build/building/multi-stage/)
@@ -282,4 +296,3 @@ docker build \
 ---
 
 **最后更新**: 2025-10-28
-

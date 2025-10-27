@@ -4,15 +4,30 @@
 
 ---
 
-## 📖 概念介绍
+## 📋 目录
+
+- [1. 📖 概念介绍](#1--概念介绍)
+- [2. 🎯 核心资源](#2--核心资源)
+  - [2.1 Deployment](#21-deployment)
+  - [2.2 Service](#22-service)
+  - [2.3 ConfigMap](#23-configmap)
+  - [2.4 Secret](#24-secret)
+  - [2.5 Ingress](#25-ingress)
+- [3. 💡 最佳实践](#3--最佳实践)
+- [4. 🔧 Helm部署](#4--helm部署)
+- [5. 📚 相关资源](#5--相关资源)
+
+---
+
+## 1. 📖 概念介绍
 
 Kubernetes（K8s）是容器编排平台，用于自动化部署、扩展和管理容器化应用。Go应用非常适合K8s部署。
 
 ---
 
-## 🎯 核心资源
+## 2. 🎯 核心资源
 
-### 1. Deployment
+### 2.1 Deployment
 
 ```yaml
 # deployment.yaml
@@ -73,7 +88,7 @@ kubectl get pods
 
 ---
 
-### 2. Service
+### 2.2 Service
 
 ```yaml
 # service.yaml
@@ -93,7 +108,7 @@ spec:
 
 ---
 
-### 3. ConfigMap
+### 2.3 ConfigMap
 
 ```yaml
 # configmap.yaml
@@ -123,7 +138,7 @@ spec:
 
 ---
 
-### 4. Secret
+### 2.4 Secret
 
 ```yaml
 # secret.yaml
@@ -146,7 +161,7 @@ kubectl create secret generic db-secret \
 
 ---
 
-### 5. Ingress
+### 2.5 Ingress
 
 ```yaml
 # ingress.yaml
@@ -172,9 +187,9 @@ spec:
 
 ---
 
-## 💡 最佳实践
+## 3. 💡 最佳实践
 
-### 1. 资源限制
+### 3.1 资源限制
 
 ```yaml
 resources:
@@ -186,7 +201,7 @@ resources:
     cpu: "500m"
 ```
 
-### 2. 健康检查
+### 3.2 健康检查
 
 ```yaml
 livenessProbe:   # 存活探针
@@ -202,7 +217,7 @@ readinessProbe:  # 就绪探针
   initialDelaySeconds: 5
 ```
 
-### 3. 滚动更新
+### 3.3 滚动更新
 
 ```yaml
 strategy:
@@ -212,7 +227,7 @@ strategy:
     maxUnavailable: 0   # 最多0个不可用
 ```
 
-### 4. 水平扩展
+### 3.4 水平扩展
 
 ```yaml
 # hpa.yaml
@@ -238,9 +253,9 @@ spec:
 
 ---
 
-## 🔧 Helm部署
+## 4. 🔧 Helm部署
 
-### Chart结构
+### 4.1 Chart结构
 
 ```
 myapp/
@@ -252,7 +267,7 @@ myapp/
     └── ingress.yaml
 ```
 
-### Chart.yaml
+### 4.2 Chart.yaml
 
 ```yaml
 apiVersion: v2
@@ -261,7 +276,7 @@ version: 1.0.0
 appVersion: "1.0.0"
 ```
 
-### values.yaml
+### 4.3 values.yaml
 
 ```yaml
 replicaCount: 3
@@ -276,7 +291,7 @@ service:
   port: 80
 ```
 
-### 使用Helm
+### 4.4 使用Helm
 
 ```bash
 # 安装
@@ -294,7 +309,7 @@ helm uninstall myapp
 
 ---
 
-## 📚 相关资源
+## 5. 📚 相关资源
 
 - [Kubernetes Documentation](https://kubernetes.io/docs/)
 - [Helm](https://helm.sh/)
@@ -304,4 +319,3 @@ helm uninstall myapp
 ---
 
 **最后更新**: 2025-10-28
-
