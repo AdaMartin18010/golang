@@ -1,4 +1,4 @@
-﻿# Golang架构知识库技术报告
+# Golang架构知识库技术报告
 
 > **简介**: 技术分析报告，包含文档质量排名、统计数据和详细的优化建议
 > **版本**: Go 1.23+  
@@ -38,11 +38,31 @@
 
 ## 📋 目录
 
-- [1. 📊 总体统计](#-总体统计)
-- [2. 🏆 文档质量排名 (Top 15)](#-文档质量排名-top-15)
-- [3. 💡 优化建议](#-优化建议)
 
----
+- [📊 总体统计](#-总体统计)
+- [🏆 文档质量排名 (Top 15)](#-文档质量排名-top-15)
+- [💡 优化建议](#-优化建议)
+  - [需要优化的文档 (20个)](#需要优化的文档-20个)
+    - [architecture_education_golang.md (评分: 60)](#architecture_education_golangmd-评分-60)
+    - [architecture_digital_twin_golang.md (评分: 60)](#architecture_digital_twin_golangmd-评分-60)
+    - [architecture_transportation_golang.md (评分: 60)](#architecture_transportation_golangmd-评分-60)
+    - [architecture_iot_golang.md (评分: 60)](#architecture_iot_golangmd-评分-60)
+    - [architecture_energy_golang.md (评分: 60)](#architecture_energy_golangmd-评分-60)
+    - [architecture_manufacturing_golang.md (评分: 60)](#architecture_manufacturing_golangmd-评分-60)
+    - [architecture_media_golang.md (评分: 60)](#architecture_media_golangmd-评分-60)
+    - [architecture_tourism_golang.md (评分: 60)](#architecture_tourism_golangmd-评分-60)
+    - [architecture_telecom_golang.md (评分: 60)](#architecture_telecom_golangmd-评分-60)
+    - [architecture_environment_golang.md (评分: 60)](#architecture_environment_golangmd-评分-60)
+    - [architecture_retail_golang.md (评分: 60)](#architecture_retail_golangmd-评分-60)
+    - [architecture_agriculture_golang.md (评分: 55)](#architecture_agriculture_golangmd-评分-55)
+    - [architecture_edge_computing_golang.md (评分: 50)](#architecture_edge_computing_golangmd-评分-50)
+    - [architecture_serverless_golang.md (评分: 50)](#architecture_serverless_golangmd-评分-50)
+    - [architecture_containerization_orchestration_golang.md (评分: 45)](#architecture_containerization_orchestration_golangmd-评分-45)
+    - [architecture_edtech_golang.md (评分: 25)](#architecture_edtech_golangmd-评分-25)
+    - [architecture_autonomous_driving_golang.md (评分: 25)](#architecture_autonomous_driving_golangmd-评分-25)
+    - [architecture_cloud_native_golang.md (评分: 25)](#architecture_cloud_native_golangmd-评分-25)
+    - [architecture_healthcare_golang.md (评分: 25)](#architecture_healthcare_golangmd-评分-25)
+    - [architecture_README.md (评分: 0)](#architecture_readmemd-评分-0)
 
 ## 📊 总体统计
 

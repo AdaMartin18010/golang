@@ -1,19 +1,30 @@
-﻿# 无服务器架构（Golang国际主流实践）
+# 无服务器架构（Golang国际主流实践）
 
 > **简介**: Serverless计算模式架构设计，实现按需弹性、免运维的云原生应用
 
 
 ## 📋 目录
 
-- [1. 目录](#目录)
-- [2. 2. 无服务器架构概述](#2-无服务器架构概述)
-- [3. 3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
-- [4. 4. Golang主流实现与代码示例](#4-golang主流实现与代码示例)
-- [5. 5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
-- [6. 6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
-- [7. 7. Golang 无服务器架构代码示例](#7-golang-无服务器架构代码示例)
 
----
+- [目录](#目录)
+- [2. 无服务器架构概述](#2-无服务器架构概述)
+  - [主流技术与平台](#主流技术与平台)
+  - [发展历程](#发展历程)
+  - [国际权威链接](#国际权威链接)
+- [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
+  - [函数即服务 (Function as a Service - FaaS)](#函数即服务-function-as-a-service---faas)
+  - [后端即服务 (Backend as a Service - BaaS)](#后端即服务-backend-as-a-service---baas)
+- [4. Golang主流实现与代码示例](#4-golang主流实现与代码示例)
+  - [AWS Lambda with Golang](#aws-lambda-with-golang)
+  - [Google Cloud Functions with Golang](#google-cloud-functions-with-golang)
+- [5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
+- [6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
+  - [项目结构建议 (Serverless Framework)](#项目结构建议-serverless-framework)
+  - [配置文件 (serverless.yml)](#配置文件-serverlessyml)
+  - [CI/CD工作流 (GitHub Actions)](#cicd工作流-github-actions)
+- [7. Golang 无服务器架构代码示例](#7-golang-无服务器架构代码示例)
+  - [完整的无服务器平台实现](#完整的无服务器平台实现)
+  - [实际使用示例](#实际使用示例)
 
 ## 目录
 

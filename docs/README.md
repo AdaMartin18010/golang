@@ -1,4 +1,4 @@
-﻿# Go 1.25.3 Documentation
+# Go 1.25.3 Documentation
 
 > **Last Updated:** 2025-10-28  
 > **Go Version:** 1.25.3  
@@ -11,16 +11,26 @@ Welcome to the Go 1.25.3 comprehensive documentation! This documentation is orga
 
 ## 📋 目录
 
-- [1. 🚀 Quick Start](#-quick-start)
-- [2. 📚 Documentation Structure](#-documentation-structure)
-- [3. 🔍 Find What You Need](#-find-what-you-need)
-- [4. 🌟 Key Features](#-key-features)
-- [5. 📖 Popular Topics](#-popular-topics)
-- [6. 🆕 最新更新 (2025-10-28)](#-最新更新-2025-10-28)
-- [7. 🤝 Contributing](#-contributing)
-- [8. 📝 License](#-license)
 
----
+- [🚀 Quick Start](#-quick-start)
+- [📚 Documentation Structure](#-documentation-structure)
+  - [🎯 [Getting Started](./getting-started/)](#-getting-startedgetting-started)
+  - [📖 [Fundamentals](./fundamentals/)](#-fundamentalsfundamentals)
+  - [💻 [Development](./development/)](#-developmentdevelopment)
+  - [🚀 [Advanced](./advanced/)](#-advancedadvanced)
+  - [🛠️ [Practices](./practices/)](#-practicespractices)
+  - [💡 [Projects](./projects/)](#-projectsprojects)
+  - [📚 [Reference](./reference/)](#-referencereference)
+- [🔍 Find What You Need](#-find-what-you-need)
+  - [核心导航文档 🆕](#核心导航文档-)
+  - [其他导航](#其他导航)
+- [🌟 Key Features](#-key-features)
+- [📖 Popular Topics](#-popular-topics)
+- [🆕 最新更新 (2025-10-28)](#-最新更新-2025-10-28)
+  - [🎉 重大更新](#-重大更新)
+  - [早期更新](#早期更新)
+- [🤝 Contributing](#-contributing)
+- [📝 License](#-license)
 
 ## 🚀 Quick Start
 
