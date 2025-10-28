@@ -1,8 +1,26 @@
-# API 文档
+﻿# API 文档
 
 > **项目**: Golang Learning Project  
 > **版本**: v2.0  
 > **最后更新**: 2025-10-22
+
+---
+
+
+## 📋 目录
+
+- [1. 📚 模块概览](#-模块概览)
+- [2. 📦 pkg/agent - AI代理框架](#-pkgagent---ai代理框架)
+- [3. 📦 pkg/concurrency - 并发模式](#-pkgconcurrency---并发模式)
+- [4. 📦 pkg/http3 - HTTP/3服务器](#-pkghttp3---http3服务器)
+- [5. 📦 pkg/memory - 内存管理](#-pkgmemory---内存管理)
+- [6. 📦 pkg/observability - 可观测性](#-pkgobservability---可观测性)
+- [7. 🛠️ CLI工具 - gox](#️-cli工具---gox)
+- [8. 📖 完整文档](#-完整文档)
+- [9. 🔗 相关链接](#-相关链接)
+- [10. 📝 示例代码](#-示例代码)
+- [11. 🤝 贡献](#-贡献)
+- [12. 📞 支持](#-支持)
 
 ---
 

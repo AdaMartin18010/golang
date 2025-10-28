@@ -8,12 +8,40 @@
 
 ## 📋 目录
 
+
 - [1. 📖 概念介绍](#1--概念介绍)
 - [2. 🎯 核心知识点](#2--核心知识点)
-- [3. 💡 最佳实践](#3--最佳实践)
-- [4. 📚 相关资源](#4--相关资源)
-
----
+  - [1. Context的设计理念](#1-context的设计理念)
+    - [Context接口定义](#context接口定义)
+    - [Context的核心原则](#context的核心原则)
+  - [2. 四种Context类型](#2-四种context类型)
+    - [Background和TODO](#background和todo)
+    - [WithCancel](#withcancel)
+    - [WithTimeout](#withtimeout)
+    - [WithDeadline](#withdeadline)
+    - [WithValue](#withvalue)
+  - [3. 超时控制实战](#3-超时控制实战)
+    - [HTTP请求超时](#http请求超时)
+    - [数据库查询超时](#数据库查询超时)
+  - [4. 取消信号传播](#4-取消信号传播)
+    - [父子Context取消传播](#父子context取消传播)
+    - [多层Goroutine取消](#多层goroutine取消)
+  - [5. 值传递最佳实践](#5-值传递最佳实践)
+    - [正确的值传递](#正确的值传递)
+    - [错误的值传递](#错误的值传递)
+  - [6. Context在HTTP中的应用](#6-context在http中的应用)
+    - [HTTP服务器中的Context](#http服务器中的context)
+    - [HTTP客户端中的Context](#http客户端中的context)
+- [🏗️ 实战案例](#-实战案例)
+  - [案例：Pipeline with Context](#案例pipeline-with-context)
+- [⚠️ 常见问题](#-常见问题)
+  - [Q1: Context应该在什么时候取消？](#q1-context应该在什么时候取消)
+  - [Q2: Context.Value应该存储什么？](#q2-contextvalue应该存储什么)
+  - [Q3: Context会泄漏吗？](#q3-context会泄漏吗)
+  - [Q4: 如何测试使用Context的代码？](#q4-如何测试使用context的代码)
+- [📚 相关资源](#-相关资源)
+  - [下一步学习](#下一步学习)
+  - [推荐阅读](#推荐阅读)
 
 ## 1. 📖 概念介绍
 

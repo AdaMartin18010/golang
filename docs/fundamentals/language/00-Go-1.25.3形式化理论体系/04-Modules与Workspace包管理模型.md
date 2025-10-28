@@ -1,4 +1,4 @@
-# Modules与Workspace包管理模型
+﻿# Modules与Workspace包管理模型
 
 **文档版本**: v1.0.0  
 **基准日期**: 2025年10月22日  
@@ -8,7 +8,7 @@
 
 ---
 
-## 📚 目录
+## 📋 目录
 
 - [Modules与Workspace包管理模型](#modules与workspace包管理模型)
   - [📚 目录](#-目录)

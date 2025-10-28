@@ -1,4 +1,4 @@
-# Kubernetes部署Go应用
+﻿# Kubernetes部署Go应用
 
 > **简介**: Kubernetes部署Go应用完整指南，包括Deployment、Service、配置管理和最佳实践
 
@@ -8,14 +8,13 @@
 
 ---
 
-## 📚 目录
-
-1. [基础概念](#基础概念)
-2. [Deployment部署](#deployment部署)
-3. [Service服务](#service服务)
-4. [配置管理](#配置管理)
-5. [健康检查](#健康检查)
-6. [最佳实践](#最佳实践)
+## 📋 目录
+- [1. 基础概念](#基础概念)
+- [2. Deployment部署](#deployment部署)
+- [3. Service服务](#service服务)
+- [4. 配置管理](#配置管理)
+- [5. 健康检查](#健康检查)
+- [6. 最佳实践](#最佳实践)
 
 ---
 

@@ -1,10 +1,10 @@
-# Go CI/CD最佳实践完全指南
+﻿# Go CI/CD最佳实践完全指南
 
 > **简介**: Go项目持续集成和持续部署的完整实践指南，包括GitHub Actions、GitLab CI、Jenkins等主流工具
 
 ---
 
-## 📚 目录
+## 📋 目录
 
 - [Go CI/CD最佳实践完全指南](#go-cicd最佳实践完全指南)
   - [📚 目录](#-目录)
