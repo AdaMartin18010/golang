@@ -1,63 +1,110 @@
-# API参考文档
+# API参考
 
-**章节定位**: 参考手册 > API  
-**难度级别**: 全级别  
-**预计查询时间**: 按需查询
+Go API参考文档，涵盖标准库、第三方库和API设计最佳实践。
 
 ---
 
-## 📋 目录
+## 📚 文档导航
 
-- [1. 📖 章节概述](#1--章节概述)
-- [2. 📚 章节内容](#2--章节内容)
-- [3. 🔗 相关链接](#3--相关链接)
+### 核心内容
 
----
+1. **[核心API参考](./01-核心API参考.md)** ⭐⭐⭐⭐⭐
+   - net/http, encoding/json, context, sync
+   - fmt, io, time, os, strings, strconv
+   - errors, log
+   - 10个核心包完整参考
 
-## 1. 📖 章节概述
+2. **[标准库API](./02-标准库API.md)** ⭐⭐⭐⭐⭐
+   - bufio, path/filepath, regexp
+   - math, math/rand, sort, flag
+   - database/sql, crypto, compress
+   - 15+标准库包详解
 
-本章提供Go标准库和常用第三方包的API快速参考，方便开发时快速查询。
+3. **[常用第三方库](./03-常用第三方库.md)** ⭐⭐⭐⭐⭐
+   - Web框架: Gin, Fiber, Echo
+   - 数据库: GORM, sqlx
+   - RPC: gRPC, Gorilla Mux
+   - 缓存: Redis, etcd
+   - 消息队列: Kafka, NATS
+   - 测试: testify, gomock
+   - 认证: JWT, bcrypt
 
----
-
-## 📚 章节内容
-
-### [01-标准库API索引](./01-标准库API索引.md)
-- 核心包API
-- 常用函数速查
-- 包导入路径
-- 版本兼容性
-
-### [02-常用包API](./02-常用包API.md)
-- Web框架API（Gin、Echo、Fiber）
-- 数据库API（GORM、sqlx）
-- 缓存API（go-redis）
-- 消息队列API（Kafka、RabbitMQ）
-
-### [03-Go命令参考](./03-Go命令参考.md)
-- go build
-- go test
-- go mod
-- go tool
-
-### [04-环境变量](./04-环境变量.md)
-- GOPATH
-- GOROOT
-- GOPROXY
-- GOMAXPROCS
+4. **[API设计指南](./04-API设计指南.md)** ⭐⭐⭐⭐⭐
+   - RESTful API设计原则
+   - 错误处理与状态码
+   - 版本控制策略
+   - 安全性最佳实践
+   - 分页、过滤、排序
 
 ---
 
-## 🎯 使用指南
+## 🎯 快速开始
 
-1. **快速查询**: 使用Ctrl+F搜索
-2. **在线文档**: pkg.go.dev
-3. **代码示例**: 每个API都有示例
-4. **版本说明**: 标注引入版本
+### HTTP服务器
+
+```go
+import "net/http"
+
+http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte("Hello, World!"))
+})
+http.ListenAndServe(":8080", nil)
+```
+
+### JSON API
+
+```go
+import (
+    "encoding/json"
+    "net/http"
+)
+
+type Response struct {
+    Message string `json:"message"`
+}
+
+http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(Response{Message: "Success"})
+})
+```
 
 ---
 
-**维护者**: Documentation Team  
-**最后更新**: 2025-10-27  
-**版本**: v1.0
+## 📖 系统文档
 
+- **[知识图谱](./00-知识图谱.md)**: API知识体系全景图
+- **[对比矩阵](./00-对比矩阵.md)**: 不同API方案对比
+- **[概念定义体系](./00-概念定义体系.md)**: API核心概念详解
+
+---
+
+## 🔗 相关资源
+
+- [Go标准库文档](https://pkg.go.dev/std)
+- [Awesome Go](https://github.com/avelino/awesome-go)
+- [Go Packages](https://pkg.go.dev/)
+
+---
+
+## 🎓 学习路径
+
+### 初学者
+1. [核心API参考](./01-核心API参考.md)
+2. [标准库API](./02-标准库API.md)
+3. 实践：构建简单HTTP服务
+
+### 进阶者
+1. [常用第三方库](./03-常用第三方库.md)
+2. [API设计指南](./04-API设计指南.md)
+3. 实践：构建RESTful API
+
+### 专家
+1. 深入标准库源码
+2. 自定义第三方库
+3. API性能优化
+
+---
+
+**最后更新**: 2025-10-28  
+**Go版本**: 1.25.3

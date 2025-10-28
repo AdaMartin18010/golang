@@ -1,82 +1,48 @@
-# AI/ML集成实战
+# Go AI/ML开发
 
-**章节定位**: 高级主题 > AI/ML  
-**难度级别**: 高级  
-**预计学习时间**: 10-12小时
+Go AI/ML开发完整指南，涵盖Go与AI集成、机器学习库、模型推理和数据处理。
 
 ---
 
-## 📋 目录
+## 📚 核心内容
 
-- [1. 📖 章节概述](#1--章节概述)
-- [2. 📚 章节内容](#2--章节内容)
-- [3. 🔗 相关链接](#3--相关链接)
-
----
-
-## 1. 📖 章节概述
-
-Go在AI/ML领域的应用日益广泛。本章讲解如何使用Go集成主流AI/ML框架，构建智能应用，包括机器学习模型部署、自然语言处理、AI Agent开发等。
+1. **[Go与AI集成](./01-Go与AI集成.md)** ⭐⭐⭐⭐
+2. **[机器学习库](./02-机器学习库.md)** ⭐⭐⭐⭐
+3. **[深度学习框架](./03-深度学习框架.md)** ⭐⭐⭐
+4. **[模型推理](./04-模型推理.md)** ⭐⭐⭐⭐⭐
+5. **[数据处理](./05-数据处理.md)** ⭐⭐⭐⭐
+6. **[实战案例](./06-实战案例.md)** ⭐⭐⭐⭐
 
 ---
 
-## 📚 章节内容
+## 🚀 TensorFlow Serving
 
-### [01-AI-ML概览](./01-AI-ML概览.md)
-- Go在AI/ML领域的定位
-- 主流框架对比
-- 使用场景分析
+```go
+import tf "github.com/tensorflow/tensorflow/tensorflow/go"
 
-### [02-TensorFlow集成](./02-TensorFlow集成.md)
-- TensorFlow Go绑定
-- 模型加载与推理
-- 图像分类示例
+// 加载模型
+model, _ := tf.LoadSavedModel("model_path", []string{"serve"}, nil)
 
-### [03-机器学习库](./03-机器学习库.md)
-- gonum数值计算
-- gorgonia深度学习
-- go-ml机器学习
-
-### [04-自然语言处理](./04-自然语言处理.md)
-- 文本预处理
-- 词向量
-- 情感分析
-- go-nlp库使用
-
-### [05-AI-Agent实战](./05-AI-Agent实战.md)
-- Agent架构设计
-- LLM集成（OpenAI、Claude）
-- RAG实现
-- 智能对话系统
-
-### [06-模型部署](./06-模型部署.md)
-- 模型服务化
-- gRPC部署
-- 性能优化
-- 监控与日志
+// 推理
+result, _ := model.Session.Run(
+    map[tf.Output]*tf.Tensor{
+        model.Graph.Operation("input").Output(0): inputTensor,
+    },
+    []tf.Output{
+        model.Graph.Operation("output").Output(0),
+    },
+    nil,
+)
+```
 
 ---
 
-## 🎯 学习目标
+## 📖 系统文档
 
-- ✅ 了解Go的AI/ML生态
-- ✅ 集成TensorFlow模型
-- ✅ 实现NLP应用
-- ✅ 开发AI Agent
-- ✅ 部署ML模型服务
+- [知识图谱](./00-知识图谱.md)
+- [对比矩阵](./00-对比矩阵.md)
+- [概念定义体系](./00-概念定义体系.md)
 
 ---
 
-## 💻 实战项目
-
-1. **图像分类API**
-2. **文本情感分析**
-3. **智能客服Agent**
-4. **推荐系统**
-
----
-
-**维护者**: Documentation Team  
-**最后更新**: 2025-10-27  
-**版本**: v1.0
-
+**最后更新**: 2025-10-28

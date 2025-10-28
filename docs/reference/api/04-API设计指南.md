@@ -1,142 +1,300 @@
 # API设计指南
 
-**难度**: 中级 | **预计阅读**: 15分钟
+**难度**: 中级 | **预计阅读**: 20分钟
 
 ---
 
 ## 📋 目录
 
-- [1. 📖 RESTful设计原则](#1--restful设计原则)
-- [2. 📚 相关资源](#2--相关资源)
+- [1. RESTful API设计](#1-restful-api设计)
+- [2. 错误处理](#2-错误处理)
+- [3. 版本控制](#3-版本控制)
+- [4. 安全性](#4-安全性)
+- [5. 最佳实践](#5-最佳实践)
 
 ---
 
-## 1. 📖 RESTful设计原则
+## 1. RESTful API设计
 
 ### 资源命名
-```
-✅ 好的设计:
-GET    /users          # 列表
-GET    /users/123      # 详情
-POST   /users          # 创建
-PUT    /users/123      # 更新
-DELETE /users/123      # 删除
 
-❌ 避免:
-GET /getUsers
-POST /createUser
 ```
+✅ 好的命名
+GET    /api/users          # 获取用户列表
+GET    /api/users/:id      # 获取单个用户
+POST   /api/users          # 创建用户
+PUT    /api/users/:id      # 更新用户
+DELETE /api/users/:id      # 删除用户
 
----
-
-### HTTP状态码
-```
-200 OK              - 成功
-201 Created         - 创建成功
-204 No Content      - 删除成功
-400 Bad Request     - 请求错误
-401 Unauthorized    - 未认证
-403 Forbidden       - 无权限
-404 Not Found       - 未找到
-500 Internal Error  - 服务器错误
+❌ 不好的命名
+GET    /api/getUsers
+POST   /api/createUser
+GET    /api/user_list
 ```
 
----
+### HTTP方法
 
-## 🎯 API版本控制
+| 方法 | 用途 | 幂等性 |
+|------|------|--------|
+| GET | 获取资源 | ✅ |
+| POST | 创建资源 | ❌ |
+| PUT | 完整更新 | ✅ |
+| PATCH | 部分更新 | ❌ |
+| DELETE | 删除资源 | ✅ |
+
+### 状态码
 
 ```go
-// URL路径版本
-r.Group("/api/v1")
-r.Group("/api/v2")
+// 成功
+200 OK           // 请求成功
+201 Created      // 创建成功
+204 No Content   // 删除成功
 
-// Header版本
-if r.Header.Get("API-Version") == "2" {
-    // v2处理
+// 客户端错误
+400 Bad Request       // 请求参数错误
+401 Unauthorized      // 未认证
+403 Forbidden         // 无权限
+404 Not Found         // 资源不存在
+409 Conflict          // 资源冲突
+
+// 服务器错误
+500 Internal Server Error  // 服务器内部错误
+503 Service Unavailable    // 服务不可用
+```
+
+---
+
+## 2. 错误处理
+
+### 统一错误响应
+
+```go
+type ErrorResponse struct {
+    Code    string `json:"code"`
+    Message string `json:"message"`
+    Details any    `json:"details,omitempty"`
+}
+
+// 示例
+{
+    "code": "INVALID_PARAMETER",
+    "message": "邮箱格式不正确",
+    "details": {
+        "field": "email",
+        "value": "invalid-email"
+    }
+}
+```
+
+### 实现
+
+```go
+func HandleError(c *gin.Context, err error) {
+    switch e := err.(type) {
+    case *ValidationError:
+        c.JSON(400, ErrorResponse{
+            Code:    "VALIDATION_ERROR",
+            Message: e.Error(),
+            Details: e.Fields,
+        })
+    case *NotFoundError:
+        c.JSON(404, ErrorResponse{
+            Code:    "NOT_FOUND",
+            Message: e.Error(),
+        })
+    default:
+        c.JSON(500, ErrorResponse{
+            Code:    "INTERNAL_ERROR",
+            Message: "服务器内部错误",
+        })
+    }
 }
 ```
 
 ---
 
-## 📝 响应格式
+## 3. 版本控制
+
+### URL版本
 
 ```go
-type APIResponse struct {
-    Code    int         `json:"code"`
-    Message string      `json:"message"`
-    Data    interface{} `json:"data,omitempty"`
+// 推荐
+/api/v1/users
+/api/v2/users
+
+r := gin.Default()
+v1 := r.Group("/api/v1")
+{
+    v1.GET("/users", getUsersV1)
 }
+v2 := r.Group("/api/v2")
+{
+    v2.GET("/users", getUsersV2)
+}
+```
 
-// 成功响应
-c.JSON(200, APIResponse{
-    Code:    0,
-    Message: "success",
-    Data:    users,
-})
+### Header版本
 
-// 错误响应
-c.JSON(400, APIResponse{
-    Code:    1001,
-    Message: "Invalid input",
-})
+```go
+// Accept: application/vnd.api+json; version=1
+func VersionMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        version := c.GetHeader("API-Version")
+        if version == "" {
+            version = "1"
+        }
+        c.Set("api_version", version)
+        c.Next()
+    }
+}
 ```
 
 ---
 
-## 🔐 认证与授权
+## 4. 安全性
+
+### 认证
 
 ```go
 // JWT认证
-Authorization: Bearer <token>
+func AuthMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        token := c.GetHeader("Authorization")
+        if token == "" {
+            c.JSON(401, gin.H{"error": "未授权"})
+            c.Abort()
+            return
+        }
+        
+        claims, err := ValidateToken(token)
+        if err != nil {
+            c.JSON(401, gin.H{"error": "令牌无效"})
+            c.Abort()
+            return
+        }
+        
+        c.Set("user_id", claims.UserID)
+        c.Next()
+    }
+}
+```
 
-// API Key
-X-API-Key: <key>
+### 限流
 
-// Basic Auth
-Authorization: Basic <base64(username:password)>
+```go
+import "golang.org/x/time/rate"
+
+func RateLimitMiddleware(r rate.Limit, b int) gin.HandlerFunc {
+    limiter := rate.NewLimiter(r, b)
+    return func(c *gin.Context) {
+        if !limiter.Allow() {
+            c.JSON(429, gin.H{"error": "请求过于频繁"})
+            c.Abort()
+            return
+        }
+        c.Next()
+    }
+}
+```
+
+### CORS
+
+```go
+func CORSMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(204)
+            return
+        }
+        c.Next()
+    }
+}
 ```
 
 ---
 
-## 📊 分页
+## 5. 最佳实践
+
+### 分页
 
 ```go
-type PaginatedResponse struct {
-    Data       []interface{} `json:"data"`
-    Page       int           `json:"page"`
-    PerPage    int           `json:"per_page"`
-    Total      int64         `json:"total"`
-    TotalPages int           `json:"total_pages"`
+type PaginationParams struct {
+    Page     int `form:"page" binding:"min=1"`
+    PageSize int `form:"page_size" binding:"min=1,max=100"`
 }
 
-// 查询参数
-GET /users?page=1&per_page=20
+type PaginatedResponse struct {
+    Data       interface{} `json:"data"`
+    Page       int         `json:"page"`
+    PageSize   int         `json:"page_size"`
+    Total      int64       `json:"total"`
+    TotalPages int         `json:"total_pages"`
+}
+
+func GetUsers(c *gin.Context) {
+    var params PaginationParams
+    params.Page = 1
+    params.PageSize = 20
+    c.ShouldBindQuery(&params)
+    
+    // 查询数据...
+}
 ```
 
----
+### 过滤和排序
 
-## 🔍 过滤与排序
+```
+GET /api/users?status=active&sort=-created_at&fields=id,name,email
+```
 
 ```go
-// 过滤
-GET /users?status=active&role=admin
+type QueryParams struct {
+    Status string   `form:"status"`
+    Sort   string   `form:"sort"`
+    Fields []string `form:"fields"`
+}
+```
 
-// 排序
-GET /users?sort=created_at&order=desc
+### 请求验证
 
-// 搜索
-GET /users?q=john
+```go
+type CreateUserRequest struct {
+    Name     string `json:"name" binding:"required,min=2,max=50"`
+    Email    string `json:"email" binding:"required,email"`
+    Age      int    `json:"age" binding:"required,gte=0,lte=150"`
+    Password string `json:"password" binding:"required,min=8"`
+}
+
+func CreateUser(c *gin.Context) {
+    var req CreateUserRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(400, gin.H{"error": err.Error()})
+        return
+    }
+    // 处理...
+}
 ```
 
 ---
 
 ## 📚 相关资源
 
-- [REST API Guidelines](https://restfulapi.net/)
-
-**下一步**: [guides/01-学习路线图](../guides/01-学习路线图.md)
+- [RESTful API Design Best Practices](https://restfulapi.net/)
+- [HTTP Status Codes](https://httpstatuses.com/)
+- [API Security Checklist](https://github.com/shieldfy/API-Security-Checklist)
 
 ---
 
-**最后更新**: 2025-10-28
+## 🔗 导航
 
+- **上一页**: [03-常用第三方库](./03-常用第三方库.md)
+- **相关**: [README](./README.md)
+
+---
+
+**最后更新**: 2025-10-28  
+**Go版本**: 1.25.3
