@@ -1,7 +1,6 @@
 # Context应用
 
 > **简介**: Context完整指南，包括超时控制、取消传播、值传递和最佳实践
-
 > **版本**: Go 1.25.3  
 > **难度**: ⭐⭐⭐⭐  
 > **标签**: #并发 #Context #超时 #取消
@@ -44,6 +43,7 @@
 ### 什么是Context
 
 **Context** 是Go中管理请求生命周期的标准方式：
+
 - 传递请求作用域的值
 - 传递取消信号
 - 传递截止时间/超时
@@ -108,6 +108,7 @@ cancel()
 ```
 
 **完整示例**:
+
 ```go
 func main() {
     ctx, cancel := context.WithCancel(context.Background())
@@ -149,6 +150,7 @@ case <-ctx.Done():
 ```
 
 **完整示例**:
+
 ```go
 func main() {
     ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -575,4 +577,3 @@ ctx = WithRequestID(ctx, "abc-123")
 
 **最后更新**: 2025-10-28  
 **Go版本**: 1.25.3
-

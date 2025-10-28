@@ -29,7 +29,7 @@
     - [泄漏案例1：阻塞的Channel](#泄漏案例1阻塞的channel)
     - [泄漏案例2：无限循环](#泄漏案例2无限循环)
     - [泄漏检测工具](#泄漏检测工具)
-- [⚠️ 常见问题](#-常见问题)
+- [3. ⚠️ 常见问题](#3--常见问题)
   - [Q1: Goroutine的开销有多大？](#q1-goroutine的开销有多大)
   - [Q2: 如何限制Goroutine数量？](#q2-如何限制goroutine数量)
   - [Q3: 如何知道Goroutine何时结束？](#q3-如何知道goroutine何时结束)
@@ -615,15 +615,17 @@ func main() {
 
 ---
 
-## ⚠️ 常见问题
+## 3. ⚠️ 常见问题
 
 ### Q1: Goroutine的开销有多大？
+
 - 初始栈大小：2KB
 - 创建时间：约纳秒级
 - 上下文切换：用户态，比线程快得多
 - 可以轻松创建数万个Goroutine
 
 ### Q2: 如何限制Goroutine数量？
+
 ```go
 // 使用缓冲Channel作为信号量
 sem := make(chan struct{}, 100) // 最多100个并发
@@ -638,11 +640,13 @@ for i := 0; i < 1000; i++ {
 ```
 
 ### Q3: 如何知道Goroutine何时结束？
+
 - 使用WaitGroup
 - 使用Channel通信
 - 使用Context传播取消信号
 
 ### Q4: Goroutine会被GC回收吗？
+
 - Goroutine本身不会被GC
 - 但Goroutine引用的对象会被GC
 - 必须显式确保Goroutine退出
@@ -652,11 +656,13 @@ for i := 0; i < 1000; i++ {
 ## 4. 📚 相关资源
 
 ### 下一步学习
+
 - [03-Channel深入](./03-Channel深入.md)
 - [04-Context应用](./04-Context应用.md)
 - [Go调度器](../language/02-并发编程/04-Go调度器.md)
 
 ### 推荐阅读
+
 - [Go Scheduler Design](https://golang.org/s/go11sched)
 - [Goroutine泄漏检测](https://github.com/uber-go/goleak)
 
@@ -664,4 +670,3 @@ for i := 0; i < 1000; i++ {
 
 **最后更新**: 2025-10-27  
 **作者**: Documentation Team
-

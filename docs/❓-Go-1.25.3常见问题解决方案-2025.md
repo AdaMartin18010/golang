@@ -9,7 +9,6 @@
 
 ## 📋 目录
 
-
 - [🔤 语法和基础](#-语法和基础)
   - [Q1: 为什么range遍历修改元素无效？](#q1-为什么range遍历修改元素无效)
   - [Q2: 切片append后为什么原切片没变？](#q2-切片append后为什么原切片没变)
@@ -44,6 +43,7 @@
 ### Q1: 为什么range遍历修改元素无效？
 
 **问题**:
+
 ```go
 items := []Item{{Value: 1}, {Value: 2}, {Value: 3}}
 for _, item := range items {
@@ -54,6 +54,7 @@ for _, item := range items {
 **原因**: `range`返回的是副本，不是原始元素。
 
 **解决方案**:
+
 ```go
 // ✅ 方案1: 使用索引
 for i := range items {
@@ -78,6 +79,7 @@ for _, item := range items {
 ### Q2: 切片append后为什么原切片没变？
 
 **问题**:
+
 ```go
 func modify(s []int) {
     s = append(s, 4)  // ❌ 原切片不变
@@ -91,6 +93,7 @@ fmt.Println(s)  // [1 2 3]
 **原因**: append可能分配新数组，切片是值类型。
 
 **解决方案**:
+
 ```go
 // ✅ 返回新切片
 func modify(s []int) []int {
@@ -114,6 +117,7 @@ modify(&s)
 ### Q3: map为什么不能并发读写？
 
 **问题**:
+
 ```go
 m := make(map[string]int)
 go func() { m["a"] = 1 }()
@@ -123,6 +127,7 @@ go func() { m["b"] = 2 }()  // ❌ fatal error: concurrent map writes
 **原因**: map不是并发安全的。
 
 **解决方案**:
+
 ```go
 // ✅ 方案1: 使用sync.Map
 var m sync.Map
@@ -173,6 +178,7 @@ ch <- command{"a", 1}
 **问题**: goroutine一直运行不退出，占用资源。
 
 **检测方法**:
+
 ```go
 // ✅ 使用pprof
 import _ "net/http/pprof"
@@ -186,6 +192,7 @@ go func() {
 ```
 
 **常见原因**:
+
 ```go
 // ❌ 原因1: Channel永远阻塞
 func leak1() {
@@ -214,6 +221,7 @@ func leak3() {
 ```
 
 **解决方案**:
+
 ```go
 // ✅ 使用Context控制生命周期
 func noLeak(ctx context.Context) {
@@ -265,6 +273,7 @@ func noLeak3() {
 ### Q5: 如何避免循环中goroutine闭包陷阱？
 
 **问题**:
+
 ```go
 for i := 0; i < 5; i++ {
     go func() {
@@ -276,6 +285,7 @@ for i := 0; i < 5; i++ {
 **原因**: 闭包捕获的是变量i的引用。
 
 **解决方案**:
+
 ```go
 // ✅ 方案1: 参数传递
 for i := 0; i < 5; i++ {
@@ -308,6 +318,7 @@ for i := 0; i < 5; i++ {
 **问题**: 多个case同时就绪，select随机选择。
 
 **解决方案**:
+
 ```go
 // ✅ 使用优先级队列
 func prioritySelect(high, low <-chan int) {
@@ -356,6 +367,7 @@ func weightedSelect(ch1, ch2 <-chan int) {
 ### Q7: 如何分析性能瓶颈？
 
 **步骤**:
+
 ```go
 // 1. 启用pprof
 import _ "net/http/pprof"
@@ -384,6 +396,7 @@ func main() {
 ### Q8: 字符串拼接慢怎么办？
 
 **问题**:
+
 ```go
 // ❌ 低效
 s := ""
@@ -393,6 +406,7 @@ for i := 0; i < 10000; i++ {
 ```
 
 **解决方案**:
+
 ```go
 // ✅ 使用strings.Builder
 var b strings.Builder
@@ -421,6 +435,7 @@ s := buf.String()
 ### Q9: 切片频繁扩容怎么办？
 
 **问题**:
+
 ```go
 // ❌ 频繁扩容
 var s []int
@@ -430,6 +445,7 @@ for i := 0; i < 100000; i++ {
 ```
 
 **解决方案**:
+
 ```go
 // ✅ 预分配容量
 s := make([]int, 0, 100000)
@@ -455,6 +471,7 @@ for i := 0; i < 100000; i++ {
 ### Q10: 内存泄露如何排查？
 
 **检测方法**:
+
 ```go
 // 1. 使用pprof heap
 go tool pprof -http=:8080 http://localhost:6060/debug/pprof/heap
@@ -474,6 +491,7 @@ defer trace.Stop()
 ```
 
 **常见原因**:
+
 ```go
 // ❌ 原因1: goroutine泄露
 func leak() {
@@ -523,6 +541,7 @@ func noLeak() {
 ### Q11: 如何减少GC压力？
 
 **方法**:
+
 ```go
 // ✅ 1. 对象池复用
 var bufPool = sync.Pool{
@@ -578,6 +597,7 @@ runtime.GC()
 ### Q12: errors.Is vs errors.As有什么区别？
 
 **区别**:
+
 ```go
 import "errors"
 import "fmt"
@@ -614,6 +634,7 @@ if errors.As(wrapped, &pathErr) {  // true
 ### Q13: defer中的错误如何处理？
 
 **方案**:
+
 ```go
 // ✅ 命名返回值
 func process() (err error) {
@@ -660,6 +681,7 @@ func process() error {
 ### Q14: 如何管理依赖版本？
 
 **方法**:
+
 ```bash
 # 初始化模块
 go mod init myproject
@@ -694,6 +716,7 @@ go mod why github.com/some/package
 ### Q15: 依赖冲突怎么办？
 
 **解决方案**:
+
 ```go
 // 使用 go.mod 的 replace
 module myproject
@@ -718,6 +741,7 @@ replace github.com/some/package => ../local/package
 ### Q16: 如何优雅关闭服务？
 
 **方案**:
+
 ```go
 package main
 
@@ -766,6 +790,7 @@ func main() {
 ### Q17: 生产环境如何调试？
 
 **方法**:
+
 ```go
 // 1. 动态日志级别
 var logLevel = zap.NewAtomicLevel()
@@ -816,6 +841,7 @@ http.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
 ### Q18: 如何调试goroutine？
 
 **方法**:
+
 ```go
 // 1. 打印goroutine信息
 import "runtime"
@@ -858,6 +884,7 @@ defer trace.Stop()
 ### Q19: 如何调试死锁？
 
 **方法**:
+
 ```go
 // 1. Go会自动检测死锁
 func deadlock() {
@@ -922,4 +949,3 @@ func (m *DebugMutex) Unlock() {
 
 > **快速解决问题，提升开发效率** 🚀  
 > **实战经验总结，避免常见陷阱** 💡
-

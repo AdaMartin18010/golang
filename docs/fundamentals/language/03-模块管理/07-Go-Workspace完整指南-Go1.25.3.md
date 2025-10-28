@@ -6,7 +6,6 @@
 
 ## 📋 目录
 
-
 - [1. 📖 Go Workspace概述](#1--go-workspace概述)
   - [1.1 什么是Go Workspace？](#11-什么是go-workspace)
   - [1.2 历史演进](#12-历史演进)
@@ -79,6 +78,7 @@
 Go Workspace是Go 1.18引入的多模块管理机制，通过`go.work`文件统一管理多个相关模块的开发环境。
 
 **核心价值**：
+
 - ✅ 同时开发多个相关模块
 - ✅ 本地模块无需发布即可测试
 - ✅ 简化跨模块调试
@@ -153,6 +153,7 @@ toolchain go1.25.3
 ```
 
 **说明**：
+
 - `go`版本决定语言特性和标准库API
 - `toolchain`指定编译器版本（Go 1.21+）
 - 建议使用最新稳定版本
@@ -178,6 +179,7 @@ use ${GOPATH}/src/example.com/module
 ```
 
 **查找规则**：
+
 1. 相对路径从`go.work`所在目录开始
 2. 每个路径必须包含有效的`go.mod`文件
 3. 路径不能重复
@@ -201,11 +203,13 @@ replace (
 ```
 
 **替换优先级**：
+
 ```text
 go.work replace > go.mod replace
 ```
 
 **注意事项**：
+
 - ⚠️ `go.work`中的`replace`会覆盖所有模块的`go.mod`中的`replace`
 - ⚠️ 生产环境不要使用`go.work`
 
@@ -218,11 +222,13 @@ golang.org/x/sync v0.5.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=
 ```
 
 **作用**：
+
 - 记录workspace中所有模块的依赖校验和
 - 确保依赖完整性和一致性
 - 自动生成和维护
 
 **与go.mod.sum的区别**：
+
 - `go.work.sum`: workspace级别的依赖校验
 - `go.sum`: 模块级别的依赖校验
 - 两者互补，共同保证安全性
@@ -294,6 +300,7 @@ import "github.com/someone/library"
 ```
 
 **特点**：
+
 - ✅ 简单直接
 - ✅ 适合单模块项目
 - ❌ 测试本地修改需要`replace`
@@ -317,6 +324,7 @@ import "example.com/library"
 ```
 
 **特点**：
+
 - ✅ 同时开发多个模块
 - ✅ 无需频繁修改`replace`
 - ✅ 支持跨模块调试
@@ -417,6 +425,7 @@ func main() {
 ```
 
 **优势**：
+
 - ✅ 修改`shared`包立即在所有服务中生效
 - ✅ 无需发布shared包到远程仓库
 - ✅ 统一管理所有服务的依赖
@@ -577,6 +586,7 @@ replace (
 ```
 
 **优势**：
+
 - ✅ 统一管理所有模块的依赖版本
 - ✅ 跨模块重构一次性完成
 - ✅ 本地测试所有模块间的集成
@@ -603,6 +613,7 @@ replace github.com/someone/library => ../library-fork
 ```
 
 **问题**：
+
 - ❌ 需要频繁修改go.mod
 - ❌ 容易忘记删除replace
 - ❌ CI/CD可能失败
@@ -632,6 +643,7 @@ use (
 ```
 
 **优势**：
+
 - ✅ go.mod保持干净
 - ✅ workspace文件不提交到版本控制
 - ✅ 调试完成后直接删除go.work
@@ -922,6 +934,7 @@ cat $GOWORK
 ### 6.3 实战案例
 
 参考本项目的go.work配置:
+
 - [根目录go.work](../../../../go.work) - 真实workspace配置示例
 
 ---
@@ -964,4 +977,3 @@ cat $GOWORK
 **版本**: Go 1.25.3  
 **更新日期**: 2025-10-28  
 **状态**: ✅ 生产就绪
-

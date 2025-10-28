@@ -4,9 +4,7 @@ Go模块管理完整指南，涵盖go.mod、go.sum、Go Workspace和版本管理
 
 ---
 
-
 ## 📋 目录
-
 
 - [📚 文档列表](#-文档列表)
 - [🚀 快速示例](#-快速示例)
@@ -24,17 +22,17 @@ Go模块管理完整指南，涵盖go.mod、go.sum、Go Workspace和版本管理
    - go.mod文件结构
    - module, require, replace
    - 版本选择算法
-   
+
 2. **[依赖管理](./02-依赖管理.md)** ⭐⭐⭐⭐⭐
    - go get, go mod tidy
    - 私有仓库
    - 版本约束
-   
+
 3. **[Go Workspace](./03-Go-Workspace.md)** ⭐⭐⭐⭐⭐
    - go.work文件
    - 多模块开发
    - Monorepo支持
-   
+
 4. **[版本管理](./04-版本管理.md)** ⭐⭐⭐⭐
    - 语义化版本(SemVer)
    - 版本标签
@@ -45,11 +43,13 @@ Go模块管理完整指南，涵盖go.mod、go.sum、Go Workspace和版本管理
 ## 🚀 快速示例
 
 ### 初始化模块
+
 ```bash
 go mod init github.com/username/myproject
 ```
 
 ### go.mod示例
+
 ```go
 module github.com/username/myproject
 
@@ -64,11 +64,13 @@ replace github.com/old/module => github.com/new/module v1.0.0
 ```
 
 ### Go Workspace
+
 ```bash
 go work init ./module1 ./module2
 ```
 
 ### go.work示例
+
 ```go
 go 1.25.3
 
@@ -80,6 +82,7 @@ use (
 ```
 
 ### 依赖管理
+
 ```bash
 # 添加依赖
 go get github.com/gin-gonic/gin@latest

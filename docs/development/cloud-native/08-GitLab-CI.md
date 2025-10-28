@@ -5,41 +5,7 @@
 > **难度**: ⭐⭐⭐⭐  
 > **标签**: #CI/CD #GitLab-CI #Pipeline #DevOps
 
-<!-- TOC START -->
-- [GitLab CI/CD](#gitlab-cicd)
-  - [8.1 📚 GitLab CI/CD概述](#81--gitlab-cicd概述)
-  - [8.2 🎯 Pipeline配置](#82--pipeline配置)
-    - [基础Pipeline](#基础pipeline)
-    - [多阶段Pipeline](#多阶段pipeline)
-  - [8.3 🧪 测试阶段](#83--测试阶段)
-    - [单元测试与集成测试](#单元测试与集成测试)
-    - [代码质量](#代码质量)
-  - [8.4 🐳 构建阶段](#84--构建阶段)
-    - [Docker镜像构建](#docker镜像构建)
-    - [使用Kaniko](#使用kaniko)
-  - [8.5 🔐 安全扫描](#85--安全扫描)
-    - [容器扫描](#容器扫描)
-    - [Trivy扫描](#trivy扫描)
-  - [8.6 🚀 部署阶段](#86--部署阶段)
-    - [Kubernetes部署](#kubernetes部署)
-    - [Helm部署](#helm部署)
-  - [8.7 📊 高级特性](#87--高级特性)
-    - [并行执行](#并行执行)
-    - [动态子Pipeline](#动态子pipeline)
-    - [自动回滚](#自动回滚)
-  - [8.8 🎯 最佳实践](#88--最佳实践)
-  - [8.9 ⚠️ 常见问题](#89-️-常见问题)
-    - [Q1: 如何加速GitLab CI？](#q1-如何加速gitlab-ci)
-    - [Q2: 如何调试Pipeline？](#q2-如何调试pipeline)
-    - [Q3: 多项目如何共享配置？](#q3-多项目如何共享配置)
-  - [8.10 📚 扩展阅读](#810--扩展阅读)
-    - [官方文档](#官方文档)
-    - [相关文档](#相关文档)
-<!-- TOC END -->
-
-
 ## 📋 目录
-
 
 - [8.1 📚 GitLab CI/CD概述](#81--gitlab-cicd概述)
 - [8.2 🎯 Pipeline配置](#82--pipeline配置)

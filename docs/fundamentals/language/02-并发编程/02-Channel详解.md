@@ -1,7 +1,6 @@
 # Channel详解
 
 > **简介**: Channel完整指南，包括无缓冲/有缓冲Channel、关闭Channel、select多路复用和最佳实践
-
 > **版本**: Go 1.25.3  
 > **难度**: ⭐⭐⭐⭐  
 > **标签**: #并发 #Channel #select #通信
@@ -49,6 +48,7 @@
 ### 什么是Channel
 
 **Channel** 是Go中的通信机制：
+
 - 用于Goroutine之间传递数据
 - 类型安全的管道
 - 支持同步和异步通信
@@ -609,4 +609,3 @@ func noLeak(ctx context.Context) <-chan int {
 
 **最后更新**: 2025-10-28  
 **Go版本**: 1.25.3
-

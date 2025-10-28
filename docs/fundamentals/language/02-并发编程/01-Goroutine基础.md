@@ -1,7 +1,6 @@
 # Goroutine基础
 
 > **简介**: Goroutine基础完整指南，包括创建、调度、GMP模型和最佳实践
-
 > **版本**: Go 1.25.3  
 > **难度**: ⭐⭐⭐  
 > **标签**: #并发 #Goroutine #GMP #调度器
@@ -9,7 +8,6 @@
 ---
 
 ## 📋 目录
-
 
 - [1. Goroutine简介](#1-goroutine简介)
   - [什么是Goroutine](#什么是goroutine)
@@ -39,6 +37,7 @@
 ### 什么是Goroutine
 
 **Goroutine** 是Go语言的轻量级线程：
+
 - 由Go运行时管理，而非操作系统
 - 启动成本低（约2KB栈空间）
 - 可以创建成千上万个
@@ -154,7 +153,7 @@ func main() {
 - **M (Machine)**: 操作系统线程
 - **P (Processor)**: 调度器的上下文（逻辑处理器）
 
-```
+```text
 ┌─────────────────────────────────────┐
 │         Global Queue                │
 │     (全局Goroutine队列)              │
@@ -182,7 +181,7 @@ func main() {
 
 1. **工作窃取 (Work Stealing)**:
    - P的本地队列为空时，从其他P窃取一半的goroutine
-   
+
 2. **系统调用**:
    - Goroutine进行系统调用时，M会与P分离
    - P会寻找其他空闲M或创建新M
@@ -385,4 +384,3 @@ func main() {
 
 **最后更新**: 2025-10-28  
 **Go版本**: 1.25.3
-
