@@ -21,7 +21,6 @@
 
 ---
 
-
 ---
 
 ## 📋 目录
@@ -106,6 +105,7 @@ spec:
 ```
 
 **部署**:
+
 ```bash
 kubectl apply -f deployment.yaml
 kubectl get deployments
@@ -133,6 +133,7 @@ spec:
 ```
 
 **更新应用**:
+
 ```bash
 # 更新镜像
 kubectl set image deployment/myapp myapp=myapp:2.0.0
@@ -180,6 +181,7 @@ spec:
 ```
 
 **应用**:
+
 ```bash
 kubectl apply -f hpa.yaml
 kubectl get hpa
@@ -304,6 +306,7 @@ data:
 ```
 
 **在Deployment中使用**:
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -350,6 +353,7 @@ data:
 ```
 
 **创建Secret**:
+
 ```bash
 # 从字面值创建
 kubectl create secret generic myapp-secret \
@@ -362,6 +366,7 @@ kubectl create secret generic myapp-secret \
 ```
 
 **使用Secret**:
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -435,6 +440,7 @@ spec:
 ```
 
 **Go应用中实现**:
+
 ```go
 func healthHandler(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
@@ -587,7 +593,7 @@ spec:
 
 ### 2. 使用Kustomize
 
-```
+```text
 k8s/
 ├── base/
 │   ├── deployment.yaml
@@ -603,6 +609,7 @@ k8s/
 ```
 
 **base/kustomization.yaml**:
+
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -616,6 +623,7 @@ commonLabels:
 ```
 
 **overlays/prod/kustomization.yaml**:
+
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -633,6 +641,7 @@ images:
 ```
 
 **部署**:
+
 ```bash
 # 开发环境
 kubectl apply -k k8s/overlays/dev
@@ -661,6 +670,7 @@ myapp/
 ```
 
 **values.yaml**:
+
 ```yaml
 replicaCount: 3
 
@@ -691,6 +701,7 @@ resources:
 ```
 
 **部署**:
+
 ```bash
 # 安装
 helm install myapp ./myapp
@@ -726,6 +737,7 @@ resources:
 ```
 
 **部署不同环境**:
+
 ```bash
 # 开发环境
 helm install myapp ./myapp -f values-dev.yaml
@@ -754,6 +766,7 @@ spec:
 ```
 
 **日志收集**:
+
 ```yaml
 # 使用fluentd收集日志
 apiVersion: v1

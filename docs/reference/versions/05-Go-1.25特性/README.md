@@ -4,9 +4,7 @@ Go 1.25版本特性完整指南，涵盖容器感知、greenteagc、语言改进
 
 ---
 
-
 ## 📋 目录
-
 
 - [🎯 核心特性](#核心特性)
   - [1. 容器感知型GOMAXPROCS ⭐⭐⭐⭐⭐](#1.-容器感知型gomaxprocs)
@@ -27,6 +25,7 @@ Go 1.25版本特性完整指南，涵盖容器感知、greenteagc、语言改进
 ### 1. 容器感知型GOMAXPROCS ⭐⭐⭐⭐⭐
 
 **自动适配容器资源限制**:
+
 ```go
 // Go 1.25会自动检测Linux cgroup限制
 // 无需手动设置GOMAXPROCS
@@ -40,11 +39,13 @@ runtime.GOMAXPROCS(runtime.NumCPU())
 ```
 
 **场景**:
+
 - Kubernetes Pod CPU限制
 - Docker容器CPU限制
 - 避免过度调度
 
 **效果**:
+
 - 性能提升5-15%
 - 避免CPU争抢
 - 更好的资源利用
@@ -54,6 +55,7 @@ runtime.GOMAXPROCS(runtime.NumCPU())
 ### 2. greenteagc实验性GC ⭐⭐⭐⭐⭐
 
 **新型垃圾回收器**:
+
 ```bash
 # 启用greenteagc
 GOEXPERIMENT=greenteagc go build
@@ -63,11 +65,13 @@ export GOEXPERIMENT=greenteagc
 ```
 
 **优势**:
+
 - GC开销降低10-40%
 - 更低的延迟
 - 更少的STW时间
 
 **适用场景**:
+
 - 高并发服务
 - 低延迟要求
 - 大内存应用
@@ -77,6 +81,7 @@ export GOEXPERIMENT=greenteagc
 ### 3. Nil Pointer Panic改进 ⭐⭐⭐⭐
 
 **更准确的错误提示**:
+
 ```go
 // Go 1.24
 panic: runtime error: invalid memory address or nil pointer dereference
@@ -86,6 +91,7 @@ panic: runtime error: nil pointer dereference at field User.Name
 ```
 
 **改进**:
+
 - 更精确的字段定位
 - 更快的调试速度
 - 更好的错误信息
@@ -95,11 +101,13 @@ panic: runtime error: nil pointer dereference at field User.Name
 ### 4. DWARF v5调试支持 ⭐⭐⭐⭐
 
 **调试信息升级**:
+
 ```bash
 go build -gcflags="-dwarfv=5" -o myapp
 ```
 
 **优势**:
+
 - 二进制大小减少30%
 - 更快的调试速度
 - 更好的IDE支持
@@ -109,6 +117,7 @@ go build -gcflags="-dwarfv=5" -o myapp
 ### 5. 移除"core types"概念 ⭐⭐⭐
 
 **简化泛型规范**:
+
 ```go
 // Go 1.24及之前需要理解"core types"
 type Number interface {
@@ -122,6 +131,7 @@ type Number interface {
 ```
 
 **改进**:
+
 - 更简单的泛型概念
 - 更容易理解的规范
 - 更少的学习曲线
@@ -142,6 +152,7 @@ type Number interface {
 ### 从Go 1.24升级
 
 **1. 容器环境优化**:
+
 ```bash
 # 删除手动GOMAXPROCS设置
 # runtime.GOMAXPROCS(n) // 不再需要
@@ -150,6 +161,7 @@ type Number interface {
 ```
 
 **2. 启用greenteagc**:
+
 ```bash
 # Dockerfile
 ENV GOEXPERIMENT=greenteagc
@@ -160,6 +172,7 @@ GOEXPERIMENT=greenteagc go build
 ```
 
 **3. 利用改进的错误信息**:
+
 ```go
 // 添加更好的错误处理
 if user == nil {

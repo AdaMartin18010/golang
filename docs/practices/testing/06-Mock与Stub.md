@@ -155,6 +155,7 @@ type UserRepository interface {
 ```
 
 生成的mock：
+
 ```go
 // mock_repository.go (自动生成)
 package service
@@ -172,6 +173,7 @@ type MockUserRepository struct {
 ```
 
 使用：
+
 ```go
 func TestUserService_WithGomock(t *testing.T) {
     ctrl := gomock.NewController(t)
@@ -410,19 +412,23 @@ func TestService_Delete(t *testing.T) {
 **版本**: v1.0  
 **更新日期**: 2025-10-29  
 **适用于**: Go 1.25.3
+
 - **Mock**: 验证交互行为（关注行为）
 
 **Q2: 何时使用Mock？**
+
 - 外部依赖（数据库、API）
 - 难以构造的场景（错误情况）
 - 昂贵的操作（网络、IO）
 
 **Q3: Mock过多是坏味道吗？**
+
 - 是的，可能表示设计问题
 - 考虑重构，减少依赖
 - 使用依赖注入
 
 **Q4: 如何Mock私有函数？**
+
 - 不应该Mock私有函数
 - 通过公有接口测试
 - 或者重构为可测试结构

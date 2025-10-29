@@ -21,11 +21,9 @@
 
 ---
 
-
 ---
 
 ## 📋 目录
-
 
 - [1. 基础Dockerfile](#1.-基础dockerfile)
   - [简单Dockerfile](#简单dockerfile)
@@ -74,6 +72,7 @@ CMD ["./main"]
 ```
 
 **构建和运行**:
+
 ```bash
 # 构建镜像
 docker build -t myapp:latest .
@@ -123,6 +122,7 @@ CMD ["./main"]
 ```
 
 **优势**:
+
 - 最终镜像不包含Go编译器
 - 镜像大小显著减小（从800MB+ → 10MB+）
 - 更安全（攻击面小）
@@ -164,6 +164,7 @@ ENTRYPOINT ["/main"]
 ```
 
 **优势**:
+
 - 镜像大小最小（<10MB）
 - 最安全
 - 适合纯Go应用（无CGO依赖）
@@ -197,7 +198,7 @@ CMD ["./main"]
 
 ### 使用.dockerignore
 
-```
+```text
 # .dockerignore
 .git
 .gitignore
@@ -241,6 +242,7 @@ ENTRYPOINT ["/main"]
 ```
 
 **标志说明**:
+
 - `-ldflags="-w -s"`: 去除调试信息，减小25-30%大小
 - `-trimpath`: 去除文件系统路径，提高可重复性
 - `CGO_ENABLED=0`: 静态链接，无libc依赖
@@ -285,6 +287,7 @@ volumes:
 ```
 
 **运行**:
+
 ```bash
 # 启动所有服务
 docker-compose up -d
@@ -403,6 +406,7 @@ CMD ["./main"]
 ```
 
 **Go应用中实现健康检查端点**:
+
 ```go
 func healthCheck(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
@@ -435,6 +439,7 @@ CMD ["./main"]
 ```
 
 **Go代码中读取环境变量**:
+
 ```go
 port := os.Getenv("PORT")
 if port == "" {
@@ -474,6 +479,7 @@ CMD ["./main"]
 ```
 
 **构建时传递参数**:
+
 ```bash
 docker build \
   --build-arg VERSION=1.0.0 \
@@ -482,6 +488,7 @@ docker build \
 ```
 
 **Go代码中使用**:
+
 ```go
 var (
     Version   string
@@ -520,6 +527,7 @@ CMD ["./main"]
 ```
 
 **构建多架构镜像**:
+
 ```bash
 # 创建builder
 docker buildx create --name multiarch --use

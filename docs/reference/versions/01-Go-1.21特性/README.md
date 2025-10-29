@@ -9,6 +9,7 @@ Go 1.21版本特性完整指南，涵盖新增功能、性能优化和标准库�
 ### 1. 内置函数增强 ⭐⭐⭐⭐⭐
 
 **min/max/clear函数**:
+
 ```go
 // min/max: 返回最小/最大值
 x := min(1, 2, 3)  // 1
@@ -25,6 +26,7 @@ clear(s)  // s所有元素置为零值
 ### 2. PGO (Profile-Guided Optimization) ⭐⭐⭐⭐⭐
 
 **性能优化**:
+
 ```bash
 # 1. 收集性能数据
 go test -cpuprofile=cpu.pprof
@@ -44,10 +46,12 @@ go build -pgo=cpu.pprof
 ### 4. 标准库更新
 
 **新增包**:
+
 - `log/slog`: 结构化日志
 - `cmp`: 比较函数
 
 **slog示例**:
+
 ```go
 import "log/slog"
 

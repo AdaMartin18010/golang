@@ -258,7 +258,7 @@ go work sync
 
 ### 2.3 更新依赖流程
 
-#### Go Modules
+#### Go Modules 1
 
 ```bash
 # 更新单个依赖
@@ -277,7 +277,7 @@ go mod tidy
 go list -u -m all
 ```
 
-#### Go Workspace
+#### Go Workspace 2
 
 ```bash
 # workspace不管理依赖版本

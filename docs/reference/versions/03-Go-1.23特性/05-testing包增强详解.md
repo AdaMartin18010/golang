@@ -15,11 +15,7 @@
 
 ---
 
-
----
-
 ## 📋 目录
-
 
 - [1. testing包增强概述](#1.-testing包增强概述)
   - [1.1 Go 1.23的testing改进](#11-go-1.23的testing改进)
@@ -129,7 +125,7 @@ func Run(t *testing.T, newHandler func() slog.Handler, checks ...Check)
 
 ### 2.2 基本用法
 
-**示例1：测试标准Handler**
+**示例1：测试标准Handler**:
 
 ```go
 package mylog_test
@@ -154,7 +150,7 @@ func TestJSONHandler(t *testing.T) {
 }
 ```
 
-**示例2：使用TestHandler**
+**示例2：使用TestHandler**:
 
 ```go
 func TestCustomHandler(t *testing.T) {
@@ -173,7 +169,7 @@ func TestCustomHandler(t *testing.T) {
 
 ### 2.3 测试自定义Handler
 
-**完整示例：自定义Handler测试**
+**完整示例：自定义Handler测试**:
 
 ```go
 package customlog
@@ -274,7 +270,7 @@ func TestCustomHandlerWithAttrs(t *testing.T) {
 
 ### 2.4 常见测试场景
 
-**场景1：测试日志级别过滤**
+**场景1：测试日志级别过滤**:
 
 ```go
 func TestHandlerLevelFilter(t *testing.T) {
@@ -304,7 +300,7 @@ func TestHandlerLevelFilter(t *testing.T) {
 }
 ```
 
-**场景2：测试属性组**
+**场景2：测试属性组**:
 
 ```go
 func TestHandlerGroups(t *testing.T) {
@@ -335,7 +331,7 @@ func TestHandlerGroups(t *testing.T) {
 }
 ```
 
-**场景3：测试上下文处理**
+**场景3：测试上下文处理**:
 
 ```go
 func TestHandlerContext(t *testing.T) {
@@ -380,7 +376,7 @@ func TestHandlerContext(t *testing.T) {
 //         Diff:     +42
 ```
 
-**最佳实践：使用t.Helper()**
+**最佳实践：使用t.Helper()**:
 
 ```go
 func assertEqual[T comparable](t *testing.T, got, want T) {
@@ -504,7 +500,7 @@ func TestConcurrentOperations(t *testing.T) {
 
 ### 4.2 并发测试最佳实践
 
-**模式1：共享资源隔离**
+**模式1：共享资源隔离**:
 
 ```go
 func TestConcurrentAccess(t *testing.T) {
@@ -534,7 +530,7 @@ func TestConcurrentAccess(t *testing.T) {
 }
 ```
 
-**模式2：并发安全验证**
+**模式2：并发安全验证**:
 
 ```go
 func TestConcurrentMapAccess(t *testing.T) {

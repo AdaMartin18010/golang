@@ -8,9 +8,7 @@ Welcome to the Go 1.25.3 comprehensive documentation! This documentation is orga
 
 ---
 
-
 ## 📋 目录
-
 
 - [🚀 Quick Start](#quick-start)
 - [📚 Documentation Structure](#documentation-structure)
@@ -51,10 +49,13 @@ New to Go? Start here:
 ## 📚 Documentation Structure
 
 ### 🎯 [Getting Started](./getting-started/)
+
 Fast-track your Go journey with quick starts, installation guides, and essential FAQs.
 
 ### 📖 [Fundamentals](./fundamentals/)
+
 Master the core concepts of Go 1.25.3:
+
 - **[Language](./fundamentals/language/)** - Syntax, semantics, and formal theory
 - **[Concurrency](./fundamentals/concurrency/)** - Goroutines, channels, and patterns ⭐ 新增
 - **[Modules](./fundamentals/language/03-模块管理/)** - Go Modules & Workspace ⭐ 2025最新
@@ -62,14 +63,18 @@ Master the core concepts of Go 1.25.3:
 - **[Data Structures](./fundamentals/data-structures/)** - Algorithms and data structures
 
 ### 💻 [Development](./development/)
+
 Build production-ready applications:
+
 - **[Web](./development/web/)** - HTTP, frameworks (Gin/Echo/Fiber), HTTP/3
 - **[Database](./development/database/)** - SQL, NoSQL, and vector databases
 - **[Microservices](./development/microservices/)** - gRPC, service mesh, API gateway
 - **[Cloud Native](./development/cloud-native/)** - Kubernetes, Docker, GitOps
 
 ### 🚀 [Advanced](./advanced/)
+
 Deep dive into advanced topics:
+
 - **[Performance](./advanced/performance/)** - Optimization, profiling, and PGO
 - **[Architecture](./advanced/architecture/)** - Design patterns and best practices
 - **[Distributed](./advanced/distributed/)** - Distributed systems and tracing ⭐ 新增
@@ -78,20 +83,26 @@ Deep dive into advanced topics:
 - **[Modern Web](./advanced/modern-web/)** - WebSocket, GraphQL, gRPC-Web ⭐ 新增
 
 ### 🛠️ [Practices](./practices/)
+
 Engineering excellence:
+
 - **[Engineering](./practices/engineering/)** - Code quality, structure, and tooling
 - **[Testing](./practices/testing/)** - Unit, integration, and benchmark tests ⭐ 新增
 - **[Deployment](./practices/deployment/)** - CI/CD and production deployment ⭐ 新增
 - **[Observability](./practices/observability/)** - Logging, metrics, and tracing
 
 ### 💡 [Projects](./projects/)
+
 Learn by building:
+
 - **[Tutorials](./projects/tutorials/)** - Step-by-step guides
 - **[Examples](./projects/examples/)** - Code samples and demos
 - **[Templates](./projects/templates/)** - Project starter templates ⭐ 新增
 
 ### 📚 [Reference](./reference/)
+
 Quick references and resources:
+
 - **[API](./reference/api/)** - API documentation ⭐ 新增
 - **[Versions](./reference/versions/)** - Go version features and migration
 - **[Guides](./reference/guides/)** - Quick reference manuals ⭐ 新增
@@ -146,6 +157,7 @@ Quick references and resources:
 ### 🎉 重大更新
 
 **知识体系完整解析**:
+
 - ✅ **[知识体系总览](./00-Go-1.25.3完整知识体系总览-2025.md)** - 12,000+字系统总览
 - ✅ **[核心机制解析](./fundamentals/language/00-Go-1.25.3核心机制完整解析/)** - 63,000+字深度解析
   - 类型系统（15,000+字）
@@ -154,6 +166,7 @@ Quick references and resources:
   - CSP模型（15,000+字）
 
 **实用文档体系**:
+
 - ✅ **[快速参考手册](./📚-Go-1.25.3快速参考手册-2025.md)** - 8,000+字速查手册
 - ✅ **[学习检查清单](./✅-Go-1.25.3学习检查清单-2025.md)** - 150+任务清单
 - ✅ **[实战开发导航](./🎯-Go-1.25.3实战开发导航-2025.md)** - 100+实战主题

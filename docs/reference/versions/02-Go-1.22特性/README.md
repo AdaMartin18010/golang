@@ -9,6 +9,7 @@ Go 1.22版本特性完整指南，涵盖语言改进、性能优化和标准库�
 ### 1. for循环改进 ⭐⭐⭐⭐⭐
 
 **循环变量作用域修复**:
+
 ```go
 // Go 1.21及之前 (Bug!)
 for _, v := range values {
@@ -37,6 +38,7 @@ for i := range 10 {
 ### 3. HTTP路由增强 ⭐⭐⭐⭐⭐
 
 **方法匹配**:
+
 ```go
 http.HandleFunc("GET /posts/{id}", getPost)
 http.HandleFunc("POST /posts", createPost)
@@ -44,6 +46,7 @@ http.HandleFunc("DELETE /posts/{id}", deletePost)
 ```
 
 **路径参数**:
+
 ```go
 func getPost(w http.ResponseWriter, r *http.Request) {
     id := r.PathValue("id")
