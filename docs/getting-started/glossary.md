@@ -274,24 +274,9 @@ type Employee struct {
 
 ### HTTP路由增强 (HTTP Routing Enhancement)
 
-**版本**: Go 1.22+ (Go 1.25.3完善)  
-**特性**: `http.ServerMux`支持方法和路径参数  
-**语法**: `mux.HandleFunc("GET /users/{id}", handler)`  
-**方法**: `r.PathValue("id")` 获取路径参数  
-**增强**: 通配符路径 `{path...}`、优先级路由  
-**相关文档**: [Go 1.25特性](10-Go版本特性/05-Go-1.25特性/README.md)
-
----
-
 ## I
 
 ### iter包
-
-**版本**: Go 1.23+ (Go 1.25.3优化)  
-**定义**: 标准库迭代器包  
-**类型**: `Seq[T]`, `Seq2[K,V]`  
-**特性**: pull迭代器、适配器函数  
-**相关文档**: [Go 1.25特性](10-Go版本特性/05-Go-1.25特性/README.md)
 
 ### Interface (接口)
 
@@ -412,13 +397,6 @@ type Reader interface {
 **相关文档**: [并发模式](01-语言基础/02-并发编程/07-并发模式实战深度指南.md)
 
 ### PGO (Profile-Guided Optimization)
-
-**版本**: Go 1.20+ (Go 1.25.3增强)  
-**定义**: 基于运行时性能数据的编译优化  
-**文件**: `default.pgo`  
-**命令**: `go build -pgo=auto`  
-**效果**: 5-15%性能提升  
-**相关文档**: [Go 1.25特性](10-Go版本特性/05-Go-1.25特性/README.md)
 
 ### Pointer (指针)
 
@@ -547,15 +525,6 @@ type Person struct {
 ## U
 
 ### unique包
-
-**版本**: Go 1.23+ (实验性，Go 1.25.3优化)  
-**定义**: 值规范化包，确保相同值只有一个内存实例  
-**类型**: `Handle[T]`  
-**方法**: `unique.Make(v)` 创建规范化值  
-**用途**: 减少内存占用、加速比较操作  
-**相关文档**: [Go 1.25特性](10-Go版本特性/05-Go-1.25特性/README.md)
-
----
 
 ## W
 

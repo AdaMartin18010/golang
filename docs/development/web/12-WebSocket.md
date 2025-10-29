@@ -9,28 +9,14 @@
 > **难度**: ⭐⭐⭐⭐
 > **标签**: #Web #WebSocket #实时通信 #gorilla
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
-**适用于**: Go 1.25.3
-
----
-
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
-**适用于**: Go 1.23+
-
----
-
-
 ## 📋 目录
-
 
 - [📚 **理论分析**](#理论分析)
   - [**WebSocket原理**](#websocket原理)
   - [**协议流程**](#协议流程)
   - [**安全与性能**](#安全与性能)
 - [💻 **代码示例**](#代码示例)
-  - [**标准库+第三方库（gorilla/websocket）**](#标准库第三方库gorillawebsocket)
+  - [**标准库+第三方库（gorilla/websocket）**](#标准库+第三方库gorillawebsocket)
   - [**Gin集成WebSocket**](#gin集成websocket)
   - [**Echo集成WebSocket**](#echo集成websocket)
   - [**Fiber集成WebSocket**](#fiber集成websocket)

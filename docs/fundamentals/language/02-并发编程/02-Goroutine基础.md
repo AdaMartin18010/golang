@@ -18,7 +18,7 @@
 - [💻 **代码示例**](#代码示例)
   - [**创建与运行Goroutine**](#创建与运行goroutine)
   - [**Goroutine并发执行**](#goroutine并发执行)
-  - [**使用sync.WaitGroup等待Goroutine完成**](#使用sync.waitgroup等待goroutine完成)
+  - [**使用sync.WaitGroup等待Goroutine完成**](#使用sync-waitgroup等待goroutine完成)
   - [**Goroutine泄漏示例与避免**](#goroutine泄漏示例与避免)
 - [📊 **性能分析**](#性能分析)
 - [🧪 **测试代码**](#测试代码)

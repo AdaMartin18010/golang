@@ -9,7 +9,7 @@
 ## 📋 目录
 
 
-- [1. 📖 主流Go Web框架](#1.-主流go-web框架)
+- [1. 📖 主流Go Web框架](#1-主流go-web框架)
   - [Gin框架](#gin框架)
   - [Fiber框架](#fiber框架)
   - [Echo框架](#echo框架)

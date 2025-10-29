@@ -9,7 +9,7 @@
 ## 📋 目录
 
 
-- [1. 📖 gqlgen入门](#1.-gqlgen入门)
+- [1. 📖 gqlgen入门](#1-gqlgen入门)
 - [🔍 DataLoader](#dataloader)
 - [📊 分页](#分页)
 - [💡 订阅 (Subscriptions)](#订阅-subscriptions)
