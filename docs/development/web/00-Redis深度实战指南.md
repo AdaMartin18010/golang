@@ -2127,7 +2127,7 @@ func InventoryExample() {
 
 Made with ❤️ for High-Performance System Developers
 
-[⬆ 回到顶部](#redis)
+[⬆ 回到顶部](#回到顶部)
 
 </div>
 

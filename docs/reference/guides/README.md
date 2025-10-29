@@ -4,9 +4,7 @@ Go语言学习指南，包含学习路线图、资源汇总和常见问题解答
 
 ---
 
-
 ## 📋 目录
-
 
 - [📚 文档导航](#文档导航)
   - [核心内容](#核心内容)
@@ -87,30 +85,35 @@ go run main.go
 ## 📖 学习路径
 
 ### 阶段1: 基础入门 (1-2周)
+
 - 环境搭建
 - 基本语法
 - 控制流
 - 函数与包
 
 ### 阶段2: 核心特性 (2-4周)
+
 - 数据结构
 - 接口
 - 错误处理
 - 并发编程
 
 ### 阶段3: Web开发 (2-3周)
+
 - HTTP服务器
 - RESTful API
 - 数据库操作
 - Web框架
 
 ### 阶段4: 进阶实践 (4-6周)
+
 - 微服务
 - gRPC
 - 消息队列
 - 性能优化
 
 ### 阶段5: 专家级 (持续)
+
 - 源码阅读
 - 分布式系统
 - 云原生
@@ -121,10 +124,12 @@ go run main.go
 ## 🛠️ 推荐工具
 
 ### IDE
+
 - Visual Studio Code + Go扩展
 - GoLand (JetBrains)
 
 ### 工具链
+
 - golangci-lint - 代码检查
 - delve - 调试器
 - pprof - 性能分析
@@ -134,11 +139,13 @@ go run main.go
 ## 📚 推荐资源
 
 ### 官方资源
+
 - [Go官方网站](https://go.dev/)
 - [Go标准库](https://pkg.go.dev/std)
 - [Effective Go](https://go.dev/doc/effective_go)
 
 ### 社区资源
+
 - [Awesome Go](https://github.com/avelino/awesome-go)
 - [Go Forum](https://forum.golangbridge.org/)
 - [Go Blog](https://go.dev/blog/)

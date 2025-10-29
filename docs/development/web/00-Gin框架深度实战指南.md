@@ -2278,7 +2278,7 @@ func setupECommerceRoutes(r *gin.Engine, handlers *Handlers) {
 
 Made with ❤️ for Gin Framework Developers
 
-[⬆ 回到顶部](#gin框架)
+[⬆ 回到顶部](#回到顶部)
 
 </div>
 

@@ -16,7 +16,7 @@
   - [读写锁RWMutex](#读写锁rwmutex)
     - [RWMutex并发控制可视化](#rwmutex并发控制可视化)
     - [RWMutex读写时序图](#rwmutex读写时序图)
-  - [WaitGroup](#waitgroup时序图)
+  - [WaitGroup](#waitgroup)
     - [WaitGroup工作流程](#waitgroup工作流程)
     - [WaitGroup时序图](#waitgroup时序图)
   - [Once](#once)

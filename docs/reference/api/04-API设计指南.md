@@ -8,7 +8,6 @@
 
 ## 📋 目录
 
-
 - [1. RESTful API设计](#1.-restful-api设计)
   - [资源命名](#资源命名)
   - [HTTP方法](#http方法)
@@ -34,7 +33,7 @@
 
 ### 资源命名
 
-```
+```text
 ✅ 好的命名
 GET    /api/users          # 获取用户列表
 GET    /api/users/:id      # 获取单个用户
@@ -263,7 +262,7 @@ func GetUsers(c *gin.Context) {
 
 ### 过滤和排序
 
-```
+```text
 GET /api/users?status=active&sort=-created_at&fields=id,name,email
 ```
 

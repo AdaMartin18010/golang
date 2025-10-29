@@ -13,7 +13,7 @@
 - [3. GitLab CI](#3.-gitlab-ci)
   - [基础配置](#基础配置)
   - [多环境部署](#多环境部署)
-- [4. Jenkins](#jenkinsfile)
+- [4. Jenkins](#4.-jenkins)
   - [Jenkinsfile](#jenkinsfile)
 - [5. 完整Pipeline](#5.-完整pipeline)
   - [多阶段Dockerfile](#多阶段dockerfile)

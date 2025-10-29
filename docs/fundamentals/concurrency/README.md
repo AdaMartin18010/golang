@@ -17,6 +17,7 @@ Go并发编程完整指南，涵盖Goroutine、Channel、Context和并发模式�
 ## 🎯 核心概念
 
 ### Goroutine
+
 ```go
 go func() {
     fmt.Println("Hello from goroutine!")
@@ -24,6 +25,7 @@ go func() {
 ```
 
 ### Channel
+
 ```go
 ch := make(chan int, 10)
 ch <- 42
@@ -31,6 +33,7 @@ value := <-ch
 ```
 
 ### Context
+
 ```go
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 defer cancel()

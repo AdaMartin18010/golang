@@ -778,20 +778,24 @@ func main() {
 ## ⚠️ 常见问题
 
 ### Q1: Context应该在什么时候取消？
+
 - 任务完成后立即取消
 - 使用defer cancel()确保释放资源
 - 超时后自动取消
 
 ### Q2: Context.Value应该存储什么？
+
 - ✅ 请求范围的值（requestID、traceID、用户信息）
 - ❌ 可选参数、配置、业务数据
 
 ### Q3: Context会泄漏吗？
+
 - 如果不调用cancel，会导致资源泄漏
 - 使用defer cancel()确保释放
 - 父Context取消会自动清理子Context
 
 ### Q4: 如何测试使用Context的代码？
+
 ```go
 func TestWithTimeout(t *testing.T) {
     ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
@@ -809,10 +813,12 @@ func TestWithTimeout(t *testing.T) {
 ## 📚 相关资源
 
 ### 下一步学习
+
 - [05-并发模式](./05-并发模式.md)
 - [HTTP服务器](../../development/web/03-HTTP服务器.md)
 
 ### 推荐阅读
+
 - [Go Blog - Context](https://go.dev/blog/context)
 - [Context Package Doc](https://pkg.go.dev/context)
 
@@ -820,4 +826,3 @@ func TestWithTimeout(t *testing.T) {
 
 **最后更新**: 2025-10-29  
 **作者**: Documentation Team
-

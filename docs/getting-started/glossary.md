@@ -14,30 +14,27 @@
 
 
 - [📑 索引](#索引)
-- [A](#wasi-webassembly-system-interface)
+- [A](#a)
   - [API Gateway (API网关)](#api-gateway-api网关)
   - [Array (数组)](#array-数组)
 - [B](#b)
   - [Benchmark (基准测试)](#benchmark-基准测试)
   - [Buffered Channel (带缓冲Channel)](#buffered-channel-带缓冲channel)
-- [C](#csp-communicating-sequential-processes)
-  - [Channel (通道)](#channel-通道)
+- [C](#csp-communicating-sequentia[C](#c)
   - [Circuit Breaker (熔断器)](#circuit-breaker-熔断器)
   - [Context (上下文)](#context-上下文)
   - [CSP (Communicating Sequential Processes)](#csp-communicating-sequential-processes)
 - [D](#docker)
   - [Defer (延迟执行)](#defer-延迟执行)
   - [Docker](#docker)
-- [E](#embedding-嵌入)
+- [D](#d)ng-嵌入)
   - [Embedding (嵌入)](#embedding-嵌入)
 - [F](#fan-in-扇入)
-  - [Fan-In (扇入)](#fan-in-扇入)
+ [E](#e)fan-in-扇入)
   - [Fan-Out (扇出)](#fan-out-扇出)
-- [G](#waitgroup)
-  - [GC (Garbage Collection)](#gc-garbage-collection)
+- [G](#[F](#f)[GC (Garbage Collection)](#gc-garbage-collection)
   - [Gin](#gin)
-  - [GitOps](#gitops)
-  - [GMP模型](#gmp模型)
+  - [Gi[G](#g)  - [GMP模型](#gmp模型)
   - [Generics (泛型)](#generics-泛型)
   - [GOAUTH](#goauth)
   - [Go Modules](#go-modules)
@@ -46,94 +43,57 @@
   - [gRPC](#grpc)
 - [H](#http2)
   - [HTTP/2](#http2)
-  - [HTTP路由增强 (HTTP Routing Enhancement)](#http路由增强-http-routing-enhancement)
-- [I](#fan-in-扇入)
+  - [HTTP路由增强 (HTTP Routing Enhancement)](#http路由增强-http-routing-enh[H](#h) [I](#fan-in-扇入)
   - [iter包](#iter包)
   - [Interface (接口)](#interface-接口)
   - [Istio](#istio)
-- [J](#jwt-json-web-token)
-  - [JWT (JSON Web Token)](#jwt-json-web-token)
+- [J](#jwt-js[I](#i) - [JWT (JSON Web Token)](#jwt-json-web-token)
 - [K](#kubernetes-k8s)
-  - [Kubernetes (K8s)](#kubernetes-k8s)
-- [L](#l)
+  - [Kubernetes ([J](#j) [L](#l)
   - [Load Balancing (负载均衡)](#load-balancing-负载均衡)
-- [M](#rwmutex-读写锁)
-  - [Map (映射)](#map-映射)
+- [M](#rw[K](#k)(映射)](#map-映射)
   - [Middleware (中间件)](#middleware-中间件)
   - [Mutex (互斥锁)](#mutex-互斥锁)
 - [N](#n)
   - [nil](#nil)
-- [O](#orm-object-relational-mapping)
+- [O][M](#m)tional-mapping)
   - [ORM (Object-Relational Mapping)](#orm-object-relational-mapping)
 - [P](#csp-communicating-sequential-processes)
-  - [Panic](#panic)
-  - [Pipeline (管道)](#pipeline-管道)
+[O](#o)管道)](#pipeline-管道)
   - [PGO (Profile-Guided Optimization)](#pgo-profile-guided-optimization)
-  - [Pointer (指针)](#pointer-指针)
-  - [pprof](#pprof)
-  - [Prometheus](#prometheus)
+  - [Poi[P](#p)  - [Prometheus](#prometheus)
 - [R](#rwmutex-读写锁)
   - [Race Condition (竞态条件)](#race-condition-竞态条件)
   - [Redis](#redis)
   - [REST (Representational State Transfer)](#rest-representational-state-transfer)
   - [RWMutex (读写锁)](#rwmutex-读写锁)
-- [S](#csp-communicating-sequential-processes)
+- [S](#csp-c[R](#r)ential-processes)
   - [Select](#select)
   - [Service Discovery (服务发现)](#service-discovery-服务发现)
   - [Service Mesh (服务网格)](#service-mesh-服务网格)
   - [Slice (切片)](#slice-切片)
-  - [Struct (结构体)](#struct-结构体)
-- [T](#testing)
-  - [Testing](#testing)
-- [U](#u)
+  - [Struct (结构体)](#struct-结构体)[S](#s)U](#u)
   - [unique包](#unique包)
 - [W](#websocket)
   - [WaitGroup](#waitgroup)
   - [WebSocket](#websocket)
   - [WebAssembly (WASM)](#webassembly-wasm)
-  - [WASI (WebAssembly System Interface)](#wasi-webassembly-system-interface)
-  - [Worker Pool (工作池)](#worker-pool-工作池)
+  - [WASI (WebAssembly System Interface)](#wasi-webassembly-system-interfac[T](#t)r Pool (工作池)](#worker-pool-工作池)
 - [🔗 相关资源](#相关资源)
 
 ## 📑 索引
 
-[A](#wasi-webassembly-system-interface) | [B](#b) | [C](#csp-communicating-sequential-processes) | [D](#docker) | [E](#embedding-嵌入) | [F](#fan-in-扇入) | [G](#waitgroup) | [H](#http2) | [I](#fan-in-扇入) | [J](#jwt-json-web-token) | [K](#kubernetes-k8s) | [L](#l) | [M](#rwmutex-读写锁) | [N](#n) | [O](#orm-object-relational-mapping) | [P](#csp-communicating-sequential-processes) | [Q](#unique包) | [R](#rwmutex-读写锁) | [S](#csp-communicating-sequential-processes) | [T](#testing) | [U](#u) ✨ | [V](#service-mesh-服务网格) | [W](#websocket) | [X](#mutex-互斥锁) | [Y](#api-gateway-api网关) | [Z](#pgo-profile-guided-optimization)
-
-**✨ = Go 1.25.3 新增内容**-
-
----
-
-## A
-
+[A][W](#w)bly-system-interface) | [B](#b) | [C](#csp-communicating-sequential-processes) | [D](#docker) | [E](#embedding-嵌入) | [F](#fan-in-扇入) | [G](#waitgroup) | [H](#http2) | [I](#fan-in-扇入) | [J](#jwt-json-web-token) | [K](#kubernetes-k8s) | [L](#l) | [M](#rwmutex-读写锁[A](#a)l-mapping) | [P](#csp-communicating-sequentia[C](#c)读写锁) | [S](#csp-communicating-sequential[D](#d)| [T](#t[E](#e)✨ | [V](#servi[F](#f) [W](#webso[G](#g)tex-互斥锁) | [H](#h)teway-a[I](#i)o-profile-g[J](#j)*✨ = Go 1.25.3 新增内容*[K](#k)
 ### API Gateway (API网关)
-
-**定义**: 微服务架构中的统一入口点，负责请求路由、认证、限流等  
-**作用**: 简化客户端调用，统一管理横切关注点  
-**相关文档**: [API网关](05-微服务架构/03-API网关.md)
-
-### Array (数组)
-
-**定义**: 固定长度的同类型元素序列  
+[M](#m)统一入口点，负责请求路由、认证、限流等  
+[O](#o)**: [API网关](05-微服务架构/03-API网关.m[P](#p)  
 **语法**: `var arr [5]int`  
-**特点**: 长度固定，值类型  
-**相关文档**: [基础数据结构](02-数据结构与算法/01-基础数据结构.md)
-
----
-
-## B
-
-### Benchmark (基准测试)
-
+**特点**: [Q](#q)*相关文档**: [R](#r)算法/01-基础数据结构.[S](#s)
 **定义**: 性能测试，测量代码执行时间  
-**语法**: `func BenchmarkXxx(b *testing.B)`  
-**命令**: `go test -bench=.`  
-**相关文档**: [性能基准测试](07-性能优化/08-性能基准测试.md)
-
-### Buffered Channel (带缓冲Channel)
-
-**定义**: 有容量限制的Channel  
-**语法**: `ch := make(chan int, 100)`  
-**特点**: 发送方在缓冲满之前不会阻塞  
+**语法**: `func[T](#t)(b *testing.B)`  
+**[V](#v)`  
+**相关文档**: [性能基[W](#w)-性能基准测试.md)[X](#x)d Channel ([Y](#y)有容量限制的Channel  
+**[Z](#z)**特点**: 发送方在缓冲满之前不会阻塞  
 **相关文档**: [Channel基础](01-语言基础/02-并发编程/03-Channel基础.md)
 
 ---

@@ -40,16 +40,19 @@ Go开发最佳实践，涵盖测试、部署、工程化和可观测性。
 ## 🎯 实践路径
 
 ### 测试工程师 (2-3周)
+
 ```
 单元测试 → Mock → 集成测试 → 性能测试 → 覆盖率
 ```
 
 ### DevOps工程师 (3-4周)
+
 ```
 Docker → Kubernetes → CI/CD → 监控 → 告警
 ```
 
 ### 工程化专家 (2-3周)
+
 ```
 代码规范 → 项目结构 → 文档 → 版本管理
 ```
@@ -138,18 +141,21 @@ spec:
 ## 🛠️ 常用工具
 
 ### 测试工具
+
 - testing - 标准测试库
 - testify - 断言库
 - gomock - Mock框架
 - gocov - 覆盖率工具
 
 ### CI/CD工具
+
 - GitHub Actions
 - GitLab CI
 - Jenkins
 - Drone
 
 ### 监控工具
+
 - Prometheus - 监控
 - Grafana - 可视化
 - ELK Stack - 日志
@@ -169,4 +175,3 @@ spec:
 **版本**: v1.0  
 **更新日期**: 2025-10-29  
 **适用于**: Go 1.25.3
-

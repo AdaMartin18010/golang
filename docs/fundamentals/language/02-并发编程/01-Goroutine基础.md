@@ -16,7 +16,7 @@
 - [2. 创建与使用](#2.-创建与使用)
   - [基本语法](#基本语法)
   - [传递参数](#传递参数)
-  - [等待Goroutine完成](#陷阱3-未等待goroutine完成)
+  - [等待Goroutine完成](#等待goroutine完成)
     - [方法1: WaitGroup](#方法1-waitgroup)
     - [方法2: Channel](#方法2-channel)
 - [3. GMP调度模型](#3.-gmp调度模型)
