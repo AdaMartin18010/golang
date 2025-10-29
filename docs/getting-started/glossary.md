@@ -1,9 +1,9 @@
-# 📖 Go语言术语表
+﻿# 📖 Go语言术语表
 
 > 常用技术术语解释和快速参考
 
 **版本**: v2.2  
-**更新日期**: 2025-10-23  
+**更新日期**: 2025-10-29  
 **术语数**: 120+  
 **对齐版本**: Go 1.25.3
 
@@ -13,27 +13,27 @@
 ## 📋 目录
 
 
-- [📑 索引](#-索引)
-- [A](#a)
+- [📑 索引](#索引)
+- [A](#wasi-webassembly-system-interface)
   - [API Gateway (API网关)](#api-gateway-api网关)
   - [Array (数组)](#array-数组)
 - [B](#b)
   - [Benchmark (基准测试)](#benchmark-基准测试)
   - [Buffered Channel (带缓冲Channel)](#buffered-channel-带缓冲channel)
-- [C](#c)
+- [C](#csp-communicating-sequential-processes)
   - [Channel (通道)](#channel-通道)
   - [Circuit Breaker (熔断器)](#circuit-breaker-熔断器)
   - [Context (上下文)](#context-上下文)
   - [CSP (Communicating Sequential Processes)](#csp-communicating-sequential-processes)
-- [D](#d)
+- [D](#docker)
   - [Defer (延迟执行)](#defer-延迟执行)
   - [Docker](#docker)
-- [E](#e)
+- [E](#embedding-嵌入)
   - [Embedding (嵌入)](#embedding-嵌入)
-- [F](#f)
+- [F](#fan-in-扇入)
   - [Fan-In (扇入)](#fan-in-扇入)
   - [Fan-Out (扇出)](#fan-out-扇出)
-- [G](#g)
+- [G](#waitgroup)
   - [GC (Garbage Collection)](#gc-garbage-collection)
   - [Gin](#gin)
   - [GitOps](#gitops)
@@ -44,60 +44,60 @@
   - [Goroutine (协程)](#goroutine-协程)
   - [GORM](#gorm)
   - [gRPC](#grpc)
-- [H](#h)
+- [H](#http2)
   - [HTTP/2](#http2)
   - [HTTP路由增强 (HTTP Routing Enhancement)](#http路由增强-http-routing-enhancement)
-- [I](#i)
+- [I](#fan-in-扇入)
   - [iter包](#iter包)
   - [Interface (接口)](#interface-接口)
   - [Istio](#istio)
-- [J](#j)
+- [J](#jwt-json-web-token)
   - [JWT (JSON Web Token)](#jwt-json-web-token)
-- [K](#k)
+- [K](#kubernetes-k8s)
   - [Kubernetes (K8s)](#kubernetes-k8s)
 - [L](#l)
   - [Load Balancing (负载均衡)](#load-balancing-负载均衡)
-- [M](#m)
+- [M](#rwmutex-读写锁)
   - [Map (映射)](#map-映射)
   - [Middleware (中间件)](#middleware-中间件)
   - [Mutex (互斥锁)](#mutex-互斥锁)
 - [N](#n)
   - [nil](#nil)
-- [O](#o)
+- [O](#orm-object-relational-mapping)
   - [ORM (Object-Relational Mapping)](#orm-object-relational-mapping)
-- [P](#p)
+- [P](#csp-communicating-sequential-processes)
   - [Panic](#panic)
   - [Pipeline (管道)](#pipeline-管道)
   - [PGO (Profile-Guided Optimization)](#pgo-profile-guided-optimization)
   - [Pointer (指针)](#pointer-指针)
   - [pprof](#pprof)
   - [Prometheus](#prometheus)
-- [R](#r)
+- [R](#rwmutex-读写锁)
   - [Race Condition (竞态条件)](#race-condition-竞态条件)
   - [Redis](#redis)
   - [REST (Representational State Transfer)](#rest-representational-state-transfer)
   - [RWMutex (读写锁)](#rwmutex-读写锁)
-- [S](#s)
+- [S](#csp-communicating-sequential-processes)
   - [Select](#select)
   - [Service Discovery (服务发现)](#service-discovery-服务发现)
   - [Service Mesh (服务网格)](#service-mesh-服务网格)
   - [Slice (切片)](#slice-切片)
   - [Struct (结构体)](#struct-结构体)
-- [T](#t)
+- [T](#testing)
   - [Testing](#testing)
 - [U](#u)
   - [unique包](#unique包)
-- [W](#w)
+- [W](#websocket)
   - [WaitGroup](#waitgroup)
   - [WebSocket](#websocket)
   - [WebAssembly (WASM)](#webassembly-wasm)
   - [WASI (WebAssembly System Interface)](#wasi-webassembly-system-interface)
   - [Worker Pool (工作池)](#worker-pool-工作池)
-- [🔗 相关资源](#-相关资源)
+- [🔗 相关资源](#相关资源)
 
 ## 📑 索引
 
-[A](#a) | [B](#b) | [C](#c) | [D](#d) | [E](#e) | [F](#f) | [G](#g) | [H](#h) | [I](#i) | [J](#j) | [K](#k) | [L](#l) | [M](#m) | [N](#n) | [O](#o) | [P](#p) | [Q](#q) | [R](#r) | [S](#s) | [T](#t) | [U](#u) ✨ | [V](#v) | [W](#w) | [X](#x) | [Y](#y) | [Z](#z)
+[A](#wasi-webassembly-system-interface) | [B](#b) | [C](#csp-communicating-sequential-processes) | [D](#docker) | [E](#embedding-嵌入) | [F](#fan-in-扇入) | [G](#waitgroup) | [H](#http2) | [I](#fan-in-扇入) | [J](#jwt-json-web-token) | [K](#kubernetes-k8s) | [L](#l) | [M](#rwmutex-读写锁) | [N](#n) | [O](#orm-object-relational-mapping) | [P](#csp-communicating-sequential-processes) | [Q](#unique包) | [R](#rwmutex-读写锁) | [S](#csp-communicating-sequential-processes) | [T](#testing) | [U](#u) ✨ | [V](#service-mesh-服务网格) | [W](#websocket) | [X](#mutex-互斥锁) | [Y](#api-gateway-api网关) | [Z](#pgo-profile-guided-optimization)
 
 **✨ = Go 1.25.3 新增内容**-
 
@@ -647,7 +647,7 @@ type Person struct {
 
 ---
 
-**最后更新**: 2025-10-23  
+**最后更新**: 2025-10-29  
 **文档版本**: v2.2  
 **对齐版本**: Go 1.25.3  
 **维护团队**: Documentation Team

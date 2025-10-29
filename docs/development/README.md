@@ -1,4 +1,4 @@
-# Go应用开发
+﻿# Go应用开发
 
 Go应用开发实践，涵盖Web开发、微服务、数据库和云原生技术。
 
@@ -136,6 +136,7 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 
 ---
 
-**最后更新**: 2025-10-28  
-**Go版本**: 1.25.3
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.25.3
 

@@ -1,18 +1,10 @@
 ﻿# GitOps部署
 
-> **简介**: 从云原生视角探讨GitOps在Kubernetes持续部署中的应用
-> **版本**: Go 1.23+ / Kubernetes 1.28+  
-> **难度**: ⭐⭐⭐⭐  
-> **标签**: #GitOps #持续部署 #ArgoCD #FluxCD
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.23+ / Kubernetes 1.28+
 
-<!-- TOC START -->
-- [GitOps部署](#gitops部署)
-  - [6.1 📚 GitOps概述](#61--gitops概述)
-  - [6.2 🎯 云原生GitOps架构](#62--云原生gitops架构)
-    - [工具对比](#工具对比)
-    - [云平台集成](#云平台集成)
-  - [6.3 📚 详细文档](#63--详细文档)
-<!-- TOC END -->
+---
 
 ## 6.1 📚 GitOps概述
 
@@ -93,6 +85,6 @@ flux bootstrap github \
 ---
 
 **文档维护者**: Go Documentation Team  
-**最后更新**: 2025年10月20日  
+**最后更新**: 2025-10-29  
 **文档状态**: 完成  
 **适用版本**: Kubernetes 1.27+, ArgoCD 2.9+, Flux 2.2+

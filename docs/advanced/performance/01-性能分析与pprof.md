@@ -1,9 +1,10 @@
-# Go性能优化与pprof深度实战指南
+﻿# Go性能优化与pprof
 
-> **简介**: 深度解析Go性能分析工具pprof，掌握CPU、内存、阻塞和锁分析技术，实现生产级性能优化
-> **版本**: Go 1.23+  
-> **难度**: ⭐⭐⭐⭐⭐  
-> **标签**: #性能优化 #pprof #性能分析 #调优
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.23+
+
+---
 
 **字数**: ~15,000字  
 **代码示例**: 30+个  
@@ -34,11 +35,11 @@
     - [CPU采样算法](#cpu采样算法)
     - [内存采样算法](#内存采样算法)
   - [Profile类型详解](#profile类型详解)
-    - [1. CPU Profile](#1-cpu-profile)
-    - [2. Memory Profile (Heap)](#2-memory-profile-heap)
-    - [3. Goroutine Profile](#3-goroutine-profile)
-    - [4. Block Profile](#4-block-profile)
-    - [5. Mutex Profile](#5-mutex-profile)
+    - [1. CPU Profile](#1.-cpu-profile)
+    - [2. Memory Profile (Heap)](#2.-memory-profile-heap)
+    - [3. Goroutine Profile](#3.-goroutine-profile)
+    - [4. Block Profile](#4.-block-profile)
+    - [5. Mutex Profile](#5.-mutex-profile)
 - [第三部分：pprof完整工具链](#第三部分pprof完整工具链)
   - [pprof命令行用法](#pprof命令行用法)
     - [基础命令](#基础命令)
@@ -63,7 +64,7 @@
     - [高级用法](#高级用法)
 - [第四部分：实战案例](#第四部分实战案例)
   - [案例1：QPS下降10倍问题排查](#案例1qps下降10倍问题排查)
-    - [问题背景](#问题背景)
+    - [问题背景](#问题背景2)
     - [Step 1: 建立基线对比](#step-1-建立基线对比)
     - [Step 2: 采集CPU profile](#step-2-采集cpu-profile)
     - [Step 3: 定位代码](#step-3-定位代码)
@@ -82,9 +83,9 @@
     - [问题背景3](#问题背景3)
     - [Step 1: 观察GC频率](#step-1-观察gc频率)
     - [Step 2: 分析内存分配](#step-2-分析内存分配)
-    - [Step 3: 优化方案 - 对象池](#step-3-优化方案---对象池)
-    - [Step 4: 优化方案 - 预分配](#step-4-优化方案---预分配)
-    - [Step 5: 优化方案 - 字符串优化](#step-5-优化方案---字符串优化)
+    - [Step 3: 优化方案 - 对象池](#step-3-优化方案-对象池)
+    - [Step 4: 优化方案 - 预分配](#step-4-优化方案-预分配)
+    - [Step 5: 优化方案 - 字符串优化](#step-5-优化方案-字符串优化)
     - [Step 6: 验证优化效果](#step-6-验证优化效果)
     - [Step 7: 持续监控](#step-7-持续监控)
 - [第五部分：进阶主题](#第五部分进阶主题)
@@ -119,7 +120,7 @@
   - [持续性能监控](#持续性能监控)
     - [建立性能监控体系](#建立性能监控体系)
     - [性能回归检测](#性能回归检测)
-- [🎯 总结](#-总结)
+- [🎯 总结](#总结)
   - [核心要点](#核心要点)
   - [学习路径建议](#学习路径建议)
   - [参考资源](#参考资源)
@@ -2349,13 +2350,13 @@ echo "✅ 性能检测通过"
 
 Made with ❤️ for Go Performance Engineers
 
-[⬆ 回到顶部](#go性能优化与pprof深度实战指南)
+[⬆ 回到顶部](#go性能优化与pprof)
 
 </div>
 
 ---
 
 **文档维护者**: Go Documentation Team  
-**最后更新**: 2025年10月20日  
+**最后更新**: 2025-10-29  
 **文档状态**: 完成  
 **适用版本**: Go 1.25.3+

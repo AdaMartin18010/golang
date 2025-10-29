@@ -1,73 +1,73 @@
-# Go Workspace完整指南 - Go 1.25.3
+﻿# Go Workspace完整指南 - Go 1.25.3
 
-**难度**: 中级 | **预计阅读**: 30分钟 | **Go版本**: 1.25.3 (2025年10月)
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. 📖 Go Workspace概述](#1--go-workspace概述)
-  - [1.1 什么是Go Workspace？](#11-什么是go-workspace)
-  - [1.2 历史演进](#12-历史演进)
-  - [1.3 适用场景](#13-适用场景)
-    - [✅ 适合使用Workspace的场景](#-适合使用workspace的场景)
-    - [❌ 不适合使用Workspace的场景](#-不适合使用workspace的场景)
-- [2. 🏗️ go.work文件详解](#2--gowork文件详解)
-  - [2.1 基本结构](#21-基本结构)
-  - [2.2 完整语法](#22-完整语法)
-    - [2.2.1 `go`指令 - 版本声明](#221-go指令---版本声明)
-    - [2.2.2 `use`指令 - 模块声明](#222-use指令---模块声明)
-    - [2.2.3 `replace`指令 - 依赖替换](#223-replace指令---依赖替换)
-  - [2.3 go.work.sum文件](#23-goworksum文件)
-- [3. 🔄 go.mod与go.work的关系](#3--gomod与gowork的关系)
-  - [3.1 架构关系](#31-架构关系)
-  - [3.2 依赖解析优先级](#32-依赖解析优先级)
-  - [3.3 工作模式对比](#33-工作模式对比)
-    - [3.3.1 传统go.mod模式](#331-传统gomod模式)
+- [1. 📖 Go Workspace概述](#1.-go-workspace概述)
+  - [1.1 什么是Go Workspace？](#1.1-什么是go-workspace)
+  - [1.2 历史演进](#1.2-历史演进)
+  - [1.3 适用场景](#1.3-适用场景)
+    - [✅ 适合使用Workspace的场景](#不适合使用workspace的场景)
+    - [❌ 不适合使用Workspace的场景](#不适合使用workspace的场景)
+- [2. 🏗️ go.work文件详解](#2.-go.work文件详解)
+  - [2.1 基本结构](#2.1-基本结构)
+  - [2.2 完整语法](#2.2-完整语法)
+    - [2.2.1 `go`指令 - 版本声明](#2.2.1-go指令-版本声明)
+    - [2.2.2 `use`指令 - 模块声明](#2.2.2-use指令-模块声明)
+    - [2.2.3 `replace`指令 - 依赖替换](#2.2.3-replace指令-依赖替换)
+  - [2.3 go.work.sum文件](#2.3-go.work.sum文件)
+- [3. 🔄 go.mod与go.work的关系](#3.-go.mod与go.work的关系)
+  - [3.1 架构关系](#3.1-架构关系)
+  - [3.2 依赖解析优先级](#3.2-依赖解析优先级)
+  - [3.3 工作模式对比](#3.3-工作模式对比)
+    - [3.3.1 传统go.mod模式](#3.3.1-传统go.mod模式)
     - [3.3.2 workspace模式](#332-workspace模式)
   - [3.4 命令行为差异](#34-命令行为差异)
 - [4. 💼 实战场景](#4--实战场景)
   - [4.1 场景1：微服务开发](#41-场景1微服务开发)
-    - [项目结构](#项目结构)
-    - [配置步骤](#配置步骤)
+    - [项目结构](#monorepo项目结构)
+    - [配置步骤](#配置)
     - [代码示例](#代码示例)
-  - [4.2 场景2：库开发与示例](#42-场景2库开发与示例)
-    - [项目结构](#项目结构)
+  - [4.2 场景2：库开发与示例](#4.2-场景2库开发与示例)
+    - [项目结构](#monorepo项目结构)
     - [配置](#配置)
-  - [4.3 场景3：大型Monorepo](#43-场景3大型monorepo)
-    - [项目结构](#项目结构)
+  - [4.3 场景3：大型Monorepo](#4.3-场景3大型monorepo)
+    - [项目结构](#monorepo项目结构)
     - [配置策略](#配置策略)
-  - [4.4 场景4：本地依赖调试](#44-场景4本地依赖调试)
+  - [4.4 场景4：本地依赖调试](#4.4-场景4本地依赖调试)
     - [场景描述](#场景描述)
     - [传统方式（使用replace）](#传统方式使用replace)
     - [Workspace方式](#workspace方式)
-- [5. 🎯 最佳实践](#5--最佳实践)
-  - [5.1 Workspace管理](#51-workspace管理)
-    - [5.1.1 版本控制](#511-版本控制)
-    - [5.1.2 提供workspace模板](#512-提供workspace模板)
-    - [5.1.3 文档说明](#513-文档说明)
-- [本地开发设置](#本地开发设置)
-  - [启用Workspace模式](#启用workspace模式)
-  - [5.2 命令使用规范](#52-命令使用规范)
-    - [5.2.1 Workspace命令](#521-workspace命令)
-    - [5.2.2 禁用Workspace](#522-禁用workspace)
-  - [5.3 CI/CD配置](#53-cicd配置)
-    - [5.3.1 确保CI不使用workspace](#531-确保ci不使用workspace)
-    - [5.3.2 Docker构建](#532-docker构建)
-  - [5.4 性能优化](#54-性能优化)
-    - [5.4.1 限制workspace模块数量](#541-限制workspace模块数量)
-    - [5.4.2 使用相对路径](#542-使用相对路径)
-  - [5.5 团队协作](#55-团队协作)
-    - [5.5.1 统一Go版本](#551-统一go版本)
-    - [5.5.2 依赖版本管理](#552-依赖版本管理)
-  - [5.6 故障排查](#56-故障排查)
-    - [5.6.1 检查workspace状态](#561-检查workspace状态)
-    - [5.6.2 常见问题](#562-常见问题)
-- [6. 📚 相关资源](#6--相关资源)
-  - [6.1 官方文档](#61-官方文档)
-  - [6.2 推荐阅读](#62-推荐阅读)
-  - [6.3 实战案例](#63-实战案例)
-- [📝 总结](#-总结)
+- [5. 🎯 最佳实践](#5.-最佳实践)
+  - [5.1 Workspace管理](#5.1-workspace管理)
+    - [5.1.1 版本控制](#5.1.1-版本控制)
+    - [5.1.2 提供workspace模板](#5.1.2-提供workspace模板)
+    - [5.1.3 文档说明](#5.1.3-文档说明)
+  - [5.2 命令使用规范](#5.2-命令使用规范)
+    - [5.2.1 Workspace命令](#5.2.1-workspace命令)
+    - [5.2.2 禁用Workspace](#5.2.2-禁用workspace)
+  - [5.3 CI/CD配置](#5.3-cicd配置)
+    - [5.3.1 确保CI不使用workspace](#5.3.1-确保ci不使用workspace)
+    - [5.3.2 Docker构建](#5.3.2-docker构建)
+  - [5.4 性能优化](#5.4-性能优化)
+    - [5.4.1 限制workspace模块数量](#5.4.1-限制workspace模块数量)
+    - [5.4.2 使用相对路径](#5.4.2-使用相对路径)
+  - [5.5 团队协作](#5.5-团队协作)
+    - [5.5.1 统一Go版本](#5.5.1-统一go版本)
+    - [5.5.2 依赖版本管理](#5.5.2-依赖版本管理)
+  - [5.6 故障排查](#5.6-故障排查)
+    - [5.6.1 检查workspace状态](#5.6.1-检查workspace状态)
+    - [5.6.2 常见问题](#5.6.2-常见问题)
+- [6. 📚 相关资源](#6.-相关资源)
+  - [6.1 官方文档](#6.1-官方文档)
+  - [6.2 推荐阅读](#6.2-推荐阅读)
+  - [6.3 实战案例](#6.3-实战案例)
+- [📝 总结](#总结)
   - [Go Workspace核心要点](#go-workspace核心要点)
   - [使用决策树](#使用决策树)
 
@@ -299,105 +299,9 @@ import "github.com/someone/library"
 # → 从远程仓库或缓存获取
 ```
 
-**特点**：
-
-- ✅ 简单直接
-- ✅ 适合单模块项目
-- ❌ 测试本地修改需要`replace`
-
-#### 3.3.2 workspace模式
-
-```bash
-# 项目结构
-workspace/
-├── go.work              ← Workspace配置
-├── myapp/
-│   ├── go.mod
-│   └── main.go
-└── library/
-    ├── go.mod
-    └── lib.go
-
-# myapp中引用library
-import "example.com/library"
-# → 直接使用本地library模块
-```
-
-**特点**：
-
-- ✅ 同时开发多个模块
-- ✅ 无需频繁修改`replace`
-- ✅ 支持跨模块调试
-- ⚠️ 仅用于开发环境
-
-### 3.4 命令行为差异
-
-| 命令 | go.mod模式 | go.work模式 |
-|------|-----------|------------|
-| `go build` | 构建当前模块 | 使用workspace中的本地模块 |
-| `go test` | 测试当前模块 | 测试时使用本地依赖 |
-| `go mod tidy` | 更新当前模块依赖 | 不影响workspace |
-| `go work sync` | N/A | 同步workspace和模块依赖 |
-| `go list -m all` | 显示模块依赖 | 显示workspace依赖 |
-
----
-
-## 4. 💼 实战场景
-
-### 4.1 场景1：微服务开发
-
-#### 项目结构
-
-```text
-microservices/
-├── go.work
-├── api-gateway/
-│   ├── go.mod      (module example.com/api-gateway)
-│   └── main.go
-├── user-service/
-│   ├── go.mod      (module example.com/user-service)
-│   └── main.go
-├── order-service/
-│   ├── go.mod      (module example.com/order-service)
-│   └── main.go
-└── shared/
-    ├── go.mod      (module example.com/shared)
-    └── types.go
-```
-
-#### 配置步骤
-
-```bash
-# 1. 初始化workspace
-cd microservices
-go work init
-
-# 2. 添加所有服务
-go work use ./api-gateway
-go work use ./user-service
-go work use ./order-service
-go work use ./shared
-
-# 3. 查看配置
-cat go.work
-```
-
-**go.work内容**：
-
-```go
-go 1.25.3
-
-use (
-    ./api-gateway
-    ./user-service
-    ./order-service
-    ./shared
-)
-```
-
-#### 代码示例
-
-**shared/types.go**:
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.25.3
 
 ```go
 package shared
@@ -432,7 +336,7 @@ func main() {
 
 ### 4.2 场景2：库开发与示例
 
-#### 项目结构
+#### 库项目结构
 
 ```text
 mylibrary/
@@ -456,7 +360,9 @@ mylibrary/
 go work init ./core ./examples
 ```
 
-**go.work**:
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.25.3
 
 ```go
 go 1.25.3
@@ -508,7 +414,7 @@ go run main.go  # 使用最新的本地代码
 
 ### 4.3 场景3：大型Monorepo
 
-#### 项目结构
+#### Monorepo项目结构
 
 ```text
 company-repo/
@@ -558,7 +464,9 @@ go work use ./tools/migrator
 find . -name "go.mod" -exec dirname {} \; | xargs go work use
 ```
 
-**go.work**:
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.25.3
 
 ```go
 go 1.25.3
@@ -631,7 +539,9 @@ go work init . ../library-fork
 # go.mod保持不变
 ```
 
-**go.work**:
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.25.3
 
 ```go
 go 1.25.3
@@ -875,7 +785,7 @@ go list ./...
 
 #### 5.6.2 常见问题
 
-**问题1: 模块找不到**
+##### 问题1: 模块找不到
 
 ```bash
 # 错误
@@ -887,7 +797,7 @@ go: module example.com/mymodule: cannot find module
 # 3. 运行 go work sync
 ```
 
-**问题2: 依赖版本冲突**
+##### 问题2: 依赖版本冲突
 
 ```bash
 # 解决步骤
@@ -902,7 +812,7 @@ replace github.com/pkg => github.com/pkg v1.2.3
 go work sync
 ```
 
-**问题3: 构建使用了错误的代码**
+##### 问题3: 构建使用了错误的代码
 
 ```bash
 # 清理缓存
@@ -974,6 +884,6 @@ cat $GOWORK
 
 ---
 
-**版本**: Go 1.25.3  
-**更新日期**: 2025-10-28  
-**状态**: ✅ 生产就绪
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.25.3

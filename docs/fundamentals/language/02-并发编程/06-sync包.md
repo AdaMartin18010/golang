@@ -1,52 +1,31 @@
-# sync包与并发安全模式
+﻿# sync包与并发安全模式
 
-> **简介**: 详解Go标准库sync包的并发原语，包括Mutex、RWMutex、WaitGroup、Once等
-> **版本**: Go 1.23+  
-> **难度**: ⭐⭐⭐  
-> **标签**: #并发 #sync #锁 #并发安全
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.23+
 
-<!-- TOC START -->
-- [sync包与并发安全模式](#sync包与并发安全模式)
-  - [1. 理论基础](#1-理论基础)
-  - [2. 典型用法](#2-典型用法)
-    - [互斥锁Mutex](#互斥锁mutex)
-      - [Mutex状态机可视化](#mutex状态机可视化)
-      - [Mutex并发访问时序图](#mutex并发访问时序图)
-    - [读写锁RWMutex](#读写锁rwmutex)
-      - [RWMutex并发控制可视化](#rwmutex并发控制可视化)
-      - [RWMutex读写时序图](#rwmutex读写时序图)
-    - [WaitGroup](#waitgroup)
-      - [WaitGroup工作流程](#waitgroup工作流程)
-      - [WaitGroup时序图](#waitgroup时序图)
-    - [Once](#once)
-      - [sync.Once单次执行保证](#synconce单次执行保证)
-      - [多Goroutine调用Once时序图](#多goroutine调用once时序图)
-  - [3. 工程分析与最佳实践](#3-工程分析与最佳实践)
-  - [4. 常见陷阱](#4-常见陷阱)
-  - [5. 单元测试建议](#5-单元测试建议)
-  - [6. 参考文献](#6-参考文献)
-<!-- TOC END -->
+---
 
 ## 📋 目录
 
-- [1. 理论基础](#1-理论基础)
-- [2. 典型用法](#2-典型用法)
+- [1. 理论基础](#1.-理论基础)
+- [2. 典型用法](#2.-典型用法)
   - [互斥锁Mutex](#互斥锁mutex)
     - [Mutex状态机可视化](#mutex状态机可视化)
     - [Mutex并发访问时序图](#mutex并发访问时序图)
   - [读写锁RWMutex](#读写锁rwmutex)
     - [RWMutex并发控制可视化](#rwmutex并发控制可视化)
     - [RWMutex读写时序图](#rwmutex读写时序图)
-  - [WaitGroup](#waitgroup)
+  - [WaitGroup](#waitgroup时序图)
     - [WaitGroup工作流程](#waitgroup工作流程)
     - [WaitGroup时序图](#waitgroup时序图)
   - [Once](#once)
-    - [sync.Once单次执行保证](#synconce单次执行保证)
+    - [sync.Once单次执行保证](#sync.once单次执行保证)
     - [多Goroutine调用Once时序图](#多goroutine调用once时序图)
-- [3. 工程分析与最佳实践](#3-工程分析与最佳实践)
-- [4. 常见陷阱](#4-常见陷阱)
-- [5. 单元测试建议](#5-单元测试建议)
-- [6. 参考文献](#6-参考文献)
+- [3. 工程分析与最佳实践](#3.-工程分析与最佳实践)
+- [4. 常见陷阱](#4.-常见陷阱)
+- [5. 单元测试建议](#5.-单元测试建议)
+- [6. 参考文献](#6.-参考文献)
 
 ## 1. 理论基础
 
@@ -596,6 +575,6 @@ func main() {
 ---
 
 **文档维护者**: Go Documentation Team  
-**最后更新**: 2025年10月20日  
+**最后更新**: 2025-10-29  
 **文档状态**: 完成  
 **适用版本**: Go 1.25.3+

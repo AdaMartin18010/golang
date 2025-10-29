@@ -1,42 +1,43 @@
-# Context应用
+﻿# Context应用
 
-> **简介**: Context完整指南，包括超时控制、取消传播、值传递和最佳实践
-> **版本**: Go 1.25.3  
-> **难度**: ⭐⭐⭐⭐  
-> **标签**: #并发 #Context #超时 #取消
+**版本**: v1.0  
+**更新日期**: 2025-10-29  
+**适用于**: Go 1.25.3
+
+---
 
 ---
 
 ## 📋 目录
 
-- [1. Context简介](#1-context简介)
+- [1. Context简介](#1.-context简介)
   - [什么是Context](#什么是context)
   - [为什么需要Context](#为什么需要context)
-- [2. 创建Context](#2-创建context)
+- [2. 创建Context](#2.-创建context)
   - [Background和TODO](#background和todo)
   - [WithCancel](#withcancel)
   - [WithTimeout](#withtimeout)
   - [WithDeadline](#withdeadline)
-- [3. 超时控制](#3-超时控制)
+- [3. 超时控制](#3.-超时控制)
   - [HTTP请求超时](#http请求超时)
   - [数据库查询超时](#数据库查询超时)
-- [4. 取消传播](#4-取消传播)
+- [4. 取消传播](#4.-取消传播)
   - [级联取消](#级联取消)
   - [优雅关闭](#优雅关闭)
-- [5. 值传递](#5-值传递)
+- [5. 值传递](#类型安全的值传递)
   - [WithValue](#withvalue)
   - [类型安全的值传递](#类型安全的值传递)
-- [6. 实战应用](#6-实战应用)
+- [6. 实战应用](#6.-实战应用)
   - [HTTP服务器中间件](#http服务器中间件)
   - [并行任务处理](#并行任务处理)
-- [7. 最佳实践](#7-最佳实践)
-  - [1. Context作为第一个参数](#1-context作为第一个参数)
-  - [2. 不要存储Context](#2-不要存储context)
-  - [3. 总是defer cancel()](#3-总是defer-cancel)
-  - [4. 检查Context错误](#4-检查context错误)
-  - [5. 不要传递nil Context](#5-不要传递nil-context)
-  - [6. Context值只用于请求作用域数据](#6-context值只用于请求作用域数据)
-- [🔗 相关资源](#-相关资源)
+- [7. 最佳实践](#7.-最佳实践)
+  - [1. Context作为第一个参数](#1.-context作为第一个参数)
+  - [2. 不要存储Context](#2.-不要存储context)
+  - [3. 总是defer cancel()](#3.-总是defer-cancel)
+  - [4. 检查Context错误](#4.-检查context错误)
+  - [5. 不要传递nil Context](#5.-不要传递nil-context)
+  - [6. Context值只用于请求作用域数据](#6.-context值只用于请求作用域数据)
+- [🔗 相关资源](#相关资源)
 
 ## 1. Context简介
 
@@ -575,5 +576,5 @@ ctx = WithRequestID(ctx, "abc-123")
 
 ---
 
-**最后更新**: 2025-10-28  
+**最后更新**: 2025-10-29  
 **Go版本**: 1.25.3
