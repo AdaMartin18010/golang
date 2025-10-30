@@ -1,40 +1,42 @@
-﻿# 高级架构模式（Golang国际主流实践）
+# 高级架构模式（Golang国际主流实践）
 
 > **简介**: 高级架构设计模式集合，涵盖CQRS、事件溯源和六边形架构
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-
-- [目录](#目录)
-- [📚 模块概述](#模块概述)
-- [🎯 学习目标](#学习目标)
-- [📋 架构模式分类](#架构模式分类)
-  - [1. 命令查询职责分离 (CQRS)](#1-命令查询职责分离-cqrs)
-    - [核心概念](#核心概念)
-    - [实现示例](#实现示例)
-  - [2. 事件溯源 (Event Sourcing)](#2-事件溯源-event-sourcing)
-    - [核心概念2](#核心概念2)
-    - [事件存储实现](#事件存储实现)
-  - [3. SAGA模式](#3-saga模式)
-    - [核心概念3](#核心概念3)
-    - [SAGA使用示例](#saga使用示例)
-  - [4. 六边形架构 (Hexagonal Architecture)](#4-六边形架构-hexagonal-architecture)
-    - [核心概念4](#核心概念4)
-  - [5. 领域驱动设计 (DDD)](#5-领域驱动设计-ddd)
-    - [核心概念5](#核心概念5)
-- [🎯 最佳实践](#最佳实践)
-  - [1. 架构选择原则](#1-架构选择原则)
-  - [2. 模式组合使用](#2-模式组合使用)
-  - [3. 实施建议](#3-实施建议)
-- [📚 参考资料](#参考资料)
-  - [官方文档](#官方文档)
-  - [书籍推荐](#书籍推荐)
-  - [在线资源](#在线资源)
+- [高级架构模式（Golang国际主流实践）](#高级架构模式golang国际主流实践)
+  - [📋 目录](#-目录)
+  - [目录](#目录)
+  - [📚 模块概述](#-模块概述)
+  - [🎯 学习目标](#-学习目标)
+  - [📋 架构模式分类](#-架构模式分类)
+    - [1. 命令查询职责分离 (CQRS)](#1-命令查询职责分离-cqrs)
+      - [核心概念](#核心概念)
+      - [实现示例](#实现示例)
+    - [2. 事件溯源 (Event Sourcing)](#2-事件溯源-event-sourcing)
+      - [核心概念2](#核心概念2)
+      - [事件存储实现](#事件存储实现)
+    - [3. SAGA模式](#3-saga模式)
+      - [核心概念3](#核心概念3)
+      - [SAGA使用示例](#saga使用示例)
+    - [4. 六边形架构 (Hexagonal Architecture)](#4-六边形架构-hexagonal-architecture)
+      - [核心概念4](#核心概念4)
+    - [5. 领域驱动设计 (DDD)](#5-领域驱动设计-ddd)
+      - [核心概念5](#核心概念5)
+  - [🎯 最佳实践](#-最佳实践)
+    - [1. 架构选择原则](#1-架构选择原则)
+    - [2. 模式组合使用](#2-模式组合使用)
+    - [3. 实施建议](#3-实施建议)
+  - [📚 参考资料](#-参考资料)
+    - [官方文档](#官方文档)
+    - [书籍推荐](#书籍推荐)
+    - [在线资源](#在线资源)
 
 ## 目录
 
@@ -116,7 +118,7 @@ CQRS（Command Query Responsibility Segregation）是一种架构模式，将数
         func (h *UserCommandHandler) HandleCreateUser(cmd CreateUserCommand) error {
             // 创建用户聚合
             user := NewUser(cmd.Name, cmd.Email, cmd.Password)
-            
+
             // 保存事件
             events := user.GetUncommittedEvents()
             for _, event := range events {
@@ -124,7 +126,7 @@ CQRS（Command Query Responsibility Segregation）是一种架构模式，将数
                     return err
                 }
             }
-            
+
             // 发布事件
             return h.eventBus.Publish(events...)
         }
@@ -207,7 +209,7 @@ Event Sourcing是一种架构模式，将应用程序的状态变化存储为一
                 Email: email,
                 Version: 0,
             }
-            
+
             // 创建事件
             event := &UserCreatedEvent{
                 EventID:     generateID(),
@@ -216,7 +218,7 @@ Event Sourcing是一种架构模式，将应用程序的状态变化存储为一
                 Name:        name,
                 Email:       email,
             }
-            
+
             user.addEvent(event)
             return user
         }
@@ -253,7 +255,7 @@ Event Sourcing是一种架构模式，将应用程序的状态变化存储为一
         func (s *InMemoryEventStore) SaveEvent(event Event) error {
             s.mu.Lock()
             defer s.mu.Unlock()
-            
+
             aggregateID := event.GetAggregateID()
             s.events[aggregateID] = append(s.events[aggregateID], event)
             return nil
@@ -262,12 +264,12 @@ Event Sourcing是一种架构模式，将应用程序的状态变化存储为一
         func (s *InMemoryEventStore) GetEvents(aggregateID string) ([]Event, error) {
             s.mu.RLock()
             defer s.mu.RUnlock()
-            
+
             events, exists := s.events[aggregateID]
             if !exists {
                 return nil, fmt.Errorf("aggregate not found: %s", aggregateID)
             }
-            
+
             return events, nil
         }
 
@@ -276,11 +278,11 @@ Event Sourcing是一种架构模式，将应用程序的状态变化存储为一
             if err != nil {
                 return nil, err
             }
-            
+
             if version >= len(events) {
                 return []Event{}, nil
             }
-            
+
             return events[version:], nil
         }
     ```
@@ -367,7 +369,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
 
         func (o *SagaOrchestrator) Execute(ctx context.Context) error {
             executedSteps := make([]SagaStep, 0)
-            
+
             for _, step := range o.steps {
                 if err := step.Execute(ctx); err != nil {
                     // 执行失败，开始补偿
@@ -376,7 +378,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
                 }
                 executedSteps = append(executedSteps, step)
             }
-            
+
             return nil
         }
 
@@ -396,18 +398,18 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
     ```go
         func RegisterUserSaga(ctx context.Context, userData CreateUserRequest) error {
             orchestrator := NewSagaOrchestrator()
-            
+
             // 添加步骤
             orchestrator.AddStep(&CreateUserStep{
                 userService: userService,
                 userData:    userData,
             })
-            
+
             orchestrator.AddStep(&SendWelcomeEmailStep{
                 emailService: emailService,
                 email:        userData.Email,
             })
-            
+
             // 执行SAGA
             return orchestrator.Execute(ctx)
         }
@@ -467,19 +469,19 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
             if req.Name == "" || req.Email == "" {
                 return errors.New("name and email are required")
             }
-            
+
             // 检查用户是否已存在
             existingUser, err := s.userRepo.FindByEmail(req.Email)
             if err == nil && existingUser != nil {
                 return errors.New("user already exists")
             }
-            
+
             // 哈希密码
             hashedPassword, err := s.passwordHasher.Hash(req.Password)
             if err != nil {
                 return fmt.Errorf("failed to hash password: %w", err)
             }
-            
+
             // 创建用户
             user := &User{
                 ID:       generateID(),
@@ -488,18 +490,18 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
                 Password: hashedPassword,
                 Role:     "user",
             }
-            
+
             // 保存用户
             if err := s.userRepo.Save(user); err != nil {
                 return fmt.Errorf("failed to save user: %w", err)
             }
-            
+
             // 发送欢迎邮件
             if err := s.emailService.SendWelcomeEmail(user.Email); err != nil {
                 log.Printf("Failed to send welcome email: %v", err)
                 // 不返回错误，因为用户已创建成功
             }
-            
+
             return nil
         }
 
@@ -571,25 +573,25 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
                 http.Error(w, "Invalid request body", http.StatusBadRequest)
                 return
             }
-            
+
             if err := h.userService.CreateUser(r.Context(), req); err != nil {
                 http.Error(w, err.Error(), http.StatusInternalServerError)
                 return
             }
-            
+
             w.WriteHeader(http.StatusCreated)
             json.NewEncoder(w).Encode(map[string]string{"status": "created"})
         }
 
         func (h *HTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
             id := mux.Vars(r)["id"]
-            
+
             user, err := h.userService.GetUser(r.Context(), id)
             if err != nil {
                 http.Error(w, err.Error(), http.StatusNotFound)
                 return
             }
-            
+
             json.NewEncoder(w).Encode(user)
         }
     ```
@@ -648,7 +650,7 @@ DDD是一种软件开发方法，专注于复杂业务逻辑的建模。
             if name == "" {
                 return nil, errors.New("name cannot be empty")
             }
-            
+
             user := &User{
                 id:       NewUserID(),
                 name:     name,
@@ -657,14 +659,14 @@ DDD是一种软件开发方法，专注于复杂业务逻辑的建模。
                 role:     UserRole,
                 events:   make([]DomainEvent, 0),
             }
-            
+
             // 添加领域事件
             user.addEvent(&UserCreatedEvent{
                 UserID: user.id.String(),
                 Name:   name,
                 Email:  email.String(),
             })
-            
+
             return user, nil
         }
 
@@ -672,16 +674,16 @@ DDD是一种软件开发方法，专注于复杂业务逻辑的建模。
             if newName == "" {
                 return errors.New("name cannot be empty")
             }
-            
+
             oldName := u.name
             u.name = newName
-            
+
             u.addEvent(&UserNameChangedEvent{
                 UserID:  u.id.String(),
                 OldName: oldName,
                 NewName: newName,
             })
-            
+
             return nil
         }
 
@@ -780,7 +782,7 @@ DDD是一种软件开发方法，专注于复杂业务逻辑的建模。
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

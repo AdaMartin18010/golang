@@ -1,66 +1,68 @@
-﻿# Go 1.23 iter包完整指南
+# Go 1.23 iter包完整指南
 
 > **难度**: ⭐⭐⭐⭐⭐
 > **标签**: #Go1.23 #iter包 #迭代器 #Pull #Seq
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. iter包概述](#1-iter包概述)
-  - [1.1 为什么需要iter包](#1-1-为什么需要iter包)
-  - [1.2 iter包的设计哲学](#1-2-iter包的设计哲学)
-  - [1.3 核心价值](#1-3-核心价值)
-- [2. 核心类型详解](#2-核心类型详解)
-  - [2.1 iter.Seq[V]](#21.-iterseqv)
-  - [2.2 iter.Seq2[K, V]](#22.-iterseq2k-v)
-  - [2.3 类型对比](#2-3-类型对比)
-- [3. iter.Pull函数详解](#3-iter-pull函数详解)
-  - [3.1 Pull的工作原理](#3-1-pull的工作原理)
-  - [3.2 基本用法](#3-2-基本用法)
-  - [3.3 Pull vs range](#3-3-pull-vs-range)
-  - [3.4 使用场景](#3-4-使用场景)
-- [4. iter.Pull2函数详解](#4-iter-pull2函数详解)
-  - [4.1 Pull2的特点](#4-1-pull2的特点)
-  - [4.2 实战示例](#4-2-实战示例)
-- [5. 高级迭代器模式](#5-高级迭代器模式)
-  - [5.1 迭代器转换](#5-1-迭代器转换)
-  - [5.2 迭代器组合](#5-2-迭代器组合)
-  - [5.3 迭代器过滤](#5-3-迭代器过滤)
-  - [5.4 迭代器聚合](#5-4-迭代器聚合)
-- [6. 与标准库集成](#6-与标准库集成)
-  - [6.1 slices包集成](#6-1-slices包集成)
-  - [6.2 maps包集成](#6-2-maps包集成)
-  - [6.3 自定义类型集成](#6-3-自定义类型集成)
-- [7. 性能优化](#7-性能优化)
-  - [7.1 性能特性](#7-1-性能特性)
-  - [7.2 性能测试](#7-2-性能测试)
-  - [7.3 优化技巧](#7-3-优化技巧)
-- [8. 实战工具库](#8-实战工具库)
-  - [8.1 通用迭代器工具](#8-1-通用迭代器工具)
-  - [8.2 流式处理库](#8-2-流式处理库)
-  - [8.3 并发迭代器](#8-3-并发迭代器)
-- [9. 最佳实践](#9-最佳实践)
-  - [9.1 设计原则](#9-1-设计原则)
-  - [9.2 错误处理](#9-2-错误处理)
-  - [9.3 资源管理](#9-3-资源管理)
-- [10. 常见陷阱](#10-常见陷阱)
-  - [10.1 Pull未调用stop](#10-1-pull未调用stop)
-  - [10.2 迭代器重用](#10-2-迭代器重用)
-  - [10.3 性能陷阱](#10-3-性能陷阱)
-- [11. 实战案例](#11-实战案例)
-  - [11.1 异步数据流处理](#11-1-异步数据流处理)
-  - [11.2 数据库游标封装](#11-2-数据库游标封装)
-  - [11.3 文件流处理器](#11-3-文件流处理器)
-- [12. 参考资源](#12-参考资源)
-  - [官方文档](#官方文档)
-  - [标准库示例](#标准库示例)
-  - [博客文章](#博客文章)
-  - [社区项目](#社区项目)
+- [Go 1.23 iter包完整指南](#go-123-iter包完整指南)
+  - [📋 目录](#-目录)
+  - [1. iter包概述](#1-iter包概述)
+    - [1.1 为什么需要iter包](#11-为什么需要iter包)
+    - [1.2 iter包的设计哲学](#12-iter包的设计哲学)
+    - [1.3 核心价值](#13-核心价值)
+  - [2. 核心类型详解](#2-核心类型详解)
+    - [2.1 iter.Seq\[V\]](#21-iterseqv)
+    - [2.2 iter.Seq2\[K, V\]](#22-iterseq2k-v)
+    - [2.3 类型对比](#23-类型对比)
+  - [3. iter.Pull函数详解](#3-iterpull函数详解)
+    - [3.1 Pull的工作原理](#31-pull的工作原理)
+    - [3.2 基本用法](#32-基本用法)
+    - [3.3 Pull vs range](#33-pull-vs-range)
+    - [3.4 使用场景](#34-使用场景)
+  - [4. iter.Pull2函数详解](#4-iterpull2函数详解)
+    - [4.1 Pull2的特点](#41-pull2的特点)
+    - [4.2 实战示例](#42-实战示例)
+  - [5. 高级迭代器模式](#5-高级迭代器模式)
+    - [5.1 迭代器转换](#51-迭代器转换)
+    - [5.2 迭代器组合](#52-迭代器组合)
+    - [5.3 迭代器过滤](#53-迭代器过滤)
+    - [5.4 迭代器聚合](#54-迭代器聚合)
+  - [6. 与标准库集成](#6-与标准库集成)
+    - [6.1 slices包集成](#61-slices包集成)
+    - [6.2 maps包集成](#62-maps包集成)
+    - [6.3 自定义类型集成](#63-自定义类型集成)
+  - [7. 性能优化](#7-性能优化)
+    - [7.1 性能特性](#71-性能特性)
+    - [7.2 性能测试](#72-性能测试)
+    - [7.3 优化技巧](#73-优化技巧)
+  - [8. 实战工具库](#8-实战工具库)
+    - [8.1 通用迭代器工具](#81-通用迭代器工具)
+    - [8.2 流式处理库](#82-流式处理库)
+    - [8.3 并发迭代器](#83-并发迭代器)
+  - [9. 最佳实践](#9-最佳实践)
+    - [9.1 设计原则](#91-设计原则)
+    - [9.2 错误处理](#92-错误处理)
+    - [9.3 资源管理](#93-资源管理)
+  - [10. 常见陷阱](#10-常见陷阱)
+    - [10.1 Pull未调用stop](#101-pull未调用stop)
+    - [10.2 迭代器重用](#102-迭代器重用)
+    - [10.3 性能陷阱](#103-性能陷阱)
+  - [11. 实战案例](#11-实战案例)
+    - [11.1 异步数据流处理](#111-异步数据流处理)
+    - [11.2 数据库游标封装](#112-数据库游标封装)
+    - [11.3 文件流处理器](#113-文件流处理器)
+  - [12. 参考资源](#12-参考资源)
+    - [官方文档](#官方文档)
+    - [标准库示例](#标准库示例)
+    - [博客文章](#博客文章)
+    - [社区项目](#社区项目)
 
 ## 1. iter包概述
 
@@ -181,7 +183,7 @@ func main() {
     for v := range Count(5) {
         fmt.Println(v)  // 0, 1, 2, 3, 4
     }
-    
+
     // 可以break
     for v := range Count(10) {
         if v > 3 {
@@ -232,7 +234,7 @@ func Enumerate[V any](slice []V) iter.Seq2[int, V] {
 
 func main() {
     fruits := []string{"apple", "banana", "cherry"}
-    
+
     // 迭代索引和值
     for i, fruit := range Enumerate(fruits) {
         fmt.Printf("%d: %s\n", i, fruit)
@@ -287,7 +289,7 @@ func Pull[V any](seq Seq[V]) (next func() (V, bool), stop func()) {
     // 创建通道作为桥梁
     ch := make(chan V)
     done := make(chan struct{})
-    
+
     // 启动goroutine运行迭代器
     go func() {
         defer close(ch)
@@ -300,18 +302,18 @@ func Pull[V any](seq Seq[V]) (next func() (V, bool), stop func()) {
             }
         })
     }()
-    
+
     // next函数从通道拉取
     next = func() (V, bool) {
         v, ok := <-ch
         return v, ok
     }
-    
+
     // stop函数停止迭代器
     stop = func() {
         close(done)
     }
-    
+
     return next, stop
 }
 ```
@@ -342,17 +344,17 @@ func main() {
     // 使用Pull转换为拉取式
     next, stop := iter.Pull(Numbers())
     defer stop()  // 确保清理
-    
+
     // 手动拉取值
     v1, ok1 := next()
     fmt.Println(v1, ok1)  // 0 true
-    
+
     v2, ok2 := next()
     fmt.Println(v2, ok2)  // 1 true
-    
+
     v3, ok3 := next()
     fmt.Println(v3, ok3)  // 2 true
-    
+
     // 可以随时停止
     // stop() - defer会调用
 }
@@ -364,14 +366,14 @@ func main() {
 func Example2() {
     next, stop := iter.Pull(Numbers())
     defer stop()
-    
+
     // 拉取直到满足条件
     for {
         v, ok := next()
         if !ok {
             break  // 迭代器耗尽
         }
-        
+
         if v > 5 {
             fmt.Println("Found:", v)
             break  // 找到目标，停止
@@ -441,13 +443,13 @@ func Merge[T cmp.Ordered](seq1, seq2 iter.Seq[T]) iter.Seq[T] {
     return func(yield func(T) bool) {
         next1, stop1 := iter.Pull(seq1)
         defer stop1()
-        
+
         next2, stop2 := iter.Pull(seq2)
         defer stop2()
-        
+
         v1, ok1 := next1()
         v2, ok2 := next2()
-        
+
         for ok1 || ok2 {
             if !ok1 {
                 // seq1耗尽，输出seq2
@@ -487,7 +489,7 @@ func Example() {
             }
         }
     }
-    
+
     seq2 := func(yield func(int) bool) {
         for _, v := range []int{2, 4, 6, 8} {
             if !yield(v) {
@@ -495,7 +497,7 @@ func Example() {
             }
         }
     }
-    
+
     for v := range Merge(seq1, seq2) {
         fmt.Println(v)  // 1, 2, 3, 4, 5, 6, 7, 8
     }
@@ -510,9 +512,9 @@ func Window[T any](seq iter.Seq[T], size int) iter.Seq[[]T] {
     return func(yield func([]T) bool) {
         next, stop := iter.Pull(seq)
         defer stop()
-        
+
         window := make([]T, 0, size)
-        
+
         // 填充第一个窗口
         for i := 0; i < size; i++ {
             v, ok := next()
@@ -521,22 +523,22 @@ func Window[T any](seq iter.Seq[T], size int) iter.Seq[[]T] {
             }
             window = append(window, v)
         }
-        
+
         // 产生第一个窗口
         if !yield(window) {
             return
         }
-        
+
         // 滑动窗口
         for {
             v, ok := next()
             if !ok {
                 break
             }
-            
+
             // 移除第一个，添加新的
             window = append(window[1:], v)
-            
+
             if !yield(window) {
                 return
             }
@@ -553,7 +555,7 @@ func Example() {
             }
         }
     }
-    
+
     // 大小为3的滑动窗口
     for window := range Window(numbers, 3) {
         fmt.Println(window)
@@ -614,20 +616,20 @@ func MapSeq[K comparable, V any](m map[K]V) iter.Seq2[K, V] {
 // MergeMaps合并多个map，后面的覆盖前面的
 func MergeMaps[K comparable, V any](maps ...map[K]V) map[K]V {
     result := make(map[K]V)
-    
+
     for _, m := range maps {
         for k, v := range MapSeq(m) {
             result[k] = v
         }
     }
-    
+
     return result
 }
 
 func main() {
     m1 := map[string]int{"a": 1, "b": 2}
     m2 := map[string]int{"b": 3, "c": 4}
-    
+
     merged := MergeMaps(m1, m2)
     fmt.Println(merged)  // map[a:1 b:3 c:4]
 }
@@ -641,18 +643,18 @@ func Zip[T, U any](seq1 iter.Seq[T], seq2 iter.Seq[U]) iter.Seq2[T, U] {
     return func(yield func(T, U) bool) {
         next1, stop1 := iter.Pull(seq1)
         defer stop1()
-        
+
         next2, stop2 := iter.Pull(seq2)
         defer stop2()
-        
+
         for {
             v1, ok1 := next1()
             v2, ok2 := next2()
-            
+
             if !ok1 || !ok2 {
                 return  // 任一耗尽
             }
-            
+
             if !yield(v1, v2) {
                 return
             }
@@ -669,7 +671,7 @@ func Example() {
             }
         }
     }
-    
+
     ages := func(yield func(int) bool) {
         for _, age := range []int{30, 25, 35} {
             if !yield(age) {
@@ -677,7 +679,7 @@ func Example() {
             }
         }
     }
-    
+
     for name, age := range Zip(names, ages) {
         fmt.Printf("%s: %d\n", name, age)
     }
@@ -721,12 +723,12 @@ func Example() {
             }
         }
     }
-    
+
     // 平方每个数字
     squared := Map(numbers, func(x int) int {
         return x * x
     })
-    
+
     for v := range squared {
         fmt.Println(v)  // 1, 4, 9, 16, 25
     }
@@ -758,7 +760,7 @@ func Example() {
             }
         }
     }
-    
+
     chars := FlatMap(words, func(s string) iter.Seq[rune] {
         return func(yield func(rune) bool) {
             for _, r := range s {
@@ -768,7 +770,7 @@ func Example() {
             }
         }
     })
-    
+
     for ch := range chars {
         fmt.Printf("%c ", ch)  // h e l l o w o r l d
     }
@@ -802,7 +804,7 @@ func Example() {
             }
         }
     }
-    
+
     seq2 := func(yield func(int) bool) {
         for i := 10; i <= 12; i++ {
             if !yield(i) {
@@ -810,7 +812,7 @@ func Example() {
             }
         }
     }
-    
+
     combined := Chain(seq1, seq2)
     for v := range combined {
         fmt.Println(v)  // 1, 2, 3, 10, 11, 12
@@ -830,18 +832,18 @@ func ZipWith[T, U, R any](
     return func(yield func(R) bool) {
         next1, stop1 := iter.Pull(seq1)
         defer stop1()
-        
+
         next2, stop2 := iter.Pull(seq2)
         defer stop2()
-        
+
         for {
             v1, ok1 := next1()
             v2, ok2 := next2()
-            
+
             if !ok1 || !ok2 {
                 return
             }
-            
+
             if !yield(fn(v1, v2)) {
                 return
             }
@@ -858,7 +860,7 @@ func Example() {
             }
         }
     }
-    
+
     vec2 := func(yield func(int) bool) {
         for _, v := range []int{4, 5, 6} {
             if !yield(v) {
@@ -866,11 +868,11 @@ func Example() {
             }
         }
     }
-    
+
     sum := ZipWith(vec1, vec2, func(a, b int) int {
         return a + b
     })
-    
+
     for v := range sum {
         fmt.Println(v)  // 5, 7, 9
     }
@@ -917,16 +919,16 @@ func Example() {
             }
         }
     }
-    
+
     // 过滤偶数
     evens := Filter(numbers, func(x int) bool {
         return x%2 == 0
     })
-    
+
     for v := range evens {
         fmt.Println(v)  // 2, 4, 6, 8, 10
     }
-    
+
     // 过滤并平方
     evenSquares := FilterMap(numbers, func(x int) (int, bool) {
         if x%2 == 0 {
@@ -934,7 +936,7 @@ func Example() {
         }
         return 0, false
     })
-    
+
     for v := range evenSquares {
         fmt.Println(v)  // 4, 16, 36, 64, 100
     }
@@ -1043,10 +1045,10 @@ func Example() {
             }
         }
     }
-    
+
     sum := Sum(numbers)
     fmt.Println("Sum:", sum)  // 55
-    
+
     count := Count(numbers)
     fmt.Println("Count:", count)  // 10
 }
@@ -1082,7 +1084,7 @@ func Example() {
             }
         }
     }
-    
+
     slice := Collect(numbers)
     fmt.Println(slice)  // [1 2 3 4 5]
 }
@@ -1106,17 +1108,17 @@ import (
 
 func Example() {
     s := []int{1, 2, 3, 4, 5}
-    
+
     // All：返回索引和值
     for i, v := range slices.All(s) {
         fmt.Printf("%d: %d\n", i, v)
     }
-    
+
     // Values：仅返回值
     for v := range slices.Values(s) {
         fmt.Println(v)
     }
-    
+
     // Backward：反向迭代
     for i, v := range slices.Backward(s) {
         fmt.Printf("%d: %d\n", i, v)  // 4:5, 3:4, 2:3, 1:2, 0:1
@@ -1145,7 +1147,7 @@ func Chunk[T any](slice []T, size int) iter.Seq[[]T] {
 // 使用
 func Example() {
     data := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-    
+
     for chunk := range Chunk(data, 3) {
         fmt.Println(chunk)
     }
@@ -1175,17 +1177,17 @@ func Example() {
         "bob":   25,
         "carol": 35,
     }
-    
+
     // All：所有键值对
     for k, v := range maps.All(m) {
         fmt.Printf("%s: %d\n", k, v)
     }
-    
+
     // Keys：仅键
     for k := range maps.Keys(m) {
         fmt.Println(k)
     }
-    
+
     // Values：仅值
     for v := range maps.Values(m) {
         fmt.Println(v)
@@ -1233,14 +1235,14 @@ func Example() {
         "bob":   25,
         "carol": 35,
     }
-    
+
     // 过滤年龄>28的
     for name, age := range FilterMap(ages, func(k string, v int) bool {
         return v > 28
     }) {
         fmt.Printf("%s: %d\n", name, age)
     }
-    
+
     // 将年龄转换为字符串
     for name, ageStr := range MapValues(ages, func(age int) string {
         return fmt.Sprintf("%d years old", age)
@@ -1295,7 +1297,7 @@ func main() {
     list.Add(3)
     list.Add(2)
     list.Add(1)
-    
+
     // 使用range遍历
     for v := range list.All() {
         fmt.Println(v)  // 1, 2, 3
@@ -1405,7 +1407,7 @@ BenchmarkForLoop-8    30000   42156 ns/op      0 B/op    0 allocs/op
 func Process(seq iter.Seq[int]) int {
     next, stop := iter.Pull(seq)
     defer stop()
-    
+
     sum := 0
     for {
         v, ok := next()
@@ -1518,7 +1520,7 @@ func Cycle[T any](seq iter.Seq[T]) iter.Seq[T] {
         if len(items) == 0 {
             return
         }
-        
+
         for {
             for _, v := range items {
                 if !yield(v) {
@@ -1553,7 +1555,7 @@ func GroupBy[K comparable, V any](
             k := keyFn(v)
             groups[k] = append(groups[k], v)
         }
-        
+
         for k, vs := range groups {
             if !yield(k, vs) {
                 return
@@ -1609,14 +1611,14 @@ func Example() {
             }
         }
     }
-    
+
     // 链式调用
     result := Of(numbers).
         Filter(func(x int) bool { return x%2 == 0 }).  // 偶数
         Map(func(x int) int { return x * x }).         // 平方
         Take(5).                                        // 前5个
         Collect()
-    
+
     fmt.Println(result)  // [4, 16, 36, 64, 100]
 }
 ```
@@ -1643,7 +1645,7 @@ func ParallelMap[T, U any](
         input := make(chan T, workers)
         output := make(chan U, workers)
         done := make(chan struct{})
-        
+
         // 启动worker
         var wg sync.WaitGroup
         for i := 0; i < workers; i++ {
@@ -1659,13 +1661,13 @@ func ParallelMap[T, U any](
                 }
             }()
         }
-        
+
         // 关闭output当所有worker完成
         go func() {
             wg.Wait()
             close(output)
         }()
-        
+
         // 发送输入
         go func() {
             defer close(input)
@@ -1677,7 +1679,7 @@ func ParallelMap[T, U any](
                 }
             }
         }()
-        
+
         // 产生输出
         for u := range output {
             if !yield(u) {
@@ -1697,12 +1699,12 @@ func Example() {
             }
         }
     }
-    
+
     // 并发平方（4个worker）
     squared := ParallelMap(numbers, func(x int) int {
         return x * x
     }, 4)
-    
+
     for v := range squared {
         fmt.Println(v)  // 顺序可能不同
     }
@@ -1782,14 +1784,14 @@ func ReadLines(filename string) iter.Seq[Result[string]] {
             return
         }
         defer file.Close()
-        
+
         scanner := bufio.NewScanner(file)
         for scanner.Scan() {
             if !yield(Result[string]{Value: scanner.Text()}) {
                 return
             }
         }
-        
+
         if err := scanner.Err(); err != nil {
             yield(Result[string]{Error: err})
         }
@@ -1826,7 +1828,7 @@ func ReadFile(path string) iter.Seq[[]byte] {
             return
         }
         defer file.Close()  // 确保关闭
-        
+
         buf := make([]byte, 4096)
         for {
             n, err := file.Read(buf)
@@ -1855,10 +1857,10 @@ func ReadFile(path string) iter.Seq[[]byte] {
 // ❌ 忘记调用stop
 func Bad() {
     next, stop := iter.Pull(Numbers(100))
-    
+
     v, _ := next()
     fmt.Println(v)
-    
+
     // 忘记stop()，goroutine泄漏！
 }
 
@@ -1866,7 +1868,7 @@ func Bad() {
 func Good() {
     next, stop := iter.Pull(Numbers(100))
     defer stop()  // 确保调用
-    
+
     v, _ := next()
     fmt.Println(v)
 }
@@ -1909,7 +1911,7 @@ for v := range Numbers(10) {
 func Sum(seq iter.Seq[int]) int {
     next, stop := iter.Pull(seq)
     defer stop()
-    
+
     sum := 0
     for {
         v, ok := next()
@@ -1970,12 +1972,12 @@ func FromChannel[T any](ch <-chan T) iter.Seq[T] {
 func Generate[T any](ctx context.Context, fn func() T, interval time.Duration) *DataStream[T] {
     ch := make(chan T)
     ctx, cancel := context.WithCancel(ctx)
-    
+
     go func() {
         defer close(ch)
         ticker := time.NewTicker(interval)
         defer ticker.Stop()
-        
+
         for {
             select {
             case <-ctx.Done():
@@ -1985,7 +1987,7 @@ func Generate[T any](ctx context.Context, fn func() T, interval time.Duration) *
             }
         }
     }()
-    
+
     return &DataStream[T]{ch: ch, cancel: cancel}
 }
 
@@ -2000,13 +2002,13 @@ func (ds *DataStream[T]) Stop() {
 // 使用
 func main() {
     ctx := context.Background()
-    
+
     // 每秒生成一个随机数
     stream := Generate(ctx, func() int {
         return time.Now().Second()
     }, 1*time.Second)
     defer stream.Stop()
-    
+
     // 处理前5个值
     count := 0
     for v := range stream.All() {
@@ -2039,13 +2041,13 @@ func Query[T any](db *sql.DB, query string, scanFn func(*sql.Rows) (T, error)) i
             return
         }
         defer rows.Close()
-        
+
         for rows.Next() {
             item, err := scanFn(rows)
             if err != nil {
                 return
             }
-            
+
             if !yield(item) {
                 return
             }
@@ -2070,11 +2072,11 @@ func GetUsers(db *sql.DB) iter.Seq[User] {
 func main() {
     db, _ := sql.Open("postgres", "...")
     defer db.Close()
-    
+
     // 惰性查询，按需加载
     for user := range GetUsers(db) {
         fmt.Printf("User: %d - %s\n", user.ID, user.Name)
-        
+
         // 可以随时break
         if user.ID > 100 {
             break
@@ -2106,7 +2108,7 @@ func Lines(filename string) iter.Seq[string] {
             return
         }
         defer file.Close()
-        
+
         scanner := bufio.NewScanner(file)
         for scanner.Scan() {
             if !yield(scanner.Text()) {
@@ -2124,13 +2126,13 @@ func GzipLines(filename string) iter.Seq[string] {
             return
         }
         defer file.Close()
-        
+
         gzReader, err := gzip.NewReader(file)
         if err != nil {
             return
         }
         defer gzReader.Close()
-        
+
         scanner := bufio.NewScanner(gzReader)
         for scanner.Scan() {
             if !yield(scanner.Text()) {
@@ -2189,9 +2191,9 @@ func main() {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.23+
 
 **贡献者**: 欢迎提交Issue和PR改进本文档

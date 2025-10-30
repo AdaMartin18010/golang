@@ -1,37 +1,40 @@
-﻿# Go 1.22 HTTP 路由增强详解
+# Go 1.22 HTTP 路由增强详解
 
 > **难度**: ⭐⭐⭐
 > **标签**: #http #routing #ServeMux
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-- [📋 概述](#概述)
-- [🚀 新特性详解](#新特性详解)
-  - [1. HTTP 方法匹配](#1-http-方法匹配)
-    - [基本语法](#基本语法)
-    - [方法不匹配处理](#方法不匹配处理)
-  - [2. 路径参数（通配符）](#2-路径参数通配符)
-    - [单段通配符 `{name}`](#单段通配符-name)
-    - [多段通配符 `{path...}`](#多段通配符-path)
-  - [3. 路由优先级](#3-路由优先级)
-    - [优先级示例](#优先级示例)
-- [🔍 详细特性](#详细特性)
-  - [PathValue() 方法](#pathvalue-方法)
-  - [组合方法和通配符](#组合方法和通配符)
-- [🏗️ 实战案例](#实战案例)
-  - [案例 1: RESTful API 服务器](#案例-1-restful-api-服务器)
-    - [测试 API](#测试-api)
-  - [案例 2: 文件服务器](#案例-2-文件服务器)
-- [💡 最佳实践](#最佳实践)
-  - [1. 使用常量定义路由](#1-使用常量定义路由)
-  - [2. 参数验证](#2-参数验证)
-  - [3. 中间件模式](#3-中间件模式)
-- [📚 扩展阅读](#扩展阅读)
+- [Go 1.22 HTTP 路由增强详解](#go-122-http-路由增强详解)
+  - [📋 目录](#-目录)
+  - [📋 概述](#-概述)
+  - [🚀 新特性详解](#-新特性详解)
+    - [1. HTTP 方法匹配](#1-http-方法匹配)
+      - [基本语法](#基本语法)
+      - [方法不匹配处理](#方法不匹配处理)
+    - [2. 路径参数（通配符）](#2-路径参数通配符)
+      - [单段通配符 `{name}`](#单段通配符-name)
+      - [多段通配符 `{path...}`](#多段通配符-path)
+    - [3. 路由优先级](#3-路由优先级)
+      - [优先级示例](#优先级示例)
+  - [🔍 详细特性](#-详细特性)
+    - [PathValue() 方法](#pathvalue-方法)
+    - [组合方法和通配符](#组合方法和通配符)
+  - [🏗️ 实战案例](#️-实战案例)
+    - [案例 1: RESTful API 服务器](#案例-1-restful-api-服务器)
+      - [测试 API](#测试-api)
+    - [案例 2: 文件服务器](#案例-2-文件服务器)
+  - [💡 最佳实践](#-最佳实践)
+    - [1. 使用常量定义路由](#1-使用常量定义路由)
+    - [2. 参数验证](#2-参数验证)
+    - [3. 中间件模式](#3-中间件模式)
+  - [📚 扩展阅读](#-扩展阅读)
 
 ## 📋 概述
 
@@ -62,13 +65,13 @@ import (
 
 func main() {
     mux := http.NewServeMux()
-    
+
     // 指定 HTTP 方法
     mux.HandleFunc("GET /users", listUsers)
     mux.HandleFunc("POST /users", createUser)
     mux.HandleFunc("PUT /users/{id}", updateUser)
     mux.HandleFunc("DELETE /users/{id}", deleteUser)
-    
+
     http.ListenAndServe(":8080", mux)
 }
 
@@ -102,10 +105,10 @@ import (
 
 func main() {
     mux := http.NewServeMux()
-    
+
     // 只允许 GET 方法
     mux.HandleFunc("GET /api/data", getData)
-    
+
     http.ListenAndServe(":8080", mux)
 }
 
@@ -138,19 +141,19 @@ import (
 
 func main() {
     mux := http.NewServeMux()
-    
+
     // 单段通配符
     mux.HandleFunc("GET /users/{id}", func(w http.ResponseWriter, r *http.Request) {
         id := r.PathValue("id")
         fmt.Fprintf(w, "User ID: %s\n", id)
     })
-    
+
     mux.HandleFunc("GET /posts/{postID}/comments/{commentID}", func(w http.ResponseWriter, r *http.Request) {
         postID := r.PathValue("postID")
         commentID := r.PathValue("commentID")
         fmt.Fprintf(w, "Post: %s, Comment: %s\n", postID, commentID)
     })
-    
+
     http.ListenAndServe(":8080", mux)
 }
 
@@ -174,13 +177,13 @@ import (
 
 func main() {
     mux := http.NewServeMux()
-    
+
     // 多段通配符（贪婪匹配）
     mux.HandleFunc("GET /files/{path...}", func(w http.ResponseWriter, r *http.Request) {
         path := r.PathValue("path")
         fmt.Fprintf(w, "File path: %s\n", path)
     })
-    
+
     http.ListenAndServe(":8080", mux)
 }
 
@@ -215,23 +218,23 @@ import (
 
 func main() {
     mux := http.NewServeMux()
-    
+
     // 优先级 1: 精确匹配（最高）
     mux.HandleFunc("GET /users/admin", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintln(w, "Admin user (exact match)")
     })
-    
+
     // 优先级 2: 带参数
     mux.HandleFunc("GET /users/{id}", func(w http.ResponseWriter, r *http.Request) {
         id := r.PathValue("id")
         fmt.Fprintf(w, "User ID: %s (parameterized)\n", id)
     })
-    
+
     // 优先级 3: 前缀匹配（最低）
     mux.HandleFunc("GET /users/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintln(w, "Users prefix (lowest priority)")
     })
-    
+
     http.ListenAndServe(":8080", mux)
 }
 
@@ -269,28 +272,28 @@ type User struct {
 
 func main() {
     mux := http.NewServeMux()
-    
+
     mux.HandleFunc("GET /api/v1/users/{userID}/posts/{postID}", func(w http.ResponseWriter, r *http.Request) {
         // 获取多个路径参数
         userID := r.PathValue("userID")
         postID := r.PathValue("postID")
-        
+
         // 参数验证
         if userID == "" || postID == "" {
             http.Error(w, "Invalid parameters", http.StatusBadRequest)
             return
         }
-        
+
         // 返回 JSON
         response := map[string]string{
             "user_id": userID,
             "post_id": postID,
         }
-        
+
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(response)
     })
-    
+
     http.ListenAndServe(":8080", mux)
 }
 ```
@@ -307,23 +310,23 @@ import (
 
 func main() {
     mux := http.NewServeMux()
-    
+
     // RESTful API 示例
-    
+
     // 列表和创建
     mux.HandleFunc("GET /api/resources", listResources)
     mux.HandleFunc("POST /api/resources", createResource)
-    
+
     // 单个资源操作
     mux.HandleFunc("GET /api/resources/{id}", getResource)
     mux.HandleFunc("PUT /api/resources/{id}", updateResource)
     mux.HandleFunc("PATCH /api/resources/{id}", patchResource)
     mux.HandleFunc("DELETE /api/resources/{id}", deleteResource)
-    
+
     // 嵌套资源
     mux.HandleFunc("GET /api/resources/{id}/items", listResourceItems)
     mux.HandleFunc("POST /api/resources/{id}/items", createResourceItem)
-    
+
     http.ListenAndServe(":8080", mux)
 }
 
@@ -407,7 +410,7 @@ func NewTodoStore() *TodoStore {
 func (s *TodoStore) List() []*Todo {
     s.mu.RLock()
     defer s.mu.RUnlock()
-    
+
     result := make([]*Todo, 0, len(s.todos))
     for _, todo := range s.todos {
         result = append(result, todo)
@@ -418,7 +421,7 @@ func (s *TodoStore) List() []*Todo {
 func (s *TodoStore) Get(id int) (*Todo, bool) {
     s.mu.RLock()
     defer s.mu.RUnlock()
-    
+
     todo, exists := s.todos[id]
     return todo, exists
 }
@@ -426,7 +429,7 @@ func (s *TodoStore) Get(id int) (*Todo, bool) {
 func (s *TodoStore) Create(title string) *Todo {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+
     todo := &Todo{
         ID:        s.nextID,
         Title:     title,
@@ -440,12 +443,12 @@ func (s *TodoStore) Create(title string) *Todo {
 func (s *TodoStore) Update(id int, title string, completed bool) (*Todo, bool) {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+
     todo, exists := s.todos[id]
     if !exists {
         return nil, false
     }
-    
+
     todo.Title = title
     todo.Completed = completed
     return todo, true
@@ -454,7 +457,7 @@ func (s *TodoStore) Update(id int, title string, completed bool) (*Todo, bool) {
 func (s *TodoStore) Delete(id int) bool {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+
     _, exists := s.todos[id]
     if exists {
         delete(s.todos, id)
@@ -475,7 +478,7 @@ func NewTodoAPI() *TodoAPI {
 
 func (api *TodoAPI) ListTodos(w http.ResponseWriter, r *http.Request) {
     todos := api.store.List()
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(todos)
 }
@@ -487,13 +490,13 @@ func (api *TodoAPI) GetTodo(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Invalid ID", http.StatusBadRequest)
         return
     }
-    
+
     todo, exists := api.store.Get(id)
     if !exists {
         http.Error(w, "Todo not found", http.StatusNotFound)
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(todo)
 }
@@ -502,19 +505,19 @@ func (api *TodoAPI) CreateTodo(w http.ResponseWriter, r *http.Request) {
     var input struct {
         Title string `json:"title"`
     }
-    
+
     if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
         http.Error(w, "Invalid JSON", http.StatusBadRequest)
         return
     }
-    
+
     if input.Title == "" {
         http.Error(w, "Title is required", http.StatusBadRequest)
         return
     }
-    
+
     todo := api.store.Create(input.Title)
-    
+
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(todo)
@@ -527,23 +530,23 @@ func (api *TodoAPI) UpdateTodo(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Invalid ID", http.StatusBadRequest)
         return
     }
-    
+
     var input struct {
         Title     string `json:"title"`
         Completed bool   `json:"completed"`
     }
-    
+
     if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
         http.Error(w, "Invalid JSON", http.StatusBadRequest)
         return
     }
-    
+
     todo, exists := api.store.Update(id, input.Title, input.Completed)
     if !exists {
         http.Error(w, "Todo not found", http.StatusNotFound)
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(todo)
 }
@@ -555,27 +558,27 @@ func (api *TodoAPI) DeleteTodo(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Invalid ID", http.StatusBadRequest)
         return
     }
-    
+
     if !api.store.Delete(id) {
         http.Error(w, "Todo not found", http.StatusNotFound)
         return
     }
-    
+
     w.WriteHeader(http.StatusNoContent)
 }
 
 func main() {
     api := NewTodoAPI()
-    
+
     mux := http.NewServeMux()
-    
+
     // 路由配置
     mux.HandleFunc("GET /api/todos", api.ListTodos)
     mux.HandleFunc("GET /api/todos/{id}", api.GetTodo)
     mux.HandleFunc("POST /api/todos", api.CreateTodo)
     mux.HandleFunc("PUT /api/todos/{id}", api.UpdateTodo)
     mux.HandleFunc("DELETE /api/todos/{id}", api.DeleteTodo)
-    
+
     fmt.Println("Server starting on :8080")
     http.ListenAndServe(":8080", mux)
 }
@@ -620,27 +623,27 @@ import (
 
 func main() {
     mux := http.NewServeMux()
-    
+
     // 静态文件服务
     mux.HandleFunc("GET /static/{path...}", func(w http.ResponseWriter, r *http.Request) {
         path := r.PathValue("path")
         filePath := filepath.Join("./static", path)
-        
+
         // 安全检查
         if !isPathSafe(filePath) {
             http.Error(w, "Forbidden", http.StatusForbidden)
             return
         }
-        
+
         // 检查文件存在
         if _, err := os.Stat(filePath); os.IsNotExist(err) {
             http.Error(w, "File not found", http.StatusNotFound)
             return
         }
-        
+
         http.ServeFile(w, r, filePath)
     })
-    
+
     fmt.Println("File server running on :8080")
     http.ListenAndServe(":8080", mux)
 }
@@ -671,7 +674,7 @@ const (
 
 func main() {
     mux := http.NewServeMux()
-    
+
     mux.HandleFunc(RouteUsers, listUsers)
     mux.HandleFunc(RouteUserByID, getUser)
     mux.HandleFunc(RouteCreateUser, createUser)
@@ -685,14 +688,14 @@ func main() {
 ```go
 func getUser(w http.ResponseWriter, r *http.Request) {
     idStr := r.PathValue("id")
-    
+
     // 验证参数
     id, err := strconv.Atoi(idStr)
     if err != nil || id <= 0 {
         http.Error(w, "Invalid user ID", http.StatusBadRequest)
         return
     }
-    
+
     // 处理请求...
 }
 ```
@@ -710,7 +713,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 func main() {
     mux := http.NewServeMux()
     mux.HandleFunc("GET /api/users", listUsers)
-    
+
     // 应用中间件
     handler := loggingMiddleware(mux)
     http.ListenAndServe(":8080", handler)
@@ -727,7 +730,7 @@ func main() {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.22+

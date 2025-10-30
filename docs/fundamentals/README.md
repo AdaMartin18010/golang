@@ -1,4 +1,4 @@
-﻿# Go基础知识
+# Go基础知识
 
 Go语言基础知识，涵盖语言特性、并发编程、标准库和数据结构。
 
@@ -79,12 +79,12 @@ import (
 
 func main() {
     ch := make(chan string)
-    
+
     go func() {
         time.Sleep(1 * time.Second)
         ch <- "Hello from goroutine!"
     }()
-    
+
     msg := <-ch
     fmt.Println(msg)
 }
@@ -117,6 +117,6 @@ func main() {
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

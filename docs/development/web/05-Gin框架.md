@@ -1,7 +1,7 @@
-﻿# Gin框架
+# Gin框架
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3, Gin v1.10+
 
 ---
@@ -70,13 +70,13 @@ import "github.com/gin-gonic/gin"
 
 func main() {
     r := gin.Default()
-    
+
     r.GET("/ping", func(c *gin.Context) {
         c.JSON(200, gin.H{
             "message": "pong",
         })
     })
-    
+
     r.Run(":8080")  // 监听8080端口
 }
 ```
@@ -88,22 +88,22 @@ func main() {
 ```go
 func main() {
     r := gin.Default()
-    
+
     // GET
     r.GET("/users", getUsers)
-    
+
     // POST
     r.POST("/users", createUser)
-    
+
     // PUT
     r.PUT("/users/:id", updateUser)
-    
+
     // DELETE
     r.DELETE("/users/:id", deleteUser)
-    
+
     // PATCH
     r.PATCH("/users/:id", patchUser)
-    
+
     r.Run(":8080")
 }
 ```
@@ -137,7 +137,7 @@ r.GET("/files/*filepath", func(c *gin.Context) {
 r.GET("/search", func(c *gin.Context) {
     query := c.Query("q")              // 获取query参数
     page := c.DefaultQuery("page", "1") // 带默认值
-    
+
     c.JSON(200, gin.H{
         "query": query,
         "page":  page,
@@ -152,21 +152,21 @@ r.GET("/search", func(c *gin.Context) {
 ```go
 func main() {
     r := gin.Default()
-    
+
     // API v1组
     v1 := r.Group("/api/v1")
     {
         v1.GET("/users", getUsersV1)
         v1.POST("/users", createUserV1)
     }
-    
+
     // API v2组
     v2 := r.Group("/api/v2")
     {
         v2.GET("/users", getUsersV2)
         v2.POST("/users", createUserV2)
     }
-    
+
     // 认证组
     authorized := r.Group("/admin")
     authorized.Use(AuthMiddleware())
@@ -174,7 +174,7 @@ func main() {
         authorized.GET("/dashboard", dashboard)
         authorized.POST("/users", adminCreateUser)
     }
-    
+
     r.Run(":8080")
 }
 ```
@@ -194,12 +194,12 @@ type User struct {
 
 func createUser(c *gin.Context) {
     var user User
-    
+
     if err := c.ShouldBindJSON(&user); err != nil {
         c.JSON(400, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(200, gin.H{
         "message": "User created",
         "user":    user,
@@ -220,12 +220,12 @@ type SearchQuery struct {
 
 func search(c *gin.Context) {
     var query SearchQuery
-    
+
     if err := c.ShouldBindQuery(&query); err != nil {
         c.JSON(400, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(200, query)
 }
 ```
@@ -241,12 +241,12 @@ type UserID struct {
 
 func getUser(c *gin.Context) {
     var userID UserID
-    
+
     if err := c.ShouldBindUri(&userID); err != nil {
         c.JSON(400, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(200, gin.H{"user_id": userID.ID})
 }
 
@@ -266,14 +266,14 @@ func uploadFile(c *gin.Context) {
         c.JSON(400, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 保存文件
     dst := "./uploads/" + file.Filename
     if err := c.SaveUploadedFile(file, dst); err != nil {
         c.JSON(500, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(200, gin.H{"filename": file.Filename})
 }
 
@@ -281,12 +281,12 @@ func uploadFile(c *gin.Context) {
 func uploadFiles(c *gin.Context) {
     form, _ := c.MultipartForm()
     files := form.File["files"]
-    
+
     for _, file := range files {
         dst := "./uploads/" + file.Filename
         c.SaveUploadedFile(file, dst)
     }
-    
+
     c.JSON(200, gin.H{"count": len(files)})
 }
 ```
@@ -301,12 +301,12 @@ func uploadFiles(c *gin.Context) {
 func main() {
     // Default包含Logger和Recovery中间件
     r := gin.Default()
-    
+
     // 或手动添加
     r := gin.New()
     r.Use(gin.Logger())
     r.Use(gin.Recovery())
-    
+
     r.Run(":8080")
 }
 ```
@@ -321,14 +321,14 @@ func Logger() gin.HandlerFunc {
     return func(c *gin.Context) {
         start := time.Now()
         path := c.Request.URL.Path
-        
+
         // 处理请求
         c.Next()
-        
+
         // 记录日志
         latency := time.Since(start)
         status := c.Writer.Status()
-        
+
         log.Printf("%s %s %d %v", c.Request.Method, path, status, latency)
     }
 }
@@ -339,12 +339,12 @@ func CORS() gin.HandlerFunc {
         c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
         c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
         c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        
+
         if c.Request.Method == "OPTIONS" {
             c.AbortWithStatus(204)
             return
         }
-        
+
         c.Next()
     }
 }
@@ -362,13 +362,13 @@ r.Use(CORS())
 func AuthMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         token := c.GetHeader("Authorization")
-        
+
         if token == "" {
             c.JSON(401, gin.H{"error": "Unauthorized"})
             c.Abort()
             return
         }
-        
+
         // 验证token
         userID, err := validateToken(token)
         if err != nil {
@@ -376,7 +376,7 @@ func AuthMiddleware() gin.HandlerFunc {
             c.Abort()
             return
         }
-        
+
         // 设置用户ID到Context
         c.Set("userID", userID)
         c.Next()
@@ -477,18 +477,18 @@ func handleError(c *gin.Context, code int, message string) {
 
 func getUser(c *gin.Context) {
     id := c.Param("id")
-    
+
     user, err := fetchUser(id)
     if err != nil {
         handleError(c, 500, "Failed to fetch user")
         return
     }
-    
+
     if user == nil {
         handleError(c, 404, "User not found")
         return
     }
-    
+
     c.JSON(200, user)
 }
 ```
@@ -526,10 +526,10 @@ myapp/
 ```go
 func SetupRouter() *gin.Engine {
     r := gin.Default()
-    
+
     // 公共路由
     r.GET("/health", healthCheck)
-    
+
     // API v1
     v1 := r.Group("/api/v1")
     {
@@ -542,7 +542,7 @@ func SetupRouter() *gin.Engine {
             users.PUT("/:id", handler.UpdateUser)
             users.DELETE("/:id", handler.DeleteUser)
         }
-        
+
         // 认证相关
         auth := v1.Group("/auth")
         {
@@ -550,7 +550,7 @@ func SetupRouter() *gin.Engine {
             auth.POST("/register", handler.Register)
         }
     }
-    
+
     return r
 }
 ```
@@ -562,33 +562,33 @@ func SetupRouter() *gin.Engine {
 ```go
 func main() {
     r := SetupRouter()
-    
+
     srv := &http.Server{
         Addr:    ":8080",
         Handler: r,
     }
-    
+
     go func() {
         if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
             log.Fatalf("Failed to start server: %v", err)
         }
     }()
-    
+
     // 等待中断信号
     quit := make(chan os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
-    
+
     log.Println("Shutting down server...")
-    
+
     // 优雅关闭
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
+
     if err := srv.Shutdown(ctx); err != nil {
         log.Fatal("Server forced to shutdown:", err)
     }
-    
+
     log.Println("Server exited")
 }
 ```
@@ -603,6 +603,6 @@ func main() {
 
 ---
 
-**最后更新**: 2025-10-29  
-**Go版本**: 1.25.3  
+**最后更新**: 2025-10-29
+**Go版本**: 1.25.3
 **Gin版本**: v1.10+

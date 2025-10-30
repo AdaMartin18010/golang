@@ -1,42 +1,44 @@
-﻿# ❓ Go 1.25.3 常见问题解决方案 - 2025
+# ❓ Go 1.25.3 常见问题解决方案 - 2025
 
-**版本**: Go 1.25.3  
-**更新日期**: 2025-10-29  
-**类型**: 问题解决  
+**版本**: Go 1.25.3
+**更新日期**: 2025-10-29
+**类型**: 问题解决
 **用途**: 快速解决开发问题
 
 ---
 
 ## 📋 目录
 
-- [🔤 语法和基础](#语法和基础)
-  - [Q1: 为什么range遍历修改元素无效？](#q1-为什么range遍历修改元素无效)
-  - [Q2: 切片append后为什么原切片没变？](#q2-切片append后为什么原切片没变)
-  - [Q3: map为什么不能并发读写？](#q3-map为什么不能并发读写)
-- [⚡ 并发编程](#并发编程)
-  - [Q4: goroutine泄露如何检测？](#q4-goroutine泄露如何检测)
-  - [Q5: 如何避免循环中goroutine闭包陷阱？](#q5-如何避免循环中goroutine闭包陷阱)
-  - [Q6: select随机选择怎么办？](#q6-select随机选择怎么办)
-- [🚀 性能问题](#性能问题)
-  - [Q7: 如何分析性能瓶颈？](#q7-如何分析性能瓶颈)
-  - [Q8: 字符串拼接慢怎么办？](#q8-字符串拼接慢怎么办)
-  - [Q9: 切片频繁扩容怎么办？](#q9-切片频繁扩容怎么办)
-- [💾 内存问题](#内存问题)
-  - [Q10: 内存泄露如何排查？](#q10-内存泄露如何排查)
-  - [Q11: 如何减少GC压力？](#q11-如何减少gc压力)
-- [🚨 错误处理](#错误处理)
-  - [Q12: errors.Is vs errors.As有什么区别？](#q12-errors-is-vs-errors-as有什么区别)
-  - [Q13: defer中的错误如何处理？](#q13-defer中的错误如何处理)
-- [📦 第三方库](#第三方库)
-  - [Q14: 如何管理依赖版本？](#q14-如何管理依赖版本)
-  - [Q15: 依赖冲突怎么办？](#q15-依赖冲突怎么办)
-- [🚀 部署和运维](#部署和运维)
-  - [Q16: 如何优雅关闭服务？](#q16-如何优雅关闭服务)
-  - [Q17: 生产环境如何调试？](#q17-生产环境如何调试)
-- [🔍 调试技巧](#调试技巧)
-  - [Q18: 如何调试goroutine？](#q18-如何调试goroutine)
-  - [Q19: 如何调试死锁？](#q19-如何调试死锁)
-- [📚 相关资源](#相关资源)
+- [❓ Go 1.25.3 常见问题解决方案 - 2025](#-go-1253-常见问题解决方案---2025)
+  - [📋 目录](#-目录)
+  - [🔤 语法和基础](#-语法和基础)
+    - [Q1: 为什么range遍历修改元素无效？](#q1-为什么range遍历修改元素无效)
+    - [Q2: 切片append后为什么原切片没变？](#q2-切片append后为什么原切片没变)
+    - [Q3: map为什么不能并发读写？](#q3-map为什么不能并发读写)
+  - [⚡ 并发编程](#-并发编程)
+    - [Q4: goroutine泄露如何检测？](#q4-goroutine泄露如何检测)
+    - [Q5: 如何避免循环中goroutine闭包陷阱？](#q5-如何避免循环中goroutine闭包陷阱)
+    - [Q6: select随机选择怎么办？](#q6-select随机选择怎么办)
+  - [🚀 性能问题](#-性能问题)
+    - [Q7: 如何分析性能瓶颈？](#q7-如何分析性能瓶颈)
+    - [Q8: 字符串拼接慢怎么办？](#q8-字符串拼接慢怎么办)
+    - [Q9: 切片频繁扩容怎么办？](#q9-切片频繁扩容怎么办)
+  - [💾 内存问题](#-内存问题)
+    - [Q10: 内存泄露如何排查？](#q10-内存泄露如何排查)
+    - [Q11: 如何减少GC压力？](#q11-如何减少gc压力)
+  - [🚨 错误处理](#-错误处理)
+    - [Q12: errors.Is vs errors.As有什么区别？](#q12-errorsis-vs-errorsas有什么区别)
+    - [Q13: defer中的错误如何处理？](#q13-defer中的错误如何处理)
+  - [📦 第三方库](#-第三方库)
+    - [Q14: 如何管理依赖版本？](#q14-如何管理依赖版本)
+    - [Q15: 依赖冲突怎么办？](#q15-依赖冲突怎么办)
+  - [🚀 部署和运维](#-部署和运维)
+    - [Q16: 如何优雅关闭服务？](#q16-如何优雅关闭服务)
+    - [Q17: 生产环境如何调试？](#q17-生产环境如何调试)
+  - [🔍 调试技巧](#-调试技巧)
+    - [Q18: 如何调试goroutine？](#q18-如何调试goroutine)
+    - [Q19: 如何调试死锁？](#q19-如何调试死锁)
+  - [📚 相关资源](#-相关资源)
 
 ## 🔤 语法和基础
 
@@ -262,7 +264,7 @@ func noLeak3() {
             }
         }
     }()
-    
+
     // 退出时
     close(done)
 }
@@ -648,7 +650,7 @@ func process() (err error) {
             err = closeErr
         }
     }()
-    
+
     // 处理文件
     return nil
 }
@@ -659,17 +661,17 @@ func process() error {
     if err != nil {
         return err
     }
-    
+
     var closeErr error
     defer func() {
         closeErr = f.Close()
     }()
-    
+
     // 处理文件
     if err := doSomething(f); err != nil {
         return fmt.Errorf("do something: %w (close: %v)", err, closeErr)
     }
-    
+
     return closeErr
 }
 ```
@@ -776,7 +778,7 @@ func main() {
     // 优雅关闭
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
+
     if err := server.Shutdown(ctx); err != nil {
         fmt.Printf("Server forced to shutdown: %v\n", err)
     }
@@ -829,7 +831,7 @@ var (
 )
 
 http.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Version: %s\nBuild: %s\nCommit: %s\n", 
+    fmt.Fprintf(w, "Version: %s\nBuild: %s\nCommit: %s\n",
         Version, BuildTime, GitCommit)
 })
 ```
@@ -941,7 +943,7 @@ func (m *DebugMutex) Unlock() {
 
 ---
 
-**更新日期**: 2025-10-29  
+**更新日期**: 2025-10-29
 
-> **快速解决问题，提升开发效率** 🚀  
+> **快速解决问题，提升开发效率** 🚀
 > **实战经验总结，避免常见陷阱** 💡

@@ -1,41 +1,42 @@
-﻿# GitHub Actions CI/CD
+# GitHub Actions CI/CD
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+
 
 ---
 
 ## 📋 目录
 
-
-- [7.1 📚 GitHub Actions概述](#7-1-github-actions概述)
-- [7.2 🎯 工作流配置](#7-2-工作流配置)
-  - [基础工作流](#基础工作流)
-- [7.3 🧪 自动化测试](#7-3-自动化测试)
-  - [单元测试与集成测试](#单元测试与集成测试)
-  - [代码质量检查](#代码质量检查)
-- [7.4 🐳 Docker镜像构建](#7-4-docker镜像构建)
-  - [多架构构建](#多架构构建)
-  - [优化构建速度](#优化构建速度)
-- [7.5 🔐 安全扫描](#7-5-安全扫描)
-  - [漏洞扫描](#漏洞扫描)
-  - [依赖检查](#依赖检查)
-- [7.6 🚀 自动部署](#7-6-自动部署)
-  - [Kubernetes部署](#kubernetes部署)
-  - [ArgoCD同步](#argocd同步)
-  - [Helm Chart部署](#helm-chart部署)
-- [7.7 📊 矩阵策略](#7-7-矩阵策略)
-  - [多版本测试](#多版本测试)
-  - [多环境部署](#多环境部署)
-- [7.8 🎯 最佳实践](#7-8-最佳实践)
-- [7.9 ⚠️ 常见问题](#7-9-常见问题)
-  - [Q1: 如何加速GitHub Actions？](#q1-如何加速github-actions)
-  - [Q2: Secret如何管理？](#q2-secret如何管理)
-  - [Q3: 如何调试失败的工作流？](#q3-如何调试失败的工作流)
-- [7.10 📚 扩展阅读](#7-10-扩展阅读)
-  - [官方文档](#官方文档)
-  - [相关文档](#相关文档)
+- [GitHub Actions CI/CD](#github-actions-cicd)
+  - [📋 目录](#-目录)
+  - [7.1 📚 GitHub Actions概述](#71--github-actions概述)
+  - [7.2 🎯 工作流配置](#72--工作流配置)
+    - [基础工作流](#基础工作流)
+  - [7.3 🧪 自动化测试](#73--自动化测试)
+    - [单元测试与集成测试](#单元测试与集成测试)
+    - [代码质量检查](#代码质量检查)
+  - [7.4 🐳 Docker镜像构建](#74--docker镜像构建)
+    - [多架构构建](#多架构构建)
+    - [优化构建速度](#优化构建速度)
+  - [7.5 🔐 安全扫描](#75--安全扫描)
+    - [漏洞扫描](#漏洞扫描)
+    - [依赖检查](#依赖检查)
+  - [7.6 🚀 自动部署](#76--自动部署)
+    - [Kubernetes部署](#kubernetes部署)
+    - [ArgoCD同步](#argocd同步)
+    - [Helm Chart部署](#helm-chart部署)
+  - [7.7 📊 矩阵策略](#77--矩阵策略)
+    - [多版本测试](#多版本测试)
+    - [多环境部署](#多环境部署)
+  - [7.8 🎯 最佳实践](#78--最佳实践)
+  - [7.9 ⚠️ 常见问题](#79-️-常见问题)
+    - [Q1: 如何加速GitHub Actions？](#q1-如何加速github-actions)
+    - [Q2: Secret如何管理？](#q2-secret如何管理)
+    - [Q3: 如何调试失败的工作流？](#q3-如何调试失败的工作流)
+  - [7.10 📚 扩展阅读](#710--扩展阅读)
+    - [官方文档](#官方文档)
+    - [相关文档](#相关文档)
 
 ## 7.1 📚 GitHub Actions概述
 
@@ -74,19 +75,19 @@ jobs:
     steps:
     - name: 检出代码
       uses: actions/checkout@v4
-    
+
     - name: 设置Go环境
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
         cache: true
-    
+
     - name: 下载依赖
       run: go mod download
-    
+
     - name: 运行测试
       run: go test -v -race -coverprofile=coverage.out ./...
-    
+
     - name: 上传覆盖率
       uses: codecov/codecov-action@v4
       with:
@@ -101,7 +102,7 @@ jobs:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -114,7 +115,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:7-alpine
         options: >-
@@ -124,17 +125,17 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - uses: actions/setup-go@v5
       with:
         go-version: '1.21'
-    
+
     - name: 运行单元测试
       run: go test -v -short ./...
-    
+
     - name: 运行集成测试
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/test?sslmode=disable
@@ -150,17 +151,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - uses: actions/setup-go@v5
       with:
         go-version: '1.21'
-    
+
     - name: golangci-lint
       uses: golangci/golangci-lint-action@v4
       with:
         version: latest
         args: --timeout=5m
-    
+
     - name: Go格式检查
       run: |
         if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
@@ -181,23 +182,23 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: 设置QEMU
       uses: docker/setup-qemu-action@v3
-    
+
     - name: 设置Docker Buildx
       uses: docker/setup-buildx-action@v3
-    
+
     - name: 登录GHCR
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
+
     - name: 提取元数据
       id: meta
       uses: docker/metadata-action@v5
@@ -209,7 +210,7 @@ jobs:
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
           type=sha,prefix={{branch}}-
-    
+
     - name: 构建并推送
       uses: docker/build-push-action@v5
       with:
@@ -247,7 +248,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: 运行Trivy扫描
       uses: aquasecurity/trivy-action@master
       with:
@@ -256,12 +257,12 @@ jobs:
         format: 'sarif'
         output: 'trivy-results.sarif'
         severity: 'CRITICAL,HIGH'
-    
+
     - name: 上传到GitHub Security
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: 'trivy-results.sarif'
-    
+
     - name: 扫描Docker镜像
       uses: aquasecurity/trivy-action@master
       with:
@@ -277,7 +278,7 @@ jobs:
 - name: Go依赖审计
   run: |
     go list -json -m all | nancy sleuth
-    
+
 - name: Snyk依赖扫描
   uses: snyk/actions/golang@master
   env:
@@ -296,22 +297,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, build, security]
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: 配置kubectl
       uses: azure/k8s-set-context@v3
       with:
         method: kubeconfig
         kubeconfig: ${{ secrets.KUBE_CONFIG }}
-    
+
     - name: 部署到Kubernetes
       run: |
         kubectl set image deployment/user-service \
           user-service=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
           -n production
-        
+
         kubectl rollout status deployment/user-service -n production
 ```
 
@@ -322,11 +323,11 @@ jobs:
   run: |
     git clone https://${{ secrets.MANIFEST_TOKEN }}@github.com/myorg/k8s-manifests.git
     cd k8s-manifests
-    
+
     # 使用yq更新镜像
     yq eval '.spec.template.spec.containers[0].image = "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"' \
       -i apps/user-service/deployment.yaml
-    
+
     git config user.name "GitHub Actions"
     git config user.email "actions@github.com"
     git add apps/user-service/deployment.yaml
@@ -359,14 +360,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         go-version: ['1.20', '1.21', '1.22']
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
-    
+
     - name: 运行测试
       run: go test -v ./...
 ```
@@ -380,11 +381,11 @@ jobs:
     strategy:
       matrix:
         environment: [staging, production]
-    
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.environment }}.example.com
-    
+
     steps:
     - name: 部署到${{ matrix.environment }}
       run: |
@@ -453,7 +454,7 @@ jobs:
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: GitHub Actions, Go 1.21+, Kubernetes 1.27+

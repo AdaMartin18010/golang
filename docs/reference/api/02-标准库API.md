@@ -1,7 +1,7 @@
-﻿# 标准库API
+# 标准库API
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
@@ -310,11 +310,11 @@ var (
 
 func main() {
     flag.Parse()
-    
+
     fmt.Printf("Host: %s\n", *host)
     fmt.Printf("Port: %d\n", *port)
     fmt.Printf("Debug: %v\n", *debug)
-    
+
     // 剩余参数
     args := flag.Args()
 }
@@ -454,5 +454,5 @@ for {
 
 ---
 
-**最后更新**: 2025-10-29  
+**最后更新**: 2025-10-29
 **Go版本**: 1.25.3

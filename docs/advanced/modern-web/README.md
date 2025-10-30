@@ -1,4 +1,4 @@
-﻿# Go现代Web开发
+# Go现代Web开发
 
 Go现代Web开发完整指南，涵盖现代Web框架、实时通信、GraphQL和微服务网关。
 
@@ -29,7 +29,7 @@ var upgrader = websocket.Upgrader{
 func wsHandler(w http.ResponseWriter, r *http.Request) {
     conn, _ := upgrader.Upgrade(w, r, nil)
     defer conn.Close()
-    
+
     for {
         messageType, p, err := conn.ReadMessage()
         if err != nil {
@@ -50,6 +50,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

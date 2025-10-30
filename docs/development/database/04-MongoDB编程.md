@@ -1,4 +1,4 @@
-﻿# MongoDB编程 - Go语言实战指南
+# MongoDB编程 - Go语言实战指南
 
 > 使用 Go 官方驱动 mongo-go-driver 进行 MongoDB 数据库编程
 
@@ -6,43 +6,44 @@
 
 ## 📋 目录
 
-
-- [MongoDB概述](#mongodb概述)
-  - [特点](#特点)
-  - [适用场景](#适用场景)
-- [安装与配置](#安装与配置)
-  - [安装驱动](#安装驱动)
-  - [项目结构](#项目结构)
-- [连接管理](#连接管理)
-  - [基本连接](#基本连接)
-  - [连接字符串配置](#连接字符串配置)
-- [CRUD操作](#crud操作)
-  - [数据模型定义](#数据模型定义)
-  - [插入操作](#插入操作)
-  - [查询操作](#查询操作)
-  - [更新操作](#更新操作)
-  - [删除操作](#删除操作)
-- [聚合查询](#聚合查询)
-  - [聚合管道](#聚合管道)
-- [索引管理](#索引管理)
-  - [创建索引](#创建索引)
-- [事务处理](#事务处理)
-  - [ACID事务](#acid事务)
-- [Change Streams](#change-streams)
-  - [实时监听数据变化](#实时监听数据变化)
-- [GridFS文件存储](#gridfs文件存储)
-  - [大文件存储](#大文件存储)
-- [性能优化](#性能优化)
-  - [连接池优化](#连接池优化)
-  - [批量操作](#批量操作)
-  - [投影查询](#投影查询)
-- [最佳实践](#最佳实践)
-  - [1. 错误处理](#1-错误处理)
-  - [2. Context超时控制](#2-context超时控制)
-  - [3. 连接复用](#3-连接复用)
-  - [4. 索引策略](#4-索引策略)
-  - [5. 数据建模](#5-数据建模)
-- [总结](#总结)
+- [MongoDB编程 - Go语言实战指南](#mongodb编程---go语言实战指南)
+  - [📋 目录](#-目录)
+  - [MongoDB概述](#mongodb概述)
+    - [特点](#特点)
+    - [适用场景](#适用场景)
+  - [安装与配置](#安装与配置)
+    - [安装驱动](#安装驱动)
+    - [项目结构](#项目结构)
+  - [连接管理](#连接管理)
+    - [基本连接](#基本连接)
+    - [连接字符串配置](#连接字符串配置)
+  - [CRUD操作](#crud操作)
+    - [数据模型定义](#数据模型定义)
+    - [插入操作](#插入操作)
+    - [查询操作](#查询操作)
+    - [更新操作](#更新操作)
+    - [删除操作](#删除操作)
+  - [聚合查询](#聚合查询)
+    - [聚合管道](#聚合管道)
+  - [索引管理](#索引管理)
+    - [创建索引](#创建索引)
+  - [事务处理](#事务处理)
+    - [ACID事务](#acid事务)
+  - [Change Streams](#change-streams)
+    - [实时监听数据变化](#实时监听数据变化)
+  - [GridFS文件存储](#gridfs文件存储)
+    - [大文件存储](#大文件存储)
+  - [性能优化](#性能优化)
+    - [连接池优化](#连接池优化)
+    - [批量操作](#批量操作)
+    - [投影查询](#投影查询)
+  - [最佳实践](#最佳实践)
+    - [1. 错误处理](#1-错误处理)
+    - [2. Context超时控制](#2-context超时控制)
+    - [3. 连接复用](#3-连接复用)
+    - [4. 索引策略](#4-索引策略)
+    - [5. 数据建模](#5-数据建模)
+  - [总结](#总结)
 
 ## MongoDB概述
 
@@ -107,7 +108,7 @@ import (
     "context"
     "fmt"
     "time"
-    
+
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
     "go.mongodb.org/mongo-driver/mongo/readpref"
@@ -123,7 +124,7 @@ type MongoDB struct {
 func NewMongoDB(uri, dbName string) (*MongoDB, error) {
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
-    
+
     // 设置客户端选项
     clientOptions := options.Client().
         ApplyURI(uri).
@@ -132,20 +133,20 @@ func NewMongoDB(uri, dbName string) (*MongoDB, error) {
         SetMaxConnIdleTime(30 * time.Second).   // 最大空闲时间
         SetConnectTimeout(10 * time.Second).    // 连接超时
         SetServerSelectionTimeout(5 * time.Second) // 服务器选择超时
-    
+
     // 连接MongoDB
     client, err := mongo.Connect(ctx, clientOptions)
     if err != nil {
         return nil, fmt.Errorf("failed to connect: %w", err)
     }
-    
+
     // 测试连接
     if err := client.Ping(ctx, readpref.Primary()); err != nil {
         return nil, fmt.Errorf("ping failed: %w", err)
     }
-    
+
     fmt.Println("✅ MongoDB连接成功")
-    
+
     return &MongoDB{
         Client:   client,
         Database: client.Database(dbName),
@@ -156,7 +157,7 @@ func NewMongoDB(uri, dbName string) (*MongoDB, error) {
 func (m *MongoDB) Close() error {
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
-    
+
     return m.Client.Disconnect(ctx)
 }
 
@@ -172,13 +173,13 @@ func (m *MongoDB) GetCollection(name string) *mongo.Collection {
 const (
     // 本地开发
     LocalURI = "mongodb://localhost:27017"
-    
+
     // 带认证
     AuthURI = "mongodb://username:password@localhost:27017/?authSource=admin"
-    
+
     // 副本集
     ReplicaSetURI = "mongodb://host1:27017,host2:27017,host3:27017/?replicaSet=myReplSet"
-    
+
     // MongoDB Atlas（云服务）
     AtlasURI = "mongodb+srv://username:password@cluster0.mongodb.net/?retryWrites=true&w=majority"
 )
@@ -195,7 +196,7 @@ package models
 
 import (
     "time"
-    
+
     "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -228,7 +229,7 @@ import (
     "context"
     "fmt"
     "time"
-    
+
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/bson/primitive"
     "go.mongodb.org/mongo-driver/mongo"
@@ -250,15 +251,15 @@ func NewUserRepository(db *mongo.Database) *UserRepository {
 func (r *UserRepository) Insert(ctx context.Context, user *models.User) error {
     user.CreatedAt = time.Now()
     user.UpdatedAt = time.Now()
-    
+
     result, err := r.collection.InsertOne(ctx, user)
     if err != nil {
         return fmt.Errorf("insert failed: %w", err)
     }
-    
+
     user.ID = result.InsertedID.(primitive.ObjectID)
     fmt.Printf("✅ 插入成功，ID: %s\n", user.ID.Hex())
-    
+
     return nil
 }
 
@@ -270,14 +271,14 @@ func (r *UserRepository) InsertMany(ctx context.Context, users []*models.User) e
         user.UpdatedAt = time.Now()
         docs[i] = user
     }
-    
+
     result, err := r.collection.InsertMany(ctx, docs)
     if err != nil {
         return fmt.Errorf("insert many failed: %w", err)
     }
-    
+
     fmt.Printf("✅ 批量插入成功，插入了 %d 条记录\n", len(result.InsertedIDs))
-    
+
     return nil
 }
 ```
@@ -288,7 +289,7 @@ func (r *UserRepository) InsertMany(ctx context.Context, users []*models.User) e
 // FindByID 根据ID查询
 func (r *UserRepository) FindByID(ctx context.Context, id primitive.ObjectID) (*models.User, error) {
     var user models.User
-    
+
     filter := bson.M{"_id": id}
     err := r.collection.FindOne(ctx, filter).Decode(&user)
     if err == mongo.ErrNoDocuments {
@@ -297,20 +298,20 @@ func (r *UserRepository) FindByID(ctx context.Context, id primitive.ObjectID) (*
     if err != nil {
         return nil, err
     }
-    
+
     return &user, nil
 }
 
 // FindByUsername 根据用户名查询
 func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
     var user models.User
-    
+
     filter := bson.M{"username": username}
     err := r.collection.FindOne(ctx, filter).Decode(&user)
     if err != nil {
         return nil, err
     }
-    
+
     return &user, nil
 }
 
@@ -318,32 +319,32 @@ func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*
 func (r *UserRepository) FindAll(ctx context.Context, page, pageSize int64) ([]*models.User, int64, error) {
     // 计算跳过数量
     skip := (page - 1) * pageSize
-    
+
     // 设置查询选项
     opts := options.Find().
         SetLimit(pageSize).
         SetSkip(skip).
         SetSort(bson.D{{Key: "created_at", Value: -1}}) // 按创建时间降序
-    
+
     // 执行查询
     cursor, err := r.collection.Find(ctx, bson.M{}, opts)
     if err != nil {
         return nil, 0, err
     }
     defer cursor.Close(ctx)
-    
+
     // 解码结果
     var users []*models.User
     if err := cursor.All(ctx, &users); err != nil {
         return nil, 0, err
     }
-    
+
     // 获取总数
     total, err := r.collection.CountDocuments(ctx, bson.M{})
     if err != nil {
         return nil, 0, err
     }
-    
+
     return users, total, nil
 }
 
@@ -355,18 +356,18 @@ func (r *UserRepository) FindByAge(ctx context.Context, minAge, maxAge int) ([]*
             "$lte": maxAge,
         },
     }
-    
+
     cursor, err := r.collection.Find(ctx, filter)
     if err != nil {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var users []*models.User
     if err := cursor.All(ctx, &users); err != nil {
         return nil, err
     }
-    
+
     return users, nil
 }
 
@@ -377,18 +378,18 @@ func (r *UserRepository) FindByTags(ctx context.Context, tags []string) ([]*mode
             "$in": tags, // 包含任意一个标签
         },
     }
-    
+
     cursor, err := r.collection.Find(ctx, filter)
     if err != nil {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var users []*models.User
     if err := cursor.All(ctx, &users); err != nil {
         return nil, err
     }
-    
+
     return users, nil
 }
 
@@ -399,23 +400,23 @@ func (r *UserRepository) Search(ctx context.Context, keyword string) ([]*models.
             "$search": keyword,
         },
     }
-    
+
     // 按相关性排序
     opts := options.Find().SetProjection(bson.M{
         "score": bson.M{"$meta": "textScore"},
     }).SetSort(bson.D{{Key: "score", Value: bson.M{"$meta": "textScore"}}})
-    
+
     cursor, err := r.collection.Find(ctx, filter, opts)
     if err != nil {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var users []*models.User
     if err := cursor.All(ctx, &users); err != nil {
         return nil, err
     }
-    
+
     return users, nil
 }
 ```
@@ -426,23 +427,23 @@ func (r *UserRepository) Search(ctx context.Context, keyword string) ([]*models.
 // Update 更新用户
 func (r *UserRepository) Update(ctx context.Context, id primitive.ObjectID, update bson.M) error {
     filter := bson.M{"_id": id}
-    
+
     // 添加更新时间
     update["updated_at"] = time.Now()
-    
+
     updateDoc := bson.M{"$set": update}
-    
+
     result, err := r.collection.UpdateOne(ctx, filter, updateDoc)
     if err != nil {
         return err
     }
-    
+
     if result.MatchedCount == 0 {
         return fmt.Errorf("user not found")
     }
-    
+
     fmt.Printf("✅ 更新成功，修改了 %d 条记录\n", result.ModifiedCount)
-    
+
     return nil
 }
 
@@ -458,16 +459,16 @@ func (r *UserRepository) IncrementAge(ctx context.Context, id primitive.ObjectID
         "$inc": bson.M{"age": increment},
         "$set": bson.M{"updated_at": time.Now()},
     }
-    
+
     result, err := r.collection.UpdateOne(ctx, filter, update)
     if err != nil {
         return err
     }
-    
+
     if result.MatchedCount == 0 {
         return fmt.Errorf("user not found")
     }
-    
+
     return nil
 }
 
@@ -478,7 +479,7 @@ func (r *UserRepository) AddTag(ctx context.Context, id primitive.ObjectID, tag 
         "$addToSet": bson.M{"tags": tag}, // 避免重复
         "$set":      bson.M{"updated_at": time.Now()},
     }
-    
+
     _, err := r.collection.UpdateOne(ctx, filter, update)
     return err
 }
@@ -490,7 +491,7 @@ func (r *UserRepository) RemoveTag(ctx context.Context, id primitive.ObjectID, t
         "$pull": bson.M{"tags": tag},
         "$set":  bson.M{"updated_at": time.Now()},
     }
-    
+
     _, err := r.collection.UpdateOne(ctx, filter, update)
     return err
 }
@@ -499,12 +500,12 @@ func (r *UserRepository) RemoveTag(ctx context.Context, id primitive.ObjectID, t
 func (r *UserRepository) UpdateMany(ctx context.Context, filter, update bson.M) (int64, error) {
     update["updated_at"] = time.Now()
     updateDoc := bson.M{"$set": update}
-    
+
     result, err := r.collection.UpdateMany(ctx, filter, updateDoc)
     if err != nil {
         return 0, err
     }
-    
+
     return result.ModifiedCount, nil
 }
 ```
@@ -515,25 +516,25 @@ func (r *UserRepository) UpdateMany(ctx context.Context, filter, update bson.M) 
 // Delete 删除用户
 func (r *UserRepository) Delete(ctx context.Context, id primitive.ObjectID) error {
     filter := bson.M{"_id": id}
-    
+
     result, err := r.collection.DeleteOne(ctx, filter)
     if err != nil {
         return err
     }
-    
+
     if result.DeletedCount == 0 {
         return fmt.Errorf("user not found")
     }
-    
+
     fmt.Println("✅ 删除成功")
-    
+
     return nil
 }
 
 // DeleteByUsername 根据用户名删除
 func (r *UserRepository) DeleteByUsername(ctx context.Context, username string) error {
     filter := bson.M{"username": username}
-    
+
     _, err := r.collection.DeleteOne(ctx, filter)
     return err
 }
@@ -544,25 +545,25 @@ func (r *UserRepository) DeleteMany(ctx context.Context, filter bson.M) (int64, 
     if err != nil {
         return 0, err
     }
-    
+
     return result.DeletedCount, nil
 }
 
 // DeleteOldUsers 删除旧用户（示例：删除超过1年未登录的用户）
 func (r *UserRepository) DeleteOldUsers(ctx context.Context, daysAgo int) (int64, error) {
     cutoff := time.Now().AddDate(0, 0, -daysAgo)
-    
+
     filter := bson.M{
         "last_login_at": bson.M{
             "$lt": cutoff,
         },
     }
-    
+
     result, err := r.collection.DeleteMany(ctx, filter)
     if err != nil {
         return 0, err
     }
-    
+
     return result.DeletedCount, nil
 }
 ```
@@ -594,18 +595,18 @@ func (r *UserRepository) AggregateByAge(ctx context.Context) ([]bson.M, error) {
         // 阶段2: 排序
         {{Key: "$sort", Value: bson.D{{Key: "_id", Value: 1}}}},
     }
-    
+
     cursor, err := r.collection.Aggregate(ctx, pipeline)
     if err != nil {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var results []bson.M
     if err := cursor.All(ctx, &results); err != nil {
         return nil, err
     }
-    
+
     return results, nil
 }
 
@@ -620,22 +621,22 @@ func (r *UserRepository) GetStatistics(ctx context.Context) (*UserStatistics, er
             {Key: "$maxAge", Value: bson.D{{Key: "$max", Value: "$age"}}},
         }}},
     }
-    
+
     cursor, err := r.collection.Aggregate(ctx, pipeline)
     if err != nil {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var results []UserStatistics
     if err := cursor.All(ctx, &results); err != nil {
         return nil, err
     }
-    
+
     if len(results) == 0 {
         return nil, fmt.Errorf("no data")
     }
-    
+
     return &results[0], nil
 }
 
@@ -668,18 +669,18 @@ func (r *UserRepository) AggregateTopTags(ctx context.Context, limit int) ([]Tag
             {Key: "_id", Value: 0},
         }}},
     }
-    
+
     cursor, err := r.collection.Aggregate(ctx, pipeline)
     if err != nil {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var results []TagCount
     if err := cursor.All(ctx, &results); err != nil {
         return nil, err
     }
-    
+
     return results, nil
 }
 
@@ -724,22 +725,22 @@ func (r *UserRepository) SearchWithFacets(ctx context.Context, keyword string) (
             }},
         }}},
     }
-    
+
     cursor, err := r.collection.Aggregate(ctx, pipeline)
     if err != nil {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var results []SearchResult
     if err := cursor.All(ctx, &results); err != nil {
         return nil, err
     }
-    
+
     if len(results) == 0 {
         return nil, fmt.Errorf("no results")
     }
-    
+
     return &results[0], nil
 }
 
@@ -764,7 +765,7 @@ import (
     "context"
     "fmt"
     "time"
-    
+
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
@@ -807,15 +808,15 @@ func (r *UserRepository) CreateIndexes(ctx context.Context) error {
             Options: options.Index().SetExpireAfterSeconds(86400 * 30), // 30天后过期
         },
     }
-    
+
     // 批量创建索引
     names, err := r.collection.Indexes().CreateMany(ctx, indexes)
     if err != nil {
         return fmt.Errorf("create indexes failed: %w", err)
     }
-    
+
     fmt.Printf("✅ 创建索引成功: %v\n", names)
-    
+
     return nil
 }
 
@@ -826,17 +827,17 @@ func (r *UserRepository) ListIndexes(ctx context.Context) error {
         return err
     }
     defer cursor.Close(ctx)
-    
+
     var indexes []bson.M
     if err := cursor.All(ctx, &indexes); err != nil {
         return err
     }
-    
+
     fmt.Println("=== 索引列表 ===")
     for _, index := range indexes {
         fmt.Printf("名称: %v, 键: %v\n", index["name"], index["key"])
     }
-    
+
     return nil
 }
 
@@ -846,9 +847,9 @@ func (r *UserRepository) DropIndex(ctx context.Context, name string) error {
     if err != nil {
         return err
     }
-    
+
     fmt.Printf("✅ 删除索引成功: %s\n", name)
-    
+
     return nil
 }
 ```
@@ -865,7 +866,7 @@ package repository
 import (
     "context"
     "fmt"
-    
+
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/bson/primitive"
     "go.mongodb.org/mongo-driver/mongo"
@@ -879,11 +880,11 @@ func TransferPoints(ctx context.Context, client *mongo.Client, fromUserID, toUse
         return err
     }
     defer session.EndSession(ctx)
-    
+
     // 定义事务函数
     callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
         usersCollection := client.Database("mydb").Collection("users")
-        
+
         // 1. 扣减发送方积分
         filter := bson.M{
             "_id": fromUserID,
@@ -892,31 +893,31 @@ func TransferPoints(ctx context.Context, client *mongo.Client, fromUserID, toUse
         update := bson.M{
             "$inc": bson.M{"points": -points},
         }
-        
+
         result, err := usersCollection.UpdateOne(sessCtx, filter, update)
         if err != nil {
             return nil, err
         }
-        
+
         if result.MatchedCount == 0 {
             return nil, fmt.Errorf("insufficient points or user not found")
         }
-        
+
         // 2. 增加接收方积分
         filter = bson.M{"_id": toUserID}
         update = bson.M{
             "$inc": bson.M{"points": points},
         }
-        
+
         result, err = usersCollection.UpdateOne(sessCtx, filter, update)
         if err != nil {
             return nil, err
         }
-        
+
         if result.MatchedCount == 0 {
             return nil, fmt.Errorf("recipient user not found")
         }
-        
+
         // 3. 记录转账历史
         transactionsCollection := client.Database("mydb").Collection("transactions")
         transaction := bson.M{
@@ -925,23 +926,23 @@ func TransferPoints(ctx context.Context, client *mongo.Client, fromUserID, toUse
             "points":       points,
             "created_at":   time.Now(),
         }
-        
+
         _, err = transactionsCollection.InsertOne(sessCtx, transaction)
         if err != nil {
             return nil, err
         }
-        
+
         return nil, nil
     }
-    
+
     // 执行事务
     _, err = session.WithTransaction(ctx, callback)
     if err != nil {
         return fmt.Errorf("transaction failed: %w", err)
     }
-    
+
     fmt.Println("✅ 积分转账成功")
-    
+
     return nil
 }
 ```
@@ -960,7 +961,7 @@ import (
     "fmt"
     "log"
     "time"
-    
+
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
@@ -970,20 +971,20 @@ import (
 func WatchUsers(ctx context.Context, collection *mongo.Collection) {
     // 创建Change Stream
     pipeline := mongo.Pipeline{}
-    
+
     // 可选：过滤特定操作
     // pipeline = append(pipeline, bson.D{{Key: "$match", Value: bson.D{
     //     {Key: "operationType", Value: bson.M{"$in": []string{"insert", "update"}}},
     // }}})
-    
+
     changeStream, err := collection.Watch(ctx, pipeline)
     if err != nil {
         log.Fatal(err)
     }
     defer changeStream.Close(ctx)
-    
+
     fmt.Println("🔔 开始监听用户数据变化...")
-    
+
     // 持续监听
     for changeStream.Next(ctx) {
         var changeEvent bson.M
@@ -991,28 +992,28 @@ func WatchUsers(ctx context.Context, collection *mongo.Collection) {
             log.Printf("解码失败: %v", err)
             continue
         }
-        
+
         operationType := changeEvent["operationType"]
         fmt.Printf("\n=== 检测到变化 ===\n")
         fmt.Printf("操作类型: %v\n", operationType)
-        
+
         switch operationType {
         case "insert":
             doc := changeEvent["fullDocument"]
             fmt.Printf("新增文档: %v\n", doc)
-            
+
         case "update":
             docID := changeEvent["documentKey"]
             updatedFields := changeEvent["updateDescription"].(bson.M)["updatedFields"]
             fmt.Printf("更新文档 ID: %v\n", docID)
             fmt.Printf("更新字段: %v\n", updatedFields)
-            
+
         case "delete":
             docID := changeEvent["documentKey"]
             fmt.Printf("删除文档 ID: %v\n", docID)
         }
     }
-    
+
     if err := changeStream.Err(); err != nil {
         log.Fatal(err)
     }
@@ -1025,12 +1026,12 @@ func main() {
         log.Fatal(err)
     }
     defer client.Disconnect(context.Background())
-    
+
     collection := client.Database("mydb").Collection("users")
-    
+
     // 在goroutine中监听
     go WatchUsers(context.Background(), collection)
-    
+
     // 主程序继续运行
     time.Sleep(10 * time.Minute)
 }
@@ -1050,7 +1051,7 @@ import (
     "fmt"
     "io"
     "os"
-    
+
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/bson/primitive"
     "go.mongodb.org/mongo-driver/mongo"
@@ -1069,7 +1070,7 @@ func NewFileStorage(db *mongo.Database) (*FileStorage, error) {
     if err != nil {
         return nil, err
     }
-    
+
     return &FileStorage{bucket: bucket}, nil
 }
 
@@ -1079,14 +1080,14 @@ func (fs *FileStorage) Upload(ctx context.Context, filename string, file io.Read
         "uploaded_at": time.Now(),
         "content_type": getContentType(filename),
     })
-    
+
     fileID, err := fs.bucket.UploadFromStream(filename, file, opts)
     if err != nil {
         return primitive.NilObjectID, fmt.Errorf("upload failed: %w", err)
     }
-    
+
     fmt.Printf("✅ 文件上传成功，ID: %s\n", fileID.Hex())
-    
+
     return fileID.(primitive.ObjectID), nil
 }
 
@@ -1096,9 +1097,9 @@ func (fs *FileStorage) Download(ctx context.Context, fileID primitive.ObjectID, 
     if err != nil {
         return fmt.Errorf("download failed: %w", err)
     }
-    
+
     fmt.Println("✅ 文件下载成功")
-    
+
     return nil
 }
 
@@ -1108,7 +1109,7 @@ func (fs *FileStorage) DownloadByName(ctx context.Context, filename string, dest
     if err != nil {
         return fmt.Errorf("download failed: %w", err)
     }
-    
+
     return nil
 }
 
@@ -1118,9 +1119,9 @@ func (fs *FileStorage) Delete(ctx context.Context, fileID primitive.ObjectID) er
     if err != nil {
         return fmt.Errorf("delete failed: %w", err)
     }
-    
+
     fmt.Println("✅ 文件删除成功")
-    
+
     return nil
 }
 
@@ -1131,14 +1132,14 @@ func (fs *FileStorage) ListFiles(ctx context.Context) ([]FileInfo, error) {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var files []FileInfo
     for cursor.Next(ctx) {
         var file gridfs.File
         if err := cursor.Decode(&file); err != nil {
             return nil, err
         }
-        
+
         files = append(files, FileInfo{
             ID:         file.ID.(primitive.ObjectID),
             Filename:   file.Name,
@@ -1146,7 +1147,7 @@ func (fs *FileStorage) ListFiles(ctx context.Context) ([]FileInfo, error) {
             UploadDate: file.UploadDate,
         })
     }
-    
+
     return files, nil
 }
 
@@ -1178,19 +1179,19 @@ func getContentType(filename string) string {
 func ExampleFileStorage() {
     client, _ := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
     db := client.Database("mydb")
-    
+
     storage, _ := NewFileStorage(db)
-    
+
     // 上传文件
     file, _ := os.Open("large-file.pdf")
     defer file.Close()
-    
+
     fileID, _ := storage.Upload(context.Background(), "large-file.pdf", file)
-    
+
     // 下载文件
     outFile, _ := os.Create("downloaded.pdf")
     defer outFile.Close()
-    
+
     storage.Download(context.Background(), fileID, outFile)
 }
 ```
@@ -1216,15 +1217,15 @@ clientOptions := options.Client().
 // BulkWrite 批量写入
 func (r *UserRepository) BulkWrite(ctx context.Context, operations []mongo.WriteModel) error {
     opts := options.BulkWrite().SetOrdered(false) // 无序执行，更快
-    
+
     result, err := r.collection.BulkWrite(ctx, operations, opts)
     if err != nil {
         return err
     }
-    
+
     fmt.Printf("✅ 批量操作成功: 插入%d, 更新%d, 删除%d\n",
         result.InsertedCount, result.ModifiedCount, result.DeletedCount)
-    
+
     return nil
 }
 
@@ -1238,7 +1239,7 @@ func ExampleBulkWrite(repo *UserRepository) {
             SetUpdate(bson.M{"$set": bson.M{"age": 35}}),
         mongo.NewDeleteOneModel().SetFilter(bson.M{"username": "dave"}),
     }
-    
+
     repo.BulkWrite(context.Background(), operations)
 }
 ```
@@ -1252,26 +1253,26 @@ func (r *UserRepository) FindUsernamesOnly(ctx context.Context) ([]string, error
         "username": 1,
         "_id":      0,
     })
-    
+
     cursor, err := r.collection.Find(ctx, bson.M{}, opts)
     if err != nil {
         return nil, err
     }
     defer cursor.Close(ctx)
-    
+
     var results []struct {
         Username string `bson:"username"`
     }
-    
+
     if err := cursor.All(ctx, &results); err != nil {
         return nil, err
     }
-    
+
     usernames := make([]string, len(results))
     for i, result := range results {
         usernames[i] = result.Username
     }
-    
+
     return usernames, nil
 }
 ```
@@ -1352,6 +1353,6 @@ MongoDB + Go 开发的核心要点：
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

@@ -1,54 +1,55 @@
-﻿# 11. ☸️ Kubernetes微服务部署
+# 11. ☸️ Kubernetes微服务部署
 
 > 📚 **简介**：本文档深入探讨在Kubernetes平台上部署和管理Go微服务的完整流程，涵盖容器化、资源编排、服务发现、配置管理、健康检查、自动扩展和持续部署等核心主题。通过本文，读者将掌握在Kubernetes环境中构建生产级微服务的实践技能。
 
 ## 📋 目录
 
-
-- [11.1 📚 Kubernetes基础](#11-1-kubernetes基础)
-  - [核心概念](#核心概念)
-  - [架构组件](#架构组件)
-- [11.2 🐳 容器化Go应用](#11-2-容器化go应用)
-  - [Dockerfile最佳实践](#dockerfile最佳实践)
-  - [多阶段构建](#多阶段构建)
-  - [镜像优化](#镜像优化)
-- [11.3 📋 部署配置](#11-3-部署配置)
-  - [Deployment](#deployment)
-  - [Service](#service)
-  - [Ingress](#ingress)
-- [11.4 ⚙️ 配置管理](#11-4-配置管理)
-  - [ConfigMap](#configmap)
-  - [Secret](#secret)
-  - [环境变量注入](#环境变量注入)
-- [11.5 💾 存储管理](#11-5-存储管理)
-  - [Volume](#volume)
-  - [PersistentVolume](#persistentvolume)
-- [11.6 🔍 健康检查](#11-6-健康检查)
-  - [Liveness Probe](#liveness-probe)
-  - [Readiness Probe](#readiness-probe)
-  - [Startup Probe](#startup-probe)
-- [11.7 📊 资源管理](#11-7-资源管理)
-  - [资源请求与限制](#资源请求与限制)
-  - [QoS类别](#qos类别)
-- [11.8 🚀 自动扩展](#11-8-自动扩展)
-  - [HPA水平扩展](#hpa水平扩展)
-  - [VPA垂直扩展](#vpa垂直扩展)
-- [11.9 🔄 滚动更新](#11-9-滚动更新)
-  - [更新策略](#更新策略)
-  - [回滚操作](#回滚操作)
-- [11.10 📈 监控与日志](#11-10-监控与日志)
-  - [Prometheus监控](#prometheus监控)
-  - [日志收集](#日志收集)
-- [11.11 🎯 最佳实践](#11-11-最佳实践)
-- [11.12 ⚠️ 常见问题](#11-12-常见问题)
-  - [Q1: Pod一直处于Pending状态？](#q1-pod一直处于pending状态)
-  - [Q2: 如何调试CrashLoopBackOff？](#q2-如何调试crashloopbackoff)
-  - [Q3: 如何优雅关闭应用？](#q3-如何优雅关闭应用)
-  - [Q4: 如何实现蓝绿部署？](#q4-如何实现蓝绿部署)
-- [11.13 📚 扩展阅读](#11-13-扩展阅读)
-  - [官方文档](#官方文档)
-  - [相关文档](#相关文档)
-  - [工具推荐](#工具推荐)
+- [11. ☸️ Kubernetes微服务部署](#11-️-kubernetes微服务部署)
+  - [📋 目录](#-目录)
+  - [11.1 📚 Kubernetes基础](#111--kubernetes基础)
+    - [核心概念](#核心概念)
+    - [架构组件](#架构组件)
+  - [11.2 🐳 容器化Go应用](#112--容器化go应用)
+    - [Dockerfile最佳实践](#dockerfile最佳实践)
+    - [多阶段构建](#多阶段构建)
+    - [镜像优化](#镜像优化)
+  - [11.3 📋 部署配置](#113--部署配置)
+    - [Deployment](#deployment)
+    - [Service](#service)
+    - [Ingress](#ingress)
+  - [11.4 ⚙️ 配置管理](#114-️-配置管理)
+    - [ConfigMap](#configmap)
+    - [Secret](#secret)
+    - [环境变量注入](#环境变量注入)
+  - [11.5 💾 存储管理](#115--存储管理)
+    - [Volume](#volume)
+    - [PersistentVolume](#persistentvolume)
+  - [11.6 🔍 健康检查](#116--健康检查)
+    - [Liveness Probe](#liveness-probe)
+    - [Readiness Probe](#readiness-probe)
+    - [Startup Probe](#startup-probe)
+  - [11.7 📊 资源管理](#117--资源管理)
+    - [资源请求与限制](#资源请求与限制)
+    - [QoS类别](#qos类别)
+  - [11.8 🚀 自动扩展](#118--自动扩展)
+    - [HPA水平扩展](#hpa水平扩展)
+    - [VPA垂直扩展](#vpa垂直扩展)
+  - [11.9 🔄 滚动更新](#119--滚动更新)
+    - [更新策略](#更新策略)
+    - [回滚操作](#回滚操作)
+  - [11.10 📈 监控与日志](#1110--监控与日志)
+    - [Prometheus监控](#prometheus监控)
+    - [日志收集](#日志收集)
+  - [11.11 🎯 最佳实践](#1111--最佳实践)
+  - [11.12 ⚠️ 常见问题](#1112-️-常见问题)
+    - [Q1: Pod一直处于Pending状态？](#q1-pod一直处于pending状态)
+    - [Q2: 如何调试CrashLoopBackOff？](#q2-如何调试crashloopbackoff)
+    - [Q3: 如何优雅关闭应用？](#q3-如何优雅关闭应用)
+    - [Q4: 如何实现蓝绿部署？](#q4-如何实现蓝绿部署)
+  - [11.13 📚 扩展阅读](#1113--扩展阅读)
+    - [官方文档](#官方文档)
+    - [相关文档](#相关文档)
+    - [工具推荐](#工具推荐)
 
 ## 11.1 📚 Kubernetes基础
 
@@ -408,11 +409,11 @@ func getEnv(key, defaultValue string) string {
 
 func main() {
     config := LoadConfig()
-    
+
     if config.DBPassword == "" {
         log.Fatal("DB_PASSWORD must be set")
     }
-    
+
     log.Printf("Starting server on port %s", config.Port)
     // ...
 }
@@ -532,7 +533,7 @@ func healthHandler(c *gin.Context) {
         })
         return
     }
-    
+
     if err := checkRedis(); err != nil {
         c.JSON(http.StatusServiceUnavailable, gin.H{
             "status": "unhealthy",
@@ -540,7 +541,7 @@ func healthHandler(c *gin.Context) {
         })
         return
     }
-    
+
     c.JSON(http.StatusOK, gin.H{
         "status": "healthy",
     })
@@ -573,7 +574,7 @@ func readyHandler(c *gin.Context) {
         })
         return
     }
-    
+
     c.JSON(http.StatusOK, gin.H{
         "status": "ready",
     })
@@ -584,12 +585,12 @@ func initializeApp() {
     if err := setupDatabase(); err != nil {
         log.Fatal(err)
     }
-    
+
     // 初始化缓存
     if err := setupCache(); err != nil {
         log.Fatal(err)
     }
-    
+
     // 标记为就绪
     isReady.Store(true)
 }
@@ -816,10 +817,10 @@ func main() {
     r := gin.Default()
     r.GET("/health", healthHandler)
     r.GET("/api/users", getUsersHandler)
-    
+
     // 指标端点
     r.GET("/metrics", gin.WrapH(promhttp.Handler()))
-    
+
     r.Run(":8080")
 }
 ```
@@ -835,7 +836,7 @@ func main() {
     log := logrus.New()
     log.SetFormatter(&logrus.JSONFormatter{})
     log.SetOutput(os.Stdout)
-    
+
     log.WithFields(logrus.Fields{
         "service":  "user-service",
         "version":  "v1.0",
@@ -858,7 +859,7 @@ data:
         Path              /var/log/containers/*production*.log
         Parser            json
         Tag               kube.*
-    
+
     [OUTPUT]
         Name              es
         Match             *
@@ -920,28 +921,28 @@ kubectl describe pod <pod-name>
 ```go
 func main() {
     srv := &http.Server{Addr: ":8080"}
-    
+
     go func() {
         if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
             log.Fatal(err)
         }
     }()
-    
+
     // 监听信号
     quit := make(chan os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
-    
+
     log.Println("Shutting down server...")
-    
+
     // 优雅关闭（5秒超时）
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
+
     if err := srv.Shutdown(ctx); err != nil {
         log.Fatal("Server forced to shutdown:", err)
     }
-    
+
     log.Println("Server exited")
 }
 ```
@@ -984,7 +985,7 @@ kubectl delete deployment user-service-blue
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Kubernetes 1.27+, Go 1.21+

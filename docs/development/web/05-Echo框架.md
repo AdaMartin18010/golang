@@ -1,13 +1,12 @@
-﻿# Echo框架基础 (Go 1.23+优化版)
+# Echo框架基础 (Go 1.23+优化版)
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+ / Echo v4.11+
 
 ---
 
 ## 📋 目录
-
 
 - [🚀 Go 1.23+ Web开发新特性概览](#go-1-23+-web开发新特性概览)
   - [核心特性更新](#核心特性更新)
@@ -207,12 +206,12 @@ type HighPerformanceEchoServer struct {
 // NewHighPerformanceEchoServer 创建高性能Echo服务器
 func NewHighPerformanceEchoServer() *HighPerformanceEchoServer {
     e := echo.New()
-    
+
     // 使用结构化日志
     logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
         Level: slog.LevelInfo,
     }))
-    
+
     return &HighPerformanceEchoServer{
         echo: e,
         logger: logger,
@@ -223,39 +222,39 @@ func NewHighPerformanceEchoServer() *HighPerformanceEchoServer {
 func (s *HighPerformanceEchoServer) SetupRoutes() {
     // 用户API组
     api := s.echo.Group("/api/v1")
-    
+
     // 获取用户列表 - 使用JSON v2
     api.GET("/users", func(c echo.Context) error {
         users := []User{
             {ID: 1, Name: "Alice", Email: "alice@example.com", CreateAt: "2025-01-01"},
             {ID: 2, Name: "Bob", Email: "bob@example.com", CreateAt: "2025-01-02"},
         }
-        
+
         // 使用JSON v2进行序列化
         data, err := json.Marshal(users)
         if err != nil {
             s.logger.Error("JSON序列化失败", "error", err)
             return c.JSON(500, map[string]string{"error": "序列化失败"})
         }
-        
+
         s.logger.Info("用户列表查询成功", "count", len(users))
         return c.JSONBlob(200, data)
     })
-    
+
     // 创建用户 - 使用JSON v2
     api.POST("/users", func(c echo.Context) error {
         var user User
-        
+
         // 使用JSON v2进行反序列化
         if err := json.Unmarshal([]byte(c.Request().Body), &user); err != nil {
             s.logger.Error("JSON反序列化失败", "error", err)
             return c.JSON(400, map[string]string{"error": "无效的JSON"})
         }
-        
+
         // 模拟创建用户
         user.ID = 3
         user.CreateAt = "2025-01-03"
-        
+
         s.logger.Info("用户创建成功", "user_id", user.ID, "name", user.Name)
         return c.JSON(201, user)
     })
@@ -312,7 +311,7 @@ func NewECDSAMessageSigner() (*ECDSAMessageSigner, error) {
     if err != nil {
         return nil, err
     }
-    
+
     return &ECDSAMessageSigner{
         privateKey: privateKey,
         publicKey:  &privateKey.PublicKey,
@@ -351,16 +350,16 @@ type ServerMetrics struct {
 // NewConcurrentEchoServer 创建并发Echo服务器
 func NewConcurrentEchoServer(maxWorkers int) (*ConcurrentEchoServer, error) {
     e := echo.New()
-    
+
     logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
         Level: slog.LevelInfo,
     }))
-    
+
     signer, err := NewECDSAMessageSigner()
     if err != nil {
         return nil, err
     }
-    
+
     return &ConcurrentEchoServer{
         echo:       e,
         logger:     logger,
@@ -378,25 +377,25 @@ func (s *ConcurrentEchoServer) SetupConcurrentRoutes() {
             // 获取工作协程
             s.workerPool <- struct{}{}
             defer func() { <-s.workerPool }()
-            
+
             // 记录请求开始时间
             start := time.Now()
             defer func() {
                 latency := time.Since(start)
                 s.updateMetrics(latency)
             }()
-            
+
             return next(c)
         }
     })
-    
+
     // 高并发API端点
     api := s.echo.Group("/api/v1")
-    
+
     // 数据处理API
     api.POST("/process", func(c echo.Context) error {
         var data map[string]interface{}
-        
+
         // 使用JSON v2解析
         if err := json.Unmarshal([]byte(c.Request().Body), &data); err != nil {
             s.metrics.mu.Lock()
@@ -404,30 +403,30 @@ func (s *ConcurrentEchoServer) SetupConcurrentRoutes() {
             s.metrics.mu.Unlock()
             return c.JSON(400, map[string]string{"error": "无效数据"})
         }
-        
+
         // 模拟数据处理
         time.Sleep(10 * time.Millisecond)
-        
+
         // 签名响应数据
         responseData := map[string]interface{}{
             "status": "processed",
             "data":   data,
             "timestamp": time.Now().Unix(),
         }
-        
+
         responseBytes, _ := json.Marshal(responseData)
         signature, _ := s.signer.SignMessage(responseBytes)
-        
+
         s.metrics.mu.Lock()
         s.metrics.requestCount++
         s.metrics.mu.Unlock()
-        
+
         return c.JSON(200, map[string]interface{}{
             "result":    responseData,
             "signature": signature,
         })
     })
-    
+
     // 指标查询API
     api.GET("/metrics", func(c echo.Context) error {
         s.metrics.mu.RLock()
@@ -437,7 +436,7 @@ func (s *ConcurrentEchoServer) SetupConcurrentRoutes() {
             "avg_latency":   s.metrics.avgLatency.String(),
         }
         s.metrics.mu.RUnlock()
-        
+
         return c.JSON(200, metrics)
     })
 }
@@ -446,7 +445,7 @@ func (s *ConcurrentEchoServer) SetupConcurrentRoutes() {
 func (s *ConcurrentEchoServer) updateMetrics(latency time.Duration) {
     s.metrics.mu.Lock()
     defer s.metrics.mu.Unlock()
-    
+
     // 简单的移动平均
     if s.metrics.avgLatency == 0 {
         s.metrics.avgLatency = latency
@@ -467,7 +466,7 @@ func main() {
     if err != nil {
         panic(err)
     }
-    
+
     if err := server.Start(":8080"); err != nil {
         server.logger.Error("服务器启动失败", "error", err)
     }
@@ -493,11 +492,11 @@ func TestPingRoute(t *testing.T) {
     e.GET("/ping", func(c echo.Context) error {
         return c.JSON(200, map[string]string{"message": "pong"})
     })
-    
+
     req := httptest.NewRequest(http.MethodGet, "/ping", nil)
     rec := httptest.NewRecorder()
     e.ServeHTTP(rec, req)
-    
+
     if rec.Code != 200 || rec.Body.String() != "{\"message\":\"pong\"}\n" {
         t.Errorf("unexpected response: %s", rec.Body.String())
     }
@@ -506,16 +505,16 @@ func TestPingRoute(t *testing.T) {
 func TestUserAPI(t *testing.T) {
     server := NewHighPerformanceEchoServer()
     server.SetupRoutes()
-    
+
     // 测试获取用户列表
     req := httptest.NewRequest(http.MethodGet, "/api/v1/users", nil)
     rec := httptest.NewRecorder()
     server.echo.ServeHTTP(rec, req)
-    
+
     if rec.Code != 200 {
         t.Errorf("expected status 200, got %d", rec.Code)
     }
-    
+
     // 验证响应包含用户数据
     body := rec.Body.String()
     if !strings.Contains(body, "Alice") || !strings.Contains(body, "Bob") {
@@ -548,52 +547,52 @@ func TestConcurrentEchoServer(t *testing.T) {
             t.Fatalf("创建服务器失败: %v", err)
         }
         server.SetupConcurrentRoutes()
-        
+
         // 并发测试数据处理API
         const numRequests = 100
         var wg sync.WaitGroup
-        
+
         for i := 0; i < numRequests; i++ {
             wg.Add(1)
             go func(id int) {
                 defer wg.Done()
-                
+
                 // 准备测试数据
                 testData := map[string]interface{}{
                     "id":      id,
                     "message": "test message",
                     "data":    []int{1, 2, 3, 4, 5},
                 }
-                
+
                 jsonData, _ := json.Marshal(testData)
                 req := httptest.NewRequest(http.MethodPost, "/api/v1/process", bytes.NewReader(jsonData))
                 req.Header.Set("Content-Type", "application/json")
                 rec := httptest.NewRecorder()
-                
+
                 server.echo.ServeHTTP(rec, req)
-                
+
                 if rec.Code != 200 {
                     t.Errorf("请求 %d 失败，状态码: %d", id, rec.Code)
                 }
             }(i)
         }
-        
+
         wg.Wait()
-        
+
         // 验证指标
         req := httptest.NewRequest(http.MethodGet, "/api/v1/metrics", nil)
         rec := httptest.NewRecorder()
         server.echo.ServeHTTP(rec, req)
-        
+
         if rec.Code != 200 {
             t.Errorf("获取指标失败，状态码: %d", rec.Code)
         }
-        
+
         var metrics map[string]interface{}
         if err := json.Unmarshal(rec.Body.Bytes(), &metrics); err != nil {
             t.Errorf("解析指标失败: %v", err)
         }
-        
+
         if metrics["request_count"].(float64) != float64(numRequests) {
             t.Errorf("请求计数不匹配，期望: %d, 实际: %v", numRequests, metrics["request_count"])
         }
@@ -605,26 +604,26 @@ func TestJSONv2Performance(t *testing.T) {
     synctest.Run(t, func(t *testing.T) {
         server := NewHighPerformanceEchoServer()
         server.SetupRoutes()
-        
+
         // 测试JSON v2序列化性能
         const numRequests = 1000
         var wg sync.WaitGroup
-        
+
         for i := 0; i < numRequests; i++ {
             wg.Add(1)
             go func() {
                 defer wg.Done()
-                
+
                 req := httptest.NewRequest(http.MethodGet, "/api/v1/users", nil)
                 rec := httptest.NewRecorder()
                 server.echo.ServeHTTP(rec, req)
-                
+
                 if rec.Code != 200 {
                     t.Errorf("JSON v2请求失败，状态码: %d", rec.Code)
                 }
             }()
         }
-        
+
         wg.Wait()
     })
 }
@@ -636,24 +635,24 @@ func TestMessageSigner(t *testing.T) {
         if err != nil {
             t.Fatalf("创建签名器失败: %v", err)
         }
-        
+
         message := []byte("test message for signing")
-        
+
         // 测试签名
         signature, err := signer.SignMessage(message)
         if err != nil {
             t.Fatalf("签名失败: %v", err)
         }
-        
+
         if len(signature) == 0 {
             t.Error("签名不能为空")
         }
-        
+
         // 测试验证
         if !signer.VerifyMessage(message, signature) {
             t.Error("签名验证失败")
         }
-        
+
         // 测试错误消息验证
         wrongMessage := []byte("wrong message")
         if signer.VerifyMessage(wrongMessage, signature) {
@@ -681,7 +680,7 @@ import (
 func BenchmarkEchoJSONv2(b *testing.B) {
     server := NewHighPerformanceEchoServer()
     server.SetupRoutes()
-    
+
     b.ResetTimer()
     b.RunParallel(func(pb *testing.PB) {
         for pb.Next() {
@@ -696,13 +695,13 @@ func BenchmarkEchoJSONv2(b *testing.B) {
 func BenchmarkConcurrentProcessing(b *testing.B) {
     server, _ := NewConcurrentEchoServer(100)
     server.SetupConcurrentRoutes()
-    
+
     testData := map[string]interface{}{
         "message": "benchmark test",
         "data":    []int{1, 2, 3, 4, 5},
     }
     jsonData, _ := json.Marshal(testData)
-    
+
     b.ResetTimer()
     b.RunParallel(func(pb *testing.PB) {
         for pb.Next() {
@@ -718,7 +717,7 @@ func BenchmarkConcurrentProcessing(b *testing.B) {
 func BenchmarkMessageSigning(b *testing.B) {
     signer, _ := NewECDSAMessageSigner()
     message := []byte("benchmark message for signing")
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         signature, _ := signer.SignMessage(message)
@@ -729,24 +728,24 @@ func BenchmarkMessageSigning(b *testing.B) {
 // BenchmarkEchoMiddleware 中间件性能基准测试
 func BenchmarkEchoMiddleware(b *testing.B) {
     e := echo.New()
-    
+
     // 添加多个中间件
     e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             return next(c)
         }
     })
-    
+
     e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             return next(c)
         }
     })
-    
+
     e.GET("/test", func(c echo.Context) error {
         return c.String(200, "test")
     })
-    
+
     b.ResetTimer()
     b.RunParallel(func(pb *testing.PB) {
         for pb.Next() {
@@ -784,13 +783,13 @@ func handleAPI(c echo.Context) error {
         "message": "Hello World",
         "timestamp": time.Now().Unix(),
     }
-    
+
     // JSON v2提供30-50%的性能提升
     jsonData, err := json.Marshal(data)
     if err != nil {
         return c.JSON(500, map[string]string{"error": "序列化失败"})
     }
-    
+
     return c.JSONBlob(200, jsonData)
 }
 ```
@@ -815,7 +814,7 @@ func loggingMiddleware(logger *slog.Logger) echo.MiddlewareFunc {
             start := time.Now()
             err := next(c)
             duration := time.Since(start)
-            
+
             logger.Info("HTTP请求",
                 "method", c.Request().Method,
                 "path", c.Request().URL.Path,
@@ -823,7 +822,7 @@ func loggingMiddleware(logger *slog.Logger) echo.MiddlewareFunc {
                 "duration", duration,
                 "error", err,
             )
-            
+
             return err
         }
     }
@@ -839,7 +838,7 @@ import "testing/synctest"
 func TestConcurrentAPI(t *testing.T) {
     synctest.Run(t, func(t *testing.T) {
         server := setupTestServer()
-        
+
         // 并发测试多个API端点
         var wg sync.WaitGroup
         for i := 0; i < 100; i++ {
@@ -868,15 +867,15 @@ func (s *SecureEchoServer) handleSecureAPI(c echo.Context) error {
     data := map[string]interface{}{
         "sensitive": "data",
     }
-    
+
     jsonData, _ := json.Marshal(data)
-    
+
     // 使用高性能签名
     signature, err := s.signer.SignMessage(jsonData)
     if err != nil {
         return c.JSON(500, map[string]string{"error": "签名失败"})
     }
-    
+
     return c.JSON(200, map[string]interface{}{
         "data": data,
         "signature": signature,
@@ -898,10 +897,10 @@ func (p *PerformanceMiddleware) Middleware() echo.MiddlewareFunc {
             start := time.Now()
             err := next(c)
             duration := time.Since(start)
-            
+
             // 收集性能指标
             p.metrics.RecordRequest(c.Request().Method, c.Path(), duration, err != nil)
-            
+
             return err
         }
     }
@@ -1024,14 +1023,14 @@ e.GET("/ready", readinessCheck)
 
 ---
 
-**版本对齐**: ✅ Go 1.23+  
-**质量等级**: 🏆 企业级  
-**代码示例**: ✅ 100%可运行  
+**版本对齐**: ✅ Go 1.23+
+**质量等级**: 🏆 企业级
+**代码示例**: ✅ 100%可运行
 **测试覆盖**: ✅ 完整测试套件
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

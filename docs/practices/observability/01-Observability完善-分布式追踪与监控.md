@@ -1,37 +1,39 @@
-﻿# Observability 完善 - 分布式追踪与监控
+# Observability 完善 - 分布式追踪与监控
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. 概述](#1-概述)
-  - [1.1 可观测性三大支柱](#1-1-可观测性三大支柱)
-  - [1.2 技术栈选择](#1-2-技术栈选择)
-- [2. 分布式追踪](#2-分布式追踪)
-  - [2.1 OpenTelemetry集成](#2-1-opentelemetry集成)
-    - [2.1.1 核心概念](#2-1-1-核心概念)
-    - [2.1.2 完整实现](#2-1-2-完整实现)
-    - [2.1.3 使用示例](#2-1-3-使用示例)
-- [3. 指标收集](#3-指标收集)
-  - [3.1 Prometheus集成](#3-1-prometheus集成)
-    - [3.1.1 指标类型](#3-1-1-指标类型)
-    - [3.1.2 完整实现](#3-1-2-完整实现)
-    - [3.1.3 使用示例](#3-1-3-使用示例)
-- [4. 健康检查](#4-健康检查)
-  - [4.1 设计原理](#4-1-设计原理)
-  - [4.2 完整实现](#4-2-完整实现)
-  - [4.3 使用示例](#4-3-使用示例)
-- [5. 日志聚合](#5-日志聚合)
-  - [5.1 结构化日志](#5-1-结构化日志)
-- [6. 综合实践](#6-综合实践)
-  - [6.1 完整示例](#6-1-完整示例)
-- [7. 最佳实践](#7-最佳实践)
-  - [7.1 采样策略](#7-1-采样策略)
-  - [7.2 指标命名](#7-2-指标命名)
+- [Observability 完善 - 分布式追踪与监控](#observability-完善---分布式追踪与监控)
+  - [📋 目录](#-目录)
+  - [1. 概述](#1-概述)
+    - [1.1 可观测性三大支柱](#11-可观测性三大支柱)
+    - [1.2 技术栈选择](#12-技术栈选择)
+  - [2. 分布式追踪](#2-分布式追踪)
+    - [2.1 OpenTelemetry集成](#21-opentelemetry集成)
+      - [2.1.1 核心概念](#211-核心概念)
+      - [2.1.2 完整实现](#212-完整实现)
+      - [2.1.3 使用示例](#213-使用示例)
+  - [3. 指标收集](#3-指标收集)
+    - [3.1 Prometheus集成](#31-prometheus集成)
+      - [3.1.1 指标类型](#311-指标类型)
+      - [3.1.2 完整实现](#312-完整实现)
+      - [3.1.3 使用示例](#313-使用示例)
+  - [4. 健康检查](#4-健康检查)
+    - [4.1 设计原理](#41-设计原理)
+    - [4.2 完整实现](#42-完整实现)
+    - [4.3 使用示例](#43-使用示例)
+  - [5. 日志聚合](#5-日志聚合)
+    - [5.1 结构化日志](#51-结构化日志)
+  - [6. 综合实践](#6-综合实践)
+    - [6.1 完整示例](#61-完整示例)
+  - [7. 最佳实践](#7-最佳实践)
+    - [7.1 采样策略](#71-采样策略)
+    - [7.2 指标命名](#72-指标命名)
 
 ## 1. 概述
 
@@ -121,7 +123,7 @@ import (
     "context"
     "fmt"
     "time"
-    
+
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/attribute"
     "go.opentelemetry.io/otel/codes"
@@ -168,7 +170,7 @@ func NewTracingProvider(config TracingConfig) (*TracingProvider, error) {
     if err != nil {
         return nil, fmt.Errorf("failed to create Jaeger exporter: %w", err)
     }
-    
+
     // 创建resource
     res, err := resource.New(
         context.Background(),
@@ -181,7 +183,7 @@ func NewTracingProvider(config TracingConfig) (*TracingProvider, error) {
     if err != nil {
         return nil, fmt.Errorf("failed to create resource: %w", err)
     }
-    
+
     // 创建trace provider
     tp := trace.NewTracerProvider(
         trace.WithBatcher(exporter),
@@ -190,10 +192,10 @@ func NewTracingProvider(config TracingConfig) (*TracingProvider, error) {
             trace.TraceIDRatioBased(config.SamplingRate),
         ),
     )
-    
+
     // 设置全局trace provider
     otel.SetTracerProvider(tp)
-    
+
     // 设置全局propagator（用于跨进程传播）
     otel.SetTextMapPropagator(
         propagation.NewCompositeTextMapPropagator(
@@ -201,7 +203,7 @@ func NewTracingProvider(config TracingConfig) (*TracingProvider, error) {
             propagation.Baggage{},
         ),
     )
-    
+
     return &TracingProvider{
         provider: tp,
         config:   config,
@@ -252,7 +254,7 @@ func RecordSpanError(ctx context.Context, err error) {
 func HTTPTracingMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         tracer := otel.Tracer("http-server")
-        
+
         ctx, span := tracer.Start(
             r.Context(),
             fmt.Sprintf("%s %s", r.Method, r.URL.Path),
@@ -266,21 +268,21 @@ func HTTPTracingMiddleware(next http.Handler) http.Handler {
             ),
         )
         defer span.End()
-        
+
         // 包装ResponseWriter以捕获状态码
         wrapped := &tracingResponseWriter{
             ResponseWriter: w,
             statusCode:     http.StatusOK,
         }
-        
+
         // 调用下一个处理器
         next.ServeHTTP(wrapped, r.WithContext(ctx))
-        
+
         // 设置响应属性
         span.SetAttributes(
             semconv.HTTPStatusCode(wrapped.statusCode),
         )
-        
+
         // 如果是错误状态，标记span
         if wrapped.statusCode >= 400 {
             span.SetStatus(codes.Error, http.StatusText(wrapped.statusCode))
@@ -326,29 +328,29 @@ http.Handle("/api", observability.HTTPTracingMiddleware(apiHandler))
 func processOrder(ctx context.Context, orderID string) error {
     ctx, span := observability.StartSpan(ctx, "process-order")
     defer span.End()
-    
+
     // 添加属性
     observability.AddSpanAttributes(ctx,
         attribute.String("order.id", orderID),
         attribute.String("order.status", "processing"),
     )
-    
+
     // 调用其他服务
     if err := validateOrder(ctx, orderID); err != nil {
         observability.RecordSpanError(ctx, err)
         return err
     }
-    
+
     // 添加事件
     observability.AddSpanEvent(ctx, "order.validated")
-    
+
     return nil
 }
 
 func validateOrder(ctx context.Context, orderID string) error {
     ctx, span := observability.StartSpan(ctx, "validate-order")
     defer span.End()
-    
+
     // 业务逻辑...
     return nil
 }
@@ -399,7 +401,7 @@ import (
     "net/http"
     "runtime"
     "time"
-    
+
     "github.com/prometheus/client_golang/prometheus"
     "github.com/prometheus/client_golang/prometheus/promauto"
     "github.com/prometheus/client_golang/prometheus/promhttp"
@@ -408,21 +410,21 @@ import (
 // Metrics 应用指标
 type Metrics struct {
     namespace string
-    
+
     // HTTP指标
     httpRequestsTotal     *prometheus.CounterVec
     httpRequestDuration   *prometheus.HistogramVec
     httpRequestSize       *prometheus.HistogramVec
     httpResponseSize      *prometheus.HistogramVec
     httpRequestsInFlight  prometheus.Gauge
-    
+
     // 系统指标
     goroutineCount        prometheus.Gauge
     heapAllocBytes        prometheus.Gauge
     heapSysBytes          prometheus.Gauge
     gcDurationSeconds     prometheus.Summary
     gcCount               prometheus.Counter
-    
+
     // 业务指标
     activeConnections     prometheus.Gauge
     queueLength           prometheus.Gauge
@@ -434,7 +436,7 @@ type Metrics struct {
 func NewMetrics(namespace string) *Metrics {
     m := &Metrics{
         namespace: namespace,
-        
+
         // HTTP指标
         httpRequestsTotal: promauto.NewCounterVec(
             prometheus.CounterOpts{
@@ -444,7 +446,7 @@ func NewMetrics(namespace string) *Metrics {
             },
             []string{"method", "path", "status"},
         ),
-        
+
         httpRequestDuration: promauto.NewHistogramVec(
             prometheus.HistogramOpts{
                 Namespace: namespace,
@@ -454,7 +456,7 @@ func NewMetrics(namespace string) *Metrics {
             },
             []string{"method", "path"},
         ),
-        
+
         httpRequestSize: promauto.NewHistogramVec(
             prometheus.HistogramOpts{
                 Namespace: namespace,
@@ -464,7 +466,7 @@ func NewMetrics(namespace string) *Metrics {
             },
             []string{"method", "path"},
         ),
-        
+
         httpResponseSize: promauto.NewHistogramVec(
             prometheus.HistogramOpts{
                 Namespace: namespace,
@@ -474,7 +476,7 @@ func NewMetrics(namespace string) *Metrics {
             },
             []string{"method", "path"},
         ),
-        
+
         httpRequestsInFlight: promauto.NewGauge(
             prometheus.GaugeOpts{
                 Namespace: namespace,
@@ -482,7 +484,7 @@ func NewMetrics(namespace string) *Metrics {
                 Help:      "Current number of HTTP requests being served",
             },
         ),
-        
+
         // 系统指标
         goroutineCount: promauto.NewGauge(
             prometheus.GaugeOpts{
@@ -491,7 +493,7 @@ func NewMetrics(namespace string) *Metrics {
                 Help:      "Number of goroutines",
             },
         ),
-        
+
         heapAllocBytes: promauto.NewGauge(
             prometheus.GaugeOpts{
                 Namespace: namespace,
@@ -499,7 +501,7 @@ func NewMetrics(namespace string) *Metrics {
                 Help:      "Heap allocated bytes",
             },
         ),
-        
+
         heapSysBytes: promauto.NewGauge(
             prometheus.GaugeOpts{
                 Namespace: namespace,
@@ -507,7 +509,7 @@ func NewMetrics(namespace string) *Metrics {
                 Help:      "Heap system bytes",
             },
         ),
-        
+
         gcDurationSeconds: promauto.NewSummary(
             prometheus.SummaryOpts{
                 Namespace:  namespace,
@@ -516,7 +518,7 @@ func NewMetrics(namespace string) *Metrics {
                 Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
             },
         ),
-        
+
         gcCount: promauto.NewCounter(
             prometheus.CounterOpts{
                 Namespace: namespace,
@@ -524,7 +526,7 @@ func NewMetrics(namespace string) *Metrics {
                 Help:      "Total number of GC runs",
             },
         ),
-        
+
         // 业务指标
         activeConnections: promauto.NewGauge(
             prometheus.GaugeOpts{
@@ -533,7 +535,7 @@ func NewMetrics(namespace string) *Metrics {
                 Help:      "Number of active connections",
             },
         ),
-        
+
         queueLength: promauto.NewGauge(
             prometheus.GaugeOpts{
                 Namespace: namespace,
@@ -541,7 +543,7 @@ func NewMetrics(namespace string) *Metrics {
                 Help:      "Length of processing queue",
             },
         ),
-        
+
         processingDuration: promauto.NewHistogramVec(
             prometheus.HistogramOpts{
                 Namespace: namespace,
@@ -551,7 +553,7 @@ func NewMetrics(namespace string) *Metrics {
             },
             []string{"operation"},
         ),
-        
+
         errorCount: promauto.NewCounterVec(
             prometheus.CounterOpts{
                 Namespace: namespace,
@@ -561,10 +563,10 @@ func NewMetrics(namespace string) *Metrics {
             []string{"type"},
         ),
     }
-    
+
     // 启动系统指标收集
     go m.collectSystemMetrics()
-    
+
     return m
 }
 
@@ -572,34 +574,34 @@ func NewMetrics(namespace string) *Metrics {
 func (m *Metrics) collectSystemMetrics() {
     ticker := time.NewTicker(15 * time.Second)
     defer ticker.Stop()
-    
+
     var lastGCCount uint32
     var lastPauseNs uint64
-    
+
     for range ticker.C {
         // Goroutine数量
         m.goroutineCount.Set(float64(runtime.NumGoroutine()))
-        
+
         // 内存统计
         var memStats runtime.MemStats
         runtime.ReadMemStats(&memStats)
-        
+
         m.heapAllocBytes.Set(float64(memStats.Alloc))
         m.heapSysBytes.Set(float64(memStats.HeapSys))
-        
+
         // GC统计
         if memStats.NumGC > lastGCCount {
             // 新的GC发生
             gcCount := memStats.NumGC - lastGCCount
             m.gcCount.Add(float64(gcCount))
-            
+
             // 计算GC暂停时间
             pauseNs := memStats.PauseTotalNs - lastPauseNs
             if gcCount > 0 {
                 avgPause := float64(pauseNs) / float64(gcCount) / 1e9
                 m.gcDurationSeconds.Observe(avgPause)
             }
-            
+
             lastGCCount = memStats.NumGC
             lastPauseNs = memStats.PauseTotalNs
         }
@@ -612,14 +614,14 @@ func (m *Metrics) HTTPMetricsMiddleware(next http.Handler) http.Handler {
         start := time.Now()
         m.httpRequestsInFlight.Inc()
         defer m.httpRequestsInFlight.Dec()
-        
+
         // 包装ResponseWriter
         wrapped := &metricsResponseWriter{
             ResponseWriter: w,
             statusCode:     http.StatusOK,
             written:        0,
         }
-        
+
         // 记录请求大小
         if r.ContentLength > 0 {
             m.httpRequestSize.WithLabelValues(
@@ -627,25 +629,25 @@ func (m *Metrics) HTTPMetricsMiddleware(next http.Handler) http.Handler {
                 r.URL.Path,
             ).Observe(float64(r.ContentLength))
         }
-        
+
         // 调用下一个处理器
         next.ServeHTTP(wrapped, r)
-        
+
         // 记录指标
         duration := time.Since(start).Seconds()
         status := fmt.Sprintf("%d", wrapped.statusCode)
-        
+
         m.httpRequestsTotal.WithLabelValues(
             r.Method,
             r.URL.Path,
             status,
         ).Inc()
-        
+
         m.httpRequestDuration.WithLabelValues(
             r.Method,
             r.URL.Path,
         ).Observe(duration)
-        
+
         m.httpResponseSize.WithLabelValues(
             r.Method,
             r.URL.Path,
@@ -697,17 +699,17 @@ func processOrder(orderID string) error {
         duration := time.Since(start).Seconds()
         metrics.processingDuration.WithLabelValues("process_order").Observe(duration)
     }()
-    
+
     // 增加队列长度
     metrics.queueLength.Inc()
     defer metrics.queueLength.Dec()
-    
+
     // 处理逻辑...
     if err := validateOrder(orderID); err != nil {
         metrics.errorCount.WithLabelValues("validation_error").Inc()
         return err
     }
-    
+
     return nil
 }
 ```
@@ -807,11 +809,11 @@ func NewHealthChecker(config HealthCheckerConfig) *HealthChecker {
     if config.Timeout == 0 {
         config.Timeout = DefaultHealthCheckerConfig.Timeout
     }
-    
+
     if config.CacheTTL == 0 {
         config.CacheTTL = DefaultHealthCheckerConfig.CacheTTL
     }
-    
+
     return &HealthChecker{
         checks:      make(map[string]HealthCheck),
         timeout:     config.Timeout,
@@ -824,14 +826,14 @@ func NewHealthChecker(config HealthCheckerConfig) *HealthChecker {
 func (hc *HealthChecker) Register(check HealthCheck) {
     hc.mu.Lock()
     defer hc.mu.Unlock()
-    
+
     hc.checks[check.Name()] = check
 }
 
 // CheckAll 执行所有健康检查
 func (hc *HealthChecker) CheckAll(ctx context.Context) map[string]error {
     hc.mu.RLock()
-    
+
     // 检查缓存
     if time.Since(hc.lastCheck) < hc.cacheTTL {
         results := make(map[string]error, len(hc.lastResults))
@@ -841,42 +843,42 @@ func (hc *HealthChecker) CheckAll(ctx context.Context) map[string]error {
         hc.mu.RUnlock()
         return results
     }
-    
+
     checks := make(map[string]HealthCheck, len(hc.checks))
     for k, v := range hc.checks {
         checks[k] = v
     }
     hc.mu.RUnlock()
-    
+
     // 执行检查
     results := make(map[string]error)
     var wg sync.WaitGroup
     var mu sync.Mutex
-    
+
     for name, check := range checks {
         wg.Add(1)
         go func(name string, check HealthCheck) {
             defer wg.Done()
-            
+
             ctx, cancel := context.WithTimeout(ctx, hc.timeout)
             defer cancel()
-            
+
             err := check.Check(ctx)
-            
+
             mu.Lock()
             results[name] = err
             mu.Unlock()
         }(name, check)
     }
-    
+
     wg.Wait()
-    
+
     // 更新缓存
     hc.mu.Lock()
     hc.lastCheck = time.Now()
     hc.lastResults = results
     hc.mu.Unlock()
-    
+
     return results
 }
 
@@ -896,11 +898,11 @@ func (hc *HealthChecker) ReadinessHandler() http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         ctx := r.Context()
         results := hc.CheckAll(ctx)
-        
+
         // 计算整体状态
         status := HealthStatusUp
         details := make(map[string]string)
-        
+
         for name, err := range results {
             if err != nil {
                 status = HealthStatusDown
@@ -909,19 +911,19 @@ func (hc *HealthChecker) ReadinessHandler() http.HandlerFunc {
                 details[name] = "UP"
             }
         }
-        
+
         // 构造响应
         response := map[string]interface{}{
             "status":  status,
             "details": details,
         }
-        
+
         // 设置HTTP状态码
         statusCode := http.StatusOK
         if status == HealthStatusDown {
             statusCode = http.StatusServiceUnavailable
         }
-        
+
         w.Header().Set("Content-Type", "application/json")
         w.WriteHeader(statusCode)
         json.NewEncoder(w).Encode(response)
@@ -999,17 +1001,17 @@ func (c *HTTPHealthCheck) Check(ctx context.Context) error {
     if err != nil {
         return err
     }
-    
+
     resp, err := c.client.Do(req)
     if err != nil {
         return err
     }
     defer resp.Body.Close()
-    
+
     if resp.StatusCode >= 400 {
         return fmt.Errorf("unhealthy status code: %d", resp.StatusCode)
     }
-    
+
     return nil
 }
 ```
@@ -1084,17 +1086,17 @@ type LoggerConfig struct {
 // NewLogger 创建日志器
 func NewLogger(config LoggerConfig) *Logger {
     var handler slog.Handler
-    
+
     opts := &slog.HandlerOptions{
         Level: config.Level,
     }
-    
+
     if config.Format == "json" {
         handler = slog.NewJSONHandler(config.Output, opts)
     } else {
         handler = slog.NewTextHandler(config.Output, opts)
     }
-    
+
     return &Logger{
         Logger: slog.New(handler),
     }
@@ -1106,7 +1108,7 @@ func (l *Logger) WithTrace(ctx context.Context) *Logger {
     if !span.SpanContext().IsValid() {
         return l
     }
-    
+
     return &Logger{
         Logger: l.With(
             "trace_id", span.SpanContext().TraceID().String(),
@@ -1138,27 +1140,27 @@ func initObservability() (*observability.TracingProvider, *observability.Metrics
     if err != nil {
         return nil, nil, nil, err
     }
-    
+
     // 2. 初始化指标
     metrics := observability.NewMetrics("myapp")
-    
+
     // 3. 初始化健康检查
     healthChecker := observability.NewHealthChecker(
         observability.DefaultHealthCheckerConfig,
     )
-    
+
     return tracingProvider, metrics, healthChecker, nil
 }
 
 // 应用中间件
 func setupMiddlewares(metrics *observability.Metrics) {
     mux := http.NewServeMux()
-    
+
     // 应用中间件链
     handler := observability.HTTPTracingMiddleware(
         metrics.HTTPMetricsMiddleware(mux),
     )
-    
+
     http.Handle("/", handler)
 }
 ```
@@ -1185,8 +1187,8 @@ func setupMiddlewares(metrics *observability.Metrics) {
 
 ---
 
-**文档完成时间**: 2025年10月24日  
-**文档版本**: v1.0  
+**文档完成时间**: 2025年10月24日
+**文档版本**: v1.0
 **质量评级**: 95分 ⭐⭐⭐⭐⭐
 
 🚀 **Observability完善实现指南完成！** 🎊

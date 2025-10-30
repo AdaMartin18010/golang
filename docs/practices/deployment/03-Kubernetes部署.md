@@ -1,7 +1,7 @@
-﻿# Kubernetes部署Go应用
+# Kubernetes部署Go应用
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3, Kubernetes 1.28+
 
 ---
@@ -11,32 +11,34 @@
 
 ## 📋 目录
 
-- [1. 基础概念](#1-基础概念)
-  - [Kubernetes核心对象](#kubernetes核心对象)
-- [2. Deployment部署](#2-deployment部署)
-  - [基本Deployment](#基本deployment)
-  - [滚动更新](#滚动更新)
-  - [水平自动扩缩容（HPA）](#水平自动扩缩容hpa)
-- [3. Service服务](#3-service服务)
-  - [ClusterIP（内部访问）](#clusterip内部访问)
-  - [NodePort（外部访问）](#nodeport外部访问)
-  - [LoadBalancer（云负载均衡）](#loadbalancer云负载均衡)
-  - [Ingress（HTTP路由）](#ingresshttp路由)
-- [4. 配置管理](#4-配置管理)
-  - [ConfigMap](#configmap)
-  - [Secret](#secret)
-- [5. 健康检查](#5-健康检查)
-  - [Liveness Probe（存活探针）](#liveness-probe存活探针)
-  - [Readiness Probe（就绪探针）](#readiness-probe就绪探针)
-  - [Startup Probe（启动探针）](#startup-probe启动探针)
-- [6. 最佳实践](#6-最佳实践)
-  - [1. 完整部署配置](#1-完整部署配置)
-  - [2. 使用Kustomize](#2-使用kustomize)
-  - [3. 使用Helm](#3-使用helm)
-  - [4. 多环境配置](#4-多环境配置)
-  - [5. 监控和日志](#5-监控和日志)
-- [🎯 常用命令](#常用命令)
-- [🔗 相关资源](#相关资源)
+- [Kubernetes部署Go应用](#kubernetes部署go应用)
+  - [📋 目录](#-目录)
+  - [1. 基础概念](#1-基础概念)
+    - [Kubernetes核心对象](#kubernetes核心对象)
+  - [2. Deployment部署](#2-deployment部署)
+    - [基本Deployment](#基本deployment)
+    - [滚动更新](#滚动更新)
+    - [水平自动扩缩容（HPA）](#水平自动扩缩容hpa)
+  - [3. Service服务](#3-service服务)
+    - [ClusterIP（内部访问）](#clusterip内部访问)
+    - [NodePort（外部访问）](#nodeport外部访问)
+    - [LoadBalancer（云负载均衡）](#loadbalancer云负载均衡)
+    - [Ingress（HTTP路由）](#ingresshttp路由)
+  - [4. 配置管理](#4-配置管理)
+    - [ConfigMap](#configmap)
+    - [Secret](#secret)
+  - [5. 健康检查](#5-健康检查)
+    - [Liveness Probe（存活探针）](#liveness-probe存活探针)
+    - [Readiness Probe（就绪探针）](#readiness-probe就绪探针)
+    - [Startup Probe（启动探针）](#startup-probe启动探针)
+  - [6. 最佳实践](#6-最佳实践)
+    - [1. 完整部署配置](#1-完整部署配置)
+    - [2. 使用Kustomize](#2-使用kustomize)
+    - [3. 使用Helm](#3-使用helm)
+    - [4. 多环境配置](#4-多环境配置)
+    - [5. 监控和日志](#5-监控和日志)
+  - [🎯 常用命令](#-常用命令)
+  - [🔗 相关资源](#-相关资源)
 
 ## 1. 基础概念
 
@@ -439,7 +441,7 @@ func readyHandler(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusServiceUnavailable)
         return
     }
-    
+
     w.WriteHeader(http.StatusOK)
     w.Write([]byte("Ready"))
 }
@@ -512,23 +514,23 @@ spec:
     spec:
       # 优雅关闭
       terminationGracePeriodSeconds: 30
-      
+
       # 安全上下文
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
-      
+
       containers:
       - name: myapp
         image: myapp:1.0.0
         imagePullPolicy: IfNotPresent
-        
+
         ports:
         - containerPort: 8080
           name: http
           protocol: TCP
-        
+
         # 环境变量
         env:
         - name: ENV
@@ -538,7 +540,7 @@ spec:
             secretKeyRef:
               name: myapp-secret
               key: DB_PASSWORD
-        
+
         # 资源限制
         resources:
           requests:
@@ -547,7 +549,7 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "500m"
-        
+
         # 健康检查
         livenessProbe:
           httpGet:
@@ -555,20 +557,20 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
-        
+
         readinessProbe:
           httpGet:
             path: /ready
             port: 8080
           initialDelaySeconds: 10
           periodSeconds: 5
-        
+
         # 挂载配置
         volumeMounts:
         - name: config
           mountPath: /etc/config
           readOnly: true
-      
+
       volumes:
       - name: config
         configMap:
@@ -812,6 +814,6 @@ kubectl delete deployment myapp
 
 ---
 
-**最后更新**: 2025-10-29  
-**Go版本**: 1.25.3  
+**最后更新**: 2025-10-29
+**Go版本**: 1.25.3
 **Kubernetes版本**: 1.28+

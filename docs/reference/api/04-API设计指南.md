@@ -1,7 +1,7 @@
-﻿# API设计指南
+# API设计指南
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
@@ -180,14 +180,14 @@ func AuthMiddleware() gin.HandlerFunc {
             c.Abort()
             return
         }
-        
+
         claims, err := ValidateToken(token)
         if err != nil {
             c.JSON(401, gin.H{"error": "令牌无效"})
             c.Abort()
             return
         }
-        
+
         c.Set("user_id", claims.UserID)
         c.Next()
     }
@@ -220,7 +220,7 @@ func CORSMiddleware() gin.HandlerFunc {
         c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
         c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        
+
         if c.Request.Method == "OPTIONS" {
             c.AbortWithStatus(204)
             return
@@ -255,7 +255,7 @@ func GetUsers(c *gin.Context) {
     params.Page = 1
     params.PageSize = 20
     c.ShouldBindQuery(&params)
-    
+
     // 查询数据...
 }
 ```
@@ -311,5 +311,5 @@ func CreateUser(c *gin.Context) {
 
 ---
 
-**最后更新**: 2025-10-29  
+**最后更新**: 2025-10-29
 **Go版本**: 1.25.3

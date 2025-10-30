@@ -1,7 +1,7 @@
-﻿# HTTP协议基础
+# HTTP协议基础
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+
 
 ---
@@ -237,12 +237,12 @@ func main() {
         panic(err)
     }
     defer resp.Body.Close()  // 必须关闭
-    
+
     body, err := io.ReadAll(resp.Body)
     if err != nil {
         panic(err)
     }
-    
+
     fmt.Printf("Status: %d\n", resp.StatusCode)
     fmt.Printf("Body: %s\n", string(body))
 }
@@ -267,7 +267,7 @@ func createUser(user User) error {
     if err != nil {
         return err
     }
-    
+
     resp, err := http.Post(
         "https://api.example.com/users",
         "application/json",
@@ -277,11 +277,11 @@ func createUser(user User) error {
         return err
     }
     defer resp.Body.Close()
-    
+
     if resp.StatusCode != http.StatusCreated {
         return fmt.Errorf("unexpected status: %d", resp.StatusCode)
     }
-    
+
     return nil
 }
 ```
@@ -304,10 +304,10 @@ func makeRequest(url string) (*http.Response, error) {
     if err != nil {
         return nil, err
     }
-    
+
     req.Header.Set("User-Agent", "MyApp/1.0")
     req.Header.Set("Accept", "application/json")
-    
+
     return client.Do(req)
 }
 ```
@@ -327,7 +327,7 @@ import (
 func handler(w http.ResponseWriter, r *http.Request) {
     // 设置响应头
     w.Header().Set("Content-Type", "application/json")
-    
+
     // 写入响应
     fmt.Fprintf(w, `{"message":"Hello, World!","method":"%s"}`, r.Method)
 }
@@ -338,7 +338,7 @@ func main() {
         w.WriteHeader(http.StatusOK)
         fmt.Fprint(w, "OK")
     })
-    
+
     fmt.Println("Server starting on :8080")
     if err := http.ListenAndServe(":8080", nil); err != nil {
         panic(err)
@@ -370,7 +370,7 @@ func (h *UserHandler) getUsers(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(users)
 }
@@ -381,12 +381,12 @@ func (h *UserHandler) createUser(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Bad Request", http.StatusBadRequest)
         return
     }
-    
+
     if err := h.store.Create(&user); err != nil {
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(user)
@@ -447,12 +447,12 @@ func corsMiddleware(next http.Handler) http.Handler {
         w.Header().Set("Access-Control-Allow-Origin", "*")
         w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        
+
         if r.Method == "OPTIONS" {
             w.WriteHeader(http.StatusOK)
             return
         }
-        
+
         next.ServeHTTP(w, r)
     })
 }
@@ -544,7 +544,7 @@ func cacheMiddleware(next http.Handler) http.Handler {
    ```go
    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
    defer cancel()
-   
+
    req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
    resp, err := client.Do(req)
    ```
@@ -557,7 +557,7 @@ func cacheMiddleware(next http.Handler) http.Handler {
 A: HTTP本身无状态，但可通过Cookie/Session/JWT等机制实现会话管理。
 
 **Q: GET和POST的区别？**
-A: 
+A:
 - GET：查询数据，参数在URL，幂等，可缓存
 - POST：提交数据，参数在Body，非幂等，不可缓存
 
@@ -579,7 +579,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     defer file.Close()
-    
+
     // 处理file
 }
 ```
@@ -596,7 +596,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 已优化  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 已优化
 **适用版本**: Go 1.25.3+

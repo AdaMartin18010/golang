@@ -1,4 +1,4 @@
-﻿# 03-Redis编程
+# 03-Redis编程
 
 > Go语言Redis编程完全指南
 
@@ -6,40 +6,41 @@
 
 ## 📋 目录
 
-
-- [📚 章节概览](#章节概览)
-- [1. 环境准备](#1-环境准备)
-  - [1.1 安装驱动](#1-1-安装驱动)
-  - [1.2 基本连接](#1-2-基本连接)
-- [2. 基本操作](#2-基本操作)
-  - [2.1 字符串操作](#2-1-字符串操作)
-  - [2.2 哈希操作](#2-2-哈希操作)
-  - [2.3 列表操作](#2-3-列表操作)
-  - [2.4 集合操作](#2-4-集合操作)
-  - [2.5 有序集合](#2-5-有序集合)
-- [3. 高级特性](#3-高级特性)
-  - [3.1 Pipeline](#3-1-pipeline)
-    - [Pipeline vs 普通命令对比](#pipeline-vs-普通命令对比)
-    - [Pipeline执行流程](#pipeline执行流程)
-  - [3.2 事务](#3-2-事务)
-  - [3.3 发布订阅](#3-3-发布订阅)
-  - [3.4 Lua脚本](#3-4-lua脚本)
-- [4. 实战应用](#4-实战应用)
-  - [4.1 缓存实现](#4-1-缓存实现)
-    - [Cache-Aside模式可视化](#cache-aside模式可视化)
-    - [缓存更新策略](#缓存更新策略)
-  - [4.2 分布式锁](#4-2-分布式锁)
-  - [4.3 限流器](#4-3-限流器)
-  - [4.4 排行榜](#4-4-排行榜)
-- [5. 性能优化](#5-性能优化)
-  - [5.1 连接池配置](#5-1-连接池配置)
-  - [5.2 批量操作](#5-2-批量操作)
-- [💡 最佳实践](#最佳实践)
-  - [1. 键命名规范](#1-键命名规范)
-  - [2. 过期时间](#2-过期时间)
-  - [3. 性能优化](#3-性能优化)
-  - [4. 高可用](#4-高可用)
-- [🔗 相关章节](#相关章节)
+- [03-Redis编程](#03-redis编程)
+  - [📋 目录](#-目录)
+  - [📚 章节概览](#-章节概览)
+  - [1. 环境准备](#1-环境准备)
+    - [1.1 安装驱动](#11-安装驱动)
+    - [1.2 基本连接](#12-基本连接)
+  - [2. 基本操作](#2-基本操作)
+    - [2.1 字符串操作](#21-字符串操作)
+    - [2.2 哈希操作](#22-哈希操作)
+    - [2.3 列表操作](#23-列表操作)
+    - [2.4 集合操作](#24-集合操作)
+    - [2.5 有序集合](#25-有序集合)
+  - [3. 高级特性](#3-高级特性)
+    - [3.1 Pipeline](#31-pipeline)
+      - [Pipeline vs 普通命令对比](#pipeline-vs-普通命令对比)
+      - [Pipeline执行流程](#pipeline执行流程)
+    - [3.2 事务](#32-事务)
+    - [3.3 发布订阅](#33-发布订阅)
+    - [3.4 Lua脚本](#34-lua脚本)
+  - [4. 实战应用](#4-实战应用)
+    - [4.1 缓存实现](#41-缓存实现)
+      - [Cache-Aside模式可视化](#cache-aside模式可视化)
+      - [缓存更新策略](#缓存更新策略)
+    - [4.2 分布式锁](#42-分布式锁)
+    - [4.3 限流器](#43-限流器)
+    - [4.4 排行榜](#44-排行榜)
+  - [5. 性能优化](#5-性能优化)
+    - [5.1 连接池配置](#51-连接池配置)
+    - [5.2 批量操作](#52-批量操作)
+  - [💡 最佳实践](#-最佳实践)
+    - [1. 键命名规范](#1-键命名规范)
+    - [2. 过期时间](#2-过期时间)
+    - [3. 性能优化](#3-性能优化)
+    - [4. 高可用](#4-高可用)
+  - [🔗 相关章节](#-相关章节)
 
 ## 📚 章节概览
 
@@ -68,7 +69,7 @@ import (
     "context"
     "fmt"
     "log"
-    
+
     "github.com/redis/go-redis/v9"
 )
 
@@ -81,13 +82,13 @@ func main() {
         Password: "", // 密码
         DB:       0,  // 数据库
     })
-    
+
     // 测试连接
     pong, err := rdb.Ping(ctx).Result()
     if err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Println("Redis连接成功:", pong)
 }
 ```
@@ -105,7 +106,7 @@ import (
     "context"
     "fmt"
     "time"
-    
+
     "github.com/redis/go-redis/v9"
 )
 
@@ -118,21 +119,21 @@ func stringOperations(rdb *redis.Client) {
     if err != nil {
         panic(err)
     }
-    
+
     // 获取值
     val, err := rdb.Get(ctx, "key").Result()
     if err != nil {
         panic(err)
     }
     fmt.Println("key:", val)
-    
+
     // 设置过期时间
     err = rdb.Set(ctx, "session:user:123", "data", 30*time.Minute).Err()
-    
+
     // 检查键是否存在
     exists, err := rdb.Exists(ctx, "key").Result()
     fmt.Println("exists:", exists)
-    
+
     // 删除键
     rdb.Del(ctx, "key")
 }
@@ -142,10 +143,10 @@ func counterOperations(rdb *redis.Client) {
     // 自增
     count, err := rdb.Incr(ctx, "counter").Result()
     fmt.Println("counter:", count)
-    
+
     // 增加指定值
     rdb.IncrBy(ctx, "counter", 10)
-    
+
     // 自减
     rdb.Decr(ctx, "counter")
 }
@@ -157,12 +158,12 @@ func setNX(rdb *redis.Client) {
     if err != nil {
         panic(err)
     }
-    
+
     if success {
         fmt.Println("获取锁成功")
         // 执行业务逻辑
         // ...
-        
+
         // 释放锁
         rdb.Del(ctx, "lock:resource")
     } else {
@@ -181,29 +182,29 @@ func hashOperations(rdb *redis.Client) {
     if err != nil {
         panic(err)
     }
-    
+
     // 设置多个字段
     rdb.HMSet(ctx, "user:1000", map[string]interface{}{
         "name":  "Alice",
         "age":   25,
         "email": "alice@example.com",
     })
-    
+
     // 获取单个字段
     name, err := rdb.HGet(ctx, "user:1000", "name").Result()
     fmt.Println("name:", name)
-    
+
     // 获取所有字段
     user, err := rdb.HGetAll(ctx, "user:1000").Result()
     fmt.Println("user:", user)
-    
+
     // 字段是否存在
     exists, err := rdb.HExists(ctx, "user:1000", "name").Result()
     fmt.Println("exists:", exists)
-    
+
     // 删除字段
     rdb.HDel(ctx, "user:1000", "email")
-    
+
     // Hash计数器
     rdb.HIncrBy(ctx, "user:1000", "visits", 1)
 }
@@ -216,26 +217,26 @@ func hashOperations(rdb *redis.Client) {
 func listOperations(rdb *redis.Client) {
     // 左侧推入
     rdb.LPush(ctx, "queue", "task1", "task2", "task3")
-    
+
     // 右侧推入
     rdb.RPush(ctx, "queue", "task4")
-    
+
     // 左侧弹出
     val, err := rdb.LPop(ctx, "queue").Result()
     fmt.Println("lpop:", val)
-    
+
     // 右侧弹出
     val, err = rdb.RPop(ctx, "queue").Result()
     fmt.Println("rpop:", val)
-    
+
     // 获取列表长度
     length, err := rdb.LLen(ctx, "queue").Result()
     fmt.Println("length:", length)
-    
+
     // 获取范围元素
     items, err := rdb.LRange(ctx, "queue", 0, -1).Result()
     fmt.Println("items:", items)
-    
+
     // 阻塞弹出（用于消息队列）
     result, err := rdb.BLPop(ctx, 5*time.Second, "queue").Result()
     if err == nil {
@@ -251,30 +252,30 @@ func listOperations(rdb *redis.Client) {
 func setOperations(rdb *redis.Client) {
     // 添加成员
     rdb.SAdd(ctx, "tags", "go", "redis", "database")
-    
+
     // 获取所有成员
     members, err := rdb.SMembers(ctx, "tags").Result()
     fmt.Println("members:", members)
-    
+
     // 检查成员是否存在
     exists, err := rdb.SIsMember(ctx, "tags", "go").Result()
     fmt.Println("exists:", exists)
-    
+
     // 移除成员
     rdb.SRem(ctx, "tags", "database")
-    
+
     // 集合运算
     rdb.SAdd(ctx, "set1", "a", "b", "c")
     rdb.SAdd(ctx, "set2", "b", "c", "d")
-    
+
     // 交集
     inter, err := rdb.SInter(ctx, "set1", "set2").Result()
     fmt.Println("inter:", inter)
-    
+
     // 并集
     union, err := rdb.SUnion(ctx, "set1", "set2").Result()
     fmt.Println("union:", union)
-    
+
     // 差集
     diff, err := rdb.SDiff(ctx, "set1", "set2").Result()
     fmt.Println("diff:", diff)
@@ -290,32 +291,32 @@ func sortedSetOperations(rdb *redis.Client) {
     rdb.ZAdd(ctx, "scores", redis.Z{Score: 90, Member: "Alice"})
     rdb.ZAdd(ctx, "scores", redis.Z{Score: 85, Member: "Bob"})
     rdb.ZAdd(ctx, "scores", redis.Z{Score: 95, Member: "Charlie"})
-    
+
     // 获取范围（按分数从小到大）
     users, err := rdb.ZRange(ctx, "scores", 0, -1).Result()
     fmt.Println("users:", users)
-    
+
     // 获取范围（按分数从大到小）
     users, err = rdb.ZRevRange(ctx, "scores", 0, -1).Result()
     fmt.Println("top users:", users)
-    
+
     // 带分数获取
     usersWithScores, err := rdb.ZRevRangeWithScores(ctx, "scores", 0, -1).Result()
     for _, z := range usersWithScores {
         fmt.Printf("%s: %.0f\n", z.Member, z.Score)
     }
-    
+
     // 获取分数
     score, err := rdb.ZScore(ctx, "scores", "Alice").Result()
     fmt.Println("Alice's score:", score)
-    
+
     // 增加分数
     rdb.ZIncrBy(ctx, "scores", 5, "Bob")
-    
+
     // 获取排名（从0开始）
     rank, err := rdb.ZRevRank(ctx, "scores", "Alice").Result()
     fmt.Println("Alice's rank:", rank)
-    
+
     // 按分数范围获取
     users, err = rdb.ZRangeByScore(ctx, "scores", &redis.ZRangeBy{
         Min: "85",
@@ -337,36 +338,36 @@ func sortedSetOperations(rdb *redis.Client) {
 sequenceDiagram
     participant App as Go应用
     participant Redis as Redis服务器
-    
+
     Note over App,Redis: 普通命令 - 3次RTT (Round Trip Time)
-    
+
     App->>Redis: SET key1 value1
     Redis-->>App: OK (RTT 1)
-    
+
     App->>Redis: SET key2 value2
     Redis-->>App: OK (RTT 2)
-    
+
     App->>Redis: INCR counter
     Redis-->>App: 1 (RTT 3)
-    
+
     Note over App,Redis: 总耗时 = 3 * RTT
-    
+
     rect rgb(240, 240, 240)
         Note over App,Redis: Pipeline批量命令 - 1次RTT
-        
+
         App->>App: pipe.Set("key1", "value1")
         App->>App: pipe.Set("key2", "value2")
         App->>App: pipe.Incr("counter")
-        
+
         App->>Redis: 批量发送 (SET, SET, INCR)
         Redis->>Redis: 执行命令1
         Redis->>Redis: 执行命令2
         Redis->>Redis: 执行命令3
         Redis-->>App: 批量返回 [OK, OK, 1]
-        
+
         Note over App,Redis: 总耗时 = 1 * RTT + 处理时间
     end
-    
+
     Note over App,Redis: 性能提升: ~3倍
 ```
 
@@ -379,13 +380,13 @@ flowchart LR
     AddCmd1 --> AddCmd2[添加命令2<br/>pipe.Get]
     AddCmd2 --> AddCmd3[添加命令3<br/>pipe.Incr]
     AddCmd3 --> QueuedCmds{命令队列<br/>已缓存}
-    
+
     QueuedCmds -->|pipe.Exec| SendBatch[批量发送到Redis]
     SendBatch --> RedisExec[Redis顺序执行]
     RedisExec --> BatchResp[批量返回结果]
     BatchResp --> ParseResp[解析各命令结果]
     ParseResp --> End([结束])
-    
+
     style CreatePipe fill:#e1ffe1
     style QueuedCmds fill:#fff4e1
     style SendBatch fill:#e1f5ff
@@ -397,19 +398,19 @@ flowchart LR
 func pipelineExample(rdb *redis.Client) {
     // 创建Pipeline
     pipe := rdb.Pipeline()
-    
+
     // 添加多个命令（仅缓存，不发送）
     incr := pipe.Incr(ctx, "pipeline_counter")
     pipe.Expire(ctx, "pipeline_counter", time.Hour)
     pipe.Set(ctx, "key1", "value1", 0)
     pipe.Get(ctx, "key1")
-    
+
     // 一次性执行所有命令
     _, err := pipe.Exec(ctx)
     if err != nil {
         panic(err)
     }
-    
+
     // 获取结果
     fmt.Println("counter:", incr.Val())
 }
@@ -422,7 +423,7 @@ func pipelinePerformance(rdb *redis.Client) {
         rdb.Set(ctx, fmt.Sprintf("key%d", i), i, 0)
     }
     fmt.Println("普通方式耗时:", time.Since(start)) // ~100ms (假设RTT=0.1ms)
-    
+
     // Pipeline方式：1000次SET - 1次RTT
     start = time.Now()
     pipe := rdb.Pipeline()
@@ -441,11 +442,11 @@ func pipelinePerformance(rdb *redis.Client) {
 func transactionExample(rdb *redis.Client) {
     // 使用TxPipeline
     pipe := rdb.TxPipeline()
-    
+
     pipe.Set(ctx, "key1", "value1", 0)
     pipe.Set(ctx, "key2", "value2", 0)
     pipe.Incr(ctx, "counter")
-    
+
     // 执行事务
     _, err := pipe.Exec(ctx)
     if err != nil {
@@ -461,16 +462,16 @@ func optimisticLock(rdb *redis.Client, key string) error {
         if err != nil && err != redis.Nil {
             return err
         }
-        
+
         // 业务逻辑
         val += 1
-        
+
         // 执行事务
         _, err = tx.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
             pipe.Set(ctx, key, val, 0)
             return nil
         })
-        
+
         return err
     }, key)
 }
@@ -484,7 +485,7 @@ package main
 import (
     "context"
     "fmt"
-    
+
     "github.com/redis/go-redis/v9"
 )
 
@@ -500,7 +501,7 @@ func publish(rdb *redis.Client, channel, message string) {
 func subscribe(rdb *redis.Client, channel string) {
     pubsub := rdb.Subscribe(ctx, channel)
     defer pubsub.Close()
-    
+
     // 接收消息
     ch := pubsub.Channel()
     for msg := range ch {
@@ -524,12 +525,12 @@ func luaScriptExample(rdb *redis.Client) {
         redis.call('SET', KEYS[1], next)
         return next
     `)
-    
+
     result, err := script.Run(ctx, rdb, []string{"counter"}, 5).Result()
     if err != nil {
         panic(err)
     }
-    
+
     fmt.Println("result:", result)
 }
 ```
@@ -546,20 +547,20 @@ func luaScriptExample(rdb *redis.Client) {
 flowchart TB
     Start([用户请求]) --> Query[查询GetUser id=123]
     Query --> CheckCache{检查Redis缓存<br/>key: user:123}
-    
+
     CheckCache -->|缓存命中| ReturnCache[返回缓存数据<br/>⚡ 快速响应]
     ReturnCache --> End1([结束])
-    
+
     CheckCache -->|缓存未命中| QueryDB[查询MySQL数据库<br/>SELECT * FROM users<br/>WHERE id = 123]
     QueryDB --> DBResult{数据库返回}
-    
+
     DBResult -->|查询成功| WriteCache[写入Redis缓存<br/>SET user:123 {data}<br/>EX 1800]
     WriteCache --> ReturnDB[返回数据库数据<br/>🐢 较慢响应]
     ReturnDB --> End2([结束])
-    
+
     DBResult -->|未找到| ReturnNull[返回空/错误]
     ReturnNull --> End3([结束])
-    
+
     style CheckCache fill:#fff4e1
     style ReturnCache fill:#e1ffe1
     style QueryDB fill:#e1f5ff
@@ -573,11 +574,11 @@ sequenceDiagram
     participant App as 应用
     participant Redis as Redis缓存
     participant DB as MySQL数据库
-    
+
     Note over App,DB: 场景1: 读取数据 (Cache-Aside)
-    
+
     App->>Redis: GET user:123
-    
+
     alt 缓存命中
         Redis-->>App: 返回数据
         Note over App: ✅ 快速响应 (~1ms)
@@ -589,12 +590,12 @@ sequenceDiagram
         App->>Redis: SET user:123 {data} EX 1800
         Redis-->>App: OK
     end
-    
+
     Note over App,DB: 场景2: 更新数据
-    
+
     App->>DB: UPDATE users SET name='Alice' WHERE id=123
     DB-->>App: OK
-    
+
     App->>Redis: DEL user:123
     Redis-->>App: OK
     Note over Redis: 删除缓存，下次读取时重建
@@ -608,7 +609,7 @@ import (
     "encoding/json"
     "fmt"
     "time"
-    
+
     "github.com/redis/go-redis/v9"
 )
 
@@ -629,7 +630,7 @@ func (c *Cache) Set(key string, value interface{}, expiration time.Duration) err
     if err != nil {
         return err
     }
-    
+
     return c.rdb.Set(ctx, key, data, expiration).Err()
 }
 
@@ -639,7 +640,7 @@ func (c *Cache) Get(key string, dest interface{}) error {
     if err != nil {
         return err
     }
-    
+
     return json.Unmarshal(data, dest)
 }
 
@@ -648,21 +649,21 @@ func (c *Cache) GetUser(id int) (*User, error) {
     // 1. 尝试从缓存获取
     cacheKey := fmt.Sprintf("user:%d", id)
     var user User
-    
+
     err := c.Get(cacheKey, &user)
     if err == nil {
         return &user, nil // 缓存命中
     }
-    
+
     // 2. 缓存未命中，从数据库查询
     user, err = queryUserFromDB(id)
     if err != nil {
         return nil, err
     }
-    
+
     // 3. 写入缓存（异步写入可进一步优化）
     c.Set(cacheKey, user, 30*time.Minute)
-    
+
     return &user, nil
 }
 
@@ -681,7 +682,7 @@ package main
 import (
     "context"
     "time"
-    
+
     "github.com/redis/go-redis/v9"
 )
 
@@ -710,7 +711,7 @@ func (l *DistributedLock) Unlock() error {
             return 0
         end
     `)
-    
+
     _, err := script.Run(ctx, l.rdb, []string{l.key}, l.value).Result()
     return err
 }
@@ -723,10 +724,10 @@ func useLock(rdb *redis.Client) {
         value: "unique-id-" + time.Now().String(),
         ttl:   10 * time.Second,
     }
-    
+
     if lock.Lock() {
         defer lock.Unlock()
-        
+
         // 执行业务逻辑
         fmt.Println("Got lock, processing...")
         time.Sleep(2 * time.Second)
@@ -754,10 +755,10 @@ func (rl *RateLimiter) Allow() bool {
         local rate = tonumber(ARGV[1])
         local burst = tonumber(ARGV[2])
         local now = tonumber(ARGV[3])
-        
+
         local last_time = redis.call('HGET', key, 'last_time')
         local tokens = redis.call('HGET', key, 'tokens')
-        
+
         if not last_time then
             last_time = now
             tokens = burst
@@ -765,7 +766,7 @@ func (rl *RateLimiter) Allow() bool {
             local delta = now - tonumber(last_time)
             tokens = math.min(burst, tonumber(tokens) + delta * rate)
         end
-        
+
         if tokens >= 1 then
             tokens = tokens - 1
             redis.call('HMSET', key, 'last_time', now, 'tokens', tokens)
@@ -775,7 +776,7 @@ func (rl *RateLimiter) Allow() bool {
             return 0
         end
     `)
-    
+
     now := time.Now().Unix()
     result, err := script.Run(
         ctx,
@@ -785,7 +786,7 @@ func (rl *RateLimiter) Allow() bool {
         rl.burst,
         now,
     ).Int()
-    
+
     return err == nil && result == 1
 }
 ```
@@ -840,18 +841,18 @@ func initRedis() *redis.Client {
         Addr:     "localhost:6379",
         Password: "",
         DB:       0,
-        
+
         // 连接池配置
         PoolSize:     100,              // 连接池大小
         MinIdleConns: 10,               // 最小空闲连接
         MaxIdleConns: 50,               // 最大空闲连接
         PoolTimeout:  4 * time.Second,  // 获取连接超时
-        
+
         // 超时配置
         DialTimeout:  5 * time.Second,
         ReadTimeout:  3 * time.Second,
         WriteTimeout: 3 * time.Second,
-        
+
         // 重试配置
         MaxRetries: 3,
     })
@@ -864,17 +865,17 @@ func initRedis() *redis.Client {
 // 使用Pipeline批量获取
 func batchGet(rdb *redis.Client, keys []string) (map[string]string, error) {
     pipe := rdb.Pipeline()
-    
+
     cmds := make([]*redis.StringCmd, len(keys))
     for i, key := range keys {
         cmds[i] = pipe.Get(ctx, key)
     }
-    
+
     _, err := pipe.Exec(ctx)
     if err != nil && err != redis.Nil {
         return nil, err
     }
-    
+
     result := make(map[string]string)
     for i, cmd := range cmds {
         val, err := cmd.Result()
@@ -882,7 +883,7 @@ func batchGet(rdb *redis.Client, keys []string) (map[string]string, error) {
             result[keys[i]] = val
         }
     }
-    
+
     return result, nil
 }
 ```
@@ -928,6 +929,6 @@ func batchGet(rdb *redis.Client, keys []string) (map[string]string, error) {
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

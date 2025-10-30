@@ -1,63 +1,66 @@
-﻿# 微服务架构（Golang国际主流实践）
+# 微服务架构（Golang国际主流实践）
 
 > **简介**: 基于国际主流标准的微服务架构完整指南，涵盖DDD领域建模、分布式挑战、架构设计、Golang实现和形式化证明
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-
-- [目录](#目录)
-- [2. 微服务架构概述](#2-微服务架构概述)
-  - [国际标准定义](#国际标准定义)
-  - [发展历程与核心思想](#发展历程与核心思想)
-  - [典型应用场景](#典型应用场景)
-  - [与单体架构对比](#与单体架构对比)
-- [3. 信息概念架构](#3-信息概念架构)
-  - [领域建模方法](#领域建模方法)
-  - [核心实体与关系](#核心实体与关系)
-    - [UML 类图（Mermaid）](#uml-类图mermaid)
-  - [典型数据流](#典型数据流)
-    - [数据流时序图（Mermaid）](#数据流时序图mermaid)
-  - [Golang 领域模型代码示例](#golang-领域模型代码示例)
-- [4. 分布式系统挑战](#4-分布式系统挑战)
-  - [网络与通信](#网络与通信)
-  - [服务协调与编排](#服务协调与编排)
-  - [数据一致性](#数据一致性)
-  - [系统可靠性](#系统可靠性)
-- [5. 架构设计解决方案](#5-架构设计解决方案)
-  - [领域驱动设计（DDD）](#领域驱动设计ddd)
-  - [服务组件定制](#服务组件定制)
-  - [同步与异步模型](#同步与异步模型)
-  - [生态适配与API网关](#生态适配与api网关)
-  - [案例分析：Netflix 微服务架构](#案例分析netflix-微服务架构)
-- [6. Golang国际主流实现范例](#6-golang国际主流实现范例)
-  - [工程结构示例](#工程结构示例)
-  - [关键代码片段](#关键代码片段)
-    - [gRPC 服务定义与实现](#grpc-服务定义与实现)
-    - [REST API 示例（Gin）](#rest-api-示例gin)
-    - [Kafka 消息发布与消费](#kafka-消息发布与消费)
-    - [Prometheus 监控埋点](#prometheus-监控埋点)
-  - [CI/CD 配置（GitHub Actions 示例）](#cicd-配置github-actions-示例)
-- [7. 形式化建模与证明](#7-形式化建模与证明)
-  - [服务集合与依赖关系建模](#服务集合与依赖关系建模)
-    - [性质1：无环性（Acyclicity）](#性质1无环性acyclicity)
-  - [一致性与可用性建模（CAP定理）](#一致性与可用性建模cap定理)
-  - [事件驱动一致性证明](#事件驱动一致性证明)
-  - [范畴论视角（可选）](#范畴论视角可选)
-  - [符号说明](#符号说明)
-- [8. 参考与外部链接](#8-参考与外部链接)
-- [9. 国际权威资源与开源组件引用](#9-国际权威资源与开源组件引用)
-- [10. 相关架构主题](#10-相关架构主题)
-- [11. 扩展阅读与参考文献](#11-扩展阅读与参考文献)
+- [微服务架构（Golang国际主流实践）](#微服务架构golang国际主流实践)
+  - [📋 目录](#-目录)
+  - [目录](#目录)
+  - [2. 微服务架构概述](#2-微服务架构概述)
+    - [国际标准定义](#国际标准定义)
+    - [发展历程与核心思想](#发展历程与核心思想)
+    - [典型应用场景](#典型应用场景)
+    - [与单体架构对比](#与单体架构对比)
+  - [3. 信息概念架构](#3-信息概念架构)
+    - [领域建模方法](#领域建模方法)
+    - [核心实体与关系](#核心实体与关系)
+      - [UML 类图（Mermaid）](#uml-类图mermaid)
+    - [典型数据流](#典型数据流)
+      - [数据流时序图（Mermaid）](#数据流时序图mermaid)
+    - [Golang 领域模型代码示例](#golang-领域模型代码示例)
+  - [4. 分布式系统挑战](#4-分布式系统挑战)
+    - [网络与通信](#网络与通信)
+    - [服务协调与编排](#服务协调与编排)
+    - [数据一致性](#数据一致性)
+    - [系统可靠性](#系统可靠性)
+  - [5. 架构设计解决方案](#5-架构设计解决方案)
+    - [领域驱动设计（DDD）](#领域驱动设计ddd)
+    - [服务组件定制](#服务组件定制)
+    - [同步与异步模型](#同步与异步模型)
+    - [生态适配与API网关](#生态适配与api网关)
+    - [案例分析：Netflix 微服务架构](#案例分析netflix-微服务架构)
+  - [6. Golang国际主流实现范例](#6-golang国际主流实现范例)
+    - [工程结构示例](#工程结构示例)
+    - [关键代码片段](#关键代码片段)
+      - [gRPC 服务定义与实现](#grpc-服务定义与实现)
+      - [REST API 示例（Gin）](#rest-api-示例gin)
+      - [Kafka 消息发布与消费](#kafka-消息发布与消费)
+      - [Prometheus 监控埋点](#prometheus-监控埋点)
+    - [CI/CD 配置（GitHub Actions 示例）](#cicd-配置github-actions-示例)
+  - [7. 形式化建模与证明](#7-形式化建模与证明)
+    - [服务集合与依赖关系建模](#服务集合与依赖关系建模)
+      - [性质1：无环性（Acyclicity）](#性质1无环性acyclicity)
+    - [一致性与可用性建模（CAP定理）](#一致性与可用性建模cap定理)
+    - [事件驱动一致性证明](#事件驱动一致性证明)
+    - [范畴论视角（可选）](#范畴论视角可选)
+    - [符号说明](#符号说明)
+  - [8. 参考与外部链接](#8-参考与外部链接)
+  - [9. 国际权威资源与开源组件引用](#9-国际权威资源与开源组件引用)
+  - [10. 相关架构主题](#10-相关架构主题)
+  - [11. 扩展阅读与参考文献](#11-扩展阅读与参考文献)
 
 ## 目录
 
 <!-- TOC START -->
 - [微服务架构（Golang国际主流实践）](#微服务架构golang国际主流实践)
+  - [📋 目录](#-目录)
   - [目录](#目录)
   - [2. 微服务架构概述](#2-微服务架构概述)
     - [国际标准定义](#国际标准定义)
@@ -794,36 +797,36 @@ func (platform *MicroservicePlatform) ProcessOrder(ctx context.Context, orderReq
     if err != nil {
         return nil, err
     }
-    
+
     if user.Status != UserStatusActive {
         return nil, errors.New("user is not active")
     }
-    
+
     // 验证商品和库存
     var totalAmount float64
     var orderItems []OrderItem
-    
+
     for _, item := range orderRequest.Items {
         // 获取商品信息
         product, err := platform.productService.GetProduct(ctx, item.ProductID)
         if err != nil {
             return nil, err
         }
-        
+
         // 检查库存
         inventory, err := platform.inventoryService.GetInventory(ctx, item.ProductID)
         if err != nil {
             return nil, err
         }
-        
+
         if inventory.Available < item.Quantity {
             return nil, errors.New("insufficient stock")
         }
-        
+
         // 计算总价
         itemTotal := product.Price * float64(item.Quantity)
         totalAmount += itemTotal
-        
+
         orderItems = append(orderItems, OrderItem{
             ID:          generateID(),
             ProductID:   product.ID,
@@ -834,7 +837,7 @@ func (platform *MicroservicePlatform) ProcessOrder(ctx context.Context, orderReq
             SKU:         product.SKU,
         })
     }
-    
+
     // 创建订单
     order := &Order{
         ID:          generateID(),
@@ -848,11 +851,11 @@ func (platform *MicroservicePlatform) ProcessOrder(ctx context.Context, orderReq
         CreatedAt:   time.Now(),
         UpdatedAt:   time.Now(),
     }
-    
+
     if err := platform.orderService.CreateOrder(ctx, order); err != nil {
         return nil, err
     }
-    
+
     // 预留库存
     for _, item := range orderItems {
         if err := platform.inventoryService.ReserveInventory(ctx, item.ProductID, item.Quantity); err != nil {
@@ -861,7 +864,7 @@ func (platform *MicroservicePlatform) ProcessOrder(ctx context.Context, orderReq
             return nil, err
         }
     }
-    
+
     // 发布订单创建事件
     platform.eventBus.Publish(&OrderCreatedEvent{
         OrderID:     order.ID,
@@ -870,7 +873,7 @@ func (platform *MicroservicePlatform) ProcessOrder(ctx context.Context, orderReq
         Items:       order.Items,
         Timestamp:   time.Now(),
     })
-    
+
     return order, nil
 }
 
@@ -880,28 +883,28 @@ func (platform *MicroservicePlatform) CallService(ctx context.Context, serviceNa
     if err != nil {
         return nil, err
     }
-    
+
     if len(services) == 0 {
         return nil, errors.New("service not found")
     }
-    
+
     // 负载均衡选择服务实例
     service := platform.selectServiceInstance(services)
-    
+
     // 检查断路器状态
     circuitBreaker := platform.getCircuitBreaker(serviceName)
     if circuitBreaker.State == CircuitStateOpen {
         return nil, errors.New("circuit breaker is open")
     }
-    
+
     // 执行服务调用
     startTime := time.Now()
     response, err := platform.executeServiceCall(ctx, service, method, endpoint, request)
     duration := time.Since(startTime)
-    
+
     // 更新断路器状态
     platform.updateCircuitBreaker(circuitBreaker, err == nil, duration)
-    
+
     // 记录调用指标
     platform.recordServiceCall(&ServiceCall{
         ID:          generateID(),
@@ -916,51 +919,51 @@ func (platform *MicroservicePlatform) CallService(ctx context.Context, serviceNa
         Error:       platform.getErrorMessage(err),
         Timestamp:   time.Now(),
     })
-    
+
     return response, err
 }
 
 func (platform *MicroservicePlatform) executeServiceCall(ctx context.Context, service *Service, method, endpoint string, request interface{}) (interface{}, error) {
     // 构建请求URL
     url := service.Endpoint + endpoint
-    
+
     // 序列化请求
     requestBody, err := json.Marshal(request)
     if err != nil {
         return nil, err
     }
-    
+
     // 创建HTTP请求
     req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(requestBody))
     if err != nil {
         return nil, err
     }
-    
+
     req.Header.Set("Content-Type", "application/json")
     req.Header.Set("X-Service-Name", "order-service")
     req.Header.Set("X-Request-ID", generateID())
-    
+
     // 执行请求
     client := &http.Client{
         Timeout: 30 * time.Second,
     }
-    
+
     resp, err := client.Do(req)
     if err != nil {
         return nil, err
     }
     defer resp.Body.Close()
-    
+
     // 解析响应
     var response interface{}
     if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
         return nil, err
     }
-    
+
     if resp.StatusCode >= 400 {
         return nil, errors.New("service call failed")
     }
-    
+
     return response, nil
 }
 
@@ -973,11 +976,11 @@ func (platform *MicroservicePlatform) selectServiceInstance(services []*Service)
             healthyServices = append(healthyServices, service)
         }
     }
-    
+
     if len(healthyServices) == 0 {
         return services[0] // 如果没有健康服务，返回第一个
     }
-    
+
     return healthyServices[0] // 简化实现，实际应该使用负载均衡算法
 }
 
@@ -985,7 +988,7 @@ func (platform *MicroservicePlatform) getCircuitBreaker(serviceName string) *Cir
     platform.mu.RLock()
     cb, exists := platform.circuitBreakers[serviceName]
     platform.mu.RUnlock()
-    
+
     if !exists {
         platform.mu.Lock()
         cb = &CircuitBreaker{
@@ -1005,22 +1008,22 @@ func (platform *MicroservicePlatform) getCircuitBreaker(serviceName string) *Cir
         platform.circuitBreakers[serviceName] = cb
         platform.mu.Unlock()
     }
-    
+
     return cb
 }
 
 func (platform *MicroservicePlatform) updateCircuitBreaker(cb *CircuitBreaker, success bool, duration time.Duration) {
     platform.mu.Lock()
     defer platform.mu.Unlock()
-    
+
     cb.Statistics.TotalRequests++
     cb.Statistics.AverageResponseTime = (cb.Statistics.AverageResponseTime + duration) / 2
-    
+
     if success {
         cb.SuccessCount++
         cb.LastSuccessTime = &[]time.Time{time.Now()}[0]
         cb.Statistics.SuccessfulRequests++
-        
+
         if cb.State == CircuitStateHalfOpen && cb.SuccessCount >= cb.Config.SuccessThreshold {
             cb.State = CircuitStateClosed
             cb.FailureCount = 0
@@ -1030,7 +1033,7 @@ func (platform *MicroservicePlatform) updateCircuitBreaker(cb *CircuitBreaker, s
         cb.FailureCount++
         cb.LastFailureTime = &[]time.Time{time.Now()}[0]
         cb.Statistics.FailedRequests++
-        
+
         if cb.FailureCount >= cb.Config.FailureThreshold {
             cb.State = CircuitStateOpen
             cb.FailureCount = 0
@@ -1043,11 +1046,11 @@ func (platform *MicroservicePlatform) getCallStatus(err error) CallStatus {
     if err == nil {
         return CallStatusSuccess
     }
-    
+
     if errors.Is(err, context.DeadlineExceeded) {
         return CallStatusTimeout
     }
-    
+
     return CallStatusFailed
 }
 
@@ -1061,7 +1064,7 @@ func (platform *MicroservicePlatform) getErrorMessage(err error) string {
 func (platform *MicroservicePlatform) recordServiceCall(call *ServiceCall) {
     // 记录服务调用指标
     platform.metrics.RecordServiceCall(call)
-    
+
     // 记录链路追踪
     platform.tracer.RecordSpan(&Span{
         TraceID:   call.ID,
@@ -1523,7 +1526,7 @@ jobs:
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

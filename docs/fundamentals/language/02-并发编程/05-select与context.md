@@ -1,32 +1,34 @@
-﻿# select与context高级用法
+# select与context高级用法
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+
 
 ---
 
 ## 📋 目录
 
-- [1. 理论基础](#1-理论基础)
-  - [select语句](#select语句)
-  - [context包](#context包)
-- [2. 典型用法](#2-典型用法)
-  - [select实现超时控制](#select实现超时控制)
-  - [select实现多路复用](#select实现多路复用)
-  - [context实现取消](#context实现取消)
-  - [context实现超时](#context实现超时)
-- [3. 工程分析与最佳实践](#3-工程分析与最佳实践)
-- [4. 常见陷阱](#4-常见陷阱)
-- [5. 单元测试建议](#5-单元测试建议)
-- [6. 参考文献](#6-参考文献)
-- [7. 完整实战示例：Web服务中的Context应用](#7-完整实战示例web服务中的context应用)
-  - [场景：HTTP API服务器](#场景http-api服务器)
-  - [使用示例](#使用示例)
-  - [示例日志输出](#示例日志输出)
-  - [关键设计要点](#关键设计要点)
-  - [性能考虑](#性能考虑)
-  - [扩展建议](#扩展建议)
+- [select与context高级用法](#select与context高级用法)
+  - [📋 目录](#-目录)
+  - [1. 理论基础](#1-理论基础)
+    - [select语句](#select语句)
+    - [context包](#context包)
+  - [2. 典型用法](#2-典型用法)
+    - [select实现超时控制](#select实现超时控制)
+    - [select实现多路复用](#select实现多路复用)
+    - [context实现取消](#context实现取消)
+    - [context实现超时](#context实现超时)
+  - [3. 工程分析与最佳实践](#3-工程分析与最佳实践)
+  - [4. 常见陷阱](#4-常见陷阱)
+  - [5. 单元测试建议](#5-单元测试建议)
+  - [6. 参考文献](#6-参考文献)
+  - [7. 完整实战示例：Web服务中的Context应用](#7-完整实战示例web服务中的context应用)
+    - [场景：HTTP API服务器](#场景http-api服务器)
+    - [使用示例](#使用示例)
+    - [示例日志输出](#示例日志输出)
+    - [关键设计要点](#关键设计要点)
+    - [性能考虑](#性能考虑)
+    - [扩展建议](#扩展建议)
 
 ## 1. 理论基础
 
@@ -169,14 +171,14 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         requestID := fmt.Sprintf("req-%d", time.Now().UnixNano())
         ctx := context.WithValue(r.Context(), requestIDKey, requestID)
-        
+
         // 将Request ID添加到响应头
         w.Header().Set("X-Request-ID", requestID)
-        
+
         log.Printf("[%s] %s %s started", requestID, r.Method, r.URL.Path)
-        
+
         next.ServeHTTP(w, r.WithContext(ctx))
-        
+
         log.Printf("[%s] %s %s completed", requestID, r.Method, r.URL.Path)
     })
 }
@@ -187,15 +189,15 @@ func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
         return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             ctx, cancel := context.WithTimeout(r.Context(), timeout)
             defer cancel()
-            
+
             // 创建一个channel来接收处理完成信号
             done := make(chan struct{})
-            
+
             go func() {
                 next.ServeHTTP(w, r.WithContext(ctx))
                 close(done)
             }()
-            
+
             select {
             case <-done:
                 // 请求正常完成
@@ -213,16 +215,16 @@ func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
 func AuthMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         token := r.Header.Get("Authorization")
-        
+
         if token == "" {
             http.Error(w, "Missing authorization", http.StatusUnauthorized)
             return
         }
-        
+
         // 模拟验证token并提取用户ID
         userID := "user-123"
         ctx := context.WithValue(r.Context(), userIDKey, userID)
-        
+
         next.ServeHTTP(w, r.WithContext(ctx))
     })
 }
@@ -233,10 +235,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 func queryDatabase(ctx context.Context, query string) (interface{}, error) {
     requestID, _ := ctx.Value(requestIDKey).(string)
     log.Printf("[%s] Executing query: %s", requestID, query)
-    
+
     // 模拟查询时间 (200-800ms)
     queryTime := time.Duration(200+rand.Intn(600)) * time.Millisecond
-    
+
     select {
     case <-time.After(queryTime):
         log.Printf("[%s] Query completed in %v", requestID, queryTime)
@@ -254,14 +256,14 @@ func queryDatabase(ctx context.Context, query string) (interface{}, error) {
 func callExternalAPI(ctx context.Context, endpoint string) (interface{}, error) {
     requestID, _ := ctx.Value(requestIDKey).(string)
     log.Printf("[%s] Calling external API: %s", requestID, endpoint)
-    
+
     // 创建带超时的子context
     apiCtx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
     defer cancel()
-    
+
     // 模拟API调用时间 (100-700ms)
     apiTime := time.Duration(100+rand.Intn(600)) * time.Millisecond
-    
+
     select {
     case <-time.After(apiTime):
         log.Printf("[%s] API call completed in %v", requestID, apiTime)
@@ -282,30 +284,30 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
     requestID, _ := ctx.Value(requestIDKey).(string)
     userID, _ := ctx.Value(userIDKey).(string)
-    
+
     log.Printf("[%s] Processing user request for: %s", requestID, userID)
-    
+
     // 并发执行多个操作
     type result struct {
         name string
         data interface{}
         err  error
     }
-    
+
     results := make(chan result, 2)
-    
+
     // 查询数据库
     go func() {
         data, err := queryDatabase(ctx, "SELECT * FROM users WHERE id = "+userID)
         results <- result{name: "database", data: data, err: err}
     }()
-    
+
     // 调用外部API
     go func() {
         data, err := callExternalAPI(ctx, "/api/user/profile")
         results <- result{name: "api", data: data, err: err}
     }()
-    
+
     // 收集结果
     response := make(map[string]interface{})
     for i := 0; i < 2; i++ {
@@ -330,11 +332,11 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
             return
         }
     }
-    
+
     // 返回响应
     response["user_id"] = userID
     response["request_id"] = requestID
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(response)
 }
@@ -353,16 +355,16 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
     // 创建路由
     mux := http.NewServeMux()
-    
+
     // 注册处理器
     mux.HandleFunc("/health", HealthHandler)
     mux.Handle("/api/user", AuthMiddleware(http.HandlerFunc(UserHandler)))
-    
+
     // 应用中间件链
     handler := RequestIDMiddleware(
         TimeoutMiddleware(2 * time.Second)(mux),
     )
-    
+
     // 启动服务器
     server := &http.Server{
         Addr:         ":8080",
@@ -371,7 +373,7 @@ func main() {
         WriteTimeout: 10 * time.Second,
         IdleTimeout:  120 * time.Second,
     }
-    
+
     log.Println("Server starting on :8080")
     if err := server.ListenAndServe(); err != nil {
         log.Fatal(err)
@@ -482,7 +484,7 @@ curl http://localhost:8080/health
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

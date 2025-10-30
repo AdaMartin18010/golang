@@ -1,7 +1,7 @@
-﻿# Context应用
+# Context应用
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
@@ -10,34 +10,36 @@
 
 ## 📋 目录
 
-- [1. Context简介](#1-context简介)
-  - [什么是Context](#什么是context)
-  - [为什么需要Context](#为什么需要context)
-- [2. 创建Context](#2-创建context)
-  - [Background和TODO](#background和todo)
-  - [WithCancel](#withcancel)
-  - [WithTimeout](#withtimeout)
-  - [WithDeadline](#withdeadline)
-- [3. 超时控制](#3-超时控制)
-  - [HTTP请求超时](#http请求超时)
-  - [数据库查询超时](#数据库查询超时)
-- [4. 取消传播](#4-取消传播)
-  - [级联取消](#级联取消)
-  - [优雅关闭](#优雅关闭)
-- [5. 值传递](#5-值传递)
-  - [WithValue](#withvalue)
-  - [类型安全的值传递](#类型安全的值传递)
-- [6. 实战应用](#6-实战应用)
-  - [HTTP服务器中间件](#http服务器中间件)
-  - [并行任务处理](#并行任务处理)
-- [7. 最佳实践](#7-最佳实践)
-  - [1. Context作为第一个参数](#1-context作为第一个参数)
-  - [2. 不要存储Context](#2-不要存储context)
-  - [3. 总是defer cancel()](#3-总是defer-cancel)
-  - [4. 检查Context错误](#4-检查context错误)
-  - [5. 不要传递nil Context](#5-不要传递nil-context)
-  - [6. Context值只用于请求作用域数据](#6-context值只用于请求作用域数据)
-- [🔗 相关资源](#相关资源)
+- [Context应用](#context应用)
+  - [📋 目录](#-目录)
+  - [1. Context简介](#1-context简介)
+    - [什么是Context](#什么是context)
+    - [为什么需要Context](#为什么需要context)
+  - [2. 创建Context](#2-创建context)
+    - [Background和TODO](#background和todo)
+    - [WithCancel](#withcancel)
+    - [WithTimeout](#withtimeout)
+    - [WithDeadline](#withdeadline)
+  - [3. 超时控制](#3-超时控制)
+    - [HTTP请求超时](#http请求超时)
+    - [数据库查询超时](#数据库查询超时)
+  - [4. 取消传播](#4-取消传播)
+    - [级联取消](#级联取消)
+    - [优雅关闭](#优雅关闭)
+  - [5. 值传递](#5-值传递)
+    - [WithValue](#withvalue)
+    - [类型安全的值传递](#类型安全的值传递)
+  - [6. 实战应用](#6-实战应用)
+    - [HTTP服务器中间件](#http服务器中间件)
+    - [并行任务处理](#并行任务处理)
+  - [7. 最佳实践](#7-最佳实践)
+    - [1. Context作为第一个参数](#1-context作为第一个参数)
+    - [2. 不要存储Context](#2-不要存储context)
+    - [3. 总是defer cancel()](#3-总是defer-cancel)
+    - [4. 检查Context错误](#4-检查context错误)
+    - [5. 不要传递nil Context](#5-不要传递nil-context)
+    - [6. Context值只用于请求作用域数据](#6-context值只用于请求作用域数据)
+  - [🔗 相关资源](#-相关资源)
 
 ## 1. Context简介
 
@@ -113,7 +115,7 @@ cancel()
 ```go
 func main() {
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     go func() {
         for {
             select {
@@ -126,7 +128,7 @@ func main() {
             }
         }
     }()
-    
+
     time.Sleep(3 * time.Second)
     cancel()  // 取消Context
     time.Sleep(1 * time.Second)
@@ -156,7 +158,7 @@ case <-ctx.Done():
 func main() {
     ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
     defer cancel()
-    
+
     go func() {
         select {
         case <-time.After(3 * time.Second):
@@ -165,7 +167,7 @@ func main() {
             fmt.Println("Timeout:", ctx.Err())
         }
     }()
-    
+
     time.Sleep(3 * time.Second)
 }
 ```
@@ -200,13 +202,13 @@ func fetchURL(ctx context.Context, url string) (string, error) {
     if err != nil {
         return "", err
     }
-    
+
     resp, err := http.DefaultClient.Do(req)
     if err != nil {
         return "", err
     }
     defer resp.Body.Close()
-    
+
     body, err := io.ReadAll(resp.Body)
     return string(body), err
 }
@@ -214,7 +216,7 @@ func fetchURL(ctx context.Context, url string) (string, error) {
 func main() {
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
+
     body, err := fetchURL(ctx, "https://example.com")
     if err != nil {
         if ctx.Err() == context.DeadlineExceeded {
@@ -224,7 +226,7 @@ func main() {
         }
         return
     }
-    
+
     fmt.Println("Body:", body)
 }
 ```
@@ -237,13 +239,13 @@ func main() {
 func queryDatabase(ctx context.Context, query string) ([]User, error) {
     ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
     defer cancel()
-    
+
     rows, err := db.QueryContext(ctx, query)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var users []User
     for rows.Next() {
         var u User
@@ -252,7 +254,7 @@ func queryDatabase(ctx context.Context, query string) ([]User, error) {
         }
         users = append(users, u)
     }
-    
+
     return users, rows.Err()
 }
 ```
@@ -268,23 +270,23 @@ func main() {
     // 父Context
     parentCtx, parentCancel := context.WithCancel(context.Background())
     defer parentCancel()
-    
+
     // 子Context1
     childCtx1, cancel1 := context.WithCancel(parentCtx)
     defer cancel1()
-    
+
     // 子Context2
     childCtx2, cancel2 := context.WithCancel(parentCtx)
     defer cancel2()
-    
+
     go worker(childCtx1, "Worker1")
     go worker(childCtx2, "Worker2")
-    
+
     time.Sleep(2 * time.Second)
-    
+
     // 取消父Context，所有子Context也会被取消
     parentCancel()
-    
+
     time.Sleep(1 * time.Second)
 }
 
@@ -309,22 +311,22 @@ func worker(ctx context.Context, name string) {
 ```go
 func server(ctx context.Context) {
     srv := &http.Server{Addr: ":8080"}
-    
+
     go func() {
         <-ctx.Done()
-        
+
         // 优雅关闭，最多等待5秒
         shutdownCtx, cancel := context.WithTimeout(
             context.Background(),
             5*time.Second,
         )
         defer cancel()
-        
+
         if err := srv.Shutdown(shutdownCtx); err != nil {
             log.Println("Server shutdown error:", err)
         }
     }()
-    
+
     if err := srv.ListenAndServe(); err != http.ErrServerClosed {
         log.Fatal(err)
     }
@@ -332,14 +334,14 @@ func server(ctx context.Context) {
 
 func main() {
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     go server(ctx)
-    
+
     // 等待中断信号
     sigChan := make(chan os.Signal, 1)
     signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
     <-sigChan
-    
+
     cancel()  // 取消Context，触发优雅关闭
     time.Sleep(6 * time.Second)
 }
@@ -357,14 +359,14 @@ type key string
 func main() {
     ctx := context.WithValue(context.Background(), key("userID"), 123)
     ctx = context.WithValue(ctx, key("requestID"), "abc-123")
-    
+
     processRequest(ctx)
 }
 
 func processRequest(ctx context.Context) {
     userID := ctx.Value(key("userID")).(int)
     requestID := ctx.Value(key("requestID")).(string)
-    
+
     fmt.Printf("UserID: %d, RequestID: %s\n", userID, requestID)
 }
 ```
@@ -400,7 +402,7 @@ func main() {
     ctx := context.Background()
     ctx = WithUserID(ctx, 123)
     ctx = WithRequestID(ctx, "abc-123")
-    
+
     if userID, ok := GetUserID(ctx); ok {
         fmt.Println("UserID:", userID)
     }
@@ -420,7 +422,7 @@ func withRequestID(next http.Handler) http.Handler {
         if requestID == "" {
             requestID = generateRequestID()
         }
-        
+
         ctx := WithRequestID(r.Context(), requestID)
         next.ServeHTTP(w, r.WithContext(ctx))
     })
@@ -429,14 +431,14 @@ func withRequestID(next http.Handler) http.Handler {
 func handler(w http.ResponseWriter, r *http.Request) {
     requestID, _ := GetRequestID(r.Context())
     log.Printf("RequestID: %s", requestID)
-    
+
     // 处理请求
 }
 
 func main() {
     mux := http.NewServeMux()
     mux.HandleFunc("/api/users", handler)
-    
+
     http.ListenAndServe(":8080", withRequestID(mux))
 }
 ```
@@ -448,14 +450,14 @@ func main() {
 ```go
 func processItems(ctx context.Context, items []Item) error {
     g, ctx := errgroup.WithContext(ctx)
-    
+
     for _, item := range items {
         item := item  // 捕获变量
         g.Go(func() error {
             return processItem(ctx, item)
         })
     }
-    
+
     return g.Wait()
 }
 
@@ -576,5 +578,5 @@ ctx = WithRequestID(ctx, "abc-123")
 
 ---
 
-**最后更新**: 2025-10-29  
+**最后更新**: 2025-10-29
 **Go版本**: 1.25.3

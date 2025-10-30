@@ -1,6 +1,6 @@
 ﻿# 🤝 Contributing Guide
 
-> **Thank you for considering contributing to this project!**  
+> **Thank you for considering contributing to this project!**
 > This guide will help you get started with contributing to our Go 1.23+ knowledge system.
 
 **Languages**: [中文](CONTRIBUTING.md) | **English**
@@ -393,7 +393,7 @@ func TestProcessTask(t *testing.T) {
             wantErr: true,
         },
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             got, err := ProcessTask(tt.input)
@@ -416,7 +416,7 @@ func TestAgent(t *testing.T) {
     t.Run("process valid input", func(t *testing.T) {
         // Test code
     })
-    
+
     t.Run("process invalid input", func(t *testing.T) {
         // Test code
     })
@@ -429,7 +429,7 @@ func TestAgent(t *testing.T) {
 func BenchmarkProcessTask(b *testing.B) {
     input := Input{ID: "test", Data: "data"}
     b.ResetTimer()
-    
+
     for i := 0; i < b.N; i++ {
         ProcessTask(input)
     }
@@ -711,7 +711,7 @@ Every contribution, no matter how small, is valuable:
 
 ---
 
-**Last Updated**: October 19, 2025  
+**Last Updated**: October 19, 2025
 **Languages**: [中文](CONTRIBUTING.md) | **English**
 
 Made with ❤️ by Contributors

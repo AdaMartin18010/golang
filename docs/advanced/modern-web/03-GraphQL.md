@@ -1,19 +1,20 @@
-﻿# GraphQL
+# GraphQL
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-
-- [1. 📖 gqlgen入门](#1-gqlgen入门)
-- [🔍 DataLoader](#dataloader)
-- [📊 分页](#分页)
-- [💡 订阅 (Subscriptions)](#订阅-subscriptions)
-- [📚 相关资源](#相关资源)
+- [GraphQL](#graphql)
+  - [📋 目录](#-目录)
+  - [1. 📖 gqlgen入门](#1--gqlgen入门)
+  - [🔍 DataLoader](#-dataloader)
+  - [📊 分页](#-分页)
+  - [💡 订阅 (Subscriptions)](#-订阅-subscriptions)
+  - [📚 相关资源](#-相关资源)
 
 ## 1. 📖 gqlgen入门
 
@@ -75,7 +76,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
         Name:  input.Name,
         Email: input.Email,
     }
-    
+
     r.users[user.ID] = user
     return user, nil
 }
@@ -87,7 +88,7 @@ func main() {
             users: make(map[string]*model.User),
         },
     }))
-    
+
     http.Handle("/graphql", srv)
     http.ListenAndServe(":8080", nil)
 }
@@ -109,34 +110,34 @@ func (u *UserLoader) BatchGetUsers(ctx context.Context, keys dataloader.Keys) []
     for i, key := range keys {
         userIDs[i] = key.String()
     }
-    
+
     // 批量查询
     users, err := u.db.GetUsersByIDs(userIDs)
-    
+
     results := make([]*dataloader.Result, len(keys))
     for i, key := range keys {
         if err != nil {
             results[i] = &dataloader.Result{Error: err}
             continue
         }
-        
+
         user := findUserByID(users, key.String())
         results[i] = &dataloader.Result{Data: user}
     }
-    
+
     return results
 }
 
 // 在resolver中使用
 func (r *queryResolver) Posts(ctx context.Context, userID string) ([]*model.Post, error) {
     loader := ctx.Value("userLoader").(*dataloader.Loader)
-    
+
     thunk := loader.Load(ctx, dataloader.StringKey(userID))
     result, err := thunk()
     if err != nil {
         return nil, err
     }
-    
+
     user := result.(*model.User)
     return user.Posts, nil
 }
@@ -173,22 +174,22 @@ func (r *queryResolver) UsersConnection(
     if first != nil {
         limit = *first
     }
-    
+
     var offset int
     if after != nil {
         offset = decodeCursor(*after)
     }
-    
+
     users, err := r.db.GetUsers(limit+1, offset)
     if err != nil {
         return nil, err
     }
-    
+
     hasNextPage := len(users) > limit
     if hasNextPage {
         users = users[:limit]
     }
-    
+
     edges := make([]*Edge, len(users))
     for i, user := range users {
         edges[i] = &Edge{
@@ -196,7 +197,7 @@ func (r *queryResolver) UsersConnection(
             Cursor: encodeCursor(offset + i),
         }
     }
-    
+
     return &Connection{
         Edges: edges,
         PageInfo: &PageInfo{
@@ -222,7 +223,7 @@ func (r *subscriptionResolver) MessageAdded(
     roomID string,
 ) (<-chan *model.Message, error) {
     messages := make(chan *model.Message, 1)
-    
+
     // 订阅消息
     r.messageBus.Subscribe(roomID, func(msg *model.Message) {
         select {
@@ -230,13 +231,13 @@ func (r *subscriptionResolver) MessageAdded(
         case <-ctx.Done():
         }
     })
-    
+
     go func() {
         <-ctx.Done()
         r.messageBus.Unsubscribe(roomID)
         close(messages)
     }()
-    
+
     return messages, nil
 }
 ```
@@ -253,4 +254,3 @@ func (r *subscriptionResolver) MessageAdded(
 ---
 
 **最后更新**: 2025-10-29
-

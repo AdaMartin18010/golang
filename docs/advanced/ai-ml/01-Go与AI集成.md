@@ -1,29 +1,29 @@
 ﻿# Go与AI集成
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-
-
-- [1. 📖 概念介绍](#1-概念介绍)
-- [2. 🎯 为什么使用Go做AI](#2-为什么使用go做ai)
-  - [优势](#优势)
-  - [适用场景](#适用场景)
-- [🔧 调用Python模型](#调用python模型)
-  - [1. 通过HTTP API](#1-通过http-api)
-  - [2. 通过gRPC](#2-通过grpc)
-- [🚀 TensorFlow集成](#tensorflow集成)
-- [🔮 ONNX Runtime](#onnx-runtime)
-- [🌐 构建推理服务](#构建推理服务)
-- [💡 最佳实践](#最佳实践)
-  - [1. 批量推理](#1-批量推理)
-  - [2. 模型缓存](#2-模型缓存)
-- [📚 相关资源](#相关资源)
+- [Go与AI集成](#go与ai集成)
+  - [📋 目录](#-目录)
+  - [1. 📖 概念介绍](#1--概念介绍)
+  - [2. 🎯 为什么使用Go做AI](#2--为什么使用go做ai)
+    - [优势](#优势)
+    - [适用场景](#适用场景)
+  - [🔧 调用Python模型](#-调用python模型)
+    - [1. 通过HTTP API](#1-通过http-api)
+    - [2. 通过gRPC](#2-通过grpc)
+  - [🚀 TensorFlow集成](#-tensorflow集成)
+  - [🔮 ONNX Runtime](#-onnx-runtime)
+  - [🌐 构建推理服务](#-构建推理服务)
+  - [💡 最佳实践](#-最佳实践)
+    - [1. 批量推理](#1-批量推理)
+    - [2. 模型缓存](#2-模型缓存)
+  - [📚 相关资源](#-相关资源)
 
 ## 1. 📖 概念介绍
 
@@ -34,12 +34,14 @@ Go在AI领域的应用日益增长，特别是在模型部署、推理服务和�
 ## 2. 🎯 为什么使用Go做AI
 
 ### 优势
+
 - **高性能**: 编译型语言，接近C的性能
 - **并发**: 天然支持高并发，适合推理服务
 - **部署简单**: 单一二进制文件，无依赖
 - **云原生**: 容器化部署的理想选择
 
 ### 适用场景
+
 - 模型推理服务
 - 数据预处理管道
 - AI模型API网关
@@ -72,19 +74,19 @@ type PredictionResponse struct {
 // 调用Python Flask模型服务
 func callPythonModel(data []float64) (*PredictionResponse, error) {
     url := "http://localhost:5000/predict"
-    
+
     reqBody := PredictionRequest{Data: data}
     jsonData, _ := json.Marshal(reqBody)
-    
+
     resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
     if err != nil {
         return nil, err
     }
     defer resp.Body.Close()
-    
+
     var result PredictionResponse
     json.NewDecoder(resp.Body).Decode(&result)
-    
+
     return &result, nil
 }
 
@@ -95,8 +97,8 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    
-    fmt.Printf("Prediction: %.2f (Confidence: %.2f%%)\n", 
+
+    fmt.Printf("Prediction: %.2f (Confidence: %.2f%%)\n",
         result.Prediction, result.Confidence*100)
 }
 ```
@@ -137,12 +139,12 @@ func callGRPCModel(features []float32) (*pb.PredictResponse, error) {
         return nil, err
     }
     defer conn.Close()
-    
+
     client := pb.NewPredictorClient(conn)
-    
+
     req := &pb.PredictRequest{Features: features}
     resp, err := client.Predict(context.Background(), req)
-    
+
     return resp, err
 }
 ```
@@ -167,7 +169,7 @@ func LoadTFModel(modelPath string) (*TFModel, error) {
     if err != nil {
         return nil, err
     }
-    
+
     return &TFModel{
         model:   model,
         session: model.Session,
@@ -180,7 +182,7 @@ func (m *TFModel) Predict(input [][]float32) ([]float32, error) {
     if err != nil {
         return nil, err
     }
-    
+
     // 运行推理
     results, err := m.session.Run(
         map[tf.Output]*tf.Tensor{
@@ -191,11 +193,11 @@ func (m *TFModel) Predict(input [][]float32) ([]float32, error) {
         },
         nil,
     )
-    
+
     if err != nil {
         return nil, err
     }
-    
+
     return results[0].Value().([]float32), nil
 }
 
@@ -203,10 +205,10 @@ func (m *TFModel) Predict(input [][]float32) ([]float32, error) {
 func example() {
     model, _ := LoadTFModel("./saved_model")
     defer model.session.Close()
-    
+
     input := [][]float32{{1.0, 2.0, 3.0}}
     output, _ := model.Predict(input)
-    
+
     fmt.Printf("Prediction: %v\n", output)
 }
 ```
@@ -230,13 +232,13 @@ func LoadONNXModel(modelPath string) (*ONNXModel, error) {
     if err != nil {
         return nil, err
     }
-    
+
     // 加载模型
     session, err := onnxruntime.NewSession(modelPath, nil)
     if err != nil {
         return nil, err
     }
-    
+
     return &ONNXModel{session: session}, nil
 }
 
@@ -248,14 +250,14 @@ func (m *ONNXModel) Predict(data []float32) ([]float32, error) {
         return nil, err
     }
     defer inputTensor.Destroy()
-    
+
     // 运行推理
     outputs, err := m.session.Run([]onnxruntime.Value{inputTensor})
     if err != nil {
         return nil, err
     }
     defer outputs[0].Destroy()
-    
+
     // 提取结果
     outputTensor := outputs[0].GetTensor()
     return outputTensor.GetData().([]float32), nil
@@ -285,7 +287,7 @@ func NewModelServer(modelPath string) (*ModelServer, error) {
     if err != nil {
         return nil, err
     }
-    
+
     return &ModelServer{
         model: model,
         pool: &sync.Pool{
@@ -300,19 +302,19 @@ func (ms *ModelServer) PredictHandler(w http.ResponseWriter, r *http.Request) {
     var req struct {
         Features []float32 `json:"features"`
     }
-    
+
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
-    
+
     // 推理
     result, err := ms.model.Predict(req.Features)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    
+
     // 返回结果
     json.NewEncoder(w).Encode(map[string]interface{}{
         "prediction": result,
@@ -321,7 +323,7 @@ func (ms *ModelServer) PredictHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
     server, _ := NewModelServer("model.onnx")
-    
+
     http.HandleFunc("/predict", server.PredictHandler)
     http.ListenAndServe(":8080", nil)
 }
@@ -332,6 +334,7 @@ func main() {
 ## 💡 最佳实践
 
 ### 1. 批量推理
+
 ```go
 type BatchProcessor struct {
     batchSize int
@@ -342,7 +345,7 @@ type BatchProcessor struct {
 func (bp *BatchProcessor) Process() {
     batch := make([]Request, 0, bp.batchSize)
     timer := time.NewTimer(bp.timeout)
-    
+
     for {
         select {
         case req := <-bp.queue:
@@ -364,6 +367,7 @@ func (bp *BatchProcessor) Process() {
 ```
 
 ### 2. 模型缓存
+
 ```go
 type ModelCache struct {
     models map[string]*ONNXModel
@@ -374,20 +378,20 @@ func (mc *ModelCache) Get(modelID string) (*ONNXModel, error) {
     mc.mu.RLock()
     model, exists := mc.models[modelID]
     mc.mu.RUnlock()
-    
+
     if exists {
         return model, nil
     }
-    
+
     // 加载模型
     mc.mu.Lock()
     defer mc.mu.Unlock()
-    
+
     model, err := LoadONNXModel(modelID)
     if err != nil {
         return nil, err
     }
-    
+
     mc.models[modelID] = model
     return model, nil
 }
@@ -406,4 +410,3 @@ func (mc *ModelCache) Get(modelID string) (*ONNXModel, error) {
 ---
 
 **最后更新**: 2025-10-29
-

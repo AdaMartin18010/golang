@@ -1,45 +1,47 @@
-﻿# Kubernetes 1.30+新特性实战指南
+# Kubernetes 1.30+新特性实战指南
 
 > **难度**: ⭐⭐⭐⭐
 > **标签**: #Kubernetes #云原生 #容器编排 #Go客户端
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. Kubernetes 1.30概述](#1-kubernetes-1-30概述)
-  - [1.1 版本亮点](#1-1-版本亮点)
-  - [1.2 重大变更](#1-2-重大变更)
-  - [1.3 弃用与移除](#1-3-弃用与移除)
-- [2. 结构化身份验证配置](#2-结构化身份验证配置)
-  - [2.1 新特性概述](#2-1-新特性概述)
-  - [2.2 配置示例](#2-2-配置示例)
-  - [2.3 Go客户端实现](#2-3-go客户端实现)
-- [3. 动态资源分配增强](#3-动态资源分配增强)
-  - [3.1 DRA v1alpha3](#3-1-dra-v1alpha3)
-  - [3.2 资源声明](#3-2-资源声明)
-  - [3.3 Go控制器实现](#3-3-go控制器实现)
-- [4. 持久卷最后一阶段转换](#4-持久卷最后一阶段转换)
-  - [4.1 特性介绍](#4-1-特性介绍)
-  - [4.2 使用场景](#4-2-使用场景)
-  - [4.3 实战示例](#4-3-实战示例)
-- [5. Pod调度就绪性](#5-pod调度就绪性)
-  - [5.1 schedulingGates](#5-1-schedulinggates)
-  - [5.2 自定义调度器](#5-2-自定义调度器)
-- [6. Sidecar容器正式发布](#6-sidecar容器正式发布)
-  - [6.1 Sidecar生命周期](#6-1-sidecar生命周期)
-  - [6.2 配置方式](#6-2-配置方式)
-  - [6.3 实战应用](#6-3-实战应用)
-- [7. Go客户端最佳实践](#7-go客户端最佳实践)
-  - [7.1 client-go v0.30](#7-1-client-go-v0-30)
-- [8. 参考资源](#8-参考资源)
-  - [官方文档](#官方文档)
-  - [Go库](#go库)
-  - [最佳实践](#最佳实践)
+- [Kubernetes 1.30+新特性实战指南](#kubernetes-130新特性实战指南)
+  - [📋 目录](#-目录)
+  - [1. Kubernetes 1.30概述](#1-kubernetes-130概述)
+    - [1.1 版本亮点](#11-版本亮点)
+    - [1.2 重大变更](#12-重大变更)
+    - [1.3 弃用与移除](#13-弃用与移除)
+  - [2. 结构化身份验证配置](#2-结构化身份验证配置)
+    - [2.1 新特性概述](#21-新特性概述)
+    - [2.2 配置示例](#22-配置示例)
+    - [2.3 Go客户端实现](#23-go客户端实现)
+  - [3. 动态资源分配增强](#3-动态资源分配增强)
+    - [3.1 DRA v1alpha3](#31-dra-v1alpha3)
+    - [3.2 资源声明](#32-资源声明)
+    - [3.3 Go控制器实现](#33-go控制器实现)
+  - [4. 持久卷最后一阶段转换](#4-持久卷最后一阶段转换)
+    - [4.1 特性介绍](#41-特性介绍)
+    - [4.2 使用场景](#42-使用场景)
+    - [4.3 实战示例](#43-实战示例)
+  - [5. Pod调度就绪性](#5-pod调度就绪性)
+    - [5.1 schedulingGates](#51-schedulinggates)
+    - [5.2 自定义调度器](#52-自定义调度器)
+  - [6. Sidecar容器正式发布](#6-sidecar容器正式发布)
+    - [6.1 Sidecar生命周期](#61-sidecar生命周期)
+    - [6.2 配置方式](#62-配置方式)
+    - [6.3 实战应用](#63-实战应用)
+  - [7. Go客户端最佳实践](#7-go客户端最佳实践)
+    - [7.1 client-go v0.30](#71-client-go-v030)
+  - [8. 参考资源](#8-参考资源)
+    - [官方文档](#官方文档)
+    - [Go库](#go库)
+    - [最佳实践](#最佳实践)
 
 ## 1. Kubernetes 1.30概述
 
@@ -155,7 +157,7 @@ import (
     "context"
     "fmt"
     "os"
-    
+
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     "k8s.io/client-go/kubernetes"
     "k8s.io/client-go/rest"
@@ -176,12 +178,12 @@ func NewJWTAuthClient(jwtToken string) (*JWTAuthClient, error) {
             CAFile:   "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt",
         },
     }
-    
+
     clientset, err := kubernetes.NewForConfig(config)
     if err != nil {
         return nil, fmt.Errorf("create clientset: %w", err)
     }
-    
+
     return &JWTAuthClient{
         clientset: clientset,
         config:    config,
@@ -194,12 +196,12 @@ func (c *JWTAuthClient) GetPods(ctx context.Context, namespace string) error {
     if err != nil {
         return err
     }
-    
+
     fmt.Printf("Found %d pods in namespace %s\n", len(pods.Items), namespace)
     for _, pod := range pods.Items {
         fmt.Printf("- %s (Status: %s)\n", pod.Name, pod.Status.Phase)
     }
-    
+
     return nil
 }
 
@@ -210,7 +212,7 @@ func main() {
     if err != nil {
         panic(err)
     }
-    
+
     ctx := context.Background()
     if err := client.GetPods(ctx, "default"); err != nil {
         panic(err)
@@ -294,7 +296,7 @@ import (
     "context"
     "fmt"
     "time"
-    
+
     resourcev1alpha3 "k8s.io/api/resource/v1alpha3"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     "k8s.io/client-go/informers"
@@ -310,7 +312,7 @@ type DRAController struct {
 
 func NewDRAController(clientset *kubernetes.Clientset) *DRAController {
     informerFactory := informers.NewSharedInformerFactory(clientset, 30*time.Second)
-    
+
     return &DRAController{
         clientset:       clientset,
         informerFactory: informerFactory,
@@ -326,15 +328,15 @@ func (c *DRAController) Run(ctx context.Context) error {
         UpdateFunc: c.onClaimUpdate,
         DeleteFunc: c.onClaimDelete,
     })
-    
+
     // 启动informer
     c.informerFactory.Start(ctx.Done())
-    
+
     // 等待同步
     if !cache.WaitForCacheSync(ctx.Done(), claimInformer.Informer().HasSynced) {
         return fmt.Errorf("failed to sync informer cache")
     }
-    
+
     fmt.Println("DRA Controller started")
     <-ctx.Done()
     return nil
@@ -343,7 +345,7 @@ func (c *DRAController) Run(ctx context.Context) error {
 func (c *DRAController) onClaimAdd(obj interface{}) {
     claim := obj.(*resourcev1alpha3.ResourceClaim)
     fmt.Printf("ResourceClaim added: %s/%s\n", claim.Namespace, claim.Name)
-    
+
     // 分配资源逻辑
     c.allocateResource(claim)
 }
@@ -356,7 +358,7 @@ func (c *DRAController) onClaimUpdate(oldObj, newObj interface{}) {
 func (c *DRAController) onClaimDelete(obj interface{}) {
     claim := obj.(*resourcev1alpha3.ResourceClaim)
     fmt.Printf("ResourceClaim deleted: %s/%s\n", claim.Namespace, claim.Name)
-    
+
     // 释放资源逻辑
     c.deallocateResource(claim)
 }
@@ -364,7 +366,7 @@ func (c *DRAController) onClaimDelete(obj interface{}) {
 func (c *DRAController) allocateResource(claim *resourcev1alpha3.ResourceClaim) {
     // 实现资源分配逻辑
     fmt.Printf("Allocating resource for claim: %s\n", claim.Name)
-    
+
     // 更新claim状态
     claim.Status.Allocation = &resourcev1alpha3.AllocationResult{
         ResourceHandles: []resourcev1alpha3.ResourceHandle{
@@ -431,7 +433,7 @@ package pv
 import (
     "context"
     "fmt"
-    
+
     v1 "k8s.io/api/core/v1"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     "k8s.io/client-go/kubernetes"
@@ -452,19 +454,19 @@ func (c *PVController) HandlePVDeletion(ctx context.Context, pv *v1.PersistentVo
     if !hasFinalizer(pv, "example.com/custom-cleanup") {
         return nil
     }
-    
+
     fmt.Printf("Cleaning up PV: %s\n", pv.Name)
-    
+
     // 1. 备份数据
     if err := c.backupPVData(ctx, pv); err != nil {
         return fmt.Errorf("backup data: %w", err)
     }
-    
+
     // 2. 清理外部资源
     if err := c.cleanupExternalResources(ctx, pv); err != nil {
         return fmt.Errorf("cleanup external resources: %w", err)
     }
-    
+
     // 3. 移除finalizer
     return c.removeFinalizer(ctx, pv, "example.com/custom-cleanup")
 }
@@ -487,10 +489,10 @@ func (c *PVController) removeFinalizer(ctx context.Context, pv *v1.PersistentVol
     if err != nil {
         return err
     }
-    
+
     // 移除finalizer
     latest.Finalizers = removeFin(latest.Finalizers, finalizer)
-    
+
     // 更新PV
     _, err = c.clientset.CoreV1().PersistentVolumes().Update(ctx, latest, metav1.UpdateOptions{})
     return err
@@ -556,7 +558,7 @@ package scheduler
 import (
     "context"
     "fmt"
-    
+
     v1 "k8s.io/api/core/v1"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     "k8s.io/client-go/kubernetes"
@@ -578,7 +580,7 @@ func (c *GateController) RemoveSchedulingGate(ctx context.Context, podName, name
     if err != nil {
         return err
     }
-    
+
     // 移除指定的gate
     var newGates []v1.PodSchedulingGate
     for _, gate := range pod.Spec.SchedulingGates {
@@ -586,15 +588,15 @@ func (c *GateController) RemoveSchedulingGate(ctx context.Context, podName, name
             newGates = append(newGates, gate)
         }
     }
-    
+
     pod.Spec.SchedulingGates = newGates
-    
+
     // 更新Pod
     _, err = c.clientset.CoreV1().Pods(namespace).Update(ctx, pod, metav1.UpdateOptions{})
     if err != nil {
         return fmt.Errorf("update pod: %w", err)
     }
-    
+
     fmt.Printf("Removed scheduling gate %s from pod %s/%s\n", gateName, namespace, podName)
     return nil
 }
@@ -603,13 +605,13 @@ func (c *GateController) RemoveSchedulingGate(ctx context.Context, podName, name
 func (c *GateController) CheckResourceReady(ctx context.Context, resourceName string) (bool, error) {
     // 实现资源检查逻辑
     fmt.Printf("Checking if resource %s is ready\n", resourceName)
-    
+
     // 示例：检查某个ConfigMap是否存在
     _, err := c.clientset.CoreV1().ConfigMaps("default").Get(ctx, resourceName, metav1.GetOptions{})
     if err != nil {
         return false, nil
     }
-    
+
     return true, nil
 }
 ```
@@ -652,20 +654,20 @@ spec:
   - name: init
     image: busybox:latest
     command: ['sh', '-c', 'echo init']
-  
+
   containers:
   - name: app
     image: nginx:latest
     ports:
     - containerPort: 80
-  
+
   - name: log-collector
     image: fluent/fluentd:latest
     restartPolicy: Always  # Sidecar标识
     volumeMounts:
     - name: logs
       mountPath: /var/log/nginx
-  
+
   volumes:
   - name: logs
     emptyDir: {}
@@ -705,9 +707,9 @@ func NewLogCollector(logPath, outputPath string) *LogCollector {
 func (lc *LogCollector) Run(ctx context.Context) error {
     ticker := time.NewTicker(lc.interval)
     defer ticker.Stop()
-    
+
     fmt.Println("Log collector started")
-    
+
     for {
         select {
         case <-ctx.Done():
@@ -728,14 +730,14 @@ func (lc *LogCollector) collect() error {
         return err
     }
     defer logFile.Close()
-    
+
     // 写入输出
     outputFile, err := os.OpenFile(lc.outputPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
     if err != nil {
         return err
     }
     defer outputFile.Close()
-    
+
     _, err = io.Copy(outputFile, logFile)
     return err
 }
@@ -748,10 +750,10 @@ func (lc *LogCollector) flush() error {
 // 使用示例
 func main() {
     collector := NewLogCollector("/var/log/nginx/access.log", "/output/logs.txt")
-    
+
     ctx, cancel := context.WithCancel(context.Background())
     defer cancel()
-    
+
     if err := collector.Run(ctx); err != nil {
         panic(err)
     }
@@ -780,7 +782,7 @@ package main
 import (
     "context"
     "fmt"
-    
+
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     "k8s.io/client-go/kubernetes"
     "k8s.io/client-go/tools/clientcmd"
@@ -792,19 +794,19 @@ func main() {
     if err != nil {
         panic(err)
     }
-    
+
     // 创建clientset
     clientset, err := kubernetes.NewForConfig(config)
     if err != nil {
         panic(err)
     }
-    
+
     // 列出所有Pod
     pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
     if err != nil {
         panic(err)
     }
-    
+
     fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
 }
 ```
@@ -832,9 +834,9 @@ func main() {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.21+ | Kubernetes 1.30+
 
 **贡献者**: 欢迎提交Issue和PR改进本文档

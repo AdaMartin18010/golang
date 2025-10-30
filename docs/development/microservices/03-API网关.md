@@ -1,7 +1,7 @@
-﻿# API网关
+# API网关
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+
 
 ---
@@ -100,20 +100,20 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         http.NotFound(w, r)
         return
     }
-    
+
     // 检查HTTP方法
     if !g.isMethodAllowed(route, r.Method) {
         http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
         return
     }
-    
+
     // 选择后端服务
     backendURL := g.selectBackend(route)
     if backendURL == "" {
         http.Error(w, "No Backend Available", http.StatusServiceUnavailable)
         return
     }
-    
+
     // 转发请求
     g.proxyRequest(w, r, backendURL)
 }
@@ -140,7 +140,7 @@ func (g *Gateway) selectBackend(route *Route) string {
     if len(route.BackendURLs) == 0 {
         return ""
     }
-    
+
     // 简单的轮询负载均衡
     // 实际应用中可以使用更复杂的算法
     return route.BackendURLs[0]
@@ -153,16 +153,16 @@ func (g *Gateway) proxyRequest(w http.ResponseWriter, r *http.Request, backendUR
         http.Error(w, "Invalid Backend URL", http.StatusInternalServerError)
         return
     }
-    
+
     // 创建反向代理
     proxy := httputil.NewSingleHostReverseProxy(target)
-    
+
     // 修改请求
     r.URL.Host = target.Host
     r.URL.Scheme = target.Scheme
     r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
     r.Host = target.Host
-    
+
     // 转发请求
     proxy.ServeHTTP(w, r)
 }
@@ -170,7 +170,7 @@ func (g *Gateway) proxyRequest(w http.ResponseWriter, r *http.Request, backendUR
 // 使用示例
 func main() {
     gateway := NewGateway()
-    
+
     // 添加路由
     gateway.AddRoute(&Route{
         Name:        "user-service",
@@ -178,20 +178,20 @@ func main() {
         Methods:     []string{"GET", "POST", "PUT", "DELETE"},
         BackendURLs: []string{"http://localhost:8081", "http://localhost:8082"},
     })
-    
+
     gateway.AddRoute(&Route{
         Name:        "order-service",
         Path:        "/api/orders",
         Methods:     []string{"GET", "POST"},
         BackendURLs: []string{"http://localhost:8083"},
     })
-    
+
     // 启动网关
     server := &http.Server{
         Addr:    ":8080",
         Handler: gateway,
     }
-    
+
     log.Println("API网关启动在 :8080")
     log.Fatal(server.ListenAndServe())
 }
@@ -225,13 +225,13 @@ func (rr *RoundRobinBalancer) Select(backends []string) string {
     if len(backends) == 0 {
         return ""
     }
-    
+
     rr.mutex.Lock()
     defer rr.mutex.Unlock()
-    
+
     backend := backends[rr.current]
     rr.current = (rr.current + 1) % len(backends)
-    
+
     return backend
 }
 
@@ -251,7 +251,7 @@ func NewWeightedRoundRobinBalancer() *WeightedRoundRobinBalancer {
 func (wrr *WeightedRoundRobinBalancer) SetWeight(backend string, weight int) {
     wrr.mutex.Lock()
     defer wrr.mutex.Unlock()
-    
+
     wrr.weights[backend] = weight
     wrr.current[backend] = 0
 }
@@ -260,30 +260,30 @@ func (wrr *WeightedRoundRobinBalancer) Select(backends []string) string {
     if len(backends) == 0 {
         return ""
     }
-    
+
     wrr.mutex.Lock()
     defer wrr.mutex.Unlock()
-    
+
     // 找到权重最大的后端
     maxWeight := -1
     selectedBackend := backends[0]
-    
+
     for _, backend := range backends {
         weight := wrr.weights[backend]
         if weight <= 0 {
             weight = 1 // 默认权重
         }
-        
+
         wrr.current[backend] += weight
-        
+
         if wrr.current[backend] > maxWeight {
             maxWeight = wrr.current[backend]
             selectedBackend = backend
         }
     }
-    
+
     wrr.current[selectedBackend] -= maxWeight
-    
+
     return selectedBackend
 }
 
@@ -301,7 +301,7 @@ func (rb *RandomBalancer) Select(backends []string) string {
     if len(backends) == 0 {
         return ""
     }
-    
+
     return backends[rb.rand.Intn(len(backends))]
 }
 
@@ -334,26 +334,26 @@ func (eg *EnhancedGateway) selectBackend(route *Route) string {
         balancer = NewRoundRobinBalancer()
         eg.balancers[route.Name] = balancer
     }
-    
+
     return balancer.Select(route.BackendURLs)
 }
 
 // 使用示例
 func main() {
     gateway := NewEnhancedGateway()
-    
+
     // 用户服务使用加权轮询
     userBalancer := NewWeightedRoundRobinBalancer()
     userBalancer.SetWeight("http://localhost:8081", 3)
     userBalancer.SetWeight("http://localhost:8082", 1)
-    
+
     gateway.AddRoute(&Route{
         Name:        "user-service",
         Path:        "/api/users",
         Methods:     []string{"GET", "POST", "PUT", "DELETE"},
         BackendURLs: []string{"http://localhost:8081", "http://localhost:8082"},
     }, userBalancer)
-    
+
     // 订单服务使用随机负载均衡
     orderBalancer := NewRandomBalancer()
     gateway.AddRoute(&Route{
@@ -362,13 +362,13 @@ func main() {
         Methods:     []string{"GET", "POST"},
         BackendURLs: []string{"http://localhost:8083", "http://localhost:8084"},
     }, orderBalancer)
-    
+
     // 启动网关
     server := &http.Server{
         Addr:    ":8080",
         Handler: gateway,
     }
-    
+
     log.Println("增强API网关启动在 :8080")
     log.Fatal(server.ListenAndServe())
 }
@@ -407,12 +407,12 @@ func NewAuthMiddleware(publicKeyPath string) (*AuthMiddleware, error) {
     if err != nil {
         return nil, err
     }
-    
+
     publicKey, err := jwt.ParseRSAPublicKeyFromPEM(keyBytes)
     if err != nil {
         return nil, err
     }
-    
+
     return &AuthMiddleware{publicKey: publicKey}, nil
 }
 
@@ -423,15 +423,15 @@ func (am *AuthMiddleware) ValidateToken(tokenString string) (*Claims, error) {
         }
         return am.publicKey, nil
     })
-    
+
     if err != nil {
         return nil, err
     }
-    
+
     if claims, ok := token.Claims.(*Claims); ok && token.Valid {
         return claims, nil
     }
-    
+
     return nil, fmt.Errorf("invalid token")
 }
 
@@ -444,25 +444,25 @@ func (am *AuthMiddleware) Middleware() func(http.Handler) http.Handler {
                 http.Error(w, "Authorization header required", http.StatusUnauthorized)
                 return
             }
-            
+
             // 检查Bearer前缀
             parts := strings.SplitN(authHeader, " ", 2)
             if len(parts) != 2 || parts[0] != "Bearer" {
                 http.Error(w, "Invalid authorization header format", http.StatusUnauthorized)
                 return
             }
-            
+
             // 验证token
             claims, err := am.ValidateToken(parts[1])
             if err != nil {
                 http.Error(w, "Invalid token", http.StatusUnauthorized)
                 return
             }
-            
+
             // 将用户信息添加到请求上下文
             ctx := context.WithValue(r.Context(), "user", claims)
             r = r.WithContext(ctx)
-            
+
             next.ServeHTTP(w, r)
         })
     }
@@ -476,7 +476,7 @@ func (am *AuthMiddleware) RequireRole(role string) func(http.Handler) http.Handl
                 http.Error(w, "User not authenticated", http.StatusUnauthorized)
                 return
             }
-            
+
             // 检查用户角色
             hasRole := false
             for _, userRole := range user.Roles {
@@ -485,12 +485,12 @@ func (am *AuthMiddleware) RequireRole(role string) func(http.Handler) http.Handl
                     break
                 }
             }
-            
+
             if !hasRole {
                 http.Error(w, "Insufficient permissions", http.StatusForbidden)
                 return
             }
-            
+
             next.ServeHTTP(w, r)
         })
     }
@@ -503,38 +503,38 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    
+
     // 创建路由
     mux := http.NewServeMux()
-    
+
     // 公开路由
     mux.HandleFunc("/api/public", func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("Public endpoint"))
     })
-    
+
     // 需要认证的路由
     protectedHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         user := r.Context().Value("user").(*Claims)
         w.Write([]byte(fmt.Sprintf("Hello, %s!", user.Username)))
     })
-    
+
     mux.Handle("/api/protected", authMiddleware.Middleware()(protectedHandler))
-    
+
     // 需要管理员角色的路由
     adminHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("Admin only endpoint"))
     })
-    
+
     adminRoute := authMiddleware.Middleware()(adminHandler)
     adminRoute = authMiddleware.RequireRole("admin")(adminRoute)
     mux.Handle("/api/admin", adminRoute)
-    
+
     // 启动服务器
     server := &http.Server{
         Addr:    ":8080",
         Handler: mux,
     }
-    
+
     log.Println("认证网关启动在 :8080")
     log.Fatal(server.ListenAndServe())
 }
@@ -573,23 +573,23 @@ func NewTokenBucket(capacity, refillRate int) *TokenBucket {
 func (tb *TokenBucket) Allow() bool {
     tb.mutex.Lock()
     defer tb.mutex.Unlock()
-    
+
     // 补充令牌
     now := time.Now()
     elapsed := now.Sub(tb.lastRefill)
     tokensToAdd := int(elapsed.Seconds()) * tb.refillRate
-    
+
     if tokensToAdd > 0 {
         tb.tokens = min(tb.capacity, tb.tokens+tokensToAdd)
         tb.lastRefill = now
     }
-    
+
     // 检查是否有可用令牌
     if tb.tokens > 0 {
         tb.tokens--
         return true
     }
-    
+
     return false
 }
 
@@ -619,10 +619,10 @@ func NewSlidingWindow(windowSize time.Duration, maxRequests int) *SlidingWindow 
 func (sw *SlidingWindow) Allow() bool {
     sw.mutex.Lock()
     defer sw.mutex.Unlock()
-    
+
     now := time.Now()
     cutoff := now.Add(-sw.windowSize)
-    
+
     // 移除过期的请求
     var validRequests []time.Time
     for _, reqTime := range sw.requests {
@@ -631,12 +631,12 @@ func (sw *SlidingWindow) Allow() bool {
         }
     }
     sw.requests = validRequests
-    
+
     // 检查是否超过限制
     if len(sw.requests) >= sw.maxRequests {
         return false
     }
-    
+
     // 记录当前请求
     sw.requests = append(sw.requests, now)
     return true
@@ -663,7 +663,7 @@ func NewCircuitBreaker(maxFailures int, timeout time.Duration) *CircuitBreaker {
 func (cb *CircuitBreaker) Call(fn func() error) error {
     cb.mutex.Lock()
     defer cb.mutex.Unlock()
-    
+
     if cb.state == "open" {
         if time.Since(cb.lastFailure) > cb.timeout {
             cb.state = "half-open"
@@ -671,24 +671,24 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
             return fmt.Errorf("circuit breaker is open")
         }
     }
-    
+
     err := fn()
-    
+
     if err != nil {
         cb.failures++
         cb.lastFailure = time.Now()
-        
+
         if cb.failures >= cb.maxFailures {
             cb.state = "open"
         }
-        
+
         return err
     }
-    
+
     // 成功调用，重置状态
     cb.failures = 0
     cb.state = "closed"
-    
+
     return nil
 }
 
@@ -708,7 +708,7 @@ func (rlm *RateLimitMiddleware) Middleware() func(http.Handler) http.Handler {
                 http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
                 return
             }
-            
+
             next.ServeHTTP(w, r)
         })
     }
@@ -730,14 +730,14 @@ func (cbm *CircuitBreakerMiddleware) Middleware() func(http.Handler) http.Handle
                 // 创建一个响应写入器来捕获状态码
                 rw := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}
                 next.ServeHTTP(rw, r)
-                
+
                 if rw.statusCode >= 500 {
                     return fmt.Errorf("server error: %d", rw.statusCode)
                 }
-                
+
                 return nil
             })
-            
+
             if err != nil {
                 http.Error(w, "Service temporarily unavailable", http.StatusServiceUnavailable)
             }
@@ -760,27 +760,27 @@ func main() {
     // 创建限流器
     rateLimiter := NewTokenBucket(100, 10) // 容量100，每秒补充10个令牌
     rateLimitMiddleware := NewRateLimitMiddleware(rateLimiter)
-    
+
     // 创建熔断器
     circuitBreaker := NewCircuitBreaker(5, 30*time.Second) // 5次失败后熔断30秒
     circuitBreakerMiddleware := NewCircuitBreakerMiddleware(circuitBreaker)
-    
+
     // 创建路由
     mux := http.NewServeMux()
     mux.HandleFunc("/api/test", func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("Test endpoint"))
     })
-    
+
     // 应用中间件
     handler := rateLimitMiddleware.Middleware()(mux)
     handler = circuitBreakerMiddleware.Middleware()(handler)
-    
+
     // 启动服务器
     server := &http.Server{
         Addr:    ":8080",
         Handler: handler,
     }
-    
+
     log.Println("限流熔断网关启动在 :8080")
     log.Fatal(server.ListenAndServe())
 }
@@ -829,7 +829,7 @@ func main() {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

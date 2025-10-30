@@ -1,50 +1,53 @@
-﻿# GMP调度器详解
+# GMP调度器详解
 
 ## 📋 目录
 
-
-- [1. GMP模型概述](#1-gmp模型概述)
-  - [为什么需要GMP](#为什么需要gmp)
-  - [GMP三者关系](#gmp三者关系)
-- [2. G - Goroutine](#2-g-goroutine)
-  - [G的数据结构](#g的数据结构)
-  - [G的状态转换](#g的状态转换)
-  - [G的创建与销毁](#g的创建与销毁)
-- [3. M - Machine](#3-m-machine)
-  - [M的数据结构](#m的数据结构)
-  - [M的创建与销毁](#m的创建与销毁)
-- [4. P - Processor](#4-p-processor)
-  - [P的数据结构](#p的数据结构)
-  - [P的状态转换](#p的状态转换)
-- [5. 调度流程](#5-调度流程)
-  - [schedule函数](#schedule函数)
-  - [findrunnable详解](#findrunnable详解)
-  - [Work Stealing](#work-stealing)
-- [6. 抢占式调度](#6-抢占式调度)
-  - [基于协作的抢占](#基于协作的抢占)
-  - [基于信号的抢占 (Go 1.14+)](#基于信号的抢占-go-1-14+)
-- [7. 系统调用处理](#7-系统调用处理)
-  - [进入系统调用](#进入系统调用)
-  - [退出系统调用](#退出系统调用)
-  - [阻塞系统调用监控](#阻塞系统调用监控)
-- [8. 性能优化](#8-性能优化)
-  - [优化1: 减少Goroutine切换](#优化1-减少goroutine切换)
-  - [优化2: GOMAXPROCS调优](#优化2-gomaxprocs调优)
-  - [优化3: 减少抢占开销](#优化3-减少抢占开销)
-  - [调度器性能指标](#调度器性能指标)
-- [🔗 相关资源](#相关资源)
+- [GMP调度器详解](#gmp调度器详解)
+  - [📋 目录](#-目录)
+  - [1. GMP模型概述](#1-gmp模型概述)
+    - [为什么需要GMP](#为什么需要gmp)
+    - [GMP三者关系](#gmp三者关系)
+  - [2. G - Goroutine](#2-g---goroutine)
+    - [G的数据结构](#g的数据结构)
+    - [G的状态转换](#g的状态转换)
+    - [G的创建与销毁](#g的创建与销毁)
+  - [3. M - Machine](#3-m---machine)
+    - [M的数据结构](#m的数据结构)
+    - [M的创建与销毁](#m的创建与销毁)
+  - [4. P - Processor](#4-p---processor)
+    - [P的数据结构](#p的数据结构)
+    - [P的状态转换](#p的状态转换)
+  - [5. 调度流程](#5-调度流程)
+    - [schedule函数](#schedule函数)
+    - [findrunnable详解](#findrunnable详解)
+    - [Work Stealing](#work-stealing)
+  - [6. 抢占式调度](#6-抢占式调度)
+    - [基于协作的抢占](#基于协作的抢占)
+    - [基于信号的抢占 (Go 1.14+)](#基于信号的抢占-go-114)
+  - [7. 系统调用处理](#7-系统调用处理)
+    - [进入系统调用](#进入系统调用)
+    - [退出系统调用](#退出系统调用)
+    - [阻塞系统调用监控](#阻塞系统调用监控)
+  - [8. 性能优化](#8-性能优化)
+    - [优化1: 减少Goroutine切换](#优化1-减少goroutine切换)
+    - [优化2: GOMAXPROCS调优](#优化2-gomaxprocs调优)
+    - [优化3: 减少抢占开销](#优化3-减少抢占开销)
+    - [调度器性能指标](#调度器性能指标)
+  - [🔗 相关资源](#-相关资源)
 
 ## 1. GMP模型概述
 
 ### 为什么需要GMP
 
 **传统线程模型的问题**:
+
 - ❌ 线程创建开销大（~1MB栈空间）
 - ❌ 线程切换开销大（内核态切换）
 - ❌ 线程数量受限（操作系统限制）
 - ❌ 调度由OS控制，无法优化
 
 **Go的解决方案 - GMP模型**:
+
 - ✅ Goroutine轻量（初始2KB栈）
 - ✅ 用户态调度（无需内核切换）
 - ✅ 可创建百万级goroutine
@@ -74,11 +77,13 @@
 ```
 
 **核心概念**:
+
 - **G (Goroutine)**: 代表一个goroutine，包含栈、指令指针等
 - **M (Machine)**: 代表一个内核线程，执行G的实体
 - **P (Processor)**: 代表调度上下文，持有G的本地队列
 
 **关键关系**:
+
 - M必须关联P才能执行G
 - P的数量 = GOMAXPROCS (默认CPU核心数)
 - M的数量动态调整，通常 M数量 > P数量
@@ -96,26 +101,26 @@ type g struct {
     stack       stack     // 栈边界 [stack.lo, stack.hi)
     stackguard0 uintptr   // 栈溢出检查
     stackguard1 uintptr   // C栈溢出检查
-    
+
     // 调度信息
     m              *m        // 当前运行在哪个M上
     sched          gobuf     // 调度上下文（PC、SP等）
     atomicstatus   uint32    // G的状态
     schedlink      guintptr  // 调度队列链表
-    
+
     // 抢占标志
     preempt       bool      // 抢占标志
     preemptStop   bool      // 抢占到_Gpreempted
     preemptShrink bool      // 收缩栈
-    
+
     // 唤醒时间
     waitsince     int64     // 等待开始时间
     waitreason    waitReason // 等待原因
-    
+
     // panic/defer
     _panic    *_panic  // panic链表
     _defer    *_defer  // defer链表
-    
+
     // ...其他字段
 }
 
@@ -173,15 +178,15 @@ func newproc(siz int32, fn *funcval) {
     argp := add(unsafe.Pointer(&fn), sys.PtrSize)
     gp := getg()
     pc := getcallerpc()
-    
+
     // 在系统栈上创建新的G
     systemstack(func() {
         newg := newproc1(fn, argp, siz, gp, pc)
-        
+
         // 放入P的本地队列
         _p_ := getg().m.p.ptr()
         runqput(_p_, newg, true)
-        
+
         // 如果有空闲P且没在spinning，唤醒或创建M
         if mainStarted {
             wakep()
@@ -217,26 +222,26 @@ type m struct {
     g0      *g       // 用于调度的特殊g（有更大的栈）
     morebuf gobuf    // 栈扩展用
     curg    *g       // 当前运行的g
-    
+
     // 关联的P
     p             puintptr // 当前关联的P
     nextp         puintptr // 下一个要关联的P
     oldp          puintptr // 执行syscall前的P
-    
+
     // M的状态
     spinning      bool     // 是否在窃取工作
     blocked       bool     // 是否阻塞在note上
-    
+
     // 系统调用
     syscalltick   uint32   // 系统调用计数
-    
+
     // 链表
     schedlink     muintptr // 链表
     alllink       *m       // allm链表
-    
+
     // 线程信息
     thread        uintptr  // 线程句柄
-    
+
     // ...其他字段
 }
 ```
@@ -253,7 +258,7 @@ func newm(fn func(), _p_ *p, id int64) {
     // 分配m结构
     mp := allocm(_p_, fn, id)
     mp.nextp.set(_p_)
-    
+
     // 创建操作系统线程
     newm1(mp)
 }
@@ -300,34 +305,34 @@ var (
 // runtime2.go
 type p struct {
     m           muintptr   // 关联的M
-    
+
     // 本地运行队列
     runqhead    uint32     // 队列头
     runqtail    uint32     // 队列尾
     runq        [256]guintptr // 本地队列，循环数组
     runnext     guintptr   // 下一个运行的G（优先级最高）
-    
+
     // 状态
     status      uint32     // P的状态
     link        puintptr   // P链表
     schedtick   uint32     // 调度计数
     syscalltick uint32     // 系统调用计数
-    
+
     // mcache for allocation
     mcache      *mcache    // 内存分配缓存
-    
+
     // defer pool
     deferpool    [5][]*_defer
     deferpoolbuf [5][32]*_defer
-    
+
     // sudoG pool
     sudogcache []*sudog
     sudogbuf   [128]*sudog
-    
+
     // timer heap
     timers      []*timer
     numTimers   uint32
-    
+
     // ...其他字段
 }
 ```
@@ -351,7 +356,7 @@ _Prunning (运行中)
 // proc.go
 func procresize(nprocs int32) *p {
     old := gomaxprocs
-    
+
     // 创建或销毁P
     for i := old; i < nprocs; i++ {
         pp := allp[i]
@@ -360,7 +365,7 @@ func procresize(nprocs int32) *p {
             pp.init(i)
         }
     }
-    
+
     // 释放多余的P
     for i := nprocs; i < old; i++ {
         p := allp[i]
@@ -372,7 +377,7 @@ func procresize(nprocs int32) *p {
         // 释放P
         p.destroy()
     }
-    
+
     return allp[0]
 }
 ```
@@ -388,36 +393,36 @@ func procresize(nprocs int32) *p {
 func schedule() {
     _g_ := getg()
     _g_.m.locks++
-    
+
 top:
     pp := _g_.m.p.ptr()
-    
+
     // 1. 检查GC
     if sched.gcwaiting != 0 {
         gcstopm()
         goto top
     }
-    
+
     var gp *g
     var inheritTime bool
-    
+
     // 2. 每61次从全局队列获取（防止全局队列饿死）
     if _g_.m.p.ptr().schedtick%61 == 0 && sched.runqsize > 0 {
         lock(&sched.lock)
         gp = globrunqget(_g_.m.p.ptr(), 1)
         unlock(&sched.lock)
     }
-    
+
     // 3. 从P的本地队列获取
     if gp == nil {
         gp, inheritTime = runqget(_g_.m.p.ptr())
     }
-    
+
     // 4. findrunnable（阻塞获取）
     if gp == nil {
         gp, inheritTime = findrunnable()
     }
-    
+
     // 5. 执行goroutine
     execute(gp, inheritTime)
 }
@@ -468,7 +473,7 @@ top:
                 if _p_ == p2 {
                     continue
                 }
-                
+
                 // 从p2窃取一半的G
                 gp := runqsteal(_p_, p2, stealRunNextG)
                 if gp != nil {
@@ -518,7 +523,7 @@ func runqgrab(_p_ *p, batch *[256]guintptr, batchHead uint32, stealRunNextG bool
         t := atomic.LoadAcq(&_p_.runqtail)
         n := t - h
         n = n - n/2  // 窃取一半
-        
+
         if n == 0 {
             // 尝试窃取runnext
             if stealRunNextG {
@@ -528,7 +533,7 @@ func runqgrab(_p_ *p, batch *[256]guintptr, batchHead uint32, stealRunNextG bool
             }
             return 0
         }
-        
+
         // 批量窃取
         if atomic.CasRel(&_p_.runqhead, h, h+n) {
             return n
@@ -538,6 +543,7 @@ func runqgrab(_p_ *p, batch *[256]guintptr, batchHead uint32, stealRunNextG bool
 ```
 
 **特点**:
+
 - 窃取一半的G
 - 随机选择受害P，减少冲突
 - 优先窃取runnext（最后放入的G）
@@ -598,6 +604,7 @@ func doSigPreempt(gp *g, ctxt *sigctxt) {
 **抢占时机**:
 
 1. **sysmon检测** (每10ms):
+
 ```go
 // proc.go
 func sysmon() {
@@ -607,13 +614,14 @@ func sysmon() {
         if pd := &allp[i].sysmontick; now-pd.schedwhen > 10*1000*1000 {
             preemptone(allp[i])
         }
-        
+
         usleep(10 * 1000) // 休眠10ms
     }
 }
 ```
 
 2. **GC触发抢占**:
+
 ```go
 func preemptall() bool {
     for _, _p_ := range allp {
@@ -635,18 +643,18 @@ func preemptall() bool {
 // proc.go
 func reentersyscall(pc, sp uintptr) {
     _g_ := getg()
-    
+
     // 保存调用者信息
     _g_.syscallsp = sp
     _g_.syscallpc = pc
-    
+
     // 解除M和P的绑定
     _g_.m.oldp.set(_g_.m.p.ptr())
     _g_.m.p = 0
-    
+
     // 将P状态设置为_Psyscall
     atomic.Store(&_g_.m.oldp.ptr().status, _Psyscall)
-    
+
     // sysmon可以接管这个P
 }
 ```
@@ -659,7 +667,7 @@ func reentersyscall(pc, sp uintptr) {
 // proc.go
 func exitsyscall() {
     _g_ := getg()
-    
+
     // 尝试重新关联原来的P
     oldp := _g_.m.oldp.ptr()
     if oldp != nil && oldp.status == _Psyscall && cas(&oldp.status, _Psyscall, _Prunning) {
@@ -667,7 +675,7 @@ func exitsyscall() {
         _g_.m.p.set(oldp)
         return
     }
-    
+
     // 无法关联原P，尝试获取空闲P
     mcall(exitsyscall0)
 }
@@ -678,7 +686,7 @@ func exitsyscall0(gp *g) {
     if _p_ == nil {
         // 没有空闲P，将G放入全局队列
         globrunqput(gp)
-        
+
         // M进入休眠
         stopm()
     } else {
@@ -701,26 +709,26 @@ func retake(now int64) uint32 {
         _p_ := allp[i]
         pd := &_p_.sysmontick
         s := _p_.status
-        
+
         if s == _Psyscall {
             // 系统调用超过10ms
             if runqempty(_p_) && atomic.Load(&sched.nmspinning)+atomic.Load(&sched.npidle) > 0 {
                 // 队列为空且有空闲资源，不抢占
                 continue
             }
-            
+
             t := int64(_p_.syscalltick)
             if int64(pd.syscalltick) != t {
                 pd.syscalltick = uint32(t)
                 pd.syscallwhen = now
                 continue
             }
-            
+
             // 系统调用时间过长，抢占P
             if runqempty(_p_) && atomic.Load(&sched.nmspinning)+atomic.Load(&sched.npidle) > 0 && pd.syscallwhen+10*1000*1000 > now {
                 continue
             }
-            
+
             // 将P从M上剥离
             if atomic.Cas(&_p_.status, s, _Pidle) {
                 n++
@@ -753,7 +761,7 @@ func badPattern() {
 func goodPattern() {
     numWorkers := runtime.GOMAXPROCS(0)
     jobs := make(chan int, 1000)
-    
+
     for i := 0; i < numWorkers; i++ {
         go func() {
             for j := range jobs {
@@ -761,7 +769,7 @@ func goodPattern() {
             }
         }()
     }
-    
+
     for i := 0; i < 1000; i++ {
         jobs <- i
     }
@@ -824,7 +832,7 @@ func heavyComputeOptimized() {
 func printSchedStats() {
     var stats runtime.SchedStats
     runtime.ReadSchedStats(&stats)
-    
+
     fmt.Printf("Goroutines: %d\n", runtime.NumGoroutine())
     fmt.Printf("OS Threads: %d\n", stats.NumThreads)
     fmt.Printf("GOMAXPROCS: %d\n", runtime.GOMAXPROCS(0))
@@ -842,7 +850,6 @@ func printSchedStats() {
 
 ---
 
-**最后更新**: 2025-10-29  
-**Go版本**: 1.25.3  
+**最后更新**: 2025-10-29
+**Go版本**: 1.25.3
 **文档类型**: GMP调度器深度解析 ✨
-

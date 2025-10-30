@@ -116,7 +116,7 @@ Look for issues labeled `good first issue` - these are great for newcomers!
    # For Formal Verifier
    cd tools/formal-verifier
    go mod download
-   
+
    # For Pattern Generator
    cd ../concurrency-pattern-generator
    go mod download
@@ -128,7 +128,7 @@ Look for issues labeled `good first issue` - these are great for newcomers!
    # Formal Verifier
    cd tools/formal-verifier
    go build ./cmd/fv
-   
+
    # Pattern Generator
    cd ../concurrency-pattern-generator
    go build ./cmd/cpg
@@ -139,10 +139,10 @@ Look for issues labeled `good first issue` - these are great for newcomers!
    ```bash
    # Test all
    go test ./...
-   
+
    # Test with coverage
    go test -cover ./...
-   
+
    # Test with race detector
    go test -race ./...
    ```
@@ -368,7 +368,7 @@ func TestWorkerPool(t *testing.T) {
         {"basic", 5, 10, 10},
         {"edge", 0, 10, 0},
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             // Test implementation
@@ -422,7 +422,7 @@ package cfg
 type Node struct {
     // ID is the unique identifier for this node
     ID int
-    
+
     // Stmt is the AST node this CFG node represents
     Stmt ast.Stmt
 }

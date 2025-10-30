@@ -1,4 +1,4 @@
-﻿# Go应用开发
+# Go应用开发
 
 Go应用开发实践，涵盖Web开发、微服务、数据库和云原生技术。
 
@@ -37,16 +37,19 @@ Go应用开发实践，涵盖Web开发、微服务、数据库和云原生技术
 ## 🎯 开发路径
 
 ### Web开发 (2-3周)
+
 ```
 HTTP基础 → RESTful API → 数据库集成 → Web框架
 ```
 
 ### 微服务 (3-4周)
+
 ```
 服务拆分 → gRPC → 服务发现 → API网关 → 监控
 ```
 
 ### 云原生 (2-3周)
+
 ```
 Docker → Kubernetes → 配置管理 → CI/CD
 ```
@@ -67,13 +70,13 @@ import (
 
 func main() {
     r := gin.Default()
-    
+
     r.GET("/ping", func(c *gin.Context) {
         c.JSON(http.StatusOK, gin.H{
             "message": "pong",
         })
     })
-    
+
     r.Run(":8080")
 }
 ```
@@ -111,16 +114,19 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 ## 🛠️ 常用技术栈
 
 ### Web框架
+
 - Gin (⭐47K) - 高性能HTTP框架
 - Echo (⭐27K) - 简洁优雅
 - Fiber (⭐30K) - Express风格
 
 ### 数据库
+
 - GORM (⭐34K) - 功能强大的ORM
 - sqlx (⭐15K) - SQL扩展
 - go-redis (⭐18K) - Redis客户端
 
 ### 微服务
+
 - gRPC - RPC框架
 - Consul/etcd - 服务发现
 - Prometheus - 监控
@@ -136,7 +142,6 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
-

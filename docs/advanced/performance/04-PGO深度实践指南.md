@@ -1,46 +1,47 @@
-﻿# Go 1.23+ PGO深度实践指南
+# Go 1.23+ PGO深度实践指南
 
 > **难度**: ⭐⭐⭐⭐⭐
 > **标签**: #PGO #性能优化 #Profile引导优化 #编译器优化
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-
-- [1. PGO概述](#1-pgo概述)
-  - [1.1 什么是PGO](#1-1-什么是pgo)
-  - [1.2 PGO工作原理](#1-2-pgo工作原理)
-  - [1.3 性能提升](#1-3-性能提升)
-- [2. PGO快速开始](#2-pgo快速开始)
-  - [2.1 基础使用](#2-1-基础使用)
-  - [2.2 Profile收集](#2-2-profile收集)
-  - [2.3 验证效果](#2-3-验证效果)
-- [3. Profile收集策略](#3-profile收集策略)
-  - [3.1 CPU Profile](#3-1-cpu-profile)
-  - [3.2 生产环境收集](#3-2-生产环境收集)
-  - [3.3 Profile合并](#3-3-profile合并)
-- [4. PGO优化原理](#4-pgo优化原理)
-  - [4.1 内联优化](#4-1-内联优化)
-  - [4.2 去虚拟化](#4-2-去虚拟化)
-  - [4.3 寄存器分配](#4-3-寄存器分配)
-- [5. Go 1.23 PGO增强](#5-go-1-23-pgo增强)
-  - [5.1 新增优化](#5-1-新增优化)
-  - [5.2 性能改进](#5-2-性能改进)
-  - [5.3 工具链改进](#5-3-工具链改进)
-- [6. 实战案例](#6-实战案例)
-  - [6.1 Web服务优化](#6-1-web服务优化)
-- [7. 最佳实践](#7-最佳实践)
-  - [7.1 Profile质量](#7-1-profile质量)
-  - [7.2 持续集成](#7-2-持续集成)
-- [9. 参考资源](#9-参考资源)
-  - [官方文档](#官方文档)
-  - [博客文章](#博客文章)
-  - [工具](#工具)
+- [Go 1.23+ PGO深度实践指南](#go-123-pgo深度实践指南)
+  - [📋 目录](#-目录)
+  - [1. PGO概述](#1-pgo概述)
+    - [1.1 什么是PGO](#11-什么是pgo)
+    - [1.2 PGO工作原理](#12-pgo工作原理)
+    - [1.3 性能提升](#13-性能提升)
+  - [2. PGO快速开始](#2-pgo快速开始)
+    - [2.1 基础使用](#21-基础使用)
+    - [2.2 Profile收集](#22-profile收集)
+    - [2.3 验证效果](#23-验证效果)
+  - [3. Profile收集策略](#3-profile收集策略)
+    - [3.1 CPU Profile](#31-cpu-profile)
+    - [3.2 生产环境收集](#32-生产环境收集)
+    - [3.3 Profile合并](#33-profile合并)
+  - [4. PGO优化原理](#4-pgo优化原理)
+    - [4.1 内联优化](#41-内联优化)
+    - [4.2 去虚拟化](#42-去虚拟化)
+    - [4.3 寄存器分配](#43-寄存器分配)
+  - [5. Go 1.23 PGO增强](#5-go-123-pgo增强)
+    - [5.1 新增优化](#51-新增优化)
+    - [5.2 性能改进](#52-性能改进)
+    - [5.3 工具链改进](#53-工具链改进)
+  - [6. 实战案例](#6-实战案例)
+    - [6.1 Web服务优化](#61-web服务优化)
+  - [7. 最佳实践](#7-最佳实践)
+    - [7.1 Profile质量](#71-profile质量)
+    - [7.2 持续集成](#72-持续集成)
+  - [9. 参考资源](#9-参考资源)
+    - [官方文档](#官方文档)
+    - [博客文章](#博客文章)
+    - [工具](#工具)
 
 ## 1. PGO概述
 
@@ -177,7 +178,7 @@ func main() {
     f, _ := os.Create("cpu.prof")
     pprof.StartCPUProfile(f)
     defer pprof.StopCPUProfile()
-    
+
     // 执行实际工作负载
     for i := 0; i < 1000; i++ {
         n := rand.Intn(20) + 10
@@ -225,7 +226,7 @@ func main() {
     f, _ := os.Create("cpu.prof")
     pprof.StartCPUProfile(f)
     defer pprof.StopCPUProfile()
-    
+
     // 你的应用逻辑
     runApplication()
 }
@@ -246,7 +247,7 @@ func main() {
     go func() {
         http.ListenAndServe("localhost:6060", nil)
     }()
-    
+
     // 你的应用逻辑
     runApplication()
 }
@@ -373,27 +374,27 @@ func (pc *ProfileCollector) Collect() error {
         return err
     }
     defer f.Close()
-    
+
     // 启动CPU Profile
     if err := pprof.StartCPUProfile(f); err != nil {
         return err
     }
     defer pprof.StopCPUProfile()
-    
+
     fmt.Printf("Collecting CPU profile for %s...\n", pc.minDuration)
-    
+
     // 运行应用至少minDuration
     start := time.Now()
     runWorkload()
-    
+
     elapsed := time.Since(start)
     fmt.Printf("Profile collected: %s\n", elapsed)
-    
+
     if elapsed < pc.minDuration {
         fmt.Printf("Warning: Profile duration (%s) is less than recommended (%s)\n",
             elapsed, pc.minDuration)
     }
-    
+
     return nil
 }
 
@@ -439,7 +440,7 @@ func NewContinuousProfiler(outputDir string) *ContinuousProfiler {
 func (cp *ContinuousProfiler) Start() {
     ticker := time.NewTicker(cp.interval)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ticker.C:
@@ -447,7 +448,7 @@ func (cp *ContinuousProfiler) Start() {
             if !cp.shouldSample() {
                 continue
             }
-            
+
             if err := cp.collectOnce(); err != nil {
                 fmt.Printf("Error collecting profile: %v\n", err)
             }
@@ -463,21 +464,21 @@ func (cp *ContinuousProfiler) shouldSample() bool {
 func (cp *ContinuousProfiler) collectOnce() error {
     timestamp := time.Now().Format("2006-01-02_15-04-05")
     filename := filepath.Join(cp.outputDir, fmt.Sprintf("cpu_%s.prof", timestamp))
-    
+
     f, err := os.Create(filename)
     if err != nil {
         return err
     }
     defer f.Close()
-    
+
     // 收集指定时长的Profile
     if err := pprof.StartCPUProfile(f); err != nil {
         return err
     }
-    
+
     time.Sleep(cp.duration)
     pprof.StopCPUProfile()
-    
+
     fmt.Printf("Profile saved: %s\n", filename)
     return nil
 }
@@ -517,22 +518,22 @@ func (pm *ProfileMerger) Merge() error {
     if err != nil {
         return err
     }
-    
+
     if len(profiles) == 0 {
         return fmt.Errorf("no profile files found in %s", pm.inputDir)
     }
-    
+
     fmt.Printf("Found %d profile files\n", len(profiles))
-    
+
     // 使用pprof工具合并
     args := append([]string{"-proto"}, profiles...)
     cmd := exec.Command("go", append([]string{"tool", "pprof", "-output", pm.outputFile}, args...)...)
-    
+
     output, err := cmd.CombinedOutput()
     if err != nil {
         return fmt.Errorf("merge failed: %v\n%s", err, output)
     }
-    
+
     fmt.Printf("Merged profile saved to: %s\n", pm.outputFile)
     return nil
 }
@@ -665,20 +666,20 @@ func computeIntensive(data []int) int {
     count := 0    // 热变量
     max := 0      // 热变量
     temp := 0     // 冷变量
-    
+
     for _, v := range data {
         sum += v
         count++
         if v > max {
             max = v
         }
-        
+
         // temp很少使用
         if v%1000 == 0 {
             temp = v
         }
     }
-    
+
     return sum + count + max + temp
 }
 
@@ -730,17 +731,17 @@ func sumArray(data []int) int {
 func sumArrayOptimized(data []int) int {
     sum := 0
     i := 0
-    
+
     // 向量化处理（4个一组）
     for ; i+3 < len(data); i += 4 {
         sum += data[i] + data[i+1] + data[i+2] + data[i+3]
     }
-    
+
     // 处理剩余元素
     for ; i < len(data); i++ {
         sum += data[i]
     }
-    
+
     return sum
 }
 ```
@@ -787,12 +788,12 @@ import (
 func main() {
     profileFile := flag.String("profile", "", "Profile file path")
     flag.Parse()
-    
+
     if *profileFile == "" {
         fmt.Println("Usage: pgotool -profile=cpu.prof")
         os.Exit(1)
     }
-    
+
     // 分析Profile文件
     analyzeProfile(*profileFile)
 }
@@ -800,7 +801,7 @@ func main() {
 func analyzeProfile(path string) {
     // 使用runtime/pprof包分析
     fmt.Printf("Analyzing profile: %s\n", path)
-    
+
     // 输出统计信息：
     // - 总样本数
     // - 热点函数
@@ -842,13 +843,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
     for i := range data {
         data[i] = fibonacci(20)
     }
-    
+
     resp := Response{
         Message: "Success",
         Data:    data[:10],  // 只返回前10个
         Time:    time.Now(),
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(resp)
 }
@@ -866,15 +867,15 @@ func main() {
         f, _ := os.Create("cpu.prof")
         pprof.StartCPUProfile(f)
         defer pprof.StopCPUProfile()
-        
+
         // 运行30秒后退出
         time.AfterFunc(30*time.Second, func() {
             os.Exit(0)
         })
     }
-    
+
     http.HandleFunc("/api/data", handler)
-    
+
     log.Println("Server starting on :8080")
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -974,37 +975,37 @@ func (c *ProfileQualityChecker) Check(profilePath string) error {
     if err != nil {
         return err
     }
-    
+
     // 检查样本数
     totalSamples := 0
     for _, sample := range profile.Sample {
         totalSamples += int(sample.Value[0])
     }
-    
+
     if totalSamples < c.minSamples {
-        return fmt.Errorf("insufficient samples: %d < %d", 
+        return fmt.Errorf("insufficient samples: %d < %d",
             totalSamples, c.minSamples)
     }
-    
+
     // 检查时长
     duration := profile.DurationNanos
     if duration < c.minDuration {
         return fmt.Errorf("insufficient duration: %dns < %dns",
             duration, c.minDuration)
     }
-    
+
     // 检查函数覆盖
     uniqueFuncs := len(profile.Function)
     if uniqueFuncs < c.minUniqueFuncs {
         return fmt.Errorf("insufficient function coverage: %d < %d",
             uniqueFuncs, c.minUniqueFuncs)
     }
-    
+
     fmt.Printf("Profile quality: OK\n")
     fmt.Printf("- Samples: %d\n", totalSamples)
     fmt.Printf("- Duration: %ds\n", duration/1e9)
     fmt.Printf("- Functions: %d\n", uniqueFuncs)
-    
+
     return nil
 }
 ```
@@ -1024,23 +1025,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Setup Go
       uses: actions/setup-go@v4
       with:
         go-version: '1.23'
-    
+
     - name: Download Profile
       run: |
         # 从生产环境下载最新Profile
         aws s3 cp s3://my-bucket/profiles/latest.prof default.pgo
-    
+
     - name: Build with PGO
       run: go build -o myapp -pgo=default.pgo
-    
+
     - name: Benchmark
       run: go test -bench=. -benchmem
-    
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
@@ -1070,9 +1071,9 @@ jobs:
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.21+ (PGO GA) | Go 1.23+ (PGO增强)
 
 **贡献者**: 欢迎提交Issue和PR改进本文档

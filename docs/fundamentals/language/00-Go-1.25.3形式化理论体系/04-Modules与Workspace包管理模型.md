@@ -1,36 +1,38 @@
-﻿# Modules与Workspace包管理模型
+# Modules与Workspace包管理模型
 
-**文档版本**: v1.0.0  
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**文档版本**: v1.0.0
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [第一部分: 模块系统基础](#第一部分-模块系统基础)
-  - [1.1 模块定义](#1-1-模块定义)
-  - [1.2 依赖图](#1-2-依赖图)
-  - [1.3 go.mod文件语法](#1-3-go-mod文件语法)
-- [第二部分: 依赖解析算法](#第二部分-依赖解析算法)
-  - [2.1 MVS (Minimal Version Selection)](#2-1-mvs-minimal-version-selection)
-  - [2.2 MVS vs npm/pip算法对比](#2-2-mvs-vs-npmpip算法对比)
-  - [2.3 Replace指令语义](#2-3-replace指令语义)
-  - [2.4 Exclude指令语义](#2-4-exclude指令语义)
-- [第三部分: Workspace模型](#第三部分-workspace模型)
-  - [3.1 Workspace定义 (Go 1.18+)](#3-1-workspace定义-go-1-18+)
-  - [3.2 Workspace依赖解析](#3-2-workspace依赖解析)
-  - [3.3 Workspace vs Monorepo](#3-3-workspace-vs-monorepo)
-- [第四部分: 形式化验证](#第四部分-形式化验证)
-  - [4.1 MVS正确性证明](#4-1-mvs正确性证明)
-  - [4.2 Replace语义的形式化验证](#4-2-replace语义的形式化验证)
-  - [4.3 循环依赖检测](#4-3-循环依赖检测)
-  - [4.4 版本冲突解决的形式化](#4-4-版本冲突解决的形式化)
-- [🎯 总结](#总结)
-  - [Go Modules核心特性](#go-modules核心特性)
-  - [与其他包管理器对比](#与其他包管理器对比)
-  - [实践建议](#实践建议)
+- [Modules与Workspace包管理模型](#modules与workspace包管理模型)
+  - [📋 目录](#-目录)
+  - [第一部分: 模块系统基础](#第一部分-模块系统基础)
+    - [1.1 模块定义](#11-模块定义)
+    - [1.2 依赖图](#12-依赖图)
+    - [1.3 go.mod文件语法](#13-gomod文件语法)
+  - [第二部分: 依赖解析算法](#第二部分-依赖解析算法)
+    - [2.1 MVS (Minimal Version Selection)](#21-mvs-minimal-version-selection)
+    - [2.2 MVS vs npm/pip算法对比](#22-mvs-vs-npmpip算法对比)
+    - [2.3 Replace指令语义](#23-replace指令语义)
+    - [2.4 Exclude指令语义](#24-exclude指令语义)
+  - [第三部分: Workspace模型](#第三部分-workspace模型)
+    - [3.1 Workspace定义 (Go 1.18+)](#31-workspace定义-go-118)
+    - [3.2 Workspace依赖解析](#32-workspace依赖解析)
+    - [3.3 Workspace vs Monorepo](#33-workspace-vs-monorepo)
+  - [第四部分: 形式化验证](#第四部分-形式化验证)
+    - [4.1 MVS正确性证明](#41-mvs正确性证明)
+    - [4.2 Replace语义的形式化验证](#42-replace语义的形式化验证)
+    - [4.3 循环依赖检测](#43-循环依赖检测)
+    - [4.4 版本冲突解决的形式化](#44-版本冲突解决的形式化)
+  - [🎯 总结](#-总结)
+    - [Go Modules核心特性](#go-modules核心特性)
+    - [与其他包管理器对比](#与其他包管理器对比)
+    - [实践建议](#实践建议)
 
 ## 第一部分: 模块系统基础
 
@@ -58,7 +60,7 @@ v ::= major.minor.patch[-prerelease][+build]
 
 /* 版本比较 */
 
-v₁ < v₂ ⟺ 
+v₁ < v₂ ⟺
     v₁.major < v₂.major ∨
     (v₁.major = v₂.major ∧ v₁.minor < v₂.minor) ∨
     (v₁.major = v₂.major ∧ v₁.minor = v₂.minor ∧ v₁.patch < v₂.patch) ∨
@@ -198,10 +200,10 @@ MVS(root: Module, required: Set[Module]) -> Map[ModulePath, Version]
 function MVS(root):
     selected = Map[ModulePath, Version]()
     worklist = {root}
-    
+
     while worklist is not empty:
         m = worklist.remove_any()
-        
+
         /* 处理模块m的所有依赖 */
         for (path, constraint) in m.dependencies:
             if path in selected:
@@ -211,7 +213,7 @@ function MVS(root):
                 /* 第一次遇到该模块 */
                 selected[path] = min_satisfying(constraint)
                 worklist.add(get_module(path, selected[path]))
-    
+
     return selected
 
 /* 最小满足版本 */
@@ -299,7 +301,7 @@ replace OldPath => NewPath@Version
 [Replace-Global]
 M contains "replace P₁ => P₂@v"
 ────────────────────────────────────────
-∀ import path containing P₁. 
+∀ import path containing P₁.
 resolve_to(P₂, v) instead of P₁
 
 /* 本地replace */
@@ -431,10 +433,10 @@ function Workspace_MVS(W):
                 all_deps[path] = max(all_deps[path], constraint)
             else:
                 all_deps[path] = constraint
-    
+
     /* 2. 应用workspace级别的replace */
     apply_replaces(W.replace)
-    
+
     /* 3. 运行MVS */
     return MVS(synthetic_root(all_deps))
 
@@ -622,28 +624,28 @@ B_fixed v1.0.1 requires C v1.5.0
 function detect_cycle(G):
     visited = Set[Module]()
     rec_stack = Stack[Module]()
-    
+
     function dfs(m):
         if m in rec_stack:
             return true  /* Cycle detected */
-        
+
         if m in visited:
             return false
-        
+
         visited.add(m)
         rec_stack.push(m)
-        
+
         for (m, m') in G.edges:
             if dfs(m'):
                 return true
-        
+
         rec_stack.pop()
         return false
-    
+
     for m in G.vertices:
         if dfs(m):
             return "Cycle detected: " + reconstruct_cycle(rec_stack)
-    
+
     return "No cycle"
 
 /* 复杂度 */
@@ -783,9 +785,9 @@ MVS → 构建失败,报告版本冲突
 
 ---
 
-**文档版本**: v1.0.0  
+**文档版本**: v1.0.0
 
-**文档维护者**: Go Formal Methods Research Group  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Formal Methods Research Group
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.25.3+

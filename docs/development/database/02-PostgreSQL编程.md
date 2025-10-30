@@ -1,4 +1,4 @@
-﻿# 02-PostgreSQL编程
+# 02-PostgreSQL编程
 
 > Go语言PostgreSQL数据库编程完全指南
 
@@ -6,38 +6,39 @@
 
 ## 📋 目录
 
-
-- [📚 章节概览](#章节概览)
-- [1. 环境准备](#1-环境准备)
-  - [1.1 安装驱动](#1-1-安装驱动)
-  - [1.2 基本连接](#1-2-基本连接)
-    - [使用pq驱动](#使用pq驱动)
-- [2. pgx驱动使用](#2-pgx驱动使用)
-  - [2.1 连接池配置](#2-1-连接池配置)
-    - [pgx连接池架构可视化](#pgx连接池架构可视化)
-    - [连接获取与释放流程](#连接获取与释放流程)
-  - [2.2 基本查询](#2-2-基本查询)
-- [3. CRUD操作](#3-crud操作)
-  - [3.1 插入数据](#3-1-插入数据)
-  - [3.2 批量插入](#3-2-批量插入)
-  - [3.3 查询数据](#3-3-查询数据)
-  - [3.4 更新和删除](#3-4-更新和删除)
-- [4. 高级特性](#4-高级特性)
-  - [4.1 JSON/JSONB支持](#4-1-jsonjsonb支持)
-  - [4.2 数组类型](#4-2-数组类型)
-  - [4.3 全文搜索](#4-3-全文搜索)
-- [5. 事务处理](#5-事务处理)
-  - [5.1 基本事务](#5-1-基本事务)
-  - [5.2 Savepoint](#5-2-savepoint)
-- [6. 性能优化](#6-性能优化)
-  - [6.1 预处理语句](#6-1-预处理语句)
-  - [6.2 批量操作](#6-2-批量操作)
-- [💡 最佳实践](#最佳实践)
-  - [1. 驱动选择](#1-驱动选择)
-  - [2. 连接管理](#2-连接管理)
-  - [3. 性能优化](#3-性能优化)
-  - [4. 安全性](#4-安全性)
-- [🔗 相关章节](#相关章节)
+- [02-PostgreSQL编程](#02-postgresql编程)
+  - [📋 目录](#-目录)
+  - [📚 章节概览](#-章节概览)
+  - [1. 环境准备](#1-环境准备)
+    - [1.1 安装驱动](#11-安装驱动)
+    - [1.2 基本连接](#12-基本连接)
+      - [使用pq驱动](#使用pq驱动)
+  - [2. pgx驱动使用](#2-pgx驱动使用)
+    - [2.1 连接池配置](#21-连接池配置)
+      - [pgx连接池架构可视化](#pgx连接池架构可视化)
+      - [连接获取与释放流程](#连接获取与释放流程)
+    - [2.2 基本查询](#22-基本查询)
+  - [3. CRUD操作](#3-crud操作)
+    - [3.1 插入数据](#31-插入数据)
+    - [3.2 批量插入](#32-批量插入)
+    - [3.3 查询数据](#33-查询数据)
+    - [3.4 更新和删除](#34-更新和删除)
+  - [4. 高级特性](#4-高级特性)
+    - [4.1 JSON/JSONB支持](#41-jsonjsonb支持)
+    - [4.2 数组类型](#42-数组类型)
+    - [4.3 全文搜索](#43-全文搜索)
+  - [5. 事务处理](#5-事务处理)
+    - [5.1 基本事务](#51-基本事务)
+    - [5.2 Savepoint](#52-savepoint)
+  - [6. 性能优化](#6-性能优化)
+    - [6.1 预处理语句](#61-预处理语句)
+    - [6.2 批量操作](#62-批量操作)
+  - [💡 最佳实践](#-最佳实践)
+    - [1. 驱动选择](#1-驱动选择)
+    - [2. 连接管理](#2-连接管理)
+    - [3. 性能优化](#3-性能优化)
+    - [4. 安全性](#4-安全性)
+  - [🔗 相关章节](#-相关章节)
 
 ## 📚 章节概览
 
@@ -70,25 +71,25 @@ import (
     "database/sql"
     "fmt"
     "log"
-    
+
     _ "github.com/lib/pq"
 )
 
 func main() {
     // DSN格式
     dsn := "host=localhost port=5432 user=postgres password=secret dbname=testdb sslmode=disable"
-    
+
     db, err := sql.Open("postgres", dsn)
     if err != nil {
         log.Fatal(err)
     }
     defer db.Close()
-    
+
     // 验证连接
     if err := db.Ping(); err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Println("PostgreSQL连接成功!")
 }
 ```
@@ -109,46 +110,46 @@ graph TB
         App3[Goroutine 3]
         App4[Goroutine 4]
     end
-    
+
     subgraph "pgxpool连接池"
         Pool[连接池管理器<br/>MaxConns=25<br/>MinConns=5]
-        
+
         subgraph "空闲连接"
             Idle1[Conn 1]
             Idle2[Conn 2]
             Idle3[Conn 3]
         end
-        
+
         subgraph "使用中连接"
             Busy1[Conn 4 - 查询中]
             Busy2[Conn 5 - 事务中]
         end
-        
+
         WaitQueue[等待队列<br/>Goroutine Queue]
     end
-    
+
     subgraph "PostgreSQL服务器"
         PG[(PostgreSQL<br/>Database)]
     end
-    
+
     App1 -->|获取连接| Pool
     App2 -->|获取连接| Pool
     App3 -->|请求连接| WaitQueue
     App4 -->|请求连接| WaitQueue
-    
+
     Pool -->|分配| Idle1
     Pool -->|分配| Idle2
     Pool -->|连接满，加入队列| WaitQueue
-    
+
     Busy1 -->|释放| Idle1
     Busy2 -->|释放| Idle2
-    
+
     Idle1 -.TCP连接.-> PG
     Idle2 -.TCP连接.-> PG
     Idle3 -.TCP连接.-> PG
     Busy1 -.TCP连接.-> PG
     Busy2 -.TCP连接.-> PG
-    
+
     style Pool fill:#e1ffe1
     style WaitQueue fill:#ffe1e1
     style PG fill:#e1f5ff
@@ -167,11 +168,11 @@ sequenceDiagram
     participant Pool as pgxpool.Pool
     participant Conn as pgx.Conn
     participant PG as PostgreSQL
-    
+
     Note over App,PG: 连接获取流程
-    
+
     App->>Pool: pool.Acquire(ctx)
-    
+
     alt 有空闲连接
         Pool->>Conn: 分配空闲连接
         Pool-->>App: 返回连接
@@ -184,22 +185,22 @@ sequenceDiagram
         Note over App: 等待其他连接释放
         Pool->>App: 阻塞等待
     end
-    
+
     Note over App,PG: 执行查询
-    
+
     App->>Conn: Query(sql, args)
     Conn->>PG: 发送SQL
     PG-->>Conn: 返回结果集
     Conn-->>App: Rows
-    
+
     App->>App: 处理结果
-    
+
     Note over App,PG: 连接释放流程
-    
+
     App->>Conn: conn.Release()
     Conn->>Pool: 归还连接
     Note over Conn: 状态: 空闲
-    
+
     opt 有等待的Goroutine
         Pool->>App: 唤醒等待者
     end
@@ -212,44 +213,44 @@ import (
     "context"
     "fmt"
     "log"
-    
+
     "github.com/jackc/pgx/v5/pgxpool"
 )
 
 func initDB() *pgxpool.Pool {
     // DSN格式
     dsn := "postgres://postgres:secret@localhost:5432/testdb?sslmode=disable"
-    
+
     // 解析配置
     config, err := pgxpool.ParseConfig(dsn)
     if err != nil {
         log.Fatal(err)
     }
-    
+
     // 设置连接池参数
     config.MaxConns = 25  // 最大连接数
     config.MinConns = 5   // 最小连接数（预热）
-    
+
     // 创建连接池
     pool, err := pgxpool.NewWithConfig(context.Background(), config)
     if err != nil {
         log.Fatal(err)
     }
-    
+
     return pool
 }
 
 func main() {
     pool := initDB()
     defer pool.Close()
-    
+
     // 测试连接
     var greeting string
     err := pool.QueryRow(context.Background(), "SELECT 'Hello PostgreSQL!'").Scan(&greeting)
     if err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Println(greeting)
 }
 ```
@@ -262,7 +263,7 @@ package main
 import (
     "context"
     "fmt"
-    
+
     "github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -276,7 +277,7 @@ type User struct {
 // 查询单行
 func getUserByID(pool *pgxpool.Pool, id int) (*User, error) {
     query := "SELECT id, username, email, age FROM users WHERE id = $1"
-    
+
     user := &User{}
     err := pool.QueryRow(context.Background(), query, id).Scan(
         &user.ID,
@@ -284,24 +285,24 @@ func getUserByID(pool *pgxpool.Pool, id int) (*User, error) {
         &user.Email,
         &user.Age,
     )
-    
+
     if err != nil {
         return nil, err
     }
-    
+
     return user, nil
 }
 
 // 查询多行
 func getAllUsers(pool *pgxpool.Pool) ([]User, error) {
     query := "SELECT id, username, email, age FROM users"
-    
+
     rows, err := pool.Query(context.Background(), query)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var users []User
     for rows.Next() {
         var user User
@@ -311,7 +312,7 @@ func getAllUsers(pool *pgxpool.Pool) ([]User, error) {
         }
         users = append(users, user)
     }
-    
+
     return users, rows.Err()
 }
 ```
@@ -326,11 +327,11 @@ func getAllUsers(pool *pgxpool.Pool) ([]User, error) {
 // 插入并返回ID
 func insertUser(pool *pgxpool.Pool, user User) (int, error) {
     query := `
-        INSERT INTO users(username, email, age) 
-        VALUES($1, $2, $3) 
+        INSERT INTO users(username, email, age)
+        VALUES($1, $2, $3)
         RETURNING id
     `
-    
+
     var id int
     err := pool.QueryRow(
         context.Background(),
@@ -339,7 +340,7 @@ func insertUser(pool *pgxpool.Pool, user User) (int, error) {
         user.Email,
         user.Age,
     ).Scan(&id)
-    
+
     return id, err
 }
 ```
@@ -351,7 +352,7 @@ package main
 
 import (
     "context"
-    
+
     "github.com/jackc/pgx/v5"
     "github.com/jackc/pgx/v5/pgxpool"
 )
@@ -363,7 +364,7 @@ func batchInsertUsers(pool *pgxpool.Pool, users []User) error {
     for i, user := range users {
         rows[i] = []interface{}{user.Username, user.Email, user.Age}
     }
-    
+
     // 使用CopyFrom
     _, err := pool.CopyFrom(
         context.Background(),
@@ -371,14 +372,14 @@ func batchInsertUsers(pool *pgxpool.Pool, users []User) error {
         []string{"username", "email", "age"},
         pgx.CopyFromRows(rows),
     )
-    
+
     return err
 }
 
 // 使用Batch批量操作
 func batchInsertWithBatch(pool *pgxpool.Pool, users []User) error {
     batch := &pgx.Batch{}
-    
+
     for _, user := range users {
         batch.Queue(
             "INSERT INTO users(username, email, age) VALUES($1, $2, $3)",
@@ -387,10 +388,10 @@ func batchInsertWithBatch(pool *pgxpool.Pool, users []User) error {
             user.Age,
         )
     }
-    
+
     results := pool.SendBatch(context.Background(), batch)
     defer results.Close()
-    
+
     // 处理所有结果
     for i := 0; i < len(users); i++ {
         _, err := results.Exec()
@@ -398,7 +399,7 @@ func batchInsertWithBatch(pool *pgxpool.Pool, users []User) error {
             return err
         }
     }
-    
+
     return nil
 }
 ```
@@ -409,18 +410,18 @@ func batchInsertWithBatch(pool *pgxpool.Pool, users []User) error {
 // 使用命名参数（pgx v5）
 func getUsersByAge(pool *pgxpool.Pool, minAge, maxAge int) ([]User, error) {
     query := `
-        SELECT id, username, email, age 
-        FROM users 
+        SELECT id, username, email, age
+        FROM users
         WHERE age BETWEEN $1 AND $2
         ORDER BY age
     `
-    
+
     rows, err := pool.Query(context.Background(), query, minAge, maxAge)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var users []User
     for rows.Next() {
         var user User
@@ -430,7 +431,7 @@ func getUsersByAge(pool *pgxpool.Pool, minAge, maxAge int) ([]User, error) {
         }
         users = append(users, user)
     }
-    
+
     return users, nil
 }
 ```
@@ -441,7 +442,7 @@ func getUsersByAge(pool *pgxpool.Pool, minAge, maxAge int) ([]User, error) {
 // 更新用户
 func updateUser(pool *pgxpool.Pool, user User) error {
     query := "UPDATE users SET username=$1, email=$2, age=$3 WHERE id=$4"
-    
+
     tag, err := pool.Exec(
         context.Background(),
         query,
@@ -450,31 +451,31 @@ func updateUser(pool *pgxpool.Pool, user User) error {
         user.Age,
         user.ID,
     )
-    
+
     if err != nil {
         return err
     }
-    
+
     if tag.RowsAffected() == 0 {
         return fmt.Errorf("user not found")
     }
-    
+
     return nil
 }
 
 // 删除用户
 func deleteUser(pool *pgxpool.Pool, id int) error {
     query := "DELETE FROM users WHERE id=$1"
-    
+
     tag, err := pool.Exec(context.Background(), query, id)
     if err != nil {
         return err
     }
-    
+
     if tag.RowsAffected() == 0 {
         return fmt.Errorf("user not found")
     }
-    
+
     return nil
 }
 ```
@@ -491,7 +492,7 @@ package main
 import (
     "context"
     "encoding/json"
-    
+
     "github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -510,15 +511,15 @@ type UserWithProfile struct {
 // 插入JSON数据
 func insertUserWithProfile(pool *pgxpool.Pool, user UserWithProfile) error {
     query := `
-        INSERT INTO users(username, profile) 
+        INSERT INTO users(username, profile)
         VALUES($1, $2)
     `
-    
+
     profileJSON, err := json.Marshal(user.Profile)
     if err != nil {
         return err
     }
-    
+
     _, err = pool.Exec(context.Background(), query, user.Username, profileJSON)
     return err
 }
@@ -526,10 +527,10 @@ func insertUserWithProfile(pool *pgxpool.Pool, user UserWithProfile) error {
 // 查询JSON数据
 func getUserProfile(pool *pgxpool.Pool, id int) (*UserWithProfile, error) {
     query := "SELECT id, username, profile FROM users WHERE id = $1"
-    
+
     user := &UserWithProfile{}
     var profileJSON []byte
-    
+
     err := pool.QueryRow(context.Background(), query, id).Scan(
         &user.ID,
         &user.Username,
@@ -538,42 +539,42 @@ func getUserProfile(pool *pgxpool.Pool, id int) (*UserWithProfile, error) {
     if err != nil {
         return nil, err
     }
-    
+
     if err := json.Unmarshal(profileJSON, &user.Profile); err != nil {
         return nil, err
     }
-    
+
     return user, nil
 }
 
 // 使用JSONB查询
 func searchUsersByHobby(pool *pgxpool.Pool, hobby string) ([]UserWithProfile, error) {
     query := `
-        SELECT id, username, profile 
-        FROM users 
+        SELECT id, username, profile
+        FROM users
         WHERE profile->'hobbies' ? $1
     `
-    
+
     rows, err := pool.Query(context.Background(), query, hobby)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var users []UserWithProfile
     for rows.Next() {
         var user UserWithProfile
         var profileJSON []byte
-        
+
         err := rows.Scan(&user.ID, &user.Username, &profileJSON)
         if err != nil {
             return nil, err
         }
-        
+
         json.Unmarshal(profileJSON, &user.Profile)
         users = append(users, user)
     }
-    
+
     return users, nil
 }
 ```
@@ -585,7 +586,7 @@ package main
 
 import (
     "context"
-    
+
     "github.com/jackc/pgx/v5/pgxpool"
     "github.com/lib/pq"
 )
@@ -593,7 +594,7 @@ import (
 // 使用数组类型
 func insertTags(pool *pgxpool.Pool, articleID int, tags []string) error {
     query := "UPDATE articles SET tags = $1 WHERE id = $2"
-    
+
     _, err := pool.Exec(context.Background(), query, tags, articleID)
     return err
 }
@@ -601,13 +602,13 @@ func insertTags(pool *pgxpool.Pool, articleID int, tags []string) error {
 // 查询包含某个标签的文章
 func getArticlesByTag(pool *pgxpool.Pool, tag string) ([]int, error) {
     query := "SELECT id FROM articles WHERE $1 = ANY(tags)"
-    
+
     rows, err := pool.Query(context.Background(), query, tag)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var ids []int
     for rows.Next() {
         var id int
@@ -616,7 +617,7 @@ func getArticlesByTag(pool *pgxpool.Pool, tag string) ([]int, error) {
         }
         ids = append(ids, id)
     }
-    
+
     return ids, nil
 }
 ```
@@ -631,31 +632,31 @@ func createFullTextIndex(pool *pgxpool.Pool) error {
         "UPDATE articles SET tsv = to_tsvector('english', title || ' ' || content)",
         "CREATE INDEX idx_articles_tsv ON articles USING GIN(tsv)",
     }
-    
+
     for _, query := range queries {
         if _, err := pool.Exec(context.Background(), query); err != nil {
             return err
         }
     }
-    
+
     return nil
 }
 
 // 全文搜索
 func searchArticles(pool *pgxpool.Pool, keyword string) ([]Article, error) {
     query := `
-        SELECT id, title, content 
-        FROM articles 
+        SELECT id, title, content
+        FROM articles
         WHERE tsv @@ to_tsquery('english', $1)
         ORDER BY ts_rank(tsv, to_tsquery('english', $1)) DESC
     `
-    
+
     rows, err := pool.Query(context.Background(), query, keyword)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var articles []Article
     for rows.Next() {
         var article Article
@@ -665,7 +666,7 @@ func searchArticles(pool *pgxpool.Pool, keyword string) ([]Article, error) {
         }
         articles = append(articles, article)
     }
-    
+
     return articles, nil
 }
 ```
@@ -681,7 +682,7 @@ package main
 
 import (
     "context"
-    
+
     "github.com/jackc/pgx/v5"
     "github.com/jackc/pgx/v5/pgxpool"
 )
@@ -694,7 +695,7 @@ func transferMoney(pool *pgxpool.Pool, fromID, toID int, amount float64) error {
         return err
     }
     defer tx.Rollback(context.Background())
-    
+
     // 扣款
     _, err = tx.Exec(
         context.Background(),
@@ -705,7 +706,7 @@ func transferMoney(pool *pgxpool.Pool, fromID, toID int, amount float64) error {
     if err != nil {
         return err
     }
-    
+
     // 加款
     _, err = tx.Exec(
         context.Background(),
@@ -716,7 +717,7 @@ func transferMoney(pool *pgxpool.Pool, fromID, toID int, amount float64) error {
     if err != nil {
         return err
     }
-    
+
     // 提交事务
     return tx.Commit(context.Background())
 }
@@ -732,32 +733,32 @@ func complexTransaction(pool *pgxpool.Pool) error {
         return err
     }
     defer tx.Rollback(context.Background())
-    
+
     // 第一部分操作
     _, err = tx.Exec(context.Background(), "INSERT INTO log(message) VALUES('step 1')")
     if err != nil {
         return err
     }
-    
+
     // 创建savepoint
     _, err = tx.Exec(context.Background(), "SAVEPOINT sp1")
     if err != nil {
         return err
     }
-    
+
     // 第二部分操作（可能失败）
     _, err = tx.Exec(context.Background(), "INSERT INTO users(username) VALUES('test')")
     if err != nil {
         // 回滚到savepoint
         tx.Exec(context.Background(), "ROLLBACK TO SAVEPOINT sp1")
     }
-    
+
     // 继续其他操作
     _, err = tx.Exec(context.Background(), "INSERT INTO log(message) VALUES('step 3')")
     if err != nil {
         return err
     }
-    
+
     return tx.Commit(context.Background())
 }
 ```
@@ -772,14 +773,14 @@ func complexTransaction(pool *pgxpool.Pool) error {
 // 使用预处理语句
 func batchInsertPrepared(pool *pgxpool.Pool, users []User) error {
     ctx := context.Background()
-    
+
     // 准备语句
     _, err := pool.Exec(ctx, "PREPARE insert_user AS INSERT INTO users(username, email, age) VALUES($1, $2, $3)")
     if err != nil {
         return err
     }
     defer pool.Exec(ctx, "DEALLOCATE insert_user")
-    
+
     // 批量执行
     for _, user := range users {
         _, err := pool.Exec(ctx, "EXECUTE insert_user($1, $2, $3)", user.Username, user.Email, user.Age)
@@ -787,7 +788,7 @@ func batchInsertPrepared(pool *pgxpool.Pool, users []User) error {
             return err
         }
     }
-    
+
     return nil
 }
 ```
@@ -800,22 +801,22 @@ func batchUpdate(pool *pgxpool.Pool, updates map[int]string) error {
     if len(updates) == 0 {
         return nil
     }
-    
+
     ids := make([]int, 0, len(updates))
     usernames := make([]string, 0, len(updates))
-    
+
     for id, username := range updates {
         ids = append(ids, id)
         usernames = append(usernames, username)
     }
-    
+
     query := `
-        UPDATE users 
-        SET username = u.username 
-        FROM UNNEST($1::int[], $2::text[]) AS u(id, username) 
+        UPDATE users
+        SET username = u.username
+        FROM UNNEST($1::int[], $2::text[]) AS u(id, username)
         WHERE users.id = u.id
     `
-    
+
     _, err := pool.Exec(context.Background(), query, ids, usernames)
     return err
 }
@@ -861,6 +862,6 @@ func batchUpdate(pool *pgxpool.Pool, updates map[int]string) error {
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

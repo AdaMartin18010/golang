@@ -1,55 +1,57 @@
-﻿# 安全架构（Security Architecture）
+# 安全架构（Security Architecture）
 
 > **简介**: 系统安全架构设计，涵盖身份认证、授权控制、数据加密和安全审计
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-
-- [目录](#目录)
-- [2. 国际标准与发展历程](#2-国际标准与发展历程)
-  - [主流标准与框架](#主流标准与框架)
-  - [发展历程](#发展历程)
-  - [国际权威链接](#国际权威链接)
-- [3. 核心安全模型与设计原则](#3-核心安全模型与设计原则)
-  - [核心原则](#核心原则)
-  - [零信任安全模型](#零信任安全模型)
-  - [安全策略引擎](#安全策略引擎)
-- [4. 认证与授权架构](#4-认证与授权架构)
-  - [多因素认证（MFA）](#多因素认证mfa)
-  - [OAuth 2.0 与 OpenID Connect](#oauth-2-0-与-openid-connect)
-- [5. 密码学应用](#5-密码学应用)
-  - [加密与签名服务](#加密与签名服务)
-  - [密钥管理服务](#密钥管理服务)
-- [6. Golang主流实现与代码示例](#6-golang主流实现与代码示例)
-  - [安全的HTTP响应头](#安全的http响应头)
-  - [输入验证与输出编码 (OWASP Top 10)](#输入验证与输出编码-owasp-top-10)
-    - [跨站脚本 (XSS) 防护](#跨站脚本-xss-防护)
-    - [SQL注入防护](#sql注入防护)
-  - [密钥管理 (Secrets Management)](#密钥管理-secrets-management)
-- [7. 容器与云原生安全](#7-容器与云原生安全)
-  - [容器安全扫描](#容器安全扫描)
-  - [运行时安全监控](#运行时安全监控)
-- [8. 工程结构与CI/CD实践](#8-工程结构与cicd实践)
-  - [CI/CD 安全流水线 (DevSecOps)](#cicd-安全流水线-devsecops)
-  - [安全监控与响应](#安全监控与响应)
-    - [安全事件监控与告警](#安全事件监控与告警)
-    - [自动化响应与SOAR](#自动化响应与soar)
-    - [威胁情报集成](#威胁情报集成)
-- [9. 合规与审计](#9-合规与审计)
-  - [合规性检查](#合规性检查)
-  - [审计日志与取证](#审计日志与取证)
-- [10. 未来趋势与国际前沿](#10-未来趋势与国际前沿)
-- [11. 国际权威资源与开源组件引用](#11-国际权威资源与开源组件引用)
-  - [安全框架与标准](#安全框架与标准)
-  - [开源安全工具](#开源安全工具)
-  - [云原生安全](#云原生安全)
-- [12. 相关架构主题](#12-相关架构主题)
-- [13. 扩展阅读与参考文献](#13-扩展阅读与参考文献)
+- [安全架构（Security Architecture）](#安全架构security-architecture)
+  - [📋 目录](#-目录)
+  - [目录](#目录)
+  - [2. 国际标准与发展历程](#2-国际标准与发展历程)
+    - [主流标准与框架](#主流标准与框架)
+    - [发展历程](#发展历程)
+    - [国际权威链接](#国际权威链接)
+  - [3. 核心安全模型与设计原则](#3-核心安全模型与设计原则)
+    - [核心原则](#核心原则)
+    - [零信任安全模型](#零信任安全模型)
+    - [安全策略引擎](#安全策略引擎)
+  - [4. 认证与授权架构](#4-认证与授权架构)
+    - [多因素认证（MFA）](#多因素认证mfa)
+    - [OAuth 2.0 与 OpenID Connect](#oauth-20-与-openid-connect)
+  - [5. 密码学应用](#5-密码学应用)
+    - [加密与签名服务](#加密与签名服务)
+    - [密钥管理服务](#密钥管理服务)
+  - [6. Golang主流实现与代码示例](#6-golang主流实现与代码示例)
+    - [安全的HTTP响应头](#安全的http响应头)
+    - [输入验证与输出编码 (OWASP Top 10)](#输入验证与输出编码-owasp-top-10)
+      - [跨站脚本 (XSS) 防护](#跨站脚本-xss-防护)
+      - [SQL注入防护](#sql注入防护)
+    - [密钥管理 (Secrets Management)](#密钥管理-secrets-management)
+  - [7. 容器与云原生安全](#7-容器与云原生安全)
+    - [容器安全扫描](#容器安全扫描)
+    - [运行时安全监控](#运行时安全监控)
+  - [8. 工程结构与CI/CD实践](#8-工程结构与cicd实践)
+    - [CI/CD 安全流水线 (DevSecOps)](#cicd-安全流水线-devsecops)
+    - [安全监控与响应](#安全监控与响应)
+      - [安全事件监控与告警](#安全事件监控与告警)
+      - [自动化响应与SOAR](#自动化响应与soar)
+      - [威胁情报集成](#威胁情报集成)
+  - [9. 合规与审计](#9-合规与审计)
+    - [合规性检查](#合规性检查)
+    - [审计日志与取证](#审计日志与取证)
+  - [10. 未来趋势与国际前沿](#10-未来趋势与国际前沿)
+  - [11. 国际权威资源与开源组件引用](#11-国际权威资源与开源组件引用)
+    - [安全框架与标准](#安全框架与标准)
+    - [开源安全工具](#开源安全工具)
+    - [云原生安全](#云原生安全)
+  - [12. 相关架构主题](#12-相关架构主题)
+  - [13. 扩展阅读与参考文献](#13-扩展阅读与参考文献)
 
 ## 目录
 
@@ -96,15 +98,15 @@ type ZeroTrustEngine struct {
     // 身份验证
     IdentityProvider    *IdentityProvider
     AuthNController    *AuthenticationController
-    
+
     // 访问控制
     PolicyEngine       *PolicyEngine
     AccessController   *AccessController
-    
+
     // 持续评估
     RiskEngine        *RiskEngine
     ThreatDetector    *ThreatDetector
-    
+
     // 可观测性
     SecurityMonitor   *SecurityMonitor
     AuditLogger      *AuditLogger
@@ -125,7 +127,7 @@ func (zt *ZeroTrustEngine) EvaluateAccess(ctx context.Context, request AccessReq
     if err != nil {
         return nil, fmt.Errorf("authentication failed: %w", err)
     }
-    
+
     // 2. 上下文评估
     secContext := &SecurityContext{
         Identity:   identity,
@@ -134,17 +136,17 @@ func (zt *ZeroTrustEngine) EvaluateAccess(ctx context.Context, request AccessReq
         Resource:  request.Resource,
         Timestamp: time.Now(),
     }
-    
+
     // 3. 风险评估
     riskScore := zt.RiskEngine.EvaluateRisk(secContext)
     secContext.RiskScore = riskScore
-    
+
     // 4. 策略评估
     decision := zt.PolicyEngine.Evaluate(secContext)
-    
+
     // 5. 记录审计日志
     zt.AuditLogger.LogAccess(secContext, decision)
-    
+
     return decision, nil
 }
 ```
@@ -171,10 +173,10 @@ type Policy struct {
 type PolicyEvaluator struct {
     // ABAC (Attribute Based Access Control)
     AttributeProviders map[string]AttributeProvider
-    
+
     // RBAC (Role Based Access Control)
     RoleManager       *RoleManager
-    
+
     // ReBAC (Relationship Based Access Control)
     RelationshipGraph *RelationshipGraph
 }
@@ -182,17 +184,17 @@ type PolicyEvaluator struct {
 func (pe *PolicyEngine) EvaluateRequest(ctx context.Context, request *AccessRequest) (*PolicyDecision, error) {
     // 1. 策略匹配
     matchedPolicies := pe.findMatchingPolicies(request)
-    
+
     // 2. 策略评估
     decisions := make([]*PolicyDecision, 0)
     for _, policy := range matchedPolicies {
         decision := pe.Evaluator.EvaluatePolicy(ctx, policy, request)
         decisions = append(decisions, decision)
     }
-    
+
     // 3. 策略合并
     finalDecision := pe.mergePolicyDecisions(decisions)
-    
+
     return finalDecision, nil
 }
 ```
@@ -207,10 +209,10 @@ type MFAService struct {
     PasswordValidator  *PasswordValidator
     TOTPProvider       *TOTPProvider
     WebAuthnProvider   *WebAuthnProvider
-    
+
     // 策略管理
     MFAPolicyEngine    *MFAPolicyEngine
-    
+
     // 会话管理
     SessionManager     *SessionManager
 }
@@ -237,7 +239,7 @@ func (mfa *MFAService) AuthenticateUser(ctx context.Context, credentials map[str
     if err != nil {
         return nil, fmt.Errorf("password validation failed: %w", err)
     }
-    
+
     // 2. 风险评估
     mfaCtx := &MFAContext{
         UserID:      userId,
@@ -247,10 +249,10 @@ func (mfa *MFAService) AuthenticateUser(ctx context.Context, credentials map[str
         RequestTime: time.Now(),
     }
     mfaCtx.RiskScore = mfa.evaluateRisk(mfaCtx)
-    
+
     // 3. 策略评估
     requiredFactors := mfa.MFAPolicyEngine.GetRequiredFactors(mfaCtx)
-    
+
     // 4. 额外因子验证
     for _, factor := range requiredFactors {
         switch factor {
@@ -259,15 +261,15 @@ func (mfa *MFAService) AuthenticateUser(ctx context.Context, credentials map[str
         case "webauthn":
             err = mfa.WebAuthnProvider.Validate(userId, credentials["webauthn"].([]byte))
         }
-        
+
         if err != nil {
             return nil, fmt.Errorf("factor %s validation failed: %w", factor, err)
         }
     }
-    
+
     // 5. 会话创建
     session := mfa.SessionManager.CreateSession(userId, mfaCtx)
-    
+
     return &AuthResult{
         UserID:   userId,
         Session:  session,
@@ -313,32 +315,32 @@ func (ts *TokenService) handleAuthorizationCode(ctx context.Context, request *To
     if err != nil {
         return nil, fmt.Errorf("invalid code: %w", err)
     }
-    
+
     // 2. 验证客户端
     if codeInfo.ClientID != request.ClientID {
         return nil, errors.New("client_id mismatch")
     }
-    
+
     // 3. 验证重定向URI
     if codeInfo.RedirectURI != request.RedirectURI {
         return nil, errors.New("redirect_uri mismatch")
     }
-    
+
     // 4. 生成访问令牌
     accessToken, err := ts.generateAccessToken(codeInfo.UserID, codeInfo.Scope, codeInfo.ClientID)
     if err != nil {
         return nil, err
     }
-    
+
     // 5. 生成刷新令牌
     refreshToken, err := ts.generateRefreshToken(codeInfo.UserID, codeInfo.Scope, codeInfo.ClientID)
     if err != nil {
         return nil, err
     }
-    
+
     // 6. 删除已使用的授权码
     ts.TokenStore.RemoveAuthorizationCode(request.Code)
-    
+
     return &TokenResponse{
         AccessToken:  accessToken,
         TokenType:    "Bearer",
@@ -359,16 +361,16 @@ type CryptoService struct {
     // 对称加密
     AESProvider       *AESProvider
     ChaCha20Provider  *ChaCha20Provider
-    
+
     // 非对称加密
     RSAProvider       *RSAProvider
     ECDSAProvider     *ECDSAProvider
     ED25519Provider   *ED25519Provider
-    
+
     // 哈希与MAC
     HashProvider      *HashProvider
     HMACProvider      *HMACProvider
-    
+
     // 密钥管理
     KeyManager        *KeyManager
 }
@@ -393,7 +395,7 @@ func (cs *CryptoService) Encrypt(ctx context.Context, req *EncryptionRequest) (*
     if err != nil {
         return nil, fmt.Errorf("key retrieval failed: %w", err)
     }
-    
+
     // 2. 根据算法选择加密提供者
     switch req.Algorithm {
     case "AES-GCM":
@@ -418,10 +420,10 @@ type KeyManager struct {
     LocalKeyStore     *LocalKeyStore
     VaultKeyStore     *VaultKeyStore
     CloudKMS          *CloudKMS
-    
+
     // 密钥生命周期
     KeyRotator        *KeyRotator
-    
+
     // 密钥策略
     KeyPolicy         *KeyPolicy
 }
@@ -443,13 +445,13 @@ func (km *KeyManager) CreateKey(ctx context.Context, req *CreateKeyRequest) (*Ke
     if err := km.validateKeyRequest(req); err != nil {
         return nil, err
     }
-    
+
     // 2. 生成密钥材料
     keyMaterial, err := km.generateKeyMaterial(req.Algorithm, req.Length)
     if err != nil {
         return nil, err
     }
-    
+
     // 3. 创建密钥对象
     key := &Key{
         ID:        uuid.New().String(),
@@ -462,12 +464,12 @@ func (km *KeyManager) CreateKey(ctx context.Context, req *CreateKeyRequest) (*Ke
         Purpose:   req.Purpose,
         Metadata:  req.Metadata,
     }
-    
+
     // 4. 存储密钥
     if err := km.storeKey(ctx, key); err != nil {
         return nil, err
     }
-    
+
     // 5. 返回密钥信息（不包含敏感材料）
     return &Key{
         ID:        key.ID,
@@ -502,7 +504,7 @@ func SecureHeadersMiddleware(next http.Handler) http.Handler {
   w.Header().Set("Content-Security-Policy", "default-src 'self'")
   // 强制使用HTTPS
   w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-  
+
   next.ServeHTTP(w, r)
  })
 }
@@ -528,10 +530,10 @@ func renderTemplate(w http.ResponseWriter, data interface{}) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    
+
     // 假设userInput来自一个不可信的源
     userInput := "<script>alert('xss')</script>"
-    
+
     // {{.}} 会被安全地转义为 "<h1>Hello, &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;</h1>"
     err = t.Execute(w, userInput)
     if err != nil {
@@ -610,14 +612,14 @@ func getDatabasePasswordFromVault() (string, error) {
 type ContainerScanner struct {
     // 漏洞数据库
     VulnDB         *VulnerabilityDatabase
-    
+
     // 扫描引擎
     ImageScanner   *ImageScanner
     RuntimeScanner *RuntimeScanner
-    
+
     // 策略引擎
     PolicyEngine   *PolicyEngine
-    
+
     // 报告生成器
     ReportGenerator *ReportGenerator
 }
@@ -649,43 +651,43 @@ func (cs *ContainerScanner) ScanImage(ctx context.Context, imageRef string) (*Sc
     if err != nil {
         return nil, fmt.Errorf("failed to pull image: %w", err)
     }
-    
+
     // 2. 提取层和文件系统
     layers, fs, err := cs.ImageScanner.ExtractLayers(ctx, image)
     if err != nil {
         return nil, fmt.Errorf("failed to extract layers: %w", err)
     }
-    
+
     // 3. 扫描操作系统包
     osVulns, err := cs.ImageScanner.ScanOSPackages(ctx, fs)
     if err != nil {
         return nil, fmt.Errorf("OS package scan failed: %w", err)
     }
-    
+
     // 4. 扫描应用依赖
     appVulns, err := cs.ImageScanner.ScanAppDependencies(ctx, fs)
     if err != nil {
         return nil, fmt.Errorf("app dependency scan failed: %w", err)
     }
-    
+
     // 5. 检查配置问题
     misconfigs, err := cs.ImageScanner.CheckConfigurations(ctx, fs)
     if err != nil {
         return nil, fmt.Errorf("configuration check failed: %w", err)
     }
-    
+
     // 6. 检查敏感信息泄露
     secrets, err := cs.ImageScanner.DetectSecrets(ctx, fs)
     if err != nil {
         return nil, fmt.Errorf("secret detection failed: %w", err)
     }
-    
+
     // 7. 合规性检查
     compliance, err := cs.ImageScanner.CheckCompliance(ctx, fs, image)
     if err != nil {
         return nil, fmt.Errorf("compliance check failed: %w", err)
     }
-    
+
     // 8. 生成结果
     result := &ScanResult{
         ImageID:          image.ID,
@@ -695,10 +697,10 @@ func (cs *ContainerScanner) ScanImage(ctx context.Context, imageRef string) (*Sc
         ComplianceIssues: compliance,
         ScanTime:         time.Now(),
     }
-    
+
     // 9. 生成摘要
     result.Summary = cs.generateSummary(result)
-    
+
     return result, nil
 }
 ```
@@ -711,13 +713,13 @@ type RuntimeSecurityMonitor struct {
     SyscallMonitor    *SyscallMonitor
     NetworkMonitor    *NetworkMonitor
     FileSystemMonitor *FileSystemMonitor
-    
+
     // 异常检测
     AnomalyDetector   *AnomalyDetector
-    
+
     // 策略引擎
     RuntimePolicyEngine *RuntimePolicyEngine
-    
+
     // 响应组件
     ResponseEngine    *ResponseEngine
 }
@@ -738,18 +740,18 @@ func (rsm *RuntimeSecurityMonitor) Start(ctx context.Context) error {
     if err := rsm.SyscallMonitor.Start(ctx); err != nil {
         return err
     }
-    
+
     if err := rsm.NetworkMonitor.Start(ctx); err != nil {
         return err
     }
-    
+
     if err := rsm.FileSystemMonitor.Start(ctx); err != nil {
         return err
     }
-    
+
     // 处理安全事件
     go rsm.processEvents(ctx)
-    
+
     return nil
 }
 
@@ -775,19 +777,19 @@ func (rsm *RuntimeSecurityMonitor) handleSecurityEvent(ctx context.Context, even
         log.Printf("Policy evaluation failed: %v", err)
         return
     }
-    
+
     // 2. 如果没有违规，直接返回
     if len(violations) == 0 {
         return
     }
-    
+
     // 3. 异常检测
     anomalyScore := rsm.AnomalyDetector.CalculateAnomalyScore(event)
-    
+
     // 4. 根据违规和异常分数确定响应动作
     for _, violation := range violations {
         actions := rsm.determineActions(violation, anomalyScore)
-        
+
         // 5. 执行响应动作
         for _, action := range actions {
             if err := rsm.ResponseEngine.ExecuteAction(ctx, action, event); err != nil {
@@ -991,7 +993,7 @@ type AuditEvent struct {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

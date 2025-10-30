@@ -1,16 +1,15 @@
-﻿# HTTP/3与QUIC生产实践指南
+# HTTP/3与QUIC生产实践指南
 
 > **难度**: ⭐⭐⭐⭐⭐
 > **标签**: #HTTP3 #QUIC #网络协议 #高性能Web
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
-
 
 - [1. HTTP/3与QUIC概述](#1-http3与quic概述)
   - [1.1 什么是HTTP/3](#1-1-什么是http3)
@@ -196,7 +195,7 @@ import (
     "crypto/tls"
     "log"
     "net/http"
-    
+
     "golang.org/x/net/http3"
 )
 
@@ -211,7 +210,7 @@ func main() {
             // TLS配置
         },
     }
-    
+
     log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
 }
 ```
@@ -270,30 +269,30 @@ import (
     "fmt"
     "log"
     "net/http"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
 func main() {
     // 创建HTTP处理器
     mux := http.NewServeMux()
-    
+
     mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "Hello HTTP/3! Protocol: %s\n", r.Proto)
     })
-    
+
     mux.HandleFunc("/api/data", func(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Content-Type", "application/json")
         fmt.Fprintf(w, `{"message": "HTTP/3 API", "protocol": "%s"}`, r.Proto)
     })
-    
+
     // TLS配置
     tlsConfig := &tls.Config{
         MinVersion: tls.VersionTLS13,
         Certificates: []tls.Certificate{loadCertificate()},
         NextProtos: []string{"h3"}, // HTTP/3 ALPN
     }
-    
+
     // HTTP/3服务器
     server := &http3.Server{
         Addr:      ":443",
@@ -306,7 +305,7 @@ func main() {
             KeepAlivePeriod:       10 * time.Second,
         },
     }
-    
+
     log.Println("Starting HTTP/3 server on :443")
     if err := server.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
         log.Fatal(err)
@@ -334,7 +333,7 @@ import (
     "log"
     "net/http"
     "sync"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
@@ -357,14 +356,14 @@ func NewDualStackServer(addr string, handler http.Handler, tlsConfig *tls.Config
 func (s *DualStackServer) ListenAndServe() error {
     var wg sync.WaitGroup
     errChan := make(chan error, 2)
-    
+
     // HTTP/2服务器
     s.http2Server = &http.Server{
         Addr:      s.addr,
         Handler:   s.handler,
         TLSConfig: s.tlsConfig,
     }
-    
+
     wg.Add(1)
     go func() {
         defer wg.Done()
@@ -373,14 +372,14 @@ func (s *DualStackServer) ListenAndServe() error {
             errChan <- fmt.Errorf("HTTP/2 server: %w", err)
         }
     }()
-    
+
     // HTTP/3服务器
     s.http3Server = &http3.Server{
         Addr:      s.addr,
         Handler:   s.handler,
         TLSConfig: s.tlsConfig,
     }
-    
+
     wg.Add(1)
     go func() {
         defer wg.Done()
@@ -389,7 +388,7 @@ func (s *DualStackServer) ListenAndServe() error {
             errChan <- fmt.Errorf("HTTP/3 server: %w", err)
         }
     }()
-    
+
     // 等待错误
     select {
     case err := <-errChan:
@@ -402,12 +401,12 @@ func main() {
     mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "Protocol: %s\n", r.Proto)
     })
-    
+
     tlsConfig := &tls.Config{
         MinVersion: tls.VersionTLS13,
         NextProtos: []string{"h3", "h2"}, // 支持HTTP/3和HTTP/2
     }
-    
+
     server := NewDualStackServer(":443", mux, tlsConfig)
     log.Fatal(server.ListenAndServe())
 }
@@ -439,16 +438,16 @@ func main() {
     mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "Protocol: %s\n", r.Proto)
     })
-    
+
     // 应用中间件
     handler := AltSvcMiddleware(mux)
-    
+
     // HTTP/2服务器（带Alt-Svc）
     http2Server := &http.Server{
         Addr:    ":443",
         Handler: handler,
     }
-    
+
     log.Fatal(http2Server.ListenAndServeTLS("cert.pem", "key.pem"))
 }
 ```
@@ -470,7 +469,7 @@ import (
     "io"
     "log"
     "net/http"
-    
+
     "github.com/quic-go/quic-go"
     "github.com/quic-go/quic-go/http3"
 )
@@ -487,14 +486,14 @@ func main() {
             },
         },
     }
-    
+
     // 发起请求
     resp, err := client.Get("https://example.com")
     if err != nil {
         log.Fatal(err)
     }
     defer resp.Body.Close()
-    
+
     body, _ := io.ReadAll(resp.Body)
     fmt.Printf("Protocol: %s\n", resp.Proto)
     fmt.Printf("Status: %s\n", resp.Status)
@@ -514,7 +513,7 @@ import (
     "net/http"
     "sync"
     "time"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
@@ -522,7 +521,7 @@ import (
 type HTTP3ClientPool struct {
     clients map[string]*http.Client
     mu      sync.RWMutex
-    
+
     maxIdleConns        int
     maxIdleConnsPerHost int
     idleConnTimeout     time.Duration
@@ -542,19 +541,19 @@ func (p *HTTP3ClientPool) GetClient(host string) *http.Client {
     p.mu.RLock()
     client, exists := p.clients[host]
     p.mu.RUnlock()
-    
+
     if exists {
         return client
     }
-    
+
     p.mu.Lock()
     defer p.mu.Unlock()
-    
+
     // 双重检查
     if client, exists := p.clients[host]; exists {
         return client
     }
-    
+
     // 创建新客户端
     client = &http.Client{
         Transport: &http3.RoundTripper{
@@ -565,7 +564,7 @@ func (p *HTTP3ClientPool) GetClient(host string) *http.Client {
         },
         Timeout: 30 * time.Second,
     }
-    
+
     p.clients[host] = client
     return client
 }
@@ -574,13 +573,13 @@ func (p *HTTP3ClientPool) GetClient(host string) *http.Client {
 func (p *HTTP3ClientPool) Close() {
     p.mu.Lock()
     defer p.mu.Unlock()
-    
+
     for _, client := range p.clients {
         if transport, ok := client.Transport.(*http3.RoundTripper); ok {
             transport.Close()
         }
     }
-    
+
     p.clients = make(map[string]*http.Client)
 }
 ```
@@ -597,7 +596,7 @@ import (
     "fmt"
     "net/http"
     "time"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
@@ -605,7 +604,7 @@ import (
 type AdaptiveClient struct {
     http3Client *http.Client
     http2Client *http.Client
-    
+
     useHTTP3 bool
     mu       sync.RWMutex
 }
@@ -634,24 +633,24 @@ func (c *AdaptiveClient) Do(req *http.Request) (*http.Response, error) {
     c.mu.RLock()
     useHTTP3 := c.useHTTP3
     c.mu.RUnlock()
-    
+
     if useHTTP3 {
         // 尝试HTTP/3
         resp, err := c.http3Client.Do(req)
         if err == nil {
             return resp, nil
         }
-        
+
         // HTTP/3失败，回退到HTTP/2
         fmt.Printf("HTTP/3 failed, falling back to HTTP/2: %v\n", err)
         c.mu.Lock()
         c.useHTTP3 = false
         c.mu.Unlock()
-        
+
         // 重新尝试HTTP/2
         return c.http2Client.Do(req)
     }
-    
+
     // 使用HTTP/2
     return c.http2Client.Do(req)
 }
@@ -679,7 +678,7 @@ import (
     "crypto/tls"
     "log"
     "net/http"
-    
+
     "github.com/quic-go/quic-go"
     "github.com/quic-go/quic-go/http3"
 )
@@ -689,25 +688,25 @@ func main() {
     quicConfig := &quic.Config{
         // BBR算法（推荐用于高延迟网络）
         EnableDatagrams: true,
-        
+
         // 初始拥塞窗口
         InitialStreamReceiveWindow:     6 * 1024 * 1024,  // 6 MB
         InitialConnectionReceiveWindow: 15 * 1024 * 1024, // 15 MB
-        
+
         // 最大流
         MaxIncomingStreams:    1000,
         MaxIncomingUniStreams: 100,
-        
+
         // 保活
         KeepAlivePeriod: 30 * time.Second,
     }
-    
+
     server := &http3.Server{
         Addr:       ":443",
         Handler:    http.HandlerFunc(handler),
         QUICConfig: quicConfig,
     }
-    
+
     log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
 }
 
@@ -736,7 +735,7 @@ import (
     "log"
     "net/http"
     "time"
-    
+
     "github.com/quic-go/quic-go"
     "github.com/quic-go/quic-go/http3"
 )
@@ -753,13 +752,13 @@ func NewZeroRTTServer() *ZeroRTTServer {
         SessionTicketsDisabled: false, // 启用会话票据
         ClientSessionCache: tls.NewLRUClientSessionCache(128),
     }
-    
+
     // QUIC配置
     quicConfig := &quic.Config{
         Allow0RTT: true, // 允许0-RTT
         MaxIdleTimeout: 30 * time.Second,
     }
-    
+
     return &ZeroRTTServer{
         server: &http3.Server{
             Addr:       ":443",
@@ -797,7 +796,7 @@ import (
     "fmt"
     "io"
     "net/http"
-    
+
     "github.com/quic-go/quic-go"
     "github.com/quic-go/quic-go/http3"
 )
@@ -805,7 +804,7 @@ import (
 func main() {
     // 会话缓存
     sessionCache := tls.NewLRUClientSessionCache(128)
-    
+
     client := &http.Client{
         Transport: &http3.RoundTripper{
             TLSClientConfig: &tls.Config{
@@ -816,12 +815,12 @@ func main() {
             },
         },
     }
-    
+
     // 第一次请求（1-RTT）
     resp1, _ := client.Get("https://example.com")
     io.ReadAll(resp1.Body)
     resp1.Body.Close()
-    
+
     // 第二次请求（0-RTT）
     resp2, _ := client.Get("https://example.com")
     fmt.Printf("Early Data: %s\n", resp2.Header.Get("X-Early-Data"))
@@ -843,7 +842,7 @@ import (
     "net"
     "net/http"
     "time"
-    
+
     "github.com/quic-go/quic-go"
     "github.com/quic-go/quic-go/http3"
 )
@@ -863,7 +862,7 @@ func NewMigrationAwareClient() *MigrationAwareClient {
             MaxIdleTimeout:          60 * time.Second,
         },
     }
-    
+
     return &MigrationAwareClient{
         client: &http.Client{
             Transport: transport,
@@ -877,19 +876,19 @@ func NewMigrationAwareClient() *MigrationAwareClient {
 func (m *MigrationAwareClient) RequestWithMigration(url string) error {
     ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
-    
+
     req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
     if err != nil {
         return err
     }
-    
+
     resp, err := m.client.Do(req)
     if err != nil {
         fmt.Printf("Request failed: %v\n", err)
         return err
     }
     defer resp.Body.Close()
-    
+
     fmt.Printf("Connection migrated successfully, Protocol: %s\n", resp.Proto)
     return nil
 }
@@ -903,13 +902,13 @@ func (m *MigrationAwareClient) SimulateNetworkSwitch() {
 
 func main() {
     client := NewMigrationAwareClient()
-    
+
     // 第一次请求
     client.RequestWithMigration("https://example.com")
-    
+
     // 模拟网络切换（例如从WiFi切换到4G）
     client.SimulateNetworkSwitch()
-    
+
     // 再次请求（连接会自动迁移）
     client.RequestWithMigration("https://example.com")
 }
@@ -933,7 +932,7 @@ import (
     "math/rand"
     "net/http"
     "sync"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
@@ -956,16 +955,16 @@ func NewQuicLoadBalancer(backends []string) *QuicLoadBalancer {
 func (lb *QuicLoadBalancer) NextBackend() string {
     lb.mu.Lock()
     defer lb.mu.Unlock()
-    
+
     switch lb.algorithm {
     case "round-robin":
         backend := lb.backends[lb.current]
         lb.current = (lb.current + 1) % len(lb.backends)
         return backend
-        
+
     case "random":
         return lb.backends[rand.Intn(len(lb.backends))]
-        
+
     default:
         return lb.backends[0]
     }
@@ -974,24 +973,24 @@ func (lb *QuicLoadBalancer) NextBackend() string {
 // ProxyHandler 代理处理器
 func (lb *QuicLoadBalancer) ProxyHandler(w http.ResponseWriter, r *http.Request) {
     backend := lb.NextBackend()
-    
+
     // 转发到后端
     backendURL := fmt.Sprintf("%s%s", backend, r.URL.Path)
-    
+
     // 创建新请求
     req, err := http.NewRequest(r.Method, backendURL, r.Body)
     if err != nil {
         http.Error(w, "Backend error", http.StatusBadGateway)
         return
     }
-    
+
     // 复制头部
     for key, values := range r.Header {
         for _, value := range values {
             req.Header.Add(key, value)
         }
     }
-    
+
     // 发送请求
     client := &http.Client{Timeout: 10 * time.Second}
     resp, err := client.Do(req)
@@ -1000,14 +999,14 @@ func (lb *QuicLoadBalancer) ProxyHandler(w http.ResponseWriter, r *http.Request)
         return
     }
     defer resp.Body.Close()
-    
+
     // 返回响应
     for key, values := range resp.Header {
         for _, value := range values {
             w.Header().Add(key, value)
         }
     }
-    
+
     w.WriteHeader(resp.StatusCode)
     io.Copy(w, resp.Body)
 }
@@ -1018,9 +1017,9 @@ func main() {
         "http://backend2:8080",
         "http://backend3:8080",
     }
-    
+
     lb := NewQuicLoadBalancer(backends)
-    
+
     server := &http3.Server{
         Addr:    ":443",
         Handler: http.HandlerFunc(lb.ProxyHandler),
@@ -1028,7 +1027,7 @@ func main() {
             MinVersion: tls.VersionTLS13,
         },
     }
-    
+
     log.Println("Load balancer starting on :443")
     log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
 }
@@ -1044,7 +1043,7 @@ package monitoring
 import (
     "sync"
     "time"
-    
+
     "github.com/prometheus/client_golang/prometheus"
     "github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -1068,7 +1067,7 @@ func NewHTTP3Metrics() *HTTP3Metrics {
             },
             []string{"method", "path", "status"},
         ),
-        
+
         requestDuration: promauto.NewHistogramVec(
             prometheus.HistogramOpts{
                 Name:    "http3_request_duration_seconds",
@@ -1077,28 +1076,28 @@ func NewHTTP3Metrics() *HTTP3Metrics {
             },
             []string{"method", "path"},
         ),
-        
+
         activeConnections: promauto.NewGauge(
             prometheus.GaugeOpts{
                 Name: "http3_active_connections",
                 Help: "Number of active HTTP/3 connections",
             },
         ),
-        
+
         zeroRTTAccepted: promauto.NewCounter(
             prometheus.CounterOpts{
                 Name: "http3_zero_rtt_accepted_total",
                 Help: "Total 0-RTT connections accepted",
             },
         ),
-        
+
         connectionMigrations: promauto.NewCounter(
             prometheus.CounterOpts{
                 Name: "http3_connection_migrations_total",
                 Help: "Total connection migrations",
             },
         ),
-        
+
         packetLoss: promauto.NewHistogramVec(
             prometheus.HistogramOpts{
                 Name:    "http3_packet_loss_percent",
@@ -1149,7 +1148,7 @@ import (
     "log"
     "net/http"
     "time"
-    
+
     "github.com/quic-go/quic-go/logging"
     "github.com/quic-go/quic-go/qlog"
 )
@@ -1168,7 +1167,7 @@ func NewDebugTracer() *DebugTracer {
 // TracerForConnection 为连接创建追踪器
 func (t *DebugTracer) TracerForConnection(ctx context.Context, p logging.Perspective, connID logging.ConnectionID) logging.ConnectionTracer {
     t.logger.Printf("New connection: %s, Perspective: %s\n", connID, p)
-    
+
     return &connectionTracer{
         connID: connID,
         logger: t.logger,
@@ -1199,16 +1198,16 @@ func (ct *connectionTracer) ReceivedPacket(hdr *logging.Header, size logging.Byt
 // 使用示例
 func main() {
     tracer := NewDebugTracer()
-    
+
     quicConfig := &quic.Config{
         Tracer: tracer,
     }
-    
+
     server := &http3.Server{
         Addr:       ":443",
         QUICConfig: quicConfig,
     }
-    
+
     log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
 }
 ```
@@ -1230,7 +1229,7 @@ import (
     "net"
     "net/http"
     "syscall"
-    
+
     "github.com/quic-go/quic-go"
     "github.com/quic-go/quic-go/http3"
 )
@@ -1245,34 +1244,34 @@ func NewOptimizedUDPConn(network, address string) (*OptimizedUDPConn, error) {
     if err != nil {
         return nil, err
     }
-    
+
     conn, err := net.ListenUDP(network, addr)
     if err != nil {
         return nil, err
     }
-    
+
     // 设置大缓冲区（推荐4MB+）
     if err := conn.SetReadBuffer(4 * 1024 * 1024); err != nil {
         log.Printf("Failed to set read buffer: %v", err)
     }
-    
+
     if err := conn.SetWriteBuffer(4 * 1024 * 1024); err != nil {
         log.Printf("Failed to set write buffer: %v", err)
     }
-    
+
     // Linux特定优化
     if file, err := conn.File(); err == nil {
         fd := int(file.Fd())
-        
+
         // 启用GSO (Generic Segmentation Offload)
         _ = syscall.SetsockoptInt(fd, syscall.SOL_UDP, syscall.UDP_SEGMENT, 1200)
-        
+
         // 启用GRO (Generic Receive Offload)
         _ = syscall.SetsockoptInt(fd, syscall.SOL_UDP, syscall.UDP_GRO, 1)
-        
+
         file.Close()
     }
-    
+
     return &OptimizedUDPConn{conn}, nil
 }
 
@@ -1282,9 +1281,9 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    
+
     log.Println("UDP connection optimized with 4MB buffers and GSO/GRO")
-    
+
     // 使用优化的连接创建HTTP/3服务器
     // 注意：实际实现需要quic-go支持自定义UDP连接
 }
@@ -1302,24 +1301,24 @@ import (
     "log"
     "net/http"
     "runtime"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
 func main() {
     // 使用所有CPU核心
     runtime.GOMAXPROCS(runtime.NumCPU())
-    
+
     log.Printf("Using %d CPU cores\n", runtime.NumCPU())
-    
+
     // 创建多个服务器实例（每个CPU核心一个）
     numServers := runtime.NumCPU()
     errChan := make(chan error, numServers)
-    
+
     for i := 0; i < numServers; i++ {
         go func(id int) {
             port := 443 + id
-            
+
             server := &http3.Server{
                 Addr: fmt.Sprintf(":%d", port),
                 Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1329,14 +1328,14 @@ func main() {
                     MinVersion: tls.VersionTLS13,
                 },
             }
-            
+
             log.Printf("Server %d starting on port %d\n", id, port)
             if err := server.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
                 errChan <- err
             }
         }(i)
     }
-    
+
     // 等待任意服务器错误
     log.Fatal(<-errChan)
 }
@@ -1397,13 +1396,13 @@ func (h *HTTP3Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     // 从池中获取缓冲区
     buf := h.bufferPool.Get()
     defer h.bufferPool.Put(buf)
-    
+
     // 使用缓冲区处理请求
     n, _ := r.Body.Read(buf)
-    
+
     // 处理数据
     processData(buf[:n])
-    
+
     w.Write([]byte("OK"))
 }
 
@@ -1427,7 +1426,7 @@ import (
     "crypto/tls"
     "log"
     "net/http"
-    
+
     "github.com/quic-go/quic-go/http3"
     "golang.org/x/crypto/acme/autocert"
 )
@@ -1439,14 +1438,14 @@ func main() {
         HostPolicy: autocert.HostWhitelist("example.com", "www.example.com"),
         Cache:      autocert.DirCache("/var/cache/certs"),
     }
-    
+
     // TLS配置
     tlsConfig := &tls.Config{
         GetCertificate: certManager.GetCertificate,
         MinVersion:     tls.VersionTLS13,
         NextProtos:     []string{"h3", "h2"},
     }
-    
+
     // HTTP/3服务器
     server := &http3.Server{
         Addr:      ":443",
@@ -1455,7 +1454,7 @@ func main() {
             w.Write([]byte("Secured with Let's Encrypt!"))
         }),
     }
-    
+
     log.Println("Starting HTTP/3 server with auto TLS")
     log.Fatal(server.ListenAndServeTLS("", ""))
 }
@@ -1473,7 +1472,7 @@ import (
     "net/http"
     "sync"
     "time"
-    
+
     "golang.org/x/time/rate"
 )
 
@@ -1497,13 +1496,13 @@ func NewRateLimiter(r rate.Limit, b int) *RateLimiter {
 func (rl *RateLimiter) GetLimiter(ip string) *rate.Limiter {
     rl.mu.Lock()
     defer rl.mu.Unlock()
-    
+
     limiter, exists := rl.visitors[ip]
     if !exists {
         limiter = rate.NewLimiter(rl.rate, rl.burst)
         rl.visitors[ip] = limiter
     }
-    
+
     return limiter
 }
 
@@ -1525,12 +1524,12 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         ip, _, _ := net.SplitHostPort(r.RemoteAddr)
         limiter := rl.GetLimiter(ip)
-        
+
         if !limiter.Allow() {
             http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
             return
         }
-        
+
         next.ServeHTTP(w, r)
     })
 }
@@ -1583,7 +1582,7 @@ func (f *IPFilter) IsAllowed(ip string) bool {
     if f.mode == "whitelist" {
         return f.whitelist[ip]
     }
-    
+
     return !f.blacklist[ip]
 }
 
@@ -1591,7 +1590,7 @@ func (f *IPFilter) IsAllowed(ip string) bool {
 func (f *IPFilter) Middleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-        
+
         // 检查X-Forwarded-For头（用于代理）
         if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
             ips := strings.Split(xff, ",")
@@ -1599,12 +1598,12 @@ func (f *IPFilter) Middleware(next http.Handler) http.Handler {
                 ip = strings.TrimSpace(ips[0])
             }
         }
-        
+
         if !f.IsAllowed(ip) {
             http.Error(w, "Forbidden", http.StatusForbidden)
             return
         }
-        
+
         next.ServeHTTP(w, r)
     })
 }
@@ -1629,7 +1628,7 @@ import (
     "log"
     "net/http"
     "time"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
@@ -1649,10 +1648,10 @@ func NewHTTP3Gateway(addr string) *HTTP3Gateway {
         },
         rateLimiter: NewRateLimiter(1000), // 1000 req/s
     }
-    
+
     mux := http.NewServeMux()
     mux.HandleFunc("/", gw.handleRequest)
-    
+
     gw.server = &http3.Server{
         Addr:    addr,
         Handler: mux,
@@ -1660,7 +1659,7 @@ func NewHTTP3Gateway(addr string) *HTTP3Gateway {
             MinVersion: tls.VersionTLS13,
         },
     }
-    
+
     return gw
 }
 
@@ -1670,14 +1669,14 @@ func (gw *HTTP3Gateway) handleRequest(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
         return
     }
-    
+
     // 查找上游
     upstream, ok := gw.upstreams[r.URL.Path]
     if !ok {
         http.Error(w, "Not found", http.StatusNotFound)
         return
     }
-    
+
     // 代理请求
     gw.proxyRequest(w, r, upstream)
 }
@@ -1686,20 +1685,20 @@ func (gw *HTTP3Gateway) proxyRequest(w http.ResponseWriter, r *http.Request, ups
     // 创建上游请求
     ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
     defer cancel()
-    
+
     proxyReq, err := http.NewRequestWithContext(ctx, r.Method, upstream+r.URL.Path, r.Body)
     if err != nil {
         http.Error(w, "Internal error", http.StatusInternalServerError)
         return
     }
-    
+
     // 复制头部
     for key, values := range r.Header {
         for _, value := range values {
             proxyReq.Header.Add(key, value)
         }
     }
-    
+
     // 发送请求
     resp, err := http.DefaultClient.Do(proxyReq)
     if err != nil {
@@ -1707,14 +1706,14 @@ func (gw *HTTP3Gateway) proxyRequest(w http.ResponseWriter, r *http.Request, ups
         return
     }
     defer resp.Body.Close()
-    
+
     // 复制响应
     for key, values := range resp.Header {
         for _, value := range values {
             w.Header().Add(key, value)
         }
     }
-    
+
     w.WriteHeader(resp.StatusCode)
     io.Copy(w, resp.Body)
 }
@@ -1741,7 +1740,7 @@ import (
     "os"
     "strconv"
     "time"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
@@ -1755,11 +1754,11 @@ func NewVideoStreamServer(videoDir string) *VideoStreamServer {
     vs := &VideoStreamServer{
         videoDir: videoDir,
     }
-    
+
     mux := http.NewServeMux()
     mux.HandleFunc("/stream/", vs.handleStream)
     mux.HandleFunc("/live/", vs.handleLive)
-    
+
     vs.server = &http3.Server{
         Addr:    ":443",
         Handler: mux,
@@ -1773,7 +1772,7 @@ func NewVideoStreamServer(videoDir string) *VideoStreamServer {
             InitialStreamReceiveWindow: 10 * 1024 * 1024, // 10MB
         },
     }
-    
+
     return vs
 }
 
@@ -1781,7 +1780,7 @@ func NewVideoStreamServer(videoDir string) *VideoStreamServer {
 func (vs *VideoStreamServer) handleStream(w http.ResponseWriter, r *http.Request) {
     videoID := r.URL.Path[len("/stream/"):]
     videoPath := fmt.Sprintf("%s/%s.mp4", vs.videoDir, videoID)
-    
+
     // 打开视频文件
     file, err := os.Open(videoPath)
     if err != nil {
@@ -1789,56 +1788,56 @@ func (vs *VideoStreamServer) handleStream(w http.ResponseWriter, r *http.Request
         return
     }
     defer file.Close()
-    
+
     // 获取文件信息
     stat, err := file.Stat()
     if err != nil {
         http.Error(w, "Internal error", http.StatusInternalServerError)
         return
     }
-    
+
     fileSize := stat.Size()
-    
+
     // 处理Range请求（断点续传）
     rangeHeader := r.Header.Get("Range")
     if rangeHeader != "" {
         vs.handleRangeRequest(w, r, file, fileSize)
         return
     }
-    
+
     // 完整传输
     w.Header().Set("Content-Type", "video/mp4")
     w.Header().Set("Content-Length", strconv.FormatInt(fileSize, 10))
     w.Header().Set("Accept-Ranges", "bytes")
     w.WriteHeader(http.StatusOK)
-    
+
     // 流式传输
     io.Copy(w, file)
 }
 
 func (vs *VideoStreamServer) handleRangeRequest(w http.ResponseWriter, r *http.Request, file *os.File, fileSize int64) {
     rangeHeader := r.Header.Get("Range")
-    
+
     // 解析Range头 (bytes=start-end)
     var start, end int64
     fmt.Sscanf(rangeHeader, "bytes=%d-%d", &start, &end)
-    
+
     if end == 0 || end >= fileSize {
         end = fileSize - 1
     }
-    
+
     contentLength := end - start + 1
-    
+
     // 设置206部分内容响应
     w.Header().Set("Content-Type", "video/mp4")
     w.Header().Set("Content-Range", fmt.Sprintf("bytes %d-%d/%d", start, end, fileSize))
     w.Header().Set("Content-Length", strconv.FormatInt(contentLength, 10))
     w.Header().Set("Accept-Ranges", "bytes")
     w.WriteHeader(http.StatusPartialContent)
-    
+
     // 跳到起始位置
     file.Seek(start, 0)
-    
+
     // 传输指定范围的内容
     io.CopyN(w, file, contentLength)
 }
@@ -1846,31 +1845,31 @@ func (vs *VideoStreamServer) handleRangeRequest(w http.ResponseWriter, r *http.R
 // handleLive 处理实时直播流
 func (vs *VideoStreamServer) handleLive(w http.ResponseWriter, r *http.Request) {
     streamID := r.URL.Path[len("/live/"):]
-    
+
     // 设置响应头
     w.Header().Set("Content-Type", "video/mp4")
     w.Header().Set("Cache-Control", "no-cache")
     w.Header().Set("X-Content-Type-Options", "nosniff")
-    
+
     // 模拟实时流（实际应该从编码器获取）
     ticker := time.NewTicker(100 * time.Millisecond)
     defer ticker.Stop()
-    
+
     flusher, ok := w.(http.Flusher)
     if !ok {
         http.Error(w, "Streaming not supported", http.StatusInternalServerError)
         return
     }
-    
+
     log.Printf("Starting live stream: %s\n", streamID)
-    
+
     // 持续推送数据
     for {
         select {
         case <-r.Context().Done():
             log.Printf("Client disconnected from stream: %s\n", streamID)
             return
-            
+
         case <-ticker.C:
             // 写入视频数据块
             chunk := generateVideoChunk() // 实际应该从编码器获取
@@ -1905,7 +1904,7 @@ import (
     "net/http"
     "os"
     "sync"
-    
+
     "github.com/quic-go/quic-go/http3"
 )
 
@@ -1937,67 +1936,67 @@ func (d *HTTP3Downloader) DownloadFile(url, outputPath string) error {
         return fmt.Errorf("head request failed: %w", err)
     }
     defer resp.Body.Close()
-    
+
     fileSize := resp.ContentLength
     if fileSize <= 0 {
         return fmt.Errorf("cannot determine file size")
     }
-    
+
     // 检查是否支持范围请求
     if resp.Header.Get("Accept-Ranges") != "bytes" {
         return fmt.Errorf("server does not support range requests")
     }
-    
+
     fmt.Printf("File size: %d bytes\n", fileSize)
     fmt.Printf("Downloading with %d concurrent connections...\n", d.concurrency)
-    
+
     // 创建输出文件
     file, err := os.Create(outputPath)
     if err != nil {
         return err
     }
     defer file.Close()
-    
+
     // 预分配文件空间
     if err := file.Truncate(fileSize); err != nil {
         return err
     }
-    
+
     // 计算每个分块的大小
     chunkSize := fileSize / int64(d.concurrency)
-    
+
     var wg sync.WaitGroup
     errChan := make(chan error, d.concurrency)
-    
+
     // 启动多个goroutine下载
     for i := 0; i < d.concurrency; i++ {
         start := int64(i) * chunkSize
         end := start + chunkSize - 1
-        
+
         // 最后一个分块包含剩余部分
         if i == d.concurrency-1 {
             end = fileSize - 1
         }
-        
+
         wg.Add(1)
         go func(partNum int, start, end int64) {
             defer wg.Done()
-            
+
             if err := d.downloadPart(url, file, start, end, partNum); err != nil {
                 errChan <- err
             }
         }(i, start, end)
     }
-    
+
     // 等待所有下载完成
     wg.Wait()
     close(errChan)
-    
+
     // 检查错误
     if err := <-errChan; err != nil {
         return err
     }
-    
+
     fmt.Println("Download completed!")
     return nil
 }
@@ -2007,26 +2006,26 @@ func (d *HTTP3Downloader) downloadPart(url string, file *os.File, start, end int
     if err != nil {
         return err
     }
-    
+
     // 设置Range头
     req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, end))
-    
+
     resp, err := d.client.Do(req)
     if err != nil {
         return fmt.Errorf("part %d download failed: %w", partNum, err)
     }
     defer resp.Body.Close()
-    
+
     if resp.StatusCode != http.StatusPartialContent {
         return fmt.Errorf("part %d unexpected status: %s", partNum, resp.Status)
     }
-    
+
     // 写入文件的指定位置
     written, err := io.Copy(&offsetWriter{file, start}, resp.Body)
     if err != nil {
         return fmt.Errorf("part %d write failed: %w", partNum, err)
     }
-    
+
     fmt.Printf("Part %d: Downloaded %d bytes\n", partNum, written)
     return nil
 }
@@ -2046,12 +2045,12 @@ func (ow *offsetWriter) Write(p []byte) (n int, err error) {
 // 使用示例
 func main() {
     downloader := NewHTTP3Downloader(8) // 8个并发连接
-    
+
     err := downloader.DownloadFile(
         "https://example.com/large-file.zip",
         "downloaded-file.zip",
     )
-    
+
     if err != nil {
         log.Fatal(err)
     }
@@ -2159,7 +2158,7 @@ func NewWorkerPool(workers int) *WorkerPool {
         workers:  workers,
         jobQueue: make(chan func(), workers*10),
     }
-    
+
     for i := 0; i < workers; i++ {
         go func() {
             for job := range pool.jobQueue {
@@ -2167,7 +2166,7 @@ func NewWorkerPool(workers int) *WorkerPool {
             }
         }()
     }
-    
+
     return pool
 }
 ```
@@ -2179,16 +2178,16 @@ func NewWorkerPool(workers int) *WorkerPool {
 func handleRequest(w http.ResponseWriter, r *http.Request) {
     // 确保Body被关闭
     defer r.Body.Close()
-    
+
     // 限制读取大小
     limitedReader := io.LimitReader(r.Body, 10<<20) // 10MB限制
-    
+
     data, err := io.ReadAll(limitedReader)
     if err != nil {
         http.Error(w, "Request too large", http.StatusRequestEntityTooLarge)
         return
     }
-    
+
     // 处理数据...
 }
 ```
@@ -2203,7 +2202,7 @@ func main() {
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("Hello!"))
     })
-    
+
     // HTTP/2服务器
     go func() {
         server := &http.Server{
@@ -2212,7 +2211,7 @@ func main() {
         }
         log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
     }()
-    
+
     // HTTP/3服务器 (使用Alt-Svc通知客户端)
     server := &http3.Server{
         Addr:    ":443",
@@ -2233,7 +2232,7 @@ stream {
         server backend1:443;
         server backend2:443;
     }
-    
+
     server {
         listen 443 udp;
         proxy_pass quic_backend;
@@ -2264,12 +2263,12 @@ func CORS() func(http.Handler) http.Handler {
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
             w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-            
+
             if r.Method == "OPTIONS" {
                 w.WriteHeader(http.StatusOK)
                 return
             }
-            
+
             next.ServeHTTP(w, r)
         })
     }
@@ -2335,7 +2334,7 @@ func main() {
     go func() {
         log.Println(http.ListenAndServe("localhost:6060", nil))
     }()
-    
+
     // 你的HTTP/3服务器...
 }
 
@@ -2380,7 +2379,7 @@ func main() {
 func main() {
     mux := http.NewServeMux()
     mux.HandleFunc("/", handler)
-    
+
     // HTTP/2
     go func() {
         server := &http.Server{
@@ -2389,7 +2388,7 @@ func main() {
         }
         log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
     }()
-    
+
     // HTTP/3 (with Alt-Svc)
     server := &http3.Server{
         Addr:    ":443",
@@ -2421,12 +2420,12 @@ func shouldEnableHTTP3(userID string, region string) bool {
     if hash[0]%100 < 10 { // 10%用户
         return true
     }
-    
+
     // 策略2: 特定地区优先
     if region == "US" || region == "EU" {
         return true
     }
-    
+
     return false
 }
 ```
@@ -2447,13 +2446,13 @@ func (m *Metrics) RecordRequest(protocol string, latency time.Duration, err erro
         atomic.AddInt64(&m.FailedRequests, 1)
         return
     }
-    
+
     if protocol == "HTTP/3" {
         atomic.AddInt64(&m.HTTP3Requests, 1)
     } else {
         atomic.AddInt64(&m.HTTP2Requests, 1)
     }
-    
+
     // 记录延迟...
 }
 
@@ -2469,14 +2468,14 @@ func rolloutHTTP3() {
         {75, 24 * time.Hour},   // 第4天: 75%
         {100, 0},               // 第5天: 100%
     }
-    
+
     for _, stage := range stages {
         setHTTP3Percentage(stage.percentage)
         log.Printf("HTTP/3 traffic: %d%%", stage.percentage)
-        
+
         if stage.duration > 0 {
             time.Sleep(stage.duration)
-            
+
             // 检查健康指标
             if !checkHealthMetrics() {
                 log.Println("Health check failed, rolling back...")
@@ -2522,22 +2521,22 @@ func TestHTTP3(t *testing.T) {
         {"POST", "POST", "/api/data", `{"key":"value"}`, 201},
         {"Large Upload", "POST", "/upload", strings.Repeat("A", 10<<20), 200},
     }
-    
+
     client := &http.Client{
         Transport: &http3.RoundTripper{},
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            req, _ := http.NewRequest(tt.method, "https://localhost:443"+tt.path, 
+            req, _ := http.NewRequest(tt.method, "https://localhost:443"+tt.path,
                 strings.NewReader(tt.body))
-            
+
             resp, err := client.Do(req)
             if err != nil {
                 t.Fatalf("Request failed: %v", err)
             }
             defer resp.Body.Close()
-            
+
             if resp.StatusCode != tt.want {
                 t.Errorf("got %d, want %d", resp.StatusCode, tt.want)
             }
@@ -2581,9 +2580,9 @@ func TestHTTP3(t *testing.T) {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.21+
 
 **贡献者**: 欢迎提交Issue和PR改进本文档

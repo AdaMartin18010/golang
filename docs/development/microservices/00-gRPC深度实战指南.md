@@ -1,32 +1,33 @@
-﻿# gRPC
+# gRPC
 
-**字数**: ~40,000字  
-**代码示例**: 130+个完整示例  
-**实战案例**: 14个端到端案例  
+**字数**: ~40,000字
+**代码示例**: 130+个完整示例
+**实战案例**: 14个端到端案例
 **适用人群**: 中级到高级Go开发者
 
 ---
 
 ## 📋 目录
 
-
-- [第一部分：gRPC核心原理](#第一部分grpc核心原理)
-  - [gRPC架构](#grpc架构)
-  - [实战案例1：Quick Start](#实战案例1quick-start)
-  - [实战案例2：生成Go代码](#实战案例2生成go代码)
-  - [实战案例3：服务端实现](#实战案例3服务端实现)
-  - [实战案例4：客户端实现](#实战案例4客户端实现)
-- [第二部分：Protocol Buffers深度](#第二部分protocol-buffers深度)
-  - [实战案例5：高级Proto特性](#实战案例5高级proto特性)
-- [第三部分：四种服务类型](#第三部分四种服务类型)
-  - [实战案例6：四种RPC完整示例](#实战案例6四种rpc完整示例)
-  - [服务端实现四种RPC](#服务端实现四种rpc)
-- [第四部分：拦截器（中间件）](#第四部分拦截器中间件)
-  - [实战案例7：日志拦截器](#实战案例7日志拦截器)
-  - [实战案例8：认证拦截器](#实战案例8认证拦截器)
-- [🎯 总结](#总结)
-  - [gRPC核心要点](#grpc核心要点)
-  - [最佳实践清单](#最佳实践清单)
+- [gRPC](#grpc)
+  - [📋 目录](#-目录)
+  - [第一部分：gRPC核心原理](#第一部分grpc核心原理)
+    - [gRPC架构](#grpc架构)
+    - [实战案例1：Quick Start](#实战案例1quick-start)
+    - [实战案例2：生成Go代码](#实战案例2生成go代码)
+    - [实战案例3：服务端实现](#实战案例3服务端实现)
+    - [实战案例4：客户端实现](#实战案例4客户端实现)
+  - [第二部分：Protocol Buffers深度](#第二部分protocol-buffers深度)
+    - [实战案例5：高级Proto特性](#实战案例5高级proto特性)
+  - [第三部分：四种服务类型](#第三部分四种服务类型)
+    - [实战案例6：四种RPC完整示例](#实战案例6四种rpc完整示例)
+    - [服务端实现四种RPC](#服务端实现四种rpc)
+  - [第四部分：拦截器（中间件）](#第四部分拦截器中间件)
+    - [实战案例7：日志拦截器](#实战案例7日志拦截器)
+    - [实战案例8：认证拦截器](#实战案例8认证拦截器)
+  - [🎯 总结](#-总结)
+    - [gRPC核心要点](#grpc核心要点)
+    - [最佳实践清单](#最佳实践清单)
 
 ## 第一部分：gRPC核心原理
 
@@ -100,10 +101,10 @@ option go_package = "github.com/example/user/pb";
 service UserService {
   // 一元RPC：获取用户
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
-  
+
   // 一元RPC：创建用户
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
-  
+
   // 服务端流式RPC：列出用户
   rpc ListUsers(ListUsersRequest) returns (stream User);
 }
@@ -200,7 +201,7 @@ import (
 // UserServer 实现UserServiceServer接口
 type UserServer struct {
  pb.UnimplementedUserServiceServer  // 嵌入未实现的服务器（向前兼容）
- 
+
  mu    sync.RWMutex
  users map[int64]*pb.User
  nextID int64
@@ -217,27 +218,27 @@ func NewUserServer() *UserServer {
 // GetUser 获取用户（一元RPC）
 func (s *UserServer) GetUser(ctx context.Context, req *GetUserRequest) (*GetUserResponse, error) {
  log.Printf("GetUser: id=%d", req.Id)
- 
+
  // 参数验证
  if req.Id <= 0 {
   return nil, status.Error(codes.InvalidArgument, "invalid user id")
  }
- 
+
  s.mu.RLock()
  user, ok := s.users[req.Id]
  s.mu.RUnlock()
- 
+
  if !ok {
   return nil, status.Errorf(codes.NotFound, "user %d not found", req.Id)
  }
- 
+
  return &GetUserResponse{User: user}, nil
 }
 
 // CreateUser 创建用户（一元RPC）
 func (s *UserServer) CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
  log.Printf("CreateUser: name=%s, email=%s", req.Name, req.Email)
- 
+
  // 参数验证
  if req.Name == "" {
   return nil, status.Error(codes.InvalidArgument, "name is required")
@@ -245,10 +246,10 @@ func (s *UserServer) CreateUser(ctx context.Context, req *CreateUserRequest) (*C
  if req.Email == "" {
   return nil, status.Error(codes.InvalidArgument, "email is required")
  }
- 
+
  s.mu.Lock()
  defer s.mu.Unlock()
- 
+
  user := &pb.User{
   Id:    s.nextID,
   Name:  req.Name,
@@ -259,47 +260,47 @@ func (s *UserServer) CreateUser(ctx context.Context, req *CreateUserRequest) (*C
    "created_at": time.Now().Format(time.RFC3339),
   },
  }
- 
+
  s.users[s.nextID] = user
  s.nextID++
- 
+
  return &CreateUserResponse{User: user}, nil
 }
 
 // ListUsers 列出用户（服务端流式RPC）
 func (s *UserServer) ListUsers(req *ListUsersRequest, stream pb.UserService_ListUsersServer) error {
  log.Printf("ListUsers: page_size=%d", req.PageSize)
- 
+
  s.mu.RLock()
  defer s.mu.RUnlock()
- 
+
  // 模拟分页
  pageSize := req.PageSize
  if pageSize <= 0 {
   pageSize = 10
  }
- 
+
  count := 0
  for _, user := range s.users {
   // 检查上下文是否取消
   if err := stream.Context().Err(); err != nil {
    return status.Error(codes.Canceled, "client canceled request")
   }
-  
+
   // 发送用户
   if err := stream.Send(user); err != nil {
    return status.Errorf(codes.Internal, "failed to send user: %v", err)
   }
-  
+
   count++
   if count >= int(pageSize) {
    break
   }
-  
+
   // 模拟延迟
   time.Sleep(100 * time.Millisecond)
  }
- 
+
  return nil
 }
 
@@ -309,18 +310,18 @@ func main() {
  if err != nil {
   log.Fatalf("failed to listen: %v", err)
  }
- 
+
  // 创建gRPC服务器
  s := grpc.NewServer(
   grpc.MaxRecvMsgSize(4 * 1024 * 1024),  // 4MB
   grpc.MaxSendMsgSize(4 * 1024 * 1024),  // 4MB
  )
- 
+
  // 注册服务
  pb.RegisterUserServiceServer(s, NewUserServer())
- 
+
  log.Println("gRPC server listening on :50051")
- 
+
  // 启动服务器
  if err := s.Serve(lis); err != nil {
   log.Fatalf("failed to serve: %v", err)
@@ -358,13 +359,13 @@ func main() {
   log.Fatalf("did not connect: %v", err)
  }
  defer conn.Close()
- 
+
  // 创建客户端
  client := pb.NewUserServiceClient(conn)
- 
+
  ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
  defer cancel()
- 
+
  // 1. 创建用户（一元RPC）
  createResp, err := client.CreateUser(ctx, &pb.CreateUserRequest{
   Name:  "Alice",
@@ -375,7 +376,7 @@ func main() {
   log.Fatalf("CreateUser failed: %v", err)
  }
  log.Printf("Created user: %+v", createResp.User)
- 
+
  // 2. 获取用户（一元RPC）
  getResp, err := client.GetUser(ctx, &pb.GetUserRequest{
   Id: createResp.User.Id,
@@ -384,7 +385,7 @@ func main() {
   log.Fatalf("GetUser failed: %v", err)
  }
  log.Printf("Got user: %+v", getResp.User)
- 
+
  // 3. 列出用户（服务端流式RPC）
  stream, err := client.ListUsers(ctx, &pb.ListUsersRequest{
   PageSize: 10,
@@ -392,7 +393,7 @@ func main() {
  if err != nil {
   log.Fatalf("ListUsers failed: %v", err)
  }
- 
+
  log.Println("Listing users:")
  for {
   user, err := stream.Recv()
@@ -438,7 +439,7 @@ message Order {
   int64 id = 1;
   int64 user_id = 2;
   OrderStatus status = 3;
-  
+
   // 嵌套消息
   message Item {
     int64 product_id = 1;
@@ -446,19 +447,19 @@ message Order {
     int32 quantity = 3;
     double price = 4;
   }
-  
+
   repeated Item items = 4;
-  
+
   // 金额信息
   Money total_amount = 5;
-  
+
   // 时间戳
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
-  
+
   // 可选字段（Proto3）
   optional string note = 8;
-  
+
   // Oneof（只能设置一个）
   oneof payment_method {
     CreditCard credit_card = 10;
@@ -494,13 +495,13 @@ message BankTransfer {
 service OrderService {
   // 创建订单
   rpc CreateOrder(CreateOrderRequest) returns (Order);
-  
+
   // 获取订单
   rpc GetOrder(GetOrderRequest) returns (Order);
-  
+
   // 取消订单
   rpc CancelOrder(CancelOrderRequest) returns (google.protobuf.Empty);
-  
+
   // 流式监听订单状态
   rpc WatchOrder(WatchOrderRequest) returns (stream OrderEvent);
 }
@@ -548,13 +549,13 @@ option go_package = "github.com/example/chat/pb";
 service ChatService {
   // 1. 一元RPC：发送单条消息
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
-  
+
   // 2. 服务端流式RPC：订阅房间消息
   rpc SubscribeRoom(SubscribeRoomRequest) returns (stream Message);
-  
+
   // 3. 客户端流式RPC：批量上传消息
   rpc UploadMessages(stream Message) returns (UploadMessagesResponse);
-  
+
   // 4. 双向流式RPC：实时聊天
   rpc Chat(stream Message) returns (stream Message);
 }
@@ -607,7 +608,7 @@ import (
 
 type ChatServer struct {
  pb.UnimplementedChatServiceServer
- 
+
  mu          sync.RWMutex
  rooms       map[string]*Room
  subscribers map[string][]chan *pb.Message
@@ -628,7 +629,7 @@ func NewChatServer() *ChatServer {
 // 1. 一元RPC：发送单条消息
 func (s *ChatServer) SendMessage(ctx context.Context, req *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
  log.Printf("SendMessage: room=%s, content=%s", req.RoomId, req.Content)
- 
+
  msg := &pb.Message{
   Id:        fmt.Sprintf("%d", time.Now().UnixNano()),
   RoomId:    req.RoomId,
@@ -636,7 +637,7 @@ func (s *ChatServer) SendMessage(ctx context.Context, req *pb.SendMessageRequest
   Content:   req.Content,
   Timestamp: time.Now().Unix(),
  }
- 
+
  s.mu.Lock()
  room, ok := s.rooms[req.RoomId]
  if !ok {
@@ -644,7 +645,7 @@ func (s *ChatServer) SendMessage(ctx context.Context, req *pb.SendMessageRequest
   s.rooms[req.RoomId] = room
  }
  room.Messages = append(room.Messages, msg)
- 
+
  // 通知订阅者
  for _, ch := range s.subscribers[req.RoomId] {
   select {
@@ -653,21 +654,21 @@ func (s *ChatServer) SendMessage(ctx context.Context, req *pb.SendMessageRequest
   }
  }
  s.mu.Unlock()
- 
+
  return &pb.SendMessageResponse{Message: msg}, nil
 }
 
 // 2. 服务端流式RPC：订阅房间消息
 func (s *ChatServer) SubscribeRoom(req *pb.SubscribeRoomRequest, stream pb.ChatService_SubscribeRoomServer) error {
  log.Printf("SubscribeRoom: room=%s", req.RoomId)
- 
+
  // 创建订阅通道
  ch := make(chan *pb.Message, 100)
- 
+
  s.mu.Lock()
  s.subscribers[req.RoomId] = append(s.subscribers[req.RoomId], ch)
  s.mu.Unlock()
- 
+
  // 清理订阅
  defer func() {
   s.mu.Lock()
@@ -681,7 +682,7 @@ func (s *ChatServer) SubscribeRoom(req *pb.SubscribeRoomRequest, stream pb.ChatS
   s.mu.Unlock()
   close(ch)
  }()
- 
+
  // 发送历史消息
  s.mu.RLock()
  if room, ok := s.rooms[req.RoomId]; ok {
@@ -693,7 +694,7 @@ func (s *ChatServer) SubscribeRoom(req *pb.SubscribeRoomRequest, stream pb.ChatS
   }
  }
  s.mu.RUnlock()
- 
+
  // 持续发送新消息
  for {
   select {
@@ -710,7 +711,7 @@ func (s *ChatServer) SubscribeRoom(req *pb.SubscribeRoomRequest, stream pb.ChatS
 // 3. 客户端流式RPC：批量上传消息
 func (s *ChatServer) UploadMessages(stream pb.ChatService_UploadMessagesServer) error {
  log.Println("UploadMessages started")
- 
+
  count := 0
  for {
   msg, err := stream.Recv()
@@ -723,9 +724,9 @@ func (s *ChatServer) UploadMessages(stream pb.ChatService_UploadMessagesServer) 
   if err != nil {
    return status.Errorf(codes.Internal, "recv error: %v", err)
   }
-  
+
   log.Printf("Received message: %+v", msg)
-  
+
   // 保存消息
   s.mu.Lock()
   room, ok := s.rooms[msg.RoomId]
@@ -735,7 +736,7 @@ func (s *ChatServer) UploadMessages(stream pb.ChatService_UploadMessagesServer) 
   }
   room.Messages = append(room.Messages, msg)
   s.mu.Unlock()
-  
+
   count++
  }
 }
@@ -743,11 +744,11 @@ func (s *ChatServer) UploadMessages(stream pb.ChatService_UploadMessagesServer) 
 // 4. 双向流式RPC：实时聊天
 func (s *ChatServer) Chat(stream pb.ChatService_ChatServer) error {
  log.Println("Chat started")
- 
+
  // 创建接收goroutine
  receiveCh := make(chan *pb.Message, 10)
  errCh := make(chan error, 1)
- 
+
  go func() {
   for {
    msg, err := stream.Recv()
@@ -762,23 +763,23 @@ func (s *ChatServer) Chat(stream pb.ChatService_ChatServer) error {
    receiveCh <- msg
   }
  }()
- 
+
  // 处理消息
  for {
   select {
   case <-stream.Context().Done():
    return stream.Context().Err()
-  
+
   case err := <-errCh:
    return err
-  
+
   case msg, ok := <-receiveCh:
    if !ok {
     return nil
    }
-   
+
    log.Printf("Chat received: %+v", msg)
-   
+
    // 回显消息
    reply := &pb.Message{
     Id:        fmt.Sprintf("reply-%s", msg.Id),
@@ -787,7 +788,7 @@ func (s *ChatServer) Chat(stream pb.ChatService_ChatServer) error {
     Content:   fmt.Sprintf("Echo: %s", msg.Content),
     Timestamp: time.Now().Unix(),
    }
-   
+
    if err := stream.Send(reply); err != nil {
     return err
    }
@@ -825,30 +826,30 @@ func UnaryServerLogger() grpc.UnaryServerInterceptor {
   handler grpc.UnaryHandler,
  ) (interface{}, error) {
   start := time.Now()
-  
+
   // 获取客户端信息
   peer, _ := peer.FromContext(ctx)
   clientIP := peer.Addr.String()
-  
+
   // 获取元数据
   md, _ := metadata.FromIncomingContext(ctx)
-  
+
   log.Printf("[UnaryServer] → %s from %s", info.FullMethod, clientIP)
   log.Printf("[UnaryServer] Metadata: %v", md)
-  
+
   // 调用实际处理器
   resp, err := handler(ctx, req)
-  
+
   // 记录结果
   duration := time.Since(start)
   st, _ := status.FromError(err)
-  
-  log.Printf("[UnaryServer] ← %s [%s] %v", 
-   info.FullMethod, 
+
+  log.Printf("[UnaryServer] ← %s [%s] %v",
+   info.FullMethod,
    st.Code(),
    duration,
   )
-  
+
   return resp, err
  }
 }
@@ -862,23 +863,23 @@ func StreamServerLogger() grpc.StreamServerInterceptor {
   handler grpc.StreamHandler,
  ) error {
   start := time.Now()
-  
+
   peer, _ := peer.FromContext(ss.Context())
   clientIP := peer.Addr.String()
-  
+
   log.Printf("[StreamServer] → %s from %s", info.FullMethod, clientIP)
-  
+
   // 包装ServerStream
   wrapped := &wrappedServerStream{
    ServerStream: ss,
    method:       info.FullMethod,
   }
-  
+
   err := handler(srv, wrapped)
-  
+
   duration := time.Since(start)
   st, _ := status.FromError(err)
-  
+
   log.Printf("[StreamServer] ← %s [%s] %v [sent=%d, recv=%d]",
    info.FullMethod,
    st.Code(),
@@ -886,7 +887,7 @@ func StreamServerLogger() grpc.StreamServerInterceptor {
    wrapped.sentCount,
    wrapped.recvCount,
   )
-  
+
   return err
  }
 }
@@ -951,34 +952,34 @@ func UnaryServerAuth() grpc.UnaryServerInterceptor {
   if strings.HasSuffix(info.FullMethod, "/Health") {
    return handler(ctx, req)
   }
-  
+
   // 从元数据获取token
   md, ok := metadata.FromIncomingContext(ctx)
   if !ok {
    return nil, status.Error(codes.Unauthenticated, "missing metadata")
   }
-  
+
   tokens := md.Get("authorization")
   if len(tokens) == 0 {
    return nil, status.Error(codes.Unauthenticated, "missing token")
   }
-  
+
   token := tokens[0]
   if !strings.HasPrefix(token, "Bearer ") {
    return nil, status.Error(codes.Unauthenticated, "invalid token format")
   }
-  
+
   token = strings.TrimPrefix(token, "Bearer ")
-  
+
   // 验证token
   userID, err := validateToken(token)
   if err != nil {
    return nil, status.Error(codes.Unauthenticated, "invalid token")
   }
-  
+
   // 将用户ID注入context
   ctx = context.WithValue(ctx, ContextKeyUserID, userID)
-  
+
   return handler(ctx, req)
  }
 }
@@ -1034,7 +1035,7 @@ func GetUserIDFromContext(ctx context.Context) (string, bool) {
 
 ---
 
-**文档版本**: v15.0  
+**文档版本**: v15.0
 
 <div align="center">
 
@@ -1046,7 +1047,7 @@ Made with ❤️ for Microservice Developers
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

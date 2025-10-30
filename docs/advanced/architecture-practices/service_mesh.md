@@ -1,76 +1,46 @@
-﻿# 服务网格架构（Service Mesh Architecture）
+# 服务网格架构（Service Mesh Architecture）
 
 > **简介**: Istio/Linkerd服务网格架构设计与实践，实现服务间通信治理、安全和可观测性
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-
-- [目录](#目录)
-- [2. 国际标准与发展历程](#2.-国际标准与发展历程)
-  - [主流服务网格平台与标准](#主流服务网格平台与标准)
-  - [发展历程](#发展历程)
-  - [国际权威链接](#国际权威链接)
-- [3. 核心架构模式与设计原则](#3.-核心架构模式与设计原则)
-  - [控制平面与数据平面](#控制平面与数据平面)
-  - [Sidecar代理模式](#sidecar代理模式)
-  - [服务发现与负载均衡](#服务发现与负载均衡)
-  - [流量管理与路由](#流量管理与路由)
-  - [安全与认证](#安全与认证)
-- [4. 实际案例分析](#4.-实际案例分析)
-  - [微服务通信](#微服务通信)
-  - [金丝雀发布](#金丝雀发布)
-- [5. 未来趋势与国际前沿](#5.-未来趋势与国际前沿)
-- [6. 国际权威资源与开源组件引用](#6.-国际权威资源与开源组件引用)
-  - [服务网格平台](#主流服务网[服务网格平台](#服务网格平台)#云原生服务网格)
-  - [服务网格标准](#服务网格标准)
-- [7. 扩展阅读与参考文献](#7.-扩展阅读与参考文献)
-- [8. Golang主流实现与代码示例](#8.-golang主流实现与代码示例)
-  - [与服务网格集成的Go应用](#与服务网格集成的go应用)
-- [9. 分布式挑战与主流解决方案](#9.-分布式挑战与主流解决方案)
-  - [流量管理 (Traffic Management)](#流量管理-traffic-management)
-    - [金丝雀发布 (Canary Release)](#金丝雀发布-canary-release)
-    - [流量镜像 (Traffic Mirroring)](#流量镜像-traffic-mirroring)
-  - [安全 (Security)](#安全-security)
-    - [自动mTLS (Mutual TLS)](#自动mtls-mutual-tls)
-- [10. 相关架构主题](#10.-相关架构主题)
-- [11. 扩展阅读与参考文献](#11.-扩展阅读与参考文献)
-
-## 目录
-
 - [服务网格架构（Service Mesh Architecture）](#服务网格架构service-mesh-architecture)
-  - [目录](#目录)
-  - [2. 国际标准与发展历程](#2.-国际标准与发展历程)
+  - [📋 目录](#-目录)
+  - [2. 国际标准与发展历程](#2-国际标准与发展历程)
     - [主流服务网格平台与标准](#主流服务网格平台与标准)
     - [发展历程](#发展历程)
     - [国际权威链接](#国际权威链接)
-  - [3. 核心架构模式与设计原则](#3.-核心架构模式与设计原则)
+  - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
     - [控制平面与数据平面](#控制平面与数据平面)
     - [Sidecar代理模式](#sidecar代理模式)
     - [服务发现与负载均衡](#服务发现与负载均衡)
     - [流量管理与路由](#流量管理与路由)
     - [安全与认证](#安全与认证)
-  - [4. 实际案例分析](#4.-实际案例分析)
+  - [4. 实际案例分析](#4-实际案例分析)
     - [微服务通信](#微服务通信)
-    - [金丝雀发布](#金丝雀发布-canar[金丝雀发布](#金丝雀发布)(#5.-未来趋势与国际前沿)
-  - [6. 国际权威资源与开源组件引用](#6.-国际权威资源与开源组件引用)
-    - [服务网格平台](#主流服务网格平台与标准)
-    - [云原生服[服务网格平台](#服务网格平台)[服务网格标准](#服务网格标准)
-  - [7. 扩展阅读与参考文献](#7.-扩展阅读与参考文献)
-  - [8. Golang主流实现与代码示例](#8.-golang主流实现与代码示例)
+    - [金丝雀发布](#金丝雀发布)
+  - [5. 未来趋势与国际前沿](#5-未来趋势与国际前沿)
+  - [6. 国际权威资源与开源组件引用](#6-国际权威资源与开源组件引用)
+    - [服务网格平台](#服务网格平台)
+    - [云原生服务网格](#云原生服务网格)
+    - [服务网格标准](#服务网格标准)
+  - [7. 扩展阅读与参考文献](#7-扩展阅读与参考文献)
+  - [8. Golang主流实现与代码示例](#8-golang主流实现与代码示例)
     - [与服务网格集成的Go应用](#与服务网格集成的go应用)
-  - [9. 分布式挑战与主流解决方案](#9.-分布式挑战与主流解决方案)
+  - [9. 分布式挑战与主流解决方案](#9-分布式挑战与主流解决方案)
     - [流量管理 (Traffic Management)](#流量管理-traffic-management)
       - [金丝雀发布 (Canary Release)](#金丝雀发布-canary-release)
       - [流量镜像 (Traffic Mirroring)](#流量镜像-traffic-mirroring)
     - [安全 (Security)](#安全-security)
       - [自动mTLS (Mutual TLS)](#自动mtls-mutual-tls)
-  - [10. 相关架构主题](#10.-相关架构主题)
-  - [11. 扩展阅读与参考文献](#11.-扩展阅读与参考文献)
+  - [10. 相关架构主题](#10-相关架构主题)
+  - [11. 扩展阅读与参考文献](#11-扩展阅读与参考文献)
 
 ---
 
@@ -123,7 +93,7 @@
         CP_Policy --下发策略--> DataPlane;
         CP_Cert --下发证书(mTLS)--> DataPlane;
     end
-    
+
     subgraph "数据平面 (Data Plane)"
         direction LR
         subgraph "Pod 1"
@@ -134,7 +104,7 @@
         end
         ProxyA <--> ProxyB;
     end
-    
+
     DataPlane --上报遥测数据--> Telemetry[遥测/监控];
     CP_API -- "运维人员/CI/CD"
 
@@ -158,13 +128,13 @@ Sidecar模式是服务网格实现的基础。一个专用的代理（Sidecar）
 type ServiceDiscovery struct {
     // 服务注册表
     Registry map[string]*Service
-    
+
     // 健康检查
     HealthChecker *HealthChecker
-    
+
     // 服务解析器
     Resolvers map[string]ServiceResolver
-    
+
     // 缓存管理
     Cache *ServiceCache
 }
@@ -190,13 +160,13 @@ type Endpoint struct {
 type LoadBalancer struct {
     // 负载均衡策略
     Strategies map[string]LoadBalancingStrategy
-    
+
     // 健康检查
     HealthChecker *HealthChecker
-    
+
     // 会话保持
     SessionManager *SessionManager
-    
+
     // 权重管理
     WeightManager *WeightManager
 }
@@ -215,19 +185,19 @@ func (rr *RoundRobinStrategy) Select(endpoints []*Endpoint) *Endpoint {
     if len(endpoints) == 0 {
         return nil
     }
-    
+
     rr.mu.Lock()
     defer rr.mu.Unlock()
-    
+
     // 过滤健康端点
     healthyEndpoints := rr.filterHealthyEndpoints(endpoints)
     if len(healthyEndpoints) == 0 {
         return nil
     }
-    
+
     endpoint := healthyEndpoints[rr.current%len(healthyEndpoints)]
     rr.current++
-    
+
     return endpoint
 }
 
@@ -254,26 +224,26 @@ func (wrr *WeightedRoundRobinStrategy) Select(endpoints []*Endpoint) *Endpoint {
     if len(endpoints) == 0 {
         return nil
     }
-    
+
     wrr.mu.Lock()
     defer wrr.mu.Unlock()
-    
+
     // 过滤健康端点
     healthyEndpoints := wrr.filterHealthyEndpoints(endpoints)
     if len(healthyEndpoints) == 0 {
         return nil
     }
-    
+
     // 计算总权重
     totalWeight := 0
     for _, endpoint := range healthyEndpoints {
         totalWeight += endpoint.Weight
     }
-    
+
     if totalWeight == 0 {
         return healthyEndpoints[0]
     }
-    
+
     // 选择端点
     currentWeight := wrr.current % totalWeight
     for _, endpoint := range healthyEndpoints {
@@ -283,7 +253,7 @@ func (wrr *WeightedRoundRobinStrategy) Select(endpoints []*Endpoint) *Endpoint {
             return endpoint
         }
     }
-    
+
     return healthyEndpoints[0]
 }
 
@@ -310,20 +280,20 @@ func (lc *LeastConnectionsStrategy) Select(endpoints []*Endpoint) *Endpoint {
     if len(endpoints) == 0 {
         return nil
     }
-    
+
     lc.mu.RLock()
     defer lc.mu.RUnlock()
-    
+
     // 过滤健康端点
     healthyEndpoints := lc.filterHealthyEndpoints(endpoints)
     if len(healthyEndpoints) == 0 {
         return nil
     }
-    
+
     // 选择连接数最少的端点
     var selected *Endpoint
     minConnections := math.MaxInt32
-    
+
     for _, endpoint := range healthyEndpoints {
         connections := lc.connectionCounts[endpoint.ID]
         if connections < minConnections {
@@ -331,7 +301,7 @@ func (lc *LeastConnectionsStrategy) Select(endpoints []*Endpoint) *Endpoint {
             selected = endpoint
         }
     }
-    
+
     return selected
 }
 
@@ -370,16 +340,16 @@ func (lc *LeastConnectionsStrategy) DecrementConnections(endpointID string) {
 type TrafficManager struct {
     // 路由规则
     RoutingRules map[string]*RoutingRule
-    
+
     // 流量分割
     TrafficSplitting *TrafficSplitting
-    
+
     // 故障注入
     FaultInjection *FaultInjection
-    
+
     // 重试策略
     RetryPolicy *RetryPolicy
-    
+
     // 超时管理
     TimeoutManager *TimeoutManager
 }
@@ -397,13 +367,13 @@ type RoutingRule struct {
 type TrafficSplitting struct {
     // 版本权重
     VersionWeights map[string]int
-    
+
     // 流量分配
     TrafficAllocation map[string]float64
-    
+
     // 金丝雀发布
     CanaryDeployment *CanaryDeployment
-    
+
     // A/B测试
     ABTesting *ABTesting
 }
@@ -411,16 +381,16 @@ type TrafficSplitting struct {
 type CanaryDeployment struct {
     // 金丝雀版本
     CanaryVersion string
-    
+
     // 金丝雀权重
     CanaryWeight int
-    
+
     // 稳定版本
     StableVersion string
-    
+
     // 稳定权重
     StableWeight int
-    
+
     // 自动扩缩
     AutoScaling *AutoScaling
 }
@@ -428,13 +398,13 @@ type CanaryDeployment struct {
 type ABTesting struct {
     // 实验版本
     ExperimentVersions []string
-    
+
     // 版本权重
     VersionWeights map[string]int
-    
+
     // 用户分组
     UserGroups map[string]string
-    
+
     // 指标收集
     Metrics *ABTestingMetrics
 }
@@ -442,10 +412,10 @@ type ABTesting struct {
 type FaultInjection struct {
     // 延迟注入
     Delay *DelayInjection
-    
+
     // 错误注入
     Error *ErrorInjection
-    
+
     // 中断注入
     Abort *AbortInjection
 }
@@ -472,13 +442,13 @@ type AbortInjection struct {
 type RetryPolicy struct {
     // 重试次数
     MaxRetries int
-    
+
     // 重试条件
     RetryConditions []string
-    
+
     // 退避策略
     BackoffPolicy *BackoffPolicy
-    
+
     // 超时设置
     Timeout time.Duration
 }
@@ -504,17 +474,17 @@ func (tm *TrafficManager) RouteRequest(req *Request) (*Response, error) {
     if rule == nil {
         return nil, errors.New("no matching routing rule")
     }
-    
+
     // 2. 应用流量分割
     if err := tm.applyTrafficSplitting(req, rule); err != nil {
         return nil, err
     }
-    
+
     // 3. 注入故障
     if err := tm.injectFault(req); err != nil {
         return nil, err
     }
-    
+
     // 4. 执行路由动作
     return tm.executeRouteAction(req, rule.Action)
 }
@@ -522,41 +492,41 @@ func (tm *TrafficManager) RouteRequest(req *Request) (*Response, error) {
 func (tm *TrafficManager) matchRoutingRule(req *Request) *RoutingRule {
     var matchedRule *RoutingRule
     highestPriority := -1
-    
+
     for _, rule := range tm.RoutingRules {
         if !rule.Enabled {
             continue
         }
-        
+
         if tm.matchesRule(req, rule) && rule.Priority > highestPriority {
             matchedRule = rule
             highestPriority = rule.Priority
         }
     }
-    
+
     return matchedRule
 }
 
 func (tm *TrafficManager) matchesRule(req *Request, rule *RoutingRule) bool {
     match := rule.Match
-    
+
     // 路径匹配
     if match.Path != "" && !strings.HasPrefix(req.Path, match.Path) {
         return false
     }
-    
+
     // 方法匹配
     if match.Method != "" && req.Method != match.Method {
         return false
     }
-    
+
     // 头部匹配
     for key, value := range match.Headers {
         if req.Headers[key] != value {
             return false
         }
     }
-    
+
     return true
 }
 
@@ -564,34 +534,34 @@ func (tm *TrafficManager) applyTrafficSplitting(req *Request, rule *RoutingRule)
     if tm.TrafficSplitting == nil {
         return nil
     }
-    
+
     // 计算流量分配
     allocation := tm.calculateTrafficAllocation(req)
-    
+
     // 选择目标版本
     targetVersion := tm.selectTargetVersion(allocation)
-    
+
     // 设置目标版本
     req.TargetVersion = targetVersion
-    
+
     return nil
 }
 
 func (tm *TrafficManager) calculateTrafficAllocation(req *Request) map[string]float64 {
     allocation := make(map[string]float64)
-    
+
     // 基于用户ID的哈希分配
     userID := req.Headers["user-id"]
     if userID != "" {
         hash := fnv.New32a()
         hash.Write([]byte(userID))
         hashValue := hash.Sum32()
-        
+
         totalWeight := 0
         for _, weight := range tm.TrafficSplitting.VersionWeights {
             totalWeight += weight
         }
-        
+
         currentWeight := 0
         for version, weight := range tm.TrafficSplitting.VersionWeights {
             currentWeight += weight
@@ -601,7 +571,7 @@ func (tm *TrafficManager) calculateTrafficAllocation(req *Request) map[string]fl
             }
         }
     }
-    
+
     return allocation
 }
 
@@ -611,7 +581,7 @@ func (tm *TrafficManager) selectTargetVersion(allocation map[string]float64) str
             return version
         }
     }
-    
+
     // 默认返回稳定版本
     return "stable"
 }
@@ -620,14 +590,14 @@ func (tm *TrafficManager) injectFault(req *Request) error {
     if tm.FaultInjection == nil {
         return nil
     }
-    
+
     // 延迟注入
     if tm.FaultInjection.Delay != nil && tm.FaultInjection.Delay.Enabled {
         if tm.shouldInjectFault(tm.FaultInjection.Delay.Percentage) {
             time.Sleep(tm.FaultInjection.Delay.Duration)
         }
     }
-    
+
     // 错误注入
     if tm.FaultInjection.Error != nil && tm.FaultInjection.Error.Enabled {
         if tm.shouldInjectFault(tm.FaultInjection.Error.Percentage) {
@@ -637,7 +607,7 @@ func (tm *TrafficManager) injectFault(req *Request) error {
             }
         }
     }
-    
+
     // 中断注入
     if tm.FaultInjection.Abort != nil && tm.FaultInjection.Abort.Enabled {
         if tm.shouldInjectFault(tm.FaultInjection.Abort.Percentage) {
@@ -646,7 +616,7 @@ func (tm *TrafficManager) injectFault(req *Request) error {
             }
         }
     }
-    
+
     return nil
 }
 
@@ -660,13 +630,13 @@ func (tm *TrafficManager) executeRouteAction(req *Request, action *RouteAction) 
     if cluster == nil {
         return nil, errors.New("cluster not found")
     }
-    
+
     // 2. 选择端点
     endpoint := tm.selectEndpoint(cluster)
     if endpoint == nil {
         return nil, errors.New("no healthy endpoint available")
     }
-    
+
     // 3. 执行请求
     return tm.executeRequest(req, endpoint, action)
 }
@@ -675,7 +645,7 @@ func (tm *TrafficManager) executeRequest(req *Request, endpoint *Endpoint, actio
     // 1. 设置超时
     ctx, cancel := context.WithTimeout(context.Background(), action.Timeout)
     defer cancel()
-    
+
     // 2. 重试逻辑
     var lastErr error
     for attempt := 0; attempt <= action.Retries; attempt++ {
@@ -683,21 +653,21 @@ func (tm *TrafficManager) executeRequest(req *Request, endpoint *Endpoint, actio
         if err == nil {
             return resp, nil
         }
-        
+
         lastErr = err
-        
+
         // 检查是否应该重试
         if !tm.shouldRetry(err) {
             break
         }
-        
+
         // 计算退避延迟
         if attempt < action.Retries {
             delay := tm.calculateBackoffDelay(attempt)
             time.Sleep(delay)
         }
     }
-    
+
     return nil, lastErr
 }
 
@@ -706,12 +676,12 @@ func (tm *TrafficManager) shouldRetry(err error) bool {
     if netErr, ok := err.(net.Error); ok {
         return netErr.Temporary() || netErr.Timeout()
     }
-    
+
     // 检查HTTP状态码
     if httpErr, ok := err.(*HTTPError); ok {
         return httpErr.StatusCode >= 500
     }
-    
+
     return false
 }
 
@@ -719,9 +689,9 @@ func (tm *TrafficManager) calculateBackoffDelay(attempt int) time.Duration {
     if tm.RetryPolicy == nil || tm.RetryPolicy.BackoffPolicy == nil {
         return time.Second
     }
-    
+
     policy := tm.RetryPolicy.BackoffPolicy
-    
+
     switch policy.Type {
     case FixedBackoff:
         return policy.BaseDelay
@@ -753,16 +723,16 @@ func (tm *TrafficManager) calculateBackoffDelay(attempt int) time.Duration {
 type SecurityManager struct {
     // 认证策略
     AuthPolicies map[string]*AuthPolicy
-    
+
     // 授权策略
     AuthorizationPolicies map[string]*AuthorizationPolicy
-    
+
     // TLS配置
     TLSConfig *TLSConfig
-    
+
     // mTLS配置
     MTLSConfig *MTLSConfig
-    
+
     // 证书管理
     CertificateManager *CertificateManager
 }
@@ -805,20 +775,20 @@ type AuthRule struct {
 type TLSConfig struct {
     // 证书文件
     CertFile string
-    
+
     // 私钥文件
     KeyFile string
-    
+
     // CA证书
     CAFile string
-    
+
     // 验证模式
     VerifyMode TLSVerifyMode
-    
+
     // 支持的协议版本
     MinVersion uint16
     MaxVersion uint16
-    
+
     // 支持的加密套件
     CipherSuites []uint16
 }
@@ -826,19 +796,19 @@ type TLSConfig struct {
 type MTLSConfig struct {
     // 客户端证书
     ClientCertFile string
-    
+
     // 客户端私钥
     ClientKeyFile string
-    
+
     // 服务器证书
     ServerCertFile string
-    
+
     // 服务器私钥
     ServerKeyFile string
-    
+
     // CA证书
     CAFile string
-    
+
     // 验证模式
     VerifyMode TLSVerifyMode
 }
@@ -857,7 +827,7 @@ func (sm *SecurityManager) Authenticate(req *Request) (*AuthResult, error) {
     if policy == nil {
         return &AuthResult{Authenticated: true}, nil
     }
-    
+
     // 2. 执行认证
     switch policy.Type {
     case JWT:
@@ -878,18 +848,18 @@ func (sm *SecurityManager) Authenticate(req *Request) (*AuthResult, error) {
 func (sm *SecurityManager) getAuthPolicy(req *Request) *AuthPolicy {
     var selectedPolicy *AuthPolicy
     highestPriority := -1
-    
+
     for _, policy := range sm.AuthPolicies {
         if !policy.Enabled {
             continue
         }
-        
+
         if sm.matchesAuthPolicy(req, policy) && policy.Priority > highestPriority {
             selectedPolicy = policy
             highestPriority = policy.Priority
         }
     }
-    
+
     return selectedPolicy
 }
 
@@ -900,14 +870,14 @@ func (sm *SecurityManager) matchesAuthPolicy(req *Request, policy *AuthPolicy) b
             return false
         }
     }
-    
+
     // 检查方法匹配
     if method, exists := policy.Config["method"]; exists {
         if req.Method != method.(string) {
             return false
         }
     }
-    
+
     return true
 }
 
@@ -917,13 +887,13 @@ func (sm *SecurityManager) authenticateJWT(req *Request, policy *AuthPolicy) (*A
     if token == "" {
         return nil, errors.New("missing JWT token")
     }
-    
+
     // 2. 验证JWT
     claims, err := sm.validateJWT(token, policy)
     if err != nil {
         return nil, err
     }
-    
+
     return &AuthResult{
         Authenticated: true,
         Principal:     claims.Subject,
@@ -937,17 +907,17 @@ func (sm *SecurityManager) extractJWTToken(req *Request) string {
     if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
         return strings.TrimPrefix(authHeader, "Bearer ")
     }
-    
+
     // 从查询参数提取
     if token := req.QueryParams["token"]; token != "" {
         return token
     }
-    
+
     // 从Cookie提取
     if cookie := req.Cookies["jwt_token"]; cookie != "" {
         return cookie
     }
-    
+
     return ""
 }
 
@@ -958,35 +928,35 @@ func (sm *SecurityManager) validateJWT(tokenString string, policy *AuthPolicy) (
         if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
             return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
         }
-        
+
         // 获取公钥
         publicKey, err := sm.getPublicKey(policy)
         if err != nil {
             return nil, err
         }
-        
+
         return publicKey, nil
     })
-    
+
     if err != nil {
         return nil, err
     }
-    
+
     if !token.Valid {
         return nil, errors.New("invalid token")
     }
-    
+
     // 2. 提取声明
     claims, ok := token.Claims.(jwt.MapClaims)
     if !ok {
         return nil, errors.New("invalid claims")
     }
-    
+
     // 3. 验证声明
     if err := sm.validateJWTClaims(claims, policy); err != nil {
         return nil, err
     }
-    
+
     return &JWTClaims{
         Subject:   claims["sub"].(string),
         Issuer:    claims["iss"].(string),
@@ -1005,21 +975,21 @@ func (sm *SecurityManager) validateJWTClaims(claims jwt.MapClaims, policy *AuthP
             return errors.New("token expired")
         }
     }
-    
+
     // 2. 验证发行者
     if issuer, exists := policy.Config["issuer"]; exists {
         if claims["iss"] != issuer {
             return errors.New("invalid issuer")
         }
     }
-    
+
     // 3. 验证受众
     if audience, exists := policy.Config["audience"]; exists {
         if claims["aud"] != audience {
             return errors.New("invalid audience")
         }
     }
-    
+
     return nil
 }
 
@@ -1029,14 +999,14 @@ func (sm *SecurityManager) Authorize(req *Request, authResult *AuthResult) (bool
     if policy == nil {
         return true, nil
     }
-    
+
     // 2. 执行授权检查
     for _, rule := range policy.Rules {
         if sm.matchesAuthRule(authResult, rule) {
             return rule.Effect == "Allow", nil
         }
     }
-    
+
     // 默认拒绝
     return false, nil
 }
@@ -1044,18 +1014,18 @@ func (sm *SecurityManager) Authorize(req *Request, authResult *AuthResult) (bool
 func (sm *SecurityManager) getAuthorizationPolicy(req *Request) *AuthorizationPolicy {
     var selectedPolicy *AuthorizationPolicy
     highestPriority := -1
-    
+
     for _, policy := range sm.AuthorizationPolicies {
         if !policy.Enabled {
             continue
         }
-        
+
         if sm.matchesAuthorizationPolicy(req, policy) && policy.Priority > highestPriority {
             selectedPolicy = policy
             highestPriority = policy.Priority
         }
     }
-    
+
     return selectedPolicy
 }
 
@@ -1066,7 +1036,7 @@ func (sm *SecurityManager) matchesAuthorizationPolicy(req *Request, policy *Auth
             return true
         }
     }
-    
+
     return false
 }
 
@@ -1075,18 +1045,18 @@ func (sm *SecurityManager) matchesAuthRule(authResult *AuthResult, rule *AuthRul
     if rule.Principal != "*" && authResult.Principal != rule.Principal {
         return false
     }
-    
+
     // 检查动作匹配
     if rule.Action != "*" && rule.Action != "ALL" {
         // 这里需要根据具体实现来匹配动作
         return false
     }
-    
+
     // 检查条件
     if rule.Condition != nil {
         return sm.evaluateCondition(authResult, rule.Condition)
     }
-    
+
     return true
 }
 
@@ -1114,19 +1084,19 @@ func (sm *SecurityManager) evaluateCondition(authResult *AuthResult, condition *
 type MicroserviceMesh struct {
     // 服务注册
     ServiceRegistry *ServiceRegistry
-    
+
     // 服务发现
     ServiceDiscovery *ServiceDiscovery
-    
+
     // 负载均衡
     LoadBalancer *LoadBalancer
-    
+
     // 熔断器
     CircuitBreakers map[string]*CircuitBreaker
-    
+
     // 重试策略
     RetryPolicies map[string]*RetryPolicy
-    
+
     // 超时管理
     TimeoutManager *TimeoutManager
 }
@@ -1139,29 +1109,29 @@ type ServiceRegistry struct {
 func (sr *ServiceRegistry) Register(service *Service) error {
     sr.mu.Lock()
     defer sr.mu.Unlock()
-    
+
     // 验证服务信息
     if err := sr.validateService(service); err != nil {
         return err
     }
-    
+
     // 注册服务
     sr.services[service.Name] = service
-    
+
     // 启动健康检查
     go sr.startHealthCheck(service)
-    
+
     return nil
 }
 
 func (sr *ServiceRegistry) Deregister(serviceName string) error {
     sr.mu.Lock()
     defer sr.mu.Unlock()
-    
+
     if _, exists := sr.services[serviceName]; !exists {
         return errors.New("service not found")
     }
-    
+
     delete(sr.services, serviceName)
     return nil
 }
@@ -1169,12 +1139,12 @@ func (sr *ServiceRegistry) Deregister(serviceName string) error {
 func (sr *ServiceRegistry) GetService(serviceName string) (*Service, error) {
     sr.mu.RLock()
     defer sr.mu.RUnlock()
-    
+
     service, exists := sr.services[serviceName]
     if !exists {
         return nil, errors.New("service not found")
     }
-    
+
     return service, nil
 }
 
@@ -1182,28 +1152,28 @@ func (sr *ServiceRegistry) validateService(service *Service) error {
     if service.Name == "" {
         return errors.New("service name is required")
     }
-    
+
     if len(service.Endpoints) == 0 {
         return errors.New("service must have at least one endpoint")
     }
-    
+
     for _, endpoint := range service.Endpoints {
         if endpoint.Address == "" {
             return errors.New("endpoint address is required")
         }
-        
+
         if endpoint.Port <= 0 {
             return errors.New("endpoint port must be positive")
         }
     }
-    
+
     return nil
 }
 
 func (sr *ServiceRegistry) startHealthCheck(service *Service) {
     ticker := time.NewTicker(30 * time.Second)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ticker.C:
@@ -1225,27 +1195,27 @@ func (sr *ServiceRegistry) checkEndpointHealth(endpoint *Endpoint) bool {
     client := &http.Client{
         Timeout: 5 * time.Second,
     }
-    
+
     url := fmt.Sprintf("http://%s:%d/health", endpoint.Address, endpoint.Port)
     resp, err := client.Get(url)
     if err != nil {
         return false
     }
     defer resp.Body.Close()
-    
+
     return resp.StatusCode == 200
 }
 
 func (sr *ServiceRegistry) updateEndpointStatus(endpoint *Endpoint, healthy bool) {
     sr.mu.Lock()
     defer sr.mu.Unlock()
-    
+
     if healthy {
         endpoint.Status = EndpointStatusHealthy
     } else {
         endpoint.Status = EndpointStatusUnhealthy
     }
-    
+
     endpoint.LastCheck = time.Now()
 }
 ```
@@ -1256,16 +1226,16 @@ func (sr *ServiceRegistry) updateEndpointStatus(endpoint *Endpoint, healthy bool
 type CanaryDeploymentManager struct {
     // 部署配置
     DeploymentConfig *DeploymentConfig
-    
+
     // 流量分割
     TrafficSplitting *TrafficSplitting
-    
+
     // 监控指标
     Metrics *CanaryMetrics
-    
+
     // 自动扩缩
     AutoScaling *AutoScaling
-    
+
     // 回滚策略
     RollbackPolicy *RollbackPolicy
 }
@@ -1273,19 +1243,19 @@ type CanaryDeploymentManager struct {
 type DeploymentConfig struct {
     // 服务名称
     ServiceName string
-    
+
     // 稳定版本
     StableVersion string
-    
+
     // 金丝雀版本
     CanaryVersion string
-    
+
     // 金丝雀权重
     CanaryWeight int
-    
+
     // 稳定权重
     StableWeight int
-    
+
     // 自动扩缩配置
     AutoScalingConfig *AutoScalingConfig
 }
@@ -1293,13 +1263,13 @@ type DeploymentConfig struct {
 type CanaryMetrics struct {
     // 错误率
     ErrorRate map[string]float64
-    
+
     // 延迟
     Latency map[string]time.Duration
-    
+
     // 吞吐量
     Throughput map[string]int64
-    
+
     // 成功率
     SuccessRate map[string]float64
 }
@@ -1307,10 +1277,10 @@ type CanaryMetrics struct {
 type AutoScaling struct {
     // 扩缩策略
     ScalingPolicy *ScalingPolicy
-    
+
     // 指标阈值
     MetricsThreshold *MetricsThreshold
-    
+
     // 扩缩历史
     ScalingHistory []*ScalingEvent
 }
@@ -1318,16 +1288,16 @@ type AutoScaling struct {
 type ScalingPolicy struct {
     // 最小实例数
     MinInstances int
-    
+
     // 最大实例数
     MaxInstances int
-    
+
     // 目标CPU使用率
     TargetCPUUtilization int
-    
+
     // 目标内存使用率
     TargetMemoryUtilization int
-    
+
     // 扩缩冷却时间
     CooldownPeriod time.Duration
 }
@@ -1335,10 +1305,10 @@ type ScalingPolicy struct {
 type MetricsThreshold struct {
     // 错误率阈值
     ErrorRateThreshold float64
-    
+
     // 延迟阈值
     LatencyThreshold time.Duration
-    
+
     // 成功率阈值
     SuccessRateThreshold float64
 }
@@ -1348,20 +1318,20 @@ func (cdm *CanaryDeploymentManager) DeployCanary(config *DeploymentConfig) error
     if err := cdm.validateDeploymentConfig(config); err != nil {
         return err
     }
-    
+
     // 2. 部署金丝雀版本
     if err := cdm.deployCanaryVersion(config); err != nil {
         return err
     }
-    
+
     // 3. 配置流量分割
     if err := cdm.configureTrafficSplitting(config); err != nil {
         return err
     }
-    
+
     // 4. 启动监控
     go cdm.startMonitoring(config)
-    
+
     return nil
 }
 
@@ -1369,23 +1339,23 @@ func (cdm *CanaryDeploymentManager) validateDeploymentConfig(config *DeploymentC
     if config.ServiceName == "" {
         return errors.New("service name is required")
     }
-    
+
     if config.CanaryVersion == "" {
         return errors.New("canary version is required")
     }
-    
+
     if config.CanaryWeight < 0 || config.CanaryWeight > 100 {
         return errors.New("canary weight must be between 0 and 100")
     }
-    
+
     if config.StableWeight < 0 || config.StableWeight > 100 {
         return errors.New("stable weight must be between 0 and 100")
     }
-    
+
     if config.CanaryWeight+config.StableWeight != 100 {
         return errors.New("canary weight and stable weight must sum to 100")
     }
-    
+
     return nil
 }
 
@@ -1394,17 +1364,17 @@ func (cdm *CanaryDeploymentManager) deployCanaryVersion(config *DeploymentConfig
     if err := cdm.buildCanaryImage(config); err != nil {
         return err
     }
-    
+
     // 2. 部署金丝雀服务
     if err := cdm.deployCanaryService(config); err != nil {
         return err
     }
-    
+
     // 3. 等待服务就绪
     if err := cdm.waitForServiceReady(config); err != nil {
         return err
     }
-    
+
     return nil
 }
 
@@ -1417,7 +1387,7 @@ func (cdm *CanaryDeploymentManager) configureTrafficSplitting(config *Deployment
         StableWeight:   config.StableWeight,
         CanaryWeight:   config.CanaryWeight,
     }
-    
+
     // 2. 应用流量分割规则
     return cdm.TrafficSplitting.ApplyRule(rule)
 }
@@ -1425,7 +1395,7 @@ func (cdm *CanaryDeploymentManager) configureTrafficSplitting(config *Deployment
 func (cdm *CanaryDeploymentManager) startMonitoring(config *DeploymentConfig) {
     ticker := time.NewTicker(30 * time.Second)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ticker.C:
@@ -1437,17 +1407,17 @@ func (cdm *CanaryDeploymentManager) startMonitoring(config *DeploymentConfig) {
 func (cdm *CanaryDeploymentManager) evaluateCanaryHealth(config *DeploymentConfig) {
     // 1. 收集指标
     metrics := cdm.collectMetrics(config)
-    
+
     // 2. 评估健康状态
     healthy := cdm.evaluateHealth(metrics)
-    
+
     // 3. 执行扩缩
     if healthy {
         cdm.scaleUpCanary(config)
     } else {
         cdm.scaleDownCanary(config)
     }
-    
+
     // 4. 检查是否需要回滚
     if cdm.shouldRollback(metrics) {
         cdm.rollbackCanary(config)
@@ -1461,21 +1431,21 @@ func (cdm *CanaryDeploymentManager) collectMetrics(config *DeploymentConfig) *Ca
         Throughput:  make(map[string]int64),
         SuccessRate: make(map[string]float64),
     }
-    
+
     // 收集稳定版本指标
     stableMetrics := cdm.collectServiceMetrics(config.ServiceName, config.StableVersion)
     metrics.ErrorRate[config.StableVersion] = stableMetrics.ErrorRate
     metrics.Latency[config.StableVersion] = stableMetrics.Latency
     metrics.Throughput[config.StableVersion] = stableMetrics.Throughput
     metrics.SuccessRate[config.StableVersion] = stableMetrics.SuccessRate
-    
+
     // 收集金丝雀版本指标
     canaryMetrics := cdm.collectServiceMetrics(config.ServiceName, config.CanaryVersion)
     metrics.ErrorRate[config.CanaryVersion] = canaryMetrics.ErrorRate
     metrics.Latency[config.CanaryVersion] = canaryMetrics.Latency
     metrics.Throughput[config.CanaryVersion] = canaryMetrics.Throughput
     metrics.SuccessRate[config.CanaryVersion] = canaryMetrics.SuccessRate
-    
+
     return metrics
 }
 
@@ -1486,21 +1456,21 @@ func (cdm *CanaryDeploymentManager) evaluateHealth(metrics *CanaryMetrics) bool 
             return false
         }
     }
-    
+
     // 检查延迟
     for version, latency := range metrics.Latency {
         if latency > cdm.AutoScaling.MetricsThreshold.LatencyThreshold {
             return false
         }
     }
-    
+
     // 检查成功率
     for version, successRate := range metrics.SuccessRate {
         if successRate < cdm.AutoScaling.MetricsThreshold.SuccessRateThreshold {
             return false
         }
     }
-    
+
     return true
 }
 
@@ -1508,18 +1478,18 @@ func (cdm *CanaryDeploymentManager) shouldRollback(metrics *CanaryMetrics) bool 
     // 检查金丝雀版本是否显著差于稳定版本
     canaryErrorRate := metrics.ErrorRate["canary"]
     stableErrorRate := metrics.ErrorRate["stable"]
-    
+
     if canaryErrorRate > stableErrorRate*1.5 {
         return true
     }
-    
+
     canaryLatency := metrics.Latency["canary"]
     stableLatency := metrics.Latency["stable"]
-    
+
     if canaryLatency > stableLatency*1.5 {
         return true
     }
-    
+
     return false
 }
 
@@ -1528,20 +1498,20 @@ func (cdm *CanaryDeploymentManager) rollbackCanary(config *DeploymentConfig) err
     if err := cdm.stopCanaryTraffic(config); err != nil {
         return err
     }
-    
+
     // 2. 删除金丝雀服务
     if err := cdm.deleteCanaryService(config); err != nil {
         return err
     }
-    
+
     // 3. 恢复稳定版本流量
     if err := cdm.restoreStableTraffic(config); err != nil {
         return err
     }
-    
+
     // 4. 记录回滚事件
     cdm.recordRollbackEvent(config)
-    
+
     return nil
 }
 ```
@@ -1620,7 +1590,7 @@ func getProductsHandler(w http.ResponseWriter, r *http.Request) {
         // _, err := http.Get(downstreamSvc)
         // ... 处理响应和错误
     }
-    
+
     products := []Product{
         {ID: "p123", Name: "Laptop Pro"},
         {ID: "p456", Name: "Wireless Mouse"},
@@ -1640,7 +1610,7 @@ func main() {
     }
 
     http.HandleFunc("/products", getProductsHandler)
-    
+
     log.Printf("Product service starting on port %s", port)
     if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
         log.Fatalf("Failed to start server: %v", err)
@@ -1756,7 +1726,7 @@ spec:
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

@@ -1,32 +1,34 @@
-﻿# Channel基础
+# Channel基础
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+
 
 ---
 
 ## 📋 目录
 
-- [📚 **理论分析**](#理论分析)
-  - [**Channel定义与原理**](#channel定义与原理)
-    - [**形式化描述**](#形式化描述)
-  - [**Channel类型**](#channel类型)
-  - [**同步与异步通信**](#同步与异步通信)
-    - [无缓冲 vs 有缓冲Channel可视化](#无缓冲-vs-有缓冲channel可视化)
-  - [**关闭Channel**](#关闭channel)
-    - [Channel生命周期状态图](#channel生命周期状态图)
-    - [多Goroutine通信模式](#多goroutine通信模式)
-- [💻 **代码示例**](#代码示例)
-  - [**无缓冲Channel通信**](#无缓冲channel通信)
-  - [**有缓冲Channel通信**](#有缓冲channel通信)
-  - [**单向Channel用法**](#单向channel用法)
-  - [**关闭Channel与检测**](#关闭channel与检测)
-- [📊 **性能分析**](#性能分析)
-- [🧪 **测试代码**](#测试代码)
-- [🎯 **最佳实践**](#最佳实践)
-- [🔍 **常见问题**](#常见问题)
-- [📚 **扩展阅读**](#扩展阅读)
+- [Channel基础](#channel基础)
+  - [📋 目录](#-目录)
+  - [📚 **理论分析**](#-理论分析)
+    - [**Channel定义与原理**](#channel定义与原理)
+      - [**形式化描述**](#形式化描述)
+    - [**Channel类型**](#channel类型)
+    - [**同步与异步通信**](#同步与异步通信)
+      - [无缓冲 vs 有缓冲Channel可视化](#无缓冲-vs-有缓冲channel可视化)
+    - [**关闭Channel**](#关闭channel)
+      - [Channel生命周期状态图](#channel生命周期状态图)
+      - [多Goroutine通信模式](#多goroutine通信模式)
+  - [💻 **代码示例**](#-代码示例)
+    - [**无缓冲Channel通信**](#无缓冲channel通信)
+    - [**有缓冲Channel通信**](#有缓冲channel通信)
+    - [**单向Channel用法**](#单向channel用法)
+    - [**关闭Channel与检测**](#关闭channel与检测)
+  - [📊 **性能分析**](#-性能分析)
+  - [🧪 **测试代码**](#-测试代码)
+  - [🎯 **最佳实践**](#-最佳实践)
+  - [🔍 **常见问题**](#-常见问题)
+  - [📚 **扩展阅读**](#-扩展阅读)
 
 ## 📚 **理论分析**
 
@@ -63,15 +65,15 @@ sequenceDiagram
     participant G1 as Goroutine 1<br/>(发送方)
     participant UnBuf as 无缓冲Channel<br/>cap=0
     participant G2 as Goroutine 2<br/>(接收方)
-    
+
     Note over G1,G2: 无缓冲Channel - 同步通信
-    
+
     G1->>UnBuf: ch <- 42
     Note over G1: ⏸️ 阻塞等待
-    
+
     G2->>UnBuf: v := <-ch
     Note over UnBuf: 直接传递
-    
+
     UnBuf-->>G2: 返回 42
     Note over G1: ✅ 发送完成
     Note over G2: ✅ 接收完成
@@ -82,25 +84,25 @@ sequenceDiagram
     participant G1 as Goroutine 1<br/>(发送方)
     participant Buf as 有缓冲Channel<br/>cap=2
     participant G2 as Goroutine 2<br/>(接收方)
-    
+
     Note over G1,G2: 有缓冲Channel - 异步通信
-    
+
     G1->>Buf: ch <- "hello"
     Note over Buf: 缓冲区: ["hello"]
     Note over G1: ✅ 立即返回
-    
+
     G1->>Buf: ch <- "world"
     Note over Buf: 缓冲区: ["hello", "world"]
     Note over G1: ✅ 立即返回
-    
+
     G1->>Buf: ch <- "!"
     Note over G1: ⏸️ 缓冲满，阻塞
-    
+
     G2->>Buf: v1 := <-ch
     Note over Buf: 缓冲区: ["world", "!"]
     Buf-->>G2: "hello"
     Note over G1: ✅ 发送"!"完成
-    
+
     G2->>Buf: v2 := <-ch
     Note over Buf: 缓冲区: ["!"]
     Buf-->>G2: "world"
@@ -116,33 +118,33 @@ sequenceDiagram
 ```mermaid
 stateDiagram-v2
     [*] --> Created: make(chan T, n)
-    
+
     Created --> Open: 初始状态
-    
+
     state Open {
         [*] --> Ready
         Ready --> Sending: ch <- value
         Ready --> Receiving: <-ch
-        
+
         Sending --> Ready: 发送成功
         Receiving --> Ready: 接收成功
-        
+
         Sending --> Blocked: 缓冲满/无接收方
         Receiving --> Blocked: 无数据/无发送方
-        
+
         Blocked --> Ready: 条件满足
     }
-    
+
     Open --> Closed: close(ch)
-    
+
     state Closed {
         [*] --> DrainData: 缓冲有数据
         DrainData --> Empty: 数据耗尽
         Empty --> [*]
     }
-    
+
     Closed --> [*]: GC回收
-    
+
     note right of Closed
         关闭后:
         - ❌ 不能发送 (panic)
@@ -161,26 +163,26 @@ graph TB
         W1[Worker 1]
         W2[Worker 2]
         W3[Worker 3]
-        
+
         Producer -->|发送任务| Ch1
         Ch1 -->|任务1| W1
         Ch1 -->|任务2| W2
         Ch1 -->|任务3| W3
     end
-    
+
     subgraph "Fan-In 扇入模式"
         P1[Producer 1]
         P2[Producer 2]
         P3[Producer 3]
         Ch2[Channel]
         Consumer[📥 Consumer]
-        
+
         P1 -->|结果1| Ch2
         P2 -->|结果2| Ch2
         P3 -->|结果3| Ch2
         Ch2 -->|聚合| Consumer
     end
-    
+
     style Producer fill:#e1ffe1
     style Consumer fill:#e1ffe1
     style Ch1 fill:#fff4e1
@@ -299,7 +301,7 @@ func TestChannelClosed(t *testing.T) {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

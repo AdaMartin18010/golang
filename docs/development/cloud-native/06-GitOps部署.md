@@ -1,7 +1,7 @@
-﻿# GitOps部署
+# GitOps部署
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+ / Kubernetes 1.28+
 
 ---
@@ -84,7 +84,7 @@ flux bootstrap github \
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Kubernetes 1.27+, ArgoCD 2.9+, Flux 2.2+

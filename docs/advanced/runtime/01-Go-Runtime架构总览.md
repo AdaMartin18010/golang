@@ -1,39 +1,40 @@
-﻿# Go Runtime架构总览
+# Go Runtime架构总览
 
 ## 📋 目录
 
-
-- [1. 什么是Go Runtime](#1-什么是go-runtime)
-  - [Runtime定义](#runtime定义)
-  - [与其他语言对比](#与其他语言对比)
-- [2. Runtime核心组件](#2-runtime核心组件)
-  - [整体架构](#整体架构)
-  - [核心组件详解](#核心组件详解)
-    - [1. 调度器 (Scheduler)](#1-调度器-scheduler)
-    - [2. 内存分配器 (Allocator)](#2-内存分配器-allocator)
-    - [3. 垃圾回收器 (GC)](#3-垃圾回收器-gc)
-- [3. 启动流程](#3-启动流程)
-  - [完整启动过程](#完整启动过程)
-- [4. 内存管理](#4-内存管理)
-  - [内存分配流程](#内存分配流程)
-  - [内存布局](#内存布局)
-  - [内存统计](#内存统计)
-- [5. 调度系统](#5-调度系统)
-  - [调度循环](#调度循环)
-  - [调度时机](#调度时机)
-  - [Work Stealing](#work-stealing)
-- [6. 垃圾回收](#6-垃圾回收)
-  - [GC触发条件](#gc触发条件)
-  - [GC Pacer](#gc-pacer)
-  - [GC性能](#gc性能)
-- [7. 性能监控](#7-性能监控)
-  - [pprof监控](#pprof监控)
-  - [Runtime指标](#runtime指标)
-- [8. 调优实战](#8-调优实战)
-  - [案例1: 减少GC压力](#案例1-减少gc压力)
-  - [案例2: 优化调度](#案例2-优化调度)
-  - [案例3: 内存对齐](#案例3-内存对齐)
-- [🔗 相关资源](#相关资源)
+- [Go Runtime架构总览](#go-runtime架构总览)
+  - [📋 目录](#-目录)
+  - [1. 什么是Go Runtime](#1-什么是go-runtime)
+    - [Runtime定义](#runtime定义)
+    - [与其他语言对比](#与其他语言对比)
+  - [2. Runtime核心组件](#2-runtime核心组件)
+    - [整体架构](#整体架构)
+    - [核心组件详解](#核心组件详解)
+      - [1. 调度器 (Scheduler)](#1-调度器-scheduler)
+      - [2. 内存分配器 (Allocator)](#2-内存分配器-allocator)
+      - [3. 垃圾回收器 (GC)](#3-垃圾回收器-gc)
+  - [3. 启动流程](#3-启动流程)
+    - [完整启动过程](#完整启动过程)
+  - [4. 内存管理](#4-内存管理)
+    - [内存分配流程](#内存分配流程)
+    - [内存布局](#内存布局)
+    - [内存统计](#内存统计)
+  - [5. 调度系统](#5-调度系统)
+    - [调度循环](#调度循环)
+    - [调度时机](#调度时机)
+    - [Work Stealing](#work-stealing)
+  - [6. 垃圾回收](#6-垃圾回收)
+    - [GC触发条件](#gc触发条件)
+    - [GC Pacer](#gc-pacer)
+    - [GC性能](#gc性能)
+  - [7. 性能监控](#7-性能监控)
+    - [pprof监控](#pprof监控)
+    - [Runtime指标](#runtime指标)
+  - [8. 调优实战](#8-调优实战)
+    - [案例1: 减少GC压力](#案例1-减少gc压力)
+    - [案例2: 优化调度](#案例2-优化调度)
+    - [案例3: 内存对齐](#案例3-内存对齐)
+  - [🔗 相关资源](#-相关资源)
 
 ## 1. 什么是Go Runtime
 
@@ -59,6 +60,7 @@ Go Runtime是Go程序运行时的支撑系统，内置在每个Go可执行文件
 | **调度** | M:N(GMP) | 1:1(线程) | GIL限制 | 手动 |
 
 **Go的优势**:
+
 - 二进制文件包含完整Runtime，部署简单
 - 启动快速，适合微服务和容器
 - 内存占用小，适合高并发场景
@@ -103,6 +105,7 @@ Go Runtime是Go程序运行时的支撑系统，内置在每个Go可执行文件
 #### 1. 调度器 (Scheduler)
 
 **GMP模型**:
+
 - **G (Goroutine)**: 用户级轻量线程
 - **M (Machine)**: 系统线程
 - **P (Processor)**: 逻辑处理器
@@ -136,6 +139,7 @@ type p struct {
 ```
 
 **特点**:
+
 - P数量 = GOMAXPROCS (默认CPU核心数)
 - M可以动态创建，通常M数量 > P数量
 - 每个P有本地队列，减少锁竞争
@@ -158,6 +162,7 @@ Heap
 ```
 
 **大小分类**:
+
 - **Tiny**: < 16B (合并分配)
 - **Small**: 16B - 32KB (使用span)
 - **Large**: > 32KB (直接分配)
@@ -207,25 +212,26 @@ type mcache struct {
 func gcStart(trigger gcTrigger) {
     // 1. Stop The World (STW)
     systemstack(stopTheWorldWithSema)
-    
+
     // 2. 并发标记准备
     gcBgMarkPrepare()
-    
+
     // 3. Start The World
     systemstack(startTheWorldWithSema)
-    
+
     // 4. 并发标记
     gcBgMarkWorker()
-    
+
     // 5. 标记终止 (STW)
     gcMarkTermination()
-    
+
     // 6. 清除
     gcSweep()
 }
 ```
 
 **Go 1.25特性**:
+
 - 并发GC，STW < 100μs
 - 写屏障优化
 - 混合写屏障技术
@@ -255,13 +261,13 @@ func schedinit() {
     if n := int32(gogetenv("GOMAXPROCS")); n > 0 {
         procs = n
     }
-    
+
     // 分配P
     procresize(procs)
-    
+
     // 初始化内存分配器
     mallocinit()
-    
+
     // 初始化GC
     gcinit()
 }
@@ -270,7 +276,7 @@ func schedinit() {
 func newproc(siz int32, fn *funcval) {
     // 创建新goroutine
     newg := newproc1(fn, argp, siz, callergp, callerpc)
-    
+
     // 放入运行队列
     runqput(_p_, newg, true)
 }
@@ -279,7 +285,7 @@ func newproc(siz int32, fn *funcval) {
 func mstart() {
     // 启动M
     mstart1()
-    
+
     // 进入调度循环
     schedule()
 }
@@ -289,7 +295,7 @@ func main() {
     // 运行用户main函数
     fn := main_main
     fn()
-    
+
     // 退出
     exit(0)
 }
@@ -326,14 +332,14 @@ t6: 执行main.main
 func mallocgc(size uintptr, typ *_type, needzero bool) unsafe.Pointer {
     // 1. 获取mcache
     c := gomcache()
-    
+
     // 2. 根据大小选择span
     var sizeclass uint8
     if size <= smallSizeMax {
         // 计算sizeclass
         sizeclass = size_to_class[size]
     }
-    
+
     // 3. 从mcache分配
     span := c.alloc[sizeclass]
     v := nextFreeFast(span)
@@ -341,7 +347,7 @@ func mallocgc(size uintptr, typ *_type, needzero bool) unsafe.Pointer {
         // mcache不足，从mcentral获取
         v, span, shouldhelpgc = c.nextFree(sizeclass)
     }
-    
+
     return v
 }
 
@@ -378,7 +384,7 @@ Virtual Memory Layout (64-bit):
 func printMemStats() {
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
-    
+
     fmt.Printf("Alloc = %v MB\n", m.Alloc/1024/1024)
     fmt.Printf("TotalAlloc = %v MB\n", m.TotalAlloc/1024/1024)
     fmt.Printf("Sys = %v MB\n", m.Sys/1024/1024)
@@ -402,22 +408,22 @@ top:
         gcstopm()
         goto top
     }
-    
+
     // 2. 每61次从全局队列获取
     if _g_.m.p.ptr().schedtick%61 == 0 && sched.runqsize > 0 {
         gp = globrunqget(_g_.m.p.ptr(), 1)
     }
-    
+
     // 3. 从本地队列获取
     if gp == nil {
         gp, inheritTime = runqget(_g_.m.p.ptr())
     }
-    
+
     // 4. 从全局队列获取
     if gp == nil {
         gp, inheritTime = findrunnable() // 阻塞
     }
-    
+
     // 5. 执行goroutine
     execute(gp, inheritTime)
 }
@@ -426,6 +432,7 @@ top:
 ### 调度时机
 
 **主动调度**:
+
 ```go
 // 1. runtime.Gosched() - 主动让出
 func Gosched() {
@@ -439,6 +446,7 @@ func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer) {
 ```
 
 **被动调度**:
+
 ```go
 // 1. 系统调用 - 超过20μs
 func exitsyscall() {
@@ -462,7 +470,7 @@ func findrunnable() (gp *g, inheritTime bool) {
     if gp, inheritTime := runqget(_p_); gp != nil {
         return gp, inheritTime
     }
-    
+
     // 2. 全局队列
     if sched.runqsize != 0 {
         gp := globrunqget(_p_, 0)
@@ -470,7 +478,7 @@ func findrunnable() (gp *g, inheritTime bool) {
             return gp, false
         }
     }
-    
+
     // 3. 从其他P窃取 (Work Stealing)
     for i := 0; i < 4; i++ {
         for enum := stealOrder.start(fastrand()); !enum.done(); enum.next() {
@@ -480,7 +488,7 @@ func findrunnable() (gp *g, inheritTime bool) {
             }
         }
     }
-    
+
     return nil, false
 }
 ```
@@ -557,7 +565,7 @@ func main() {
     go func() {
         http.ListenAndServe("localhost:6060", nil)
     }()
-    
+
     // 应用逻辑
 }
 ```
@@ -657,7 +665,7 @@ func handleRequests(requests []Request) {
 func handleRequestsOptimized(requests []Request) {
     numWorkers := runtime.GOMAXPROCS(0)
     jobs := make(chan Request, len(requests))
-    
+
     // 固定数量的worker
     var wg sync.WaitGroup
     for i := 0; i < numWorkers; i++ {
@@ -669,7 +677,7 @@ func handleRequestsOptimized(requests []Request) {
             }
         }()
     }
-    
+
     for _, req := range requests {
         jobs <- req
     }
@@ -715,7 +723,6 @@ type Counter struct {
 
 ---
 
-**最后更新**: 2025-10-29  
-**Go版本**: 1.25.3  
+**最后更新**: 2025-10-29
+**Go版本**: 1.25.3
 **文档类型**: Runtime深度解析 ✨
-

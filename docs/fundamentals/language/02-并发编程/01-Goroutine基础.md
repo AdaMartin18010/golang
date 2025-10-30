@@ -1,7 +1,7 @@
-﻿# Goroutine基础
+# Goroutine基础
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
@@ -10,28 +10,30 @@
 
 ## 📋 目录
 
-- [1. Goroutine简介](#1-goroutine简介)
-  - [什么是Goroutine](#什么是goroutine)
-  - [Goroutine vs 线程](#goroutine-vs-线程)
-- [2. 创建与使用](#2-创建与使用)
-  - [基本语法](#基本语法)
-  - [传递参数](#传递参数)
-  - [等待Goroutine完成](#等待goroutine完成)
-    - [方法1: WaitGroup](#方法1-waitgroup)
-    - [方法2: Channel](#方法2-channel)
-- [3. GMP调度模型](#3-gmp调度模型)
-  - [GMP组件](#gmp组件)
-  - [调度策略](#调度策略)
-  - [GOMAXPROCS](#gomaxprocs)
-- [4. 最佳实践](#4-最佳实践)
-  - [1. 控制Goroutine数量](#1-控制goroutine数量)
-  - [2. 使用Context管理生命周期](#2-使用context管理生命周期)
-  - [3. 避免Goroutine泄漏](#3-避免goroutine泄漏)
-- [5. 常见陷阱](#5-常见陷阱)
-  - [陷阱1: 循环变量捕获](#陷阱1-循环变量捕获)
-  - [陷阱2: Goroutine数量爆炸](#陷阱2-goroutine数量爆炸)
-  - [陷阱3: 未等待Goroutine完成](#陷阱3-未等待goroutine完成)
-- [🔗 相关资源](#相关资源)
+- [Goroutine基础](#goroutine基础)
+  - [📋 目录](#-目录)
+  - [1. Goroutine简介](#1-goroutine简介)
+    - [什么是Goroutine](#什么是goroutine)
+    - [Goroutine vs 线程](#goroutine-vs-线程)
+  - [2. 创建与使用](#2-创建与使用)
+    - [基本语法](#基本语法)
+    - [传递参数](#传递参数)
+    - [等待Goroutine完成](#等待goroutine完成)
+      - [方法1: WaitGroup](#方法1-waitgroup)
+      - [方法2: Channel](#方法2-channel)
+  - [3. GMP调度模型](#3-gmp调度模型)
+    - [GMP组件](#gmp组件)
+    - [调度策略](#调度策略)
+    - [GOMAXPROCS](#gomaxprocs)
+  - [4. 最佳实践](#4-最佳实践)
+    - [1. 控制Goroutine数量](#1-控制goroutine数量)
+    - [2. 使用Context管理生命周期](#2-使用context管理生命周期)
+    - [3. 避免Goroutine泄漏](#3-避免goroutine泄漏)
+  - [5. 常见陷阱](#5-常见陷阱)
+    - [陷阱1: 循环变量捕获](#陷阱1-循环变量捕获)
+    - [陷阱2: Goroutine数量爆炸](#陷阱2-goroutine数量爆炸)
+    - [陷阱3: 未等待Goroutine完成](#陷阱3-未等待goroutine完成)
+  - [🔗 相关资源](#-相关资源)
 
 ## 1. Goroutine简介
 
@@ -64,12 +66,12 @@
 func main() {
     // 启动一个Goroutine
     go sayHello()
-    
+
     // 启动匿名函数
     go func() {
         fmt.Println("Hello from anonymous goroutine")
     }()
-    
+
     // 等待goroutine执行
     time.Sleep(1 * time.Second)
 }
@@ -86,21 +88,21 @@ func sayHello() {
 ```go
 func main() {
     name := "World"
-    
+
     // ❌ 错误：捕获循环变量
     for i := 0; i < 5; i++ {
         go func() {
             fmt.Println(i)  // 可能打印5个5
         }()
     }
-    
+
     // ✅ 正确：传递参数
     for i := 0; i < 5; i++ {
         go func(n int) {
             fmt.Println(n)  // 正确打印0-4
         }(i)
     }
-    
+
     time.Sleep(1 * time.Second)
 }
 ```
@@ -114,7 +116,7 @@ func main() {
 ```go
 func main() {
     var wg sync.WaitGroup
-    
+
     for i := 0; i < 5; i++ {
         wg.Add(1)  // 增加计数
         go func(n int) {
@@ -122,7 +124,7 @@ func main() {
             process(n)
         }(i)
     }
-    
+
     wg.Wait()  // 等待所有goroutine完成
     fmt.Println("All done")
 }
@@ -133,12 +135,12 @@ func main() {
 ```go
 func main() {
     done := make(chan bool)
-    
+
     go func() {
         process()
         done <- true  // 发送完成信号
     }()
-    
+
     <-done  // 等待完成
     fmt.Println("Done")
 }
@@ -201,10 +203,10 @@ import "runtime"
 func main() {
     // 获取当前P的数量
     fmt.Println(runtime.GOMAXPROCS(0))
-    
+
     // 设置P的数量
     runtime.GOMAXPROCS(4)
-    
+
     // Go 1.25+: 容器环境自动适配
     // 无需手动设置GOMAXPROCS
 }
@@ -221,7 +223,7 @@ func main() {
 func workerPool(jobs <-chan int, results chan<- int) {
     const numWorkers = 10
     var wg sync.WaitGroup
-    
+
     for i := 0; i < numWorkers; i++ {
         wg.Add(1)
         go func() {
@@ -231,7 +233,7 @@ func workerPool(jobs <-chan int, results chan<- int) {
             }
         }()
     }
-    
+
     wg.Wait()
     close(results)
 }
@@ -256,9 +258,9 @@ func worker(ctx context.Context) {
 
 func main() {
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     go worker(ctx)
-    
+
     time.Sleep(5 * time.Second)
     cancel()  // 停止worker
 }
@@ -383,5 +385,5 @@ func main() {
 
 ---
 
-**最后更新**: 2025-10-29  
+**最后更新**: 2025-10-29
 **Go版本**: 1.25.3

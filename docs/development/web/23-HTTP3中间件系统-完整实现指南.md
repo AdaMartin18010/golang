@@ -1,13 +1,12 @@
-﻿# HTTP/3 中间件系统 - 完整实现指南
+# HTTP/3 中间件系统 - 完整实现指南
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
-
 
 - [1. 概述](#1-概述)
   - [1.1 HTTP/3中间件的价值](#1-1-http3中间件的价值)
@@ -312,13 +311,13 @@ type LoggingMiddleware struct {
 type LoggingConfig struct {
     // IncludeHeaders 是否记录请求头
     IncludeHeaders bool
-    
+
     // IncludeQuery 是否记录查询参数
     IncludeQuery bool
-    
+
     // IncludeBody 是否记录请求体（谨慎使用）
     IncludeBody bool
-    
+
     // SlowRequestThreshold 慢请求阈值
     SlowRequestThreshold time.Duration
 }
@@ -341,7 +340,7 @@ func NewLoggingMiddlewareWithConfig(logger *log.Logger, config LoggingConfig) *L
     if logger == nil {
         logger = log.Default()
     }
-    
+
     return &LoggingMiddleware{
         logger: logger,
         config: config,
@@ -352,23 +351,23 @@ func NewLoggingMiddlewareWithConfig(logger *log.Logger, config LoggingConfig) *L
 func (m *LoggingMiddleware) Handle(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         start := time.Now()
-        
+
         // 包装ResponseWriter以捕获状态码和字节数
         wrapped := &loggingResponseWriter{
             ResponseWriter: w,
             statusCode:     http.StatusOK,
             bytesWritten:   0,
         }
-        
+
         // 调用下一个处理器
         next.ServeHTTP(wrapped, r)
-        
+
         // 计算处理时间
         duration := time.Since(start)
-        
+
         // 构造日志消息
         logMsg := m.buildLogMessage(r, wrapped, duration)
-        
+
         // 记录日志
         if duration > m.config.SlowRequestThreshold {
             m.logger.Printf("[SLOW] %s", logMsg)
@@ -393,15 +392,15 @@ func (m *LoggingMiddleware) buildLogMessage(
         r.Proto, // "HTTP/3"
         w.bytesWritten,
     )
-    
+
     if m.config.IncludeQuery && r.URL.RawQuery != "" {
         msg += fmt.Sprintf(" - Query: %s", r.URL.RawQuery)
     }
-    
+
     if m.config.IncludeHeaders {
         msg += fmt.Sprintf(" - Headers: %v", r.Header)
     }
-    
+
     return msg
 }
 
@@ -491,7 +490,7 @@ import (
     "net/http"
     "sync"
     "time"
-    
+
     "golang.org/x/time/rate"
 )
 
@@ -541,10 +540,10 @@ func NewRateLimitMiddlewareWithExtractor(
         cleanupTicker: time.NewTicker(1 * time.Minute),
         stopCleanup:   make(chan struct{}),
     }
-    
+
     // 启动清理goroutine
     go m.cleanupExpiredLimiters()
-    
+
     return m
 }
 
@@ -553,10 +552,10 @@ func (m *RateLimitMiddleware) Handle(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         // 提取键
         key := m.keyExtractor(r)
-        
+
         // 获取或创建限流器
         limiter := m.getLimiter(key)
-        
+
         // 检查是否超过限流
         if !limiter.Allow() {
             // 设置Retry-After头
@@ -564,7 +563,7 @@ func (m *RateLimitMiddleware) Handle(next http.Handler) http.Handler {
             http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
             return
         }
-        
+
         // 调用下一个处理器
         next.ServeHTTP(w, r)
     })
@@ -575,31 +574,31 @@ func (m *RateLimitMiddleware) getLimiter(key string) *rate.Limiter {
     m.mu.RLock()
     entry, exists := m.limiters[key]
     m.mu.RUnlock()
-    
+
     if exists {
         // 更新最后访问时间
         m.mu.Lock()
         entry.lastAccess = time.Now()
         m.mu.Unlock()
-        
+
         return entry.limiter
     }
-    
+
     // 创建新限流器
     m.mu.Lock()
     defer m.mu.Unlock()
-    
+
     // 双重检查
     if entry, exists := m.limiters[key]; exists {
         return entry.limiter
     }
-    
+
     limiter := rate.NewLimiter(m.rate, m.burst)
     m.limiters[key] = &rateLimiterEntry{
         limiter:    limiter,
         lastAccess: time.Now(),
     }
-    
+
     return limiter
 }
 
@@ -619,10 +618,10 @@ func (m *RateLimitMiddleware) cleanupExpiredLimiters() {
 func (m *RateLimitMiddleware) cleanup() {
     m.mu.Lock()
     defer m.mu.Unlock()
-    
+
     now := time.Now()
     threshold := 5 * time.Minute
-    
+
     for key, entry := range m.limiters {
         if now.Sub(entry.lastAccess) > threshold {
             delete(m.limiters, key)
@@ -642,12 +641,12 @@ func getClientIP(r *http.Request) string {
     if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
         return strings.Split(ip, ",")[0]
     }
-    
+
     // 从X-Real-IP获取
     if ip := r.Header.Get("X-Real-IP"); ip != "" {
         return ip
     }
-    
+
     // 直接从RemoteAddr获取
     ip, _, _ := net.SplitHostPort(r.RemoteAddr)
     return ip
@@ -716,19 +715,19 @@ type CORSConfig struct {
     // AllowOrigins 允许的Origin列表
     // 使用"*"允许所有Origin
     AllowOrigins []string
-    
+
     // AllowMethods 允许的HTTP方法
     AllowMethods []string
-    
+
     // AllowHeaders 允许的请求头
     AllowHeaders []string
-    
+
     // ExposeHeaders 暴露的响应头
     ExposeHeaders []string
-    
+
     // AllowCredentials 是否允许凭证
     AllowCredentials bool
-    
+
     // MaxAge 预检请求缓存时间（秒）
     MaxAge int
 }
@@ -754,15 +753,15 @@ func NewCORSMiddleware(config CORSConfig) *CORSMiddleware {
     if len(config.AllowMethods) == 0 {
         config.AllowMethods = DefaultCORSConfig.AllowMethods
     }
-    
+
     if len(config.AllowHeaders) == 0 {
         config.AllowHeaders = DefaultCORSConfig.AllowHeaders
     }
-    
+
     if config.MaxAge == 0 {
         config.MaxAge = DefaultCORSConfig.MaxAge
     }
-    
+
     return &CORSMiddleware{
         config: config,
     }
@@ -777,37 +776,37 @@ func NewDefaultCORSMiddleware() *CORSMiddleware {
 func (m *CORSMiddleware) Handle(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         origin := r.Header.Get("Origin")
-        
+
         // 检查是否允许该Origin
         if m.isOriginAllowed(origin) {
             // 设置CORS响应头
             w.Header().Set("Access-Control-Allow-Origin", m.getAllowOriginHeader(origin))
-            
+
             if m.config.AllowCredentials {
                 w.Header().Set("Access-Control-Allow-Credentials", "true")
             }
-            
-            w.Header().Set("Access-Control-Allow-Methods", 
+
+            w.Header().Set("Access-Control-Allow-Methods",
                 strings.Join(m.config.AllowMethods, ", "))
-            
-            w.Header().Set("Access-Control-Allow-Headers", 
+
+            w.Header().Set("Access-Control-Allow-Headers",
                 strings.Join(m.config.AllowHeaders, ", "))
-            
+
             if len(m.config.ExposeHeaders) > 0 {
-                w.Header().Set("Access-Control-Expose-Headers", 
+                w.Header().Set("Access-Control-Expose-Headers",
                     strings.Join(m.config.ExposeHeaders, ", "))
             }
-            
-            w.Header().Set("Access-Control-Max-Age", 
+
+            w.Header().Set("Access-Control-Max-Age",
                 strconv.Itoa(m.config.MaxAge))
         }
-        
+
         // 处理预检请求
         if r.Method == http.MethodOptions {
             w.WriteHeader(http.StatusNoContent)
             return
         }
-        
+
         // 调用下一个处理器
         next.ServeHTTP(w, r)
     })
@@ -818,20 +817,20 @@ func (m *CORSMiddleware) isOriginAllowed(origin string) bool {
     if origin == "" {
         return false
     }
-    
+
     if len(m.config.AllowOrigins) == 0 {
         return false
     }
-    
+
     for _, allowed := range m.config.AllowOrigins {
         if allowed == "*" {
             return true
         }
-        
+
         if allowed == origin {
             return true
         }
-        
+
         // 支持通配符匹配（简单实现）
         if strings.HasPrefix(allowed, "*.") {
             domain := strings.TrimPrefix(allowed, "*")
@@ -840,7 +839,7 @@ func (m *CORSMiddleware) isOriginAllowed(origin string) bool {
             }
         }
     }
-    
+
     return false
 }
 
@@ -850,14 +849,14 @@ func (m *CORSMiddleware) getAllowOriginHeader(origin string) string {
     if m.config.AllowCredentials {
         return origin
     }
-    
+
     // 如果配置了通配符，直接返回通配符
     for _, allowed := range m.config.AllowOrigins {
         if allowed == "*" {
             return "*"
         }
     }
-    
+
     return origin
 }
 ```
@@ -928,10 +927,10 @@ type CompressionMiddleware struct {
 type CompressionConfig struct {
     // Level 压缩级别 (1-9)
     Level int
-    
+
     // MinLength 最小压缩长度（字节）
     MinLength int
-    
+
     // ShouldSkip 是否跳过压缩的判断函数
     ShouldSkip func(*http.Request) bool
 }
@@ -959,15 +958,15 @@ func NewCompressionMiddlewareWithConfig(config CompressionConfig) *CompressionMi
     if config.Level < gzip.BestSpeed || config.Level > gzip.BestCompression {
         config.Level = gzip.DefaultCompression
     }
-    
+
     if config.MinLength == 0 {
         config.MinLength = DefaultCompressionConfig.MinLength
     }
-    
+
     if config.ShouldSkip == nil {
         config.ShouldSkip = DefaultCompressionConfig.ShouldSkip
     }
-    
+
     return &CompressionMiddleware{
         level:      config.Level,
         minLength:  config.MinLength,
@@ -989,29 +988,29 @@ func (m *CompressionMiddleware) Handle(next http.Handler) http.Handler {
             next.ServeHTTP(w, r)
             return
         }
-        
+
         // 检查客户端是否支持gzip
         if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
             next.ServeHTTP(w, r)
             return
         }
-        
+
         // 从池中获取gzip writer
         gz := m.pool.Get().(*gzip.Writer)
         defer m.pool.Put(gz)
-        
+
         gz.Reset(w)
         defer gz.Close()
-        
+
         // 包装ResponseWriter
         w.Header().Set("Content-Encoding", "gzip")
         w.Header().Del("Content-Length") // 压缩后长度会变化
-        
+
         gzw := &gzipResponseWriter{
             ResponseWriter: w,
             Writer:         gz,
         }
-        
+
         // 调用下一个处理器
         next.ServeHTTP(gzw, r)
     })
@@ -1039,7 +1038,7 @@ func (w *gzipResponseWriter) Flush() {
     if gz, ok := w.Writer.(*gzip.Writer); ok {
         gz.Flush()
     }
-    
+
     if f, ok := w.ResponseWriter.(http.Flusher); ok {
         f.Flush()
     }
@@ -1129,39 +1128,39 @@ func (m *AuthMiddleware) Handle(next http.Handler) http.Handler {
             next.ServeHTTP(w, r)
             return
         }
-        
+
         // 获取Authorization头
         authHeader := r.Header.Get("Authorization")
         if authHeader == "" {
             m.unauthorized(w, "Missing authorization header")
             return
         }
-        
+
         // 解析认证方案和token
         parts := strings.SplitN(authHeader, " ", 2)
         if len(parts) != 2 {
             m.unauthorized(w, "Invalid authorization header format")
             return
         }
-        
+
         scheme, token := parts[0], parts[1]
-        
+
         // 检查认证方案
         if !strings.EqualFold(scheme, m.scheme) {
             m.unauthorized(w, fmt.Sprintf("Expected %s authentication", m.scheme))
             return
         }
-        
+
         // 验证token
         userID, ok := m.validateFunc(token)
         if !ok {
             m.unauthorized(w, "Invalid token")
             return
         }
-        
+
         // 将用户ID设置到上下文
         r = SetUserID(r, userID)
-        
+
         // 调用下一个处理器
         next.ServeHTTP(w, r)
     })
@@ -1186,29 +1185,29 @@ func NewBasicAuthMiddleware(users map[string]string) *AuthMiddleware {
         if err != nil {
             return "", false
         }
-        
+
         // 解析username:password
         parts := strings.SplitN(string(decoded), ":", 2)
         if len(parts) != 2 {
             return "", false
         }
-        
+
         username, password := parts[0], parts[1]
-        
+
         // 验证用户名和密码
         expectedPassword, ok := users[username]
         if !ok {
             return "", false
         }
-        
+
         // 使用常量时间比较防止时序攻击
         if subtle.ConstantTimeCompare([]byte(password), []byte(expectedPassword)) != 1 {
             return "", false
         }
-        
+
         return username, true
     }
-    
+
     return NewAuthMiddleware("Basic", validateFunc)
 }
 
@@ -1217,17 +1216,17 @@ func NewJWTAuthMiddleware(secretKey []byte) *AuthMiddleware {
     validateFunc := func(token string) (string, bool) {
         // JWT验证逻辑
         // 这里需要使用JWT库，如github.com/golang-jwt/jwt
-        
+
         // 简化示例
         claims, err := parseAndValidateJWT(token, secretKey)
         if err != nil {
             return "", false
         }
-        
+
         userID, ok := claims["user_id"].(string)
         return userID, ok
     }
-    
+
     return NewAuthMiddleware("Bearer", validateFunc)
 }
 
@@ -1332,7 +1331,7 @@ import (
     "net/http"
     "net/http/httptest"
     "testing"
-    
+
     "your-project/pkg/http3/middleware"
 )
 
@@ -1340,17 +1339,17 @@ func BenchmarkLoggingMiddleware(b *testing.B) {
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("OK"))
     })
-    
+
     logger := log.New(io.Discard, "", 0)
     loggingMW := middleware.NewLoggingMiddleware(logger)
     wrappedHandler := loggingMW.Handle(handler)
-    
+
     req := httptest.NewRequest("GET", "/", nil)
     rec := httptest.NewRecorder()
-    
+
     b.ResetTimer()
     b.ReportAllocs()
-    
+
     for i := 0; i < b.N; i++ {
         wrappedHandler.ServeHTTP(rec, req)
     }
@@ -1360,17 +1359,17 @@ func BenchmarkRateLimitMiddleware(b *testing.B) {
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("OK"))
     })
-    
+
     rateLimitMW := middleware.NewRateLimitMiddleware(1000, 10)
     defer rateLimitMW.Close()
     wrappedHandler := rateLimitMW.Handle(handler)
-    
+
     req := httptest.NewRequest("GET", "/", nil)
     rec := httptest.NewRecorder()
-    
+
     b.ResetTimer()
     b.ReportAllocs()
-    
+
     for i := 0; i < b.N; i++ {
         wrappedHandler.ServeHTTP(rec, req)
     }
@@ -1380,17 +1379,17 @@ func BenchmarkCompressionMiddleware(b *testing.B) {
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte(strings.Repeat("Hello, World! ", 100)))
     })
-    
+
     compressionMW := middleware.NewCompressionMiddleware(gzip.BestSpeed)
     wrappedHandler := compressionMW.Handle(handler)
-    
+
     req := httptest.NewRequest("GET", "/", nil)
     req.Header.Set("Accept-Encoding", "gzip")
     rec := httptest.NewRecorder()
-    
+
     b.ResetTimer()
     b.ReportAllocs()
-    
+
     for i := 0; i < b.N; i++ {
         wrappedHandler.ServeHTTP(rec, req)
     }
@@ -1427,7 +1426,7 @@ func (m *LoggingMiddleware) Handle(next http.Handler) http.Handler {
         buf := bufferPool.Get().(*bytes.Buffer)
         buf.Reset()
         defer bufferPool.Put(buf)
-        
+
         // 使用buf...
     })
 }
@@ -1463,7 +1462,7 @@ import (
     "net/http"
     "os"
     "time"
-    
+
     "github.com/quic-go/quic-go/http3"
     "your-project/pkg/http3/middleware"
 )
@@ -1471,28 +1470,28 @@ import (
 func main() {
     // 创建日志器
     logger := log.New(os.Stdout, "[HTTP3] ", log.LstdFlags|log.Lshortfile)
-    
+
     // 配置中间件
     loggingMW := middleware.NewLoggingMiddlewareWithConfig(logger, middleware.LoggingConfig{
         IncludeQuery:         true,
         SlowRequestThreshold: 500 * time.Millisecond,
     })
-    
+
     rateLimitMW := middleware.NewRateLimitMiddleware(100, 20)
     defer rateLimitMW.Close()
-    
+
     corsMW := middleware.NewCORSMiddleware(middleware.CORSConfig{
         AllowOrigins:     []string{"https://app.example.com"},
         AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
         AllowCredentials: true,
     })
-    
+
     compressionMW := middleware.NewCompressionMiddleware(gzip.BestSpeed)
-    
+
     authMW := middleware.NewBearerAuthMiddleware(validateToken).
         SkipPath("/health").
         SkipPath("/metrics")
-    
+
     // 创建中间件链
     chain := middleware.NewChain(
         loggingMW,
@@ -1501,22 +1500,22 @@ func main() {
         compressionMW,
         authMW,
     )
-    
+
     // 创建路由
     mux := http.NewServeMux()
     mux.HandleFunc("/health", healthHandler)
     mux.HandleFunc("/api/users", usersHandler)
     mux.HandleFunc("/api/orders", ordersHandler)
-    
+
     // 应用中间件链
     handler := chain.Then(mux)
-    
+
     // 启动HTTP/3服务器
     server := &http3.Server{
         Addr:    ":443",
         Handler: handler,
     }
-    
+
     logger.Println("HTTP/3 server starting on :443")
     if err := server.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
         logger.Fatal(err)
@@ -1556,7 +1555,7 @@ import (
     "net/http"
     "strconv"
     "time"
-    
+
     "github.com/prometheus/client_golang/prometheus"
     "github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -1579,7 +1578,7 @@ func NewMetricsMiddleware(namespace string) *MetricsMiddleware {
             },
             []string{"method", "path", "status"},
         ),
-        
+
         duration: promauto.NewHistogramVec(
             prometheus.HistogramOpts{
                 Namespace: namespace,
@@ -1589,7 +1588,7 @@ func NewMetricsMiddleware(namespace string) *MetricsMiddleware {
             },
             []string{"method", "path"},
         ),
-        
+
         inFlight: promauto.NewGauge(
             prometheus.GaugeOpts{
                 Namespace: namespace,
@@ -1606,22 +1605,22 @@ func (m *MetricsMiddleware) Handle(next http.Handler) http.Handler {
         start := time.Now()
         m.inFlight.Inc()
         defer m.inFlight.Dec()
-        
+
         wrapped := &metricsResponseWriter{
             ResponseWriter: w,
             statusCode:     http.StatusOK,
         }
-        
+
         next.ServeHTTP(wrapped, r)
-        
+
         duration := time.Since(start).Seconds()
-        
+
         m.requests.WithLabelValues(
             r.Method,
             r.URL.Path,
             strconv.Itoa(wrapped.statusCode),
         ).Inc()
-        
+
         m.duration.WithLabelValues(
             r.Method,
             r.URL.Path,
@@ -1658,7 +1657,7 @@ import (
     "net/http/httptest"
     "strings"
     "testing"
-    
+
     "your-project/pkg/http3/middleware"
 )
 
@@ -1666,31 +1665,31 @@ func TestLoggingMiddleware(t *testing.T) {
     // 准备
     var buf bytes.Buffer
     logger := log.New(&buf, "", 0)
-    
+
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusOK)
         w.Write([]byte("OK"))
     })
-    
+
     loggingMW := middleware.NewLoggingMiddleware(logger)
     wrappedHandler := loggingMW.Handle(handler)
-    
+
     req := httptest.NewRequest("GET", "/test", nil)
     rec := httptest.NewRecorder()
-    
+
     // 执行
     wrappedHandler.ServeHTTP(rec, req)
-    
+
     // 验证
     if rec.Code != http.StatusOK {
         t.Errorf("Expected status 200, got %d", rec.Code)
     }
-    
+
     logOutput := buf.String()
     if !strings.Contains(logOutput, "GET /test") {
         t.Errorf("Log should contain request method and path")
     }
-    
+
     if !strings.Contains(logOutput, "Status: 200") {
         t.Errorf("Log should contain status code")
     }
@@ -1727,8 +1726,8 @@ func TestLoggingMiddleware(t *testing.T) {
 
 ---
 
-**文档完成时间**: 2025年10月24日  
-**文档版本**: v1.0  
+**文档完成时间**: 2025年10月24日
+**文档版本**: v1.0
 **质量评级**: 95分 ⭐⭐⭐⭐⭐
 
 🚀 **HTTP/3中间件系统完整实现指南完成！** 🎊

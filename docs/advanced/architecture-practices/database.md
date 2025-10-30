@@ -1,49 +1,51 @@
-﻿# 数据库架构（Golang国际主流实践）
+# 数据库架构（Golang国际主流实践）
 
 > **简介**: 关系型、NoSQL和NewSQL数据库架构设计，支持高可用、分布式数据存储
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-
-- [目录](#目录)
-- [2. 数据库架构概述](#2-数据库架构概述)
-  - [主流数据库类型与标准](#主流数据库类型与标准)
-  - [发展历程](#发展历程)
-  - [国际权威链接](#国际权威链接)
-- [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
-  - [数据库选型: SQL vs. NoSQL](#数据库选型-sql-vs-nosql)
-  - [CAP理论与权衡](#cap理论与权衡)
-  - [CQRS (命令查询职责分离)](#cqrs-命令查询职责分离)
-  - [数据库连接池管理](#数据库连接池管理)
-  - [事务管理](#事务管理)
-- [4. 分布式数据库架构](#4-分布式数据库架构)
-  - [分片与复制](#分片与复制)
-  - [一致性协议](#一致性协议)
-- [5. 查询优化与性能调优](#5-查询优化与性能调优)
-  - [查询计划优化器](#查询计划优化器)
-  - [索引管理](#索引管理)
-- [6. Golang主流实现与代码示例](#6-golang主流实现与代码示例)
-  - [database/sql 库最佳实践](#databasesql-库最佳实践)
-- [7. 分布式挑战与主流解决方案](#7-分布式挑战与主流解决方案)
-  - [分布式事务](#分布式事务)
-    - [Saga模式](#saga模式)
-  - [数据库高可用性](#数据库高可用性)
-    - [读写分离 (Read/Write Splitting)](#读写分离-readwrite-splitting)
-    - [数据库故障转移 (Database Failover)](#数据库故障转移-database-failover)
-- [8. 工程结构与CI/CD实践](#8-工程结构与cicd实践)
-- [9. 形式化建模与数学表达](#9-形式化建模与数学表达)
-- [10. 国际权威资源与开源组件引用](#10-国际权威资源与开源组件引用)
-  - [关系型数据库](#关系型数据库)
-  - [NoSQL数据库](#nosql数据库)
-  - [时序数据库](#时序数据库)
-  - [图数据库](#图数据库)
-- [11. 相关架构主题](#11-相关架构主题)
-- [12. 扩展阅读与参考文献](#12-扩展阅读与参考文献)
+- [数据库架构（Golang国际主流实践）](#数据库架构golang国际主流实践)
+  - [📋 目录](#-目录)
+  - [目录](#目录)
+  - [2. 数据库架构概述](#2-数据库架构概述)
+    - [主流数据库类型与标准](#主流数据库类型与标准)
+    - [发展历程](#发展历程)
+    - [国际权威链接](#国际权威链接)
+  - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
+    - [数据库选型: SQL vs. NoSQL](#数据库选型-sql-vs-nosql)
+    - [CAP理论与权衡](#cap理论与权衡)
+    - [CQRS (命令查询职责分离)](#cqrs-命令查询职责分离)
+    - [数据库连接池管理](#数据库连接池管理)
+    - [事务管理](#事务管理)
+  - [4. 分布式数据库架构](#4-分布式数据库架构)
+    - [分片与复制](#分片与复制)
+    - [一致性协议](#一致性协议)
+  - [5. 查询优化与性能调优](#5-查询优化与性能调优)
+    - [查询计划优化器](#查询计划优化器)
+    - [索引管理](#索引管理)
+  - [6. Golang主流实现与代码示例](#6-golang主流实现与代码示例)
+    - [database/sql 库最佳实践](#databasesql-库最佳实践)
+  - [7. 分布式挑战与主流解决方案](#7-分布式挑战与主流解决方案)
+    - [分布式事务](#分布式事务)
+      - [Saga模式](#saga模式)
+    - [数据库高可用性](#数据库高可用性)
+      - [读写分离 (Read/Write Splitting)](#读写分离-readwrite-splitting)
+      - [数据库故障转移 (Database Failover)](#数据库故障转移-database-failover)
+  - [8. 工程结构与CI/CD实践](#8-工程结构与cicd实践)
+  - [9. 形式化建模与数学表达](#9-形式化建模与数学表达)
+  - [10. 国际权威资源与开源组件引用](#10-国际权威资源与开源组件引用)
+    - [关系型数据库](#关系型数据库)
+    - [NoSQL数据库](#nosql数据库)
+    - [时序数据库](#时序数据库)
+    - [图数据库](#图数据库)
+  - [11. 相关架构主题](#11-相关架构主题)
+  - [12. 扩展阅读与参考文献](#12-扩展阅读与参考文献)
 
 ## 目录
 
@@ -115,13 +117,13 @@ CQRS是一种将读操作（查询）模型与写操作（命令）模型分离�
 type DatabaseManager struct {
     // 连接池管理
     ConnectionPools map[string]*ConnectionPool
-    
+
     // 配置管理
     ConfigManager *ConfigManager
-    
+
     // 监控
     Monitor *DatabaseMonitor
-    
+
     // 故障转移
     FailoverManager *FailoverManager
 }
@@ -152,7 +154,7 @@ func (dm *DatabaseManager) GetConnection(poolName string) (*sql.DB, error) {
     if !exists {
         return nil, fmt.Errorf("connection pool %s not found", poolName)
     }
-    
+
     // 检查连接健康状态
     if err := pool.pool.Ping(); err != nil {
         // 尝试重新连接
@@ -160,7 +162,7 @@ func (dm *DatabaseManager) GetConnection(poolName string) (*sql.DB, error) {
             return nil, err
         }
     }
-    
+
     return pool.pool, nil
 }
 
@@ -169,18 +171,18 @@ func (dm *DatabaseManager) reconnectPool(pool *ConnectionPool) error {
     if pool.pool != nil {
         pool.pool.Close()
     }
-    
+
     // 创建新连接
     db, err := sql.Open(pool.Driver, pool.DSN)
     if err != nil {
         return err
     }
-    
+
     // 配置连接池
     db.SetMaxOpenConns(pool.MaxOpen)
     db.SetMaxIdleConns(pool.MaxIdle)
     db.SetConnMaxLifetime(pool.MaxLifetime)
-    
+
     pool.pool = db
     return nil
 }
@@ -204,7 +206,7 @@ func (tm *TransactionManager) Begin(ctx context.Context, opts *sql.TxOptions) (*
     if err != nil {
         return nil, err
     }
-    
+
     return &Transaction{
         tx:      tx,
         context: ctx,
@@ -248,13 +250,13 @@ func (t *Transaction) executeQuery(query Query) error {
 type DistributedDatabase struct {
     // 分片管理
     ShardManager *ShardManager
-    
+
     // 复制管理
     ReplicationManager *ReplicationManager
-    
+
     // 一致性管理
     ConsistencyManager *ConsistencyManager
-    
+
     // 路由管理
     Router *QueryRouter
 }
@@ -310,10 +312,10 @@ func (rs *RangeSharding) GetShard(key interface{}) (*Shard, error) {
 type ConsistencyManager struct {
     // 一致性级别
     Level ConsistencyLevel
-    
+
     // 协议实现
     Protocol ConsistencyProtocol
-    
+
     // 冲突解决
     ConflictResolver *ConflictResolver
 }
@@ -348,7 +350,7 @@ func (rp *RaftProtocol) Write(ctx context.Context, key string, value interface{}
     if rp.state != Leader {
         return errors.New("not leader")
     }
-    
+
     // 2. 追加日志
     entry := &LogEntry{
         Term:  rp.term,
@@ -356,9 +358,9 @@ func (rp *RaftProtocol) Write(ctx context.Context, key string, value interface{}
         Key:   key,
         Value: value,
     }
-    
+
     rp.log.Append(entry)
-    
+
     // 3. 复制到其他节点
     return rp.replicateLog(entry)
 }
@@ -367,12 +369,12 @@ func (rp *RaftProtocol) replicateLog(entry *LogEntry) error {
     // 并行复制到所有follower
     var wg sync.WaitGroup
     errors := make(chan error, len(rp.nodes))
-    
+
     for _, node := range rp.nodes {
         if node == rp.nodeID {
             continue
         }
-        
+
         wg.Add(1)
         go func(node string) {
             defer wg.Done()
@@ -381,17 +383,17 @@ func (rp *RaftProtocol) replicateLog(entry *LogEntry) error {
             }
         }(node)
     }
-    
+
     wg.Wait()
     close(errors)
-    
+
     // 检查错误
     for err := range errors {
         if err != nil {
             return err
         }
     }
-    
+
     return nil
 }
 ```
@@ -404,13 +406,13 @@ func (rp *RaftProtocol) replicateLog(entry *LogEntry) error {
 type QueryOptimizer struct {
     // 统计信息
     Statistics *Statistics
-    
+
     // 索引管理
     IndexManager *IndexManager
-    
+
     // 查询重写
     QueryRewriter *QueryRewriter
-    
+
     // 成本估算
     CostEstimator *CostEstimator
 }
@@ -448,21 +450,21 @@ func (qo *QueryOptimizer) OptimizeQuery(sql string) (*QueryPlan, error) {
     if err != nil {
         return nil, err
     }
-    
+
     // 2. 查询重写
     rewritten := qo.QueryRewriter.Rewrite(ast)
-    
+
     // 3. 生成候选计划
     candidates := qo.generateCandidatePlans(rewritten)
-    
+
     // 4. 成本估算
     for _, plan := range candidates {
         plan.Cost = qo.CostEstimator.EstimateCost(plan)
     }
-    
+
     // 5. 选择最优计划
     bestPlan := qo.selectBestPlan(candidates)
-    
+
     return &QueryPlan{
         ID:     uuid.New().String(),
         SQL:    sql,
@@ -473,12 +475,12 @@ func (qo *QueryOptimizer) OptimizeQuery(sql string) (*QueryPlan, error) {
 
 func (qo *QueryOptimizer) generateCandidatePlans(ast *AST) []*ExecutionPlan {
     var plans []*ExecutionPlan
-    
+
     // 生成不同的执行计划
     plans = append(plans, qo.generateTableScanPlan(ast))
     plans = append(plans, qo.generateIndexScanPlans(ast)...)
     plans = append(plans, qo.generateJoinPlans(ast)...)
-    
+
     return plans
 }
 ```
@@ -489,13 +491,13 @@ func (qo *QueryOptimizer) generateCandidatePlans(ast *AST) []*ExecutionPlan {
 type IndexManager struct {
     // 索引定义
     Indexes map[string]*Index
-    
+
     // 索引构建
     Builder *IndexBuilder
-    
+
     // 索引维护
     Maintainer *IndexMaintainer
-    
+
     // 索引建议
     Advisor *IndexAdvisor
 }
@@ -525,34 +527,34 @@ func (im *IndexManager) CreateIndex(ctx context.Context, index *Index) error {
     if err := im.validateIndex(index); err != nil {
         return err
     }
-    
+
     // 2. 构建索引
     if err := im.Builder.BuildIndex(ctx, index); err != nil {
         return err
     }
-    
+
     // 3. 更新统计信息
     im.updateIndexStatistics(index)
-    
+
     // 4. 注册索引
     im.Indexes[index.ID] = index
-    
+
     return nil
 }
 
 func (im *IndexManager) RecommendIndexes(queries []string) []*IndexRecommendation {
     var recommendations []*IndexRecommendation
-    
+
     // 分析查询模式
     patterns := im.analyzeQueryPatterns(queries)
-    
+
     // 生成索引建议
     for _, pattern := range patterns {
         if rec := im.Advisor.GenerateRecommendation(pattern); rec != nil {
             recommendations = append(recommendations, rec)
         }
     }
-    
+
     return recommendations
 }
 ```
@@ -649,7 +651,7 @@ Saga是一种通过**异步消息**来协调一系列本地事务的设计模式
     B -- OrderCreated Event --> C(Reserve Inventory);
     C -- InventoryReserved Event --> D(Process Payment);
     D -- PaymentProcessed Event --> E(Mark Order - Completed);
-    
+
     C -- Inventory Not Available --> F(Cancel Order - Failed);
     D -- Payment Failed --> G(Release Inventory);
     G --> F;
@@ -740,7 +742,7 @@ func (r *ReadWriteRouter) selectReplica() *sql.DB {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

@@ -1,52 +1,56 @@
-﻿# Go 1.21 PGO (Profile-Guided Optimization) 使用指南
+# Go 1.21 PGO (Profile-Guided Optimization) 使用指南
 
 > **难度**: ⭐⭐⭐⭐
 > **标签**: #PGO #性能优化 #编译优化
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-- [📋 概述](#概述)
-- [🎯 PGO 工作原理](#pgo-工作原理)
-  - [传统编译 vs PGO 编译](#传统编译-vs-pgo-编译)
-  - [PGO 优化点](#pgo-优化点)
-- [🚀 快速开始](#快速开始)
-  - [步骤 1: 收集 Profile](#步骤-1-收集-profile)
-    - [方法 1: 使用测试](#方法-1-使用测试)
-    - [方法 2: 使用 pprof 包](#方法-2-使用-pprof-包)
-    - [方法 3: 使用 net/http/pprof（生产环境）](#方法-3-使用-nethttppprof生产环境)
-  - [步骤 2: 使用 PGO 编译](#步骤-2-使用-pgo-编译)
-  - [步骤 3: 验证性能提升](#步骤-3-验证性能提升)
-- [📊 实战案例](#实战案例)
-  - [案例 1: HTTP 服务器优化](#案例-1-http-服务器优化)
-    - [项目结构](#项目结构)
-    - [main.go](#main-go)
-    - [收集 Profile](#收集-profile)
-    - [PGO [PGO 编译](#pgo-编译)- [性能对比](#性能对比)
-  - [案例 2: 数据处理程序优化](#案例-2-数据处理程序优化)
-    - [程序示例](#程序示例)
-    - [Benchmark 测试](#benchmark-测试)
-    - [执行流程](#执行流程)
-- [🔧 高级用法](#高级用法)
-  - [使用 default.pgo 自动化 PGO](#使用-default-pgo-自动化-pgo)
-  - [多 Profile 合并](#多-profile-合并)
-  - [CI/CD 集成](#cicd-集成)
-- [📈 PGO 效果分析](#pgo-效果分析)
-  - [查看 PGO 优化详情](#查看-pgo-优化详情)
-  - [对比二进制大小](#对比二进制大小)
-- [💡 最佳实践](#最佳实践)
-  - [1. Profile 收集建议](#1-profile-收集建议)
-  - [2. 何时使用 PGO](#2-何时使用-pgo)
-  - [3. Profile 更新策略](#3-profile-更新策略)
-- [⚠️ 注意事项](#注意事项)
-  - [1. Profile 代表性](#1-profile-代表性)
-  - [2. PGO 不是万能的](#2-pgo-不是万能的)
-  - [3. 安全性考虑](#3-安全性考虑)
-- [📚 扩展阅读](#扩展阅读)
+- [Go 1.21 PGO (Profile-Guided Optimization) 使用指南](#go-121-pgo-profile-guided-optimization-使用指南)
+  - [📋 目录](#-目录)
+  - [📋 概述](#-概述)
+  - [🎯 PGO 工作原理](#-pgo-工作原理)
+    - [传统编译 vs PGO 编译](#传统编译-vs-pgo-编译)
+    - [PGO 优化点](#pgo-优化点)
+  - [🚀 快速开始](#-快速开始)
+    - [步骤 1: 收集 Profile](#步骤-1-收集-profile)
+      - [方法 1: 使用测试](#方法-1-使用测试)
+      - [方法 2: 使用 pprof 包](#方法-2-使用-pprof-包)
+      - [方法 3: 使用 net/http/pprof（生产环境）](#方法-3-使用-nethttppprof生产环境)
+    - [步骤 2: 使用 PGO 编译](#步骤-2-使用-pgo-编译)
+    - [步骤 3: 验证性能提升](#步骤-3-验证性能提升)
+  - [📊 实战案例](#-实战案例)
+    - [案例 1: HTTP 服务器优化](#案例-1-http-服务器优化)
+      - [项目结构](#项目结构)
+      - [main.go](#maingo)
+      - [收集 Profile](#收集-profile)
+      - [PGO 编译](#pgo-编译)
+      - [性能对比](#性能对比)
+    - [案例 2: 数据处理程序优化](#案例-2-数据处理程序优化)
+      - [程序示例](#程序示例)
+      - [Benchmark 测试](#benchmark-测试)
+      - [执行流程](#执行流程)
+  - [🔧 高级用法](#-高级用法)
+    - [使用 default.pgo 自动化 PGO](#使用-defaultpgo-自动化-pgo)
+    - [多 Profile 合并](#多-profile-合并)
+    - [CI/CD 集成](#cicd-集成)
+  - [📈 PGO 效果分析](#-pgo-效果分析)
+    - [查看 PGO 优化详情](#查看-pgo-优化详情)
+    - [对比二进制大小](#对比二进制大小)
+  - [💡 最佳实践](#-最佳实践)
+    - [1. Profile 收集建议](#1-profile-收集建议)
+    - [2. 何时使用 PGO](#2-何时使用-pgo)
+    - [3. Profile 更新策略](#3-profile-更新策略)
+  - [⚠️ 注意事项](#️-注意事项)
+    - [1. Profile 代表性](#1-profile-代表性)
+    - [2. PGO 不是万能的](#2-pgo-不是万能的)
+    - [3. 安全性考虑](#3-安全性考虑)
+  - [📚 扩展阅读](#-扩展阅读)
 
 ## 📋 概述
 
@@ -138,13 +142,13 @@ func main() {
         log.Fatal(err)
     }
     defer f.Close()
-    
+
     // 开始 CPU profiling
     if err := pprof.StartCPUProfile(f); err != nil {
         log.Fatal(err)
     }
     defer pprof.StopCPUProfile()
-    
+
     // 运行你的应用逻辑
     runApplication()
 }
@@ -170,7 +174,7 @@ func main() {
     go func() {
         log.Println(http.ListenAndServe("localhost:6060", nil))
     }()
-    
+
     // 运行你的应用
     runApplication()
 }
@@ -239,7 +243,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
         Message: "Hello, World!",
         Count:   computeHeavyTask(),
     }
-    
+
     json.NewEncoder(w).Encode(resp)
 }
 
@@ -342,12 +346,12 @@ func main() {
         log.Fatal(err)
     }
     defer f.Close()
-    
+
     if err := pprof.StartCPUProfile(f); err != nil {
         log.Fatal(err)
     }
     defer pprof.StopCPUProfile()
-    
+
     // 生成测试数据
     records := make([]Record, 100000)
     for i := range records {
@@ -357,7 +361,7 @@ func main() {
             Value: float64(i) * 1.5,
         }
     }
-    
+
     // 处理数据
     total := processRecords(records)
     fmt.Printf("Total: %.2f\n", total)
@@ -382,7 +386,7 @@ func BenchmarkProcessRecords(b *testing.B) {
             Value: 1.5,
         }
     }
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         processRecords(records)
@@ -457,20 +461,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
-      
+
       - name: Collect Profile
         run: |
           go test -bench=. -cpuprofile=cpu.pprof
-      
+
       - name: Build with PGO
         run: |
           go build -pgo=cpu.pprof -o myapp
-      
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -593,7 +597,7 @@ PGO 提升有限的场景：
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.21+

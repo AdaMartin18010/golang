@@ -1,4 +1,4 @@
-﻿# 01-MySQL编程
+# 01-MySQL编程
 
 > Go语言MySQL数据库编程完全指南
 
@@ -6,36 +6,37 @@
 
 ## 📋 目录
 
-
-- [📚 章节概览](#章节概览)
-- [1. 环境准备](#1-环境准备)
-  - [1.1 安装MySQL驱动](#1-1-安装mysql驱动)
-  - [1.2 基本连接](#1-2-基本连接)
-- [2. 连接池配置](#2-连接池配置)
-  - [2.1 连接池参数](#2-1-连接池参数)
-- [3. CRUD操作](#3-crud操作)
-  - [3.1 创建表](#3-1-创建表)
-  - [3.2 插入数据](#3-2-插入数据)
-  - [3.3 查询数据](#3-3-查询数据)
-  - [3.4 更新数据](#3-4-更新数据)
-  - [3.5 删除数据](#3-5-删除数据)
-- [4. 事务处理](#4-事务处理)
-  - [4.1 基本事务](#4-1-基本事务)
-  - [4.2 事务隔离级别](#4-2-事务隔离级别)
-- [5. 预处理语句](#5-预处理语句)
-  - [5.1 使用Prepared Statement](#5-1-使用prepared-statement)
-- [6. 错误处理](#6-错误处理)
-  - [6.1 常见错误处理](#6-1-常见错误处理)
-- [7. 性能优化](#7-性能优化)
-  - [7.1 批量操作](#7-1-批量操作)
-  - [7.2 使用索引](#7-2-使用索引)
-- [8. 完整示例](#8-完整示例)
-- [💡 最佳实践](#最佳实践)
-  - [1. 连接管理](#1-连接管理)
-  - [2. SQL安全](#2-sql安全)
-  - [3. 性能优化](#3-性能优化)
-  - [4. 错误处理](#4-错误处理)
-- [🔗 相关章节](#相关章节)
+- [01-MySQL编程](#01-mysql编程)
+  - [📋 目录](#-目录)
+  - [📚 章节概览](#-章节概览)
+  - [1. 环境准备](#1-环境准备)
+    - [1.1 安装MySQL驱动](#11-安装mysql驱动)
+    - [1.2 基本连接](#12-基本连接)
+  - [2. 连接池配置](#2-连接池配置)
+    - [2.1 连接池参数](#21-连接池参数)
+  - [3. CRUD操作](#3-crud操作)
+    - [3.1 创建表](#31-创建表)
+    - [3.2 插入数据](#32-插入数据)
+    - [3.3 查询数据](#33-查询数据)
+    - [3.4 更新数据](#34-更新数据)
+    - [3.5 删除数据](#35-删除数据)
+  - [4. 事务处理](#4-事务处理)
+    - [4.1 基本事务](#41-基本事务)
+    - [4.2 事务隔离级别](#42-事务隔离级别)
+  - [5. 预处理语句](#5-预处理语句)
+    - [5.1 使用Prepared Statement](#51-使用prepared-statement)
+  - [6. 错误处理](#6-错误处理)
+    - [6.1 常见错误处理](#61-常见错误处理)
+  - [7. 性能优化](#7-性能优化)
+    - [7.1 批量操作](#71-批量操作)
+    - [7.2 使用索引](#72-使用索引)
+  - [8. 完整示例](#8-完整示例)
+  - [💡 最佳实践](#-最佳实践)
+    - [1. 连接管理](#1-连接管理)
+    - [2. SQL安全](#2-sql安全)
+    - [3. 性能优化](#3-性能优化)
+    - [4. 错误处理](#4-错误处理)
+  - [🔗 相关章节](#-相关章节)
 
 ## 📚 章节概览
 
@@ -60,26 +61,26 @@ import (
     "database/sql"
     "fmt"
     "log"
-    
+
     _ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
     // DSN格式: username:password@protocol(address)/dbname?param=value
     dsn := "root:password@tcp(127.0.0.1:3306)/testdb?charset=utf8mb4&parseTime=True"
-    
+
     db, err := sql.Open("mysql", dsn)
     if err != nil {
         log.Fatal(err)
     }
     defer db.Close()
-    
+
     // 验证连接
     err = db.Ping()
     if err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Println("MySQL连接成功!")
 }
 ```
@@ -96,7 +97,7 @@ package main
 import (
     "database/sql"
     "time"
-    
+
     _ "github.com/go-sql-driver/mysql"
 )
 
@@ -106,19 +107,19 @@ func initDB() *sql.DB {
     if err != nil {
         panic(err)
     }
-    
+
     // 设置最大打开连接数
     db.SetMaxOpenConns(100)
-    
+
     // 设置最大空闲连接数
     db.SetMaxIdleConns(10)
-    
+
     // 设置连接最大生命周期
     db.SetConnMaxLifetime(time.Hour)
-    
+
     // 设置连接最大空闲时间
     db.SetConnMaxIdleTime(time.Minute * 10)
-    
+
     return db
 }
 ```
@@ -128,28 +129,28 @@ func initDB() *sql.DB {
 ```mermaid
 stateDiagram-v2
     [*] --> Idle: 创建连接
-    
+
     Idle --> InUse: 应用请求连接
     InUse --> Idle: 释放连接
-    
+
     Idle --> CheckHealth: 定期健康检查
     CheckHealth --> Idle: 检查通过
     CheckHealth --> Closed: 连接失效
-    
+
     Idle --> Closed: 空闲超时<br/>(ConnMaxIdleTime)
     Idle --> Closed: 生命周期到期<br/>(ConnMaxLifetime)
-    
+
     InUse --> Closed: 连接错误
     InUse --> Closed: 执行超时
-    
+
     Closed --> [*]: 销毁连接
-    
+
     state Idle {
         [*] --> Available
         Available --> Waiting: 达到MaxOpenConns
         Waiting --> Available: 有连接释放
     }
-    
+
     state InUse {
         [*] --> Executing
         Executing --> Executing: 执行SQL
@@ -161,37 +162,37 @@ stateDiagram-v2
 ```mermaid
 flowchart TD
     Start([应用请求连接]) --> CheckIdle{有空闲连接?}
-    
+
     CheckIdle -->|是| GetIdle[获取空闲连接]
     CheckIdle -->|否| CheckMax{达到MaxOpenConns?}
-    
+
     CheckMax -->|否| CreateNew[创建新连接]
     CheckMax -->|是| Wait[等待连接释放]
-    
+
     GetIdle --> Validate{连接有效?}
     Validate -->|是| Use[使用连接]
     Validate -->|否| Remove[移除连接]
     Remove --> CheckMax
-    
+
     CreateNew --> Use
     Wait --> CheckIdle
-    
+
     Use --> Execute[执行SQL]
     Execute --> Done{执行完成?}
-    
+
     Done -->|成功| Return[返回连接池]
     Done -->|失败| Close[关闭连接]
-    
+
     Return --> CheckLife{超过MaxLifetime?}
     CheckLife -->|是| Close
     CheckLife -->|否| CheckIdle2{空闲数 > MaxIdleConns?}
-    
+
     CheckIdle2 -->|是| Close
     CheckIdle2 -->|否| BackToPool[放回空闲池]
-    
+
     BackToPool --> End([结束])
     Close --> End
-    
+
     style Start fill:#e1f5ff
     style Use fill:#e1ffe1
     style Execute fill:#fff4e1
@@ -217,7 +218,7 @@ func createTable(db *sql.DB) error {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `
-    
+
     _, err := db.Exec(query)
     return err
 }
@@ -243,12 +244,12 @@ type User struct {
 // 插入单条记录
 func insertUser(db *sql.DB, user User) (int64, error) {
     query := "INSERT INTO users(username, email, age) VALUES(?, ?, ?)"
-    
+
     result, err := db.Exec(query, user.Username, user.Email, user.Age)
     if err != nil {
         return 0, err
     }
-    
+
     // 获取插入的ID
     id, err := result.LastInsertId()
     return id, err
@@ -260,14 +261,14 @@ func batchInsert(db *sql.DB, users []User) error {
     if err != nil {
         return err
     }
-    
+
     stmt, err := tx.Prepare("INSERT INTO users(username, email, age) VALUES(?, ?, ?)")
     if err != nil {
         tx.Rollback()
         return err
     }
     defer stmt.Close()
-    
+
     for _, user := range users {
         _, err := stmt.Exec(user.Username, user.Email, user.Age)
         if err != nil {
@@ -275,7 +276,7 @@ func batchInsert(db *sql.DB, users []User) error {
             return err
         }
     }
-    
+
     return tx.Commit()
 }
 ```
@@ -286,7 +287,7 @@ func batchInsert(db *sql.DB, users []User) error {
 // 查询单条记录
 func getUserByID(db *sql.DB, id int) (*User, error) {
     query := "SELECT id, username, email, age FROM users WHERE id = ?"
-    
+
     user := &User{}
     err := db.QueryRow(query, id).Scan(
         &user.ID,
@@ -294,24 +295,24 @@ func getUserByID(db *sql.DB, id int) (*User, error) {
         &user.Email,
         &user.Age,
     )
-    
+
     if err != nil {
         return nil, err
     }
-    
+
     return user, nil
 }
 
 // 查询多条记录
 func getAllUsers(db *sql.DB) ([]User, error) {
     query := "SELECT id, username, email, age FROM users"
-    
+
     rows, err := db.Query(query)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var users []User
     for rows.Next() {
         var user User
@@ -321,20 +322,20 @@ func getAllUsers(db *sql.DB) ([]User, error) {
         }
         users = append(users, user)
     }
-    
+
     return users, rows.Err()
 }
 
 // 条件查询
 func getUsersByAge(db *sql.DB, minAge, maxAge int) ([]User, error) {
     query := "SELECT id, username, email, age FROM users WHERE age BETWEEN ? AND ?"
-    
+
     rows, err := db.Query(query, minAge, maxAge)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var users []User
     for rows.Next() {
         var user User
@@ -344,7 +345,7 @@ func getUsersByAge(db *sql.DB, minAge, maxAge int) ([]User, error) {
         }
         users = append(users, user)
     }
-    
+
     return users, nil
 }
 ```
@@ -355,22 +356,22 @@ func getUsersByAge(db *sql.DB, minAge, maxAge int) ([]User, error) {
 // 更新用户信息
 func updateUser(db *sql.DB, user User) error {
     query := "UPDATE users SET username=?, email=?, age=? WHERE id=?"
-    
+
     result, err := db.Exec(query, user.Username, user.Email, user.Age, user.ID)
     if err != nil {
         return err
     }
-    
+
     // 检查影响的行数
     rowsAffected, err := result.RowsAffected()
     if err != nil {
         return err
     }
-    
+
     if rowsAffected == 0 {
         return fmt.Errorf("no rows affected")
     }
-    
+
     return nil
 }
 ```
@@ -381,21 +382,21 @@ func updateUser(db *sql.DB, user User) error {
 // 删除用户
 func deleteUser(db *sql.DB, id int) error {
     query := "DELETE FROM users WHERE id=?"
-    
+
     result, err := db.Exec(query, id)
     if err != nil {
         return err
     }
-    
+
     rowsAffected, err := result.RowsAffected()
     if err != nil {
         return err
     }
-    
+
     if rowsAffected == 0 {
         return fmt.Errorf("user not found")
     }
-    
+
     return nil
 }
 ```
@@ -421,26 +422,26 @@ func transfer(db *sql.DB, fromID, toID int, amount float64) error {
     if err != nil {
         return err
     }
-    
+
     // 使用defer确保事务回滚或提交
     defer func() {
         if err != nil {
             tx.Rollback()
         }
     }()
-    
+
     // 扣款
     _, err = tx.Exec("UPDATE accounts SET balance = balance - ? WHERE id = ?", amount, fromID)
     if err != nil {
         return err
     }
-    
+
     // 加款
     _, err = tx.Exec("UPDATE accounts SET balance = balance + ? WHERE id = ?", amount, toID)
     if err != nil {
         return err
     }
-    
+
     // 提交事务
     return tx.Commit()
 }
@@ -456,15 +457,15 @@ func executeWithIsolation(db *sql.DB) error {
     if err != nil {
         return err
     }
-    
+
     tx, err := db.Begin()
     if err != nil {
         return err
     }
     defer tx.Rollback()
-    
+
     // 执行事务操作...
-    
+
     return tx.Commit()
 }
 ```
@@ -488,7 +489,7 @@ func batchInsertWithPrepare(db *sql.DB, users []User) error {
         return err
     }
     defer stmt.Close()
-    
+
     // 批量执行
     for _, user := range users {
         _, err := stmt.Exec(user.Username, user.Email, user.Age)
@@ -496,7 +497,7 @@ func batchInsertWithPrepare(db *sql.DB, users []User) error {
             return err
         }
     }
-    
+
     return nil
 }
 ```
@@ -514,7 +515,7 @@ import (
     "database/sql"
     "errors"
     "fmt"
-    
+
     "github.com/go-sql-driver/mysql"
 )
 
@@ -522,13 +523,13 @@ func handleMySQLError(err error) {
     if err == nil {
         return
     }
-    
+
     // 处理sql.ErrNoRows
     if errors.Is(err, sql.ErrNoRows) {
         fmt.Println("记录不存在")
         return
     }
-    
+
     // 处理MySQL特定错误
     var mysqlErr *mysql.MySQLError
     if errors.As(err, &mysqlErr) {
@@ -542,7 +543,7 @@ func handleMySQLError(err error) {
         }
         return
     }
-    
+
     fmt.Println("其他错误:", err)
 }
 ```
@@ -559,18 +560,18 @@ func batchInsertOptimized(db *sql.DB, users []User) error {
     if len(users) == 0 {
         return nil
     }
-    
+
     valueStrings := make([]string, 0, len(users))
     valueArgs := make([]interface{}, 0, len(users)*3)
-    
+
     for _, user := range users {
         valueStrings = append(valueStrings, "(?, ?, ?)")
         valueArgs = append(valueArgs, user.Username, user.Email, user.Age)
     }
-    
+
     query := fmt.Sprintf("INSERT INTO users(username, email, age) VALUES %s",
         strings.Join(valueStrings, ","))
-    
+
     _, err := db.Exec(query, valueArgs...)
     return err
 }
@@ -586,14 +587,14 @@ func createIndexes(db *sql.DB) error {
         "CREATE INDEX idx_email ON users(email)",
         "CREATE INDEX idx_age ON users(age)",
     }
-    
+
     for _, query := range indexes {
         _, err := db.Exec(query)
         if err != nil {
             return err
         }
     }
-    
+
     return nil
 }
 ```
@@ -610,7 +611,7 @@ import (
     "fmt"
     "log"
     "time"
-    
+
     _ "github.com/go-sql-driver/mysql"
 )
 
@@ -630,48 +631,48 @@ func main() {
         log.Fatal(err)
     }
     defer db.Close()
-    
+
     // 配置连接池
     db.SetMaxOpenConns(100)
     db.SetMaxIdleConns(10)
     db.SetConnMaxLifetime(time.Hour)
-    
+
     // 创建表
     if err := createTable(db); err != nil {
         log.Fatal(err)
     }
-    
+
     // 插入数据
     user := User{
         Username: "john_doe",
         Email:    "john@example.com",
         Age:      25,
     }
-    
+
     id, err := insertUser(db, user)
     if err != nil {
         log.Fatal(err)
     }
     fmt.Printf("插入成功, ID: %d\n", id)
-    
+
     // 查询数据
     foundUser, err := getUserByID(db, int(id))
     if err != nil {
         log.Fatal(err)
     }
     fmt.Printf("查询结果: %+v\n", foundUser)
-    
+
     // 更新数据
     foundUser.Age = 26
     if err := updateUser(db, *foundUser); err != nil {
         log.Fatal(err)
     }
-    
+
     // 删除数据
     if err := deleteUser(db, foundUser.ID); err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Println("所有操作完成!")
 }
 ```
@@ -715,7 +716,7 @@ func main() {
 
 ---
 
-**维护者**: Documentation Team  
-**创建日期**: 2025-10-22  
-**最后更新**: 2025-10-29  
+**维护者**: Documentation Team
+**创建日期**: 2025-10-22
+**最后更新**: 2025-10-29
 **文档状态**: ✅ 完成

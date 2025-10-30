@@ -1,7 +1,7 @@
-﻿# Kubernetes高级特性
+# Kubernetes高级特性
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+ / Kubernetes 1.28+
 
 ---
@@ -94,7 +94,7 @@ func CreateDatabase(ctx context.Context, client dynamic.Interface, db *Database)
         Version:  "v1",
         Resource: "databases",
     }
-    
+
     unstructuredObj := &unstructured.Unstructured{
         Object: map[string]interface{}{
             "apiVersion": "example.com/v1",
@@ -105,7 +105,7 @@ func CreateDatabase(ctx context.Context, client dynamic.Interface, db *Database)
             "spec": db.Spec,
         },
     }
-    
+
     _, err := client.Resource(gvr).Namespace("default").Create(ctx, unstructuredObj, metav1.CreateOptions{})
     return err
 }
@@ -138,7 +138,7 @@ import (
     "context"
     ctrl "sigs.k8s.io/controller-runtime"
     "sigs.k8s.io/controller-runtime/pkg/client"
-    
+
     databasev1 "github.com/myorg/database-operator/api/v1"
 )
 
@@ -149,26 +149,26 @@ type DatabaseReconciler struct {
 
 func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
     log := log.FromContext(ctx)
-    
+
     // 获取Database资源
     database := &databasev1.Database{}
     if err := r.Get(ctx, req.NamespacedName, database); err != nil {
         return ctrl.Result{}, client.IgnoreNotFound(err)
     }
-    
+
     // 业务逻辑: 创建/更新Deployment
     deployment := r.createDeployment(database)
     if err := r.Create(ctx, deployment); err != nil {
         log.Error(err, "Failed to create Deployment")
         return ctrl.Result{}, err
     }
-    
+
     // 更新状态
     database.Status.State = "Ready"
     if err := r.Status().Update(ctx, database); err != nil {
         return ctrl.Result{}, err
     }
-    
+
     return ctrl.Result{}, nil
 }
 
@@ -541,7 +541,7 @@ data:
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Kubernetes 1.27+, Go 1.21+

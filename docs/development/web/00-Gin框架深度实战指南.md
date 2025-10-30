@@ -1,8 +1,8 @@
-﻿# Gin框架
+# Gin框架
 
-**字数**: ~42,000字  
-**代码示例**: 130+个完整示例  
-**实战案例**: 12个端到端案例  
+**字数**: ~42,000字
+**代码示例**: 130+个完整示例
+**实战案例**: 12个端到端案例
 **适用人群**: 初级到高级Go Web开发者
 
 ---
@@ -90,7 +90,7 @@ import (
     "fmt"
     "net/http"
     "time"
-    
+
     "github.com/gin-gonic/gin"
 )
 
@@ -98,38 +98,38 @@ import (
 func createEngine() *gin.Engine {
     // 方式1：使用Default（包含Logger和Recovery中间件）
     // r := gin.Default()
-    
+
     // 方式2：使用New（不包含中间件）
     r := gin.New()
-    
+
     // 手动添加中间件
     r.Use(gin.Logger())
     r.Use(gin.Recovery())
-    
+
     return r
 }
 
 // ===== 2. Context生命周期 =====
 func contextLifecycle() {
     r := gin.Default()
-    
+
     r.GET("/lifecycle", func(c *gin.Context) {
         // Context在请求开始时创建
         fmt.Printf("Request ID: %p\n", c)
-        
+
         // 设置Context数据（键值对）
         c.Set("user_id", 123)
         c.Set("request_time", time.Now())
-        
+
         // 获取Context数据
         if userID, exists := c.Get("user_id"); exists {
             fmt.Printf("User ID: %v\n", userID)
         }
-        
+
         // Context会在请求结束后被回收（sync.Pool）
         c.JSON(http.StatusOK, gin.H{"message": "lifecycle demo"})
     })
-    
+
     r.Run(":8080")
 }
 
@@ -155,24 +155,24 @@ users  posts
 
 func routingDemo() {
     r := gin.Default()
-    
+
     // 静态路由
     r.GET("/users", func(c *gin.Context) {
         c.JSON(200, gin.H{"type": "static"})
     })
-    
+
     // 参数路由
     r.GET("/users/:id", func(c *gin.Context) {
         id := c.Param("id")
         c.JSON(200, gin.H{"type": "param", "id": id})
     })
-    
+
     // 通配符路由
     r.GET("/files/*filepath", func(c *gin.Context) {
         filepath := c.Param("filepath")
         c.JSON(200, gin.H{"type": "wildcard", "path": filepath})
     })
-    
+
     r.Run(":8080")
 }
 
@@ -196,18 +196,18 @@ import (
 
 func routePatterns() {
     r := gin.Default()
-    
+
     // ===== 1. 静态路由（精确匹配）=====
     r.GET("/users", func(c *gin.Context) {
         c.JSON(200, gin.H{"message": "list users"})
     })
-    
+
     // ===== 2. 路径参数（:param）=====
     r.GET("/users/:id", func(c *gin.Context) {
         id := c.Param("id")
         c.JSON(200, gin.H{"user_id": id})
     })
-    
+
     r.GET("/posts/:category/:id", func(c *gin.Context) {
         category := c.Param("category")
         id := c.Param("id")
@@ -216,49 +216,49 @@ func routePatterns() {
             "id":       id,
         })
     })
-    
+
     // ===== 3. 通配符路由（*path）=====
     r.GET("/static/*filepath", func(c *gin.Context) {
         filepath := c.Param("filepath")
         // filepath = /css/style.css
         c.String(200, "File: %s", filepath)
     })
-    
+
     // ===== 4. 查询参数 =====
     r.GET("/search", func(c *gin.Context) {
         // /search?q=golang&page=1
         query := c.Query("q")              // 必需参数（缺少返回空字符串）
         page := c.DefaultQuery("page", "1") // 可选参数（默认值）
-        
+
         c.JSON(200, gin.H{
             "query": query,
             "page":  page,
         })
     })
-    
+
     // ===== 5. 路由优先级 =====
     // 优先级：静态 > 参数 > 通配符
     r.GET("/admin/dashboard", func(c *gin.Context) {
         c.String(200, "Admin dashboard")
     })
-    
+
     r.GET("/admin/:page", func(c *gin.Context) {
         page := c.Param("page")
         c.String(200, "Admin page: %s", page)
     })
-    
+
     r.GET("/admin/*action", func(c *gin.Context) {
         action := c.Param("action")
         c.String(200, "Admin action: %s", action)
     })
-    
+
     /*
     匹配测试:
     /admin/dashboard   → "Admin dashboard" (静态路由)
     /admin/users       → "Admin page: users" (参数路由)
     /admin/settings/profile → "Admin action: /settings/profile" (通配符路由)
     */
-    
+
     r.Run(":8080")
 }
 ```
@@ -272,7 +272,7 @@ package main
 
 import (
     "net/http"
-    
+
     "github.com/gin-gonic/gin"
 )
 
@@ -302,7 +302,7 @@ func (uc *UserController) List(c *gin.Context) {
     for _, user := range uc.users {
         users = append(users, user)
     }
-    
+
     c.JSON(http.StatusOK, gin.H{
         "data": users,
         "total": len(users),
@@ -316,81 +316,81 @@ func (uc *UserController) Create(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     user.ID = uc.nextID
     uc.nextID++
     uc.users[user.ID] = &user
-    
+
     c.JSON(http.StatusCreated, gin.H{"data": user})
 }
 
 // Get - GET /users/:id
 func (uc *UserController) Get(c *gin.Context) {
     id := c.Param("id")
-    
+
     var userID int64
     if _, err := fmt.Sscanf(id, "%d", &userID); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
         return
     }
-    
+
     user, exists := uc.users[userID]
     if !exists {
         c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
         return
     }
-    
+
     c.JSON(http.StatusOK, gin.H{"data": user})
 }
 
 // Update - PUT /users/:id
 func (uc *UserController) Update(c *gin.Context) {
     id := c.Param("id")
-    
+
     var userID int64
     fmt.Sscanf(id, "%d", &userID)
-    
+
     user, exists := uc.users[userID]
     if !exists {
         c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
         return
     }
-    
+
     var updates User
     if err := c.ShouldBindJSON(&updates); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     user.Name = updates.Name
     user.Email = updates.Email
-    
+
     c.JSON(http.StatusOK, gin.H{"data": user})
 }
 
 // Delete - DELETE /users/:id
 func (uc *UserController) Delete(c *gin.Context) {
     id := c.Param("id")
-    
+
     var userID int64
     fmt.Sscanf(id, "%d", &userID)
-    
+
     if _, exists := uc.users[userID]; !exists {
         c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
         return
     }
-    
+
     delete(uc.users, userID)
-    
+
     c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
 }
 
 // ===== 路由注册 =====
 func setupRESTfulRoutes() {
     r := gin.Default()
-    
+
     uc := NewUserController()
-    
+
     // RESTful API路由
     api := r.Group("/api/v1")
     {
@@ -403,7 +403,7 @@ func setupRESTfulRoutes() {
             users.DELETE("/:id", uc.Delete) // 删除
         }
     }
-    
+
     r.Run(":8080")
 }
 
@@ -453,7 +453,7 @@ import (
     "strings"
     "sync"
     "time"
-    
+
     "github.com/gin-gonic/gin"
 )
 
@@ -463,20 +463,20 @@ func LoggerMiddleware() gin.HandlerFunc {
         start := time.Now()
         path := c.Request.URL.Path
         raw := c.Request.URL.RawQuery
-        
+
         // 处理请求
         c.Next()
-        
+
         // 请求完成后记录日志
         latency := time.Since(start)
         clientIP := c.ClientIP()
         method := c.Request.Method
         statusCode := c.Writer.Status()
-        
+
         if raw != "" {
             path = path + "?" + raw
         }
-        
+
         log.Printf("[GIN] %v | %3d | %13v | %15s | %-7s %s",
             start.Format("2006/01/02 - 15:04:05"),
             statusCode,
@@ -495,16 +495,16 @@ func RecoveryMiddleware() gin.HandlerFunc {
             if err := recover(); err != nil {
                 // 打印堆栈信息
                 log.Printf("Panic recovered: %v\n%s", err, debug.Stack())
-                
+
                 // 返回500错误
                 c.JSON(http.StatusInternalServerError, gin.H{
                     "error": "Internal Server Error",
                 })
-                
+
                 c.Abort()
             }
         }()
-        
+
         c.Next()
     }
 }
@@ -516,12 +516,12 @@ func CORSMiddleware() gin.HandlerFunc {
         c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
         c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
         c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
-        
+
         if c.Request.Method == "OPTIONS" {
             c.AbortWithStatus(http.StatusNoContent)
             return
         }
-        
+
         c.Next()
     }
 }
@@ -531,23 +531,23 @@ func AuthMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         // 从Header获取Token
         token := c.GetHeader("Authorization")
-        
+
         // 移除"Bearer "前缀
         if len(token) > 7 && strings.HasPrefix(token, "Bearer ") {
             token = token[7:]
         }
-        
+
         // 验证Token（简化版）
         if token == "" || token != "valid-token-123" {
             c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
             c.Abort() // 终止后续处理
             return
         }
-        
+
         // 将用户信息存入Context
         c.Set("userID", 123)
         c.Set("username", "alice")
-        
+
         c.Next()
     }
 }
@@ -573,7 +573,7 @@ func NewRateLimiter(maxTokens, refillRate int) *RateLimiter {
 func (rl *RateLimiter) Allow() bool {
     rl.mu.Lock()
     defer rl.mu.Unlock()
-    
+
     // 补充token
     elapsed := time.Since(rl.lastRefill)
     if elapsed >= time.Second {
@@ -581,13 +581,13 @@ func (rl *RateLimiter) Allow() bool {
         rl.tokens = min(rl.maxTokens, rl.tokens+tokensToAdd)
         rl.lastRefill = time.Now()
     }
-    
+
     // 检查token
     if rl.tokens > 0 {
         rl.tokens--
         return true
     }
-    
+
     return false
 }
 
@@ -600,7 +600,7 @@ func RateLimitMiddleware(limiter *RateLimiter) gin.HandlerFunc {
             c.Abort()
             return
         }
-        
+
         c.Next()
     }
 }
@@ -612,10 +612,10 @@ func RequestIDMiddleware() gin.HandlerFunc {
         if requestID == "" {
             requestID = fmt.Sprintf("%d", time.Now().UnixNano())
         }
-        
+
         c.Set("requestID", requestID)
         c.Writer.Header().Set("X-Request-ID", requestID)
-        
+
         c.Next()
     }
 }
@@ -626,18 +626,18 @@ func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
         // 创建带超时的Context
         ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
         defer cancel()
-        
+
         // 替换请求的Context
         c.Request = c.Request.WithContext(ctx)
-        
+
         // 创建完成channel
         done := make(chan struct{})
-        
+
         go func() {
             c.Next()
             close(done)
         }()
-        
+
         select {
         case <-done:
             // 正常完成
@@ -654,21 +654,21 @@ func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
 // ===== 使用示例 =====
 func main() {
     r := gin.New() // 不使用默认中间件
-    
+
     // 全局中间件
     r.Use(RecoveryMiddleware())
     r.Use(LoggerMiddleware())
     r.Use(RequestIDMiddleware())
     r.Use(CORSMiddleware())
-    
+
     // 限流器
     limiter := NewRateLimiter(10, 10) // 每秒10个请求
-    
+
     // 公开路由
     r.GET("/ping", func(c *gin.Context) {
         c.JSON(200, gin.H{"message": "pong"})
     })
-    
+
     // 需要认证的路由
     api := r.Group("/api")
     api.Use(AuthMiddleware())
@@ -680,7 +680,7 @@ func main() {
             c.JSON(200, gin.H{"username": username})
         })
     }
-    
+
     r.Run(":8080")
 }
 ```
@@ -696,7 +696,7 @@ package main
 
 import (
     "net/http"
-    
+
     "github.com/gin-gonic/gin"
 )
 
@@ -710,12 +710,12 @@ type CreateUserRequest struct {
 
 func createUser(c *gin.Context) {
     var req CreateUserRequest
-    
+
     if err := c.ShouldBindJSON(&req); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(http.StatusCreated, gin.H{
         "message": "User created",
         "data":    req,
@@ -732,12 +732,12 @@ type ListQuery struct {
 
 func listUsers(c *gin.Context) {
     var query ListQuery
-    
+
     if err := c.ShouldBindQuery(&query); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(http.StatusOK, gin.H{
         "page":      query.Page,
         "page_size": query.PageSize,
@@ -755,17 +755,17 @@ type UpdateUserRequest struct {
 func updateUser(c *gin.Context) {
     // 路径参数
     userID := c.Param("id")
-    
+
     // 查询参数
     force := c.DefaultQuery("force", "false")
-    
+
     // JSON Body
     var req UpdateUserRequest
     if err := c.ShouldBindJSON(&req); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(http.StatusOK, gin.H{
         "user_id": userID,
         "force":   force,
@@ -782,12 +782,12 @@ type LoginForm struct {
 
 func login(c *gin.Context) {
     var form LoginForm
-    
+
     if err := c.ShouldBind(&form); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(http.StatusOK, gin.H{
         "message": "Login successful",
         "user":    form.Username,
@@ -802,12 +802,12 @@ type HeaderInfo struct {
 
 func getHeaders(c *gin.Context) {
     var headers HeaderInfo
-    
+
     if err := c.ShouldBindHeader(&headers); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(http.StatusOK, gin.H{"headers": headers})
 }
 
@@ -819,12 +819,12 @@ type URIParams struct {
 
 func getPost(c *gin.Context) {
     var params URIParams
-    
+
     if err := c.ShouldBindUri(&params); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(http.StatusOK, gin.H{
         "category": params.Category,
         "id":       params.ID,
@@ -833,7 +833,7 @@ func getPost(c *gin.Context) {
 
 func main() {
     r := gin.Default()
-    
+
     // 路由注册
     r.POST("/users", createUser)
     r.GET("/users", listUsers)
@@ -841,7 +841,7 @@ func main() {
     r.POST("/login", login)
     r.GET("/headers", getHeaders)
     r.GET("/posts/:category/:id", getPost)
-    
+
     r.Run(":8080")
 }
 ```
@@ -936,7 +936,7 @@ func stringResponse(c *gin.Context) {
 func redirectResponse(c *gin.Context) {
  // HTTP重定向
  c.Redirect(http.StatusMovedPermanently, "https://google.com")
- 
+
  // 路由重定向
  // c.Request.URL.Path = "/new-path"
  // r.HandleContext(c)
@@ -961,7 +961,7 @@ func streamResponse(c *gin.Context) {
 func customHeaders(c *gin.Context) {
  c.Header("X-Custom-Header", "CustomValue")
  c.Header("Cache-Control", "no-cache")
- 
+
  c.JSON(http.StatusOK, gin.H{"message": "With custom headers"})
 }
 
@@ -1026,12 +1026,12 @@ type RegisterRequest struct {
 
 func register(c *gin.Context) {
  var req RegisterRequest
- 
+
  if err := c.ShouldBindJSON(&req); err != nil {
   c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
   return
  }
- 
+
  c.JSON(http.StatusOK, gin.H{"message": "Registration successful"})
 }
 
@@ -1064,12 +1064,12 @@ type ChangePasswordRequest struct {
 
 func changePassword(c *gin.Context) {
  var req ChangePasswordRequest
- 
+
  if err := c.ShouldBindJSON(&req); err != nil {
   c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
   return
  }
- 
+
  c.JSON(http.StatusOK, gin.H{"message": "Password changed"})
 }
 
@@ -1088,12 +1088,12 @@ type UserProfile struct {
 
 func createProfile(c *gin.Context) {
  var req UserProfile
- 
+
  if err := c.ShouldBindJSON(&req); err != nil {
   c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
   return
  }
- 
+
  c.JSON(http.StatusCreated, gin.H{"data": req})
 }
 
@@ -1107,12 +1107,12 @@ type BatchCreateRequest struct {
 
 func batchCreate(c *gin.Context) {
  var req BatchCreateRequest
- 
+
  if err := c.ShouldBindJSON(&req); err != nil {
   c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
   return
  }
- 
+
  c.JSON(http.StatusCreated, gin.H{
   "message": "Users created",
   "count":   len(req.Users),
@@ -1122,12 +1122,12 @@ func batchCreate(c *gin.Context) {
 // ===== 6. 自定义错误消息 =====
 func getValidationErrors(err error) map[string]string {
  errors := make(map[string]string)
- 
+
  if validationErrors, ok := err.(validator.ValidationErrors); ok {
   for _, e := range validationErrors {
    field := e.Field()
    tag := e.Tag()
-   
+
    switch tag {
    case "required":
     errors[field] = field + " is required"
@@ -1142,19 +1142,19 @@ func getValidationErrors(err error) map[string]string {
    }
   }
  }
- 
+
  return errors
 }
 
 func registerWithCustomError(c *gin.Context) {
  var req RegisterRequest
- 
+
  if err := c.ShouldBindJSON(&req); err != nil {
   errors := getValidationErrors(err)
   c.JSON(http.StatusBadRequest, gin.H{"errors": errors})
   return
  }
- 
+
  c.JSON(http.StatusOK, gin.H{"message": "Success"})
 }
 ```
@@ -1192,7 +1192,7 @@ func uploadSingleFile(c *gin.Context) {
  // 验证文件类型
  allowedExts := []string{".jpg", ".jpeg", ".png", ".gif"}
  ext := strings.ToLower(filepath.Ext(file.Filename))
- 
+
  allowed := false
  for _, allowedExt := range allowedExts {
   if ext == allowedExt {
@@ -1200,7 +1200,7 @@ func uploadSingleFile(c *gin.Context) {
    break
   }
  }
- 
+
  if !allowed {
   c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file type"})
   return
@@ -1273,7 +1273,7 @@ func uploadMultipleFiles(c *gin.Context) {
 // ===== 3. 文件下载 =====
 func downloadFile(c *gin.Context) {
  filename := c.Param("filename")
- 
+
  // 验证文件名（防止路径遍历攻击）
  if strings.Contains(filename, "..") || strings.Contains(filename, "/") {
   c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filename"})
@@ -1346,7 +1346,7 @@ func uploadImage(c *gin.Context) {
 
  // 验证MIME类型
  allowedTypes := []string{"image/jpeg", "image/png", "image/gif"}
- 
+
  src, err := file.Open()
  if err != nil {
   c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -1362,7 +1362,7 @@ func uploadImage(c *gin.Context) {
  }
 
  contentType := http.DetectContentType(buffer)
- 
+
  allowed := false
  for _, allowedType := range allowedTypes {
   if contentType == allowedType {
@@ -1637,10 +1637,10 @@ func setupReleaseMode() *gin.Engine {
  // 生产环境使用Release模式
  gin.SetMode(gin.ReleaseMode)
  r := gin.New()
- 
+
  // 只添加必要的中间件
  r.Use(gin.Recovery())
- 
+
  return r
 }
 
@@ -1715,14 +1715,14 @@ func CacheMiddleware(ttl time.Duration) gin.HandlerFunc {
   // 检查缓存
   if cached, ok := responseCache.Load(cacheKey); ok {
    cachedResp := cached.(*CachedResponse)
-   
+
    // 检查是否过期
    if time.Since(cachedResp.Timestamp) < cachedResp.TTL {
     c.Data(http.StatusOK, "application/json", cachedResp.Data)
     c.Abort()
     return
    }
-   
+
    // 删除过期缓存
    responseCache.Delete(cacheKey)
   }
@@ -2272,7 +2272,7 @@ func setupECommerceRoutes(r *gin.Engine, handlers *Handlers) {
 
 ---
 
-**文档版本**: v13.0  
+**文档版本**: v13.0
 
 <div align="center">
 
@@ -2284,7 +2284,7 @@ Made with ❤️ for Gin Framework Developers
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

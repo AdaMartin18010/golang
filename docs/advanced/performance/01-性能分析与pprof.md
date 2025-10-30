@@ -1,129 +1,130 @@
-﻿# Go性能优化与pprof
+# Go性能优化与pprof
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+
 
 ---
 
-**字数**: ~15,000字  
-**代码示例**: 30+个  
-**实战案例**: 3个完整案例  
+**字数**: ~15,000字
+**代码示例**: 30+个
+**实战案例**: 3个完整案例
 **适用人群**: 中高级Go开发者
 
 ---
 
 ## 📋 目录
 
-
-- [第一部分：性能优化理论基础](#第一部分性能优化理论基础)
-  - [性能优化的核心原则](#性能优化的核心原则)
-    - [原则1：度量驱动优化（Measure-Driven Optimization）](#原则1度量驱动优化measure-driven-optimization)
-    - [原则2：先对再快（Correct First, Fast Second）](#原则2先对再快correct-first-fast-second)
-    - [原则3：局部优化 vs 全局优化](#原则3局部优化-vs-全局优化)
-  - [性能指标体系](#性能指标体系)
-    - [核心指标（The Four Golden Signals）](#核心指标the-four-golden-signals)
-    - [Go特有指标](#go特有指标)
-  - [性能优化流程](#性能优化流程)
-    - [标准流程（6步法）](#标准流程6步法)
-    - [详细步骤](#详细步骤)
-- [第二部分：pprof工具原理深入](#第二部分pprof工具原理深入)
-  - [pprof架构与实现](#pprof架构与实现)
-    - [pprof工作流程](#pprof工作流程)
-    - [核心实现原理](#核心实现原理)
-  - [采样算法详解](#采样算法详解)
-    - [CPU采样算法](#cpu采样算法)
-    - [内存采样算法](#内存采样算法)
-  - [Profile类型详解](#profile类型详解)
-    - [1. CPU Profile](#1-cpu-profile)
-    - [2. Memory Profile (Heap)](#2-memory-profile-heap)
-    - [3. Goroutine Profile](#3-goroutine-profile)
-    - [4. Block Profile](#4-block-profile)
-    - [5. Mutex Profile](#5-mutex-profile)
-- [第三部分：pprof完整工具链](#第三部分pprof完整工具链)
-  - [pprof命令行用法](#pprof命令行用法)
-    - [基础命令](#基础命令)
-    - [top命令（最常用）](#top命令最常用)
-    - [list命令（查看源码）](#list命令查看源码)
-    - [更多高级命令](#更多高级命令)
-  - [火焰图生成与分析](#火焰图生成与分析)
-    - [什么是火焰图？](#什么是火焰图)
-    - [生成火焰图](#生成火焰图)
-    - [火焰图阅读技巧](#火焰图阅读技巧)
-  - [go tool trace时间线分析](#go-tool-trace时间线分析)
-    - [trace vs pprof](#trace-vs-pprof)
-    - [采集trace](#采集trace)
-    - [分析trace](#分析trace)
-    - [Trace UI功能](#trace-ui功能)
-    - [实战案例：用trace找问题](#实战案例用trace找问题)
-  - [benchstat性能对比](#benchstat性能对比)
-    - [为什么需要benchstat？](#为什么需要benchstat)
-    - [安装benchstat](#安装benchstat)
-    - [基础用法](#基础用法)
-    - [理解输出](#理解输出)
-    - [高级用法](#高级用法)
-- [第四部分：实战案例](#第四部分实战案例)
-  - [案例1：QPS下降10倍问题排查](#案例1qps下降10倍问题排查)
-    - [问题背景](#问题背景)
-    - [Step 1: 建立基线对比](#step-1-建立基线对比)
-    - [Step 2: 采集CPU profile](#step-2-采集cpu-profile)
-    - [Step 3: 定位代码](#step-3-定位代码)
-    - [Step 4: 修复方案](#step-4-修复方案)
-    - [Step 5: 验证效果](#step-5-验证效果)
-    - [Step 6: 根因分析与预防](#step-6-根因分析与预防)
-  - [案例2：内存泄漏排查与修复](#案例2内存泄漏排查与修复)
-    - [问题背景2](#问题背景2)
-    - [Step 1: 观察内存增长](#step-1-观察内存增长)
-    - [Step 2: 采集堆快照对比](#step-2-采集堆快照对比)
-    - [Step 3: 定位泄漏代码](#step-3-定位泄漏代码)
-    - [Step 4: 修复方案1](#step-4-修复方案1)
-    - [Step 5: 验证修复效果](#step-5-验证修复效果)
-    - [Step 6: 添加监控预警](#step-6-添加监控预警)
-  - [案例3：GC压力优化实战](#案例3gc压力优化实战)
-    - [问题背景3](#问题背景3)
-    - [Step 1: 观察GC频率](#step-1-观察gc频率)
-    - [Step 2: 分析内存分配](#step-2-分析内存分配)
-    - [Step 3: 优化方案 - 对象池](#step-3-优化方案-对象池)
-    - [Step 4: 优化方案 - 预分配](#step-4-优化方案-预分配)
-    - [Step 5: 优化方案 - 字符串优化](#step-5-优化方案-字符串优化)
-    - [Step 6: 验证优化效果](#step-6-验证优化效果)
-    - [Step 7: 持续监控](#step-7-持续监控)
-- [第五部分：进阶主题](#第五部分进阶主题)
-  - [逃逸分析与优化](#逃逸分析与优化)
-    - [什么是逃逸分析？](#什么是逃逸分析)
-    - [查看逃逸分析](#查看逃逸分析)
-    - [案例1：指针导致逃逸](#案例1指针导致逃逸)
-    - [案例2：接口导致逃逸](#案例2接口导致逃逸)
-    - [案例3：切片越界导致逃逸](#案例3切片越界导致逃逸)
-    - [逃逸优化总结](#逃逸优化总结)
-  - [内存对齐与CPU缓存](#内存对齐与cpu缓存)
-    - [什么是内存对齐？](#什么是内存对齐)
-    - [CPU缓存行（Cache Line）](#cpu缓存行cache-line)
-  - [零拷贝技术](#零拷贝技术)
-    - [什么是零拷贝？](#什么是零拷贝)
-    - [Go实现零拷贝](#go实现零拷贝)
-  - [SIMD优化](#simd优化)
-    - [什么是SIMD？](#什么是simd)
-- [第六部分：最佳实践](#第六部分最佳实践)
-  - [性能优化Checklist](#性能优化checklist)
-    - [开发阶段](#开发阶段)
-    - [测试阶段](#测试阶段)
-    - [上线阶段](#上线阶段)
-  - [常见陷阱](#常见陷阱)
-    - [陷阱1：过度使用`defer`](#陷阱1过度使用defer)
-    - [陷阱2：闭包捕获循环变量](#陷阱2闭包捕获循环变量)
-    - [陷阱3：忘记设置HTTP超时](#陷阱3忘记设置http超时)
-    - [陷阱4：map并发读写](#陷阱4map并发读写)
-  - [性能预算](#性能预算)
-    - [什么是性能预算？](#什么是性能预算)
-    - [实施性能预算](#实施性能预算)
-  - [持续性能监控](#持续性能监控)
-    - [建立性能监控体系](#建立性能监控体系)
-    - [性能回归检测](#性能回归检测)
-- [🎯 总结](#总结)
-  - [核心要点](#核心要点)
-  - [学习路径建议](#学习路径建议)
-  - [参考资源](#参考资源)
+- [Go性能优化与pprof](#go性能优化与pprof)
+  - [📋 目录](#-目录)
+  - [第一部分：性能优化理论基础](#第一部分性能优化理论基础)
+    - [性能优化的核心原则](#性能优化的核心原则)
+      - [原则1：度量驱动优化（Measure-Driven Optimization）](#原则1度量驱动优化measure-driven-optimization)
+      - [原则2：先对再快（Correct First, Fast Second）](#原则2先对再快correct-first-fast-second)
+      - [原则3：局部优化 vs 全局优化](#原则3局部优化-vs-全局优化)
+    - [性能指标体系](#性能指标体系)
+      - [核心指标（The Four Golden Signals）](#核心指标the-four-golden-signals)
+      - [Go特有指标](#go特有指标)
+    - [性能优化流程](#性能优化流程)
+      - [标准流程（6步法）](#标准流程6步法)
+      - [详细步骤](#详细步骤)
+  - [第二部分：pprof工具原理深入](#第二部分pprof工具原理深入)
+    - [pprof架构与实现](#pprof架构与实现)
+      - [pprof工作流程](#pprof工作流程)
+      - [核心实现原理](#核心实现原理)
+    - [采样算法详解](#采样算法详解)
+      - [CPU采样算法](#cpu采样算法)
+      - [内存采样算法](#内存采样算法)
+    - [Profile类型详解](#profile类型详解)
+      - [1. CPU Profile](#1-cpu-profile)
+      - [2. Memory Profile (Heap)](#2-memory-profile-heap)
+      - [3. Goroutine Profile](#3-goroutine-profile)
+      - [4. Block Profile](#4-block-profile)
+      - [5. Mutex Profile](#5-mutex-profile)
+  - [第三部分：pprof完整工具链](#第三部分pprof完整工具链)
+    - [pprof命令行用法](#pprof命令行用法)
+      - [基础命令](#基础命令)
+      - [top命令（最常用）](#top命令最常用)
+      - [list命令（查看源码）](#list命令查看源码)
+      - [更多高级命令](#更多高级命令)
+    - [火焰图生成与分析](#火焰图生成与分析)
+      - [什么是火焰图？](#什么是火焰图)
+      - [生成火焰图](#生成火焰图)
+      - [火焰图阅读技巧](#火焰图阅读技巧)
+    - [go tool trace时间线分析](#go-tool-trace时间线分析)
+      - [trace vs pprof](#trace-vs-pprof)
+      - [采集trace](#采集trace)
+      - [分析trace](#分析trace)
+      - [Trace UI功能](#trace-ui功能)
+      - [实战案例：用trace找问题](#实战案例用trace找问题)
+    - [benchstat性能对比](#benchstat性能对比)
+      - [为什么需要benchstat？](#为什么需要benchstat)
+      - [安装benchstat](#安装benchstat)
+      - [基础用法](#基础用法)
+      - [理解输出](#理解输出)
+      - [高级用法](#高级用法)
+  - [第四部分：实战案例](#第四部分实战案例)
+    - [案例1：QPS下降10倍问题排查](#案例1qps下降10倍问题排查)
+      - [问题背景](#问题背景)
+      - [Step 1: 建立基线对比](#step-1-建立基线对比)
+      - [Step 2: 采集CPU profile](#step-2-采集cpu-profile)
+      - [Step 3: 定位代码](#step-3-定位代码)
+      - [Step 4: 修复方案](#step-4-修复方案)
+      - [Step 5: 验证效果](#step-5-验证效果)
+      - [Step 6: 根因分析与预防](#step-6-根因分析与预防)
+    - [案例2：内存泄漏排查与修复](#案例2内存泄漏排查与修复)
+      - [问题背景2](#问题背景2)
+      - [Step 1: 观察内存增长](#step-1-观察内存增长)
+      - [Step 2: 采集堆快照对比](#step-2-采集堆快照对比)
+      - [Step 3: 定位泄漏代码](#step-3-定位泄漏代码)
+      - [Step 4: 修复方案1](#step-4-修复方案1)
+      - [Step 5: 验证修复效果](#step-5-验证修复效果)
+      - [Step 6: 添加监控预警](#step-6-添加监控预警)
+    - [案例3：GC压力优化实战](#案例3gc压力优化实战)
+      - [问题背景3](#问题背景3)
+      - [Step 1: 观察GC频率](#step-1-观察gc频率)
+      - [Step 2: 分析内存分配](#step-2-分析内存分配)
+      - [Step 3: 优化方案 - 对象池](#step-3-优化方案---对象池)
+      - [Step 4: 优化方案 - 预分配](#step-4-优化方案---预分配)
+      - [Step 5: 优化方案 - 字符串优化](#step-5-优化方案---字符串优化)
+      - [Step 6: 验证优化效果](#step-6-验证优化效果)
+      - [Step 7: 持续监控](#step-7-持续监控)
+  - [第五部分：进阶主题](#第五部分进阶主题)
+    - [逃逸分析与优化](#逃逸分析与优化)
+      - [什么是逃逸分析？](#什么是逃逸分析)
+      - [查看逃逸分析](#查看逃逸分析)
+      - [案例1：指针导致逃逸](#案例1指针导致逃逸)
+      - [案例2：接口导致逃逸](#案例2接口导致逃逸)
+      - [案例3：切片越界导致逃逸](#案例3切片越界导致逃逸)
+      - [逃逸优化总结](#逃逸优化总结)
+    - [内存对齐与CPU缓存](#内存对齐与cpu缓存)
+      - [什么是内存对齐？](#什么是内存对齐)
+      - [CPU缓存行（Cache Line）](#cpu缓存行cache-line)
+    - [零拷贝技术](#零拷贝技术)
+      - [什么是零拷贝？](#什么是零拷贝)
+      - [Go实现零拷贝](#go实现零拷贝)
+    - [SIMD优化](#simd优化)
+      - [什么是SIMD？](#什么是simd)
+  - [第六部分：最佳实践](#第六部分最佳实践)
+    - [性能优化Checklist](#性能优化checklist)
+      - [开发阶段](#开发阶段)
+      - [测试阶段](#测试阶段)
+      - [上线阶段](#上线阶段)
+    - [常见陷阱](#常见陷阱)
+      - [陷阱1：过度使用`defer`](#陷阱1过度使用defer)
+      - [陷阱2：闭包捕获循环变量](#陷阱2闭包捕获循环变量)
+      - [陷阱3：忘记设置HTTP超时](#陷阱3忘记设置http超时)
+      - [陷阱4：map并发读写](#陷阱4map并发读写)
+    - [性能预算](#性能预算)
+      - [什么是性能预算？](#什么是性能预算)
+      - [实施性能预算](#实施性能预算)
+    - [持续性能监控](#持续性能监控)
+      - [建立性能监控体系](#建立性能监控体系)
+      - [性能回归检测](#性能回归检测)
+  - [🎯 总结](#-总结)
+    - [核心要点](#核心要点)
+    - [学习路径建议](#学习路径建议)
+    - [参考资源](#参考资源)
 
 ## 第一部分：性能优化理论基础
 
@@ -152,13 +153,13 @@ func processData(data []string) []string {
 // 正确示例：基于Benchmark的优化
 func BenchmarkProcessData(b *testing.B) {
     data := generateTestData(1000)
-    
+
     b.Run("方案A-slice", func(b *testing.B) {
         for i := 0; i < b.N; i++ {
             processDataSlice(data)
         }
     })
-    
+
     b.Run("方案B-map", func(b *testing.B) {
         for i := 0; i < b.N; i++ {
             processDataMap(data)
@@ -210,10 +211,10 @@ func (c *Counter) IncAtomic() {
 func processRequest(r *Request) {
     // 1. 解析请求 (占用5%时间)
     parsed := ultraFastParse(r)  // ❌ 花了3天优化这里
-    
+
     // 2. 数据库查询 (占用90%时间)
     data := slowDBQuery(parsed)  // ⚠️ 真正的瓶颈在这里！
-    
+
     // 3. 返回响应 (占用5%时间)
     return buildResponse(data)
 }
@@ -251,7 +252,7 @@ Total: 1000ms
 func monitorGCPause() {
     var stats debug.GCStats
     debug.ReadGCStats(&stats)
-    
+
     fmt.Printf("GC暂停次数: %d\n", stats.NumGC)
     fmt.Printf("最后一次暂停: %v\n", stats.PauseTotal)
     fmt.Printf("平均暂停: %v\n", stats.PauseTotal/time.Duration(stats.NumGC))
@@ -269,7 +270,7 @@ func monitorGoroutines() {
 func monitorMemory() {
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
-    
+
     fmt.Printf("堆内存: %d MB\n", m.Alloc/1024/1024)
     fmt.Printf("总分配: %d MB\n", m.TotalAlloc/1024/1024)
     fmt.Printf("堆对象: %d\n", m.HeapObjects)
@@ -323,7 +324,7 @@ Total: 30s
    8s (26.7%) encoding/json.Marshal   # ← JSON序列化热点
    5s (16.7%) regexp.MatchString      # ← 正则匹配热点
    3s (10.0%) database/sql.Query      # ← 数据库查询
-   2s ( 6.6%) net/http.(*conn).serve  
+   2s ( 6.6%) net/http.(*conn).serve
 ```
 
 **Step 3: 分析原因**:
@@ -396,13 +397,13 @@ type UserOptimized struct {
 func StartCPUProfile(w io.Writer) error {
     // 1. 设置采样频率（默认100Hz = 每10ms采样一次）
     runtime.SetCPUProfileRate(100)
-    
+
     // 2. 开启信号处理
     runtime.SetCPUProfiler(100, func() {
         // 3. 每10ms触发一次，记录当前调用栈
         runtime.CPUProfile.Add(1)
     })
-    
+
     return nil
 }
 
@@ -410,13 +411,13 @@ func StartCPUProfile(w io.Writer) error {
 func WriteHeapProfile(w io.Writer) error {
     // 1. 触发GC，获取最新内存快照
     runtime.GC()
-    
+
     // 2. 遍历所有分配记录
     runtime.MemProfile(func(r runtime.MemProfileRecord) {
         // 3. 记录分配栈、大小、数量
         writeRecord(w, r)
     })
-    
+
     return nil
 }
 ```
@@ -439,7 +440,7 @@ type CPUProfiler struct {
 
 func (p *CPUProfiler) Start() {
     p.ticker = time.NewTicker(time.Second / time.Duration(p.rate))
-    
+
     go func() {
         for range p.ticker.C {
             // 每10ms采样一次
@@ -483,7 +484,7 @@ func mallocSample(size uintptr) bool {
         // 512KB分配中，随机采样一次
         return rand.Intn(512*1024) < int(size)
     }
-    
+
     // 2. 大对象：必定采样
     return true
 }
@@ -513,7 +514,7 @@ func main() {
     go func() {
         log.Println(http.ListenAndServe("localhost:6060", nil))
     }()
-    
+
     // 你的业务代码
     runServer()
 }
@@ -522,10 +523,10 @@ func main() {
 func TestPerformance(t *testing.T) {
     f, _ := os.Create("cpu.prof")
     defer f.Close()
-    
+
     pprof.StartCPUProfile(f)
     defer pprof.StopCPUProfile()
-    
+
     // 运行被测代码
     for i := 0; i < 1000000; i++ {
         processData()
@@ -635,12 +636,12 @@ Total: 50000 goroutines
 // 泄漏代码
 func leakyHandler(w http.ResponseWriter, r *http.Request) {
     ch := make(chan int)  // ❌ 无缓冲channel
-    
+
     go func() {
         result := heavyCompute()
         ch <- result  // ← 这里会永久阻塞！
     }()
-    
+
     // 如果这里提前返回，goroutine永远不会退出
     select {
     case res := <-ch:
@@ -653,12 +654,12 @@ func leakyHandler(w http.ResponseWriter, r *http.Request) {
 // 修复
 func fixedHandler(w http.ResponseWriter, r *http.Request) {
     ch := make(chan int, 1)  // ✅ 有缓冲channel
-    
+
     go func() {
         result := heavyCompute()
         ch <- result  // ✅ 即使没人接收也不会阻塞
     }()
-    
+
     select {
     case res := <-ch:
         fmt.Fprintf(w, "Result: %d", res)
@@ -885,10 +886,10 @@ import "runtime/trace"
 func main() {
     f, _ := os.Create("trace.out")
     defer f.Close()
-    
+
     trace.Start(f)
     defer trace.Stop()
-    
+
     // 你的代码
     runApp()
 }
@@ -1256,7 +1257,7 @@ type RecommendCache struct {
 func (c *RecommendCache) loadUserData(userID int64) {
     c.mu.Lock()
     defer c.mu.Unlock()
-    
+
     // ❌ 加入缓存后，永远不删除！
     c.cache[userID] = fetchUserFromDB(userID)
 }
@@ -1303,7 +1304,7 @@ func (c *RecommendCache) loadUserData(userID int64) *UserData {
     if val, ok := c.cache.Get(userID); ok {
         return val.(*UserData)
     }
-    
+
     data := fetchUserFromDB(userID)
     c.cache.Add(userID, data)  // ✅ 自动淘汰旧数据
     return data
@@ -1326,7 +1327,7 @@ type Feature struct {
 func (s *FeatureStore) addFeature(id string, vec []float64) {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+
     s.features[id] = &Feature{
         Vector:    vec,
         UpdatedAt: time.Now(),
@@ -1362,9 +1363,9 @@ type ModelManager struct {
 func (m *ModelManager) keepModel(version int, model *Model) {
     m.mu.Lock()
     defer m.mu.Unlock()
-    
+
     m.models[version] = model
-    
+
     // ✅ 只保留最新5个版本
     if len(m.models) > m.maxVersions {
         oldestVer := version - m.maxVersions
@@ -1410,15 +1411,15 @@ func monitorMemory() {
     for range ticker.C {
         var m runtime.MemStats
         runtime.ReadMemStats(&m)
-        
+
         allocMB := m.Alloc / 1024 / 1024
-        
+
         // 内存超过1GB告警
         if allocMB > 1024 {
             log.Warnf("内存过高: %d MB", allocMB)
             alertToSlack(fmt.Sprintf("内存告警: %d MB", allocMB))
         }
-        
+
         // 上报监控系统
         metrics.Gauge("memory.alloc_mb", float64(allocMB))
         metrics.Gauge("memory.sys_mb", float64(m.Sys/1024/1024))
@@ -1446,11 +1447,11 @@ func monitorMemory() {
 func printGCStats() {
     var stats debug.GCStats
     debug.ReadGCStats(&stats)
-    
+
     fmt.Printf("GC次数: %d\n", stats.NumGC)
     fmt.Printf("GC总暂停: %v\n", stats.PauseTotal)
     fmt.Printf("最近暂停: %v\n", stats.Pause[0])
-    
+
     // 计算GC频率
     if stats.NumGC > 0 {
         avgGCInterval := time.Since(stats.LastGC) / time.Duration(stats.NumGC)
@@ -1521,24 +1522,24 @@ var resultPool = sync.Pool{
 func processEventOptimized(e *Event) *Result {
     // ✅ 从对象池获取
     result := resultPool.Get().(*Result)
-    
+
     // 重置
     result.ID = e.ID
     result.Time = time.Now()
     result.Tags = result.Tags[:0]  // 复用底层数组
-    
+
     // 复制tags
     result.Tags = append(result.Tags, e.Tags...)
-    
+
     return result
 }
 
 // ✅ 使用完毕后归还
 func handleEvent(e *Event) {
     result := processEventOptimized(e)
-    
+
     // ... 使用result ...
-    
+
     // 归还对象池
     resultPool.Put(result)
 }
@@ -1643,20 +1644,20 @@ P99延迟: 200ms → 50ms  # ✅ 降低75%
 func monitorGC() {
     var lastNumGC uint32
     ticker := time.NewTicker(10 * time.Second)
-    
+
     for range ticker.C {
         var m runtime.MemStats
         runtime.ReadMemStats(&m)
-        
+
         // 计算GC频率
         gcRate := m.NumGC - lastNumGC
         lastNumGC = m.NumGC
-        
+
         // 上报监控
         metrics.Gauge("gc.rate_per_10s", float64(gcRate))
         metrics.Gauge("gc.pause_ms", float64(m.PauseNs[(m.NumGC+255)%256])/1e6)
         metrics.Gauge("gc.heap_mb", float64(m.HeapAlloc)/1024/1024)
-        
+
         // GC频率过高告警
         if gcRate > 50 {  // 10秒超过50次 = 5次/秒
             log.Warnf("GC频率过高: %d次/10s", gcRate)
@@ -1695,7 +1696,7 @@ $ go tool compile -m main.go
 ```go
 // 案例：返回局部变量指针
 func newUser(name string) *User {
-    u := User{Name: name}  
+    u := User{Name: name}
     return &u  // ← 逃逸到堆
 }
 
@@ -1882,7 +1883,7 @@ type CounterOptimized struct {
 func serveFile(w http.ResponseWriter, r *http.Request) {
     f, _ := os.Open("large_file.dat")
     defer f.Close()
-    
+
     // ✅ 自动零拷贝（如果支持）
     io.Copy(w, f)
 }
@@ -1900,7 +1901,7 @@ func mmapRead(filename string) ([]byte, error) {
         return nil, err
     }
     defer at.Close()
-    
+
     data := make([]byte, at.Len())
     at.ReadAt(data, 0)
     return data, nil
@@ -2054,11 +2055,11 @@ groups:
       - alert: HighMemory
         expr: go_memstats_alloc_bytes > 1e9  # 1GB
         for: 5m
-        
+
       - alert: HighGCRate
         expr: rate(go_gc_duration_seconds_count[1m]) > 10
         for: 2m
-        
+
       - alert: GoroutineLeak
         expr: go_goroutines > 10000
         for: 5m
@@ -2173,14 +2174,14 @@ go func() { m.Load("key") }()
 func PerformanceBudget(maxLatency time.Duration) gin.HandlerFunc {
     return func(c *gin.Context) {
         start := time.Now()
-        
+
         c.Next()
-        
+
         latency := time.Since(start)
         if latency > maxLatency {
             log.Warnf("超出性能预算: %s took %v (budget: %v)",
                 c.Request.URL.Path, latency, maxLatency)
-            
+
             // 上报监控
             metrics.Counter("budget.exceeded").Inc()
         }
@@ -2206,12 +2207,12 @@ type PerformanceMetrics struct {
     P50Latency time.Duration
     P99Latency time.Duration
     ErrorRate float64
-    
+
     // 系统指标
     MemoryMB  float64
     GCRate    float64
     Goroutines int
-    
+
     // 自定义指标
     CacheHitRate float64
     DBQueryTime  time.Duration
@@ -2220,7 +2221,7 @@ type PerformanceMetrics struct {
 func collectMetrics() *PerformanceMetrics {
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
-    
+
     return &PerformanceMetrics{
         MemoryMB:   float64(m.Alloc) / 1024 / 1024,
         GCRate:     float64(m.NumGC),
@@ -2233,7 +2234,7 @@ func reportMetrics() {
     ticker := time.NewTicker(10 * time.Second)
     for range ticker.C {
         m := collectMetrics()
-        
+
         // 上报到Prometheus
         metrics.Gauge("memory_mb").Set(m.MemoryMB)
         metrics.Gauge("gc_rate").Set(m.GCRate)
@@ -2334,7 +2335,7 @@ echo "✅ 性能检测通过"
 
 ---
 
-**文档版本**: v2.0  
+**文档版本**: v2.0
 
 > 📚 **简介**
 >
@@ -2356,7 +2357,7 @@ Made with ❤️ for Go Performance Engineers
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

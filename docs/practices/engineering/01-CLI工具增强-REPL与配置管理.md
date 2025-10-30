@@ -1,33 +1,35 @@
-﻿# CLI工具增强 - REPL与配置管理
+# CLI工具增强 - REPL与配置管理
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. 概述](#1-概述)
-  - [1.1 CLI工具核心功能](#1-1-cli工具核心功能)
-- [2. REPL接口设计](#2-repl接口设计)
-  - [2.1 核心概念](#2-1-核心概念)
-  - [2.2 完整实现](#2-2-完整实现)
-- [3. 配置管理系统](#3-配置管理系统)
-  - [3.1 配置层次](#3-1-配置层次)
-  - [3.2 完整实现](#3-2-完整实现)
-- [4. 插件系统架构](#4-插件系统架构)
-  - [4.1 插件接口](#4-1-插件接口)
-- [5. 命令行解析](#5-命令行解析)
-  - [5.1 完整实现](#5-1-完整实现)
-- [6. 最佳实践](#6-最佳实践)
-  - [6.1 REPL设计](#6-1-repl设计)
-  - [6.2 配置管理](#6-2-配置管理)
-  - [6.3 插件系统](#6-3-插件系统)
-- [7. 使用示例](#7-使用示例)
-  - [7.1 REPL使用](#7-1-repl使用)
-  - [7.2 配置管理](#7-2-配置管理)
-  - [7.3 CLI应用](#7-3-cli应用)
+- [CLI工具增强 - REPL与配置管理](#cli工具增强---repl与配置管理)
+  - [📋 目录](#-目录)
+  - [1. 概述](#1-概述)
+    - [1.1 CLI工具核心功能](#11-cli工具核心功能)
+  - [2. REPL接口设计](#2-repl接口设计)
+    - [2.1 核心概念](#21-核心概念)
+    - [2.2 完整实现](#22-完整实现)
+  - [3. 配置管理系统](#3-配置管理系统)
+    - [3.1 配置层次](#31-配置层次)
+    - [3.2 完整实现](#32-完整实现)
+  - [4. 插件系统架构](#4-插件系统架构)
+    - [4.1 插件接口](#41-插件接口)
+  - [5. 命令行解析](#5-命令行解析)
+    - [5.1 完整实现](#51-完整实现)
+  - [6. 最佳实践](#6-最佳实践)
+    - [6.1 REPL设计](#61-repl设计)
+    - [6.2 配置管理](#62-配置管理)
+    - [6.3 插件系统](#63-插件系统)
+  - [7. 使用示例](#7-使用示例)
+    - [7.1 REPL使用](#71-repl使用)
+    - [7.2 配置管理](#72-配置管理)
+    - [7.3 CLI应用](#73-cli应用)
 
 ## 1. 概述
 
@@ -93,7 +95,7 @@ import (
     "os"
     "strings"
     "sync"
-    
+
     "github.com/chzyer/readline"
 )
 
@@ -137,7 +139,7 @@ var DefaultREPLConfig = REPLConfig{
 // NewREPL 创建REPL实例
 func NewREPL(config REPLConfig) (*REPL, error) {
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     repl := &REPL{
         commands:   make(map[string]Command),
         variables:  make(map[string]interface{}),
@@ -146,7 +148,7 @@ func NewREPL(config REPLConfig) (*REPL, error) {
         ctx:        ctx,
         cancelFunc: cancel,
     }
-    
+
     // 配置readline
     rlConfig := &readline.Config{
         Prompt:          config.Prompt,
@@ -154,22 +156,22 @@ func NewREPL(config REPLConfig) (*REPL, error) {
         InterruptPrompt: "^C",
         EOFPrompt:       "exit",
     }
-    
+
     // 自动补全
     if config.AutoComplete {
         rlConfig.AutoComplete = repl.completer()
     }
-    
+
     rl, err := readline.NewEx(rlConfig)
     if err != nil {
         return nil, fmt.Errorf("failed to create readline: %w", err)
     }
-    
+
     repl.reader = rl
-    
+
     // 注册内置命令
     repl.registerBuiltinCommands()
-    
+
     return repl, nil
 }
 
@@ -177,7 +179,7 @@ func NewREPL(config REPLConfig) (*REPL, error) {
 func (r *REPL) RegisterCommand(cmd Command) {
     r.mu.Lock()
     defer r.mu.Unlock()
-    
+
     r.commands[cmd.Name()] = cmd
 }
 
@@ -185,7 +187,7 @@ func (r *REPL) RegisterCommand(cmd Command) {
 func (r *REPL) SetVariable(name string, value interface{}) {
     r.mu.Lock()
     defer r.mu.Unlock()
-    
+
     r.variables[name] = value
 }
 
@@ -193,7 +195,7 @@ func (r *REPL) SetVariable(name string, value interface{}) {
 func (r *REPL) GetVariable(name string) (interface{}, bool) {
     r.mu.RLock()
     defer r.mu.RUnlock()
-    
+
     val, ok := r.variables[name]
     return val, ok
 }
@@ -202,9 +204,9 @@ func (r *REPL) GetVariable(name string) (interface{}, bool) {
 func (r *REPL) Run() error {
     r.running = true
     defer r.Close()
-    
+
     fmt.Println("Welcome to REPL! Type 'help' for available commands.")
-    
+
     for r.running {
         line, err := r.reader.Readline()
         if err == readline.ErrInterrupt {
@@ -216,21 +218,21 @@ func (r *REPL) Run() error {
         } else if err == io.EOF {
             break
         }
-        
+
         line = strings.TrimSpace(line)
         if line == "" {
             continue
         }
-        
+
         // 添加到历史
         r.addHistory(line)
-        
+
         // 执行命令
         if err := r.executeCommand(line); err != nil {
             fmt.Printf("Error: %v\n", err)
         }
     }
-    
+
     return nil
 }
 
@@ -240,18 +242,18 @@ func (r *REPL) executeCommand(line string) error {
     if len(parts) == 0 {
         return nil
     }
-    
+
     cmdName := parts[0]
     args := parts[1:]
-    
+
     r.mu.RLock()
     cmd, ok := r.commands[cmdName]
     r.mu.RUnlock()
-    
+
     if !ok {
         return fmt.Errorf("unknown command: %s", cmdName)
     }
-    
+
     return cmd.Execute(r.ctx, args)
 }
 
@@ -259,7 +261,7 @@ func (r *REPL) executeCommand(line string) error {
 func (r *REPL) addHistory(line string) {
     r.mu.Lock()
     defer r.mu.Unlock()
-    
+
     r.history = append(r.history, line)
     if len(r.history) > 100 {
         r.history = r.history[1:]
@@ -269,13 +271,13 @@ func (r *REPL) addHistory(line string) {
 // completer 自动补全器
 func (r *REPL) completer() *readline.PrefixCompleter {
     items := []readline.PrefixCompleterInterface{}
-    
+
     r.mu.RLock()
     for name := range r.commands {
         items = append(items, readline.PcItem(name))
     }
     r.mu.RUnlock()
-    
+
     return readline.NewPrefixCompleter(items...)
 }
 
@@ -307,7 +309,7 @@ func (c *HelpCommand) Usage() string       { return "help [command]" }
 func (c *HelpCommand) Execute(ctx context.Context, args []string) error {
     c.repl.mu.RLock()
     defer c.repl.mu.RUnlock()
-    
+
     if len(args) == 0 {
         fmt.Println("Available commands:")
         for name, cmd := range c.repl.commands {
@@ -315,17 +317,17 @@ func (c *HelpCommand) Execute(ctx context.Context, args []string) error {
         }
         return nil
     }
-    
+
     cmdName := args[0]
     cmd, ok := c.repl.commands[cmdName]
     if !ok {
         return fmt.Errorf("unknown command: %s", cmdName)
     }
-    
+
     fmt.Printf("Command: %s\n", cmd.Name())
     fmt.Printf("Description: %s\n", cmd.Description())
     fmt.Printf("Usage: %s\n", cmd.Usage())
-    
+
     return nil
 }
 
@@ -356,7 +358,7 @@ func (c *HistoryCommand) Usage() string       { return "history [n]" }
 func (c *HistoryCommand) Execute(ctx context.Context, args []string) error {
     c.repl.mu.RLock()
     defer c.repl.mu.RUnlock()
-    
+
     count := len(c.repl.history)
     if len(args) > 0 {
         var n int
@@ -365,16 +367,16 @@ func (c *HistoryCommand) Execute(ctx context.Context, args []string) error {
             count = n
         }
     }
-    
+
     start := len(c.repl.history) - count
     if start < 0 {
         start = 0
     }
-    
+
     for i, line := range c.repl.history[start:] {
         fmt.Printf("%4d  %s\n", start+i+1, line)
     }
-    
+
     return nil
 }
 
@@ -391,13 +393,13 @@ func (c *SetCommand) Execute(ctx context.Context, args []string) error {
     if len(args) < 2 {
         return fmt.Errorf("usage: %s", c.Usage())
     }
-    
+
     name := args[0]
     value := strings.Join(args[1:], " ")
-    
+
     c.repl.SetVariable(name, value)
     fmt.Printf("Set %s = %s\n", name, value)
-    
+
     return nil
 }
 
@@ -415,20 +417,20 @@ func (c *GetCommand) Execute(ctx context.Context, args []string) error {
         // 显示所有变量
         c.repl.mu.RLock()
         defer c.repl.mu.RUnlock()
-        
+
         fmt.Println("Variables:")
         for name, value := range c.repl.variables {
             fmt.Printf("  %s = %v\n", name, value)
         }
         return nil
     }
-    
+
     name := args[0]
     value, ok := c.repl.GetVariable(name)
     if !ok {
         return fmt.Errorf("variable not found: %s", name)
     }
-    
+
     fmt.Printf("%s = %v\n", name, value)
     return nil
 }
@@ -470,7 +472,7 @@ import (
     "path/filepath"
     "strings"
     "sync"
-    
+
     "gopkg.in/yaml.v3"
 )
 
@@ -515,11 +517,11 @@ func NewConfig(opts ...ConfigOption) *Config {
         searchPaths: []string{".", "~/.config", "/etc"},
         format:      "yaml",
     }
-    
+
     for _, opt := range opts {
         opt(cfg)
     }
-    
+
     return cfg
 }
 
@@ -527,19 +529,19 @@ func NewConfig(opts ...ConfigOption) *Config {
 func (c *Config) Load(filename string) error {
     c.mu.Lock()
     defer c.mu.Unlock()
-    
+
     // 查找配置文件
     path, err := c.findConfigFile(filename)
     if err != nil {
         return err
     }
-    
+
     // 读取文件
     data, err := os.ReadFile(path)
     if err != nil {
         return fmt.Errorf("failed to read config file: %w", err)
     }
-    
+
     // 解析配置
     var values map[string]interface{}
     switch c.format {
@@ -554,10 +556,10 @@ func (c *Config) Load(filename string) error {
     default:
         return fmt.Errorf("unsupported format: %s", c.format)
     }
-    
+
     // 合并配置
     c.merge(values)
-    
+
     return nil
 }
 
@@ -565,10 +567,10 @@ func (c *Config) Load(filename string) error {
 func (c *Config) Save(filename string) error {
     c.mu.RLock()
     defer c.mu.RUnlock()
-    
+
     var data []byte
     var err error
-    
+
     switch c.format {
     case "yaml", "yml":
         data, err = yaml.Marshal(c.values)
@@ -577,11 +579,11 @@ func (c *Config) Save(filename string) error {
     default:
         return fmt.Errorf("unsupported format: %s", c.format)
     }
-    
+
     if err != nil {
         return fmt.Errorf("failed to marshal config: %w", err)
     }
-    
+
     return os.WriteFile(filename, data, 0644)
 }
 
@@ -589,17 +591,17 @@ func (c *Config) Save(filename string) error {
 func (c *Config) Get(key string) (interface{}, bool) {
     c.mu.RLock()
     defer c.mu.RUnlock()
-    
+
     // 检查值
     if val, ok := c.values[key]; ok {
         return val, true
     }
-    
+
     // 检查默认值
     if val, ok := c.defaults[key]; ok {
         return val, true
     }
-    
+
     return nil, false
 }
 
@@ -609,11 +611,11 @@ func (c *Config) GetString(key string) string {
     if !ok {
         return ""
     }
-    
+
     if str, ok := val.(string); ok {
         return str
     }
-    
+
     return fmt.Sprintf("%v", val)
 }
 
@@ -623,7 +625,7 @@ func (c *Config) GetInt(key string) int {
     if !ok {
         return 0
     }
-    
+
     switch v := val.(type) {
     case int:
         return v
@@ -642,11 +644,11 @@ func (c *Config) GetBool(key string) bool {
     if !ok {
         return false
     }
-    
+
     if b, ok := val.(bool); ok {
         return b
     }
-    
+
     return false
 }
 
@@ -654,7 +656,7 @@ func (c *Config) GetBool(key string) bool {
 func (c *Config) Set(key string, value interface{}) {
     c.mu.Lock()
     defer c.mu.Unlock()
-    
+
     c.values[key] = value
 }
 
@@ -662,20 +664,20 @@ func (c *Config) Set(key string, value interface{}) {
 func (c *Config) LoadEnv(prefix string) {
     c.mu.Lock()
     defer c.mu.Unlock()
-    
+
     for _, env := range os.Environ() {
         pair := strings.SplitN(env, "=", 2)
         if len(pair) != 2 {
             continue
         }
-        
+
         key, value := pair[0], pair[1]
-        
+
         if strings.HasPrefix(key, prefix) {
             // 移除前缀，转换为小写
             configKey := strings.ToLower(strings.TrimPrefix(key, prefix))
             configKey = strings.ReplaceAll(configKey, "_", ".")
-            
+
             c.values[configKey] = value
         }
     }
@@ -690,7 +692,7 @@ func (c *Config) findConfigFile(filename string) (string, error) {
         }
         return "", fmt.Errorf("config file not found: %s", filename)
     }
-    
+
     // 在搜索路径中查找
     for _, dir := range c.searchPaths {
         // 展开 ~ 为用户目录
@@ -700,13 +702,13 @@ func (c *Config) findConfigFile(filename string) (string, error) {
                 dir = filepath.Join(home, dir[1:])
             }
         }
-        
+
         path := filepath.Join(dir, filename)
         if _, err := os.Stat(path); err == nil {
             return path, nil
         }
     }
-    
+
     return "", fmt.Errorf("config file not found in search paths: %s", filename)
 }
 
@@ -800,36 +802,36 @@ func NewPluginManager() *PluginManager {
 func (pm *PluginManager) Load(path string) error {
     pm.mu.Lock()
     defer pm.mu.Unlock()
-    
+
     // 加载.so文件
     p, err := plugin.Open(path)
     if err != nil {
         return fmt.Errorf("failed to open plugin: %w", err)
     }
-    
+
     // 查找New函数
     newFunc, err := p.Lookup("New")
     if err != nil {
         return fmt.Errorf("plugin missing New function: %w", err)
     }
-    
+
     // 调用New函数创建插件实例
     newPluginFunc, ok := newFunc.(func() Plugin)
     if !ok {
         return fmt.Errorf("invalid New function signature")
     }
-    
+
     plugin := newPluginFunc()
-    
+
     // 初始化插件
     if err := plugin.Initialize(context.Background()); err != nil {
         return fmt.Errorf("failed to initialize plugin: %w", err)
     }
-    
+
     // 注册插件
     pm.plugins[plugin.Name()] = plugin
     pm.loaded[plugin.Name()] = p
-    
+
     return nil
 }
 
@@ -837,7 +839,7 @@ func (pm *PluginManager) Load(path string) error {
 func (pm *PluginManager) Get(name string) (Plugin, bool) {
     pm.mu.RLock()
     defer pm.mu.RUnlock()
-    
+
     p, ok := pm.plugins[name]
     return p, ok
 }
@@ -846,20 +848,20 @@ func (pm *PluginManager) Get(name string) (Plugin, bool) {
 func (pm *PluginManager) Unload(name string) error {
     pm.mu.Lock()
     defer pm.mu.Unlock()
-    
+
     p, ok := pm.plugins[name]
     if !ok {
         return fmt.Errorf("plugin not found: %s", name)
     }
-    
+
     // 关闭插件
     if err := p.Shutdown(context.Background()); err != nil {
         return fmt.Errorf("failed to shutdown plugin: %w", err)
     }
-    
+
     delete(pm.plugins, name)
     delete(pm.loaded, name)
-    
+
     return nil
 }
 
@@ -867,12 +869,12 @@ func (pm *PluginManager) Unload(name string) error {
 func (pm *PluginManager) List() []string {
     pm.mu.RLock()
     defer pm.mu.RUnlock()
-    
+
     names := make([]string, 0, len(pm.plugins))
     for name := range pm.plugins {
         names = append(names, name)
     }
-    
+
     return names
 }
 ```
@@ -943,9 +945,9 @@ func (cli *CLI) Run(args []string) error {
         cli.printHelp()
         return nil
     }
-    
+
     cmdName := args[1]
-    
+
     // 特殊命令
     switch cmdName {
     case "help", "-h", "--help":
@@ -955,18 +957,18 @@ func (cli *CLI) Run(args []string) error {
         fmt.Printf("%s version %s\n", cli.name, cli.version)
         return nil
     }
-    
+
     // 查找命令
     cmd, ok := cli.commands[cmdName]
     if !ok {
         return fmt.Errorf("unknown command: %s", cmdName)
     }
-    
+
     // 解析标志
     if err := cmd.Flags.Parse(args[2:]); err != nil {
         return err
     }
-    
+
     // 执行命令
     ctx := &CLIContext{
         CLI:     cli,
@@ -974,7 +976,7 @@ func (cli *CLI) Run(args []string) error {
         Args:    cmd.Flags.Args(),
         Config:  cli.config,
     }
-    
+
     return cmd.Action(ctx)
 }
 
@@ -984,11 +986,11 @@ func (cli *CLI) printHelp() {
     fmt.Println("Usage:")
     fmt.Printf("  %s <command> [flags] [args]\n\n", cli.name)
     fmt.Println("Available Commands:")
-    
+
     for name, cmd := range cli.commands {
         fmt.Printf("  %-15s %s\n", name, cmd.Description)
     }
-    
+
     fmt.Println("\nUse \"" + cli.name + " <command> --help\" for more information about a command.")
 }
 ```
@@ -1083,8 +1085,8 @@ if err := app.Run(os.Args); err != nil {
 
 ---
 
-**文档完成时间**: 2025年10月24日  
-**文档版本**: v1.0  
+**文档完成时间**: 2025年10月24日
+**文档版本**: v1.0
 **质量评级**: 95分 ⭐⭐⭐⭐⭐
 
 🚀 **CLI工具增强实现指南完成！** 🎊

@@ -1,24 +1,30 @@
-﻿# Mock与Stub
+# Mock与Stub
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. 📖 概念介绍](#1-概念介绍)
-- [2. 🎯 核心知识点](#2-核心知识点)
-  - [2.1 手动Mock](#2-1-手动mock)
-  - [2.2 使用testify/mock](#2-2-使用testifymock)
-  - [2.3 使用gomock](#2-3-使用gomock)
-  - [2.4 HTTP Mock](#2-4-http-mock)
-  - [2.5 数据库Mock](#2-5-数据库mock)
-  - [2.6 Time Mock](#2-6-time-mock)
-- [3. 💡 最佳实践](#3-最佳实践)
-- [4. ⚠️ 常见问题](#4-常见问题)
-- [5. 📚 相关资源](#5-相关资源)
+- [Mock与Stub](#mock与stub)
+  - [📋 目录](#-目录)
+  - [1. 📖 概念介绍](#1--概念介绍)
+  - [2. 🎯 核心知识点](#2--核心知识点)
+    - [2.1 手动Mock](#21-手动mock)
+    - [2.2 使用testify/mock](#22-使用testifymock)
+    - [2.3 使用gomock](#23-使用gomock)
+    - [2.4 HTTP Mock](#24-http-mock)
+    - [2.5 数据库Mock](#25-数据库mock)
+    - [2.6 Time Mock](#26-time-mock)
+  - [3. 💡 最佳实践](#3--最佳实践)
+    - [3.1 优先使用接口](#31-优先使用接口)
+    - [3.2 Mock应该简单](#32-mock应该简单)
+    - [3.3 只Mock外部依赖](#33-只mock外部依赖)
+    - [3.4 验证交互](#34-验证交互)
+  - [4. ⚠️ 常见问题](#4-️-常见问题)
+  - [5. 📚 相关资源](#5--相关资源)
 
 ---
 
@@ -66,10 +72,10 @@ func TestUserService(t *testing.T) {
             return &User{ID: id, Name: "Alice"}, nil
         },
     }
-    
+
     service := NewUserService(mock)
     user, err := service.GetUser(1)
-    
+
     if err != nil {
         t.Fatal(err)
     }
@@ -116,18 +122,18 @@ func (m *MockUserRepository) Create(user *User) error {
 // 测试
 func TestUserService_GetUser(t *testing.T) {
     mockRepo := new(MockUserRepository)
-    
+
     // 设置期望
     expectedUser := &User{ID: 1, Name: "Alice"}
     mockRepo.On("GetByID", 1).Return(expectedUser, nil)
-    
+
     service := NewUserService(mockRepo)
     user, err := service.GetUser(1)
-    
+
     // 断言
     assert.NoError(t, err)
     assert.Equal(t, "Alice", user.Name)
-    
+
     // 验证Mock被正确调用
     mockRepo.AssertExpectations(t)
 }
@@ -178,19 +184,19 @@ type MockUserRepository struct {
 func TestUserService_WithGomock(t *testing.T) {
     ctrl := gomock.NewController(t)
     defer ctrl.Finish()
-    
+
     mockRepo := NewMockUserRepository(ctrl)
-    
+
     // 设置期望
     expectedUser := &User{ID: 1, Name: "Alice"}
     mockRepo.EXPECT().
         GetByID(1).
         Return(expectedUser, nil).
         Times(1)
-    
+
     service := NewUserService(mockRepo)
     user, err := service.GetUser(1)
-    
+
     if err != nil {
         t.Fatal(err)
     }
@@ -220,17 +226,17 @@ func TestFetchUser(t *testing.T) {
         if r.URL.Path != "/api/users/123" {
             t.Errorf("Expected path /api/users/123, got %s", r.URL.Path)
         }
-        
+
         // 返回mock响应
         w.WriteHeader(http.StatusOK)
         w.Write([]byte(`{"id":"123","name":"Alice"}`))
     }))
     defer server.Close()
-    
+
     // 使用mock URL
     client := NewAPIClient(server.URL)
     user, err := client.FetchUser("123")
-    
+
     if err != nil {
         t.Fatal(err)
     }
@@ -260,26 +266,26 @@ func TestUserRepository_GetByID(t *testing.T) {
         t.Fatalf("Failed to create mock: %v", err)
     }
     defer db.Close()
-    
+
     // 设置期望查询
     rows := sqlmock.NewRows([]string{"id", "name", "email"}).
         AddRow(1, "Alice", "alice@example.com")
-    
+
     mock.ExpectQuery("SELECT (.+) FROM users WHERE id = ?").
         WithArgs(1).
         WillReturnRows(rows)
-    
+
     // 测试
     repo := NewUserRepository(db)
     user, err := repo.GetByID(1)
-    
+
     if err != nil {
         t.Fatal(err)
     }
     if user.Name != "Alice" {
         t.Errorf("got %s, want Alice", user.Name)
     }
-    
+
     // 验证所有期望都被满足
     if err := mock.ExpectationsWereMet(); err != nil {
         t.Errorf("Unfulfilled expectations: %s", err)
@@ -334,11 +340,11 @@ func TestService_IsExpired(t *testing.T) {
     mockClock := &MockClock{
         current: time.Date(2025, 10, 28, 12, 0, 0, 0, time.UTC),
     }
-    
+
     service := &Service{clock: mockClock}
-    
+
     deadline := time.Date(2025, 10, 28, 11, 0, 0, 0, time.UTC)
-    
+
     if !service.IsExpired(deadline) {
         t.Error("Expected to be expired")
     }
@@ -395,10 +401,10 @@ mockHTTP := httptest.NewServer(...)
 func TestService_Delete(t *testing.T) {
     mockRepo := new(MockUserRepository)
     mockRepo.On("Delete", 1).Return(nil)
-    
+
     service := NewUserService(mockRepo)
     service.DeleteUser(1)
-    
+
     // 验证Delete被调用了一次
     mockRepo.AssertCalled(t, "Delete", 1)
     mockRepo.AssertNumberOfCalls(t, "Delete", 1)

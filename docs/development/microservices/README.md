@@ -1,4 +1,4 @@
-﻿# Go微服务开发
+# Go微服务开发
 
 Go微服务架构完整指南，涵盖gRPC、服务发现、API网关和服务网格。
 
@@ -38,6 +38,6 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

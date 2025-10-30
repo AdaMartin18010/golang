@@ -1,0 +1,25 @@
+{
+  "version": "0.2",
+  "language": "en,zh-CN",
+  "words": [
+    "greenteagc",
+    "GOMAXPROCS",
+    "GOEXPERIMENT",
+    "GOOS",
+    "cgroup",
+    "cgroupLimit",
+    "servemux",
+    "slog",
+    "lychee",
+    "codecov",
+    "microservice",
+    "microservices"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "*.log",
+    "*.rar",
+    "go.sum",
+    "go.work.sum"
+  ]
+}

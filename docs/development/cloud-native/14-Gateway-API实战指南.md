@@ -1,49 +1,51 @@
-﻿# Gateway API实战指南
+# Gateway API实战指南
 
 > **难度**: ⭐⭐⭐⭐
 > **标签**: #GatewayAPI #Kubernetes #服务网格 #流量管理
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. Gateway API概述](#1-gateway-api概述)
-  - [1.1 什么是Gateway API](#1-1-什么是gateway-api)
-  - [1.2 核心资源](#1-2-核心资源)
-  - [1.3 与Ingress对比](#1-3-与ingress对比)
-- [2. Gateway API安装](#2-gateway-api安装)
-  - [2.1 安装CRD](#2-1-安装crd)
-  - [2.2 安装Gateway控制器](#2-2-安装gateway控制器)
-  - [2.3 验证安装](#2-3-验证安装)
-- [3. Gateway资源](#3-gateway资源)
-  - [3.1 Gateway配置](#3-1-gateway配置)
-  - [3.2 GatewayClass](#3-2-gatewayclass)
-  - [3.3 监听器配置](#3-3-监听器配置)
-- [4. HTTPRoute配置](#4-httproute配置)
-  - [4.1 基础路由](#4-1-基础路由)
-  - [4.2 高级匹配](#4-2-高级匹配)
-  - [4.3 流量分割](#4-3-流量分割)
-- [5. TLS与证书管理](#5-tls与证书管理)
-  - [5.1 TLS终止](#5-1-tls终止)
-  - [5.2 TLS透传](#5-2-tls透传)
-  - [5.3 证书轮换](#5-3-证书轮换)
-- [6. 流量管理](#6-流量管理)
-  - [6.1 流量分割与金丝雀](#6-1-流量分割与金丝雀)
-  - [6.2 请求重定向](#6-2-请求重定向)
-  - [6.3 请求镜像](#6-3-请求镜像)
-- [7. Go客户端实现](#7-go客户端实现)
-  - [7.1 Gateway API客户端](#7-1-gateway-api客户端)
-  - [7.2 动态路由管理](#7-2-动态路由管理)
-- [8. 实战案例](#8-实战案例)
-  - [8.1 多租户API网关](#8-1-多租户api网关)
-- [9. 参考资源](#9-参考资源)
-  - [官方文档](#官方文档)
-  - [Go库](#go库)
-  - [最佳实践](#最佳实践)
+- [Gateway API实战指南](#gateway-api实战指南)
+  - [📋 目录](#-目录)
+  - [1. Gateway API概述](#1-gateway-api概述)
+    - [1.1 什么是Gateway API](#11-什么是gateway-api)
+    - [1.2 核心资源](#12-核心资源)
+    - [1.3 与Ingress对比](#13-与ingress对比)
+  - [2. Gateway API安装](#2-gateway-api安装)
+    - [2.1 安装CRD](#21-安装crd)
+    - [2.2 安装Gateway控制器](#22-安装gateway控制器)
+    - [2.3 验证安装](#23-验证安装)
+  - [3. Gateway资源](#3-gateway资源)
+    - [3.1 Gateway配置](#31-gateway配置)
+    - [3.2 GatewayClass](#32-gatewayclass)
+    - [3.3 监听器配置](#33-监听器配置)
+  - [4. HTTPRoute配置](#4-httproute配置)
+    - [4.1 基础路由](#41-基础路由)
+    - [4.2 高级匹配](#42-高级匹配)
+    - [4.3 流量分割](#43-流量分割)
+  - [5. TLS与证书管理](#5-tls与证书管理)
+    - [5.1 TLS终止](#51-tls终止)
+    - [5.2 TLS透传](#52-tls透传)
+    - [5.3 证书轮换](#53-证书轮换)
+  - [6. 流量管理](#6-流量管理)
+    - [6.1 流量分割与金丝雀](#61-流量分割与金丝雀)
+    - [6.2 请求重定向](#62-请求重定向)
+    - [6.3 请求镜像](#63-请求镜像)
+  - [7. Go客户端实现](#7-go客户端实现)
+    - [7.1 Gateway API客户端](#71-gateway-api客户端)
+    - [7.2 动态路由管理](#72-动态路由管理)
+  - [8. 实战案例](#8-实战案例)
+    - [8.1 多租户API网关](#81-多租户api网关)
+  - [9. 参考资源](#9-参考资源)
+    - [官方文档](#官方文档)
+    - [Go库](#go库)
+    - [最佳实践](#最佳实践)
 
 ## 1. Gateway API概述
 
@@ -230,7 +232,7 @@ spec:
     protocol: HTTP
     port: 80
     hostname: "*.example.com"
-  
+
   # HTTPS监听器
   - name: https
     protocol: HTTPS
@@ -240,7 +242,7 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: wildcard-cert
-  
+
   # TCP监听器
   - name: tcp
     protocol: TCP
@@ -265,10 +267,10 @@ spec:
   parentRefs:
   - name: my-gateway
     namespace: default
-  
+
   hostnames:
   - "api.example.com"
-  
+
   rules:
   - matches:
     - path:
@@ -291,7 +293,7 @@ metadata:
 spec:
   parentRefs:
   - name: my-gateway
-  
+
   rules:
   # 匹配路径 + Header
   - matches:
@@ -304,7 +306,7 @@ spec:
     backendRefs:
     - name: api-v2-service
       port: 8080
-  
+
   # 匹配查询参数
   - matches:
     - path:
@@ -316,7 +318,7 @@ spec:
     backendRefs:
     - name: search-beta-service
       port: 8080
-  
+
   # 匹配HTTP方法
   - matches:
     - path:
@@ -340,19 +342,19 @@ metadata:
 spec:
   parentRefs:
   - name: my-gateway
-  
+
   rules:
   - matches:
     - path:
         type: PathPrefix
         value: /app
-    
+
     backendRefs:
     # 90% 流量到稳定版本
     - name: app-stable
       port: 8080
       weight: 90
-    
+
     # 10% 流量到金丝雀版本
     - name: app-canary
       port: 8080
@@ -427,10 +429,10 @@ metadata:
 spec:
   parentRefs:
   - name: my-gateway
-  
+
   hostnames:
   - "secure.example.com"
-  
+
   rules:
   - backendRefs:
     - name: secure-backend
@@ -500,7 +502,7 @@ metadata:
 spec:
   parentRefs:
   - name: my-gateway
-  
+
   rules:
   - matches:
     - path:
@@ -523,7 +525,7 @@ metadata:
 spec:
   parentRefs:
   - name: my-gateway
-  
+
   rules:
   - matches:
     - path:
@@ -550,18 +552,18 @@ metadata:
 spec:
   parentRefs:
   - name: my-gateway
-  
+
   rules:
   - matches:
     - path:
         type: PathPrefix
         value: /api
-    
+
     # 主要后端
     backendRefs:
     - name: production-service
       port: 8080
-    
+
     # 镜像配置
     filters:
     - type: RequestMirror
@@ -585,7 +587,7 @@ package main
 import (
     "context"
     "fmt"
-    
+
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     "k8s.io/client-go/tools/clientcmd"
     gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
@@ -602,12 +604,12 @@ func NewGatewayAPIClient(kubeconfig string) (*GatewayAPIClient, error) {
     if err != nil {
         return nil, err
     }
-    
+
     client, err := gatewayclient.NewForConfig(config)
     if err != nil {
         return nil, err
     }
-    
+
     return &GatewayAPIClient{client: client}, nil
 }
 
@@ -634,15 +636,15 @@ func main() {
     if err != nil {
         panic(err)
     }
-    
+
     ctx := context.Background()
-    
+
     // 列出Gateway
     gateways, err := client.ListGateways(ctx, "default")
     if err != nil {
         panic(err)
     }
-    
+
     fmt.Printf("Found %d gateways\n", len(gateways.Items))
     for _, gw := range gateways.Items {
         fmt.Printf("- %s (Class: %s)\n", gw.Name, gw.Spec.GatewayClassName)
@@ -660,7 +662,7 @@ package gateway
 import (
     "context"
     "fmt"
-    
+
     gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -681,27 +683,27 @@ func (rm *RouteManager) UpdateCanaryWeight(ctx context.Context, namespace, route
     if err != nil {
         return err
     }
-    
+
     // 更新权重
     if len(route.Spec.Rules) > 0 && len(route.Spec.Rules[0].BackendRefs) >= 2 {
         route.Spec.Rules[0].BackendRefs[0].Weight = &stableWeight
         route.Spec.Rules[0].BackendRefs[1].Weight = &canaryWeight
     }
-    
+
     // 更新HTTPRoute
     _, err = rm.client.client.GatewayV1().HTTPRoutes(namespace).Update(ctx, route, metav1.UpdateOptions{})
     if err != nil {
         return fmt.Errorf("update route: %w", err)
     }
-    
+
     fmt.Printf("Updated canary weight: stable=%d%%, canary=%d%%\n", stableWeight, canaryWeight)
     return nil
 }
 
 // CreateCanaryRoute 创建金丝雀路由
-func (rm *RouteManager) CreateCanaryRoute(ctx context.Context, namespace, routeName, gatewayName string, 
+func (rm *RouteManager) CreateCanaryRoute(ctx context.Context, namespace, routeName, gatewayName string,
     stableService, canaryService string, stableWeight, canaryWeight int32) error {
-    
+
     route := &gatewayv1.HTTPRoute{
         ObjectMeta: metav1.ObjectMeta{
             Name:      routeName,
@@ -739,7 +741,7 @@ func (rm *RouteManager) CreateCanaryRoute(ctx context.Context, namespace, routeN
             },
         },
     }
-    
+
     return rm.client.CreateHTTPRoute(ctx, namespace, route)
 }
 
@@ -761,18 +763,18 @@ func (rm *RouteManager) ProgressiveCanary(ctx context.Context, namespace, routeN
         {25, 75},  // 75%
         {0, 100},  // 100%
     }
-    
+
     for i, stage := range stages {
         fmt.Printf("Stage %d: %d%% canary\n", i+1, stage.canary)
-        
+
         if err := rm.UpdateCanaryWeight(ctx, namespace, routeName, stage.stable, stage.canary); err != nil {
             return err
         }
-        
+
         // 等待验证（实际应用中应该检查指标）
         // time.Sleep(5 * time.Minute)
     }
-    
+
     fmt.Println("Canary deployment completed!")
     return nil
 }
@@ -847,9 +849,9 @@ spec:
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.21+ | Gateway API v1.0+
 
 **贡献者**: 欢迎提交Issue和PR改进本文档

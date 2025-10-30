@@ -1,60 +1,62 @@
-﻿# Go 1.23 testing包增强详解
+# Go 1.23 testing包增强详解
 
 > **难度**: ⭐⭐⭐⭐
 > **标签**: #Go1.23 #testing #slogtest #并发测试
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. testing包增强概述](#1.-testing包增强概述)
-  - [1.1 Go 1.23的testing改进](#11-go-1.23的testing改进)
-  - [1.2 核心价值](#12-核心价值)
-- [2. testing/slogtest包详解](#2.-testingslogtest包详解)
-  - [2.1 slogtest简介](#21-slogtest简介)
-  - [2.2 基本用法](#22-基本用法)
-  - [2.3 测试自定义Handler](#23-测试自定义handler)
-  - [2.4 常见测试场景](#24-常见测试场景)
-- [3. 测试输出改进](#3.-测试输出改进)
-  - [3.1 更清晰的失败信息](#31-更清晰的失败信息)
-  - [3.2 并行测试输出](#32-并行测试输出)
-  - [3.3 子测试可视化](#33-子测试可视化)
-- [4. 并发测试增强](#4.-并发测试增强)
-  - [4.1 t.Parallel()改进](#41-t.parallel改进)
-  - [4.2 并发测试最佳实践](#42-并发测试最佳实践)
-  - [4.3 死锁检测](#43-死锁检测)
-- [5. 基准测试改进](#5.-基准测试改进)
-  - [5.1 内存分配报告](#51-内存分配报告)
-  - [5.2 性能回归检测](#52-性能回归检测)
-  - [5.3 benchstat集成](#53-benchstat集成)
-- [6. Fuzzing增强](#6.-fuzzing增强)
-  - [6.1 模糊测试改进](#61-模糊测试改进)
-  - [6.2 语料库管理](#62-语料库管理)
-  - [6.3 实战案例](#63-实战案例)
-- [7. 测试覆盖率增强](#7.-测试覆盖率增强)
-  - [7.1 更精确的覆盖率](#71-更精确的覆盖率)
-  - [7.2 函数级覆盖率](#72-函数级覆盖率)
-  - [7.3 HTML报告改进](#73-html报告改进)
-- [8. 测试工具函数](#8.-测试工具函数)
-  - [8.1 t.TempDir()最佳实践](#81-t.tempdir最佳实践)
-  - [8.2 t.Setenv()使用](#82-t.setenv使用)
-  - [8.3 t.Cleanup()模式](#83-t.cleanup模式)
-- [9. 实战案例](#9.-实战案例)
-  - [9.1 完整的日志Handler测试](#91-完整的日志handler测试)
-  - [9.2 并发服务测试](#92-并发服务测试)
-  - [9.3 性能基准测试套件](#93-性能基准测试套件)
-- [10. 最佳实践](#10.-最佳实践)
-  - [10.1 测试组织](#101-测试组织)
-  - [10.2 测试命名](#102-测试命名)
-  - [10.3 测试数据管理](#103-测试数据管理)
-- [11. 参考资源](#11.-参考资源)
-  - [官方文档](#官方文档)
-  - [测试工具](#测试工具)
-  - [博客文章](#博客文章)
+- [Go 1.23 testing包增强详解](#go-123-testing包增强详解)
+  - [📋 目录](#-目录)
+  - [1. testing包增强概述](#1-testing包增强概述)
+    - [1.1 Go 1.23的testing改进](#11-go-123的testing改进)
+    - [1.2 核心价值](#12-核心价值)
+  - [2. testing/slogtest包详解](#2-testingslogtest包详解)
+    - [2.1 slogtest简介](#21-slogtest简介)
+    - [2.2 基本用法](#22-基本用法)
+    - [2.3 测试自定义Handler](#23-测试自定义handler)
+    - [2.4 常见测试场景](#24-常见测试场景)
+  - [3. 测试输出改进](#3-测试输出改进)
+    - [3.1 更清晰的失败信息](#31-更清晰的失败信息)
+    - [3.2 并行测试输出](#32-并行测试输出)
+    - [3.3 子测试可视化](#33-子测试可视化)
+  - [4. 并发测试增强](#4-并发测试增强)
+    - [4.1 t.Parallel()改进](#41-tparallel改进)
+    - [4.2 并发测试最佳实践](#42-并发测试最佳实践)
+    - [4.3 死锁检测](#43-死锁检测)
+  - [5. 基准测试改进](#5-基准测试改进)
+    - [5.1 内存分配报告](#51-内存分配报告)
+    - [5.2 性能回归检测](#52-性能回归检测)
+    - [5.3 benchstat集成](#53-benchstat集成)
+  - [6. Fuzzing增强](#6-fuzzing增强)
+    - [6.1 模糊测试改进](#61-模糊测试改进)
+    - [6.2 语料库管理](#62-语料库管理)
+    - [6.3 实战案例](#63-实战案例)
+  - [7. 测试覆盖率增强](#7-测试覆盖率增强)
+    - [7.1 更精确的覆盖率](#71-更精确的覆盖率)
+    - [7.2 函数级覆盖率](#72-函数级覆盖率)
+    - [7.3 HTML报告改进](#73-html报告改进)
+  - [8. 测试工具函数](#8-测试工具函数)
+    - [8.1 t.TempDir()最佳实践](#81-ttempdir最佳实践)
+    - [8.2 t.Setenv()使用](#82-tsetenv使用)
+    - [8.3 t.Cleanup()模式](#83-tcleanup模式)
+  - [9. 实战案例](#9-实战案例)
+    - [9.1 完整的日志Handler测试](#91-完整的日志handler测试)
+    - [9.2 并发服务测试](#92-并发服务测试)
+    - [9.3 性能基准测试套件](#93-性能基准测试套件)
+  - [10. 最佳实践](#10-最佳实践)
+    - [10.1 测试组织](#101-测试组织)
+    - [10.2 测试命名](#102-测试命名)
+    - [10.3 测试数据管理](#103-测试数据管理)
+  - [11. 参考资源](#11-参考资源)
+    - [官方文档](#官方文档)
+    - [测试工具](#测试工具)
+    - [博客文章](#博客文章)
 
 ## 1. testing包增强概述
 
@@ -132,13 +134,13 @@ import (
 
 func TestJSONHandler(t *testing.T) {
     var buf bytes.Buffer
-    
+
     // 创建Handler工厂函数
     newHandler := func() slog.Handler {
         buf.Reset()
         return slog.NewJSONHandler(&buf, nil)
     }
-    
+
     // 运行标准测试
     slogtest.Run(t, newHandler, slogtest.All)
 }
@@ -149,11 +151,11 @@ func TestJSONHandler(t *testing.T) {
 ```go
 func TestCustomHandler(t *testing.T) {
     h := NewCustomHandler()
-    
+
     newHandler := func() slog.Handler {
         return NewCustomHandler()
     }
-    
+
     // 执行测试，返回错误
     if err := slogtest.TestHandler(h, newHandler); err != nil {
         t.Error(err)
@@ -194,24 +196,24 @@ func (h *CustomHandler) Enabled(ctx context.Context, level slog.Level) bool {
 
 func (h *CustomHandler) Handle(ctx context.Context, r slog.Record) error {
     entry := make(map[string]interface{})
-    
+
     // 添加基本字段
     entry["time"] = r.Time
     entry["level"] = r.Level.String()
     entry["msg"] = r.Message
-    
+
     // 添加属性
     r.Attrs(func(a slog.Attr) bool {
         entry[a.Key] = a.Value.Any()
         return true
     })
-    
+
     // 编码为JSON
     data, err := json.Marshal(entry)
     if err != nil {
         return err
     }
-    
+
     h.buf.Write(data)
     h.buf.WriteByte('\n')
     return nil
@@ -232,12 +234,12 @@ func (h *CustomHandler) WithGroup(name string) slog.Handler {
 // 测试
 func TestCustomHandler(t *testing.T) {
     var buf bytes.Buffer
-    
+
     newHandler := func() slog.Handler {
         buf.Reset()
         return NewCustomHandler(&buf)
     }
-    
+
     // 运行所有标准测试
     slogtest.Run(t, newHandler, slogtest.All)
 }
@@ -246,11 +248,11 @@ func TestCustomHandler(t *testing.T) {
 func TestCustomHandlerWithAttrs(t *testing.T) {
     var buf bytes.Buffer
     h := NewCustomHandler(&buf)
-    
+
     logger := slog.New(h)
     logger = logger.With("key1", "value1")
     logger.Info("test message", "key2", "value2")
-    
+
     // 验证输出
     output := buf.String()
     if !strings.Contains(output, "key1") {
@@ -269,21 +271,21 @@ func TestCustomHandlerWithAttrs(t *testing.T) {
 ```go
 func TestHandlerLevelFilter(t *testing.T) {
     var buf bytes.Buffer
-    
+
     h := slog.NewJSONHandler(&buf, &slog.HandlerOptions{
         Level: slog.LevelWarn,
     })
-    
+
     logger := slog.New(h)
-    
+
     // 应该被过滤
     logger.Debug("debug message")
     logger.Info("info message")
-    
+
     // 应该输出
     logger.Warn("warn message")
     logger.Error("error message")
-    
+
     output := buf.String()
     if strings.Contains(output, "debug") || strings.Contains(output, "info") {
         t.Error("Debug/Info messages should be filtered")
@@ -300,25 +302,25 @@ func TestHandlerLevelFilter(t *testing.T) {
 func TestHandlerGroups(t *testing.T) {
     var buf bytes.Buffer
     h := slog.NewJSONHandler(&buf, nil)
-    
+
     logger := slog.New(h)
     logger = logger.WithGroup("request")
     logger.Info("handling request",
         "method", "GET",
         "path", "/api/users",
     )
-    
+
     var result map[string]interface{}
     if err := json.Unmarshal(buf.Bytes(), &result); err != nil {
         t.Fatal(err)
     }
-    
+
     // 验证嵌套结构
     request, ok := result["request"].(map[string]interface{})
     if !ok {
         t.Fatal("Expected request group")
     }
-    
+
     if request["method"] != "GET" {
         t.Error("Expected method=GET")
     }
@@ -330,16 +332,16 @@ func TestHandlerGroups(t *testing.T) {
 ```go
 func TestHandlerContext(t *testing.T) {
     var buf bytes.Buffer
-    
+
     // 自定义Handler，从context提取值
     h := NewContextAwareHandler(&buf)
     logger := slog.New(h)
-    
+
     // 创建带值的context
     ctx := context.WithValue(context.Background(), "request_id", "req-123")
-    
+
     logger.InfoContext(ctx, "processing request")
-    
+
     output := buf.String()
     if !strings.Contains(output, "req-123") {
         t.Error("Request ID should be in output")
@@ -375,7 +377,7 @@ func TestHandlerContext(t *testing.T) {
 ```go
 func assertEqual[T comparable](t *testing.T, got, want T) {
     t.Helper()  // 标记为辅助函数，错误指向调用者
-    
+
     if got != want {
         t.Errorf("got %v, want %v", got, want)
     }
@@ -401,7 +403,7 @@ func TestParallelSuite(t *testing.T) {
         {"test2", testCase2},
         {"test3", testCase3},
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             t.Parallel()  // Go 1.23输出更有组织
@@ -443,7 +445,7 @@ func TestNestedSubtests(t *testing.T) {
             // 测试代码
         })
     })
-    
+
     t.Run("group2", func(t *testing.T) {
         t.Run("case1", func(t *testing.T) {
             // 测试代码
@@ -481,7 +483,7 @@ func TestConcurrentOperations(t *testing.T) {
         i := i
         t.Run(fmt.Sprintf("test-%d", i), func(t *testing.T) {
             t.Parallel()  // 更好的并发控制
-            
+
             // 测试代码
             result := expensiveOperation(i)
             if result != expected {
@@ -506,16 +508,16 @@ func TestConcurrentAccess(t *testing.T) {
         {"test2", 2},
         {"test3", 3},
     }
-    
+
     for _, tt := range tests {
         tt := tt  // 捕获循环变量
         t.Run(tt.name, func(t *testing.T) {
             t.Parallel()
-            
+
             // 每个子测试有独立的资源
             resource := newTestResource()
             defer resource.Close()
-            
+
             // 测试代码
             result := resource.Process(tt.data)
             assertEqual(t, result, tt.data*2)
@@ -529,7 +531,7 @@ func TestConcurrentAccess(t *testing.T) {
 ```go
 func TestConcurrentMapAccess(t *testing.T) {
     m := &sync.Map{}
-    
+
     // 并发写入
     t.Run("concurrent_writes", func(t *testing.T) {
         var wg sync.WaitGroup
@@ -542,7 +544,7 @@ func TestConcurrentMapAccess(t *testing.T) {
         }
         wg.Wait()
     })
-    
+
     // 验证结果
     t.Run("verify_results", func(t *testing.T) {
         for i := 0; i < 100; i++ {
@@ -567,11 +569,11 @@ func TestConcurrentMapAccess(t *testing.T) {
 func TestNoDeadlock(t *testing.T) {
     // Go 1.23会更快检测到死锁情况
     ch := make(chan int)
-    
+
     done := make(chan bool)
     go func() {
         defer close(done)
-        
+
         // 这会超时，Go 1.23会报告
         select {
         case v := <-ch:
@@ -580,7 +582,7 @@ func TestNoDeadlock(t *testing.T) {
             t.Error("timeout waiting for value")
         }
     }()
-    
+
     <-done
 }
 ```
@@ -596,7 +598,7 @@ func TestNoDeadlock(t *testing.T) {
 ```go
 func BenchmarkStringConcat(b *testing.B) {
     b.ReportAllocs()  // Go 1.23提供更详细的分配信息
-    
+
     for i := 0; i < b.N; i++ {
         s := "hello"
         s += " world"
@@ -647,7 +649,7 @@ StringConcat-8      2.00 ± 0%      1.00 ± 0%   -50.00%  (p=0.000 n=10+10)
 // benchmark_test.go
 func BenchmarkCriticalPath(b *testing.B) {
     b.ReportAllocs()
-    
+
     for i := 0; i < b.N; i++ {
         result := criticalOperation()
         if result == nil {
@@ -674,11 +676,11 @@ func FuzzParseInput(f *testing.F) {
     f.Add("hello")
     f.Add("world")
     f.Add("12345")
-    
+
     f.Fuzz(func(t *testing.T, input string) {
         // Go 1.23：更快的模糊测试
         result, err := ParseInput(input)
-        
+
         if err != nil {
             // 预期的错误可以跳过
             if isExpectedError(err) {
@@ -687,7 +689,7 @@ func FuzzParseInput(f *testing.F) {
             t.Errorf("unexpected error: %v", err)
             return
         }
-        
+
         // 验证结果
         if result == nil {
             t.Error("result should not be nil")
@@ -722,7 +724,7 @@ func FuzzJSON(f *testing.F) {
         data, _ := os.ReadFile(filepath.Join("testdata/json", entry.Name()))
         f.Add(data)
     }
-    
+
     f.Fuzz(func(t *testing.T, data []byte) {
         var v interface{}
         _ = json.Unmarshal(data, &v)
@@ -741,23 +743,23 @@ func FuzzURLParser(f *testing.F) {
     f.Add("http://example.com")
     f.Add("https://example.com/path?query=value")
     f.Add("ftp://example.com:21/file.txt")
-    
+
     f.Fuzz(func(t *testing.T, input string) {
         u, err := url.Parse(input)
-        
+
         if err != nil {
             // 某些输入预期会失败
             return
         }
-        
+
         // 验证解析结果的一致性
         reconstructed := u.String()
         u2, err2 := url.Parse(reconstructed)
-        
+
         if err2 != nil {
             t.Errorf("re-parsing failed: %v", err2)
         }
-        
+
         if u.Scheme != u2.Scheme || u.Host != u2.Host {
             t.Errorf("inconsistent parsing: %v vs %v", u, u2)
         }
@@ -832,19 +834,19 @@ go tool cover -html=coverage.out
 func TestFileOperations(t *testing.T) {
     // 自动清理的临时目录
     dir := t.TempDir()
-    
+
     // 创建测试文件
     testFile := filepath.Join(dir, "test.txt")
     if err := os.WriteFile(testFile, []byte("test data"), 0644); err != nil {
         t.Fatal(err)
     }
-    
+
     // 测试代码
     result, err := ProcessFile(testFile)
     if err != nil {
         t.Errorf("ProcessFile failed: %v", err)
     }
-    
+
     // 不需要手动清理，t.TempDir()会自动处理
 }
 ```
@@ -857,10 +859,10 @@ func TestConcurrentFileOps(t *testing.T) {
         i := i
         t.Run(fmt.Sprintf("test-%d", i), func(t *testing.T) {
             t.Parallel()
-            
+
             // 每个并发测试有独立的临时目录
             dir := t.TempDir()
-            
+
             // 测试代码
             testFile := filepath.Join(dir, "data.txt")
             // ...
@@ -878,15 +880,15 @@ func TestEnvironmentDependentCode(t *testing.T) {
     // t.Setenv()会在测试结束后自动恢复
     t.Setenv("API_KEY", "test-key-123")
     t.Setenv("DEBUG", "true")
-    
+
     // 测试使用环境变量的代码
     client := NewAPIClient()  // 读取API_KEY
     result, err := client.FetchData()
-    
+
     if err != nil {
         t.Errorf("FetchData failed: %v", err)
     }
-    
+
     // 环境变量会自动恢复
 }
 ```
@@ -903,17 +905,17 @@ func TestParallelWithEnv(t *testing.T) {
         {"test1", "VAR1", "value1"},
         {"test2", "VAR2", "value2"},
     }
-    
+
     for _, tt := range tests {
         tt := tt
         t.Run(tt.name, func(t *testing.T) {
             // ⚠️ t.Parallel() 和 t.Setenv() 要注意隔离
             t.Parallel()
-            
+
             // 如果多个测试设置相同的环境变量，可能有问题
             // 最好使用不同的变量或避免并行
             t.Setenv(tt.envVar, tt.value)
-            
+
             // 测试代码
         })
     }
@@ -931,26 +933,26 @@ func TestWithCleanup(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    
+
     // 注册清理（类似defer，但更灵活）
     t.Cleanup(func() {
         db.Close()
     })
-    
+
     // 创建更多资源
     conn, err := db.Conn(context.Background())
     if err != nil {
         t.Fatal(err)
     }
-    
+
     // 再次注册清理（LIFO顺序）
     t.Cleanup(func() {
         conn.Close()
     })
-    
+
     // 测试代码
     // ...
-    
+
     // 清理会自动按LIFO顺序执行
 }
 ```
@@ -963,17 +965,17 @@ func setupTestDB(t *testing.T) *sql.DB {
     if err != nil {
         t.Fatal(err)
     }
-    
+
     // 在辅助函数中注册清理
     t.Cleanup(func() {
         db.Close()
     })
-    
+
     // 初始化数据库
     if err := initSchema(db); err != nil {
         t.Fatal(err)
     }
-    
+
     return db
 }
 
@@ -1030,27 +1032,27 @@ func (h *JSONHandler) Enabled(ctx context.Context, level slog.Level) bool {
 
 func (h *JSONHandler) Handle(ctx context.Context, r slog.Record) error {
     entry := make(map[string]interface{})
-    
+
     entry["time"] = r.Time.Format(time.RFC3339)
     entry["level"] = r.Level.String()
     entry["msg"] = r.Message
-    
+
     // 添加handler的attrs
     for _, a := range h.attrs {
         entry[a.Key] = a.Value.Any()
     }
-    
+
     // 添加record的attrs
     r.Attrs(func(a slog.Attr) bool {
         entry[a.Key] = a.Value.Any()
         return true
     })
-    
+
     data, err := json.Marshal(entry)
     if err != nil {
         return err
     }
-    
+
     h.buf.Write(data)
     h.buf.WriteByte('\n')
     return nil
@@ -1072,12 +1074,12 @@ func (h *JSONHandler) WithGroup(name string) slog.Handler {
 // 测试套件
 func TestJSONHandler(t *testing.T) {
     var buf bytes.Buffer
-    
+
     newHandler := func() slog.Handler {
         buf.Reset()
         return NewJSONHandler(&buf, nil)
     }
-    
+
     // 运行标准测试
     slogtest.Run(t, newHandler, slogtest.All)
 }
@@ -1086,18 +1088,18 @@ func TestJSONHandlerOutput(t *testing.T) {
     var buf bytes.Buffer
     h := NewJSONHandler(&buf, nil)
     logger := slog.New(h)
-    
+
     logger.Info("test message",
         "key1", "value1",
         "key2", 42,
     )
-    
+
     // 验证JSON输出
     var entry map[string]interface{}
     if err := json.Unmarshal(buf.Bytes(), &entry); err != nil {
         t.Fatalf("invalid JSON: %v", err)
     }
-    
+
     if entry["msg"] != "test message" {
         t.Errorf("wrong message: %v", entry["msg"])
     }
@@ -1135,7 +1137,7 @@ func TestJSONHandlerLevels(t *testing.T) {
             shouldHide: []slog.Level{slog.LevelDebug, slog.LevelInfo},
         },
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             var buf bytes.Buffer
@@ -1143,7 +1145,7 @@ func TestJSONHandlerLevels(t *testing.T) {
                 Level: tt.level,
             })
             logger := slog.New(h)
-            
+
             // 测试应该显示的级别
             for _, level := range tt.shouldShow {
                 buf.Reset()
@@ -1152,7 +1154,7 @@ func TestJSONHandlerLevels(t *testing.T) {
                     t.Errorf("level %v should be shown", level)
                 }
             }
-            
+
             // 测试应该隐藏的级别
             for _, level := range tt.shouldHide {
                 buf.Reset()
@@ -1198,7 +1200,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     s.mu.Lock()
     s.calls++
     s.mu.Unlock()
-    
+
     switch r.Method {
     case http.MethodGet:
         s.handleGet(w, r)
@@ -1211,27 +1213,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleGet(w http.ResponseWriter, r *http.Request) {
     key := r.URL.Query().Get("key")
-    
+
     s.mu.RLock()
     value, ok := s.data[key]
     s.mu.RUnlock()
-    
+
     if !ok {
         http.Error(w, "not found", http.StatusNotFound)
         return
     }
-    
+
     w.Write([]byte(value))
 }
 
 func (s *Server) handlePost(w http.ResponseWriter, r *http.Request) {
     key := r.URL.Query().Get("key")
     value := r.URL.Query().Get("value")
-    
+
     s.mu.Lock()
     s.data[key] = value
     s.mu.Unlock()
-    
+
     w.WriteHeader(http.StatusCreated)
 }
 
@@ -1240,7 +1242,7 @@ func TestServerConcurrency(t *testing.T) {
     server := NewServer()
     ts := httptest.NewServer(server)
     defer ts.Close()
-    
+
     // 并发写入
     t.Run("concurrent_writes", func(t *testing.T) {
         var wg sync.WaitGroup
@@ -1248,7 +1250,7 @@ func TestServerConcurrency(t *testing.T) {
             wg.Add(1)
             go func(i int) {
                 defer wg.Done()
-                
+
                 url := fmt.Sprintf("%s?key=key%d&value=value%d", ts.URL, i, i)
                 req, _ := http.NewRequest(http.MethodPost, url, nil)
                 resp, err := http.DefaultClient.Do(req)
@@ -1257,7 +1259,7 @@ func TestServerConcurrency(t *testing.T) {
                     return
                 }
                 resp.Body.Close()
-                
+
                 if resp.StatusCode != http.StatusCreated {
                     t.Errorf("unexpected status: %d", resp.StatusCode)
                 }
@@ -1265,7 +1267,7 @@ func TestServerConcurrency(t *testing.T) {
         }
         wg.Wait()
     })
-    
+
     // 验证数据
     t.Run("verify_writes", func(t *testing.T) {
         for i := 0; i < 100; i++ {
@@ -1276,20 +1278,20 @@ func TestServerConcurrency(t *testing.T) {
                 continue
             }
             defer resp.Body.Close()
-            
+
             if resp.StatusCode != http.StatusOK {
                 t.Errorf("key%d: unexpected status %d", i, resp.StatusCode)
             }
         }
     })
-    
+
     // 并发读写
     t.Run("concurrent_read_write", func(t *testing.T) {
         ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
         defer cancel()
-        
+
         var wg sync.WaitGroup
-        
+
         // 启动读取goroutine
         for i := 0; i < 10; i++ {
             wg.Add(1)
@@ -1309,7 +1311,7 @@ func TestServerConcurrency(t *testing.T) {
                 }
             }()
         }
-        
+
         // 启动写入goroutine
         for i := 0; i < 10; i++ {
             wg.Add(1)
@@ -1330,7 +1332,7 @@ func TestServerConcurrency(t *testing.T) {
                 }
             }()
         }
-        
+
         wg.Wait()
     })
 }
@@ -1359,7 +1361,7 @@ func BenchmarkStringConcat(b *testing.B) {
             _ = s
         }
     })
-    
+
     b.Run("sprintf", func(b *testing.B) {
         b.ReportAllocs()
         for i := 0; i < b.N; i++ {
@@ -1367,7 +1369,7 @@ func BenchmarkStringConcat(b *testing.B) {
             _ = s
         }
     })
-    
+
     b.Run("strings_builder", func(b *testing.B) {
         b.ReportAllocs()
         for i := 0; i < b.N; i++ {
@@ -1378,7 +1380,7 @@ func BenchmarkStringConcat(b *testing.B) {
             _ = sb.String()
         }
     })
-    
+
     b.Run("bytes_buffer", func(b *testing.B) {
         b.ReportAllocs()
         for i := 0; i < b.N; i++ {
@@ -1398,13 +1400,13 @@ func BenchmarkJSONMarshal(b *testing.B) {
         Name string `json:"name"`
         Tags []string `json:"tags"`
     }
-    
+
     data := Data{
         ID:   123,
         Name: "test",
         Tags: []string{"tag1", "tag2", "tag3"},
     }
-    
+
     b.Run("marshal", func(b *testing.B) {
         b.ReportAllocs()
         for i := 0; i < b.N; i++ {
@@ -1414,7 +1416,7 @@ func BenchmarkJSONMarshal(b *testing.B) {
             }
         }
     })
-    
+
     b.Run("marshal_indent", func(b *testing.B) {
         b.ReportAllocs()
         for i := 0; i < b.N; i++ {
@@ -1424,12 +1426,12 @@ func BenchmarkJSONMarshal(b *testing.B) {
             }
         }
     })
-    
+
     b.Run("encoder", func(b *testing.B) {
         b.ReportAllocs()
         var buf bytes.Buffer
         enc := json.NewEncoder(&buf)
-        
+
         b.ResetTimer()
         for i := 0; i < b.N; i++ {
             buf.Reset()
@@ -1461,11 +1463,11 @@ func TestUserCreation(t *testing.T) {
     t.Run("valid_user", func(t *testing.T) {
         // 测试有效用户创建
     })
-    
+
     t.Run("invalid_email", func(t *testing.T) {
         // 测试无效邮箱
     })
-    
+
     t.Run("duplicate_email", func(t *testing.T) {
         // 测试重复邮箱
     })
@@ -1508,7 +1510,7 @@ func TestUserFail(t *testing.T) {}
 
 func loadTestData(t *testing.T, filename string) []byte {
     t.Helper()
-    
+
     data, err := os.ReadFile(filepath.Join("testdata", filename))
     if err != nil {
         t.Fatalf("failed to load test data: %v", err)
@@ -1518,12 +1520,12 @@ func loadTestData(t *testing.T, filename string) []byte {
 
 func TestWithFixtures(t *testing.T) {
     data := loadTestData(t, "users.json")
-    
+
     var users []User
     if err := json.Unmarshal(data, &users); err != nil {
         t.Fatal(err)
     }
-    
+
     // 使用测试数据
     for _, user := range users {
         // 测试代码
@@ -1554,9 +1556,9 @@ func TestWithFixtures(t *testing.T) {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.23+
 
 **贡献者**: 欢迎提交Issue和PR改进本文档

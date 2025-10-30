@@ -1,36 +1,17 @@
-﻿# 容器化与编排架构（Containerization and Orchestration Architecture）
+# 容器化与编排架构（Containerization and Orchestration Architecture）
 
 > **简介**: Docker容器化和Kubernetes编排架构实践，构建可移植、可扩展的云原生应用
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-
-- [目录](#目录)
-- [2. 国际标准与发展历程](#2-国际标准与发展历程)
-  - [主流技术与标准](#主流技术与标准)
-  - [发展历程](#发展历程)
-  - [国际权威链接](#国际权威链接)
-- [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
-  - [容器化架构 (Docker)](#容器化架构-docker)
-  - [容器编排架构 (Kubernetes)](#容器编排架构-kubernetes)
-- [4. Golang与云原生生态](#4-golang与云原生生态)
-  - [使用Go开发Kubernetes原生应用](#使用go开发kubernetes原生应用)
-  - [可观测性 (Observability)](#可观测性-observability)
-- [5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
-- [6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
-  - [目录结构建议](#目录结构建议)
-  - [CI/CD工作流 (GitHub Actions)](#cicd工作流-github-actions)
-- [7. 相关架构主题](#7-相关架构主题)
-
-## 目录
-
 - [容器化与编排架构（Containerization and Orchestration Architecture）](#容器化与编排架构containerization-and-orchestration-architecture)
-  - [目录](#目录)
+  - [📋 目录](#-目录)
   - [2. 国际标准与发展历程](#2-国际标准与发展历程)
     - [主流技术与标准](#主流技术与标准)
     - [发展历程](#发展历程)
@@ -218,7 +199,7 @@ metadata:
   name: my-golang-app-service
 spec:
   # 服务类型：ClusterIP, NodePort, LoadBalancer, ExternalName
-  type: LoadBalancer 
+  type: LoadBalancer
   selector:
     app: my-golang-app
   ports:
@@ -354,10 +335,10 @@ func main() {
   httpRequestsTotal.WithLabelValues(r.URL.Path).Inc()
   w.Write([]byte("Hello, World!"))
  })
- 
+
  // 暴露/metrics端点
  http.Handle("/metrics", promhttp.Handler())
- 
+
  log.Println("Listening on :8080")
  log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -485,7 +466,7 @@ jobs:
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

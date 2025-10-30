@@ -2,11 +2,12 @@
 
 > **简介**: 基于CNCF标准的云原生架构设计，涵盖容器、Kubernetes、服务网格、DevOps和持续交付
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
 - [1. 目录](#1.-目录)[2. 2. 云原生架构概述](#2.-2.-云原生架构概述)[3. 3. 核心思想与典型应用场景](#3.-3.-核心思想与典型应用场景)[4. 4. 与传统方案对比](#4.-4.-与传统方案对比)[5. 5. 领域建模（核心实体、关系、UML类图）](#5.-5.-领域建模核心实体关系uml类图)[6. 6. 典型数据流与时序图](#6.-6.-典型数据流与时序图)[7. 7. Golang领域模型代码示例](#7.-7.-golang领域模型代码示例)[8. 8. 分布式系统挑战](#8.-8.-分布式系统挑战)[9. 9. 主流解决方案](#9.-9.-主流解决方案)[10. 10. 形式化建模与证明](#10.-10.-形式化建模与证明[11. 11. 国际权威参考链接](#11.-11.-国际权威参考链接)1. 11. 国际权威参考链接](#11.-国际权威参考链接)
@@ -16,6 +17,7 @@
 ## 目录
 
 - [云原生架构（Golang国际主流实践）](#云原生架构golang国际主流实践)
+  - [📋 目录](#-目录)
   - [目录](#目录)
   - [2. 云原生架构概述](#2-云原生架构概述)
   - [3. 核心思想与典型应用场景](#3-核心思想与典型应用场景)
@@ -1011,11 +1013,11 @@ func (platform *CloudNativePlatform) DeployApplication(ctx context.Context, app 
         CreatedAt: time.Now(),
         UpdatedAt: time.Now(),
     }
-    
+
     if err := platform.deploymentService.CreateDeployment(ctx, deployment); err != nil {
         return err
     }
-    
+
     // 创建服务
     service := &Service{
         ID:        generateID(),
@@ -1029,11 +1031,11 @@ func (platform *CloudNativePlatform) DeployApplication(ctx context.Context, app 
         CreatedAt: time.Now(),
         UpdatedAt: time.Now(),
     }
-    
+
     if err := platform.serviceService.CreateService(ctx, service); err != nil {
         return err
     }
-    
+
     // 发布部署事件
     platform.eventBus.Publish(&ApplicationDeployedEvent{
         ApplicationName: app.Name,
@@ -1042,7 +1044,7 @@ func (platform *CloudNativePlatform) DeployApplication(ctx context.Context, app 
         ServiceID:       service.ID,
         Timestamp:       time.Now(),
     })
-    
+
     return nil
 }
 
@@ -1052,15 +1054,15 @@ func (platform *CloudNativePlatform) ScaleApplication(ctx context.Context, names
     if err != nil {
         return err
     }
-    
+
     // 更新副本数
     deployment.Replicas = replicas
     deployment.UpdatedAt = time.Now()
-    
+
     if err := platform.deploymentService.UpdateDeployment(ctx, deployment); err != nil {
         return err
     }
-    
+
     // 发布扩缩容事件
     platform.eventBus.Publish(&ApplicationScaledEvent{
         ApplicationName: name,
@@ -1069,7 +1071,7 @@ func (platform *CloudNativePlatform) ScaleApplication(ctx context.Context, names
         NewReplicas:     replicas,
         Timestamp:       time.Now(),
     })
-    
+
     return nil
 }
 
@@ -1079,13 +1081,13 @@ func (platform *CloudNativePlatform) MonitorClusterHealth(ctx context.Context, c
     if err != nil {
         return nil, err
     }
-    
+
     // 获取集群指标
     metrics, err := platform.clusterService.GetClusterMetrics(ctx, clusterName)
     if err != nil {
         return nil, err
     }
-    
+
     // 分析集群健康状态
     report := &ClusterHealthReport{
         ClusterName:    clusterName,
@@ -1097,7 +1099,7 @@ func (platform *CloudNativePlatform) MonitorClusterHealth(ctx context.Context, c
         Recommendations: platform.generateRecommendations(metrics),
         GeneratedAt:    time.Now(),
     }
-    
+
     return report, nil
 }
 
@@ -1255,18 +1257,18 @@ func (platform *CloudNativePlatform) analyzeNodeHealth(ctx context.Context, clus
     if err != nil {
         return NodeHealthSummary{}
     }
-    
+
     totalNodes := len(nodes)
     readyNodes := 0
-    
+
     for _, node := range nodes {
         if node.Status == NodeStatusReady {
             readyNodes++
         }
     }
-    
+
     healthScore := float64(readyNodes) / float64(totalNodes) * 100
-    
+
     return NodeHealthSummary{
         TotalNodes:    totalNodes,
         ReadyNodes:    readyNodes,
@@ -1280,18 +1282,18 @@ func (platform *CloudNativePlatform) analyzeServiceHealth(ctx context.Context, c
     if err != nil {
         return ServiceHealthSummary{}
     }
-    
+
     totalServices := len(services)
     healthyServices := 0
-    
+
     for _, service := range services {
         if service.Status == ServiceStatusActive {
             healthyServices++
         }
     }
-    
+
     healthScore := float64(healthyServices) / float64(totalServices) * 100
-    
+
     return ServiceHealthSummary{
         TotalServices:     totalServices,
         HealthyServices:   healthyServices,
@@ -1312,7 +1314,7 @@ func (platform *CloudNativePlatform) analyzeResourceHealth(metrics *ClusterMetri
 
 func (platform *CloudNativePlatform) identifyIssues(ctx context.Context, cluster *Cluster, metrics *ClusterMetrics) []HealthIssue {
     var issues []HealthIssue
-    
+
     // 检查资源使用率
     if metrics.CPUUsage > 90 {
         issues = append(issues, HealthIssue{
@@ -1323,7 +1325,7 @@ func (platform *CloudNativePlatform) identifyIssues(ctx context.Context, cluster
             Timestamp:   time.Now(),
         })
     }
-    
+
     if metrics.MemoryUsage > 90 {
         issues = append(issues, HealthIssue{
             Type:        IssueTypeResource,
@@ -1333,7 +1335,7 @@ func (platform *CloudNativePlatform) identifyIssues(ctx context.Context, cluster
             Timestamp:   time.Now(),
         })
     }
-    
+
     // 检查节点状态
     nodes, _ := platform.nodeService.ListNodes(ctx, nil)
     for _, node := range nodes {
@@ -1347,13 +1349,13 @@ func (platform *CloudNativePlatform) identifyIssues(ctx context.Context, cluster
             })
         }
     }
-    
+
     return issues
 }
 
 func (platform *CloudNativePlatform) generateRecommendations(metrics *ClusterMetrics) []Recommendation {
     var recommendations []Recommendation
-    
+
     if metrics.CPUUsage > 80 {
         recommendations = append(recommendations, Recommendation{
             Type:        RecommendationTypeResource,
@@ -1364,7 +1366,7 @@ func (platform *CloudNativePlatform) generateRecommendations(metrics *ClusterMet
             Impact:      "Improved performance and reduced risk of resource exhaustion",
         })
     }
-    
+
     if metrics.MemoryUsage > 80 {
         recommendations = append(recommendations, Recommendation{
             Type:        RecommendationTypeResource,
@@ -1375,7 +1377,7 @@ func (platform *CloudNativePlatform) generateRecommendations(metrics *ClusterMet
             Impact:      "Reduced memory pressure and improved stability",
         })
     }
-    
+
     return recommendations
 }
 ```
@@ -1419,7 +1421,7 @@ func (platform *CloudNativePlatform) generateRecommendations(metrics *ClusterMet
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

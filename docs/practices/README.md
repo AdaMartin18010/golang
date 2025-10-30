@@ -1,4 +1,4 @@
-﻿# Go最佳实践
+# Go最佳实践
 
 Go开发最佳实践，涵盖测试、部署、工程化和可观测性。
 
@@ -78,7 +78,7 @@ func TestAdd(t *testing.T) {
         {"negative", -1, -1, -2},
         {"zero", 0, 0, 0},
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             if got := Add(tt.a, tt.b); got != tt.want {
@@ -172,6 +172,6 @@ spec:
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

@@ -1,7 +1,7 @@
-﻿# RESTful API设计
+# RESTful API设计
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
@@ -124,42 +124,42 @@ GET /users?q=john
 func listUsers(w http.ResponseWriter, r *http.Request) {
     // 解析查询参数
     query := r.URL.Query()
-    
+
     // 分页
     page, _ := strconv.Atoi(query.Get("page"))
     if page < 1 {
         page = 1
     }
-    
+
     limit, _ := strconv.Atoi(query.Get("limit"))
     if limit < 1 || limit > 100 {
         limit = 20
     }
-    
+
     // 排序
     sort := query.Get("sort")
     if sort == "" {
         sort = "created_at"
     }
-    
+
     order := query.Get("order")
     if order != "asc" && order != "desc" {
         order = "desc"
     }
-    
+
     // 过滤
     filters := map[string]string{
         "role":   query.Get("role"),
         "status": query.Get("status"),
     }
-    
+
     // 查询数据
     users, total, err := getUserList(page, limit, sort, order, filters)
     if err != nil {
         respondError(w, 500, "Internal server error")
         return
     }
-    
+
     // 响应
     respondJSON(w, 200, map[string]interface{}{
         "data": users,
@@ -211,69 +211,69 @@ func createUser(w http.ResponseWriter, r *http.Request) {
         respondError(w, 400, "Invalid request body")
         return
     }
-    
+
     if err := validate(user); err != nil {
         respondError(w, 422, err.Error())
         return
     }
-    
+
     createdUser, err := insertUser(user)
     if err != nil {
         respondError(w, 500, "Failed to create user")
         return
     }
-    
+
     respondJSON(w, 201, createdUser)
 }
 
 // PUT - 完整更新
 func updateUser(w http.ResponseWriter, r *http.Request) {
     id := chi.URLParam(r, "id")
-    
+
     var user User
     if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
         respondError(w, 400, "Invalid request body")
         return
     }
-    
+
     user.ID = id
     updatedUser, err := replaceUser(user)
     if err != nil {
         respondError(w, 404, "User not found")
         return
     }
-    
+
     respondJSON(w, 200, updatedUser)
 }
 
 // PATCH - 部分更新
 func patchUser(w http.ResponseWriter, r *http.Request) {
     id := chi.URLParam(r, "id")
-    
+
     var updates map[string]interface{}
     if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
         respondError(w, 400, "Invalid request body")
         return
     }
-    
+
     updatedUser, err := partialUpdateUser(id, updates)
     if err != nil {
         respondError(w, 404, "User not found")
         return
     }
-    
+
     respondJSON(w, 200, updatedUser)
 }
 
 // DELETE - 删除资源
 func deleteUser(w http.ResponseWriter, r *http.Request) {
     id := chi.URLParam(r, "id")
-    
+
     if err := removeUser(id); err != nil {
         respondError(w, 404, "User not found")
         return
     }
-    
+
     respondJSON(w, 204, nil)
 }
 ```
@@ -328,21 +328,21 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
         respondError(w, 422, "Validation failed")
         return
     }
-    
+
     // 未找到 - 404
     user, err := findUser(id)
     if err == ErrNotFound {
         respondError(w, 404, "User not found")
         return
     }
-    
+
     // 服务器错误 - 500
     if err != nil {
         log.Printf("Error: %v", err)
         respondError(w, 500, "Internal server error")
         return
     }
-    
+
     // 成功 - 200
     respondJSON(w, 200, user)
 }
@@ -554,26 +554,26 @@ func NewUserAPI(service *UserService) *UserAPI {
 
 func (api *UserAPI) Routes() chi.Router {
     r := chi.NewRouter()
-    
+
     r.Get("/", api.list)
     r.Post("/", api.create)
     r.Get("/{id}", api.get)
     r.Put("/{id}", api.update)
     r.Patch("/{id}", api.patch)
     r.Delete("/{id}", api.delete)
-    
+
     return r
 }
 
 func (api *UserAPI) list(w http.ResponseWriter, r *http.Request) {
     params := ParseQueryParams(r)
     users, total, err := api.service.List(params)
-    
+
     if err != nil {
         RespondError(w, 500, "Failed to fetch users")
         return
     }
-    
+
     RespondJSON(w, 200, map[string]interface{}{
         "data": users,
         "pagination": map[string]int{
@@ -590,18 +590,18 @@ func (api *UserAPI) create(w http.ResponseWriter, r *http.Request) {
         RespondError(w, 400, "Invalid request body")
         return
     }
-    
+
     if err := Validate(req); err != nil {
         RespondValidationError(w, err)
         return
     }
-    
+
     user, err := api.service.Create(req)
     if err != nil {
         RespondError(w, 500, "Failed to create user")
         return
     }
-    
+
     w.Header().Set("Location", fmt.Sprintf("/users/%s", user.ID))
     RespondJSON(w, 201, user)
 }
@@ -617,5 +617,5 @@ func (api *UserAPI) create(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-**最后更新**: 2025-10-29  
+**最后更新**: 2025-10-29
 **Go版本**: 1.25.3

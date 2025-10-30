@@ -1,52 +1,17 @@
-﻿# 数据流架构（Dataflow Architecture）
+# 数据流架构（Dataflow Architecture）
 
 > **简介**: 数据流处理架构设计，涵盖实时流处理、批处理和混合数据处理
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-
-- [目录](#目录)
-- [2. 国际标准与发展历程](#2-国际标准与发展历程)
-  - [主流数据流处理平台](#主流数据流处理平台)
-  - [发展历程](#发展历程)
-  - [国际权威链接](#国际权威链接)
-- [3. 典型应用场景与需求分析](#3-典型应用场景与需求分析)
-  - [实时数据分析](#实时数据分析)
-  - [监控与告警](#监控与告警)
-  - [实时ETL](#实时etl)
-- [4. 领域建模与UML类图](#4-领域建模与uml类图)
-  - [核心实体建模](#核心实体建模)
-  - [数据流处理架构](#数据流处理架构)
-- [5. 架构模式与设计原则](#5-架构模式与设计原则)
-  - [Lambda架构 vs Kappa架构](#lambda架构-vs-kappa架构)
-    - [Lambda架构 (批处理 + 流处理)](#lambda架构-批处理-+-流处理)
-    - [Kappa架构 (纯流处理)](#kappa架构-纯流处理)
-  - [流处理核心概念](#流处理核心概念)
-    - [时间语义 (Time Semantics)](#时间语义-time-semantics)
-    - [窗口机制 (Windowing)](#窗口机制-windowing)
-- [6. Golang主流实现与代码示例](#6-golang主流实现与代码示例)
-  - [基础数据流处理框架](#基础数据流处理框架)
-  - [窗口聚合处理示例](#窗口聚合处理示例)
-- [7. 分布式挑战与主流解决方案](#7-分布式挑战与主流解决方案)
-  - [状态一致性与检查点机制](#状态一致性与检查点机制)
-  - [背压控制与流量整形](#背压控制与流量整形)
-  - [事件时间处理与水位线机制](#事件时间处理与水位线机制)
-- [8. 工程结构与CI/CD实践](#8-工程结构与cicd实践)
-  - [典型项目结构](#典型项目结构)
-  - [容器化部署](#容器化部署)
-- [9. 形式化建模与数学表达](#9-形式化建模与数学表达)
-  - [流处理数学模型](#流处理数学模型)
-- [10. 相关架构主题](#10-相关架构主题)
-- [11. 扩展阅读与参考文献](#11-扩展阅读与参考文献)
-
-## 目录
-
 - [数据流架构（Dataflow Architecture）](#数据流架构dataflow-architecture)
+  - [📋 目录](#-目录)
   - [目录](#目录)
   - [2. 国际标准与发展历程](#2-国际标准与发展历程)
     - [主流数据流处理平台](#主流数据流处理平台)
@@ -61,7 +26,45 @@
     - [数据流处理架构](#数据流处理架构)
   - [5. 架构模式与设计原则](#5-架构模式与设计原则)
     - [Lambda架构 vs Kappa架构](#lambda架构-vs-kappa架构)
-      - [Lambda架构 (批处理 + 流处理)](#lambda架构-批处理-+-流处理)
+      - [Lambda架构 (批处理 + 流处理)](#lambda架构-批处理--流处理)
+      - [Kappa架构 (纯流处理)](#kappa架构-纯流处理)
+    - [流处理核心概念](#流处理核心概念)
+      - [时间语义 (Time Semantics)](#时间语义-time-semantics)
+      - [窗口机制 (Windowing)](#窗口机制-windowing)
+  - [6. Golang主流实现与代码示例](#6-golang主流实现与代码示例)
+    - [基础数据流处理框架](#基础数据流处理框架)
+    - [窗口聚合处理示例](#窗口聚合处理示例)
+  - [7. 分布式挑战与主流解决方案](#7-分布式挑战与主流解决方案)
+    - [状态一致性与检查点机制](#状态一致性与检查点机制)
+    - [背压控制与流量整形](#背压控制与流量整形)
+    - [事件时间处理与水位线机制](#事件时间处理与水位线机制)
+  - [8. 工程结构与CI/CD实践](#8-工程结构与cicd实践)
+    - [典型项目结构](#典型项目结构)
+    - [容器化部署](#容器化部署)
+  - [9. 形式化建模与数学表达](#9-形式化建模与数学表达)
+    - [流处理数学模型](#流处理数学模型)
+  - [10. 相关架构主题](#10-相关架构主题)
+  - [11. 扩展阅读与参考文献](#11-扩展阅读与参考文献)
+
+## 目录
+
+- [数据流架构（Dataflow Architecture）](#数据流架构dataflow-architecture)
+  - [📋 目录](#-目录)
+  - [目录](#目录)
+  - [2. 国际标准与发展历程](#2-国际标准与发展历程)
+    - [主流数据流处理平台](#主流数据流处理平台)
+    - [发展历程](#发展历程)
+    - [国际权威链接](#国际权威链接)
+  - [3. 典型应用场景与需求分析](#3-典型应用场景与需求分析)
+    - [实时数据分析](#实时数据分析)
+    - [监控与告警](#监控与告警)
+    - [实时ETL](#实时etl)
+  - [4. 领域建模与UML类图](#4-领域建模与uml类图)
+    - [核心实体建模](#核心实体建模)
+    - [数据流处理架构](#数据流处理架构)
+  - [5. 架构模式与设计原则](#5-架构模式与设计原则)
+    - [Lambda架构 vs Kappa架构](#lambda架构-vs-kappa架构)
+      - [Lambda架构 (批处理 + 流处理)](#lambda架构-批处理--流处理)
       - [Kappa架构 (纯流处理)](#kappa架构-纯流处理)
     - [流处理核心概念](#流处理核心概念)
       - [时间语义 (Time Semantics)](#时间语义-time-semantics)
@@ -140,7 +143,7 @@
         +PartitionStrategy partitionStrategy
         +process(Event) Result
     }
-    
+
     class Event {
         +string ID
         +string Type
@@ -149,7 +152,7 @@
         +time.Time ProcessingTime
         +map[string]string Headers
     }
-    
+
     class StreamProcessor {
         +string ID
         +ProcessorType type
@@ -158,7 +161,7 @@
         +process(Event) Result
         +checkpoint() error
     }
-    
+
     class StateStore {
         +string ID
         +map[string]interface{} data
@@ -167,7 +170,7 @@
         +checkpoint() Snapshot
         +restore(Snapshot) error
     }
-    
+
     class WindowManager {
         +WindowType type
         +time.Duration size
@@ -227,7 +230,7 @@
     SP2 -.-> SS
     SP3 -.-> SS
     SP4 -.-> SS
-    
+
     SS -.-> CP
 
     SP4 --> SK1
@@ -401,32 +404,32 @@ func (dp *DataflowPipeline) Start(ctx context.Context) {
 
 func (dp *DataflowPipeline) processEvents(ctx context.Context) {
     defer dp.wg.Done()
-    
+
     for {
         select {
         case event := <-dp.inputChan:
             processedEvent := event
             var err error
-            
+
             // 依次通过所有处理器
             for _, processor := range dp.processors {
                 if processedEvent == nil {
                     break // 事件被过滤掉
                 }
-                
+
                 processedEvent, err = processor.Process(ctx, processedEvent)
                 if err != nil {
                     dp.errorChan <- fmt.Errorf("processor %s failed: %w", processor.Name(), err)
                     break
                 }
             }
-            
+
             // 如果事件未被过滤且处理成功，发送到输出通道
             if processedEvent != nil && err == nil {
                 processedEvent.ProcessingTime = time.Now()
                 dp.outputChan <- processedEvent
             }
-            
+
         case <-dp.stopChan:
             return
         case <-ctx.Done():
@@ -488,10 +491,10 @@ func NewWindowManager(windowSize, slideSize time.Duration) *WindowManager {
 func (wm *WindowManager) AddEvent(event *Event) []*Window {
     wm.mu.Lock()
     defer wm.mu.Unlock()
-    
+
     var triggeredWindows []*Window
     windowKey := wm.getWindowKey(event.EventTime)
-    
+
     // 获取或创建窗口
     window, exists := wm.windows[windowKey]
     if !exists {
@@ -503,12 +506,12 @@ func (wm *WindowManager) AddEvent(event *Event) []*Window {
         }
         wm.windows[windowKey] = window
     }
-    
+
     // 添加事件到窗口
     window.mu.Lock()
     window.Events = append(window.Events, event)
     window.mu.Unlock()
-    
+
     // 检查是否有窗口可以触发
     now := time.Now()
     for key, win := range wm.windows {
@@ -517,7 +520,7 @@ func (wm *WindowManager) AddEvent(event *Event) []*Window {
             delete(wm.windows, key)
         }
     }
-    
+
     return triggeredWindows
 }
 
@@ -537,7 +540,7 @@ type AggregateProcessor struct {
     aggregateFunc func([]*Event) map[string]interface{}
 }
 
-func NewAggregateProcessor(name string, windowSize, slideSize time.Duration, 
+func NewAggregateProcessor(name string, windowSize, slideSize time.Duration,
     aggregateFunc func([]*Event) map[string]interface{}) *AggregateProcessor {
     return &AggregateProcessor{
         name:          name,
@@ -548,11 +551,11 @@ func NewAggregateProcessor(name string, windowSize, slideSize time.Duration,
 
 func (ap *AggregateProcessor) Process(ctx context.Context, event *Event) (*Event, error) {
     triggeredWindows := ap.windowManager.AddEvent(event)
-    
+
     // 对触发的窗口进行聚合处理
     for _, window := range triggeredWindows {
         aggregatedData := ap.aggregateFunc(window.Events)
-        
+
         // 创建聚合结果事件
         aggregatedEvent := &Event{
             ID:           fmt.Sprintf("agg_%d_%d", window.StartTime.Unix(), window.EndTime.Unix()),
@@ -561,14 +564,14 @@ func (ap *AggregateProcessor) Process(ctx context.Context, event *Event) (*Event
             EventTime:    window.EndTime,
             ProcessingTime: time.Now(),
         }
-        
+
         // 这里可以发送聚合结果到下游
-        log.Printf("Window [%s, %s] aggregated: %+v", 
+        log.Printf("Window [%s, %s] aggregated: %+v",
             window.StartTime.Format(time.RFC3339),
             window.EndTime.Format(time.RFC3339),
             aggregatedData)
     }
-    
+
     return event, nil // 返回原始事件继续处理链
 }
 
@@ -579,16 +582,16 @@ func (ap *AggregateProcessor) Name() string {
 // 使用示例
 func main() {
     ctx := context.Background()
-    
+
     // 创建数据流处理管道
     pipeline := NewDataflowPipeline("user_analytics")
-    
+
     // 添加过滤器：只处理用户点击事件
     clickFilter := NewFilterProcessor("click_filter", func(event *Event) bool {
         return event.Type == "user_click"
     })
     pipeline.AddProcessor(clickFilter)
-    
+
     // 添加转换器：提取用户ID
     userExtractor := NewMapProcessor("user_extractor", func(event *Event) *Event {
         if userID, ok := event.Payload["user_id"].(string); ok {
@@ -597,9 +600,9 @@ func main() {
         return event
     })
     pipeline.AddProcessor(userExtractor)
-    
+
     // 添加窗口聚合器：5分钟窗口，1分钟滑动
-    aggregator := NewAggregateProcessor("click_aggregator", 
+    aggregator := NewAggregateProcessor("click_aggregator",
         5*time.Minute, 1*time.Minute,
         func(events []*Event) map[string]interface{} {
             userClicks := make(map[string]int)
@@ -615,10 +618,10 @@ func main() {
             }
         })
     pipeline.AddProcessor(aggregator)
-    
+
     // 启动管道
     pipeline.Start(ctx)
-    
+
     // 模拟发送事件
     go func() {
         for i := 0; i < 100; i++ {
@@ -632,7 +635,7 @@ func main() {
             time.Sleep(100 * time.Millisecond)
         }
     }()
-    
+
     // 处理输出和错误
     go func() {
         for {
@@ -644,7 +647,7 @@ func main() {
             }
         }
     }()
-    
+
     // 运行10秒后停止
     time.Sleep(10 * time.Second)
     pipeline.Stop()
@@ -692,7 +695,7 @@ func NewCheckpointManager(interval time.Duration, storage CheckpointStorage) *Ch
 func (cm *CheckpointManager) StartCheckpointing(ctx context.Context, stateProvider func() map[string]interface{}) {
     ticker := time.NewTicker(cm.interval)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ticker.C:
@@ -708,18 +711,18 @@ func (cm *CheckpointManager) StartCheckpointing(ctx context.Context, stateProvid
 func (cm *CheckpointManager) createCheckpoint(state map[string]interface{}) error {
     cm.mu.Lock()
     defer cm.mu.Unlock()
-    
+
     snapshot := &StateSnapshot{
         ID:        fmt.Sprintf("checkpoint_%d", time.Now().Unix()),
         Timestamp: time.Now(),
         Data:      state,
         Checksum:  cm.calculateChecksum(state),
     }
-    
+
     if err := cm.storage.Save(snapshot); err != nil {
         return err
     }
-    
+
     cm.lastSnapshot = snapshot
     log.Printf("Checkpoint created: %s", snapshot.ID)
     return nil
@@ -767,13 +770,13 @@ func (bpc *BackpressureController) CanProcess() bool {
         atomic.AddInt64(&bpc.metrics.DroppedEvents, 1)
         return false
     }
-    
+
     // 检查速率限制
     if !bpc.rateLimiter.Allow() {
         atomic.AddInt64(&bpc.metrics.DelayedEvents, 1)
         return false
     }
-    
+
     return true
 }
 
@@ -789,10 +792,10 @@ func (bpc *BackpressureController) AdaptiveAdjust(processingLatency time.Duratio
     if !bpc.adaptiveControl {
         return
     }
-    
+
     bpc.mu.Lock()
     defer bpc.mu.Unlock()
-    
+
     // 基于处理延迟动态调整速率限制
     if processingLatency > 100*time.Millisecond {
         // 降低速率限制
@@ -842,9 +845,9 @@ func NewWatermarkManager(maxOutOfOrder, watermarkInterval time.Duration) *Waterm
 func (wm *WatermarkManager) UpdateSourceWatermark(source string, timestamp time.Time) {
     wm.mu.Lock()
     defer wm.mu.Unlock()
-    
+
     wm.sources[source] = timestamp
-    
+
     // 计算全局水位线（所有源的最小时间戳）
     minTimestamp := time.Now()
     for _, ts := range wm.sources {
@@ -852,19 +855,19 @@ func (wm *WatermarkManager) UpdateSourceWatermark(source string, timestamp time.
             minTimestamp = ts
         }
     }
-    
+
     // 减去最大乱序时间作为安全边界
     newWatermark := minTimestamp.Add(-wm.maxOutOfOrder)
-    
+
     if newWatermark.After(wm.globalWatermark) {
         wm.globalWatermark = newWatermark
-        
+
         // 通知所有监听器
         watermark := Watermark{
             Timestamp: newWatermark,
             Source:    "global",
         }
-        
+
         for _, listener := range wm.listeners {
             go listener(watermark)
         }
@@ -984,7 +987,7 @@ CMD ["./dataflow-processor"]
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

@@ -1,4 +1,4 @@
-﻿# API参考
+# API参考
 
 Go API参考文档，涵盖标准库、第三方库和API设计最佳实践。
 
@@ -123,6 +123,6 @@ http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

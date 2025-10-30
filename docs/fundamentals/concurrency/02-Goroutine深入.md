@@ -1,42 +1,44 @@
-﻿# Goroutine深入
+# Goroutine深入
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. 📖 概念介绍](#1-概念介绍)
-- [2. 🎯 核心知识点](#2-核心知识点)
-  - [1. Goroutine的创建和启动](#1-goroutine的创建和启动)
-    - [基础创建](#基础创建)
-    - [匿名函数Goroutine](#匿名函数goroutine)
-    - [闭包陷阱](#闭包陷阱)
-  - [2. G-P-M调度模型](#2-g-p-m调度模型)
-    - [模型组成](#模型组成)
-    - [查看调度信息](#查看调度信息)
-    - [调度策略](#调度策略)
-  - [3. Goroutine生命周期管理](#3-goroutine生命周期管理)
-    - [使用WaitGroup](#使用waitgroup)
-    - [使用Channel同步](#使用channel同步)
-    - [使用Context控制](#使用context控制)
-  - [4. 栈管理和内存开销](#4-栈管理和内存开销)
-    - [栈大小演示](#栈大小演示)
-    - [栈增长机制](#栈增长机制)
-  - [5. 避免Goroutine泄漏](#5-避免goroutine泄漏)
-    - [泄漏案例1：阻塞的Channel](#泄漏案例1阻塞的channel)
-    - [泄漏案例2：无限循环](#泄漏案例2无限循环)
-    - [泄漏检测工具](#泄漏检测工具)
-- [3. ⚠️ 常见问题](#3-常见问题)
-  - [Q1: Goroutine的开销有多大？](#q1-goroutine的开销有多大)
-  - [Q2: 如何限制Goroutine数量？](#q2-如何限制goroutine数量)
-  - [Q3: 如何知道Goroutine何时结束？](#q3-如何知道goroutine何时结束)
-  - [Q4: Goroutine会被GC回收吗？](#q4-goroutine会被gc回收吗)
-- [4. 📚 相关资源](#4-相关资源)
-  - [下一步学习](#下一步学习)
-  - [推荐阅读](#推荐阅读)
+- [Goroutine深入](#goroutine深入)
+  - [📋 目录](#-目录)
+  - [1. 📖 概念介绍](#1--概念介绍)
+  - [2. 🎯 核心知识点](#2--核心知识点)
+    - [1. Goroutine的创建和启动](#1-goroutine的创建和启动)
+      - [基础创建](#基础创建)
+      - [匿名函数Goroutine](#匿名函数goroutine)
+      - [闭包陷阱](#闭包陷阱)
+    - [2. G-P-M调度模型](#2-g-p-m调度模型)
+      - [模型组成](#模型组成)
+      - [查看调度信息](#查看调度信息)
+      - [调度策略](#调度策略)
+    - [3. Goroutine生命周期管理](#3-goroutine生命周期管理)
+      - [使用WaitGroup](#使用waitgroup)
+      - [使用Channel同步](#使用channel同步)
+      - [使用Context控制](#使用context控制)
+    - [4. 栈管理和内存开销](#4-栈管理和内存开销)
+      - [栈大小演示](#栈大小演示)
+      - [栈增长机制](#栈增长机制)
+    - [5. 避免Goroutine泄漏](#5-避免goroutine泄漏)
+      - [泄漏案例1：阻塞的Channel](#泄漏案例1阻塞的channel)
+      - [泄漏案例2：无限循环](#泄漏案例2无限循环)
+      - [泄漏检测工具](#泄漏检测工具)
+  - [3. ⚠️ 常见问题](#3-️-常见问题)
+    - [Q1: Goroutine的开销有多大？](#q1-goroutine的开销有多大)
+    - [Q2: 如何限制Goroutine数量？](#q2-如何限制goroutine数量)
+    - [Q3: 如何知道Goroutine何时结束？](#q3-如何知道goroutine何时结束)
+    - [Q4: Goroutine会被GC回收吗？](#q4-goroutine会被gc回收吗)
+  - [4. 📚 相关资源](#4--相关资源)
+    - [下一步学习](#下一步学习)
+    - [推荐阅读](#推荐阅读)
 
 ## 1. 📖 概念介绍
 
@@ -68,11 +70,11 @@ func sayHello(name string) {
 func main() {
     // 普通函数调用（同步）
     sayHello("Alice")
-    
+
     // 使用go关键字创建Goroutine（异步）
     go sayHello("Bob")
     go sayHello("Charlie")
-    
+
     // 主Goroutine需要等待，否则程序会立即退出
     time.Sleep(1 * time.Second)
     fmt.Println("Main goroutine exiting")
@@ -91,14 +93,14 @@ import (
 
 func main() {
     var wg sync.WaitGroup
-    
+
     // 方式1：匿名函数
     wg.Add(1)
     go func() {
         defer wg.Done()
         fmt.Println("匿名函数Goroutine")
     }()
-    
+
     // 方式2：带参数的匿名函数
     for i := 0; i < 5; i++ {
         wg.Add(1)
@@ -107,7 +109,7 @@ func main() {
             fmt.Printf("Goroutine %d\n", id)
         }(i)
     }
-    
+
     wg.Wait()
 }
 ```
@@ -125,7 +127,7 @@ import (
 
 func closureTrap() {
     var wg sync.WaitGroup
-    
+
     // ❌ 错误：所有Goroutine都会打印5
     fmt.Println("错误示例：")
     for i := 0; i < 5; i++ {
@@ -137,7 +139,7 @@ func closureTrap() {
     }
     wg.Wait()
     fmt.Println()
-    
+
     // ✅ 正确：通过参数传递
     fmt.Println("正确示例：")
     for i := 0; i < 5; i++ {
@@ -187,23 +189,23 @@ import (
 func schedulerInfo() {
     // 获取GOMAXPROCS（P的数量）
     fmt.Printf("GOMAXPROCS: %d\n", runtime.GOMAXPROCS(0))
-    
+
     // 获取CPU核心数
     fmt.Printf("NumCPU: %d\n", runtime.NumCPU())
-    
+
     // 获取当前Goroutine数量
     fmt.Printf("Initial Goroutines: %d\n", runtime.NumGoroutine())
-    
+
     // 创建1000个Goroutine
     for i := 0; i < 1000; i++ {
         go func() {
             time.Sleep(1 * time.Second)
         }()
     }
-    
+
     time.Sleep(100 * time.Millisecond)
     fmt.Printf("After creating 1000 goroutines: %d\n", runtime.NumGoroutine())
-    
+
     // 设置GOMAXPROCS
     runtime.GOMAXPROCS(2)
     fmt.Printf("Set GOMAXPROCS to: %d\n", runtime.GOMAXPROCS(0))
@@ -229,26 +231,26 @@ import (
 // Work Stealing演示
 func workStealingDemo() {
     runtime.GOMAXPROCS(4) // 使用4个P
-    
+
     var wg sync.WaitGroup
-    
+
     // 创建不平衡的工作负载
     for i := 0; i < 8; i++ {
         wg.Add(1)
         go func(id int) {
             defer wg.Done()
-            
+
             // 不同的工作量
             iterations := 1000000 * (id + 1)
             sum := 0
             for j := 0; j < iterations; j++ {
                 sum += j
             }
-            
+
             fmt.Printf("Goroutine %d finished with sum=%d\n", id, sum)
         }(i)
     }
-    
+
     wg.Wait()
 }
 
@@ -274,7 +276,7 @@ import (
 
 func worker(id int, wg *sync.WaitGroup) {
     defer wg.Done() // 确保Done被调用
-    
+
     fmt.Printf("Worker %d starting\n", id)
     time.Sleep(time.Duration(id) * 100 * time.Millisecond)
     fmt.Printf("Worker %d done\n", id)
@@ -282,12 +284,12 @@ func worker(id int, wg *sync.WaitGroup) {
 
 func waitGroupDemo() {
     var wg sync.WaitGroup
-    
+
     for i := 1; i <= 5; i++ {
         wg.Add(1)
         go worker(i, &wg)
     }
-    
+
     wg.Wait() // 等待所有worker完成
     fmt.Println("All workers completed")
 }
@@ -316,16 +318,16 @@ func workerWithChannel(id int, done chan bool) {
 
 func channelSyncDemo() {
     done := make(chan bool, 5) // 缓冲channel
-    
+
     for i := 1; i <= 5; i++ {
         go workerWithChannel(i, done)
     }
-    
+
     // 等待所有worker完成
     for i := 1; i <= 5; i++ {
         <-done
     }
-    
+
     fmt.Println("All workers completed")
 }
 
@@ -361,11 +363,11 @@ func workerWithContext(ctx context.Context, id int) {
 func contextDemo() {
     ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
     defer cancel()
-    
+
     for i := 1; i <= 3; i++ {
         go workerWithContext(ctx, i)
     }
-    
+
     <-ctx.Done()
     fmt.Println("All workers should have stopped")
     time.Sleep(100 * time.Millisecond) // 等待打印完成
@@ -393,7 +395,7 @@ import (
 func stackGrowth() {
     var m1 runtime.MemStats
     runtime.ReadMemStats(&m1)
-    
+
     // 创建10000个Goroutine
     done := make(chan bool)
     for i := 0; i < 10000; i++ {
@@ -404,14 +406,14 @@ func stackGrowth() {
             <-done
         }()
     }
-    
+
     var m2 runtime.MemStats
     runtime.ReadMemStats(&m2)
-    
+
     fmt.Printf("初始分配: %d KB\n", m1.Alloc/1024)
     fmt.Printf("创建10000个Goroutine后: %d KB\n", m2.Alloc/1024)
     fmt.Printf("平均每个Goroutine: %d KB\n", (m2.Alloc-m1.Alloc)/1024/10000)
-    
+
     close(done)
 }
 
@@ -445,10 +447,10 @@ func stackGrowthDemo() {
     var m1 runtime.MemStats
     runtime.ReadMemStats(&m1)
     fmt.Printf("初始栈大小: %d KB\n", m1.StackInuse/1024)
-    
+
     // 深度递归触发栈增长
     result := deepRecursion(1000)
-    
+
     var m2 runtime.MemStats
     runtime.ReadMemStats(&m2)
     fmt.Printf("递归后栈大小: %d KB\n", m2.StackInuse/1024)
@@ -478,12 +480,12 @@ import (
 // ❌ 错误：Goroutine泄漏
 func leakyGoroutine() {
     ch := make(chan int)
-    
+
     go func() {
         val := <-ch // 永远阻塞，Goroutine泄漏
         fmt.Println(val)
     }()
-    
+
     // ch没有发送数据，Goroutine永远阻塞
 }
 
@@ -491,7 +493,7 @@ func leakyGoroutine() {
 func fixedGoroutine() {
     ch := make(chan int)
     done := make(chan bool)
-    
+
     go func() {
         select {
         case val := <-ch:
@@ -501,25 +503,25 @@ func fixedGoroutine() {
             return
         }
     }()
-    
+
     time.Sleep(1 * time.Second)
     close(done) // 取消Goroutine
 }
 
 func detectLeak() {
     fmt.Printf("Initial goroutines: %d\n", runtime.NumGoroutine())
-    
+
     for i := 0; i < 10; i++ {
         leakyGoroutine()
     }
-    
+
     time.Sleep(100 * time.Millisecond)
     fmt.Printf("After leaky: %d goroutines (leaked 10)\n", runtime.NumGoroutine())
-    
+
     for i := 0; i < 10; i++ {
         fixedGoroutine()
     }
-    
+
     time.Sleep(2 * time.Second)
     fmt.Printf("After fixed: %d goroutines (no leak)\n", runtime.NumGoroutine())
 }
@@ -554,7 +556,7 @@ func leakyLoop() {
 // ✅ 正确：使用Context控制退出
 func fixedLoop() {
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     go func() {
         for {
             select {
@@ -567,7 +569,7 @@ func fixedLoop() {
             }
         }
     }()
-    
+
     time.Sleep(1 * time.Second)
     cancel() // 取消循环
 }
@@ -592,7 +594,7 @@ import (
 func monitorGoroutines() {
     ticker := time.NewTicker(1 * time.Second)
     defer ticker.Stop()
-    
+
     for i := 0; i < 5; i++ {
         <-ticker.C
         fmt.Printf("[%d] Goroutines: %d\n", i, runtime.NumGoroutine())
@@ -601,14 +603,14 @@ func monitorGoroutines() {
 
 func main() {
     go monitorGoroutines()
-    
+
     // 创建一些Goroutine
     for i := 0; i < 10; i++ {
         go func() {
             time.Sleep(3 * time.Second)
         }()
     }
-    
+
     time.Sleep(6 * time.Second)
 }
 ```
@@ -668,5 +670,5 @@ for i := 0; i < 1000; i++ {
 
 ---
 
-**最后更新**: 2025-10-29  
+**最后更新**: 2025-10-29
 **作者**: Documentation Team

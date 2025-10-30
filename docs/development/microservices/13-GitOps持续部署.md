@@ -1,43 +1,44 @@
-﻿# 13. 🔄 GitOps持续部署
+# 13. 🔄 GitOps持续部署
 
 > 📚 **简介**：本文档深入探讨GitOps理念及其在微服务持续部署中的应用，涵盖ArgoCD、Flux等主流工具的使用，以及如何构建自动化、可追溯、安全的部署流程。通过本文，读者将掌握现代化的GitOps实践方法。
 
 ## 📋 目录
 
-
-- [13.1 📚 GitOps概述](#13-1-gitops概述)
-- [13.2 ⚙️ ArgoCD实践](#13-2-argocd实践)
-  - [安装ArgoCD](#安装argocd)
-  - [创建应用](#创建应用)
-  - [Helm集成](#helm集成)
-  - [多环境管理](#多环境管理)
-- [13.3 🌊 Flux CD实践](#13-3-flux-cd实践)
-  - [安装Flux](#安装flux)
-  - [GitRepository源](#gitrepository源)
-  - [Kustomization部署](#kustomization部署)
-  - [HelmRelease](#helmrelease)
-- [13.4 📋 部署策略](#13-4-部署策略)
-  - [蓝绿部署](#蓝绿部署)
-  - [金丝雀发布（Flagger）](#金丝雀发布flagger)
-  - [渐进式交付（Argo Rollouts）](#渐进式交付argo-rollouts)
-- [13.5 🔐 安全最佳实践](#13-5-安全最佳实践)
-  - [敏感信息管理](#敏感信息管理)
-  - [RBAC配置](#rbac配置)
-- [13.6 📊 监控与告警](#13-6-监控与告警)
-  - [Prometheus监控](#prometheus监控)
-  - [通知集成](#通知集成)
-- [13.7 💻 实战案例](#13-7-实战案例)
-  - [CI/CD完整流程](#cicd完整流程)
-  - [多集群部署](#多集群部署)
-- [13.8 🎯 最佳实践](#13-8-最佳实践)
-- [13.9 ⚠️ 常见问题](#13-9-常见问题)
-  - [Q1: ArgoCD应用一直OutOfSync？](#q1-argocd应用一直outofsync)
-  - [Q2: 如何处理Helm Chart版本冲突？](#q2-如何处理helm-chart版本冲突)
-  - [Q3: 如何回滚部署？](#q3-如何回滚部署)
-  - [Q4: 多环境配置如何管理？](#q4-多环境配置如何管理)
-- [13.10 📚 扩展阅读](#13-10-扩展阅读)
-  - [官方文档](#官方文档)
-  - [相关文档](#相关文档)
+- [13. 🔄 GitOps持续部署](#13--gitops持续部署)
+  - [📋 目录](#-目录)
+  - [13.1 📚 GitOps概述](#131--gitops概述)
+  - [13.2 ⚙️ ArgoCD实践](#132-️-argocd实践)
+    - [安装ArgoCD](#安装argocd)
+    - [创建应用](#创建应用)
+    - [Helm集成](#helm集成)
+    - [多环境管理](#多环境管理)
+  - [13.3 🌊 Flux CD实践](#133--flux-cd实践)
+    - [安装Flux](#安装flux)
+    - [GitRepository源](#gitrepository源)
+    - [Kustomization部署](#kustomization部署)
+    - [HelmRelease](#helmrelease)
+  - [13.4 📋 部署策略](#134--部署策略)
+    - [蓝绿部署](#蓝绿部署)
+    - [金丝雀发布（Flagger）](#金丝雀发布flagger)
+    - [渐进式交付（Argo Rollouts）](#渐进式交付argo-rollouts)
+  - [13.5 🔐 安全最佳实践](#135--安全最佳实践)
+    - [敏感信息管理](#敏感信息管理)
+    - [RBAC配置](#rbac配置)
+  - [13.6 📊 监控与告警](#136--监控与告警)
+    - [Prometheus监控](#prometheus监控)
+    - [通知集成](#通知集成)
+  - [13.7 💻 实战案例](#137--实战案例)
+    - [CI/CD完整流程](#cicd完整流程)
+    - [多集群部署](#多集群部署)
+  - [13.8 🎯 最佳实践](#138--最佳实践)
+  - [13.9 ⚠️ 常见问题](#139-️-常见问题)
+    - [Q1: ArgoCD应用一直OutOfSync？](#q1-argocd应用一直outofsync)
+    - [Q2: 如何处理Helm Chart版本冲突？](#q2-如何处理helm-chart版本冲突)
+    - [Q3: 如何回滚部署？](#q3-如何回滚部署)
+    - [Q4: 多环境配置如何管理？](#q4-多环境配置如何管理)
+  - [13.10 📚 扩展阅读](#1310--扩展阅读)
+    - [官方文档](#官方文档)
+    - [相关文档](#相关文档)
 
 ## 13.1 📚 GitOps概述
 
@@ -521,7 +522,7 @@ groups:
       severity: warning
     annotations:
       summary: "ArgoCD application {{ $labels.name }} is out of sync"
-  
+
   - alert: ArgoCDAppUnhealthy
     expr: argocd_app_health_status{health_status!="Healthy"} == 1
     for: 15m
@@ -569,12 +570,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Build Docker Image
       run: |
         docker build -t myregistry/user-service:${{ github.sha }} .
         docker push myregistry/user-service:${{ github.sha }}
-    
+
     - name: Update Manifest
       run: |
         git clone https://github.com/myorg/k8s-manifests.git
@@ -691,8 +692,7 @@ git push
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: ArgoCD 2.9+, Flux 2.2+, Kubernetes 1.27+
-

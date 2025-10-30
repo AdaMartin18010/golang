@@ -1,4 +1,4 @@
-﻿# Go项目实战
+# Go项目实战
 
 Go项目实战，包含示例项目、教程和项目模板。
 
@@ -110,14 +110,14 @@ import (
 
 func main() {
     r := gin.Default()
-    
+
     // 路由
     r.GET("/users", getUsers)
     r.POST("/users", createUser)
     r.GET("/users/:id", getUser)
     r.PUT("/users/:id", updateUser)
     r.DELETE("/users/:id", deleteUser)
-    
+
     r.Run(":8080")
 }
 ```
@@ -197,6 +197,6 @@ func main() {
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

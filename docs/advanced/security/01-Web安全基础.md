@@ -1,14 +1,12 @@
-﻿# Web安全基础
+# Web安全基础
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
-
-
 
 - [1. 📖 概念介绍](#1-概念介绍)
 - [2. 🎯 常见Web攻击](#2-常见web攻击)
@@ -93,16 +91,16 @@ func generateCSRFToken() string {
 // 使用gorilla/csrf中间件
 func main() {
     r := mux.NewRouter()
-    
+
     // CSRF保护
     csrfMiddleware := csrf.Protect(
         []byte("32-byte-long-auth-key"),
         csrf.Secure(false), // 开发环境设为false
     )
-    
+
     r.HandleFunc("/form", showForm)
     r.HandleFunc("/submit", submitForm).Methods("POST")
-    
+
     http.ListenAndServe(":8080", csrfMiddleware(r))
 }
 
@@ -168,25 +166,25 @@ func badFileHandler(w http.ResponseWriter, r *http.Request) {
 // ✅ 安全：路径验证
 func safeFileHandler(w http.ResponseWriter, r *http.Request) {
     filename := r.URL.Query().Get("file")
-    
+
     // 清理路径
     cleaned := filepath.Clean(filename)
-    
+
     // 检查是否包含..
     if strings.Contains(cleaned, "..") {
         http.Error(w, "Invalid filename", http.StatusBadRequest)
         return
     }
-    
+
     // 构建完整路径
     fullPath := filepath.Join("/uploads", cleaned)
-    
+
     // 验证路径前缀
     if !strings.HasPrefix(fullPath, "/uploads/") {
         http.Error(w, "Invalid path", http.StatusBadRequest)
         return
     }
-    
+
     http.ServeFile(w, r, fullPath)
 }
 ```
@@ -201,20 +199,20 @@ func securityHeaders(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         // 防止XSS
         w.Header().Set("X-XSS-Protection", "1; mode=block")
-        
+
         // 防止点击劫持
         w.Header().Set("X-Frame-Options", "DENY")
-        
+
         // 防止MIME类型嗅探
         w.Header().Set("X-Content-Type-Options", "nosniff")
-        
+
         // 强制HTTPS
         w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
-        
+
         // Content Security Policy
-        w.Header().Set("Content-Security-Policy", 
+        w.Header().Set("Content-Security-Policy",
             "default-src 'self'; script-src 'self' 'unsafe-inline'")
-        
+
         next.ServeHTTP(w, r)
     })
 }
@@ -223,7 +221,7 @@ func securityHeaders(next http.Handler) http.Handler {
 func main() {
     mux := http.NewServeMux()
     mux.HandleFunc("/", handler)
-    
+
     http.ListenAndServe(":8080", securityHeaders(mux))
 }
 ```
@@ -263,17 +261,17 @@ func (r *RegisterRequest) Validate() error {
     if !validateLength(r.Username, 3, 20) {
         return errors.New("username must be 3-20 characters")
     }
-    
+
     // 邮箱验证
     if !validateEmail(r.Email) {
         return errors.New("invalid email format")
     }
-    
+
     // 密码验证
     if !validateLength(r.Password, 8, 50) {
         return errors.New("password must be 8-50 characters")
     }
-    
+
     return nil
 }
 ```

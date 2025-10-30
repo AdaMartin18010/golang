@@ -1,8 +1,8 @@
-﻿# Redis
+# Redis
 
-**字数**: ~48,000字  
-**代码示例**: 170+个完整示例  
-**实战案例**: 15个端到端案例  
+**字数**: ~48,000字
+**代码示例**: 170+个完整示例
+**实战案例**: 15个端到端案例
 **适用人群**: 中级到高级Go开发者
 
 ---
@@ -791,7 +791,7 @@ func (c *CacheService) GetWithCacheBreakdown(ctx context.Context, key string, lo
 func (c *CacheService) SetWithRandomTTL(ctx context.Context, key string, value interface{}, baseTTL time.Duration) error {
  // 在基础TTL上增加随机时间（0-300秒）
  randomTTL := baseTTL + time.Duration(rand.Intn(300))*time.Second
- 
+
  jsonData, err := json.Marshal(value)
  if err != nil {
   return err
@@ -836,13 +836,13 @@ func (m *MultiLevelCache) Get(ctx context.Context, key string, loader func() (in
  val, err := m.rdb.Get(ctx, key).Result()
  if err == nil {
   log.Printf("[Redis Cache] Hit: %s", key)
-  
+
   // 更新本地缓存
   m.localCache.Store(key, &CacheItem{
    Value:      val,
    ExpireTime: time.Now().Add(1 * time.Minute),
   })
-  
+
   return val, nil
  }
 
@@ -2010,7 +2010,7 @@ func (s *InventoryService) PreemptStock(ctx context.Context, productID, orderID 
 // ConfirmStock 确认预占（支付成功）
 func (s *InventoryService) ConfirmStock(ctx context.Context, productID, orderID string) error {
  preemptKey := fmt.Sprintf("preempt:%s:%s", productID, orderID)
- 
+
  // 删除预占记录
  deleted, err := s.rdb.Del(ctx, preemptKey).Result()
  if err != nil {
@@ -2121,7 +2121,7 @@ func InventoryExample() {
 
 ---
 
-**文档版本**: v17.0  
+**文档版本**: v17.0
 
 <div align="center">
 
@@ -2133,7 +2133,7 @@ Made with ❤️ for High-Performance System Developers
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

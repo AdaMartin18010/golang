@@ -2,21 +2,45 @@
 
 > Go语言在金融科技领域的应用实践指南
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用Go版本**: Go 1.25.3+
 
 ---
 
 ## 📋 目录
 
-- [概述](#概述)
-- [核心应用场景](#核心应用场景)
-- [高并发交易系统](#高并发交易系统)
-- [风控系统](#风控系统)
-- [支付系统](#支付系统)
-- [最佳实践](#最佳实践)
-- [参考资源](#参考资源)
+- [金融科技 (FinTech) - Go语言实战](#金融科技-fintech---go语言实战)
+  - [📋 目录](#-目录)
+  - [概述](#概述)
+    - [为什么选择Go](#为什么选择go)
+    - [Go在金融科技的应用统计](#go在金融科技的应用统计)
+  - [核心应用场景](#核心应用场景)
+    - [1. 交易系统](#1-交易系统)
+    - [2. 支付系统](#2-支付系统)
+    - [3. 风险控制](#3-风险控制)
+    - [4. 数据分析](#4-数据分析)
+  - [高并发交易系统](#高并发交易系统)
+    - [系统架构](#系统架构)
+    - [核心代码示例](#核心代码示例)
+    - [性能优化](#性能优化)
+    - [监控指标](#监控指标)
+  - [风控系统](#风控系统)
+    - [实时风控架构](#实时风控架构)
+    - [常见风控规则](#常见风控规则)
+  - [支付系统](#支付系统)
+    - [支付网关架构](#支付网关架构)
+    - [对账系统](#对账系统)
+  - [最佳实践](#最佳实践)
+    - [1. 安全性](#1-安全性)
+    - [2. 可靠性](#2-可靠性)
+    - [3. 性能](#3-性能)
+    - [4. 监控](#4-监控)
+    - [5. 合规性](#5-合规性)
+  - [参考资源](#参考资源)
+    - [开源项目](#开源项目)
+    - [学习资料](#学习资料)
+    - [相关文档](#相关文档)
 
 ---
 
@@ -188,7 +212,7 @@ func (me *MatchingEngine) SubmitOrder(ctx context.Context, order *Order) error {
 
     // 尝试撮合
     trades := me.match(order)
-    
+
     // 发送成交通知
     for _, trade := range trades {
         select {
@@ -209,7 +233,7 @@ func (me *MatchingEngine) SubmitOrder(ctx context.Context, order *Order) error {
 // match 撮合逻辑
 func (me *MatchingEngine) match(order *Order) []*Trade {
     trades := make([]*Trade, 0)
-    
+
     var oppositeBook *OrderBook
     if order.Side == BUY {
         oppositeBook = me.sellOrders
@@ -229,17 +253,17 @@ func (me *MatchingEngine) match(order *Order) []*Trade {
 
         for i := 0; i < len(orders) && order.Quantity > 0; i++ {
             oppositeOrder := orders[i]
-            
+
             // 计算成交量
             tradeQty := min(order.Quantity, oppositeOrder.Quantity)
-            
+
             // 创建成交记录
             trade := &Trade{
                 Price:     price,
                 Quantity:  tradeQty,
                 Timestamp: time.Now(),
             }
-            
+
             if order.Side == BUY {
                 trade.BuyOrderID = order.ID
                 trade.SellOrderID = oppositeOrder.ID
@@ -247,7 +271,7 @@ func (me *MatchingEngine) match(order *Order) []*Trade {
                 trade.BuyOrderID = oppositeOrder.ID
                 trade.SellOrderID = order.ID
             }
-            
+
             trades = append(trades, trade)
 
             // 更新订单数量
@@ -440,10 +464,10 @@ func (re *RiskEngine) Evaluate(ctx context.Context, req *TransactionRequest) (*R
 
     // 聚合结果
     finalResult := re.aggregateResults(results)
-    
+
     // 更新缓存
     re.cache.Set(req.UserID, finalResult)
-    
+
     // 更新指标
     re.metrics.Record(finalResult)
 
@@ -463,15 +487,15 @@ func (re *RiskEngine) aggregateResults(results chan *RiskResult) *RiskResult {
     for result := range results {
         count++
         totalScore += result.Score
-        
+
         if result.RiskLevel > maxRiskLevel {
             maxRiskLevel = result.RiskLevel
         }
-        
+
         if !result.Passed {
             failedRules = append(failedRules, result.RuleName)
         }
-        
+
         suggestions = append(suggestions, result.Suggestions...)
     }
 
@@ -525,12 +549,12 @@ func NewRiskMetrics() *RiskMetrics {
 func (rm *RiskMetrics) Record(result *RiskResult) {
     rm.mu.Lock()
     defer rm.mu.Unlock()
-    
+
     rm.totalChecks++
     if !result.Passed {
         rm.blockedCount++
     }
-    
+
     // 更新平均分数
     rm.avgScore = (rm.avgScore*float64(rm.totalChecks-1) + result.Score) / float64(rm.totalChecks)
 }
@@ -886,6 +910,6 @@ type DifferenceHandler interface {
 
 ---
 
-**维护者**: Go FinTech Community  
-**最后更新**: 2025-10-29  
+**维护者**: Go FinTech Community
+**最后更新**: 2025-10-29
 **许可证**: MIT

@@ -1,53 +1,31 @@
-﻿# 无服务器架构（Golang国际主流实践）
+# 无服务器架构（Golang国际主流实践）
 
 > **简介**: Serverless计算模式架构设计，实现按需弹性、免运维的云原生应用
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
-
-- [目录](#目录)
-- [2. 无服务器架构概述](#2-无服务器架构概述)
-  - [主流技术与平台](#主流技术与平台)
-  - [发展历程](#发展历程)
-  - [国际权威链接](#国际权威链接)
-- [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
-  - [函数即服务 (Function as a Service - FaaS)](#函数即服务-function-as-a-service-faas)
-  - [后端即服务 (Backend as a Service - BaaS)](#后端即服务-backend-as-a-service-baas)
-- [4. Golang主流实现与代码示例](#4-golang主流实现与代码示例)
-  - [AWS Lambda with Golang](#aws-lambda-with-golang)
-  - [Google Cloud Functions with Golang](#google-cloud-functions-with-golang)
-- [5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
-- [6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
-  - [项目结构建议 (Serverless Framework)](#项目结构建议-serverless-framework)
-  - [配置文件 (serverless.yml)](#配置文件-serverless-yml)
-  - [CI/CD工作流 (GitHub Actions)](#cicd工作流-github-actions)
-- [7. Golang 无服务器架构代码示例](#7-golang-无服务器架构代码示例)
-  - [完整的无服务器平台实现](#完整的无服务器平台实现)
-  - [实际使用示例](#实际使用示例)
-
-## 目录
-
 - [无服务器架构（Golang国际主流实践）](#无服务器架构golang国际主流实践)
-  - [目录](#目录)
+  - [📋 目录](#-目录)
   - [2. 无服务器架构概述](#2-无服务器架构概述)
     - [主流技术与平台](#主流技术与平台)
     - [发展历程](#发展历程)
     - [国际权威链接](#国际权威链接)
   - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
-    - [函数即服务 (Function as a Service - FaaS)](#函数即服务-function-as-a-service-faas)
-    - [后端即服务 (Backend as a Service - BaaS)](#后端即服务-backend-as-a-service-baas)
+    - [函数即服务 (Function as a Service - FaaS)](#函数即服务-function-as-a-service---faas)
+    - [后端即服务 (Backend as a Service - BaaS)](#后端即服务-backend-as-a-service---baas)
   - [4. Golang主流实现与代码示例](#4-golang主流实现与代码示例)
     - [AWS Lambda with Golang](#aws-lambda-with-golang)
     - [Google Cloud Functions with Golang](#google-cloud-functions-with-golang)
   - [5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
   - [6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
     - [项目结构建议 (Serverless Framework)](#项目结构建议-serverless-framework)
-    - [配置文件 (serverless.yml)](#配置文件-serverless-yml)
+    - [配置文件 (serverless.yml)](#配置文件-serverlessyml)
     - [CI/CD工作流 (GitHub Actions)](#cicd工作流-github-actions)
   - [7. Golang 无服务器架构代码示例](#7-golang-无服务器架构代码示例)
     - [完整的无服务器平台实现](#完整的无服务器平台实现)
@@ -304,7 +282,7 @@ functions:
       - http:
           path: /users/{id}
           method: get
-          
+
   updateUser:
     handler: bin/update-user
     package:
@@ -321,7 +299,7 @@ functions:
 custom:
   build:
     # 构建命令，在部署前执行
-    command: make build 
+    command: make build
 ```
 
 ### CI/CD工作流 (GitHub Actions)
@@ -359,7 +337,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
       - name: Install Serverless Framework
         run: npm install -g serverless
 
@@ -765,11 +743,11 @@ func (platform *ServerlessPlatform) InvokeFunction(ctx context.Context, function
     if err != nil {
         return nil, err
     }
-    
+
     if function.Status != FunctionStatusActive {
         return nil, errors.New("function is not active")
     }
-    
+
     // 创建执行记录
     execution := &FunctionExecution{
         ID:         generateID(),
@@ -782,18 +760,18 @@ func (platform *ServerlessPlatform) InvokeFunction(ctx context.Context, function
             MemorySize:   function.Configuration.MemorySize,
         },
     }
-    
+
     if err := platform.executionService.CreateExecution(ctx, execution); err != nil {
         return nil, err
     }
-    
+
     // 执行函数
     result, err := platform.executeFunction(ctx, function, payload, execution)
-    
+
     // 更新执行状态
     execution.EndTime = &[]time.Time{time.Now()}[0]
     execution.Duration = time.Since(execution.StartTime)
-    
+
     if err != nil {
         execution.Status = ExecutionStatusFailed
         execution.Error = &ExecutionError{
@@ -805,15 +783,15 @@ func (platform *ServerlessPlatform) InvokeFunction(ctx context.Context, function
         execution.Status = ExecutionStatusCompleted
         execution.Output = result
     }
-    
+
     // 更新执行记录
     if err := platform.executionService.UpdateExecution(ctx, execution); err != nil {
         platform.logger.Error("Failed to update execution", "error", err)
     }
-    
+
     // 记录指标
     platform.recordExecutionMetrics(execution)
-    
+
     return execution, err
 }
 
@@ -834,10 +812,10 @@ func (platform *ServerlessPlatform) executeFunction(ctx context.Context, functio
 func (platform *ServerlessPlatform) executeZipFunction(ctx context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
     // 实现ZIP包函数的执行逻辑
     // 这里可以集成AWS Lambda Go SDK或其他运行时
-    
+
     // 模拟函数执行
     time.Sleep(100 * time.Millisecond)
-    
+
     // 返回执行结果
     return map[string]interface{}{
         "statusCode": 200,
@@ -849,10 +827,10 @@ func (platform *ServerlessPlatform) executeZipFunction(ctx context.Context, func
 func (platform *ServerlessPlatform) executeImageFunction(ctx context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
     // 实现容器镜像函数的执行逻辑
     // 这里可以集成容器运行时或Kubernetes
-    
+
     // 模拟函数执行
     time.Sleep(150 * time.Millisecond)
-    
+
     return map[string]interface{}{
         "statusCode": 200,
         "body":       "Container function executed successfully",
@@ -863,10 +841,10 @@ func (platform *ServerlessPlatform) executeImageFunction(ctx context.Context, fu
 func (platform *ServerlessPlatform) executeInlineFunction(ctx context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
     // 实现内联函数的执行逻辑
     // 这里可以执行嵌入的代码
-    
+
     // 模拟函数执行
     time.Sleep(50 * time.Millisecond)
-    
+
     return map[string]interface{}{
         "statusCode": 200,
         "body":       "Inline function executed successfully",
@@ -886,11 +864,11 @@ func (platform *ServerlessPlatform) recordExecutionMetrics(execution *FunctionEx
         "function_id": execution.FunctionID,
         "status":      string(execution.Status),
     })
-    
+
     platform.metrics.RecordMetric("function_duration", float64(execution.Duration.Milliseconds()), map[string]string{
         "function_id": execution.FunctionID,
     })
-    
+
     if execution.Error != nil {
         platform.metrics.RecordMetric("function_errors", 1, map[string]string{
             "function_id": execution.FunctionID,
@@ -906,11 +884,11 @@ func (platform *ServerlessPlatform) StartWorkflowExecution(ctx context.Context, 
     if err != nil {
         return nil, err
     }
-    
+
     if workflow.Status != WorkflowStatusActive {
         return nil, errors.New("workflow is not active")
     }
-    
+
     // 创建执行实例
     execution := &WorkflowExecution{
         ID:           generateID(),
@@ -925,14 +903,14 @@ func (platform *ServerlessPlatform) StartWorkflowExecution(ctx context.Context, 
             TotalStates: len(workflow.Definition.States),
         },
     }
-    
+
     if err := platform.workflowService.CreateExecution(ctx, execution); err != nil {
         return nil, err
     }
-    
+
     // 异步执行工作流
     go platform.executeWorkflow(ctx, execution, workflow)
-    
+
     return execution, nil
 }
 
@@ -940,14 +918,14 @@ func (platform *ServerlessPlatform) executeWorkflow(ctx context.Context, executi
     defer func() {
         execution.StopTime = &[]time.Time{time.Now()}[0]
         execution.Duration = time.Since(execution.StartTime)
-        
+
         if execution.Status == ExecutionStatusRunning {
             execution.Status = ExecutionStatusCompleted
         }
-        
+
         platform.workflowService.UpdateExecution(ctx, execution)
     }()
-    
+
     // 执行工作流状态
     for execution.CurrentState != "" && execution.Status == ExecutionStatusRunning {
         state := platform.findState(workflow.Definition.States, execution.CurrentState)
@@ -959,7 +937,7 @@ func (platform *ServerlessPlatform) executeWorkflow(ctx context.Context, executi
             }
             break
         }
-        
+
         // 执行状态
         result, err := platform.executeState(ctx, state, execution)
         if err != nil {
@@ -970,7 +948,7 @@ func (platform *ServerlessPlatform) executeWorkflow(ctx context.Context, executi
             }
             break
         }
-        
+
         // 记录历史
         execution.History = append(execution.History, ExecutionHistory{
             ID:        generateID(),
@@ -980,10 +958,10 @@ func (platform *ServerlessPlatform) executeWorkflow(ctx context.Context, executi
             Output:    result,
             Timestamp: time.Now(),
         })
-        
+
         // 更新统计
         execution.Statistics.CompletedStates++
-        
+
         // 确定下一个状态
         if state.End {
             execution.CurrentState = ""
@@ -1028,15 +1006,15 @@ func (platform *ServerlessPlatform) executeState(ctx context.Context, state *Wor
 func (platform *ServerlessPlatform) executeTaskState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行任务状态
     // 这里可以调用Lambda函数或其他服务
-    
+
     functionID := state.Parameters["function_id"].(string)
     payload := state.Parameters["payload"]
-    
+
     result, err := platform.InvokeFunction(ctx, functionID, payload)
     if err != nil {
         return nil, err
     }
-    
+
     return result.Output, nil
 }
 
@@ -1245,10 +1223,10 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
             Body:       "Invalid JSON",
         }, nil
     }
-    
+
     // 处理业务逻辑
     result := processBusinessLogic(payload)
-    
+
     // 返回响应
     responseBody, _ := json.Marshal(result)
     return events.APIGatewayProxyResponse{
@@ -1278,7 +1256,7 @@ func main() {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

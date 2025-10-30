@@ -1,8 +1,8 @@
-﻿# Go HTTP编程
+# Go HTTP编程
 
-**字数**: ~25,000字  
-**代码示例**: 60+个完整示例  
-**实战案例**: 7个端到端案例  
+**字数**: ~25,000字
+**代码示例**: 60+个完整示例
+**实战案例**: 7个端到端案例
 **适用人群**: 初级到高级Go开发者
 
 ---
@@ -98,7 +98,7 @@ func main() {
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "Hello, World!")
     })
-    
+
     fmt.Println("Server starting on :8080...")
     http.ListenAndServe(":8080", nil)
 }
@@ -126,7 +126,7 @@ func main() {
     mux := http.NewServeMux()
     mux.HandleFunc("/", hello)
     mux.HandleFunc("/about", about)
-    
+
     fmt.Println("Server starting on :8080...")
     http.ListenAndServe(":8080", mux)
 }
@@ -162,22 +162,22 @@ func main() {
         time.Sleep(100 * time.Millisecond)
         fmt.Fprintf(w, "Hello, World!")
     })
-    
+
     // 2. 配置服务器
     server := &http.Server{
         Addr:    ":8080",
         Handler: mux,
-        
+
         // 超时配置（防止慢速攻击）
         ReadTimeout:       5 * time.Second,   // 读取请求超时
         WriteTimeout:      10 * time.Second,  // 写入响应超时
         IdleTimeout:       120 * time.Second, // 空闲连接超时
         ReadHeaderTimeout: 2 * time.Second,   // 读取请求头超时
-        
+
         // 最大请求头大小
         MaxHeaderBytes: 1 << 20, // 1MB
     }
-    
+
     // 3. 启动服务器
     go func() {
         fmt.Println("Server starting on :8080...")
@@ -185,22 +185,22 @@ func main() {
             log.Fatalf("Server failed: %v", err)
         }
     }()
-    
+
     // 4. 优雅关闭
     quit := make(chan os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
-    
+
     fmt.Println("Shutting down server...")
-    
+
     // 5秒内完成所有请求
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
+
     if err := server.Shutdown(ctx); err != nil {
         log.Fatalf("Server forced to shutdown: %v", err)
     }
-    
+
     fmt.Println("Server gracefully stopped")
 }
 ```
@@ -231,9 +231,9 @@ func main() {
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "Hello, HTTPS!")
     })
-    
+
     fmt.Println("HTTPS server starting on :443...")
-    
+
     // 启动HTTPS服务器
     err := http.ListenAndServeTLS(":443", "server.crt", "server.key", nil)
     if err != nil {
@@ -258,7 +258,7 @@ func redirectToHTTPS(w http.ResponseWriter, r *http.Request) {
     if len(r.URL.RawQuery) > 0 {
         target += "?" + r.URL.RawQuery
     }
-    
+
     http.Redirect(w, r, target, http.StatusMovedPermanently)
 }
 
@@ -268,12 +268,12 @@ func main() {
         fmt.Println("HTTP server starting on :80 (redirecting to HTTPS)...")
         http.ListenAndServe(":80", http.HandlerFunc(redirectToHTTPS))
     }()
-    
+
     // HTTPS服务器
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "Secure connection!")
     })
-    
+
     fmt.Println("HTTPS server starting on :443...")
     log.Fatal(http.ListenAndServeTLS(":443", "server.crt", "server.key", nil))
 }
@@ -332,12 +332,12 @@ import (
 func Logging(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         start := time.Now()
-        
+
         // 包装ResponseWriter以捕获状态码
         wrapped := &responseWriter{ResponseWriter: w}
-        
+
         next.ServeHTTP(wrapped, r)
-        
+
         log.Printf("%s %s %d %v",
             r.Method,
             r.URL.Path,
@@ -369,13 +369,13 @@ func Authentication(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         // 获取token
         token := r.Header.Get("Authorization")
-        
+
         // 验证token（简化版）
         if token == "" || token != "Bearer secret-token" {
             http.Error(w, "Unauthorized", http.StatusUnauthorized)
             return
         }
-        
+
         // 验证成功，继续
         next.ServeHTTP(w, r)
     })
@@ -390,7 +390,7 @@ func Recovery(next http.Handler) http.Handler {
                 http.Error(w, "Internal Server Error", http.StatusInternalServerError)
             }
         }()
-        
+
         next.ServeHTTP(w, r)
     })
 }
@@ -416,7 +416,7 @@ func NewRateLimiter(maxTokens, refillRate int) *RateLimiter {
 func (rl *RateLimiter) Allow() bool {
     rl.mu.Lock()
     defer rl.mu.Unlock()
-    
+
     // 补充token
     elapsed := time.Since(rl.lastRefill)
     if elapsed > time.Second {
@@ -424,13 +424,13 @@ func (rl *RateLimiter) Allow() bool {
         rl.tokens = min(rl.maxTokens, rl.tokens+tokensToAdd)
         rl.lastRefill = time.Now()
     }
-    
+
     // 检查token
     if rl.tokens > 0 {
         rl.tokens--
         return true
     }
-    
+
     return false
 }
 
@@ -441,7 +441,7 @@ func RateLimit(limiter *RateLimiter) func(http.Handler) http.Handler {
                 http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
                 return
             }
-            
+
             next.ServeHTTP(w, r)
         })
     }
@@ -462,10 +462,10 @@ func Example() {
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "Hello, Middleware!")
     })
-    
+
     // 创建限流器（每秒10个请求）
     limiter := NewRateLimiter(10, 10)
-    
+
     // 组合中间件链
     finalHandler := Chain(
         handler,
@@ -474,7 +474,7 @@ func Example() {
         Authentication,
         RateLimit(limiter),
     )
-    
+
     // 启动服务器
     http.ListenAndServe(":8080", finalHandler)
 }
@@ -550,7 +550,7 @@ func NewUserStore() *UserStore {
 func (s *UserStore) ListUsers() []*User {
     s.mu.RLock()
     defer s.mu.RUnlock()
-    
+
     users := make([]*User, 0, len(s.users))
     for _, user := range s.users {
         users = append(users, user)
@@ -562,7 +562,7 @@ func (s *UserStore) ListUsers() []*User {
 func (s *UserStore) GetUser(id int) (*User, bool) {
     s.mu.RLock()
     defer s.mu.RUnlock()
-    
+
     user, exists := s.users[id]
     return user, exists
 }
@@ -571,7 +571,7 @@ func (s *UserStore) GetUser(id int) (*User, bool) {
 func (s *UserStore) CreateUser(name, email string) *User {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+
     user := &User{
         ID:    s.nextID,
         Name:  name,
@@ -579,7 +579,7 @@ func (s *UserStore) CreateUser(name, email string) *User {
     }
     s.users[s.nextID] = user
     s.nextID++
-    
+
     return user
 }
 
@@ -587,12 +587,12 @@ func (s *UserStore) CreateUser(name, email string) *User {
 func (s *UserStore) UpdateUser(id int, name, email string) bool {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+
     user, exists := s.users[id]
     if !exists {
         return false
     }
-    
+
     user.Name = name
     user.Email = email
     return true
@@ -602,7 +602,7 @@ func (s *UserStore) UpdateUser(id int, name, email string) bool {
 func (s *UserStore) DeleteUser(id int) bool {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+
     _, exists := s.users[id]
     if exists {
         delete(s.users, id)
@@ -622,43 +622,43 @@ func NewUserHandler(store *UserStore) *UserHandler {
 func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     // 解析路径
     path := strings.TrimPrefix(r.URL.Path, "/users")
-    
+
     // GET /users - 列表
     if r.Method == http.MethodGet && path == "" {
         h.handleList(w, r)
         return
     }
-    
+
     // POST /users - 创建
     if r.Method == http.MethodPost && path == "" {
         h.handleCreate(w, r)
         return
     }
-    
+
     // GET /users/:id - 详情
     if r.Method == http.MethodGet && path != "" {
         h.handleGet(w, r, path)
         return
     }
-    
+
     // PUT /users/:id - 更新
     if r.Method == http.MethodPut && path != "" {
         h.handleUpdate(w, r, path)
         return
     }
-    
+
     // DELETE /users/:id - 删除
     if r.Method == http.MethodDelete && path != "" {
         h.handleDelete(w, r, path)
         return
     }
-    
+
     http.Error(w, "Not Found", http.StatusNotFound)
 }
 
 func (h *UserHandler) handleList(w http.ResponseWriter, r *http.Request) {
     users := h.store.ListUsers()
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(users)
 }
@@ -668,14 +668,14 @@ func (h *UserHandler) handleCreate(w http.ResponseWriter, r *http.Request) {
         Name  string `json:"name"`
         Email string `json:"email"`
     }
-    
+
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         http.Error(w, "Invalid request body", http.StatusBadRequest)
         return
     }
-    
+
     user := h.store.CreateUser(req.Name, req.Email)
-    
+
     w.Header().Set("Content-Type", "application/json")
     w.WriteStatus(http.StatusCreated)
     json.NewEncoder(w).Encode(user)
@@ -687,13 +687,13 @@ func (h *UserHandler) handleGet(w http.ResponseWriter, r *http.Request, path str
         http.Error(w, "Invalid user ID", http.StatusBadRequest)
         return
     }
-    
+
     user, exists := h.store.GetUser(id)
     if !exists {
         http.Error(w, "User not found", http.StatusNotFound)
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(user)
 }
@@ -704,22 +704,22 @@ func (h *UserHandler) handleUpdate(w http.ResponseWriter, r *http.Request, path 
         http.Error(w, "Invalid user ID", http.StatusBadRequest)
         return
     }
-    
+
     var req struct {
         Name  string `json:"name"`
         Email string `json:"email"`
     }
-    
+
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         http.Error(w, "Invalid request body", http.StatusBadRequest)
         return
     }
-    
+
     if !h.store.UpdateUser(id, req.Name, req.Email) {
         http.Error(w, "User not found", http.StatusNotFound)
         return
     }
-    
+
     w.WriteHeader(http.StatusNoContent)
 }
 
@@ -729,12 +729,12 @@ func (h *UserHandler) handleDelete(w http.ResponseWriter, r *http.Request, path 
         http.Error(w, "Invalid user ID", http.StatusBadRequest)
         return
     }
-    
+
     if !h.store.DeleteUser(id) {
         http.Error(w, "User not found", http.StatusNotFound)
         return
     }
-    
+
     w.WriteHeader(http.StatusNoContent)
 }
 
@@ -742,10 +742,10 @@ func (h *UserHandler) handleDelete(w http.ResponseWriter, r *http.Request, path 
 func main() {
     store := NewUserStore()
     handler := NewUserHandler(store)
-    
+
     http.Handle("/users", handler)
     http.Handle("/users/", handler)
-    
+
     fmt.Println("Server starting on :8080...")
     http.ListenAndServe(":8080", nil)
 }
@@ -798,21 +798,21 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
     // 1. URL参数（Query String）
     name := r.URL.Query().Get("name")
     age := r.URL.Query().Get("age")
-    
+
     // 2. 路径参数（需要自己解析或使用路由库）
     // 例如：/users/123
     // 使用strings.Split或正则解析
-    
+
     // 3. 请求头
     contentType := r.Header.Get("Content-Type")
     authorization := r.Header.Get("Authorization")
-    
+
     // 4. Cookie
     cookie, err := r.Cookie("session_id")
     if err == nil {
         fmt.Println("Cookie:", cookie.Value)
     }
-    
+
     // 5. 表单数据（POST application/x-www-form-urlencoded）
     if r.Method == http.MethodPost {
         r.ParseForm()
@@ -820,14 +820,14 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
         password := r.FormValue("password")
         fmt.Println("Form:", username, password)
     }
-    
+
     // 6. JSON数据
     if contentType == "application/json" {
         var data map[string]interface{}
         json.NewDecoder(r.Body).Decode(&data)
         fmt.Println("JSON:", data)
     }
-    
+
     // 响应
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]string{
@@ -852,7 +852,7 @@ import (
 func jsonResponse(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
-    
+
     json.NewEncoder(w).Encode(map[string]interface{}{
         "message": "Success",
         "data":    []int{1, 2, 3},
@@ -863,7 +863,7 @@ func jsonResponse(w http.ResponseWriter, r *http.Request) {
 func htmlResponse(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "text/html; charset=utf-8")
     w.WriteHeader(http.StatusOK)
-    
+
     html := `
     <!DOCTYPE html>
     <html>
@@ -896,7 +896,7 @@ func setCookieResponse(w http.ResponseWriter, r *http.Request) {
         HttpOnly: true,
         Secure:   true,
     })
-    
+
     w.Write([]byte("Cookie set"))
 }
 ```
@@ -923,10 +923,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
         return
     }
-    
+
     // 1. 解析multipart表单（最大32MB）
     r.ParseMultipartForm(32 << 20)
-    
+
     // 2. 获取文件
     file, header, err := r.FormFile("file")
     if err != nil {
@@ -934,18 +934,18 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     defer file.Close()
-    
+
     // 3. 验证文件类型
-    if header.Header.Get("Content-Type") != "image/png" && 
+    if header.Header.Get("Content-Type") != "image/png" &&
        header.Header.Get("Content-Type") != "image/jpeg" {
         http.Error(w, "Only PNG/JPEG allowed", http.StatusBadRequest)
         return
     }
-    
+
     // 4. 创建目标文件
     uploadDir := "./uploads"
     os.MkdirAll(uploadDir, 0755)
-    
+
     dstPath := filepath.Join(uploadDir, header.Filename)
     dst, err := os.Create(dstPath)
     if err != nil {
@@ -953,20 +953,20 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     defer dst.Close()
-    
+
     // 5. 复制文件
     written, err := io.Copy(dst, file)
     if err != nil {
         http.Error(w, "Failed to save file", http.StatusInternalServerError)
         return
     }
-    
+
     fmt.Fprintf(w, "File uploaded successfully! Size: %d bytes\n", written)
 }
 
 func main() {
     http.HandleFunc("/upload", uploadHandler)
-    
+
     fmt.Println("Server starting on :8080...")
     http.ListenAndServe(":8080", nil)
 }
@@ -981,19 +981,19 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Missing filename", http.StatusBadRequest)
         return
     }
-    
+
     filepath := filepath.Join("./uploads", filename)
-    
+
     // 检查文件是否存在
     if _, err := os.Stat(filepath); os.IsNotExist(err) {
         http.Error(w, "File not found", http.StatusNotFound)
         return
     }
-    
+
     // 设置响应头
     w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
     w.Header().Set("Content-Type", "application/octet-stream")
-    
+
     // 发送文件
     http.ServeFile(w, r, filepath)
 }
@@ -1013,7 +1013,7 @@ import (
     "log"
     "net/http"
     "sync"
-    
+
     "github.com/gorilla/websocket"
 )
 
@@ -1057,7 +1057,7 @@ func (h *Hub) Run() {
             h.clients[client] = true
             h.mu.Unlock()
             fmt.Println("Client connected. Total:", len(h.clients))
-            
+
         case client := <-h.unregister:
             h.mu.Lock()
             if _, ok := h.clients[client]; ok {
@@ -1066,7 +1066,7 @@ func (h *Hub) Run() {
             }
             h.mu.Unlock()
             fmt.Println("Client disconnected. Total:", len(h.clients))
-            
+
         case message := <-h.broadcast:
             h.mu.RLock()
             for client := range h.clients {
@@ -1087,13 +1087,13 @@ func (c *Client) readPump(hub *Hub) {
         hub.unregister <- c
         c.conn.Close()
     }()
-    
+
     for {
         _, message, err := c.conn.ReadMessage()
         if err != nil {
             break
         }
-        
+
         // 广播消息
         hub.broadcast <- message
     }
@@ -1101,7 +1101,7 @@ func (c *Client) readPump(hub *Hub) {
 
 func (c *Client) writePump() {
     defer c.conn.Close()
-    
+
     for message := range c.send {
         err := c.conn.WriteMessage(websocket.TextMessage, message)
         if err != nil {
@@ -1118,14 +1118,14 @@ func wsHandler(hub *Hub) http.HandlerFunc {
             log.Println("Upgrade error:", err)
             return
         }
-        
+
         client := &Client{
             conn: conn,
             send: make(chan []byte, 256),
         }
-        
+
         hub.register <- client
-        
+
         // 启动读写协程
         go client.writePump()
         go client.readPump(hub)
@@ -1135,14 +1135,14 @@ func wsHandler(hub *Hub) http.HandlerFunc {
 func main() {
     hub := NewHub()
     go hub.Run()
-    
+
     http.HandleFunc("/ws", wsHandler(hub))
-    
+
     // 静态文件（聊天页面）
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         http.ServeFile(w, r, "chat.html")
     })
-    
+
     fmt.Println("WebSocket server starting on :8080...")
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -1190,64 +1190,64 @@ func NewHTTPClient(baseURL string) *HTTPClient {
 // GET请求
 func (c *HTTPClient) Get(ctx context.Context, path string) ([]byte, error) {
     url := c.baseURL + path
-    
+
     req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
     if err != nil {
         return nil, err
     }
-    
+
     req.Header.Set("Accept", "application/json")
-    
+
     resp, err := c.client.Do(req)
     if err != nil {
         return nil, err
     }
     defer resp.Body.Close()
-    
+
     if resp.StatusCode != http.StatusOK {
         return nil, fmt.Errorf("unexpected status: %d", resp.StatusCode)
     }
-    
+
     return io.ReadAll(resp.Body)
 }
 
 // POST请求
 func (c *HTTPClient) Post(ctx context.Context, path string, data interface{}) ([]byte, error) {
     url := c.baseURL + path
-    
+
     jsonData, err := json.Marshal(data)
     if err != nil {
         return nil, err
     }
-    
+
     req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonData))
     if err != nil {
         return nil, err
     }
-    
+
     req.Header.Set("Content-Type", "application/json")
     req.Header.Set("Accept", "application/json")
-    
+
     resp, err := c.client.Do(req)
     if err != nil {
         return nil, err
     }
     defer resp.Body.Close()
-    
+
     if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
         return nil, fmt.Errorf("unexpected status: %d", resp.StatusCode)
     }
-    
+
     return io.ReadAll(resp.Body)
 }
 
 // 使用示例
 func main() {
     client := NewHTTPClient("https://jsonplaceholder.typicode.com")
-    
+
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
+
     // GET请求
     data, err := client.Get(ctx, "/posts/1")
     if err != nil {
@@ -1255,14 +1255,14 @@ func main() {
         return
     }
     fmt.Println("GET response:", string(data))
-    
+
     // POST请求
     postData := map[string]interface{}{
         "title":  "foo",
         "body":   "bar",
         "userId": 1,
     }
-    
+
     data, err = client.Post(ctx, "/posts", postData)
     if err != nil {
         fmt.Println("POST error:", err)
@@ -1296,15 +1296,15 @@ func Gzip(next http.Handler) http.Handler {
             next.ServeHTTP(w, r)
             return
         }
-        
+
         // 创建gzip writer
         gz := gzip.NewWriter(w)
         defer gz.Close()
-        
+
         // 包装ResponseWriter
         gzw := &gzipResponseWriter{Writer: gz, ResponseWriter: w}
         gzw.Header().Set("Content-Encoding", "gzip")
-        
+
         next.ServeHTTP(gzw, r)
     })
 }
@@ -1375,7 +1375,7 @@ project/
 
 ---
 
-**文档版本**: v6.0  
+**文档版本**: v6.0
 
 <div align="center">
 
@@ -1385,7 +1385,7 @@ Made with ❤️ for Go HTTP Developers
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

@@ -1,30 +1,30 @@
-﻿# 并发优化策略 - 无锁算法与Worker池
+# 并发优化策略 - 无锁算法与Worker池
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [并发优化策略 - 无锁算法与Worker池](#并发优化策略-无锁算法与worker池)
-  - [📋 目录](#目录)
+- [并发优化策略 - 无锁算法与Worker池](#并发优化策略---无锁算法与worker池)
+  - [📋 目录](#-目录)
   - [1. 概述](#1-概述)
-    - [1.1 并发优化目标](#1-1-并发优化目标)
+    - [1.1 并发优化目标](#11-并发优化目标)
   - [2. 无锁算法](#2-无锁算法)
-    - [2.1 原子操作](#2-1-原子操作)
-    - [2.2 无锁队列](#2-2-无锁队列)
-    - [2.3 无锁栈](#2-3-无锁栈)
+    - [2.1 原子操作](#21-原子操作)
+    - [2.2 无锁队列](#22-无锁队列)
+    - [2.3 无锁栈](#23-无锁栈)
   - [3. Worker池设计](#3-worker池设计)
-    - [3.1 基础Worker池](#3-1-基础worker池)
-    - [3.2 动态Worker池](#3-2-动态worker池)
+    - [3.1 基础Worker池](#31-基础worker池)
+    - [3.2 动态Worker池](#32-动态worker池)
   - [4. 并发模式](#4-并发模式)
-    - [4.1 Fan-Out/Fan-In](#4-1-fan-outfan-in)
-    - [4.2 Pipeline模式](#4-2-pipeline模式)
+    - [4.1 Fan-Out/Fan-In](#41-fan-outfan-in)
+    - [4.2 Pipeline模式](#42-pipeline模式)
   - [5. 最佳实践](#5-最佳实践)
-    - [5.1 并发优化清单](#5-1-并发优化清单)
-    - [5.2 性能对比](#5-2-性能对比)
+    - [5.1 并发优化清单](#51-并发优化清单)
+    - [5.2 性能对比](#52-性能对比)
 
 ---
 
@@ -138,11 +138,11 @@ func NewLockFreeQueue() *LockFreeQueue {
 // Enqueue 入队
 func (q *LockFreeQueue) Enqueue(value interface{}) {
     n := &node{value: value}
-    
+
     for {
         tail := load(&q.tail)
         next := load(&tail.next)
-        
+
         if tail == load(&q.tail) {
             if next == nil {
                 if cas(&tail.next, next, n) {
@@ -162,7 +162,7 @@ func (q *LockFreeQueue) Dequeue() (interface{}, bool) {
         head := load(&q.head)
         tail := load(&q.tail)
         next := load(&head.next)
-        
+
         if head == load(&q.head) {
             if head == tail {
                 if next == nil {
@@ -221,7 +221,7 @@ func NewLockFreeStack() *LockFreeStack {
 // Push 压栈
 func (s *LockFreeStack) Push(value interface{}) {
     n := &stackNode{value: value}
-    
+
     for {
         old := atomic.LoadPointer(&s.head)
         n.next = old
@@ -238,10 +238,10 @@ func (s *LockFreeStack) Pop() (interface{}, bool) {
         if old == nil {
             return nil, false
         }
-        
+
         node := (*stackNode)(old)
         next := atomic.LoadPointer(&node.next)
-        
+
         if atomic.CompareAndSwapPointer(&s.head, old, next) {
             return node.value, true
         }
@@ -292,7 +292,7 @@ type PoolStats struct {
 // NewWorkerPool 创建Worker池
 func NewWorkerPool(workers, queueSize int) *WorkerPool {
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     return &WorkerPool{
         workers:   workers,
         taskQueue: make(chan Task, queueSize),
@@ -313,20 +313,20 @@ func (p *WorkerPool) Start() {
 // worker Worker goroutine
 func (p *WorkerPool) worker(id int) {
     defer p.wg.Done()
-    
+
     for {
         select {
         case task, ok := <-p.taskQueue:
             if !ok {
                 return
             }
-            
+
             if err := task.Execute(p.ctx); err != nil {
                 p.stats.recordFailed()
             } else {
                 p.stats.recordCompleted()
             }
-            
+
         case <-p.ctx.Done():
             return
         }
@@ -355,7 +355,7 @@ func (p *WorkerPool) Stop() {
 func (p *WorkerPool) Stats() (submitted, completed, failed int64) {
     p.stats.mu.RLock()
     defer p.stats.mu.RUnlock()
-    
+
     return p.stats.tasksSubmitted, p.stats.tasksCompleted, p.stats.tasksFailed
 }
 
@@ -409,7 +409,7 @@ type DynamicPool struct {
 // NewDynamicPool 创建动态Worker池
 func NewDynamicPool(min, max, queueSize int) *DynamicPool {
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     return &DynamicPool{
         minWorkers:    min,
         maxWorkers:    max,
@@ -427,7 +427,7 @@ func (p *DynamicPool) Start() {
     for i := 0; i < p.minWorkers; i++ {
         p.addWorker()
     }
-    
+
     // 启动自动缩放
     go p.autoScale()
 }
@@ -438,36 +438,36 @@ func (p *DynamicPool) addWorker() {
     if int(current) >= p.maxWorkers {
         return
     }
-    
+
     atomic.AddInt32(&p.currentWorkers, 1)
     p.wg.Add(1)
-    
+
     go func() {
         defer p.wg.Done()
         defer atomic.AddInt32(&p.currentWorkers, -1)
-        
+
         idleCount := 0
         maxIdle := 5
-        
+
         for {
             select {
             case task, ok := <-p.taskQueue:
                 if !ok {
                     return
                 }
-                
+
                 idleCount = 0
                 task.Execute(p.ctx)
-                
+
             case <-time.After(time.Second):
                 idleCount++
-                
+
                 // 如果空闲太久且超过最小worker数，退出
                 current := atomic.LoadInt32(&p.currentWorkers)
                 if idleCount >= maxIdle && int(current) > p.minWorkers {
                     return
                 }
-                
+
             case <-p.ctx.Done():
                 return
             }
@@ -479,25 +479,25 @@ func (p *DynamicPool) addWorker() {
 func (p *DynamicPool) autoScale() {
     ticker := time.NewTicker(p.scaleInterval)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ticker.C:
             queueLen := len(p.taskQueue)
             currentWorkers := int(atomic.LoadInt32(&p.currentWorkers))
-            
+
             // 队列积压，增加worker
             if queueLen > currentWorkers && currentWorkers < p.maxWorkers {
                 needed := (queueLen - currentWorkers) / 2
                 if needed < 1 {
                     needed = 1
                 }
-                
+
                 for i := 0; i < needed && currentWorkers+i < p.maxWorkers; i++ {
                     p.addWorker()
                 }
             }
-            
+
         case <-p.ctx.Done():
             return
         }
@@ -546,41 +546,41 @@ import (
 // FanOut 扇出模式
 func FanOut(ctx context.Context, input <-chan interface{}, workers int, process func(interface{}) interface{}) []<-chan interface{} {
     outputs := make([]<-chan interface{}, workers)
-    
+
     for i := 0; i < workers; i++ {
         outputs[i] = worker(ctx, input, process)
     }
-    
+
     return outputs
 }
 
 func worker(ctx context.Context, input <-chan interface{}, process func(interface{}) interface{}) <-chan interface{} {
     output := make(chan interface{})
-    
+
     go func() {
         defer close(output)
-        
+
         for {
             select {
             case data, ok := <-input:
                 if !ok {
                     return
                 }
-                
+
                 result := process(data)
-                
+
                 select {
                 case output <- result:
                 case <-ctx.Done():
                     return
                 }
-                
+
             case <-ctx.Done():
                 return
             }
         }
     }()
-    
+
     return output
 }
 
@@ -588,39 +588,39 @@ func worker(ctx context.Context, input <-chan interface{}, process func(interfac
 func FanIn(ctx context.Context, inputs ...<-chan interface{}) <-chan interface{} {
     output := make(chan interface{})
     var wg sync.WaitGroup
-    
+
     multiplex := func(input <-chan interface{}) {
         defer wg.Done()
-        
+
         for {
             select {
             case data, ok := <-input:
                 if !ok {
                     return
                 }
-                
+
                 select {
                 case output <- data:
                 case <-ctx.Done():
                     return
                 }
-                
+
             case <-ctx.Done():
                 return
             }
         }
     }
-    
+
     wg.Add(len(inputs))
     for _, input := range inputs {
         go multiplex(input)
     }
-    
+
     go func() {
         wg.Wait()
         close(output)
     }()
-    
+
     return output
 }
 ```
@@ -642,11 +642,11 @@ type Stage func(context.Context, <-chan interface{}) <-chan interface{}
 // Pipeline 创建管道
 func Pipeline(ctx context.Context, input <-chan interface{}, stages ...Stage) <-chan interface{} {
     output := input
-    
+
     for _, stage := range stages {
         output = stage(ctx, output)
     }
-    
+
     return output
 }
 
@@ -654,17 +654,17 @@ func Pipeline(ctx context.Context, input <-chan interface{}, stages ...Stage) <-
 func FilterStage(predicate func(interface{}) bool) Stage {
     return func(ctx context.Context, input <-chan interface{}) <-chan interface{} {
         output := make(chan interface{})
-        
+
         go func() {
             defer close(output)
-            
+
             for {
                 select {
                 case data, ok := <-input:
                     if !ok {
                         return
                     }
-                    
+
                     if predicate(data) {
                         select {
                         case output <- data:
@@ -672,13 +672,13 @@ func FilterStage(predicate func(interface{}) bool) Stage {
                             return
                         }
                     }
-                    
+
                 case <-ctx.Done():
                     return
                 }
             }
         }()
-        
+
         return output
     }
 }
@@ -687,31 +687,31 @@ func FilterStage(predicate func(interface{}) bool) Stage {
 func MapStage(transform func(interface{}) interface{}) Stage {
     return func(ctx context.Context, input <-chan interface{}) <-chan interface{} {
         output := make(chan interface{})
-        
+
         go func() {
             defer close(output)
-            
+
             for {
                 select {
                 case data, ok := <-input:
                     if !ok {
                         return
                     }
-                    
+
                     result := transform(data)
-                    
+
                     select {
                     case output <- result:
                     case <-ctx.Done():
                         return
                     }
-                    
+
                 case <-ctx.Done():
                     return
                 }
             }
         }()
-        
+
         return output
     }
 }
@@ -801,8 +801,8 @@ Worker池（1000 workers）:
 
 ---
 
-**文档完成时间**: 2025年10月24日  
-**文档版本**: v1.0  
+**文档完成时间**: 2025年10月24日
+**文档版本**: v1.0
 **质量评级**: 95分 ⭐⭐⭐⭐⭐
 
 🚀 **并发优化策略完整指南完成！** 🎊

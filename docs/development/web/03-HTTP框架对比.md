@@ -1,7 +1,6 @@
-﻿# HTTP框架对比
+# HTTP框架对比
 
 ## 📋 目录
-
 
 - [1. 框架概览](#1-框架概览)
   - [主流框架一览](#主流框架一览)
@@ -124,10 +123,10 @@ func ginCreateUser(c *gin.Context) {
         c.JSON(400, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 模拟数据库操作
     time.Sleep(time.Millisecond)
-    
+
     c.JSON(200, user)
 }
 ```
@@ -245,10 +244,10 @@ import (
 
 func main() {
     r := gin.Default()
-    
+
     // 中间件
     r.Use(cors.Default())
-    
+
     // 路由分组
     api := r.Group("/api/v1")
     {
@@ -258,7 +257,7 @@ func main() {
         api.PUT("/users/:id", updateUser)
         api.DELETE("/users/:id", deleteUser)
     }
-    
+
     r.Run(":8080")
 }
 
@@ -268,15 +267,15 @@ func getUsers(c *gin.Context) {
         Page  int `form:"page" binding:"required,min=1"`
         Limit int `form:"limit" binding:"required,min=1,max=100"`
     }
-    
+
     if err := c.ShouldBindQuery(&query); err != nil {
         c.JSON(400, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 业务逻辑
     users := fetchUsers(query.Page, query.Limit)
-    
+
     c.JSON(200, gin.H{
         "data": users,
         "total": len(users),
@@ -322,17 +321,17 @@ func main() {
         CaseSensitive: true,
         StrictRouting: true,
     })
-    
+
     // 中间件
     app.Use(logger.New())
     app.Use(cors.New())
-    
+
     // 路由
     api := app.Group("/api/v1")
     api.Get("/users", getUsers)
     api.Post("/users", createUser)
     api.Get("/users/:id", getUser)
-    
+
     app.Listen(":8080")
 }
 
@@ -340,9 +339,9 @@ func getUsers(c *fiber.Ctx) error {
     // 参数解析
     page := c.QueryInt("page", 1)
     limit := c.QueryInt("limit", 10)
-    
+
     users := fetchUsers(page, limit)
-    
+
     return c.JSON(fiber.Map{
         "data": users,
         "total": len(users),
@@ -395,17 +394,17 @@ import (
 
 func main() {
     e := echo.New()
-    
+
     // 中间件
     e.Use(middleware.Logger())
     e.Use(middleware.Recover())
     e.Use(middleware.CORS())
-    
+
     // 路由
     api := e.Group("/api/v1")
     api.GET("/users", getUsers)
     api.POST("/users", createUser)
-    
+
     e.Logger.Fatal(e.Start(":8080"))
 }
 
@@ -415,18 +414,18 @@ func getUsers(c echo.Context) error {
         Page  int `query:"page" validate:"required,min=1"`
         Limit int `query:"limit" validate:"required,min=1,max=100"`
     }
-    
+
     params := new(QueryParams)
     if err := c.Bind(params); err != nil {
         return c.JSON(400, map[string]string{"error": err.Error()})
     }
-    
+
     if err := c.Validate(params); err != nil {
         return c.JSON(400, map[string]string{"error": err.Error()})
     }
-    
+
     users := fetchUsers(params.Page, params.Limit)
-    
+
     return c.JSON(200, map[string]interface{}{
         "data": users,
         "total": len(users),
@@ -478,18 +477,18 @@ import (
 
 func main() {
     r := chi.NewRouter()
-    
+
     // 中间件
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
-    
+
     // 路由
     r.Route("/api/v1", func(r chi.Router) {
         r.Get("/users", getUsers)
         r.Post("/users", createUser)
         r.Get("/users/{id}", getUser)
     })
-    
+
     http.ListenAndServe(":8080", r)
 }
 
@@ -497,9 +496,9 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
     // 手动解析参数
     page := r.URL.Query().Get("page")
     limit := r.URL.Query().Get("limit")
-    
+
     users := fetchUsers(page, limit)
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]interface{}{
         "data": users,
@@ -510,9 +509,9 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 func getUser(w http.ResponseWriter, r *http.Request) {
     // 获取路径参数
     userID := chi.URLParam(r, "id")
-    
+
     user := fetchUser(userID)
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(user)
 }
@@ -697,7 +696,7 @@ app.Get("/users/:id", func(c *fiber.Ctx) error {
 
 ---
 
-**最后更新**: 2025-10-29  
-**Go版本**: 1.25.3  
+**最后更新**: 2025-10-29
+**Go版本**: 1.25.3
 **框架版本**: 均为最新稳定版 ✨
 

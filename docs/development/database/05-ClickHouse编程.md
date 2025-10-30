@@ -1,4 +1,4 @@
-﻿# ClickHouse编程 - Go语言实战指南
+# ClickHouse编程 - Go语言实战指南
 
 > 使用 Go 语言操作 ClickHouse 高性能列式数据库
 
@@ -6,45 +6,46 @@
 
 ## 📋 目录
 
-
-- [ClickHouse概述](#clickhouse概述)
-  - [特点](#特点)
-  - [适用场景](#适用场景)
-  - [OLTP vs OLAP](#oltp-vs-olap)
-- [安装与配置](#安装与配置)
-  - [安装驱动](#安装驱动)
-  - [本地安装ClickHouse](#本地安装clickhouse)
-- [连接管理](#连接管理)
-  - [原生协议连接](#原生协议连接)
-  - [HTTP协议连接](#http协议连接)
-- [表设计与操作](#表设计与操作)
-  - [表引擎类型](#表引擎类型)
-  - [创建表](#创建表)
-- [数据插入](#数据插入)
-  - [批量插入](#批量插入)
-- [数据查询](#数据查询)
-  - [基本查询](#基本查询)
-  - [聚合查询](#聚合查询)
-  - [漏斗分析](#漏斗分析)
-  - [留存分析](#留存分析)
-- [物化视图](#物化视图)
-  - [创建物化视图](#创建物化视图)
-- [分区与分片](#分区与分片)
-  - [分区管理](#分区管理)
-- [实时数据分析](#实时数据分析)
-  - [实时看板](#实时看板)
-- [性能优化](#性能优化)
-  - [查询优化](#查询优化)
-  - [索引优化](#索引优化)
-  - [批量写入优化](#批量写入优化)
-- [监控与运维](#监控与运维)
-  - [系统监控](#系统监控)
-- [最佳实践](#最佳实践)
-  - [1. 表设计原则](#1-表设计原则)
-  - [2. 查询优化](#2-查询优化)
-  - [3. 写入优化](#3-写入优化)
-  - [4. 监控告警](#4-监控告警)
-- [总结](#总结)
+- [ClickHouse编程 - Go语言实战指南](#clickhouse编程---go语言实战指南)
+  - [📋 目录](#-目录)
+  - [ClickHouse概述](#clickhouse概述)
+    - [特点](#特点)
+    - [适用场景](#适用场景)
+    - [OLTP vs OLAP](#oltp-vs-olap)
+  - [安装与配置](#安装与配置)
+    - [安装驱动](#安装驱动)
+    - [本地安装ClickHouse](#本地安装clickhouse)
+  - [连接管理](#连接管理)
+    - [原生协议连接](#原生协议连接)
+    - [HTTP协议连接](#http协议连接)
+  - [表设计与操作](#表设计与操作)
+    - [表引擎类型](#表引擎类型)
+    - [创建表](#创建表)
+  - [数据插入](#数据插入)
+    - [批量插入](#批量插入)
+  - [数据查询](#数据查询)
+    - [基本查询](#基本查询)
+    - [聚合查询](#聚合查询)
+    - [漏斗分析](#漏斗分析)
+    - [留存分析](#留存分析)
+  - [物化视图](#物化视图)
+    - [创建物化视图](#创建物化视图)
+  - [分区与分片](#分区与分片)
+    - [分区管理](#分区管理)
+  - [实时数据分析](#实时数据分析)
+    - [实时看板](#实时看板)
+  - [性能优化](#性能优化)
+    - [查询优化](#查询优化)
+    - [索引优化](#索引优化)
+    - [批量写入优化](#批量写入优化)
+  - [监控与运维](#监控与运维)
+    - [系统监控](#系统监控)
+  - [最佳实践](#最佳实践)
+    - [1. 表设计原则](#1-表设计原则)
+    - [2. 查询优化](#2-查询优化)
+    - [3. 写入优化](#3-写入优化)
+    - [4. 监控告警](#4-监控告警)
+  - [总结](#总结)
 
 ## ClickHouse概述
 
@@ -126,7 +127,7 @@ import (
     "crypto/tls"
     "fmt"
     "time"
-    
+
     "github.com/ClickHouse/clickhouse-go/v2"
     "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
@@ -153,28 +154,28 @@ func NewClickHouse(addr string) (*ClickHouse, error) {
         MaxIdleConns:     5,
         ConnMaxLifetime:  time.Hour,
         ConnOpenStrategy: clickhouse.ConnOpenInOrder,
-        
+
         // TLS配置（可选）
         TLS: &tls.Config{
             InsecureSkipVerify: true,
         },
-        
+
         // 调试模式
         Debug: false,
     })
-    
+
     if err != nil {
         return nil, fmt.Errorf("failed to connect: %w", err)
     }
-    
+
     // 测试连接
     ctx := context.Background()
     if err := conn.Ping(ctx); err != nil {
         return nil, fmt.Errorf("ping failed: %w", err)
     }
-    
+
     fmt.Println("✅ ClickHouse连接成功")
-    
+
     return &ClickHouse{Conn: conn}, nil
 }
 
@@ -195,7 +196,7 @@ func (c *ClickHouse) Query(ctx context.Context, dest interface{}, query string, 
         return err
     }
     defer rows.Close()
-    
+
     return rows.ScanStruct(dest)
 }
 ```
@@ -215,19 +216,19 @@ func NewClickHouseHTTP(dsn string) (*sql.DB, error) {
     if err != nil {
         return nil, err
     }
-    
+
     // 设置连接池
     db.SetMaxOpenConns(10)
     db.SetMaxIdleConns(5)
     db.SetConnMaxLifetime(time.Hour)
-    
+
     // 测试连接
     if err := db.Ping(); err != nil {
         return nil, err
     }
-    
+
     fmt.Println("✅ ClickHouse HTTP连接成功")
-    
+
     return db, nil
 }
 ```
@@ -255,7 +256,7 @@ package repository
 import (
     "context"
     "fmt"
-    
+
     "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
@@ -292,14 +293,14 @@ func (r *EventRepository) CreateTable(ctx context.Context) error {
     TTL event_time + INTERVAL 90 DAY     -- 数据保留90天
     SETTINGS index_granularity = 8192
     `
-    
+
     err := r.conn.Exec(ctx, query)
     if err != nil {
         return fmt.Errorf("create table failed: %w", err)
     }
-    
+
     fmt.Println("✅ 表创建成功")
-    
+
     return nil
 }
 
@@ -309,7 +310,7 @@ func (r *EventRepository) CreateDistributedTable(ctx context.Context, cluster st
     CREATE TABLE IF NOT EXISTS events_distributed AS events
     ENGINE = Distributed(%s, default, events, rand())
     `, cluster)
-    
+
     return r.conn.Exec(ctx, query)
 }
 
@@ -361,13 +362,13 @@ func (r *EventRepository) Insert(ctx context.Context, event *Event) error {
         country, city, device, os, browser, session_id
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
-    
+
     err := r.conn.Exec(ctx, query,
         event.EventID, event.UserID, event.EventType, event.EventTime,
         event.Properties, event.Country, event.City, event.Device,
         event.OS, event.Browser, event.SessionID,
     )
-    
+
     return err
 }
 
@@ -378,7 +379,7 @@ func (r *EventRepository) BatchInsert(ctx context.Context, events []*Event) erro
     if err != nil {
         return err
     }
-    
+
     for _, event := range events {
         err := batch.Append(
             event.EventID, event.UserID, event.EventType, event.EventTime,
@@ -389,14 +390,14 @@ func (r *EventRepository) BatchInsert(ctx context.Context, events []*Event) erro
             return err
         }
     }
-    
+
     // 发送批次
     if err := batch.Send(); err != nil {
         return fmt.Errorf("batch send failed: %w", err)
     }
-    
+
     fmt.Printf("✅ 批量插入成功，插入了 %d 条记录\n", len(events))
-    
+
     return nil
 }
 
@@ -409,18 +410,18 @@ func (r *EventRepository) AsyncInsert(ctx context.Context, events []*Event) erro
         country, city, device, os, browser, session_id
     ) VALUES
     `
-    
+
     // 使用 SETTINGS async_insert=1
     ctx = clickhouse.Context(ctx, clickhouse.WithSettings(clickhouse.Settings{
         "async_insert": 1,
         "wait_for_async_insert": 0, // 不等待插入完成
     }))
-    
+
     batch, err := r.conn.PrepareBatch(ctx, query)
     if err != nil {
         return err
     }
-    
+
     for _, event := range events {
         batch.Append(
             event.EventID, event.UserID, event.EventType, event.EventTime,
@@ -428,7 +429,7 @@ func (r *EventRepository) AsyncInsert(ctx context.Context, events []*Event) erro
             event.OS, event.Browser, event.SessionID,
         )
     }
-    
+
     return batch.Send()
 }
 ```
@@ -450,13 +451,13 @@ func (r *EventRepository) FindByUserID(ctx context.Context, userID uint64, limit
     ORDER BY event_time DESC
     LIMIT ?
     `
-    
+
     rows, err := r.conn.Query(ctx, query, userID, limit)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var events []*Event
     for rows.Next() {
         var event Event
@@ -469,7 +470,7 @@ func (r *EventRepository) FindByUserID(ctx context.Context, userID uint64, limit
         }
         events = append(events, &event)
     }
-    
+
     return events, rows.Err()
 }
 
@@ -482,13 +483,13 @@ func (r *EventRepository) CountByEventType(ctx context.Context, startTime, endTi
     GROUP BY event_type
     ORDER BY count DESC
     `
-    
+
     rows, err := r.conn.Query(ctx, query, startTime, endTime)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     result := make(map[string]uint64)
     for rows.Next() {
         var eventType string
@@ -498,7 +499,7 @@ func (r *EventRepository) CountByEventType(ctx context.Context, startTime, endTi
         }
         result[eventType] = count
     }
-    
+
     return result, rows.Err()
 }
 ```
@@ -509,7 +510,7 @@ func (r *EventRepository) CountByEventType(ctx context.Context, startTime, endTi
 // GetDailyStatistics 获取每日统计
 func (r *EventRepository) GetDailyStatistics(ctx context.Context, days int) ([]DailyStats, error) {
     query := `
-    SELECT 
+    SELECT
         toDate(event_time) as date,
         count() as total_events,
         uniq(user_id) as unique_users,
@@ -522,13 +523,13 @@ func (r *EventRepository) GetDailyStatistics(ctx context.Context, days int) ([]D
     GROUP BY date
     ORDER BY date DESC
     `
-    
+
     rows, err := r.conn.Query(ctx, query, days)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var stats []DailyStats
     for rows.Next() {
         var stat DailyStats
@@ -540,7 +541,7 @@ func (r *EventRepository) GetDailyStatistics(ctx context.Context, days int) ([]D
         }
         stats = append(stats, stat)
     }
-    
+
     return stats, rows.Err()
 }
 
@@ -558,7 +559,7 @@ type DailyStats struct {
 // GetTopCountries 获取Top国家
 func (r *EventRepository) GetTopCountries(ctx context.Context, limit int) ([]CountryStats, error) {
     query := `
-    SELECT 
+    SELECT
         country,
         count() as events,
         uniq(user_id) as users,
@@ -569,13 +570,13 @@ func (r *EventRepository) GetTopCountries(ctx context.Context, limit int) ([]Cou
     ORDER BY events DESC
     LIMIT ?
     `
-    
+
     rows, err := r.conn.Query(ctx, query, limit)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var stats []CountryStats
     for rows.Next() {
         var stat CountryStats
@@ -584,7 +585,7 @@ func (r *EventRepository) GetTopCountries(ctx context.Context, limit int) ([]Cou
         }
         stats = append(stats, stat)
     }
-    
+
     return stats, rows.Err()
 }
 
@@ -604,7 +605,7 @@ type CountryStats struct {
 func (r *EventRepository) FunnelAnalysis(ctx context.Context, steps []string, window int) (*FunnelResult, error) {
     // 使用windowFunnel函数
     query := `
-    SELECT 
+    SELECT
         windowFunnel(?, 'strict')(event_time, ` + buildFunnelConditions(steps) + `) as level,
         count() as users
     FROM events
@@ -612,13 +613,13 @@ func (r *EventRepository) FunnelAnalysis(ctx context.Context, steps []string, wi
     GROUP BY level
     ORDER BY level
     `
-    
+
     rows, err := r.conn.Query(ctx, query, window)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     result := &FunnelResult{Steps: steps}
     for rows.Next() {
         var level int
@@ -628,7 +629,7 @@ func (r *EventRepository) FunnelAnalysis(ctx context.Context, steps []string, wi
         }
         result.Levels = append(result.Levels, FunnelLevel{Level: level, Users: users})
     }
-    
+
     return result, rows.Err()
 }
 
@@ -660,11 +661,11 @@ type FunnelLevel struct {
 // RetentionAnalysis 留存分析
 func (r *EventRepository) RetentionAnalysis(ctx context.Context, days int) ([][]float64, error) {
     query := `
-    SELECT 
+    SELECT
         retention
     FROM
     (
-        SELECT 
+        SELECT
             user_id,
             groupArray(toDate(event_time)) as dates
         FROM events
@@ -673,17 +674,17 @@ func (r *EventRepository) RetentionAnalysis(ctx context.Context, days int) ([][]
     )
     ARRAY JOIN retention(dates, today() - INTERVAL ? DAY, toDate(today()), 1) as retention
     `
-    
+
     rows, err := r.conn.Query(ctx, query, days, days)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var retentionData [][]float64
     // 处理结果
     // ...
-    
+
     return retentionData, nil
 }
 ```
@@ -711,16 +712,16 @@ func (r *EventRepository) CreateMaterializedView(ctx context.Context) error {
     PARTITION BY toYYYYMM(event_date)
     ORDER BY (event_date, event_hour, event_type, country)
     `
-    
+
     if err := r.conn.Exec(ctx, createTableQuery); err != nil {
         return err
     }
-    
+
     // 创建物化视图
     createMVQuery := `
     CREATE MATERIALIZED VIEW IF NOT EXISTS event_hourly_stats_mv
     TO event_hourly_stats
-    AS SELECT 
+    AS SELECT
         toDate(event_time) as event_date,
         toHour(event_time) as event_hour,
         event_type,
@@ -730,20 +731,20 @@ func (r *EventRepository) CreateMaterializedView(ctx context.Context) error {
     FROM events
     GROUP BY event_date, event_hour, event_type, country
     `
-    
+
     if err := r.conn.Exec(ctx, createMVQuery); err != nil {
         return err
     }
-    
+
     fmt.Println("✅ 物化视图创建成功")
-    
+
     return nil
 }
 
 // QueryMaterializedView 查询物化视图
 func (r *EventRepository) QueryMaterializedView(ctx context.Context, date time.Time) ([]HourlyStats, error) {
     query := `
-    SELECT 
+    SELECT
         event_hour,
         event_type,
         country,
@@ -754,13 +755,13 @@ func (r *EventRepository) QueryMaterializedView(ctx context.Context, date time.T
     GROUP BY event_hour, event_type, country
     ORDER BY event_hour, events DESC
     `
-    
+
     rows, err := r.conn.Query(ctx, query, date)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var stats []HourlyStats
     for rows.Next() {
         var stat HourlyStats
@@ -769,7 +770,7 @@ func (r *EventRepository) QueryMaterializedView(ctx context.Context, date time.T
         }
         stats = append(stats, stat)
     }
-    
+
     return stats, rows.Err()
 }
 
@@ -793,7 +794,7 @@ type HourlyStats struct {
 // ListPartitions 列出所有分区
 func (r *EventRepository) ListPartitions(ctx context.Context) ([]PartitionInfo, error) {
     query := `
-    SELECT 
+    SELECT
         partition,
         rows,
         bytes_on_disk,
@@ -802,13 +803,13 @@ func (r *EventRepository) ListPartitions(ctx context.Context) ([]PartitionInfo, 
     WHERE table = 'events' AND active = 1
     ORDER BY partition
     `
-    
+
     rows, err := r.conn.Query(ctx, query)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var partitions []PartitionInfo
     for rows.Next() {
         var p PartitionInfo
@@ -817,7 +818,7 @@ func (r *EventRepository) ListPartitions(ctx context.Context) ([]PartitionInfo, 
         }
         partitions = append(partitions, p)
     }
-    
+
     return partitions, rows.Err()
 }
 
@@ -860,7 +861,7 @@ package analytics
 import (
     "context"
     "time"
-    
+
     "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
@@ -877,28 +878,28 @@ func NewDashboard(conn driver.Conn) *Dashboard {
 // GetRealtimeMetrics 获取实时指标
 func (d *Dashboard) GetRealtimeMetrics(ctx context.Context) (*RealtimeMetrics, error) {
     query := `
-    SELECT 
+    SELECT
         -- 最近1分钟
         countIf(event_time >= now() - INTERVAL 1 MINUTE) as events_1m,
         uniqIf(user_id, event_time >= now() - INTERVAL 1 MINUTE) as users_1m,
-        
+
         -- 最近5分钟
         countIf(event_time >= now() - INTERVAL 5 MINUTE) as events_5m,
         uniqIf(user_id, event_time >= now() - INTERVAL 5 MINUTE) as users_5m,
-        
+
         -- 最近1小时
         countIf(event_time >= now() - INTERVAL 1 HOUR) as events_1h,
         uniqIf(user_id, event_time >= now() - INTERVAL 1 HOUR) as users_1h,
-        
+
         -- 今日
         countIf(toDate(event_time) = today()) as events_today,
         uniqIf(user_id, toDate(event_time) = today()) as users_today
     FROM events
     WHERE event_time >= today()
     `
-    
+
     row := d.conn.QueryRow(ctx, query)
-    
+
     var metrics RealtimeMetrics
     if err := row.Scan(
         &metrics.Events1m, &metrics.Users1m,
@@ -908,7 +909,7 @@ func (d *Dashboard) GetRealtimeMetrics(ctx context.Context) (*RealtimeMetrics, e
     ); err != nil {
         return nil, err
     }
-    
+
     return &metrics, nil
 }
 
@@ -927,7 +928,7 @@ type RealtimeMetrics struct {
 // GetActiveUsers 获取活跃用户
 func (d *Dashboard) GetActiveUsers(ctx context.Context, minutes int) ([]ActiveUser, error) {
     query := `
-    SELECT 
+    SELECT
         user_id,
         count() as event_count,
         max(event_time) as last_event_time
@@ -937,13 +938,13 @@ func (d *Dashboard) GetActiveUsers(ctx context.Context, minutes int) ([]ActiveUs
     ORDER BY event_count DESC
     LIMIT 100
     `
-    
+
     rows, err := d.conn.Query(ctx, query, minutes)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var users []ActiveUser
     for rows.Next() {
         var user ActiveUser
@@ -952,7 +953,7 @@ func (d *Dashboard) GetActiveUsers(ctx context.Context, minutes int) ([]ActiveUs
         }
         users = append(users, user)
     }
-    
+
     return users, rows.Err()
 }
 
@@ -988,15 +989,15 @@ WHERE user_id = ?
 
 // 3. 使用FINAL慎重（会降低性能）
 query := `
-SELECT * 
-FROM events 
+SELECT *
+FROM events
 -- FINAL  -- 避免使用，除非必需
 WHERE user_id = ?
 `
 
 // 4. 合理使用LIMIT
 query := `
-SELECT * 
+SELECT *
 FROM events
 ORDER BY event_time DESC
 LIMIT 1000  -- 限制返回行数
@@ -1020,22 +1021,22 @@ func (r *EventRepository) CreateSkipIndex(ctx context.Context) error {
     queries := []string{
         // MinMax索引（适合范围查询）
         `ALTER TABLE events ADD INDEX idx_user_id_minmax user_id TYPE minmax GRANULARITY 4`,
-        
+
         // Set索引（适合IN查询）
         `ALTER TABLE events ADD INDEX idx_country_set country TYPE set(100) GRANULARITY 4`,
-        
+
         // Bloom Filter索引（适合等值查询）
         `ALTER TABLE events ADD INDEX idx_event_id_bloom event_id TYPE bloom_filter GRANULARITY 4`,
     }
-    
+
     for _, query := range queries {
         if err := r.conn.Exec(ctx, query); err != nil {
             return err
         }
     }
-    
+
     fmt.Println("✅ 跳数索引创建成功")
-    
+
     return nil
 }
 ```
@@ -1062,10 +1063,10 @@ func NewBatchWriter(repo *EventRepository, batchSize int, flushInterval time.Dur
         ticker:    time.NewTicker(flushInterval),
         done:      make(chan struct{}),
     }
-    
+
     // 启动定时刷新
     go bw.autoFlush()
-    
+
     return bw
 }
 
@@ -1073,14 +1074,14 @@ func NewBatchWriter(repo *EventRepository, batchSize int, flushInterval time.Dur
 func (bw *BatchWriter) Write(event *Event) error {
     bw.mu.Lock()
     defer bw.mu.Unlock()
-    
+
     bw.buffer = append(bw.buffer, event)
-    
+
     // 达到批次大小，立即刷新
     if len(bw.buffer) >= bw.batchSize {
         return bw.flush()
     }
-    
+
     return nil
 }
 
@@ -1089,17 +1090,17 @@ func (bw *BatchWriter) flush() error {
     if len(bw.buffer) == 0 {
         return nil
     }
-    
+
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
-    
+
     err := bw.repo.BatchInsert(ctx, bw.buffer)
     if err != nil {
         return err
     }
-    
+
     bw.buffer = bw.buffer[:0] // 清空缓冲区
-    
+
     return nil
 }
 
@@ -1111,7 +1112,7 @@ func (bw *BatchWriter) autoFlush() {
             bw.mu.Lock()
             bw.flush()
             bw.mu.Unlock()
-            
+
         case <-bw.done:
             return
         }
@@ -1122,10 +1123,10 @@ func (bw *BatchWriter) autoFlush() {
 func (bw *BatchWriter) Close() error {
     close(bw.done)
     bw.ticker.Stop()
-    
+
     bw.mu.Lock()
     defer bw.mu.Unlock()
-    
+
     return bw.flush()
 }
 ```
@@ -1140,7 +1141,7 @@ func (bw *BatchWriter) Close() error {
 // GetSystemMetrics 获取系统指标
 func (d *Dashboard) GetSystemMetrics(ctx context.Context) (*SystemMetrics, error) {
     query := `
-    SELECT 
+    SELECT
         uptime() as uptime,
         -- 查询统计
         (SELECT count() FROM system.query_log WHERE event_time >= now() - INTERVAL 1 MINUTE) as queries_1m,
@@ -1153,9 +1154,9 @@ func (d *Dashboard) GetSystemMetrics(ctx context.Context) (*SystemMetrics, error
         -- 行数
         (SELECT sum(rows) FROM system.parts WHERE table = 'events' AND active = 1) as table_rows
     `
-    
+
     row := d.conn.QueryRow(ctx, query)
-    
+
     var metrics SystemMetrics
     if err := row.Scan(
         &metrics.Uptime,
@@ -1167,7 +1168,7 @@ func (d *Dashboard) GetSystemMetrics(ctx context.Context) (*SystemMetrics, error
     ); err != nil {
         return nil, err
     }
-    
+
     return &metrics, nil
 }
 
@@ -1238,6 +1239,6 @@ ClickHouse + Go 开发的核心要点：
 
 ---
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3

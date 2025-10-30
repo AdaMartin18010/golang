@@ -1,51 +1,53 @@
-﻿# CSP并发模型与Go形式化证明
+# CSP并发模型与Go形式化证明
 
-**文档版本**: v1.0.0  
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**文档版本**: v1.0.0
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [第一部分: CSP理论基础](#第一部分-csp理论基础)
-  - [1.1 CSP进程代数](#1-1-csp进程代数)
-    - [基本语法](#基本语法)
-    - [操作语义](#操作语义)
-  - [1.2 痕迹语义 (Traces Semantics)](#1-2-痕迹语义-traces-semantics)
-  - [1.3 失败语义 (Failures Semantics)](#1-3-失败语义-failures-semantics)
-  - [1.4 精炼关系 (Refinement)](#1-4-精炼关系-refinement)
-- [第二部分: Go并发原语的CSP映射](#第二部分-go并发原语的csp映射)
-  - [2.1 Goroutine到CSP的映射](#2-1-goroutine到csp的映射)
-  - [2.2 Channel到CSP的映射](#2-2-channel到csp的映射)
-    - [无缓冲Channel (Unbuffered Channel)](#无缓冲channel-unbuffered-channel)
-    - [有缓冲Channel (Buffered Channel)](#有缓冲channel-buffered-channel)
-  - [2.3 Select语句的CSP表示](#2-3-select语句的csp表示)
-  - [2.4 Sync包原语的CSP表示](#2-4-sync包原语的csp表示)
-    - [Mutex](#mutex)
-    - [WaitGroup](#waitgroup)
-    - [Channel Close](#channel-close)
-- [第三部分: 形式化语义定义](#第三部分-形式化语义定义)
-  - [3.1 Goroutine状态机](#3-1-goroutine状态机)
-  - [3.2 Channel同步语义](#3-2-channel同步语义)
-  - [3.3 Happens-Before关系完整定义](#3-3-happens-before关系完整定义)
-- [第四部分: 并发安全性证明](#第四部分-并发安全性证明)
-  - [4.1 死锁自由性](#4-1-死锁自由性)
-  - [4.2 数据竞争检测](#4-2-数据竞争检测)
-  - [4.3 活锁检测](#4-3-活锁检测)
-  - [4.4 线性化性 (Linearizability)](#4-4-线性化性-linearizability)
-- [第五部分: 实际应用与验证](#第五部分-实际应用与验证)
-  - [5.1 生产者-消费者验证](#5-1-生产者-消费者验证)
-  - [5.2 并发Map的正确性](#5-2-并发map的正确性)
-  - [5.3 Work Stealing调度器验证](#5-3-work-stealing调度器验证)
-  - [5.4 实际Bug的形式化分析](#5-4-实际bug的形式化分析)
-    - [Case 1: 丢失唤醒 (Lost Wakeup)](#case-1-丢失唤醒-lost-wakeup)
-    - [Case 2: 数据竞争](#case-2-数据竞争)
-- [🎯 总结](#总结)
-  - [核心贡献](#核心贡献)
-  - [理论意义](#理论意义)
-  - [工程价值](#工程价值)
+- [CSP并发模型与Go形式化证明](#csp并发模型与go形式化证明)
+  - [📋 目录](#-目录)
+  - [第一部分: CSP理论基础](#第一部分-csp理论基础)
+    - [1.1 CSP进程代数](#11-csp进程代数)
+      - [基本语法](#基本语法)
+      - [操作语义](#操作语义)
+    - [1.2 痕迹语义 (Traces Semantics)](#12-痕迹语义-traces-semantics)
+    - [1.3 失败语义 (Failures Semantics)](#13-失败语义-failures-semantics)
+    - [1.4 精炼关系 (Refinement)](#14-精炼关系-refinement)
+  - [第二部分: Go并发原语的CSP映射](#第二部分-go并发原语的csp映射)
+    - [2.1 Goroutine到CSP的映射](#21-goroutine到csp的映射)
+    - [2.2 Channel到CSP的映射](#22-channel到csp的映射)
+      - [无缓冲Channel (Unbuffered Channel)](#无缓冲channel-unbuffered-channel)
+      - [有缓冲Channel (Buffered Channel)](#有缓冲channel-buffered-channel)
+    - [2.3 Select语句的CSP表示](#23-select语句的csp表示)
+    - [2.4 Sync包原语的CSP表示](#24-sync包原语的csp表示)
+      - [Mutex](#mutex)
+      - [WaitGroup](#waitgroup)
+      - [Channel Close](#channel-close)
+  - [第三部分: 形式化语义定义](#第三部分-形式化语义定义)
+    - [3.1 Goroutine状态机](#31-goroutine状态机)
+    - [3.2 Channel同步语义](#32-channel同步语义)
+    - [3.3 Happens-Before关系完整定义](#33-happens-before关系完整定义)
+  - [第四部分: 并发安全性证明](#第四部分-并发安全性证明)
+    - [4.1 死锁自由性](#41-死锁自由性)
+    - [4.2 数据竞争检测](#42-数据竞争检测)
+    - [4.3 活锁检测](#43-活锁检测)
+    - [4.4 线性化性 (Linearizability)](#44-线性化性-linearizability)
+  - [第五部分: 实际应用与验证](#第五部分-实际应用与验证)
+    - [5.1 生产者-消费者验证](#51-生产者-消费者验证)
+    - [5.2 并发Map的正确性](#52-并发map的正确性)
+    - [5.3 Work Stealing调度器验证](#53-work-stealing调度器验证)
+    - [5.4 实际Bug的形式化分析](#54-实际bug的形式化分析)
+      - [Case 1: 丢失唤醒 (Lost Wakeup)](#case-1-丢失唤醒-lost-wakeup)
+      - [Case 2: 数据竞争](#case-2-数据竞争)
+  - [🎯 总结](#-总结)
+    - [核心贡献](#核心贡献)
+    - [理论意义](#理论意义)
+    - [工程价值](#工程价值)
 
 ## 第一部分: CSP理论基础
 
@@ -168,7 +170,7 @@ P ⊑T Q ⟺ traces(Q) ⊆ traces(P)
 
 /* 失败精炼 (Failures Refinement) */
 
-P ⊑F Q ⟺ 
+P ⊑F Q ⟺
   traces(Q) ⊆ traces(P) ∧
   failures(Q) ⊆ failures(P)
 
@@ -311,7 +313,7 @@ case' = select_ready_case_nondeterministically(ready_cases)
 [Select-Block]
 ∀ i. ¬is_ready(case_i) ∧ ¬has_default
 ────────────────────────────────────────────────
-⟨select{cases}, σ, μ, ρ⟩ → 
+⟨select{cases}, σ, μ, ρ⟩ →
   ⟨(), σ, μ, ρ[g_current ↦ Blocked(cases)]⟩
 
 [Select-Default]
@@ -349,7 +351,7 @@ Locked_State = release → Unlocked_State
 /* 互斥性质 */
 
 定理 (Mutual Exclusion):
-∀ g₁, g₂. g₁ ≠ g₂ ⇒ 
+∀ g₁, g₂. g₁ ≠ g₂ ⇒
   ¬(g₁ holds mu ∧ g₂ holds mu)
 
 证明:
@@ -367,12 +369,12 @@ WaitGroup_State = {
 
 /* 操作 */
 wg.Add(n)  ≡ counter := counter + n
-wg.Done()  ≡ counter := counter - 1; 
+wg.Done()  ≡ counter := counter - 1;
              if counter = 0 then wake_all(waiters)
-wg.Wait()  ≡ if counter > 0 then 
+wg.Wait()  ≡ if counter > 0 then
                  waiters := waiters ∪ {current_gid};
                  block
-             else 
+             else
                  continue
 
 /* CSP进程 */
@@ -505,19 +507,19 @@ Channel = {
 function send(ch: Channel, v: Value):
     if ch.closed:
         panic("send on closed channel")
-    
+
     /* Case 1: 有等待的接收者 */
     if ch.recvq.is_not_empty():
         g_recv = ch.recvq.dequeue()
         transfer_value(v, g_recv)
         wakeup(g_recv)
         return
-    
+
     /* Case 2: 缓冲区有空间 */
     if ch.buf.len() < ch.cap:
         ch.buf.enqueue(v)
         return
-    
+
     /* Case 3: 阻塞 */
     g_current.state = Waiting(WaitChannel(ch, Send(v)))
     ch.sendq.enqueue(g_current)
@@ -529,26 +531,26 @@ function receive(ch: Channel) -> (Value, Boolean):
     /* Case 1: 缓冲区有数据 */
     if ch.buf.is_not_empty():
         v = ch.buf.dequeue()
-        
+
         /* 唤醒等待的发送者 */
         if ch.sendq.is_not_empty():
             g_send = ch.sendq.dequeue()
             ch.buf.enqueue(g_send.send_value)
             wakeup(g_send)
-        
+
         return (v, true)
-    
+
     /* Case 2: channel已关闭 */
     if ch.closed:
         return (zero_value(T), false)
-    
+
     /* Case 3: 有等待的发送者 */
     if ch.sendq.is_not_empty():
         g_send = ch.sendq.dequeue()
         v = g_send.send_value
         wakeup(g_send)
         return (v, true)
-    
+
     /* Case 4: 阻塞 */
     g_current.state = Waiting(WaitChannel(ch, Recv))
     ch.recvq.enqueue(g_current)
@@ -608,7 +610,7 @@ DataRace(e₁, e₂) ⟺
 
 /* 无数据竞争程序 */
 
-DRF(Program) ⟺ 
+DRF(Program) ⟺
     ∀ execution ∈ Executions(Program).
     ∀ e₁, e₂ ∈ Events(execution).
     ¬DataRace(e₁, e₂)
@@ -649,14 +651,14 @@ Deadlock(System) ⟺
 function request_locks(g: Goroutine, locks: List[Mutex]):
     /* 按全局顺序排序 */
     sorted_locks = sort_by_global_order(locks)
-    
+
     /* 按序获取 */
     for mu in sorted_locks:
         mu.Lock()
-    
+
     /* 使用资源 */
     critical_section()
-    
+
     /* 按逆序释放 */
     for mu in reverse(sorted_locks):
         mu.Unlock()
@@ -716,14 +718,14 @@ var AccessHistory: Map[Address, List[AccessRecord]]
 
 function check_race(addr: Address, is_write: Boolean):
     current_vc = get_vc(current_goroutine)
-    
+
     for record in AccessHistory[addr]:
         /* 检查是否并发 */
         if ¬(record.vc < current_vc) ∧ ¬(current_vc < record.vc):
             /* 并发访问 */
             if is_write ∨ record.is_write:
                 report_race(record, current)
-    
+
     /* 记录当前访问 */
     AccessHistory[addr].append({
         addr: addr,
@@ -783,7 +785,7 @@ P(livelock after n tries) = P_collision^n
 function philosopher(i: int):
     for {
         think()
-        
+
         /* 尝试获取两个叉子 */
         for {
             if try_acquire_forks(i):
@@ -996,7 +998,7 @@ func consumer():
 事件序列:
 e₁: producer: mu.Lock()
 e₂: producer: ready = true
-e₃: producer: cond.Signal()  
+e₃: producer: cond.Signal()
 e₄: producer: mu.Unlock()
 e₅: consumer: mu.Lock()
 e₆: consumer: check !ready (false)
@@ -1095,9 +1097,9 @@ func goroutine2():
 
 ---
 
-**文档版本**: v1.0.0  
+**文档版本**: v1.0.0
 
-**文档维护者**: Go Formal Methods Research Group  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Formal Methods Research Group
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.25.3+

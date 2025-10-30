@@ -1,33 +1,35 @@
-﻿# Go CI/CD最佳实践完全指南
+# Go CI/CD最佳实践完全指南
 
 > **简介**: Go项目持续集成和持续部署的完整实践指南，包括GitHub Actions、GitLab CI、Jenkins等主流工具
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
 
 ---
 
 ## 📋 目录
 
-- [1. CI/CD概述](#1-cicd概述)
-  - [CI/CD流程图](#cicd流程图)
-  - [核心阶段](#核心阶段)
-- [2. GitHub Actions](#2-github-actions)
-  - [完整工作流配置](#完整工作流配置)
-  - [多阶段构建Dockerfile](#多阶段构建dockerfile)
-- [3. GitLab CI/CD](#3-gitlab-cicd)
-  - [完整.gitlab-ci.yml](#完整-gitlab-ci-yml)
-- [4. Jenkins](#4-jenkins)
-  - [Jenkinsfile](#jenkinsfile)
-- [5. Docker集成](#5-docker集成)
-  - [Docker Compose开发环境](#docker-compose开发环境)
-- [6. 部署策略](#6-部署策略)
-  - [蓝绿部署](#蓝绿部署)
-  - [金丝雀发布](#金丝雀发布)
-- [7. 最佳实践](#7-最佳实践)
-  - [DO's ✅](#dos)
-  - [DON'Ts ❌](#donts)
+- [Go CI/CD最佳实践完全指南](#go-cicd最佳实践完全指南)
+  - [📋 目录](#-目录)
+  - [1. CI/CD概述](#1-cicd概述)
+    - [CI/CD流程图](#cicd流程图)
+    - [核心阶段](#核心阶段)
+  - [2. GitHub Actions](#2-github-actions)
+    - [完整工作流配置](#完整工作流配置)
+    - [多阶段构建Dockerfile](#多阶段构建dockerfile)
+  - [3. GitLab CI/CD](#3-gitlab-cicd)
+    - [完整.gitlab-ci.yml](#完整gitlab-ciyml)
+  - [4. Jenkins](#4-jenkins)
+    - [Jenkinsfile](#jenkinsfile)
+  - [5. Docker集成](#5-docker集成)
+    - [Docker Compose开发环境](#docker-compose开发环境)
+  - [6. 部署策略](#6-部署策略)
+    - [蓝绿部署](#蓝绿部署)
+    - [金丝雀发布](#金丝雀发布)
+  - [7. 最佳实践](#7-最佳实践)
+    - [DO's ✅](#dos-)
+    - [DON'Ts ❌](#donts-)
 
 ## 1. CI/CD概述
 
@@ -89,12 +91,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: ${{ env.GO_VERSION }}
-    
+
     - name: Run golangci-lint
       uses: golangci/golangci-lint-action@v3
       with:
@@ -107,16 +109,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: ${{ env.GO_VERSION }}
-    
+
     - name: Run tests
       run: |
         go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
-    
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
@@ -130,12 +132,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Run Gosec Security Scanner
       uses: securego/gosec@master
       with:
         args: '-no-fail -fmt sarif -out results.sarif ./...'
-    
+
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
       with:
@@ -155,17 +157,17 @@ jobs:
             goarch: arm64
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: ${{ env.GO_VERSION }}
-    
+
     - name: Build
       run: |
         GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
         go build -v -ldflags="-s -w" -o bin/myapp-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/myapp
-    
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -183,17 +185,17 @@ jobs:
       packages: write
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-    
+
     - name: Log in to Container Registry
       uses: docker/login-action@v2
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
+
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v4
@@ -205,7 +207,7 @@ jobs:
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
           type=sha
-    
+
     - name: Build and push
       uses: docker/build-push-action@v4
       with:
@@ -227,7 +229,7 @@ jobs:
       url: https://staging.example.com
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Deploy to Kubernetes
       uses: azure/k8s-deploy@v4
       with:
@@ -249,7 +251,7 @@ jobs:
       url: https://example.com
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Deploy to Kubernetes
       uses: azure/k8s-deploy@v4
       with:
@@ -445,20 +447,20 @@ deploy:production:
 // Jenkinsfile
 pipeline {
     agent any
-    
+
     environment {
         GO_VERSION = '1.21'
         REGISTRY = 'docker.io'
         IMAGE_NAME = 'myorg/myapp'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        
+
         stage('Setup') {
             steps {
                 sh '''
@@ -469,7 +471,7 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Lint') {
             steps {
                 sh '''
@@ -478,30 +480,30 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Test') {
             steps {
                 sh '''
                     go test -v -race -coverprofile=coverage.out ./...
                 '''
-                
+
                 // 发布测试报告
                 junit 'test-results.xml'
                 cobertura coberturaReportFile: 'coverage.out'
             }
         }
-        
+
         stage('Build') {
             steps {
                 sh '''
                     CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/myapp ./cmd/myapp
                 '''
-                
+
                 // 归档制品
                 archiveArtifacts artifacts: 'bin/myapp', fingerprint: true
             }
         }
-        
+
         stage('Docker Build') {
             steps {
                 script {
@@ -509,7 +511,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Docker Push') {
             steps {
                 script {
@@ -520,7 +522,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Deploy to Staging') {
             when {
                 branch 'develop'
@@ -532,14 +534,14 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Deploy to Production') {
             when {
                 branch 'main'
             }
             steps {
                 input message: 'Deploy to Production?', ok: 'Deploy'
-                
+
                 sh '''
                     kubectl set image deployment/myapp myapp=${IMAGE_NAME}:${BUILD_NUMBER} -n production
                     kubectl rollout status deployment/myapp -n production
@@ -547,7 +549,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
@@ -589,7 +591,7 @@ services:
       - db
       - redis
     command: go run cmd/myapp/main.go
-  
+
   db:
     image: postgres:15-alpine
     environment:
@@ -600,7 +602,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-  
+
   redis:
     image: redis:7-alpine
     ports:
@@ -768,7 +770,7 @@ spec:
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: ✅ 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: ✅ 完成
 **适用版本**: Go 1.21+

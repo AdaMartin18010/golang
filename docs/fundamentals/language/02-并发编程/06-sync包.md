@@ -1,31 +1,33 @@
-﻿# sync包与并发安全模式
+# sync包与并发安全模式
 
-**版本**: v1.0  
-**更新日期**: 2025-10-29  
+**版本**: v1.0
+**更新日期**: 2025-10-29
 **适用于**: Go 1.23+
 
 ---
 
 ## 📋 目录
 
-- [1. 理论基础](#1-理论基础)
-- [2. 典型用法](#2-典型用法)
-  - [互斥锁Mutex](#互斥锁mutex)
-    - [Mutex状态机可视化](#mutex状态机可视化)
-    - [Mutex并发访问时序图](#mutex并发访问时序图)
-  - [读写锁RWMutex](#读写锁rwmutex)
-    - [RWMutex并发控制可视化](#rwmutex并发控制可视化)
-    - [RWMutex读写时序图](#rwmutex读写时序图)
-  - [WaitGroup](#waitgroup)
-    - [WaitGroup工作流程](#waitgroup工作流程)
-    - [WaitGroup时序图](#waitgroup时序图)
-  - [Once](#once)
-    - [sync.Once单次执行保证](#sync-once单次执行保证)
-    - [多Goroutine调用Once时序图](#多goroutine调用once时序图)
-- [3. 工程分析与最佳实践](#3-工程分析与最佳实践)
-- [4. 常见陷阱](#4-常见陷阱)
-- [5. 单元测试建议](#5-单元测试建议)
-- [6. 参考文献](#6-参考文献)
+- [sync包与并发安全模式](#sync包与并发安全模式)
+  - [📋 目录](#-目录)
+  - [1. 理论基础](#1-理论基础)
+  - [2. 典型用法](#2-典型用法)
+    - [互斥锁Mutex](#互斥锁mutex)
+      - [Mutex状态机可视化](#mutex状态机可视化)
+      - [Mutex并发访问时序图](#mutex并发访问时序图)
+    - [读写锁RWMutex](#读写锁rwmutex)
+      - [RWMutex并发控制可视化](#rwmutex并发控制可视化)
+      - [RWMutex读写时序图](#rwmutex读写时序图)
+    - [WaitGroup](#waitgroup)
+      - [WaitGroup工作流程](#waitgroup工作流程)
+      - [WaitGroup时序图](#waitgroup时序图)
+    - [Once](#once)
+      - [sync.Once单次执行保证](#synconce单次执行保证)
+      - [多Goroutine调用Once时序图](#多goroutine调用once时序图)
+  - [3. 工程分析与最佳实践](#3-工程分析与最佳实践)
+  - [4. 常见陷阱](#4-常见陷阱)
+  - [5. 单元测试建议](#5-单元测试建议)
+  - [6. 参考文献](#6-参考文献)
 
 ## 1. 理论基础
 
@@ -48,31 +50,31 @@ Go的sync包提供了多种并发原语，保障多Goroutine环境下的数据�
 ```mermaid
 stateDiagram-v2
     [*] --> Unlocked: 初始状态
-    
+
     Unlocked --> Locked: Goroutine A<br/>调用 Lock()
-    
+
     state Locked {
         [*] --> Executing: 获得锁
         Executing --> [*]: 执行临界区代码
     }
-    
+
     Locked --> Unlocked: Goroutine A<br/>调用 Unlock()
-    
+
     state Locked_Contention {
         direction LR
         [*] --> WaitingQueue: Goroutine B, C, D<br/>等待获取锁
         WaitingQueue --> GotLock: 锁释放后<br/>按FIFO唤醒
     }
-    
+
     Unlocked --> Locked_Contention: 多个Goroutine<br/>竞争
     Locked_Contention --> Unlocked: 最后一个<br/>释放锁
-    
+
     note right of Locked
         临界区:
         - 只有一个Goroutine执行
         - 其他Goroutine阻塞等待
     end note
-    
+
     note left of Locked_Contention
         锁竞争:
         - 等待队列 (FIFO)
@@ -88,32 +90,32 @@ sequenceDiagram
     participant Mutex as sync.Mutex
     participant G2 as Goroutine 2
     participant G3 as Goroutine 3
-    
+
     Note over G1,G3: 初始状态：Mutex未锁定
-    
+
     G1->>Mutex: Lock()
     Mutex-->>G1: 获得锁 ✓
     Note over G1: 进入临界区
-    
+
     G2->>Mutex: Lock()
     Note over G2: ⏸️ 阻塞等待
-    
+
     G3->>Mutex: Lock()
     Note over G3: ⏸️ 阻塞等待
-    
+
     Note over Mutex: 等待队列: [G2, G3]
-    
+
     G1->>G1: 执行临界区代码
     G1->>Mutex: Unlock()
     Mutex-->>G2: 唤醒 G2 ✓
     Note over G2: 获得锁，进入临界区
     Note over G3: 仍在等待
-    
+
     G2->>G2: 执行临界区代码
     G2->>Mutex: Unlock()
     Mutex-->>G3: 唤醒 G3 ✓
     Note over G3: 获得锁，进入临界区
-    
+
     G3->>G3: 执行临界区代码
     G3->>Mutex: Unlock()
     Note over Mutex: Mutex回到未锁定状态
@@ -135,10 +137,10 @@ var (
 
 func increment(id int, wg *sync.WaitGroup) {
     defer wg.Done()
-    
+
     mu.Lock()           // 获取锁
     defer mu.Unlock()   // 确保释放锁
-    
+
     // 临界区：修改共享资源
     temp := counter
     time.Sleep(10 * time.Millisecond) // 模拟处理时间
@@ -148,13 +150,13 @@ func increment(id int, wg *sync.WaitGroup) {
 
 func main() {
     var wg sync.WaitGroup
-    
+
     // 启动10个并发Goroutine
     for i := 1; i <= 10; i++ {
         wg.Add(1)
         go increment(i, &wg)
     }
-    
+
     wg.Wait()
     fmt.Printf("Final counter: %d\n", counter) // 输出: 10
 }
@@ -171,34 +173,34 @@ graph TB
         Reading[读模式<br/>多个Reader并发]
         Writing[写模式<br/>独占访问]
     end
-    
+
     subgraph "Reader Goroutines"
         R1[Reader 1]
         R2[Reader 2]
         R3[Reader 3]
     end
-    
+
     subgraph "Writer Goroutines"
         W1[Writer 1]
         W2[Writer 2]
     end
-    
+
     Idle -->|RLock| Reading
     Reading -->|所有RUnlock| Idle
     Idle -->|Lock| Writing
     Writing -->|Unlock| Idle
-    
+
     R1 -->|RLock| Reading
     R2 -->|RLock| Reading
     R3 -->|RLock| Reading
-    
+
     W1 -->|Lock - 等待所有Reader完成| Writing
     W2 -->|Lock - 进入等待队列| Writing
-    
+
     Reading -.阻塞.-> W1
     Writing -.阻塞.-> R1
     Writing -.阻塞.-> W2
-    
+
     style Reading fill:#e1ffe1
     style Writing fill:#ffe1e1
     style Idle fill:#e1f5ff
@@ -213,37 +215,37 @@ sequenceDiagram
     participant RW as RWMutex
     participant W1 as Writer 1
     participant R3 as Reader 3
-    
+
     Note over R1,R3: 场景：多个读并发，写独占
-    
+
     R1->>RW: RLock()
     RW-->>R1: 获得读锁 ✓
     Note over R1: 读取数据
-    
+
     R2->>RW: RLock()
     RW-->>R2: 获得读锁 ✓ (并发)
     Note over R2: 读取数据
     Note over RW: 读计数: 2
-    
+
     W1->>RW: Lock()
     Note over W1: ⏸️ 阻塞 (等待所有Reader完成)
-    
+
     R3->>RW: RLock()
     Note over R3: ⏸️ 阻塞 (Writer等待中，不允许新Reader)
-    
+
     R1->>RW: RUnlock()
     Note over RW: 读计数: 1
-    
+
     R2->>RW: RUnlock()
     Note over RW: 读计数: 0
-    
+
     RW-->>W1: 获得写锁 ✓
     Note over W1: 独占写入
-    
+
     W1->>RW: Unlock()
     RW-->>R3: 获得读锁 ✓
     Note over R3: 读取数据
-    
+
     R3->>RW: RUnlock()
 ```
 
@@ -265,7 +267,7 @@ type SafeMap struct {
 func (m *SafeMap) Get(key string) (int, bool) {
     m.rw.RLock()
     defer m.rw.RUnlock()
-    
+
     val, ok := m.data[key]
     return val, ok
 }
@@ -274,7 +276,7 @@ func (m *SafeMap) Get(key string) (int, bool) {
 func (m *SafeMap) Set(key string, value int) {
     m.rw.Lock()
     defer m.rw.Unlock()
-    
+
     m.data[key] = value
 }
 
@@ -282,7 +284,7 @@ func main() {
     sm := &SafeMap{
         data: make(map[string]int),
     }
-    
+
     // 多个Reader并发读取
     for i := 0; i < 5; i++ {
         go func(id int) {
@@ -293,7 +295,7 @@ func main() {
             }
         }(i)
     }
-    
+
     // 单个Writer写入
     go func() {
         for i := 0; i < 3; i++ {
@@ -302,7 +304,7 @@ func main() {
             time.Sleep(50 * time.Millisecond)
         }
     }()
-    
+
     time.Sleep(300 * time.Millisecond)
 }
 ```
@@ -318,28 +320,28 @@ flowchart TB
     Add1 --> Launch1[启动 Goroutine 1]
     Add1 --> Launch2[启动 Goroutine 2]
     Add1 --> Launch3[启动 Goroutine 3]
-    
+
     Launch1 --> G1[Goroutine 1执行]
     Launch2 --> G2[Goroutine 2执行]
     Launch3 --> G3[Goroutine 3执行]
-    
+
     G1 --> Done1[wg.Done<br/>counter = 2]
     G2 --> Done2[wg.Done<br/>counter = 1]
     G3 --> Done3[wg.Done<br/>counter = 0]
-    
+
     Add1 --> Wait[wg.Wait<br/>阻塞等待]
-    
+
     Done1 --> Check1{counter == 0?}
     Check1 -->|否| Wait
-    
+
     Done2 --> Check2{counter == 0?}
     Check2 -->|否| Wait
-    
+
     Done3 --> Check3{counter == 0?}
     Check3 -->|是| Unblock[唤醒主Goroutine]
-    
+
     Unblock --> End([所有任务完成])
-    
+
     style Init fill:#e1f5ff
     style Wait fill:#ffe1e1
     style Unblock fill:#e1ffe1
@@ -355,32 +357,32 @@ sequenceDiagram
     participant G1 as Goroutine 1
     participant G2 as Goroutine 2
     participant G3 as Goroutine 3
-    
+
     Main->>WG: Add(3)
     Note over WG: counter = 3
-    
+
     Main->>G1: 启动 go func()
     Main->>G2: 启动 go func()
     Main->>G3: 启动 go func()
-    
+
     Main->>WG: Wait()
     Note over Main: ⏸️ 阻塞等待
-    
+
     par 并发执行
         G1->>G1: 执行任务1
         G2->>G2: 执行任务2
         G3->>G3: 执行任务3
     end
-    
+
     G1->>WG: Done()
     Note over WG: counter = 2
-    
+
     G2->>WG: Done()
     Note over WG: counter = 1
-    
+
     G3->>WG: Done()
     Note over WG: counter = 0
-    
+
     WG-->>Main: 唤醒主Goroutine ✓
     Note over Main: 继续执行
 ```
@@ -396,7 +398,7 @@ import (
 
 func worker(id int, wg *sync.WaitGroup) {
     defer wg.Done() // 确保Done被调用
-    
+
     fmt.Printf("Worker %d: 开始工作\n", id)
     time.Sleep(time.Second)
     fmt.Printf("Worker %d: 完成工作\n", id)
@@ -404,13 +406,13 @@ func worker(id int, wg *sync.WaitGroup) {
 
 func main() {
     var wg sync.WaitGroup
-    
+
     // 启动5个worker
     for i := 1; i <= 5; i++ {
         wg.Add(1) // 每启动一个Goroutine，计数器+1
         go worker(i, &wg)
     }
-    
+
     fmt.Println("主Goroutine: 等待所有worker完成...")
     wg.Wait() // 阻塞，直到计数器为0
     fmt.Println("主Goroutine: 所有worker已完成！")
@@ -424,30 +426,30 @@ func main() {
 ```mermaid
 stateDiagram-v2
     [*] --> NotExecuted: 初始状态<br/>done = 0
-    
+
     NotExecuted --> Executing: 第一个Goroutine<br/>调用 Do(f)
-    
+
     state Executing {
         [*] --> RunningFunc: 执行 f()
         RunningFunc --> SetDone: 设置 done = 1
         SetDone --> [*]
     }
-    
+
     Executing --> Executed: 执行完成
-    
+
     NotExecuted --> Blocked: 其他Goroutine<br/>调用 Do(f)
     Blocked --> WaitForCompletion: 等待第一个<br/>Goroutine完成
     WaitForCompletion --> Executed
-    
+
     Executed --> Executed: 后续调用 Do(f)<br/>直接返回，不执行
-    
+
     note right of Executing
         关键特性:
         - 只有第一个调用执行函数
         - 其他调用阻塞等待
         - 执行完成后，done=1
     end note
-    
+
     note left of Executed
         已执行状态:
         - 函数只执行一次
@@ -465,27 +467,27 @@ sequenceDiagram
     participant Once as sync.Once
     participant G3 as Goroutine 3
     participant Init as 初始化函数
-    
+
     Note over G1,Init: 场景：多个Goroutine并发调用once.Do()
-    
+
     G1->>Once: Do(init)
     Once->>Init: 执行 init() ✓
     Note over Init: 初始化操作
-    
+
     G2->>Once: Do(init)
     Note over G2: ⏸️ 阻塞等待
-    
+
     G3->>Once: Do(init)
     Note over G3: ⏸️ 阻塞等待
-    
+
     Init-->>Once: 完成
     Once-->>G1: 返回
-    
+
     Once-->>G2: 返回 (不执行init)
     Once-->>G3: 返回 (不执行init)
-    
+
     Note over Once: done = 1, 后续调用直接返回
-    
+
     G1->>Once: Do(init)
     Once-->>G1: 立即返回 (不执行)
 ```
@@ -520,7 +522,7 @@ func GetInstance() *Singleton {
 
 func main() {
     var wg sync.WaitGroup
-    
+
     // 10个Goroutine并发调用GetInstance
     for i := 1; i <= 10; i++ {
         wg.Add(1)
@@ -530,7 +532,7 @@ func main() {
             fmt.Printf("Goroutine %d: %p - %s\n", id, inst, inst.data)
         }(i)
     }
-    
+
     wg.Wait()
     // 输出：所有Goroutine获得同一个实例（地址相同）
     // "创建Singleton实例"只打印一次
@@ -574,7 +576,7 @@ func main() {
 
 ---
 
-**文档维护者**: Go Documentation Team  
-**最后更新**: 2025-10-29  
-**文档状态**: 完成  
+**文档维护者**: Go Documentation Team
+**最后更新**: 2025-10-29
+**文档状态**: 完成
 **适用版本**: Go 1.25.3+

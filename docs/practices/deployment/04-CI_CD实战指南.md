@@ -1,37 +1,39 @@
-﻿# CI/CD实战指南
+# CI/CD实战指南
 
 ## 📋 目录
 
-- [1. CI/CD概述](#1-cicd概述)
-  - [CI/CD流程](#cicd流程)
-- [2. GitHub Actions](#2-github-actions)
-  - [基础工作流](#基础工作流)
-  - [完整CI Pipeline](#完整ci-pipeline)
-  - [Docker构建与推送](#docker构建与推送)
-  - [自动部署到Kubernetes](#自动部署到kubernetes)
-- [3. GitLab CI](#3-gitlab-ci)
-  - [基础配置](#基础配置)
-  - [多环境部署](#多环境部署)
-- [4. Jenkins](#4-jenkins)
-  - [Jenkinsfile](#jenkinsfile)
-- [5. 完整Pipeline](#5-完整pipeline)
-  - [多阶段Dockerfile](#多阶段dockerfile)
-  - [部署脚本](#部署脚本)
-  - [烟雾测试](#烟雾测试)
-- [6. 最佳实践](#6-最佳实践)
-  - [1. 缓存优化](#1-缓存优化)
-  - [2. 并行测试](#2-并行测试)
-  - [3. 安全扫描](#3-安全扫描)
-  - [4. 制品管理](#4-制品管理)
-- [7. 性能优化](#7-性能优化)
-  - [构建时间优化](#构建时间优化)
-  - [Pipeline优化对比](#pipeline优化对比)
-- [8. 故障排查](#8-故障排查)
-  - [常见问题](#常见问题)
-    - [1. 构建缓存失效](#1-构建缓存失效)
-    - [2. Docker构建慢](#2-docker构建慢)
-    - [3. 测试不稳定](#3-测试不稳定)
-- [🔗 相关资源](#相关资源)
+- [CI/CD实战指南](#cicd实战指南)
+  - [📋 目录](#-目录)
+  - [1. CI/CD概述](#1-cicd概述)
+    - [CI/CD流程](#cicd流程)
+  - [2. GitHub Actions](#2-github-actions)
+    - [基础工作流](#基础工作流)
+    - [完整CI Pipeline](#完整ci-pipeline)
+    - [Docker构建与推送](#docker构建与推送)
+    - [自动部署到Kubernetes](#自动部署到kubernetes)
+  - [3. GitLab CI](#3-gitlab-ci)
+    - [基础配置](#基础配置)
+    - [多环境部署](#多环境部署)
+  - [4. Jenkins](#4-jenkins)
+    - [Jenkinsfile](#jenkinsfile)
+  - [5. 完整Pipeline](#5-完整pipeline)
+    - [多阶段Dockerfile](#多阶段dockerfile)
+    - [部署脚本](#部署脚本)
+    - [烟雾测试](#烟雾测试)
+  - [6. 最佳实践](#6-最佳实践)
+    - [1. 缓存优化](#1-缓存优化)
+    - [2. 并行测试](#2-并行测试)
+    - [3. 安全扫描](#3-安全扫描)
+    - [4. 制品管理](#4-制品管理)
+  - [7. 性能优化](#7-性能优化)
+    - [构建时间优化](#构建时间优化)
+    - [Pipeline优化对比](#pipeline优化对比)
+  - [8. 故障排查](#8-故障排查)
+    - [常见问题](#常见问题)
+      - [1. 构建缓存失效](#1-构建缓存失效)
+      - [2. Docker构建慢](#2-docker构建慢)
+      - [3. 测试不稳定](#3-测试不稳定)
+  - [🔗 相关资源](#-相关资源)
 
 ## 1. CI/CD概述
 
@@ -75,23 +77,23 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
+
     - name: Setup Go
       uses: actions/setup-go@v4
       with:
         go-version: '1.25.3'
         cache: true
-    
+
     - name: Install dependencies
       run: go mod download
-    
+
     - name: Run tests
       run: go test -v -race -coverprofile=coverage.out ./...
-    
+
     - name: Upload coverage
       uses: codecov/codecov-action@v3
       with:
@@ -116,12 +118,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.25.3'
-      
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -134,20 +136,20 @@ jobs:
     strategy:
       matrix:
         go-version: ['1.24', '1.25.3']
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      
+
       - name: Run tests
         run: |
           go test -v -race -coverprofile=coverage.out ./...
           go tool cover -html=coverage.out -o coverage.html
-      
+
       - name: Upload coverage
         uses: actions/upload-artifact@v3
         with:
@@ -159,12 +161,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Run Gosec
         uses: securego/gosec@master
         with:
           args: '-no-fail -fmt json -out results.json ./...'
-      
+
       - name: Run Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -179,18 +181,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.25.3'
-      
+
       - name: Build
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app-linux-amd64 ./cmd/app
           CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o app-darwin-amd64 ./cmd/app
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o app-windows-amd64.exe ./cmd/app
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -219,21 +221,21 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Log in to Container Registry
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v4
@@ -245,7 +247,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
-      
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -276,36 +278,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'v1.28.0'
-      
+
       - name: Configure kubectl
         run: |
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
           export KUBECONFIG=./kubeconfig
-      
+
       - name: Deploy to staging
         run: |
           kubectl set image deployment/myapp \
             myapp=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             -n staging
-          
+
           kubectl rollout status deployment/myapp -n staging --timeout=5m
-      
+
       - name: Run smoke tests
         run: |
           ./scripts/smoke-test.sh staging
-      
+
       - name: Deploy to production
         if: success()
         run: |
           kubectl set image deployment/myapp \
             myapp=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             -n production
-          
+
           kubectl rollout status deployment/myapp -n production --timeout=10m
 ```
 
@@ -484,28 +486,28 @@ pipeline {
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
-    
+
     environment {
         GO111MODULE = 'on'
         CGO_ENABLED = '0'
         DOCKER_REGISTRY = 'registry.example.com'
         IMAGE_NAME = 'myapp'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        
+
         stage('Dependencies') {
             steps {
                 sh 'go mod download'
                 sh 'go mod verify'
             }
         }
-        
+
         stage('Lint') {
             steps {
                 sh 'go fmt ./...'
@@ -513,7 +515,7 @@ pipeline {
                 sh 'golangci-lint run'
             }
         }
-        
+
         stage('Test') {
             steps {
                 sh 'go test -v -race -coverprofile=coverage.out ./...'
@@ -529,13 +531,13 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Build') {
             steps {
                 sh 'go build -o app ./cmd/app'
             }
         }
-        
+
         stage('Docker Build') {
             when {
                 branch 'main'
@@ -544,14 +546,14 @@ pipeline {
                 script {
                     def imageTag = "${DOCKER_REGISTRY}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
                     def latestTag = "${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
-                    
+
                     sh "docker build -t ${imageTag} -t ${latestTag} ."
                     sh "docker push ${imageTag}"
                     sh "docker push ${latestTag}"
                 }
             }
         }
-        
+
         stage('Deploy to Staging') {
             when {
                 branch 'develop'
@@ -565,7 +567,7 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Deploy to Production') {
             when {
                 branch 'main'
@@ -581,7 +583,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         success {
             slackSend color: 'good', message: "Build ${env.BUILD_NUMBER} succeeded"
@@ -882,6 +884,6 @@ RUN go build
 
 ---
 
-**最后更新**: 2025-10-29  
-**Go版本**: 1.25.3  
+**最后更新**: 2025-10-29
+**Go版本**: 1.25.3
 **文档类型**: CI/CD实战指南 ✨
