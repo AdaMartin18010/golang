@@ -16,7 +16,7 @@ package main
 //   4. all workers exit → results channel closed
 //
 // Formal Proof:
-//   ∀ job ∈ Jobs: 
+//   ∀ job ∈ Jobs:
 //     sent(job) →ʰᵇ received(job) →ʰᵇ processed(job) →ʰᵇ result_sent(job)
 
 import (
@@ -48,20 +48,21 @@ type Result struct {
 //   - <-chan Result: 结果输出channel
 //
 // 使用示例:
-//   ctx := context.Background()
-//   jobs := make(chan Job, 100)
-//   results := WorkerPool(ctx, 5, jobs)
 //
-//   // 发送任务
-//   for i := 0; i < 100; i++ {
-//       jobs <- Job{ID: i, Data: i}
-//   }
-//   close(jobs)
+//	ctx := context.Background()
+//	jobs := make(chan Job, 100)
+//	results := WorkerPool(ctx, 5, jobs)
 //
-//   // 接收结果
-//   for result := range results {
-//       fmt.Printf("Result: %+v\n", result)
-//   }
+//	// 发送任务
+//	for i := 0; i < 100; i++ {
+//	    jobs <- Job{ID: i, Data: i}
+//	}
+//	close(jobs)
+//
+//	// 接收结果
+//	for result := range results {
+//	    fmt.Printf("Result: %+v\n", result)
+//	}
 func WorkerPool(ctx context.Context, numWorkers int, jobs <-chan Job) <-chan Result {
 	results := make(chan Result)
 	var wg sync.WaitGroup
@@ -71,23 +72,23 @@ func WorkerPool(ctx context.Context, numWorkers int, jobs <-chan Job) <-chan Res
 		wg.Add(1)
 		go func(workerID int) {
 			defer wg.Done()
-			
+
 			// Worker循环
 			for {
 				select {
 				case <-ctx.Done():
 					// Context取消，退出
 					return
-					
+
 				case job, ok := <-jobs:
 					if !ok {
 						// Jobs channel关闭，退出
 						return
 					}
-					
+
 					// 处理任务
 					result := processJob(job)
-					
+
 					// 发送结果
 					select {
 					case results <- result:
@@ -139,5 +140,5 @@ func processJob(job Job) Result {
 //     3. Channels are properly closed
 //
 // Safety:
-//   ∀ t ∈ traces(Pool): 
+//   ∀ t ∈ traces(Pool):
 //     safe(t) ⟺ ¬(∃ job: received(job) ∧ ¬sent(job))
