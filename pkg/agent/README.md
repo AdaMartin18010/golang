@@ -1,7 +1,7 @@
 # AI Agent 库
 
-> **版本**: v1.0.0  
-> **Go版本**: 1.25+  
+> **版本**: v1.0.0
+> **Go版本**: 1.25+
 > **状态**: ✅ 生产就绪
 
 ---
@@ -49,21 +49,21 @@ func main() {
         Name: "MyAgent",
         Type: "assistant",
     }
-    
+
     // 创建Agent实例
     agent := core.NewBaseAgent("agent-001", config)
-    
+
     // 初始化组件
     agent.SetLearningEngine(core.NewLearningEngine(nil))
     agent.SetDecisionEngine(core.NewDecisionEngine(nil))
-    
+
     // 启动Agent
     ctx := context.Background()
     if err := agent.Start(ctx); err != nil {
         panic(err)
     }
     defer agent.Stop()
-    
+
     // 处理任务
     input := core.Input{
         ID:   "task-1",
@@ -72,12 +72,12 @@ func main() {
             "message": "Hello, Agent!",
         },
     }
-    
+
     output, err := agent.Process(input)
     if err != nil {
         panic(err)
     }
-    
+
     fmt.Printf("Response: %+v\n", output)
 }
 ```
@@ -154,5 +154,5 @@ go tool cover -html=coverage.out
 
 ---
 
-**版本**: v1.0.0  
+**版本**: v1.0.0
 **最后更新**: 2025-10-22

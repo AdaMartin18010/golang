@@ -1,13 +1,8 @@
-# database/sql基础
+﻿# database/sql基础
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
 **适用于**: Go 1.25.3
-
----
-
-> **难度**: ⭐⭐⭐
-> **标签**: #数据库 #SQL #MySQL #PostgreSQL
 
 ## 📋 目录
 
@@ -354,7 +349,7 @@ func transferMoney(db *sql.DB, fromID, toID int, amount float64) error {
 ### 使用Context的事务
 
 ```go
-func transferMoneyWithContext(ctx context.Context, db *sql.DB, fromID, toID int, amount float64) error {
+func transferMoneyWithContext(ctx Context.Context, db *sql.DB, fromID, toID int, amount float64) error {
     tx, err := db.BeginTx(ctx, nil)
     if err != nil {
         return err
@@ -450,7 +445,7 @@ func getUsersByAge(db *sql.DB, ages []int) ([]*User, error) {
 
 ```go
 // ✅ 推荐
-func getUser(ctx context.Context, db *sql.DB, id int) (*User, error) {
+func getUser(ctx Context.Context, db *sql.DB, id int) (*User, error) {
     var user User
     err := db.QueryRowContext(ctx,
         "SELECT id, name, email, age FROM users WHERE id = ?",

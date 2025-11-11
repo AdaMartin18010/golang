@@ -1,7 +1,7 @@
 # HTTP/3 模块增强功能文档
 
-> **版本**: v2.1  
-> **更新时间**: 2025-10-22  
+> **版本**: v2.1
+> **更新时间**: 2025-10-22
 > **状态**: ✅ 完成
 
 ---
@@ -19,6 +19,7 @@
 完整的WebSocket实现，支持双向通信。
 
 **核心特性**:
+
 - ✅ 自动心跳检测 (Ping/Pong)
 - ✅ 连接管理 (Hub模式)
 - ✅ 广播消息支持
@@ -43,6 +44,7 @@ count := wsHub.ClientCount()
 ```
 
 **API端点**:
+
 - `WS /ws` - WebSocket连接端点
 - `GET /ws/stats` - WebSocket统计信息
 
@@ -90,10 +92,10 @@ func MyMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         // 前置处理
         log.Println("Before:", r.URL.Path)
-        
+
         // 执行下一个处理器
         next.ServeHTTP(w, r)
-        
+
         // 后置处理
         log.Println("After:", r.URL.Path)
     })
@@ -194,6 +196,7 @@ defer func() {
 | 连接池 | N/A | 50 ns/op | 新增 |
 
 **优化技术**:
+
 - ✅ 对象池化 (sync.Pool)
 - ✅ Buffer复用
 - ✅ 零额外分配
@@ -302,30 +305,30 @@ func main() {
     // 1. 创建WebSocket Hub
     wsHub := NewWSHub()
     go wsHub.Run()
-    
+
     // 2. 创建连接管理器
     connManager := NewConnectionManager(1000)
-    
+
     // 3. 设置路由
     mux := http.NewServeMux()
     mux.HandleFunc("/", handleRootOptimized)
     mux.HandleFunc("/ws", handleWebSocket(wsHub))
-    
+
     // 4. 创建中间件链
     chain := NewMiddlewareChain()
     chain.Use(RecoveryMiddleware)
     chain.Use(LoggingMiddleware)
     chain.Use(SecurityHeadersMiddleware)
-    
+
     // 5. 应用中间件
     handler := chain.Then(mux)
-    
+
     // 6. 启动服务器
     server := &http.Server{
         Addr:    ":8443",
         Handler: handler,
     }
-    
+
     log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
 }
 ```
@@ -477,8 +480,7 @@ defer pool.Put(client)
 
 ---
 
-**文档版本**: v2.1  
-**最后更新**: 2025-10-22  
-**维护者**: AI Assistant  
+**文档版本**: v2.1
+**最后更新**: 2025-10-22
+**维护者**: AI Assistant
 **许可证**: MIT
-

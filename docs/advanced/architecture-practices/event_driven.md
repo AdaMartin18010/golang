@@ -1,4 +1,4 @@
-# 事件驱动架构（Golang国际主流实践）
+﻿# 事件驱动架构（Golang国际主流实践）
 
 > **简介**: 基于事件的异步通信架构设计，支持松耦合、高扩展性的分布式系统构建
 
@@ -147,7 +147,7 @@ type Event struct {
 }
 
 type EventHandler interface {
-    Handle(ctx context.Context, event *Event) error
+    Handle(ctx Context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
 ```
@@ -215,12 +215,12 @@ type Query interface {
 }
 
 type CommandHandler interface {
-    Handle(ctx context.Context, command Command) error
+    Handle(ctx Context.Context, command Command) error
     CanHandle(commandType string) bool
 }
 
 type QueryHandler interface {
-    Handle(ctx context.Context, query Query) (interface{}, error)
+    Handle(ctx Context.Context, query Query) (interface{}, error)
     CanHandle(queryType string) bool
 }
 ```
@@ -374,7 +374,7 @@ func NewOrderAggregate(id string) *OrderAggregate {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
  "time"
@@ -581,7 +581,7 @@ type Event struct {
 }
 
 type EventHandler interface {
-    Handle(ctx context.Context, event *Event) error
+    Handle(ctx Context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
 ```
@@ -627,7 +627,7 @@ type Event struct {
 }
 
 type EventHandler interface {
-    Handle(ctx context.Context, event *Event) error
+    Handle(ctx Context.Context, event *Event) error
     CanHandle(eventType string) bool
 }
 ```

@@ -1,9 +1,8 @@
-# gRPC
+﻿# gRPC
 
-**字数**: ~40,000字
-**代码示例**: 130+个完整示例
-**实战案例**: 14个端到端案例
-**适用人群**: 中级到高级Go开发者
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -185,7 +184,7 @@ protoc --go_out=. --go_opt=paths=source_relative \
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
  "net"
@@ -216,7 +215,7 @@ func NewUserServer() *UserServer {
 }
 
 // GetUser 获取用户（一元RPC）
-func (s *UserServer) GetUser(ctx context.Context, req *GetUserRequest) (*GetUserResponse, error) {
+func (s *UserServer) GetUser(ctx Context.Context, req *GetUserRequest) (*GetUserResponse, error) {
  log.Printf("GetUser: id=%d", req.Id)
 
  // 参数验证
@@ -236,7 +235,7 @@ func (s *UserServer) GetUser(ctx context.Context, req *GetUserRequest) (*GetUser
 }
 
 // CreateUser 创建用户（一元RPC）
-func (s *UserServer) CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
+func (s *UserServer) CreateUser(ctx Context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
  log.Printf("CreateUser: name=%s, email=%s", req.Name, req.Email)
 
  // 参数验证
@@ -337,7 +336,7 @@ func main() {
 package main
 
 import (
- "context"
+ "Context"
  "io"
  "log"
  "time"
@@ -363,7 +362,7 @@ func main() {
  // 创建客户端
  client := pb.NewUserServiceClient(conn)
 
- ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+ ctx, cancel := Context.WithTimeout(Context.Background(), 10*time.Second)
  defer cancel()
 
  // 1. 创建用户（一元RPC）
@@ -594,7 +593,7 @@ message UploadMessagesResponse {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "io"
  "log"
@@ -611,7 +610,7 @@ type ChatServer struct {
 
  mu          sync.RWMutex
  rooms       map[string]*Room
- subscribers map[string][]chan *pb.Message
+ subscribers map[string][]Channel *pb.Message
 }
 
 type Room struct {
@@ -622,12 +621,12 @@ type Room struct {
 func NewChatServer() *ChatServer {
  return &ChatServer{
   rooms:       make(map[string]*Room),
-  subscribers: make(map[string][]chan *pb.Message),
+  subscribers: make(map[string][]Channel *pb.Message),
  }
 }
 
 // 1. 一元RPC：发送单条消息
-func (s *ChatServer) SendMessage(ctx context.Context, req *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
+func (s *ChatServer) SendMessage(ctx Context.Context, req *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
  log.Printf("SendMessage: room=%s, content=%s", req.RoomId, req.Content)
 
  msg := &pb.Message{
@@ -663,7 +662,7 @@ func (s *ChatServer) SubscribeRoom(req *pb.SubscribeRoomRequest, stream pb.ChatS
  log.Printf("SubscribeRoom: room=%s", req.RoomId)
 
  // 创建订阅通道
- ch := make(chan *pb.Message, 100)
+ ch := make(Channel *pb.Message, 100)
 
  s.mu.Lock()
  s.subscribers[req.RoomId] = append(s.subscribers[req.RoomId], ch)
@@ -746,8 +745,8 @@ func (s *ChatServer) Chat(stream pb.ChatService_ChatServer) error {
  log.Println("Chat started")
 
  // 创建接收goroutine
- receiveCh := make(chan *pb.Message, 10)
- errCh := make(chan error, 1)
+ receiveCh := make(Channel *pb.Message, 10)
+ errCh := make(Channel error, 1)
 
  go func() {
   for {
@@ -807,7 +806,7 @@ func (s *ChatServer) Chat(stream pb.ChatService_ChatServer) error {
 package interceptor
 
 import (
- "context"
+ "Context"
  "log"
  "time"
 
@@ -820,7 +819,7 @@ import (
 // UnaryServerLogger 一元RPC日志拦截器
 func UnaryServerLogger() grpc.UnaryServerInterceptor {
  return func(
-  ctx context.Context,
+  ctx Context.Context,
   req interface{},
   info *grpc.UnaryServerInfo,
   handler grpc.UnaryHandler,
@@ -925,7 +924,7 @@ func (w *wrappedServerStream) RecvMsg(m interface{}) error {
 package interceptor
 
 import (
- "context"
+ "Context"
  "strings"
 
  "google.golang.org/grpc"
@@ -943,7 +942,7 @@ const (
 // UnaryServerAuth 认证拦截器
 func UnaryServerAuth() grpc.UnaryServerInterceptor {
  return func(
-  ctx context.Context,
+  ctx Context.Context,
   req interface{},
   info *grpc.UnaryServerInfo,
   handler grpc.UnaryHandler,
@@ -978,7 +977,7 @@ func UnaryServerAuth() grpc.UnaryServerInterceptor {
   }
 
   // 将用户ID注入context
-  ctx = context.WithValue(ctx, ContextKeyUserID, userID)
+  ctx = Context.WithValue(ctx, ContextKeyUserID, userID)
 
   return handler(ctx, req)
  }
@@ -993,7 +992,7 @@ func validateToken(token string) (string, error) {
 }
 
 // 从context获取用户ID
-func GetUserIDFromContext(ctx context.Context) (string, bool) {
+func GetUserIDFromContext(ctx Context.Context) (string, bool) {
  userID, ok := ctx.Value(ContextKeyUserID).(string)
  return userID, ok
 }

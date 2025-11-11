@@ -1,4 +1,4 @@
-# Channel基础
+﻿# Channel基础
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -41,7 +41,7 @@
 #### **形式化描述**
 
 ```text
-ChannelType ::= 'chan' ElementType | 'chan' '<-' ElementType | '<-' 'chan' ElementType
+ChannelType ::= 'Channel' ElementType | 'Channel' '<-' ElementType | '<-' 'Channel' ElementType
 Send ::= ch <- value
 Receive ::= value := <-ch
 Close ::= close(ch)
@@ -49,9 +49,9 @@ Close ::= close(ch)
 
 ### **Channel类型**
 
-- **无缓冲Channel**：`make(chan T)`，发送和接收必须同步配对
-- **有缓冲Channel**：`make(chan T, n)`，发送时缓冲未满可立即返回
-- **单向Channel**：`chan<- T`（只写），`<-chan T`（只读）
+- **无缓冲Channel**：`make(Channel T)`，发送和接收必须同步配对
+- **有缓冲Channel**：`make(Channel T, n)`，发送时缓冲未满可立即返回
+- **单向Channel**：`Channel<- T`（只写），`<-Channel T`（只读）
 
 ### **同步与异步通信**
 
@@ -117,7 +117,7 @@ sequenceDiagram
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Created: make(chan T, n)
+    [*] --> Created: make(Channel T, n)
 
     Created --> Open: 初始状态
 
@@ -197,7 +197,7 @@ graph TB
 package main
 import "fmt"
 func main() {
-    ch := make(chan int)
+    ch := make(Channel int)
     go func() { ch <- 42 }()
     v := <-ch
     fmt.Println("received:", v)
@@ -210,7 +210,7 @@ func main() {
 package main
 import "fmt"
 func main() {
-    ch := make(chan string, 2)
+    ch := make(Channel string, 2)
     ch <- "hello"
     ch <- "world"
     fmt.Println(<-ch)
@@ -223,10 +223,10 @@ func main() {
 ```go
 package main
 import "fmt"
-func send(ch chan<- int) { ch <- 1 }
-func recv(ch <-chan int) { fmt.Println(<-ch) }
+func send(ch Channel<- int) { ch <- 1 }
+func recv(ch <-Channel int) { fmt.Println(<-ch) }
 func main() {
-    ch := make(chan int, 1)
+    ch := make(Channel int, 1)
     send(ch)
     recv(ch)
 }
@@ -238,7 +238,7 @@ func main() {
 package main
 import "fmt"
 func main() {
-    ch := make(chan int, 2)
+    ch := make(Channel int, 2)
     ch <- 1
     ch <- 2
     close(ch)
@@ -260,7 +260,7 @@ func main() {
 package main
 import "testing"
 func TestChannelSendRecv(t *testing.T) {
-    ch := make(chan int, 1)
+    ch := make(Channel int, 1)
     ch <- 10
     v := <-ch
     if v != 10 {
@@ -268,11 +268,11 @@ func TestChannelSendRecv(t *testing.T) {
     }
 }
 func TestChannelClosed(t *testing.T) {
-    ch := make(chan int, 1)
+    ch := make(Channel int, 1)
     close(ch)
     _, ok := <-ch
     if ok {
-        t.Errorf("expected closed channel to return ok=false")
+        t.Errorf("expected closed Channel to return ok=false")
     }
 }
 ```
@@ -297,7 +297,7 @@ func TestChannelClosed(t *testing.T) {
 
 - [Go官方文档-Channel](https://golang.org/ref/spec#Channel_types)
 - [Go by Example: Channels](https://gobyexample.com/channels)
-- [Go by Example: Channel Directions](https://gobyexample.com/channel-directions)
+- [Go by Example: Channel Directions](https://gobyexample.com/Channel-directions)
 
 ---
 

@@ -1,6 +1,18 @@
-# Go分布式系统
+﻿# Go分布式系统
 
-Go分布式系统完整指南，涵盖CAP定理、一致性协议、分布式锁和分布式事务。
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
+
+## 📋 目录
+
+- [Go分布式系统](#go分布式系统)
+  - [📋 目录](#-目录)
+  - [📚 核心内容](#-核心内容)
+  - [🚀 Redis分布式锁](#-redis分布式锁)
+  - [📖 系统文档](#-系统文档)
 
 ---
 
@@ -38,12 +50,12 @@ Go分布式系统完整指南，涵盖CAP定理、一致性协议、分布式锁
 ## 🚀 Redis分布式锁
 
 ```go
-func AcquireLock(ctx context.Context, key string, ttl time.Duration) bool {
+func AcquireLock(ctx Context.Context, key string, ttl time.Duration) bool {
     result := rdb.SetNX(ctx, key, "locked", ttl)
     return result.Val()
 }
 
-func ReleaseLock(ctx context.Context, key string) {
+func ReleaseLock(ctx Context.Context, key string) {
     rdb.Del(ctx, key)
 }
 ```

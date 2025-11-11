@@ -1,4 +1,4 @@
-# API网关
+﻿# API网关
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -214,7 +214,7 @@ type LoadBalancer interface {
 
 type RoundRobinBalancer struct {
     current int
-    mutex   sync.Mutex
+    Mutex   sync.Mutex
 }
 
 func NewRoundRobinBalancer() *RoundRobinBalancer {
@@ -226,8 +226,8 @@ func (rr *RoundRobinBalancer) Select(backends []string) string {
         return ""
     }
 
-    rr.mutex.Lock()
-    defer rr.mutex.Unlock()
+    rr.Mutex.Lock()
+    defer rr.Mutex.Unlock()
 
     backend := backends[rr.current]
     rr.current = (rr.current + 1) % len(backends)
@@ -238,7 +238,7 @@ func (rr *RoundRobinBalancer) Select(backends []string) string {
 type WeightedRoundRobinBalancer struct {
     weights map[string]int
     current map[string]int
-    mutex   sync.Mutex
+    Mutex   sync.Mutex
 }
 
 func NewWeightedRoundRobinBalancer() *WeightedRoundRobinBalancer {
@@ -249,8 +249,8 @@ func NewWeightedRoundRobinBalancer() *WeightedRoundRobinBalancer {
 }
 
 func (wrr *WeightedRoundRobinBalancer) SetWeight(backend string, weight int) {
-    wrr.mutex.Lock()
-    defer wrr.mutex.Unlock()
+    wrr.Mutex.Lock()
+    defer wrr.Mutex.Unlock()
 
     wrr.weights[backend] = weight
     wrr.current[backend] = 0
@@ -261,8 +261,8 @@ func (wrr *WeightedRoundRobinBalancer) Select(backends []string) string {
         return ""
     }
 
-    wrr.mutex.Lock()
-    defer wrr.mutex.Unlock()
+    wrr.Mutex.Lock()
+    defer wrr.Mutex.Unlock()
 
     // 找到权重最大的后端
     maxWeight := -1
@@ -460,7 +460,7 @@ func (am *AuthMiddleware) Middleware() func(http.Handler) http.Handler {
             }
 
             // 将用户信息添加到请求上下文
-            ctx := context.WithValue(r.Context(), "user", claims)
+            ctx := Context.WithValue(r.Context(), "user", claims)
             r = r.WithContext(ctx)
 
             next.ServeHTTP(w, r)
@@ -546,7 +546,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "sync"
     "time"
@@ -558,7 +558,7 @@ type TokenBucket struct {
     tokens       int
     refillRate   int
     lastRefill   time.Time
-    mutex        sync.Mutex
+    Mutex        sync.Mutex
 }
 
 func NewTokenBucket(capacity, refillRate int) *TokenBucket {
@@ -571,8 +571,8 @@ func NewTokenBucket(capacity, refillRate int) *TokenBucket {
 }
 
 func (tb *TokenBucket) Allow() bool {
-    tb.mutex.Lock()
-    defer tb.mutex.Unlock()
+    tb.Mutex.Lock()
+    defer tb.Mutex.Unlock()
 
     // 补充令牌
     now := time.Now()
@@ -604,7 +604,7 @@ func min(a, b int) int {
 type SlidingWindow struct {
     windowSize time.Duration
     requests   []time.Time
-    mutex      sync.Mutex
+    Mutex      sync.Mutex
     maxRequests int
 }
 
@@ -617,8 +617,8 @@ func NewSlidingWindow(windowSize time.Duration, maxRequests int) *SlidingWindow 
 }
 
 func (sw *SlidingWindow) Allow() bool {
-    sw.mutex.Lock()
-    defer sw.mutex.Unlock()
+    sw.Mutex.Lock()
+    defer sw.Mutex.Unlock()
 
     now := time.Now()
     cutoff := now.Add(-sw.windowSize)
@@ -649,7 +649,7 @@ type CircuitBreaker struct {
     failures    int
     lastFailure time.Time
     state       string // "closed", "open", "half-open"
-    mutex       sync.Mutex
+    Mutex       sync.Mutex
 }
 
 func NewCircuitBreaker(maxFailures int, timeout time.Duration) *CircuitBreaker {
@@ -661,8 +661,8 @@ func NewCircuitBreaker(maxFailures int, timeout time.Duration) *CircuitBreaker {
 }
 
 func (cb *CircuitBreaker) Call(fn func() error) error {
-    cb.mutex.Lock()
-    defer cb.mutex.Unlock()
+    cb.Mutex.Lock()
+    defer cb.Mutex.Unlock()
 
     if cb.state == "open" {
         if time.Since(cb.lastFailure) > cb.timeout {

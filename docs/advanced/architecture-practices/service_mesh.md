@@ -1,4 +1,4 @@
-# 服务网格架构（Service Mesh Architecture）
+﻿# 服务网格架构（Service Mesh Architecture）
 
 > **简介**: Istio/Linkerd服务网格架构设计与实践，实现服务间通信治理、安全和可观测性
 
@@ -643,7 +643,7 @@ func (tm *TrafficManager) executeRouteAction(req *Request, action *RouteAction) 
 
 func (tm *TrafficManager) executeRequest(req *Request, endpoint *Endpoint, action *RouteAction) (*Response, error) {
     // 1. 设置超时
-    ctx, cancel := context.WithTimeout(context.Background(), action.Timeout)
+    ctx, cancel := Context.WithTimeout(Context.Background(), action.Timeout)
     defer cancel()
 
     // 2. 重试逻辑

@@ -1,4 +1,4 @@
-# Goroutine基础
+﻿# Goroutine基础
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -181,7 +181,7 @@ import (
     "time"
 )
 func sayHello() {
-    fmt.Println("Hello from goroutine!")
+    fmt.Println("Hello from Goroutine!")
 }
 func main() {
     go sayHello()
@@ -240,7 +240,7 @@ func main() {
 package main
 import "time"
 func leak() {
-    ch := make(chan int)
+    ch := make(Channel int)
     go func() {
         // 永远阻塞，泄漏
         ch <- 1

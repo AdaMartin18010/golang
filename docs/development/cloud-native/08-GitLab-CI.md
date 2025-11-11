@@ -1,4 +1,4 @@
-# GitLab CI/CD
+﻿# GitLab CI/CD
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -227,7 +227,7 @@ build:kaniko:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor \
-        --context $CI_PROJECT_DIR \
+        --Context $CI_PROJECT_DIR \
         --dockerfile $CI_PROJECT_DIR/Dockerfile \
         --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA \
         --destination $CI_REGISTRY_IMAGE:latest \
@@ -296,7 +296,7 @@ deploy:staging:
     name: staging
     url: https://staging.example.com
   script:
-    - kubectl config use-context staging-cluster
+    - kubectl config use-Context staging-cluster
     - kubectl set image deployment/user-service \
         user-service=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA \
         -n staging
@@ -311,7 +311,7 @@ deploy:production:
     name: production
     url: https://example.com
   script:
-    - kubectl config use-context production-cluster
+    - kubectl config use-Context production-cluster
     - kubectl set image deployment/user-service \
         user-service=$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG \
         -n production
@@ -361,7 +361,7 @@ deploy:regions:
       - REGION: [us-east-1, eu-west-1, ap-southeast-1]
   script:
     - echo "Deploying to $REGION"
-    - kubectl --context=$REGION deploy...
+    - kubectl --Context=$REGION deploy...
 ```
 
 ### 动态子Pipeline

@@ -1,7 +1,4 @@
-# Go 1.23 iter包完整指南
-
-> **难度**: ⭐⭐⭐⭐⭐
-> **标签**: #Go1.23 #iter包 #迭代器 #Pull #Seq
+﻿# Go 1.23 iter包完整指南
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -287,8 +284,8 @@ yield(v3)               v3, ok := next()
 // Pull内部实现（简化版概念）
 func Pull[V any](seq Seq[V]) (next func() (V, bool), stop func()) {
     // 创建通道作为桥梁
-    ch := make(chan V)
-    done := make(chan struct{})
+    ch := make(Channel V)
+    done := make(Channel struct{})
 
     // 启动goroutine运行迭代器
     go func() {
@@ -391,7 +388,7 @@ func Example2() {
 | **控制** | 自动 | 手动 |
 | **语法** | 简洁 | 灵活 |
 | **适用** | 顺序遍历 | 复杂控制流 |
-| **性能** | 更优 | 稍慢（goroutine） |
+| **性能** | 更优 | 稍慢（Goroutine） |
 | **资源清理** | 自动 | 需defer stop() |
 
 **何时使用Pull**:
@@ -1642,9 +1639,9 @@ func ParallelMap[T, U any](
     workers int,
 ) iter.Seq[U] {
     return func(yield func(U) bool) {
-        input := make(chan T, workers)
-        output := make(chan U, workers)
-        done := make(chan struct{})
+        input := make(Channel T, workers)
+        output := make(Channel U, workers)
+        done := make(Channel struct{})
 
         // 启动worker
         var wg sync.WaitGroup
@@ -1945,7 +1942,7 @@ func Sum(seq iter.Seq[int]) int {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "iter"
     "time"
@@ -1953,12 +1950,12 @@ import (
 
 // DataStream异步数据流
 type DataStream[T any] struct {
-    ch     <-chan T
-    cancel context.CancelFunc
+    ch     <-Channel T
+    cancel Context.CancelFunc
 }
 
 // FromChannel从channel创建迭代器
-func FromChannel[T any](ch <-chan T) iter.Seq[T] {
+func FromChannel[T any](ch <-Channel T) iter.Seq[T] {
     return func(yield func(T) bool) {
         for v := range ch {
             if !yield(v) {
@@ -1969,9 +1966,9 @@ func FromChannel[T any](ch <-chan T) iter.Seq[T] {
 }
 
 // Generate生成数据流
-func Generate[T any](ctx context.Context, fn func() T, interval time.Duration) *DataStream[T] {
-    ch := make(chan T)
-    ctx, cancel := context.WithCancel(ctx)
+func Generate[T any](ctx Context.Context, fn func() T, interval time.Duration) *DataStream[T] {
+    ch := make(Channel T)
+    ctx, cancel := Context.WithCancel(ctx)
 
     go func() {
         defer close(ch)
@@ -2001,7 +1998,7 @@ func (ds *DataStream[T]) Stop() {
 
 // 使用
 func main() {
-    ctx := context.Background()
+    ctx := Context.Background()
 
     // 每秒生成一个随机数
     stream := Generate(ctx, func() int {

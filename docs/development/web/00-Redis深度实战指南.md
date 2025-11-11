@@ -1,11 +1,10 @@
-# Redis
-
-**字数**: ~48,000字
-**代码示例**: 170+个完整示例
-**实战案例**: 15个端到端案例
-**适用人群**: 中级到高级Go开发者
+﻿# Redis
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
+
 
 ## 📋 目录
 
@@ -144,7 +143,7 @@ Client
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
  "time"
@@ -173,7 +172,7 @@ func NewRedisClient(addr, password string, db int) (*RedisClient, error) {
  })
 
  // 测试连接
- ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
  defer cancel()
 
  if err := rdb.Ping(ctx).Err(); err != nil {
@@ -190,12 +189,12 @@ func (r *RedisClient) Close() error {
 }
 
 // Set 设置键值（带过期时间）
-func (r *RedisClient) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+func (r *RedisClient) Set(ctx Context.Context, key string, value interface{}, expiration time.Duration) error {
  return r.client.Set(ctx, key, value, expiration).Err()
 }
 
 // Get 获取值
-func (r *RedisClient) Get(ctx context.Context, key string) (string, error) {
+func (r *RedisClient) Get(ctx Context.Context, key string) (string, error) {
  val, err := r.client.Get(ctx, key).Result()
  if err == redis.Nil {
   return "", fmt.Errorf("key does not exist")
@@ -204,22 +203,22 @@ func (r *RedisClient) Get(ctx context.Context, key string) (string, error) {
 }
 
 // Del 删除键
-func (r *RedisClient) Del(ctx context.Context, keys ...string) error {
+func (r *RedisClient) Del(ctx Context.Context, keys ...string) error {
  return r.client.Del(ctx, keys...).Err()
 }
 
 // Exists 检查键是否存在
-func (r *RedisClient) Exists(ctx context.Context, keys ...string) (int64, error) {
+func (r *RedisClient) Exists(ctx Context.Context, keys ...string) (int64, error) {
  return r.client.Exists(ctx, keys...).Result()
 }
 
 // Expire 设置过期时间
-func (r *RedisClient) Expire(ctx context.Context, key string, expiration time.Duration) error {
+func (r *RedisClient) Expire(ctx Context.Context, key string, expiration time.Duration) error {
  return r.client.Expire(ctx, key, expiration).Err()
 }
 
 // TTL 获取剩余生存时间
-func (r *RedisClient) TTL(ctx context.Context, key string) (time.Duration, error) {
+func (r *RedisClient) TTL(ctx Context.Context, key string) (time.Duration, error) {
  return r.client.TTL(ctx, key).Result()
 }
 
@@ -232,7 +231,7 @@ func main() {
  }
  defer client.Close()
 
- ctx := context.Background()
+ ctx := Context.Background()
 
  // 设置键值
  err = client.Set(ctx, "name", "Alice", 10*time.Minute)
@@ -271,7 +270,7 @@ func main() {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
  "time"
@@ -290,7 +289,7 @@ func NewStringOps(rdb *redis.Client) *StringOps {
 // ===== 基础操作 =====
 
 // SetGet 设置和获取
-func (s *StringOps) SetGet(ctx context.Context) {
+func (s *StringOps) SetGet(ctx Context.Context) {
  // SET
  s.rdb.Set(ctx, "user:1:name", "Alice", 0)
  s.rdb.Set(ctx, "user:1:age", "25", 0)
@@ -316,7 +315,7 @@ func (s *StringOps) SetGet(ctx context.Context) {
 // ===== 计数器操作 =====
 
 // Counter 计数器实现
-func (s *StringOps) Counter(ctx context.Context) {
+func (s *StringOps) Counter(ctx Context.Context) {
  key := "article:123:views"
 
  // INCR (增加1)
@@ -340,7 +339,7 @@ func (s *StringOps) Counter(ctx context.Context) {
 // ===== 分布式ID生成器 =====
 
 // GenerateID 生成分布式ID
-func (s *StringOps) GenerateID(ctx context.Context, key string) (int64, error) {
+func (s *StringOps) GenerateID(ctx Context.Context, key string) (int64, error) {
  // 使用INCR生成唯一ID
  return s.rdb.Incr(ctx, key).Result()
 }
@@ -356,19 +355,19 @@ func NewLikeService(rdb *redis.Client) *LikeService {
 }
 
 // Like 点赞
-func (l *LikeService) Like(ctx context.Context, postID string) (int64, error) {
+func (l *LikeService) Like(ctx Context.Context, postID string) (int64, error) {
  key := fmt.Sprintf("post:%s:likes", postID)
  return l.rdb.Incr(ctx, key).Result()
 }
 
 // Unlike 取消点赞
-func (l *LikeService) Unlike(ctx context.Context, postID string) (int64, error) {
+func (l *LikeService) Unlike(ctx Context.Context, postID string) (int64, error) {
  key := fmt.Sprintf("post:%s:likes", postID)
  return l.rdb.Decr(ctx, key).Result()
 }
 
 // GetLikes 获取点赞数
-func (l *LikeService) GetLikes(ctx context.Context, postID string) (int64, error) {
+func (l *LikeService) GetLikes(ctx Context.Context, postID string) (int64, error) {
  key := fmt.Sprintf("post:%s:likes", postID)
  return l.rdb.Get(ctx, key).Int64()
 }
@@ -384,7 +383,7 @@ func NewRateLimiter(rdb *redis.Client) *RateLimiter {
 }
 
 // Allow 检查是否允许访问（简单计数器限流）
-func (r *RateLimiter) Allow(ctx context.Context, userID string, maxRequests int, window time.Duration) (bool, error) {
+func (r *RateLimiter) Allow(ctx Context.Context, userID string, maxRequests int, window time.Duration) (bool, error) {
  key := fmt.Sprintf("rate_limit:%s", userID)
 
  // 获取当前计数
@@ -417,7 +416,7 @@ func main() {
  })
  defer rdb.Close()
 
- ctx := context.Background()
+ ctx := Context.Background()
 
  // String操作
  stringOps := NewStringOps(rdb)
@@ -444,7 +443,7 @@ func main() {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
 
@@ -462,7 +461,7 @@ func NewHashOps(rdb *redis.Client) *HashOps {
 // ===== 基础操作 =====
 
 // BasicOps Hash基础操作
-func (h *HashOps) BasicOps(ctx context.Context) {
+func (h *HashOps) BasicOps(ctx Context.Context) {
  key := "user:1000"
 
  // HSET (设置单个字段)
@@ -511,7 +510,7 @@ func (h *HashOps) BasicOps(ctx context.Context) {
 // ===== 计数器操作 =====
 
 // IncrementField Hash字段自增
-func (h *HashOps) IncrementField(ctx context.Context) {
+func (h *HashOps) IncrementField(ctx Context.Context) {
  key := "user:1000:stats"
 
  // HINCRBY (整数增加)
@@ -544,7 +543,7 @@ func NewUserRepository(rdb *redis.Client) *UserRepository {
 }
 
 // Save 保存用户信息
-func (r *UserRepository) Save(ctx context.Context, user *User) error {
+func (r *UserRepository) Save(ctx Context.Context, user *User) error {
  key := fmt.Sprintf("user:%s", user.ID)
  return r.rdb.HMSet(ctx, key, map[string]interface{}{
   "username": user.Username,
@@ -555,7 +554,7 @@ func (r *UserRepository) Save(ctx context.Context, user *User) error {
 }
 
 // Get 获取用户信息
-func (r *UserRepository) Get(ctx context.Context, id string) (*User, error) {
+func (r *UserRepository) Get(ctx Context.Context, id string) (*User, error) {
  key := fmt.Sprintf("user:%s", id)
  data, err := r.rdb.HGetAll(ctx, key).Result()
  if err != nil {
@@ -580,13 +579,13 @@ func (r *UserRepository) Get(ctx context.Context, id string) (*User, error) {
 }
 
 // Update 更新字段
-func (r *UserRepository) Update(ctx context.Context, id string, fields map[string]interface{}) error {
+func (r *UserRepository) Update(ctx Context.Context, id string, fields map[string]interface{}) error {
  key := fmt.Sprintf("user:%s", id)
  return r.rdb.HMSet(ctx, key, fields).Err()
 }
 
 // Delete 删除用户
-func (r *UserRepository) Delete(ctx context.Context, id string) error {
+func (r *UserRepository) Delete(ctx Context.Context, id string) error {
  key := fmt.Sprintf("user:%s", id)
  return r.rdb.Del(ctx, key).Err()
 }
@@ -602,37 +601,37 @@ func NewShoppingCart(rdb *redis.Client) *ShoppingCart {
 }
 
 // AddItem 添加商品到购物车
-func (s *ShoppingCart) AddItem(ctx context.Context, userID, productID string, quantity int) error {
+func (s *ShoppingCart) AddItem(ctx Context.Context, userID, productID string, quantity int) error {
  key := fmt.Sprintf("cart:%s", userID)
  return s.rdb.HIncrBy(ctx, key, productID, int64(quantity)).Err()
 }
 
 // RemoveItem 从购物车移除商品
-func (s *ShoppingCart) RemoveItem(ctx context.Context, userID, productID string) error {
+func (s *ShoppingCart) RemoveItem(ctx Context.Context, userID, productID string) error {
  key := fmt.Sprintf("cart:%s", userID)
  return s.rdb.HDel(ctx, key, productID).Err()
 }
 
 // UpdateQuantity 更新商品数量
-func (s *ShoppingCart) UpdateQuantity(ctx context.Context, userID, productID string, quantity int) error {
+func (s *ShoppingCart) UpdateQuantity(ctx Context.Context, userID, productID string, quantity int) error {
  key := fmt.Sprintf("cart:%s", userID)
  return s.rdb.HSet(ctx, key, productID, quantity).Err()
 }
 
 // GetCart 获取购物车
-func (s *ShoppingCart) GetCart(ctx context.Context, userID string) (map[string]string, error) {
+func (s *ShoppingCart) GetCart(ctx Context.Context, userID string) (map[string]string, error) {
  key := fmt.Sprintf("cart:%s", userID)
  return s.rdb.HGetAll(ctx, key).Result()
 }
 
 // GetItemCount 获取购物车商品种类数
-func (s *ShoppingCart) GetItemCount(ctx context.Context, userID string) (int64, error) {
+func (s *ShoppingCart) GetItemCount(ctx Context.Context, userID string) (int64, error) {
  key := fmt.Sprintf("cart:%s", userID)
  return s.rdb.HLen(ctx, key).Result()
 }
 
 // Clear 清空购物车
-func (s *ShoppingCart) Clear(ctx context.Context, userID string) error {
+func (s *ShoppingCart) Clear(ctx Context.Context, userID string) error {
  key := fmt.Sprintf("cart:%s", userID)
  return s.rdb.Del(ctx, key).Err()
 }
@@ -643,7 +642,7 @@ func main() {
  })
  defer rdb.Close()
 
- ctx := context.Background()
+ ctx := Context.Background()
 
  // Hash基础操作
  hashOps := NewHashOps(rdb)
@@ -684,7 +683,7 @@ func main() {
 package main
 
 import (
- "context"
+ "Context"
  "crypto/sha256"
  "encoding/hex"
  "encoding/json"
@@ -709,7 +708,7 @@ func NewCacheService(rdb *redis.Client) *CacheService {
 }
 
 // GetWithCachePenetration 防止缓存穿透
-func (c *CacheService) GetWithCachePenetration(ctx context.Context, key string, loader func() (interface{}, error)) (string, error) {
+func (c *CacheService) GetWithCachePenetration(ctx Context.Context, key string, loader func() (interface{}, error)) (string, error) {
  // 1. 查询缓存
  val, err := c.rdb.Get(ctx, key).Result()
  if err == nil {
@@ -740,10 +739,10 @@ func (c *CacheService) GetWithCachePenetration(ctx context.Context, key string, 
  return string(jsonData), nil
 }
 
-// ===== 缓存击穿解决方案：互斥锁 =====
+// ===== 缓存击穿解决方案：Mutex =====
 
 // GetWithCacheBreakdown 防止缓存击穿（热点key）
-func (c *CacheService) GetWithCacheBreakdown(ctx context.Context, key string, loader func() (interface{}, error), ttl time.Duration) (string, error) {
+func (c *CacheService) GetWithCacheBreakdown(ctx Context.Context, key string, loader func() (interface{}, error), ttl time.Duration) (string, error) {
  // 1. 查询缓存
  val, err := c.rdb.Get(ctx, key).Result()
  if err == nil {
@@ -788,7 +787,7 @@ func (c *CacheService) GetWithCacheBreakdown(ctx context.Context, key string, lo
 // ===== 缓存雪崩解决方案：随机过期时间 =====
 
 // SetWithRandomTTL 设置随机过期时间（防止雪崩）
-func (c *CacheService) SetWithRandomTTL(ctx context.Context, key string, value interface{}, baseTTL time.Duration) error {
+func (c *CacheService) SetWithRandomTTL(ctx Context.Context, key string, value interface{}, baseTTL time.Duration) error {
  // 在基础TTL上增加随机时间（0-300秒）
  randomTTL := baseTTL + time.Duration(rand.Intn(300))*time.Second
 
@@ -820,7 +819,7 @@ type CacheItem struct {
 }
 
 // Get 多级缓存获取
-func (m *MultiLevelCache) Get(ctx context.Context, key string, loader func() (interface{}, error)) (interface{}, error) {
+func (m *MultiLevelCache) Get(ctx Context.Context, key string, loader func() (interface{}, error)) (interface{}, error) {
  // 1. 查询本地缓存
  if item, ok := m.localCache.Load(key); ok {
   cacheItem := item.(*CacheItem)
@@ -875,7 +874,7 @@ func (m *MultiLevelCache) Get(ctx context.Context, key string, loader func() (in
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "time"
 
@@ -893,7 +892,7 @@ func NewListOps(rdb *redis.Client) *ListOps {
 }
 
 // 消息队列示例
-func (l *ListOps) MessageQueue(ctx context.Context) {
+func (l *ListOps) MessageQueue(ctx Context.Context) {
  queue := "task_queue"
 
  // 生产者：LPUSH（左侧插入）
@@ -919,7 +918,7 @@ func NewSetOps(rdb *redis.Client) *SetOps {
 }
 
 // 标签系统示例
-func (s *SetOps) TagSystem(ctx context.Context) {
+func (s *SetOps) TagSystem(ctx Context.Context) {
  // 文章标签
  s.rdb.SAdd(ctx, "article:1:tags", "go", "redis", "performance")
  s.rdb.SAdd(ctx, "article:2:tags", "go", "kubernetes", "cloud")
@@ -948,7 +947,7 @@ func NewZSetOps(rdb *redis.Client) *ZSetOps {
 }
 
 // 排行榜示例
-func (z *ZSetOps) Leaderboard(ctx context.Context) {
+func (z *ZSetOps) Leaderboard(ctx Context.Context) {
  leaderboard := "game:leaderboard"
 
  // 添加分数
@@ -986,7 +985,7 @@ func (z *ZSetOps) Leaderboard(ctx context.Context) {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
 
  "github.com/redis/go-redis/v9"
@@ -1003,7 +1002,7 @@ func NewBitmapOps(rdb *redis.Client) *BitmapOps {
 }
 
 // 用户签到系统
-func (b *BitmapOps) UserCheckIn(ctx context.Context) {
+func (b *BitmapOps) UserCheckIn(ctx Context.Context) {
  // 用户ID 123 在第1、3、5天签到
  b.rdb.SetBit(ctx, "checkin:123:2024-01", 1, 1)
  b.rdb.SetBit(ctx, "checkin:123:2024-01", 3, 1)
@@ -1029,7 +1028,7 @@ func NewHyperLogLogOps(rdb *redis.Client) *HyperLogLogOps {
 }
 
 // UV统计（独立访客）
-func (h *HyperLogLogOps) UniqueVisitors(ctx context.Context) {
+func (h *HyperLogLogOps) UniqueVisitors(ctx Context.Context) {
  // 添加访客
  h.rdb.PFAdd(ctx, "page:home:uv:2024-01-01", "user1", "user2", "user3")
  h.rdb.PFAdd(ctx, "page:home:uv:2024-01-01", "user2", "user4") // user2重复
@@ -1050,7 +1049,7 @@ func NewGeoOps(rdb *redis.Client) *GeoOps {
 }
 
 // 附近的人
-func (g *GeoOps) NearbyLocations(ctx context.Context) {
+func (g *GeoOps) NearbyLocations(ctx Context.Context) {
  locations := "drivers:locations"
 
  // 添加位置（经度、纬度、成员）
@@ -1086,7 +1085,7 @@ func (g *GeoOps) NearbyLocations(ctx context.Context) {
 package main
 
 import (
- "context"
+ "Context"
  "errors"
  "fmt"
  "time"
@@ -1113,12 +1112,12 @@ func NewDistributedLock(rdb *redis.Client, key string, ttl time.Duration) *Distr
 }
 
 // Lock 获取锁
-func (d *DistributedLock) Lock(ctx context.Context) (bool, error) {
+func (d *DistributedLock) Lock(ctx Context.Context) (bool, error) {
  return d.rdb.SetNX(ctx, d.key, d.value, d.ttl).Result()
 }
 
 // Unlock 释放锁（使用Lua脚本确保原子性）
-func (d *DistributedLock) Unlock(ctx context.Context) error {
+func (d *DistributedLock) Unlock(ctx Context.Context) error {
  script := `
   if redis.call("get", KEYS[1]) == ARGV[1] then
    return redis.call("del", KEYS[1])
@@ -1138,7 +1137,7 @@ func (d *DistributedLock) Unlock(ctx context.Context) error {
 
 // ===== 使用示例 =====
 
-func UseDistributedLock(ctx context.Context, rdb *redis.Client) {
+func UseDistributedLock(ctx Context.Context, rdb *redis.Client) {
  lock := NewDistributedLock(rdb, "order:123", 10*time.Second)
 
  // 尝试获取锁
@@ -1184,7 +1183,7 @@ func NewReentrantLock(rdb *redis.Client, key, threadID string, ttl time.Duration
 }
 
 // Lock 可重入锁
-func (r *ReentrantLock) Lock(ctx context.Context) (bool, error) {
+func (r *ReentrantLock) Lock(ctx Context.Context) (bool, error) {
  script := `
   if redis.call("exists", KEYS[1]) == 0 then
    redis.call("hset", KEYS[1], ARGV[1], 1)
@@ -1206,7 +1205,7 @@ func (r *ReentrantLock) Lock(ctx context.Context) (bool, error) {
 }
 
 // Unlock 释放可重入锁
-func (r *ReentrantLock) Unlock(ctx context.Context) error {
+func (r *ReentrantLock) Unlock(ctx Context.Context) error {
  script := `
   if redis.call("hexists", KEYS[1], ARGV[1]) == 0 then
    return nil
@@ -1235,7 +1234,7 @@ func (r *ReentrantLock) Unlock(ctx context.Context) error {
 package main
 
 import (
- "context"
+ "Context"
  "encoding/json"
  "fmt"
  "time"
@@ -1265,7 +1264,7 @@ func NewTaskQueue(rdb *redis.Client, queueName string) *TaskQueue {
 }
 
 // Push 推送任务
-func (q *TaskQueue) Push(ctx context.Context, task *Task) error {
+func (q *TaskQueue) Push(ctx Context.Context, task *Task) error {
  data, err := json.Marshal(task)
  if err != nil {
   return err
@@ -1274,7 +1273,7 @@ func (q *TaskQueue) Push(ctx context.Context, task *Task) error {
 }
 
 // Pop 消费任务（阻塞式）
-func (q *TaskQueue) Pop(ctx context.Context, timeout time.Duration) (*Task, error) {
+func (q *TaskQueue) Pop(ctx Context.Context, timeout time.Duration) (*Task, error) {
  result, err := q.rdb.BRPop(ctx, timeout, q.queueName).Result()
  if err != nil {
   return nil, err
@@ -1293,7 +1292,7 @@ func (q *TaskQueue) Pop(ctx context.Context, timeout time.Duration) (*Task, erro
 }
 
 // GetLength 获取队列长度
-func (q *TaskQueue) GetLength(ctx context.Context) (int64, error) {
+func (q *TaskQueue) GetLength(ctx Context.Context) (int64, error) {
  return q.rdb.LLen(ctx, q.queueName).Result()
 }
 
@@ -1312,7 +1311,7 @@ func NewDelayQueue(rdb *redis.Client, queueName string) *DelayQueue {
 }
 
 // Push 推送延迟任务
-func (d *DelayQueue) Push(ctx context.Context, task *Task, delay time.Duration) error {
+func (d *DelayQueue) Push(ctx Context.Context, task *Task, delay time.Duration) error {
  data, err := json.Marshal(task)
  if err != nil {
   return err
@@ -1326,7 +1325,7 @@ func (d *DelayQueue) Push(ctx context.Context, task *Task, delay time.Duration) 
 }
 
 // PopReady 获取到期的任务
-func (d *DelayQueue) PopReady(ctx context.Context) ([]*Task, error) {
+func (d *DelayQueue) PopReady(ctx Context.Context) ([]*Task, error) {
  now := float64(time.Now().Unix())
 
  // 获取到期的任务
@@ -1366,7 +1365,7 @@ func (d *DelayQueue) PopReady(ctx context.Context) ([]*Task, error) {
 package main
 
 import (
- "context"
+ "Context"
  "errors"
  "fmt"
 
@@ -1375,7 +1374,7 @@ import (
 
 // ===== Redis事务（MULTI/EXEC）=====
 
-func TransferMoney(ctx context.Context, rdb *redis.Client, from, to string, amount int64) error {
+func TransferMoney(ctx Context.Context, rdb *redis.Client, from, to string, amount int64) error {
  // 使用WATCH实现乐观锁
  txf := func(tx *redis.Tx) error {
   // 获取账户余额
@@ -1417,7 +1416,7 @@ func TransferMoney(ctx context.Context, rdb *redis.Client, from, to string, amou
 
 // ===== Pipeline（管道）=====
 
-func UsePipeline(ctx context.Context, rdb *redis.Client) {
+func UsePipeline(ctx Context.Context, rdb *redis.Client) {
  pipe := rdb.Pipeline()
 
  // 批量操作
@@ -1449,7 +1448,7 @@ func UsePipeline(ctx context.Context, rdb *redis.Client) {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "time"
 
@@ -1458,7 +1457,7 @@ import (
 
 // ===== 限流器（令牌桶算法）=====
 
-func RateLimitWithLua(ctx context.Context, rdb *redis.Client, key string, rate, capacity int64) (bool, error) {
+func RateLimitWithLua(ctx Context.Context, rdb *redis.Client, key string, rate, capacity int64) (bool, error) {
  script := `
   local key = KEYS[1]
   local rate = tonumber(ARGV[1])
@@ -1503,7 +1502,7 @@ func RateLimitWithLua(ctx context.Context, rdb *redis.Client, key string, rate, 
 
 // ===== 原子递增（带上限）=====
 
-func IncrWithLimit(ctx context.Context, rdb *redis.Client, key string, limit int64) (int64, error) {
+func IncrWithLimit(ctx Context.Context, rdb *redis.Client, key string, limit int64) (int64, error) {
  script := `
   local key = KEYS[1]
   local limit = tonumber(ARGV[1])
@@ -1531,7 +1530,7 @@ func IncrWithLimit(ctx context.Context, rdb *redis.Client, key string, limit int
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
  "time"
@@ -1554,7 +1553,7 @@ func NewStreamProducer(rdb *redis.Client, streamName string) *StreamProducer {
 }
 
 // Publish 发布消息到Stream
-func (p *StreamProducer) Publish(ctx context.Context, data map[string]interface{}) (string, error) {
+func (p *StreamProducer) Publish(ctx Context.Context, data map[string]interface{}) (string, error) {
  id, err := p.rdb.XAdd(ctx, &redis.XAddArgs{
   Stream: p.streamName,
   Values: data,
@@ -1581,12 +1580,12 @@ func NewStreamConsumer(rdb *redis.Client, streamName, groupName, consumerName st
 }
 
 // CreateGroup 创建消费者组
-func (c *StreamConsumer) CreateGroup(ctx context.Context) error {
+func (c *StreamConsumer) CreateGroup(ctx Context.Context) error {
  return c.rdb.XGroupCreate(ctx, c.streamName, c.groupName, "0").Err()
 }
 
 // Consume 消费消息
-func (c *StreamConsumer) Consume(ctx context.Context) {
+func (c *StreamConsumer) Consume(ctx Context.Context) {
  for {
   // 读取消息
   streams, err := c.rdb.XReadGroup(ctx, &redis.XReadGroupArgs{
@@ -1627,7 +1626,7 @@ func (c *StreamConsumer) Consume(ctx context.Context) {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
  "time"
@@ -1646,8 +1645,8 @@ func NewPublisher(rdb *redis.Client) *Publisher {
 }
 
 // Publish 发布消息
-func (p *Publisher) Publish(ctx context.Context, channel, message string) error {
- return p.rdb.Publish(ctx, channel, message).Err()
+func (p *Publisher) Publish(ctx Context.Context, Channel, message string) error {
+ return p.rdb.Publish(ctx, Channel, message).Err()
 }
 
 // ===== 订阅者 =====
@@ -1661,7 +1660,7 @@ func NewSubscriber(rdb *redis.Client) *Subscriber {
 }
 
 // Subscribe 订阅频道
-func (s *Subscriber) Subscribe(ctx context.Context, channels ...string) {
+func (s *Subscriber) Subscribe(ctx Context.Context, channels ...string) {
  pubsub := s.rdb.Subscribe(ctx, channels...)
  defer pubsub.Close()
 
@@ -1673,7 +1672,7 @@ func (s *Subscriber) Subscribe(ctx context.Context, channels ...string) {
 }
 
 // PSubscribe 模式订阅
-func (s *Subscriber) PSubscribe(ctx context.Context, patterns ...string) {
+func (s *Subscriber) PSubscribe(ctx Context.Context, patterns ...string) {
  pubsub := s.rdb.PSubscribe(ctx, patterns...)
  defer pubsub.Close()
 
@@ -1690,7 +1689,7 @@ func PubSubExample() {
   Addr: "localhost:6379",
  })
 
- ctx := context.Background()
+ ctx := Context.Background()
 
  // 启动订阅者
  subscriber := NewSubscriber(rdb)
@@ -1723,12 +1722,12 @@ func PubSubExample() {
 // save 60 10000     # 60秒内至少10000个key变化
 
 // 手动触发RDB快照
-func SaveSnapshot(ctx context.Context, rdb *redis.Client) error {
+func SaveSnapshot(ctx Context.Context, rdb *redis.Client) error {
  // SAVE（阻塞）
  return rdb.Save(ctx).Err()
 }
 
-func BackgroundSave(ctx context.Context, rdb *redis.Client) error {
+func BackgroundSave(ctx Context.Context, rdb *redis.Client) error {
  // BGSAVE（后台异步）
  return rdb.BgSave(ctx).Err()
 }
@@ -1740,7 +1739,7 @@ func BackgroundSave(ctx context.Context, rdb *redis.Client) error {
 // appendfsync everysec  # always | everysec | no
 
 // 重写AOF
-func RewriteAOF(ctx context.Context, rdb *redis.Client) error {
+func RewriteAOF(ctx Context.Context, rdb *redis.Client) error {
  return rdb.BgRewriteAOF(ctx).Err()
 }
 ```
@@ -1755,7 +1754,7 @@ func RewriteAOF(ctx context.Context, rdb *redis.Client) error {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
  "time"
@@ -1765,7 +1764,7 @@ import (
 
 // ===== 1. 使用Pipeline批量操作 =====
 
-func BatchOperations(ctx context.Context, rdb *redis.Client) {
+func BatchOperations(ctx Context.Context, rdb *redis.Client) {
  pipe := rdb.Pipeline()
 
  for i := 0; i < 1000; i++ {
@@ -1794,7 +1793,7 @@ func OptimizedClient() *redis.Client {
 
 // ===== 3. 避免大key =====
 
-func AvoidBigKeys(ctx context.Context, rdb *redis.Client) {
+func AvoidBigKeys(ctx Context.Context, rdb *redis.Client) {
  // 不好：一个大Hash
  // for i := 0; i < 1000000; i++ {
  //     rdb.HSet(ctx, "big_hash", fmt.Sprintf("field%d", i), i)
@@ -1810,7 +1809,7 @@ func AvoidBigKeys(ctx context.Context, rdb *redis.Client) {
 
 // ===== 4. 使用Scan代替Keys =====
 
-func ScanKeys(ctx context.Context, rdb *redis.Client, pattern string) []string {
+func ScanKeys(ctx Context.Context, rdb *redis.Client, pattern string) []string {
  var keys []string
  var cursor uint64
 
@@ -1845,7 +1844,7 @@ func ScanKeys(ctx context.Context, rdb *redis.Client, pattern string) []string {
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "log"
 
@@ -1854,7 +1853,7 @@ import (
 
 // ===== Redis INFO命令 =====
 
-func MonitorRedis(ctx context.Context, rdb *redis.Client) {
+func MonitorRedis(ctx Context.Context, rdb *redis.Client) {
  // 获取服务器信息
  info, err := rdb.Info(ctx).Result()
  if err != nil {
@@ -1882,7 +1881,7 @@ func MonitorRedis(ctx context.Context, rdb *redis.Client) {
 
 // ===== 慢查询监控 =====
 
-func MonitorSlowLog(ctx context.Context, rdb *redis.Client) {
+func MonitorSlowLog(ctx Context.Context, rdb *redis.Client) {
  // 获取慢查询日志
  slowLogs, err := rdb.SlowLogGet(ctx, 10).Result()
  if err != nil {
@@ -1898,7 +1897,7 @@ func MonitorSlowLog(ctx context.Context, rdb *redis.Client) {
 
 // ===== 健康检查 =====
 
-func HealthCheck(ctx context.Context, rdb *redis.Client) error {
+func HealthCheck(ctx Context.Context, rdb *redis.Client) error {
  // PING命令
  pong, err := rdb.Ping(ctx).Result()
  if err != nil {
@@ -1930,7 +1929,7 @@ func HealthCheck(ctx context.Context, rdb *redis.Client) error {
 package main
 
 import (
- "context"
+ "Context"
  "errors"
  "fmt"
  "time"
@@ -1949,19 +1948,19 @@ func NewInventoryService(rdb *redis.Client) *InventoryService {
 }
 
 // SetStock 设置库存
-func (s *InventoryService) SetStock(ctx context.Context, productID string, stock int64) error {
+func (s *InventoryService) SetStock(ctx Context.Context, productID string, stock int64) error {
  key := fmt.Sprintf("inventory:%s", productID)
  return s.rdb.Set(ctx, key, stock, 0).Err()
 }
 
 // GetStock 获取库存
-func (s *InventoryService) GetStock(ctx context.Context, productID string) (int64, error) {
+func (s *InventoryService) GetStock(ctx Context.Context, productID string) (int64, error) {
  key := fmt.Sprintf("inventory:%s", productID)
  return s.rdb.Get(ctx, key).Int64()
 }
 
 // DeductStock 扣减库存（使用Lua脚本保证原子性）
-func (s *InventoryService) DeductStock(ctx context.Context, productID string, quantity int64) error {
+func (s *InventoryService) DeductStock(ctx Context.Context, productID string, quantity int64) error {
  script := `
   local key = KEYS[1]
   local quantity = tonumber(ARGV[1])
@@ -1989,7 +1988,7 @@ func (s *InventoryService) DeductStock(ctx context.Context, productID string, qu
 }
 
 // PreemptStock 预占库存（秒杀场景）
-func (s *InventoryService) PreemptStock(ctx context.Context, productID, orderID string, quantity int64, ttl time.Duration) error {
+func (s *InventoryService) PreemptStock(ctx Context.Context, productID, orderID string, quantity int64, ttl time.Duration) error {
  // 1. 扣减总库存
  if err := s.DeductStock(ctx, productID, quantity); err != nil {
   return err
@@ -2008,7 +2007,7 @@ func (s *InventoryService) PreemptStock(ctx context.Context, productID, orderID 
 }
 
 // ConfirmStock 确认预占（支付成功）
-func (s *InventoryService) ConfirmStock(ctx context.Context, productID, orderID string) error {
+func (s *InventoryService) ConfirmStock(ctx Context.Context, productID, orderID string) error {
  preemptKey := fmt.Sprintf("preempt:%s:%s", productID, orderID)
 
  // 删除预占记录
@@ -2025,7 +2024,7 @@ func (s *InventoryService) ConfirmStock(ctx context.Context, productID, orderID 
 }
 
 // CancelStock 取消预占（支付失败或超时）
-func (s *InventoryService) CancelStock(ctx context.Context, productID, orderID string) error {
+func (s *InventoryService) CancelStock(ctx Context.Context, productID, orderID string) error {
  preemptKey := fmt.Sprintf("preempt:%s:%s", productID, orderID)
 
  // 获取预占数量
@@ -2049,7 +2048,7 @@ func (s *InventoryService) CancelStock(ctx context.Context, productID, orderID s
 }
 
 // AddStock 增加库存
-func (s *InventoryService) AddStock(ctx context.Context, productID string, quantity int64) error {
+func (s *InventoryService) AddStock(ctx Context.Context, productID string, quantity int64) error {
  key := fmt.Sprintf("inventory:%s", productID)
  return s.rdb.IncrBy(ctx, key, quantity).Err()
 }
@@ -2062,7 +2061,7 @@ func InventoryExample() {
  })
  defer rdb.Close()
 
- ctx := context.Background()
+ ctx := Context.Background()
  service := NewInventoryService(rdb)
 
  // 设置初始库存

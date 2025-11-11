@@ -1,7 +1,4 @@
-# Go 1.21 PGO (Profile-Guided Optimization) 使用指南
-
-> **难度**: ⭐⭐⭐⭐
-> **标签**: #PGO #性能优化 #编译优化
+﻿# Go 1.21 PGO (Profile-Guided Optimization) 使用指南
 
 **版本**: v1.0
 **更新日期**: 2025-10-29

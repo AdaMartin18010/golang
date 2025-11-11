@@ -1,4 +1,4 @@
-# DevOps与运维架构（Golang国际主流实践）
+﻿# DevOps与运维架构（Golang国际主流实践）
 
 > **简介**: 持续集成、持续部署的DevOps工程实践，实现快速交付和自动化运维
 
@@ -193,7 +193,7 @@ type Step struct {
     Artifacts   []Artifact
 }
 
-func (pe *PipelineEngine) ExecutePipeline(ctx context.Context, pipelineID string, params map[string]interface{}) (*ExecutionResult, error) {
+func (pe *PipelineEngine) ExecutePipeline(ctx Context.Context, pipelineID string, params map[string]interface{}) (*ExecutionResult, error) {
     // 1. 获取流水线定义
     pipeline, err := pe.PipelineRegistry.GetPipeline(pipelineID)
     if err != nil {
@@ -218,7 +218,7 @@ func (pe *PipelineEngine) ExecutePipeline(ctx context.Context, pipelineID string
     return pe.Scheduler.Schedule(ctx, execution)
 }
 
-func (pe *PipelineEngine) ExecuteStage(ctx context.Context, execution *PipelineExecution, stageID string) error {
+func (pe *PipelineEngine) ExecuteStage(ctx Context.Context, execution *PipelineExecution, stageID string) error {
     stage := pe.findStage(execution.Pipeline, stageID)
 
     // 检查依赖
@@ -239,7 +239,7 @@ func (pe *PipelineEngine) ExecuteStage(ctx context.Context, execution *PipelineE
 
 ```go
 type DeploymentStrategy interface {
-    Deploy(ctx context.Context, app *Application, target *Environment) error
+    Deploy(ctx Context.Context, app *Application, target *Environment) error
 }
 
 type BlueGreenDeployment struct {
@@ -248,7 +248,7 @@ type BlueGreenDeployment struct {
     RollbackManager *RollbackManager
 }
 
-func (bg *BlueGreenDeployment) Deploy(ctx context.Context, app *Application, target *Environment) error {
+func (bg *BlueGreenDeployment) Deploy(ctx Context.Context, app *Application, target *Environment) error {
     // 1. 部署新版本到绿色环境
     greenDeployment, err := bg.deployToEnvironment(ctx, app, target.Green)
     if err != nil {
@@ -284,7 +284,7 @@ type CanaryDeployment struct {
     RollbackThreshold float64
 }
 
-func (cd *CanaryDeployment) Deploy(ctx context.Context, app *Application, target *Environment) error {
+func (cd *CanaryDeployment) Deploy(ctx Context.Context, app *Application, target *Environment) error {
     // 1. 部署金丝雀版本
     canaryDeployment, err := cd.deployCanary(ctx, app, target)
     if err != nil {
@@ -358,7 +358,7 @@ type InfrastructurePlan struct {
     EstimatedCost *CostEstimate
 }
 
-func (im *InfrastructureManager) Plan(ctx context.Context, resources []*ResourceDefinition) (*InfrastructurePlan, error) {
+func (im *InfrastructureManager) Plan(ctx Context.Context, resources []*ResourceDefinition) (*InfrastructurePlan, error) {
     // 1. 解析依赖关系
     dependencies, err := im.DependencyResolver.Resolve(resources)
     if err != nil {
@@ -391,7 +391,7 @@ func (im *InfrastructureManager) Plan(ctx context.Context, resources []*Resource
     }, nil
 }
 
-func (im *InfrastructureManager) Apply(ctx context.Context, plan *InfrastructurePlan) error {
+func (im *InfrastructureManager) Apply(ctx Context.Context, plan *InfrastructurePlan) error {
     // 1. 锁定状态
     if err := im.StateManager.Lock(ctx); err != nil {
         return err
@@ -435,11 +435,11 @@ type MultiCloudManager struct {
 }
 
 type CloudProvider interface {
-    CreateResource(ctx context.Context, resource *ResourceDefinition) error
-    UpdateResource(ctx context.Context, resource *ResourceDefinition) error
-    DeleteResource(ctx context.Context, resourceID string) error
-    GetResource(ctx context.Context, resourceID string) (*Resource, error)
-    ListResources(ctx context.Context, filters map[string]string) ([]*Resource, error)
+    CreateResource(ctx Context.Context, resource *ResourceDefinition) error
+    UpdateResource(ctx Context.Context, resource *ResourceDefinition) error
+    DeleteResource(ctx Context.Context, resourceID string) error
+    GetResource(ctx Context.Context, resourceID string) (*Resource, error)
+    ListResources(ctx Context.Context, filters map[string]string) ([]*Resource, error)
 }
 
 type AWSProvider struct {
@@ -447,7 +447,7 @@ type AWSProvider struct {
     region string
 }
 
-func (p *AWSProvider) CreateResource(ctx context.Context, resource *ResourceDefinition) error {
+func (p *AWSProvider) CreateResource(ctx Context.Context, resource *ResourceDefinition) error {
     switch resource.Type {
     case "aws_ec2_instance":
         return p.createEC2Instance(ctx, resource)
@@ -465,7 +465,7 @@ type GCPProvider struct {
     project string
 }
 
-func (p *GCPProvider) CreateResource(ctx context.Context, resource *ResourceDefinition) error {
+func (p *GCPProvider) CreateResource(ctx Context.Context, resource *ResourceDefinition) error {
     switch resource.Type {
     case "google_compute_instance":
         return p.createComputeInstance(ctx, resource)
@@ -514,7 +514,7 @@ func (p *GCPProvider) CreateResource(ctx context.Context, resource *ResourceDefi
 
 1. **日志 (Logging)**: 使用高性能的结构化日志库如`uber-go/zap`或`sirupsen/logrus`，将日志输出为JSON格式。通过`Fluentd`或`Promtail`收集日志，并发送到`Loki`或`Elasticsearch`进行存储和查询。
 2. **指标 (Metrics)**: 在Go应用中引入`prometheus/client_golang`库，通过HTTP暴露`/metrics`端点。Prometheus Server定期抓取这些指标，并使用Grafana进行可视化，使用Alertmanager进行告警。
-3. **追踪 (Tracing)**: 使用`OpenTelemetry`的Go SDK。在请求入口处创建父Span，并通过`context`在函数调用链中传递，在关键节点创建子Span。将追踪数据导出到`Jaeger`或`Tempo`进行分析。
+3. **追踪 (Tracing)**: 使用`OpenTelemetry`的Go SDK。在请求入口处创建父Span，并通过`Context`在函数调用链中传递，在关键节点创建子Span。将追踪数据导出到`Jaeger`或`Tempo`进行分析。
 
 ## 9. 混沌工程 (Chaos Engineering)
 
@@ -602,7 +602,7 @@ type Action struct {
     Retries     int
 }
 
-func (shs *SelfHealingSystem) MonitorAndHeal(ctx context.Context) {
+func (shs *SelfHealingSystem) MonitorAndHeal(ctx Context.Context) {
     ticker := time.NewTicker(30 * time.Second)
     defer ticker.Stop()
 
@@ -616,7 +616,7 @@ func (shs *SelfHealingSystem) MonitorAndHeal(ctx context.Context) {
     }
 }
 
-func (shs *SelfHealingSystem) checkAndHeal(ctx context.Context) {
+func (shs *SelfHealingSystem) checkAndHeal(ctx Context.Context) {
     // 1. 收集系统状态
     status := shs.Monitor.GetSystemStatus()
 
@@ -635,7 +635,7 @@ func (shs *SelfHealingSystem) checkAndHeal(ctx context.Context) {
     }
 }
 
-func (shs *SelfHealingSystem) executeHealingPolicy(ctx context.Context, policy *HealingPolicy, issue *Issue) error {
+func (shs *SelfHealingSystem) executeHealingPolicy(ctx Context.Context, policy *HealingPolicy, issue *Issue) error {
     // 1. 记录修复开始
     shs.logHealingStart(policy, issue)
 
@@ -692,7 +692,7 @@ type Configuration struct {
     Updated     time.Time
 }
 
-func (cm *ConfigurationManager) DeployConfig(ctx context.Context, config *Configuration) error {
+func (cm *ConfigurationManager) DeployConfig(ctx Context.Context, config *Configuration) error {
     // 1. 验证配置
     if err := cm.Validator.Validate(config); err != nil {
         return fmt.Errorf("config validation failed: %w", err)
@@ -719,7 +719,7 @@ func (cm *ConfigurationManager) DeployConfig(ctx context.Context, config *Config
     return nil
 }
 
-func (cm *ConfigurationManager) RollbackConfig(ctx context.Context, configID string, targetVersion string) error {
+func (cm *ConfigurationManager) RollbackConfig(ctx Context.Context, configID string, targetVersion string) error {
     // 1. 获取目标版本
     version, err := cm.VersionManager.GetVersion(configID, targetVersion)
     if err != nil {
@@ -775,7 +775,7 @@ type Finding struct {
     References  []string
 }
 
-func (scm *SecurityComplianceManager) RunSecurityScan(ctx context.Context, target string, scanType ScanType) (*SecurityScan, error) {
+func (scm *SecurityComplianceManager) RunSecurityScan(ctx Context.Context, target string, scanType ScanType) (*SecurityScan, error) {
     scan := &SecurityScan{
         ID:       uuid.New().String(),
         Type:     scanType,
@@ -805,7 +805,7 @@ func (scm *SecurityComplianceManager) RunSecurityScan(ctx context.Context, targe
     return scan, nil
 }
 
-func (scm *SecurityComplianceManager) CheckCompliance(ctx context.Context, framework string) (*ComplianceReport, error) {
+func (scm *SecurityComplianceManager) CheckCompliance(ctx Context.Context, framework string) (*ComplianceReport, error) {
     // 支持的合规框架
     frameworks := map[string]ComplianceFramework{
         "SOC2":     &SOC2Framework{},
@@ -860,7 +860,7 @@ type AccessDecision struct {
     ExpiresAt   time.Time
 }
 
-func (acm *AccessControlManager) CheckAccess(ctx context.Context, req *AccessRequest) (*AccessDecision, error) {
+func (acm *AccessControlManager) CheckAccess(ctx Context.Context, req *AccessRequest) (*AccessDecision, error) {
     // 1. 获取用户身份
     identity, err := acm.IdentityManager.GetIdentity(ctx, req.UserID)
     if err != nil {
@@ -926,7 +926,7 @@ type OptimizationRecommendation struct {
     Priority    string
 }
 
-func (ro *ResourceOptimizer) AnalyzeAndOptimize(ctx context.Context) error {
+func (ro *ResourceOptimizer) AnalyzeAndOptimize(ctx Context.Context) error {
     // 1. 收集资源使用情况
     usage := ro.ResourceMonitor.CollectUsage()
 
@@ -973,7 +973,7 @@ type CapacityForecast struct {
     Factors     []string
 }
 
-func (cp *CapacityPlanner) ForecastCapacity(ctx context.Context, resource string, timeline time.Duration) (*CapacityForecast, error) {
+func (cp *CapacityPlanner) ForecastCapacity(ctx Context.Context, resource string, timeline time.Duration) (*CapacityForecast, error) {
     // 1. 分析历史数据
     historicalData := cp.HistoricalAnalyzer.GetHistoricalData(resource, timeline)
 
@@ -1037,7 +1037,7 @@ type Service struct {
     Config      *ServiceConfig
 }
 
-func (sm *ServiceManager) ScaleService(ctx context.Context, serviceID string, targetReplicas int) error {
+func (sm *ServiceManager) ScaleService(ctx Context.Context, serviceID string, targetReplicas int) error {
     service := sm.services[serviceID]
 
     // 1. 检查资源可用性
@@ -1053,7 +1053,7 @@ func (sm *ServiceManager) ScaleService(ctx context.Context, serviceID string, ta
     }
 }
 
-func (sm *ServiceManager) scaleUp(ctx context.Context, service *Service, targetReplicas int) error {
+func (sm *ServiceManager) scaleUp(ctx Context.Context, service *Service, targetReplicas int) error {
     currentReplicas := len(service.Instances)
     newReplicas := targetReplicas - currentReplicas
 
@@ -1099,7 +1099,7 @@ type GitOpsWorkflow struct {
     argocd      *ArgoCDManager
 }
 
-func (gw *GitOpsWorkflow) SyncInfrastructure(ctx context.Context) error {
+func (gw *GitOpsWorkflow) SyncInfrastructure(ctx Context.Context) error {
     // 1. 拉取最新代码
     if err := gw.pullLatestCode(); err != nil {
         return err

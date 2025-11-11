@@ -1,15 +1,8 @@
-# Go性能优化与pprof
+﻿# Go性能优化与pprof
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
 **适用于**: Go 1.23+
-
----
-
-**字数**: ~15,000字
-**代码示例**: 30+个
-**实战案例**: 3个完整案例
-**适用人群**: 中高级Go开发者
 
 ---
 
@@ -616,10 +609,10 @@ go tool pprof -base heap1.prof heap2.prof
 
 ```bash
 # 采集
-curl http://localhost:6060/debug/pprof/goroutine > goroutine.prof
+curl http://localhost:6060/debug/pprof/Goroutine > Goroutine.prof
 
 # 分析
-go tool pprof goroutine.prof
+go tool pprof Goroutine.prof
 (pprof) top
 Total: 50000 goroutines
   40000 (80.00%) runtime.gopark           # ← goroutine在等待
@@ -635,7 +628,7 @@ Total: 50000 goroutines
 ```go
 // 泄漏代码
 func leakyHandler(w http.ResponseWriter, r *http.Request) {
-    ch := make(chan int)  // ❌ 无缓冲channel
+    ch := make(Channel int)  // ❌ 无缓冲channel
 
     go func() {
         result := heavyCompute()
@@ -653,7 +646,7 @@ func leakyHandler(w http.ResponseWriter, r *http.Request) {
 
 // 修复
 func fixedHandler(w http.ResponseWriter, r *http.Request) {
-    ch := make(chan int, 1)  // ✅ 有缓冲channel
+    ch := make(Channel int, 1)  // ✅ 有缓冲channel
 
     go func() {
         result := heavyCompute()
@@ -692,8 +685,8 @@ $ go tool pprof block.prof
 (pprof) top
 Total: 120s (阻塞总时长)
    80s (66.67%) sync.(*Mutex).Lock      # ← 锁竞争严重！
-   30s (25.00%) chan receive
-   10s ( 8.33%) chan send
+   30s (25.00%) Channel receive
+   10s ( 8.33%) Channel send
 ```
 
 #### 5. Mutex Profile
@@ -711,8 +704,8 @@ func init() {
 ```
 
 ```bash
-$ curl http://localhost:6060/debug/pprof/mutex > mutex.prof
-$ go tool pprof mutex.prof
+$ curl http://localhost:6060/debug/pprof/Mutex > Mutex.prof
+$ go tool pprof Mutex.prof
 (pprof) top
 Total: 500ms (等待锁的总时长)
   400ms (80.00%) main.(*Cache).Get
@@ -918,7 +911,7 @@ $ go tool trace trace.out
 ┌─────────────────────────────────────────────────────────┐
 │ Goroutines (200)                                        │
 ├─────────────────────────────────────────────────────────┤
-│ G1: ▓▓▓░░░▓▓▓░░░▓▓▓░░░▓▓▓  ← main goroutine          │
+│ G1: ▓▓▓░░░▓▓▓░░░▓▓▓░░░▓▓▓  ← main Goroutine          │
 │ G2: ░░░▓▓▓░░░▓▓▓░░░▓▓▓░░░  ← worker 1                │
 │ G3: ░░░░░░▓▓▓░░░░░░▓▓▓░░░  ← worker 2                │
 │ ...                                                     │
@@ -950,7 +943,7 @@ $ go tool trace trace.out
 
 **4. Synchronization Blocking Profile**:
 
-分析同步原语阻塞（mutex、channel等）
+分析同步原语阻塞（Mutex、channel等）
 
 #### 实战案例：用trace找问题
 
@@ -979,7 +972,7 @@ func processItemsFixed(items []Item) {
 }
 
 // trace显示（修复后）：
-// - 8个worker goroutine（CPU数量）
+// - 8个worker Goroutine（CPU数量）
 // - P1-P8持续工作，无空闲
 // - 吞吐量提升3倍
 ```
@@ -2031,8 +2024,8 @@ echo "5. 检查竞态条件"
 go test -race ./...
 
 echo "6. 检查goroutine泄漏"
-curl http://localhost:6060/debug/pprof/goroutine > goroutine.prof
-go tool pprof -top goroutine.prof
+curl http://localhost:6060/debug/pprof/Goroutine > Goroutine.prof
+go tool pprof -top Goroutine.prof
 ```
 
 #### 上线阶段

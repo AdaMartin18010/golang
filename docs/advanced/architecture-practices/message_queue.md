@@ -1,4 +1,4 @@
-# 消息队列架构（Golang国际主流实践）
+﻿# 消息队列架构（Golang国际主流实践）
 
 > **简介**: 异步消息传递和流处理架构，实现系统解耦和可靠通信
 
@@ -155,7 +155,7 @@ type IdempotentConsumer struct {
     storage           IdempotencyStorage
 }
 
-func (ic *IdempotentConsumer) ProcessMessage(ctx context.Context, msg *Message) error {
+func (ic *IdempotentConsumer) ProcessMessage(ctx Context.Context, msg *Message) error {
     // 1. 检查消息是否已经处理过
     if ic.hasProcessed(msg.ID) {
         log.Printf("Message %s already processed, skipping", msg.ID)
@@ -340,7 +340,7 @@ type MessageAck struct {
     RetryCount  int
 }
 
-func (ma *MessageAcknowledgment) Acknowledge(ctx context.Context, messageID string, consumerID string) error {
+func (ma *MessageAcknowledgment) Acknowledge(ctx Context.Context, messageID string, consumerID string) error {
     // 1. 记录确认
     ack := &MessageAck{
         MessageID:  messageID,
@@ -361,7 +361,7 @@ func (ma *MessageAcknowledgment) Acknowledge(ctx context.Context, messageID stri
     return nil
 }
 
-func (ma *MessageAcknowledgment) HandleFailure(ctx context.Context, messageID string, consumerID string, error error) error {
+func (ma *MessageAcknowledgment) HandleFailure(ctx Context.Context, messageID string, consumerID string, error error) error {
     // 1. 检查重试次数
     retryCount := ma.RetryManager.GetRetryCount(messageID, consumerID)
 
@@ -411,7 +411,7 @@ type Batch struct {
     Status      BatchStatus
 }
 
-func (bp *BatchProcessor) ProcessBatch(ctx context.Context, messages []*Message) error {
+func (bp *BatchProcessor) ProcessBatch(ctx Context.Context, messages []*Message) error {
     // 1. 创建批次
     batch := &Batch{
         ID:       uuid.New().String(),
@@ -435,13 +435,13 @@ func (bp *BatchProcessor) ProcessBatch(ctx context.Context, messages []*Message)
     return bp.processBatchSequential(ctx, batch)
 }
 
-func (bp *BatchProcessor) processBatchParallel(ctx context.Context, batch *Batch) error {
+func (bp *BatchProcessor) processBatchParallel(ctx Context.Context, batch *Batch) error {
     // 1. 分割批次
     subBatches := bp.splitBatch(batch, bp.Config.Parallelism)
 
     // 2. 并行处理
     var wg sync.WaitGroup
-    errors := make(chan error, len(subBatches))
+    errors := make(Channel error, len(subBatches))
 
     for _, subBatch := range subBatches {
         wg.Add(1)
@@ -618,7 +618,7 @@ type LatencyMetrics struct {
     Percentile99      time.Duration
 }
 
-func (qm *QueueMonitor) CollectMetrics(ctx context.Context) (*QueueMetrics, error) {
+func (qm *QueueMonitor) CollectMetrics(ctx Context.Context) (*QueueMetrics, error) {
     metrics := &QueueMetrics{
         Timestamp: time.Now(),
     }
@@ -703,7 +703,7 @@ type RetryProcessor struct {
     dlqTopic string
 }
 
-func (rp *RetryProcessor) ProcessWithRetry(ctx context.Context, msg *Message, handler MessageHandler) error {
+func (rp *RetryProcessor) ProcessWithRetry(ctx Context.Context, msg *Message, handler MessageHandler) error {
     var lastErr error
 
     for attempt := 0; attempt <= rp.config.MaxRetries; attempt++ {
@@ -939,7 +939,7 @@ type OrderProcessor struct {
     eventBus       *EventBus
 }
 
-func (op *OrderProcessor) ProcessOrder(ctx context.Context, order *Order) error {
+func (op *OrderProcessor) ProcessOrder(ctx Context.Context, order *Order) error {
     // 1. 发布订单创建事件
     orderEvent := &OrderEvent{
         Type:      "OrderCreated",
@@ -1029,7 +1029,7 @@ type LogSource struct {
     Filters     []string
 }
 
-func (lc *LogCollector) CollectLogs(ctx context.Context) error {
+func (lc *LogCollector) CollectLogs(ctx Context.Context) error {
     for _, source := range lc.Sources {
         go func(s LogSource) {
             lc.collectFromSource(ctx, s)
@@ -1038,7 +1038,7 @@ func (lc *LogCollector) CollectLogs(ctx context.Context) error {
     return nil
 }
 
-func (lc *LogCollector) collectFromSource(ctx context.Context, source LogSource) {
+func (lc *LogCollector) collectFromSource(ctx Context.Context, source LogSource) {
     // 1. 读取日志文件
     files, err := filepath.Glob(source.Pattern)
     if err != nil {
@@ -1071,7 +1071,7 @@ func (lc *LogCollector) collectFromSource(ctx context.Context, source LogSource)
     }
 }
 
-func (lc *LogCollector) processLogFile(ctx context.Context, filepath string, source LogSource) error {
+func (lc *LogCollector) processLogFile(ctx Context.Context, filepath string, source LogSource) error {
     // 1. 读取新日志行
     file, err := os.Open(filepath)
     if err != nil {

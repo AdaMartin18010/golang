@@ -1,4 +1,4 @@
-# 无服务器架构（Golang国际主流实践）
+﻿# 无服务器架构（Golang国际主流实践）
 
 > **简介**: Serverless计算模式架构设计，实现按需弹性、免运维的云原生应用
 
@@ -115,7 +115,7 @@ BaaS利用第三方服务来处理后端逻辑，如认证、数据库管理、�
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  "github.com/aws/aws-lambda-go/lambda"
 )
@@ -131,7 +131,7 @@ type MyResponse struct {
 }
 
 // 函数处理器
-func HandleRequest(ctx context.Context, event MyEvent) (MyResponse, error) {
+func HandleRequest(ctx Context.Context, event MyEvent) (MyResponse, error) {
  if event.Name == "" {
   return MyResponse{}, fmt.Errorf("name is empty")
  }
@@ -363,7 +363,7 @@ jobs:
 package serverless
 
 import (
-    "context"
+    "Context"
     "time"
     "errors"
     "sync"
@@ -737,7 +737,7 @@ type ServerlessPlatform struct {
     metrics            MetricsCollector
 }
 
-func (platform *ServerlessPlatform) InvokeFunction(ctx context.Context, functionID string, payload interface{}) (*FunctionExecution, error) {
+func (platform *ServerlessPlatform) InvokeFunction(ctx Context.Context, functionID string, payload interface{}) (*FunctionExecution, error) {
     // 获取函数配置
     function, err := platform.functionService.GetFunction(ctx, functionID)
     if err != nil {
@@ -795,7 +795,7 @@ func (platform *ServerlessPlatform) InvokeFunction(ctx context.Context, function
     return execution, err
 }
 
-func (platform *ServerlessPlatform) executeFunction(ctx context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeFunction(ctx Context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
     // 根据函数类型执行不同的逻辑
     switch function.Code.CodeType {
     case CodeTypeZip:
@@ -809,7 +809,7 @@ func (platform *ServerlessPlatform) executeFunction(ctx context.Context, functio
     }
 }
 
-func (platform *ServerlessPlatform) executeZipFunction(ctx context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeZipFunction(ctx Context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
     // 实现ZIP包函数的执行逻辑
     // 这里可以集成AWS Lambda Go SDK或其他运行时
 
@@ -824,7 +824,7 @@ func (platform *ServerlessPlatform) executeZipFunction(ctx context.Context, func
     }, nil
 }
 
-func (platform *ServerlessPlatform) executeImageFunction(ctx context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeImageFunction(ctx Context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
     // 实现容器镜像函数的执行逻辑
     // 这里可以集成容器运行时或Kubernetes
 
@@ -838,7 +838,7 @@ func (platform *ServerlessPlatform) executeImageFunction(ctx context.Context, fu
     }, nil
 }
 
-func (platform *ServerlessPlatform) executeInlineFunction(ctx context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeInlineFunction(ctx Context.Context, function *Function, payload interface{}, execution *FunctionExecution) (interface{}, error) {
     // 实现内联函数的执行逻辑
     // 这里可以执行嵌入的代码
 
@@ -878,7 +878,7 @@ func (platform *ServerlessPlatform) recordExecutionMetrics(execution *FunctionEx
 }
 
 // 工作流执行
-func (platform *ServerlessPlatform) StartWorkflowExecution(ctx context.Context, workflowID string, input interface{}) (*WorkflowExecution, error) {
+func (platform *ServerlessPlatform) StartWorkflowExecution(ctx Context.Context, workflowID string, input interface{}) (*WorkflowExecution, error) {
     // 获取工作流定义
     workflow, err := platform.workflowService.GetWorkflow(ctx, workflowID)
     if err != nil {
@@ -914,7 +914,7 @@ func (platform *ServerlessPlatform) StartWorkflowExecution(ctx context.Context, 
     return execution, nil
 }
 
-func (platform *ServerlessPlatform) executeWorkflow(ctx context.Context, execution *WorkflowExecution, workflow *Workflow) {
+func (platform *ServerlessPlatform) executeWorkflow(ctx Context.Context, execution *WorkflowExecution, workflow *Workflow) {
     defer func() {
         execution.StopTime = &[]time.Time{time.Now()}[0]
         execution.Duration = time.Since(execution.StartTime)
@@ -980,7 +980,7 @@ func (platform *ServerlessPlatform) findState(states []WorkflowState, stateID st
     return nil
 }
 
-func (platform *ServerlessPlatform) executeState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     switch state.Type {
     case StateTypeTask:
         return platform.executeTaskState(ctx, state, execution)
@@ -1003,7 +1003,7 @@ func (platform *ServerlessPlatform) executeState(ctx context.Context, state *Wor
     }
 }
 
-func (platform *ServerlessPlatform) executeTaskState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeTaskState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行任务状态
     // 这里可以调用Lambda函数或其他服务
 
@@ -1018,43 +1018,43 @@ func (platform *ServerlessPlatform) executeTaskState(ctx context.Context, state 
     return result.Output, nil
 }
 
-func (platform *ServerlessPlatform) executePassState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executePassState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行传递状态
     return execution.Input, nil
 }
 
-func (platform *ServerlessPlatform) executeChoiceState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeChoiceState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行选择状态
     // 这里可以实现条件逻辑
     return execution.Input, nil
 }
 
-func (platform *ServerlessPlatform) executeWaitState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeWaitState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行等待状态
     waitSeconds := state.Parameters["seconds"].(int)
     time.Sleep(time.Duration(waitSeconds) * time.Second)
     return execution.Input, nil
 }
 
-func (platform *ServerlessPlatform) executeSucceedState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeSucceedState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行成功状态
     execution.Status = ExecutionStatusCompleted
     return execution.Input, nil
 }
 
-func (platform *ServerlessPlatform) executeFailState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeFailState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行失败状态
     execution.Status = ExecutionStatusFailed
     return nil, errors.New("workflow failed")
 }
 
-func (platform *ServerlessPlatform) executeParallelState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeParallelState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行并行状态
     // 这里可以实现并行执行逻辑
     return execution.Input, nil
 }
 
-func (platform *ServerlessPlatform) executeMapState(ctx context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
+func (platform *ServerlessPlatform) executeMapState(ctx Context.Context, state *WorkflowState, execution *WorkflowExecution) (interface{}, error) {
     // 执行映射状态
     // 这里可以实现映射执行逻辑
     return execution.Input, nil
@@ -1062,66 +1062,66 @@ func (platform *ServerlessPlatform) executeMapState(ctx context.Context, state *
 
 // 领域服务接口
 type FunctionService interface {
-    CreateFunction(ctx context.Context, function *Function) error
-    GetFunction(ctx context.Context, id string) (*Function, error)
-    UpdateFunction(ctx context.Context, function *Function) error
-    DeleteFunction(ctx context.Context, id string) error
-    ListFunctions(ctx context.Context, filters map[string]interface{}) ([]*Function, error)
-    DeployFunction(ctx context.Context, functionID string) error
-    GetFunctionCode(ctx context.Context, functionID string) (*FunctionCode, error)
-    UpdateFunctionCode(ctx context.Context, functionID string, code *FunctionCode) error
+    CreateFunction(ctx Context.Context, function *Function) error
+    GetFunction(ctx Context.Context, id string) (*Function, error)
+    UpdateFunction(ctx Context.Context, function *Function) error
+    DeleteFunction(ctx Context.Context, id string) error
+    ListFunctions(ctx Context.Context, filters map[string]interface{}) ([]*Function, error)
+    DeployFunction(ctx Context.Context, functionID string) error
+    GetFunctionCode(ctx Context.Context, functionID string) (*FunctionCode, error)
+    UpdateFunctionCode(ctx Context.Context, functionID string, code *FunctionCode) error
 }
 
 type ExecutionService interface {
-    CreateExecution(ctx context.Context, execution *FunctionExecution) error
-    GetExecution(ctx context.Context, id string) (*FunctionExecution, error)
-    UpdateExecution(ctx context.Context, execution *FunctionExecution) error
-    ListExecutions(ctx context.Context, functionID string, filters map[string]interface{}) ([]*FunctionExecution, error)
-    GetExecutionLogs(ctx context.Context, executionID string) ([]string, error)
-    GetExecutionMetrics(ctx context.Context, executionID string) (*ExecutionMetrics, error)
+    CreateExecution(ctx Context.Context, execution *FunctionExecution) error
+    GetExecution(ctx Context.Context, id string) (*FunctionExecution, error)
+    UpdateExecution(ctx Context.Context, execution *FunctionExecution) error
+    ListExecutions(ctx Context.Context, functionID string, filters map[string]interface{}) ([]*FunctionExecution, error)
+    GetExecutionLogs(ctx Context.Context, executionID string) ([]string, error)
+    GetExecutionMetrics(ctx Context.Context, executionID string) (*ExecutionMetrics, error)
 }
 
 type WorkflowService interface {
-    CreateWorkflow(ctx context.Context, workflow *Workflow) error
-    GetWorkflow(ctx context.Context, id string) (*Workflow, error)
-    UpdateWorkflow(ctx context.Context, workflow *Workflow) error
-    DeleteWorkflow(ctx context.Context, id string) error
-    ListWorkflows(ctx context.Context, filters map[string]interface{}) ([]*Workflow, error)
-    CreateExecution(ctx context.Context, execution *WorkflowExecution) error
-    GetExecution(ctx context.Context, id string) (*WorkflowExecution, error)
-    UpdateExecution(ctx context.Context, execution *WorkflowExecution) error
-    ListExecutions(ctx context.Context, workflowID string, filters map[string]interface{}) ([]*WorkflowExecution, error)
-    StopExecution(ctx context.Context, executionID string) error
+    CreateWorkflow(ctx Context.Context, workflow *Workflow) error
+    GetWorkflow(ctx Context.Context, id string) (*Workflow, error)
+    UpdateWorkflow(ctx Context.Context, workflow *Workflow) error
+    DeleteWorkflow(ctx Context.Context, id string) error
+    ListWorkflows(ctx Context.Context, filters map[string]interface{}) ([]*Workflow, error)
+    CreateExecution(ctx Context.Context, execution *WorkflowExecution) error
+    GetExecution(ctx Context.Context, id string) (*WorkflowExecution, error)
+    UpdateExecution(ctx Context.Context, execution *WorkflowExecution) error
+    ListExecutions(ctx Context.Context, workflowID string, filters map[string]interface{}) ([]*WorkflowExecution, error)
+    StopExecution(ctx Context.Context, executionID string) error
 }
 
 type EventService interface {
-    PublishEvent(ctx context.Context, event *Event) error
-    GetEvent(ctx context.Context, id string) (*Event, error)
-    ListEvents(ctx context.Context, filters map[string]interface{}) ([]*Event, error)
-    ProcessEvent(ctx context.Context, event *Event) error
-    SubscribeToEvent(ctx context.Context, eventType EventType, handler EventHandler) error
+    PublishEvent(ctx Context.Context, event *Event) error
+    GetEvent(ctx Context.Context, id string) (*Event, error)
+    ListEvents(ctx Context.Context, filters map[string]interface{}) ([]*Event, error)
+    ProcessEvent(ctx Context.Context, event *Event) error
+    SubscribeToEvent(ctx Context.Context, eventType EventType, handler EventHandler) error
 }
 
 type MonitoringService interface {
-    GetFunctionMetrics(ctx context.Context, functionID string, startTime, endTime time.Time) (*FunctionStats, error)
-    GetWorkflowMetrics(ctx context.Context, workflowID string, startTime, endTime time.Time) (*WorkflowStats, error)
-    GetSystemMetrics(ctx context.Context, startTime, endTime time.Time) (*SystemMetrics, error)
-    CreateAlarm(ctx context.Context, alarm *Alarm) error
-    UpdateAlarm(ctx context.Context, alarm *Alarm) error
-    DeleteAlarm(ctx context.Context, alarmID string) error
-    ListAlarms(ctx context.Context, filters map[string]interface{}) ([]*Alarm, error)
+    GetFunctionMetrics(ctx Context.Context, functionID string, startTime, endTime time.Time) (*FunctionStats, error)
+    GetWorkflowMetrics(ctx Context.Context, workflowID string, startTime, endTime time.Time) (*WorkflowStats, error)
+    GetSystemMetrics(ctx Context.Context, startTime, endTime time.Time) (*SystemMetrics, error)
+    CreateAlarm(ctx Context.Context, alarm *Alarm) error
+    UpdateAlarm(ctx Context.Context, alarm *Alarm) error
+    DeleteAlarm(ctx Context.Context, alarmID string) error
+    ListAlarms(ctx Context.Context, filters map[string]interface{}) ([]*Alarm, error)
 }
 
 type DeploymentService interface {
-    DeployFunction(ctx context.Context, functionID string) error
-    DeployWorkflow(ctx context.Context, workflowID string) error
-    RollbackDeployment(ctx context.Context, deploymentID string) error
-    GetDeploymentStatus(ctx context.Context, deploymentID string) (*DeploymentStatus, error)
-    ListDeployments(ctx context.Context, filters map[string]interface{}) ([]*Deployment, error)
+    DeployFunction(ctx Context.Context, functionID string) error
+    DeployWorkflow(ctx Context.Context, workflowID string) error
+    RollbackDeployment(ctx Context.Context, deploymentID string) error
+    GetDeploymentStatus(ctx Context.Context, deploymentID string) (*DeploymentStatus, error)
+    ListDeployments(ctx Context.Context, filters map[string]interface{}) ([]*Deployment, error)
 }
 
 // 辅助类型
-type EventHandler func(ctx context.Context, event *Event) error
+type EventHandler func(ctx Context.Context, event *Event) error
 type Logger interface {
     Info(msg string, fields ...interface{})
     Error(msg string, fields ...interface{})
@@ -1214,7 +1214,7 @@ func generateID() string {
 
 ```go
 // Lambda函数示例
-func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func HandleRequest(ctx Context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
     // 解析请求
     var payload map[string]interface{}
     if err := json.Unmarshal([]byte(request.Body), &payload); err != nil {

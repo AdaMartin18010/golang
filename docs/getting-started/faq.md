@@ -1,10 +1,10 @@
-# ❓ 常见问题解答 (FAQ)
+﻿# ❓ 常见问题解答 (FAQ)
 
-> 解答Go学习和使用中的常见问题
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
-**版本**: v2.1
-**更新日期**: 2025-10-29
-**问题数**: 60+
+---
 
 ---
 
@@ -434,8 +434,8 @@ for i := 0; i < 1000000; i++ {
 ```go
 // 典型使用：Worker Pool
 func workerPool(tasks []Task) {
-    taskCh := make(chan Task, 100)
-    resultCh := make(chan Result, 100)
+    taskCh := make(Channel Task, 100)
+    resultCh := make(Channel Result, 100)
 
     // 启动workers
     for i := 0; i < 10; i++ {
@@ -928,12 +928,12 @@ func main() {
     }()
 
     // 等待中断信号
-    quit := make(chan os.Signal, 1)
+    quit := make(Channel os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
 
     // 优雅关闭
-    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 30*time.Second)
     defer cancel()
 
     if err := server.Shutdown(ctx); err != nil {

@@ -1,4 +1,4 @@
-# Go 1.25.3 核心机制完整解析
+﻿# Go 1.25.3 核心机制完整解析
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -112,7 +112,7 @@
 ### 4️⃣ CSP模型
 
 - **[04-CSP模型三维完整分析-2025.md](./04-CSP模型三维完整分析-2025.md)** ⭐ 新增
-  - 数据模型：类型、值、通道
+  - 数据模型：类型、值、Channel
   - 执行模型：进程、调度、同步
   - 控制模型：选择、超时、取消
   - 三维模型关系
@@ -184,7 +184,7 @@ Week 5-6: 综合实践
 类型分类
 ├── 基本类型：bool, int, float, string
 ├── 复合类型：array, slice, map, struct
-├── 引用类型：pointer, func, chan, interface
+├── 引用类型：pointer, func, Channel, interface
 └── 泛型类型：type parameters (Go 1.18+)
 
 类型关系
@@ -238,8 +238,8 @@ Week 5-6: 综合实践
 └── 并发模式：常用模式库
 
 并发控制
-├── WaitGroup：等待组
-├── Mutex：互斥锁
+├── WaitGroup：WaitGroup
+├── Mutex：Mutex
 ├── RWMutex：读写锁
 └── Context：上下文控制
 ```
@@ -248,21 +248,21 @@ Week 5-6: 综合实践
 
 ```text
 数据模型
-├── 类型定义：chan T
+├── 类型定义：Channel T
 ├── 值传递：send/receive
-├── 缓冲机制：buffered channel
-└── 关闭语义：close channel
+├── 缓冲机制：buffered Channel
+└── 关闭语义：close Channel
 
 执行模型
 ├── 进程创建：go statement
 ├── 进程调度：GMP scheduler
-├── 进程同步：channel sync
+├── 进程同步：Channel sync
 └── 进程终止：exit/panic
 
 控制模型
 ├── 选择控制：select statement
 ├── 超时控制：time.After
-├── 取消控制：context.Context
+├── 取消控制：Context.Context
 └── 优先级控制：priority pattern
 ```
 

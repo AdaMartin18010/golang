@@ -1,13 +1,10 @@
-# Gin框架
+﻿# Gin框架
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
 **适用于**: Go 1.25.3, Gin v1.10+
 
----
 
-> **难度**: ⭐⭐⭐
-> **标签**: #Web #Gin #框架 #HTTP
 
 ## 📋 目录
 
@@ -575,14 +572,14 @@ func main() {
     }()
 
     // 等待中断信号
-    quit := make(chan os.Signal, 1)
+    quit := make(Channel os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
 
     log.Println("Shutting down server...")
 
     // 优雅关闭
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
     defer cancel()
 
     if err := srv.Shutdown(ctx); err != nil {

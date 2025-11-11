@@ -1,6 +1,75 @@
-# CI/CD实战指南
+﻿# CI/CD实战指南
+
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ## 📋 目录
+
+- [CI/CD实战指南](#cicd实战指南)
+  - [1. CI/CD概述](#1-cicd概述)
+  - [2. GitHub Actions](#2-github-actions)
+- [.github/workflows/ci.yml](#githubworkflowsciyml)
+- [.github/workflows/complete-ci.yml](#githubworkflowscomplete-ciyml)
+- [.github/workflows/docker.yml](#githubworkflowsdockeryml)
+- [.github/workflows/deploy.yml](#githubworkflowsdeployyml)
+  - [3. GitLab CI](#3-gitlab-ci)
+- [.gitlab-ci.yml](#gitlab-ciyml)
+- [.gitlab-ci.yml (完整版)](#gitlab-ciyml-完整版)
+- [测试阶段](#测试阶段)
+- [构建阶段](#构建阶段)
+- [部署到Staging](#部署到staging)
+- [Staging环境测试](#staging环境测试)
+- [部署到Production](#部署到production)
+  - [4. Jenkins](#4-jenkins)
+  - [5. 完整Pipeline](#5-完整pipeline)
+- [Dockerfile (多阶段构建)](#dockerfile-多阶段构建)
+- [第1阶段: 构建](#第1阶段-构建)
+- [安装依赖](#安装依赖)
+- [复制依赖文件](#复制依赖文件)
+- [复制源代码](#复制源代码)
+- [构建](#构建)
+- [第2阶段: 运行](#第2阶段-运行)
+- [安全: 创建非root用户](#安全-创建非root用户)
+- [安装CA证书](#安装ca证书)
+- [从builder复制二进制文件](#从builder复制二进制文件)
+- [切换到非root用户](#切换到非root用户)
+- [scripts/deploy.sh](#scriptsdeploysh)
+- [1. 更新Kubernetes配置](#1-更新kubernetes配置)
+- [2. 等待滚动更新完成](#2-等待滚动更新完成)
+- [3. 运行健康检查](#3-运行健康检查)
+- [4. 运行烟雾测试](#4-运行烟雾测试)
+- [scripts/smoke-test.sh](#scriptssmoke-testsh)
+- [测试健康检查](#测试健康检查)
+- [测试API](#测试api)
+  - [6. 最佳实践](#6-最佳实践)
+- [GitHub Actions](#github-actions)
+- [矩阵构建](#矩阵构建)
+- [Trivy扫描](#trivy扫描)
+- [Gosec扫描](#gosec扫描)
+- [上传制品](#上传制品)
+  - [7. 性能优化](#7-性能优化)
+- [每次都重新下载依赖](#每次都重新下载依赖)
+- [耗时: 5分钟](#耗时-5分钟)
+- [使用缓存](#使用缓存)
+- [使用buildx缓存](#使用buildx缓存)
+- [耗时: 1分钟 (5x提升)](#耗时-1分钟-5x提升)
+  - [8. 故障排查](#8-故障排查)
+- [问题: 缓存key不稳定](#问题-缓存key不稳定)
+- [解决: 使用go.sum哈希](#解决-使用gosum哈希)
+- [❌ 问题: 每次都复制所有文件](#问题-每次都复制所有文件)
+- [✅ 解决: 先复制依赖文件](#解决-先复制依赖文件)
+- [添加重试机制](#添加重试机制)
+  - [🔗 相关资源](#相关资源)
+
+---
+
+    - [基础工作流](#基础工作流)
+    - [完整CI Pipeline](#完整ci-pipeline)
+    - [Docker构建与推送](#docker构建与推送)
+    - [自动部署到Kubernetes](#自动部署到kubernetes)
 
 - [CI/CD实战指南](#cicd实战指南)
   - [📋 目录](#-目录)
@@ -251,7 +320,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          Context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -438,8 +507,8 @@ deploy-staging:
   script:
     - kubectl config set-cluster k8s --server="$KUBE_URL" --insecure-skip-tls-verify=true
     - kubectl config set-credentials admin --token="$KUBE_TOKEN"
-    - kubectl config set-context default --cluster=k8s --user=admin
-    - kubectl config use-context default
+    - kubectl config set-Context default --cluster=k8s --user=admin
+    - kubectl config use-Context default
     - kubectl set image deployment/myapp myapp=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -n staging
     - kubectl rollout status deployment/myapp -n staging
   environment:

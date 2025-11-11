@@ -1,10 +1,8 @@
 ﻿# Go 1.25.3 Documentation
 
-> **Last Updated:** 2025-10-28
-> **Go Version:** 1.25.3
-> **Status:** ✅ Production Ready
-
-Welcome to the Go 1.25.3 comprehensive documentation! This documentation is organized functionally for modern development workflows.
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 

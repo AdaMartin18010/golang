@@ -1,7 +1,4 @@
-# Kubernetes 1.30+新特性实战指南
-
-> **难度**: ⭐⭐⭐⭐
-> **标签**: #Kubernetes #云原生 #容器编排 #Go客户端
+﻿# Kubernetes 1.30+新特性实战指南
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -154,7 +151,7 @@ kube-apiserver \
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "os"
 
@@ -191,7 +188,7 @@ func NewJWTAuthClient(jwtToken string) (*JWTAuthClient, error) {
 }
 
 // GetPods 获取Pod列表
-func (c *JWTAuthClient) GetPods(ctx context.Context, namespace string) error {
+func (c *JWTAuthClient) GetPods(ctx Context.Context, namespace string) error {
     pods, err := c.clientset.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
     if err != nil {
         return err
@@ -213,7 +210,7 @@ func main() {
         panic(err)
     }
 
-    ctx := context.Background()
+    ctx := Context.Background()
     if err := client.GetPods(ctx, "default"); err != nil {
         panic(err)
     }
@@ -293,7 +290,7 @@ spec:
 package dra
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 
@@ -320,7 +317,7 @@ func NewDRAController(clientset *kubernetes.Clientset) *DRAController {
 }
 
 // Run 启动控制器
-func (c *DRAController) Run(ctx context.Context) error {
+func (c *DRAController) Run(ctx Context.Context) error {
     // 监听ResourceClaim变化
     claimInformer := c.informerFactory.Resource().V1alpha3().ResourceClaims()
     claimInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
@@ -431,7 +428,7 @@ spec:
 package pv
 
 import (
-    "context"
+    "Context"
     "fmt"
 
     v1 "k8s.io/api/core/v1"
@@ -449,7 +446,7 @@ func NewPVController(clientset *kubernetes.Clientset) *PVController {
 }
 
 // HandlePVDeletion 处理PV删除
-func (c *PVController) HandlePVDeletion(ctx context.Context, pv *v1.PersistentVolume) error {
+func (c *PVController) HandlePVDeletion(ctx Context.Context, pv *v1.PersistentVolume) error {
     // 检查是否有自定义finalizer
     if !hasFinalizer(pv, "example.com/custom-cleanup") {
         return nil
@@ -471,19 +468,19 @@ func (c *PVController) HandlePVDeletion(ctx context.Context, pv *v1.PersistentVo
     return c.removeFinalizer(ctx, pv, "example.com/custom-cleanup")
 }
 
-func (c *PVController) backupPVData(ctx context.Context, pv *v1.PersistentVolume) error {
+func (c *PVController) backupPVData(ctx Context.Context, pv *v1.PersistentVolume) error {
     fmt.Printf("Backing up data from PV: %s\n", pv.Name)
     // 实现备份逻辑
     return nil
 }
 
-func (c *PVController) cleanupExternalResources(ctx context.Context, pv *v1.PersistentVolume) error {
+func (c *PVController) cleanupExternalResources(ctx Context.Context, pv *v1.PersistentVolume) error {
     fmt.Printf("Cleaning up external resources for PV: %s\n", pv.Name)
     // 实现清理逻辑
     return nil
 }
 
-func (c *PVController) removeFinalizer(ctx context.Context, pv *v1.PersistentVolume, finalizer string) error {
+func (c *PVController) removeFinalizer(ctx Context.Context, pv *v1.PersistentVolume, finalizer string) error {
     // 获取最新的PV对象
     latest, err := c.clientset.CoreV1().PersistentVolumes().Get(ctx, pv.Name, metav1.GetOptions{})
     if err != nil {
@@ -556,7 +553,7 @@ spec:
 package scheduler
 
 import (
-    "context"
+    "Context"
     "fmt"
 
     v1 "k8s.io/api/core/v1"
@@ -574,7 +571,7 @@ func NewGateController(clientset *kubernetes.Clientset) *GateController {
 }
 
 // RemoveSchedulingGate 移除调度门控
-func (c *GateController) RemoveSchedulingGate(ctx context.Context, podName, namespace, gateName string) error {
+func (c *GateController) RemoveSchedulingGate(ctx Context.Context, podName, namespace, gateName string) error {
     // 获取Pod
     pod, err := c.clientset.CoreV1().Pods(namespace).Get(ctx, podName, metav1.GetOptions{})
     if err != nil {
@@ -602,7 +599,7 @@ func (c *GateController) RemoveSchedulingGate(ctx context.Context, podName, name
 }
 
 // CheckResourceReady 检查资源是否就绪
-func (c *GateController) CheckResourceReady(ctx context.Context, resourceName string) (bool, error) {
+func (c *GateController) CheckResourceReady(ctx Context.Context, resourceName string) (bool, error) {
     // 实现资源检查逻辑
     fmt.Printf("Checking if resource %s is ready\n", resourceName)
 
@@ -681,7 +678,7 @@ spec:
 package sidecar
 
 import (
-    "context"
+    "Context"
     "fmt"
     "io"
     "os"
@@ -704,7 +701,7 @@ func NewLogCollector(logPath, outputPath string) *LogCollector {
 }
 
 // Run 运行日志收集
-func (lc *LogCollector) Run(ctx context.Context) error {
+func (lc *LogCollector) Run(ctx Context.Context) error {
     ticker := time.NewTicker(lc.interval)
     defer ticker.Stop()
 
@@ -751,7 +748,7 @@ func (lc *LogCollector) flush() error {
 func main() {
     collector := NewLogCollector("/var/log/nginx/access.log", "/output/logs.txt")
 
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
     defer cancel()
 
     if err := collector.Run(ctx); err != nil {
@@ -780,7 +777,7 @@ go get k8s.io/apimachinery@v0.30.0
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
 
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -802,7 +799,7 @@ func main() {
     }
 
     // 列出所有Pod
-    pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
+    pods, err := clientset.CoreV1().Pods("").List(Context.TODO(), metav1.ListOptions{})
     if err != nil {
         panic(err)
     }

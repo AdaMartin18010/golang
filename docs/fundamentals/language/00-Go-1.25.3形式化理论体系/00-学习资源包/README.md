@@ -1,8 +1,10 @@
-# Go 1.25.3 形式化理论体系 - 学习资源包
+﻿# Go 1.25.3 形式化理论体系 - 学习资源包
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用对象**: 学生、教师、研究人员、工程师
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ---
 
@@ -614,7 +616,7 @@
     ```text
     用CSP形式化以下Go并发程序:
 
-    ch := make(chan int)
+    ch := make(Channel int)
     go func() {
         ch <- 1
     }()
@@ -631,8 +633,8 @@
     ```text
     分析以下程序是否会死锁:
 
-    ch1 := make(chan int)
-    ch2 := make(chan int)
+    ch1 := make(Channel int)
+    ch2 := make(Channel int)
 
     go func() {
         <-ch2

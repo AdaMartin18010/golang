@@ -1,4 +1,4 @@
-# Memory 管理优化 - 完整实现指南
+﻿# Memory 管理优化 - 完整实现指南
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -455,7 +455,7 @@ type WeakCache[K comparable, V any] struct {
     maxAge        time.Duration
     maxGeneration int
     cleaner       *time.Ticker
-    stopCleanup   chan struct{}
+    stopCleanup   Channel struct{}
 }
 
 // weakEntry 弱引用缓存条目
@@ -508,7 +508,7 @@ func NewWeakCacheWithConfig[K comparable, V any](config WeakCacheConfig) *WeakCa
         maxAge:        config.MaxAge,
         maxGeneration: config.MaxGeneration,
         cleaner:       time.NewTicker(config.CleanInterval),
-        stopCleanup:   make(chan struct{}),
+        stopCleanup:   make(Channel struct{}),
     }
 
     // 启动清理goroutine
@@ -1006,7 +1006,7 @@ type GCTrigger struct {
     strategy     GCStrategy    // GC策略
     logger       *log.Logger   // 日志器
     ticker       *time.Ticker
-    stop         chan struct{}
+    stop         Channel struct{}
 
     // 统计
     checks       atomic.Int64
@@ -1068,7 +1068,7 @@ func NewGCTriggerWithConfig(config GCTriggerConfig) *GCTrigger {
         interval:  config.Interval,
         strategy:  config.Strategy,
         logger:    config.Logger,
-        stop:      make(chan struct{}),
+        stop:      make(Channel struct{}),
     }
 }
 

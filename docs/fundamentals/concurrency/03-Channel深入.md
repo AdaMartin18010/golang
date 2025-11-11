@@ -1,4 +1,4 @@
-# Channel深入
+﻿# Channel深入
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -61,23 +61,23 @@ import "fmt"
 
 func channelBasics() {
     // 声明（零值为nil）
-    var ch1 chan int
+    var ch1 Channel int
     fmt.Printf("零值Channel: %v (nil? %v)\n", ch1, ch1 == nil)
 
     // 创建无缓冲Channel
-    ch2 := make(chan int)
+    ch2 := make(Channel int)
     fmt.Printf("无缓冲Channel: %v\n", ch2)
 
     // 创建缓冲Channel
-    ch3 := make(chan int, 5)
+    ch3 := make(Channel int, 5)
     fmt.Printf("缓冲Channel (cap=%d): %v\n", cap(ch3), ch3)
 
     // 只读Channel
-    var ch4 <-chan int = ch2
+    var ch4 <-Channel int = ch2
     fmt.Printf("只读Channel: %v\n", ch4)
 
     // 只写Channel
-    var ch5 chan<- int = ch2
+    var ch5 Channel<- int = ch2
     fmt.Printf("只写Channel: %v\n", ch5)
 }
 
@@ -94,19 +94,19 @@ package main
 import "fmt"
 
 // 生产者：返回只读Channel
-func producer() <-chan int {
-    ch := make(chan int, 5)
+func producer() <-Channel int {
+    ch := make(Channel int, 5)
     go func() {
         for i := 0; i < 5; i++ {
             ch <- i
         }
         close(ch)
     }()
-    return ch // chan int 自动转换为 <-chan int
+    return ch // Channel int 自动转换为 <-Channel int
 }
 
 // 消费者：接收只写Channel
-func consumer(ch <-chan int) {
+func consumer(ch <-Channel int) {
     for val := range ch {
         fmt.Printf("Received: %d\n", val)
     }
@@ -133,7 +133,7 @@ import (
 )
 
 func unbufferedChannel() {
-    ch := make(chan string) // 无缓冲
+    ch := make(Channel string) // 无缓冲
 
     // 发送方
     go func() {
@@ -177,7 +177,7 @@ import (
 )
 
 func bufferedChannel() {
-    ch := make(chan string, 2) // 容量为2
+    ch := make(Channel string, 2) // 容量为2
 
     // 发送方
     go func() {
@@ -232,7 +232,7 @@ package main
 import "fmt"
 
 func channelCapLen() {
-    ch := make(chan int, 5)
+    ch := make(Channel int, 5)
 
     fmt.Printf("初始 - len: %d, cap: %d\n", len(ch), cap(ch))
 
@@ -262,7 +262,7 @@ package main
 import "fmt"
 
 func closeChannel() {
-    ch := make(chan int, 3)
+    ch := make(Channel int, 3)
 
     // 发送数据
     ch <- 1
@@ -295,7 +295,7 @@ package main
 import "fmt"
 
 func detectClosed() {
-    ch := make(chan int, 2)
+    ch := make(Channel int, 2)
     ch <- 1
     ch <- 2
     close(ch)
@@ -311,7 +311,7 @@ func detectClosed() {
     fmt.Printf("Value: %d, Open: %v\n", val, ok) // 0, false
 
     // 方式2：使用range（自动检测关闭）
-    ch2 := make(chan int, 3)
+    ch2 := make(Channel int, 3)
     ch2 <- 1
     ch2 <- 2
     ch2 <- 3
@@ -320,7 +320,7 @@ func detectClosed() {
     for val := range ch2 {
         fmt.Printf("Range received: %d\n", val)
     }
-    fmt.Println("Range loop ended (channel closed)")
+    fmt.Println("Range loop ended (Channel closed)")
 }
 
 func main() {
@@ -340,7 +340,7 @@ import (
 
 // ✅ 正确：发送方关闭Channel
 func goodPractice() {
-    ch := make(chan int)
+    ch := make(Channel int)
     var wg sync.WaitGroup
 
     // 发送方
@@ -372,9 +372,9 @@ func badPractice() {
         }
     }()
 
-    ch := make(chan int)
+    ch := make(Channel int)
     close(ch)
-    ch <- 1 // panic: send on closed channel
+    ch <- 1 // panic: send on closed Channel
 }
 
 func main() {
@@ -398,8 +398,8 @@ import (
 )
 
 func selectBasic() {
-    ch1 := make(chan string)
-    ch2 := make(chan string)
+    ch1 := make(Channel string)
+    ch2 := make(Channel string)
 
     go func() {
         time.Sleep(1 * time.Second)
@@ -438,7 +438,7 @@ import (
 )
 
 func selectTimeout() {
-    ch := make(chan string)
+    ch := make(Channel string)
 
     go func() {
         time.Sleep(2 * time.Second)
@@ -466,7 +466,7 @@ package main
 import "fmt"
 
 func selectNonBlocking() {
-    ch := make(chan int, 1)
+    ch := make(Channel int, 1)
 
     // 非阻塞发送
     select {
@@ -501,8 +501,8 @@ import (
 )
 
 func selectRandom() {
-    ch1 := make(chan string)
-    ch2 := make(chan string)
+    ch1 := make(Channel string)
+    ch2 := make(Channel string)
 
     // 两个Channel同时准备好
     go func() {
@@ -550,7 +550,7 @@ type hchan struct {
     recvx    uint           // 接收索引
     recvq    waitq          // 接收等待队列
     sendq    waitq          // 发送等待队列
-    lock     mutex          // 互斥锁
+    lock     Mutex          // Mutex
 }
 ```
 
@@ -581,7 +581,7 @@ import "fmt"
 
 func channelInternals() {
     // 示例：展示Channel的行为
-    ch := make(chan int, 2)
+    ch := make(Channel int, 2)
 
     // 发送到缓冲区
     ch <- 1
@@ -615,7 +615,7 @@ import (
 )
 
 func producerConsumer() {
-    ch := make(chan int, 10)
+    ch := make(Channel int, 10)
     var wg sync.WaitGroup
 
     // 生产者
@@ -692,7 +692,7 @@ func main() {
 
 ### 推荐阅读
 
-- [Go Channel Internals](https://github.com/golang/go/blob/master/src/runtime/chan.go)
+- [Go Channel Internals](https://github.com/golang/go/blob/master/src/runtime/Channel.go)
 - [Effective Go - Channels](https://go.dev/doc/effective_go#channels)
 
 ---

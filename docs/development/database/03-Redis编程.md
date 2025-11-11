@@ -1,6 +1,8 @@
-# 03-Redis编程
+﻿# 03-Redis编程
 
-> Go语言Redis编程完全指南
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -53,7 +55,7 @@
 ### 1.1 安装驱动
 
 ```bash
-# go-redis v9 (推荐)
+# redis v9 (推荐)
 go get github.com/redis/go-redis/v9
 
 # redigo (另一个流行驱动)
@@ -66,14 +68,14 @@ go get github.com/gomodule/redigo/redis
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "log"
 
     "github.com/redis/go-redis/v9"
 )
 
-var ctx = context.Background()
+var ctx = Context.Background()
 
 func main() {
     // 创建Redis客户端
@@ -103,14 +105,14 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 
     "github.com/redis/go-redis/v9"
 )
 
-var ctx = context.Background()
+var ctx = Context.Background()
 
 // SET和GET
 func stringOperations(rdb *redis.Client) {
@@ -483,23 +485,23 @@ func optimisticLock(rdb *redis.Client, key string) error {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
 
     "github.com/redis/go-redis/v9"
 )
 
 // 发布消息
-func publish(rdb *redis.Client, channel, message string) {
-    err := rdb.Publish(ctx, channel, message).Err()
+func publish(rdb *redis.Client, Channel, message string) {
+    err := rdb.Publish(ctx, Channel, message).Err()
     if err != nil {
         panic(err)
     }
 }
 
 // 订阅频道
-func subscribe(rdb *redis.Client, channel string) {
-    pubsub := rdb.Subscribe(ctx, channel)
+func subscribe(rdb *redis.Client, Channel string) {
+    pubsub := rdb.Subscribe(ctx, Channel)
     defer pubsub.Close()
 
     // 接收消息
@@ -605,7 +607,7 @@ sequenceDiagram
 package main
 
 import (
-    "context"
+    "Context"
     "encoding/json"
     "fmt"
     "time"
@@ -680,7 +682,7 @@ func queryUserFromDB(id int) (User, error) {
 package main
 
 import (
-    "context"
+    "Context"
     "time"
 
     "github.com/redis/go-redis/v9"

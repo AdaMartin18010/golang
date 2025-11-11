@@ -1,4 +1,4 @@
-# Go语言完整测试体系
+﻿# Go语言完整测试体系
 
 > **简介**: 构建完整的Go测试体系，包括测试金字塔、工具链、覆盖率分析、性能测试和持续集成
 
@@ -976,7 +976,7 @@ func TestLoadTest(t *testing.T) {
     )
 
     var wg sync.WaitGroup
-    errors := make(chan error, numGoroutines*requestsPerGoroutine)
+    errors := make(Channel error, numGoroutines*requestsPerGoroutine)
 
     start := time.Now()
 

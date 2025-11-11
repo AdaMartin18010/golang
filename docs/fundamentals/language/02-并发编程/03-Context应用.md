@@ -1,4 +1,4 @@
-# Context应用
+﻿# Context应用
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -64,7 +64,7 @@ func process() {
 }
 
 // ✅ 有Context：可以优雅取消
-func process(ctx context.Context) {
+func process(ctx Context.Context) {
     for {
         select {
         case <-ctx.Done():
@@ -83,13 +83,13 @@ func process(ctx context.Context) {
 ### Background和TODO
 
 ```go
-import "context"
+import "Context"
 
 // Background: 根Context，通常用于main、init和测试
-ctx := context.Background()
+ctx := Context.Background()
 
 // TODO: 不确定使用哪个Context时的占位符
-ctx := context.TODO()
+ctx := Context.TODO()
 ```
 
 ---
@@ -98,7 +98,7 @@ ctx := context.TODO()
 
 ```go
 // 创建可取消的Context
-ctx, cancel := context.WithCancel(context.Background())
+ctx, cancel := Context.WithCancel(Context.Background())
 defer cancel()  // 确保释放资源
 
 go func() {
@@ -114,7 +114,7 @@ cancel()
 
 ```go
 func main() {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     go func() {
         for {
@@ -141,7 +141,7 @@ func main() {
 
 ```go
 // 创建带超时的Context
-ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
 defer cancel()
 
 select {
@@ -156,7 +156,7 @@ case <-ctx.Done():
 
 ```go
 func main() {
-    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
     defer cancel()
 
     go func() {
@@ -179,7 +179,7 @@ func main() {
 ```go
 // 创建带截止时间的Context
 deadline := time.Now().Add(10 * time.Second)
-ctx, cancel := context.WithDeadline(context.Background(), deadline)
+ctx, cancel := Context.WithDeadline(Context.Background(), deadline)
 defer cancel()
 
 select {
@@ -197,7 +197,7 @@ case <-ctx.Done():
 ### HTTP请求超时
 
 ```go
-func fetchURL(ctx context.Context, url string) (string, error) {
+func fetchURL(ctx Context.Context, url string) (string, error) {
     req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
     if err != nil {
         return "", err
@@ -214,12 +214,12 @@ func fetchURL(ctx context.Context, url string) (string, error) {
 }
 
 func main() {
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
     defer cancel()
 
     body, err := fetchURL(ctx, "https://example.com")
     if err != nil {
-        if ctx.Err() == context.DeadlineExceeded {
+        if ctx.Err() == Context.DeadlineExceeded {
             fmt.Println("Request timeout")
         } else {
             fmt.Println("Error:", err)
@@ -236,8 +236,8 @@ func main() {
 ### 数据库查询超时
 
 ```go
-func queryDatabase(ctx context.Context, query string) ([]User, error) {
-    ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+func queryDatabase(ctx Context.Context, query string) ([]User, error) {
+    ctx, cancel := Context.WithTimeout(ctx, 3*time.Second)
     defer cancel()
 
     rows, err := db.QueryContext(ctx, query)
@@ -268,15 +268,15 @@ func queryDatabase(ctx context.Context, query string) ([]User, error) {
 ```go
 func main() {
     // 父Context
-    parentCtx, parentCancel := context.WithCancel(context.Background())
+    parentCtx, parentCancel := Context.WithCancel(Context.Background())
     defer parentCancel()
 
     // 子Context1
-    childCtx1, cancel1 := context.WithCancel(parentCtx)
+    childCtx1, cancel1 := Context.WithCancel(parentCtx)
     defer cancel1()
 
     // 子Context2
-    childCtx2, cancel2 := context.WithCancel(parentCtx)
+    childCtx2, cancel2 := Context.WithCancel(parentCtx)
     defer cancel2()
 
     go worker(childCtx1, "Worker1")
@@ -290,7 +290,7 @@ func main() {
     time.Sleep(1 * time.Second)
 }
 
-func worker(ctx context.Context, name string) {
+func worker(ctx Context.Context, name string) {
     for {
         select {
         case <-ctx.Done():
@@ -309,15 +309,15 @@ func worker(ctx context.Context, name string) {
 ### 优雅关闭
 
 ```go
-func server(ctx context.Context) {
+func server(ctx Context.Context) {
     srv := &http.Server{Addr: ":8080"}
 
     go func() {
         <-ctx.Done()
 
         // 优雅关闭，最多等待5秒
-        shutdownCtx, cancel := context.WithTimeout(
-            context.Background(),
+        shutdownCtx, cancel := Context.WithTimeout(
+            Context.Background(),
             5*time.Second,
         )
         defer cancel()
@@ -333,12 +333,12 @@ func server(ctx context.Context) {
 }
 
 func main() {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     go server(ctx)
 
     // 等待中断信号
-    sigChan := make(chan os.Signal, 1)
+    sigChan := make(Channel os.Signal, 1)
     signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
     <-sigChan
 
@@ -357,13 +357,13 @@ func main() {
 type key string
 
 func main() {
-    ctx := context.WithValue(context.Background(), key("userID"), 123)
-    ctx = context.WithValue(ctx, key("requestID"), "abc-123")
+    ctx := Context.WithValue(Context.Background(), key("userID"), 123)
+    ctx = Context.WithValue(ctx, key("requestID"), "abc-123")
 
     processRequest(ctx)
 }
 
-func processRequest(ctx context.Context) {
+func processRequest(ctx Context.Context) {
     userID := ctx.Value(key("userID")).(int)
     requestID := ctx.Value(key("requestID")).(string)
 
@@ -379,27 +379,27 @@ func processRequest(ctx context.Context) {
 type userIDKey struct{}
 type requestIDKey struct{}
 
-func WithUserID(ctx context.Context, userID int) context.Context {
-    return context.WithValue(ctx, userIDKey{}, userID)
+func WithUserID(ctx Context.Context, userID int) Context.Context {
+    return Context.WithValue(ctx, userIDKey{}, userID)
 }
 
-func GetUserID(ctx context.Context) (int, bool) {
+func GetUserID(ctx Context.Context) (int, bool) {
     userID, ok := ctx.Value(userIDKey{}).(int)
     return userID, ok
 }
 
-func WithRequestID(ctx context.Context, requestID string) context.Context {
-    return context.WithValue(ctx, requestIDKey{}, requestID)
+func WithRequestID(ctx Context.Context, requestID string) Context.Context {
+    return Context.WithValue(ctx, requestIDKey{}, requestID)
 }
 
-func GetRequestID(ctx context.Context) (string, bool) {
+func GetRequestID(ctx Context.Context) (string, bool) {
     requestID, ok := ctx.Value(requestIDKey{}).(string)
     return requestID, ok
 }
 
 // 使用
 func main() {
-    ctx := context.Background()
+    ctx := Context.Background()
     ctx = WithUserID(ctx, 123)
     ctx = WithRequestID(ctx, "abc-123")
 
@@ -448,7 +448,7 @@ func main() {
 ### 并行任务处理
 
 ```go
-func processItems(ctx context.Context, items []Item) error {
+func processItems(ctx Context.Context, items []Item) error {
     g, ctx := errgroup.WithContext(ctx)
 
     for _, item := range items {
@@ -461,7 +461,7 @@ func processItems(ctx context.Context, items []Item) error {
     return g.Wait()
 }
 
-func processItem(ctx context.Context, item Item) error {
+func processItem(ctx Context.Context, item Item) error {
     select {
     case <-ctx.Done():
         return ctx.Err()
@@ -480,12 +480,12 @@ func processItem(ctx context.Context, item Item) error {
 
 ```go
 // ✅ 推荐
-func doWork(ctx context.Context, arg string) error {
+func doWork(ctx Context.Context, arg string) error {
     // ...
 }
 
 // ❌ 不推荐
-func doWork(arg string, ctx context.Context) error {
+func doWork(arg string, ctx Context.Context) error {
     // ...
 }
 ```
@@ -497,7 +497,7 @@ func doWork(arg string, ctx context.Context) error {
 ```go
 // ❌ 不要存储Context
 type Server struct {
-    ctx context.Context  // 错误
+    ctx Context.Context  // 错误
 }
 
 // ✅ 通过参数传递
@@ -505,7 +505,7 @@ type Server struct {
     // 其他字段
 }
 
-func (s *Server) Handle(ctx context.Context) {
+func (s *Server) Handle(ctx Context.Context) {
     // 使用ctx
 }
 ```
@@ -516,7 +516,7 @@ func (s *Server) Handle(ctx context.Context) {
 
 ```go
 // ✅ 推荐
-ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
 defer cancel()  // 确保释放资源
 
 // ❌ 忘记调用cancel会导致资源泄漏
@@ -530,10 +530,10 @@ defer cancel()  // 确保释放资源
 // ✅ 推荐
 select {
 case <-ctx.Done():
-    if ctx.Err() == context.Canceled {
+    if ctx.Err() == Context.Canceled {
         return errors.New("operation was canceled")
     }
-    if ctx.Err() == context.DeadlineExceeded {
+    if ctx.Err() == Context.DeadlineExceeded {
         return errors.New("operation timed out")
     }
 default:
@@ -550,10 +550,10 @@ default:
 doWork(nil)
 
 // ✅ 使用context.TODO()
-doWork(context.TODO())
+doWork(Context.TODO())
 
 // ✅ 或使用context.Background()
-doWork(context.Background())
+doWork(Context.Background())
 ```
 
 ---

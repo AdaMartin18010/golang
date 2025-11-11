@@ -1,8 +1,43 @@
-# Kubernetes高级特性
+﻿# Kubernetes高级特性
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
 **适用于**: Go 1.23+ / Kubernetes 1.28+
+
+---
+
+## 📋 目录
+
+- [Kubernetes高级特性](#kubernetes高级特性)
+  - [📋 目录](#-目录)
+  - [📋 目录](#-目录-1)
+  - [4.1 📚 自定义资源(CRD)](#41--自定义资源crd)
+  - [4.2 🤖 Operator模式](#42--operator模式)
+  - [4.3 📊 高级调度](#43--高级调度)
+    - [亲和性与反亲和性](#亲和性与反亲和性)
+    - [Taint和Toleration](#taint和toleration)
+    - [优先级与抢占](#优先级与抢占)
+  - [4.4 💾 存储管理](#44--存储管理)
+    - [StatefulSet](#statefulset)
+    - [动态存储供应](#动态存储供应)
+    - [卷快照](#卷快照)
+  - [4.5 🌐 网络高级特性](#45--网络高级特性)
+    - [Service Topology](#service-topology)
+    - [Endpoint Slices](#endpoint-slices)
+  - [4.6 🔧 集群管理](#46--集群管理)
+    - [集群备份与恢复](#集群备份与恢复)
+    - [集群升级](#集群升级)
+  - [4.7 📈 监控与日志](#47--监控与日志)
+    - [Prometheus Operator](#prometheus-operator)
+    - [日志聚合](#日志聚合)
+  - [4.8 🎯 最佳实践](#48--最佳实践)
+  - [4.9 ⚠️ 常见问题](#49-️-常见问题)
+    - [Q1: CRD与ConfigMap的区别？](#q1-crd与configmap的区别)
+    - [Q2: Operator如何实现幂等性？](#q2-operator如何实现幂等性)
+    - [Q3: StatefulSet何时使用？](#q3-statefulset何时使用)
+  - [4.10 📚 扩展阅读](#410--扩展阅读)
+    - [官方文档](#官方文档)
+    - [相关文档](#相关文档)
 
 ---
 
@@ -88,7 +123,7 @@ type DatabaseSpec struct {
     Replicas int    `json:"replicas"`
 }
 
-func CreateDatabase(ctx context.Context, client dynamic.Interface, db *Database) error {
+func CreateDatabase(ctx Context.Context, client dynamic.Interface, db *Database) error {
     gvr := schema.GroupVersionResource{
         Group:    "example.com",
         Version:  "v1",
@@ -135,7 +170,7 @@ make manifests
 package controllers
 
 import (
-    "context"
+    "Context"
     ctrl "sigs.k8s.io/controller-runtime"
     "sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -147,7 +182,7 @@ type DatabaseReconciler struct {
     Scheme *runtime.Scheme
 }
 
-func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *DatabaseReconciler) Reconcile(ctx Context.Context, req ctrl.Request) (ctrl.Result, error) {
     log := log.FromContext(ctx)
 
     // 获取Database资源

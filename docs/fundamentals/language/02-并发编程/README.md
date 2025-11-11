@@ -1,6 +1,22 @@
-# Go并发编程
+﻿# Go并发编程
 
-Go并发编程完整指南，涵盖Goroutine、Channel、Context和并发模式。
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
+
+## 📋 目录
+
+- [Go并发编程](#go并发编程)
+  - [� 目录](#-目录)
+  - [📚 文档列表](#-文档列表)
+  - [🚀 快速示例](#-快速示例)
+    - [Goroutine](#goroutine)
+    - [Channel](#channel)
+    - [Context](#context)
+    - [Worker Pool](#worker-pool)
+  - [📖 系统文档](#-系统文档)
 
 ---
 
@@ -44,14 +60,14 @@ Go并发编程完整指南，涵盖Goroutine、Channel、Context和并发模式�
 
 ```go
 go func() {
-    fmt.Println("Hello from goroutine!")
+    fmt.Println("Hello from Goroutine!")
 }()
 ```
 
 ### Channel
 
 ```go
-ch := make(chan int, 10)
+ch := make(Channel int, 10)
 go func() { ch <- 42 }()
 value := <-ch
 ```
@@ -59,7 +75,7 @@ value := <-ch
 ### Context
 
 ```go
-ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
 defer cancel()
 
 select {
@@ -73,8 +89,8 @@ case result := <-ch:
 ### Worker Pool
 
 ```go
-jobs := make(chan int, 100)
-results := make(chan int, 100)
+jobs := make(Channel int, 100)
+results := make(Channel int, 100)
 
 for w := 1; w <= 3; w++ {
     go worker(w, jobs, results)

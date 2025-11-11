@@ -1,4 +1,4 @@
-# Go开源生态系统深度分析（2025）
+﻿# Go开源生态系统深度分析（2025）
 
 **文档版本**: v1.0.0
 **版本**: v1.0
@@ -305,7 +305,7 @@ func cacheMiddleware(duration time.Duration) gin.HandlerFunc {
 }
 
 // 4. Goroutine池
-var workerPool = make(chan struct{}, 100)
+var workerPool = make(Channel struct{}, 100)
 
 func asyncHandler(c *gin.Context) {
     workerPool <- struct{}{}
@@ -627,7 +627,7 @@ func UserCtx(next http.Handler) http.Handler {
             return
         }
 
-        ctx := context.WithValue(r.Context(), "user", user)
+        ctx := Context.WithValue(r.Context(), "user", user)
         next.ServeHTTP(w, r.WithContext(ctx))
     })
 }
@@ -720,7 +720,7 @@ message ChatMessage {
 package main
 
 import (
-    "context"
+    "Context"
     "google.golang.org/grpc"
     "google.golang.org/grpc/codes"
     "google.golang.org/grpc/status"
@@ -734,7 +734,7 @@ type userServiceServer struct {
 }
 
 // Unary RPC
-func (s *userServiceServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User, error) {
+func (s *userServiceServer) GetUser(ctx Context.Context, req *pb.GetUserRequest) (*pb.User, error) {
     user, err := s.db.GetUser(req.Id)
     if err != nil {
         return nil, status.Error(codes.NotFound, "user not found")
@@ -748,7 +748,7 @@ func (s *userServiceServer) GetUser(ctx context.Context, req *pb.GetUserRequest)
     }, nil
 }
 
-func (s *userServiceServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.User, error) {
+func (s *userServiceServer) CreateUser(ctx Context.Context, req *pb.CreateUserRequest) (*pb.User, error) {
     user := &User{
         Name:  req.Name,
         Email: req.Email,
@@ -860,7 +860,7 @@ func startServer() {
 }
 
 // 3. 拦截器
-func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func unaryInterceptor(ctx Context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
     start := time.Now()
 
     // 认证
@@ -904,12 +904,12 @@ func createClient() {
     client := pb.NewUserServiceClient(conn)
 
     // Unary调用
-    user, err := client.GetUser(context.Background(), &pb.GetUserRequest{
+    user, err := client.GetUser(Context.Background(), &pb.GetUserRequest{
         Id: "123",
     })
 
     // Server streaming
-    stream, err := client.ListUsers(context.Background(), &pb.ListUsersRequest{
+    stream, err := client.ListUsers(Context.Background(), &pb.ListUsersRequest{
         Page:     1,
         PageSize: 10,
     })
@@ -925,7 +925,7 @@ func createClient() {
     }
 
     // Client streaming
-    updateStream, err := client.UpdateUser(context.Background())
+    updateStream, err := client.UpdateUser(Context.Background())
     for _, user := range usersToUpdate {
         updateStream.Send(&pb.UpdateUserRequest{
             Id:   user.ID,
@@ -935,7 +935,7 @@ func createClient() {
     resp, err := updateStream.CloseAndRecv()
 
     // Bidirectional streaming
-    chatStream, err := client.ChatUsers(context.Background())
+    chatStream, err := client.ChatUsers(Context.Background())
     go func() {
         for {
             msg, err := chatStream.Recv()
@@ -971,7 +971,7 @@ import (
 // 1. 服务定义
 type UserService struct{}
 
-func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest, rsp *pb.User) error {
+func (s *UserService) GetUser(ctx Context.Context, req *pb.GetUserRequest, rsp *pb.User) error {
     user, err := db.GetUser(req.Id)
     if err != nil {
         return err
@@ -1018,7 +1018,7 @@ func callMicroService() {
 
     client := pb.NewUserService("user.service", service.Client())
 
-    rsp, err := client.GetUser(context.Background(), &pb.GetUserRequest{
+    rsp, err := client.GetUser(Context.Background(), &pb.GetUserRequest{
         Id: "123",
     })
     if err != nil {
@@ -1044,7 +1044,7 @@ import (
 // 1. 服务实现
 type UserServiceImpl struct{}
 
-func (s *UserServiceImpl) GetUser(ctx context.Context, req *user.GetUserRequest) (*user.User, error) {
+func (s *UserServiceImpl) GetUser(ctx Context.Context, req *user.GetUserRequest) (*user.User, error) {
     // 实现逻辑
     return &user.User{
         Id:    req.Id,
@@ -1078,7 +1078,7 @@ func createKitexClient() {
         log.Fatal(err)
     }
 
-    resp, err := client.GetUser(context.Background(), &user.GetUserRequest{
+    resp, err := client.GetUser(Context.Background(), &user.GetUserRequest{
         Id: "123",
     })
     if err != nil {
@@ -1323,7 +1323,7 @@ Ent 是 Facebook 开发的实体框架。
 package main
 
 import (
-    "context"
+    "Context"
     "log"
 
     "<project>/ent"
@@ -1374,7 +1374,7 @@ func useEnt() {
     }
     defer client.Close()
 
-    ctx := context.Background()
+    ctx := Context.Background()
 
     // 运行迁移
     if err := client.Schema.Create(ctx); err != nil {
@@ -1414,7 +1414,7 @@ func useEnt() {
 
 // 3. 事务
 func entTransaction(client *ent.Client) error {
-    ctx := context.Background()
+    ctx := Context.Background()
 
     tx, err := client.Tx(ctx)
     if err != nil {
@@ -1462,7 +1462,7 @@ func rollback(tx *ent.Tx, err error) error {
 package main
 
 import (
-    "context"
+    "Context"
     "k8s.io/client-go/kubernetes"
     "k8s.io/client-go/tools/clientcmd"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -1488,7 +1488,7 @@ func initK8sClient() (*kubernetes.Clientset, error) {
 
 // 2. Pod操作
 func podOperations(clientset *kubernetes.Clientset) {
-    ctx := context.Background()
+    ctx := Context.Background()
 
     // 列出Pods
     pods, err := clientset.CoreV1().Pods("default").List(ctx, metav1.ListOptions{
@@ -1530,7 +1530,7 @@ func podOperations(clientset *kubernetes.Clientset) {
 
 // 3. Deployment操作
 func deploymentOperations(clientset *kubernetes.Clientset) {
-    ctx := context.Background()
+    ctx := Context.Background()
 
     deploymentsClient := clientset.AppsV1().Deployments("default")
 
@@ -1578,7 +1578,7 @@ func deploymentOperations(clientset *kubernetes.Clientset) {
 
 // 4. Watch资源变化
 func watchResources(clientset *kubernetes.Clientset) {
-    ctx := context.Background()
+    ctx := Context.Background()
 
     watcher, err := clientset.CoreV1().Pods("default").Watch(ctx, metav1.ListOptions{
         LabelSelector: "app=myapp",
@@ -1694,7 +1694,7 @@ type dbCollector struct {
     db *sql.DB
 }
 
-func (c *dbCollector) Describe(ch chan<- *prometheus.Desc) {
+func (c *dbCollector) Describe(ch Channel<- *prometheus.Desc) {
     ch <- prometheus.NewDesc(
         "db_connections_open",
         "Number of open database connections",
@@ -1702,7 +1702,7 @@ func (c *dbCollector) Describe(ch chan<- *prometheus.Desc) {
     )
 }
 
-func (c *dbCollector) Collect(ch chan<- prometheus.Metric) {
+func (c *dbCollector) Collect(ch Channel<- prometheus.Metric) {
     stats := c.db.Stats()
     ch <- prometheus.MustNewConstMetric(
         prometheus.NewDesc(

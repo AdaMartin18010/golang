@@ -1,4 +1,4 @@
-# 数据流架构（Dataflow Architecture）
+﻿# 数据流架构（Dataflow Architecture）
 
 > **简介**: 数据流处理架构设计，涵盖实时流处理、批处理和混合数据处理
 
@@ -303,7 +303,7 @@
 package main
 
 import (
-    "context"
+    "Context"
     "encoding/json"
     "fmt"
     "log"
@@ -322,7 +322,7 @@ type Event struct {
 
 // StreamProcessor 流处理器接口
 type StreamProcessor interface {
-    Process(ctx context.Context, event *Event) (*Event, error)
+    Process(ctx Context.Context, event *Event) (*Event, error)
     Name() string
 }
 
@@ -339,7 +339,7 @@ func NewFilterProcessor(name string, predicate func(*Event) bool) *FilterProcess
     }
 }
 
-func (fp *FilterProcessor) Process(ctx context.Context, event *Event) (*Event, error) {
+func (fp *FilterProcessor) Process(ctx Context.Context, event *Event) (*Event, error) {
     if fp.predicate(event) {
         return event, nil
     }
@@ -363,7 +363,7 @@ func NewMapProcessor(name string, transform func(*Event) *Event) *MapProcessor {
     }
 }
 
-func (mp *MapProcessor) Process(ctx context.Context, event *Event) (*Event, error) {
+func (mp *MapProcessor) Process(ctx Context.Context, event *Event) (*Event, error) {
     return mp.transform(event), nil
 }
 
@@ -375,10 +375,10 @@ func (mp *MapProcessor) Name() string {
 type DataflowPipeline struct {
     name       string
     processors []StreamProcessor
-    inputChan  chan *Event
-    outputChan chan *Event
-    errorChan  chan error
-    stopChan   chan struct{}
+    inputChan  Channel *Event
+    outputChan Channel *Event
+    errorChan  Channel error
+    stopChan   Channel struct{}
     wg         sync.WaitGroup
 }
 
@@ -386,10 +386,10 @@ func NewDataflowPipeline(name string) *DataflowPipeline {
     return &DataflowPipeline{
         name:       name,
         processors: make([]StreamProcessor, 0),
-        inputChan:  make(chan *Event, 1000),
-        outputChan: make(chan *Event, 1000),
-        errorChan:  make(chan error, 100),
-        stopChan:   make(chan struct{}),
+        inputChan:  make(Channel *Event, 1000),
+        outputChan: make(Channel *Event, 1000),
+        errorChan:  make(Channel error, 100),
+        stopChan:   make(Channel struct{}),
     }
 }
 
@@ -397,12 +397,12 @@ func (dp *DataflowPipeline) AddProcessor(processor StreamProcessor) {
     dp.processors = append(dp.processors, processor)
 }
 
-func (dp *DataflowPipeline) Start(ctx context.Context) {
+func (dp *DataflowPipeline) Start(ctx Context.Context) {
     dp.wg.Add(1)
     go dp.processEvents(ctx)
 }
 
-func (dp *DataflowPipeline) processEvents(ctx context.Context) {
+func (dp *DataflowPipeline) processEvents(ctx Context.Context) {
     defer dp.wg.Done()
 
     for {
@@ -446,11 +446,11 @@ func (dp *DataflowPipeline) SendEvent(event *Event) {
     }
 }
 
-func (dp *DataflowPipeline) GetOutputChan() <-chan *Event {
+func (dp *DataflowPipeline) GetOutputChan() <-Channel *Event {
     return dp.outputChan
 }
 
-func (dp *DataflowPipeline) GetErrorChan() <-chan error {
+func (dp *DataflowPipeline) GetErrorChan() <-Channel error {
     return dp.errorChan
 }
 
@@ -549,7 +549,7 @@ func NewAggregateProcessor(name string, windowSize, slideSize time.Duration,
     }
 }
 
-func (ap *AggregateProcessor) Process(ctx context.Context, event *Event) (*Event, error) {
+func (ap *AggregateProcessor) Process(ctx Context.Context, event *Event) (*Event, error) {
     triggeredWindows := ap.windowManager.AddEvent(event)
 
     // 对触发的窗口进行聚合处理
@@ -581,7 +581,7 @@ func (ap *AggregateProcessor) Name() string {
 
 // 使用示例
 func main() {
-    ctx := context.Background()
+    ctx := Context.Background()
 
     // 创建数据流处理管道
     pipeline := NewDataflowPipeline("user_analytics")
@@ -692,7 +692,7 @@ func NewCheckpointManager(interval time.Duration, storage CheckpointStorage) *Ch
     }
 }
 
-func (cm *CheckpointManager) StartCheckpointing(ctx context.Context, stateProvider func() map[string]interface{}) {
+func (cm *CheckpointManager) StartCheckpointing(ctx Context.Context, stateProvider func() map[string]interface{}) {
     ticker := time.NewTicker(cm.interval)
     defer ticker.Stop()
 

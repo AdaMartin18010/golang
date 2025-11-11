@@ -1,4 +1,4 @@
-# GitHub Actions CI/CD
+﻿# GitHub Actions CI/CD
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -214,7 +214,7 @@ jobs:
     - name: 构建并推送
       uses: docker/build-push-action@v5
       with:
-        context: .
+        Context: .
         platforms: linux/amd64,linux/arm64
         push: true
         tags: ${{ steps.meta.outputs.tags }}
@@ -229,7 +229,7 @@ jobs:
 - name: 构建（带缓存）
   uses: docker/build-push-action@v5
   with:
-    context: .
+    Context: .
     push: true
     tags: ${{ steps.meta.outputs.tags }}
     cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
@@ -302,7 +302,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: 配置kubectl
-      uses: azure/k8s-set-context@v3
+      uses: azure/k8s-set-Context@v3
       with:
         method: kubeconfig
         kubeconfig: ${{ secrets.KUBE_CONFIG }}

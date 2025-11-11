@@ -1,8 +1,42 @@
-# 12. 🕸️ Service Mesh集成
+﻿# 12. 🕸️ Service Mesh集成
 
-> 📚 **简介**：本文档深入探讨Service Mesh（服务网格）技术在微服务架构中的应用，重点介绍Istio的核心概念、流量管理、安全策略、可观测性以及Go微服务与Istio的集成实践。通过本文，读者将掌握使用Service Mesh构建云原生微服务的核心技能。
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ## 📋 目录
+
+- [12. 🕸️ Service Mesh集成](#12-️-service-mesh集成)
+  - [📋 目录](#-目录)
+  - [12.1 📚 Service Mesh概述](#121--service-mesh概述)
+  - [12.2 ⚙️ Istio架构](#122-️-istio架构)
+  - [12.3 🚀 Istio安装与配置](#123--istio安装与配置)
+  - [12.4 🌐 流量管理](#124--流量管理)
+    - [VirtualService - 路由规则](#virtualservice---路由规则)
+    - [DestinationRule - 目标策略](#destinationrule---目标策略)
+    - [Gateway - 入口网关](#gateway---入口网关)
+    - [高级路由场景](#高级路由场景)
+  - [12.5 🔐 安全策略](#125--安全策略)
+    - [mTLS加密](#mtls加密)
+    - [授权策略](#授权策略)
+  - [12.6 📊 可观测性](#126--可观测性)
+    - [Prometheus指标](#prometheus指标)
+    - [Jaeger链路追踪](#jaeger链路追踪)
+    - [Kiali可视化](#kiali可视化)
+  - [12.7 💻 Go微服务集成](#127--go微服务集成)
+  - [12.8 🎯 最佳实践](#128--最佳实践)
+  - [12.9 ⚠️ 常见问题](#129-️-常见问题)
+    - [Q1: Sidecar注入失败？](#q1-sidecar注入失败)
+    - [Q2: 服务无法通信？](#q2-服务无法通信)
+    - [Q3: 性能开销多大？](#q3-性能开销多大)
+    - [Q4: 如何禁用某个Pod的Sidecar？](#q4-如何禁用某个pod的sidecar)
+  - [12.10 📚 扩展阅读](#1210--扩展阅读)
+    - [官方文档](#官方文档)
+    - [相关文档](#相关文档)
+
+---
 
 - [12. 🕸️ Service Mesh集成](#12-️-service-mesh集成)
   - [📋 目录](#-目录)
@@ -500,7 +534,7 @@ func main() {
 **传播追踪头**:
 
 ```go
-func CallDownstream(ctx context.Context, url string) (*http.Response, error) {
+func CallDownstream(ctx Context.Context, url string) (*http.Response, error) {
     req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
 
     // 传播Istio追踪头

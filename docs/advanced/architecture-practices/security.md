@@ -1,4 +1,4 @@
-# 安全架构（Security Architecture）
+﻿# 安全架构（Security Architecture）
 
 > **简介**: 系统安全架构设计，涵盖身份认证、授权控制、数据加密和安全审计
 
@@ -121,7 +121,7 @@ type SecurityContext struct {
     Timestamp    time.Time
 }
 
-func (zt *ZeroTrustEngine) EvaluateAccess(ctx context.Context, request AccessRequest) (*AccessDecision, error) {
+func (zt *ZeroTrustEngine) EvaluateAccess(ctx Context.Context, request AccessRequest) (*AccessDecision, error) {
     // 1. 身份验证
     identity, err := zt.IdentityProvider.Authenticate(ctx, request.Credentials)
     if err != nil {
@@ -181,7 +181,7 @@ type PolicyEvaluator struct {
     RelationshipGraph *RelationshipGraph
 }
 
-func (pe *PolicyEngine) EvaluateRequest(ctx context.Context, request *AccessRequest) (*PolicyDecision, error) {
+func (pe *PolicyEngine) EvaluateRequest(ctx Context.Context, request *AccessRequest) (*PolicyDecision, error) {
     // 1. 策略匹配
     matchedPolicies := pe.findMatchingPolicies(request)
 
@@ -233,7 +233,7 @@ type MFAPolicy struct {
     ExemptUsers        []string
 }
 
-func (mfa *MFAService) AuthenticateUser(ctx context.Context, credentials map[string]interface{}) (*AuthResult, error) {
+func (mfa *MFAService) AuthenticateUser(ctx Context.Context, credentials map[string]interface{}) (*AuthResult, error) {
     // 1. 初始认证
     userId, err := mfa.PasswordValidator.Validate(credentials["username"].(string), credentials["password"].(string))
     if err != nil {
@@ -295,7 +295,7 @@ type TokenService struct {
     TokenStore         TokenStore
 }
 
-func (ts *TokenService) IssueTokens(ctx context.Context, request *TokenRequest) (*TokenResponse, error) {
+func (ts *TokenService) IssueTokens(ctx Context.Context, request *TokenRequest) (*TokenResponse, error) {
     // 根据授权类型处理
     switch request.GrantType {
     case "authorization_code":
@@ -309,7 +309,7 @@ func (ts *TokenService) IssueTokens(ctx context.Context, request *TokenRequest) 
     }
 }
 
-func (ts *TokenService) handleAuthorizationCode(ctx context.Context, request *TokenRequest) (*TokenResponse, error) {
+func (ts *TokenService) handleAuthorizationCode(ctx Context.Context, request *TokenRequest) (*TokenResponse, error) {
     // 1. 验证授权码
     codeInfo, err := ts.TokenStore.GetAuthorizationCode(request.Code)
     if err != nil {
@@ -389,7 +389,7 @@ type EncryptionResponse struct {
     KeyID        string
 }
 
-func (cs *CryptoService) Encrypt(ctx context.Context, req *EncryptionRequest) (*EncryptionResponse, error) {
+func (cs *CryptoService) Encrypt(ctx Context.Context, req *EncryptionRequest) (*EncryptionResponse, error) {
     // 1. 获取加密密钥
     key, err := cs.KeyManager.GetKey(req.KeyID)
     if err != nil {
@@ -440,7 +440,7 @@ type Key struct {
     Metadata    map[string]string
 }
 
-func (km *KeyManager) CreateKey(ctx context.Context, req *CreateKeyRequest) (*Key, error) {
+func (km *KeyManager) CreateKey(ctx Context.Context, req *CreateKeyRequest) (*Key, error) {
     // 1. 验证请求
     if err := km.validateKeyRequest(req); err != nil {
         return nil, err
@@ -645,7 +645,7 @@ type ScanSummary struct {
     FailedChecks  int
 }
 
-func (cs *ContainerScanner) ScanImage(ctx context.Context, imageRef string) (*ScanResult, error) {
+func (cs *ContainerScanner) ScanImage(ctx Context.Context, imageRef string) (*ScanResult, error) {
     // 1. 拉取镜像
     image, err := cs.ImageScanner.PullImage(ctx, imageRef)
     if err != nil {
@@ -735,7 +735,7 @@ type SecurityEvent struct {
     RawData      []byte
 }
 
-func (rsm *RuntimeSecurityMonitor) Start(ctx context.Context) error {
+func (rsm *RuntimeSecurityMonitor) Start(ctx Context.Context) error {
     // 启动各监控组件
     if err := rsm.SyscallMonitor.Start(ctx); err != nil {
         return err
@@ -755,7 +755,7 @@ func (rsm *RuntimeSecurityMonitor) Start(ctx context.Context) error {
     return nil
 }
 
-func (rsm *RuntimeSecurityMonitor) processEvents(ctx context.Context) {
+func (rsm *RuntimeSecurityMonitor) processEvents(ctx Context.Context) {
     for {
         select {
         case event := <-rsm.SyscallMonitor.Events():
@@ -770,7 +770,7 @@ func (rsm *RuntimeSecurityMonitor) processEvents(ctx context.Context) {
     }
 }
 
-func (rsm *RuntimeSecurityMonitor) handleSecurityEvent(ctx context.Context, event *SecurityEvent) {
+func (rsm *RuntimeSecurityMonitor) handleSecurityEvent(ctx Context.Context, event *SecurityEvent) {
     // 1. 策略评估
     violations, err := rsm.RuntimePolicyEngine.EvaluateEvent(ctx, event)
     if err != nil {

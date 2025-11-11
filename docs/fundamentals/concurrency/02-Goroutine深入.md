@@ -1,4 +1,4 @@
-# Goroutine深入
+﻿# Goroutine深入
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -77,7 +77,7 @@ func main() {
 
     // 主Goroutine需要等待，否则程序会立即退出
     time.Sleep(1 * time.Second)
-    fmt.Println("Main goroutine exiting")
+    fmt.Println("Main Goroutine exiting")
 }
 ```
 
@@ -309,7 +309,7 @@ import (
     "time"
 )
 
-func workerWithChannel(id int, done chan bool) {
+func workerWithChannel(id int, done Channel bool) {
     fmt.Printf("Worker %d starting\n", id)
     time.Sleep(time.Duration(id) * 100 * time.Millisecond)
     fmt.Printf("Worker %d done\n", id)
@@ -317,7 +317,7 @@ func workerWithChannel(id int, done chan bool) {
 }
 
 func channelSyncDemo() {
-    done := make(chan bool, 5) // 缓冲channel
+    done := make(Channel bool, 5) // 缓冲channel
 
     for i := 1; i <= 5; i++ {
         go workerWithChannel(i, done)
@@ -342,12 +342,12 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 )
 
-func workerWithContext(ctx context.Context, id int) {
+func workerWithContext(ctx Context.Context, id int) {
     for {
         select {
         case <-ctx.Done():
@@ -361,7 +361,7 @@ func workerWithContext(ctx context.Context, id int) {
 }
 
 func contextDemo() {
-    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
     defer cancel()
 
     for i := 1; i <= 3; i++ {
@@ -397,7 +397,7 @@ func stackGrowth() {
     runtime.ReadMemStats(&m1)
 
     // 创建10000个Goroutine
-    done := make(chan bool)
+    done := make(Channel bool)
     for i := 0; i < 10000; i++ {
         go func() {
             // 递归调用，触发栈增长
@@ -479,7 +479,7 @@ import (
 
 // ❌ 错误：Goroutine泄漏
 func leakyGoroutine() {
-    ch := make(chan int)
+    ch := make(Channel int)
 
     go func() {
         val := <-ch // 永远阻塞，Goroutine泄漏
@@ -491,8 +491,8 @@ func leakyGoroutine() {
 
 // ✅ 正确：使用Context取消
 func fixedGoroutine() {
-    ch := make(chan int)
-    done := make(chan bool)
+    ch := make(Channel int)
+    done := make(Channel bool)
 
     go func() {
         select {
@@ -537,7 +537,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 )
@@ -555,7 +555,7 @@ func leakyLoop() {
 
 // ✅ 正确：使用Context控制退出
 func fixedLoop() {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     go func() {
         for {
@@ -630,7 +630,7 @@ func main() {
 
 ```go
 // 使用缓冲Channel作为信号量
-sem := make(chan struct{}, 100) // 最多100个并发
+sem := make(Channel struct{}, 100) // 最多100个并发
 
 for i := 0; i < 1000; i++ {
     sem <- struct{}{} // 获取

@@ -1,4 +1,4 @@
-# 微服务架构（Golang国际主流实践）
+﻿# 微服务架构（Golang国际主流实践）
 
 > **简介**: 基于国际主流标准的微服务架构完整指南，涵盖DDD领域建模、分布式挑战、架构设计、Golang实现和形式化证明
 
@@ -255,7 +255,7 @@
 package microservice
 
 import (
-    "context"
+    "Context"
     "time"
     "errors"
     "sync"
@@ -711,66 +711,66 @@ type MeshMetrics struct {
 
 // 领域服务接口
 type UserService interface {
-    CreateUser(ctx context.Context, user *User) error
-    GetUser(ctx context.Context, id string) (*User, error)
-    UpdateUser(ctx context.Context, user *User) error
-    DeleteUser(ctx context.Context, id string) error
-    GetUsersByRole(ctx context.Context, role UserRole) ([]*User, error)
-    AuthenticateUser(ctx context.Context, email, password string) (*User, error)
-    UpdateUserStatus(ctx context.Context, id string, status UserStatus) error
+    CreateUser(ctx Context.Context, user *User) error
+    GetUser(ctx Context.Context, id string) (*User, error)
+    UpdateUser(ctx Context.Context, user *User) error
+    DeleteUser(ctx Context.Context, id string) error
+    GetUsersByRole(ctx Context.Context, role UserRole) ([]*User, error)
+    AuthenticateUser(ctx Context.Context, email, password string) (*User, error)
+    UpdateUserStatus(ctx Context.Context, id string, status UserStatus) error
 }
 
 type OrderService interface {
-    CreateOrder(ctx context.Context, order *Order) error
-    GetOrder(ctx context.Context, id string) (*Order, error)
-    UpdateOrder(ctx context.Context, order *Order) error
-    CancelOrder(ctx context.Context, id string) error
-    GetOrdersByUser(ctx context.Context, userID string) ([]*Order, error)
-    UpdateOrderStatus(ctx context.Context, id string, status OrderStatus) error
-    ProcessOrder(ctx context.Context, orderID string) error
+    CreateOrder(ctx Context.Context, order *Order) error
+    GetOrder(ctx Context.Context, id string) (*Order, error)
+    UpdateOrder(ctx Context.Context, order *Order) error
+    CancelOrder(ctx Context.Context, id string) error
+    GetOrdersByUser(ctx Context.Context, userID string) ([]*Order, error)
+    UpdateOrderStatus(ctx Context.Context, id string, status OrderStatus) error
+    ProcessOrder(ctx Context.Context, orderID string) error
 }
 
 type ProductService interface {
-    CreateProduct(ctx context.Context, product *Product) error
-    GetProduct(ctx context.Context, id string) (*Product, error)
-    UpdateProduct(ctx context.Context, product *Product) error
-    DeleteProduct(ctx context.Context, id string) error
-    GetProductsByCategory(ctx context.Context, category string) ([]*Product, error)
-    SearchProducts(ctx context.Context, query string) ([]*Product, error)
-    UpdateProductStock(ctx context.Context, id string, quantity int) error
+    CreateProduct(ctx Context.Context, product *Product) error
+    GetProduct(ctx Context.Context, id string) (*Product, error)
+    UpdateProduct(ctx Context.Context, product *Product) error
+    DeleteProduct(ctx Context.Context, id string) error
+    GetProductsByCategory(ctx Context.Context, category string) ([]*Product, error)
+    SearchProducts(ctx Context.Context, query string) ([]*Product, error)
+    UpdateProductStock(ctx Context.Context, id string, quantity int) error
 }
 
 type InventoryService interface {
-    GetInventory(ctx context.Context, productID string) (*Inventory, error)
-    UpdateInventory(ctx context.Context, productID string, quantity int) error
-    ReserveInventory(ctx context.Context, productID string, quantity int) error
-    ReleaseInventory(ctx context.Context, productID string, quantity int) error
-    GetLowStockItems(ctx context.Context) ([]*Inventory, error)
-    ReorderProduct(ctx context.Context, productID string) error
+    GetInventory(ctx Context.Context, productID string) (*Inventory, error)
+    UpdateInventory(ctx Context.Context, productID string, quantity int) error
+    ReserveInventory(ctx Context.Context, productID string, quantity int) error
+    ReleaseInventory(ctx Context.Context, productID string, quantity int) error
+    GetLowStockItems(ctx Context.Context) ([]*Inventory, error)
+    ReorderProduct(ctx Context.Context, productID string) error
 }
 
 type ServiceRegistry interface {
-    RegisterService(ctx context.Context, service *Service) error
-    DeregisterService(ctx context.Context, serviceID string) error
-    GetService(ctx context.Context, name string) (*Service, error)
-    ListServices(ctx context.Context, tags []string) ([]*Service, error)
-    HealthCheck(ctx context.Context, serviceID string) error
-    UpdateServiceStatus(ctx context.Context, serviceID string, status ServiceStatus) error
+    RegisterService(ctx Context.Context, service *Service) error
+    DeregisterService(ctx Context.Context, serviceID string) error
+    GetService(ctx Context.Context, name string) (*Service, error)
+    ListServices(ctx Context.Context, tags []string) ([]*Service, error)
+    HealthCheck(ctx Context.Context, serviceID string) error
+    UpdateServiceStatus(ctx Context.Context, serviceID string, status ServiceStatus) error
 }
 
 type ConfigurationService interface {
-    GetConfig(ctx context.Context, service, key string) (*Configuration, error)
-    SetConfig(ctx context.Context, config *Configuration) error
-    DeleteConfig(ctx context.Context, service, key string) error
-    ListConfigs(ctx context.Context, service string) ([]*Configuration, error)
-    WatchConfig(ctx context.Context, service, key string, handler ConfigChangeHandler) error
+    GetConfig(ctx Context.Context, service, key string) (*Configuration, error)
+    SetConfig(ctx Context.Context, config *Configuration) error
+    DeleteConfig(ctx Context.Context, service, key string) error
+    ListConfigs(ctx Context.Context, service string) ([]*Configuration, error)
+    WatchConfig(ctx Context.Context, service, key string, handler ConfigChangeHandler) error
 }
 
 type ServiceDiscovery interface {
-    DiscoverService(ctx context.Context, name string) ([]*Service, error)
-    GetServiceEndpoints(ctx context.Context, name string) ([]string, error)
-    WatchService(ctx context.Context, name string, handler ServiceChangeHandler) error
-    GetServiceHealth(ctx context.Context, name string) (ServiceStatus, error)
+    DiscoverService(ctx Context.Context, name string) ([]*Service, error)
+    GetServiceEndpoints(ctx Context.Context, name string) ([]string, error)
+    WatchService(ctx Context.Context, name string, handler ServiceChangeHandler) error
+    GetServiceHealth(ctx Context.Context, name string) (ServiceStatus, error)
 }
 
 // 微服务平台核心实现
@@ -791,7 +791,7 @@ type MicroservicePlatform struct {
     mu                 sync.RWMutex
 }
 
-func (platform *MicroservicePlatform) ProcessOrder(ctx context.Context, orderRequest *CreateOrderRequest) (*Order, error) {
+func (platform *MicroservicePlatform) ProcessOrder(ctx Context.Context, orderRequest *CreateOrderRequest) (*Order, error) {
     // 验证用户
     user, err := platform.userService.GetUser(ctx, orderRequest.UserID)
     if err != nil {
@@ -877,7 +877,7 @@ func (platform *MicroservicePlatform) ProcessOrder(ctx context.Context, orderReq
     return order, nil
 }
 
-func (platform *MicroservicePlatform) CallService(ctx context.Context, serviceName, method, endpoint string, request interface{}) (interface{}, error) {
+func (platform *MicroservicePlatform) CallService(ctx Context.Context, serviceName, method, endpoint string, request interface{}) (interface{}, error) {
     // 获取服务实例
     services, err := platform.serviceDiscovery.DiscoverService(ctx, serviceName)
     if err != nil {
@@ -923,7 +923,7 @@ func (platform *MicroservicePlatform) CallService(ctx context.Context, serviceNa
     return response, err
 }
 
-func (platform *MicroservicePlatform) executeServiceCall(ctx context.Context, service *Service, method, endpoint string, request interface{}) (interface{}, error) {
+func (platform *MicroservicePlatform) executeServiceCall(ctx Context.Context, service *Service, method, endpoint string, request interface{}) (interface{}, error) {
     // 构建请求URL
     url := service.Endpoint + endpoint
 
@@ -1047,7 +1047,7 @@ func (platform *MicroservicePlatform) getCallStatus(err error) CallStatus {
         return CallStatusSuccess
     }
 
-    if errors.Is(err, context.DeadlineExceeded) {
+    if errors.Is(err, Context.DeadlineExceeded) {
         return CallStatusTimeout
     }
 
@@ -1151,7 +1151,7 @@ type Span struct {
 
 ```go
 // gRPC 客户端调用带超时与重试
-ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
 defer cancel()
 resp, err := client.DoSomething(ctx, req)
 if err != nil {
@@ -1172,7 +1172,7 @@ if err != nil {
 // etcd 服务注册示例
 import clientv3 "go.etcd.io/etcd/client/v3"
 cli, _ := clientv3.New(clientv3.Config{Endpoints: []string{"localhost:2379"}})
-cli.Put(context.Background(), "/services/order/instance1", "127.0.0.1:8080")
+cli.Put(Context.Background(), "/services/order/instance1", "127.0.0.1:8080")
 ```
 
 ### 数据一致性
@@ -1188,7 +1188,7 @@ cli.Put(context.Background(), "/services/order/instance1", "127.0.0.1:8080")
 // Kafka 事件发布
 import "github.com/segmentio/kafka-go"
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "order-events"})
-writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("OrderCreated")})
+writer.WriteMessages(Context.Background(), kafka.Message{Value: []byte("OrderCreated")})
 ```
 
 ### 系统可靠性
@@ -1228,8 +1228,8 @@ reqCount.Inc()
 ```go
 // 限界上下文内的服务接口
  type OrderService interface {
-     CreateOrder(ctx context.Context, order *Order) error
-     GetOrder(ctx context.Context, id string) (*Order, error)
+     CreateOrder(ctx Context.Context, order *Order) error
+     GetOrder(ctx Context.Context, id string) (*Order, error)
  }
 ```
 
@@ -1278,7 +1278,7 @@ r.GET("/orders/:id", orderHandler.GetOrder)
 
 ```go
 // 事件驱动异步处理
-func (p *OrderEventProcessor) ProcessEvent(ctx context.Context, event interface{}) error {
+func (p *OrderEventProcessor) ProcessEvent(ctx Context.Context, event interface{}) error {
     switch e := event.(type) {
     case *OrderCreatedEvent:
         // 处理订单创建事件
@@ -1380,7 +1380,7 @@ import pb "github.com/yourorg/microservice-demo/api"
 
 type OrderService struct{}
 
-func (s *OrderService) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*pb.OrderResponse, error) {
+func (s *OrderService) CreateOrder(ctx Context.Context, req *pb.CreateOrderRequest) (*pb.OrderResponse, error) {
     // 业务逻辑...
     return &pb.OrderResponse{OrderId: "123", Status: "CREATED"}, nil
 }
@@ -1405,11 +1405,11 @@ import "github.com/segmentio/kafka-go"
 
 // 发布事件
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "order-events"})
-writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("OrderCreated")})
+writer.WriteMessages(Context.Background(), kafka.Message{Value: []byte("OrderCreated")})
 
 // 消费事件
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "order-events", GroupID: "order-group"})
-msg, _ := reader.ReadMessage(context.Background())
+msg, _ := reader.ReadMessage(Context.Background())
 log.Printf("received: %s", string(msg.Value))
 ```
 

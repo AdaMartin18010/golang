@@ -1,6 +1,6 @@
 # Memory 内存管理库
 
-> **版本**: v1.0.0  
+> **版本**: v1.0.0
 > **Go版本**: 1.25+
 
 ---
@@ -24,6 +24,5 @@ go get github.com/yourusername/golang/pkg/memory@latest
 
 ---
 
-**版本**: v1.0.0  
+**版本**: v1.0.0
 **最后更新**: 2025-10-22
-

@@ -1,4 +1,4 @@
-# CSP并发模型与Go形式化证明
+﻿# CSP并发模型与Go形式化证明
 
 **文档版本**: v1.0.0
 **版本**: v1.0
@@ -221,7 +221,7 @@ go f() ≡ f() ||| continuation
 
 ```mathematical
 /* Channel声明 */
-ch := make(chan T) ≡ channel ch : T
+ch := make(Channel T) ≡ Channel ch : T
 
 /* 发送操作 */
 ch <- v ≡ ch!v → P
@@ -247,7 +247,7 @@ System = Sender [|{ch}|] Receiver
 
 ```mathematical
 /* Channel声明 */
-ch := make(chan T, n) ≡ buffered_channel ch : T with capacity n
+ch := make(Channel T, n) ≡ buffered_channel ch : T with capacity n
 
 /* 状态定义 */
 BufferState = {
@@ -411,7 +411,7 @@ close(ch) → ch.state := Closed(buf)
 [Close-Already-Closed]
 ch.state = Closed(_)
 ──────────────────────────────────────
-close(ch) → panic("close of closed channel")
+close(ch) → panic("close of closed Channel")
 
 /* 接收语义 (从关闭的channel) */
 
@@ -506,7 +506,7 @@ Channel = {
 
 function send(ch: Channel, v: Value):
     if ch.closed:
-        panic("send on closed channel")
+        panic("send on closed Channel")
 
     /* Case 1: 有等待的接收者 */
     if ch.recvq.is_not_empty():
@@ -853,11 +853,11 @@ function (q *ConcurrentQueue[T]) Dequeue() -> T:
 ```mathematical
 /* 经典生产者-消费者 */
 
-func producer(ch chan int):
+func producer(ch Channel int):
     for i := 0; i < N; i++:
         ch <- i
 
-func consumer(ch chan int):
+func consumer(ch Channel int):
     for i := 0; i < N; i++:
         v := <-ch
         process(v)
@@ -1063,7 +1063,7 @@ func goroutine2():
 
 1. **完整的CSP到Go并发原语的映射**
    - Goroutine ↔ 进程
-   - Channel ↔ 通道
+   - Channel ↔ Channel
    - Select ↔ 外部选择
 
 2. **精确的形式化语义**

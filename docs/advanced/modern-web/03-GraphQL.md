@@ -1,4 +1,4 @@
-# GraphQL
+﻿# GraphQL
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -46,7 +46,7 @@ input NewUser {
 package graph
 
 import (
-    "context"
+    "Context"
     "github.com/99designs/gqlgen/graphql/handler"
 )
 
@@ -54,7 +54,7 @@ type Resolver struct {
     users map[string]*model.User
 }
 
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+func (r *queryResolver) Users(ctx Context.Context) ([]*model.User, error) {
     users := make([]*model.User, 0, len(r.users))
     for _, user := range r.users {
         users = append(users, user)
@@ -62,7 +62,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
     return users, nil
 }
 
-func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
+func (r *queryResolver) User(ctx Context.Context, id string) (*model.User, error) {
     user, ok := r.users[id]
     if !ok {
         return nil, fmt.Errorf("user not found")
@@ -70,7 +70,7 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
     return user, nil
 }
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
+func (r *mutationResolver) CreateUser(ctx Context.Context, input model.NewUser) (*model.User, error) {
     user := &model.User{
         ID:    uuid.New().String(),
         Name:  input.Name,
@@ -105,7 +105,7 @@ type UserLoader struct {
     db *sql.DB
 }
 
-func (u *UserLoader) BatchGetUsers(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+func (u *UserLoader) BatchGetUsers(ctx Context.Context, keys dataloader.Keys) []*dataloader.Result {
     userIDs := make([]string, len(keys))
     for i, key := range keys {
         userIDs[i] = key.String()
@@ -129,7 +129,7 @@ func (u *UserLoader) BatchGetUsers(ctx context.Context, keys dataloader.Keys) []
 }
 
 // 在resolver中使用
-func (r *queryResolver) Posts(ctx context.Context, userID string) ([]*model.Post, error) {
+func (r *queryResolver) Posts(ctx Context.Context, userID string) ([]*model.Post, error) {
     loader := ctx.Value("userLoader").(*dataloader.Loader)
 
     thunk := loader.Load(ctx, dataloader.StringKey(userID))
@@ -166,7 +166,7 @@ type PageInfo struct {
 }
 
 func (r *queryResolver) UsersConnection(
-    ctx context.Context,
+    ctx Context.Context,
     first *int,
     after *string,
 ) (*Connection, error) {
@@ -219,10 +219,10 @@ type Subscription {
 }
 
 func (r *subscriptionResolver) MessageAdded(
-    ctx context.Context,
+    ctx Context.Context,
     roomID string,
-) (<-chan *model.Message, error) {
-    messages := make(chan *model.Message, 1)
+) (<-Channel *model.Message, error) {
+    messages := make(Channel *model.Message, 1)
 
     // 订阅消息
     r.messageBus.Subscribe(roomID, func(msg *model.Message) {

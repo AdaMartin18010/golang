@@ -1,4 +1,4 @@
-# Echo框架基础 (Go 1.23+优化版)
+﻿# Echo框架基础 (Go 1.23+优化版)
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -8,7 +8,7 @@
 
 ## 📋 目录
 
-- [🚀 Go 1.23+ Web开发新特性概览](#go-1-23+-web开发新特性概览)
+- [🚀 Go 1.23+ Web开发新特性概览](#go-123-web开发新特性概览)
   - [核心特性更新](#核心特性更新)
   - [性能提升数据](#性能提升数据)
   - [企业级应用场景](#企业级应用场景)
@@ -16,21 +16,21 @@
   - [**Echo框架简介**](#echo框架简介)
   - [**核心原理**](#核心原理)
   - [**主要类型与接口**](#主要类型与接口)
-  - [**Go 1.23+集成特性**](#go-1-23+集成特性)
+  - [**Go 1.23+集成特性**](#go-123集成特性)
 - [💻 **代码示例**](#代码示例)
   - [**最小Echo应用**](#最小echo应用)
   - [**路由与参数绑定**](#路由与参数绑定)
   - [**中间件用法**](#中间件用法)
   - [**分组与RESTful API**](#分组与restful-api)
-  - [**Go 1.23+ JSON v2集成**](#go-1-23+-json-v2集成)
+  - [**Go 1.23+ JSON v2集成**](#go-123-json-v2集成)
   - [**高性能并发处理**](#高性能并发处理)
 - [🧪 **测试代码**](#测试代码)
   - [**基础测试**](#基础测试)
-  - [**Go 1.23+并发测试**](#go-1-23+并发测试)
+  - [**Go 1.23+并发测试**](#go-123并发测试)
   - [**性能基准测试**](#性能基准测试)
 - [🎯 **最佳实践**](#最佳实践)
   - [基础最佳实践](#基础最佳实践)
-  - [Go 1.23+优化最佳实践](#go-1-23+优化最佳实践)
+  - [Go 1.23+优化最佳实践](#go-123优化最佳实践)
     - [1. JSON v2性能优化](#1-json-v2性能优化)
     - [2. 结构化日志最佳实践](#2-结构化日志最佳实践)
     - [3. 并发测试最佳实践](#3-并发测试最佳实践)
@@ -42,11 +42,11 @@
     - [3. 健康检查](#3-健康检查)
 - [🔍 **常见问题**](#常见问题)
   - [基础问题](#基础问题)
-  - [Go 1.23+相关问题](#go-1-23+相关问题)
+  - [Go 1.23+相关问题](#go-123相关问题)
   - [性能优化问题](#性能优化问题)
 - [📚 **扩展阅读**](#扩展阅读)
   - [官方资源](#官方资源)
-  - [Go 1.23+相关资源](#go-1-23+相关资源)
+  - [Go 1.23+相关资源](#go-123相关资源)
   - [学习资源](#学习资源)
   - [社区资源](#社区资源)
 
@@ -281,7 +281,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "crypto" // Go 1.23+ 加密增强
     "crypto/ecdsa"
     "crypto/ed25519"
@@ -335,7 +335,7 @@ type ConcurrentEchoServer struct {
     echo        *echo.Echo
     logger      *slog.Logger
     signer      MessageSigner
-    workerPool  chan struct{}
+    workerPool  Channel struct{}
     metrics     *ServerMetrics
 }
 
@@ -364,7 +364,7 @@ func NewConcurrentEchoServer(maxWorkers int) (*ConcurrentEchoServer, error) {
         echo:       e,
         logger:     logger,
         signer:     signer,
-        workerPool: make(chan struct{}, maxWorkers),
+        workerPool: make(Channel struct{}, maxWorkers),
         metrics:    &ServerMetrics{},
     }, nil
 }

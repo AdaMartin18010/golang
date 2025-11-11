@@ -143,22 +143,22 @@ type BaseAgent struct {
 func (a *BaseAgent) Process(input Input) (Output, error) {
     // 1. 感知输入
     context := a.perceive(input)
-    
+
     // 2. 学习历史经验
     a.learnFromHistory(context)
-    
+
     // 3. 做出决策
     decision, err := a.decision.MakeDecision(context)
     if err != nil {
         return Output{}, err
     }
-    
+
     // 4. 执行决策
     output := a.execute(decision)
-    
+
     // 5. 学习结果
     a.learnFromOutcome(decision, output)
-    
+
     return output, nil
 }
 
@@ -178,16 +178,16 @@ type DataProcessingAgent struct {
 func (a *DataProcessingAgent) Process(input Input) (Output, error) {
     // 数据预处理
     processedData := a.preprocess(input.Data)
-    
+
     // 特征提取
     features := a.extractFeatures(processedData)
-    
+
     // 模型预测
     prediction := a.predict(features)
-    
+
     // 结果后处理
     output := a.postprocess(prediction)
-    
+
     return output, nil
 }
 
@@ -206,13 +206,13 @@ type DecisionAgent struct {
 func (a *DecisionAgent) Process(input Input) (Output, error) {
     // 规则匹配
     matchedRules := a.rules.Match(input)
-    
+
     // 策略选择
     policy := a.policies.Select(matchedRules, input)
-    
+
     // 优化决策
     decision := a.optimizer.Optimize(policy, input)
-    
+
     return Output{Decision: decision}, nil
 }
 
@@ -231,16 +231,16 @@ type CollaborationAgent struct {
 func (a *CollaborationAgent) Process(input Input) (Output, error) {
     // 任务分解
     subtasks := a.decompose(input)
-    
+
     // 分配任务
     assignments := a.assignTasks(subtasks)
-    
+
     // 协调执行
     results := a.coordinateExecution(assignments)
-    
+
     // 结果聚合
     output := a.aggregateResults(results)
-    
+
     return output, nil
 }
 
@@ -260,15 +260,15 @@ type SmartCoordinator struct {
 func (c *SmartCoordinator) RouteTask(task Task) (Agent, error) {
     // 分析任务特征
     taskProfile := c.analyzeTask(task)
-    
+
     // 选择最适合的代理
     agent := c.selectBestAgent(taskProfile)
-    
+
     // 负载均衡检查
     if c.balancer.IsOverloaded(agent) {
         agent = c.balancer.Redistribute(agent, task)
     }
-    
+
     return agent, nil
 }
 
@@ -284,7 +284,7 @@ func (a *BaseAgent) ProcessParallel(inputs []Input) ([]Output, error) {
     results := make([]Output, len(inputs))
     var wg sync.WaitGroup
     errChan := make(chan error, len(inputs))
-    
+
     for i, input := range inputs {
         wg.Add(1)
         go func(index int, in Input) {
@@ -297,10 +297,10 @@ func (a *BaseAgent) ProcessParallel(inputs []Input) ([]Output, error) {
             results[index] = output
         }(i, input)
     }
-    
+
     wg.Wait()
     close(errChan)
-    
+
     // 检查错误
     select {
     case err := <-errChan:
@@ -326,11 +326,11 @@ func (a *BaseAgent) ProcessWithPool(input Input) (Output, error) {
     // 从池中获取对象
     context := a.contextPool.Get().(Context)
     defer a.contextPool.Put(context)
-    
+
     // 处理逻辑
     output := a.outputPool.Get().(Output)
     defer a.outputPool.Put(output)
-    
+
     return output, nil
 }
 
@@ -372,16 +372,16 @@ type CustomerServiceAgent struct {
 func (a *CustomerServiceAgent) Process(input Input) (Output, error) {
     // 自然语言理解
     intent := a.nlp.Understand(input.Text)
-    
+
     // 情感分析
     sentiment := a.sentiment.Analyze(input.Text)
-    
+
     // 知识库查询
     response := a.knowledge.Query(intent, sentiment)
-    
+
     // 个性化回复
     personalized := a.personalize(response, input.UserProfile)
-    
+
     return Output{Response: personalized}, nil
 }
 
@@ -400,13 +400,13 @@ type RecommendationAgent struct {
 func (a *RecommendationAgent) Process(input Input) (Output, error) {
     // 特征提取
     features := a.features.Extract(input.UserBehavior)
-    
+
     // 模型预测
     scores := a.model.Predict(features)
-    
+
     // 结果排序
     recommendations := a.ranking.Rank(scores)
-    
+
     return Output{Recommendations: recommendations}, nil
 }
 
@@ -425,13 +425,13 @@ type MonitoringAgent struct {
 func (a *MonitoringAgent) Process(input Input) (Output, error) {
     // 收集指标
     metrics := a.collector.Collect(input.SystemState)
-    
+
     // 异常检测
     anomalies := a.analyzer.Detect(metrics)
-    
+
     // 生成告警
     alerts := a.alertor.GenerateAlerts(anomalies)
-    
+
     return Output{Alerts: alerts}, nil
 }
 
@@ -449,13 +449,13 @@ func (a *BaseAgent) LearnOnline(experience Experience) error {
     if err != nil {
         return err
     }
-    
+
     // 调整策略
     a.decision.AdjustStrategy(experience)
-    
+
     // 更新配置
     a.updateConfig(experience)
-    
+
     return nil
 }
 
@@ -468,15 +468,15 @@ func (a *BaseAgent) LearnOnline(experience Experience) error {
 func (a *BaseAgent) SelfOptimize() error {
     // 分析性能指标
     metrics := a.metrics.GetMetrics()
-    
+
     // 识别瓶颈
     bottlenecks := a.identifyBottlenecks(metrics)
-    
+
     // 优化参数
     for _, bottleneck := range bottlenecks {
         a.optimizeParameter(bottleneck)
     }
-    
+
     return nil
 }
 
@@ -496,12 +496,12 @@ type AgentMonitor struct {
 func (m *AgentMonitor) Monitor() {
     for agentID, agent := range m.agents {
         status := agent.GetStatus()
-        
+
         // 检查健康状态
         if !status.IsHealthy() {
             m.alerts.SendAlert(agentID, "Agent unhealthy")
         }
-        
+
         // 收集性能指标
         m.metrics.Collect(agentID, status.Metrics)
     }
@@ -521,13 +521,13 @@ type SystemAnalyzer struct {
 func (a *SystemAnalyzer) Analyze() {
     // 收集系统指标
     metrics := a.metrics.Collect()
-    
+
     // 分析性能瓶颈
     bottlenecks := a.analyzeBottlenecks(metrics)
-    
+
     // 生成优化建议
     recommendations := a.generateRecommendations(bottlenecks)
-    
+
     // 自动优化
     a.optimizer.ApplyOptimizations(recommendations)
 }

@@ -1,4 +1,4 @@
-# sync包与并发安全模式
+﻿# sync包与并发安全模式
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -33,9 +33,9 @@
 
 Go的sync包提供了多种并发原语，保障多Goroutine环境下的数据一致性和同步。
 
-- **互斥锁（Mutex）**：保证同一时刻只有一个Goroutine访问临界区。
+- **Mutex（Mutex）**：保证同一时刻只有一个Goroutine访问临界区。
 - **读写锁（RWMutex）**：读操作可并发，写操作独占。
-- **等待组（WaitGroup）**：用于等待一组Goroutine完成。
+- **WaitGroup（WaitGroup）**：用于等待一组Goroutine完成。
 - **Once**：确保某段代码只执行一次。
 - **Cond**：条件变量，支持复杂同步。
 

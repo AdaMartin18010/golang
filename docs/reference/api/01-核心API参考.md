@@ -1,4 +1,4 @@
-# 核心API参考
+﻿# 核心API参考
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -8,21 +8,23 @@
 
 ## 📋 目录
 
-- [1. 📖 标准库核心包](#1-标准库核心包)
-  - [net/http](#nethttp)
-  - [encoding/json](#encodingjson)
-  - [context](#context)
-  - [sync](#sync)
-  - [fmt](#fmt)
-  - [io](#io)
-  - [time](#time)
-  - [os](#os)
-  - [strings](#strings)
-  - [strconv](#strconv)
-  - [errors](#errors)
-  - [log](#log)
-- [📚 相关资源](#相关资源)
-- [🔗 导航](#导航)
+- [核心API参考](#核心api参考)
+  - [📋 目录](#-目录)
+  - [1. 📖 标准库核心包](#1--标准库核心包)
+    - [net/http](#nethttp)
+    - [encoding/json](#encodingjson)
+    - [Context](#context)
+    - [sync](#sync)
+    - [fmt](#fmt)
+    - [io](#io)
+    - [time](#time)
+    - [os](#os)
+    - [strings](#strings)
+    - [strconv](#strconv)
+    - [errors](#errors)
+    - [log](#log)
+  - [📚 相关资源](#-相关资源)
+  - [🔗 导航](#-导航)
 
 ## 1. 📖 标准库核心包
 
@@ -64,19 +66,19 @@ json.NewDecoder(r.Body).Decode(&data)
 
 ---
 
-### context
+### Context
 
 ```go
 // 超时控制
-ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
 defer cancel()
 
 // 值传递
-ctx = context.WithValue(ctx, "key", "value")
+ctx = Context.WithValue(ctx, "key", "value")
 value := ctx.Value("key")
 
 // 取消信号
-ctx, cancel := context.WithCancel(context.Background())
+ctx, cancel := Context.WithCancel(Context.Background())
 go func() {
     <-ctx.Done()
     // 清理...
@@ -89,7 +91,7 @@ cancel()
 ### sync
 
 ```go
-// 互斥锁
+// Mutex
 var mu sync.Mutex
 mu.Lock()
 defer mu.Unlock()

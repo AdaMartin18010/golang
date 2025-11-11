@@ -1,4 +1,4 @@
-# Go 1.25.3 生态系统全景 (2025年10月)
+﻿# Go 1.25.3 生态系统全景 (2025年10月)
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -472,7 +472,7 @@ rdb := redis.NewClient(&redis.Options{
     Addr: "localhost:6379",
 })
 
-ctx := context.Background()
+ctx := Context.Background()
 rdb.Set(ctx, "key", "value", 0)
 val, _ := rdb.Get(ctx, "key").Result()
 ```

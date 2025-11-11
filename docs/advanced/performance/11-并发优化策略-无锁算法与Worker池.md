@@ -1,4 +1,4 @@
-# 并发优化策略 - 无锁算法与Worker池
+﻿# 并发优化策略 - 无锁算法与Worker池
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -261,23 +261,23 @@ func (s *LockFreeStack) Pop() (interface{}, bool) {
 package worker
 
 import (
-    "context"
+    "Context"
     "fmt"
     "sync"
 )
 
 // Task 任务接口
 type Task interface {
-    Execute(ctx context.Context) error
+    Execute(ctx Context.Context) error
 }
 
 // WorkerPool Worker池
 type WorkerPool struct {
     workers    int
-    taskQueue  chan Task
+    taskQueue  Channel Task
     wg         sync.WaitGroup
-    ctx        context.Context
-    cancel     context.CancelFunc
+    ctx        Context.Context
+    cancel     Context.CancelFunc
     stats      *PoolStats
 }
 
@@ -291,11 +291,11 @@ type PoolStats struct {
 
 // NewWorkerPool 创建Worker池
 func NewWorkerPool(workers, queueSize int) *WorkerPool {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     return &WorkerPool{
         workers:   workers,
-        taskQueue: make(chan Task, queueSize),
+        taskQueue: make(Channel Task, queueSize),
         ctx:       ctx,
         cancel:    cancel,
         stats:     &PoolStats{},
@@ -310,7 +310,7 @@ func (p *WorkerPool) Start() {
     }
 }
 
-// worker Worker goroutine
+// worker Worker Goroutine
 func (p *WorkerPool) worker(id int) {
     defer p.wg.Done()
 
@@ -388,7 +388,7 @@ func (s *PoolStats) recordFailed() {
 package worker
 
 import (
-    "context"
+    "Context"
     "sync"
     "sync/atomic"
     "time"
@@ -399,22 +399,22 @@ type DynamicPool struct {
     minWorkers    int
     maxWorkers    int
     currentWorkers int32
-    taskQueue     chan Task
+    taskQueue     Channel Task
     wg            sync.WaitGroup
-    ctx           context.Context
-    cancel        context.CancelFunc
+    ctx           Context.Context
+    cancel        Context.CancelFunc
     scaleInterval time.Duration
 }
 
 // NewDynamicPool 创建动态Worker池
 func NewDynamicPool(min, max, queueSize int) *DynamicPool {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     return &DynamicPool{
         minWorkers:    min,
         maxWorkers:    max,
         currentWorkers: 0,
-        taskQueue:     make(chan Task, queueSize),
+        taskQueue:     make(Channel Task, queueSize),
         ctx:           ctx,
         cancel:        cancel,
         scaleInterval: 5 * time.Second,
@@ -539,13 +539,13 @@ func (p *DynamicPool) WorkerCount() int {
 package patterns
 
 import (
-    "context"
+    "Context"
     "sync"
 )
 
 // FanOut 扇出模式
-func FanOut(ctx context.Context, input <-chan interface{}, workers int, process func(interface{}) interface{}) []<-chan interface{} {
-    outputs := make([]<-chan interface{}, workers)
+func FanOut(ctx Context.Context, input <-Channel interface{}, workers int, process func(interface{}) interface{}) []<-Channel interface{} {
+    outputs := make([]<-Channel interface{}, workers)
 
     for i := 0; i < workers; i++ {
         outputs[i] = worker(ctx, input, process)
@@ -554,8 +554,8 @@ func FanOut(ctx context.Context, input <-chan interface{}, workers int, process 
     return outputs
 }
 
-func worker(ctx context.Context, input <-chan interface{}, process func(interface{}) interface{}) <-chan interface{} {
-    output := make(chan interface{})
+func worker(ctx Context.Context, input <-Channel interface{}, process func(interface{}) interface{}) <-Channel interface{} {
+    output := make(Channel interface{})
 
     go func() {
         defer close(output)
@@ -585,11 +585,11 @@ func worker(ctx context.Context, input <-chan interface{}, process func(interfac
 }
 
 // FanIn 扇入模式
-func FanIn(ctx context.Context, inputs ...<-chan interface{}) <-chan interface{} {
-    output := make(chan interface{})
+func FanIn(ctx Context.Context, inputs ...<-Channel interface{}) <-Channel interface{} {
+    output := make(Channel interface{})
     var wg sync.WaitGroup
 
-    multiplex := func(input <-chan interface{}) {
+    multiplex := func(input <-Channel interface{}) {
         defer wg.Done()
 
         for {
@@ -634,13 +634,13 @@ func FanIn(ctx context.Context, inputs ...<-chan interface{}) <-chan interface{}
 
 package patterns
 
-import "context"
+import "Context"
 
 // Stage 管道阶段
-type Stage func(context.Context, <-chan interface{}) <-chan interface{}
+type Stage func(Context.Context, <-Channel interface{}) <-Channel interface{}
 
 // Pipeline 创建管道
-func Pipeline(ctx context.Context, input <-chan interface{}, stages ...Stage) <-chan interface{} {
+func Pipeline(ctx Context.Context, input <-Channel interface{}, stages ...Stage) <-Channel interface{} {
     output := input
 
     for _, stage := range stages {
@@ -652,8 +652,8 @@ func Pipeline(ctx context.Context, input <-chan interface{}, stages ...Stage) <-
 
 // 示例阶段：过滤
 func FilterStage(predicate func(interface{}) bool) Stage {
-    return func(ctx context.Context, input <-chan interface{}) <-chan interface{} {
-        output := make(chan interface{})
+    return func(ctx Context.Context, input <-Channel interface{}) <-Channel interface{} {
+        output := make(Channel interface{})
 
         go func() {
             defer close(output)
@@ -685,8 +685,8 @@ func FilterStage(predicate func(interface{}) bool) Stage {
 
 // 示例阶段：转换
 func MapStage(transform func(interface{}) interface{}) Stage {
-    return func(ctx context.Context, input <-chan interface{}) <-chan interface{} {
-        output := make(chan interface{})
+    return func(ctx Context.Context, input <-Channel interface{}) <-Channel interface{} {
+        output := make(Channel interface{})
 
         go func() {
             defer close(output)

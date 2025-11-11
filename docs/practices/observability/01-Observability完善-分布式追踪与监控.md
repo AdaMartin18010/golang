@@ -1,4 +1,4 @@
-# Observability 完善 - 分布式追踪与监控
+﻿# Observability 完善 - 分布式追踪与监控
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -100,7 +100,7 @@ Trace (追踪)
 │   ├── Attributes (属性)
 │   └── Events (事件)
 │
-└── Context (上下文)
+└── Context (Context)
     └── 跨进程传播
 
 示例追踪链:
@@ -120,7 +120,7 @@ Request → Service A → Service B → Database
 package observability
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 
@@ -173,7 +173,7 @@ func NewTracingProvider(config TracingConfig) (*TracingProvider, error) {
 
     // 创建resource
     res, err := resource.New(
-        context.Background(),
+        Context.Background(),
         resource.WithAttributes(
             semconv.ServiceName(config.ServiceName),
             semconv.ServiceVersion(config.ServiceVersion),
@@ -211,7 +211,7 @@ func NewTracingProvider(config TracingConfig) (*TracingProvider, error) {
 }
 
 // Shutdown 关闭追踪提供者
-func (tp *TracingProvider) Shutdown(ctx context.Context) error {
+func (tp *TracingProvider) Shutdown(ctx Context.Context) error {
     return tp.provider.Shutdown(ctx)
 }
 
@@ -221,30 +221,30 @@ func Tracer(name string) oteltrace.Tracer {
 }
 
 // StartSpan 开始一个span
-func StartSpan(ctx context.Context, name string, opts ...oteltrace.SpanStartOption) (context.Context, oteltrace.Span) {
+func StartSpan(ctx Context.Context, name string, opts ...oteltrace.SpanStartOption) (Context.Context, oteltrace.Span) {
     tracer := otel.Tracer("default")
     return tracer.Start(ctx, name, opts...)
 }
 
 // SpanFromContext 从上下文获取当前span
-func SpanFromContext(ctx context.Context) oteltrace.Span {
+func SpanFromContext(ctx Context.Context) oteltrace.Span {
     return oteltrace.SpanFromContext(ctx)
 }
 
 // AddSpanAttributes 添加span属性
-func AddSpanAttributes(ctx context.Context, attrs ...attribute.KeyValue) {
+func AddSpanAttributes(ctx Context.Context, attrs ...attribute.KeyValue) {
     span := SpanFromContext(ctx)
     span.SetAttributes(attrs...)
 }
 
 // AddSpanEvent 添加span事件
-func AddSpanEvent(ctx context.Context, name string, attrs ...attribute.KeyValue) {
+func AddSpanEvent(ctx Context.Context, name string, attrs ...attribute.KeyValue) {
     span := SpanFromContext(ctx)
     span.AddEvent(name, oteltrace.WithAttributes(attrs...))
 }
 
 // RecordSpanError 记录span错误
-func RecordSpanError(ctx context.Context, err error) {
+func RecordSpanError(ctx Context.Context, err error) {
     span := SpanFromContext(ctx)
     span.RecordError(err)
     span.SetStatus(codes.Error, err.Error())
@@ -319,13 +319,13 @@ tracingProvider, err := observability.NewTracingProvider(config)
 if err != nil {
     log.Fatal(err)
 }
-defer tracingProvider.Shutdown(context.Background())
+defer tracingProvider.Shutdown(Context.Background())
 
 // 在HTTP handler中使用追踪
 http.Handle("/api", observability.HTTPTracingMiddleware(apiHandler))
 
 // 在业务逻辑中创建子span
-func processOrder(ctx context.Context, orderID string) error {
+func processOrder(ctx Context.Context, orderID string) error {
     ctx, span := observability.StartSpan(ctx, "process-order")
     defer span.End()
 
@@ -347,7 +347,7 @@ func processOrder(ctx context.Context, orderID string) error {
     return nil
 }
 
-func validateOrder(ctx context.Context, orderID string) error {
+func validateOrder(ctx Context.Context, orderID string) error {
     ctx, span := observability.StartSpan(ctx, "validate-order")
     defer span.End()
 
@@ -761,7 +761,7 @@ func processOrder(orderID string) error {
 package observability
 
 import (
-    "context"
+    "Context"
     "encoding/json"
     "net/http"
     "sync"
@@ -779,7 +779,7 @@ const (
 // HealthCheck 健康检查接口
 type HealthCheck interface {
     Name() string
-    Check(ctx context.Context) error
+    Check(ctx Context.Context) error
 }
 
 // HealthChecker 健康检查器
@@ -831,7 +831,7 @@ func (hc *HealthChecker) Register(check HealthCheck) {
 }
 
 // CheckAll 执行所有健康检查
-func (hc *HealthChecker) CheckAll(ctx context.Context) map[string]error {
+func (hc *HealthChecker) CheckAll(ctx Context.Context) map[string]error {
     hc.mu.RLock()
 
     // 检查缓存
@@ -860,7 +860,7 @@ func (hc *HealthChecker) CheckAll(ctx context.Context) map[string]error {
         go func(name string, check HealthCheck) {
             defer wg.Done()
 
-            ctx, cancel := context.WithTimeout(ctx, hc.timeout)
+            ctx, cancel := Context.WithTimeout(ctx, hc.timeout)
             defer cancel()
 
             err := check.Check(ctx)
@@ -933,11 +933,11 @@ func (hc *HealthChecker) ReadinessHandler() http.HandlerFunc {
 // DatabaseHealthCheck 数据库健康检查
 type DatabaseHealthCheck struct {
     name string
-    ping func(ctx context.Context) error
+    ping func(ctx Context.Context) error
 }
 
 // NewDatabaseHealthCheck 创建数据库健康检查
-func NewDatabaseHealthCheck(name string, ping func(ctx context.Context) error) *DatabaseHealthCheck {
+func NewDatabaseHealthCheck(name string, ping func(ctx Context.Context) error) *DatabaseHealthCheck {
     return &DatabaseHealthCheck{
         name: name,
         ping: ping,
@@ -948,18 +948,18 @@ func (c *DatabaseHealthCheck) Name() string {
     return c.name
 }
 
-func (c *DatabaseHealthCheck) Check(ctx context.Context) error {
+func (c *DatabaseHealthCheck) Check(ctx Context.Context) error {
     return c.ping(ctx)
 }
 
 // RedisHealthCheck Redis健康检查
 type RedisHealthCheck struct {
     name string
-    ping func(ctx context.Context) error
+    ping func(ctx Context.Context) error
 }
 
 // NewRedisHealthCheck 创建Redis健康检查
-func NewRedisHealthCheck(name string, ping func(ctx context.Context) error) *RedisHealthCheck {
+func NewRedisHealthCheck(name string, ping func(ctx Context.Context) error) *RedisHealthCheck {
     return &RedisHealthCheck{
         name: name,
         ping: ping,
@@ -970,7 +970,7 @@ func (c *RedisHealthCheck) Name() string {
     return c.name
 }
 
-func (c *RedisHealthCheck) Check(ctx context.Context) error {
+func (c *RedisHealthCheck) Check(ctx Context.Context) error {
     return c.ping(ctx)
 }
 
@@ -996,7 +996,7 @@ func (c *HTTPHealthCheck) Name() string {
     return c.name
 }
 
-func (c *HTTPHealthCheck) Check(ctx context.Context) error {
+func (c *HTTPHealthCheck) Check(ctx Context.Context) error {
     req, err := http.NewRequestWithContext(ctx, "GET", c.url, nil)
     if err != nil {
         return err
@@ -1031,14 +1031,14 @@ healthChecker := observability.NewHealthChecker(
 
 // 注册数据库健康检查
 healthChecker.Register(
-    observability.NewDatabaseHealthCheck("postgres", func(ctx context.Context) error {
+    observability.NewDatabaseHealthCheck("postgres", func(ctx Context.Context) error {
         return db.PingContext(ctx)
     }),
 )
 
 // 注册Redis健康检查
 healthChecker.Register(
-    observability.NewRedisHealthCheck("redis", func(ctx context.Context) error {
+    observability.NewRedisHealthCheck("redis", func(ctx Context.Context) error {
         return redisClient.Ping(ctx).Err()
     }),
 )
@@ -1065,7 +1065,7 @@ http.HandleFunc("/health/ready", healthChecker.ReadinessHandler())
 package observability
 
 import (
-    "context"
+    "Context"
     "io"
     "log/slog"
     "os"
@@ -1103,7 +1103,7 @@ func NewLogger(config LoggerConfig) *Logger {
 }
 
 // WithTrace 添加追踪信息到日志
-func (l *Logger) WithTrace(ctx context.Context) *Logger {
+func (l *Logger) WithTrace(ctx Context.Context) *Logger {
     span := SpanFromContext(ctx)
     if !span.SpanContext().IsValid() {
         return l

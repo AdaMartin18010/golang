@@ -1,4 +1,4 @@
-# Go Modules 简介
+﻿# Go Modules 简介
 
 > **简介**: 全面介绍 Go Modules 依赖管理系统的由来、核心概念和工作原理，帮助开发者理解为什么需要 Go Modules 以及它如何解决传统 GOPATH 的问题。
 

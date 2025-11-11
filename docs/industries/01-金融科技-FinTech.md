@@ -1,10 +1,10 @@
-# 金融科技 (FinTech) - Go语言实战
-
-> Go语言在金融科技领域的应用实践指南
+﻿# 金融科技 (FinTech) - Go语言实战
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用Go版本**: Go 1.25.3+
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ---
 
@@ -140,7 +140,7 @@
 package trading
 
 import (
-    "context"
+    "Context"
     "sync"
     "time"
 )
@@ -178,7 +178,7 @@ type MatchingEngine struct {
     buyOrders  *OrderBook
     sellOrders *OrderBook
     mu         sync.RWMutex
-    trades     chan *Trade
+    trades     Channel *Trade
 }
 
 // OrderBook 订单簿
@@ -201,12 +201,12 @@ func NewMatchingEngine() *MatchingEngine {
     return &MatchingEngine{
         buyOrders:  NewOrderBook(),
         sellOrders: NewOrderBook(),
-        trades:     make(chan *Trade, 1000),
+        trades:     make(Channel *Trade, 1000),
     }
 }
 
 // SubmitOrder 提交订单
-func (me *MatchingEngine) SubmitOrder(ctx context.Context, order *Order) error {
+func (me *MatchingEngine) SubmitOrder(ctx Context.Context, order *Order) error {
     me.mu.Lock()
     defer me.mu.Unlock()
 
@@ -361,7 +361,7 @@ func min(a, b float64) float64 {
 package riskcontrol
 
 import (
-    "context"
+    "Context"
     "sync"
     "time"
 )
@@ -377,7 +377,7 @@ type RiskEngine struct {
 // RiskRule 风控规则接口
 type RiskRule interface {
     Name() string
-    Check(ctx context.Context, req *TransactionRequest) (*RiskResult, error)
+    Check(ctx Context.Context, req *TransactionRequest) (*RiskResult, error)
     Priority() int
 }
 
@@ -422,7 +422,7 @@ func NewRiskEngine(rules []RiskRule) *RiskEngine {
 }
 
 // Evaluate 评估交易风险
-func (re *RiskEngine) Evaluate(ctx context.Context, req *TransactionRequest) (*RiskResult, error) {
+func (re *RiskEngine) Evaluate(ctx Context.Context, req *TransactionRequest) (*RiskResult, error) {
     re.mu.RLock()
     defer re.mu.RUnlock()
 
@@ -434,8 +434,8 @@ func (re *RiskEngine) Evaluate(ctx context.Context, req *TransactionRequest) (*R
     }
 
     // 并发执行所有规则
-    results := make(chan *RiskResult, len(re.rules))
-    errors := make(chan error, len(re.rules))
+    results := make(Channel *RiskResult, len(re.rules))
+    errors := make(Channel error, len(re.rules))
 
     var wg sync.WaitGroup
     for _, rule := range re.rules {
@@ -475,7 +475,7 @@ func (re *RiskEngine) Evaluate(ctx context.Context, req *TransactionRequest) (*R
 }
 
 // aggregateResults 聚合风控结果
-func (re *RiskEngine) aggregateResults(results chan *RiskResult) *RiskResult {
+func (re *RiskEngine) aggregateResults(results Channel *RiskResult) *RiskResult {
     var (
         maxRiskLevel RiskLevel
         totalScore   float64
@@ -581,7 +581,7 @@ func (r *AmountLimitRule) Priority() int {
     return 1
 }
 
-func (r *AmountLimitRule) Check(ctx context.Context, req *TransactionRequest) (*RiskResult, error) {
+func (r *AmountLimitRule) Check(ctx Context.Context, req *TransactionRequest) (*RiskResult, error) {
     r.mu.Lock()
     defer r.mu.Unlock()
 
@@ -636,7 +636,7 @@ func (r *AmountLimitRule) Check(ctx context.Context, req *TransactionRequest) (*
 package payment
 
 import (
-    "context"
+    "Context"
     "errors"
     "time"
 )
@@ -651,9 +651,9 @@ type PaymentGateway struct {
 // PaymentProcessor 支付处理器接口
 type PaymentProcessor interface {
     Name() string
-    Process(ctx context.Context, req *PaymentRequest) (*PaymentResponse, error)
-    Refund(ctx context.Context, txID string, amount float64) error
-    Query(ctx context.Context, txID string) (*TransactionStatus, error)
+    Process(ctx Context.Context, req *PaymentRequest) (*PaymentResponse, error)
+    Refund(ctx Context.Context, txID string, amount float64) error
+    Query(ctx Context.Context, txID string) (*TransactionStatus, error)
 }
 
 // PaymentRequest 支付请求
@@ -696,7 +696,7 @@ const (
 )
 
 // Process 处理支付
-func (pg *PaymentGateway) Process(ctx context.Context, req *PaymentRequest) (*PaymentResponse, error) {
+func (pg *PaymentGateway) Process(ctx Context.Context, req *PaymentRequest) (*PaymentResponse, error) {
     // 1. 路由到合适的支付处理器
     processor, err := pg.router.Route(req)
     if err != nil {
@@ -748,7 +748,7 @@ type Logger interface {
 package reconciliation
 
 import (
-    "context"
+    "Context"
     "time"
 )
 
@@ -770,7 +770,7 @@ type Transaction struct {
 }
 
 // Reconcile 执行对账
-func (rs *ReconciliationService) Reconcile(ctx context.Context, date time.Time) (*ReconciliationReport, error) {
+func (rs *ReconciliationService) Reconcile(ctx Context.Context, date time.Time) (*ReconciliationReport, error) {
     // 1. 获取内部交易记录
     internalTxs, err := rs.internalTxRepo.GetByDate(ctx, date)
     if err != nil {
@@ -834,11 +834,11 @@ type ReconciliationReport struct {
 }
 
 type TransactionRepository interface {
-    GetByDate(ctx context.Context, date time.Time) ([]*Transaction, error)
+    GetByDate(ctx Context.Context, date time.Time) ([]*Transaction, error)
 }
 
 type DifferenceHandler interface {
-    Handle(ctx context.Context, diff *Difference) error
+    Handle(ctx Context.Context, diff *Difference) error
 }
 ```
 

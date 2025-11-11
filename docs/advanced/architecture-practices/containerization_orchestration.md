@@ -1,4 +1,4 @@
-# 容器化与编排架构（Containerization and Orchestration Architecture）
+﻿# 容器化与编排架构（Containerization and Orchestration Architecture）
 
 > **简介**: Docker容器化和Kubernetes编排架构实践，构建可移植、可扩展的云原生应用
 
@@ -261,7 +261,7 @@ spec:
 package main
 
 import (
- "context"
+ "Context"
  "fmt"
  metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
  "k8s.io/client-go/kubernetes"
@@ -287,7 +287,7 @@ func main() {
  }
 
  // 获取默认命名空间下的所有Pod
- pods, err := clientset.CoreV1().Pods("default").List(context.TODO(), metav1.ListOptions{})
+ pods, err := clientset.CoreV1().Pods("default").List(Context.TODO(), metav1.ListOptions{})
  if err != nil {
   panic(err.Error())
  }
@@ -429,7 +429,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .
+        Context: .
         file: ./build/package/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/my-golang-app:latest
@@ -442,7 +442,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Kubeconfig
-      uses: azure/k8s-set-context@v3
+      uses: azure/k8s-set-Context@v3
       with:
         method: kubeconfig
         kubeconfig: ${{ secrets.KUBECONFIG }} # 将kubeconfig文件内容存在Actions Secret中

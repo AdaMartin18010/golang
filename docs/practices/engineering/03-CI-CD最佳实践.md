@@ -1,4 +1,4 @@
-# Go CI/CD最佳实践完全指南
+﻿# Go CI/CD最佳实践完全指南
 
 > **简介**: Go项目持续集成和持续部署的完整实践指南，包括GitHub Actions、GitLab CI、Jenkins等主流工具
 
@@ -211,7 +211,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v4
       with:
-        context: .
+        Context: .
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
@@ -412,7 +412,7 @@ deploy:staging:
   stage: deploy
   image: bitnami/kubectl:latest
   script:
-    - kubectl config use-context staging
+    - kubectl config use-Context staging
     - kubectl set image deployment/myapp myapp=$IMAGE_NAME:$CI_COMMIT_SHORT_SHA -n staging
     - kubectl rollout status deployment/myapp -n staging
   environment:
@@ -426,7 +426,7 @@ deploy:production:
   stage: deploy
   image: bitnami/kubectl:latest
   script:
-    - kubectl config use-context production
+    - kubectl config use-Context production
     - kubectl set image deployment/myapp myapp=$IMAGE_NAME:$CI_COMMIT_TAG -n production
     - kubectl rollout status deployment/myapp -n production
   environment:
@@ -577,7 +577,7 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
+      Context: .
       dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"

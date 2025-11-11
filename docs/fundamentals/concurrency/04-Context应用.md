@@ -1,4 +1,4 @@
-# Context应用
+﻿# Context应用
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -62,7 +62,7 @@ type Context interface {
     Deadline() (deadline time.Time, ok bool)
 
     // Done返回一个channel，当context被取消或过期时关闭
-    Done() <-chan struct{}
+    Done() <-Channel struct{}
 
     // Err在Done channel关闭后返回错误原因
     Err() error
@@ -78,7 +78,7 @@ type Context interface {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
 )
 
@@ -92,7 +92,7 @@ Context设计原则：
 */
 
 // ✅ 正确示例
-func doSomething(ctx context.Context, arg string) error {
+func doSomething(ctx Context.Context, arg string) error {
     // ctx作为第一个参数
     select {
     case <-ctx.Done():
@@ -105,11 +105,11 @@ func doSomething(ctx context.Context, arg string) error {
 
 // ❌ 错误示例
 type Worker struct {
-    ctx context.Context // 不要存储Context
+    ctx Context.Context // 不要存储Context
 }
 
 func main() {
-    ctx := context.Background()
+    ctx := Context.Background()
     doSomething(ctx, "task1")
 }
 ```
@@ -124,17 +124,17 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
 )
 
 func contextRoots() {
     // Background：根Context，永不取消，通常在main、init、测试中使用
-    ctx1 := context.Background()
+    ctx1 := Context.Background()
     fmt.Printf("Background: %v\n", ctx1)
 
     // TODO：当不确定使用哪个Context时使用（临时占位）
-    ctx2 := context.TODO()
+    ctx2 := Context.TODO()
     fmt.Printf("TODO: %v\n", ctx2)
 }
 
@@ -149,14 +149,14 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 )
 
 func withCancelExample() {
     // 创建可取消的Context
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
     defer cancel() // 确保释放资源
 
     go func() {
@@ -190,14 +190,14 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 )
 
 func withTimeoutExample() {
     // 创建带超时的Context（3秒后自动取消）
-    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 3*time.Second)
     defer cancel()
 
     go func() {
@@ -227,7 +227,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 )
@@ -235,7 +235,7 @@ import (
 func withDeadlineExample() {
     // 创建有截止时间的Context
     deadline := time.Now().Add(2 * time.Second)
-    ctx, cancel := context.WithDeadline(context.Background(), deadline)
+    ctx, cancel := Context.WithDeadline(Context.Background(), deadline)
     defer cancel()
 
     go func() {
@@ -265,7 +265,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
 )
 
@@ -279,14 +279,14 @@ const (
 
 func withValueExample() {
     // 创建带值的Context
-    ctx := context.WithValue(context.Background(), userIDKey, "12345")
-    ctx = context.WithValue(ctx, traceIDKey, "trace-abc")
+    ctx := Context.WithValue(Context.Background(), userIDKey, "12345")
+    ctx = Context.WithValue(ctx, traceIDKey, "trace-abc")
 
     // 读取值
     processRequest(ctx)
 }
 
-func processRequest(ctx context.Context) {
+func processRequest(ctx Context.Context) {
     // 类型断言获取值
     if userID, ok := ctx.Value(userIDKey).(string); ok {
         fmt.Printf("Processing request for user: %s\n", userID)
@@ -300,7 +300,7 @@ func processRequest(ctx context.Context) {
     doWork(ctx)
 }
 
-func doWork(ctx context.Context) {
+func doWork(ctx Context.Context) {
     userID := ctx.Value(userIDKey)
     fmt.Printf("DoWork for user: %v\n", userID)
 }
@@ -320,7 +320,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "io"
     "net/http"
@@ -329,7 +329,7 @@ import (
 
 func fetchWithTimeout(url string, timeout time.Duration) (string, error) {
     // 创建带超时的Context
-    ctx, cancel := context.WithTimeout(context.Background(), timeout)
+    ctx, cancel := Context.WithTimeout(Context.Background(), timeout)
     defer cancel()
 
     // 创建带Context的HTTP请求
@@ -370,7 +370,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "database/sql"
     "fmt"
     "time"
@@ -378,7 +378,7 @@ import (
 
 func queryWithTimeout(db *sql.DB) error {
     // 3秒超时
-    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 3*time.Second)
     defer cancel()
 
     // 使用Context执行查询
@@ -425,21 +425,21 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 )
 
 func cancelPropagation() {
     // 创建根Context
-    parent, parentCancel := context.WithCancel(context.Background())
+    parent, parentCancel := Context.WithCancel(Context.Background())
     defer parentCancel()
 
     // 创建子Context
-    child1, child1Cancel := context.WithCancel(parent)
+    child1, child1Cancel := Context.WithCancel(parent)
     defer child1Cancel()
 
-    child2, child2Cancel := context.WithCancel(parent)
+    child2, child2Cancel := Context.WithCancel(parent)
     defer child2Cancel()
 
     // 子Goroutine 1
@@ -474,12 +474,12 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 )
 
-func worker(ctx context.Context, name string) {
+func worker(ctx Context.Context, name string) {
     for {
         select {
         case <-ctx.Done():
@@ -492,9 +492,9 @@ func worker(ctx context.Context, name string) {
     }
 }
 
-func supervisor(ctx context.Context, name string) {
+func supervisor(ctx Context.Context, name string) {
     // 创建子Context
-    ctx, cancel := context.WithCancel(ctx)
+    ctx, cancel := Context.WithCancel(ctx)
     defer cancel()
 
     // 启动多个worker
@@ -510,7 +510,7 @@ func supervisor(ctx context.Context, name string) {
 }
 
 func multiLayerCancellation() {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     go supervisor(ctx, "Supervisor-A")
     go supervisor(ctx, "Supervisor-B")
@@ -537,7 +537,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
 )
 
@@ -557,14 +557,14 @@ type User struct {
 
 // ✅ 正确：只传递请求相关的值
 func goodPractice() {
-    ctx := context.Background()
-    ctx = context.WithValue(ctx, requestIDKey, "req-123")
-    ctx = context.WithValue(ctx, userKey, User{ID: "u1", Name: "Alice"})
+    ctx := Context.Background()
+    ctx = Context.WithValue(ctx, requestIDKey, "req-123")
+    ctx = Context.WithValue(ctx, userKey, User{ID: "u1", Name: "Alice"})
 
     processRequest(ctx)
 }
 
-func processRequest(ctx context.Context) {
+func processRequest(ctx Context.Context) {
     requestID := ctx.Value(requestIDKey).(string)
     user := ctx.Value(userKey).(User)
 
@@ -574,10 +574,10 @@ func processRequest(ctx context.Context) {
     logRequest(ctx)
 }
 
-func logRequest(ctx context.Context) {
+func logRequest(ctx Context.Context) {
     requestID, ok := ctx.Value(requestIDKey).(string)
     if !ok {
-        fmt.Println("No request ID in context")
+        fmt.Println("No request ID in Context")
         return
     }
     fmt.Printf("Logging request: %s\n", requestID)
@@ -594,7 +594,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
 )
 
@@ -604,21 +604,21 @@ type Config struct {
     Timeout    int
 }
 
-func badPractice(ctx context.Context) {
+func badPractice(ctx Context.Context) {
     // ❌ 不要这样做
     config := ctx.Value("config").(Config)
     fmt.Printf("Config: %+v\n", config)
 }
 
 // ✅ 正确：显式传递配置参数
-func goodPractice(ctx context.Context, config Config) {
+func goodPractice(ctx Context.Context, config Config) {
     fmt.Printf("Config: %+v\n", config)
 }
 
 func main() {
     // 配置应该显式传递，不要放在Context中
     config := Config{MaxRetries: 3, Timeout: 5}
-    goodPractice(context.Background(), config)
+    goodPractice(Context.Background(), config)
 }
 ```
 
@@ -632,7 +632,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "net/http"
     "time"
@@ -647,7 +647,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     if requestID == "" {
         requestID = "generated-id"
     }
-    ctx = context.WithValue(ctx, "requestID", requestID)
+    ctx = Context.WithValue(ctx, "requestID", requestID)
 
     // 模拟长时间处理
     select {
@@ -678,7 +678,7 @@ func httpServerExample() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "io"
     "net/http"
@@ -687,7 +687,7 @@ import (
 
 func httpClientWithContext() {
     // 创建带超时的Context
-    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
     defer cancel()
 
     // 创建请求
@@ -720,13 +720,13 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 )
 
-func generator(ctx context.Context, nums ...int) <-chan int {
-    out := make(chan int)
+func generator(ctx Context.Context, nums ...int) <-Channel int {
+    out := make(Channel int)
     go func() {
         defer close(out)
         for _, n := range nums {
@@ -740,8 +740,8 @@ func generator(ctx context.Context, nums ...int) <-chan int {
     return out
 }
 
-func square(ctx context.Context, in <-chan int) <-chan int {
-    out := make(chan int)
+func square(ctx Context.Context, in <-Channel int) <-Channel int {
+    out := make(Channel int)
     go func() {
         defer close(out)
         for n := range in {
@@ -756,7 +756,7 @@ func square(ctx context.Context, in <-chan int) <-chan int {
 }
 
 func pipelineExample() {
-    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
     defer cancel()
 
     // 构建pipeline
@@ -800,11 +800,11 @@ func main() {
 
 ```go
 func TestWithTimeout(t *testing.T) {
-    ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 1*time.Second)
     defer cancel()
 
     err := doWork(ctx)
-    if err != context.DeadlineExceeded {
+    if err != Context.DeadlineExceeded {
         t.Errorf("Expected timeout, got %v", err)
     }
 }
@@ -821,8 +821,8 @@ func TestWithTimeout(t *testing.T) {
 
 ### 推荐阅读
 
-- [Go Blog - Context](https://go.dev/blog/context)
-- [Context Package Doc](https://pkg.go.dev/context)
+- [Go Blog - Context](https://go.dev/blog/Context)
+- [Context Package Doc](https://pkg.go.dev/Context)
 
 ---
 

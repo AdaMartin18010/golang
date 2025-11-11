@@ -128,7 +128,7 @@ message PredictResponse {
 ```go
 // Go客户端
 import (
-    "context"
+    "Context"
     pb "path/to/prediction"
     "google.golang.org/grpc"
 )
@@ -143,7 +143,7 @@ func callGRPCModel(features []float32) (*pb.PredictResponse, error) {
     client := pb.NewPredictorClient(conn)
 
     req := &pb.PredictRequest{Features: features}
-    resp, err := client.Predict(context.Background(), req)
+    resp, err := client.Predict(Context.Background(), req)
 
     return resp, err
 }
@@ -339,7 +339,7 @@ func main() {
 type BatchProcessor struct {
     batchSize int
     timeout   time.Duration
-    queue     chan Request
+    queue     Channel Request
 }
 
 func (bp *BatchProcessor) Process() {

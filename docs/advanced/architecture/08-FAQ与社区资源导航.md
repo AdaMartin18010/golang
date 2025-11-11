@@ -1,4 +1,4 @@
-# Go设计模式FAQ与社区资源导航
+﻿# Go设计模式FAQ与社区资源导航
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -334,7 +334,7 @@ func NewShape(cfg Config) (Shape, error) {
 ```go
 // 错误示例
 func leakyObserver() {
-    ch := make(chan Event) // 无缓冲channel
+    ch := make(Channel Event) // 无缓冲channel
     go func() {
         for event := range ch { // 永久阻塞
             handleEvent(event)
@@ -344,8 +344,8 @@ func leakyObserver() {
 }
 
 // 正确示例
-func safeObserver(ctx context.Context) {
-    ch := make(chan Event, 10) // 带缓冲
+func safeObserver(ctx Context.Context) {
+    ch := make(Channel Event, 10) // 带缓冲
     go func() {
         defer close(ch)
         for {
@@ -372,7 +372,7 @@ func leakyChain(req *Request) {
 }
 
 // 正确示例
-func safeChain(ctx context.Context, req *Request) {
+func safeChain(ctx Context.Context, req *Request) {
     go func() {
         select {
         case <-ctx.Done():
@@ -396,7 +396,7 @@ func TestNoGoroutineLeak(t *testing.T) {
     before := runtime.NumGoroutine()
 
     // 运行测试逻辑
-    ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 1*time.Second)
     defer cancel()
     service.Run(ctx)
 
@@ -520,7 +520,7 @@ A: 滥用继承（应优先组合）、接口设计不合理、未考虑并发�
 
 ### Q: 如何选择合适的设计模式？
 
-A: 结合业务场景、代码可维护性、Go语言特性（如接口、goroutine、channel）综合考量。
+A: 结合业务场景、代码可维护性、Go语言特性（如接口、Goroutine、Channel）综合考量。
 
 ### Q: Go并发型/分布式型/工作流型模式有哪些典型应用？
 
@@ -542,7 +542,7 @@ A: 先掌握Go基础与接口组合，按六大类模式逐步实践，结合开
 - 工厂/抽象工厂过度嵌套，接口设计不清晰
 - 责任链/观察者/命令等模式易出现Goroutine泄漏、死锁
 - 并发/分布式模式需关注一致性、幂等、容错、雪崩等问题
-- 推荐结合Go接口、组合、泛型、context、sync原语等特性实现高效、类型安全的模式
+- 推荐结合Go接口、组合、泛型、Context、sync原语等特性实现高效、类型安全的模式
 
 ---
 

@@ -1,4 +1,4 @@
-# 跨语言集成架构（Golang国际主流实践）
+﻿# 跨语言集成架构（Golang国际主流实践）
 
 > **简介**: 多语言系统集成架构，涵盖FFI、gRPC跨语言调用和协议转换
 
@@ -385,7 +385,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 import "google.golang.org/grpc"
 import pb "github.com/yourorg/yourproto"
 
-func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
+func (s *UserService) GetUser(ctx Context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
     // ...
 }
 ```
@@ -412,7 +412,7 @@ data, _ := proto.Marshal(user)
 // etcd 服务注册
 import clientv3 "go.etcd.io/etcd/client/v3"
 cli, _ := clientv3.New(clientv3.Config{Endpoints: []string{"localhost:2379"}})
-cli.Put(context.Background(), "/services/user/instance1", "127.0.0.1:8080")
+cli.Put(Context.Background(), "/services/user/instance1", "127.0.0.1:8080")
 ```
 
 ### 消息队列与事件流
@@ -425,7 +425,7 @@ cli.Put(context.Background(), "/services/user/instance1", "127.0.0.1:8080")
 // Kafka 消息发布
 import "github.com/segmentio/kafka-go"
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "events"})
-writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("event data")})
+writer.WriteMessages(Context.Background(), kafka.Message{Value: []byte("event data")})
 ```
 
 ### 安全与认证1
@@ -500,7 +500,7 @@ import pb "github.com/yourorg/crosslang-demo/api"
 
 type UserService struct{}
 
-func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
+func (s *UserService) GetUser(ctx Context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
     // 业务逻辑...
     return &pb.UserResponse{Id: req.Id, Name: "Alice"}, nil
 }
@@ -512,10 +512,10 @@ func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
 import "github.com/segmentio/kafka-go"
 // 发布事件
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "user-events"})
-writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("UserCreated")})
+writer.WriteMessages(Context.Background(), kafka.Message{Value: []byte("UserCreated")})
 // 消费事件
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "user-events", GroupID: "user-group"})
-msg, _ := reader.ReadMessage(context.Background())
+msg, _ := reader.ReadMessage(Context.Background())
 processEvent(msg.Value)
 ```
 

@@ -44,21 +44,21 @@ func main() {
         Name: "MyFirstAgent",
         Type: "assistant",
     }
-    
+
     // 2. 创建Agent实例
     agent := core.NewBaseAgent("agent-001", config)
-    
+
     // 3. 初始化组件
     agent.SetLearningEngine(core.NewLearningEngine(nil))
     agent.SetDecisionEngine(core.NewDecisionEngine(nil))
-    
+
     // 4. 启动Agent
     ctx := context.Background()
     if err := agent.Start(ctx); err != nil {
         panic(err)
     }
     defer agent.Stop()
-    
+
     // 5. 处理任务
     input := core.Input{
         ID:   "task-1",
@@ -67,12 +67,12 @@ func main() {
             "message": "Hello, Agent!",
         },
     }
-    
+
     output, err := agent.Process(input)
     if err != nil {
         panic(err)
     }
-    
+
     fmt.Printf("Agent Response: %+v\n", output)
 }
 ```
@@ -229,7 +229,7 @@ automationAgent.SetLearningEngine(learningEngine)
 for i := 0; i < 100; i++ {
     task := generateTask(i)
     result := automationAgent.Process(task)
-    
+
     // 根据结果学习
     reward := evaluateResult(result)
     learningEngine.Learn(core.Experience{
@@ -431,8 +431,8 @@ A: 使用Metrics:
 
 ```go
 metrics := agent.GetMetrics()
-fmt.Printf("Processed: %d, Success: %d\n", 
-    metrics.TotalProcessed, 
+fmt.Printf("Processed: %d, Success: %d\n",
+    metrics.TotalProcessed,
     metrics.SuccessCount)
 ```
 
@@ -446,5 +446,5 @@ fmt.Printf("Processed: %d, Success: %d\n",
 
 ---
 
-**快速开始版本**: v1.0  
+**快速开始版本**: v1.0
 **最后更新**: 2025-10-22

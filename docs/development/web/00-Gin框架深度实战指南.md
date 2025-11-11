@@ -1,11 +1,10 @@
-# Gin框架
-
-**字数**: ~42,000字
-**代码示例**: 130+个完整示例
-**实战案例**: 12个端到端案例
-**适用人群**: 初级到高级Go Web开发者
+﻿# Gin框架
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
+
 
 ## 📋 目录
 
@@ -624,14 +623,14 @@ func RequestIDMiddleware() gin.HandlerFunc {
 func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
     return func(c *gin.Context) {
         // 创建带超时的Context
-        ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
+        ctx, cancel := Context.WithTimeout(c.Request.Context(), timeout)
         defer cancel()
 
         // 替换请求的Context
         c.Request = c.Request.WithContext(ctx)
 
         // 创建完成channel
-        done := make(chan struct{})
+        done := make(Channel struct{})
 
         go func() {
             c.Next()
@@ -1442,25 +1441,25 @@ type Client struct {
  ID       string
  Username string
  Conn     *websocket.Conn
- Send     chan Message
+ Send     Channel Message
  Hub      *Hub
 }
 
 // ===== Hub管理所有客户端 =====
 type Hub struct {
  clients    map[string]*Client
- broadcast  chan Message
- register   chan *Client
- unregister chan *Client
+ broadcast  Channel Message
+ register   Channel *Client
+ unregister Channel *Client
  mu         sync.RWMutex
 }
 
 func NewHub() *Hub {
  return &Hub{
   clients:    make(map[string]*Client),
-  broadcast:  make(chan Message, 256),
-  register:   make(chan *Client),
-  unregister: make(chan *Client),
+  broadcast:  make(Channel Message, 256),
+  register:   make(Channel *Client),
+  unregister: make(Channel *Client),
  }
 }
 
@@ -1591,7 +1590,7 @@ func wsHandler(hub *Hub) gin.HandlerFunc {
    ID:       fmt.Sprintf("%d", time.Now().UnixNano()),
    Username: username,
    Conn:     conn,
-   Send:     make(chan Message, 256),
+   Send:     make(Channel Message, 256),
    Hub:      hub,
   }
 
@@ -1625,7 +1624,7 @@ func setupWebSocket() {
 package main
 
 import (
- "context"
+ "Context"
  "net/http"
  "time"
 
@@ -1677,13 +1676,13 @@ func gracefulShutdown() {
  }()
 
  // 等待中断信号
- quit := make(chan os.Signal, 1)
+ quit := make(Channel os.Signal, 1)
  signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
  <-quit
  log.Println("Shutting down server...")
 
  // 5秒超时关闭
- ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
  defer cancel()
 
  if err := srv.Shutdown(ctx); err != nil {
@@ -1946,12 +1945,12 @@ type User struct {
 package repository
 
 type UserRepository interface {
- Create(ctx context.Context, user *model.User) error
- GetByID(ctx context.Context, id int64) (*model.User, error)
- GetByUsername(ctx context.Context, username string) (*model.User, error)
- Update(ctx context.Context, user *model.User) error
- Delete(ctx context.Context, id int64) error
- List(ctx context.Context, offset, limit int) ([]*model.User, error)
+ Create(ctx Context.Context, user *model.User) error
+ GetByID(ctx Context.Context, id int64) (*model.User, error)
+ GetByUsername(ctx Context.Context, username string) (*model.User, error)
+ Update(ctx Context.Context, user *model.User) error
+ Delete(ctx Context.Context, id int64) error
+ List(ctx Context.Context, offset, limit int) ([]*model.User, error)
 }
 
 type userRepository struct {
@@ -1962,11 +1961,11 @@ func NewUserRepository(db *gorm.DB) UserRepository {
  return &userRepository{db: db}
 }
 
-func (r *userRepository) Create(ctx context.Context, user *model.User) error {
+func (r *userRepository) Create(ctx Context.Context, user *model.User) error {
  return r.db.WithContext(ctx).Create(user).Error
 }
 
-func (r *userRepository) GetByID(ctx context.Context, id int64) (*model.User, error) {
+func (r *userRepository) GetByID(ctx Context.Context, id int64) (*model.User, error) {
  var user model.User
  err := r.db.WithContext(ctx).First(&user, id).Error
  if err != nil {
@@ -1979,10 +1978,10 @@ func (r *userRepository) GetByID(ctx context.Context, id int64) (*model.User, er
 package service
 
 type UserService interface {
- Register(ctx context.Context, req *RegisterRequest) (*model.User, error)
- Login(ctx context.Context, req *LoginRequest) (string, error)
- GetProfile(ctx context.Context, userID int64) (*model.User, error)
- UpdateProfile(ctx context.Context, userID int64, req *UpdateProfileRequest) error
+ Register(ctx Context.Context, req *RegisterRequest) (*model.User, error)
+ Login(ctx Context.Context, req *LoginRequest) (string, error)
+ GetProfile(ctx Context.Context, userID int64) (*model.User, error)
+ UpdateProfile(ctx Context.Context, userID int64, req *UpdateProfileRequest) error
 }
 
 type userService struct {
@@ -1995,7 +1994,7 @@ func NewUserService(userRepo repository.UserRepository) UserService {
  }
 }
 
-func (s *userService) Register(ctx context.Context, req *RegisterRequest) (*model.User, error) {
+func (s *userService) Register(ctx Context.Context, req *RegisterRequest) (*model.User, error) {
  // 检查用户名是否存在
  existing, _ := s.userRepo.GetByUsername(ctx, req.Username)
  if existing != nil {

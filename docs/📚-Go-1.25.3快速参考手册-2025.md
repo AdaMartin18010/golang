@@ -1,9 +1,10 @@
-# 📚 Go 1.25.3 快速参考手册 - 2025
+﻿# 📚 Go 1.25.3 快速参考手册 - 2025
 
-**版本**: Go 1.25.3
-**更新日期**: 2025-10-29
-**类型**: 快速参考
-**用途**: 日常开发速查
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ---
 
@@ -18,7 +19,7 @@
   - [2. 类型系统速查](#2-类型系统速查)
     - [基本类型](#基本类型)
     - [复合类型](#复合类型)
-    - [指针、函数、通道](#指针函数通道)
+    - [指针、函数、Channel](#指针函数channel)
     - [接口](#接口)
     - [泛型（Go 1.18+）](#泛型go-118)
   - [3. 并发编程速查](#3-并发编程速查)
@@ -223,7 +224,7 @@ p := Person{"Alice", 30}
 p := Person{Name: "Bob", Age: 25}
 ```
 
-### 指针、函数、通道
+### 指针、函数、Channel
 
 ```go
 // 指针
@@ -238,9 +239,9 @@ func add(a, b int) int {
 }
 f := func(x int) int { return x * 2 }
 
-// 通道
-ch := make(chan int)       // 无缓冲
-ch := make(chan int, 10)   // 缓冲
+// Channel
+ch := make(Channel int)       // 无缓冲
+ch := make(Channel int, 10)   // 缓冲
 
 // 发送/接收
 ch <- 42
@@ -327,8 +328,8 @@ for i := 0; i < 5; i++ {
 
 ```go
 // 创建
-ch := make(chan int)       // 无缓冲
-ch := make(chan int, 10)   // 缓冲
+ch := make(Channel int)       // 无缓冲
+ch := make(Channel int, 10)   // 缓冲
 
 // 操作
 ch <- value        // 发送
@@ -337,8 +338,8 @@ value, ok := <-ch  // 检查关闭
 close(ch)          // 关闭
 
 // 单向channel
-func send(ch chan<- int) {}    // 只写
-func recv(ch <-chan int) {}     // 只读
+func send(ch Channel<- int) {}    // 只写
+func recv(ch <-Channel int) {}     // 只读
 
 // select
 select {
@@ -395,24 +396,24 @@ atomic.StoreInt64(&counter, 100)
 
 ```go
 // 创建
-ctx := context.Background()
-ctx := context.TODO()
+ctx := Context.Background()
+ctx := Context.TODO()
 
 // WithCancel
-ctx, cancel := context.WithCancel(parent)
+ctx, cancel := Context.WithCancel(parent)
 defer cancel()
 
 // WithTimeout
-ctx, cancel := context.WithTimeout(parent, 5*time.Second)
+ctx, cancel := Context.WithTimeout(parent, 5*time.Second)
 defer cancel()
 
 // WithDeadline
 deadline := time.Now().Add(5 * time.Second)
-ctx, cancel := context.WithDeadline(parent, deadline)
+ctx, cancel := Context.WithDeadline(parent, deadline)
 defer cancel()
 
 // WithValue
-ctx := context.WithValue(parent, key, value)
+ctx := Context.WithValue(parent, key, value)
 value := ctx.Value(key)
 
 // 使用
@@ -889,7 +890,7 @@ func New(opts Options) *Client
 
 ```go
 // ✅ 使用channel通信
-ch := make(chan int)
+ch := make(Channel int)
 go producer(ch)
 consumer(ch)
 
@@ -900,7 +901,7 @@ var (
 )
 
 // ✅ 使用Context控制生命周期
-func worker(ctx context.Context) {
+func worker(ctx Context.Context) {
     for {
         select {
         case <-ctx.Done():

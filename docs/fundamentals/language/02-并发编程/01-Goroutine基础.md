@@ -1,4 +1,4 @@
-# Goroutine基础
+﻿# Goroutine基础
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -69,7 +69,7 @@ func main() {
 
     // 启动匿名函数
     go func() {
-        fmt.Println("Hello from anonymous goroutine")
+        fmt.Println("Hello from anonymous Goroutine")
     }()
 
     // 等待goroutine执行
@@ -77,7 +77,7 @@ func main() {
 }
 
 func sayHello() {
-    fmt.Println("Hello from goroutine")
+    fmt.Println("Hello from Goroutine")
 }
 ```
 
@@ -134,7 +134,7 @@ func main() {
 
 ```go
 func main() {
-    done := make(chan bool)
+    done := make(Channel bool)
 
     go func() {
         process()
@@ -220,7 +220,7 @@ func main() {
 
 ```go
 // Worker Pool模式
-func workerPool(jobs <-chan int, results chan<- int) {
+func workerPool(jobs <-Channel int, results Channel<- int) {
     const numWorkers = 10
     var wg sync.WaitGroup
 
@@ -244,7 +244,7 @@ func workerPool(jobs <-chan int, results chan<- int) {
 ### 2. 使用Context管理生命周期
 
 ```go
-func worker(ctx context.Context) {
+func worker(ctx Context.Context) {
     for {
         select {
         case <-ctx.Done():
@@ -257,7 +257,7 @@ func worker(ctx context.Context) {
 }
 
 func main() {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     go worker(ctx)
 
@@ -273,7 +273,7 @@ func main() {
 ```go
 // ❌ 泄漏：Goroutine永远阻塞
 func leak() {
-    ch := make(chan int)
+    ch := make(Channel int)
     go func() {
         val := <-ch  // 永远等待
         fmt.Println(val)
@@ -282,8 +282,8 @@ func leak() {
 }
 
 // ✅ 正确：使用带缓冲的channel或context
-func noLeak(ctx context.Context) {
-    ch := make(chan int, 1)  // 带缓冲
+func noLeak(ctx Context.Context) {
+    ch := make(Channel int, 1)  // 带缓冲
     go func() {
         select {
         case val := <-ch:
@@ -336,8 +336,8 @@ for _, item := range millionsOfItems {
 }
 
 // ✅ 正确：使用Worker Pool
-jobs := make(chan Item, 100)
-results := make(chan Result, 100)
+jobs := make(Channel Item, 100)
+results := make(Channel Result, 100)
 
 // 启动固定数量的worker
 for i := 0; i < 100; i++ {

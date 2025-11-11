@@ -95,7 +95,7 @@
 package cloudnative
 
 import (
-    "context"
+    "Context"
     "time"
     "errors"
     "sync"
@@ -568,7 +568,7 @@ type ClusterConfig struct {
     CertificateData string            `json:"certificate_data"`
     Token           string            `json:"token"`
     Namespace       string            `json:"namespace"`
-    Context         string            `json:"context"`
+    Context         string            `json:"Context"`
     Options         map[string]string `json:"options"`
 }
 
@@ -902,67 +902,67 @@ type PipelineMetrics struct {
 
 // 领域服务接口
 type KubernetesService interface {
-    CreatePod(ctx context.Context, pod *Pod) error
-    GetPod(ctx context.Context, namespace, name string) (*Pod, error)
-    UpdatePod(ctx context.Context, pod *Pod) error
-    DeletePod(ctx context.Context, namespace, name string) error
-    ListPods(ctx context.Context, namespace string, selector map[string]string) ([]*Pod, error)
-    WatchPods(ctx context.Context, namespace string, handler PodEventHandler) error
+    CreatePod(ctx Context.Context, pod *Pod) error
+    GetPod(ctx Context.Context, namespace, name string) (*Pod, error)
+    UpdatePod(ctx Context.Context, pod *Pod) error
+    DeletePod(ctx Context.Context, namespace, name string) error
+    ListPods(ctx Context.Context, namespace string, selector map[string]string) ([]*Pod, error)
+    WatchPods(ctx Context.Context, namespace string, handler PodEventHandler) error
 }
 
 type ServiceService interface {
-    CreateService(ctx context.Context, service *Service) error
-    GetService(ctx context.Context, namespace, name string) (*Service, error)
-    UpdateService(ctx context.Context, service *Service) error
-    DeleteService(ctx context.Context, namespace, name string) error
-    ListServices(ctx context.Context, namespace string, selector map[string]string) ([]*Service, error)
+    CreateService(ctx Context.Context, service *Service) error
+    GetService(ctx Context.Context, namespace, name string) (*Service, error)
+    UpdateService(ctx Context.Context, service *Service) error
+    DeleteService(ctx Context.Context, namespace, name string) error
+    ListServices(ctx Context.Context, namespace string, selector map[string]string) ([]*Service, error)
 }
 
 type DeploymentService interface {
-    CreateDeployment(ctx context.Context, deployment *Deployment) error
-    GetDeployment(ctx context.Context, namespace, name string) (*Deployment, error)
-    UpdateDeployment(ctx context.Context, deployment *Deployment) error
-    DeleteDeployment(ctx context.Context, namespace, name string) error
-    ScaleDeployment(ctx context.Context, namespace, name string, replicas int32) error
-    RollbackDeployment(ctx context.Context, namespace, name string, revision int64) error
+    CreateDeployment(ctx Context.Context, deployment *Deployment) error
+    GetDeployment(ctx Context.Context, namespace, name string) (*Deployment, error)
+    UpdateDeployment(ctx Context.Context, deployment *Deployment) error
+    DeleteDeployment(ctx Context.Context, namespace, name string) error
+    ScaleDeployment(ctx Context.Context, namespace, name string, replicas int32) error
+    RollbackDeployment(ctx Context.Context, namespace, name string, revision int64) error
 }
 
 type NodeService interface {
-    GetNode(ctx context.Context, name string) (*Node, error)
-    ListNodes(ctx context.Context, selector map[string]string) ([]*Node, error)
-    UpdateNode(ctx context.Context, node *Node) error
-    CordonNode(ctx context.Context, name string) error
-    UncordonNode(ctx context.Context, name string) error
-    DrainNode(ctx context.Context, name string) error
+    GetNode(ctx Context.Context, name string) (*Node, error)
+    ListNodes(ctx Context.Context, selector map[string]string) ([]*Node, error)
+    UpdateNode(ctx Context.Context, node *Node) error
+    CordonNode(ctx Context.Context, name string) error
+    UncordonNode(ctx Context.Context, name string) error
+    DrainNode(ctx Context.Context, name string) error
 }
 
 type ClusterService interface {
-    GetCluster(ctx context.Context, name string) (*Cluster, error)
-    ListClusters(ctx context.Context) ([]*Cluster, error)
-    CreateCluster(ctx context.Context, cluster *Cluster) error
-    UpdateCluster(ctx context.Context, cluster *Cluster) error
-    DeleteCluster(ctx context.Context, name string) error
-    GetClusterMetrics(ctx context.Context, name string) (*ClusterMetrics, error)
+    GetCluster(ctx Context.Context, name string) (*Cluster, error)
+    ListClusters(ctx Context.Context) ([]*Cluster, error)
+    CreateCluster(ctx Context.Context, cluster *Cluster) error
+    UpdateCluster(ctx Context.Context, cluster *Cluster) error
+    DeleteCluster(ctx Context.Context, name string) error
+    GetClusterMetrics(ctx Context.Context, name string) (*ClusterMetrics, error)
 }
 
 type ServiceMeshService interface {
-    GetServiceMesh(ctx context.Context, name string) (*ServiceMesh, error)
-    ListServiceMeshes(ctx context.Context) ([]*ServiceMesh, error)
-    CreateServiceMesh(ctx context.Context, mesh *ServiceMesh) error
-    UpdateServiceMesh(ctx context.Context, mesh *ServiceMesh) error
-    DeleteServiceMesh(ctx context.Context, name string) error
-    ApplyPolicy(ctx context.Context, meshName string, policy *MeshPolicy) error
-    RemovePolicy(ctx context.Context, meshName, policyID string) error
+    GetServiceMesh(ctx Context.Context, name string) (*ServiceMesh, error)
+    ListServiceMeshes(ctx Context.Context) ([]*ServiceMesh, error)
+    CreateServiceMesh(ctx Context.Context, mesh *ServiceMesh) error
+    UpdateServiceMesh(ctx Context.Context, mesh *ServiceMesh) error
+    DeleteServiceMesh(ctx Context.Context, name string) error
+    ApplyPolicy(ctx Context.Context, meshName string, policy *MeshPolicy) error
+    RemovePolicy(ctx Context.Context, meshName, policyID string) error
 }
 
 type CICDService interface {
-    CreatePipeline(ctx context.Context, pipeline *CICDPipeline) error
-    GetPipeline(ctx context.Context, name string) (*CICDPipeline, error)
-    UpdatePipeline(ctx context.Context, pipeline *CICDPipeline) error
-    DeletePipeline(ctx context.Context, name string) error
-    RunPipeline(ctx context.Context, name string, parameters map[string]string) error
-    GetPipelineStatus(ctx context.Context, name string) (*PipelineStatus, error)
-    GetPipelineLogs(ctx context.Context, name, runID string) (string, error)
+    CreatePipeline(ctx Context.Context, pipeline *CICDPipeline) error
+    GetPipeline(ctx Context.Context, name string) (*CICDPipeline, error)
+    UpdatePipeline(ctx Context.Context, pipeline *CICDPipeline) error
+    DeletePipeline(ctx Context.Context, name string) error
+    RunPipeline(ctx Context.Context, name string, parameters map[string]string) error
+    GetPipelineStatus(ctx Context.Context, name string) (*PipelineStatus, error)
+    GetPipelineLogs(ctx Context.Context, name, runID string) (string, error)
 }
 
 // 云原生平台核心服务实现
@@ -978,7 +978,7 @@ type CloudNativePlatform struct {
     logger          Logger
 }
 
-func (platform *CloudNativePlatform) DeployApplication(ctx context.Context, app *Application) error {
+func (platform *CloudNativePlatform) DeployApplication(ctx Context.Context, app *Application) error {
     // 创建部署
     deployment := &Deployment{
         ID:        generateID(),
@@ -1048,7 +1048,7 @@ func (platform *CloudNativePlatform) DeployApplication(ctx context.Context, app 
     return nil
 }
 
-func (platform *CloudNativePlatform) ScaleApplication(ctx context.Context, namespace, name string, replicas int32) error {
+func (platform *CloudNativePlatform) ScaleApplication(ctx Context.Context, namespace, name string, replicas int32) error {
     // 获取当前部署
     deployment, err := platform.deploymentService.GetDeployment(ctx, namespace, name)
     if err != nil {
@@ -1075,7 +1075,7 @@ func (platform *CloudNativePlatform) ScaleApplication(ctx context.Context, names
     return nil
 }
 
-func (platform *CloudNativePlatform) MonitorClusterHealth(ctx context.Context, clusterName string) (*ClusterHealthReport, error) {
+func (platform *CloudNativePlatform) MonitorClusterHealth(ctx Context.Context, clusterName string) (*ClusterHealthReport, error) {
     // 获取集群信息
     cluster, err := platform.clusterService.GetCluster(ctx, clusterName)
     if err != nil {
@@ -1252,7 +1252,7 @@ func (platform *CloudNativePlatform) calculateOverallHealth(metrics *ClusterMetr
     return HealthStatusHealthy
 }
 
-func (platform *CloudNativePlatform) analyzeNodeHealth(ctx context.Context, cluster *Cluster) NodeHealthSummary {
+func (platform *CloudNativePlatform) analyzeNodeHealth(ctx Context.Context, cluster *Cluster) NodeHealthSummary {
     nodes, err := platform.nodeService.ListNodes(ctx, nil)
     if err != nil {
         return NodeHealthSummary{}
@@ -1277,7 +1277,7 @@ func (platform *CloudNativePlatform) analyzeNodeHealth(ctx context.Context, clus
     }
 }
 
-func (platform *CloudNativePlatform) analyzeServiceHealth(ctx context.Context, cluster *Cluster) ServiceHealthSummary {
+func (platform *CloudNativePlatform) analyzeServiceHealth(ctx Context.Context, cluster *Cluster) ServiceHealthSummary {
     services, err := platform.serviceService.ListServices(ctx, "default", nil)
     if err != nil {
         return ServiceHealthSummary{}
@@ -1312,7 +1312,7 @@ func (platform *CloudNativePlatform) analyzeResourceHealth(metrics *ClusterMetri
     }
 }
 
-func (platform *CloudNativePlatform) identifyIssues(ctx context.Context, cluster *Cluster, metrics *ClusterMetrics) []HealthIssue {
+func (platform *CloudNativePlatform) identifyIssues(ctx Context.Context, cluster *Cluster, metrics *ClusterMetrics) []HealthIssue {
     var issues []HealthIssue
 
     // 检查资源使用率

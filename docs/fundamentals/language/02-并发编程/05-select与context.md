@@ -1,4 +1,4 @@
-# select与context高级用法
+﻿# select与context高级用法
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -47,10 +47,10 @@ select语句用于监听多个channel操作，实现多路复用、超时、取�
 context用于跨Goroutine传递取消信号、超时、元数据，是Go并发控制的标准方式。
 
 - 典型结构：
-  - context.Background()
-  - context.WithCancel(parent)
-  - context.WithTimeout(parent, duration)
-  - context.WithValue(parent, key, value)
+  - Context.Background()
+  - Context.WithCancel(parent)
+  - Context.WithTimeout(parent, duration)
+  - Context.WithValue(parent, key, value)
 
 ---
 
@@ -59,7 +59,7 @@ context用于跨Goroutine传递取消信号、超时、元数据，是Go并发�
 ### select实现超时控制
 
 ```go
-ch := make(chan int)
+ch := make(Channel int)
 select {
 case v := <-ch:
     fmt.Println("received", v)
@@ -82,7 +82,7 @@ case v2 := <-ch2:
 ### context实现取消
 
 ```go
-ctx, cancel := context.WithCancel(context.Background())
+ctx, cancel := Context.WithCancel(Context.Background())
 go func() {
     <-ctx.Done()
     fmt.Println("cancelled")
@@ -93,7 +93,7 @@ cancel()
 ### context实现超时
 
 ```go
-ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+ctx, cancel := Context.WithTimeout(Context.Background(), time.Second)
 defer cancel()
 select {
 case <-ctx.Done():
@@ -117,7 +117,7 @@ case <-ctx.Done():
 
 - 忘记cancel context会导致资源泄漏。
 - select所有分支都阻塞时会死锁。
-- context.Value仅用于传递请求范围内的元数据，勿滥用。
+- Context.Value仅用于传递请求范围内的元数据，勿滥用。
 
 ---
 
@@ -131,7 +131,7 @@ case <-ctx.Done():
 ## 6. 参考文献
 
 - Go官方文档：<https://golang.org/doc/>
-- Go Blog: <https://blog.golang.org/context>
+- Go Blog: <https://blog.golang.org/Context>
 - 《Go语言高级编程》
 
 ---
@@ -146,7 +146,7 @@ case <-ctx.Done():
 package main
 
 import (
-    "context"
+    "Context"
     "encoding/json"
     "fmt"
     "log"
@@ -170,7 +170,7 @@ const (
 func RequestIDMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         requestID := fmt.Sprintf("req-%d", time.Now().UnixNano())
-        ctx := context.WithValue(r.Context(), requestIDKey, requestID)
+        ctx := Context.WithValue(r.Context(), requestIDKey, requestID)
 
         // 将Request ID添加到响应头
         w.Header().Set("X-Request-ID", requestID)
@@ -187,11 +187,11 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
 func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
     return func(next http.Handler) http.Handler {
         return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            ctx, cancel := context.WithTimeout(r.Context(), timeout)
+            ctx, cancel := Context.WithTimeout(r.Context(), timeout)
             defer cancel()
 
             // 创建一个channel来接收处理完成信号
-            done := make(chan struct{})
+            done := make(Channel struct{})
 
             go func() {
                 next.ServeHTTP(w, r.WithContext(ctx))
@@ -223,7 +223,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
         // 模拟验证token并提取用户ID
         userID := "user-123"
-        ctx := context.WithValue(r.Context(), userIDKey, userID)
+        ctx := Context.WithValue(r.Context(), userIDKey, userID)
 
         next.ServeHTTP(w, r.WithContext(ctx))
     })
@@ -232,7 +232,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 // ==================== 业务逻辑 ====================
 
 // 模拟数据库查询
-func queryDatabase(ctx context.Context, query string) (interface{}, error) {
+func queryDatabase(ctx Context.Context, query string) (interface{}, error) {
     requestID, _ := ctx.Value(requestIDKey).(string)
     log.Printf("[%s] Executing query: %s", requestID, query)
 
@@ -253,12 +253,12 @@ func queryDatabase(ctx context.Context, query string) (interface{}, error) {
 }
 
 // 模拟外部API调用
-func callExternalAPI(ctx context.Context, endpoint string) (interface{}, error) {
+func callExternalAPI(ctx Context.Context, endpoint string) (interface{}, error) {
     requestID, _ := ctx.Value(requestIDKey).(string)
     log.Printf("[%s] Calling external API: %s", requestID, endpoint)
 
     // 创建带超时的子context
-    apiCtx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
+    apiCtx, cancel := Context.WithTimeout(ctx, 500*time.Millisecond)
     defer cancel()
 
     // 模拟API调用时间 (100-700ms)
@@ -294,7 +294,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
         err  error
     }
 
-    results := make(chan result, 2)
+    results := make(Channel result, 2)
 
     // 查询数据库
     go func() {
@@ -314,10 +314,10 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
         select {
         case res := <-results:
             if res.err != nil {
-                if res.err == context.DeadlineExceeded {
+                if res.err == Context.DeadlineExceeded {
                     log.Printf("[%s] %s operation timeout", requestID, res.name)
                     response[res.name+"_error"] = "timeout"
-                } else if res.err == context.Canceled {
+                } else if res.err == Context.Canceled {
                     log.Printf("[%s] %s operation cancelled", requestID, res.name)
                     response[res.name+"_error"] = "cancelled"
                 } else {
@@ -327,7 +327,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
                 response[res.name] = res.data
             }
         case <-ctx.Done():
-            log.Printf("[%s] Request context done: %v", requestID, ctx.Err())
+            log.Printf("[%s] Request Context done: %v", requestID, ctx.Err())
             http.Error(w, "Request timeout", http.StatusGatewayTimeout)
             return
         }

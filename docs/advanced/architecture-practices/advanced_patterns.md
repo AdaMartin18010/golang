@@ -1,4 +1,4 @@
-# 高级架构模式（Golang国际主流实践）
+﻿# 高级架构模式（Golang国际主流实践）
 
 > **简介**: 高级架构设计模式集合，涵盖CQRS、事件溯源和六边形架构
 
@@ -296,8 +296,8 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
     ```go
         // SAGA步骤接口
         type SagaStep interface {
-            Execute(ctx context.Context) error
-            Compensate(ctx context.Context) error
+            Execute(ctx Context.Context) error
+            Compensate(ctx Context.Context) error
             GetStepName() string
         }
 
@@ -308,7 +308,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
             userData    CreateUserRequest
         }
 
-        func (s *CreateUserStep) Execute(ctx context.Context) error {
+        func (s *CreateUserStep) Execute(ctx Context.Context) error {
             user, err := s.userService.CreateUser(ctx, s.userData)
             if err != nil {
                 return err
@@ -317,7 +317,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
             return nil
         }
 
-        func (s *CreateUserStep) Compensate(ctx context.Context) error {
+        func (s *CreateUserStep) Compensate(ctx Context.Context) error {
             if s.userID != "" {
                 return s.userService.DeleteUser(ctx, s.userID)
             }
@@ -335,11 +335,11 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
             email        string
         }
 
-        func (s *SendWelcomeEmailStep) Execute(ctx context.Context) error {
+        func (s *SendWelcomeEmailStep) Execute(ctx Context.Context) error {
             return s.emailService.SendWelcomeEmail(ctx, s.email)
         }
 
-        func (s *SendWelcomeEmailStep) Compensate(ctx context.Context) error {
+        func (s *SendWelcomeEmailStep) Compensate(ctx Context.Context) error {
             // 邮件发送无法撤销，记录日志
             log.Printf("Cannot compensate email sent to %s", s.email)
             return nil
@@ -367,7 +367,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
             o.steps = append(o.steps, step)
         }
 
-        func (o *SagaOrchestrator) Execute(ctx context.Context) error {
+        func (o *SagaOrchestrator) Execute(ctx Context.Context) error {
             executedSteps := make([]SagaStep, 0)
 
             for _, step := range o.steps {
@@ -382,7 +382,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
             return nil
         }
 
-        func (o *SagaOrchestrator) compensate(ctx context.Context, steps []SagaStep) {
+        func (o *SagaOrchestrator) compensate(ctx Context.Context, steps []SagaStep) {
             // 逆序执行补偿操作
             for i := len(steps) - 1; i >= 0; i-- {
                 step := steps[i]
@@ -396,7 +396,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
 #### SAGA使用示例
 
     ```go
-        func RegisterUserSaga(ctx context.Context, userData CreateUserRequest) error {
+        func RegisterUserSaga(ctx Context.Context, userData CreateUserRequest) error {
             orchestrator := NewSagaOrchestrator()
 
             // 添加步骤
@@ -464,7 +464,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
             }
         }
 
-        func (s *UserService) CreateUser(ctx context.Context, req CreateUserRequest) error {
+        func (s *UserService) CreateUser(ctx Context.Context, req CreateUserRequest) error {
             // 业务逻辑
             if req.Name == "" || req.Email == "" {
                 return errors.New("name and email are required")
@@ -505,7 +505,7 @@ SAGA模式是一种处理分布式事务的模式，通过一系列本地事务�
             return nil
         }
 
-        func (s *UserService) GetUser(ctx context.Context, id string) (*User, error) {
+        func (s *UserService) GetUser(ctx Context.Context, id string) (*User, error) {
             return s.userRepo.FindByID(id)
         }
 

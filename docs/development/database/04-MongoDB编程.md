@@ -1,6 +1,8 @@
-# MongoDB编程 - Go语言实战指南
+﻿# MongoDB编程 - Go语言实战指南
 
-> 使用 Go 官方驱动 mongo-go-driver 进行 MongoDB 数据库编程
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -105,7 +107,7 @@ project/
 package database
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 
@@ -122,7 +124,7 @@ type MongoDB struct {
 
 // NewMongoDB 创建MongoDB连接
 func NewMongoDB(uri, dbName string) (*MongoDB, error) {
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 10*time.Second)
     defer cancel()
 
     // 设置客户端选项
@@ -155,7 +157,7 @@ func NewMongoDB(uri, dbName string) (*MongoDB, error) {
 
 // Close 关闭连接
 func (m *MongoDB) Close() error {
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 10*time.Second)
     defer cancel()
 
     return m.Client.Disconnect(ctx)
@@ -226,7 +228,7 @@ type Profile struct {
 package repository
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 
@@ -248,7 +250,7 @@ func NewUserRepository(db *mongo.Database) *UserRepository {
 }
 
 // Insert 插入单个用户
-func (r *UserRepository) Insert(ctx context.Context, user *models.User) error {
+func (r *UserRepository) Insert(ctx Context.Context, user *models.User) error {
     user.CreatedAt = time.Now()
     user.UpdatedAt = time.Now()
 
@@ -264,7 +266,7 @@ func (r *UserRepository) Insert(ctx context.Context, user *models.User) error {
 }
 
 // InsertMany 批量插入
-func (r *UserRepository) InsertMany(ctx context.Context, users []*models.User) error {
+func (r *UserRepository) InsertMany(ctx Context.Context, users []*models.User) error {
     docs := make([]interface{}, len(users))
     for i, user := range users {
         user.CreatedAt = time.Now()
@@ -287,7 +289,7 @@ func (r *UserRepository) InsertMany(ctx context.Context, users []*models.User) e
 
 ```go
 // FindByID 根据ID查询
-func (r *UserRepository) FindByID(ctx context.Context, id primitive.ObjectID) (*models.User, error) {
+func (r *UserRepository) FindByID(ctx Context.Context, id primitive.ObjectID) (*models.User, error) {
     var user models.User
 
     filter := bson.M{"_id": id}
@@ -303,7 +305,7 @@ func (r *UserRepository) FindByID(ctx context.Context, id primitive.ObjectID) (*
 }
 
 // FindByUsername 根据用户名查询
-func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
+func (r *UserRepository) FindByUsername(ctx Context.Context, username string) (*models.User, error) {
     var user models.User
 
     filter := bson.M{"username": username}
@@ -316,7 +318,7 @@ func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*
 }
 
 // FindAll 查询所有用户（带分页）
-func (r *UserRepository) FindAll(ctx context.Context, page, pageSize int64) ([]*models.User, int64, error) {
+func (r *UserRepository) FindAll(ctx Context.Context, page, pageSize int64) ([]*models.User, int64, error) {
     // 计算跳过数量
     skip := (page - 1) * pageSize
 
@@ -349,7 +351,7 @@ func (r *UserRepository) FindAll(ctx context.Context, page, pageSize int64) ([]*
 }
 
 // FindByAge 根据年龄范围查询
-func (r *UserRepository) FindByAge(ctx context.Context, minAge, maxAge int) ([]*models.User, error) {
+func (r *UserRepository) FindByAge(ctx Context.Context, minAge, maxAge int) ([]*models.User, error) {
     filter := bson.M{
         "age": bson.M{
             "$gte": minAge,
@@ -372,7 +374,7 @@ func (r *UserRepository) FindByAge(ctx context.Context, minAge, maxAge int) ([]*
 }
 
 // FindByTags 根据标签查询（数组查询）
-func (r *UserRepository) FindByTags(ctx context.Context, tags []string) ([]*models.User, error) {
+func (r *UserRepository) FindByTags(ctx Context.Context, tags []string) ([]*models.User, error) {
     filter := bson.M{
         "tags": bson.M{
             "$in": tags, // 包含任意一个标签
@@ -394,7 +396,7 @@ func (r *UserRepository) FindByTags(ctx context.Context, tags []string) ([]*mode
 }
 
 // Search 全文搜索（需要创建文本索引）
-func (r *UserRepository) Search(ctx context.Context, keyword string) ([]*models.User, error) {
+func (r *UserRepository) Search(ctx Context.Context, keyword string) ([]*models.User, error) {
     filter := bson.M{
         "$text": bson.M{
             "$search": keyword,
@@ -425,7 +427,7 @@ func (r *UserRepository) Search(ctx context.Context, keyword string) ([]*models.
 
 ```go
 // Update 更新用户
-func (r *UserRepository) Update(ctx context.Context, id primitive.ObjectID, update bson.M) error {
+func (r *UserRepository) Update(ctx Context.Context, id primitive.ObjectID, update bson.M) error {
     filter := bson.M{"_id": id}
 
     // 添加更新时间
@@ -448,12 +450,12 @@ func (r *UserRepository) Update(ctx context.Context, id primitive.ObjectID, upda
 }
 
 // UpdateUsername 更新用户名
-func (r *UserRepository) UpdateUsername(ctx context.Context, id primitive.ObjectID, newUsername string) error {
+func (r *UserRepository) UpdateUsername(ctx Context.Context, id primitive.ObjectID, newUsername string) error {
     return r.Update(ctx, id, bson.M{"username": newUsername})
 }
 
 // IncrementAge 增加年龄（原子操作）
-func (r *UserRepository) IncrementAge(ctx context.Context, id primitive.ObjectID, increment int) error {
+func (r *UserRepository) IncrementAge(ctx Context.Context, id primitive.ObjectID, increment int) error {
     filter := bson.M{"_id": id}
     update := bson.M{
         "$inc": bson.M{"age": increment},
@@ -473,7 +475,7 @@ func (r *UserRepository) IncrementAge(ctx context.Context, id primitive.ObjectID
 }
 
 // AddTag 添加标签
-func (r *UserRepository) AddTag(ctx context.Context, id primitive.ObjectID, tag string) error {
+func (r *UserRepository) AddTag(ctx Context.Context, id primitive.ObjectID, tag string) error {
     filter := bson.M{"_id": id}
     update := bson.M{
         "$addToSet": bson.M{"tags": tag}, // 避免重复
@@ -485,7 +487,7 @@ func (r *UserRepository) AddTag(ctx context.Context, id primitive.ObjectID, tag 
 }
 
 // RemoveTag 移除标签
-func (r *UserRepository) RemoveTag(ctx context.Context, id primitive.ObjectID, tag string) error {
+func (r *UserRepository) RemoveTag(ctx Context.Context, id primitive.ObjectID, tag string) error {
     filter := bson.M{"_id": id}
     update := bson.M{
         "$pull": bson.M{"tags": tag},
@@ -497,7 +499,7 @@ func (r *UserRepository) RemoveTag(ctx context.Context, id primitive.ObjectID, t
 }
 
 // UpdateMany 批量更新
-func (r *UserRepository) UpdateMany(ctx context.Context, filter, update bson.M) (int64, error) {
+func (r *UserRepository) UpdateMany(ctx Context.Context, filter, update bson.M) (int64, error) {
     update["updated_at"] = time.Now()
     updateDoc := bson.M{"$set": update}
 
@@ -514,7 +516,7 @@ func (r *UserRepository) UpdateMany(ctx context.Context, filter, update bson.M) 
 
 ```go
 // Delete 删除用户
-func (r *UserRepository) Delete(ctx context.Context, id primitive.ObjectID) error {
+func (r *UserRepository) Delete(ctx Context.Context, id primitive.ObjectID) error {
     filter := bson.M{"_id": id}
 
     result, err := r.collection.DeleteOne(ctx, filter)
@@ -532,7 +534,7 @@ func (r *UserRepository) Delete(ctx context.Context, id primitive.ObjectID) erro
 }
 
 // DeleteByUsername 根据用户名删除
-func (r *UserRepository) DeleteByUsername(ctx context.Context, username string) error {
+func (r *UserRepository) DeleteByUsername(ctx Context.Context, username string) error {
     filter := bson.M{"username": username}
 
     _, err := r.collection.DeleteOne(ctx, filter)
@@ -540,7 +542,7 @@ func (r *UserRepository) DeleteByUsername(ctx context.Context, username string) 
 }
 
 // DeleteMany 批量删除
-func (r *UserRepository) DeleteMany(ctx context.Context, filter bson.M) (int64, error) {
+func (r *UserRepository) DeleteMany(ctx Context.Context, filter bson.M) (int64, error) {
     result, err := r.collection.DeleteMany(ctx, filter)
     if err != nil {
         return 0, err
@@ -550,7 +552,7 @@ func (r *UserRepository) DeleteMany(ctx context.Context, filter bson.M) (int64, 
 }
 
 // DeleteOldUsers 删除旧用户（示例：删除超过1年未登录的用户）
-func (r *UserRepository) DeleteOldUsers(ctx context.Context, daysAgo int) (int64, error) {
+func (r *UserRepository) DeleteOldUsers(ctx Context.Context, daysAgo int) (int64, error) {
     cutoff := time.Now().AddDate(0, 0, -daysAgo)
 
     filter := bson.M{
@@ -578,13 +580,13 @@ func (r *UserRepository) DeleteOldUsers(ctx context.Context, daysAgo int) (int64
 package repository
 
 import (
-    "context"
+    "Context"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
 )
 
 // AggregateByAge 按年龄分组统计
-func (r *UserRepository) AggregateByAge(ctx context.Context) ([]bson.M, error) {
+func (r *UserRepository) AggregateByAge(ctx Context.Context) ([]bson.M, error) {
     pipeline := mongo.Pipeline{
         // 阶段1: 分组
         {{Key: "$group", Value: bson.D{
@@ -611,7 +613,7 @@ func (r *UserRepository) AggregateByAge(ctx context.Context) ([]bson.M, error) {
 }
 
 // GetStatistics 获取用户统计信息
-func (r *UserRepository) GetStatistics(ctx context.Context) (*UserStatistics, error) {
+func (r *UserRepository) GetStatistics(ctx Context.Context) (*UserStatistics, error) {
     pipeline := mongo.Pipeline{
         {{Key: "$group", Value: bson.D{
             {Key: "_id", Value: nil},
@@ -649,7 +651,7 @@ type UserStatistics struct {
 }
 
 // AggregateTopTags 获取最热门的标签
-func (r *UserRepository) AggregateTopTags(ctx context.Context, limit int) ([]TagCount, error) {
+func (r *UserRepository) AggregateTopTags(ctx Context.Context, limit int) ([]TagCount, error) {
     pipeline := mongo.Pipeline{
         // 阶段1: 展开数组
         {{Key: "$unwind", Value: "$tags"}},
@@ -691,7 +693,7 @@ type TagCount struct {
 }
 
 // SearchWithFacets 带分面的搜索
-func (r *UserRepository) SearchWithFacets(ctx context.Context, keyword string) (*SearchResult, error) {
+func (r *UserRepository) SearchWithFacets(ctx Context.Context, keyword string) (*SearchResult, error) {
     pipeline := mongo.Pipeline{
         // 阶段1: 文本搜索
         {{Key: "$match", Value: bson.M{
@@ -762,7 +764,7 @@ type SearchResult struct {
 package repository
 
 import (
-    "context"
+    "Context"
     "fmt"
     "time"
 
@@ -772,7 +774,7 @@ import (
 )
 
 // CreateIndexes 创建索引
-func (r *UserRepository) CreateIndexes(ctx context.Context) error {
+func (r *UserRepository) CreateIndexes(ctx Context.Context) error {
     indexes := []mongo.IndexModel{
         // 1. 单字段索引（用户名唯一）
         {
@@ -821,7 +823,7 @@ func (r *UserRepository) CreateIndexes(ctx context.Context) error {
 }
 
 // ListIndexes 列出所有索引
-func (r *UserRepository) ListIndexes(ctx context.Context) error {
+func (r *UserRepository) ListIndexes(ctx Context.Context) error {
     cursor, err := r.collection.Indexes().List(ctx)
     if err != nil {
         return err
@@ -842,7 +844,7 @@ func (r *UserRepository) ListIndexes(ctx context.Context) error {
 }
 
 // DropIndex 删除索引
-func (r *UserRepository) DropIndex(ctx context.Context, name string) error {
+func (r *UserRepository) DropIndex(ctx Context.Context, name string) error {
     _, err := r.collection.Indexes().DropOne(ctx, name)
     if err != nil {
         return err
@@ -864,7 +866,7 @@ func (r *UserRepository) DropIndex(ctx context.Context, name string) error {
 package repository
 
 import (
-    "context"
+    "Context"
     "fmt"
 
     "go.mongodb.org/mongo-driver/bson"
@@ -873,7 +875,7 @@ import (
 )
 
 // TransferPoints 积分转账（使用事务）
-func TransferPoints(ctx context.Context, client *mongo.Client, fromUserID, toUserID primitive.ObjectID, points int) error {
+func TransferPoints(ctx Context.Context, client *mongo.Client, fromUserID, toUserID primitive.ObjectID, points int) error {
     // 开启会话
     session, err := client.StartSession()
     if err != nil {
@@ -957,7 +959,7 @@ func TransferPoints(ctx context.Context, client *mongo.Client, fromUserID, toUse
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "log"
     "time"
@@ -968,7 +970,7 @@ import (
 )
 
 // WatchUsers 监听用户集合的变化
-func WatchUsers(ctx context.Context, collection *mongo.Collection) {
+func WatchUsers(ctx Context.Context, collection *mongo.Collection) {
     // 创建Change Stream
     pipeline := mongo.Pipeline{}
 
@@ -1021,16 +1023,16 @@ func WatchUsers(ctx context.Context, collection *mongo.Collection) {
 
 // 使用示例
 func main() {
-    client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
+    client, err := mongo.Connect(Context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
     if err != nil {
         log.Fatal(err)
     }
-    defer client.Disconnect(context.Background())
+    defer client.Disconnect(Context.Background())
 
     collection := client.Database("mydb").Collection("users")
 
     // 在goroutine中监听
-    go WatchUsers(context.Background(), collection)
+    go WatchUsers(Context.Background(), collection)
 
     // 主程序继续运行
     time.Sleep(10 * time.Minute)
@@ -1047,7 +1049,7 @@ func main() {
 package storage
 
 import (
-    "context"
+    "Context"
     "fmt"
     "io"
     "os"
@@ -1075,7 +1077,7 @@ func NewFileStorage(db *mongo.Database) (*FileStorage, error) {
 }
 
 // Upload 上传文件
-func (fs *FileStorage) Upload(ctx context.Context, filename string, file io.Reader) (primitive.ObjectID, error) {
+func (fs *FileStorage) Upload(ctx Context.Context, filename string, file io.Reader) (primitive.ObjectID, error) {
     opts := options.GridFSUpload().SetMetadata(bson.M{
         "uploaded_at": time.Now(),
         "content_type": getContentType(filename),
@@ -1092,7 +1094,7 @@ func (fs *FileStorage) Upload(ctx context.Context, filename string, file io.Read
 }
 
 // Download 下载文件
-func (fs *FileStorage) Download(ctx context.Context, fileID primitive.ObjectID, dest io.Writer) error {
+func (fs *FileStorage) Download(ctx Context.Context, fileID primitive.ObjectID, dest io.Writer) error {
     _, err := fs.bucket.DownloadToStream(fileID, dest)
     if err != nil {
         return fmt.Errorf("download failed: %w", err)
@@ -1104,7 +1106,7 @@ func (fs *FileStorage) Download(ctx context.Context, fileID primitive.ObjectID, 
 }
 
 // DownloadByName 根据文件名下载
-func (fs *FileStorage) DownloadByName(ctx context.Context, filename string, dest io.Writer) error {
+func (fs *FileStorage) DownloadByName(ctx Context.Context, filename string, dest io.Writer) error {
     _, err := fs.bucket.DownloadToStreamByName(filename, dest)
     if err != nil {
         return fmt.Errorf("download failed: %w", err)
@@ -1114,7 +1116,7 @@ func (fs *FileStorage) DownloadByName(ctx context.Context, filename string, dest
 }
 
 // Delete 删除文件
-func (fs *FileStorage) Delete(ctx context.Context, fileID primitive.ObjectID) error {
+func (fs *FileStorage) Delete(ctx Context.Context, fileID primitive.ObjectID) error {
     err := fs.bucket.Delete(fileID)
     if err != nil {
         return fmt.Errorf("delete failed: %w", err)
@@ -1126,7 +1128,7 @@ func (fs *FileStorage) Delete(ctx context.Context, fileID primitive.ObjectID) er
 }
 
 // ListFiles 列出所有文件
-func (fs *FileStorage) ListFiles(ctx context.Context) ([]FileInfo, error) {
+func (fs *FileStorage) ListFiles(ctx Context.Context) ([]FileInfo, error) {
     cursor, err := fs.bucket.Find(bson.M{})
     if err != nil {
         return nil, err
@@ -1177,7 +1179,7 @@ func getContentType(filename string) string {
 
 // 使用示例
 func ExampleFileStorage() {
-    client, _ := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
+    client, _ := mongo.Connect(Context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
     db := client.Database("mydb")
 
     storage, _ := NewFileStorage(db)
@@ -1186,13 +1188,13 @@ func ExampleFileStorage() {
     file, _ := os.Open("large-file.pdf")
     defer file.Close()
 
-    fileID, _ := storage.Upload(context.Background(), "large-file.pdf", file)
+    fileID, _ := storage.Upload(Context.Background(), "large-file.pdf", file)
 
     // 下载文件
     outFile, _ := os.Create("downloaded.pdf")
     defer outFile.Close()
 
-    storage.Download(context.Background(), fileID, outFile)
+    storage.Download(Context.Background(), fileID, outFile)
 }
 ```
 
@@ -1215,7 +1217,7 @@ clientOptions := options.Client().
 
 ```go
 // BulkWrite 批量写入
-func (r *UserRepository) BulkWrite(ctx context.Context, operations []mongo.WriteModel) error {
+func (r *UserRepository) BulkWrite(ctx Context.Context, operations []mongo.WriteModel) error {
     opts := options.BulkWrite().SetOrdered(false) // 无序执行，更快
 
     result, err := r.collection.BulkWrite(ctx, operations, opts)
@@ -1240,7 +1242,7 @@ func ExampleBulkWrite(repo *UserRepository) {
         mongo.NewDeleteOneModel().SetFilter(bson.M{"username": "dave"}),
     }
 
-    repo.BulkWrite(context.Background(), operations)
+    repo.BulkWrite(Context.Background(), operations)
 }
 ```
 
@@ -1248,7 +1250,7 @@ func ExampleBulkWrite(repo *UserRepository) {
 
 ```go
 // FindUsernamesOnly 只查询用户名（减少网络传输）
-func (r *UserRepository) FindUsernamesOnly(ctx context.Context) ([]string, error) {
+func (r *UserRepository) FindUsernamesOnly(ctx Context.Context) ([]string, error) {
     opts := options.Find().SetProjection(bson.M{
         "username": 1,
         "_id":      0,
@@ -1298,7 +1300,7 @@ if mongo.IsTimeout(err) {
 ### 2. Context超时控制
 
 ```go
-ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
 defer cancel()
 
 user, err := repo.FindByID(ctx, userID)
@@ -1311,14 +1313,14 @@ user, err := repo.FindByID(ctx, userID)
 var mongoClient *mongo.Client
 
 func init() {
-    client, _ := mongo.Connect(context.Background(), clientOptions)
+    client, _ := mongo.Connect(Context.Background(), clientOptions)
     mongoClient = client
 }
 
 // ❌ 每次都创建新连接
 func BadExample() {
-    client, _ := mongo.Connect(context.Background(), clientOptions)
-    defer client.Disconnect(context.Background())
+    client, _ := mongo.Connect(Context.Background(), clientOptions)
+    defer client.Disconnect(Context.Background())
     // ...
 }
 ```

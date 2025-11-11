@@ -82,15 +82,19 @@ curl -k https://localhost:8443/health
 ## HTTP/3 优势
 
 ### 1. 0-RTT 握手
+
 首次连接后，后续连接无需握手，直接发送数据。
 
 ### 2. 多路复用无队头阻塞
+
 基于UDP，每个流独立，一个流的丢包不影响其他流。
 
 ### 3. 连接迁移
+
 客户端IP变化（如WiFi切换到4G）时，连接不中断。
 
 ### 4. 更快的拥塞控制
+
 QUIC内置现代拥塞控制算法。
 
 ## 生产部署
@@ -105,6 +109,7 @@ certbot certonly --standalone -d yourdomain.com
 ### 2. 负载均衡
 
 支持大多数现代负载均衡器：
+
 - Nginx 1.25+
 - HAProxy 2.6+
 - Envoy
@@ -112,6 +117,7 @@ certbot certonly --standalone -d yourdomain.com
 ### 3. 监控
 
 关键指标：
+
 - 0-RTT成功率
 - 连接迁移次数
 - 协议降级比例
@@ -137,4 +143,3 @@ sudo ufw allow 8443/udp
 
 - [HTTP/3和QUIC文档](../../../docs/02-Go语言现代化/14-Go-1.23并发和网络/03-HTTP3-和-QUIC支持.md)
 - [网络优化指南](../../../docs/02-Go语言现代化/性能优化实战指南.md)
-

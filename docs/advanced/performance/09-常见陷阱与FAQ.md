@@ -1,4 +1,4 @@
-# Go性能优化常见陷阱与FAQ
+﻿# Go性能优化常见陷阱与FAQ
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -42,7 +42,7 @@ A: 不是，过多会导致调度压力、内存膨胀，应结合GOMAXPROCS和�
 
 ### Q2: 如何检测和避免Goroutine泄漏？
 
-A: 用pprof goroutine profile、trace分析，结合context、done信号、超时机制管理生命周期。
+A: 用pprof Goroutine profile、trace分析，结合context、done信号、超时机制管理生命周期。
 
 ### Q3: sync.Pool适合哪些场景？
 

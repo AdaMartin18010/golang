@@ -1,4 +1,4 @@
-# CLI工具增强 - REPL与配置管理
+﻿# CLI工具增强 - REPL与配置管理
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -89,7 +89,7 @@ package cli
 
 import (
     "bufio"
-    "context"
+    "Context"
     "fmt"
     "io"
     "os"
@@ -108,8 +108,8 @@ type REPL struct {
     mu          sync.RWMutex
     prompt      string
     running     bool
-    ctx         context.Context
-    cancelFunc  context.CancelFunc
+    ctx         Context.Context
+    cancelFunc  Context.CancelFunc
 }
 
 // Command 命令接口
@@ -117,7 +117,7 @@ type Command interface {
     Name() string
     Description() string
     Usage() string
-    Execute(ctx context.Context, args []string) error
+    Execute(ctx Context.Context, args []string) error
 }
 
 // REPLConfig REPL配置
@@ -138,7 +138,7 @@ var DefaultREPLConfig = REPLConfig{
 
 // NewREPL 创建REPL实例
 func NewREPL(config REPLConfig) (*REPL, error) {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     repl := &REPL{
         commands:   make(map[string]Command),
@@ -306,7 +306,7 @@ func (c *HelpCommand) Name() string        { return "help" }
 func (c *HelpCommand) Description() string { return "Show available commands" }
 func (c *HelpCommand) Usage() string       { return "help [command]" }
 
-func (c *HelpCommand) Execute(ctx context.Context, args []string) error {
+func (c *HelpCommand) Execute(ctx Context.Context, args []string) error {
     c.repl.mu.RLock()
     defer c.repl.mu.RUnlock()
 
@@ -340,7 +340,7 @@ func (c *ExitCommand) Name() string        { return "exit" }
 func (c *ExitCommand) Description() string { return "Exit the REPL" }
 func (c *ExitCommand) Usage() string       { return "exit" }
 
-func (c *ExitCommand) Execute(ctx context.Context, args []string) error {
+func (c *ExitCommand) Execute(ctx Context.Context, args []string) error {
     c.repl.running = false
     fmt.Println("Goodbye!")
     return nil
@@ -355,7 +355,7 @@ func (c *HistoryCommand) Name() string        { return "history" }
 func (c *HistoryCommand) Description() string { return "Show command history" }
 func (c *HistoryCommand) Usage() string       { return "history [n]" }
 
-func (c *HistoryCommand) Execute(ctx context.Context, args []string) error {
+func (c *HistoryCommand) Execute(ctx Context.Context, args []string) error {
     c.repl.mu.RLock()
     defer c.repl.mu.RUnlock()
 
@@ -389,7 +389,7 @@ func (c *SetCommand) Name() string        { return "set" }
 func (c *SetCommand) Description() string { return "Set a variable" }
 func (c *SetCommand) Usage() string       { return "set <name> <value>" }
 
-func (c *SetCommand) Execute(ctx context.Context, args []string) error {
+func (c *SetCommand) Execute(ctx Context.Context, args []string) error {
     if len(args) < 2 {
         return fmt.Errorf("usage: %s", c.Usage())
     }
@@ -412,7 +412,7 @@ func (c *GetCommand) Name() string        { return "get" }
 func (c *GetCommand) Description() string { return "Get a variable" }
 func (c *GetCommand) Usage() string       { return "get <name>" }
 
-func (c *GetCommand) Execute(ctx context.Context, args []string) error {
+func (c *GetCommand) Execute(ctx Context.Context, args []string) error {
     if len(args) < 1 {
         // 显示所有变量
         c.repl.mu.RLock()
@@ -769,7 +769,7 @@ func (b *ConfigBuilder) Build() *Config {
 package cli
 
 import (
-    "context"
+    "Context"
     "fmt"
     "plugin"
     "sync"
@@ -779,8 +779,8 @@ import (
 type Plugin interface {
     Name() string
     Version() string
-    Initialize(ctx context.Context) error
-    Shutdown(ctx context.Context) error
+    Initialize(ctx Context.Context) error
+    Shutdown(ctx Context.Context) error
 }
 
 // PluginManager 插件管理器
@@ -824,7 +824,7 @@ func (pm *PluginManager) Load(path string) error {
     plugin := newPluginFunc()
 
     // 初始化插件
-    if err := plugin.Initialize(context.Background()); err != nil {
+    if err := plugin.Initialize(Context.Background()); err != nil {
         return fmt.Errorf("failed to initialize plugin: %w", err)
     }
 
@@ -855,7 +855,7 @@ func (pm *PluginManager) Unload(name string) error {
     }
 
     // 关闭插件
-    if err := p.Shutdown(context.Background()); err != nil {
+    if err := p.Shutdown(Context.Background()); err != nil {
         return fmt.Errorf("failed to shutdown plugin: %w", err)
     }
 

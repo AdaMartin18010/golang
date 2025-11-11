@@ -1,4 +1,4 @@
-# 数据库架构（Golang国际主流实践）
+﻿# 数据库架构（Golang国际主流实践）
 
 > **简介**: 关系型、NoSQL和NewSQL数据库架构设计，支持高可用、分布式数据存储
 
@@ -197,11 +197,11 @@ type TransactionManager struct {
 
 type Transaction struct {
     tx      *sql.Tx
-    context context.Context
+    Context Context.Context
     options *sql.TxOptions
 }
 
-func (tm *TransactionManager) Begin(ctx context.Context, opts *sql.TxOptions) (*Transaction, error) {
+func (tm *TransactionManager) Begin(ctx Context.Context, opts *sql.TxOptions) (*Transaction, error) {
     tx, err := tm.db.BeginTx(ctx, opts)
     if err != nil {
         return nil, err
@@ -209,7 +209,7 @@ func (tm *TransactionManager) Begin(ctx context.Context, opts *sql.TxOptions) (*
 
     return &Transaction{
         tx:      tx,
-        context: ctx,
+        Context: ctx,
         options: opts,
     }, nil
 }
@@ -331,8 +331,8 @@ const (
 )
 
 type ConsistencyProtocol interface {
-    Read(ctx context.Context, key string) (interface{}, error)
-    Write(ctx context.Context, key string, value interface{}) error
+    Read(ctx Context.Context, key string) (interface{}, error)
+    Write(ctx Context.Context, key string, value interface{}) error
     Sync() error
 }
 
@@ -345,7 +345,7 @@ type RaftProtocol struct {
     log         *Log
 }
 
-func (rp *RaftProtocol) Write(ctx context.Context, key string, value interface{}) error {
+func (rp *RaftProtocol) Write(ctx Context.Context, key string, value interface{}) error {
     // 1. 检查是否为Leader
     if rp.state != Leader {
         return errors.New("not leader")
@@ -368,7 +368,7 @@ func (rp *RaftProtocol) Write(ctx context.Context, key string, value interface{}
 func (rp *RaftProtocol) replicateLog(entry *LogEntry) error {
     // 并行复制到所有follower
     var wg sync.WaitGroup
-    errors := make(chan error, len(rp.nodes))
+    errors := make(Channel error, len(rp.nodes))
 
     for _, node := range rp.nodes {
         if node == rp.nodeID {
@@ -522,7 +522,7 @@ const (
     GIST  IndexType = "GIST"
 )
 
-func (im *IndexManager) CreateIndex(ctx context.Context, index *Index) error {
+func (im *IndexManager) CreateIndex(ctx Context.Context, index *Index) error {
     // 1. 验证索引定义
     if err := im.validateIndex(index); err != nil {
         return err
@@ -672,13 +672,13 @@ type ReadWriteRouter struct {
  Replicas []*sql.DB // 从库连接池
 }
 
-func (r *ReadWriteRouter) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (r *ReadWriteRouter) QueryContext(ctx Context.Context, query string, args ...interface{}) (*sql.Rows, error) {
  // 随机选择一个从库执行读操作
  replica := r.selectReplica()
  return replica.QueryContext(ctx, query, args...)
 }
 
-func (r *ReadWriteRouter) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (r *ReadWriteRouter) ExecContext(ctx Context.Context, query string, args ...interface{}) (sql.Result, error) {
  // 所有写操作都在主库上执行
  return r.Primary.ExecContext(ctx, query, args...)
 }

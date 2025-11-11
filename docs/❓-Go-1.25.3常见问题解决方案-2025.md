@@ -1,9 +1,10 @@
-# ❓ Go 1.25.3 常见问题解决方案 - 2025
+﻿# ❓ Go 1.25.3 常见问题解决方案 - 2025
 
-**版本**: Go 1.25.3
-**更新日期**: 2025-10-29
-**类型**: 问题解决
-**用途**: 快速解决开发问题
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ---
 
@@ -159,7 +160,7 @@ type command struct {
     key   string
     value int
 }
-ch := make(chan command)
+ch := make(Channel command)
 
 go func() {
     m := make(map[string]int)
@@ -190,7 +191,7 @@ go func() {
     http.ListenAndServe("localhost:6060", nil)
 }()
 
-// 访问 http://localhost:6060/debug/pprof/goroutine
+// 访问 http://localhost:6060/debug/pprof/Goroutine
 ```
 
 **常见原因**:
@@ -198,7 +199,7 @@ go func() {
 ```go
 // ❌ 原因1: Channel永远阻塞
 func leak1() {
-    ch := make(chan int)
+    ch := make(Channel int)
     go func() {
         <-ch  // 永远阻塞
     }()
@@ -226,8 +227,8 @@ func leak3() {
 
 ```go
 // ✅ 使用Context控制生命周期
-func noLeak(ctx context.Context) {
-    ch := make(chan int)
+func noLeak(ctx Context.Context) {
+    ch := make(Channel int)
     go func() {
         select {
         case <-ch:
@@ -240,7 +241,7 @@ func noLeak(ctx context.Context) {
 
 // ✅ 使用超时
 func noLeak2() {
-    ch := make(chan int)
+    ch := make(Channel int)
     go func() {
         select {
         case <-ch:
@@ -251,9 +252,9 @@ func noLeak2() {
     }()
 }
 
-// ✅ 使用Done channel
+// ✅ 使用Done Channel
 func noLeak3() {
-    done := make(chan struct{})
+    done := make(Channel struct{})
     go func() {
         for {
             select {
@@ -323,7 +324,7 @@ for i := 0; i < 5; i++ {
 
 ```go
 // ✅ 使用优先级队列
-func prioritySelect(high, low <-chan int) {
+func prioritySelect(high, low <-Channel int) {
     for {
         select {
         case v := <-high:
@@ -341,7 +342,7 @@ func prioritySelect(high, low <-chan int) {
 }
 
 // ✅ 使用带权重的选择
-func weightedSelect(ch1, ch2 <-chan int) {
+func weightedSelect(ch1, ch2 <-Channel int) {
     weight1, weight2 := 3, 1
     for {
         for i := 0; i < weight1; i++ {
@@ -385,7 +386,7 @@ func main() {
 // 2. 收集性能数据
 // CPU: go tool pprof http://localhost:6060/debug/pprof/profile?seconds=30
 // 内存: go tool pprof http://localhost:6060/debug/pprof/heap
-// Goroutine: go tool pprof http://localhost:6060/debug/pprof/goroutine
+// Goroutine: go tool pprof http://localhost:6060/debug/pprof/Goroutine
 
 // 3. 分析
 // top10       - 显示前10个热点
@@ -497,7 +498,7 @@ defer trace.Stop()
 ```go
 // ❌ 原因1: goroutine泄露
 func leak() {
-    ch := make(chan int)
+    ch := make(Channel int)
     go func() {
         <-ch  // 永远阻塞，内存不释放
     }()
@@ -748,7 +749,7 @@ replace github.com/some/package => ../local/package
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "net/http"
     "os"
@@ -770,13 +771,13 @@ func main() {
     }()
 
     // 等待中断信号
-    quit := make(chan os.Signal, 1)
+    quit := make(Channel os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
     fmt.Println("Shutting down server...")
 
     // 优雅关闭
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
     defer cancel()
 
     if err := server.Shutdown(ctx); err != nil {
@@ -851,14 +852,14 @@ import "runtime"
 func printGoroutines() {
     buf := make([]byte, 1<<20)  // 1MB
     stackLen := runtime.Stack(buf, true)
-    fmt.Printf("=== goroutine stack dump ===\n%s\n", buf[:stackLen])
+    fmt.Printf("=== Goroutine stack dump ===\n%s\n", buf[:stackLen])
 }
 
 // 2. 使用pprof
-go tool pprof http://localhost:6060/debug/pprof/goroutine
+go tool pprof http://localhost:6060/debug/pprof/Goroutine
 
 // 3. 添加goroutine标识
-func worker(ctx context.Context, id int) {
+func worker(ctx Context.Context, id int) {
     for {
         select {
         case <-ctx.Done():
@@ -890,13 +891,13 @@ defer trace.Stop()
 ```go
 // 1. Go会自动检测死锁
 func deadlock() {
-    ch := make(chan int)
+    ch := make(Channel int)
     <-ch  // fatal error: all goroutines are asleep - deadlock!
 }
 
 // 2. 使用select timeout
 func noDeadlock() {
-    ch := make(chan int)
+    ch := make(Channel int)
     select {
     case <-ch:
         // 处理

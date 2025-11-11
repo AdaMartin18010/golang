@@ -1,6 +1,48 @@
-# Go Runtime架构总览
+﻿# Go Runtime架构总览
+
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ## 📋 目录
+
+- [Go Runtime架构总览](#go-runtime架构总览)
+  - [📋 目录](#-目录)
+  - [1. 什么是Go Runtime](#1-什么是go-runtime)
+    - [Runtime定义](#runtime定义)
+    - [与其他语言对比](#与其他语言对比)
+  - [2. Runtime核心组件](#2-runtime核心组件)
+    - [整体架构](#整体架构)
+    - [核心组件详解](#核心组件详解)
+      - [1. 调度器 (Scheduler)](#1-调度器-scheduler)
+      - [2. 内存分配器 (Allocator)](#2-内存分配器-allocator)
+      - [3. 垃圾回收器 (GC)](#3-垃圾回收器-gc)
+  - [3. 启动流程](#3-启动流程)
+    - [完整启动过程](#完整启动过程)
+  - [4. 内存管理](#4-内存管理)
+    - [内存分配流程](#内存分配流程)
+    - [内存布局](#内存布局)
+    - [内存统计](#内存统计)
+  - [5. 调度系统](#5-调度系统)
+    - [调度循环](#调度循环)
+    - [调度时机](#调度时机)
+    - [Work Stealing](#work-stealing)
+  - [6. 垃圾回收](#6-垃圾回收)
+    - [GC触发条件](#gc触发条件)
+    - [GC Pacer](#gc-pacer)
+    - [GC性能](#gc性能)
+  - [7. 性能监控](#7-性能监控)
+    - [pprof监控](#pprof监控)
+    - [Runtime指标](#runtime指标)
+  - [8. 调优实战](#8-调优实战)
+    - [案例1: 减少GC压力](#案例1-减少gc压力)
+    - [案例2: 优化调度](#案例2-优化调度)
+    - [案例3: 内存对齐](#案例3-内存对齐)
+  - [🔗 相关资源](#-相关资源)
+
+---
 
 - [Go Runtime架构总览](#go-runtime架构总览)
   - [📋 目录](#-目录)
@@ -272,7 +314,7 @@ func schedinit() {
     gcinit()
 }
 
-// 4. 创建main goroutine: proc.go
+// 4. 创建main Goroutine: proc.go
 func newproc(siz int32, fn *funcval) {
     // 创建新goroutine
     newg := newproc1(fn, argp, siz, callergp, callerpc)
@@ -312,7 +354,7 @@ t2: 调度器初始化 (分配P)
   ↓ (~100μs)
 t3: 内存分配器初始化
   ↓ (~500μs)
-t4: 创建main goroutine
+t4: 创建main Goroutine
   ↓ (~1μs)
 t5: 开始调度
   ↓
@@ -439,7 +481,7 @@ func Gosched() {
     mcall(gosched_m)
 }
 
-// 2. 阻塞操作 - channel/锁等
+// 2. 阻塞操作 - Channel/锁等
 func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer) {
     mcall(park_m)
 }
@@ -582,7 +624,7 @@ curl http://localhost:6060/debug/pprof/heap > heap.prof
 go tool pprof heap.prof
 
 # Goroutine
-curl http://localhost:6060/debug/pprof/goroutine?debug=1
+curl http://localhost:6060/debug/pprof/Goroutine?debug=1
 
 # 调度trace
 curl http://localhost:6060/debug/pprof/trace?seconds=5 > trace.out
@@ -664,7 +706,7 @@ func handleRequests(requests []Request) {
 // ✅ Worker Pool
 func handleRequestsOptimized(requests []Request) {
     numWorkers := runtime.GOMAXPROCS(0)
-    jobs := make(chan Request, len(requests))
+    jobs := make(Channel Request, len(requests))
 
     // 固定数量的worker
     var wg sync.WaitGroup

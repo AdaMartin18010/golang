@@ -1,11 +1,10 @@
-# 📖 Go语言术语表
+﻿# 📖 Go语言术语表
 
-> 常用技术术语解释和快速参考
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
-**版本**: v2.2
-**更新日期**: 2025-10-29
-**术语数**: 120+
-**对齐版本**: Go 1.25.3
+---
 
 ---
 
@@ -16,9 +15,9 @@
   - [📑 索引](#-索引)
     - [API Gateway (API网关)](#api-gateway-api网关)
   - [C](#c)
-    - [Channel (通道)](#channel-通道)
+    - [Channel (Channel)](#channel-channel)
     - [Circuit Breaker (熔断器)](#circuit-breaker-熔断器)
-    - [Context (上下文)](#context-上下文)
+    - [Context (Context)](#context-context)
     - [CSP (Communicating Sequential Processes)](#csp-communicating-sequential-processes)
   - [D](#d)
     - [Defer (延迟执行)](#defer-延迟执行)
@@ -36,7 +35,7 @@
     - [Generics (泛型)](#generics-泛型)
     - [GOAUTH](#goauth)
     - [Go Modules](#go-modules)
-    - [Goroutine (协程)](#goroutine-协程)
+    - [Goroutine (Goroutine)](#goroutine-goroutine)
     - [GORM](#gorm)
     - [gRPC](#grpc)
   - [H](#h)
@@ -55,7 +54,7 @@
   - [M](#m)
     - [Map (映射)](#map-映射)
     - [Middleware (中间件)](#middleware-中间件)
-    - [Mutex (互斥锁)](#mutex-互斥锁)
+    - [Mutex (Mutex)](#mutex-mutex)
   - [N](#n)
     - [nil](#nil)
   - [O](#o)
@@ -92,7 +91,7 @@
 
 ## 📑 索引
 
-[A][W](#w)bly-system-interface) | [B](#b) | [C](#csp-communicating-sequential-processes) | [D](#docker) | [E](#embedding-嵌入) | [F](#fan-in-扇入) | [G](#waitgroup) | [H](#http2) | [I](#fan-in-扇入) | [J](#jwt-json-web-token) | [K](#kubernetes-k8s) | [L](#l) | [M](#rwmutex-读写锁[A](#a)l-mapping) | [P](#csp-communicating-sequentia[C](#c)读写锁) | [S](#csp-communicating-sequential[D](#d)| [T](#t[E](#e)✨ | [V](#servi[F](#f) [W](#webso[G](#g)tex-互斥锁) | [H](#h)teway-a[I](#i)o-profile-g[J](#j)*✨ = Go 1.25.3 新增内容*[K](#k)
+[A][W](#w)bly-system-interface) | [B](#b) | [C](#c) | [D](#d) | [E](#e) | [F](#f) | [G](#g) | [H](#h) | [I](#fan-in-扇入) | [J](#j) | [K](#k) | [L](#l) | [M](#m)l-mapping) | [P](#p)读写锁) | [S](#s)| [T](#t)✨ | [V](#servi[F](#f) [W](#w)tex-Mutex) | [H](#h)teway-a[I](#i)o-profile-g[J](#j)*✨ = Go 1.25.3 新增内容*[K](#k)
 
 ### API Gateway (API网关)
 
@@ -111,10 +110,10 @@
 
 ## C
 
-### Channel (通道)
+### Channel (Channel)
 
 **定义**: Goroutine间的通信机制
-**语法**: `ch := make(chan int)`
+**语法**: `ch := make(Channel int)`
 **操作**: `ch <- value` (发送), `value := <-ch` (接收)
 **相关文档**: [Channel基础](01-语言基础/02-并发编程/03-Channel基础.md)
 
@@ -125,10 +124,10 @@
 **状态**: Closed → Open → Half-Open
 **相关文档**: [容错处理与熔断](05-微服务架构/07-容错处理与熔断.md)
 
-### Context (上下文)
+### Context (Context)
 
 **定义**: 跨API边界传递截止时间、取消信号和请求范围值
-**包**: `context`
+**包**: `Context`
 **类型**: `Background()`, `TODO()`, `WithTimeout()`, `WithCancel()`
 **相关文档**: [select与context](01-语言基础/02-并发编程/05-select与context.md)
 
@@ -251,7 +250,7 @@ type Employee struct {
 **tool指令**: Go 1.25.3新增tool依赖声明（如golangci-lint）
 **相关文档**: [模块管理](01-语言基础/03-模块管理/README.md)
 
-### Goroutine (协程)
+### Goroutine (Goroutine)
 
 **定义**: Go的轻量级并发执行单元
 **创建**: `go funcName()`
@@ -361,7 +360,7 @@ type Reader interface {
 **示例**: `app.Use(middleware)`
 **相关文档**: [中间件模式](03-Web开发/07-中间件模式.md)
 
-### Mutex (互斥锁)
+### Mutex (Mutex)
 
 **定义**: 保护共享资源的同步原语
 **类型**: `sync.Mutex`, `sync.RWMutex`

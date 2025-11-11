@@ -1,13 +1,10 @@
-# HTTP协议基础
+﻿# HTTP协议基础
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
 **适用于**: Go 1.23+
 
----
 
-> **难度**: ⭐⭐⭐
-> **标签**: #Web #HTTP #协议 #网络编程
 
 ## 📋 目录
 
@@ -24,8 +21,8 @@
     - [4xx 客户端错误](#4xx-客户端错误)
     - [5xx 服务器错误](#5xx-服务器错误)
   - [HTTP版本演进](#http版本演进)
-    - [HTTP/1.0（1996）](#http1-01996)
-    - [HTTP/1.1（1999）](#http1-11999)
+    - [HTTP/1.0（1996）](#http101996)
+    - [HTTP/1.1（1999）](#http111999)
     - [HTTP/2（2015）](#http22015)
     - [HTTP/3（2022）](#http32022)
 - [💻 Go语言HTTP实战](#go语言http实战)
@@ -542,7 +539,7 @@ func cacheMiddleware(next http.Handler) http.Handler {
 
 5. **使用Context控制超时**
    ```go
-   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+   ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
    defer cancel()
 
    req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)

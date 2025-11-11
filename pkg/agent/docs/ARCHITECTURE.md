@@ -1,7 +1,7 @@
 # AI-Agent 架构设计文档
 
-> **项目**: AI-Agent智能代理系统  
-> **版本**: v1.0  
+> **项目**: AI-Agent智能代理系统
+> **版本**: v1.0
 > **更新**: 2025-10-22
 
 ---
@@ -362,22 +362,22 @@ func (agent *BaseAgent) Process(input Input) (Output, error) {
     // 创建通道
     resultCh := make(chan Output, 1)
     errorCh := make(chan error, 1)
-    
+
     // 并发处理
     go func() {
         // 多模态处理
         features := agent.multimodal.Process(input)
-        
+
         // 决策
         decision := agent.decision.Decide(features)
-        
+
         // 学习
         agent.learning.Learn(features, decision)
-        
+
         // 返回结果
         resultCh <- decision.ToOutput()
     }()
-    
+
     // 等待结果或超时
     select {
     case result := <-resultCh:
@@ -434,12 +434,12 @@ func NewAgent(config AgentConfig) *BaseAgent {
         id:     generateID(),
         config: config,
     }
-    
+
     // 初始化组件
     agent.learning = NewLearningEngine(config.LearningConfig)
     agent.decision = NewDecisionEngine(config.DecisionConfig)
     agent.multimodal = NewMultimodalInterface(config.MultimodalConfig)
-    
+
     return agent
 }
 ```
@@ -565,6 +565,6 @@ engine.SetAlgorithm(&MyLearningAlgorithm{})
 
 ---
 
-**文档版本**: v1.0  
-**最后更新**: 2025-10-22  
+**文档版本**: v1.0
+**最后更新**: 2025-10-22
 **维护者**: AI-Agent Team

@@ -1,4 +1,4 @@
-# Go新特性实践应用
+﻿# Go新特性实践应用
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -140,7 +140,7 @@ type Processor interface {
 package main
 
 import (
-    "context"
+    "Context"
     "log/slog"
     "os"
 )
@@ -162,7 +162,7 @@ func productionUsage() {
     slog.SetDefault(logger)
 
     // 使用上下文
-    ctx := context.Background()
+    ctx := Context.Background()
     logger.InfoContext(ctx, "request processed",
         slog.Group("request",
             slog.String("method", "GET"),
@@ -174,7 +174,7 @@ func productionUsage() {
 }
 
 // 3. 带上下文的logger
-func contextLogger(ctx context.Context) *slog.Logger {
+func contextLogger(ctx Context.Context) *slog.Logger {
     // 从context中提取trace_id等信息
     logger := slog.Default()
     if traceID, ok := ctx.Value("trace_id").(string); ok {
@@ -194,7 +194,7 @@ func NewService(logger *slog.Logger) *Service {
     }
 }
 
-func (s *Service) ProcessRequest(ctx context.Context, userID string) error {
+func (s *Service) ProcessRequest(ctx Context.Context, userID string) error {
     s.logger.Info("processing request", "user_id", userID)
 
     // 业务逻辑...
@@ -333,7 +333,7 @@ slog.Info("user logged in", "username", username)
 
     ```go
     // 检查代码中的for循环使用
-    // 重点检查：goroutine、闭包、defer中使用循环变量
+    // 重点检查：Goroutine、闭包、defer中使用循环变量
 
     // 可能有问题的代码（Go 1.21）
     for i := 0; i < 10; i++ {

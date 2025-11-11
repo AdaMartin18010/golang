@@ -1,4 +1,4 @@
-# Go 1.24特性
+﻿# Go 1.24特性
 
 **版本**: v1.0
 **更新日期**: 2025-10-30
@@ -118,7 +118,7 @@ func init() {
 // 高并发场景性能提升
 func BenchmarkGoroutineSpawn(b *testing.B) {
     for i := 0; i < b.N; i++ {
-        done := make(chan bool)
+        done := make(Channel bool)
         go func() {
             // 轻量级任务
             done <- true
@@ -215,7 +215,7 @@ go tool cover -html=coverage.out -o coverage.html
 import _ "net/http/pprof"
 
 // 新增的profile类型
-// http://localhost:6060/debug/pprof/mutex     (互斥锁分析)
+// http://localhost:6060/debug/pprof/Mutex     (互斥锁分析)
 // http://localhost:6060/debug/pprof/block     (阻塞分析)
 // http://localhost:6060/debug/pprof/threadcreate (线程创建)
 ```
@@ -275,12 +275,12 @@ client := &http.Client{
 **更好的上下文传播**:
 
 ```go
-import "context"
+import "Context"
 
 // 新增：WithoutCancel - 创建不可取消的上下文
-func processAsync(ctx context.Context) {
+func processAsync(ctx Context.Context) {
     // 异步任务使用不可取消的上下文
-    backgroundCtx := context.WithoutCancel(ctx)
+    backgroundCtx := Context.WithoutCancel(ctx)
 
     go func() {
         // 即使原ctx被取消，这里也会继续执行
@@ -290,8 +290,8 @@ func processAsync(ctx context.Context) {
 }
 
 // 新增：AfterFunc - 上下文取消后执行清理
-func withCleanup(ctx context.Context) {
-    cleanup := context.AfterFunc(ctx, func() {
+func withCleanup(ctx Context.Context) {
+    cleanup := Context.AfterFunc(ctx, func() {
         // ctx取消后自动执行清理
         fmt.Println("Cleaning up resources...")
     })
@@ -700,10 +700,10 @@ go test -bench=. -benchmem
 **⚠️ 需要注意**:
 
 ```go
-// 1. context.WithoutCancel是新增API
+// 1. Context.WithoutCancel是新增API
 // 需要检查是否在旧版本运行
 if runtime.Version() >= "go1.24" {
-    ctx = context.WithoutCancel(ctx)
+    ctx = Context.WithoutCancel(ctx)
 }
 
 // 2. 某些内部实现变更可能影响性能特征
@@ -760,21 +760,21 @@ Go 1.23: 120s  →  Go 1.24: 110s  (提升8.3%)
 
 ```go
 // ✅ 推荐：异步任务使用WithoutCancel
-func handleRequest(ctx context.Context) {
+func handleRequest(ctx Context.Context) {
     // 主任务
     data := fetchData(ctx)
 
     // 异步日志记录（不受主任务取消影响）
-    go logAsync(context.WithoutCancel(ctx), data)
+    go logAsync(Context.WithoutCancel(ctx), data)
 
     return processData(data)
 }
 
 // ✅ 推荐：使用AfterFunc清理资源
-func acquireResource(ctx context.Context) *Resource {
+func acquireResource(ctx Context.Context) *Resource {
     res := allocateResource()
 
-    context.AfterFunc(ctx, func() {
+    Context.AfterFunc(ctx, func() {
         res.Close()  // 自动清理
     })
 

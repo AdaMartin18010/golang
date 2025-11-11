@@ -1,4 +1,4 @@
-# Channel详解
+﻿# Channel详解
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -59,20 +59,20 @@
 
 ```go
 // 声明
-var ch chan int          // nil channel
-var ch chan string       // nil channel
+var ch Channel int          // nil Channel
+var ch Channel string       // nil Channel
 
 // 创建无缓冲channel
-ch := make(chan int)
+ch := make(Channel int)
 
 // 创建有缓冲channel
-ch := make(chan int, 10)
+ch := make(Channel int, 10)
 
 // 只读channel
-var readOnly <-chan int = ch
+var readOnly <-Channel int = ch
 
 // 只写channel
-var writeOnly chan<- int = ch
+var writeOnly Channel<- int = ch
 ```
 
 ---
@@ -80,7 +80,7 @@ var writeOnly chan<- int = ch
 ### 基本操作
 
 ```go
-ch := make(chan int)
+ch := make(Channel int)
 
 // 发送（写入）
 ch <- 42
@@ -106,13 +106,13 @@ close(ch)
 
 - **同步通信**：发送操作会阻塞，直到有接收者
 - **握手机制**：发送者和接收者必须同时准备好
-- **容量为0**：make(chan T)
+- **容量为0**：make(Channel T)
 
 ### 示例
 
 ```go
 func main() {
-    ch := make(chan int)  // 无缓冲
+    ch := make(Channel int)  // 无缓冲
 
     // ❌ 错误：死锁
     // ch <- 42  // 阻塞，没有接收者
@@ -132,7 +132,7 @@ func main() {
 ### 同步示例
 
 ```go
-func worker(done chan bool) {
+func worker(done Channel bool) {
     fmt.Println("Working...")
     time.Sleep(1 * time.Second)
     fmt.Println("Done")
@@ -140,7 +140,7 @@ func worker(done chan bool) {
 }
 
 func main() {
-    done := make(chan bool)
+    done := make(Channel bool)
     go worker(done)
     <-done  // 等待完成
     fmt.Println("All done")
@@ -154,14 +154,14 @@ func main() {
 ### 特点3
 
 - **异步通信**：发送操作不会立即阻塞（缓冲区未满时）
-- **有容量**：make(chan T, capacity)
+- **有容量**：make(Channel T, capacity)
 - **FIFO队列**：先进先出
 
 ### 示例3
 
 ```go
 func main() {
-    ch := make(chan int, 3)  // 缓冲大小为3
+    ch := make(Channel int, 3)  // 缓冲大小为3
 
     // 可以连续发送3个值而不阻塞
     ch <- 1
@@ -181,7 +181,7 @@ func main() {
 ### 查询状态
 
 ```go
-ch := make(chan int, 10)
+ch := make(Channel int, 10)
 
 // 当前长度
 fmt.Println(len(ch))  // 0
@@ -205,7 +205,7 @@ fmt.Println(cap(ch))  // 10
 ### close操作
 
 ```go
-ch := make(chan int, 3)
+ch := make(Channel int, 3)
 
 // 发送数据
 ch <- 1
@@ -216,7 +216,7 @@ ch <- 3
 close(ch)
 
 // ❌ 错误：向已关闭的channel发送数据会panic
-// ch <- 4  // panic: send on closed channel
+// ch <- 4  // panic: send on closed Channel
 
 // ✅ 正确：从已关闭的channel接收数据
 fmt.Println(<-ch)  // 1
@@ -230,7 +230,7 @@ fmt.Println(<-ch)  // 0 (零值)
 ### 检查是否关闭
 
 ```go
-ch := make(chan int, 2)
+ch := make(Channel int, 2)
 ch <- 1
 ch <- 2
 close(ch)
@@ -245,7 +245,7 @@ for {
 }
 
 // 方法2: 使用range（推荐）
-ch2 := make(chan int, 2)
+ch2 := make(Channel int, 2)
 ch2 <- 1
 ch2 <- 2
 close(ch2)
@@ -262,7 +262,7 @@ for value := range ch2 {
 
 ```go
 // ✅ 可以：发送者关闭channel
-func producer(ch chan<- int) {
+func producer(ch Channel<- int) {
     for i := 0; i < 5; i++ {
         ch <- i
     }
@@ -270,7 +270,7 @@ func producer(ch chan<- int) {
 }
 
 // ❌ 不要：接收者关闭channel
-func consumer(ch <-chan int) {
+func consumer(ch <-Channel int) {
     for v := range ch {
         fmt.Println(v)
     }
@@ -279,7 +279,7 @@ func consumer(ch <-chan int) {
 
 // ❌ 不要：多次关闭channel
 close(ch)
-// close(ch)  // panic: close of closed channel
+// close(ch)  // panic: close of closed Channel
 ```
 
 ---
@@ -307,7 +307,7 @@ default:
 
 ```go
 func main() {
-    ch := make(chan int)
+    ch := make(Channel int)
 
     select {
     case value := <-ch:
@@ -346,8 +346,8 @@ default:
 
 ```go
 func main() {
-    ch1 := make(chan string)
-    ch2 := make(chan string)
+    ch1 := make(Channel string)
+    ch2 := make(Channel string)
 
     go func() {
         time.Sleep(1 * time.Second)
@@ -377,8 +377,8 @@ func main() {
 ### 模式1: Generator
 
 ```go
-func fibonacci(n int) <-chan int {
-    ch := make(chan int)
+func fibonacci(n int) <-Channel int {
+    ch := make(Channel int)
     go func() {
         defer close(ch)
         a, b := 0, 1
@@ -401,8 +401,8 @@ for num := range fibonacci(10) {
 ### 模式2: Pipeline
 
 ```go
-func generator(nums ...int) <-chan int {
-    out := make(chan int)
+func generator(nums ...int) <-Channel int {
+    out := make(Channel int)
     go func() {
         defer close(out)
         for _, n := range nums {
@@ -412,8 +412,8 @@ func generator(nums ...int) <-chan int {
     return out
 }
 
-func square(in <-chan int) <-chan int {
-    out := make(chan int)
+func square(in <-Channel int) <-Channel int {
+    out := make(Channel int)
     go func() {
         defer close(out)
         for n := range in {
@@ -436,21 +436,21 @@ for sq := range squares {
 ### 模式3: Fan-out/Fan-in
 
 ```go
-func fanOut(ch <-chan int, n int) []<-chan int {
-    channels := make([]<-chan int, n)
+func fanOut(ch <-Channel int, n int) []<-Channel int {
+    channels := make([]<-Channel int, n)
     for i := 0; i < n; i++ {
         channels[i] = worker(ch)
     }
     return channels
 }
 
-func fanIn(channels ...<-chan int) <-chan int {
-    out := make(chan int)
+func fanIn(channels ...<-Channel int) <-Channel int {
+    out := make(Channel int)
     var wg sync.WaitGroup
 
     for _, ch := range channels {
         wg.Add(1)
-        go func(c <-chan int) {
+        go func(c <-Channel int) {
             defer wg.Done()
             for v := range c {
                 out <- v
@@ -472,7 +472,7 @@ func fanIn(channels ...<-chan int) <-chan int {
 ### 模式4: 退出通知
 
 ```go
-func worker(ctx context.Context) {
+func worker(ctx Context.Context) {
     for {
         select {
         case <-ctx.Done():
@@ -485,7 +485,7 @@ func worker(ctx context.Context) {
 }
 
 func main() {
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := Context.WithCancel(Context.Background())
 
     go worker(ctx)
 
@@ -502,7 +502,7 @@ func main() {
 
 ```go
 // ✅ 正确
-func producer(ch chan<- int) {
+func producer(ch Channel<- int) {
     defer close(ch)  // 发送者关闭
     for i := 0; i < 10; i++ {
         ch <- i
@@ -516,11 +516,11 @@ func producer(ch chan<- int) {
 
 ```go
 // ❌ 可能阻塞
-ch := make(chan int)
+ch := make(Channel int)
 ch <- 42  // 阻塞
 
 // ✅ 使用缓冲
-ch := make(chan int, 1)
+ch := make(Channel int, 1)
 ch <- 42  // 不阻塞
 ```
 
@@ -530,7 +530,7 @@ ch <- 42  // 不阻塞
 
 ```go
 // ✅ 推荐
-ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
 defer cancel()
 
 select {
@@ -546,7 +546,7 @@ case <-ctx.Done():
 ### 4. nil Channel的使用
 
 ```go
-var ch chan int  // nil channel
+var ch Channel int  // nil Channel
 
 // 从nil channel接收：永远阻塞
 // <-ch
@@ -554,12 +554,12 @@ var ch chan int  // nil channel
 // 向nil channel发送：永远阻塞
 // ch <- 1
 
-// 关闭nil channel：panic
+// 关闭nil Channel：panic
 // close(ch)
 
 // 用途：在select中禁用某个case
-ch1 := make(chan int)
-ch2 := make(chan int)
+ch1 := make(Channel int)
+ch2 := make(Channel int)
 
 select {
 case v := <-ch1:
@@ -576,8 +576,8 @@ case v := <-ch2:
 
 ```go
 // ❌ 泄漏：goroutine永远阻塞
-func leak() <-chan int {
-    ch := make(chan int)
+func leak() <-Channel int {
+    ch := make(Channel int)
     go func() {
         ch <- 42  // 没有接收者，永远阻塞
     }()
@@ -585,8 +585,8 @@ func leak() <-chan int {
 }
 
 // ✅ 正确：使用缓冲或context
-func noLeak(ctx context.Context) <-chan int {
-    ch := make(chan int, 1)  // 有缓冲
+func noLeak(ctx Context.Context) <-Channel int {
+    ch := make(Channel int, 1)  // 有缓冲
     go func() {
         select {
         case ch <- 42:

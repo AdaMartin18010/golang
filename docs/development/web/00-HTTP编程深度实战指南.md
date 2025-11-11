@@ -1,11 +1,10 @@
-# Go HTTP编程
-
-**字数**: ~25,000字
-**代码示例**: 60+个完整示例
-**实战案例**: 7个端到端案例
-**适用人群**: 初级到高级Go开发者
+﻿# Go HTTP编程
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
+
 
 ## 📋 目录
 
@@ -144,7 +143,7 @@ func main() {
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
     "log"
     "net/http"
@@ -187,14 +186,14 @@ func main() {
     }()
 
     // 4. 优雅关闭
-    quit := make(chan os.Signal, 1)
+    quit := make(Channel os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
 
     fmt.Println("Shutting down server...")
 
     // 5秒内完成所有请求
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
     defer cancel()
 
     if err := server.Shutdown(ctx); err != nil {
@@ -1028,24 +1027,24 @@ var upgrader = websocket.Upgrader{
 // Client 客户端
 type Client struct {
     conn *websocket.Conn
-    send chan []byte
+    send Channel []byte
 }
 
 // Hub 聊天室
 type Hub struct {
     clients    map[*Client]bool
-    broadcast  chan []byte
-    register   chan *Client
-    unregister chan *Client
+    broadcast  Channel []byte
+    register   Channel *Client
+    unregister Channel *Client
     mu         sync.RWMutex
 }
 
 func NewHub() *Hub {
     return &Hub{
         clients:    make(map[*Client]bool),
-        broadcast:  make(chan []byte),
-        register:   make(chan *Client),
-        unregister: make(chan *Client),
+        broadcast:  make(Channel []byte),
+        register:   make(Channel *Client),
+        unregister: make(Channel *Client),
     }
 }
 
@@ -1121,7 +1120,7 @@ func wsHandler(hub *Hub) http.HandlerFunc {
 
         client := &Client{
             conn: conn,
-            send: make(chan []byte, 256),
+            send: make(Channel []byte, 256),
         }
 
         hub.register <- client
@@ -1159,7 +1158,7 @@ package main
 
 import (
     "bytes"
-    "context"
+    "Context"
     "encoding/json"
     "fmt"
     "io"
@@ -1188,7 +1187,7 @@ func NewHTTPClient(baseURL string) *HTTPClient {
 }
 
 // GET请求
-func (c *HTTPClient) Get(ctx context.Context, path string) ([]byte, error) {
+func (c *HTTPClient) Get(ctx Context.Context, path string) ([]byte, error) {
     url := c.baseURL + path
 
     req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -1212,7 +1211,7 @@ func (c *HTTPClient) Get(ctx context.Context, path string) ([]byte, error) {
 }
 
 // POST请求
-func (c *HTTPClient) Post(ctx context.Context, path string, data interface{}) ([]byte, error) {
+func (c *HTTPClient) Post(ctx Context.Context, path string, data interface{}) ([]byte, error) {
     url := c.baseURL + path
 
     jsonData, err := json.Marshal(data)
@@ -1245,7 +1244,7 @@ func (c *HTTPClient) Post(ctx context.Context, path string, data interface{}) ([
 func main() {
     client := NewHTTPClient("https://jsonplaceholder.typicode.com")
 
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
     defer cancel()
 
     // GET请求

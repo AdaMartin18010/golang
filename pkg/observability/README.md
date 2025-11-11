@@ -1,6 +1,6 @@
 # Observability 可观测性库
 
-> **版本**: v2.0.0  
+> **版本**: v2.0.0
 > **Go版本**: 1.25+
 
 ---
@@ -147,11 +147,11 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
     // 追踪
     span, ctx := observability.StartSpan(r.Context(), "handle-request")
     defer span.Finish()
-    
+
     // 日志
     logger := observability.GetDefaultLogger()
     logger.WithContext(ctx).Info("Request started")
-    
+
     // 指标
     observability.HTTPRequestsTotal.Inc()
     start := time.Now()
@@ -159,10 +159,10 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
         duration := time.Since(start).Seconds()
         observability.HTTPRequestDuration.Observe(duration)
     }()
-    
+
     // 业务逻辑
     // ...
-    
+
     span.SetStatus(observability.StatusOK, "Success")
     logger.WithContext(ctx).Info("Request completed")
 }
@@ -304,6 +304,6 @@ logger.AddHook(fileHook)
 
 ---
 
-**版本**: v2.0.0  
-**最后更新**: 2025-10-22  
+**版本**: v2.0.0
+**最后更新**: 2025-10-22
 **测试覆盖率**: 95%+

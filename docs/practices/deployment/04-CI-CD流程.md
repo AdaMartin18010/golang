@@ -1,4 +1,4 @@
-# CI/CD流程
+﻿# CI/CD流程
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -135,7 +135,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v4
       with:
-        context: .
+        Context: .
         push: true
         tags: |
           myapp/app:latest

@@ -1,4 +1,4 @@
-# API 文档
+﻿# API 文档
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -69,7 +69,7 @@ import "github.com/yourusername/golang/pkg/agent/core"
 ```go
 type Agent interface {
     ID() string
-    Start(ctx context.Context) error
+    Start(ctx Context.Context) error
     Stop() error
     Process(input Input) (Output, error)
     Learn(experience Experience) error
@@ -99,7 +99,7 @@ agent := core.NewBaseAgent("agent-1", config)
 **使用示例**:
 
 ```go
-ctx := context.Background()
+ctx := Context.Background()
 
 // 启动代理
 if err := agent.Start(ctx); err != nil {
@@ -164,8 +164,8 @@ import "github.com/yourusername/golang/pkg/concurrency/patterns"
 
 ```go
 // 生成器
-gen := func(nums ...int) <-chan int {
-    out := make(chan int)
+gen := func(nums ...int) <-Channel int {
+    out := make(Channel int)
     go func() {
         defer close(out)
         for _, n := range nums {
@@ -176,8 +176,8 @@ gen := func(nums ...int) <-chan int {
 }
 
 // 处理器
-sq := func(in <-chan int) <-chan int {
-    out := make(chan int)
+sq := func(in <-Channel int) <-Channel int {
+    out := make(Channel int)
     go func() {
         defer close(out)
         for n := range in {
@@ -200,8 +200,8 @@ for n := range squared {
 
 ```go
 const numWorkers = 5
-jobs := make(chan int, 100)
-results := make(chan int, 100)
+jobs := make(Channel int, 100)
+results := make(Channel int, 100)
 
 // 启动workers
 for w := 1; w <= numWorkers; w++ {

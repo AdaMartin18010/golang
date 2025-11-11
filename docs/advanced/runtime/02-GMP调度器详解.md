@@ -1,4 +1,10 @@
-# GMP调度器详解
+﻿# GMP调度器详解
+
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ## 📋 目录
 
@@ -34,6 +40,8 @@
     - [优化3: 减少抢占开销](#优化3-减少抢占开销)
     - [调度器性能指标](#调度器性能指标)
   - [🔗 相关资源](#-相关资源)
+
+---
 
 ## 1. GMP模型概述
 
@@ -760,7 +768,7 @@ func badPattern() {
 // ✅ 批量处理
 func goodPattern() {
     numWorkers := runtime.GOMAXPROCS(0)
-    jobs := make(chan int, 1000)
+    jobs := make(Channel int, 1000)
 
     for i := 0; i < numWorkers; i++ {
         go func() {

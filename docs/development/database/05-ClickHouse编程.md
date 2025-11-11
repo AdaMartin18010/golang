@@ -1,6 +1,8 @@
-# ClickHouse编程 - Go语言实战指南
+﻿# ClickHouse编程 - Go语言实战指南
 
-> 使用 Go 语言操作 ClickHouse 高性能列式数据库
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -123,7 +125,7 @@ curl http://localhost:8123/ping
 package database
 
 import (
-    "context"
+    "Context"
     "crypto/tls"
     "fmt"
     "time"
@@ -169,7 +171,7 @@ func NewClickHouse(addr string) (*ClickHouse, error) {
     }
 
     // 测试连接
-    ctx := context.Background()
+    ctx := Context.Background()
     if err := conn.Ping(ctx); err != nil {
         return nil, fmt.Errorf("ping failed: %w", err)
     }
@@ -185,12 +187,12 @@ func (c *ClickHouse) Close() error {
 }
 
 // Exec 执行SQL
-func (c *ClickHouse) Exec(ctx context.Context, query string, args ...interface{}) error {
+func (c *ClickHouse) Exec(ctx Context.Context, query string, args ...interface{}) error {
     return c.Conn.Exec(ctx, query, args...)
 }
 
 // Query 查询
-func (c *ClickHouse) Query(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+func (c *ClickHouse) Query(ctx Context.Context, dest interface{}, query string, args ...interface{}) error {
     rows, err := c.Conn.Query(ctx, query, args...)
     if err != nil {
         return err
@@ -254,7 +256,7 @@ ClickHouse支持多种表引擎：
 package repository
 
 import (
-    "context"
+    "Context"
     "fmt"
 
     "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -271,7 +273,7 @@ func NewEventRepository(conn driver.Conn) *EventRepository {
 }
 
 // CreateTable 创建事件表
-func (r *EventRepository) CreateTable(ctx context.Context) error {
+func (r *EventRepository) CreateTable(ctx Context.Context) error {
     query := `
     CREATE TABLE IF NOT EXISTS events (
         event_id String,
@@ -305,7 +307,7 @@ func (r *EventRepository) CreateTable(ctx context.Context) error {
 }
 
 // CreateDistributedTable 创建分布式表
-func (r *EventRepository) CreateDistributedTable(ctx context.Context, cluster string) error {
+func (r *EventRepository) CreateDistributedTable(ctx Context.Context, cluster string) error {
     query := fmt.Sprintf(`
     CREATE TABLE IF NOT EXISTS events_distributed AS events
     ENGINE = Distributed(%s, default, events, rand())
@@ -315,12 +317,12 @@ func (r *EventRepository) CreateDistributedTable(ctx context.Context, cluster st
 }
 
 // DropTable 删除表
-func (r *EventRepository) DropTable(ctx context.Context) error {
+func (r *EventRepository) DropTable(ctx Context.Context) error {
     return r.conn.Exec(ctx, "DROP TABLE IF EXISTS events")
 }
 
 // OptimizeTable 优化表（手动触发合并）
-func (r *EventRepository) OptimizeTable(ctx context.Context) error {
+func (r *EventRepository) OptimizeTable(ctx Context.Context) error {
     return r.conn.Exec(ctx, "OPTIMIZE TABLE events FINAL")
 }
 ```
@@ -355,7 +357,7 @@ type Event struct {
 
 ```go
 // Insert 插入单条事件
-func (r *EventRepository) Insert(ctx context.Context, event *Event) error {
+func (r *EventRepository) Insert(ctx Context.Context, event *Event) error {
     query := `
     INSERT INTO events (
         event_id, user_id, event_type, event_time, properties,
@@ -373,7 +375,7 @@ func (r *EventRepository) Insert(ctx context.Context, event *Event) error {
 }
 
 // BatchInsert 批量插入（推荐）
-func (r *EventRepository) BatchInsert(ctx context.Context, events []*Event) error {
+func (r *EventRepository) BatchInsert(ctx Context.Context, events []*Event) error {
     // 使用Batch接口，性能更好
     batch, err := r.conn.PrepareBatch(ctx, "INSERT INTO events")
     if err != nil {
@@ -402,7 +404,7 @@ func (r *EventRepository) BatchInsert(ctx context.Context, events []*Event) erro
 }
 
 // AsyncInsert 异步插入（ClickHouse 22.3+）
-func (r *EventRepository) AsyncInsert(ctx context.Context, events []*Event) error {
+func (r *EventRepository) AsyncInsert(ctx Context.Context, events []*Event) error {
     // 异步插入会在服务器端批量处理
     query := `
     INSERT INTO events (
@@ -442,7 +444,7 @@ func (r *EventRepository) AsyncInsert(ctx context.Context, events []*Event) erro
 
 ```go
 // FindByUserID 根据用户ID查询事件
-func (r *EventRepository) FindByUserID(ctx context.Context, userID uint64, limit int) ([]*Event, error) {
+func (r *EventRepository) FindByUserID(ctx Context.Context, userID uint64, limit int) ([]*Event, error) {
     query := `
     SELECT event_id, user_id, event_type, event_time, properties,
            country, city, device, os, browser, session_id, created_at
@@ -475,7 +477,7 @@ func (r *EventRepository) FindByUserID(ctx context.Context, userID uint64, limit
 }
 
 // CountByEventType 按事件类型统计
-func (r *EventRepository) CountByEventType(ctx context.Context, startTime, endTime time.Time) (map[string]uint64, error) {
+func (r *EventRepository) CountByEventType(ctx Context.Context, startTime, endTime time.Time) (map[string]uint64, error) {
     query := `
     SELECT event_type, count() as count
     FROM events
@@ -508,7 +510,7 @@ func (r *EventRepository) CountByEventType(ctx context.Context, startTime, endTi
 
 ```go
 // GetDailyStatistics 获取每日统计
-func (r *EventRepository) GetDailyStatistics(ctx context.Context, days int) ([]DailyStats, error) {
+func (r *EventRepository) GetDailyStatistics(ctx Context.Context, days int) ([]DailyStats, error) {
     query := `
     SELECT
         toDate(event_time) as date,
@@ -557,7 +559,7 @@ type DailyStats struct {
 }
 
 // GetTopCountries 获取Top国家
-func (r *EventRepository) GetTopCountries(ctx context.Context, limit int) ([]CountryStats, error) {
+func (r *EventRepository) GetTopCountries(ctx Context.Context, limit int) ([]CountryStats, error) {
     query := `
     SELECT
         country,
@@ -602,7 +604,7 @@ type CountryStats struct {
 
 ```go
 // FunnelAnalysis 漏斗分析
-func (r *EventRepository) FunnelAnalysis(ctx context.Context, steps []string, window int) (*FunnelResult, error) {
+func (r *EventRepository) FunnelAnalysis(ctx Context.Context, steps []string, window int) (*FunnelResult, error) {
     // 使用windowFunnel函数
     query := `
     SELECT
@@ -659,7 +661,7 @@ type FunnelLevel struct {
 
 ```go
 // RetentionAnalysis 留存分析
-func (r *EventRepository) RetentionAnalysis(ctx context.Context, days int) ([][]float64, error) {
+func (r *EventRepository) RetentionAnalysis(ctx Context.Context, days int) ([][]float64, error) {
     query := `
     SELECT
         retention
@@ -697,7 +699,7 @@ func (r *EventRepository) RetentionAnalysis(ctx context.Context, days int) ([][]
 
 ```go
 // CreateMaterializedView 创建物化视图
-func (r *EventRepository) CreateMaterializedView(ctx context.Context) error {
+func (r *EventRepository) CreateMaterializedView(ctx Context.Context) error {
     // 创建目标表
     createTableQuery := `
     CREATE TABLE IF NOT EXISTS event_hourly_stats (
@@ -742,7 +744,7 @@ func (r *EventRepository) CreateMaterializedView(ctx context.Context) error {
 }
 
 // QueryMaterializedView 查询物化视图
-func (r *EventRepository) QueryMaterializedView(ctx context.Context, date time.Time) ([]HourlyStats, error) {
+func (r *EventRepository) QueryMaterializedView(ctx Context.Context, date time.Time) ([]HourlyStats, error) {
     query := `
     SELECT
         event_hour,
@@ -792,7 +794,7 @@ type HourlyStats struct {
 
 ```go
 // ListPartitions 列出所有分区
-func (r *EventRepository) ListPartitions(ctx context.Context) ([]PartitionInfo, error) {
+func (r *EventRepository) ListPartitions(ctx Context.Context) ([]PartitionInfo, error) {
     query := `
     SELECT
         partition,
@@ -831,19 +833,19 @@ type PartitionInfo struct {
 }
 
 // DropPartition 删除分区
-func (r *EventRepository) DropPartition(ctx context.Context, partition string) error {
+func (r *EventRepository) DropPartition(ctx Context.Context, partition string) error {
     query := fmt.Sprintf("ALTER TABLE events DROP PARTITION '%s'", partition)
     return r.conn.Exec(ctx, query)
 }
 
 // DetachPartition 分离分区（不删除数据）
-func (r *EventRepository) DetachPartition(ctx context.Context, partition string) error {
+func (r *EventRepository) DetachPartition(ctx Context.Context, partition string) error {
     query := fmt.Sprintf("ALTER TABLE events DETACH PARTITION '%s'", partition)
     return r.conn.Exec(ctx, query)
 }
 
 // AttachPartition 附加分区
-func (r *EventRepository) AttachPartition(ctx context.Context, partition string) error {
+func (r *EventRepository) AttachPartition(ctx Context.Context, partition string) error {
     query := fmt.Sprintf("ALTER TABLE events ATTACH PARTITION '%s'", partition)
     return r.conn.Exec(ctx, query)
 }
@@ -859,7 +861,7 @@ func (r *EventRepository) AttachPartition(ctx context.Context, partition string)
 package analytics
 
 import (
-    "context"
+    "Context"
     "time"
 
     "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -876,7 +878,7 @@ func NewDashboard(conn driver.Conn) *Dashboard {
 }
 
 // GetRealtimeMetrics 获取实时指标
-func (d *Dashboard) GetRealtimeMetrics(ctx context.Context) (*RealtimeMetrics, error) {
+func (d *Dashboard) GetRealtimeMetrics(ctx Context.Context) (*RealtimeMetrics, error) {
     query := `
     SELECT
         -- 最近1分钟
@@ -926,7 +928,7 @@ type RealtimeMetrics struct {
 }
 
 // GetActiveUsers 获取活跃用户
-func (d *Dashboard) GetActiveUsers(ctx context.Context, minutes int) ([]ActiveUser, error) {
+func (d *Dashboard) GetActiveUsers(ctx Context.Context, minutes int) ([]ActiveUser, error) {
     query := `
     SELECT
         user_id,
@@ -1017,7 +1019,7 @@ GROUP BY event_type
 
 ```go
 // 创建跳数索引（Skip Index）
-func (r *EventRepository) CreateSkipIndex(ctx context.Context) error {
+func (r *EventRepository) CreateSkipIndex(ctx Context.Context) error {
     queries := []string{
         // MinMax索引（适合范围查询）
         `ALTER TABLE events ADD INDEX idx_user_id_minmax user_id TYPE minmax GRANULARITY 4`,
@@ -1051,7 +1053,7 @@ type BatchWriter struct {
     buffer    []*Event
     mu        sync.Mutex
     ticker    *time.Ticker
-    done      chan struct{}
+    done      Channel struct{}
 }
 
 // NewBatchWriter 创建批量写入器
@@ -1061,7 +1063,7 @@ func NewBatchWriter(repo *EventRepository, batchSize int, flushInterval time.Dur
         batchSize: batchSize,
         buffer:    make([]*Event, 0, batchSize),
         ticker:    time.NewTicker(flushInterval),
-        done:      make(chan struct{}),
+        done:      make(Channel struct{}),
     }
 
     // 启动定时刷新
@@ -1091,7 +1093,7 @@ func (bw *BatchWriter) flush() error {
         return nil
     }
 
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    ctx, cancel := Context.WithTimeout(Context.Background(), 10*time.Second)
     defer cancel()
 
     err := bw.repo.BatchInsert(ctx, bw.buffer)
@@ -1139,7 +1141,7 @@ func (bw *BatchWriter) Close() error {
 
 ```go
 // GetSystemMetrics 获取系统指标
-func (d *Dashboard) GetSystemMetrics(ctx context.Context) (*SystemMetrics, error) {
+func (d *Dashboard) GetSystemMetrics(ctx Context.Context) (*SystemMetrics, error) {
     query := `
     SELECT
         uptime() as uptime,

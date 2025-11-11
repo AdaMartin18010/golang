@@ -1,7 +1,4 @@
-# Gateway API实战指南
-
-> **难度**: ⭐⭐⭐⭐
-> **标签**: #GatewayAPI #Kubernetes #服务网格 #流量管理
+﻿# Gateway API实战指南
 
 **版本**: v1.0
 **更新日期**: 2025-10-29
@@ -585,7 +582,7 @@ spec:
 package main
 
 import (
-    "context"
+    "Context"
     "fmt"
 
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -614,18 +611,18 @@ func NewGatewayAPIClient(kubeconfig string) (*GatewayAPIClient, error) {
 }
 
 // CreateGateway 创建Gateway
-func (c *GatewayAPIClient) CreateGateway(ctx context.Context, namespace string, gateway *gatewayv1.Gateway) error {
+func (c *GatewayAPIClient) CreateGateway(ctx Context.Context, namespace string, gateway *gatewayv1.Gateway) error {
     _, err := c.client.GatewayV1().Gateways(namespace).Create(ctx, gateway, metav1.CreateOptions{})
     return err
 }
 
 // ListGateways 列出所有Gateway
-func (c *GatewayAPIClient) ListGateways(ctx context.Context, namespace string) (*gatewayv1.GatewayList, error) {
+func (c *GatewayAPIClient) ListGateways(ctx Context.Context, namespace string) (*gatewayv1.GatewayList, error) {
     return c.client.GatewayV1().Gateways(namespace).List(ctx, metav1.ListOptions{})
 }
 
 // CreateHTTPRoute 创建HTTPRoute
-func (c *GatewayAPIClient) CreateHTTPRoute(ctx context.Context, namespace string, route *gatewayv1.HTTPRoute) error {
+func (c *GatewayAPIClient) CreateHTTPRoute(ctx Context.Context, namespace string, route *gatewayv1.HTTPRoute) error {
     _, err := c.client.GatewayV1().HTTPRoutes(namespace).Create(ctx, route, metav1.CreateOptions{})
     return err
 }
@@ -637,7 +634,7 @@ func main() {
         panic(err)
     }
 
-    ctx := context.Background()
+    ctx := Context.Background()
 
     // 列出Gateway
     gateways, err := client.ListGateways(ctx, "default")
@@ -660,7 +657,7 @@ func main() {
 package gateway
 
 import (
-    "context"
+    "Context"
     "fmt"
 
     gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
@@ -677,7 +674,7 @@ func NewRouteManager(client *GatewayAPIClient) *RouteManager {
 }
 
 // UpdateCanaryWeight 更新金丝雀权重
-func (rm *RouteManager) UpdateCanaryWeight(ctx context.Context, namespace, routeName string, stableWeight, canaryWeight int32) error {
+func (rm *RouteManager) UpdateCanaryWeight(ctx Context.Context, namespace, routeName string, stableWeight, canaryWeight int32) error {
     // 获取现有HTTPRoute
     route, err := rm.client.client.GatewayV1().HTTPRoutes(namespace).Get(ctx, routeName, metav1.GetOptions{})
     if err != nil {
@@ -701,7 +698,7 @@ func (rm *RouteManager) UpdateCanaryWeight(ctx context.Context, namespace, route
 }
 
 // CreateCanaryRoute 创建金丝雀路由
-func (rm *RouteManager) CreateCanaryRoute(ctx context.Context, namespace, routeName, gatewayName string,
+func (rm *RouteManager) CreateCanaryRoute(ctx Context.Context, namespace, routeName, gatewayName string,
     stableService, canaryService string, stableWeight, canaryWeight int32) error {
 
     route := &gatewayv1.HTTPRoute{
@@ -751,7 +748,7 @@ func portPtr(port int32) *gatewayv1.PortNumber {
 }
 
 // 渐进式金丝雀发布
-func (rm *RouteManager) ProgressiveCanary(ctx context.Context, namespace, routeName string) error {
+func (rm *RouteManager) ProgressiveCanary(ctx Context.Context, namespace, routeName string) error {
     stages := []struct {
         stable int32
         canary int32

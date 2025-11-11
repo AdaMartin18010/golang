@@ -1,9 +1,10 @@
-# ✅ Go 1.25.3 学习检查清单 - 2025
+﻿# ✅ Go 1.25.3 学习检查清单 - 2025
 
-**版本**: Go 1.25.3
-**更新日期**: 2025-10-29
-**类型**: 学习追踪
-**用途**: 检查学习进度
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
 
 ---
 
@@ -222,11 +223,11 @@
 
 ### 2.5 Context ⭐⭐⭐⭐
 
-- [ ] context.Background和TODO
-- [ ] context.WithCancel
-- [ ] context.WithTimeout
-- [ ] context.WithDeadline
-- [ ] context.WithValue
+- [ ] Context.Background和TODO
+- [ ] Context.WithCancel
+- [ ] Context.WithTimeout
+- [ ] Context.WithDeadline
+- [ ] Context.WithValue
 - [ ] Context最佳实践
 
 **文档**: [04-Context应用.md](./fundamentals/concurrency/04-Context应用.md)
