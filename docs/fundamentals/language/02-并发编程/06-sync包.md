@@ -5,29 +5,17 @@
 **适用于**: Go 1.23+
 
 ---
-
 ## 📋 目录
 
 - [sync包与并发安全模式](#sync包与并发安全模式)
-  - [📋 目录](#-目录)
   - [1. 理论基础](#1-理论基础)
   - [2. 典型用法](#2-典型用法)
-    - [互斥锁Mutex](#互斥锁mutex)
-      - [Mutex状态机可视化](#mutex状态机可视化)
-      - [Mutex并发访问时序图](#mutex并发访问时序图)
-    - [读写锁RWMutex](#读写锁rwmutex)
-      - [RWMutex并发控制可视化](#rwmutex并发控制可视化)
-      - [RWMutex读写时序图](#rwmutex读写时序图)
-    - [WaitGroup](#waitgroup)
-      - [WaitGroup工作流程](#waitgroup工作流程)
-      - [WaitGroup时序图](#waitgroup时序图)
-    - [Once](#once)
-      - [sync.Once单次执行保证](#synconce单次执行保证)
-      - [多Goroutine调用Once时序图](#多goroutine调用once时序图)
   - [3. 工程分析与最佳实践](#3-工程分析与最佳实践)
   - [4. 常见陷阱](#4-常见陷阱)
   - [5. 单元测试建议](#5-单元测试建议)
   - [6. 参考文献](#6-参考文献)
+
+---
 
 ## 1. 理论基础
 
@@ -569,14 +557,3 @@ func main() {
 ---
 
 ## 6. 参考文献
-
-- Go官方文档：<https://golang.org/pkg/sync/>
-- Go Blog: <https://blog.golang.org/share-memory-by-communicating>
-- 《Go语言高级编程》
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

@@ -33,6 +33,10 @@
     - [3. 中间件模式](#3-中间件模式)
   - [📚 扩展阅读](#-扩展阅读)
 
+---
+
+---
+
 ## 📋 概述
 
 Go 1.22 对 `net/http` 包的 `ServeMux` 进行了重大增强，引入了现代化的路由功能：
@@ -720,14 +724,3 @@ func main() {
 ---
 
 ## 📚 扩展阅读
-
-- [Go 1.22 Release Notes - HTTP Routing](https://go.dev/doc/go1.22#net/http)
-- [net/http ServeMux 文档](https://pkg.go.dev/net/http#ServeMux)
-- [Go Blog: Routing Enhancements](https://go.dev/blog/routing-enhancements)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.22+

@@ -1,7 +1,7 @@
 ﻿# CLI工具模板
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -17,9 +17,11 @@
 
 ---
 
+---
+
 ## 1. 📖 CLI结构
 
-```
+```text
 mycli/
 ├── cmd/
 │   ├── root.go
@@ -91,19 +93,15 @@ func main() {
 ## 🚀 使用示例
 
 ```bash
-# 构建
-go build -o mycli
+    # 构建
+    go build -o mycli
 
-# 使用
-./mycli create myitem
-./mycli list
-./mycli --help
+    # 使用
+    ./mycli create myitem
+    ./mycli list
+    ./mycli --help
 ```
 
 ---
 
 ## 📚 相关资源
-
-- [Cobra](https://github.com/spf13/cobra)
-
-**最后更新**: 2025-10-29

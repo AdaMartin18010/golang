@@ -51,6 +51,10 @@
     - [Q4: 可以选择使用旧行为吗？](#q4-可以选择使用旧行为吗)
   - [📚 扩展阅读](#-扩展阅读)
 
+---
+
+---
+
 ## 📋 概述
 
 Go 1.22 修复了 Go 语言中存在已久的 **for 循环变量共享问题**。这是一个重大的语言改进，解决了困扰开发者多年的闭包捕获陷阱。
@@ -612,14 +616,3 @@ go 1.21  // 使用旧语义
 ---
 
 ## 📚 扩展阅读
-
-- [Go 1.22 Release Notes - For Loop](https://go.dev/doc/go1.22#language)
-- [Loopvar Experiment Wiki](https://go.dev/wiki/LoopvarExperiment)
-- [Go Blog: Fixing For Loops in Go 1.22](https://go.dev/blog/loopvar-preview)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.22+

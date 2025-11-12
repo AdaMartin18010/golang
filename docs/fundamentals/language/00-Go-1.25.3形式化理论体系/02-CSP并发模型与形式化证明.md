@@ -6,48 +6,17 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [CSP并发模型与Go形式化证明](#csp并发模型与go形式化证明)
-  - [📋 目录](#-目录)
   - [第一部分: CSP理论基础](#第一部分-csp理论基础)
-    - [1.1 CSP进程代数](#11-csp进程代数)
-      - [基本语法](#基本语法)
-      - [操作语义](#操作语义)
-    - [1.2 痕迹语义 (Traces Semantics)](#12-痕迹语义-traces-semantics)
-    - [1.3 失败语义 (Failures Semantics)](#13-失败语义-failures-semantics)
-    - [1.4 精炼关系 (Refinement)](#14-精炼关系-refinement)
   - [第二部分: Go并发原语的CSP映射](#第二部分-go并发原语的csp映射)
-    - [2.1 Goroutine到CSP的映射](#21-goroutine到csp的映射)
-    - [2.2 Channel到CSP的映射](#22-channel到csp的映射)
-      - [无缓冲Channel (Unbuffered Channel)](#无缓冲channel-unbuffered-channel)
-      - [有缓冲Channel (Buffered Channel)](#有缓冲channel-buffered-channel)
-    - [2.3 Select语句的CSP表示](#23-select语句的csp表示)
-    - [2.4 Sync包原语的CSP表示](#24-sync包原语的csp表示)
-      - [Mutex](#mutex)
-      - [WaitGroup](#waitgroup)
-      - [Channel Close](#channel-close)
   - [第三部分: 形式化语义定义](#第三部分-形式化语义定义)
-    - [3.1 Goroutine状态机](#31-goroutine状态机)
-    - [3.2 Channel同步语义](#32-channel同步语义)
-    - [3.3 Happens-Before关系完整定义](#33-happens-before关系完整定义)
   - [第四部分: 并发安全性证明](#第四部分-并发安全性证明)
-    - [4.1 死锁自由性](#41-死锁自由性)
-    - [4.2 数据竞争检测](#42-数据竞争检测)
-    - [4.3 活锁检测](#43-活锁检测)
-    - [4.4 线性化性 (Linearizability)](#44-线性化性-linearizability)
   - [第五部分: 实际应用与验证](#第五部分-实际应用与验证)
-    - [5.1 生产者-消费者验证](#51-生产者-消费者验证)
-    - [5.2 并发Map的正确性](#52-并发map的正确性)
-    - [5.3 Work Stealing调度器验证](#53-work-stealing调度器验证)
-    - [5.4 实际Bug的形式化分析](#54-实际bug的形式化分析)
-      - [Case 1: 丢失唤醒 (Lost Wakeup)](#case-1-丢失唤醒-lost-wakeup)
-      - [Case 2: 数据竞争](#case-2-数据竞争)
-  - [🎯 总结](#-总结)
-    - [核心贡献](#核心贡献)
-    - [理论意义](#理论意义)
-    - [工程价值](#工程价值)
+  - [🎯 总结](#总结)
+
+---
 
 ## 第一部分: CSP理论基础
 
@@ -1087,19 +1056,3 @@ func goroutine2():
 使得并发程序的正确性可以通过数学方法严格证明。
 
 ### 工程价值
-
-形式化方法可以:
-
-1. 指导并发程序设计
-2. 检测并发bug
-3. 验证并发算法
-4. 优化运行时实现
-
----
-
-**文档版本**: v1.0.0
-
-**文档维护者**: Go Formal Methods Research Group
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.25.3+

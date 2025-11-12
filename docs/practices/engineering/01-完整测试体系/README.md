@@ -7,27 +7,16 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [Go语言完整测试体系](#go语言完整测试体系)
-  - [📋 目录](#-目录)
-  - [🧪 测试金字塔](#-测试金字塔)
-    - [单元测试 (70%)](#单元测试-70)
-    - [集成测试 (20%)](#集成测试-20)
-    - [端到端测试 (10%)](#端到端测试-10)
-  - [🔧 测试工具链](#-测试工具链)
-    - [测试框架](#测试框架)
-    - [测试工具](#测试工具)
-  - [📊 测试覆盖率](#-测试覆盖率)
-    - [覆盖率分析](#覆盖率分析)
-    - [覆盖率报告](#覆盖率报告)
-  - [🚀 性能测试](#-性能测试)
-    - [基准测试](#基准测试)
-    - [负载测试](#负载测试)
-  - [🔄 持续集成](#-持续集成)
-    - [CI/CD流水线](#cicd流水线)
-    - [测试质量门禁](#测试质量门禁)
+  - [🧪 测试金字塔](#测试金字塔)
+  - [🔧 测试工具链](#测试工具链)
+  - [📊 测试覆盖率](#测试覆盖率)
+  - [🚀 性能测试](#性能测试)
+  - [🔄 持续集成](#持续集成)
+
+---
 
 ## 🧪 测试金字塔
 
@@ -1274,142 +1263,3 @@ func (tr *TestRunner) stopTestEnvironment() error {
 ```
 
 ### 测试质量门禁
-
-**质量门禁检查**:
-
-```go
-// 质量门禁
-type QualityGate struct {
-    minCoverage    float64
-    maxComplexity  int
-    maxDuplication float64
-    maxIssues      int
-}
-
-func NewQualityGate() *QualityGate {
-    return &QualityGate{
-        minCoverage:    80.0,
-        maxComplexity:  10,
-        maxDuplication: 5.0,
-        maxIssues:      0,
-    }
-}
-
-func (qg *QualityGate) CheckQuality() error {
-    fmt.Println("Running quality gate checks...")
-
-    // 检查测试覆盖率
-    if err := qg.checkCoverage(); err != nil {
-        return fmt.Errorf("coverage check failed: %w", err)
-    }
-
-    // 检查代码复杂度
-    if err := qg.checkComplexity(); err != nil {
-        return fmt.Errorf("complexity check failed: %w", err)
-    }
-
-    // 检查代码重复
-    if err := qg.checkDuplication(); err != nil {
-        return fmt.Errorf("duplication check failed: %w", err)
-    }
-
-    // 检查静态分析问题
-    if err := qg.checkStaticAnalysis(); err != nil {
-        return fmt.Errorf("static analysis check failed: %w", err)
-    }
-
-    fmt.Println("All quality gate checks passed!")
-    return nil
-}
-
-func (qg *QualityGate) checkCoverage() error {
-    cmd := exec.Command("go", "tool", "cover", "-func=coverage.out")
-    output, err := cmd.Output()
-    if err != nil {
-        return err
-    }
-
-    // 解析覆盖率
-    lines := strings.Split(string(output), "\n")
-    for _, line := range lines {
-        if strings.Contains(line, "total:") {
-            parts := strings.Fields(line)
-            if len(parts) >= 3 {
-                coverageStr := strings.TrimSuffix(parts[2], "%")
-                coverage, err := strconv.ParseFloat(coverageStr, 64)
-                if err != nil {
-                    return err
-                }
-
-                if coverage < qg.minCoverage {
-                    return fmt.Errorf("coverage %.2f%% is below minimum %.2f%%", coverage, qg.minCoverage)
-                }
-
-                fmt.Printf("Coverage: %.2f%% (minimum: %.2f%%)\n", coverage, qg.minCoverage)
-                return nil
-            }
-        }
-    }
-
-    return fmt.Errorf("could not parse coverage output")
-}
-
-func (qg *QualityGate) checkComplexity() error {
-    // 运行gocyclo检查复杂度
-    cmd := exec.Command("gocyclo", "-over", fmt.Sprintf("%d", qg.maxComplexity), ".")
-    output, err := cmd.Output()
-    if err != nil {
-        // gocyclo返回非零退出码表示发现高复杂度函数
-        if len(output) > 0 {
-            return fmt.Errorf("high complexity functions found:\n%s", string(output))
-        }
-        return err
-    }
-
-    fmt.Printf("Complexity check passed (max: %d)\n", qg.maxComplexity)
-    return nil
-}
-
-func (qg *QualityGate) checkDuplication() error {
-    // 运行dupl检查重复代码
-    cmd := exec.Command("dupl", "-t", fmt.Sprintf("%.1f", qg.maxDuplication), ".")
-    output, err := cmd.Output()
-    if err != nil {
-        if len(output) > 0 {
-            return fmt.Errorf("code duplication found:\n%s", string(output))
-        }
-        return err
-    }
-
-    fmt.Printf("Duplication check passed (max: %.1f%%)\n", qg.maxDuplication)
-    return nil
-}
-
-func (qg *QualityGate) checkStaticAnalysis() error {
-    // 运行golangci-lint
-    cmd := exec.Command("golangci-lint", "run", "--config", ".golangci.yml")
-    output, err := cmd.Output()
-    if err != nil {
-        if len(output) > 0 {
-            return fmt.Errorf("static analysis issues found:\n%s", string(output))
-        }
-        return err
-    }
-
-    fmt.Println("Static analysis check passed")
-    return nil
-}
-```
-
----
-
-**完整测试体系**: 2025年1月
-
-**质量等级**: 🏆 **企业级**
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

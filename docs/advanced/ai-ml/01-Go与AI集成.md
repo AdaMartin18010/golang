@@ -5,25 +5,19 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [Go与AI集成](#go与ai集成)
-  - [📋 目录](#-目录)
-  - [1. 📖 概念介绍](#1--概念介绍)
-  - [2. 🎯 为什么使用Go做AI](#2--为什么使用go做ai)
-    - [优势](#优势)
-    - [适用场景](#适用场景)
-  - [🔧 调用Python模型](#-调用python模型)
-    - [1. 通过HTTP API](#1-通过http-api)
-    - [2. 通过gRPC](#2-通过grpc)
-  - [🚀 TensorFlow集成](#-tensorflow集成)
-  - [🔮 ONNX Runtime](#-onnx-runtime)
-  - [🌐 构建推理服务](#-构建推理服务)
-  - [💡 最佳实践](#-最佳实践)
-    - [1. 批量推理](#1-批量推理)
-    - [2. 模型缓存](#2-模型缓存)
-  - [📚 相关资源](#-相关资源)
+  - [1. 📖 概念介绍](#1-概念介绍)
+  - [2. 🎯 为什么使用Go做AI](#2-为什么使用go做ai)
+  - [🔧 调用Python模型](#调用python模型)
+  - [🚀 TensorFlow集成](#tensorflow集成)
+  - [🔮 ONNX Runtime](#onnx-runtime)
+  - [🌐 构建推理服务](#构建推理服务)
+  - [💡 最佳实践](#最佳实践)
+  - [📚 相关资源](#相关资源)
+
+---
 
 ## 1. 📖 概念介绍
 
@@ -400,13 +394,3 @@ func (mc *ModelCache) Get(modelID string) (*ONNXModel, error) {
 ---
 
 ## 📚 相关资源
-
-- [TensorFlow Go](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/go)
-- [ONNX Runtime Go](https://github.com/yalue/onnxruntime_go)
-- [GoLearn](https://github.com/sjwhitworth/golearn)
-
-**下一步**: [02-机器学习库](./02-机器学习库.md)
-
----
-
-**最后更新**: 2025-10-29

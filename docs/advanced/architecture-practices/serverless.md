@@ -7,29 +7,21 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [无服务器架构（Golang国际主流实践）](#无服务器架构golang国际主流实践)
-  - [📋 目录](#-目录)
   - [2. 无服务器架构概述](#2-无服务器架构概述)
-    - [主流技术与平台](#主流技术与平台)
-    - [发展历程](#发展历程)
-    - [国际权威链接](#国际权威链接)
   - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
-    - [函数即服务 (Function as a Service - FaaS)](#函数即服务-function-as-a-service---faas)
-    - [后端即服务 (Backend as a Service - BaaS)](#后端即服务-backend-as-a-service---baas)
   - [4. Golang主流实现与代码示例](#4-golang主流实现与代码示例)
-    - [AWS Lambda with Golang](#aws-lambda-with-golang)
-    - [Google Cloud Functions with Golang](#google-cloud-functions-with-golang)
   - [5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
   - [6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
-    - [项目结构建议 (Serverless Framework)](#项目结构建议-serverless-framework)
-    - [配置文件 (serverless.yml)](#配置文件-serverlessyml)
-    - [CI/CD工作流 (GitHub Actions)](#cicd工作流-github-actions)
+- [IAM角色权限定义](#iam角色权限定义)
+- [自定义构建过程](#自定义构建过程)
+- [构建命令，在部署前执行](#构建命令在部署前执行)
+- [.github/workflows/ci-cd.yml](#githubworkflowsci-cdyml)
+- [使用Serverless Framework进行部署](#使用serverless-framework进行部署)
+- [Makefile会负责编译所有函数](#makefile会负责编译所有函数)
   - [7. Golang 无服务器架构代码示例](#7-golang-无服务器架构代码示例)
-    - [完整的无服务器平台实现](#完整的无服务器平台实现)
-    - [实际使用示例](#实际使用示例)
 
 ---
 
@@ -1211,52 +1203,3 @@ func generateID() string {
 ```
 
 ### 实际使用示例
-
-```go
-// Lambda函数示例
-func HandleRequest(ctx Context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-    // 解析请求
-    var payload map[string]interface{}
-    if err := json.Unmarshal([]byte(request.Body), &payload); err != nil {
-        return events.APIGatewayProxyResponse{
-            StatusCode: 400,
-            Body:       "Invalid JSON",
-        }, nil
-    }
-
-    // 处理业务逻辑
-    result := processBusinessLogic(payload)
-
-    // 返回响应
-    responseBody, _ := json.Marshal(result)
-    return events.APIGatewayProxyResponse{
-        StatusCode: 200,
-        Body:       string(responseBody),
-    }, nil
-}
-
-func processBusinessLogic(payload map[string]interface{}) map[string]interface{} {
-    // 实现具体的业务逻辑
-    return map[string]interface{}{
-        "message": "Processing completed",
-        "input":   payload,
-        "timestamp": time.Now().Unix(),
-    }
-}
-
-// 启动Lambda函数
-func main() {
-    lambda.Start(HandleRequest)
-}
-```
-
----
-
-- 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

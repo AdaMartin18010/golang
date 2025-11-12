@@ -7,47 +7,28 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [DevOps与运维架构（Golang国际主流实践）](#devops与运维架构golang国际主流实践)
-  - [📋 目录](#-目录)
-  - [目录](#目录)
   - [2. 国际标准与发展历程](#2-国际标准与发展历程)
-    - [主流标准与组织](#主流标准与组织)
-    - [发展历程](#发展历程)
-    - [国际权威链接](#国际权威链接)
   - [3. 典型应用场景与需求分析](#3-典型应用场景与需求分析)
   - [4. 领域建模与UML类图](#4-领域建模与uml类图)
   - [5. 架构模式与设计原则](#5-架构模式与设计原则)
   - [6. CI/CD流水线架构](#6-cicd流水线架构)
-    - [流水线引擎设计](#流水线引擎设计)
-    - [多环境部署策略](#多环境部署策略)
   - [7. 基础设施即代码（IaC）](#7-基础设施即代码iac)
-    - [资源定义与编排](#资源定义与编排)
-    - [多云资源管理](#多云资源管理)
-  - [8. 可观测性与监控 (Observability \& Monitoring)](#8-可观测性与监控-observability--monitoring)
-    - [三大支柱 (Three Pillars)](#三大支柱-three-pillars)
-    - [Golang应用可观测性技术栈](#golang应用可观测性技术栈)
+  - [8. 可观测性与监控 (Observability & Monitoring)](#8-可观测性与监控-observability-monitoring)
   - [9. 混沌工程 (Chaos Engineering)](#9-混沌工程-chaos-engineering)
-    - [核心原则](#核心原则)
-    - [混沌实验示例 (Chaos Mesh)](#混沌实验示例-chaos-mesh)
+- [pod-kill-chaos.yaml](#pod-kill-chaosyaml)
+- [动作：杀死Pod](#动作杀死pod)
+- [实验持续时间和调度规则](#实验持续时间和调度规则)
   - [10. 自动化运维与自愈](#10-自动化运维与自愈)
-    - [自愈系统架构](#自愈系统架构)
-    - [配置管理与自动化](#配置管理与自动化)
   - [11. 安全合规与治理](#11-安全合规与治理)
-    - [安全扫描与合规检查](#安全扫描与合规检查)
-    - [访问控制与审计](#访问控制与审计)
   - [12. 性能优化与资源管理](#12-性能优化与资源管理)
-    - [资源优化器](#资源优化器)
-    - [容量规划](#容量规划)
   - [13. 实际案例分析](#13-实际案例分析)
-    - [大规模微服务运维](#大规模微服务运维)
-    - [云原生DevOps实践](#云原生devops实践)
   - [14. 相关架构主题](#14-相关架构主题)
   - [15. 扩展阅读与参考文献](#15-扩展阅读与参考文献)
 
-## 目录
+---
 
 ## 2. 国际标准与发展历程
 
@@ -1129,20 +1110,3 @@ func (gw *GitOpsWorkflow) SyncInfrastructure(ctx Context.Context) error {
 - [**微服务架构 (Microservice Architecture)**](./architecture_microservice_golang.md): DevOps是有效管理和部署大量微服务的关键。
 
 ## 15. 扩展阅读与参考文献
-
-1. "The Phoenix Project" - Gene Kim, Kevin Behr, George Spafford
-2. "The DevOps Handbook" - Gene Kim, Jez Humble, Patrick Debois
-3. "Site Reliability Engineering" - Google
-4. "Infrastructure as Code" - Kief Morris
-5. "Continuous Delivery" - Jez Humble, David Farley
-
----
-
-- 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

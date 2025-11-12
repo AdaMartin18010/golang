@@ -44,6 +44,10 @@
     - [Go库](#go库)
     - [最佳实践](#最佳实践)
 
+---
+
+---
+
 ## 1. Gateway API概述
 
 ### 1.1 什么是Gateway API
@@ -70,7 +74,7 @@
 
 **资源层次结构**:
 
-```
+```text
 GatewayClass (集群级别)
     ↓
 Gateway (命名空间级别)
@@ -840,15 +844,3 @@ spec:
 - [client-go](https://github.com/kubernetes/client-go)
 
 ### 最佳实践
-
-- [Gateway API User Guides](https://gateway-api.sigs.k8s.io/guides/)
-- [Gateway API Patterns](https://gateway-api.sigs.k8s.io/guides/http-routing/)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.21+ | Gateway API v1.0+
-
-**贡献者**: 欢迎提交Issue和PR改进本文档

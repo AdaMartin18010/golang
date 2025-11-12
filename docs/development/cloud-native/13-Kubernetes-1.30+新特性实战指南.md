@@ -40,6 +40,10 @@
     - [Go库](#go库)
     - [最佳实践](#最佳实践)
 
+---
+
+---
+
 ## 1. Kubernetes 1.30概述
 
 ### 1.1 版本亮点
@@ -74,7 +78,7 @@
 
 **弃用警告**:
 
-```
+```text
 ⚠️ PodSecurityPolicy (已在1.25中移除)
 ⚠️ flowcontrol.apiserver.k8s.io/v1beta2 (1.29中弃用)
 ⚠️ kubectl run --generator (已移除)
@@ -227,7 +231,7 @@ func main() {
 
 **核心概念**:
 
-```
+```text
 ResourceClass → ResourceClaim → Pod
      ↓              ↓              ↓
   定义资源类型   声明资源需求   使用资源
@@ -627,7 +631,7 @@ func (c *GateController) CheckResourceReady(ctx Context.Context, resourceName st
 
 **生命周期图**:
 
-```
+```text
 Init Containers → Sidecar Containers → Main Containers
                        ↓
                   (持续运行)
@@ -825,15 +829,3 @@ func main() {
 - [kubebuilder](https://github.com/kubernetes-sigs/kubebuilder)
 
 ### 最佳实践
-
-- [Programming Kubernetes](https://programming-kubernetes.info/)
-- [Kubernetes Operator Pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.21+ | Kubernetes 1.30+
-
-**贡献者**: 欢迎提交Issue和PR改进本文档

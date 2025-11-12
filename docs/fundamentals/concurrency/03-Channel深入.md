@@ -5,42 +5,16 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [Channel深入](#channel深入)
-  - [📋 目录](#-目录)
-  - [1. 📖 概念介绍](#1--概念介绍)
-  - [2. 🎯 核心知识点](#2--核心知识点)
-    - [1. Channel的类型和特性](#1-channel的类型和特性)
-      - [Channel声明和创建](#channel声明和创建)
-      - [Channel类型转换](#channel类型转换)
-    - [2. 缓冲Channel vs 无缓冲Channel](#2-缓冲channel-vs-无缓冲channel)
-      - [无缓冲Channel（同步）](#无缓冲channel同步)
-      - [缓冲Channel（异步）](#缓冲channel异步)
-      - [容量和长度](#容量和长度)
-    - [3. Channel的关闭和检测](#3-channel的关闭和检测)
-      - [关闭Channel](#关闭channel)
-      - [检测Channel是否关闭](#检测channel是否关闭)
-      - [Channel关闭的最佳实践](#channel关闭的最佳实践)
-    - [4. select多路复用](#4-select多路复用)
-      - [基础用法](#基础用法)
-      - [超时控制](#超时控制)
-      - [非阻塞操作](#非阻塞操作)
-      - [select随机选择](#select随机选择)
-    - [5. Channel的内部实现](#5-channel的内部实现)
-      - [数据结构（简化版）](#数据结构简化版)
-      - [发送接收流程](#发送接收流程)
+  - [1. 📖 概念介绍](#1-概念介绍)
+  - [2. 🎯 核心知识点](#2-核心知识点)
   - [3. 🏗️ 实战案例](#3-️-实战案例)
-    - [案例：生产者-消费者模式](#案例生产者-消费者模式)
   - [4. ⚠️ 常见问题](#4-️-常见问题)
-    - [Q1: 什么时候关闭Channel？](#q1-什么时候关闭channel)
-    - [Q2: 缓冲大小应该设置多少？](#q2-缓冲大小应该设置多少)
-    - [Q3: nil Channel有什么用？](#q3-nil-channel有什么用)
-    - [Q4: 如何处理Channel泄漏？](#q4-如何处理channel泄漏)
-  - [5. 📚 相关资源](#5--相关资源)
-    - [下一步学习](#下一步学习)
-    - [推荐阅读](#推荐阅读)
+  - [5. 📚 相关资源](#5-相关资源)
+
+---
 
 ## 1. 📖 概念介绍
 
@@ -691,11 +665,3 @@ func main() {
 - [select与context](../language/02-并发编程/05-select与context.md)
 
 ### 推荐阅读
-
-- [Go Channel Internals](https://github.com/golang/go/blob/master/src/runtime/Channel.go)
-- [Effective Go - Channels](https://go.dev/doc/effective_go#channels)
-
----
-
-**最后更新**: 2025-10-29
-**作者**: Documentation Team

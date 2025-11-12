@@ -18,6 +18,8 @@
 
 ---
 
+---
+
 ## 6.1 📚 GitOps概述
 
 **GitOps**是云原生环境下的声明式持续交付方法论：
@@ -79,24 +81,3 @@ flux bootstrap github \
 ```
 
 ## 6.3 📚 详细文档
-
-完整的GitOps持续部署指南，请参考：
-
-**[📖 微服务/13-GitOps持续部署](../05-微服务架构/13-GitOps持续部署.md)**
-
-该文档涵盖：
-
-- ArgoCD完整实践（安装、配置、应用管理）
-- Flux CD实践（GitRepository、Kustomization、HelmRelease）
-- 部署策略（蓝绿、金丝雀、渐进式）
-- 安全最佳实践（Sealed Secrets、RBAC）
-- 监控与告警（Prometheus集成、通知配置）
-- CI/CD完整流程（GitHub Actions集成）
-- 多集群部署（ApplicationSet、多环境管理）
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Kubernetes 1.27+, ArgoCD 2.9+, Flux 2.2+

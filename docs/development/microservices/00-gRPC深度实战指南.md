@@ -5,28 +5,26 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [gRPC](#grpc)
-  - [📋 目录](#-目录)
   - [第一部分：gRPC核心原理](#第一部分grpc核心原理)
-    - [gRPC架构](#grpc架构)
-    - [实战案例1：Quick Start](#实战案例1quick-start)
-    - [实战案例2：生成Go代码](#实战案例2生成go代码)
-    - [实战案例3：服务端实现](#实战案例3服务端实现)
-    - [实战案例4：客户端实现](#实战案例4客户端实现)
+- [安装protoc编译器](#安装protoc编译器)
+- [macOS](#macos)
+- [Linux](#linux)
+- [Windows](#windows)
+- [下载 https://github.com/protocolbuffers/protobuf/releases](#下载-httpsgithubcomprotocolbuffersprotobufreleases)
+- [安装Go插件](#安装go插件)
+- [生成Go代码](#生成go代码)
+- [生成的文件:](#生成的文件)
+- [user.pb.go        - Message定义](#userpbgo-message定义)
+- [user_grpc.pb.go   - Service接口和Stub](#user_grpcpbgo-service接口和stub)
   - [第二部分：Protocol Buffers深度](#第二部分protocol-buffers深度)
-    - [实战案例5：高级Proto特性](#实战案例5高级proto特性)
   - [第三部分：四种服务类型](#第三部分四种服务类型)
-    - [实战案例6：四种RPC完整示例](#实战案例6四种rpc完整示例)
-    - [服务端实现四种RPC](#服务端实现四种rpc)
   - [第四部分：拦截器（中间件）](#第四部分拦截器中间件)
-    - [实战案例7：日志拦截器](#实战案例7日志拦截器)
-    - [实战案例8：认证拦截器](#实战案例8认证拦截器)
-  - [🎯 总结](#-总结)
-    - [gRPC核心要点](#grpc核心要点)
-    - [最佳实践清单](#最佳实践清单)
+  - [🎯 总结](#总结)
+
+---
 
 ## 第一部分：gRPC核心原理
 
@@ -1016,37 +1014,3 @@ func GetUserIDFromContext(ctx Context.Context) (string, bool) {
 10. **测试** - 单元测试、集成测试、性能测试
 
 ### 最佳实践清单
-
-```text
-✅ 使用Proto3语法
-✅ 合理设计Message（避免过深嵌套）
-✅ 使用oneof实现多态
-✅ 实现健康检查
-✅ 使用拦截器统一处理横切关注点
-✅ 设置合理的超时和截止时间
-✅ 实现优雅关闭
-✅ 启用TLS加密
-✅ 实施认证和授权
-✅ 记录结构化日志
-✅ 配置监控和追踪
-✅ 编写完整的测试
-```
-
----
-
-**文档版本**: v15.0
-
-<div align="center">
-
-Made with ❤️ for Microservice Developers
-
-[⬆ 回到顶部](#回到顶部)
-
-</div>
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

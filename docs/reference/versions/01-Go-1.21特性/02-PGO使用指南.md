@@ -49,6 +49,10 @@
     - [3. 安全性考虑](#3-安全性考虑)
   - [📚 扩展阅读](#-扩展阅读)
 
+---
+
+---
+
 ## 📋 概述
 
 **PGO (Profile-Guided Optimization)** 是一种编译器优化技术，通过分析程序运行时的性能数据（profile），指导编译器进行更有针对性的优化。
@@ -587,14 +591,3 @@ PGO 提升有限的场景：
 ---
 
 ## 📚 扩展阅读
-
-- [Go 1.21 Release Notes - PGO](https://go.dev/doc/go1.21#pgo)
-- [Profile-Guided Optimization User Guide](https://go.dev/doc/pgo)
-- [Go PGO 博客文章](https://go.dev/blog/pgo)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.21+

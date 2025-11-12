@@ -5,41 +5,19 @@
 **适用于**: Go 1.25.3
 
 ---
-
----
-
 ## 📋 目录
 
 - [Context应用](#context应用)
-  - [📋 目录](#-目录)
   - [1. Context简介](#1-context简介)
-    - [什么是Context](#什么是context)
-    - [为什么需要Context](#为什么需要context)
   - [2. 创建Context](#2-创建context)
-    - [Background和TODO](#background和todo)
-    - [WithCancel](#withcancel)
-    - [WithTimeout](#withtimeout)
-    - [WithDeadline](#withdeadline)
   - [3. 超时控制](#3-超时控制)
-    - [HTTP请求超时](#http请求超时)
-    - [数据库查询超时](#数据库查询超时)
   - [4. 取消传播](#4-取消传播)
-    - [级联取消](#级联取消)
-    - [优雅关闭](#优雅关闭)
   - [5. 值传递](#5-值传递)
-    - [WithValue](#withvalue)
-    - [类型安全的值传递](#类型安全的值传递)
   - [6. 实战应用](#6-实战应用)
-    - [HTTP服务器中间件](#http服务器中间件)
-    - [并行任务处理](#并行任务处理)
   - [7. 最佳实践](#7-最佳实践)
-    - [1. Context作为第一个参数](#1-context作为第一个参数)
-    - [2. 不要存储Context](#2-不要存储context)
-    - [3. 总是defer cancel()](#3-总是defer-cancel)
-    - [4. 检查Context错误](#4-检查context错误)
-    - [5. 不要传递nil Context](#5-不要传递nil-context)
-    - [6. Context值只用于请求作用域数据](#6-context值只用于请求作用域数据)
-  - [🔗 相关资源](#-相关资源)
+  - [🔗 相关资源](#相关资源)
+
+---
 
 ## 1. Context简介
 
@@ -571,12 +549,3 @@ ctx = WithRequestID(ctx, "abc-123")
 ---
 
 ## 🔗 相关资源
-
-- [Goroutine基础](./01-Goroutine基础.md)
-- [Channel详解](./02-Channel详解.md)
-- [并发模式](./05-并发模式.md)
-
----
-
-**最后更新**: 2025-10-29
-**Go版本**: 1.25.3

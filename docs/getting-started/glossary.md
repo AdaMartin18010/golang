@@ -5,89 +5,32 @@
 **适用于**: Go 1.25.3
 
 ---
-
----
-
 ## 📋 目录
 
-- [📖 Go语言术语表](#-go语言术语表)
-  - [📋 目录](#-目录)
-  - [📑 索引](#-索引)
-    - [API Gateway (API网关)](#api-gateway-api网关)
+- [📖 Go语言术语表](#go语言术语表)
+  - [📑 索引](#索引)
   - [C](#c)
-    - [Channel (Channel)](#channel-channel)
-    - [Circuit Breaker (熔断器)](#circuit-breaker-熔断器)
-    - [Context (Context)](#context-context)
-    - [CSP (Communicating Sequential Processes)](#csp-communicating-sequential-processes)
   - [D](#d)
-    - [Defer (延迟执行)](#defer-延迟执行)
-    - [Docker](#docker)
   - [E](#e)
-    - [Embedding (嵌入)](#embedding-嵌入)
   - [F](#f)
-    - [Fan-In (扇入)](#fan-in-扇入)
-    - [Fan-Out (扇出)](#fan-out-扇出)
   - [G](#g)
-    - [GC (Garbage Collection)](#gc-garbage-collection)
-    - [Gin](#gin)
-    - [GitOps](#gitops)
-    - [GMP模型](#gmp模型)
-    - [Generics (泛型)](#generics-泛型)
-    - [GOAUTH](#goauth)
-    - [Go Modules](#go-modules)
-    - [Goroutine (Goroutine)](#goroutine-goroutine)
-    - [GORM](#gorm)
-    - [gRPC](#grpc)
   - [H](#h)
-    - [HTTP/2](#http2)
-    - [HTTP路由增强 (HTTP Routing Enhancement)](#http路由增强-http-routing-enhancement)
   - [I](#i)
-    - [iter包](#iter包)
-    - [Interface (接口)](#interface-接口)
-    - [Istio](#istio)
   - [J](#j)
-    - [JWT (JSON Web Token)](#jwt-json-web-token)
   - [K](#k)
-    - [Kubernetes (K8s)](#kubernetes-k8s)
   - [L](#l)
-    - [Load Balancing (负载均衡)](#load-balancing-负载均衡)
   - [M](#m)
-    - [Map (映射)](#map-映射)
-    - [Middleware (中间件)](#middleware-中间件)
-    - [Mutex (Mutex)](#mutex-mutex)
   - [N](#n)
-    - [nil](#nil)
   - [O](#o)
-    - [ORM (Object-Relational Mapping)](#orm-object-relational-mapping)
   - [P](#p)
-    - [Panic](#panic)
-    - [Pipeline (管道)](#pipeline-管道)
-    - [PGO (Profile-Guided Optimization)](#pgo-profile-guided-optimization)
-    - [Pointer (指针)](#pointer-指针)
-    - [pprof](#pprof)
-    - [Prometheus](#prometheus)
   - [R](#r)
-    - [Race Condition (竞态条件)](#race-condition-竞态条件)
-    - [Redis](#redis)
-    - [REST (Representational State Transfer)](#rest-representational-state-transfer)
-    - [RWMutex (读写锁)](#rwmutex-读写锁)
   - [S](#s)
-    - [Select](#select)
-    - [Service Discovery (服务发现)](#service-discovery-服务发现)
-    - [Service Mesh (服务网格)](#service-mesh-服务网格)
-    - [Slice (切片)](#slice-切片)
-    - [Struct (结构体)](#struct-结构体)
   - [T](#t)
-    - [Testing](#testing)
   - [U](#u)
-    - [unique包](#unique包)
   - [W](#w)
-    - [WaitGroup](#waitgroup)
-    - [WebSocket](#websocket)
-    - [WebAssembly (WASM)](#webassembly-wasm)
-    - [WASI (WebAssembly System Interface)](#wasi-webassembly-system-interface)
-    - [Worker Pool (工作池)](#worker-pool-工作池)
-  - [🔗 相关资源](#-相关资源)
+  - [🔗 相关资源](#相关资源)
+
+---
 
 ## 📑 索引
 
@@ -578,27 +521,3 @@ type Person struct {
 ---
 
 ## 🔗 相关资源
-
-- [技术索引](INDEX.md) - 全部文档索引
-- [快速开始](QUICK_START.md) - 快速入门
-- [常见问题](FAQ.md) - FAQ
-- [学习路径](LEARNING_PATHS.md) - 学习路径
-
----
-
-**最后更新**: 2025-10-29
-**文档版本**: v2.2
-**对齐版本**: Go 1.25.3
-**维护团队**: Documentation Team
-
-**✨ 新增**: Generics、GOAUTH、HTTP路由增强、iter包、PGO、unique包、WebAssembly、WASI
-
----
-
-<div align="center">
-
-**📖 Go语言术语表 | 快速查询 · 准确理解**:
-
-**120+术语** · **Go 1.25.3对齐** · **持续更新**
-
-</div>

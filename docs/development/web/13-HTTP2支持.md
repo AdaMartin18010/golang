@@ -14,10 +14,7 @@
   - [🔍 **常见问题**](#常见问题)
   - [📚 **扩展阅读**](#扩展阅读)
 
-
 ---
-
-
 
 ## 📚 **理论分析**
 
@@ -102,13 +99,3 @@ func main() {
   A: 标准库暂不支持，需第三方库
 
 ## 📚 **扩展阅读**
-
-- [Go官方文档-HTTP/2](https://golang.org/pkg/net/http/#hdr-HTTP_2_Support)
-- [HTTP/2 RFC7540](https://datatracker.ietf.org/doc/html/rfc7540)
-- [MDN HTTP/2](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Overview#http2)
-
----
-
-**版本**: v1.0
-**更新日期**: 2025-10-29
-**适用于**: Go 1.25.3

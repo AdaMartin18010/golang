@@ -55,6 +55,10 @@
     - [测试工具](#测试工具)
     - [博客文章](#博客文章)
 
+---
+
+---
+
 ## 1. testing包增强概述
 
 ### 1.1 Go 1.23的testing改进
@@ -1547,15 +1551,3 @@ func TestWithFixtures(t *testing.T) {
 - [httptest](https://pkg.go.dev/net/http/httptest) - HTTP测试
 
 ### 博客文章
-
-- [Go Blog - Testing](https://go.dev/blog/)
-- [Advanced Testing in Go](https://about.sourcegraph.com/go/)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.23+
-
-**贡献者**: 欢迎提交Issue和PR改进本文档

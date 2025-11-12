@@ -5,30 +5,18 @@
 **适用于**: Go 1.23+
 
 ---
-
 ## 📋 目录
 
 - [Channel基础](#channel基础)
-  - [📋 目录](#-目录)
-  - [📚 **理论分析**](#-理论分析)
-    - [**Channel定义与原理**](#channel定义与原理)
-      - [**形式化描述**](#形式化描述)
-    - [**Channel类型**](#channel类型)
-    - [**同步与异步通信**](#同步与异步通信)
-      - [无缓冲 vs 有缓冲Channel可视化](#无缓冲-vs-有缓冲channel可视化)
-    - [**关闭Channel**](#关闭channel)
-      - [Channel生命周期状态图](#channel生命周期状态图)
-      - [多Goroutine通信模式](#多goroutine通信模式)
-  - [💻 **代码示例**](#-代码示例)
-    - [**无缓冲Channel通信**](#无缓冲channel通信)
-    - [**有缓冲Channel通信**](#有缓冲channel通信)
-    - [**单向Channel用法**](#单向channel用法)
-    - [**关闭Channel与检测**](#关闭channel与检测)
-  - [📊 **性能分析**](#-性能分析)
-  - [🧪 **测试代码**](#-测试代码)
-  - [🎯 **最佳实践**](#-最佳实践)
-  - [🔍 **常见问题**](#-常见问题)
-  - [📚 **扩展阅读**](#-扩展阅读)
+  - [📚 **理论分析**](#理论分析)
+  - [💻 **代码示例**](#代码示例)
+  - [📊 **性能分析**](#性能分析)
+  - [🧪 **测试代码**](#测试代码)
+  - [🎯 **最佳实践**](#最佳实践)
+  - [🔍 **常见问题**](#常见问题)
+  - [📚 **扩展阅读**](#扩展阅读)
+
+---
 
 ## 📚 **理论分析**
 
@@ -294,14 +282,3 @@ func TestChannelClosed(t *testing.T) {
   A: 保证每个发送都有对应接收
 
 ## 📚 **扩展阅读**
-
-- [Go官方文档-Channel](https://golang.org/ref/spec#Channel_types)
-- [Go by Example: Channels](https://gobyexample.com/channels)
-- [Go by Example: Channel Directions](https://gobyexample.com/Channel-directions)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

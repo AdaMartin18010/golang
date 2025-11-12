@@ -6,33 +6,16 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [Modules与Workspace包管理模型](#modules与workspace包管理模型)
-  - [📋 目录](#-目录)
   - [第一部分: 模块系统基础](#第一部分-模块系统基础)
-    - [1.1 模块定义](#11-模块定义)
-    - [1.2 依赖图](#12-依赖图)
-    - [1.3 go.mod文件语法](#13-gomod文件语法)
   - [第二部分: 依赖解析算法](#第二部分-依赖解析算法)
-    - [2.1 MVS (Minimal Version Selection)](#21-mvs-minimal-version-selection)
-    - [2.2 MVS vs npm/pip算法对比](#22-mvs-vs-npmpip算法对比)
-    - [2.3 Replace指令语义](#23-replace指令语义)
-    - [2.4 Exclude指令语义](#24-exclude指令语义)
   - [第三部分: Workspace模型](#第三部分-workspace模型)
-    - [3.1 Workspace定义 (Go 1.18+)](#31-workspace定义-go-118)
-    - [3.2 Workspace依赖解析](#32-workspace依赖解析)
-    - [3.3 Workspace vs Monorepo](#33-workspace-vs-monorepo)
   - [第四部分: 形式化验证](#第四部分-形式化验证)
-    - [4.1 MVS正确性证明](#41-mvs正确性证明)
-    - [4.2 Replace语义的形式化验证](#42-replace语义的形式化验证)
-    - [4.3 循环依赖检测](#43-循环依赖检测)
-    - [4.4 版本冲突解决的形式化](#44-版本冲突解决的形式化)
-  - [🎯 总结](#-总结)
-    - [Go Modules核心特性](#go-modules核心特性)
-    - [与其他包管理器对比](#与其他包管理器对比)
-    - [实践建议](#实践建议)
+  - [🎯 总结](#总结)
+
+---
 
 ## 第一部分: 模块系统基础
 
@@ -762,32 +745,3 @@ MVS → 构建失败,报告版本冲突
 | Workspace | ✓ | ✓ | ✗ | ✓ |
 
 ### 实践建议
-
-1. **使用MVS的优势**
-   - 明确最小版本要求
-   - 避免意外升级
-   - 构建稳定性
-
-2. **Replace使用场景**
-   - 本地开发测试
-   - Fork修复bug
-   - 临时workaround
-
-3. **Workspace最佳实践**
-   - 多模块项目开发
-   - 统一依赖管理
-   - 跨模块重构
-
-4. **避免的陷阱**
-   - 过度使用replace
-   - 忽略indirect依赖
-   - 循环依赖
-
----
-
-**文档版本**: v1.0.0
-
-**文档维护者**: Go Formal Methods Research Group
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.25.3+

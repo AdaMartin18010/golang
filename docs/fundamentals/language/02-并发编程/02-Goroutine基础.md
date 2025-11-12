@@ -5,28 +5,18 @@
 **适用于**: Go 1.23+
 
 ---
-
 ## 📋 目录
 
 - [Goroutine基础](#goroutine基础)
-  - [📋 目录](#-目录)
-  - [📚 **理论分析**](#-理论分析)
-    - [**Goroutine定义与原理**](#goroutine定义与原理)
-      - [**形式化描述**](#形式化描述)
-    - [**生命周期与调度**](#生命周期与调度)
-      - [Goroutine生命周期可视化](#goroutine生命周期可视化)
-    - [**调度机制**](#调度机制)
-      - [G-P-M调度模型可视化](#g-p-m调度模型可视化)
-  - [💻 **代码示例**](#-代码示例)
-    - [**创建与运行Goroutine**](#创建与运行goroutine)
-    - [**Goroutine并发执行**](#goroutine并发执行)
-    - [**使用sync.WaitGroup等待Goroutine完成**](#使用syncwaitgroup等待goroutine完成)
-    - [**Goroutine泄漏示例与避免**](#goroutine泄漏示例与避免)
-  - [📊 **性能分析**](#-性能分析)
-  - [🧪 **测试代码**](#-测试代码)
-  - [🎯 **最佳实践**](#-最佳实践)
-  - [🔍 **常见问题**](#-常见问题)
-  - [📚 **扩展阅读**](#-扩展阅读)
+  - [📚 **理论分析**](#理论分析)
+  - [💻 **代码示例**](#代码示例)
+  - [📊 **性能分析**](#性能分析)
+  - [🧪 **测试代码**](#测试代码)
+  - [🎯 **最佳实践**](#最佳实践)
+  - [🔍 **常见问题**](#常见问题)
+  - [📚 **扩展阅读**](#扩展阅读)
+
+---
 
 ## 📚 **理论分析**
 
@@ -299,14 +289,3 @@ func TestGoroutine(t *testing.T) {
   A: 使用pprof、trace等工具分析
 
 ## 📚 **扩展阅读**
-
-- [Go官方文档-Goroutine](https://golang.org/doc/effective_go.html#goroutines)
-- [Go by Example: Goroutines](https://gobyexample.com/goroutines)
-- [Go Scheduler: G-P-M模型](https://blog.golang.org/2018/09/go-scheduler.html)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

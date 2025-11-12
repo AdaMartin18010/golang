@@ -38,6 +38,10 @@
     - [官方文档](#官方文档)
     - [相关文档](#相关文档)
 
+---
+
+---
+
 ## 7.1 📚 GitHub Actions概述
 
 **GitHub Actions**: GitHub原生CI/CD平台，通过YAML配置自动化工作流。
@@ -447,14 +451,3 @@ jobs:
 - [Actions Marketplace](https://github.com/marketplace?type=actions)
 
 ### 相关文档
-
-- [06-GitOps部署.md](./06-GitOps部署.md)
-- [08-GitLab-CI.md](./08-GitLab-CI.md)
-- [09-多环境部署.md](./09-多环境部署.md)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: GitHub Actions, Go 1.21+, Kubernetes 1.27+

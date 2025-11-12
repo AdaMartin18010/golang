@@ -5,18 +5,15 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [现代Web框架](#现代web框架)
-  - [📋 目录](#-目录)
-  - [1. 📖 主流Go Web框架](#1--主流go-web框架)
-    - [Gin框架](#gin框架)
-    - [Fiber框架](#fiber框架)
-    - [Echo框架](#echo框架)
-  - [🎯 框架对比](#-框架对比)
-  - [💡 中间件开发](#-中间件开发)
-  - [📚 相关资源](#-相关资源)
+  - [1. 📖 主流Go Web框架](#1-主流go-web框架)
+  - [🎯 框架对比](#框架对比)
+  - [💡 中间件开发](#中间件开发)
+  - [📚 相关资源](#相关资源)
+
+---
 
 ## 1. 📖 主流Go Web框架
 
@@ -172,13 +169,3 @@ r.Use(RateLimitMiddleware(100))
 ---
 
 ## 📚 相关资源
-
-- [Gin Documentation](https://gin-gonic.com/)
-- [Fiber Documentation](https://docs.gofiber.io/)
-- [Echo Documentation](https://echo.labstack.com/)
-
-**下一步**: [02-实时通信](./02-实时通信.md)
-
----
-
-**最后更新**: 2025-10-29

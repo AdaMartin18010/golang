@@ -39,6 +39,10 @@
     - [官方文档](#官方文档)
     - [相关文档](#相关文档)
 
+---
+
+---
+
 ## 8.1 📚 GitLab CI/CD概述
 
 **GitLab CI/CD**: GitLab内置的CI/CD平台，通过`.gitlab-ci.yml`配置Pipeline。
@@ -463,14 +467,3 @@ include:
 - [GitLab Runner](https://docs.gitlab.com/runner/)
 
 ### 相关文档
-
-- [06-GitOps部署.md](./06-GitOps部署.md)
-- [07-GitHub-Actions.md](./07-GitHub-Actions.md)
-- [09-多环境部署.md](./09-多环境部署.md)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: GitLab CE/EE 16+, Go 1.21+, Kubernetes 1.27+

@@ -9,7 +9,7 @@
 ## 📋 目录
 
 - [Go 1.25.3 Documentation](#go-1253-documentation)
-  - [📋 目录](#-目录)
+  - [� 目录](#-目录)
   - [🚀 Quick Start](#-quick-start)
   - [📚 Documentation Structure](#-documentation-structure)
     - [🎯 Getting Started](#-getting-started)
@@ -29,6 +29,10 @@
     - [早期更新](#早期更新)
   - [🤝 Contributing](#-contributing)
   - [📝 License](#-license)
+
+---
+
+---
 
 ## 🚀 Quick Start
 
@@ -188,9 +192,3 @@ We welcome contributions! Please see our [Contributing Guide](../CONTRIBUTING.md
 ---
 
 ## 📝 License
-
-This documentation is part of the Go 1.25.3 learning project. See [LICENSE](../LICENSE) for details.
-
----
-
-> **Navigation:** [Home](./) | [Getting Started](./getting-started/) | [Index](./INDEX.md) | [FAQ](./getting-started/faq.md)

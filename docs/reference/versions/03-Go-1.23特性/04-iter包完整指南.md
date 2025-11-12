@@ -61,6 +61,10 @@
     - [博客文章](#博客文章)
     - [社区项目](#社区项目)
 
+---
+
+---
+
 ## 1. iter包概述
 
 ### 1.1 为什么需要iter包
@@ -2182,15 +2186,3 @@ func main() {
 - [Go Blog - Iterators](https://go.dev/blog/)
 
 ### 社区项目
-
-- [iter extras](https://pkg.go.dev/golang.org/x/exp/iter)
-- [Functional programming with iter](https://github.com/samber/lo)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: ✅ 完成
-**适用版本**: Go 1.23+
-
-**贡献者**: 欢迎提交Issue和PR改进本文档

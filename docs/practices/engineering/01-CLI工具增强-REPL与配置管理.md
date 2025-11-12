@@ -5,31 +5,18 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
-- [CLI工具增强 - REPL与配置管理](#cli工具增强---repl与配置管理)
-  - [📋 目录](#-目录)
+- [CLI工具增强 - REPL与配置管理](#cli工具增强-repl与配置管理)
   - [1. 概述](#1-概述)
-    - [1.1 CLI工具核心功能](#11-cli工具核心功能)
   - [2. REPL接口设计](#2-repl接口设计)
-    - [2.1 核心概念](#21-核心概念)
-    - [2.2 完整实现](#22-完整实现)
   - [3. 配置管理系统](#3-配置管理系统)
-    - [3.1 配置层次](#31-配置层次)
-    - [3.2 完整实现](#32-完整实现)
   - [4. 插件系统架构](#4-插件系统架构)
-    - [4.1 插件接口](#41-插件接口)
   - [5. 命令行解析](#5-命令行解析)
-    - [5.1 完整实现](#51-完整实现)
   - [6. 最佳实践](#6-最佳实践)
-    - [6.1 REPL设计](#61-repl设计)
-    - [6.2 配置管理](#62-配置管理)
-    - [6.3 插件系统](#63-插件系统)
   - [7. 使用示例](#7-使用示例)
-    - [7.1 REPL使用](#71-repl使用)
-    - [7.2 配置管理](#72-配置管理)
-    - [7.3 CLI应用](#73-cli应用)
+
+---
 
 ## 1. 概述
 
@@ -1060,33 +1047,3 @@ port := config.GetInt("port")
 ```
 
 ### 7.3 CLI应用
-
-```go
-// 创建CLI
-app := cli.NewCLI("myapp", "1.0.0")
-app.description = "My awesome CLI application"
-
-// 添加命令
-app.AddCommand(&cli.CLICommand{
-    Name:        "start",
-    Description: "Start the server",
-    Flags:       flag.NewFlagSet("start", flag.ExitOnError),
-    Action: func(ctx *cli.CLIContext) error {
-        fmt.Println("Starting server...")
-        return nil
-    },
-})
-
-// 运行
-if err := app.Run(os.Args); err != nil {
-    log.Fatal(err)
-}
-```
-
----
-
-**文档完成时间**: 2025年10月24日
-**文档版本**: v1.0
-**质量评级**: 95分 ⭐⭐⭐⭐⭐
-
-🚀 **CLI工具增强实现指南完成！** 🎊

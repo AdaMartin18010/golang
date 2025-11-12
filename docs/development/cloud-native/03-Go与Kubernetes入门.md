@@ -91,13 +91,3 @@ spec:
   A: 查看Pod日志，kubectl exec进入容器
 
 ## 📚 **扩展阅读**
-
-- [Go与Kubernetes实战](https://geektutu.com/post/hpg-golang-k8s.html)
-- [Kubernetes官方文档](https://kubernetes.io/zh/docs/)
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

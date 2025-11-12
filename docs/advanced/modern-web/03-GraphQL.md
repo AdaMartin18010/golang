@@ -5,16 +5,16 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [GraphQL](#graphql)
-  - [📋 目录](#-目录)
-  - [1. 📖 gqlgen入门](#1--gqlgen入门)
-  - [🔍 DataLoader](#-dataloader)
-  - [📊 分页](#-分页)
-  - [💡 订阅 (Subscriptions)](#-订阅-subscriptions)
-  - [📚 相关资源](#-相关资源)
+  - [1. 📖 gqlgen入门](#1-gqlgen入门)
+  - [🔍 DataLoader](#dataloader)
+  - [📊 分页](#分页)
+  - [💡 订阅 (Subscriptions)](#订阅-subscriptions)
+  - [📚 相关资源](#相关资源)
+
+---
 
 ## 1. 📖 gqlgen入门
 
@@ -245,12 +245,3 @@ func (r *subscriptionResolver) MessageAdded(
 ---
 
 ## 📚 相关资源
-
-- [gqlgen](https://gqlgen.com/)
-- [GraphQL](https://graphql.org/)
-
-**下一步**: [04-微服务网关](./04-微服务网关.md)
-
----
-
-**最后更新**: 2025-10-29

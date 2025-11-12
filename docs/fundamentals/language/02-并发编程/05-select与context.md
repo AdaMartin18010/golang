@@ -5,30 +5,34 @@
 **适用于**: Go 1.23+
 
 ---
-
 ## 📋 目录
 
 - [select与context高级用法](#select与context高级用法)
-  - [📋 目录](#-目录)
   - [1. 理论基础](#1-理论基础)
-    - [select语句](#select语句)
-    - [context包](#context包)
   - [2. 典型用法](#2-典型用法)
-    - [select实现超时控制](#select实现超时控制)
-    - [select实现多路复用](#select实现多路复用)
-    - [context实现取消](#context实现取消)
-    - [context实现超时](#context实现超时)
   - [3. 工程分析与最佳实践](#3-工程分析与最佳实践)
   - [4. 常见陷阱](#4-常见陷阱)
   - [5. 单元测试建议](#5-单元测试建议)
   - [6. 参考文献](#6-参考文献)
   - [7. 完整实战示例：Web服务中的Context应用](#7-完整实战示例web服务中的context应用)
-    - [场景：HTTP API服务器](#场景http-api服务器)
-    - [使用示例](#使用示例)
-    - [示例日志输出](#示例日志输出)
-    - [关键设计要点](#关键设计要点)
-    - [性能考虑](#性能考虑)
-    - [扩展建议](#扩展建议)
+- [成功请求](#成功请求)
+- [响应示例：](#响应示例)
+- [{](#)
+- ["api": {"status": "success", "data": "external data"},](#api-status-success-data-external-data)
+- ["database": {"data": "result data", "rows": 10},](#database-data-result-data-rows-10)
+- ["user_id": "user-123",](#user_id-user-123)
+- ["request_id": "req-1729584123456789"](#request_id-req-1729584123456789)
+- [}](#)
+- [如果操作时间超过2秒，会收到超时响应](#如果操作时间超过2秒会收到超时响应)
+- [超时响应：](#超时响应)
+- [Request timeout](#request-timeout)
+- [没有Authorization头](#没有authorization头)
+- [响应：](#响应)
+- [Missing authorization](#missing-authorization)
+- [响应：](#响应)
+- [{"status":"healthy","time":"2025-10-22T10:30:45Z"}](#statushealthytime2025-10-22t103045z)
+
+---
 
 ## 1. 理论基础
 
@@ -476,15 +480,3 @@ curl http://localhost:8080/health
 - **非阻塞取消**：使用`select`而非阻塞等待，及时响应取消信号
 
 ### 扩展建议
-
-1. **添加重试逻辑**：在 `callExternalAPI` 中使用指数退避重试
-2. **熔断器集成**：当外部API频繁超时时自动熔断
-3. **分布式追踪**：集成OpenTelemetry，将requestID关联到trace
-4. **指标监控**：记录超时率、平均响应时间等指标
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+

@@ -7,53 +7,21 @@
 **适用于**: Go 1.25.3
 
 ---
-
 ## 📋 目录
 
 - [安全架构（Security Architecture）](#安全架构security-architecture)
-  - [📋 目录](#-目录)
-  - [目录](#目录)
   - [2. 国际标准与发展历程](#2-国际标准与发展历程)
-    - [主流标准与框架](#主流标准与框架)
-    - [发展历程](#发展历程)
-    - [国际权威链接](#国际权威链接)
   - [3. 核心安全模型与设计原则](#3-核心安全模型与设计原则)
-    - [核心原则](#核心原则)
-    - [零信任安全模型](#零信任安全模型)
-    - [安全策略引擎](#安全策略引擎)
   - [4. 认证与授权架构](#4-认证与授权架构)
-    - [多因素认证（MFA）](#多因素认证mfa)
-    - [OAuth 2.0 与 OpenID Connect](#oauth-20-与-openid-connect)
   - [5. 密码学应用](#5-密码学应用)
-    - [加密与签名服务](#加密与签名服务)
-    - [密钥管理服务](#密钥管理服务)
   - [6. Golang主流实现与代码示例](#6-golang主流实现与代码示例)
-    - [安全的HTTP响应头](#安全的http响应头)
-    - [输入验证与输出编码 (OWASP Top 10)](#输入验证与输出编码-owasp-top-10)
-      - [跨站脚本 (XSS) 防护](#跨站脚本-xss-防护)
-      - [SQL注入防护](#sql注入防护)
-    - [密钥管理 (Secrets Management)](#密钥管理-secrets-management)
   - [7. 容器与云原生安全](#7-容器与云原生安全)
-    - [容器安全扫描](#容器安全扫描)
-    - [运行时安全监控](#运行时安全监控)
   - [8. 工程结构与CI/CD实践](#8-工程结构与cicd实践)
-    - [CI/CD 安全流水线 (DevSecOps)](#cicd-安全流水线-devsecops)
-    - [安全监控与响应](#安全监控与响应)
-      - [安全事件监控与告警](#安全事件监控与告警)
-      - [自动化响应与SOAR](#自动化响应与soar)
-      - [威胁情报集成](#威胁情报集成)
   - [9. 合规与审计](#9-合规与审计)
-    - [合规性检查](#合规性检查)
-    - [审计日志与取证](#审计日志与取证)
   - [10. 未来趋势与国际前沿](#10-未来趋势与国际前沿)
   - [11. 国际权威资源与开源组件引用](#11-国际权威资源与开源组件引用)
-    - [安全框架与标准](#安全框架与标准)
-    - [开源安全工具](#开源安全工具)
-    - [云原生安全](#云原生安全)
   - [12. 相关架构主题](#12-相关架构主题)
   - [13. 扩展阅读与参考文献](#13-扩展阅读与参考文献)
-
-## 目录
 
 ---
 
@@ -980,20 +948,3 @@ type AuditEvent struct {
 - [**DevOps与运维架构 (DevOps & Operations Architecture)**](./architecture_devops_golang.md): DevSecOps将安全实践深度集成到CI/CD流水线中。
 
 ## 13. 扩展阅读与参考文献
-
-1. "The Phoenix Project" - Gene Kim, Kevin Behr, George Spafford
-2. "Building Secure and Reliable Systems" - Google
-3. "Zero Trust Networks" - Evan Gilman, Doug Barth
-4. "Security Engineering" - Ross Anderson
-5. "Applied Cryptography" - Bruce Schneier
-
----
-
-- 本文档严格对标国际主流标准，采用多表征输出，便于后续断点续写和批量处理。*
-
----
-
-**文档维护者**: Go Documentation Team
-**最后更新**: 2025-10-29
-**文档状态**: 完成
-**适用版本**: Go 1.25.3+
