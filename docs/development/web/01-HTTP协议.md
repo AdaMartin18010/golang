@@ -5,6 +5,7 @@
 **适用于**: Go 1.23+
 
 ---
+
 ## 📋 目录
 
 - [HTTP协议基础](#http协议基础)
@@ -30,6 +31,7 @@
 - **应用层协议**：基于TCP/IP，默认端口80（HTTP）/443（HTTPS）
 
 **核心特点：**
+
 - 简单：请求-响应模式易于理解
 - 可扩展：通过Headers添加元数据
 - 无状态：通过Cookie/Session实现会话管理
@@ -96,6 +98,7 @@ Server: Go-Server/1.0
 | **TRACE** | 回显请求 | ✅ | ✅ | 调试（通常禁用） |
 
 **幂等性说明：**
+
 - **幂等**：多次执行产生相同结果（GET、PUT、DELETE）
 - **非幂等**：多次执行结果不同（POST、PATCH）
 
@@ -490,6 +493,7 @@ func cacheMiddleware(next http.Handler) http.Handler {
 ## 🎯 最佳实践
 
 1. **始终关闭Response.Body**
+
    ```go
    resp, err := http.Get(url)
    if err != nil {
@@ -499,6 +503,7 @@ func cacheMiddleware(next http.Handler) http.Handler {
    ```
 
 2. **设置合理的超时**
+
    ```go
    client.Timeout = 30 * time.Second
    ```
@@ -508,6 +513,7 @@ func cacheMiddleware(next http.Handler) http.Handler {
    - Client是并发安全的
 
 4. **正确处理状态码**
+
    ```go
    if resp.StatusCode != http.StatusOK {
        return fmt.Errorf("unexpected status: %d", resp.StatusCode)
@@ -515,6 +521,7 @@ func cacheMiddleware(next http.Handler) http.Handler {
    ```
 
 5. **使用Context控制超时**
+
    ```go
    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
    defer cancel()
@@ -532,11 +539,13 @@ A: HTTP本身无状态，但可通过Cookie/Session/JWT等机制实现会话管�
 
 **Q: GET和POST的区别？**
 A:
+
 - GET：查询数据，参数在URL，幂等，可缓存
 - POST：提交数据，参数在Body，非幂等，不可缓存
 
 **Q: 何时使用PUT vs PATCH？**
 A:
+
 - PUT：完整替换资源（幂等）
 - PATCH：部分更新资源（非幂等）
 
@@ -545,6 +554,7 @@ A: 通常是，但在高延迟或小文件场景下优势不明显。
 
 **Q: 如何实现文件上传？**
 A:
+
 ```go
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
     file, header, err := r.FormFile("file")

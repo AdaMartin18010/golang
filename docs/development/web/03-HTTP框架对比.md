@@ -1,21 +1,46 @@
 ﻿# HTTP框架对比
+
 **版本**: v1.0
 **更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
 - [HTTP框架对比](#http框架对比)
+  - [📋 目录](#-目录)
   - [1. 框架概览](#1-框架概览)
+    - [主流框架一览](#主流框架一览)
   - [2. 性能基准测试](#2-性能基准测试)
-- [基准测试 - 单次请求内存分配](#基准测试-单次请求内存分配)
+    - [测试环境](#测试环境)
+    - [Hello World基准测试](#hello-world基准测试)
+    - [性能结果](#性能结果)
+    - [复杂场景基准测试](#复杂场景基准测试)
+    - [内存分配对比](#内存分配对比)
   - [3. 特性对比](#3-特性对比)
+    - [核心特性矩阵](#核心特性矩阵)
+    - [中间件生态对比](#中间件生态对比)
   - [4. 详细分析](#4-详细分析)
+    - [Gin - 最流行的选择](#gin---最流行的选择)
+    - [Fiber - 性能之王](#fiber---性能之王)
+    - [Echo - 简洁优雅](#echo---简洁优雅)
+    - [Chi - 轻量stdlib风格](#chi---轻量stdlib风格)
   - [5. 使用场景](#5-使用场景)
+    - [场景选择决策树](#场景选择决策树)
+    - [具体场景推荐](#具体场景推荐)
+      - [1. 创业公司/快速原型](#1-创业公司快速原型)
+      - [2. 高并发API](#2-高并发api)
+      - [3. 微服务架构](#3-微服务架构)
+      - [4. 企业级应用](#4-企业级应用)
+      - [5. 学习Go Web开发](#5-学习go-web开发)
   - [6. 迁移指南](#6-迁移指南)
-  - [📊 总结对比](#总结对比)
-  - [🔗 相关资源](#相关资源)
+    - [从Gin迁移到Fiber](#从gin迁移到fiber)
+    - [从Express迁移到Fiber](#从express迁移到fiber)
+  - [📊 总结对比](#-总结对比)
+    - [综合评分 (满分5分)](#综合评分-满分5分)
+    - [快速选择指南](#快速选择指南)
+  - [🔗 相关资源](#-相关资源)
 
 ---
 
@@ -69,6 +94,7 @@ func fiberHandler(c *fiber.Ctx) error {
 ```
 
 **测试命令**:
+
 ```bash
 wrk -t12 -c400 -d30s http://localhost:8080/hello
 ```
@@ -185,16 +211,19 @@ go test -bench=. -benchmem
 ### 中间件生态对比
 
 **Gin 中间件**:
+
 - gin-contrib (官方) - CORS, JWT, Sessions等
 - 第三方生态丰富
 - 易于编写自定义中间件
 
 **Echo 中间件**:
+
 - echo-contrib (官方)
 - 中间件链式调用
 - 支持Before/After hooks
 
 **Fiber 中间件**:
+
 - 内置40+中间件
 - Express风格，前端开发者友好
 - 性能优化的中间件实现
@@ -206,6 +235,7 @@ go test -bench=. -benchmem
 ### Gin - 最流行的选择
 
 **优势**:
+
 - ✅ 社区最大，文档丰富
 - ✅ 生态系统完善
 - ✅ 性能优秀
@@ -213,6 +243,7 @@ go test -bench=. -benchmem
 - ✅ 学习曲线平缓
 
 **劣势**:
+
 - ❌ 部分设计略显陈旧
 - ❌ 依赖注入不够优雅
 - ❌ 错误处理不够统一
@@ -269,6 +300,7 @@ func getUsers(c *gin.Context) {
 ```
 
 **适用场景**:
+
 - ✅ REST API服务
 - ✅ 微服务
 - ✅ 需要稳定生态
@@ -279,12 +311,14 @@ func getUsers(c *gin.Context) {
 ### Fiber - 性能之王
 
 **优势**:
+
 - ✅ 性能最佳
 - ✅ Express风格，前端转后端友好
 - ✅ 内置丰富功能
 - ✅ 零内存分配的fasthttp
 
 **劣势**:
+
 - ❌ 不兼容net/http (使用fasthttp)
 - ❌ 生态相对较小
 - ❌ 部分库不兼容
@@ -348,6 +382,7 @@ func setupWebSocket(app *fiber.App) {
 ```
 
 **适用场景**:
+
 - ✅ 高性能API
 - ✅ 实时应用
 - ✅ 微服务
@@ -358,12 +393,14 @@ func setupWebSocket(app *fiber.App) {
 ### Echo - 简洁优雅
 
 **优势**:
+
 - ✅ API设计简洁
 - ✅ 中间件强大
 - ✅ 性能优秀
 - ✅ 错误处理优雅
 
 **劣势**:
+
 - ❌ 社区相比Gin较小
 - ❌ 生态不如Gin丰富
 
@@ -428,6 +465,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 ```
 
 **适用场景**:
+
 - ✅ REST API
 - ✅ 微服务
 - ✅ 需要优雅错误处理
@@ -438,12 +476,14 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 ### Chi - 轻量stdlib风格
 
 **优势**:
+
 - ✅ 完全兼容net/http
 - ✅ 轻量级，无依赖
 - ✅ stdlib风格，易于理解
 - ✅ 内存占用最低
 
 **劣势**:
+
 - ❌ 功能较基础，需要手动实现
 - ❌ 缺少内置验证器
 - ❌ 文档相对较少
@@ -503,6 +543,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 ```
 
 **适用场景**:
+
 - ✅ 简单API服务
 - ✅ 需要完全控制
 - ✅ 学习标准库
@@ -537,6 +578,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 #### 1. 创业公司/快速原型
 
 **推荐**: Gin
+
 - 生态丰富，快速开发
 - 文档完善，易于上手
 - 社区活跃，问题易解决
@@ -544,6 +586,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 #### 2. 高并发API
 
 **推荐**: Fiber
+
 - 性能最优
 - 内存占用低
 - 适合大规模流量
@@ -551,6 +594,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 #### 3. 微服务架构
 
 **推荐**: Gin 或 Echo
+
 - 轻量级
 - 易于集成gRPC
 - 适合容器化部署
@@ -558,6 +602,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 #### 4. 企业级应用
 
 **推荐**: Gin 或 Beego
+
 - 稳定可靠
 - 长期维护
 - 丰富的企业级特性
@@ -565,6 +610,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 #### 5. 学习Go Web开发
 
 **推荐**: Chi 或 Echo
+
 - 代码清晰
 - 接近标准库
 - 易于理解原理
@@ -608,6 +654,7 @@ app.Use(func(c *fiber.Ctx) error {
 ```
 
 **主要差异**:
+
 1. Context方法名不同 (Param→Params, JSON→JSON)
 2. 错误处理方式不同 (void→error)
 3. 底层实现不同 (net/http→fasthttp)
@@ -652,21 +699,25 @@ app.Get("/users/:id", func(c *fiber.Ctx) error {
 ### 快速选择指南
 
 **选Gin如果你**:
+
 - 需要稳定可靠的框架
 - 重视社区和生态
 - 团队协作项目
 
 **选Fiber如果你**:
+
 - 追求极致性能
 - 熟悉Express
 - 资源受限环境
 
 **选Echo如果你**:
+
 - 喜欢简洁API
 - 需要优雅错误处理
 - 中等规模项目
 
 **选Chi如果你**:
+
 - 追求轻量级
 - 需要stdlib兼容
 - 完全控制代码

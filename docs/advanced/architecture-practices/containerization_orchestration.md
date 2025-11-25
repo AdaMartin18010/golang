@@ -7,37 +7,24 @@
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
 - [容器化与编排架构（Containerization and Orchestration Architecture）](#容器化与编排架构containerization-and-orchestration-architecture)
+  - [📋 目录](#-目录)
   - [2. 国际标准与发展历程](#2-国际标准与发展历程)
+    - [主流技术与标准](#主流技术与标准)
+    - [发展历程](#发展历程)
+    - [国际权威链接](#国际权威链接)
   - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
-- [1. 使用官方、精简的基础镜像 (多阶段构建)](#1-使用官方精简的基础镜像-多阶段构建)
-- [2. 设置工作目录](#2-设置工作目录)
-- [3. 优化依赖缓存](#3-优化依赖缓存)
-- [4. 拷贝源代码](#4-拷贝源代码)
-- [5. 构建应用，使用静态编译以减少依赖](#5-构建应用使用静态编译以减少依赖)
-- [CGO_ENABLED=0 禁用CGO](#cgo_enabled0-禁用cgo)
-- [GOOS=linux 指定目标操作系统](#gooslinux-指定目标操作系统)
-- [-a 强制重新构建](#a-强制重新构建)
-- [-ldflags "-w -s" 移除调试信息，减小体积](#ldflags-w-s-移除调试信息减小体积)
-- [--- 创建一个最小化的生产镜像 ---](#创建一个最小化的生产镜像)
-- [6. 设置工作目录](#6-设置工作目录)
-- [7. 从构建阶段拷贝编译好的二进制文件](#7-从构建阶段拷贝编译好的二进制文件)
-- [8. （安全实践）添加非root用户](#8-安全实践添加非root用户)
-- [9. 暴露端口](#9-暴露端口)
-- [10. 定义启动命令](#10-定义启动命令)
-- [deployment.yaml](#deploymentyaml)
-- [资源限制与请求](#资源限制与请求)
-- [健康检查](#健康检查)
-- [service.yaml](#serviceyaml)
-- [服务类型：ClusterIP, NodePort, LoadBalancer, ExternalName](#服务类型clusterip-nodeport-loadbalancer-externalname)
-- [定义持久化卷声明模板](#定义持久化卷声明模板)
+    - [容器化架构 (Docker)](#容器化架构-docker)
+    - [容器编排架构 (Kubernetes)](#容器编排架构-kubernetes)
   - [4. Golang与云原生生态](#4-golang与云原生生态)
+    - [使用Go开发Kubernetes原生应用](#使用go开发kubernetes原生应用)
+    - [可观测性 (Observability)](#可观测性-observability)
   - [5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
   - [6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
-- [.github/workflows/ci-cd.yml](#githubworkflowsci-cdyml)
-- [使用kubectl或kustomize进行部署](#使用kubectl或kustomize进行部署)
+    - [CI/CD工作流 (GitHub Actions)](#cicd工作流-github-actions)
   - [7. 相关架构主题](#7-相关架构主题)
 
 ---

@@ -7,21 +7,29 @@
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
 - [无服务器架构（Golang国际主流实践）](#无服务器架构golang国际主流实践)
+  - [📋 目录](#-目录)
   - [2. 无服务器架构概述](#2-无服务器架构概述)
+    - [主流技术与平台](#主流技术与平台)
+    - [发展历程](#发展历程)
+    - [国际权威链接](#国际权威链接)
   - [3. 核心架构模式与设计原则](#3-核心架构模式与设计原则)
+    - [函数即服务 (Function as a Service - FaaS)](#函数即服务-function-as-a-service---faas)
+    - [后端即服务 (Backend as a Service - BaaS)](#后端即服务-backend-as-a-service---baas)
   - [4. Golang主流实现与代码示例](#4-golang主流实现与代码示例)
+    - [AWS Lambda with Golang](#aws-lambda-with-golang)
+    - [Google Cloud Functions with Golang](#google-cloud-functions-with-golang)
   - [5. 分布式挑战与主流解决方案](#5-分布式挑战与主流解决方案)
   - [6. 工程结构与CI/CD实践](#6-工程结构与cicd实践)
-- [IAM角色权限定义](#iam角色权限定义)
-- [自定义构建过程](#自定义构建过程)
-- [构建命令，在部署前执行](#构建命令在部署前执行)
-- [.github/workflows/ci-cd.yml](#githubworkflowsci-cdyml)
-- [使用Serverless Framework进行部署](#使用serverless-framework进行部署)
-- [Makefile会负责编译所有函数](#makefile会负责编译所有函数)
+    - [项目结构建议 (Serverless Framework)](#项目结构建议-serverless-framework)
+    - [配置文件 (serverless.yml)](#配置文件-serverlessyml)
+    - [CI/CD工作流 (GitHub Actions)](#cicd工作流-github-actions)
   - [7. Golang 无服务器架构代码示例](#7-golang-无服务器架构代码示例)
+    - [完整的无服务器平台实现](#完整的无服务器平台实现)
+    - [实际使用示例](#实际使用示例)
 
 ---
 

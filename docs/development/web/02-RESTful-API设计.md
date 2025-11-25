@@ -5,23 +5,37 @@
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
 - [RESTful API设计](#restful-api设计)
+  - [📋 目录](#-目录)
   - [1. REST原则](#1-rest原则)
+    - [REST核心概念](#rest核心概念)
+    - [REST约束](#rest约束)
   - [2. URL设计](#2-url设计)
-- [过滤](#过滤)
-- [排序](#排序)
-- [分页](#分页)
-- [字段选择](#字段选择)
-- [搜索](#搜索)
+    - [资源命名](#资源命名)
+    - [资源层级](#资源层级)
+    - [查询参数](#查询参数)
+    - [Go实现示例](#go实现示例)
   - [3. HTTP方法](#3-http方法)
+    - [标准方法](#标准方法)
+    - [方法使用示例](#方法使用示例)
   - [4. 状态码](#4-状态码)
+    - [常用状态码](#常用状态码)
+    - [使用示例](#使用示例)
   - [5. 请求和响应](#5-请求和响应)
+    - [请求格式](#请求格式)
+    - [响应格式](#响应格式)
+    - [示例响应](#示例响应)
   - [6. 最佳实践](#6-最佳实践)
-- [URL版本](#url版本)
-- [Header版本](#header版本)
-  - [🔗 相关资源](#相关资源)
+    - [1. 版本控制](#1-版本控制)
+    - [2. 过滤和搜索](#2-过滤和搜索)
+    - [3. 分页](#3-分页)
+    - [4. 字段过滤](#4-字段过滤)
+    - [5. HATEOAS](#5-hateoas)
+    - [6. 完整示例](#6-完整示例)
+  - [🔗 相关资源](#-相关资源)
 
 ---
 
@@ -272,17 +286,20 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 ### 常用状态码
 
 **2xx 成功**:
+
 - `200 OK`: 请求成功
 - `201 Created`: 资源已创建
 - `202 Accepted`: 请求已接受（异步处理）
 - `204 No Content`: 成功但无返回内容
 
 **3xx 重定向**:
+
 - `301 Moved Permanently`: 永久重定向
 - `302 Found`: 临时重定向
 - `304 Not Modified`: 资源未修改
 
 **4xx 客户端错误**:
+
 - `400 Bad Request`: 请求格式错误
 - `401 Unauthorized`: 未认证
 - `403 Forbidden`: 无权限
@@ -293,6 +310,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 - `429 Too Many Requests`: 请求过多
 
 **5xx 服务器错误**:
+
 - `500 Internal Server Error`: 服务器错误
 - `502 Bad Gateway`: 网关错误
 - `503 Service Unavailable`: 服务不可用
@@ -446,6 +464,7 @@ Accept: application/vnd.myapp.v1+json
 ```
 
 **Go实现**:
+
 ```go
 r := chi.NewRouter()
 

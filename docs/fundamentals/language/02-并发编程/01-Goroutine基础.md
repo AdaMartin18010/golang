@@ -5,15 +5,33 @@
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
 - [Goroutine基础](#goroutine基础)
+  - [📋 目录](#-目录)
   - [1. Goroutine简介](#1-goroutine简介)
+    - [什么是Goroutine](#什么是goroutine)
+    - [Goroutine vs 线程](#goroutine-vs-线程)
   - [2. 创建与使用](#2-创建与使用)
+    - [基本语法](#基本语法)
+    - [传递参数](#传递参数)
+    - [等待Goroutine完成](#等待goroutine完成)
+      - [方法1: WaitGroup](#方法1-waitgroup)
+      - [方法2: Channel](#方法2-channel)
   - [3. GMP调度模型](#3-gmp调度模型)
+    - [GMP组件](#gmp组件)
+    - [调度策略](#调度策略)
+    - [GOMAXPROCS](#gomaxprocs)
   - [4. 最佳实践](#4-最佳实践)
+    - [1. 控制Goroutine数量](#1-控制goroutine数量)
+    - [2. 使用Context管理生命周期](#2-使用context管理生命周期)
+    - [3. 避免Goroutine泄漏](#3-避免goroutine泄漏)
   - [5. 常见陷阱](#5-常见陷阱)
-  - [🔗 相关资源](#相关资源)
+    - [陷阱1: 循环变量捕获](#陷阱1-循环变量捕获)
+    - [陷阱2: Goroutine数量爆炸](#陷阱2-goroutine数量爆炸)
+    - [陷阱3: 未等待Goroutine完成](#陷阱3-未等待goroutine完成)
+  - [🔗 相关资源](#-相关资源)
 
 ---
 

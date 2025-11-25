@@ -5,6 +5,7 @@
 **适用于**: Go 1.25.3
 
 ---
+
 ## 📋 目录
 
 - [HTTP/3 中间件系统 - 完整实现指南](#http3-中间件系统-完整实现指南)
@@ -61,6 +62,7 @@ HTTP/3基于QUIC协议，提供了更好的性能和可靠性。中间件系统�
 ```
 
 **核心优势**:
+
 - ✅ 模块化设计，易于扩展
 - ✅ 链式调用，灵活组合
 - ✅ 性能开销低（<5%）
@@ -112,6 +114,7 @@ func (f HandlerFunc) Handle(next http.Handler) http.Handler {
 ```
 
 **设计理念**:
+
 - 简单的接口，易于实现
 - 支持函数式编程
 - 符合Go标准库风格
@@ -171,6 +174,7 @@ func (c *Chain) ThenFunc(fn http.HandlerFunc) http.Handler {
 ```
 
 **执行流程**:
+
 ```text
 请求流向:
 Request → M1 → M2 → M3 → Handler → M3 → M2 → M1 → Response
@@ -245,6 +249,7 @@ func SetUserID(r *http.Request, id string) *http.Request {
 #### 3.1.1 设计目标
 
 **功能需求**:
+
 - ✅ 记录请求方法、路径、状态码
 - ✅ 记录请求处理时间
 - ✅ 记录HTTP协议版本（HTTP/3）
@@ -425,6 +430,7 @@ handler := loggingMW.Handle(yourHandler)
 ```
 
 **输出示例**:
+
 ```text
 [HTTP/3] 2025/10/24 10:30:45 GET /api/users - Status: 200 - Duration: 15ms - Proto: HTTP/3 - Size: 1024 bytes
 [HTTP/3] 2025/10/24 10:30:46 POST /api/orders - Status: 201 - Duration: 45ms - Proto: HTTP/3 - Size: 512 bytes
@@ -438,6 +444,7 @@ handler := loggingMW.Handle(yourHandler)
 #### 3.2.1 设计目标
 
 **功能需求**:
+
 - ✅ 基于IP的限流
 - ✅ 令牌桶算法
 - ✅ 可配置速率和突发量
@@ -656,6 +663,7 @@ rateLimitMW := middleware.NewRateLimitMiddlewareWithExtractor(
 #### 3.3.1 设计目标
 
 **功能需求**:
+
 - ✅ 配置允许的Origin
 - ✅ 配置允许的HTTP方法
 - ✅ 配置允许的请求头
@@ -860,6 +868,7 @@ corsMW := middleware.NewCORSMiddleware(wildcardConfig)
 #### 3.4.1 设计目标
 
 **功能需求**:
+
 - ✅ Gzip压缩支持
 - ✅ 可配置压缩级别
 - ✅ 自动检测客户端支持
@@ -1041,6 +1050,7 @@ config := middleware.CompressionConfig{
 #### 3.5.1 设计目标
 
 **功能需求**:
+
 - ✅ Bearer Token认证
 - ✅ Basic认证
 - ✅ JWT验证
