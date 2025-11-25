@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/yourusername/golang/internal/application/user"
+	appuser "github.com/yourusername/golang/internal/application/user"
 	"github.com/yourusername/golang/internal/domain/user"
 )
 
@@ -47,28 +47,36 @@ func (m *MockRepository) Delete(ctx context.Context, id string) error {
 	return args.Error(0)
 }
 
+func (m *MockRepository) List(ctx context.Context, limit, offset int) ([]*user.User, error) {
+	args := m.Called(ctx, limit, offset)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*user.User), args.Error(1)
+}
+
 func TestUserService_CreateUser(t *testing.T) {
 	tests := []struct {
 		name    string
-		req     user.CreateUserRequest
+		req     appuser.CreateUserRequest
 		setup   func(*MockRepository)
 		wantErr bool
 	}{
 		{
 			name: "success",
-			req: user.CreateUserRequest{
+			req: appuser.CreateUserRequest{
 				Email: "test@example.com",
 				Name:  "Test User",
 			},
 			setup: func(m *MockRepository) {
-				m.On("FindByEmail", mock.Anything, "test@example.com").Return(nil, user.ErrNotFound)
+				m.On("FindByEmail", mock.Anything, "test@example.com").Return(nil, user.ErrUserNotFound)
 				m.On("Create", mock.Anything, mock.AnythingOfType("*user.User")).Return(nil)
 			},
 			wantErr: false,
 		},
 		{
 			name: "user already exists",
-			req: user.CreateUserRequest{
+			req: appuser.CreateUserRequest{
 				Email: "existing@example.com",
 				Name:  "Existing User",
 			},
@@ -89,7 +97,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			mockRepo := new(MockRepository)
 			tt.setup(mockRepo)
 
-			service := user.NewService(mockRepo)
+			service := appuser.NewService(mockRepo)
 			ctx := context.Background()
 
 			resp, err := service.CreateUser(ctx, tt.req)
@@ -121,7 +129,7 @@ func TestUserService_GetUser(t *testing.T) {
 
 	mockRepo.On("FindByID", mock.Anything, "1").Return(expectedUser, nil)
 
-	service := user.NewService(mockRepo)
+	service := appuser.NewService(mockRepo)
 	ctx := context.Background()
 
 	resp, err := service.GetUser(ctx, "1")

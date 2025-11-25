@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -9,7 +10,8 @@ import (
 
 	"github.com/yourusername/golang/internal/config"
 	appuser "github.com/yourusername/golang/internal/application/user"
-	"github.com/yourusername/golang/internal/infrastructure/database/postgres"
+	entdb "github.com/yourusername/golang/internal/infrastructure/database/ent"
+	entrepo "github.com/yourusername/golang/internal/infrastructure/database/ent/repository"
 	"github.com/yourusername/golang/internal/infrastructure/workflow/temporal"
 	appworkflow "github.com/yourusername/golang/internal/application/workflow"
 )
@@ -28,9 +30,24 @@ func main() {
 	}
 	defer temporalClient.Close()
 
-	// 初始化数据库（TODO: 使用 Ent 客户端）
-	var db interface{} = nil
-	userRepo := postgres.NewUserRepository(db)
+	// 初始化数据库（使用 Ent 客户端）
+	ctx := context.Background()
+	entClient, err := entdb.NewClientFromConfig(
+		ctx,
+		cfg.Database.Host,
+		fmt.Sprintf("%d", cfg.Database.Port),
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.DBName,
+		cfg.Database.SSLMode,
+	)
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+	defer entClient.Close()
+	log.Println("Database connected successfully")
+
+	userRepo := entrepo.NewUserRepository(entClient)
 	userService := appuser.NewService(userRepo)
 
 	// 创建 Worker

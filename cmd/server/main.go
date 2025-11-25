@@ -47,7 +47,6 @@ func main() {
 	}
 
 	// 4. 初始化数据库（使用 Ent）
-	// 注意：需要先运行 make generate-ent 生成 Ent 代码
 	var userService appuser.Service
 	entClient, err := entdb.NewClientFromConfig(
 		ctx,
@@ -59,18 +58,23 @@ func main() {
 		cfg.Database.SSLMode,
 	)
 	if err != nil {
-		logger.Warn("Failed to initialize database", "error", err)
-		logger.Info("Note: To use Ent, run 'make generate-ent' first to generate code")
-		// 使用临时的内存实现（仅用于开发/测试）
-		// 在实际使用中，应该确保数据库连接成功
-		logger.Error("Database connection failed. Please check your database configuration and run 'make generate-ent'.")
+		logger.Error("Failed to initialize database", "error", err)
+		logger.Info("Please ensure PostgreSQL is running and configuration is correct")
 		os.Exit(1)
-	} else {
-		defer entClient.Close()
-		logger.Info("Database connected successfully")
-		userRepo := entrepo.NewUserRepository(entClient)
-		userService = appuser.NewService(userRepo)
 	}
+	defer entClient.Close()
+	logger.Info("Database connected successfully")
+
+	// 运行数据库迁移
+	if err := entClient.Migrate(ctx); err != nil {
+		logger.Warn("Failed to run database migrations", "error", err)
+		// 继续运行，可能表已存在
+	} else {
+		logger.Info("Database migrations completed")
+	}
+
+	userRepo := entrepo.NewUserRepository(entClient)
+	userService = appuser.NewService(userRepo)
 
 	// 5. 初始化 Temporal 客户端（可选）
 	var temporalHandler *temporalhandler.Handler

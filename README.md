@@ -60,9 +60,16 @@ go generate ./scripts/wire/
 ```bash
 # HTTP 服务器
 go run ./cmd/server
-
 # 或使用 Makefile
 make run
+
+# Temporal Worker（工作流执行器）
+go run ./cmd/temporal-worker
+# 或使用 Makefile
+make run-worker
+
+# 使用 Docker Compose 启动所有服务（包括 Temporal）
+docker-compose -f deployments/docker/docker-compose.yml up -d
 ```
 
 ---
@@ -95,6 +102,7 @@ Infrastructure → Domain
 - **依赖注入**: Wire
 - **数据库**: PostgreSQL (pgx)
 - **可观测性**: OpenTelemetry (OTLP)
+- **工作流编排**: Temporal
 - **消息队列**: Kafka, MQTT
 - **API**: REST, gRPC, GraphQL
 
@@ -102,9 +110,19 @@ Infrastructure → Domain
 
 ## 📚 文档
 
-- [架构文档](docs/architecture/)
-- [开发指南](docs/guides/)
-- [API 文档](docs/api/)
+### 核心文档
+
+- 🏗️ **[架构文档](docs/architecture/README.md)** - Clean Architecture、领域模型、工作流架构
+- 📖 **[使用指南](docs/guides/)** - 开发、部署、测试指南
+- 🔧 **[API 文档](docs/api/)** - REST、GraphQL、gRPC API 规范
+
+### 导航文档
+
+- 📊 **[项目文档索引](docs/00-项目文档索引.md)** - 完整文档索引
+- 📋 **[文档结构规范](docs/00-项目文档结构规范.md)** - 文档格式规范
+- 🗺️ **[架构知识图谱](docs/architecture/00-知识图谱.md)** - 架构全景图
+- 🔍 **[概念定义体系](docs/architecture/00-概念定义体系.md)** - 概念定义
+- 📖 **[技术对比矩阵](docs/architecture/00-对比矩阵.md)** - 技术选型对比
 
 ---
 

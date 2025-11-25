@@ -52,6 +52,26 @@ New to Go? Start here:
 
 ## 📚 Documentation Structure
 
+### 🏗️ [Architecture](./architecture/) ⭐ 项目架构
+
+项目架构相关文档：
+
+- **[Clean Architecture](./architecture/clean-architecture.md)** - 四层架构设计
+- **[领域模型设计](./architecture/domain-model.md)** - 领域层设计
+- **[工作流架构设计](./architecture/workflow.md)** - Temporal 工作流
+- **[知识图谱](./architecture/00-知识图谱.md)** - 架构知识图谱
+- **[概念定义体系](./architecture/00-概念定义体系.md)** - 概念定义
+- **[技术对比矩阵](./architecture/00-对比矩阵.md)** - 技术选型对比
+
+### 📖 [Guides](./guides/) ⭐ 使用指南
+
+项目使用指南：
+
+- **[工作流指南](./guides/workflow.md)** - Temporal 工作流使用
+- **[开发指南](./guides/development.md)** - 开发指南
+- **[部署指南](./guides/deployment.md)** - 部署指南
+- **[测试指南](./guides/testing.md)** - 测试指南
+
 ### 🎯 [Getting Started](./getting-started/)
 
 Fast-track your Go journey with quick starts, installation guides, and essential FAQs.

@@ -1,27 +1,49 @@
-# 工作流指南
+# 工作流使用指南
 
-## Temporal 工作流
+> **简介**: 本文档介绍如何使用本项目中的 Temporal 工作流功能，包括快速开始、API 使用和工作流定义。
+
+**版本**: v1.0
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
+
+---
+
+## 📋 目录
+
+- [工作流使用指南](#工作流使用指南)
+  - [📋 目录](#-目录)
+  - [1. 📚 概述](#1--概述)
+  - [2. 🚀 快速开始](#2--快速开始)
+  - [3. 💻 使用工作流](#3--使用工作流)
+  - [4. 🔧 工作流定义](#4--工作流定义)
+  - [5. ⚙️ 配置](#5-️-配置)
+  - [6. 🔍 监控和调试](#6--监控和调试)
+  - [7. 📚 扩展阅读](#7--扩展阅读)
+
+---
+
+## 1. 📚 概述
 
 本项目使用 [Temporal](https://temporal.io/) 作为工作流编排引擎，用于构建可靠的分布式应用。
 
-## 架构
-
-### 组件
+### 1.1 组件
 
 1. **Temporal Server** - 工作流引擎
 2. **Worker** - 执行工作流和活动
 3. **Client** - 启动和查询工作流
 
-### 工作流类型
+### 1.2 工作流类型
 
 - **UserWorkflow** - 用户相关操作工作流
   - 创建用户
   - 更新用户
   - 删除用户
 
-## 快速开始
+---
 
-### 1. 启动 Temporal Server
+## 2. 🚀 快速开始
+
+### 2.1 启动 Temporal Server
 
 使用 Docker Compose：
 
@@ -30,25 +52,27 @@ cd deployments/docker
 docker-compose up -d temporal temporal-db temporal-ui
 ```
 
-### 2. 启动 Worker
+### 2.2 启动 Worker
 
 ```bash
 go run ./cmd/temporal-worker
 ```
 
-### 3. 启动应用
+### 2.3 启动应用
 
 ```bash
 go run ./cmd/server
 ```
 
-### 4. 访问 Temporal UI
+### 2.4 访问 Temporal UI
 
 打开浏览器访问：http://localhost:8088
 
-## 使用工作流
+---
 
-### 启动工作流
+## 3. 💻 使用工作流
+
+### 3.1 启动工作流
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/workflows/user \
@@ -61,15 +85,17 @@ curl -X POST http://localhost:8080/api/v1/workflows/user \
   }'
 ```
 
-### 查询工作流结果
+### 3.2 查询工作流结果
 
 ```bash
 curl http://localhost:8080/api/v1/workflows/user/{workflow_id}?run_id={run_id}
 ```
 
-## 工作流定义
+---
 
-### UserWorkflow
+## 4. 🔧 工作流定义
+
+### 4.1 UserWorkflow
 
 用户工作流处理用户相关的操作，包括：
 
@@ -86,7 +112,7 @@ curl http://localhost:8080/api/v1/workflows/user/{workflow_id}?run_id={run_id}
    - 删除用户
    - 发送通知
 
-### 活动（Activities）
+### 4.2 活动（Activities）
 
 - `ValidateUserActivity` - 验证用户信息
 - `CreateUserActivity` - 创建用户
@@ -94,7 +120,9 @@ curl http://localhost:8080/api/v1/workflows/user/{workflow_id}?run_id={run_id}
 - `DeleteUserActivity` - 删除用户
 - `SendNotificationActivity` - 发送通知
 
-## 配置
+---
+
+## 5. ⚙️ 配置
 
 在 `configs/config.yaml` 中配置：
 
@@ -106,76 +134,66 @@ workflow:
     namespace: "default"
 ```
 
-## 开发工作流
+### 5.1 配置文件
 
-### 1. 定义工作流
+在 `configs/config.yaml` 中配置：
 
-在 `internal/application/workflow/` 中定义工作流函数：
-
-```go
-func MyWorkflow(ctx workflow.Context, input MyInput) (MyOutput, error) {
-    // 工作流逻辑
-    return output, nil
-}
+```yaml
+workflow:
+  temporal:
+    address: "localhost:7233"
+    task_queue: "user-task-queue"
+    namespace: "default"
 ```
 
-### 2. 定义活动
+### 5.2 环境变量
 
-在 `internal/application/workflow/` 中定义活动函数：
+也可以通过环境变量配置：
 
-```go
-func MyActivity(ctx context.Context, input string) (string, error) {
-    // 活动逻辑
-    return result, nil
-}
+```bash
+export TEMPORAL_ADDRESS=localhost:7233
+export TEMPORAL_TASK_QUEUE=user-task-queue
 ```
 
-### 3. 注册工作流和活动
+---
 
-在 `cmd/temporal-worker/main.go` 中注册：
+## 6. 🔍 监控和调试
 
-```go
-w.RegisterWorkflow(MyWorkflow)
-w.RegisterActivity(MyActivity)
-```
-
-## 最佳实践
-
-1. **幂等性** - 确保活动和查询是幂等的
-2. **超时设置** - 为活动设置合理的超时时间
-3. **重试策略** - 配置适当的重试策略
-4. **错误处理** - 正确处理和传播错误
-5. **信号和查询** - 使用信号和查询进行工作流交互
-
-## 监控
-
-### Temporal UI
+### 6.1 Temporal UI
 
 访问 http://localhost:8088 查看：
 - 工作流执行历史
 - 活动执行状态
 - 工作流查询和信号
 
-### 指标
+### 6.2 指标
 
 Temporal 提供丰富的指标，可以集成到 Prometheus 和 Grafana。
 
-## 故障排除
+### 6.3 故障排除
 
-### Worker 无法连接
+#### Worker 无法连接
 
 - 检查 Temporal Server 是否运行
 - 验证连接地址配置
 - 检查网络连接
 
-### 工作流执行失败
+#### 工作流执行失败
 
 - 查看 Temporal UI 中的错误信息
 - 检查活动日志
 - 验证输入参数
 
-## 参考资源
+---
 
-- [Temporal 文档](https://docs.temporal.io/)
+## 7. 📚 扩展阅读
+
+- [Temporal 官方文档](https://docs.temporal.io/)
 - [Temporal Go SDK](https://docs.temporal.io/dev-guide/go)
 - [工作流模式](https://docs.temporal.io/workflows)
+- [工作流架构设计](../architecture/workflow.md) - 架构设计详解
+
+---
+
+> 📚 **简介**
+> 本文深入探讨 Temporal 工作流的使用方法，系统讲解快速开始、API 使用、工作流定义和最佳实践。通过本文，您将全面掌握工作流的使用方法。
