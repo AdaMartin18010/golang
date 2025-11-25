@@ -20,3 +20,9 @@ observability:
   trace_endpoint: "localhost:4317"
   metric_endpoint: "localhost:4317"
   enabled: true
+
+workflow:
+  temporal:
+    address: "localhost:7233"
+    task_queue: "user-task-queue"
+    namespace: "default"

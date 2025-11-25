@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-// User holds the schema definition for the User entity.
+// User 用户实体
 type User struct {
 	ent.Schema
 }
 
-// Fields of the User.
+// Fields 定义用户字段
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
@@ -20,7 +20,8 @@ func (User) Fields() []ent.Field {
 			Immutable(),
 		field.String("email").
 			Unique().
-			NotEmpty(),
+			NotEmpty().
+			MaxLen(255),
 		field.String("name").
 			NotEmpty().
 			MaxLen(100),
@@ -33,7 +34,7 @@ func (User) Fields() []ent.Field {
 	}
 }
 
-// Indexes of the User.
+// Indexes 定义索引
 func (User) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("email").Unique(),

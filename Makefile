@@ -25,11 +25,18 @@ generate-proto: ## 生成 gRPC 代码
 	       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
 	       internal/interfaces/grpc/proto/user.proto
 
+generate-ent: ## 生成 Ent 代码
+	go generate ./internal/infrastructure/database/ent
+
 build: ## 构建应用
 	go build -o bin/server ./cmd/server
+	go build -o bin/temporal-worker ./cmd/temporal-worker
 
 run: ## 运行应用
 	go run ./cmd/server
+
+run-worker: ## 运行 Temporal Worker
+	go run ./cmd/temporal-worker
 
 test: ## 运行测试
 	go test -v ./...

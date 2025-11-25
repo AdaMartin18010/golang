@@ -3,40 +3,154 @@ version: '3.8'
 services:
   app:
     build:
-      context: ../..
-      dockerfile: deployments/docker/Dockerfile
+      context: ../../.
+      dockerfile: ./deployments/docker/Dockerfile
     ports:
       - "8080:8080"
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=golang
-      - OTLP_ENDPOINT=otel-collector:4317
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      DATABASE_DBNAME: mydb
+      DATABASE_SSLMODE: disable
+      OTEL_EXPORTER_OTLP_ENDPOINT: otel-collector:4317
+      TEMPORAL_ADDRESS: temporal:7233
     depends_on:
-      - postgres
+      - db
       - otel-collector
+      - temporal
+    networks:
+      - app-network
 
-  postgres:
-    image: postgres:15-alpine
+  temporal-worker:
+    build:
+      context: ../../.
+      dockerfile: ./deployments/docker/Dockerfile
+    command: ./temporal-worker
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=golang
-    ports:
-      - "5432:5432"
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      DATABASE_DBNAME: mydb
+      DATABASE_SSLMODE: disable
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_TASK_QUEUE: user-task-queue
+    depends_on:
+      - db
+      - temporal
+    networks:
+      - app-network
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  temporal:
+    image: temporalio/auto-setup:1.22.0
+    ports:
+      - "7233:7233"
+      - "8088:8088"
+    environment:
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=user
+      - POSTGRES_PWD=password
+      - POSTGRES_SEEDS=temporal-db
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
+    depends_on:
+      - temporal-db
+    networks:
+      - app-network
+
+  temporal-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: temporal
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - temporal-db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  temporal-ui:
+    image: temporalio/ui:2.21.2
+    ports:
+      - "8088:8080"
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    depends_on:
+      - temporal
+    networks:
+      - app-network
 
   otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector:0.90.1
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
-      - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP HTTP receiver
+      - "4317:4317" # OTLP gRPC receiver
+      - "13133:13133" # Health Check extension
+      - "14268:14268" # Jaeger HTTP receiver
+      - "9411:9411" # Zipkin receiver
+      - "8888:8888" # Prometheus metrics exporter
+    networks:
+      - app-network
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--enable-feature=native-histograms'
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:10.2.2
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - app-network
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "14268:14268" # Jaeger gRPC
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
-  postgres_data:
+  db-data:
+  temporal-db-data:
+  grafana-data:

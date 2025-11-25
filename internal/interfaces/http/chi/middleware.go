@@ -15,26 +15,27 @@ import (
 func TracingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		propagator := otel.GetTextMapPropagator()
-		ctx = propagator.Extract(ctx, propagation.HeaderCarrier(r.Header))
-
-		tr := otel.Tracer("http")
-		ctx, span := tr.Start(ctx, r.URL.Path,
-			trace.WithAttributes(
-				attribute.String("http.method", r.Method),
-				attribute.String("http.url", r.URL.String()),
-				attribute.String("http.user_agent", r.UserAgent()),
-			),
+		tracer := otel.Tracer("http-server")
+		propagator := propagation.NewCompositeTextMapPropagator(
+			propagation.TraceContext{},
+			propagation.Baggage{},
 		)
+
+		ctx = propagator.Extract(ctx, propagation.HeaderCarrier(r.Header))
+		ctx, span := tracer.Start(ctx, r.URL.Path, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		// 将 span 注入到 context
-		r = r.WithContext(ctx)
+		span.SetAttributes(
+			attribute.String("http.method", r.Method),
+			attribute.String("http.target", r.URL.Path),
+			attribute.String("http.user_agent", r.UserAgent()),
+			attribute.String("http.client_ip", r.RemoteAddr),
+		)
 
-		// 注入追踪头到响应
-		propagator.Inject(ctx, propagation.HeaderCarrier(w.Header()))
+		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+		next.ServeHTTP(ww, r.WithContext(ctx))
 
-		next.ServeHTTP(w, r)
+		span.SetAttributes(attribute.Int("http.status_code", ww.Status()))
 	})
 }
 
@@ -46,14 +47,14 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})(next)
 }
 
-// TimeoutMiddleware 超时中间件
-func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
-	return middleware.Timeout(timeout)
-}
-
 // RecovererMiddleware 恢复中间件
 func RecovererMiddleware(next http.Handler) http.Handler {
 	return middleware.Recoverer(next)
+}
+
+// TimeoutMiddleware 超时中间件
+func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
+	return middleware.Timeout(timeout)
 }
 
 // CORSMiddleware CORS 中间件

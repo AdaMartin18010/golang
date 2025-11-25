@@ -13,6 +13,7 @@ type Config struct {
 	Database      DatabaseConfig      `mapstructure:"database"`
 	Log           LogConfig           `mapstructure:"log"`
 	Observability ObservabilityConfig `mapstructure:"observability"`
+	Workflow      WorkflowConfig      `mapstructure:"workflow"`
 }
 
 // ServerConfig 服务器配置
@@ -46,6 +47,18 @@ type ObservabilityConfig struct {
 	Enabled        bool   `mapstructure:"enabled"`
 }
 
+// WorkflowConfig 工作流配置
+type WorkflowConfig struct {
+	Temporal TemporalConfig `mapstructure:"temporal"`
+}
+
+// TemporalConfig Temporal 配置
+type TemporalConfig struct {
+	Address   string `mapstructure:"address"`
+	TaskQueue string `mapstructure:"task_queue"`
+	Namespace string `mapstructure:"namespace"`
+}
+
 // LoadConfig 加载配置
 func LoadConfig() (*Config, error) {
 	viper.SetConfigName("config")
@@ -72,6 +85,11 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("observability.trace_endpoint", "localhost:4317")
 	viper.SetDefault("observability.metric_endpoint", "localhost:4317")
 	viper.SetDefault("observability.enabled", true)
+
+	// Workflow defaults
+	viper.SetDefault("workflow.temporal.address", "localhost:7233")
+	viper.SetDefault("workflow.temporal.task_queue", "user-task-queue")
+	viper.SetDefault("workflow.temporal.namespace", "default")
 
 	// 读取环境变量
 	viper.AutomaticEnv()

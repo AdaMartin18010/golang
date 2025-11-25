@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	appuser "github.com/yourusername/golang/internal/application/user"
-	domain "github.com/yourusername/golang/internal/domain/user"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	appuser "github.com/yourusername/golang/internal/application/user"
+	domain "github.com/yourusername/golang/internal/domain/user"
 )
 
 // MockRepository 模拟仓储
