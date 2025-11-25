@@ -7,14 +7,14 @@ coverage:
   precision: 2
   round: down
   range: "50...100"
-  
+
   status:
     project:
       default:
         target: 70%
         threshold: 5%
         if_ci_failed: error
-    
+
     patch:
       default:
         target: 80%
@@ -45,4 +45,3 @@ ignore:
   - "archive/**"
   - "docs_old/**"
   - "reports/**"
-

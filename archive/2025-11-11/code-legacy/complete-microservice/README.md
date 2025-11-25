@@ -1,7 +1,7 @@
 # 🎯 完整微服务示例
 
-> **版本**: v2.0.0  
-> **类型**: 完整应用示例  
+> **版本**: v2.0.0
+> **类型**: 完整应用示例
 > **难度**: 中级
 
 这是一个完整的微服务应用示例，展示了如何集成和使用所有核心模块。
@@ -333,7 +333,7 @@ server.Shutdown(ctx)
 ```go
 // 使用上下文记录错误
 if err != nil {
-    observability.WithContext(ctx).Error("Operation failed", 
+    observability.WithContext(ctx).Error("Operation failed",
         "error", err,
         "request_id", reqID)
     return err

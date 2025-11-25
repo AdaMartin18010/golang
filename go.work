@@ -4,8 +4,8 @@ go 1.25.3
 // 使用 workspace 模式统一管理多个模块
 
 use (
-	// CLI工具
-	//./cmd/gox
+	// 主模块
+	.
 
 	// 示例模块
 	./examples

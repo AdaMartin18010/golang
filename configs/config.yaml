@@ -1,0 +1,29 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout: 30
+  write_timeout: 30
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "postgres"
+  dbname: "golang"
+  sslmode: "disable"
+  max_conns: 25
+
+observability:
+  otlp:
+    endpoint: "localhost:4317"
+    insecure: true
+
+messaging:
+  kafka:
+    brokers:
+      - "localhost:9092"
+  mqtt:
+    broker: "tcp://localhost:1883"
+    client_id: "golang-client"
+    username: ""
+    password: ""
