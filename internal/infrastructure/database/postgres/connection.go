@@ -1,55 +1,37 @@
 package postgres
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/yourusername/golang/internal/config"
 )
 
-// Config 数据库配置
-type Config struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	Database string
-	SSLMode  string
-}
-
-// Connection 数据库连接
+// Connection PostgreSQL 连接
 type Connection struct {
-	pool *pgxpool.Pool
+	// TODO: 使用 Ent 客户端
+	db interface{}
 }
 
 // NewConnection 创建数据库连接
-func NewConnection(ctx context.Context, cfg Config) (*Connection, error) {
-	dsn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Database, cfg.SSLMode,
-	)
+func NewConnection(cfg *config.DatabaseConfig) (*Connection, error) {
+	// TODO: 使用 Ent 客户端初始化
+	// 示例:
+	// client, err := ent.NewClient(ent.Driver(drv))
+	// if err != nil {
+	//     return nil, err
+	// }
+	// return &Connection{db: client}, nil
 
-	pool, err := pgxpool.New(ctx, dsn)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create connection pool: %w", err)
-	}
-
-	// 测试连接
-	if err := pool.Ping(ctx); err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
-	}
-
-	return &Connection{pool: pool}, nil
+	return &Connection{db: nil}, fmt.Errorf("not implemented: use Ent client")
 }
 
 // Close 关闭连接
-func (c *Connection) Close() {
-	if c.pool != nil {
-		c.pool.Close()
-	}
+func (c *Connection) Close() error {
+	// TODO: 实现关闭逻辑
+	return nil
 }
 
-// Pool 获取连接池
-func (c *Connection) Pool() *pgxpool.Pool {
-	return c.pool
+// Client 获取客户端
+func (c *Connection) Client() interface{} {
+	return c.db
 }

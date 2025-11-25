@@ -2,7 +2,6 @@ package user
 
 import (
 	"time"
-
 	domain "github.com/yourusername/golang/internal/domain/user"
 )
 
@@ -27,7 +26,7 @@ type UserDTO struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// ToDTO 转换为DTO
+// ToDTO 转换为 DTO
 func ToDTO(u *domain.User) *UserDTO {
 	if u == nil {
 		return nil

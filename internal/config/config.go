@@ -2,66 +2,48 @@ package config
 
 import (
 	"fmt"
-	"log/slog"
+	"time"
 
 	"github.com/spf13/viper"
 )
 
 // Config 应用配置
 type Config struct {
-	Server      ServerConfig      `mapstructure:"server"`
-	Database    DatabaseConfig    `mapstructure:"database"`
+	Server        ServerConfig        `mapstructure:"server"`
+	Database      DatabaseConfig      `mapstructure:"database"`
+	Log           LogConfig           `mapstructure:"log"`
 	Observability ObservabilityConfig `mapstructure:"observability"`
-	Messaging   MessagingConfig   `mapstructure:"messaging"`
 }
 
 // ServerConfig 服务器配置
 type ServerConfig struct {
-	Host         string `mapstructure:"host" env:"SERVER_HOST"`
-	Port         int    `mapstructure:"port" env:"SERVER_PORT"`
-	ReadTimeout  int    `mapstructure:"read_timeout" env:"SERVER_READ_TIMEOUT"`
-	WriteTimeout int    `mapstructure:"write_timeout" env:"SERVER_WRITE_TIMEOUT"`
+	Host         string        `mapstructure:"host"`
+	Port         int           `mapstructure:"port"`
+	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
+	WriteTimeout time.Duration `mapstructure:"write_timeout"`
+	IdleTimeout  time.Duration `mapstructure:"idle_timeout"`
 }
 
 // DatabaseConfig 数据库配置
 type DatabaseConfig struct {
-	Host     string `mapstructure:"host" env:"DB_HOST"`
-	Port     int    `mapstructure:"port" env:"DB_PORT"`
-	User     string `mapstructure:"user" env:"DB_USER"`
-	Password string `mapstructure:"password" env:"DB_PASSWORD"`
-	DBName   string `mapstructure:"dbname" env:"DB_NAME"`
-	SSLMode  string `mapstructure:"sslmode" env:"DB_SSLMODE"`
-	MaxConns int    `mapstructure:"max_conns" env:"DB_MAX_CONNS"`
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	DBName   string `mapstructure:"dbname"`
+	SSLMode  string `mapstructure:"sslmode"`
+}
+
+// LogConfig 日志配置
+type LogConfig struct {
+	Level string `mapstructure:"level"`
 }
 
 // ObservabilityConfig 可观测性配置
 type ObservabilityConfig struct {
-	OTLP OTLPConfig `mapstructure:"otlp"`
-}
-
-// OTLPConfig OTLP配置
-type OTLPConfig struct {
-	Endpoint string `mapstructure:"endpoint" env:"OTLP_ENDPOINT"`
-	Insecure bool   `mapstructure:"insecure" env:"OTLP_INSECURE"`
-}
-
-// MessagingConfig 消息队列配置
-type MessagingConfig struct {
-	Kafka KafkaConfig `mapstructure:"kafka"`
-	MQTT  MQTTConfig  `mapstructure:"mqtt"`
-}
-
-// KafkaConfig Kafka配置
-type KafkaConfig struct {
-	Brokers []string `mapstructure:"brokers" env:"KAFKA_BROKERS"`
-}
-
-// MQTTConfig MQTT配置
-type MQTTConfig struct {
-	Broker   string `mapstructure:"broker" env:"MQTT_BROKER"`
-	ClientID string `mapstructure:"client_id" env:"MQTT_CLIENT_ID"`
-	Username string `mapstructure:"username" env:"MQTT_USERNAME"`
-	Password string `mapstructure:"password" env:"MQTT_PASSWORD"`
+	TraceEndpoint  string `mapstructure:"trace_endpoint"`
+	MetricEndpoint string `mapstructure:"metric_endpoint"`
+	Enabled        bool   `mapstructure:"enabled"`
 }
 
 // LoadConfig 加载配置
@@ -72,48 +54,39 @@ func LoadConfig() (*Config, error) {
 	viper.AddConfigPath(".")
 
 	// 设置默认值
-	setDefaults()
+	viper.SetDefault("server.host", "0.0.0.0")
+	viper.SetDefault("server.port", 8080)
+	viper.SetDefault("server.read_timeout", 5*time.Second)
+	viper.SetDefault("server.write_timeout", 10*time.Second)
+	viper.SetDefault("server.idle_timeout", 120*time.Second)
+
+	viper.SetDefault("database.host", "localhost")
+	viper.SetDefault("database.port", 5432)
+	viper.SetDefault("database.user", "user")
+	viper.SetDefault("database.password", "password")
+	viper.SetDefault("database.dbname", "golang")
+	viper.SetDefault("database.sslmode", "disable")
+
+	viper.SetDefault("log.level", "info")
+
+	viper.SetDefault("observability.trace_endpoint", "localhost:4317")
+	viper.SetDefault("observability.metric_endpoint", "localhost:4317")
+	viper.SetDefault("observability.enabled", true)
 
 	// 读取环境变量
 	viper.AutomaticEnv()
 
 	// 读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
-		slog.Warn("config file not found, using defaults and environment variables", "error", err)
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return nil, fmt.Errorf("failed to read config file: %w", err)
+		}
 	}
 
-	var config Config
-	if err := viper.Unmarshal(&config); err != nil {
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	return &config, nil
-}
-
-// setDefaults 设置默认值
-func setDefaults() {
-	// Server defaults
-	viper.SetDefault("server.host", "0.0.0.0")
-	viper.SetDefault("server.port", 8080)
-	viper.SetDefault("server.read_timeout", 30)
-	viper.SetDefault("server.write_timeout", 30)
-
-	// Database defaults
-	viper.SetDefault("database.host", "localhost")
-	viper.SetDefault("database.port", 5432)
-	viper.SetDefault("database.user", "postgres")
-	viper.SetDefault("database.password", "postgres")
-	viper.SetDefault("database.dbname", "golang")
-	viper.SetDefault("database.sslmode", "disable")
-	viper.SetDefault("database.max_conns", 25)
-
-	// OTLP defaults
-	viper.SetDefault("observability.otlp.endpoint", "localhost:4317")
-	viper.SetDefault("observability.otlp.insecure", true)
-}
-
-// GetDSN 获取数据库连接字符串
-func (c *DatabaseConfig) GetDSN() string {
-	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		c.Host, c.Port, c.User, c.Password, c.DBName, c.SSLMode)
+	return &cfg, nil
 }

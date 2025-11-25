@@ -2,6 +2,7 @@ package chi
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -14,16 +15,18 @@ type Router struct {
 	router *chi.Mux
 }
 
-// NewRouter 创建路由
-func NewRouter(userService *appuser.Service) *Router {
+// NewRouter 创建 HTTP 路由器
+func NewRouter(userService appuser.Service) *Router {
 	r := chi.NewRouter()
 
 	// 中间件
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(60))
+	r.Use(TracingMiddleware) // OpenTelemetry 追踪
+	r.Use(LoggingMiddleware)  // 日志
+	r.Use(RecovererMiddleware) // 恢复
+	r.Use(TimeoutMiddleware(60 * time.Second)) // 超时
+	r.Use(CORSMiddleware) // CORS
 
 	// 健康检查
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -33,15 +36,8 @@ func NewRouter(userService *appuser.Service) *Router {
 
 	// API 路由
 	r.Route("/api/v1", func(r chi.Router) {
-		// 用户路由
 		userHandler := handlers.NewUserHandler(userService)
-		r.Route("/users", func(r chi.Router) {
-			r.Post("/", userHandler.CreateUser)
-			r.Get("/", userHandler.ListUsers)
-			r.Get("/{id}", userHandler.GetUser)
-			r.Put("/{id}", userHandler.UpdateUser)
-			r.Delete("/{id}", userHandler.DeleteUser)
-		})
+		r.Mount("/users", userRoutes(userHandler))
 	})
 
 	return &Router{router: r}
@@ -50,4 +46,15 @@ func NewRouter(userService *appuser.Service) *Router {
 // Handler 返回 HTTP 处理器
 func (r *Router) Handler() http.Handler {
 	return r.router
+}
+
+// userRoutes 用户路由
+func userRoutes(userHandler *handlers.UserHandler) http.Handler {
+	r := chi.NewRouter()
+	r.Post("/", userHandler.CreateUser)
+	r.Get("/", userHandler.ListUsers)
+	r.Get("/{id}", userHandler.GetUser)
+	r.Put("/{id}", userHandler.UpdateUser)
+	r.Delete("/{id}", userHandler.DeleteUser)
+	return r
 }

@@ -4,7 +4,7 @@
 
 ## 结构
 
-```
+```text
 cmd/
 ├── server/        # HTTP 服务器
 ├── grpc-server/   # gRPC 服务器

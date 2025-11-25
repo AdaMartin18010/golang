@@ -9,12 +9,15 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib" // PostgreSQL driver
 
 	"github.com/yourusername/golang/internal/config"
-	"github.com/yourusername/golang/internal/infrastructure/database/ent/schema"
 )
 
-// Client Ent 客户端
+// Client Ent 客户端接口
+// 注意：需要先运行 go generate 生成 Ent 客户端代码
+// 然后替换 *ent.Client 为实际生成的客户端类型
 type Client struct {
-	*ent.Client
+	// TODO: 替换为生成的 Ent 客户端
+	// 例如: *ent.Client (从生成的代码导入)
+	db interface{} // 临时占位
 }
 
 // NewClient 创建 Ent 客户端
@@ -27,17 +30,23 @@ func NewClient(cfg *config.DatabaseConfig) (*Client, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	client := ent.NewClient(ent.Driver(drv))
+	// TODO: 使用生成的 Ent 客户端
+	// client := ent.NewClient(ent.Driver(drv))
+	//
+	// // 运行迁移
+	// if err := client.Schema.Create(context.Background()); err != nil {
+	// 	return nil, fmt.Errorf("failed to create schema: %w", err)
+	// }
 
-	// 运行迁移
-	if err := client.Schema.Create(context.Background()); err != nil {
-		return nil, fmt.Errorf("failed to create schema: %w", err)
-	}
-
-	return &Client{Client: client}, nil
+	// 临时返回
+	return &Client{db: drv}, nil
 }
 
 // Close 关闭客户端
 func (c *Client) Close() error {
-	return c.Client.Close()
+	// TODO: 实现关闭逻辑
+	if closer, ok := c.db.(interface{ Close() error }); ok {
+		return closer.Close()
+	}
+	return nil
 }

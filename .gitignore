@@ -1,27 +1,23 @@
-# Go workspace
-go.work.sum
-
-# Binaries for programs and plugins
+# Binaries
+bin/
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
 
-# Test binary, built with `go test -c`
+# Test binary
 *.test
 
 # Output of the go coverage tool
 *.out
-coverage
 coverage.html
-coverage.txt
 
 # Dependency directories
 vendor/
 
-# Go workspace file (optional - comment out if you want to track it)
-# go.work
+# Go workspace file
+go.work.sum
 
 # IDE
 .idea/
@@ -34,22 +30,17 @@ vendor/
 .DS_Store
 Thumbs.db
 
-# Build output
-bin/
-dist/
-build/
+# Environment
+.env
+.env.local
 
-# Temporary files
-tmp/
-temp/
+# Generated files
+internal/infrastructure/database/ent/gen/
+scripts/wire/wire_gen.go
 
-# Log files
+# Logs
 *.log
 
-# Profile files
-*.prof
-*.pprof
-
-# Benchmark results
-benchmarks/
-*.bench
+# Build artifacts
+dist/
+build/

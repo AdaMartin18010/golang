@@ -2,6 +2,7 @@ package mqtt
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -13,51 +14,64 @@ type Client struct {
 	client mqtt.Client
 }
 
-// Config 配置
-type Config struct {
-	Broker   string
-	ClientID string
-	Username string
-	Password string
-}
-
 // MessageHandler 消息处理函数
-type MessageHandler func(ctx context.Context, topic string, payload []byte)
+type MessageHandler func(ctx context.Context, topic string, payload []byte) error
 
 // NewClient 创建 MQTT 客户端
-func NewClient(cfg Config) (*Client, error) {
+func NewClient(broker, clientID, username, password string) (*Client, error) {
 	opts := mqtt.NewClientOptions()
-	opts.AddBroker(cfg.Broker)
-	opts.SetClientID(cfg.ClientID)
-	if cfg.Username != "" {
-		opts.SetUsername(cfg.Username)
-	}
-	if cfg.Password != "" {
-		opts.SetPassword(cfg.Password)
-	}
-	opts.SetKeepAlive(60 * time.Second)
-	opts.SetDefaultPublishHandler(func(client mqtt.Client, msg mqtt.Message) {
-		// 默认处理函数
-	})
-	opts.SetPingTimeout(1 * time.Second)
+	opts.AddBroker(broker)
+	opts.SetClientID(clientID)
+	opts.SetUsername(username)
+	opts.SetPassword(password)
 	opts.SetAutoReconnect(true)
+	opts.SetConnectRetry(true)
+	opts.SetConnectRetryInterval(5 * time.Second)
+	opts.SetKeepAlive(60 * time.Second)
+	opts.SetPingTimeout(10 * time.Second)
 
 	client := mqtt.NewClient(opts)
 
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		return nil, fmt.Errorf("failed to connect to MQTT broker: %w", token.Error())
+	token := client.Connect()
+	if token.Wait() && token.Error() != nil {
+		return nil, fmt.Errorf("failed to connect: %w", token.Error())
 	}
 
-	return &Client{
-		client: client,
-	}, nil
+	return &Client{client: client}, nil
+}
+
+// Publish 发布消息
+func (c *Client) Publish(ctx context.Context, topic string, qos byte, retained bool, payload interface{}) error {
+	var data []byte
+	var err error
+
+	switch v := payload.(type) {
+	case []byte:
+		data = v
+	case string:
+		data = []byte(v)
+	default:
+		data, err = json.Marshal(payload)
+		if err != nil {
+			return fmt.Errorf("failed to marshal payload: %w", err)
+		}
+	}
+
+	token := c.client.Publish(topic, qos, retained, data)
+	if token.Wait() && token.Error() != nil {
+		return fmt.Errorf("failed to publish: %w", token.Error())
+	}
+
+	return nil
 }
 
 // Subscribe 订阅主题
-func (c *Client) Subscribe(topic string, qos byte, handler MessageHandler) error {
+func (c *Client) Subscribe(ctx context.Context, topic string, qos byte, handler MessageHandler) error {
 	token := c.client.Subscribe(topic, qos, func(client mqtt.Client, msg mqtt.Message) {
-		ctx := context.Background()
-		handler(ctx, msg.Topic(), msg.Payload())
+		if err := handler(ctx, msg.Topic(), msg.Payload()); err != nil {
+			// 记录错误，但不中断订阅
+			fmt.Printf("Error handling message: %v\n", err)
+		}
 	})
 
 	if token.Wait() && token.Error() != nil {
@@ -67,18 +81,16 @@ func (c *Client) Subscribe(topic string, qos byte, handler MessageHandler) error
 	return nil
 }
 
-// Publish 发布消息
-func (c *Client) Publish(topic string, qos byte, retained bool, payload []byte) error {
-	token := c.client.Publish(topic, qos, retained, payload)
+// Unsubscribe 取消订阅
+func (c *Client) Unsubscribe(ctx context.Context, topics ...string) error {
+	token := c.client.Unsubscribe(topics...)
 	if token.Wait() && token.Error() != nil {
-		return fmt.Errorf("failed to publish: %w", token.Error())
+		return fmt.Errorf("failed to unsubscribe: %w", token.Error())
 	}
 	return nil
 }
 
-// Disconnect 断开连接
-func (c *Client) Disconnect() {
-	if c.client != nil && c.client.IsConnected() {
-		c.client.Disconnect(250)
-	}
+// Close 关闭客户端
+func (c *Client) Close() {
+	c.client.Disconnect(250)
 }

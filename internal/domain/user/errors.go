@@ -3,8 +3,12 @@ package user
 import "errors"
 
 var (
-	ErrEmailRequired = errors.New("email is required")
-	ErrNameRequired  = errors.New("name is required")
-	ErrNotFound      = errors.New("user not found")
-	ErrAlreadyExists = errors.New("user already exists")
+	// ErrUserNotFound 用户不存在
+	ErrUserNotFound = errors.New("user not found")
+
+	// ErrUserAlreadyExists 用户已存在
+	ErrUserAlreadyExists = errors.New("user already exists")
+
+	// ErrInvalidEmail 无效邮箱
+	ErrInvalidEmail = errors.New("invalid email")
 )

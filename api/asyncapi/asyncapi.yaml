@@ -1,0 +1,67 @@
+asyncapi: 3.0.0
+info:
+  title: Go Modern Architecture AsyncAPI
+  version: 1.0.0
+  description: AsyncAPI specification for event-driven architecture
+
+servers:
+  kafka:
+    url: localhost:9092
+    protocol: kafka
+  mqtt:
+    url: tcp://localhost:1883
+    protocol: mqtt
+
+channels:
+  user.created:
+    description: User created event
+    publish:
+      message:
+        $ref: '#/components/messages/UserCreated'
+
+  user.updated:
+    description: User updated event
+    publish:
+      message:
+        $ref: '#/components/messages/UserUpdated'
+
+  user.deleted:
+    description: User deleted event
+    publish:
+      message:
+        $ref: '#/components/messages/UserDeleted'
+
+components:
+  messages:
+    UserCreated:
+      payload:
+        type: object
+        properties:
+          id:
+            type: string
+          email:
+            type: string
+          name:
+            type: string
+          createdAt:
+            type: string
+
+    UserUpdated:
+      payload:
+        type: object
+        properties:
+          id:
+            type: string
+          email:
+            type: string
+          name:
+            type: string
+          updatedAt:
+            type: string
+
+    UserDeleted:
+      payload:
+        type: object
+        properties:
+          id:
+            type: string

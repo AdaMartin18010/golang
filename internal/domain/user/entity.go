@@ -1,8 +1,11 @@
 package user
 
-import "time"
+import (
+	"time"
+	"github.com/google/uuid"
+)
 
-// User 用户实体（领域模型）
+// User 用户实体
 type User struct {
 	ID        string
 	Email     string
@@ -15,6 +18,7 @@ type User struct {
 func NewUser(email, name string) *User {
 	now := time.Now()
 	return &User{
+		ID:        uuid.New().String(),
 		Email:     email,
 		Name:      name,
 		CreatedAt: now,
@@ -32,4 +36,9 @@ func (u *User) UpdateName(name string) {
 func (u *User) UpdateEmail(email string) {
 	u.Email = email
 	u.UpdatedAt = time.Now()
+}
+
+// IsValid 验证用户是否有效
+func (u *User) IsValid() bool {
+	return u.Email != "" && u.Name != "" && u.ID != ""
 }

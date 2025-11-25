@@ -2,54 +2,50 @@ package kafka
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/IBM/sarama"
 )
 
+// MessageHandler 消息处理函数
+type MessageHandler func(ctx context.Context, key string, value []byte) error
+
 // Consumer Kafka 消费者
 type Consumer struct {
 	consumer sarama.ConsumerGroup
+	handler  MessageHandler
 }
 
-// Config 配置
-type Config struct {
-	Brokers []string
-	GroupID string
-}
-
-// Handler 消息处理函数
-type Handler func(ctx context.Context, topic string, key string, value []byte) error
-
-// NewConsumer 创建消费者
-func NewConsumer(cfg Config) (*Consumer, error) {
+// NewConsumer 创建 Kafka 消费者
+func NewConsumer(brokers []string, groupID string, handler MessageHandler) (*Consumer, error) {
 	config := sarama.NewConfig()
 	config.Consumer.Group.Rebalance.Strategy = sarama.NewBalanceStrategyRoundRobin()
 	config.Consumer.Offsets.Initial = sarama.OffsetNewest
 
-	consumer, err := sarama.NewConsumerGroup(cfg.Brokers, cfg.GroupID, config)
+	consumer, err := sarama.NewConsumerGroup(brokers, groupID, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create consumer: %w", err)
 	}
 
 	return &Consumer{
 		consumer: consumer,
+		handler:  handler,
 	}, nil
 }
 
 // Consume 消费消息
-func (c *Consumer) Consume(ctx context.Context, topics []string, handler Handler) error {
-	consumerHandler := &consumerGroupHandler{
-		handler: handler,
-	}
+func (c *Consumer) Consume(ctx context.Context, topics []string) error {
+	handler := &consumerGroupHandler{handler: c.handler}
 
 	for {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			if err := c.consumer.Consume(ctx, topics, consumerHandler); err != nil {
-				return fmt.Errorf("failed to consume: %w", err)
+			err := c.consumer.Consume(ctx, topics, handler)
+			if err != nil {
+				return fmt.Errorf("consumer error: %w", err)
 			}
 		}
 	}
@@ -57,20 +53,25 @@ func (c *Consumer) Consume(ctx context.Context, topics []string, handler Handler
 
 // Close 关闭消费者
 func (c *Consumer) Close() error {
-	if c.consumer != nil {
-		return c.consumer.Close()
-	}
-	return nil
+	return c.consumer.Close()
 }
 
 // consumerGroupHandler 消费者组处理器
 type consumerGroupHandler struct {
-	handler Handler
+	handler MessageHandler
 }
 
-func (h *consumerGroupHandler) Setup(sarama.ConsumerGroupSession) error   { return nil }
-func (h *consumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error { return nil }
+// Setup 设置会话
+func (h *consumerGroupHandler) Setup(sarama.ConsumerGroupSession) error {
+	return nil
+}
 
+// Cleanup 清理会话
+func (h *consumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error {
+	return nil
+}
+
+// ConsumeClaim 消费消息
 func (h *consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for {
 		select {
@@ -82,9 +83,7 @@ func (h *consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 			}
 
 			key := string(message.Key)
-			value := message.Value
-
-			if err := h.handler(session.Context(), message.Topic, key, value); err != nil {
+			if err := h.handler(session.Context(), key, message.Value); err != nil {
 				return err
 			}
 

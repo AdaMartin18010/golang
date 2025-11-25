@@ -9,18 +9,11 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
-	"go.opentelemetry.io/otel/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.19.0"
 )
 
-// TracerProvider OpenTelemetry 追踪提供者
-type TracerProvider struct {
-	provider *sdktrace.TracerProvider
-	tracer   trace.Tracer
-}
-
 // NewTracerProvider 创建追踪提供者
-func NewTracerProvider(ctx context.Context, endpoint string, insecure bool) (*TracerProvider, error) {
+func NewTracerProvider(ctx context.Context, endpoint string, insecure bool) (func(context.Context) error, error) {
 	// 创建资源
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
@@ -58,19 +51,5 @@ func NewTracerProvider(ctx context.Context, endpoint string, insecure bool) (*Tr
 		propagation.Baggage{},
 	))
 
-	return &TracerProvider{
-		provider: tp,
-		tracer:   tp.Tracer("golang-service"),
-	}, nil
+	return tp.Shutdown, nil
 }
-
-// Tracer 获取追踪器
-func (tp *TracerProvider) Tracer() trace.Tracer {
-	return tp.tracer
-}
-
-// Shutdown 关闭追踪提供者
-func (tp *TracerProvider) Shutdown(ctx context.Context) error {
-	return tp.provider.Shutdown(ctx)
-}
-

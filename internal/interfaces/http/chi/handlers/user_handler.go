@@ -3,18 +3,20 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	appuser "github.com/yourusername/golang/internal/application/user"
+	"github.com/yourusername/golang/pkg/errors"
 )
 
-// UserHandler 用户 HTTP 处理器
+// UserHandler 用户处理器
 type UserHandler struct {
-	service *appuser.Service
+	service appuser.Service
 }
 
 // NewUserHandler 创建用户处理器
-func NewUserHandler(service *appuser.Service) *UserHandler {
+func NewUserHandler(service appuser.Service) *UserHandler {
 	return &UserHandler{service: service}
 }
 
@@ -22,73 +24,92 @@ func NewUserHandler(service *appuser.Service) *UserHandler {
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req appuser.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		Error(w, http.StatusBadRequest, errors.NewInvalidInputError("Invalid request body"))
 		return
 	}
 
 	user, err := h.service.CreateUser(r.Context(), req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if appErr, ok := err.(*errors.AppError); ok && appErr.Code == errors.ErrCodeConflict {
+			Error(w, http.StatusConflict, err)
+		} else {
+			Error(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(user)
+	Success(w, http.StatusCreated, user)
 }
 
 // GetUser 获取用户
 func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+		Error(w, http.StatusBadRequest, errors.NewInvalidInputError("User ID is required"))
 		return
 	}
 
 	user, err := h.service.GetUser(r.Context(), id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		if appErr, ok := err.(*errors.AppError); ok && appErr.Code == errors.ErrCodeNotFound {
+			Error(w, http.StatusNotFound, err)
+		} else {
+			Error(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	Success(w, http.StatusOK, user)
 }
 
 // UpdateUser 更新用户
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+		Error(w, http.StatusBadRequest, errors.NewInvalidInputError("User ID is required"))
 		return
 	}
 
 	var req appuser.UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		Error(w, http.StatusBadRequest, errors.NewInvalidInputError("Invalid request body"))
 		return
 	}
 
 	user, err := h.service.UpdateUser(r.Context(), id, req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if appErr, ok := err.(*errors.AppError); ok {
+			switch appErr.Code {
+			case errors.ErrCodeNotFound:
+				Error(w, http.StatusNotFound, err)
+			case errors.ErrCodeConflict:
+				Error(w, http.StatusConflict, err)
+			default:
+				Error(w, http.StatusInternalServerError, err)
+			}
+		} else {
+			Error(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	Success(w, http.StatusOK, user)
 }
 
 // DeleteUser 删除用户
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+		Error(w, http.StatusBadRequest, errors.NewInvalidInputError("User ID is required"))
 		return
 	}
 
 	if err := h.service.DeleteUser(r.Context(), id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if appErr, ok := err.(*errors.AppError); ok && appErr.Code == errors.ErrCodeNotFound {
+			Error(w, http.StatusNotFound, err)
+		} else {
+			Error(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -97,13 +118,27 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 // ListUsers 列出用户
 func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
-	// TODO: 解析分页参数
-	users, err := h.service.ListUsers(r.Context(), 10, 0)
+	// 解析分页参数
+	limit := 10
+	offset := 0
+
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+			limit = l
+		}
+	}
+
+	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
+		if o, err := strconv.Atoi(offsetStr); err == nil && o >= 0 {
+			offset = o
+		}
+	}
+
+	users, err := h.service.ListUsers(r.Context(), limit, offset)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(users)
+	Success(w, http.StatusOK, users)
 }

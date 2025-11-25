@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.19.0"
 )
 
 // MetricsProvider OpenTelemetry 指标提供者
@@ -28,23 +27,12 @@ func NewMetricsProvider(ctx context.Context, endpoint string, insecure bool) (*M
 		return nil, fmt.Errorf("failed to create resource: %w", err)
 	}
 
-	// 创建 OTLP 导出器
-	opts := []otlpmetricgrpc.Option{
-		otlpmetricgrpc.WithEndpoint(endpoint),
-	}
-	if insecure {
-		opts = append(opts, otlpmetricgrpc.WithInsecure())
-	}
-
-	exporter, err := otlpmetricgrpc.New(ctx, opts...)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create exporter: %w", err)
-	}
-
+	// TODO: 实现 OTLP metrics 导出器
+	// 暂时使用空的 reader，后续添加 OTLP exporter
 	// 创建指标提供者
 	mp := metric.NewMeterProvider(
 		metric.WithResource(res),
-		metric.WithReader(metric.NewPeriodicReader(exporter)),
+		// metric.WithReader(metric.NewPeriodicReader(exporter)),
 	)
 
 	return &MetricsProvider{

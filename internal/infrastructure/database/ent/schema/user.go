@@ -40,4 +40,3 @@ func (User) Indexes() []ent.Index {
 		index.Fields("created_at"),
 	}
 }
-
