@@ -157,4 +157,3 @@ func TestToStringWithTime(t *testing.T) {
 		t.Error("Expected non-empty string for time.Time")
 	}
 }
-
