@@ -59,19 +59,19 @@
 
 ### Web开发 (2-3周)
 
-```
+```text
 HTTP基础 → RESTful API → 数据库集成 → Web框架
 ```
 
 ### 微服务 (3-4周)
 
-```
+```text
 服务拆分 → gRPC → 服务发现 → API网关 → 监控
 ```
 
 ### 云原生 (2-3周)
 
-```
+```text
 Docker → Kubernetes → 配置管理 → CI/CD
 ```
 

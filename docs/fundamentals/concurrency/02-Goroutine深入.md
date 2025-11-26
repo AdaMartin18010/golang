@@ -140,7 +140,7 @@ func main() {
 
 #### 模型组成
 
-```
+```text
 G (Goroutine)  - 用户态线程
 P (Processor)  - 逻辑处理器（通常等于CPU核心数）
 M (Machine)    - 系统线程（OS Thread）

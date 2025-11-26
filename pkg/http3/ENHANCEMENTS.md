@@ -208,13 +208,13 @@ defer func() {
 
 ### 系统架构
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │                   Client                        │
 └───────────────────┬─────────────────────────────┘
                     │
          ┌──────────▼──────────┐
-         │   Middleware Chain   │
+         │   Middleware Chain  │
          ├─────────────────────┤
          │  1. Recovery         │
          │  2. Logging          │
@@ -227,16 +227,16 @@ defer func() {
          └──────────┬───────────┘
                     │
          ┌──────────▼──────────┐
-         │   Router (ServeMux)  │
-         └──────────┬───────────┘
+         │   Router (ServeMux) │
+         └──────────┬──────────┘
                     │
         ┌───────────┴───────────┐
         │                       │
     ┌───▼────┐           ┌─────▼─────┐
-    │  HTTP   │           │ WebSocket │
-    │ Handler │           │   Hub     │
-    └────┬────┘           └─────┬─────┘
-         │                      │
+    │  HTTP  │           │ WebSocket │
+    │ Handler│           │   Hub     │
+    └────┬───┘           └─────┬─────┘
+         │                     │
     ┌────▼────┐           ┌─────▼─────┐
     │ Optimize│           │  Clients  │
     │ Handler │           │ Management│
@@ -245,7 +245,7 @@ defer func() {
 
 ### 数据流
 
-```
+```text
 Request → Middleware Chain → Router → Handler → Response
            ↓                             ↓
     Connection Manager            Object Pool
@@ -259,7 +259,7 @@ Request → Middleware Chain → Router → Handler → Response
 
 ### 测试统计
 
-```
+```text
 总测试数: 25+
 ├─ WebSocket测试: 5个
 ├─ 中间件测试: 12个
