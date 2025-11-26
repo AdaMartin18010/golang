@@ -1,8 +1,8 @@
 ﻿# Go HTTP服务器进阶
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用于**: Go 1.23+
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -87,7 +87,7 @@ func main() {
 ```go
 package main
 import (
-    "Context"
+    "context"
     "fmt"
     "net/http"
     "os"
@@ -106,7 +106,7 @@ func main() {
     quit := make(Channel os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
-    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
     if err := srv.Shutdown(ctx); err != nil {
         fmt.Println("Shutdown error:", err)

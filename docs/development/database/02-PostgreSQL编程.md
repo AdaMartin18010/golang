@@ -214,7 +214,7 @@ sequenceDiagram
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "log"
 
@@ -236,7 +236,7 @@ func initDB() *pgxpool.Pool {
     config.MinConns = 5   // 最小连接数（预热）
 
     // 创建连接池
-    pool, err := pgxpool.NewWithConfig(Context.Background(), config)
+    pool, err := pgxpool.NewWithConfig(context.Background(), config)
     if err != nil {
         log.Fatal(err)
     }
@@ -250,7 +250,7 @@ func main() {
 
     // 测试连接
     var greeting string
-    err := pool.QueryRow(Context.Background(), "SELECT 'Hello PostgreSQL!'").Scan(&greeting)
+    err := pool.QueryRow(context.Background(), "SELECT 'Hello PostgreSQL!'").Scan(&greeting)
     if err != nil {
         log.Fatal(err)
     }
@@ -265,7 +265,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     "github.com/jackc/pgx/v5/pgxpool"
@@ -283,7 +283,7 @@ func getUserByID(pool *pgxpool.Pool, id int) (*User, error) {
     query := "SELECT id, username, email, age FROM users WHERE id = $1"
 
     user := &User{}
-    err := pool.QueryRow(Context.Background(), query, id).Scan(
+    err := pool.QueryRow(context.Background(), query, id).Scan(
         &user.ID,
         &user.Username,
         &user.Email,
@@ -301,7 +301,7 @@ func getUserByID(pool *pgxpool.Pool, id int) (*User, error) {
 func getAllUsers(pool *pgxpool.Pool) ([]User, error) {
     query := "SELECT id, username, email, age FROM users"
 
-    rows, err := pool.Query(Context.Background(), query)
+    rows, err := pool.Query(context.Background(), query)
     if err != nil {
         return nil, err
     }
@@ -338,7 +338,7 @@ func insertUser(pool *pgxpool.Pool, user User) (int, error) {
 
     var id int
     err := pool.QueryRow(
-        Context.Background(),
+        context.Background(),
         query,
         user.Username,
         user.Email,
@@ -355,7 +355,7 @@ func insertUser(pool *pgxpool.Pool, user User) (int, error) {
 package main
 
 import (
-    "Context"
+    "context"
 
     "github.com/jackc/pgx/v5"
     "github.com/jackc/pgx/v5/pgxpool"
@@ -371,7 +371,7 @@ func batchInsertUsers(pool *pgxpool.Pool, users []User) error {
 
     // 使用CopyFrom
     _, err := pool.CopyFrom(
-        Context.Background(),
+        context.Background(),
         pgx.Identifier{"users"},
         []string{"username", "email", "age"},
         pgx.CopyFromRows(rows),
@@ -393,7 +393,7 @@ func batchInsertWithBatch(pool *pgxpool.Pool, users []User) error {
         )
     }
 
-    results := pool.SendBatch(Context.Background(), batch)
+    results := pool.SendBatch(context.Background(), batch)
     defer results.Close()
 
     // 处理所有结果
@@ -420,7 +420,7 @@ func getUsersByAge(pool *pgxpool.Pool, minAge, maxAge int) ([]User, error) {
         ORDER BY age
     `
 
-    rows, err := pool.Query(Context.Background(), query, minAge, maxAge)
+    rows, err := pool.Query(context.Background(), query, minAge, maxAge)
     if err != nil {
         return nil, err
     }
@@ -448,7 +448,7 @@ func updateUser(pool *pgxpool.Pool, user User) error {
     query := "UPDATE users SET username=$1, email=$2, age=$3 WHERE id=$4"
 
     tag, err := pool.Exec(
-        Context.Background(),
+        context.Background(),
         query,
         user.Username,
         user.Email,
@@ -471,7 +471,7 @@ func updateUser(pool *pgxpool.Pool, user User) error {
 func deleteUser(pool *pgxpool.Pool, id int) error {
     query := "DELETE FROM users WHERE id=$1"
 
-    tag, err := pool.Exec(Context.Background(), query, id)
+    tag, err := pool.Exec(context.Background(), query, id)
     if err != nil {
         return err
     }
@@ -494,7 +494,7 @@ func deleteUser(pool *pgxpool.Pool, id int) error {
 package main
 
 import (
-    "Context"
+    "context"
     "encoding/json"
 
     "github.com/jackc/pgx/v5/pgxpool"
@@ -524,7 +524,7 @@ func insertUserWithProfile(pool *pgxpool.Pool, user UserWithProfile) error {
         return err
     }
 
-    _, err = pool.Exec(Context.Background(), query, user.Username, profileJSON)
+    _, err = pool.Exec(context.Background(), query, user.Username, profileJSON)
     return err
 }
 
@@ -535,7 +535,7 @@ func getUserProfile(pool *pgxpool.Pool, id int) (*UserWithProfile, error) {
     user := &UserWithProfile{}
     var profileJSON []byte
 
-    err := pool.QueryRow(Context.Background(), query, id).Scan(
+    err := pool.QueryRow(context.Background(), query, id).Scan(
         &user.ID,
         &user.Username,
         &profileJSON,
@@ -559,7 +559,7 @@ func searchUsersByHobby(pool *pgxpool.Pool, hobby string) ([]UserWithProfile, er
         WHERE profile->'hobbies' ? $1
     `
 
-    rows, err := pool.Query(Context.Background(), query, hobby)
+    rows, err := pool.Query(context.Background(), query, hobby)
     if err != nil {
         return nil, err
     }
@@ -589,7 +589,7 @@ func searchUsersByHobby(pool *pgxpool.Pool, hobby string) ([]UserWithProfile, er
 package main
 
 import (
-    "Context"
+    "context"
 
     "github.com/jackc/pgx/v5/pgxpool"
     "github.com/lib/pq"
@@ -599,7 +599,7 @@ import (
 func insertTags(pool *pgxpool.Pool, articleID int, tags []string) error {
     query := "UPDATE articles SET tags = $1 WHERE id = $2"
 
-    _, err := pool.Exec(Context.Background(), query, tags, articleID)
+    _, err := pool.Exec(context.Background(), query, tags, articleID)
     return err
 }
 
@@ -607,7 +607,7 @@ func insertTags(pool *pgxpool.Pool, articleID int, tags []string) error {
 func getArticlesByTag(pool *pgxpool.Pool, tag string) ([]int, error) {
     query := "SELECT id FROM articles WHERE $1 = ANY(tags)"
 
-    rows, err := pool.Query(Context.Background(), query, tag)
+    rows, err := pool.Query(context.Background(), query, tag)
     if err != nil {
         return nil, err
     }
@@ -638,7 +638,7 @@ func createFullTextIndex(pool *pgxpool.Pool) error {
     }
 
     for _, query := range queries {
-        if _, err := pool.Exec(Context.Background(), query); err != nil {
+        if _, err := pool.Exec(context.Background(), query); err != nil {
             return err
         }
     }
@@ -655,7 +655,7 @@ func searchArticles(pool *pgxpool.Pool, keyword string) ([]Article, error) {
         ORDER BY ts_rank(tsv, to_tsquery('english', $1)) DESC
     `
 
-    rows, err := pool.Query(Context.Background(), query, keyword)
+    rows, err := pool.Query(context.Background(), query, keyword)
     if err != nil {
         return nil, err
     }
@@ -685,7 +685,7 @@ func searchArticles(pool *pgxpool.Pool, keyword string) ([]Article, error) {
 package main
 
 import (
-    "Context"
+    "context"
 
     "github.com/jackc/pgx/v5"
     "github.com/jackc/pgx/v5/pgxpool"
@@ -694,15 +694,15 @@ import (
 // 使用事务
 func transferMoney(pool *pgxpool.Pool, fromID, toID int, amount float64) error {
     // 开始事务
-    tx, err := pool.Begin(Context.Background())
+    tx, err := pool.Begin(context.Background())
     if err != nil {
         return err
     }
-    defer tx.Rollback(Context.Background())
+    defer tx.Rollback(context.Background())
 
     // 扣款
     _, err = tx.Exec(
-        Context.Background(),
+        context.Background(),
         "UPDATE accounts SET balance = balance - $1 WHERE id = $2",
         amount,
         fromID,
@@ -713,7 +713,7 @@ func transferMoney(pool *pgxpool.Pool, fromID, toID int, amount float64) error {
 
     // 加款
     _, err = tx.Exec(
-        Context.Background(),
+        context.Background(),
         "UPDATE accounts SET balance = balance + $1 WHERE id = $2",
         amount,
         toID,
@@ -723,7 +723,7 @@ func transferMoney(pool *pgxpool.Pool, fromID, toID int, amount float64) error {
     }
 
     // 提交事务
-    return tx.Commit(Context.Background())
+    return tx.Commit(context.Background())
 }
 ```
 
@@ -732,38 +732,38 @@ func transferMoney(pool *pgxpool.Pool, fromID, toID int, amount float64) error {
 ```go
 // 使用Savepoint
 func complexTransaction(pool *pgxpool.Pool) error {
-    tx, err := pool.Begin(Context.Background())
+    tx, err := pool.Begin(context.Background())
     if err != nil {
         return err
     }
-    defer tx.Rollback(Context.Background())
+    defer tx.Rollback(context.Background())
 
     // 第一部分操作
-    _, err = tx.Exec(Context.Background(), "INSERT INTO log(message) VALUES('step 1')")
+    _, err = tx.Exec(context.Background(), "INSERT INTO log(message) VALUES('step 1')")
     if err != nil {
         return err
     }
 
     // 创建savepoint
-    _, err = tx.Exec(Context.Background(), "SAVEPOINT sp1")
+    _, err = tx.Exec(context.Background(), "SAVEPOINT sp1")
     if err != nil {
         return err
     }
 
     // 第二部分操作（可能失败）
-    _, err = tx.Exec(Context.Background(), "INSERT INTO users(username) VALUES('test')")
+    _, err = tx.Exec(context.Background(), "INSERT INTO users(username) VALUES('test')")
     if err != nil {
         // 回滚到savepoint
-        tx.Exec(Context.Background(), "ROLLBACK TO SAVEPOINT sp1")
+        tx.Exec(context.Background(), "ROLLBACK TO SAVEPOINT sp1")
     }
 
     // 继续其他操作
-    _, err = tx.Exec(Context.Background(), "INSERT INTO log(message) VALUES('step 3')")
+    _, err = tx.Exec(context.Background(), "INSERT INTO log(message) VALUES('step 3')")
     if err != nil {
         return err
     }
 
-    return tx.Commit(Context.Background())
+    return tx.Commit(context.Background())
 }
 ```
 
@@ -776,7 +776,7 @@ func complexTransaction(pool *pgxpool.Pool) error {
 ```go
 // 使用预处理语句
 func batchInsertPrepared(pool *pgxpool.Pool, users []User) error {
-    ctx := Context.Background()
+    ctx := context.Background()
 
     // 准备语句
     _, err := pool.Exec(ctx, "PREPARE insert_user AS INSERT INTO users(username, email, age) VALUES($1, $2, $3)")
@@ -821,7 +821,7 @@ func batchUpdate(pool *pgxpool.Pool, updates map[int]string) error {
         WHERE users.id = u.id
     `
 
-    _, err := pool.Exec(Context.Background(), query, ids, usernames)
+    _, err := pool.Exec(context.Background(), query, ids, usernames)
     return err
 }
 ```

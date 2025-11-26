@@ -3,7 +3,7 @@
 > **简介**: Istio/Linkerd服务网格架构设计与实践，实现服务间通信治理、安全和可观测性
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -643,7 +643,7 @@ func (tm *TrafficManager) executeRouteAction(req *Request, action *RouteAction) 
 
 func (tm *TrafficManager) executeRequest(req *Request, endpoint *Endpoint, action *RouteAction) (*Response, error) {
     // 1. 设置超时
-    ctx, cancel := Context.WithTimeout(Context.Background(), action.Timeout)
+    ctx, cancel := context.WithTimeout(context.Background(), action.Timeout)
     defer cancel()
 
     // 2. 重试逻辑

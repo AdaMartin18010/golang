@@ -626,7 +626,7 @@ func RequestIDMiddleware() gin.HandlerFunc {
 func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
     return func(c *gin.Context) {
         // 创建带超时的Context
-        ctx, cancel := Context.WithTimeout(c.Request.Context(), timeout)
+        ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
         defer cancel()
 
         // 替换请求的Context
@@ -1627,7 +1627,7 @@ func setupWebSocket() {
 package main
 
 import (
- "Context"
+ "context"
  "net/http"
  "time"
 
@@ -1685,7 +1685,7 @@ func gracefulShutdown() {
  log.Println("Shutting down server...")
 
  // 5秒超时关闭
- ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+ ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
  defer cancel()
 
  if err := srv.Shutdown(ctx); err != nil {

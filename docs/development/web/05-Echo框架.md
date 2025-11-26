@@ -1,16 +1,16 @@
-﻿# Echo框架基础 (Go 1.23+优化版)
+﻿# Echo框架基础 (Go 1.25.3优化版)
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用于**: Go 1.23+ / Echo v4.11+
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3 / Echo v4.11+
 
 ---
 
 ## 📋 目录
 
-- [Echo框架基础 (Go 1.23+优化版)](#echo框架基础-go-123优化版)
+- [Echo框架基础 (Go 1.25.3优化版)](#echo框架基础-go-123优化版)
   - [📋 目录](#-目录)
-  - [🚀 Go 1.23+ Web开发新特性概览](#-go-123-web开发新特性概览)
+  - [🚀 Go 1.25.3 Web开发新特性概览](#-go-123-web开发新特性概览)
     - [核心特性更新](#核心特性更新)
     - [性能提升数据](#性能提升数据)
     - [企业级应用场景](#企业级应用场景)
@@ -18,21 +18,21 @@
     - [**Echo框架简介**](#echo框架简介)
     - [**核心原理**](#核心原理)
     - [**主要类型与接口**](#主要类型与接口)
-    - [**Go 1.23+集成特性**](#go-123集成特性)
+    - [**Go 1.25.3集成特性**](#go-123集成特性)
   - [💻 **代码示例**](#-代码示例)
     - [**最小Echo应用**](#最小echo应用)
     - [**路由与参数绑定**](#路由与参数绑定)
     - [**中间件用法**](#中间件用法)
     - [**分组与RESTful API**](#分组与restful-api)
-    - [**Go 1.23+ JSON v2集成**](#go-123-json-v2集成)
+    - [**Go 1.25.3 JSON v2集成**](#go-123-json-v2集成)
     - [**高性能并发处理**](#高性能并发处理)
   - [🧪 **测试代码**](#-测试代码)
     - [**基础测试**](#基础测试)
-    - [**Go 1.23+并发测试**](#go-123并发测试)
+    - [**Go 1.25.3并发测试**](#go-123并发测试)
     - [**性能基准测试**](#性能基准测试)
   - [🎯 **最佳实践**](#-最佳实践)
     - [基础最佳实践](#基础最佳实践)
-    - [Go 1.23+优化最佳实践](#go-123优化最佳实践)
+    - [Go 1.25.3优化最佳实践](#go-123优化最佳实践)
       - [1. JSON v2性能优化](#1-json-v2性能优化)
       - [2. 结构化日志最佳实践](#2-结构化日志最佳实践)
       - [3. 并发测试最佳实践](#3-并发测试最佳实践)
@@ -44,17 +44,17 @@
       - [3. 健康检查](#3-健康检查)
   - [🔍 **常见问题**](#-常见问题)
     - [基础问题](#基础问题)
-    - [Go 1.23+相关问题](#go-123相关问题)
+    - [Go 1.25.3相关问题](#go-123相关问题)
     - [性能优化问题](#性能优化问题)
   - [📚 **扩展阅读**](#-扩展阅读)
     - [官方资源](#官方资源)
-    - [Go 1.23+相关资源](#go-123相关资源)
+    - [Go 1.25.3相关资源](#go-123相关资源)
     - [学习资源](#学习资源)
     - [社区资源](#社区资源)
 
 ---
 
-## 🚀 Go 1.23+ Web开发新特性概览
+## 🚀 Go 1.25.3 Web开发新特性概览
 
 ### 核心特性更新
 
@@ -102,7 +102,7 @@
 - `echo.Context`：请求上下文，封装请求、响应、参数、状态等
 - `echo.HandlerFunc`：处理函数类型
 
-### **Go 1.23+集成特性**
+### **Go 1.25.3集成特性**
 
 - **JSON v2集成**: 支持`encoding/json/v2`实验性实现，提升JSON处理性能
 - **并发测试支持**: 集成`testing/synctest`包，提供稳定的并发测试环境
@@ -182,15 +182,15 @@ func main() {
 }
 ```
 
-### **Go 1.23+ JSON v2集成**
+### **Go 1.25.3 JSON v2集成**
 
 ```go
 package main
 
 import (
-    "encoding/json/v2" // Go 1.23+ JSON v2
+    "encoding/json/v2" // Go 1.25.3 JSON v2
     "github.com/labstack/echo/v4"
-    "log/slog" // Go 1.23+ 结构化日志
+    "log/slog" // Go 1.25.3 结构化日志
 )
 
 // User 用户结构体
@@ -285,8 +285,8 @@ func main() {
 package main
 
 import (
-    "Context"
-    "crypto" // Go 1.23+ 加密增强
+    "context"
+    "crypto" // Go 1.25.3 加密增强
     "crypto/ecdsa"
     "crypto/ed25519"
     "crypto/rand"
@@ -297,7 +297,7 @@ import (
     "time"
 )
 
-// MessageSigner Go 1.23+ 消息签名接口
+// MessageSigner Go 1.25.3 消息签名接口
 type MessageSigner interface {
     SignMessage(message []byte) ([]byte, error)
     VerifyMessage(message, signature []byte) bool
@@ -527,7 +527,7 @@ func TestUserAPI(t *testing.T) {
 }
 ```
 
-### **Go 1.23+并发测试**
+### **Go 1.25.3并发测试**
 
 ```go
 package main
@@ -539,11 +539,11 @@ import (
     "net/http/httptest"
     "sync"
     "testing"
-    "testing/synctest" // Go 1.23+ 并发测试
+    "testing/synctest" // Go 1.25.3 并发测试
     "github.com/labstack/echo/v4"
 )
 
-// TestConcurrentEchoServer Go 1.23+并发测试
+// TestConcurrentEchoServer Go 1.25.3并发测试
 func TestConcurrentEchoServer(t *testing.T) {
     synctest.Run(t, func(t *testing.T) {
         server, err := NewConcurrentEchoServer(10)
@@ -771,7 +771,7 @@ func BenchmarkEchoMiddleware(b *testing.B) {
 - 错误处理建议统一返回JSON结构
 - 生产环境关闭debug模式，合理配置日志
 
-### Go 1.23+优化最佳实践
+### Go 1.25.3优化最佳实践
 
 #### 1. JSON v2性能优化
 
@@ -978,7 +978,7 @@ e.GET("/ready", readinessCheck)
 - Q: 如何优雅关闭Echo服务？
   A: 通过`e.Shutdown(ctx)`实现
 
-### Go 1.23+相关问题
+### Go 1.25.3相关问题
 
 - Q: 如何启用JSON v2？
   A: 设置环境变量`GOEXPERIMENT=jsonv2`并导入`encoding/json/v2`
@@ -1004,9 +1004,9 @@ e.GET("/ready", readinessCheck)
 
 - [Echo官方文档](https://echo.labstack.com/guide)
 - [Echo源码分析](https://github.com/labstack/echo)
-- [Go 1.23+ Release Notes](https://golang.org/doc/go1.23)
+- [Go 1.25.3 Release Notes](https://golang.org/doc/go1.23)
 
-### Go 1.23+相关资源
+### Go 1.25.3相关资源
 
 - [JSON v2实验性实现](https://pkg.go.dev/encoding/json/v2)
 - [testing/synctest包文档](https://pkg.go.dev/testing/synctest)

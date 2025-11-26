@@ -138,7 +138,7 @@
 package trading
 
 import (
-    "Context"
+    "context"
     "sync"
     "time"
 )
@@ -359,7 +359,7 @@ func min(a, b float64) float64 {
 package riskcontrol
 
 import (
-    "Context"
+    "context"
     "sync"
     "time"
 )
@@ -634,7 +634,7 @@ func (r *AmountLimitRule) Check(ctx Context.Context, req *TransactionRequest) (*
 package payment
 
 import (
-    "Context"
+    "context"
     "errors"
     "time"
 )
@@ -746,7 +746,7 @@ type Logger interface {
 package reconciliation
 
 import (
-    "Context"
+    "context"
     "time"
 )
 

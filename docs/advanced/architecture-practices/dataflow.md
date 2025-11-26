@@ -3,7 +3,7 @@
 > **简介**: 数据流处理架构设计，涵盖实时流处理、批处理和混合数据处理
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -266,7 +266,7 @@
 package main
 
 import (
-    "Context"
+    "context"
     "encoding/json"
     "fmt"
     "log"
@@ -544,7 +544,7 @@ func (ap *AggregateProcessor) Name() string {
 
 // 使用示例
 func main() {
-    ctx := Context.Background()
+    ctx := context.Background()
 
     // 创建数据流处理管道
     pipeline := NewDataflowPipeline("user_analytics")

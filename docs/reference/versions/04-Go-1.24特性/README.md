@@ -330,7 +330,7 @@ client := &http.Client{
 **更好的上下文传播**:
 
 ```go
-import "Context"
+import "context"
 
 // 新增：WithoutCancel - 创建不可取消的上下文
 func processAsync(ctx Context.Context) {

@@ -1,7 +1,7 @@
 ﻿# API 文档
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -103,7 +103,7 @@ agent := core.NewBaseAgent("agent-1", config)
 **使用示例**:
 
 ```go
-ctx := Context.Background()
+ctx := context.Background()
 
 // 启动代理
 if err := agent.Start(ctx); err != nil {

@@ -75,7 +75,7 @@ value := <-ch
 ### Context
 
 ```go
-ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 defer cancel()
 
 select {

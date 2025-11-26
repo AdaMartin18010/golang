@@ -1,7 +1,7 @@
 ﻿# GraphQL
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -48,7 +48,7 @@ input NewUser {
 package graph
 
 import (
-    "Context"
+    "context"
     "github.com/99designs/gqlgen/graphql/handler"
 )
 

@@ -102,11 +102,13 @@ make generate
 ### 使用脚本
 
 **Linux/macOS:**
+
 ```bash
 ./scripts/generate/all.sh
 ```
 
 **Windows:**
+
 ```powershell
 .\scripts\generate\all.ps1
 ```
@@ -118,6 +120,7 @@ make generate
    - 修改 `internal/interfaces/grpc/proto/` 中的 .proto 文件
 
 2. **生成代码**
+
    ```bash
    make generate
    ```
@@ -160,4 +163,3 @@ make generate
 - 确保已安装 Go 插件
 - 检查 .proto 文件语法
 - 确保 PATH 中包含 protoc 和插件
-

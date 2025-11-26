@@ -183,7 +183,7 @@ protoc --go_out=. --go_opt=paths=source_relative \
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
  "net"
@@ -335,7 +335,7 @@ func main() {
 package main
 
 import (
- "Context"
+ "context"
  "io"
  "log"
  "time"
@@ -361,7 +361,7 @@ func main() {
  // 创建客户端
  client := pb.NewUserServiceClient(conn)
 
- ctx, cancel := Context.WithTimeout(Context.Background(), 10*time.Second)
+ ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
  defer cancel()
 
  // 1. 创建用户（一元RPC）
@@ -592,7 +592,7 @@ message UploadMessagesResponse {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "io"
  "log"
@@ -805,7 +805,7 @@ func (s *ChatServer) Chat(stream pb.ChatService_ChatServer) error {
 package interceptor
 
 import (
- "Context"
+ "context"
  "log"
  "time"
 
@@ -923,7 +923,7 @@ func (w *wrappedServerStream) RecvMsg(m interface{}) error {
 package interceptor
 
 import (
- "Context"
+ "context"
  "strings"
 
  "google.golang.org/grpc"
@@ -976,7 +976,7 @@ func UnaryServerAuth() grpc.UnaryServerInterceptor {
   }
 
   // 将用户ID注入context
-  ctx = Context.WithValue(ctx, ContextKeyUserID, userID)
+  ctx = context.WithValue(ctx, ContextKeyUserID, userID)
 
   return handler(ctx, req)
  }

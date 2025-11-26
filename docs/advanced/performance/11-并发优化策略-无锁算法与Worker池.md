@@ -1,7 +1,7 @@
 ﻿# 并发优化策略 - 无锁算法与Worker池
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -261,7 +261,7 @@ func (s *LockFreeStack) Pop() (interface{}, bool) {
 package worker
 
 import (
-    "Context"
+    "context"
     "fmt"
     "sync"
 )
@@ -291,7 +291,7 @@ type PoolStats struct {
 
 // NewWorkerPool 创建Worker池
 func NewWorkerPool(workers, queueSize int) *WorkerPool {
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
 
     return &WorkerPool{
         workers:   workers,
@@ -388,7 +388,7 @@ func (s *PoolStats) recordFailed() {
 package worker
 
 import (
-    "Context"
+    "context"
     "sync"
     "sync/atomic"
     "time"
@@ -408,7 +408,7 @@ type DynamicPool struct {
 
 // NewDynamicPool 创建动态Worker池
 func NewDynamicPool(min, max, queueSize int) *DynamicPool {
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
 
     return &DynamicPool{
         minWorkers:    min,
@@ -539,7 +539,7 @@ func (p *DynamicPool) WorkerCount() int {
 package patterns
 
 import (
-    "Context"
+    "context"
     "sync"
 )
 
@@ -634,7 +634,7 @@ func FanIn(ctx Context.Context, inputs ...<-Channel interface{}) <-Channel inter
 
 package patterns
 
-import "Context"
+import "context"
 
 // Stage 管道阶段
 type Stage func(Context.Context, <-Channel interface{}) <-Channel interface{}

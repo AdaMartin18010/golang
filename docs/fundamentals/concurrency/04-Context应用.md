@@ -1,7 +1,7 @@
 ﻿# Context应用
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -51,7 +51,7 @@ type Context interface {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 )
 
@@ -82,7 +82,7 @@ type Worker struct {
 }
 
 func main() {
-    ctx := Context.Background()
+    ctx := context.Background()
     doSomething(ctx, "task1")
 }
 ```
@@ -97,17 +97,17 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 )
 
 func contextRoots() {
     // Background：根Context，永不取消，通常在main、init、测试中使用
-    ctx1 := Context.Background()
+    ctx1 := context.Background()
     fmt.Printf("Background: %v\n", ctx1)
 
     // TODO：当不确定使用哪个Context时使用（临时占位）
-    ctx2 := Context.TODO()
+    ctx2 := context.TODO()
     fmt.Printf("TODO: %v\n", ctx2)
 }
 
@@ -122,14 +122,14 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 )
 
 func withCancelExample() {
     // 创建可取消的Context
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
     defer cancel() // 确保释放资源
 
     go func() {
@@ -163,14 +163,14 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 )
 
 func withTimeoutExample() {
     // 创建带超时的Context（3秒后自动取消）
-    ctx, cancel := Context.WithTimeout(Context.Background(), 3*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
     defer cancel()
 
     go func() {
@@ -200,7 +200,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 )
@@ -208,7 +208,7 @@ import (
 func withDeadlineExample() {
     // 创建有截止时间的Context
     deadline := time.Now().Add(2 * time.Second)
-    ctx, cancel := Context.WithDeadline(Context.Background(), deadline)
+    ctx, cancel := context.WithDeadline(context.Background(), deadline)
     defer cancel()
 
     go func() {
@@ -238,7 +238,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 )
 
@@ -252,8 +252,8 @@ const (
 
 func withValueExample() {
     // 创建带值的Context
-    ctx := Context.WithValue(Context.Background(), userIDKey, "12345")
-    ctx = Context.WithValue(ctx, traceIDKey, "trace-abc")
+    ctx := context.WithValue(context.Background(), userIDKey, "12345")
+    ctx = context.WithValue(ctx, traceIDKey, "trace-abc")
 
     // 读取值
     processRequest(ctx)
@@ -293,7 +293,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "io"
     "net/http"
@@ -302,7 +302,7 @@ import (
 
 func fetchWithTimeout(url string, timeout time.Duration) (string, error) {
     // 创建带超时的Context
-    ctx, cancel := Context.WithTimeout(Context.Background(), timeout)
+    ctx, cancel := context.WithTimeout(context.Background(), timeout)
     defer cancel()
 
     // 创建带Context的HTTP请求
@@ -343,7 +343,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "database/sql"
     "fmt"
     "time"
@@ -351,7 +351,7 @@ import (
 
 func queryWithTimeout(db *sql.DB) error {
     // 3秒超时
-    ctx, cancel := Context.WithTimeout(Context.Background(), 3*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
     defer cancel()
 
     // 使用Context执行查询
@@ -398,21 +398,21 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 )
 
 func cancelPropagation() {
     // 创建根Context
-    parent, parentCancel := Context.WithCancel(Context.Background())
+    parent, parentCancel := context.WithCancel(context.Background())
     defer parentCancel()
 
     // 创建子Context
-    child1, child1Cancel := Context.WithCancel(parent)
+    child1, child1Cancel := context.WithCancel(parent)
     defer child1Cancel()
 
-    child2, child2Cancel := Context.WithCancel(parent)
+    child2, child2Cancel := context.WithCancel(parent)
     defer child2Cancel()
 
     // 子Goroutine 1
@@ -447,7 +447,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 )
@@ -467,7 +467,7 @@ func worker(ctx Context.Context, name string) {
 
 func supervisor(ctx Context.Context, name string) {
     // 创建子Context
-    ctx, cancel := Context.WithCancel(ctx)
+    ctx, cancel := context.WithCancel(ctx)
     defer cancel()
 
     // 启动多个worker
@@ -483,7 +483,7 @@ func supervisor(ctx Context.Context, name string) {
 }
 
 func multiLayerCancellation() {
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
 
     go supervisor(ctx, "Supervisor-A")
     go supervisor(ctx, "Supervisor-B")
@@ -510,7 +510,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 )
 
@@ -530,9 +530,9 @@ type User struct {
 
 // ✅ 正确：只传递请求相关的值
 func goodPractice() {
-    ctx := Context.Background()
-    ctx = Context.WithValue(ctx, requestIDKey, "req-123")
-    ctx = Context.WithValue(ctx, userKey, User{ID: "u1", Name: "Alice"})
+    ctx := context.Background()
+    ctx = context.WithValue(ctx, requestIDKey, "req-123")
+    ctx = context.WithValue(ctx, userKey, User{ID: "u1", Name: "Alice"})
 
     processRequest(ctx)
 }
@@ -567,7 +567,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 )
 
@@ -591,7 +591,7 @@ func goodPractice(ctx Context.Context, config Config) {
 func main() {
     // 配置应该显式传递，不要放在Context中
     config := Config{MaxRetries: 3, Timeout: 5}
-    goodPractice(Context.Background(), config)
+    goodPractice(context.Background(), config)
 }
 ```
 
@@ -605,7 +605,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "net/http"
     "time"
@@ -620,7 +620,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     if requestID == "" {
         requestID = "generated-id"
     }
-    ctx = Context.WithValue(ctx, "requestID", requestID)
+    ctx = context.WithValue(ctx, "requestID", requestID)
 
     // 模拟长时间处理
     select {
@@ -651,7 +651,7 @@ func httpServerExample() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "io"
     "net/http"
@@ -660,7 +660,7 @@ import (
 
 func httpClientWithContext() {
     // 创建带超时的Context
-    ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
     defer cancel()
 
     // 创建请求
@@ -693,7 +693,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 )
@@ -729,7 +729,7 @@ func square(ctx Context.Context, in <-Channel int) <-Channel int {
 }
 
 func pipelineExample() {
-    ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
     defer cancel()
 
     // 构建pipeline
@@ -773,7 +773,7 @@ func main() {
 
 ```go
 func TestWithTimeout(t *testing.T) {
-    ctx, cancel := Context.WithTimeout(Context.Background(), 1*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
     defer cancel()
 
     err := doWork(ctx)

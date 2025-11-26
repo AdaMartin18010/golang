@@ -1,7 +1,7 @@
 ﻿# Goroutine深入
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -318,7 +318,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 )
@@ -337,7 +337,7 @@ func workerWithContext(ctx Context.Context, id int) {
 }
 
 func contextDemo() {
-    ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
     defer cancel()
 
     for i := 1; i <= 3; i++ {
@@ -513,7 +513,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 )
@@ -531,7 +531,7 @@ func leakyLoop() {
 
 // ✅ 正确：使用Context控制退出
 func fixedLoop() {
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
 
     go func() {
         for {

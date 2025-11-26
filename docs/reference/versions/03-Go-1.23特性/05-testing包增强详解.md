@@ -1,7 +1,7 @@
 ﻿# Go 1.23 testing包增强详解
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -173,7 +173,7 @@ package customlog
 
 import (
     "bytes"
-    "Context"
+    "context"
     "encoding/json"
     "log/slog"
     "testing"
@@ -339,7 +339,7 @@ func TestHandlerContext(t *testing.T) {
     logger := slog.New(h)
 
     // 创建带值的context
-    ctx := Context.WithValue(Context.Background(), "request_id", "req-123")
+    ctx := context.WithValue(context.Background(), "request_id", "req-123")
 
     logger.InfoContext(ctx, "processing request")
 
@@ -941,7 +941,7 @@ func TestWithCleanup(t *testing.T) {
     })
 
     // 创建更多资源
-    conn, err := db.Conn(Context.Background())
+    conn, err := db.Conn(context.Background())
     if err != nil {
         t.Fatal(err)
     }
@@ -997,7 +997,7 @@ package customlog_test
 
 import (
     "bytes"
-    "Context"
+    "context"
     "encoding/json"
     "log/slog"
     "testing"
@@ -1150,7 +1150,7 @@ func TestJSONHandlerLevels(t *testing.T) {
             // 测试应该显示的级别
             for _, level := range tt.shouldShow {
                 buf.Reset()
-                logger.Log(Context.Background(), level, "test")
+                logger.Log(context.Background(), level, "test")
                 if buf.Len() == 0 {
                     t.Errorf("level %v should be shown", level)
                 }
@@ -1159,7 +1159,7 @@ func TestJSONHandlerLevels(t *testing.T) {
             // 测试应该隐藏的级别
             for _, level := range tt.shouldHide {
                 buf.Reset()
-                logger.Log(Context.Background(), level, "test")
+                logger.Log(context.Background(), level, "test")
                 if buf.Len() > 0 {
                     t.Errorf("level %v should be hidden", level)
                 }
@@ -1175,7 +1175,7 @@ func TestJSONHandlerLevels(t *testing.T) {
 package server_test
 
 import (
-    "Context"
+    "context"
     "fmt"
     "net/http"
     "net/http/httptest"
@@ -1288,7 +1288,7 @@ func TestServerConcurrency(t *testing.T) {
 
     // 并发读写
     t.Run("concurrent_read_write", func(t *testing.T) {
-        ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
+        ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
         defer cancel()
 
         var wg sync.WaitGroup

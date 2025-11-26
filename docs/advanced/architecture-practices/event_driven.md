@@ -3,7 +3,7 @@
 > **简介**: 基于事件的异步通信架构设计，支持松耦合、高扩展性的分布式系统构建
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -337,7 +337,7 @@ func NewOrderAggregate(id string) *OrderAggregate {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
  "time"

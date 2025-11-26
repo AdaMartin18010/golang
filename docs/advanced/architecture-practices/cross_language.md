@@ -3,7 +3,7 @@
 > **简介**: 多语言系统集成架构，涵盖FFI、gRPC跨语言调用和协议转换
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -364,7 +364,7 @@ data, _ := proto.Marshal(user)
 // etcd 服务注册
 import clientv3 "go.etcd.io/etcd/client/v3"
 cli, _ := clientv3.New(clientv3.Config{Endpoints: []string{"localhost:2379"}})
-cli.Put(Context.Background(), "/services/user/instance1", "127.0.0.1:8080")
+cli.Put(context.Background(), "/services/user/instance1", "127.0.0.1:8080")
 ```
 
 ### 消息队列与事件流
@@ -377,7 +377,7 @@ cli.Put(Context.Background(), "/services/user/instance1", "127.0.0.1:8080")
 // Kafka 消息发布
 import "github.com/segmentio/kafka-go"
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "events"})
-writer.WriteMessages(Context.Background(), kafka.Message{Value: []byte("event data")})
+writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("event data")})
 ```
 
 ### 安全与认证1
@@ -464,10 +464,10 @@ func (s *UserService) GetUser(ctx Context.Context, req *pb.GetUserRequest) (*pb.
 import "github.com/segmentio/kafka-go"
 // 发布事件
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "user-events"})
-writer.WriteMessages(Context.Background(), kafka.Message{Value: []byte("UserCreated")})
+writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("UserCreated")})
 // 消费事件
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "user-events", GroupID: "user-group"})
-msg, _ := reader.ReadMessage(Context.Background())
+msg, _ := reader.ReadMessage(context.Background())
 processEvent(msg.Value)
 ```
 

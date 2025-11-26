@@ -1,8 +1,8 @@
 ﻿# Go设计模式FAQ与社区资源导航
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用于**: Go 1.23+
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -398,7 +398,7 @@ func TestNoGoroutineLeak(t *testing.T) {
     before := runtime.NumGoroutine()
 
     // 运行测试逻辑
-    ctx, cancel := Context.WithTimeout(Context.Background(), 1*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
     defer cancel()
     service.Run(ctx)
 

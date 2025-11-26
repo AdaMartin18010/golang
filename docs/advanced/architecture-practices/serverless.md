@@ -3,7 +3,7 @@
 > **简介**: Serverless计算模式架构设计，实现按需弹性、免运维的云原生应用
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -115,7 +115,7 @@ BaaS利用第三方服务来处理后端逻辑，如认证、数据库管理、�
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "github.com/aws/aws-lambda-go/lambda"
 )
@@ -363,7 +363,7 @@ jobs:
 package serverless
 
 import (
-    "Context"
+    "context"
     "time"
     "errors"
     "sync"

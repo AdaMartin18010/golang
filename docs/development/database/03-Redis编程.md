@@ -46,14 +46,14 @@ go get github.com/gomodule/redigo/redis
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "log"
 
     "github.com/redis/go-redis/v9"
 )
 
-var ctx = Context.Background()
+var ctx = context.Background()
 
 func main() {
     // 创建Redis客户端
@@ -83,14 +83,14 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 
     "github.com/redis/go-redis/v9"
 )
 
-var ctx = Context.Background()
+var ctx = context.Background()
 
 // SET和GET
 func stringOperations(rdb *redis.Client) {
@@ -463,7 +463,7 @@ func optimisticLock(rdb *redis.Client, key string) error {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     "github.com/redis/go-redis/v9"
@@ -585,7 +585,7 @@ sequenceDiagram
 package main
 
 import (
-    "Context"
+    "context"
     "encoding/json"
     "fmt"
     "time"
@@ -660,7 +660,7 @@ func queryUserFromDB(id int) (User, error) {
 package main
 
 import (
-    "Context"
+    "context"
     "time"
 
     "github.com/redis/go-redis/v9"

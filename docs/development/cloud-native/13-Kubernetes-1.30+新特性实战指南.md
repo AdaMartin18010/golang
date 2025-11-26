@@ -1,7 +1,7 @@
 ﻿# Kubernetes 1.30+新特性实战指南
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -155,7 +155,7 @@ kube-apiserver \
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "os"
 
@@ -214,7 +214,7 @@ func main() {
         panic(err)
     }
 
-    ctx := Context.Background()
+    ctx := context.Background()
     if err := client.GetPods(ctx, "default"); err != nil {
         panic(err)
     }
@@ -294,7 +294,7 @@ spec:
 package dra
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 
@@ -432,7 +432,7 @@ spec:
 package pv
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     v1 "k8s.io/api/core/v1"
@@ -557,7 +557,7 @@ spec:
 package scheduler
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     v1 "k8s.io/api/core/v1"
@@ -682,7 +682,7 @@ spec:
 package sidecar
 
 import (
-    "Context"
+    "context"
     "fmt"
     "io"
     "os"
@@ -752,7 +752,7 @@ func (lc *LogCollector) flush() error {
 func main() {
     collector := NewLogCollector("/var/log/nginx/access.log", "/output/logs.txt")
 
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
     defer cancel()
 
     if err := collector.Run(ctx); err != nil {
@@ -781,7 +781,7 @@ go get k8s.io/apimachinery@v0.30.0
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -803,7 +803,7 @@ func main() {
     }
 
     // 列出所有Pod
-    pods, err := clientset.CoreV1().Pods("").List(Context.TODO(), metav1.ListOptions{})
+    pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
     if err != nil {
         panic(err)
     }

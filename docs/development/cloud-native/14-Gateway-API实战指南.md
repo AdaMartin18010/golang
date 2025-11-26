@@ -1,7 +1,7 @@
 ﻿# Gateway API实战指南
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -586,7 +586,7 @@ spec:
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -638,7 +638,7 @@ func main() {
         panic(err)
     }
 
-    ctx := Context.Background()
+    ctx := context.Background()
 
     // 列出Gateway
     gateways, err := client.ListGateways(ctx, "default")
@@ -661,7 +661,7 @@ func main() {
 package gateway
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"

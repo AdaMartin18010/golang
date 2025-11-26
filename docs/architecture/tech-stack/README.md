@@ -84,6 +84,7 @@
 
 - **[eBPF](./observability/ebpf.md)** - eBPF 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
+  - **主流技术**: 云原生和可观测性的重要技术，被 Cilium、Falco、Pixie 等使用
 
 ---
 
@@ -120,12 +121,15 @@
 
 - **[GraphQL](./api/graphql.md)** - GraphQL 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
+  - **主流技术**: Facebook 开发，被 GitHub、Shopify、Twitter 等广泛采用
 
 - **[OpenAPI](./api/openapi.md)** - OpenAPI 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
+  - **主流技术**: RESTful API 的行业标准，被广泛采用
 
 - **[AsyncAPI](./api/asyncapi.md)** - AsyncAPI 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
+  - **主流技术**: 事件驱动架构的标准，与 OpenAPI 互补
 
 - **[Protocol Buffers](./api/protobuf.md)** - Protocol Buffers 深度解析
   - 核心特性、选型论证、实际应用、最佳实践

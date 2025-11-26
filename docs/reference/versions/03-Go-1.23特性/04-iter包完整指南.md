@@ -1,7 +1,7 @@
 ﻿# Go 1.23 iter包完整指南
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -1946,7 +1946,7 @@ func Sum(seq iter.Seq[int]) int {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "iter"
     "time"
@@ -1972,7 +1972,7 @@ func FromChannel[T any](ch <-Channel T) iter.Seq[T] {
 // Generate生成数据流
 func Generate[T any](ctx Context.Context, fn func() T, interval time.Duration) *DataStream[T] {
     ch := make(Channel T)
-    ctx, cancel := Context.WithCancel(ctx)
+    ctx, cancel := context.WithCancel(ctx)
 
     go func() {
         defer close(ch)
@@ -2002,7 +2002,7 @@ func (ds *DataStream[T]) Stop() {
 
 // 使用
 func main() {
-    ctx := Context.Background()
+    ctx := context.Background()
 
     // 每秒生成一个随机数
     stream := Generate(ctx, func() int {

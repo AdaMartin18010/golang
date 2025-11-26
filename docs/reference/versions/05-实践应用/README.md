@@ -1,7 +1,7 @@
 ﻿# Go新特性实践应用
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.21+
 
 ---
@@ -122,7 +122,7 @@ type Processor interface {
 package main
 
 import (
-    "Context"
+    "context"
     "log/slog"
     "os"
 )
@@ -144,7 +144,7 @@ func productionUsage() {
     slog.SetDefault(logger)
 
     // 使用上下文
-    ctx := Context.Background()
+    ctx := context.Background()
     logger.InfoContext(ctx, "request processed",
         slog.Group("request",
             slog.String("method", "GET"),

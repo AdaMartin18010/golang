@@ -873,7 +873,7 @@ func main() {
     <-quit
 
     // 优雅关闭
-    ctx, cancel := Context.WithTimeout(Context.Background(), 30*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
 
     if err := server.Shutdown(ctx); err != nil {

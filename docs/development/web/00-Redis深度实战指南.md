@@ -146,7 +146,7 @@ Client
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
  "time"
@@ -175,7 +175,7 @@ func NewRedisClient(addr, password string, db int) (*RedisClient, error) {
  })
 
  // 测试连接
- ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+ ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
  defer cancel()
 
  if err := rdb.Ping(ctx).Err(); err != nil {
@@ -234,7 +234,7 @@ func main() {
  }
  defer client.Close()
 
- ctx := Context.Background()
+ ctx := context.Background()
 
  // 设置键值
  err = client.Set(ctx, "name", "Alice", 10*time.Minute)
@@ -273,7 +273,7 @@ func main() {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
  "time"
@@ -419,7 +419,7 @@ func main() {
  })
  defer rdb.Close()
 
- ctx := Context.Background()
+ ctx := context.Background()
 
  // String操作
  stringOps := NewStringOps(rdb)
@@ -446,7 +446,7 @@ func main() {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
 
@@ -645,7 +645,7 @@ func main() {
  })
  defer rdb.Close()
 
- ctx := Context.Background()
+ ctx := context.Background()
 
  // Hash基础操作
  hashOps := NewHashOps(rdb)
@@ -686,7 +686,7 @@ func main() {
 package main
 
 import (
- "Context"
+ "context"
  "crypto/sha256"
  "encoding/hex"
  "encoding/json"
@@ -877,7 +877,7 @@ func (m *MultiLevelCache) Get(ctx Context.Context, key string, loader func() (in
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "time"
 
@@ -988,7 +988,7 @@ func (z *ZSetOps) Leaderboard(ctx Context.Context) {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
 
  "github.com/redis/go-redis/v9"
@@ -1088,7 +1088,7 @@ func (g *GeoOps) NearbyLocations(ctx Context.Context) {
 package main
 
 import (
- "Context"
+ "context"
  "errors"
  "fmt"
  "time"
@@ -1237,7 +1237,7 @@ func (r *ReentrantLock) Unlock(ctx Context.Context) error {
 package main
 
 import (
- "Context"
+ "context"
  "encoding/json"
  "fmt"
  "time"
@@ -1368,7 +1368,7 @@ func (d *DelayQueue) PopReady(ctx Context.Context) ([]*Task, error) {
 package main
 
 import (
- "Context"
+ "context"
  "errors"
  "fmt"
 
@@ -1451,7 +1451,7 @@ func UsePipeline(ctx Context.Context, rdb *redis.Client) {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "time"
 
@@ -1533,7 +1533,7 @@ func IncrWithLimit(ctx Context.Context, rdb *redis.Client, key string, limit int
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
  "time"
@@ -1629,7 +1629,7 @@ func (c *StreamConsumer) Consume(ctx Context.Context) {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
  "time"
@@ -1692,7 +1692,7 @@ func PubSubExample() {
   Addr: "localhost:6379",
  })
 
- ctx := Context.Background()
+ ctx := context.Background()
 
  // 启动订阅者
  subscriber := NewSubscriber(rdb)
@@ -1757,7 +1757,7 @@ func RewriteAOF(ctx Context.Context, rdb *redis.Client) error {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
  "time"
@@ -1847,7 +1847,7 @@ func ScanKeys(ctx Context.Context, rdb *redis.Client, pattern string) []string {
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  "log"
 
@@ -1932,7 +1932,7 @@ func HealthCheck(ctx Context.Context, rdb *redis.Client) error {
 package main
 
 import (
- "Context"
+ "context"
  "errors"
  "fmt"
  "time"
@@ -2064,7 +2064,7 @@ func InventoryExample() {
  })
  defer rdb.Close()
 
- ctx := Context.Background()
+ ctx := context.Background()
  service := NewInventoryService(rdb)
 
  // 设置初始库存

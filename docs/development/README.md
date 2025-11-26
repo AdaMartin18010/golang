@@ -108,7 +108,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "google.golang.org/grpc"
     pb "myapp/proto"
 )

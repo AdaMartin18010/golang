@@ -1,7 +1,7 @@
 ﻿# 📦 安装指南
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: v2.0.0
 
 ---
@@ -149,7 +149,7 @@ go mod tidy
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "github.com/yourusername/golang/pkg/observability"
 )
@@ -158,7 +158,7 @@ func main() {
     // 使用observability
     observability.Info("Application started")
 
-    ctx := Context.Background()
+    ctx := context.Background()
     span, ctx := observability.StartSpan(ctx, "main-operation")
     defer span.Finish()
 

@@ -1,7 +1,7 @@
 ﻿# HTTP/3 中间件系统 - 完整实现指南
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -199,7 +199,7 @@ Request → M1 → M2 → M3 → Handler → M3 → M2 → M1 → Response
 package middleware
 
 import (
-    "Context"
+    "context"
     "net/http"
 )
 
@@ -221,7 +221,7 @@ func GetRequestID(r *http.Request) string {
 
 // SetRequestID 设置请求ID到上下文
 func SetRequestID(r *http.Request, id string) *http.Request {
-    ctx := Context.WithValue(r.Context(), RequestIDKey, id)
+    ctx := context.WithValue(r.Context(), RequestIDKey, id)
     return r.WithContext(ctx)
 }
 
@@ -235,7 +235,7 @@ func GetUserID(r *http.Request) string {
 
 // SetUserID 设置用户ID到上下文
 func SetUserID(r *http.Request, id string) *http.Request {
-    ctx := Context.WithValue(r.Context(), UserIDKey, id)
+    ctx := context.WithValue(r.Context(), UserIDKey, id)
     return r.WithContext(ctx)
 }
 ```

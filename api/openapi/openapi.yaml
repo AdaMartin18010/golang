@@ -1,43 +1,114 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Go Modern Architecture API
   version: 1.0.0
-  description: RESTful API built with Clean Architecture
+  description: |
+    Go Modern Architecture RESTful API 规范
+
+    提供用户管理、文章管理等功能的 RESTful API。
+
+    ## 认证
+    使用 Bearer Token 进行认证，在请求头中添加：
+    ```
+    Authorization: Bearer <token>
+    ```
+
+  contact:
+    name: API Support
+    email: api@example.com
+    url: https://example.com/support
+
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 
 servers:
   - url: http://localhost:8080/api/v1
     description: Development server
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+
+tags:
+  - name: Users
+    description: 用户管理相关操作
+  - name: Health
+    description: 健康检查相关操作
 
 paths:
   /users:
     get:
-      summary: List users
+      summary: 获取用户列表
+      description: 获取用户列表，支持分页、过滤和排序
+      operationId: listUsers
       tags:
         - Users
+      security:
+        - BearerAuth: []
       parameters:
-        - name: limit
+        - name: page
           in: query
+          description: 页码（从1开始）
+          required: false
           schema:
             type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: 每页数量
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
             default: 10
-        - name: offset
+        - name: email
           in: query
+          description: 邮箱过滤
+          required: false
           schema:
-            type: integer
-            default: 0
+            type: string
+            format: email
+        - name: sort
+          in: query
+          description: 排序字段
+          required: false
+          schema:
+            type: string
+            enum: [created_at, name, email]
+            default: created_at
+        - name: order
+          in: query
+          description: 排序方向
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
       responses:
         '200':
-          description: List of users
+          description: 成功返回用户列表
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
     post:
-      summary: Create user
+      summary: 创建用户
+      description: 创建新用户
+      operationId: createUser
       tags:
         - Users
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -46,42 +117,68 @@ paths:
               $ref: '#/components/schemas/CreateUserRequest'
       responses:
         '201':
-          description: User created
+          description: 用户创建成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          description: Bad request
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: 用户已存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /users/{id}:
     get:
-      summary: Get user by ID
+      summary: 获取用户详情
+      description: 根据ID获取用户详情
+      operationId: getUser
       tags:
         - Users
+      security:
+        - BearerAuth: []
       parameters:
         - name: id
           in: path
           required: true
+          description: 用户ID
           schema:
             type: string
+            pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
       responses:
         '200':
-          description: User found
+          description: 成功返回用户详情
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
         '404':
-          description: User not found
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
     put:
-      summary: Update user
+      summary: 更新用户
+      description: 更新用户信息
+      operationId: updateUser
       tags:
         - Users
+      security:
+        - BearerAuth: []
       parameters:
         - name: id
           in: path
           required: true
+          description: 用户ID
           schema:
             type: string
       requestBody:
@@ -92,57 +189,135 @@ paths:
               $ref: '#/components/schemas/UpdateUserRequest'
       responses:
         '200':
-          description: User updated
+          description: 用户更新成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
     delete:
-      summary: Delete user
+      summary: 删除用户
+      description: 删除用户
+      operationId: deleteUser
       tags:
         - Users
+      security:
+        - BearerAuth: []
       parameters:
         - name: id
           in: path
           required: true
+          description: 用户ID
           schema:
             type: string
       responses:
         '204':
-          description: User deleted
+          description: 用户删除成功
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /health:
+    get:
+      summary: 健康检查
+      description: 检查服务健康状态
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: 服务健康
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        使用 JWT Token 进行认证。
+
+        获取 Token 后，在请求头中添加：
+        ```
+        Authorization: Bearer <token>
+        ```
+
   schemas:
     User:
       type: object
+      required:
+        - id
+        - email
+        - name
+        - created_at
       properties:
         id:
           type: string
+          format: uuid
+          description: 用户唯一标识符
+          example: "123e4567-e89b-12d3-a456-426614174000"
         email:
           type: string
           format: email
+          description: 用户邮箱地址
+          example: "user@example.com"
         name:
           type: string
+          minLength: 1
+          maxLength: 100
+          description: 用户显示名称
+          example: "John Doe"
         created_at:
           type: string
           format: date-time
+          description: 创建时间
+          example: "2025-01-01T00:00:00Z"
         updated_at:
           type: string
           format: date-time
+          description: 更新时间
+          example: "2025-01-01T00:00:00Z"
 
     CreateUserRequest:
       type: object
       required:
         - email
         - name
+        - password
       properties:
         email:
           type: string
           format: email
+          description: 用户邮箱地址
+          example: "user@example.com"
         name:
           type: string
-          minLength: 2
+          minLength: 1
           maxLength: 100
+          description: 用户显示名称
+          example: "John Doe"
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 128
+          description: 用户密码（至少8个字符）
+          example: "SecurePassword123!"
 
     UpdateUserRequest:
       type: object
@@ -150,7 +325,134 @@ components:
         email:
           type: string
           format: email
+          description: 用户邮箱地址
         name:
           type: string
-          minLength: 2
+          minLength: 1
           maxLength: 100
+          description: 用户显示名称
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 128
+          description: 用户密码
+
+    UserListResponse:
+      type: object
+      required:
+        - data
+        - pagination
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    Pagination:
+      type: object
+      required:
+        - page
+        - page_size
+        - total
+        - total_pages
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          description: 当前页码
+        page_size:
+          type: integer
+          minimum: 1
+          description: 每页数量
+        total:
+          type: integer
+          minimum: 0
+          description: 总记录数
+        total_pages:
+          type: integer
+          minimum: 0
+          description: 总页数
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: 错误代码
+          example: "INVALID_INPUT"
+        message:
+          type: string
+          description: 错误消息
+          example: "Invalid input parameters"
+        details:
+          type: object
+          description: 错误详情
+          additionalProperties: true
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+          description: 健康状态
+        timestamp:
+          type: string
+          format: date-time
+          description: 检查时间
+        version:
+          type: string
+          description: 服务版本
+        uptime:
+          type: integer
+          description: 运行时间（秒）
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "BAD_REQUEST"
+            message: "Invalid request parameters"
+
+    Unauthorized:
+      description: 未授权
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "UNAUTHORIZED"
+            message: "Authentication required"
+
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "NOT_FOUND"
+            message: "Resource not found"
+
+    InternalServerError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "INTERNAL_ERROR"
+            message: "An internal error occurred"

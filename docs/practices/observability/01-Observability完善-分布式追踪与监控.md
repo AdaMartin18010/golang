@@ -1,7 +1,7 @@
 ﻿# Observability 完善 - 分布式追踪与监控
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -122,7 +122,7 @@ Request → Service A → Service B → Database
 package observability
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 
@@ -175,7 +175,7 @@ func NewTracingProvider(config TracingConfig) (*TracingProvider, error) {
 
     // 创建resource
     res, err := resource.New(
-        Context.Background(),
+        context.Background(),
         resource.WithAttributes(
             semconv.ServiceName(config.ServiceName),
             semconv.ServiceVersion(config.ServiceVersion),
@@ -321,7 +321,7 @@ tracingProvider, err := observability.NewTracingProvider(config)
 if err != nil {
     log.Fatal(err)
 }
-defer tracingProvider.Shutdown(Context.Background())
+defer tracingProvider.Shutdown(context.Background())
 
 // 在HTTP handler中使用追踪
 http.Handle("/api", observability.HTTPTracingMiddleware(apiHandler))
@@ -763,7 +763,7 @@ func processOrder(orderID string) error {
 package observability
 
 import (
-    "Context"
+    "context"
     "encoding/json"
     "net/http"
     "sync"
@@ -862,7 +862,7 @@ func (hc *HealthChecker) CheckAll(ctx Context.Context) map[string]error {
         go func(name string, check HealthCheck) {
             defer wg.Done()
 
-            ctx, cancel := Context.WithTimeout(ctx, hc.timeout)
+            ctx, cancel := context.WithTimeout(ctx, hc.timeout)
             defer cancel()
 
             err := check.Check(ctx)
@@ -1067,7 +1067,7 @@ http.HandleFunc("/health/ready", healthChecker.ReadinessHandler())
 package observability
 
 import (
-    "Context"
+    "context"
     "io"
     "log/slog"
     "os"

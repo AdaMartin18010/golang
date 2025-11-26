@@ -1,7 +1,7 @@
 ﻿# Go与AI集成
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -130,7 +130,7 @@ message PredictResponse {
 ```go
 // Go客户端
 import (
-    "Context"
+    "context"
     pb "path/to/prediction"
     "google.golang.org/grpc"
 )
@@ -145,7 +145,7 @@ func callGRPCModel(features []float32) (*pb.PredictResponse, error) {
     client := pb.NewPredictorClient(conn)
 
     req := &pb.PredictRequest{Features: features}
-    resp, err := client.Predict(Context.Background(), req)
+    resp, err := client.Predict(context.Background(), req)
 
     return resp, err
 }

@@ -1,7 +1,7 @@
 ﻿# HTTP/3与QUIC生产实践指南
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -784,7 +784,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "crypto/tls"
     "fmt"
     "net"
@@ -822,7 +822,7 @@ func NewMigrationAwareClient() *MigrationAwareClient {
 
 // RequestWithMigration 发送支持迁移的请求
 func (m *MigrationAwareClient) RequestWithMigration(url string) error {
-    ctx, cancel := Context.WithTimeout(Context.Background(), 30*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
 
     req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
@@ -1569,7 +1569,7 @@ func (f *IPFilter) Middleware(next http.Handler) http.Handler {
 package gateway
 
 import (
-    "Context"
+    "context"
     "crypto/tls"
     "fmt"
     "io"
@@ -1631,7 +1631,7 @@ func (gw *HTTP3Gateway) handleRequest(w http.ResponseWriter, r *http.Request) {
 
 func (gw *HTTP3Gateway) proxyRequest(w http.ResponseWriter, r *http.Request, upstream string) {
     // 创建上游请求
-    ctx, cancel := Context.WithTimeout(r.Context(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
     defer cancel()
 
     proxyReq, err := http.NewRequestWithContext(ctx, r.Method, upstream+r.URL.Path, r.Body)

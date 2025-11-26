@@ -1,8 +1,8 @@
 ﻿# Kubernetes高级特性
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用于**: Go 1.23+ / Kubernetes 1.28+
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3 / Kubernetes 1.28+
 
 ---
 
@@ -169,7 +169,7 @@ make manifests
 package controllers
 
 import (
-    "Context"
+    "context"
     ctrl "sigs.k8s.io/controller-runtime"
     "sigs.k8s.io/controller-runtime/pkg/client"
 

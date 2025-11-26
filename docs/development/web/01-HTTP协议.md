@@ -1,8 +1,8 @@
 ﻿# HTTP协议基础
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用于**: Go 1.23+
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -523,7 +523,7 @@ func cacheMiddleware(next http.Handler) http.Handler {
 5. **使用Context控制超时**
 
    ```go
-   ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
    defer cancel()
 
    req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)

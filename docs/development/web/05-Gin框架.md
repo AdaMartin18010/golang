@@ -1,7 +1,7 @@
 ﻿# Gin框架
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3, Gin v1.10+
 
 ---
@@ -584,7 +584,7 @@ func main() {
     log.Println("Shutting down server...")
 
     // 优雅关闭
-    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
 
     if err := srv.Shutdown(ctx); err != nil {

@@ -2,7 +2,7 @@
 
 **文档版本**: v1.0.0
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -631,7 +631,7 @@ func UserCtx(next http.Handler) http.Handler {
             return
         }
 
-        ctx := Context.WithValue(r.Context(), "user", user)
+        ctx := context.WithValue(r.Context(), "user", user)
         next.ServeHTTP(w, r.WithContext(ctx))
     })
 }
@@ -724,7 +724,7 @@ message ChatMessage {
 package main
 
 import (
-    "Context"
+    "context"
     "google.golang.org/grpc"
     "google.golang.org/grpc/codes"
     "google.golang.org/grpc/status"
@@ -908,12 +908,12 @@ func createClient() {
     client := pb.NewUserServiceClient(conn)
 
     // Unary调用
-    user, err := client.GetUser(Context.Background(), &pb.GetUserRequest{
+    user, err := client.GetUser(context.Background(), &pb.GetUserRequest{
         Id: "123",
     })
 
     // Server streaming
-    stream, err := client.ListUsers(Context.Background(), &pb.ListUsersRequest{
+    stream, err := client.ListUsers(context.Background(), &pb.ListUsersRequest{
         Page:     1,
         PageSize: 10,
     })
@@ -929,7 +929,7 @@ func createClient() {
     }
 
     // Client streaming
-    updateStream, err := client.UpdateUser(Context.Background())
+    updateStream, err := client.UpdateUser(context.Background())
     for _, user := range usersToUpdate {
         updateStream.Send(&pb.UpdateUserRequest{
             Id:   user.ID,
@@ -939,7 +939,7 @@ func createClient() {
     resp, err := updateStream.CloseAndRecv()
 
     // Bidirectional streaming
-    chatStream, err := client.ChatUsers(Context.Background())
+    chatStream, err := client.ChatUsers(context.Background())
     go func() {
         for {
             msg, err := chatStream.Recv()
@@ -1022,7 +1022,7 @@ func callMicroService() {
 
     client := pb.NewUserService("user.service", service.Client())
 
-    rsp, err := client.GetUser(Context.Background(), &pb.GetUserRequest{
+    rsp, err := client.GetUser(context.Background(), &pb.GetUserRequest{
         Id: "123",
     })
     if err != nil {
@@ -1082,7 +1082,7 @@ func createKitexClient() {
         log.Fatal(err)
     }
 
-    resp, err := client.GetUser(Context.Background(), &user.GetUserRequest{
+    resp, err := client.GetUser(context.Background(), &user.GetUserRequest{
         Id: "123",
     })
     if err != nil {
@@ -1327,7 +1327,7 @@ Ent 是 Facebook 开发的实体框架。
 package main
 
 import (
-    "Context"
+    "context"
     "log"
 
     "<project>/ent"
@@ -1378,7 +1378,7 @@ func useEnt() {
     }
     defer client.Close()
 
-    ctx := Context.Background()
+    ctx := context.Background()
 
     // 运行迁移
     if err := client.Schema.Create(ctx); err != nil {
@@ -1418,7 +1418,7 @@ func useEnt() {
 
 // 3. 事务
 func entTransaction(client *ent.Client) error {
-    ctx := Context.Background()
+    ctx := context.Background()
 
     tx, err := client.Tx(ctx)
     if err != nil {
@@ -1466,7 +1466,7 @@ func rollback(tx *ent.Tx, err error) error {
 package main
 
 import (
-    "Context"
+    "context"
     "k8s.io/client-go/kubernetes"
     "k8s.io/client-go/tools/clientcmd"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -1492,7 +1492,7 @@ func initK8sClient() (*kubernetes.Clientset, error) {
 
 // 2. Pod操作
 func podOperations(clientset *kubernetes.Clientset) {
-    ctx := Context.Background()
+    ctx := context.Background()
 
     // 列出Pods
     pods, err := clientset.CoreV1().Pods("default").List(ctx, metav1.ListOptions{
@@ -1534,7 +1534,7 @@ func podOperations(clientset *kubernetes.Clientset) {
 
 // 3. Deployment操作
 func deploymentOperations(clientset *kubernetes.Clientset) {
-    ctx := Context.Background()
+    ctx := context.Background()
 
     deploymentsClient := clientset.AppsV1().Deployments("default")
 
@@ -1582,7 +1582,7 @@ func deploymentOperations(clientset *kubernetes.Clientset) {
 
 // 4. Watch资源变化
 func watchResources(clientset *kubernetes.Clientset) {
-    ctx := Context.Background()
+    ctx := context.Background()
 
     watcher, err := clientset.CoreV1().Pods("default").Watch(ctx, metav1.ListOptions{
         LabelSelector: "app=myapp",

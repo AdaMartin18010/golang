@@ -1,8 +1,8 @@
 ﻿# API网关
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用于**: Go 1.23+
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -475,7 +475,7 @@ func (am *AuthMiddleware) Middleware() func(http.Handler) http.Handler {
             }
 
             // 将用户信息添加到请求上下文
-            ctx := Context.WithValue(r.Context(), "user", claims)
+            ctx := context.WithValue(r.Context(), "user", claims)
             r = r.WithContext(ctx)
 
             next.ServeHTTP(w, r)
@@ -561,7 +561,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "sync"
     "time"

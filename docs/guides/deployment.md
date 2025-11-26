@@ -10,6 +10,7 @@ docker-compose up -d
 ```
 
 这将启动：
+
 - PostgreSQL 数据库
 - OpenTelemetry Collector
 - Prometheus
@@ -104,9 +105,9 @@ kubectl logs <pod-name>
 
 ### 访问监控面板
 
-- **Grafana**: http://localhost:3000 (admin/admin)
-- **Prometheus**: http://localhost:9090
-- **Jaeger**: http://localhost:16686
+- **Grafana**: <http://localhost:3000> (admin/admin)
+- **Prometheus**: <http://localhost:9090>
+- **Jaeger**: <http://localhost:16686>
 
 ## 数据库迁移
 
@@ -172,4 +173,3 @@ server:
 
 - 调整 Docker/Kubernetes 资源限制
 - 优化应用配置
-

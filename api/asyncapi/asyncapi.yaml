@@ -2,66 +2,259 @@ asyncapi: 3.0.0
 info:
   title: Go Modern Architecture AsyncAPI
   version: 1.0.0
-  description: AsyncAPI specification for event-driven architecture
+  description: |
+    Go Modern Architecture 异步 API 规范
+
+    提供事件驱动架构的消息定义，支持 Kafka、MQTT、NATS 等多种协议。
+
+  contact:
+    name: API Support
+    email: api@example.com
+
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 
 servers:
   kafka:
     url: localhost:9092
     protocol: kafka
+    description: Kafka 消息服务器
+    protocolVersion: '2.8.0'
+
   mqtt:
     url: tcp://localhost:1883
     protocol: mqtt
+    description: MQTT 消息代理
+    protocolVersion: '5.0'
+
+  nats:
+    url: nats://localhost:4222
+    protocol: nats
+    description: NATS 消息服务器
+    protocolVersion: '2.9.0'
+
+defaultContentType: application/json
 
 channels:
-  user.created:
-    description: User created event
+  # 用户域事件 - 使用层次化命名: {domain}.{entity}.{action}
+  user.service.created:
+    description: 用户创建事件
+    address: user.service.created
+    messages:
+      UserCreated:
+        $ref: '#/components/messages/UserCreated'
     publish:
       message:
         $ref: '#/components/messages/UserCreated'
+      bindings:
+        kafka:
+          bindingVersion: '0.4.0'
+          key:
+            type: string
+            description: 用户ID作为消息键
+          partitions: 3
+          replicas: 3
+        mqtt:
+          bindingVersion: '0.1.0'
+          qos: 1
+          retain: false
 
-  user.updated:
-    description: User updated event
+  user.service.updated:
+    description: 用户更新事件
+    address: user.service.updated
+    messages:
+      UserUpdated:
+        $ref: '#/components/messages/UserUpdated'
     publish:
       message:
         $ref: '#/components/messages/UserUpdated'
 
-  user.deleted:
-    description: User deleted event
+  user.service.deleted:
+    description: 用户删除事件
+    address: user.service.deleted
+    messages:
+      UserDeleted:
+        $ref: '#/components/messages/UserDeleted'
     publish:
       message:
         $ref: '#/components/messages/UserDeleted'
 
+  # 订阅示例
+  notification.service.send:
+    description: 发送通知事件
+    address: notification.service.send
+    subscribe:
+      message:
+        $ref: '#/components/messages/NotificationRequest'
+      bindings:
+        kafka:
+          bindingVersion: '0.4.0'
+          consumerGroup:
+            $ref: '#/components/schemas/ConsumerGroup'
+          clientId: notification-service
+
 components:
   messages:
     UserCreated:
+      name: UserCreated
+      title: User Created Event
+      summary: 用户创建事件
+      contentType: application/json
       payload:
-        type: object
-        properties:
-          id:
-            type: string
-          email:
-            type: string
-          name:
-            type: string
-          createdAt:
-            type: string
+        $ref: '#/components/schemas/UserCreatedPayload'
+      headers:
+        $ref: '#/components/schemas/EventHeaders'
+      examples:
+        - payload:
+            id: "123e4567-e89b-12d3-a456-426614174000"
+            email: "user@example.com"
+            name: "John Doe"
+            created_at: "2025-01-01T00:00:00Z"
+          headers:
+            event_id: "event-123"
+            event_type: "user.created"
+            event_version: "1.0.0"
+            timestamp: "2025-01-01T00:00:00Z"
 
     UserUpdated:
+      name: UserUpdated
+      title: User Updated Event
+      summary: 用户更新事件
+      contentType: application/json
       payload:
-        type: object
-        properties:
-          id:
-            type: string
-          email:
-            type: string
-          name:
-            type: string
-          updatedAt:
-            type: string
+        $ref: '#/components/schemas/UserUpdatedPayload'
+      headers:
+        $ref: '#/components/schemas/EventHeaders'
 
     UserDeleted:
+      name: UserDeleted
+      title: User Deleted Event
+      summary: 用户删除事件
+      contentType: application/json
       payload:
-        type: object
-        properties:
-          id:
-            type: string
+        $ref: '#/components/schemas/UserDeletedPayload'
+      headers:
+        $ref: '#/components/schemas/EventHeaders'
+
+    NotificationRequest:
+      name: NotificationRequest
+      title: Notification Request
+      summary: 通知请求
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/NotificationRequestPayload'
+
+  schemas:
+    UserCreatedPayload:
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 用户唯一标识符
+        email:
+          type: string
+          format: email
+          description: 用户邮箱地址
+        name:
+          type: string
+          description: 用户显示名称
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间
+
+    UserUpdatedPayload:
+      type: object
+      required:
+        - id
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+
+    UserDeletedPayload:
+      type: object
+      required:
+        - id
+        - deleted_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        deleted_at:
+          type: string
+          format: date-time
+
+    EventHeaders:
+      type: object
+      required:
+        - event_id
+        - event_type
+        - event_version
+        - timestamp
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          description: 事件唯一标识符
+        event_type:
+          type: string
+          description: 事件类型
+          example: "user.created"
+        event_version:
+          type: string
+          description: 事件版本
+          example: "1.0.0"
+        timestamp:
+          type: string
+          format: date-time
+          description: 事件时间戳
+        source:
+          type: string
+          description: 事件来源服务
+          example: "user-service"
+        correlation_id:
+          type: string
+          format: uuid
+          description: 关联ID（用于追踪）
+
+    NotificationRequestPayload:
+      type: object
+      required:
+        - user_id
+        - type
+        - message
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [email, sms, push]
+        message:
+          type: string
+        priority:
+          type: string
+          enum: [low, normal, high]
+          default: normal
+
+    ConsumerGroup:
+      type: string
+      description: 消费者组名称
+      example: "notification-service-group"

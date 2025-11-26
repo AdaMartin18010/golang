@@ -3,7 +3,7 @@
 > **简介**: 基于CNCF标准的云原生架构设计，涵盖容器、Kubernetes、服务网格、DevOps和持续交付
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -88,7 +88,7 @@
 package cloudnative
 
 import (
-    "Context"
+    "context"
     "time"
     "errors"
     "sync"
@@ -561,7 +561,7 @@ type ClusterConfig struct {
     CertificateData string            `json:"certificate_data"`
     Token           string            `json:"token"`
     Namespace       string            `json:"namespace"`
-    Context         string            `json:"Context"`
+    Context         string            `json:"context"`
     Options         map[string]string `json:"options"`
 }
 

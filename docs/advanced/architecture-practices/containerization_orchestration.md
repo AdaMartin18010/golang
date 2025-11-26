@@ -3,7 +3,7 @@
 > **简介**: Docker容器化和Kubernetes编排架构实践，构建可移植、可扩展的云原生应用
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -260,7 +260,7 @@ spec:
 package main
 
 import (
- "Context"
+ "context"
  "fmt"
  metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
  "k8s.io/client-go/kubernetes"
@@ -286,7 +286,7 @@ func main() {
  }
 
  // 获取默认命名空间下的所有Pod
- pods, err := clientset.CoreV1().Pods("default").List(Context.TODO(), metav1.ListOptions{})
+ pods, err := clientset.CoreV1().Pods("default").List(context.TODO(), metav1.ListOptions{})
  if err != nil {
   panic(err.Error())
  }

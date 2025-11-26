@@ -1,8 +1,8 @@
 ﻿# select与context高级用法
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
-**适用于**: Go 1.23+
+**更新日期**: 2025-11-11
+**适用于**: Go 1.25.3
 
 ---
 
@@ -49,10 +49,10 @@ select语句用于监听多个channel操作，实现多路复用、超时、取�
 context用于跨Goroutine传递取消信号、超时、元数据，是Go并发控制的标准方式。
 
 - 典型结构：
-  - Context.Background()
-  - Context.WithCancel(parent)
-  - Context.WithTimeout(parent, duration)
-  - Context.WithValue(parent, key, value)
+  - context.Background()
+  - context.WithCancel(parent)
+  - context.WithTimeout(parent, duration)
+  - context.WithValue(parent, key, value)
 
 ---
 
@@ -84,7 +84,7 @@ case v2 := <-ch2:
 ### context实现取消
 
 ```go
-ctx, cancel := Context.WithCancel(Context.Background())
+ctx, cancel := context.WithCancel(context.Background())
 go func() {
     <-ctx.Done()
     fmt.Println("cancelled")
@@ -95,7 +95,7 @@ cancel()
 ### context实现超时
 
 ```go
-ctx, cancel := Context.WithTimeout(Context.Background(), time.Second)
+ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 defer cancel()
 select {
 case <-ctx.Done():
@@ -148,7 +148,7 @@ case <-ctx.Done():
 package main
 
 import (
-    "Context"
+    "context"
     "encoding/json"
     "fmt"
     "log"
@@ -172,7 +172,7 @@ const (
 func RequestIDMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         requestID := fmt.Sprintf("req-%d", time.Now().UnixNano())
-        ctx := Context.WithValue(r.Context(), requestIDKey, requestID)
+        ctx := context.WithValue(r.Context(), requestIDKey, requestID)
 
         // 将Request ID添加到响应头
         w.Header().Set("X-Request-ID", requestID)
@@ -189,7 +189,7 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
 func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
     return func(next http.Handler) http.Handler {
         return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            ctx, cancel := Context.WithTimeout(r.Context(), timeout)
+            ctx, cancel := context.WithTimeout(r.Context(), timeout)
             defer cancel()
 
             // 创建一个channel来接收处理完成信号
@@ -225,7 +225,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
         // 模拟验证token并提取用户ID
         userID := "user-123"
-        ctx := Context.WithValue(r.Context(), userIDKey, userID)
+        ctx := context.WithValue(r.Context(), userIDKey, userID)
 
         next.ServeHTTP(w, r.WithContext(ctx))
     })
@@ -260,7 +260,7 @@ func callExternalAPI(ctx Context.Context, endpoint string) (interface{}, error) 
     log.Printf("[%s] Calling external API: %s", requestID, endpoint)
 
     // 创建带超时的子context
-    apiCtx, cancel := Context.WithTimeout(ctx, 500*time.Millisecond)
+    apiCtx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
     defer cancel()
 
     // 模拟API调用时间 (100-700ms)

@@ -127,7 +127,7 @@ curl http://localhost:8123/ping
 package database
 
 import (
-    "Context"
+    "context"
     "crypto/tls"
     "fmt"
     "time"
@@ -173,7 +173,7 @@ func NewClickHouse(addr string) (*ClickHouse, error) {
     }
 
     // 测试连接
-    ctx := Context.Background()
+    ctx := context.Background()
     if err := conn.Ping(ctx); err != nil {
         return nil, fmt.Errorf("ping failed: %w", err)
     }
@@ -258,7 +258,7 @@ ClickHouse支持多种表引擎：
 package repository
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -863,7 +863,7 @@ func (r *EventRepository) AttachPartition(ctx Context.Context, partition string)
 package analytics
 
 import (
-    "Context"
+    "context"
     "time"
 
     "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -1095,7 +1095,7 @@ func (bw *BatchWriter) flush() error {
         return nil
     }
 
-    ctx, cancel := Context.WithTimeout(Context.Background(), 10*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
 
     err := bw.repo.BatchInsert(ctx, bw.buffer)

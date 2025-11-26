@@ -1,7 +1,7 @@
 ﻿# CLI工具增强 - REPL与配置管理
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -91,7 +91,7 @@ package cli
 
 import (
     "bufio"
-    "Context"
+    "context"
     "fmt"
     "io"
     "os"
@@ -140,7 +140,7 @@ var DefaultREPLConfig = REPLConfig{
 
 // NewREPL 创建REPL实例
 func NewREPL(config REPLConfig) (*REPL, error) {
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
 
     repl := &REPL{
         commands:   make(map[string]Command),
@@ -771,7 +771,7 @@ func (b *ConfigBuilder) Build() *Config {
 package cli
 
 import (
-    "Context"
+    "context"
     "fmt"
     "plugin"
     "sync"
@@ -826,7 +826,7 @@ func (pm *PluginManager) Load(path string) error {
     plugin := newPluginFunc()
 
     // 初始化插件
-    if err := plugin.Initialize(Context.Background()); err != nil {
+    if err := plugin.Initialize(context.Background()); err != nil {
         return fmt.Errorf("failed to initialize plugin: %w", err)
     }
 
@@ -857,7 +857,7 @@ func (pm *PluginManager) Unload(name string) error {
     }
 
     // 关闭插件
-    if err := p.Shutdown(Context.Background()); err != nil {
+    if err := p.Shutdown(context.Background()); err != nil {
         return fmt.Errorf("failed to shutdown plugin: %w", err)
     }
 

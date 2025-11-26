@@ -109,7 +109,7 @@ project/
 package database
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 
@@ -126,7 +126,7 @@ type MongoDB struct {
 
 // NewMongoDB 创建MongoDB连接
 func NewMongoDB(uri, dbName string) (*MongoDB, error) {
-    ctx, cancel := Context.WithTimeout(Context.Background(), 10*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
 
     // 设置客户端选项
@@ -159,7 +159,7 @@ func NewMongoDB(uri, dbName string) (*MongoDB, error) {
 
 // Close 关闭连接
 func (m *MongoDB) Close() error {
-    ctx, cancel := Context.WithTimeout(Context.Background(), 10*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
 
     return m.Client.Disconnect(ctx)
@@ -230,7 +230,7 @@ type Profile struct {
 package repository
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 
@@ -582,7 +582,7 @@ func (r *UserRepository) DeleteOldUsers(ctx Context.Context, daysAgo int) (int64
 package repository
 
 import (
-    "Context"
+    "context"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
 )
@@ -766,7 +766,7 @@ type SearchResult struct {
 package repository
 
 import (
-    "Context"
+    "context"
     "fmt"
     "time"
 
@@ -868,7 +868,7 @@ func (r *UserRepository) DropIndex(ctx Context.Context, name string) error {
 package repository
 
 import (
-    "Context"
+    "context"
     "fmt"
 
     "go.mongodb.org/mongo-driver/bson"
@@ -961,7 +961,7 @@ func TransferPoints(ctx Context.Context, client *mongo.Client, fromUserID, toUse
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "log"
     "time"
@@ -1025,16 +1025,16 @@ func WatchUsers(ctx Context.Context, collection *mongo.Collection) {
 
 // 使用示例
 func main() {
-    client, err := mongo.Connect(Context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
+    client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
     if err != nil {
         log.Fatal(err)
     }
-    defer client.Disconnect(Context.Background())
+    defer client.Disconnect(context.Background())
 
     collection := client.Database("mydb").Collection("users")
 
     // 在goroutine中监听
-    go WatchUsers(Context.Background(), collection)
+    go WatchUsers(context.Background(), collection)
 
     // 主程序继续运行
     time.Sleep(10 * time.Minute)
@@ -1051,7 +1051,7 @@ func main() {
 package storage
 
 import (
-    "Context"
+    "context"
     "fmt"
     "io"
     "os"
@@ -1181,7 +1181,7 @@ func getContentType(filename string) string {
 
 // 使用示例
 func ExampleFileStorage() {
-    client, _ := mongo.Connect(Context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
+    client, _ := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
     db := client.Database("mydb")
 
     storage, _ := NewFileStorage(db)
@@ -1190,13 +1190,13 @@ func ExampleFileStorage() {
     file, _ := os.Open("large-file.pdf")
     defer file.Close()
 
-    fileID, _ := storage.Upload(Context.Background(), "large-file.pdf", file)
+    fileID, _ := storage.Upload(context.Background(), "large-file.pdf", file)
 
     // 下载文件
     outFile, _ := os.Create("downloaded.pdf")
     defer outFile.Close()
 
-    storage.Download(Context.Background(), fileID, outFile)
+    storage.Download(context.Background(), fileID, outFile)
 }
 ```
 
@@ -1244,7 +1244,7 @@ func ExampleBulkWrite(repo *UserRepository) {
         mongo.NewDeleteOneModel().SetFilter(bson.M{"username": "dave"}),
     }
 
-    repo.BulkWrite(Context.Background(), operations)
+    repo.BulkWrite(context.Background(), operations)
 }
 ```
 
@@ -1302,7 +1302,7 @@ if mongo.IsTimeout(err) {
 ### 2. Context超时控制
 
 ```go
-ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 defer cancel()
 
 user, err := repo.FindByID(ctx, userID)
@@ -1315,14 +1315,14 @@ user, err := repo.FindByID(ctx, userID)
 var mongoClient *mongo.Client
 
 func init() {
-    client, _ := mongo.Connect(Context.Background(), clientOptions)
+    client, _ := mongo.Connect(context.Background(), clientOptions)
     mongoClient = client
 }
 
 // ❌ 每次都创建新连接
 func BadExample() {
-    client, _ := mongo.Connect(Context.Background(), clientOptions)
-    defer client.Disconnect(Context.Background())
+    client, _ := mongo.Connect(context.Background(), clientOptions)
+    defer client.Disconnect(context.Background())
     // ...
 }
 ```

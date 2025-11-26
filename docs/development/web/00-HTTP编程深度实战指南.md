@@ -131,7 +131,7 @@ func main() {
 package main
 
 import (
-    "Context"
+    "context"
     "fmt"
     "log"
     "net/http"
@@ -181,7 +181,7 @@ func main() {
     fmt.Println("Shutting down server...")
 
     // 5秒内完成所有请求
-    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
 
     if err := server.Shutdown(ctx); err != nil {
@@ -1146,7 +1146,7 @@ package main
 
 import (
     "bytes"
-    "Context"
+    "context"
     "encoding/json"
     "fmt"
     "io"
@@ -1232,7 +1232,7 @@ func (c *HTTPClient) Post(ctx Context.Context, path string, data interface{}) ([
 func main() {
     client := NewHTTPClient("https://jsonplaceholder.typicode.com")
 
-    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
 
     // GET请求

@@ -1,7 +1,7 @@
 ﻿# Context应用
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -83,13 +83,13 @@ func process(ctx Context.Context) {
 ### Background和TODO
 
 ```go
-import "Context"
+import "context"
 
 // Background: 根Context，通常用于main、init和测试
-ctx := Context.Background()
+ctx := context.Background()
 
 // TODO: 不确定使用哪个Context时的占位符
-ctx := Context.TODO()
+ctx := context.TODO()
 ```
 
 ---
@@ -98,7 +98,7 @@ ctx := Context.TODO()
 
 ```go
 // 创建可取消的Context
-ctx, cancel := Context.WithCancel(Context.Background())
+ctx, cancel := context.WithCancel(context.Background())
 defer cancel()  // 确保释放资源
 
 go func() {
@@ -114,7 +114,7 @@ cancel()
 
 ```go
 func main() {
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
 
     go func() {
         for {
@@ -141,7 +141,7 @@ func main() {
 
 ```go
 // 创建带超时的Context
-ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 defer cancel()
 
 select {
@@ -156,7 +156,7 @@ case <-ctx.Done():
 
 ```go
 func main() {
-    ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
     defer cancel()
 
     go func() {
@@ -179,7 +179,7 @@ func main() {
 ```go
 // 创建带截止时间的Context
 deadline := time.Now().Add(10 * time.Second)
-ctx, cancel := Context.WithDeadline(Context.Background(), deadline)
+ctx, cancel := context.WithDeadline(context.Background(), deadline)
 defer cancel()
 
 select {
@@ -214,7 +214,7 @@ func fetchURL(ctx Context.Context, url string) (string, error) {
 }
 
 func main() {
-    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
 
     body, err := fetchURL(ctx, "https://example.com")
@@ -237,7 +237,7 @@ func main() {
 
 ```go
 func queryDatabase(ctx Context.Context, query string) ([]User, error) {
-    ctx, cancel := Context.WithTimeout(ctx, 3*time.Second)
+    ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
     defer cancel()
 
     rows, err := db.QueryContext(ctx, query)
@@ -268,15 +268,15 @@ func queryDatabase(ctx Context.Context, query string) ([]User, error) {
 ```go
 func main() {
     // 父Context
-    parentCtx, parentCancel := Context.WithCancel(Context.Background())
+    parentCtx, parentCancel := context.WithCancel(context.Background())
     defer parentCancel()
 
     // 子Context1
-    childCtx1, cancel1 := Context.WithCancel(parentCtx)
+    childCtx1, cancel1 := context.WithCancel(parentCtx)
     defer cancel1()
 
     // 子Context2
-    childCtx2, cancel2 := Context.WithCancel(parentCtx)
+    childCtx2, cancel2 := context.WithCancel(parentCtx)
     defer cancel2()
 
     go worker(childCtx1, "Worker1")
@@ -316,8 +316,8 @@ func server(ctx Context.Context) {
         <-ctx.Done()
 
         // 优雅关闭，最多等待5秒
-        shutdownCtx, cancel := Context.WithTimeout(
-            Context.Background(),
+        shutdownCtx, cancel := context.WithTimeout(
+            context.Background(),
             5*time.Second,
         )
         defer cancel()
@@ -333,7 +333,7 @@ func server(ctx Context.Context) {
 }
 
 func main() {
-    ctx, cancel := Context.WithCancel(Context.Background())
+    ctx, cancel := context.WithCancel(context.Background())
 
     go server(ctx)
 
@@ -357,8 +357,8 @@ func main() {
 type key string
 
 func main() {
-    ctx := Context.WithValue(Context.Background(), key("userID"), 123)
-    ctx = Context.WithValue(ctx, key("requestID"), "abc-123")
+    ctx := context.WithValue(context.Background(), key("userID"), 123)
+    ctx = context.WithValue(ctx, key("requestID"), "abc-123")
 
     processRequest(ctx)
 }
@@ -380,7 +380,7 @@ type userIDKey struct{}
 type requestIDKey struct{}
 
 func WithUserID(ctx Context.Context, userID int) Context.Context {
-    return Context.WithValue(ctx, userIDKey{}, userID)
+    return context.WithValue(ctx, userIDKey{}, userID)
 }
 
 func GetUserID(ctx Context.Context) (int, bool) {
@@ -389,7 +389,7 @@ func GetUserID(ctx Context.Context) (int, bool) {
 }
 
 func WithRequestID(ctx Context.Context, requestID string) Context.Context {
-    return Context.WithValue(ctx, requestIDKey{}, requestID)
+    return context.WithValue(ctx, requestIDKey{}, requestID)
 }
 
 func GetRequestID(ctx Context.Context) (string, bool) {
@@ -399,7 +399,7 @@ func GetRequestID(ctx Context.Context) (string, bool) {
 
 // 使用
 func main() {
-    ctx := Context.Background()
+    ctx := context.Background()
     ctx = WithUserID(ctx, 123)
     ctx = WithRequestID(ctx, "abc-123")
 
@@ -516,7 +516,7 @@ func (s *Server) Handle(ctx Context.Context) {
 
 ```go
 // ✅ 推荐
-ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 defer cancel()  // 确保释放资源
 
 // ❌ 忘记调用cancel会导致资源泄漏
@@ -550,10 +550,10 @@ default:
 doWork(nil)
 
 // ✅ 使用context.TODO()
-doWork(Context.TODO())
+doWork(context.TODO())
 
 // ✅ 或使用context.Background()
-doWork(Context.Background())
+doWork(context.Background())
 ```
 
 ---

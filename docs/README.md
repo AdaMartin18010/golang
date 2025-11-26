@@ -3,6 +3,7 @@
 **版本**: v1.0
 **更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
+**项目结构**: 符合 [golang-standards/project-layout](https://github.com/golang-standards/project-layout)
 
 ---
 
@@ -26,7 +27,7 @@
     - [其他导航](#其他导航)
   - [🌟 Key Features](#-key-features)
   - [📖 Popular Topics](#-popular-topics)
-  - [🆕 最新更新 (2025-10-28)](#-最新更新-2025-10-28)
+  - [🆕 最新更新 (2025-11-11)](#-最新更新-2025-11-11)
     - [🎉 重大更新](#-重大更新)
     - [早期更新](#早期更新)
   - [🤝 Contributing](#-contributing)
@@ -54,6 +55,8 @@ New to Go? Start here:
 
 ## 📚 Documentation Structure
 
+本文档目录遵循标准Go项目文档布局，提供完整的Go 1.25.3学习和开发指南。
+
 ### 🏗️ [Architecture](./architecture/) ⭐ 项目架构
 
 **项目架构文档** (完整架构设计，已深度增强):
@@ -78,16 +81,25 @@ New to Go? Start here:
 
 ### 📖 [Guides](./guides/) ⭐ 使用指南
 
-项目使用指南：
+项目使用指南和快速入门：
 
-- **[工作流指南](./guides/workflow.md)** - Temporal 工作流使用
+- **[快速开始](./guides/getting-started.md)** - 快速开始指南
 - **[开发指南](./guides/development.md)** - 开发指南
 - **[部署指南](./guides/deployment.md)** - 部署指南
 - **[测试指南](./guides/testing.md)** - 测试指南
+- **[工作流指南](./guides/workflow.md)** - Temporal 工作流使用
+- **[代码生成](./guides/code-generation.md)** - 代码生成指南
+- **[贡献指南](./guides/contributing.md)** - 贡献指南
 
-### 🎯 [Getting Started](./getting-started/)
+### 🎯 Getting Started
 
-Fast-track your Go journey with quick starts, installation guides, and essential FAQs.
+快速入门指南（详细内容请参考 [Guides](./guides/)）：
+
+- **[安装指南](./getting-started/installation.md)** - 环境设置
+- **[3分钟快速开始](./getting-started/quick-start-3min.md)** - 快速上手
+- **[快速开始](./getting-started/quick-start.md)** - 完整快速开始
+- **[常见问题](./getting-started/faq.md)** - FAQ
+- **[术语表](./getting-started/glossary.md)** - 术语定义
 
 ### 📖 [Fundamentals](./fundamentals/)
 
@@ -189,7 +201,7 @@ Quick references and resources:
 
 ---
 
-## 🆕 最新更新 (2025-10-28)
+## 🆕 最新更新 (2025-11-11)
 
 ### 🎉 重大更新
 

@@ -3,7 +3,7 @@
 > **简介**: 基于国际主流标准的微服务架构完整指南，涵盖DDD领域建模、分布式挑战、架构设计、Golang实现和形式化证明
 
 **版本**: v1.0
-**更新日期**: 2025-10-29
+**更新日期**: 2025-11-11
 **适用于**: Go 1.25.3
 
 ---
@@ -205,7 +205,7 @@
 package microservice
 
 import (
-    "Context"
+    "context"
     "time"
     "errors"
     "sync"
@@ -1101,7 +1101,7 @@ type Span struct {
 
 ```go
 // gRPC 客户端调用带超时与重试
-ctx, cancel := Context.WithTimeout(Context.Background(), 2*time.Second)
+ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 defer cancel()
 resp, err := client.DoSomething(ctx, req)
 if err != nil {
@@ -1122,7 +1122,7 @@ if err != nil {
 // etcd 服务注册示例
 import clientv3 "go.etcd.io/etcd/client/v3"
 cli, _ := clientv3.New(clientv3.Config{Endpoints: []string{"localhost:2379"}})
-cli.Put(Context.Background(), "/services/order/instance1", "127.0.0.1:8080")
+cli.Put(context.Background(), "/services/order/instance1", "127.0.0.1:8080")
 ```
 
 ### 数据一致性
@@ -1138,7 +1138,7 @@ cli.Put(Context.Background(), "/services/order/instance1", "127.0.0.1:8080")
 // Kafka 事件发布
 import "github.com/segmentio/kafka-go"
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "order-events"})
-writer.WriteMessages(Context.Background(), kafka.Message{Value: []byte("OrderCreated")})
+writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("OrderCreated")})
 ```
 
 ### 系统可靠性
@@ -1355,11 +1355,11 @@ import "github.com/segmentio/kafka-go"
 
 // 发布事件
 writer := kafka.NewWriter(kafka.WriterConfig{Brokers: []string{"localhost:9092"}, Topic: "order-events"})
-writer.WriteMessages(Context.Background(), kafka.Message{Value: []byte("OrderCreated")})
+writer.WriteMessages(context.Background(), kafka.Message{Value: []byte("OrderCreated")})
 
 // 消费事件
 reader := kafka.NewReader(kafka.ReaderConfig{Brokers: []string{"localhost:9092"}, Topic: "order-events", GroupID: "order-group"})
-msg, _ := reader.ReadMessage(Context.Background())
+msg, _ := reader.ReadMessage(context.Background())
 log.Printf("received: %s", string(msg.Value))
 ```
 

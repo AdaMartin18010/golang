@@ -942,7 +942,7 @@ func main() {
     log.Println("Shutting down server...")
 
     // 优雅关闭（5秒超时）
-    ctx, cancel := Context.WithTimeout(Context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
 
     if err := srv.Shutdown(ctx); err != nil {
