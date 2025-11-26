@@ -85,7 +85,7 @@
    - 模式概念深度解析（Repository Pattern, Service Pattern, DTO Pattern, Dependency Injection）
    - 设计原则深度解析（SOLID 原则, DRY 原则, KISS 原则, YAGNI 原则）
 
-7. **[第三方技术栈深度解析](./00-第三方技术栈深度解析.md)** ⭐⭐⭐⭐ ✅ 新建
+7. **[技术栈文档索引](./tech-stack/README.md)** ⭐⭐⭐⭐ ✅ 已拆分
    - 全面梳理和论证所有第三方技术栈
    - Chi Router、Ent ORM、Temporal、OpenTelemetry 等深度解析
    - 每个技术的核心特性、选型论证、实际应用、最佳实践
@@ -116,11 +116,21 @@
 
 ### 按技术导航
 
-- **Temporal**: [工作流架构设计](./workflow.md) | [第三方技术栈深度解析](./00-第三方技术栈深度解析.md#41-temporal)
-- **Ent ORM**: [Clean Architecture](./clean-architecture.md) → Infrastructure Layer | [第三方技术栈深度解析](./00-第三方技术栈深度解析.md#31-ent-orm)
-- **Chi Router**: [Clean Architecture](./clean-architecture.md) → Interfaces Layer | [第三方技术栈深度解析](./00-第三方技术栈深度解析.md#21-chi-router)
-- **OpenTelemetry**: [第三方技术栈深度解析](./00-第三方技术栈深度解析.md#51-opentelemetry)
-- **PostgreSQL**: [第三方技术栈深度解析](./00-第三方技术栈深度解析.md#32-postgresql-pgx)
+- **Temporal**: [工作流架构设计](./workflow.md) | [技术栈文档](./tech-stack/workflow/temporal.md)
+- **Ent ORM**: [Clean Architecture](./clean-architecture.md) → Infrastructure Layer | [技术栈文档](./tech-stack/data/ent-orm.md)
+- **Chi Router**: [Clean Architecture](./clean-architecture.md) → Interfaces Layer | [技术栈文档](./tech-stack/web/chi-router.md)
+- **OpenTelemetry**: [技术栈文档](./tech-stack/observability/opentelemetry.md)
+- **Prometheus**: [技术栈文档](./tech-stack/observability/prometheus.md)
+- **Grafana**: [技术栈文档](./tech-stack/observability/grafana.md)
+- **Jaeger**: [技术栈文档](./tech-stack/observability/jaeger.md)
+- **PostgreSQL**: [技术栈文档](./tech-stack/data/postgresql-pgx.md)
+- **Kafka**: [技术栈文档](./tech-stack/messaging/kafka.md)
+- **MQTT**: [技术栈文档](./tech-stack/messaging/mqtt.md)
+- **Viper**: [技术栈文档](./tech-stack/config/viper.md)
+- **Slog**: [技术栈文档](./tech-stack/config/slog.md)
+- **Wire**: [技术栈文档](./tech-stack/config/wire.md)
+- **gRPC**: [技术栈文档](./tech-stack/api/grpc.md)
+- **GraphQL**: [技术栈文档](./tech-stack/api/graphql.md)
 - **Go 1.25.3**: [Go 1.25.3 技术栈对齐](./00-Go-1.25.3技术栈对齐.md)
 
 ---
@@ -221,7 +231,12 @@
 
 ### 架构相关
 
-- [第三方技术栈深度解析](./00-第三方技术栈深度解析.md) - 第三方技术栈全面解析
+- [技术栈文档索引](./tech-stack/README.md) - 第三方技术栈文档索引（按分类组织）
+- [技术栈概览](./tech-stack/00-技术栈概览.md) - 技术栈分层和选型原则
+- [技术栈思维导图](./tech-stack/00-技术栈思维导图.md) - 技术栈可视化（思维导图、关系网络图、决策流程图）
+- [技术栈集成](./tech-stack/01-技术栈集成.md) - 技术栈集成架构和最佳实践
+- [技术栈选型决策树](./tech-stack/02-技术栈选型决策树.md) - 技术栈选型决策树
+- [第三方技术栈深度解析](./00-第三方技术栈深度解析.md) - 第三方技术栈全面解析（旧版，已拆分）
 - [Go 1.25.3 技术栈对齐](./00-Go-1.25.3技术栈对齐.md) - Go 1.25.3 新特性应用
 - [知识图谱](./00-知识图谱.md) - 架构知识图谱
 - [概念定义体系](./00-概念定义体系.md) - 概念定义体系

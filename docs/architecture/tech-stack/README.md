@@ -43,6 +43,9 @@
 - **[Chi Router](./web/chi-router.md)** - Chi Router 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
 
+- **[WebSocket](./web/websocket.md)** - WebSocket 深度解析
+  - 核心特性、选型论证、实际应用、最佳实践
+
 ---
 
 ## 🗄️ 数据访问层
@@ -51,6 +54,9 @@
   - 核心特性、选型论证、实际应用、最佳实践
 
 - **[PostgreSQL (pgx)](./data/postgresql-pgx.md)** - PostgreSQL (pgx) 深度解析
+  - 核心特性、选型论证、实际应用、最佳实践
+
+- **[SQLite](./data/sqlite.md)** - SQLite 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
 
 ---
@@ -76,6 +82,9 @@
 - **[Jaeger](./observability/jaeger.md)** - Jaeger 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
 
+- **[eBPF](./observability/ebpf.md)** - eBPF 深度解析
+  - 核心特性、选型论证、实际应用、最佳实践
+
 ---
 
 ## 💬 消息队列层
@@ -84,6 +93,9 @@
   - 核心特性、选型论证、实际应用、最佳实践
 
 - **[MQTT](./messaging/mqtt.md)** - MQTT 深度解析
+  - 核心特性、选型论证、实际应用、最佳实践
+
+- **[NATS](./messaging/nats.md)** - NATS 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
 
 ---
@@ -109,6 +121,18 @@
 - **[GraphQL](./api/graphql.md)** - GraphQL 深度解析
   - 核心特性、选型论证、实际应用、最佳实践
 
+- **[OpenAPI](./api/openapi.md)** - OpenAPI 深度解析
+  - 核心特性、选型论证、实际应用、最佳实践
+
+- **[AsyncAPI](./api/asyncapi.md)** - AsyncAPI 深度解析
+  - 核心特性、选型论证、实际应用、最佳实践
+
+- **[Protocol Buffers](./api/protobuf.md)** - Protocol Buffers 深度解析
+  - 核心特性、选型论证、实际应用、最佳实践
+
+- **[gRPC Gateway](./api/grpc-gateway.md)** - gRPC Gateway 深度解析
+  - 核心特性、选型论证、实际应用、最佳实践
+
 ---
 
 ## 🎯 快速导航
@@ -116,18 +140,22 @@
 ### 按技术栈类型
 
 - **Web 框架**: [Chi Router](./web/chi-router.md)
-- **数据访问**: [Ent ORM](./data/ent-orm.md) | [PostgreSQL](./data/postgresql-pgx.md)
+- **数据访问**: [Ent ORM](./data/ent-orm.md) | [PostgreSQL](./data/postgresql-pgx.md) | [SQLite](./data/sqlite.md)
 - **工作流**: [Temporal](./workflow/temporal.md)
-- **可观测性**: [OpenTelemetry](./observability/opentelemetry.md) | [Prometheus](./observability/prometheus.md) | [Grafana](./observability/grafana.md) | [Jaeger](./observability/jaeger.md)
-- **消息队列**: [Kafka](./messaging/kafka.md) | [MQTT](./messaging/mqtt.md)
+- **可观测性**: [OpenTelemetry](./observability/opentelemetry.md) | [Prometheus](./observability/prometheus.md) | [Grafana](./observability/grafana.md) | [Jaeger](./observability/jaeger.md) | [eBPF](./observability/ebpf.md)
+- **消息队列**: [Kafka](./messaging/kafka.md) | [MQTT](./messaging/mqtt.md) | [NATS](./messaging/nats.md)
 - **配置工具**: [Viper](./config/viper.md) | [Slog](./config/slog.md) | [Wire](./config/wire.md)
-- **API 协议**: [gRPC](./api/grpc.md) | [GraphQL](./api/graphql.md)
+- **API 协议**: [gRPC](./api/grpc.md) | [GraphQL](./api/graphql.md) | [OpenAPI](./api/openapi.md) | [AsyncAPI](./api/asyncapi.md) | [Protocol Buffers](./api/protobuf.md) | [gRPC Gateway](./api/grpc-gateway.md)
+- **工具库**: [UUID](./utils/uuid.md) | [Cron](./utils/cron.md)
+- **测试框架**: [Testify](./testing/testify.md)
+- **可视化**: [技术栈思维导图](./00-技术栈思维导图.md)
 
 ### 按文档类型
 
 - **概览**: [技术栈概览](./00-技术栈概览.md)
 - **集成**: [技术栈集成](./01-技术栈集成.md)
 - **选型**: [技术栈选型决策树](./02-技术栈选型决策树.md)
+- **可视化**: [技术栈思维导图](./00-技术栈思维导图.md) - 思维导图、关系网络图、决策流程图
 
 ---
 
