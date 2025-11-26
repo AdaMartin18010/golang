@@ -4,7 +4,7 @@ API 定义目录。
 
 ## 结构
 
-```
+```text
 api/
 ├── openapi/       # OpenAPI 3.0 规范
 ├── asyncapi/      # AsyncAPI 规范
