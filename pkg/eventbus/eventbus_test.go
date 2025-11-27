@@ -2,7 +2,6 @@ package eventbus
 
 import (
 	"context"
-	"errors"
 	"sync"
 	"testing"
 	"time"

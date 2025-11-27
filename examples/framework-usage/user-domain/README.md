@@ -19,7 +19,7 @@
 
 ## 📁 目录结构
 
-```
+```text
 examples/framework-usage/user-domain/
 ├── domain/          # 领域层示例
 │   ├── entity.go    # 用户实体
@@ -44,5 +44,13 @@ examples/framework-usage/user-domain/
 
 ## 📚 相关文档
 
-- [框架使用指南](../../../docs/00-框架使用指南.md)
+- [框架快速开始指南](../../../docs/framework/05-快速开始指南.md) ⭐⭐⭐⭐⭐
+- [框架使用示例说明](../../../docs/framework/02-框架使用示例说明.md)
+- [框架最佳实践指南](../../../docs/framework/06-最佳实践指南.md)
 - [架构说明](../../../docs/architecture/00-架构模型与依赖注入完整说明.md)
+
+## 🔗 快速链接
+
+- [运行示例](../README.md#2-运行示例)
+- [框架基础设施说明](../../../docs/framework/00-框架基础设施说明.md)
+- [API规范与代码生成](../../../docs/framework/01-API规范与代码生成.md)

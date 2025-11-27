@@ -87,39 +87,37 @@ golang/
 
 ## 🚀 快速开始
 
-### 1. 安装依赖
+### 方式 1: 框架快速开始（推荐）⭐
+
+如果你是第一次使用框架，建议从框架快速开始指南开始：
 
 ```bash
+# 1. 设置开发环境
+make setup
+
+# 2. 安装 Git hooks
+make install-hooks
+
+# 3. 运行示例
+cd examples/framework-usage
+go run main.go
+```
+
+📖 **详细指南**: [框架快速开始指南](docs/framework/05-快速开始指南.md) - 5 分钟快速上手
+
+### 方式 2: 完整项目启动
+
+```bash
+# 1. 安装依赖
 go mod tidy
-```
 
-### 2. 生成代码
+# 2. 生成代码
+make generate
 
-```bash
-# Ent 代码
-go generate ./internal/infrastructure/database/ent/...
-
-# gRPC 代码
-go generate ./scripts/generate/
-
-# Wire 代码
-go generate ./scripts/wire/
-```
-
-### 3. 运行应用
-
-```bash
-# HTTP 服务器
-go run ./cmd/server
-# 或使用 Makefile
+# 3. 运行应用
 make run
 
-# Temporal Worker（工作流执行器）
-go run ./cmd/temporal-worker
-# 或使用 Makefile
-make run-worker
-
-# 使用 Docker Compose 启动所有服务（包括 Temporal）
+# 或使用 Docker Compose 启动所有服务
 docker-compose -f deployments/docker/docker-compose.yml up -d
 ```
 

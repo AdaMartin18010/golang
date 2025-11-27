@@ -37,6 +37,9 @@ setup: ## 设置开发环境（运行设置脚本）
 check-env: ## 检查开发环境配置
 	@bash scripts/dev/check-env.sh
 
+install-hooks: ## 安装 Git hooks
+	@bash scripts/dev/install-hooks.sh
+
 generate: ## 生成代码（Ent, Wire, OpenAPI等）
 	@echo "生成 Ent 代码..."
 	cd internal/infrastructure/database/ent && go generate ./...

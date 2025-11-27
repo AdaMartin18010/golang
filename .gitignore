@@ -44,3 +44,8 @@ scripts/wire/wire_gen.go
 # Build artifacts
 dist/
 build/
+tmp/
+
+# Profiling
+*.prof
+*.pprof
