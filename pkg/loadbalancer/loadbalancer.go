@@ -203,8 +203,8 @@ func (lc *LeastConnections) Name() string {
 
 // ServiceSelector 服务选择器
 type ServiceSelector struct {
-	registry  registry.Registry
-	balancer  LoadBalancer
+	registry    registry.Registry
+	balancer    LoadBalancer
 	serviceName string
 }
 

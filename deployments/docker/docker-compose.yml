@@ -14,12 +14,27 @@ services:
       DATABASE_PASSWORD: password
       DATABASE_DBNAME: mydb
       DATABASE_SSLMODE: disable
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redispassword
+      REDIS_DB: 0
       OTEL_EXPORTER_OTLP_ENDPOINT: otel-collector:4317
       TEMPORAL_ADDRESS: temporal:7233
     depends_on:
-      - db
-      - otel-collector
-      - temporal
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_healthy
+      temporal:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - app-network
 
@@ -35,22 +50,110 @@ services:
       DATABASE_PASSWORD: password
       DATABASE_DBNAME: mydb
       DATABASE_SSLMODE: disable
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redispassword
+      REDIS_DB: 0
       TEMPORAL_ADDRESS: temporal:7233
       TEMPORAL_TASK_QUEUE: user-task-queue
     depends_on:
-      - db
-      - temporal
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
     networks:
       - app-network
 
+  # PostgreSQL 主节点
   db:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: mydb
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD: replicatorpassword
     volumes:
       - db-data:/var/lib/postgresql/data
+      - ./postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/etc/postgresql/postgresql.conf"
+      - "-c"
+      - "hba_file=/etc/postgresql/pg_hba.conf"
+      - "-c"
+      - "wal_level=replica"
+      - "-c"
+      - "max_wal_senders=3"
+      - "-c"
+      - "max_replication_slots=3"
+      - "-c"
+      - "hot_standby=on"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app-network
+
+  # PostgreSQL 备节点（异步复制）
+  db-replica:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      PGUSER: postgres
+      POSTGRES_MASTER_SERVICE: db
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD: replicatorpassword
+    volumes:
+      - db-replica-data:/var/lib/postgresql/data
+      - ./postgresql/postgresql-replica.conf:/etc/postgresql/postgresql.conf
+    command:
+      - "bash"
+      - "-c"
+      - |
+        until pg_basebackup -h db -U replicator -D /var/lib/postgresql/data -P -W -Fp -R; do
+          echo "Waiting for primary database..."
+          sleep 2
+        done
+        postgres -c config_file=/etc/postgresql/postgresql.conf
+    ports:
+      - "5433:5432"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.2-alpine
+    command: redis-server --appendonly yes --requirepass redispassword
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
     networks:
       - app-network
 
@@ -67,7 +170,14 @@ services:
       - POSTGRES_SEEDS=temporal-db
       - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
     depends_on:
-      - temporal-db
+      temporal-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "tctl", "--address", "localhost:7233", "cluster", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     networks:
       - app-network
 
@@ -79,6 +189,12 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - temporal-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d temporal"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - app-network
 
@@ -101,10 +217,29 @@ services:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
       - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver
       - "13133:13133" # Health Check extension
       - "14268:14268" # Jaeger HTTP receiver
       - "9411:9411" # Zipkin receiver
       - "8888:8888" # Prometheus metrics exporter
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:13133/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - app-network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    environment:
+      DATA_SOURCE_NAME: "postgresql://user:password@db:5432/mydb?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -118,7 +253,18 @@ services:
     ports:
       - "9090:9090"
     depends_on:
-      - otel-collector
+      otel-collector:
+        condition: service_healthy
+      redis-exporter:
+        condition: service_started
+      postgres-exporter:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - app-network
 
@@ -134,7 +280,14 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - app-network
 
@@ -142,7 +295,21 @@ services:
     image: jaegertracing/all-in-one:1.50
     ports:
       - "16686:16686" # Jaeger UI
-      - "14268:14268" # Jaeger gRPC
+      - "14250:14250" # Jaeger gRPC
+      - "14268:14268" # Jaeger HTTP
+    networks:
+      - app-network
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.55.0
+    environment:
+      REDIS_ADDR: redis:6379
+      REDIS_PASSWORD: redispassword
+    ports:
+      - "9121:9121"
+    depends_on:
+      redis:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -152,5 +319,7 @@ networks:
 
 volumes:
   db-data:
+  db-replica-data:
   temporal-db-data:
   grafana-data:
+  redis-data:
