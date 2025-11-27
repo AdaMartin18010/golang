@@ -79,6 +79,7 @@ services:
       - db-data:/var/lib/postgresql/data
       - ./postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./postgresql/init-replication.sh:/docker-entrypoint-initdb.d/init-replication.sh
     command:
       - "postgres"
       - "-c"
@@ -96,7 +97,7 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb && psql -U user -d mydb -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -118,14 +119,31 @@ services:
     volumes:
       - db-replica-data:/var/lib/postgresql/data
       - ./postgresql/postgresql-replica.conf:/etc/postgresql/postgresql.conf
+      - ./postgresql/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh
     command:
       - "bash"
       - "-c"
       - |
-        until pg_basebackup -h db -U replicator -D /var/lib/postgresql/data -P -W -Fp -R; do
-          echo "Waiting for primary database..."
-          sleep 2
-        done
+        if [ ! -f /var/lib/postgresql/data/PG_VERSION ]; then
+          echo "Waiting for primary database to be ready..."
+          until PGPASSWORD=$$POSTGRES_REPLICATION_PASSWORD pg_isready -h db -U $$POSTGRES_REPLICATION_USER; do
+            echo "Waiting for primary database..."
+            sleep 2
+          done
+          echo "Initializing replica from primary..."
+          PGPASSWORD=$$POSTGRES_REPLICATION_PASSWORD pg_basebackup \
+            -h db \
+            -U $$POSTGRES_REPLICATION_USER \
+            -D /var/lib/postgresql/data \
+            -P -Fp -R -X stream \
+            -S replica_slot || \
+          PGPASSWORD=$$POSTGRES_REPLICATION_PASSWORD pg_basebackup \
+            -h db \
+            -U $$POSTGRES_REPLICATION_USER \
+            -D /var/lib/postgresql/data \
+            -P -Fp -R -X stream
+          echo "Replica initialization completed"
+        fi
         postgres -c config_file=/etc/postgresql/postgresql.conf
     ports:
       - "5433:5432"
@@ -133,11 +151,11 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb && psql -U user -d mydb -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 60s
+      start_period: 90s
     networks:
       - app-network
 
@@ -239,6 +257,18 @@ services:
       - "9187:9187"
     depends_on:
       db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  postgres-replica-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    environment:
+      DATA_SOURCE_NAME: "postgresql://user:password@db-replica:5432/mydb?sslmode=disable"
+    ports:
+      - "9188:9187"
+    depends_on:
+      db-replica:
         condition: service_healthy
     networks:
       - app-network

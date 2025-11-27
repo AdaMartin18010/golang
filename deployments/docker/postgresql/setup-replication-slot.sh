@@ -1,0 +1,21 @@
+#!/bin/bash
+# 在主节点上创建复制槽（用于逻辑复制）
+
+set -e
+
+PRIMARY_HOST="${DATABASE_HOST:-db}"
+PRIMARY_PORT="${DATABASE_PORT:-5432}"
+PRIMARY_USER="${DATABASE_USER:-user}"
+PRIMARY_PASSWORD="${DATABASE_PASSWORD:-password}"
+PRIMARY_DB="${DATABASE_DBNAME:-mydb}"
+REPLICATION_SLOT_NAME="${REPLICATION_SLOT_NAME:-replica_slot}"
+
+export PGPASSWORD="$PRIMARY_PASSWORD"
+
+echo "创建复制槽: $REPLICATION_SLOT_NAME"
+
+psql -h "$PRIMARY_HOST" -p "$PRIMARY_PORT" -U "$PRIMARY_USER" -d "$PRIMARY_DB" <<-EOSQL
+    SELECT pg_create_physical_replication_slot('$REPLICATION_SLOT_NAME');
+EOSQL
+
+echo "复制槽创建成功"
