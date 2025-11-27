@@ -61,10 +61,16 @@ func NewEnhancedOTLP(cfg Config) (*EnhancedOTLP, error) {
 	}
 
 	// 创建追踪导出器
-	traceExporter, err := otlptracegrpc.New(context.Background(),
+	opts := []otlptracegrpc.Option{
 		otlptracegrpc.WithEndpoint(cfg.Endpoint),
-		otlptracegrpc.WithInsecure(cfg.Insecure),
-	)
+	}
+	if cfg.Insecure {
+		opts = append(opts, otlptracegrpc.WithTLSCredentials(insecure.NewCredentials()))
+	} else {
+		// 生产环境应使用 TLS 证书
+		// opts = append(opts, otlptracegrpc.WithTLSCredentials(credentials.NewTLS(&tls.Config{})))
+	}
+	traceExporter, err := otlptracegrpc.New(context.Background(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,23 +88,34 @@ func NewEnhancedOTLP(cfg Config) (*EnhancedOTLP, error) {
 		propagation.Baggage{},
 	))
 
-	// 创建指标导出器
-	metricExporter, err := otlpmetricgrpc.New(context.Background(),
-		otlpmetricgrpc.WithEndpoint(cfg.Endpoint),
-		otlpmetricgrpc.WithInsecure(cfg.Insecure),
-	)
-	if err != nil {
-		return nil, err
-	}
+	// TODO: 实现指标导出器
+	// 注意：需要添加 go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc 依赖
+	// 当前使用空的 MeterProvider，指标数据不会导出
+	// 
+	// 完整实现示例：
+	// import "go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
+	// metricOpts := []otlpmetricgrpc.Option{
+	//     otlpmetricgrpc.WithEndpoint(cfg.Endpoint),
+	// }
+	// if cfg.Insecure {
+	//     metricOpts = append(metricOpts, otlpmetricgrpc.WithTLSCredentials(insecure.NewCredentials()))
+	// }
+	// metricExporter, err := otlpmetricgrpc.New(context.Background(), metricOpts...)
+	// if err != nil {
+	//     return nil, err
+	// }
+	// mp := sdkmetric.NewMeterProvider(
+	//     sdkmetric.WithResource(res),
+	//     sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter,
+	//         sdkmetric.WithInterval(10*time.Second),
+	//     )),
+	// )
+	// otel.SetMeterProvider(mp)
 
-	// 创建指标提供者
+	// 临时使用空的 MeterProvider
 	mp := sdkmetric.NewMeterProvider(
 		sdkmetric.WithResource(res),
-		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter,
-			sdkmetric.WithInterval(10*time.Second),
-		)),
 	)
-
 	otel.SetMeterProvider(mp)
 
 	return &EnhancedOTLP{
@@ -153,13 +170,11 @@ func newSamplerWrapper(sampler sampling.Sampler) sdktrace.Sampler {
 func (s *samplerWrapper) ShouldSample(params sdktrace.SamplingParameters) sdktrace.SamplingResult {
 	if s.sampler.ShouldSample(params.ParentContext) {
 		return sdktrace.SamplingResult{
-			Decision:   sdktrace.RecordAndSample,
-			Tracestate: params.Tracestate,
+			Decision: sdktrace.RecordAndSample,
 		}
 	}
 	return sdktrace.SamplingResult{
-		Decision:   sdktrace.Drop,
-		Tracestate: params.Tracestate,
+		Decision: sdktrace.Drop,
 	}
 }
 
