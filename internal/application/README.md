@@ -1,90 +1,164 @@
 # Application Layer (应用层)
 
-Clean Architecture 的应用层，包含用例编排。
+Clean Architecture 的应用层，提供框架层面的应用服务抽象和通用应用模式。
+
+## ⚠️ 重要说明
+
+**本框架不包含具体业务应用服务**。应用层提供的是框架层面的应用模式抽象，用户需要根据自己的业务需求实现具体的应用服务。
 
 ## 结构
 
 ```text
 application/
-├── user/          # 用户用例
-│   ├── dto.go         # 用户 DTO
-│   └── service.go     # 用户应用服务
-├── order/         # 订单用例
-│   ├── dto.go         # 订单 DTO
-│   └── service.go     # 订单应用服务
-└── product/       # 产品用例
-    ├── dto.go         # 产品 DTO
-    └── service.go     # 产品应用服务
+├── patterns/      # 通用应用模式
+│   ├── command.go    # 命令模式
+│   ├── query.go      # 查询模式
+│   ├── event.go      # 事件模式
+│   └── dto.go        # DTO 基类
+└── workflow/      # 工作流模式（Temporal）
+    └── context.go    # 工作流上下文
 ```
 
 ## 规则
 
 - ✅ 只能导入 domain 层
-- ✅ 协调领域对象
-- ✅ 包含用例逻辑
+- ✅ 提供框架层面的应用模式抽象
+- ✅ 不包含具体业务用例
 - ❌ 不能导入 infrastructure 或 interfaces 层
+- ❌ 不包含具体业务应用服务
 
-## 应用服务
+## 框架应用模式
 
-### User Service (用户服务)
+### Command 模式
 
-**功能**:
-- `CreateUser()` - 创建用户
-- `GetUser()` - 获取用户
-- `UpdateUser()` - 更新用户
-- `DeleteUser()` - 删除用户
-- `ListUsers()` - 列出用户
+框架提供命令模式的抽象，用于处理写操作。
 
-**DTO**:
-- `CreateUserRequest` - 创建用户请求
-- `UpdateUserRequest` - 更新用户请求
-- `UserDTO` - 用户数据传输对象
+```go
+// Command 命令接口（示例）
+type Command interface {
+    Execute(ctx context.Context) error
+}
 
-### Order Service (订单服务)
+// CommandHandler 命令处理器接口（示例）
+type CommandHandler[T Command] interface {
+    Handle(ctx context.Context, cmd T) error
+}
+```
 
-**功能**:
-- `CreateOrder()` - 创建订单
-- `GetOrder()` - 获取订单
-- `GetUserOrders()` - 获取用户订单列表
-- `PayOrder()` - 支付订单
-- `ShipOrder()` - 发货
-- `DeliverOrder()` - 送达
-- `CancelOrder()` - 取消订单
-- `RefundOrder()` - 退款
-- `UpdateOrder()` - 更新订单
+### Query 模式
 
-**DTO**:
-- `CreateOrderRequest` - 创建订单请求
-- `CreateOrderItemRequest` - 创建订单项请求
-- `UpdateOrderRequest` - 更新订单请求
-- `OrderDTO` - 订单数据传输对象
-- `OrderItemDTO` - 订单项数据传输对象
+框架提供查询模式的抽象，用于处理读操作。
 
-### Product Service (产品服务)
+```go
+// Query 查询接口（示例）
+type Query interface {
+    Execute(ctx context.Context) (interface{}, error)
+}
 
-**功能**:
-- `CreateProduct()` - 创建产品
-- `GetProduct()` - 获取产品
-- `GetProductBySKU()` - 根据 SKU 获取产品
-- `UpdateProduct()` - 更新产品
-- `DeleteProduct()` - 删除产品
-- `ListProducts()` - 列出产品
-- `SearchProducts()` - 搜索产品
-- `GetProductsByCategory()` - 根据分类获取产品
-- `ActivateProduct()` - 上架产品
-- `DeactivateProduct()` - 下架产品
-- `UpdateStock()` - 更新库存
-- `IncreaseStock()` - 增加库存
-- `DecreaseStock()` - 减少库存
+// QueryHandler 查询处理器接口（示例）
+type QueryHandler[T Query, R any] interface {
+    Handle(ctx context.Context, query T) (R, error)
+}
+```
 
-**DTO**:
-- `CreateProductRequest` - 创建产品请求
-- `UpdateProductRequest` - 更新产品请求
-- `ProductDTO` - 产品数据传输对象
+### Event 模式
+
+框架提供事件模式的抽象，用于处理领域事件。
+
+```go
+// Event 事件接口（示例）
+type Event interface {
+    Type() string
+    Data() interface{}
+    Timestamp() time.Time
+}
+
+// EventHandler 事件处理器接口（示例）
+type EventHandler[T Event] interface {
+    Handle(ctx context.Context, event T) error
+}
+```
+
+### DTO 基类
+
+框架提供 DTO 的基类和工具函数。
+
+```go
+// DTO 数据传输对象基类（示例）
+type DTO struct {
+    ID        string    `json:"id"`
+    CreatedAt time.Time `json:"created_at"`
+    UpdatedAt time.Time `json:"updated_at"`
+}
+
+// ToDTO 转换函数接口（示例）
+type ToDTO[T any] interface {
+    ToDTO() T
+}
+```
+
+## 用户如何使用
+
+### 1. 定义自己的应用服务
+
+用户在自己的项目中定义应用服务：
+
+```go
+// 用户项目中的应用服务
+package application
+
+type UserService interface {
+    CreateUser(ctx context.Context, req CreateUserRequest) (*UserDTO, error)
+    GetUser(ctx context.Context, id string) (*UserDTO, error)
+    // ...
+}
+
+type userService struct {
+    userRepo domain.UserRepository
+}
+
+func NewUserService(userRepo domain.UserRepository) UserService {
+    return &userService{userRepo: userRepo}
+}
+```
+
+### 2. 使用命令/查询模式
+
+```go
+// 用户项目中使用命令模式
+type CreateUserCommand struct {
+    Email string
+    Name  string
+}
+
+type CreateUserCommandHandler struct {
+    userRepo domain.UserRepository
+}
+
+func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) error {
+    user := domain.NewUser(cmd.Email, cmd.Name)
+    return h.userRepo.Create(ctx, user)
+}
+```
+
+### 3. 使用工作流模式
+
+```go
+// 用户项目中使用 Temporal 工作流
+func UserWorkflow(ctx workflow.Context, input UserWorkflowInput) (UserWorkflowOutput, error) {
+    // 工作流逻辑
+}
+```
 
 ## 设计原则
 
-1. **用例编排**: 应用服务负责协调领域对象完成业务用例
-2. **DTO 转换**: 应用层负责领域对象和 DTO 之间的转换
-3. **事务边界**: 应用服务方法通常是一个事务边界
-4. **依赖注入**: 通过构造函数注入领域仓储和领域服务
+1. **模式抽象**: 提供通用的应用模式抽象，不包含具体业务
+2. **用例编排**: 应用层负责协调领域对象完成业务用例
+3. **DTO 转换**: 应用层负责领域对象和 DTO 之间的转换
+4. **事务边界**: 应用服务方法通常是一个事务边界
+
+## 相关资源
+
+- [应用服务示例](../../examples/application-service/) - 应用服务实现示例
+- [命令/查询模式示例](../../examples/cqrs/) - CQRS 模式示例
+- [工作流示例](../../examples/workflow/) - Temporal 工作流示例

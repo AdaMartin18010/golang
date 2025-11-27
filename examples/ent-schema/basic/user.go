@@ -1,3 +1,6 @@
+// Ent Schema 定义示例 - User 实体
+// 这是一个示例，展示如何定义 Ent Schema
+// 用户应该在自己的项目中定义自己的业务 Schema
 package schema
 
 import (
@@ -7,7 +10,7 @@ import (
 	"time"
 )
 
-// User 用户实体
+// User 用户实体（示例）
 type User struct {
 	ent.Schema
 }
