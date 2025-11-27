@@ -297,7 +297,179 @@ r.Use(middleware.CORSMiddleware(middleware.CORSConfig{
 
 ---
 
-## 10. 限流中间件
+## 10. 采样中间件
+
+### 10.1 功能特性
+
+- ✅ **多种采样策略**: 支持概率采样、速率限制采样、自适应采样等
+- ✅ **路径跳过**: 支持跳过特定路径的采样（如 /health、/metrics）
+- ✅ **采样决策传递**: 将采样决策添加到上下文，供后续中间件使用
+- ✅ **响应头信息**: 可选在响应头中添加采样决策信息
+
+### 10.2 使用示例
+
+```go
+import (
+    "github.com/go-chi/chi/v5"
+    "github.com/yourusername/golang/internal/interfaces/http/chi/middleware"
+    "github.com/yourusername/golang/pkg/sampling"
+)
+
+// 创建采样器
+sampler, _ := sampling.NewProbabilisticSampler(0.5)
+
+// 配置采样中间件
+router.Use(middleware.SamplingMiddleware(middleware.SamplingConfig{
+    Sampler:             sampler,
+    SkipPaths:           []string{"/health", "/metrics"},
+    AddSamplingDecision: true,
+}))
+
+// 在处理器中使用采样决策
+func MyHandler(w http.ResponseWriter, r *http.Request) {
+    if middleware.IsSampled(r.Context()) {
+        // 只有被采样的请求才记录详细日志
+        log.Debug("Detailed request info", ...)
+    }
+}
+```
+
+---
+
+## 11. 数据转换中间件
+
+### 11.1 功能特性
+
+- ✅ **请求数据转换**: 自动转换请求数据格式（JSON、Form 等）
+- ✅ **响应数据转换**: 自动转换响应数据格式
+- ✅ **多种格式支持**: 支持 JSON、XML、Form 等多种格式
+- ✅ **上下文传递**: 将转换后的数据添加到上下文
+
+### 11.2 使用示例
+
+```go
+import (
+    "github.com/go-chi/chi/v5"
+    "github.com/yourusername/golang/internal/interfaces/http/chi/middleware"
+)
+
+// 配置数据转换中间件
+router.Use(middleware.ConverterMiddleware(middleware.ConverterConfig{
+    EnableRequestConversion:  true,
+    EnableResponseConversion: true,
+    RequestFormats:           []string{"json", "form"},
+    ResponseFormats:          []string{"json"},
+    DefaultResponseFormat:    "json",
+}))
+
+// 在处理器中获取转换后的数据
+func MyHandler(w http.ResponseWriter, r *http.Request) {
+    data := middleware.GetRequestData(r.Context())
+    if data != nil {
+        // 使用转换后的数据
+    }
+}
+```
+
+---
+
+## 12. 精细控制中间件
+
+### 12.1 功能特性
+
+- ✅ **功能开关**: 基于框架的功能控制器，动态启用/禁用功能
+- ✅ **速率控制**: 基于框架的速率控制器，细粒度限流
+- ✅ **熔断器**: 基于框架的熔断器控制器，自动熔断和恢复
+- ✅ **路径配置**: 支持按路径配置不同的控制策略
+- ✅ **上下文传递**: 将控制器添加到上下文，供后续使用
+
+### 12.2 使用示例
+
+```go
+import (
+    "github.com/go-chi/chi/v5"
+    "github.com/yourusername/golang/internal/interfaces/http/chi/middleware"
+    "github.com/yourusername/golang/pkg/control"
+)
+
+// 创建控制器
+featureController := control.NewFeatureController()
+rateController := control.NewRateController()
+circuitController := control.NewCircuitController()
+
+// 注册功能
+featureController.Register("experimental-feature", "Experimental feature", true, nil)
+
+// 注册速率限制
+rateController.SetRateLimit("user-api", 100.0, time.Second)
+
+// 注册熔断器
+circuitController.RegisterCircuit("external-api", 10, 5, 30*time.Second)
+
+// 配置精细控制中间件
+router.Use(middleware.ControlMiddleware(middleware.ControlConfig{
+    FeatureController: featureController,
+    RateController:    rateController,
+    CircuitController: circuitController,
+    FeatureFlags: map[string]string{
+        "/api/v1/experimental": "experimental-feature",
+    },
+    RateLimits: map[string]string{
+        "/api/v1/users": "user-api",
+    },
+    CircuitBreakers: map[string]string{
+        "/api/v1/external": "external-api",
+    },
+    SkipPaths: []string{"/health", "/metrics"},
+}))
+
+// 在处理器中使用功能开关
+func MyHandler(w http.ResponseWriter, r *http.Request) {
+    if middleware.GetFeatureFlag(r.Context(), "experimental-feature") {
+        // 执行实验性功能
+    }
+}
+```
+
+---
+
+## 13. 反射/自解释中间件
+
+### 13.1 功能特性
+
+- ✅ **元数据信息**: 在响应头中添加请求元数据信息
+- ✅ **自描述功能**: 支持自描述功能
+- ✅ **反射检查器**: 提供反射检查器供后续使用
+- ✅ **路径配置**: 支持按路径配置元数据
+
+### 13.2 使用示例
+
+```go
+import (
+    "github.com/go-chi/chi/v5"
+    "github.com/yourusername/golang/internal/interfaces/http/chi/middleware"
+)
+
+// 配置反射中间件
+router.Use(middleware.ReflectMiddleware(middleware.ReflectConfig{
+    EnableMetadata:     true,
+    EnableSelfDescribe: true,
+    SkipPaths:          []string{"/health", "/metrics"},
+}))
+
+// 在处理器中使用反射检查器
+func MyHandler(w http.ResponseWriter, r *http.Request) {
+    inspector := middleware.GetInspector(r.Context())
+    if inspector != nil {
+        metadata := inspector.InspectType(myStruct)
+        // 使用元数据...
+    }
+}
+```
+
+---
+
+## 14. 限流中间件
 
 ### 10.1 功能特性
 

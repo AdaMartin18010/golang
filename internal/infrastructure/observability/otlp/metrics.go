@@ -57,10 +57,10 @@ type MetricsProvider struct {
 // - 返回配置好的 MetricsProvider 实例
 //
 // 参数：
-// - ctx: 上下文，用于创建导出器和资源
-// - endpoint: OpenTelemetry Collector 的 gRPC 端点地址
-//   示例：localhost:4317（gRPC）或 localhost:4318（HTTP）
-// - insecure: 是否使用不安全的连接（不使用 TLS）
+//   - ctx: 上下文，用于创建导出器和资源
+//   - endpoint: OpenTelemetry Collector 的 gRPC 端点地址
+//     示例：localhost:4317（gRPC）或 localhost:4318（HTTP）
+//   - insecure: 是否使用不安全的连接（不使用 TLS）
 //   - true: 使用不安全的连接，适用于开发环境
 //   - false: 使用 TLS 加密，适用于生产环境
 //
@@ -116,8 +116,8 @@ func NewMetricsProvider(ctx context.Context, endpoint string, insecure bool) (*M
 	// 这些信息会在所有指标中自动包含，便于在监控系统中识别和过滤
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
-			semconv.ServiceName("golang-service"),      // 服务名称
-			semconv.ServiceVersion("1.0.0"),            // 服务版本
+			semconv.ServiceName("golang-service"), // 服务名称
+			semconv.ServiceVersion("1.0.0"),       // 服务版本
 			// 可以添加更多资源属性，例如：
 			// semconv.DeploymentEnvironment("production"),
 			// semconv.HostName("server-01"),

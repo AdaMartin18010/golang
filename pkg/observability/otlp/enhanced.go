@@ -2,10 +2,8 @@ package otlp
 
 import (
 	"context"
-	"time"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
@@ -65,11 +63,10 @@ func NewEnhancedOTLP(cfg Config) (*EnhancedOTLP, error) {
 		otlptracegrpc.WithEndpoint(cfg.Endpoint),
 	}
 	if cfg.Insecure {
-		opts = append(opts, otlptracegrpc.WithTLSCredentials(insecure.NewCredentials()))
-	} else {
-		// 生产环境应使用 TLS 证书
-		// opts = append(opts, otlptracegrpc.WithTLSCredentials(credentials.NewTLS(&tls.Config{})))
+		opts = append(opts, otlptracegrpc.WithInsecure())
 	}
+	// 生产环境应使用 TLS：
+	// opts = append(opts, otlptracegrpc.WithTLSCredentials(credentials.NewTLS(&tls.Config{})))
 	traceExporter, err := otlptracegrpc.New(context.Background(), opts...)
 	if err != nil {
 		return nil, err
@@ -91,7 +88,7 @@ func NewEnhancedOTLP(cfg Config) (*EnhancedOTLP, error) {
 	// TODO: 实现指标导出器
 	// 注意：需要添加 go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc 依赖
 	// 当前使用空的 MeterProvider，指标数据不会导出
-	// 
+	//
 	// 完整实现示例：
 	// import "go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	// metricOpts := []otlpmetricgrpc.Option{
