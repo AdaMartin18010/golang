@@ -1,0 +1,23 @@
+# Application Layer (应用层)
+
+本目录包含框架层面的应用服务抽象，不包含具体业务用例。
+
+## ⚠️ 重要说明
+
+**本框架是框架性代码，不包含具体业务逻辑**。
+
+如果存在 `user/`、`order/` 等目录，这些是**示例代码**，仅用于展示框架的使用方式。
+
+## 框架应用模式
+
+- `patterns/command.go` - Command 模式
+- `patterns/query.go` - Query 模式
+- `patterns/event.go` - Event 模式
+- `patterns/dto.go` - DTO 模式
+
+## 使用方式
+
+用户应该：
+1. 使用框架提供的应用模式（Command、Query、Event）
+2. 实现自己的应用服务
+3. 参考 `examples/framework-usage/` 中的示例代码

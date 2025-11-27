@@ -1,34 +1,41 @@
 # Domain Layer (领域层)
 
-Clean Architecture 的领域层，包含核心业务逻辑。
+Clean Architecture 的领域层，提供框架层面的抽象接口。
+
+## ⚠️ 重要说明
+
+**本框架是框架性代码，不包含具体业务逻辑**：
+
+- ✅ 提供通用的框架抽象接口（Repository、Service 等）
+- ✅ 用户可以通过这些接口定义自己的业务领域模型
+- ❌ **不包含具体业务领域**（如 user、order、product 等）
+- ❌ **不包含具体业务逻辑**
+
+**用户使用框架时**：
+
+1. 通过 **Ent Schema** 定义自己的业务领域模型
+2. 通过 **框架提供的接口** 实现自己的业务逻辑
+3. 参考 `examples/framework-usage/` 中的示例代码
 
 ## 结构
 
 ```text
 domain/
-├── user/          # 用户领域
-│   ├── entity.go      # 用户实体
-│   ├── repository.go  # 用户仓储接口
-│   ├── service.go     # 用户领域服务接口
-│   └── errors.go      # 用户领域错误
-├── order/         # 订单领域
-│   ├── entity.go      # 订单实体
-│   ├── repository.go  # 订单仓储接口
-│   ├── service.go     # 订单领域服务接口
-│   └── errors.go      # 订单领域错误
-└── product/       # 产品领域
-    ├── entity.go      # 产品实体
-    ├── repository.go  # 产品仓储接口
-    ├── service.go     # 产品领域服务接口
-    └── errors.go      # 产品领域错误
+├── interfaces/    # 框架抽象接口（核心）
+│   ├── repository.go  # 通用仓储接口
+│   └── service.go     # 通用领域服务接口
+└── README.md      # 本文件
 ```
+
+**注意**：如果存在 `user/`、`order/` 等目录，这些是**示例代码**，仅用于展示框架的使用方式，不是框架的核心部分。
 
 ## 规则
 
 - ✅ 不依赖任何外部框架
-- ✅ 只包含业务逻辑
+- ✅ 只提供框架抽象接口
 - ✅ 定义接口，不包含实现
 - ❌ 不能导入 infrastructure 或 interfaces 层
+- ❌ **不包含具体业务领域模型**
 
 ## 领域模型
 

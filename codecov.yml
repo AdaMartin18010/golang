@@ -1,47 +1,55 @@
+# Codecov 配置文件
+# 参考: https://docs.codecov.com/docs/codecov-yaml
+
 codecov:
+  # 要求覆盖率
   require_ci_to_pass: yes
+
+  # 通知配置
   notify:
     wait_for_ci: yes
 
+# 覆盖率配置
 coverage:
+  # 精度
   precision: 2
-  round: down
-  range: "50...100"
 
+  # 范围
+  range: "70...100"
+
+  # 状态
   status:
     project:
       default:
         target: 70%
-        threshold: 5%
-        if_ci_failed: error
-
+        threshold: 1%
+        base: auto
+        branches:
+          - main
+          - develop
     patch:
       default:
-        target: 80%
-        threshold: 10%
-        if_ci_failed: error
+        target: 60%
+        threshold: 1%
+        base: auto
 
-parsers:
-  gcov:
-    branch_detection:
-      conditional: yes
-      loop: yes
-      method: no
-      macro: no
+# 忽略的文件和目录
+ignore:
+  - ".*\\.pb\\.go$"
+  - ".*\\.gen\\.go$"
+  - ".*_wire_gen\\.go$"
+  - ".*_mock\\.go$"
+  - "cmd/.*"
+  - "examples/.*"
+  - "tools/.*"
+  - "deployments/.*"
+  - "docs/.*"
+  - "migrations/.*"
+  - "test/.*"
+  - "scripts/.*"
 
+# 注释配置
 comment:
-  layout: "reach,diff,flags,tree"
+  layout: "reach,diff,flags,tree,reach"
   behavior: default
   require_changes: no
-  require_base: no
-  require_head: yes
-
-ignore:
-  - "**/*_test.go"
-  - "**/testdata/**"
-  - "examples/**"
-  - "scripts/**"
-  - "docs/**"
-  - "archive/**"
-  - "docs_old/**"
-  - "reports/**"

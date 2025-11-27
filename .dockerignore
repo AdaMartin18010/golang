@@ -1,0 +1,70 @@
+# Docker 构建忽略文件
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# 文档
+docs/
+*.md
+README*.md
+CHANGELOG.md
+CONTRIBUTING*.md
+SECURITY.md
+
+# 测试
+test/
+*_test.go
+coverage.out
+coverage.html
+*.test
+
+# 构建产物
+bin/
+build/
+dist/
+tmp/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 依赖
+vendor/
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# 环境配置
+.env
+.env.local
+.env.*.local
+
+# 示例和工具
+examples/
+tools/
+scripts/
+
+# CI/CD
+.github/
+
+# 其他
+*.db
+*.sqlite
+*.sqlite3

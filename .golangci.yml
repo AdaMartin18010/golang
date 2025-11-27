@@ -1,111 +1,300 @@
-# golangci-lint configuration
-# https://golangci-lint.run/usage/configuration/
+# golangci-lint 配置文件
+# 参考: https://golangci-lint.run/usage/configuration/
 
 run:
-  timeout: 10m
-  tests: true
-  modules-download-mode: readonly
-  allow-parallel-runners: true
+  # 超时时间
+  timeout: 5m
 
+  # 包含的测试文件
+  tests: true
+
+  # 跳过目录
+  skip-dirs:
+    - vendor
+    - bin
+    - .git
+    - .github
+    - deployments
+    - docs
+    - examples
+    - tools
+    - migrations
+
+  # 跳过文件
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.gen\\.go$"
+    - ".*_wire_gen\\.go$"
+    - ".*_mock\\.go$"
+
+  # 模块下载模式
+  modules-download-mode: readonly
+
+# 输出配置
+output:
+  # 输出格式
+  formats:
+    - format: colored-line-number
+      path: stdout
+
+  # 打印问题数量
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  sort-results: true
+
+# 启用的 linter
 linters:
   enable:
-    - errcheck      # 检查未处理的错误
-    - gosimple      # 简化代码
-    - govet         # 报告可疑的构造
-    - ineffassign   # 检测无效的赋值
-    - staticcheck   # 静态分析
-    - unused        # 检查未使用的常量、变量、函数和类型
-    - gofmt         # 检查代码格式
-    - goimports     # 检查导入格式
-    - misspell      # 拼写检查
-    - revive        # 快速、可配置、可扩展的 linter
-    - typecheck     # 类型检查
-    - gosec         # 安全检查
-    - goconst       # 查找可以用常量替换的重复字符串
-    - gocyclo       # 计算并检查函数的圈复杂度
-    - dupl          # 检查重复代码
-    - unparam       # 检查未使用的函数参数
-    - prealloc      # 查找可能预分配的切片
-    - gocritic      # 提供诊断检查
+    # 代码质量
+    - errcheck          # 检查错误处理
+    - gosimple          # 简化代码
+    - govet             # go vet
+    - ineffassign       # 检查未使用的赋值
+    - staticcheck       # 静态分析
+    - unused            # 检查未使用的代码
+    - varcheck          # 检查未使用的变量
 
-  disable:
-    - exhaustive    # 检查是否穷举所有枚举值（可能过于严格）
-    - exhaustruct   # 检查结构体初始化（可能过于严格）
-    - nlreturn      # 返回语句前的空行要求（风格偏好）
+    # 代码风格
+    - gofmt             # 代码格式化
+    - goimports         # import 格式化
+    - misspell          # 拼写检查
+    - revive            # Go linter
+    - stylecheck        # 风格检查
 
+    # 性能
+    - prealloc          # 预分配切片
+    - unconvert         # 移除不必要的类型转换
+
+    # 复杂度
+    - cyclop            # 循环复杂度
+    - gocognit          # 认知复杂度
+    - gocyclo           # 循环复杂度
+
+    # 错误处理
+    - errorlint         # 错误处理检查
+    - errname           # 错误命名
+    - wrapcheck         # 错误包装检查
+
+    # 文档
+    - godot             # 注释检查
+    - godox             # TODO/FIXME 检查
+
+    # 安全
+    - gosec             # 安全检查
+
+    # 其他
+    - exportloopref     # 循环引用检查
+    - gocritic          # 代码审查
+    - goconst           # 常量检查
+    - goheader          # 文件头检查
+    - gomnd             # 魔数检查
+    - gomodguard        # 模块保护
+    - goprintffuncname  # printf 函数名检查
+    - gosec             # 安全检查
+    - grouper           # 分组检查
+    - importas          # import 别名检查
+    - interfacer        # 接口检查
+    - lll               # 行长度检查
+    - makezero          # 零值检查
+    - maligned          # 对齐检查
+    - mirror            # 镜像检查
+    - nakedret          # 裸返回检查
+    - nestif            # 嵌套 if 检查
+    - noctx             # context 检查
+    - nolintlint        # nolint 检查
+    - paralleltest      # 并行测试检查
+    - predeclared       # 预声明检查
+    - promlinter        # Prometheus 检查
+    - rowserrcheck      # rows 错误检查
+    - scopelint         # 作用域检查
+    - sqlclosecheck     # SQL 关闭检查
+    - structcheck       # 结构体检查
+    - tagliatelle       # 标签检查
+    - tenv              # 环境变量检查
+    - testpackage       # 测试包检查
+    - thelper           # 测试辅助检查
+    - tparallel         # 并行测试检查
+    - typecheck         # 类型检查
+    - unconvert         # 类型转换检查
+    - unparam           # 未使用参数检查
+    - whitespace        # 空白检查
+
+# 禁用的 linter
 linters-settings:
+  # errcheck 配置
   errcheck:
     check-type-assertions: true
     check-blank: true
+    ignore: fmt:.*,io/ioutil:^Read.*
 
-  govet:
-    check-shadowing: true
-    enable-all: true
-
+  # gocyclo 配置
   gocyclo:
     min-complexity: 15
 
-  dupl:
-    threshold: 100
+  # gocognit 配置
+  gocognit:
+    min-complexity: 15
 
-  goconst:
-    min-len: 3
-    min-occurrences: 3
+  # cyclop 配置
+  cyclop:
+    max-complexity: 15
+    package-average: 0.0
+    skip-tests: true
 
-  misspell:
-    locale: US
-
+  # revive 配置
   revive:
-    severity: warning
     rules:
       - name: exported
+        severity: warning
+        disabled: false
+      - name: var-naming
         severity: warning
         disabled: false
       - name: package-comments
         severity: warning
         disabled: false
-      - name: indent-error-flow
+      - name: comment-spacings
         severity: warning
         disabled: false
+      - name: range
+        severity: warning
+        disabled: false
+      - name: increment-decrement
+        severity: warning
+        disabled: false
+      - name: var-declaration
+        severity: warning
+        disabled: false
+      - name: range-val-in-closure
+        severity: warning
+        disabled: false
+      - name: range-val-address
+        severity: warning
+        disabled: false
+      - name: waitgroup-by-value
+        severity: warning
+        disabled: false
+      - name: atomic
+        severity: warning
+        disabled: false
+      - name: empty-lines
+        severity: warning
+        disabled: false
+      - name: line-length-limit
+        severity: warning
+        disabled: false
+        arguments:
+          - "120"
 
+  # gocritic 配置
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+
+  # godot 配置
+  godot:
+    scope: declarations
+    exclude:
+      - "^TODO:"
+      - "^FIXME:"
+      - "^NOTE:"
+      - "^XXX:"
+    capital: true
+
+  # gomnd 配置
+  gomnd:
+    settings:
+      mnd:
+        checks: argument,case,condition,operation,return,assign
+
+  # lll 配置
+  lll:
+    line-length: 120
+    tab-width: 4
+
+  # gosec 配置
   gosec:
     severity: medium
     confidence: medium
     excludes:
-      - G104  # 审计未检查的错误（由errcheck处理）
-      - G204  # 审计命令执行（在某些情况下是必需的）
+      - G101 # 查找硬编码凭证
+      - G104 # 错误未检查
+      - G204 # 审计命令执行
+      - G401 # 检测弱加密算法
+      - G501 # 导入黑名单：crypto/md5
+      - G502 # 导入黑名单：crypto/des
+      - G503 # 导入黑名单：crypto/rc4
+      - G504 # 导入黑名单：net/http/cgi
 
-  staticcheck:
-    checks: ["all"]
+  # misspell 配置
+  misspell:
+    locale: US
 
+  # nolintlint 配置
+  nolintlint:
+    allow-leading-space: true
+    allow-unused: false
+    require-explanation: false
+    require-specific: false
+
+# 问题过滤
 issues:
-  exclude-use-default: false
-  max-issues-per-linter: 0
-  max-same-issues: 0
-
+  # 排除的问题
   exclude-rules:
-    # 排除测试文件的某些检查
+    # 排除测试文件中的某些检查
     - path: _test\.go
-      linters:
-        - dupl
-        - gosec
-        - goconst
-
-    # 排除生成的文件
-    - path: \.gen\.go
-      linters:
-        - all
-
-    # 排除示例代码的某些检查
-    - path: examples/
       linters:
         - errcheck
         - gosec
         - gocritic
+        - gocyclo
+        - gocognit
+        - cyclop
 
-output:
-  format: colored-line-number
-  print-issued-lines: true
-  print-linter-name: true
-  uniq-by-line: true
-  sort-results: true
+    # 排除生成的代码
+    - path: ".*\\.pb\\.go$"
+      linters:
+        - all
+    - path: ".*\\.gen\\.go$"
+      linters:
+        - all
+    - path: ".*_wire_gen\\.go$"
+      linters:
+        - all
+    - path: ".*_mock\\.go$"
+      linters:
+        - all
+
+    # 排除某些错误
+    - text: "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked"
+      linters:
+        - errcheck
+
+    # 排除行长度检查（某些特殊情况）
+    - text: "line is .* characters"
+      linters:
+        - lll
+      source: "^//go:generate "
+
+  # 最大问题数
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+  # 排除使用默认排除列表
+  exclude-use-default: false
+
+# 服务器配置（可选）
+# server:
+#   listen: :8080
+#   loglevel: info
