@@ -1,3 +1,37 @@
+// Package config provides configuration management for the application.
+//
+// 配置管理包提供了统一的配置加载和管理机制，支持：
+// 1. 多种配置源：配置文件（YAML）、环境变量、默认值
+// 2. 配置优先级：环境变量 > 配置文件 > 默认值
+// 3. 热重载：支持配置文件变化时自动重新加载
+// 4. 类型安全：使用结构体定义配置，确保类型安全
+//
+// 设计原则：
+// 1. 统一管理：所有配置项集中在一个 Config 结构体中
+// 2. 灵活加载：支持多种加载方式（文件、环境变量、默认值）
+// 3. 易于扩展：可以轻松添加新的配置项
+// 4. 类型安全：使用结构体和 mapstructure 标签确保类型安全
+//
+// 使用场景：
+// - 应用启动时加载配置
+// - 开发环境使用配置文件
+// - 生产环境使用环境变量
+// - 动态调整配置（热重载）
+//
+// 示例：
+//
+//	// 加载配置
+//	cfg, err := config.LoadConfig()
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//
+//	// 使用配置
+//	server := http.Server{
+//	    Addr:         fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
+//	    ReadTimeout:  cfg.Server.ReadTimeout,
+//	    WriteTimeout: cfg.Server.WriteTimeout,
+//	}
 package config
 
 import (
@@ -8,7 +42,33 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config 应用配置
+// Config 是应用程序的完整配置结构。
+//
+// 功能说明：
+// - 包含所有子系统的配置
+// - 使用 mapstructure 标签支持 YAML 和 Viper 绑定
+// - 支持环境变量覆盖
+//
+// 配置项说明：
+// - Server: HTTP/gRPC 服务器配置
+// - Database: 数据库连接配置
+// - Redis: Redis 缓存配置
+// - Kafka: Kafka 消息队列配置
+// - MQTT: MQTT 消息队列配置
+// - OTLP: OpenTelemetry 可观测性配置
+// - JWT: JWT 认证配置
+// - Logging: 日志配置
+// - Temporal: Temporal 工作流配置
+//
+// 配置文件示例（YAML）：
+//
+//	server:
+//	  host: 0.0.0.0
+//	  port: 8080
+//	database:
+//	  type: postgres
+//	  host: localhost
+//	  port: 5432
 type Config struct {
 	Server     ServerConfig     `mapstructure:"server"`
 	Database   DatabaseConfig   `mapstructure:"database"`
@@ -21,7 +81,18 @@ type Config struct {
 	Temporal   TemporalConfig   `mapstructure:"temporal"`
 }
 
-// ServerConfig 服务器配置
+// ServerConfig 是 HTTP/gRPC 服务器的配置。
+//
+// 字段说明：
+// - Host: 服务器监听地址（默认：0.0.0.0）
+// - Port: 服务器监听端口（默认：8080）
+// - ReadTimeout: 读取超时时间（默认：30s）
+// - WriteTimeout: 写入超时时间（默认：30s）
+// - IdleTimeout: 空闲连接超时时间（默认：120s）
+//
+// 环境变量：
+// - APP_SERVER_HOST: 服务器地址
+// - APP_SERVER_PORT: 服务器端口
 type ServerConfig struct {
 	Host         string        `mapstructure:"host"`
 	Port         int           `mapstructure:"port"`
@@ -30,7 +101,28 @@ type ServerConfig struct {
 	IdleTimeout  time.Duration `mapstructure:"idle_timeout"`
 }
 
-// DatabaseConfig 数据库配置
+// DatabaseConfig 是数据库连接的配置。
+//
+// 字段说明：
+// - Type: 数据库类型（postgres、sqlite3）
+// - Host: 数据库主机地址（PostgreSQL）
+// - Port: 数据库端口（PostgreSQL，默认：5432）
+// - User: 数据库用户名
+// - Password: 数据库密码
+// - Database: 数据库名称
+// - SSLMode: SSL 模式（PostgreSQL：disable、require、verify-full）
+// - MaxOpenConns: 最大打开连接数（默认：25）
+// - MaxIdleConns: 最大空闲连接数（默认：5）
+// - DSN: SQLite3 数据源名称（SQLite3 专用）
+//
+// 环境变量：
+// - APP_DB_TYPE: 数据库类型
+// - APP_DB_HOST: 数据库主机
+// - APP_DB_PORT: 数据库端口
+// - APP_DB_USER: 数据库用户名
+// - APP_DB_PASSWORD: 数据库密码
+// - APP_DB_NAME: 数据库名称
+// - APP_DB_DSN: SQLite3 DSN
 type DatabaseConfig struct {
 	Type         string `mapstructure:"type"` // postgres, sqlite3
 	Host         string `mapstructure:"host"`
@@ -45,7 +137,22 @@ type DatabaseConfig struct {
 	DSN string `mapstructure:"dsn"` // SQLite3 DSN
 }
 
-// RedisConfig Redis 配置
+// RedisConfig 是 Redis 缓存的配置。
+//
+// 字段说明：
+// - Addr: Redis 服务器地址（格式：host:port，默认：localhost:6379）
+// - Password: Redis 密码（可选）
+// - DB: 数据库编号（默认：0）
+// - PoolSize: 连接池大小（默认：10）
+// - MinIdleConns: 最小空闲连接数（默认：5）
+// - DialTimeout: 连接超时时间
+// - ReadTimeout: 读取超时时间
+// - WriteTimeout: 写入超时时间
+//
+// 环境变量：
+// - APP_REDIS_ADDR: Redis 地址
+// - APP_REDIS_PASSWORD: Redis 密码
+// - APP_REDIS_DB: 数据库编号
 type RedisConfig struct {
 	Addr         string        `mapstructure:"addr"`
 	Password     string        `mapstructure:"password"`
@@ -57,14 +164,33 @@ type RedisConfig struct {
 	WriteTimeout time.Duration `mapstructure:"write_timeout"`
 }
 
-// KafkaConfig Kafka 配置
+// KafkaConfig 是 Kafka 消息队列的配置。
+//
+// 字段说明：
+// - Brokers: Kafka Broker 地址列表（默认：["localhost:9092"]）
+// - ConsumerGroup: 消费者组 ID
+// - Timeout: 操作超时时间
+//
+// 环境变量：
+// - APP_KAFKA_BROKERS: Kafka Broker 地址（逗号分隔）
 type KafkaConfig struct {
 	Brokers       []string      `mapstructure:"brokers"`
 	ConsumerGroup string        `mapstructure:"consumer_group"`
 	Timeout       time.Duration `mapstructure:"timeout"`
 }
 
-// MQTTConfig MQTT 配置
+// MQTTConfig 是 MQTT 消息队列的配置。
+//
+// 字段说明：
+// - Broker: MQTT Broker 地址（格式：tcp://host:port，默认：tcp://localhost:1883）
+// - ClientID: 客户端 ID（必须唯一）
+// - Username: 用户名（可选）
+// - Password: 密码（可选）
+// - Timeout: 操作超时时间
+//
+// 环境变量：
+// - APP_MQTT_BROKER: MQTT Broker 地址
+// - APP_MQTT_CLIENT_ID: 客户端 ID
 type MQTTConfig struct {
 	Broker   string        `mapstructure:"broker"`
 	ClientID string        `mapstructure:"client_id"`
@@ -73,7 +199,18 @@ type MQTTConfig struct {
 	Timeout  time.Duration `mapstructure:"timeout"`
 }
 
-// OTLPConfig OpenTelemetry 配置
+// OTLPConfig 是 OpenTelemetry 可观测性的配置。
+//
+// 字段说明：
+// - Endpoint: OpenTelemetry Collector 端点（默认：localhost:4317）
+// - Insecure: 是否使用不安全的连接（开发环境：true，生产环境：false）
+// - Timeout: 操作超时时间
+// - ServiceName: 服务名称（默认：app）
+// - ServiceVersion: 服务版本（默认：1.0.0）
+//
+// 环境变量：
+// - APP_OTLP_ENDPOINT: Collector 端点
+// - APP_OTLP_SERVICE_NAME: 服务名称
 type OTLPConfig struct {
 	Endpoint    string        `mapstructure:"endpoint"`
 	Insecure    bool          `mapstructure:"insecure"`
@@ -82,7 +219,20 @@ type OTLPConfig struct {
 	ServiceVersion string     `mapstructure:"service_version"`
 }
 
-// JWTConfig JWT 配置
+// JWTConfig 是 JWT 认证的配置。
+//
+// 字段说明：
+// - SecretKey: JWT 签名密钥（必须设置，建议使用环境变量）
+// - SigningMethod: 签名方法（默认：HS256）
+// - AccessTokenTTL: 访问令牌有效期（默认：15分钟）
+// - RefreshTokenTTL: 刷新令牌有效期（默认：7天）
+//
+// 环境变量：
+// - APP_JWT_SECRET_KEY: JWT 签名密钥
+//
+// 注意事项：
+// - SecretKey 应该保密，不应提交到版本控制系统
+// - 生产环境应使用强随机密钥
 type JWTConfig struct {
 	SecretKey      string        `mapstructure:"secret_key"`
 	SigningMethod  string        `mapstructure:"signing_method"`
@@ -90,7 +240,17 @@ type JWTConfig struct {
 	RefreshTokenTTL time.Duration `mapstructure:"refresh_token_ttl"`
 }
 
-// LoggingConfig 日志配置
+// LoggingConfig 是日志系统的配置。
+//
+// 字段说明：
+// - Level: 日志级别（debug、info、warn、error，默认：info）
+// - Format: 日志格式（json、text，默认：json）
+// - Output: 输出目标（stdout、file，默认：stdout）
+// - OutputPath: 日志文件路径（当 Output 为 file 时使用）
+//
+// 环境变量：
+// - APP_LOG_LEVEL: 日志级别
+// - APP_LOG_FORMAT: 日志格式
 type LoggingConfig struct {
 	Level      string `mapstructure:"level"`       // debug, info, warn, error
 	Format     string `mapstructure:"format"`      // json, text
@@ -98,7 +258,19 @@ type LoggingConfig struct {
 	OutputPath string `mapstructure:"output_path"` // 日志文件路径
 }
 
-// TemporalConfig Temporal 配置
+// TemporalConfig 是 Temporal 工作流的配置。
+//
+// 字段说明：
+// - Address: Temporal Server 地址（默认：localhost:7233）
+// - Namespace: 命名空间（默认：default）
+// - TaskQueue: 任务队列名称（默认：default）
+// - Workers: Worker 数量（默认：10）
+// - MaxConcurrent: 最大并发任务数（默认：100）
+//
+// 环境变量：
+// - APP_TEMPORAL_ADDRESS: Temporal Server 地址
+// - APP_TEMPORAL_NAMESPACE: 命名空间
+// - APP_TEMPORAL_TASK_QUEUE: 任务队列
 type TemporalConfig struct {
 	Address      string        `mapstructure:"address"`
 	Namespace    string        `mapstructure:"namespace"`
@@ -108,14 +280,61 @@ type TemporalConfig struct {
 }
 
 // Load 加载配置
+//
+// 设计原理：
+// 1. 使用 Viper 进行配置管理
+// 2. 支持多种配置源：配置文件、环境变量、默认值
+// 3. 配置优先级：环境变量 > 配置文件 > 默认值
+// 4. 如果配置文件不存在，使用默认配置（不报错）
+//
+// 参数：
+//   - configPath: 配置文件路径，如果为空则使用默认路径
+//
+// 返回：
+//   - *Config: 加载的配置对象
+//   - error: 加载失败时返回错误
+//
+// 配置加载流程：
+// 1. 创建 Viper 实例
+// 2. 设置配置文件路径（如果指定）或使用默认路径
+// 3. 设置环境变量前缀（APP_）
+// 4. 读取配置文件（如果存在）
+// 5. 绑定环境变量
+// 6. 解析配置到结构体
+// 7. 设置默认值
+//
+// 配置文件路径：
+// - 如果 configPath 不为空，使用指定路径
+// - 否则，按以下顺序查找：
+//   1. ./configs/config.yaml
+//   2. ./config.yaml
+//
+// 环境变量：
+// - 前缀：APP_
+// - 格式：APP_SERVER_PORT、APP_DATABASE_HOST 等
+// - 支持嵌套配置：APP_DATABASE_HOST、APP_DATABASE_PORT
+//
+// 示例：
+//   // 使用默认路径
+//   cfg, err := config.Load("")
+//
+//   // 使用指定路径
+//   cfg, err := config.Load("/path/to/config.yaml")
+//
+//   // 使用环境变量覆盖
+//   // export APP_SERVER_PORT=8080
+//   // export APP_DATABASE_HOST=localhost
+//   cfg, err := config.Load("")
 func Load(configPath string) (*Config, error) {
 	v := viper.New()
 
 	// 设置配置文件路径
+	// 如果指定了路径，使用指定路径；否则使用默认路径
 	if configPath != "" {
 		v.SetConfigFile(configPath)
 	} else {
 		// 默认配置文件路径
+		// 按顺序查找：./configs/config.yaml、./config.yaml
 		v.SetConfigName("config")
 		v.SetConfigType("yaml")
 		v.AddConfigPath("./configs")
@@ -123,26 +342,33 @@ func Load(configPath string) (*Config, error) {
 	}
 
 	// 设置环境变量
+	// 前缀：APP_，例如 APP_SERVER_PORT、APP_DATABASE_HOST
 	v.SetEnvPrefix("APP")
+	// 自动读取环境变量
 	v.AutomaticEnv()
 
 	// 读取配置文件
+	// 如果配置文件不存在，不报错（使用默认配置）
 	if err := v.ReadInConfig(); err != nil {
 		// 如果配置文件不存在，使用默认配置
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			// 其他错误（如格式错误）需要返回
 			return nil, fmt.Errorf("failed to read config file: %w", err)
 		}
 	}
 
 	// 环境变量覆盖
+	// 绑定环境变量到配置项
 	bindEnvVars(v)
 
+	// 解析配置到结构体
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
 	// 设置默认值
+	// 对于未设置的配置项，使用默认值
 	setDefaults(&config)
 
 	return &config, nil
@@ -299,17 +525,94 @@ func setDefaults(c *Config) {
 	}
 }
 
+// LoadConfig 加载配置（便捷函数）
+//
+// 设计原理：
+// 1. 这是 Load("") 的便捷函数
+// 2. 使用默认配置文件路径
+// 3. 支持环境变量覆盖
+//
+// 返回：
+//   - *Config: 加载的配置对象
+//   - error: 加载失败时返回错误
+//
+// 使用示例：
+//   cfg, err := config.LoadConfig()
+//   if err != nil {
+//       log.Fatal(err)
+//   }
+func LoadConfig() (*Config, error) {
+	return Load("")
+}
+
 // LoadFromEnv 从环境变量加载配置
+//
+// 设计原理：
+// 1. 只从环境变量加载配置，不使用配置文件
+// 2. 适用于容器化部署场景
+// 3. 所有配置都通过环境变量提供
+//
+// 返回：
+//   - *Config: 加载的配置对象
+//   - error: 加载失败时返回错误
+//
+// 使用示例：
+//   // 设置环境变量
+//   // export APP_SERVER_PORT=8080
+//   // export APP_DATABASE_HOST=localhost
+//   cfg, err := config.LoadFromEnv()
 func LoadFromEnv() (*Config, error) {
 	return Load("")
 }
 
 // LoadFromFile 从文件加载配置
+//
+// 设计原理：
+// 1. 从指定文件路径加载配置
+// 2. 仍然支持环境变量覆盖
+// 3. 适用于需要指定配置文件路径的场景
+//
+// 参数：
+//   - path: 配置文件路径
+//
+// 返回：
+//   - *Config: 加载的配置对象
+//   - error: 加载失败时返回错误
+//
+// 使用示例：
+//   cfg, err := config.LoadFromFile("/path/to/config.yaml")
 func LoadFromFile(path string) (*Config, error) {
 	return Load(path)
 }
 
 // Watch 监听配置文件变化（热重载）
+//
+// 设计原理：
+// 1. 监听配置文件的变化
+// 2. 当配置文件发生变化时，自动重新加载配置
+// 3. 调用回调函数通知配置变化
+//
+// 参数：
+//   - configPath: 配置文件路径，如果为空则使用默认路径
+//   - onChange: 配置变化时的回调函数
+//
+// 返回：
+//   - error: 监听失败时返回错误
+//
+// 使用场景：
+// 1. 开发环境：修改配置后自动生效，无需重启
+// 2. 生产环境：动态调整配置（如日志级别）
+//
+// 注意事项：
+// - 热重载可能导致配置不一致
+// - 某些配置（如数据库连接）需要重启才能生效
+// - 建议只用于非关键配置的热重载
+//
+// 使用示例：
+//   err := config.Watch("", func(cfg *config.Config) {
+//       log.Printf("Config reloaded: %+v", cfg)
+//       // 更新应用配置
+//   })
 func Watch(configPath string, onChange func(*Config)) error {
 	v := viper.New()
 
@@ -322,7 +625,9 @@ func Watch(configPath string, onChange func(*Config)) error {
 		v.AddConfigPath(".")
 	}
 
+	// 监听配置文件变化
 	v.WatchConfig()
+	// 配置变化时的回调
 	v.OnConfigChange(func(e fsnotify.Event) {
 		var config Config
 		if err := v.Unmarshal(&config); err == nil {

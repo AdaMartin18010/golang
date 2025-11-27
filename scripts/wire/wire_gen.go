@@ -6,5 +6,30 @@
 
 package wire
 
+// 文件说明：
+//
+// 1. 此文件是 Wire 自动生成的依赖注入代码
+// 2. 包含 InitializeApp 函数的实际实现
+// 3. 根据 wire.go 中的 wire.Build 声明生成
+//
+// 生成步骤：
+// 1. 在 wire.go 中定义 Provider 函数和 wire.Build
+// 2. 运行命令：go generate ./scripts/wire
+// 3. Wire 会分析依赖关系并生成此文件
+//
+// 工作原理：
+// 1. Wire 分析 wire.Build 中的 Provider 函数
+// 2. 构建依赖关系图
+// 3. 生成依赖注入代码
+// 4. 生成的代码会调用所有 Provider 函数并组装依赖
+//
+// 注意事项：
+// - 此文件是自动生成的，不要手动编辑
+// - 如果修改了 wire.go，需要重新生成此文件
+// - 生成的代码可以查看，便于调试和理解依赖关系
+//
+// 当前状态：
+// - 此文件尚未生成，需要运行生成命令
+// - 生成后，InitializeApp 函数会包含实际的依赖注入逻辑
+//
 // 运行 `go generate ./scripts/wire` 生成此文件
-

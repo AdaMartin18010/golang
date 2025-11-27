@@ -12,7 +12,31 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-// TracingConfig 追踪配置
+// TracingConfig 是请求追踪中间件的配置结构。
+//
+// 功能说明：
+// - 配置 OpenTelemetry 追踪行为
+// - 支持跳过特定路径的追踪
+// - 支持添加请求 ID 和用户 ID 到追踪上下文
+//
+// 字段说明：
+// - TracerName: Tracer 名称（默认：http-server）
+// - ServiceName: 服务名称（默认：api）
+// - ServiceVersion: 服务版本（可选）
+// - SkipPaths: 跳过追踪的路径列表（如 /health、/metrics）
+// - AddRequestID: 是否添加请求 ID 到追踪上下文
+// - AddUserID: 是否添加用户 ID 到追踪上下文
+//
+// 使用示例：
+//
+//	config := middleware.TracingConfig{
+//	    ServiceName:    "user-service",
+//	    ServiceVersion: "1.0.0",
+//	    SkipPaths:      []string{"/health", "/metrics"},
+//	    AddRequestID:   true,
+//	    AddUserID:      true,
+//	}
+//	router.Use(middleware.TracingMiddleware(config))
 type TracingConfig struct {
 	TracerName      string
 	ServiceName     string
@@ -22,7 +46,62 @@ type TracingConfig struct {
 	AddUserID       bool
 }
 
-// TracingMiddleware 请求追踪中间件
+// TracingMiddleware 创建请求追踪中间件。
+//
+// 功能说明：
+// - 基于 OpenTelemetry 实现分布式追踪
+// - 为每个 HTTP 请求创建 Span
+// - 提取和传播追踪上下文
+// - 记录请求和响应信息
+//
+// 工作流程：
+// 1. 检查路径是否在跳过列表中
+// 2. 从请求头提取追踪上下文（TraceContext、Baggage）
+// 3. 创建新的 Span（Server Span）
+// 4. 设置基本属性（HTTP 方法、路径、用户代理等）
+// 5. 可选添加请求 ID 和用户 ID
+// 6. 在响应头中添加追踪 ID
+// 7. 执行下一个处理器
+// 8. 记录响应信息（状态码、响应大小、耗时）
+// 9. 设置 Span 状态（成功或错误）
+//
+// 追踪属性：
+// - http.method: HTTP 方法
+// - http.target: 请求路径
+// - http.route: 路由路径
+// - http.user_agent: 用户代理
+// - http.client_ip: 客户端 IP
+// - service.name: 服务名称
+// - service.version: 服务版本（如果配置）
+// - http.request_id: 请求 ID（如果配置）
+// - user.id: 用户 ID（如果配置）
+// - http.status_code: 响应状态码
+// - http.response_size: 响应大小
+// - http.duration_ms: 请求耗时（毫秒）
+//
+// 响应头：
+// - X-Trace-ID: 追踪 ID
+// - X-Span-ID: Span ID
+//
+// 参数：
+// - config: 追踪配置
+//
+// 返回：
+// - func(http.Handler) http.Handler: Chi 中间件函数
+//
+// 使用示例：
+//
+//	config := middleware.TracingConfig{
+//	    ServiceName:  "api",
+//	    SkipPaths:    []string{"/health"},
+//	    AddRequestID: true,
+//	}
+//	router.Use(middleware.TracingMiddleware(config))
+//
+// 注意事项：
+// - 需要先初始化 OpenTelemetry TracerProvider
+// - 追踪上下文会自动传播到下游服务
+// - 可以在 Handler 中使用 context 获取当前 Span
 func TracingMiddleware(config TracingConfig) func(http.Handler) http.Handler {
 	if config.TracerName == "" {
 		config.TracerName = "http-server"
