@@ -97,7 +97,7 @@ func (sc *StructuredConcurrency) Execute(tasks []Task) error {
             t.Execute(sc.ctx)
         }(task)
     }
-    
+
     sc.wg.Wait()
     return sc.ctx.Err()
 }
@@ -207,11 +207,11 @@ type LockFreeRingBuffer[T any] struct {
 func (rb *LockFreeRingBuffer[T]) Push(item T) bool {
     write := atomic.LoadUint64(&rb.write)
     next := (write + 1) & rb.mask
-    
+
     if next == atomic.LoadUint64(&rb.read) {
         return false // 缓冲区满
     }
-    
+
     rb.data[write] = item
     atomic.StoreUint64(&rb.write, next)
     return true
@@ -317,7 +317,7 @@ go test -race
 
 ---
 
-**模块维护者**: AI Assistant  
-**最后更新**: 2025年2月  
-**模块状态**: 生产就绪  
+**模块维护者**: AI Assistant
+**最后更新**: 2025年2月
+**模块状态**: 生产就绪
 **许可证**: MIT License

@@ -4,12 +4,26 @@
 - [Go WebAssembly导出功能深度解析](#go-webassembly导出功能深度解析)
   - [1.1 概述](#11-概述)
   - [1.2 WASM导出基础](#12-wasm导出基础)
+    - [1.2.1 基本编译配置](#121-基本编译配置)
+    - [1.2.2 编译命令](#122-编译命令)
   - [1.3 函数导出](#13-函数导出)
+    - [1.3.1 基础函数导出](#131-基础函数导出)
+    - [1.3.2 复杂数据结构导出](#132-复杂数据结构导出)
   - [1.4 内存管理](#14-内存管理)
+    - [1.4.1 内存分配和释放](#141-内存分配和释放)
+    - [1.4.2 字符串内存管理](#142-字符串内存管理)
   - [1.5 类型转换](#15-类型转换)
+    - [1.5.1 Go类型到JavaScript类型](#151-go类型到javascript类型)
+    - [1.5.2 JavaScript类型到Go类型](#152-javascript类型到go类型)
   - [1.6 高级特性](#16-高级特性)
+    - [1.6.1 异步操作支持](#161-异步操作支持)
+    - [1.6.2 事件系统](#162-事件系统)
   - [1.7 性能优化](#17-性能优化)
+    - [1.7.1 内存优化](#171-内存优化)
+    - [1.7.2 批量操作优化](#172-批量操作优化)
   - [1.8 实际应用](#18-实际应用)
+    - [1.8.1 图像处理](#181-图像处理)
+    - [1.8.2 数据加密](#182-数据加密)
 <!-- TOC END -->
 
 ## 1.1 概述
@@ -34,7 +48,7 @@ func main() {
     // 注册全局函数
     js.Global().Set("goAdd", js.FuncOf(add))
     js.Global().Set("goMultiply", js.FuncOf(multiply))
-    
+
     // 保持程序运行
     select {}
 }
@@ -44,10 +58,10 @@ func add(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Expected 2 arguments")
     }
-    
+
     a := args[0].Float()
     b := args[1].Float()
-    
+
     return js.ValueOf(a + b)
 }
 
@@ -56,10 +70,10 @@ func multiply(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Expected 2 arguments")
     }
-    
+
     a := args[0].Float()
     b := args[1].Float()
-    
+
     return js.ValueOf(a * b)
 }
 ```
@@ -103,12 +117,12 @@ func add(this js.Value, args []js.Value) interface{} {
     if len(args) < 2 {
         return js.ValueOf("Error: At least 2 arguments required")
     }
-    
+
     result := 0.0
     for _, arg := range args {
         result += arg.Float()
     }
-    
+
     return js.ValueOf(result)
 }
 
@@ -116,7 +130,7 @@ func subtract(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Exactly 2 arguments required")
     }
-    
+
     return js.ValueOf(args[0].Float() - args[1].Float())
 }
 
@@ -124,12 +138,12 @@ func multiply(this js.Value, args []js.Value) interface{} {
     if len(args) < 2 {
         return js.ValueOf("Error: At least 2 arguments required")
     }
-    
+
     result := 1.0
     for _, arg := range args {
         result *= arg.Float()
     }
-    
+
     return js.ValueOf(result)
 }
 
@@ -137,12 +151,12 @@ func divide(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Exactly 2 arguments required")
     }
-    
+
     divisor := args[1].Float()
     if divisor == 0 {
         return js.ValueOf("Error: Division by zero")
     }
-    
+
     return js.ValueOf(args[0].Float() / divisor)
 }
 
@@ -150,15 +164,15 @@ func power(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Exactly 2 arguments required")
     }
-    
+
     base := args[0].Float()
     exponent := args[1].Float()
-    
+
     result := 1.0
     for i := 0; i < int(exponent); i++ {
         result *= base
     }
-    
+
     return js.ValueOf(result)
 }
 ```
@@ -241,19 +255,19 @@ func addUser(this js.Value, args []js.Value) interface{} {
     if len(args) != 3 {
         return js.ValueOf("Error: Expected 3 arguments (name, email, age)")
     }
-    
+
     name := args[0].String()
     email := args[1].String()
     age := args[2].Int()
-    
+
     user := userManager.AddUser(name, email, age)
-    
+
     // 转换为JSON
     userJSON, err := json.Marshal(user)
     if err != nil {
         return js.ValueOf("Error: Failed to serialize user")
     }
-    
+
     return js.ValueOf(string(userJSON))
 }
 
@@ -261,30 +275,30 @@ func getUser(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (id)")
     }
-    
+
     id := args[0].Int()
     user, exists := userManager.GetUser(id)
-    
+
     if !exists {
         return js.ValueOf("Error: User not found")
     }
-    
+
     userJSON, err := json.Marshal(user)
     if err != nil {
         return js.ValueOf("Error: Failed to serialize user")
     }
-    
+
     return js.ValueOf(string(userJSON))
 }
 
 func getAllUsers(this js.Value, args []js.Value) interface{} {
     users := userManager.GetAllUsers()
-    
+
     usersJSON, err := json.Marshal(users)
     if err != nil {
         return js.ValueOf("Error: Failed to serialize users")
     }
-    
+
     return js.ValueOf(string(usersJSON))
 }
 ```
@@ -319,14 +333,14 @@ func NewMemoryManager() *MemoryManager {
 func (mm *MemoryManager) Allocate(size int) uintptr {
     // 在Go中分配内存
     data := make([]byte, size)
-    
+
     // 获取内存地址
     ptr := unsafe.Pointer(&data[0])
     addr := uintptr(ptr)
-    
+
     // 记录分配
     mm.allocated[addr] = size
-    
+
     return addr
 }
 
@@ -355,10 +369,10 @@ func allocateMemory(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (size)")
     }
-    
+
     size := args[0].Int()
     addr := memoryManager.Allocate(size)
-    
+
     return js.ValueOf(addr)
 }
 
@@ -366,10 +380,10 @@ func freeMemory(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (address)")
     }
-    
+
     addr := uintptr(args[0].Int())
     memoryManager.Free(addr)
-    
+
     return js.ValueOf("OK")
 }
 
@@ -377,10 +391,10 @@ func getMemorySize(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (address)")
     }
-    
+
     addr := uintptr(args[0].Int())
     size := memoryManager.GetSize(addr)
-    
+
     return js.ValueOf(size)
 }
 ```
@@ -413,14 +427,14 @@ func NewStringManager() *StringManager {
 func (sm *StringManager) StoreString(s string) uintptr {
     // 将字符串转换为字节数组
     bytes := []byte(s)
-    
+
     // 获取内存地址
     ptr := unsafe.Pointer(&bytes[0])
     addr := uintptr(ptr)
-    
+
     // 存储字符串引用
     sm.strings[addr] = s
-    
+
     return addr
 }
 
@@ -450,10 +464,10 @@ func storeString(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (string)")
     }
-    
+
     s := args[0].String()
     addr := stringManager.StoreString(s)
-    
+
     return js.ValueOf(addr)
 }
 
@@ -461,14 +475,14 @@ func getString(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (address)")
     }
-    
+
     addr := uintptr(args[0].Int())
     s, exists := stringManager.GetString(addr)
-    
+
     if !exists {
         return js.ValueOf("Error: String not found")
     }
-    
+
     return js.ValueOf(s)
 }
 
@@ -476,10 +490,10 @@ func freeString(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (address)")
     }
-    
+
     addr := uintptr(args[0].Int())
     stringManager.FreeString(addr)
-    
+
     return js.ValueOf("OK")
 }
 ```
@@ -507,7 +521,7 @@ func (tc *TypeConverter) ConvertToJS(value interface{}) js.Value {
     if value == nil {
         return js.Null()
     }
-    
+
     switch v := value.(type) {
     case bool:
         return js.ValueOf(v)
@@ -569,22 +583,22 @@ func (tc *TypeConverter) convertStructToJS(value interface{}) js.Value {
     // 使用反射获取结构体字段
     v := reflect.ValueOf(value)
     t := reflect.TypeOf(value)
-    
+
     jsObject := js.Global().Get("Object").New()
-    
+
     for i := 0; i < v.NumField(); i++ {
         field := t.Field(i)
         fieldValue := v.Field(i)
-        
+
         // 获取JSON标签
         jsonTag := field.Tag.Get("json")
         if jsonTag == "" {
             jsonTag = field.Name
         }
-        
+
         jsObject.Set(jsonTag, tc.ConvertToJS(fieldValue.Interface()))
     }
-    
+
     return jsObject
 }
 
@@ -601,7 +615,7 @@ func convertToJS(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument")
     }
-    
+
     // 这里需要从JavaScript传递Go值，实际使用中可能需要序列化
     return js.ValueOf("Type conversion not implemented for this example")
 }
@@ -650,10 +664,10 @@ func (jvc *JSValueConverter) convertObjectFromJS(jsValue js.Value) interface{} {
     if jsValue.Get("length").Type() != js.TypeUndefined {
         return jvc.convertArrayFromJS(jsValue)
     }
-    
+
     // 转换为map
     result := make(map[string]interface{})
-    
+
     // 获取对象的所有属性
     keys := js.Global().Get("Object").Call("keys", jsValue)
     for i := 0; i < keys.Length(); i++ {
@@ -661,7 +675,7 @@ func (jvc *JSValueConverter) convertObjectFromJS(jsValue js.Value) interface{} {
         value := jsValue.Get(key)
         result[key] = jvc.ConvertFromJS(value)
     }
-    
+
     return result
 }
 
@@ -669,11 +683,11 @@ func (jvc *JSValueConverter) convertObjectFromJS(jsValue js.Value) interface{} {
 func (jvc *JSValueConverter) convertArrayFromJS(jsValue js.Value) []interface{} {
     length := jsValue.Length()
     result := make([]interface{}, length)
-    
+
     for i := 0; i < length; i++ {
         result[i] = jvc.ConvertFromJS(jsValue.Index(i))
     }
-    
+
     return result
 }
 
@@ -682,11 +696,11 @@ func (jvc *JSValueConverter) ConvertToInt(jsValue js.Value) (int, error) {
     if jsValue.Type() == js.TypeNumber {
         return int(jsValue.Int()), nil
     }
-    
+
     if jsValue.Type() == js.TypeString {
         return strconv.Atoi(jsValue.String())
     }
-    
+
     return 0, js.ValueOf("Cannot convert to int")
 }
 
@@ -695,11 +709,11 @@ func (jvc *JSValueConverter) ConvertToFloat(jsValue js.Value) (float64, error) {
     if jsValue.Type() == js.TypeNumber {
         return jsValue.Float(), nil
     }
-    
+
     if jsValue.Type() == js.TypeString {
         return strconv.ParseFloat(jsValue.String(), 64)
     }
-    
+
     return 0, js.ValueOf("Cannot convert to float")
 }
 
@@ -708,15 +722,15 @@ func (jvc *JSValueConverter) ConvertToBool(jsValue js.Value) bool {
     if jsValue.Type() == js.TypeBoolean {
         return jsValue.Bool()
     }
-    
+
     if jsValue.Type() == js.TypeString {
         return jsValue.String() == "true"
     }
-    
+
     if jsValue.Type() == js.TypeNumber {
         return jsValue.Int() != 0
     }
-    
+
     return false
 }
 
@@ -736,7 +750,7 @@ func convertFromJS(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument")
     }
-    
+
     result := jsValueConverter.ConvertFromJS(args[0])
     return js.ValueOf(result)
 }
@@ -745,12 +759,12 @@ func convertToInt(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument")
     }
-    
+
     result, err := jsValueConverter.ConvertToInt(args[0])
     if err != nil {
         return js.ValueOf("Error: " + err.Error())
     }
-    
+
     return js.ValueOf(result)
 }
 
@@ -758,12 +772,12 @@ func convertToFloat(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument")
     }
-    
+
     result, err := jsValueConverter.ConvertToFloat(args[0])
     if err != nil {
         return js.ValueOf("Error: " + err.Error())
     }
-    
+
     return js.ValueOf(result)
 }
 
@@ -771,7 +785,7 @@ func convertToBool(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument")
     }
-    
+
     result := jsValueConverter.ConvertToBool(args[0])
     return js.ValueOf(result)
 }
@@ -808,16 +822,16 @@ func (am *AsyncManager) CreatePromise(id string) js.Value {
     promise := js.Global().Get("Promise").New(js.FuncOf(func(this js.Value, args []js.Value) interface{} {
         resolve := args[0]
         reject := args[1]
-        
+
         // 存储resolve和reject函数
         am.promises[id] = js.ValueOf(map[string]interface{}{
             "resolve": resolve,
             "reject":  reject,
         })
-        
+
         return nil
     }))
-    
+
     return promise
 }
 
@@ -855,10 +869,10 @@ func createPromise(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (id)")
     }
-    
+
     id := args[0].String()
     promise := asyncManager.CreatePromise(id)
-    
+
     return promise
 }
 
@@ -866,12 +880,12 @@ func resolvePromise(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Expected 2 arguments (id, value)")
     }
-    
+
     id := args[0].String()
     value := args[1]
-    
+
     asyncManager.ResolvePromise(id, value)
-    
+
     return js.ValueOf("OK")
 }
 
@@ -879,12 +893,12 @@ func rejectPromise(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Expected 2 arguments (id, reason)")
     }
-    
+
     id := args[0].String()
     reason := args[1].String()
-    
+
     asyncManager.RejectPromise(id, reason)
-    
+
     return js.ValueOf("OK")
 }
 
@@ -892,26 +906,26 @@ func asyncOperation(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (id)")
     }
-    
+
     id := args[0].String()
-    
+
     // 创建Promise
     promise := asyncManager.CreatePromise(id)
-    
+
     // 模拟异步操作
     go func() {
         time.Sleep(2 * time.Second)
-        
+
         // 模拟操作结果
         result := map[string]interface{}{
             "id":      id,
             "result":  "Operation completed",
             "timestamp": time.Now().Unix(),
         }
-        
+
         asyncManager.ResolvePromise(id, result)
     }()
-    
+
     return promise
 }
 ```
@@ -945,7 +959,7 @@ func NewEventEmitter() *EventEmitter {
 func (ee *EventEmitter) On(event string, listener js.Value) {
     ee.mutex.Lock()
     defer ee.mutex.Unlock()
-    
+
     ee.listeners[event] = append(ee.listeners[event], listener)
 }
 
@@ -953,7 +967,7 @@ func (ee *EventEmitter) On(event string, listener js.Value) {
 func (ee *EventEmitter) Off(event string, listener js.Value) {
     ee.mutex.Lock()
     defer ee.mutex.Unlock()
-    
+
     listeners := ee.listeners[event]
     for i, l := range listeners {
         if l.Equal(listener) {
@@ -968,14 +982,14 @@ func (ee *EventEmitter) Emit(event string, args ...interface{}) {
     ee.mutex.RLock()
     listeners := ee.listeners[event]
     ee.mutex.RUnlock()
-    
+
     for _, listener := range listeners {
         // 转换参数
         jsArgs := make([]interface{}, len(args))
         for i, arg := range args {
             jsArgs[i] = js.ValueOf(arg)
         }
-        
+
         // 调用监听器
         listener.Invoke(jsArgs...)
     }
@@ -996,12 +1010,12 @@ func onEvent(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Expected 2 arguments (event, listener)")
     }
-    
+
     event := args[0].String()
     listener := args[1]
-    
+
     eventEmitter.On(event, listener)
-    
+
     return js.ValueOf("OK")
 }
 
@@ -1009,12 +1023,12 @@ func offEvent(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Expected 2 arguments (event, listener)")
     }
-    
+
     event := args[0].String()
     listener := args[1]
-    
+
     eventEmitter.Off(event, listener)
-    
+
     return js.ValueOf("OK")
 }
 
@@ -1022,17 +1036,17 @@ func emitEvent(this js.Value, args []js.Value) interface{} {
     if len(args) < 1 {
         return js.ValueOf("Error: Expected at least 1 argument (event)")
     }
-    
+
     event := args[0].String()
-    
+
     // 转换剩余参数
     eventArgs := make([]interface{}, len(args)-1)
     for i, arg := range args[1:] {
         eventArgs[i] = arg
     }
-    
+
     eventEmitter.Emit(event, eventArgs...)
-    
+
     return js.ValueOf("OK")
 }
 ```
@@ -1069,7 +1083,7 @@ func (mp *MemoryPool) Get(size int) []byte {
     mp.mutex.RLock()
     pool, exists := mp.pools[size]
     mp.mutex.RUnlock()
-    
+
     if !exists {
         mp.mutex.Lock()
         pool = &sync.Pool{
@@ -1080,7 +1094,7 @@ func (mp *MemoryPool) Get(size int) []byte {
         mp.pools[size] = pool
         mp.mutex.Unlock()
     }
-    
+
     return pool.Get().([]byte)
 }
 
@@ -1090,7 +1104,7 @@ func (mp *MemoryPool) Put(buf []byte) {
     mp.mutex.RLock()
     pool, exists := mp.pools[size]
     mp.mutex.RUnlock()
-    
+
     if exists {
         // 重置切片长度
         buf = buf[:0]
@@ -1112,10 +1126,10 @@ func getMemory(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (size)")
     }
-    
+
     size := args[0].Int()
     buf := memoryPool.Get(size)
-    
+
     // 返回内存地址（实际使用中需要更复杂的处理）
     return js.ValueOf(len(buf))
 }
@@ -1124,7 +1138,7 @@ func putMemory(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument (buffer)")
     }
-    
+
     // 实际使用中需要从JavaScript传递缓冲区
     return js.ValueOf("OK")
 }
@@ -1163,13 +1177,13 @@ func NewBatchProcessor(batchSize int, processor func([]interface{}) interface{})
 func (bp *BatchProcessor) Add(item interface{}) interface{} {
     bp.mutex.Lock()
     defer bp.mutex.Unlock()
-    
+
     bp.buffer = append(bp.buffer, item)
-    
+
     if len(bp.buffer) >= bp.batchSize {
         return bp.flush()
     }
-    
+
     return nil
 }
 
@@ -1185,11 +1199,11 @@ func (bp *BatchProcessor) flush() interface{} {
     if len(bp.buffer) == 0 {
         return nil
     }
-    
+
     batch := make([]interface{}, len(bp.buffer))
     copy(batch, bp.buffer)
     bp.buffer = bp.buffer[:0]
-    
+
     return bp.processor(batch)
 }
 
@@ -1218,12 +1232,12 @@ func addToBatch(this js.Value, args []js.Value) interface{} {
     if len(args) != 1 {
         return js.ValueOf("Error: Expected 1 argument")
     }
-    
+
     result := batchProcessor.Add(args[0])
     if result != nil {
         return js.ValueOf(result)
     }
-    
+
     return js.ValueOf("Added to batch")
 }
 
@@ -1232,7 +1246,7 @@ func flushBatch(this js.Value, args []js.Value) interface{} {
     if result != nil {
         return js.ValueOf(result)
     }
-    
+
     return js.ValueOf("Batch is empty")
 }
 ```
@@ -1259,29 +1273,29 @@ type ImageProcessor struct{}
 func (ip *ImageProcessor) ProcessImage(imgData []byte, width, height int) []byte {
     // 创建图像
     img := image.NewRGBA(image.Rect(0, 0, width, height))
-    
+
     // 处理像素数据
     for y := 0; y < height; y++ {
         for x := 0; x < width; x++ {
             // 获取像素索引
             idx := (y*width + x) * 4
-            
+
             if idx+3 < len(imgData) {
                 // 读取RGBA值
                 r := imgData[idx]
                 g := imgData[idx+1]
                 b := imgData[idx+2]
                 a := imgData[idx+3]
-                
+
                 // 应用滤镜（例如：灰度化）
                 gray := uint8(0.299*float64(r) + 0.587*float64(g) + 0.114*float64(b))
-                
+
                 // 设置像素
                 img.Set(x, y, color.RGBA{gray, gray, gray, a})
             }
         }
     }
-    
+
     // 返回处理后的数据
     return img.Pix
 }
@@ -1299,27 +1313,27 @@ func processImage(this js.Value, args []js.Value) interface{} {
     if len(args) != 3 {
         return js.ValueOf("Error: Expected 3 arguments (data, width, height)")
     }
-    
+
     // 获取参数
     data := args[0]
     width := args[1].Int()
     height := args[2].Int()
-    
+
     // 转换数据
     imgData := make([]byte, data.Length())
     for i := 0; i < data.Length(); i++ {
         imgData[i] = byte(data.Index(i).Int())
     }
-    
+
     // 处理图像
     result := imageProcessor.ProcessImage(imgData, width, height)
-    
+
     // 返回结果
     jsResult := js.Global().Get("Array").New(len(result))
     for i, b := range result {
         jsResult.SetIndex(i, js.ValueOf(b))
     }
-    
+
     return jsResult
 }
 ```
@@ -1350,22 +1364,22 @@ func (cm *CryptoManager) Encrypt(data []byte, key []byte) ([]byte, error) {
     if err != nil {
         return nil, err
     }
-    
+
     // 创建GCM
     gcm, err := cipher.NewGCM(block)
     if err != nil {
         return nil, err
     }
-    
+
     // 生成随机nonce
     nonce := make([]byte, gcm.NonceSize())
     if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
         return nil, err
     }
-    
+
     // 加密数据
     ciphertext := gcm.Seal(nonce, nonce, data, nil)
-    
+
     return ciphertext, nil
 }
 
@@ -1376,27 +1390,27 @@ func (cm *CryptoManager) Decrypt(data []byte, key []byte) ([]byte, error) {
     if err != nil {
         return nil, err
     }
-    
+
     // 创建GCM
     gcm, err := cipher.NewGCM(block)
     if err != nil {
         return nil, err
     }
-    
+
     // 提取nonce
     nonceSize := gcm.NonceSize()
     if len(data) < nonceSize {
         return nil, js.ValueOf("ciphertext too short")
     }
-    
+
     nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-    
+
     // 解密数据
     plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
     if err != nil {
         return nil, err
     }
-    
+
     return plaintext, nil
 }
 
@@ -1414,28 +1428,28 @@ func encryptData(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Expected 2 arguments (data, key)")
     }
-    
+
     // 获取参数
     data := args[0]
     key := args[1]
-    
+
     // 转换数据
     dataBytes := make([]byte, data.Length())
     for i := 0; i < data.Length(); i++ {
         dataBytes[i] = byte(data.Index(i).Int())
     }
-    
+
     keyBytes := make([]byte, key.Length())
     for i := 0; i < key.Length(); i++ {
         keyBytes[i] = byte(key.Index(i).Int())
     }
-    
+
     // 加密
     result, err := cryptoManager.Encrypt(dataBytes, keyBytes)
     if err != nil {
         return js.ValueOf("Error: " + err.Error())
     }
-    
+
     // 返回base64编码的结果
     return js.ValueOf(base64.StdEncoding.EncodeToString(result))
 }
@@ -1444,35 +1458,35 @@ func decryptData(this js.Value, args []js.Value) interface{} {
     if len(args) != 2 {
         return js.ValueOf("Error: Expected 2 arguments (data, key)")
     }
-    
+
     // 获取参数
     data := args[0].String()
     key := args[1]
-    
+
     // 解码base64
     dataBytes, err := base64.StdEncoding.DecodeString(data)
     if err != nil {
         return js.ValueOf("Error: " + err.Error())
     }
-    
+
     // 转换密钥
     keyBytes := make([]byte, key.Length())
     for i := 0; i < key.Length(); i++ {
         keyBytes[i] = byte(key.Index(i).Int())
     }
-    
+
     // 解密
     result, err := cryptoManager.Decrypt(dataBytes, keyBytes)
     if err != nil {
         return js.ValueOf("Error: " + err.Error())
     }
-    
+
     // 返回结果
     jsResult := js.Global().Get("Array").New(len(result))
     for i, b := range result {
         jsResult.SetIndex(i, js.ValueOf(b))
     }
-    
+
     return jsResult
 }
 ```

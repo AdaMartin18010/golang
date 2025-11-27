@@ -194,18 +194,18 @@ func (mpm *MemoryPoolManager) GetPool(size int) *ObjectPool {
     mpm.mu.RLock()
     pool, exists := mpm.pools[size]
     mpm.mu.RUnlock()
-    
+
     if !exists {
         mpm.mu.Lock()
         defer mpm.mu.Unlock()
-        
+
         pool = &ObjectPool{
             new:  func() interface{} { return make([]byte, size) },
             size: size,
         }
         mpm.pools[size] = pool
     }
-    
+
     return pool
 }
 ```
@@ -320,7 +320,7 @@ go test -bench=.
 
 ---
 
-**模块维护者**: AI Assistant  
-**最后更新**: 2025年2月  
-**模块状态**: 生产就绪  
+**模块维护者**: AI Assistant
+**最后更新**: 2025年2月
+**模块状态**: 生产就绪
 **许可证**: MIT License

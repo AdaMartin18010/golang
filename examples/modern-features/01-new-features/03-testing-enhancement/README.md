@@ -1,18 +1,22 @@
-# Go 1.24 测试增强：`testing.B.Loop` 最佳实践
+# Go 1.25.3 测试增强：基准测试最佳实践
 
 <!-- TOC START -->
-- [Go 1.24 测试增强：`testing.B.Loop` 最佳实践](#go-124-测试增强testingbloop-最佳实践)
-  - [1.1.3.1.1 🎯 **核心概念**](#11311--核心概念)
-  - [1.1.3.1.2 ✨ **相比传统 `for b.N` 循环的主要优势**](#11312--相比传统-for-bn-循环的主要优势)
-  - [1.1.3.1.3 💡 **最佳实践和使用场景**](#11313--最佳实践和使用场景)
-  - [1.1.3.1.4 🚀 **总结**](#11314--总结)
+- [Go 1.25.3 测试增强：基准测试最佳实践](#go-1253-测试增强基准测试最佳实践)
+  - [🎯 **核心概念**](#-核心概念)
+  - [✨ **基准测试最佳实践**](#-基准测试最佳实践)
+  - [💡 **最佳实践和使用场景**](#-最佳实践和使用场景)
+  - [🚀 **运行示例**](#-运行示例)
+    - [运行所有基准测试](#运行所有基准测试)
+    - [运行特定基准测试](#运行特定基准测试)
+    - [查看详细输出](#查看详细输出)
+  - [📊 **总结**](#-总结)
 <!-- TOC END -->
 
-## 1.1.3.1.1 🎯 **核心概念**
+## 🎯 **核心概念**
 
-`testing.B.Loop` 是在 Go 1.24 中引入的一个新的基准测试辅助函数，旨在解决传统 `for i := 0; i < b.N; i++` 循环在编写复杂基准测试时的一些痛点。它提供了一种更清晰、更健壮的方式来组织基准测试代码，并内置了对并行测试的简化支持。
+Go 1.25.3 在测试框架方面继续优化，虽然移除了实验性的 `testing.B.Loop` API，但提供了更成熟的基准测试最佳实践。本指南将展示如何编写准确、高效的基准测试。
 
-`B.Loop` 的核心是将被测试的逻辑封装在一个函数体内，由 `Loop` 方法负责执行 `b.N` 次。
+**注意**: Go 1.25 中移除了实验性的 `testing.Loop` API，我们使用传统的基准测试模式，但遵循最佳实践。
 
 **基本语法**:
 
@@ -20,25 +24,29 @@
 func BenchmarkMyFunction(b *testing.B) {
     // 1. 在循环外执行所有昂贵的设置
     setupData := prepareExpensiveData()
-    b.ResetTimer()
+    b.ResetTimer()  // 重置计时器，排除设置时间
 
-    // 2. 使用 b.Loop 执行基准测试
-    b.Loop(func(i int) {
+    // 2. 使用传统的 for 循环执行基准测试
+    for i := 0; i < b.N; i++ {
         // 3. 将要被测试的核心逻辑放在这里
         myFunction(setupData)
-    })
+    }
 }
-
 ```
 
-## 1.1.3.1.2 ✨ **相比传统 `for b.N` 循环的主要优势**
+## ✨ **基准测试最佳实践**
 
 1. **清晰的职责分离**:
-    - `B.Loop` 强制将**"单次设置" (per-run setup)** 与 **"每次迭代的逻辑" (per-iteration logic)** 分离开来。所有昂贵的、只需执行一次的设置代码都自然地放在 `b.Loop` 调用之前，而循环体内部只包含需要被精确计时的核心操作。这避免了将设置代码意外地包含在计时器内的常见错误。
+    - 将**"单次设置" (per-run setup)** 与 **"每次迭代的逻辑" (per-iteration logic)** 分离开来。所有昂贵的、只需执行一次的设置代码都放在循环之前，并在设置完成后调用 `b.ResetTimer()`。循环体内部只包含需要被精确计时的核心操作。
 
-2. **简化的并行测试 (`b.RunParallel`)**:
-    - `B.Loop` 与 `b.RunParallel` 结合使用时，可以极大地简化并行基准测试的编写。开发者不再需要手动管理 `pb.Next()` 循环。
-    - **之前 (传统方式)**:
+2. **正确使用计时器控制**:
+    - `b.ResetTimer()`: 重置计时器，排除之前设置代码的时间
+    - `b.StopTimer()`: 暂停计时器，用于不计入测试时间的操作
+    - `b.StartTimer()`: 恢复计时器
+
+3. **并行测试 (`b.RunParallel`)**:
+    - 使用 `b.RunParallel` 进行并行基准测试，可以更好地利用多核 CPU
+    - 使用 `sync.Pool` 来复用对象，减少分配开销
 
       ```go
       b.RunParallel(func(pb *testing.PB) {
@@ -48,54 +56,85 @@ func BenchmarkMyFunction(b *testing.B) {
       })
       ```
 
-    - **之后 (使用 B.Loop)**:
+4. **处理"每次迭代的设置" (Per-iteration Setup)**:
+    - 当每次迭代都需要新环境时，使用 `b.StopTimer()` 和 `b.StartTimer()` 来控制计时
+    - 或者使用 `sync.Pool` 来复用对象
 
       ```go
-      b.RunParallel(func(pb *testing.PB) {
-          // b.Loop 内部处理了 pb.Next() 的逻辑
-          b.Loop(func(i int) {
-              myFunction()
-          })
-      })
+      for i := 0; i < b.N; i++ {
+          b.StopTimer()  // 暂停计时
+          buffer := new(bytes.Buffer)
+          b.StartTimer()  // 恢复计时
+
+          myFunction(buffer)
+      }
       ```
 
-      虽然看起来变化不大，但它统一了串行和并行测试的编码风格。更重要的是，它允许在并行测试中也使用 **"每次迭代的设置"**:
+5. **内存分配跟踪**:
+    - 使用 `b.ReportAllocs()` 来报告内存分配情况
+    - 使用 `b.SetBytes()` 来设置每次操作处理的字节数
 
-3. **支持"每次迭代的设置" (Per-iteration Setup)**:
-    - 这是 `B.Loop` 最强大的功能之一。在某些场景下，每次测试迭代都需要一个全新的、干净的环境（例如，一个新的缓冲区、一个未被污染的对象）。传统 `for b.N` 循环很难在不影响计时器的情况下实现这一点。
-    - `B.Loop` 通过其 `Setup` 字段优雅地解决了这个问题：
-
-      ```go
-      b.Loop(testing.Loop{
-          // 在每次迭代开始前执行，且不计入测试时间
-          Setup: func() {
-              // 例如：创建一个新的缓冲区
-              buffer = new(bytes.Buffer)
-          },
-          // 每次迭代的核心逻辑
-          Body: func(i int) {
-              myFunction(buffer)
-          },
-      })
-      ```
-
-4. **提高代码可读性和可维护性**:
-    - 通过结构化的方式（如 `testing.Loop` 结构体），`B.Loop` 使得测试的意图更加明确，降低了新成员理解和维护基准测试的难度。
-
-## 1.1.3.1.3 💡 **最佳实践和使用场景**
+## 💡 **最佳实践和使用场景**
 
 1. **简单场景**:
-    - 对于没有复杂设置的基准测试，直接使用 `b.Loop(func(i int) { ... })` 是最简洁的方式。
+    - 对于没有复杂设置的基准测试，直接使用传统的 `for i := 0; i < b.N; i++` 循环。
 
 2. **有昂贵设置的场景**:
-    - 将所有昂贵的、与循环无关的设置代码放在 `b.Loop` 调用之前，并在设置完成后调用 `b.ResetTimer()`。
+    - 将所有昂贵的、与循环无关的设置代码放在循环之前
+    - 在设置完成后调用 `b.ResetTimer()` 重置计时器
 
 3. **每次迭代都需要新环境的场景**:
-    - 使用 `b.Loop(testing.Loop{ Setup: ..., Body: ... })` 结构，将易变的设置放在 `Setup` 函数中。这是测试非幂等操作或需要隔离状态的操作的理想选择。
+    - 使用 `b.StopTimer()` 和 `b.StartTimer()` 来控制计时
+    - 或者使用 `sync.Pool` 来复用对象，减少分配开销
 
 4. **并行测试场景**:
-    - 在 `b.RunParallel` 内部使用 `b.Loop`。如果并行测试的每个 goroutine 都需要独立的资源，可以将资源初始化放在 `b.RunParallel` 的函数体内、`b.Loop` 调用之前。
+    - 使用 `b.RunParallel` 进行并行基准测试
+    - 在并行测试中使用 `sync.Pool` 来管理资源
 
-## 1.1.3.1.4 🚀 **总结**
+5. **内存分配跟踪**:
+    - 使用 `b.ReportAllocs()` 来报告内存分配
+    - 使用 `b.SetBytes()` 来设置每次操作处理的字节数
 
-`testing.B.Loop` 是 Go 测试工具链的一次重要演进。它通过提供一个更结构化、功能更丰富的 API，鼓励开发者编写出更准确、更健壮、更易于维护的基准测试代码。对于新的基准测试，推荐优先使用 `B.Loop`，特别是当测试涉及任何形式的设置或并行化时。
+## 🚀 **运行示例**
+
+### 运行所有基准测试
+
+```bash
+cd examples/modern-features/01-new-features/03-testing-enhancement
+go test -bench=. -benchmem
+```
+
+### 运行特定基准测试
+
+```bash
+# 运行传统方式的基准测试
+go test -bench=BenchmarkProcessData_Traditional
+
+# 运行改进方式的基准测试
+go test -bench=BenchmarkProcessData_Improved
+
+# 运行并行测试
+go test -bench=BenchmarkParallel
+```
+
+### 查看详细输出
+
+```bash
+# 显示内存分配信息
+go test -bench=. -benchmem -v
+
+# 设置基准测试运行时间
+go test -bench=. -benchtime=5s
+```
+
+## 📊 **总结**
+
+虽然 Go 1.25.3 移除了实验性的 `testing.B.Loop` API，但通过遵循最佳实践，我们仍然可以编写出准确、高效、易于维护的基准测试代码。关键要点：
+
+1. ✅ **正确使用计时器控制** (`ResetTimer`, `StopTimer`, `StartTimer`)
+2. ✅ **清晰的职责分离** (设置代码 vs 测试代码)
+3. ✅ **合理使用并行测试** (`RunParallel`)
+4. ✅ **内存分配跟踪** (`ReportAllocs`, `SetBytes`)
+5. ✅ **对象复用** (`sync.Pool`)
+
+这些实践确保了基准测试的准确性和可重复性，是编写高质量 Go 代码的重要组成部分。

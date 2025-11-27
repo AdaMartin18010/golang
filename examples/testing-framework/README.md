@@ -175,10 +175,10 @@ func ExampleIntegrationTest() {
             {Name: "用户更新", Function: testUserUpdate},
         },
     }
-    
+
     executor := NewTestExecutor()
     results := executor.RunSuite(suite)
-    
+
     for _, result := range results {
         fmt.Printf("测试 %s: %s\n", result.Name, result.Status)
     }
@@ -195,10 +195,10 @@ func ExamplePerformanceTest() {
         Iterations: 1000,
         Warmup: 100,
     }
-    
+
     monitor := NewPerformanceMonitor()
     result := monitor.RunBenchmark(benchmark)
-    
+
     fmt.Printf("性能测试结果: %+v\n", result)
 }
 ```
@@ -308,7 +308,7 @@ go run main.go
 
 ---
 
-**模块维护者**: AI Assistant  
-**最后更新**: 2025年2月  
-**模块状态**: 生产就绪  
+**模块维护者**: AI Assistant
+**最后更新**: 2025年2月
+**模块状态**: 生产就绪
 **许可证**: MIT License

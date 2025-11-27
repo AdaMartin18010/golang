@@ -4,7 +4,7 @@ Clean Architecture 的应用层，包含用例编排。
 
 ## 结构
 
-```
+```text
 application/
 ├── user/          # 用户用例
 ├── order/         # 订单用例

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"log/slog"
+	"strings"
 	"testing"
 	"time"
 )
@@ -38,10 +39,19 @@ func TestNewLoggerWithConfig(t *testing.T) {
 func TestLogger_WithContext(t *testing.T) {
 	logger := NewLogger(slog.LevelInfo)
 
+	// 测试传统的 context value 方式
 	ctx := context.WithValue(context.Background(), "trace_id", "trace-123")
 	loggerWithCtx := logger.WithContext(ctx)
 
 	if loggerWithCtx == nil {
+		t.Error("Expected logger with context, got nil")
+	}
+
+	// 测试 OpenTelemetry context（需要实际的 span）
+	// 这里只测试不会 panic
+	ctx2 := context.Background()
+	loggerWithCtx2 := logger.WithContext(ctx2)
+	if loggerWithCtx2 == nil {
 		t.Error("Expected logger with context, got nil")
 	}
 }
@@ -115,4 +125,74 @@ type testError struct {
 
 func (e *testError) Error() string {
 	return e.msg
+}
+
+func TestLogger_SampleRate(t *testing.T) {
+	var buf bytes.Buffer
+	config := Config{
+		Level:      slog.LevelDebug,
+		Output:     &buf,
+		JSONFormat: true,
+		SampleRate: 0.0, // 不采样
+	}
+	logger := NewLoggerWithConfig(config)
+
+	logger.Info("test message")
+	if buf.Len() > 0 {
+		t.Error("Expected no log output with 0 sample rate, got output")
+	}
+
+	// 测试错误日志不受采样影响
+	buf.Reset()
+	logger.Error("error message")
+	if buf.Len() == 0 {
+		t.Error("Expected error log output, got empty")
+	}
+}
+
+func TestLogger_ServiceNameAndVersion(t *testing.T) {
+	var buf bytes.Buffer
+	config := Config{
+		Level:          slog.LevelInfo,
+		Output:         &buf,
+		JSONFormat:     true,
+		ServiceName:    "test-service",
+		ServiceVersion: "1.0.0",
+	}
+	logger := NewLoggerWithConfig(config)
+
+	logger.Info("test message")
+	output := buf.String()
+	if !contains(output, "test-service") || !contains(output, "1.0.0") {
+		t.Error("Expected service name and version in log output")
+	}
+}
+
+func TestLogger_SetLevel(t *testing.T) {
+	logger := NewLogger(slog.LevelInfo)
+
+	if logger.GetLevel() != slog.LevelInfo {
+		t.Error("Expected Info level, got different level")
+	}
+
+	logger.SetLevel(slog.LevelWarn)
+	if logger.GetLevel() != slog.LevelWarn {
+		t.Error("Expected Warn level after SetLevel, got different level")
+	}
+}
+
+func TestLogger_WithRequestID(t *testing.T) {
+	logger := NewLogger(slog.LevelInfo)
+
+	ctx := context.WithValue(context.Background(), "request_id", "req-123")
+	loggerWithCtx := logger.WithContext(ctx)
+
+	if loggerWithCtx == nil {
+		t.Error("Expected logger with context, got nil")
+	}
+}
+
+// contains 检查字符串是否包含子字符串
+func contains(s, substr string) bool {
+	return strings.Contains(s, substr)
 }

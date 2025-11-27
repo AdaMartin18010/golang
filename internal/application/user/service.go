@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	domain "github.com/yourusername/golang/internal/domain/user"
 	"github.com/google/uuid"
+	domain "github.com/yourusername/golang/internal/domain/user"
 )
 
 // Service 应用服务接口

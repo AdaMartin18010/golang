@@ -59,7 +59,7 @@ func BenchmarkOptimizedFunction(b *testing.B) {
     // 性能分析配置
     pprof.StartCPUProfile(os.Stdout)
     defer pprof.StopCPUProfile()
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         OptimizedFunction()
@@ -111,10 +111,10 @@ import "C"
 func ZeroCopyCGO(data []byte) ([]byte, error) {
     cData := (*C.char)(unsafe.Pointer(&data[0]))
     cLen := C.int(len(data))
-    
+
     // 直接操作Go内存，避免拷贝
     result := C.process_data_zero_copy(cData, cLen)
-    
+
     return C.GoBytes(unsafe.Pointer(result), cLen), nil
 }
 ```
@@ -274,7 +274,7 @@ go run main.go
 
 ---
 
-**模块维护者**: AI Assistant  
-**最后更新**: 2025年2月  
-**模块状态**: 生产就绪  
+**模块维护者**: AI Assistant
+**最后更新**: 2025年2月
+**模块状态**: 生产就绪
 **许可证**: MIT License

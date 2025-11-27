@@ -34,7 +34,7 @@ Go 的并发模型虽然从一开始就非常强大，但 Go 团队仍在持续�
   stop := context.AfterFunc(ctx, func() {
       log.Println("Context is done. Performing cleanup.")
   })
-  
+
   // 如果想在 context 完成前主动停止回调，可以调用 stop()
   // stop()
   ```

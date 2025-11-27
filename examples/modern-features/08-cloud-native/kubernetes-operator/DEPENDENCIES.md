@@ -56,4 +56,3 @@ go test ./...
 - [Kubernetes Operator Pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
 - [Controller Runtime](https://github.com/kubernetes-sigs/controller-runtime)
 - [Kubebuilder](https://book.kubebuilder.io/)
-

@@ -2,6 +2,7 @@ package user
 
 import (
 	"time"
+
 	domain "github.com/yourusername/golang/internal/domain/user"
 )
 

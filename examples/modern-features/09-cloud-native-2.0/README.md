@@ -73,7 +73,7 @@ func (ac *ApplicationController) Reconcile(ctx context.Context, req reconcile.Re
     if err := ac.client.Get(ctx, req.NamespacedName, app); err != nil {
         return reconcile.Result{}, client.IgnoreNotFound(err)
     }
-    
+
     // 执行调和逻辑
     return ac.reconcileApplication(ctx, app)
 }
@@ -242,7 +242,7 @@ kubectl apply -f argocd/
 
 ---
 
-**模块维护者**: AI Assistant  
-**最后更新**: 2025年2月  
-**模块状态**: 生产就绪  
+**模块维护者**: AI Assistant
+**最后更新**: 2025年2月
+**模块状态**: 生产就绪
 **许可证**: MIT License

@@ -18,6 +18,7 @@
 ### 选项1: 查看代码（推荐）
 
 直接查看代码了解高级 Kubernetes Operator 的实现模式，包括：
+
 - 完整的应用生命周期管理
 - 自动扩缩容（HPA）
 - 资源管理和调度
@@ -65,4 +66,3 @@ go test ./...
 - [Controller Runtime](https://github.com/kubernetes-sigs/controller-runtime)
 - [Operator Best Practices](https://sdk.operatorframework.io/docs/best-practices/)
 - [Kubebuilder Book](https://book.kubebuilder.io/)
-

@@ -2,8 +2,10 @@ package testing_enhancements
 
 import (
 	"bytes"
+	"crypto/rand"
 	"crypto/sha256"
-	"math/rand"
+	"fmt"
+	mathrand "math/rand"
 	"strconv"
 	"strings"
 	"sync"
@@ -106,7 +108,7 @@ func parallelWork(id int) {
 func BenchmarkParallel_Traditional(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			parallelWork(rand.Intn(1000000))
+			parallelWork(mathrand.Intn(1000000))
 		}
 	})
 }
@@ -127,8 +129,154 @@ func BenchmarkParallel_WithSetup(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			// 每次迭代生成新的worker ID
-			workerID := rand.Intn(1000000)
+			workerID := mathrand.Intn(1000000)
 			parallelWork(workerID)
 		}
 	})
+}
+
+// --- 示例5: 内存分配跟踪 ---
+
+// 使用 ReportAllocs 来报告内存分配
+func BenchmarkWithAllocTracking(b *testing.B) {
+	b.ReportAllocs() // 报告内存分配情况
+
+	data := generateData()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		// 创建一个新的切片（会产生分配）
+		result := make([]byte, len(data))
+		copy(result, data)
+		processData(result)
+	}
+}
+
+// 使用 SetBytes 来设置每次操作处理的字节数
+func BenchmarkWithBytesTracking(b *testing.B) {
+	data := generateData()
+	b.SetBytes(int64(len(data))) // 设置每次操作处理的字节数
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		processData(data)
+	}
+}
+
+// --- 示例6: 子基准测试 (Sub-benchmarks) ---
+
+// 使用 Run 方法创建子基准测试，可以测试不同大小的输入
+func BenchmarkProcessData_SubBenchmarks(b *testing.B) {
+	sizes := []int{100, 1000, 10000, 100000}
+
+	for _, size := range sizes {
+		size := size // 避免闭包问题
+		b.Run(fmt.Sprintf("size_%d", size), func(b *testing.B) {
+			data := make([]byte, size)
+			rand.Read(data)
+
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				processData(data)
+			}
+		})
+	}
+}
+
+// --- 示例7: 使用 sync.Pool 优化对象分配 ---
+
+var bufferPool = sync.Pool{
+	New: func() interface{} {
+		return new(bytes.Buffer)
+	},
+}
+
+func processWithBuffer(data []byte) {
+	buf := bufferPool.Get().(*bytes.Buffer)
+	defer bufferPool.Put(buf)
+
+	buf.Reset()
+	buf.Write(data)
+	_ = buf.Bytes()
+}
+
+// 不使用 Pool 的版本（会产生大量分配）
+func BenchmarkProcessWithoutPool(b *testing.B) {
+	b.ReportAllocs()
+	data := generateData()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		buf := new(bytes.Buffer)
+		buf.Write(data)
+		_ = buf.Bytes()
+	}
+}
+
+// 使用 Pool 的版本（减少分配）
+func BenchmarkProcessWithPool(b *testing.B) {
+	b.ReportAllocs()
+	data := generateData()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		processWithBuffer(data)
+	}
+}
+
+// --- 示例8: 基准测试的清理工作 ---
+
+func BenchmarkWithCleanup(b *testing.B) {
+	// 设置阶段
+	data := generateData()
+	b.ResetTimer()
+
+	// 基准测试阶段
+	for i := 0; i < b.N; i++ {
+		processData(data)
+	}
+
+	// 清理阶段（不计入测试时间）
+	b.StopTimer()
+	// 执行清理工作
+	_ = data
+	b.StartTimer()
+}
+
+// --- 示例9: 比较不同实现的性能 ---
+
+// 实现1: 使用字符串拼接
+func concatStrings(strs []string) string {
+	result := ""
+	for _, s := range strs {
+		result += s
+	}
+	return result
+}
+
+// 实现2: 使用 strings.Builder
+func concatWithBuilder(strs []string) string {
+	var builder strings.Builder
+	for _, s := range strs {
+		builder.WriteString(s)
+	}
+	return builder.String()
+}
+
+func BenchmarkConcat_StringConcatenation(b *testing.B) {
+	strs := []string{"hello", "world", "golang", "testing"}
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_ = concatStrings(strs)
+	}
+}
+
+func BenchmarkConcat_StringBuilder(b *testing.B) {
+	strs := []string{"hello", "world", "golang", "testing"}
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_ = concatWithBuilder(strs)
+	}
 }

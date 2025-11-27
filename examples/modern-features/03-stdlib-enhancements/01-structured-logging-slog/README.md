@@ -62,7 +62,7 @@ import (
 func main() {
     // 1. 创建一个 JSON Handler，将日志写入标准输出
     handler := slog.NewJSONHandler(os.Stdout, nil)
-    
+
     // 2. 将 Handler 设置为默认的 Logger
     slog.SetDefault(slog.New(handler))
 

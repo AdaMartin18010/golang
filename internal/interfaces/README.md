@@ -4,7 +4,7 @@ Clean Architecture 的接口层，包含外部接口适配。
 
 ## 结构
 
-```
+```text
 interfaces/
 ├── http/          # HTTP 接口
 │   ├── chi/       # Chi 路由

@@ -2,6 +2,8 @@
 
 本目录包含完整的 Docker Compose 配置，用于本地开发和测试环境。
 
+> 💡 **快速开始**: 查看 [QUICKSTART.md](./QUICKSTART.md) 获取快速启动指南
+
 ## 📋 服务列表
 
 ### 应用服务
@@ -188,6 +190,10 @@ Grafana 已自动配置 Prometheus 数据源，无需手动添加。
 - `setup-replica.sh`: 备节点初始化脚本
 - `check-replication.sh`: 复制状态检查脚本
 - `setup-replication-slot.sh`: 复制槽创建脚本
+- `backup.sh`: 数据库备份脚本
+- `restore.sh`: 数据库恢复脚本
+- `maintenance.sh`: 数据库维护脚本（VACUUM、ANALYZE）
+- `performance.sh`: 性能监控脚本
 
 ### HAProxy 配置目录 (`haproxy/`)
 
@@ -287,6 +293,28 @@ docker-compose exec db-replica psql -U user -d mydb -c "SELECT pg_is_in_recovery
 ```bash
 # 在主节点上创建复制槽（用于逻辑复制）
 ./postgresql/setup-replication-slot.sh
+```
+
+### 数据库备份和恢复
+
+```bash
+# 备份数据库
+./postgresql/backup.sh
+
+# 恢复数据库
+./postgresql/restore.sh ./backups/mydb_20240101_120000.sql.gz
+```
+
+备份文件会自动压缩并保存在 `./backups/` 目录，默认保留最近 7 天的备份。
+
+### 数据库维护
+
+```bash
+# 执行数据库维护（VACUUM、ANALYZE 等）
+./postgresql/maintenance.sh
+
+# 性能监控
+./postgresql/performance.sh
 ```
 
 ### 查看服务日志

@@ -35,6 +35,11 @@
   - [9. CORS中间件](#9-cors中间件)
     - [9.1 功能特性](#91-功能特性)
     - [9.2 使用示例](#92-使用示例)
+  - [10. 限流中间件](#10-限流中间件)
+    - [10.1 功能特性](#101-功能特性)
+    - [10.2 限流算法](#102-限流算法)
+    - [10.3 使用示例](#103-使用示例)
+    - [10.4 Redis 分布式限流](#104-redis-分布式限流)
 
 ---
 
@@ -43,7 +48,7 @@
 HTTP 中间件提供了各种 HTTP 请求处理中间件：
 
 - ✅ **认证授权中间件**: JWT Token 认证和角色权限控制
-- ✅ **限流中间件**: 请求限流保护（令牌桶算法）
+- ✅ **限流中间件**: 请求限流保护（支持多种算法：令牌桶、滑动窗口、漏桶，支持 Redis 分布式限流）
 - ✅ **熔断器中间件**: 服务熔断保护（三种状态）
 - ✅ **请求追踪中间件**: 请求链路追踪（基于OpenTelemetry）
 - ✅ **性能监控中间件**: 请求性能监控和指标收集
@@ -289,6 +294,83 @@ r.Use(middleware.CORSMiddleware(middleware.CORSConfig{
     MaxAge:           3600,
 }))
 ```
+
+---
+
+## 10. 限流中间件
+
+### 10.1 功能特性
+
+- ✅ **多种限流算法**: 支持令牌桶、滑动窗口、漏桶三种算法
+- ✅ **分布式限流**: 支持 Redis 分布式限流（适用于多实例部署）
+- ✅ **灵活配置**: 可配置限流速率、突发容量、时间窗口
+- ✅ **路径跳过**: 支持跳过特定路径的限流
+- ✅ **自定义键生成**: 支持自定义限流键生成函数（默认基于 IP）
+
+### 10.2 限流算法
+
+#### 令牌桶算法 (Token Bucket)
+
+- **特点**: 允许突发流量，适合需要处理突发请求的场景
+- **适用场景**: API 限流、用户请求限流
+- **优势**: 平滑处理突发流量
+
+#### 滑动窗口算法 (Sliding Window)
+
+- **特点**: 精确控制时间窗口内的请求数
+- **适用场景**: 需要精确限流的场景
+- **优势**: 更精确的限流控制
+
+#### 漏桶算法 (Leaky Bucket)
+
+- **特点**: 以固定速率处理请求，平滑输出
+- **适用场景**: 需要平滑输出流量的场景
+- **优势**: 输出速率恒定
+
+### 10.3 使用示例
+
+#### 基本使用（令牌桶算法）
+
+```go
+r.Use(middleware.RateLimitMiddleware(middleware.RateLimitConfig{
+    RequestsPerSecond: 100,
+    Burst:             200,
+    Window:            time.Second,
+    Algorithm:         middleware.AlgorithmTokenBucket,
+}))
+```
+
+#### 滑动窗口算法
+
+```go
+r.Use(middleware.RateLimitMiddleware(middleware.RateLimitConfig{
+    RequestsPerSecond: 100,
+    Window:            time.Second,
+    Algorithm:         middleware.AlgorithmSlidingWindow,
+}))
+```
+
+#### 自定义限流键和跳过路径
+
+```go
+r.Use(middleware.RateLimitMiddleware(middleware.RateLimitConfig{
+    RequestsPerSecond: 100,
+    Burst:             200,
+    Algorithm:         middleware.AlgorithmTokenBucket,
+    KeyFunc: func(r *http.Request) string {
+        userID := r.Header.Get("X-User-ID")
+        if userID != "" {
+            return "user:" + userID
+        }
+        return r.RemoteAddr
+    },
+    SkipPaths: []string{"/health", "/metrics"},
+}))
+```
+
+### 10.4 Redis 分布式限流
+
+当使用多个服务实例时，需要使用 Redis 进行分布式限流。需要实现 `RedisClient` 接口。
 
 ---
 

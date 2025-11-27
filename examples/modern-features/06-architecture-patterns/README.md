@@ -75,7 +75,7 @@ func (s *UserService) CreateUser(ctx context.Context, req CreateUserRequest) (*U
         Email:     req.Email,
         CreatedAt: time.Now(),
     }
-    
+
     return s.repo.Save(ctx, user)
 }
 
@@ -91,13 +91,13 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
-    
+
     user, err := h.service.CreateUser(r.Context(), req)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    
+
     json.NewEncoder(w).Encode(user)
 }
 ```
@@ -171,12 +171,12 @@ func (h *HTTPUserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
-    
+
     if err := h.service.CreateUser(r.Context(), &user); err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    
+
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(user)
 }
@@ -283,7 +283,7 @@ go test ./...
 
 ---
 
-**模块维护者**: AI Assistant  
-**最后更新**: 2025年2月  
-**模块状态**: 生产就绪  
+**模块维护者**: AI Assistant
+**最后更新**: 2025年2月
+**模块状态**: 生产就绪
 **许可证**: MIT License

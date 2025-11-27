@@ -4,7 +4,7 @@ Clean Architecture 的领域层，包含核心业务逻辑。
 
 ## 结构
 
-```
+```text
 domain/
 ├── user/          # 用户领域
 ├── order/         # 订单领域

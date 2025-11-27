@@ -159,6 +159,34 @@ cd 06-wasm-export
 go run main.go
 ```
 
+### 1.3.7 Go 1.25 新特性
+
+**路径**: `04-go125-new-features/`
+
+**内容**:
+
+- 迭代器 API 示例（strings.Lines, strings.SplitSeq 等）
+- unique 包示例（值规范化）
+- 基准测试最佳实践
+
+**状态**: ✅ 100%完成
+
+**快速体验**:
+
+```bash
+# 迭代器示例
+cd 04-go125-new-features/01-iter-demo
+go run main.go
+
+# unique 包示例
+cd 04-go125-new-features/02-unique-demo
+go run main.go
+
+# 基准测试示例
+cd 04-go125-new-features/03-testing-loop
+go test -bench=.
+```
+
 ## 1.4 🚀 快速开始
 
 ### 1.4.1 环境要求
@@ -252,7 +280,7 @@ go run basic-export/main.go
 
 ---
 
-**模块维护者**: AI Assistant  
-**最后更新**: 2025年2月  
-**模块状态**: 生产就绪  
+**模块维护者**: AI Assistant
+**最后更新**: 2025年2月
+**模块状态**: 生产就绪
 **许可证**: MIT License
