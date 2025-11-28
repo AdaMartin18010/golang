@@ -3,6 +3,7 @@
 **版本**: Go 1.25.3
 **架构**: Clean Architecture（轻量级）
 **技术栈**: Chi, Ent, Viper, Slog, Wire, OpenTelemetry, GraphQL, gRPC, MQTT, Kafka, PostgreSQL
+**定位**: 轻量级技术栈框架（不包含业务模型）
 
 ---
 
