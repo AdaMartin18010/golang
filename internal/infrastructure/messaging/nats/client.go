@@ -48,6 +48,7 @@ package nats
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/nats-io/nats.go"
@@ -66,10 +67,13 @@ func NewClient(cfg Config) (*Client, error) {
 		nats.ReconnectWait(cfg.ReconnectWait),
 		nats.Timeout(cfg.Timeout),
 		nats.DisconnectErrHandler(func(nc *nats.Conn, err error) {
-			// 记录断开连接错误（可以集成日志系统）
+			slog.Warn("NATS disconnected", "error", err)
 		}),
 		nats.ReconnectHandler(func(nc *nats.Conn) {
-			// 记录重连成功（可以集成日志系统）
+			slog.Info("NATS reconnected", "url", nc.ConnectedUrl())
+		}),
+		nats.ClosedHandler(func(nc *nats.Conn) {
+			slog.Info("NATS connection closed")
 		}),
 	}
 
@@ -85,6 +89,7 @@ func NewClient(cfg Config) (*Client, error) {
 		return nil, fmt.Errorf("failed to connect to NATS: %w", err)
 	}
 
+	slog.Info("NATS connected", "url", conn.ConnectedUrl())
 	return &Client{conn: conn}, nil
 }
 
@@ -145,7 +150,10 @@ func (c *Client) Request(subject string, data interface{}, timeout time.Duration
 
 // Close 关闭连接
 func (c *Client) Close() {
-	c.conn.Close()
+	if c.conn != nil && c.conn.IsConnected() {
+		slog.Info("Closing NATS connection")
+		c.conn.Close()
+	}
 }
 
 // IsConnected 检查连接状态
@@ -154,7 +162,6 @@ func (c *Client) IsConnected() bool {
 }
 
 // Stats 获取连接统计信息
-func (c *Client) Stats() nats.Stats {
+func (c *Client) Stats() nats.Statistics {
 	return c.conn.Stats()
 }
-

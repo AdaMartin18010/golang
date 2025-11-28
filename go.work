@@ -10,9 +10,6 @@ use (
 	// 示例模块
 	./examples
 
-	// AI Agent 模块（已迁移）
-	./pkg/agent
-
 	// 并发模块（已迁移）
 	./pkg/concurrency
 

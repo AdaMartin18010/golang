@@ -1,68 +1,71 @@
 syntax = "proto3";
 
-package user;
+package user.v1;
 
-option go_package = "github.com/yourusername/golang/internal/interfaces/grpc/proto/user";
+option go_package = "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb";
 
-// UserService 用户服务
+import "google/protobuf/timestamp.proto";
+
+// 用户服务
 service UserService {
-  // CreateUser 创建用户
-  rpc CreateUser(CreateUserRequest) returns (UserResponse);
-  // GetUser 获取用户
-  rpc GetUser(GetUserRequest) returns (UserResponse);
-  // UpdateUser 更新用户
-  rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
-  // DeleteUser 删除用户
+  // 获取用户
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  // 创建用户
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  // 更新用户
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  // 删除用户
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
-  // ListUsers 列出用户
-  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  // 列出用户（流式）
+  rpc ListUsers(ListUsersRequest) returns (stream User);
 }
 
-// CreateUserRequest 创建用户请求
-message CreateUserRequest {
-  string email = 1;
+// 用户消息
+message User {
+  string id = 1;
   string name = 2;
+  string email = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
 }
 
-// GetUserRequest 获取用户请求
+// 请求消息
 message GetUserRequest {
   string id = 1;
 }
 
-// UpdateUserRequest 更新用户请求
-message UpdateUserRequest {
-  string id = 1;
-  optional string name = 2;
-  optional string email = 3;
+message GetUserResponse {
+  User user = 1;
 }
 
-// DeleteUserRequest 删除用户请求
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
+
 message DeleteUserRequest {
   string id = 1;
 }
 
-// ListUsersRequest 列出用户请求
-message ListUsersRequest {
-  int32 limit = 1;
-  int32 offset = 2;
-}
-
-// UserResponse 用户响应
-message UserResponse {
-  string id = 1;
-  string email = 2;
-  string name = 3;
-  int64 created_at = 4;
-  int64 updated_at = 5;
-}
-
-// ListUsersResponse 用户列表响应
-message ListUsersResponse {
-  repeated UserResponse users = 1;
-  int32 total = 2;
-}
-
-// DeleteUserResponse 删除用户响应
 message DeleteUserResponse {
   bool success = 1;
+}
+
+message ListUsersRequest {
+  int32 page = 1;
+  int32 page_size = 2;
 }

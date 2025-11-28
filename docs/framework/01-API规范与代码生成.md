@@ -17,6 +17,7 @@
 **位置**: `api/openapi/openapi.yaml`
 
 **功能**:
+
 - RESTful API 规范定义
 - 代码生成（服务器、客户端、类型）
 - 文档生成（HTML、Markdown）
@@ -28,6 +29,7 @@
 **位置**: `api/asyncapi/asyncapi.yaml`
 
 **功能**:
+
 - 异步消息 API 规范定义
 - 事件驱动架构文档
 - 多协议支持（Kafka、MQTT、NATS）
@@ -88,6 +90,7 @@ make generate-api-docs
 ### OpenAPI 代码生成
 
 **生成服务器代码**:
+
 ```bash
 oapi-codegen \
   -generate types,server,chi-server,spec \
@@ -97,6 +100,7 @@ oapi-codegen \
 ```
 
 **生成客户端代码**:
+
 ```bash
 oapi-codegen \
   -generate types,client \
@@ -108,6 +112,7 @@ oapi-codegen \
 ### AsyncAPI 代码生成
 
 **使用 Docker**:
+
 ```bash
 docker run --rm \
   -v ${PWD}:/local \
@@ -144,6 +149,7 @@ router.Mount("/swagger", openapi.Handler(swaggerConfig))
 **文件**: `api/openapi/openapi.yaml`
 
 **关键配置**:
+
 - `openapi: 3.1.0` - 规范版本
 - `info` - API 信息（标题、版本、描述）
 - `servers` - 服务器地址
@@ -155,6 +161,7 @@ router.Mount("/swagger", openapi.Handler(swaggerConfig))
 **文件**: `api/asyncapi/asyncapi.yaml`
 
 **关键配置**:
+
 - `asyncapi: 3.0.0` - 规范版本
 - `info` - API 信息
 - `servers` - 消息服务器配置

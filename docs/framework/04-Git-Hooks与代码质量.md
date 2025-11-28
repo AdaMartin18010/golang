@@ -42,6 +42,7 @@ Pre-commit hook 会在每次 `git commit` 时自动运行以下检查：
 检查代码是否符合 Go 代码格式规范。
 
 **失败时**:
+
 - 显示未格式化的文件列表
 - 提示运行 `make fmt` 或 `gofmt -w .` 修复
 
@@ -50,6 +51,7 @@ Pre-commit hook 会在每次 `git commit` 时自动运行以下检查：
 运行 Go 官方静态分析工具。
 
 **检查项**:
+
 - 未使用的变量
 - 错误的函数调用
 - 错误的类型转换
@@ -60,6 +62,7 @@ Pre-commit hook 会在每次 `git commit` 时自动运行以下检查：
 运行 golangci-lint（如果已安装）。
 
 **检查项**:
+
 - 代码质量
 - 代码风格
 - 性能问题
@@ -73,6 +76,7 @@ Pre-commit hook 会在每次 `git commit` 时自动运行以下检查：
 运行修改文件相关的测试（仅运行 `-short` 模式的测试，快速反馈）。
 
 **检查项**:
+
 - 只运行有测试文件的包的测试
 - 使用 `go test -short` 快速执行
 
@@ -82,7 +86,7 @@ Pre-commit hook 会在每次 `git commit` 时自动运行以下检查：
 
 ### Pre-commit Hook 位置
 
-```
+```text
 .githooks/pre-commit  # 源文件
 .git/hooks/pre-commit # 安装后的位置
 ```
@@ -158,6 +162,7 @@ git commit --no-verify -m "feat: add feature"
 **原因**: Hook 文件没有执行权限
 
 **解决**:
+
 ```bash
 chmod +x .git/hooks/pre-commit
 ```
@@ -167,6 +172,7 @@ chmod +x .git/hooks/pre-commit
 **现象**: Hook 提示 golangci-lint 未安装
 
 **解决**:
+
 ```bash
 # 安装 golangci-lint
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest

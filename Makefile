@@ -43,11 +43,13 @@ check-env: ## 检查开发环境配置
 install-hooks: ## 安装 Git hooks
 	@bash scripts/dev/install-hooks.sh
 
-generate: ## 生成代码（Ent, Wire, OpenAPI等）
+generate: ## 生成代码（Ent, Wire, gRPC, OpenAPI等）
 	@echo "生成 Ent 代码..."
 	cd internal/infrastructure/database/ent && go generate ./...
 	@echo "生成 Wire 代码..."
 	cd scripts/wire && go generate ./...
+	@echo "生成 gRPC 代码..."
+	@bash scripts/grpc/generate.sh || echo "gRPC 代码生成跳过（需要安装 protoc）"
 	@echo "生成 OpenAPI 代码..."
 	@bash scripts/api/generate-openapi.sh || echo "OpenAPI 代码生成跳过（需要安装 oapi-codegen）"
 
@@ -57,10 +59,9 @@ generate-ent: ## 生成 Ent 代码
 generate-wire: ## 生成 Wire 代码
 	cd scripts/wire && go generate ./...
 
-generate-proto: ## 生成 gRPC 代码
-	protoc --go_out=. --go_opt=paths=source_relative \
-	       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-	       internal/interfaces/grpc/proto/user.proto
+generate-grpc: ## 生成 gRPC 代码
+	@echo "Generating gRPC code..."
+	@bash scripts/grpc/generate.sh
 
 generate-openapi: ## 生成 OpenAPI 代码
 	@bash scripts/api/generate-openapi.sh

@@ -50,7 +50,10 @@ import (
 	"github.com/yourusername/golang/internal/config"
 	appuser "github.com/yourusername/golang/internal/application/user"
 	"github.com/yourusername/golang/internal/infrastructure/database/postgres"
-	// "github.com/yourusername/golang/internal/interfaces/grpc/handlers" // TODO: 生成 gRPC 代码后启用
+	"github.com/yourusername/golang/internal/interfaces/grpc/handlers"
+	"github.com/yourusername/golang/internal/interfaces/grpc/interceptors"
+	// userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb" // TODO: 生成 gRPC 代码后启用
+	// healthpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/healthpb" // TODO: 生成 gRPC 代码后启用
 )
 
 func main() {
@@ -83,34 +86,33 @@ func main() {
 	userRepo := postgres.NewUserRepository(db)
 	userService := appuser.NewService(userRepo)
 
-	// 步骤 4: 创建 gRPC 服务器
+	// 步骤 4: 创建 gRPC 服务器（带拦截器）
 	//
 	// gRPC 服务器说明：
 	// - 使用 google.golang.org/grpc 创建服务器
-	// - 可以配置拦截器（Interceptor）用于认证、日志、追踪等
+	// - 配置拦截器（Interceptor）用于日志、追踪等
 	// - 可以配置选项（Options）用于压缩、超时等
-	//
-	// 示例配置：
-	//   grpcServer := grpc.NewServer(
-	//       grpc.UnaryInterceptor(authInterceptor),
-	//       grpc.StreamInterceptor(streamInterceptor),
-	//   )
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			interceptors.LoggingUnaryInterceptor,
+			interceptors.TracingUnaryInterceptor,
+		),
+	)
 
 	// 步骤 5: 注册 gRPC 服务
 	//
 	// 服务注册说明：
-	// - 需要先运行 protoc 生成 gRPC 代码
+	// - 需要先运行 make generate-grpc 生成 gRPC 代码
 	// - 生成代码位置：internal/interfaces/grpc/proto/
 	// - 注册服务处理器，将 gRPC 请求路由到应用服务
 	//
-	// 注册流程：
-	// 1. 创建 Handler（实现 gRPC 服务接口）
-	// 2. 注册服务到 gRPC 服务器
-	//
-	// TODO: 生成 gRPC 代码后启用
+	// 注意：需要先运行 make generate-grpc 生成 Proto 代码
+	// TODO: 生成 gRPC 代码后取消注释
 	// userHandler := handlers.NewUserHandler(userService)
 	// userpb.RegisterUserServiceServer(grpcServer, userHandler)
+	//
+	// healthHandler := handlers.NewHealthHandler()
+	// healthpb.RegisterHealthServiceServer(grpcServer, healthHandler)
 	_ = userService // 临时使用，避免未使用变量错误
 
 	// 步骤 6: 启动服务器
