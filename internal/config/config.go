@@ -247,15 +247,35 @@ type JWTConfig struct {
 // - Format: 日志格式（json、text，默认：json）
 // - Output: 输出目标（stdout、file，默认：stdout）
 // - OutputPath: 日志文件路径（当 Output 为 file 时使用）
+// - Rotation: 日志轮转配置（仅当 Output 为 file 时生效）
 //
 // 环境变量：
 // - APP_LOG_LEVEL: 日志级别
 // - APP_LOG_FORMAT: 日志格式
+// - APP_LOG_OUTPUT: 输出目标
+// - APP_LOG_OUTPUT_PATH: 日志文件路径
+// - APP_LOG_ROTATION_MAX_SIZE: 单个日志文件最大大小（MB）
+// - APP_LOG_ROTATION_MAX_BACKUPS: 保留的旧日志文件数量
+// - APP_LOG_ROTATION_MAX_AGE: 保留旧日志文件的天数
+// - APP_LOG_ROTATION_COMPRESS: 是否压缩旧日志文件
 type LoggingConfig struct {
-	Level      string `mapstructure:"level"`       // debug, info, warn, error
-	Format     string `mapstructure:"format"`      // json, text
-	Output     string `mapstructure:"output"`      // stdout, file
-	OutputPath string `mapstructure:"output_path"` // 日志文件路径
+	Level      string         `mapstructure:"level"`       // debug, info, warn, error
+	Format     string         `mapstructure:"format"`       // json, text
+	Output     string         `mapstructure:"output"`       // stdout, file
+	OutputPath string         `mapstructure:"output_path"`  // 日志文件路径
+	Rotation   RotationConfig `mapstructure:"rotation"`    // 日志轮转配置
+}
+
+// RotationConfig 日志轮转配置
+type RotationConfig struct {
+	// MaxSize 单个日志文件的最大大小（MB），超过此大小会轮转
+	MaxSize int `mapstructure:"max_size"`
+	// MaxBackups 保留的旧日志文件数量
+	MaxBackups int `mapstructure:"max_backups"`
+	// MaxAge 保留旧日志文件的天数
+	MaxAge int `mapstructure:"max_age"`
+	// Compress 是否压缩轮转后的旧日志文件
+	Compress bool `mapstructure:"compress"`
 }
 
 // TemporalConfig 是 Temporal 工作流的配置。

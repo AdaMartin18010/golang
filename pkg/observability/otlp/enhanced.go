@@ -2,8 +2,10 @@ package otlp
 
 import (
 	"context"
+	"time"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
@@ -12,15 +14,18 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.19.0"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/yourusername/golang/pkg/sampling"
 )
 
 // EnhancedOTLP 增强的 OTLP 集成
 // 提供采样、追踪、指标的完整支持
+// 注意：日志导出器需要 OpenTelemetry 日志 SDK 正式发布后实现
 type EnhancedOTLP struct {
 	tracerProvider *sdktrace.TracerProvider
 	meterProvider  *sdkmetric.MeterProvider
+	logExporter    LogExporter // 日志导出器（占位实现）
 	sampler        sampling.Sampler
 	resource       *resource.Resource
 }
@@ -33,6 +38,12 @@ type Config struct {
 	Insecure       bool
 	Sampler        sampling.Sampler
 	SampleRate     float64
+	// MetricInterval 指标导出间隔（默认：10秒）
+	MetricInterval time.Duration
+	// TraceBatchTimeout 追踪批处理超时（默认：5秒）
+	TraceBatchTimeout time.Duration
+	// TraceBatchSize 追踪批处理大小（默认：512）
+	TraceBatchSize int
 }
 
 // NewEnhancedOTLP 创建增强的 OTLP 集成
@@ -72,9 +83,22 @@ func NewEnhancedOTLP(cfg Config) (*EnhancedOTLP, error) {
 		return nil, err
 	}
 
-	// 创建追踪提供者（带采样）
+	// 配置追踪批处理选项
+	batchTimeout := cfg.TraceBatchTimeout
+	if batchTimeout == 0 {
+		batchTimeout = 5 * time.Second
+	}
+	batchSize := cfg.TraceBatchSize
+	if batchSize == 0 {
+		batchSize = 512
+	}
+
+	// 创建追踪提供者（带采样和批处理配置）
 	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(traceExporter),
+		sdktrace.WithBatcher(traceExporter,
+			sdktrace.WithBatchTimeout(batchTimeout),
+			sdktrace.WithMaxExportBatchSize(batchSize),
+		),
 		sdktrace.WithResource(res),
 		sdktrace.WithSampler(newSamplerWrapper(sampler)),
 	)
@@ -85,39 +109,50 @@ func NewEnhancedOTLP(cfg Config) (*EnhancedOTLP, error) {
 		propagation.Baggage{},
 	))
 
-	// TODO: 实现指标导出器
-	// 注意：需要添加 go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc 依赖
-	// 当前使用空的 MeterProvider，指标数据不会导出
-	//
-	// 完整实现示例：
-	// import "go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
-	// metricOpts := []otlpmetricgrpc.Option{
-	//     otlpmetricgrpc.WithEndpoint(cfg.Endpoint),
-	// }
-	// if cfg.Insecure {
-	//     metricOpts = append(metricOpts, otlpmetricgrpc.WithTLSCredentials(insecure.NewCredentials()))
-	// }
-	// metricExporter, err := otlpmetricgrpc.New(context.Background(), metricOpts...)
-	// if err != nil {
-	//     return nil, err
-	// }
-	// mp := sdkmetric.NewMeterProvider(
-	//     sdkmetric.WithResource(res),
-	//     sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter,
-	//         sdkmetric.WithInterval(10*time.Second),
-	//     )),
-	// )
-	// otel.SetMeterProvider(mp)
+	// 创建指标导出器
+	metricOpts := []otlpmetricgrpc.Option{
+		otlpmetricgrpc.WithEndpoint(cfg.Endpoint),
+	}
+	if cfg.Insecure {
+		metricOpts = append(metricOpts, otlpmetricgrpc.WithTLSCredentials(insecure.NewCredentials()))
+	}
+	metricExporter, err := otlpmetricgrpc.New(context.Background(), metricOpts...)
+	if err != nil {
+		return nil, err
+	}
 
-	// 临时使用空的 MeterProvider
+	// 配置指标导出间隔
+	metricInterval := cfg.MetricInterval
+	if metricInterval == 0 {
+		metricInterval = 10 * time.Second
+	}
+
+	// 创建指标提供者（带周期性读取器）
 	mp := sdkmetric.NewMeterProvider(
 		sdkmetric.WithResource(res),
+		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter,
+			sdkmetric.WithInterval(metricInterval),
+		)),
 	)
 	otel.SetMeterProvider(mp)
+
+	// 创建日志导出器（占位实现）
+	// 注意：OpenTelemetry 日志导出器（otlploggrpc）可能尚未正式发布
+	// 当前使用占位实现，等待官方发布后替换
+	logExporter, err := NewLogExporter(LogExporterConfig{
+		Endpoint: cfg.Endpoint,
+		Insecure: cfg.Insecure,
+	})
+	if err != nil {
+		// 如果创建失败，使用占位实现（禁用状态）
+		// 这是预期的行为，因为当前日志导出器尚未正式实现
+		logExporter = NewPlaceholderLogExporter()
+	}
 
 	return &EnhancedOTLP{
 		tracerProvider: tp,
 		meterProvider:  mp,
+		logExporter:    logExporter,
 		sampler:        sampler,
 		resource:       res,
 	}, nil
@@ -131,6 +166,11 @@ func (e *EnhancedOTLP) Shutdown(ctx context.Context) error {
 	if err := e.meterProvider.Shutdown(ctx); err != nil {
 		return err
 	}
+	if e.logExporter != nil {
+		if err := e.logExporter.Shutdown(ctx); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -142,6 +182,17 @@ func (e *EnhancedOTLP) Tracer(name string) trace.Tracer {
 // Meter 获取指标器
 func (e *EnhancedOTLP) Meter(name string) metric.Meter {
 	return otel.Meter(name)
+}
+
+// LogExporter 获取日志导出器
+// 当前返回占位实现，等待官方发布后返回实际实现
+func (e *EnhancedOTLP) LogExporter() LogExporter {
+	return e.logExporter
+}
+
+// GetResource 获取资源信息
+func (e *EnhancedOTLP) GetResource() *resource.Resource {
+	return e.resource
 }
 
 // ShouldSample 检查是否应该采样

@@ -23,10 +23,16 @@ require (
 	// 测试
 	github.com/stretchr/testify v1.11.1
 
+	// 日志轮转
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
+
 	// OpenTelemetry - 使用主版本，子包会自动解析
 	go.opentelemetry.io/otel v1.38.0
+	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.38.0
+	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v1.38.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.38.0
 	go.opentelemetry.io/otel/sdk v1.38.0
+	go.opentelemetry.io/otel/sdk/log v1.38.0
 	go.opentelemetry.io/otel/sdk/metric v1.38.0
 	go.opentelemetry.io/otel/trace v1.38.0
 )

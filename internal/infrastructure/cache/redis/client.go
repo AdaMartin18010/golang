@@ -147,8 +147,8 @@ type Client struct {
 // - 测试连接是否可用
 //
 // 参数：
-// - config: Redis 客户端配置
-//   如果 Addr 为空，则使用默认配置
+//   - config: Redis 客户端配置
+//     如果 Addr 为空，则使用默认配置
 //
 // 返回：
 // - *Client: 配置好的客户端实例
@@ -458,6 +458,7 @@ func (c *Client) Expire(ctx context.Context, key string, expiration time.Duratio
 //   - > 0: 剩余过期时间
 //   - -1: 键存在但没有过期时间
 //   - -2: 键不存在
+//
 // - error: 如果查询失败，返回错误信息
 //
 // 使用示例：
