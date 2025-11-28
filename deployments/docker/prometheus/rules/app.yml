@@ -1,0 +1,49 @@
+# Prometheus 告警规则 - 应用服务
+
+groups:
+  - name: app_alerts
+    interval: 30s
+    rules:
+      # 高错误率告警
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: app
+        annotations:
+          summary: "应用错误率过高"
+          description: "应用 {{ $labels.instance }} 的错误率超过 5% (当前值: {{ $value }})"
+
+      # 高延迟告警
+      - alert: HighLatency
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: app
+        annotations:
+          summary: "应用延迟过高"
+          description: "应用 {{ $labels.instance }} 的 P99 延迟超过 1 秒 (当前值: {{ $value }}s)"
+
+      # 请求速率异常告警
+      - alert: HighRequestRate
+        expr: rate(http_requests_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: app
+        annotations:
+          summary: "请求速率异常"
+          description: "应用 {{ $labels.instance }} 的请求速率超过 1000 req/s (当前值: {{ $value }})"
+
+      # 服务不可用告警
+      - alert: ServiceDown
+        expr: up{job="app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: app
+        annotations:
+          summary: "服务不可用"
+          description: "应用服务 {{ $labels.instance }} 已下线超过 1 分钟"

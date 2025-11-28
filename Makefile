@@ -23,6 +23,9 @@ help: ## 显示帮助信息
 	@echo "Docker:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | grep -E '(docker)' | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 	@echo ""
+	@echo "Kubernetes:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | grep -E '(k8s)' | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
+	@echo ""
 	@echo "其他:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | grep -vE '(run|dev|setup|check|build|generate|install|test|bench|coverage|lint|fmt|vet|check|openapi|asyncapi|api|validate|docker)' | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 	@echo ""
@@ -113,14 +116,30 @@ clean: ## 清理构建文件
 	rm -rf bin/
 	rm -f coverage.out coverage.html
 
+# 部署相关命令
 docker-build: ## 构建 Docker 镜像
-	docker build -f deployments/docker/Dockerfile -t golang-app:latest .
+	@./scripts/deploy/docker-build.sh
 
-docker-run: ## 运行 Docker 容器
-	docker-compose -f deployments/docker/docker-compose.yml up -d
+docker-push: ## 推送 Docker 镜像到仓库
+	@./scripts/deploy/docker-push.sh
 
-docker-stop: ## 停止 Docker 容器
-	docker-compose -f deployments/docker/docker-compose.yml down
+docker-up: ## 启动 Docker Compose 服务
+	@cd deployments/docker && docker-compose up -d
+
+docker-down: ## 停止 Docker Compose 服务
+	@cd deployments/docker && docker-compose down
+
+docker-logs: ## 查看 Docker Compose 日志
+	@cd deployments/docker && docker-compose logs -f
+
+k8s-deploy: ## 部署到 Kubernetes
+	@./scripts/deploy/k8s-deploy.sh
+
+k8s-delete: ## 删除 Kubernetes 部署
+	@./scripts/deploy/k8s-delete.sh
+
+k8s-status: ## 查看 Kubernetes 部署状态
+	@kubectl get pods,svc,hpa -l app=app
 
 lint: ## 运行代码检查
 	golangci-lint run

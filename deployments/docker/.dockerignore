@@ -1,0 +1,69 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+docs/
+*.md
+README.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.prof
+
+# Test files
+*_test.go
+test/
+tests/
+
+# Examples
+examples/
+
+# Scripts
+scripts/
+*.sh
+*.bat
+
+# Config files (not needed in image)
+*.yaml
+*.yml
+!deployments/docker/*.yaml
+*.toml
+*.json
+!go.mod
+!go.sum
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+*.coverprofile
+
+# Air
+.air.toml
+tmp/
+
+# Wire generated files
+wire_gen.go

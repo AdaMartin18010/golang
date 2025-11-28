@@ -1,0 +1,57 @@
+# Ingress 配置示例
+# 注意：实际使用时需要根据实际情况修改域名和证书配置
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: default
+  annotations:
+    # 使用 Nginx Ingress Controller
+    kubernetes.io/ingress.class: nginx
+
+    # 使用 cert-manager 自动管理 TLS 证书
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+    # SSL 重定向
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+    # 速率限制（每分钟 100 个请求）
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+
+    # 请求体大小限制
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+
+    # 超时设置
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+
+    # CORS 配置（如果需要）
+    # nginx.ingress.kubernetes.io/enable-cors: "true"
+    # nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    # nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    # nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+spec:
+  tls:
+  - hosts:
+    - app.example.com  # 修改为实际域名
+    secretName: app-tls
+  rules:
+  - host: app.example.com  # 修改为实际域名
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service
+            port:
+              number: 80
+
+# 使用说明：
+# 1. 修改域名：将 app.example.com 替换为实际域名
+# 2. 配置证书：确保 cert-manager 已安装并配置了 ClusterIssuer
+# 3. 应用配置：kubectl apply -f ingress.yaml
+# 4. 检查状态：kubectl get ingress app-ingress

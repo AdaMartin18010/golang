@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: default
+data:
+  redis-url: "redis://redis-service:6379/0"
+  kafka-brokers: "kafka-service:9092"
+  otlp-endpoint: "http://otel-collector:4317"
+  log-level: "info"
+  port: "8080"

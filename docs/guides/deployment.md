@@ -1,5 +1,20 @@
 # 部署指南
 
+> **详细文档**：请参考 [部署文档索引](../deployment/README.md)
+
+---
+
+## 📋 目录
+
+- [本地开发](#本地开发)
+- [Docker 部署](#docker-部署)
+- [Kubernetes 部署](#kubernetes-部署)
+- [环境变量](#环境变量)
+- [健康检查](#健康检查)
+- [监控和日志](#监控和日志)
+
+---
+
 ## 本地开发
 
 ### 使用 Docker Compose
@@ -11,56 +26,126 @@ docker-compose up -d
 
 这将启动：
 
-- PostgreSQL 数据库
-- OpenTelemetry Collector
-- Prometheus
-- Grafana
-- Jaeger
+- **应用服务** (app) - 端口 8080
+- **负载均衡器** (haproxy) - 端口 80
+- **PostgreSQL 数据库** (db) - 端口 5432
+- **Redis 缓存** (cache) - 端口 6379
+- **Kafka 消息队列** (kafka) - 端口 9092
+- **OpenTelemetry Collector** (otel-collector) - 端口 4317
+- **Prometheus** (prometheus) - 端口 9090
+- **Grafana** (grafana) - 端口 3000
 
 ### 运行应用
 
 ```bash
+# 方式 1: 直接运行
 go run ./cmd/server
+
+# 方式 2: 使用热重载（推荐）
+make run-dev
 ```
 
-## 生产部署
+---
 
-### Docker 部署
+## Docker 部署
 
-#### 构建镜像
+### 构建镜像
 
 ```bash
-docker build -f deployments/docker/Dockerfile -t golang-app:latest .
+# 从项目根目录构建
+docker build -f deployments/docker/Dockerfile -t app:latest .
 ```
 
-#### 运行容器
+### 使用 Docker Compose 启动
 
 ```bash
-docker run -d \
-  -p 8080:8080 \
-  -e DB_HOST=postgres \
-  -e DB_PORT=5432 \
-  -e DB_USER=user \
-  -e DB_PASSWORD=password \
-  -e DB_NAME=golang \
-  golang-app:latest
+cd deployments/docker
+docker-compose up -d
 ```
 
-### Kubernetes 部署
+### 检查服务状态
 
-#### 应用配置
+```bash
+# 查看所有服务状态
+docker-compose ps
+
+# 查看应用日志
+docker-compose logs -f app
+```
+
+### 停止服务
+
+```bash
+# 停止所有服务
+docker-compose down
+
+# 停止并删除数据卷
+docker-compose down -v
+```
+
+**详细说明**：请参考 [Docker 部署指南](../deployment/01-Docker部署指南.md)
+
+---
+
+## Kubernetes 部署
+
+### 前置要求
+
+- Kubernetes 1.25+
+- kubectl
+- 已配置的 kubeconfig
+
+### 部署步骤
+
+#### 1. 创建 ConfigMap
+
+```bash
+kubectl apply -f deployments/kubernetes/configmap.yaml
+```
+
+#### 2. 创建 Secret
+
+```bash
+# 从示例文件创建（需要修改实际值）
+kubectl create secret generic db-secret \
+  --from-literal=url=postgres://user:password@postgres-service:5432/dbname?sslmode=disable
+```
+
+#### 3. 创建 Deployment
 
 ```bash
 kubectl apply -f deployments/kubernetes/deployment.yaml
+```
+
+#### 4. 创建 Service
+
+```bash
 kubectl apply -f deployments/kubernetes/service.yaml
 ```
 
-#### 检查状态
+#### 5. 创建 HPA（可选）
 
 ```bash
-kubectl get pods
-kubectl get services
+kubectl apply -f deployments/kubernetes/hpa.yaml
 ```
+
+#### 6. 检查状态
+
+```bash
+# 查看 Pod 状态
+kubectl get pods -l app=app
+
+# 查看 Service
+kubectl get svc app-service
+
+# 查看 HPA
+kubectl get hpa app-hpa
+
+# 查看日志
+kubectl logs -l app=app -f
+```
+
+**详细说明**：请参考 [Kubernetes 部署指南](../deployment/02-Kubernetes部署指南.md)
 
 ## 环境变量
 
