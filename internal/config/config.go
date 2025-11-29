@@ -75,10 +75,11 @@ type Config struct {
 	Redis      RedisConfig      `mapstructure:"redis"`
 	Kafka      KafkaConfig      `mapstructure:"kafka"`
 	MQTT       MQTTConfig       `mapstructure:"mqtt"`
-	OTLP       OTLPConfig       `mapstructure:"otlp"`
-	JWT        JWTConfig        `mapstructure:"jwt"`
-	Logging    LoggingConfig    `mapstructure:"logging"`
-	Temporal   TemporalConfig   `mapstructure:"temporal"`
+	OTLP           OTLPConfig           `mapstructure:"otlp"`
+	Observability  ObservabilityConfig  `mapstructure:"observability"`
+	JWT            JWTConfig            `mapstructure:"jwt"`
+	Logging        LoggingConfig        `mapstructure:"logging"`
+	Temporal       TemporalConfig       `mapstructure:"temporal"`
 }
 
 // ServerConfig 是 HTTP/gRPC 服务器的配置。
@@ -276,6 +277,76 @@ type RotationConfig struct {
 	MaxAge int `mapstructure:"max_age"`
 	// Compress 是否压缩轮转后的旧日志文件
 	Compress bool `mapstructure:"compress"`
+}
+
+// ObservabilityConfig 是可观测性的完整配置。
+//
+// 字段说明：
+// - OTLP: OTLP 配置（已存在，这里扩展）
+// - System: 系统监控配置
+//
+// 环境变量：
+// - APP_OBSERVABILITY_SYSTEM_ENABLED: 是否启用系统监控
+// - APP_OBSERVABILITY_SYSTEM_COLLECT_INTERVAL: 系统监控收集间隔
+type ObservabilityConfig struct {
+	// OTLP 配置（复用现有的 OTLPConfig）
+	OTLP OTLPConfig `mapstructure:"otlp"`
+	
+	// 系统监控配置
+	System SystemMonitoringConfig `mapstructure:"system"`
+}
+
+// SystemMonitoringConfig 是系统监控的配置。
+//
+// 字段说明：
+// - Enabled: 是否启用系统监控（默认：false）
+// - CollectInterval: 收集间隔（默认：5s）
+// - EnableDiskMonitor: 是否启用磁盘监控（默认：false）
+// - EnableLoadMonitor: 是否启用负载监控（默认：false）
+// - EnableAPMMonitor: 是否启用 APM 监控（默认：false）
+// - RateLimit: 限流器配置
+// - HealthThresholds: 健康检查阈值
+// - Alerts: 告警规则配置
+//
+// 环境变量：
+// - APP_OBSERVABILITY_SYSTEM_ENABLED: 是否启用系统监控
+// - APP_OBSERVABILITY_SYSTEM_COLLECT_INTERVAL: 收集间隔
+type SystemMonitoringConfig struct {
+	Enabled            bool              `mapstructure:"enabled"`
+	CollectInterval    string            `mapstructure:"collect_interval"` // 如 "5s"
+	EnableDiskMonitor  bool              `mapstructure:"enable_disk_monitor"`
+	EnableLoadMonitor  bool              `mapstructure:"enable_load_monitor"`
+	EnableAPMMonitor   bool              `mapstructure:"enable_apm_monitor"`
+	RateLimit          RateLimitConfig   `mapstructure:"rate_limit"`
+	HealthThresholds   HealthThresholdsConfig `mapstructure:"health_thresholds"`
+	Alerts             []AlertRuleConfig `mapstructure:"alerts"`
+}
+
+// RateLimitConfig 限流器配置
+type RateLimitConfig struct {
+	Enabled bool   `mapstructure:"enabled"`
+	Limit   int64  `mapstructure:"limit"`
+	Window  string `mapstructure:"window"` // 如 "1s"
+}
+
+// HealthThresholdsConfig 健康检查阈值配置
+type HealthThresholdsConfig struct {
+	MaxMemoryUsage float64 `mapstructure:"max_memory_usage"`
+	MaxCPUUsage    float64 `mapstructure:"max_cpu_usage"`
+	MaxGoroutines  int     `mapstructure:"max_goroutines"`
+}
+
+// AlertRuleConfig 告警规则配置
+type AlertRuleConfig struct {
+	ID         string  `mapstructure:"id"`
+	Name       string  `mapstructure:"name"`
+	MetricName string  `mapstructure:"metric_name"`
+	Condition  string  `mapstructure:"condition"` // gt, lt, eq, gte, lte
+	Threshold  float64 `mapstructure:"threshold"`
+	Level      string  `mapstructure:"level"` // info, warning, critical
+	Enabled    bool    `mapstructure:"enabled"`
+	Duration   string  `mapstructure:"duration"` // 如 "5m"
+	Cooldown   string  `mapstructure:"cooldown"` // 如 "10m"
 }
 
 // TemporalConfig 是 Temporal 工作流的配置。
@@ -542,6 +613,35 @@ func setDefaults(c *Config) {
 	}
 	if c.Temporal.MaxConcurrent == 0 {
 		c.Temporal.MaxConcurrent = 100
+	}
+
+	// Observability 默认值
+	// 如果 Observability.OTLP 未设置，使用 OTLP 配置
+	if c.Observability.OTLP.Endpoint == "" {
+		c.Observability.OTLP = c.OTLP
+	}
+	if c.Observability.OTLP.Endpoint == "" {
+		c.Observability.OTLP.Endpoint = "localhost:4317"
+	}
+	if c.Observability.OTLP.ServiceName == "" {
+		c.Observability.OTLP.ServiceName = "app"
+	}
+	if c.Observability.OTLP.ServiceVersion == "" {
+		c.Observability.OTLP.ServiceVersion = "1.0.0"
+	}
+
+	// 系统监控默认值
+	if c.Observability.System.CollectInterval == "" {
+		c.Observability.System.CollectInterval = "5s"
+	}
+	if c.Observability.System.HealthThresholds.MaxMemoryUsage == 0 {
+		c.Observability.System.HealthThresholds.MaxMemoryUsage = 90.0
+	}
+	if c.Observability.System.HealthThresholds.MaxCPUUsage == 0 {
+		c.Observability.System.HealthThresholds.MaxCPUUsage = 95.0
+	}
+	if c.Observability.System.HealthThresholds.MaxGoroutines == 0 {
+		c.Observability.System.HealthThresholds.MaxGoroutines = 10000
 	}
 }
 

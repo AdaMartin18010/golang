@@ -4,9 +4,6 @@ import (
 	"context"
 	"sync"
 	"time"
-
-	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // ConfigReloader 配置热重载器

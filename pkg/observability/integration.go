@@ -159,3 +159,76 @@ func (o *Observability) IsVirtualized() bool {
 	}
 	return false
 }
+
+// GetMetricsExporter 获取指标导出器
+func (o *Observability) GetMetricsExporter() *system.MetricsExporter {
+	if o.systemMonitor != nil {
+		return o.systemMonitor.GetMetricsExporter()
+	}
+	return nil
+}
+
+// GetAlertManager 获取告警管理器
+func (o *Observability) GetAlertManager() *system.AlertManager {
+	if o.systemMonitor != nil {
+		return o.systemMonitor.GetAlertManager()
+	}
+	return nil
+}
+
+// GetDiagnostics 获取诊断工具
+func (o *Observability) GetDiagnostics() *system.Diagnostics {
+	if o.systemMonitor != nil {
+		return o.systemMonitor.GetDiagnostics()
+	}
+	return nil
+}
+
+// GetPredictor 获取资源预测器
+func (o *Observability) GetPredictor() *system.ResourcePredictor {
+	if o.systemMonitor != nil {
+		return o.systemMonitor.GetPredictor()
+	}
+	return nil
+}
+
+// GetAPMMonitor 获取 APM 监控器
+func (o *Observability) GetAPMMonitor() *system.APMMonitor {
+	if o.systemMonitor != nil {
+		return o.systemMonitor.GetAPMMonitor()
+	}
+	return nil
+}
+
+// GetRateLimiter 获取限流器
+func (o *Observability) GetRateLimiter() *system.RateLimiter {
+	if o.systemMonitor != nil {
+		return o.systemMonitor.GetRateLimiter()
+	}
+	return nil
+}
+
+// GetKubernetesInfo 获取 Kubernetes 信息
+func (o *Observability) GetKubernetesInfo() system.KubernetesInfo {
+	if o.systemMonitor != nil {
+		return o.systemMonitor.GetKubernetesInfo()
+	}
+	return system.KubernetesInfo{}
+}
+
+// GetDashboardExporter 获取仪表板导出器
+func (o *Observability) GetDashboardExporter() *system.DashboardExporter {
+	if o.systemMonitor != nil {
+		return o.systemMonitor.GetDashboardExporter()
+	}
+	return nil
+}
+
+// GetOperationalEndpoints 获取运维控制端点（便捷方法）
+// 注意：需要先创建 operational.OperationalEndpoints 实例
+// 这个方法返回 nil，仅用于文档说明
+func (o *Observability) GetOperationalEndpoints() interface{} {
+	// 返回 nil，实际使用需要创建 operational.OperationalEndpoints
+	// 见 examples/observability/operational/main.go
+	return nil
+}

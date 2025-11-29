@@ -6,7 +6,6 @@ import (
 	"runtime"
 	"time"
 
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
 

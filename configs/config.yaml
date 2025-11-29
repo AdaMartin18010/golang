@@ -48,6 +48,56 @@ otlp:
   service_name: "app"
   service_version: "1.0.0"
 
+observability:
+  otlp:
+    endpoint: "localhost:4317"
+    insecure: true
+    timeout: 10s
+    service_name: "app"
+    service_version: "1.0.0"
+  system:
+    enabled: true
+    collect_interval: 5s
+    enable_disk_monitor: true
+    enable_load_monitor: true
+    enable_apm_monitor: true
+    rate_limit:
+      enabled: true
+      limit: 100
+      window: 1s
+    health_thresholds:
+      max_memory_usage: 90.0
+      max_cpu_usage: 95.0
+      max_goroutines: 10000
+    alerts:
+      - id: "cpu-high"
+        name: "CPU Usage High"
+        metric_name: "system.cpu.usage"
+        condition: "gt"
+        threshold: 80.0
+        level: "warning"
+        enabled: true
+        duration: 5m
+        cooldown: 10m
+      - id: "memory-high"
+        name: "Memory Usage High"
+        metric_name: "system.memory.usage"
+        condition: "gt"
+        threshold: 90.0
+        level: "critical"
+        enabled: true
+        duration: 5m
+        cooldown: 10m
+      - id: "disk-high"
+        name: "Disk Usage High"
+        metric_name: "system.disk.usage"
+        condition: "gt"
+        threshold: 85.0
+        level: "warning"
+        enabled: true
+        duration: 5m
+        cooldown: 10m
+
 jwt:
   secret_key: "your-secret-key-change-in-production"
   signing_method: "HS256"

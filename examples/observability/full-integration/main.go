@@ -1,158 +1,150 @@
-// Package main 展示完整的可观测性集成
-//
-// 本示例展示：
-// 1. 如何集成 OTLP、系统监控、日志轮转
-// 2. 如何获取平台信息
-// 3. 如何监控系统资源
-// 4. 如何在容器和 Kubernetes 环境中使用
 package main
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
+	"net/http"
 	"time"
 
-	"github.com/yourusername/golang/pkg/logger"
+	"github.com/yourusername/golang/internal/config"
 	"github.com/yourusername/golang/pkg/observability"
-	"github.com/yourusername/golang/pkg/sampling"
-	"log/slog"
+	"github.com/yourusername/golang/pkg/observability/operational"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// 1. 初始化日志轮转
-	log.Println("Initializing logger...")
-	rotationCfg := logger.ProductionRotationConfig("logs/app.log")
-	appLogger, err := logger.NewRotatingLogger(slog.LevelInfo, rotationCfg)
+	// 1. 加载配置
+	appConfig, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Failed to create logger: %v", err)
-	}
-	slog.SetDefault(appLogger.Logger)
-	appLogger.Info("Application starting...")
-
-	// 2. 创建采样器
-	sampler, err := sampling.NewProbabilisticSampler(0.5)
-	if err != nil {
-		appLogger.Error("Failed to create sampler", "error", err)
-		os.Exit(1)
+		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	// 3. 初始化完整的可观测性集成
-	appLogger.Info("Initializing observability...")
-	obs, err := observability.NewObservability(observability.Config{
-		ServiceName:            "full-integration-example",
-		ServiceVersion:         "v1.0.0",
-		OTLPEndpoint:           getEnv("OTLP_ENDPOINT", "localhost:4317"),
-		OTLPInsecure:           true,
-		SampleRate:             0.5,
-		MetricInterval:         10 * time.Second,
-		TraceBatchTimeout:      5 * time.Second,
-		TraceBatchSize:         512,
-		EnableSystemMonitoring: true,
-		SystemCollectInterval:  5 * time.Second,
-	})
+	// 2. 从应用配置创建可观测性配置
+	obsConfig := observability.ConfigFromAppConfig(appConfig)
+
+	// 3. 创建可观测性集成
+	obs, err := observability.NewObservability(obsConfig)
 	if err != nil {
-		appLogger.Error("Failed to initialize observability", "error", err)
-		os.Exit(1)
+		log.Fatalf("Failed to create observability: %v", err)
 	}
 
-	// 4. 启动可观测性
+	// 4. 应用告警规则
+	observability.ApplyAlertRules(obs, appConfig.Observability.System.Alerts)
+
+	// 5. 启动可观测性
 	if err := obs.Start(); err != nil {
-		appLogger.Error("Failed to start observability", "error", err)
-		os.Exit(1)
+		log.Fatalf("Failed to start observability: %v", err)
 	}
-	defer obs.Stop(ctx)
 
-	appLogger.Info("Observability initialized successfully")
+	// 6. 创建运维控制端点
+	operationalEndpoints := operational.NewOperationalEndpoints(operational.Config{
+		Observability: obs,
+		Port:          9090,
+		PathPrefix:    "/ops",
+		Enabled:       true,
+	})
 
-	// 5. 显示平台信息
-	platformInfo := obs.GetPlatformInfo()
-	appLogger.Info("Platform Information",
-		"os", platformInfo.OS,
-		"arch", platformInfo.Arch,
-		"go_version", platformInfo.GoVersion,
-		"hostname", platformInfo.Hostname,
-		"cpus", platformInfo.CPUs,
-		"container_id", platformInfo.ContainerID,
-		"container_name", platformInfo.ContainerName,
-		"k8s_pod", platformInfo.KubernetesPod,
-		"k8s_node", platformInfo.KubernetesNode,
-		"virtualization", platformInfo.Virtualization,
-	)
+	// 7. 启动运维端点
+	if err := operationalEndpoints.Start(); err != nil {
+		log.Fatalf("Failed to start operational endpoints: %v", err)
+	}
 
-	// 6. 环境检测
-	appLogger.Info("Environment Detection",
-		"is_container", obs.IsContainer(),
-		"is_kubernetes", obs.IsKubernetes(),
-		"is_virtualized", obs.IsVirtualized(),
-	)
+	log.Println("Operational endpoints started on :9090")
+	log.Println("Available endpoints:")
+	log.Println("  - Health:      http://localhost:9090/ops/health")
+	log.Println("  - Readiness:   http://localhost:9090/ops/ready")
+	log.Println("  - Liveness:    http://localhost:9090/ops/live")
+	log.Println("  - Metrics:     http://localhost:9090/ops/metrics")
+	log.Println("  - Prometheus:  http://localhost:9090/ops/metrics/prometheus")
+	log.Println("  - Dashboard:   http://localhost:9090/ops/dashboard")
+	log.Println("  - Diagnostics: http://localhost:9090/ops/diagnostics")
+	log.Println("  - Info:        http://localhost:9090/ops/info")
+	log.Println("  - Version:     http://localhost:9090/ops/version")
+	log.Println("  - Pprof:       http://localhost:9090/ops/debug/pprof/")
 
-	// 7. 使用追踪
-	tracer := obs.Tracer("example-service")
-	ctx, span := tracer.Start(ctx, "main-operation")
-	defer span.End()
+	// 8. 创建主 HTTP 服务器
+	mux := http.NewServeMux()
 
-	appLogger.Info("Main operation started")
+	// 使用运维中间件
+	mux.HandleFunc("/", operational.RecoveryMiddleware(
+		operational.SecurityHeadersMiddleware(
+			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// 使用追踪
+				ctx, span := obs.Tracer("server").Start(r.Context(), "handler")
+				defer span.End()
 
-	// 8. 使用指标
-	meter := obs.Meter("example-service")
-	counter, _ := meter.Int64Counter("requests_total")
-	counter.Add(ctx, 1)
+				// 使用指标
+				meter := obs.Meter("server")
+				counter, _ := meter.Int64Counter("requests_total")
+				counter.Add(ctx, 1)
 
-	// 9. 定期显示系统资源
-	systemMonitor := obs.GetSystemMonitor()
-	if systemMonitor != nil {
-		go func() {
-			ticker := time.NewTicker(10 * time.Second)
-			defer ticker.Stop()
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprintf(w, "Hello, World! Time: %s\n", time.Now().Format(time.RFC3339))
+			}),
+		),
+	).ServeHTTP)
 
-			for {
-				select {
-				case <-ctx.Done():
-					return
-				case <-ticker.C:
-					memStats := systemMonitor.GetMemoryStats()
-					appLogger.Info("System Resources",
-						"memory_alloc_mb", float64(memStats.Alloc)/1024/1024,
-						"memory_total_mb", float64(memStats.TotalAlloc)/1024/1024,
-						"gc_count", memStats.NumGC,
-						"goroutines", systemMonitor.GetGoroutineCount(),
-					)
+	server := &http.Server{
+		Addr:    fmt.Sprintf(":%d", appConfig.Server.Port),
+		Handler: mux,
+	}
+
+	// 9. 启动主服务器
+	go func() {
+		log.Printf("Server starting on :%d", appConfig.Server.Port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server failed: %v", err)
+		}
+	}()
+
+	// 10. 创建优雅关闭管理器
+	shutdownManager := operational.NewShutdownManager(30 * time.Second)
+
+	// 注册关闭函数
+	shutdownManager.Register(operational.GracefulShutdown("http-server", func(ctx context.Context) error {
+		return server.Shutdown(ctx)
+	}))
+	shutdownManager.Register(operational.GracefulShutdown("observability", func(ctx context.Context) error {
+		return obs.Stop(ctx)
+	}))
+	shutdownManager.Register(operational.GracefulShutdown("operational-endpoints", func(ctx context.Context) error {
+		return operationalEndpoints.Stop(ctx)
+	}))
+
+	// 11. 演示熔断器
+	circuitBreaker := operational.NewCircuitBreaker(operational.CircuitBreakerConfig{
+		Name:         "external-api",
+		MaxFailures:  5,
+		ResetTimeout: 60 * time.Second,
+	})
+
+	// 模拟一些操作
+	go func() {
+		for i := 0; i < 10; i++ {
+			err := circuitBreaker.Execute(ctx, func() error {
+				time.Sleep(100 * time.Millisecond)
+				if i%3 == 0 {
+					return fmt.Errorf("simulated error")
 				}
+				return nil
+			})
+			if err != nil {
+				log.Printf("Circuit breaker error: %v (state: %s)", err, circuitBreaker.GetState())
+			} else {
+				log.Printf("Operation succeeded (state: %s)", circuitBreaker.GetState())
 			}
-		}()
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
+	// 12. 等待关闭信号
+	log.Println("Application running. Press Ctrl+C to shutdown gracefully...")
+	if err := shutdownManager.WaitForShutdown(); err != nil {
+		log.Printf("Shutdown error: %v", err)
 	}
 
-	// 10. 模拟业务逻辑
-	appLogger.Info("Processing requests...")
-	for i := 0; i < 10; i++ {
-		ctx, span := tracer.Start(ctx, "process-request")
-		appLogger.Info("Request processed",
-			"request_id", i,
-			"timestamp", time.Now().Unix(),
-		)
-		counter.Add(ctx, 1)
-		time.Sleep(500 * time.Millisecond)
-		span.End()
-	}
-
-	// 11. 等待中断信号
-	appLogger.Info("Application is running. Press Ctrl+C to stop...")
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-	<-sigChan
-
-	appLogger.Info("Shutting down...")
-}
-
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
+	log.Println("Application shutdown complete")
 }

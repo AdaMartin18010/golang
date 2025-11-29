@@ -28,6 +28,7 @@ type SystemMonitor struct {
 	alertManager     *AlertManager
 	diagnostics      *Diagnostics
 	predictor        *ResourcePredictor
+	dashboardExporter *DashboardExporter
 	enabled          bool
 }
 
@@ -184,6 +185,7 @@ func NewSystemMonitor(cfg SystemConfig) (*SystemMonitor, error) {
 	systemMonitor.metricsExporter = NewMetricsExporter(systemMonitor, 100)
 	systemMonitor.diagnostics = NewDiagnostics(systemMonitor, cfg.Meter, cfg.Enabled)
 	systemMonitor.predictor = NewResourcePredictor(systemMonitor, 100)
+	systemMonitor.dashboardExporter = NewDashboardExporter(systemMonitor)
 
 	return systemMonitor, nil
 }
@@ -402,4 +404,9 @@ func (sm *SystemMonitor) GetDiagnostics() *Diagnostics {
 // GetPredictor 获取资源预测器
 func (sm *SystemMonitor) GetPredictor() *ResourcePredictor {
 	return sm.predictor
+}
+
+// GetDashboardExporter 获取仪表板导出器
+func (sm *SystemMonitor) GetDashboardExporter() *DashboardExporter {
+	return sm.dashboardExporter
 }

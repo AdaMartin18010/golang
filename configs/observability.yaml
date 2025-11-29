@@ -1,0 +1,64 @@
+# 可观测性配置示例
+observability:
+  # OTLP 配置
+  otlp:
+    service_name: "my-service"
+    service_version: "v1.0.0"
+    endpoint: "localhost:4317"
+    insecure: true
+    sample_rate: 0.5  # 50% 采样率
+    metric_interval: 10s
+    trace_batch_timeout: 5s
+    trace_batch_size: 512
+
+  # 系统监控配置
+  system:
+    enabled: true
+    collect_interval: 5s
+    enable_disk_monitor: true
+    enable_load_monitor: true
+    enable_apm_monitor: true
+
+    # 限流器配置
+    rate_limit:
+      enabled: true
+      limit: 100  # 每秒 100 个请求
+      window: 1s
+
+    # 健康检查阈值
+    health_thresholds:
+      max_memory_usage: 90.0  # 90%
+      max_cpu_usage: 95.0     # 95%
+      max_goroutines: 10000
+
+    # 告警规则
+    alerts:
+      - id: "cpu-high"
+        name: "CPU Usage High"
+        metric_name: "system.cpu.usage"
+        condition: "gt"
+        threshold: 80.0
+        level: "warning"
+        enabled: true
+        duration: 5m
+        cooldown: 10m
+
+      - id: "memory-high"
+        name: "Memory Usage High"
+        metric_name: "system.memory.usage"
+        condition: "gt"
+        threshold: 90.0
+        level: "critical"
+        enabled: true
+        duration: 5m
+        cooldown: 10m
+
+      - id: "disk-high"
+        name: "Disk Usage High"
+        metric_name: "system.disk.usage"
+        condition: "gt"
+        threshold: 85.0
+        level: "warning"
+        enabled: true
+        duration: 5m
+        cooldown: 10m
