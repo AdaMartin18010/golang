@@ -198,4 +198,3 @@ func TestEncryptionIntegration(t *testing.T) {
 		t.Errorf("Expected '%s', got '%s'", plaintext, decrypted)
 	}
 }
-

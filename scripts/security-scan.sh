@@ -62,4 +62,3 @@ if grep -r "private[_-]key" --include="*.go" --exclude-dir=vendor . -i; then
 fi
 
 echo -e "${GREEN}安全扫描完成!${NC}"
-

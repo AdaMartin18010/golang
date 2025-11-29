@@ -60,4 +60,3 @@ if ($privateKeyMatches) {
 }
 
 Write-Host "安全扫描完成!" -ForegroundColor Green
-

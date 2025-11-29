@@ -66,7 +66,7 @@
    ```go
    encryptor, _ := security.NewAES256EncryptorFromString(os.Getenv("ENCRYPTION_KEY"))
    fieldEncryptor := security.NewFieldEncryptor(encryptor)
-   
+
    // 加密敏感字段
    encryptedEmail, _ := fieldEncryptor.EncryptField(user.Email)
    ```
@@ -229,7 +229,7 @@
        Limit:  100,
        Window: 1 * time.Minute,
    })
-   
+
    // 用户级别：防止滥用
    userLimiter := security.NewUserRateLimiter(security.RateLimiterConfig{
        Limit:  1000,
@@ -459,4 +459,3 @@
 ---
 
 **最后更新**: 2025-01-XX
-

@@ -19,15 +19,15 @@ import (
 func main() {
     // 创建安全配置
     config := security.DefaultSecurityConfig()
-    
+
     // 验证配置
     if err := config.Validate(); err != nil {
         log.Fatal(err)
     }
-    
+
     // 创建安全配置管理器
     manager, _ := security.NewSecurityConfigManager(config)
-    
+
     // 使用配置...
 }
 ```
@@ -46,7 +46,7 @@ func main() {
     tokenStore := oauth2.NewMemoryTokenStore()
     clientStore := oauth2.NewMemoryClientStore()
     codeStore := oauth2.NewMemoryCodeStore()
-    
+
     // 创建服务器
     server := oauth2.NewServer(
         oauth2.DefaultServerConfig(),
@@ -54,7 +54,7 @@ func main() {
         clientStore,
         codeStore,
     )
-    
+
     // 使用服务器...
 }
 ```
@@ -71,10 +71,10 @@ import (
 func main() {
     // 创建加密器
     encryptor, _ := security.NewAES256EncryptorFromString("your-secret-key")
-    
+
     // 加密数据
     ciphertext, _ := encryptor.EncryptString("sensitive data")
-    
+
     // 解密数据
     plaintext, _ := encryptor.DecryptString(ciphertext)
 }
@@ -92,10 +92,10 @@ import (
 func main() {
     // 创建密码哈希器
     hasher := security.NewPasswordHasher(security.DefaultPasswordHashConfig())
-    
+
     // 哈希密码
     hash, _ := hasher.Hash("user-password")
-    
+
     // 验证密码
     valid, _ := hasher.Verify("user-password", hash)
 }
@@ -117,7 +117,7 @@ func main() {
         Window: 1 * time.Minute,
     })
     defer limiter.Shutdown(context.Background())
-    
+
     // 检查是否允许
     allowed, _ := limiter.AllowIP(ctx, "192.168.1.1")
 }
@@ -136,10 +136,10 @@ func main() {
     // 创建 CSRF 防护
     csrf := security.NewCSRFProtection(security.DefaultCSRFConfig())
     defer csrf.Shutdown()
-    
+
     // 生成令牌
     token, _ := csrf.GenerateToken(sessionID)
-    
+
     // 验证令牌
     err := csrf.ValidateToken(sessionID, token)
 }
@@ -164,10 +164,10 @@ func main() {
             Window: 1 * time.Minute,
         },
     }
-    
+
     middleware := security.NewSecurityMiddleware(config)
     defer middleware.Shutdown()
-    
+
     // 使用中间件
     router := chi.NewRouter()
     router.Use(middleware.Middleware)
@@ -185,4 +185,3 @@ func main() {
 ---
 
 **最后更新**: 2025-01-XX
-
