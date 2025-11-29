@@ -359,6 +359,12 @@ go tool cover -html=coverage.out
 - [ ] 密钥自动轮换
 - [ ] 密钥访问审计
 
+## 📚 安全文档
+
+- **[安全最佳实践](../../docs/security/SECURITY-BEST-PRACTICES.md)** - 完整的安全最佳实践指南
+- **[安全功能快速开始](../../docs/security/SECURITY-QUICK-START.md)** - 快速上手安全功能
+- **[安全文档索引](../../docs/security/README.md)** - 安全文档导航
+
 ---
 
 ## 🔗 相关文档
