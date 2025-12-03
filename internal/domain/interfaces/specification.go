@@ -205,4 +205,3 @@ func Or[T any](left, right Specification[T]) Specification[T] {
 func Not[T any](spec Specification[T]) Specification[T] {
 	return NewNotSpecification[T](spec)
 }
-

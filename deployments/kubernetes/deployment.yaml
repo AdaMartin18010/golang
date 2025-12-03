@@ -1,87 +1,212 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: go-app
   namespace: default
   labels:
-    app: app
-    version: v1.0.0
+    app: go-app
+    version: v1
 spec:
   replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   selector:
     matchLabels:
-      app: app
+      app: go-app
   template:
     metadata:
       labels:
-        app: app
-        version: v1.0.0
+        app: go-app
+        version: v1
       annotations:
+        # Prometheus 抓取配置
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
         prometheus.io/path: "/metrics"
     spec:
-      serviceAccountName: app-service-account
+      # 服务账号（用于 K8s API 访问）
+      serviceAccountName: go-app
+
+      # 安全上下文
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
+
       containers:
       - name: app
-        image: app:latest
+        image: ghcr.io/yourusername/golang:latest
         imagePullPolicy: IfNotPresent
+
+        # 资源限制（生产环境必须）
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+        # 端口
         ports:
         - name: http
           containerPort: 8080
           protocol: TCP
+        - name: grpc
+          containerPort: 9090
+          protocol: TCP
+        - name: metrics
+          containerPort: 8081
+          protocol: TCP
+
+        # 环境变量（通过 Downward API 注入 K8s 信息）
         env:
-        - name: DATABASE_URL
+        - name: POD_NAME
           valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: url
-        - name: REDIS_URL
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
           valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: redis-url
-        - name: LOG_LEVEL
-          value: "info"
-        - name: PORT
-          value: "8080"
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: SERVICE_NAME
+          value: "go-app"
+
+        # OpenTelemetry 配置
+        - name: OTEL_SERVICE_NAME
+          value: "go-app"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.namespace=default,service.version=v1"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector:4317"
+        - name: OTEL_EXPORTER_OTLP_INSECURE
+          value: "true"
+
+        # 从 ConfigMap 加载配置
+        envFrom:
+        - configMapRef:
+            name: go-app-config
+
+        # 从 Secret 加载敏感信息
+        - secretRef:
+            name: go-app-secrets
+
+        # 健康检查
         livenessProbe:
           httpGet:
-            path: /health
+            path: /health/live
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
+
         readinessProbe:
           httpGet:
-            path: /ready
+            path: /health/ready
             port: 8080
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
+
+        # 启动探针（Go 应用启动较慢时使用）
         startupProbe:
           httpGet:
-            path: /startup
+            path: /health/startup
             port: 8080
           initialDelaySeconds: 0
-          periodSeconds: 10
+          periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 30
+
+        # 挂载卷
+        volumeMounts:
+        - name: config
+          mountPath: /etc/config
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+
+      # 卷定义
+      volumes:
+      - name: config
+        configMap:
+          name: go-app-config
+      - name: tmp
+        emptyDir: {}
+
+      # 优雅关闭（给应用足够时间处理）
+      terminationGracePeriodSeconds: 30
+
+      # 拓扑分布（跨可用区部署）
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: go-app
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-app
+  namespace: default
+  labels:
+    app: go-app
+spec:
+  type: ClusterIP
+  selector:
+    app: go-app
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: grpc
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  - name: metrics
+    port: 8081
+    targetPort: 8081
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: go-app
+  namespace: default
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app-config
+  namespace: default
+data:
+  LOG_LEVEL: "info"
+  ENVIRONMENT: "production"
+  DATABASE_MAX_CONNECTIONS: "25"
+  CACHE_TTL: "300"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: go-app-secrets
+  namespace: default
+type: Opaque
+stringData:
+  DATABASE_URL: "postgres://user:pass@postgres:5432/db"
+  REDIS_URL: "redis://redis:6379"
+  JWT_PRIVATE_KEY: "base64-encoded-key"

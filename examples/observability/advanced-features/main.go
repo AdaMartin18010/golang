@@ -47,10 +47,10 @@ func main() {
 
 	// 4. 创建系统监控器（启用所有功能）
 	systemMonitor, err := system.NewSystemMonitor(system.SystemConfig{
-		Meter:            mp.Meter("system"),
-		Tracer:           tp.Tracer("system"),
-		Enabled:          true,
-		CollectInterval:  5 * time.Second,
+		Meter:             mp.Meter("system"),
+		Tracer:            tp.Tracer("system"),
+		Enabled:           true,
+		CollectInterval:   5 * time.Second,
 		EnableDiskMonitor: true,
 		EnableLoadMonitor: true,
 		EnableAPMMonitor:  true,

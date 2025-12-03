@@ -65,7 +65,7 @@ mv "$DOCS_DIR"/system-monitoring-implementation.md "$ARCHIVE_DIR/" 2>/dev/null |
 cat > "$ARCHIVE_DIR/README.md" << 'EOF'
 # 归档的报告文档
 
-**归档日期**: 2025-12-03  
+**归档日期**: 2025-12-03
 **原因**: 重复的进度报告和完成总结，不再需要
 
 ## 归档内容
@@ -73,7 +73,7 @@ cat > "$ARCHIVE_DIR/README.md" << 'EOF'
 本目录包含了项目历史上生成的各类报告文档：
 
 - 技术栈实施报告
-- 项目评价报告  
+- 项目评价报告
 - 改进任务报告
 - 文件归档报告
 - 各种完成/总结报告
@@ -109,4 +109,3 @@ echo "  - docs/00-项目改进计划总览.md"
 echo "  - docs/IMPROVEMENT-TASK-BOARD.md"
 echo "  - docs/00-架构代码检查与改进计划-2025-12-03.md"
 echo ""
-

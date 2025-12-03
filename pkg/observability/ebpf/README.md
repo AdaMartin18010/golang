@@ -1,7 +1,7 @@
 # eBPF 可观测性实现
 
-**版本**: v2.0  
-**更新日期**: 2025-12-03  
+**版本**: v2.0
+**更新日期**: 2025-12-03
 **使用库**: github.com/cilium/ebpf (最成熟的Go eBPF库)
 
 ---
@@ -133,7 +133,7 @@ package main
 import (
     "context"
     "log"
-    
+
     "github.com/yourusername/golang/pkg/observability/ebpf"
     "go.opentelemetry.io/otel"
 )
@@ -142,7 +142,7 @@ func main() {
     // 创建 OTLP tracer 和 meter
     tracer := otel.Tracer("ebpf-collector")
     meter := otel.Meter("ebpf-collector")
-    
+
     // 创建 eBPF 收集器
     collector, err := ebpf.NewCollector(ebpf.Config{
         Tracer:                 tracer,
@@ -154,13 +154,13 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    
+
     // 启动收集
     if err := collector.Start(); err != nil {
         log.Fatal(err)
     }
     defer collector.Stop()
-    
+
     // 应用运行...
     select {}
 }
@@ -196,5 +196,5 @@ func main() {
 
 ---
 
-**状态**: 🔄 重构中  
+**状态**: 🔄 重构中
 **目标**: 使用 Cilium eBPF 实现真正的系统级监控

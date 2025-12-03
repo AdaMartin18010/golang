@@ -1,42 +1,71 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: app-hpa
+  name: go-app-hpa
   namespace: default
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: app
+    name: go-app
+
   minReplicas: 3
   maxReplicas: 10
+
+  # 扩缩容行为
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # 5分钟稳定窗口
+      policies:
+      - type: Percent
+        value: 50  # 每次最多缩容 50%
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0  # 立即扩容
+      policies:
+      - type: Percent
+        value: 100  # 每次最多扩容 100%
+        periodSeconds: 15
+      - type: Pods
+        value: 4  # 或每次增加 4 个 Pod
+        periodSeconds: 15
+      selectPolicy: Max  # 选择最激进的策略
+
+  # 扩缩容指标
   metrics:
+  # CPU 利用率
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 70  # 70% CPU 时扩容
+
+  # 内存利用率
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 80
-  behavior:
-    scaleDown:
-      stabilizationWindowSeconds: 300
-      policies:
-      - type: Percent
-        value: 50
-        periodSeconds: 60
-    scaleUp:
-      stabilizationWindowSeconds: 0
-      policies:
-      - type: Percent
-        value: 100
-        periodSeconds: 15
-      - type: Pods
-        value: 2
-        periodSeconds: 15
-      selectPolicy: Max
+        averageUtilization: 80  # 80% 内存时扩容
+
+  # 自定义指标：每秒请求数
+  - type: Pods
+    pods:
+      metric:
+        name: http_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "1000"  # 每个 Pod 1000 RPS 时扩容
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: go-app-pdb
+  namespace: default
+spec:
+  minAvailable: 2  # 至少保持 2 个 Pod 运行
+  selector:
+    matchLabels:
+      app: go-app

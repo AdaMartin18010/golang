@@ -1,9 +1,32 @@
+# Prometheus 配置
+# 用于收集 OpenTelemetry Collector 导出的指标
+
 global:
-  scrape_interval: 10s
-  evaluation_interval: 10s
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'local'
+    environment: 'development'
 
 scrape_configs:
-  - job_name: otel-collector
+  # OpenTelemetry Collector 指标
+  - job_name: 'otel-collector'
     static_configs:
-      - targets: ["collector:8889"]
+      - targets: ['collector:8889']
+        labels:
+          service: 'otel-collector'
 
+  # 应用程序指标 (如果应用直接暴露 Prometheus 端点)
+  - job_name: 'go-app'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+        labels:
+          service: 'go-app'
+          environment: 'dev'
+
+  # Collector 自身的指标
+  - job_name: 'collector-internal'
+    static_configs:
+      - targets: ['collector:8888']
+        labels:
+          service: 'collector-internal'

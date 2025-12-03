@@ -66,4 +66,3 @@ type AndSpec struct {
 func (s *AndSpec) IsSatisfiedBy(u *user.User) bool {
 	return s.left.IsSatisfiedBy(u) && s.right.IsSatisfiedBy(u)
 }
-

@@ -241,7 +241,7 @@ func detectCloudProvider() (provider, region, zone string) {
 		provider = "aws"
 		region = os.Getenv("AWS_REGION")
 		zone = os.Getenv("AWS_AVAILABILITY_ZONE")
-		
+
 		// 尝试从 EC2 metadata 读取
 		if region == "" {
 			// 实际实现需要调用 EC2 metadata API
@@ -255,7 +255,7 @@ func detectCloudProvider() (provider, region, zone string) {
 		provider = "gcp"
 		region = os.Getenv("GOOGLE_CLOUD_REGION")
 		zone = os.Getenv("GOOGLE_CLOUD_ZONE")
-		
+
 		// 尝试从 GCE metadata 读取
 		if region == "" {
 			// 实际实现需要调用 GCE metadata API

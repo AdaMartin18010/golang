@@ -1,7 +1,7 @@
 # 🏗️ 架构状态报告
 
-**更新日期**: 2025-12-03  
-**项目**: Go Clean Architecture 框架  
+**更新日期**: 2025-12-03
+**项目**: Go Clean Architecture 框架
 **版本**: Go 1.25.3
 
 ---
@@ -11,6 +11,7 @@
 **Go 现代化企业级架构框架** - 基于 Clean Architecture 的轻量级技术栈框架
 
 ### 核心特性
+
 - ✅ **Clean Architecture** - 标准4层分层
 - ✅ **OTLP** - OpenTelemetry v1.38.0 完整集成
 - ✅ **eBPF** - Cilium eBPF v0.20.0 系统级监控
@@ -83,6 +84,7 @@
 **版本**: v1.38.0 (最新稳定版)
 
 **特性**:
+
 - ✅ Trace Provider with Batching
 - ✅ Metric Provider with Periodic Export
 - ✅ Context Propagation (W3C TraceContext + Baggage)
@@ -91,6 +93,7 @@
 - ⚠️ Log Exporter (等待官方 SDK)
 
 **集成**:
+
 ```go
 // pkg/observability/otlp/enhanced.go
 - EnhancedOTLP 完整集成
@@ -105,6 +108,7 @@
 **版本**: Cilium eBPF v0.20.0 (最新稳定版)
 
 **特性**:
+
 - ✅ 系统调用追踪 (sys_enter/sys_exit)
 - ✅ Perf Event Array 数据传输
 - ✅ OpenTelemetry 集成
@@ -113,6 +117,7 @@
 - ⏳ 性能分析 (待实现)
 
 **实现**:
+
 ```text
 pkg/observability/ebpf/
 ├── collector.go          # 主收集器
@@ -123,6 +128,7 @@ pkg/observability/ebpf/
 ```
 
 **技术亮点**:
+
 - 🌟 使用业界最成熟的 Cilium eBPF 库
 - 🌟 纯 Go 实现，无 CGO 依赖
 - 🌟 类型安全，编译时检查
@@ -147,6 +153,7 @@ pkg/observability/ebpf/
 | **虚拟化** | DMI, /proc/cpuinfo | ✅ |
 
 **实现**:
+
 ```go
 // pkg/observability/system/platform.go
 type PlatformInfo struct {
@@ -168,6 +175,7 @@ type PlatformInfo struct {
 ### Repository Pattern
 
 **基础接口**:
+
 ```go
 type Repository[T any] interface {
     Create(ctx context.Context, entity *T) error
@@ -181,6 +189,7 @@ type Repository[T any] interface {
 ### Specification Pattern ✅ 新增
 
 **接口定义**:
+
 ```go
 type Specification[T any] interface {
     IsSatisfiedBy(entity *T) bool
@@ -194,6 +203,7 @@ type RepositoryWithSpecification[T any] interface {
 ```
 
 **组合规约**:
+
 ```go
 // And/Or/Not 逻辑组合
 spec := And(
@@ -206,6 +216,7 @@ spec := And(
 ```
 
 **优势**:
+
 - ✅ 业务规则封装
 - ✅ 查询逻辑复用
 - ✅ 易于测试
@@ -216,28 +227,33 @@ spec := And(
 ## 📦 技术栈清单
 
 ### 核心框架
+
 - Go 1.25.3 ✅
 - Clean Architecture ✅
 - Wire v0.6.0 (DI) ✅
 
 ### 可观测性
+
 - OpenTelemetry v1.38.0 ✅
 - Cilium eBPF v0.20.0 ✅
 - Slog (标准库) ✅
 
 ### Web & API
+
 - Chi v5.0.12 ✅
 - gRPC ✅
 - GraphQL ✅
 - OpenAPI/AsyncAPI ✅
 
 ### 数据库
+
 - Ent v0.13.1 ✅
 - PostgreSQL ✅
 - SQLite3 ✅
 - Redis ✅
 
 ### 消息队列
+
 - Kafka ✅
 - NATS ✅
 - MQTT ✅
@@ -334,17 +350,20 @@ go test ./pkg/observability/ebpf/...
 ## 📚 文档导航
 
 ### 核心文档
+
 - [README](./README.md) - 项目总览
 - [架构设计](./docs/architecture/) - Clean Architecture 详解
 - [改进计划](./docs/00-项目改进计划总览.md) - 改进路线图
 - [任务看板](./docs/IMPROVEMENT-TASK-BOARD.md) - 102个具体任务
 
 ### 技术文档
+
 - [eBPF 实现](./pkg/observability/ebpf/README.md) - eBPF 使用指南
 - [OTLP 集成](./pkg/observability/otlp/) - OpenTelemetry 集成
 - [系统监控](./pkg/observability/system/) - 系统级监控
 
 ### 最新报告
+
 - [架构改进完成报告](./docs/00-架构改进完成报告-2025-12-03.md) - 本次改进详情
 - [当前工作总结](./docs/00-当前工作总结-2025-12-03.md) - 工作总结
 
@@ -387,9 +406,8 @@ go test ./pkg/observability/ebpf/...
 
 ---
 
-**项目状态**: ✅ 架构优秀，持续改进中  
-**维护团队**: Go Framework Team  
+**项目状态**: ✅ 架构优秀，持续改进中
+**维护团队**: Go Framework Team
 **联系方式**: GitHub Issues
 
 🚀 **专注于代码实现，持续优化架构！**
-

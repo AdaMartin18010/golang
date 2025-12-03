@@ -256,4 +256,3 @@ func (st *SyscallTracer) IsEnabled() bool {
 // 参考实现：
 // - https://github.com/cilium/ebpf/tree/main/examples
 // - https://github.com/iovisor/bcc/blob/master/tools/syscount.py
-

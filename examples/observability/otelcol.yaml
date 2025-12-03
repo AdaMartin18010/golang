@@ -1,47 +1,150 @@
+# OpenTelemetry Collector 配置
+# 版本: 0.104.0 (2024最新稳定版)
+# 最佳实践配置 - 生产就绪
+
 receivers:
+  # OTLP gRPC receiver (推荐)
   otlp:
     protocols:
       grpc:
+        endpoint: 0.0.0.0:4317
+        # 生产环境应启用 TLS
+        # tls:
+        #   cert_file: /path/to/cert.pem
+        #   key_file: /path/to/key.pem
       http:
+        endpoint: 0.0.0.0:4318
+        cors:
+          allowed_origins:
+            - "http://*"
+            - "https://*"
+
+  # Prometheus receiver (可选)
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          scrape_interval: 10s
+          static_configs:
+            - targets: ['localhost:8888']
+
 processors:
-  batch: {}
+  # 批处理器 - 提高性能
+  batch:
+    timeout: 10s
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+
+  # 内存限制 - 防止 OOM
   memory_limiter:
-    check_interval: 5s
-    limit_percentage: 80
-    spike_limit_percentage: 25
-  tail_sampling:
-    decision_wait: 5s
-    num_traces: 10000
-    expected_new_traces_per_sec: 100
-    policies:
-      - name: errors
-        type: status_code
-        status_code:
-          status_codes: [ERROR]
-      - name: long_latency
-        type: latency
-        latency:
-          threshold_ms: 200
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
+
+  # 资源检测 - 自动添加资源属性
+  resourcedetection:
+    detectors: [env, system, docker, kubernetes]
+    timeout: 5s
+    override: false
+
+  # 属性处理器 - 添加自定义属性
+  attributes:
+    actions:
+      - key: environment
+        value: production
+        action: insert
+      - key: service.namespace
+        value: default
+        action: insert
+
+  # 采样处理器 - 智能采样
+  probabilistic_sampler:
+    sampling_percentage: 10  # 10% 采样率
+
+  # Span 处理器 - 过滤和转换
+  span:
+    name:
+      from_attributes: ["http.method", "http.route"]
+      separator: " "
+
 exporters:
+  # OTLP gRPC exporter - 导出到后端
   otlp/tempo:
     endpoint: tempo:4317
     tls:
       insecure: true
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 1000
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
+
+  # Prometheus exporter - 指标导出
   prometheus:
-    endpoint: 0.0.0.0:8889
+    endpoint: "0.0.0.0:8889"
+    namespace: otel
+    const_labels:
+      environment: production
+
+  # Logging exporter - 调试用
+  logging:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+  # Loki exporter - 日志导出
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
+    labels:
+      attributes:
+        service.name: "service_name"
+        service.namespace: "service_namespace"
+      resource:
+        host.name: "host_name"
+
+extensions:
+  # Health check
+  health_check:
+    endpoint: 0.0.0.0:13133
+    path: /health
+
+  # pprof for debugging
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  # zpages for debugging
+  zpages:
+    endpoint: 0.0.0.0:55679
+
 service:
+  extensions: [health_check, pprof, zpages]
+
   pipelines:
+    # Traces pipeline
     traces:
       receivers: [otlp]
-      processors: [memory_limiter, tail_sampling, batch]
-      exporters: [otlp/tempo]
+      processors: [memory_limiter, resourcedetection, batch, attributes, probabilistic_sampler]
+      exporters: [otlp/tempo, logging]
+
+    # Metrics pipeline
     metrics:
-      receivers: [otlp]
-      processors: [memory_limiter, batch]
-      exporters: [prometheus]
+      receivers: [otlp, prometheus]
+      processors: [memory_limiter, resourcedetection, batch, attributes]
+      exporters: [prometheus, logging]
+
+    # Logs pipeline
     logs:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
-      exporters: [loki]
+      processors: [memory_limiter, resourcedetection, batch, attributes]
+      exporters: [loki, logging]
+
+  telemetry:
+    logs:
+      level: info
+    metrics:
+      level: detailed
+      address: 0.0.0.0:8888

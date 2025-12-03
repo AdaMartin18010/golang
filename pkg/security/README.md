@@ -1,402 +1,190 @@
-# 安全功能包
+# 安全模块
 
-> **状态**: ✅ 基础实现完成
-> **版本**: v1.0.0
-> **优先级**: P0 - 安全加固
+**版本**: v1.0
+**更新日期**: 2025-12-03
+**状态**: 🔄 实现中
 
 ---
 
-## 📋 概述
+## 🎯 功能概览
 
-本包提供了完整的安全功能，包括：
+本模块提供企业级安全功能：
 
-- ✅ AES-256 数据加密/解密
-- ✅ 字段级加密
-- ✅ 数据脱敏（邮箱、手机号、身份证、姓名）
-- ✅ 密钥管理（AES、RSA 密钥生成和管理）
-- ✅ 密钥轮换
-- ✅ 审计日志系统
-- ✅ 速率限制（IP、用户、端点级别）
-- ✅ 密码哈希和验证（Argon2id）
-- ✅ CSRF 防护
-- ✅ XSS 防护
-- ✅ SQL 注入防护
-- ✅ 安全头部中间件
-- ✅ 输入验证和清理
-- ✅ 文件上传安全
-- ✅ 会话管理
-- ✅ 安全配置管理
-- ✅ HTTPS/TLS 配置
-- ✅ 安全中间件集成
+1. **OAuth2/OIDC** - 标准认证协议
+2. **RBAC** - 基于角色的访问控制
+3. **ABAC** - 基于属性的访问控制（计划中）
+4. **JWT** - JSON Web Token
+5. **Vault** - 密钥管理（计划中）
+
+---
+
+## 🏗️ 模块结构
+
+```text
+pkg/security/
+├── oauth2/
+│   ├── provider.go      # OAuth2 提供者 ✅
+│   ├── oidc.go          # OIDC 实现 ✅
+│   └── README.md
+├── rbac/
+│   ├── rbac.go          # RBAC 核心 ✅
+│   ├── middleware.go    # HTTP 中间件 ✅
+│   └── README.md
+├── jwt/
+│   ├── jwt.go           # JWT 实现
+│   └── README.md
+├── vault/
+│   ├── client.go        # Vault 客户端
+│   └── README.md
+└── README.md            # 本文档
+```
 
 ---
 
 ## 🚀 快速开始
 
-### 数据加密
+### OAuth2/OIDC 认证
 
 ```go
-package main
-
 import (
-    "fmt"
-    "github.com/yourusername/golang/pkg/security"
+    "github.com/yourusername/golang/pkg/security/oauth2"
 )
 
-func main() {
-    // 创建加密器（从字符串密钥）
-    encryptor, err := security.NewAES256EncryptorFromString("my-secret-key-12345")
-    if err != nil {
-        panic(err)
-    }
+// 创建 OIDC 提供者 (Google)
+provider, err := oauth2.NewGoogleOIDCProvider(
+    ctx,
+    "your-client-id",
+    "your-client-secret",
+    "http://localhost:8080/callback",
+)
 
-    // 加密字符串
-    plaintext := "sensitive data"
-    ciphertext, err := encryptor.EncryptString(plaintext)
-    if err != nil {
-        panic(err)
-    }
+// 生成授权 URL
+authURL := provider.AuthorizationURL("random-state")
 
-    fmt.Printf("Encrypted: %s\n", ciphertext)
+// 交换授权码
+token, err := provider.Exchange(ctx, code)
 
-    // 解密字符串
-    decrypted, err := encryptor.DecryptString(ciphertext)
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Printf("Decrypted: %s\n", decrypted)
-}
+// 验证 ID Token
+claims, err := provider.VerifyIDToken(ctx, token.IDToken)
 ```
 
-### 字段级加密
+### RBAC 授权
 
 ```go
-package main
-
 import (
-    "github.com/yourusername/golang/pkg/security"
+    "github.com/yourusername/golang/pkg/security/rbac"
 )
 
-func main() {
-    // 创建加密器
-    encryptor, _ := security.NewAES256EncryptorFromString("my-secret-key")
-    fieldEncryptor := security.NewFieldEncryptor(encryptor)
+// 创建 RBAC
+rbacSystem := rbac.NewRBAC()
 
-    // 加密字段
-    encrypted, _ := fieldEncryptor.EncryptField("sensitive-value")
+// 初始化默认角色
+rbacSystem.InitializeDefaultRoles()
 
-    // 解密字段
-    decrypted, _ := fieldEncryptor.DecryptField(encrypted)
-}
-```
-
-### 数据脱敏
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/yourusername/golang/pkg/security"
+// 检查权限
+hasPermission, err := rbacSystem.CheckPermission(
+    ctx,
+    []string{"admin"},  // 用户角色
+    "user",             // 资源
+    "create",           // 操作
 )
 
-func main() {
-    masker := security.NewDataMasker()
-
-    // 脱敏邮箱
-    maskedEmail := masker.MaskEmail("test@example.com")
-    fmt.Println(maskedEmail) // t***t@***.com
-
-    // 脱敏手机号
-    maskedPhone := masker.MaskPhone("13812345678")
-    fmt.Println(maskedPhone) // 138****5678
-
-    // 脱敏身份证
-    maskedIDCard := masker.MaskIDCard("123456789012345678")
-    fmt.Println(maskedIDCard) // 1234********5678
-
-    // 脱敏姓名
-    maskedName := masker.MaskName("张三")
-    fmt.Println(maskedName) // 张*
-}
-```
-
-### 密钥管理
-
-```go
-package main
-
-import (
-    "context"
-    "github.com/yourusername/golang/pkg/security"
-)
-
-func main() {
-    // 创建密钥管理器
-    store := security.NewMemoryKeyStore()
-    km := security.NewKeyManager(store)
-
-    ctx := context.Background()
-
-    // 生成 AES 密钥
-    aesKey, err := km.GenerateAESKey(ctx, "my-aes-key", 256)
-    if err != nil {
-        panic(err)
-    }
-
-    // 生成 RSA 密钥对
-    privateKey, publicKey, err := km.GenerateRSAKeyPair(ctx, "my-rsa-key", 2048)
-    if err != nil {
-        panic(err)
-    }
-
-    // 获取密钥
-    retrievedKey, err := km.GetKey(ctx, aesKey.ID)
-    if err != nil {
-        panic(err)
-    }
-
-    // 轮换密钥
-    newKeyData := make([]byte, 32)
-    newKey, err := km.RotateKey(ctx, aesKey.ID, newKeyData)
-    if err != nil {
-        panic(err)
-    }
-}
-```
-
-### 审计日志
-
-```go
-package main
-
-import (
-    "context"
-    "github.com/yourusername/golang/pkg/security"
-)
-
-func main() {
-    // 创建审计日志记录器
-    store := security.NewMemoryAuditLogStore()
-    logger := security.NewAuditLogger(store)
-
-    ctx := context.Background()
-
-    // 记录操作日志
-    logger.LogAction(ctx, "user-123", "create", "user", "user-456",
-        security.AuditResultSuccess, map[string]interface{}{
-            "name": "Test User",
-        })
-
-    // 记录访问日志
-    logger.LogAccess(ctx, "user-123", "api", "endpoint-1",
-        security.AuditResultSuccess, "192.168.1.1", "Mozilla/5.0")
-
-    // 记录安全事件
-    logger.LogSecurity(ctx, "user-123", "failed_login", map[string]interface{}{
-        "attempts": 3,
-    })
-
-    // 查询日志
-    filter := &security.AuditLogFilter{
-        UserID: "user-123",
-        Action: "create",
-    }
-    logs, _ := logger.QueryLogs(ctx, filter)
-
-    // 导出日志
-    exporter := security.NewAuditLogExporter(store)
-    jsonData, _ := exporter.ExportJSON(ctx, filter)
-    csvData, _ := exporter.ExportCSV(ctx, filter)
-}
-```
-
-### 速率限制
-
-```go
-package main
-
-import (
-    "context"
-    "time"
-    "github.com/yourusername/golang/pkg/security"
-)
-
-func main() {
-    // 创建 IP 速率限制器（每分钟 100 次请求）
-    ipLimiter := security.NewIPRateLimiter(security.RateLimiterConfig{
-        Limit:  100,
-        Window: 1 * time.Minute,
-    })
-    defer ipLimiter.Shutdown(context.Background())
-
-    ctx := context.Background()
-
-    // 检查 IP 是否允许请求
-    allowed, err := ipLimiter.AllowIP(ctx, "192.168.1.1")
-    if err != nil {
-        // 速率限制超出
-        return
-    }
-
-    if !allowed {
-        // 请求被拒绝
-        return
-    }
-
-    // 处理请求...
-
-    // 获取剩余请求次数
-    remaining, _ := ipLimiter.GetRemaining(ctx, "192.168.1.1")
-}
+// 使用中间件
+middleware := rbac.NewMiddleware(rbacSystem)
+router.Use(middleware.RequirePermission("user", "read"))
 ```
 
 ---
 
-## 📚 API 文档
+## 📊 实现状态
 
-### AES256Encryptor
-
-- `NewAES256Encryptor(key []byte) (*AES256Encryptor, error)` - 创建加密器
-- `NewAES256EncryptorFromString(keyString string) (*AES256Encryptor, error)` - 从字符串创建加密器
-- `Encrypt(plaintext []byte) ([]byte, error)` - 加密数据
-- `Decrypt(ciphertext []byte) ([]byte, error)` - 解密数据
-- `EncryptString(plaintext string) (string, error)` - 加密字符串
-- `DecryptString(ciphertext string) (string, error)` - 解密字符串
-
-### FieldEncryptor
-
-- `NewFieldEncryptor(encryptor *AES256Encryptor) *FieldEncryptor` - 创建字段加密器
-- `EncryptField(value string) (string, error)` - 加密字段
-- `DecryptField(encryptedValue string) (string, error)` - 解密字段
-
-### DataMasker
-
-- `NewDataMasker() *DataMasker` - 创建数据脱敏器
-- `MaskEmail(email string) string` - 脱敏邮箱
-- `MaskPhone(phone string) string` - 脱敏手机号
-- `MaskIDCard(idCard string) string` - 脱敏身份证
-- `MaskName(name string) string` - 脱敏姓名
-
-### KeyManager
-
-- `NewKeyManager(keyStore KeyStore) *KeyManager` - 创建密钥管理器
-- `GenerateAESKey(ctx, name string, size int) (*Key, error)` - 生成 AES 密钥
-- `GenerateRSAKeyPair(ctx, name string, bits int) (*Key, *Key, error)` - 生成 RSA 密钥对
-- `SaveKey(ctx, key *Key) error` - 保存密钥
-- `GetKey(ctx, keyID string) (*Key, error)` - 获取密钥
-- `DeleteKey(ctx, keyID string) error` - 删除密钥
-- `ListKeys(ctx) ([]*Key, error)` - 列出所有密钥
-- `RotateKey(ctx, keyID string, newKeyData []byte) (*Key, error)` - 轮换密钥
-
-### AuditLogger
-
-- `NewAuditLogger(store AuditLogStore) *AuditLogger` - 创建审计日志记录器
-- `Log(ctx, log *AuditLog) error` - 记录审计日志
-- `LogAction(ctx, userID, action, resource, resourceID string, result AuditResult, details map[string]interface{}) error` - 记录操作日志
-- `LogAccess(ctx, userID, resource, resourceID string, result AuditResult, ipAddress, userAgent string) error` - 记录访问日志
-- `LogSecurity(ctx, userID, event string, details map[string]interface{}) error` - 记录安全事件
-- `GetLog(ctx, logID string) (*AuditLog, error)` - 获取审计日志
-- `QueryLogs(ctx, filter *AuditLogFilter) ([]*AuditLog, error)` - 查询审计日志
-- `DeleteLog(ctx, logID string) error` - 删除审计日志
-
-### AuditLogExporter
-
-- `NewAuditLogExporter(store AuditLogStore) *AuditLogExporter` - 创建审计日志导出器
-- `ExportJSON(ctx, filter *AuditLogFilter) ([]byte, error)` - 导出为 JSON
-- `ExportCSV(ctx, filter *AuditLogFilter) ([]byte, error)` - 导出为 CSV
-
-### RateLimiter
-
-- `NewRateLimiter(config RateLimiterConfig) *RateLimiter` - 创建速率限制器
-- `Allow(ctx, key string) (bool, error)` - 检查并记录请求
-- `Check(ctx, key string) (bool, error)` - 检查请求（不记录）
-- `Reset(ctx, key string) error` - 重置请求记录
-- `GetRemaining(ctx, key string) (int, error)` - 获取剩余请求次数
-- `Shutdown(ctx) error` - 关闭速率限制器
-
-### IPRateLimiter
-
-- `NewIPRateLimiter(config RateLimiterConfig) *IPRateLimiter` - 创建 IP 速率限制器
-- `AllowIP(ctx, ip string) (bool, error)` - 检查 IP 是否允许请求
-
-### UserRateLimiter
-
-- `NewUserRateLimiter(config RateLimiterConfig) *UserRateLimiter` - 创建用户速率限制器
-- `AllowUser(ctx, userID string) (bool, error)` - 检查用户是否允许请求
-
-### EndpointRateLimiter
-
-- `NewEndpointRateLimiter(config RateLimiterConfig) *EndpointRateLimiter` - 创建端点速率限制器
-- `AllowEndpoint(ctx, endpoint string) (bool, error)` - 检查端点是否允许请求
+| 功能 | 状态 | 优先级 | 预计完成 |
+|------|------|--------|---------|
+| **OAuth2** | ✅ 基础实现 | P0 | 完成 |
+| **OIDC** | ✅ 基础实现 | P0 | 完成 |
+| **RBAC** | ✅ 基础实现 | P0 | 完成 |
+| **RBAC 中间件** | ✅ 完成 | P0 | 完成 |
+| **JWT** | ⏳ 待实现 | P0 | 本周 |
+| **ABAC** | ⏳ 待实现 | P1 | 下周 |
+| **Vault** | ⏳ 待实现 | P1 | 下周 |
+| **测试** | ⏳ 待实现 | P0 | 本周 |
 
 ---
 
-## 🧪 测试
+## 🔐 安全最佳实践
 
-运行测试：
+### 1. OAuth2/OIDC
 
-```bash
-go test -v ./pkg/security/...
-```
+- ✅ 使用 PKCE (RFC 7636)
+- ✅ 验证 state 参数防止 CSRF
+- ✅ 使用 HTTPS（生产环境）
+- ✅ 安全存储 client_secret
+- ✅ 验证 ID Token 签名
 
-运行测试并查看覆盖率：
+### 2. RBAC
 
-```bash
-go test -v -coverprofile=coverage.out ./pkg/security/...
-go tool cover -html=coverage.out
-```
+- ✅ 最小权限原则
+- ✅ 角色继承支持
+- ✅ 权限细粒度控制
+- ✅ 线程安全实现
 
----
+### 3. 令牌管理
 
-## 📝 待实现功能
-
-根据改进计划，以下功能待实现：
-
-- [ ] HashiCorp Vault 集成
-- [ ] 密钥版本管理
-- [ ] 密钥自动轮换
-- [ ] 密钥访问审计
-
-## 📚 安全文档
-
-- **[安全最佳实践](../../docs/security/SECURITY-BEST-PRACTICES.md)** - 完整的安全最佳实践指南
-- **[安全功能快速开始](../../docs/security/SECURITY-QUICK-START.md)** - 快速上手安全功能
-- **[安全文档索引](../../docs/security/README.md)** - 安全文档导航
+- ⏳ 短期访问令牌（15分钟）
+- ⏳ 长期刷新令牌（7天）
+- ⏳ 令牌轮换
+- ⏳ 令牌撤销
 
 ---
 
-## 🔗 相关文档
+## 📚 参考资源
 
-- [改进任务看板](../../../docs/IMPROVEMENT-TASK-BOARD.md)
-- [改进路线图](../../../docs/IMPROVEMENT-ROADMAP-EXECUTABLE.md)
+### 标准和规范
 
----
+- [RFC 6749 - OAuth 2.0](https://datatracker.ietf.org/doc/html/rfc6749)
+- [RFC 7636 - PKCE](https://datatracker.ietf.org/doc/html/rfc7636)
+- [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
+- [NIST RBAC](https://csrc.nist.gov/projects/role-based-access-control)
 
-## 📊 完成状态
+### Go 库
 
-| 功能 | 状态 | 测试覆盖率 |
-|------|------|-----------|
-| AES-256 加密 | ✅ | 90%+ |
-| 字段级加密 | ✅ | 90%+ |
-| 数据脱敏 | ✅ | 90%+ |
-| 密钥管理 | ✅ | 90%+ |
-| 密钥轮换 | ✅ | 90%+ |
-| 审计日志 | ✅ | 90%+ |
-| 速率限制 | ✅ | 90%+ |
-| 密码哈希 | ✅ | 90%+ |
-| CSRF 防护 | ✅ | 90%+ |
-| XSS 防护 | ✅ | 90%+ |
-| SQL 注入防护 | ✅ | 90%+ |
-| 安全头部 | ✅ | 90%+ |
-| 输入验证 | ✅ | 90%+ |
-| 文件上传安全 | ✅ | 90%+ |
-| 会话管理 | ✅ | 90%+ |
-| 安全配置管理 | ✅ | 90%+ |
-| HTTPS/TLS | ✅ | 90%+ |
-| 安全中间件 | ✅ | 90%+ |
+- [golang.org/x/oauth2](https://pkg.go.dev/golang.org/x/oauth2)
+- [github.com/coreos/go-oidc](https://github.com/coreos/go-oidc)
+- [github.com/golang-jwt/jwt](https://github.com/golang-jwt/jwt)
 
 ---
 
-**最后更新**: 2025-01-XX
+## 🎯 下一步
+
+### 本周任务
+
+1. **JWT 实现**
+   - 生成和验证 JWT
+   - 支持 RS256/ES256
+   - 刷新令牌机制
+
+2. **测试**
+   - OAuth2/OIDC 单元测试
+   - RBAC 单元测试
+   - 集成测试
+
+3. **文档**
+   - 使用指南
+   - 最佳实践
+   - 故障排查
+
+### 下周任务
+
+1. **ABAC 实现**
+   - 策略引擎
+   - 属性评估
+
+2. **Vault 集成**
+   - 密钥存储
+   - 密钥轮换
+
+---
+
+**状态**: 🔄 快速推进中
+**目标**: 安全性 6/10 → 9/10
+**优先级**: P0 (最高)
