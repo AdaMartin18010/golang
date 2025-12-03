@@ -43,7 +43,7 @@ check-env: ## 检查开发环境配置
 install-hooks: ## 安装 Git hooks
 	@bash scripts/dev/install-hooks.sh
 
-generate: ## 生成代码（Ent, Wire, gRPC, OpenAPI等）
+generate: ## 生成代码（Ent, Wire, gRPC, OpenAPI, eBPF等）
 	@echo "生成 Ent 代码..."
 	cd internal/infrastructure/database/ent && go generate ./...
 	@echo "生成 Wire 代码..."
@@ -52,6 +52,8 @@ generate: ## 生成代码（Ent, Wire, gRPC, OpenAPI等）
 	@bash scripts/grpc/generate.sh || echo "gRPC 代码生成跳过（需要安装 protoc）"
 	@echo "生成 OpenAPI 代码..."
 	@bash scripts/api/generate-openapi.sh || echo "OpenAPI 代码生成跳过（需要安装 oapi-codegen）"
+	@echo "生成 eBPF 代码..."
+	@make generate-ebpf || echo "eBPF 代码生成跳过（需要 Linux + Clang）"
 
 generate-ent: ## 生成 Ent 代码
 	cd internal/infrastructure/database/ent && go generate ./...
@@ -79,6 +81,14 @@ validate-asyncapi: ## 验证 AsyncAPI 规范
 	@bash scripts/api/validate-asyncapi.sh
 
 validate-api: validate-openapi validate-asyncapi ## 验证所有 API 规范
+
+generate-ebpf: ## 生成 eBPF 代码（需要 Linux + Clang）
+	@echo "生成 eBPF 代码..."
+	@if [ "$(shell uname -s)" = "Linux" ]; then \
+		go generate ./pkg/observability/ebpf/...; \
+	else \
+		echo "⚠️  eBPF 生成需要 Linux 环境，跳过"; \
+	fi
 
 generate-ent: ## 生成 Ent 代码
 	go generate ./internal/infrastructure/database/ent

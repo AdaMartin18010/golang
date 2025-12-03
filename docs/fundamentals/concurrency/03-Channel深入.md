@@ -661,8 +661,24 @@ func main() {
 
 ### 下一步学习
 
-- [04-Context应用](./04-Context应用.md)
-- [05-并发模式](./05-并发模式.md)
-- [select与context](../language/02-并发编程/05-select与context.md)
+- [04-Context应用](./04-Context应用.md) - 学习Context控制
+- [05-并发模式](./05-并发模式.md) - 实践并发模式
+- [02-Goroutine深入](./02-Goroutine深入.md) - 回顾Goroutine
 
 ### 推荐阅读
+
+- [Go Blog - Share Memory By Communicating](https://go.dev/blog/codelab-share)
+- [Go Blog - Pipelines](https://go.dev/blog/pipelines)
+- [Effective Go - Channels](https://go.dev/doc/effective_go#channels)
+- [Channel内部实现](https://go.dev/src/runtime/chan.go) - 源码分析
+
+### 相关主题
+
+- [并发模式](./05-并发模式.md) - 并发设计模式
+- [性能优化](../../advanced/performance/) - Channel性能优化
+- [架构模式](../../advanced/architecture/) - 高级架构模式
+
+---
+
+**上次更新**: 2025-12-03
+**维护者**: Go Framework Team

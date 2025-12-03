@@ -789,7 +789,29 @@ func TestWithTimeout(t *testing.T) {
 
 ### 下一步学习
 
-- [05-并发模式](./05-并发模式.md)
-- [HTTP服务器](../../development/web/03-HTTP服务器.md)
+- [05-并发模式](./05-并发模式.md) - 实践并发模式
+- [HTTP服务器](../../development/web/http-server.md) - Web服务中的Context
+- [gRPC服务](../../development/grpc/grpc-basics.md) - RPC中的Context
 
 ### 推荐阅读
+
+- [Go Blog - Context](https://go.dev/blog/context) - 官方Context指南
+- [Context包文档](https://pkg.go.dev/context) - 标准库文档
+- [Context最佳实践](https://go.dev/blog/context-and-structs) - Context使用规范
+
+### 相关主题
+
+- [并发模式](./05-并发模式.md) - 超时控制模式
+- [可观测性](../../practices/observability/) - 分布式追踪
+- [微服务](../../development/microservices/) - 微服务中的Context
+
+### 实战案例
+
+- [HTTP中间件](../../examples/http-middleware/) - Context传递示例
+- [数据库操作](../../examples/database-context/) - 数据库超时控制
+- [微服务通信](../../examples/microservices-context/) - 服务间Context传播
+
+---
+
+**上次更新**: 2025-12-03
+**维护者**: Go Framework Team

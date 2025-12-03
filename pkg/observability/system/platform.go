@@ -21,8 +21,13 @@ type PlatformInfo struct {
 	ContainerName   string
 	KubernetesPod   string
 	KubernetesNode  string
+	KubernetesNS    string // Kubernetes Namespace
 	Virtualization  string
+	CloudProvider   string // AWS/GCP/Azure/Alibaba/Tencent
+	CloudRegion     string
+	CloudZone       string
 	CPUs            int
+	MemoryTotal     uint64 // Total memory in bytes
 }
 
 // PlatformMonitor 平台信息监控器
@@ -123,12 +128,22 @@ func detectPlatform() (PlatformInfo, error) {
 	info.ContainerName = containerName
 
 	// 检测 Kubernetes
-	pod, node := detectKubernetes()
+	pod, node, ns := detectKubernetes()
 	info.KubernetesPod = pod
 	info.KubernetesNode = node
+	info.KubernetesNS = ns
+
+	// 检测云环境
+	provider, region, zone := detectCloudProvider()
+	info.CloudProvider = provider
+	info.CloudRegion = region
+	info.CloudZone = zone
 
 	// 检测虚拟化
 	info.Virtualization = detectVirtualization()
+
+	// 检测内存
+	info.MemoryTotal = detectTotalMemory()
 
 	return info, nil
 }
@@ -172,14 +187,18 @@ func detectContainer() (id, name string) {
 }
 
 // detectKubernetes 检测 Kubernetes 环境
-func detectKubernetes() (pod, node string) {
-	// 从环境变量读取
+func detectKubernetes() (pod, node, namespace string) {
+	// 从环境变量读取（推荐的 Downward API 方式）
 	pod = os.Getenv("POD_NAME")
 	if pod == "" {
 		pod = os.Getenv("HOSTNAME") // 通常 Pod 名就是 HOSTNAME
 	}
 
 	node = os.Getenv("NODE_NAME")
+	namespace = os.Getenv("POD_NAMESPACE")
+	if namespace == "" {
+		namespace = os.Getenv("NAMESPACE")
+	}
 
 	// 尝试从文件读取（如果存在）
 	if pod == "" {
@@ -188,24 +207,115 @@ func detectKubernetes() (pod, node string) {
 		}
 	}
 
+	// 从 service account 读取 namespace
+	if namespace == "" {
+		if data, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
+			namespace = strings.TrimSpace(string(data))
+		}
+	}
+
 	// 检查是否在 Kubernetes 中
 	if pod != "" {
 		// 检查是否有 Kubernetes 相关的挂载点或文件
 		// 1. 检查 service account token
 		if _, err := os.Stat("/var/run/secrets/kubernetes.io/serviceaccount"); err == nil {
-			return pod, node
+			return pod, node, namespace
 		}
 		// 2. 检查 podinfo 目录
 		if _, err := os.Stat("/etc/podinfo"); err == nil {
-			return pod, node
+			return pod, node, namespace
 		}
 		// 3. 检查 KUBERNETES_SERVICE_HOST 环境变量
 		if os.Getenv("KUBERNETES_SERVICE_HOST") != "" {
-			return pod, node
+			return pod, node, namespace
 		}
 	}
 
-	return "", ""
+	return "", "", ""
+}
+
+// detectCloudProvider 检测云服务提供商
+func detectCloudProvider() (provider, region, zone string) {
+	// AWS 检测
+	if os.Getenv("AWS_EXECUTION_ENV") != "" || os.Getenv("AWS_REGION") != "" {
+		provider = "aws"
+		region = os.Getenv("AWS_REGION")
+		zone = os.Getenv("AWS_AVAILABILITY_ZONE")
+		
+		// 尝试从 EC2 metadata 读取
+		if region == "" {
+			// 实际实现需要调用 EC2 metadata API
+			// http://169.254.169.254/latest/meta-data/placement/region
+		}
+		return provider, region, zone
+	}
+
+	// GCP 检测
+	if os.Getenv("GOOGLE_CLOUD_PROJECT") != "" || os.Getenv("GCP_PROJECT") != "" {
+		provider = "gcp"
+		region = os.Getenv("GOOGLE_CLOUD_REGION")
+		zone = os.Getenv("GOOGLE_CLOUD_ZONE")
+		
+		// 尝试从 GCE metadata 读取
+		if region == "" {
+			// 实际实现需要调用 GCE metadata API
+			// http://metadata.google.internal/computeMetadata/v1/instance/zone
+		}
+		return provider, region, zone
+	}
+
+	// Azure 检测
+	if os.Getenv("WEBSITE_SITE_NAME") != "" || os.Getenv("AZURE_CLIENT_ID") != "" {
+		provider = "azure"
+		region = os.Getenv("AZURE_REGION")
+		// Azure 使用 region 而不是 zone
+		return provider, region, ""
+	}
+
+	// Alibaba Cloud 检测
+	if os.Getenv("ALIBABA_CLOUD_REGION_ID") != "" {
+		provider = "alibaba"
+		region = os.Getenv("ALIBABA_CLOUD_REGION_ID")
+		zone = os.Getenv("ALIBABA_CLOUD_ZONE_ID")
+		return provider, region, zone
+	}
+
+	// Tencent Cloud 检测
+	if os.Getenv("TENCENTCLOUD_REGION") != "" {
+		provider = "tencent"
+		region = os.Getenv("TENCENTCLOUD_REGION")
+		zone = os.Getenv("TENCENTCLOUD_ZONE")
+		return provider, region, zone
+	}
+
+	// 通用云环境变量
+	if provider := os.Getenv("CLOUD_PROVIDER"); provider != "" {
+		return provider, os.Getenv("CLOUD_REGION"), os.Getenv("CLOUD_ZONE")
+	}
+
+	return "", "", ""
+}
+
+// detectTotalMemory 检测总内存
+func detectTotalMemory() uint64 {
+	// Linux: 读取 /proc/meminfo
+	if runtime.GOOS == "linux" {
+		if data, err := os.ReadFile("/proc/meminfo"); err == nil {
+			lines := strings.Split(string(data), "\n")
+			for _, line := range lines {
+				if strings.HasPrefix(line, "MemTotal:") {
+					fields := strings.Fields(line)
+					if len(fields) >= 2 {
+						var kb uint64
+						fmt.Sscanf(fields[1], "%d", &kb)
+						return kb * 1024 // KB to Bytes
+					}
+				}
+			}
+		}
+	}
+	// 其他操作系统可以使用 gopsutil 库
+	return 0
 }
 
 // detectVirtualization 检测虚拟化环境

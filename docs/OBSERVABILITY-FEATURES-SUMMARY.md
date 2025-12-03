@@ -38,12 +38,14 @@
 ### 导出的指标总数：34 个
 
 #### 基础系统指标（21 个）
+
 - 系统资源：7 个
 - IO：4 个
 - 网络：5 个
 - 磁盘：5 个
 
 #### 高级功能指标（13 个）
+
 - 负载监控：4 个
 - APM：5 个
 - 限流器：3 个
@@ -54,6 +56,7 @@
 ### 核心实现文件：24 个
 
 #### 系统监控（19 个）
+
 - `monitor.go` - 系统资源监控
 - `cpu_linux.go` - Linux CPU 监控
 - `cpu_common.go` - CPU 通用接口
@@ -75,6 +78,7 @@
 - `kubernetes.go` - Kubernetes 集成
 
 #### 智能分析（5 个）
+
 - `metrics_export.go` - 指标导出
 - `alerting.go` - 告警系统
 - `diagnostics.go` - 诊断工具
@@ -82,10 +86,12 @@
 - `dashboard.go` - 仪表板导出
 
 ### 集成和示例：2 个
+
 - `integration.go` - 统一集成接口
 - `examples/observability/complete-integration/main.go` - 完整示例
 
 ### 文档：5 个
+
 - `pkg/observability/system/README.md`
 - `docs/COMPLETE-IMPLEMENTATION-FINAL-REPORT.md`
 - `docs/OBSERVABILITY-COMPLETE-GUIDE.md`
@@ -95,16 +101,19 @@
 ## 🎯 功能分类
 
 ### 基础监控
+
 - 系统资源监控
 - 平台检测
 - 健康检查
 
 ### 高级监控
+
 - 负载监控
 - APM 监控
 - Kubernetes 集成
 
 ### 智能分析
+
 - 指标导出和查询
 - 告警系统
 - 诊断工具
@@ -112,6 +121,7 @@
 - 仪表板导出
 
 ### 控制功能
+
 - 限流器
 - 配置热重载
 - 指标聚合
@@ -126,22 +136,26 @@
 ## 🚀 使用场景
 
 ### 1. 生产环境监控
+
 - 系统资源监控
 - 健康检查
 - 告警系统
 - 诊断工具
 
 ### 2. 性能分析
+
 - APM 监控
 - 负载监控
 - 资源预测
 
 ### 3. 云原生环境
+
 - Kubernetes 集成
 - 容器检测
 - 虚拟化检测
 
 ### 4. 运维管理
+
 - 指标导出
 - 仪表板导出
 - 配置热重载

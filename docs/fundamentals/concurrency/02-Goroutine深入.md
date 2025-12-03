@@ -635,8 +635,23 @@ for i := 0; i < 1000; i++ {
 
 ### 下一步学习
 
-- [03-Channel深入](./03-Channel深入.md)
-- [04-Context应用](./04-Context应用.md)
-- [Go调度器](../language/02-并发编程/04-Go调度器.md)
+- [03-Channel深入](./03-Channel深入.md) - 学习Goroutine间通信
+- [04-Context应用](./04-Context应用.md) - 控制Goroutine生命周期
+- [05-并发模式](./05-并发模式.md) - 实践并发模式
 
 ### 推荐阅读
+
+- [Go Runtime Scheduler](https://go.dev/src/runtime/proc.go) - 调度器源码
+- [Goroutine调度详解](https://morsmachine.dk/go-scheduler) - 深入理解GMP
+- [Effective Go - Goroutines](https://go.dev/doc/effective_go#goroutines)
+
+### 相关主题
+
+- [GMP调度器](../../advanced/runtime/scheduler.md) - 调度器深入解析
+- [并发性能优化](../../advanced/performance/concurrency.md) - 性能调优
+- [Goroutine泄漏检测](../../practices/goroutine-leak-detection.md) - 避免泄漏
+
+---
+
+**上次更新**: 2025-12-03
+**维护者**: Go Framework Team
