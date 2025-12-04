@@ -20,14 +20,14 @@ var (
 
 // Config JWT配置
 type Config struct {
-	SecretKey       string        // 密钥（HMAC）
+	SecretKey       string          // 密钥（HMAC）
 	PrivateKey      *rsa.PrivateKey // 私钥（RSA）
 	PublicKey       *rsa.PublicKey  // 公钥（RSA）
-	SigningMethod   string        // 签名方法 (HS256, RS256)
-	AccessTokenTTL  time.Duration // Access Token 过期时间
-	RefreshTokenTTL time.Duration // Refresh Token 过期时间
-	Issuer          string        // 签发者
-	Audience        string        // 受众
+	SigningMethod   string          // 签名方法 (HS256, RS256)
+	AccessTokenTTL  time.Duration   // Access Token 过期时间
+	RefreshTokenTTL time.Duration   // Refresh Token 过期时间
+	Issuer          string          // 签发者
+	Audience        string          // 受众
 }
 
 // Claims JWT Claims

@@ -24,10 +24,11 @@
 // - 支持版本控制和迁移
 //
 // 使用方式：
-//   go run cmd/temporal-worker/main.go
-//   # 或
-//   go build -o bin/temporal-worker cmd/temporal-worker/main.go
-//   ./bin/temporal-worker
+//
+//	go run cmd/temporal-worker/main.go
+//	# 或
+//	go build -o bin/temporal-worker cmd/temporal-worker/main.go
+//	./bin/temporal-worker
 //
 // 配置：
 // - 配置文件：configs/config.yaml
@@ -43,12 +44,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/yourusername/golang/internal/config"
 	appuser "github.com/yourusername/golang/internal/application/user"
+	appworkflow "github.com/yourusername/golang/internal/application/workflow"
+	"github.com/yourusername/golang/internal/config"
 	entdb "github.com/yourusername/golang/internal/infrastructure/database/ent"
 	entrepo "github.com/yourusername/golang/internal/infrastructure/database/ent/repository"
 	"github.com/yourusername/golang/internal/infrastructure/workflow/temporal"
-	appworkflow "github.com/yourusername/golang/internal/application/workflow"
 )
 
 func main() {

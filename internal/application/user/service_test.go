@@ -7,188 +7,233 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/suite"
+	"github.com/stretchr/testify/require"
 
 	"github.com/yourusername/golang/internal/domain/user"
-	"github.com/yourusername/golang/test/mocks"
 )
 
-// ServiceTestSuite 用户服务测试套件
-type ServiceTestSuite struct {
-	suite.Suite
-	ctx      context.Context
-	repo     *mocks.MockRepository[user.User]
-	service  *Service
+// MockUserRepository 是用户仓储的mock实现
+type MockUserRepository struct {
+	mock.Mock
 }
 
-// SetupTest 每个测试前执行
-func (s *ServiceTestSuite) SetupTest() {
-	s.ctx = context.Background()
-	s.repo = &mocks.MockRepository[user.User]{}
-	s.service = &Service{
-		repo: s.repo,
+func (m *MockUserRepository) FindByID(ctx context.Context, id string) (*user.User, error) {
+	args := m.Called(ctx, id)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
 	}
+	return args.Get(0).(*user.User), args.Error(1)
 }
 
-// TearDownTest 每个测试后执行
-func (s *ServiceTestSuite) TearDownTest() {
-	s.repo.AssertExpectations(s.T())
+func (m *MockUserRepository) FindByEmail(ctx context.Context, email string) (*user.User, error) {
+	args := m.Called(ctx, email)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*user.User), args.Error(1)
 }
 
-// TestCreateUser 测试创建用户
-func (s *ServiceTestSuite) TestCreateUser() {
+func (m *MockUserRepository) Save(ctx context.Context, u *user.User) error {
+	args := m.Called(ctx, u)
+	return args.Error(0)
+}
+
+func (m *MockUserRepository) Update(ctx context.Context, u *user.User) error {
+	args := m.Called(ctx, u)
+	return args.Error(0)
+}
+
+func (m *MockUserRepository) Delete(ctx context.Context, id string) error {
+	args := m.Called(ctx, id)
+	return args.Error(0)
+}
+
+func (m *MockUserRepository) List(ctx context.Context, limit, offset int) ([]*user.User, error) {
+	args := m.Called(ctx, limit, offset)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*user.User), args.Error(1)
+}
+
+// TestNewService 测试创建服务
+func TestNewService(t *testing.T) {
+	repo := new(MockUserRepository)
+	service := NewService(repo)
+
+	assert.NotNil(t, service)
+}
+
+// TestService_GetUser 测试获取用户
+func TestService_GetUser(t *testing.T) {
+	ctx := context.Background()
+	repo := new(MockUserRepository)
+	service := NewService(repo)
+
 	// 准备测试数据
-	testUser := &user.User{
-		Email: "test@example.com",
-		Name:  "Test User",
-	}
+	testUser := user.NewUser("test@example.com", "Test User")
 
-	// 设置 mock 期望
-	s.repo.On("Create", s.ctx, mock.AnythingOfType("*user.User")).Return(nil)
+	// 设置mock期望
+	repo.On("FindByID", ctx, testUser.ID).Return(testUser, nil)
 
 	// 执行测试
-	err := s.service.CreateUser(s.ctx, testUser)
+	result, err := service.GetUser(ctx, testUser.ID)
 
 	// 验证结果
-	s.NoError(err)
+	require.NoError(t, err)
+	assert.Equal(t, testUser.ID, result.ID)
+	assert.Equal(t, testUser.Email, result.Email)
+
+	// 验证mock被调用
+	repo.AssertExpectations(t)
 }
 
-// TestCreateUser_ValidationError 测试创建用户 - 验证错误
-func (s *ServiceTestSuite) TestCreateUser_ValidationError() {
-	// 无效的用户（空邮箱）
-	invalidUser := &user.User{
-		Email: "",
-		Name:  "Test User",
-	}
+// TestService_GetUser_NotFound 测试获取不存在的用户
+func TestService_GetUser_NotFound(t *testing.T) {
+	ctx := context.Background()
+	repo := new(MockUserRepository)
+	service := NewService(repo)
 
-	// 不应该调用 repository
-	// s.repo.On(...) 不设置期望
+	// 设置mock期望 - 返回错误
+	repo.On("FindByID", ctx, "non-existent").Return(nil, errors.New("user not found"))
 
 	// 执行测试
-	err := s.service.CreateUser(s.ctx, invalidUser)
+	result, err := service.GetUser(ctx, "non-existent")
 
 	// 验证结果
-	s.Error(err)
-	s.Contains(err.Error(), "email")
+	assert.Error(t, err)
+	assert.Nil(t, result)
+
+	repo.AssertExpectations(t)
 }
 
-// TestCreateUser_RepositoryError 测试创建用户 - 仓储错误
-func (s *ServiceTestSuite) TestCreateUser_RepositoryError() {
-	testUser := &user.User{
-		Email: "test@example.com",
-		Name:  "Test User",
-	}
+// TestService_CreateUser 测试创建用户
+func TestService_CreateUser(t *testing.T) {
+	ctx := context.Background()
+	repo := new(MockUserRepository)
+	service := NewService(repo)
 
-	// 设置 mock 返回错误
-	expectedErr := errors.New("database error")
-	s.repo.On("Create", s.ctx, mock.AnythingOfType("*user.User")).Return(expectedErr)
+	email := "newuser@example.com"
+	name := "New User"
+
+	// 设置mock期望 - 邮箱不存在
+	repo.On("FindByEmail", ctx, email).Return(nil, errors.New("not found"))
+	// 设置mock期望 - 保存成功
+	repo.On("Save", ctx, mock.AnythingOfType("*user.User")).Return(nil)
 
 	// 执行测试
-	err := s.service.CreateUser(s.ctx, testUser)
+	result, err := service.CreateUser(ctx, email, name)
 
 	// 验证结果
-	s.Error(err)
-	s.Equal(expectedErr, err)
+	require.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, email, result.Email)
+	assert.Equal(t, name, result.Name)
+
+	repo.AssertExpectations(t)
 }
 
-// TestFindUserByID 测试根据ID查找用户
-func (s *ServiceTestSuite) TestFindUserByID() {
-	expectedUser := &user.User{
-		ID:    "123",
-		Email: "test@example.com",
-		Name:  "Test User",
-	}
+// TestService_CreateUser_DuplicateEmail 测试创建重复邮箱用户
+func TestService_CreateUser_DuplicateEmail(t *testing.T) {
+	ctx := context.Background()
+	repo := new(MockUserRepository)
+	service := NewService(repo)
 
-	// 设置 mock 期望
-	s.repo.On("FindByID", s.ctx, "123").Return(expectedUser, nil)
+	email := "existing@example.com"
+	existingUser := user.NewUser(email, "Existing User")
+
+	// 设置mock期望 - 邮箱已存在
+	repo.On("FindByEmail", ctx, email).Return(existingUser, nil)
 
 	// 执行测试
-	result, err := s.service.FindUserByID(s.ctx, "123")
+	result, err := service.CreateUser(ctx, email, "New User")
 
 	// 验证结果
-	s.NoError(err)
-	s.Equal(expectedUser, result)
+	assert.Error(t, err)
+	assert.Nil(t, result)
+	assert.Contains(t, err.Error(), "already exists")
+
+	repo.AssertExpectations(t)
 }
 
-// TestFindUserByID_NotFound 测试查找用户 - 未找到
-func (s *ServiceTestSuite) TestFindUserByID_NotFound() {
-	// 设置 mock 返回 nil
-	s.repo.On("FindByID", s.ctx, "999").Return(nil, nil)
+// TestService_UpdateUser 测试更新用户
+func TestService_UpdateUser(t *testing.T) {
+	ctx := context.Background()
+	repo := new(MockUserRepository)
+	service := NewService(repo)
+
+	testUser := user.NewUser("test@example.com", "Old Name")
+
+	// 设置mock期望
+	repo.On("FindByID", ctx, testUser.ID).Return(testUser, nil)
+	repo.On("Update", ctx, testUser).Return(nil)
 
 	// 执行测试
-	result, err := s.service.FindUserByID(s.ctx, "999")
+	err := service.UpdateUserName(ctx, testUser.ID, "New Name")
 
 	// 验证结果
-	s.NoError(err)
-	s.Nil(result)
+	require.NoError(t, err)
+	assert.Equal(t, "New Name", testUser.Name)
+
+	repo.AssertExpectations(t)
 }
 
-// 运行测试套件
-func TestServiceTestSuite(t *testing.T) {
-	suite.Run(t, new(ServiceTestSuite))
+// TestService_DeleteUser 测试删除用户
+func TestService_DeleteUser(t *testing.T) {
+	ctx := context.Background()
+	repo := new(MockUserRepository)
+	service := NewService(repo)
+
+	userID := "user-to-delete"
+
+	// 设置mock期望
+	repo.On("Delete", ctx, userID).Return(nil)
+
+	// 执行测试
+	err := service.DeleteUser(ctx, userID)
+
+	// 验证结果
+	require.NoError(t, err)
+
+	repo.AssertExpectations(t)
 }
 
-// 表格驱动测试示例
-func TestService_UpdateUser_TableDriven(t *testing.T) {
-	tests := []struct {
-		name    string
-		userID  string
-		updates map[string]interface{}
-		setup   func(*mocks.MockRepository[user.User])
-		wantErr bool
-	}{
-		{
-			name:   "successful update",
-			userID: "123",
-			updates: map[string]interface{}{
-				"name": "Updated Name",
-			},
-			setup: func(repo *mocks.MockRepository[user.User]) {
-				existingUser := &user.User{
-					ID:    "123",
-					Email: "test@example.com",
-					Name:  "Old Name",
-				}
-				repo.On("FindByID", mock.Anything, "123").Return(existingUser, nil)
-				repo.On("Update", mock.Anything, mock.AnythingOfType("*user.User")).Return(nil)
-			},
-			wantErr: false,
-		},
-		{
-			name:   "user not found",
-			userID: "999",
-			updates: map[string]interface{}{
-				"name": "Updated Name",
-			},
-			setup: func(repo *mocks.MockRepository[user.User]) {
-				repo.On("FindByID", mock.Anything, "999").Return(nil, nil)
-			},
-			wantErr: true,
-		},
+// TestService_ListUsers 测试列出用户
+func TestService_ListUsers(t *testing.T) {
+	ctx := context.Background()
+	repo := new(MockUserRepository)
+	service := NewService(repo)
+
+	users := []*user.User{
+		user.NewUser("user1@example.com", "User 1"),
+		user.NewUser("user2@example.com", "User 2"),
+		user.NewUser("user3@example.com", "User 3"),
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// 创建 mock
-			repo := &mocks.MockRepository[user.User]{}
-			if tt.setup != nil {
-				tt.setup(repo)
-			}
+	// 设置mock期望
+	repo.On("List", ctx, 10, 0).Return(users, nil)
 
-			service := &Service{repo: repo}
+	// 执行测试
+	result, err := service.ListUsers(ctx, 10, 0)
 
-			// 执行测试
-			err := service.UpdateUser(context.Background(), tt.userID, tt.updates)
+	// 验证结果
+	require.NoError(t, err)
+	assert.Len(t, result, 3)
 
-			// 验证结果
-			if tt.wantErr {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-			}
+	repo.AssertExpectations(t)
+}
 
-			// 验证 mock 调用
-			repo.AssertExpectations(t)
-		})
+// BenchmarkService_GetUser 性能测试 - 获取用户
+func BenchmarkService_GetUser(b *testing.B) {
+	ctx := context.Background()
+	repo := new(MockUserRepository)
+	service := NewService(repo)
+
+	testUser := user.NewUser("test@example.com", "Test User")
+	repo.On("FindByID", ctx, testUser.ID).Return(testUser, nil)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		service.GetUser(ctx, testUser.ID)
 	}
 }

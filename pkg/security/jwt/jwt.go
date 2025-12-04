@@ -7,6 +7,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -277,6 +278,3 @@ func (tm *TokenManager) ExportKeys() (privateKeyPEM, publicKeyPEM []byte, err er
 
 	return privateKeyPEM, publicKeyPEM, nil
 }
-
-// 需要导入 os 包
-import "os"
