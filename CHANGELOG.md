@@ -5,6 +5,7 @@
 ### 新增
 
 #### NATS 消息队列支持
+
 - ✅ 完整的 NATS 客户端实现
 - ✅ 支持发布/订阅模式
 - ✅ 支持 Request/Reply 模式
@@ -14,6 +15,7 @@
 - ✅ 使用文档和示例代码
 
 #### gRPC 框架完善
+
 - ✅ Proto 文件定义（user.proto, health.proto）
 - ✅ Handler 实现（UserHandler, HealthHandler）
 - ✅ 拦截器实现（日志、追踪）
@@ -22,12 +24,14 @@
 - ✅ 使用文档和示例代码
 
 #### 代码生成工具链
+
 - ✅ gRPC 代码生成脚本
 - ✅ OpenAPI 代码生成脚本（已存在，已验证）
 - ✅ AsyncAPI 代码生成脚本（已存在）
 - ✅ Makefile 集成
 
 #### 文档和示例
+
 - ✅ NATS 使用文档
 - ✅ gRPC 使用文档
 - ✅ 代码生成工具链文档
@@ -50,6 +54,7 @@
 ## 技术栈状态
 
 ### 已完成 ✅
+
 - OpenTelemetry (OTLP)
 - PostgreSQL
 - SQLite3

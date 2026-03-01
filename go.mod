@@ -23,6 +23,11 @@ require (
 	// 测试
 	github.com/stretchr/testify v1.11.1
 
+	// Vault
+	github.com/hashicorp/vault/api v1.16.0
+	github.com/hashicorp/vault/api/auth/approle v0.11.0
+	github.com/hashicorp/vault/api/auth/kubernetes v0.11.0
+
 	// OpenTelemetry - 使用主版本，子包会自动解析
 	go.opentelemetry.io/otel v1.38.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.38.0

@@ -3,6 +3,8 @@ package ebpf
 import (
 	"context"
 	"fmt"
+	"runtime"
+	"sync"
 	"time"
 
 	"go.opentelemetry.io/otel/metric"
@@ -27,10 +29,10 @@ type Collector struct {
 	syscallTracer *SyscallTracer
 	networkTracer *NetworkTracer
 
-	// 指标（保留用于兼容性）
-	syscallCounter          metric.Int64Counter
-	networkPacketCounter    metric.Int64Counter
-	syscallLatencyHistogram metric.Float64Histogram
+	// 运行时状态
+	started    bool
+	startMutex sync.Mutex
+	wg         sync.WaitGroup
 }
 
 // Config 配置
@@ -52,6 +54,11 @@ type Config struct {
 // 使用 Cilium eBPF 库实现真正的系统级监控
 func NewCollector(cfg Config) (*Collector, error) {
 	if !cfg.Enabled {
+		return &Collector{enabled: false}, nil
+	}
+
+	// 非 Linux 系统不支持 eBPF
+	if runtime.GOOS != "linux" {
 		return &Collector{enabled: false}, nil
 	}
 
@@ -117,6 +124,13 @@ func (c *Collector) Start() error {
 		return nil
 	}
 
+	c.startMutex.Lock()
+	defer c.startMutex.Unlock()
+
+	if c.started {
+		return nil
+	}
+
 	// 启动系统调用追踪器
 	if c.syscallTracer != nil {
 		if err := c.syscallTracer.Start(); err != nil {
@@ -135,7 +149,36 @@ func (c *Collector) Start() error {
 		}
 	}
 
+	c.started = true
+
+	// 启动定期收集任务
+	c.wg.Add(1)
+	go c.collectLoop()
+
 	return nil
+}
+
+// collectLoop 定期收集循环
+func (c *Collector) collectLoop() {
+	defer c.wg.Done()
+
+	ticker := time.NewTicker(c.collectInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			c.collect()
+		}
+	}
+}
+
+// collect 执行一次数据收集
+func (c *Collector) collect() {
+	// 这里可以添加定期收集的逻辑
+	// 例如：从 eBPF maps 读取聚合数据、更新指标等
 }
 
 // GetSyscallTracer 获取系统调用追踪器
@@ -148,6 +191,38 @@ func (c *Collector) GetNetworkTracer() *NetworkTracer {
 	return c.networkTracer
 }
 
+// GetSyscallStats 获取系统调用统计
+func (c *Collector) GetSyscallStats(ctx context.Context) (map[uint64]uint64, error) {
+	if c.syscallTracer == nil {
+		return nil, nil
+	}
+	return c.syscallTracer.GetSyscallStats(ctx)
+}
+
+// GetActiveConnections 获取活跃连接数
+func (c *Collector) GetActiveConnections(ctx context.Context) (int64, error) {
+	if c.networkTracer == nil {
+		return 0, nil
+	}
+	return c.networkTracer.GetActiveConnections(ctx)
+}
+
+// GetConnectionStats 获取网络连接统计
+func (c *Collector) GetConnectionStats(ctx context.Context) (map[uint32]uint64, error) {
+	if c.networkTracer == nil {
+		return nil, nil
+	}
+	return c.networkTracer.GetConnectionStats(ctx)
+}
+
+// GetConnectionDetails 获取连接详细信息
+func (c *Collector) GetConnectionDetails(ctx context.Context) ([]ConnectionDetail, error) {
+	if c.networkTracer == nil {
+		return nil, nil
+	}
+	return c.networkTracer.GetConnectionDetails(ctx)
+}
+
 // Stop 停止收集器
 // 停止所有子追踪器并清理资源
 func (c *Collector) Stop() error {
@@ -155,9 +230,20 @@ func (c *Collector) Stop() error {
 		return nil
 	}
 
+	c.startMutex.Lock()
+	defer c.startMutex.Unlock()
+
+	if !c.started {
+		return nil
+	}
+
+	// 取消上下文，停止收集循环
 	if c.cancel != nil {
 		c.cancel()
 	}
+
+	// 等待收集循环结束
+	c.wg.Wait()
 
 	// 停止系统调用追踪器
 	if c.syscallTracer != nil {
@@ -173,12 +259,20 @@ func (c *Collector) Stop() error {
 		}
 	}
 
+	c.started = false
 	return nil
 }
 
 // IsEnabled 检查是否启用
 func (c *Collector) IsEnabled() bool {
 	return c.enabled
+}
+
+// IsStarted 检查是否已启动
+func (c *Collector) IsStarted() bool {
+	c.startMutex.Lock()
+	defer c.startMutex.Unlock()
+	return c.started
 }
 
 // Enable 启用收集器
@@ -190,6 +284,41 @@ func (c *Collector) Enable() {
 func (c *Collector) Disable() {
 	c.enabled = false
 	if c.syscallTracer != nil {
-		c.syscallTracer.Disable()
+		c.syscallTracer.Stop()
+	}
+	if c.networkTracer != nil {
+		c.networkTracer.Stop()
+	}
+}
+
+// Close 关闭收集器（别名方法）
+func (c *Collector) Close() error {
+	return c.Stop()
+}
+
+// Status 返回收集器状态
+type Status struct {
+	Enabled                 bool          `json:"enabled"`
+	Started                 bool          `json:"started"`
+	SyscallTrackingEnabled  bool          `json:"syscall_tracking_enabled"`
+	NetworkMonitoringEnabled bool         `json:"network_monitoring_enabled"`
+	SyscallTracerEnabled    bool          `json:"syscall_tracer_enabled"`
+	NetworkTracerEnabled    bool          `json:"network_tracer_enabled"`
+	CollectInterval         time.Duration `json:"collect_interval"`
+}
+
+// GetStatus 获取收集器状态
+func (c *Collector) GetStatus() Status {
+	c.startMutex.Lock()
+	defer c.startMutex.Unlock()
+
+	return Status{
+		Enabled:                  c.enabled,
+		Started:                  c.started,
+		SyscallTrackingEnabled:   c.enableSyscallTracking,
+		NetworkMonitoringEnabled: c.enableNetworkMonitoring,
+		SyscallTracerEnabled:     c.syscallTracer != nil && c.syscallTracer.IsEnabled(),
+		NetworkTracerEnabled:     c.networkTracer != nil && c.networkTracer.IsEnabled(),
+		CollectInterval:          c.collectInterval,
 	}
 }

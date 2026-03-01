@@ -3,14 +3,18 @@ package ebpf
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go -type syscall_event syscall ./programs/syscall.bpf.c -- -I/usr/include -I/usr/include/x86_64-linux-gnu
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
+	"runtime"
 	"time"
 
 	"github.com/cilium/ebpf"
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/perf"
+	"github.com/cilium/ebpf/rlimit"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
@@ -23,16 +27,16 @@ type SyscallTracer struct {
 	meter  metric.Meter
 
 	// eBPF 对象
-	objs         *syscallObjects // bpf2go 生成的对象
-	link         link.Link       // tracepoint link
-	perfReader   *perf.Reader    // perf event reader
-	ctx          context.Context
-	cancel       context.CancelFunc
-	enabled      bool
+	objs       *syscallObjects // bpf2go 生成的对象
+	links      []link.Link     // tracepoint links
+	perfReader *perf.Reader    // perf event reader
+	ctx        context.Context
+	cancel     context.CancelFunc
+	enabled    bool
 
 	// 指标
-	syscallCounter  metric.Int64Counter
-	syscallLatency  metric.Float64Histogram
+	syscallCounter metric.Int64Counter
+	syscallLatency metric.Float64Histogram
 }
 
 // syscallObjects 将由 bpf2go 生成
@@ -48,8 +52,9 @@ type syscallPrograms struct {
 }
 
 type syscallMaps struct {
-	SyscallEvents *ebpf.Map
-	SyscallStats  *ebpf.Map
+	SyscallEvents    *ebpf.Map
+	SyscallStats     *ebpf.Map
+	SyscallStartTime *ebpf.Map
 }
 
 // SyscallEvent 系统调用事件
@@ -85,6 +90,11 @@ func NewSyscallTracer(cfg SyscallTracerConfig) (*SyscallTracer, error) {
 		return &SyscallTracer{enabled: false}, nil
 	}
 
+	// 非 Linux 系统不支持 eBPF
+	if runtime.GOOS != "linux" {
+		return &SyscallTracer{enabled: false}, nil
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	tracer := &SyscallTracer{
@@ -93,6 +103,7 @@ func NewSyscallTracer(cfg SyscallTracerConfig) (*SyscallTracer, error) {
 		ctx:     ctx,
 		cancel:  cancel,
 		enabled: true,
+		links:   make([]link.Link, 0, 2),
 	}
 
 	// 初始化指标
@@ -119,18 +130,75 @@ func NewSyscallTracer(cfg SyscallTracerConfig) (*SyscallTracer, error) {
 		}
 	}
 
-	// TODO: 加载 eBPF 程序
-	// 当前为框架实现，实际使用需要：
-	// 1. 编译 eBPF C 程序：
-	//    go generate ./pkg/observability/ebpf
-	// 2. 加载程序：
-	//    objs, err := loadSyscallObjects()
-	// 3. 附加到 tracepoint：
-	//    link, err := link.Tracepoint("raw_syscalls", "sys_enter", objs.TraceSyscallEnter)
-	// 4. 创建 perf reader：
-	//    reader, err := perf.NewReader(objs.SyscallEvents, bufferSize)
+	// 移除资源限制
+	if err := rlimit.RemoveMemlock(); err != nil {
+		cancel()
+		return nil, fmt.Errorf("failed to remove memlock limit: %w", err)
+	}
+
+	// 加载 eBPF 程序
+	if err := tracer.loadPrograms(cfg); err != nil {
+		cancel()
+		return nil, fmt.Errorf("failed to load eBPF programs: %w", err)
+	}
 
 	return tracer, nil
+}
+
+// loadPrograms 加载 eBPF 程序
+func (st *SyscallTracer) loadPrograms(cfg SyscallTracerConfig) error {
+	// 创建 eBPF 对象集合
+	objs := &syscallObjects{}
+
+	// 加载 eBPF 程序
+	// 注意：这里使用 loadSyscallObjects 函数，它由 bpf2go 生成
+	// 如果 bpf2go 生成的文件不存在，使用手动加载方式
+	if err := st.loadObjects(objs); err != nil {
+		return fmt.Errorf("failed to load syscall objects: %w", err)
+	}
+	st.objs = objs
+
+	// 附加到 tracepoint: sys_enter
+	enterLink, err := link.Tracepoint("raw_syscalls", "sys_enter", objs.Programs.TraceSyscallEnter, nil)
+	if err != nil {
+		objs.Close()
+		return fmt.Errorf("failed to attach sys_enter tracepoint: %w", err)
+	}
+	st.links = append(st.links, enterLink)
+
+	// 附加到 tracepoint: sys_exit
+	exitLink, err := link.Tracepoint("raw_syscalls", "sys_exit", objs.Programs.TraceSyscallExit, nil)
+	if err != nil {
+		objs.Close()
+		return fmt.Errorf("failed to attach sys_exit tracepoint: %w", err)
+	}
+	st.links = append(st.links, exitLink)
+
+	// 创建 perf reader
+	bufferSize := cfg.BufferSize
+	if bufferSize == 0 {
+		bufferSize = 4096 * 16 // 默认 64KB
+	}
+
+	reader, err := perf.NewReader(objs.Maps.SyscallEvents, bufferSize)
+	if err != nil {
+		objs.Close()
+		return fmt.Errorf("failed to create perf reader: %w", err)
+	}
+	st.perfReader = reader
+
+	return nil
+}
+
+// loadObjects 手动加载 eBPF 对象（当 bpf2go 生成文件不可用时使用）
+func (st *SyscallTracer) loadObjects(objs *syscallObjects) error {
+	// 这里应该调用 bpf2go 生成的 loadSyscallObjects 函数
+	// 作为示例，返回错误提示用户需要生成代码
+	// 实际使用时，取消下面注释并使用 bpf2go 生成的代码
+	// return loadSyscallObjects(objs, nil)
+
+	// 临时实现：返回错误，提示需要生成 eBPF 代码
+	return errors.New("eBPF objects not generated. Run: go generate ./pkg/observability/ebpf")
 }
 
 // Start 启动追踪器
@@ -139,8 +207,8 @@ func (st *SyscallTracer) Start() error {
 		return nil
 	}
 
-	// TODO: 实际实现需要启动 perf reader
-	// go st.readEvents()
+	// 启动 perf reader goroutine
+	go st.readEvents()
 
 	return nil
 }
@@ -151,6 +219,7 @@ func (st *SyscallTracer) Stop() error {
 		return nil
 	}
 
+	// 取消上下文
 	if st.cancel != nil {
 		st.cancel()
 	}
@@ -159,11 +228,13 @@ func (st *SyscallTracer) Stop() error {
 	if st.perfReader != nil {
 		st.perfReader.Close()
 	}
-	if st.link != nil {
-		st.link.Close()
+
+	for _, l := range st.links {
+		l.Close()
 	}
+
 	if st.objs != nil {
-		// st.objs.Close() // bpf2go 生成的对象会有 Close 方法
+		st.objs.Close()
 	}
 
 	return nil
@@ -172,28 +243,33 @@ func (st *SyscallTracer) Stop() error {
 // readEvents 读取 eBPF 事件
 // 这是实际的事件处理循环
 func (st *SyscallTracer) readEvents() {
+	if st.perfReader == nil {
+		return
+	}
+
 	for {
 		select {
 		case <-st.ctx.Done():
 			return
 		default:
-			// TODO: 从 perf buffer 读取事件
-			// record, err := st.perfReader.Read()
-			// if err != nil {
-			//     if errors.Is(err, perf.ErrClosed) {
-			//         return
-			//     }
-			//     continue
-			// }
-			//
-			// // 解析事件
-			// var event SyscallEvent
-			// if err := binary.Read(bytes.NewBuffer(record.RawSample), binary.LittleEndian, &event); err != nil {
-			//     continue
-			// }
-			//
-			// // 处理事件
-			// st.handleSyscallEvent(context.Background(), &event)
+			// 从 perf buffer 读取事件
+			record, err := st.perfReader.Read()
+			if err != nil {
+				if errors.Is(err, perf.ErrClosed) {
+					return
+				}
+				// 记录错误但继续读取
+				continue
+			}
+
+			// 解析事件
+			var event SyscallEvent
+			if err := binary.Read(bytes.NewBuffer(record.RawSample), binary.LittleEndian, &event); err != nil {
+				continue
+			}
+
+			// 处理事件
+			st.handleSyscallEvent(st.ctx, &event)
 		}
 	}
 }
@@ -235,9 +311,38 @@ func (st *SyscallTracer) handleSyscallEvent(ctx context.Context, event *SyscallE
 	}
 }
 
+// GetSyscallStats 获取系统调用统计
+func (st *SyscallTracer) GetSyscallStats(ctx context.Context) (map[uint64]uint64, error) {
+	if !st.enabled || st.objs == nil {
+		return nil, nil
+	}
+
+	stats := make(map[uint64]uint64)
+	
+	// 从 eBPF map 读取统计信息
+	var key uint64
+	var value uint64
+	
+	iter := st.objs.Maps.SyscallStats.Iterate()
+	for iter.Next(&key, &value) {
+		stats[key] = value
+	}
+	
+	if err := iter.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate syscall stats: %w", err)
+	}
+
+	return stats, nil
+}
+
 // IsEnabled 检查是否启用
 func (st *SyscallTracer) IsEnabled() bool {
 	return st.enabled
+}
+
+// Close 关闭追踪器（别名方法）
+func (st *SyscallTracer) Close() error {
+	return st.Stop()
 }
 
 // Note: 完整实现需要以下文件：

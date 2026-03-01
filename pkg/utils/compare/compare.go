@@ -389,11 +389,11 @@ func CompareSlice[T comparable](a, b []T) int {
 		minLen = len(b)
 	}
 	for i := 0; i < minLen; i++ {
-		if a[i] < b[i] {
+		if a[i] != b[i] {
+			// 对于可比较类型，使用泛型比较
+			// 注意：这里不能直接使用 < 或 > 操作符，因为 T 不一定是 Ordered
+			// 返回 -1 表示不同（无法确定顺序）
 			return -1
-		}
-		if a[i] > b[i] {
-			return 1
 		}
 	}
 	if len(a) < len(b) {

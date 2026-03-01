@@ -6,9 +6,7 @@ import (
 	"testing"
 	"time"
 
-	// 注意：需要安装 Redis 客户端
-	// go get github.com/redis/go-redis/v9
-	// "github.com/redis/go-redis/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 // 注意：这个测试需要 Redis 服务器

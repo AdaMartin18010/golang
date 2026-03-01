@@ -2,10 +2,8 @@ package oauth2
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"

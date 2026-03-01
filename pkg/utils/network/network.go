@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 )
 
 // IsValidIP 检查是否为有效的IP地址
@@ -166,7 +167,7 @@ func IsPortOpen(host string, port int) bool {
 // IsPortOpenTimeout 检查端口是否开放（带超时）
 func IsPortOpenTimeout(host string, port int, timeoutSeconds int) bool {
 	address := fmt.Sprintf("%s:%d", host, port)
-	conn, err := net.DialTimeout("tcp", address, timeoutSeconds)
+	conn, err := net.DialTimeout("tcp", address, time.Duration(timeoutSeconds)*time.Second)
 	if err != nil {
 		return false
 	}

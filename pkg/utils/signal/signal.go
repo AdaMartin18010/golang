@@ -17,15 +17,13 @@ func Notify(sig ...os.Signal) <-chan os.Signal {
 	return c
 }
 
-// NotifyAll 注册所有信号通知
+// NotifyAll 注册所有信号通知（通用版本）
 func NotifyAll() <-chan os.Signal {
 	return Notify(
 		syscall.SIGINT,
 		syscall.SIGTERM,
 		syscall.SIGQUIT,
 		syscall.SIGHUP,
-		syscall.SIGUSR1,
-		syscall.SIGUSR2,
 	)
 }
 
@@ -42,16 +40,6 @@ func NotifyQuit() <-chan os.Signal {
 // NotifyHangup 注册挂起信号通知（SIGHUP）
 func NotifyHangup() <-chan os.Signal {
 	return Notify(syscall.SIGHUP)
-}
-
-// NotifyUser1 注册用户信号1通知（SIGUSR1）
-func NotifyUser1() <-chan os.Signal {
-	return Notify(syscall.SIGUSR1)
-}
-
-// NotifyUser2 注册用户信号2通知（SIGUSR2）
-func NotifyUser2() <-chan os.Signal {
-	return Notify(syscall.SIGUSR2)
 }
 
 // Handle 处理信号
@@ -221,16 +209,6 @@ func IsHangup(sig os.Signal) bool {
 	return sig == syscall.SIGHUP
 }
 
-// IsUser1 检查信号是否为用户信号1
-func IsUser1(sig os.Signal) bool {
-	return sig == syscall.SIGUSR1
-}
-
-// IsUser2 检查信号是否为用户信号2
-func IsUser2(sig os.Signal) bool {
-	return sig == syscall.SIGUSR2
-}
-
 // SignalName 获取信号名称
 func SignalName(sig os.Signal) string {
 	switch sig {
@@ -242,10 +220,6 @@ func SignalName(sig os.Signal) string {
 		return "SIGQUIT"
 	case syscall.SIGHUP:
 		return "SIGHUP"
-	case syscall.SIGUSR1:
-		return "SIGUSR1"
-	case syscall.SIGUSR2:
-		return "SIGUSR2"
 	case syscall.SIGKILL:
 		return "SIGKILL"
 	default:

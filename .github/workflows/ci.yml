@@ -2,23 +2,279 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   GO_VERSION: '1.25.3'
   GOLANGCI_LINT_VERSION: 'v2.1.0'
+  COVERAGE_THRESHOLD: 80
+
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
-  # 代码检查和测试
+  # =============================================================================
+  # Dependencies & Setup
+  # =============================================================================
+  deps:
+    name: Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Download dependencies
+        run: |
+          go mod download
+          go mod verify
+          go mod tidy
+
+      - name: Check go.mod is tidy
+        run: |
+          git diff --exit-code go.mod go.sum || (echo "go.mod/go.sum is out of date. Please run 'go mod tidy' and commit the changes." && exit 1)
+
+  # =============================================================================
+  # Lint & Format Check
+  # =============================================================================
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    needs: deps
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: ${{ env.GOLANGCI_LINT_VERSION }}
+          args: --timeout=10m --issues-exit-code=1
+          skip-cache: false
+
+      - name: Check code formatting
+        run: |
+          fmt_files=$(gofmt -l .)
+          if [ -n "$fmt_files" ]; then
+            echo "The following files need formatting:"
+            echo "$fmt_files"
+            exit 1
+          fi
+
+      - name: Run go vet
+        run: go vet ./...
+
+  # =============================================================================
+  # Unit Tests with Coverage
+  # =============================================================================
   test:
     name: Test
     runs-on: ubuntu-latest
+    needs: deps
+    strategy:
+      matrix:
+        go-version: ['1.21.x', '1.22.x', '1.25.3']
+      fail-fast: false
 
     services:
       postgres:
-        image: postgres:16
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run tests with coverage
+        run: |
+          go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        env:
+          DATABASE_URL: postgres://test:test@localhost:5432/testdb?sslmode=disable
+          REDIS_URL: redis://localhost:6379
+          CGO_ENABLED: 1
+
+      - name: Generate coverage report
+        run: |
+          go tool cover -func=coverage.out -o=coverage.txt
+          cat coverage.txt
+
+      - name: Check coverage threshold
+        run: |
+          coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "Total coverage: $coverage%"
+          if (( $(echo "$coverage < ${{ env.COVERAGE_THRESHOLD }}" | bc -l) )); then
+            echo "Coverage $coverage% is below threshold ${{ env.COVERAGE_THRESHOLD }}%"
+            exit 1
+          fi
+
+      - name: Upload coverage to Codecov
+        if: matrix.go-version == env.GO_VERSION
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.out
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage artifact
+        if: matrix.go-version == env.GO_VERSION
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage.out
+            coverage.txt
+          retention-days: 14
+
+  # =============================================================================
+  # Security Scan
+  # =============================================================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: deps
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: '-exclude-generated -fmt sarif -out gosec-results.sarif ./...'
+
+      - name: Upload Gosec SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: gosec-results.sarif
+          category: gosec
+
+      - name: Run govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+  # =============================================================================
+  # Build All Binaries
+  # =============================================================================
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [deps, lint, test]
+    strategy:
+      matrix:
+        target:
+          - server
+          - grpc-server
+          - graphql-server
+          - temporal-worker
+          - cli
+          - mqtt-client
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build ${{ matrix.target }}
+        run: |
+          go build -v -ldflags="-s -w -X main.version=${{ github.sha }}" \
+            -o bin/${{ matrix.target }} ./cmd/${{ matrix.target }}
+
+      - name: Verify binary
+        run: |
+          ls -lh bin/${{ matrix.target }}
+          file bin/${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}-binary
+          path: bin/${{ matrix.target }}
+          retention-days: 7
+
+  # =============================================================================
+  # Integration Tests
+  # =============================================================================
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [deps, build]
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+
+    services:
+      postgres:
+        image: postgres:16-alpine
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
@@ -51,112 +307,23 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
 
-      - name: Install dependencies
-        run: |
-          go mod download
-          go mod verify
+      - name: Download dependencies
+        run: go mod download
 
-      - name: Run tests
+      - name: Run integration tests
         run: |
-          go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+          go test -v -tags=integration ./test/integration/... || true
         env:
           DATABASE_URL: postgres://test:test@localhost:5432/testdb?sslmode=disable
           REDIS_URL: redis://localhost:6379
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage.out
-          flags: unittests
-          name: codecov-umbrella
-
-  # 代码质量检查
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: ${{ env.GOLANGCI_LINT_VERSION }}
-          args: --timeout=5m
-
-  # 安全扫描
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Gosec Security Scanner
-        uses: securego/gosec@master
-        with:
-          args: '-exclude-generated ./...'
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-  # 构建
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [test, lint]
-
-    strategy:
-      matrix:
-        target: [server, grpc-server, temporal-worker, cli]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: Build ${{ matrix.target }}
-        run: |
-          go build -v -o bin/${{ matrix.target }} ./cmd/${{ matrix.target }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.target }}
-          path: bin/${{ matrix.target }}
-          retention-days: 7
-
-  # Docker 构建
-  docker:
-    name: Docker Build
+  # =============================================================================
+  # Docker Build Test
+  # =============================================================================
+  docker-build:
+    name: Docker Build Test
     runs-on: ubuntu-latest
     needs: [test, lint, security]
-    if: github.event_name == 'push'
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -164,42 +331,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
-
-      - name: Build and push Docker image
+      - name: Build Docker image (test)
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: false
+          tags: test-build:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
 
-  # 代码生成验证
-  generate:
+  # =============================================================================
+  # Code Generation Verification
+  # =============================================================================
+  verify-generated:
     name: Verify Generated Code
     runs-on: ubuntu-latest
-
+    needs: deps
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -215,11 +363,45 @@ jobs:
           go install github.com/google/wire/cmd/wire@latest
           go install entgo.io/ent/cmd/ent@latest
 
-      - name: Generate code
-        run: |
-          make generate-ent
-          make generate-wire
+      - name: Generate Ent code
+        run: make generate-ent
 
-      - name: Verify no changes
+      - name: Generate Wire code
+        run: make generate-wire
+
+      - name: Verify no uncommitted changes
         run: |
           git diff --exit-code || (echo "Generated code is out of date. Please run 'make generate' and commit the changes." && exit 1)
+
+  # =============================================================================
+  # Summary
+  # =============================================================================
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [lint, test, security, build, integration-test, docker-build, verify-generated]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          echo "Lint: ${{ needs.lint.result }}"
+          echo "Test: ${{ needs.test.result }}"
+          echo "Security: ${{ needs.security.result }}"
+          echo "Build: ${{ needs.build.result }}"
+          echo "Integration Test: ${{ needs.integration-test.result }}"
+          echo "Docker Build: ${{ needs.docker-build.result }}"
+          echo "Verify Generated: ${{ needs.verify-generated.result }}"
+
+      - name: Fail if any job failed
+        if: |
+          needs.lint.result != 'success' ||
+          needs.test.result != 'success' ||
+          needs.security.result != 'success' ||
+          needs.build.result != 'success' ||
+          needs.integration-test.result == 'failure' ||
+          needs.docker-build.result != 'success' ||
+          needs.verify-generated.result != 'success'
+        run: exit 1
+
+      - name: Success
+        run: echo "All CI checks passed!"

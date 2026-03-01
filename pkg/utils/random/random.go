@@ -3,7 +3,7 @@ package random
 import (
 	"crypto/rand"
 	"math/big"
-	"math/rand/v2"
+	randv2 "math/rand/v2"
 	"time"
 	"unsafe"
 )
@@ -21,7 +21,7 @@ const (
 
 var (
 	// 默认随机数生成器（使用时间种子）
-	defaultRand = rand.New(rand.NewPCG(uint64(time.Now().UnixNano()), uint64(time.Now().UnixNano())))
+	defaultRand = randv2.New(randv2.NewPCG(uint64(time.Now().UnixNano()), uint64(time.Now().UnixNano())))
 )
 
 // Int 生成随机整数 [0, max)
@@ -315,7 +315,7 @@ func Time(start, end time.Time) time.Time {
 
 // Seed 设置随机数生成器的种子
 func Seed(seed int64) {
-	defaultRand = rand.New(rand.NewPCG(uint64(seed), uint64(seed)))
+	defaultRand = randv2.New(randv2.NewPCG(uint64(seed), uint64(seed)))
 }
 
 // FastString 快速生成随机字符串（使用unsafe，性能更高）

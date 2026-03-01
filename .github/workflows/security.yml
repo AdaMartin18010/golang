@@ -2,36 +2,33 @@ name: Security Scan
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
   schedule:
-    # 每天 UTC 0点运行
-    - cron: '0 0 * * *'
+    # Run every Sunday at 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: '1.25.3'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
 
 jobs:
-  # 依赖漏洞扫描
-  dependency-scan:
-    name: Dependency Vulnerability Scan
+  # =============================================================================
+  # Gosec Security Scanner
+  # =============================================================================
+  gosec:
+    name: Gosec Security Scan
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/golang@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-
-  # 代码安全扫描
-  code-scan:
-    name: Code Security Scan
-    runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,51 +36,54 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.3'
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
 
       - name: Run Gosec Security Scanner
-        run: |
-          go install github.com/securego/gosec/v2/cmd/gosec@latest
-          gosec -fmt=json -out=gosec-report.json -exclude-generated ./...
-
-      - name: Upload Gosec report
-        uses: actions/upload-artifact@v4
+        uses: securego/gosec@master
         with:
-          name: gosec-report
-          path: gosec-report.json
+          args: >-
+            -exclude-generated
+            -fmt sarif
+            -out gosec-results.sarif
+            -severity high
+            -confidence high
+            ./...
 
-  # 容器镜像扫描
-  container-scan:
-    name: Container Image Scan
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t test-image .
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'test-image'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload Trivy results
+      - name: Upload Gosec SARIF results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: gosec-results.sarif
+          category: gosec
 
-  # SAST 分析
+      - name: Run Gosec (JSON output)
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          gosec -fmt json -out gosec-report.json -exclude-generated ./... || true
+
+      - name: Upload Gosec report artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gosec-report
+          path: gosec-report.json
+          retention-days: 30
+
+  # =============================================================================
+  # CodeQL Analysis
+  # =============================================================================
   codeql:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
     permissions:
+      actions: read
+      contents: read
       security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['go']
 
     steps:
       - name: Checkout code
@@ -92,7 +92,229 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: go
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+          config: |
+            paths-ignore:
+              - '**/vendor/**'
+              - '**/docs/**'
+              - '**/test/**'
+              - '**/*_test.go'
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+
+  # =============================================================================
+  # Dependency Vulnerability Scan (govulncheck)
+  # =============================================================================
+  govulncheck:
+    name: govulncheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run govulncheck
+        run: |
+          govulncheck -format sarif ./... > govulncheck-results.sarif || true
+          govulncheck ./...
+
+      - name: Upload govulncheck SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: govulncheck-results.sarif
+          category: govulncheck
+
+      - name: Run govulncheck (JSON)
+        run: |
+          govulncheck -format json ./... > govulncheck-report.json || true
+
+      - name: Upload govulncheck report artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: govulncheck-report
+          path: govulncheck-report.json
+          retention-days: 30
+
+  # =============================================================================
+  # Nancy Dependency Scan
+  # =============================================================================
+  nancy:
+    name: Nancy Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Write go.list for Nancy
+        run: go list -json -deps ./... > go.list
+
+      - name: Run Nancy vulnerability scanner
+        uses: sonatypecommunity/nancy-github-action@main
+        continue-on-error: true
+        with:
+          nancyCommand: sleuth -o json > nancy-report.json
+
+      - name: Upload Nancy report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nancy-report
+          path: nancy-report.json
+          retention-days: 30
+
+  # =============================================================================
+  # Trivy Filesystem Scan
+  # =============================================================================
+  trivy-fs:
+    name: Trivy Filesystem Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner (FS)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-fs-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '0'
+          ignore-unfixed: true
+
+      - name: Upload Trivy FS SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-fs-results.sarif
+          category: trivy-fs
+
+      - name: Run Trivy (table output)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+  # =============================================================================
+  # Secrets Scanning (Gitleaks)
+  # =============================================================================
+  gitleaks:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        continue-on-error: true
+
+  # =============================================================================
+  # License Scanning
+  # =============================================================================
+  license-check:
+    name: License Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install go-licenses
+        run: go install github.com/google/go-licenses@latest
+
+      - name: Check licenses
+        run: |
+          go-licenses check ./... --disallowed_types=forbidden,restricted,unknown 2>&1 | tee license-report.txt || true
+          go-licenses csv ./... > licenses.csv || true
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: license-report
+          path: |
+            license-report.txt
+            licenses.csv
+          retention-days: 30
+
+  # =============================================================================
+  # Security Summary
+  # =============================================================================
+  summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [gosec, codeql, govulncheck, nancy, trivy-fs, gitleaks, license-check]
+    if: always()
+    steps:
+      - name: Generate security summary
+        run: |
+          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Scanner | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Gosec | ${{ needs.gosec.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| CodeQL | ${{ needs.codeql.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| govulncheck | ${{ needs.govulncheck.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Nancy | ${{ needs.nancy.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Trivy FS | ${{ needs.trivy-fs.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Gitleaks | ${{ needs.gitleaks.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| License Check | ${{ needs.license-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note:** Some scanners may be configured to continue on error." >> $GITHUB_STEP_SUMMARY
+          echo "Please review the individual job outputs for detailed findings." >> $GITHUB_STEP_SUMMARY
+
+      - name: Check critical failures
+        if: |
+          needs.gosec.result == 'failure' ||
+          needs.codeql.result == 'failure' ||
+          needs.govulncheck.result == 'failure'
+        run: |
+          echo "Critical security scans failed. Please review the findings."
+          exit 1

@@ -95,7 +95,7 @@ type HTMLTemplate struct {
 // NewHTMLTemplate 创建新的HTML模板
 func NewHTMLTemplate(name string) *HTMLTemplate {
 	return &HTMLTemplate{
-		tmpl: html.Template.New(name),
+		tmpl: html.New(name),
 	}
 }
 

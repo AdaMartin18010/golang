@@ -136,12 +136,14 @@ type SimpleTable struct {
 
 // NewSimpleTable 创建简单表格
 func NewSimpleTable(headers ...string) *SimpleTable {
-	return &SimpleTable{
+	st := &SimpleTable{
 		headers: headers,
 		rows:    make([][]string, 0),
 		widths:  make([]int, len(headers)),
 		sep:     "  ",
 	}
+	st.calculateWidths()
+	return st
 }
 
 // SetSeparator 设置分隔符
@@ -159,6 +161,13 @@ func (st *SimpleTable) AddRow(row ...string) {
 	}
 	st.rows = append(st.rows, row)
 	st.calculateWidths()
+}
+
+// AddRows 添加多行
+func (st *SimpleTable) AddRows(rows [][]string) {
+	for _, row := range rows {
+		st.AddRow(row...)
+	}
 }
 
 // calculateWidths 计算列宽

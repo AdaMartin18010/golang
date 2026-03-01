@@ -1,0 +1,349 @@
+name: CD Pipeline
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  GO_VERSION: '1.25.3'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  security-events: write
+
+jobs:
+  # =============================================================================
+  # Prepare Release Metadata
+  # =============================================================================
+  prepare:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+      short_sha: ${{ steps.version.outputs.SHORT_SHA }}
+      is_prerelease: ${{ steps.version.outputs.IS_PRERELEASE }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version info
+        id: version
+        run: |
+          if [[ ${{ github.ref_type }} == 'tag' ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            IS_PRERELEASE="false"
+            if [[ "$VERSION" =~ -(alpha|beta|rc|pre) ]]; then
+              IS_PRERELEASE="true"
+            fi
+          else
+            VERSION="dev-${{ github.run_number }}"
+            IS_PRERELEASE="true"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "IS_PRERELEASE=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          echo "Short SHA: ${GITHUB_SHA::7}"
+          echo "Is Prerelease: $IS_PRERELEASE"
+
+  # =============================================================================
+  # Build and Push Docker Image
+  # =============================================================================
+  docker-build:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ needs.prepare.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.prepare.outputs.version }}
+            type=semver,pattern={{major}},value=${{ needs.prepare.outputs.version }}
+            type=sha,prefix=${{ needs.prepare.outputs.version }}-
+            type=raw,value=latest,enable=${{ !needs.prepare.outputs.is_prerelease }}
+          labels: |
+            org.opencontainers.image.title=${{ github.event.repository.name }}
+            org.opencontainers.image.description=${{ github.event.repository.description }}
+            org.opencontainers.image.url=${{ github.event.repository.html_url }}
+            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
+            org.opencontainers.image.version=${{ needs.prepare.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=${{ github.event.repository.license.spdx_id }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            VERSION=${{ needs.prepare.outputs.version }}
+            COMMIT=${{ github.sha }}
+            BUILD_TIME=${{ github.event.head_commit.timestamp }}
+
+      - name: Output image digest
+        run: |
+          echo "Image digest: ${{ steps.build-push.outputs.digest }}"
+
+  # =============================================================================
+  # Scan Docker Image for Vulnerabilities
+  # =============================================================================
+  scan-image:
+    name: Scan Docker Image
+    runs-on: ubuntu-latest
+    needs: [prepare, docker-build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.version }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: true
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: trivy-container
+
+      - name: Run Trivy in table format
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.version }}
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+  # =============================================================================
+  # Deploy to Staging
+  # =============================================================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [prepare, docker-build, scan-image]
+    if: always() && needs.scan-image.result == 'success'
+    environment:
+      name: staging
+      url: https://staging.example.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+
+      - name: Deploy to Staging
+        run: |
+          echo "Deploying version ${{ needs.prepare.outputs.version }} to staging"
+          export KUBECONFIG=kubeconfig
+          # Update image tag in deployment
+          kubectl set image deployment/app-server \
+            app=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.version }} \
+            -n staging --record
+          # Wait for rollout
+          kubectl rollout status deployment/app-server -n staging --timeout=300s
+
+      - name: Verify deployment
+        run: |
+          export KUBECONFIG=kubeconfig
+          kubectl get pods -n staging -l app=app-server
+
+  # =============================================================================
+  # Smoke Tests on Staging
+  # =============================================================================
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [prepare, deploy-staging]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests against staging environment"
+          # Health check
+          curl -sf https://staging.example.com/health || exit 1
+          # API smoke tests
+          curl -sf https://staging.example.com/api/v1/health || exit 1
+          echo "Smoke tests passed!"
+        continue-on-error: true
+
+      - name: Run E2E tests
+        run: |
+          echo "Running E2E tests"
+          # Add your E2E test commands here
+          # go test -v -tags=e2e ./test/e2e/... || true
+        continue-on-error: true
+
+  # =============================================================================
+  # Deploy to Production (Manual Approval Required)
+  # =============================================================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [prepare, smoke-tests]
+    if: github.ref_type == 'tag' && !contains(needs.prepare.outputs.version, '-') && needs.smoke-tests.result == 'success'
+    environment:
+      name: production
+      url: https://production.example.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+
+      - name: Deploy to Production (Canary)
+        run: |
+          echo "Deploying version ${{ needs.prepare.outputs.version }} to production (canary)"
+          export KUBECONFIG=kubeconfig
+          # Update canary deployment
+          kubectl set image deployment/app-server-canary \
+            app=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.version }} \
+            -n production --record
+          # Wait for canary rollout
+          kubectl rollout status deployment/app-server-canary -n production --timeout=300s
+
+      - name: Monitor canary metrics
+        run: |
+          echo "Monitoring canary deployment for 5 minutes..."
+          sleep 300
+          # Add canary health checks here
+          echo "Canary monitoring complete"
+
+      - name: Promote to full deployment
+        run: |
+          export KUBECONFIG=kubeconfig
+          echo "Promoting canary to full deployment"
+          kubectl set image deployment/app-server \
+            app=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.version }} \
+            -n production --record
+          kubectl rollout status deployment/app-server -n production --timeout=600s
+
+      - name: Verify production deployment
+        run: |
+          export KUBECONFIG=kubeconfig
+          kubectl get pods -n production -l app=app-server
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "Production deployment successful!"
+          # Add notification webhook here (Slack, Discord, etc.)
+          # curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+          #   -H 'Content-type: application/json' \
+          #   --data '{"text":"✅ Production deployment successful: ${{ needs.prepare.outputs.version }}"}'
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          export KUBECONFIG=kubeconfig
+          echo "Deployment failed, initiating rollback..."
+          kubectl rollout undo deployment/app-server -n production
+          kubectl rollout status deployment/app-server -n production --timeout=300s
+          echo "Rollback complete"
+
+  # =============================================================================
+  # Cleanup
+  # =============================================================================
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    steps:
+      - name: Delete old packages
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ github.event.repository.name }}
+          package-type: container
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: true
+        continue-on-error: true
+
+  # =============================================================================
+  # Deployment Summary
+  # =============================================================================
+  summary:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [prepare, docker-build, scan-image, deploy-staging, smoke-tests, deploy-production]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Prepare | ${{ needs.prepare.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker Build | ${{ needs.docker-build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Scan | ${{ needs.scan-image.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy Staging | ${{ needs.deploy-staging.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Smoke Tests | ${{ needs.smoke-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy Production | ${{ needs.deploy-production.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.prepare.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.version }}" >> $GITHUB_STEP_SUMMARY

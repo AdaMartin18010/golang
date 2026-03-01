@@ -148,7 +148,7 @@ func TestOIDCProvider_GetUserInfo(t *testing.T) {
 	ctx := context.Background()
 	
 	// 生成访问令牌
-	token, err := server.GenerateClientCredentialsToken(ctx, "test-client", "test-secret", "read")
+	_, err = server.GenerateClientCredentialsToken(ctx, "test-client", "test-secret", "read")
 	if err != nil {
 		t.Fatalf("Failed to generate token: %v", err)
 	}

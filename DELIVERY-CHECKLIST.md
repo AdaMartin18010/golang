@@ -11,12 +11,14 @@
 ### 1. 核心架构代码 ✅
 
 **Clean Architecture 实现**:
+
 - [x] Domain Layer (`internal/domain/`)
 - [x] Application Layer (`internal/application/`)
 - [x] Infrastructure Layer (`internal/infrastructure/`)
 - [x] Interfaces Layer (`internal/interfaces/`)
 
 **DDD 模式**:
+
 - [x] Repository Pattern
 - [x] Specification Pattern
 - [x] Entity
@@ -25,6 +27,7 @@
 ### 2. eBPF 监控 ✅
 
 **实现文件**:
+
 - [x] `pkg/observability/ebpf/syscall_tracer.go`
 - [x] `pkg/observability/ebpf/network_tracer.go`
 - [x] `pkg/observability/ebpf/programs/syscall.bpf.c`
@@ -33,6 +36,7 @@
 - [x] `pkg/observability/ebpf/README.md`
 
 **技术**:
+
 - [x] Cilium eBPF v0.20.0 (最新)
 - [x] 系统调用追踪
 - [x] TCP 网络监控
@@ -41,18 +45,21 @@
 ### 3. 安全模块 ✅
 
 **OAuth2/OIDC**:
+
 - [x] `pkg/security/oauth2/provider.go`
 - [x] `pkg/security/oauth2/oidc.go`
 - [x] PKCE 支持
 - [x] Google/Microsoft/Auth0 预设
 
 **RBAC**:
+
 - [x] `pkg/security/rbac/rbac.go`
 - [x] `pkg/security/rbac/middleware.go`
 - [x] 角色继承
 - [x] 细粒度权限
 
 **JWT**:
+
 - [x] `pkg/security/jwt/jwt.go`
 - [x] `pkg/security/jwt/middleware.go`
 - [x] RS256 签名
@@ -61,15 +68,18 @@
 ### 4. 测试框架 ✅
 
 **基础设施**:
+
 - [x] `test/testing_framework.go`
 - [x] `test/mocks/repository_mock.go`
 - [x] `test/README.md`
 
 **示例测试**:
+
 - [x] `internal/domain/user/entity_test.go`
 - [x] `internal/application/user/service_test.go`
 
 **工具**:
+
 - [x] testify v1.9.0
 - [x] 表格驱动测试
 - [x] 测试套件
@@ -77,12 +87,14 @@
 ### 5. 可观测性栈 ✅
 
 **OTEL Collector**:
+
 - [x] `examples/observability/otelcol.yaml` (最佳实践)
 - [x] `examples/observability/tempo.yaml`
 - [x] `examples/observability/prometheus.yaml`
 - [x] `examples/observability/docker-compose.yaml` (最新版本)
 
 **版本**:
+
 - [x] OTEL Collector 0.114.0
 - [x] Tempo 2.6.1
 - [x] Prometheus 2.55.1
@@ -92,12 +104,14 @@
 ### 6. CI/CD 流水线 ✅
 
 **GitHub Actions**:
+
 - [x] `.github/workflows/ci.yml` - CI 流水线
 - [x] `.github/workflows/release.yml` - 发布流水线
 - [x] `.github/workflows/security.yml` - 安全扫描
 - [x] `.golangci.yml` - Linter 配置
 
 **功能**:
+
 - [x] 自动测试
 - [x] 代码检查
 - [x] 安全扫描 (Gosec/Trivy/CodeQL)
@@ -107,11 +121,13 @@
 ### 7. Wire 依赖注入 ✅
 
 **配置**:
+
 - [x] `scripts/wire/wire.go`
 - [x] `scripts/wire/providers.go`
 - [x] `scripts/wire/README.md`
 
 **Provider Sets**:
+
 - [x] ObservabilityProviderSet
 - [x] SecurityProviderSet
 - [x] DatabaseProviderSet
@@ -121,10 +137,12 @@
 ### 8. Kubernetes 部署 ✅
 
 **配置文件**:
+
 - [x] `deployments/kubernetes/deployment.yaml`
 - [x] `deployments/kubernetes/hpa.yaml`
 
 **特性**:
+
 - [x] 资源限制
 - [x] 健康检查
 - [x] 环境变量注入
@@ -134,6 +152,7 @@
 ### 9. 环境感知 ✅
 
 **检测能力**:
+
 - [x] OS/Arch 检测
 - [x] 容器检测 (Docker/LXC)
 - [x] Kubernetes 检测 (Pod/Node/Namespace)
@@ -142,12 +161,14 @@
 - [x] 资源检测 (CPU/内存)
 
 **文件**:
+
 - [x] `pkg/observability/system/platform.go` (增强)
 - [x] `pkg/observability/system/kubernetes.go`
 
 ### 10. 完整示例 ✅
 
 **示例**:
+
 - [x] `examples/complete-integration/` - 完整集成
 - [x] `examples/observability/ebpf-monitoring/` - eBPF 监控
 - [x] `examples/security/auth-example/` - 安全认证
@@ -252,6 +273,7 @@
 **项目评分**: **8.5/10** ⭐⭐⭐⭐⭐
 
 **核心特性**:
+
 - ✅ 使用最新最成熟的技术栈
 - ✅ 真正的 eBPF 系统级监控
 - ✅ 企业级安全认证授权
