@@ -32,6 +32,7 @@
 Chi, Ent, Wire, OpenTelemetry, Cilium eBPF, GraphQL, gRPC, Kafka, NATS, MQTT, PostgreSQL, Redis
 
 **项目状态**: ✅ 核心架构完整 | 🔄 持续改进中 | 📊 [详细状态](./PROJECT-STATUS.md)
+**架构文档**: 🧠 [全面概念梳理](./docs/comprehensive-analysis/00-MASTER-INDEX.md) - 结合网络最新权威内容的多维度分析
 
 ---
 
