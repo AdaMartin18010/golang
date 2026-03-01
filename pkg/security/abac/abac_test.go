@@ -776,8 +776,8 @@ func TestEnvironmentBasedAccess(t *testing.T) {
 		{
 			name: "access during business hours",
 			request: Request{
-				Subject:  Subject{ID: "manager1", Roles: []string{"manager"}},
-				Resource: Resource{Type: "document", Attributes: map[string]interface{}{"sensitivity": "high"}},
+				Subject:     Subject{ID: "manager1", Roles: []string{"manager"}},
+				Resource:    Resource{Type: "document", Attributes: map[string]interface{}{"sensitivity": "high"}},
 				Action:      Action{Name: "read"},
 				Environment: Environment{Time: today9AM.Add(2 * time.Hour).Unix()}, // 11:00 AM
 			},
@@ -786,8 +786,8 @@ func TestEnvironmentBasedAccess(t *testing.T) {
 		{
 			name: "access outside business hours",
 			request: Request{
-				Subject:  Subject{ID: "manager1", Roles: []string{"manager"}},
-				Resource: Resource{Type: "document", Attributes: map[string]interface{}{"sensitivity": "high"}},
+				Subject:     Subject{ID: "manager1", Roles: []string{"manager"}},
+				Resource:    Resource{Type: "document", Attributes: map[string]interface{}{"sensitivity": "high"}},
 				Action:      Action{Name: "read"},
 				Environment: Environment{Time: today6PM.Add(2 * time.Hour).Unix()}, // 20:00 PM
 			},
@@ -803,10 +803,11 @@ func TestEnvironmentBasedAccess(t *testing.T) {
 	}
 }
 
-// parseTime 辅助函数：解析时间字符串为 Unix 时间戳
+// parseTime 辅助函数：解析时间字符串为今天的 Unix 时间戳
 func parseTime(timeStr string) int64 {
+	now := time.Now()
 	t, _ := time.Parse("15:04", timeStr)
-	return t.Unix()
+	// 使用今天的日期，但使用解析的时间
+	todayTime := time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
+	return todayTime.Unix()
 }
-
-

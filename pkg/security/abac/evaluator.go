@@ -48,7 +48,7 @@ type Condition interface {
 	//   - bool: 如果条件满足返回 true
 	//   - error: 评估过程中的错误
 	Evaluate(ctx context.Context, req Request) (bool, error)
-	
+
 	// String 返回条件的可读描述
 	String() string
 }
@@ -612,7 +612,8 @@ func resolveRequestAttribute(req Request, path string) (interface{}, error) {
 		return nil, fmt.Errorf("attribute key is required")
 	}
 
-	value, exists := accessor.GetAttribute(parts[1])
+	// 使用 ResolveAttribute 支持嵌套属性
+	value, exists := ResolveAttribute(accessor, parts[1])
 	if !exists {
 		return nil, fmt.Errorf("attribute not found: %s", path)
 	}

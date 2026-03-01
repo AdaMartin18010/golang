@@ -26,7 +26,7 @@ require (
 	// Vault
 	github.com/hashicorp/vault/api v1.16.0
 	github.com/hashicorp/vault/api/auth/approle v0.11.0
-	github.com/hashicorp/vault/api/auth/kubernetes v0.11.0
+	github.com/hashicorp/vault/api/auth/kubernetes v0.9.0
 
 	// OpenTelemetry - 使用主版本，子包会自动解析
 	go.opentelemetry.io/otel v1.38.0

@@ -2,7 +2,6 @@ package security
 
 import (
 	"bytes"
-	"io"
 	"strings"
 	"testing"
 )
@@ -112,7 +111,7 @@ func TestFileUploadValidator_CalculateFileHash(t *testing.T) {
 }
 
 func TestFileUploadValidator_ValidateFileHeader(t *testing.T) {
-	validator := NewFileUploadValidator(DefaultFileUploadConfig())
+	_ = NewFileUploadValidator(DefaultFileUploadConfig())
 
 	tests := []struct {
 		header []byte
@@ -126,6 +125,7 @@ func TestFileUploadValidator_ValidateFileHeader(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		_ = tt
 		// 使用反射或导出方法测试（这里简化处理）
 		// 实际测试通过 ValidateFile 间接测试
 		_ = tt

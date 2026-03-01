@@ -3,7 +3,6 @@ package security
 import (
 	"crypto/tls"
 	"testing"
-	"time"
 )
 
 func TestSecurityConfig_Validate(t *testing.T) {

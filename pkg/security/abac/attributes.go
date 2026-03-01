@@ -63,6 +63,8 @@ func (s Subject) GetAttribute(key string) (interface{}, bool) {
 		return s.ID, true
 	case "department":
 		return s.Department, true
+	case "attributes":
+		return s.Attributes, s.Attributes != nil
 	default:
 		if s.Attributes != nil {
 			val, exists := s.Attributes[key]
@@ -146,6 +148,8 @@ func (r Resource) GetAttribute(key string) (interface{}, bool) {
 		return r.Type, true
 	case "owner":
 		return r.Owner, true
+	case "attributes":
+		return r.Attributes, r.Attributes != nil
 	default:
 		if r.Attributes != nil {
 			val, exists := r.Attributes[key]
@@ -186,6 +190,8 @@ func (a Action) GetAttribute(key string) (interface{}, bool) {
 	switch key {
 	case "name":
 		return a.Name, true
+	case "attributes":
+		return a.Attributes, a.Attributes != nil
 	default:
 		if a.Attributes != nil {
 			val, exists := a.Attributes[key]
@@ -232,8 +238,8 @@ func (a Action) IsWrite() bool {
 //
 // 包含时间、位置、设备信息等环境因素
 type Environment struct {
-	Time       int64                  `json:"time"`       // Unix timestamp
-	Location   string                 `json:"location"`   // e.g., "192.168.1.1", "office"
+	Time       int64                  `json:"time"`        // Unix timestamp
+	Location   string                 `json:"location"`    // e.g., "192.168.1.1", "office"
 	DeviceType string                 `json:"device_type"` // e.g., "mobile", "desktop"
 	Attributes map[string]interface{} `json:"attributes"`
 }
@@ -254,6 +260,8 @@ func (e Environment) GetAttribute(key string) (interface{}, bool) {
 		return e.Location, true
 	case "device_type":
 		return e.DeviceType, true
+	case "attributes":
+		return e.Attributes, e.Attributes != nil
 	default:
 		if e.Attributes != nil {
 			val, exists := e.Attributes[key]

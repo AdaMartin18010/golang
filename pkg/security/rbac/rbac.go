@@ -109,7 +109,8 @@ func (r *RBAC) CheckPermission(ctx context.Context, userRoles []string, resource
 	for _, roleID := range userRoles {
 		perms, err := r.getRolePermissions(roleID, make(map[string]bool))
 		if err != nil {
-			return false, err
+			// 忽略不存在的角色，继续检查其他角色
+			continue
 		}
 		for permID := range perms {
 			userPermissions[permID] = true

@@ -1,7 +1,6 @@
 package security
 
 import (
-	"crypto/tls"
 	"testing"
 )
 

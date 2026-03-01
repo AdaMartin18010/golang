@@ -1,0 +1,43 @@
+# GraphQL Schema
+# 用户管理 API
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Query {
+  # 获取单个用户
+  user(id: ID!): User
+  
+  # 获取用户列表
+  users(limit: Int = 10, offset: Int = 0): [User!]!
+}
+
+type Mutation {
+  # 创建用户
+  createUser(input: CreateUserInput!): User!
+  
+  # 更新用户
+  updateUser(id: ID!, input: UpdateUserInput!): User!
+  
+  # 删除用户
+  deleteUser(id: ID!): Boolean!
+}
+
+input CreateUserInput {
+  email: String!
+  name: String!
+}
+
+input UpdateUserInput {
+  name: String
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
