@@ -217,6 +217,7 @@ collector.RecordSyscallTrace(ctx, "open", 12345, 10*time.Millisecond)
 4. 实现程序加载和数据收集逻辑
 
 参考文档：
+
 - [eBPF 深度解析](../architecture/tech-stack/observability/ebpf.md)
 - [cilium/ebpf 官方文档](https://github.com/cilium/ebpf)
 
