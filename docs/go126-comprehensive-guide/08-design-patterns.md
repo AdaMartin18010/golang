@@ -108,23 +108,55 @@ var (
 
 func GetDB() *Database {
     once.Do(func() {
-        conn, err := sql.Open("postgres", "...")
+        conn, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
         if err != nil {
             log.Fatal(err)
         }
+
+        // 配置连接池
+        conn.SetMaxOpenConns(25)
+        conn.SetMaxIdleConns(10)
+        conn.SetConnMaxLifetime(5 * time.Minute)
+
         db = &Database{conn: conn}
     })
     return db
 }
 
-// 反例: 错误的单例实现
-var instance *Singleton
+func (db *Database) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+    return db.conn.QueryContext(ctx, query, args...)
+}
 
-func GetInstanceWrong() *Singleton {
+// 反例: 错误的单例实现
+var instance *Database
+
+func GetInstanceWrong() *Database {
     if instance == nil {        // 竞态条件！
-        instance = &Singleton{} // 可能创建多个实例
+        instance = &Database{} // 可能创建多个实例
     }
     return instance
+}
+
+// 并发测试
+func TestSingleton(t *testing.T) {
+    var wg sync.WaitGroup
+    instances := make([]*Database, 100)
+
+    for i := 0; i < 100; i++ {
+        wg.Add(1)
+        go func(idx int) {
+            defer wg.Done()
+            instances[idx] = GetDB()
+        }(i)
+    }
+    wg.Wait()
+
+    // 验证所有实例相同
+    for i := 1; i < 100; i++ {
+        if instances[i] != instances[0] {
+            t.Error("Singleton failed!")
+        }
+    }
 }
 ```
 
@@ -176,6 +208,7 @@ type Server struct {
     logger   *log.Logger
     tlsConfig *tls.Config
     maxConns int
+    middleware []Middleware
 }
 
 type Option func(*Server)
@@ -207,6 +240,12 @@ func WithTLS(config *tls.Config) Option {
 func WithMaxConnections(n int) Option {
     return func(s *Server) {
         s.maxConns = n
+    }
+}
+
+func WithMiddleware(m ...Middleware) Option {
+    return func(s *Server) {
+        s.middleware = append(s.middleware, m...)
     }
 }
 
@@ -264,7 +303,73 @@ func NewServerBad(addr string, timeout time.Duration, logger *log.Logger,
 }
 ```
 
-### 2.3 对象池模式
+### 2.3 工厂模式
+
+```
+工厂模式:
+────────────────────────────────────────
+封装对象创建逻辑，根据条件返回不同类型实例
+
+代码示例:
+// 抽象产品
+type Animal interface {
+    Speak() string
+}
+
+// 具体产品
+type Dog struct{}
+func (d *Dog) Speak() string { return "Woof!" }
+
+type Cat struct{}
+func (c *Cat) Speak() string { return "Meow!" }
+
+type Cow struct{}
+func (c *Cow) Speak() string { return "Moo!" }
+
+// 简单工厂
+func AnimalFactory(animalType string) (Animal, error) {
+    switch animalType {
+    case "dog":
+        return &Dog{}, nil
+    case "cat":
+        return &Cat{}, nil
+    case "cow":
+        return &Cow{}, nil
+    default:
+        return nil, fmt.Errorf("unknown animal: %s", animalType)
+    }
+}
+
+// 使用
+func factoryExample() {
+    animals := []string{"dog", "cat", "cow"}
+
+    for _, a := range animals {
+        animal, err := AnimalFactory(a)
+        if err != nil {
+            log.Println(err)
+            continue
+        }
+        fmt.Println(animal.Speak())
+    }
+}
+
+// 抽象工厂: 创建一族相关对象
+type UIFactory interface {
+    CreateButton() Button
+    CreateCheckbox() Checkbox
+}
+
+type WindowsFactory struct{}
+func (w *WindowsFactory) CreateButton() Button { return &WindowsButton{} }
+func (w *WindowsFactory) CreateCheckbox() Checkbox { return &WindowsCheckbox{} }
+
+type MacFactory struct{}
+func (m *MacFactory) CreateButton() Button { return &MacButton{} }
+func (m *MacFactory) CreateCheckbox() Checkbox { return &MacCheckbox{} }
+```
+
+### 2.4 对象池模式
 
 ```
 对象池的形式化:
@@ -294,24 +399,28 @@ func putBuffer(b *Buffer) {
 代码示例:
 // Buffer池
 type Buffer struct {
-    data []byte
+    buf []byte
 }
 
 func (b *Buffer) Write(p []byte) {
-    b.data = append(b.data, p...)
+    b.buf = append(b.buf, p...)
+}
+
+func (b *Buffer) Bytes() []byte {
+    return b.buf
 }
 
 func (b *Buffer) Reset() {
-    b.data = b.data[:0]  // 保留容量，重置长度
+    b.buf = b.buf[:0]  // 保留容量，重置长度
 }
 
 var bufferPool = sync.Pool{
     New: func() interface{} {
-        return &Buffer{data: make([]byte, 0, 1024)}
+        return &Buffer{buf: make([]byte, 0, 1024)}
     },
 }
 
-func processWithPool(data []byte) {
+func processWithPool(data []byte) []byte {
     buf := bufferPool.Get().(*Buffer)
     defer func() {
         buf.Reset()
@@ -320,13 +429,26 @@ func processWithPool(data []byte) {
 
     buf.Write(data)
     // 处理...
+    result := make([]byte, len(buf.Bytes()))
+    copy(result, buf.Bytes())
+    return result
 }
 
-// 反例: 不使用池
-func processWithoutPool(data []byte) {
-    buf := &Buffer{data: make([]byte, 0, len(data))}  // 每次分配
-    buf.Write(data)
-    // 处理... 然后GC
+// 性能对比测试
+func BenchmarkWithPool(b *testing.B) {
+    data := make([]byte, 1000)
+    for i := 0; i < b.N; i++ {
+        _ = processWithPool(data)
+    }
+}
+
+func BenchmarkWithoutPool(b *testing.B) {
+    data := make([]byte, 1000)
+    for i := 0; i < b.N; i++ {
+        buf := &Buffer{buf: make([]byte, 0, 1024)}
+        buf.Write(data)
+        _ = buf.Bytes()
+    }
 }
 ```
 
@@ -400,6 +522,22 @@ func (ad *AdapterB) Write(p []byte) error {
 // 统一使用
 func processData(w Writer, data []byte) error {
     return w.Write(data)
+}
+
+// 使用示例
+func adapterExample() {
+    a := &ThirdPartyA{}
+    b := &ThirdPartyB{}
+
+    adapters := []Writer{
+        &AdapterA{a: a},
+        &AdapterB{b: b},
+    }
+
+    data := []byte("hello")
+    for _, w := range adapters {
+        processData(w, data)
+    }
 }
 ```
 
@@ -481,6 +619,19 @@ func AuthMiddleware(apiKey string) Middleware {
     }
 }
 
+func RateLimitMiddleware(rps int) Middleware {
+    limiter := rate.NewLimiter(rate.Limit(rps), rps)
+    return func(next http.Handler) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            if !limiter.Allow() {
+                http.Error(w, "Rate limit exceeded", 429)
+                return
+            }
+            next.ServeHTTP(w, r)
+        })
+    }
+}
+
 func Chain(middlewares ...Middleware) Middleware {
     return func(final http.Handler) http.Handler {
         for i := len(middlewares) - 1; i >= 0; i-- {
@@ -511,9 +662,59 @@ func decoratorExample() {
         RecoveryMiddleware,
         LoggingMiddleware,
         AuthMiddleware("secret-key"),
+        RateLimitMiddleware(100),
     )(mux)
 
     http.ListenAndServe(":8080", handler)
+}
+```
+
+### 3.3 外观模式
+
+```
+外观模式:
+────────────────────────────────────────
+为复杂子系统提供简化接口
+
+代码示例:
+// 复杂子系统
+type CPU struct{}
+func (c *CPU) Freeze() {}
+func (c *CPU) Jump(position int) {}
+func (c *CPU) Execute() {}
+
+type Memory struct{}
+func (m *Memory) Load(position int, data []byte) {}
+
+type HardDrive struct{}
+func (h *HardDrive) Read(lba int, size int) []byte { return nil }
+
+// 外观
+type ComputerFacade struct {
+    cpu       *CPU
+    memory    *Memory
+    hardDrive *HardDrive
+}
+
+func NewComputerFacade() *ComputerFacade {
+    return &ComputerFacade{
+        cpu:       &CPU{},
+        memory:    &Memory{},
+        hardDrive: &HardDrive{},
+    }
+}
+
+func (c *ComputerFacade) Start() {
+    c.cpu.Freeze()
+    c.memory.Load(0, c.hardDrive.Read(0, 1024))
+    c.cpu.Jump(0)
+    c.cpu.Execute()
+}
+
+// 使用
+func facadeExample() {
+    computer := NewComputerFacade()
+    computer.Start()  // 简化接口，隐藏复杂启动过程
 }
 ```
 
@@ -640,6 +841,38 @@ func strategyExample() {
     })
     fmt.Println("Insertion:", sorter.Sort(data))
 }
+
+// 支付策略示例
+type PaymentStrategy interface {
+    Pay(amount float64) error
+}
+
+type CreditCard struct {
+    number string
+    cvv    string
+}
+
+func (c *CreditCard) Pay(amount float64) error {
+    fmt.Printf("Paying %.2f using Credit Card %s\n", amount, c.number[:4])
+    return nil
+}
+
+type PayPal struct {
+    email string
+}
+
+func (p *PayPal) Pay(amount float64) error {
+    fmt.Printf("Paying %.2f using PayPal account %s\n", amount, p.email)
+    return nil
+}
+
+type ShoppingCart struct {
+    strategy PaymentStrategy
+}
+
+func (c *ShoppingCart) Checkout(amount float64) error {
+    return c.strategy.Pay(amount)
+}
 ```
 
 ### 4.2 观察者模式的Channel实现
@@ -763,11 +996,120 @@ func observerExample() {
         }
     }()
 
+    // 订阅者3: 记录日志
+    logCh := bus.Subscribe("order.created", 10)
+    go func() {
+        for event := range logCh {
+            fmt.Printf("记录日志: %v\n", event.Data)
+        }
+    }()
+
     // 发布事件
     bus.Publish(Event{
         Type: "order.created",
         Data: OrderCreatedEvent{OrderID: "123", Amount: 99.99},
     })
+}
+```
+
+### 4.3 模板方法模式
+
+```
+模板方法模式:
+────────────────────────────────────────
+定义算法骨架，延迟到子类实现步骤
+
+代码示例:
+// 抽象类 (接口定义骨架)
+type DataParser interface {
+    Parse(data []byte) ([]Record, error)
+    // 子类需要实现的方法
+    parseHeader([]byte) (Header, error)
+    parseRecord([]byte) (Record, error)
+}
+
+// 模板方法实现
+type BaseParser struct {
+    // 嵌入的具体解析器
+    impl DataParser
+}
+
+func (p *BaseParser) Parse(data []byte) ([]Record, error) {
+    // 1. 解析头部 (固定步骤)
+    header, err := p.impl.parseHeader(data)
+    if err != nil {
+        return nil, err
+    }
+
+    // 2. 验证头部 (固定步骤)
+    if !p.validateHeader(header) {
+        return nil, fmt.Errorf("invalid header")
+    }
+
+    // 3. 解析记录 (变化步骤)
+    var records []Record
+    for _, chunk := range p.splitRecords(data) {
+        record, err := p.impl.parseRecord(chunk)
+        if err != nil {
+            return nil, err
+        }
+        records = append(records, record)
+    }
+
+    return records, nil
+}
+
+func (p *BaseParser) validateHeader(h Header) bool {
+    // 默认验证逻辑
+    return h.Version == "1.0"
+}
+
+func (p *BaseParser) splitRecords(data []byte) [][]byte {
+    // 默认分割逻辑
+    return bytes.Split(data, []byte("\n"))
+}
+
+// CSV解析器
+type CSVParser struct {
+    BaseParser
+}
+
+func NewCSVParser() *CSVParser {
+    p := &CSVParser{}
+    p.BaseParser.impl = p  // 自引用
+    return p
+}
+
+func (p *CSVParser) parseHeader(data []byte) (Header, error) {
+    // CSV特定头部解析
+    return Header{Version: "1.0"}, nil
+}
+
+func (p *CSVParser) parseRecord(data []byte) (Record, error) {
+    // CSV特定记录解析
+    fields := strings.Split(string(data), ",")
+    return Record{Fields: fields}, nil
+}
+
+// JSON解析器
+type JSONParser struct {
+    BaseParser
+}
+
+func NewJSONParser() *JSONParser {
+    p := &JSONParser{}
+    p.BaseParser.impl = p
+    return p
+}
+
+func (p *JSONParser) parseHeader(data []byte) (Header, error) {
+    // JSON特定头部解析
+    return Header{Version: "1.0"}, nil
+}
+
+func (p *JSONParser) parseRecord(data []byte) (Record, error) {
+    // JSON特定记录解析
+    return Record{Raw: data}, nil
 }
 ```
 
@@ -833,8 +1175,9 @@ func NewPostgresUserRepo(db *sql.DB) *PostgresUserRepo {
 }
 
 func (r *PostgresUserRepo) GetByID(ctx context.Context, id string) (*User, error) {
-    // 实现...
-    return nil, nil
+    var user User
+    err := r.db.QueryRowContext(ctx, "SELECT * FROM users WHERE id = $1", id).Scan(&user.ID, &user.Name)
+    return &user, err
 }
 
 type ConsoleLogger struct{}
@@ -845,6 +1188,10 @@ func NewConsoleLogger() *ConsoleLogger {
 
 func (l *ConsoleLogger) Info(msg string) {
     fmt.Println("[INFO]", msg)
+}
+
+func (l *ConsoleLogger) Error(msg string, err error) {
+    fmt.Println("[ERROR]", msg, err)
 }
 
 // 服务
@@ -862,12 +1209,29 @@ func (s *UserService) GetUser(ctx context.Context, id string) (*User, error) {
     return s.repo.GetByID(ctx, id)
 }
 
-// 手动DI
+// 手动DI容器
+type Container struct {
+    db     *sql.DB
+    logger Logger
+}
+
+func NewContainer() *Container {
+    db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    return &Container{
+        db:     db,
+        logger: NewConsoleLogger(),
+    }
+}
+
+func (c *Container) GetUserService() *UserService {
+    repo := NewPostgresUserRepo(c.db)
+    return NewUserService(repo, c.logger)
+}
+
+// 使用
 func diExample() {
-    db, _ := sql.Open("postgres", "...")
-    repo := NewPostgresUserRepo(db)
-    logger := NewConsoleLogger()
-    service := NewUserService(repo, logger)
+    container := NewContainer()
+    service := container.GetUserService()
 
     user, _ := service.GetUser(context.Background(), "123")
     fmt.Println(user)
@@ -976,8 +1340,10 @@ func NewPostgresOrderRepo(db *sql.DB) *PostgresOrderRepo {
 }
 
 func (r *PostgresOrderRepo) Save(ctx context.Context, order *Order) error {
-    // SQL实现
-    return nil
+    _, err := r.db.ExecContext(ctx,
+        "INSERT INTO orders (id, user_id, amount, status) VALUES ($1, $2, $3, $4)",
+        order.ID, order.UserID, order.Amount, order.Status)
+    return err
 }
 
 // internal/infrastructure/stripe/gateway.go
@@ -990,8 +1356,12 @@ func NewStripeGateway(apiKey string) *StripeGateway {
 }
 
 func (g *StripeGateway) Charge(ctx context.Context, orderID string, amount Money) error {
-    // Stripe API调用
-    return nil
+    params := &stripe.PaymentIntentParams{
+        Amount:   stripe.Int64(amount.Amount.IntPart()),
+        Currency: stripe.String(strings.ToLower(amount.Currency)),
+    }
+    _, err := g.client.PaymentIntents.New(params)
+    return err
 }
 ```
 
@@ -1020,6 +1390,123 @@ func (g *StripeGateway) Charge(ctx context.Context, orderID string, amount Money
 │       ├── 是 → 接口/插件系统
 │       └── 否 → 编译期泛型
 └── 否 → 直接实现
+```
+
+---
+
+## 七、反模式与最佳实践
+
+### 7.1 常见反模式
+
+```
+反模式1: 过度使用单例
+────────────────────────────────────────
+// 不好: 单例难以测试，隐藏依赖
+var globalDB *sql.DB
+
+// 好: 依赖注入
+type Service struct {
+    db *sql.DB
+}
+
+反模式2: 接口污染
+────────────────────────────────────────
+// 不好: 过大的接口
+type BigInterface interface {
+    Method1()
+    Method2()
+    // ... 20 more methods
+}
+
+// 好: 小接口组合
+type Reader interface { Read() }
+type Writer interface { Write() }
+type ReadWriter interface {
+    Reader
+    Writer
+}
+
+反模式3: 不处理错误
+────────────────────────────────────────
+// 不好
+value, _ := someFunction()
+
+// 好
+value, err := someFunction()
+if err != nil {
+    return fmt.Errorf("doing something: %w", err)
+}
+
+反模式4: goroutine泄露
+────────────────────────────────────────
+// 不好
+func leaky() {
+    ch := make(chan int)
+    go func() {
+        // 永远阻塞
+        <-ch
+    }()
+}
+
+// 好
+func clean(ctx context.Context) {
+    ch := make(chan int)
+    go func() {
+        select {
+        case <-ch:
+        case <-ctx.Done():
+        }
+    }()
+}
+```
+
+### 7.2 性能优化模式
+
+```
+对象复用:
+────────────────────────────────────────
+var bufPool = sync.Pool{
+    New: func() interface{} {
+        return make([]byte, 4096)
+    },
+}
+
+func process(data []byte) {
+    buf := bufPool.Get().([]byte)
+    defer bufPool.Put(buf[:cap(buf)])
+
+    // 使用buf...
+}
+
+预分配:
+────────────────────────────────────────
+// 不好
+var result []int
+for i := 0; i < n; i++ {
+    result = append(result, i)  // 多次分配
+}
+
+// 好
+result := make([]int, 0, n)  // 预分配
+for i := 0; i < n; i++ {
+    result = append(result, i)
+}
+
+字符串构建:
+────────────────────────────────────────
+// 不好
+var s string
+for i := 0; i < 1000; i++ {
+    s += fmt.Sprintf("%d", i)  // 多次分配
+}
+
+// 好
+var b strings.Builder
+b.Grow(4000)  // 预分配
+for i := 0; i < 1000; i++ {
+    fmt.Fprintf(&b, "%d", i)
+}
+s := b.String()
 ```
 
 ---
