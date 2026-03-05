@@ -1,179 +1,325 @@
-# 第十章：分布式系统设计模式
+# 分布式系统模式
 
-> Go 微服务架构中的分布式设计模式
+> 一致性理论与分布式算法的Go实现
 
 ---
 
-## 10.1 服务治理模式
+## 一、分布式系统的理论基础
 
-### 10.1.1 服务发现
+### 1.1 CAP定理的形式化
 
-```go
-// 服务发现接口
-type ServiceDiscovery interface {
-    Register(service ServiceInstance) error
-    Deregister(serviceID string) error
-    Discover(serviceName string) ([]ServiceInstance, error)
-    Watch(serviceName string) (<-chan []ServiceInstance, error)
-}
+```
+CAP定理 (Brewer):
+────────────────────────────────────────
+分布式系统最多同时满足以下两项:
+├─ C (Consistency): 一致性
+│   所有节点在同一时间看到相同数据
+│   形式化: ∀t: read(t) → write(t₀) where t₀ ≤ t
+│
+├─ A (Availability): 可用性
+│   每个请求都能在有限时间内获得响应
+│   形式化: ∀request: P(response) = 1
+│
+└─ P (Partition tolerance): 分区容错
+    网络分区时系统仍能运行
+    形式化: partition → system_continues
 
-type ServiceInstance struct {
-    ID       string
-    Name     string
-    Host     string
-    Port     int
-    Metadata map[string]string
-    Health   HealthStatus
-}
+不可能三角:
+    C ──────── A
+     ╲       ╱
+      ╲   ╱
+        P (必须选择)
 
-// Consul 实现
-func NewConsulDiscovery(addr string) (ServiceDiscovery, error) {
-    client, err := api.NewClient(&api.Config{
-        Address: addr,
-    })
-    if err != nil {
-        return nil, err
-    }
-    return &ConsulDiscovery{client: client}, nil
-}
+CP系统: etcd, ZooKeeper, Consul
+AP系统: Cassandra, DynamoDB, CouchDB
+```
 
-type ConsulDiscovery struct {
-    client *api.Client
-}
+### 1.2 一致性模型谱系
 
-func (c *ConsulDiscovery) Register(service ServiceInstance) error {
-    reg := &api.AgentServiceRegistration{
-        ID:      service.ID,
-        Name:    service.Name,
-        Address: service.Host,
-        Port:    service.Port,
-        Check: &api.AgentServiceCheck{
-            HTTP:     fmt.Sprintf("http://%s:%d/health", service.Host, service.Port),
-            Interval: "10s",
-            Timeout:  "5s",
-        },
-    }
-    return c.client.Agent().ServiceRegister(reg)
-}
+```
+一致性强度谱系 (强 → 弱):
+────────────────────────────────────────
 
-func (c *ConsulDiscovery) Discover(serviceName string) ([]ServiceInstance, error) {
-    entries, _, err := c.client.Health().Service(serviceName, "", true, nil)
-    if err != nil {
-        return nil, err
-    }
+线性一致性 (Linearizable):
+├─ 所有操作表现为在全局时间点原子执行
+├─ 实时顺序保持
+└─ 实现: 单领导者复制、共识算法
 
-    var instances []ServiceInstance
-    for _, entry := range entries {
-        instances = append(instances, ServiceInstance{
-            ID:   entry.Service.ID,
-            Name: entry.Service.Service,
-            Host: entry.Service.Address,
-            Port: entry.Service.Port,
-        })
-    }
-    return instances, nil
+顺序一致性 (Sequential):
+├─ 操作顺序与程序顺序一致
+├─ 所有进程看到相同操作顺序
+└─ 不保证实时性
+
+因果一致性 (Causal):
+├─ 因果相关的操作顺序保持一致
+├─ 并发操作顺序任意
+└─ 实现: 向量时钟
+
+最终一致性 (Eventual):
+├─ 无新更新时，副本最终一致
+├─ 允许临时不一致
+└─ 实现: 异步复制
+
+弱一致性 (Weak):
+└─ 无一致性保证
+```
+
+---
+
+## 二、共识算法
+
+### 2.1 Raft共识算法
+
+```
+Raft核心机制:
+────────────────────────────────────────
+
+角色状态机:
+Follower ──► Candidate ──► Leader
+    ▲                        │
+    └────────────────────────┘
+(心跳超时)              (选举成功)
+
+安全性保证:
+├─ 选举安全: 一个任期内最多一个Leader
+├─ 领导者追加: Leader不会删除/修改已提交日志
+├─ 日志匹配: 相同索引和任期的日志内容相同
+├─ 领导者完备: 已提交日志在未来的Leader中
+└─ 状态机安全: 相同索引应用相同命令
+
+Go实现要点:
+type Raft struct {
+    mu        sync.Mutex
+    state     State
+    currentTerm int
+    votedFor  int
+    log       []LogEntry
+    commitIndex int
+    lastApplied int
+    nextIndex  []int
+    matchIndex []int
 }
 ```
 
-### 10.1.2 负载均衡
+### 2.2 拜占庭容错 (BFT)
 
-```go
-// 负载均衡策略
-type LoadBalancer interface {
-    Select(instances []ServiceInstance) (ServiceInstance, error)
+```
+BFT问题:
+────────────────────────────────────────
+n个节点，f个拜占庭(恶意)节点
+安全条件: n ≥ 3f + 1
+
+PBFT算法:
+├─ Request: 客户端发送请求
+├─ Pre-prepare: Leader分配序号
+├─ Prepare: 节点验证并广播
+├─ Commit: 2f+1个prepare后提交
+└─ Reply: 返回结果
+
+Go实现考虑:
+├─ 加密签名验证
+├─ 消息认证码
+└─ 视图更换机制
+```
+
+---
+
+## 三、分布式事务
+
+### 3.1 两阶段提交 (2PC)
+
+```
+2PC协议:
+────────────────────────────────────────
+
+阶段1 (投票):
+Coordinator → Prepare? ──► Participant
+Participant: 执行本地事务，锁定资源
+Participant ── Vote YES/NO ──► Coordinator
+
+阶段2 (提交/回滚):
+若全部YES:
+  Coordinator → Commit ──► Participants
+  Participants: 提交本地事务，释放锁
+  Participants ── ACK ──► Coordinator
+
+若有NO:
+  Coordinator → Rollback ──► All
+  Participants: 回滚本地事务，释放锁
+
+问题:
+├─ 协调者单点故障
+├─ 同步阻塞
+└─ 脑裂风险
+
+Go实现:
+type Coordinator struct {
+    participants []Participant
+    timeout      time.Duration
 }
 
-// 轮询
-type RoundRobin struct {
-    counter uint64
-}
-
-func (r *RoundRobin) Select(instances []ServiceInstance) (ServiceInstance, error) {
-    if len(instances) == 0 {
-        return ServiceInstance{}, errors.New("no instances available")
+func (c *Coordinator) Commit(ctx context.Context, txn Transaction) error {
+    // Phase 1: Prepare
+    votes := make(chan Vote, len(c.participants))
+    for _, p := range c.participants {
+        go func(p Participant) {
+            vote, err := p.Prepare(ctx, txn)
+            votes <- Vote{Participant: p, Vote: vote, Err: err}
+        }(p)
     }
-    idx := atomic.AddUint64(&r.counter, 1) % uint64(len(instances))
-    return instances[idx], nil
-}
 
-// 随机
-type Random struct {
-    rnd *rand.Rand
-    mu  sync.Mutex
-}
-
-func (r *Random) Select(instances []ServiceInstance) (ServiceInstance, error) {
-    if len(instances) == 0 {
-        return ServiceInstance{}, errors.New("no instances available")
-    }
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    return instances[r.rnd.Intn(len(instances))], nil
-}
-
-// 加权轮询
-type WeightedRoundRobin struct {
-    instances []WeightedInstance
-    current   int
-    gcdWeight int
-    maxWeight int
-}
-
-type WeightedInstance struct {
-    Instance ServiceInstance
-    Weight   int
-    Current  int
-}
-
-func (w *WeightedRoundRobin) Select() (ServiceInstance, error) {
-    for {
-        w.current = (w.current + 1) % len(w.instances)
-        if w.current == 0 {
-            w.gcdWeight--
-            if w.gcdWeight == 0 {
-                w.gcdWeight = w.maxWeight
+    // 收集投票
+    for i := 0; i < len(c.participants); i++ {
+        select {
+        case v := <-votes:
+            if v.Err != nil || v.Vote == No {
+                return c.rollback(ctx)
             }
+        case <-ctx.Done():
+            return ctx.Err()
         }
-        if w.instances[w.current].Weight >= w.gcdWeight {
-            return w.instances[w.current].Instance, nil
+    }
+
+    // Phase 2: Commit
+    return c.commit(ctx)
+}
+```
+
+### 3.2 Saga模式
+
+```
+Saga长事务:
+────────────────────────────────────────
+将长事务拆分为本地事务序列
+每个本地事务提交后立即释放资源
+通过补偿事务处理失败
+
+两种协调方式:
+├─ 编排式 (Choreography): 事件驱动，服务自主决策
+└─ 编排式 (Orchestration): 中央协调器指挥
+
+Go实现 (编排式):
+type Saga struct {
+    steps []Step
+    compensations []Compensation
+}
+
+func (s *Saga) Execute(ctx context.Context) error {
+    completed := 0
+    for i, step := range s.steps {
+        if err := step.Execute(ctx); err != nil {
+            // 补偿已完成的步骤
+            for j := completed - 1; j >= 0; j-- {
+                s.compensations[j].Execute(ctx)
+            }
+            return err
         }
+        completed++
+    }
+    return nil
+}
+```
+
+---
+
+## 四、一致性协议实现
+
+### 4.1 向量时钟
+
+```
+向量时钟原理:
+────────────────────────────────────────
+VC(a)[i] = 进程a观察到进程i的事件数
+
+偏序关系:
+VC₁ ≤ VC₂ ⟺ ∀i: VC₁[i] ≤ VC₂[i]
+VC₁ < VC₂ ⟺ VC₁ ≤ VC₂ ∧ VC₁ ≠ VC₂
+VC₁ ∥ VC₂ ⟺ ¬(VC₁ ≤ VC₂) ∧ ¬(VC₂ ≤ VC₁)
+
+Go实现:
+type VectorClock map[string]uint64
+
+func (vc VectorClock) Increment(node string) {
+    vc[node]++
+}
+
+func (vc VectorClock) Merge(other VectorClock) {
+    for node, ts := range other {
+        if ts > vc[node] {
+            vc[node] = ts
+        }
+    }
+}
+
+func (vc VectorClock) HappensBefore(other VectorClock) bool {
+    for node, ts := range other {
+        if vc[node] > ts {
+            return false
+        }
+    }
+    return true
+}
+```
+
+### 4.2 Gossip协议
+
+```
+Gossip协议 (流行病协议):
+────────────────────────────────────────
+
+传播模型:
+├─ 反熵 (Anti-entropy): 全量同步，修复不一致
+├─ 谣言传播 (Rumor mongering): 增量传播新信息
+└─ 聚合 (Aggregation): 分布式计算统计值
+
+Go实现要点:
+├─ 成员列表维护
+├─ 随机节点选择
+├─ 收敛检测
+└─ 消息去重
+
+type Gossiper struct {
+    members []string
+    seen    map[string]time.Time
+    mu      sync.RWMutex
+}
+
+func (g *Gossiper) Spread(msg Message) {
+    g.mu.RLock()
+    targets := selectRandom(g.members, fanout)
+    g.mu.RUnlock()
+
+    for _, target := range targets {
+        go g.send(target, msg)
     }
 }
 ```
 
 ---
 
-## 10.2 弹性模式
+## 五、容错与恢复
 
-### 10.2.1 熔断器 (Circuit Breaker)
+### 5.1 断路器模式
 
-```go
+```
+状态机模型:
+────────────────────────────────────────
+Closed ──(失败阈值)──► Open ──(超时)──► HalfOpen
+  ▲                                           │
+  └──────────(成功)───────────────────────────┘
+
+Go实现:
 type CircuitBreaker struct {
-    name           string
-    maxFailures    int
-    timeout        time.Duration
-    halfOpenMaxCalls int
-
-    state          State
-    failures       int
-    successes      int
-    lastFailureTime time.Time
-    mutex          sync.RWMutex
-
-    // 指标
-    metrics        *Metrics
+    state       State
+    failures    int
+    threshold   int
+    resetTimeout time.Duration
+    lastFailure time.Time
+    mu          sync.Mutex
 }
 
-type State int
-
-const (
-    StateClosed State = iota
-    StateOpen
-    StateHalfOpen
-)
-
-func (cb *CircuitBreaker) Call(fn func() error) error {
-    if !cb.canCall() {
+func (cb *CircuitBreaker) Execute(fn func() error) error {
+    if !cb.allow() {
         return ErrCircuitOpen
     }
 
@@ -181,566 +327,125 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
     cb.recordResult(err)
     return err
 }
-
-func (cb *CircuitBreaker) canCall() bool {
-    cb.mutex.RLock()
-    defer cb.mutex.RUnlock()
-
-    switch cb.state {
-    case StateClosed:
-        return true
-    case StateOpen:
-        if time.Since(cb.lastFailureTime) > cb.timeout {
-            cb.mutex.RUnlock()
-            cb.mutex.Lock()
-            cb.state = StateHalfOpen
-            cb.failures = 0
-            cb.successes = 0
-            cb.mutex.Unlock()
-            cb.mutex.RLock()
-            return true
-        }
-        return false
-    case StateHalfOpen:
-        return cb.successes+cb.failures < cb.halfOpenMaxCalls
-    }
-    return false
-}
-
-func (cb *CircuitBreaker) recordResult(err error) {
-    cb.mutex.Lock()
-    defer cb.mutex.Unlock()
-
-    if err == nil {
-        cb.onSuccess()
-    } else {
-        cb.onFailure()
-    }
-}
-
-func (cb *CircuitBreaker) onSuccess() {
-    switch cb.state {
-    case StateClosed:
-        cb.failures = 0
-    case StateHalfOpen:
-        cb.successes++
-        if cb.successes >= cb.halfOpenMaxCalls {
-            cb.state = StateClosed
-            cb.failures = 0
-            cb.successes = 0
-        }
-    }
-}
-
-func (cb *CircuitBreaker) onFailure() {
-    cb.failures++
-    cb.lastFailureTime = time.Now()
-
-    switch cb.state {
-    case StateClosed:
-        if cb.failures >= cb.maxFailures {
-            cb.state = StateOpen
-        }
-    case StateHalfOpen:
-        cb.state = StateOpen
-    }
-}
 ```
 
-### 10.2.2 舱壁隔离 (Bulkhead)
+### 5.2 重试策略
 
-```go
-// 舱壁模式：隔离资源
-type Bulkhead struct {
-    name        string
-    maxConcurrent int
-    maxWait     time.Duration
-
-    semaphore   chan struct{}
-    metrics     *Metrics
-}
-
-func NewBulkhead(name string, maxConcurrent int, maxWait time.Duration) *Bulkhead {
-    return &Bulkhead{
-        name:        name,
-        maxConcurrent: maxConcurrent,
-        maxWait:     maxWait,
-        semaphore:   make(chan struct{}, maxConcurrent),
-    }
-}
-
-func (b *Bulkhead) Execute(ctx context.Context, fn func() error) error {
-    select {
-    case b.semaphore <- struct{}{}:
-        defer func() { <-b.semaphore }()
-        return fn()
-    case <-time.After(b.maxWait):
-        return ErrBulkheadFull
-    case <-ctx.Done():
-        return ctx.Err()
-    }
-}
-
-// 服务级别的舱壁隔离
-type ServiceBulkheads struct {
-    bulkheads map[string]*Bulkhead
-    mu        sync.RWMutex
-}
-
-func (s *ServiceBulkheads) Execute(serviceName string, fn func() error) error {
-    s.mu.RLock()
-    bulkhead, ok := s.bulkheads[serviceName]
-    s.mu.RUnlock()
-
-    if !ok {
-        // 使用默认配置
-        bulkhead = NewBulkhead(serviceName, 100, 5*time.Second)
-        s.mu.Lock()
-        s.bulkheads[serviceName] = bulkhead
-        s.mu.Unlock()
-    }
-
-    return bulkhead.Execute(context.Background(), fn)
-}
 ```
+重试算法:
+────────────────────────────────────────
 
-### 10.2.3 重试模式
+指数退避:
+delay = min(base × 2^attempt + jitter, maxDelay)
 
-```go
-type RetryConfig struct {
-    MaxAttempts     int
-    InitialInterval time.Duration
-    MaxInterval     time.Duration
-    Multiplier      float64
-    Jitter          float64
-    RetryableErrors func(error) bool
-}
-
-func Retry(ctx context.Context, config RetryConfig, fn func() error) error {
-    var err error
-    interval := config.InitialInterval
-
-    for attempt := 1; attempt <= config.MaxAttempts; attempt++ {
-        err = fn()
+Go实现:
+func Retry(ctx context.Context, fn func() error, opts RetryOptions) error {
+    delay := opts.BaseDelay
+    for attempt := 0; attempt < opts.MaxAttempts; attempt++ {
+        err := fn()
         if err == nil {
             return nil
         }
 
-        if !config.RetryableErrors(err) {
+        if !opts.Retryable(err) {
             return err
         }
 
-        if attempt == config.MaxAttempts {
-            break
-        }
-
-        // 计算下次重试间隔
-        jitter := time.Duration(rand.Float64() * config.Jitter * float64(interval))
-        sleepTime := interval + jitter
-
         select {
+        case <-time.After(delay):
+            delay = min(delay*2, opts.MaxDelay)
+            delay += time.Duration(rand.Int63n(int64(delay/4))) // jitter
         case <-ctx.Done():
             return ctx.Err()
-        case <-time.After(sleepTime):
-        }
-
-        // 指数退避
-        interval = time.Duration(float64(interval) * config.Multiplier)
-        if interval > config.MaxInterval {
-            interval = config.MaxInterval
         }
     }
-
-    return fmt.Errorf("max retry attempts reached: %w", err)
-}
-
-// 使用
-config := RetryConfig{
-    MaxAttempts:     5,
-    InitialInterval: 100 * time.Millisecond,
-    MaxInterval:     5 * time.Second,
-    Multiplier:      2.0,
-    Jitter:          0.1,
-    RetryableErrors: func(err error) bool {
-        return errors.Is(err, ErrTemporary) || errors.Is(err, ErrTimeout)
-    },
-}
-
-err := Retry(ctx, config, func() error {
-    return callExternalService()
-})
-```
-
----
-
-## 10.3 Saga 分布式事务模式
-
-```go
-// Saga 协调器
-type Saga struct {
-    steps []SagaStep
-    compensations []func() error
-}
-
-type SagaStep struct {
-    Action       func() error
-    Compensation func() error
-    Name         string
-}
-
-func NewSaga() *Saga {
-    return &Saga{
-        compensations: make([]func() error, 0),
-    }
-}
-
-func (s *Saga) AddStep(step SagaStep) {
-    s.steps = append(s.steps, step)
-}
-
-func (s *Saga) Execute() error {
-    for i, step := range s.steps {
-        if err := step.Action(); err != nil {
-            // 执行补偿
-            s.compensate(i)
-            return fmt.Errorf("step %s failed: %w", step.Name, err)
-        }
-        s.compensations = append(s.compensations, step.Compensation)
-    }
-    return nil
-}
-
-func (s *Saga) compensate(failedIndex int) {
-    for i := len(s.compensations) - 1; i >= 0; i-- {
-        if err := s.compensations[i](); err != nil {
-            log.Printf("Compensation failed: %v", err)
-        }
-    }
-}
-
-// 使用示例：订单处理
-func ProcessOrder(order Order) error {
-    saga := NewSaga()
-
-    // Step 1: 扣减库存
-    saga.AddStep(SagaStep{
-        Name: "Deduct Inventory",
-        Action: func() error {
-            return inventoryService.Deduct(order.Items)
-        },
-        Compensation: func() error {
-            return inventoryService.Restore(order.Items)
-        },
-    })
-
-    // Step 2: 扣款
-    saga.AddStep(SagaStep{
-        Name: "Charge Payment",
-        Action: func() error {
-            return paymentService.Charge(order.UserID, order.Total)
-        },
-        Compensation: func() error {
-            return paymentService.Refund(order.UserID, order.Total)
-        },
-    })
-
-    // Step 3: 创建订单
-    saga.AddStep(SagaStep{
-        Name: "Create Order",
-        Action: func() error {
-            return orderService.Create(order)
-        },
-        Compensation: func() error {
-            return orderService.Cancel(order.ID)
-        },
-    })
-
-    return saga.Execute()
+    return ErrMaxRetriesExceeded
 }
 ```
 
 ---
 
-## 10.4 事件驱动架构
+## 六、服务发现与负载均衡
 
-### 10.4.1 事件总线
+### 6.1 服务发现模式
 
-```go
-type EventBus struct {
-    handlers map[string][]EventHandler
+```
+服务发现架构:
+────────────────────────────────────────
+┌─────────────┐         ┌─────────────┐
+│   Client    │◄───────►│  Registry   │
+└──────┬──────┘         └──────┬──────┘
+       │                       │
+       ▼                       ▼
+┌─────────────┐         ┌─────────────┐
+│  Service A  │◄───────►│ Health Check│
+└─────────────┘         └─────────────┘
+
+一致性模型:
+├─ 强一致性: etcd, Consul (Raft)
+└─ 最终一致性: Eureka, ZooKeeper
+
+Go实现 (客户端发现):
+type Resolver struct {
+    registry Registry
+    cache    map[string][]Endpoint
     mu       sync.RWMutex
 }
 
-type Event struct {
-    Type      string
-    Payload   interface{}
-    Timestamp time.Time
-    Metadata  map[string]string
-}
+func (r *Resolver) Resolve(service string) ([]Endpoint, error) {
+    r.mu.RLock()
+    endpoints := r.cache[service]
+    r.mu.RUnlock()
 
-type EventHandler func(ctx context.Context, event Event) error
-
-func NewEventBus() *EventBus {
-    return &EventBus{
-        handlers: make(map[string][]EventHandler),
-    }
-}
-
-func (b *EventBus) Subscribe(eventType string, handler EventHandler) {
-    b.mu.Lock()
-    defer b.mu.Unlock()
-    b.handlers[eventType] = append(b.handlers[eventType], handler)
-}
-
-func (b *EventBus) Publish(ctx context.Context, event Event) error {
-    b.mu.RLock()
-    handlers := b.handlers[event.Type]
-    b.mu.RUnlock()
-
-    var wg sync.WaitGroup
-    errChan := make(chan error, len(handlers))
-
-    for _, handler := range handlers {
-        wg.Add(1)
-        go func(h EventHandler) {
-            defer wg.Done()
-            if err := h(ctx, event); err != nil {
-                errChan <- err
-            }
-        }(handler)
+    if len(endpoints) > 0 {
+        return endpoints, nil
     }
 
-    wg.Wait()
-    close(errChan)
-
-    var errs []error
-    for err := range errChan {
-        errs = append(errs, err)
-    }
-
-    if len(errs) > 0 {
-        return fmt.Errorf("handler errors: %v", errs)
-    }
-    return nil
-}
-
-// 集成消息队列
-func (b *EventBus) PublishToMQ(event Event) error {
-    // 序列化事件
-    data, err := json.Marshal(event)
+    endpoints, err := r.registry.Lookup(service)
     if err != nil {
-        return err
+        return nil, err
     }
 
-    // 发布到 Kafka/NATS
-    return kafkaClient.Publish(event.Type, data)
+    r.mu.Lock()
+    r.cache[service] = endpoints
+    r.mu.Unlock()
+
+    return endpoints, nil
 }
 ```
 
-### 10.4.2 CQRS 模式
+### 6.2 负载均衡算法
 
-```go
-// 命令端
-type OrderCommandHandler struct {
-    eventStore EventStore
-    bus        EventBus
+```
+负载均衡策略:
+────────────────────────────────────────
+
+轮询 (Round Robin):
+next = (last + 1) mod n
+
+加权轮询:
+weight = current_weight + effective_weight
+if weight > max_weight: weight = 0
+
+最少连接:
+selected = argmin(connections)
+
+一致性哈希:
+hash(key) → node
+虚拟节点解决不均匀问题
+
+Go实现:
+type LoadBalancer struct {
+    endpoints []Endpoint
+    current   uint64
 }
 
-func (h *OrderCommandHandler) CreateOrder(cmd CreateOrderCommand) error {
-    order := NewOrder(cmd.UserID, cmd.Items)
-
-    // 存储事件
-    if err := h.eventStore.Save(order.Events()); err != nil {
-        return err
-    }
-
-    // 发布事件
-    for _, event := range order.Events() {
-        if err := h.bus.Publish(context.Background(), event); err != nil {
-            return err
-        }
-    }
-
-    return nil
-}
-
-// 查询端
-type OrderQueryHandler struct {
-    readModel OrderReadModel
-}
-
-func (h *OrderQueryHandler) GetOrder(orderID string) (OrderDTO, error) {
-    return h.readModel.FindByID(orderID)
-}
-
-func (h *OrderQueryHandler) ListOrders(userID string) ([]OrderDTO, error) {
-    return h.readModel.FindByUser(userID)
-}
-
-// 事件处理器更新读模型
-type OrderProjector struct {
-    readModel OrderReadModel
-}
-
-func (p *OrderProjector) HandleOrderCreated(ctx context.Context, event Event) error {
-    created := event.Payload.(OrderCreatedEvent)
-
-    dto := OrderDTO{
-        ID:        created.OrderID,
-        UserID:    created.UserID,
-        Status:    "pending",
-        Total:     created.Total,
-        CreatedAt: event.Timestamp,
-    }
-
-    return p.readModel.Save(dto)
+func (lb *LoadBalancer) Next() Endpoint {
+    idx := atomic.AddUint64(&lb.current, 1) % uint64(len(lb.endpoints))
+    return lb.endpoints[idx]
 }
 ```
 
 ---
 
-## 10.5 分布式追踪
-
-```go
-// OpenTelemetry 集成
-
-import (
-    "go.opentelemetry.io/otel"
-    "go.opentelemetry.io/otel/attribute"
-    "go.opentelemetry.io/otel/trace"
-)
-
-var tracer = otel.Tracer("my-service")
-
-func ProcessOrder(ctx context.Context, order Order) error {
-    // 创建 span
-    ctx, span := tracer.Start(ctx, "ProcessOrder",
-        trace.WithAttributes(
-            attribute.String("order.id", order.ID),
-            attribute.String("user.id", order.UserID),
-        ),
-    )
-    defer span.End()
-
-    // 子操作
-    if err := validateOrder(ctx, order); err != nil {
-        span.RecordError(err)
-        return err
-    }
-
-    if err := saveOrder(ctx, order); err != nil {
-        span.RecordError(err)
-        span.SetStatus(codes.Error, "save failed")
-        return err
-    }
-
-    return nil
-}
-
-func validateOrder(ctx context.Context, order Order) error {
-    ctx, span := tracer.Start(ctx, "validateOrder")
-    defer span.End()
-
-    // 验证逻辑
-    if len(order.Items) == 0 {
-        span.SetAttributes(attribute.Bool("order.valid", false))
-        return ErrEmptyOrder
-    }
-
-    span.SetAttributes(attribute.Bool("order.valid", true))
-    return nil
-}
-
-// HTTP 中间件
-func TracingMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        ctx := r.Context()
-
-        // 从请求头提取 trace context
-        ctx = otel.GetTextMapPropagator().Extract(ctx, propagation.HeaderCarrier(r.Header))
-
-        ctx, span := tracer.Start(ctx, r.URL.Path,
-            trace.WithAttributes(
-                attribute.String("http.method", r.Method),
-                attribute.String("http.url", r.URL.String()),
-            ),
-        )
-        defer span.End()
-
-        next.ServeHTTP(w, r.WithContext(ctx))
-    })
-}
-```
-
----
-
-## 10.6 分布式锁
-
-```go
-// Redis 分布式锁
-type DistributedLock struct {
-    client *redis.Client
-    key    string
-    value  string
-    ttl    time.Duration
-}
-
-func (l *DistributedLock) Lock(ctx context.Context) error {
-    l.value = uuid.New().String()
-
-    for {
-        ok, err := l.client.SetNX(ctx, l.key, l.value, l.ttl).Result()
-        if err != nil {
-            return err
-        }
-        if ok {
-            // 获取锁成功，启动续期
-            go l.keepAlive()
-            return nil
-        }
-
-        // 等待重试
-        select {
-        case <-ctx.Done():
-            return ctx.Err()
-        case <-time.After(100 * time.Millisecond):
-        }
-    }
-}
-
-func (l *DistributedLock) Unlock(ctx context.Context) error {
-    // 使用 Lua 脚本确保原子性
-    script := `
-        if redis.call("get", KEYS[1]) == ARGV[1] then
-            return redis.call("del", KEYS[1])
-        else
-            return 0
-        end
-    `
-
-    result, err := l.client.Eval(ctx, script, []string{l.key}, l.value).Result()
-    if err != nil {
-        return err
-    }
-
-    if result.(int64) == 0 {
-        return ErrLockNotHeld
-    }
-    return nil
-}
-
-func (l *DistributedLock) keepAlive() {
-    ticker := time.NewTicker(l.ttl / 3)
-    defer ticker.Stop()
-
-    for range ticker.C {
-        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-        l.client.Expire(ctx, l.key, l.ttl)
-        cancel()
-    }
-}
-```
-
----
-
-*本章涵盖了构建可靠分布式系统的核心模式，包括弹性、事务、事件驱动和可观测性等方面。*
+*本章涵盖分布式系统的核心理论与Go实现，为构建可靠分布式服务提供基础。*
