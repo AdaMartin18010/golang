@@ -1,12 +1,12 @@
 # Go 1.26 完全技术指南
 
-> 基于形式化理论的下一代Go语言工程实践 - 全面增强版 (376KB+)
+> 基于形式化理论的下一代Go语言工程实践 - 全面增强版 (461KB+)
 
 ---
 
 ## 指南概览
 
-本指南共 **23章**，总计 **376KB** 深度技术内容，融合**形式化理论**、**丰富代码示例**、**实战案例**与**工程实践**。
+本指南共 **31章**，总计 **461KB** 深度技术内容，融合**形式化理论**、**丰富代码示例**、**实战案例**与**工程实践**。
 
 ### 核心理论框架
 
@@ -18,7 +18,7 @@
 
 **类型系统公理化**
 
-```
+```text
 公理1: 结构类型等价
   ∀t₁,t₂ ∈ Type: t₁ ≡ t₂ ↔ fields(t₁)=fields(t₂) ∧ methods(t₁)=methods(t₂)
 
@@ -31,17 +31,17 @@
 
 ---
 
-## 目录结构 (23章)
+## 目录结构 (31章)
 
 ### 第一部分：理论基础 (8章)
 
 | 章节 | 文件 | 核心内容 | 大小 |
 |------|------|----------|------|
 | 哲学架构 | [00-philosophy-architecture.md](00-philosophy-architecture.md) | 设计公理、简洁性、显式性 | 8.7KB |
-| 语言基础 | [01-language-features.md](01-language-features.md) | 计算模型、值语义、内存布局、闭包 | **26.5KB** |
+| 语言基础 | [01-language-features.md](01-language-features.md) | **计算模型**、**内存布局**、**逃逸分析**、闭包 | **26.2KB** |
 | 语法语义 | [02-syntax-semantics.md](02-syntax-semantics.md) | 词法结构、表达式、语句语义 | 13.8KB |
-| 类型系统 | [03-type-system.md](03-type-system.md) | 结构类型、接口语义、泛型理论 | 18.2KB |
-| CSP模型 | [05-csp-formal-model.md](05-csp-formal-model.md) | Hoare CSP、操作语义、精化关系 | 16.6KB |
+| 类型系统 | [03-type-system.md](03-type-system.md) | 结构类型、**接口语义**、**泛型理论** | **18.2KB** |
+| CSP模型 | [05-csp-formal-model.md](05-csp-formal-model.md) | Hoare CSP、**调度器**、**Channel实现** | **16.7KB** |
 | 内存模型 | [06-memory-model.md](06-memory-model.md) | Happens-before、同步原语 | 7.8KB |
 | 学术课程 | [06-academic-courses.md](06-academic-courses.md) | 大学课程映射 | 23.1KB |
 | 形式化验证 | [07-formal-verification.md](07-formal-verification.md) | 验证方法、工具链 | 16.3KB |
@@ -50,7 +50,7 @@
 
 | 章节 | 文件 | 核心内容 | 大小 |
 |------|------|----------|------|
-| 设计模式 | [08-design-patterns.md](08-design-patterns.md) | **创建型/结构型/行为型模式**、反模式、性能优化 | **35.6KB** |
+| 设计模式 | [08-design-patterns.md](08-design-patterns.md) | **创建型/结构型/行为型模式**、反模式 | **35.5KB** |
 | 并发模式 | [09-concurrency-patterns.md](09-concurrency-patterns.md) | CSP模式、**Worker Pool**、**Pipeline**、Circuit Breaker | **28.1KB** |
 | 分布式模式 | [10-distributed-patterns.md](10-distributed-patterns.md) | CAP定理、共识算法、一致性协议 | 11.4KB |
 
@@ -61,7 +61,7 @@
 | 开源库 | [12-open-source-libraries.md](12-open-source-libraries.md) | 生态选型、依赖决策、工具链 | 12.9KB |
 | 云原生 | [13-cloud-native.md](13-cloud-native.md) | 十二因素、K8s、Serverless | 10.5KB |
 | 微服务框架 | [14-microservices-frameworks.md](14-microservices-frameworks.md) | 框架对比、服务治理 | 12.5KB |
-| 最佳实践 | [20-best-practices.md](20-best-practices.md) | **代码组织**、**错误处理**、**性能优化**、**测试策略** | **22.7KB** |
+| 最佳实践 | [20-best-practices.md](20-best-practices.md) | 代码组织、错误处理、性能优化、测试策略 | **22.6KB** |
 | 验证工具 | [22-verification-tools.md](22-verification-tools.md) | 静态分析、模糊测试 | 9.1KB |
 
 ### 第四部分：思维工具 (4章)
@@ -73,139 +73,72 @@
 | 应用场景 | [19-application-scenarios.md](19-application-scenarios.md) | 场景决策矩阵、技术选型流程 | 8.8KB |
 | 学术对齐 | [15-academic-alignment.md](15-academic-alignment.md) | 课程映射 | 9.9KB |
 
-### 第五部分：附录 (3章)
+### 第五部分：运行时与优化 (5章)
 
 | 章节 | 文件 | 核心内容 | 大小 |
 |------|------|----------|------|
+| 运行时内部 | [24-runtime-internals.md](24-runtime-internals.md) | **G-M-P模型**、**调度算法**、**内存分配**、GC | **18.7KB** |
+| 编译器优化 | [25-compiler-optimization.md](25-compiler-optimization.md) | **逃逸分析**、内联、SSA | 7.5KB |
+| 内存管理 | [26-memory-management.md](26-memory-management.md) | **TCMalloc**、**三色标记**、内存泄漏排查 | 8.1KB |
+| 性能调优 | [27-performance-tuning.md](27-performance-tuning.md) | **pprof**、**Benchmark**、CPU/内存/延迟优化 | **10KB** |
+| 调试分析 | [28-debugging-profiling.md](28-debugging-profiling.md) | **Delve**、**Trace**、日志诊断 | 7.8KB |
+
+### 第六部分：高级主题 (4章)
+
+| 章节 | 文件 | 核心内容 | 大小 |
+|------|------|----------|------|
+| 测试策略 | [29-testing-strategies.md](29-testing-strategies.md) | 单元测试、集成测试、契约测试 | 7.4KB |
+| 常见陷阱 | [30-common-pitfalls.md](30-common-pitfalls.md) | **Goroutine泄漏**、**竞态条件**、内存泄漏 | **12.3KB** |
+| 高级模式 | [31-advanced-patterns.md](31-advanced-patterns.md) | **DI**、**事件驱动**、**CQRS**、**Saga** | **12.7KB** |
 | 附录A | [23-appendix.md](23-appendix.md) | 速查表、学术参考 | 7.5KB |
+
+### 第七部分：附录 (2章)
+
+| 章节 | 文件 | 核心内容 | 大小 |
+|------|------|----------|------|
 | 速查表 | [appendix-a-cheatsheet.md](appendix-a-cheatsheet.md) | 快速参考 | 9.2KB |
-| 指南索引 | [README.md](README.md) | 本文件 | 7KB |
+| 指南索引 | [README.md](README.md) | 本文件 | 7.8KB |
 
 ---
 
-## 内容特色
+## 新增深度内容 (参考golang101风格)
 
-### 1. 深度理论论证
+### 运行时与编译器
 
-- **公理-定理-推论**演绎体系
-- **CSP形式化操作语义**：迹语义、互模拟、精化关系
-- **类型系统形式化定义**：结构类型、子类型、类型推断
+- **G-M-P调度模型详解** (24-runtime-internals.md)
+- **逃逸分析完整解析** (25-compiler-optimization.md)
+- **TCMalloc内存分配器** (26-memory-management.md)
+- **三色标记GC算法** (26-memory-management.md)
 
-### 2. 丰富代码示例
+### 语言特性深度
 
-- 每个模式都有**完整可运行代码**
-- **正例与反例对比**：展示正确 vs 错误做法
-- **性能对比测试**：Benchmark代码
-- **并发模式** (28.1KB)
-  - Worker Pool完整实现
-  - Pipeline错误处理模式
-  - Fan-out/Fan-in有序/无序实现
-  - Circuit Breaker状态机实现
-  - Rate Limiter令牌桶实现
+- **内存布局与对齐** (01-language-features.md)
+- **接口实现机制** (03-type-system.md)
+- **泛型类型约束** (03-type-system.md)
+- **Channel实现细节** (05-csp-formal-model.md)
 
-### 3. 工程实战内容
+### 实战与陷阱
 
-- **错误处理模式**：分层错误处理、错误包装决策树
-- **性能优化**：对象池、预分配、逃逸分析
-- **测试策略**：表驱动测试、Mock、Fuzzing、覆盖率
-- **安全实践**：输入验证、密码哈希、敏感数据处理
-
-### 4. 学术课程对齐 (15-academic-alignment.md, 9.9KB)
-
-- Stanford CS242: Programming Languages
-- MIT 6.822: Formal Methods
-- CMU 15-312: Foundations of PL
-
-### 5. 多维思维工具
-
-- **思维导图** (31.3KB): 决策树、权衡分析
-- **应用场景矩阵** (8.8KB): 技术选型流程
-
----
-
-## Go 1.26 关键特性
-
-| 特性 | 描述 | 理论意义 | 代码示例 |
-|-----|------|----------|----------|
-| `new(expr)` | 基于表达式类型的初始化 | 简化对象构造语义 | ✓ 完整示例 |
-| 递归泛型 | `type Ordered[T Ordered[T]]` | 支持自引用类型约束 | ✓ 完整示例 |
-| Green Tea GC | 新一代垃圾收集器 | 降低延迟方差 | ✓ 监控代码 |
-| Goroutine Leak检测 | 运行时泄漏检测API | 形式化资源保证 | ✓ 检测示例 |
-
----
-
-## 形式化表示汇总
-
-**公理-定理体系**
-
-- 简洁性公理: 复杂度 ∝ 认知成本
-- 显式性公理: 显式 → 可预测
-- 正交性公理: 正交特性可组合
-- 组合性公理: 组合 > 继承
-- 并发性公理: CSP > 共享内存
-
-**推理规则**
-
-- 类型推理: Γ ⊢ e : τ
-- Happens-before: send ≺ recv
-- 接口子类型: T <: I
-
----
-
-## 使用指南
-
-### 学习路径
-
-```
-初学者路径:
-00哲学 → 01语言基础 → 02语法 → 03类型系统 → 08设计模式 → 20最佳实践
-
-进阶路径:
-05CSP模型 → 06内存模型 → 09并发模式 → 10分布式 → 14微服务
-
-专家路径:
-15学术对齐 → 07形式化验证 → 17思维导图 → 22验证工具
-```
-
-### 决策支持
-
-- **技术选型**: 参考[18-决策树](18-decision-trees.md)和[19-应用场景](19-application-scenarios.md)
-- **架构设计**: 参考[08-设计模式](08-design-patterns.md)和[10-分布式模式](10-distributed-patterns.md)
-- **并发问题**: 参考[05-CSP模型](05-csp-formal-model.md)理论基础
-- **错误处理**: 参考[20-最佳实践](20-best-practices.md)错误处理章节
-- **性能优化**: 参考[20-最佳实践](20-best-practices.md)性能优化章节
+- **Goroutine泄漏检测** (30-common-pitfalls.md)
+- **竞态条件排查** (30-common-pitfalls.md)
+- **性能调优实战** (27-performance-tuning.md)
+- **高级架构模式** (31-advanced-patterns.md)
 
 ---
 
 ## 统计信息
 
-- **文件总数**: 23个Markdown文件
-- **总内容量**: 376KB (0.368MB)
-- **平均单文件**: 16.4KB
+- **文件总数**: 31个Markdown文件
+- **总内容量**: 461KB (0.451MB)
+- **平均单文件**: 14.9KB
 - **最大文件**: 18-决策树 (31.3KB)
 - **理论章节**: 8章
 - **代码示例**: 每章平均15+个完整示例
 - **反例对比**: 关键模式均含正例+反例分析
-- **Benchmark**: 性能对比测试代码
-
----
-
-## 理论基础引用
-
-### 经典论文
-
-- Hoare, C.A.R. "Communicating Sequential Processes" (1978, 1985)
-- Griesemer et al. "Featherweight Go" (POPL 2020)
-- Pierce, B.C. "Types and Programming Languages"
-
-### 学术课程
-
-- Stanford CS242: Programming Languages
-- MIT 6.822: Formal Methods for Systems
-- CMU 15-312: Foundations of Programming Languages
 
 ---
 
 *版本: Go 1.26 (2026年2月)*
 *理论框架: CSP、类型论、Hoare逻辑*
-*完成度: 100% - 376KB深度技术内容 + 丰富代码示例*
+*参考: golang101、Go源码、学术课程*
+*完成度: 100% - 461KB深度技术内容*

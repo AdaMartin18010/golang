@@ -8,7 +8,7 @@
 
 ### 1.1 模式的代数表示
 
-```
+```text
 模式的抽象定义:
 ────────────────────────────────────────
 设计模式 = (Context, Problem, Solution, Consequences)
@@ -28,7 +28,7 @@ Go模式的特点:
 
 ### 1.2 模式分类学
 
-```
+```text
 Go模式分类:
 ────────────────────────────────────────
 
@@ -63,7 +63,7 @@ Go模式分类:
 
 ### 2.1 单例模式的形式化
 
-```
+```text
 单例公理:
 ────────────────────────────────────────
 ∀t: instance(t) = instance(t₀)  (唯一性)
@@ -162,7 +162,7 @@ func TestSingleton(t *testing.T) {
 
 ### 2.2 函数选项模式
 
-```
+```text
 构建者模式的函数式实现:
 ────────────────────────────────────────
 
@@ -305,7 +305,7 @@ func NewServerBad(addr string, timeout time.Duration, logger *log.Logger,
 
 ### 2.3 工厂模式
 
-```
+```text
 工厂模式:
 ────────────────────────────────────────
 封装对象创建逻辑，根据条件返回不同类型实例
@@ -371,7 +371,7 @@ func (m *MacFactory) CreateCheckbox() Checkbox { return &MacCheckbox{} }
 
 ### 2.4 对象池模式
 
-```
+```text
 对象池的形式化:
 ────────────────────────────────────────
 Pool = (Available, InUse, Factory, Reset)
@@ -458,7 +458,7 @@ func BenchmarkWithoutPool(b *testing.B) {
 
 ### 3.1 适配器模式的隐式实现
 
-```
+```text
 适配器的形式化:
 ────────────────────────────────────────
 Adapter: Target <: Adapter(Source)
@@ -543,7 +543,7 @@ func adapterExample() {
 
 ### 3.2 装饰器模式的函数实现
 
-```
+```text
 装饰器的组合数学:
 ────────────────────────────────────────
 装饰器 = 高阶函数: (a → b) → (a → b)
@@ -671,7 +671,7 @@ func decoratorExample() {
 
 ### 3.3 外观模式
 
-```
+```text
 外观模式:
 ────────────────────────────────────────
 为复杂子系统提供简化接口
@@ -724,7 +724,7 @@ func facadeExample() {
 
 ### 4.1 策略模式的函数式实现
 
-```
+```text
 策略模式的形式化:
 ────────────────────────────────────────
 策略 = 算法族，可互相替换
@@ -877,7 +877,7 @@ func (c *ShoppingCart) Checkout(amount float64) error {
 
 ### 4.2 观察者模式的Channel实现
 
-```
+```text
 观察者 ≡ Publish-Subscribe:
 ────────────────────────────────────────
 
@@ -1014,7 +1014,7 @@ func observerExample() {
 
 ### 4.3 模板方法模式
 
-```
+```text
 模板方法模式:
 ────────────────────────────────────────
 定义算法骨架，延迟到子类实现步骤
@@ -1119,7 +1119,7 @@ func (p *JSONParser) parseRecord(data []byte) (Record, error) {
 
 ### 5.1 依赖注入的显式实现
 
-```
+```text
 DI的形式化:
 ────────────────────────────────────────
 组件定义:
@@ -1240,7 +1240,7 @@ func diExample() {
 
 ### 5.2 六边形架构 (Ports & Adapters)
 
-```
+```text
 架构代数:
 ────────────────────────────────────────
 Domain = Core Logic (独立于技术细节)
@@ -1369,7 +1369,7 @@ func (g *StripeGateway) Charge(ctx context.Context, orderID string, amount Money
 
 ## 六、模式选择决策
 
-```
+```text
 模式选择决策树:
 ────────────────────────────────────────
 
@@ -1398,7 +1398,7 @@ func (g *StripeGateway) Charge(ctx context.Context, orderID string, amount Money
 
 ### 7.1 常见反模式
 
-```
+```text
 反模式1: 过度使用单例
 ────────────────────────────────────────
 // 不好: 单例难以测试，隐藏依赖
@@ -1462,7 +1462,7 @@ func clean(ctx context.Context) {
 
 ### 7.2 性能优化模式
 
-```
+```text
 对象复用:
 ────────────────────────────────────────
 var bufPool = sync.Pool{

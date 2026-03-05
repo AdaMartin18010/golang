@@ -8,7 +8,7 @@
 
 ### 1.1 Hoare的CSP理论
 
-```
+```text
 CSP原始形式 (1978):
 ────────────────────────────────────────
 CSP = Communicating Sequential Processes
@@ -31,7 +31,7 @@ Rob Pike和Ken Thompson在设计Go时明确采用CSP作为理论基础
 
 ### 1.2 CSP语法与语义
 
-```
+```text
 CSP语法概要:
 ────────────────────────────────────────
 
@@ -59,7 +59,7 @@ P ∥ Q      → go关键字创建goroutine
 
 ### 1.3 迹语义 (Trace Semantics)
 
-```
+```text
 迹 (Trace):
 ────────────────────────────────────────
 定义: 迹是进程执行过程中发生的事件序列
@@ -87,7 +87,7 @@ go run -race 可以记录并发迹用于分析
 
 ### 2.1 Goroutine作为CSP进程
 
-```
+```text
 Goroutine = CSP Process:
 ────────────────────────────────────────
 
@@ -134,7 +134,7 @@ func leak() {
 
 ### 2.2 Channel作为CSP通信
 
-```
+```text
 Channel = CSP Channel:
 ────────────────────────────────────────
 
@@ -196,7 +196,7 @@ func signal() {
 
 ### 2.3 Select作为外部选择
 
-```
+```text
 Select = CSP External Choice (□):
 ────────────────────────────────────────
 
@@ -257,7 +257,7 @@ func deadSelect() {
 
 ### 3.1 小步操作语义
 
-```
+```text
 小步语义 (Small-step Semantics):
 ────────────────────────────────────────
 
@@ -301,7 +301,7 @@ func demonstrateSemantics() {
 
 ### 3.2 Goroutine创建规则
 
-```
+```text
 Goroutine创建语义:
 ────────────────────────────────────────
 (Go-Creation)
@@ -367,7 +367,7 @@ func fixedRace() {
 
 ### 4.1 强互模拟 (Strong Bisimulation)
 
-```
+```text
 强互模拟定义:
 ────────────────────────────────────────
 关系 R 是强互模拟，如果:
@@ -406,7 +406,7 @@ func processB(ch chan int) {
 
 ### 4.2 弱互模拟 (Weak Bisimulation)
 
-```
+```text
 弱互模拟定义:
 ────────────────────────────────────────
 忽略内部τ动作 (不可见动作)
@@ -456,7 +456,7 @@ func buffer2(ch <-chan int, out chan<- int) {
 
 ### 5.1 迹精化 (Trace Refinement)
 
-```
+```text
 迹精化定义:
 ────────────────────────────────────────
 P ⊑ₜ Q ⟺ traces(Q) ⊆ traces(P)
@@ -499,7 +499,7 @@ func deterministic(ch1, ch2 <-chan int) int {
 
 ### 5.2 失败精化 (Failures Refinement)
 
-```
+```text
 失败精化定义:
 ────────────────────────────────────────
 失败 = (迹, 拒绝集)
@@ -545,7 +545,7 @@ func noDeadlock(ch1, ch2 chan int) {
 
 ### 6.1 死锁检测
 
-```
+```text
 死锁检测原理:
 ────────────────────────────────────────
 静态分析: 检查循环等待模式
@@ -609,7 +609,7 @@ func avoidWithSelect() {
 
 ### 6.2 竞态检测
 
-```
+```text
 竞态检测:
 ────────────────────────────────────────
 go test -race 原理:
@@ -688,7 +688,7 @@ func channelExample() {
 
 ## 七、CSP到Go的完整映射
 
-```
+```text
 完整语义映射表:
 ────────────────────────────────────────
 
