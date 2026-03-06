@@ -1,15 +1,17 @@
-﻿# Go 1.25.3 Documentation
+﻿# Go 1.26 Documentation
 
-**版本**: v1.0
-**更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**版本**: v1.1
+**更新日期**: 2026-03-06
+**适用于**: Go 1.26
+
+> 🎉 **新**: 已全面更新至 Go 1.26，包含 new() 表达式、递归泛型约束、Green Tea GC 等全新特性！
 **项目结构**: 符合 [golang-standards/project-layout](https://github.com/golang-standards/project-layout)
 
 ---
 
 ## 📋 目录
 
-- [Go 1.25.3 Documentation](#go-1253-documentation)
+- [Go 1.26 Documentation](#go-126-documentation)
   - [📋 目录](#-目录)
   - [🚀 Quick Start](#-quick-start)
   - [📚 Documentation Structure](#-documentation-structure)
@@ -41,6 +43,8 @@
 
 New to Go? Start here:
 
+- 🎯 **[Go 1.26 综合技术指南](./go126-comprehensive-guide/README.md)** - Go 1.26 完全指南 ⭐⭐⭐⭐⭐ 🆕
+- 🎯 **[Go 1.26 特性详解](./reference/versions/06-Go-1.26特性/README.md)** - 版本特性完全指南 ⭐⭐⭐⭐⭐ 🆕
 - 🎯 **[Go 1.25.3完整知识体系总览](./00-Go-1.25.3完整知识体系总览-2025.md)** - 系统化总领文档 ⭐⭐⭐⭐⭐ 🆕
 - 📚 **[快速参考手册](./📚-Go-1.25.3快速参考手册-2025.md)** - 日常开发速查利器 ⭐⭐⭐⭐⭐ 🆕
 - ✅ **[学习检查清单](./✅-Go-1.25.3学习检查清单-2025.md)** - 追踪学习进度 ⭐⭐⭐⭐⭐ 🆕
@@ -55,7 +59,7 @@ New to Go? Start here:
 
 ## 📚 Documentation Structure
 
-本文档目录遵循标准Go项目文档布局，提供完整的Go 1.25.3学习和开发指南。
+本文档目录遵循标准Go项目文档布局，提供完整的Go 1.26学习和开发指南。
 
 ### 🏗️ [Architecture](./architecture/) ⭐ 项目架构
 

@@ -1,8 +1,10 @@
 ﻿# 📚 Go语言技术文档索引
 
-**版本**: v1.0
-**更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**版本**: v1.1
+**更新日期**: 2026-03-06
+**适用于**: Go 1.26
+
+> 🎉 **Go 1.26 已发布**: new() 表达式 | 递归泛型约束 | Green Tea GC | crypto/hpke | 全新 go fix
 
 ---
 
@@ -21,7 +23,38 @@
 
 ---
 
-## 🆕 最新更新 (2025-10-28)
+## 🆕 最新更新 (2026-03-06)
+
+### 🎉 Go 1.26 全面梳理完成 ⭐⭐⭐⭐⭐
+
+**Go 1.26 发布**: 2026年2月
+
+**核心文档**:
+
+- 🎯 **[Go 1.26 综合技术指南](./go126-comprehensive-guide/README.md)** - 46章完全指南 🆕
+- 📚 **[Go 1.26 特性详解](./reference/versions/06-Go-1.26特性/README.md)** - 版本特性完全指南 🆕
+  - [语言变化详解](./reference/versions/06-Go-1.26特性/01-语言变化详解.md) - new(expr) + 递归泛型
+  - [标准库新增](./reference/versions/06-Go-1.26特性/02-标准库新增.md) - crypto/hpke + simd + secret
+  - [工具改进](./reference/versions/06-Go-1.26特性/03-工具改进.md) - go fix Modernizers
+  - [性能优化](./reference/versions/06-Go-1.26特性/04-性能优化.md) - Green Tea GC + cgo 优化
+  - [迁移指南](./reference/versions/06-Go-1.26特性/05-迁移指南.md) - 1.25 → 1.26 迁移
+
+**Go 1.26 新特性**:
+
+| 特性 | 说明 | 文档 |
+|------|------|------|
+| `new(expr)` | 内置 new 支持表达式操作数 | [详解](./reference/versions/06-Go-1.26特性/01-语言变化详解.md#1-new-支持表达式操作数) |
+| 递归泛型约束 | 泛型类型可自引用 | [详解](./reference/versions/06-Go-1.26特性/01-语言变化详解.md#2-递归泛型约束) |
+| Green Tea GC | 新GC默认启用，延迟降低10-40% | [详解](./reference/versions/06-Go-1.26特性/04-性能优化.md#1-green-tea-gc) |
+| crypto/hpke | 后量子混合加密 | [详解](./reference/versions/06-Go-1.26特性/02-标准库新增.md#1-cryptohpke---混合公钥加密) |
+| simd/archsimd | SIMD操作(实验性) | [详解](./reference/versions/06-Go-1.26特性/02-标准库新增.md#2-simdarchsimd---simd-操作-实验性) |
+| runtime/secret | 安全内存管理(实验性) | [详解](./reference/versions/06-Go-1.26特性/02-标准库新增.md#3-runtimesecret---安全内存管理-实验性) |
+| go fix | 完全重写，支持Modernizers | [详解](./reference/versions/06-Go-1.26特性/03-工具改进.md) |
+| errors.AsType | 泛型错误断言 | [详解](./reference/versions/06-Go-1.26特性/02-标准库新增.md#4-errorsastype---泛型错误断言) |
+
+---
+
+## 🆕 历史更新 (2025-10-28)
 
 ### 🎯 Go 1.25.3完整知识体系总览发布 ⭐⭐⭐⭐⭐
 

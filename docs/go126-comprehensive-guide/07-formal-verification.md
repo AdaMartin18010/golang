@@ -6,7 +6,7 @@
 
 ## 7.1 形式化验证概述
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    形式化验证方法谱系                                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -50,7 +50,7 @@ go run -race main.go
 // 竞态检测示例
 func raceCondition() {
     var counter int
-    
+
     for i := 0; i < 1000; i++ {
         go func() {
             counter++ // 竞态！多个 goroutine 同时读写
@@ -61,7 +61,7 @@ func raceCondition() {
 // 修复方案
 func fixedRace() {
     var counter int64
-    
+
     for i := 0; i < 1000; i++ {
         go func() {
             atomic.AddInt64(&counter, 1) // 原子操作
@@ -95,14 +95,14 @@ func FuzzParse(f *testing.F) {
     // 种子语料
     f.Add("example input")
     f.Add("another input")
-    
+
     f.Fuzz(func(t *testing.T, input string) {
         result, err := Parse(input)
         if err != nil {
             // 某些输入可能合法地失败
             return
         }
-        
+
         // 验证性质
         if result.String() != input {
             t.Errorf("round-trip failed: %q -> %q", input, result.String())
@@ -256,7 +256,7 @@ func noMemoryLeak() {
     // 局部变量在栈上分配
     x := 42
     _ = x
-    
+
     // 逃逸到堆上的变量由 GC 管理
     p := &x
     global = p  // 逃逸
