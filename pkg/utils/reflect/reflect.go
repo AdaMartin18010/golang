@@ -6,23 +6,23 @@ import (
 )
 
 // GetType 获取值的类型名称
-func GetType(v interface{}) string {
+func GetType(v any) string {
 	return reflect.TypeOf(v).String()
 }
 
 // GetKind 获取值的Kind
-func GetKind(v interface{}) reflect.Kind {
+func GetKind(v any) reflect.Kind {
 	return reflect.TypeOf(v).Kind()
 }
 
 // IsNil 检查值是否为nil
-func IsNil(v interface{}) bool {
+func IsNil(v any) bool {
 	if v == nil {
 		return true
 	}
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
-	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
 		return rv.IsNil()
 	default:
 		return false
@@ -30,7 +30,7 @@ func IsNil(v interface{}) bool {
 }
 
 // IsZero 检查值是否为零值
-func IsZero(v interface{}) bool {
+func IsZero(v any) bool {
 	if v == nil {
 		return true
 	}
@@ -39,44 +39,44 @@ func IsZero(v interface{}) bool {
 }
 
 // IsPointer 检查值是否为指针
-func IsPointer(v interface{}) bool {
-	return reflect.TypeOf(v).Kind() == reflect.Ptr
+func IsPointer(v any) bool {
+	return reflect.TypeOf(v).Kind() == reflect.Pointer
 }
 
 // IsSlice 检查值是否为切片
-func IsSlice(v interface{}) bool {
+func IsSlice(v any) bool {
 	return reflect.TypeOf(v).Kind() == reflect.Slice
 }
 
 // IsMap 检查值是否为映射
-func IsMap(v interface{}) bool {
+func IsMap(v any) bool {
 	return reflect.TypeOf(v).Kind() == reflect.Map
 }
 
 // IsStruct 检查值是否为结构体
-func IsStruct(v interface{}) bool {
+func IsStruct(v any) bool {
 	return reflect.TypeOf(v).Kind() == reflect.Struct
 }
 
 // IsInterface 检查值是否为接口
-func IsInterface(v interface{}) bool {
+func IsInterface(v any) bool {
 	return reflect.TypeOf(v).Kind() == reflect.Interface
 }
 
 // IsFunc 检查值是否为函数
-func IsFunc(v interface{}) bool {
+func IsFunc(v any) bool {
 	return reflect.TypeOf(v).Kind() == reflect.Func
 }
 
 // IsChan 检查值是否为通道
-func IsChan(v interface{}) bool {
+func IsChan(v any) bool {
 	return reflect.TypeOf(v).Kind() == reflect.Chan
 }
 
 // Dereference 解引用指针，如果不是指针则返回原值
-func Dereference(v interface{}) interface{} {
+func Dereference(v any) any {
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		if rv.IsNil() {
 			return nil
 		}
@@ -86,9 +86,9 @@ func Dereference(v interface{}) interface{} {
 }
 
 // GetField 获取结构体字段的值
-func GetField(v interface{}, fieldName string) (interface{}, error) {
+func GetField(v any, fieldName string) (any, error) {
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		rv = rv.Elem()
 	}
 	if rv.Kind() != reflect.Struct {
@@ -102,9 +102,9 @@ func GetField(v interface{}, fieldName string) (interface{}, error) {
 }
 
 // SetField 设置结构体字段的值
-func SetField(v interface{}, fieldName string, value interface{}) error {
+func SetField(v any, fieldName string, value any) error {
 	rv := reflect.ValueOf(v)
-	if rv.Kind() != reflect.Ptr {
+	if rv.Kind() != reflect.Pointer {
 		return fmt.Errorf("value must be a pointer")
 	}
 	rv = rv.Elem()
@@ -127,9 +127,9 @@ func SetField(v interface{}, fieldName string, value interface{}) error {
 }
 
 // HasField 检查结构体是否有指定字段
-func HasField(v interface{}, fieldName string) bool {
+func HasField(v any, fieldName string) bool {
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		rv = rv.Elem()
 	}
 	if rv.Kind() != reflect.Struct {
@@ -140,9 +140,9 @@ func HasField(v interface{}, fieldName string) bool {
 }
 
 // GetFieldNames 获取结构体的所有字段名
-func GetFieldNames(v interface{}) []string {
+func GetFieldNames(v any) []string {
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		rv = rv.Elem()
 	}
 	if rv.Kind() != reflect.Struct {
@@ -157,9 +157,9 @@ func GetFieldNames(v interface{}) []string {
 }
 
 // GetFieldTags 获取结构体字段的标签
-func GetFieldTags(v interface{}, fieldName string) (map[string]string, error) {
+func GetFieldTags(v any, fieldName string) (map[string]string, error) {
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		rv = rv.Elem()
 	}
 	if rv.Kind() != reflect.Struct {
@@ -180,7 +180,7 @@ func GetFieldTags(v interface{}, fieldName string) (map[string]string, error) {
 }
 
 // CallMethod 调用方法
-func CallMethod(v interface{}, methodName string, args ...interface{}) ([]interface{}, error) {
+func CallMethod(v any, methodName string, args ...any) ([]any, error) {
 	rv := reflect.ValueOf(v)
 	method := rv.MethodByName(methodName)
 	if !method.IsValid() {
@@ -195,7 +195,7 @@ func CallMethod(v interface{}, methodName string, args ...interface{}) ([]interf
 		argValues[i] = reflect.ValueOf(arg)
 	}
 	results := method.Call(argValues)
-	resultValues := make([]interface{}, len(results))
+	resultValues := make([]any, len(results))
 	for i, result := range results {
 		resultValues[i] = result.Interface()
 	}
@@ -203,14 +203,14 @@ func CallMethod(v interface{}, methodName string, args ...interface{}) ([]interf
 }
 
 // HasMethod 检查值是否有指定方法
-func HasMethod(v interface{}, methodName string) bool {
+func HasMethod(v any, methodName string) bool {
 	rv := reflect.ValueOf(v)
 	method := rv.MethodByName(methodName)
 	return method.IsValid()
 }
 
 // GetMethodNames 获取值的所有方法名
-func GetMethodNames(v interface{}) []string {
+func GetMethodNames(v any) []string {
 	rv := reflect.ValueOf(v)
 	t := rv.Type()
 	methods := make([]string, t.NumMethod())
@@ -221,18 +221,18 @@ func GetMethodNames(v interface{}) []string {
 }
 
 // NewInstance 创建类型的新实例
-func NewInstance(v interface{}) interface{} {
+func NewInstance(v any) any {
 	t := reflect.TypeOf(v)
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 	return reflect.New(t).Interface()
 }
 
 // NewSlice 创建切片的新实例
-func NewSlice(v interface{}, length, capacity int) interface{} {
+func NewSlice(v any, length, capacity int) any {
 	t := reflect.TypeOf(v)
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 	if t.Kind() == reflect.Slice {
@@ -242,13 +242,13 @@ func NewSlice(v interface{}, length, capacity int) interface{} {
 }
 
 // NewMap 创建映射的新实例
-func NewMap(keyType, valueType interface{}) interface{} {
+func NewMap(keyType, valueType any) any {
 	kt := reflect.TypeOf(keyType)
 	vt := reflect.TypeOf(valueType)
-	if kt.Kind() == reflect.Ptr {
+	if kt.Kind() == reflect.Pointer {
 		kt = kt.Elem()
 	}
-	if vt.Kind() == reflect.Ptr {
+	if vt.Kind() == reflect.Pointer {
 		vt = vt.Elem()
 	}
 	mapType := reflect.MapOf(kt, vt)
@@ -256,10 +256,10 @@ func NewMap(keyType, valueType interface{}) interface{} {
 }
 
 // Convert 转换值的类型
-func Convert(v interface{}, targetType interface{}) (interface{}, error) {
+func Convert(v any, targetType any) (any, error) {
 	rv := reflect.ValueOf(v)
 	tt := reflect.TypeOf(targetType)
-	if tt.Kind() == reflect.Ptr {
+	if tt.Kind() == reflect.Pointer {
 		tt = tt.Elem()
 	}
 	if !rv.CanConvert(tt) {
@@ -269,14 +269,14 @@ func Convert(v interface{}, targetType interface{}) (interface{}, error) {
 }
 
 // DeepEqual 深度比较两个值是否相等
-func DeepEqual(a, b interface{}) bool {
+func DeepEqual(a, b any) bool {
 	return reflect.DeepEqual(a, b)
 }
 
 // Copy 深度复制值
-func Copy(v interface{}) interface{} {
+func Copy(v any) any {
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		if rv.IsNil() {
 			return nil
 		}
@@ -286,7 +286,7 @@ func Copy(v interface{}) interface{} {
 }
 
 // GetSliceElement 获取切片元素
-func GetSliceElement(slice interface{}, index int) (interface{}, error) {
+func GetSliceElement(slice any, index int) (any, error) {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
 		return nil, fmt.Errorf("value is not a slice")
@@ -298,7 +298,7 @@ func GetSliceElement(slice interface{}, index int) (interface{}, error) {
 }
 
 // SetSliceElement 设置切片元素
-func SetSliceElement(slice interface{}, index int, value interface{}) error {
+func SetSliceElement(slice any, index int, value any) error {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
 		return fmt.Errorf("value is not a slice")
@@ -319,7 +319,7 @@ func SetSliceElement(slice interface{}, index int, value interface{}) error {
 }
 
 // GetMapValue 获取映射的值
-func GetMapValue(m interface{}, key interface{}) (interface{}, bool) {
+func GetMapValue(m any, key any) (any, bool) {
 	rv := reflect.ValueOf(m)
 	if rv.Kind() != reflect.Map {
 		return nil, false
@@ -336,7 +336,7 @@ func GetMapValue(m interface{}, key interface{}) (interface{}, bool) {
 }
 
 // SetMapValue 设置映射的值
-func SetMapValue(m interface{}, key, value interface{}) error {
+func SetMapValue(m any, key, value any) error {
 	rv := reflect.ValueOf(m)
 	if rv.Kind() != reflect.Map {
 		return fmt.Errorf("value is not a map")
@@ -354,7 +354,7 @@ func SetMapValue(m interface{}, key, value interface{}) error {
 }
 
 // GetLength 获取值的长度（切片、映射、字符串、数组）
-func GetLength(v interface{}) (int, error) {
+func GetLength(v any) (int, error) {
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
 	case reflect.Slice, reflect.Map, reflect.String, reflect.Array:
@@ -365,7 +365,7 @@ func GetLength(v interface{}) (int, error) {
 }
 
 // GetCapacity 获取值的容量（切片、数组）
-func GetCapacity(v interface{}) (int, error) {
+func GetCapacity(v any) (int, error) {
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
 	case reflect.Slice, reflect.Array:
@@ -376,20 +376,20 @@ func GetCapacity(v interface{}) (int, error) {
 }
 
 // IsAssignable 检查值是否可以赋值给目标类型
-func IsAssignable(value, targetType interface{}) bool {
+func IsAssignable(value, targetType any) bool {
 	rv := reflect.ValueOf(value)
 	tt := reflect.TypeOf(targetType)
-	if tt.Kind() == reflect.Ptr {
+	if tt.Kind() == reflect.Pointer {
 		tt = tt.Elem()
 	}
 	return rv.Type().AssignableTo(tt)
 }
 
 // IsConvertible 检查值是否可以转换为目标类型
-func IsConvertible(value, targetType interface{}) bool {
+func IsConvertible(value, targetType any) bool {
 	rv := reflect.ValueOf(value)
 	tt := reflect.TypeOf(targetType)
-	if tt.Kind() == reflect.Ptr {
+	if tt.Kind() == reflect.Pointer {
 		tt = tt.Elem()
 	}
 	return rv.Type().ConvertibleTo(tt)

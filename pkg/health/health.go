@@ -31,10 +31,10 @@ type Check interface {
 
 // Result 检查结果
 type Result struct {
-	Status    Status                 `json:"status"`
-	Message   string                 `json:"message,omitempty"`
-	Timestamp time.Time              `json:"timestamp"`
-	Metadata  map[string]interface{} `json:"metadata,omitempty"`
+	Status    Status         `json:"status"`
+	Message   string         `json:"message,omitempty"`
+	Timestamp time.Time      `json:"timestamp"`
+	Metadata  map[string]any `json:"metadata,omitempty"`
 }
 
 // HealthChecker 健康检查器
@@ -311,7 +311,7 @@ func (ac *AggregateCheck) Check(ctx context.Context) Result {
 		Status:    status,
 		Message:   message,
 		Timestamp: time.Now(),
-		Metadata: map[string]interface{}{
+		Metadata: map[string]any{
 			"checks": len(results),
 		},
 	}

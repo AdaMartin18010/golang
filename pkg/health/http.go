@@ -26,8 +26,8 @@ func (h *HTTPHandler) LivenessHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"status": "alive",
+		json.NewEncoder(w).Encode(map[string]any{
+			"status":    "alive",
 			"timestamp": time.Now().Unix(),
 		})
 	}
@@ -46,7 +46,7 @@ func (h *HTTPHandler) ReadinessHandler() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		response := map[string]interface{}{
+		response := map[string]any{
 			"status":    string(overallStatus),
 			"timestamp": time.Now().Unix(),
 			"checks":    results,
@@ -76,7 +76,7 @@ func (h *HTTPHandler) HealthHandler() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		response := map[string]interface{}{
+		response := map[string]any{
 			"status":    string(overallStatus),
 			"timestamp": time.Now().Unix(),
 			"checks":    results,
@@ -106,7 +106,7 @@ func (h *HTTPHandler) StartupHandler() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		response := map[string]interface{}{
+		response := map[string]any{
 			"status":    string(overallStatus),
 			"timestamp": time.Now().Unix(),
 			"checks":    results,

@@ -155,7 +155,7 @@ func ResolveHostname(ip string) (string, error) {
 
 // IsPortOpen 检查端口是否开放
 func IsPortOpen(host string, port int) bool {
-	address := fmt.Sprintf("%s:%d", host, port)
+	address := net.JoinHostPort(host, fmt.Sprintf("%d", port))
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
 		return false
@@ -166,7 +166,7 @@ func IsPortOpen(host string, port int) bool {
 
 // IsPortOpenTimeout 检查端口是否开放（带超时）
 func IsPortOpenTimeout(host string, port int, timeoutSeconds int) bool {
-	address := fmt.Sprintf("%s:%d", host, port)
+	address := net.JoinHostPort(host, fmt.Sprintf("%d", port))
 	conn, err := net.DialTimeout("tcp", address, time.Duration(timeoutSeconds)*time.Second)
 	if err != nil {
 		return false
@@ -251,8 +251,8 @@ func ValidateHost(host string) bool {
 	if len(host) == 0 || len(host) > 253 {
 		return false
 	}
-	parts := strings.Split(host, ".")
-	for _, part := range parts {
+	parts := strings.SplitSeq(host, ".")
+	for part := range parts {
 		if len(part) == 0 || len(part) > 63 {
 			return false
 		}

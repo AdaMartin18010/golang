@@ -90,15 +90,15 @@ func (p *postgresql) Begin(ctx context.Context) (Transaction, error) {
 	return &transaction{tx: tx}, nil
 }
 
-func (p *postgresql) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (p *postgresql) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return p.db.ExecContext(ctx, query, args...)
 }
 
-func (p *postgresql) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (p *postgresql) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	return p.db.QueryContext(ctx, query, args...)
 }
 
-func (p *postgresql) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
+func (p *postgresql) QueryRow(ctx context.Context, query string, args ...any) *sql.Row {
 	return p.db.QueryRowContext(ctx, query, args...)
 }
 

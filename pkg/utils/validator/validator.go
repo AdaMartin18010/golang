@@ -2,6 +2,7 @@ package validator
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 	"unicode"
 )
@@ -69,7 +70,7 @@ func validateIDCardChecksum(idCard string) bool {
 	checkCodes := []byte{'1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'}
 
 	sum := 0
-	for i := 0; i < 17; i++ {
+	for i := range 17 {
 		if idCard[i] < '0' || idCard[i] > '9' {
 			return false
 		}
@@ -251,12 +252,7 @@ func EndsWith(s, suffix string) bool {
 
 // IsIn 检查值是否在切片中
 func IsIn[T comparable](value T, slice []T) bool {
-	for _, v := range slice {
-		if v == value {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, value)
 }
 
 // IsNotIn 检查值是否不在切片中

@@ -21,7 +21,7 @@ func WithCancel(parent context.Context) (context.Context, context.CancelFunc) {
 }
 
 // WithValue 创建带值的context
-func WithValue(parent context.Context, key, val interface{}) context.Context {
+func WithValue(parent context.Context, key, val any) context.Context {
 	return context.WithValue(parent, key, val)
 }
 
@@ -66,12 +66,12 @@ func IsCancelled(ctx context.Context) bool {
 }
 
 // GetValue 获取context中的值
-func GetValue(ctx context.Context, key interface{}) interface{} {
+func GetValue(ctx context.Context, key any) any {
 	return ctx.Value(key)
 }
 
 // GetStringValue 获取context中的字符串值
-func GetStringValue(ctx context.Context, key interface{}) (string, bool) {
+func GetStringValue(ctx context.Context, key any) (string, bool) {
 	value := ctx.Value(key)
 	if value == nil {
 		return "", false
@@ -81,7 +81,7 @@ func GetStringValue(ctx context.Context, key interface{}) (string, bool) {
 }
 
 // GetIntValue 获取context中的整数值
-func GetIntValue(ctx context.Context, key interface{}) (int, bool) {
+func GetIntValue(ctx context.Context, key any) (int, bool) {
 	value := ctx.Value(key)
 	if value == nil {
 		return 0, false
@@ -99,7 +99,7 @@ func GetIntValue(ctx context.Context, key interface{}) (int, bool) {
 }
 
 // GetInt64Value 获取context中的64位整数值
-func GetInt64Value(ctx context.Context, key interface{}) (int64, bool) {
+func GetInt64Value(ctx context.Context, key any) (int64, bool) {
 	value := ctx.Value(key)
 	if value == nil {
 		return 0, false
@@ -117,7 +117,7 @@ func GetInt64Value(ctx context.Context, key interface{}) (int64, bool) {
 }
 
 // GetBoolValue 获取context中的布尔值
-func GetBoolValue(ctx context.Context, key interface{}) (bool, bool) {
+func GetBoolValue(ctx context.Context, key any) (bool, bool) {
 	value := ctx.Value(key)
 	if value == nil {
 		return false, false
@@ -185,7 +185,7 @@ func DoWithCancel(ctx context.Context, fn func(context.Context) error) error {
 // RetryWithContext 使用context重试函数
 func RetryWithContext(ctx context.Context, maxRetries int, fn func(context.Context) error) error {
 	var lastErr error
-	for i := 0; i < maxRetries; i++ {
+	for range maxRetries {
 		if IsDone(ctx) {
 			return ctx.Err()
 		}
@@ -216,7 +216,7 @@ func Merge(ctxs ...context.Context) (context.Context, context.CancelFunc) {
 }
 
 // WithValues 批量设置context值
-func WithValues(parent context.Context, values map[interface{}]interface{}) context.Context {
+func WithValues(parent context.Context, values map[any]any) context.Context {
 	ctx := parent
 	for key, value := range values {
 		ctx = context.WithValue(ctx, key, value)
@@ -240,12 +240,12 @@ func (k ContextKey) String() string {
 }
 
 // WithStringValue 使用字符串键设置值
-func WithStringValue(parent context.Context, key string, value interface{}) context.Context {
+func WithStringValue(parent context.Context, key string, value any) context.Context {
 	return context.WithValue(parent, ContextKey(key), value)
 }
 
 // GetStringKeyValue 使用字符串键获取值
-func GetStringKeyValue(ctx context.Context, key string) interface{} {
+func GetStringKeyValue(ctx context.Context, key string) any {
 	return ctx.Value(ContextKey(key))
 }
 
@@ -320,7 +320,7 @@ func GetUserAgent(ctx context.Context) (string, bool) {
 }
 
 // MustGetStringValue 获取字符串值，如果不存在则panic
-func MustGetStringValue(ctx context.Context, key interface{}) string {
+func MustGetStringValue(ctx context.Context, key any) string {
 	value, ok := GetStringValue(ctx, key)
 	if !ok {
 		panic("context value not found or not a string")
@@ -329,7 +329,7 @@ func MustGetStringValue(ctx context.Context, key interface{}) string {
 }
 
 // MustGetIntValue 获取整数值，如果不存在则panic
-func MustGetIntValue(ctx context.Context, key interface{}) int {
+func MustGetIntValue(ctx context.Context, key any) int {
 	value, ok := GetIntValue(ctx, key)
 	if !ok {
 		panic("context value not found or not an int")
@@ -338,7 +338,7 @@ func MustGetIntValue(ctx context.Context, key interface{}) int {
 }
 
 // MustGetBoolValue 获取布尔值，如果不存在则panic
-func MustGetBoolValue(ctx context.Context, key interface{}) bool {
+func MustGetBoolValue(ctx context.Context, key any) bool {
 	value, ok := GetBoolValue(ctx, key)
 	if !ok {
 		panic("context value not found or not a bool")
@@ -357,13 +357,13 @@ type ContextBuilder struct {
 }
 
 // WithValue 添加值
-func (b *ContextBuilder) WithValue(key, value interface{}) *ContextBuilder {
+func (b *ContextBuilder) WithValue(key, value any) *ContextBuilder {
 	b.ctx = context.WithValue(b.ctx, key, value)
 	return b
 }
 
 // WithStringValue 添加字符串键值
-func (b *ContextBuilder) WithStringValue(key string, value interface{}) *ContextBuilder {
+func (b *ContextBuilder) WithStringValue(key string, value any) *ContextBuilder {
 	b.ctx = WithStringValue(b.ctx, key, value)
 	return b
 }

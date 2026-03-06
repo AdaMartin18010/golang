@@ -4,32 +4,33 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"maps"
 	"os"
 	"strings"
 )
 
 // Marshal 序列化为JSON
-func Marshal(v interface{}) ([]byte, error) {
+func Marshal(v any) ([]byte, error) {
 	return json.Marshal(v)
 }
 
 // MarshalIndent 序列化为格式化的JSON
-func MarshalIndent(v interface{}, prefix, indent string) ([]byte, error) {
+func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
 	return json.MarshalIndent(v, prefix, indent)
 }
 
 // Unmarshal 反序列化JSON
-func Unmarshal(data []byte, v interface{}) error {
+func Unmarshal(data []byte, v any) error {
 	return json.Unmarshal(data, v)
 }
 
 // UnmarshalString 从字符串反序列化JSON
-func UnmarshalString(data string, v interface{}) error {
+func UnmarshalString(data string, v any) error {
 	return json.Unmarshal([]byte(data), v)
 }
 
 // MarshalString 序列化为JSON字符串
-func MarshalString(v interface{}) (string, error) {
+func MarshalString(v any) (string, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
 		return "", err
@@ -38,7 +39,7 @@ func MarshalString(v interface{}) (string, error) {
 }
 
 // MarshalIndentString 序列化为格式化的JSON字符串
-func MarshalIndentString(v interface{}, prefix, indent string) (string, error) {
+func MarshalIndentString(v any, prefix, indent string) (string, error) {
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
 		return "", err
@@ -47,28 +48,28 @@ func MarshalIndentString(v interface{}, prefix, indent string) (string, error) {
 }
 
 // PrettyPrint 美化打印JSON
-func PrettyPrint(v interface{}) (string, error) {
+func PrettyPrint(v any) (string, error) {
 	return MarshalIndentString(v, "", "  ")
 }
 
 // IsValidJSON 检查字符串是否为有效的JSON
 func IsValidJSON(s string) bool {
-	var js interface{}
+	var js any
 	return json.Unmarshal([]byte(s), &js) == nil
 }
 
 // Get 从JSON对象中获取值（使用点号分隔的路径）
-func Get(data []byte, path string) (interface{}, error) {
-	var obj map[string]interface{}
+func Get(data []byte, path string) (any, error) {
+	var obj map[string]any
 	if err := json.Unmarshal(data, &obj); err != nil {
 		return nil, err
 	}
 
 	keys := strings.Split(path, ".")
-	current := interface{}(obj)
+	current := any(obj)
 
 	for _, key := range keys {
-		if m, ok := current.(map[string]interface{}); ok {
+		if m, ok := current.(map[string]any); ok {
 			if val, exists := m[key]; exists {
 				current = val
 			} else {
@@ -83,33 +84,33 @@ func Get(data []byte, path string) (interface{}, error) {
 }
 
 // Set 设置JSON对象中的值（使用点号分隔的路径）
-func Set(data []byte, path string, value interface{}) ([]byte, error) {
-	var obj map[string]interface{}
+func Set(data []byte, path string, value any) ([]byte, error) {
+	var obj map[string]any
 	if err := json.Unmarshal(data, &obj); err != nil {
 		return nil, err
 	}
 
 	keys := strings.Split(path, ".")
-	current := interface{}(obj)
+	current := any(obj)
 
 	for i, key := range keys {
 		if i == len(keys)-1 {
 			// 最后一个键，设置值
-			if m, ok := current.(map[string]interface{}); ok {
+			if m, ok := current.(map[string]any); ok {
 				m[key] = value
 			} else {
 				return nil, errors.New("invalid path: " + path)
 			}
 		} else {
 			// 中间键，创建或获取嵌套对象
-			if m, ok := current.(map[string]interface{}); ok {
+			if m, ok := current.(map[string]any); ok {
 				if val, exists := m[key]; exists {
-					if _, ok := val.(map[string]interface{}); !ok {
-						m[key] = make(map[string]interface{})
+					if _, ok := val.(map[string]any); !ok {
+						m[key] = make(map[string]any)
 					}
 					current = m[key]
 				} else {
-					newMap := make(map[string]interface{})
+					newMap := make(map[string]any)
 					m[key] = newMap
 					current = newMap
 				}
@@ -124,24 +125,22 @@ func Set(data []byte, path string, value interface{}) ([]byte, error) {
 
 // Merge 合并多个JSON对象
 func Merge(jsons ...[]byte) ([]byte, error) {
-	result := make(map[string]interface{})
+	result := make(map[string]any)
 
 	for _, data := range jsons {
-		var obj map[string]interface{}
+		var obj map[string]any
 		if err := json.Unmarshal(data, &obj); err != nil {
 			return nil, err
 		}
 
-		for k, v := range obj {
-			result[k] = v
-		}
+		maps.Copy(result, obj)
 	}
 
 	return json.Marshal(result)
 }
 
 // ReadFile 从文件读取JSON
-func ReadFile(filename string, v interface{}) error {
+func ReadFile(filename string, v any) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return err
@@ -150,7 +149,7 @@ func ReadFile(filename string, v interface{}) error {
 }
 
 // WriteFile 将JSON写入文件
-func WriteFile(filename string, v interface{}, indent bool) error {
+func WriteFile(filename string, v any, indent bool) error {
 	var data []byte
 	var err error
 
@@ -168,18 +167,18 @@ func WriteFile(filename string, v interface{}, indent bool) error {
 }
 
 // Decode 从Reader解码JSON
-func Decode(r io.Reader, v interface{}) error {
+func Decode(r io.Reader, v any) error {
 	return json.NewDecoder(r).Decode(v)
 }
 
 // Encode 编码JSON到Writer
-func Encode(w io.Writer, v interface{}) error {
+func Encode(w io.Writer, v any) error {
 	return json.NewEncoder(w).Encode(v)
 }
 
 // Transform 转换JSON结构
-func Transform(data []byte, transformer func(map[string]interface{}) map[string]interface{}) ([]byte, error) {
-	var obj map[string]interface{}
+func Transform(data []byte, transformer func(map[string]any) map[string]any) ([]byte, error) {
+	var obj map[string]any
 	if err := json.Unmarshal(data, &obj); err != nil {
 		return nil, err
 	}
@@ -189,13 +188,13 @@ func Transform(data []byte, transformer func(map[string]interface{}) map[string]
 }
 
 // Filter 过滤JSON对象
-func Filter(data []byte, filter func(string, interface{}) bool) ([]byte, error) {
-	var obj map[string]interface{}
+func Filter(data []byte, filter func(string, any) bool) ([]byte, error) {
+	var obj map[string]any
 	if err := json.Unmarshal(data, &obj); err != nil {
 		return nil, err
 	}
 
-	filtered := make(map[string]interface{})
+	filtered := make(map[string]any)
 	for k, v := range obj {
 		if filter(k, v) {
 			filtered[k] = v
@@ -211,25 +210,25 @@ func Flatten(data []byte, separator string) ([]byte, error) {
 		separator = "."
 	}
 
-	var obj map[string]interface{}
+	var obj map[string]any
 	if err := json.Unmarshal(data, &obj); err != nil {
 		return nil, err
 	}
 
-	flattened := make(map[string]interface{})
+	flattened := make(map[string]any)
 	flattenMap(obj, "", separator, flattened)
 
 	return json.Marshal(flattened)
 }
 
-func flattenMap(m map[string]interface{}, prefix, separator string, result map[string]interface{}) {
+func flattenMap(m map[string]any, prefix, separator string, result map[string]any) {
 	for k, v := range m {
 		key := k
 		if prefix != "" {
 			key = prefix + separator + k
 		}
 
-		if nested, ok := v.(map[string]interface{}); ok {
+		if nested, ok := v.(map[string]any); ok {
 			flattenMap(nested, key, separator, result)
 		} else {
 			result[key] = v
@@ -243,12 +242,12 @@ func Unflatten(data []byte, separator string) ([]byte, error) {
 		separator = "."
 	}
 
-	var obj map[string]interface{}
+	var obj map[string]any
 	if err := json.Unmarshal(data, &obj); err != nil {
 		return nil, err
 	}
 
-	unflattened := make(map[string]interface{})
+	unflattened := make(map[string]any)
 	for k, v := range obj {
 		keys := strings.Split(k, separator)
 		setNestedValue(unflattened, keys, v)
@@ -257,7 +256,7 @@ func Unflatten(data []byte, separator string) ([]byte, error) {
 	return json.Marshal(unflattened)
 }
 
-func setNestedValue(m map[string]interface{}, keys []string, value interface{}) {
+func setNestedValue(m map[string]any, keys []string, value any) {
 	if len(keys) == 1 {
 		m[keys[0]] = value
 		return
@@ -265,10 +264,10 @@ func setNestedValue(m map[string]interface{}, keys []string, value interface{}) 
 
 	key := keys[0]
 	if _, exists := m[key]; !exists {
-		m[key] = make(map[string]interface{})
+		m[key] = make(map[string]any)
 	}
 
-	if nested, ok := m[key].(map[string]interface{}); ok {
+	if nested, ok := m[key].(map[string]any); ok {
 		setNestedValue(nested, keys[1:], value)
 	}
 }

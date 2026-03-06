@@ -87,27 +87,27 @@ func FileLine(skip int) (file string, line int) {
 }
 
 // Dump 打印变量的详细信息
-func Dump(v interface{}) {
+func Dump(v any) {
 	fmt.Printf("%+v\n", v)
 }
 
 // DumpWithLabel 带标签打印变量
-func DumpWithLabel(label string, v interface{}) {
+func DumpWithLabel(label string, v any) {
 	fmt.Printf("%s: %+v\n", label, v)
 }
 
 // DumpType 打印变量类型
-func DumpType(v interface{}) {
+func DumpType(v any) {
 	fmt.Printf("Type: %T\n", v)
 }
 
 // DumpValue 打印变量值
-func DumpValue(v interface{}) {
+func DumpValue(v any) {
 	fmt.Printf("Value: %v\n", v)
 }
 
 // DumpStruct 打印结构体详细信息
-func DumpStruct(v interface{}) {
+func DumpStruct(v any) {
 	fmt.Printf("Struct: %+v\n", v)
 }
 
@@ -149,7 +149,7 @@ func MeasureWithResult[T any](fn func() T) (T, time.Duration) {
 // Benchmark 基准测试
 func Benchmark(name string, iterations int, fn func()) {
 	start := time.Now()
-	for i := 0; i < iterations; i++ {
+	for range iterations {
 		fn()
 	}
 	duration := time.Since(start)
@@ -160,7 +160,7 @@ func Benchmark(name string, iterations int, fn func()) {
 // BenchmarkWithResult 基准测试（带返回值）
 func BenchmarkWithResult[T any](name string, iterations int, fn func() T) {
 	start := time.Now()
-	for i := 0; i < iterations; i++ {
+	for range iterations {
 		_ = fn()
 	}
 	duration := time.Since(start)
@@ -190,21 +190,21 @@ func AssertNotEqual[T comparable](expected, actual T, message string) {
 }
 
 // AssertNil 断言nil
-func AssertNil(v interface{}, message string) {
+func AssertNil(v any, message string) {
 	if v != nil {
 		panic(fmt.Sprintf("Assertion failed: %s (expected nil, got: %v)", message, v))
 	}
 }
 
 // AssertNotNil 断言非nil
-func AssertNotNil(v interface{}, message string) {
+func AssertNotNil(v any, message string) {
 	if v == nil {
 		panic(fmt.Sprintf("Assertion failed: %s (expected not nil)", message))
 	}
 }
 
 // LogCall 记录函数调用
-func LogCall(function string, args ...interface{}) {
+func LogCall(function string, args ...any) {
 	fmt.Printf("[CALL] %s(", function)
 	for i, arg := range args {
 		if i > 0 {
@@ -216,7 +216,7 @@ func LogCall(function string, args ...interface{}) {
 }
 
 // LogReturn 记录函数返回
-func LogReturn(function string, result interface{}) {
+func LogReturn(function string, result any) {
 	fmt.Printf("[RETURN] %s -> %v\n", function, result)
 }
 
@@ -233,17 +233,17 @@ func LogError(err error, context ...string) {
 }
 
 // LogInfo 记录信息
-func LogInfo(message string, args ...interface{}) {
+func LogInfo(message string, args ...any) {
 	fmt.Printf("[INFO] "+message+"\n", args...)
 }
 
 // LogWarning 记录警告
-func LogWarning(message string, args ...interface{}) {
+func LogWarning(message string, args ...any) {
 	fmt.Printf("[WARNING] "+message+"\n", args...)
 }
 
 // LogDebug 记录调试信息
-func LogDebug(message string, args ...interface{}) {
+func LogDebug(message string, args ...any) {
 	fmt.Printf("[DEBUG] "+message+"\n", args...)
 }
 
@@ -296,14 +296,14 @@ func SetDebug(debug bool) {
 }
 
 // DebugPrint 调试打印（仅在调试模式下）
-func DebugPrint(message string, args ...interface{}) {
+func DebugPrint(message string, args ...any) {
 	if IsDebug {
 		fmt.Printf("[DEBUG] "+message+"\n", args...)
 	}
 }
 
 // DebugDump 调试转储（仅在调试模式下）
-func DebugDump(v interface{}) {
+func DebugDump(v any) {
 	if IsDebug {
 		Dump(v)
 	}

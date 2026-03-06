@@ -10,7 +10,7 @@ import (
 
 // ConfigFromFile 从配置文件创建日志配置
 // 将 internal/config 的 LoggingConfig 转换为 logger.Config
-func ConfigFromFile(cfg interface{}) (Config, error) {
+func ConfigFromFile(cfg any) (Config, error) {
 	// 这里需要根据实际的配置结构进行转换
 	// 当前为占位实现
 	return Config{
@@ -108,7 +108,7 @@ func CreateLoggerFromFileConfig(
 	format string,
 	output string,
 	outputPath string,
-	rotationCfg interface{}, // internal/config.RotationConfig
+	rotationCfg any, // internal/config.RotationConfig
 ) (*Logger, error) {
 	// 转换轮转配置
 	var loggerRotationCfg RotationConfig

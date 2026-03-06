@@ -121,22 +121,22 @@ func StringToBool(s string) (bool, error) {
 }
 
 // JSONEncode JSON编码
-func JSONEncode(v interface{}) ([]byte, error) {
+func JSONEncode(v any) ([]byte, error) {
 	return json.Marshal(v)
 }
 
 // JSONEncodePretty JSON编码（格式化）
-func JSONEncodePretty(v interface{}) ([]byte, error) {
+func JSONEncodePretty(v any) ([]byte, error) {
 	return json.MarshalIndent(v, "", "  ")
 }
 
 // JSONDecode JSON解码
-func JSONDecode(data []byte, v interface{}) error {
+func JSONDecode(data []byte, v any) error {
 	return json.Unmarshal(data, v)
 }
 
 // JSONEncodeString JSON编码为字符串
-func JSONEncodeString(v interface{}) (string, error) {
+func JSONEncodeString(v any) (string, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
 		return "", err
@@ -145,7 +145,7 @@ func JSONEncodeString(v interface{}) (string, error) {
 }
 
 // JSONEncodePrettyString JSON编码为字符串（格式化）
-func JSONEncodePrettyString(v interface{}) (string, error) {
+func JSONEncodePrettyString(v any) (string, error) {
 	data, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		return "", err
@@ -154,7 +154,7 @@ func JSONEncodePrettyString(v interface{}) (string, error) {
 }
 
 // JSONDecodeString JSON解码字符串
-func JSONDecodeString(s string, v interface{}) error {
+func JSONDecodeString(s string, v any) error {
 	return json.Unmarshal([]byte(s), v)
 }
 
@@ -250,7 +250,7 @@ func IsHex(s string) bool {
 
 // IsJSON 检查字符串是否为有效的JSON
 func IsJSON(s string) bool {
-	var js interface{}
+	var js any
 	return json.Unmarshal([]byte(s), &js) == nil
 }
 

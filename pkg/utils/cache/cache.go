@@ -8,7 +8,7 @@ import (
 
 // Item 缓存项
 type Item struct {
-	Value      interface{}
+	Value      any
 	Expiration time.Time
 }
 
@@ -19,8 +19,8 @@ func (i *Item) IsExpired() bool {
 
 // Cache 缓存接口
 type Cache interface {
-	Get(ctx context.Context, key string) (interface{}, bool)
-	Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error
+	Get(ctx context.Context, key string) (any, bool)
+	Set(ctx context.Context, key string, value any, ttl time.Duration) error
 	Delete(ctx context.Context, key string) error
 	Clear(ctx context.Context) error
 	Size() int
@@ -42,7 +42,7 @@ func NewMemoryCache() *MemoryCache {
 }
 
 // Get 获取缓存
-func (c *MemoryCache) Get(ctx context.Context, key string) (interface{}, bool) {
+func (c *MemoryCache) Get(ctx context.Context, key string) (any, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -60,7 +60,7 @@ func (c *MemoryCache) Get(ctx context.Context, key string) (interface{}, bool) {
 }
 
 // Set 设置缓存
-func (c *MemoryCache) Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
+func (c *MemoryCache) Set(ctx context.Context, key string, value any, ttl time.Duration) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -132,8 +132,8 @@ func GetOrSet(
 	cache Cache,
 	key string,
 	ttl time.Duration,
-	fn func() (interface{}, error),
-) (interface{}, error) {
+	fn func() (any, error),
+) (any, error) {
 	// 尝试获取
 	if value, ok := cache.Get(ctx, key); ok {
 		return value, nil

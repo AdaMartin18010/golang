@@ -84,7 +84,7 @@ func TestGetOrSet(t *testing.T) {
 	ctx := context.Background()
 
 	callCount := 0
-	fn := func() (interface{}, error) {
+	fn := func() (any, error) {
 		callCount++
 		return "value1", nil
 	}

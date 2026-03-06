@@ -6,12 +6,12 @@ import (
 )
 
 // Equal 检查两个值是否相等
-func Equal(a, b interface{}) bool {
+func Equal(a, b any) bool {
 	return reflect.DeepEqual(a, b)
 }
 
 // NotEqual 检查两个值是否不相等
-func NotEqual(a, b interface{}) bool {
+func NotEqual(a, b any) bool {
 	return !Equal(a, b)
 }
 
@@ -71,7 +71,7 @@ func CompareTime(a, b time.Time) int {
 }
 
 // Less 检查a是否小于b
-func Less(a, b interface{}) bool {
+func Less(a, b any) bool {
 	switch aVal := a.(type) {
 	case int:
 		if bVal, ok := b.(int); ok {
@@ -98,7 +98,7 @@ func Less(a, b interface{}) bool {
 }
 
 // Greater 检查a是否大于b
-func Greater(a, b interface{}) bool {
+func Greater(a, b any) bool {
 	switch aVal := a.(type) {
 	case int:
 		if bVal, ok := b.(int); ok {
@@ -125,17 +125,17 @@ func Greater(a, b interface{}) bool {
 }
 
 // LessOrEqual 检查a是否小于等于b
-func LessOrEqual(a, b interface{}) bool {
+func LessOrEqual(a, b any) bool {
 	return Less(a, b) || Equal(a, b)
 }
 
 // GreaterOrEqual 检查a是否大于等于b
-func GreaterOrEqual(a, b interface{}) bool {
+func GreaterOrEqual(a, b any) bool {
 	return Greater(a, b) || Equal(a, b)
 }
 
 // Min 返回两个值中的较小值
-func Min(a, b interface{}) interface{} {
+func Min(a, b any) any {
 	if Less(a, b) {
 		return a
 	}
@@ -143,7 +143,7 @@ func Min(a, b interface{}) interface{} {
 }
 
 // Max 返回两个值中的较大值
-func Max(a, b interface{}) interface{} {
+func Max(a, b any) any {
 	if Greater(a, b) {
 		return a
 	}
@@ -231,7 +231,7 @@ func MaxTime(a, b time.Time) time.Time {
 }
 
 // InRange 检查值是否在范围内
-func InRange(value, min, max interface{}) bool {
+func InRange(value, min, max any) bool {
 	return GreaterOrEqual(value, min) && LessOrEqual(value, max)
 }
 
@@ -251,7 +251,7 @@ func InRangeFloat64(value, min, max float64) bool {
 }
 
 // Clamp 将值限制在[min, max]范围内
-func Clamp(value, min, max interface{}) interface{} {
+func Clamp(value, min, max any) any {
 	if Less(value, min) {
 		return min
 	}
@@ -295,7 +295,7 @@ func ClampFloat64(value, min, max float64) float64 {
 }
 
 // IsZero 检查值是否为零值
-func IsZero(v interface{}) bool {
+func IsZero(v any) bool {
 	if v == nil {
 		return true
 	}
@@ -315,7 +315,7 @@ func IsZero(v interface{}) bool {
 		return val.String() == ""
 	case reflect.Array, reflect.Slice, reflect.Map:
 		return val.Len() == 0
-	case reflect.Ptr, reflect.Interface:
+	case reflect.Pointer, reflect.Interface:
 		return val.IsNil()
 	case reflect.Struct:
 		return val.IsZero()
@@ -325,13 +325,13 @@ func IsZero(v interface{}) bool {
 }
 
 // IsNil 检查值是否为nil
-func IsNil(v interface{}) bool {
+func IsNil(v any) bool {
 	if v == nil {
 		return true
 	}
 	val := reflect.ValueOf(v)
 	switch val.Kind() {
-	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
 		return val.IsNil()
 	default:
 		return false
@@ -339,7 +339,7 @@ func IsNil(v interface{}) bool {
 }
 
 // IsEmpty 检查值是否为空（nil、零值或空集合）
-func IsEmpty(v interface{}) bool {
+func IsEmpty(v any) bool {
 	return IsNil(v) || IsZero(v)
 }
 
@@ -384,10 +384,7 @@ func EqualBy[T any, K comparable](a, b T, keyFunc func(T) K) bool {
 
 // CompareSlice 比较两个切片
 func CompareSlice[T comparable](a, b []T) int {
-	minLen := len(a)
-	if len(b) < minLen {
-		minLen = len(b)
-	}
+	minLen := min(len(b), len(a))
 	for i := 0; i < minLen; i++ {
 		if a[i] != b[i] {
 			// 对于可比较类型，使用泛型比较
@@ -407,10 +404,7 @@ func CompareSlice[T comparable](a, b []T) int {
 
 // CompareSliceFunc 使用比较函数比较两个切片
 func CompareSliceFunc[T any](a, b []T, cmp func(T, T) int) int {
-	minLen := len(a)
-	if len(b) < minLen {
-		minLen = len(b)
-	}
+	minLen := min(len(b), len(a))
 	for i := 0; i < minLen; i++ {
 		result := cmp(a[i], b[i])
 		if result != 0 {

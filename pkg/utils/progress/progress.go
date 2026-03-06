@@ -10,9 +10,9 @@ import (
 
 // ProgressBar 进度条
 type ProgressBar struct {
-	total      int64
-	current    int64
-	width      int
+	total       int64
+	current     int64
+	width       int
 	showPercent bool
 	showSpeed   bool
 	showETA     bool
@@ -117,10 +117,7 @@ func (pb *ProgressBar) Add(n int64) {
 func (pb *ProgressBar) Set(n int64) {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
-	pb.current = n
-	if pb.current > pb.total {
-		pb.current = pb.total
-	}
+	pb.current = min(n, pb.total)
 	if pb.current < 0 {
 		pb.current = 0
 	}
@@ -284,10 +281,7 @@ func (spb *SimpleProgressBar) Add(n int64) {
 func (spb *SimpleProgressBar) Set(n int64) {
 	spb.mu.Lock()
 	defer spb.mu.Unlock()
-	spb.current = n
-	if spb.current > spb.total {
-		spb.current = spb.total
-	}
+	spb.current = min(n, spb.total)
 	if spb.current < 0 {
 		spb.current = 0
 	}
@@ -318,12 +312,12 @@ func (spb *SimpleProgressBar) Finish() {
 
 // Spinner 旋转器
 type Spinner struct {
-	chars    []string
-	index    int
-	message  string
-	mu       sync.Mutex
-	stop     chan struct{}
-	stopped  bool
+	chars   []string
+	index   int
+	message string
+	mu      sync.Mutex
+	stop    chan struct{}
+	stopped bool
 }
 
 // NewSpinner 创建旋转器

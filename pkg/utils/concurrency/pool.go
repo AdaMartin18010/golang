@@ -8,12 +8,12 @@ import (
 
 // Pool goroutine池
 type Pool struct {
-	workers    int
-	jobQueue   chan func()
-	wg         sync.WaitGroup
-	once       sync.Once
-	ctx        context.Context
-	cancel     context.CancelFunc
+	workers  int
+	jobQueue chan func()
+	wg       sync.WaitGroup
+	once     sync.Once
+	ctx      context.Context
+	cancel   context.CancelFunc
 }
 
 // NewPool 创建新的goroutine池
@@ -88,23 +88,23 @@ func (p *Pool) Wait() {
 
 // WorkerPool worker池
 type WorkerPool struct {
-	workers    int
-	jobQueue   chan interface{}
-	resultQueue chan interface{}
-	processor  func(interface{}) interface{}
-	wg         sync.WaitGroup
-	once       sync.Once
-	ctx        context.Context
-	cancel     context.CancelFunc
+	workers     int
+	jobQueue    chan any
+	resultQueue chan any
+	processor   func(any) any
+	wg          sync.WaitGroup
+	once        sync.Once
+	ctx         context.Context
+	cancel      context.CancelFunc
 }
 
 // NewWorkerPool 创建新的worker池
-func NewWorkerPool(workers int, queueSize int, processor func(interface{}) interface{}) *WorkerPool {
+func NewWorkerPool(workers int, queueSize int, processor func(any) any) *WorkerPool {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &WorkerPool{
 		workers:     workers,
-		jobQueue:    make(chan interface{}, queueSize),
-		resultQueue: make(chan interface{}, queueSize),
+		jobQueue:    make(chan any, queueSize),
+		resultQueue: make(chan any, queueSize),
 		processor:   processor,
 		ctx:         ctx,
 		cancel:      cancel,
@@ -140,7 +140,7 @@ func (wp *WorkerPool) worker() {
 }
 
 // Submit 提交任务
-func (wp *WorkerPool) Submit(job interface{}) error {
+func (wp *WorkerPool) Submit(job any) error {
 	select {
 	case wp.jobQueue <- job:
 		return nil
@@ -150,7 +150,7 @@ func (wp *WorkerPool) Submit(job interface{}) error {
 }
 
 // GetResult 获取结果
-func (wp *WorkerPool) GetResult() (interface{}, error) {
+func (wp *WorkerPool) GetResult() (any, error) {
 	select {
 	case result := <-wp.resultQueue:
 		return result, nil
@@ -272,12 +272,12 @@ func (m *Mutex) LockWithContext(ctx context.Context) error {
 type Once struct {
 	mu    sync.Mutex
 	done  bool
-	value interface{}
+	value any
 	err   error
 }
 
 // Do 执行函数（只执行一次）
-func (o *Once) Do(fn func() (interface{}, error)) (interface{}, error) {
+func (o *Once) Do(fn func() (any, error)) (any, error) {
 	o.mu.Lock()
 	defer o.mu.Unlock()
 	if o.done {

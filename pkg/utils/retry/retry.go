@@ -45,10 +45,7 @@ type LinearBackoff struct {
 
 // NextDelay 计算下次延迟
 func (l *LinearBackoff) NextDelay(attempt int) time.Duration {
-	delay := l.InitialDelay + l.Increment*time.Duration(attempt-1)
-	if delay > l.MaxDelay {
-		delay = l.MaxDelay
-	}
+	delay := min(l.InitialDelay+l.Increment*time.Duration(attempt-1), l.MaxDelay)
 	return delay
 }
 

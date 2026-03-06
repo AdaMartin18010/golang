@@ -2,6 +2,7 @@ package env
 
 import (
 	"fmt"
+	"maps"
 	"os"
 	"strconv"
 	"strings"
@@ -216,8 +217,8 @@ func LoadFromFile(filename string) error {
 		return err
 	}
 
-	lines := strings.Split(string(data), "\n")
-	for _, line := range lines {
+	lines := strings.SplitSeq(string(data), "\n")
+	for line := range lines {
 		line = strings.TrimSpace(line)
 		// 跳过空行和注释
 		if line == "" || strings.HasPrefix(line, "#") {
@@ -290,9 +291,7 @@ func Copy() map[string]string {
 func Merge(envs ...map[string]string) map[string]string {
 	result := make(map[string]string)
 	for _, env := range envs {
-		for k, v := range env {
-			result[k] = v
-		}
+		maps.Copy(result, env)
 	}
 	return result
 }

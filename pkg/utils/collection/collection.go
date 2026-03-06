@@ -7,12 +7,7 @@ import (
 
 // Contains 检查切片是否包含指定元素
 func Contains[T comparable](slice []T, item T) bool {
-	for _, v := range slice {
-		if v == item {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, item)
 }
 
 // Index 返回元素在切片中的索引，如果不存在返回-1
@@ -102,10 +97,7 @@ func Chunk[T any](slice []T, size int) [][]T {
 
 	result := make([][]T, 0, (len(slice)+size-1)/size)
 	for i := 0; i < len(slice); i += size {
-		end := i + size
-		if end > len(slice) {
-			end = len(slice)
-		}
+		end := min(i+size, len(slice))
 		result = append(result, slice[i:end])
 	}
 	return result
@@ -267,12 +259,7 @@ func Count[T any](slice []T, fn func(T) bool) int {
 
 // Any 检查是否有元素满足条件
 func Any[T any](slice []T, fn func(T) bool) bool {
-	for _, v := range slice {
-		if fn(v) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(slice, fn)
 }
 
 // All 检查是否所有元素都满足条件
@@ -395,10 +382,7 @@ func Zip[T, U any](slice1 []T, slice2 []U) []struct {
 	First  T
 	Second U
 } {
-	minLen := len(slice1)
-	if len(slice2) < minLen {
-		minLen = len(slice2)
-	}
+	minLen := min(len(slice2), len(slice1))
 
 	result := make([]struct {
 		First  T

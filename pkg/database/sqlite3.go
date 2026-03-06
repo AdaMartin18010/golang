@@ -90,15 +90,15 @@ func (s *sqlite3) Begin(ctx context.Context) (Transaction, error) {
 	return &transaction{tx: tx}, nil
 }
 
-func (s *sqlite3) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (s *sqlite3) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return s.db.ExecContext(ctx, query, args...)
 }
 
-func (s *sqlite3) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (s *sqlite3) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	return s.db.QueryContext(ctx, query, args...)
 }
 
-func (s *sqlite3) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
+func (s *sqlite3) QueryRow(ctx context.Context, query string, args ...any) *sql.Row {
 	return s.db.QueryRowContext(ctx, query, args...)
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 // ToString 转换为字符串
-func ToString(v interface{}) string {
+func ToString(v any) string {
 	if v == nil {
 		return ""
 	}
@@ -52,7 +52,7 @@ func ToString(v interface{}) string {
 }
 
 // ToInt 转换为int
-func ToInt(v interface{}) (int, error) {
+func ToInt(v any) (int, error) {
 	switch val := v.(type) {
 	case int:
 		return val, nil
@@ -91,7 +91,7 @@ func ToInt(v interface{}) (int, error) {
 }
 
 // ToInt64 转换为int64
-func ToInt64(v interface{}) (int64, error) {
+func ToInt64(v any) (int64, error) {
 	switch val := v.(type) {
 	case int:
 		return int64(val), nil
@@ -130,7 +130,7 @@ func ToInt64(v interface{}) (int64, error) {
 }
 
 // ToFloat64 转换为float64
-func ToFloat64(v interface{}) (float64, error) {
+func ToFloat64(v any) (float64, error) {
 	switch val := v.(type) {
 	case int:
 		return float64(val), nil
@@ -169,7 +169,7 @@ func ToFloat64(v interface{}) (float64, error) {
 }
 
 // ToBool 转换为bool
-func ToBool(v interface{}) (bool, error) {
+func ToBool(v any) (bool, error) {
 	switch val := v.(type) {
 	case bool:
 		return val, nil
@@ -205,7 +205,7 @@ func ToBool(v interface{}) (bool, error) {
 }
 
 // ToBytes 转换为[]byte
-func ToBytes(v interface{}) []byte {
+func ToBytes(v any) []byte {
 	switch val := v.(type) {
 	case []byte:
 		return val
@@ -217,7 +217,7 @@ func ToBytes(v interface{}) []byte {
 }
 
 // MustInt 转换为int，失败时panic
-func MustInt(v interface{}) int {
+func MustInt(v any) int {
 	val, err := ToInt(v)
 	if err != nil {
 		panic(err)
@@ -226,7 +226,7 @@ func MustInt(v interface{}) int {
 }
 
 // MustInt64 转换为int64，失败时panic
-func MustInt64(v interface{}) int64 {
+func MustInt64(v any) int64 {
 	val, err := ToInt64(v)
 	if err != nil {
 		panic(err)
@@ -235,7 +235,7 @@ func MustInt64(v interface{}) int64 {
 }
 
 // MustFloat64 转换为float64，失败时panic
-func MustFloat64(v interface{}) float64 {
+func MustFloat64(v any) float64 {
 	val, err := ToFloat64(v)
 	if err != nil {
 		panic(err)
@@ -244,7 +244,7 @@ func MustFloat64(v interface{}) float64 {
 }
 
 // MustBool 转换为bool，失败时panic
-func MustBool(v interface{}) bool {
+func MustBool(v any) bool {
 	val, err := ToBool(v)
 	if err != nil {
 		panic(err)
@@ -253,7 +253,7 @@ func MustBool(v interface{}) bool {
 }
 
 // ToIntDefault 转换为int，失败时返回默认值
-func ToIntDefault(v interface{}, defaultValue int) int {
+func ToIntDefault(v any, defaultValue int) int {
 	val, err := ToInt(v)
 	if err != nil {
 		return defaultValue
@@ -262,7 +262,7 @@ func ToIntDefault(v interface{}, defaultValue int) int {
 }
 
 // ToInt64Default 转换为int64，失败时返回默认值
-func ToInt64Default(v interface{}, defaultValue int64) int64 {
+func ToInt64Default(v any, defaultValue int64) int64 {
 	val, err := ToInt64(v)
 	if err != nil {
 		return defaultValue
@@ -271,7 +271,7 @@ func ToInt64Default(v interface{}, defaultValue int64) int64 {
 }
 
 // ToFloat64Default 转换为float64，失败时返回默认值
-func ToFloat64Default(v interface{}, defaultValue float64) float64 {
+func ToFloat64Default(v any, defaultValue float64) float64 {
 	val, err := ToFloat64(v)
 	if err != nil {
 		return defaultValue
@@ -280,7 +280,7 @@ func ToFloat64Default(v interface{}, defaultValue float64) float64 {
 }
 
 // ToBoolDefault 转换为bool，失败时返回默认值
-func ToBoolDefault(v interface{}, defaultValue bool) bool {
+func ToBoolDefault(v any, defaultValue bool) bool {
 	val, err := ToBool(v)
 	if err != nil {
 		return defaultValue
@@ -289,11 +289,11 @@ func ToBoolDefault(v interface{}, defaultValue bool) bool {
 }
 
 // ToStringSlice 转换为[]string
-func ToStringSlice(v interface{}) []string {
+func ToStringSlice(v any) []string {
 	switch val := v.(type) {
 	case []string:
 		return val
-	case []interface{}:
+	case []any:
 		result := make([]string, len(val))
 		for i, item := range val {
 			result[i] = ToString(item)
@@ -329,11 +329,11 @@ func ToStringSlice(v interface{}) []string {
 }
 
 // ToIntSlice 转换为[]int
-func ToIntSlice(v interface{}) ([]int, error) {
+func ToIntSlice(v any) ([]int, error) {
 	switch val := v.(type) {
 	case []int:
 		return val, nil
-	case []interface{}:
+	case []any:
 		result := make([]int, len(val))
 		for i, item := range val {
 			num, err := ToInt(item)
@@ -359,7 +359,7 @@ func ToIntSlice(v interface{}) ([]int, error) {
 }
 
 // ToInt64Slice 转换为[]int64
-func ToInt64Slice(v interface{}) ([]int64, error) {
+func ToInt64Slice(v any) ([]int64, error) {
 	switch val := v.(type) {
 	case []int64:
 		return val, nil
@@ -369,7 +369,7 @@ func ToInt64Slice(v interface{}) ([]int64, error) {
 			result[i] = int64(item)
 		}
 		return result, nil
-	case []interface{}:
+	case []any:
 		result := make([]int64, len(val))
 		for i, item := range val {
 			num, err := ToInt64(item)
@@ -395,7 +395,7 @@ func ToInt64Slice(v interface{}) ([]int64, error) {
 }
 
 // ToFloat64Slice 转换为[]float64
-func ToFloat64Slice(v interface{}) ([]float64, error) {
+func ToFloat64Slice(v any) ([]float64, error) {
 	switch val := v.(type) {
 	case []float64:
 		return val, nil
@@ -411,7 +411,7 @@ func ToFloat64Slice(v interface{}) ([]float64, error) {
 			result[i] = float64(item)
 		}
 		return result, nil
-	case []interface{}:
+	case []any:
 		result := make([]float64, len(val))
 		for i, item := range val {
 			num, err := ToFloat64(item)
@@ -437,11 +437,11 @@ func ToFloat64Slice(v interface{}) ([]float64, error) {
 }
 
 // ToBoolSlice 转换为[]bool
-func ToBoolSlice(v interface{}) ([]bool, error) {
+func ToBoolSlice(v any) ([]bool, error) {
 	switch val := v.(type) {
 	case []bool:
 		return val, nil
-	case []interface{}:
+	case []any:
 		result := make([]bool, len(val))
 		for i, item := range val {
 			b, err := ToBool(item)
@@ -467,12 +467,12 @@ func ToBoolSlice(v interface{}) ([]bool, error) {
 }
 
 // ToMapStringInterface 转换为map[string]interface{}
-func ToMapStringInterface(v interface{}) (map[string]interface{}, error) {
+func ToMapStringInterface(v any) (map[string]any, error) {
 	switch val := v.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		return val, nil
-	case map[interface{}]interface{}:
-		result := make(map[string]interface{})
+	case map[any]any:
+		result := make(map[string]any)
 		for k, v := range val {
 			result[ToString(k)] = v
 		}
@@ -483,17 +483,17 @@ func ToMapStringInterface(v interface{}) (map[string]interface{}, error) {
 }
 
 // ToMapStringString 转换为map[string]string
-func ToMapStringString(v interface{}) (map[string]string, error) {
+func ToMapStringString(v any) (map[string]string, error) {
 	switch val := v.(type) {
 	case map[string]string:
 		return val, nil
-	case map[string]interface{}:
+	case map[string]any:
 		result := make(map[string]string)
 		for k, v := range val {
 			result[k] = ToString(v)
 		}
 		return result, nil
-	case map[interface{}]interface{}:
+	case map[any]any:
 		result := make(map[string]string)
 		for k, v := range val {
 			result[ToString(k)] = ToString(v)
@@ -505,7 +505,7 @@ func ToMapStringString(v interface{}) (map[string]string, error) {
 }
 
 // IsNumeric 检查是否为数字类型
-func IsNumeric(v interface{}) bool {
+func IsNumeric(v any) bool {
 	switch v.(type) {
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
 		return true
@@ -518,7 +518,7 @@ func IsNumeric(v interface{}) bool {
 }
 
 // IsInteger 检查是否为整数类型
-func IsInteger(v interface{}) bool {
+func IsInteger(v any) bool {
 	switch v.(type) {
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
 		return true
@@ -531,7 +531,7 @@ func IsInteger(v interface{}) bool {
 }
 
 // IsFloat 检查是否为浮点数类型
-func IsFloat(v interface{}) bool {
+func IsFloat(v any) bool {
 	switch v.(type) {
 	case float32, float64:
 		return true

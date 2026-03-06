@@ -53,12 +53,12 @@ func (t *TextTemplate) ParseGlob(pattern string) (*TextTemplate, error) {
 }
 
 // Execute 执行模板
-func (t *TextTemplate) Execute(wr io.Writer, data interface{}) error {
+func (t *TextTemplate) Execute(wr io.Writer, data any) error {
 	return t.tmpl.Execute(wr, data)
 }
 
 // ExecuteToString 执行模板并返回字符串
-func (t *TextTemplate) ExecuteToString(data interface{}) (string, error) {
+func (t *TextTemplate) ExecuteToString(data any) (string, error) {
 	var buf bytes.Buffer
 	err := t.tmpl.Execute(&buf, data)
 	if err != nil {
@@ -68,7 +68,7 @@ func (t *TextTemplate) ExecuteToString(data interface{}) (string, error) {
 }
 
 // ExecuteToBytes 执行模板并返回字节数组
-func (t *TextTemplate) ExecuteToBytes(data interface{}) ([]byte, error) {
+func (t *TextTemplate) ExecuteToBytes(data any) ([]byte, error) {
 	var buf bytes.Buffer
 	err := t.tmpl.Execute(&buf, data)
 	if err != nil {
@@ -78,7 +78,7 @@ func (t *TextTemplate) ExecuteToBytes(data interface{}) ([]byte, error) {
 }
 
 // ExecuteToFile 执行模板并写入文件
-func (t *TextTemplate) ExecuteToFile(data interface{}, filename string) error {
+func (t *TextTemplate) ExecuteToFile(data any, filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -130,12 +130,12 @@ func (t *HTMLTemplate) ParseGlob(pattern string) (*HTMLTemplate, error) {
 }
 
 // Execute 执行模板
-func (t *HTMLTemplate) Execute(wr io.Writer, data interface{}) error {
+func (t *HTMLTemplate) Execute(wr io.Writer, data any) error {
 	return t.tmpl.Execute(wr, data)
 }
 
 // ExecuteToString 执行模板并返回字符串
-func (t *HTMLTemplate) ExecuteToString(data interface{}) (string, error) {
+func (t *HTMLTemplate) ExecuteToString(data any) (string, error) {
 	var buf bytes.Buffer
 	err := t.tmpl.Execute(&buf, data)
 	if err != nil {
@@ -145,7 +145,7 @@ func (t *HTMLTemplate) ExecuteToString(data interface{}) (string, error) {
 }
 
 // ExecuteToBytes 执行模板并返回字节数组
-func (t *HTMLTemplate) ExecuteToBytes(data interface{}) ([]byte, error) {
+func (t *HTMLTemplate) ExecuteToBytes(data any) ([]byte, error) {
 	var buf bytes.Buffer
 	err := t.tmpl.Execute(&buf, data)
 	if err != nil {
@@ -155,7 +155,7 @@ func (t *HTMLTemplate) ExecuteToBytes(data interface{}) ([]byte, error) {
 }
 
 // ExecuteToFile 执行模板并写入文件
-func (t *HTMLTemplate) ExecuteToFile(data interface{}, filename string) error {
+func (t *HTMLTemplate) ExecuteToFile(data any, filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -165,7 +165,7 @@ func (t *HTMLTemplate) ExecuteToFile(data interface{}, filename string) error {
 }
 
 // Render 渲染文本模板
-func Render(templateText string, data interface{}) (string, error) {
+func Render(templateText string, data any) (string, error) {
 	tmpl, err := text.New("").Parse(templateText)
 	if err != nil {
 		return "", err
@@ -179,7 +179,7 @@ func Render(templateText string, data interface{}) (string, error) {
 }
 
 // RenderHTML 渲染HTML模板
-func RenderHTML(templateText string, data interface{}) (string, error) {
+func RenderHTML(templateText string, data any) (string, error) {
 	tmpl, err := html.New("").Parse(templateText)
 	if err != nil {
 		return "", err
@@ -193,7 +193,7 @@ func RenderHTML(templateText string, data interface{}) (string, error) {
 }
 
 // RenderFile 从文件渲染模板
-func RenderFile(filename string, data interface{}) (string, error) {
+func RenderFile(filename string, data any) (string, error) {
 	tmpl, err := text.ParseFiles(filename)
 	if err != nil {
 		return "", err
@@ -207,7 +207,7 @@ func RenderFile(filename string, data interface{}) (string, error) {
 }
 
 // RenderHTMLFile 从文件渲染HTML模板
-func RenderHTMLFile(filename string, data interface{}) (string, error) {
+func RenderHTMLFile(filename string, data any) (string, error) {
 	tmpl, err := html.ParseFiles(filename)
 	if err != nil {
 		return "", err
@@ -233,7 +233,7 @@ func ValidateHTML(templateText string) error {
 }
 
 // AddFunc 添加自定义函数到文本模板
-func (t *TextTemplate) AddFunc(name string, fn interface{}) *TextTemplate {
+func (t *TextTemplate) AddFunc(name string, fn any) *TextTemplate {
 	t.tmpl = t.tmpl.Funcs(text.FuncMap{name: fn})
 	return t
 }
@@ -245,7 +245,7 @@ func (t *TextTemplate) AddFuncs(funcMap text.FuncMap) *TextTemplate {
 }
 
 // AddFunc 添加自定义函数到HTML模板
-func (t *HTMLTemplate) AddFunc(name string, fn interface{}) *HTMLTemplate {
+func (t *HTMLTemplate) AddFunc(name string, fn any) *HTMLTemplate {
 	t.tmpl = t.tmpl.Funcs(html.FuncMap{name: fn})
 	return t
 }
@@ -325,10 +325,10 @@ var CommonFuncMap = text.FuncMap{
 		}
 		return a % b
 	},
-	"eq": func(a, b interface{}) bool {
+	"eq": func(a, b any) bool {
 		return a == b
 	},
-	"ne": func(a, b interface{}) bool {
+	"ne": func(a, b any) bool {
 		return a != b
 	},
 	"gt": func(a, b int) bool {
@@ -382,25 +382,25 @@ var CommonFuncMap = text.FuncMap{
 	"replace": func(old, new, s string) string {
 		return strings.ReplaceAll(s, old, new)
 	},
-	"len": func(s interface{}) int {
+	"len": func(s any) int {
 		switch v := s.(type) {
 		case string:
 			return len(v)
-		case []interface{}:
+		case []any:
 			return len(v)
-		case map[string]interface{}:
+		case map[string]any:
 			return len(v)
 		default:
 			return 0
 		}
 	},
-	"default": func(def, val interface{}) interface{} {
+	"default": func(def, val any) any {
 		if val == nil || val == "" {
 			return def
 		}
 		return val
 	},
-	"format": func(format string, args ...interface{}) string {
+	"format": func(format string, args ...any) string {
 		return fmt.Sprintf(format, args...)
 	},
 }
@@ -428,10 +428,10 @@ var HTMLCommonFuncMap = html.FuncMap{
 		}
 		return a % b
 	},
-	"eq": func(a, b interface{}) bool {
+	"eq": func(a, b any) bool {
 		return a == b
 	},
-	"ne": func(a, b interface{}) bool {
+	"ne": func(a, b any) bool {
 		return a != b
 	},
 	"gt": func(a, b int) bool {
@@ -485,25 +485,25 @@ var HTMLCommonFuncMap = html.FuncMap{
 	"replace": func(old, new, s string) string {
 		return strings.ReplaceAll(s, old, new)
 	},
-	"len": func(s interface{}) int {
+	"len": func(s any) int {
 		switch v := s.(type) {
 		case string:
 			return len(v)
-		case []interface{}:
+		case []any:
 			return len(v)
-		case map[string]interface{}:
+		case map[string]any:
 			return len(v)
 		default:
 			return 0
 		}
 	},
-	"default": func(def, val interface{}) interface{} {
+	"default": func(def, val any) any {
 		if val == nil || val == "" {
 			return def
 		}
 		return val
 	},
-	"format": func(format string, args ...interface{}) string {
+	"format": func(format string, args ...any) string {
 		return fmt.Sprintf(format, args...)
 	},
 }

@@ -48,13 +48,13 @@ type Database interface {
 	Begin(ctx context.Context) (Transaction, error)
 
 	// Exec 执行 SQL 语句（不返回结果）
-	Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
 
 	// Query 执行查询 SQL 语句
-	Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
+	Query(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 
 	// QueryRow 执行查询 SQL 语句，返回单行
-	QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row
+	QueryRow(ctx context.Context, query string, args ...any) *sql.Row
 
 	// Prepare 准备 SQL 语句
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)
@@ -69,13 +69,13 @@ type Transaction interface {
 	Rollback() error
 
 	// Exec 在事务中执行 SQL 语句
-	Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+	Exec(ctx context.Context, query string, args ...any) (sql.Result, error)
 
 	// Query 在事务中执行查询 SQL 语句
-	Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
+	Query(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 
 	// QueryRow 在事务中执行查询 SQL 语句，返回单行
-	QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row
+	QueryRow(ctx context.Context, query string, args ...any) *sql.Row
 
 	// Prepare 在事务中准备 SQL 语句
 	Prepare(ctx context.Context, query string) (*sql.Stmt, error)

@@ -18,15 +18,15 @@ func (t *transaction) Rollback() error {
 	return t.tx.Rollback()
 }
 
-func (t *transaction) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (t *transaction) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return t.tx.ExecContext(ctx, query, args...)
 }
 
-func (t *transaction) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (t *transaction) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	return t.tx.QueryContext(ctx, query, args...)
 }
 
-func (t *transaction) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
+func (t *transaction) QueryRow(ctx context.Context, query string, args ...any) *sql.Row {
 	return t.tx.QueryRowContext(ctx, query, args...)
 }
 

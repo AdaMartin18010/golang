@@ -48,6 +48,67 @@ func NewLogger(level slog.Level) *Logger {
 	})
 }
 
+// NewMultiOutputLogger 创建多输出日志记录器 (Go 1.26+)
+// 使用 slog.NewMultiHandler 同时将日志输出到多个目标
+//
+// 参数：
+//   - level: 日志级别
+//   - handlers: 多个 slog.Handler，日志将被同时输出到所有处理器
+//
+// 使用示例：
+//
+//	handler1 := slog.NewJSONHandler(os.Stdout, nil)
+//	handler2 := slog.NewTextHandler(file, &slog.HandlerOptions{Level: slog.LevelWarn})
+//	logger := NewMultiOutputLogger(slog.LevelInfo, handler1, handler2)
+func NewMultiOutputLogger(level slog.Level, handlers ...slog.Handler) *Logger {
+	if len(handlers) == 0 {
+		return NewLogger(level)
+	}
+	if len(handlers) == 1 {
+		return &Logger{
+			Logger:     slog.New(handlers[0]),
+			level:      level,
+			sampleRate: 1.0,
+		}
+	}
+	// Go 1.26+: 使用 slog.NewMultiHandler 组合多个处理器
+	multiHandler := slog.NewMultiHandler(handlers...)
+	return &Logger{
+		Logger:     slog.New(multiHandler),
+		level:      level,
+		sampleRate: 1.0,
+	}
+}
+
+// NewLoggerWithOutputs 创建同时输出到多个 io.Writer 的日志记录器 (Go 1.26+)
+//
+// 参数：
+//   - level: 日志级别
+//   - jsonOutputs: JSON 格式输出的目标（如 os.Stdout, file）
+//   - textOutputs: 文本格式输出的目标
+//
+// 使用示例：
+//
+//	file, _ := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+//	logger := NewLoggerWithOutputs(
+//	    slog.LevelInfo,
+//	    []io.Writer{os.Stdout, file},  // JSON 格式输出到控制台和文件
+//	    nil,                           // 不需要文本格式输出
+//	)
+func NewLoggerWithOutputs(level slog.Level, jsonOutputs []io.Writer, textOutputs []io.Writer) *Logger {
+	var handlers []slog.Handler
+	opts := &slog.HandlerOptions{Level: level}
+
+	for _, out := range jsonOutputs {
+		handlers = append(handlers, slog.NewJSONHandler(out, opts))
+	}
+	for _, out := range textOutputs {
+		handlers = append(handlers, slog.NewTextHandler(out, opts))
+	}
+
+	return NewMultiOutputLogger(level, handlers...)
+}
+
 // NewLoggerWithConfig 使用配置创建日志记录器
 func NewLoggerWithConfig(config Config) *Logger {
 	opts := &slog.HandlerOptions{
@@ -72,7 +133,7 @@ func NewLoggerWithConfig(config Config) *Logger {
 		if config.ServiceVersion != "" {
 			attrs = append(attrs, slog.String("service.version", config.ServiceVersion))
 		}
-		baseLogger = slog.New(handler).With(attrs)
+		baseLogger = slog.New(handler).With(attrsToAny(attrs)...)
 	} else {
 		baseLogger = slog.New(handler)
 	}
@@ -129,7 +190,7 @@ func (l *Logger) WithContext(ctx context.Context) *slog.Logger {
 	}
 
 	if len(attrs) > 0 {
-		return l.Logger.With(attrs)
+		return l.Logger.With(attrsToAny(attrs)...)
 	}
 
 	return l.Logger
@@ -255,3 +316,13 @@ func getRequestID(ctx context.Context) string {
 	}
 	return ""
 }
+
+// attrsToAny converts []slog.Attr to []any
+func attrsToAny(attrs []slog.Attr) []any {
+	result := make([]any, len(attrs))
+	for i, attr := range attrs {
+		result[i] = attr
+	}
+	return result
+}
+

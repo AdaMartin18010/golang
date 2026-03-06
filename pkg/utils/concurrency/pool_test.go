@@ -13,7 +13,7 @@ func TestPool(t *testing.T) {
 	defer pool.Stop()
 
 	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		wg.Add(1)
 		j := i
 		pool.Submit(func() {
@@ -41,18 +41,18 @@ func TestPoolWithContext(t *testing.T) {
 }
 
 func TestWorkerPool(t *testing.T) {
-	processor := func(job interface{}) interface{} {
+	processor := func(job any) any {
 		return job.(int) * 2
 	}
 	pool := NewWorkerPool(3, 10, processor)
 	pool.Start()
 	defer pool.Stop()
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		pool.Submit(i)
 	}
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		result, err := pool.GetResult()
 		if err != nil {
 			t.Fatalf("Expected no error, got %v", err)
@@ -117,7 +117,7 @@ func TestOnce(t *testing.T) {
 	once := &Once{}
 	count := 0
 
-	fn := func() (interface{}, error) {
+	fn := func() (any, error) {
 		count++
 		return count, nil
 	}
@@ -138,7 +138,7 @@ func TestBarrier(t *testing.T) {
 	var wg sync.WaitGroup
 	results := make([]int, 3)
 
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		wg.Add(1)
 		j := i
 		go func() {
@@ -149,7 +149,7 @@ func TestBarrier(t *testing.T) {
 	}
 
 	wg.Wait()
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		if results[i] != i {
 			t.Errorf("Expected %d, got %d", i, results[i])
 		}

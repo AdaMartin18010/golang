@@ -8,7 +8,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/OWNER/REPO)](https://goreportcard.com/report/github.com/OWNER/REPO)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**版本**: Go 1.25.3
+**版本**: Go 1.26
 **架构**: Clean Architecture (标准4层)
 **更新**: 2025-12-03
 **评分**: 8.5/10 ⭐⭐⭐⭐⭐
@@ -181,7 +181,7 @@ Infrastructure → Domain
 - **Web框架**: Chi
 - **ORM**: Ent
 - **配置**: Viper
-- **日志**: Slog (Go 1.21+)
+- **日志**: Slog (Go 1.26+，支持 MultiHandler)
 - **依赖注入**: Wire
 - **数据库**: PostgreSQL (pgx), SQLite3
 - **可观测性**: OpenTelemetry (OTLP)

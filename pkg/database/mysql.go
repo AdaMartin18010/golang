@@ -90,15 +90,15 @@ func (m *mysql) Begin(ctx context.Context) (Transaction, error) {
 	return &transaction{tx: tx}, nil
 }
 
-func (m *mysql) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (m *mysql) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return m.db.ExecContext(ctx, query, args...)
 }
 
-func (m *mysql) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (m *mysql) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	return m.db.QueryContext(ctx, query, args...)
 }
 
-func (m *mysql) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
+func (m *mysql) QueryRow(ctx context.Context, query string, args ...any) *sql.Row {
 	return m.db.QueryRowContext(ctx, query, args...)
 }
 

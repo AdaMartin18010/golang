@@ -149,15 +149,15 @@ func (c ErrorCategory) HTTPStatus() int {
 //	    Retryable:  false,
 //	}
 type AppError struct {
-	Code       ErrorCode              `json:"code"`
-	Message    string                 `json:"message"`
-	Cause      error                  `json:"-"` // 不序列化到 JSON
-	Category   ErrorCategory          `json:"category"`
-	HTTPStatus int                    `json:"http_status"`
-	Details    map[string]interface{} `json:"details,omitempty"`
-	Timestamp  time.Time              `json:"timestamp"`
-	Retryable  bool                   `json:"retryable"`
-	TraceID    string                 `json:"trace_id,omitempty"`
+	Code       ErrorCode      `json:"code"`
+	Message    string         `json:"message"`
+	Cause      error          `json:"-"` // 不序列化到 JSON
+	Category   ErrorCategory  `json:"category"`
+	HTTPStatus int            `json:"http_status"`
+	Details    map[string]any `json:"details,omitempty"`
+	Timestamp  time.Time      `json:"timestamp"`
+	Retryable  bool           `json:"retryable"`
+	TraceID    string         `json:"trace_id,omitempty"`
 }
 
 // Error 实现 error 接口，返回错误的字符串表示。
@@ -214,9 +214,9 @@ func (e *AppError) Unwrap() error {
 //	err := errors.NewValidationError("Validation failed", nil).
 //	    WithDetails("field", "email").
 //	    WithDetails("reason", "invalid format")
-func (e *AppError) WithDetails(key string, value interface{}) *AppError {
+func (e *AppError) WithDetails(key string, value any) *AppError {
 	if e.Details == nil {
-		e.Details = make(map[string]interface{})
+		e.Details = make(map[string]any)
 	}
 	e.Details[key] = value
 	return e
@@ -357,7 +357,7 @@ func NewInvalidInputError(message string) *AppError {
 //	    "email": "invalid format",
 //	    "name":  "required",
 //	})
-func NewValidationError(message string, details map[string]interface{}) *AppError {
+func NewValidationError(message string, details map[string]any) *AppError {
 	return &AppError{
 		Code:       ErrCodeValidation,
 		Message:    message,

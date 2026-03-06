@@ -62,7 +62,7 @@ func TestEnvLoader(t *testing.T) {
 }
 
 func TestMapLoader(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"name": "test",
 		"port": 8080,
 	}

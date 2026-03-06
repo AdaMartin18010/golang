@@ -294,8 +294,8 @@ func GetPort(rawURL string) (string, error) {
 	}
 
 	host := u.Host
-	if idx := strings.Index(host, ":"); idx != -1 {
-		return host[idx+1:], nil
+	if _, after, ok := strings.Cut(host, ":"); ok {
+		return after, nil
 	}
 
 	// 根据协议返回默认端口

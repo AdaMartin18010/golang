@@ -12,7 +12,7 @@ import (
 
 // Loader 配置加载器接口
 type Loader interface {
-	Load(config interface{}) error
+	Load(config any) error
 }
 
 // FileLoader 文件配置加载器
@@ -26,7 +26,7 @@ func NewFileLoader(filename string) *FileLoader {
 }
 
 // Load 从文件加载配置
-func (l *FileLoader) Load(config interface{}) error {
+func (l *FileLoader) Load(config any) error {
 	data, err := os.ReadFile(l.filename)
 	if err != nil {
 		return fmt.Errorf("read config file: %w", err)
@@ -52,22 +52,22 @@ func NewEnvLoader(prefix string) *EnvLoader {
 }
 
 // Load 从环境变量加载配置
-func (l *EnvLoader) Load(config interface{}) error {
+func (l *EnvLoader) Load(config any) error {
 	return loadFromEnv(config, l.prefix)
 }
 
 // MapLoader Map配置加载器
 type MapLoader struct {
-	data map[string]interface{}
+	data map[string]any
 }
 
 // NewMapLoader 创建Map配置加载器
-func NewMapLoader(data map[string]interface{}) *MapLoader {
+func NewMapLoader(data map[string]any) *MapLoader {
 	return &MapLoader{data: data}
 }
 
 // Load 从Map加载配置
-func (l *MapLoader) Load(config interface{}) error {
+func (l *MapLoader) Load(config any) error {
 	return loadFromMap(config, l.data)
 }
 
@@ -82,7 +82,7 @@ func NewMultiLoader(loaders ...Loader) *MultiLoader {
 }
 
 // Load 从多个源加载配置（后面的会覆盖前面的）
-func (l *MultiLoader) Load(config interface{}) error {
+func (l *MultiLoader) Load(config any) error {
 	for _, loader := range l.loaders {
 		if err := loader.Load(config); err != nil {
 			return err
@@ -92,9 +92,9 @@ func (l *MultiLoader) Load(config interface{}) error {
 }
 
 // loadFromEnv 从环境变量加载配置
-func loadFromEnv(config interface{}, prefix string) error {
+func loadFromEnv(config any, prefix string) error {
 	val := reflect.ValueOf(config)
-	if val.Kind() != reflect.Ptr || val.Elem().Kind() != reflect.Struct {
+	if val.Kind() != reflect.Pointer || val.Elem().Kind() != reflect.Struct {
 		return errors.New("config must be a pointer to struct")
 	}
 
@@ -125,9 +125,9 @@ func loadFromEnv(config interface{}, prefix string) error {
 }
 
 // loadFromMap 从Map加载配置
-func loadFromMap(config interface{}, data map[string]interface{}) error {
+func loadFromMap(config any, data map[string]any) error {
 	val := reflect.ValueOf(config)
-	if val.Kind() != reflect.Ptr || val.Elem().Kind() != reflect.Struct {
+	if val.Kind() != reflect.Pointer || val.Elem().Kind() != reflect.Struct {
 		return errors.New("config must be a pointer to struct")
 	}
 
@@ -221,7 +221,7 @@ func setFieldValue(field reflect.Value, value string) error {
 }
 
 // setFieldValueFromInterface 设置字段值（从interface{}）
-func setFieldValueFromInterface(field reflect.Value, value interface{}) error {
+func setFieldValueFromInterface(field reflect.Value, value any) error {
 	val := reflect.ValueOf(value)
 
 	if val.Type().AssignableTo(field.Type()) {
@@ -252,19 +252,19 @@ func getFileExt(filename string) string {
 }
 
 // Load 从文件加载配置（便捷函数）
-func Load(filename string, config interface{}) error {
+func Load(filename string, config any) error {
 	loader := NewFileLoader(filename)
 	return loader.Load(config)
 }
 
 // LoadFromEnv 从环境变量加载配置（便捷函数）
-func LoadFromEnv(prefix string, config interface{}) error {
+func LoadFromEnv(prefix string, config any) error {
 	loader := NewEnvLoader(prefix)
 	return loader.Load(config)
 }
 
 // LoadFromMap 从Map加载配置（便捷函数）
-func LoadFromMap(data map[string]interface{}, config interface{}) error {
+func LoadFromMap(data map[string]any, config any) error {
 	loader := NewMapLoader(data)
 	return loader.Load(config)
 }

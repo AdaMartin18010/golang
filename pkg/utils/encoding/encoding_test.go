@@ -95,7 +95,7 @@ func TestStringToBool(t *testing.T) {
 }
 
 func TestJSONEncodeDecode(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"name": "test",
 		"age":  30,
 	}
@@ -105,7 +105,7 @@ func TestJSONEncodeDecode(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	var decoded map[string]interface{}
+	var decoded map[string]any
 	err = JSONDecode(encoded, &decoded)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)

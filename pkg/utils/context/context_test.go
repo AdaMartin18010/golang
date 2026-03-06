@@ -68,8 +68,7 @@ func TestGetBoolValue(t *testing.T) {
 }
 
 func TestSleep(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	err := Sleep(ctx, 100*time.Millisecond)
 	if err != nil {

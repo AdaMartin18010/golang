@@ -6,7 +6,7 @@ import (
 )
 
 func TestMarshalString(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"name": "test",
 		"age":  30,
 	}
@@ -23,7 +23,7 @@ func TestMarshalString(t *testing.T) {
 
 func TestUnmarshalString(t *testing.T) {
 	jsonStr := `{"name":"test","age":30}`
-	var result map[string]interface{}
+	var result map[string]any
 
 	err := UnmarshalString(jsonStr, &result)
 	if err != nil {
@@ -36,7 +36,7 @@ func TestUnmarshalString(t *testing.T) {
 }
 
 func TestPrettyPrint(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"name": "test",
 		"age":  30,
 	}
@@ -84,10 +84,10 @@ func TestSet(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	var obj map[string]interface{}
+	var obj map[string]any
 	Unmarshal(result, &obj)
 
-	user := obj["user"].(map[string]interface{})
+	user := obj["user"].(map[string]any)
 	if user["name"] != "new" {
 		t.Errorf("Expected 'new', got %v", user["name"])
 	}
@@ -102,7 +102,7 @@ func TestMerge(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	var obj map[string]interface{}
+	var obj map[string]any
 	Unmarshal(result, &obj)
 
 	if obj["a"] != float64(1) {
@@ -124,7 +124,7 @@ func TestFlatten(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	var obj map[string]interface{}
+	var obj map[string]any
 	Unmarshal(result, &obj)
 
 	if obj["user.name"] != "test" {
@@ -140,10 +140,10 @@ func TestUnflatten(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	var obj map[string]interface{}
+	var obj map[string]any
 	Unmarshal(result, &obj)
 
-	user := obj["user"].(map[string]interface{})
+	user := obj["user"].(map[string]any)
 	if user["name"] != "test" {
 		t.Errorf("Expected 'test', got %v", user["name"])
 	}
@@ -152,14 +152,14 @@ func TestUnflatten(t *testing.T) {
 func TestFilter(t *testing.T) {
 	data := []byte(`{"a":1,"b":2,"c":3}`)
 
-	result, err := Filter(data, func(k string, v interface{}) bool {
+	result, err := Filter(data, func(k string, v any) bool {
 		return k != "b"
 	})
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	var obj map[string]interface{}
+	var obj map[string]any
 	Unmarshal(result, &obj)
 
 	if _, exists := obj["b"]; exists {

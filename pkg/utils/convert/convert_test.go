@@ -140,7 +140,7 @@ func TestIsInteger(t *testing.T) {
 }
 
 func TestToMapStringString(t *testing.T) {
-	m := map[string]interface{}{
+	m := map[string]any{
 		"key1": "value1",
 		"key2": 42,
 	}

@@ -43,9 +43,9 @@ func NewSimpleSubject[T any]() *SimpleSubject[T] {
 func (s *SimpleSubject[T]) Subscribe(observer Observer[T]) func() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	s.observers = append(s.observers, observer)
-	
+
 	// 返回取消订阅函数
 	return func() {
 		s.Unsubscribe(observer)
@@ -56,7 +56,7 @@ func (s *SimpleSubject[T]) Subscribe(observer Observer[T]) func() {
 func (s *SimpleSubject[T]) Unsubscribe(observer Observer[T]) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	for i, obs := range s.observers {
 		if obs == observer {
 			s.observers = append(s.observers[:i], s.observers[i+1:]...)
@@ -71,7 +71,7 @@ func (s *SimpleSubject[T]) Notify(data T) {
 	observers := make([]Observer[T], len(s.observers))
 	copy(observers, s.observers)
 	s.mu.RUnlock()
-	
+
 	for _, observer := range observers {
 		observer.Update(data)
 	}
@@ -108,9 +108,9 @@ func NewAsyncSubject[T any]() *AsyncSubject[T] {
 func (s *AsyncSubject[T]) Subscribe(observer Observer[T]) func() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	s.observers = append(s.observers, observer)
-	
+
 	return func() {
 		s.Unsubscribe(observer)
 	}
@@ -120,7 +120,7 @@ func (s *AsyncSubject[T]) Subscribe(observer Observer[T]) func() {
 func (s *AsyncSubject[T]) Unsubscribe(observer Observer[T]) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	for i, obs := range s.observers {
 		if obs == observer {
 			s.observers = append(s.observers[:i], s.observers[i+1:]...)
@@ -135,7 +135,7 @@ func (s *AsyncSubject[T]) Notify(data T) {
 	observers := make([]Observer[T], len(s.observers))
 	copy(observers, s.observers)
 	s.mu.RUnlock()
-	
+
 	for _, observer := range observers {
 		go observer.Update(data)
 	}
@@ -177,12 +177,12 @@ func NewFilteredSubject[T any]() *FilteredSubject[T] {
 func (s *FilteredSubject[T]) Subscribe(observer Observer[T], filter func(T) bool) func() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	s.observers = append(s.observers, filteredObserver[T]{
 		observer: observer,
 		filter:   filter,
 	})
-	
+
 	return func() {
 		s.Unsubscribe(observer)
 	}
@@ -192,7 +192,7 @@ func (s *FilteredSubject[T]) Subscribe(observer Observer[T], filter func(T) bool
 func (s *FilteredSubject[T]) Unsubscribe(observer Observer[T]) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	for i, fo := range s.observers {
 		if fo.observer == observer {
 			s.observers = append(s.observers[:i], s.observers[i+1:]...)
@@ -207,7 +207,7 @@ func (s *FilteredSubject[T]) Notify(data T) {
 	observers := make([]filteredObserver[T], len(s.observers))
 	copy(observers, s.observers)
 	s.mu.RUnlock()
-	
+
 	for _, fo := range observers {
 		if fo.filter == nil || fo.filter(data) {
 			fo.observer.Update(data)
@@ -231,47 +231,47 @@ func (s *FilteredSubject[T]) Clear() {
 
 // EventBus 事件总线
 type EventBus struct {
-	subjects map[string]Subject[interface{}]
+	subjects map[string]Subject[any]
 	mu       sync.RWMutex
 }
 
 // NewEventBus 创建事件总线
 func NewEventBus() *EventBus {
 	return &EventBus{
-		subjects: make(map[string]Subject[interface{}]),
+		subjects: make(map[string]Subject[any]),
 	}
 }
 
 // Subscribe 订阅事件
-func (eb *EventBus) Subscribe(event string, observer Observer[interface{}]) func() {
+func (eb *EventBus) Subscribe(event string, observer Observer[any]) func() {
 	eb.mu.Lock()
 	subject, ok := eb.subjects[event]
 	if !ok {
-		subject = NewSimpleSubject[interface{}]()
+		subject = NewSimpleSubject[any]()
 		eb.subjects[event] = subject
 	}
 	eb.mu.Unlock()
-	
+
 	return subject.Subscribe(observer)
 }
 
 // Publish 发布事件
-func (eb *EventBus) Publish(event string, data interface{}) {
+func (eb *EventBus) Publish(event string, data any) {
 	eb.mu.RLock()
 	subject, ok := eb.subjects[event]
 	eb.mu.RUnlock()
-	
+
 	if ok {
 		subject.Notify(data)
 	}
 }
 
 // Unsubscribe 取消订阅
-func (eb *EventBus) Unsubscribe(event string, observer Observer[interface{}]) {
+func (eb *EventBus) Unsubscribe(event string, observer Observer[any]) {
 	eb.mu.RLock()
 	subject, ok := eb.subjects[event]
 	eb.mu.RUnlock()
-	
+
 	if ok {
 		subject.Unsubscribe(observer)
 	}
@@ -281,7 +281,7 @@ func (eb *EventBus) Unsubscribe(event string, observer Observer[interface{}]) {
 func (eb *EventBus) Clear(event string) {
 	eb.mu.Lock()
 	defer eb.mu.Unlock()
-	
+
 	if subject, ok := eb.subjects[event]; ok {
 		subject.Clear()
 	}
@@ -291,18 +291,17 @@ func (eb *EventBus) Clear(event string) {
 func (eb *EventBus) ClearAll() {
 	eb.mu.Lock()
 	defer eb.mu.Unlock()
-	
-	eb.subjects = make(map[string]Subject[interface{}])
+
+	eb.subjects = make(map[string]Subject[any])
 }
 
 // Count 获取指定事件的观察者数量
 func (eb *EventBus) Count(event string) int {
 	eb.mu.RLock()
 	defer eb.mu.RUnlock()
-	
+
 	if subject, ok := eb.subjects[event]; ok {
 		return subject.Count()
 	}
 	return 0
 }
-

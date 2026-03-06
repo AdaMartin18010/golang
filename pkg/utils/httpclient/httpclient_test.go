@@ -49,7 +49,7 @@ func TestClient_Post(t *testing.T) {
 		Timeout: 5 * time.Second,
 	})
 
-	body := map[string]interface{}{
+	body := map[string]any{
 		"name": "test",
 	}
 
@@ -95,7 +95,7 @@ func TestResponse_JSON(t *testing.T) {
 		Body:       []byte(`{"name":"test","age":30}`),
 	}
 
-	var result map[string]interface{}
+	var result map[string]any
 	err := resp.JSON(&result)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)

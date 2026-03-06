@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"net/url"
 	"strings"
@@ -22,10 +23,10 @@ type Client struct {
 
 // Config 客户端配置
 type Config struct {
-	BaseURL    string
-	Timeout    time.Duration
-	Headers    map[string]string
-	Transport  *http.Transport
+	BaseURL   string
+	Timeout   time.Duration
+	Headers   map[string]string
+	Transport *http.Transport
 }
 
 // NewClient 创建HTTP客户端
@@ -63,9 +64,7 @@ func (c *Client) SetHeaders(headers map[string]string) {
 	if c.headers == nil {
 		c.headers = make(map[string]string)
 	}
-	for k, v := range headers {
-		c.headers[k] = v
-	}
+	maps.Copy(c.headers, headers)
 }
 
 // Get 发送GET请求
@@ -74,12 +73,12 @@ func (c *Client) Get(ctx context.Context, path string, params map[string]string)
 }
 
 // Post 发送POST请求
-func (c *Client) Post(ctx context.Context, path string, body interface{}, headers map[string]string) (*Response, error) {
+func (c *Client) Post(ctx context.Context, path string, body any, headers map[string]string) (*Response, error) {
 	return c.Request(ctx, "POST", path, nil, body, headers)
 }
 
 // Put 发送PUT请求
-func (c *Client) Put(ctx context.Context, path string, body interface{}, headers map[string]string) (*Response, error) {
+func (c *Client) Put(ctx context.Context, path string, body any, headers map[string]string) (*Response, error) {
 	return c.Request(ctx, "PUT", path, nil, body, headers)
 }
 
@@ -89,7 +88,7 @@ func (c *Client) Delete(ctx context.Context, path string, params map[string]stri
 }
 
 // Patch 发送PATCH请求
-func (c *Client) Patch(ctx context.Context, path string, body interface{}, headers map[string]string) (*Response, error) {
+func (c *Client) Patch(ctx context.Context, path string, body any, headers map[string]string) (*Response, error) {
 	return c.Request(ctx, "PATCH", path, nil, body, headers)
 }
 
@@ -98,7 +97,7 @@ func (c *Client) Request(
 	ctx context.Context,
 	method, path string,
 	params map[string]string,
-	body interface{},
+	body any,
 	headers map[string]string,
 ) (*Response, error) {
 	// 构建URL
@@ -197,7 +196,7 @@ type Response struct {
 }
 
 // JSON 将响应体解析为JSON
-func (r *Response) JSON(v interface{}) error {
+func (r *Response) JSON(v any) error {
 	return json.Unmarshal(r.Body, v)
 }
 
@@ -232,12 +231,12 @@ func Get(ctx context.Context, url string, params map[string]string) (*Response, 
 }
 
 // Post 使用默认客户端发送POST请求
-func Post(ctx context.Context, url string, body interface{}) (*Response, error) {
+func Post(ctx context.Context, url string, body any) (*Response, error) {
 	return DefaultClient.Post(ctx, url, body, nil)
 }
 
 // Put 使用默认客户端发送PUT请求
-func Put(ctx context.Context, url string, body interface{}) (*Response, error) {
+func Put(ctx context.Context, url string, body any) (*Response, error) {
 	return DefaultClient.Put(ctx, url, body, nil)
 }
 
