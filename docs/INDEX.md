@@ -31,13 +31,13 @@
 
 **核心文档**:
 
-- 🎯 **[Go 1.26 综合技术指南](./go126-comprehensive-guide/README.md)** - 46章完全指南 🆕
-- 📚 **[Go 1.26 特性详解](./reference/versions/06-Go-1.26特性/README.md)** - 版本特性完全指南 🆕
-  - [语言变化详解](./reference/versions/06-Go-1.26特性/01-语言变化详解.md) - new(expr) + 递归泛型
-  - [标准库新增](./reference/versions/06-Go-1.26特性/02-标准库新增.md) - crypto/hpke + simd + secret
-  - [工具改进](./reference/versions/06-Go-1.26特性/03-工具改进.md) - go fix Modernizers
-  - [性能优化](./reference/versions/06-Go-1.26特性/04-性能优化.md) - Green Tea GC + cgo 优化
-  - [迁移指南](./reference/versions/06-Go-1.26特性/05-迁移指南.md) - 1.25 → 1.26 迁移
+- 📚 **[Go 1.26 完全梳理](./reference/versions/06-Go-1.26特性/README.md)** - 版本特性完全指南 🆕⭐⭐⭐⭐⭐
+  - [Go-1.26-完全梳理.md](./reference/versions/06-Go-1.26特性/Go-1.26-完全梳理.md) - 主文档: 概念定义+形式论证+完整示例
+  - [思维表征图表.md](./reference/versions/06-Go-1.26特性/思维表征图表.md) - 12种可视化: 思维导图+决策树+场景树
+  - [100-检查清单.md](./reference/versions/06-Go-1.26特性/100-检查清单.md) - 官方特性100%覆盖验证
+- 📋 **[文档结构与主题映射](./文档结构与主题映射总览.md)** - 全局文档结构梳理 🆕
+- 🎯 **[主题文档精确映射](./主题文档精确映射.md)** - 概念到文档的精确导航 🆕
+- 🗺️ **[知识图谱统一视图](./知识图谱统一视图.md)** - 全局知识关联图 🆕
 
 **Go 1.26 新特性**:
 
