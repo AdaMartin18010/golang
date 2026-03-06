@@ -1,7 +1,7 @@
 ﻿# 📦 安装指南
 
 **版本**: v1.0
-**更新日期**: 2025-11-11
+**更新日期**: 2026-03-06
 **适用于**: v2.0.0
 
 ---
@@ -46,7 +46,7 @@
 - [永久添加（Windows）](#永久添加windows)
   - [✅ 验证安装](#验证安装)
 - [检查Go版本](#检查go版本)
-- [输出: go version go1.25.3 ...](#输出-go-version-go1253)
+- [输出: go version go1.26 ...](#输出-go-version-go1253)
 - [检查Go环境](#检查go环境)
 - [列出已安装的包](#列出已安装的包)
 - [查看包信息](#查看包信息)
@@ -93,7 +93,7 @@
 
 | 组件 | 最低版本 | 推荐版本 |
 |------|---------|----------|
-| Go | 1.25.3 | 1.25.3+ |
+| Go | 1.26 | 1.26+ |
 | 操作系统 | - | Windows 10+, Linux 4.0+, macOS 10.15+ |
 | 内存 | 512MB | 2GB+ |
 | 磁盘空间 | 100MB | 500MB+ |
@@ -236,7 +236,7 @@ docker pull yourusername/golang:v2.0.0
 创建 `Dockerfile`:
 
 ```dockerfile
-FROM golang:1.25.3-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
 
@@ -340,7 +340,7 @@ $env:Path += ";$env:GOPATH\bin"
 ```bash
 # 检查Go版本
 go version
-# 输出: go version go1.25.3 ...
+# 输出: go version go1.26 ...
 
 # 检查Go环境
 go env
@@ -454,7 +454,7 @@ go work sync
 ### GoLand
 
 1. 打开设置: `File` > `Settings` > `Go`
-2. 配置GOROOT指向Go 1.25.3
+2. 配置GOROOT指向Go 1.26
 3. 配置GOPATH
 4. 启用Go Modules: `Go` > `Go Modules` > `Enable Go Modules integration`
 
@@ -542,7 +542,7 @@ export PATH=$PATH:$GOPATH/bin
 # 检查Go版本
 go version
 
-# 必须是1.25.3+
+# 必须是1.26+
 # 如果版本过低，升级Go
 
 # 验证依赖

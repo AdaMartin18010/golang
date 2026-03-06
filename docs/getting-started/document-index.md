@@ -1,8 +1,8 @@
 ﻿# 📚 文档导航总索引
 
 **版本**: v1.0
-**更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**更新日期**: 2026-03-06
+**适用于**: Go 1.26
 
 ---
 
@@ -82,7 +82,7 @@
 
 | 文档 | 说明 | 推荐人群 |
 |------|------|----------|
-| **[RESTRUCTURE_PROPOSAL_GO1.25.3.md](RESTRUCTURE_PROPOSAL_GO1.25.3.md)** | 完整重构方案 | 技术人员 |
+| **[RESTRUCTURE_PROPOSAL_GO1.26.md](RESTRUCTURE_PROPOSAL_GO1.25.3.md)** | 完整重构方案 | 技术人员 |
 | **[RESTRUCTURE.md](RESTRUCTURE.md)** | 重构说明 | 管理者 |
 | **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** | 实施总结 | 管理者 |
 | **[目录结构对比-重构前后.md](目录结构对比-重构前后.md)** | 结构对比 | 技术人员 |

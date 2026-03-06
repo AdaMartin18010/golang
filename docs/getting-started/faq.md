@@ -1,8 +1,8 @@
 ﻿# ❓ 常见问题解答 (FAQ)
 
 **版本**: v1.0
-**更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**更新日期**: 2026-03-06
+**适用于**: Go 1.26
 
 ---
 
@@ -42,7 +42,7 @@
 
 ---
 
-## 🆕 工具相关问题 (2025-10-25新增)
+## 🆕 工具相关问题 (2026-03-06新增)
 
 ### Q26: 如何快速分析Go项目代码质量？
 
@@ -808,7 +808,7 @@ CGO_ENABLED=0 GOOS=linux go build -o myapp
 **方式2: Docker部署**:
 
 ```dockerfile
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26-alpine AS builder
 WORKDIR /app
 COPY . .
 RUN go build -o myapp
@@ -832,7 +832,7 @@ CMD ["/myapp"]
 
 ```dockerfile
 # 多阶段构建
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26-alpine AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download

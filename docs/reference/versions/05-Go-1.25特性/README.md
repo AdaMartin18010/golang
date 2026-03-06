@@ -2,7 +2,7 @@
 
 **版本**: v1.0
 **更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**适用于**: Go 1.26
 
 ---
 
@@ -222,7 +222,7 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: myapp:go1.25
+        image: myapp:go1.26
         resources:
           limits:
             cpu: "2"  # Go 1.25自动适配

@@ -1,8 +1,8 @@
 ﻿# 📖 Go语言术语表
 
 **版本**: v1.0
-**更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**更新日期**: 2026-03-06
+**适用于**: Go 1.26
 
 ---
 
@@ -35,7 +35,7 @@
 
 ## 📑 索引
 
-[A][W](#w)bly-system-interface) | [B](#b) | [C](#c) | [D](#d) | [E](#e) | [F](#f) | [G](#g) | [H](#h) | [I](#fan-in-扇入) | [J](#j) | [K](#k) | [L](#l) | [M](#m)l-mapping) | [P](#p)读写锁) | [S](#s)| [T](#t)✨ | [V](#servi[F](#f) [W](#w)tex-Mutex) | [H](#h)teway-a[I](#i)o-profile-g[J](#j)*✨ = Go 1.25.3 新增内容*[K](#k)
+[A][W](#w)bly-system-interface) | [B](#b) | [C](#c) | [D](#d) | [E](#e) | [F](#f) | [G](#g) | [H](#h) | [I](#fan-in-扇入) | [J](#j) | [K](#k) | [L](#l) | [M](#m)l-mapping) | [P](#p)读写锁) | [S](#s)| [T](#t)✨ | [V](#servi[F](#f) [W](#w)tex-Mutex) | [H](#h)teway-a[I](#i)o-profile-g[J](#j)*✨ = Go 1.26 新增内容*[K](#k)
 
 ### API Gateway (API网关)
 
@@ -176,12 +176,12 @@ type Employee struct {
 **定义**: Go 1.18+引入的类型参数化特性
 **语法**: `func Print[T any](s []T)`
 **约束**: `any`, `comparable`, 自定义约束
-**增强**: Go 1.25.3支持泛型类型别名
+**增强**: Go 1.26支持泛型类型别名
 **相关文档**: [泛型编程](01-语言基础/01-语法基础/09-泛型编程.md)
 
 ### GOAUTH
 
-**定义**: Go 1.25.3新增的私有模块认证环境变量
+**定义**: Go 1.26新增的私有模块认证环境变量
 **作用**: 配置私有仓库访问凭证
 **替代**: 取代 `~/.netrc` 配置方式
 **相关文档**: [Go 1.25特性](10-Go版本特性/05-Go-1.25特性/README.md)
@@ -191,7 +191,7 @@ type Employee struct {
 **定义**: Go官方依赖管理工具
 **文件**: `go.mod`, `go.sum`
 **命令**: `go mod init`, `go mod tidy`
-**tool指令**: Go 1.25.3新增tool依赖声明（如golangci-lint）
+**tool指令**: Go 1.26新增tool依赖声明（如golangci-lint）
 **相关文档**: [模块管理](01-语言基础/03-模块管理/README.md)
 
 ### Goroutine (Goroutine)
@@ -502,7 +502,7 @@ type Person struct {
 **Go支持**: `GOOS=wasip1 GOARCH=wasm`
 **工具**: TinyGo（生成更小体积10-100KB）
 **应用**: 前端计算、边缘计算
-**相关文档**: [新兴技术应用](11-高级专题/00-Go-1.25.3新兴技术应用-2025.md)
+**相关文档**: [新兴技术应用](11-高级专题/00-Go-1.26新兴技术应用-2026.md)
 
 ### WASI (WebAssembly System Interface)
 
@@ -510,7 +510,7 @@ type Person struct {
 **Go 1.21+**: 支持`GOOS=wasip1`
 **特性**: 访问文件系统、网络、环境变量
 **用途**: 服务器端WASM、命令行工具
-**相关文档**: [新兴技术应用](11-高级专题/00-Go-1.25.3新兴技术应用-2025.md)
+**相关文档**: [新兴技术应用](11-高级专题/00-Go-1.26新兴技术应用-2026.md)
 
 ### Worker Pool (工作池)
 

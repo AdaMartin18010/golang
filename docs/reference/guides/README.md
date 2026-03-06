@@ -2,7 +2,7 @@
 
 **版本**: v1.0
 **更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**适用于**: Go 1.26
 
 ---
 
@@ -63,9 +63,9 @@
 ### 第一步：环境搭建
 
 ```bash
-# 安装Go 1.25.3
-wget https://go.dev/dl/go1.25.3.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf go1.25.3.linux-amd64.tar.gz
+# 安装Go 1.26
+wget https://go.dev/dl/go1.26.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.26.linux-amd64.tar.gz
 
 # 配置环境变量
 export PATH=$PATH:/usr/local/go/bin
@@ -80,7 +80,7 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("Hello, Go 1.25.3!")
+    fmt.Println("Hello, Go 1.26!")
 }
 ```
 

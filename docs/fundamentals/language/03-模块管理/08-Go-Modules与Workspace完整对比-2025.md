@@ -2,7 +2,7 @@
 
 **版本**: v1.0
 **更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**适用于**: Go 1.26
 
 ---
 
@@ -495,7 +495,7 @@ tools/
 
 #### 测试环境
 
-- Go 1.25.3
+- Go 1.26
 - 项目: 10个模块，共5000个文件
 - 机器: 8核CPU, 16GB RAM
 
@@ -604,7 +604,7 @@ du -sh .
 
 - [Go Modules Reference](https://go.dev/ref/mod)
 - [Workspace Tutorial](https://go.dev/doc/tutorial/workspaces)
-- [Go 1.25 Release Notes](https://go.dev/doc/go1.25)
+- [Go 1.26 Release Notes](https://go.dev/doc/go1.26)
 
 ### 5.3 最佳实践
 

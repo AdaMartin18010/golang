@@ -2,7 +2,7 @@
 
 **版本**: v1.0
 **更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**适用于**: Go 1.26
 
 ---
 
@@ -356,7 +356,7 @@ log.SetOutput(file)
 ## 📚 相关资源
 
 - [Go Standard Library](https://pkg.go.dev/std)
-- [Go 1.25.3 Documentation](https://go.dev/doc/)
+- [Go 1.26 Documentation](https://go.dev/doc/)
 - [Effective Go](https://go.dev/doc/effective_go)
 
 ---

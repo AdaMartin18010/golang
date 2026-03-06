@@ -2,7 +2,7 @@
 
 ## 前置要求
 
-- Go 1.25.3+
+- Go 1.26+
 - PostgreSQL 15+
 - Docker (可选)
 

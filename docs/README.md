@@ -45,11 +45,11 @@ New to Go? Start here:
 
 - 🎯 **[Go 1.26 综合技术指南](./go126-comprehensive-guide/README.md)** - Go 1.26 完全指南 ⭐⭐⭐⭐⭐ 🆕
 - 🎯 **[Go 1.26 特性详解](./reference/versions/06-Go-1.26特性/README.md)** - 版本特性完全指南 ⭐⭐⭐⭐⭐ 🆕
-- 🎯 **[Go 1.25.3完整知识体系总览](./00-Go-1.25.3完整知识体系总览-2025.md)** - 系统化总领文档 ⭐⭐⭐⭐⭐ 🆕
-- 📚 **[快速参考手册](./📚-Go-1.25.3快速参考手册-2025.md)** - 日常开发速查利器 ⭐⭐⭐⭐⭐ 🆕
-- ✅ **[学习检查清单](./✅-Go-1.25.3学习检查清单-2025.md)** - 追踪学习进度 ⭐⭐⭐⭐⭐ 🆕
-- 🎯 **[实战开发导航](./🎯-Go-1.25.3实战开发导航-2025.md)** - 快速定位实战文档 ⭐⭐⭐⭐⭐ 🆕
-- ❓ **[常见问题解决](./❓-Go-1.25.3常见问题解决方案-2025.md)** - 快速解决开发问题 ⭐⭐⭐⭐⭐ 🆕
+- 🎯 **[Go 1.26完整知识体系总览](./00-Go-1.25.3完整知识体系总览-2025.md)** - 系统化总领文档 ⭐⭐⭐⭐⭐ 🆕
+- 📚 **[快速参考手册](./📚-Go-1.26快速参考手册-2026.md)** - 日常开发速查利器 ⭐⭐⭐⭐⭐ 🆕
+- ✅ **[学习检查清单](./✅-Go-1.26学习检查清单-2026.md)** - 追踪学习进度 ⭐⭐⭐⭐⭐ 🆕
+- 🎯 **[实战开发导航](./🎯-Go-1.26实战开发导航-2026.md)** - 快速定位实战文档 ⭐⭐⭐⭐⭐ 🆕
+- ❓ **[常见问题解决](./❓-Go-1.26常见问题解决方案-2026.md)** - 快速解决开发问题 ⭐⭐⭐⭐⭐ 🆕
 - **[Getting Started](./getting-started/)** - Installation, quick starts, and FAQs
 - **[Quick Start (3 min)](./getting-started/quick-start-3min.md)** - Get up and running fast
 - **[Installation Guide](./getting-started/installation.md)** - Setup your environment
@@ -73,7 +73,7 @@ New to Go? Start here:
 - 🔍 **[概念定义体系](./architecture/00-概念定义体系.md)** - 概念定义体系 ⭐⭐⭐⭐
 - 📖 **[技术对比矩阵](./architecture/00-对比矩阵.md)** - 技术选型对比 ⭐⭐⭐
 - 🔧 **[技术栈文档索引](./architecture/tech-stack/README.md)** - 技术栈文档索引（已拆分） ⭐⭐⭐⭐
-- 🚀 **[Go 1.25.3 技术栈对齐](./architecture/00-Go-1.25.3技术栈对齐.md)** - 技术栈对齐 ⭐⭐⭐
+- 🚀 **[Go 1.26 技术栈对齐](./architecture/00-Go-1.26技术栈对齐.md)** - 技术栈对齐 ⭐⭐⭐
 
 **架构文档特点**:
 
@@ -107,7 +107,7 @@ New to Go? Start here:
 
 ### 📖 [Fundamentals](./fundamentals/)
 
-Master the core concepts of Go 1.25.3:
+Master the core concepts of Go 1.26:
 
 - **[Language](./fundamentals/language/)** - Syntax, semantics, and formal theory
 - **[Concurrency](./fundamentals/concurrency/)** - Goroutines, channels, and patterns ⭐ 新增
@@ -167,11 +167,11 @@ Quick references and resources:
 
 ### 核心导航文档 🆕
 
-- 🎯 **[完整知识体系总览](./00-Go-1.25.3完整知识体系总览-2025.md)** - 系统化总领 ⭐⭐⭐⭐⭐
-- 📚 **[快速参考手册](./📚-Go-1.25.3快速参考手册-2025.md)** - 日常速查 ⭐⭐⭐⭐⭐
-- ✅ **[学习检查清单](./✅-Go-1.25.3学习检查清单-2025.md)** - 进度追踪 ⭐⭐⭐⭐⭐
-- 🎯 **[实战开发导航](./🎯-Go-1.25.3实战开发导航-2025.md)** - 精准定位 ⭐⭐⭐⭐⭐
-- ❓ **[常见问题解决](./❓-Go-1.25.3常见问题解决方案-2025.md)** - 快速解决 ⭐⭐⭐⭐⭐
+- 🎯 **[完整知识体系总览](./00-Go-1.26完整知识体系总览-2026.md)** - 系统化总领 ⭐⭐⭐⭐⭐
+- 📚 **[快速参考手册](./📚-Go-1.26快速参考手册-2026.md)** - 日常速查 ⭐⭐⭐⭐⭐
+- ✅ **[学习检查清单](./✅-Go-1.26学习检查清单-2026.md)** - 进度追踪 ⭐⭐⭐⭐⭐
+- 🎯 **[实战开发导航](./🎯-Go-1.26实战开发导航-2026.md)** - 精准定位 ⭐⭐⭐⭐⭐
+- ❓ **[常见问题解决](./❓-Go-1.26常见问题解决方案-2026.md)** - 快速解决 ⭐⭐⭐⭐⭐
 
 ### 其他导航
 
@@ -184,7 +184,7 @@ Quick references and resources:
 
 ## 🌟 Key Features
 
-✅ **100% Go 1.25.3 Focused** - All content is specific to Go 1.25.3
+✅ **100% Go 1.26 Focused** - All content is specific to Go 1.26
 ✅ **Modern Structure** - Functional organization for easy navigation
 ✅ **Comprehensive** - From basics to advanced topics
 ✅ **Production Ready** - Tested patterns and best practices
@@ -195,8 +195,8 @@ Quick references and resources:
 
 ## 📖 Popular Topics
 
-- [Go 1.25.3 New Features](./reference/versions/05-Go-1.25特性/)
-- [Go Workspace完整指南](./fundamentals/language/03-模块管理/07-Go-Workspace完整指南-Go1.25.3.md) ⭐ 2025最新
+- [Go 1.26 New Features](./reference/versions/06-Go-1.26特性/)
+- [Go Workspace完整指南](./fundamentals/language/03-模块管理/07-Go-Workspace完整指南-Go1.26.md) ⭐ 2025最新
 - [Modules与Workspace对比](./fundamentals/language/03-模块管理/08-Go-Modules与Workspace完整对比-2025.md) ⭐ 新增
 - [Iterators Deep Dive](./reference/versions/03-Go-1.23特性/01-迭代器详解.md)
 - [Performance Optimization](./advanced/performance/)
@@ -221,7 +221,7 @@ Quick references and resources:
 **实用文档体系**:
 
 - ✅ **[快速参考手册](./📚-Go-1.25.3快速参考手册-2025.md)** - 8,000+字速查手册
-- ✅ **[学习检查清单](./✅-Go-1.25.3学习检查清单-2025.md)** - 150+任务清单
+- ✅ **[学习检查清单](./✅-Go-1.26学习检查清单-2026.md)** - 150+任务清单
 - ✅ **[实战开发导航](./🎯-Go-1.25.3实战开发导航-2025.md)** - 100+实战主题
 - ✅ **[常见问题解决](./❓-Go-1.25.3常见问题解决方案-2025.md)** - 19个常见问题
 

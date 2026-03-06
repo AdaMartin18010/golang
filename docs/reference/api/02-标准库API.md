@@ -2,7 +2,7 @@
 
 **版本**: v1.0
 **更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**适用于**: Go 1.26
 
 ---
 
@@ -428,7 +428,7 @@ for {
 ## 📚 相关资源
 
 - [Standard Library Documentation](https://pkg.go.dev/std)
-- [Go 1.25.3 Release Notes](https://go.dev/doc/go1.25)
+- [Go 1.26 Release Notes](https://go.dev/doc/go1.26)
 - [Effective Go](https://go.dev/doc/effective_go)
 
 ---

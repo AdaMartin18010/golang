@@ -285,7 +285,7 @@ graph TB
 graph TB
     subgraph "技术栈关系网络"
         subgraph "核心层"
-            Go[Go 1.25.3]
+            Go[Go 1.26]
         end
 
         subgraph "接口层"
@@ -775,7 +775,7 @@ graph TB
 graph TB
     subgraph "Go Clean Architecture 知识图谱"
         subgraph "基础层"
-            Go[Go 1.25.3]
+            Go[Go 1.26]
             GoSyntax[语法基础]
             GoConcurrency[并发模型]
             GoModule[模块管理]

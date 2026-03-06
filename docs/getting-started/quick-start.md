@@ -1,8 +1,8 @@
 ﻿# 🚀 快速开始指南
 
 **版本**: v1.0
-**更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**更新日期**: 2026-03-06
+**适用于**: Go 1.26
 
 ---
 
@@ -10,7 +10,7 @@
 
 - [🚀 快速开始指南](#快速开始指南)
   - [安装Go](#安装go)
-- [输出: go version go1.25.x windows/amd64](#输出-go-version-go125x-windowsamd64)
+- [输出: go version go1.26.x windows/amd64](#输出-go-version-go125x-windowsamd64)
 - [设置GOPATH (可选，Go 1.11+已启用Go Modules)](#设置gopath-可选go-111已启用go-modules)
 - [设置Go代理 (国内用户推荐)](#设置go代理-国内用户推荐)
   - [第一个Go程序](#第一个go程序)
@@ -52,7 +52,7 @@
    https://go.dev/dl/
    ```
 
-   下载 `go1.25.x.windows-amd64.msi`
+   下载 `go1.26.x.windows-amd64.msi`
 
 2. **安装**
    - 双击运行安装包
@@ -62,7 +62,7 @@
 
    ```powershell
    go version
-   # 输出: go version go1.25.x windows/amd64
+   # 输出: go version go1.26.x windows/amd64
    ```
 
 ### macOS
@@ -79,7 +79,7 @@
    https://go.dev/dl/
    ```
 
-   下载 `go1.25.x.darwin-amd64.pkg` (Intel) 或 `go1.25.x.darwin-arm64.pkg` (M1/M2)
+   下载 `go1.26.x.darwin-amd64.pkg` (Intel) 或 `go1.26.x.darwin-arm64.pkg` (M1/M2)
 
 3. **验证安装**
 
@@ -92,9 +92,9 @@
 1. **下载并解压**
 
    ```bash
-   wget https://go.dev/dl/go1.25.x.linux-amd64.tar.gz
+   wget https://go.dev/dl/go1.26.x.linux-amd64.tar.gz
    sudo rm -rf /usr/local/go
-   sudo tar -C /usr/local -xzf go1.25.x.linux-amd64.tar.gz
+   sudo tar -C /usr/local -xzf go1.26.x.linux-amd64.tar.gz
    ```
 
 2. **配置环境变量**

@@ -4,7 +4,7 @@
 
 **版本**: v1.0
 **更新日期**: 2025-11-11
-**适用于**: Go 1.25.3
+**适用于**: Go 1.26
 
 ---
 
@@ -99,7 +99,7 @@
 
 ### 版本发布
 
-- [Go 1.25 Release Notes](https://go.dev/doc/go1.25)
+- [Go 1.26 Release Notes](https://go.dev/doc/go1.26)
 - [Go 1.24 Release Notes](https://go.dev/doc/go1.24)
 - [Go 1.23 Release Notes](https://go.dev/doc/go1.23)
 - [Go 1.22 Release Notes](https://go.dev/doc/go1.22)
