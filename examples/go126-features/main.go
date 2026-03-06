@@ -40,23 +40,21 @@ func (c Config) WithName(name string) Config {
 	return c
 }
 
-// demonstrateNewExpression shows Go 1.26 new() with expressions feature
+// demonstrateNewExpression shows Go 1.26 new() clarifications
+// Note: Go 1.26 does NOT support new(expression), this is a common misconception
+// The actual change is that new() is better optimized for stack allocation
 func demonstrateNewExpression() {
-	fmt.Println("=== Feature 1: new() with expressions ===")
+	fmt.Println("=== Feature 1: new() clarifications ===")
+	fmt.Println("NOTE: Go 1.26 does NOT support new(expression)")
+	fmt.Println("The actual improvements are:")
+	fmt.Println("1. Better stack allocation for small objects")
+	fmt.Println("2. Optimized escape analysis")
+	fmt.Println()
 
-	// Before Go 1.26: need intermediate variable
-	config := NewConfig()
-	config.Name = "myapp"
-	ptr1 := config
-	fmt.Printf("Old way: %+v\n", ptr1)
-
-	// Go 1.26: new() accepts expressions
-	// Note: This only works with types, not function return values
-	// So we demonstrate with a simple expression
-	value := 42
-	ptr2 := new(int)
-	*ptr2 = value * 2
-	fmt.Printf("New way (pointer to int): %d\n", *ptr2)
+	// Traditional usage (still the only way)
+	ptr := new(int)
+	*ptr = 42
+	fmt.Printf("Traditional new() usage: %d\n", *ptr)
 
 	// Practical use case: optional fields in JSON
 	type User struct {
@@ -64,15 +62,14 @@ func demonstrateNewExpression() {
 		Age  *int `json:"age,omitempty"`
 	}
 
-	// Go 1.26: Simplified optional field creation
+	// Traditional way (still valid)
 	age := 25
 	user := User{
 		Name: "Alice",
-		Age:  new(int), // Can now use expressions like new(25) if 25 is a const
+		Age:  &age, // Use address of variable
 	}
-	*user.Age = age
 
-	fmt.Printf("User: %+v\n", user)
+	fmt.Printf("User with pointer field: Name=%s, Age=%d\n", user.Name, *user.Age)
 	fmt.Println()
 }
 
@@ -205,7 +202,7 @@ func demonstrateGenericSelfReference() {
 
 func main() {
 	fmt.Println("Go 1.26 Features Demo")
-	fmt.Println("====================\n")
+	fmt.Println("====================")
 
 	demonstrateNewExpression()
 	demonstrateErrorsAsType()
