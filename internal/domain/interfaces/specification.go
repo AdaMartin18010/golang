@@ -58,6 +58,15 @@ type Specification[T any] interface {
 	// 2. 验证业务规则
 	// 3. 单元测试规约逻辑
 	IsSatisfiedBy(entity *T) bool
+
+	// And 与操作 - 返回同时满足当前规约和其他规约的组合规约
+	And(other Specification[T]) Specification[T]
+
+	// Or 或操作 - 返回满足当前规约或其他规约的组合规约
+	Or(other Specification[T]) Specification[T]
+
+	// Not 非操作 - 返回当前规约的否定规约
+	Not() Specification[T]
 }
 
 // CompositeSpecification 组合规约接口

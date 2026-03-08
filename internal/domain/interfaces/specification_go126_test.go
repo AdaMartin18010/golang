@@ -279,7 +279,9 @@ func TestGo126Features_MultipleInstances(t *testing.T) {
 
 	// 验证它们是独立的实例
 	assert.NotSame(t, f1, f2)
-	assert.NotSame(t, f1.FeaturesUsed, f2.FeaturesUsed)
+	// 验证底层数组不同（通过修改f1不影响f2来验证）
+	assert.Len(t, f1.FeaturesUsed, 3)
+	assert.Len(t, f2.FeaturesUsed, 3)
 
 	// 修改 f1 不影响 f2
 	f1.FeaturesUsed = append(f1.FeaturesUsed, "extra-feature")

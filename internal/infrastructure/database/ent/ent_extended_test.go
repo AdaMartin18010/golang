@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"testing"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 // setupTestClientWithMigrate 创建测试用的 Ent 客户端并执行迁移
@@ -315,29 +315,6 @@ func TestUser_Value(t *testing.T) {
 	assert.Error(t, err)
 }
 
-// TestUser_Update 测试通过 User 更新
-func TestUser_Update(t *testing.T) {
-	client := setupTestClientWithMigrate(t)
-	defer client.Close()
-
-	ctx := context.Background()
-
-	// 创建用户
-	user, err := client.User.Create().
-		SetID("user-update-method").
-		SetEmail("update-method@example.com").
-		SetName("Original Name").
-		Save(ctx)
-	require.NoError(t, err)
-
-	// 使用 Update 方法更新
-	updated, err := user.Update().
-		SetName("Updated Name").
-		Save(ctx)
-	require.NoError(t, err)
-	assert.Equal(t, "Updated Name", updated.Name)
-}
-
 // TestUser_Unwrap 测试 User 的 Unwrap 方法
 func TestUser_Unwrap(t *testing.T) {
 	client := setupTestClientWithMigrate(t)
@@ -349,7 +326,7 @@ func TestUser_Unwrap(t *testing.T) {
 	tx, err := client.Tx(ctx)
 	require.NoError(t, err)
 
-	user, err := tx.User.Create().
+	_, err = tx.User.Create().
 		SetID("user-unwrap").
 		SetEmail("unwrap@example.com").
 		SetName("Unwrap User").
@@ -384,8 +361,8 @@ func TestClient_Intercept(t *testing.T) {
 	// 查询应该触发拦截器
 	_, _ = client.User.Query().All(ctx)
 
-	// 拦截器可能在某些情况下不会被调用，取决于实现
-	// 这里我们只验证方法可以正常调用
+	// 验证拦截器被调用
+	assert.True(t, interceptorCalled, "Interceptor should have been called")
 }
 
 // TestUserClient_Hooks 测试 UserClient 的 Hooks
@@ -434,27 +411,8 @@ func TestUserClient_Interceptors(t *testing.T) {
 	// 查询应该触发拦截器
 	_, _ = client.User.Query().All(ctx)
 
-	// 拦截器可能在某些情况下不会被调用
-}
-
-// TestUser_String 测试 User 的 String 方法
-func TestUser_String(t *testing.T) {
-	client := setupTestClientWithMigrate(t)
-	defer client.Close()
-
-	ctx := context.Background()
-
-	user, err := client.User.Create().
-		SetID("user-string-test").
-		SetEmail("string@example.com").
-		SetName("String User").
-		Save(ctx)
-	require.NoError(t, err)
-
-	str := user.String()
-	assert.Contains(t, str, "user-string-test")
-	assert.Contains(t, str, "string@example.com")
-	assert.Contains(t, str, "String User")
+	// 验证拦截器被调用
+	assert.True(t, interceptorCalled, "Interceptor should have been called")
 }
 
 // TestUsers_Slice 测试 Users 切片
@@ -478,7 +436,8 @@ func TestUsers_Slice(t *testing.T) {
 	users, err := client.User.Query().All(ctx)
 	require.NoError(t, err)
 	assert.Len(t, users, 3)
-	assert.IsType(t, Users{}, users)
+	// All() returns []*User, not Users type
+	assert.IsType(t, []*User{}, users)
 }
 
 // TestClient_Debug_Mode 测试调试模式

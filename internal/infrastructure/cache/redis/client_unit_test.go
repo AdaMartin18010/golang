@@ -104,7 +104,7 @@ func createMockBoolCmd(result bool, err error) *redis.BoolCmd {
 
 // createMockDurationCmd 创建 mock DurationCmd
 func createMockDurationCmd(result time.Duration, err error) *redis.DurationCmd {
-	cmd := redis.NewDurationCmd(context.Background(), "ttl", "key")
+	cmd := redis.NewDurationCmd(context.Background(), time.Second)
 	if err != nil {
 		cmd.SetErr(err)
 	} else {

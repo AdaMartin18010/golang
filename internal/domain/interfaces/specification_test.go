@@ -24,6 +24,18 @@ func (s NameSpecification) IsSatisfiedBy(entity *TestEntity) bool {
 	return entity.Name == s.Name
 }
 
+func (s NameSpecification) And(other Specification[TestEntity]) Specification[TestEntity] {
+	return NewAndSpecification[TestEntity](s, other)
+}
+
+func (s NameSpecification) Or(other Specification[TestEntity]) Specification[TestEntity] {
+	return NewOrSpecification[TestEntity](s, other)
+}
+
+func (s NameSpecification) Not() Specification[TestEntity] {
+	return NewNotSpecification[TestEntity](s)
+}
+
 type AgeRangeSpecification struct {
 	MinAge int
 	MaxAge int
@@ -31,6 +43,18 @@ type AgeRangeSpecification struct {
 
 func (s AgeRangeSpecification) IsSatisfiedBy(entity *TestEntity) bool {
 	return entity.Age >= s.MinAge && entity.Age <= s.MaxAge
+}
+
+func (s AgeRangeSpecification) And(other Specification[TestEntity]) Specification[TestEntity] {
+	return NewAndSpecification[TestEntity](s, other)
+}
+
+func (s AgeRangeSpecification) Or(other Specification[TestEntity]) Specification[TestEntity] {
+	return NewOrSpecification[TestEntity](s, other)
+}
+
+func (s AgeRangeSpecification) Not() Specification[TestEntity] {
+	return NewNotSpecification[TestEntity](s)
 }
 
 type EmailDomainSpecification struct {
@@ -42,12 +66,36 @@ func (s EmailDomainSpecification) IsSatisfiedBy(entity *TestEntity) bool {
 	return len(entity.Email) > 0
 }
 
+func (s EmailDomainSpecification) And(other Specification[TestEntity]) Specification[TestEntity] {
+	return NewAndSpecification[TestEntity](s, other)
+}
+
+func (s EmailDomainSpecification) Or(other Specification[TestEntity]) Specification[TestEntity] {
+	return NewOrSpecification[TestEntity](s, other)
+}
+
+func (s EmailDomainSpecification) Not() Specification[TestEntity] {
+	return NewNotSpecification[TestEntity](s)
+}
+
 type ScoreThresholdSpecification struct {
 	Threshold float64
 }
 
 func (s ScoreThresholdSpecification) IsSatisfiedBy(entity *TestEntity) bool {
 	return entity.Score >= s.Threshold
+}
+
+func (s ScoreThresholdSpecification) And(other Specification[TestEntity]) Specification[TestEntity] {
+	return NewAndSpecification[TestEntity](s, other)
+}
+
+func (s ScoreThresholdSpecification) Or(other Specification[TestEntity]) Specification[TestEntity] {
+	return NewOrSpecification[TestEntity](s, other)
+}
+
+func (s ScoreThresholdSpecification) Not() Specification[TestEntity] {
+	return NewNotSpecification[TestEntity](s)
 }
 
 // TestSpecification_Basic 测试基本规约
@@ -176,7 +224,7 @@ func TestOrSpecification_Methods(t *testing.T) {
 
 	// 创建 OrSpecification
 	orSpec := &OrSpecification[TestEntity]{
-		left:  NameSpecification{Name: "Jane Doe"}, // 不满足
+		left:  NameSpecification{Name: "Jane Doe"},           // 不满足
 		right: AgeRangeSpecification{MinAge: 20, MaxAge: 30}, // 满足
 	}
 
@@ -356,11 +404,11 @@ func TestSpecification_DeepNesting(t *testing.T) {
 	scoreSpec := ScoreThresholdSpecification{Threshold: 80.0}
 	emailSpec := EmailDomainSpecification{Domain: "example.com"}
 
-	innerAnd1 := And(nameSpec, ageSpec)       // true
-	innerAnd2 := And(scoreSpec, emailSpec)    // true
-	innerOr := Or(innerAnd1, innerAnd2)       // true
-	notName := Not(nameSpec)                  // false
-	finalSpec := And(innerOr, notName)        // true AND false = false
+	innerAnd1 := And(nameSpec, ageSpec)    // true
+	innerAnd2 := And(scoreSpec, emailSpec) // true
+	innerOr := Or(innerAnd1, innerAnd2)    // true
+	notName := Not(nameSpec)               // false
+	finalSpec := And(innerOr, notName)     // true AND false = false
 
 	assert.False(t, finalSpec.IsSatisfiedBy(entity))
 
@@ -437,7 +485,7 @@ func TestSpecification_ShortCircuit(t *testing.T) {
 
 	// 测试 Or 短路: 第一个满足，第二个从语义上不需要检查
 	orSpec := Or(
-		NameSpecification{Name: "John"}, // true
+		NameSpecification{Name: "John"},               // true
 		AgeRangeSpecification{MinAge: 50, MaxAge: 60}, // false
 	)
 	assert.True(t, orSpec.IsSatisfiedBy(entity))
