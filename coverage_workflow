@@ -1,0 +1,23 @@
+mode: set
+github.com/yourusername/golang/internal/application/workflow/workflow.go:30.85,32.2 1 1
+github.com/yourusername/golang/internal/application/workflow/workflow.go:35.59,37.9 2 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:37.9,38.45 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:40.2,40.16 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:59.95,69.16 5 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:69.16,71.3 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:72.2,72.23 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:72.23,74.3 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:77.2,79.16 3 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:79.16,81.3 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:84.2,85.16 2 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:85.16,88.3 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:90.2,95.8 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:99.82,101.31 1 1
+github.com/yourusername/golang/internal/application/workflow/workflow.go:101.31,103.3 1 1
+github.com/yourusername/golang/internal/application/workflow/workflow.go:105.2,105.18 1 1
+github.com/yourusername/golang/internal/application/workflow/workflow.go:109.82,112.16 3 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:112.16,114.3 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:115.2,115.21 1 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:119.73,122.2 2 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:125.67,128.2 2 0
+github.com/yourusername/golang/internal/application/workflow/workflow.go:131.80,136.2 2 1

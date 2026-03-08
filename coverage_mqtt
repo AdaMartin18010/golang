@@ -1,0 +1,22 @@
+mode: set
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:144.78,164.42 13 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:164.42,166.3 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:168.2,168.37 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:222.113,227.29 3 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:228.14,230.11 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:231.14,233.19 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:234.10,237.17 2 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:237.17,239.4 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:243.2,244.42 2 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:244.42,246.3 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:248.2,248.12 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:294.103,296.85 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:296.85,298.66 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:298.66,302.4 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:306.2,306.42 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:306.42,308.3 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:310.2,310.12 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:340.75,342.42 2 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:342.42,344.3 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:345.2,345.12 1 0
+github.com/yourusername/golang/internal/infrastructure/messaging/mqtt/client.go:367.26,369.2 1 0
