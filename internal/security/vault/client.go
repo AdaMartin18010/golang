@@ -345,7 +345,7 @@ func authenticateWithKubernetes(client *api.Client, config *Config) error {
 func authenticateWithAppRole(client *api.Client, config *Config) error {
 	appRoleAuth, err := approle.NewAppRoleAuth(
 		config.AppRoleID,
-		approle.WithSecretID(approle.SecretID{FromString: config.AppSecretID}),
+		&approle.SecretID{FromString: config.AppSecretID},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create approle auth: %w", err)

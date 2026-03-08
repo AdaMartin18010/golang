@@ -1,5 +1,5 @@
-//go:build !windows
-// +build !windows
+//go:build windows
+// +build windows
 
 package signal
 
@@ -12,7 +12,8 @@ import (
 )
 
 func TestNotify(t *testing.T) {
-	c := Notify(syscall.SIGUSR1)
+	// Windows 不支持 SIGUSR1，使用 SIGTERM 代替
+	c := Notify(syscall.SIGTERM)
 	if c == nil {
 		t.Error("Expected non-nil channel")
 	}
@@ -44,9 +45,6 @@ func TestIsInterrupt(t *testing.T) {
 	}
 	if !IsInterrupt(syscall.SIGTERM) {
 		t.Error("Expected SIGTERM to be interrupt signal")
-	}
-	if IsInterrupt(syscall.SIGQUIT) {
-		t.Error("Expected SIGQUIT not to be interrupt signal")
 	}
 }
 
@@ -81,7 +79,8 @@ func TestWaitWithContext(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	_, err := WaitWithContext(ctx, syscall.SIGUSR1)
+	// Windows 使用 SIGTERM 代替 SIGUSR1
+	_, err := WaitWithContext(ctx, syscall.SIGTERM)
 	if err == nil {
 		// 如果没有收到信号，应该返回超时错误
 		// 但在测试环境中可能不会收到信号

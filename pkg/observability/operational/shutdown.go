@@ -105,9 +105,9 @@ func (sm *ShutdownManager) Shutdown(ctx context.Context) error {
 	}
 }
 
-// GracefulShutdown 优雅关闭辅助函数
+// GracefulShutdownFunc 优雅关闭辅助函数
 // 用于包装需要优雅关闭的服务
-func GracefulShutdown(serviceName string, shutdownFn func(ctx context.Context) error) ShutdownFunc {
+func GracefulShutdownFunc(serviceName string, shutdownFn func(ctx context.Context) error) ShutdownFunc {
 	return func(ctx context.Context) error {
 		fmt.Printf("Shutting down %s...\n", serviceName)
 		if err := shutdownFn(ctx); err != nil {

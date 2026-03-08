@@ -22,6 +22,7 @@ package vault
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -276,7 +277,7 @@ func (e *encryptionService) CreateKey(ctx context.Context, name string, keyType 
 		opts = &KeyOptions{}
 	}
 
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
 		path := fmt.Sprintf("%s/keys/%s", e.transitPath, name)
 		data := map[string]interface{}{
 			"type": keyType,
@@ -305,11 +306,12 @@ func (e *encryptionService) CreateKey(ctx context.Context, name string, keyType 
 
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // DeleteKey 删除加密密钥
 func (e *encryptionService) DeleteKey(ctx context.Context, name string) error {
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
 		path := fmt.Sprintf("%s/keys/%s", e.transitPath, name)
 		_, err := e.client.Logical().DeleteWithContext(ctx, path)
 		if err != nil {
@@ -318,6 +320,7 @@ func (e *encryptionService) DeleteKey(ctx context.Context, name string) error {
 
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // ListKeys 列出所有加密密钥
@@ -394,7 +397,7 @@ func (e *encryptionService) GetKeyInfo(ctx context.Context, name string) (*KeyIn
 
 // RotateKey 轮换加密密钥
 func (e *encryptionService) RotateKey(ctx context.Context, name string) error {
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
 		path := fmt.Sprintf("%s/keys/%s/rotate", e.transitPath, name)
 		_, err := e.client.Logical().WriteWithContext(ctx, path, nil)
 		if err != nil {
@@ -403,6 +406,7 @@ func (e *encryptionService) RotateKey(ctx context.Context, name string) error {
 
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // ExportKey 导出密钥（如果允许）
@@ -789,11 +793,6 @@ func getMapInterface(data map[string]interface{}, key string) map[string]interfa
 		return val
 	}
 	return nil
-}
-
-// json 用于解析 json.Number
-type json interface {
-	Number
 }
 
 // Number 是 JSON 数字类型

@@ -594,7 +594,7 @@ func TestEncryptionService(t *testing.T) {
 	enc := NewMockEncryptionService()
 
 	t.Run("CreateKey and GetKeyInfo", func(t *testing.T) {
-		if err := enc.CreateKey(ctx, "my-key", KeyTypeAES256GCM, nil); err != nil {
+		if err := enc.CreateKey(ctx, "my-key", KeyTypeAES, nil); err != nil {
 			t.Errorf("CreateKey() error = %v", err)
 			return
 		}
@@ -609,7 +609,7 @@ func TestEncryptionService(t *testing.T) {
 	})
 
 	t.Run("Encrypt and Decrypt", func(t *testing.T) {
-		enc.CreateKey(ctx, "encrypt-key", KeyTypeAES256GCM, nil)
+		enc.CreateKey(ctx, "encrypt-key", KeyTypeAES, nil)
 		plaintext := []byte("hello world")
 
 		result, err := enc.Encrypt(ctx, "encrypt-key", plaintext, nil)
@@ -650,7 +650,7 @@ func TestEncryptionService(t *testing.T) {
 	})
 
 	t.Run("Batch Encrypt", func(t *testing.T) {
-		enc.CreateKey(ctx, "batch-key", KeyTypeAES256GCM, nil)
+		enc.CreateKey(ctx, "batch-key", KeyTypeAES, nil)
 		items := []*BatchEncryptItem{
 			{ID: "1", Plaintext: []byte("data1")},
 			{ID: "2", Plaintext: []byte("data2")},
@@ -668,7 +668,7 @@ func TestEncryptionService(t *testing.T) {
 	})
 
 	t.Run("RotateKey", func(t *testing.T) {
-		enc.CreateKey(ctx, "rotate-key", KeyTypeAES256GCM, nil)
+		enc.CreateKey(ctx, "rotate-key", KeyTypeAES, nil)
 		enc.RotateKey(ctx, "rotate-key")
 
 		info, err := enc.GetKeyInfo(ctx, "rotate-key")
@@ -884,7 +884,7 @@ func TestClose(t *testing.T) {
 func BenchmarkEncrypt(b *testing.B) {
 	ctx := context.Background()
 	enc := NewMockEncryptionService()
-	enc.CreateKey(ctx, "bench-key", KeyTypeAES256GCM, nil)
+	enc.CreateKey(ctx, "bench-key", KeyTypeAES, nil)
 	plaintext := []byte("benchmark data for encryption")
 
 	b.ResetTimer()
@@ -897,7 +897,7 @@ func BenchmarkEncrypt(b *testing.B) {
 func BenchmarkDecrypt(b *testing.B) {
 	ctx := context.Background()
 	enc := NewMockEncryptionService()
-	enc.CreateKey(ctx, "bench-key", KeyTypeAES256GCM, nil)
+	enc.CreateKey(ctx, "bench-key", KeyTypeAES, nil)
 	plaintext := []byte("benchmark data for decryption")
 	result, _ := enc.Encrypt(ctx, "bench-key", plaintext, nil)
 
@@ -941,7 +941,7 @@ func TestIntegration(t *testing.T) {
 		}
 
 		// 4. 创建加密密钥
-		err = client.Encryption().CreateKey(ctx, "app-encryption-key", KeyTypeAES256GCM, nil)
+		err = client.Encryption().CreateKey(ctx, "app-encryption-key", KeyTypeAES, nil)
 		if err != nil {
 			t.Fatalf("failed to create encryption key: %v", err)
 		}

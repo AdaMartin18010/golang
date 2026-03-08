@@ -87,7 +87,7 @@ type Router struct {
 //   httpServer := &http.Server{
 //       Handler: router.Handler(),
 //   }
-func NewRouter(userService appuser.Service, temporalClient *temporalhandler.Handler) *Router {
+func NewRouter(userService *appuser.Service, temporalClient *temporalhandler.Handler) *Router {
 	r := chi.NewRouter()
 
 	// 中间件配置（按顺序执行）

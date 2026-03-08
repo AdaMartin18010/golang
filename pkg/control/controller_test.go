@@ -6,7 +6,7 @@ import (
 )
 
 func TestFeatureController_EnableDisable(t *testing.T) {
-	controller := NewFeatureController()
+	controller := NewFeatureController().(*FeatureController)
 
 	controller.Register("feature-a", "Feature A", false, nil)
 
@@ -32,7 +32,7 @@ func TestFeatureController_EnableDisable(t *testing.T) {
 }
 
 func TestFeatureController_Config(t *testing.T) {
-	controller := NewFeatureController()
+	controller := NewFeatureController().(*FeatureController)
 
 	config := map[string]interface{}{
 		"max_requests": 100,
@@ -58,7 +58,7 @@ func TestFeatureController_Config(t *testing.T) {
 }
 
 func TestFeatureController_Watch(t *testing.T) {
-	controller := NewFeatureController()
+	controller := NewFeatureController().(*FeatureController)
 
 	controller.Register("feature-a", "Feature A", true, nil)
 

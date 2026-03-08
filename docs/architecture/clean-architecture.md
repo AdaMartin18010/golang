@@ -1490,7 +1490,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 - [概念定义体系](./00-概念定义体系.md) - 概念定义
 - [技术栈文档索引](./tech-stack/README.md) - 第三方技术栈文档索引（按分类组织）
 - [技术栈思维导图](./tech-stack/00-技术栈思维导图.md) - 技术栈可视化（思维导图、关系网络图、决策流程图）
-- [Go 1.26 技术栈对齐](./00-Go-1.25.3技术栈对齐.md) - Go 1.26 新特性应用
+- [Go 1.26 技术栈对齐](./00-Go-1.26技术栈对齐.md) - Go 1.26 新特性应用
 
 ### 外部资源
 

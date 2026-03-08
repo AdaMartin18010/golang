@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	appuser "github.com/yourusername/golang/internal/application/user"
-	"github.com/yourusername/golang/internal/domain/user"
+	domainuser "github.com/yourusername/golang/internal/domain/user"
 )
 
 // MockRepository 模拟仓储
@@ -16,29 +16,29 @@ type MockRepository struct {
 	mock.Mock
 }
 
-func (m *MockRepository) Create(ctx context.Context, u *user.User) error {
-	args := m.Called(ctx, u)
-	return args.Error(0)
-}
-
-func (m *MockRepository) FindByID(ctx context.Context, id string) (*user.User, error) {
+func (m *MockRepository) FindByID(ctx context.Context, id string) (*domainuser.User, error) {
 	args := m.Called(ctx, id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*user.User), args.Error(1)
+	return args.Get(0).(*domainuser.User), args.Error(1)
 }
 
-func (m *MockRepository) FindByEmail(ctx context.Context, email string) (*user.User, error) {
+func (m *MockRepository) FindByEmail(ctx context.Context, email string) (*domainuser.User, error) {
 	args := m.Called(ctx, email)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*user.User), args.Error(1)
+	return args.Get(0).(*domainuser.User), args.Error(1)
 }
 
-func (m *MockRepository) Update(ctx context.Context, u *user.User) error {
-	args := m.Called(ctx, u)
+func (m *MockRepository) Save(ctx context.Context, user *domainuser.User) error {
+	args := m.Called(ctx, user)
+	return args.Error(0)
+}
+
+func (m *MockRepository) Update(ctx context.Context, user *domainuser.User) error {
+	args := m.Called(ctx, user)
 	return args.Error(0)
 }
 
@@ -47,45 +47,38 @@ func (m *MockRepository) Delete(ctx context.Context, id string) error {
 	return args.Error(0)
 }
 
-func (m *MockRepository) List(ctx context.Context, limit, offset int) ([]*user.User, error) {
+func (m *MockRepository) List(ctx context.Context, limit, offset int) ([]*domainuser.User, error) {
 	args := m.Called(ctx, limit, offset)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]*user.User), args.Error(1)
+	return args.Get(0).([]*domainuser.User), args.Error(1)
 }
 
 func TestUserService_CreateUser(t *testing.T) {
 	tests := []struct {
 		name    string
-		req     appuser.CreateUserRequest
+		email   string
+		name    string
 		setup   func(*MockRepository)
 		wantErr bool
 	}{
 		{
-			name: "success",
-			req: appuser.CreateUserRequest{
-				Email: "test@example.com",
-				Name:  "Test User",
-			},
+			name:  "success",
+			email: "test@example.com",
+			name:  "Test User",
 			setup: func(m *MockRepository) {
-				m.On("FindByEmail", mock.Anything, "test@example.com").Return(nil, user.ErrUserNotFound)
-				m.On("Create", mock.Anything, mock.AnythingOfType("*user.User")).Return(nil)
+				m.On("FindByEmail", mock.Anything, "test@example.com").Return(nil, domainuser.ErrUserNotFound)
+				m.On("Save", mock.Anything, mock.AnythingOfType("*domainuser.User")).Return(nil)
 			},
 			wantErr: false,
 		},
 		{
-			name: "user already exists",
-			req: appuser.CreateUserRequest{
-				Email: "existing@example.com",
-				Name:  "Existing User",
-			},
+			name:  "user already exists",
+			email: "existing@example.com",
+			name:  "Existing User",
 			setup: func(m *MockRepository) {
-				existingUser := &user.User{
-					ID:    "1",
-					Email: "existing@example.com",
-					Name:  "Existing User",
-				}
+				existingUser := domainuser.NewUser("existing@example.com", "Existing User")
 				m.On("FindByEmail", mock.Anything, "existing@example.com").Return(existingUser, nil)
 			},
 			wantErr: true,
@@ -100,16 +93,16 @@ func TestUserService_CreateUser(t *testing.T) {
 			service := appuser.NewService(mockRepo)
 			ctx := context.Background()
 
-			resp, err := service.CreateUser(ctx, tt.req)
+			user, err := service.CreateUser(ctx, tt.email, tt.name)
 
 			if tt.wantErr {
 				assert.Error(t, err)
-				assert.Nil(t, resp)
+				assert.Nil(t, user)
 			} else {
 				assert.NoError(t, err)
-				assert.NotNil(t, resp)
-				assert.Equal(t, tt.req.Email, resp.Email)
-				assert.Equal(t, tt.req.Name, resp.Name)
+				assert.NotNil(t, user)
+				assert.Equal(t, tt.email, user.Email)
+				assert.Equal(t, tt.name, user.Name)
 			}
 
 			mockRepo.AssertExpectations(t)
@@ -119,26 +112,23 @@ func TestUserService_CreateUser(t *testing.T) {
 
 func TestUserService_GetUser(t *testing.T) {
 	mockRepo := new(MockRepository)
-	expectedUser := &user.User{
-		ID:        "1",
-		Email:     "test@example.com",
-		Name:      "Test User",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
+	expectedUser := domainuser.NewUser("test@example.com", "Test User")
+	expectedUser.ID = "1"
+	expectedUser.CreatedAt = time.Now()
+	expectedUser.UpdatedAt = time.Now()
 
 	mockRepo.On("FindByID", mock.Anything, "1").Return(expectedUser, nil)
 
 	service := appuser.NewService(mockRepo)
 	ctx := context.Background()
 
-	resp, err := service.GetUser(ctx, "1")
+	user, err := service.GetUser(ctx, "1")
 
 	assert.NoError(t, err)
-	assert.NotNil(t, resp)
-	assert.Equal(t, expectedUser.ID, resp.ID)
-	assert.Equal(t, expectedUser.Email, resp.Email)
-	assert.Equal(t, expectedUser.Name, resp.Name)
+	assert.NotNil(t, user)
+	assert.Equal(t, expectedUser.ID, user.ID)
+	assert.Equal(t, expectedUser.Email, user.Email)
+	assert.Equal(t, expectedUser.Name, user.Name)
 
 	mockRepo.AssertExpectations(t)
 }

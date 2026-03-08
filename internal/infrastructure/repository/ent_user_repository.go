@@ -58,6 +58,11 @@ func NewEntUserRepository(client *ent.Client) *EntUserRepository {
 	}
 }
 
+// Save 保存用户（创建或更新）
+func (r *EntUserRepository) Save(ctx context.Context, u *user.User) error {
+	return r.Create(ctx, u)
+}
+
 // Create 创建用户
 func (r *EntUserRepository) Create(ctx context.Context, u *user.User) error {
 	entUser, err := r.client.User.Create().

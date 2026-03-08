@@ -137,7 +137,7 @@ func (wrr *WeightedRoundRobin) Name() string {
 
 // getWeight 获取服务权重
 func getWeight(service *registry.Service) int {
-	if weight, ok := service.Metadata["weight"]; ok {
+	if _, ok := service.Metadata["weight"]; ok {
 		// 解析权重（简化实现）
 		// 实际应该使用strconv.Atoi
 		return 1 // 默认权重为1

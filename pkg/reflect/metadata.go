@@ -92,10 +92,23 @@ func (i *Inspector) InspectType(v interface{}) TypeMetadata {
 	// 获取方法
 	for j := 0; j < rt.NumMethod(); j++ {
 		method := rt.Method(j)
+		
+		// 获取输入参数类型名称
+		inputTypes := make([]string, method.Type.NumIn())
+		for k := 0; k < method.Type.NumIn(); k++ {
+			inputTypes[k] = method.Type.In(k).String()
+		}
+		
+		// 获取输出参数类型名称
+		outputTypes := make([]string, method.Type.NumOut())
+		for k := 0; k < method.Type.NumOut(); k++ {
+			outputTypes[k] = method.Type.Out(k).String()
+		}
+		
 		metadata.Methods = append(metadata.Methods, MethodMetadata{
 			Name:     method.Name,
-			Inputs:   i.getTypeNames(method.Type.In),
-			Outputs:  i.getTypeNames(method.Type.Out),
+			Inputs:   inputTypes,
+			Outputs:  outputTypes,
 			Exported: method.IsExported(),
 		})
 	}

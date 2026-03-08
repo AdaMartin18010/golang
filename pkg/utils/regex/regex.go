@@ -2,7 +2,6 @@ package regex
 
 import (
 	"regexp"
-	"strings"
 )
 
 // Match 检查字符串是否匹配正则表达式

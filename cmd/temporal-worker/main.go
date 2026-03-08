@@ -48,7 +48,7 @@ import (
 	appworkflow "github.com/yourusername/golang/internal/application/workflow"
 	"github.com/yourusername/golang/internal/config"
 	entdb "github.com/yourusername/golang/internal/infrastructure/database/ent"
-	entrepo "github.com/yourusername/golang/internal/infrastructure/database/ent/repository"
+	"github.com/yourusername/golang/internal/infrastructure/repository"
 	"github.com/yourusername/golang/internal/infrastructure/workflow/temporal"
 )
 
@@ -70,7 +70,7 @@ func main() {
 	// - 连接到 Temporal 服务器
 	// - 用于启动工作流、查询工作流状态等
 	// - 如果连接失败，程序无法继续运行
-	temporalClient, err := temporal.NewClient(cfg.Workflow.Temporal.Address)
+	temporalClient, err := temporal.NewClient(cfg.Temporal.Address)
 	if err != nil {
 		log.Fatalf("Failed to create temporal client: %v", err)
 	}
@@ -90,7 +90,7 @@ func main() {
 		fmt.Sprintf("%d", cfg.Database.Port),
 		cfg.Database.User,
 		cfg.Database.Password,
-		cfg.Database.DBName,
+		cfg.Database.Database,
 		cfg.Database.SSLMode,
 	)
 	if err != nil {
@@ -106,7 +106,7 @@ func main() {
 	// - 创建仓储和应用服务
 	// - 活动需要访问应用服务来执行业务逻辑
 	// - 推荐迁移到 Wire 依赖注入
-	userRepo := entrepo.NewUserRepository(entClient)
+	userRepo := repository.NewEntUserRepository(entClient)
 	userService := appuser.NewService(userRepo)
 
 	// 步骤 5: 创建 Worker
@@ -115,7 +115,7 @@ func main() {
 	// - Worker 负责执行工作流和活动
 	// - 从任务队列（TaskQueue）中获取任务
 	// - 可以配置并发数、重试策略等
-	w := temporal.NewWorkerFromClient(temporalClient, cfg.Workflow.Temporal.TaskQueue)
+	w := temporal.NewWorkerFromClient(temporalClient, cfg.Temporal.TaskQueue)
 
 	// 步骤 6: 注册工作流
 	//
@@ -151,9 +151,9 @@ func main() {
 		ctx = appworkflow.WithUserService(ctx, userService)
 		return appworkflow.CreateUserActivity(ctx, email, name)
 	}
-	updateUserActivity := func(ctx context.Context, userID, email, name string) error {
+	updateUserActivity := func(ctx context.Context, userID, name string) error {
 		ctx = appworkflow.WithUserService(ctx, userService)
-		return appworkflow.UpdateUserActivity(ctx, userID, email, name)
+		return appworkflow.UpdateUserActivity(ctx, userID, name)
 	}
 	deleteUserActivity := func(ctx context.Context, userID string) error {
 		ctx = appworkflow.WithUserService(ctx, userService)
@@ -177,7 +177,7 @@ func main() {
 		}
 	}()
 
-	log.Printf("Temporal Worker started on task queue: %s", cfg.Workflow.Temporal.TaskQueue)
+	log.Printf("Temporal Worker started on task queue: %s", cfg.Temporal.TaskQueue)
 
 	// 步骤 9: 等待中断信号
 	//

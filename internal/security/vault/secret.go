@@ -21,6 +21,7 @@ package vault
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"path"
 	"strings"
@@ -131,9 +132,9 @@ type KVMetadata struct {
 	// CasRequired 表示是否需要 CAS（Check-And-Set）
 	CasRequired bool `json:"cas_required,omitempty"`
 	// DeleteVersionAfter 是自动删除版本的时间
-	DeleteVersionAfter string `json:"delete_version_after,omitempty"`
+	DeleteVersionAfter time.Duration `json:"delete_version_after,omitempty"`
 	// CustomMetadata 是自定义元数据
-	CustomMetadata map[string]string `json:"custom_metadata,omitempty"`
+	CustomMetadata map[string]interface{} `json:"custom_metadata,omitempty"`
 }
 
 // DBManager 是动态数据库凭据管理器接口。
@@ -184,26 +185,25 @@ func (k *kvManager) Get(ctx context.Context, secretPath string, version ...int) 
 	secretPath = k.normalizePath(secretPath)
 
 	return withRetry(ctx, 3, 1*time.Second, func() (*Secret, error) {
-		var secret *api.Secret
-		var err error
-
 		if k.version == 2 {
 			fullPath := path.Join(k.dataPath, secretPath)
+			var kvSecret *api.KVSecret
+			var err error
 			if len(version) > 0 {
-				secret, err = k.client.KVv2("secret").GetVersion(ctx, version[0], secretPath)
+				kvSecret, err = k.client.KVv2("secret").GetVersion(ctx, secretPath, version[0])
 			} else {
-				secret, err = k.client.KVv2("secret").Get(ctx, secretPath)
+				kvSecret, err = k.client.KVv2("secret").Get(ctx, secretPath)
 			}
 			if err != nil {
 				return nil, fmt.Errorf("failed to get secret from path %s: %w", fullPath, err)
 			}
 
-			return k.parseV2Secret(secret), nil
+			return k.parseKVSecret(kvSecret), nil
 		}
 
 		// KV v1
 		fullPath := path.Join("secret", secretPath)
-		secret, err = k.client.KVv1("secret").Get(ctx, secretPath)
+		secret, err := k.client.KVv1("secret").Get(ctx, secretPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get secret from path %s: %w", fullPath, err)
 		}
@@ -223,7 +223,33 @@ func (k *kvManager) GetRaw(ctx context.Context, secretPath string) (map[string]i
 	return secret.Data, nil
 }
 
-// parseV2Secret 解析 KV v2 密钥
+// parseKVSecret 解析 KV v2 密钥 (api.KVSecret)
+func (k *kvManager) parseKVSecret(kvSecret *api.KVSecret) *Secret {
+	if kvSecret == nil {
+		return nil
+	}
+
+	result := &Secret{
+		Data: kvSecret.Data,
+	}
+
+	// 提取元数据
+	if meta := kvSecret.VersionMetadata; meta != nil {
+		result.Metadata = &SecretMetadata{
+			Destroyed: meta.Destroyed,
+			Version:   meta.Version,
+		}
+		result.Version = meta.Version
+		result.Metadata.CreatedTime = meta.CreatedTime
+		if !meta.DeletionTime.IsZero() {
+			result.Metadata.DeletionTime = &meta.DeletionTime
+		}
+	}
+
+	return result
+}
+
+// parseV2Secret 解析 KV v2 密钥 (api.Secret - 兼容旧接口)
 func (k *kvManager) parseV2Secret(secret *api.Secret) *Secret {
 	if secret == nil {
 		return nil
@@ -269,7 +295,7 @@ func (k *kvManager) parseV2Secret(secret *api.Secret) *Secret {
 func (k *kvManager) Put(ctx context.Context, secretPath string, data map[string]interface{}) error {
 	secretPath = k.normalizePath(secretPath)
 
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
 		if k.version == 2 {
 			_, err := k.client.KVv2("secret").Put(ctx, secretPath, data)
 			if err != nil {
@@ -283,15 +309,16 @@ func (k *kvManager) Put(ctx context.Context, secretPath string, data map[string]
 		}
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // Delete 删除密钥
 func (k *kvManager) Delete(ctx context.Context, secretPath string) error {
 	secretPath = k.normalizePath(secretPath)
 
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
 		if k.version == 2 {
-			err := k.client.KVv2("secret").DeleteLatestVersion(ctx, secretPath)
+			err := k.client.KVv2("secret").Delete(ctx, secretPath)
 			if err != nil {
 				return struct{}{}, fmt.Errorf("failed to delete secret at path %s: %w", secretPath, err)
 			}
@@ -303,6 +330,7 @@ func (k *kvManager) Delete(ctx context.Context, secretPath string) error {
 		}
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // DeleteVersion 删除指定版本（仅 KV v2）
@@ -313,13 +341,14 @@ func (k *kvManager) DeleteVersion(ctx context.Context, secretPath string, versio
 
 	secretPath = k.normalizePath(secretPath)
 
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
 		err := k.client.KVv2("secret").DeleteVersions(ctx, secretPath, []int{version})
 		if err != nil {
 			return struct{}{}, fmt.Errorf("failed to delete version %d of secret at path %s: %w", version, secretPath, err)
 		}
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // DestroyVersion 销毁指定版本（仅 KV v2）
@@ -330,13 +359,14 @@ func (k *kvManager) DestroyVersion(ctx context.Context, secretPath string, versi
 
 	secretPath = k.normalizePath(secretPath)
 
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
-		err := k.client.KVv2("secret").DestroyVersions(ctx, secretPath, []int{version})
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+		err := k.client.KVv2("secret").Destroy(ctx, secretPath, []int{version})
 		if err != nil {
 			return struct{}{}, fmt.Errorf("failed to destroy version %d of secret at path %s: %w", version, secretPath, err)
 		}
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // List 列出密钥
@@ -344,20 +374,31 @@ func (k *kvManager) List(ctx context.Context, secretPath string) ([]string, erro
 	secretPath = strings.TrimSuffix(secretPath, "/")
 
 	return withRetry(ctx, 3, 1*time.Second, func() ([]string, error) {
-		var keys []string
-		var err error
+		var result []string
 
-		if k.version == 2 {
-			keys, err = k.client.KVv2("secret").List(ctx, secretPath)
-		} else {
-			keys, err = k.client.KVv1("secret").List(ctx, secretPath)
+		// KVv2 和 KVv1 没有 List 方法，使用 Logical().ListWithContext() 代替
+		listPath := path.Join("secret/metadata", secretPath)
+		if k.version == 1 {
+			listPath = path.Join("secret", secretPath)
 		}
-
+		secret, err := k.client.Logical().ListWithContext(ctx, listPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to list secrets at path %s: %w", secretPath, err)
 		}
+		if secret == nil || secret.Data == nil {
+			return []string{}, nil
+		}
+		keys, ok := secret.Data["keys"].([]interface{})
+		if !ok {
+			return []string{}, nil
+		}
+		for _, key := range keys {
+			if keyStr, ok := key.(string); ok {
+				result = append(result, keyStr)
+			}
+		}
 
-		return keys, nil
+		return result, nil
 	})
 }
 
@@ -454,6 +495,7 @@ func (k *kvManager) GetMetadata(ctx context.Context, secretPath string) (*KVMeta
 			return nil, fmt.Errorf("failed to get metadata for secret at path %s: %w", secretPath, err)
 		}
 
+		// 类型现在匹配：DeleteVersionAfter 是 time.Duration，CustomMetadata 是 map[string]interface{}
 		return &KVMetadata{
 			MaxVersions:        metadata.MaxVersions,
 			CasRequired:        metadata.CASRequired,
@@ -471,21 +513,24 @@ func (k *kvManager) UpdateMetadata(ctx context.Context, secretPath string, metad
 
 	secretPath = k.normalizePath(secretPath)
 
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
-		apiMetadata := &api.KVMetadata{
-			MaxVersions:        metadata.MaxVersions,
-			CASRequired:        metadata.CasRequired,
-			DeleteVersionAfter: metadata.DeleteVersionAfter,
-			CustomMetadata:     metadata.CustomMetadata,
+	// KVv2 没有 UpdateMetadata 方法，使用 Logical().WriteWithContext() 直接写入元数据路径
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+		metadataPath := path.Join(k.metadataPath, secretPath)
+		data := map[string]interface{}{
+			"max_versions":         metadata.MaxVersions,
+			"cas_required":         metadata.CasRequired,
+			"delete_version_after": metadata.DeleteVersionAfter.String(),
+			"custom_metadata":      metadata.CustomMetadata,
 		}
 
-		err := k.client.KVv2("secret").UpdateMetadata(ctx, secretPath, apiMetadata)
+		_, err := k.client.Logical().WriteWithContext(ctx, metadataPath, data)
 		if err != nil {
 			return struct{}{}, fmt.Errorf("failed to update metadata for secret at path %s: %w", secretPath, err)
 		}
 
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // IsV2 返回是否使用 KV v2 引擎
@@ -533,24 +578,26 @@ func (d *dbManager) GetCredentialsFromPath(ctx context.Context, mount, role stri
 
 // RenewLease 续期租约
 func (d *dbManager) RenewLease(ctx context.Context, leaseID string, increment int) error {
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
 		_, err := d.client.Sys().RenewWithContext(ctx, leaseID, increment)
 		if err != nil {
 			return struct{}{}, fmt.Errorf("failed to renew lease %s: %w", leaseID, err)
 		}
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // RevokeLease 撤销租约
 func (d *dbManager) RevokeLease(ctx context.Context, leaseID string) error {
-	return withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
+	_, err := withRetry(ctx, 3, 1*time.Second, func() (struct{}, error) {
 		err := d.client.Sys().RevokeWithContext(ctx, leaseID)
 		if err != nil {
 			return struct{}{}, fmt.Errorf("failed to revoke lease %s: %w", leaseID, err)
 		}
 		return struct{}{}, nil
 	})
+	return err
 }
 
 // getString 从 map 中获取字符串值

@@ -6,7 +6,7 @@ import (
 
 func TestColorize(t *testing.T) {
 	Enable()
-	result := Colorize("test", Red)
+	result := Colorize("test", RedColor)
 	if result == "" {
 		t.Error("Expected non-empty result")
 	}

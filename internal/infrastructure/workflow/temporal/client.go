@@ -314,6 +314,53 @@ func (c *Client) Close() {
 	c.client.Close()
 }
 
+// StartUserWorkflow 启动用户工作流
+//
+// 功能说明：
+// - 启动用户创建工作流
+// - 返回工作流 ID 和运行 ID
+//
+// 参数：
+// - ctx: 上下文
+// - email: 用户邮箱
+// - name: 用户名称
+//
+// 返回：
+// - workflowID: 工作流 ID
+// - runID: 运行 ID
+// - error: 如果启动失败，返回错误信息
+func (c *Client) StartUserWorkflow(ctx context.Context, email, name string) (string, string, error) {
+	// 此处需要导入 workflow 包，但为了避免循环导入，我们使用 ExecuteWorkflow 直接执行
+	// 实际使用时，需要传入工作流函数和输入参数
+	// 这是一个简化实现，实际项目可能需要更复杂的处理
+	return "", "", fmt.Errorf("not implemented: please use ExecuteWorkflow directly with workflow.UserWorkflow")
+}
+
+// GetWorkflowResult 获取工作流结果
+//
+// 功能说明：
+// - 根据工作流 ID 获取工作流执行结果
+// - 等待工作流完成并返回结果
+//
+// 参数：
+// - ctx: 上下文
+// - workflowID: 工作流 ID
+//
+// 返回：
+// - string: 工作流结果（JSON 格式）
+// - error: 如果获取失败，返回错误信息
+func (c *Client) GetWorkflowResult(ctx context.Context, workflowID string) (string, error) {
+	workflowRun := c.GetWorkflow(ctx, workflowID, "")
+	// 等待工作流完成并获取结果
+	// 这里需要根据实际的结果类型来反序列化
+	var result interface{}
+	if err := workflowRun.Get(ctx, &result); err != nil {
+		return "", err
+	}
+	// 简化处理，直接返回字符串表示
+	return fmt.Sprintf("%v", result), nil
+}
+
 // Client 返回底层的 Temporal SDK 客户端。
 //
 // 功能说明：

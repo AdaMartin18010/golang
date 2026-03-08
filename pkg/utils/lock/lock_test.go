@@ -3,7 +3,6 @@ package lock
 import (
 	"sync"
 	"testing"
-	"time"
 )
 
 func TestMutex(t *testing.T) {

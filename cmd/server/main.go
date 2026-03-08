@@ -53,7 +53,7 @@ import (
 	"github.com/yourusername/golang/internal/config"
 	appuser "github.com/yourusername/golang/internal/application/user"
 	entdb "github.com/yourusername/golang/internal/infrastructure/database/ent"
-	entrepo "github.com/yourusername/golang/internal/infrastructure/database/ent/repository"
+	"github.com/yourusername/golang/internal/infrastructure/repository"
 	"github.com/yourusername/golang/internal/infrastructure/observability/otlp"
 	"github.com/yourusername/golang/internal/infrastructure/workflow/temporal"
 	temporalhandler "github.com/yourusername/golang/internal/interfaces/workflow/temporal"
@@ -107,10 +107,10 @@ func main() {
 	// - 如果初始化失败，记录警告但继续运行
 	//
 	// 配置：
-	// - TraceEndpoint: OpenTelemetry Collector 地址
+	// - OTLP.Endpoint: OpenTelemetry Collector 地址
 	// - 如果为空，则不启用追踪
 	ctx := context.Background()
-	shutdownTracer, err := otlp.NewTracerProvider(ctx, cfg.Observability.TraceEndpoint, true)
+	shutdownTracer, err := otlp.NewTracerProvider(ctx, cfg.Observability.OTLP.Endpoint, true)
 	if err != nil {
 		logger.Warn("Failed to initialize tracer", "error", err)
 	} else {
@@ -134,20 +134,20 @@ func main() {
 	// - Port: 数据库端口（默认 5432）
 	// - User: 数据库用户名
 	// - Password: 数据库密码
-	// - DBName: 数据库名称
+	// - Database: 数据库名称
 	// - SSLMode: SSL 模式（disable、require、verify-full 等）
 	//
 	// 连接池配置：
 	// - MaxOpenConns: 最大打开连接数（默认 25）
 	// - MaxIdleConns: 最大空闲连接数（默认 5）
-	var userService appuser.Service
+	var userService *appuser.Service
 	entClient, err := entdb.NewClientFromConfig(
 		ctx,
 		cfg.Database.Host,
 		fmt.Sprintf("%d", cfg.Database.Port),
 		cfg.Database.User,
 		cfg.Database.Password,
-		cfg.Database.DBName,
+		cfg.Database.Database,
 		cfg.Database.SSLMode,
 	)
 	if err != nil {
@@ -185,7 +185,7 @@ func main() {
 	// 1. 创建仓储（Repository）：依赖数据库客户端
 	// 2. 创建应用服务（Service）：依赖仓储
 	// 3. 创建路由（Router）：依赖应用服务
-	userRepo := entrepo.NewUserRepository(entClient)
+	userRepo := repository.NewEntUserRepository(entClient)
 	userService = appuser.NewService(userRepo)
 
 	// 步骤 5: 初始化 Temporal 客户端（可选）
@@ -200,15 +200,15 @@ func main() {
 	// - 用户注册流程
 	// - 异步任务处理
 	var temporalHandler *temporalhandler.Handler
-	if cfg.Workflow.Temporal.Address != "" {
-		temporalClient, err := temporal.NewClient(cfg.Workflow.Temporal.Address)
+	if cfg.Temporal.Address != "" {
+		temporalClient, err := temporal.NewClient(cfg.Temporal.Address)
 		if err != nil {
 			logger.Warn("Failed to create temporal client", "error", err)
 		} else {
 			// 确保在程序退出时关闭 Temporal 客户端
 			defer temporalClient.Close()
-			temporalHandler = temporalhandler.NewHandler(temporalClient.Client())
-			logger.Info("Temporal client initialized", "address", cfg.Workflow.Temporal.Address)
+			temporalHandler = temporalhandler.NewHandler(temporalClient)
+			logger.Info("Temporal client initialized", "address", cfg.Temporal.Address)
 		}
 	}
 

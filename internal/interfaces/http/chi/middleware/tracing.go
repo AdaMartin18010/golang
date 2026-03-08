@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -157,7 +158,7 @@ func TracingMiddleware(config TracingConfig) func(http.Handler) http.Handler {
 
 			// 添加用户ID
 			if config.AddUserID {
-				if userID := GetUserID(ctx); userID != "" {
+				if userID := getUserID(ctx); userID != "" {
 					span.SetAttributes(attribute.String("user.id", userID))
 				}
 			}
@@ -186,9 +187,9 @@ func TracingMiddleware(config TracingConfig) func(http.Handler) http.Handler {
 
 			// 设置状态
 			if ww.Status() >= 400 {
-				span.SetStatus(trace.StatusError, http.StatusText(ww.Status()))
+				span.SetStatus(codes.Error, http.StatusText(ww.Status()))
 			} else {
-				span.SetStatus(trace.StatusOK, "")
+				span.SetStatus(codes.Ok, "")
 			}
 		})
 	}
@@ -216,4 +217,12 @@ func shouldSkipTracing(path string, skipPaths []string) bool {
 		}
 	}
 	return false
+}
+
+// getUserID 从上下文中获取用户ID
+func getUserID(ctx context.Context) string {
+	if userID, ok := ctx.Value("user_id").(string); ok {
+		return userID
+	}
+	return ""
 }

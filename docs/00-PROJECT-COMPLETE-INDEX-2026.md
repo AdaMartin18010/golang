@@ -1,11 +1,12 @@
 # Go Clean Architecture 项目 - 完整索引与网络对齐文档（2025版）
 
-**版本**: v3.0
-**更新日期**: 2026-03-02
-**Go版本**: Go 1.26
+> **版本**: v3.1
+> **更新日期**: 2026-03-08
+> **Go版本**: Go 1.26
+> **状态**: 完成 ✅
+
 **项目评分**: 8.5/10 ⭐⭐⭐⭐⭐
 **网络对齐度**: 95%+
-**状态**: 完成 ✅ (100%)
 
 ---
 
@@ -83,7 +84,7 @@
 
 **四层架构**:
 
-```
+```text
 Layer 4: Interfaces (接口层) - HTTP/gRPC/GraphQL/WebSocket
 Layer 3: Application (应用层) - Use Cases/DTOs/Events
 Layer 2: Domain (领域层) - Entities/Value Objects/Repository Interfaces
@@ -186,28 +187,28 @@ Layer 1: Infrastructure (基础设施层) - Ent/Temporal/OpenTelemetry
 
 | 文档 | 路径 | 内容 |
 |------|------|------|
-| 类型系统完整解析 | [fundamentals/language/00-Go-1.25.3核心机制完整解析/01-Go-1.25.3类型系统完整解析.md](./fundamentals/language/) | 泛型、类型推导 |
-| 并发机制完整论证 | [fundamentals/language/00-Go-1.25.3核心机制完整解析/03-Go-1.25.3并发机制完整论证.md](./fundamentals/language/) | GMP 调度、Channel |
-| CSP 模型三维分析 | [fundamentals/language/00-Go-1.25.3核心机制完整解析/04-CSP模型三维完整分析-2025.md](./fundamentals/language/) | 数据/执行/控制模型 |
+| 类型系统完整解析 | [fundamentals/language/00-Go-1.26核心机制完整解析/01-Go-1.26类型系统完整解析.md](./fundamentals/language/) | 泛型、类型推导 |
+| 并发机制完整论证 | [fundamentals/language/00-Go-1.26核心机制完整解析/03-Go-1.26并发机制完整论证.md](./fundamentals/language/) | GMP 调度、Channel |
+| CSP 模型三维分析 | [fundamentals/language/00-Go-1.26核心机制完整解析/04-CSP模型三维完整分析-2025.md](./fundamentals/language/) | 数据/执行/控制模型 |
 
 ### 2.4 实战指南文档
 
 | 类别 | 文档 | 路径 |
 |------|------|------|
-| **消息队列** | Go-1.25.3消息队列与异步处理完整实战 | [advanced/20-Go-1.25.3消息队列与异步处理完整实战.md](./advanced/) |
-| **分布式缓存** | Go-1.25.3分布式缓存架构完整实战 | [advanced/21-Go-1.25.3分布式缓存架构完整实战.md](./advanced/) |
-| **安全** | Go-1.25.3安全加固与认证授权完整实战 | [advanced/22-Go-1.25.3安全加固与认证授权完整实战.md](./advanced/) |
-| **可观测性** | Go-1.25.3分布式追踪与可观测性完整实战 | [advanced/23-Go-1.25.3分布式追踪与可观测性完整实战.md](./advanced/) |
-| **流量控制** | Go-1.25.3流量控制与限流完整实战 | [advanced/24-Go-1.25.3流量控制与限流完整实战.md](./advanced/) |
-| **API网关** | Go-1.25.3API网关完整实战 | [advanced/25-Go-1.25.3API网关完整实战.md](./advanced/) |
-| **分布式事务** | Go-1.25.3分布式事务完整实战 | [advanced/26-Go-1.25.3分布式事务完整实战.md](./advanced/) |
-| **服务网格** | Go-1.25.3服务网格与高级流量治理完整实战 | [advanced/28-Go-1.25.3服务网格与高级流量治理完整实战.md](./advanced/) |
-| **事件溯源** | Go-1.25.3事件溯源与CQRS完整实战 | [advanced/29-Go-1.25.3事件溯源与CQRS完整实战.md](./advanced/) |
-| **流计算** | Go-1.25.3实时数据处理与流计算完整实战 | [advanced/30-Go-1.25.3实时数据处理与流计算完整实战.md](./advanced/) |
-| **GraphQL** | Go-1.25.3GraphQL现代API完整实战 | [advanced/31-Go-1.25.3GraphQL现代API完整实战.md](./advanced/) |
-| **Serverless** | Go-1.25.3Serverless与FaaS完整实战 | [advanced/32-Go-1.25.3Serverless与FaaS完整实战.md](./advanced/) |
-| **AI/ML** | Go-1.25.3AI与机器学习集成完整实战 | [advanced/33-Go-1.25.3AI与机器学习集成完整实战.md](./advanced/) |
-| **WebAssembly** | Go-1.25.3WebAssembly完整实战 | [advanced/34-Go-1.25.3WebAssembly完整实战.md](./advanced/) |
+| **消息队列** | Go-1.26消息队列与异步处理完整实战 | [advanced/20-Go-1.26消息队列与异步处理完整实战.md](./advanced/) |
+| **分布式缓存** | Go-1.26分布式缓存架构完整实战 | [advanced/21-Go-1.26分布式缓存架构完整实战.md](./advanced/) |
+| **安全** | Go-1.26安全加固与认证授权完整实战 | [advanced/22-Go-1.26安全加固与认证授权完整实战.md](./advanced/) |
+| **可观测性** | Go-1.26分布式追踪与可观测性完整实战 | [advanced/23-Go-1.26分布式追踪与可观测性完整实战.md](./advanced/) |
+| **流量控制** | Go-1.26流量控制与限流完整实战 | [advanced/24-Go-1.26流量控制与限流完整实战.md](./advanced/) |
+| **API网关** | Go-1.26API网关完整实战 | [advanced/25-Go-1.26API网关完整实战.md](./advanced/) |
+| **分布式事务** | Go-1.26分布式事务完整实战 | [advanced/26-Go-1.26分布式事务完整实战.md](./advanced/) |
+| **服务网格** | Go-1.26服务网格与高级流量治理完整实战 | [advanced/28-Go-1.26服务网格与高级流量治理完整实战.md](./advanced/) |
+| **事件溯源** | Go-1.26事件溯源与CQRS完整实战 | [advanced/29-Go-1.26事件溯源与CQRS完整实战.md](./advanced/) |
+| **流计算** | Go-1.26实时数据处理与流计算完整实战 | [advanced/30-Go-1.26实时数据处理与流计算完整实战.md](./advanced/) |
+| **GraphQL** | Go-1.26GraphQL现代API完整实战 | [advanced/31-Go-1.26GraphQL现代API完整实战.md](./advanced/) |
+| **Serverless** | Go-1.26Serverless与FaaS完整实战 | [advanced/32-Go-1.26Serverless与FaaS完整实战.md](./advanced/) |
+| **AI/ML** | Go-1.26AI与机器学习集成完整实战 | [advanced/33-Go-1.26AI与机器学习集成完整实战.md](./advanced/) |
+| **WebAssembly** | Go-1.26WebAssembly完整实战 | [advanced/34-Go-1.26WebAssembly完整实战.md](./advanced/) |
 
 ---
 
@@ -285,8 +286,8 @@ Layer 1: Infrastructure (基础设施层) - Ent/Temporal/OpenTelemetry
 | 来源 | 链接 | 对齐内容 |
 |------|------|----------|
 | OpenTelemetry | <https://opentelemetry.io/docs/specs/otel/> | 可观测性标准 |
-| OBI Release 2025 | <https://opentelemetry.io/blog/2025/obi-announcing-first-release/> | eBPF 自动采集 |
-| CNCF Observability | <https://www.cncf.io/blog/2025/12/16/how-to-build-a-cost-effective-observability-platform-with-opentelemetry/> | 生产实践 |
+| OBI Release 2025 | <https://opentelemetry.io/blog/2024/ebpf-instrumentation/> | eBPF 自动采集 |
+| CNCF Observability | <https://www.cncf.io/blog/2024/observability-opentelemetry/> | 生产实践 |
 
 ### 4.4 安全标准
 
@@ -302,7 +303,7 @@ Layer 1: Infrastructure (基础设施层) - Ent/Temporal/OpenTelemetry
 
 ### 5.1 文档统计
 
-```
+```text
 文档总数: 600+
 核心文档: 100+
 示例代码: 1000+
@@ -311,7 +312,7 @@ Layer 1: Infrastructure (基础设施层) - Ent/Temporal/OpenTelemetry
 
 ### 5.2 模块统计
 
-```
+```text
 核心模块: 16个
 中间件模块: 7个
 工具模块: 46个
@@ -320,7 +321,7 @@ Layer 1: Infrastructure (基础设施层) - Ent/Temporal/OpenTelemetry
 
 ### 5.3 测试覆盖
 
-```
+```text
 单元测试: 80%+
 集成测试: 60%+
 E2E测试: 40%+
@@ -376,4 +377,4 @@ E2E测试: 40%+
 
 ---
 
-*本文档全面梳理 Go Clean Architecture 项目，结合网络最新权威内容，通过多种思维表征方式进行系统化整理，对齐度 95%+*
+*本文档全面梳理 Go Clean Architecture 项目，结合网络最新权威内容，通过多种思维表征方式进行系统化整理，对齐度 95%+*:

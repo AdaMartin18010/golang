@@ -153,10 +153,10 @@ func TestShuffle(t *testing.T) {
 	Shuffle(slice)
 
 	// 检查是否被打乱（有一定概率相同，但通常不同）
-	same := true
+	_ = true
 	for i := range slice {
 		if slice[i] != original[i] {
-			same = false
+			_ = false
 			break
 		}
 	}

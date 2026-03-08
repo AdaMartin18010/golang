@@ -1,7 +1,6 @@
 package pool
 
 import (
-	"strings"
 	"testing"
 )
 

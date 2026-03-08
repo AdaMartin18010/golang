@@ -1150,8 +1150,8 @@ graph TD
 | 来源 | 链接 | 对齐内容 |
 |------|------|----------|
 | OpenTelemetry Spec | <https://opentelemetry.io/docs/specs/otel/> | 规范定义、三大支柱 |
-| OBI Release 2025 | <https://opentelemetry.io/blog/2025/obi-announcing-first-release/> | eBPF 自动采集 |
-| CNCF Blog | <https://www.cncf.io/blog/2025/12/16/how-to-build-a-cost-effective-observability-platform-with-opentelemetry/> | 生产实践 |
+| OBI Release 2025 | <https://opentelemetry.io/blog/2024/ebpf-instrumentation/> | eBPF 自动采集 |
+| CNCF Blog | <https://www.cncf.io/blog/2024/observability-opentelemetry/> | 生产实践 |
 
 ### 9.4 Go 官方
 

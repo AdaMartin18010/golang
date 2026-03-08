@@ -283,7 +283,6 @@ func (cb *CircuitBreaker) OnFailure() {
 // - 如果配置了回调函数，会调用回调通知状态变更
 func (cb *CircuitBreaker) setState(newState CircuitState) {
 	if cb.state != newState {
-		oldState := cb.state
 		cb.state = newState
 		cb.lastStateChange = time.Now()
 		cb.failures = 0      // 重置失败计数

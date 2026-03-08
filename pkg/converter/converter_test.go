@@ -3,7 +3,6 @@ package converter
 import (
 	"reflect"
 	"testing"
-	"time"
 )
 
 func TestDefaultConverter_ToString(t *testing.T) {

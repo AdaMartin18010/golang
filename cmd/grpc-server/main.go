@@ -49,8 +49,8 @@ import (
 
 	"github.com/yourusername/golang/internal/config"
 	appuser "github.com/yourusername/golang/internal/application/user"
-	"github.com/yourusername/golang/internal/infrastructure/database/postgres"
-	"github.com/yourusername/golang/internal/interfaces/grpc/handlers"
+	"github.com/yourusername/golang/internal/infrastructure/database/ent"
+	"github.com/yourusername/golang/internal/infrastructure/repository"
 	"github.com/yourusername/golang/internal/interfaces/grpc/interceptors"
 	// userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb" // TODO: 生成 gRPC 代码后启用
 	// healthpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/healthpb" // TODO: 生成 gRPC 代码后启用
@@ -82,8 +82,8 @@ func main() {
 	// - 当前使用占位符，需要替换为实际的 Ent 客户端
 	// - 参考 cmd/server/main.go 中的数据库初始化代码
 	// - 需要创建数据库连接、运行迁移等
-	var db interface{} = nil
-	userRepo := postgres.NewUserRepository(db)
+	var entClient *ent.Client = nil
+	userRepo := repository.NewEntUserRepository(entClient)
 	userService := appuser.NewService(userRepo)
 
 	// 步骤 4: 创建 gRPC 服务器（带拦截器）
