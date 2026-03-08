@@ -2,10 +2,17 @@ package user
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/yourusername/golang/internal/domain/user"
+)
+
+// 错误类型常量，用于统一错误标识
+const (
+	ErrTypeUserAlreadyExists = "user_already_exists"
+	ErrTypeUserNotFound      = "user_not_found"
+	ErrTypeInvalidInput      = "invalid_input"
+	ErrTypeInternal          = "internal_error"
 )
 
 // Service 用户应用服务
@@ -40,7 +47,7 @@ func (s *Service) CreateUser(ctx context.Context, email, name string) (*user.Use
 	// 检查邮箱是否已存在
 	existing, err := s.repo.FindByEmail(ctx, email)
 	if err == nil && existing != nil {
-		return nil, fmt.Errorf("user with email %s already exists", email)
+		return nil, fmt.Errorf("%w: user with email %s already exists", ErrUserAlreadyExists, email)
 	}
 
 	// 创建新用户
@@ -86,10 +93,10 @@ func (s *Service) DeleteUser(ctx context.Context, id string) error {
 // ListUsers 列出用户
 func (s *Service) ListUsers(ctx context.Context, limit, offset int) ([]*user.User, error) {
 	if limit <= 0 {
-		return nil, errors.New("limit must be positive")
+		return nil, fmt.Errorf("%w: limit must be positive", ErrInvalidInput)
 	}
 	if offset < 0 {
-		return nil, errors.New("offset cannot be negative")
+		return nil, fmt.Errorf("%w: offset cannot be negative", ErrInvalidInput)
 	}
 
 	return s.repo.List(ctx, limit, offset)
