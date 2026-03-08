@@ -233,7 +233,10 @@ func (s *MemoryAuditLogStore) Query(ctx context.Context, filter *AuditLogFilter)
 
 	// 应用分页
 	if filter != nil {
-		if filter.Offset > 0 && filter.Offset < len(results) {
+		if filter.Offset > 0 {
+			if filter.Offset >= len(results) {
+				return []*AuditLog{}, nil
+			}
 			results = results[filter.Offset:]
 		}
 		if filter.Limit > 0 && filter.Limit < len(results) {

@@ -202,15 +202,20 @@ func (m *DataMasker) MaskName(name string) string {
 		return ""
 	}
 
-	if len(name) <= 1 {
+	// 将字符串转换为 rune 切片以正确处理中文字符
+	runes := []rune(name)
+	n := len(runes)
+
+	if n <= 1 {
 		return "*"
 	}
 
-	if len(name) == 2 {
-		return name[:1] + "*"
+	if n == 2 {
+		return string(runes[:1]) + "*"
 	}
 
-	return name[:1] + "**" + name[len(name)-1:]
+	// 3个或更多字符：保留首尾，中间用**替代
+	return string(runes[:1]) + "**" + string(runes[n-1:])
 }
 
 // splitEmail 分割邮箱地址
@@ -235,25 +240,12 @@ func maskDomain(domain string) string {
 	}
 
 	if len(parts) == 1 {
-		return maskString(parts[0])
+		return "***"
 	}
 
-	// 保留最后一个部分（通常是 .com, .org 等）
+	// 保留最后一个部分（通常是 .com, .org 等），其他部分脱敏
 	lastPart := parts[len(parts)-1]
-	maskedParts := make([]string, len(parts)-1)
-	for i := 0; i < len(parts)-1; i++ {
-		maskedParts[i] = maskString(parts[i])
-	}
-	maskedParts = append(maskedParts, lastPart)
-
-	result := ""
-	for i, part := range maskedParts {
-		if i > 0 {
-			result += "."
-		}
-		result += part
-	}
-	return result
+	return "***." + lastPart
 }
 
 // splitDomain 分割域名

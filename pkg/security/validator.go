@@ -65,6 +65,9 @@ func (v *InputValidator) Validate(input string) error {
 		return ErrInputTooShort
 	}
 
+	// 对于非空输入，检查长度是否满足最小长度要求
+	// 注意：当 MinLength 为 5 时，长度为 5 的输入是有效的
+
 	if v.maxLength > 0 && len(input) > v.maxLength {
 		return ErrInputTooLong
 	}
@@ -125,6 +128,11 @@ func NewURLValidator(allowedSchemes []string) *URLValidator {
 func (v *URLValidator) ValidateURL(urlStr string) error {
 	if err := v.Validate(urlStr); err != nil {
 		return err
+	}
+
+	// 空值已验证通过
+	if urlStr == "" {
+		return nil
 	}
 
 	parsedURL, err := url.Parse(urlStr)

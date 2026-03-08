@@ -40,9 +40,10 @@ func TestFileUploadValidator_InvalidFileType(t *testing.T) {
 }
 
 func TestFileUploadValidator_InvalidFileName(t *testing.T) {
-	validator := NewFileUploadValidator(DefaultFileUploadConfig())
-
-	content := strings.NewReader("test content")
+	// 使用禁用内容扫描的配置，因为我们只测试文件名验证
+	config := DefaultFileUploadConfig()
+	config.ScanContent = false
+	validator := NewFileUploadValidator(config)
 	
 	tests := []struct {
 		filename string
@@ -55,6 +56,8 @@ func TestFileUploadValidator_InvalidFileName(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		// 每次创建新的 content Reader
+		content := strings.NewReader("test content")
 		err := validator.ValidateFile(tt.filename, "image/jpeg", 1024, content)
 		if tt.shouldFail && err == nil {
 			t.Errorf("ValidateFile(%q) should fail", tt.filename)

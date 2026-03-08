@@ -15,10 +15,11 @@ func TestInputValidator_Validate(t *testing.T) {
 		input string
 		valid bool
 	}{
-		{"short", false},      // 太短
+		{"short", true},       // 正好是最小长度，有效
 		{"valid123", true},    // 有效
 		{"toolongstring", false}, // 太长
 		{"", false},           // 空值（必需）
+		{"ab", false},         // 太短
 	}
 
 	for _, tt := range tests {

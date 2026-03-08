@@ -87,9 +87,24 @@ func TestAuditLogger_QueryLogs(t *testing.T) {
 	ctx := context.Background()
 
 	// 记录多个日志
-	logger.LogAction(ctx, "user-1", "create", "user", "user-1", AuditResultSuccess, nil)
-	logger.LogAction(ctx, "user-1", "update", "user", "user-1", AuditResultSuccess, nil)
-	logger.LogAction(ctx, "user-2", "create", "user", "user-2", AuditResultSuccess, nil)
+	if err := logger.LogAction(ctx, "user-1", "create", "user", "user-1", AuditResultSuccess, nil); err != nil {
+		t.Fatalf("Failed to log action: %v", err)
+	}
+	if err := logger.LogAction(ctx, "user-1", "update", "user", "user-1", AuditResultSuccess, nil); err != nil {
+		t.Fatalf("Failed to log action: %v", err)
+	}
+	if err := logger.LogAction(ctx, "user-2", "create", "user", "user-2", AuditResultSuccess, nil); err != nil {
+		t.Fatalf("Failed to log action: %v", err)
+	}
+
+	// 先查询所有日志，验证保存成功
+	allLogs, err := logger.QueryLogs(ctx, nil)
+	if err != nil {
+		t.Fatalf("Failed to query all logs: %v", err)
+	}
+	if len(allLogs) != 3 {
+		t.Fatalf("Expected 3 total logs, got %d", len(allLogs))
+	}
 
 	// 查询特定用户的日志
 	filter := &AuditLogFilter{
@@ -102,7 +117,7 @@ func TestAuditLogger_QueryLogs(t *testing.T) {
 	}
 
 	if len(logs) != 2 {
-		t.Errorf("Expected 2 logs, got %d", len(logs))
+		t.Errorf("Expected 2 logs for user-1, got %d", len(logs))
 	}
 
 	// 查询特定操作的日志
@@ -116,7 +131,7 @@ func TestAuditLogger_QueryLogs(t *testing.T) {
 	}
 
 	if len(logs) != 2 {
-		t.Errorf("Expected 2 logs, got %d", len(logs))
+		t.Errorf("Expected 2 logs with action 'create', got %d", len(logs))
 	}
 }
 
