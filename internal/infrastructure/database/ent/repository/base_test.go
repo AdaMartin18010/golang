@@ -109,6 +109,7 @@ func TestBaseRepository_WithTx_Commit(t *testing.T) {
 	// 在事务中创建用户
 	err := repo.WithTx(ctx, func(tx *ent.Tx) error {
 		_, err := tx.User.Create().
+			SetID("tx-user-id").
 			SetEmail("tx@example.com").
 			SetName("Transaction User").
 			Save(ctx)
@@ -135,6 +136,7 @@ func TestBaseRepository_WithTx_Rollback(t *testing.T) {
 	testErr := errors.New("test error")
 	err := repo.WithTx(ctx, func(tx *ent.Tx) error {
 		_, err := tx.User.Create().
+			SetID("rollback-user-id").
 			SetEmail("rollback@example.com").
 			SetName("Rollback User").
 			Save(ctx)
@@ -144,7 +146,8 @@ func TestBaseRepository_WithTx_Rollback(t *testing.T) {
 		return testErr
 	})
 	assert.Error(t, err)
-	assert.Equal(t, testErr, err)
+	// 错误可能是被包装后的错误，检查错误消息包含 test error
+	assert.Contains(t, err.Error(), "test error")
 
 	// 验证用户未创建
 	exists, _ := client.User.Query().
@@ -170,6 +173,7 @@ func TestBaseRepository_WithTx_Panic(t *testing.T) {
 	// 在事务中触发 panic
 	_ = repo.WithTx(ctx, func(tx *ent.Tx) error {
 		_, err := tx.User.Create().
+			SetID("panic-user-id").
 			SetEmail("panic@example.com").
 			SetName("Panic User").
 			Save(ctx)

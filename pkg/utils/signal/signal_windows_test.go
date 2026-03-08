@@ -27,9 +27,8 @@ func TestNotifyInterrupt(t *testing.T) {
 }
 
 func TestHandleInterrupt(t *testing.T) {
-	handled := false
 	HandleInterrupt(func(sig os.Signal) {
-		handled = true
+		// 信号处理函数被调用
 	})
 	// 注意：实际测试中需要发送信号，这里只测试函数调用
 }
@@ -59,9 +58,8 @@ func TestSignalName(t *testing.T) {
 
 func TestGracefulShutdown(t *testing.T) {
 	gs := NewGracefulShutdown()
-	handled := false
 	gs.AddHandler(func() {
-		handled = true
+		// 处理函数被调用
 	})
 	// 注意：实际测试中需要发送信号，这里只测试函数调用
 }

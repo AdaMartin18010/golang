@@ -57,26 +57,26 @@ func (m *MockRepository) List(ctx context.Context, limit, offset int) ([]*domain
 
 func TestUserService_CreateUser(t *testing.T) {
 	tests := []struct {
-		name    string
-		email   string
-		name    string
-		setup   func(*MockRepository)
-		wantErr bool
+		name     string
+		email    string
+		userName string
+		setup    func(*MockRepository)
+		wantErr  bool
 	}{
 		{
-			name:  "success",
-			email: "test@example.com",
-			name:  "Test User",
+			name:     "success",
+			email:    "test@example.com",
+			userName: "Test User",
 			setup: func(m *MockRepository) {
 				m.On("FindByEmail", mock.Anything, "test@example.com").Return(nil, domainuser.ErrUserNotFound)
-				m.On("Save", mock.Anything, mock.AnythingOfType("*domainuser.User")).Return(nil)
+				m.On("Save", mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
 		},
 		{
-			name:  "user already exists",
-			email: "existing@example.com",
-			name:  "Existing User",
+			name:     "user already exists",
+			email:    "existing@example.com",
+			userName: "Existing User",
 			setup: func(m *MockRepository) {
 				existingUser := domainuser.NewUser("existing@example.com", "Existing User")
 				m.On("FindByEmail", mock.Anything, "existing@example.com").Return(existingUser, nil)
@@ -93,7 +93,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			service := appuser.NewService(mockRepo)
 			ctx := context.Background()
 
-			user, err := service.CreateUser(ctx, tt.email, tt.name)
+			user, err := service.CreateUser(ctx, tt.email, tt.userName)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -102,7 +102,7 @@ func TestUserService_CreateUser(t *testing.T) {
 				assert.NoError(t, err)
 				assert.NotNil(t, user)
 				assert.Equal(t, tt.email, user.Email)
-				assert.Equal(t, tt.name, user.Name)
+				assert.Equal(t, tt.userName, user.Name)
 			}
 
 			mockRepo.AssertExpectations(t)

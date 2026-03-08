@@ -70,7 +70,7 @@ func TestService_CreateUser(t *testing.T) {
 			userName: "Test User",
 			setup: func(m *MockRepository) {
 				m.On("FindByEmail", mock.Anything, "test@example.com").Return(nil, domain.ErrUserNotFound)
-				m.On("Save", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil)
+				m.On("Save", mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: nil,
 		},

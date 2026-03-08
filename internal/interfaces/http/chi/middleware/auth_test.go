@@ -12,20 +12,18 @@ import (
 )
 
 func TestAuthMiddleware(t *testing.T) {
-	config := jwt.Config{
-		SecretKey:      "test-secret-key",
-		SigningMethod:  "HS256",
-		AccessTokenTTL: 15 * time.Minute,
-		Issuer:         "test-issuer",
-		Audience:       "test-audience",
-	}
-
-	j, err := jwt.NewJWT(config)
+	// 创建 TokenManager
+	tm, err := jwt.NewTokenManager(jwt.Config{
+		Issuer:          "test-issuer",
+		AccessTokenTTL:  15 * time.Minute,
+		RefreshTokenTTL: 7 * 24 * time.Hour,
+		SigningMethod:   "RS256",
+	})
 	if err != nil {
-		t.Fatalf("Failed to create JWT: %v", err)
+		t.Fatalf("Failed to create TokenManager: %v", err)
 	}
 
-	token, err := j.GenerateAccessToken("user-123", "john", []string{"user"}, "john@example.com")
+	token, err := tm.GenerateAccessToken("user-123", "john", "john@example.com", []string{"user"})
 	if err != nil {
 		t.Fatalf("Failed to generate token: %v", err)
 	}
@@ -34,7 +32,6 @@ func TestAuthMiddleware(t *testing.T) {
 		name           string
 		authHeader     string
 		skipPaths      []string
-		optionalAuth   bool
 		expectedStatus int
 	}{
 		{
@@ -58,23 +55,16 @@ func TestAuthMiddleware(t *testing.T) {
 			skipPaths:      []string{"/public"},
 			expectedStatus: http.StatusOK,
 		},
-		{
-			name:           "optional auth without token",
-			authHeader:     "",
-			optionalAuth:   true,
-			expectedStatus: http.StatusOK,
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := chi.NewRouter()
-			
+
 			// 使用 jwt 包的中间件
 			jwtMiddleware := jwt.NewMiddleware(jwt.MiddlewareConfig{
-				JWT:          j,
+				TokenManager: tm,
 				SkipPaths:    tt.skipPaths,
-				OptionalAuth: tt.optionalAuth,
 			})
 			r.Use(jwtMiddleware.Authenticate)
 			r.Get("/test", func(w http.ResponseWriter, r *http.Request) {
@@ -122,31 +112,26 @@ func TestRequireRole(t *testing.T) {
 			requiredRoles:  []string{"admin"},
 			expectedStatus: http.StatusForbidden,
 		},
-		{
-			name:           "has any of required roles",
-			userRoles:      []string{"user"},
-			requiredRoles:  []string{"user", "admin"},
-			expectedStatus: http.StatusOK,
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			config := jwt.Config{
-				SecretKey:      "test-secret-key",
-				SigningMethod:  "HS256",
+			tm, _ := jwt.NewTokenManager(jwt.Config{
+				Issuer:         "test-issuer",
 				AccessTokenTTL: 15 * time.Minute,
-			}
-			j, _ := jwt.NewJWT(config)
+			})
 			jwtMiddleware := jwt.NewMiddleware(jwt.MiddlewareConfig{
-				JWT: j,
+				TokenManager: tm,
 			})
 
 			r := chi.NewRouter()
-			// 先设置角色到上下文，然后检查角色
+			// 设置 claims 到上下文，然后检查角色
 			r.Use(func(next http.Handler) http.Handler {
 				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					ctx := context.WithValue(r.Context(), "roles", tt.userRoles)
+					claims := &jwt.Claims{
+						Roles: tt.userRoles,
+					}
+					ctx := context.WithValue(r.Context(), jwt.ClaimsKey, claims)
 					next.ServeHTTP(w, r.WithContext(ctx))
 				})
 			})

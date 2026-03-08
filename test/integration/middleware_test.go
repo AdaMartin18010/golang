@@ -20,15 +20,12 @@ func TestMiddlewareIntegration(t *testing.T) {
 	}
 	defer tf.Shutdown()
 
-	// 创建测试处理器
+	// 测试日志中间件
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
-
-	// 测试日志中间件
-	loggingMiddleware := operational.LoggingMiddleware()
-	loggedHandler := loggingMiddleware(handler)
+	loggedHandler := operational.LoggingMiddleware(handler)
 
 	req := httptest.NewRequest("GET", "/test", nil)
 	rr := httptest.NewRecorder()
@@ -49,14 +46,11 @@ func TestRecoveryMiddlewareIntegration(t *testing.T) {
 	}
 	defer tf.Shutdown()
 
-	// 创建会panic的处理器
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 创建会panic的处理器并使用恢复中间件
+	panicHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		panic("test panic")
 	})
-
-	// 使用恢复中间件
-	recoveryMiddleware := operational.RecoveryMiddleware()
-	recoveredHandler := recoveryMiddleware(handler)
+	recoveredHandler := operational.RecoveryMiddleware(panicHandler)
 
 	req := httptest.NewRequest("GET", "/test", nil)
 	rr := httptest.NewRecorder()
@@ -78,21 +72,12 @@ func TestCORSMiddlewareIntegration(t *testing.T) {
 	}
 	defer tf.Shutdown()
 
-	// 创建CORS配置
-	corsConfig := operational.CORSConfig{
-		AllowedOrigins: []string{"http://localhost:3000"},
-		AllowedMethods: []string{"GET", "POST"},
-		AllowedHeaders: []string{"Content-Type"},
-		MaxAge:         3600,
-	}
-
 	// 创建CORS中间件
-	corsMiddleware := operational.CORSMiddleware(corsConfig)
+	corsMiddleware := operational.CORSMiddleware([]string{"http://localhost:3000"})
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
-
 	corsHandler := corsMiddleware(handler)
 
 	// 测试预检请求

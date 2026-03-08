@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/yourusername/golang/pkg/auth/oauth2"
 )
@@ -20,14 +19,8 @@ func TestOAuth2AuthorizationCodeFlow(t *testing.T) {
 	}
 	defer tf.Shutdown()
 
-	ctx := context.Background()
-
 	// 创建 OAuth2 服务器
-	tokenStore := oauth2.NewMemoryTokenStore()
-	clientStore := oauth2.NewMemoryClientStore()
-	codeStore := oauth2.NewMemoryCodeStore()
-
-	server := oauth2.NewServer(oauth2.DefaultServerConfig(), tokenStore, clientStore, codeStore)
+	server := oauth2.NewServer(oauth2.DefaultServerConfig())
 
 	// 创建测试客户端
 	client := &oauth2.Client{
@@ -38,23 +31,24 @@ func TestOAuth2AuthorizationCodeFlow(t *testing.T) {
 		Scopes:       []string{"read", "write"},
 	}
 
-	err = clientStore.Save(ctx, client)
+	ctx := context.Background()
+	err = server.RegisterClient(client)
 	if err != nil {
-		t.Fatalf("Failed to save client: %v", err)
+		t.Fatalf("Failed to register client: %v", err)
 	}
 
 	// 1. 生成授权码
-	authCode, err := server.GenerateAuthorizationCode(ctx, "test-user", client.ID, "http://localhost:8080/callback", []string{"read", "write"})
+	code, err := server.GenerateAuthCode(ctx, client.ID, "http://localhost:8080/callback", "read write", "test-user")
 	if err != nil {
 		t.Fatalf("Failed to generate authorization code: %v", err)
 	}
 
-	if authCode.Code == "" {
+	if code == "" {
 		t.Error("Authorization code should not be empty")
 	}
 
 	// 2. 交换访问令牌
-	token, err := server.ExchangeAuthorizationCode(ctx, authCode.Code, client.ID, client.Secret, "http://localhost:8080/callback")
+	token, err := server.ExchangeAuthCode(ctx, code, client.ID, client.Secret, "http://localhost:8080/callback")
 	if err != nil {
 		t.Fatalf("Failed to exchange authorization code: %v", err)
 	}
@@ -86,10 +80,7 @@ func TestOAuth2ClientCredentialsFlow(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建 OAuth2 服务器
-	tokenStore := oauth2.NewMemoryTokenStore()
-	clientStore := oauth2.NewMemoryClientStore()
-
-	server := oauth2.NewServer(oauth2.DefaultServerConfig(), tokenStore, clientStore, nil)
+	server := oauth2.NewServer(oauth2.DefaultServerConfig())
 
 	// 创建测试客户端
 	client := &oauth2.Client{
@@ -99,13 +90,13 @@ func TestOAuth2ClientCredentialsFlow(t *testing.T) {
 		Scopes:     []string{"read", "write"},
 	}
 
-	err = clientStore.Save(ctx, client)
+	err = server.RegisterClient(client)
 	if err != nil {
-		t.Fatalf("Failed to save client: %v", err)
+		t.Fatalf("Failed to register client: %v", err)
 	}
 
 	// 生成客户端凭证令牌
-	token, err := server.GenerateClientCredentialsToken(ctx, client.ID, client.Secret, []string{"read", "write"})
+	token, err := server.GenerateClientCredentialsToken(ctx, client.ID, client.Secret, "read write")
 	if err != nil {
 		t.Fatalf("Failed to generate client credentials token: %v", err)
 	}
@@ -137,11 +128,7 @@ func TestOAuth2RefreshTokenFlow(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建 OAuth2 服务器
-	tokenStore := oauth2.NewMemoryTokenStore()
-	clientStore := oauth2.NewMemoryClientStore()
-	codeStore := oauth2.NewMemoryCodeStore()
-
-	server := oauth2.NewServer(oauth2.DefaultServerConfig(), tokenStore, clientStore, codeStore)
+	server := oauth2.NewServer(oauth2.DefaultServerConfig())
 
 	// 创建测试客户端
 	client := &oauth2.Client{
@@ -152,14 +139,14 @@ func TestOAuth2RefreshTokenFlow(t *testing.T) {
 		Scopes:       []string{"read", "write"},
 	}
 
-	err = clientStore.Save(ctx, client)
+	err = server.RegisterClient(client)
 	if err != nil {
-		t.Fatalf("Failed to save client: %v", err)
+		t.Fatalf("Failed to register client: %v", err)
 	}
 
 	// 1. 生成初始令牌（带刷新令牌）
-	authCode, _ := server.GenerateAuthorizationCode(ctx, "test-user", client.ID, "http://localhost:8080/callback", []string{"read", "write"})
-	token, _ := server.ExchangeAuthorizationCode(ctx, authCode.Code, client.ID, client.Secret, "http://localhost:8080/callback")
+	code, _ := server.GenerateAuthCode(ctx, client.ID, "http://localhost:8080/callback", "read write", "test-user")
+	token, _ := server.ExchangeAuthCode(ctx, code, client.ID, client.Secret, "http://localhost:8080/callback")
 
 	if token.RefreshToken == "" {
 		t.Fatal("Refresh token should be generated")
@@ -189,14 +176,8 @@ func TestOAuth2HTTPHandler(t *testing.T) {
 	}
 	defer tf.Shutdown()
 
-	ctx := context.Background()
-
 	// 创建 OAuth2 服务器
-	tokenStore := oauth2.NewMemoryTokenStore()
-	clientStore := oauth2.NewMemoryClientStore()
-	codeStore := oauth2.NewMemoryCodeStore()
-
-	server := oauth2.NewServer(oauth2.DefaultServerConfig(), tokenStore, clientStore, codeStore)
+	server := oauth2.NewServer(oauth2.DefaultServerConfig())
 
 	// 创建测试客户端
 	client := &oauth2.Client{
@@ -207,9 +188,9 @@ func TestOAuth2HTTPHandler(t *testing.T) {
 		Scopes:       []string{"read", "write"},
 	}
 
-	err = clientStore.Save(ctx, client)
+	err = server.RegisterClient(client)
 	if err != nil {
-		t.Fatalf("Failed to save client: %v", err)
+		t.Fatalf("Failed to register client: %v", err)
 	}
 
 	// 创建测试服务器
