@@ -6,8 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 )
+
+var auditLogIDCounter uint64
 
 var (
 	// ErrAuditLogNotFound 审计日志未找到
@@ -160,7 +163,8 @@ func (l *AuditLogger) DeleteLog(ctx context.Context, logID string) error {
 
 // generateAuditLogID 生成审计日志 ID
 func generateAuditLogID() string {
-	return fmt.Sprintf("audit_%d_%d", time.Now().UnixNano(), time.Now().Unix())
+	counter := atomic.AddUint64(&auditLogIDCounter, 1)
+	return fmt.Sprintf("audit_%d_%d", time.Now().UnixNano(), counter)
 }
 
 // MemoryAuditLogStore 内存审计日志存储（用于测试）
