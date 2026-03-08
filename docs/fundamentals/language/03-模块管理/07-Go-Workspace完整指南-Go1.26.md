@@ -8,7 +8,7 @@
 
 ## 📋 目录
 
-- [Go Workspace完整指南 - Go 1.26](#go-workspace完整指南---go-1253)
+- [Go Workspace完整指南 - Go 1.26](#go-workspace完整指南---go-126)
   - [📋 目录](#-目录)
   - [1. 📖 Go Workspace概述](#1--go-workspace概述)
     - [1.1 什么是Go Workspace？](#11-什么是go-workspace)
