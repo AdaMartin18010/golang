@@ -148,6 +148,7 @@ func TestPasswordHashingIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to hash password: %v", err)
 	}
+	t.Logf("Generated hash: %s", hash)
 
 	// 验证正确密码
 	valid, err := hasher.Verify(password, hash)

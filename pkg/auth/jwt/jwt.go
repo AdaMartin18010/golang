@@ -100,6 +100,10 @@ func (j *JWT) GenerateRefreshToken(userID string) (string, error) {
 func (j *JWT) ValidateToken(tokenString string) (*Claims, error) {
 	token, err := j.parseToken(tokenString)
 	if err != nil {
+		// 检查是否是过期错误
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, ErrExpiredToken
+		}
 		return nil, err
 	}
 

@@ -14,13 +14,13 @@ import (
 // Server OAuth2 服务器
 // 提供 OAuth2 授权服务器功能
 type Server struct {
-	clients      map[string]*Client
-	tokens       map[string]*Token
-	authCodes    map[string]*AuthCode
-	config       *ServerConfig
-	tokenStore   TokenStore
-	clientStore  ClientStore
-	codeStore    CodeStore
+	clients     map[string]*Client
+	tokens      map[string]*Token
+	authCodes   map[string]*AuthCode
+	config      *ServerConfig
+	tokenStore  TokenStore
+	clientStore ClientStore
+	codeStore   CodeStore
 }
 
 // ServerConfig OAuth2 服务器配置
@@ -115,6 +115,7 @@ type TokenStore interface {
 type ClientStore interface {
 	Get(ctx context.Context, clientID string) (*Client, error)
 	ValidateSecret(ctx context.Context, clientID, secret string) error
+	Save(ctx context.Context, client *Client) error
 }
 
 // CodeStore 授权码存储接口
@@ -131,11 +132,11 @@ func NewServer(config *ServerConfig) *Server {
 	}
 
 	return &Server{
-		clients:    make(map[string]*Client),
-		tokens:     make(map[string]*Token),
-		authCodes:  make(map[string]*AuthCode),
-		config:     config,
-		tokenStore: NewMemoryTokenStore(),
+		clients:     make(map[string]*Client),
+		tokens:      make(map[string]*Token),
+		authCodes:   make(map[string]*AuthCode),
+		config:      config,
+		tokenStore:  NewMemoryTokenStore(),
 		clientStore: NewMemoryClientStore(),
 		codeStore:   NewMemoryCodeStore(),
 	}
@@ -165,7 +166,11 @@ func (s *Server) RegisterClient(client *Client) error {
 		return errors.New("client secret is required")
 	}
 
+	// 同时保存到内存 map 和 clientStore
 	s.clients[client.ID] = client
+	if s.clientStore != nil {
+		return s.clientStore.Save(context.Background(), client)
+	}
 	return nil
 }
 
@@ -256,20 +261,28 @@ func (s *Server) RefreshToken(ctx context.Context, refreshToken, clientID, clien
 		return nil, fmt.Errorf("invalid client credentials: %w", err)
 	}
 
-	// 查找令牌
-	token, err := s.tokenStore.Get(ctx, refreshToken)
-	if err != nil {
-		// 尝试通过刷新令牌查找
-		tokens := s.tokens
-		for _, t := range tokens {
-			if t.RefreshToken == refreshToken {
-				token = t
-				break
-			}
+	// 查找令牌 - 通过刷新令牌查找
+	// 首先尝试在内存中查找
+	var token *Token
+	for _, t := range s.tokens {
+		if t.RefreshToken == refreshToken {
+			token = t
+			break
 		}
-		if token == nil {
-			return nil, errors.New("invalid refresh token")
-		}
+	}
+
+	// 如果在内存中没找到，尝试通过 tokenStore 的 DeleteByRefreshToken 的查找逻辑
+	// 由于 TokenStore 接口没有直接通过 refresh token 获取的方法，
+	// 我们需要遍历存储来查找
+	if token == nil {
+		// 尝试获取所有可能的令牌（这里使用一种简单的方式：通过 access token 反向查找）
+		// 实际上我们需要存储支持通过 refresh token 查找
+		// 这里我们尝试从 s.tokens 查找，这是内存存储的备用
+		token = s.findTokenByRefreshToken(refreshToken)
+	}
+
+	if token == nil {
+		return nil, errors.New("invalid refresh token")
 	}
 
 	// 验证客户端 ID
@@ -285,9 +298,20 @@ func (s *Server) RefreshToken(ctx context.Context, refreshToken, clientID, clien
 
 	// 删除旧令牌
 	s.tokenStore.DeleteByRefreshToken(ctx, refreshToken)
+	delete(s.tokens, token.AccessToken)
 
 	// 生成新令牌
 	return s.generateToken(ctx, clientID, token.UserID, token.Scope)
+}
+
+// findTokenByRefreshToken 通过刷新令牌查找令牌（辅助方法）
+func (s *Server) findTokenByRefreshToken(refreshToken string) *Token {
+	for _, t := range s.tokens {
+		if t.RefreshToken == refreshToken {
+			return t
+		}
+	}
+	return nil
 }
 
 // ValidateToken 验证访问令牌
@@ -322,17 +346,20 @@ func (s *Server) generateToken(ctx context.Context, clientID, userID, scope stri
 		RefreshToken: refreshToken,
 		TokenType:    s.config.TokenType,
 		ExpiresIn:    int64(s.config.AccessTokenLifetime.Seconds()),
-		Scope:         scope,
-		ClientID:      clientID,
-		UserID:        userID,
-		CreatedAt:     now,
-		ExpiresAt:     now.Add(s.config.AccessTokenLifetime),
+		Scope:        scope,
+		ClientID:     clientID,
+		UserID:       userID,
+		CreatedAt:    now,
+		ExpiresAt:    now.Add(s.config.AccessTokenLifetime),
 	}
 
-	// 保存令牌
+	// 保存令牌到 tokenStore
 	if err := s.tokenStore.Save(ctx, token); err != nil {
 		return nil, fmt.Errorf("failed to save token: %w", err)
 	}
+
+	// 同时保存到内存 map，以便 RefreshToken 可以查找
+	s.tokens[accessToken] = token
 
 	return token, nil
 }

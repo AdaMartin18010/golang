@@ -6,9 +6,22 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi/v5"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
+func initTestTracer() {
+	// 初始化一个测试用的 TracerProvider
+	provider := trace.NewTracerProvider(
+		trace.WithSampler(trace.AlwaysSample()),
+	)
+	otel.SetTracerProvider(provider)
+}
+
 func TestTracingMiddleware(t *testing.T) {
+	// 初始化测试 tracer
+	initTestTracer()
+
 	config := TracingConfig{
 		TracerName:     "test-tracer",
 		ServiceName:    "test-service",

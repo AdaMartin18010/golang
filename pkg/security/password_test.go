@@ -30,6 +30,7 @@ func TestPasswordHasher_Verify(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to hash password: %v", err)
 	}
+	t.Logf("Hash: %s, len(parts)=%d", hash, len(hash))
 
 	// 验证正确密码
 	valid, err := hasher.Verify(password, hash)
@@ -87,10 +88,10 @@ func TestPasswordValidator_Validate(t *testing.T) {
 		valid    bool
 	}{
 		{"ValidPass123", true},
-		{"short", false},           // 太短
-		{"nouppercase123", false},  // 没有大写
-		{"NOLOWERCASE123", false},  // 没有小写
-		{"NoDigits", false},         // 没有数字
+		{"short", false},          // 太短
+		{"nouppercase123", false}, // 没有大写
+		{"NOLOWERCASE123", false}, // 没有小写
+		{"NoDigits", false},       // 没有数字
 		{"ValidPass123", true},
 	}
 

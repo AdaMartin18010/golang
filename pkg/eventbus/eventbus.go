@@ -536,7 +536,13 @@ func (eb *EventBus) Start() error {
 func (eb *EventBus) Stop() error {
 	eb.cancel()
 	eb.wg.Wait()
-	close(eb.eventChan)
+	// 使用 select 防止重复关闭或向已关闭的 channel 发送
+	select {
+	case <-eb.eventChan:
+		// channel 已经关闭
+	default:
+		close(eb.eventChan)
+	}
 	return nil
 }
 
@@ -704,6 +710,14 @@ func (eb *EventBus) Unsubscribe(subscriptionID string) error {
 //	    }
 //	}
 func (eb *EventBus) Publish(event Event) error {
+	// 首先检查 context 是否已取消
+	select {
+	case <-eb.ctx.Done():
+		return ErrEventBusStopped
+	default:
+	}
+
+	// 尝试发送事件
 	select {
 	case eb.eventChan <- event:
 		eb.metrics.mu.Lock()

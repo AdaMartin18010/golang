@@ -73,9 +73,9 @@ func (h *PasswordHasher) Hash(password string) (string, error) {
 	// 使用 Argon2id 哈希密码
 	hash := argon2.IDKey([]byte(password), salt, h.iterations, h.memory, h.parallelism, h.keyLength)
 
-	// 编码为 base64
-	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
-	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
+	// 编码为 base64 (使用 URL 编码避免特殊字符)
+	b64Salt := base64.RawURLEncoding.EncodeToString(salt)
+	b64Hash := base64.RawURLEncoding.EncodeToString(hash)
 
 	// 返回格式：argon2id$v=19$m=65536,t=3,p=2$salt$hash
 	return fmt.Sprintf("argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s",
@@ -92,7 +92,7 @@ func (h *PasswordHasher) Hash(password string) (string, error) {
 func (h *PasswordHasher) Verify(password, encodedHash string) (bool, error) {
 	// 解析哈希字符串
 	parts := strings.Split(encodedHash, "$")
-	if len(parts) != 6 {
+	if len(parts) != 5 {
 		return false, ErrInvalidHash
 	}
 
@@ -118,12 +118,12 @@ func (h *PasswordHasher) Verify(password, encodedHash string) (bool, error) {
 	}
 
 	// 解码盐和哈希
-	salt, err := base64.RawStdEncoding.DecodeString(parts[3])
+	salt, err := base64.RawURLEncoding.DecodeString(parts[3])
 	if err != nil {
 		return false, ErrInvalidHash
 	}
 
-	hash, err := base64.RawStdEncoding.DecodeString(parts[4])
+	hash, err := base64.RawURLEncoding.DecodeString(parts[4])
 	if err != nil {
 		return false, ErrInvalidHash
 	}
@@ -138,7 +138,7 @@ func (h *PasswordHasher) Verify(password, encodedHash string) (bool, error) {
 // NeedsRehash 检查是否需要重新哈希
 func (h *PasswordHasher) NeedsRehash(encodedHash string) bool {
 	parts := strings.Split(encodedHash, "$")
-	if len(parts) != 6 {
+	if len(parts) != 5 {
 		return true
 	}
 
@@ -154,32 +154,32 @@ func (h *PasswordHasher) NeedsRehash(encodedHash string) bool {
 
 // PasswordValidator 密码验证器
 type PasswordValidator struct {
-	minLength    int
-	maxLength    int
-	requireUpper bool
-	requireLower bool
-	requireDigit bool
+	minLength      int
+	maxLength      int
+	requireUpper   bool
+	requireLower   bool
+	requireDigit   bool
 	requireSpecial bool
 }
 
 // PasswordValidatorConfig 密码验证器配置
 type PasswordValidatorConfig struct {
-	MinLength     int
-	MaxLength     int
-	RequireUpper  bool
-	RequireLower  bool
-	RequireDigit  bool
+	MinLength      int
+	MaxLength      int
+	RequireUpper   bool
+	RequireLower   bool
+	RequireDigit   bool
 	RequireSpecial bool
 }
 
 // DefaultPasswordValidatorConfig 默认密码验证器配置
 func DefaultPasswordValidatorConfig() PasswordValidatorConfig {
 	return PasswordValidatorConfig{
-		MinLength:     8,
-		MaxLength:     128,
-		RequireUpper:  true,
-		RequireLower:  true,
-		RequireDigit:  true,
+		MinLength:      8,
+		MaxLength:      128,
+		RequireUpper:   true,
+		RequireLower:   true,
+		RequireDigit:   true,
 		RequireSpecial: false,
 	}
 }
@@ -191,11 +191,11 @@ func NewPasswordValidator(config PasswordValidatorConfig) *PasswordValidator {
 	}
 
 	return &PasswordValidator{
-		minLength:     config.MinLength,
-		maxLength:     config.MaxLength,
-		requireUpper:  config.RequireUpper,
-		requireLower:  config.RequireLower,
-		requireDigit:  config.RequireDigit,
+		minLength:      config.MinLength,
+		maxLength:      config.MaxLength,
+		requireUpper:   config.RequireUpper,
+		requireLower:   config.RequireLower,
+		requireDigit:   config.RequireDigit,
 		requireSpecial: config.RequireSpecial,
 	}
 }
