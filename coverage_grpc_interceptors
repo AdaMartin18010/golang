@@ -1,0 +1,11 @@
+mode: set
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/logging.go:11.144,19.16 3 1
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/logging.go:19.16,24.3 1 1
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/logging.go:24.8,28.3 1 1
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/logging.go:30.2,30.18 1 1
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/tracing.go:16.144,25.8 5 0
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/tracing.go:25.8,28.3 1 0
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/tracing.go:30.2,32.16 2 0
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/tracing.go:32.16,36.3 3 0
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/tracing.go:36.8,38.3 1 0
+github.com/yourusername/golang/internal/interfaces/grpc/interceptors/tracing.go:40.2,45.18 2 0

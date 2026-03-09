@@ -8,7 +8,7 @@ import (
 
 func TestServer_GenerateAuthCode(t *testing.T) {
 	server := NewServer(DefaultServerConfig())
-	
+
 	// 注册客户端
 	client := &Client{
 		ID:           "test-client",
@@ -18,7 +18,7 @@ func TestServer_GenerateAuthCode(t *testing.T) {
 		Scopes:       []string{"read", "write"},
 		CreatedAt:    time.Now(),
 	}
-	
+
 	if err := server.clientStore.(*MemoryClientStore).Save(context.Background(), client); err != nil {
 		t.Fatalf("Failed to register client: %v", err)
 	}
@@ -50,7 +50,7 @@ func TestServer_GenerateAuthCode(t *testing.T) {
 
 func TestServer_ExchangeAuthCode(t *testing.T) {
 	server := NewServer(DefaultServerConfig())
-	
+
 	// 注册客户端
 	client := &Client{
 		ID:           "test-client",
@@ -60,13 +60,13 @@ func TestServer_ExchangeAuthCode(t *testing.T) {
 		Scopes:       []string{"read", "write"},
 		CreatedAt:    time.Now(),
 	}
-	
+
 	if err := server.clientStore.(*MemoryClientStore).Save(context.Background(), client); err != nil {
 		t.Fatalf("Failed to register client: %v", err)
 	}
 
 	ctx := context.Background()
-	
+
 	// 生成授权码
 	code, err := server.GenerateAuthCode(ctx, "test-client", "http://localhost:8080/callback", "read write", "user-123")
 	if err != nil {
@@ -104,7 +104,7 @@ func TestServer_ExchangeAuthCode(t *testing.T) {
 
 func TestServer_GenerateClientCredentialsToken(t *testing.T) {
 	server := NewServer(DefaultServerConfig())
-	
+
 	// 注册客户端
 	client := &Client{
 		ID:         "test-client",
@@ -113,7 +113,7 @@ func TestServer_GenerateClientCredentialsToken(t *testing.T) {
 		Scopes:     []string{"read", "write"},
 		CreatedAt:  time.Now(),
 	}
-	
+
 	if err := server.clientStore.(*MemoryClientStore).Save(context.Background(), client); err != nil {
 		t.Fatalf("Failed to register client: %v", err)
 	}
@@ -140,7 +140,7 @@ func TestServer_GenerateClientCredentialsToken(t *testing.T) {
 
 func TestServer_RefreshToken(t *testing.T) {
 	server := NewServer(DefaultServerConfig())
-	
+
 	// 注册客户端
 	client := &Client{
 		ID:         "test-client",
@@ -149,13 +149,13 @@ func TestServer_RefreshToken(t *testing.T) {
 		Scopes:     []string{"read", "write"},
 		CreatedAt:  time.Now(),
 	}
-	
+
 	if err := server.clientStore.(*MemoryClientStore).Save(context.Background(), client); err != nil {
 		t.Fatalf("Failed to register client: %v", err)
 	}
 
 	ctx := context.Background()
-	
+
 	// 生成初始令牌
 	originalToken, err := server.GenerateClientCredentialsToken(ctx, "test-client", "test-secret", "read write")
 	if err != nil {
@@ -185,7 +185,7 @@ func TestServer_RefreshToken(t *testing.T) {
 
 func TestServer_ValidateToken(t *testing.T) {
 	server := NewServer(DefaultServerConfig())
-	
+
 	// 注册客户端
 	client := &Client{
 		ID:         "test-client",
@@ -194,7 +194,7 @@ func TestServer_ValidateToken(t *testing.T) {
 		Scopes:     []string{"read"},
 		CreatedAt:  time.Now(),
 	}
-	
+
 	if err := server.clientStore.(*MemoryClientStore).Save(context.Background(), client); err != nil {
 		t.Fatalf("Failed to register client: %v", err)
 	}
@@ -218,7 +218,7 @@ func TestServer_ValidateToken(t *testing.T) {
 
 func TestServer_RevokeToken(t *testing.T) {
 	server := NewServer(DefaultServerConfig())
-	
+
 	// 注册客户端
 	client := &Client{
 		ID:         "test-client",
@@ -227,7 +227,7 @@ func TestServer_RevokeToken(t *testing.T) {
 		Scopes:     []string{"read"},
 		CreatedAt:  time.Now(),
 	}
-	
+
 	if err := server.clientStore.(*MemoryClientStore).Save(context.Background(), client); err != nil {
 		t.Fatalf("Failed to register client: %v", err)
 	}

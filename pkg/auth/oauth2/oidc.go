@@ -15,11 +15,11 @@ import (
 
 // OIDCProvider OpenID Connect 提供者
 type OIDCProvider struct {
-	server      *Server
-	issuer      string
-	privateKey  *rsa.PrivateKey
-	publicKey   *rsa.PublicKey
-	userStore   UserStore
+	server     *Server
+	issuer     string
+	privateKey *rsa.PrivateKey
+	publicKey  *rsa.PublicKey
+	userStore  UserStore
 }
 
 // UserStore 用户存储接口
@@ -53,18 +53,18 @@ type UserInfo struct {
 
 // IDTokenClaims ID Token Claims
 type IDTokenClaims struct {
-	Issuer              string   `json:"iss"`
-	Subject             string   `json:"sub"`
-	Audience            []string `json:"aud"`
-	ExpirationTime      int64    `json:"exp"`
-	IssuedAt            int64    `json:"iat"`
-	AuthTime            int64    `json:"auth_time,omitempty"`
-	Nonce               string   `json:"nonce,omitempty"`
-	AccessTokenHash     string   `json:"at_hash,omitempty"`
-	CodeHash            string   `json:"c_hash,omitempty"`
-	AuthenticationClass string   `json:"acr,omitempty"`
-	AuthenticationMethod string `json:"amr,omitempty"`
-	AuthorizedParty     string   `json:"azp,omitempty"`
+	Issuer               string   `json:"iss"`
+	Subject              string   `json:"sub"`
+	Audience             []string `json:"aud"`
+	ExpirationTime       int64    `json:"exp"`
+	IssuedAt             int64    `json:"iat"`
+	AuthTime             int64    `json:"auth_time,omitempty"`
+	Nonce                string   `json:"nonce,omitempty"`
+	AccessTokenHash      string   `json:"at_hash,omitempty"`
+	CodeHash             string   `json:"c_hash,omitempty"`
+	AuthenticationClass  string   `json:"acr,omitempty"`
+	AuthenticationMethod string   `json:"amr,omitempty"`
+	AuthorizedParty      string   `json:"azp,omitempty"`
 	jwt.RegisteredClaims
 }
 
@@ -107,9 +107,9 @@ func (p *OIDCProvider) GenerateIDToken(ctx context.Context, userID, clientID, no
 		AuthTime:       now.Unix(),
 		Nonce:          nonce,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:  p.issuer,
-			Subject: userInfo.Subject,
-			Audience: jwt.ClaimStrings{clientID},
+			Issuer:    p.issuer,
+			Subject:   userInfo.Subject,
+			Audience:  jwt.ClaimStrings{clientID},
 			ExpiresAt: jwt.NewNumericDate(now.Add(3600 * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(now),
 		},
@@ -203,31 +203,31 @@ func (p *OIDCProvider) GetUserInfo(ctx context.Context, accessToken string) (*Us
 // GetDiscoveryDocument 获取 Discovery 文档
 func (p *OIDCProvider) GetDiscoveryDocument() *DiscoveryDocument {
 	return &DiscoveryDocument{
-		Issuer:                            p.issuer,
-		AuthorizationEndpoint:            fmt.Sprintf("%s/oauth/authorize", p.issuer),
-		TokenEndpoint:                    fmt.Sprintf("%s/oauth/token", p.issuer),
-		UserInfoEndpoint:                 fmt.Sprintf("%s/userinfo", p.issuer),
-		JWKSUri:                          fmt.Sprintf("%s/.well-known/jwks.json", p.issuer),
-		RegistrationEndpoint:            fmt.Sprintf("%s/register", p.issuer),
-		ScopesSupported:                  []string{"openid", "profile", "email", "address", "phone", "offline_access"},
-		ResponseTypesSupported:           []string{"code", "id_token", "token", "id_token token"},
-		ResponseModesSupported:           []string{"query", "fragment", "form_post"},
-		GrantTypesSupported:             []string{"authorization_code", "client_credentials", "refresh_token"},
-		ACRValuesSupported:               []string{},
-		SubjectTypesSupported:           []string{"public"},
-		IDTokenSigningAlgValuesSupported: []string{"RS256"},
-		IDTokenEncryptionAlgValuesSupported: []string{},
-		IDTokenEncryptionEncValuesSupported: []string{},
-		UserInfoSigningAlgValuesSupported:   []string{"RS256"},
-		UserInfoEncryptionAlgValuesSupported: []string{},
-		UserInfoEncryptionEncValuesSupported: []string{},
-		RequestObjectSigningAlgValuesSupported: []string{},
-		RequestObjectEncryptionAlgValuesSupported: []string{},
-		RequestObjectEncryptionEncValuesSupported: []string{},
-		TokenEndpointAuthMethodsSupported:        []string{"client_secret_basic", "client_secret_post"},
+		Issuer:                                     p.issuer,
+		AuthorizationEndpoint:                      fmt.Sprintf("%s/oauth/authorize", p.issuer),
+		TokenEndpoint:                              fmt.Sprintf("%s/oauth/token", p.issuer),
+		UserInfoEndpoint:                           fmt.Sprintf("%s/userinfo", p.issuer),
+		JWKSUri:                                    fmt.Sprintf("%s/.well-known/jwks.json", p.issuer),
+		RegistrationEndpoint:                       fmt.Sprintf("%s/register", p.issuer),
+		ScopesSupported:                            []string{"openid", "profile", "email", "address", "phone", "offline_access"},
+		ResponseTypesSupported:                     []string{"code", "id_token", "token", "id_token token"},
+		ResponseModesSupported:                     []string{"query", "fragment", "form_post"},
+		GrantTypesSupported:                        []string{"authorization_code", "client_credentials", "refresh_token"},
+		ACRValuesSupported:                         []string{},
+		SubjectTypesSupported:                      []string{"public"},
+		IDTokenSigningAlgValuesSupported:           []string{"RS256"},
+		IDTokenEncryptionAlgValuesSupported:        []string{},
+		IDTokenEncryptionEncValuesSupported:        []string{},
+		UserInfoSigningAlgValuesSupported:          []string{"RS256"},
+		UserInfoEncryptionAlgValuesSupported:       []string{},
+		UserInfoEncryptionEncValuesSupported:       []string{},
+		RequestObjectSigningAlgValuesSupported:     []string{},
+		RequestObjectEncryptionAlgValuesSupported:  []string{},
+		RequestObjectEncryptionEncValuesSupported:  []string{},
+		TokenEndpointAuthMethodsSupported:          []string{"client_secret_basic", "client_secret_post"},
 		TokenEndpointAuthSigningAlgValuesSupported: []string{},
-		DisplayValuesSupported:                    []string{},
-		ClaimTypesSupported:                       []string{"normal"},
+		DisplayValuesSupported:                     []string{},
+		ClaimTypesSupported:                        []string{"normal"},
 		ClaimsSupported: []string{
 			"sub", "iss", "aud", "exp", "iat", "auth_time",
 			"nonce", "acr", "amr", "azp", "at_hash", "c_hash",
@@ -237,15 +237,15 @@ func (p *OIDCProvider) GetDiscoveryDocument() *DiscoveryDocument {
 			"birthdate", "zoneinfo", "locale", "phone_number",
 			"phone_number_verified", "address", "updated_at",
 		},
-		ServiceDocumentation: fmt.Sprintf("%s/docs", p.issuer),
-		ClaimsLocalesSupported: []string{},
-		UILocalesSupported:    []string{},
-		ClaimsParameterSupported: false,
-		RequestParameterSupported: false,
-		RequestURIParameterSupported: false,
+		ServiceDocumentation:          fmt.Sprintf("%s/docs", p.issuer),
+		ClaimsLocalesSupported:        []string{},
+		UILocalesSupported:            []string{},
+		ClaimsParameterSupported:      false,
+		RequestParameterSupported:     false,
+		RequestURIParameterSupported:  false,
 		RequireRequestURIRegistration: false,
-		OPPolicyURI:                    fmt.Sprintf("%s/policy", p.issuer),
-		OPTosURI:                       fmt.Sprintf("%s/tos", p.issuer),
+		OPPolicyURI:                   fmt.Sprintf("%s/policy", p.issuer),
+		OPTosURI:                      fmt.Sprintf("%s/tos", p.issuer),
 	}
 }
 
@@ -290,41 +290,41 @@ func (p *OIDCProvider) hashToken(token string) string {
 
 // DiscoveryDocument OIDC Discovery 文档
 type DiscoveryDocument struct {
-	Issuer                            string   `json:"issuer"`
-	AuthorizationEndpoint            string   `json:"authorization_endpoint"`
-	TokenEndpoint                    string   `json:"token_endpoint"`
-	UserInfoEndpoint                 string   `json:"userinfo_endpoint"`
-	JWKSUri                          string   `json:"jwks_uri"`
-	RegistrationEndpoint             string   `json:"registration_endpoint,omitempty"`
-	ScopesSupported                  []string `json:"scopes_supported"`
-	ResponseTypesSupported           []string `json:"response_types_supported"`
-	ResponseModesSupported           []string `json:"response_modes_supported"`
-	GrantTypesSupported             []string `json:"grant_types_supported"`
-	ACRValuesSupported               []string `json:"acr_values_supported"`
-	SubjectTypesSupported           []string `json:"subject_types_supported"`
-	IDTokenSigningAlgValuesSupported []string `json:"id_token_signing_alg_values_supported"`
-	IDTokenEncryptionAlgValuesSupported []string `json:"id_token_encryption_alg_values_supported"`
-	IDTokenEncryptionEncValuesSupported []string `json:"id_token_encryption_enc_values_supported"`
-	UserInfoSigningAlgValuesSupported   []string `json:"userinfo_signing_alg_values_supported"`
-	UserInfoEncryptionAlgValuesSupported []string `json:"userinfo_encryption_alg_values_supported"`
-	UserInfoEncryptionEncValuesSupported []string `json:"userinfo_encryption_enc_values_supported"`
-	RequestObjectSigningAlgValuesSupported []string `json:"request_object_signing_alg_values_supported"`
-	RequestObjectEncryptionAlgValuesSupported []string `json:"request_object_encryption_alg_values_supported"`
-	RequestObjectEncryptionEncValuesSupported []string `json:"request_object_encryption_enc_values_supported"`
-	TokenEndpointAuthMethodsSupported        []string `json:"token_endpoint_auth_methods_supported"`
+	Issuer                                     string   `json:"issuer"`
+	AuthorizationEndpoint                      string   `json:"authorization_endpoint"`
+	TokenEndpoint                              string   `json:"token_endpoint"`
+	UserInfoEndpoint                           string   `json:"userinfo_endpoint"`
+	JWKSUri                                    string   `json:"jwks_uri"`
+	RegistrationEndpoint                       string   `json:"registration_endpoint,omitempty"`
+	ScopesSupported                            []string `json:"scopes_supported"`
+	ResponseTypesSupported                     []string `json:"response_types_supported"`
+	ResponseModesSupported                     []string `json:"response_modes_supported"`
+	GrantTypesSupported                        []string `json:"grant_types_supported"`
+	ACRValuesSupported                         []string `json:"acr_values_supported"`
+	SubjectTypesSupported                      []string `json:"subject_types_supported"`
+	IDTokenSigningAlgValuesSupported           []string `json:"id_token_signing_alg_values_supported"`
+	IDTokenEncryptionAlgValuesSupported        []string `json:"id_token_encryption_alg_values_supported"`
+	IDTokenEncryptionEncValuesSupported        []string `json:"id_token_encryption_enc_values_supported"`
+	UserInfoSigningAlgValuesSupported          []string `json:"userinfo_signing_alg_values_supported"`
+	UserInfoEncryptionAlgValuesSupported       []string `json:"userinfo_encryption_alg_values_supported"`
+	UserInfoEncryptionEncValuesSupported       []string `json:"userinfo_encryption_enc_values_supported"`
+	RequestObjectSigningAlgValuesSupported     []string `json:"request_object_signing_alg_values_supported"`
+	RequestObjectEncryptionAlgValuesSupported  []string `json:"request_object_encryption_alg_values_supported"`
+	RequestObjectEncryptionEncValuesSupported  []string `json:"request_object_encryption_enc_values_supported"`
+	TokenEndpointAuthMethodsSupported          []string `json:"token_endpoint_auth_methods_supported"`
 	TokenEndpointAuthSigningAlgValuesSupported []string `json:"token_endpoint_auth_signing_alg_values_supported"`
-	DisplayValuesSupported                    []string `json:"display_values_supported"`
-	ClaimTypesSupported                       []string `json:"claim_types_supported"`
-	ClaimsSupported                           []string `json:"claims_supported"`
-	ServiceDocumentation                      string   `json:"service_documentation,omitempty"`
-	ClaimsLocalesSupported                    []string `json:"claims_locales_supported"`
-	UILocalesSupported                        []string `json:"ui_locales_supported"`
-	ClaimsParameterSupported                  bool     `json:"claims_parameter_supported"`
+	DisplayValuesSupported                     []string `json:"display_values_supported"`
+	ClaimTypesSupported                        []string `json:"claim_types_supported"`
+	ClaimsSupported                            []string `json:"claims_supported"`
+	ServiceDocumentation                       string   `json:"service_documentation,omitempty"`
+	ClaimsLocalesSupported                     []string `json:"claims_locales_supported"`
+	UILocalesSupported                         []string `json:"ui_locales_supported"`
+	ClaimsParameterSupported                   bool     `json:"claims_parameter_supported"`
 	RequestParameterSupported                  bool     `json:"request_parameter_supported"`
-	RequestURIParameterSupported              bool     `json:"request_uri_parameter_supported"`
-	RequireRequestURIRegistration             bool     `json:"require_request_uri_registration"`
-	OPPolicyURI                               string   `json:"op_policy_uri,omitempty"`
-	OPTosURI                                  string   `json:"op_tos_uri,omitempty"`
+	RequestURIParameterSupported               bool     `json:"request_uri_parameter_supported"`
+	RequireRequestURIRegistration              bool     `json:"require_request_uri_registration"`
+	OPPolicyURI                                string   `json:"op_policy_uri,omitempty"`
+	OPTosURI                                   string   `json:"op_tos_uri,omitempty"`
 }
 
 // JWKS JSON Web Key Set
