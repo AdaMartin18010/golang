@@ -9,28 +9,51 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/yourusername/golang/internal/application/user"
-	userdomain "github.com/yourusername/golang/internal/domain/user"
+	domainuser "github.com/yourusername/golang/internal/domain/user"
 	userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb"
 )
+
+// UserService 定义用户服务接口。
+//
+// 功能说明：
+// - 解耦 gRPC 处理器与具体的应用层服务实现
+// - 便于单元测试时使用 mock 实现
+//
+// 方法列表：
+// - GetUser: 根据 ID 获取用户
+// - CreateUser: 创建新用户
+// - UpdateUserName: 更新用户名称
+// - DeleteUser: 删除用户
+// - ListUsers: 列出用户
+type UserService interface {
+	GetUser(ctx context.Context, id string) (*domainuser.User, error)
+	CreateUser(ctx context.Context, email, name string) (*domainuser.User, error)
+	UpdateUserName(ctx context.Context, id, name string) error
+	DeleteUser(ctx context.Context, id string) error
+	ListUsers(ctx context.Context, limit, offset int) ([]*domainuser.User, error)
+}
 
 // UserHandler gRPC 用户服务处理器
 // 负责将 gRPC 请求转换为应用层服务调用，并将结果转换回 gRPC 响应
 type UserHandler struct {
 	userpb.UnimplementedUserServiceServer
-	service *user.Service
+	service UserService
 	logger  *slog.Logger
 }
 
 // NewUserHandler 创建用户服务处理器
 //
 // 参数:
-//   - service: 用户应用服务
+//   - service: 用户应用服务接口（可以是具体实现或 mock）
 //   - logger: 日志记录器（可为 nil，将使用默认日志）
 //
 // 返回:
 //   - *UserHandler: 用户服务处理器实例
-func NewUserHandler(service *user.Service, logger *slog.Logger) *UserHandler {
+//
+// 注意事项:
+//   - 接受任何实现 UserService 接口的类型
+//   - 便于单元测试时使用 mock 实现
+func NewUserHandler(service UserService, logger *slog.Logger) *UserHandler {
 	if logger == nil {
 		logger = slog.Default()
 	}
@@ -56,7 +79,7 @@ func (h *UserHandler) GetUser(ctx context.Context, req *userpb.GetUserRequest) (
 	u, err := h.service.GetUser(ctx, req.Id)
 	if err != nil {
 		h.logger.Error("GetUser failed", "user_id", req.Id, "error", err)
-		if errors.Is(err, userdomain.ErrUserNotFound) {
+		if errors.Is(err, domainuser.ErrUserNotFound) {
 			return nil, status.Errorf(codes.NotFound, "user not found: %s", req.Id)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -90,11 +113,11 @@ func (h *UserHandler) CreateUser(ctx context.Context, req *userpb.CreateUserRequ
 		h.logger.Error("CreateUser failed", "email", req.Email, "error", err)
 		// 根据错误类型返回适当的 gRPC 状态码
 		switch {
-		case errors.Is(err, userdomain.ErrInvalidEmailFormat):
+		case errors.Is(err, domainuser.ErrInvalidEmailFormat):
 			return nil, status.Errorf(codes.InvalidArgument, "invalid email format: %v", err)
-		case errors.Is(err, userdomain.ErrNameTooShort):
+		case errors.Is(err, domainuser.ErrNameTooShort):
 			return nil, status.Errorf(codes.InvalidArgument, "name too short: %v", err)
-		case errors.Is(err, userdomain.ErrUserAlreadyExists):
+		case errors.Is(err, domainuser.ErrUserAlreadyExists):
 			return nil, status.Errorf(codes.AlreadyExists, "user already exists: %v", err)
 		default:
 			return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
@@ -123,7 +146,7 @@ func (h *UserHandler) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequ
 	u, err := h.service.GetUser(ctx, req.Id)
 	if err != nil {
 		h.logger.Error("UpdateUser failed: user not found", "user_id", req.Id, "error", err)
-		if errors.Is(err, userdomain.ErrUserNotFound) {
+		if errors.Is(err, domainuser.ErrUserNotFound) {
 			return nil, status.Errorf(codes.NotFound, "user not found: %s", req.Id)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -134,7 +157,7 @@ func (h *UserHandler) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequ
 		if err := h.service.UpdateUserName(ctx, req.Id, req.Name); err != nil {
 			h.logger.Error("UpdateUser failed: update name error", "user_id", req.Id, "error", err)
 			switch {
-			case errors.Is(err, userdomain.ErrNameTooShort):
+			case errors.Is(err, domainuser.ErrNameTooShort):
 				return nil, status.Errorf(codes.InvalidArgument, "name too short: %v", err)
 			default:
 				return nil, status.Errorf(codes.Internal, "failed to update user name: %v", err)
@@ -175,7 +198,7 @@ func (h *UserHandler) DeleteUser(ctx context.Context, req *userpb.DeleteUserRequ
 	// 调用应用层服务
 	if err := h.service.DeleteUser(ctx, req.Id); err != nil {
 		h.logger.Error("DeleteUser failed", "user_id", req.Id, "error", err)
-		if errors.Is(err, userdomain.ErrUserNotFound) {
+		if errors.Is(err, domainuser.ErrUserNotFound) {
 			return nil, status.Errorf(codes.NotFound, "user not found: %s", req.Id)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
@@ -238,7 +261,7 @@ func (h *UserHandler) ListUsers(req *userpb.ListUsersRequest, stream userpb.User
 //
 // 返回:
 //   - *userpb.User: gRPC Protobuf 用户消息
-func toProtoUser(u *userdomain.User) *userpb.User {
+func toProtoUser(u *domainuser.User) *userpb.User {
 	if u == nil {
 		return nil
 	}

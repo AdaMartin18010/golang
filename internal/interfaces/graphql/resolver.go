@@ -38,18 +38,40 @@
 package graphql
 
 import (
-	appuser "github.com/yourusername/golang/internal/application/user"
+	"context"
+
+	domainuser "github.com/yourusername/golang/internal/domain/user"
 )
+
+// UserService 定义用户服务接口。
+//
+// 功能说明：
+// - 解耦 GraphQL 解析器与具体的应用层服务实现
+// - 便于单元测试时使用 mock 实现
+//
+// 方法列表：
+// - GetUser: 根据 ID 获取用户
+// - CreateUser: 创建新用户
+// - UpdateUserName: 更新用户名称
+// - DeleteUser: 删除用户
+// - ListUsers: 列出用户
+type UserService interface {
+	GetUser(ctx context.Context, id string) (*domainuser.User, error)
+	CreateUser(ctx context.Context, email, name string) (*domainuser.User, error)
+	UpdateUserName(ctx context.Context, id, name string) error
+	DeleteUser(ctx context.Context, id string) error
+	ListUsers(ctx context.Context, limit, offset int) ([]*domainuser.User, error)
+}
 
 // Resolver 是 GraphQL 的根解析器。
 //
 // 功能说明：
 // - 包含所有查询和变更解析器
-// - 持有应用层服务实例
+// - 持有应用层服务接口（而非具体实现）
 // - 作为 GraphQL Schema 的入口点
 //
 // 设计说明：
-// - 依赖应用层服务处理业务逻辑
+// - 依赖 UserService 接口处理业务逻辑
 // - 通过依赖注入接收服务实例
 // - 可以包含多个服务的引用
 //
@@ -63,20 +85,20 @@ import (
 // - 可以在多个请求间共享
 // - 可以使用 DataLoader 优化性能
 type Resolver struct {
-	userService *appuser.Service
+	userService UserService
 	// 可以添加更多服务：
-	// postService *apppost.Service
-	// orderService *apporder.Service
+	// postService PostService
+	// orderService OrderService
 }
 
 // NewResolver 创建并初始化 GraphQL 根解析器。
 //
 // 功能说明：
-// - 接收应用层服务实例
+// - 接收应用层服务接口实例
 // - 创建并返回配置好的解析器
 //
 // 参数：
-// - userService: 应用层用户服务实例
+// - userService: 应用层用户服务接口实例
 //
 // 返回：
 // - *Resolver: 配置好的解析器实例
@@ -88,8 +110,9 @@ type Resolver struct {
 //
 // 注意事项：
 // - 服务实例应通过依赖注入提供
-// - 可以扩展以支持多个服务
-func NewResolver(userService *appuser.Service) *Resolver {
+// - 可以接受任何实现 UserService 接口的类型
+// - 便于单元测试时使用 mock 实现
+func NewResolver(userService UserService) *Resolver {
 	return &Resolver{
 		userService: userService,
 	}
