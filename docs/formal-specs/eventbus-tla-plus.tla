@@ -140,7 +140,7 @@ ProcLoop:
             Process();
         or
             Stop();
-            break;
+            goto Done;
         end either;
     end while;
 end process;
