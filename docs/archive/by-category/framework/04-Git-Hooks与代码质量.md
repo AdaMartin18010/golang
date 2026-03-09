@@ -1,0 +1,246 @@
+# Git Hooks 与代码质量
+
+> **版本**: v1.0
+> **日期**: 2025-01-XX
+
+---
+
+## 📋 概述
+
+框架提供了 Git pre-commit hooks，在每次提交前自动运行代码质量检查，确保代码符合规范。
+
+---
+
+## 🚀 快速开始
+
+### 安装 Git Hooks
+
+```bash
+# 方式 1: 使用 Makefile
+make install-hooks
+
+# 方式 2: 使用脚本
+bash scripts/dev/install-hooks.sh
+```
+
+### 手动安装
+
+```bash
+# 复制 pre-commit hook
+cp .githooks/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+---
+
+## 🔍 Pre-commit Hook 功能
+
+Pre-commit hook 会在每次 `git commit` 时自动运行以下检查：
+
+### 1. 代码格式检查 (gofmt)
+
+检查代码是否符合 Go 代码格式规范。
+
+**失败时**:
+
+- 显示未格式化的文件列表
+- 提示运行 `make fmt` 或 `gofmt -w .` 修复
+
+### 2. go vet 检查
+
+运行 Go 官方静态分析工具。
+
+**检查项**:
+
+- 未使用的变量
+- 错误的函数调用
+- 错误的类型转换
+- 其他常见错误
+
+### 3. golangci-lint 检查
+
+运行 golangci-lint（如果已安装）。
+
+**检查项**:
+
+- 代码质量
+- 代码风格
+- 性能问题
+- 安全问题
+- 复杂度
+
+**注意**: 如果未安装 golangci-lint，会跳过此检查并提示安装。
+
+### 4. 相关测试
+
+运行修改文件相关的测试（仅运行 `-short` 模式的测试，快速反馈）。
+
+**检查项**:
+
+- 只运行有测试文件的包的测试
+- 使用 `go test -short` 快速执行
+
+---
+
+## 📝 Hook 配置
+
+### Pre-commit Hook 位置
+
+```text
+.githooks/pre-commit  # 源文件
+.git/hooks/pre-commit # 安装后的位置
+```
+
+### 自定义 Hook
+
+可以修改 `.githooks/pre-commit` 来自定义检查行为：
+
+```bash
+# 编辑 hook
+vim .githooks/pre-commit
+
+# 重新安装
+make install-hooks
+```
+
+---
+
+## 🎯 使用场景
+
+### 场景 1: 正常提交
+
+```bash
+# 1. 修改代码
+vim internal/domain/user/entity.go
+
+# 2. 暂存文件
+git add internal/domain/user/entity.go
+
+# 3. 提交（自动运行检查）
+git commit -m "feat: add user entity"
+
+# 如果检查通过，提交成功
+# 如果检查失败，提交被阻止，需要修复后重新提交
+```
+
+### 场景 2: 检查失败
+
+```bash
+$ git commit -m "feat: add feature"
+========================================
+  运行 pre-commit 检查
+========================================
+
+[1/4] 检查代码格式...
+❌ 代码格式不符合规范:
+  internal/domain/user/entity.go
+运行 'make fmt' 或 'gofmt -w .' 修复
+
+# 修复代码格式
+make fmt
+
+# 重新提交
+git add internal/domain/user/entity.go
+git commit -m "feat: add feature"
+```
+
+### 场景 3: 跳过检查（不推荐）
+
+```bash
+# 使用 --no-verify 跳过检查（不推荐）
+git commit --no-verify -m "feat: add feature"
+```
+
+**注意**: 跳过检查可能导致代码质量问题，不推荐在生产环境中使用。
+
+---
+
+## 🔧 故障排除
+
+### 问题 1: Hook 未执行
+
+**原因**: Hook 文件没有执行权限
+
+**解决**:
+
+```bash
+chmod +x .git/hooks/pre-commit
+```
+
+### 问题 2: golangci-lint 未安装
+
+**现象**: Hook 提示 golangci-lint 未安装
+
+**解决**:
+
+```bash
+# 安装 golangci-lint
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+# 或使用 Makefile
+make install-tools
+```
+
+### 问题 3: 测试运行时间过长
+
+**原因**: 测试包含长时间运行的测试
+
+**解决**: Pre-commit hook 使用 `go test -short`，只运行快速测试。长时间运行的测试应在 CI/CD 中运行。
+
+---
+
+## 📚 相关命令
+
+### Makefile 命令
+
+```bash
+# 安装 hooks
+make install-hooks
+
+# 手动运行检查（不提交）
+make check
+
+# 提交前检查（格式、检查、测试）
+make pre-commit
+
+# 格式化代码
+make fmt
+
+# 运行代码检查
+make lint
+```
+
+### Git 命令
+
+```bash
+# 查看 hook 内容
+cat .git/hooks/pre-commit
+
+# 测试 hook（手动运行）
+.git/hooks/pre-commit
+
+# 卸载 hook（删除文件）
+rm .git/hooks/pre-commit
+```
+
+---
+
+## 🎯 最佳实践
+
+1. **始终安装 hooks**: 在项目开始时运行 `make install-hooks`
+2. **不要跳过检查**: 除非有特殊原因，不要使用 `--no-verify`
+3. **快速修复**: 如果检查失败，立即修复并重新提交
+4. **保持工具更新**: 定期更新 golangci-lint 等工具
+5. **团队协作**: 确保团队成员都安装了 hooks
+
+---
+
+## 🔗 相关文档
+
+- [代码质量控制](../practices/engineering/02-代码质量控制.md)
+- [贡献指南](../guides/contributing.md)
+- [框架基础设施说明](00-框架基础设施说明.md)
+
+---
+
+**最后更新**: 2025-01-XX
