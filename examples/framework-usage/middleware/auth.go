@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yourusername/golang/pkg/security/jwt"
 	"github.com/yourusername/golang/pkg/errors"
+	"github.com/yourusername/golang/pkg/security/jwt"
 )
 
 // contextKey 是上下文键的类型
@@ -20,8 +20,8 @@ const (
 
 // AuthConfig 认证中间件配置
 type AuthConfig struct {
-	JWT       *jwt.JWT
-	SkipPaths []string
+	TokenManager *jwt.TokenManager
+	SkipPaths    []string
 }
 
 // AuthMiddleware 创建JWT认证中间件
@@ -56,7 +56,7 @@ func AuthMiddleware(config AuthConfig) func(http.Handler) http.Handler {
 			tokenString := parts[1]
 
 			// 验证token
-			claims, err := config.JWT.ValidateToken(tokenString)
+			claims, err := config.TokenManager.ValidateToken(tokenString)
 			if err != nil {
 				http.Error(w, `{"error":"invalid token"}`, http.StatusUnauthorized)
 				return
@@ -105,4 +105,3 @@ func GetUserFromContext(ctx context.Context) (*jwt.Claims, error) {
 		Roles:  GetRoles(ctx),
 	}, nil
 }
-
