@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"time"
+
+	"log/slog"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/yourusername/golang/internal/interfaces/http/chi/middleware"
@@ -18,7 +18,6 @@ import (
 	"github.com/yourusername/golang/pkg/logger"
 	"github.com/yourusername/golang/pkg/rbac"
 	"github.com/yourusername/golang/pkg/validator"
-	"log/slog"
 )
 
 func main() {

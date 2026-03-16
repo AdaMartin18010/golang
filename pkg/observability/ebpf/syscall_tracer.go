@@ -318,16 +318,16 @@ func (st *SyscallTracer) GetSyscallStats(ctx context.Context) (map[uint64]uint64
 	}
 
 	stats := make(map[uint64]uint64)
-	
+
 	// 从 eBPF map 读取统计信息
 	var key uint64
 	var value uint64
-	
+
 	iter := st.objs.Maps.SyscallStats.Iterate()
 	for iter.Next(&key, &value) {
 		stats[key] = value
 	}
-	
+
 	if err := iter.Err(); err != nil {
 		return nil, fmt.Errorf("failed to iterate syscall stats: %w", err)
 	}

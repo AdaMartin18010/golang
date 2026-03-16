@@ -7,7 +7,6 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-
 	// TODO: 生成 gRPC 代码后取消注释
 	// userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb"
 )

@@ -253,7 +253,7 @@ func TestService_ContextHandling(t *testing.T) {
 		},
 		{
 			name:    "context with timeout",
-			ctx:     func() context.Context { ctx, _ := context.WithTimeout(context.Background(), 0); return ctx }(),
+			ctx:     func() context.Context { ctx, cancel := context.WithTimeout(context.Background(), 0); defer cancel(); return ctx }(),
 			wantErr: false, // mock 实现不检查上下文状态
 		},
 		{
