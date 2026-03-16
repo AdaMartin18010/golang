@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/yourusername/golang/internal/application/user"
+	"github.com/yourusername/golang/internal/app/user"
 	healthpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/healthpb"
 	userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb"
 
@@ -259,3 +259,4 @@ func (s *Server) RegisterHealthChecker(checker handlers.HealthChecker) {
 	// 实际实现可能需要重新创建 healthHandler
 	s.logger.Warn("RegisterHealthChecker should be called before Start")
 }
+

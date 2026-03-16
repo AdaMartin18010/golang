@@ -48,9 +48,9 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/yourusername/golang/internal/config"
-	appuser "github.com/yourusername/golang/internal/application/user"
-	"github.com/yourusername/golang/internal/infrastructure/database/ent"
-	"github.com/yourusername/golang/internal/infrastructure/repository"
+	appuser "github.com/yourusername/golang/internal/app/user"
+	"github.com/yourusername/golang/internal/infra/database/ent"
+	"github.com/yourusername/golang/internal/infra/repository"
 	"github.com/yourusername/golang/internal/interfaces/grpc/interceptors"
 	// userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb" // TODO: 生成 gRPC 代码后启用
 	// healthpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/healthpb" // TODO: 生成 gRPC 代码后启用
@@ -175,3 +175,5 @@ func main() {
 		grpcServer.Stop()
 	}
 }
+
+

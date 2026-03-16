@@ -44,12 +44,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	appuser "github.com/yourusername/golang/internal/application/user"
-	appworkflow "github.com/yourusername/golang/internal/application/workflow"
+	appuser "github.com/yourusername/golang/internal/app/user"
+	appworkflow "github.com/yourusername/golang/internal/app/workflow"
 	"github.com/yourusername/golang/internal/config"
-	entdb "github.com/yourusername/golang/internal/infrastructure/database/ent"
-	"github.com/yourusername/golang/internal/infrastructure/repository"
-	"github.com/yourusername/golang/internal/infrastructure/workflow/temporal"
+	entdb "github.com/yourusername/golang/internal/infra/database/ent"
+	"github.com/yourusername/golang/internal/infra/repository"
+	"github.com/yourusername/golang/internal/infra/workflow/temporal"
 )
 
 func main() {
@@ -199,3 +199,5 @@ func main() {
 	w.Stop()
 	log.Println("Worker stopped")
 }
+
+

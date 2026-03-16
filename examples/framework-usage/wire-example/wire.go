@@ -18,7 +18,7 @@ import (
 	"github.com/yourusername/golang/pkg/database"
 	"github.com/yourusername/golang/pkg/observability/otlp"
 	"github.com/yourusername/golang/pkg/sampling"
-	"github.com/yourusername/golang/pkg/tracing"
+	"github.com/yourusername/golang/pkg/observability/tracing"
 )
 
 // App 应用程序结构
@@ -130,3 +130,4 @@ func provideCircuitController() *control.CircuitController {
 	controller.RegisterCircuit("external-api", 10, 5, 30*time.Second)
 	return controller
 }
+

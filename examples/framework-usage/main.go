@@ -11,13 +11,13 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"example.com/golang-examples/framework-usage/middleware"
-	"github.com/yourusername/golang/pkg/auth/jwt"
+	"github.com/yourusername/golang/pkg/security/jwt"
 	"github.com/yourusername/golang/pkg/errors"
 	"github.com/yourusername/golang/pkg/eventbus"
 	"github.com/yourusername/golang/pkg/health"
 	"github.com/yourusername/golang/pkg/http/response"
 	"github.com/yourusername/golang/pkg/logger"
-	"github.com/yourusername/golang/pkg/rbac"
+	"github.com/yourusername/golang/pkg/security/rbac"
 	"github.com/yourusername/golang/pkg/validator"
 )
 
@@ -304,3 +304,5 @@ func createCreateUserHandler(
 		response.Success(w, http.StatusCreated, newUser)
 	}
 }
+
+

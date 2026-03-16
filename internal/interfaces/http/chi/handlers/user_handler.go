@@ -26,7 +26,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	appuser "github.com/yourusername/golang/internal/application/user"
+	appuser "github.com/yourusername/golang/internal/app/user"
 	domainuser "github.com/yourusername/golang/internal/domain/user"
 	apperrors "github.com/yourusername/golang/pkg/errors"
 )
@@ -221,3 +221,4 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	Success(w, http.StatusNoContent, nil)
 }
+

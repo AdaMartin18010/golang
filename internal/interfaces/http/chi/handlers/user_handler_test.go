@@ -14,7 +14,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	appuser "github.com/yourusername/golang/internal/application/user"
+	appuser "github.com/yourusername/golang/internal/app/user"
 	domainuser "github.com/yourusername/golang/internal/domain/user"
 )
 
@@ -500,3 +500,4 @@ func TestUpdateUserRequestStruct(t *testing.T) {
 
 	assert.Equal(t, "Updated Name", req.Name)
 }
+

@@ -32,7 +32,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	appuser "github.com/yourusername/golang/internal/application/user"
+	appuser "github.com/yourusername/golang/internal/app/user"
 	"github.com/yourusername/golang/internal/interfaces/http/chi/handlers"
 	temporalhandler "github.com/yourusername/golang/internal/interfaces/workflow/temporal"
 )
@@ -202,3 +202,4 @@ func workflowRoutes(workflowHandler *handlers.WorkflowHandler) http.Handler {
 	r.Get("/user/{workflow_id}/result", workflowHandler.GetWorkflowResult) // GET /api/v1/workflows/user/{workflow_id}/result
 	return r
 }
+

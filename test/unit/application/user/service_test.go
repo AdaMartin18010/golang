@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	appuser "github.com/yourusername/golang/internal/application/user"
+	appuser "github.com/yourusername/golang/internal/app/user"
 	domain "github.com/yourusername/golang/internal/domain/user"
 )
 
@@ -268,3 +268,4 @@ func TestService_NewService(t *testing.T) {
 
 	assert.NotNil(t, service)
 }
+

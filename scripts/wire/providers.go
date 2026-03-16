@@ -3,10 +3,10 @@ package wire
 import (
 	"github.com/google/wire"
 
-	appuser "github.com/yourusername/golang/internal/application/user"
+	appuser "github.com/yourusername/golang/internal/app/user"
 	"github.com/yourusername/golang/internal/config"
-	"github.com/yourusername/golang/internal/infrastructure/database/ent"
-	entrepo "github.com/yourusername/golang/internal/infrastructure/database/ent/repository"
+	"github.com/yourusername/golang/internal/infra/database/ent"
+	entrepo "github.com/yourusername/golang/internal/infra/database/ent/repository"
 	chirouter "github.com/yourusername/golang/internal/interfaces/http/chi"
 
 	// 可观测性
@@ -118,3 +118,5 @@ func NewEntClient(cfg *config.Config) (*ent.Client, error) {
 
 // 需要的导入
 import "time"
+
+

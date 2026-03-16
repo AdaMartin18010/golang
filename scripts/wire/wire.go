@@ -5,9 +5,9 @@ package wire
 
 import (
 	"github.com/google/wire"
-	appuser "github.com/yourusername/golang/internal/application/user"
+	appuser "github.com/yourusername/golang/internal/app/user"
 	"github.com/yourusername/golang/internal/config"
-	"github.com/yourusername/golang/internal/infrastructure/database/postgres"
+	"github.com/yourusername/golang/internal/infra/database/postgres"
 	chirouter "github.com/yourusername/golang/internal/interfaces/http/chi"
 )
 
@@ -185,3 +185,5 @@ type App struct {
 func NewApp(router *chirouter.Router) *App {
 	return &App{Router: router}
 }
+
+

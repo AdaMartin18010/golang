@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yourusername/golang/pkg/auth/jwt"
+	"github.com/yourusername/golang/pkg/security/jwt"
 	"github.com/yourusername/golang/pkg/errors"
 )
 
@@ -105,3 +105,4 @@ func GetUserFromContext(ctx context.Context) (*jwt.Claims, error) {
 		Roles:  GetRoles(ctx),
 	}, nil
 }
+

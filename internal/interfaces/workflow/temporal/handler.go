@@ -15,7 +15,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/yourusername/golang/internal/infrastructure/workflow/temporal"
+	"github.com/yourusername/golang/internal/infra/workflow/temporal"
 )
 
 // Handler Temporal 工作流 HTTP 处理器
@@ -94,3 +94,4 @@ func (h *Handler) GetWorkflowResult(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 }
+

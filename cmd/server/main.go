@@ -51,11 +51,11 @@ import (
 	"time"
 
 	"github.com/yourusername/golang/internal/config"
-	appuser "github.com/yourusername/golang/internal/application/user"
-	entdb "github.com/yourusername/golang/internal/infrastructure/database/ent"
-	"github.com/yourusername/golang/internal/infrastructure/repository"
-	"github.com/yourusername/golang/internal/infrastructure/observability/otlp"
-	"github.com/yourusername/golang/internal/infrastructure/workflow/temporal"
+	appuser "github.com/yourusername/golang/internal/app/user"
+	entdb "github.com/yourusername/golang/internal/infra/database/ent"
+	"github.com/yourusername/golang/internal/infra/repository"
+	"github.com/yourusername/golang/internal/infra/observability/otlp"
+	"github.com/yourusername/golang/internal/infra/workflow/temporal"
 	temporalhandler "github.com/yourusername/golang/internal/interfaces/workflow/temporal"
 	chiRouter "github.com/yourusername/golang/internal/interfaces/http/chi"
 )
@@ -309,3 +309,5 @@ func main() {
 
 	logger.Info("Application gracefully stopped.")
 }
+
+
