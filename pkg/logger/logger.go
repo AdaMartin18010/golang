@@ -249,6 +249,12 @@ func (l *Logger) Error(msg string, args ...any) {
 	l.Logger.Error(msg, args...)
 }
 
+// Fatal 记录致命错误日志并退出程序
+func (l *Logger) Fatal(msg string, args ...any) {
+	l.Logger.Error(msg, args...)
+	os.Exit(1)
+}
+
 // SetLevel 动态设置日志级别
 func (l *Logger) SetLevel(level slog.Level) {
 	l.mu.Lock()
@@ -325,4 +331,3 @@ func attrsToAny(attrs []slog.Attr) []any {
 	}
 	return result
 }
-

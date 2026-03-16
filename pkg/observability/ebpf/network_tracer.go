@@ -1,3 +1,6 @@
+//go:build linux
+// +build linux
+
 package ebpf
 
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go -type tcp_event network ./programs/network.bpf.c -- -I/usr/include -I/usr/include/x86_64-linux-gnu
@@ -11,7 +14,6 @@ import (
 	"net"
 	"runtime"
 	"time"
-	"unsafe"
 
 	"github.com/cilium/ebpf"
 	"github.com/cilium/ebpf/link"
@@ -50,12 +52,12 @@ type networkObjects struct {
 }
 
 type networkPrograms struct {
-	TraceTCPConnect     *ebpf.Program
-	TraceTCPAccept      *ebpf.Program
-	TraceTCPSendMsg     *ebpf.Program
-	TraceTCPClose       *ebpf.Program
-	TraceTCPRecvMsg     *ebpf.Program
-	TraceTCPRecvMsgRet  *ebpf.Program
+	TraceTCPConnect    *ebpf.Program
+	TraceTCPAccept     *ebpf.Program
+	TraceTCPSendMsg    *ebpf.Program
+	TraceTCPClose      *ebpf.Program
+	TraceTCPRecvMsg    *ebpf.Program
+	TraceTCPRecvMsgRet *ebpf.Program
 }
 
 type networkMaps struct {
@@ -447,16 +449,16 @@ func (nt *NetworkTracer) GetActiveConnections(ctx context.Context) (int64, error
 
 	// 从 eBPF map 读取活跃连接数
 	var count int64
-	
+
 	// 使用 Iterate 遍历 map
 	var key uint64
 	var value TCPConnInfo
-	
+
 	iter := nt.objs.Maps.TCPConnections.Iterate()
 	for iter.Next(&key, &value) {
 		count++
 	}
-	
+
 	if err := iter.Err(); err != nil {
 		return 0, fmt.Errorf("failed to iterate tcp connections: %w", err)
 	}
@@ -471,16 +473,16 @@ func (nt *NetworkTracer) GetConnectionStats(ctx context.Context) (map[uint32]uin
 	}
 
 	stats := make(map[uint32]uint64)
-	
+
 	// 从 eBPF map 读取统计信息
 	var key uint32
 	var value uint64
-	
+
 	iter := nt.objs.Maps.TCPStats.Iterate()
 	for iter.Next(&key, &value) {
 		stats[key] = value
 	}
-	
+
 	if err := iter.Err(); err != nil {
 		return nil, fmt.Errorf("failed to iterate tcp stats: %w", err)
 	}
@@ -495,10 +497,10 @@ func (nt *NetworkTracer) GetConnectionDetails(ctx context.Context) ([]Connection
 	}
 
 	var details []ConnectionDetail
-	
+
 	var key uint64
 	var value TCPConnInfo
-	
+
 	iter := nt.objs.Maps.TCPConnections.Iterate()
 	for iter.Next(&key, &value) {
 		detail := ConnectionDetail{
@@ -513,7 +515,7 @@ func (nt *NetworkTracer) GetConnectionDetails(ctx context.Context) ([]Connection
 		}
 		details = append(details, detail)
 	}
-	
+
 	if err := iter.Err(); err != nil {
 		return nil, fmt.Errorf("failed to iterate tcp connections: %w", err)
 	}

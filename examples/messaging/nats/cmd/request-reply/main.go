@@ -4,19 +4,19 @@ import (
 	"log"
 	"time"
 
-	"github.com/yourusername/golang/internal/infrastructure/messaging/nats"
+	"github.com/nats-io/nats.go"
 )
 
 func main() {
-	// 创建客户端
-	client, err := nats.NewClient(nats.DefaultConfig())
+	// 连接到 NATS 服务器
+	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
-		log.Fatal("Failed to create NATS client:", err)
+		log.Fatal("Failed to connect to NATS:", err)
 	}
-	defer client.Close()
+	defer nc.Close()
 
 	// 服务端：订阅并回复
-	sub, err := client.Subscribe("user.get", func(msg *nats.Msg) {
+	sub, err := nc.Subscribe("user.get", func(msg *nats.Msg) {
 		userID := string(msg.Data)
 		log.Printf("Received request for user: %s", userID)
 
@@ -35,7 +35,7 @@ func main() {
 	time.Sleep(100 * time.Millisecond)
 
 	// 客户端：发送请求
-	reply, err := client.Request("user.get", "123", 5*time.Second)
+	reply, err := nc.Request("user.get", []byte("123"), 5*time.Second)
 	if err != nil {
 		log.Fatal("Failed to send request:", err)
 	}

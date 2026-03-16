@@ -5,41 +5,53 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	"github.com/yourusername/golang/internal/config"
 	"github.com/yourusername/golang/pkg/observability"
 	"github.com/yourusername/golang/pkg/observability/operational"
+	"github.com/yourusername/golang/pkg/observability/otlp"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// 1. 加载配置
-	appConfig, err := config.LoadConfig()
-	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+	// 1. 创建可观测性配置
+	obsConfig := observability.Config{
+		ServiceName:    "example-service",
+		ServiceVersion: "1.0.0",
+		Environment:    "development",
+		OTLP: otlp.Config{
+			Endpoint: "localhost:4317",
+			Insecure: true,
+		},
+		Metrics: observability.MetricsConfig{
+			Enabled:      true,
+			ExportPeriod: 30 * time.Second,
+		},
+		Tracing: observability.TracingConfig{
+			Enabled:         true,
+			SampleRate:      1.0,
+			ExportBatchSize: 100,
+		},
 	}
 
-	// 2. 从应用配置创建可观测性配置
-	obsConfig := observability.ConfigFromAppConfig(appConfig)
-
-	// 3. 创建可观测性集成
+	// 2. 创建可观测性集成
 	obs, err := observability.NewObservability(obsConfig)
 	if err != nil {
 		log.Fatalf("Failed to create observability: %v", err)
 	}
 
-	// 4. 应用告警规则
-	observability.ApplyAlertRules(obs, appConfig.Observability.System.Alerts)
-
-	// 5. 启动可观测性
+	// 3. 启动可观测性
 	if err := obs.Start(); err != nil {
 		log.Fatalf("Failed to start observability: %v", err)
 	}
+	defer obs.Stop(ctx)
 
-	// 6. 创建运维控制端点
+	// 4. 创建运维控制端点
 	operationalEndpoints := operational.NewOperationalEndpoints(operational.Config{
 		Observability: obs,
 		Port:          9090,
@@ -47,10 +59,11 @@ func main() {
 		Enabled:       true,
 	})
 
-	// 7. 启动运维端点
+	// 5. 启动运维端点
 	if err := operationalEndpoints.Start(); err != nil {
 		log.Fatalf("Failed to start operational endpoints: %v", err)
 	}
+	defer operationalEndpoints.Stop(ctx)
 
 	log.Println("Operational endpoints started on :9090")
 	log.Println("Available endpoints:")
@@ -58,15 +71,10 @@ func main() {
 	log.Println("  - Readiness:   http://localhost:9090/ops/ready")
 	log.Println("  - Liveness:    http://localhost:9090/ops/live")
 	log.Println("  - Metrics:     http://localhost:9090/ops/metrics")
-	log.Println("  - Prometheus:  http://localhost:9090/ops/metrics/prometheus")
-	log.Println("  - Dashboard:   http://localhost:9090/ops/dashboard")
-	log.Println("  - Diagnostics: http://localhost:9090/ops/diagnostics")
-	log.Println("  - Info:        http://localhost:9090/ops/info")
-	log.Println("  - Version:     http://localhost:9090/ops/version")
-	log.Println("  - Pprof:       http://localhost:9090/ops/debug/pprof/")
 
-	// 8. 创建主 HTTP 服务器
+	// 6. 创建主 HTTP 服务器
 	mux := http.NewServeMux()
+	port := 8080
 
 	// 使用运维中间件
 	mux.HandleFunc("/", operational.RecoveryMiddleware(
@@ -88,62 +96,30 @@ func main() {
 	).ServeHTTP)
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", appConfig.Server.Port),
+		Addr:    fmt.Sprintf(":%d", port),
 		Handler: mux,
 	}
 
-	// 9. 启动主服务器
+	// 7. 启动主服务器
 	go func() {
-		log.Printf("Server starting on :%d", appConfig.Server.Port)
+		log.Printf("Server starting on :%d", port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server failed: %v", err)
 		}
 	}()
 
-	// 10. 创建优雅关闭管理器
-	shutdownManager := operational.NewShutdownManager(30 * time.Second)
-
-	// 注册关闭函数
-	shutdownManager.Register(operational.GracefulShutdown("http-server", func(ctx context.Context) error {
-		return server.Shutdown(ctx)
-	}))
-	shutdownManager.Register(operational.GracefulShutdown("observability", func(ctx context.Context) error {
-		return obs.Stop(ctx)
-	}))
-	shutdownManager.Register(operational.GracefulShutdown("operational-endpoints", func(ctx context.Context) error {
-		return operationalEndpoints.Stop(ctx)
-	}))
-
-	// 11. 演示熔断器
-	circuitBreaker := operational.NewCircuitBreaker(operational.CircuitBreakerConfig{
-		Name:         "external-api",
-		MaxFailures:  5,
-		ResetTimeout: 60 * time.Second,
-	})
-
-	// 模拟一些操作
-	go func() {
-		for i := 0; i < 10; i++ {
-			err := circuitBreaker.Execute(ctx, func() error {
-				time.Sleep(100 * time.Millisecond)
-				if i%3 == 0 {
-					return fmt.Errorf("simulated error")
-				}
-				return nil
-			})
-			if err != nil {
-				log.Printf("Circuit breaker error: %v (state: %s)", err, circuitBreaker.GetState())
-			} else {
-				log.Printf("Operation succeeded (state: %s)", circuitBreaker.GetState())
-			}
-			time.Sleep(1 * time.Second)
-		}
-	}()
-
-	// 12. 等待关闭信号
+	// 8. 等待关闭信号
 	log.Println("Application running. Press Ctrl+C to shutdown gracefully...")
-	if err := shutdownManager.WaitForShutdown(); err != nil {
-		log.Printf("Shutdown error: %v", err)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("Shutting down...")
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer shutdownCancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Printf("Server shutdown error: %v", err)
 	}
 
 	log.Println("Application shutdown complete")

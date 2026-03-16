@@ -54,10 +54,7 @@ func main() {
 	// 2. 初始化系统监控
 	// ============================================
 	log.Println("📈 初始化系统监控...")
-	var meter = otel.Meter("complete-example")
-	if otlpClient != nil {
-		meter = otlpClient.GetMeter()
-	}
+	meter := otel.Meter("complete-example")
 
 	systemMonitor, err := system.NewMonitor(system.Config{
 		Meter:           meter,
@@ -67,7 +64,7 @@ func main() {
 		log.Printf("⚠️  系统监控初始化失败: %v", err)
 	} else {
 		log.Println("✅ 系统监控初始化成功")
-		go systemMonitor.Start(ctx)
+		go systemMonitor.Start()
 		defer systemMonitor.Stop()
 	}
 
@@ -91,10 +88,7 @@ func main() {
 	// 4. 初始化 eBPF 监控 (可选，需要 Linux)
 	// ============================================
 	log.Println("🔍 初始化 eBPF 监控...")
-	var tracer = otel.Tracer("complete-example")
-	if otlpClient != nil {
-		tracer = otlpClient.GetTracer()
-	}
+	tracer := otel.Tracer("complete-example")
 
 	ebpfCollector, err := ebpf.NewCollector(ebpf.Config{
 		Tracer:                  tracer,
@@ -171,7 +165,7 @@ func main() {
 
 	// 登录端点
 	r.Post("/login", func(w http.ResponseWriter, r *http.Request) {
-		ctx, span := tracer.Start(r.Context(), "login")
+		_, span := tracer.Start(r.Context(), "login")
 		defer span.End()
 
 		// 简化示例：直接生成令牌
@@ -190,7 +184,7 @@ func main() {
 		span.SetAttributes(attribute.String("user.id", "user-123"))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"access_token":"` + tokenPair.AccessToken + `","expires_in":` + string(tokenPair.ExpiresIn) + `}`))
+		w.Write([]byte(`{"access_token":"` + tokenPair.AccessToken + `","expires_in":` + formatInt64(tokenPair.ExpiresIn) + `}`))
 	})
 
 	// 需要认证的端点组
@@ -198,10 +192,10 @@ func main() {
 		r.Use(jwtMiddleware.Authenticate)
 
 		r.Get("/profile", func(w http.ResponseWriter, r *http.Request) {
-			ctx, span := tracer.Start(r.Context(), "get-profile")
+			_, span := tracer.Start(r.Context(), "get-profile")
 			defer span.End()
 
-			claims, _ := jwt.GetClaims(ctx)
+			claims, _ := jwt.GetClaims(r.Context())
 			span.SetAttributes(attribute.String("user.id", claims.UserID))
 
 			w.Header().Set("Content-Type", "application/json")
@@ -213,7 +207,7 @@ func main() {
 			r.Use(rbacMiddleware.RequirePermission("user", "read"))
 
 			r.Get("/users", func(w http.ResponseWriter, r *http.Request) {
-				ctx, span := tracer.Start(r.Context(), "list-users")
+				_, span := tracer.Start(r.Context(), "list-users")
 				defer span.End()
 
 				w.Header().Set("Content-Type", "application/json")
@@ -226,7 +220,7 @@ func main() {
 			r.Use(rbacMiddleware.RequireRole("admin"))
 
 			r.Post("/admin/users", func(w http.ResponseWriter, r *http.Request) {
-				ctx, span := tracer.Start(r.Context(), "admin-create-user")
+				_, span := tracer.Start(r.Context(), "admin-create-user")
 				defer span.End()
 
 				w.WriteHeader(http.StatusCreated)
@@ -302,6 +296,10 @@ func main() {
 }
 
 // 辅助函数
+
+func formatInt64(n int64) string {
+	return string(rune('0' + n%10))
+}
 
 func getContainerStatus(info system.PlatformInfo) string {
 	if info.ContainerID != "" {

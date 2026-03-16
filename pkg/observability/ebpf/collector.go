@@ -133,14 +133,14 @@ func (c *Collector) Start() error {
 
 	// 启动系统调用追踪器
 	if c.syscallTracer != nil {
-		if err := c.syscallTracer.Start(); err != nil {
+		if err := c.syscallTracer.Start(c.ctx); err != nil {
 			return fmt.Errorf("failed to start syscall tracer: %w", err)
 		}
 	}
 
 	// 启动网络追踪器
 	if c.networkTracer != nil {
-		if err := c.networkTracer.Start(); err != nil {
+		if err := c.networkTracer.Start(c.ctx); err != nil {
 			// 清理已启动的追踪器
 			if c.syscallTracer != nil {
 				c.syscallTracer.Stop()
@@ -298,13 +298,13 @@ func (c *Collector) Close() error {
 
 // Status 返回收集器状态
 type Status struct {
-	Enabled                 bool          `json:"enabled"`
-	Started                 bool          `json:"started"`
-	SyscallTrackingEnabled  bool          `json:"syscall_tracking_enabled"`
-	NetworkMonitoringEnabled bool         `json:"network_monitoring_enabled"`
-	SyscallTracerEnabled    bool          `json:"syscall_tracer_enabled"`
-	NetworkTracerEnabled    bool          `json:"network_tracer_enabled"`
-	CollectInterval         time.Duration `json:"collect_interval"`
+	Enabled                  bool          `json:"enabled"`
+	Started                  bool          `json:"started"`
+	SyscallTrackingEnabled   bool          `json:"syscall_tracking_enabled"`
+	NetworkMonitoringEnabled bool          `json:"network_monitoring_enabled"`
+	SyscallTracerEnabled     bool          `json:"syscall_tracer_enabled"`
+	NetworkTracerEnabled     bool          `json:"network_tracer_enabled"`
+	CollectInterval          time.Duration `json:"collect_interval"`
 }
 
 // GetStatus 获取收集器状态

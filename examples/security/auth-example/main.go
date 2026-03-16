@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -135,6 +135,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
-// 需要导入 fmt
-import "fmt"

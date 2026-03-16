@@ -1,3 +1,6 @@
+//go:build linux
+// +build linux
+
 package ebpf
 
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go -type syscall_event syscall ./programs/syscall.bpf.c -- -I/usr/include -I/usr/include/x86_64-linux-gnu

@@ -5,19 +5,19 @@ import (
 	"log"
 	"time"
 
-	"github.com/yourusername/golang/internal/infrastructure/messaging/nats"
+	"github.com/nats-io/nats.go"
 )
 
 func main() {
-	// 创建客户端
-	client, err := nats.NewClient(nats.DefaultConfig())
+	// 连接到 NATS 服务器（默认本地）
+	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
-		log.Fatal("Failed to create NATS client:", err)
+		log.Fatal("Failed to connect to NATS:", err)
 	}
-	defer client.Close()
+	defer nc.Close()
 
 	// 订阅主题
-	sub, err := client.Subscribe("user.created", func(msg *nats.Msg) {
+	sub, err := nc.Subscribe("user.created", func(msg *nats.Msg) {
 		var data map[string]interface{}
 		if err := json.Unmarshal(msg.Data, &data); err != nil {
 			log.Printf("Failed to unmarshal message: %v", err)
@@ -40,7 +40,12 @@ func main() {
 		"email":   "alice@example.com",
 	}
 
-	if err := client.Publish("user.created", message); err != nil {
+	data, err := json.Marshal(message)
+	if err != nil {
+		log.Fatal("Failed to marshal message:", err)
+	}
+
+	if err := nc.Publish("user.created", data); err != nil {
 		log.Fatal("Failed to publish:", err)
 	}
 

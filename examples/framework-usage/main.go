@@ -9,7 +9,8 @@ import (
 	"log/slog"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/yourusername/golang/internal/interfaces/http/chi/middleware"
+
+	"example.com/golang-examples/framework-usage/middleware"
 	"github.com/yourusername/golang/pkg/auth/jwt"
 	"github.com/yourusername/golang/pkg/errors"
 	"github.com/yourusername/golang/pkg/eventbus"
@@ -238,7 +239,7 @@ func createGetUsersHandler(enforcer *rbac.Enforcer) http.HandlerFunc {
 
 // createCreateUserHandler 创建用户处理器
 func createCreateUserHandler(
-	validator *validator.Validator,
+	val *validator.Validator,
 	eventBus *eventbus.EventBus,
 	enforcer *rbac.Enforcer,
 ) http.HandlerFunc {
@@ -254,15 +255,19 @@ func createCreateUserHandler(
 			return
 		}
 
-		// 验证请求
-		if !validator.Validate(req) {
-			validationErrors := validator.ValidateStruct(req)
-			details := make(map[string]interface{})
-			for _, err := range validationErrors {
-				details[err.Field] = err.Message
-			}
+		// 验证请求（简化验证）
+		if req.Name == "" || len(req.Name) < 2 {
 			response.Error(w, http.StatusBadRequest,
-				errors.NewValidationError("validation failed", details))
+				errors.NewValidationError("validation failed", map[string]interface{}{
+					"name": "name is required and must be at least 2 characters",
+				}))
+			return
+		}
+		if req.Email == "" || !validator.ValidateEmail(req.Email) {
+			response.Error(w, http.StatusBadRequest,
+				errors.NewValidationError("validation failed", map[string]interface{}{
+					"email": "valid email is required",
+				}))
 			return
 		}
 

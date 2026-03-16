@@ -33,5 +33,7 @@ func main() {
 	// }
 	// log.Printf("User: %+v", resp.User)
 
+	// 使用 ctx 避免未使用错误
+	_ = ctx
 	log.Println("gRPC client example (requires generated code)")
 }
