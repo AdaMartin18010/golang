@@ -115,6 +115,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/nats-io/nats.go v1.35.0
 	github.com/redis/go-redis/v9 v9.17.2
+	github.com/yourusername/golang/pkg/observability v0.0.0-00010101000000-000000000000
 	golang.org/x/oauth2 v0.33.0
 )
 
@@ -133,7 +134,9 @@ require (
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
-	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.42.0 // indirect
-	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.42.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.38.0 // indirect
 	golang.org/x/mod v0.29.0 // indirect
 )
+
+// 本地子模块替换
+replace github.com/yourusername/golang/pkg/observability => ./pkg/observability

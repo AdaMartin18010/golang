@@ -86,4 +86,3 @@ func TestTracer_AddStackTrace(t *testing.T) {
 
 	// 验证堆栈跟踪被添加
 }
-

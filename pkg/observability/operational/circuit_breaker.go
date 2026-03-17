@@ -121,14 +121,15 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, fn func() error) error {
 		// 操作成功
 		cb.failures = 0
 
-		if cb.state == CircuitStateHalfOpen {
+		switch cb.state {
+		case CircuitStateHalfOpen:
 			cb.successCount++
 			if cb.successCount >= cb.halfOpenLimit {
 				// 半开状态下成功次数达到限制，关闭熔断器
 				cb.state = CircuitStateClosed
 				cb.successCount = 0
 			}
-		} else if cb.state == CircuitStateOpen {
+		case CircuitStateOpen:
 			// 不应该发生，但处理一下
 			cb.state = CircuitStateClosed
 		}

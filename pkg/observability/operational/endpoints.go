@@ -164,7 +164,7 @@ func (oe *OperationalEndpoints) healthHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	status := healthChecker.Check(r.Context())
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	if status.Healthy {
 		w.WriteHeader(http.StatusOK)
@@ -180,7 +180,7 @@ func (oe *OperationalEndpoints) healthHandler(w http.ResponseWriter, r *http.Req
 			"memory_usage": status.MemoryUsage,
 			"cpu_usage":    status.CPUUsage,
 			"goroutines":   status.Goroutines,
-			"gc":          status.GC,
+			"gc":           status.GC,
 		},
 	})
 }
@@ -379,14 +379,14 @@ func (oe *OperationalEndpoints) infoHandler(w http.ResponseWriter, r *http.Reque
 	// 平台信息
 	platformInfo := oe.observability.GetPlatformInfo()
 	info["platform"] = map[string]interface{}{
-		"os":            platformInfo.OS,
-		"arch":          platformInfo.Arch,
-		"go_version":    platformInfo.GoVersion,
-		"hostname":      platformInfo.Hostname,
-		"cpu_cores":     platformInfo.CPUs,
-		"container":     oe.observability.IsContainer(),
-		"kubernetes":    oe.observability.IsKubernetes(),
-		"virtualized":   oe.observability.IsVirtualized(),
+		"os":          platformInfo.OS,
+		"arch":        platformInfo.Arch,
+		"go_version":  platformInfo.GoVersion,
+		"hostname":    platformInfo.Hostname,
+		"cpu_cores":   platformInfo.CPUs,
+		"container":   oe.observability.IsContainer(),
+		"kubernetes":  oe.observability.IsKubernetes(),
+		"virtualized": oe.observability.IsVirtualized(),
 	}
 
 	// Kubernetes 信息
@@ -409,10 +409,10 @@ func (oe *OperationalEndpoints) infoHandler(w http.ResponseWriter, r *http.Reque
 // versionHandler 版本信息处理器
 func (oe *OperationalEndpoints) versionHandler(w http.ResponseWriter, r *http.Request) {
 	version := map[string]interface{}{
-		"version":     "1.0.0",
-		"build_time":  time.Now().Format(time.RFC3339),
-		"git_commit":  "unknown",
-		"go_version":  "1.25.3",
+		"version":    "1.0.0",
+		"build_time": time.Now().Format(time.RFC3339),
+		"git_commit": "unknown",
+		"go_version": "1.25.3",
 	}
 
 	w.Header().Set("Content-Type", "application/json")

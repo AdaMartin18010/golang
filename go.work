@@ -27,7 +27,4 @@ use (
 )
 
 // 本地替换（开发时使用）
-// replace (
-//     example.com/agent => ./pkg/agent
-//     example.com/concurrency => ./pkg/concurrency
-// )
+// 注意：workspace 中的模块通过 use 指令指定，不需要 replace
