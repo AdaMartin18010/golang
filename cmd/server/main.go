@@ -29,10 +29,11 @@
 // - 关闭数据库连接和其他资源
 //
 // 使用方式：
-//   go run cmd/server/main.go
-//   # 或
-//   go build -o bin/server cmd/server/main.go
-//   ./bin/server
+//
+//	go run cmd/server/main.go
+//	# 或
+//	go build -o bin/server cmd/server/main.go
+//	./bin/server
 //
 // 配置：
 // - 配置文件：configs/config.yaml
@@ -50,14 +51,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yourusername/golang/internal/config"
 	appuser "github.com/yourusername/golang/internal/app/user"
+	"github.com/yourusername/golang/internal/config"
 	entdb "github.com/yourusername/golang/internal/infra/database/ent"
-	"github.com/yourusername/golang/internal/infra/repository"
 	"github.com/yourusername/golang/internal/infra/observability/otlp"
+	"github.com/yourusername/golang/internal/infra/repository"
 	"github.com/yourusername/golang/internal/infra/workflow/temporal"
-	temporalhandler "github.com/yourusername/golang/internal/interfaces/workflow/temporal"
 	chiRouter "github.com/yourusername/golang/internal/interfaces/http/chi"
+	temporalhandler "github.com/yourusername/golang/internal/interfaces/workflow/temporal"
 )
 
 func main() {
@@ -309,5 +310,3 @@ func main() {
 
 	logger.Info("Application gracefully stopped.")
 }
-
-

@@ -199,5 +199,3 @@ func main() {
 	w.Stop()
 	log.Println("Worker stopped")
 }
-
-
