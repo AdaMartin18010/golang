@@ -38,11 +38,11 @@ func TestBaseEvent(t *testing.T) {
 
 	t.Run("复杂数据事件", func(t *testing.T) {
 		data := map[string]interface{}{
-			"id":      "complex-123",
-			"name":    "Complex Event",
-			"count":   42,
-			"active":  true,
-			"nested":  map[string]string{"key": "value"},
+			"id":     "complex-123",
+			"name":   "Complex Event",
+			"count":  42,
+			"active": true,
+			"nested": map[string]string{"key": "value"},
 		}
 		event := NewBaseEvent("complex.event", data)
 
@@ -541,12 +541,12 @@ func TestEventWithSliceData(t *testing.T) {
 // TestEventWithMapData 测试 Map 数据的事件
 func TestEventWithMapData(t *testing.T) {
 	data := map[string]interface{}{
-		"id":        "123",
-		"name":      "Test",
-		"count":     42,
-		"active":    true,
-		"tags":      []string{"tag1", "tag2"},
-		"metadata":  map[string]string{"key": "value"},
+		"id":       "123",
+		"name":     "Test",
+		"count":    42,
+		"active":   true,
+		"tags":     []string{"tag1", "tag2"},
+		"metadata": map[string]string{"key": "value"},
 	}
 
 	event := NewBaseEvent("complex.event", data)
