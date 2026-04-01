@@ -308,4 +308,3 @@ func Or(predicates ...predicate.User) predicate.User {
 func Not(p predicate.User) predicate.User {
 	return predicate.User(sql.NotPredicates(p))
 }
-

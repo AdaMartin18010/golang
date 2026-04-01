@@ -1,7 +1,7 @@
 # Go Clean Architecture 框架 - 目录结构全面梳理方案
 
-**日期**: 2026-03-17  
-**参考标准**: [golang-standards/project-layout](https://github.com/golang-standards/project-layout)  
+**日期**: 2026-03-17
+**参考标准**: [golang-standards/project-layout](https://github.com/golang-standards/project-layout)
 **架构**: Clean Architecture + 标准 Go 项目布局
 
 ---
@@ -116,11 +116,13 @@ golang/
 #### 1. `docs/` - 文档过度膨胀
 
 **问题**:
+
 - 24 个子目录，超过 100 个 Markdown 文件
 - 大量重复和归档文档
 - 自我参照的 "完成报告" 堆积
 
 **标准建议**:
+
 ```
 docs/
 ├── README.md              # 文档索引
@@ -135,11 +137,13 @@ docs/
 #### 2. `internal/` - Clean Architecture 过度工程化
 
 **问题**:
+
 - 层级过多，包依赖复杂
 - `interfaces/` 包含太多实现细节
 - `infrastructure/` 过于臃肿
 
 **当前结构**:
+
 ```
 internal/
 ├── application/           # 用例层（空洞）
@@ -153,12 +157,14 @@ internal/
 #### 3. `pkg/` - 公共库过度膨胀
 
 **问题**:
+
 - 40+ 顶级包，职责混乱
 - `utils/` 包含 50+ 个小模块
 - `auth/`、`rbac/`、`security/` 重复
 - `observability/` 与 `tracing/` 重复
 
 **重复/冲突**:
+
 | 包 | 问题 |
 |----|------|
 | `pkg/auth/jwt` vs `pkg/security/jwt` | 重复实现 |
@@ -169,6 +175,7 @@ internal/
 #### 4. `archive/` - 不应在版本控制中
 
 **问题**:
+
 - 归档文件应在版本控制外
 - 使用 Git 历史或外部存储
 
@@ -545,6 +552,7 @@ go test -short ./...
 **影响**: 这是一个重大重构，会影响所有导入路径
 
 **缓解**:
+
 - 在 README 中明确标记为破坏性变更
 - 提供迁移脚本
 - 更新版本号（v1.0 -> v2.0）
@@ -554,6 +562,7 @@ go test -short ./...
 **影响**: 移动文件可能导致测试失效
 
 **缓解**:
+
 - 使用 IDE 重构工具
 - 全面运行测试套件
 - 增加集成测试
@@ -563,6 +572,7 @@ go test -short ./...
 **影响**: 大量文档引用旧路径
 
 **缓解**:
+
 - 同步更新所有文档
 - 添加重定向说明
 
@@ -593,6 +603,7 @@ go test -short ./...
 ---
 
 **建议**: 这是一个重大重构，建议在以下时机执行：
+
 - 主要功能稳定后
 - 新功能开发暂停期间
 - 有足够的测试覆盖时

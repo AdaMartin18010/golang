@@ -10,9 +10,9 @@ import (
 var (
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, Unique: true},
-		{Name: "email", Type: field.TypeString, Unique: true, Size: 255},
-		{Name: "name", Type: field.TypeString, Size: 100},
+		{Name: "id", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString, Size: 50},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}
@@ -21,18 +21,6 @@ var (
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "user_email",
-				Unique:  true,
-				Columns: []*schema.Column{UsersColumns[1]},
-			},
-			{
-				Name:    "user_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{UsersColumns[3]},
-			},
-		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

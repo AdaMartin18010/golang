@@ -1,7 +1,7 @@
 # 目录结构重构完成报告
 
-**日期**: 2026-03-17  
-**执行**: Kimi Code CLI  
+**日期**: 2026-03-17
+**执行**: Kimi Code CLI
 **状态**: ✅ 完成
 
 ---
@@ -15,6 +15,7 @@
 ## 完成的变更
 
 ### ✅ Phase 1: 清理归档文件
+
 - archive/ 目录已在前期清理
 - 所有历史报告已归档
 
@@ -40,10 +41,11 @@
 
 ### ✅ Phase 4: 精简 utils/ 目录
 
-**精简前**: 47 个子目录  
+**精简前**: 47 个子目录
 **精简后**: 5 个子目录
 
 **保留**:
+
 - pkg/utils/crypto/
 - pkg/utils/hash/
 - pkg/utils/id/
@@ -70,12 +72,14 @@
 ## 验证结果
 
 ### 构建验证
+
 ```bash
 go build ./...
 # ✅ 成功
 ```
 
 ### 静态分析
+
 ```bash
 go vet ./...
 # ✅ 通过
@@ -94,11 +98,13 @@ go vet ./...
 ## 文件变更统计
 
 ### 修改的文件
+
 - 更新导入路径: 47 个 Go 文件
 - 修复测试文件: 4 个
 - 删除重复测试: 1 个 (rbac_enhanced_test.go)
 
 ### 删除的目录
+
 - pkg/auth/ (完整删除)
 - pkg/rbac/ (完整删除)
 - pkg/tracing/ (完整删除)
@@ -108,6 +114,7 @@ go vet ./...
 - internal/types/
 
 ### 重命名的目录
+
 - internal/application -> internal/app
 - internal/infrastructure -> internal/infra
 
@@ -156,17 +163,21 @@ golang/
 ## 后续建议
 
 ### 1. 文档精简（可选）
+
 docs/ 目录仍有 24 个子目录，建议：
+
 - 删除 archive/
 - 合并重复内容
 - 目标：精简到 6-8 个子目录
 
 ### 2. 进一步精简 pkg/（可选）
+
 - 评估 pkg/concurrency/ 是否必要
 - 评估 pkg/control/ 是否必要
 - 合并 pkg/http/ 和 pkg/http3/
 
 ### 3. internal/ 最终整理（可选）
+
 - 将 internal/framework/ 合并到 internal/app/
 - 简化 internal/interfaces/ 结构
 
@@ -175,7 +186,9 @@ docs/ 目录仍有 24 个子目录，建议：
 ## 风险与回滚
 
 ### 备份位置
+
 所有删除/修改的内容已备份到：
+
 - .backup/auth/
 - .backup/rbac/
 - .backup/tracing/
@@ -183,6 +196,7 @@ docs/ 目录仍有 24 个子目录，建议：
 - .backup/internal/
 
 ### 回滚方法
+
 ```bash
 # 如果需要回滚，从备份恢复
 cp -r .backup/auth pkg/

@@ -2,9 +2,9 @@
 
 package runtime
 
-// The schema-stitching logic is generated in github.com/yourusername/golang/internal/infrastructure/database/ent/runtime.go
+// The schema-stitching logic is generated in github.com/yourusername/golang/internal/infra/database/ent/runtime.go
 
 const (
-	Version = "v0.12.5"                                         // Version of ent codegen.
-	Sum     = "h1:KREM5E4CSoej4zeGa88Ou/gfturAnpUv0mzAjch1sj4=" // Sum of ent codegen.
+	Version = "v0.14.6"                                         // Version of ent codegen.
+	Sum     = "h1:/f2696BpwuWAEEG6PVGWflg6+Inrpq4pRWuNlWz/Skk=" // Sum of ent codegen.
 )

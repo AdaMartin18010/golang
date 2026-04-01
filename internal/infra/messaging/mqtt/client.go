@@ -219,24 +219,30 @@ func NewClient(broker, clientID, username, password string) (*Client, error) {
 // - QoS 1 保证消息至少到达一次，但可能重复
 // - QoS 2 保证消息恰好到达一次，但性能较低
 // - 保留消息会占用 Broker 存储空间
-func (c *Client) Publish(ctx context.Context, topic string, qos byte, retained bool, payload interface{}) error {
-	var data []byte
-	var err error
-
-	// 根据负载类型进行转换
+// convertPayload 将不同类型的 payload 转换为字节数组
+// 该函数提取出来以便进行单元测试
+func convertPayload(payload interface{}) ([]byte, error) {
 	switch v := payload.(type) {
 	case []byte:
 		// 已经是字节数组，直接使用
-		data = v
+		return v, nil
 	case string:
 		// 字符串，转换为字节数组
-		data = []byte(v)
+		return []byte(v), nil
 	default:
 		// 其他类型，序列化为 JSON
-		data, err = json.Marshal(payload)
+		data, err := json.Marshal(payload)
 		if err != nil {
-			return fmt.Errorf("failed to marshal payload: %w", err)
+			return nil, fmt.Errorf("failed to marshal payload: %w", err)
 		}
+		return data, nil
+	}
+}
+
+func (c *Client) Publish(ctx context.Context, topic string, qos byte, retained bool, payload interface{}) error {
+	data, err := convertPayload(payload)
+	if err != nil {
+		return err
 	}
 
 	// 发布消息

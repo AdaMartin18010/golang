@@ -82,4 +82,3 @@ func migrateSchema(t TestingT, c *ent.Client, o *options) {
 		t.FailNow()
 	}
 }
-

@@ -51,7 +51,7 @@ func TestNewLogger_WithCustomConfig(t *testing.T) {
 		Output:         &buf,
 		AddSource:      true,
 		JSONFormat:     true,
-		SampleRate:     0.5,
+		SampleRate:     1.0, // 测试中使用全采样，避免随机采样导致断言失败
 		ServiceName:    "test-service",
 		ServiceVersion: "1.0.0",
 	}
@@ -202,7 +202,7 @@ func TestLogger_WithError(t *testing.T) {
 func TestSetLogger(t *testing.T) {
 	var buf bytes.Buffer
 	cfg := &Config{
-		Output:     &buf,
+		Output:      &buf,
 		ServiceName: "test-logger",
 	}
 

@@ -93,21 +93,27 @@ func NewClient(cfg Config) (*Client, error) {
 	return &Client{conn: conn}, nil
 }
 
-// Publish 发布消息到指定主题
-func (c *Client) Publish(subject string, data interface{}) error {
-	var payload []byte
-	var err error
-
+// marshalPayload 将数据序列化为字节数组
+func marshalPayload(data interface{}) ([]byte, error) {
 	switch v := data.(type) {
 	case []byte:
-		payload = v
+		return v, nil
 	case string:
-		payload = []byte(v)
+		return []byte(v), nil
 	default:
-		payload, err = json.Marshal(data)
+		payload, err := json.Marshal(data)
 		if err != nil {
-			return fmt.Errorf("failed to marshal message: %w", err)
+			return nil, fmt.Errorf("failed to marshal message: %w", err)
 		}
+		return payload, nil
+	}
+}
+
+// Publish 发布消息到指定主题
+func (c *Client) Publish(subject string, data interface{}) error {
+	payload, err := marshalPayload(data)
+	if err != nil {
+		return err
 	}
 
 	return c.conn.Publish(subject, payload)
@@ -125,19 +131,9 @@ func (c *Client) QueueSubscribe(subject, queue string, handler func(*nats.Msg)) 
 
 // Request 发送请求并等待响应（Request-Reply 模式）
 func (c *Client) Request(subject string, data interface{}, timeout time.Duration) (*nats.Msg, error) {
-	var payload []byte
-	var err error
-
-	switch v := data.(type) {
-	case []byte:
-		payload = v
-	case string:
-		payload = []byte(v)
-	default:
-		payload, err = json.Marshal(data)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal message: %w", err)
-		}
+	payload, err := marshalPayload(data)
+	if err != nil {
+		return nil, err
 	}
 
 	msg, err := c.conn.Request(subject, payload, timeout)

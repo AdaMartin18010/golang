@@ -1,5 +1,7 @@
-# golangci-lint 配置
-# 2024 最佳实践配置
+# golangci-lint v2 配置
+# 2025-2026 最佳实践配置
+
+version: "2"
 
 run:
   timeout: 5m
@@ -7,18 +9,16 @@ run:
   modules-download-mode: readonly
 
 linters:
+  default: none
   enable:
-    # 默认启用
+    # 默认启用（对应 v1 默认集）
     - errcheck      # 检查未处理的错误
-    - gosimple      # 简化代码
     - govet         # 标准 go vet 检查
     - ineffassign   # 检测无效赋值
-    - staticcheck   # 静态分析
+    - staticcheck   # 静态分析（v2 中合并了 gosimple/stylecheck）
     - unused        # 检测未使用的代码
 
     # 额外启用
-    - gofmt         # 格式检查
-    - goimports     # import 检查
     - misspell      # 拼写检查
     - revive        # 代码规范
     - gosec         # 安全检查
@@ -32,90 +32,96 @@ linters:
     - nakedret      # naked return 检查
     - godot         # 注释句点检查
     - whitespace    # 空白字符检查
-    - wsl           # 空行检查
+    - wsl           # 空行检查（v2 中仍可用，但已被标记为 deprecated）
 
-  disable:
-    - typecheck     # 由于使用了泛型，可能会误报
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
 
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-    check-blank: true
+    govet:
+      enable-all: true
+      disable:
+        - shadow
 
-  govet:
-    enable-all: true
-    disable:
-      - shadow
+    gocyclo:
+      min-complexity: 15
 
-  gocyclo:
-    min-complexity: 15
+    dupl:
+      threshold: 100
 
-  dupl:
-    threshold: 100
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+        - experimental
+        - opinionated
+      disabled-checks:
+        - whyNoLint
+        - unnamedResult
 
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
-      - experimental
-      - opinionated
-    disabled-checks:
-      - whyNoLint
-      - unnamedResult
+    revive:
+      rules:
+        - name: exported
+          disabled: false
+        - name: var-naming
+          disabled: false
+        - name: package-comments
+          disabled: false
 
-  revive:
+    gosec:
+      severity: medium
+      confidence: medium
+      excludes:
+        - G104  # 允许某些错误不处理
+        - G307  # 允许某些 defer 不检查错误
+
+  exclusions:
+    generated: lax
     rules:
-      - name: exported
-        disabled: false
-      - name: var-naming
-        disabled: false
-      - name: package-comments
-        disabled: false
+      # 排除测试文件的某些检查
+      - path: _test\.go
+        linters:
+          - errcheck
+          - dupl
+          - gosec
 
-  gosec:
-    severity: medium
-    confidence: medium
-    excludes:
-      - G104  # 允许某些错误不处理
-      - G307  # 允许某些 defer 不检查错误
+      # 排除生成的代码
+      - path: (^|/)vendor/
+        linters:
+          - all
+      - path: \.pb\.go$
+        linters:
+          - all
+      - path: _gen\.go$
+        linters:
+          - all
+      - path: wire_gen\.go$
+        linters:
+          - all
+
+      # 排除某些常见的误报
+      - text: "G404: Use of weak random number generator"
+        linters:
+          - gosec
+      - text: "ST1000: at least one file in a package should have a package comment"
+        linters:
+          - staticcheck
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
 
 issues:
-  exclude-rules:
-    # 排除测试文件的某些检查
-    - path: _test\.go
-      linters:
-        - errcheck
-        - dupl
-        - gosec
-
-    # 排除生成的代码
-    - path: (^|/)vendor/
-      linters:
-        - all
-    - path: \.pb\.go$
-      linters:
-        - all
-    - path: _gen\.go$
-      linters:
-        - all
-    - path: wire_gen\.go$
-      linters:
-        - all
-
-    # 排除某些常见的误报
-    - text: "G404: Use of weak random number generator"
-      linters:
-        - gosec
-    - text: "ST1000: at least one file in a package should have a package comment"
-      linters:
-        - stylecheck
-
   max-issues-per-linter: 0
   max-same-issues: 0
 
 output:
-  format: colored-line-number
-  print-issued-lines: true
-  print-linter-name: true
+  formats:
+    text:
+      path: stdout
+      print-linter-name: true
+      print-issued-lines: true
   sort-results: true

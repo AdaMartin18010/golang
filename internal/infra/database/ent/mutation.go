@@ -520,4 +520,3 @@ func (m *UserMutation) ClearEdge(name string) error {
 func (m *UserMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown User edge %s", name)
 }
-

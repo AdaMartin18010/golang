@@ -11,15 +11,15 @@
 - **泛型自引用类型** - `internal/domain/interfaces/specification_go126.go`
   - 利用 Go 1.26 泛型自引用特性实现更强大的类型约束
   - 为规约模式提供类型安全的组合操作
-  
+
 - **errors.AsType** - 类型安全的泛型错误断言
   - 简化错误类型检查代码
   - 编译期类型安全保证
-  
+
 - **slog.NewMultiHandler** - 多日志处理器支持
   - `pkg/logger/logger.go` 新增 `NewMultiOutputLogger` 函数
   - 支持同时输出到多个目标（控制台、文件、远程等）
-  
+
 - **new() 表达式** - 简化可选字段初始化
   - 在 `examples/go126-features/` 中提供完整示例
   - 简化 JSON 可选字段等场景
