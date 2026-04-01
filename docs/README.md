@@ -1,244 +1,96 @@
-﻿# Go 1.26 Documentation
+# Go 1.26 Clean Architecture 项目文档
 
-> **版本**: v1.2
-> **更新日期**: 2026-03-08
-> **Go版本**: Go 1.26
-> **状态**: 完成 ✅
-
-> 🎉 **新**: 已全面更新至 Go 1.26，包含 new() 表达式、递归泛型约束、Green Tea GC 等全新特性！
-> **项目结构**: 符合 [golang-standards/project-layout](https://github.com/golang-standards/project-layout)
+> **版本**: v2.0
+> **更新日期**: 2026-04-02
+> **Go版本**: 1.26.1
+> **文档数**: 15篇核心文档
 
 ---
 
-## 📋 目录
+## 📚 核心文档索引
 
-- [Go 1.26 Documentation](#go-126-documentation)
-  - [📋 目录](#-目录)
-  - [🚀 Quick Start](#-quick-start)
-  - [📚 Documentation Structure](#-documentation-structure)
-    - [🏗️ Architecture ⭐ 项目架构](#️-architecture--项目架构)
-    - [📖 Guides ⭐ 使用指南](#-guides--使用指南)
-    - [🎯 Getting Started](#-getting-started)
-    - [📖 Fundamentals](#-fundamentals)
-    - [💻 Development](#-development)
-    - [🚀 Advanced](#-advanced)
-    - [🛠️ Practices](#️-practices)
-    - [💡 Projects](#-projects)
-    - [📚 Reference](#-reference)
-  - [🔍 Find What You Need](#-find-what-you-need)
-    - [核心导航文档 🆕](#核心导航文档-)
-    - [其他导航](#其他导航)
-  - [🌟 Key Features](#-key-features)
-  - [📖 Popular Topics](#-popular-topics)
-  - [🆕 最新更新 (2025-11-11)](#-最新更新-2025-11-11)
-    - [🎉 重大更新](#-重大更新)
-    - [早期更新](#早期更新)
-  - [🤝 Contributing](#-contributing)
-  - [📝 License](#-license)
+### 🏗️ 架构设计 (5篇)
 
----
+| 文档 | 说明 | 优先级 |
+|------|------|--------|
+| [clean-architecture.md](architecture/clean-architecture.md) | 整洁架构设计 | ⭐⭐⭐⭐⭐ |
+| [clean-architecture-2026-best-practices.md](architecture/clean-architecture-2026-best-practices.md) | 2026最佳实践 | ⭐⭐⭐⭐ |
+| [opentelemetry.md](architecture/tech-stack/observability/opentelemetry.md) | 可观测性架构 | ⭐⭐⭐⭐ |
+| [OPENTELEMETRY-2026-UPDATE.md](architecture/tech-stack/observability/OPENTELEMETRY-2026-UPDATE.md) | OTel 2026更新 | ⭐⭐⭐⭐ |
+| [ent-orm.md](architecture/tech-stack/data/ent-orm.md) | 数据持久化 | ⭐⭐⭐ |
 
----
+### 📖 Go 1.26 核心知识 (5篇)
 
-## 🚀 Quick Start
+| 文档 | 说明 | 优先级 |
+|------|------|--------|
+| [05-csp-formal-model.md](go126-comprehensive-guide/05-csp-formal-model.md) | CSP形式化模型 | ⭐⭐⭐⭐⭐ |
+| [01-language-features.md](go126-comprehensive-guide/01-language-features.md) | 语言特性 | ⭐⭐⭐⭐ |
+| [03-type-system.md](go126-comprehensive-guide/03-type-system.md) | 类型系统 | ⭐⭐⭐⭐ |
+| [09-concurrency-patterns.md](go126-comprehensive-guide/09-concurrency-patterns.md) | 并发模式 | ⭐⭐⭐⭐ |
+| [26-memory-management.md](go126-comprehensive-guide/26-memory-management.md) | 内存管理 | ⭐⭐⭐ |
 
-New to Go? Start here:
+### 📋 参考文档 (3篇)
 
-- 🎯 **[Go 1.26 综合技术指南](./go126-comprehensive-guide/README.md)** - Go 1.26 完全指南 ⭐⭐⭐⭐⭐ 🆕
-- 🎯 **[Go 1.26 特性详解](./reference/versions/06-Go-1.26特性/README.md)** - 版本特性完全指南 ⭐⭐⭐⭐⭐ 🆕
-- 🎯 **[Go 1.26完整知识体系总览](./00-Go-1.26完整知识体系总览-2026.md)** - 系统化总领文档 ⭐⭐⭐⭐⭐ 🆕
-- 📚 **[快速参考手册](./📚-Go-1.26快速参考手册-2026.md)** - 日常开发速查利器 ⭐⭐⭐⭐⭐ 🆕
-- ✅ **[学习检查清单](./✅-Go-1.26学习检查清单-2026.md)** - 追踪学习进度 ⭐⭐⭐⭐⭐ 🆕
-- 🎯 **[实战开发导航](./🎯-Go-1.26实战开发导航-2026.md)** - 快速定位实战文档 ⭐⭐⭐⭐⭐ 🆕
-- ❓ **[常见问题解决](./❓-Go-1.26常见问题解决方案-2026.md)** - 快速解决开发问题 ⭐⭐⭐⭐⭐ 🆕
-- **[Getting Started](./getting-started/)** - Installation, quick starts, and FAQs
-- **[Quick Start (3 min)](./getting-started/quick-start-3min.md)** - Get up and running fast
-- **[Installation Guide](./getting-started/installation.md)** - Setup your environment
-- **[FAQ](./getting-started/faq.md)** - Common questions
+| 文档 | 说明 | 优先级 |
+|------|------|--------|
+| [00-Go-1.26完整知识体系总览-2026.md](00-Go-1.26完整知识体系总览-2026.md) | 知识总览 | ⭐⭐⭐⭐ |
+| [go126-package-management.md](go126-package-management.md) | 包管理 | ⭐⭐⭐ |
+| [CORE-DOCUMENTS.md](CORE-DOCUMENTS.md) | 文档索引 | ⭐⭐⭐ |
 
 ---
 
-## 📚 Documentation Structure
+## 🚀 快速开始
 
-本文档目录遵循标准Go项目文档布局，提供完整的Go 1.26学习和开发指南。
-
-### 🏗️ [Architecture](./architecture/) ⭐ 项目架构
-
-**项目架构文档** (完整架构设计，已深度增强):
-
-- 🏗️ **[架构文档索引](./architecture/README.md)** - 架构文档完整索引 ⭐⭐⭐⭐⭐
-- 📐 **[Clean Architecture](./architecture/clean-architecture.md)** - 四层架构设计 ⭐⭐⭐⭐⭐
-- 🎯 **[领域模型设计](./architecture/domain-model.md)** - DDD 领域模型 ⭐⭐⭐⭐
-- 🔄 **[工作流架构设计](./architecture/workflow.md)** - Temporal 工作流 ⭐⭐⭐⭐⭐
-- 📊 **[架构知识图谱](./architecture/00-知识图谱.md)** - 架构知识图谱 ⭐⭐⭐⭐
-- 🔍 **[概念定义体系](./architecture/00-概念定义体系.md)** - 概念定义体系 ⭐⭐⭐⭐
-- 📖 **[技术对比矩阵](./architecture/00-对比矩阵.md)** - 技术选型对比 ⭐⭐⭐
-- 🔧 **[技术栈文档索引](./architecture/tech-stack/README.md)** - 技术栈文档索引（已拆分） ⭐⭐⭐⭐
-- 🚀 **[Go 1.26 技术栈对齐](./architecture/00-Go-1.26技术栈对齐.md)** - 技术栈对齐 ⭐⭐⭐
-
-**架构文档特点**:
-
-- ✅ 完整的四层架构设计（Domain, Application, Infrastructure, Interfaces）
-- ✅ 详细的选型论证和设计决策说明
-- ✅ 丰富的实际应用示例和代码说明
-- ✅ 多种思维表征方式（思维导图、决策树、对比矩阵等）
-- ✅ 全面的技术栈解析和最佳实践
-
-### 📖 [Guides](./guides/) ⭐ 使用指南
-
-项目使用指南和快速入门：
-
-- **[快速开始](./guides/getting-started.md)** - 快速开始指南
-- **[开发指南](./guides/development.md)** - 开发指南
-- **[部署指南](./guides/deployment.md)** - 部署指南
-- **[测试指南](./guides/testing.md)** - 测试指南
-- **[工作流指南](./guides/workflow.md)** - Temporal 工作流使用
-- **[代码生成](./guides/code-generation.md)** - 代码生成指南
-- **[贡献指南](./guides/contributing.md)** - 贡献指南
-
-### 🎯 Getting Started
-
-快速入门指南（详细内容请参考 [Guides](./guides/)）：
-
-- **[安装指南](./getting-started/installation.md)** - 环境设置
-- **[3分钟快速开始](./getting-started/quick-start-3min.md)** - 快速上手
-- **[快速开始](./getting-started/quick-start.md)** - 完整快速开始
-- **[常见问题](./getting-started/faq.md)** - FAQ
-- **[术语表](./getting-started/glossary.md)** - 术语定义
-
-### 📖 [Fundamentals](./fundamentals/)
-
-Master the core concepts of Go 1.26:
-
-- **[Language](./fundamentals/language/)** - Syntax, semantics, and formal theory
-- **[Concurrency](./fundamentals/concurrency/)** - Goroutines, channels, and patterns ⭐ 新增
-- **[Modules](./fundamentals/language/03-模块管理/)** - Go Modules & Workspace ⭐ 2025最新
-- **[Standard Library](./fundamentals/stdlib/)** - Core packages and APIs
-- **[Data Structures](./fundamentals/data-structures/)** - Algorithms and data structures
-
-### 💻 [Development](./development/)
-
-Build production-ready applications:
-
-- **[Web](./development/web/)** - HTTP, frameworks (Gin/Echo/Fiber), HTTP/3
-- **[Database](./development/database/)** - SQL, NoSQL, and vector databases
-- **[Microservices](./development/microservices/)** - gRPC, service mesh, API gateway
-- **[Cloud Native](./development/cloud-native/)** - Kubernetes, Docker, GitOps
-
-### 🚀 [Advanced](./advanced/)
-
-Deep dive into advanced topics:
-
-- **[Performance](./advanced/performance/)** - Optimization, profiling, and PGO
-- **[Architecture](./advanced/architecture/)** - Design patterns and best practices
-- **[Distributed](./advanced/distributed/)** - Distributed systems and tracing ⭐ 新增
-- **[AI & ML](./advanced/ai-ml/)** - LLM, RAG, and AI agent development ⭐ 新增
-- **[Security](./advanced/security/)** - Authentication, encryption, and hardening ⭐ 新增
-- **[Modern Web](./advanced/modern-web/)** - WebSocket, GraphQL, gRPC-Web ⭐ 新增
-
-### 🛠️ [Practices](./practices/)
-
-Engineering excellence:
-
-- **[Engineering](./practices/engineering/)** - Code quality, structure, and tooling
-- **[Testing](./practices/testing/)** - Unit, integration, and benchmark tests ⭐ 新增
-- **[Deployment](./practices/deployment/)** - CI/CD and production deployment ⭐ 新增
-- **[Observability](./practices/observability/)** - Logging, metrics, and tracing
-
-### 💡 [Projects](./projects/)
-
-Learn by building:
-
-- **[Tutorials](./projects/tutorials/)** - Step-by-step guides
-- **[Examples](./projects/examples/)** - Code samples and demos
-- **[Templates](./projects/templates/)** - Project starter templates ⭐ 新增
-
-### 📚 [Reference](./reference/)
-
-Quick references and resources:
-
-- **[API](./reference/api/)** - API documentation ⭐ 新增
-- **[Versions](./reference/versions/)** - Go version features and migration
-- **[Guides](./reference/guides/)** - Quick reference manuals ⭐ 新增
-- **[Resources](./reference/resources/)** - External resources and tools
+1. **新用户**: 从 [clean-architecture.md](architecture/clean-architecture.md) 开始
+2. **Go 1.26 特性**: 阅读 [01-language-features.md](go126-comprehensive-guide/01-language-features.md)
+3. **并发编程**: 深入学习 [05-csp-formal-model.md](go126-comprehensive-guide/05-csp-formal-model.md)
+4. **可观测性**: 查看 [opentelemetry.md](architecture/tech-stack/observability/opentelemetry.md)
 
 ---
 
-## 🔍 Find What You Need
+## 📁 文档结构
 
-### 核心导航文档 🆕
-
-- 🎯 **[完整知识体系总览](./00-Go-1.26完整知识体系总览-2026.md)** - 系统化总领 ⭐⭐⭐⭐⭐
-- 📚 **[快速参考手册](./📚-Go-1.26快速参考手册-2026.md)** - 日常速查 ⭐⭐⭐⭐⭐
-- ✅ **[学习检查清单](./✅-Go-1.26学习检查清单-2026.md)** - 进度追踪 ⭐⭐⭐⭐⭐
-- 🎯 **[实战开发导航](./🎯-Go-1.26实战开发导航-2026.md)** - 精准定位 ⭐⭐⭐⭐⭐
-- ❓ **[常见问题解决](./❓-Go-1.26常见问题解决方案-2026.md)** - 快速解决 ⭐⭐⭐⭐⭐
-
-### 其他导航
-
-- **[Complete Index](./INDEX.md)** - Full documentation index
-- **[Learning Paths](./LEARNING_PATHS.md)** - Structured learning journeys
-- **[Document Index](./getting-started/document-index.md)** - Detailed document catalog
-- **[Glossary](./getting-started/glossary.md)** - Technical terms
-
----
-
-## 🌟 Key Features
-
-✅ **100% Go 1.26 Focused** - All content is specific to Go 1.26
-✅ **Modern Structure** - Functional organization for easy navigation
-✅ **Comprehensive** - From basics to advanced topics
-✅ **Production Ready** - Tested patterns and best practices
-✅ **Well Maintained** - Regular updates and improvements
-✅ **2025最新** - 包含最新的Go Workspace系统梳理
+```
+docs/
+├── README.md                                    # 本文档
+├── CORE-DOCUMENTS.md                            # 高质量文档索引
+├── 00-Go-1.26完整知识体系总览-2026.md          # 知识总览
+├── go126-package-management.md                  # 包管理
+├── architecture/                                # 架构文档
+│   ├── clean-architecture.md                   # 整洁架构
+│   ├── clean-architecture-2026-best-practices.md
+│   └── tech-stack/                             # 技术栈
+│       ├── observability/
+│       └── data/
+└── go126-comprehensive-guide/                  # Go 1.26核心
+    ├── 01-language-features.md
+    ├── 03-type-system.md
+    ├── 05-csp-formal-model.md
+    ├── 09-concurrency-patterns.md
+    └── 26-memory-management.md
+```
 
 ---
 
-## 📖 Popular Topics
+## 📝 文档说明
 
-- [Go 1.26 New Features](./reference/versions/06-Go-1.26特性/)
-- [Go Workspace完整指南](./fundamentals/language/03-模块管理/07-Go-Workspace完整指南-Go1.26.md) ⭐ 2025最新
-- [Modules与Workspace对比](./fundamentals/language/03-模块管理/08-Go-Modules与Workspace完整对比-2025.md) ⭐ 新增
-- [Iterators Deep Dive](./reference/versions/03-Go-1.23特性/01-迭代器详解.md)
-- [Performance Optimization](./advanced/performance/)
-- [Microservices Architecture](./development/microservices/)
-- [Cloud Native Development](./development/cloud-native/)
+- **总文档数**: 15篇（从1002篇精简）
+- **文档质量**: 核心高质量文档
+- **更新频率**: 按重要程度维护
+- **归档文档**: 备份在 `docs-backup-20260402-062435.zip`
 
 ---
 
-## 🆕 最新更新 (2025-11-11)
+## 🔍 查找文档
 
-### 🎉 重大更新
+使用以下关键词快速定位：
 
-**知识体系完整解析**:
-
-- ✅ **[知识体系总览](./00-Go-1.26完整知识体系总览-2026.md)** - 12,000+字系统总览
-- ✅ **[核心机制解析](./fundamentals/language/00-Go-1.26核心机制完整解析/)** - 63,000+字深度解析
-  - 类型系统（15,000+字）
-  - 控制流（12,000+字）
-  - 并发机制（18,000+字）
-  - CSP模型（15,000+字）
-
-**实用文档体系**:
-
-- ✅ **[快速参考手册](./📚-Go-1.25.3快速参考手册-2025.md)** - 8,000+字速查手册
-- ✅ **[学习检查清单](./✅-Go-1.26学习检查清单-2026.md)** - 150+任务清单
-- ✅ **[实战开发导航](./🎯-Go-1.25.3实战开发导航-2025.md)** - 100+实战主题
-- ✅ **[常见问题解决](./❓-Go-1.25.3常见问题解决方案-2025.md)** - 19个常见问题
-
-### 早期更新
-
-- ✅ **Go Workspace系统梳理** - 完整的go.work与go.mod文档
-- ✅ **空目录填充完成** - 11个新主题目录，65+篇文档
-- ✅ **文档格式统一** - 所有文档添加目录和章节编号
-- ✅ **项目文档归档** - 清理~70+历史文档
+- **架构**: `architecture/`
+- **Go特性**: `go126-comprehensive-guide/`
+- **并发**: `05-csp-formal-model.md`, `09-concurrency-patterns.md`
+- **可观测性**: `opentelemetry.md`, `OPENTELEMETRY-2026-UPDATE.md`
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](../CONTRIBUTING.md).
-
----
-
-## 📝 License
+*最后更新: 2026-04-02*
+*文档清理完成 ✅*
