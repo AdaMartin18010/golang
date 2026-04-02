@@ -1,0 +1,327 @@
+# 任务执行引擎 (Task Execution Engine)
+
+> **分类**: 工程与云原生  
+> **标签**: #execution-engine #worker #async
+
+---
+
+## 引擎架构
+
+```go
+// ExecutionEngine 任务执行引擎
+type ExecutionEngine struct {
+    config     EngineConfig
+    dispatcher *TaskDispatcher
+    executor   *TaskExecutor
+    monitor    *ExecutionMonitor
+    
+    // 组件
+    preProcessors  []TaskPreProcessor
+    postProcessors []TaskPostProcessor
+    errorHandlers  []ErrorHandler
+}
+
+type EngineConfig struct {
+    MaxConcurrency  int
+    QueueSize       int
+    DefaultTimeout  time.Duration
+    ShutdownTimeout time.Duration
+}
+```
+
+---
+
+## 任务分发器
+
+```go
+type TaskDispatcher struct {
+    queues    map[string]chan *Task  // 按优先级/类型分队列
+    workers   map[string]*WorkerPool
+    strategies map[string]DispatchStrategy
+}
+
+type DispatchStrategy interface {
+    SelectQueue(task *Task) string
+    SelectWorker(queues []string) string
+}
+
+// 优先级策略
+func (td *TaskDispatcher) dispatch(task *Task) error {
+    // 预处理
+    for _, processor := range td.preProcessors {
+        if err := processor.Process(task); err != nil {
+            return err
+        }
+    }
+    
+    // 选择队列
+    queueName := td.strategy.SelectQueue(task)
+    queue := td.queues[queueName]
+    
+    // 尝试放入队列
+    select {
+    case queue <- task:
+        return nil
+    case <-time.After(5 * time.Second):
+        return ErrQueueFull
+    }
+}
+
+// 工作池
+func (td *TaskDispatcher) startWorkerPool(queueName string, size int) {
+    pool := &WorkerPool{
+        size:  size,
+        queue: td.queues[queueName],
+        work:  td.processTask,
+    }
+    
+    td.workers[queueName] = pool
+    pool.Start()
+}
+```
+
+---
+
+## 任务执行器
+
+```go
+type TaskExecutor struct {
+    handlers map[string]TaskHandler
+    plugins  []ExecutionPlugin
+}
+
+type TaskHandler interface {
+    Handle(ctx context.Context, task *Task) (interface{}, error)
+    CanHandle(taskType string) bool
+}
+
+func (te *TaskExecutor) Execute(ctx context.Context, task *Task) ExecutionResult {
+    start := time.Now()
+    
+    // 构建执行上下文
+    execCtx := te.createExecutionContext(ctx, task)
+    
+    // 查找处理器
+    handler := te.findHandler(task.Type)
+    if handler == nil {
+        return ExecutionResult{
+            Status: StatusFailed,
+            Error:  ErrNoHandler,
+        }
+    }
+    
+    // 执行插件前置处理
+    for _, plugin := range te.plugins {
+        if err := plugin.Before(execCtx, task); err != nil {
+            return ExecutionResult{Status: StatusFailed, Error: err}
+        }
+    }
+    
+    // 执行
+    output, err := handler.Handle(execCtx, task)
+    
+    // 执行插件后置处理
+    for _, plugin := range te.plugins {
+        plugin.After(execCtx, task, output, err)
+    }
+    
+    return ExecutionResult{
+        Status:   statusFromError(err),
+        Output:   output,
+        Error:    err,
+        Duration: time.Since(start),
+    }
+}
+
+func (te *TaskExecutor) createExecutionContext(ctx context.Context, task *Task) context.Context {
+    execCtx := ctx
+    
+    // 注入任务信息
+    execCtx = WithTaskInfo(execCtx, TaskInfo{
+        ID:       task.ID,
+        Type:     task.Type,
+        Name:     task.Name,
+        Attempt:  task.Attempt,
+    })
+    
+    // 设置超时
+    if task.Timeout > 0 {
+        execCtx, _ = context.WithTimeout(execCtx, task.Timeout)
+    }
+    
+    return execCtx
+}
+```
+
+---
+
+## 执行插件
+
+```go
+// MetricsPlugin 指标收集
+type MetricsPlugin struct {
+    metrics MetricsCollector
+}
+
+func (mp *MetricsPlugin) Before(ctx context.Context, task *Task) error {
+    mp.metrics.IncCounter("task_started", task.Type)
+    mp.metrics.RecordTiming("task_wait_time", time.Since(task.CreatedAt))
+    return nil
+}
+
+func (mp *MetricsPlugin) After(ctx context.Context, task *Task, output interface{}, err error) {
+    if err != nil {
+        mp.metrics.IncCounter("task_failed", task.Type)
+    } else {
+        mp.metrics.IncCounter("task_succeeded", task.Type)
+    }
+    
+    if info := TaskInfoFromContext(ctx); info != nil {
+        mp.metrics.RecordTiming("task_execution_time", info.Duration)
+    }
+}
+
+// TracingPlugin 分布式追踪
+type TracingPlugin struct {
+    tracer trace.Tracer
+}
+
+func (tp *TracingPlugin) Before(ctx context.Context, task *Task) error {
+    ctx, span := tp.tracer.Start(ctx, fmt.Sprintf("execute-task-%s", task.Type))
+    span.SetAttributes(
+        attribute.String("task.id", task.ID),
+        attribute.String("task.name", task.Name),
+    )
+    return nil
+}
+
+func (tp *TracingPlugin) After(ctx context.Context, task *Task, output interface{}, err error) {
+    span := trace.SpanFromContext(ctx)
+    if err != nil {
+        span.RecordError(err)
+        span.SetStatus(codes.Error, err.Error())
+    }
+    span.End()
+}
+
+// LoggingPlugin 日志记录
+type LoggingPlugin struct {
+    logger *zap.Logger
+}
+
+func (lp *LoggingPlugin) Before(ctx context.Context, task *Task) error {
+    lp.logger.Info("task started",
+        zap.String("task_id", task.ID),
+        zap.String("task_type", task.Type),
+    )
+    return nil
+}
+
+func (lp *LoggingPlugin) After(ctx context.Context, task *Task, output interface{}, err error) {
+    if err != nil {
+        lp.logger.Error("task failed",
+            zap.String("task_id", task.ID),
+            zap.Error(err),
+        )
+    } else {
+        lp.logger.Info("task completed",
+            zap.String("task_id", task.ID),
+            zap.Duration("duration", TaskInfoFromContext(ctx).Duration),
+        )
+    }
+}
+```
+
+---
+
+## 执行监控
+
+```go
+type ExecutionMonitor struct {
+    activeTasks  sync.Map  // taskID -> *ActiveTask
+    metrics      MetricsCollector
+    alertManager AlertManager
+}
+
+type ActiveTask struct {
+    Task      *Task
+    StartTime time.Time
+    WorkerID  string
+}
+
+func (em *ExecutionMonitor) RecordStart(task *Task, workerID string) {
+    em.activeTasks.Store(task.ID, &ActiveTask{
+        Task:      task,
+        StartTime: time.Now(),
+        WorkerID:  workerID,
+    })
+    
+    em.metrics.GaugeInc("active_tasks")
+}
+
+func (em *ExecutionMonitor) RecordEnd(taskID string) {
+    if at, ok := em.activeTasks.Load(taskID); ok {
+        activeTask := at.(*ActiveTask)
+        duration := time.Since(activeTask.StartTime)
+        
+        em.metrics.RecordTiming("task_duration", duration)
+        em.metrics.GaugeDec("active_tasks")
+        
+        // 慢任务告警
+        if duration > 5*time.Minute {
+            em.alertManager.Send(Alert{
+                Severity: Warning,
+                Message:  fmt.Sprintf("Slow task detected: %s took %v", taskID, duration),
+            })
+        }
+    }
+    
+    em.activeTasks.Delete(taskID)
+}
+
+func (em *ExecutionMonitor) GetActiveTasks() []*ActiveTask {
+    var tasks []*ActiveTask
+    em.activeTasks.Range(func(key, value interface{}) bool {
+        tasks = append(tasks, value.(*ActiveTask))
+        return true
+    })
+    return tasks
+}
+```
+
+---
+
+## 优雅关闭
+
+```go
+func (ee *ExecutionEngine) Shutdown(ctx context.Context) error {
+    // 1. 停止接收新任务
+    ee.dispatcher.Stop()
+    
+    // 2. 等待活动任务完成
+    done := make(chan struct{})
+    go func() {
+        ee.waitForActiveTasks()
+        close(done)
+    }()
+    
+    select {
+    case <-done:
+        return nil
+    case <-ctx.Done():
+        // 强制取消
+        ee.forceCancel()
+        return ctx.Err()
+    }
+}
+
+func (ee *ExecutionEngine) waitForActiveTasks() {
+    for {
+        active := len(ee.monitor.GetActiveTasks())
+        if active == 0 {
+            return
+        }
+        time.Sleep(100 * time.Millisecond)
+    }
+}
+```
