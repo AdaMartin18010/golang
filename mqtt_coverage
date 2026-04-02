@@ -1,0 +1,25 @@
+mode: set
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:144.78,164.42 13 0
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:164.42,166.3 1 0
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:168.2,168.37 1 0
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:224.58,225.29 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:226.14,228.16 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:229.14,231.24 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:232.10,235.17 2 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:235.17,237.4 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:238.3,238.19 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:242.113,244.16 2 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:244.16,246.3 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:249.2,250.42 2 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:250.42,252.3 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:254.2,254.12 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:300.103,302.85 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:302.85,304.66 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:304.66,308.4 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:312.2,312.42 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:312.42,314.3 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:316.2,316.12 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:346.75,348.42 2 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:348.42,350.3 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:351.2,351.12 1 1
+github.com/yourusername/golang/internal/infra/messaging/mqtt/client.go:373.26,375.2 1 1

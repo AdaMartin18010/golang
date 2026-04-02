@@ -49,6 +49,23 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
+// mqttClient defines the interface for MQTT client operations
+// This interface allows for mocking in unit tests
+type mqttClient interface {
+	Publish(topic string, qos byte, retained bool, payload interface{}) mqtt.Token
+	Subscribe(topic string, qos byte, callback mqtt.MessageHandler) mqtt.Token
+	Unsubscribe(topics ...string) mqtt.Token
+	Disconnect(quiesce uint)
+	IsConnected() bool
+}
+
+// mqttClientFactory is a function type that creates mqtt.Client
+// Used for dependency injection in tests
+type mqttClientFactory func(options *mqtt.ClientOptions) mqtt.Client
+
+// defaultFactory is the default factory that creates real MQTT clients
+var defaultFactory mqttClientFactory = mqtt.NewClient
+
 // Client 是 MQTT 客户端的封装，用于与 MQTT Broker 通信。
 //
 // 功能说明：
@@ -70,7 +87,7 @@ import (
 //	}
 //	defer client.Close()
 type Client struct {
-	client mqtt.Client
+	client mqttClient
 }
 
 // MessageHandler 是消息处理函数的类型定义。
@@ -95,6 +112,17 @@ type Client struct {
 //	    return nil
 //	}
 type MessageHandler func(ctx context.Context, topic string, payload []byte) error
+
+// setMqttClientFactory sets the factory function for creating MQTT clients
+// This is used for testing to inject mock clients
+func setMqttClientFactory(f mqttClientFactory) {
+	defaultFactory = f
+}
+
+// resetMqttClientFactory resets the factory to the default implementation
+func resetMqttClientFactory() {
+	defaultFactory = mqtt.NewClient
+}
 
 // NewClient 创建并连接到 MQTT Broker 的客户端。
 //
@@ -143,21 +171,17 @@ type MessageHandler func(ctx context.Context, topic string, payload []byte) erro
 // - 应在应用程序生命周期中复用客户端实例
 func NewClient(broker, clientID, username, password string) (*Client, error) {
 	opts := mqtt.NewClientOptions()
-	opts.AddBroker(broker)                    // Broker 地址
-	opts.SetClientID(clientID)                // 客户端 ID
-	opts.SetUsername(username)                // 用户名
-	opts.SetPassword(password)                // 密码
-	opts.SetAutoReconnect(true)               // 自动重连
-	opts.SetConnectRetry(true)                // 连接重试
+	opts.AddBroker(broker)                        // Broker 地址
+	opts.SetClientID(clientID)                    // 客户端 ID
+	opts.SetUsername(username)                    // 用户名
+	opts.SetPassword(password)                    // 密码
+	opts.SetAutoReconnect(true)                   // 自动重连
+	opts.SetConnectRetry(true)                    // 连接重试
 	opts.SetConnectRetryInterval(5 * time.Second) // 重试间隔
-	opts.SetKeepAlive(60 * time.Second)       // 心跳间隔
-	opts.SetPingTimeout(10 * time.Second)     // Ping 超时
-	// 其他可选配置：
-	// opts.SetCleanSession(true)              // 清理会话
-	// opts.SetOrderMatters(false)             // 消息顺序
-	// opts.SetResumeSubs(true)                // 恢复订阅
+	opts.SetKeepAlive(60 * time.Second)           // 心跳间隔
+	opts.SetPingTimeout(10 * time.Second)         // Ping 超时
 
-	client := mqtt.NewClient(opts)
+	client := defaultFactory(opts)
 
 	// 连接到 Broker
 	token := client.Connect()
@@ -166,6 +190,11 @@ func NewClient(broker, clientID, username, password string) (*Client, error) {
 	}
 
 	return &Client{client: client}, nil
+}
+
+// newClientWithClient creates a Client with a pre-existing mqtt client (for testing)
+func newClientWithClient(c mqttClient) *Client {
+	return &Client{client: c}
 }
 
 // Publish 发布消息到指定的 MQTT 主题。

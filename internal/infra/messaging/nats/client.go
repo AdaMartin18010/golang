@@ -54,9 +54,22 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
+// natsConn defines the interface for NATS connection operations
+// This interface allows for mocking in unit tests
+type natsConn interface {
+	Publish(subj string, data []byte) error
+	Subscribe(subj string, cb nats.MsgHandler) (*nats.Subscription, error)
+	QueueSubscribe(subj, queue string, cb nats.MsgHandler) (*nats.Subscription, error)
+	Request(subj string, data []byte, timeout time.Duration) (*nats.Msg, error)
+	IsConnected() bool
+	Close()
+	Stats() nats.Statistics
+	ConnectedUrl() string
+}
+
 // Client NATS 客户端封装
 type Client struct {
-	conn *nats.Conn
+	conn natsConn
 }
 
 // NewClient 创建 NATS 客户端
@@ -91,6 +104,11 @@ func NewClient(cfg Config) (*Client, error) {
 
 	slog.Info("NATS connected", "url", conn.ConnectedUrl())
 	return &Client{conn: conn}, nil
+}
+
+// newClientWithConn creates a Client with a pre-existing connection (for testing)
+func newClientWithConn(conn natsConn) *Client {
+	return &Client{conn: conn}
 }
 
 // marshalPayload 将数据序列化为字节数组
@@ -154,10 +172,16 @@ func (c *Client) Close() {
 
 // IsConnected 检查连接状态
 func (c *Client) IsConnected() bool {
+	if c.conn == nil {
+		return false
+	}
 	return c.conn.IsConnected()
 }
 
 // Stats 获取连接统计信息
 func (c *Client) Stats() nats.Statistics {
+	if c.conn == nil {
+		return nats.Statistics{}
+	}
 	return c.conn.Stats()
 }

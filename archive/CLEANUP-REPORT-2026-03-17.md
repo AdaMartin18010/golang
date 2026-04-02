@@ -30,6 +30,7 @@
 ### 1. 历史报告 (archive/historical-reports-2026-03/) - 43 文件
 
 #### 2025-12-03 批次 (25 文件)
+
 - 100-PERCENT-COMPLETE-FINAL.md
 - 100-PERCENT-COMPLETION-CONFIRMED.md
 - 100-PERCENT-COMPLETION-FINAL.md
@@ -57,6 +58,7 @@
 - WORK-SUMMARY-2025-12-03.md
 
 #### 2026-03-08 批次 (7 文件)
+
 - COMPREHENSIVE-PROJECT-ANALYSIS-2026-03-08.md
 - HONEST-ASSESSMENT-2026-03-08.md
 - MISTAKE-ACKNOWLEDGMENT-2026-03-08.md
@@ -66,6 +68,7 @@
 - TEST-COVERAGE-REPORT-2026-03-08.md
 
 #### 其他过时文件 (11 文件)
+
 - DELIVERY-CHECKLIST.md
 - ONE-PAGE-SUMMARY.md
 - PROJECT-100PERCENT-COMPLETE.md
@@ -78,6 +81,7 @@
 - TODAY-ACHIEVEMENTS.md
 
 ### 2. 覆盖率报告 (archive/coverage-reports/) - 22 文件
+
 - coverage
 - coverage-domain
 - coverage-real
@@ -106,6 +110,7 @@
 ## 删除文件清单
 
 ### 临时文件 (6 文件)
+
 - ent.test.exe
 - main.exe
 - redis.test.exe
@@ -120,15 +125,18 @@
 根目录现在只保留项目运行和开发所必需的核心文件：
 
 ### 配置和构建
+
 - .air.toml, .golangci.yml, .goreleaser.yml
 - .dockerignore, .gitignore, .cursorignore
 - .markdownlint.json, .markdownlint.jsonc
 - Makefile, codecov.yml, cspell.json, lychee.toml
 
 ### Go 模块
+
 - go.mod, go.sum, go.work, go.work.sum
 
 ### 核心文档
+
 - README.md - 项目主文档
 - CHANGELOG.md - 变更日志
 - PROJECT-STATUS.md - 项目状态
@@ -138,9 +146,11 @@
 - SECURITY.md - 安全政策
 
 ### 测试
+
 - coverage.out - 当前测试覆盖率基准
 
 ### 元数据
+
 - .architecture-status
 
 ---
@@ -148,6 +158,7 @@
 ## 目录结构对比
 
 ### 清理前
+
 ```
 根目录文件: 90+
 ├── 大量过时报告文件 (60+)
@@ -157,6 +168,7 @@
 ```
 
 ### 清理后
+
 ```
 根目录文件: 25
 ├── 核心配置文件 (12)

@@ -8,6 +8,7 @@
 ## 📋 归档说明
 
 本目录存放与当前项目定位无关的文件，这些文件可能来自：
+
 - 项目历史版本
 - 已完成的研究项目
 - 与当前定位不符的功能模块
@@ -21,6 +22,7 @@
 ### 1. formal-verification/ - 形式化验证相关
 
 **内容**:
+
 - `tools/formal-verifier/` - 形式化验证工具
 - `tools/concurrency-pattern-generator/` - 并发模式生成器
 - `docs/formal-theory/` - 形式化理论文档
@@ -35,6 +37,7 @@
 ### 2. ai-agent/ - AI Agent 相关
 
 **内容**:
+
 - `pkg/agent/` - AI Agent 相关代码
 - `examples/advanced/ai-agent/` - AI Agent 示例
 
@@ -47,6 +50,7 @@
 ### 3. outdated-docs/ - 过时文档
 
 **内容**:
+
 - `project-docs/` - 过时的项目文档
 
 **归档原因**: 已被新的技术栈实施计划文档替代

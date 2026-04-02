@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        go: ['1.23.x', '1.25.x']
+        go: ['1.26.x']
     
     steps:
     - name: Checkout code
@@ -63,7 +63,7 @@ jobs:
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
-      if: matrix.os == 'ubuntu-latest' && matrix.go == '1.25.x'
+      if: matrix.os == 'ubuntu-latest' && matrix.go == '1.26.x'
       with:
         files: ./pkg/agent/coverage-agent.out,./pkg/concurrency/coverage-concurrency.out,./pkg/http3/coverage-http3.out,./pkg/memory/coverage-memory.out
         flags: unittests
@@ -82,7 +82,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.26'
+        go-version: '1.26.x'
     
     - name: Build CLI tool
       run: go build -v -o gox ./cmd/gox
