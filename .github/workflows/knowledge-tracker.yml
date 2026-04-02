@@ -1,0 +1,54 @@
+name: Knowledge Tracker
+
+on:
+  schedule:
+    # 每天 UTC 09:00 运行
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  track-go-releases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/knowledge-tracker/requirements.txt
+      
+      - name: Track Go Releases
+        run: |
+          python scripts/knowledge-tracker/track_go_releases.py
+      
+      - name: Track Academic Papers
+        run: |
+          python scripts/knowledge-tracker/track_papers.py
+        continue-on-error: true
+      
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --exit-code docs/tracking/ || echo "changes=true" >> $GITHUB_OUTPUT
+      
+      - name: Create Pull Request
+        if: steps.git-check.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'docs: update knowledge tracking reports'
+          title: 'docs: daily knowledge tracking update'
+          body: |
+            ## Automated Knowledge Update
+            
+            This PR contains:
+            - Go version release tracking
+            - Academic paper tracking
+            
+            Generated automatically by Knowledge Tracker.
+          branch: knowledge-tracking-update
+          delete-branch: true

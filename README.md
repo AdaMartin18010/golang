@@ -1,282 +1,210 @@
-﻿# 🚀 Go 现代化架构项目
+# Go 1.26.1 全面技术知识库
 
-[![CI Pipeline](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
-[![CD Pipeline](https://github.com/OWNER/REPO/actions/workflows/cd.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/cd.yml)
-[![Security Scan](https://github.com/OWNER/REPO/actions/workflows/security.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/security.yml)
-[![Release](https://github.com/OWNER/REPO/actions/workflows/release.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/release.yml)
-[![codecov](https://codecov.io/gh/OWNER/REPO/branch/main/graph/badge.svg)](https://codecov.io/gh/OWNER/REPO)
-[![Go Report Card](https://goreportcard.com/badge/github.com/OWNER/REPO)](https://goreportcard.com/report/github.com/OWNER/REPO)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-**版本**: Go 1.26
-**架构**: Clean Architecture (标准4层)
-**更新**: 2025-12-03
-**评分**: 8.5/10 ⭐⭐⭐⭐⭐
-
-## 🎯 项目定位
-
-**Go Clean Architecture 企业级框架** - 集成最新最成熟的技术栈
-
-### 核心特性
-
-- ✅ **Clean Architecture** - 标准4层分层，依赖倒置
-- ✅ **OTLP v1.38.0** - OpenTelemetry 完整可观测性
-- ✅ **Cilium eBPF v0.20.0** - 真实的系统级监控
-- ✅ **OAuth2/OIDC/RBAC/JWT** - 企业级安全
-- ✅ **自我感知环境** - 容器/K8s/5大云厂商
-- ✅ **完整测试框架** - testify + mocks
-- ✅ **CI/CD** - GitHub Actions 完整流水线
-
-### 技术栈
-
-Chi, Ent, Wire, OpenTelemetry, Cilium eBPF, GraphQL, gRPC, Kafka, NATS, MQTT, PostgreSQL, Redis
-
-**项目状态**: ✅ 核心架构完整 | 🔄 持续改进中 | 📊 [详细状态](./PROJECT-STATUS.md)
-**架构文档**: 🧠 [全面概念梳理](./docs/comprehensive-analysis/00-MASTER-INDEX.md) - 结合网络最新权威内容的多维度分析
+> **类型**: 个人技术知识管理项目
+> **目标**: 系统掌握 Go 语言技术，从语法到形式化理论
+> **方法**: Zettelkasten + 结构化知识 + 实验验证
+> **更新**: 持续跟踪国际权威信息
 
 ---
 
-## 📁 项目结构
-
-本项目遵循 [golang-standards/project-layout](https://github.com/golang-standards/project-layout) 标准布局：
-
-```text
-golang/
-├── cmd/                    # 主程序入口
-│   ├── server/            # HTTP 服务器
-│   ├── grpc-server/       # gRPC 服务器
-│   ├── graphql-server/    # GraphQL 服务器
-│   ├── mqtt-client/       # MQTT 客户端
-│   ├── cli/               # CLI 工具
-│   └── temporal-worker/   # Temporal 工作流执行器
-│
-├── internal/               # 私有代码（Clean Architecture）
-│   ├── domain/            # 领域层 - 核心业务逻辑
-│   ├── application/       # 应用层 - 用例编排
-│   ├── infrastructure/    # 基础设施层 - 技术实现
-│   ├── interfaces/        # 接口层 - 外部接口适配
-│   └── config/            # 配置管理
-│
-├── pkg/                    # 可被外部使用的公共库
-│   ├── logger/            # 日志库
-│   ├── errors/            # 错误处理
-│   ├── validator/         # 验证器
-│   ├── http3/             # HTTP/3 支持
-│   ├── concurrency/       # 并发工具
-│   └── observability/     # 可观测性工具
-│
-├── api/                    # API 定义文件
-│   ├── openapi/           # OpenAPI/Swagger 定义
-│   ├── graphql/           # GraphQL schema
-│   └── asyncapi/          # AsyncAPI 定义
-│
-├── configs/                # 配置文件模板
-│   └── config.yaml        # 默认配置
-│
-├── scripts/                # 构建、安装、分析等脚本
-│   ├── build.sh
-│   └── generate.sh
-│
-├── deployments/            # 部署配置和模板
-│   ├── docker/            # Docker 配置
-│   └── kubernetes/        # Kubernetes 配置
-│
-├── test/                   # 外部测试应用和测试数据
-│   ├── unit/              # 单元测试
-│   ├── integration/       # 集成测试
-│   └── e2e/               # 端到端测试
-│
-├── docs/                   # 设计和用户文档
-│   ├── architecture/      # 架构文档
-│   ├── guides/            # 使用指南
-│   ├── development/       # 开发文档
-│   └── ...
-│
-├── examples/               # 应用程序和库的示例
-│   ├── basic/             # 基础示例
-│   ├── advanced/          # 高级示例
-│   └── modern-features/   # 现代特性示例
-│
-├── tools/                  # 项目的支持工具
-│   ├── codegen/           # 代码生成工具
-│   └── formal-verifier/   # 形式化验证工具
-│
-├── migrations/             # 数据库迁移脚本
-│   ├── postgres/          # PostgreSQL 迁移
-│   └── ent/               # Ent 迁移
-│
-├── go.mod                  # Go 模块定义
-├── go.sum                  # Go 模块校验和
-├── go.work                 # Go 工作区
-├── Makefile                # Make 构建脚本
-├── Dockerfile              # Docker 镜像构建
-└── README.md               # 项目说明
-```
-
----
-
-## 🚀 快速开始
-
-### 方式 1: 框架快速开始（推荐）⭐
-
-如果你是第一次使用框架，建议从框架快速开始指南开始：
-
-```bash
-# 1. 设置开发环境
-make setup
-
-# 2. 安装 Git hooks
-make install-hooks
-
-# 3. 运行示例
-cd examples/framework-usage
-go run main.go
-```
-
-📖 **详细指南**: [框架快速开始指南](docs/framework/05-快速开始指南.md) - 5 分钟快速上手
-
-### 方式 2: 完整项目启动
-
-```bash
-# 1. 安装依赖
-go mod tidy
-
-# 2. 生成代码
-make generate
-
-# 3. 运行应用
-make run
-
-# 或使用 Docker Compose 启动所有服务
-docker-compose -f deployments/docker/docker-compose.yml up -d
-```
-
----
-
-## 🏗️ Clean Architecture
-
-### 分层说明
-
-1. **Domain Layer** - 领域层：核心业务逻辑
-2. **Application Layer** - 应用层：用例编排
-3. **Infrastructure Layer** - 基础设施层：技术实现
-4. **Interfaces Layer** - 接口层：外部接口适配
-
-### 依赖方向
-
-```text
-Interfaces → Application → Domain
-     ↓            ↓
-Infrastructure → Domain
-```
-
----
-
-## 🛠️ 技术栈（2024最新版本）
-
-### 核心框架
-
-- **Go**: 1.25.3
-- **Wire**: v0.6.0 (依赖注入)
-- **Web框架**: Chi
-- **ORM**: Ent
-- **配置**: Viper
-- **日志**: Slog (Go 1.26+，支持 MultiHandler)
-- **依赖注入**: Wire
-- **数据库**: PostgreSQL (pgx), SQLite3
-- **可观测性**: OpenTelemetry (OTLP)
-- **工作流编排**: Temporal
-- **消息队列**: Kafka, MQTT, **NATS** ✅
-- **API**: REST (OpenAPI), **gRPC** ✅, GraphQL, AsyncAPI
-
----
-
-## 📚 文档
+## 📚 知识库结构
 
 ### 核心文档
 
-- 📖 **[文档首页](docs/README.md)** - 完整文档导航和索引
-- 🏗️ **[架构文档](docs/architecture/README.md)** - Clean Architecture、领域模型、工作流架构
-- 📘 **[使用指南](docs/guides/)** - 开发、部署、测试指南
-- 🔧 **[API 文档](api/README.md)** - REST、GraphQL、gRPC API 规范
+| 文档 | 说明 |
+|------|------|
+| `GO-126-COMPREHENSIVE-TECHNICAL-ANALYSIS-2026.md` | 全面技术分析 (14KB) |
+| `GO-126-SUSTAINABLE-ROADMAP-2026.md` | 持续跟踪路线图 (9KB) |
+| `PERSONAL-KNOWLEDGE-BASE-SETUP.md` | 知识库配置指南 |
+| `PERSONAL-LEARNING-PATH.md` | 12个月学习路径 |
 
-### 快速导航
+### 个人知识库
 
-- 🎯 **[快速开始](docs/getting-started/quick-start-3min.md)** - 3分钟快速开始
-- 📊 **[完整知识体系](docs/00-Go-1.25.3完整知识体系总览-2025.md)** - 系统化总领文档
-- 📚 **[快速参考手册](docs/📚-Go-1.25.3快速参考手册-2025.md)** - 日常开发速查
-- 🗺️ **[架构知识图谱](docs/architecture/00-知识图谱.md)** - 架构全景图
-- 🔍 **[概念定义体系](docs/architecture/00-概念定义体系.md)** - 概念定义
-- 📖 **[技术对比矩阵](docs/architecture/00-对比矩阵.md)** - 技术选型对比
+```
+pknowledge/                    # 个人知识库
+├── 00-inbox/                  # 收件箱
+├── 01-reading/                # 阅读中
+├── 02-zettelkasten/           # 卡片笔记 (已创建4张)
+├── 03-structures/             # 结构化知识
+├── 04-projects/               # 实验项目
+└── 05-references/             # 参考资料
+```
 
-### 项目结构
+### 项目文档 (精简版)
 
-- 📋 **[项目结构重构计划](docs/00-项目结构重构计划.md)** - 项目结构优化方案
-- 📊 **[项目文档索引](docs/00-项目文档索引.md)** - 完整文档索引
-- 📋 **[文档结构规范](docs/00-项目文档结构规范.md)** - 文档格式规范
-
-### 技术栈对标
-
-- 🎉 **[技术栈实施完成最终总结](docs/00-技术栈实施完成最终总结.md)** - 实施完成最终总结 ⭐⭐⭐ 强烈推荐
-- 🎉 **[技术栈实施完成README](docs/00-技术栈实施完成README.md)** - 实施完成快速导航 ⭐⭐⭐ 强烈推荐
-- 🎉 **[技术栈实施完成最终报告](docs/00-技术栈实施完成最终报告.md)** - 最详细的完成报告 ⭐⭐⭐ 强烈推荐
-- 🎉 **[技术栈实施全面完成报告](docs/00-技术栈实施全面完成报告.md)** - 实施完成总结报告 ⭐⭐ 推荐
-- 🎯 **[项目重新定位与轻量级架构计划](docs/00-项目重新定位与轻量级架构计划.md)** - 项目重新定位和简化架构计划 ⭐ 推荐
-- 🚀 **[技术栈实施快速开始](docs/00-技术栈实施快速开始.md)** - 快速开始实施指南 ⭐ 推荐
-- 📋 **[技术栈实施总体规划](docs/00-技术栈实施总体规划.md)** - 4周实施总体规划和时间表 ⭐ 推荐
-- 📝 **[技术栈实施详细方案](docs/00-技术栈实施详细方案.md)** - 详细的技术实施步骤和代码方案 ⭐ 推荐
-- ✅ **[技术栈实施检查清单](docs/00-技术栈实施检查清单.md)** - 实施过程中的检查清单和验收标准 ⭐ 推荐
-- 🎯 **[技术栈对标总结与建议](docs/00-技术栈对标总结与建议.md)** - 技术栈对标总结和优先级建议
-- 📊 **[技术栈对标分析与改进计划](docs/00-技术栈对标分析与改进计划.md)** - 详细的技术栈分析和改进计划
-- 💻 **[技术栈实施细节与代码建议](docs/00-技术栈实施细节与代码建议.md)** - 具体实施细节和代码实现建议
-
-### 🔍 项目评价与改进计划
-
-**综合评分**: 65/100 (C+) | **目标**: 90/100 (A)
-
-- 📊 **[项目完整状态报告](docs/00-项目完整状态报告.md)** - 当前状态总览
-- 📋 **[项目改进计划总览](docs/00-项目改进计划总览.md)** ⭐ **推荐阅读**
-- 📖 **[执行摘要](docs/EXECUTIVE-SUMMARY.md)** - 总体评价和关键发现
-- 📚 **[项目全面评价与改进计划](docs/CRITICAL-REVIEW-AND-IMPROVEMENT-PLAN.md)** - 详细评价
-- 🗺️ **[改进路线图 - 可执行版本](docs/IMPROVEMENT-ROADMAP-EXECUTABLE.md)** - 详细路线图
-- 📊 **[改进任务看板](docs/IMPROVEMENT-TASK-BOARD.md)** - 102 个任务清单
-- 📚 **[改进文档索引](docs/README-IMPROVEMENT.md)** - 文档导航
-
-**关键改进点**:
-
-- 🔴 **安全性**: 50/100 → 90/100 (P0, 1-2个月)
-- 🔴 **测试质量**: < 50% → > 80% (P0, 2-3个月)
-- 🟡 **云原生**: 需要深度集成 Kubernetes (P1, 3-4个月)
-
----
-
-## 🧪 测试
-
-```bash
-# 运行所有测试
-go test ./...
-
-# 运行单元测试
-go test ./test/unit/...
-
-# 测试覆盖率
-go test -coverprofile=coverage.out ./...
+```
+docs/                          # 18篇核心文档
+├── architecture/              # 架构 (6篇)
+├── go126-comprehensive-guide/ # Go核心 (5篇)
+├── api/                       # API文档
+├── deployment/                # 部署指南
+└── development/               # 开发指南
 ```
 
 ---
 
-## 📊 项目统计
+## 🎯 核心技术专题
 
-- **核心模块**: 16个
-- **中间件模块**: 7个
-- **工具模块**: 46个
-- **总计**: 64个模块
-- **测试文件**: 64+个
-- **文档文件**: 64+个
-- **代码行数**: 30000+行
+### 已深入研究
+
+| 专题 | 状态 | 关键发现 |
+|------|------|----------|
+| **F-有界多态性** | ✅ | Go 1.26 类型系统增强 |
+| **Green Tea GC** | ✅ | GC 开销 -10~40% |
+| **errors.AsType** | ✅ | 性能 +68% |
+| **CSP 模型** | ✅ | Hoare 理论 + Go 实现 |
+
+### 待深入研究
+
+- [ ] Featherweight Go 完整解析
+- [ ] DRF-SC 形式化证明
+- [ ] 编译器 SSA 转换
+- [ ] 调度器 G-M-P 模型
 
 ---
 
-## 📝 License
+## 🤖 自动化跟踪
 
-MIT
+### 已配置工具
+
+| 工具 | 功能 | 频率 |
+|------|------|------|
+| `track_go_releases.py` | Go 版本跟踪 | 每日 |
+| `track_papers.py` | 论文跟踪 | 每周 |
+| `knowledge-tracker.yml` | CI自动运行 | 每日 |
+
+### 跟踪内容
+
+- Go 新版本发布
+- 学术论文发表
+- 开源库更新
+- 安全 CVE
+
+---
+
+## 📖 学习路径
+
+### Month 1: 语言核心
+
+- Go 1.26 新特性
+- 类型系统
+- 泛型深度
+
+### Month 2-3: 并发与内存
+
+- CSP 模型
+- 内存模型
+- 调度器
+
+### Month 4-6: 运行时
+
+- GC 实现
+- 内存分配
+- 编译器
+
+### Month 7-9: 形式化方法
+
+- Featherweight Go
+- 形式化证明
+- 验证工具
+
+### Month 10-12: 生态与前沿
+
+- 标准库
+- 性能优化
+- Go 1.27
+
+---
+
+## 🧪 实验项目
+
+### 已完成
+
+| 项目 | 说明 |
+|------|------|
+| `green-tea-gc-benchmark/` | GC 性能测试 |
+
+### 计划中
+
+- [ ] SIMD 向量操作实验
+- [ ] 泛型模式实现
+- [ ] 形式化验证练习
+- [ ] 调度器可视化
+
+---
+
+## 📝 最近更新
+
+### 2026-04-02
+
+- ✅ 建立个人知识库架构
+- ✅ 创建初始卡片 (4张)
+- ✅ 对齐国际权威信息
+- ✅ 配置自动化跟踪
+- ✅ 制定学习路径
+
+---
+
+## 🎯 当前目标
+
+### 本周
+
+- [ ] 创建 10 张概念卡片
+- [ ] 阅读 runtime/malloc.go
+- [ ] 运行 GC 基准测试
+
+### 本月
+
+- [ ] 30 张卡片
+- [ ] 3 篇结构化文档
+- [ ] 5 个实验
+
+---
+
+## 📚 关键资源
+
+### 必读论文
+
+1. Featherweight Go (OOPSLA 2020)
+2. A Dictionary-Passing Translation of FGG (APLAS 2021)
+3. Go Memory Model (POPL 2022)
+
+### 官方资源
+
+- [Go Blog](https://blog.golang.org)
+- [Go Spec](https://go.dev/ref/spec)
+- [Go Source](https://github.com/golang/go)
+
+### 工具
+
+- Obsidian: 笔记
+- VS Code: 开发
+- Git: 版本控制
+
+---
+
+## 🔄 持续更新
+
+### 每日
+
+- 检查 inbox
+- 创建 3-5 张卡片
+- 记录实验
+
+### 每周
+
+- 整理卡片
+- 更新结构化知识
+- 运行跟踪脚本
+
+### 每月
+
+- 深度研究专题
+- 撰写技术文章
+- 复习归档
+
+---
+
+*知识库版本: 2.0*
+*最后更新: 2026-04-02*
+*状态: 基础完成，内容生产中*
