@@ -1,7 +1,7 @@
 # 灾难恢复规划 (Disaster Recovery Planning)
 
-> **分类**: 工程与云原生  
-> **标签**: #disaster-recovery #business-continuity #backup  
+> **分类**: 工程与云原生
+> **标签**: #disaster-recovery #business-continuity #backup
 > **参考**: AWS DR Strategies, Azure Site Recovery
 
 ---
@@ -54,15 +54,15 @@ type DRConfig struct {
     // RPO/RTO 目标
     RPO time.Duration // 恢复点目标
     RTO time.Duration // 恢复时间目标
-    
+
     // 复制配置
     ReplicationMode string // "sync" | "async"
     SyncTimeout     time.Duration
-    
+
     // 故障转移配置
     HealthCheckInterval time.Duration
     FailoverThreshold   int // 连续失败次数
-    
+
     // 备份配置
     BackupInterval    time.Duration
     BackupRetention   int // 保留份数
@@ -75,7 +75,7 @@ type Site struct {
     Endpoint string
     Status   SiteStatus
     Role     SiteRole
-    
+
     // 健康状态
     LastHealthCheck time.Time
     ConsecutiveFails int
@@ -98,21 +98,21 @@ const (
 // DisasterRecoveryManager 灾难恢复管理器
 type DisasterRecoveryManager struct {
     config DRConfig
-    
+
     // 站点管理
     sites       map[string]*Site
     primarySite string
-    
+
     // 复制管理
     replicator DataReplicator
-    
+
     // 故障检测
     healthChecker *HealthChecker
-    
+
     // 故障转移控制
     failoverLock sync.RWMutex
     isFailoverInProgress bool
-    
+
     // 备份管理
     backupManager *BackupManager
 }
@@ -147,7 +147,7 @@ func NewHealthChecker(config DRConfig, sites map[string]*Site) *HealthChecker {
 func (hc *HealthChecker) Start() {
     ticker := time.NewTicker(hc.config.HealthCheckInterval)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ticker.C:
@@ -162,7 +162,7 @@ func (hc *HealthChecker) checkAllSites() {
     for _, site := range hc.sites {
         healthy, err := hc.checkFunc(site)
         site.LastHealthCheck = time.Now()
-        
+
         if err != nil || !healthy {
             site.ConsecutiveFails++
             if site.ConsecutiveFails >= hc.config.FailoverThreshold {
@@ -186,47 +186,47 @@ func defaultHealthCheck(site *Site) (bool, error) {
 func (drm *DisasterRecoveryManager) Failover(ctx context.Context, targetSiteID string) error {
     drm.failoverLock.Lock()
     defer drm.failoverLock.Unlock()
-    
+
     if drm.isFailoverInProgress {
         return fmt.Errorf("failover already in progress")
     }
-    
+
     drm.isFailoverInProgress = true
     defer func() { drm.isFailoverInProgress = false }()
-    
+
     targetSite, ok := drm.sites[targetSiteID]
     if !ok {
         return fmt.Errorf("target site not found: %s", targetSiteID)
     }
-    
+
     if targetSite.Status != SiteHealthy {
         return fmt.Errorf("target site is not healthy: %s", targetSite.Status)
     }
-    
+
     // 1. 停止复制
     if err := drm.replicator.StopReplication(ctx); err != nil {
         return fmt.Errorf("failed to stop replication: %w", err)
     }
-    
+
     // 2. 最终同步
     if err := drm.replicator.Sync(ctx); err != nil {
         return fmt.Errorf("final sync failed: %w", err)
     }
-    
+
     // 3. 提升目标站点为主站点
     oldPrimary := drm.sites[drm.primarySite]
     oldPrimary.Role = RoleReplica
-    
+
     targetSite.Role = RolePrimary
     drm.primarySite = targetSiteID
-    
+
     // 4. 启动新的复制
     for _, site := range drm.sites {
         if site.ID != targetSiteID && site.Status == SiteHealthy {
             go drm.replicator.StartReplication(ctx, targetSiteID, site.ID)
         }
     }
-    
+
     return nil
 }
 
@@ -268,10 +268,10 @@ type BackupScheduler struct {
 func (bs *BackupScheduler) Start() {
     ticker := time.NewTicker(bs.interval)
     defer ticker.Stop()
-    
+
     // 立即执行一次
     bs.executor()
-    
+
     for {
         select {
         case <-ticker.C:
@@ -296,31 +296,31 @@ func (rp *RetentionPolicy) Apply(backups []Backup) []string {
     if len(backups) <= rp.minBackups {
         return nil
     }
-    
+
     var toDelete []string
     now := time.Now()
-    
+
     // 按时间排序（旧的在前）
     sortBackupsByTime(backups)
-    
+
     for i, backup := range backups {
         // 保留最小数量
         if len(backups)-len(toDelete) <= rp.minBackups {
             break
         }
-        
+
         // 检查最大数量
         if len(backups)-len(toDelete) > rp.maxBackups {
             toDelete = append(toDelete, backup.ID)
             continue
         }
-        
+
         // 检查最大年龄
         if now.Sub(backup.Timestamp) > rp.maxAge {
             toDelete = append(toDelete, backup.ID)
         }
     }
-    
+
     return toDelete
 }
 
@@ -342,12 +342,12 @@ func (bm *BackupManager) PointInTimeRecovery(ctx context.Context, targetTime tim
     if fullBackup == nil {
         return fmt.Errorf("no full backup found before %v", targetTime)
     }
-    
+
     // 2. 恢复完整备份
     if err := bm.restoreBackup(ctx, fullBackup); err != nil {
         return err
     }
-    
+
     // 3. 应用增量备份直到目标时间
     incrementals := bm.findIncrementalBackups(fullBackup.Timestamp, targetTime)
     for _, inc := range incrementals {
@@ -355,7 +355,7 @@ func (bm *BackupManager) PointInTimeRecovery(ctx context.Context, targetTime tim
             return err
         }
     }
-    
+
     return nil
 }
 
@@ -402,29 +402,29 @@ const (
 // RunDrill 执行演练
 func (drill *DRDrill) RunDrill(ctx context.Context) (*DrillResult, error) {
     startTime := time.Now()
-    
+
     // 1. 注入故障
     if err := drill.injectFault(ctx); err != nil {
         return nil, err
     }
-    
+
     // 2. 检测故障
     detectionTime := time.Now()
-    
+
     // 3. 执行故障转移
     if err := drill.manager.Failover(ctx, "standby-site"); err != nil {
         return nil, err
     }
-    
+
     failoverTime := time.Now()
-    
+
     // 4. 验证恢复
     if err := drill.verifyRecovery(ctx); err != nil {
         return nil, err
     }
-    
+
     recoveryTime := time.Now()
-    
+
     return &DrillResult{
         DetectionTime:   detectionTime.Sub(startTime),
         FailoverTime:    failoverTime.Sub(detectionTime),
