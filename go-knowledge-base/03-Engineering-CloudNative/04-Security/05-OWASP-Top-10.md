@@ -18,12 +18,12 @@ func GetUserData(w http.ResponseWriter, r *http.Request) {
 func GetUserData(w http.ResponseWriter, r *http.Request) {
     currentUser := GetCurrentUser(r)
     targetID := r.URL.Query().Get("id")
-    
+
     if !currentUser.CanAccess(targetID) {
         http.Error(w, "Forbidden", http.StatusForbidden)
         return
     }
-    
+
     data := db.GetUser(targetID)
     json.NewEncoder(w).Encode(data)
 }
@@ -109,7 +109,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func Login(w http.ResponseWriter, r *http.Request) {
     sessionID := generateSecureSessionID()
     storeSession(sessionID, userID)
-    
+
     http.SetCookie(w, &http.Cookie{
         Name:     "session",
         Value:    sessionID,

@@ -1,6 +1,6 @@
 # 安全通信 (Secure Communication)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #tls #mtls #encryption
 
 ---
@@ -36,18 +36,18 @@ func LoadCertificate(certFile, keyFile string) (tls.Certificate, error) {
     if err != nil {
         return tls.Certificate{}, err
     }
-    
+
     // 验证证书
     cert.Leaf, err = x509.ParseCertificate(cert.Certificate[0])
     if err != nil {
         return tls.Certificate{}, err
     }
-    
+
     // 检查过期
     if time.Now().After(cert.Leaf.NotAfter) {
         return tls.Certificate{}, fmt.Errorf("certificate expired")
     }
-    
+
     return cert, nil
 }
 ```
@@ -60,7 +60,7 @@ func LoadCertificate(certFile, keyFile string) (tls.Certificate, error) {
 func CreateMutualTLSConfig(caCert []byte) *tls.Config {
     caCertPool := x509.NewCertPool()
     caCertPool.AppendCertsFromPEM(caCert)
-    
+
     return &tls.Config{
         ClientCAs:  caCertPool,
         ClientAuth: tls.RequireAndVerifyClientCert,
@@ -85,7 +85,7 @@ func (cm *CertManager) StartWatching() {
     watcher, _ := fsnotify.NewWatcher()
     watcher.Add(cm.certPath)
     watcher.Add(cm.keyPath)
-    
+
     go func() {
         for event := range watcher.Events {
             if event.Op&fsnotify.Write == fsnotify.Write {
@@ -101,11 +101,11 @@ func (cm *CertManager) Reload() error {
     if err != nil {
         return err
     }
-    
+
     cm.mu.Lock()
     cm.cert = &cert
     cm.mu.Unlock()
-    
+
     return nil
 }
 
