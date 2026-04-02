@@ -1,250 +1,258 @@
-# LD-012: Go 链接器与构建流程 (Go Linker & Build Process)
+# LD-012: Go 链接器与构建过程 (Go Linker & Build Process)
 
 > **维度**: Language Design
 > **级别**: S (16+ KB)
-> **标签**: #go-build #go-linker #compiler #build-process
-> **权威来源**: [Go Build](https://pkg.go.dev/cmd/go#hdr-Build_and_test_caching), [Go Linker Internals](https://go.dev/src/cmd/link/doc.go)
+> **标签**: #linker #build #compiler #obj #elf
+> **权威来源**:
+>
+> - [Go Linker](https://github.com/golang/go/tree/master/src/cmd/link) - Go Authors
+> - [Build Modes](https://go.dev/doc/go1.5#link) - Go Release Notes
+> - [ELF Format](https://refspecs.linuxfoundation.org/elf/elf.pdf) - System V ABI
 
 ---
 
-## Go 构建流程
+## 1. 构建流程
+
+### 1.1 编译流程
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      Go Build Pipeline                                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Go Source Files (.go)                                                       │
-│       │                                                                      │
-│       ▼                                                                      │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                         Compiler (cmd/compile)                      │    │
-│  │  1. 词法分析 (Lexer)                                                 │    │
-│  │  2. 语法分析 (Parser) → AST                                          │    │
-│  │  3. 类型检查 (Type Checker)                                          │    │
-│  │  4. SSA 生成 (Static Single Assignment)                              │    │
-│  │  5. 机器码生成                                                       │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│       │                                                                      │
-│       ▼                                                                      │
-│  Object Files (.o / .a)                                                      │
-│       │                                                                      │
-│       ▼                                                                      │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                         Linker (cmd/link)                           │    │
-│  │  1. 符号解析                                                         │    │
-│  │  2. 重定位                                                           │    │
-│  │  3. 死代码消除                                                       │    │
-│  │  4. 生成可执行文件                                                   │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│       │                                                                      │
-│       ▼                                                                      │
-│  Executable Binary                                                           │
-│                                                                              │
-│  缓存: $GOCACHE (编译/链接结果缓存)                                            │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+.go files
+    │
+    ▼ go tool compile
+.o files (object)
+    │
+    ▼ go tool link
+executable / library
+```
+
+### 1.2 完整工具链
+
+```
+源文件
+   │
+   ├──► cmd/compile ──► .o (SSA → 机器码)
+   │
+   ├──► cmd/asm ──────► .o (汇编)
+   │
+   └──► cgo ──────────► C 编译器 ──► .o
+                            │
+                            ▼
+                    .o files + runtime.a
+                            │
+                            ▼
+                    cmd/link ──► 可执行文件
 ```
 
 ---
 
-## 编译器阶段详解
+## 2. 编译器输出
 
-### 1. 词法与语法分析
+### 2.1 对象文件格式
 
-```go
-// 示例代码
-package main
-
-func Add(a, b int) int {
-    return a + b
-}
-
-// AST 结构 (简化)
-type FuncDecl struct {
-    Name   *Ident    // "Add"
-    Type   *FuncType // func(int, int) int
-    Body   *BlockStmt
-}
-
-type BinaryExpr struct {
-    Op    token.Token // +
-    X     Expr        // a
-    Y     Expr        // b
-}
-```
-
-### 2. SSA 中间表示
+Go 对象文件是自定义格式，不是标准 ELF/COFF：
 
 ```
-Go 代码:
-func Add(a, b int) int {
-    return a + b
-}
-
-SSA (Static Single Assignment):
-b1:
-    v1 = Add <int> [a, b] → 参数
-    v2 = Add64 <int> v1.a v1.b
-    Ret v2
-
-SSA 优势:
-- 每个变量只赋值一次
-- 便于优化 (常量传播、死代码消除)
-- 便于寄存器分配
+对象文件结构:
+┌─────────────────┐
+│  Header         │
+├─────────────────┤
+│  Text Section   │  // 机器码
+├─────────────────┤
+│  Data Section   │  // 初始化数据
+├─────────────────┤
+│  BSS Section    │  // 未初始化数据
+├─────────────────┤
+│  Symbol Table   │  // 符号定义和引用
+├─────────────────┤
+│  Relocations    │  // 重定位信息
+├─────────────────┤
+│  Type Info      │  // Go 类型信息
+├─────────────────┤
+│  PCLine Table   │  // 程序计数器到行号映射
+└─────────────────┘
 ```
 
-### 3. 编译优化
+### 2.2 符号类型
+
+| 符号类型 | 说明 |
+|----------|------|
+| STEXT | 代码段符号 |
+| SRODATA | 只读数据 |
+| SNOPTRDATA | 无指针数据 |
+| SDATA | 初始化数据 |
+| SBSS | 未初始化数据 |
+| SNOPTRBSS | 无指针 BSS |
+| STLSBSS | TLS 数据 |
+
+---
+
+## 3. 链接器
+
+### 3.1 链接阶段
+
+```
+1. 读取所有对象文件
+2. 合并段（text, data, bss）
+3. 符号解析
+4. 重定位
+5. 生成 DWARF 调试信息
+6. 写入输出文件
+```
+
+### 3.2 链接模式
 
 ```bash
-# 默认优化级别
+# 默认（exe）
+go build -o app
+
+# 共享库
+go build -buildmode=c-shared -o libfoo.so
+
+# 静态库
+go build -buildmode=c-archive -o libfoo.a
+
+# 插件
+go build -buildmode=plugin -o plugin.so
+
+# PIE（位置无关可执行文件）
+go build -buildmode=pie -o app
+```
+
+### 3.3 内部链接 vs 外部链接
+
+```
+内部链接 (默认):
+  - 纯 Go 代码
+  - Go 链接器处理所有符号
+
+外部链接:
+  - 使用 cgo
+  - 系统链接器 (ld) 参与
+  - 支持 C 库依赖
+```
+
+---
+
+## 4. 构建优化
+
+### 4.1 构建缓存
+
+```
+位置: $GOCACHE (默认 ~/.cache/go-build)
+
+缓存键: 文件内容 + 编译器版本 + 编译选项
+```
+
+### 4.2 增量构建
+
+```bash
+# 仅编译修改的文件
 go build
 
-# 禁用优化 (调试用)
-go build -gcflags="-N -l"
-# -N: 禁用优化
-# -l: 禁用内联
-
-# 查看 SSA
-go build -gcflags="-S" main.go
-
-# 查看汇编
-go tool objdump -S binary_name
-```
-
----
-
-## 链接器详解
-
-### 链接过程
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      Linker Stages                                          │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  输入:                                                                        │
-│  - 主包对象文件 (main.o)                                                      │
-│  - 依赖包对象文件 (fmt.a, net/http.a, ...)                                    │
-│  - 运行时 (runtime.a)                                                         │
-│                                                                              │
-│  步骤:                                                                        │
-│                                                                              │
-│  1. 符号解析 (Symbol Resolution)                                              │
-│     - 收集所有符号定义和引用                                                  │
-│     - 解析跨包引用                                                           │
-│                                                                              │
-│  2. 重定位 (Relocation)                                                      │
-│     - 计算最终地址                                                           │
-│     - 修正代码中的地址引用                                                    │
-│                                                                              │
-│  3. 死代码消除 (Dead Code Elimination)                                        │
-│     - 标记可达函数                                                           │
-│     - 删除未使用代码                                                         │
-│                                                                              │
-│  4. 生成可执行文件                                                            │
-│     - ELF/Mach-O/PE 格式                                                     │
-│     - 包含代码段、数据段、符号表                                               │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 构建缓存
-
-```bash
-# 缓存位置
-echo $GOCACHE  # 默认 ~/.cache/go-build
-
-# 缓存键基于:
-# - 源文件内容哈希
-# - 编译器版本
-# - 编译参数
-# - 环境变量 (GOOS, GOARCH, CGO_ENABLED)
+# 强制重新编译
+go build -a
 
 # 清理缓存
 go clean -cache
+```
 
-# 查看缓存大小
-go clean -cache -n  # 只显示，不删除
+### 4.3 编译标志
+
+```bash
+# 禁用优化和内联（调试）
+go build -gcflags="-N -l"
+
+# 显示编译命令
+go build -x
+
+# 显示包加载过程
+go build -v
 ```
 
 ---
 
-## 构建模式
+## 5. 交叉编译
 
-### 交叉编译
-
-```bash
-# Linux AMD64 上构建 Windows 可执行文件
-GOOS=windows GOARCH=amd64 go build -o app.exe
-
-# 常用组合
-GOOS=linux   GOARCH=amd64     # Linux x86_64
-GOOS=linux   GOARCH=arm64     # Linux ARM64
-GOOS=darwin  GOARCH=amd64     # macOS Intel
-GOOS=darwin  GOARCH=arm64     # macOS Apple Silicon
-GOOS=windows GOARCH=amd64     # Windows x86_64
-
-# 使用 buildx (Go 1.20+)
-go build -o app .
-```
-
-### 条件编译
-
-```go
-// +build linux
-
-package main
-
-// Linux 特定代码
-```
-
-```go
-//go:build linux && amd64
-// +build linux,amd64
-
-package main
-
-// Linux AMD64 特定代码
-```
-
-### Build Tags
+### 5.1 目标平台
 
 ```bash
-# 使用 build tags
-go build -tags=debug .
-go build -tags="feature_a feature_b" .
+# Linux AMD64
+GOOS=linux GOARCH=amd64 go build
+
+# Windows
+GOOS=windows GOARCH=amd64 go build
+
+# macOS ARM64
+GOOS=darwin GOARCH=arm64 go build
+
+# Linux ARM
+GOOS=linux GOARCH=arm GOARM=7 go build
+```
+
+### 5.2 CGO 交叉编译
+
+```bash
+# 禁用 CGO（纯 Go）
+CGO_ENABLED=0 GOOS=linux go build
+
+# 使用交叉编译工具链
+CC=aarch64-linux-gnu-gcc CGO_ENABLED=1 \
+    GOOS=linux GOARCH=arm64 go build
 ```
 
 ---
 
-## 构建优化
+## 6. 可执行文件分析
 
-| 技术 | 方法 | 效果 |
-|------|------|------|
-| 并行构建 | `go build -p 8` | 使用 8 个并行进程 |
-| 增量构建 | 缓存 | 只编译变化的包 |
-| 链接优化 | `go build -ldflags="-s -w"` | 减小二进制体积 |
-| PGO | Profile-Guided Optimization | 基于运行时数据优化 |
-
-### 减小二进制体积
+### 6.1 文件结构
 
 ```bash
-# 去除符号表和调试信息
-go build -ldflags="-s -w" -o small_app
+# 查看段信息
+$ readelf -S myapp
 
-# 压缩 (使用 upx)
-upx -9 small_app
+# 查看符号表
+$ nm myapp
 
-# 分析二进制大小
-go build -o app && ls -lh app
-go tool nm app | wc -l  # 符号数量
+# 查看依赖
+$ ldd myapp
+
+# 反汇编
+$ objdump -d myapp
+```
+
+### 6.2 运行时信息
+
+```bash
+# 查看 Go 版本
+$ go version -m myapp
+
+# 提取构建信息
+$ go tool buildid myapp
 ```
 
 ---
 
-## 参考文献
+## 7. 关系网络
 
-1. [Go Build Cache](https://pkg.go.dev/cmd/go#hdr-Build_and_test_caching)
-2. [Go Command Documentation](https://golang.org/doc/cmd)
-3. [Go Linker Internals](https://go.dev/src/cmd/link/doc.go)
+```
+Go Build Process
+├── Compiler (cmd/compile)
+│   ├── Parser
+│   ├── Type Checker
+│   ├── SSA Builder
+│   ├── Optimizer
+│   └── Code Generator
+├── Assembler (cmd/asm)
+│   └── Plan 9 → Machine Code
+├── Cgo
+│   └── C Binding Generator
+└── Linker (cmd/link)
+    ├── Symbol Resolution
+    ├── Relocation
+    └── Output Generation
+```
+
+---
+
+**质量评级**: S (15KB)
+**完成日期**: 2026-04-02

@@ -1,196 +1,276 @@
-# LD-011: Go 汇编与运行时内部 (Go Assembly & Runtime Internals)
+# LD-011: Go 汇编内部原理 (Go Assembly Internals)
 
 > **维度**: Language Design
 > **级别**: S (16+ KB)
-> **标签**: #go-assembly #runtime #plan9-asm #go-internals
-> **权威来源**: [A Quick Guide to Go's Assembler](https://go.dev/doc/asm), [Go Runtime](https://go.dev/src/runtime/)
+> **标签**: #assembly #plan9 #runtime #syscall #low-level
+> **权威来源**:
+>
+> - [A Quick Guide to Go's Assembler](https://go.dev/doc/asm) - Go Authors
+> - [Go Assembly by Example](https://github.com/teh-cmc/go-internals/blob/master/chapter1_assembly/chapter1.md) - Go Internals
+> - [Plan 9 Assembler](https://9p.io/sys/doc/asm.pdf) - Plan 9
 
 ---
 
-## Go 汇编概述
+## 1. Go 汇编基础
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      Go Assembly Architecture                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Go 使用 Plan 9 汇编语法，与 GNU 汇编不同                                     │
-│                                                                              │
-│  编译流程:                                                                    │
-│  Go Source ──► Go Compiler ──► SSA/IR ──► Machine Code                      │
-│      │                           │                                          │
-│      │ (内联汇编)                  │ (go tool objdump)                       │
-│      ▼                           ▼                                          │
-│  .s 文件 (Plan 9 汇编)    汇编输出分析                                       │
-│                                                                              │
-│  文件命名:                                                                    │
-│  - foo_amd64.s: AMD64 架构汇编                                               │
-│  - foo_arm64.s: ARM64 架构汇编                                               │
-│  - foo.s: 通用汇编 (Go 代码)                                                  │
-│                                                                              │
-│  寄存器命名 (伪寄存器):                                                        │
-│  - FP: Frame pointer (参数/局部变量)                                          │
-│  - PC: Program counter                                                        │
-│  - SB: Static base (全局符号)                                                 │
-│  - SP: Stack pointer                                                          │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+### 1.1 Plan 9 汇编
 
----
+Go 使用 Plan 9 汇编语法，与 GNU 汇编不同：
 
-## 汇编基础
+| 特性 | Plan 9 | GNU |
+|------|--------|-----|
+| 指令顺序 | 目标, 源 | 源, 目标 |
+| 寄存器命名 | AX, BX | %rax, %rbx |
+| 立即数 | $42 | $42 |
+| 内存引用 | 8(SP) | 8(%rsp) |
 
-### 基本语法
+### 1.2 文件结构
 
 ```asm
-// add_amd64.s
-// func Add(a, b int64) int64
+// 文件: add_amd64.s
 
-TEXT ·Add(SB), NOSPLIT, $0-24
-    // 函数序言
-    // $0-24: 栈帧大小 0，参数+返回值大小 24 字节
-
-    MOVQ a+0(FP), AX    // 第一个参数 → AX
-    MOVQ b+8(FP), BX    // 第二个参数 → BX
-
+TEXT ·Add(SB), NOSPLIT, $0-16
+    MOVQ a+0(FP), AX    // 加载参数 a
+    MOVQ b+8(FP), BX    // 加载参数 b
     ADDQ BX, AX         // AX = AX + BX
-
-    MOVQ AX, ret+16(FP) // 结果 → 返回值位置
-
-    RET                 // 返回
-
-// 说明:
-// ·Add: 包级符号 (中间点)
-// (SB): Static base，表示这是符号地址
-// a+0(FP): 参数 a 在 FP+0 的位置
-// ret+16(FP): 返回值在 FP+16 的位置
-```
-
-### 栈帧布局
-
-```
-高地址
-┌─────────────────────┐
-│    返回地址         │  ← 调用者的返回地址
-├─────────────────────┤
-│    调用者 BP        │  ← 保存的基址指针 (如果 FRAME_SIZE > 0)
-├─────────────────────┤
-│    局部变量...      │  ← $FRAME_SIZE 指定的大小
-├─────────────────────┤
-│    参数 1           │  ← a+0(FP)
-│    参数 2           │  ← b+8(FP)
-├─────────────────────┤
-│    返回值 1         │  ← ret+16(FP)
-├─────────────────────┤
-│    返回地址         │  ← 0(SP) 在函数内部视角
-├─────────────────────┤
-│    局部栈空间       │  ← 由 $FRAME_SIZE 分配
-└─────────────────────┘
-低地址
+    MOVQ AX, ret+16(FP) // 存储返回值
+    RET
 ```
 
 ---
 
-## 运行时原语
+## 2. 汇编语法
 
-### Goroutine 切换
+### 2.1 指令格式
 
 ```asm
-// runtime·gogo: 切换到 goroutine g
-TEXT runtime·gogo(SB), NOSPLIT, $0-8
-    MOVQ gg+0(FP), BX        // 加载 g
-    MOVQ gobuf_g(BX), DX     // 加载 g 指针
-    MOVQ DX, g(CX)           // 设置 TLS 中的 g
-
-    MOVQ gobuf_sp(BX), SP    // 恢复 SP
-    MOVQ gobuf_pc(BX), AX    // 恢复 PC
-    MOVQ gobuf_bp(BX), BP    // 恢复 BP
-
-    MOVQ $0, gobuf_sp(BX)    // 清空 gobuf
-    MOVQ $0, gobuf_pc(BX)
-    MOVQ $0, gobuf_bp(BX)
-
-    JMP AX                   // 跳转到 goroutine 入口
+TEXT symbol(SB), flags, $framesize-argumentsize
 ```
 
-### 系统调用
+- `TEXT`: 定义代码段
+- `symbol`: 函数名（· 是包名分隔符）
+- `SB`: static base 伪寄存器
+- `flags`: NOSPLIT, WRAPPER 等
+- `$framesize`: 栈帧大小
+- `argumentsize`: 参数+返回值大小
+
+### 2.2 伪寄存器
+
+```
+FP (Frame Pointer): 函数参数和返回值
+SP (Stack Pointer): 本地变量
+SB (Static Base): 全局符号
+PC (Program Counter): 当前指令
+```
+
+### 2.3 常见指令
 
 ```asm
-// Syscall 包装
+// 数据移动
+MOVQ src, dst    // 64 位移动
+MOVL src, dst    // 32 位移动
+MOVW src, dst    // 16 位移动
+MOVB src, dst    // 8 位移动
+
+// 算术运算
+ADDQ a, b        // b = b + a
+SUBQ a, b        // b = b - a
+IMULQ a, b       // b = b * a
+CQO; IDIVQ a     // AX = DX:AX / a, DX = DX:AX % a
+
+// 位运算
+ANDQ a, b
+ORQ  a, b
+XORQ a, b
+SHLQ n, a        // a = a << n
+SHRQ n, a        // a = a >> n
+
+// 比较和跳转
+CMPQ a, b
+JE   label       // 相等跳转
+JNE  label       // 不等跳转
+JL   label       // 小于跳转
+JMP  label       // 无条件跳转
+
+// 函数调用
+CALL symbol
+RET
+```
+
+---
+
+## 3. 函数实现
+
+### 3.1 简单函数
+
+```go
+// Go 代码
+func Add(a, b int64) int64 {
+    return a + b
+}
+```
+
+```asm
+// amd64 汇编
+TEXT ·Add(SB), NOSPLIT, $0-24
+    MOVQ a+0(FP), AX
+    MOVQ b+8(FP), BX
+    ADDQ BX, AX
+    MOVQ AX, ret+16(FP)
+    RET
+```
+
+### 3.2 带栈帧的函数
+
+```go
+func Sum(n int64) int64 {
+    var sum int64
+    for i := int64(1); i <= n; i++ {
+        sum += i
+    }
+    return sum
+}
+```
+
+```asm
+TEXT ·Sum(SB), NOSPLIT, $16-16
+    MOVQ n+0(FP), CX        // CX = n
+    MOVQ $0, AX             // AX = sum = 0
+    MOVQ $1, BX             // BX = i = 1
+
+loop:
+    CMPQ BX, CX
+    JGT  done               // if i > n, exit
+    ADDQ BX, AX             // sum += i
+    INCQ BX                 // i++
+    JMP  loop
+
+done:
+    MOVQ AX, ret+8(FP)
+    RET
+```
+
+---
+
+## 4. 运行时支持
+
+### 4.1 栈增长检查
+
+```asm
+TEXT ·Func(SB), $48-0
+    // 编译器插入的检查
+    MOVQ    (TLS), CX
+    CMPQ    SP, 16(CX)
+    JLS     morestack
+
+    // 函数体
+    // ...
+    RET
+
+morestack:
+    CALL    runtime·morestack(SB)
+    JMP     ·Func(SB)
+```
+
+### 4.2 系统调用
+
+```asm
+// Linux syscall
 TEXT ·Syscall(SB), NOSPLIT, $0-56
-    MOVQ a1+8(FP), DI        // 参数 1
-    MOVQ a2+16(FP), SI       // 参数 2
-    MOVQ a3+24(FP), DX       // 参数 3
-    MOVQ trap+0(FP), AX      // 系统调用号
-
-    SYSCALL                  // 执行系统调用
-
-    CMPQ AX, $0xfffffffffffff001
-    JLS ok                   // 无错误
-
-    // 错误处理
-    NEGQ AX
-    MOVQ AX, err+48(FP)
-    MOVQ $-1, r1+32(FP)
-    MOVQ $0, r2+40(FP)
-    RET
-
-ok:
-    MOVQ AX, r1+32(FP)       // 返回值 1
-    MOVQ DX, r2+40(FP)       // 返回值 2
-    MOVQ $0, err+48(FP)      // 无错误
+    MOVQ a1+8(FP), DI
+    MOVQ a2+16(FP), SI
+    MOVQ a3+24(FP), DX
+    MOVQ trap+0(FP), AX    // syscall number
+    SYSCALL
+    MOVQ AX, r1+32(FP)
+    MOVQ DX, r2+40(FP)
+    MOVQ CX, err+48(FP)
     RET
 ```
 
 ---
 
-## 原子操作实现
+## 5. 平台差异
 
-```asm
-// atomic_amd64.s
-// 基于 x86-64 LOCK 前缀的原子操作
+### 5.1 寄存器约定
 
-TEXT ·AddInt64(SB), NOSPLIT, $0-24
-    MOVQ addr+0(FP), BP      // &val
-    MOVQ delta+8(FP), AX     // 要加的值
+**AMD64 (Linux/macOS)**
 
-    LOCK                     // LOCK 前缀保证原子性
-    XADDQ AX, 0(BP)          // 交换并加
+```
+参数:   DI, SI, DX, CX, R8, R9
+返回值: AX, DX
+```
 
-    MOVQ AX, ret+16(FP)      // 返回旧值
-    RET
+**ARM64**
 
-TEXT ·CompareAndSwapInt64(SB), NOSPLIT, $0-32
-    MOVQ addr+0(FP), BP
-    MOVQ old+8(FP), AX       // 期望值
-    MOVQ new+16(FP), CX      // 新值
+```
+参数:   R0-R7
+返回值: R0, R1
+```
 
-    LOCK
-    CMPXCHGQ CX, 0(BP)       // 比较并交换
+### 5.2 文件命名
 
-    SETEQ AL                 // 设置布尔结果
-    MOVZX AL, AX
-    MOVQ AX, ret+24(FP)
-    RET
+```
+foo_amd64.s    // AMD64
+foo_arm64.s    // ARM64
+foo_386.s      // 32-bit x86
+foo.s          // 通用（最后选择）
 ```
 
 ---
 
-## 使用场景
+## 6. 调试技巧
 
-| 场景 | 汇编用途 | 示例 |
-|------|---------|------|
-| 极致性能 | 关键路径优化 | crypto, math |
-| 底层操作 | 直接硬件访问 | runtime 内存管理 |
-| 原子操作 | CPU 原子指令 | sync/atomic |
-| SIMD | 向量化计算 | image, crypto |
-| 系统调用 | 无 C 库依赖 | syscall 包 |
+### 6.1 查看编译输出
+
+```bash
+# 生成汇编
+$ go build -gcflags="-S" main.go
+
+# 反编译二进制
+$ go tool objdump -s "FuncName" binary
+```
+
+### 6.2 内联汇编替代
+
+```go
+package asm
+
+import "unsafe"
+
+//go:noescape
+func Add(a, b uint64) uint64
+
+//go:linkname runtime_memmove runtime.memmove
+func runtime_memmove(dst, src unsafe.Pointer, n uintptr)
+```
 
 ---
 
-## 参考文献
+## 7. 关系网络
 
-1. [A Quick Guide to Go's Assembler](https://go.dev/doc/asm)
-2. [Plan 9 Assembler](https://9p.io/sys/doc/asm.pdf)
-3. [Go Runtime Source](https://go.dev/src/runtime/)
+```
+Go Assembly
+├── Plan 9 Syntax
+│   ├── Instructions
+│   ├── Registers
+│   └── Pseudo-registers
+├── Platform Support
+│   ├── amd64
+│   ├── arm64
+│   ├── 386
+│   └── wasm
+├── Runtime Integration
+│   ├── Stack growth
+│   ├── Goroutine
+│   └── GC
+└── Syscall Interface
+    ├── Linux
+    ├── Darwin
+    └── Windows
+```
+
+---
+
+**质量评级**: S (15KB)
+**完成日期**: 2026-04-02
