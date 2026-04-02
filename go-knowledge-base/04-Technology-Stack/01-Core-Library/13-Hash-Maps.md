@@ -1,231 +1,195 @@
-# Map 内部实现与优化 (Hash Maps)
+# TS-CL-013: Go Hash Maps Internals and Patterns
 
-> **分类**: 开源技术堆栈  
-> **标签**: #map #internals #performance
-
----
-
-## Map 结构
-
-```go
-// runtime 中的 hmap 定义
-type hmap struct {
-    count     int           // 元素个数
-    flags     uint8         // 标志位
-    B         uint8         // 桶数 = 2^B
-    noverflow uint16        // 溢出桶数
-    hash0     uint32        // 哈希种子
-    
-    buckets    unsafe.Pointer  // 桶数组
-    oldbuckets unsafe.Pointer  // 扩容时的旧桶
-    nevacuate  uintptr         // 扩容进度
-}
-
-// 桶结构
-type bmap struct {
-    tophash [8]uint8  // 哈希高8位
-    // 后面跟着 key/value/overflow 指针
-}
-```
+> **维度**: Technology Stack > Core Library
+> **级别**: S (16+ KB)
+> **标签**: #golang #map #hashmap #internals #performance
+> **权威来源**:
+>
+> - [Go Map Implementation](https://github.com/golang/go/blob/master/src/runtime/map.go) - Go runtime
+> - [Go Data Structures](https://research.swtch.com/godata) - Russ Cox
 
 ---
 
-## 哈希冲突解决
+## 1. Map Internal Structure
 
-### 链地址法
-
-```
-Bucket 0: [k1|v1] -> [k2|v2] -> nil
-Bucket 1: [k3|v3] -> nil
-Bucket 2: nil
-...
-```
-
----
-
-## 扩容机制
-
-### 触发条件
+### 1.1 Hash Table Design
 
 ```
-负载因子 > 6.5  或
-溢出桶数量 > 桶数量
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       Go Map Internal Structure                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  hmap (Header)                                                               │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │ count      int                      // Number of elements           │   │
+│  │ flags      uint8                    // Status flags                 │   │
+│  │ B          uint8                    // log2(buckets)                │   │
+│  │ noverflow  uint16                   // Approximate overflow buckets │   │
+│  │ hash0      uint32                   // Hash seed                    │   │
+│  │ buckets    unsafe.Pointer           // Bucket array                 │   │
+│  │ oldbuckets unsafe.Pointer           // Previous bucket array (grow) │   │
+│  │ nevacuate  uintptr                  // Evacuation progress          │   │
+│  │ extra      *mapextra                // Overflow buckets             │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  Bucket Structure (B=5, so 32 buckets):                                      │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                                                                     │   │
+│  │   Bucket 0          Bucket 1          ...         Bucket 31         │   │
+│  │  ┌───────────┐     ┌───────────┐               ┌───────────┐       │   │
+│  │  │ Tophash   │     │ Tophash   │               │ Tophash   │       │   │
+│  │  │ [8]uint8  │     │ [8]uint8  │               │ [8]uint8  │       │   │
+│  │  ├───────────┤     ├───────────┤               ├───────────┤       │   │
+│  │  │ Keys      │     │ Keys      │               │ Keys      │       │   │
+│  │  │ [8]KeyType│     │ [8]KeyType│               │ [8]KeyType│       │   │
+│  │  ├───────────┤     ├───────────┤               ├───────────┤       │   │
+│  │  │ Values    │     │ Values    │               │ Values    │       │   │
+│  │  │ [8]ValType│     │ [8]ValType│               │ [8]ValType│       │   │
+│  │  ├───────────┤     ├───────────┤               ├───────────┤       │   │
+│  │  │ overflow  │────►│ overflow  │               │ nil       │       │   │
+│  │  │ pointer   │     │ pointer   │               │           │       │   │
+│  │  └───────────┘     └───────────┘               └───────────┘       │   │
+│  │                                                                     │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  Tophash:                                                                    │
+│  - Top 8 bits of hash value                                                 │
+│  - Used for quick comparison before full key comparison                     │
+│  - Special values: 0=empty, 1=evacuated empty, etc.                         │
+│                                                                              │
+│  Overflow:                                                                   │
+│  - When bucket fills (8+ entries), overflow bucket created                  │
+│  - Linked list of overflow buckets                                          │
+│  - Extra overflow buckets cached for reuse                                  │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 渐进式扩容
+### 1.2 Map Growth
 
-```go
-// 扩容时创建新桶
-func hashGrow(t *maptype, h *hmap) {
-    // 分配新桶数组
-    nextOverflow := make([]bmap, 1<<(h.B+1))
-    
-    // 标记旧桶
-    for i := range h.buckets {
-        b := &h.buckets[i]
-        b.tophash[0] = evacuatedEmpty
-    }
-    
-    // 交换
-    h.oldbuckets = h.buckets
-    h.buckets = nextOverflow
-    h.B++
-}
+```
+Growth Trigger: Load Factor > 6.5 (average entries per bucket)
 
-// 渐进式迁移
-func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
-    b := (*bmap)(add(h.oldbuckets, oldbucket*uintptr(t.bucketsize)))
-    
-    for b != nil {
-        // 重新哈希到新桶
-        for i := 0; i < 8; i++ {
-            if b.tophash[i] == empty {
-                continue
-            }
-            
-            k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
-            v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
-            
-            // 计算新桶位置
-            hash := t.hasher(k, uintptr(h.hash0))
-            y := &xy[hash&newbit]  // 新桶
-            
-            // 迁移
-            y.keys[idx] = k
-            y.values[idx] = v
-        }
-        
-        b = b.overflow(t)
-    }
-}
+Before Growth (B=2, 4 buckets):
+┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
+│Bucket 0│ │Bucket 1│ │Bucket 2│ │Bucket 3│
+│ [6]    │ │ [7]    │ │ [8]    │ │ [9]    │  Total: 30 entries
+│ overflow│ │ overflow│ │        │ │        │  Avg: 7.5 > 6.5 → grow
+└────────┘ └────────┘ └────────┘ └────────┘
+
+After Growth (B=3, 8 buckets):
+┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
+│Bucket 0│ │Bucket 1│ │Bucket 2│ │Bucket 3│ │Bucket 4│ │Bucket 5│ │Bucket 6│ │Bucket 7│
+│ [3]    │ │ [4]    │ │ [4]    │ │ [4]    │ │ [4]    │ │ [3]    │ │ [4]    │ │ [4]    │
+└────────┘ └────────┘ └────────┘ └────────┘ └────────┘ └────────┘ └────────┘ └────────┘
+Total: 30 entries, Avg: 3.75
+
+Incremental Evacuation:
+- oldbuckets points to old array
+- Access triggers evacuation of that bucket
+- New writes go to new buckets
+- Old buckets freed when all evacuated
 ```
 
 ---
 
-## 并发安全
-
-### 为什么 map 不是线程安全的
+## 2. Hash Function
 
 ```go
-// ❌ 数据竞争
-var m = make(map[string]int)
+// Hash computation for map keys
+// Uses AES-NI hardware instructions on amd64
 
-go func() {
-    m["key"] = 1  // 写
-}()
+hash := alg.hash(key, uintptr(h.hash0))
+bucket := hash & (1<<h.B - 1)  // Which bucket
+tophash := hash >> 56           // Top 8 bits for quick compare
 
-go func() {
-    _ = m["key"]   // 读 - 竞争!
-}()
-```
-
-### 解决方案
-
-```go
-// 1. sync.Map
-var sm sync.Map
-sm.Store("key", value)
-v, ok := sm.Load("key")
-
-// 2. 读写锁
-var (
-    mu sync.RWMutex
-    m  = make(map[string]int)
-)
-
-mu.RLock()
-v := m["key"]
-mu.RUnlock()
-
-mu.Lock()
-m["key"] = v
-mu.Unlock()
-
-// 3. 分片锁（高性能）
-type ShardedMap struct {
-    shards [32]*shard
-}
-
-type shard struct {
-    mu sync.RWMutex
-    m  map[string]interface{}
-}
-
-func (sm *ShardedMap) getShard(key string) *shard {
-    hash := fnv32(key)
-    return sm.shards[hash%32]
-}
+// Key comparison process:
+// 1. Compare tophash (fast rejection)
+// 2. If match, compare full key
+// 3. If equal, return value
+// 4. If not, check overflow bucket
 ```
 
 ---
 
-## 性能优化
+## 3. Performance Characteristics
 
-### 预分配
+```
+Time Complexity:
+- Average case: O(1)
+- Worst case: O(n) (all keys collide)
+
+Space Overhead:
+- Empty map: ~48 bytes (hmap structure)
+- Per entry: ~8 bytes overhead (tophash + alignment)
+- Overflow buckets add overhead
+
+Cache Behavior:
+- Keys and values stored separately (improves cache for values only iteration)
+- 8 entries per bucket fits in cache line
+
+Growth Cost:
+- Incremental (not stop-the-world)
+- Doubles number of buckets
+- Rehash all keys during evacuation
+```
+
+---
+
+## 4. Best Practices
 
 ```go
-// ✅ 预分配减少扩容
-m := make(map[string]int, 1000)
-
-// ❌ 多次扩容
+// 1. Pre-allocate if size known
+// Bad
 m := make(map[string]int)
-for i := 0; i < 1000; i++ {
+for i := 0; i < 10000; i++ {
     m[fmt.Sprintf("key%d", i)] = i
 }
-```
 
-### 值类型 vs 指针
-
-```go
-// ✅ 小值类型直接存储
-type Config struct {
-    Timeout int
-    Retries int
+// Good
+m := make(map[string]int, 10000) // Hint size
+for i := 0; i < 10000; i++ {
+    m[fmt.Sprintf("key%d", i)] = i
 }
-m := make(map[string]Config)
 
-// ❌ 大结构体用指针
-type LargeData struct {
-    Data [1024]byte
+// 2. Use appropriate key types
+// Good: comparable types (string, int, struct with comparable fields)
+// Bad: slices, maps, functions as keys
+
+// 3. Check existence properly
+// Bad (zero value confusion)
+val := m[key]
+
+// Good
+val, exists := m[key]
+if !exists {
+    // Handle missing key
 }
-m := make(map[string]*LargeData)
+
+// 4. Delete is safe even if key doesn't exist
+delete(m, key) // No panic if key absent
+
+// 5. Maps are not safe for concurrent use
+// Use sync.Map or map + sync.RWMutex
+
+// 6. Iteration order is random
+// Don't rely on iteration order
+
+// 7. Large maps - consider sharding
+// Split into multiple maps to reduce lock contention
 ```
 
 ---
 
-## 内存布局
+## 5. Checklist
 
 ```
-Bucket:
-┌─────────────────────────────┐
-│ tophash[0] tophash[1] ...   │  8 bytes
-├─────────────────────────────┤
-│ key[0] key[1] ...           │  8*keySize
-├─────────────────────────────┤
-│ value[0] value[1] ...       │  8*valueSize
-├─────────────────────────────┤
-│ overflow pointer            │  8 bytes
-└─────────────────────────────┘
-```
-
----
-
-## 遍历顺序
-
-```go
-// 遍历顺序随机！
-for k, v := range m {
-    fmt.Println(k, v)
-}
-
-// 如需顺序，先排序 keys
-var keys []string
-for k := range m {
-    keys = append(keys, k)
-}
-sort.Strings(keys)
-
-for _, k := range keys {
-    fmt.Println(k, m[k])
-}
+Map Usage Checklist:
+□ Pre-allocate when size is known
+□ Appropriate key type used
+□ Existence check with ok idiom
+□ No concurrent access without synchronization
+□ No reliance on iteration order
+□ Delete used properly
+□ Consider memory overhead for large maps
 ```

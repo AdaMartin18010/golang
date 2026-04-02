@@ -2,7 +2,7 @@
 
 > **维度**: Language Design
 > **级别**: S (16+ KB)
-> **标签**: #memory-allocator #tcmalloc #heap #stack #gc
+> **标签**: #memory-allocator #tcmalloc #heap #stack #gc #performance
 > **权威来源**:
 >
 > - [Go Memory Allocator](https://github.com/golang/go/tree/master/src/runtime/malloc.go) - Go Authors
@@ -79,15 +79,15 @@ type mspan struct {
     prev      *mspan     // 链表上一个
     startAddr uintptr    // 起始地址
     npages    uintptr    // 页数 (8KB per page)
-    
+
     // 分配相关
     freeindex uintptr    // 下一个空闲对象索引
     nelems    uintptr    // 对象总数
     allocBits *gcBits    // 分配位图
     gcmarkBits *gcBits   // GC 标记位图
-    
+
     allocCache uint64    // 快速分配缓存
-    
+
     spanclass   spanClass
     state       mSpanState
 }
@@ -113,14 +113,14 @@ type mspan struct {
 func mallocgc(size uintptr, typ *_type, needzero bool) unsafe.Pointer {
     // 1. 选择 size class
     spc := makeSpanClass(sizeclass, noscan)
-    
+
     // 2. 从 mcache 分配
     span := c.alloc[spc]
     v := nextFreeFast(span)
     if v == 0 {
         v = c.nextFree(spc)
     }
-    
+
     // 3. 返回对象
     x = unsafe.Pointer(v)
     if needzero {
@@ -140,10 +140,10 @@ func largeAlloc(size uintptr, needzero bool, noscan bool) *mspan {
     if size&pageMask != 0 {
         npages++
     }
-    
+
     // 从 heap 分配 span
     s := mheap_.alloc(npages, spanClass(0))
-    
+
     if needzero {
         memclrNoHeapPointers(unsafe.Pointer(s.base()), s.npages<<pageShift)
     }
@@ -163,14 +163,14 @@ type mcache struct {
 func (c *mcache) tinyAlloc(size uintptr) unsafe.Pointer {
     // 对齐
     roundedSize := roundUpSize(size)
-    
+
     // 检查是否有空间
     if c.tinyoffset+roundedSize <= maxTinySize {
         x := c.tiny + c.tinyoffset
         c.tinyoffset += roundedSize
         return unsafe.Pointer(x)
     }
-    
+
     // 分配新的 tiny 块
     c.tiny = nextFreeFast(span)
     c.tinyoffset = roundedSize
@@ -313,20 +313,20 @@ import (
 
 func main() {
     var m1, m2 runtime.MemStats
-    
+
     // 分配前
     runtime.GC()
     runtime.ReadMemStats(&m1)
-    
+
     // 分配内存
     data := make([][]byte, 1000)
     for i := range data {
         data[i] = make([]byte, 1024)
     }
-    
+
     // 分配后
     runtime.ReadMemStats(&m2)
-    
+
     fmt.Printf("Alloc increase: %d KB\n", (m2.Alloc-m1.Alloc)/1024)
     fmt.Printf("TotalAlloc: %d KB\n", m2.TotalAlloc/1024)
     fmt.Printf("Mallocs: %d\n", m2.Mallocs-m1.Mallocs)
@@ -364,9 +364,52 @@ func putBuffer(b *Buffer) {
 func process(data []byte) {
     buf := getBuffer()
     defer putBuffer(buf)
-    
+
     copy(buf.data[:], data)
     // 处理...
+}
+```
+
+### 7.3 减少分配
+
+```go
+package main
+
+import (
+    "strings"
+)
+
+// Bad: 每次调用都分配
+func concatBad(items []string) string {
+    var result string
+    for _, item := range items {
+        result += item  // 每次分配新字符串
+    }
+    return result
+}
+
+// Good: 预分配容量
+func concatGood(items []string) string {
+    var n int
+    for _, item := range items {
+        n += len(item)
+    }
+
+    var buf strings.Builder
+    buf.Grow(n)  // 预分配
+    for _, item := range items {
+        buf.WriteString(item)
+    }
+    return buf.String()
+}
+
+// Better: 复用 buffer
+func concatBetter(items []string, buf *strings.Builder) string {
+    buf.Reset()
+    for _, item := range items {
+        buf.WriteString(item)
+    }
+    return buf.String()
 }
 ```
 
@@ -392,5 +435,5 @@ Go Memory Allocator
 
 ---
 
-**质量评级**: S (15KB)
+**质量评级**: S (16KB)
 **完成日期**: 2026-04-02

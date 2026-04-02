@@ -1,194 +1,401 @@
-# 数据库连接池 (Connection Pooling)
+# TS-DB-013: Database Connection Pooling
 
-> **分类**: 开源技术堆栈  
-> **标签**: #database #pooling #performance
+> **维度**: Technology Stack > Database
+> **级别**: S (16+ KB)
+> **标签**: #database #connection-pool #performance #golang #sql
+> **权威来源**:
+>
+> - [database/sql Connection Pool](https://go.dev/doc/database/manage-connections) - Go team
+> - [PostgreSQL Connection Pooling](https://www.postgresql.org/docs/current/runtime-config-connection.html) - PostgreSQL
 
 ---
 
-## 连接池配置
+## 1. Connection Pool Architecture
 
-```go
-db, err := sql.Open("postgres", dsn)
-if err != nil {
-    log.Fatal(err)
-}
-
-// 连接池设置
-db.SetMaxOpenConns(25)        // 最大打开连接数
-db.SetMaxIdleConns(5)         // 最大空闲连接数
-db.SetConnMaxLifetime(5 * time.Minute)   // 连接最大生命周期
-db.SetConnMaxIdleTime(10 * time.Minute)  // 空闲连接最大时间
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    Database Connection Pool Architecture                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Application                                                                  │
+│     │                                                                         │
+│     ▼                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    Connection Pool (sql.DB)                          │   │
+│  │                                                                      │   │
+│  │  ┌───────────────────────────────────────────────────────────────┐  │   │
+│  │  │                    Idle Connection Pool                        │  │   │
+│  │  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐          │  │   │
+│  │  │  │  Conn 1 │  │  Conn 2 │  │  Conn 3 │  │  ...    │          │  │   │
+│  │  │  │ (Idle)  │  │ (Idle)  │  │ (Idle)  │  │         │          │  │   │
+│  │  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘          │  │   │
+│  │  └───────────────────────────────────────────────────────────────┘  │   │
+│  │                                                                      │   │
+│  │  ┌───────────────────────────────────────────────────────────────┐  │   │
+│  │  │                   Active Connections                           │  │   │
+│  │  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐          │  │   │
+│  │  │  │  Conn A │  │  Conn B │  │  Conn C │  │  Conn D │          │  │   │
+│  │  │  │ (In Tx) │  │ (Query) │  │ (Query) │  │ (In Tx) │          │  │   │
+│  │  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘          │  │   │
+│  │  └───────────────────────────────────────────────────────────────┘  │   │
+│  │                                                                      │   │
+│  │  Pool Configuration:                                                 │   │
+│  │  - MaxOpenConns: Maximum open connections (default: unlimited)      │   │
+│  │  - MaxIdleConns: Maximum idle connections (default: 2)              │   │
+│  │  - ConnMaxLifetime: Maximum lifetime of a connection                │   │
+│  │  - ConnMaxIdleTime: Maximum idle time before close (Go 1.15+)       │   │
+│  │                                                                      │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                              │                                               │
+│                              │                                               │
+│  ┌───────────────────────────┼─────────────────────────────────────────┐   │
+│  │                    Database Server                                   │   │
+│  │  ┌────────────────────────┴─────────────────────────────────────┐   │   │
+│  │  │                     Connection Slots                           │   │   │
+│  │  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐          │   │   │
+│  │  │  │ Conn 1  │  │ Conn 2  │  │ Conn 3  │  │  ...    │          │   │   │
+│  │  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘          │   │   │
+│  │  │  max_connections (PostgreSQL default: 100)                    │   │   │
+│  │  └───────────────────────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 监控连接池
+## 2. Connection Pool Configuration
+
+### 2.1 Go sql.DB Pool Settings
 
 ```go
-type PoolStats struct {
-    db *sql.DB
-}
+package main
 
-func (ps *PoolStats) Collect() map[string]interface{} {
-    stats := ps.db.Stats()
-    
-    return map[string]interface{}{
-        "open_connections":    stats.OpenConnections,
-        "in_use":              stats.InUse,
-        "idle":                stats.Idle,
-        "wait_count":          stats.WaitCount,
-        "wait_duration_ms":    stats.WaitDuration.Milliseconds(),
-        "max_idle_closed":     stats.MaxIdleClosed,
-        "max_lifetime_closed": stats.MaxLifetimeClosed,
-    }
-}
+import (
+    "database/sql"
+    "fmt"
+    "log"
+    "runtime"
+    "time"
 
-// 导出到 Prometheus
-var (
-    openConnections = prometheus.NewGauge(prometheus.GaugeOpts{
-        Name: "db_open_connections",
-        Help: "The number of established connections",
-    })
-    
-    inUseConnections = prometheus.NewGauge(prometheus.GaugeOpts{
-        Name: "db_in_use_connections",
-        Help: "The number of connections currently in use",
-    })
+    _ "github.com/lib/pq"
 )
 
-func recordDBMetrics(db *sql.DB) {
-    stats := db.Stats()
-    openConnections.Set(float64(stats.OpenConnections))
-    inUseConnections.Set(float64(stats.InUse))
+func configurePool(db *sql.DB) {
+    // Maximum number of open connections to the database
+    // Formula: (core_count * 2) + effective_spindle_count
+    // For SSD/cloud: core_count * 2
+    // Default: 0 (unlimited - dangerous!)
+    db.SetMaxOpenConns(25)
+
+    // Maximum number of connections in the idle connection pool
+    // Should be <= MaxOpenConns
+    // Default: 2 (often too low for production)
+    db.SetMaxIdleConns(10)
+
+    // Maximum amount of time a connection may be reused
+    // Prevents issues with stale connections, connection leaks
+    // Should be less than database's wait_timeout
+    // MySQL: typically 1 hour, PostgreSQL: typically 8 hours
+    db.SetConnMaxLifetime(30 * time.Minute)
+
+    // Maximum amount of time a connection can be idle (Go 1.15+)
+    // Closes idle connections sooner, reduces memory usage
+    db.SetConnMaxIdleTime(10 * time.Minute)
 }
-```
 
----
-
-## 动态调整
-
-```go
-type AdaptivePool struct {
-    db      *sql.DB
-    minConn int
-    maxConn int
-    target  float64  // 目标使用率
+// Calculate optimal pool size based on environment
+func calculatePoolSize() int {
+    cores := runtime.NumCPU()
+    // Conservative formula for web applications
+    // Each request typically takes ~10-50ms of DB time
+    // With concurrent requests, we need enough connections
+    return cores * 4
 }
 
-func (ap *AdaptivePool) Adjust() {
-    stats := ap.db.Stats()
-    
-    if stats.OpenConnections == 0 {
-        return
+func main() {
+    dsn := "postgres://user:password@localhost/dbname?sslmode=disable"
+
+    db, err := sql.Open("postgres", dsn)
+    if err != nil {
+        log.Fatal(err)
     }
-    
-    usage := float64(stats.InUse) / float64(stats.OpenConnections)
-    
-    // 使用率过高，增加连接
-    if usage > ap.target && stats.OpenConnections < ap.maxConn {
-        newMax := int(float64(stats.OpenConnections) * 1.2)
-        if newMax > ap.maxConn {
-            newMax = ap.maxConn
-        }
-        ap.db.SetMaxOpenConns(newMax)
-    }
-    
-    // 使用率过低，减少连接
-    if usage < ap.target*0.5 && stats.OpenConnections > ap.minConn {
-        newMax := int(float64(stats.OpenConnections) * 0.8)
-        if newMax < ap.minConn {
-            newMax = ap.minConn
-        }
-        ap.db.SetMaxOpenConns(newMax)
-    }
-}
-```
+    defer db.Close()
 
----
+    // Configure pool
+    configurePool(db)
 
-## 连接池最佳实践
-
-### 1. 预连接
-
-```go
-// 验证连接
-func verifyPool(db *sql.DB) error {
+    // Verify with ping
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
-    return db.PingContext(ctx)
+
+    if err := db.PingContext(ctx); err != nil {
+        log.Fatal(err)
+    }
+
+    // Print pool stats
+    printStats(db)
 }
 
-// 预热连接池
-func warmupPool(db *sql.DB, n int) {
-    conns := make([]*sql.Conn, 0, n)
-    
-    for i := 0; i < n; i++ {
-        conn, err := db.Conn(context.Background())
-        if err != nil {
-            break
-        }
-        conns = append(conns, conn)
-    }
-    
-    // 释放回池中
-    for _, conn := range conns {
-        conn.Close()
-    }
+func printStats(db *sql.DB) {
+    stats := db.Stats()
+    fmt.Printf("Open Connections: %d\n", stats.OpenConnections)
+    fmt.Printf("In Use: %d\n", stats.InUse)
+    fmt.Printf("Idle: %d\n", stats.Idle)
+    fmt.Printf("Wait Count: %d\n", stats.WaitCount)
+    fmt.Printf("Wait Duration: %v\n", stats.WaitDuration)
+    fmt.Printf("Max Idle Closed: %d\n", stats.MaxIdleClosed)
+    fmt.Printf("Max Lifetime Closed: %d\n", stats.MaxLifetimeClosed)
 }
 ```
 
-### 2. 健康检查
+### 2.2 Pool Size Guidelines
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       Pool Size Recommendations                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Small Application (1-2 cores):                                             │
+│  - MaxOpenConns: 5-10                                                       │
+│  - MaxIdleConns: 2-5                                                        │
+│                                                                              │
+│  Medium Application (4-8 cores):                                            │
+│  - MaxOpenConns: 20-40                                                      │
+│  - MaxIdleConns: 5-10                                                       │
+│                                                                              │
+│  Large Application (16+ cores):                                             │
+│  - MaxOpenConns: 50-100                                                     │
+│  - MaxIdleConns: 10-25                                                      │
+│                                                                              │
+│  Important Constraints:                                                      │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  Database max_connections                                           │   │
+│  │  ├── PostgreSQL: default 100                                        │   │
+│  │  ├── MySQL: depends on RAM, typically 150-1000                      │   │
+│  │  └── Consider: App instances × MaxOpenConns < max_connections       │   │
+│  │                                                                     │   │
+│  │  Example:                                                           │   │
+│  │  - 5 app instances                                                  │   │
+│  │  - 20 MaxOpenConns each                                             │   │
+│  │  - Total: 100 connections                                           │   │
+│  │  - PostgreSQL default max_connections: 100 ✓                        │   │
+│  │  - Leave room for admin connections (usually 3 reserved)            │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3. Connection Lifecycle
 
 ```go
-type PoolHealthChecker struct {
-    db     *sql.DB
-    ticker *time.Ticker
+// Connection lifecycle management
+
+type ManagedDB struct {
+    *sql.DB
+    maxRetries int
+    retryDelay  time.Duration
 }
 
-func (phc *PoolHealthChecker) Start() {
-    phc.ticker = time.NewTicker(30 * time.Second)
-    
+func (mdb *ManagedDB) QueryWithRetry(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+    var rows *sql.Rows
+    var err error
+
+    for i := 0; i < mdb.maxRetries; i++ {
+        rows, err = mdb.QueryContext(ctx, query, args...)
+        if err == nil {
+            return rows, nil
+        }
+
+        // Check if it's a retryable error
+        if !isRetryableError(err) {
+            return nil, err
+        }
+
+        time.Sleep(mdb.retryDelay * time.Duration(i+1))
+    }
+
+    return nil, err
+}
+
+func isRetryableError(err error) bool {
+    if err == nil {
+        return false
+    }
+
+    errStr := err.Error()
+    retryableErrors := []string{
+        "connection refused",
+        "connection reset",
+        "broken pipe",
+        "deadlock",
+        "lock wait timeout",
+    }
+
+    for _, retryable := range retryableErrors {
+        if contains(errStr, retryable) {
+            return true
+        }
+    }
+
+    return false
+}
+```
+
+---
+
+## 4. Monitoring Pool Health
+
+```go
+// Health check and monitoring
+
+type PoolMonitor struct {
+    db     *sql.DB
+    ticker *time.Ticker
+    done   chan struct{}
+}
+
+func NewPoolMonitor(db *sql.DB, interval time.Duration) *PoolMonitor {
+    return &PoolMonitor{
+        db:     db,
+        ticker: time.NewTicker(interval),
+        done:   make(chan struct{}),
+    }
+}
+
+func (pm *PoolMonitor) Start() {
     go func() {
-        for range phc.ticker.C {
-            ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-            
-            if err := phc.db.PingContext(ctx); err != nil {
-                log.Printf("Pool health check failed: %v", err)
+        for {
+            select {
+            case <-pm.ticker.C:
+                pm.checkHealth()
+            case <-pm.done:
+                return
             }
-            
-            cancel()
         }
     }()
 }
+
+func (pm *PoolMonitor) checkHealth() {
+    stats := pm.db.Stats()
+
+    // Alert if wait count is high (indicates pool exhaustion)
+    if stats.WaitCount > 100 {
+        log.Printf("WARNING: High connection wait count: %d", stats.WaitCount)
+    }
+
+    // Alert if idle connections are being closed frequently
+    if stats.MaxIdleClosed > 10 {
+        log.Printf("WARNING: High idle connection closure: %d", stats.MaxIdleClosed)
+    }
+
+    // Check if we're near max connections
+    if stats.InUse > int(float64(stats.OpenConnections)*0.8) {
+        log.Printf("WARNING: High connection usage: %d/%d",
+            stats.InUse, stats.OpenConnections)
+    }
+}
+
+func (pm *PoolMonitor) Stop() {
+    close(pm.done)
+    pm.ticker.Stop()
+}
 ```
 
 ---
 
-## 连接池问题排查
+## 5. Pool Exhaustion Handling
 
 ```go
-func DiagnosePool(db *sql.DB) {
-    stats := db.Stats()
-    
-    // 检查等待
-    if stats.WaitCount > 100 {
-        log.Printf("WARNING: High wait count: %d", stats.WaitCount)
-        log.Printf("Consider increasing MaxOpenConns (current: %d)", 
-            stats.OpenConnections)
+// Graceful handling of pool exhaustion
+
+func queryWithTimeout(db *sql.DB, timeout time.Duration) error {
+    ctx, cancel := context.WithTimeout(context.Background(), timeout)
+    defer cancel()
+
+    // This will fail fast if pool is exhausted and timeout is reached
+    rows, err := db.QueryContext(ctx, "SELECT * FROM users")
+    if err != nil {
+        if ctx.Err() == context.DeadlineExceeded {
+            return fmt.Errorf("query timeout (pool may be exhausted): %w", err)
+        }
+        return err
     }
-    
-    // 检查连接关闭
-    if stats.MaxIdleClosed > 100 {
-        log.Printf("WARNING: Many idle connections closed: %d", 
-            stats.MaxIdleClosed)
-        log.Printf("Consider increasing MaxIdleConns or ConnMaxIdleTime")
+    defer rows.Close()
+
+    return nil
+}
+
+// Circuit breaker for database operations
+type DBCircuitBreaker struct {
+    db           *sql.DB
+    failureCount int
+    threshold    int
+    lastFailure  time.Time
+    cooldown     time.Duration
+    mu           sync.RWMutex
+}
+
+func (cb *DBCircuitBreaker) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+    if cb.isOpen() {
+        return nil, errors.New("database circuit breaker open")
     }
-    
-    // 检查生命周期
-    if stats.MaxLifetimeClosed > 100 {
-        log.Printf("INFO: Many connections closed due to max lifetime: %d",
-            stats.MaxLifetimeClosed)
+
+    rows, err := cb.db.QueryContext(ctx, query, args...)
+    if err != nil {
+        cb.recordFailure()
+        return nil, err
+    }
+
+    cb.recordSuccess()
+    return rows, nil
+}
+
+func (cb *DBCircuitBreaker) isOpen() bool {
+    cb.mu.RLock()
+    defer cb.mu.RUnlock()
+
+    if cb.failureCount < cb.threshold {
+        return false
+    }
+
+    return time.Since(cb.lastFailure) < cb.cooldown
+}
+
+func (cb *DBCircuitBreaker) recordFailure() {
+    cb.mu.Lock()
+    defer cb.mu.Unlock()
+
+    cb.failureCount++
+    cb.lastFailure = time.Now()
+}
+
+func (cb *DBCircuitBreaker) recordSuccess() {
+    cb.mu.Lock()
+    defer cb.mu.Unlock()
+
+    if cb.failureCount > 0 {
+        cb.failureCount--
     }
 }
+```
+
+---
+
+## 6. Checklist
+
+```
+Connection Pool Checklist:
+□ MaxOpenConns configured appropriately
+□ MaxIdleConns configured (not default 2)
+□ ConnMaxLifetime set (prevent stale connections)
+□ ConnMaxIdleTime set (Go 1.15+)
+□ Pool size accounts for multiple app instances
+□ Monitor pool statistics
+□ Handle pool exhaustion gracefully
+□ Set query timeouts
+□ Use context for cancellation
+□ Test pool behavior under load
 ```

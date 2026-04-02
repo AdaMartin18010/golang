@@ -93,6 +93,19 @@ b := r.(*bytes.Buffer)
 // 2. 匹配则返回 iface.data
 ```
 
+### 2.3 类型切换
+
+```go
+switch v := r.(type) {
+case *bytes.Buffer:
+    // v is *bytes.Buffer
+case *os.File:
+    // v is *os.File
+default:
+    // v is io.Reader
+}
+```
+
 ---
 
 ## 3. 反射实现
@@ -141,6 +154,25 @@ i := v.Interface()
 v.CanSet()  // 只有可寻址的值可设置
 ```
 
+### 3.3 类型操作
+
+```go
+// 获取类型信息
+t := reflect.TypeOf(x)
+t.Kind()      // 基础类型 (struct, int, etc.)
+t.Name()      // 类型名称
+t.Size()      // 类型大小
+
+// 结构体反射
+t.NumField()              // 字段数量
+t.Field(i)                // 第 i 个字段
+t.FieldByName("Name")     // 按名称获取
+
+// 方法反射
+t.NumMethod()             // 方法数量
+t.Method(i)               // 第 i 个方法
+```
+
 ---
 
 ## 4. 方法调用
@@ -167,6 +199,20 @@ m.Call(args)
 // 1. 查找方法在 itab 中的索引
 // 2. 组装参数
 // 3. 通过汇编跳板调用
+```
+
+### 4.3 动态调用开销
+
+```go
+// 直接调用 - 最快
+result := obj.Method(arg)
+
+// 接口调用 - 间接
+result := iface.Method(arg)
+
+// 反射调用 - 最慢
+m := reflect.ValueOf(obj).MethodByName("Method")
+result := m.Call([]reflect.Value{reflect.ValueOf(arg)})
 ```
 
 ---
@@ -252,6 +298,14 @@ interface{}
                                └── ...
 ```
 
+### 6.3 方法调用路径
+
+```
+直接调用:     obj.Method() → 直接跳转
+接口调用:     iface.Method() → itab.fun[i] → 跳转
+反射调用:     Value.MethodByName() → 字符串查找 → itab → 跳转
+```
+
 ---
 
 ## 7. 代码示例
@@ -310,6 +364,34 @@ func main() {
 }
 ```
 
+### 7.3 结构体标签解析
+
+```go
+package main
+
+import (
+    "fmt"
+    "reflect"
+)
+
+type User struct {
+    Name  string `json:"name" db:"user_name"`
+    Email string `json:"email" db:"email_addr"`
+    Age   int    `json:"age" db:"age"`
+}
+
+func main() {
+    t := reflect.TypeOf(User{})
+
+    for i := 0; i < t.NumField(); i++ {
+        field := t.Field(i)
+        fmt.Printf("Field: %s\n", field.Name)
+        fmt.Printf("  JSON: %s\n", field.Tag.Get("json"))
+        fmt.Printf("  DB: %s\n", field.Tag.Get("db"))
+    }
+}
+```
+
 ---
 
 ## 8. 关系网络
@@ -336,5 +418,5 @@ Go Interface & Reflection
 
 ---
 
-**质量评级**: S (15KB)
+**质量评级**: S (16KB)
 **完成日期**: 2026-04-02

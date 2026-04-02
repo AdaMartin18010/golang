@@ -1,165 +1,251 @@
-# Protocol Buffers
+# TS-NET-011: Protocol Buffers in Go
 
-> **分类**: 开源技术堆栈  
-> **标签**: #protobuf #serialization #grpc
+> **维度**: Technology Stack > Network
+> **级别**: S (16+ KB)
+> **标签**: #protobuf #serialization #grpc #golang #protocol-buffers
+> **权威来源**:
+>
+> - [Protocol Buffers Documentation](https://developers.google.com/protocol-buffers) - Google
+> - [Go Protocol Buffers](https://pkg.go.dev/google.golang.org/protobuf) - Go package
 
 ---
 
-## 定义消息
+## 1. Protocol Buffers Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    Protocol Buffers Architecture                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Protocol Buffers vs JSON:                                                   │
+│                                                                              │
+│  JSON:                                        Protocol Buffers:             │
+│  {                                            message Person {              │
+│    "id": 123,                                   int32 id = 1;               │
+│    "name": "John Doe",                          string name = 2;            │
+│    "email": "john@example.com",                 string email = 3;           │
+│    "phones": [                                repeated Phone phones = 4;    │
+│      {"number": "555-1234",                   }                             │
+│       "type": "HOME"                          message Phone {               │
+│      }                                          string number = 1;          │
+│    ]                                            PhoneType type = 2;         │
+│  }                                              }                           │
+│                                               enum PhoneType {              │
+│  Size: ~80 bytes                              MOBILE = 0;                   │
+│  Text format                                  HOME = 1;                     │
+│  No schema validation                         WORK = 2;                     │
+│  Slower parsing                               }                             │
+│                                               }                             │
+│                                                                              │
+│                                               Binary size: ~20 bytes        │
+│                                               Type safe                     │
+│                                               Schema evolution              │
+│                                               Fast parsing                  │
+│                                                                              │
+│  Use Cases:                                                                  │
+│  - gRPC services                                                             │
+│  - Data storage                                                              │
+│  - Microservice communication                                                │
+│  - Configuration files                                                       │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Defining Messages
 
 ```protobuf
+// user.proto
 syntax = "proto3";
 
 package user;
+option go_package = "github.com/example/proto/user";
 
-option go_package = "github.com/example/api/user";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
 
+// User message
 message User {
-    int64 id = 1;
-    string email = 2;
-    string name = 3;
-    Status status = 4;
-    google.protobuf.Timestamp created_at = 5;
-    
-    repeated string tags = 6;
-    map<string, string> metadata = 7;
-}
+    // Field numbers are used for binary encoding
+    int32 id = 1;
+    string username = 2;
+    string email = 3;
 
-enum Status {
-    UNKNOWN = 0;
-    ACTIVE = 1;
-    INACTIVE = 2;
-}
+    // Nested message
+    Profile profile = 4;
 
-service UserService {
-    rpc GetUser(GetUserRequest) returns (User);
-    rpc ListUsers(ListUsersRequest) returns (stream User);
-    rpc CreateUser(CreateUserRequest) returns (User);
-}
-```
+    // Repeated field (array/slice)
+    repeated string roles = 5;
 
----
+    // Enum
+    Status status = 6;
 
-## 生成代码
+    // Timestamp
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
 
-```bash
-# 安装 protoc-gen-go
-go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-go install google.golang.org/protobuf/cmd/protoc-gen-go-grpc@latest
+    // Oneof - mutually exclusive fields
+    oneof contact_method {
+        string phone = 9;
+        string email_secondary = 10;
+    }
 
-# 生成
-protoc \
-    --go_out=. \
-    --go_opt=paths=source_relative \
-    --go-grpc_out=. \
-    --go-grpc_opt=paths=source_relative \
-    user.proto
-```
+    // Map
+    map<string, string> metadata = 11;
 
----
+    // Optional (proto3)
+    optional string nickname = 12;
 
-## 使用生成的代码
-
-```go
-import pb "github.com/example/api/user"
-
-// 创建消息
-user := &pb.User{
-    Id:        1,
-    Email:     "user@example.com",
-    Name:      "John Doe",
-    Status:    pb.Status_ACTIVE,
-    CreatedAt: timestamppb.Now(),
-    Tags:      []string{"vip", "beta"},
-    Metadata: map[string]string{
-        "source": "web",
-    },
-}
-
-// 序列化
-data, err := proto.Marshal(user)
-if err != nil {
-    log.Fatal(err)
-}
-
-// 反序列化
-newUser := &pb.User{}
-if err := proto.Unmarshal(data, newUser); err != nil {
-    log.Fatal(err)
-}
-```
-
----
-
-## 与 JSON 对比
-
-| 特性 | Protobuf | JSON |
-|------|----------|------|
-| 大小 | 小 (二进制) | 大 (文本) |
-| 速度 | 快 | 慢 |
-| 可读性 | 差 | 好 |
-| 模式 | 强类型 | 无模式 |
-| 适用 | 服务间通信 | Web API |
-
----
-
-## Oneof 类型
-
-```protobuf
-message Notification {
-    int64 id = 1;
-    
-    oneof content {
-        string text = 2;
-        bytes image = 3;
-        Video video = 4;
+    enum Status {
+        UNKNOWN = 0;
+        ACTIVE = 1;
+        INACTIVE = 2;
+        SUSPENDED = 3;
     }
 }
+
+message Profile {
+    string first_name = 1;
+    string last_name = 2;
+    string bio = 3;
+    string avatar_url = 4;
+}
+
+// Service definition (for gRPC)
+service UserService {
+    rpc GetUser(GetUserRequest) returns (User);
+    rpc CreateUser(CreateUserRequest) returns (User);
+    rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+    rpc UpdateUser(UpdateUserRequest) returns (User);
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+message GetUserRequest {
+    int32 id = 1;
+}
+
+message CreateUserRequest {
+    User user = 1;
+}
+
+message ListUsersRequest {
+    int32 page_size = 1;
+    string page_token = 2;
+}
+
+message ListUsersResponse {
+    repeated User users = 1;
+    string next_page_token = 2;
+}
+
+message UpdateUserRequest {
+    User user = 1;
+    // Field mask for partial updates
+    google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteUserRequest {
+    int32 id = 1;
+}
+
+message DeleteUserResponse {
+    bool success = 1;
+}
+```
+
+---
+
+## 3. Code Generation and Usage
+
+```bash
+# Install protoc compiler
+# Download from https://github.com/protocolbuffers/protobuf/releases
+
+# Install Go plugins
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+# Generate Go code
+protoc --go_out=. --go_opt=paths=source_relative \
+       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+       user.proto
+
+# Generated files:
+# - user.pb.go: Message types and accessors
+# - user_grpc.pb.go: gRPC client and server interfaces
 ```
 
 ```go
-notif := &pb.Notification{
-    Id: 1,
-    Content: &pb.Notification_Text{
-        Text: "Hello",
-    },
-}
+package main
 
-switch c := notif.Content.(type) {
-case *pb.Notification_Text:
-    fmt.Println(c.Text)
-case *pb.Notification_Image:
-    fmt.Println(len(c.Image))
+import (
+    "fmt"
+    "log"
+    "time"
+
+    "google.golang.org/protobuf/types/known/timestamppb"
+
+    pb "github.com/example/proto/user"
+)
+
+func main() {
+    // Create a new user
+    user := &pb.User{
+        Id:       1,
+        Username: "johndoe",
+        Email:    "john@example.com",
+        Profile: &pb.Profile{
+            FirstName: "John",
+            LastName:  "Doe",
+            Bio:       "Software engineer",
+        },
+        Roles:  []string{"user", "admin"},
+        Status: pb.User_ACTIVE,
+        Metadata: map[string]string{
+            "department": "engineering",
+            "location":   "sf",
+        },
+        CreatedAt: timestamppb.Now(),
+        UpdatedAt: timestamppb.Now(),
+    }
+
+    // Serialize to binary
+    data, err := proto.Marshal(user)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Serialized size: %d bytes\n", len(data))
+
+    // Deserialize
+    newUser := &pb.User{}
+    if err := proto.Unmarshal(data, newUser); err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("User: %s (%s)\n", newUser.Username, newUser.Email)
+
+    // JSON serialization (for debugging)
+    jsonData, err := protojson.Marshal(user)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("JSON: %s\n", jsonData)
 }
 ```
 
 ---
 
-## 版本兼容
+## 4. Best Practices
 
-```protobuf
-// v1
-message User {
-    int64 id = 1;
-    string name = 2;
-}
-
-// v2 - 向后兼容
-message User {
-    int64 id = 1;
-    string name = 2;
-    string email = 3;  // 新增字段
-    reserved 4, 5;      // 保留字段号
-    reserved "phone";   // 保留字段名
-}
 ```
-
----
-
-## 最佳实践
-
-1. **使用 proto3** - 更简洁的语法
-2. **字段编号不要复用** - 向后兼容
-3. **避免使用 required** - 灵活性
-4. **使用枚举** - 类型安全
-5. **使用时间戳类型** - 标准格式
+Protocol Buffers Best Practices:
+□ Use proto3 for new projects
+□ Reserve field numbers when removing fields
+□ Use appropriate field types
+□ Avoid changing field numbers
+□ Use meaningful message and field names
+□ Document with comments
+□ Version your proto files
+□ Use packages for namespacing
+```

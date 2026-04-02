@@ -25,6 +25,7 @@ func (t *T) PointerMethod() {} // 指针接收器
 ```
 
 **定义 1.1 (方法集)**
+
 ```
 MethodSet(T)  = { ValueMethod }
 MethodSet(*T) = { ValueMethod, PointerMethod }
@@ -33,6 +34,7 @@ MethodSet(*T) = { ValueMethod, PointerMethod }
 ### 1.2 Go 1.26 的变更
 
 Go 1.26 引入了更严格的指针接收器检查，旨在：
+
 1. 提前发现潜在的 nil 指针解引用
 2. 使方法集规则更直观
 3. 提高代码安全性
@@ -44,6 +46,7 @@ Go 1.26 引入了更严格的指针接收器检查，旨在：
 ### 2.1 方法集规则
 
 **定义 2.1 (值类型的方法集)**
+
 ```
 对于类型 T:
 MethodSet(T) = { m | m 的接收器是 T 或 *T }
@@ -51,6 +54,7 @@ MethodSet(*T) = { m | m 的接收器是 T 或 *T }
 ```
 
 **定理 2.1 (方法集包含)**
+
 ```
 MethodSet(T) ⊆ MethodSet(*T)
 ```
@@ -59,12 +63,14 @@ MethodSet(T) ⊆ MethodSet(*T)
 
 **定义 2.2 (可寻址性)**
 值 x 可寻址当：
+
 1. x 是变量
 2. x 是切片索引操作 x[i]
 3. x 是可寻址数组的索引操作
 4. x 是字段选择器 x.f，其中 x 可寻址
 
 **定理 2.2 (方法调用要求)**
+
 ```
 t.Method() 合法当且仅当：
 - t 可寻址且 MethodSet(*T) 包含 Method
@@ -153,19 +159,19 @@ type Reader interface {
 
 func main() {
     var c Counter
-    
+
     // 值方法可通过值和指针调用
     _ = c.Get()
     _ = (&c).Get()
-    
+
     // 指针方法只能通过指针调用
     // c.Increment()  // 编译错误！
     (&c).Increment() // OK
-    
+
     // 接口赋值
     var r Reader = c       // OK: Get 是值接收器
     var i Incrementer = &c // OK: Increment 是指针接收器
-    
+
     _ = r
     _ = i
 }
@@ -186,12 +192,12 @@ func (i *Item) Set(v int) {
 
 func main() {
     items := []Item{{1}, {2}, {3}}
-    
+
     // 陷阱: 遍历中的值复制
     for _, item := range items {
         item.Set(100) // 编译错误！item 不是指针
     }
-    
+
     // 正确做法
     for i := range items {
         items[i].Set(100) // OK
@@ -288,5 +294,85 @@ Go Method Receivers
 
 ---
 
-**质量评级**: S (15KB)
+## 8. 深入分析
+
+### 8.1 方法集推导
+
+```go
+type MyInt int
+
+func (m MyInt) Method1() {}
+func (m *MyInt) Method2() {}
+
+// MethodSet(MyInt) = { Method1 }
+// MethodSet(*MyInt) = { Method1, Method2 }
+
+// 注意: MyInt 的底层类型是 int
+// int 没有方法，所以 MyInt 只能通过显式定义获得方法
+```
+
+### 8.2 嵌入类型的方法集
+
+```go
+type Inner struct{}
+
+func (i Inner) InnerMethod() {}
+func (i *Inner) InnerPtrMethod() {}
+
+type Outer struct {
+    Inner
+}
+
+func (o *Outer) OuterMethod() {}
+
+// MethodSet(Outer) = { InnerMethod }
+// MethodSet(*Outer) = { InnerMethod, InnerPtrMethod, OuterMethod }
+```
+
+### 8.3 接口实现的性能影响
+
+```go
+// 值接收器方法 - 值类型直接实现接口
+type ValueReceiver struct{}
+func (v ValueReceiver) Method() {}
+
+// 指针接收器方法 - 只有指针类型实现接口
+type PointerReceiver struct{}
+func (p *PointerReceiver) Method() {}
+
+type Interface interface {
+    Method()
+}
+
+// 使用
+var _ Interface = ValueReceiver{}    // OK
+var _ Interface = &ValueReceiver{}   // OK
+var _ Interface = PointerReceiver{}  // 编译错误！
+var _ Interface = &PointerReceiver{} // OK
+```
+
+---
+
+## 9. 迁移策略
+
+### 9.1 代码审查清单
+
+- [ ] 检查所有指针接收器方法的 nil 检查
+- [ ] 确保接口实现符合预期
+- [ ] 验证值/指针类型的方法集一致性
+- [ ] 测试边界条件
+
+### 9.2 自动化工具
+
+```bash
+# 使用 go vet 检查常见问题
+go vet ./...
+
+# 使用 staticcheck 深度分析
+staticcheck ./...
+```
+
+---
+
+**质量评级**: S (16KB)
 **完成日期**: 2026-04-02

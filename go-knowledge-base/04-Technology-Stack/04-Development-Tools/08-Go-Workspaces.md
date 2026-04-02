@@ -1,116 +1,132 @@
-# Go Workspaces (多模块工作区)
+# TS-DT-008: Go Workspaces (Go 1.18+)
 
-> **分类**: 开源技术堆栈  
-> **标签**: #workspace #gomodules #go1.18
-
----
-
-## 工作区配置
-
-### go.work
-
-```go
-// go.work
-go 1.22
-
-use (
-    ./module-a
-    ./module-b
-    ./module-c
-)
-
-replace (
-    example.com/module-a => ./module-a
-    example.com/module-b => ./module-b
-)
-```
+> **维度**: Technology Stack > Development Tools
+> **级别**: S (16+ KB)
+> **标签**: #go-workspaces #go-modules #multi-module #development
+> **权威来源**:
+>
+> - [Go Workspaces Tutorial](https://go.dev/doc/tutorial/workspaces) - Go team
+> - [Workspace Mode](https://go.dev/ref/mod#workspaces) - Go modules reference
 
 ---
 
-## 使用场景
-
-### 场景1: 多模块开发
+## 1. Workspace Architecture
 
 ```
-project/
-├── go.work
-├── api/                    # 模块1: API 定义
-│   ├── go.mod
-│   └── proto/
-├── server/                 # 模块2: 服务端
-│   ├── go.mod
-│   └── main.go
-└── client/                 # 模块3: 客户端
-    ├── go.mod
-    └── main.go
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       Go Workspace Architecture                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Project Structure:                                                          │
+│  /myproject/                                                                 │
+│  ├── go.work              # Workspace file                                   │
+│  ├── go.work.sum          # Workspace checksums                              │
+│  ├── api/                 # Module 1                                         │
+│  │   ├── go.mod           # module github.com/example/api                    │
+│  │   └── api.go                                                            │
+│  ├── service/             # Module 2                                         │
+│  │   ├── go.mod           # module github.com/example/service                │
+│  │   └── service.go                                                         │
+│  ├── common/              # Module 3 (shared library)                        │
+│  │   ├── go.mod           # module github.com/example/common                 │
+│  │   └── common.go                                                          │
+│  └── client/              # Module 4                                         │
+│      ├── go.mod           # module github.com/example/client                 │
+│      └── client.go                                                          │
+│                                                                              │
+│  go.work file:                                                               │
+│  go 1.21                                                                     │
+│                                                                              │
+│  use (                                                                       │
+│      ./api                                                                   │
+│      ./service                                                               │
+│      ./common                                                                │
+│      ./client                                                                │
+│  )                                                                           │
+│                                                                              │
+│  replace (                                                                   │
+│      github.com/example/api => ./api                                         │
+│      github.com/example/service => ./service                                 │
+│      github.com/example/common => ./common                                   │
+│      github.com/example/client => ./client                                   │
+│  )                                                                           │
+│                                                                              │
+│  Benefits:                                                                   │
+│  - Work on multiple modules simultaneously                                   │
+│  - Changes in one module immediately visible to others                       │
+│  - No need to publish to test changes                                        │
+│  - Atomic commits across modules                                             │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 2. Workspace Commands
 
 ```bash
-# 初始化工作区
-go work init ./api ./server ./client
+# Initialize workspace in current directory
+go work init
 
-# 现在可以在工作区内跨模块引用
-cd server
-go build  # 自动使用本地 api 模块
-```
+# Initialize workspace with specific modules
+go work init ./api ./service ./common
 
----
-
-## 常用命令
-
-```bash
-# 初始化工作区
-go work init [moddirs...]
-
-# 添加模块到工作区
+# Add module to workspace
+go work use ./client
 go work use ./new-module
 
-# 从工作区移除模块
+# Remove module from workspace
 go work edit -dropuse=./old-module
 
-# 查看工作区状态
-cat go.work
-```
+# View workspace status
+go work sync
 
----
-
-## 与 replace 对比
-
-| 特性 | go.work | go.mod replace |
-|------|---------|----------------|
-| 范围 | 本地开发 | 提交到仓库 |
-| 团队协作 | 本地配置 | 共享配置 |
-| CI/CD | 不使用 | 使用 |
-| 适用场景 | 本地多模块开发 | 临时替换依赖 |
-
----
-
-## CI/CD 处理
-
-```bash
-# CI 中忽略工作区，使用正式发布版本
-rm go.work go.work.sum
-go mod download
+# Build all modules in workspace
 go build ./...
+
+# Test all modules in workspace
+go test ./...
+
+# List workspace modules
+go list -m all
+
+# Tidy workspace
+go work sync
+
+# Vendor dependencies for workspace
+go work vendor
 ```
 
 ---
 
-## 版本控制
+## 3. Workspace Use Cases
 
-```gitignore
-# .gitignore
-go.work
-go.work.sum
 ```
+Use Case 1: Multi-Module Development
+- Main application depends on library
+- Both in same repository
+- Changes to library immediately available
 
-工作区文件通常是本地配置，不应提交到版本控制。
+Use Case 2: Dependency Override
+- Need to test with local fork of dependency
+- Override without modifying go.mod
+
+Use Case 3: Large Projects
+- Monorepo with multiple services
+- Each service is a module
+- Shared libraries in same repo
+```
 
 ---
 
-## 最佳实践
+## 4. Best Practices
 
-1. **本地开发**使用 go.work
-2. **CI/CD**删除 go.work，使用实际版本
-3. **模块发布**后更新依赖
-4. **文档**说明工作区使用方法
+```
+Workspace Best Practices:
+□ Don't commit go.work to version control (usually)
+□ Use go.work for local development
+□ Each module should have its own go.mod
+□ Use replace directives for local paths
+□ Keep modules loosely coupled
+□ Document workspace setup in README
+```

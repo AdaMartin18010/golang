@@ -1,101 +1,174 @@
-# flag 包
+# TS-CL-010: Go flag Package
 
-> **分类**: 开源技术堆栈
+> **维度**: Technology Stack > Core Library
+> **级别**: S (16+ KB)
+> **标签**: #golang #cli #flags #command-line #arguments
+> **权威来源**:
+>
+> - [flag Package](https://golang.org/pkg/flag/) - Go standard library
 
 ---
 
-## 基本用法
+## 1. Basic Flag Usage
 
 ```go
-import "flag"
+package main
 
-func main() {
-    // 定义参数
-    host := flag.String("host", "localhost", "Server host")
-    port := flag.Int("port", 8080, "Server port")
-    debug := flag.Bool("debug", false, "Enable debug mode")
-    
-    // 解析
+import (
+    "flag"
+    "fmt"
+    "os"
+    "time"
+)
+
+func basicFlags() {
+    // Define flags
+    var (
+        host    = flag.String("host", "localhost", "Server host")
+        port    = flag.Int("port", 8080, "Server port")
+        debug   = flag.Bool("debug", false, "Enable debug mode")
+        timeout = flag.Duration("timeout", 30*time.Second, "Request timeout")
+    )
+
+    // Parse flags
     flag.Parse()
-    
+
+    // Use flags
     fmt.Printf("Server: %s:%d\n", *host, *port)
-}
-```
-
----
-
-## 运行
-
-```bash
-go run main.go -host=0.0.0.0 -port=3000 -debug
-
-# 简写
-go run main.go -h 0.0.0.0 -p 3000
-```
-
----
-
-## 自定义类型
-
-```go
-type DurationFlag time.Duration
-
-func (d *DurationFlag) String() string {
-    return time.Duration(*d).String()
+    fmt.Printf("Debug: %v\n", *debug)
+    fmt.Printf("Timeout: %v\n", *timeout)
 }
 
-func (d *DurationFlag) Set(s string) error {
-    duration, err := time.ParseDuration(s)
-    if err != nil {
-        return err
-    }
-    *d = DurationFlag(duration)
+// Custom flag type
+type arrayFlags []string
+
+func (a *arrayFlags) String() string {
+    return fmt.Sprintf("%v", *a)
+}
+
+func (a *arrayFlags) Set(value string) error {
+    *a = append(*a, value)
     return nil
 }
 
-var timeout DurationFlag
+func customFlagType() {
+    var tags arrayFlags
+    flag.Var(&tags, "tag", "Tags (can be specified multiple times)")
 
-func init() {
-    flag.Var(&timeout, "timeout", "Request timeout")
+    flag.Parse()
+
+    fmt.Printf("Tags: %v\n", tags)
+    // Usage: ./app -tag=go -tag=backend -tag=api
 }
 ```
 
 ---
 
-## 子命令
+## 2. Advanced Flag Usage
 
 ```go
-func main() {
+func advancedFlags() {
+    // Flag with environment variable fallback
+    host := flag.String("host", getEnv("HOST", "localhost"), "Server host")
+
+    flag.Parse()
+
+    fmt.Printf("Host: %s\n", *host)
+}
+
+func getEnv(key, defaultValue string) string {
+    if value := os.Getenv(key); value != "" {
+        return value
+    }
+    return defaultValue
+}
+
+// Subcommands with flag.NewFlagSet
+func subcommands() {
+    // Define subcommands
+    serveCmd := flag.NewFlagSet("serve", flag.ExitOnError)
+    serveHost := serveCmd.String("host", "localhost", "Server host")
+    servePort := serveCmd.Int("port", 8080, "Server port")
+
+    migrateCmd := flag.NewFlagSet("migrate", flag.ExitOnError)
+    migrateDirection := migrateCmd.String("direction", "up", "Migration direction (up/down)")
+
+    // Check subcommand
     if len(os.Args) < 2 {
         fmt.Println("Expected 'serve' or 'migrate' subcommand")
         os.Exit(1)
     }
-    
+
     switch os.Args[1] {
     case "serve":
-        serveCmd := flag.NewFlagSet("serve", flag.ExitOnError)
-        port := serveCmd.Int("port", 8080, "Port")
         serveCmd.Parse(os.Args[2:])
-        runServer(*port)
-        
+        fmt.Printf("Serving on %s:%d\n", *serveHost, *servePort)
+
     case "migrate":
-        migrateCmd := flag.NewFlagSet("migrate", flag.ExitOnError)
-        direction := migrateCmd.String("direction", "up", "up or down")
         migrateCmd.Parse(os.Args[2:])
-        runMigrate(*direction)
+        fmt.Printf("Migrating %s\n", *migrateDirection)
+
+    default:
+        fmt.Printf("Unknown subcommand: %s\n", os.Args[1])
+        os.Exit(1)
     }
 }
 ```
 
 ---
 
-## 与 Cobra 对比
+## 3. Best Practices
 
-| 特性 | flag | Cobra |
-|------|------|-------|
-| 复杂度 | 简单 | 复杂 |
-| 子命令 | 手动 | 内置 |
-| 帮助信息 | 基础 | 丰富 |
-| 配置集成 | 无 | Viper |
+```go
+// Configuration struct with flags
+type Config struct {
+    Host    string
+    Port    int
+    Debug   bool
+    Timeout time.Duration
+}
 
-**推荐**: 简单工具用 flag，复杂 CLI 用 Cobra。
+func parseFlags() Config {
+    var cfg Config
+
+    flag.StringVar(&cfg.Host, "host", "localhost", "Server host")
+    flag.IntVar(&cfg.Port, "port", 8080, "Server port")
+    flag.BoolVar(&cfg.Debug, "debug", false, "Enable debug mode")
+    flag.DurationVar(&cfg.Timeout, "timeout", 30*time.Second, "Request timeout")
+
+    flag.Parse()
+
+    return cfg
+}
+
+// Help text customization
+func customHelp() {
+    flag.Usage = func() {
+        fmt.Fprintf(os.Stderr, "Usage: %s [OPTIONS]\n\n", os.Args[0])
+        fmt.Fprintln(os.Stderr, "My Application - A sample Go application")
+        fmt.Fprintln(os.Stderr, "\nOptions:")
+        flag.PrintDefaults()
+        fmt.Fprintln(os.Stderr, "\nExamples:")
+        fmt.Fprintln(os.Stderr, "  ./app -host=0.0.0.0 -port=9090")
+        fmt.Fprintln(os.Stderr, "  ./app -debug -timeout=1m")
+    }
+
+    flag.Parse()
+}
+```
+
+---
+
+## 4. Checklist
+
+```
+Flag Package Checklist:
+□ Meaningful flag names
+□ Sensible defaults
+□ Clear help text
+□ Environment variable fallback
+□ Required flags validated
+□ Custom flag types documented
+□ Subcommands if needed
+□ Version flag
+```

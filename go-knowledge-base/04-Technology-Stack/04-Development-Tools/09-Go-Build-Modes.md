@@ -1,213 +1,238 @@
-# Go 构建模式 (Build Modes)
+# TS-DT-009: Go Build Modes and Cross-Compilation
 
-> **分类**: 开源技术堆栈  
-> **标签**: #build #compilation #linking
+> **维度**: Technology Stack > Development Tools
+> **级别**: S (16+ KB)
+> **标签**: #go-build #cross-compilation #cgo #build-tags #ldflags
+> **权威来源**:
+>
+> - [go build documentation](https://golang.org/cmd/go/#hdr-Build_modes) - Go team
+> - [Cross Compilation](https://dave.cheney.net/2015/08/22/cross-compilation-with-go) - Dave Cheney
 
 ---
 
-## 常用构建命令
+## 1. Build Modes
+
+### 1.1 Default Build Mode
 
 ```bash
-# 普通构建
-go build
-
-# 指定输出名称
+# Default: executable binary
 go build -o myapp
 
-# 交叉编译
-go build -o myapp-linux GOOS=linux GOARCH=amd64
+# Output:
+# - Linux: ELF binary
+# - Windows: PE binary (.exe)
+# - macOS: Mach-O binary
+```
 
-# 静态链接
-go build -ldflags="-extldflags=-static" -o myapp
+### 1.2 Available Build Modes
 
-# 压缩二进制
-go build -ldflags="-s -w" -o myapp
+```bash
+# Build as archive (static library)
+go build -buildmode=archive -o libmylib.a
+
+# Build as shared library (C-shared)
+go build -buildmode=c-shared -o libmylib.so
+
+# Build as shared library (C-archive)
+go build -buildmode=c-archive -o libmylib.a
+
+# Build as plugin
+go build -buildmode=plugin -o myplugin.so
+
+# Build as PIE (Position Independent Executable)
+go build -buildmode=pie -o myapp
+
+# Build with race detector
+go build -race -o myapp
+
+# Build with coverage
+go build -cover -o myapp
 ```
 
 ---
 
-## 构建标签
+## 2. Cross-Compilation
 
-### 条件编译
-
-```go
-//go:build linux
-// +build linux
-
-package main
-
-func init() {
-    println("Linux specific init")
-}
-```
-
-### 多条件
-
-```go
-//go:build linux && amd64
-//go:build (linux || darwin) && !windows
-```
-
-### 自定义标签
-
-```go
-//go:build debug
-
-package main
-
-import "log"
-
-func debugLog(msg string) {
-    log.Println("[DEBUG]", msg)
-}
-```
+### 2.1 Cross-Compilation Basics
 
 ```bash
-go build -tags debug
-go build -tags "debug prod"
+# List available targets
+go tool dist list
+
+# Common cross-compilation examples:
+
+# Linux AMD64
+go build -o myapp-linux-amd64
+
+# Linux ARM64
+go build -o myapp-linux-arm64
+
+# Windows AMD64
+GOOS=windows GOARCH=amd64 go build -o myapp-windows-amd64.exe
+
+# macOS AMD64
+GOOS=darwin GOARCH=amd64 go build -o myapp-darwin-amd64
+
+# macOS ARM64 (Apple Silicon)
+GOOS=darwin GOARCH=arm64 go build -o myapp-darwin-arm64
+
+# FreeBSD
+GOOS=freebsd GOARCH=amd64 go build -o myapp-freebsd-amd64
+
+# WebAssembly
+GOOS=js GOARCH=wasm go build -o myapp.wasm
 ```
 
----
-
-## 链接器标志
+### 2.2 Cross-Compilation Script
 
 ```bash
-# 去除符号表和调试信息
-go build -ldflags="-s -w"
+#!/bin/bash
+# build-all.sh - Build for multiple platforms
 
-# 版本信息注入
-go build -ldflags="-X main.version=1.0.0 -X main.buildTime=$(date -u +%Y%m%d%H%M%S)"
+PLATFORMS=(
+    "linux/amd64"
+    "linux/arm64"
+    "linux/arm"
+    "darwin/amd64"
+    "darwin/arm64"
+    "windows/amd64"
+    "freebsd/amd64"
+)
 
-# 减小二进制大小
-go build -ldflags="-s -w -trimpath"
+VERSION=$(git describe --tags --always)
+LDFLAGS="-s -w -X main.Version=$VERSION"
 
-# 禁用 CGO
-go build -ldflags="-linkmode external -extldflags=-static" -o myapp
-```
-
----
-
-## 构建模式
-
-### 可执行文件
-
-```bash
-go build -buildmode=exe
-```
-
-### 共享库 (C Archive)
-
-```go
-// main.go
-package main
-
-import "C"
-
-//export Add
-func Add(a, b int) int {
-    return a + b
-}
-
-func main() {}
-```
-
-```bash
-go build -buildmode=c-archive -o libadd.a
-```
-
-### 共享库 (C Shared)
-
-```bash
-go build -buildmode=c-shared -o libadd.so
-```
-
-### 插件 (Plugin)
-
-```go
-// plugin.go
-package main
-
-type MyPlugin struct{}
-
-func (p *MyPlugin) Do() string {
-    return "hello from plugin"
-}
-
-var Plugin MyPlugin
-```
-
-```bash
-go build -buildmode=plugin -o plugin.so
-```
-
-```go
-// 主程序加载插件
-p, err := plugin.Open("plugin.so")
-sym, err := p.Lookup("Plugin")
-myPlugin := sym.(*MyPlugin)
-```
-
----
-
-## 交叉编译矩阵
-
-| GOOS | GOARCH | 说明 |
-|------|--------|------|
-| linux | amd64 | Linux x86_64 |
-| linux | arm64 | Linux ARM64 |
-| darwin | amd64 | macOS Intel |
-| darwin | arm64 | macOS M1/M2 |
-| windows | amd64 | Windows x64 |
-| windows | 386 | Windows x86 |
-| freebsd | amd64 | FreeBSD |
-| js | wasm | WebAssembly |
-
-```bash
-# 构建所有平台
-platforms=("linux/amd64" "linux/arm64" "darwin/amd64" "darwin/arm64" "windows/amd64")
-
-for platform in "${platforms[@]}"; do
+for platform in "${PLATFORMS[@]}"; do
     GOOS=${platform%/*}
     GOARCH=${platform#*/}
-    output="myapp-${GOOS}-${GOARCH}"
+    output="myapp-$GOOS-$GOARCH"
+
     if [ "$GOOS" = "windows" ]; then
-        output+=".exe"
+        output="${output}.exe"
     fi
-    
-    GOOS=$GOOS GOARCH=$GOARCH go build -o "$output"
+
+    echo "Building for $GOOS/$GOARCH..."
+    GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "$LDFLAGS" -o "dist/$output"
 done
 ```
 
 ---
 
-## 优化构建
+## 3. Build Tags and Constraints
 
-### 使用 cache
+### 3.1 File Constraints
 
-```bash
-# 自动使用 $GOCACHE
-go build
+```go
+// +build linux
 
-# 清空缓存
-go clean -cache
+// This file only builds on Linux
+package main
+
+import "fmt"
+
+func Platform() string {
+    return "Linux"
+}
 ```
 
-### 并行构建
+```go
+// +build windows
 
-```bash
-# -p 并行度
-go build -p 8
+// This file only builds on Windows
+package main
+
+import "fmt"
+
+func Platform() string {
+    return "Windows"
+}
 ```
 
-### Bazel 构建
+### 3.2 New Build Tags (Go 1.17+)
 
-```python
-# BUILD
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+```go
+//go:build linux && amd64
 
-go_binary(
-    name = "myapp",
-    srcs = ["main.go"],
-    deps = ["//pkg/mypackage"],
-)
+// This file only builds on Linux AMD64
+package main
+```
+
+### 3.3 Using Build Tags
+
+```bash
+# Build with specific tags
+go build -tags "production"
+go build -tags "debug"
+go build -tags "linux"
+go build -tags "production linux"
+
+# Build without specific tags
+go build -tags "!windows"
+```
+
+---
+
+## 4. Linker Flags
+
+### 4.1 Common ldflags
+
+```bash
+# Strip debug information (reduce binary size)
+go build -ldflags "-s -w"
+
+# Set version at build time
+go build -ldflags "-X main.Version=1.0.0 -X main.BuildTime=$(date -u +%Y%m%d%H%M%S)"
+
+# Disable CGO
+go build -ldflags "-linkmode external -extldflags -static"
+
+# Full static binary
+go build -a -installsuffix cgo -ldflags "-s -w -extldflags '-static'"
+```
+
+### 4.2 Build for Production
+
+```bash
+# Optimized production build
+go build -ldflags "-s -w \
+    -X main.Version=$(git describe --tags) \
+    -X main.Commit=$(git rev-parse --short HEAD) \
+    -X main.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    -o myapp
+
+# UPX compression (optional)
+upx --best myapp
+```
+
+---
+
+## 5. CGO and Cross-Compilation
+
+```bash
+# Disable CGO for easier cross-compilation
+CGO_ENABLED=0 go build
+
+# Enable CGO for specific platform
+CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build
+
+# Cross-compile with CGO (requires cross-compiler)
+CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++ \
+    CGO_ENABLED=1 GOOS=linux GOARCH=amd64 \
+    go build -ldflags '-linkmode external -extldflags -static'
+```
+
+---
+
+## 6. Checklist
+
+```
+Build Checklist:
+□ Cross-compilation tested
+□ Build tags used appropriately
+□ Version information embedded
+□ Debug symbols stripped for production
+□ CGO disabled if not needed
+□ Binary size optimized
+□ Platform-specific code separated
+□ CI/CD handles multi-platform builds
 ```

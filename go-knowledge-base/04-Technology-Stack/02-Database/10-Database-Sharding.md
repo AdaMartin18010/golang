@@ -1,176 +1,271 @@
-# 数据库分片 (Database Sharding)
+# TS-DB-010: Database Sharding Strategies
 
-> **分类**: 开源技术堆栈  
-> **标签**: #sharding #database #scaling
+> **维度**: Technology Stack > Database
+> **级别**: S (16+ KB)
+> **标签**: #sharding #partitioning #scalability #database #distributed
+> **权威来源**:
+>
+> - [Database Sharding](https://docs.microsoft.com/en-us/azure/architecture/patterns/sharding) - Microsoft Azure
+> - [PostgreSQL Partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html) - PostgreSQL
 
 ---
 
-## 分片策略
+## 1. Sharding Architecture
 
-### 哈希分片
+### 1.1 Horizontal Partitioning
 
-```go
-type ShardingStrategy interface {
-    GetShard(key string) int
-}
-
-type HashSharding struct {
-    shardCount int
-}
-
-func (h *HashSharding) GetShard(key string) int {
-    hash := fnv32(key)
-    return int(hash) % h.shardCount
-}
-
-func fnv32(s string) uint32 {
-    h := fnv.New32a()
-    h.Write([]byte(s))
-    return h.Sum32()
-}
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       Database Sharding Architecture                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Before Sharding:                                                            │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                      Single Database                                 │   │
+│  │  ┌───────────────────────────────────────────────────────────────┐  │   │
+│  │  │                    Users Table (100M rows)                     │  │   │
+│  │  │  ID 1-100,000,000                                              │  │   │
+│  │  │  CPU: 100%    Memory: 95%    Disk: 90%                         │  │   │
+│  │  │  Query time: 5s+                                               │  │   │
+│  │  └───────────────────────────────────────────────────────────────┘  │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  After Sharding (by user_id % 4):                                            │
+│  ┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐   │
+│  │    Shard 0          │ │    Shard 1          │ │    Shard 2          │   │
+│  │  ┌───────────────┐  │ │  ┌───────────────┐  │ │  ┌───────────────┐  │   │
+│  │  │ Users (ID%4=0)│  │ │  │ Users (ID%4=1)│  │ │  │ Users (ID%4=2)│  │   │
+│  │  │ 25M rows      │  │ │  │ 25M rows      │  │ │  │ 25M rows      │  │   │
+│  │  │ CPU: 30%      │  │ │  │ CPU: 28%      │  │ │  │ CPU: 32%      │  │   │
+│  │  └───────────────┘  │ │  └───────────────┘  │ │  └───────────────┘  │   │
+│  └─────────────────────┘ └─────────────────────┘ └─────────────────────┘   │
+│                                                                              │
+│  ┌─────────────────────┐                                                    │
+│  │    Shard 3          │                                                    │
+│  │  ┌───────────────┐  │                                                    │
+│  │  │ Users (ID%4=3)│  │                                                    │
+│  │  │ 25M rows      │  │                                                    │
+│  │  │ CPU: 29%      │  │                                                    │
+│  │  └───────────────┘  │                                                    │
+│  └─────────────────────┘                                                    │
+│                                                                              │
+│  Query time: <100ms on each shard                                           │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 范围分片
+### 1.2 Sharding Strategies
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        Sharding Strategies                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  1. Hash Sharding                                                            │
+│     shard = hash(key) % num_shards                                          │
+│                                                                              │
+│     Pros: Even distribution                                                  │
+│     Cons: Range queries across shards, rebalancing on scale                 │
+│                                                                              │
+│  2. Range Sharding                                                           │
+│     Shard 1: ID 1-1,000,000                                                 │
+│     Shard 2: ID 1,000,001-2,000,000                                         │
+│     Shard 3: ID 2,000,001-3,000,000                                         │
+│                                                                              │
+│     Pros: Efficient range queries                                            │
+│     Cons: Hot spots (latest data in last shard)                             │
+│                                                                              │
+│  3. List Sharding                                                            │
+│     Shard 1: US, CA                                                         │
+│     Shard 2: EU countries                                                   │
+│     Shard 3: APAC countries                                                 │
+│                                                                              │
+│     Pros: Data locality, compliance                                          │
+│     Cons: Uneven distribution                                                │
+│                                                                              │
+│  4. Composite Sharding                                                       │
+│     Primary: region (list)                                                   │
+│     Secondary: user_id % N (hash)                                           │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Sharding Implementation
 
 ```go
-type RangeSharding struct {
-    ranges []Range
+package sharding
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "hash/fnv"
+)
+
+// ShardManager manages database shards
+type ShardManager struct {
+    shards []*sql.DB
+    config *ShardingConfig
 }
 
-type Range struct {
-    Min   int64
-    Max   int64
-    Shard int
+type ShardingConfig struct {
+    ShardCount int
+    Strategy   ShardingStrategy
 }
 
-func (r *RangeSharding) GetShard(key int64) int {
-    for _, rng := range r.ranges {
-        if key >= rng.Min && key < rng.Max {
-            return rng.Shard
-        }
+type ShardingStrategy int
+
+const (
+    HashStrategy ShardingStrategy = iota
+    RangeStrategy
+    ListStrategy
+)
+
+// NewShardManager creates a new shard manager
+func NewShardManager(shards []*sql.DB, config *ShardingConfig) *ShardManager {
+    return &ShardManager{
+        shards: shards,
+        config: config,
     }
-    return 0
-}
-```
-
----
-
-## 分片管理器
-
-```go
-type ShardingManager struct {
-    shards  []*sql.DB
-    strategy ShardingStrategy
 }
 
-func (sm *ShardingManager) GetDB(key string) *sql.DB {
-    shardIndex := sm.strategy.GetShard(key)
-    return sm.shards[shardIndex]
+// GetShard returns the appropriate shard for a key
+func (sm *ShardManager) GetShard(key string) (*sql.DB, error) {
+    shardIndex := sm.calculateShard(key)
+    if shardIndex < 0 || shardIndex >= len(sm.shards) {
+        return nil, fmt.Errorf("invalid shard index: %d", shardIndex)
+    }
+    return sm.shards[shardIndex], nil
 }
 
-func (sm *ShardingManager) Query(ctx context.Context, key string, query string, args ...interface{}) (*sql.Rows, error) {
-    db := sm.GetDB(key)
-    return db.QueryContext(ctx, query, args...)
+func (sm *ShardManager) calculateShard(key string) int {
+    switch sm.config.Strategy {
+    case HashStrategy:
+        return sm.hashShard(key)
+    case RangeStrategy:
+        return sm.rangeShard(key)
+    default:
+        return sm.hashShard(key)
+    }
 }
 
-func (sm *ShardingManager) QueryAll(ctx context.Context, query string, args ...interface{}) ([]*sql.Rows, error) {
-    var results []*sql.Rows
-    var errs []error
-    
-    for _, db := range sm.shards {
-        rows, err := db.QueryContext(ctx, query, args...)
+func (sm *ShardManager) hashShard(key string) int {
+    h := fnv.New32a()
+    h.Write([]byte(key))
+    return int(h.Sum32()) % sm.config.ShardCount
+}
+
+func (sm *ShardManager) rangeShard(key string) int {
+    // Parse key as integer for range sharding
+    var id int
+    fmt.Sscanf(key, "%d", &id)
+
+    // Assuming even distribution
+    shardSize := 1000000 // 1M per shard
+    return id / shardSize
+}
+
+// Query executes a query on the appropriate shard
+func (sm *ShardManager) Query(ctx context.Context, shardKey string, query string, args ...interface{}) (*sql.Rows, error) {
+    shard, err := sm.GetShard(shardKey)
+    if err != nil {
+        return nil, err
+    }
+    return shard.QueryContext(ctx, query, args...)
+}
+
+// Execute executes a write on the appropriate shard
+func (sm *ShardManager) Execute(ctx context.Context, shardKey string, query string, args ...interface{}) (sql.Result, error) {
+    shard, err := sm.GetShard(shardKey)
+    if err != nil {
+        return nil, err
+    }
+    return shard.ExecContext(ctx, query, args...)
+}
+
+// QueryAll executes query on all shards and merges results
+func (sm *ShardManager) QueryAll(ctx context.Context, query string, args ...interface{}) ([]*sql.Rows, error) {
+    results := make([]*sql.Rows, 0, len(sm.shards))
+
+    for _, shard := range sm.shards {
+        rows, err := shard.QueryContext(ctx, query, args...)
         if err != nil {
-            errs = append(errs, err)
-            continue
+            // Close already opened results
+            for _, r := range results {
+                r.Close()
+            }
+            return nil, err
         }
         results = append(results, rows)
     }
-    
-    if len(errs) > 0 {
-        return nil, fmt.Errorf("query errors: %v", errs)
-    }
+
     return results, nil
 }
 ```
 
 ---
 
-## 全局 ID 生成
+## 3. Cross-Shard Operations
 
 ```go
-// 雪花算法
-type Snowflake struct {
-    mu        sync.Mutex
-    lastStamp int64
-    sequence  int64
-    workerID  int64
+// CrossShardTransaction coordinates transactions across shards
+type CrossShardTransaction struct {
+    shards map[int]*sql.Tx
+    mu     sync.Mutex
 }
 
-func (s *Snowflake) NextID() int64 {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    
-    now := time.Now().UnixMilli()
-    if now == s.lastStamp {
-        s.sequence = (s.sequence + 1) & 4095
-        if s.sequence == 0 {
-            for now <= s.lastStamp {
-                now = time.Now().UnixMilli()
-            }
+func (cst *CrossShardTransaction) Begin(shards []*sql.DB) error {
+    cst.shards = make(map[int]*sql.Tx)
+
+    for i, shard := range shards {
+        tx, err := shard.Begin()
+        if err != nil {
+            // Rollback already started transactions
+            cst.Rollback()
+            return err
         }
-    } else {
-        s.sequence = 0
+        cst.shards[i] = tx
     }
-    
-    s.lastStamp = now
-    
-    return ((now - epoch) << 22) | (s.workerID << 12) | s.sequence
+
+    return nil
+}
+
+func (cst *CrossShardTransaction) Commit() error {
+    // Two-phase commit would be needed for true ACID
+    // Simplified: commit all, hope for the best
+
+    var lastErr error
+    for _, tx := range cst.shards {
+        if err := tx.Commit(); err != nil {
+            lastErr = err
+        }
+    }
+
+    return lastErr
+}
+
+func (cst *CrossShardTransaction) Rollback() {
+    for _, tx := range cst.shards {
+        tx.Rollback()
+    }
 }
 ```
 
 ---
 
-## 跨分片事务
+## 4. Checklist
 
-```go
-func (sm *ShardingManager) CrossShardTx(ctx context.Context, keys []string, fn func(map[string]*sql.Tx) error) error {
-    // 收集涉及的分片
-    shardMap := make(map[int]*sql.DB)
-    for _, key := range keys {
-        shard := sm.strategy.GetShard(key)
-        shardMap[shard] = sm.shards[shard]
-    }
-    
-    // 开启所有事务
-    txs := make(map[string]*sql.Tx)
-    for shard, db := range shardMap {
-        tx, err := db.BeginTx(ctx, nil)
-        if err != nil {
-            // 回滚已开启的事务
-            for _, t := range txs {
-                t.Rollback()
-            }
-            return err
-        }
-        txs[fmt.Sprintf("shard_%d", shard)] = tx
-    }
-    
-    // 执行业务逻辑
-    if err := fn(txs); err != nil {
-        for _, t := range txs {
-            t.Rollback()
-        }
-        return err
-    }
-    
-    // 提交所有事务
-    for _, t := range txs {
-        if err := t.Commit(); err != nil {
-            // 需要补偿或人工介入
-            return err
-        }
-    }
-    
-    return nil
-}
+```
+Sharding Checklist:
+□ Sharding strategy chosen appropriately
+□ Shard key selected (high cardinality)
+□ Cross-shard operations minimized
+□ Rebalancing strategy defined
+□ Query routing layer implemented
+□ Monitoring for shard balance
+□ Backup strategy per shard
+□ Failover per shard
+□ Application code handles shard failures
 ```

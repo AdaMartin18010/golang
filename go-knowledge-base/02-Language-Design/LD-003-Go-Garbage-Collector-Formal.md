@@ -2,12 +2,12 @@
 
 > **维度**: Language Design
 > **级别**: S (16+ KB)
-> **标签**: #garbage-collection #tricolor #concurrent-gc #memory-management
+> **标签**: #garbage-collection #tricolor #concurrent-gc #memory-management #formal-semantics
 > **权威来源**:
 >
 > - [Go GC Guide](https://go.dev/doc/gc-guide) - Go Authors
 > - [Concurrent Garbage Collection](https://dl.acm.org/doi/10.1145/359580.359587) - Dijkstra et al.
-> - [Tri-color Marking](https://en.wikipedia.org/wiki/Tracing_garbage_collection) - Garbage Collection
+> - [Tri-color Marking](https://en.wikipedia.org/wiki/Tracing_garbage_collection) - Wikipedia
 > - [Go 1.5 GC](https://go.dev/s/go15gc) - Rick Hudson
 
 ---
@@ -17,7 +17,7 @@
 ### 1.1 垃圾回收理论
 
 **定义 1.1 (垃圾)**
-垃圾是不再被任何可达对象引用的内存对象。
+垃圾是不再被任何可达对象引用的内存对象：
 
 ```
 Garbage = { o ∈ Heap | ¬∃r ∈ Roots : r →* o }
@@ -38,11 +38,17 @@ r →* o ≡ r → o1 → o2 → ... → o
 ```
 
 **定理 1.1 (垃圾安全性)**
-垃圾回收器不会回收可达对象。
+垃圾回收器不会回收可达对象：
 
 ```
 ∀o: Collected(o) ⇒ o ∈ Garbage
 ```
+
+*证明*：
+
+1. GC 从 Roots 开始标记所有可达对象
+2. 只有未被标记的对象才会被回收
+3. 因此，回收的对象必定不可达
 
 ### 1.2 Go GC 设计目标
 

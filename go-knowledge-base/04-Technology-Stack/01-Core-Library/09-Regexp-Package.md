@@ -1,89 +1,179 @@
-# regexp 包
+# TS-CL-009: Go regexp Package
 
-> **分类**: 开源技术堆栈
+> **维度**: Technology Stack > Core Library
+> **级别**: S (16+ KB)
+> **标签**: #golang #regex #regular-expressions #pattern-matching
+> **权威来源**:
+>
+> - [regexp Package](https://golang.org/pkg/regexp/) - Go standard library
 
 ---
 
-## 基本使用
+## 1. Regular Expression Basics
 
 ```go
-import "regexp"
+package main
 
-// 编译正则
-re := regexp.MustCompile(`\b\w+@\w+\.\w+\b`)
+import (
+    "fmt"
+    "regexp"
+)
 
-// 匹配
-matched := re.MatchString("contact@example.com")
+func basicRegex() {
+    // Compile regex
+    re := regexp.MustCompile(`\b\w+@\w+\.\w+\b`)
 
-// 查找
-email := re.FindString("Email me at john@example.com")
+    // Match string
+    text := "Contact us at support@example.com or sales@company.org"
+    matches := re.FindAllString(text, -1)
+    fmt.Println(matches) // [support@example.com sales@company.org]
 
-// 提取所有
-emails := re.FindAllString(text, -1)
+    // Check if matches
+    matched := re.MatchString("test@email.com")
+    fmt.Println(matched) // true
+
+    // Find first match
+    first := re.FindString(text)
+    fmt.Println(first) // support@example.com
+}
+
+// Common patterns
+var patterns = struct {
+    Email    *regexp.Regexp
+    Phone    *regexp.Regexp
+    URL      *regexp.Regexp
+    IP       *regexp.Regexp
+    Date     *regexp.Regexp
+}{
+    Email:    regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`),
+    Phone:    regexp.MustCompile(`^\+?\d{1,3}[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$`),
+    URL:      regexp.MustCompile(`https?://[^\s]+`),
+    IP:       regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`),
+    Date:     regexp.MustCompile(`\d{4}-\d{2}-\d{2}`),
+}
+
+func validationExamples() {
+    // Email validation
+    emails := []string{
+        "user@example.com",
+        "invalid.email",
+        "test@domain.org",
+    }
+
+    for _, email := range emails {
+        valid := patterns.Email.MatchString(email)
+        fmt.Printf("%s: %v\n", email, valid)
+    }
+}
 ```
 
 ---
 
-## 常用方法
-
-| 方法 | 说明 |
-|------|------|
-| `MatchString` | 是否匹配 |
-| `FindString` | 查找第一个 |
-| `FindAllString` | 查找所有 |
-| `FindStringSubmatch` | 提取子匹配 |
-| `ReplaceAllString` | 替换 |
-| `Split` | 分割 |
-
----
-
-## 子匹配提取
+## 2. Advanced Patterns
 
 ```go
-re := regexp.MustCompile(`(\w+)@(\w+)\.(\w+)`)
+func advancedRegex() {
+    // Capture groups
+    re := regexp.MustCompile(`(\w+)\s+(\w+)`)
+    matches := re.FindStringSubmatch("John Doe")
+    fmt.Printf("Full: %s, First: %s, Last: %s\n",
+        matches[0], matches[1], matches[2])
 
-matches := re.FindStringSubmatch("john@example.com")
-// matches[0] = "john@example.com"
-// matches[1] = "john"
-// matches[2] = "example"
-// matches[3] = "com"
+    // Named capture groups (Go 1.22+)
+    re2 := regexp.MustCompile(`(?P<first>\w+)\s+(?P<last>\w+)`)
+    matches2 := re2.FindStringSubmatch("Jane Smith")
+    for i, name := range re2.SubexpNames() {
+        if i != 0 && name != "" {
+            fmt.Printf("%s: %s\n", name, matches2[i])
+        }
+    }
 
-// 命名捕获
-re2 := regexp.MustCompile(`(?P<user>\w+)@(?P<host>\w+)\.(?P<domain>\w+)`)
+    // Find all with submatches
+    re3 := regexp.MustCompile(`(\d{4})-(\d{2})-(\d{2})`)
+    text := "Dates: 2024-01-15, 2024-02-20"
+    allMatches := re3.FindAllStringSubmatch(text, -1)
+    for _, match := range allMatches {
+        fmt.Printf("Date: %s-%s-%s\n", match[1], match[2], match[3])
+    }
+
+    // Replace with groups
+    re4 := regexp.MustCompile(`(\w+)\s+(\w+)`)
+    result := re4.ReplaceAllString("John Doe", "$2, $1")
+    fmt.Println(result) // Doe, John
+
+    // Replace with function
+    re5 := regexp.MustCompile(`\d+`)
+    result2 := re5.ReplaceAllStringFunc("Age: 25, Score: 90", func(s string) string {
+        return "[" + s + "]"
+    })
+    fmt.Println(result2) // Age: [25], Score: [90]
+}
+
+// Split with regex
+func splitExample() {
+    re := regexp.MustCompile(`\s+`)
+    parts := re.Split("Hello   World\tTest", -1)
+    fmt.Println(parts) // [Hello World Test]
+}
 ```
 
 ---
 
-## 替换
+## 3. Performance Considerations
 
 ```go
-re := regexp.MustCompile(`\s+`)
+// Compile once, use many times
+var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
-// 替换为单个空格
-result := re.ReplaceAllString("hello   world", " ")
-// "hello world"
-
-// 使用函数
-re.ReplaceAllStringFunc(text, func(s string) string {
-    return strings.ToUpper(s)
-})
-```
-
----
-
-## 预编译优化
-
-```go
-// ✅ 全局预编译
-var emailRegex = regexp.MustCompile(`^[\w.-]+@[\w.-]+\.\w+$`)
-
-func ValidateEmail(email string) bool {
+func isEmailValid(email string) bool {
     return emailRegex.MatchString(email)
 }
 
-// ❌ 不要每次编译
-func BadValidate(email string) bool {
-    re := regexp.MustCompile(`^[\w.-]+@[\w.-]+\.\w+$`)  // 浪费！
-    return re.MatchString(email)
+// Avoid compiling in hot paths
+func badExample(emails []string) {
+    for _, email := range emails {
+        // DON'T: Compile regex in loop
+        re := regexp.MustCompile(`...`)
+        re.MatchString(email)
+    }
 }
+
+func goodExample(emails []string) {
+    // DO: Compile once outside loop
+    re := regexp.MustCompile(`...`)
+    for _, email := range emails {
+        re.MatchString(email)
+    }
+}
+```
+
+---
+
+## 4. Best Practices
+
+```
+Regex Best Practices:
+□ Compile regex at package level
+□ Use raw strings for patterns
+□ Test patterns thoroughly
+□ Document what pattern matches
+□ Consider readability vs complexity
+□ Use capture groups wisely
+□ Handle no-match cases
+□ Escape special characters properly
+```
+
+---
+
+## 5. Checklist
+
+```
+Regex Checklist:
+□ Pattern tested with edge cases
+□ Compiled once, reused
+□ Proper escaping
+□ Capture groups documented
+□ Performance acceptable
+□ Handles no-match case
+□ Uses appropriate methods (Match/Find/Replace)
 ```
