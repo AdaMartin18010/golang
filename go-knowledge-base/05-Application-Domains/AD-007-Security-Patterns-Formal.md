@@ -1,167 +1,597 @@
-# AD-007: 应用安全模式的形式化 (Security Patterns: Formal Analysis)
+﻿# AD-007: Security Architecture Patterns
 
-> **维度**: Application Domains
-> **级别**: S (17+ KB)
-> **标签**: #security #authentication #authorization #jwt #oauth #zero-trust
-> **权威来源**:
->
-> - [Security Patterns](https://www.oreilly.com/library/view/security-patterns-in/9780470858844/) - Schumacher et al. (2006)
-> - [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/) - OWASP (2025)
-> - [Zero Trust Architecture](https://www.nist.gov/publications/zero-trust-architecture) - NIST (2020)
-> - [OAuth 2.0 and OpenID Connect](https://oauth.net/2/) - IETF (2024)
-> - [JWT Handbook](https://auth0.com/resources/ebooks/jwt-handbook) - Auth0 (2017)
+> **Dimension**: Application Domains
+> **Level**: S (16+ KB)
+> **Tags**: #security #authentication #authorization #encryption #oauth2
 
 ---
 
-## 1. 安全的形式化定义
+## 1. Security Architecture Fundamentals
 
-### 1.1 CIA 三元组
+### 1.1 CIA Triad
 
-**定义 1.1 (机密性 Confidentiality)**
-$$\forall d \in \text{Data}: \text{Authorized}(u) \Leftarrow \text{Access}(u, d)$$
+**Confidentiality**: Prevent unauthorized access to data
+**Integrity**: Ensure data is not modified by unauthorized parties
+**Availability**: Systems are accessible when needed
 
-**定义 1.2 (完整性 Integrity)**
-$$\forall d: \text{Modified}(d) \Rightarrow \text{Authorized}(modifier)$$
+### 1.2 Defense in Depth
 
-**定义 1.3 (可用性 Availability)**
-$$\Diamond(\text{Access}(u, \text{service}))$$
+Multiple layers of security controls:
 
-### 1.2 威胁模型
-
-**定义 1.4 (STRIDE)**
-
-| 威胁 | 定义 |
-|------|------|
-| Spoofing | 身份伪造 |
-| Tampering | 数据篡改 |
-| Repudiation | 否认行为 |
-| Information Disclosure | 信息泄露 |
-| Denial of Service | 拒绝服务 |
-| Elevation of Privilege | 权限提升 |
+- Network layer: Firewalls, VPNs
+- Application layer: Authentication, authorization
+- Data layer: Encryption, access controls
 
 ---
 
-## 2. 认证的形式化
+## 2. Authentication Patterns
 
-### 2.1 JWT 结构
+### 2.1 JWT Authentication
 
-**定义 2.1 (JWT)**
-$$\text{JWT} = \text{Base64}(\text{Header}) \cdot \text{Base64}(\text{Payload}) \cdot \text{Signature}$$
+```go
+package auth
 
-**签名验证**:
-$$\text{Verify}(\text{JWT}, \text{secret}) \Leftrightarrow \text{Signature} = H(\text{Header} \circ \text{Payload}, \text{secret})$$
+import (
+    "time"
+    "github.com/golang-jwt/jwt/v5"
+)
 
-### 2.2 OAuth 2.0 流程
+type Claims struct {
+    UserID   string   `json:"user_id"`
+    Username string   `json:"username"`
+    Roles    []string `json:"roles"`
+    jwt.RegisteredClaims
+}
 
-**定义 2.2 (授权码模式)**
+func GenerateToken(userID, username string, roles []string, secret []byte) (string, error) {
+    claims := Claims{
+        UserID:   userID,
+        Username: username,
+        Roles:    roles,
+        RegisteredClaims: jwt.RegisteredClaims{
+            ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+            IssuedAt:  jwt.NewNumericDate(time.Now()),
+            NotBefore: jwt.NewNumericDate(time.Now()),
+        },
+    }
 
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+    return token.SignedString(secret)
+}
+
+func ValidateToken(tokenString string, secret []byte) (*Claims, error) {
+    token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+        return secret, nil
+    })
+
+    if err != nil {
+        return nil, err
+    }
+
+    if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+        return claims, nil
+    }
+
+    return nil, jwt.ErrSignatureInvalid
+}
 ```
-1. Client → AuthServer: authorize request
-2. AuthServer → User: login + consent
-3. User → AuthServer: approval
-4. AuthServer → Client: authorization code
-5. Client → AuthServer: code + client_secret
-6. AuthServer → Client: access_token + refresh_token
+
+### 2.2 OAuth2 / OIDC Implementation
+
+```go
+package oauth
+
+import (
+    "context"
+    "golang.org/x/oauth2"
+)
+
+type OAuth2Config struct {
+    ClientID     string
+    ClientSecret string
+    RedirectURL  string
+    AuthURL      string
+    TokenURL     string
+    Scopes       []string
+}
+
+func (c *OAuth2Config) Exchange(ctx context.Context, code string) (*Token, error) {
+    config := &oauth2.Config{
+        ClientID:     c.ClientID,
+        ClientSecret: c.ClientSecret,
+        RedirectURL:  c.RedirectURL,
+        Endpoint: oauth2.Endpoint{
+            AuthURL:  c.AuthURL,
+            TokenURL: c.TokenURL,
+        },
+        Scopes: c.Scopes,
+    }
+
+    token, err := config.Exchange(ctx, code)
+    if err != nil {
+        return nil, err
+    }
+
+    return &Token{
+        AccessToken:  token.AccessToken,
+        RefreshToken: token.RefreshToken,
+        Expiry:       token.Expiry,
+    }, nil
+}
+```
+
+### 2.3 API Key Authentication
+
+```go
+package auth
+
+import (
+    "context"
+    "crypto/sha256"
+    "encoding/hex"
+    "sync"
+    "time"
+)
+
+type APIKeyManager struct {
+    keys map[string]*APIKey
+    mu   sync.RWMutex
+}
+
+type APIKey struct {
+    ID        string
+    KeyHash   string
+    OwnerID   string
+    Scopes    []string
+    CreatedAt time.Time
+    ExpiresAt time.Time
+    LastUsed  time.Time
+}
+
+func (m *APIKeyManager) ValidateKey(ctx context.Context, key string) (*APIKey, error) {
+    hash := hashKey(key)
+
+    m.mu.RLock()
+    defer m.mu.RUnlock()
+
+    for _, apiKey := range m.keys {
+        if apiKey.KeyHash == hash {
+            if time.Now().After(apiKey.ExpiresAt) {
+                return nil, ErrKeyExpired
+            }
+            return apiKey, nil
+        }
+    }
+
+    return nil, ErrInvalidKey
+}
+
+func hashKey(key string) string {
+    h := sha256.Sum256([]byte(key))
+    return hex.EncodeToString(h[:])
+}
 ```
 
 ---
 
-## 3. 授权的形式化
+## 3. Authorization Patterns
 
-### 3.1 RBAC
+### 3.1 RBAC (Role-Based Access Control)
 
-**定义 3.1 (基于角色的访问控制)**
-$$\text{Permission}(u, r) \Leftrightarrow \exists \text{role}: u \in \text{role} \land r \in \text{Permissions}(\text{role})$$
+```go
+package auth
 
-### 3.2 ABAC
+type RBAC struct {
+    roles       map[string]*Role
+    permissions map[string]*Permission
+    assignments map[string][]string // userID -> roleIDs
+}
 
-**定义 3.2 (基于属性的访问控制)**
-$$\text{Permission}(u, r, e) \Leftrightarrow \text{Policy}(\text{Attributes}(u, r, e)) = \text{allow}$$
+type Role struct {
+    ID          string
+    Name        string
+    Permissions []string
+}
 
----
+type Permission struct {
+    ID     string
+    Resource string
+    Action   string
+}
 
-## 4. 多元表征
+func (r *RBAC) HasPermission(userID, resource, action string) bool {
+    roles := r.assignments[userID]
 
-### 4.1 安全层次图
+    for _, roleID := range roles {
+        role := r.roles[roleID]
+        for _, permID := range role.Permissions {
+            perm := r.permissions[permID]
+            if perm.Resource == resource && perm.Action == action {
+                return true
+            }
+        }
+    }
 
-```
-Security Layers
-├── Network
-│   ├── TLS/mTLS
-│   ├── VPN
-│   └── Firewall
-├── Application
-│   ├── Authentication
-│   ├── Authorization
-│   ├── Input Validation
-│   └── Output Encoding
-├── Data
-│   ├── Encryption at Rest
-│   ├── Encryption in Transit
-│   └── Tokenization
-└── Infrastructure
-    ├── Secrets Management
-    ├── IAM
-    └── Audit Logging
-```
-
-### 4.2 认证方式对比矩阵
-
-| 方式 | 安全性 | 用户体验 | 适用场景 |
-|------|--------|----------|---------|
-| **Password** | 中 | 好 | 基础认证 |
-| **MFA** | 高 | 中 | 敏感操作 |
-| **OAuth/OIDC** | 高 | 好 | 第三方登录 |
-| **mTLS** | 极高 | 差 | 服务间认证 |
-| **JWT** | 中 | 好 | 状态less认证 |
-
-### 4.3 零信任架构
-
-```
-Zero Trust Principles
-├── Never Trust, Always Verify
-│   └── 每个请求都认证和授权
-├── Assume Breach
-│   └── 分段网络，限制爆炸半径
-├── Verify Explicitly
-│   └── 多因素认证，最少权限
-└── Use Least Privilege Access
-    └── 动态授权，实时评估
+    return false
+}
 ```
 
----
+### 3.2 ABAC (Attribute-Based Access Control)
 
-## 5. 检查清单
+```go
+package auth
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    Security Implementation Checklist                        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  认证:                                                                       │
-│  □ 强密码策略                                                                │
-│  □ MFA 支持                                                                  │
-│  □ 会话管理 (超时、刷新)                                                      │
-│  □ JWT 安全存储                                                              │
-│                                                                              │
-│  授权:                                                                       │
-│  □ 最小权限原则                                                              │
-│  □ RBAC/ABAC 实现                                                            │
-│  □ 资源级权限控制                                                             │
-│                                                                              │
-│  输入验证:                                                                   │
-│  □ 白名单验证                                                                │
-│  □ 参数化查询 (防 SQL 注入)                                                   │
-│  □ XSS/CSRF 防护                                                             │
-│                                                                              │
-│  审计:                                                                       │
-│  □ 操作日志                                                                  │
-│  □ 不可篡改                                                                  │
-│  □ 敏感操作告警                                                              │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+type ABAC struct {
+    policies []Policy
+}
+
+type Policy struct {
+    ID        string
+    Subject   Condition
+    Resource  Condition
+    Action    Condition
+    Environment Condition
+    Effect    Effect
+}
+
+type Condition struct {
+    Attributes map[string]interface{}
+    Operator   string // equals, greater_than, in, etc.
+}
+
+type Effect int
+
+const (
+    Deny Effect = iota
+    Allow
+)
+
+func (a *ABAC) Evaluate(subject, resource, action map[string]interface{}) Effect {
+    for _, policy := range a.policies {
+        if matches(policy.Subject, subject) &&
+           matches(policy.Resource, resource) &&
+           matches(policy.Action, action) {
+            return policy.Effect
+        }
+    }
+    return Deny
+}
 ```
 
 ---
 
-**质量评级**: S (17KB, 完整形式化)
+## 4. Data Protection
+
+### 4.1 Encryption at Rest
+
+```go
+package crypto
+
+import (
+    "crypto/aes"
+    "crypto/cipher"
+    "crypto/rand"
+    "io"
+)
+
+type Encrypter struct {
+    key []byte
+}
+
+func NewEncrypter(key []byte) *Encrypter {
+    return &Encrypter{key: key}
+}
+
+func (e *Encrypter) Encrypt(plaintext []byte) ([]byte, error) {
+    block, err := aes.NewCipher(e.key)
+    if err != nil {
+        return nil, err
+    }
+
+    gcm, err := cipher.NewGCM(block)
+    if err != nil {
+        return nil, err
+    }
+
+    nonce := make([]byte, gcm.NonceSize())
+    if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+        return nil, err
+    }
+
+    return gcm.Seal(nonce, nonce, plaintext, nil), nil
+}
+
+func (e *Encrypter) Decrypt(ciphertext []byte) ([]byte, error) {
+    block, err := aes.NewCipher(e.key)
+    if err != nil {
+        return nil, err
+    }
+
+    gcm, err := cipher.NewGCM(block)
+    if err != nil {
+        return nil, err
+    }
+
+    nonceSize := gcm.NonceSize()
+    if len(ciphertext) < nonceSize {
+        return nil, ErrCipherTooShort
+    }
+
+    nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
+    return gcm.Open(nil, nonce, ciphertext, nil)
+}
+```
+
+### 4.2 TLS Configuration
+
+```go
+package tls
+
+import (
+    "crypto/tls"
+    "time"
+)
+
+func NewConfig(certFile, keyFile string) (*tls.Config, error) {
+    cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+    if err != nil {
+        return nil, err
+    }
+
+    return &tls.Config{
+        Certificates: []tls.Certificate{cert},
+        MinVersion:   tls.VersionTLS12,
+        CipherSuites: []uint16{
+            tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+            tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+            tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+            tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+        },
+        PreferServerCipherSuites: true,
+        SessionTicketsDisabled:   false,
+        SessionTicketKey:         [32]byte{},
+        ClientSessionCache:       tls.NewLRUClientSessionCache(128),
+    }, nil
+}
+```
+
+---
+
+## 5. Secure Communication
+
+### 5.1 mTLS (Mutual TLS)
+
+```go
+package mtls
+
+import (
+    "crypto/tls"
+    "crypto/x509"
+    "io/ioutil"
+)
+
+func NewMutualTLSConfig(certFile, keyFile, caFile string) (*tls.Config, error) {
+    cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+    if err != nil {
+        return nil, err
+    }
+
+    caCert, err := ioutil.ReadFile(caFile)
+    if err != nil {
+        return nil, err
+    }
+
+    caCertPool := x509.NewCertPool()
+    caCertPool.AppendCertsFromPEM(caCert)
+
+    return &tls.Config{
+        Certificates: []tls.Certificate{cert},
+        RootCAs:      caCertPool,
+        ClientCAs:    caCertPool,
+        ClientAuth:   tls.RequireAndVerifyClientCert,
+        MinVersion:   tls.VersionTLS12,
+    }, nil
+}
+```
+
+---
+
+## 6. Security Headers
+
+```go
+package security
+
+import "net/http"
+
+func SecurityHeaders(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("X-Content-Type-Options", "nosniff")
+        w.Header().Set("X-Frame-Options", "DENY")
+        w.Header().Set("X-XSS-Protection", "1; mode=block")
+        w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        w.Header().Set("Content-Security-Policy", "default-src 'self'")
+        w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+        w.Header().Set("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+
+        next.ServeHTTP(w, r)
+    })
+}
+```
+
+---
+
+## 7. Secrets Management
+
+```go
+package secrets
+
+import (
+    "context"
+    "encoding/json"
+    "os"
+)
+
+type Manager interface {
+    Get(ctx context.Context, key string) (string, error)
+    Set(ctx context.Context, key, value string) error
+}
+
+// Environment-based implementation (development only)
+type EnvManager struct{}
+
+func (e *EnvManager) Get(ctx context.Context, key string) (string, error) {
+    value := os.Getenv(key)
+    if value == "" {
+        return "", ErrSecretNotFound
+    }
+    return value, nil
+}
+
+// HashiCorp Vault implementation
+type VaultManager struct {
+    client *vault.Client
+}
+
+func (v *VaultManager) Get(ctx context.Context, key string) (string, error) {
+    secret, err := v.client.KVv2("secret").Get(ctx, key)
+    if err != nil {
+        return "", err
+    }
+
+    value, ok := secret.Data["value"].(string)
+    if !ok {
+        return "", ErrInvalidSecret
+    }
+
+    return value, nil
+}
+```
+
+---
+
+## 8. Security Best Practices
+
+### 8.1 Input Validation
+
+```go
+package validation
+
+import (
+    "regexp"
+    "unicode"
+)
+
+func ValidateUsername(username string) error {
+    if len(username) < 3 || len(username) > 32 {
+        return ErrInvalidLength
+    }
+
+    valid := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+    if !valid.MatchString(username) {
+        return ErrInvalidCharacters
+    }
+
+    return nil
+}
+
+func ValidatePassword(password string) error {
+    if len(password) < 12 {
+        return ErrPasswordTooShort
+    }
+
+    var hasUpper, hasLower, hasDigit, hasSpecial bool
+    for _, char := range password {
+        switch {
+        case unicode.IsUpper(char):
+            hasUpper = true
+        case unicode.IsLower(char):
+            hasLower = true
+        case unicode.IsDigit(char):
+            hasDigit = true
+        case unicode.IsPunct(char) || unicode.IsSymbol(char):
+            hasSpecial = true
+        }
+    }
+
+    if !hasUpper || !hasLower || !hasDigit || !hasSpecial {
+        return ErrPasswordComplexity
+    }
+
+    return nil
+}
+```
+
+### 8.2 Rate Limiting
+
+```go
+package ratelimit
+
+import (
+    "context"
+    "sync"
+    "time"
+)
+
+type RateLimiter struct {
+    requests map[string][]time.Time
+    limit    int
+    window   time.Duration
+    mu       sync.RWMutex
+}
+
+func (r *RateLimiter) Allow(ctx context.Context, key string) bool {
+    r.mu.Lock()
+    defer r.mu.Unlock()
+
+    now := time.Now()
+    windowStart := now.Add(-r.window)
+
+    // Filter requests within window
+    var valid []time.Time
+    for _, t := range r.requests[key] {
+        if t.After(windowStart) {
+            valid = append(valid, t)
+        }
+    }
+
+    if len(valid) >= r.limit {
+        return false
+    }
+
+    valid = append(valid, now)
+    r.requests[key] = valid
+
+    return true
+}
+```
+
+---
+
+## 9. Security Checklist
+
+- [ ] Use HTTPS everywhere
+- [ ] Implement proper authentication
+- [ ] Apply least privilege principle
+- [ ] Encrypt sensitive data at rest
+- [ ] Use prepared statements (prevent SQL injection)
+- [ ] Validate all inputs
+- [ ] Implement rate limiting
+- [ ] Set security headers
+- [ ] Use secure password storage (bcrypt/Argon2)
+- [ ] Implement audit logging
+- [ ] Regular dependency updates
+- [ ] Security testing (SAST/DAST)
+
+---
+
+## References
+
+1. OWASP Top 10
+2. NIST Cybersecurity Framework
+3. OAuth 2.0 and OpenID Connect
+4. Go Secure Coding Practices
+
+---
+
+**Quality Rating**: S (16+ KB)
+**Last Updated**: 2026-04-02

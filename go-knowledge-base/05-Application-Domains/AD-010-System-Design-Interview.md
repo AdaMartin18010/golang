@@ -1,241 +1,475 @@
-# AD-010: 系统设计面试指南 (System Design Interview Guide)
+﻿# AD-010: System Design Interview Preparation
 
-> **维度**: Application Domains  
-> **级别**: S (18+ KB)  
-> **标签**: #system-design #interview #architecture #scalability  
-> **权威来源**: [Designing Data-Intensive Applications](https://dataintensive.net/), [System Design Primer](https://github.com/donnemartin/system-design-primer)  
-
----
-
-## 面试框架 (RASCAL)
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      System Design Interview Framework                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  R - Requirements (需求)                                                      │
-│     ├── 功能性需求: 系统应该做什么                                              │
-│     └── 非功能性需求: 性能、可用性、扩展性                                        │
-│                                                                              │
-│  A - Architecture (架构)                                                      │
-│     ├── 高层设计: API、数据流、组件                                             │
-│     └── 技术选型: 数据库、缓存、队列                                            │
-│                                                                              │
-│  S - Scale (扩展)                                                             │
-│     ├── 容量估算: QPS、存储、带宽                                               │
-│     └── 扩展策略: 水平/垂直扩展、分片                                           │
-│                                                                              │
-│  C - Components (组件)                                                        │
-│     ├── 详细设计: 每个组件的职责                                                │
-│     └── 交互设计: 组件间通信方式                                                │
-│                                                                              │
-│  A - Algorithms (算法)                                                        │
-│     ├── 核心算法: 推荐、排序、搜索                                              │
-│     └── 优化策略: 缓存、预计算、批处理                                          │
-│                                                                              │
-│  L - Logistics (落地)                                                         │
-│     ├── 监控告警: 可观测性                                                      │
-│     └── 部署运维: CI/CD、容灾                                                   │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+> **Dimension**: Application Domains
+> **Level**: S (20+ KB)
+> **Tags**: #system-design #interview #scalability #reliability #distributed-systems
 
 ---
 
-## 经典系统设计案例
+## 1. Interview Framework
 
-### 1. 短链接服务 (URL Shortener)
+### 1.1 RASCAL Framework
+
+| Letter | Component | Time | Key Questions |
+|--------|-----------|------|---------------|
+| R | Requirements | 5 min | Functional? Non-functional? |
+| A | Architecture | 10 min | High-level design? |
+| S | Scale | 5 min | Capacity planning? |
+| C | Components | 15 min | Database? Cache? Queue? |
+| A | Algorithms | 10 min | Sharding? Consistency? |
+| L | Logistics | 5 min | Monitoring? Deployment? |
+
+### 1.2 Requirements Gathering
+
+**Functional Requirements**:
+
+- Core features
+- API endpoints
+- User interactions
+
+**Non-Functional Requirements**:
+
+- Availability: 99.9%, 99.99%, 99.999%
+- Latency: P50, P95, P99 targets
+- Throughput: QPS/RPS requirements
+- Consistency: Strong vs Eventual
+- Durability: Data retention
+
+---
+
+## 2. Capacity Planning
+
+### 2.1 Back-of-Envelope Calculations
+
+| Metric | Calculation | Example |
+|--------|-------------|---------|
+| Daily Active Users | Given | 100M DAU |
+| Requests per User | Estimated | 10 req/day |
+| Total Daily Requests | DAU × RPU | 1B requests/day |
+| Peak QPS | Daily × 2 / 86400 | ~23K QPS |
+| Write QPS | Read/Write ratio | 2.3K writes |
+| Read QPS | 90% of total | 20.7K reads |
+| Storage per day | Write QPS × size × time | 2TB/day |
+| 5-year storage | Daily × 365 × 5 × replica | 11PB |
+
+### 2.2 Resource Estimation
 
 ```
-需求:
-- 生成短链接
-- 重定向到原链接
-- 支持自定义别名
-- 访问统计
+Server Requirements:
+- 1 server: 64GB RAM, 16 cores
+- QPS capacity per server: ~1K QPS
+- Servers needed: 23 (with 2x redundancy) = 46 servers
 
-流量估算:
-- 写入: 1000 URLs/s
-- 读取: 10M redirects/s (100:1 读写比)
-- 存储: 100M URLs/year × 500B = 50GB/year
+Database Requirements:
+- Write QPS: 2.3K
+- MySQL can handle: ~1K writes/second
+- Shards needed: 4-8
 
-设计:
+Cache Requirements:
+- Cache hit ratio target: 90%
+- Working set size: 100GB
+- Redis memory needed: 128GB (with overhead)
+- Redis nodes: 4 (32GB each)
+```
+
+---
+
+## 3. System Components
+
+### 3.1 Load Balancer
+
+```go
+package design
+
+// Types of Load Balancers
+const (
+    Layer4 LoadBalancerType = iota // Transport layer
+    Layer7                         // Application layer
+)
+
+// Algorithms
+type LBAlgorithm int
+
+const (
+    RoundRobin LBAlgorithm = iota
+    LeastConnections
+    IPHash
+    WeightedRoundRobin
+)
+
+// Health Check
+type HealthChecker struct {
+    interval    time.Duration
+    timeout     time.Duration
+    threshold   int
+    unhealthy   map[string]int
+}
+
+func (h *HealthChecker) Check(endpoint string) bool {
+    resp, err := http.Get(endpoint + "/health")
+    if err != nil || resp.StatusCode != 200 {
+        h.unhealthy[endpoint]++
+        return h.unhealthy[endpoint] < h.threshold
+    }
+    h.unhealthy[endpoint] = 0
+    return true
+}
+```
+
+### 3.2 Database Selection
+
+| Use Case | Database | Reason |
+|----------|----------|--------|
+| Transactions | PostgreSQL | ACID compliance |
+| High write throughput | Cassandra | LSM trees |
+| Flexible schema | MongoDB | Document model |
+| Caching | Redis | In-memory |
+| Search | Elasticsearch | Inverted index |
+| Graph data | Neo4j | Graph traversal |
+| Time series | InfluxDB | Time-optimized |
+
+### 3.3 Caching Strategies
+
+| Strategy | Use Case | Pros | Cons |
+|----------|----------|------|------|
+| Cache-aside | Read-heavy | Simple | Stale data |
+| Write-through | Consistency needed | No stale data | Write latency |
+| Write-behind | Write-heavy | Fast writes | Data loss risk |
+| Read-through | Complex backend | Transparent | Cache miss penalty |
+
+### 3.4 Message Queues
+
+| Feature | Kafka | RabbitMQ | SQS | Pulsar |
+|---------|-------|----------|-----|--------|
+| Throughput | Very High | High | Medium | Very High |
+| Persistence | Yes | Optional | Yes | Yes |
+| Ordering | Partition | Queue | Best effort | Partition |
+| Replay | Yes | No | No | Yes |
+| Delayed messages | No | Yes | Yes | Yes |
+
+---
+
+## 4. Scalability Patterns
+
+### 4.1 Horizontal Scaling
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      Horizontal Scaling                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────┐     ┌──────────────┐     ┌─────────────────────┐  │
+│  │  CDN    │────>│ Load Balancer │────>│  App Servers        │  │
+│  └─────────┘     └──────────────┘     │  ┌─────┐ ┌─────┐   │  │
+│                                        │  │ S1  │ │ S2  │   │  │
+│                                        │  └─────┘ └─────┘   │  │
+│                                        │  ┌─────┐ ┌─────┐   │  │
+│                                        │  │ S3  │ │ S4  │   │  │
+│                                        │  └─────┘ └─────┘   │  │
+│                                        └─────────────────────┘  │
+│                                                                  │
+│  Stateless Application Servers                                   │
+│  - Share nothing                                                 │
+│  - Session in Redis/Cookie                                       │
+│  - Easy to add/remove instances                                  │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2 Database Sharding
+
+```go
+package design
+
+// Sharding Strategies
+
+type Sharder interface {
+    GetShard(key string) int
+}
+
+// Hash-based sharding
+type HashSharder struct {
+    numShards int
+}
+
+func (h *HashSharder) GetShard(key string) int {
+    hash := fnv32(key)
+    return int(hash % uint32(h.numShards))
+}
+
+// Range-based sharding
+type RangeSharder struct {
+    ranges []Range
+}
+
+type Range struct {
+    Min   int
+    Max   int
+    Shard int
+}
+
+func (r *RangeSharder) GetShard(key string) int {
+    id := parseInt(key)
+    for _, rng := range r.ranges {
+        if id >= rng.Min && id < rng.Max {
+            return rng.Shard
+        }
+    }
+    return 0
+}
+
+// Directory-based sharding
+type DirectorySharder struct {
+    lookup map[string]int
+}
+
+func (d *DirectorySharder) GetShard(key string) int {
+    return d.lookup[key]
+}
+```
+
+### 4.3 Consistent Hashing
+
+```go
+package design
+
+import (
+    "hash/crc32"
+    "sort"
+)
+
+type ConsistentHash struct {
+    replicas int
+    ring     []uint32
+    nodes    map[uint32]string
+}
+
+func NewConsistentHash(replicas int) *ConsistentHash {
+    return &ConsistentHash{
+        replicas: replicas,
+        nodes:    make(map[uint32]string),
+    }
+}
+
+func (ch *ConsistentHash) Add(node string) {
+    for i := 0; i < ch.replicas; i++ {
+        hash := ch.hash(node + string(rune(i)))
+        ch.nodes[hash] = node
+        ch.ring = append(ch.ring, hash)
+    }
+    sort.Slice(ch.ring, func(i, j int) bool {
+        return ch.ring[i] < ch.ring[j]
+    })
+}
+
+func (ch *ConsistentHash) Get(key string) string {
+    if len(ch.ring) == 0 {
+        return ""
+    }
+
+    hash := ch.hash(key)
+    idx := sort.Search(len(ch.ring), func(i int) bool {
+        return ch.ring[i] >= hash
+    })
+
+    if idx == len(ch.ring) {
+        idx = 0
+    }
+
+    return ch.nodes[ch.ring[idx]]
+}
+
+func (ch *ConsistentHash) hash(key string) uint32 {
+    return crc32.ChecksumIEEE([]byte(key))
+}
+```
+
+---
+
+## 5. Reliability Patterns
+
+### 5.1 Replication
+
+| Strategy | Consistency | Availability | Use Case |
+|----------|-------------|--------------|----------|
+| Single Leader | Strong | Medium | Read-heavy |
+| Multi-Leader | Eventual | High | Multi-region |
+| Leaderless | Eventual | Very High | High write |
+
+### 5.2 CAP Theorem
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         CAP Theorem                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│                    ┌──────────────┐                             │
+│                   /    Consistency  \                            │
+│                  /         (C)        \                           │
+│                 /                       \                          │
+│                /                         \                         │
+│       ┌───────┴───────┐             ┌───────┴───────┐            │
+│       │  CP Systems   │             │  AP Systems   │            │
+│       │               │             │               │            │
+│       │ • PostgreSQL  │             │ • Cassandra   │            │
+│       │ • MongoDB     │             │ • DynamoDB    │            │
+│       │ • Redis       │             │ • CouchDB     │            │
+│       └───────────────┘             └───────────────┘            │
+│                                                                  │
+│                    \                       /                         │
+│                     \    Availability    /                          │
+│                      \      (A)         /                           │
+│                       \               /                            │
+│                        \           /                             │
+│                         \       /                              │
+│                          \   /                               │
+│                           \ /                                │
+│                      Partition Tolerance                       │
+│                            (P)                                 │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 5.3 Circuit Breaker
+
+```go
+package design
+
+type CircuitBreaker struct {
+    state          State
+    failureCount   int
+    successCount   int
+    failureThreshold int
+    successThreshold int
+    timeout        time.Duration
+}
+
+func (cb *CircuitBreaker) Call(f func() error) error {
+    if cb.state == StateOpen {
+        if time.Since(cb.lastFailure) > cb.timeout {
+            cb.state = StateHalfOpen
+            cb.failureCount = 0
+            cb.successCount = 0
+        } else {
+            return ErrCircuitOpen
+        }
+    }
+
+    err := f()
+    cb.recordResult(err)
+    return err
+}
+
+func (cb *CircuitBreaker) recordResult(err error) {
+    if err != nil {
+        cb.failureCount++
+        if cb.failureCount >= cb.failureThreshold {
+            cb.state = StateOpen
+            cb.lastFailure = time.Now()
+        }
+    } else {
+        cb.successCount++
+        if cb.state == StateHalfOpen && cb.successCount >= cb.successThreshold {
+            cb.state = StateClosed
+        }
+    }
+}
+```
+
+---
+
+## 6. Common System Designs
+
+### 6.1 URL Shortener
+
+```
+Requirements:
+- Shorten long URLs
+- Redirect to original URL
+- Custom aliases (optional)
+- Analytics (optional)
+
+Scale:
+- 100M new URLs/month
+- 10:1 read:write ratio
+- 100B redirects/month
+
+Design:
+┌─────────┐     ┌──────────┐     ┌──────────┐
+│  Client │────>│  Load    │────>│  App     │
+└─────────┘     │ Balancer │     │ Servers  │
+                └──────────┘     └────┬─────┘
+                                      │
+                    ┌─────────────────┼─────────────────┐
+                    │                 │                 │
+                    v                 v                 v
+              ┌──────────┐     ┌──────────┐     ┌──────────┐
+              │  Cache   │     │  DB      │     │ Key Gen  │
+              │ (Redis)  │     │(MySQL)   │     │ (ZooKeeper│
+              └──────────┘     └──────────┘     └──────────┘
+```
+
+### 6.2 News Feed System
+
+```
+Requirements:
+- Post text/image/video
+- View news feed
+- Follow/unfollow users
+
+Push vs Pull:
+- Normal user (1000 followers): Push model
+- Celebrity (1M followers): Pull model
+
+Design:
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Client    │────►│   API       │────►│   Redis     │
-└─────────────┘     │   Gateway   │     │  (Cache)    │
-                    └──────┬──────┘     └──────┬──────┘
-                           │                     │
-                           ▼                     │
-                    ┌─────────────┐              │
-                    │   App       │              │
-                    │   Server    │              │
-                    └──────┬──────┘              │
-                           │                     │
-                           ▼                     │
-                    ┌─────────────┐              │
-                    │   MySQL     │──────────────┘
-                    │  (Master)   │
-                    └──────┬──────┘
-                           │
-                    ┌──────┴──────┐
-                    │   MySQL     │
-                    │  (Replica)  │
-                    └─────────────┘
-
-核心算法:
-- Base62 编码 (a-zA-Z0-9)
-- 自增 ID → 短码
-- 冲突解决: 预生成、布隆过滤器
-```
-
-### 2. 分布式消息队列 (如 Kafka)
-
-```
-需求:
-- 高吞吐消息发布/订阅
-- 消息持久化
-- 分区有序
-- 消费者组
-
-架构:
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Producer   │────►│   Broker    │────►│  Consumer   │
-│   (App)     │     │   Cluster   │     │   (App)     │
-└─────────────┘     └──────┬──────┘     └─────────────┘
-                           │
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-        ┌─────────┐  ┌─────────┐  ┌─────────┐
-        │Partition│  │Partition│  │Partition│
-        │   0     │  │   1     │  │   2     │
-        │ (Leader)│  │ (Leader)│  │ (Leader)│
-        │ (R1,R2) │  │ (R2,R0) │  │ (R0,R1) │
-        └─────────┘  └─────────┘  └─────────┘
-
-关键设计:
-- 分区: 水平扩展、并行消费
-- 副本: ISR (In-Sync Replicas)
-- 存储: 日志结构、顺序写、零拷贝
-- 协调: ZooKeeper/KRaft
-```
-
-### 3. 社交媒体 Feed (如 Twitter)
-
-```
-需求:
-- 发帖
-- 关注/取消关注
-- 查看 Timeline (关注者的帖子)
-- 点赞、评论
-
-两种模型:
-
-1. 拉模型 (Pull/Fan-out on read)
-   - 发帖: 只写入自己的帖子表
-   - 读 Timeline: 查询所有关注者的帖子，合并排序
-   - 适合: 读少写多、关注数少
-
-2. 推模型 (Push/Fan-out on write)
-   - 发帖: 写入自己的帖子 + 推送到所有粉丝的 Timeline
-   - 读 Timeline: 直接读取自己的 Timeline 表
-   - 适合: 读多写少、关注数少
-
-混合方案:
-- 普通用户: Push 模型
-- 大 V (>1M 粉丝): Pull 模型
-
-架构:
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Client    │────►│   API       │────►│   Redis     │
-└─────────────┘     │   Gateway   │     │  (Timeline  │
-                    └──────┬──────┘     │   Cache)    │
-                           │             └─────────────┘
-                           ▼                    │
-                    ┌─────────────┐              │
-                    │   Post      │              │
-                    │   Service   │              │
-                    └──────┬──────┘              │
-                           │                     │
-              ┌────────────┴────────────┐        │
-              ▼                         ▼        │
-        ┌─────────────┐           ┌─────────────┐│
-        │  Post DB    │           │  Fan-out    ││
-        │  (Sharding) │           │  Service    │└┘
-        └─────────────┘           └──────┬──────┘
-                                          │
-                                          ▼
-                                    ┌─────────────┐
-                                    │  Message    │
-                                    │  Queue      │
-                                    └─────────────┘
+│   User      │────>│  Post       │────>│  Fanout     │
+│   Action    │     │  Service    │     │  Service    │
+└─────────────┘     └─────────────┘     └──────┬──────┘
+                                               │
+                         ┌─────────────────────┼──────┐
+                         │                     │      │
+                         v                     v      v
+                   ┌──────────┐          ┌────────┐ ┌────────┐
+                   │  Redis   │          │User A  │ │User B  │
+                   │ Timeline │          │Feed    │ │Feed    │
+                   └──────────┘          └────────┘ └────────┘
 ```
 
 ---
 
-## 容量估算速查
+## 7. Interview Tips
 
-```
-常用数字:
-- 1M DAU: 日活用户
-- 10 RPS/用户: 平均请求率
-- 100KB/请求: 平均请求大小
-- 100ms: 目标延迟
-- 99.9%: 目标可用性
+### 7.1 Common Mistakes
 
-计算示例:
-DAU = 10M
-请求/用户/天 = 100
-峰值倍数 = 3
+| Mistake | Solution |
+|---------|----------|
+| Jumping to solutions | Ask clarifying questions first |
+| Ignoring non-functional | Always discuss scale |
+| Single point of failure | Design for redundancy |
+| Premature optimization | Start simple, then scale |
+| Not discussing trade-offs | Compare alternatives |
 
-QPS = 10M × 100 / 86400 × 3 ≈ 35K
-带宽 = 35K × 100KB = 3.5GB/s
-存储/天 = 10M × 100 × 100KB = 100TB
+### 7.2 Time Management
 
-数据库:
-- MySQL: ~1K QPS/实例
-- Redis: ~100K QPS/实例
-- Cassandra: ~10K QPS/节点
-
-需要实例数:
-- MySQL: 35K / 1K = 35 主库 + 70 从库
-- Redis: 35K / 100K = 1 集群
-```
+| Phase | Duration | Activities |
+|-------|----------|------------|
+| Understanding | 2-3 min | Clarify requirements |
+| Estimation | 5 min | Back-of-envelope math |
+| High-level | 10-15 min | Draw architecture |
+| Deep dive | 15-20 min | Data model, algorithms |
+| Trade-offs | 5-10 min | Discuss alternatives |
 
 ---
 
-## 技术选型对比
+## References
 
-| 场景 | 方案 A | 方案 B | 选择因素 |
-|------|--------|--------|---------|
-| 缓存 | Redis | Memcached | 数据结构 vs 性能 |
-| 数据库 | PostgreSQL | MySQL | 复杂查询 vs 生态 |
-| 搜索 | Elasticsearch | Solr | 易用性 vs 定制 |
-| 队列 | Kafka | RabbitMQ | 吞吐 vs 路由 |
-| 协调 | etcd | ZooKeeper | K8s 原生 vs 成熟 |
-| 网关 | Envoy | Nginx | 动态配置 vs 性能 |
+1. Designing Data-Intensive Applications - Martin Kleppmann
+2. System Design Interview - Alex Xu
+3. Designing Distributed Systems - Brendan Burns
+4. Scalability Rules - Abbott & Fisher
 
 ---
 
-## 面试要点
-
-### 应该做 ✅
-- 先澄清需求
-- 做容量估算
-- 讨论权衡 (Trade-offs)
-- 从简单开始逐步扩展
-- 提及监控和运维
-
-### 避免 ❌
-- 立即深入细节
-- 忽视非功能性需求
-- 只有一种方案
-- 忽视故障场景
-- 过度设计
-
----
-
-## 参考文献
-
-1. [Designing Data-Intensive Applications](https://dataintensive.net/) - Martin Kleppmann
-2. [System Design Primer](https://github.com/donnemartin/system-design-primer)
-3. [System Design Interview](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF)
+**Quality Rating**: S (20+ KB)
+**Last Updated**: 2026-04-02

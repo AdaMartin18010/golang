@@ -1,85 +1,87 @@
-# AD-006: API 网关设计模式 (API Gateway Design Patterns)
+﻿# AD-006: API Gateway Design Patterns
 
-> **维度**: Application Domains
-> **级别**: S (17+ KB)
-> **标签**: #api-gateway #edge-service #routing #security #rate-limiting
-> **权威来源**: [API Gateway Pattern](https://microservices.io/patterns/apigateway.html), [Building Microservices](https://samnewman.io/books/building_microservices/)
+> **Dimension**: Application Domains
+> **Level**: S (17+ KB)
+> **Tags**: #api-gateway #routing #rate-limiting #authentication #load-balancing
 
 ---
 
-## API 网关架构
+## 1. API Gateway Architecture
+
+### 1.1 Core Responsibilities
+
+| Responsibility | Description |
+|---------------|-------------|
+| Routing | Route requests to appropriate backend services |
+| Authentication | Verify JWT, API keys, OAuth tokens |
+| Rate Limiting | Prevent abuse and ensure fair usage |
+| Load Balancing | Distribute traffic across instances |
+| SSL Termination | Handle HTTPS encryption/decryption |
+| Caching | Cache responses to reduce backend load |
+| Request/Response Transformation | Convert between protocols/formats |
+
+### 1.2 Gateway Pattern Types
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                      API Gateway Architecture                               │
+│                         API Gateway Patterns                                │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
-│  Client Apps                                                                 │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐                                     │
-│  │  Web    │  │ Mobile  │  │ 3rd Party│                                     │
-│  │  App    │  │  Apps   │  │  API    │                                     │
-│  └────┬────┘  └────┬────┘  └────┬────┘                                     │
-│       │            │            │                                           │
-│       └────────────┴────────────┘                                           │
-│                    │                                                        │
-│                    ▼                                                        │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                      API Gateway                                    │   │
-│  │                                                                      │   │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │   │
-│  │  │   Routing   │  │   Auth      │  │   Rate      │  │  Request   │ │   │
-│  │  │   & LB      │  │   (JWT/OAuth)│  │   Limiting  │  │  Transform │ │   │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └────────────┘ │   │
-│  │                                                                      │   │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │   │
-│  │  │  Circuit    │  │   Caching   │  │  Logging &  │  │   SSL/     │ │   │
-│  │  │  Breaker    │  │             │  │  Metrics    │  │   TLS      │ │   │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └────────────┘ │   │
-│  │                                                                      │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                    │                                                        │
-│       ┌────────────┼────────────┬────────────┐                             │
-│       ▼            ▼            ▼            ▼                             │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐                        │
-│  │ Service │  │ Service │  │ Service │  │ Service │                        │
-│  │    A    │  │    B    │  │    C    │  │    D    │                        │
-│  └─────────┘  └─────────┘  └─────────┘  └─────────┘                        │
+│  1. Single Gateway                                                           │
+│  ┌─────────┐     ┌──────────────┐     ┌──────────────┐                     │
+│  │ Client  │────>│   Gateway    │────>│  Services    │                     │
+│  └─────────┘     └──────────────┘     └──────────────┘                     │
+│                                                                              │
+│  2. Backend for Frontend (BFF)                                               │
+│  ┌─────────┐     ┌──────────┐     ┌──────────────┐                         │
+│  │  Web    │────>│ Web BFF  │────>│  Services    │                         │
+│  ├─────────┤     ├──────────┤     └──────────────┘                         │
+│  │ Mobile  │────>│Mobile BFF│                                             │
+│  ├─────────┤     ├──────────┤                                             │
+│  │  IoT    │────>│ IoT BFF  │                                             │
+│  └─────────┘     └──────────┘                                             │
+│                                                                              │
+│  3. Micro Gateway                                                            │
+│  ┌─────────┐     ┌────────┐     ┌────────┐     ┌────────┐                 │
+│  │ Client  │────>│ Gateway│────>│ServiceA│     │ServiceB│                 │
+│  └─────────┘     └────────┘     └────────┘     └────────┘                 │
+│                     │                                                        │
+│                     └────────────────────────────────> ServiceC             │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 核心功能
+## 2. Routing Implementation
 
-### 1. 路由与负载均衡
+### 2.1 Dynamic Router
 
 ```go
 package gateway
 
 import (
+    "context"
     "net/http"
     "net/http/httputil"
     "net/url"
     "strings"
     "sync"
-    "time"
 )
 
-// Route 路由配置
-type Route struct {
-    ID          string
-    PathPrefix  string
-    StripPrefix bool
-    TargetURL   *url.URL
-    Methods     []string
-    Middlewares []Middleware
-}
-
-// Router 路由器
 type Router struct {
     routes map[string]*Route
     mu     sync.RWMutex
+}
+
+type Route struct {
+    ID          string
+    Path        string
+    Methods     []string
+    Target      *url.URL
+    StripPath   bool
+    Middlewares []Middleware
+    RateLimit   *RateLimitConfig
 }
 
 func NewRouter() *Router {
@@ -94,7 +96,7 @@ func (r *Router) Register(route *Route) {
     r.routes[route.ID] = route
 }
 
-func (r *Router) Match(req *http.Request) (*Route, bool) {
+func (r *Router) Match(req *http.Request) (*Route, map[string]string) {
     r.mu.RLock()
     defer r.mu.RUnlock()
 
@@ -102,11 +104,13 @@ func (r *Router) Match(req *http.Request) (*Route, bool) {
         if !r.methodMatch(req.Method, route.Methods) {
             continue
         }
-        if strings.HasPrefix(req.URL.Path, route.PathPrefix) {
-            return route, true
+
+        if params, ok := r.pathMatch(req.URL.Path, route.Path); ok {
+            return route, params
         }
     }
-    return nil, false
+
+    return nil, nil
 }
 
 func (r *Router) methodMatch(method string, allowed []string) bool {
@@ -121,32 +125,224 @@ func (r *Router) methodMatch(method string, allowed []string) bool {
     return false
 }
 
-// ReverseProxy 反向代理
-func (r *Router) ReverseProxy(route *Route) *httputil.ReverseProxy {
-    director := func(req *http.Request) {
-        target := route.TargetURL
+func (r *Router) pathMatch(path, pattern string) (map[string]string, bool) {
+    // Simple pattern matching with parameters
+    // e.g., /users/:id matches /users/123
+    pathParts := strings.Split(path, "/")
+    patternParts := strings.Split(pattern, "/")
 
-        req.URL.Scheme = target.Scheme
-        req.URL.Host = target.Host
+    if len(pathParts) != len(patternParts) {
+        return nil, false
+    }
 
-        if route.StripPrefix {
-            req.URL.Path = strings.TrimPrefix(req.URL.Path, route.PathPrefix)
+    params := make(map[string]string)
+    for i, part := range patternParts {
+        if strings.HasPrefix(part, ":") {
+            params[part[1:]] = pathParts[i]
+        } else if part != pathParts[i] {
+            return nil, false
         }
-
-        req.Header.Set("X-Forwarded-Host", req.Host)
-        req.Header.Set("X-Forwarded-For", req.RemoteAddr)
     }
 
-    return &httputil.ReverseProxy{
-        Director: director,
-        ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
-            http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
-        },
-    }
+    return params, true
 }
 ```
 
-### 2. 认证与授权
+### 2.2 Load Balancer
+
+```go
+package gateway
+
+import (
+    "net/http"
+    "net/http/httputil"
+    "net/url"
+    "sync/atomic"
+)
+
+type LoadBalancer interface {
+    Next() *url.URL
+}
+
+// Round Robin Load Balancer
+type RoundRobin struct {
+    targets []*url.URL
+    current uint64
+}
+
+func NewRoundRobin(targets []*url.URL) *LoadBalancer {
+    return &RoundRobin{targets: targets}
+}
+
+func (r *RoundRobin) Next() *url.URL {
+    n := atomic.AddUint64(&r.current, 1)
+    return r.targets[int(n)%len(r.targets)]
+}
+
+// Weighted Round Robin
+type WeightedRoundRobin struct {
+    targets []*WeightedTarget
+    current int
+    cw      int
+}
+
+type WeightedTarget struct {
+    URL    *url.URL
+    Weight int
+}
+
+func (w *WeightedRoundRobin) Next() *url.URL {
+    for {
+        w.current = (w.current + 1) % len(w.targets)
+        if w.current == 0 {
+            w.cw--
+            if w.cw <= 0 {
+                w.cw = w.maxWeight()
+            }
+        }
+        if w.targets[w.current].Weight >= w.cw {
+            return w.targets[w.current].URL
+        }
+    }
+}
+
+func (w *WeightedRoundRobin) maxWeight() int {
+    max := 0
+    for _, t := range w.targets {
+        if t.Weight > max {
+            max = t.Weight
+        }
+    }
+    return max
+}
+```
+
+---
+
+## 3. Rate Limiting
+
+### 3.1 Token Bucket Algorithm
+
+```go
+package gateway
+
+import (
+    "context"
+    "net/http"
+    "sync"
+    "time"
+)
+
+type TokenBucket struct {
+    capacity int
+    tokens   float64
+    rate     float64
+    lastRefill time.Time
+    mu       sync.Mutex
+}
+
+func NewTokenBucket(capacity int, ratePerSecond float64) *TokenBucket {
+    return &TokenBucket{
+        capacity:   capacity,
+        tokens:     float64(capacity),
+        rate:       ratePerSecond,
+        lastRefill: time.Now(),
+    }
+}
+
+func (tb *TokenBucket) Allow() bool {
+    tb.mu.Lock()
+    defer tb.mu.Unlock()
+
+    now := time.Now()
+    elapsed := now.Sub(tb.lastRefill).Seconds()
+    tb.tokens = min(float64(tb.capacity), tb.tokens+elapsed*tb.rate)
+    tb.lastRefill = now
+
+    if tb.tokens >= 1 {
+        tb.tokens--
+        return true
+    }
+
+    return false
+}
+
+// Distributed Rate Limiter with Redis
+type DistributedRateLimiter struct {
+    redis      RedisClient
+    windowSize time.Duration
+    maxRequests int
+}
+
+func (rl *DistributedRateLimiter) Allow(ctx context.Context, key string) bool {
+    now := time.Now().Unix()
+    windowStart := now - int64(rl.windowSize.Seconds())
+
+    pipe := rl.redis.Pipeline()
+    pipe.ZRemRangeByScore(ctx, key, "0", string(windowStart))
+    pipe.ZCard(ctx, key)
+    pipe.ZAdd(ctx, key, &redis.Z{Score: float64(now), Member: now})
+    pipe.Expire(ctx, key, rl.windowSize)
+
+    results, err := pipe.Exec(ctx)
+    if err != nil {
+        return false
+    }
+
+    currentCount := results[1].(*redis.IntCmd).Val()
+    return currentCount < int64(rl.maxRequests)
+}
+```
+
+### 3.2 Rate Limit Middleware
+
+```go
+package gateway
+
+import (
+    "net/http"
+    "strconv"
+)
+
+func RateLimitMiddleware(limiter RateLimiter) Middleware {
+    return func(next http.Handler) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            key := extractClientKey(r)
+
+            if !limiter.Allow(r.Context(), key) {
+                w.Header().Set("X-RateLimit-Limit", strconv.Itoa(limiter.Limit()))
+                w.Header().Set("X-RateLimit-Remaining", "0")
+                http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
+                return
+            }
+
+            w.Header().Set("X-RateLimit-Remaining", strconv.Itoa(limiter.Remaining(key)))
+            next.ServeHTTP(w, r)
+        })
+    }
+}
+
+func extractClientKey(r *http.Request) string {
+    // Try API key first
+    apiKey := r.Header.Get("X-API-Key")
+    if apiKey != "" {
+        return apiKey
+    }
+
+    // Fall back to IP address
+    ip := r.Header.Get("X-Forwarded-For")
+    if ip == "" {
+        ip = r.RemoteAddr
+    }
+    return ip
+}
+```
+
+---
+
+## 4. Authentication & Authorization
+
+### 4.1 JWT Authentication
 
 ```go
 package gateway
@@ -155,190 +351,228 @@ import (
     "context"
     "net/http"
     "strings"
-
     "github.com/golang-jwt/jwt/v5"
 )
 
-// AuthMiddleware JWT 认证中间件
-type AuthMiddleware struct {
-    secretKey []byte
-    validator TokenValidator
+type JWTAuth struct {
+    secret     []byte
+    headerName string
 }
 
-type TokenValidator interface {
-    Validate(token string) (*Claims, error)
-}
-
-type Claims struct {
-    UserID   string   `json:"sub"`
-    Username string   `json:"username"`
-    Roles    []string `json:"roles"`
-    jwt.RegisteredClaims
-}
-
-func (a *AuthMiddleware) Handler(next http.Handler) http.Handler {
+func (a *JWTAuth) Middleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        authHeader := r.Header.Get("Authorization")
-        if authHeader == "" {
-            http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
+        tokenString := extractToken(r, a.headerName)
+        if tokenString == "" {
+            http.Error(w, "Missing token", http.StatusUnauthorized)
             return
         }
 
-        parts := strings.SplitN(authHeader, " ", 2)
-        if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-            http.Error(w, "Invalid Authorization header", http.StatusUnauthorized)
-            return
-        }
+        token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+            return a.secret, nil
+        })
 
-        claims, err := a.validator.Validate(parts[1])
-        if err != nil {
+        if err != nil || !token.Valid {
             http.Error(w, "Invalid token", http.StatusUnauthorized)
             return
         }
 
-        // 将用户信息注入上下文
-        ctx := context.WithValue(r.Context(), "claims", claims)
-        next.ServeHTTP(w, r.WithContext(ctx))
+        // Add claims to context
+        if claims, ok := token.Claims.(jwt.MapClaims); ok {
+            ctx := context.WithValue(r.Context(), "claims", claims)
+            next.ServeHTTP(w, r.WithContext(ctx))
+        }
     })
 }
 
-// RBACMiddleware 基于角色的访问控制
-type RBACMiddleware struct {
-    requiredRoles []string
-}
-
-func (r *RBACMiddleware) Handler(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-        claims, ok := req.Context().Value("claims").(*Claims)
-        if !ok {
-            http.Error(w, "Unauthorized", http.StatusUnauthorized)
-            return
-        }
-
-        if !hasAnyRole(claims.Roles, r.requiredRoles) {
-            http.Error(w, "Forbidden", http.StatusForbidden)
-            return
-        }
-
-        next.ServeHTTP(w, req)
-    })
-}
-
-func hasAnyRole(userRoles, requiredRoles []string) bool {
-    roleSet := make(map[string]bool)
-    for _, r := range userRoles {
-        roleSet[r] = true
+func extractToken(r *http.Request, headerName string) string {
+    authHeader := r.Header.Get(headerName)
+    parts := strings.SplitN(authHeader, " ", 2)
+    if len(parts) == 2 && strings.ToLower(parts[0]) == "bearer" {
+        return parts[1]
     }
-    for _, r := range requiredRoles {
-        if roleSet[r] {
-            return true
-        }
-    }
-    return false
+    return authHeader
 }
 ```
 
-### 3. 限流
+---
+
+## 5. Circuit Breaker
 
 ```go
 package gateway
 
 import (
+    "errors"
     "net/http"
     "sync"
     "time"
-
-    "golang.org/x/time/rate"
 )
 
-// RateLimiter 令牌桶限流器
-type RateLimiter struct {
-    limiters map[string]*rate.Limiter
-    mu       sync.RWMutex
-    rate     rate.Limit
-    burst    int
+type State int
+
+const (
+    StateClosed State = iota
+    StateOpen
+    StateHalfOpen
+)
+
+type CircuitBreaker struct {
+    failureThreshold int
+    successThreshold int
+    timeout          time.Duration
+
+    state           State
+    failures        int
+    successes       int
+    lastFailureTime time.Time
+    mu              sync.RWMutex
 }
 
-func NewRateLimiter(r rate.Limit, burst int) *RateLimiter {
-    return &RateLimiter{
-        limiters: make(map[string]*rate.Limiter),
-        rate:     r,
-        burst:    burst,
+func NewCircuitBreaker(failureThreshold, successThreshold int, timeout time.Duration) *CircuitBreaker {
+    return &CircuitBreaker{
+        failureThreshold: failureThreshold,
+        successThreshold: successThreshold,
+        timeout:          timeout,
+        state:           StateClosed,
     }
 }
 
-func (rl *RateLimiter) GetLimiter(key string) *rate.Limiter {
-    rl.mu.RLock()
-    limiter, exists := rl.limiters[key]
-    rl.mu.RUnlock()
-
-    if exists {
-        return limiter
+func (cb *CircuitBreaker) Call(fn func() error) error {
+    if !cb.canExecute() {
+        return ErrCircuitOpen
     }
 
-    rl.mu.Lock()
-    defer rl.mu.Unlock()
-
-    // 双重检查
-    if limiter, exists := rl.limiters[key]; exists {
-        return limiter
-    }
-
-    limiter = rate.NewLimiter(rl.rate, rl.burst)
-    rl.limiters[key] = limiter
-    return limiter
+    err := fn()
+    cb.recordResult(err)
+    return err
 }
 
-func (rl *RateLimiter) Handler(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // 按 IP 限流
-        key := r.RemoteAddr
+func (cb *CircuitBreaker) canExecute() bool {
+    cb.mu.RLock()
+    defer cb.mu.RUnlock()
 
-        // 或按用户限流
-        if claims, ok := r.Context().Value("claims").(*Claims); ok {
-            key = claims.UserID
+    if cb.state == StateClosed {
+        return true
+    }
+
+    if cb.state == StateOpen {
+        if time.Since(cb.lastFailureTime) > cb.timeout {
+            cb.mu.RUnlock()
+            cb.mu.Lock()
+            cb.state = StateHalfOpen
+            cb.failures = 0
+            cb.successes = 0
+            cb.mu.Unlock()
+            cb.mu.RLock()
+            return true
         }
+        return false
+    }
 
-        limiter := rl.GetLimiter(key)
-        if !limiter.Allow() {
-            http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
-            return
+    return true // StateHalfOpen
+}
+
+func (cb *CircuitBreaker) recordResult(err error) {
+    cb.mu.Lock()
+    defer cb.mu.Unlock()
+
+    if err == nil {
+        cb.successes++
+        if cb.state == StateHalfOpen && cb.successes >= cb.successThreshold {
+            cb.state = StateClosed
+            cb.failures = 0
         }
-
-        next.ServeHTTP(w, r)
-    })
+    } else {
+        cb.failures++
+        cb.lastFailureTime = time.Now()
+        if cb.failures >= cb.failureThreshold {
+            cb.state = StateOpen
+        }
+    }
 }
 ```
 
 ---
 
-## 网关实现对比
+## 6. Caching
 
-| 特性 | Nginx | Kong | Envoy | Spring Cloud Gateway | Traefik |
-|------|-------|------|-------|---------------------|---------|
-| 语言 | C/Lua | Lua | C++ | Java | Go |
-| 配置 | 文件 | Admin API | xDS | Java Config | 动态 |
-| 插件 | Lua | 丰富 | WASM | Spring | 中等 |
-| K8s 集成 | 一般 | 好 | 原生 | 好 | 原生 |
-| 性能 | 高 | 高 | 极高 | 中 | 高 |
-| 服务发现 | 需配置 | 支持 | 原生 | 支持 | 原生 |
+```go
+package gateway
+
+import (
+    "crypto/sha256"
+    "encoding/hex"
+    "net/http"
+    "time"
+)
+
+type CacheMiddleware struct {
+    cache       Cache
+    ttl         time.Duration
+    cacheable   func(r *http.Request) bool
+}
+
+func (m *CacheMiddleware) Handler(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        if !m.cacheable(r) {
+            next.ServeHTTP(w, r)
+            return
+        }
+
+        key := generateCacheKey(r)
+
+        // Try cache
+        if cached, found := m.cache.Get(key); found {
+            writeCachedResponse(w, cached)
+            return
+        }
+
+        // Capture response
+        recorder := NewResponseRecorder(w)
+        next.ServeHTTP(recorder, r)
+
+        // Cache if successful
+        if recorder.StatusCode == http.StatusOK {
+            m.cache.Set(key, recorder.Body, m.ttl)
+        }
+    })
+}
+
+func generateCacheKey(r *http.Request) string {
+    data := r.Method + r.URL.String() + r.Header.Get("Accept")
+    hash := sha256.Sum256([]byte(data))
+    return hex.EncodeToString(hash[:])
+}
+```
 
 ---
 
-## 生产建议
+## 7. Gateway Comparison
 
-| 关注点 | 建议 |
-|--------|------|
-| 高可用 | 多实例 + 负载均衡器 |
-| 缓存 | 静态资源 CDN，API 响应缓存 |
-| 超时 | 设置合理的上下游超时 |
-| 熔断 | 集成断路器防止级联故障 |
-| 监控 | 延迟、错误率、流量指标 |
+| Feature | Nginx | Kong | Envoy | Traefik | Custom |
+|---------|-------|------|-------|---------|--------|
+| Performance | High | High | Very High | High | Varies |
+| Ease of Use | Medium | Easy | Complex | Easy | Varies |
+| Plugin System | Lua | Rich | WASM | Moderate | Custom |
+| K8s Native | No | Yes | Yes | Yes | Varies |
+| Observability | Basic | Good | Excellent | Good | Custom |
 
 ---
 
-## 参考文献
+## 8. Best Practices
 
-1. [API Gateway Pattern](https://microservices.io/patterns/apigateway.html)
-2. [Building Microservices](https://samnewman.io/books/building_microservices/) - Sam Newman
-3. [Kong Documentation](https://docs.konghq.com/)
+- [ ] Implement health checks
+- [ ] Use appropriate timeouts
+- [ ] Log all requests
+- [ ] Monitor gateway metrics
+- [ ] Implement graceful degradation
+- [ ] Use SSL/TLS termination
+- [ ] Implement request tracing
+- [ ] Configure CORS properly
+- [ ] Use connection pooling
+- [ ] Implement request validation
+
+---
+
+**Quality Rating**: S (17+ KB)
+**Last Updated**: 2026-04-02
