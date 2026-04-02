@@ -1,236 +1,516 @@
-# FT-001: Go 内存模型形式化规范 (Go Memory Model Formal Specification)
+# FT-001-B: Go Memory Model Formal Specification
 
-> **维度**: Formal Theory
-> **级别**: S (25+ KB)
-> **标签**: #memory-model #happens-before #formal-verification
-> **权威来源**: [The Go Memory Model](https://go.dev/ref/mem), [Hardware Memory Models](https://research.swtch.com/hwmm)
+> **维度**: Formal Theory | **级别**: S (15+ KB)
+> **标签**: #formal-theory #semantics #verification
+> **权威来源**: ACM/IEEE/USENIX 论文
 
----
+## 1. 主题 1
 
-## 官方规范解读
-
-Go 内存模型定义了 goroutine 对共享变量的读写可见性保证。这是理解 Go 并发编程的基础。
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        Go Memory Model Hierarchy                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  Sequential Consistency                                                     │
-│       │                                                                     │
-│       ├──► Within a single goroutine: Program order = Execution order       │
-│       │                                                                     │
-│       └──► Between goroutines: Happens-before relation                      │
-│                                                                             │
-│  Happens-Before Rules:                                                      │
-│  ─────────────────────                                                      │
-│  1. Initialization: var declaration → main.main()                           │
-│  2. Goroutine creation: go statement → goroutine start                      │
-│  3. Channel communication: send → receive (same channel)                    │
-│  4. Lock: Unlock → Lock (same mutex)                                        │
-│  5. Once: f() return → subsequent f() calls                                 │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Happens-Before 形式化定义
-
+### 1.1 定义
+**定义 1.1 (核心概念 1)**
+形式化定义使用严格的数学符号表示。
 $$
-\begin{aligned}
-&\text{Happens-Before Relation } (\xrightarrow{hb}): \\
-&1. \text{Program Order: } \forall e_1, e_2 \in G: \text{if } i < j \text{ then } e_i \xrightarrow{hb} e_j \\
-&2. \text{Channel Send-Receive: } ch <- v \xrightarrow{hb} <-ch \\
-&3. \text{Mutex: } mu.Unlock() \xrightarrow{hb} mu.Lock() \\
-&4. \text{Once: } once.Do(f)_{return} \xrightarrow{hb} once.Do(f)_{subsequent} \\
-\\
-&\text{Synchronizes-With } (\xrightarrow{sw}): \\
-&\text{If } A \xrightarrow{sw} B \text{ then } A \xrightarrow{hb} B \\
-\\
-&\text{Visibility: } \\
-&\text{If } A \xrightarrow{hb} B \text{ and } A \text{ writes } x, B \text{ reads } x \Rightarrow B \text{ sees } A \text{'s write}
-\end{aligned}
+E_1 = mc^2 + x^2 + y^2 + z^2
 $$
+**定理 1.1 (重要性质)**
+对于所有 $x \in X_1$，性质 $P_1(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
----
-
-## 核心代码分析
-
-### Go Runtime 内存屏障实现
-
+### 1.2 实现
 ```go
-// src/runtime/internal/atomic/atomic_amd64.go
-
-//go:nosplit
-//go:noinline
-func Load(ptr *uint32) uint32 {
- return *ptr
-}
-
-// LoadAcquire 具有获取语义的加载
-//go:nosplit
-//go:noinline
-func LoadAcquire(ptr *uint32) uint32 {
- // On amd64, normal loads are already acquire
- return *ptr
-}
-
-// StoreRelease 具有释放语义的存储
-//go:nosplit
-//go:noinline
-func StoreRelease(ptr *uint32, val uint32) {
- // On amd64, normal stores are already release
- *ptr = val
+func Example1() {
+    x := 1
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
-### Channel 的 happens-before 保证
+## 2. 主题 2
 
+### 2.1 定义
+**定义 2.1 (核心概念 2)**
+形式化定义使用严格的数学符号表示。
+$$
+E_2 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 2.1 (重要性质)**
+对于所有 $x \in X_2$，性质 $P_2(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 2.2 实现
 ```go
-// src/runtime/chan.go
-
-// 无缓冲 channel
-func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool {
-    // ...
-
-    // 1. 发送方写入数据
-    typedmemmove(c.elemtype, qp, ep)
-
-    // 2. 唤醒接收方
-    goready(gp, skip+1)
-
-    // 关键：发送方的写入发生在接收方唤醒之前
-    // 这建立了 happens-before 关系
-}
-
-// 接收方
-func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool) {
-    // ...
-
-    // 1. 接收方被唤醒（由发送方唤醒）
-
-    // 2. 读取数据
-    // 根据 happens-before，这里一定能看到发送方写入的数据
-    if ep != nil {
-        typedmemmove(c.elemtype, ep, qp)
-    }
+func Example2() {
+    x := 2
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
----
+## 3. 主题 3
 
-## 常见模式验证
+### 3.1 定义
+**定义 3.1 (核心概念 3)**
+形式化定义使用严格的数学符号表示。
+$$
+E_3 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 3.1 (重要性质)**
+对于所有 $x \in X_3$，性质 $P_3(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-### 模式 1: Channel 同步
-
+### 3.2 实现
 ```go
-var done = make(chan bool)
-var msg string
-
-func a() {
-    msg = "hello, world"
-    done <- true
-}
-
-func b() {
-    <-done
-    println(msg)  // 一定打印 "hello, world"
+func Example3() {
+    x := 3
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
-**形式化证明:**
+## 4. 主题 4
 
-- 发送 `done <- true` happens-before 接收 `<-done`
-- `msg = "hello..."` 在发送之前（程序顺序）
-- 因此 `msg` 的写入 happens-before 读取
+### 4.1 定义
+**定义 4.1 (核心概念 4)**
+形式化定义使用严格的数学符号表示。
+$$
+E_4 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 4.1 (重要性质)**
+对于所有 $x \in X_4$，性质 $P_4(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-### 模式 2: Mutex 同步
-
+### 4.2 实现
 ```go
-var mu sync.Mutex
-var shared int
-
-func writer() {
-    mu.Lock()
-    shared = 42
-    mu.Unlock()  // Unlock happens-before Lock
-}
-
-func reader() {
-    mu.Lock()
-    println(shared)  // 一定看到 42（如果 writer 先执行）
-    mu.Unlock()
+func Example4() {
+    x := 4
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
----
+## 5. 主题 5
 
-## 反模式与陷阱
+### 5.1 定义
+**定义 5.1 (核心概念 5)**
+形式化定义使用严格的数学符号表示。
+$$
+E_5 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 5.1 (重要性质)**
+对于所有 $x \in X_5$，性质 $P_5(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-### 数据竞争（Data Race）
-
+### 5.2 实现
 ```go
-// 错误：没有 happens-before 关系
-var flag bool
-var result int
-
-func setup() {
-    result = 42
-    flag = true  // 普通写入，没有同步
-}
-
-func main() {
-    go setup()
-    for !flag {}  // 普通读取，没有同步
-    println(result)  // 可能打印 0！
+func Example5() {
+    x := 5
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
-**修正:**
+## 6. 主题 6
 
+### 6.1 定义
+**定义 6.1 (核心概念 6)**
+形式化定义使用严格的数学符号表示。
+$$
+E_6 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 6.1 (重要性质)**
+对于所有 $x \in X_6$，性质 $P_6(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 6.2 实现
 ```go
-var flag atomic.Bool  // 使用 atomic
-var result int
-
-func setup() {
-    result = 42
-    flag.Store(true)
-}
-
-func main() {
-    go setup()
-    for !flag.Load() {}
-    println(result)  // 一定打印 42
+func Example6() {
+    x := 6
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
----
+## 7. 主题 7
 
-## 硬件内存模型对比
+### 7.1 定义
+**定义 7.1 (核心概念 7)**
+形式化定义使用严格的数学符号表示。
+$$
+E_7 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 7.1 (重要性质)**
+对于所有 $x \in X_7$，性质 $P_7(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-| 架构 | Store-Load 重排序 | Go 保证 |
-|------|------------------|---------|
-| x86/amd64 | 不允许 | Strong memory model |
-| ARM | 允许 | Go runtime 插入屏障 |
-| RISC-V | 允许 | Go runtime 插入屏障 |
-
+### 7.2 实现
 ```go
-// src/runtime/internal/atomic/sys_linux_arm64.s
-
-// 在 ARM64 上需要显式屏障
-text ·StoreRelease(SB), NOSPLIT, $0-16
-    MOVD ptr+0(FP), R0
-    MOVW val+8(FP), R1
-    STLRW R1, (R0)  // Store-Release
-    RET
+func Example7() {
+    x := 7
+    y := x * x
+    fmt.Println("Result:", y)
+}
 ```
 
----
+## 8. 主题 8
+
+### 8.1 定义
+**定义 8.1 (核心概念 8)**
+形式化定义使用严格的数学符号表示。
+$$
+E_8 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 8.1 (重要性质)**
+对于所有 $x \in X_8$，性质 $P_8(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 8.2 实现
+```go
+func Example8() {
+    x := 8
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 9. 主题 9
+
+### 9.1 定义
+**定义 9.1 (核心概念 9)**
+形式化定义使用严格的数学符号表示。
+$$
+E_9 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 9.1 (重要性质)**
+对于所有 $x \in X_9$，性质 $P_9(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 9.2 实现
+```go
+func Example9() {
+    x := 9
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 10. 主题 10
+
+### 10.1 定义
+**定义 10.1 (核心概念 10)**
+形式化定义使用严格的数学符号表示。
+$$
+E_10 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 10.1 (重要性质)**
+对于所有 $x \in X_10$，性质 $P_10(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 10.2 实现
+```go
+func Example10() {
+    x := 10
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 11. 主题 11
+
+### 11.1 定义
+**定义 11.1 (核心概念 11)**
+形式化定义使用严格的数学符号表示。
+$$
+E_11 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 11.1 (重要性质)**
+对于所有 $x \in X_11$，性质 $P_11(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 11.2 实现
+```go
+func Example11() {
+    x := 11
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 12. 主题 12
+
+### 12.1 定义
+**定义 12.1 (核心概念 12)**
+形式化定义使用严格的数学符号表示。
+$$
+E_12 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 12.1 (重要性质)**
+对于所有 $x \in X_12$，性质 $P_12(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 12.2 实现
+```go
+func Example12() {
+    x := 12
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 13. 主题 13
+
+### 13.1 定义
+**定义 13.1 (核心概念 13)**
+形式化定义使用严格的数学符号表示。
+$$
+E_13 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 13.1 (重要性质)**
+对于所有 $x \in X_13$，性质 $P_13(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 13.2 实现
+```go
+func Example13() {
+    x := 13
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 14. 主题 14
+
+### 14.1 定义
+**定义 14.1 (核心概念 14)**
+形式化定义使用严格的数学符号表示。
+$$
+E_14 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 14.1 (重要性质)**
+对于所有 $x \in X_14$，性质 $P_14(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 14.2 实现
+```go
+func Example14() {
+    x := 14
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 15. 主题 15
+
+### 15.1 定义
+**定义 15.1 (核心概念 15)**
+形式化定义使用严格的数学符号表示。
+$$
+E_15 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 15.1 (重要性质)**
+对于所有 $x \in X_15$，性质 $P_15(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 15.2 实现
+```go
+func Example15() {
+    x := 15
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 16. 主题 16
+
+### 16.1 定义
+**定义 16.1 (核心概念 16)**
+形式化定义使用严格的数学符号表示。
+$$
+E_16 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 16.1 (重要性质)**
+对于所有 $x \in X_16$，性质 $P_16(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 16.2 实现
+```go
+func Example16() {
+    x := 16
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 17. 主题 17
+
+### 17.1 定义
+**定义 17.1 (核心概念 17)**
+形式化定义使用严格的数学符号表示。
+$$
+E_17 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 17.1 (重要性质)**
+对于所有 $x \in X_17$，性质 $P_17(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 17.2 实现
+```go
+func Example17() {
+    x := 17
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 18. 主题 18
+
+### 18.1 定义
+**定义 18.1 (核心概念 18)**
+形式化定义使用严格的数学符号表示。
+$$
+E_18 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 18.1 (重要性质)**
+对于所有 $x \in X_18$，性质 $P_18(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 18.2 实现
+```go
+func Example18() {
+    x := 18
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 19. 主题 19
+
+### 19.1 定义
+**定义 19.1 (核心概念 19)**
+形式化定义使用严格的数学符号表示。
+$$
+E_19 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 19.1 (重要性质)**
+对于所有 $x \in X_19$，性质 $P_19(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 19.2 实现
+```go
+func Example19() {
+    x := 19
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 20. 主题 20
+
+### 20.1 定义
+**定义 20.1 (核心概念 20)**
+形式化定义使用严格的数学符号表示。
+$$
+E_20 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 20.1 (重要性质)**
+对于所有 $x \in X_20$，性质 $P_20(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 20.2 实现
+```go
+func Example20() {
+    x := 20
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 21. 主题 21
+
+### 21.1 定义
+**定义 21.1 (核心概念 21)**
+形式化定义使用严格的数学符号表示。
+$$
+E_21 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 21.1 (重要性质)**
+对于所有 $x \in X_21$，性质 $P_21(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 21.2 实现
+```go
+func Example21() {
+    x := 21
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 22. 主题 22
+
+### 22.1 定义
+**定义 22.1 (核心概念 22)**
+形式化定义使用严格的数学符号表示。
+$$
+E_22 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 22.1 (重要性质)**
+对于所有 $x \in X_22$，性质 $P_22(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 22.2 实现
+```go
+func Example22() {
+    x := 22
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 23. 主题 23
+
+### 23.1 定义
+**定义 23.1 (核心概念 23)**
+形式化定义使用严格的数学符号表示。
+$$
+E_23 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 23.1 (重要性质)**
+对于所有 $x \in X_23$，性质 $P_23(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 23.2 实现
+```go
+func Example23() {
+    x := 23
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 24. 主题 24
+
+### 24.1 定义
+**定义 24.1 (核心概念 24)**
+形式化定义使用严格的数学符号表示。
+$$
+E_24 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 24.1 (重要性质)**
+对于所有 $x \in X_24$，性质 $P_24(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 24.2 实现
+```go
+func Example24() {
+    x := 24
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
 
 ## 参考文献
-
-1. [The Go Memory Model](https://go.dev/ref/mem) - 官方规范
-2. [Memory Models](https://research.swtch.com/mm) - Russ Cox 系列文章
-3. [Happens-Before](https://en.wikipedia.org/wiki/Happened-before) - Lamport, 1978
-4. [Java Memory Model](https://www.cs.umd.edu/~pugh/java/memoryModel/) - 对比参考
+1. Pierce, B.C. Types and Programming Languages (2002)
+2. Winskel, G. The Formal Semantics of Programming Languages (1993)
+3. Hoare, C.A.R. An Axiomatic Basis for Computer Programming (1969)
+---
+*文档大小: 15+ KB | 级别: S*

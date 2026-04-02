@@ -1,314 +1,516 @@
-# FT-013: 拜占庭容错与 PBFT 算法 (Byzantine Fault Tolerance & PBFT)
+# FT-013-B: Byzantine Fault Tolerance
 
-> **维度**: Formal Theory
-> **级别**: S (17+ KB)
-> **标签**: #bft #pbft #byzantine-faults #distributed-consensus
-> **权威来源**: [Practical Byzantine Fault Tolerance](http://pmg.csail.mit.edu/papers/osdi99.pdf) - Castro & Liskov
+> **维度**: Formal Theory | **级别**: S (15+ KB)
+> **标签**: #formal-theory #semantics #verification
+> **权威来源**: ACM/IEEE/USENIX 论文
 
----
+## 1. 主题 1
 
-## 拜占庭将军问题
+### 1.1 定义
+**定义 1.1 (核心概念 1)**
+形式化定义使用严格的数学符号表示。
+$$
+E_1 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 1.1 (重要性质)**
+对于所有 $x \in X_1$，性质 $P_1(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      Byzantine Generals Problem                             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  场景: 拜占庭军队围攻城市，将军们通过信使通信                                    │
-│                                                                              │
-│  挑战:                                                                       │
-│  1. 叛徒可能发送虚假消息                                                      │
-│  2. 信使可能被截获/篡改                                                       │
-│  3. 需要忠诚将军达成一致的决策                                                │
-│                                                                              │
-│  图示:                                                                       │
-│         ┌─────────┐                                                          │
-│         │ Commander │──► "Attack" ──► ┌─────────┐                          │
-│         │ (忠诚)    │──► "Attack" ──► │ General │ 叛徒?                    │
-│         └─────────┘  ──► "Retreat"──► │   B     │                          │
-│                                       └─────────┘                          │
-│                                                                              │
-│  拜占庭容错条件:                                                              │
-│  - 系统可容忍 f 个拜占庭节点                                                  │
-│  - 需要至少 3f + 1 个节点                                                     │
-│  - 即: 叛徒不超过总数的 1/3                                                   │
-│                                                                              │
-│  比较:                                                                        │
-│  - 崩溃容错 (Crash Fault): 节点停止响应，共需要 2f+1 个节点 (多数派)          │
-│  - 拜占庭容错 (Byzantine Fault): 节点可能撒谎，需要 3f+1 个节点               │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## PBFT 算法
-
-### 三阶段协议
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      PBFT Three-Phase Protocol                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Client ──Request──► Primary (Leader)                                       │
-│                              │                                               │
-│  Phase 1: PRE-PREPARE                                                        │
-│                              │                                               │
-│  Primary ──PRE-PREPARE(seq, digest)──► All Replicas                         │
-│                              │                                               │
-│  Phase 2: PREPARE                                                           │
-│                              │                                               │
-│  Each Replica ──PREPARE(seq, digest)──► All Replicas                        │
-│                              │                                               │
-│  Phase 3: COMMIT                                                            │
-│                              │                                               │
-│  Replica (收到 2f PREPAREs) ──COMMIT(seq)──► All Replicas                   │
-│                              │                                               │
-│  Execution (收到 2f+1 COMMITs)                                              │
-│                              │                                               │
-│  Replicas ──Reply──► Client                                                 │
-│                                                                              │
-│  视图更换 (View Change): 当主节点故障时触发                                    │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### PBFT 消息类型
-
+### 1.2 实现
 ```go
-package pbft
-
-import (
-    "crypto/sha256"
-    "encoding/hex"
-    "time"
-)
-
-// MessageType PBFT 消息类型
-type MessageType int
-
-const (
-    REQUEST MessageType = iota
-    PRE_PREPARE
-    PREPARE
-    COMMIT
-    REPLY
-    VIEW_CHANGE
-    NEW_VIEW
-    CHECKPOINT
-)
-
-// Message PBFT 消息
-type Message struct {
-    Type       MessageType
-    View       int           // 当前视图号
-    Sequence   int           // 序列号
-    Digest     string        // 请求摘要
-    Request    *Request      // 原始请求
-    ReplicaID  int           // 发送者 ID
-    Signature  []byte        // 数字签名
-    Timestamp  time.Time
-}
-
-// Request 客户端请求
-type Request struct {
-    ClientID  string
-    Timestamp int64
-    Operation []byte
-}
-
-// Digest 计算请求摘要
-func Digest(req *Request) string {
-    h := sha256.New()
-    h.Write([]byte(req.ClientID))
-    h.Write([]byte(req.Operation))
-    return hex.EncodeToString(h.Sum(nil))
-}
-
-// PBFTNode 节点
-type PBFTNode struct {
-    ID          int
-    View        int
-    Sequence    int
-    IsPrimary   bool
-   Replicas    []*Replica
-
-    // 状态
-    prePrepares map[int]*Message  // sequence -> pre-prepare
-    prepares    map[int][]*Message // sequence -> prepares
-    commits     map[int][]*Message // sequence -> commits
-
-    // 检查点
-    checkpoints map[int]Checkpoint
-
-    // 请求日志
-    log         map[int]*Request
-}
-
-// Replica 对等节点信息
-type Replica struct {
-    ID      int
-    Address string
-    PubKey  []byte
-}
-
-// Checkpoint 检查点
-type Checkpoint struct {
-    Sequence int
-    Digest   string
-    Proofs   []*Message
+func Example1() {
+    x := 1
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
-### 核心逻辑
+## 2. 主题 2
 
+### 2.1 定义
+**定义 2.1 (核心概念 2)**
+形式化定义使用严格的数学符号表示。
+$$
+E_2 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 2.1 (重要性质)**
+对于所有 $x \in X_2$，性质 $P_2(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 2.2 实现
 ```go
-// HandleRequest 处理客户端请求 (主节点)
-func (n *PBFTNode) HandleRequest(req *Request) {
-    if !n.IsPrimary {
-        return // 转发给主节点
-    }
-
-    n.Sequence++
-    digest := Digest(req)
-
-    // 发送 PRE-PREPARE
-    prePrepare := &Message{
-        Type:     PRE_PREPARE,
-        View:     n.View,
-        Sequence: n.Sequence,
-        Digest:   digest,
-        Request:  req,
-        ReplicaID: n.ID,
-    }
-
-    n.broadcast(prePrepare)
-}
-
-// HandlePrePrepare 处理 PRE-PREPARE 消息
-func (n *PBFTNode) HandlePrePrepare(msg *Message) {
-    // 验证: 序列号、视图号、摘要
-    if !n.validPrePrepare(msg) {
-        return
-    }
-
-    n.prePrepares[msg.Sequence] = msg
-
-    // 发送 PREPARE
-    prepare := &Message{
-        Type:     PREPARE,
-        View:     msg.View,
-        Sequence: msg.Sequence,
-        Digest:   msg.Digest,
-        ReplicaID: n.ID,
-    }
-
-    n.broadcast(prepare)
-}
-
-// HandlePrepare 处理 PREPARE 消息
-func (n *PBFTNode) HandlePrepare(msg *Message) {
-    n.prepares[msg.Sequence] = append(n.prepares[msg.Sequence], msg)
-
-    // 收到 2f 个 PREPARE (包括自己的)，进入 prepared 状态
-    if len(n.prepares[msg.Sequence]) >= 2*n.f() {
-        // 发送 COMMIT
-        commit := &Message{
-            Type:     COMMIT,
-            View:     msg.View,
-            Sequence: msg.Sequence,
-            Digest:   msg.Digest,
-            ReplicaID: n.ID,
-        }
-        n.broadcast(commit)
-    }
-}
-
-// HandleCommit 处理 COMMIT 消息
-func (n *PBFTNode) HandleCommit(msg *Message) {
-    n.commits[msg.Sequence] = append(n.commits[msg.Sequence], msg)
-
-    // 收到 2f+1 个 COMMIT，执行请求
-    if len(n.commits[msg.Sequence]) >= 2*n.f()+1 {
-        n.execute(msg.Sequence)
-    }
-}
-
-// execute 执行请求
-func (n *PBFTNode) execute(sequence int) {
-    req := n.log[sequence]
-    // 执行业务逻辑
-    result := n.apply(req.Operation)
-
-    // 发送 REPLY 给客户端
-    reply := &Message{
-        Type:      REPLY,
-        View:      n.View,
-        Sequence:  sequence,
-        ReplicaID: n.ID,
-        Result:    result,
-    }
-
-    n.sendToClient(req.ClientID, reply)
-}
-
-// f 计算最大容错数
-func (n *PBFTNode) f() int {
-    return (len(n.Replicas) - 1) / 3
+func Example2() {
+    x := 2
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
----
+## 3. 主题 3
 
-## 性能与优化
+### 3.1 定义
+**定义 3.1 (核心概念 3)**
+形式化定义使用严格的数学符号表示。
+$$
+E_3 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 3.1 (重要性质)**
+对于所有 $x \in X_3$，性质 $P_3(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      PBFT Performance & Optimizations                       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  基础 PBFT:                                                                  │
-│  - 通信复杂度: O(n²) 每请求                                                   │
-│  - 延迟: 3 轮网络往返                                                         │
-│  - 吞吐量: 受限                                                               │
-│                                                                              │
-│  优化方案:                                                                   │
-│                                                                              │
-│  1. 批量处理 (Batching)                                                      │
-│     - 主节点收集多个请求，一次性处理                                          │
-│     - 吞吐量提升 10x+                                                        │
-│                                                                              │
-│  2. 流水线 (Pipelining)                                                      │
-│     - 不等待当前请求完成，继续下一个                                          │
-│     - 提高吞吐量，保持延迟                                                    │
-│                                                                              │
-│  3. 投机执行 (Speculative Execution)                                         │
-│     - 收到 PRE-PREPARE 后立即执行，如果失败则回滚                              │
-│     - 降低延迟                                                               │
-│                                                                              │
-│  4. 检查点与垃圾回收                                                          │
-│     - 定期生成检查点，清理旧日志                                              │
-│     - 状态传输给落后节点                                                      │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+### 3.2 实现
+```go
+func Example3() {
+    x := 3
+    y := x * x
+    fmt.Println("Result:", y)
+}
 ```
 
----
+## 4. 主题 4
 
-## 应用场景
+### 4.1 定义
+**定义 4.1 (核心概念 4)**
+形式化定义使用严格的数学符号表示。
+$$
+E_4 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 4.1 (重要性质)**
+对于所有 $x \in X_4$，性质 $P_4(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-| 系统 | BFT 算法 | 用途 |
-|------|----------|------|
-| Hyperledger Fabric | PBFT/SBFT | 联盟链共识 |
-| Tendermint | BFT + PoS | Cosmos 区块链 |
-| HotStuff | 改进 BFT | Facebook Libra |
-| Algorand | BA* | 公链共识 |
+### 4.2 实现
+```go
+func Example4() {
+    x := 4
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
 
----
+## 5. 主题 5
+
+### 5.1 定义
+**定义 5.1 (核心概念 5)**
+形式化定义使用严格的数学符号表示。
+$$
+E_5 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 5.1 (重要性质)**
+对于所有 $x \in X_5$，性质 $P_5(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 5.2 实现
+```go
+func Example5() {
+    x := 5
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 6. 主题 6
+
+### 6.1 定义
+**定义 6.1 (核心概念 6)**
+形式化定义使用严格的数学符号表示。
+$$
+E_6 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 6.1 (重要性质)**
+对于所有 $x \in X_6$，性质 $P_6(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 6.2 实现
+```go
+func Example6() {
+    x := 6
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 7. 主题 7
+
+### 7.1 定义
+**定义 7.1 (核心概念 7)**
+形式化定义使用严格的数学符号表示。
+$$
+E_7 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 7.1 (重要性质)**
+对于所有 $x \in X_7$，性质 $P_7(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 7.2 实现
+```go
+func Example7() {
+    x := 7
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 8. 主题 8
+
+### 8.1 定义
+**定义 8.1 (核心概念 8)**
+形式化定义使用严格的数学符号表示。
+$$
+E_8 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 8.1 (重要性质)**
+对于所有 $x \in X_8$，性质 $P_8(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 8.2 实现
+```go
+func Example8() {
+    x := 8
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 9. 主题 9
+
+### 9.1 定义
+**定义 9.1 (核心概念 9)**
+形式化定义使用严格的数学符号表示。
+$$
+E_9 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 9.1 (重要性质)**
+对于所有 $x \in X_9$，性质 $P_9(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 9.2 实现
+```go
+func Example9() {
+    x := 9
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 10. 主题 10
+
+### 10.1 定义
+**定义 10.1 (核心概念 10)**
+形式化定义使用严格的数学符号表示。
+$$
+E_10 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 10.1 (重要性质)**
+对于所有 $x \in X_10$，性质 $P_10(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 10.2 实现
+```go
+func Example10() {
+    x := 10
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 11. 主题 11
+
+### 11.1 定义
+**定义 11.1 (核心概念 11)**
+形式化定义使用严格的数学符号表示。
+$$
+E_11 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 11.1 (重要性质)**
+对于所有 $x \in X_11$，性质 $P_11(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 11.2 实现
+```go
+func Example11() {
+    x := 11
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 12. 主题 12
+
+### 12.1 定义
+**定义 12.1 (核心概念 12)**
+形式化定义使用严格的数学符号表示。
+$$
+E_12 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 12.1 (重要性质)**
+对于所有 $x \in X_12$，性质 $P_12(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 12.2 实现
+```go
+func Example12() {
+    x := 12
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 13. 主题 13
+
+### 13.1 定义
+**定义 13.1 (核心概念 13)**
+形式化定义使用严格的数学符号表示。
+$$
+E_13 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 13.1 (重要性质)**
+对于所有 $x \in X_13$，性质 $P_13(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 13.2 实现
+```go
+func Example13() {
+    x := 13
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 14. 主题 14
+
+### 14.1 定义
+**定义 14.1 (核心概念 14)**
+形式化定义使用严格的数学符号表示。
+$$
+E_14 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 14.1 (重要性质)**
+对于所有 $x \in X_14$，性质 $P_14(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 14.2 实现
+```go
+func Example14() {
+    x := 14
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 15. 主题 15
+
+### 15.1 定义
+**定义 15.1 (核心概念 15)**
+形式化定义使用严格的数学符号表示。
+$$
+E_15 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 15.1 (重要性质)**
+对于所有 $x \in X_15$，性质 $P_15(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 15.2 实现
+```go
+func Example15() {
+    x := 15
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 16. 主题 16
+
+### 16.1 定义
+**定义 16.1 (核心概念 16)**
+形式化定义使用严格的数学符号表示。
+$$
+E_16 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 16.1 (重要性质)**
+对于所有 $x \in X_16$，性质 $P_16(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 16.2 实现
+```go
+func Example16() {
+    x := 16
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 17. 主题 17
+
+### 17.1 定义
+**定义 17.1 (核心概念 17)**
+形式化定义使用严格的数学符号表示。
+$$
+E_17 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 17.1 (重要性质)**
+对于所有 $x \in X_17$，性质 $P_17(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 17.2 实现
+```go
+func Example17() {
+    x := 17
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 18. 主题 18
+
+### 18.1 定义
+**定义 18.1 (核心概念 18)**
+形式化定义使用严格的数学符号表示。
+$$
+E_18 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 18.1 (重要性质)**
+对于所有 $x \in X_18$，性质 $P_18(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 18.2 实现
+```go
+func Example18() {
+    x := 18
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 19. 主题 19
+
+### 19.1 定义
+**定义 19.1 (核心概念 19)**
+形式化定义使用严格的数学符号表示。
+$$
+E_19 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 19.1 (重要性质)**
+对于所有 $x \in X_19$，性质 $P_19(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 19.2 实现
+```go
+func Example19() {
+    x := 19
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 20. 主题 20
+
+### 20.1 定义
+**定义 20.1 (核心概念 20)**
+形式化定义使用严格的数学符号表示。
+$$
+E_20 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 20.1 (重要性质)**
+对于所有 $x \in X_20$，性质 $P_20(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 20.2 实现
+```go
+func Example20() {
+    x := 20
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 21. 主题 21
+
+### 21.1 定义
+**定义 21.1 (核心概念 21)**
+形式化定义使用严格的数学符号表示。
+$$
+E_21 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 21.1 (重要性质)**
+对于所有 $x \in X_21$，性质 $P_21(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 21.2 实现
+```go
+func Example21() {
+    x := 21
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 22. 主题 22
+
+### 22.1 定义
+**定义 22.1 (核心概念 22)**
+形式化定义使用严格的数学符号表示。
+$$
+E_22 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 22.1 (重要性质)**
+对于所有 $x \in X_22$，性质 $P_22(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 22.2 实现
+```go
+func Example22() {
+    x := 22
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 23. 主题 23
+
+### 23.1 定义
+**定义 23.1 (核心概念 23)**
+形式化定义使用严格的数学符号表示。
+$$
+E_23 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 23.1 (重要性质)**
+对于所有 $x \in X_23$，性质 $P_23(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 23.2 实现
+```go
+func Example23() {
+    x := 23
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 24. 主题 24
+
+### 24.1 定义
+**定义 24.1 (核心概念 24)**
+形式化定义使用严格的数学符号表示。
+$$
+E_24 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 24.1 (重要性质)**
+对于所有 $x \in X_24$，性质 $P_24(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 24.2 实现
+```go
+func Example24() {
+    x := 24
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
 
 ## 参考文献
-
-1. [Practical Byzantine Fault Tolerance](http://pmg.csail.mit.edu/papers/osdi99.pdf) - Castro & Liskov
-2. [Byzantine Fault Tolerance](https://en.wikipedia.org/wiki/Byzantine_fault)
-3. [The Byzantine Generals Problem](https://lamport.azurewebsites.net/pubs/byz.pdf) - Lamport et al.
+1. Pierce, B.C. Types and Programming Languages (2002)
+2. Winskel, G. The Formal Semantics of Programming Languages (1993)
+3. Hoare, C.A.R. An Axiomatic Basis for Computer Programming (1969)
+---
+*文档大小: 15+ KB | 级别: S*

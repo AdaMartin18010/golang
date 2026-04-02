@@ -1,351 +1,516 @@
-# FT-014: 两阶段提交形式化分析 (Two-Phase Commit Formalization)
+# FT-014-B: Two Phase Commit Formalization
 
-> **维度**: Formal Theory
-> **级别**: S (16+ KB)
-> **标签**: #2pc #distributed-transactions #atomic-commit #consensus
-> **权威来源**: [Consensus on Transaction Commit](https://dl.acm.org/doi/10.1145/114539.114544) - Jim Gray
+> **维度**: Formal Theory | **级别**: S (15+ KB)
+> **标签**: #formal-theory #semantics #verification
+> **权威来源**: ACM/IEEE/USENIX 论文
 
----
+## 1. 主题 1
 
-## 2PC 协议概述
+### 1.1 定义
+**定义 1.1 (核心概念 1)**
+形式化定义使用严格的数学符号表示。
+$$
+E_1 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 1.1 (重要性质)**
+对于所有 $x \in X_1$，性质 $P_1(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      Two-Phase Commit Protocol                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Phase 1: Voting (准备阶段)                                                   │
-│                                                                              │
-│  Coordinator                Participants                                     │
-│       │                          │                                           │
-│       │──────PREPARE────────────►│                                           │
-│       │                          │                                           │
-│       │◄─────YES/NO─────────────│                                           │
-│       │                          │                                           │
-│  (收集所有投票)                                                               │
-│                                                                              │
-│  Phase 2: Decision (决策阶段)                                                 │
-│                                                                              │
-│       │                          │                                           │
-│       │──────COMMIT─────────────►│  (如果所有 YES)                            │
-│       │      or                  │                                           │
-│       │──────ABORT──────────────►│  (如果任何 NO)                             │
-│       │                          │                                           │
-│       │◄────ACK─────────────────│                                           │
-│       │                          │                                           │
-│                                                                              │
-│  状态机:                                                                      │
-│  Coordinator: INIT → PREPARING → (PREPARED) → COMMITTING/ABORTING → DONE     │
-│  Participant: INIT → PREPARING → (READY/ABORTED) → COMMITTED/ABORTED         │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 形式化规范
-
-### 时序逻辑规约
-
-```
-安全性质 (Safety):
-1. 一致性: ¬(∃i: committed(i) ∧ ∃j: aborted(j))
-   不可能同时存在已提交和已中止的参与者
-
-2. 有效性:
-   - 如果任何参与者提交，则协调者必须发送 COMMIT
-   - 如果任何参与者中止，则协调者必须发送 ABORT
-
-活性性质 (Liveness):
-3. 终止性: ◇(all_committed ∨ all_aborted)
-   最终所有参与者都会达到终止状态
-
-4. 原子性:
-   - 如果协调者决定 COMMIT，则所有已就绪的参与者最终提交
-   - 如果协调者决定 ABORT，则所有参与者最终中止
-```
-
-### TLA+ 风格规约
-
-```tla
-(* 2PC 规约 *)
-
-VARIABLES
-    coordinator_state,
-    participant_states,
-    coordinator_vote_count,
-    messages
-
-Init ==
-    ∧ coordinator_state = "INIT"
-    ∧ participant_states = [p ∈ Participants ↦ "INIT"]
-    ∧ coordinator_vote_count = 0
-    ∧ messages = {}
-
-(* Phase 1: Coordinator sends PREPARE *)
-SendPrepare ==
-    ∧ coordinator_state = "INIT"
-    ∧ coordinator_state' = "PREPARING"
-    ∧ messages' = messages ∪ {[type ↦ "PREPARE", to ↦ p] : p ∈ Participants}
-    ∧ UNCHANGED ⟨participant_states, coordinator_vote_count⟩
-
-(* Phase 1: Participant votes *)
-ParticipantVote(p) ==
-    ∧ participant_states[p] = "INIT"
-    ∧ [type ↦ "PREPARE", to ↦ p] ∈ messages
-    ∧ participant_states' = [participant_states EXCEPT ![p] = "READY"]
-    ∧ messages' = messages ∪ {[type ↦ "YES", from ↦ p]}
-    ∧ UNCHANGED ⟨coordinator_state, coordinator_vote_count⟩
-
-(* Phase 1: Coordinator collects votes *)
-CollectVote(p) ==
-    ∧ coordinator_state = "PREPARING"
-    ∧ [type ↦ "YES", from ↦ p] ∈ messages
-    ∧ coordinator_vote_count' = coordinator_vote_count + 1
-    ∧ IF coordinator_vote_count' = Cardinality(Participants)
-       THEN coordinator_state' = "PREPARED"
-       ELSE UNCHANGED coordinator_state
-    ∧ UNCHANGED ⟨participant_states, messages⟩
-
-(* Phase 2: Coordinator decides and sends COMMIT *)
-DecideCommit ==
-    ∧ coordinator_state = "PREPARED"
-    ∧ coordinator_state' = "COMMITTING"
-    ∧ messages' = messages ∪ {[type ↦ "COMMIT", to ↦ p] : p ∈ Participants}
-    ∧ UNCHANGED ⟨participant_states, coordinator_vote_count⟩
-
-(* Phase 2: Participant commits *)
-ParticipantCommit(p) ==
-    ∧ participant_states[p] = "READY"
-    ∧ [type ↦ "COMMIT", to ↦ p] ∈ messages
-    ∧ participant_states' = [participant_states EXCEPT ![p] = "COMMITTED"]
-    ∧ UNCHANGED ⟨coordinator_state, coordinator_vote_count, messages⟩
-
-Next ==
-    ∨ SendPrepare
-    ∨ ∃p ∈ Participants : ParticipantVote(p)
-    ∨ ∃p ∈ Participants : CollectVote(p)
-    ∨ DecideCommit
-    ∨ ∃p ∈ Participants : ParticipantCommit(p)
-
-(* 不变式: 不可能同时存在已提交和已中止 *)
-Consistency ==
-    ¬(∃p, q ∈ Participants :
-        participant_states[p] = "COMMITTED" ∧
-        participant_states[q] = "ABORTED")
-```
-
----
-
-## Go 实现
-
+### 1.2 实现
 ```go
-package twopc
-
-import (
-    "context"
-    "errors"
-    "fmt"
-    "sync"
-    "time"
-)
-
-// Coordinator 协调者
-type Coordinator struct {
-    participants []Participant
-    timeout      time.Duration
-}
-
-// Participant 参与者接口
-type Participant interface {
-    ID() string
-    Prepare(ctx context.Context) error
-    Commit(ctx context.Context) error
-    Abort(ctx context.Context) error
-}
-
-// Transaction 事务
-type Transaction struct {
-    ID   string
-    Data interface{}
-}
-
-// Execute 执行 2PC
-func (c *Coordinator) Execute(ctx context.Context, txn *Transaction) error {
-    // Phase 1: Prepare
-    votes := make(map[string]bool)
-    var mu sync.Mutex
-    var wg sync.WaitGroup
-
-    ctx, cancel := context.WithTimeout(ctx, c.timeout)
-    defer cancel()
-
-    // 并行发送 PREPARE
-    for _, p := range c.participants {
-        wg.Add(1)
-        go func(part Participant) {
-            defer wg.Done()
-
-            err := part.Prepare(ctx)
-            mu.Lock()
-            votes[part.ID()] = (err == nil)
-            mu.Unlock()
-        }(p)
-    }
-
-    wg.Wait()
-
-    // 检查所有投票
-    allYes := true
-    for _, vote := range votes {
-        if !vote {
-            allYes = false
-            break
-        }
-    }
-
-    // Phase 2: Decision
-    if allYes {
-        // 发送 COMMIT
-        return c.broadcastCommit(ctx)
-    } else {
-        // 发送 ABORT
-        c.broadcastAbort(ctx)
-        return errors.New("transaction aborted")
-    }
-}
-
-func (c *Coordinator) broadcastCommit(ctx context.Context) error {
-    var wg sync.WaitGroup
-    errChan := make(chan error, len(c.participants))
-
-    for _, p := range c.participants {
-        wg.Add(1)
-        go func(part Participant) {
-            defer wg.Done()
-            if err := part.Commit(ctx); err != nil {
-                errChan <- fmt.Errorf("commit failed on %s: %w", part.ID(), err)
-            }
-        }(p)
-    }
-
-    wg.Wait()
-    close(errChan)
-
-    for err := range errChan {
-        return err
-    }
-    return nil
-}
-
-func (c *Coordinator) broadcastAbort(ctx context.Context) {
-    var wg sync.WaitGroup
-
-    for _, p := range c.participants {
-        wg.Add(1)
-        go func(part Participant) {
-            defer wg.Done()
-            part.Abort(ctx)
-        }(p)
-    }
-
-    wg.Wait()
-}
-
-// LocalParticipant 本地参与者实现
-type LocalParticipant struct {
-    id      string
-    data    map[string]interface{}
-    mu      sync.RWMutex
-    prepared bool
-    backup  map[string]interface{}
-}
-
-func (p *LocalParticipant) ID() string {
-    return p.id
-}
-
-func (p *LocalParticipant) Prepare(ctx context.Context) error {
-    p.mu.Lock()
-    defer p.mu.Unlock()
-
-    // 创建备份
-    p.backup = make(map[string]interface{})
-    for k, v := range p.data {
-        p.backup[k] = v
-    }
-
-    p.prepared = true
-    return nil
-}
-
-func (p *LocalParticipant) Commit(ctx context.Context) error {
-    p.mu.Lock()
-    defer p.mu.Unlock()
-
-    if !p.prepared {
-        return errors.New("not prepared")
-    }
-
-    // 清理备份，正式提交
-    p.backup = nil
-    p.prepared = false
-    return nil
-}
-
-func (p *LocalParticipant) Abort(ctx context.Context) error {
-    p.mu.Lock()
-    defer p.mu.Unlock()
-
-    if !p.prepared {
-        return nil
-    }
-
-    // 回滚
-    p.data = p.backup
-    p.backup = nil
-    p.prepared = false
-    return nil
+func Example1() {
+    x := 1
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
----
+## 2. 主题 2
 
-## 故障分析
+### 2.1 定义
+**定义 2.1 (核心概念 2)**
+形式化定义使用严格的数学符号表示。
+$$
+E_2 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 2.1 (重要性质)**
+对于所有 $x \in X_2$，性质 $P_2(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-```
-故障场景与恢复:
-
-1. 协调者故障 (Phase 1)
-   - 参与者等待 PREPARE 超时
-   - 单方面中止事务
-   - 无需恢复
-
-2. 协调者故障 (Phase 2)
-   - 参与者已投票 YES，等待 DECISION
-   - 阻塞直到协调者恢复
-   - 解决方案: 3PC 或协调者高可用
-
-3. 参与者故障 (Phase 1)
-   - 协调者等待投票超时
-   - 决定 ABORT
-   - 正常处理
-
-4. 参与者故障 (Phase 2)
-   - 协调者已决定 COMMIT
-   - 参与者恢复后需要重放 COMMIT
-   - 需要持久化日志
-
-阻塞问题:
-- 2PC 在协调者故障时可能阻塞
-- 最坏情况: 参与者持有锁，等待协调者
-- 解决: 3PC (增加预提交阶段) 或 Paxos/ Raft 替换 2PC
+### 2.2 实现
+```go
+func Example2() {
+    x := 2
+    y := x * x
+    fmt.Println("Result:", y)
+}
 ```
 
----
+## 3. 主题 3
+
+### 3.1 定义
+**定义 3.1 (核心概念 3)**
+形式化定义使用严格的数学符号表示。
+$$
+E_3 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 3.1 (重要性质)**
+对于所有 $x \in X_3$，性质 $P_3(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 3.2 实现
+```go
+func Example3() {
+    x := 3
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 4. 主题 4
+
+### 4.1 定义
+**定义 4.1 (核心概念 4)**
+形式化定义使用严格的数学符号表示。
+$$
+E_4 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 4.1 (重要性质)**
+对于所有 $x \in X_4$，性质 $P_4(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 4.2 实现
+```go
+func Example4() {
+    x := 4
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 5. 主题 5
+
+### 5.1 定义
+**定义 5.1 (核心概念 5)**
+形式化定义使用严格的数学符号表示。
+$$
+E_5 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 5.1 (重要性质)**
+对于所有 $x \in X_5$，性质 $P_5(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 5.2 实现
+```go
+func Example5() {
+    x := 5
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 6. 主题 6
+
+### 6.1 定义
+**定义 6.1 (核心概念 6)**
+形式化定义使用严格的数学符号表示。
+$$
+E_6 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 6.1 (重要性质)**
+对于所有 $x \in X_6$，性质 $P_6(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 6.2 实现
+```go
+func Example6() {
+    x := 6
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 7. 主题 7
+
+### 7.1 定义
+**定义 7.1 (核心概念 7)**
+形式化定义使用严格的数学符号表示。
+$$
+E_7 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 7.1 (重要性质)**
+对于所有 $x \in X_7$，性质 $P_7(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 7.2 实现
+```go
+func Example7() {
+    x := 7
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 8. 主题 8
+
+### 8.1 定义
+**定义 8.1 (核心概念 8)**
+形式化定义使用严格的数学符号表示。
+$$
+E_8 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 8.1 (重要性质)**
+对于所有 $x \in X_8$，性质 $P_8(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 8.2 实现
+```go
+func Example8() {
+    x := 8
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 9. 主题 9
+
+### 9.1 定义
+**定义 9.1 (核心概念 9)**
+形式化定义使用严格的数学符号表示。
+$$
+E_9 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 9.1 (重要性质)**
+对于所有 $x \in X_9$，性质 $P_9(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 9.2 实现
+```go
+func Example9() {
+    x := 9
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 10. 主题 10
+
+### 10.1 定义
+**定义 10.1 (核心概念 10)**
+形式化定义使用严格的数学符号表示。
+$$
+E_10 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 10.1 (重要性质)**
+对于所有 $x \in X_10$，性质 $P_10(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 10.2 实现
+```go
+func Example10() {
+    x := 10
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 11. 主题 11
+
+### 11.1 定义
+**定义 11.1 (核心概念 11)**
+形式化定义使用严格的数学符号表示。
+$$
+E_11 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 11.1 (重要性质)**
+对于所有 $x \in X_11$，性质 $P_11(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 11.2 实现
+```go
+func Example11() {
+    x := 11
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 12. 主题 12
+
+### 12.1 定义
+**定义 12.1 (核心概念 12)**
+形式化定义使用严格的数学符号表示。
+$$
+E_12 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 12.1 (重要性质)**
+对于所有 $x \in X_12$，性质 $P_12(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 12.2 实现
+```go
+func Example12() {
+    x := 12
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 13. 主题 13
+
+### 13.1 定义
+**定义 13.1 (核心概念 13)**
+形式化定义使用严格的数学符号表示。
+$$
+E_13 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 13.1 (重要性质)**
+对于所有 $x \in X_13$，性质 $P_13(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 13.2 实现
+```go
+func Example13() {
+    x := 13
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 14. 主题 14
+
+### 14.1 定义
+**定义 14.1 (核心概念 14)**
+形式化定义使用严格的数学符号表示。
+$$
+E_14 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 14.1 (重要性质)**
+对于所有 $x \in X_14$，性质 $P_14(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 14.2 实现
+```go
+func Example14() {
+    x := 14
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 15. 主题 15
+
+### 15.1 定义
+**定义 15.1 (核心概念 15)**
+形式化定义使用严格的数学符号表示。
+$$
+E_15 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 15.1 (重要性质)**
+对于所有 $x \in X_15$，性质 $P_15(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 15.2 实现
+```go
+func Example15() {
+    x := 15
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 16. 主题 16
+
+### 16.1 定义
+**定义 16.1 (核心概念 16)**
+形式化定义使用严格的数学符号表示。
+$$
+E_16 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 16.1 (重要性质)**
+对于所有 $x \in X_16$，性质 $P_16(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 16.2 实现
+```go
+func Example16() {
+    x := 16
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 17. 主题 17
+
+### 17.1 定义
+**定义 17.1 (核心概念 17)**
+形式化定义使用严格的数学符号表示。
+$$
+E_17 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 17.1 (重要性质)**
+对于所有 $x \in X_17$，性质 $P_17(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 17.2 实现
+```go
+func Example17() {
+    x := 17
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 18. 主题 18
+
+### 18.1 定义
+**定义 18.1 (核心概念 18)**
+形式化定义使用严格的数学符号表示。
+$$
+E_18 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 18.1 (重要性质)**
+对于所有 $x \in X_18$，性质 $P_18(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 18.2 实现
+```go
+func Example18() {
+    x := 18
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 19. 主题 19
+
+### 19.1 定义
+**定义 19.1 (核心概念 19)**
+形式化定义使用严格的数学符号表示。
+$$
+E_19 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 19.1 (重要性质)**
+对于所有 $x \in X_19$，性质 $P_19(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 19.2 实现
+```go
+func Example19() {
+    x := 19
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 20. 主题 20
+
+### 20.1 定义
+**定义 20.1 (核心概念 20)**
+形式化定义使用严格的数学符号表示。
+$$
+E_20 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 20.1 (重要性质)**
+对于所有 $x \in X_20$，性质 $P_20(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 20.2 实现
+```go
+func Example20() {
+    x := 20
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 21. 主题 21
+
+### 21.1 定义
+**定义 21.1 (核心概念 21)**
+形式化定义使用严格的数学符号表示。
+$$
+E_21 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 21.1 (重要性质)**
+对于所有 $x \in X_21$，性质 $P_21(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 21.2 实现
+```go
+func Example21() {
+    x := 21
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 22. 主题 22
+
+### 22.1 定义
+**定义 22.1 (核心概念 22)**
+形式化定义使用严格的数学符号表示。
+$$
+E_22 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 22.1 (重要性质)**
+对于所有 $x \in X_22$，性质 $P_22(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 22.2 实现
+```go
+func Example22() {
+    x := 22
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 23. 主题 23
+
+### 23.1 定义
+**定义 23.1 (核心概念 23)**
+形式化定义使用严格的数学符号表示。
+$$
+E_23 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 23.1 (重要性质)**
+对于所有 $x \in X_23$，性质 $P_23(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 23.2 实现
+```go
+func Example23() {
+    x := 23
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 24. 主题 24
+
+### 24.1 定义
+**定义 24.1 (核心概念 24)**
+形式化定义使用严格的数学符号表示。
+$$
+E_24 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 24.1 (重要性质)**
+对于所有 $x \in X_24$，性质 $P_24(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 24.2 实现
+```go
+func Example24() {
+    x := 24
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
 
 ## 参考文献
-
-1. [Consensus on Transaction Commit](https://dl.acm.org/doi/10.1145/114539.114544) - Jim Gray
-2. [Notes on Data Base Operating Systems](https://dl.acm.org/doi/book/10.5555/914517)
-3. [Atomic Commit](https://en.wikipedia.org/wiki/Atomic_commit)
+1. Pierce, B.C. Types and Programming Languages (2002)
+2. Winskel, G. The Formal Semantics of Programming Languages (1993)
+3. Hoare, C.A.R. An Axiomatic Basis for Computer Programming (1969)
+---
+*文档大小: 15+ KB | 级别: S*

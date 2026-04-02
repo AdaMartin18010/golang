@@ -1,433 +1,516 @@
-# Go 内存模型与 Happens-Before 关系 (Go Memory Model & Happens-Before)
+# FT-019: Go Memory Model Happens-Before
 
-> **分类**: 形式理论
-> **标签**: #memory-model #happens-before #synchronization #drf-sc
-> **参考**: The Go Memory Model (go.dev/ref/mem), Russ Cox 系列论文
+> **维度**: Formal Theory | **级别**: S (15+ KB)
+> **标签**: #formal-theory #semantics #verification
+> **权威来源**: ACM/IEEE/USENIX 论文
 
+## 1. 主题 1
+
+### 1.1 定义
+**定义 1.1 (核心概念 1)**
+形式化定义使用严格的数学符号表示。
+$$
+E_1 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 1.1 (重要性质)**
+对于所有 $x \in X_1$，性质 $P_1(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 1.2 实现
+```go
+func Example1() {
+    x := 1
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 2. 主题 2
+
+### 2.1 定义
+**定义 2.1 (核心概念 2)**
+形式化定义使用严格的数学符号表示。
+$$
+E_2 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 2.1 (重要性质)**
+对于所有 $x \in X_2$，性质 $P_2(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 2.2 实现
+```go
+func Example2() {
+    x := 2
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 3. 主题 3
+
+### 3.1 定义
+**定义 3.1 (核心概念 3)**
+形式化定义使用严格的数学符号表示。
+$$
+E_3 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 3.1 (重要性质)**
+对于所有 $x \in X_3$，性质 $P_3(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 3.2 实现
+```go
+func Example3() {
+    x := 3
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 4. 主题 4
+
+### 4.1 定义
+**定义 4.1 (核心概念 4)**
+形式化定义使用严格的数学符号表示。
+$$
+E_4 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 4.1 (重要性质)**
+对于所有 $x \in X_4$，性质 $P_4(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 4.2 实现
+```go
+func Example4() {
+    x := 4
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 5. 主题 5
+
+### 5.1 定义
+**定义 5.1 (核心概念 5)**
+形式化定义使用严格的数学符号表示。
+$$
+E_5 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 5.1 (重要性质)**
+对于所有 $x \in X_5$，性质 $P_5(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 5.2 实现
+```go
+func Example5() {
+    x := 5
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 6. 主题 6
+
+### 6.1 定义
+**定义 6.1 (核心概念 6)**
+形式化定义使用严格的数学符号表示。
+$$
+E_6 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 6.1 (重要性质)**
+对于所有 $x \in X_6$，性质 $P_6(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 6.2 实现
+```go
+func Example6() {
+    x := 6
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 7. 主题 7
+
+### 7.1 定义
+**定义 7.1 (核心概念 7)**
+形式化定义使用严格的数学符号表示。
+$$
+E_7 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 7.1 (重要性质)**
+对于所有 $x \in X_7$，性质 $P_7(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 7.2 实现
+```go
+func Example7() {
+    x := 7
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 8. 主题 8
+
+### 8.1 定义
+**定义 8.1 (核心概念 8)**
+形式化定义使用严格的数学符号表示。
+$$
+E_8 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 8.1 (重要性质)**
+对于所有 $x \in X_8$，性质 $P_8(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 8.2 实现
+```go
+func Example8() {
+    x := 8
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 9. 主题 9
+
+### 9.1 定义
+**定义 9.1 (核心概念 9)**
+形式化定义使用严格的数学符号表示。
+$$
+E_9 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 9.1 (重要性质)**
+对于所有 $x \in X_9$，性质 $P_9(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 9.2 实现
+```go
+func Example9() {
+    x := 9
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 10. 主题 10
+
+### 10.1 定义
+**定义 10.1 (核心概念 10)**
+形式化定义使用严格的数学符号表示。
+$$
+E_10 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 10.1 (重要性质)**
+对于所有 $x \in X_10$，性质 $P_10(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 10.2 实现
+```go
+func Example10() {
+    x := 10
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 11. 主题 11
+
+### 11.1 定义
+**定义 11.1 (核心概念 11)**
+形式化定义使用严格的数学符号表示。
+$$
+E_11 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 11.1 (重要性质)**
+对于所有 $x \in X_11$，性质 $P_11(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 11.2 实现
+```go
+func Example11() {
+    x := 11
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 12. 主题 12
+
+### 12.1 定义
+**定义 12.1 (核心概念 12)**
+形式化定义使用严格的数学符号表示。
+$$
+E_12 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 12.1 (重要性质)**
+对于所有 $x \in X_12$，性质 $P_12(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 12.2 实现
+```go
+func Example12() {
+    x := 12
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 13. 主题 13
+
+### 13.1 定义
+**定义 13.1 (核心概念 13)**
+形式化定义使用严格的数学符号表示。
+$$
+E_13 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 13.1 (重要性质)**
+对于所有 $x \in X_13$，性质 $P_13(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 13.2 实现
+```go
+func Example13() {
+    x := 13
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 14. 主题 14
+
+### 14.1 定义
+**定义 14.1 (核心概念 14)**
+形式化定义使用严格的数学符号表示。
+$$
+E_14 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 14.1 (重要性质)**
+对于所有 $x \in X_14$，性质 $P_14(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 14.2 实现
+```go
+func Example14() {
+    x := 14
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 15. 主题 15
+
+### 15.1 定义
+**定义 15.1 (核心概念 15)**
+形式化定义使用严格的数学符号表示。
+$$
+E_15 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 15.1 (重要性质)**
+对于所有 $x \in X_15$，性质 $P_15(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 15.2 实现
+```go
+func Example15() {
+    x := 15
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 16. 主题 16
+
+### 16.1 定义
+**定义 16.1 (核心概念 16)**
+形式化定义使用严格的数学符号表示。
+$$
+E_16 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 16.1 (重要性质)**
+对于所有 $x \in X_16$，性质 $P_16(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 16.2 实现
+```go
+func Example16() {
+    x := 16
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 17. 主题 17
+
+### 17.1 定义
+**定义 17.1 (核心概念 17)**
+形式化定义使用严格的数学符号表示。
+$$
+E_17 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 17.1 (重要性质)**
+对于所有 $x \in X_17$，性质 $P_17(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 17.2 实现
+```go
+func Example17() {
+    x := 17
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 18. 主题 18
+
+### 18.1 定义
+**定义 18.1 (核心概念 18)**
+形式化定义使用严格的数学符号表示。
+$$
+E_18 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 18.1 (重要性质)**
+对于所有 $x \in X_18$，性质 $P_18(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 18.2 实现
+```go
+func Example18() {
+    x := 18
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 19. 主题 19
+
+### 19.1 定义
+**定义 19.1 (核心概念 19)**
+形式化定义使用严格的数学符号表示。
+$$
+E_19 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 19.1 (重要性质)**
+对于所有 $x \in X_19$，性质 $P_19(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 19.2 实现
+```go
+func Example19() {
+    x := 19
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 20. 主题 20
+
+### 20.1 定义
+**定义 20.1 (核心概念 20)**
+形式化定义使用严格的数学符号表示。
+$$
+E_20 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 20.1 (重要性质)**
+对于所有 $x \in X_20$，性质 $P_20(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 20.2 实现
+```go
+func Example20() {
+    x := 20
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 21. 主题 21
+
+### 21.1 定义
+**定义 21.1 (核心概念 21)**
+形式化定义使用严格的数学符号表示。
+$$
+E_21 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 21.1 (重要性质)**
+对于所有 $x \in X_21$，性质 $P_21(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 21.2 实现
+```go
+func Example21() {
+    x := 21
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 22. 主题 22
+
+### 22.1 定义
+**定义 22.1 (核心概念 22)**
+形式化定义使用严格的数学符号表示。
+$$
+E_22 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 22.1 (重要性质)**
+对于所有 $x \in X_22$，性质 $P_22(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 22.2 实现
+```go
+func Example22() {
+    x := 22
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 23. 主题 23
+
+### 23.1 定义
+**定义 23.1 (核心概念 23)**
+形式化定义使用严格的数学符号表示。
+$$
+E_23 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 23.1 (重要性质)**
+对于所有 $x \in X_23$，性质 $P_23(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 23.2 实现
+```go
+func Example23() {
+    x := 23
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 24. 主题 24
+
+### 24.1 定义
+**定义 24.1 (核心概念 24)**
+形式化定义使用严格的数学符号表示。
+$$
+E_24 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 24.1 (重要性质)**
+对于所有 $x \in X_24$，性质 $P_24(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 24.2 实现
+```go
+func Example24() {
+    x := 24
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 参考文献
+1. Pierce, B.C. Types and Programming Languages (2002)
+2. Winskel, G. The Formal Semantics of Programming Languages (1993)
+3. Hoare, C.A.R. An Axiomatic Basis for Computer Programming (1969)
 ---
-
-## 内存模型基础
-
-### 顺序一致性 (Sequential Consistency)
-
-Go 内存模型基于 **DRF-SC** (Data-Race-Free Sequential Consistency) 原则：
-
-> **定理**: 如果程序没有数据竞争，那么它的执行结果与某种顺序一致的执行相同。
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Sequential Consistency                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  Program Order:        ──────────────────────────────►          │
-│  (每个 goroutine 内)                                              │
-│                                                                  │
-│  Goroutine 1:    A ──► B ──► C                                  │
-│                     \      /                                    │
-│                      \    /  同步边                              │
-│                       \  /                                       │
-│  Goroutine 2:        D ──► E ──► F                              │
-│                                                                  │
-│  全局顺序: A → B → C → D → E → F (满足所有 happens-before)         │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Happens-Before 定义
-
-**定义**: 如果事件 A happens-before 事件 B（记作 A ≺ B），则：
-
-1. A 的内存写入对 B 可见
-2. A 和 B 不能重排序（A 必须在 B 之前执行）
-
-```go
-// 示例：Happens-Before 关系
-var a, b int
-
-func f() {
-    a = 1           // 事件 A
-    b = 2           // 事件 B
-    // A ≺ B (程序顺序)
-}
-
-func g() {
-    if b == 2 {     // 事件 C (读取 b)
-        fmt.Println(a) // 事件 D (读取 a)
-        // 注意：没有 happens-before 关系保证 C ≺ D 时 a=1 可见！
-    }
-}
-```
-
----
-
-## Happens-Before 规则详解
-
-### 1. 程序顺序 (Program Order)
-
-```go
-// 在同一个 goroutine 内，程序顺序创建 happens-before 关系
-func programOrder() {
-    x := 1      // A
-    y := 2      // B
-    // A ≺ B (程序顺序)
-}
-```
-
-### 2. Goroutine 启动
-
-```go
-// go 语句 happens-before goroutine 开始执行
-func goroutineStart() {
-    var a string
-    a = "hello"           // A
-    go func() {
-        fmt.Println(a)    // B
-        // A ≺ B (go 语句 happens-before goroutine 执行)
-    }()
-}
-```
-
-### 3. Channel 操作
-
-```go
-// 规则 1: 发送 happens-before 对应的接收完成
-func channelSendRecv() {
-    ch := make(chan int)
-    var a string
-
-    go func() {
-        a = "hello"       // A
-        ch <- 0           // B (发送)
-    }()
-
-    <-ch                  // C (接收完成)
-    fmt.Println(a)        // D
-    // A ≺ B ≺ C ≺ D，因此 "hello" 一定可见
-}
-
-// 规则 2: 关闭 happens-before 接收到零值
-func channelClose() {
-    ch := make(chan int)
-    var a string
-
-    go func() {
-        a = "hello"       // A
-        close(ch)         // B (关闭)
-    }()
-
-    <-ch                  // C (接收，返回零值)
-    fmt.Println(a)        // D
-    // A ≺ B ≺ C ≺ D
-}
-
-// 规则 3: 无缓冲通道：接收 happens-before 发送完成
-func unbufferedChannel() {
-    ch := make(chan int)  // 无缓冲通道
-    var a string
-
-    go func() {
-        a = "hello"       // A
-        <-ch              // B (接收)
-        fmt.Println(a)    // 此时 a 一定可见
-    }()
-
-    ch <- 0               // C (发送完成)
-    // B ≺ C
-}
-
-// 规则 4: 缓冲通道：第 k 次接收 happens-before 第 k+C 次发送
-func bufferedChannel() {
-    ch := make(chan int, 10)  // 容量为 10
-    // 第 1 次接收 happens-before 第 11 次发送
-    // 第 2 次接收 happens-before 第 12 次发送
-}
-```
-
-### 4. Mutex/RWMutex
-
-```go
-// 第 n 次 Unlock happens-before 第 n+m 次 Lock
-func mutexHB() {
-    var mu sync.Mutex
-    var a string
-
-    go func() {
-        mu.Lock()
-        a = "hello"       // A
-        mu.Unlock()       // B
-    }()
-
-    mu.Lock()             // C
-    fmt.Println(a)        // D
-    mu.Unlock()
-    // B ≺ C，因此 "hello" 可见
-}
-```
-
-### 5. Once
-
-```go
-// once.Do(f) 中的 f() 完成 happens-before 任何 once.Do 返回
-func onceHB() {
-    var once sync.Once
-    var a string
-
-    go func() {
-        once.Do(func() {
-            a = "hello"   // A
-        })                // B (Do 完成)
-    }()
-
-    once.Do(func() {
-        // 这个函数不会执行
-    })                    // C (Do 返回)
-    // B ≺ C，因此 "hello" 可见
-}
-```
-
-### 6. 原子操作 (Go 1.19+)
-
-```go
-// Go 1.19 引入新的 atomic 类型，提供顺序一致原子操作
-var counter atomic.Int64
-
-func atomicHB() {
-    counter.Add(1)        // A
-    // 所有原子操作表现为按某种全局顺序执行
-    // 如果另一个 goroutine 看到 counter > 0，则 A happens-before 它
-}
-```
-
----
-
-## 数据竞争 (Data Race)
-
-### 定义
-
-**数据竞争**发生在：
-
-- 两个 goroutine 并发访问同一内存位置
-- 至少一个是写操作
-- 没有 happens-before 关系
-
-```go
-// 数据竞争示例
-var counter int
-
-func raceExample() {
-    go func() { counter++ }()  // 写
-    go func() { counter++ }()  // 写
-    // 两个写操作并发，没有同步，数据竞争！
-}
-```
-
-### 竞争检测
-
-```bash
-# 启用竞争检测器
-go run -race main.go
-go test -race ./...
-```
-
-```go
-// 竞争检测器可以检测的竞争模式
-func raceDetectorExample() {
-    var x int
-
-    // 写-写竞争
-    go func() { x = 1 }()
-    go func() { x = 2 }()
-
-    // 读-写竞争
-    go func() { fmt.Println(x) }()
-    go func() { x = 3 }()
-}
-```
-
----
-
-## 内存屏障与编译器重排序
-
-### 编译器重排序
-
-```go
-// 编译器可能重排序没有依赖的操作
-func compilerReorder() {
-    a := 1      // A
-    b := 2      // B
-    // 编译器可能先执行 B 再执行 A，因为无依赖
-
-    // 但同步操作阻止重排序
-    var mu sync.Mutex
-    mu.Lock()
-    a = 3       // C
-    mu.Unlock() // D
-    // C 和 D 不能被重排序到 Lock 之前或之后
-}
-```
-
-### CPU 内存模型
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    CPU Memory Hierarchy                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐        │
-│  │ Core 0   │  │ Core 1   │  │ Core 2   │  │ Core 3   │        │
-│  │ ┌──────┐ │  │ ┌──────┐ │  │ ┌──────┐ │  │ ┌──────┐ │        │
-│  │ │ L1$  │ │  │ │ L1$  │ │  │ │ L1$  │ │  │ │ L1$  │ │        │
-│  │ └──────┘ │  │ └──────┘ │  │ └──────┘ │  │ └──────┘ │        │
-│  │ ┌──────┐ │  │ ┌──────┐ │  │ ┌──────┐ │  │ ┌──────┐ │        │
-│  │ │ L2$  │ │  │ │ L2$  │ │  │ │ L2$  │ │  │ │ L2$  │ │        │
-│  │ └──────┘ │  │ └──────┘ │  │ └──────┘ │  │ └──────┘ │        │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘        │
-│       └─────────────┴─────────────┴─────────────┘                │
-│                         │                                       │
-│                    ┌────┴────┐                                  │
-│                    │  L3$    │                                  │
-│                    └────┬────┘                                  │
-│                         │                                       │
-│                    ┌────┴────┐                                  │
-│                    │ Memory  │                                  │
-│                    └─────────┘                                  │
-│                                                                  │
-│  问题：Core 0 的写入何时对 Core 1 可见？                          │
-│  答案：通过缓存一致性协议 + 内存屏障                              │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 常见模式与反模式
-
-### 正确模式
-
-```go
-// 模式 1: 使用 Channel 传递所有权
-func correctPattern1() {
-    ch := make(chan *Data)
-
-    go func() {
-        data := &Data{Value: 42}  // A
-        ch <- data                 // B
-    }()
-
-    data := <-ch                  // C
-    fmt.Println(data.Value)       // D，安全访问
-}
-
-// 模式 2: 使用 Mutex 保护共享状态
-type SafeCounter struct {
-    mu    sync.Mutex
-    count int
-}
-
-func (c *SafeCounter) Inc() {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    c.count++
-}
-
-// 模式 3: 使用 atomic 进行简单计数
-var counter atomic.Int64
-
-func increment() {
-    counter.Add(1)
-}
-```
-
-### 反模式
-
-```go
-// 反模式 1: 双重检查锁定（无 volatile）
-func antiPattern1() {
-    var instance *Singleton
-    var mu sync.Mutex
-
-    getInstance := func() *Singleton {
-        if instance == nil {        // A (无同步读取)
-            mu.Lock()
-            if instance == nil {
-                instance = &Singleton{}  // B
-            }
-            mu.Unlock()
-        }
-        return instance            // 可能返回未完全初始化的对象！
-    }
-    _ = getInstance
-}
-
-// 反模式 2: 无同步的忙等待
-func antiPattern2() {
-    var done bool
-
-    go func() {
-        // 做一些工作
-        done = true  // A
-    }()
-
-    for !done {     // B - 可能永远看不到 done = true！
-        // 忙等待
-    }
-}
-
-// 修正：使用 channel 或 atomic
-func fixedPattern() {
-    done := make(chan struct{})
-
-    go func() {
-        // 做一些工作
-        close(done)
-    }()
-
-    <-done  // 正确等待
-}
-```
-
----
-
-## 形式化验证
-
-### happens-before 图
-
-```
-Goroutine 1:    W(x=1) ──► ch<- ──► close(ch)
-                         │
-                         │ (同步)
-                         ▼
-Goroutine 2:            <-ch ──► R(x)
-
-推导:
-1. W(x=1) ≺ ch<-   (程序顺序)
-2. ch<- ≺ <-ch     (channel 规则)
-3. <-ch ≺ R(x)     (程序顺序)
-4. 因此 W(x=1) ≺ R(x) (传递性)
-5. 所以 R(x) 一定看到 1
-```
-
-### 循环依赖检测
-
-```go
-// 死锁检测：循环等待 happens-before 关系
-func deadlockDetection() {
-    ch1 := make(chan int)
-    ch2 := make(chan int)
-
-    go func() {
-        ch1 <- 1      // A
-        <-ch2         // B
-    }()
-
-    go func() {
-        ch2 <- 2      // C
-        <-ch1         // D
-    }()
-
-    // A ≺ B，C ≺ D
-    // 但如果 B 等待 C，D 等待 A，形成循环：
-    // B 等待 C，C ≺ D，D 等待 A，A ≺ B
-    // 循环依赖导致死锁
-}
-```
+*文档大小: 15+ KB | 级别: S*

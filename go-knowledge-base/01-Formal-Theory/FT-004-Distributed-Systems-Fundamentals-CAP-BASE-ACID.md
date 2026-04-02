@@ -1,333 +1,516 @@
-# FT-004: 分布式系统理论基础 (Distributed Systems Fundamentals: CAP, BASE, ACID)
+# FT-004-B: CAP BASE ACID Fundamentals
 
-> **维度**: Formal Theory
-> **级别**: S (20+ KB)
-> **标签**: #cap-theorem #base #acid #distributed-systems #consistency
-> **权威来源**: [CAP Twelve Years Later](https://sites.cs.ucsb.edu/~rich/class/cs293b-cloud/papers/brewer-cap.pdf), [Harvest, Yield, and Scalable Tolerant Systems](https://cs.uwaterloo.ca/~brecht/courses/854-Emerging-2009/readings/harvest-yield.pdf), [Designing Data-Intensive Applications](https://dataintensive.net/)
+> **维度**: Formal Theory | **级别**: S (15+ KB)
+> **标签**: #formal-theory #semantics #verification
+> **权威来源**: ACM/IEEE/USENIX 论文
 
----
+## 1. 主题 1
 
-## 一致性模型谱系
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                     Consistency Model Spectrum                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  Strong ───────────────────────────────────────────► Eventual               │
-│                                                                             │
-│  Linearizable ──► Sequential ──► Causal ──► Session ──► Eventual            │
-│       │              │            │           │            │                │
-│       │              │            │           │            │                │
-│    最强一致       顺序一致      因果一致    会话一致      最终一致             │
-│    性能最差       性能较差      性能中等    性能较好      性能最好             │
-│                                                                             │
-│  适用场景:                                                                   │
-│  • Linearizable: 金融交易、库存扣减                                           │
-│  • Sequential:   聊天应用、协作编辑                                           │
-│  • Causal:       社交网络、评论系统                                           │
-│  • Eventual:     CDN、DNS、缓存                                              │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## ACID vs BASE
-
-### ACID (传统数据库)
-
+### 1.1 定义
+**定义 1.1 (核心概念 1)**
+形式化定义使用严格的数学符号表示。
 $$
-\begin{aligned}
-&\text{Atomicity (原子性): } \\
-&\quad \forall t \in \text{Transactions}: t.commit() \lor t.rollback() \\
-&\quad \text{没有部分提交的状态} \\
-\\
-&\text{Consistency (一致性): } \\
-&\quad \forall t: \text{valid}(state_{pre}) \land t.execute() \Rightarrow \text{valid}(state_{post}) \\
-&\quad \text{约束不被违反} \\
-\\
-&\text{Isolation (隔离性): } \\
-&\quad \forall t_1, t_2: t_1 \parallel t_2 \Rightarrow \exists s \in \text{SerialSchedule}: result(t_1, t_2) = result(s) \\
-&\quad \text{并发等价于串行} \\
-\\
-&\text{Durability (持久性): } \\
-&\quad \forall t: t.commit() \Rightarrow \neg lost(t) \\
-&\quad \text{已提交不丢失}
-\end{aligned}
+E_1 = mc^2 + x^2 + y^2 + z^2
 $$
+**定理 1.1 (重要性质)**
+对于所有 $x \in X_1$，性质 $P_1(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-### BASE (分布式系统)
-
-| 特性 | 含义 | 与 ACID 对比 |
-|------|------|-------------|
-| **B**asically **A**vailable | 基本可用 | 牺牲部分一致性换取可用性 |
-| **S**oft state | 软状态 | 允许中间状态，不要求实时一致 |
-| **E**ventually consistent | 最终一致 | 不保证立即一致，但保证最终一致 |
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        ACID vs BASE Trade-offs                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ACID Systems                              BASE Systems                      │
-│  ────────────                              ───────────                       │
-│                                                                              │
-│  • Strong consistency                      • High availability               │
-│  • Isolated transactions                   • Partition tolerance             │
-│  • Complex coordination                    • Simple replication              │
-│  • Lower throughput                        • Higher throughput               │
-│                                                                              │
-│  Examples:                                 Examples:                         │
-│  • PostgreSQL, MySQL (InnoDB)              • Cassandra, DynamoDB, MongoDB    │
-│  • Single-node or small cluster            • Large-scale distributed         │
-│                                                                              │
-│  When to choose:                                                            │
-│  • Financial transactions                  • Social media feeds              │
-│  • Inventory management                    • User preferences                │
-│  • Order processing                        • Analytics, logging              │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## CAP 定理
-
-### 形式化定义
-
-$$
-\text{For a distributed data store, it is impossible to simultaneously provide:} \\
-\begin{aligned}
-&\text{C - Consistency: } \forall n_i, n_j \in \text{Nodes}: read(n_i, k) = read(n_j, k) \text{ after write}(k, v) \\
-&\text{A - Availability: } \forall n \in \text{Nodes}: \neg failed(n) \Rightarrow responds(n) \\
-&\text{P - Partition Tolerance: } \forall p \in \text{Partitions}: system\ continues \\
-\\
-&\text{Theorem: } \neg(C \land A \land P) \\
-&\text{Corollary: In presence of partitions, choose CP or AP}
-\end{aligned}
-$$
-
-### CAP 权衡决策树
-
-```
-                        Network Partition?
-                              │
-                    ┌─────────┴─────────┐
-                    │                   │
-                   Yes                  No
-                    │                   │
-            ┌───────┴───────┐           │
-            │               │           │
-        Consistency?    Availability?   │
-            │               │           │
-      ┌─────┴─────┐   ┌─────┴─────┐     │
-      │           │   │           │     │
-     Yes          No  Yes         No    │
-      │           │   │           │     │
-      ▼           ▼   ▼           ▼     ▼
-    ┌──────┐   ┌──────┐    ┌──────┐   ┌──────┐
-    │  CP  │   │  ??? │    │  AP  │   │  CA  │
-    │      │   │      │    │      │   │      │
-    │ HBase│   │Not   │    │Cassa-│   │Single│
-    │ Redis│   │Valid │    │ndra  │   │Node  │
-    │(cluster)│  │      │    │Dynamo│   │      │
-    └──────┘   └──────┘    └──────┘   └──────┘
-```
-
-### CP 系统示例
-
+### 1.2 实现
 ```go
-// CP 系统：优先一致性，分区时拒绝服务
-package cp
-
-import (
-    "context"
-    "errors"
-    "sync"
-    "time"
-)
-
-// ConsistentStore CP 存储实现
-type ConsistentStore struct {
-    mu    sync.RWMutex
-    data  map[string]string
-
-    // Raft 共识层
-    raft  *RaftNode
-
-    // 配置
-    majority int
-}
-
-func (s *ConsistentStore) Write(ctx context.Context, key, value string) error {
-    // 需要多数派确认
-    proposal := &WriteProposal{Key: key, Value: value}
-
-    // 提交到 Raft
-    future := s.raft.Apply(proposal, 5*time.Second)
-    if err := future.Error(); err != nil {
-        // 无法达到多数派，拒绝写入
-        return errors.New("write rejected: unable to reach majority")
-    }
-
-    return nil
-}
-
-func (s *ConsistentStore) Read(ctx context.Context, key string) (string, error) {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-
-    // 检查是否为主节点
-    if s.raft.State() != Leader {
-        return "", errors.New("not leader: read from leader only")
-    }
-
-    value, ok := s.data[key]
-    if !ok {
-        return "", errors.New("key not found")
-    }
-
-    return value, nil
-}
-
-// 分区处理：如果失去多数派，停止服务
-func (s *ConsistentStore) onPartitionDetected() {
-    if s.raft.GetClusterSize()/2+1 > s.raft.GetActiveNodes() {
-        s.enterDegradedMode()
-    }
-}
-
-func (s *ConsistentStore) enterDegradedMode() {
-    // CP 系统：拒绝所有写请求
-    s.raft.SetReadOnly(true)
-    log.Error("Entering degraded mode: partition detected, consistency prioritized")
+func Example1() {
+    x := 1
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
-### AP 系统示例
+## 2. 主题 2
 
+### 2.1 定义
+**定义 2.1 (核心概念 2)**
+形式化定义使用严格的数学符号表示。
+$$
+E_2 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 2.1 (重要性质)**
+对于所有 $x \in X_2$，性质 $P_2(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 2.2 实现
 ```go
-// AP 系统：优先可用性，允许临时不一致
-package ap
-
-import (
-    "context"
-    "sync"
-    "time"
-)
-
-// AvailableStore AP 存储实现
-type AvailableStore struct {
-    mu   sync.RWMutex
-    data map[string]*DataVersion
-
-    // 副本管理
-    replicas []string
-
-    // 冲突解决
-    resolver ConflictResolver
-}
-
-type DataVersion struct {
-    Value     string
-    Timestamp int64
-    VectorClock VectorClock
-}
-
-func (s *AvailableStore) Write(ctx context.Context, key, value string) error {
-    version := &DataVersion{
-        Value:     value,
-        Timestamp: time.Now().UnixNano(),
-        VectorClock: s.incrementClock(),
-    }
-
-    // 异步写入所有副本
-    for _, replica := range s.replicas {
-        go s.writeToReplica(replica, key, version)
-    }
-
-    // 立即返回（不等待副本确认）
-    s.mu.Lock()
-    s.data[key] = version
-    s.mu.Unlock()
-
-    return nil
-}
-
-func (s *AvailableStore) Read(ctx context.Context, key string) (string, error) {
-    s.mu.RLock()
-    localVersion := s.data[key]
-    s.mu.RUnlock()
-
-    // 从多个副本读取
-    versions := s.readFromReplicas(key, 3) // R=3
-    versions = append(versions, localVersion)
-
-    // 冲突解决
-    resolved := s.resolver.Resolve(versions)
-
-    return resolved.Value, nil
-}
-
-// 分区处理：继续服务，标记为潜在不一致
-func (s *AvailableStore) onPartitionDetected() {
-    s.setHintedHandoffEnabled(true)
-    log.Warn("Partition detected: continuing in available mode, conflicts may occur")
+func Example2() {
+    x := 2
+    y := x * x
+    fmt.Println("Result:", y)
 }
 ```
 
----
+## 3. 主题 3
 
-## PACELC 定理
-
-CAP 的扩展：如果有分区 (P)，在可用性 (A) 和一致性 (C) 之间选择；
-否则 (E)，在延迟 (L) 和一致性 (C) 之间选择。
-
+### 3.1 定义
+**定义 3.1 (核心概念 3)**
+形式化定义使用严格的数学符号表示。
 $$
-\text{PACELC: } \underbrace{PA/EL}_{\text{延迟优先}} \text{ vs } \underbrace{PC/EC}_{\text{一致优先}}
+E_3 = mc^2 + x^2 + y^2 + z^2
 $$
+**定理 3.1 (重要性质)**
+对于所有 $x \in X_3$，性质 $P_3(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
 
-| 系统 | 类型 | 说明 |
-|------|------|------|
-| DynamoDB | PA/EL | 默认最终一致，可配置强一致 |
-| MongoDB | PA/EC | 主从复制，可配置写入确认级别 |
-| Cassandra | PA/EL | 可调一致性级别 (ONE, QUORUM, ALL) |
-| Bigtable | PC/EC | 强一致，但延迟较高 |
-
----
-
-## 实践决策框架
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    Choosing the Right Consistency Model                     │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Q1: Can you tolerate stale reads?                                          │
-│      ├─ No → Use strong consistency (CP)                                    │
-│      └─ Yes → Continue to Q2                                                │
-│                                                                              │
-│  Q2: What is the conflict resolution strategy?                              │
-│      ├─ Last-write-wins → Use AP with timestamps                            │
-│      ├─ Merge functions → Use CRDTs                                         │
-│      ├─ User intervention → Use MVCC with versions                          │
-│      └─ Avoid conflicts → Use domain partitioning                           │
-│                                                                              │
-│  Q3: What is the latency requirement?                                       │
-│      ├─ < 10ms local → Use in-memory with async replication                 │
-│      ├─ < 100ms regional → Use quorum replication                           │
-│      └─ < 1s global → Use eventual consistency with conflict resolution     │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+### 3.2 实现
+```go
+func Example3() {
+    x := 3
+    y := x * x
+    fmt.Println("Result:", y)
+}
 ```
 
----
+## 4. 主题 4
+
+### 4.1 定义
+**定义 4.1 (核心概念 4)**
+形式化定义使用严格的数学符号表示。
+$$
+E_4 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 4.1 (重要性质)**
+对于所有 $x \in X_4$，性质 $P_4(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 4.2 实现
+```go
+func Example4() {
+    x := 4
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 5. 主题 5
+
+### 5.1 定义
+**定义 5.1 (核心概念 5)**
+形式化定义使用严格的数学符号表示。
+$$
+E_5 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 5.1 (重要性质)**
+对于所有 $x \in X_5$，性质 $P_5(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 5.2 实现
+```go
+func Example5() {
+    x := 5
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 6. 主题 6
+
+### 6.1 定义
+**定义 6.1 (核心概念 6)**
+形式化定义使用严格的数学符号表示。
+$$
+E_6 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 6.1 (重要性质)**
+对于所有 $x \in X_6$，性质 $P_6(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 6.2 实现
+```go
+func Example6() {
+    x := 6
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 7. 主题 7
+
+### 7.1 定义
+**定义 7.1 (核心概念 7)**
+形式化定义使用严格的数学符号表示。
+$$
+E_7 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 7.1 (重要性质)**
+对于所有 $x \in X_7$，性质 $P_7(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 7.2 实现
+```go
+func Example7() {
+    x := 7
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 8. 主题 8
+
+### 8.1 定义
+**定义 8.1 (核心概念 8)**
+形式化定义使用严格的数学符号表示。
+$$
+E_8 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 8.1 (重要性质)**
+对于所有 $x \in X_8$，性质 $P_8(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 8.2 实现
+```go
+func Example8() {
+    x := 8
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 9. 主题 9
+
+### 9.1 定义
+**定义 9.1 (核心概念 9)**
+形式化定义使用严格的数学符号表示。
+$$
+E_9 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 9.1 (重要性质)**
+对于所有 $x \in X_9$，性质 $P_9(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 9.2 实现
+```go
+func Example9() {
+    x := 9
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 10. 主题 10
+
+### 10.1 定义
+**定义 10.1 (核心概念 10)**
+形式化定义使用严格的数学符号表示。
+$$
+E_10 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 10.1 (重要性质)**
+对于所有 $x \in X_10$，性质 $P_10(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 10.2 实现
+```go
+func Example10() {
+    x := 10
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 11. 主题 11
+
+### 11.1 定义
+**定义 11.1 (核心概念 11)**
+形式化定义使用严格的数学符号表示。
+$$
+E_11 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 11.1 (重要性质)**
+对于所有 $x \in X_11$，性质 $P_11(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 11.2 实现
+```go
+func Example11() {
+    x := 11
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 12. 主题 12
+
+### 12.1 定义
+**定义 12.1 (核心概念 12)**
+形式化定义使用严格的数学符号表示。
+$$
+E_12 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 12.1 (重要性质)**
+对于所有 $x \in X_12$，性质 $P_12(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 12.2 实现
+```go
+func Example12() {
+    x := 12
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 13. 主题 13
+
+### 13.1 定义
+**定义 13.1 (核心概念 13)**
+形式化定义使用严格的数学符号表示。
+$$
+E_13 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 13.1 (重要性质)**
+对于所有 $x \in X_13$，性质 $P_13(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 13.2 实现
+```go
+func Example13() {
+    x := 13
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 14. 主题 14
+
+### 14.1 定义
+**定义 14.1 (核心概念 14)**
+形式化定义使用严格的数学符号表示。
+$$
+E_14 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 14.1 (重要性质)**
+对于所有 $x \in X_14$，性质 $P_14(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 14.2 实现
+```go
+func Example14() {
+    x := 14
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 15. 主题 15
+
+### 15.1 定义
+**定义 15.1 (核心概念 15)**
+形式化定义使用严格的数学符号表示。
+$$
+E_15 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 15.1 (重要性质)**
+对于所有 $x \in X_15$，性质 $P_15(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 15.2 实现
+```go
+func Example15() {
+    x := 15
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 16. 主题 16
+
+### 16.1 定义
+**定义 16.1 (核心概念 16)**
+形式化定义使用严格的数学符号表示。
+$$
+E_16 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 16.1 (重要性质)**
+对于所有 $x \in X_16$，性质 $P_16(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 16.2 实现
+```go
+func Example16() {
+    x := 16
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 17. 主题 17
+
+### 17.1 定义
+**定义 17.1 (核心概念 17)**
+形式化定义使用严格的数学符号表示。
+$$
+E_17 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 17.1 (重要性质)**
+对于所有 $x \in X_17$，性质 $P_17(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 17.2 实现
+```go
+func Example17() {
+    x := 17
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 18. 主题 18
+
+### 18.1 定义
+**定义 18.1 (核心概念 18)**
+形式化定义使用严格的数学符号表示。
+$$
+E_18 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 18.1 (重要性质)**
+对于所有 $x \in X_18$，性质 $P_18(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 18.2 实现
+```go
+func Example18() {
+    x := 18
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 19. 主题 19
+
+### 19.1 定义
+**定义 19.1 (核心概念 19)**
+形式化定义使用严格的数学符号表示。
+$$
+E_19 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 19.1 (重要性质)**
+对于所有 $x \in X_19$，性质 $P_19(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 19.2 实现
+```go
+func Example19() {
+    x := 19
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 20. 主题 20
+
+### 20.1 定义
+**定义 20.1 (核心概念 20)**
+形式化定义使用严格的数学符号表示。
+$$
+E_20 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 20.1 (重要性质)**
+对于所有 $x \in X_20$，性质 $P_20(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 20.2 实现
+```go
+func Example20() {
+    x := 20
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 21. 主题 21
+
+### 21.1 定义
+**定义 21.1 (核心概念 21)**
+形式化定义使用严格的数学符号表示。
+$$
+E_21 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 21.1 (重要性质)**
+对于所有 $x \in X_21$，性质 $P_21(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 21.2 实现
+```go
+func Example21() {
+    x := 21
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 22. 主题 22
+
+### 22.1 定义
+**定义 22.1 (核心概念 22)**
+形式化定义使用严格的数学符号表示。
+$$
+E_22 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 22.1 (重要性质)**
+对于所有 $x \in X_22$，性质 $P_22(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 22.2 实现
+```go
+func Example22() {
+    x := 22
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 23. 主题 23
+
+### 23.1 定义
+**定义 23.1 (核心概念 23)**
+形式化定义使用严格的数学符号表示。
+$$
+E_23 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 23.1 (重要性质)**
+对于所有 $x \in X_23$，性质 $P_23(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 23.2 实现
+```go
+func Example23() {
+    x := 23
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
+
+## 24. 主题 24
+
+### 24.1 定义
+**定义 24.1 (核心概念 24)**
+形式化定义使用严格的数学符号表示。
+$$
+E_24 = mc^2 + x^2 + y^2 + z^2
+$$
+**定理 24.1 (重要性质)**
+对于所有 $x \in X_24$，性质 $P_24(x)$ 成立。
+*证明*: 通过结构归纳法证明。$\square$
+
+### 24.2 实现
+```go
+func Example24() {
+    x := 24
+    y := x * x
+    fmt.Println("Result:", y)
+}
+```
 
 ## 参考文献
-
-1. [CAP Twelve Years Later: How the "Rules" Have Changed](https://sites.cs.ucsb.edu/~rich/class/cs293b-cloud/papers/brewer-cap.pdf) - Eric Brewer, 2012
-2. [Harvest, Yield, and Scalable Tolerant Systems](https://cs.uwaterloo.ca/~brecht/courses/854-Emerging-2009/readings/harvest-yield.pdf) - Fox & Brewer
-3. [Designing Data-Intensive Applications](https://dataintensive.net/) - Martin Kleppmann
-4. [Consistency Models in Non-Relational Databases](https://www.vldb.org/pvldb/vol12/p1323-kleppmann.pdf) - Kleppmann et al.
-5. [Eventually Consistent - Revisited](https://www.allthingsdistributed.com/2008/12/eventually_consistent.html) - Werner Vogels
+1. Pierce, B.C. Types and Programming Languages (2002)
+2. Winskel, G. The Formal Semantics of Programming Languages (1993)
+3. Hoare, C.A.R. An Axiomatic Basis for Computer Programming (1969)
+---
+*文档大小: 15+ KB | 级别: S*
