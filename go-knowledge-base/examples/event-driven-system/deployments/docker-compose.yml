@@ -1,0 +1,241 @@
+version: '3.8'
+
+services:
+  # Event Store - PostgreSQL
+  eventstore:
+    image: postgres:15-alpine
+    container_name: event-driven-eventstore
+    environment:
+      POSTGRES_USER: eventstore
+      POSTGRES_PASSWORD: eventstore
+      POSTGRES_DB: eventstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - eventstore_data:/var/lib/postgresql/data
+    networks:
+      - event-driven-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventstore"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Read Models - MongoDB
+  mongodb:
+    image: mongo:6-jammy
+    container_name: event-driven-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - event-driven-network
+
+  # Cache - Redis
+  redis:
+    image: redis:7-alpine
+    container_name: event-driven-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - event-driven-network
+
+  # Message Broker - Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: event-driven-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - event-driven-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: event-driven-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    networks:
+      - event-driven-network
+
+  # Alternative Message Broker - NATS
+  nats:
+    image: nats:2-alpine
+    container_name: event-driven-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: "-m 8222 -js"
+    networks:
+      - event-driven-network
+
+  # Search Engine - Elasticsearch
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: event-driven-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - event-driven-network
+
+  # API Service
+  api-service:
+    build:
+      context: ..
+      dockerfile: cmd/api/Dockerfile
+    container_name: event-driven-api
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      EVENTSTORE_URL: postgres://eventstore:eventstore@eventstore:5432/eventstore?sslmode=disable
+      KAFKA_BROKERS: kafka:29092
+      MONGODB_URI: mongodb://admin:admin@mongodb:27017/readmodels?authSource=admin
+      REDIS_URL: redis:6379
+    depends_on:
+      eventstore:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      mongodb:
+        condition: service_started
+    networks:
+      - event-driven-network
+    restart: unless-stopped
+
+  # Event Processor Worker
+  event-worker:
+    build:
+      context: ..
+      dockerfile: cmd/worker/Dockerfile
+    container_name: event-driven-worker
+    environment:
+      EVENTSTORE_URL: postgres://eventstore:eventstore@eventstore:5432/eventstore?sslmode=disable
+      KAFKA_BROKERS: kafka:29092
+      MONGODB_URI: mongodb://admin:admin@mongodb:27017/readmodels?authSource=admin
+      REDIS_URL: redis:6379
+    depends_on:
+      eventstore:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      mongodb:
+        condition: service_started
+    networks:
+      - event-driven-network
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+
+  # Projection Service
+  projector-service:
+    build:
+      context: ..
+      dockerfile: cmd/projector/Dockerfile
+    container_name: event-driven-projector
+    environment:
+      EVENTSTORE_URL: postgres://eventstore:eventstore@eventstore:5432/eventstore?sslmode=disable
+      KAFKA_BROKERS: kafka:29092
+      MONGODB_URI: mongodb://admin:admin@mongodb:27017/readmodels?authSource=admin
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    depends_on:
+      eventstore:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      mongodb:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+    networks:
+      - event-driven-network
+    restart: unless-stopped
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: event-driven-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - event-driven-network
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: event-driven-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - event-driven-network
+
+  # Distributed Tracing - Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: event-driven-jaeger
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - event-driven-network
+
+  # Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: event-driven-kafka-ui
+    ports:
+      - "8081:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
+    networks:
+      - event-driven-network
+
+volumes:
+  eventstore_data:
+  mongodb_data:
+  redis_data:
+  elasticsearch_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  event-driven-network:
+    driver: bridge
