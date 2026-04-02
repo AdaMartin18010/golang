@@ -1,0 +1,428 @@
+# 分布式锁实现 (Distributed Lock Implementation)
+
+> **分类**: 工程与云原生
+> **标签**: #distributed-lock #redis #etcd #zookeeper
+> **参考**: Redlock Algorithm, etcd Lease
+
+---
+
+## 分布式锁架构
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    Distributed Lock Architecture                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    Redis RedLock Algorithm                           │   │
+│  │                                                                      │   │
+│  │   Acquire Lock:                                                      │   │
+│  │   1. Get current time in milliseconds                                │   │
+│  │   2. Try to acquire lock on N Redis instances sequentially           │   │
+│  │   3. Use same key name and random value on all instances             │   │
+│  │   4. Set TTL for each lock                                           │   │
+│  │   5. Calculate elapsed time                                          │   │
+│  │   6. Lock acquired if locked on majority (N/2 + 1) AND               │   │
+│  │      elapsed time < lock validity time                               │   │
+│  │                                                                      │   │
+│  │   Release Lock:                                                      │   │
+│  │   1. Check if lock value matches (prevent releasing other's lock)    │   │
+│  │   2. Delete lock on all instances                                    │   │
+│  │                                                                      │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    etcd Lease-Based Lock                             │   │
+│  │                                                                      │   │
+│  │   1. Create lease with TTL                                           │   │
+│  │   2. Put key with lease (atomic create-if-not-exists)                │   │
+│  │   3. If put succeeds, lock acquired                                  │   │
+│  │   4. Keep lease alive (renewal)                                      │   │
+│  │   5. Delete key or let lease expire to release                       │   │
+│  │                                                                      │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 完整分布式锁实现
+
+```go
+package distlock
+
+import (
+    "context"
+    "crypto/rand"
+    "encoding/hex"
+    "errors"
+    "fmt"
+    "sync"
+    "time"
+)
+
+// Lock 分布式锁接口
+type Lock interface {
+    Lock(ctx context.Context) error
+    TryLock(ctx context.Context) (bool, error)
+    Unlock(ctx context.Context) error
+    Extend(ctx context.Context, duration time.Duration) error
+}
+
+// LockOptions 锁选项
+type LockOptions struct {
+    TTL         time.Duration
+    WaitTimeout time.Duration
+    RetryDelay  time.Duration
+}
+
+// DefaultLockOptions 默认选项
+var DefaultLockOptions = LockOptions{
+    TTL:         30 * time.Second,
+    WaitTimeout: 0, // 不等待
+    RetryDelay:  100 * time.Millisecond,
+}
+
+// LockToken 锁令牌
+type LockToken struct {
+    Resource string
+    Value    string
+    Expires  time.Time
+}
+
+// generateToken 生成唯一令牌
+func generateToken() string {
+    b := make([]byte, 16)
+    rand.Read(b)
+    return hex.EncodeToString(b)
+}
+
+// RedisLock Redis 分布式锁
+type RedisLock struct {
+    client     RedisClient
+    resource   string
+    token      string
+    options    LockOptions
+
+    mu         sync.Mutex
+    isLocked   bool
+}
+
+// RedisClient Redis 客户端接口
+type RedisClient interface {
+    SetNX(ctx context.Context, key, value string, ttl time.Duration) (bool, error)
+    Eval(ctx context.Context, script string, keys []string, args ...interface{}) (interface{}, error)
+    Del(ctx context.Context, keys ...string) error
+    Expire(ctx context.Context, key string, ttl time.Duration) error
+}
+
+// NewRedisLock 创建 Redis 锁
+func NewRedisLock(client RedisClient, resource string, options LockOptions) *RedisLock {
+    return &RedisLock{
+        client:   client,
+        resource: resource,
+        token:    generateToken(),
+        options:  options,
+    }
+}
+
+// Lock 获取锁（阻塞）
+func (rl *RedisLock) Lock(ctx context.Context) error {
+    if rl.options.WaitTimeout > 0 {
+        var cancel context.CancelFunc
+        ctx, cancel = context.WithTimeout(ctx, rl.options.WaitTimeout)
+        defer cancel()
+    }
+
+    for {
+        acquired, err := rl.TryLock(ctx)
+        if err != nil {
+            return err
+        }
+        if acquired {
+            return nil
+        }
+
+        select {
+        case <-ctx.Done():
+            return ctx.Err()
+        case <-time.After(rl.options.RetryDelay):
+        }
+    }
+}
+
+// TryLock 尝试获取锁（非阻塞）
+func (rl *RedisLock) TryLock(ctx context.Context) (bool, error) {
+    rl.mu.Lock()
+    defer rl.mu.Unlock()
+
+    if rl.isLocked {
+        return false, errors.New("already locked")
+    }
+
+    acquired, err := rl.client.SetNX(ctx, rl.resource, rl.token, rl.options.TTL)
+    if err != nil {
+        return false, err
+    }
+
+    if acquired {
+        rl.isLocked = true
+        return true, nil
+    }
+
+    return false, nil
+}
+
+// Unlock 释放锁
+func (rl *RedisLock) Unlock(ctx context.Context) error {
+    rl.mu.Lock()
+    defer rl.mu.Unlock()
+
+    if !rl.isLocked {
+        return errors.New("not locked")
+    }
+
+    // Lua 脚本确保原子性
+    script := `
+        if redis.call("get", KEYS[1]) == ARGV[1] then
+            return redis.call("del", KEYS[1])
+        else
+            return 0
+        end
+    `
+
+    result, err := rl.client.Eval(ctx, script, []string{rl.resource}, rl.token)
+    if err != nil {
+        return err
+    }
+
+    if result.(int64) == 0 {
+        return errors.New("lock was not held or expired")
+    }
+
+    rl.isLocked = false
+    return nil
+}
+
+// Extend 延长锁
+func (rl *RedisLock) Extend(ctx context.Context, duration time.Duration) error {
+    rl.mu.Lock()
+    defer rl.mu.Unlock()
+
+    if !rl.isLocked {
+        return errors.New("not locked")
+    }
+
+    script := `
+        if redis.call("get", KEYS[1]) == ARGV[1] then
+            return redis.call("pexpire", KEYS[1], ARGV[2])
+        else
+            return 0
+        end
+    `
+
+    result, err := rl.client.Eval(ctx, script, []string{rl.resource}, rl.token, duration.Milliseconds())
+    if err != nil {
+        return err
+    }
+
+    if result.(int64) == 0 {
+        return errors.New("lock was not held or expired")
+    }
+
+    return nil
+}
+
+// RedLock Redis RedLock
+type RedLock struct {
+    clients    []RedisClient
+    quorum     int
+    options    LockOptions
+}
+
+// NewRedLock 创建 RedLock
+func NewRedLock(clients []RedisClient, options LockOptions) *RedLock {
+    return &RedLock{
+        clients: clients,
+        quorum:  len(clients)/2 + 1,
+        options: options,
+    }
+}
+
+// Lock 获取分布式锁
+func (rl *RedLock) Lock(ctx context.Context, resource string) (*LockToken, error) {
+    token := generateToken()
+    validityTime := rl.options.TTL
+
+    var wg sync.WaitGroup
+    successCount := 0
+    var mu sync.Mutex
+
+    startTime := time.Now()
+
+    for _, client := range rl.clients {
+        wg.Add(1)
+        go func(c RedisClient) {
+            defer wg.Done()
+
+            ok, err := c.SetNX(ctx, resource, token, rl.options.TTL)
+            if err == nil && ok {
+                mu.Lock()
+                successCount++
+                mu.Unlock()
+            }
+        }(client)
+    }
+
+    wg.Wait()
+
+    elapsed := time.Since(startTime)
+    validity := validityTime - elapsed - 2*time.Millisecond // 时钟漂移补偿
+
+    if successCount >= rl.quorum && validity > 0 {
+        return &LockToken{
+            Resource: resource,
+            Value:    token,
+            Expires:  time.Now().Add(validity),
+        }, nil
+    }
+
+    // 获取失败，释放所有锁
+    rl.Unlock(ctx, resource, token)
+
+    return nil, errors.New("failed to acquire lock")
+}
+
+// Unlock 释放分布式锁
+func (rl *RedLock) Unlock(ctx context.Context, resource string, token string) {
+    script := `
+        if redis.call("get", KEYS[1]) == ARGV[1] then
+            return redis.call("del", KEYS[1])
+        else
+            return 0
+        end
+    `
+
+    var wg sync.WaitGroup
+    for _, client := range rl.clients {
+        wg.Add(1)
+        go func(c RedisClient) {
+            defer wg.Done()
+            c.Eval(ctx, script, []string{resource}, token)
+        }(client)
+    }
+
+    wg.Wait()
+}
+
+// LockManager 锁管理器
+type LockManager struct {
+    locks map[string]Lock
+    mu    sync.RWMutex
+}
+
+// NewLockManager 创建锁管理器
+func NewLockManager() *LockManager {
+    return &LockManager{
+        locks: make(map[string]Lock),
+    }
+}
+
+// Register 注册锁
+func (lm *LockManager) Register(name string, lock Lock) {
+    lm.mu.Lock()
+    defer lm.mu.Unlock()
+    lm.locks[name] = lock
+}
+
+// Acquire 获取锁
+func (lm *LockManager) Acquire(ctx context.Context, name string) error {
+    lm.mu.RLock()
+    lock, ok := lm.locks[name]
+    lm.mu.RUnlock()
+
+    if !ok {
+        return fmt.Errorf("lock %s not found", name)
+    }
+
+    return lock.Lock(ctx)
+}
+
+// Release 释放锁
+func (lm *LockManager) Release(ctx context.Context, name string) error {
+    lm.mu.RLock()
+    lock, ok := lm.locks[name]
+    lm.mu.RUnlock()
+
+    if !ok {
+        return fmt.Errorf("lock %s not found", name)
+    }
+
+    return lock.Unlock(ctx)
+}
+```
+
+---
+
+## 使用示例
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "time"
+
+    "distlock"
+)
+
+func main() {
+    // Redis 锁
+    redisClient := NewRedisClient("localhost:6379")
+    lock := distlock.NewRedisLock(redisClient, "my-resource", distlock.LockOptions{
+        TTL:         10 * time.Second,
+        WaitTimeout: 30 * time.Second,
+    })
+
+    // 获取锁
+    ctx := context.Background()
+    if err := lock.Lock(ctx); err != nil {
+        panic(err)
+    }
+
+    fmt.Println("Lock acquired")
+
+    // 执行业务逻辑
+    time.Sleep(5 * time.Second)
+
+    // 释放锁
+    if err := lock.Unlock(ctx); err != nil {
+        panic(err)
+    }
+
+    fmt.Println("Lock released")
+
+    // RedLock
+    clients := []distlock.RedisClient{
+        NewRedisClient("redis1:6379"),
+        NewRedisClient("redis2:6379"),
+        NewRedisClient("redis3:6379"),
+    }
+
+    redLock := distlock.NewRedLock(clients, distlock.LockOptions{
+        TTL: 30 * time.Second,
+    })
+
+    token, err := redLock.Lock(ctx, "critical-resource")
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Println("RedLock acquired")
+
+    // 释放
+    redLock.Unlock(ctx, token.Resource, token.Value)
+}
+```
