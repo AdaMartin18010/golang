@@ -1,0 +1,68 @@
+# 文档重构映射表 (Rename Map)
+
+## 合并文档（新编号 → 旧文档列表）
+
+| 新编号 | 新标题 | 合并的旧文档 | 状态 |
+|--------|--------|-------------|------|
+| EC-007 | 优雅关闭完整实现 | 07-Graceful-Shutdown.md + 120-Task-Graceful-Shutdown-Complete.md | ✅ |
+| EC-008 | 熔断器高级实现 | 08-Circuit-Breaker-Patterns.md + 117-Task-Circuit-Breaker-Advanced.md | ✅ |
+| EC-042 | 任务调度器核心架构 | 17-Scheduled-Task-Framework.md + 42-Task-CLI-Tooling.md | 🔄 |
+| EC-099 | Kubernetes CronJob 深度分析 | 59-Kubernetes-CronJob-Controller-Deep-Dive.md + 68-Kubernetes-CronJob-V2-Controller.md + 114-Task-K8s-CronJob-Controller-Analysis.md | 🔄 |
+| EC-100 | Temporal 工作流引擎 | 58-Cadence-Temporal-Workflow-Engine.md + 69-Temporal-Workflow-Engine.md + 115-Task-Temporal-Workflow-Deep-Dive.md | 🔄 |
+
+## 直接重命名（旧 → 新）
+
+### 01-Formal-Theory/ → FT-001~026
+
+| 旧文件名 | 新编号 | 级别 |
+|---------|--------|------|
+| 待整理 | FT-001 | - |
+
+### 02-Language-Design/ → LD-001~040
+
+| 旧文件名 | 新编号 | 级别 |
+|---------|--------|------|
+| 待整理 | LD-001 | - |
+
+### 03-Engineering-CloudNative/ → EC-001~148
+
+| 旧文件名 | 新编号 | 级别 |
+|---------|--------|------|
+| 01-Microservices.md | EC-001 | B |
+| 02-Containers.md | EC-002 | B |
+| 03-Kubernetes.md | EC-003 | B |
+| ... | ... | ... |
+| 101-Formal-Verification-Task-Scheduler.md | EC-101 | S |
+| 102-Performance-Benchmarking-Methodology.md | EC-102 | S |
+| ... | ... | ... |
+| 109-Production-Ready-Task-Scheduler-Complete-Implementation.md | EC-109 | S |
+| 110-Task-Resource-Quota-Management.md | EC-110 | A |
+| 111-Task-Event-Sourcing-Implementation.md | EC-111 | A |
+| 112-Task-Saga-Pattern-Complete.md | EC-112 | A |
+| 113-Task-CRDT-Conflict-Resolution.md | EC-113 | B |
+| 114-Task-K8s-CronJob-Controller-Analysis.md | → 合并到 EC-099 | - |
+| 115-Task-Temporal-Workflow-Deep-Dive.md | → 合并到 EC-100 | - |
+| 116-Task-etcd-Coordination-Patterns.md | EC-116 | A |
+| 117-Task-Circuit-Breaker-Advanced.md | → 合并到 EC-008 | - |
+| 118-Task-Backpressure-Flow-Control.md | EC-118 | B |
+| 119-Task-Idempotency-Guarantee.md | EC-119 | B |
+| 120-Task-Graceful-Shutdown-Complete.md | → 合并到 EC-007 | - |
+
+### 04-Technology-Stack/ → TS-001~056
+
+| 旧文件名 | 新编号 | 级别 |
+|---------|--------|------|
+| 待整理 | TS-001 | - |
+
+### 05-Application-Domains/ → AD-001~043
+
+| 旧文件名 | 新编号 | 级别 |
+|---------|--------|------|
+| 待整理 | AD-001 | - |
+
+## 删除文档列表
+
+以下文档内容过于简单，建议删除：
+
+- 02-Containers.md (0.81 KB) - 无实质内容
+- 03-Kubernetes.md (0.7 KB) - 无实质内容

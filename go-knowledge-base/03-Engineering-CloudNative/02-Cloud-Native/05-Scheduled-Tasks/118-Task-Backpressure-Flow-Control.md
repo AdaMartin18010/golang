@@ -1,0 +1,277 @@
+# 背压与流量控制 (Backpressure & Flow Control)
+
+> **分类**: 工程与云原生
+> **标签**: #backpressure #flow-control #rate-limiting #throttling
+> **参考**: Reactive Streams, gRPC Flow Control, TCP Congestion Control
+
+---
+
+## 背压模式
+
+```
+无背压（崩溃）              有背压（稳定）
+    │                         │
+    ▼                         ▼
+┌────────┐              ┌────────┐
+│Producer│              │Producer│◄──── 慢下来
+│ (快)    │              │ (自适应)│
+└───┬────┘              └───┬────┘
+    │                       │
+    │ 数据                  │ 数据
+    ▼                       ▼
+┌────────┐              ┌────────┐
+│Buffer  │ 溢出!          │Buffer  │
+│ (满)    │  XXXXXX       │ (可控)  │
+└───┬────┘              └───┬────┘
+    │                       │
+    │                       │ 处理完
+    ▼                       ▼
+┌────────┐              ┌────────┐
+│Consumer│              │Consumer│
+│ (慢)    │              │ (稳定)  │
+└────────┘              └────────┘
+```
+
+---
+
+## 令牌桶限流实现
+
+```go
+package flowcontrol
+
+import (
+ "context"
+ "sync"
+ "time"
+
+ "go.uber.org/atomic"
+)
+
+// TokenBucket 令牌桶
+type TokenBucket struct {
+ capacity int64
+ rate     int64 // tokens per second
+
+ // 当前令牌数
+ tokens atomic.Int64
+
+ // 上次补充时间
+ lastRefill atomic.Time
+
+ // 等待队列
+ waiters chan chan struct{}
+ mu      sync.Mutex
+}
+
+// NewTokenBucket 创建令牌桶
+func NewTokenBucket(capacity, rate int64) *TokenBucket {
+ tb := &TokenBucket{
+  capacity: capacity,
+  rate:     rate,
+  waiters:  make(chan chan struct{}, 1000),
+ }
+ tb.tokens.Store(capacity)
+ tb.lastRefill.Store(time.Now())
+ return tb
+}
+
+// Allow 检查是否允许（非阻塞）
+func (tb *TokenBucket) Allow(n int64) bool {
+ tb.refill()
+
+ for {
+  current := tb.tokens.Load()
+  if current < n {
+   return false
+  }
+
+  if tb.tokens.CompareAndSwap(current, current-n) {
+   return true
+  }
+ }
+}
+
+// Wait 等待直到允许（阻塞）
+func (tb *TokenBucket) Wait(ctx context.Context, n int64) error {
+ if tb.Allow(n) {
+  return nil
+ }
+
+ // 计算需要等待的时间
+ needed := n - tb.tokens.Load()
+ waitTime := time.Duration(needed*1e9/tb.rate) * time.Nanosecond
+
+ select {
+ case <-ctx.Done():
+  return ctx.Err()
+ case <-time.After(waitTime):
+  return tb.Wait(ctx, n)
+ }
+}
+
+// refill 补充令牌
+func (tb *TokenBucket) refill() {
+ now := time.Now()
+ last := tb.lastRefill.Load()
+ elapsed := now.Sub(last).Seconds()
+
+ if elapsed < 0.001 {
+  return
+ }
+
+ if !tb.lastRefill.CompareAndSwap(last, now) {
+  return
+ }
+
+ tokensToAdd := int64(elapsed * float64(tb.rate))
+ if tokensToAdd <= 0 {
+  return
+ }
+
+ for {
+  current := tb.tokens.Load()
+  newTokens := current + tokensToAdd
+  if newTokens > tb.capacity {
+   newTokens = tb.capacity
+  }
+
+  if tb.tokens.CompareAndSwap(current, newTokens) {
+   return
+  }
+ }
+}
+```
+
+---
+
+## 滑动窗口限流
+
+```go
+// SlidingWindow 滑动窗口限流器
+type SlidingWindow struct {
+ limit    int           // 窗口内最大请求数
+ window   time.Duration // 窗口大小
+
+ // 请求时间戳
+ requests []time.Time
+ mu       sync.Mutex
+}
+
+// Allow 检查是否允许
+func (sw *SlidingWindow) Allow() bool {
+ sw.mu.Lock()
+ defer sw.mu.Unlock()
+
+ now := time.Now()
+ cutoff := now.Add(-sw.window)
+
+ // 清理过期请求
+ valid := 0
+ for _, t := range sw.requests {
+  if t.After(cutoff) {
+   sw.requests[valid] = t
+   valid++
+  }
+ }
+ sw.requests = sw.requests[:valid]
+
+ // 检查是否超过限制
+ if len(sw.requests) >= sw.limit {
+  return false
+ }
+
+ // 记录请求
+ sw.requests = append(sw.requests, now)
+ return true
+}
+```
+
+---
+
+## gRPC 流控
+
+```go
+// ServerStream 带背压的服务端流
+type ServerStream struct {
+ grpc.ServerStream
+
+ // 流量控制
+ sem chan struct{}
+}
+
+// SendMsg 发送消息（带背压）
+func (s *ServerStream) SendMsg(m interface{}) error {
+ // 获取许可
+ select {
+ case s.sem <- struct{}{}:
+  defer func() { <-s.sem }()
+ case <-s.Context().Done():
+  return s.Context().Err()
+ }
+
+ return s.ServerStream.SendMsg(m)
+}
+
+// 基于 gRPC BDP 估算的动态流控
+func adaptiveFlowControl(currentWindow, bdpEstimate uint32) uint32 {
+ // BDP (Bandwidth-Delay Product) 估算
+ // 窗口大小 = 2 * BDP
+ targetWindow := 2 * bdpEstimate
+
+ // 平滑调整
+ if currentWindow < targetWindow {
+  return currentWindow + (targetWindow-currentWindow)/4
+ }
+ return currentWindow
+}
+```
+
+---
+
+## 动态背压
+
+```go
+// DynamicBackpressure 动态背压控制器
+type DynamicBackpressure struct {
+ // 指标
+ latency       *EWMA // 指数加权移动平均
+ throughput    *EWMA
+ errorRate     *EWMA
+
+ // 控制参数
+ concurrencyLimit atomic.Int32
+
+ // 目标
+ targetLatency   time.Duration
+ targetErrorRate float64
+}
+
+// Adjust 调整并发限制
+func (db *DynamicBackpressure) Adjust() {
+ latency := db.latency.Value()
+ errors := db.errorRate.Value()
+
+ currentLimit := db.concurrencyLimit.Load()
+
+ // PID 控制
+ var adjustment int32
+
+ // 如果延迟过高，降低并发
+ if latency > float64(db.targetLatency)*1.2 {
+  adjustment = -int32(float64(currentLimit) * 0.1)
+ }
+
+ // 如果错误率过高，大幅降低并发
+ if errors > db.targetErrorRate*2 {
+  adjustment = -int32(float64(currentLimit) * 0.2)
+ }
+
+ // 如果一切正常，缓慢增加并发
+ if latency < float64(db.targetLatency) && errors < db.targetErrorRate {
+  adjustment = int32(float64(currentLimit) * 0.05)
+ }
+
+ newLimit := max(1, min(1000, currentLimit+adjustment))
+ db.concurrencyLimit.Store(newLimit)
+}
+```
