@@ -1,6 +1,6 @@
 # 资源限制 (Resource Limits)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #resources #cgroups #limits
 
 ---
@@ -20,7 +20,7 @@ func SetMemoryLimit(limit int64) {
 func MonitorMemory() {
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
-    
+
     fmt.Printf("Alloc = %v MB\n", m.Alloc/1024/1024)
     fmt.Printf("TotalAlloc = %v MB\n", m.TotalAlloc/1024/1024)
     fmt.Printf("Sys = %v MB\n", m.Sys/1024/1024)
@@ -41,7 +41,7 @@ import "runtime"
 func init() {
     // 自动检测，但容器环境需要手动设置
     // runtime.GOMAXPROCS(runtime.NumCPU())
-    
+
     // 容器感知
     cpus := cpuset.CountCPUs()
     runtime.GOMAXPROCS(cpus)
@@ -62,7 +62,7 @@ func (l *AdaptiveLimiter) Limit(ctx context.Context, fn func() error) error {
         if l.current < l.targetCPU {
             return fn()
         }
-        
+
         select {
         case <-time.After(10 * time.Millisecond):
             continue
@@ -111,22 +111,22 @@ func NewRateLimiter(rate, burst int) *RateLimiter {
         burst:  burst,
         tokens: make(chan struct{}, burst),
     }
-    
+
     // 初始化令牌
     for i := 0; i < burst; i++ {
         rl.tokens <- struct{}{}
     }
-    
+
     // 持续补充令牌
     go rl.refill()
-    
+
     return rl
 }
 
 func (rl *RateLimiter) refill() {
     ticker := time.NewTicker(time.Second / time.Duration(rl.rate))
     defer ticker.Stop()
-    
+
     for range ticker.C {
         select {
         case rl.tokens <- struct{}{}:
@@ -174,7 +174,7 @@ spec:
 func ResourceMetrics() map[string]interface{} {
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
-    
+
     return map[string]interface{}{
         "memory_alloc_mb":     m.Alloc / 1024 / 1024,
         "memory_sys_mb":       m.Sys / 1024 / 1024,

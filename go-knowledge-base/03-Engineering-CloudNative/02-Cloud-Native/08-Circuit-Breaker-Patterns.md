@@ -1,6 +1,6 @@
 # 熔断器模式详解 (Circuit Breaker Patterns)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #circuit-breaker #resilience #pattern
 
 ---
@@ -45,12 +45,12 @@ type CircuitBreaker struct {
     failureCount  int
     successCount  int
     lastFailureTime time.Time
-    
+
     // 配置
     maxFailures    int           // 触发熔断的失败次数
     timeout        time.Duration // 熔断持续时间
     halfOpenMaxCalls int         // 半开状态最大测试请求
-    
+
     mu sync.Mutex
 }
 
@@ -58,7 +58,7 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
     if !cb.canExecute() {
         return ErrCircuitOpen
     }
-    
+
     err := fn()
     cb.recordResult(err)
     return err
@@ -67,11 +67,11 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
 func (cb *CircuitBreaker) canExecute() bool {
     cb.mu.Lock()
     defer cb.mu.Unlock()
-    
+
     switch cb.state {
     case StateClosed:
         return true
-        
+
     case StateOpen:
         if time.Since(cb.lastFailureTime) > cb.timeout {
             cb.state = StateHalfOpen
@@ -79,28 +79,28 @@ func (cb *CircuitBreaker) canExecute() bool {
             return true
         }
         return false
-        
+
     case StateHalfOpen:
         return cb.successCount < cb.halfOpenMaxCalls
     }
-    
+
     return false
 }
 
 func (cb *CircuitBreaker) recordResult(err error) {
     cb.mu.Lock()
     defer cb.mu.Unlock()
-    
+
     if err != nil {
         cb.failureCount++
         cb.lastFailureTime = time.Now()
-        
+
         if cb.state == StateHalfOpen || cb.failureCount >= cb.maxFailures {
             cb.state = StateOpen
         }
     } else {
         cb.successCount++
-        
+
         if cb.state == StateHalfOpen {
             if cb.successCount >= cb.halfOpenMaxCalls {
                 cb.state = StateClosed
@@ -124,26 +124,26 @@ func (cb *CircuitBreaker) CallWithTimeout(fn func() error, maxDuration time.Dura
     if !cb.canExecute() {
         return ErrCircuitOpen
     }
-    
+
     done := make(chan error, 1)
     start := time.Now()
-    
+
     go func() {
         done <- fn()
     }()
-    
+
     select {
     case err := <-done:
         duration := time.Since(start)
-        
+
         // 记录慢调用
         if duration > maxDuration {
             cb.recordSlowCall()
         }
-        
+
         cb.recordResult(err)
         return err
-        
+
     case <-time.After(maxDuration):
         cb.recordSlowCall()
         return ErrTimeout
@@ -156,7 +156,7 @@ func (cb *CircuitBreaker) CallWithTimeout(fn func() error, maxDuration time.Dura
 ```go
 type AdaptiveCircuitBreaker struct {
     *CircuitBreaker
-    
+
     // 滑动窗口
     window []bool  // true = 成功, false = 失败
     windowSize int
@@ -166,21 +166,21 @@ type AdaptiveCircuitBreaker struct {
 func (acb *AdaptiveCircuitBreaker) recordResult(err error) {
     acb.mu.Lock()
     defer acb.mu.Unlock()
-    
+
     // 记录到窗口
     acb.window[acb.windowPos] = (err == nil)
     acb.windowPos = (acb.windowPos + 1) % acb.windowSize
-    
+
     // 计算错误率
     failureRate := acb.calculateFailureRate()
-    
+
     // 自适应调整阈值
     if failureRate > 0.5 {
         acb.maxFailures = max(1, acb.maxFailures-1)  // 更敏感
     } else if failureRate < 0.1 {
         acb.maxFailures = min(10, acb.maxFailures+1)  // 更宽容
     }
-    
+
     acb.recordResult(err)
 }
 ```
@@ -198,16 +198,16 @@ func CallWithRetryAndCircuitBreaker(
 ) error {
     return cb.Call(func() error {
         var err error
-        
+
         for i := 0; i < maxRetries; i++ {
             err = fn()
             if err == nil {
                 return nil
             }
-            
+
             time.Sleep(backoff * time.Duration(1<<i))
         }
-        
+
         return err
     })
 })

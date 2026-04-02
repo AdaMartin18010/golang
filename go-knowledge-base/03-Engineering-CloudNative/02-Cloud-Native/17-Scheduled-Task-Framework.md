@@ -1,6 +1,6 @@
 # 计划任务框架设计 (Scheduled Task Framework)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #scheduler #framework #cron #distributed
 
 ---
@@ -46,14 +46,14 @@ type Task struct {
     Schedule      Schedule
     RetryPolicy   RetryPolicy
     Timeout       time.Duration
-    
+
     // 状态
     Status        TaskStatus
     ExecuteAt     time.Time
     ExecutedAt    *time.Time
     Error         string
     RetryCount    int
-    
+
     // 上下文传递
     Metadata      map[string]string
     ParentID      string  // 工作流子任务
@@ -87,14 +87,14 @@ type Scheduler interface {
     Cancel(ctx context.Context, taskID string) error
     Pause(ctx context.Context, taskID string) error
     Resume(ctx context.Context, taskID string) error
-    
+
     // 查询
     GetTask(ctx context.Context, taskID string) (*Task, error)
     ListTasks(ctx context.Context, filter TaskFilter) ([]*Task, error)
-    
+
     // 执行控制
     Trigger(ctx context.Context, taskID string) error // 手动触发
-    
+
     // 生命周期
     Start(ctx context.Context) error
     Stop(ctx context.Context) error
@@ -125,10 +125,10 @@ type DistributedScheduler struct {
     store      TaskStore
     workerPool *WorkerPool
     leader     *LeaderElection
-    
+
     cronEngine *CronEngine
     delayQueue *DelayQueue
-    
+
     executors map[string]Executor
     mu        sync.RWMutex
 }
@@ -136,34 +136,34 @@ type DistributedScheduler struct {
 func (ds *DistributedScheduler) Start(ctx context.Context) error {
     // 1. 启动Leader选举
     go ds.leader.Start(ctx)
-    
+
     // 2. 等待成为Leader或Follower
     <-ds.leader.Ready()
-    
+
     if ds.leader.IsLeader() {
         // Leader: 启动调度引擎
         go ds.cronEngine.Start(ctx)
         go ds.delayQueue.Start(ctx)
     }
-    
+
     // 3. 所有节点启动工作池
     go ds.workerPool.Start(ctx)
-    
+
     // 4. 监听任务事件
     go ds.watchTasks(ctx)
-    
+
     return nil
 }
 
 func (ds *DistributedScheduler) Schedule(ctx context.Context, task *Task) (string, error) {
     task.ID = generateID()
     task.Status = TaskStatusPending
-    
+
     // 持久化
     if err := ds.store.Save(ctx, task); err != nil {
         return "", err
     }
-    
+
     // 根据类型分发
     switch task.Type {
     case TaskTypeCron:
@@ -173,13 +173,13 @@ func (ds *DistributedScheduler) Schedule(ctx context.Context, task *Task) (strin
     case TaskTypeOneTime:
         ds.workerPool.Submit(task)
     }
-    
+
     return task.ID, nil
 }
 
 func (ds *DistributedScheduler) watchTasks(ctx context.Context) {
     events := ds.store.Watch(ctx)
-    
+
     for event := range events {
         switch event.Type {
         case EventTypeTrigger:
@@ -205,34 +205,34 @@ type TaskExecutor struct {
 
 func (te *TaskExecutor) Execute(ctx context.Context, task *Task) Result {
     start := time.Now()
-    
+
     // 构建任务上下文
     taskCtx := te.buildContext(ctx, task)
-    
+
     // 设置超时
     if task.Timeout > 0 {
         var cancel context.CancelFunc
         taskCtx, cancel = context.WithTimeout(taskCtx, task.Timeout)
         defer cancel()
     }
-    
+
     // 获取执行器
     executor := te.getExecutor(task)
-    
+
     // 执行前钩子
     te.beforeExecute(taskCtx, task)
-    
+
     // 执行
     result, err := executor.Execute(taskCtx, task)
-    
+
     // 执行后钩子
     te.afterExecute(taskCtx, task, result, err)
-    
+
     // 处理重试
     if err != nil && task.RetryCount < task.RetryPolicy.MaxRetries {
         return te.retry(taskCtx, task, err)
     }
-    
+
     return Result{
         Status:   statusFromError(err),
         Output:   result,
@@ -243,25 +243,25 @@ func (te *TaskExecutor) Execute(ctx context.Context, task *Task) Result {
 
 func (te *TaskExecutor) buildContext(parent context.Context, task *Task) context.Context {
     ctx := parent
-    
+
     // 注入任务信息
     ctx = WithTaskID(ctx, task.ID)
     ctx = WithTaskName(ctx, task.Name)
     ctx = WithTaskMetadata(ctx, task.Metadata)
-    
+
     // 注入父任务上下文（如果是工作流子任务）
     if task.ParentID != "" {
         if parentCtx := te.getParentContext(task.ParentID); parentCtx != nil {
             ctx = MergeContext(ctx, parentCtx)
         }
     }
-    
+
     return ctx
 }
 
 func (te *TaskExecutor) retry(ctx context.Context, task *Task, lastErr error) Result {
     task.RetryCount++
-    
+
     // 计算退避延迟
     delay := calculateBackoff(
         task.RetryPolicy.InitialDelay,
@@ -269,9 +269,9 @@ func (te *TaskExecutor) retry(ctx context.Context, task *Task, lastErr error) Re
         task.RetryPolicy.BackoffMultiplier,
         task.RetryPolicy.MaxDelay,
     )
-    
+
     log.Printf("Task %s retry %d after %v", task.ID, task.RetryCount, delay)
-    
+
     select {
     case <-time.After(delay):
         return te.Execute(ctx, task)
@@ -332,20 +332,20 @@ func LoggerWithTaskContext(ctx context.Context, logger *zap.Logger) *zap.Logger 
 ```go
 func main() {
     ctx := context.Background()
-    
+
     // 创建调度器
     scheduler, _ := NewDistributedScheduler(Config{
         NodeID:    "scheduler-1",
         Store:     NewRedisStore("localhost:6379"),
         WorkerCount: 10,
     })
-    
+
     scheduler.Start(ctx)
-    
+
     // 注册执行器
     scheduler.RegisterExecutor("http", NewHTTPExecutor())
     scheduler.RegisterExecutor("sql", NewSQLExecutor())
-    
+
     // 创建 Cron 任务
     taskID, _ := scheduler.Schedule(ctx, &Task{
         Name:    "daily-report",
@@ -359,7 +359,7 @@ func main() {
             InitialDelay: time.Minute,
         },
     })
-    
+
     // 创建延迟任务
     scheduler.Schedule(ctx, &Task{
         Name:     "send-reminder",
@@ -367,7 +367,7 @@ func main() {
         Schedule: Schedule{ExecuteAt: time.Now().Add(24 * time.Hour)},
         Payload:  []byte(`{"user_id": "123", "message": "Meeting in 1 hour"}`),
     })
-    
+
     // 监听任务事件
     events := scheduler.Subscribe()
     go func() {

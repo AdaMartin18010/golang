@@ -1,6 +1,6 @@
 # 任务调试与诊断 (Task Debugging & Diagnostics)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #debugging #diagnostics #troubleshooting
 
 ---
@@ -19,7 +19,7 @@ func (td *TaskDebugger) GetTaskDetails(ctx context.Context, taskID string) (*Tas
     if err != nil {
         return nil, err
     }
-    
+
     details := &TaskDetails{
         Task:        task,
         StackTrace:  td.getStackTrace(taskID),
@@ -28,18 +28,18 @@ func (td *TaskDebugger) GetTaskDetails(ctx context.Context, taskID string) (*Tas
         Events:      td.getEventHistory(taskID),
         Performance: td.getPerformanceMetrics(taskID),
     }
-    
+
     return details, nil
 }
 
 // 单步执行
 func (td *TaskDebugger) StepExecute(ctx context.Context, taskID string) error {
     task, _ := td.store.Get(ctx, taskID)
-    
+
     // 设置断点模式
     task.DebugMode = true
     task.Breakpoints = []string{"next"}
-    
+
     // 执行一步
     return td.executor.Step(ctx, task)
 }
@@ -67,12 +67,12 @@ type TaskDiagnostics struct {
 // 分析任务失败原因
 func (td *TaskDiagnostics) DiagnoseFailure(ctx context.Context, taskID string) (*Diagnosis, error) {
     task, _ := td.analyzer.store.Get(ctx, taskID)
-    
+
     diagnosis := &Diagnosis{
         TaskID: taskID,
         Issues: []Issue{},
     }
-    
+
     // 检查超时
     if task.Status == TaskStatusTimeout {
         diagnosis.Issues = append(diagnosis.Issues, Issue{
@@ -82,7 +82,7 @@ func (td *TaskDiagnostics) DiagnoseFailure(ctx context.Context, taskID string) (
             Suggestion:  "Consider increasing timeout or optimizing task",
         })
     }
-    
+
     // 检查内存
     if task.ResourceUsage.Memory > task.ResourceRequest.Memory*1.5 {
         diagnosis.Issues = append(diagnosis.Issues, Issue{
@@ -92,7 +92,7 @@ func (td *TaskDiagnostics) DiagnoseFailure(ctx context.Context, taskID string) (
             Suggestion:  "Review memory allocation in task",
         })
     }
-    
+
     // 检查重试
     if task.RetryCount > 5 {
         diagnosis.Issues = append(diagnosis.Issues, Issue{
@@ -102,36 +102,36 @@ func (td *TaskDiagnostics) DiagnoseFailure(ctx context.Context, taskID string) (
             Suggestion:  "Check for flaky dependencies",
         })
     }
-    
+
     return diagnosis, nil
 }
 
 // 性能分析
 func (td *TaskDiagnostics) ProfileTask(ctx context.Context, taskID string) (*Profile, error) {
     task, _ := td.analyzer.store.Get(ctx, taskID)
-    
+
     profile := &Profile{
         TaskID: taskID,
     }
-    
+
     // CPU 分析
     profile.CPUProfile = CPUProfile{
         TotalTime: task.Duration,
         Hotspots:  td.analyzer.findCPUHotspots(task),
     }
-    
+
     // 内存分析
     profile.MemoryProfile = MemoryProfile{
         PeakUsage: task.ResourceUsage.Memory,
         Allocations: td.analyzer.getAllocationStats(task),
     }
-    
+
     // 阻塞分析
     profile.BlockProfile = BlockProfile{
         BlockedTime: td.analyzer.getBlockedTime(task),
         BlockPoints: td.analyzer.getBlockPoints(task),
     }
-    
+
     return profile, nil
 }
 ```
@@ -152,13 +152,13 @@ func (tr *TaskReplayer) Replay(ctx context.Context, taskID string, fromEvent int
     if err != nil {
         return err
     }
-    
+
     // 重建任务状态
     task := tr.reconstructTask(events)
-    
+
     // 在隔离环境重放
     replayCtx := context.WithValue(ctx, "replay_mode", true)
-    
+
     return tr.executor.Execute(replayCtx, task)
 }
 
@@ -166,7 +166,7 @@ func (tr *TaskReplayer) CompareRuns(ctx context.Context, taskID string, run1, ru
     // 获取两次运行的结果
     result1, _ := tr.store.GetRunResult(ctx, taskID, run1)
     result2, _ := tr.store.GetRunResult(ctx, taskID, run2)
-    
+
     return &Comparison{
         Differences: tr.compareResults(result1, result2),
         Similarity:  tr.calculateSimilarity(result1, result2),
@@ -186,11 +186,11 @@ type LiveDiagnostics struct {
 
 func (ld *LiveDiagnostics) Subscribe(taskID string) chan DiagnosticEvent {
     ch := make(chan DiagnosticEvent, 100)
-    
+
     ld.mu.Lock()
     ld.subscribers[taskID] = append(ld.subscribers[taskID], ch)
     ld.mu.Unlock()
-    
+
     return ch
 }
 
@@ -198,7 +198,7 @@ func (ld *LiveDiagnostics) Publish(taskID string, event DiagnosticEvent) {
     ld.mu.RLock()
     subs := ld.subscribers[taskID]
     ld.mu.RUnlock()
-    
+
     for _, ch := range subs {
         select {
         case ch <- event:
@@ -211,13 +211,13 @@ func (ld *LiveDiagnostics) Publish(taskID string, event DiagnosticEvent) {
 // WebSocket 推送
 func (ld *LiveDiagnostics) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
     taskID := r.URL.Query().Get("task_id")
-    
+
     conn, _ := websocket.Upgrade(w, r, nil, 1024, 1024)
     defer conn.Close()
-    
+
     events := ld.Subscribe(taskID)
     defer ld.Unsubscribe(taskID, events)
-    
+
     for event := range events {
         conn.WriteJSON(event)
     }

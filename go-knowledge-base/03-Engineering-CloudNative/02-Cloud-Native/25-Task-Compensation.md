@@ -1,6 +1,6 @@
 # 任务补偿机制 (Task Compensation)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #compensation #saga #distributed-transaction
 
 ---
@@ -22,7 +22,7 @@ type SagaStep struct {
 
 func (s *Saga) Execute() error {
     completed := []int{}  // 记录已完成的步骤索引
-    
+
     for i, step := range s.steps {
         if err := step.Action(s.ctx); err != nil {
             // 执行补偿
@@ -30,28 +30,28 @@ func (s *Saga) Execute() error {
         }
         completed = append(completed, i)
     }
-    
+
     return nil
 }
 
 func (s *Saga) compensate(completed []int) error {
     var errs []error
-    
+
     // 逆序补偿
     for i := len(completed) - 1; i >= 0; i-- {
         stepIndex := completed[i]
         step := s.steps[stepIndex]
-        
+
         if err := step.Compensate(s.ctx); err != nil {
             errs = append(errs, fmt.Errorf("compensate %s failed: %w", step.Name, err))
             // 记录补偿失败，需要人工介入
         }
     }
-    
+
     if len(errs) > 0 {
         return fmt.Errorf("compensation failed: %v", errs)
     }
-    
+
     return nil
 }
 
@@ -124,24 +124,24 @@ func (cm *CompensationManager) ExecuteAll(ctx context.Context) error {
 
 func (cm *CompensationManager) executeCompensation(ctx context.Context, comp CompensationTask) error {
     var lastErr error
-    
+
     for i := 0; i < comp.MaxRetries; i++ {
         if err := comp.Action(ctx); err != nil {
             lastErr = err
             time.Sleep(time.Second * time.Duration(i+1))
             continue
         }
-        
+
         comp.Status = CompensationStatusSuccess
         return nil
     }
-    
+
     comp.Status = CompensationStatusFailed
-    
+
     // 记录需要人工处理的补偿失败
     cm.store.RecordFailedCompensation(ctx, comp, lastErr)
-    
-    return fmt.Errorf("compensation %s failed after %d retries: %w", 
+
+    return fmt.Errorf("compensation %s failed after %d retries: %w",
         comp.ID, comp.MaxRetries, lastErr)
 }
 ```
@@ -161,16 +161,16 @@ func (ic *IdempotentCompensation) Execute(ctx context.Context, key string, actio
     if status, _ := ic.store.Get(ctx, key); status == "completed" {
         return nil  // 已执行过
     }
-    
+
     // 标记为进行中
     ic.store.Set(ctx, key, "in_progress")
-    
+
     // 执行补偿
     if err := action(); err != nil {
         ic.store.Set(ctx, key, "failed")
         return err
     }
-    
+
     // 标记为完成
     ic.store.Set(ctx, key, "completed")
     return nil
@@ -207,7 +207,7 @@ func (cm *CompensationMonitor) RecordCompensationSuccess(originalTaskID string, 
 func (cm *CompensationMonitor) RecordCompensationFailure(originalTaskID string, err error) {
     cm.metrics.IncCounter("compensation_failed")
     cm.metrics.GaugeDec("active_compensations")
-    
+
     // 发送告警
     alertManager.Send(Alert{
         Severity: "critical",

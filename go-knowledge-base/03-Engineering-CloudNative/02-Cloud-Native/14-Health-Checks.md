@@ -1,6 +1,6 @@
 # 健康检查 (Health Checks)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #health #kubernetes #monitoring
 
 ---
@@ -30,7 +30,7 @@ type HealthCheck func(ctx context.Context) error
 
 func (h *HealthChecker) ReadinessHandler(w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
-    
+
     for name, check := range h.checks {
         if err := check(ctx); err != nil {
             w.WriteHeader(http.StatusServiceUnavailable)
@@ -42,7 +42,7 @@ func (h *HealthChecker) ReadinessHandler(w http.ResponseWriter, r *http.Request)
             return
         }
     }
-    
+
     w.WriteHeader(http.StatusOK)
     w.Write([]byte("ready"))
 }
@@ -52,17 +52,17 @@ func NewHealthChecker() *HealthChecker {
     hc := &HealthChecker{
         checks: make(map[string]HealthCheck),
     }
-    
+
     // 数据库检查
     hc.checks["database"] = func(ctx context.Context) error {
         return db.PingContext(ctx)
     }
-    
+
     // 缓存检查
     hc.checks["cache"] = func(ctx context.Context) error {
         return redisClient.Ping(ctx).Err()
     }
-    
+
     // 外部服务检查
     hc.checks["external-api"] = func(ctx context.Context) error {
         req, _ := http.NewRequestWithContext(ctx, "GET", "https://api.external.com/health", nil)
@@ -71,13 +71,13 @@ func NewHealthChecker() *HealthChecker {
             return err
         }
         defer resp.Body.Close()
-        
+
         if resp.StatusCode != http.StatusOK {
             return fmt.Errorf("external API unhealthy: %d", resp.StatusCode)
         }
         return nil
     }
-    
+
     return hc
 }
 ```
@@ -100,7 +100,7 @@ func StartupHandler(w http.ResponseWriter, r *http.Request) {
 func init() {
     // 执行初始化
     initialize()
-    
+
     atomic.StoreInt32(&startupComplete, 1)
 }
 ```
@@ -126,7 +126,7 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
-        
+
         readinessProbe:
           httpGet:
             path: /health/ready
@@ -135,7 +135,7 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
-        
+
         startupProbe:
           httpGet:
             path: /health/startup
@@ -201,17 +201,17 @@ func (a *HealthAggregator) Aggregate(ctx context.Context) HealthReport {
         Services: make(map[string]ServiceHealth),
         Overall:  "healthy",
     }
-    
+
     var wg sync.WaitGroup
     mu := sync.Mutex{}
-    
+
     for name, url := range a.services {
         wg.Add(1)
         go func(n string, u *url.URL) {
             defer wg.Done()
-            
+
             health := a.checkService(ctx, u)
-            
+
             mu.Lock()
             report.Services[n] = health
             if health.Status != "healthy" {
@@ -220,7 +220,7 @@ func (a *HealthAggregator) Aggregate(ctx context.Context) HealthReport {
             mu.Unlock()
         }(name, url)
     }
-    
+
     wg.Wait()
     return report
 }

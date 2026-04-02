@@ -1,6 +1,6 @@
 # 日志模式 (Logging Patterns)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #logging #observability #structured
 
 ---
@@ -16,7 +16,7 @@ func InitLogger() {
     config := zap.NewProductionConfig()
     config.OutputPaths = []string{"stdout", "/var/log/app.log"}
     config.ErrorOutputPaths = []string{"stderr"}
-    
+
     var err error
     logger, err = config.Build()
     if err != nil {
@@ -100,13 +100,13 @@ func WithRequestID(ctx context.Context, requestID string) context.Context {
 ```go
 func SampledLogger() *zap.Logger {
     config := zap.NewProductionConfig()
-    
+
     // 每秒最多记录 100 条 info，保留所有 error
     config.Sampling = &zap.SamplingConfig{
         Initial:    100,
         Thereafter: 100,
     }
-    
+
     logger, _ := config.Build()
     return logger
 }
@@ -119,10 +119,10 @@ func SampledLogger() *zap.Logger {
 ```go
 func SanitizeFields(data map[string]interface{}) map[string]interface{} {
     sensitive := []string{
-        "password", "token", "secret", "api_key", 
+        "password", "token", "secret", "api_key",
         "credit_card", "ssn", "email",
     }
-    
+
     sanitized := make(map[string]interface{})
     for k, v := range data {
         isSensitive := false
@@ -132,14 +132,14 @@ func SanitizeFields(data map[string]interface{}) map[string]interface{} {
                 break
             }
         }
-        
+
         if isSensitive {
             sanitized[k] = "[REDACTED]"
         } else {
             sanitized[k] = v
         }
     }
-    
+
     return sanitized
 }
 ```
@@ -159,13 +159,13 @@ func NewRotatingLogger() *zap.Logger {
         MaxAge:     7,    // days
         Compress:   true,
     })
-    
+
     core := zapcore.NewCore(
         zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
         w,
         zap.InfoLevel,
     )
-    
+
     return zap.New(core)
 }
 ```

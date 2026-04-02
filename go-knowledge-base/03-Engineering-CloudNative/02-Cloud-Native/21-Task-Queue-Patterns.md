@@ -1,6 +1,6 @@
 # 任务队列模式 (Task Queue Patterns)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #task-queue #patterns #messaging
 
 ---
@@ -21,7 +21,7 @@ type PriorityQueue struct {
 func (pq *PriorityQueue) Push(task PriorityTask) {
     pq.mu.Lock()
     defer pq.mu.Unlock()
-    
+
     // 按优先级插入
     inserted := false
     for i, item := range pq.items {
@@ -31,7 +31,7 @@ func (pq *PriorityQueue) Push(task PriorityTask) {
             break
         }
     }
-    
+
     if !inserted {
         pq.items = append(pq.items, task)
     }
@@ -40,11 +40,11 @@ func (pq *PriorityQueue) Push(task PriorityTask) {
 func (pq *PriorityQueue) Pop() (PriorityTask, bool) {
     pq.mu.Lock()
     defer pq.mu.Unlock()
-    
+
     if len(pq.items) == 0 {
         return PriorityTask{}, false
     }
-    
+
     task := pq.items[0]
     pq.items = pq.items[1:]
     return task, true
@@ -70,32 +70,32 @@ type DelayedItem struct {
 func (dq *DelayedQueue) Push(item DelayedItem) {
     dq.mu.Lock()
     defer dq.mu.Unlock()
-    
+
     dq.items = append(dq.items, item)
     sort.Slice(dq.items, func(i, j int) bool {
         return dq.items[i].ExecuteAt.Before(dq.items[j].ExecuteAt)
     })
-    
+
     dq.cond.Signal()
 }
 
 func (dq *DelayedQueue) Poll() (DelayedItem, bool) {
     dq.mu.Lock()
     defer dq.mu.Unlock()
-    
+
     for {
         if len(dq.items) == 0 {
             dq.cond.Wait()
             continue
         }
-        
+
         item := dq.items[0]
         if time.Now().Before(item.ExecuteAt) {
             // 等待直到执行时间
             dq.cond.Wait()
             continue
         }
-        
+
         dq.items = dq.items[1:]
         return item, true
     }
@@ -119,7 +119,7 @@ func (dlq *DeadLetterQueue) Process(task *Task) {
         dlq.dlq.Push(task)
         return
     }
-    
+
     // 正常处理
     dlq.mainQueue.Push(task)
 }
@@ -128,13 +128,13 @@ func (dlq *DeadLetterQueue) Process(task *Task) {
 func (dlq *DeadLetterQueue) ProcessDeadLetter(task *Task) {
     // 记录日志
     log.Printf("Dead letter: %v, error: %v", task.ID, task.LastError)
-    
+
     // 告警
     alertManager.Send(Alert{
         Severity: "warning",
         Message:  fmt.Sprintf("Task %s failed after %d retries", task.ID, task.RetryCount),
     })
-    
+
     // 保存到持久化存储
     dlq.store.SaveDeadLetter(task)
 }
@@ -206,7 +206,7 @@ func (mr *MessageRouter) Route(task *Task) (string, error) {
             return rule.Target, nil
         }
     }
-    
+
     return "", ErrNoRoute
 }
 

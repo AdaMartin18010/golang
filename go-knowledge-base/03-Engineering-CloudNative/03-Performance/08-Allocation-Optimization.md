@@ -1,6 +1,6 @@
 # 内存分配优化 (Allocation Optimization)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #memory #allocation #performance
 
 ---
@@ -45,7 +45,7 @@ var bufferPool = sync.Pool{
 func process(data []byte) []byte {
     buf := bufferPool.Get().([]byte)
     defer bufferPool.Put(buf)
-    
+
     // 处理数据到 buf
     n := copy(buf, data)
     return buf[:n]
@@ -132,10 +132,10 @@ var objectPool = sync.Pool{
 func useObject() {
     obj := objectPool.Get().(*LargeObject)
     defer objectPool.Put(obj)
-    
+
     // 重置状态
     obj.Data = [1024 * 1024]byte{}
-    
+
     // 使用 obj
 }
 ```
@@ -151,7 +151,7 @@ import "arena"
 func processBatch(items []Item) {
     a := arena.NewArena()
     defer a.Free()
-    
+
     for _, item := range items {
         // 在 arena 中分配
         node := arena.New[Node](a)

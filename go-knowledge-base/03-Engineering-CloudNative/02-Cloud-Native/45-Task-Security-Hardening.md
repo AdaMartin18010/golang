@@ -1,6 +1,6 @@
 # 任务安全加固 (Task Security Hardening)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #security #hardening #isolation
 
 ---
@@ -19,7 +19,7 @@ func (sr *SecureRegistry) Register(taskType string, handler TaskHandler) error {
     if !isValidTaskType(taskType) {
         return fmt.Errorf("invalid task type: %s", taskType)
     }
-    
+
     sr.allowedTypes[taskType] = handler
     return nil
 }
@@ -30,13 +30,13 @@ func (sr *SecureRegistry) Execute(ctx context.Context, task *Task) error {
     if !ok {
         return fmt.Errorf("unknown task type: %s", task.Type)
     }
-    
+
     // 净化输入
     sanitized, err := sr.sanitizer.Sanitize(task)
     if err != nil {
         return fmt.Errorf("input sanitization failed: %w", err)
     }
-    
+
     return handler.Handle(ctx, sanitized)
 }
 
@@ -49,10 +49,10 @@ type InputSanitizer struct {
 func (is *InputSanitizer) Sanitize(task *Task) (*Task, error) {
     // 检查 payload 大小
     if int64(len(task.Payload)) > is.maxPayloadSize {
-        return nil, fmt.Errorf("payload too large: %d > %d", 
+        return nil, fmt.Errorf("payload too large: %d > %d",
             len(task.Payload), is.maxPayloadSize)
     }
-    
+
     // 检查危险模式
     payloadStr := string(task.Payload)
     for _, pattern := range is.forbiddenPatterns {
@@ -60,13 +60,13 @@ func (is *InputSanitizer) Sanitize(task *Task) (*Task, error) {
             return nil, fmt.Errorf("forbidden pattern found: %s", pattern)
         }
     }
-    
+
     // 验证 JSON 结构
     var v interface{}
     if err := json.Unmarshal(task.Payload, &v); err != nil {
         return nil, fmt.Errorf("invalid json: %w", err)
     }
-    
+
     return task, nil
 }
 ```
@@ -99,7 +99,7 @@ func (se *SandboxExecutor) Execute(ctx context.Context, task *Task) (*Result, er
         Seccomp:    se.config.Seccomp,
         Debug:      false,
     }
-    
+
     // 配置资源限制
     spec := &specs.Spec{
         Linux: &specs.Linux{
@@ -114,14 +114,14 @@ func (se *SandboxExecutor) Execute(ctx context.Context, task *Task) (*Result, er
             },
         },
     }
-    
+
     // 启动沙箱
     container, err := se.runtime.Create(ctx, task.ID, spec, conf)
     if err != nil {
         return nil, fmt.Errorf("create sandbox: %w", err)
     }
     defer container.Destroy()
-    
+
     // 在沙箱中执行
     return se.runInSandbox(ctx, container, task)
 }
@@ -147,12 +147,12 @@ func (sa *SecurityAuditor) LogEvent(ctx context.Context, event SecurityEvent) er
         Result:      event.Result,
         Details:     event.Details,
     }
-    
+
     // 敏感操作立即告警
     if event.IsSensitive() {
         sa.alert(auditLog)
     }
-    
+
     return sa.store.Save(ctx, auditLog)
 }
 
@@ -173,9 +173,9 @@ func (sa *SecurityAuditor) LogTaskExecution(ctx context.Context, task *Task, res
 // 异常检测
 func (sa *SecurityAuditor) DetectAnomalies(ctx context.Context, window time.Duration) ([]Anomaly, error) {
     events, _ := sa.store.GetEvents(ctx, time.Now().Add(-window), time.Now())
-    
+
     var anomalies []Anomaly
-    
+
     // 检测异常模式
     if sa.detectRateSpike(events) {
         anomalies = append(anomalies, Anomaly{
@@ -184,7 +184,7 @@ func (sa *SecurityAuditor) DetectAnomalies(ctx context.Context, window time.Dura
             Description: "Unusual task execution rate detected",
         })
     }
-    
+
     if sa.detectRepeatedFailures(events) {
         anomalies = append(anomalies, Anomaly{
             Type:        "repeated_failures",
@@ -192,7 +192,7 @@ func (sa *SecurityAuditor) DetectAnomalies(ctx context.Context, window time.Dura
             Description: "Multiple task failures from same source",
         })
     }
-    
+
     return anomalies, nil
 }
 ```
@@ -212,7 +212,7 @@ func (ta *TaskAuthorization) Authorize(ctx context.Context, user User, action Ac
     if err != nil {
         return fmt.Errorf("policy evaluation failed: %w", err)
     }
-    
+
     if !allowed {
         return &AuthorizationError{
             User:   user.ID,
@@ -220,7 +220,7 @@ func (ta *TaskAuthorization) Authorize(ctx context.Context, user User, action Ac
             Resource: resource.String(),
         }
     }
-    
+
     return nil
 }
 
@@ -232,18 +232,18 @@ type RBACPolicy struct {
 
 func (rp *RBACPolicy) Evaluate(ctx context.Context, user User, action Action, resource Resource) (bool, error) {
     userRoles := rp.userRoles[user.ID]
-    
+
     for _, roleID := range userRoles {
         role := rp.roles[roleID]
-        
+
         for _, permission := range role.Permissions {
-            if permission.Resource == resource.Type && 
+            if permission.Resource == resource.Type &&
                (permission.Action == action.Type || permission.Action == "*") {
                 return true, nil
             }
         }
     }
-    
+
     return false, nil
 }
 ```

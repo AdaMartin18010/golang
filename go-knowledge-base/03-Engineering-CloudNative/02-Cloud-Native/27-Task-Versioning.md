@@ -1,6 +1,6 @@
 # 任务版本管理 (Task Versioning)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #versioning #migration #compatibility
 
 ---
@@ -31,11 +31,11 @@ func (vr *VersionRegistry) Get(version string) (*TaskVersion, error) {
     if !ok {
         return nil, fmt.Errorf("unknown task version: %s", version)
     }
-    
+
     if v.Deprecated && time.Now().After(v.SupportedUntil) {
         return nil, fmt.Errorf("task version %s is no longer supported", version)
     }
-    
+
     return v, nil
 }
 
@@ -46,15 +46,15 @@ func (vr *VersionRegistry) GetCurrent() *TaskVersion {
 // 版本迁移
 func (vr *VersionRegistry) Migrate(oldVersion string, data []byte) ([]byte, string, error) {
     current := vr.GetCurrent()
-    
+
     // 已经是当前版本
     if oldVersion == current.Version {
         return data, oldVersion, nil
     }
-    
+
     // 逐版本迁移
     versions := vr.getMigrationPath(oldVersion, current.Version)
-    
+
     for _, v := range versions {
         if v.Migrate != nil {
             migrated, err := v.Migrate(data)
@@ -64,7 +64,7 @@ func (vr *VersionRegistry) Migrate(oldVersion string, data []byte) ([]byte, stri
             data = migrated
         }
     }
-    
+
     return data, current.Version, nil
 }
 
@@ -73,7 +73,7 @@ func (vr *VersionRegistry) getMigrationPath(from, to string) []*TaskVersion {
     // 简化版本：假设版本是线性的 v1 -> v2 -> v3
     var path []*TaskVersion
     started := false
-    
+
     for _, v := range vr.getSortedVersions() {
         if v.Version == from {
             started = true
@@ -85,7 +85,7 @@ func (vr *VersionRegistry) getMigrationPath(from, to string) []*TaskVersion {
             break
         }
     }
-    
+
     return path
 }
 ```
@@ -106,17 +106,17 @@ func (fct *ForwardCompatibleTask) UnmarshalJSON(data []byte) error {
     if err := json.Unmarshal(data, &raw); err != nil {
         return err
     }
-    
+
     // 处理版本字段
     if v, ok := raw["version"].(string); ok {
         fct.version = v
     } else {
         fct.version = "1.0"  // 默认版本
     }
-    
+
     // 设置默认值
     fct.data = fct.applyDefaults(raw, fct.version)
-    
+
     return nil
 }
 
@@ -125,7 +125,7 @@ func (fct *ForwardCompatibleTask) applyDefaults(data map[string]interface{}, ver
         "timeout": 30,
         "retry":   3,
     }
-    
+
     // 不同版本默认值不同
     switch version {
     case "1.0":
@@ -134,14 +134,14 @@ func (fct *ForwardCompatibleTask) applyDefaults(data map[string]interface{}, ver
         defaults["timeout"] = 30
         defaults["priority"] = "normal"
     }
-    
+
     // 合并
     for k, v := range defaults {
         if _, ok := data[k]; !ok {
             data[k] = v
         }
     }
-    
+
     return data
 }
 ```
@@ -175,11 +175,11 @@ func (cd *CanaryDeployment) GradualRollout(targetPercentage float64, duration ti
     steps := 10
     stepDuration := duration / time.Duration(steps)
     stepSize := (targetPercentage - cd.percentage) / float64(steps)
-    
+
     for i := 0; i < steps; i++ {
         time.Sleep(stepDuration)
         cd.percentage += stepSize
-        
+
         // 监控新版本的错误率
         if cd.checkErrorRate() > 0.05 {
             // 错误率过高，回滚

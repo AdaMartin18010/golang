@@ -1,6 +1,6 @@
 # 任务 Web UI (Task Web UI)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #web-ui #dashboard #visualization
 
 ---
@@ -20,16 +20,16 @@ func (tdh *TaskDashboardHandler) RegisterRoutes(r *gin.Engine) {
         api.GET("/tasks/:id", tdh.GetTask)
         api.POST("/tasks", tdh.CreateTask)
         api.DELETE("/tasks/:id", tdh.CancelTask)
-        
+
         api.GET("/stats", tdh.GetStats)
         api.GET("/stats/realtime", tdh.GetRealtimeStats)
-        
+
         api.GET("/workers", tdh.ListWorkers)
         api.GET("/queues", tdh.ListQueues)
-        
+
         api.GET("/logs/:taskId", tdh.GetTaskLogs)
     }
-    
+
     // WebSocket 实时更新
     r.GET("/ws", tdh.WebSocketHandler)
 }
@@ -41,9 +41,9 @@ func (tdh *TaskDashboardHandler) ListTasks(c *gin.Context) {
         Limit:  parseInt(c.DefaultQuery("limit", "20")),
         Offset: parseInt(c.DefaultQuery("offset", "0")),
     }
-    
+
     tasks, total, _ := tdh.taskService.List(c.Request.Context(), options)
-    
+
     c.JSON(200, gin.H{
         "data":  tasks,
         "total": total,
@@ -61,11 +61,11 @@ func (tdh *TaskDashboardHandler) WebSocketHandler(c *gin.Context) {
         return
     }
     defer conn.Close()
-    
+
     // 订阅实时更新
     events := tdh.statsService.Subscribe()
     defer tdh.statsService.Unsubscribe(events)
-    
+
     for event := range events {
         if err := conn.WriteJSON(event); err != nil {
             break
@@ -157,9 +157,9 @@ type Dataset struct {
 func (tdh *TaskDashboardHandler) GetTimelineData(c *gin.Context) {
     rangeParam := c.DefaultQuery("range", "1h")
     duration := parseDuration(rangeParam)
-    
+
     timeline, _ := tdh.statsService.GetTimeline(c.Request.Context(), duration)
-    
+
     c.JSON(200, ChartData{
         Labels: extractLabels(timeline),
         Datasets: []Dataset{

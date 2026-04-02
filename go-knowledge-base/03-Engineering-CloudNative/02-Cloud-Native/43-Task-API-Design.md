@@ -1,6 +1,6 @@
 # 任务 API 设计 (Task API Design)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #api-design #rest #graphql
 
 ---
@@ -11,7 +11,7 @@
 // API 路由定义
 func RegisterTaskAPI(r *gin.Engine, service TaskService) {
     handler := &TaskHandler{service: service}
-    
+
     v1 := r.Group("/api/v1")
     {
         tasks := v1.Group("/tasks")
@@ -21,17 +21,17 @@ func RegisterTaskAPI(r *gin.Engine, service TaskService) {
             tasks.GET("/:id", handler.GetTask)
             tasks.PATCH("/:id", handler.UpdateTask)
             tasks.DELETE("/:id", handler.CancelTask)
-            
+
             // 任务操作
             tasks.POST("/:id/retry", handler.RetryTask)
             tasks.POST("/:id/pause", handler.PauseTask)
             tasks.POST("/:id/resume", handler.ResumeTask)
-            
+
             // 任务日志
             tasks.GET("/:id/logs", handler.GetTaskLogs)
             tasks.GET("/:id/events", handler.GetTaskEvents)
         }
-        
+
         // 批处理
         v1.POST("/batch/submit", handler.BatchSubmit)
         v1.POST("/batch/cancel", handler.BatchCancel)
@@ -90,7 +90,7 @@ func (th *TaskHandler) ListTasks(c *gin.Context) {
         c.JSON(400, ErrorResponse{Error: err.Error()})
         return
     }
-    
+
     // 构建过滤器
     filter := TaskFilter{
         Status:    query.Status,
@@ -100,26 +100,26 @@ func (th *TaskHandler) ListTasks(c *gin.Context) {
         CreatedBefore: query.CreatedBefore,
         Metadata:  parseMetadataFilter(query.Metadata),
     }
-    
+
     // 排序
     sort := SortOptions{
         Field: query.SortBy,
         Order: query.SortOrder,
     }
-    
+
     // 分页
     pagination := PaginationOptions{
         Limit:  query.Limit,
         Offset: query.Offset,
         Cursor: query.Cursor,
     }
-    
+
     result, err := th.service.List(c.Request.Context(), filter, sort, pagination)
     if err != nil {
         c.JSON(500, ErrorResponse{Error: err.Error()})
         return
     }
-    
+
     c.JSON(200, ListTasksResponse{
         Data:       convertToResponses(result.Tasks),
         Pagination: result.Pagination,
@@ -224,14 +224,14 @@ func (tr *TaskResolver) Tasks(ctx context.Context, args struct {
         Status: dereference(args.Status),
         Type:   dereference(args.Type),
     }
-    
+
     limit := 20
     if args.Limit != nil {
         limit = int(*args.Limit)
     }
-    
+
     result, _ := tr.service.List(ctx, filter, SortOptions{}, PaginationOptions{Limit: limit})
-    
+
     return &TaskConnection{
         Edges: convertToEdges(result.Tasks),
         PageInfo: PageInfo{
@@ -254,18 +254,18 @@ type RateLimitedHandler struct {
 
 func (rlh *RateLimitedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     key := rlh.keyFunc(r)
-    
+
     if !rlh.limiter.Allow(key) {
         w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", rlh.limiter.Limit()))
         w.Header().Set("X-RateLimit-Remaining", "0")
-        
+
         retryAfter := rlh.limiter.RetryAfter(key)
         w.Header().Set("Retry-After", fmt.Sprintf("%d", int(retryAfter.Seconds())))
-        
+
         http.Error(w, "rate limit exceeded", http.StatusTooManyRequests)
         return
     }
-    
+
     rlh.handler.ServeHTTP(w, r)
 }
 
@@ -277,7 +277,7 @@ func RateLimitByEndpoint() gin.HandlerFunc {
         "POST /api/v1/batch":      rate.Limit(5, time.Minute),
         "GET /api/v1/tasks/:id":   rate.Limit(200, time.Minute),
     }
-    
+
     return func(c *gin.Context) {
         key := fmt.Sprintf("%s %s", c.Request.Method, c.FullPath())
         limit, ok := limits[key]
@@ -285,14 +285,14 @@ func RateLimitByEndpoint() gin.HandlerFunc {
             c.Next()
             return
         }
-        
+
         if !limit.Allow(c.ClientIP()) {
             c.AbortWithStatusJSON(429, gin.H{
                 "error": "rate limit exceeded",
             })
             return
         }
-        
+
         c.Next()
     }
 }

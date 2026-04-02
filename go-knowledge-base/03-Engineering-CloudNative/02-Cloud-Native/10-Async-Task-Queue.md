@@ -1,6 +1,6 @@
 # 异步任务队列 (Async Task Queue)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #async #queue #task #background
 
 ---
@@ -41,7 +41,7 @@ func (q *TaskQueue) Start() {
 
 func (q *TaskQueue) worker(id int) {
     defer q.wg.Done()
-    
+
     for task := range q.tasks {
         select {
         case <-q.ctx.Done():
@@ -55,9 +55,9 @@ func (q *TaskQueue) worker(id int) {
 func (q *TaskQueue) executeTask(task Task) {
     ctx, cancel := context.WithTimeout(q.ctx, 5*time.Minute)
     defer cancel()
-    
+
     err := task.Execute(ctx)
-    
+
     if task.Callback != nil {
         task.Callback(nil, err)
     }
@@ -104,7 +104,7 @@ func NewPriorityQueue() *PriorityQueue {
 func (pq *PriorityQueue) Push(task PriorityTask) {
     pq.mu.Lock()
     defer pq.mu.Unlock()
-    
+
     // 按优先级插入
     inserted := false
     for i, item := range pq.items {
@@ -114,26 +114,26 @@ func (pq *PriorityQueue) Push(task PriorityTask) {
             break
         }
     }
-    
+
     if !inserted {
         pq.items = append(pq.items, task)
     }
-    
+
     pq.cond.Signal()
 }
 
 func (pq *PriorityQueue) Pop() (PriorityTask, bool) {
     pq.mu.Lock()
     defer pq.mu.Unlock()
-    
+
     for len(pq.items) == 0 {
         pq.cond.Wait()
     }
-    
+
     if len(pq.items) == 0 {
         return PriorityTask{}, false
     }
-    
+
     task := pq.items[0]
     pq.items = pq.items[1:]
     return task, true
@@ -179,29 +179,29 @@ func (q *PersistentQueue) Dequeue() (*Task, error) {
         return nil, err
     }
     defer tx.Rollback()
-    
+
     // 获取并锁定任务
     var task Task
     err = tx.QueryRow(`
-        SELECT id, type, payload FROM tasks 
+        SELECT id, type, payload FROM tasks
         WHERE status = 'pending' AND scheduled_at <= ?
         ORDER BY scheduled_at ASC
         LIMIT 1
     `, time.Now()).Scan(&task.ID, &task.Type, &task.Payload)
-    
+
     if err == sql.ErrNoRows {
         return nil, nil
     }
     if err != nil {
         return nil, err
     }
-    
+
     // 标记为处理中
     _, err = tx.Exec("UPDATE tasks SET status = 'processing' WHERE id = ?", task.ID)
     if err != nil {
         return nil, err
     }
-    
+
     return &task, tx.Commit()
 }
 
@@ -210,7 +210,7 @@ func (q *PersistentQueue) Complete(taskID string, success bool) error {
     if !success {
         status = "failed"
     }
-    
+
     _, err := q.db.Exec(
         "UPDATE tasks SET status = ?, processed_at = ? WHERE id = ?",
         status, time.Now(), taskID,
@@ -246,11 +246,11 @@ func (e *DAGExecutor) Execute(ctx context.Context) error {
             }
             break
         }
-        
+
         // 并行执行就绪任务
         var wg sync.WaitGroup
         errChan := make(chan error, len(ready))
-        
+
         for _, task := range ready {
             wg.Add(1)
             go func(t *TaskNode) {
@@ -260,32 +260,32 @@ func (e *DAGExecutor) Execute(ctx context.Context) error {
                 }
             }(task)
         }
-        
+
         wg.Wait()
         close(errChan)
-        
+
         // 收集错误
         for err := range errChan {
             return err
         }
-        
+
         // 标记完成
         for _, task := range ready {
             e.completed[task.ID] = true
         }
     }
-    
+
     return nil
 }
 
 func (e *DAGExecutor) findReadyTasks() []*TaskNode {
     var ready []*TaskNode
-    
+
     for id, task := range e.tasks {
         if e.completed[id] {
             continue
         }
-        
+
         // 检查依赖是否完成
         allDepsCompleted := true
         for _, dep := range task.DependsOn {
@@ -294,12 +294,12 @@ func (e *DAGExecutor) findReadyTasks() []*TaskNode {
                 break
             }
         }
-        
+
         if allDepsCompleted {
             ready = append(ready, task)
         }
     }
-    
+
     return ready
 }
 ```

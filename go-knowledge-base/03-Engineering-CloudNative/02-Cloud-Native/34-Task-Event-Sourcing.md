@@ -1,6 +1,6 @@
 # 任务事件溯源 (Task Event Sourcing)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #event-sourcing #cqrs #audit
 
 ---
@@ -77,7 +77,7 @@ func (pes *PostgresEventStore) Append(ctx context.Context, events []TaskEvent) e
         return err
     }
     defer tx.Rollback()
-    
+
     stmt, err := tx.PrepareContext(ctx, `
         INSERT INTO task_events (event_id, task_id, event_type, payload, version, position)
         VALUES ($1, $2, $3, $4, $5, nextval('event_position_seq'))
@@ -86,7 +86,7 @@ func (pes *PostgresEventStore) Append(ctx context.Context, events []TaskEvent) e
         return err
     }
     defer stmt.Close()
-    
+
     for _, event := range events {
         payload, _ := json.Marshal(event)
         _, err := stmt.ExecContext(ctx,
@@ -100,7 +100,7 @@ func (pes *PostgresEventStore) Append(ctx context.Context, events []TaskEvent) e
             return err
         }
     }
-    
+
     return tx.Commit()
 }
 ```
@@ -129,21 +129,21 @@ func (ta *TaskAggregate) Apply(event TaskEvent) {
     switch e := event.(type) {
     case TaskCreatedEvent:
         ta.State.Status = "pending"
-        
+
     case TaskStartedEvent:
         ta.State.Status = "running"
         ta.State.WorkerID = e.WorkerID
-        
+
     case TaskCompletedEvent:
         ta.State.Status = "completed"
         ta.State.Result = e.Result
-        
+
     case TaskFailedEvent:
         ta.State.Status = "failed"
         ta.State.Error = e.Error
         ta.State.Attempts++
     }
-    
+
     ta.Version++
     ta.Events = append(ta.Events, event)
 }
@@ -175,14 +175,14 @@ func (tp *TaskProjection) HandleEvent(ctx context.Context, event TaskEvent) erro
             Status:    "pending",
             CreatedAt: e.Timestamp,
         })
-        
+
     case TaskStartedEvent:
         return tp.store.Update(ctx, e.TaskID, map[string]interface{}{
             "status":    "running",
             "worker_id": e.WorkerID,
             "started_at": e.Timestamp,
         })
-        
+
     case TaskCompletedEvent:
         return tp.store.Update(ctx, e.TaskID, map[string]interface{}{
             "status":     "completed",
@@ -191,7 +191,7 @@ func (tp *TaskProjection) HandleEvent(ctx context.Context, event TaskEvent) erro
             "completed_at": e.Timestamp,
         })
     }
-    
+
     return nil
 }
 
@@ -224,7 +224,7 @@ func (tal *TaskAuditLog) GetAuditTrail(ctx context.Context, taskID string) ([]Au
     if err != nil {
         return nil, err
     }
-    
+
     var entries []AuditEntry
     for _, event := range events {
         entries = append(entries, AuditEntry{
@@ -234,21 +234,21 @@ func (tal *TaskAuditLog) GetAuditTrail(ctx context.Context, taskID string) ([]Au
             Details:   event,
         })
     }
-    
+
     return entries, nil
 }
 
 func (tal *TaskAuditLog) WhoChanged(ctx context.Context, taskID string, field string) ([]ChangeRecord, error) {
     events, _ := tal.store.GetEvents(ctx, taskID, 0)
-    
+
     var changes []ChangeRecord
     var prevState TaskState
-    
+
     for _, event := range events {
         // 重建状态
         newState := prevState
         applyEvent(&newState, event)
-        
+
         // 检测字段变化
         if diff := compareStates(prevState, newState); diff != nil {
             for _, change := range diff.Changes {
@@ -262,10 +262,10 @@ func (tal *TaskAuditLog) WhoChanged(ctx context.Context, taskID string, field st
                 }
             }
         }
-        
+
         prevState = newState
     }
-    
+
     return changes, nil
 }
 ```

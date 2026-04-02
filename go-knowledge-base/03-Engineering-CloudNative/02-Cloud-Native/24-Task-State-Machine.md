@@ -1,6 +1,6 @@
 # 任务状态机 (Task State Machine)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #state-machine #task-lifecycle #workflow
 
 ---
@@ -69,7 +69,7 @@ func CanTransition(from, to TaskStatus) bool {
     if !ok {
         return false
     }
-    
+
     for _, v := range valid {
         if v == to {
             return true
@@ -106,14 +106,14 @@ type StateObserver interface {
 func (sm *TaskStateMachine) Transition(to TaskStatus, reason string) error {
     sm.mu.Lock()
     defer sm.mu.Unlock()
-    
+
     from := sm.task.Status
-    
+
     // 验证转换
     if !CanTransition(from, to) {
         return fmt.Errorf("invalid transition from %s to %s", from, to)
     }
-    
+
     // 执行转换
     transition := StateTransition{
         From:      from,
@@ -121,15 +121,15 @@ func (sm *TaskStateMachine) Transition(to TaskStatus, reason string) error {
         Timestamp: time.Now(),
         Reason:    reason,
     }
-    
+
     sm.transitions = append(sm.transitions, transition)
     sm.task.Status = to
-    
+
     // 通知观察者
     for _, obs := range sm.observers {
         obs.OnStateChange(sm.task, from, to)
     }
-    
+
     return nil
 }
 
@@ -162,7 +162,7 @@ type StateHooks struct {
 
 func (sm *TaskStateMachine) ExecuteWithHooks(to TaskStatus, hooks StateHooks) error {
     var hook func(*Task) error
-    
+
     switch to {
     case TaskStatusRunning:
         hook = hooks.OnRunning
@@ -171,13 +171,13 @@ func (sm *TaskStateMachine) ExecuteWithHooks(to TaskStatus, hooks StateHooks) er
     case TaskStatusFailed:
         hook = hooks.OnFailed
     }
-    
+
     if hook != nil {
         if err := hook(sm.task); err != nil {
             return fmt.Errorf("hook failed: %w", err)
         }
     }
-    
+
     return sm.Transition(to, "hook executed")
 }
 ```
@@ -192,11 +192,11 @@ func (sm *TaskStateMachine) Recover(ctx context.Context, store StateStore) error
     if err != nil {
         return err
     }
-    
+
     // 恢复状态
     sm.task.Status = record.To
     sm.transitions = record.Transitions
-    
+
     // 处理中断的任务
     switch sm.task.Status {
     case TaskStatusRunning:
@@ -209,7 +209,7 @@ func (sm *TaskStateMachine) Recover(ctx context.Context, store StateStore) error
         // 继续重试流程
         go sm.executeRetry()
     }
-    
+
     return nil
 }
 ```
@@ -222,7 +222,7 @@ func (sm *TaskStateMachine) Recover(ctx context.Context, store StateStore) error
 func (sm *TaskStateMachine) GetHistory() []StateTransition {
     sm.mu.RLock()
     defer sm.mu.RUnlock()
-    
+
     history := make([]StateTransition, len(sm.transitions))
     copy(history, sm.transitions)
     return history
@@ -231,10 +231,10 @@ func (sm *TaskStateMachine) GetHistory() []StateTransition {
 func (sm *TaskStateMachine) TimeInState(status TaskStatus) time.Duration {
     sm.mu.RLock()
     defer sm.mu.RUnlock()
-    
+
     var total time.Duration
     var enterTime time.Time
-    
+
     for _, t := range sm.transitions {
         if t.To == status {
             enterTime = t.Timestamp
@@ -244,12 +244,12 @@ func (sm *TaskStateMachine) TimeInState(status TaskStatus) time.Duration {
             enterTime = time.Time{}
         }
     }
-    
+
     // 如果当前就在该状态
     if sm.task.Status == status && !enterTime.IsZero() {
         total += time.Since(enterTime)
     }
-    
+
     return total
 }
 ```

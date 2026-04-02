@@ -1,6 +1,6 @@
 # 任务故障恢复 (Task Failure Recovery)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #failure-recovery #disaster-recovery #resilience
 
 ---
@@ -30,16 +30,16 @@ func (fd *FailureDetector) Start(ctx context.Context) {
 func (fd *FailureDetector) runCheck(ctx context.Context, check HealthCheck) {
     ticker := time.NewTicker(check.Interval)
     defer ticker.Stop()
-    
+
     failures := 0
-    
+
     for {
         select {
         case <-ticker.C:
             checkCtx, cancel := context.WithTimeout(ctx, check.Timeout)
             err := check.Check(checkCtx)
             cancel()
-            
+
             if err != nil {
                 failures++
                 if failures >= check.Threshold {
@@ -82,7 +82,7 @@ func (rr *RestartRecovery) Recover(ctx context.Context, task *Task) error {
     if err := cleanupTaskState(task); err != nil {
         return err
     }
-    
+
     // 重新提交任务
     return scheduler.Reschedule(task)
 }
@@ -127,7 +127,7 @@ func (rm *RecoveryManager) AttemptRecovery(ctx context.Context, task *Task, err 
             }
         }
     }
-    
+
     return fmt.Errorf("all recovery strategies failed for task %s", task.ID)
 }
 ```
@@ -156,7 +156,7 @@ func (cp *Checkpointer) SaveCheckpoint(ctx context.Context, taskID string, state
         Progress:  progress,
         Timestamp: time.Now(),
     }
-    
+
     return cp.store.Save(ctx, checkpoint)
 }
 
@@ -172,7 +172,7 @@ func processWithCheckpoint(ctx context.Context, task *Task, checkpointer *Checkp
         task.State = checkpoint.State
         task.Progress = checkpoint.Progress
     }
-    
+
     // 处理剩余工作
     for i := int(task.Progress); i < len(task.Items); i++ {
         // 处理每个项目
@@ -181,13 +181,13 @@ func processWithCheckpoint(ctx context.Context, task *Task, checkpointer *Checkp
             checkpointer.SaveCheckpoint(ctx, task.ID, task.State, float64(i))
             return err
         }
-        
+
         // 定期保存检查点
         if i%100 == 0 {
             checkpointer.SaveCheckpoint(ctx, task.ID, task.State, float64(i))
         }
     }
-    
+
     return nil
 }
 ```
@@ -205,37 +205,37 @@ type DisasterRecovery struct {
 func (dr *DisasterRecovery) ExecuteDRPlan(ctx context.Context) error {
     // 1. 评估影响
     impact := dr.assessImpact()
-    
+
     // 2. 通知相关人员
     dr.notifyStakeholders(impact)
-    
+
     // 3. 切换到备用集群
     if err := dr.clusterManager.Failover(ctx); err != nil {
         return fmt.Errorf("failover failed: %w", err)
     }
-    
+
     // 4. 恢复数据
     if err := dr.backupManager.RestoreLatest(ctx); err != nil {
         return fmt.Errorf("restore failed: %w", err)
     }
-    
+
     // 5. 恢复任务状态
     if err := dr.recoverTaskStates(ctx); err != nil {
         return fmt.Errorf("task recovery failed: %w", err)
     }
-    
+
     // 6. 验证恢复
     if err := dr.verifyRecovery(ctx); err != nil {
         return fmt.Errorf("verification failed: %w", err)
     }
-    
+
     return nil
 }
 
 func (dr *DisasterRecovery) recoverTaskStates(ctx context.Context) error {
     // 获取所有进行中任务
     tasks, _ := dr.store.ListRunningTasks(ctx)
-    
+
     for _, task := range tasks {
         // 检查是否需要重新执行
         if time.Since(task.LastHeartbeat) > 5*time.Minute {
@@ -244,7 +244,7 @@ func (dr *DisasterRecovery) recoverTaskStates(ctx context.Context) error {
             dr.store.Update(ctx, task)
         }
     }
-    
+
     return nil
 }
 ```

@@ -1,6 +1,6 @@
 # 状态机工作流 (State Machine Workflow)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #state-machine #workflow #saga
 
 ---
@@ -54,24 +54,24 @@ func (sm *StateMachine) AddTransition(t Transition) {
 func (sm *StateMachine) Trigger(ctx context.Context, event Event, data interface{}) error {
     sm.mu.Lock()
     defer sm.mu.Unlock()
-    
+
     transitions, ok := sm.transitions[sm.current]
     if !ok {
         return fmt.Errorf("no transitions from state %s", sm.current)
     }
-    
+
     transition, ok := transitions[event]
     if !ok {
         return fmt.Errorf("event %s not valid from state %s", event, sm.current)
     }
-    
+
     // 执行动作
     if transition.Action != nil {
         if err := transition.Action(ctx, data); err != nil {
             return fmt.Errorf("action failed: %w", err)
         }
     }
-    
+
     sm.current = transition.To
     return nil
 }
@@ -90,7 +90,7 @@ func (sm *StateMachine) Current() State {
 ```go
 func NewOrderStateMachine() *StateMachine {
     sm := NewStateMachine(StatePending)
-    
+
     sm.AddTransition(Transition{
         From:  StatePending,
         Event: EventStart,
@@ -100,7 +100,7 @@ func NewOrderStateMachine() *StateMachine {
             return reserveInventory(ctx, order)
         },
     })
-    
+
     sm.AddTransition(Transition{
         From:  StateProcessing,
         Event: EventSuccess,
@@ -110,7 +110,7 @@ func NewOrderStateMachine() *StateMachine {
             return chargePayment(ctx, order)
         },
     })
-    
+
     sm.AddTransition(Transition{
         From:  StateProcessing,
         Event: EventFail,
@@ -120,7 +120,7 @@ func NewOrderStateMachine() *StateMachine {
             return releaseInventory(ctx, order)
         },
     })
-    
+
     sm.AddTransition(Transition{
         From:  StateFailed,
         Event: EventRetry,
@@ -130,7 +130,7 @@ func NewOrderStateMachine() *StateMachine {
             return nil
         },
     })
-    
+
     return sm
 }
 ```
@@ -151,12 +151,12 @@ func (psm *PersistentStateMachine) Trigger(ctx context.Context, event Event, dat
     if err := psm.store.SaveEvent(ctx, psm.id, event, data); err != nil {
         return err
     }
-    
+
     // 执行状态转换
     if err := psm.StateMachine.Trigger(ctx, event, data); err != nil {
         return err
     }
-    
+
     // 保存新状态
     return psm.store.SaveState(ctx, psm.id, psm.Current())
 }
@@ -166,15 +166,15 @@ func (psm *PersistentStateMachine) Recover(ctx context.Context) error {
     if err != nil {
         return err
     }
-    
+
     psm.StateMachine.current = state
-    
+
     // 重放未处理的事件
     events, _ := psm.store.GetPendingEvents(ctx, psm.id)
     for _, event := range events {
         psm.StateMachine.Trigger(ctx, event.Type, event.Data)
     }
-    
+
     return nil
 }
 ```
@@ -191,7 +191,7 @@ type ParallelStateMachine struct {
 func (psm *ParallelStateMachine) Trigger(ctx context.Context, event Event, data interface{}) error {
     var wg sync.WaitGroup
     errChan := make(chan error, len(psm.regions))
-    
+
     for _, region := range psm.regions {
         wg.Add(1)
         go func(sm *StateMachine) {
@@ -201,10 +201,10 @@ func (psm *ParallelStateMachine) Trigger(ctx context.Context, event Event, data 
             }
         }(region)
     }
-    
+
     wg.Wait()
     close(errChan)
-    
+
     for err := range errChan {
         return err
     }

@@ -1,6 +1,6 @@
 # 任务监控与告警 (Task Monitoring & Alerting)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #monitoring #alerting #observability
 
 ---
@@ -20,7 +20,7 @@ var (
         },
         []string{"type", "status"},
     )
-    
+
     taskDuration = prometheus.NewHistogramVec(
         prometheus.HistogramOpts{
             Name:    "task_duration_seconds",
@@ -29,7 +29,7 @@ var (
         },
         []string{"type"},
     )
-    
+
     taskQueueSize = prometheus.NewGaugeVec(
         prometheus.GaugeOpts{
             Name: "task_queue_size",
@@ -37,14 +37,14 @@ var (
         },
         []string{"queue"},
     )
-    
+
     activeTasks = prometheus.NewGauge(
         prometheus.GaugeOpts{
             Name: "active_tasks",
             Help: "Number of currently running tasks",
         },
     )
-    
+
     taskRetries = prometheus.NewCounterVec(
         prometheus.CounterOpts{
             Name: "task_retries_total",
@@ -92,17 +92,17 @@ type HealthThresholds struct {
 
 func (thc *TaskHealthChecker) CheckHealth(ctx context.Context) HealthStatus {
     status := HealthStatus{Healthy: true}
-    
+
     // 检查队列大小
     for queue, size := range thc.executor.GetQueueSizes() {
         if size > thc.thresholds.MaxQueueSize {
             status.Healthy = false
-            status.Issues = append(status.Issues, 
-                fmt.Sprintf("Queue %s size %d exceeds threshold %d", 
+            status.Issues = append(status.Issues,
+                fmt.Sprintf("Queue %s size %d exceeds threshold %d",
                     queue, size, thc.thresholds.MaxQueueSize))
         }
     }
-    
+
     // 检查活跃任务数
     active := thc.executor.GetActiveTaskCount()
     if active > thc.thresholds.MaxActiveTasks {
@@ -111,7 +111,7 @@ func (thc *TaskHealthChecker) CheckHealth(ctx context.Context) HealthStatus {
             fmt.Sprintf("Active tasks %d exceeds threshold %d",
                 active, thc.thresholds.MaxActiveTasks))
     }
-    
+
     // 检查错误率
     errorRate := thc.calculateErrorRate()
     if errorRate > thc.thresholds.MaxErrorRate {
@@ -120,7 +120,7 @@ func (thc *TaskHealthChecker) CheckHealth(ctx context.Context) HealthStatus {
             fmt.Sprintf("Error rate %.2f%% exceeds threshold %.2f%%",
                 errorRate*100, thc.thresholds.MaxErrorRate*100))
     }
-    
+
     return status
 }
 ```
@@ -173,14 +173,14 @@ func (ar *AlertRule) Evaluate(metrics Metrics) *Alert {
     if !ar.Condition(metrics) {
         return nil
     }
-    
+
     // 检查冷却期
     if time.Since(ar.LastFired) < ar.Cooldown {
         return nil
     }
-    
+
     ar.LastFired = time.Now()
-    
+
     return &Alert{
         Rule:      ar.Name,
         Severity:  ar.Severity,
@@ -259,14 +259,14 @@ func (tt *TaskTracer) StartSpan(ctx context.Context, taskID, name string) contex
         StartTime: time.Now(),
         Tags:      make(map[string]string),
     }
-    
+
     // 提取父span
     if parent := SpanFromContext(ctx); parent != nil {
         span.ParentID = parent.TaskID
     }
-    
+
     tt.spans[taskID] = span
-    
+
     return WithSpan(ctx, span)
 }
 
@@ -274,7 +274,7 @@ func (tt *TaskTracer) FinishSpan(ctx context.Context, taskID string) {
     if span, ok := tt.spans[taskID]; ok {
         now := time.Now()
         span.EndTime = &now
-        
+
         // 记录到存储
         tt.store.SaveSpan(ctx, span)
     }

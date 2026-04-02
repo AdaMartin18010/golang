@@ -1,6 +1,6 @@
 # 优雅关闭 (Graceful Shutdown)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #graceful-shutdown #context #signal
 
 ---
@@ -15,29 +15,29 @@ func main() {
         Addr:    ":8080",
         Handler: router(),
     }
-    
+
     // 启动服务
     go func() {
         if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
             log.Fatalf("listen: %s\n", err)
         }
     }()
-    
+
     // 等待中断信号
     quit := make(chan os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
-    
+
     log.Println("Shutting down server...")
-    
+
     // 超时上下文
     ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
-    
+
     if err := srv.Shutdown(ctx); err != nil {
         log.Fatal("Server forced to shutdown:", err)
     }
-    
+
     log.Println("Server exiting")
 }
 ```
@@ -63,12 +63,12 @@ func (a *App) Run() error {
             return err
         }
     }
-    
+
     // 等待信号
     quit := make(chan os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
-    
+
     // 优雅关闭
     return a.shutdown()
 }
@@ -76,10 +76,10 @@ func (a *App) Run() error {
 func (a *App) shutdown() error {
     ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
-    
+
     var wg sync.WaitGroup
     errChan := make(chan error, len(a.services))
-    
+
     for _, s := range a.services {
         wg.Add(1)
         go func(svc Service) {
@@ -89,16 +89,16 @@ func (a *App) shutdown() error {
             }
         }(s)
     }
-    
+
     wg.Wait()
     close(errChan)
-    
+
     // 收集错误
     var errs []error
     for err := range errChan {
         errs = append(errs, err)
     }
-    
+
     if len(errs) > 0 {
         return fmt.Errorf("shutdown errors: %v", errs)
     }
@@ -117,12 +117,12 @@ type Database struct {
 
 func (db *Database) Stop(ctx context.Context) error {
     done := make(chan struct{})
-    
+
     go func() {
         db.Close()
         close(done)
     }()
-    
+
     select {
     case <-done:
         return nil
@@ -146,14 +146,14 @@ type WorkerPool struct {
 func (wp *WorkerPool) Stop(ctx context.Context) error {
     // 停止接收新任务
     close(wp.jobs)
-    
+
     // 等待完成或超时
     done := make(chan struct{})
     go func() {
         wp.wg.Wait()
         close(done)
     }()
-    
+
     select {
     case <-done:
         return nil
@@ -173,10 +173,10 @@ func main() {
     http.HandleFunc("/pre-stop", func(w http.ResponseWriter, r *http.Request) {
         // 标记不再接收新连接
         healthz.SetReady(false)
-        
+
         // 等待现有请求完成
         time.Sleep(10 * time.Second)
-        
+
         w.WriteHeader(http.StatusOK)
     })
 }

@@ -1,6 +1,6 @@
 # 并发模式 (Concurrent Patterns)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #concurrency #patterns #goroutine
 
 ---
@@ -12,9 +12,9 @@
 func FanOut(ctx context.Context, tasks []Task, workers int) []Result {
     taskCh := make(chan Task)
     resultCh := make(chan Result, len(tasks))
-    
+
     var wg sync.WaitGroup
-    
+
     // 启动 workers
     for i := 0; i < workers; i++ {
         wg.Add(1)
@@ -31,7 +31,7 @@ func FanOut(ctx context.Context, tasks []Task, workers int) []Result {
             }
         }(i)
     }
-    
+
     // 分发任务
     go func() {
         for _, task := range tasks {
@@ -39,19 +39,19 @@ func FanOut(ctx context.Context, tasks []Task, workers int) []Result {
         }
         close(taskCh)
     }()
-    
+
     // 等待完成
     go func() {
         wg.Wait()
         close(resultCh)
     }()
-    
+
     // 收集结果
     var results []Result
     for r := range resultCh {
         results = append(results, r)
     }
-    
+
     return results
 }
 
@@ -59,7 +59,7 @@ func FanOut(ctx context.Context, tasks []Task, workers int) []Result {
 func FanIn(ctx context.Context, channels ...<-chan Result) <-chan Result {
     out := make(chan Result)
     var wg sync.WaitGroup
-    
+
     for _, ch := range channels {
         wg.Add(1)
         go func(c <-chan Result) {
@@ -73,12 +73,12 @@ func FanIn(ctx context.Context, channels ...<-chan Result) <-chan Result {
             }
         }(ch)
     }
-    
+
     go func() {
         wg.Wait()
         close(out)
     }()
-    
+
     return out
 }
 ```
@@ -243,21 +243,21 @@ func (s *Semaphore) Release() {
 func ProcessWithLimit(ctx context.Context, items []Item, limit int) {
     sem := NewSemaphore(limit)
     var wg sync.WaitGroup
-    
+
     for _, item := range items {
         wg.Add(1)
         go func(i Item) {
             defer wg.Done()
-            
+
             if err := sem.Acquire(ctx); err != nil {
                 return
             }
             defer sem.Release()
-            
+
             process(i)
         }(item)
     }
-    
+
     wg.Wait()
 }
 ```

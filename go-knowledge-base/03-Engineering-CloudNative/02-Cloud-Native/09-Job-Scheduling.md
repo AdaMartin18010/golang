@@ -1,6 +1,6 @@
 # 任务调度 (Job Scheduling)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #scheduler #cron #distributed-job
 
 ---
@@ -53,17 +53,17 @@ type DistributedScheduler struct {
 func (s *DistributedScheduler) Schedule(ctx context.Context, job Job) error {
     // 获取分布式锁
     lockKey := fmt.Sprintf("scheduler:lock:%s", job.Name)
-    
+
     acquired, err := s.redis.SetNX(ctx, lockKey, s.nodeID, s.lockTTL).Result()
     if err != nil || !acquired {
         return fmt.Errorf("could not acquire lock: %w", err)
     }
-    
+
     // 启动续期 goroutine
     stopRenew := make(chan struct{})
     go s.renewLock(ctx, lockKey, stopRenew)
     defer close(stopRenew)
-    
+
     // 执行任务
     return s.executeJob(ctx, job)
 }
@@ -71,7 +71,7 @@ func (s *DistributedScheduler) Schedule(ctx context.Context, job Job) error {
 func (s *DistributedScheduler) renewLock(ctx context.Context, key string, stop <-chan struct{}) {
     ticker := time.NewTicker(s.lockTTL / 3)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ticker.C:
@@ -124,7 +124,7 @@ func (p *WorkerPool) Start() {
 
 func (p *WorkerPool) worker(id int) {
     defer p.wg.Done()
-    
+
     for {
         select {
         case job := <-p.jobQueue:
@@ -147,7 +147,7 @@ func (p *WorkerPool) processJob(job Job) {
     // 合并任务上下文和工作池上下文
     ctx, cancel := context.WithTimeout(job.Context, 30*time.Second)
     defer cancel()
-    
+
     if err := executeWithContext(ctx, job); err != nil {
         log.Printf("Job %s failed: %v", job.ID, err)
     }
@@ -179,9 +179,9 @@ type DelayedQueue struct {
 
 func (q *DelayedQueue) Push(ctx context.Context, job Job, delay time.Duration) error {
     executeAt := time.Now().Add(delay)
-    
+
     data, _ := json.Marshal(job)
-    
+
     // 使用 Redis ZSet，score 为执行时间戳
     return q.redis.ZAdd(ctx, "delayed:jobs", &redis.Z{
         Score:  float64(executeAt.Unix()),
@@ -193,22 +193,22 @@ func (q *DelayedQueue) Poll(ctx context.Context) (*Job, error) {
     for {
         // 获取已到期的任务
         now := float64(time.Now().Unix())
-        
+
         result, err := q.redis.ZRangeByScoreWithScores(ctx, "delayed:jobs", &redis.ZRangeBy{
             Min:   "0",
             Max:   fmt.Sprintf("%f", now),
             Count: 1,
         }).Result()
-        
+
         if err != nil || len(result) == 0 {
             time.Sleep(100 * time.Millisecond)
             continue
         }
-        
+
         // 移除并返回
         data := result[0].Member.(string)
         q.redis.ZRem(ctx, "delayed:jobs", data)
-        
+
         var job Job
         json.Unmarshal([]byte(data), &job)
         return &job, nil
@@ -232,34 +232,34 @@ func (p *RetryPolicy) CalculateDelay(attempt int) time.Duration {
     if attempt >= p.MaxRetries {
         return 0
     }
-    
+
     delay := float64(p.InitialDelay) * math.Pow(p.Multiplier, float64(attempt))
     if delay > float64(p.MaxDelay) {
         delay = float64(p.MaxDelay)
     }
-    
+
     // 添加抖动
     jitter := rand.Float64() * 0.3 * delay
     delay += jitter
-    
+
     return time.Duration(delay)
 }
 
 func ExecuteWithRetry(ctx context.Context, fn func() error, policy RetryPolicy) error {
     var err error
-    
+
     for attempt := 0; attempt <= policy.MaxRetries; attempt++ {
         err = fn()
         if err == nil {
             return nil
         }
-        
+
         if attempt == policy.MaxRetries {
             break
         }
-        
+
         delay := policy.CalculateDelay(attempt)
-        
+
         select {
         case <-time.After(delay):
             continue
@@ -267,7 +267,7 @@ func ExecuteWithRetry(ctx context.Context, fn func() error, policy RetryPolicy) 
             return ctx.Err()
         }
     }
-    
+
     return fmt.Errorf("max retries exceeded: %w", err)
 }
 ```

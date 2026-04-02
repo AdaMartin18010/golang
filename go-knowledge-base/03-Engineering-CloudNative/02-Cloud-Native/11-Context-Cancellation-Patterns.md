@@ -1,6 +1,6 @@
 # Context 取消模式 (Context Cancellation Patterns)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #context #cancellation #graceful-shutdown
 
 ---
@@ -12,22 +12,22 @@ func ProcessWithCancellation(parentCtx context.Context) error {
     // 创建可取消的上下文
     ctx, cancel := context.WithCancel(parentCtx)
     defer cancel()
-    
+
     // 启动多个子任务
     errChan := make(chan error, 3)
-    
+
     go func() {
         errChan <- processStep1(ctx)
     }()
-    
+
     go func() {
         errChan <- processStep2(ctx)
     }()
-    
+
     go func() {
         errChan <- processStep3(ctx)
     }()
-    
+
     // 等待任一任务完成或出错
     for i := 0; i < 3; i++ {
         if err := <-errChan; err != nil {
@@ -35,7 +35,7 @@ func ProcessWithCancellation(parentCtx context.Context) error {
             return err
         }
     }
-    
+
     return nil
 }
 ```
@@ -50,11 +50,11 @@ func HTTPRequestWithCancellation(ctx context.Context, url string) (*http.Respons
     if err != nil {
         return nil, err
     }
-    
+
     client := &http.Client{
         Timeout: 30 * time.Second,
     }
-    
+
     resp, err := client.Do(req)
     if err != nil {
         // 检查是否是取消错误
@@ -66,7 +66,7 @@ func HTTPRequestWithCancellation(ctx context.Context, url string) (*http.Respons
         }
         return nil, err
     }
-    
+
     return resp, nil
 }
 ```
@@ -87,7 +87,7 @@ func QueryWithCancellation(ctx context.Context, db *sql.DB, query string) (*sql.
             return nil, err
         }
     }
-    
+
     return rows, nil
 }
 
@@ -96,7 +96,7 @@ func ScanWithCancellation(ctx context.Context, rows *sql.Rows, dest interface{})
     if err := ctx.Err(); err != nil {
         return err
     }
-    
+
     return rows.Scan(dest)
 }
 ```
@@ -133,19 +133,19 @@ func (p *CancellableWorkerPool) Start() {
 
 func (p *CancellableWorkerPool) worker(id int) {
     defer p.wg.Done()
-    
+
     for {
         select {
         case job, ok := <-p.jobs:
             if !ok {
                 return
             }
-            
+
             // 每个任务使用派生上下文
             jobCtx, cancel := context.WithTimeout(p.ctx, 30*time.Second)
             p.executeJob(jobCtx, job)
             cancel()
-            
+
         case <-p.ctx.Done():
             // 取消信号，处理剩余任务
             for {
@@ -177,31 +177,31 @@ func (p *CancellableWorkerPool) Stop() {
 ```go
 func CascadeTimeout(parentCtx context.Context, stages []Stage) error {
     remaining := 10 * time.Second  // 总超时
-    
+
     for i, stage := range stages {
         start := time.Now()
-        
+
         // 每个阶段分配剩余时间的一部分
         stageTimeout := remaining / time.Duration(len(stages)-i)
-        
+
         ctx, cancel := context.WithTimeout(parentCtx, stageTimeout)
-        
+
         err := stage.Execute(ctx)
         cancel()
-        
+
         if err != nil {
             return fmt.Errorf("stage %d failed: %w", i, err)
         }
-        
+
         // 扣除已用时间
         elapsed := time.Since(start)
         remaining -= elapsed
-        
+
         if remaining <= 0 {
             return fmt.Errorf("timeout exceeded")
         }
     }
-    
+
     return nil
 }
 ```
@@ -219,19 +219,19 @@ type CancellableTask struct {
 func (t *CancellableTask) Run() error {
     ctx, cancel := context.WithCancelCause(t.ctx)
     t.cancel = cancel
-    
+
     go func() {
         if err := doWork(ctx); err != nil {
             cancel(err)  // 传递取消原因
         }
     }()
-    
+
     <-ctx.Done()
-    
+
     if err := context.Cause(ctx); err != nil {
         return fmt.Errorf("task failed: %w", err)
     }
-    
+
     return nil
 }
 

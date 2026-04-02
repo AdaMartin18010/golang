@@ -1,6 +1,6 @@
 # 任务数据一致性 (Task Data Consistency)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #consistency #transaction #at-least-once
 
 ---
@@ -19,21 +19,21 @@ func (ale *AtLeastOnceExecutor) Execute(ctx context.Context, task *Task) error {
     if executed, _ := ale.idempotencyChecker.IsExecuted(ctx, task.ID); executed {
         return nil
     }
-    
+
     // 2. 标记为执行中
     if err := ale.store.MarkExecuting(ctx, task.ID); err != nil {
         return err
     }
-    
+
     // 3. 执行任务
     err := ale.executeTask(ctx, task)
-    
+
     // 4. 记录结果
     if err != nil {
         ale.store.MarkFailed(ctx, task.ID, err)
         return err
     }
-    
+
     // 5. 标记为已完成（幂等键）
     return ale.idempotencyChecker.MarkExecuted(ctx, task.ID, time.Hour*24)
 }
@@ -53,34 +53,34 @@ type ExactlyOnceExecutor struct {
 func (eoe *ExactlyOnceExecutor) Execute(ctx context.Context, task *Task) error {
     // 使用任务ID作为去重键
     dedupKey := fmt.Sprintf("task:dedup:%s", task.ID)
-    
+
     // 1. 尝试获取去重锁
     if !eoe.dedupStore.TrySetNX(ctx, dedupKey, "processing", 5*time.Minute) {
         // 已经处理过或正在处理
         return eoe.waitForCompletion(ctx, dedupKey)
     }
-    
+
     // 2. 获取分布式锁确保只有一个实例执行
     lock := eoe.locker.NewLock(fmt.Sprintf("task:lock:%s", task.ID), 5*time.Minute)
     if err := lock.Acquire(ctx); err != nil {
         return err
     }
     defer lock.Release(ctx)
-    
+
     // 3. 再次检查（双重检查）
     if status, _ := eoe.dedupStore.Get(ctx, dedupKey); status == "completed" {
         return nil
     }
-    
+
     // 4. 执行任务
     err := eoe.execute(ctx, task)
-    
+
     // 5. 标记完成
     if err != nil {
         eoe.dedupStore.Set(ctx, dedupKey, "failed")
         return err
     }
-    
+
     eoe.dedupStore.Set(ctx, dedupKey, "completed")
     return nil
 }
@@ -104,26 +104,26 @@ func (op *OutboxPattern) ProcessTask(ctx context.Context, task *Task) error {
         return err
     }
     defer tx.Rollback()
-    
+
     // 1. 执行业务逻辑
     if err := op.executeBusinessLogic(tx, task); err != nil {
         return err
     }
-    
+
     // 2. 记录事件到 Outbox 表
     event := op.createEvent(task)
     if err := op.saveToOutbox(tx, event); err != nil {
         return err
     }
-    
+
     // 3. 提交事务
     if err := tx.Commit(); err != nil {
         return err
     }
-    
+
     // 4. 异步发布事件
     go op.publisher.Publish(event)
-    
+
     return nil
 }
 
@@ -135,7 +135,7 @@ type OutboxPublisher struct {
 
 func (op *OutboxPublisher) Start(ctx context.Context) {
     ticker := time.NewTicker(5 * time.Second)
-    
+
     for {
         select {
         case <-ticker.C:
@@ -147,14 +147,14 @@ func (op *OutboxPublisher) Start(ctx context.Context) {
 }
 
 func (op *OutboxPublisher) publishPending(ctx context.Context) {
-    rows, _ := op.db.QueryContext(ctx, 
+    rows, _ := op.db.QueryContext(ctx,
         "SELECT id, event_type, payload FROM outbox WHERE processed = false LIMIT 100")
-    
+
     for rows.Next() {
         var id int
         var eventType, payload string
         rows.Scan(&id, &eventType, &payload)
-        
+
         // 发布事件
         if err := op.eventBus.Publish(eventType, []byte(payload)); err == nil {
             // 标记为已处理
@@ -180,26 +180,26 @@ func (cc *ConsistencyChecker) CheckTaskConsistency(ctx context.Context, taskID s
     if err != nil {
         return err
     }
-    
+
     // 检查预期副作用
     for _, expected := range task.ExpectedSideEffects {
         actual, err := cc.store.GetSideEffect(ctx, expected.ID)
         if err != nil {
             return fmt.Errorf("missing side effect %s: %w", expected.ID, err)
         }
-        
+
         if !reflect.DeepEqual(expected.Data, actual.Data) {
             return fmt.Errorf("side effect %s mismatch", expected.ID)
         }
     }
-    
+
     return nil
 }
 
 // 修复不一致
 func (cc *ConsistencyChecker) RepairConsistency(ctx context.Context, taskID string) error {
     task, _ := cc.store.GetTask(ctx, taskID)
-    
+
     for _, expected := range task.ExpectedSideEffects {
         if exists, _ := cc.store.SideEffectExists(ctx, expected.ID); !exists {
             // 重新应用副作用
@@ -208,7 +208,7 @@ func (cc *ConsistencyChecker) RepairConsistency(ctx context.Context, taskID stri
             }
         }
     }
-    
+
     return nil
 }
 ```

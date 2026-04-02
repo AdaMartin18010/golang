@@ -1,6 +1,6 @@
 # 分布式 Cron (Distributed Cron)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #distributed-cron #leader-election #scheduler
 
 ---
@@ -26,7 +26,7 @@ type LeaderCron struct {
     isLeader    bool
     cron        *cron.Cron
     mu          sync.RWMutex
-    
+
     onLeader    func()
     onFollower  func()
 }
@@ -39,7 +39,7 @@ func (lc *LeaderCron) Start(ctx context.Context) {
 func (lc *LeaderCron) electionLoop(ctx context.Context) {
     ticker := time.NewTicker(5 * time.Second)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ticker.C:
@@ -69,7 +69,7 @@ func (lc *LeaderCron) tryAcquireLeadership(ctx context.Context) error {
         AcquiredAt: time.Now(),
         ExpiresAt:  time.Now().Add(10 * time.Second),
     }
-    
+
     // CAS 操作确保只有一个节点能成为 Leader
     return lc.store.CompareAndSwap(ctx, "cron-leader", nil, lease)
 }
@@ -78,12 +78,12 @@ func (lc *LeaderCron) becomeLeader() {
     lc.mu.Lock()
     lc.isLeader = true
     lc.mu.Unlock()
-    
+
     log.Printf("Node %s became leader", lc.nodeID)
-    
+
     // 启动 Cron
     lc.cron.Start()
-    
+
     if lc.onLeader != nil {
         lc.onLeader()
     }
@@ -93,12 +93,12 @@ func (lc *LeaderCron) stepDown() {
     lc.mu.Lock()
     lc.isLeader = false
     lc.mu.Unlock()
-    
+
     log.Printf("Node %s stepped down", lc.nodeID)
-    
+
     // 停止 Cron
     lc.cron.Stop()
-    
+
     if lc.onFollower != nil {
         lc.onFollower()
     }
@@ -138,7 +138,7 @@ func (re *RedisElection) Renew(ctx context.Context) error {
     if val != re.nodeID {
         return ErrLostLeadership
     }
-    
+
     // 续期
     return re.client.Expire(ctx, re.key, re.ttl).Err()
 }
@@ -192,7 +192,7 @@ func (sc *ShardedCron) Schedule(taskID string, job func()) {
     if !sc.ShouldExecute(taskID) {
         return  // 不是本节点执行
     }
-    
+
     // 添加到本节点 Cron
     cron.AddFunc(spec, job)
 }
@@ -216,7 +216,7 @@ type DistributedJob struct {
 func (dc *DistributedCron) syncJobStatus(ctx context.Context) {
     // 从存储加载任务状态
     jobs, _ := dc.store.ListJobs(ctx)
-    
+
     for _, job := range jobs {
         // 检查是否错过执行
         if time.Now().After(job.NextRun) && dc.isLeader {
@@ -234,9 +234,9 @@ func (dc *DistributedCron) executeMissedJob(ctx context.Context, job *Distribute
         StartedAt: time.Now(),
         Type:      ExecutionTypeMissed,
     }
-    
+
     dc.store.SaveExecution(ctx, execution)
-    
+
     // 执行
     dc.executeJob(ctx, job)
 }
@@ -254,18 +254,18 @@ type CoordinatedJob struct {
 
 func (cj *CoordinatedJob) Run() {
     ctx := context.Background()
-    
+
     // 尝试获取任务锁
     lockKey := fmt.Sprintf("job-lock:%s", cj.ID)
     lock := cj.dc.store.NewLock(lockKey, 5*time.Minute)
-    
+
     if err := lock.Acquire(ctx); err != nil {
         // 其他节点正在执行
         log.Printf("Job %s is being executed by another node", cj.ID)
         return
     }
     defer lock.Release(ctx)
-    
+
     // 执行
     cj.execute(ctx)
 }

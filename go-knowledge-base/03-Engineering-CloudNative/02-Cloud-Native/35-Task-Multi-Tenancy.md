@@ -1,6 +1,6 @@
 # 任务多租户隔离 (Task Multi-Tenancy)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #multi-tenancy #isolation #security
 
 ---
@@ -42,13 +42,13 @@ func TenantMiddleware(tenantResolver TenantResolver) gin.HandlerFunc {
             c.AbortWithStatusJSON(400, gin.H{"error": "missing tenant"})
             return
         }
-        
+
         tenant, err := tenantResolver.Resolve(c.Request.Context(), tenantID)
         if err != nil {
             c.AbortWithStatusJSON(404, gin.H{"error": "tenant not found"})
             return
         }
-        
+
         ctx := WithTenant(c.Request.Context(), tenant)
         c.Request = c.Request.WithContext(ctx)
         c.Next()
@@ -80,12 +80,12 @@ func (tae *TenantAwareExecutor) Execute(ctx context.Context, task *Task) error {
     if !ok {
         return errors.New("no tenant in context")
     }
-    
+
     // 检查配额
     if err := tae.checkQuota(ctx, tenant, task); err != nil {
         return err
     }
-    
+
     // 根据隔离模式选择执行器
     switch tae.isolationMode {
     case DedicatedPool, DedicatedWorker:
@@ -97,21 +97,21 @@ func (tae *TenantAwareExecutor) Execute(ctx context.Context, task *Task) error {
 
 func (tae *TenantAwareExecutor) checkQuota(ctx context.Context, tenant TenantContext, task *Task) error {
     quotas := tenant.Quotas
-    
+
     // 检查并发数
     current := tae.getTenantConcurrentTasks(tenant.TenantID)
     if current >= quotas.MaxConcurrentTasks {
-        return fmt.Errorf("concurrent task quota exceeded: %d/%d", 
+        return fmt.Errorf("concurrent task quota exceeded: %d/%d",
             current, quotas.MaxConcurrentTasks)
     }
-    
+
     // 检查每小时任务数
     hourly := tae.getTenantHourlyTasks(tenant.TenantID)
     if hourly >= quotas.MaxTasksPerHour {
         return fmt.Errorf("hourly task quota exceeded: %d/%d",
             hourly, quotas.MaxTasksPerHour)
     }
-    
+
     return nil
 }
 
@@ -122,7 +122,7 @@ func (tae *TenantAwareExecutor) executeDedicated(ctx context.Context, tenantID s
         executor = tae.createDedicatedExecutor(tenantID)
         tae.executors[tenantID] = executor
     }
-    
+
     return executor.Execute(ctx, task)
 }
 ```
@@ -138,40 +138,40 @@ type TenantQuotaManager struct {
 
 func (tqm *TenantQuotaManager) EnforceQuota(ctx context.Context, tenantID string, task *Task) error {
     quotas, _ := tqm.store.GetQuota(ctx, tenantID)
-    
+
     // CPU/内存限制
     if task.ResourceRequest.CPU > quotas.MaxCPU {
-        return fmt.Errorf("CPU request %f exceeds quota %f", 
+        return fmt.Errorf("CPU request %f exceeds quota %f",
             task.ResourceRequest.CPU, quotas.MaxCPU)
     }
-    
+
     if task.ResourceRequest.Memory > quotas.MaxMemory {
         return fmt.Errorf("memory request %d exceeds quota %d",
             task.ResourceRequest.Memory, quotas.MaxMemory)
     }
-    
+
     // 优先级限制
     if !tqm.isPriorityAllowed(quotas, task.Priority) {
         return fmt.Errorf("priority %d not allowed for tenant", task.Priority)
     }
-    
+
     return nil
 }
 
 func (tqm *TenantQuotaManager) GetUsage(ctx context.Context, tenantID string) (QuotaUsage, error) {
     tasks, _ := tqm.store.ListTenantTasks(ctx, tenantID)
-    
+
     usage := QuotaUsage{
         ActiveTasks: len(tasks),
         CPUUsed:     0,
         MemoryUsed:  0,
     }
-    
+
     for _, task := range tasks {
         usage.CPUUsed += task.ResourceUsage.CPU
         usage.MemoryUsed += task.ResourceUsage.Memory
     }
-    
+
     return usage, nil
 }
 ```
@@ -188,13 +188,13 @@ type TenantIsolation struct {
 
 func (ti *TenantIsolation) QueryTenantTasks(ctx context.Context, tenantID string) ([]Task, error) {
     // 自动添加租户过滤
-    rows, err := ti.db.QueryContext(ctx, 
+    rows, err := ti.db.QueryContext(ctx,
         "SELECT * FROM tasks WHERE tenant_id = $1", tenantID)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     // ...
 }
 

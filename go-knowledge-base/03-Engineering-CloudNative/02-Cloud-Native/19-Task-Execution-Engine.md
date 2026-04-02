@@ -1,6 +1,6 @@
 # 任务执行引擎 (Task Execution Engine)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #execution-engine #worker #async
 
 ---
@@ -14,7 +14,7 @@ type ExecutionEngine struct {
     dispatcher *TaskDispatcher
     executor   *TaskExecutor
     monitor    *ExecutionMonitor
-    
+
     // 组件
     preProcessors  []TaskPreProcessor
     postProcessors []TaskPostProcessor
@@ -53,11 +53,11 @@ func (td *TaskDispatcher) dispatch(task *Task) error {
             return err
         }
     }
-    
+
     // 选择队列
     queueName := td.strategy.SelectQueue(task)
     queue := td.queues[queueName]
-    
+
     // 尝试放入队列
     select {
     case queue <- task:
@@ -74,7 +74,7 @@ func (td *TaskDispatcher) startWorkerPool(queueName string, size int) {
         queue: td.queues[queueName],
         work:  td.processTask,
     }
-    
+
     td.workers[queueName] = pool
     pool.Start()
 }
@@ -97,10 +97,10 @@ type TaskHandler interface {
 
 func (te *TaskExecutor) Execute(ctx context.Context, task *Task) ExecutionResult {
     start := time.Now()
-    
+
     // 构建执行上下文
     execCtx := te.createExecutionContext(ctx, task)
-    
+
     // 查找处理器
     handler := te.findHandler(task.Type)
     if handler == nil {
@@ -109,22 +109,22 @@ func (te *TaskExecutor) Execute(ctx context.Context, task *Task) ExecutionResult
             Error:  ErrNoHandler,
         }
     }
-    
+
     // 执行插件前置处理
     for _, plugin := range te.plugins {
         if err := plugin.Before(execCtx, task); err != nil {
             return ExecutionResult{Status: StatusFailed, Error: err}
         }
     }
-    
+
     // 执行
     output, err := handler.Handle(execCtx, task)
-    
+
     // 执行插件后置处理
     for _, plugin := range te.plugins {
         plugin.After(execCtx, task, output, err)
     }
-    
+
     return ExecutionResult{
         Status:   statusFromError(err),
         Output:   output,
@@ -135,7 +135,7 @@ func (te *TaskExecutor) Execute(ctx context.Context, task *Task) ExecutionResult
 
 func (te *TaskExecutor) createExecutionContext(ctx context.Context, task *Task) context.Context {
     execCtx := ctx
-    
+
     // 注入任务信息
     execCtx = WithTaskInfo(execCtx, TaskInfo{
         ID:       task.ID,
@@ -143,12 +143,12 @@ func (te *TaskExecutor) createExecutionContext(ctx context.Context, task *Task) 
         Name:     task.Name,
         Attempt:  task.Attempt,
     })
-    
+
     // 设置超时
     if task.Timeout > 0 {
         execCtx, _ = context.WithTimeout(execCtx, task.Timeout)
     }
-    
+
     return execCtx
 }
 ```
@@ -175,7 +175,7 @@ func (mp *MetricsPlugin) After(ctx context.Context, task *Task, output interface
     } else {
         mp.metrics.IncCounter("task_succeeded", task.Type)
     }
-    
+
     if info := TaskInfoFromContext(ctx); info != nil {
         mp.metrics.RecordTiming("task_execution_time", info.Duration)
     }
@@ -255,7 +255,7 @@ func (em *ExecutionMonitor) RecordStart(task *Task, workerID string) {
         StartTime: time.Now(),
         WorkerID:  workerID,
     })
-    
+
     em.metrics.GaugeInc("active_tasks")
 }
 
@@ -263,10 +263,10 @@ func (em *ExecutionMonitor) RecordEnd(taskID string) {
     if at, ok := em.activeTasks.Load(taskID); ok {
         activeTask := at.(*ActiveTask)
         duration := time.Since(activeTask.StartTime)
-        
+
         em.metrics.RecordTiming("task_duration", duration)
         em.metrics.GaugeDec("active_tasks")
-        
+
         // 慢任务告警
         if duration > 5*time.Minute {
             em.alertManager.Send(Alert{
@@ -275,7 +275,7 @@ func (em *ExecutionMonitor) RecordEnd(taskID string) {
             })
         }
     }
-    
+
     em.activeTasks.Delete(taskID)
 }
 
@@ -297,14 +297,14 @@ func (em *ExecutionMonitor) GetActiveTasks() []*ActiveTask {
 func (ee *ExecutionEngine) Shutdown(ctx context.Context) error {
     // 1. 停止接收新任务
     ee.dispatcher.Stop()
-    
+
     // 2. 等待活动任务完成
     done := make(chan struct{})
     go func() {
         ee.waitForActiveTasks()
         close(done)
     }()
-    
+
     select {
     case <-done:
         return nil

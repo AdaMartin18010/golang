@@ -1,6 +1,6 @@
 # 任务调度策略 (Task Scheduling Strategies)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #scheduling-strategy #load-balancing #affinity
 
 ---
@@ -21,7 +21,7 @@ func (rr *RoundRobinStrategy) SelectWorker(workers []Worker, task *Task) (Worker
     if len(workers) == 0 {
         return Worker{}, errors.New("no workers available")
     }
-    
+
     idx := atomic.AddUint64(&rr.current, 1) % uint64(len(workers))
     return workers[idx], nil
 }
@@ -32,14 +32,14 @@ type LeastConnectionsStrategy struct{}
 func (lc *LeastConnectionsStrategy) SelectWorker(workers []Worker, task *Task) (Worker, error) {
     var best Worker
     minConn := int(^uint(0) >> 1)  // MaxInt
-    
+
     for _, w := range workers {
         if w.ActiveTasks < minConn {
             minConn = w.ActiveTasks
             best = w
         }
     }
-    
+
     return best, nil
 }
 
@@ -51,16 +51,16 @@ func (wr *WeightedRandomStrategy) SelectWorker(workers []Worker, task *Task) (Wo
     for _, w := range workers {
         totalWeight += w.Weight
     }
-    
+
     r := rand.Intn(totalWeight)
-    
+
     for _, w := range workers {
         r -= w.Weight
         if r < 0 {
             return w, nil
         }
     }
-    
+
     return workers[0], nil
 }
 
@@ -69,7 +69,7 @@ type ResourceAwareStrategy struct{}
 
 func (ra *ResourceAwareStrategy) SelectWorker(workers []Worker, task *Task) (Worker, error) {
     var candidates []Worker
-    
+
     for _, w := range workers {
         // 检查资源是否满足
         if w.CPUUsage < 70 && w.MemoryUsage < 80 {
@@ -79,33 +79,33 @@ func (ra *ResourceAwareStrategy) SelectWorker(workers []Worker, task *Task) (Wor
             candidates = append(candidates, w)
         }
     }
-    
+
     if len(candidates) == 0 {
         return Worker{}, errors.New("no worker with sufficient resources")
     }
-    
+
     // 选择分数最高的
     sort.Slice(candidates, func(i, j int) bool {
         return candidates[i].Score > candidates[j].Score
     })
-    
+
     return candidates[0], nil
 }
 
 func (ra *ResourceAwareStrategy) calculateScore(w Worker, task *Task) float64 {
     score := 100.0
-    
+
     // CPU 余量
     score += (100 - w.CPUUsage) * 0.5
-    
+
     // 内存余量
     score += (100 - w.MemoryUsage) * 0.3
-    
+
     // 任务亲和性
     if w.LastTaskType == task.Type {
         score += 10  // 缓存友好
     }
-    
+
     return score
 }
 ```
@@ -124,7 +124,7 @@ type AffinityRule struct {
 
 func calculateAffinityScore(worker Worker, task *Task, rules []AffinityRule) int {
     score := 0
-    
+
     for _, rule := range rules {
         matches := 0
         for k, v := range worker.Labels {
@@ -136,7 +136,7 @@ func calculateAffinityScore(worker Worker, task *Task, rules []AffinityRule) int
                 }
             }
         }
-        
+
         if rule.Type == "affinity" {
             // 亲和性：匹配越多分越高
             score += matches * rule.Weight
@@ -145,7 +145,7 @@ func calculateAffinityScore(worker Worker, task *Task, rules []AffinityRule) int
             score -= matches * rule.Weight
         }
     }
-    
+
     return score
 }
 
@@ -185,7 +185,7 @@ func (ps *PreemptiveScheduler) Schedule(task *Task) error {
         // 资源不足，尝试抢占
         return ps.preempt(task)
     }
-    
+
     return ps.assign(worker, task)
 }
 
@@ -198,19 +198,19 @@ func (ps *PreemptiveScheduler) preempt(highPriTask *Task) error {
             return ps.assign(runningTask.Worker, highPriTask)
         }
     }
-    
+
     return errors.New("no preemptable tasks found")
 }
 
 func (ps *PreemptiveScheduler) evict(taskID string) {
     task := ps.tasks[taskID]
-    
+
     // 发送抢占信号
     task.Cancel()
-    
+
     // 保存状态（检查点）
     ps.saveCheckpoint(task)
-    
+
     // 移除
     delete(ps.tasks, taskID)
 }

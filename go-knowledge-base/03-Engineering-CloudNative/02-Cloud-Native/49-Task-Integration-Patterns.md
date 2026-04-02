@@ -1,6 +1,6 @@
 # 任务系统集成模式 (Task System Integration Patterns)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #integration #patterns #external-systems
 
 ---
@@ -25,19 +25,19 @@ type WebhookEndpoint struct {
 
 func (wi *WebhookIntegration) Notify(ctx context.Context, event TaskEvent) error {
     endpoint := wi.endpoints[event.Type]
-    
+
     payload, _ := json.Marshal(event)
-    
+
     req, _ := http.NewRequestWithContext(ctx, "POST", endpoint.URL, bytes.NewReader(payload))
     req.Header.Set("Content-Type", "application/json")
     req.Header.Set("X-Webhook-Secret", wi.generateSignature(payload, endpoint.Secret))
-    
+
     return wi.sendWithRetry(req, endpoint.Retries)
 }
 
 func (wi *WebhookIntegration) sendWithRetry(req *http.Request, maxRetries int) error {
     backoff := time.Second
-    
+
     for i := 0; i <= maxRetries; i++ {
         resp, err := wi.client.Do(req)
         if err != nil {
@@ -49,11 +49,11 @@ func (wi *WebhookIntegration) sendWithRetry(req *http.Request, maxRetries int) e
             continue
         }
         defer resp.Body.Close()
-        
+
         if resp.StatusCode >= 200 && resp.StatusCode < 300 {
             return nil
         }
-        
+
         if resp.StatusCode >= 500 || resp.StatusCode == 429 {
             if i == maxRetries {
                 return fmt.Errorf("webhook failed with status: %d", resp.StatusCode)
@@ -62,10 +62,10 @@ func (wi *WebhookIntegration) sendWithRetry(req *http.Request, maxRetries int) e
             backoff *= 2
             continue
         }
-        
+
         return fmt.Errorf("webhook failed with status: %d", resp.StatusCode)
     }
-    
+
     return nil
 }
 ```
@@ -93,7 +93,7 @@ func (ca *CeleryAdapter) Submit(ctx context.Context, task ExternalTask) error {
         Args: task.Payload,
         ID:   task.ID,
     }
-    
+
     return ca.broker.SendTask(ctx, celeryTask)
 }
 
@@ -104,13 +104,13 @@ type StepFunctionsAdapter struct {
 
 func (sfa *StepFunctionsAdapter) Submit(ctx context.Context, task ExternalTask) error {
     input, _ := json.Marshal(task.Payload)
-    
+
     _, err := sfa.client.StartExecution(ctx, &sfn.StartExecutionInput{
         StateMachineArn: aws.String(sfa.getStateMachineARN(task.Type)),
         Name:            aws.String(task.ID),
         Input:           aws.String(string(input)),
     })
-    
+
     return err
 }
 
@@ -122,12 +122,12 @@ func SubmitToExternalSystem(ctx context.Context, system string, task ExternalTas
         "temporal":       &TemporalAdapter{},
         "argo":           &ArgoAdapter{},
     }
-    
+
     adapter, ok := adapters[system]
     if !ok {
         return fmt.Errorf("unknown external system: %s", system)
     }
-    
+
     return adapter.Submit(ctx, task)
 }
 ```
@@ -241,7 +241,7 @@ func (edi *EventDrivenIntegration) Start() {
 
 func (edi *EventDrivenIntegration) consume(eventType string, handlers []EventHandler) {
     messages := edi.eventBus.Subscribe(eventType)
-    
+
     for msg := range messages {
         for _, handler := range handlers {
             go func(h EventHandler) {

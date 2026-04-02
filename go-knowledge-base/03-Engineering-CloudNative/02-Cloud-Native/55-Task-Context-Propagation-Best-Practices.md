@@ -1,6 +1,6 @@
 # 任务上下文传播最佳实践 (Task Context Propagation Best Practices)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #best-practices #context #propagation #guidelines
 
 ---
@@ -18,7 +18,7 @@ func (s *GoodService) Process(ctx context.Context, req *Request) (*Response, err
     if err != nil {
         return nil, err
     }
-    
+
     // 继续传递
     result, err := s.processor.Process(ctx, data)
     return result, err
@@ -60,7 +60,7 @@ func (t *BadTask) Execute() error {
 func GoodFunction(ctx context.Context) error {
     ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
     defer cancel()  // 确保取消
-    
+
     return doWork(ctx)
 }
 
@@ -73,7 +73,7 @@ func GoodLoop(ctx context.Context) error {
             return ctx.Err()
         default:
         }
-        
+
         if err := doIteration(ctx, i); err != nil {
             return err
         }
@@ -92,13 +92,13 @@ func AsyncBoundary(ctx context.Context, work func(context.Context)) {
     // 提取需要传递的值
     traceID, _ := ctx.Value(TraceIDKey).(string)
     tenantID, _ := ctx.Value(TenantIDKey).(string)
-    
+
     go func() {
         // 创建新的上下文，携带必要的值
         newCtx := context.Background()
         newCtx = context.WithValue(newCtx, TraceIDKey, traceID)
         newCtx = context.WithValue(newCtx, TenantIDKey, tenantID)
-        
+
         work(newCtx)
     }()
 }
@@ -108,18 +108,18 @@ func CacheBoundary(ctx context.Context, key string, loader func(context.Context)
     // 缓存键包含上下文中的身份标识
     tenantID, _ := ctx.Value(TenantIDKey).(string)
     cacheKey := fmt.Sprintf("%s:%s", tenantID, key)
-    
+
     // 使用无限制的上下文访问缓存
     if cached, ok := cache.Get(cacheKey); ok {
         return cached, nil
     }
-    
+
     // 使用原始上下文加载
     value, err := loader(ctx)
     if err != nil {
         return nil, err
     }
-    
+
     cache.Set(cacheKey, value)
     return value, nil
 }
@@ -135,7 +135,7 @@ func (dbc *DBContext) Query(ctx context.Context, query string, args ...interface
         // 使用 RLS 或其他租户隔离机制
         ctx = context.WithValue(ctx, "rls.tenant_id", tenantID)
     }
-    
+
     return dbc.db.QueryContext(ctx, query, args...)
 }
 ```
@@ -151,7 +151,7 @@ func OptimizedHandler(ctx context.Context) {
     tenant, _ := TenantFromContext(ctx)
     user, _ := UserFromContext(ctx)
     traceID, _ := TraceIDFromContext(ctx)
-    
+
     // 后续使用局部变量
     doSomethingWithTenant(tenant)
     doSomethingWithUser(user)
@@ -181,15 +181,15 @@ func (lc *lazyContext) Value(key interface{}) interface{} {
         return v
     }
     lc.mu.RUnlock()
-    
+
     // 从父上下文获取
     v := lc.parent.Value(key)
-    
+
     // 缓存结果
     lc.mu.Lock()
     lc.computed[key] = v
     lc.mu.Unlock()
-    
+
     return v
 }
 
@@ -197,7 +197,7 @@ func (lc *lazyContext) Value(key interface{}) interface{} {
 func BatchPropagation(ctx context.Context, tasks []Task) []context.Context {
     // 提取一次公共值
     commonValues := extractCommonValues(ctx)
-    
+
     contexts := make([]context.Context, len(tasks))
     for i, task := range tasks {
         // 基于公共值创建上下文
@@ -205,7 +205,7 @@ func BatchPropagation(ctx context.Context, tasks []Task) []context.Context {
         taskCtx = context.WithValue(taskCtx, TaskIDKey, task.ID)
         contexts[i] = taskCtx
     }
-    
+
     return contexts
 }
 ```
@@ -224,21 +224,21 @@ func (cd *ContextDebugger) Dump(ctx context.Context) string {
     if !cd.enabled {
         return ""
     }
-    
+
     var info []string
-    
+
     // 标准值
     if deadline, ok := ctx.Deadline(); ok {
         info = append(info, fmt.Sprintf("deadline=%v", deadline))
     }
-    
+
     info = append(info, fmt.Sprintf("cancelled=%v", ctx.Err() != nil))
-    
+
     // 自定义值
     ctx.Value(DebugKeyFunc(func(key interface{}) {
         info = append(info, fmt.Sprintf("%v=%v", key, ctx.Value(key)))
     }))
-    
+
     return strings.Join(info, ", ")
 }
 
@@ -250,13 +250,13 @@ type PropagationTracer struct {
 func (pt *PropagationTracer) TracePropagation(ctx context.Context, from, to string) context.Context {
     ctx, span := pt.tracer.Start(ctx, fmt.Sprintf("propagate:%s->%s", from, to))
     defer span.End()
-    
+
     // 记录传播的上下文内容
     span.SetAttributes(
         attribute.String("propagation.from", from),
         attribute.String("propagation.to", to),
     )
-    
+
     return ctx
 }
 

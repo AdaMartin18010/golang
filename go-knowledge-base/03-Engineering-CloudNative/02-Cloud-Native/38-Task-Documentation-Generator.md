@@ -1,6 +1,6 @@
 # 任务文档生成器 (Task Documentation Generator)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #documentation #code-generation #openapi
 
 ---
@@ -14,28 +14,28 @@ type TaskDocGenerator struct {
 
 func (tdg *TaskDocGenerator) GenerateAll() (*TaskDocumentation, error) {
     tasks := tdg.registry.ListTasks()
-    
+
     doc := &TaskDocumentation{
         Version:   "1.0.0",
         Generated: time.Now(),
         Tasks:     []TaskDoc{},
     }
-    
+
     for _, task := range tasks {
         taskDoc := tdg.generateTaskDoc(task)
         doc.Tasks = append(doc.Tasks, taskDoc)
     }
-    
+
     return doc, nil
 }
 
 func (tdg *TaskDocGenerator) generateTaskDoc(task TaskDefinition) TaskDoc {
     // 提取结构体字段作为参数文档
     params := tdg.extractParams(task.PayloadType)
-    
+
     // 提取错误码
     errors := tdg.extractErrors(task.Handler)
-    
+
     return TaskDoc{
         Name:        task.Name,
         Type:        task.Type,
@@ -51,10 +51,10 @@ func (tdg *TaskDocGenerator) generateTaskDoc(task TaskDefinition) TaskDoc {
 
 func (tdg *TaskDocGenerator) extractParams(t reflect.Type) []ParamDoc {
     var params []ParamDoc
-    
+
     for i := 0; i < t.NumField(); i++ {
         field := t.Field(i)
-        
+
         param := ParamDoc{
             Name:        field.Name,
             Type:        field.Type.String(),
@@ -62,10 +62,10 @@ func (tdg *TaskDocGenerator) extractParams(t reflect.Type) []ParamDoc {
             Description: field.Tag.Get("doc"),
             Default:     field.Tag.Get("default"),
         }
-        
+
         params = append(params, param)
     }
-    
+
     return params
 }
 ```
@@ -77,7 +77,7 @@ func (tdg *TaskDocGenerator) extractParams(t reflect.Type) []ParamDoc {
 ```go
 func (tdg *TaskDocGenerator) GenerateOpenAPI() (*OpenAPI, error) {
     tasks, _ := tdg.GenerateAll()
-    
+
     api := &OpenAPI{
         OpenAPI: "3.0.0",
         Info: Info{
@@ -87,11 +87,11 @@ func (tdg *TaskDocGenerator) GenerateOpenAPI() (*OpenAPI, error) {
         },
         Paths: make(map[string]PathItem),
     }
-    
+
     // 为每个任务生成端点
     for _, task := range tasks.Tasks {
         path := fmt.Sprintf("/tasks/%s", task.Type)
-        
+
         api.Paths[path] = PathItem{
             Post: &Operation{
                 Summary:     task.Description,
@@ -116,7 +116,7 @@ func (tdg *TaskDocGenerator) GenerateOpenAPI() (*OpenAPI, error) {
             },
         }
     }
-    
+
     return api, nil
 }
 ```
@@ -128,9 +128,9 @@ func (tdg *TaskDocGenerator) GenerateOpenAPI() (*OpenAPI, error) {
 ```go
 func (tdg *TaskDocGenerator) GenerateMarkdown(w io.Writer) error {
     tasks, _ := tdg.GenerateAll()
-    
+
     tmpl := template.Must(template.New("docs").Parse(docTemplate))
-    
+
     return tmpl.Execute(w, tasks)
 }
 
@@ -188,17 +188,17 @@ type TaskDocHandler struct {
 
 func (tdh *TaskDocHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     format := r.URL.Query().Get("format")
-    
+
     switch format {
     case "openapi", "swagger":
         doc, _ := tdh.generator.GenerateOpenAPI()
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(doc)
-        
+
     case "markdown":
         w.Header().Set("Content-Type", "text/markdown")
         tdh.generator.GenerateMarkdown(w)
-        
+
     default:
         doc, _ := tdh.generator.GenerateAll()
         w.Header().Set("Content-Type", "application/json")

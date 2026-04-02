@@ -1,6 +1,6 @@
 # 任务配置管理 (Task Configuration Management)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #configuration #hot-reload #dynamic-config
 
 ---
@@ -27,14 +27,14 @@ func (dc *DynamicConfig) Load(source ConfigSource) error {
     if err != nil {
         return err
     }
-    
+
     dc.mu.Lock()
     dc.config = cfg
     dc.mu.Unlock()
-    
+
     // 通知监听者
     dc.notifyWatchers(cfg)
-    
+
     return nil
 }
 
@@ -55,7 +55,7 @@ func (dc *DynamicConfig) notifyWatchers(cfg Config) {
     watchers := make([]func(Config), len(dc.watchers))
     copy(watchers, dc.watchers)
     dc.mu.RUnlock()
-    
+
     for _, fn := range watchers {
         go fn(cfg)
     }
@@ -77,16 +77,16 @@ type EnvironmentConfig struct {
 func LoadForEnvironment(env string) (Config, error) {
     // 加载基础配置
     baseConfig, _ := LoadFromFile("config/base.yaml")
-    
+
     // 加载环境特定配置
     envConfig, _ := LoadFromFile(fmt.Sprintf("config/%s.yaml", env))
-    
+
     // 合并配置（环境配置覆盖基础配置）
     merged := MergeConfigs(baseConfig, envConfig)
-    
+
     // 环境变量覆盖
     merged = ApplyEnvOverrides(merged)
-    
+
     return merged, nil
 }
 
@@ -96,13 +96,13 @@ func ApplyEnvOverrides(cfg Config) Config {
             cfg.MaxConcurrent = n
         }
     }
-    
+
     if v := os.Getenv("TASK_TIMEOUT"); v != "" {
         if d, err := time.ParseDuration(v); err == nil {
             cfg.DefaultTimeout = d
         }
     }
-    
+
     return cfg
 }
 ```
@@ -124,27 +124,27 @@ type ValidationRule struct {
 
 func (cv *ConfigValidator) Validate(cfg Config) error {
     var errs []error
-    
+
     if cfg.MaxConcurrent <= 0 {
         errs = append(errs, fmt.Errorf("max_concurrent must be > 0"))
     }
-    
+
     if cfg.DefaultTimeout < time.Second {
         errs = append(errs, fmt.Errorf("default_timeout must be >= 1s"))
     }
-    
+
     if cfg.WorkerPoolSize < cfg.MaxConcurrent {
         errs = append(errs, fmt.Errorf("worker_pool_size must be >= max_concurrent"))
     }
-    
+
     if cfg.QueueSize <= 0 {
         errs = append(errs, fmt.Errorf("queue_size must be > 0"))
     }
-    
+
     if len(errs) > 0 {
         return &ValidationError{Errors: errs}
     }
-    
+
     return nil
 }
 
@@ -153,15 +153,15 @@ func (cv *ConfigValidator) ValidateWithContext(ctx context.Context, cfg Config) 
     if err := cv.checkDatabase(ctx, cfg.Database); err != nil {
         return fmt.Errorf("database check failed: %w", err)
     }
-    
+
     if err := cv.checkRedis(ctx, cfg.Redis); err != nil {
         return fmt.Errorf("redis check failed: %w", err)
     }
-    
+
     if err := cv.checkQueue(ctx, cfg.Queue); err != nil {
         return fmt.Errorf("queue check failed: %w", err)
     }
-    
+
     return nil
 }
 ```
@@ -180,7 +180,7 @@ type HotReloader struct {
 func (hr *HotReloader) Start(ctx context.Context) {
     ticker := time.NewTicker(hr.interval)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ctx.Done():
@@ -198,11 +198,11 @@ func (hr *HotReloader) checkAndReload() {
         log.Printf("failed to calculate checksum: %v", err)
         return
     }
-    
+
     if checksum == hr.lastChecksum {
         return  // 无变化
     }
-    
+
     // 重新加载
     for _, source := range hr.sources {
         if err := hr.config.Load(source); err != nil {
@@ -210,14 +210,14 @@ func (hr *HotReloader) checkAndReload() {
             continue
         }
     }
-    
+
     hr.lastChecksum = checksum
     log.Println("config reloaded successfully")
 }
 
 func (hr *HotReloader) calculateChecksum() (string, error) {
     h := sha256.New()
-    
+
     for _, source := range hr.sources {
         data, err := source.Raw()
         if err != nil {
@@ -225,7 +225,7 @@ func (hr *HotReloader) calculateChecksum() (string, error) {
         }
         h.Write(data)
     }
-    
+
     return hex.EncodeToString(h.Sum(nil)), nil
 }
 ```

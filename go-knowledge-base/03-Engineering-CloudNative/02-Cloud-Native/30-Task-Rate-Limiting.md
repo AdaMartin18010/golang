@@ -1,6 +1,6 @@
 # 任务限流与降级 (Task Rate Limiting & Degradation)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #rate-limiting #circuit-breaker #degradation
 
 ---
@@ -20,11 +20,11 @@ func (arl *AdaptiveRateLimiter) Allow() bool {
     for {
         current := atomic.LoadInt64(&arl.current)
         limit := atomic.LoadInt64(&arl.limit)
-        
+
         if current >= limit {
             return false
         }
-        
+
         if atomic.CompareAndSwapInt64(&arl.current, current, current+1) {
             return true
         }
@@ -37,7 +37,7 @@ func (arl *AdaptiveRateLimiter) RecordResult(success bool) {
     } else {
         atomic.AddInt64(&arl.failure, 1)
     }
-    
+
     // 自适应调整
     arl.adjust()
 }
@@ -45,14 +45,14 @@ func (arl *AdaptiveRateLimiter) RecordResult(success bool) {
 func (arl *AdaptiveRateLimiter) adjust() {
     arl.mu.Lock()
     defer arl.mu.Unlock()
-    
+
     total := arl.success + arl.failure
     if total < 100 {
         return  // 样本不足
     }
-    
+
     successRate := float64(arl.success) / float64(total)
-    
+
     if successRate < 0.9 {
         // 成功率低，降低限制
         arl.limit = int(float64(arl.limit) * 0.9)
@@ -66,7 +66,7 @@ func (arl *AdaptiveRateLimiter) adjust() {
             arl.limit = 1000
         }
     }
-    
+
     // 重置计数
     atomic.StoreInt64(&arl.success, 0)
     atomic.StoreInt64(&arl.failure, 0)
@@ -118,9 +118,9 @@ var defaultLevels = []DegradationLevel{
 func (pd *PriorityDegradation) Evaluate() {
     cpu := pd.metrics.GetCPUUsage()
     memory := pd.metrics.GetMemoryUsage()
-    
+
     load := math.Max(cpu, memory)
-    
+
     // 确定当前级别
     level := 0
     for i, l := range pd.levels {
@@ -128,7 +128,7 @@ func (pd *PriorityDegradation) Evaluate() {
             level = i
         }
     }
-    
+
     if level != pd.current {
         pd.applyLevel(level)
     }
@@ -137,33 +137,33 @@ func (pd *PriorityDegradation) Evaluate() {
 func (pd *PriorityDegradation) applyLevel(level int) {
     oldLevel := pd.levels[pd.current]
     newLevel := pd.levels[level]
-    
+
     log.Printf("Degradation level changed: %s -> %s", oldLevel.Name, newLevel.Name)
-    
+
     if newLevel.DropLowPri && !oldLevel.DropLowPri {
         // 开始丢弃低优先级任务
         pd.startDroppingLowPriority()
     }
-    
+
     if newLevel.DisableNonEssential && !oldLevel.DisableNonEssential {
         // 禁用非关键功能
         pd.disableNonEssential()
     }
-    
+
     pd.current = level
 }
 
 func (pd *PriorityDegradation) ShouldProcess(task *Task) bool {
     level := pd.levels[pd.current]
-    
+
     if level.DropLowPri && task.Priority == PriorityLow {
         return false
     }
-    
+
     if level.DisableNonEssential && task.Category == CategoryNonEssential {
         return false
     }
-    
+
     return true
 }
 ```
@@ -184,23 +184,23 @@ type TokenBucket struct {
 func (tb *TokenBucket) Allow(n int) bool {
     tb.mu.Lock()
     defer tb.mu.Unlock()
-    
+
     now := time.Now()
     elapsed := now.Sub(tb.lastUpdate).Seconds()
     tb.lastUpdate = now
-    
+
     // 添加新令牌
     tb.tokens += elapsed * tb.rate
     if tb.tokens > float64(tb.burst) {
         tb.tokens = float64(tb.burst)
     }
-    
+
     // 检查是否足够
     if tb.tokens >= float64(n) {
         tb.tokens -= float64(n)
         return true
     }
-    
+
     return false
 }
 
@@ -209,7 +209,7 @@ func (tb *TokenBucket) Wait(ctx context.Context, n int) error {
         if tb.Allow(n) {
             return nil
         }
-        
+
         select {
         case <-time.After(10 * time.Millisecond):
             continue
@@ -236,24 +236,24 @@ func (hp *HotspotProtection) IsHotspot(key string) bool {
     counter, exists := hp.counters[key]
     threshold := hp.thresholds[key]
     hp.mu.RUnlock()
-    
+
     if !exists {
         return false
     }
-    
+
     return counter.Count() > threshold
 }
 
 func (hp *HotspotProtection) Record(key string) {
     hp.mu.Lock()
-    
+
     if _, exists := hp.counters[key]; !exists {
         hp.counters[key] = NewSlidingWindow(time.Second)
     }
-    
+
     counter := hp.counters[key]
     hp.mu.Unlock()
-    
+
     counter.Add(1)
 }
 
@@ -266,7 +266,7 @@ func (hp *HotspotProtection) HandleRequest(ctx context.Context, key string, hand
         }
         return ErrHotspotLimited
     }
-    
+
     hp.Record(key)
     return handler()
 }
