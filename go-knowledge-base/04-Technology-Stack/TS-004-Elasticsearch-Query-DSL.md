@@ -1764,30 +1764,30 @@ func executeSearch(client *elasticsearch.Client, index string, query map[string]
 package techstack_test
 
 import (
-	"context"
-	"testing"
-	"time"
+ "context"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = ctx
-		// Simulate operation
-	}
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = ctx
+  // Simulate operation
+ }
 }
 
 // BenchmarkConcurrentLoad tests concurrent operations
 func BenchmarkConcurrentLoad(b *testing.B) {
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate concurrent operation
-			time.Sleep(1 * time.Microsecond)
-		}
-	})
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate concurrent operation
+   time.Sleep(1 * time.Microsecond)
+  }
+ })
 }
 ```
 
@@ -1817,3 +1817,51 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 - [ ] Proper indexing strategy
 - [ ] Query optimization completed
 - [ ] Resource limits configured
+
+---
+
+## Learning Resources
+
+### Academic Papers
+
+1. **Elasticsearch B.V.** (2023). Elasticsearch Reference. *Official Docs*. <https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html>
+2. **Gormley, C., & Tong, Z.** (2015). *Elasticsearch: The Definitive Guide*. O'Reilly.
+3. **Kononenko, O., et al.** (2014). Mining Modern Repositories with Elasticsearch. *ACM MSR*.
+4. **Banerjee, S.** (2018). Elasticsearch Performance. *IEEE Big Data*.
+
+### Video Tutorials
+
+1. **Elastic.** (2023). [Elasticsearch Fundamentals](https://www.youtube.com/playlist?list=PLhLSfiseQLVJH0nQt6DwyWNv74N3xU3aE). YouTube.
+2. **Elasticsearch Explained.** (2022). [Query DSL](https://www.youtube.com/watch?v=a4r4R1V7PhE). Tutorial.
+3. **Honza Král.** (2019). [Elasticsearch Architecture](https://www.youtube.com/watch?v=60UsHHsKyN4). ElasticON.
+4. **Shay Banon.** (2018). [Elasticsearch Design](https://www.youtube.com/watch?v=ksT-3wWZx8c). Conference.
+
+### Book References
+
+1. **Gormley, C., & Tong, Z.** (2015). *Elasticsearch: The Definitive Guide*. O'Reilly.
+2. **Gupta, Y.** (2017). *Elasticsearch Essentials*. Packt.
+3. **Paro, A.** (2015). *Mastering Elasticsearch* (2nd ed.). Packt.
+4. **Padmaraju, V., & Dixit, S.** (2019). *Learning Elasticsearch*. Packt.
+
+### Online Courses
+
+1. **Elastic.** [Elastic Training](https://www.elastic.co/training/) - Official training.
+2. **Coursera.** [Search and Analytics](https://www.coursera.org/learn/elasticsearch) - Introduction.
+3. **Udemy.** [Complete Elasticsearch](https://www.udemy.com/course/elasticsearch-complete-guide/) - Bo Andersen.
+4. **Pluralsight.** [Elasticsearch Fundamentals](https://www.pluralsight.com/courses/elasticsearch-fundamentals) - Introduction.
+
+### GitHub Repositories
+
+1. [elastic/elasticsearch](https://github.com/elastic/elasticsearch) - Elasticsearch source.
+2. [olivere/elastic](https://github.com/olivere/elastic) - Go Elasticsearch client.
+3. [elastic/go-elasticsearch](https://github.com/elastic/go-elasticsearch) - Official Go client.
+4. [sirupsen/logrus](https://github.com/sirupsen/logrus) - Logging with Elasticsearch.
+
+### Conference Talks
+
+1. **Shay Banon.** (2018). *Elasticsearch Evolution*. ElasticON.
+2. **Honza Král.** (2019). *Query Optimization*. ElasticON.
+3. **Zachary Tong.** (2017). *Elasticsearch Internals*. ElasticON.
+4. **Mark Walkom.** (2020). *Cluster Architecture*. ElasticON.
+
+---

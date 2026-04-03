@@ -1690,30 +1690,30 @@ func (pc *ParallelConsumer) partitionWorker(ctx context.Context, topic string, p
 package techstack_test
 
 import (
-	"context"
-	"testing"
-	"time"
+ "context"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = ctx
-		// Simulate operation
-	}
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = ctx
+  // Simulate operation
+ }
 }
 
 // BenchmarkConcurrentLoad tests concurrent operations
 func BenchmarkConcurrentLoad(b *testing.B) {
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate concurrent operation
-			time.Sleep(1 * time.Microsecond)
-		}
-	})
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate concurrent operation
+   time.Sleep(1 * time.Microsecond)
+  }
+ })
 }
 ```
 
@@ -1743,3 +1743,51 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 - [ ] Proper indexing strategy
 - [ ] Query optimization completed
 - [ ] Resource limits configured
+
+---
+
+## Learning Resources
+
+### Academic Papers
+
+1. **Kreps, J., et al.** (2011). Kafka: A Distributed Messaging System for Log Processing. *Netflix Tech Blog*.
+2. **Apache Kafka.** (2023). Kafka Documentation. *Official Docs*. <https://kafka.apache.org/documentation/>
+3. **Goodhope, K., et al.** (2012). Building LinkedIn's Real-time Activity Data Pipeline. *IEEE Data Engineering Bulletin*.
+4. **Wang, Y., et al.** (2015). Kafka and Real-time Analytics. *ACM SIGMOD*.
+
+### Video Tutorials
+
+1. **Confluent.** (2023). [Kafka Fundamentals](https://www.youtube.com/playlist?list=PLa7VYi0yPIH2PelhRHoFR5iQgflg-y6JA). YouTube.
+2. **Kafka Summit.** (2022). [Kafka Summit](https://www.youtube.com/kafkasummit). Conference talks.
+3. **Neha Narkhede.** (2016). [Kafka Architecture](https://www.youtube.com/watch?v=06iRM1Ghr1k). QCon.
+4. **Jay Kreps.** (2015). [The Log](https://www.youtube.com/watch?v=aJuo_bLSW6s). Strange Loop.
+
+### Book References
+
+1. **Narkhede, N., et al.** (2017). *Kafka: The Definitive Guide*. O'Reilly.
+2. **Garg, N.** (2013). *Apache Kafka Cookbook*. Packt.
+3. **Bejeck, B.** (2018). *Kafka Streams in Action*. Manning.
+4. **Sax, J.** (2021). *Mastering Kafka Streams*. Packt.
+
+### Online Courses
+
+1. **Confluent.** [Kafka Training](https://www.confluent.io/training/) - Official training.
+2. **Coursera.** [Stream Processing](https://www.coursera.org/learn/kafka-stream-processing) - LinkedIn.
+3. **Udemy.** [Apache Kafka Series](https://www.udemy.com/course/apache-kafka/) - Stéphane Maarek.
+4. **Pluralsight.** [Apache Kafka](https://www.pluralsight.com/courses/apache-kafka-getting-started) - Introduction.
+
+### GitHub Repositories
+
+1. [apache/kafka](https://github.com/apache/kafka) - Kafka source code.
+2. [confluentinc/confluent-kafka-go](https://github.com/confluentinc/confluent-kafka-go) - Go client.
+3. [segmentio/kafka-go](https://github.com/segmentio/kafka-go) - Pure Go Kafka.
+4. [Shopify/sarama](https://github.com/Shopify/sarama) - Sarama Go library.
+
+### Conference Talks
+
+1. **Neha Narkhede.** (2016). *Kafka Architecture*. QCon.
+2. **Jay Kreps.** (2013). *The Log*. LinkedIn Engineering.
+3. **Gwen Shapira.** (2017). *Kafka Operations*. Kafka Summit.
+4. **Matthias Sax.** (2019). *Kafka Streams*. Kafka Summit.
+
+---

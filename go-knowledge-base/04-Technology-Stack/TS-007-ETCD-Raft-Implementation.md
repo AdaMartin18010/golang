@@ -586,30 +586,30 @@ quota-backend-bytes: 8589934592  # 8GB
 package techstack_test
 
 import (
-	"context"
-	"testing"
-	"time"
+ "context"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = ctx
-		// Simulate operation
-	}
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = ctx
+  // Simulate operation
+ }
 }
 
 // BenchmarkConcurrentLoad tests concurrent operations
 func BenchmarkConcurrentLoad(b *testing.B) {
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate concurrent operation
-			time.Sleep(1 * time.Microsecond)
-		}
-	})
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate concurrent operation
+   time.Sleep(1 * time.Microsecond)
+  }
+ })
 }
 ```
 
@@ -639,3 +639,51 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 - [ ] Proper indexing strategy
 - [ ] Query optimization completed
 - [ ] Resource limits configured
+
+---
+
+## Learning Resources
+
+### Academic Papers
+
+1. **Ongaro, D., & Ousterhout, J.** (2014). In Search of an Understandable Consensus Algorithm. *USENIX ATC*. DOI: [10.5555/2643634.2643666](https://doi.org/10.5555/2643634.2643666)
+2. **etcd Authors.** (2023). etcd Documentation. *Official Docs*. <https://etcd.io/docs/>
+3. **Lamport, L.** (2001). Paxos Made Simple. *ACM SIGACT News*, 32(4), 51-58.
+4. **Ongaro, D.** (2014). *Consensus: Bridging Theory and Practice*. PhD Thesis, Stanford.
+
+### Video Tutorials
+
+1. **Diego Ongaro.** (2015). [The Raft Consensus Algorithm](https://www.youtube.com/watch?v=vYp4LYbnnW8). QCon.
+2. **CoreOS.** (2018). [etcd Architecture](https://www.youtube.com/watch?v=PBQKz8ZoG98). YouTube.
+3. **Xiang Li.** (2017). [etcd and Kubernetes](https://www.youtube.com/watch?v=Jn40G7s-MYc). KubeCon.
+4. **Brandon Philips.** (2016). [etcd Internals](https://www.youtube.com/watch?v=6uOpA7n9MOM). CoreOS Fest.
+
+### Book References
+
+1. **Ongaro, D.** (2014). *Consensus: Bridging Theory and Practice*. Stanford University.
+2. **Lynch, N. A.** (1996). *Distributed Algorithms*. Morgan Kaufmann.
+3. **Cachin, C., et al.** (2011). *Introduction to Reliable and Secure Distributed Programming*. Springer.
+4. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications*. O'Reilly.
+
+### Online Courses
+
+1. **MIT 6.824.** [Distributed Systems](https://pdos.csail.mit.edu/6.824/) - Raft lecture.
+2. **Coursera.** [Cloud Computing Concepts](https://www.coursera.org/learn/cloud-computing) - Consensus.
+3. **Udemy.** [Distributed Systems](https://www.udemy.com/course/distributed-systems/) - Raft.
+4. **edX.** [Distributed Systems](https://www.edx.org/professional-certificate/delftx-cloud-computing) - TU Delft.
+
+### GitHub Repositories
+
+1. [etcd-io/etcd](https://github.com/etcd-io/etcd) - etcd source code.
+2. [hashicorp/raft](https://github.com/hashicorp/raft) - Raft implementation in Go.
+3. [coreos/etcd](https://github.com/coreos/etcd) - CoreOS etcd.
+4. [etcd-io/raft](https://github.com/etcd-io/raft) - Raft library.
+
+### Conference Talks
+
+1. **Diego Ongaro.** (2015). *Raft*. USENIX ATC.
+2. **John Ousterhout.** (2013). *Raft*. Stanford Seminar.
+3. **Xiang Li.** (2017). *etcd*. KubeCon.
+4. **Brandon Philips.** (2016). *etcd Operations*. CoreOS Fest.
+
+---

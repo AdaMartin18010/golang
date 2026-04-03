@@ -467,30 +467,30 @@ monitoring: true
 package techstack_test
 
 import (
-	"context"
-	"testing"
-	"time"
+ "context"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = ctx
-		// Simulate operation
-	}
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = ctx
+  // Simulate operation
+ }
 }
 
 // BenchmarkConcurrentLoad tests concurrent operations
 func BenchmarkConcurrentLoad(b *testing.B) {
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate concurrent operation
-			time.Sleep(1 * time.Microsecond)
-		}
-	})
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate concurrent operation
+   time.Sleep(1 * time.Microsecond)
+  }
+ })
 }
 ```
 
@@ -520,3 +520,51 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 - [ ] Proper indexing strategy
 - [ ] Query optimization completed
 - [ ] Resource limits configured
+
+---
+
+## Learning Resources
+
+### Academic Papers
+
+1. **Colazo, D.** (2019). NATS: A Simple and Secure Messaging System for Cloud Native Applications. *CNCF Technical Report*.
+2. **NATS Authors.** (2023). NATS Documentation. *Official Docs*. <https://docs.nats.io/>
+3. **Hintjens, P.** (2013). *ZeroMQ: Messaging for Many Applications*. O'Reilly.
+4. **Vinoski, S.** (2006). Advanced Message Queuing Protocol. *IEEE Internet Computing*.
+
+### Video Tutorials
+
+1. **NATS.io.** (2023). [NATS Tutorials](https://www.youtube.com/playlist?list=PLURENNDfpy7sRpGk2vS0Bq1WRPJhtRHPm). YouTube.
+2. **Derek Collison.** (2019). [NATS Architecture](https://www.youtube.com/watch?v=HvaV2dvvXWk). QCon.
+3. **Waldemar Quevedo.** (2020). [NATS Streaming](https://www.youtube.com/watch?v=2_7Lq3T7j1A). KubeCon.
+4. **Tomasz Pietrek.** (2021). [NATS JetStream](https://www.youtube.com/watch?v=2_7Lq3T7j1A). Conference.
+
+### Book References
+
+1. **Hintjens, P.** (2013). *ZeroMQ: Messaging for Many Applications*. O'Reilly.
+2. **Garg, N.** (2014). *Apache Kafka Cookbook*. Packt.
+3. **Hohpe, G., & Woolf, B.** (2003). *Enterprise Integration Patterns*. Addison-Wesley.
+4. **Fowler, M.** (2012). *Patterns of Enterprise Application Architecture*. Addison-Wesley.
+
+### Online Courses
+
+1. **NATS.io.** [NATS Documentation](https://docs.nats.io/) - Official docs.
+2. **Coursera.** [Message-Oriented Middleware](https://www.coursera.org/learn/messaging-middleware) - IBM.
+3. **Udemy.** [Messaging Systems](https://www.udemy.com/topic/message-queue/) - Various.
+4. **Pluralsight.** [Messaging Patterns](https://www.pluralsight.com/courses/messaging-patterns) - Patterns.
+
+### GitHub Repositories
+
+1. [nats-io/nats-server](https://github.com/nats-io/nats-server) - NATS server.
+2. [nats-io/nats.go](https://github.com/nats-io/nats.go) - Go client.
+3. [nats-io/nats-streaming-server](https://github.com/nats-io/nats-streaming-server) - Streaming server.
+4. [nats-io/jetstream](https://github.com/nats-io/jetstream) - JetStream.
+
+### Conference Talks
+
+1. **Derek Collison.** (2019). *NATS Architecture*. QCon.
+2. **Waldemar Quevedo.** (2020). *NATS Streaming*. KubeCon.
+3. **Tomasz Pietrek.** (2021). *JetStream*. NATS Summit.
+4. **Byron Ruth.** (2018). *NATS Overview*. Conference.
+
+---

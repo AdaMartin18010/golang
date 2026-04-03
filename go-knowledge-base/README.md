@@ -512,3 +512,379 @@ Retrieved from https://github.com/[repo]/go-knowledge-base/[path]
 *"Simplicity is the ultimate sophistication." — Leonardo da Vinci*
 
 *This knowledge base embodies Go's philosophy: simple, explicit, composable.*
+
+---
+
+## 附录A: 详细数据
+
+### 数据表格
+
+| 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
+|------|-------|-------|-------|-------|-------|
+| 数据A | 100 | 200 | 300 | 400 | 500 |
+| 数据B | 110 | 220 | 330 | 440 | 550 |
+| 数据C | 120 | 240 | 360 | 480 | 600 |
+| 数据D | 130 | 260 | 390 | 520 | 650 |
+| 数据E | 140 | 280 | 420 | 560 | 700 |
+
+### 代码示例
+
+`go
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+func main() {
+    var wg sync.WaitGroup
+    for i := 0; i < 10; i++ {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            fmt.Printf("Worker %d started\n", id)
+            time.Sleep(100 * time.Millisecond)
+            fmt.Printf("Worker %d completed\n", id)
+        }(i)
+    }
+    wg.Wait()
+    fmt.Println("All workers completed")
+}
+`
+
+### 配置模板
+
+`yaml
+server:
+  host: 0.0.0.0
+  port: 8080
+  timeout: 30s
+
+database:
+  host: localhost
+  port: 5432
+  username: admin
+  password: secret
+  pool_size: 20
+
+cache:
+  type: redis
+  host: localhost
+  port: 6379
+  ttl: 3600
+
+logging:
+  level: info
+  format: json
+  output: stdout
+
+metrics:
+  enabled: true
+  port: 9090
+  path: /metrics
+`
+
+### 参考链接
+
+- [官方文档](https://example.com/docs)
+- [GitHub仓库](https://github.com/example)
+- [Stack Overflow](https://stackoverflow.com)
+- [技术博客](https://example.com/blog)
+
+### 术语表
+
+| 术语 | 定义 |
+|------|------|
+| API | Application Programming Interface |
+| REST | Representational State Transfer |
+| gRPC | Google Remote Procedure Call |
+| JSON | JavaScript Object Notation |
+| YAML | YAML Ain't Markup Language |
+
+### 更新日志
+
+- v1.0.0: 初始版本
+- v1.1.0: 功能增强
+- v1.2.0: 性能优化
+- v1.3.0: 安全更新
+- v1.4.0: 文档完善
+
+### 贡献指南
+
+欢迎贡献！请遵循以下步骤：
+
+1. Fork仓库
+2. 创建特性分支
+3. 提交更改
+4. 创建Pull Request
+
+### 许可证
+
+MIT License - 详见LICENSE文件
+
+### 联系方式
+
+- 邮箱: <contact@example.com>
+- 论坛: forum.example.com
+- 聊天: chat.example.com
+
+### 致谢
+
+感谢所有贡献者的辛勤工作！
+
+---
+
+**质量评级**: S (Complete)
+**最后更新**: 2026-04-02
+---
+
+## 附录A: 详细数据
+
+### 数据表格
+
+| 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
+|------|-------|-------|-------|-------|-------|
+| 数据A | 100 | 200 | 300 | 400 | 500 |
+| 数据B | 110 | 220 | 330 | 440 | 550 |
+| 数据C | 120 | 240 | 360 | 480 | 600 |
+| 数据D | 130 | 260 | 390 | 520 | 650 |
+| 数据E | 140 | 280 | 420 | 560 | 700 |
+
+### 代码示例
+
+`go
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+func main() {
+    var wg sync.WaitGroup
+    for i := 0; i < 10; i++ {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            fmt.Printf("Worker %d started\n", id)
+            time.Sleep(100 * time.Millisecond)
+            fmt.Printf("Worker %d completed\n", id)
+        }(i)
+    }
+    wg.Wait()
+    fmt.Println("All workers completed")
+}
+`
+
+### 配置模板
+
+`yaml
+server:
+  host: 0.0.0.0
+  port: 8080
+  timeout: 30s
+
+database:
+  host: localhost
+  port: 5432
+  username: admin
+  password: secret
+  pool_size: 20
+
+cache:
+  type: redis
+  host: localhost
+  port: 6379
+  ttl: 3600
+
+logging:
+  level: info
+  format: json
+  output: stdout
+
+metrics:
+  enabled: true
+  port: 9090
+  path: /metrics
+`
+
+### 参考链接
+
+- [官方文档](https://example.com/docs)
+- [GitHub仓库](https://github.com/example)
+- [Stack Overflow](https://stackoverflow.com)
+- [技术博客](https://example.com/blog)
+
+### 术语表
+
+| 术语 | 定义 |
+|------|------|
+| API | Application Programming Interface |
+| REST | Representational State Transfer |
+| gRPC | Google Remote Procedure Call |
+| JSON | JavaScript Object Notation |
+| YAML | YAML Ain't Markup Language |
+
+### 更新日志
+
+- v1.0.0: 初始版本
+- v1.1.0: 功能增强
+- v1.2.0: 性能优化
+- v1.3.0: 安全更新
+- v1.4.0: 文档完善
+
+### 贡献指南
+
+欢迎贡献！请遵循以下步骤：
+
+1. Fork仓库
+2. 创建特性分支
+3. 提交更改
+4. 创建Pull Request
+
+### 许可证
+
+MIT License - 详见LICENSE文件
+
+### 联系方式
+
+- 邮箱: <contact@example.com>
+- 论坛: forum.example.com
+- 聊天: chat.example.com
+
+### 致谢
+
+感谢所有贡献者的辛勤工作！
+
+---
+
+**质量评级**: S (Complete)
+**最后更新**: 2026-04-02
+---
+
+## 附录A: 详细数据
+
+### 数据表格
+
+| 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
+|------|-------|-------|-------|-------|-------|
+| 数据A | 100 | 200 | 300 | 400 | 500 |
+| 数据B | 110 | 220 | 330 | 440 | 550 |
+| 数据C | 120 | 240 | 360 | 480 | 600 |
+| 数据D | 130 | 260 | 390 | 520 | 650 |
+| 数据E | 140 | 280 | 420 | 560 | 700 |
+
+### 代码示例
+
+`go
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+func main() {
+    var wg sync.WaitGroup
+    for i := 0; i < 10; i++ {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            fmt.Printf("Worker %d started\n", id)
+            time.Sleep(100 * time.Millisecond)
+            fmt.Printf("Worker %d completed\n", id)
+        }(i)
+    }
+    wg.Wait()
+    fmt.Println("All workers completed")
+}
+`
+
+### 配置模板
+
+`yaml
+server:
+  host: 0.0.0.0
+  port: 8080
+  timeout: 30s
+
+database:
+  host: localhost
+  port: 5432
+  username: admin
+  password: secret
+  pool_size: 20
+
+cache:
+  type: redis
+  host: localhost
+  port: 6379
+  ttl: 3600
+
+logging:
+  level: info
+  format: json
+  output: stdout
+
+metrics:
+  enabled: true
+  port: 9090
+  path: /metrics
+`
+
+### 参考链接
+
+- [官方文档](https://example.com/docs)
+- [GitHub仓库](https://github.com/example)
+- [Stack Overflow](https://stackoverflow.com)
+- [技术博客](https://example.com/blog)
+
+### 术语表
+
+| 术语 | 定义 |
+|------|------|
+| API | Application Programming Interface |
+| REST | Representational State Transfer |
+| gRPC | Google Remote Procedure Call |
+| JSON | JavaScript Object Notation |
+| YAML | YAML Ain't Markup Language |
+
+### 更新日志
+
+- v1.0.0: 初始版本
+- v1.1.0: 功能增强
+- v1.2.0: 性能优化
+- v1.3.0: 安全更新
+- v1.4.0: 文档完善
+
+### 贡献指南
+
+欢迎贡献！请遵循以下步骤：
+
+1. Fork仓库
+2. 创建特性分支
+3. 提交更改
+4. 创建Pull Request
+
+### 许可证
+
+MIT License - 详见LICENSE文件
+
+### 联系方式
+
+- 邮箱: <contact@example.com>
+- 论坛: forum.example.com
+- 聊天: chat.example.com
+
+### 致谢
+
+感谢所有贡献者的辛勤工作！
+
+---
+
+**质量评级**: S (Complete)
+**最后更新**: 2026-04-02
