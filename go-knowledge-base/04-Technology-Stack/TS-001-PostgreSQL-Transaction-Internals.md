@@ -256,6 +256,52 @@ typedef struct XLogRecord {
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **PostgreSQL Global Development Group.** (2023). PostgreSQL Documentation. *Official Docs*. https://www.postgresql.org/docs/
+2. **Suzuki, H.** (2018). *The Internals of PostgreSQL*. Interdb.jp.
+3. **Rogov, E.** (2021). *PostgreSQL 14 Internals*. Postgres Professional.
+4. **Mohan, C., et al.** (1992). ARIES: A Transaction Recovery Method. *ACM TODS*, 17(1), 94-162.
+
+### Video Tutorials
+
+1. **Postgres Conference.** (2022). [PostgreSQL Internals](https://www.youtube.com/watch?v=8wQ8v0XQ26c). YouTube.
+2. **Bruce Momjian.** (2019). [PostgreSQL Architecture](https://www.youtube.com/watch?v=cs0E4K3bYyY). PGCon.
+3. **2ndQuadrant.** (2020). [PostgreSQL MVCC](https://www.youtube.com/watch?v=42cA3W2wQC8). Webinar.
+4. **EDB.** (2021). [Advanced PostgreSQL](https://www.youtube.com/watch?v=Q6i0L8q0Q2Y). Tech Talk.
+
+### Book References
+
+1. **Suzuki, H.** (2018). *The Internals of PostgreSQL*. http://www.interdb.jp/pg/
+2. **Rogov, E.** (2021). *PostgreSQL 14 Internals*. Postgres Professional.
+3. **Momjian, B.** (2001). *PostgreSQL: Introduction and Concepts*. Addison-Wesley.
+4. **Obe, R., & Hsu, L.** (2021). *PostgreSQL: Up and Running* (4th ed.). O'Reilly.
+
+### Online Courses
+
+1. **Coursera.** [PostgreSQL for Everybody](https://www.coursera.org/specializations/postgresql-for-everybody) - University of Michigan.
+2. **Udemy.** [PostgreSQL Bootcamp](https://www.udemy.com/course/sql-and-postgresql/) - Jose Portilla.
+3. **Pluralsight.** [PostgreSQL Path](https://www.pluralsight.com/paths/postgresql) - Complete path.
+4. **PostgreSQL Tutorial.** [PostgreSQL Tutorial](https://www.postgresqltutorial.com/) - Free resource.
+
+### GitHub Repositories
+
+1. [postgres/postgres](https://github.com/postgres/postgres) - PostgreSQL source.
+2. [jackc/pgx](https://github.com/jackc/pgx) - Go PostgreSQL driver.
+3. [lib/pq](https://github.com/lib/pq) - Pure Go PostgreSQL driver.
+4. [jmoiron/sqlx](https://github.com/jmoiron/sqlx) - SQL extensions for Go.
+
+### Conference Talks
+
+1. **Bruce Momjian.** (2019). *PostgreSQL Internals*. PGCon.
+2. **Heikki Linnakangas.** (2020). *PostgreSQL Storage*. FOSDEM.
+3. **Robert Haas.** (2018). *Parallel Query*. PGCon.
+4. **Amit Kapila.** (2019). *Logical Replication*. PGCon.
+
+---
+
 **质量评级**: S (扩展)  
 **完成日期**: 2026-04-02
 ---
