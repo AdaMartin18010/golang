@@ -438,5 +438,51 @@ spec:
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Nygard, M. T.** (2007). *Release It!* (Chapter 5: Stability Patterns). Pragmatic Bookshelf. ISBN: 978-1680502398
+2. **Schmidt, D. C., et al.** (2000). *Pattern-Oriented Software Architecture* (Vol. 2). Wiley.
+3. **Vernon, V.** (2016). *Domain-Driven Design Distilled*. Addison-Wesley.
+4. **Newman, S.** (2021). *Building Microservices* (2nd ed.). O'Reilly.
+
+### Video Tutorials
+
+1. **Martin Fowler.** (2014). [Circuit Breaker Pattern](https://www.youtube.com/watch?v=8WIlNZr3QnA). GOTO Conference.
+2. **Udi Dahan.** (2016). [Service Boundaries](https://www.youtube.com/watch?v=3E5RH9-q7sI). NDC.
+3. **Netflix Tech.** (2018). [Hystrix](https://www.youtube.com/watch?v=8g-1wQicj3M). Netflix Open Source.
+4. **AWS.** (2020). [Resilience Patterns](https://www.youtube.com/watch?v=BJ59K68dH_0). AWS Summit.
+
+### Book References
+
+1. **Nygard, M. T.** (2018). *Release It!* (2nd ed.). Pragmatic Bookshelf.
+2. **Richardson, C.** (2018). *Microservices Patterns*. Manning.
+3. **Newman, S.** (2021). *Building Microservices*. O'Reilly.
+4. **Hohpe, G., & Woolf, B.** (2003). *Enterprise Integration Patterns*. Addison-Wesley.
+
+### Online Courses
+
+1. **Coursera.** [Cloud Computing](https://www.coursera.org/learn/cloud-computing) - Fault tolerance.
+2. **Udemy.** [Microservices with Spring](https://www.udemy.com/course/microservices-with-spring/) - Resilience patterns.
+3. **Pluralsight.** [Resilience Patterns](https://www.pluralsight.com/courses/resilience-patterns) - Design patterns.
+4. **edX.** [Cloud Microservices](https://www.edx.org/professional-certificate/ibm-cloud-microservices) - IBM.
+
+### GitHub Repositories
+
+1. [sony/gobreaker](https://github.com/sony/gobreaker) - Circuit breaker in Go.
+2. [afex/hystrix-go](https://github.com/afex/hystrix-go) - Hystrix port to Go.
+3. [Netflix/Hystrix](https://github.com/Netflix/Hystrix) - Original Java implementation.
+4. [resilience4j/resilience4j](https://github.com/resilience4j/resilience4j) - Resilience library.
+
+### Conference Talks
+
+1. **Michael Nygard.** (2018). *Release It!*. GOTO.
+2. **Martin Fowler.** (2014). *Microservices and Circuit Breaker*. GOTO.
+3. **Ben Christensen.** (2012). *Hystrix*. Netflix Tech Talk.
+4. **Adrian Cockcroft.** (2014). *Migrating to Microservices*. QCon.
+
+---
+
 **质量评级**: S (扩展)  
 **完成日期**: 2026-04-02

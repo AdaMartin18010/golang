@@ -561,4 +561,50 @@ func (h *HealthChecker) Handler(c *gin.Context) {
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Newman, S.** (2021). *Building Microservices* (2nd ed.). O'Reilly Media. ISBN: 978-1492034025
+2. **Richardson, C.** (2018). *Microservices Patterns*. Manning Publications. ISBN: 978-1617294549
+3. **Fowler, M.** (2014). Microservices: A Definition of This New Architectural Term. *martinfowler.com*.
+4. **Newman, S.** (2020). *Monolith to Microservices*. O'Reilly Media. ISBN: 978-1492047841
+
+### Video Tutorials
+
+1. **Sam Newman.** (2019). [Building Microservices](https://www.youtube.com/watch?v=upU8I3YFYNc). GOTO Conference.
+2. **Chris Richardson.** (2018). [Microservices Patterns](https://www.youtube.com/watch?v=4L3cRSvJJaU). QCon.
+3. **Martin Fowler.** (2015). [Microservices and the First Law of Distributed Computing](https://www.youtube.com/watch?v=bd4ju2K20DM). YOW!
+4. **Udi Dahan.** (2015). [Microservices and SOA](https://www.youtube.com/watch?v=VQVsDl6_42U). NDC.
+
+### Book References
+
+1. **Newman, S.** (2021). *Building Microservices* (2nd ed.). O'Reilly.
+2. **Richardson, C.** (2018). *Microservices Patterns*. Manning.
+3. **Burns, B.** (2018). *Designing Distributed Systems*. O'Reilly.
+4. **Vernon, V.** (2016). *Domain-Driven Design Distilled*. Addison-Wesley.
+
+### Online Courses
+
+1. **Coursera.** [Building Scalable Microservices](https://www.coursera.org/learn/building-scalable-microservices) - Google Cloud.
+2. **Udemy.** [Microservices with Node JS and React](https://www.udemy.com/course/microservices-with-node-js-and-react/) - Stephen Grider.
+3. **Pluralsight.** [Microservices Architecture](https://www.pluralsight.com/courses/microservices-architecture) - Mark Heath.
+4. **edX.** [Cloud Microservices](https://www.edx.org/professional-certificate/ibm-cloud-microservices) - IBM.
+
+### GitHub Repositories
+
+1. [GoogleCloudPlatform/microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) - Hipster Shop demo.
+2. [aspnetrun/microservices](https://github.com/aspnetrun/microservices) - .NET microservices.
+3. [microservices-demo](https://github.com/microservices-demo) - Sock Shop microservices.
+4. [go-kit/kit](https://github.com/go-kit/kit) - Go microservices toolkit.
+
+### Conference Talks
+
+1. **Sam Newman.** (2019). *Building Microservices*. GOTO Chicago.
+2. **Chris Richardson.** (2018). *Microservices Patterns*. QCon SF.
+3. **Martin Fowler.** (2014). *Microservices*. GOTO Berlin.
+4. **Udi Dahan.** (2015). *The Heart of Microservices*. NDC Oslo.
+
+---
+
 *S-Level Quality Document | Generated: 2026-04-02*

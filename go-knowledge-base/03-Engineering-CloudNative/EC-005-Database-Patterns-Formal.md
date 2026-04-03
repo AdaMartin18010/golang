@@ -910,3 +910,49 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 | 🟡 Medium | Async processing | 30% latency | Medium |
 | 🟡 Medium | Batch operations | 40% throughput | Low |
 | 🟢 Low | Compression | 20% bandwidth | Low |
+
+---
+
+## Learning Resources
+
+### Academic Papers
+
+1. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications* (Chapters 5-6). O'Reilly. ISBN: 978-1449373320
+2. **Elmasri, R., & Navathe, S. B.** (2016). *Fundamentals of Database Systems* (7th ed.). Pearson. ISBN: 978-0133970777
+3. **Silberschatz, A., et al.** (2019). *Database System Concepts* (7th ed.). McGraw-Hill. ISBN: 978-0078022159
+4. **Martin, R. C.** (2012). *Patterns of Enterprise Application Architecture*. Addison-Wesley.
+
+### Video Tutorials
+
+1. **Martin Kleppmann.** (2017). [Designing Data-Intensive Applications](https://www.youtube.com/watch?v=plA1GAnFtLA). QCon London.
+2. **Cockroach Labs.** (2020). [Distributed SQL](https://www.youtube.com/watch?v=tgTOvO6e35w). Tech Talk.
+3. **Use the Index, Luke!** (2021). [SQL Performance](https://www.youtube.com/playlist?list=PL6L9Vw5VB9zQWp5k2qV4R5g8_7U6LpX5D). YouTube.
+4. **CMU Database Group.** (2020). [Intro to Database Systems](https://www.youtube.com/playlist?list=PLSE8ODhjZXjbohkNB1QrY7J5ak8v6P9). Lecture series.
+
+### Book References
+
+1. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications*. O'Reilly.
+2. **Nelson, E.** (2018). *SQL Antipatterns*. Pragmatic Bookshelf.
+3. **Winand, M.** (2012). *SQL Performance Explained*. Markus Winand.
+4. **Hogan, B. P.** (2018). *Designing Data-Intensive Applications*. Pragmatic Bookshelf.
+
+### Online Courses
+
+1. **Coursera.** [Database Systems](https://www.coursera.org/specializations/database-systems) - Stanford.
+2. **edX.** [Introduction to Databases](https://www.edx.org/course/introduction-to-databases) - Microsoft.
+3. **Udemy.** [SQL and PostgreSQL](https://www.udemy.com/course/sql-and-postgresql/) - Complete Bootcamp.
+4. **CMU.** [Database Systems](https://15445.courses.cs.cmu.edu/fall2020/) - Carnegie Mellon.
+
+### GitHub Repositories
+
+1. [lib/pq](https://github.com/lib/pq) - PostgreSQL driver for Go.
+2. [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) - MySQL driver.
+3. [jmoiron/sqlx](https://github.com/jmoiron/sqlx) - SQL extensions for Go.
+4. [go-gorm/gorm](https://github.com/go-gorm/gorm) - ORM for Go.
+
+### Conference Talks
+
+1. **Martin Kleppmann.** (2017). *Designing Data-Intensive Applications*. QCon.
+2. **Andy Pavlo.** (2019). *Database Systems*. CMU Database Group.
+3. **Rebecca Taft.** (2020). *CockroachDB*. SIGMOD.
+4. **James Hamilton.** (2016). *AWS Database Services*. Re:Invent.

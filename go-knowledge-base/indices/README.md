@@ -1,4 +1,4 @@
-﻿# Go Knowledge Base - Indices
+# Go Knowledge Base - Indices
 
 > **Version**: Auto-generated
 > **Last Updated**: 2026-04-03
@@ -20,15 +20,13 @@ This directory contains auto-generated indices for the Go Knowledge Base.
 
 Run the index generator script from the knowledge base root:
 
-`powershell
-.\scripts\generate-index.ps1
-`
+```bash
+# Using Python (recommended)
+python scripts/generate-index.py
 
-Or from anywhere with the path:
-
-`powershell
-.\path\to\scripts\generate-index.ps1 C:\path\to\go-knowledge-base
-`
+# Or with explicit path
+python /path/to/scripts/generate-index.py /path/to/go-knowledge-base
+```
 
 ## Index Details
 

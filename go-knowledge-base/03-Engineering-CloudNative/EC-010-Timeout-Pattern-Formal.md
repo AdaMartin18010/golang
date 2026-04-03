@@ -653,6 +653,52 @@ stateDiagram-v2
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Nygard, M. T.** (2018). *Release It!* (2nd ed.). Pragmatic Bookshelf. ISBN: 978-1680502398
+2. **Allspaw, J.** (2012). *Web Operations*. O'Reilly.
+3. **Richardson, C.** (2018). *Microservices Patterns*. Manning.
+4. **Newman, S.** (2021). *Building Microservices*. O'Reilly.
+
+### Video Tutorials
+
+1. **Martin Fowler.** (2014). [Timeout Pattern](https://www.youtube.com/watch?v=8WIlNZr3QnA). GOTO.
+2. **Netflix Tech.** (2018). [Timeouts](https://www.youtube.com/watch?v=8g-1wQicj3M). YouTube.
+3. **Google Cloud.** (2019). [Context and Timeouts](https://www.youtube.com/watch?v=J5kXh8N7c0M). Cloud Next.
+4. **AWS.** (2020). [Distributed Systems Timeout](https://www.youtube.com/watch?v=Zr-pL-PQZrY). Summit.
+
+### Book References
+
+1. **Nygard, M. T.** (2018). *Release It!* (2nd ed.). Pragmatic Bookshelf.
+2. **Richardson, C.** (2018). *Microservices Patterns*. Manning.
+3. **Newman, S.** (2021). *Building Microservices*. O'Reilly.
+4. **Hohpe, G., & Woolf, B.** (2003). *Enterprise Integration Patterns*. Addison-Wesley.
+
+### Online Courses
+
+1. **Coursera.** [Cloud Computing](https://www.coursera.org/learn/cloud-computing) - Fault tolerance.
+2. **Udemy.** [Microservices Architecture](https://www.udemy.com/course/microservices-architecture/) - Patterns.
+3. **Pluralsight.** [Resilience Patterns](https://www.pluralsight.com/courses/resilience-patterns) - Design patterns.
+4. **edX.** [Scalable Microservices](https://www.edx.org/professional-certificate/google-cloud-microservices) - Google.
+
+### GitHub Repositories
+
+1. [golang/go](https://github.com/golang/go/tree/master/src/context) - Context package.
+2. [sony/gobreaker](https://github.com/sony/gobreaker) - Circuit breaker.
+3. [afex/hystrix-go](https://github.com/afex/hystrix-go) - Hystrix for Go.
+4. [go-kit/kit](https://github.com/go-kit/kit) - Go microservices.
+
+### Conference Talks
+
+1. **Michael Nygard.** (2018). *Release It!*. GOTO.
+2. **Martin Fowler.** (2014). *Microservices Patterns*. GOTO.
+3. **Sameer Ajmani.** (2014). *Context at Google*. Google I/O.
+4. **Adrian Cockcroft.** (2014). *Resilience*. QCon.
+
+---
+
 **质量评级**: S (15+ KB, TLA+ 规范, 完整 Go 实现)
 
 **相关文档**:

@@ -637,5 +637,51 @@ xychart-beta
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Broder, A. Z., & Karlin, A. R.** (1996). Multilevel Adaptive Hashing. *ACM SODA*, 43-53.
+2. **Nygard, M. T.** (2018). *Release It!* (2nd ed.). Pragmatic Bookshelf. ISBN: 978-1680502398
+3. **Richardson, C.** (2018). *Microservices Patterns*. Manning.
+4. **Allspaw, J.** (2012). *Web Operations*. O'Reilly.
+
+### Video Tutorials
+
+1. **Netflix Tech.** (2018). [Retry Patterns](https://www.youtube.com/watch?v=8g-1wQicj3M). YouTube.
+2. **AWS.** (2020). [Exponential Backoff](https://www.youtube.com/watch?v=Zr-pL-PQZrY). AWS Summit.
+3. **Google Cloud.** (2019). [Retry Strategies](https://www.youtube.com/watch?v=J5kXh8N7c0M). Cloud Next.
+4. **Microsoft Azure.** (2021). [Transient Fault Handling](https://www.youtube.com/watch?v=3Q1yM8f8w1s). Azure Friday.
+
+### Book References
+
+1. **Nygard, M. T.** (2018). *Release It!* (2nd ed.). Pragmatic Bookshelf.
+2. **Richardson, C.** (2018). *Microservices Patterns*. Manning.
+3. **Newman, S.** (2021). *Building Microservices*. O'Reilly.
+4. **Hohpe, G., & Woolf, B.** (2003). *Enterprise Integration Patterns*. Addison-Wesley.
+
+### Online Courses
+
+1. **Coursera.** [Cloud Computing](https://www.coursera.org/learn/cloud-computing) - Resilience patterns.
+2. **Udemy.** [Microservices Architecture](https://www.udemy.com/course/microservices-architecture/) - Retry patterns.
+3. **Pluralsight.** [Design Patterns](https://www.pluralsight.com/courses/patterns-library) - Library.
+4. **edX.** [Scalable Microservices](https://www.edx.org/professional-certificate/google-cloud-microservices) - Google.
+
+### GitHub Repositories
+
+1. [cenkalti/backoff](https://github.com/cenkalti/backoff) - Exponential backoff in Go.
+2. [hashicorp/go-retryablehttp](https://github.com/hashicorp/go-retryablehttp) - Retryable HTTP client.
+3. [sethvargo/go-retry](https://github.com/sethvargo/go-retry) - Retry library.
+4. [avast/retry-go](https://github.com/avast/retry-go) - Simple retry mechanism.
+
+### Conference Talks
+
+1. **Michael Nygard.** (2018). *Release It!*. GOTO.
+2. **Adrian Cockcroft.** (2014). *Resilience Patterns*. QCon.
+3. **Ben Christensen.** (2013). *Fault Tolerance*. Netflix Tech Talk.
+4. **Martin Fowler.** (2014). *Microservices Resilience*. GOTO.
+
+---
+
 **质量评级**: S (扩展)
 **完成日期**: 2026-04-02

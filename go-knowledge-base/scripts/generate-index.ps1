@@ -6,8 +6,9 @@
     Automatic Index Generator for Go Knowledge Base
 
 .DESCRIPTION
-    This script scans all markdown files in the knowledge base and generates
-    cross-referenced indices including by-topic, by-tag, by-date, and complete-map.
+    This script is a wrapper that calls the Python implementation.
+    The Python script generates cross-referenced indices including by-topic, 
+    by-tag, by-date, and complete-map.
 
 .PARAMETER KnowledgeBasePath
     Path to the knowledge base directory. Defaults to parent of script directory.
@@ -26,6 +27,26 @@ param(
     [Parameter()]
     [string]$KnowledgeBasePath = (Split-Path -Parent $PSScriptRoot)
 )
+
+# Check if Python is available
+$pythonCmd = $null
+foreach ($cmd in @("python", "python3", "py")) {
+    if (Get-Command $cmd -ErrorAction SilentlyContinue) {
+        $pythonCmd = $cmd
+        break
+    }
+}
+
+if (-not $pythonCmd) {
+    Write-Host "[ERROR] Python is required but not installed." -ForegroundColor Red
+    Write-Host "Please install Python 3.6+ and try again." -ForegroundColor Red
+    exit 1
+}
+
+# Run the Python script
+$pythonScript = Join-Path $PSScriptRoot "generate-index.py"
+& $pythonCmd $pythonScript $KnowledgeBasePath
+exit $LASTEXITCODE
 
 # Ensure path is absolute and normalized
 $KBPath = (Resolve-Path $KnowledgeBasePath).Path

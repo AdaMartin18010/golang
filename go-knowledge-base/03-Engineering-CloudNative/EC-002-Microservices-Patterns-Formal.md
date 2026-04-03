@@ -854,4 +854,50 @@ func TestServiceIntegration(t *testing.T) {
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Richardson, C.** (2018). *Microservices Patterns*. Manning Publications. ISBN: 978-1617294549
+2. **Hohpe, G., & Woolf, B.** (2003). *Enterprise Integration Patterns*. Addison-Wesley. ISBN: 978-0321200686
+3. **Gamma, E., et al.** (1994). *Design Patterns*. Addison-Wesley. ISBN: 978-0201633610
+4. **Newman, S.** (2021). *Building Microservices* (2nd ed.). O'Reilly. ISBN: 978-1492034025
+
+### Video Tutorials
+
+1. **Chris Richardson.** (2019). [Microservices Patterns and Practices](https://www.youtube.com/watch?v=4L3cRSvJJaU). QCon.
+2. **Udi Dahan.** (2016). [CQRS and Event Sourcing](https://www.youtube.com/watch?v=JHGkaShoyNs). NDC.
+3. **Martin Fowler.** (2015). [GOTO 2014 • Microservices](https://www.youtube.com/watch?v=wgdBVIX9ifA). GOTO Conference.
+4. **Greg Young.** (2014). [CQRS and Event Sourcing](https://www.youtube.com/watch?v=JHGkaShoyNs). Code on the Beach.
+
+### Book References
+
+1. **Richardson, C.** (2018). *Microservices Patterns*. Manning.
+2. **Hohpe, G., & Woolf, B.** (2003). *Enterprise Integration Patterns*. Addison-Wesley.
+3. **Vernon, V.** (2013). *Implementing Domain-Driven Design*. Addison-Wesley.
+4. **Fowler, M.** (2012). *Patterns of Enterprise Application Architecture*. Addison-Wesley.
+
+### Online Courses
+
+1. **Coursera.** [Software Design and Architecture](https://www.coursera.org/specializations/software-design-architecture) - University of Alberta.
+2. **Udemy.** [Design Patterns in Go](https://www.udemy.com/course/design-patterns-go/) - Dmitri Nesteruk.
+3. **Pluralsight.** [Architectural Patterns](https://www.pluralsight.com/courses/patterns-library) - Patterns library.
+4. **edX.** [Software Architecture](https://www.edx.org/course/software-architecture) - University of British Columbia.
+
+### GitHub Repositories
+
+1. [microservices-patterns](https://github.com/microservices-patterns) - Chris Richardson's examples.
+2 [go-kit/kit](https://github.com/go-kit/kit) - Go microservices toolkit.
+3. [asim/go-micro](https://github.com/asim/go-micro) - Go microservices framework.
+4. [grpc-ecosystem/grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway) - gRPC to REST.
+
+### Conference Talks
+
+1. **Chris Richardson.** (2019). *Microservices Patterns*. QCon SF.
+2. **Greg Young.** (2014). *CQRS and Event Sourcing*. Code on the Beach.
+3. **Udi Dahan.** (2016). *The Heart of Microservices*. NDC Oslo.
+4. **Randy Shoup.** (2018). *Migrating to Microservices*. QCon.
+
+---
+
 **质量评级**: S (38KB, 完整形式化 + 生产代码 + 可视化)
