@@ -533,6 +533,8 @@ rdb.Set(ctx, "compressed", compress(data), ttl)
 // Set appropriate maxmemory policy
 // maxmemory-policy allkeys-lru (for cache)
 // maxmemory-policy volatile-lru (for session store)
+// maxmemory-policy allkeys-lrm (for read-heavy workloads, Redis 8.6+)
+// maxmemory-policy volatile-lrm (for TTL-based read-heavy, Redis 8.6+)
 ```
 
 ### 5.2 Pipeline Optimization
@@ -610,16 +612,206 @@ func getSlowLogs(ctx context.Context, rdb *redis.Client) {
 
 ---
 
-## 7. Checklist
+## 7. Redis 8.6 New Features
+
+### 7.1 New Eviction Policies (LRM - Least Recently Modified)
+
+Redis 8.6 introduces two new eviction policies based on **LRM (Least Recently Modified)**:
+
+| Policy | Description | Use Case |
+|--------|-------------|----------|
+| `allkeys-lrm` | Evict least recently modified keys | Read-heavy workloads |
+| `volatile-lrm` | Evict least recently modified keys with TTL | Session stores with TTL |
+
+**LRM vs LRU:**
+
+- **LRU**: Updates timestamp on **read AND write** operations
+- **LRM**: Updates timestamp on **write ONLY**
+
+This distinction is valuable for scenarios where frequently read but rarely modified data should be preserved.
+
+```conf
+# redis.conf - LRM Configuration
+maxmemory-policy allkeys-lrm
+maxmemory-samples 10  # Higher samples for better LRM approximation
+```
+
+**Go Example:**
+
+```go
+// Configure LRM policy for read-heavy cache
+func setupLRMPolicy(ctx context.Context, rdb *redis.Client) error {
+    return rdb.ConfigSet(ctx, "maxmemory-policy", "allkeys-lrm").Err()
+}
+
+// Check current policy
+func getCurrentPolicy(ctx context.Context, rdb *redis.Client) (string, error) {
+    return rdb.ConfigGet(ctx, "maxmemory-policy").Result()
+}
+```
+
+### 7.2 Hot Key Detection (HOTKEYS Command)
+
+Redis 8.6 introduces the `HOTKEYS` command for identifying frequently accessed keys:
+
+```bash
+# Get top hot keys
+127.0.0.1:6379> HOTKEYS
+1) "user:1000"
+2) "session:abc123"
+3) "config:feature-x"
+
+# Get hot keys with access counts
+127.0.0.1:6379> HOTKEYS WITHCOUNTS
+1) "user:1000" with 52341 accesses
+2) "session:abc123" with 42109 accesses
+
+# Limit results
+127.0.0.1:6379> HOTKEYS LIMIT 5
+```
+
+**Configuration:**
+
+```conf
+# redis.conf - Hot Key Detection
+hotkeys-samples 16           # Sample size for detection
+hotkeys-log-frequency 1000   # Log frequency
+```
+
+**Go Implementation:**
+
+```go
+// GetHotKeys retrieves top hot keys from Redis
+type HotKeyInfo struct {
+    Key   string
+    Count int64
+}
+
+func getHotKeys(ctx context.Context, rdb *redis.Client, limit int) ([]HotKeyInfo, error) {
+    result, err := rdb.Do(ctx, "HOTKEYS", "LIMIT", limit, "WITHCOUNTS").Result()
+    if err != nil {
+        return nil, err
+    }
+
+    var hotKeys []HotKeyInfo
+    arr := result.([]interface{})
+
+    for i := 0; i < len(arr); i += 2 {
+        key := arr[i].(string)
+        count := arr[i+1].(int64)
+        hotKeys = append(hotKeys, HotKeyInfo{Key: key, Count: count})
+    }
+
+    return hotKeys, nil
+}
+
+// Use hot key detection for cache optimization
+func optimizeHotKeys(ctx context.Context, rdb *redis.Client) error {
+    hotKeys, err := getHotKeys(ctx, rdb, 20)
+    if err != nil {
+        return err
+    }
+
+    for _, hk := range hotKeys {
+        if hk.Count > 50000 {
+            // Consider sharding or local caching for very hot keys
+            log.Printf("Critical hot key detected: %s (%d accesses)", hk.Key, hk.Count)
+        }
+    }
+    return nil
+}
+```
+
+### 7.3 Stream Idempotency (XADD with IDMP)
+
+Redis 8.6 introduces idempotent stream operations for **at-most-once delivery**:
+
+```bash
+# Automatic idempotency key generation
+XADD mystream IDMPAUTO field1 value1 field2 value2
+# Returns: <stream-id> <idempotency-key>
+
+# Explicit idempotency key
+XADD mystream IDMP my-message-id-123 field1 value1
+# Returns: <stream-id> (existing ID if duplicate)
+```
+
+**Go Implementation:**
+
+```go
+import "github.com/google/uuid"
+
+// IdempotentStreamProducer provides at-most-once delivery
+type IdempotentStreamProducer struct {
+    client *redis.Client
+    stream string
+}
+
+// Produce adds message with idempotency guarantee
+func (p *IdempotentStreamProducer) Produce(ctx context.Context, values map[string]interface{}) (string, error) {
+    idempotencyKey := uuid.New().String()
+
+    args := []interface{}{"XADD", p.stream, "IDMP", idempotencyKey}
+    for k, v := range values {
+        args = append(args, k, v)
+    }
+
+    result, err := p.client.Do(ctx, args...).Result()
+    if err != nil {
+        return "", err
+    }
+
+    return result.(string), nil
+}
+
+// ProduceWithRetry handles network failures with idempotency
+func (p *IdempotentStreamProducer) ProduceWithRetry(ctx context.Context, values map[string]interface{}, maxRetries int) (string, error) {
+    idempotencyKey := uuid.New().String()
+
+    for i := 0; i < maxRetries; i++ {
+        args := []interface{}{"XADD", p.stream, "IDMP", idempotencyKey}
+        for k, v := range values {
+            args = append(args, k, v)
+        }
+
+        result, err := p.client.Do(ctx, args...).Result()
+        if err == nil {
+            return result.(string), nil
+        }
+
+        // Check if retryable
+        if !isRetryableError(err) {
+            return "", err
+        }
+    }
+
+    return "", fmt.Errorf("exhausted retries")
+}
+```
+
+### 7.4 Performance Improvements in Redis 8.6
+
+| Feature | Improvement |
+|---------|-------------|
+| Memory Reduction | 30-50% for hashes and sorted sets |
+| Vector Sets | SIMD optimizations for vector operations |
+| I/O Threads | Improved multi-threading efficiency |
+| Lua Scripting | 20% faster execution |
+| Persistence | Faster RDB snapshots |
+
+---
+
+## 8. Checklist
 
 ```
 Redis Configuration Checklist:
 □ Set appropriate maxmemory
-□ Configure maxmemory-policy
+□ Configure maxmemory-policy (consider LRM for read-heavy workloads)
 □ Enable persistence (RDB + AOF)
 □ Set client output buffer limits
 □ Configure timeout for idle connections
 □ Enable slow log monitoring
+□ Configure hotkeys-samples for hot key detection (8.6+)
 
 Go Client Checklist:
 □ Configure connection pool size
@@ -628,4 +820,6 @@ Go Client Checklist:
 □ Handle redis.Nil for missing keys
 □ Use pipelines for batch operations
 □ Implement circuit breaker for resilience
+□ Use stream idempotency for critical messages (8.6+)
+□ Monitor HOTKEYS for optimization opportunities (8.6+)
 ```

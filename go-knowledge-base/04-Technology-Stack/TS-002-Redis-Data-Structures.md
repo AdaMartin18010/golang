@@ -9,6 +9,9 @@
 > - [Redis Internals](https://redis.io/docs/reference/internals/) - Redis Source Code Analysis
 > - [Redis Data Types](https://redis.io/docs/data-types/) - Official Reference
 > - [Go-Redis Client](https://github.com/redis/go-redis) - Official Go Client
+> - [Redis 8.0 Release Notes](https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes/)
+> - [Redis 8.4 Release Notes](https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.4-release-notes/)
+> - [Redis 8.6 Release Notes](https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.6-release-notes/)
 
 ---
 
@@ -335,7 +338,180 @@ Level 32: 概率 1/2^32
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 1.8 Stream (Redis 5.0+)
+### 1.8 Stream (Redis 5.0+) - Enhanced with Idempotency (Redis 8.6+)
+
+**Stream Idempotency - NEW in Redis 8.6:**
+
+Redis 8.6 introduces idempotency support for stream operations via the `IDMPAUTO` and `IDMP` arguments to `XADD`, providing **at-most-once delivery guarantees** for stream producers.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│              Redis Stream Idempotency Architecture                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  Problem: Duplicate Messages in Distributed Systems                     │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  Producer                Network              Redis              │   │
+│  │     │                       │                  │                 │   │
+│  │     │ XADD mystream *       │                  │                 │   │
+│  │     │ field value           │                  │                 │   │
+│  │     │ ─────────────────────▶│                  │                 │   │
+│  │     │ (timeout/unknown)     │                  │                 │   │
+│  │     │                       │                  │                 │   │
+│  │     │ XADD mystream *       │                  │                 │   │
+│  │     │ field value           │                  │                 │   │
+│  │     │ ─────────────────────▶│                  │                 │   │
+│  │     │                       │                  │                 │   │
+│  │     │ Result: DUPLICATE MESSAGE in stream!                      │   │
+│  │     │ Consumer must handle deduplication                        │   │
+│  │     │                                                           │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  Solution: Idempotent XADD (Redis 8.6+)                                 │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  Producer                Network              Redis              │   │
+│  │     │                       │                  │                 │   │
+│  │     │ XADD mystream         │                  │                 │   │
+│  │     │ IDMPAUTO              │                  │                 │   │
+│  │     │ field value           │                  │                 │   │
+│  │     │ ─────────────────────▶│                  │                 │   │
+│  │     │                       │                  │                 │   │
+│  │     │ (retry with same IDMPAUTO)              │                 │   │
+│  │     │                       │                  │                 │   │
+│  │     │ XADD mystream         │                  │                 │   │
+│  │     │ IDMPAUTO              │                  │                 │   │
+│  │     │ field value           │                  │                 │   │
+│  │     │ ─────────────────────▶│                  │                 │   │
+│  │     │                       │                  │                 │   │
+│  │     │ Redis checks: ID already exists?                          │   │
+│  │     │ Yes → Return existing ID (no duplicate)                   │   │
+│  │     │ No  → Insert new entry                                    │   │
+│  │     │                                                           │   │
+│  │     │ Result: EXACTLY ONCE delivery guarantee!                  │   │
+│  │     │                                                           │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  IDMPAUTO Mechanism:                                                    │
+│  • Producer generates unique message ID (UUID/sequence)                 │
+│  • Redis maintains IDMP index: message_id → stream_id                   │
+│  • Duplicate IDMP detection: Returns original stream ID                 │
+│  • TTL-based cleanup: IDMP entries expire after configured time         │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Idempotent XADD Commands:**
+
+```bash
+# IDMPAUTO - Automatic idempotency key generation
+# Redis generates and returns the idempotency key
+XADD mystream IDMPAUTO field1 value1 field2 value2
+# Returns: <stream-id> <idempotency-key>
+
+# IDMP - Explicit idempotency key
+# Producer provides the idempotency key
+XADD mystream IDMP my-message-uuid-123 field1 value1
+# Returns: <stream-id> (or existing stream-id if duplicate)
+
+# With specific stream ID and idempotency
+XADD mystream 1712345678900-0 IDMP my-key field1 value1
+```
+
+**Go Implementation with Idempotency:**
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "github.com/google/uuid"
+    "github.com/redis/go-redis/v9"
+)
+
+// IdempotentProducer ensures at-most-once delivery
+type IdempotentProducer struct {
+    client *redis.Client
+    stream string
+}
+
+// ProduceWithIdempotency adds message with automatic idempotency
+func (p *IdempotentProducer) ProduceWithIdempotency(ctx context.Context, values map[string]interface{}) (string, string, error) {
+    // Generate idempotency key
+    idempotencyKey := uuid.New().String()
+
+    // Build args: XADD stream IDMP <key> field value ...
+    args := []interface{}{"XADD", p.stream, "IDMP", idempotencyKey}
+    for k, v := range values {
+        args = append(args, k, v)
+    }
+
+    result, err := p.client.Do(ctx, args...).Result()
+    if err != nil {
+        return "", "", err
+    }
+
+    streamID := result.(string)
+    return streamID, idempotencyKey, nil
+}
+
+// ProduceWithAutoIdempotency uses Redis-generated idempotency key
+func (p *IdempotentProducer) ProduceWithAutoIdempotency(ctx context.Context, values map[string]interface{}) (string, string, error) {
+    args := []interface{}{"XADD", p.stream, "IDMPAUTO"}
+    for k, v := range values {
+        args = append(args, k, v)
+    }
+
+    result, err := p.client.Do(ctx, args...).Result()
+    if err != nil {
+        return "", "", err
+    }
+
+    // Result is array: [stream_id, idempotency_key]
+    arr := result.([]interface{})
+    streamID := arr[0].(string)
+    idempotencyKey := arr[1].(string)
+
+    return streamID, idempotencyKey, nil
+}
+
+// RetryableProduce handles network failures with idempotency
+func (p *IdempotentProducer) RetryableProduce(ctx context.Context, values map[string]interface{}, maxRetries int) (string, error) {
+    idempotencyKey := uuid.New().String()
+
+    var lastErr error
+    for i := 0; i < maxRetries; i++ {
+        args := []interface{}{"XADD", p.stream, "IDMP", idempotencyKey}
+        for k, v := range values {
+            args = append(args, k, v)
+        }
+
+        result, err := p.client.Do(ctx, args...).Result()
+        if err == nil {
+            return result.(string), nil
+        }
+
+        lastErr = err
+        // Check if it's a retryable error
+        if !isRetryable(err) {
+            return "", err
+        }
+    }
+
+    return "", fmt.Errorf("exhausted retries: %w", lastErr)
+}
+
+func isRetryable(err error) bool {
+    // Check for network errors, timeouts, etc.
+    if err == context.DeadlineExceeded {
+        return true
+    }
+    // Add more retryable error checks
+    return false
+}
+```
+
+**Stream Structure**:
 
 **Stream Structure**:
 
@@ -391,19 +567,24 @@ struct streamID {
 
 ## 2. Redis Configuration Best Practices
 
-### 2.1 Memory Management
+### 2.1 Memory Management - NEW Eviction Policies (Redis 8.6+)
 
 ```conf
-# redis.conf - Memory Optimization
+# redis.conf - Memory Optimization (Redis 8.6+ Enhanced)
 
 # 最大内存限制 (必须设置)
 maxmemory 4gb
 
-# 淘汰策略选择
+# 淘汰策略选择 (Redis 8.6 新增 LRM 策略)
 # allkeys-lru: 所有键按 LRU 淘汰 (推荐缓存场景)
+# allkeys-lrm: 所有键按 LRM (Least Recently Modified) 淘汰 (Redis 8.6+)
 # volatile-lru: 仅淘汰有过期时间的键
+# volatile-lrm: 仅淘汰有过期时间且最近最少修改的键 (Redis 8.6+)
 # allkeys-lfu: 按访问频率淘汰 (适合幂律分布)
+# volatile-lfu: 有过期时间的按 LFU 淘汰
 # volatile-ttl: 淘汰即将过期的键
+# allkeys-random: 随机淘汰所有键
+# volatile-random: 随机淘汰有过期时间的键
 # noeviction: 不淘汰，直接返回错误
 maxmemory-policy allkeys-lru
 
@@ -419,6 +600,252 @@ active-defrag-threshold-lower 10
 active-defrag-threshold-upper 100
 active-defrag-cycle-min 5
 active-defrag-cycle-max 75
+```
+
+**LRM (Least Recently Modified) Eviction Policy - NEW in Redis 8.6:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│              LRM Eviction Policy Comparison                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  LRU (Least Recently Used):                                             │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  Time ─────────────────────────────────────────────────────▶    │   │
+│  │                                                                  │   │
+│  │  Operation:   Read    Write    Read    Read    Write           │   │
+│  │  Timestamp:   t=1     t=2      t=3     t=4     t=5              │   │
+│  │                │       │        │       │       │               │   │
+│  │  Key A:        ◆───────◆────────◆───────◆───────◆ (LRU updated) │   │
+│  │                                                                  │   │
+│  │  Result: Key A has high LRU score, unlikely to be evicted       │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  LRM (Least Recently Modified):                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  Time ─────────────────────────────────────────────────────▶    │   │
+│  │                                                                  │   │
+│  │  Operation:   Read    Write    Read    Read    Write           │   │
+│  │  Timestamp:   t=1     t=2      t=3     t=4     t=5              │   │
+│  │                │       │        │       │       │               │   │
+│  │  Key A:        ─────────◆───────────────────────◆ (LRM updated) │   │
+│  │                        ↑                       ↑               │   │
+│  │                     Write                    Write              │   │
+│  │                     only                     only               │   │
+│  │                                                                  │   │
+│  │  Result: Key A has moderate LRM score                           │   │
+│  │  Read-heavy keys without writes are candidates for eviction     │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  When to Use LRM Policies:                                              │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  • Read-heavy workloads with distinct write patterns            │   │
+│  │  • Caching frequently-read reference data                       │   │
+│  │  • Session stores (reads common, writes on activity)            │   │
+│  │  • Configuration caches (rarely modified)                       │   │
+│  │  • Hot key scenarios (see HOTKEYS command below)                │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  Policy Selection Guide:                                                │
+│  ┌─────────────────┬─────────────────────────────────────────────────┐ │
+│  │ Policy          │ Use Case                                        │ │
+│  ├─────────────────┼─────────────────────────────────────────────────┤ │
+│  │ allkeys-lru     │ General purpose caching                         │ │
+│  │ allkeys-lrm     │ Read-heavy, write-light workloads (8.6+)        │ │
+│  │ allkeys-lfu     │ Power-law distribution (some keys very popular) │ │
+│  │ volatile-lru    │ Mixed cache and persistent data                 │ │
+│  │ volatile-lrm    │ TTL data, preserve unmodified entries (8.6+)    │ │
+│  │ volatile-ttl    │ Time-sensitive expiring data                    │ │
+│  └─────────────────┴─────────────────────────────────────────────────┘ │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Hot Key Detection - NEW in Redis 8.6:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│              Redis Hot Key Detection (HOTKEYS Command)                   │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  Problem: Identifying Hot Keys in Production                            │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  Redis Cluster                                                  │   │
+│  │                                                                  │   │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐                        │   │
+│  │  │ Node A  │  │ Node B  │  │ Node C  │                        │   │
+│  │  │ (Hot!)  │  │         │  │         │                        │   │
+│  │  │         │  │         │  │         │                        │   │
+│  │  │ user:1  │  │ user:50 │  │ user:99│                         │   │
+│  │  │ (10k/s) │  │ (100/s) │  │ (50/s)  │                        │   │
+│  │  └────┬────┘  └─────────┘  └─────────┘                        │   │
+│  │       │                                                        │   │
+│  │       ▼                                                        │   │
+│  │  CPU 100% ──▶ Slowdown ──▶ Potential OOM                       │   │
+│  │                                                                  │   │
+│  │  Without HOTKEYS: Blind debugging, guesswork                   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  Solution: HOTKEYS Command (Redis 8.6+)                                 │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  127.0.0.1:6379> HOTKEYS                                         │   │
+│  │  1) "user:1" with 52341 accesses                                 │   │
+│  │  2) "session:abc" with 42109 accesses                            │   │
+│  │  3) "config:feature-flags" with 38921 accesses                   │   │
+│  │  4) "rate:ip:192.168.1.1" with 25431 accesses                    │   │
+│  │  5) "cache:product:12345" with 19876 accesses                    │   │
+│  │                                                                  │   │
+│  │  127.0.0.1:6379> HOTKEYS WITHCOUNTS                              │   │
+│  │  # Returns access counts for capacity planning                   │   │
+│  │                                                                  │   │
+│  │  127.0.0.1:6379> HOTKEYS LIMIT 10                                │   │
+│  │  # Limit to top 10 hot keys                                      │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  Implementation Details:                                                │
+│  • Sampling-based detection (similar to LRU approximation)             │
+│  • Configurable sample size: hotkeys-samples <n>                       │
+│  • Low overhead: ~0.1% CPU impact                                      │
+│  • Real-time statistics, no persistence required                       │
+│  • Works in cluster mode (per-node statistics)                         │
+│                                                                         │
+│  Configuration:                                                         │
+│  hotkeys-samples 16          # Number of samples per iteration         │
+│  hotkeys-log-frequency 100   # Log top hot keys every N accesses       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Go Implementation with Hot Key Detection:**
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "strings"
+    "github.com/redis/go-redis/v9"
+)
+
+// HotKeyAnalyzer provides hot key detection capabilities
+type HotKeyAnalyzer struct {
+    client *redis.Client
+}
+
+// HotKey represents a detected hot key with its access count
+type HotKey struct {
+    Key         string
+    AccessCount int64
+}
+
+// GetHotKeys retrieves the top hot keys from Redis
+func (a *HotKeyAnalyzer) GetHotKeys(ctx context.Context, limit int) ([]HotKey, error) {
+    // Execute HOTKEYS command
+    result, err := a.client.Do(ctx, "HOTKEYS", "LIMIT", limit).Result()
+    if err != nil {
+        return nil, fmt.Errorf("failed to get hot keys: %w", err)
+    }
+
+    var hotKeys []HotKey
+    keys := result.([]interface{})
+
+    for _, key := range keys {
+        keyStr := key.(string)
+
+        // Parse key and count if WITHCOUNTS was used
+        // Format: "key with count" or just "key"
+        parts := strings.SplitN(keyStr, " ", 2)
+        hk := HotKey{Key: parts[0]}
+
+        if len(parts) > 1 {
+            // Extract count from format "with N accesses"
+            var count int64
+            fmt.Sscanf(parts[1], "with %d accesses", &count)
+            hk.AccessCount = count
+        }
+
+        hotKeys = append(hotKeys, hk)
+    }
+
+    return hotKeys, nil
+}
+
+// GetHotKeysWithCounts retrieves hot keys with their access counts
+func (a *HotKeyAnalyzer) GetHotKeysWithCounts(ctx context.Context, limit int) ([]HotKey, error) {
+    result, err := a.client.Do(ctx, "HOTKEYS", "LIMIT", limit, "WITHCOUNTS").Result()
+    if err != nil {
+        return nil, err
+    }
+
+    var hotKeys []HotKey
+    arr := result.([]interface{})
+
+    for i := 0; i < len(arr); i += 2 {
+        key := arr[i].(string)
+        count := arr[i+1].(int64)
+        hotKeys = append(hotKeys, HotKey{Key: key, AccessCount: count})
+    }
+
+    return hotKeys, nil
+}
+
+// AnalyzeHotKeys provides recommendations based on hot keys
+func (a *HotKeyAnalyzer) AnalyzeHotKeys(ctx context.Context) (*HotKeyAnalysis, error) {
+    hotKeys, err := a.GetHotKeysWithCounts(ctx, 20)
+    if err != nil {
+        return nil, err
+    }
+
+    analysis := &HotKeyAnalysis{
+        HotKeys: hotKeys,
+    }
+
+    for _, hk := range hotKeys {
+        // Identify patterns
+        if strings.HasPrefix(hk.Key, "user:") {
+            analysis.UserKeyRecommendations = append(analysis.UserKeyRecommendations,
+                fmt.Sprintf("Consider sharding %s to distribute load", hk.Key))
+        }
+        if strings.HasPrefix(hk.Key, "session:") {
+            analysis.SessionKeyRecommendations = append(analysis.SessionKeyRecommendations,
+                "Consider shorter TTL for session keys or local caching")
+        }
+        if hk.AccessCount > 100000 {
+            analysis.CriticalHotKeys = append(analysis.CriticalHotKeys, hk)
+        }
+    }
+
+    return analysis, nil
+}
+
+type HotKeyAnalysis struct {
+    HotKeys                     []HotKey
+    CriticalHotKeys             []HotKey
+    UserKeyRecommendations      []string
+    SessionKeyRecommendations   []string
+}
+
+// Example: Using hot key detection for cache warming
+func (a *HotKeyAnalyzer) WarmHotKeys(ctx context.Context, replicaClient *redis.Client) error {
+    hotKeys, err := a.GetHotKeys(ctx, 100)
+    if err != nil {
+        return err
+    }
+
+    // Pre-load hot keys into replica/cache layer
+    pipe := replicaClient.Pipeline()
+    for _, hk := range hotKeys {
+        // Get from primary and set in replica
+        val, err := a.client.Get(ctx, hk.Key).Result()
+        if err == nil {
+            pipe.Set(ctx, hk.Key, val, 0)
+        }
+    }
+
+    _, err = pipe.Exec(ctx)
+    return err
+}
 ```
 
 ### 2.2 Persistence Configuration
@@ -462,6 +889,9 @@ aof-load-truncated yes
 
 # RDB-AOF 混合持久化 (Redis 7.0+ 推荐)
 aof-use-rdb-preamble yes
+
+# Redis 8.4+: AOF 损坏尾部自动修复
+aof-load-corrupt-tail-max-size 1mb
 ```
 
 ### 2.3 Connection & Network
@@ -501,9 +931,21 @@ rename-command DEBUG ""
 protected-mode yes
 
 # ACL 配置 (Redis 6.0+)
+# Redis 8.x 新增 ACL 类别: @search, @json, @timeseries, @bloom, @cuckoo, @cms, @topk, @tdigest
 user default on >password ~* &* +@all
 user app-read on >app-pass ~app:* &* +@read
 user app-write on >write-pass ~app:* &* +@write -@dangerous
+```
+
+### 2.5 I/O Threading Configuration (Redis 8.x)
+
+```conf
+# Redis 8.x I/O 线程配置
+# I/O 线程数量，推荐设置为 CPU 核心数或略低
+io-threads 8
+
+# 是否启用 I/O 线程处理读取
+io-threads-do-reads yes
 ```
 
 ---
@@ -1136,6 +1578,8 @@ import (
     "fmt"
     "log"
     "time"
+
+    "github.com/redis/go-redis/v9"
 )
 
 // StreamConsumer Stream 消费者
@@ -1492,24 +1936,840 @@ func (s *StreamConsumer) Produce(ctx context.Context, values map[string]interfac
 
 ---
 
-## 7. References
+## 7. Redis 8 New Data Structures
 
-1. **Redis Documentation** (2024). Data Types. Redis Ltd.
-2. **Redis Documentation** (2024). Memory Optimization. Redis Ltd.
-3. **Redis Source Code** (v7.2). github.com/redis/redis
-4. **Go-Redis Documentation** (v9). github.com/redis/go-redis
-5. **Zhang, T.** (2023). Redis 5设计与源码分析. 机械工业出版社.
-6. **Josiah Carlson** (2023). Redis in Action, 2nd Edition. Manning Publications.
+Redis 8.0 标志着 Redis 从单一缓存系统向多模型数据库的重大转变。此前作为独立模块（Redis Stack）的功能现已深度集成到核心中。
+
+### 7.1 Vector Set (向量集合) - Redis 8.0+
+
+**概述**: Vector Set 是 Redis 8.0 引入的预览版数据结构，专为高维向量相似性搜索设计，适用于 AI/ML 场景如语义搜索和推荐系统。
+
+**核心特性**:
+
+- 支持高维向量存储（用于 AI 嵌入向量）
+- 多种距离计算：欧几里得距离、余弦相似度、点积
+- 量化支持：二进制量化、8-bit 量化
+- SIMD 优化：AVX2/AVX512 (Intel)、Neon (ARM)
+
+**基本命令**:
+
+```redis
+# 添加向量到集合
+VADD my_vectors "[0.1, 0.2, 0.3, ...]"
+
+# 相似性搜索（查找最相似的 k 个向量）
+VSIM my_vectors "[0.1, 0.2, 0.3, ...]" K 10
+
+# 带属性的向量添加
+VADD my_vectors WITHATTRS "{\"name\": \"doc1\"}" "[0.1, 0.2, ...]"
+
+# 使用 EPSILON 参数指定最大距离
+VSIM my_vectors "[0.1, 0.2, ...]" EPSILON 0.5
+```
+
+**Go 实现示例**:
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "github.com/redis/go-redis/v9"
+)
+
+// VectorSetExample Vector Set 操作示例
+func VectorSetExample() {
+    rdb := redis.NewClient(&redis.Options{
+        Addr: "localhost:6379",
+    })
+    defer rdb.Close()
+
+    ctx := context.Background()
+
+    // 添加向量 (768维嵌入向量示例)
+    embedding := make([]float32, 768)
+    // ... 填充向量数据
+
+    err := rdb.Do(ctx, "VADD", "product_embeddings", embedding).Err()
+    if err != nil {
+        panic(err)
+    }
+
+    // 相似性搜索
+    results, err := rdb.Do(ctx, "VSIM", "product_embeddings", embedding, "K", 5).Result()
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Top 5 similar: %v\n", results)
+}
+```
+
+**适用场景**:
+
+- RAG (Retrieval-Augmented Generation) 系统
+- 语义搜索引擎
+- 推荐系统
+- 图像/文本相似度匹配
+
+### 7.2 JSON - Redis 8.0+
+
+**概述**: 原生 JSON 文档支持，提供 JSONPath 查询能力和完整的 CRUD 操作。
+
+**核心特性**:
+
+- 符合 RFC 7159/ECMA-404 标准的 JSON 支持
+- JSONPath 表达式查询
+- 原子性更新操作
+- 索引支持（配合 Redis Search）
+- 内存优化：同质数组内存减少高达 91% (Redis 8.4+)
+
+**基本命令**:
+
+```redis
+# 设置 JSON 文档
+JSON.SET user:100 $ '{"name": "张三", "age": 30, "address": {"city": "北京"}}'
+
+# 获取完整文档
+JSON.GET user:100
+
+# JSONPath 查询
+JSON.GET user:100 $.name
+JSON.GET user:100 $.address.city
+
+# 数组操作
+JSON.ARRAPPEND user:100 $.hobbies '"reading"'
+JSON.ARRINDEX user:100 $.hobbies '"reading"'
+
+# 数值增减
+JSON.NUMINCRBY user:100 $.age 1
+
+# 删除字段
+JSON.DEL user:100 $.address
+
+# 获取文档类型
+JSON.TYPE user:100 $.name
+```
+
+**Go 实现示例**:
+
+```go
+package main
+
+import (
+    "context"
+    "encoding/json"
+    "github.com/redis/go-redis/v9"
+)
+
+type User struct {
+    Name    string   `json:"name"`
+    Age     int      `json:"age"`
+    Address Address  `json:"address"`
+    Hobbies []string `json:"hobbies"`
+}
+
+type Address struct {
+    City string `json:"city"`
+}
+
+// JSONExample Redis JSON 操作
+func JSONExample() {
+    rdb := redis.NewClient(&redis.Options{
+        Addr: "localhost:6379",
+    })
+    defer rdb.Close()
+
+    ctx := context.Background()
+
+    user := User{
+        Name: "张三",
+        Age:  30,
+        Address: Address{
+            City: "北京",
+        },
+        Hobbies: []string{"reading", "coding"},
+    }
+
+    // 序列化并存储
+    data, _ := json.Marshal(user)
+    err := rdb.Do(ctx, "JSON.SET", "user:100", "$", string(data)).Err()
+    if err != nil {
+        panic(err)
+    }
+
+    // 使用 JSONPath 查询
+    result, err := rdb.Do(ctx, "JSON.GET", "user:100", "$.name").Result()
+    if err != nil {
+        panic(err)
+    }
+    // result: ["张三"]
+
+    // 条件查询 (配合 Redis Search)
+    // FT.CREATE idx ON JSON SCHEMA $.name AS name TEXT $.age AS age NUMERIC
+}
+```
+
+### 7.3 Time Series (时间序列) - Redis 8.0+
+
+**概述**: 专为时间序列数据优化的数据类型，支持高效插入、降采样和聚合查询。
+
+**核心特性**:
+
+- 高性能时间序列数据写入
+- 自动降采样（downsampling）
+- 丰富的聚合函数：AVG、SUM、MIN、MAX、COUNT、STD.P、STD.S、VAR.P、VAR.S
+- 保留策略（retention policy）
+- 标签支持用于多维度查询
+- **Redis 8.6+**: NaN 值支持，COUNTNAN/COUNTALL 聚合器
+
+**基本命令**:
+
+```redis
+# 创建时间序列
+TS.CREATE temperature:room1 RETENTION 86400000 LABELS sensor_id 1 location "room1"
+
+# 添加数据点
+TS.ADD temperature:room1 1712345678000 23.5
+TS.ADD temperature:room1 * 24.0  # * 表示当前时间戳
+
+# 范围查询
+TS.RANGE temperature:room1 1712345600000 1712345700000
+
+# 聚合查询 (每 1 分钟的平均值)
+TS.RANGE temperature:room1 1712345600000 1712345700000 AGGREGATION AVG 60000
+
+# 多序列查询 (按标签过滤)
+TS.MRANGE 1712345600000 1712345700000 FILTER location=room1
+
+# 获取最新值
+TS.GET temperature:room1
+
+# Redis 8.6+: NaN 值支持
+TS.ADD temperature:room1 * NaN
+```
+
+**Go 实现示例**:
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "time"
+    "github.com/redis/go-redis/v9"
+)
+
+// TimeSeriesExample 时间序列操作
+func TimeSeriesExample() {
+    rdb := redis.NewClient(&redis.Options{
+        Addr: "localhost:6379",
+    })
+    defer rdb.Close()
+
+    ctx := context.Background()
+
+    // 创建时间序列
+    err := rdb.Do(ctx, "TS.CREATE", "metrics:cpu",
+        "RETENTION", 86400000,  // 24小时保留
+        "LABELS", "host", "server1", "metric", "cpu").Err()
+    if err != nil {
+        panic(err)
+    }
+
+    // 批量添加数据点
+    now := time.Now().UnixMilli()
+    for i := 0; i < 100; i++ {
+        rdb.Do(ctx, "TS.ADD", "metrics:cpu", now+int64(i*1000), float64(50+i%20))
+    }
+
+    // 范围查询
+    results, err := rdb.Do(ctx, "TS.RANGE", "metrics:cpu",
+        now, now+100000,
+        "AGGREGATION", "AVG", 10000).Result()
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Aggregated results: %v\n", results)
+}
+```
+
+### 7.4 Probabilistic Data Structures (概率数据结构) - Redis 8.0+
+
+Redis 8.0 集成了五种概率数据结构，用于大规模数据场景下的近似计算。
+
+#### 7.4.1 Bloom Filter (布隆过滤器)
+
+**用途**: 空间高效的概率型数据结构，用于测试元素是否可能属于集合（允许假阳性，无假阴性）。
+
+```redis
+# 创建布隆过滤器
+BF.RESERVE my_filter 0.01 1000000  # 错误率 1%，预计 100 万元素
+
+# 添加元素
+BF.ADD my_filter "user:100"
+BF.MADD my_filter "user:101" "user:102"
+
+# 检查存在性 (可能存在/肯定不存在)
+BF.EXISTS my_filter "user:100"
+BF.MEXISTS my_filter "user:100" "user:999"
+
+# 获取信息
+BF.INFO my_filter
+```
+
+**Go 示例**:
+
+```go
+func BloomFilterExample(rdb *redis.Client, ctx context.Context) {
+    // 创建过滤器
+    rdb.Do(ctx, "BF.RESERVE", "email_filter", 0.001, 100000)
+
+    // 添加邮箱
+    rdb.Do(ctx, "BF.ADD", "email_filter", "user@example.com")
+
+    // 检查 (1=可能存在, 0=肯定不存在)
+    exists, _ := rdb.Do(ctx, "BF.EXISTS", "email_filter", "user@example.com").Int()
+    if exists == 1 {
+        // 需要二次确认（查数据库）
+    }
+}
+```
+
+#### 7.4.2 Cuckoo Filter (布谷鸟过滤器)
+
+**用途**: 布隆过滤器的替代方案，支持删除操作且查询效率更高。
+
+```redis
+# 创建布谷鸟过滤器
+CF.RESERVE my_cuckoo 1000000
+
+# 添加元素
+CF.ADD my_cuckoo "item:1"
+CF.ADDNX my_cuckoo "item:1"  # 仅当不存在时添加
+
+# 检查存在性
+CF.EXISTS my_cuckoo "item:1"
+
+# 删除元素 (Bloom Filter 不支持)
+CF.DEL my_cuckoo "item:1"
+
+# 获取信息
+CF.INFO my_cuckoo
+```
+
+#### 7.4.3 Count-Min Sketch (计数最小草图)
+
+**用途**: 频率估计数据结构，用于计算元素出现次数的近似值。
+
+```redis
+# 初始化
+CMS.INITBYDIM my_sketch 2000 5
+# 或基于误差初始化
+CMS.INITBYPROB my_sketch 0.001 0.99
+
+# 增加计数
+CMS.INCRBY my_sketch "word:hello" 1
+CMS.INCRBY my_sketch "word:world" 1 "word:hello" 2
+
+# 查询频率
+CMS.QUERY my_sketch "word:hello"
+
+# 合并多个 sketch
+CMS.MERGE dest_sketch 2 sketch1 sketch2 WEIGHTS 1 1
+```
+
+#### 7.4.4 Top-K
+
+**用途**: 跟踪数据流中出现频率最高的 K 个元素。
+
+```redis
+# 创建 Top-K 结构
+TOPK.RESERVE my_topk 100 2000 7 0.925  # k=100, 宽度=2000, 深度=7, 衰减=0.925
+
+# 添加元素
+TOPK.ADD my_topk "product:1"
+TOPK.ADD my_topk "product:2" "product:1" "product:3"
+
+# 查询 Top-K 列表
+TOPK.LIST my_topk
+
+# 查询元素频率
+TOPK.QUERY my_topk "product:1"
+
+# 获取计数器
+TOPK.COUNT my_topk "product:1"
+```
+
+#### 7.4.5 t-digest
+
+**用途**: 用于精确计算分位数（percentiles）和累积分布的数据结构。
+
+```redis
+# 创建 t-digest
+TDIGEST.CREATE my_digest
+
+# 添加值
+TDIGEST.ADD my_digest 1.0 2.0 3.0 100.0
+
+# 查询分位数 (如 median, p99)
+TDIGEST.QUANTILE my_digest 0.5   # 中位数
+TDIGEST.QUANTILE my_digest 0.99  # 99 分位数
+
+# 查询排名
+TDIGEST.CDF my_digest 50.0  # 小于 50 的值占比
+
+# 获取信息
+TDIGEST.INFO my_digest
+
+# 合并多个 digest
+TDIGEST.MERGE dest_digest 2 digest1 digest2
+```
+
+**概率数据结构对比**:
+
+| 数据结构 | 主要用途 | 删除支持 | 内存效率 | 误差类型 |
+|----------|----------|----------|----------|----------|
+| Bloom Filter | 存在性测试 | 否 | 极高 | 假阳性 |
+| Cuckoo Filter | 存在性测试 | 是 | 高 | 假阳性 |
+| Count-Min Sketch | 频率估计 | 否 | 极高 | 过高估计 |
+| Top-K | 热门项追踪 | 否 | 高 | 近似排名 |
+| t-digest | 分位数计算 | 否 | 中等 | 可配置精度 |
 
 ---
 
-*Document Version: 1.0 | Last Updated: 2024*
+## 8. Redis 8 Performance Improvements
+
+Redis 8 系列带来了历史上最大的性能飞跃，包含超过 30 项性能优化。
+
+### 8.1 Throughput Improvements (吞吐量提升)
+
+**Redis 8.6 vs Redis 7.2**:
+
+| 指标 | 数值 | 配置 |
+|------|------|------|
+| 吞吐量提升 | **5 倍以上** | 16 核心, 11 io-threads, 2000 客户端 |
+| 最大吞吐量 | **3.5M ops/sec** | Pipeline size = 16 |
+| I/O 线程优化 | **112% 提升** | 8 核心 Intel CPU, io-threads=8 |
+
+**测试场景**: 1:10 SET:GET 比例，100 万 keys，1KB 字符串值，m8g.24xlarge (ARM Graviton4)
+
+```
+Throughput Evolution:
+Redis 7.2  ──────────────────────►  ~500K ops/sec
+Redis 8.0  ────────────────────────────►  ~1M ops/sec (2x)
+Redis 8.4  ────────────────────────────────────►  ~2M ops/sec (4x)
+Redis 8.6  ────────────────────────────────────────────►  ~3.5M ops/sec (5x+)
+```
+
+### 8.2 Latency Reduction (延迟降低)
+
+**Redis 8.0 命令延迟改善**:
+
+| 命令类别 | P50 延迟降低 | 范围 |
+|----------|-------------|------|
+| 整体命令 | **最高 87%** | 5.4% - 87.4% |
+| 常用命令 | 平均 40% | 基于 149 项测试 |
+
+**Redis 8.6 vs Redis 8.4**:
+
+| 数据类型 | 延迟降低 |
+|----------|----------|
+| Sorted Set 命令 | **最高 35%** |
+| GET (短字符串) | **最高 15%** |
+| List 命令 | **最高 11%** |
+| Hash 命令 | **最高 7%** |
+
+### 8.3 Memory Reduction (内存优化)
+
+**Redis 8.6 内存占用降低**:
+
+| 数据类型 | 内存降低 | 编码类型 |
+|----------|----------|----------|
+| Hash | **16.7%** | hashtable-encoded |
+| Sorted Set | **30.5%** | skiplist-encoded |
+| JSON 同质数组 | **91%** | Redis 8.4+ |
+| 副本节点 | **35%** | 复制缓冲区优化 |
+
+**实现原理**:
+
+- Hash: 统一 field/value 结构
+- Sorted Set: 统一 score/value 结构
+- 回复拷贝避免路径（Reply copy-avoidance）
+- 优化的 listpack 迭代器
+
+### 8.4 I/O Threading (I/O 线程)
+
+Redis 8.0+ 重新实现了 I/O 线程，充分发挥多核性能：
+
+```conf
+# redis.conf I/O 线程配置
+io-threads 8              # I/O 线程数，建议 = CPU 核心数
+io-threads-do-reads yes   # 启用 I/O 线程处理读取
+```
+
+**架构演进**:
+
+| 版本 | I/O 模型 | 特性 |
+|------|----------|------|
+| Redis 1.0-5.0 | 单线程 | 所有操作在主线程执行 |
+| Redis 6.0 | I/O 线程 v1 | 仅 socket 读写和协议解析 |
+| Redis 8.0 | I/O 线程 v2 | 增量改进 |
+| Redis 8.4 | I/O 线程 v3 | 客户端绑定 I/O 线程，批量处理查询 |
+
+**Redis 8.4 I/O 线程架构**:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   Redis 8.4 I/O Threading                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
+│   │ I/O Thread 1│    │ I/O Thread 2│    │ I/O Thread N│     │
+│   │ (Client A-D)│    │ (Client E-H)│    │ (Client X-Z)│     │
+│   └──────┬──────┘    └──────┬──────┘    └──────┬──────┘     │
+│          │                  │                  │            │
+│          │ Read/Parse       │ Read/Parse       │ Read/Parse │
+│          ▼                  ▼                  ▼            │
+│   ┌─────────────────────────────────────────────────────┐   │
+│   │              Main Thread (Command Execution)         │   │
+│   │  ┌───────────────────────────────────────────────┐   │   │
+│   │  │ Batch Process Queries → Generate Replies     │   │   │
+│   │  └───────────────────────────────────────────────┘   │   │
+│   └─────────────────────────────────────────────────────┘   │
+│          │                  │                  │            │
+│          │ Write Replies    │ Write Replies    │ Write      │
+│          ▼                  ▼                  ▼            │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
+│   │  Clients    │    │  Clients    │    │  Clients    │     │
+│   └─────────────┘    └─────────────┘    └─────────────┘     │
+│                                                              │
+│  结果: 8 核心系统吞吐量提升 112%                              │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**配置建议**:
+
+- 4 核心: `io-threads 4`
+- 8 核心: `io-threads 8`
+- 16+ 核心: `io-threads 16`
+
+### 8.5 Replication Improvements (复制优化)
+
+**Redis 8.0 新复制机制**:
+
+| 指标 | 改善 |
+|------|------|
+| 复制速度 | 提升 18% |
+| 主节点写操作速率 | 提升 7.5% |
+| 复制缓冲区峰值 | 降低 35% |
+
+**机制**: 同时启动两个复制流 - 一个传输 RDB，一个传输增量变更，无需等待第一阶段完成。
 
 ---
 
-## 9. Performance Benchmarking
+## 9. Redis 8 Cluster Management
 
-### 9.1 Redis Client Benchmarks
+Redis 8 系列大幅增强了集群管理能力，提供更精细的监控和运维工具。
+
+### 9.1 Hot Key Detection (热点键检测) - Redis 8.6+
+
+**背景**: 单个热点键可能导致节点过载，即使整体请求率不高。
+
+**HOTKEYS 命令**:
+
+```redis
+# 开始收集热点键数据
+HOTKEYS START METRICS 2 CPU NET COUNT 10 DURATION 60000
+
+# 或限制特定槽位
+HOTKEYS START METRICS 2 CPU NET COUNT 10 DURATION 60000 SLOTS 2 5460 5461
+
+# 查看收集状态
+HOTKEYS GET
+
+# 停止收集
+HOTKEYS STOP
+```
+
+**输出示例**:
+
+```
+1) "cpu"
+2) 1) "user:100:profile"
+   2) "product:500:inventory"
+
+3) "net"
+4) 1) "large:hash:key"
+   2) "big:sorted:set"
+```
+
+**Go 实现示例**:
+
+```go
+func DetectHotKeys(rdb *redis.Client, ctx context.Context) {
+    // 开始收集 60 秒
+    rdb.Do(ctx, "HOTKEYS", "START",
+        "METRICS", 2, "CPU", "NET",
+        "COUNT", 10,
+        "DURATION", 60000)
+
+    time.Sleep(60 * time.Second)
+
+    // 获取结果
+    result, err := rdb.Do(ctx, "HOTKEYS", "GET").Result()
+    if err != nil {
+        panic(err)
+    }
+
+    // 解析结果并告警
+    fmt.Printf("Hot keys detected: %v\n", result)
+
+    // 停止收集
+    rdb.Do(ctx, "HOTKEYS", "STOP")
+}
+```
+
+### 9.2 Slot Statistics (槽位统计) - Redis 8.2+
+
+**CLUSTER SLOT-STATS 命令**:
+
+```redis
+# 获取所有槽位统计
+CLUSTER SLOT-STATS
+
+# 查询特定槽位范围
+CLUSTER SLOT-STATS SLOTS 0 100
+
+# 查询特定槽位
+CLUSTER SLOT-STATS SLOTRANGE 5460 5461
+```
+
+**输出字段**:
+
+- `key_count`: 键数量
+- `cpu_time`: CPU 时间消耗
+- `network_bytes_in/out`: 网络 I/O
+
+**用途**: 识别热点槽位，为槽位迁移提供数据支持。
+
+### 9.3 Atomic Slot Migration (原子槽位迁移) - Redis 8.4+
+
+**概述**: 提供零停机时间的槽位迁移能力，确保槽位和数据在单次原子操作中移动。
+
+**CLUSTER MIGRATION 命令**:
+
+```redis
+# 在目标节点执行：导入槽位范围
+CLUSTER MIGRATION IMPORT 5460 5500
+
+# 查看迁移状态
+CLUSTER MIGRATION STATUS
+
+# 查看特定任务状态
+CLUSTER MIGRATION STATUS ID <task-id>
+
+# 取消迁移
+CLUSTER MIGRATION CANCEL ID <task-id>
+CLUSTER MIGRATION CANCEL ALL
+```
+
+**配置参数**:
+
+```conf
+# 迁移移交最大滞后字节数
+cluster-slot-migration-handoff-max-lag-bytes 1mb
+
+# 写入暂停超时
+cluster-slot-migration-write-pause-timeout 10
+
+# 启用槽位统计
+cluster-slot-stats-enabled yes
+```
+
+**迁移流程**:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              Atomic Slot Migration Process                   │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Source Node              Migration              Target Node │
+│  (槽位 5460-5500)            │                   (新主节点)  │
+│       │                      │                        │      │
+│       │  1. 初始化迁移        │                        │      │
+│       │─────────────────────►│                        │      │
+│       │                      │                        │      │
+│       │  2. 快照传输          │                        │      │
+│       │─────────────────────►│  接收 RDB              │      │
+│       │                      │───────────────────────►│      │
+│       │                      │                        │      │
+│       │  3. 增量同步          │                        │      │
+│       │─────────────────────►│  应用变更              │      │
+│       │                      │───────────────────────►│      │
+│       │                      │                        │      │
+│       │  4. 写入暂停          │                        │      │
+│       │───[暂停写入]────────►│  接管槽位              │      │
+│       │                      │───────────────────────►│      │
+│       │                      │                        │      │
+│       │  5. 完成移交          │                        │      │
+│       │                      │◄───────────────────────│      │
+│       │                      │  确认                  │      │
+│       │                      │                        │      │
+│  [槽位 5460-5500 已移除]      │              [槽位 5460-5500 已添加]  │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 9.4 Stream Idempotency (流幂等性) - Redis 8.6+
+
+**概述**: 确保消息在流中最多出现一次，即使生产者因崩溃或网络故障重试。
+
+**XADD 幂等选项**:
+
+```redis
+# 自动生成幂等 ID
+XADD mystream IDMPAUTO * field value
+
+# 手动指定幂等 ID
+XADD mystream IDMP <idempotency-id> * field value
+
+# 配置默认参数
+CONFIG SET stream-idmp-duration 86400000      # 幂等窗口 24 小时
+CONFIG SET stream-idmp-maxsize 100000         # 最大幂等条目数
+```
+
+**配置参数**:
+
+```conf
+# redis.conf
+stream-idmp-duration 86400000    # 幂等标识符保留时间 (毫秒)
+stream-idmp-maxsize 100000       # 最大幂等条目数
+```
+
+**使用场景**:
+
+- 金融交易记录
+- 订单处理系统
+- 事件溯源架构
+- 需要精确一次语义的流水线
+
+**Go 实现示例**:
+
+```go
+func IdempotentStreamProduce(rdb *redis.Client, ctx context.Context) {
+    // 使用 IDMPAUTO 自动生成幂等 ID
+    id, err := rdb.Do(ctx, "XADD", "orders",
+        "IDMPAUTO", "*",
+        "order_id", "ORD-1001",
+        "amount", "99.99").Result()
+    if err != nil {
+        // 如果是重复消息，Redis 会返回错误
+        panic(err)
+    }
+    fmt.Printf("Message added with ID: %v\n", id)
+}
+```
+
+---
+
+## 10. Eviction Policies - LRM (Least Recently Modified)
+
+Redis 8.6 引入了新的淘汰策略：LRM (Least Recently Modified)，与 LRU 形成互补。
+
+### 10.1 LRM vs LRU
+
+| 特性 | LRU (Least Recently Used) | LRM (Least Recently Modified) |
+|------|---------------------------|-------------------------------|
+| 触发条件 | 读操作 + 写操作 | 仅写操作 |
+| 适用场景 | 活跃访问数据 | 写入频率敏感数据 |
+| 策略名称 | `allkeys-lru`, `volatile-lru` | `allkeys-lrm`, `volatile-lrm` |
+
+### 10.2 新淘汰策略
+
+**Redis 8.6 新增策略**:
+
+```conf
+# 仅淘汰有过期时间的键，基于最近最少修改
+maxmemory-policy volatile-lrm
+
+# 淘汰所有键，基于最近最少修改
+maxmemory-policy allkeys-lrm
+```
+
+### 10.3 使用场景
+
+**场景 1: 缓存响应数据**
+
+```
+问题: 缓存的 API 响应需要定期刷新，但可能被频繁读取
+
+LRU 问题: 频繁读取会保持缓存不过期
+LRM 解决: 只有写入刷新时才更新时间戳，不刷新的缓存会被淘汰
+```
+
+**场景 2: 语义缓存 vs 普通缓存**
+
+```
+两组键：
+- 短生命周期 (1 小时 TTL) - 普通缓存
+- 长生命周期 (7 天 TTL) - 语义缓存（不经常修改）
+
+LRU 问题: 语义缓存被频繁读取，永远不会被淘汰
+LRM 解决: 语义缓存不修改，优先被淘汰
+```
+
+**场景 3: 聚合数据**
+
+```
+聚合数据应该定期刷新，如果停止刷新则应被淘汰
+
+LRM 策略确保：
+- 写入（刷新）→ 更新时间戳
+- 读取 → 不影响时间戳
+- 停止刷新 → 优先被淘汰
+```
+
+### 10.4 完整淘汰策略列表 (Redis 8.6)
+
+| 策略 | 描述 | 适用场景 |
+|------|------|----------|
+| `noeviction` | 不淘汰，返回错误 | 数据不可丢失 |
+| `allkeys-lru` | 所有键，最近最少使用 | 通用缓存 |
+| `allkeys-lrm` | 所有键，最近最少修改 | 写入敏感缓存 |
+| `allkeys-lfu` | 所有键，最少频率使用 | 幂律分布访问 |
+| `allkeys-random` | 所有键，随机淘汰 | 均匀分布 |
+| `volatile-lru` | 有过期时间的键，LRU | 部分持久数据 |
+| `volatile-lrm` | 有过期时间的键，LRM | 写入敏感 + 持久数据 |
+| `volatile-lfu` | 有过期时间的键，LFU | 频率敏感 + 持久数据 |
+| `volatile-random` | 有过期时间的键，随机 | 临时数据 |
+| `volatile-ttl` | 有过期时间的键，最短 TTL | 即将过期优先 |
+
+### 10.5 配置示例
+
+```conf
+# redis.conf - 内存管理完整配置
+
+# 最大内存
+maxmemory 4gb
+
+# 使用 LRM 策略 (Redis 8.6+)
+maxmemory-policy allkeys-lrm
+
+# 采样数量 (LRM 同样使用近似算法)
+maxmemory-samples 5
+
+# 从库不淘汰
+replica-ignore-maxmemory yes
+```
+
+---
+
+## 11. Performance Benchmarking
+
+### 11.1 Redis Client Benchmarks
 
 ```go
 package redis_test
@@ -1606,7 +2866,7 @@ func BenchmarkRedisDataStructures(b *testing.B) {
 }
 ```
 
-### 9.2 Redis Operation Performance
+### 11.2 Redis Operation Performance
 
 | Operation | Latency (Local) | Throughput | Big-O | Memory |
 |-----------|-----------------|------------|-------|--------|
@@ -1619,7 +2879,7 @@ func BenchmarkRedisDataStructures(b *testing.B) {
 | **Pipeline (100 cmd)** | 1ms | 1M ops/s | - | Low |
 | **Transaction** | 200μs | 50K ops/s | O(N) | Low |
 
-### 9.3 Data Structure Memory Efficiency
+### 11.3 Data Structure Memory Efficiency
 
 | Structure | 1M Entries | Memory/Entry | Best For |
 |-----------|------------|--------------|----------|
@@ -1632,7 +2892,7 @@ func BenchmarkRedisDataStructures(b *testing.B) {
 | ZSet | 180 MB | 180 bytes | Leaderboards |
 | Bitmap | 125 KB | 1 bit | Boolean flags |
 
-### 9.4 Production Benchmarks
+### 11.4 Production Benchmarks
 
 From Redis deployments (single node):
 
@@ -1643,7 +2903,7 @@ From Redis deployments (single node):
 | Pipeline (100) | 1ms | 2ms | 5ms | 20ms |
 | Connection Time | 50μs | 100μs | 200μs | 1ms |
 
-### 9.5 Optimization Strategies
+### 11.5 Optimization Strategies
 
 | Strategy | Throughput Gain | Latency Reduction | Implementation |
 |----------|-----------------|-------------------|----------------|
@@ -1668,7 +2928,27 @@ client := redis.NewClient(&redis.Options{
 
 ---
 
-## Learning Resources
+## 12. References
+
+1. **Redis Documentation** (2024). Data Types. Redis Ltd.
+2. **Redis Documentation** (2024). Memory Optimization. Redis Ltd.
+3. **Redis Source Code** (v8.6). github.com/redis/redis
+4. **Go-Redis Documentation** (v9). github.com/redis/go-redis
+5. **Zhang, T.** (2023). Redis 5设计与源码分析. 机械工业出版社.
+6. **Josiah Carlson** (2023). Redis in Action, 2nd Edition. Manning Publications.
+7. **Redis 8.0 Release Notes** (2025). Redis Open Source 8.0 GA. Redis Ltd.
+8. **Redis 8.4 Release Notes** (2025). Redis Open Source 8.4 GA. Redis Ltd.
+9. **Redis 8.6 Release Notes** (2026). Redis Open Source 8.6 GA. Redis Ltd.
+10. **Redis Blog** (2025). Redis 8 is now GA, loaded with new features. Redis Ltd.
+11. **Redis Blog** (2026). Announcing Redis 8.6: Performance improvements. Redis Ltd.
+
+---
+
+*Document Version: 2.0 | Last Updated: 2026-04-03 | Redis Version: 8.6*
+
+---
+
+## 13. Learning Resources
 
 ### Academic Papers
 
