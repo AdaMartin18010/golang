@@ -1,340 +1,460 @@
-# TS-CL-004: Go Context Package - Deep Dive
+# TS-CL-004: Go Context Package - Deep Architecture and Cancellation Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (16+ KB)
-> **标签**: #golang #context #cancellation #deadline #request-scoping
+> **级别**: S (20+ KB)
+> **标签**: #golang #context #cancellation #deadline #timeout #tracing
 > **权威来源**:
-> - [Go Context Package](https://golang.org/pkg/context/) - Go standard library
-> - [Go Concurrency Patterns: Context](https://blog.golang.org/context) - Go Blog
-> - [Context and structs](https://go.dev/blog/context-and-structs) - Go Blog
+>
+> - [Go context package](https://pkg.go.dev/context) - Official documentation
+> - [Go Concurrency Patterns: Context](https://go.dev/blog/context) - Go Blog
+> - [Understanding Context](https://medium.com/@cep21/go-contexts-3-examples-4e63725f31f2) - Practical examples
 
 ---
 
-## 1. Context Architecture
+## 1. Context Architecture Deep Dive
 
-### 1.1 Context Tree Structure
+### 1.1 The Context Tree
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       Context Tree Structure                                 │
+│                         Context Tree Structure                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
-│                         Background() / TODO()                                │
-│                                (root)                                        │
+│                              Background()                                    │
+│                                   │                                          │
+│                    ┌──────────────┼──────────────┐                          │
+│                    │              │              │                          │
+│               ┌────▼────┐   ┌────▼────┐   ┌────▼────┐                      │
+│               │WithValue│   │WithCancel│  │WithTimeout│                     │
+│               │ (key=1) │   │         │   │ (30s)     │                     │
+│               └────┬────┘   └────┬────┘   └────┬────┘                      │
+│                    │             │             │                            │
+│              ┌─────▼─────┐  ┌────▼────┐  ┌────▼────┐                        │
+│              │WithValue  │  │WithValue│  │WithCancel│                       │
+│              │ (key=2)   │  │ (key=3) │  │         │                        │
+│              └─────┬─────┘  └────┬────┘  └────┬────┘                        │
+│                    │             │             │                             │
+│                    └─────────────┴─────────────┘                             │
 │                                  │                                           │
-│           ┌──────────────────────┼──────────────────────┐                   │
-│           │                      │                      │                   │
-│           ▼                      ▼                      ▼                   │
-│    ┌─────────────┐        ┌─────────────┐        ┌─────────────┐           │
-│    │ WithCancel  │        │ WithTimeout │        │ WithValue   │           │
-│    │  (ctx1)     │        │  (ctx2)     │        │  (ctx3)     │           │
-│    └──────┬──────┘        └──────┬──────┘        └──────┬──────┘           │
-│           │                      │                      │                   │
-│    ┌──────┴──────┐               │                      │                   │
-│    ▼             ▼               ▼                      ▼                   │
-│ ┌────────┐  ┌────────┐    ┌─────────────┐        ┌─────────────┐           │
-│ │ ctx1.1 │  │ ctx1.2 │    │ WithCancel  │        │ WithCancel  │           │
-│ │        │  │        │    │  (ctx2.1)   │        │  (ctx3.1)   │           │
-│ └────────┘  └────────┘    └─────────────┘        └──────┬──────┘           │
-│                                                         │                   │
-│                                                         ▼                   │
-│                                                  ┌─────────────┐           │
-│                                                  │ WithValue   │           │
-│                                                  │  (ctx3.1.1) │           │
-│                                                  └─────────────┘           │
+│                           ┌──────▼──────┐                                    │
+│                           │   Request   │                                    │
+│                           │   Handler   │                                    │
+│                           └─────────────┘                                    │
 │                                                                              │
-│  Propagation Rules:                                                          │
-│  - Cancellation: Propagates DOWN the tree (parent cancels → children cancel)│
-│  - Deadline: Propagates DOWN (child deadline ≤ parent deadline)             │
-│  - Values: Propagates UP (lookup goes from child to parent)                 │
-│                                                                              │
+│  Key Properties:                                                             │
+│  - Immutable: Each With* creates a new context                              │
+│  - Hierarchical: Children inherit from parents                               │
+│  - Cancellation propagates down the tree                                     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 1.2 Context Interface
 
 ```go
-// Context interface - the foundation of request scoping
+// Context is the core interface
 type Context interface {
-    // Deadline returns the time when this Context will be cancelled
-    // ok=false if no deadline is set
+    // Deadline returns when this context will be canceled
     Deadline() (deadline time.Time, ok bool)
-    
-    // Done returns a channel that closes when Context is cancelled
-    // Used for cancellation detection
+
+    // Done returns a channel that's closed when context is canceled
     Done() <-chan struct{}
-    
-    // Err returns why the Context was cancelled
-    // nil if not cancelled, Canceled or DeadlineExceeded if cancelled
+
+    // Err returns why the context was canceled
     Err() error
-    
-    // Value returns the value for the key, or nil if not found
-    // Searches up the context tree
+
+    // Value retrieves data stored in the context
     Value(key interface{}) interface{}
 }
-
-// Context errors
-var Canceled = errors.New("context canceled")
-var DeadlineExceeded error = deadlineExceededError{}
 ```
+
+### 1.3 Context Types
+
+| Type | Purpose | Use Case |
+|------|---------|----------|
+| `context.Background()` | Root context | Main function, initialization |
+| `context.TODO()` | Placeholder | Temporary, when unsure |
+| `WithCancel(parent)` | Manual cancellation | User cancels operation |
+| `WithDeadline(parent, time)` | Absolute deadline | Scheduled tasks |
+| `WithTimeout(parent, duration)` | Relative deadline | API calls, DB queries |
+| `WithValue(parent, key, val)` | Request-scoped data | Authentication, tracing |
 
 ---
 
-## 2. Context Creation Patterns
+## 2. Cancellation Patterns
 
-### 2.1 Root Contexts
-
-```go
-// Background() - empty root context, never cancelled, no values
-// Used for: main function, initialization, tests
-ctx := context.Background()
-
-// TODO() - placeholder for when context is unclear
-// Used for: refactoring, unclear propagation paths
-ctx := context.TODO()
-
-// Both return emptyCtx{} - never cancelled, no deadline, no values
-```
-
-### 2.2 Derived Contexts
+### 2.1 Basic Cancellation
 
 ```go
-// WithCancel - returns ctx + cancel function
-// Use for: explicit cancellation control
-ctx, cancel := context.WithCancel(parent)
-defer cancel() // Always call to prevent goroutine leak
+func main() {
+    ctx, cancel := context.WithCancel(context.Background())
+    defer cancel() // Always call cancel to release resources
 
-// WithDeadline - cancels at specific time
-// Use for: absolute time limits
-ctx, cancel := context.WithDeadline(parent, time.Now().Add(5*time.Minute))
-defer cancel()
+    go worker(ctx)
 
-// WithTimeout - cancels after duration
-// Use for: relative time limits
-ctx, cancel := context.WithTimeout(parent, 30*time.Second)
-defer cancel()
+    // Cancel after 5 seconds
+    time.Sleep(5 * time.Second)
+    cancel() // Signals all goroutines to stop
+}
 
-// WithValue - carries request-scoped values
-// Use for: request IDs, user info, tracing data
-ctx := context.WithValue(parent, key, value)
-```
-
----
-
-## 3. Cancellation Patterns
-
-### 3.1 Basic Cancellation
-
-```go
-func longRunningOperation(ctx context.Context) error {
+func worker(ctx context.Context) {
     for {
         select {
         case <-ctx.Done():
-            return ctx.Err() // Return when cancelled
+            fmt.Println("Worker shutting down:", ctx.Err())
+            return
         default:
-            // Do work...
+            // Do work
+            time.Sleep(100 * time.Millisecond)
         }
     }
 }
+```
 
-func main() {
-    ctx, cancel := context.WithCancel(context.Background())
-    
+### 2.2 Timeout Pattern
+
+```go
+func queryDatabase(ctx context.Context, query string) error {
+    // Create timeout context for this specific operation
+    ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+    defer cancel()
+
+    result := make(chan error, 1)
     go func() {
-        time.Sleep(5 * time.Second)
-        cancel() // Cancel after 5 seconds
+        result <- performQuery(query)
     }()
-    
-    if err := longRunningOperation(ctx); err != nil {
-        log.Println("Operation cancelled:", err)
+
+    select {
+    case err := <-result:
+        return err
+    case <-ctx.Done():
+        return fmt.Errorf("query timeout: %w", ctx.Err())
     }
 }
 ```
 
-### 3.2 Timeout Pattern
+### 2.3 Deadline Pattern
 
 ```go
-func callExternalAPI(ctx context.Context) error {
-    ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+func scheduleTask(ctx context.Context, executeAt time.Time) error {
+    ctx, cancel := context.WithDeadline(ctx, executeAt)
     defer cancel()
-    
-    req, err := http.NewRequestWithContext(ctx, "GET", "https://api.example.com", nil)
-    if err != nil {
-        return err
-    }
-    
-    resp, err := http.DefaultClient.Do(req)
-    if err != nil {
-        if ctx.Err() == context.DeadlineExceeded {
-            return fmt.Errorf("API call timeout: %w", err)
+
+    // Check if deadline is already passed
+    if deadline, ok := ctx.Deadline(); ok {
+        if time.Until(deadline) < 0 {
+            return errors.New("deadline already passed")
         }
-        return err
     }
-    defer resp.Body.Close()
-    
-    return nil
-}
-```
 
-### 3.3 Propagating Cancellation
-
-```go
-func processRequest(ctx context.Context, req Request) error {
-    // Pass context to all downstream calls
-    
-    user, err := getUser(ctx, req.UserID)
-    if err != nil {
-        return err
-    }
-    
-    orders, err := getOrders(ctx, user.ID)
-    if err != nil {
-        return err
-    }
-    
-    return sendNotification(ctx, user, orders)
-}
-
-func getUser(ctx context.Context, userID string) (*User, error) {
-    ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
-    defer cancel()
-    
-    // Database call with context
-    row := db.QueryRowContext(ctx, "SELECT * FROM users WHERE id = ?", userID)
-    // ...
+    <-ctx.Done()
+    return ctx.Err()
 }
 ```
 
 ---
 
-## 4. Value Storage Patterns
+## 3. Context Value Storage
 
-### 4.1 Typed Keys
+### 3.1 Value Storage Best Practices
 
 ```go
-// Private type prevents collisions
+// Define custom key types to avoid collisions
 type contextKey string
 
 const (
-    userKey     contextKey = "user"
-    requestIDKey contextKey = "requestID"
+    userIDKey     contextKey = "userID"
+    requestIDKey  contextKey = "requestID"
+    traceIDKey    contextKey = "traceID"
 )
 
-func WithUser(ctx context.Context, user *User) context.Context {
-    return context.WithValue(ctx, userKey, user)
+// Setter functions
+func WithUserID(ctx context.Context, userID string) context.Context {
+    return context.WithValue(ctx, userIDKey, userID)
 }
 
-func UserFromContext(ctx context.Context) (*User, bool) {
-    user, ok := ctx.Value(userKey).(*User)
-    return user, ok
+func UserIDFromContext(ctx context.Context) (string, bool) {
+    userID, ok := ctx.Value(userIDKey).(string)
+    return userID, ok
 }
 
-func WithRequestID(ctx context.Context, id string) context.Context {
-    return context.WithValue(ctx, requestIDKey, id)
-}
+// Usage
+func handler(w http.ResponseWriter, r *http.Request) {
+    ctx := r.Context()
+    ctx = WithUserID(ctx, "user-123")
+    ctx = WithRequestID(ctx, generateRequestID())
 
-func RequestIDFromContext(ctx context.Context) (string, bool) {
-    id, ok := ctx.Value(requestIDKey).(string)
-    return id, ok
-}
-```
-
-### 4.2 HTTP Middleware Pattern
-
-```go
-func RequestIDMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        requestID := r.Header.Get("X-Request-ID")
-        if requestID == "" {
-            requestID = generateRequestID()
-        }
-        
-        ctx := WithRequestID(r.Context(), requestID)
-        w.Header().Set("X-Request-ID", requestID)
-        
-        next.ServeHTTP(w, r.WithContext(ctx))
-    })
-}
-
-func LoggingMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        start := time.Now()
-        
-        next.ServeHTTP(w, r)
-        
-        if requestID, ok := RequestIDFromContext(r.Context()); ok {
-            log.Printf("[%s] %s %s %v", requestID, r.Method, r.URL.Path, time.Since(start))
-        }
-    })
+    processRequest(ctx)
 }
 ```
+
+### 3.2 What to Store in Context
+
+| ✅ Store | ❌ Don't Store |
+|---------|---------------|
+| Request ID / Trace ID | Database connections |
+| User ID / Session info | Large objects |
+| Authentication tokens | Business logic data |
+| Deadline/timeout info | Logger instances |
+| Flags for behavior | Configuration |
 
 ---
 
-## 5. Best Practices
+## 4. Go Client Integration
+
+### 4.1 HTTP Client with Context
 
 ```go
-// DO: Pass context as first parameter
-func DoSomething(ctx context.Context, arg string) error
+func makeRequest(ctx context.Context, url string) ([]byte, error) {
+    req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+    if err != nil {
+        return nil, err
+    }
 
-// DON'T: Store context in structs
-type BadService struct {
-    ctx context.Context // BAD!
+    client := &http.Client{
+        Timeout: 10 * time.Second,
+    }
+
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+
+    return io.ReadAll(resp.Body)
 }
 
-// DO: Pass explicitly
-type GoodService struct{}
-func (s *GoodService) DoSomething(ctx context.Context) error
-
-// DO: Always call cancel
+// Usage with timeout
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 defer cancel()
 
-// DO: Check ctx.Err() before expensive operations
-if err := ctx.Err(); err != nil {
-    return err
-}
-
-// DO: Use typed keys for values
-// DON'T: Use string keys (collision risk)
-
-// DO: Respect cancellation in loops
-for {
-    select {
-    case <-ctx.Done():
-        return ctx.Err()
-    case item := <-items:
-        process(item)
+data, err := makeRequest(ctx, "https://api.example.com/data")
+if err != nil {
+    if errors.Is(err, context.DeadlineExceeded) {
+        log.Println("Request timed out")
     }
 }
 ```
 
+### 4.2 Database Operations with Context
+
+```go
+func queryWithContext(ctx context.Context, db *sql.DB) error {
+    ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+    defer cancel()
+
+    rows, err := db.QueryContext(ctx, "SELECT * FROM users WHERE active = ?", true)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        select {
+        case <-ctx.Done():
+            return ctx.Err()
+        default:
+            // Process row
+        }
+    }
+    return rows.Err()
+}
+```
+
+### 4.3 gRPC with Context
+
+```go
+func grpcCall(ctx context.Context, client pb.ServiceClient) (*pb.Response, error) {
+    // Set deadline
+    ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+    defer cancel()
+
+    // Add metadata
+    md := metadata.New(map[string]string{
+        "request-id": "abc-123",
+        "user-id": "user-456",
+    })
+    ctx = metadata.NewOutgoingContext(ctx, md)
+
+    return client.GetData(ctx, &pb.Request{})
+}
+```
+
 ---
 
-## 6. Common Pitfalls
+## 5. Performance Tuning Guidelines
 
-```
-Pitfalls to Avoid:
-□ Storing context in structs
-□ Not checking ctx.Done() in long operations
-□ Not calling cancel() (goroutine leak)
-□ Using string keys (collision risk)
-□ Storing optional parameters in context
-□ Passing nil context (use context.Background())
-□ Not propagating context to child goroutines
+### 5.1 Context Overhead
+
+| Operation | Approximate Cost |
+|-----------|-----------------|
+| context.Background() | ~0 (singleton) |
+| WithCancel() | ~50-100ns + allocation |
+| WithTimeout() | ~100-200ns + allocation |
+| WithValue() | ~50-100ns + allocation |
+| ctx.Done() check | ~5-10ns |
+
+### 5.2 Best Practices for Performance
+
+```go
+// 1. Pass context as first parameter
+func DoSomething(ctx context.Context, arg string) error
+
+// 2. Don't store context in structs
+type BadService struct {
+    ctx context.Context // DON'T DO THIS
+}
+
+// 3. Accept context at method call time
+type GoodService struct{}
+func (s *GoodService) DoWork(ctx context.Context) error
+
+// 4. Create child contexts for specific operations
+func (s *Service) HandleRequest(ctx context.Context) error {
+    // Short timeout for auth check
+    authCtx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
+    defer cancel()
+    if err := s.authenticate(authCtx); err != nil {
+        return err
+    }
+
+    // Longer timeout for main processing
+    processCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+    defer cancel()
+    return s.process(processCtx)
+}
 ```
 
 ---
 
-## 7. Checklist
+## 6. Visual Representations
+
+### 6.1 Cancellation Flow
 
 ```
-Context Usage Checklist:
-□ Context is first parameter in functions
-□ cancel() is always called (defer)
-□ Typed keys for values
-□ Context propagated to all downstream calls
-□ ctx.Err() checked in loops
-□ Timeouts configured appropriately
-□ Request-scoped data only in context
-□ No context stored in structs
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        Cancellation Propagation                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   Parent Context                    Child Contexts                          │
+│   ┌──────────────┐                  ┌─────────────┐  ┌─────────────┐        │
+│   │   cancel()   │─────────────────>│  <-Done()   │  │  <-Done()   │        │
+│   └──────────────┘                  └──────┬──────┘  └──────┬──────┘        │
+│        │                                    │                │              │
+│        │                           ┌────────▼────────┐       │              │
+│        │                           │  Grandchild 1   │       │              │
+│        │                           │   <-Done()      │       │              │
+│        │                           └────────┬────────┘       │              │
+│        │                                    │                │              │
+│        └────────────────────────────────────┴────────────────┘              │
+│                                             │                               │
+│                                    ┌────────▼────────┐                      │
+│                                    │  Grandchild 2   │                      │
+│                                    │   <-Done()      │                      │
+│                                    └─────────────────┘                      │
+│                                                                              │
+│   All descendants receive cancellation signal simultaneously                │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### 6.2 Context Lifecycle
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Context Lifecycle                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Create ──> Use ──> Propagate ──> Cancel ──> Cleanup                        │
+│     │        │         │           │          │                             │
+│     │        │         │           │          └── Release resources         │
+│     │        │         │           └── Signal done channel                  │
+│     │        │         └── Pass to child contexts                          │
+│     │        └── Store values, check deadlines                              │
+│     └── Background(), TODO(), WithCancel(), WithTimeout()                   │
+│                                                                              │
+│  Critical Points:                                                            │
+│  - Always call cancel() to release resources                                │
+│  - Check ctx.Err() to determine cancellation reason                         │
+│  - Don't pass nil context, use context.TODO()                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 7. Comparison with Alternatives
+
+| Approach | Pros | Cons | When to Use |
+|----------|------|------|-------------|
+| **Context** | Standard, composable, cancellation support | Can be misused for data | Go 1.7+, all new code |
+| **Channels** | Direct control, no magic | Verbose, manual propagation | Complex coordination |
+| **sync.WaitGroup** | Simple wait semantics | No cancellation | Wait for completion |
+| **Atomic flags** | Fast, simple | No composition | Simple stop signals |
+| **Error return** | Explicit, testable | No async cancellation | Synchronous code |
+
+---
+
+## 8. Configuration Best Practices
+
+```go
+// Timeout configuration constants
+const (
+    // External service timeouts
+    DefaultHTTPTimeout    = 10 * time.Second
+    DefaultDBTimeout      = 5 * time.Second
+    DefaultGRPCTimeout    = 10 * time.Second
+
+    // Internal operation timeouts
+    DefaultCacheTimeout   = 100 * time.Millisecond
+    DefaultAuthTimeout    = 500 * time.Millisecond
+)
+
+// Context configuration struct
+type ContextConfig struct {
+    RequestTimeout  time.Duration
+    ShutdownTimeout time.Duration
+    EnableTracing   bool
+}
+
+func NewServerContext(cfg ContextConfig) (context.Context, context.CancelFunc) {
+    ctx := context.Background()
+
+    if cfg.EnableTracing {
+        ctx = withTracing(ctx)
+    }
+
+    return context.WithTimeout(ctx, cfg.RequestTimeout)
+}
+```
+
+---
+
+## 9. Checklist
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      Context Best Practices                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  API Design:                                                                 │
+│  □ Context as first parameter of functions/methods                          │
+│  □ Store only request-scoped values (IDs, metadata)                         │
+│  □ Never store context in struct fields                                     │
+│  □ Propagate context through call chain                                     │
+│                                                                              │
+│  Cancellation:                                                               │
+│  □ Always call cancel() (defer immediately after creation)                  │
+│  □ Check ctx.Done() in long-running operations                              │
+│  □ Handle context errors appropriately                                      │
+│  □ Use specific timeouts for different operations                           │
+│                                                                              │
+│  Values:                                                                     │
+│  □ Use typed keys to avoid collisions                                       │
+│  □ Provide getter/setter functions                                          │
+│  □ Document what values are available                                       │
+│  □ Don't store large objects or connections                                 │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+**质量评级**: S (20+ KB, comprehensive coverage)

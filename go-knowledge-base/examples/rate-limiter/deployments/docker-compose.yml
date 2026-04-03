@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  rate-limiter:
+    build:
+      context: ..
+      dockerfile: cmd/server/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - RATE_LIMIT_ALGORITHM=token_bucket
+      - RATE_LIMIT_CAPACITY=100
+      - RATE_LIMIT_REFILL=10
+      - REDIS_URL=redis:6379
+    depends_on:
+      - redis
+    networks:
+      - rate-limiter-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: rate-limiter-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - rate-limiter-network
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: rate-limiter-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - rate-limiter-network
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: rate-limiter-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - rate-limiter-network
+
+volumes:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  rate-limiter-network:
+    driver: bridge

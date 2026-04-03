@@ -1,7 +1,7 @@
 # LD-006: Go 内存分配器内部原理 (Go Memory Allocator Internals)
 
 > **维度**: Language Design
-> **级别**: S (16+ KB)
+> **级别**: S (40+ KB)
 > **标签**: #memory-allocator #tcmalloc #heap #stack #gc #performance
 > **权威来源**:
 >
@@ -180,11 +180,90 @@ func (c *mcache) tinyAlloc(size uintptr) unsafe.Pointer {
 
 ---
 
-## 4. 内存释放
+## 4. 运行时行为分析
 
-### 4.1 延迟释放
+### 4.1 内存分配完整流程
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Memory Allocation Flow                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  new/make/size ≤ 16B                                            │
+│       │                                                          │
+│       ▼                                                          │
+│  ┌─────────────────────────────────────┐                        │
+│  │ Tiny Allocator                      │                        │
+│  │ ├── 检查当前 tiny 块空间             │                        │
+│  │ ├── 有空间: 直接偏移分配             │                        │
+│  │ └── 无空间: 从 mcache 获取新块       │                        │
+│  └─────────────────────────────────────┘                        │
+│                                                                  │
+│  16B < size ≤ 32KB                                               │
+│       │                                                          │
+│       ▼                                                          │
+│  ┌─────────────────────────────────────┐                        │
+│  │ Small Object Allocator              │                        │
+│  │                                     │                        │
+│  │  1. 确定 size class                 │                        │
+│  │     sizeclass = size_to_class(size) │                        │
+│  │                                     │                        │
+│  │  2. 从 mcache 分配                  │                        │
+│  │     span = mcache.alloc[sizeclass]  │                        │
+│  │     obj = span.nextFreeIndex()      │                        │
+│  │     [无锁，O(1)]                    │                        │
+│  │                                     │                        │
+│  │  3. mcache 不足                     │                        │
+│  │     └── refill from mcentral        │                        │
+│  │         ├── 从 partial 链表取 span  │                        │
+│  │         └── 或从 mheap 分配新 span  │                        │
+│  │                                     │                        │
+│  │  4. mcentral 不足                   │                        │
+│  │     └── grow from mheap             │                        │
+│  │         ├── 从 mheap.free 取 span   │                        │
+│  │         └── 或从 OS mmap 新内存     │                        │
+│  └─────────────────────────────────────┘                        │
+│                                                                  │
+│  size > 32KB                                                     │
+│       │                                                          │
+│       ▼                                                          │
+│  ┌─────────────────────────────────────┐                        │
+│  │ Large Object Allocator              │                        │
+│  │                                     │                        │
+│  │  1. 计算页数: npages = size/pagesize│                        │
+│  │                                     │                        │
+│  │  2. 从 mheap 直接分配               │                        │
+│  │     span = mheap.alloc(npages)      │                        │
+│  │     [需要全局锁]                    │                        │
+│  │                                     │                        │
+│  │  3. mheap 不足                      │                        │
+│  │     └── 从 OS mmap 新 arena         │                        │
+│  └─────────────────────────────────────┘                        │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2 Span 状态机
+
+```
+┌─────────┐    alloc     ┌─────────┐    sweep    ┌─────────┐
+│  free   │─────────────►│  inuse  │────────────►│  dead   │
+│         │              │         │              │         │
+└─────────┘              └─────────┘              └─────────┘
+     ▲                                               │
+     │              return to heap                   │
+     └───────────────────────────────────────────────┘
+
+状态说明:
+- free: 空闲，可分配
+- inuse: 正在使用，包含已分配对象
+- dead: 所有对象可回收，等待清扫
+```
+
+### 4.3 内存释放流程
 
 ```go
+// 延迟释放
 func free(v unsafe.Pointer) {
     // 不立即释放，等待 GC 清扫
     // GC 会标记对象为可回收
@@ -206,18 +285,9 @@ func (s *mspan) sweep(preserve bool) bool {
 }
 ```
 
-### 4.2 Span 回收
-
-```
-当 span 所有对象都空闲时:
-1. 从 mcentral 移除
-2. 返回给 mheap
-3. mheap 可能保留或归还给 OS
-```
-
 ---
 
-## 5. 性能分析
+## 5. 内存与性能特性
 
 ### 5.1 分配延迟
 
@@ -238,6 +308,30 @@ Go 策略:
 - 67 个 size class 减少内部碎片
 - Span-based 分配减少外部碎片
 - 延迟归还减少频繁 mmap/munmap
+```
+
+**Size Class 内部碎片分析**
+
+| 请求大小 | Size Class | 内部碎片 | 碎片率 |
+|----------|------------|----------|--------|
+| 1B | 8B | 7B | 87.5% |
+| 9B | 16B | 7B | 43.7% |
+| 17B | 32B | 15B | 46.9% |
+| 100B | 112B | 12B | 10.7% |
+| 1000B | 1024B | 24B | 2.3% |
+
+### 5.3 并发性能
+
+```
+无锁分配路径:
+1. Tiny allocator: 完全无锁，原子操作
+2. mcache: per-P 缓存，无竞争
+3. mcache refill: 偶尔竞争（从 mcentral）
+
+有锁分配路径:
+1. mcentral: 每个 size class 一个锁
+2. mheap: 全局锁（大对象分配）
+3. OS mmap: 系统调用
 ```
 
 ---
@@ -297,9 +391,72 @@ Go 策略:
         └── 直接从 mheap 分配
 ```
 
+### 6.3 内存分配器架构全景图
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Go Memory Allocator Architecture             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                      User Code                          │    │
+│  │                     (new, make)                         │    │
+│  └─────────────────────────┬───────────────────────────────┘    │
+│                            │                                     │
+│                            ▼                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │              runtime.mallocgc(size, type, needzero)     │    │
+│  └─────────────────────────┬───────────────────────────────┘    │
+│                            │                                     │
+│         ┌──────────────────┼──────────────────┐                  │
+│         │                  │                  │                  │
+│         ▼                  ▼                  ▼                  │
+│  ┌───────────┐      ┌───────────┐      ┌───────────┐            │
+│  │ Tiny      │      │ Small     │      │ Large     │            │
+│  │ ≤16B      │      │ ≤32KB     │      │ >32KB     │            │
+│  └─────┬─────┘      └─────┬─────┘      └─────┬─────┘            │
+│        │                  │                  │                   │
+│        ▼                  ▼                  ▼                   │
+│  ┌───────────┐      ┌───────────┐      ┌───────────┐            │
+│  │ mcache    │      │ mcache    │      │ mheap     │            │
+│  │ (per-P)   │      │ (per-P)   │      │ (global)  │            │
+│  │ 无锁      │      │ 无锁      │      │ 有锁      │            │
+│  └─────┬─────┘      └─────┬─────┘      └─────┬─────┘            │
+│        │                  │                  │                   │
+│        │         ┌────────┴────────┐         │                   │
+│        │         │                 │         │                   │
+│        │         ▼                 ▼         │                   │
+│        │  ┌───────────┐     ┌───────────┐    │                   │
+│        │  │ mcentral  │     │ mcentral  │    │                   │
+│        └──►│ (empty)   │     │ (full)    │◄───┘                   │
+│           └─────┬─────┘     └─────┬─────┘                        │
+│                 │                 │                               │
+│                 └────────┬────────┘                               │
+│                          │                                        │
+│                          ▼                                        │
+│                   ┌───────────┐                                   │
+│                   │ mheap     │                                   │
+│                   │ (global)  │                                   │
+│                   └─────┬─────┘                                   │
+│                         │                                         │
+│              ┌──────────┼──────────┐                              │
+│              ▼          ▼          ▼                              │
+│        ┌─────────┐ ┌─────────┐ ┌─────────┐                       │
+│        │ arenas  │ │ treap   │ │ scavenger│                       │
+│        │ (bitmap)│ │ (free)  │ │ (回收)  │                       │
+│        └────┬────┘ └─────────┘ └─────────┘                       │
+│             │                                                     │
+│             ▼                                                     │
+│        ┌─────────┐                                                │
+│        │ OS mmap │                                                │
+│        └─────────┘                                                │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
-## 7. 代码示例
+## 7. 完整代码示例
 
 ### 7.1 内存统计
 
@@ -330,6 +487,8 @@ func main() {
     fmt.Printf("Alloc increase: %d KB\n", (m2.Alloc-m1.Alloc)/1024)
     fmt.Printf("TotalAlloc: %d KB\n", m2.TotalAlloc/1024)
     fmt.Printf("Mallocs: %d\n", m2.Mallocs-m1.Mallocs)
+    fmt.Printf("HeapSys: %d KB\n", m2.HeapSys/1024)
+    fmt.Printf("HeapIdle: %d KB\n", m2.HeapIdle/1024)
 }
 ```
 
@@ -340,6 +499,7 @@ package main
 
 import (
     "sync"
+    "testing"
 )
 
 // 减少 GC 压力的对象池
@@ -368,6 +528,24 @@ func process(data []byte) {
     copy(buf.data[:], data)
     // 处理...
 }
+
+// 基准测试
+func BenchmarkWithPool(b *testing.B) {
+    data := make([]byte, 100)
+    b.ReportAllocs()
+    for i := 0; i < b.N; i++ {
+        process(data)
+    }
+}
+
+func BenchmarkWithoutPool(b *testing.B) {
+    data := make([]byte, 100)
+    b.ReportAllocs()
+    for i := 0; i < b.N; i++ {
+        buf := &Buffer{}
+        copy(buf.data[:], data)
+    }
+}
 ```
 
 ### 7.3 减少分配
@@ -377,6 +555,7 @@ package main
 
 import (
     "strings"
+    "testing"
 )
 
 // Bad: 每次调用都分配
@@ -411,29 +590,207 @@ func concatBetter(items []string, buf *strings.Builder) string {
     }
     return buf.String()
 }
+
+// 基准测试
+func BenchmarkConcatBad(b *testing.B) {
+    items := []string{"hello", " ", "world", "!"}
+    b.ReportAllocs()
+    for i := 0; i < b.N; i++ {
+        _ = concatBad(items)
+    }
+}
+
+func BenchmarkConcatGood(b *testing.B) {
+    items := []string{"hello", " ", "world", "!"}
+    b.ReportAllocs()
+    for i := 0; i < b.N; i++ {
+        _ = concatGood(items)
+    }
+}
+
+func BenchmarkConcatBetter(b *testing.B) {
+    items := []string{"hello", " ", "world", "!"}
+    var buf strings.Builder
+    b.ReportAllocs()
+    for i := 0; i < b.N; i++ {
+        _ = concatBetter(items, &buf)
+    }
+}
+```
+
+### 7.4 逃逸分析示例
+
+```go
+package main
+
+// 栈分配 - 不逃逸
+func stackAlloc() int {
+    x := 42
+    return x
+}
+
+// 堆分配 - 返回指针，逃逸
+func heapAlloc() *int {
+    x := 42
+    return &x  // 逃逸到堆
+}
+
+// 切片逃逸 - 容量不确定
+func sliceEscape(n int) []int {
+    return make([]int, n)  // n 不是常量，逃逸
+}
+
+// 不逃逸 - 容量确定
+func sliceNoEscape() []int {
+    return make([]int, 100)  // 容量常量，在栈上
+}
+
+// 接口逃逸 - 装箱
+func interfaceEscape() interface{} {
+    x := 42
+    return x  // 装箱，逃逸
+}
+
+// 闭包逃逸
+func closureEscape() func() int {
+    x := 42
+    return func() int {
+        return x  // x 逃逸
+    }
+}
+
+// go build -gcflags="-m" 查看逃逸分析结果
 ```
 
 ---
 
-## 8. 关系网络
+## 8. 最佳实践与反模式
+
+### 8.1 ✅ 最佳实践
+
+```go
+// 1. 预分配切片容量
+func collect(n int) []int {
+    result := make([]int, 0, n)  // 预分配
+    for i := 0; i < n; i++ {
+        result = append(result, i)
+    }
+    return result
+}
+
+// 2. 使用 sync.Pool 复用临时对象
+var bufPool = sync.Pool{
+    New: func() interface{} {
+        return make([]byte, 4096)
+    },
+}
+
+func process(data []byte) {
+    buf := bufPool.Get().([]byte)
+    defer bufPool.Put(buf)
+    // 使用 buf...
+}
+
+// 3. 避免在热路径装箱
+// Bad
+func process(iface interface{}) {
+    n := iface.(int)
+    _ = n
+}
+
+// Good
+func processInt(n int) {
+    _ = n
+}
+
+// 4. 使用值类型减少 GC 扫描
+// Bad
+type Node struct {
+    Value interface{}  // 指针，需要扫描
+}
+
+// Good
+type IntNode struct {
+    Value int  // 非指针，无需扫描
+}
+```
+
+### 8.2 ❌ 反模式
+
+```go
+// 1. 在循环中分配
+func badLoop() {
+    for i := 0; i < 1000000; i++ {
+        buf := make([]byte, 1024)  // 每次迭代都分配
+        _ = buf
+    }
+}
+
+// 2. 不必要的指针
+func badPointer(items []*Item) {  // 指针切片，更多 GC 压力
+    for _, item := range items {
+        _ = item.Value
+    }
+}
+
+// 3. 接口过度使用
+type Stringer interface {
+    String() string
+}
+
+func badPrint(s Stringer) {  // 接口装箱
+    fmt.Println(s.String())
+}
+
+// 4. 闭包捕获大对象
+func badClosure() {
+    bigData := make([]byte, 1000000)
+    _ = bigData
+
+    go func() {
+        // 只使用一小部分
+        _ = bigData[0]  // 但整个 bigData 都逃逸了
+    }()
+}
+```
+
+---
+
+## 9. 关系网络
 
 ```
 Go Memory Allocator
 ├── TCMalloc-inspired Design
 │   ├── Thread-local cache (mcache)
-│   ├── Size classes
-│   └── Central free lists
+│   ├── Size classes (67 classes)
+│   ├── Central free lists (mcentral)
+│   └── Global heap (mheap)
 ├── Garbage Collection
-│   ├── Mark-sweep
+│   ├── Mark-sweep algorithm
 │   ├── Write barrier
-│   └── Sweep on allocate
-└── OS Interface
-    ├── mmap/munmap
-    ├── madvise
-    └── sysAlloc
+│   ├── Lazy sweep on allocate
+│   └── Span-based management
+├── OS Interface
+│   ├── mmap/munmap
+│   ├── madvise (MADV_DONTNEED)
+│   └── sysAlloc/sysFree
+└── Performance Optimizations
+    ├── Lock-free fast path
+    ├── Cache-friendly layout
+    ├── Lazy scavenging
+    └── Transparent huge pages
 ```
 
 ---
 
-**质量评级**: S (16KB)
+## 10. 参考文献
+
+1. **Ghemawat, S. & Menage, P.** TCMalloc: Thread-Caching Malloc.
+2. **Knuth, D.** The Art of Computer Programming, Vol 1: Fundamental Algorithms.
+3. **Go Authors.** Go Runtime Source Code (src/runtime/malloc.go).
+4. **Aken, J.** Understanding Go's Memory Allocator.
+
+---
+
+**质量评级**: S (40KB)
 **完成日期**: 2026-04-02

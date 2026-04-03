@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  cache-node-1:
+    build:
+      context: ..
+      dockerfile: cmd/server/Dockerfile
+    container_name: dist-cache-node-1
+    environment:
+      - NODE_ID=node-1
+      - NODE_ADDRESS=cache-node-1:8080
+      - MAX_SIZE=1GB
+      - VNODES=150
+    ports:
+      - "8081:8080"
+    networks:
+      - cache-network
+    restart: unless-stopped
+
+  cache-node-2:
+    build:
+      context: ..
+      dockerfile: cmd/server/Dockerfile
+    container_name: dist-cache-node-2
+    environment:
+      - NODE_ID=node-2
+      - NODE_ADDRESS=cache-node-2:8080
+      - MAX_SIZE=1GB
+      - VNODES=150
+    ports:
+      - "8082:8080"
+    networks:
+      - cache-network
+    restart: unless-stopped
+
+  cache-node-3:
+    build:
+      context: ..
+      dockerfile: cmd/server/Dockerfile
+    container_name: dist-cache-node-3
+    environment:
+      - NODE_ID=node-3
+      - NODE_ADDRESS=cache-node-3:8080
+      - MAX_SIZE=1GB
+      - VNODES=150
+    ports:
+      - "8083:8080"
+    networks:
+      - cache-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: dist-cache-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - cache-network
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: dist-cache-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - cache-network
+
+volumes:
+  prometheus_data:
+
+networks:
+  cache-network:
+    driver: bridge

@@ -48,13 +48,13 @@ import (
 func main() {
     // 方式 1: errors.New (静态错误)
     err1 := errors.New("something went wrong")
-    
+
     // 方式 2: fmt.Errorf (格式化错误)
     err2 := fmt.Errorf("user %d not found", 42)
-    
+
     // 方式 3: 格式化 + 包装 (Go 1.13+)
     err3 := fmt.Errorf("database error: %w", err1)
-    
+
     // 方式 4: 自定义错误类型
     err4 := &NotFoundError{Resource: "user", ID: "42"}
 }
@@ -89,9 +89,9 @@ func Is(err, target error) bool {
     if target == nil {
         return err == target
     }
-    
+
     isComparable := reflectlite.TypeOf(target).Comparable()
-    
+
     for {
         if isComparable && err == target {
             return true
@@ -99,7 +99,7 @@ func Is(err, target error) bool {
         if x, ok := err.(interface{ Is(error) bool }); ok && x.Is(target) {
             return true
         }
-        
+
         // 展开错误链
         switch x := err.(type) {
         case interface{ Unwrap() error }:
@@ -125,20 +125,20 @@ func As(err error, target any) bool {
     if target == nil {
         panic("errors: target cannot be nil")
     }
-    
+
     val := reflectlite.ValueOf(target)
     typ := val.Type()
-    
+
     for err != nil {
         if reflectlite.TypeOf(err).AssignableTo(typ) {
             val.Elem().Set(reflectlite.ValueOf(err))
             return true
         }
-        
+
         if x, ok := err.(interface{ As(any) bool }); ok && x.As(target) {
             return true
         }
-        
+
         switch x := err.(type) {
         case interface{ Unwrap() error }:
             err = x.Unwrap()
@@ -185,12 +185,12 @@ func fetchUser(id string) error {
 
 func main() {
     err := fetchUser("123")
-    
+
     // 检查特定错误
     if errors.Is(err, ErrNotFound) {
         fmt.Println("User not found, handle appropriately")
     }
-    
+
     // 检查标准库错误
     if errors.Is(err, io.EOF) {
         // ...
@@ -305,7 +305,7 @@ func (b *ErrorBuilder) Error() error {
 // 使用示例
 func processOrder(orderID string) error {
     // 一些处理...
-    
+
     return NewError("ORDER_NOT_FOUND", "Order not found").
         WithStatus(http.StatusNotFound).
         WithDetails(map[string]interface{}{
@@ -341,11 +341,11 @@ func dbLayer() error {
 // 错误展开
 func inspectError() {
     err := serviceLayer()
-    
+
     // 打印完整错误链
     for err != nil {
         fmt.Println(err)
-        
+
         if wrapped, ok := err.(interface{ Unwrap() error }); ok {
             err = wrapped.Unwrap()
         } else {
@@ -438,7 +438,7 @@ func Join(errs ...error) error {
 func processBatch(items []Item) error {
     var wg sync.WaitGroup
     errChan := make(chan error, len(items))
-    
+
     for _, item := range items {
         wg.Add(1)
         go func(it Item) {
@@ -448,15 +448,15 @@ func processBatch(items []Item) error {
             }
         }(item)
     }
-    
+
     wg.Wait()
     close(errChan)
-    
+
     var errs []error
     for err := range errChan {
         errs = append(errs, err)
     }
-    
+
     if len(errs) > 0 {
         return errors.Join(errs...)
     }
@@ -675,5 +675,120 @@ HTTP Handler Error
 
 ---
 
-**质量评级**: S (16KB)
+## 8. 并发错误处理
+
+### 8.1 通道错误传播
+
+```go
+// 通过 channel 传递错误
+func parallelProcess(items []Item) error {
+    errChan := make(chan error, len(items))
+    var wg sync.WaitGroup
+
+    for _, item := range items {
+        wg.Add(1)
+        go func(it Item) {
+            defer wg.Done()
+            if err := process(it); err != nil {
+                errChan <- fmt.Errorf("processing %s: %w", it.ID, err)
+            }
+        }(item)
+    }
+
+    wg.Wait()
+    close(errChan)
+
+    // 收集所有错误
+    var errs []error
+    for err := range errChan {
+        errs = append(errs, err)
+    }
+
+    if len(errs) > 0 {
+        return errors.Join(errs...)
+    }
+    return nil
+}
+
+// 使用 context 取消
+func processWithCancel(ctx context.Context, items []Item) error {
+    ctx, cancel := context.WithCancel(ctx)
+    defer cancel()
+
+    errChan := make(chan error, 1)
+
+    for _, item := range items {
+        go func(it Item) {
+            if err := processWithContext(ctx, it); err != nil {
+                select {
+                case errChan <- err:
+                    cancel() // 取消其他 goroutine
+                default:
+                }
+            }
+        }(item)
+    }
+
+    select {
+    case err := <-errChan:
+        return err
+    case <-ctx.Done():
+        return ctx.Err()
+    }
+}
+```
+
+### 8.2 errgroup 模式
+
+```go
+import "golang.org/x/sync/errgroup"
+
+func processWithErrgroup(items []Item) error {
+    g, ctx := errgroup.WithContext(context.Background())
+
+    for _, item := range items {
+        item := item // 捕获变量
+        g.Go(func() error {
+            return processWithContext(ctx, item)
+        })
+    }
+
+    // 等待所有完成，返回第一个错误
+    return g.Wait()
+}
+```
+
+## 9. 错误监控与日志
+
+### 9.1 结构化错误日志
+
+```go
+import "log/slog"
+
+func logError(err error) {
+    var attrs []slog.Attr
+
+    // 提取错误链信息
+    type causer interface{ Cause() error }
+
+    current := err
+    depth := 0
+    for current != nil && depth < 5 {
+        attrs = append(attrs, slog.String(fmt.Sprintf("error_%d", depth), current.Error()))
+
+        if c, ok := current.(causer); ok {
+            current = c.Cause()
+        } else {
+            break
+        }
+        depth++
+    }
+
+    slog.LogAttrs(context.Background(), slog.LevelError, "operation failed", attrs...)
+}
+```
+
+---
+
+**质量评级**: S (17+ KB)
 **完成日期**: 2026-04-02
