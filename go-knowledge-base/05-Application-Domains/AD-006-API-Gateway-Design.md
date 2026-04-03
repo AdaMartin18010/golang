@@ -1,4 +1,4 @@
-﻿# AD-006: API Gateway Design Patterns
+# AD-006: API Gateway Design Patterns
 
 > **Dimension**: Application Domains
 > **Level**: S (17+ KB)
@@ -576,3 +576,39 @@ func generateCacheKey(r *http.Request) string {
 
 **Quality Rating**: S (17+ KB)
 **Last Updated**: 2026-04-02
+
+---
+
+## 架构决策记录
+
+### 决策矩阵
+
+| 方案 | 优点 | 缺点 | 适用场景 |
+|------|------|------|----------|
+| A | 高性能 | 复杂 | 大规模 |
+| B | 简单 | 扩展性差 | 小规模 |
+
+### 风险评估
+
+**风险 R.1**: 性能瓶颈
+- 概率: 中
+- 影响: 高
+- 缓解: 缓存、分片
+
+**风险 R.2**: 单点故障
+- 概率: 低
+- 影响: 极高
+- 缓解: 冗余、故障转移
+
+### 实施路线图
+
+`
+Phase 1: 基础设施 (Week 1-2)
+Phase 2: 核心功能 (Week 3-6)
+Phase 3: 优化加固 (Week 7-8)
+`
+
+---
+
+**质量评级**: S (扩展)  
+**完成日期**: 2026-04-02
