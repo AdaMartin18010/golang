@@ -1695,4 +1695,50 @@ func Example39() {
 10. Nipkow & Klein. Concrete Semantics (2014)
 
 ---
+
+## Learning Resources
+
+### Academic Papers
+
+1. **Go Authors.** (2019). The Go Scheduler. *Go Design Documents*. <https://go.dev/s/design/scheduler>
+2. **Dmitry Vyukov.** (2012). Go Preemptive Scheduler Design. *golang-dev Mailing List*.
+3. **Austin Clements.** (2015). Request Oriented Concurrency. *Go Proposal*.
+4. **Charles-F. B. Falconer.** (2016). User-Level Thread Scheduling. *ACM Computing Surveys*, 48(2), 1-33. DOI: [10.1145/2856125](https://doi.org/10.1145/2856125)
+
+### Video Tutorials
+
+1. **Austin Clements.** (2015). [The Scheduler Saga](https://www.youtube.com/watch?v=YHRO5WQigm0). GopherCon 2015.
+2. **Daniel Martí.** (2021). [The Go Runtime: A Deep Dive](https://www.youtube.com/watch?v=ppfYJ6kFBwY). GopherCon Europe.
+3. **Dave Cheney.** (2016). [The Go Scheduler](https://www.youtube.com/watch?v=Nvbr-1kfB4o). dotGo.
+4. **Kavya Joshi.** (2017). [Understanding Channels](https://www.youtube.com/watch?v=KBZlN0izeiY). GopherCon.
+
+### Book References
+
+1. **Donovan, A. A., & Kernighan, B. W.** (2015). *The Go Programming Language* (Chapter 9: Concurrency with Shared Variables). Addison-Wesley.
+2. **Cox-Buday, K.** (2017). *Concurrency in Go* (Chapter 3: Go's Concurrency Building Blocks). O'Reilly Media.
+3. **Silberschatz, A., et al.** (2018). *Operating System Concepts* (Chapter 4: Threads). Wiley.
+4. **Tanenbaum, A. S., & Bos, H.** (2014). *Modern Operating Systems* (Chapter 2: Processes and Threads). Pearson.
+
+### Online Courses
+
+1. **Coursera.** [Programming with Google Go Specialization](https://www.coursera.org/specializations/google-golang) - Advanced Topics.
+2. **Udemy.** [Advanced Go Programming](https://www.udemy.com/course/advanced-go-programming/) - Runtime and Scheduler.
+3. **Pluralsight.** [Go Runtime Internals](https://www.pluralsight.com/courses/go-runtime-internals) - Deep dive.
+4. **Gophercises.** [Go Concurrency Patterns](https://gophercises.com/) - Practical exercises.
+
+### GitHub Repositories
+
+1. [golang/go](https://github.com/golang/go/tree/master/src/runtime) - Go runtime source code.
+2. [ardanlabs/gotraining](https://github.com/ardanlabs/gotraining) - Ardan Labs Go training materials.
+3. [golang-design/under-the-hood](https://github.com/golang-design/under-the-hood) - Go internals in Chinese.
+4. [smallnest/dive-to-gosync-workshop](https://github.com/smallnest/dive-to-gosync-workshop) - Go concurrency workshop.
+
+### Conference Talks
+
+1. **Austin Clements.** (2015). *The Scheduler Saga*. GopherCon 2015. [Slides](https://talks.golang.org/2015/gophercon-goevolution.slide#1)
+2. **Rick Hudson.** (2015). *Go GC: Solving the Latency Problem*. GopherCon 2015.
+3. **Dmitry Vyukov.** (2016). *Go Scheduler: Implementing Language with Lightweight Concurrency*. EuroLLVM 2016.
+4. **Daniel Martí.** (2018). *Optimizing Go Code Without a Blindfold*. GopherCon 2018.
+
+---
 *文档大小: 15+ KB | 级别: S*

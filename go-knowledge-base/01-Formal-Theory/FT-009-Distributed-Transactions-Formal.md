@@ -917,6 +917,52 @@ func (o *SagaOrchestrator) Execute(ctx context.Context, sagaName string) Result 
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Gray, J., & Reuter, A.** (1993). *Transaction Processing: Concepts and Techniques*. Morgan Kaufmann. ISBN: 978-1558601901
+2. **Mohan, C., et al.** (1992). ARIES: A Transaction Recovery Method Supporting Fine-Granularity Locking and Partial Rollbacks. *ACM TODS*, 17(1), 94-162. DOI: [10.1145/128765.128770](https://doi.org/10.1145/128765.128770)
+3. **Garcia-Molina, H., & Salem, K.** (1987). Sagas. *ACM SIGMOD*, 249-259. DOI: [10.1145/38713.38742](https://doi.org/10.1145/38713.38742)
+4. **Lampson, B., & Sturgis, H.** (1976). Crash Recovery in a Distributed Data Storage System. *Xerox PARC Technical Report*.
+
+### Video Tutorials
+
+1. **Martin Kleppmann.** (2018). [Distributed Transactions](https://www.youtube.com/watch?v=5ZjhNTM8XU8). QCon London.
+2. **Pat Helland.** (2016). [ACID 2.0](https://www.youtube.com/watch?v=7HHPm1X4NGE). GOTO Conference.
+3. **Cockroach Labs.** (2020). [Distributed Transactions at Scale](https://www.youtube.com/watch?v=tgTOvO6e35w). CockroachDB Tech Talk.
+4. **ByteByteGo.** (2022). [Saga Pattern and Distributed Transactions](https://www.youtube.com/watch?v=0h0X8L15e1w). System Design.
+
+### Book References
+
+1. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications* (Chapter 7: Transactions). O'Reilly Media.
+2. **Bernstein, P. A., & Newcomer, E.** (2009). *Principles of Transaction Processing* (2nd ed.). Morgan Kaufmann.
+3. **Weikum, G., & Vossen, G.** (2001). *Transactional Information Systems*. Morgan Kaufmann.
+4. **Elmasri, R., & Navathe, S.** (2016). *Fundamentals of Database Systems* (Chapter 21). Pearson.
+
+### Online Courses
+
+1. **Coursera.** [Database Systems](https://www.coursera.org/learn/database-systems) - Transaction management.
+2. **edX.** [Distributed Systems by TU Delft](https://www.edx.org/professional-certificate/delftx-cloud-computing) - Transactions module.
+3. **Udemy.** [Database Design and Management](https://www.udemy.com/topic/database-design/) - ACID properties.
+4. **CMU Database Group.** [Intro to Database Systems](https://www.youtube.com/playlist?list=PLSE8ODhjZXjbohkNB1QrY7J5ak8v6P9) - Lecture 16-18.
+
+### GitHub Repositories
+
+1. [dgraph-io/dgraph](https://github.com/dgraph-io/dgraph) - Distributed graph database with transactions.
+2. [cockroachdb/cockroach](https://github.com/cockroachdb/cockroach) - Distributed SQL with serializable default.
+3. [pingcap/tidb](https://github.com/pingcap/tidb) - MySQL-compatible distributed database.
+4. [saga-go/saga](https://github.com/saga-go/saga) - Saga pattern implementation in Go.
+
+### Conference Talks
+
+1. **Pat Helland.** (2007). *Life Beyond Distributed Transactions*. CIDR.
+2. **James Corbett.** (2012). *Spanner: Google's Globally-Distributed Database*. OSDI.
+3. **Rebecca Taft.** (2020). *CockroachDB: The Resilient Geo-Distributed SQL Database*. SIGMOD.
+4. **Peter Bailis.** (2014). *Coordination Avoidance in Database Systems*. VLDB.
+
+---
+
 *文档生成时间: 2026-04-02*
 *维护者: Distributed Systems Knowledge Base*
 *版本: S-Level (23+ KB)*

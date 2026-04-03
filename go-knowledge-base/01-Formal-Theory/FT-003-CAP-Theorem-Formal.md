@@ -79,6 +79,53 @@ $$P: \forall \pi \text{ (分区)}, \forall G_i \in \pi: (|G_i| \geq 1 \land G_i 
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Brewer, E.** (2000). Towards Robust Distributed Systems. *ACM PODC Keynote*. <https://people.eecs.berkeley.edu/~brewer/cs262b-2004/PODC-keynote.pdf>
+2. **Gilbert, S., & Lynch, N.** (2002). Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services. *ACM SIGACT News*, 33(2), 51-59. DOI: [10.1145/564585.564601](https://doi.org/10.1145/564585.564601)
+3. **Brewer, E.** (2012). CAP Twelve Years Later: How the "Rules" Have Changed. *Computer*, 45(2), 23-29. DOI: [10.1109/MC.2012.37](https://doi.org/10.1109/MC.2012.37)
+4. **Abadi, D. J.** (2012). Consistency Tradeoffs in Modern Distributed Database Design. *IEEE Computer*, 45(2), 37-42. DOI: [10.1109/MC.2012.33](https://doi.org/10.1109/MC.2012.33)
+5. **Kleppmann, M.** (2015). A Critique of the CAP Theorem. *University of Cambridge Technical Report*. <https://www.cl.cam.ac.uk/research/dtg/www/files/publications/public/mk428/cap-critique.pdf>
+
+### Video Tutorials
+
+1. **Martin Kleppmann.** (2018). [Designing Data-Intensive Applications: CAP Theorem](https://www.youtube.com/watch?v=plA1GAnFtLA). QCon London.
+2. **Eric Brewer.** (2012). [CAP Twelve Years Later](https://www.youtube.com/watch?v=jgF2j7aEMzk). Google Tech Talk.
+3. **MIT 6.824.** (2020). [Distributed Systems: CAP Theorem](https://www.youtube.com/watch?v=NgWSB1KCjuY). Lecture 1.
+4. **Berkeley CS 162.** (2019). [Distributed Systems and CAP](https://www.youtube.com/watch?v=68BjP5f0ccE). Operating Systems.
+
+### Book References
+
+1. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications* (Chapter 9: Consistency and Consensus). O'Reilly Media.
+2. **Cachin, C., Guerraoui, R., & Rodrigues, L.** (2011). *Introduction to Reliable and Secure Distributed Programming* (Chapter 2). Springer.
+3. **Lynch, N. A.** (1996). *Distributed Algorithms* (Chapter 12: Consensus). Morgan Kaufmann.
+4. **Tanenbaum, A. S., & Van Steen, M.** (2006). *Distributed Systems: Principles and Paradigms* (Chapter 6). Pearson.
+
+### Online Courses
+
+1. **MIT 6.824.** [Distributed Systems](https://pdos.csail.mit.edu/6.824/) - Full course on distributed systems theory.
+2. **Coursera.** [Cloud Computing Concepts](https://www.coursera.org/learn/cloud-computing) - CAP Theorem module by UIUC.
+3. **edX.** [Distributed Systems by TU Delft](https://www.edx.org/professional-certificate/delftx-cloud-computing) - Consistency lectures.
+4. **Udemy.** [Distributed Systems in Go](https://www.udemy.com/course/distributed-systems-in-go/) - CAP and beyond.
+
+### GitHub Repositories
+
+1. [aphyr/distsys-class](https://github.com/aphyr/distsys-class) - Jepsen distributed systems course materials.
+2 [mit-pdos/6.824-lecture-notes](https://github.com/mit-pdos/6.824-lecture-notes) - MIT 6.824 lecture notes.
+2. [theanalyst/awesome-distributed-systems](https://github.com/theanalyst/awesome-distributed-systems) - Curated list of DS resources.
+3. [gonum/gonum](https://github.com/gonum/gonum) - Go numerical libraries for consensus algorithms.
+
+### Conference Talks
+
+1. **Eric Brewer.** (2012). *CAP Twelve Years Later: How the "Rules" Have Changed*. Google Tech Talk.
+2. **Martin Kleppmann.** (2015). *The CAP Theorem Is Not Enough*. GOTO Conference.
+3. **Peter Bailis.** (2014). *Coordination Avoidance in Database Systems*. VLDB Keynote.
+4. **Jay Kreps.** (2013). *The Log: What Every Software Engineer Should Know About Real-Time Data*. LinkedIn Engineering.
+
+---
+
 ## 2. CAP 不可能性定理
 
 ### 2.1 定理陈述

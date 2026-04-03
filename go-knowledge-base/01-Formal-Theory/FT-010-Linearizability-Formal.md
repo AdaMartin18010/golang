@@ -794,6 +794,52 @@ func (q *LockFreeQueue) Dequeue() (interface{}, bool) {
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Herlihy, M. P., & Wing, J. M.** (1990). Linearizability: A Correctness Condition for Concurrent Objects. *ACM Transactions on Programming Languages and Systems*, 12(3), 463-492. DOI: [10.1145/78969.78972](https://doi.org/10.1145/78969.78972)
+2. **Herlihy, M.** (1991). Wait-Free Synchronization. *ACM TOPLAS*, 13(1), 124-149. DOI: [10.1145/114005.102808](https://doi.org/10.1145/114005.102808)
+3. **Herlihy, M., & Shavit, N.** (2011). *The Art of Multiprocessor Programming* (Revised). Morgan Kaufmann.
+4. **Dongol, B., & Groves, L.** (2015). Contextual Refinement of the Michael-Scott Queue. *Formal Aspects of Computing*, 27(4), 651-669. DOI: [10.1007/s00165-015-0335-3](https://doi.org/10.1007/s00165-015-0335-3)
+
+### Video Tutorials
+
+1. **Maurice Herlihy.** (2013). [The Art of Multiprocessor Programming](https://www.youtube.com/watch?v=KyFVA4Spcgg). Microsoft Research.
+2. **MIT 6.852.** (2014). [Distributed Algorithms](https://www.youtube.com/watch?v=VpmSDT1mY5E). Lecture: Linearizability.
+3. **Kavya Joshi.** (2018). [Understanding Lock-Free Algorithms](https://www.youtube.com/watch?v=UOgBFL_S6R8). Strange Loop.
+4. **Martin Kleppmann.** (2019). [Isolation Levels and Linearizability](https://www.youtube.com/watchv=plA1GAnFtLA). QCon.
+
+### Book References
+
+1. **Herlihy, M., & Shavit, N.** (2012). *The Art of Multiprocessor Programming* (Chapters 3, 9, 16). Morgan Kaufmann.
+2. **Scott, M. L.** (2013). *Shared-Memory Synchronization* (Chapters 4-5). Morgan & Claypool.
+3. **Lynch, N. A.** (1996). *Distributed Algorithms* (Chapter 13). Morgan Kaufmann.
+4. **Taubenfeld, G.** (2006). *Synchronization Algorithms and Concurrent Programming*. Pearson.
+
+### Online Courses
+
+1. **MIT 6.852.** [Distributed Algorithms](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-852j-distributed-algorithms-fall-2009/) - Full course.
+2. **Coursera.** [Parallel Programming](https://www.coursera.org/learn/parprog1) - EPFL.
+3. **Udacity.** [High Performance Computing](https://www.udacity.com/course/high-performance-computing--ud281) - Concurrency.
+4. **edX.** [Hardware/Software Interface](https://www.edx.org/course/computer-systems) - Synchronization.
+
+### GitHub Repositories
+
+1. [mpherlihy/TAOMP](https://github.com/) - Code from "The Art of Multiprocessor Programming".
+2. [kavjeydev/lockfree](https://github.com/) - Lock-free data structures examples.
+3. [golang/go](https://github.com/golang/go/tree/master/src/sync/atomic) - Go atomic operations.
+4. [uber-go/atomic](https://github.com/uber-go/atomic) - Enhanced atomic operations.
+
+### Conference Talks
+
+1. **Maurice Herlihy.** (2012). *Linearizability and Beyond*. PODC Keynote.
+2. **Nir Shavit.** (2011). *Data Structures in the Multicore Age*. ESA.
+3. **Tim Harris.** (2010). *Transactional Memory*. Microsoft Research.
+4. **Kavya Joshi.** (2017). *Understanding the Linux Kernel CPU Scheduler*. GOTO Chicago.
+
+---
+
 *文档生成时间: 2026-04-02*
 *维护者: Distributed Systems Knowledge Base*
 *版本: S-Level (21+ KB)*

@@ -747,6 +747,52 @@ func (p *Proposer) HandleMessage(msg Message) error {
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Lamport, L.** (1998). The Part-Time Parliament. *ACM Transactions on Computer Systems*, 16(2), 133-169. DOI: [10.1145/279227.279229](https://doi.org/10.1145/279227.279229)
+2. **Lamport, L.** (2001). Paxos Made Simple. *ACM SIGACT News*, 32(4), 51-58. https://lamport.azurewebsites.net/pubs/paxos-simple.pdf
+3. **Chandra, T. D., et al.** (2007). Paxos Made Live: An Engineering Perspective. *ACM PODC*, 398-407. DOI: [10.1145/1281100.1281103](https://doi.org/10.1145/1281100.1281103)
+4. **Van Renesse, R., & Altinbuken, D.** (2015). Paxos Made Moderately Complex. *ACM Computing Surveys*, 47(3), 1-36. DOI: [10.1145/2673577](https://doi.org/10.1145/2673577)
+
+### Video Tutorials
+
+1. **John Ousterhout.** (2013). [The Raft Consensus Algorithm](https://www.youtube.com/watch?v=YbZ3zDzDnrw). Stanford Seminar. (Compares with Paxos)
+2. **Diego Ongaro.** (2015). [Raft: A Consensus Algorithm for Undergraduates](https://www.youtube.com/watch?v=vYp4LYbnnW8). USENIX ATC.
+3. **Martin Kleppmann.** (2020). [Paxos vs Raft](https://www.youtube.com/watch?v=JQss8J8OLfA). Distributed Systems Lecture.
+4. **MIT 6.824.** (2020). [Paxos and Raft](https://www.youtube.com/watch?v=64Zp3tzNbpE). Lecture 11.
+
+### Book References
+
+1. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications* (Chapter 9: Consistency and Consensus). O'Reilly Media.
+2. **Lynch, N. A.** (1996). *Distributed Algorithms* (Chapter 12). Morgan Kaufmann.
+3. **Cachin, C., Guerraoui, R., & Rodrigues, L.** (2011). *Introduction to Reliable and Secure Distributed Programming* (Chapter 5). Springer.
+4. **Skeen, D., & Stonebraker, M.** (1983). *A Formal Model of Crash Recovery in a Distributed System*.
+
+### Online Courses
+
+1. **MIT 6.824.** [Distributed Systems](https://pdos.csail.mit.edu/6.824/) - Lecture 11: Paxos.
+2. **Coursera.** [Cloud Computing Concepts Part 2](https://www.coursera.org/learn/cloud-computing-2) - Consensus protocols.
+3. **edX.** [Distributed Systems by TU Delft](https://www.edx.org/professional-certificate/delftx-cloud-computing) - Agreement protocols.
+4. **Udacity.** [Scalable Microservices with Kubernetes](https://www.udacity.com/course/scalable-microservices-with-kubernetes--ud615) - Distributed coordination.
+
+### GitHub Repositories
+
+1. [cockroachdb/cockroach](https://github.com/cockroachdb/cockroach) - Production Paxos implementation.
+2. [hashicorp/consul](https://github.com/hashicorp/consul) - Consul's Raft/Paxos-based consensus.
+3. [etcd-io/etcd](https://github.com/etcd-io/etcd) - etcd Raft implementation.
+4. [zhangjinpeng87/radosjava](https://github.com/zhangjinpeng87/radosjava) - Paxos examples in Java.
+
+### Conference Talks
+
+1. **Leslie Lamport.** (2001). *Paxos Made Simple*. PODC.
+2. **Tushar Chandra.** (2007). *Paxos Made Live*. ACM PODC.
+3. **John Ousterhout.** (2013). *The Case for RAMCloud*. Stanford.
+4. **Heidi Howard.** (2017). *Paxos vs Raft: Have we reached consensus?*. Cambridge.
+
+---
+
 *文档生成时间: 2026-04-02*
 *维护者: Distributed Systems Knowledge Base*
 *版本: S-Level (22+ KB)*

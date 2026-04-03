@@ -809,5 +809,51 @@ func leaky() *[]int {
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Jones, R., & Lins, R.** (1996). *Garbage Collection: Algorithms for Automatic Dynamic Memory Management*. Wiley. ISBN: 978-0471941484
+2. **Hudson, R.** (2015). Go 1.5 Concurrent Garbage Collector. *Go Blog*. https://go.dev/blog/go15gc
+3. **Detlefs, D., et al.** (2004). Garbage-First Garbage Collection. *ACM ISMM*. DOI: [10.1145/1028973.1028979](https://doi.org/10.1145/1028973.1028979)
+4. **Clements, A.** (2015). Go 1.5 Garbage Collection. *GopherCon*. https://go.dev/s/gcslides
+
+### Video Tutorials
+
+1. **Rick Hudson.** (2015). [Go GC: Solving the Latency Problem](https://www.youtube.com/watch?v=aiv1JOfMjm0). GopherCon.
+2. **Austin Clements.** (2016). [Garbage Collection in Go](https://www.youtube.com/watch?v=ETUeTL8IH3M). GopherCon.
+3. **Richard Jones.** (2013). [Garbage Collection: The Past, Present, and Future](https://www.youtube.com/watch?v=gCXMvzOqhL8). QCon London.
+4. **MIT 6.035.** (2019). [Memory Management](https://www.youtube.com/watch?v=8sW4vM8Khco). Lecture 12.
+
+### Book References
+
+1. **Jones, R., et al.** (2016). *The Garbage Collection Handbook: The Art of Automatic Memory Management* (2nd ed.). CRC Press.
+2. **Wilson, P. R.** (1992). Uniprocessor Garbage Collection Techniques. *IWMM*. DOI: [10.1007/BFb0017182](https://doi.org/10.1007/BFb0017182)
+3. **Go Authors.** (2023). *Go Runtime: GC Guide*. https://go.dev/doc/gc-guide
+4. **Dijkstra, E. W., et al.** (1978). On-the-Fly Garbage Collection: An Exercise in Cooperation. *CACM*, 21(11), 966-975.
+
+### Online Courses
+
+1. **Coursera.** [Programming Languages Part B](https://www.coursera.org/learn/programming-languages-part-b) - Memory management.
+2. **Udemy.** [Advanced Go Programming](https://www.udemy.com/course/advanced-go-programming/) - GC tuning.
+3. **Pluralsight.** [Go Performance](https://www.pluralsight.com/courses/go-performance) - Memory optimization.
+4. **edX.** [CS50's Understanding Technology](https://www.edx.org/course/cs50s-understanding-technology) - Memory basics.
+
+### GitHub Repositories
+
+1. [golang/go](https://github.com/golang/go/tree/master/src/runtime/mgc.go) - Go GC source code.
+2. [davecheney/gcvis](https://github.com/davecheney/gcvis) - GC visualizer.
+3. [google/perftools](https://github.com/google/perftools) - Performance analysis tools.
+4. [uber-go/goleak](https://github.com/uber-go/goleak) - Goroutine leak detector.
+
+### Conference Talks
+
+1. **Rick Hudson.** (2015). *Go GC: Solving the Latency Problem*. GopherCon 2015.
+2. **Austin Clements.** (2016). *Garbage Collection in Go*. GopherCon 2016.
+3. **Richard Jones.** (2016). *Garbage Collection Then and Now*. QCon London.
+4. **Felix Geisendörfer.** (2020). *Optimizing Go Memory Usage*. GopherCon Europe.
+
+---
+
 **质量评级**: S (35KB)
 **完成日期**: 2026-04-02

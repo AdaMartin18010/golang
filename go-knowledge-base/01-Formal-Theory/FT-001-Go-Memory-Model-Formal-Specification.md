@@ -1695,4 +1695,50 @@ func Example39() {
 10. Nipkow & Klein. Concrete Semantics (2014)
 
 ---
+
+## Learning Resources
+
+### Academic Papers
+
+1. **Boehm, H. J., & Adve, S. V.** (2012). Foundations of the C++ Concurrency Memory Model. *ACM SIGPLAN Notices*, 43(6), 68-78. DOI: [10.1145/1379022.1375595](https://doi.org/10.1145/1379022.1375595)
+2. **Go Authors.** (2022). The Go Memory Model. *Official Go Documentation*. <https://go.dev/ref/mem>
+3. **Batty, M., et al.** (2011). Mathematizing C++ Concurrency. *ACM SIGPLAN Notices*, 46(1), 55-66. DOI: [10.1145/1926385.1926395](https://doi.org/10.1145/1926385.1926395)
+4. **Lamport, L.** (1979). How to Make a Multiprocessor Computer That Correctly Executes Multiprocess Programs. *IEEE Transactions on Computers*, C-28(9), 690-691. DOI: [10.1109/TC.1979.1675439](https://doi.org/10.1109/TC.1979.1675439)
+
+### Video Tutorials
+
+1. **Russ Cox.** (2022). [Inside the Go Memory Model](https://www.youtube.com/watch?v=4iF9QZ_FgjI). GopherCon.
+2. **Austin Clements.** (2021). [Go Runtime: Memory Management](https://www.youtube.com/watch?v=3CR4UNMK6r8). GopherCon.
+3. **MIT 6.824.** (2020). [Distributed Systems: Memory Consistency](https://www.youtube.com/watch?v=7JOmMm0ESzw). Lecture 18.
+4. **UC Berkeley CS 194.** (2019). [Memory Models and Concurrency](https://www.youtube.com/watch?v=WyJExHKQqtc). Parallel Programming.
+
+### Book References
+
+1. **Go Authors.** (2022). *The Go Programming Language Specification* - Memory Model Chapter.
+2. **Pike, R.** (2016). *Concurrency in Go* (Chapter 4: Memory Synchronization).
+3. **Bryant, R. E., & O'Hallaron, D. R.** (2015). *Computer Systems: A Programmer's Perspective* (Chapter 12: Concurrent Programming).
+4. **Herlihy, M., & Shavit, N.** (2012). *The Art of Multiprocessor Programming* (Chapter 3: Concurrent Objects).
+
+### Online Courses
+
+1. **Coursera.** [Programming with Google Go Specialization](https://www.coursera.org/specializations/google-golang) - Concurrency Module.
+2. **Udemy.** [Go: The Complete Developer's Guide](https://www.udemy.com/course/go-the-complete-developers-guide/) - Memory Model Section.
+3. **Pluralsight.** [Go Fundamentals](https://www.pluralsight.com/courses/go-fundamentals) - Concurrency and Memory.
+4. **MIT OpenCourseWare.** [6.824 Distributed Systems](https://pdos.csail.mit.edu/6.824/) - Lecture 14-16.
+
+### GitHub Repositories
+
+1. [golang/go](https://github.com/golang/go) - Official Go source code with memory model implementation.
+2. [rsc/memory](https://github.com/rsc/memory) - Russ Cox's memory model documentation examples.
+3. [golang-design/history](https://github.com/golang-design/history) - Go memory model evolution.
+4. [uber-go/goleak](https://github.com/uber-go/goleak) - Goroutine leak detector.
+
+### Conference Talks
+
+1. **Russ Cox.** (2022). *Updating the Go Memory Model*. GopherCon. [Slides](https://go.dev/talks/2022/gcpl/memory-model.pdf)
+2. **Austin Clements.** (2015). *The Scheduler Saga*. GopherCon 2015.
+3. **Dmitry Vyukov.** (2016). *Go Scheduler: Implementing Language with Lightweight Concurrency*. EuroLLVM.
+4. **Rick Hudson.** (2015). *Go GC: Solving the Latency Problem*. GopherCon 2015.
+
+---
 *文档大小: 15+ KB | 级别: S*

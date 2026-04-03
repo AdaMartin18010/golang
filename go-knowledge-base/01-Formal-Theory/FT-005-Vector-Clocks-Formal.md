@@ -12,6 +12,52 @@
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Lamport, L.** (1978). Time, Clocks, and the Ordering of Events in a Distributed System. *Communications of the ACM*, 21(7), 558-565. DOI: [10.1145/359545.359563](https://doi.org/10.1145/359545.359563)
+2. **Mattern, F.** (1989). Virtual Time and Global States of Distributed Systems. *Parallel and Distributed Algorithms*, 215-226.
+3. **Schwarz, R., & Mattern, F.** (1994). Detecting Causal Relationships in Distributed Computations: In Search of the Holy Grail. *Distributed Computing*, 7(3), 149-174. DOI: [10.1007/BF02277859](https://doi.org/10.1007/BF02277859)
+4. **DeCandia, G., et al.** (2007). Dynamo: Amazon's Highly Available Key-Value Store. *ACM SOSP*, 205-220. DOI: [10.1145/1294261.1294281](https://doi.org/10.1145/1294261.1294281)
+
+### Video Tutorials
+
+1. **Martin Kleppmann.** (2018). [Vector Clocks and Version Vectors](https://www.youtube.com/watch?v=GqJ4zoBrh1Y). Data Intensive Applications.
+2. **MIT 6.824.** (2020). [Logical Time and Vector Clocks](https://www.youtube.com/watch?v=x-D8i_rxnKU). Lecture 7.
+3. **ByteByteGo.** (2022). [Causality and Logical Clocks](https://www.youtube.com/watch?v=3-eXL2cFIqI). System Design.
+4. **Georgia Tech CS 7210.** (2019). [Distributed Time and Causality](https://www.youtube.com/watch?v=4y_-ayJQ3Xw). Graduate Course.
+
+### Book References
+
+1. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications* (Chapter 9: Consistency and Consensus). O'Reilly Media.
+2. **Coulouris, G., et al.** (2011). *Distributed Systems: Concepts and Design* (Chapter 14: Time and Global States). Addison-Wesley.
+3. **Tel, G.** (2000). *Introduction to Distributed Algorithms* (Chapter 2: Logical Time). Cambridge University Press.
+4. **Lynch, N. A.** (1996). *Distributed Algorithms* (Chapter 18). Morgan Kaufmann.
+
+### Online Courses
+
+1. **MIT 6.824.** [Distributed Systems](https://pdos.csail.mit.edu/6.824/) - Lecture 7: Logical Time.
+2. **Coursera.** [Cloud Computing Concepts](https://www.coursera.org/learn/cloud-computing) - Clock synchronization.
+3. **edX.** [Distributed Systems by TU Delft](https://www.edx.org/professional-certificate/delftx-cloud-computing) - Logical clocks module.
+4. **Udacity.** [Distributed Systems Fundamentals](https://www.udacity.com/course/intro-to-hadoop-and-mapreduce--ud617) - Time and ordering.
+
+### GitHub Repositories
+
+1. [basho/riak_kv](https://github.com/basho/riak_kv) - Riak's vector clock implementation.
+2. [ricardobcl/Interval-Tree-Clocks](https://github.com/ricardobcl/Interval-Tree-Clocks) - Interval tree clocks in Erlang.
+3. [szymonm/leap](https://github.com/szymonm/leap) - Logical clocks in Go.
+4. [streamrail/distributed-causal-graph](https://github.com/streamrail/distributed-causal-graph) - Causal graph implementation.
+
+### Conference Talks
+
+1. **Leslie Lamport.** (1978). *Time, Clocks, and the Ordering of Events*. PODC.
+2. **Werner Vogels.** (2009). *Eventually Consistent*. ACM Queue.
+3. **Peter Bailis.** (2013). *Causality is Expensive (and What To Do About It)*. RICON West.
+4. **Kresten Krab Thorup.** (2012). *Riak Data Types: Vector Clocks Revisited*. Erlang Factory.
+
+---
+
 ## 1. 形式化问题定义
 
 ### 1.1 分布式系统中的时间

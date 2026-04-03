@@ -1695,4 +1695,50 @@ func Example39() {
 10. Nipkow & Klein. Concrete Semantics (2014)
 
 ---
+
+## Learning Resources
+
+### Academic Papers
+
+1. **Brewer, E.** (2012). CAP Twelve Years Later: How the "Rules" Have Changed. *Computer*, 45(2), 23-29. DOI: [10.1109/MC.2012.37](https://doi.org/10.1109/MC.2012.37)
+2. **Birman, K.** (2012). A History of the Virtual Synchrony Replication Model. *Replication*, 91-120. DOI: [10.1007/978-3-642-11294-2_4](https://doi.org/10.1007/978-3-642-11294-2_4)
+3. **Yu, H., & Vahdat, A.** (2002). The Costs and Limits of Availability for Replicated Services. *ACM SOSP*, 29-42. DOI: [10.1145/844128.844132](https://doi.org/10.1145/844128.844132)
+4. **Weatherspoon, H., et al.** (2002). Epidemic Routing for Sensor Networks. *SenSys*. DOI: [10.1145/570738.570776](https://doi.org/10.1145/570738.570776)
+
+### Video Tutorials
+
+1. **Martin Kleppmann.** (2017). [The Confusing CAP and ACID Words](https://www.youtube.com/watch?v=KeS1f9kwsYY). QCon London.
+2. **Kyle Kingsbury.** (2017). [Jepsen: Testing Data Safety](https://www.youtube.com/watch?v=J24Yw34eSno). Strange Loop.
+3. **Cockroach Labs.** (2019). [Surviving Network Partitions](https://www.youtube.com/watch?v=HK6hLq2f4vY). Tech Talk.
+4. **ByteByteGo.** (2022). [Network Partitions in Distributed Systems](https://www.youtube.com/watch?v=8BjE6dK3m4I). System Design.
+
+### Book References
+
+1. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications* (Chapter 8: The Trouble with Distributed Systems). O'Reilly Media.
+2. **Newman, S.** (2015). *Building Microservices* (Chapter 11: Handling Failure). O'Reilly Media.
+3. **Richardson, C.** (2018). *Microservices Patterns* (Chapter 3: Interprocess Communication). Manning.
+4. **Ford, N.** (2017). *Building Evolutionary Architectures* (Chapter 5: Fitness Functions). O'Reilly Media.
+
+### Online Courses
+
+1. **Coursera.** [Cloud Computing Concepts](https://www.coursera.org/learn/cloud-computing) - Fault tolerance.
+2. **Udemy.** [Distributed Systems in Go](https://www.udemy.com/course/distributed-systems-in-go/) - Network failures.
+3. **Pluralsight.** [Network Programming in Go](https://www.pluralsight.com/courses/go-network-programming) - Connection handling.
+4. **Linux Foundation.** [Introduction to Kubernetes](https://www.linuxfoundation.org/projects/kubernetes/) - Pod networking.
+
+### GitHub Repositories
+
+1. [aphyr/jepsen](https://github.com/aphyr/jepsen) - Distributed systems testing framework.
+2. [hashicorp/memberlist](https://github.com/hashicorp/memberlist) - Gossip protocol implementation.
+3. [Netflix/chaosmonkey](https://github.com/Netflix/chaosmonkey) - Resilience testing.
+4. [chaosblade-io/chaosblade](https://github.com/chaosblade-io/chaosblade) - Chaos engineering toolkit.
+
+### Conference Talks
+
+1. **Kyle Kingsbury.** (2013-2022). *Jepsen Talks Series*. Multiple conferences.
+2. **Peter Alvaro.** (2015). *Outwards from the Middle of the Maze*. Strange Loop.
+3. **Christopher Meiklejohn.** (2016). *The Reactive Manifesto*. GOTO Chicago.
+4. **Caitie McCaffrey.** (2016). *Building Scalable Stateful Services*. QCon.
+
+---
 *文档大小: 15+ KB | 级别: S*

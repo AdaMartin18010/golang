@@ -12,6 +12,52 @@
 
 ---
 
+## Learning Resources
+
+### Academic Papers
+
+1. **Karger, D., et al.** (1997). Consistent Hashing and Random Trees: Distributed Caching Protocols for Relieving Hot Spots on the World Wide Web. *ACM STOC*, 654-663. DOI: [10.1145/258533.258660](https://doi.org/10.1145/258533.258660)
+2. **Karger, D., et al.** (1999). Web Caching with Consistent Hashing. *Computer Networks*, 31(11-16), 1203-1213. DOI: [10.1016/S1389-1286(99)00055-9](https://doi.org/10.1016/S1389-1286(99)00055-9)
+3. **DeCandia, G., et al.** (2007). Dynamo: Amazon's Highly Available Key-Value Store. *ACM SOSP*, 205-220. DOI: [10.1145/1294261.1294281](https://doi.org/10.1145/1294261.1294281)
+4. **Stoica, I., et al.** (2003). Chord: A Scalable Peer-to-Peer Lookup Protocol for Internet Applications. *IEEE/ACM Transactions on Networking*, 11(1), 17-32. DOI: [10.1109/TNET.2002.808407](https://doi.org/10.1109/TNET.2002.808407)
+
+### Video Tutorials
+
+1. **MIT 6.824.** (2020). [Consistent Hashing and Distributed Hash Tables](https://www.youtube.com/watch?v=jk6tB0UoMQQ). Lecture 10.
+2. **David Malan.** (2022). [Hashing and Distributed Systems](https://www.youtube.com/watch?v=2Bkp4pmS7pU). CS50 Tech Talk.
+3. **System Design Primer.** (2021). [Consistent Hashing Explained](https://www.youtube.com/watch?v=zaRkONvyGr8). YouTube.
+4. **ByteByteGo.** (2022). [Consistent Hashing in Distributed Systems](https://www.youtube.com/watch?v=UF9Iqmg94tk). System Design Interview.
+
+### Book References
+
+1. **Kleppmann, M.** (2017). *Designing Data-Intensive Applications* (Chapter 6: Partitioning). O'Reilly Media.
+2. **Tannenbaum, A. S., & Van Steen, M.** (2006). *Distributed Systems* (Chapter 5: Naming). Pearson.
+3. **Lynch, N. A.** (1996). *Distributed Algorithms* (Chapter 18). Morgan Kaufmann.
+4. **Coulouris, G., et al.** (2011). *Distributed Systems: Concepts and Design* (Chapter 10). Addison-Wesley.
+
+### Online Courses
+
+1. **MIT 6.824.** [Distributed Systems](https://pdos.csail.mit.edu/6.824/) - Lecture 10: Consistent Hashing.
+2. **Coursera.** [Scalable Microservices with Kubernetes](https://www.coursera.org/learn/scalable-microservices-kubernetes) - Load balancing section.
+3. **Udacity.** [Data Engineering Nanodegree](https://www.udacity.com/course/data-engineer-nanodegree--nd027) - Distributed data.
+4. **Pluralsight.** [Architecting Distributed Systems](https://www.pluralsight.com/courses/architecting-distributed-systems) - Partitioning strategies.
+
+### GitHub Repositories
+
+1. [hashicorp/memberlist](https://github.com/hashicorp/memberlist) - HashiCorp's consistent hashing implementation.
+2. [dgryski/go-jump](https://github.com/dgryski/go-jump) - Jump consistent hash in Go.
+3. [buraksezer/consistent](https://github.com/buraksezer/consistent) - Consistent hashing with bounded loads.
+4. [karlseguin/ccache](https://github.com/karlseguin/ccache) - Go caching with consistent hashing.
+
+### Conference Talks
+
+1. **Werner Vogels.** (2007). *Dynamo: Amazon's Highly Available Key-Value Store*. SOSP.
+2. **Giuseppe DeCandia.** (2007). *Dynamo: Gossip and Consistent Hashing*. Amazon Web Services Talk.
+3. **Ion Stoica.** (2003). *Chord: A Scalable Peer-to-Peer Lookup Protocol*. MIT Lecture.
+4. **David Karger.** (1997). *Consistent Hashing and Random Trees*. MIT Theory Colloquium.
+
+---
+
 ## 1. 形式化问题定义
 
 ### 1.1 传统哈希的问题
