@@ -551,8 +551,8 @@ func noDeadlock(ch1, ch2 chan int) {
 静态分析: 检查循环等待模式
 动态检测: 运行时监控goroutine状态
 
-Go 1.26工具:
-runtime.SetGoroutineLeakCallback
+Go 1.26工具 (实验性):
+runtime/pprof 的 goroutineleak profile
 
 代码示例:
 // 潜在死锁

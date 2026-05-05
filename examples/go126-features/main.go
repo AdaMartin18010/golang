@@ -1,10 +1,10 @@
 // Package main demonstrates Go 1.26 new features
 //
 // 演示内容包括：
-// 1. new() 函数支持表达式参数
-// 2. errors.AsType 泛型错误断言
-// 3. slog.NewMultiHandler 多日志处理器
-// 4. 泛型自引用类型约束
+// 1. new() 函数支持表达式参数 (Go 1.26)
+// 2. errors.AsType 泛型错误断言 (Go 1.26)
+// 3. slog.NewMultiHandler 多日志处理器 (Go 1.26)
+// 4. 泛型自引用类型约束 (Go 1.26)
 package main
 
 import (
@@ -12,64 +12,47 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 )
 
 // ============================================================================
-// Feature 1: new() with expressions
+// Feature 1: new() with expressions (Go 1.26)
 // ============================================================================
 
-// Config represents application configuration
-type Config struct {
-	Name     string
-	LogLevel string
-	Port     int
+// yearsSince calculates approximate years since a given time
+func yearsSince(t time.Time) int {
+	return int(time.Since(t).Hours() / (365.25 * 24)) // approximately
 }
 
-// NewConfig creates a config with default values
-func NewConfig() *Config {
-	return &Config{
-		Name:     "default",
-		LogLevel: "info",
-		Port:     8080,
-	}
-}
-
-// WithName returns config with name set (for new() expression demo)
-func (c Config) WithName(name string) Config {
-	c.Name = name
-	return c
-}
-
-// demonstrateNewExpression shows Go 1.26 new() clarifications
-// Note: Go 1.26 does NOT support new(expression), this is a common misconception
-// The actual change is that new() is better optimized for stack allocation
+// demonstrateNewExpression shows Go 1.26 new() with expression operand
+// Go 1.26 语言变更：内置 new 函数允许操作数为表达式，指定变量的初始值
 func demonstrateNewExpression() {
-	fmt.Println("=== Feature 1: new() clarifications ===")
-	fmt.Println("NOTE: Go 1.26 does NOT support new(expression)")
-	fmt.Println("The actual improvements are:")
-	fmt.Println("1. Better stack allocation for small objects")
-	fmt.Println("2. Optimized escape analysis")
+	fmt.Println("=== Feature 1: new() with expressions ===")
+	fmt.Println("Go 1.26 Change: The built-in new function now allows its operand to be an expression.")
 	fmt.Println()
 
-	// Traditional usage (still the only way)
-	ptr := new(int)
-	*ptr = 42
-	fmt.Printf("Traditional new() usage: %d\n", *ptr)
-
-	// Practical use case: optional fields in JSON
-	type User struct {
-		Name string
-		Age  *int `json:"age,omitempty"`
+	// Official Go 1.26 example: new(expression)
+	// 特别适用于序列化包中表示可选值的指针字段
+	type Person struct {
+		Name string `json:"name"`
+		Age  *int   `json:"age"` // age if known; nil otherwise
 	}
 
-	// Traditional way (still valid)
-	age := 25
-	user := User{
+	born := time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)
+	person := Person{
 		Name: "Alice",
-		Age:  &age, // Use address of variable
+		Age:  new(yearsSince(born)), // Go 1.26: new accepts expression
 	}
+	fmt.Printf("Person: Name=%s, Age=%d\n", person.Name, *person.Age)
 
-	fmt.Printf("User with pointer field: Name=%s, Age=%d\n", user.Name, *user.Age)
+	// 更简洁的用法：不再需要临时变量
+	enabled := new(true)  // *bool pointing to true
+	count := new(42)      // *int pointing to 42
+	message := new("hello") // *string pointing to "hello"
+
+	fmt.Printf("new(true) = %t\n", *enabled)
+	fmt.Printf("new(42) = %d\n", *count)
+	fmt.Printf("new(\"hello\") = %s\n", *message)
 	fmt.Println()
 }
 
@@ -93,14 +76,14 @@ func demonstrateErrorsAsType() {
 
 	var err error = &CustomError{Code: 404, Message: "not found"}
 
-	// Before Go 1.26: need var declaration
+	// Before Go 1.26: need var declaration and pointer-to-pointer
 	var customErr1 *CustomError
 	if errors.As(err, &customErr1) {
 		fmt.Printf("Old way - Code: %d, Message: %s\n", customErr1.Code, customErr1.Message)
 	}
 
-	// Go 1.26: Direct type-safe assertion
-	// Note: This uses the new errors.AsType function
+	// Go 1.26: Direct type-safe assertion with generics
+	// AsType is type-safe at compile time, no reflection overhead
 	customErr2, ok := errors.AsType[*CustomError](err)
 	if ok {
 		fmt.Printf("New way - Code: %d, Message: %s\n", customErr2.Code, customErr2.Message)
@@ -117,7 +100,7 @@ func demonstrateErrorsAsType() {
 }
 
 // ============================================================================
-// Feature 3: slog.NewMultiHandler
+// Feature 3: slog.NewMultiHandler (Go 1.26)
 // ============================================================================
 
 // demonstrateMultiHandler shows Go 1.26 slog.NewMultiHandler feature
@@ -153,7 +136,7 @@ func demonstrateMultiHandler() {
 }
 
 // ============================================================================
-// Feature 4: Generic self-reference (conceptual)
+// Feature 4: Generic self-reference (Go 1.26)
 // ============================================================================
 
 // Adder is an example of self-referential generic constraint (Go 1.26)

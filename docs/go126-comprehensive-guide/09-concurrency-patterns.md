@@ -1151,8 +1151,8 @@ Go中预防:
 ├─ 避免持有锁时启动goroutine
 └─ 使用context取消
 
-Go 1.26增强:
-runtime.SetGoroutineLeakCallback 检测潜在死锁
+Go 1.26增强 (实验性):
+runtime/pprof goroutineleak profile 检测潜在死锁
 
 代码示例:
 // 潜在死锁

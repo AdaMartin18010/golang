@@ -2,9 +2,9 @@
 
 ## Status: S-Level (Superior)
 
-**Date:** 2026-04-03  
-**Author:** System Architect  
-**Version:** 2.0  
+**Date:** 2026-04-03
+**Author:** System Architect
+**Version:** 2.0
 
 ---
 
@@ -138,12 +138,12 @@ type MarketMaker struct {
     position    atomic.Int64
     activeOrders map[string]*ActiveOrder
     orderMu     sync.RWMutex
-    
+
     // Market data
     lastPrice   atomic.Value
     bidLevel    atomic.Value
     askLevel    atomic.Value
-    
+
     // Metrics
     quoteCount  atomic.Int64
     fillCount   atomic.Int64
@@ -182,20 +182,20 @@ func (mm *MarketMaker) Start(ctx context.Context) error {
     if err := mm.exchange.SubscribeMarketData(ctx, mm.config.Symbol, mm.onMarketData); err != nil {
         return err
     }
-    
+
     // Start quoting loop
     go mm.quoteLoop(ctx)
-    
+
     // Start position reconciliation
     go mm.reconcileLoop(ctx)
-    
+
     return nil
 }
 
 func (mm *MarketMaker) quoteLoop(ctx context.Context) {
     ticker := time.NewTicker(mm.config.QuoteRefreshRate)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ctx.Done():
@@ -209,26 +209,26 @@ func (mm *MarketMaker) quoteLoop(ctx context.Context) {
 func (mm *MarketMaker) updateQuotes(ctx context.Context) {
     bidLevel := mm.bidLevel.Load().(PriceLevel)
     askLevel := mm.askLevel.Load().(PriceLevel)
-    
+
     // Calculate optimal spread
     spread := askLevel.Price - bidLevel.Price
     if spread < mm.config.SpreadThreshold {
         return // Skip if spread too tight
     }
-    
+
     position := mm.position.Load()
-    
+
     // Dynamic sizing based on inventory
     bidSize := mm.calculateBidSize(position)
     askSize := mm.calculateAskSize(position)
-    
+
     // Calculate quote prices with skew
     bidPrice := mm.calculateBidPrice(bidLevel, position)
     askPrice := mm.calculateAskPrice(askLevel, position)
-    
+
     // Cancel stale orders
     mm.cancelStaleOrders(ctx)
-    
+
     // Send new quotes
     if bidSize > 0 {
         mm.sendQuote(ctx, SideBuy, bidPrice, bidSize)
@@ -236,7 +236,7 @@ func (mm *MarketMaker) updateQuotes(ctx context.Context) {
     if askSize > 0 {
         mm.sendQuote(ctx, SideSell, askPrice, askSize)
     }
-    
+
     mm.quoteCount.Add(2)
 }
 
@@ -288,12 +288,12 @@ func (mm *MarketMaker) sendQuote(ctx context.Context, side Side, price float64, 
         Quantity:  size,
         TimeInForce: TimeInForceGTC,
     }
-    
+
     resp, err := mm.exchange.SendOrder(ctx, order)
     if err != nil {
         return
     }
-    
+
     mm.orderMu.Lock()
     mm.activeOrders[resp.OrderID] = &ActiveOrder{
         ID:        resp.OrderID,
@@ -307,10 +307,10 @@ func (mm *MarketMaker) sendQuote(ctx context.Context, side Side, price float64, 
 
 func (mm *MarketMaker) cancelStaleOrders(ctx context.Context) {
     cutoff := time.Now().Add(-mm.config.CancelTimeout)
-    
+
     mm.orderMu.Lock()
     defer mm.orderMu.Unlock()
-    
+
     for id, order := range mm.activeOrders {
         if order.Timestamp.Before(cutoff) {
             mm.exchange.CancelOrder(ctx, id)
@@ -333,12 +333,12 @@ func (mm *MarketMaker) onExecution(exec ExecutionReport) {
         }
         mm.position.Add(delta)
         mm.fillCount.Add(1)
-        
+
         // Update P&L
         currentPnL := mm.pnl.Load().(float64)
         tradePnL := float64(exec.FilledQty) * (exec.AvgPrice - mm.lastPrice.Load().(float64))
         mm.pnl.Store(currentPnL + tradePnL)
-        
+
         // Remove from active orders
         mm.orderMu.Lock()
         delete(mm.activeOrders, exec.OrderID)
@@ -349,7 +349,7 @@ func (mm *MarketMaker) onExecution(exec ExecutionReport) {
 func (mm *MarketMaker) reconcileLoop(ctx context.Context) {
     ticker := time.NewTicker(1 * time.Second)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-ctx.Done():
@@ -366,7 +366,7 @@ func (mm *MarketMaker) reconcilePosition(ctx context.Context) {
     if err != nil {
         return
     }
-    
+
     localPos := mm.position.Load()
     if exchangePos != localPos {
         // Log discrepancy and update
@@ -381,7 +381,7 @@ type VWAPAlgorithm struct {
     timeWindow  time.Duration
     buckets     int
     executedQty atomic.Int64
-    
+
     volumeProfile []float64 // Historical volume distribution
 }
 
@@ -398,14 +398,14 @@ func NewVWAPAlgorithm(symbol string, targetQty int64, timeWindow time.Duration, 
 func (v *VWAPAlgorithm) Execute(ctx context.Context, exchange ExchangeConnector) error {
     bucketDuration := v.timeWindow / time.Duration(v.buckets)
     remainingQty := v.targetQty - v.executedQty.Load()
-    
+
     for i := 0; i < v.buckets && remainingQty > 0; i++ {
         bucketStart := time.Now()
         bucketTarget := int64(float64(remainingQty) * v.volumeProfile[i])
-        
+
         bucketExecuted := v.executeBucket(ctx, exchange, bucketTarget, bucketDuration)
         v.executedQty.Add(bucketExecuted)
-        
+
         // Wait for next bucket
         elapsed := time.Since(bucketStart)
         if elapsed < bucketDuration {
@@ -415,35 +415,35 @@ func (v *VWAPAlgorithm) Execute(ctx context.Context, exchange ExchangeConnector)
             case <-time.After(bucketDuration - elapsed):
             }
         }
-        
+
         remainingQty = v.targetQty - v.executedQty.Load()
     }
-    
+
     return nil
 }
 
 func (v *VWAPAlgorithm) executeBucket(ctx context.Context, exchange ExchangeConnector, targetQty int64, duration time.Duration) int64 {
     var executed int64
     chunkSize := targetQty / 10 // Split into smaller chunks
-    
+
     for executed < targetQty {
         remaining := targetQty - executed
         size := min(chunkSize, remaining)
-        
+
         order := &Order{
             Symbol:      v.symbol,
             Side:        SideBuy,
             Type:        OrderTypeMarket,
             Quantity:    size,
         }
-        
+
         resp, err := exchange.SendOrder(ctx, order)
         if err != nil {
             continue
         }
-        
+
         executed += resp.FilledQty
-        
+
         // Small delay between chunks
         select {
         case <-ctx.Done():
@@ -451,7 +451,7 @@ func (v *VWAPAlgorithm) executeBucket(ctx context.Context, exchange ExchangeConn
         case <-time.After(duration / 20):
         }
     }
-    
+
     return executed
 }
 
@@ -466,19 +466,19 @@ type TWAPAlgorithm struct {
 func (t *TWAPAlgorithm) Execute(ctx context.Context, exchange ExchangeConnector) error {
     intervalDuration := t.timeWindow / time.Duration(t.intervals)
     qtyPerInterval := t.targetQty / int64(t.intervals)
-    
+
     for i := 0; i < t.intervals; i++ {
         intervalStart := time.Now()
-        
+
         order := &Order{
             Symbol:   t.symbol,
             Side:     SideBuy,
             Type:     OrderTypeMarket,
             Quantity: qtyPerInterval,
         }
-        
+
         exchange.SendOrder(ctx, order)
-        
+
         elapsed := time.Since(intervalStart)
         if elapsed < intervalDuration {
             select {
@@ -488,7 +488,7 @@ func (t *TWAPAlgorithm) Execute(ctx context.Context, exchange ExchangeConnector)
             }
         }
     }
-    
+
     return nil
 }
 
@@ -498,7 +498,7 @@ type ImplementationShortfall struct {
     targetQty    int64
     urgency      float64 // 0-1, higher = more aggressive
     priceTarget  float64
-    
+
     alpha        float64 // Expected price drift
     lambda       float64 // Market impact coefficient
     sigma        float64 // Volatility
@@ -507,34 +507,34 @@ type ImplementationShortfall struct {
 func (is *ImplementationShortfall) OptimalExecutionSchedule() []TradeSlice {
     // Calculate optimal trading trajectory
     // Based on Almgren-Chriss model
-    
+
     n := 10 // Number of slices
     schedule := make([]TradeSlice, n)
-    
+
     // Initial position
     x0 := float64(is.targetQty)
-    
+
     // Risk aversion
     gamma := is.urgency * is.lambda / (is.sigma * is.sigma)
-    
+
     // Calculate optimal slices
     for i := 0; i < n; i++ {
         t := float64(i) / float64(n)
-        
+
         // Optimal position at time t
         xt := x0 * math.Sinh(gamma*(1-t)) / math.Sinh(gamma)
-        
+
         if i == 0 {
             schedule[i].Quantity = int64(x0 - xt)
         } else {
             prevX := float64(schedule[i-1].Remaining)
             schedule[i].Quantity = int64(prevX - xt)
         }
-        
+
         schedule[i].Remaining = int64(xt)
         schedule[i].Timestamp = time.Duration(i) * time.Hour / time.Duration(n)
     }
-    
+
     return schedule
 }
 
@@ -646,12 +646,12 @@ type PairTrading struct {
     entryZScore  float64
     exitZScore   float64
     lookback     int
-    
+
     prices1      []float64
     prices2      []float64
     spreadHistory []float64
     mu           sync.RWMutex
-    
+
     position1    int64
     position2    int64
 }
@@ -673,7 +673,7 @@ func NewPairTrading(leg1, leg2 string, hedgeRatio, entryZ, exitZ float64, lookba
 func (pt *PairTrading) OnPriceUpdate(symbol string, price float64) {
     pt.mu.Lock()
     defer pt.mu.Unlock()
-    
+
     if symbol == pt.leg1 {
         pt.prices1 = append(pt.prices1, price)
         if len(pt.prices1) > pt.lookback {
@@ -685,7 +685,7 @@ func (pt *PairTrading) OnPriceUpdate(symbol string, price float64) {
             pt.prices2 = pt.prices2[1:]
         }
     }
-    
+
     if len(pt.prices1) == pt.lookback && len(pt.prices2) == pt.lookback {
         pt.calculateSpread()
         pt.evaluateSignal()
@@ -705,12 +705,12 @@ func (pt *PairTrading) evaluateSignal() {
     if len(pt.spreadHistory) < pt.lookback {
         return
     }
-    
+
     // Calculate z-score
     mean, std := calculateMeanStd(pt.spreadHistory)
     currentSpread := pt.spreadHistory[len(pt.spreadHistory)-1]
     zScore := (currentSpread - mean) / std
-    
+
     // Trading logic
     if pt.position1 == 0 && pt.position2 == 0 {
         // No position - look for entry
@@ -752,13 +752,13 @@ func calculateMeanStd(data []float64) (mean, std float64) {
     if len(data) == 0 {
         return 0, 0
     }
-    
+
     sum := 0.0
     for _, v := range data {
         sum += v
     }
     mean = sum / float64(len(data))
-    
+
     sumSq := 0.0
     for _, v := range data {
         diff := v - mean
@@ -766,7 +766,7 @@ func calculateMeanStd(data []float64) (mean, std float64) {
     }
     variance := sumSq / float64(len(data))
     std = math.Sqrt(variance)
-    
+
     return mean, std
 }
 
@@ -775,7 +775,7 @@ type MomentumStrategy struct {
     symbol       string
     lookback     int
     threshold    float64
-    
+
     returns      []float64
     mu           sync.RWMutex
     position     int64
@@ -784,7 +784,7 @@ type MomentumStrategy struct {
 func (ms *MomentumStrategy) OnPrice(price float64) {
     ms.mu.Lock()
     defer ms.mu.Unlock()
-    
+
     if len(ms.returns) > 0 {
         ret := (price - ms.prices[len(ms.prices)-1]) / ms.prices[len(ms.prices)-1]
         ms.returns = append(ms.returns, ret)
@@ -792,10 +792,10 @@ func (ms *MomentumStrategy) OnPrice(price float64) {
             ms.returns = ms.returns[1:]
         }
     }
-    
+
     if len(ms.returns) == ms.lookback {
         momentum := calculateMomentum(ms.returns)
-        
+
         if momentum > ms.threshold && ms.position <= 0 {
             ms.position = 100 // Enter long
         } else if momentum < -ms.threshold && ms.position >= 0 {
@@ -853,15 +853,15 @@ func (hv *HistoricalVaR) Calculate(portfolio Portfolio, confidence float64, hori
     sorted := make([]float64, len(hv.returns))
     copy(sorted, hv.returns)
     sort.Float64s(sorted)
-    
+
     // Find percentile
     index := int(math.Ceil((1 - confidence) * float64(len(sorted))))
     if index >= len(sorted) {
         index = len(sorted) - 1
     }
-    
+
     varLoss := -sorted[index] * portfolio.Value
-    
+
     // Scale to horizon
     timeScaling := math.Sqrt(horizon.Hours() / 24) // Assuming daily returns
     return varLoss * timeScaling, nil
@@ -880,10 +880,10 @@ func NewParametricVaR(mean, stdDev float64) *ParametricVaR {
 func (pv *ParametricVaR) Calculate(portfolio Portfolio, confidence float64, horizon time.Duration) (float64, error) {
     // Z-score for confidence level
     zScore := inverseNormalCDF(confidence)
-    
+
     // Daily VaR
     dailyVaR := portfolio.Value * (pv.mean - zScore*pv.stdDev)
-    
+
     // Scale to horizon
     timeScaling := math.Sqrt(horizon.Hours() / 24)
     return dailyVaR * timeScaling, nil
@@ -902,26 +902,26 @@ func NewMonteCarloVaR(simulations int, seed int64) *MonteCarloVaR {
 func (mc *MonteCarloVaR) Calculate(portfolio Portfolio, confidence float64, horizon time.Duration) (float64, error) {
     // Generate correlated random returns
     simulatedReturns := mc.simulateReturns(portfolio, horizon)
-    
+
     // Calculate portfolio values
     portfolioValues := make([]float64, mc.numSimulations)
     for i, ret := range simulatedReturns {
         portfolioValues[i] = portfolio.Value * (1 + ret)
     }
-    
+
     // Calculate losses
     losses := make([]float64, mc.numSimulations)
     for i, val := range portfolioValues {
         losses[i] = portfolio.Value - val
     }
-    
+
     // Find VaR percentile
     sort.Float64s(losses)
     index := int(math.Ceil(confidence * float64(len(losses))))
     if index >= len(losses) {
         index = len(losses) - 1
     }
-    
+
     return losses[index], nil
 }
 
@@ -929,13 +929,13 @@ func (mc *MonteCarloVaR) simulateReturns(portfolio Portfolio, horizon time.Durat
     // Simplified: assume normal distribution
     // In practice, use copulas for correlated returns
     returns := make([]float64, mc.numSimulations)
-    
+
     for i := 0; i < mc.numSimulations; i++ {
         // Generate random return using portfolio volatility
         z := normalRandom()
         returns[i] = portfolio.MeanReturn + portfolio.Volatility*z*math.Sqrt(horizon.Hours()/24)
     }
-    
+
     return returns
 }
 
@@ -949,10 +949,10 @@ func (c *CVaR) Calculate(portfolio Portfolio, confidence float64, horizon time.D
     sorted := make([]float64, len(c.returns))
     copy(sorted, c.returns)
     sort.Float64s(sorted)
-    
+
     // Find threshold index
     thresholdIndex := int(math.Ceil((1 - confidence) * float64(len(sorted))))
-    
+
     // Calculate average of tail losses
     var sum float64
     count := 0
@@ -960,11 +960,11 @@ func (c *CVaR) Calculate(portfolio Portfolio, confidence float64, horizon time.D
         sum += sorted[i]
         count++
     }
-    
+
     if count == 0 {
         return 0, nil
     }
-    
+
     avgReturn := sum / float64(count)
     return -avgReturn * portfolio.Value * math.Sqrt(horizon.Hours()/24), nil
 }
@@ -992,7 +992,7 @@ func inverseNormalCDF(p float64) float64 {
     if p <= 0 || p >= 1 {
         return 0
     }
-    
+
     // Coefficients
     a1 := -3.969683028665376e+01
     a2 := 2.209460984245205e+02
@@ -1000,30 +1000,30 @@ func inverseNormalCDF(p float64) float64 {
     a4 := 1.383577518672690e+02
     a5 := -3.066479806614716e+01
     a6 := 2.506628277459239e+00
-    
+
     b1 := -5.447609879822406e+01
     b2 := 1.615858368580409e+02
     b3 := -1.556989798598866e+02
     b4 := 6.680131188771972e+01
     b5 := -1.328068155288572e+01
-    
+
     c1 := -7.784894002430293e-03
     c2 := -3.223964580411365e-01
     c3 := -2.400758277161838e+00
     c4 := -2.549732539343734e+00
     c5 := 4.374664141464968e+00
     c6 := 2.938163982698783e+00
-    
+
     d1 := 7.784695709041462e-03
     d2 := 3.224671290700398e-01
     d3 := 2.445134137142996e+00
     d4 := 3.754408661907416e+00
-    
+
     pLow := 0.02425
     pHigh := 1 - pLow
-    
+
     var q, r float64
-    
+
     if p < pLow {
         q = math.Sqrt(-2 * math.Log(p))
         return (((((c1*q+c2)*q+c3)*q+c4)*q+c5)*q + c6) /
@@ -1044,7 +1044,7 @@ func normalRandom() float64 {
     // Box-Muller transform
     u1 := 0.5 // Replace with actual random
     u2 := 0.5
-    
+
     mag := math.Sqrt(-2.0 * math.Log(u1))
     return mag * math.Cos(2*math.Pi*u2)
 }
@@ -1100,10 +1100,10 @@ func (bs *BlackScholesCalculator) CalculatePrice(opt Option) float64 {
     r := opt.RiskFreeRate
     q := opt.DividendYield
     sigma := opt.Volatility
-    
+
     d1 := (math.Log(S/K) + (r-q+sigma*sigma/2)*T) / (sigma * math.Sqrt(T))
     d2 := d1 - sigma*math.Sqrt(T)
-    
+
     if opt.Type == OptionTypeCall {
         return S*math.Exp(-q*T)*normalCDF(d1) - K*math.Exp(-r*T)*normalCDF(d2)
     }
@@ -1117,21 +1117,21 @@ func (bs *BlackScholesCalculator) CalculateGreeks(opt Option) Greeks {
     r := opt.RiskFreeRate
     q := opt.DividendYield
     sigma := opt.Volatility
-    
+
     d1 := (math.Log(S/K) + (r-q+sigma*sigma/2)*T) / (sigma * math.Sqrt(T))
     d2 := d1 - sigma*math.Sqrt(T)
-    
+
     nd1 := normalPDF(d1)
-    
+
     var delta float64
     if opt.Type == OptionTypeCall {
         delta = math.Exp(-q*T) * normalCDF(d1)
     } else {
         delta = -math.Exp(-q*T) * normalCDF(-d1)
     }
-    
+
     gamma := math.Exp(-q*T) * nd1 / (S * sigma * math.Sqrt(T))
-    
+
     var theta float64
     if opt.Type == OptionTypeCall {
         theta = -S*math.Exp(-q*T)*nd1*sigma/(2*math.Sqrt(T)) -
@@ -1143,16 +1143,16 @@ func (bs *BlackScholesCalculator) CalculateGreeks(opt Option) Greeks {
             q*S*math.Exp(-q*T)*normalCDF(-d1)
     }
     theta = theta / 365 // Daily theta
-    
+
     vega := S * math.Exp(-q*T) * nd1 * math.Sqrt(T) / 100 // Per 1% vol change
-    
+
     var rho float64
     if opt.Type == OptionTypeCall {
         rho = K * T * math.Exp(-r*T) * normalCDF(d2) / 100 // Per 1% rate change
     } else {
         rho = -K * T * math.Exp(-r*T) * normalCDF(-d2) / 100
     }
-    
+
     return Greeks{
         Delta: delta,
         Gamma: gamma,
@@ -1185,7 +1185,7 @@ type PortfolioGreeks struct {
     TotalTheta float64
     TotalVega  float64
     TotalRho   float64
-    
+
     ByUnderlying map[string]Greeks
     ByExpiry     map[string]Greeks
 }
@@ -1195,13 +1195,13 @@ func CalculatePortfolioGreeks(positions []OptionPosition) PortfolioGreeks {
         ByUnderlying: make(map[string]Greeks),
         ByExpiry:     make(map[string]Greeks),
     }
-    
+
     bs := &BlackScholesCalculator{}
-    
+
     for _, pos := range positions {
         greeks := bs.CalculateGreeks(pos.Option)
         multiplier := float64(pos.Quantity)
-        
+
         scaledGreeks := Greeks{
             Delta: greeks.Delta * multiplier,
             Gamma: greeks.Gamma * multiplier,
@@ -1209,13 +1209,13 @@ func CalculatePortfolioGreeks(positions []OptionPosition) PortfolioGreeks {
             Vega:  greeks.Vega * multiplier,
             Rho:   greeks.Rho * multiplier,
         }
-        
+
         pg.TotalDelta += scaledGreeks.Delta
         pg.TotalGamma += scaledGreeks.Gamma
         pg.TotalTheta += scaledGreeks.Theta
         pg.TotalVega += scaledGreeks.Vega
         pg.TotalRho += scaledGreeks.Rho
-        
+
         // Aggregate by underlying
         if _, ok := pg.ByUnderlying[pos.Option.Underlying]; !ok {
             pg.ByUnderlying[pos.Option.Underlying] = Greeks{}
@@ -1227,7 +1227,7 @@ func CalculatePortfolioGreeks(positions []OptionPosition) PortfolioGreeks {
         ug.Vega += scaledGreeks.Vega
         ug.Rho += scaledGreeks.Rho
         pg.ByUnderlying[pos.Option.Underlying] = ug
-        
+
         // Aggregate by expiry
         expiryKey := pos.Option.Expiry.Format("2006-01-02")
         if _, ok := pg.ByExpiry[expiryKey]; !ok {
@@ -1241,7 +1241,7 @@ func CalculatePortfolioGreeks(positions []OptionPosition) PortfolioGreeks {
         eg.Rho += scaledGreeks.Rho
         pg.ByExpiry[expiryKey] = eg
     }
-    
+
     return pg
 }
 
@@ -1268,22 +1268,22 @@ import (
 type RiskEngine struct {
     // Limits
     limits        RiskLimits
-    
+
     // Current state
     positions     map[string]Position
     posMu         sync.RWMutex
-    
+
     pnl           atomic.Value
     exposure      atomic.Value
     margin        atomic.Value
-    
+
     // Calculators
     varCalc       VaRModel
     greeksCalc    *BlackScholesCalculator
-    
+
     // Alerting
     alerts        chan RiskAlert
-    
+
     // Metrics
     checkCount    atomic.Int64
     rejectCount   atomic.Int64
@@ -1295,7 +1295,7 @@ type RiskLimits struct {
     MaxVaR           float64             // Daily VaR limit
     MaxDrawdown      float64             // Max drawdown %
     MarginRequirement float64            // Margin ratio
-    
+
     // Option-specific
     MaxDelta         float64
     MaxGamma         float64
@@ -1332,17 +1332,17 @@ const (
 // PreTradeCheck validates order before execution
 func (re *RiskEngine) PreTradeCheck(ctx context.Context, order *Order, portfolio Portfolio) (*RiskCheckResult, error) {
     re.checkCount.Add(1)
-    
+
     // Check position limits
     re.posMu.RLock()
     currentPos := re.positions[order.Symbol]
     re.posMu.RUnlock()
-    
+
     newPosition := currentPos.Quantity + order.Quantity
     if order.Side == SideSell {
         newPosition = currentPos.Quantity - order.Quantity
     }
-    
+
     if limit, ok := re.limits.MaxPosition[order.Symbol]; ok {
         if abs(newPosition) > limit {
             re.rejectCount.Add(1)
@@ -1352,12 +1352,12 @@ func (re *RiskEngine) PreTradeCheck(ctx context.Context, order *Order, portfolio
             }, nil
         }
     }
-    
+
     // Check exposure
     orderValue := float64(order.Quantity) * order.Price
     currentExposure := re.exposure.Load().(float64)
     newExposure := currentExposure + orderValue
-    
+
     if newExposure > re.limits.MaxExposure {
         re.rejectCount.Add(1)
         return &RiskCheckResult{
@@ -1365,13 +1365,13 @@ func (re *RiskEngine) PreTradeCheck(ctx context.Context, order *Order, portfolio
             Reason:   "Exposure limit exceeded",
         }, nil
     }
-    
+
     // Check VaR impact
     varImpact, err := re.calculateOrderVaRImpact(order, portfolio)
     if err != nil {
         return nil, err
     }
-    
+
     currentVaR := re.calculatePortfolioVaR(portfolio)
     if currentVaR+varImpact > re.limits.MaxVaR {
         re.rejectCount.Add(1)
@@ -1387,11 +1387,11 @@ func (re *RiskEngine) PreTradeCheck(ctx context.Context, order *Order, portfolio
             },
         }
     }
-    
+
     // Check margin requirements
     marginRequired := re.calculateMarginRequirement(order)
     availableMargin := re.margin.Load().(float64)
-    
+
     if marginRequired > availableMargin {
         re.rejectCount.Add(1)
         return &RiskCheckResult{
@@ -1399,7 +1399,7 @@ func (re *RiskEngine) PreTradeCheck(ctx context.Context, order *Order, portfolio
             Reason:   "Insufficient margin",
         }, nil
     }
-    
+
     return &RiskCheckResult{
         Approved: true,
         Metrics: map[string]interface{}{
@@ -1413,17 +1413,17 @@ func (re *RiskEngine) PreTradeCheck(ctx context.Context, order *Order, portfolio
 func (re *RiskEngine) calculateOrderVaRImpact(order *Order, portfolio Portfolio) (float64, error) {
     // Simplified: assume order adds linearly to portfolio VaR
     // In practice, use incremental VaR calculation
-    
+
     positionValue := float64(order.Quantity) * order.Price
     portfolioWeight := positionValue / portfolio.Value
-    
+
     // Estimate based on position volatility
     estimatedVol := 0.02 // 2% daily volatility assumption
     confidence := 0.99
-    
+
     zScore := inverseNormalCDF(confidence)
     varImpact := positionValue * estimatedVol * zScore
-    
+
     // Diversification benefit
     diversification := 0.7 // 30% reduction
     return varImpact * diversification * portfolioWeight, nil
@@ -1437,17 +1437,17 @@ func (re *RiskEngine) calculatePortfolioVaR(portfolio Portfolio) float64 {
 func (re *RiskEngine) calculateMarginRequirement(order *Order) float64 {
     // SPAN margin calculation simplified
     // In practice, use exchange-provided margin rates
-    
+
     positionValue := float64(order.Quantity) * order.Price
     marginRate := 0.15 // 15% initial margin
-    
+
     return positionValue * marginRate
 }
 
 func (re *RiskEngine) UpdatePosition(symbol string, qty int64, price float64) {
     re.posMu.Lock()
     defer re.posMu.Unlock()
-    
+
     if pos, ok := re.positions[symbol]; ok {
         pos.Quantity = qty
         pos.Price = price
@@ -1459,7 +1459,7 @@ func (re *RiskEngine) UpdatePosition(symbol string, qty int64, price float64) {
             Price:    price,
         }
     }
-    
+
     // Recalculate exposure
     re.recalculateExposure()
 }
@@ -1505,14 +1505,14 @@ type FraudDetector struct {
     rules          []FraudRule
     mlModel        MLModel
     featureStore   FeatureStore
-    
+
     // Risk scoring
     riskThresholds RiskThresholds
-    
+
     // Caching
     velocityCache  map[string]*VelocityData
     cacheMu        sync.RWMutex
-    
+
     // Alerting
     alerts         chan FraudAlert
 }
@@ -1561,28 +1561,28 @@ type VelocityRule struct {
 
 func (vr *VelocityRule) Evaluate(ctx context.Context, txn Transaction) (float64, []string) {
     features, _ := vr.featureStore.GetAccountFeatures(ctx, txn.AccountID)
-    
+
     var risk float64
     var reasons []string
-    
+
     // Check transaction count in window
     if features.TxCountLastHour > vr.maxCount {
         risk += 0.3
         reasons = append(reasons, "high_transaction_velocity")
     }
-    
+
     // Check amount velocity
     if features.AmountLastHour > vr.maxAmount {
         risk += 0.25
         reasons = append(reasons, "high_amount_velocity")
     }
-    
+
     // Check merchant velocity
     if features.UniqueMerchantsLastHour > 5 {
         risk += 0.2
         reasons = append(reasons, "multiple_merchants")
     }
-    
+
     return risk, reasons
 }
 
@@ -1596,13 +1596,13 @@ type GeolocationRule struct {
 func (gr *GeolocationRule) Evaluate(ctx context.Context, txn Transaction) (float64, []string) {
     var risk float64
     var reasons []string
-    
+
     // Get last transaction location
     lastTxn, err := gr.getLastTransaction(ctx, txn.AccountID)
     if err != nil {
         return 0, nil
     }
-    
+
     timeDiff := txn.Timestamp.Sub(lastTxn.Timestamp).Hours()
     if timeDiff < 1 {
         // Check if same location
@@ -1610,7 +1610,7 @@ func (gr *GeolocationRule) Evaluate(ctx context.Context, txn Transaction) (float
             txn.Location.Latitude, txn.Location.Longitude,
             lastTxn.Location.Latitude, lastTxn.Location.Longitude,
         )
-        
+
         if distance > 0 {
             speed := distance / timeDiff // km/h
             if speed > gr.maxSpeedKmh {
@@ -1619,14 +1619,14 @@ func (gr *GeolocationRule) Evaluate(ctx context.Context, txn Transaction) (float
             }
         }
     }
-    
+
     // Check high-risk countries
     highRiskCountries := map[string]bool{"XX": true, "YY": true}
     if highRiskCountries[txn.Location.Country] {
         risk += 0.3
         reasons = append(reasons, "high_risk_country")
     }
-    
+
     return risk, reasons
 }
 
@@ -1643,21 +1643,21 @@ type DeviceRule struct{}
 func (dr *DeviceRule) Evaluate(ctx context.Context, txn Transaction) (float64, []string) {
     var risk float64
     var reasons []string
-    
+
     // Check if new device
     deviceHistory := dr.getDeviceHistory(ctx, txn.AccountID)
-    
+
     if !contains(deviceHistory, txn.DeviceID) {
         risk += 0.15
         reasons = append(reasons, "new_device")
     }
-    
+
     // Check for device fingerprint anomalies
     if dr.isEmulator(txn.DeviceID) {
         risk += 0.4
         reasons = append(reasons, "emulator_detected")
     }
-    
+
     return risk, reasons
 }
 
@@ -1680,29 +1680,29 @@ type AmountRule struct {
 func (ar *AmountRule) Evaluate(ctx context.Context, txn Transaction) (float64, []string) {
     var risk float64
     var reasons []string
-    
+
     profile, _ := ar.featureStore.GetAccountProfile(ctx, txn.AccountID)
-    
+
     // Check if amount is an outlier
     zScore := (txn.Amount - profile.AverageAmount) / profile.StdDevAmount
-    
+
     if zScore > 3 {
         risk += 0.35
         reasons = append(reasons, "unusual_amount")
     }
-    
+
     // Check round number patterns (potential money laundering)
     if isRoundNumber(txn.Amount) {
         risk += 0.1
         reasons = append(reasons, "round_amount")
     }
-    
+
     // Check velocity of large amounts
     if txn.Amount > profile.MaxHistoricalAmount*1.5 {
         risk += 0.3
         reasons = append(reasons, "amount_exceeds_history")
     }
-    
+
     return risk, reasons
 }
 
@@ -1719,7 +1719,7 @@ func (fd *FraudDetector) EvaluateTransaction(ctx context.Context, txn Transactio
     var totalRisk float64
     allReasons := make([]string, 0)
     ruleResults := make(map[string]float64)
-    
+
     // Run rule-based checks
     for _, rule := range fd.rules {
         risk, reasons := rule.Evaluate(ctx, txn)
@@ -1727,20 +1727,20 @@ func (fd *FraudDetector) EvaluateTransaction(ctx context.Context, txn Transactio
         totalRisk += risk
         allReasons = append(allReasons, reasons...)
     }
-    
+
     // Run ML model
     if fd.mlModel != nil {
         mlRisk := fd.mlModel.Predict(ctx, txn)
         totalRisk = 0.6*totalRisk + 0.4*mlRisk // Weighted combination
         ruleResults["ml_model"] = mlRisk
     }
-    
+
     // Normalize to 0-1
     totalRisk = math.Min(totalRisk, 1.0)
-    
+
     // Determine action
     action := fd.determineAction(totalRisk)
-    
+
     // Generate alert if needed
     if totalRisk > fd.riskThresholds.Medium {
         fd.alerts <- FraudAlert{
@@ -1751,7 +1751,7 @@ func (fd *FraudDetector) EvaluateTransaction(ctx context.Context, txn Transactio
             Timestamp:     time.Now(),
         }
     }
-    
+
     return &FraudResult{
         TransactionID: txn.ID,
         RiskScore:     totalRisk,
@@ -1834,17 +1834,17 @@ type MLModel interface {
 
 func haversineDistance(lat1, lon1, lat2, lon2 float64) float64 {
     const R = 6371 // Earth radius in km
-    
+
     phi1 := lat1 * math.Pi / 180
     phi2 := lat2 * math.Pi / 180
     deltaPhi := (lat2 - lat1) * math.Pi / 180
     deltaLambda := (lon2 - lon1) * math.Pi / 180
-    
+
     a := math.Sin(deltaPhi/2)*math.Sin(deltaPhi/2) +
         math.Cos(phi1)*math.Cos(phi2)*
             math.Sin(deltaLambda/2)*math.Sin(deltaLambda/2)
     c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-    
+
     return R * c
 }
 
@@ -1881,25 +1881,25 @@ type TransactionReport struct {
     ReportID      string      `xml:"RptId,attr"`
     ReportType    string      `xml:"RptTp,attr"`
     Timestamp     time.Time   `xml:"ExecTs,attr"`
-    
+
     // Trade details
     TradeID       string      `xml:"Tx>TradId"`
     TradeDate     time.Time   `xml:"Tx>TradDt"`
-    
+
     // Instrument
     ISIN          string      `xml:"Tx>FinInstrm>Id>ISIN"`
     InstrumentID  string      `xml:"Tx>FinInstrm>Id>InstrmId"`
-    
+
     // Counterparties
     Buyer         Counterparty `xml:"Tx>Buyr"`
     Seller        Counterparty `xml:"Tx>Sllr"`
-    
+
     // Terms
     Quantity      float64     `xml:"Tx>TradgCpcty>Qty"`
     Price         float64     `xml:"Tx>Pric>Pric"`
     Currency      string      `xml:"Tx>Pric>Ccy"`
     Venue         string      `xml:"Tx>TradVn"`
-    
+
     // Algorithm details
     AlgoID        string      `xml:"Tx>Algo>Id"`
     AlgoType      string      `xml:"Tx>Algo>AlgoTp"`
@@ -1931,13 +1931,13 @@ func (rg *ReportGenerator) GenerateMiFIDReport(trade Trade) (*TransactionReport,
         ReportID:   generateReportID(),
         ReportType: "TRAN",
         Timestamp:  time.Now().UTC(),
-        
+
         TradeID:   trade.ID,
         TradeDate: trade.Timestamp,
-        
+
         ISIN:         trade.Instrument.ISIN,
         InstrumentID: trade.Instrument.ID,
-        
+
         Buyer: Counterparty{
             LEI: trade.Buyer.LEI,
             ID:  trade.Buyer.ID,
@@ -1946,21 +1946,21 @@ func (rg *ReportGenerator) GenerateMiFIDReport(trade Trade) (*TransactionReport,
             LEI: trade.Seller.LEI,
             ID:  trade.Seller.ID,
         },
-        
+
         Quantity: trade.Quantity,
         Price:    trade.Price,
         Currency: trade.Currency,
         Venue:    trade.Venue,
-        
+
         AlgoID:   trade.AlgorithmID,
         AlgoType: trade.AlgorithmType,
     }
-    
+
     // Validate report
     if err := rg.validateMiFIDReport(report); err != nil {
         return nil, err
     }
-    
+
     return report, nil
 }
 
@@ -1985,7 +1985,7 @@ func (rg *ReportGenerator) GenerateEMIRReport(trade Trade) (*EMIRReport, error) 
         ActionType:     "NEWT",
         Cleared:        trade.Cleared,
         ClearingObligation: trade.ClearingObligation,
-        
+
         Counterparty1: EMIRCounterparty{
             LEI:        trade.Buyer.LEI,
             Collateral: trade.BuyerCollateral,
@@ -1994,19 +1994,19 @@ func (rg *ReportGenerator) GenerateEMIRReport(trade Trade) (*EMIRReport, error) 
             LEI:        trade.Seller.LEI,
             Collateral: trade.SellerCollateral,
         },
-        
+
         Valuation: EMIRValuation{
             Amount:     trade.MarketValue,
             Currency:   trade.Currency,
             Timestamp:  time.Now(),
         },
-        
+
         MarginData: EMIRMargin{
             InitialMargin:    trade.InitialMargin,
             VariationMargin:  trade.VariationMargin,
         },
     }
-    
+
     return report, nil
 }
 
@@ -2113,11 +2113,11 @@ func NewLockFreeQueue(capacity int) *LockFreeQueue {
 func (q *LockFreeQueue) Enqueue(item interface{}) bool {
     tail := atomic.LoadUint64(&q.tail)
     nextTail := (tail + 1) % q.capacity
-    
+
     if nextTail == atomic.LoadUint64(&q.head) {
         return false // Queue full
     }
-    
+
     q.buffer[tail] = item
     atomic.StoreUint64(&q.tail, nextTail)
     return true
@@ -2125,11 +2125,11 @@ func (q *LockFreeQueue) Enqueue(item interface{}) bool {
 
 func (q *LockFreeQueue) Dequeue() (interface{}, bool) {
     head := atomic.LoadUint64(&q.head)
-    
+
     if head == atomic.LoadUint64(&q.tail) {
         return nil, false // Queue empty
     }
-    
+
     item := q.buffer[head]
     atomic.StoreUint64(&q.head, (head+1)%q.capacity)
     return item, true
@@ -2194,7 +2194,7 @@ func NewBatchProcessor(batchSize int, timeout time.Duration, processor func([]in
 func (bp *BatchProcessor) Add(item interface{}) {
     bp.mu.Lock()
     bp.buffer = append(bp.buffer, item)
-    
+
     if len(bp.buffer) >= bp.batchSize {
         bp.flush()
     } else if bp.timer == nil {
@@ -2207,16 +2207,16 @@ func (bp *BatchProcessor) flush() {
     if len(bp.buffer) == 0 {
         return
     }
-    
+
     batch := make([]interface{}, len(bp.buffer))
     copy(batch, bp.buffer)
     bp.buffer = bp.buffer[:0]
-    
+
     if bp.timer != nil {
         bp.timer.Stop()
         bp.timer = nil
     }
-    
+
     go bp.processor(batch)
 }
 
@@ -2272,19 +2272,19 @@ func (es *EncryptionService) EncryptSensitive(plaintext []byte) (*EncryptedData,
     if _, err := io.ReadFull(rand.Reader, dek); err != nil {
         return nil, err
     }
-    
+
     // Encrypt data with DEK
     ciphertext, err := aesGCMEncrypt(dek, plaintext)
     if err != nil {
         return nil, err
     }
-    
+
     // Encrypt DEK with master key
     encryptedDEK, err := es.hsm.Encrypt(es.masterKeyID, dek)
     if err != nil {
         return nil, err
     }
-    
+
     return &EncryptedData{
         Ciphertext:   ciphertext,
         EncryptedKey: encryptedDEK,
@@ -2299,7 +2299,7 @@ func (es *EncryptionService) DecryptSensitive(data *EncryptedData) ([]byte, erro
     if err != nil {
         return nil, err
     }
-    
+
     // Decrypt data
     return aesGCMDecrypt(dek, data.Ciphertext)
 }
@@ -2316,17 +2316,17 @@ func aesGCMEncrypt(key, plaintext []byte) ([]byte, error) {
     if err != nil {
         return nil, err
     }
-    
+
     gcm, err := cipher.NewGCM(block)
     if err != nil {
         return nil, err
     }
-    
+
     nonce := make([]byte, gcm.NonceSize())
     if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
         return nil, err
     }
-    
+
     return gcm.Seal(nonce, nonce, plaintext, nil), nil
 }
 
@@ -2335,17 +2335,17 @@ func aesGCMDecrypt(key, ciphertext []byte) ([]byte, error) {
     if err != nil {
         return nil, err
     }
-    
+
     gcm, err := cipher.NewGCM(block)
     if err != nil {
         return nil, err
     }
-    
+
     nonceSize := gcm.NonceSize()
     if len(ciphertext) < nonceSize {
         return nil, fmt.Errorf("ciphertext too short")
     }
-    
+
     nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
     return gcm.Open(nil, nonce, ciphertext, nil)
 }
@@ -2361,12 +2361,12 @@ func (ts *TokenService) Tokenize(cardNumber string) (string, error) {
     if _, err := rand.Read(token); err != nil {
         return "", err
     }
-    
+
     tokenStr := fmt.Sprintf("%x", token)
-    
+
     // Store mapping in secure vault
     // Implementation depends on vault storage
-    
+
     return tokenStr, nil
 }
 

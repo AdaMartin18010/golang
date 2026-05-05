@@ -1140,12 +1140,16 @@ func tuneGC() {
 Go 1.26新API:
 ────────────────────────────────────────
 
-运行时检测:
-runtime.SetGoroutineLeakCallback(
-    func(gid uint64, stack []byte) {
-        log.Printf("Leak: goroutine %d\n%s", gid, stack)
-    },
-)
+运行时检测 (Go 1.26 实验性特性):
+// 启用: GOEXPERIMENT=goroutineleakprofile go run main.go
+// 通过 pprof 获取 goroutine leak profile，非 runtime API
+import "runtime/pprof"
+
+func dumpGoroutineLeaks() {
+    // goroutineleak profile 基于可达性分析
+    // 识别阻塞在 channel/mutex 上且无法被其他 goroutine 到达的泄漏 goroutine
+    pprof.Lookup("goroutineleak").WriteTo(os.Stdout, 1)
+}
 
 测试集成:
 func TestNoLeak(t *testing.T) {

@@ -1,7 +1,7 @@
 # API 文档
 
-> **版本**: v1.0  
-> **更新日期**: 2026-04-02  
+> **版本**: v1.0
+> **更新日期**: 2026-04-02
 > **状态**: 持续完善中
 
 ---
@@ -24,6 +24,7 @@
 ### HTTP REST API
 
 **基础信息**:
+
 - Base URL: `http://localhost:8080/api/v1`
 - Content-Type: `application/json`
 - 认证: Bearer Token (JWT)
@@ -40,6 +41,7 @@
 | GET | `/users` | 用户列表 | ✅ 可用 |
 
 **请求示例**:
+
 ```bash
 # 创建用户
 curl -X POST http://localhost:8080/api/v1/users \
@@ -64,6 +66,7 @@ curl -X POST http://localhost:8080/api/v1/users \
 | UserService | 用户服务 | CreateUser, GetUser, UpdateUser, DeleteUser, ListUsers |
 
 **连接示例**:
+
 ```go
 conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 client := pb.NewUserServiceClient(conn)
