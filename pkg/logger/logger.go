@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 	"log/slog"
-	"math/rand"
+	"math/rand/v2"
 	"os"
 	"sync"
 	"time"

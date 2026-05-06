@@ -2,7 +2,7 @@ package sampling
 
 import (
 	"context"
-	"math/rand"
+	"math/rand/v2"
 	"sync"
 	"time"
 )
@@ -63,7 +63,7 @@ func (s *NeverSampler) UpdateRate(rate float64) error {
 type ProbabilisticSampler struct {
 	mu        sync.RWMutex
 	rate      float64
-	rand      *rand.Rand
+	rnd       *rand.Rand
 	threshold float64
 }
 
@@ -76,7 +76,7 @@ func NewProbabilisticSampler(rate float64) (Sampler, error) {
 
 	return &ProbabilisticSampler{
 		rate:      rate,
-		rand:      rand.New(rand.NewSource(time.Now().UnixNano())),
+		rnd:       rand.New(rand.NewPCG(uint64(time.Now().UnixNano()), 0)),
 		threshold: rate,
 	}, nil
 }
@@ -85,7 +85,7 @@ func (s *ProbabilisticSampler) ShouldSample(ctx context.Context) bool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	return s.rand.Float64() < s.threshold
+	return s.rnd.Float64() < s.threshold
 }
 
 func (s *ProbabilisticSampler) SampleRate() float64 {
@@ -176,7 +176,7 @@ type AdaptiveSampler struct {
 	currentRate float64
 	minRate     float64
 	maxRate     float64
-	rand        *rand.Rand
+	rnd         *rand.Rand
 }
 
 // NewAdaptiveSampler 创建自适应采样器
@@ -199,7 +199,7 @@ func NewAdaptiveSampler(baseRate, minRate, maxRate float64) (Sampler, error) {
 		currentRate: baseRate,
 		minRate:     minRate,
 		maxRate:     maxRate,
-		rand:        rand.New(rand.NewSource(time.Now().UnixNano())),
+		rnd:         rand.New(rand.NewPCG(uint64(time.Now().UnixNano()), 1)),
 	}, nil
 }
 
@@ -207,7 +207,7 @@ func (s *AdaptiveSampler) ShouldSample(ctx context.Context) bool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	return s.rand.Float64() < s.currentRate
+	return s.rnd.Float64() < s.currentRate
 }
 
 func (s *AdaptiveSampler) SampleRate() float64 {

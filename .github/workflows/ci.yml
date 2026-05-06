@@ -230,10 +230,7 @@ jobs:
         target:
           - server
           - grpc-server
-          - graphql-server
           - temporal-worker
-          - cli
-          - mqtt-client
       fail-fast: false
 
     steps:

@@ -29,7 +29,7 @@
 | **Formal Theory** | FT | 54 | 48 | 32 KB | `01-Formal-Theory/` |
 | **Language Design** | LD | 72 | 45 | 18 KB | `02-Language-Design/` |
 | **Engineering CloudNative** | EC | 380+ | 180+ | 22 KB | `03-Engineering-CloudNative/` |
-| **Technology Stack** | TS | 95 | 65 | 28 KB | `04-Technology-Stack/` |
+| **Technology Stack** | TS | 97 | 67 | 28 KB | `04-Technology-Stack/` |
 | **Application Domains** | AD | 53 | 35 | 25 KB | `05-Application-Domains/` |
 | **Infrastructure** | - | 25+ | 15 | 12 KB | Root + Supporting |
 

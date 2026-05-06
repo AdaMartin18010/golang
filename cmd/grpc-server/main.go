@@ -51,9 +51,10 @@ import (
 	appuser "github.com/yourusername/golang/internal/app/user"
 	"github.com/yourusername/golang/internal/infra/database/ent"
 	"github.com/yourusername/golang/internal/infra/repository"
+	"github.com/yourusername/golang/internal/interfaces/grpc/handlers"
 	"github.com/yourusername/golang/internal/interfaces/grpc/interceptors"
-	// userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb" // TODO: 生成 gRPC 代码后启用
-	// healthpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/healthpb" // TODO: 生成 gRPC 代码后启用
+	userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb"
+	healthpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/healthpb"
 )
 
 func main() {
@@ -102,18 +103,13 @@ func main() {
 	// 步骤 5: 注册 gRPC 服务
 	//
 	// 服务注册说明：
-	// - 需要先运行 make generate-grpc 生成 gRPC 代码
-	// - 生成代码位置：internal/interfaces/grpc/proto/
+	// - Proto 代码已生成在 internal/interfaces/grpc/proto/
 	// - 注册服务处理器，将 gRPC 请求路由到应用服务
-	//
-	// 注意：需要先运行 make generate-grpc 生成 Proto 代码
-	// TODO: 生成 gRPC 代码后取消注释
-	// userHandler := handlers.NewUserHandler(userService)
-	// userpb.RegisterUserServiceServer(grpcServer, userHandler)
-	//
-	// healthHandler := handlers.NewHealthHandler()
-	// healthpb.RegisterHealthServiceServer(grpcServer, healthHandler)
-	_ = userService // 临时使用，避免未使用变量错误
+	userHandler := handlers.NewUserHandler(userService, nil)
+	userpb.RegisterUserServiceServer(grpcServer, userHandler)
+
+	healthHandler := handlers.NewHealthHandler(nil)
+	healthpb.RegisterHealthServiceServer(grpcServer, healthHandler)
 
 	// 步骤 6: 启动服务器
 	//

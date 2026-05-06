@@ -3,7 +3,7 @@ package loadbalancer
 import (
 	"context"
 	"errors"
-	"math/rand"
+	"math/rand/v2"
 	"sync"
 	"time"
 
@@ -56,13 +56,13 @@ func (rr *RoundRobin) Name() string {
 
 // Random 随机负载均衡
 type Random struct {
-	rand *rand.Rand
+	rnd *rand.Rand
 }
 
 // NewRandom 创建随机负载均衡器
 func NewRandom() *Random {
 	return &Random{
-		rand: rand.New(rand.NewSource(time.Now().UnixNano())),
+		rnd: rand.New(rand.NewPCG(uint64(time.Now().UnixNano()), 0)),
 	}
 }
 
@@ -72,7 +72,7 @@ func (r *Random) Select(ctx context.Context, services []*registry.Service) (*reg
 		return nil, ErrNoServices
 	}
 
-	index := r.rand.Intn(len(services))
+	index := r.rnd.IntN(len(services))
 	return services[index], nil
 }
 

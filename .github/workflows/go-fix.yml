@@ -1,0 +1,48 @@
+name: Go Fix Modernization Check
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+env:
+  GO_VERSION: '1.26.2'
+
+permissions:
+  contents: read
+
+jobs:
+  go-fix:
+    name: Go Fix Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Run go fix
+        run: |
+          go fix ./...
+
+      - name: Check for uncommitted modernizations
+        run: |
+          git diff --exit-code || (
+            echo "::error::go fix found code that needs modernization."
+            echo "::error::Please run 'go fix ./...' locally and commit the changes."
+            exit 1
+          )
+
+      - name: Run go vet
+        run: go vet ./...
