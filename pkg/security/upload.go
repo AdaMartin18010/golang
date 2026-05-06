@@ -8,6 +8,7 @@ import (
 	"mime"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -135,13 +136,7 @@ func (v *FileUploadValidator) isAllowedExt(ext string) bool {
 		return true // 如果没有限制，允许所有
 	}
 
-	for _, allowed := range v.allowedExts {
-		if ext == allowed {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(v.allowedExts, ext)
 }
 
 // isAllowedType 检查 MIME 类型是否允许
@@ -156,13 +151,7 @@ func (v *FileUploadValidator) isAllowedType(contentType string) bool {
 		return false
 	}
 
-	for _, allowed := range v.allowedTypes {
-		if mediaType == allowed {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(v.allowedTypes, mediaType)
 }
 
 // scanFileContent 扫描文件内容

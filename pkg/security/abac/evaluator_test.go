@@ -44,7 +44,7 @@ func TestEqualsCondition(t *testing.T) {
 		Subject: Subject{
 			ID:    "user-123",
 			Roles: []string{"admin"},
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"level": 5,
 			},
 		},
@@ -53,7 +53,7 @@ func TestEqualsCondition(t *testing.T) {
 	tests := []struct {
 		name     string
 		attr     string
-		value    interface{}
+		value    any
 		expected bool
 	}{
 		{"subject.id equals", "subject.id", "user-123", true},
@@ -94,7 +94,7 @@ func TestGreaterThanCondition(t *testing.T) {
 	ctx := context.Background()
 	req := Request{
 		Subject: Subject{
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"level": 5,
 			},
 		},
@@ -103,7 +103,7 @@ func TestGreaterThanCondition(t *testing.T) {
 	tests := []struct {
 		name     string
 		attr     string
-		value    interface{}
+		value    any
 		expected bool
 	}{
 		{"5 > 3", "subject.attributes.level", 3, true},
@@ -126,7 +126,7 @@ func TestGreaterThanOrEqualCondition(t *testing.T) {
 	ctx := context.Background()
 	req := Request{
 		Subject: Subject{
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"level": 5,
 			},
 		},
@@ -147,7 +147,7 @@ func TestLessThanCondition(t *testing.T) {
 	ctx := context.Background()
 	req := Request{
 		Subject: Subject{
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"level": 5,
 			},
 		},
@@ -168,7 +168,7 @@ func TestLessThanOrEqualCondition(t *testing.T) {
 	ctx := context.Background()
 	req := Request{
 		Subject: Subject{
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"level": 5,
 			},
 		},
@@ -190,7 +190,7 @@ func TestInCondition(t *testing.T) {
 	req := Request{
 		Subject: Subject{
 			ID: "user-123",
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"level": 5,
 			},
 		},
@@ -199,7 +199,7 @@ func TestInCondition(t *testing.T) {
 	tests := []struct {
 		name     string
 		attr     string
-		values   interface{}
+		values   any
 		expected bool
 	}{
 		{"id in slice", "subject.id", []string{"user-123", "user-456"}, true},
@@ -239,7 +239,7 @@ func TestContainsCondition(t *testing.T) {
 	ctx := context.Background()
 	req := Request{
 		Subject: Subject{
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"tags": []string{"admin", "active", "verified"},
 				"bio":  "Software engineer",
 			},
@@ -249,7 +249,7 @@ func TestContainsCondition(t *testing.T) {
 	tests := []struct {
 		name     string
 		attr     string
-		value    interface{}
+		value    any
 		expected bool
 	}{
 		{"string in slice", "subject.attributes.tags", "admin", true},
@@ -273,7 +273,7 @@ func TestMatchesCondition(t *testing.T) {
 	req := Request{
 		Subject: Subject{
 			ID: "user-123",
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"email": "test@example.com",
 			},
 		},
@@ -440,7 +440,7 @@ func TestBetweenCondition(t *testing.T) {
 	ctx := context.Background()
 	req := Request{
 		Subject: Subject{
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"age": 25,
 			},
 		},
@@ -462,7 +462,7 @@ func TestExistsCondition(t *testing.T) {
 	req := Request{
 		Subject: Subject{
 			ID: "user-123",
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"level": 5,
 			},
 		},
@@ -578,7 +578,7 @@ func BenchmarkCondition_Evaluate(b *testing.B) {
 		Subject: Subject{
 			ID:    "user-123",
 			Roles: []string{"admin", "user"},
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"level": 5,
 			},
 		},

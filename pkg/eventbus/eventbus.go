@@ -111,7 +111,7 @@ type Event interface {
 
 	// Data 返回事件数据
 	// 包含事件发生时的完整上下文信息
-	Data() interface{}
+	Data() any
 
 	// Timestamp 返回事件时间戳
 	// 用于事件排序、审计和重放
@@ -146,13 +146,13 @@ type BaseEvent struct {
 	eventType string
 
 	// data 事件数据
-	data interface{}
+	data any
 
 	// timestamp 事件时间戳
 	timestamp time.Time
 
 	// metadata 元数据，用于存储额外的上下文信息
-	metadata map[string]interface{}
+	metadata map[string]any
 }
 
 // NewEvent 创建基础事件
@@ -172,12 +172,12 @@ type BaseEvent struct {
 //	// 添加元数据
 //	event.SetMetadata("request_id", "req-123")
 //	event.SetMetadata("user_id", "user-456")
-func NewEvent(eventType string, data interface{}) *BaseEvent {
+func NewEvent(eventType string, data any) *BaseEvent {
 	return &BaseEvent{
 		eventType: eventType,
 		data:      data,
 		timestamp: time.Now(),
-		metadata:  make(map[string]interface{}),
+		metadata:  make(map[string]any),
 	}
 }
 
@@ -187,7 +187,7 @@ func (e *BaseEvent) Type() string {
 }
 
 // Data 返回事件数据
-func (e *BaseEvent) Data() interface{} {
+func (e *BaseEvent) Data() any {
 	return e.data
 }
 
@@ -211,9 +211,9 @@ func (e *BaseEvent) Timestamp() time.Time {
 //
 //	event.SetMetadata("request_id", "req-123")
 //	event.SetMetadata("user_id", "user-456")
-func (e *BaseEvent) SetMetadata(key string, value interface{}) {
+func (e *BaseEvent) SetMetadata(key string, value any) {
 	if e.metadata == nil {
-		e.metadata = make(map[string]interface{})
+		e.metadata = make(map[string]any)
 	}
 	e.metadata[key] = value
 }
@@ -232,7 +232,7 @@ func (e *BaseEvent) SetMetadata(key string, value interface{}) {
 //	if requestID, ok := event.GetMetadata("request_id"); ok {
 //	    log.Printf("Request ID: %v", requestID)
 //	}
-func (e *BaseEvent) GetMetadata(key string) (interface{}, bool) {
+func (e *BaseEvent) GetMetadata(key string) (any, bool) {
 	if e.metadata == nil {
 		return nil, false
 	}

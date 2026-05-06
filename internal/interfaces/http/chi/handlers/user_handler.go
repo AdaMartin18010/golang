@@ -221,4 +221,3 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	Success(w, http.StatusNoContent, nil)
 }
-

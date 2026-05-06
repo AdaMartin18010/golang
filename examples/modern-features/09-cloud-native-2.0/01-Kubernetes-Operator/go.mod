@@ -1,6 +1,6 @@
 module kubernetes-operator-advanced-example
 
-go 1.25
+go 1.26
 
 // 注意：这个示例需要Kubernetes相关的依赖
 // 这些依赖体积较大，在实际使用前需要运行：

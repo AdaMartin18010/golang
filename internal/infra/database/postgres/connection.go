@@ -37,7 +37,7 @@ import (
 type Connection struct {
 	// db 数据库连接（当前为占位符）
 	// TODO: 使用 Ent 客户端
-	db interface{}
+	db any
 }
 
 // NewConnection 创建数据库连接
@@ -59,15 +59,16 @@ type Connection struct {
 // - 推荐使用 Ent 客户端：ent.NewClientFromConfig()
 //
 // 使用示例（使用 Ent 客户端）：
-//   client, err := ent.NewClientFromConfig(
-//       ctx,
-//       cfg.Host,
-//       fmt.Sprintf("%d", cfg.Port),
-//       cfg.User,
-//       cfg.Password,
-//       cfg.Database,
-//       cfg.SSLMode,
-//   )
+//
+//	client, err := ent.NewClientFromConfig(
+//	    ctx,
+//	    cfg.Host,
+//	    fmt.Sprintf("%d", cfg.Port),
+//	    cfg.User,
+//	    cfg.Password,
+//	    cfg.Database,
+//	    cfg.SSLMode,
+//	)
 func NewConnection(cfg *config.DatabaseConfig) (*Connection, error) {
 	// TODO: 使用 Ent 客户端初始化
 	// 示例:
@@ -110,6 +111,6 @@ func (c *Connection) Close() error {
 // 注意：
 // - 当前返回 nil
 // - 推荐使用 Ent 客户端
-func (c *Connection) Client() interface{} {
+func (c *Connection) Client() any {
 	return c.db
 }

@@ -12,7 +12,7 @@ import (
 
 // InMemoryUserRepository 内存用户仓储（用于测试）
 type InMemoryUserRepository struct {
-	users map[string]*user.User
+	users  map[string]*user.User
 	emails map[string]string // email -> id mapping
 }
 
@@ -81,18 +81,15 @@ func (r *InMemoryUserRepository) List(ctx context.Context, limit, offset int) ([
 		return []*user.User{}, nil
 	}
 
-	end := start + limit
-	if end > len(users) {
-		end = len(users)
-	}
+	end := min(start+limit, len(users))
 
 	return users[start:end], nil
 }
 
 // 错误定义
 var (
-	ErrUserNotFound = assert.AnError
-	ErrUserAlreadyExists = assert.AnError
+	ErrUserNotFound       = assert.AnError
+	ErrUserAlreadyExists  = assert.AnError
 	ErrEmailAlreadyExists = assert.AnError
 )
 
@@ -177,7 +174,7 @@ func TestInMemoryUserRepository_List(t *testing.T) {
 	repo := NewInMemoryUserRepository()
 
 	// 添加多个用户
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		u := user.NewUser("user"+string(rune('0'+i))+"@example.com", "User")
 		require.NoError(t, repo.Save(ctx, u))
 	}

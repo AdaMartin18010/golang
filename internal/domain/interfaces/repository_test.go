@@ -17,9 +17,9 @@ type TestRepoEntity struct {
 
 // mockRepository 模拟仓储实现，用于测试接口
 type mockRepository[T any] struct {
-	data    map[string]*T
+	data     map[string]*T
 	listData []*T
-	err     error
+	err      error
 }
 
 func newMockRepository[T any]() *mockRepository[T] {

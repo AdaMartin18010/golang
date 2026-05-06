@@ -24,7 +24,7 @@ type Transaction interface {
 	// Rollback 回滚事务
 	Rollback() error
 	// GetTx 获取底层事务对象
-	GetTx() interface{}
+	GetTx() any
 }
 
 // Manager 事务管理器接口
@@ -43,10 +43,10 @@ type Manager interface {
 
 // SQLTransaction SQL事务实现
 type SQLTransaction struct {
-	tx     *sql.Tx
-	committed   bool
-	rolledBack  bool
-	mu          sync.Mutex
+	tx         *sql.Tx
+	committed  bool
+	rolledBack bool
+	mu         sync.Mutex
 }
 
 // NewSQLTransaction 创建SQL事务
@@ -95,7 +95,7 @@ func (t *SQLTransaction) Rollback() error {
 }
 
 // GetTx 获取底层事务对象
-func (t *SQLTransaction) GetTx() interface{} {
+func (t *SQLTransaction) GetTx() any {
 	return t.tx
 }
 

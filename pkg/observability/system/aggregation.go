@@ -11,11 +11,11 @@ import (
 // Aggregator 指标聚合器
 // 提供指标聚合和统计功能
 type Aggregator struct {
-	meter    metric.Meter
-	enabled  bool
-	mu       sync.RWMutex
-	counters map[string]int64
-	gauges   map[string]float64
+	meter      metric.Meter
+	enabled    bool
+	mu         sync.RWMutex
+	counters   map[string]int64
+	gauges     map[string]float64
 	histograms map[string][]float64
 }
 

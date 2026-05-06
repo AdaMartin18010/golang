@@ -17,11 +17,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/yourusername/golang/internal/domain/user"
 	"github.com/yourusername/golang/internal/infra/database/ent"
 	"github.com/yourusername/golang/internal/infra/database/ent/migrate"
 	entuser "github.com/yourusername/golang/internal/infra/database/ent/user"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 // setupTestClient 创建测试用的 Ent 客户端
@@ -393,4 +393,3 @@ func BenchmarkWithTx(b *testing.B) {
 		})
 	}
 }
-

@@ -34,6 +34,7 @@ package abac
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -114,7 +115,7 @@ type Rule interface {
 	//   - bool: 如果规则匹配返回 true
 	//   - error: 评估过程中的错误
 	Evaluate(ctx context.Context, req Request) (bool, error)
-	
+
 	// String 返回规则的可读描述
 	String() string
 }
@@ -313,7 +314,7 @@ func (r *subjectAnyRoleRule) String() string {
 // 示例：
 //
 //	rule := abac.SubjectAttributeEquals("department", "engineering")
-func SubjectAttributeEquals(key string, value interface{}) Rule {
+func SubjectAttributeEquals(key string, value any) Rule {
 	return &attributeEqualsRule{
 		accessor: func(req Request) AttributeAccessor { return req.Subject },
 		key:      key,
@@ -349,7 +350,7 @@ func (r *resourceTypeRule) String() string {
 // 示例：
 //
 //	rule := abac.ResourceAttributeEquals("sensitivity", "confidential")
-func ResourceAttributeEquals(key string, value interface{}) Rule {
+func ResourceAttributeEquals(key string, value any) Rule {
 	return &attributeEqualsRule{
 		accessor: func(req Request) AttributeAccessor { return req.Resource },
 		key:      key,
@@ -415,10 +416,8 @@ type actionInRule struct {
 }
 
 func (r *actionInRule) Evaluate(ctx context.Context, req Request) (bool, error) {
-	for _, action := range r.actions {
-		if req.Action.Equals(action) {
-			return true, nil
-		}
+	if slices.ContainsFunc(r.actions, req.Action.Equals) {
+		return true, nil
 	}
 	return false, nil
 }
@@ -432,7 +431,7 @@ func (r *actionInRule) String() string {
 // 示例：
 //
 //	rule := abac.EnvironmentAttributeEquals("location", "office")
-func EnvironmentAttributeEquals(key string, value interface{}) Rule {
+func EnvironmentAttributeEquals(key string, value any) Rule {
 	return &attributeEqualsRule{
 		accessor: func(req Request) AttributeAccessor { return req.Environment },
 		key:      key,
@@ -445,7 +444,7 @@ func EnvironmentAttributeEquals(key string, value interface{}) Rule {
 type attributeEqualsRule struct {
 	accessor func(Request) AttributeAccessor
 	key      string
-	value    interface{}
+	value    any
 	typeName string
 }
 

@@ -23,7 +23,7 @@ func (m *MockRedisClientV2) Ping(ctx context.Context) *redis.StatusCmd {
 	return args.Get(0).(*redis.StatusCmd)
 }
 
-func (m *MockRedisClientV2) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
+func (m *MockRedisClientV2) Set(ctx context.Context, key string, value any, expiration time.Duration) *redis.StatusCmd {
 	args := m.Called(ctx, key, value, expiration)
 	return args.Get(0).(*redis.StatusCmd)
 }
@@ -479,7 +479,7 @@ func TestClient_Set_VariousTypes(t *testing.T) {
 	tests := []struct {
 		name  string
 		key   string
-		value interface{}
+		value any
 	}{
 		{
 			name:  "string value",
@@ -552,7 +552,7 @@ func TestClient_ConcurrentOperations(t *testing.T) {
 	}()
 
 	// 等待所有 goroutine 完成
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		<-done
 	}
 

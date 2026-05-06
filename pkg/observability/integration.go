@@ -60,10 +60,10 @@ func NewObservability(cfg Config) (*Observability, error) {
 	var systemMonitor *system.SystemMonitor
 	if cfg.EnableSystemMonitoring {
 		systemMonitor, err = system.NewSystemMonitor(system.SystemConfig{
-			Meter:            otlpClient.Meter("system"),
-			Tracer:           otlpClient.Tracer("system"),
-			Enabled:          true,
-			CollectInterval:  cfg.SystemCollectInterval,
+			Meter:             otlpClient.Meter("system"),
+			Tracer:            otlpClient.Tracer("system"),
+			Enabled:           true,
+			CollectInterval:   cfg.SystemCollectInterval,
 			EnableDiskMonitor: cfg.EnableDiskMonitor,
 			EnableLoadMonitor: cfg.EnableLoadMonitor,
 			EnableAPMMonitor:  cfg.EnableAPMMonitor,

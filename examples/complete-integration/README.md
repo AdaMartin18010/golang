@@ -32,7 +32,7 @@
 
 ### 前置要求
 
-1. **Go 1.25.3+**
+1. **Go 1.26.2+**
 2. **可选**: OpenTelemetry Collector (用于查看追踪数据)
 3. **可选**: Linux + Root 权限 (用于 eBPF 监控)
 

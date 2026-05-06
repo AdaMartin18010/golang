@@ -18,13 +18,13 @@ type Controller interface {
 	IsEnabled(name string) bool
 
 	// SetConfig 设置配置
-	SetConfig(name string, config interface{}) error
+	SetConfig(name string, config any) error
 
 	// GetConfig 获取配置
-	GetConfig(name string) (interface{}, error)
+	GetConfig(name string) (any, error)
 
 	// Watch 监听配置变化
-	Watch(name string, callback func(interface{})) error
+	Watch(name string, callback func(any)) error
 
 	// Unwatch 取消监听
 	Unwatch(name string) error
@@ -35,14 +35,14 @@ type Controller interface {
 type FeatureController struct {
 	mu       sync.RWMutex
 	features map[string]*Feature
-	watchers map[string][]func(interface{})
+	watchers map[string][]func(any)
 }
 
 // Feature 功能定义
 type Feature struct {
 	Name        string
 	Enabled     bool
-	Config      interface{}
+	Config      any
 	Description string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -52,12 +52,12 @@ type Feature struct {
 func NewFeatureController() Controller {
 	return &FeatureController{
 		features: make(map[string]*Feature),
-		watchers: make(map[string][]func(interface{})),
+		watchers: make(map[string][]func(any)),
 	}
 }
 
 // Register 注册功能
-func (fc *FeatureController) Register(name, description string, enabled bool, config interface{}) {
+func (fc *FeatureController) Register(name, description string, enabled bool, config any) {
 	fc.mu.Lock()
 	defer fc.mu.Unlock()
 
@@ -119,7 +119,7 @@ func (fc *FeatureController) IsEnabled(name string) bool {
 	return feature.Enabled
 }
 
-func (fc *FeatureController) SetConfig(name string, config interface{}) error {
+func (fc *FeatureController) SetConfig(name string, config any) error {
 	fc.mu.Lock()
 	defer fc.mu.Unlock()
 
@@ -137,7 +137,7 @@ func (fc *FeatureController) SetConfig(name string, config interface{}) error {
 	return nil
 }
 
-func (fc *FeatureController) GetConfig(name string) (interface{}, error) {
+func (fc *FeatureController) GetConfig(name string) (any, error) {
 	fc.mu.RLock()
 	defer fc.mu.RUnlock()
 
@@ -149,7 +149,7 @@ func (fc *FeatureController) GetConfig(name string) (interface{}, error) {
 	return feature.Config, nil
 }
 
-func (fc *FeatureController) Watch(name string, callback func(interface{})) error {
+func (fc *FeatureController) Watch(name string, callback func(any)) error {
 	fc.mu.Lock()
 	defer fc.mu.Unlock()
 
@@ -170,7 +170,7 @@ func (fc *FeatureController) Unwatch(name string) error {
 }
 
 // notifyWatchers 通知监听者
-func (fc *FeatureController) notifyWatchers(name string, config interface{}) {
+func (fc *FeatureController) notifyWatchers(name string, config any) {
 	watchers := fc.watchers[name]
 	for _, callback := range watchers {
 		go callback(config) // 异步通知
@@ -268,29 +268,29 @@ func (rc *RateController) Disable(name string) {
 // CircuitController 熔断器控制器
 // 提供细粒度的熔断控制
 type CircuitController struct {
-	mu        sync.RWMutex
-	circuits  map[string]*Circuit
+	mu       sync.RWMutex
+	circuits map[string]*Circuit
 }
 
 // Circuit 熔断器
 type Circuit struct {
-	Name          string
-	State         CircuitState
-	FailureCount  int64
-	SuccessCount  int64
+	Name             string
+	State            CircuitState
+	FailureCount     int64
+	SuccessCount     int64
 	FailureThreshold int64
 	SuccessThreshold int64
-	Timeout       time.Duration
-	LastFailure   time.Time
-	LastSuccess   time.Time
+	Timeout          time.Duration
+	LastFailure      time.Time
+	LastSuccess      time.Time
 }
 
 // CircuitState 熔断器状态
 type CircuitState string
 
 const (
-	CircuitStateClosed   CircuitState = "closed"   // 关闭（正常）
-	CircuitStateOpen     CircuitState = "open"     // 打开（熔断）
+	CircuitStateClosed   CircuitState = "closed"    // 关闭（正常）
+	CircuitStateOpen     CircuitState = "open"      // 打开（熔断）
 	CircuitStateHalfOpen CircuitState = "half-open" // 半开（尝试恢复）
 )
 
@@ -307,11 +307,11 @@ func (cc *CircuitController) RegisterCircuit(name string, failureThreshold, succ
 	defer cc.mu.Unlock()
 
 	cc.circuits[name] = &Circuit{
-		Name:            name,
-		State:           CircuitStateClosed,
+		Name:             name,
+		State:            CircuitStateClosed,
 		FailureThreshold: failureThreshold,
 		SuccessThreshold: successThreshold,
-		Timeout:         timeout,
+		Timeout:          timeout,
 	}
 }
 

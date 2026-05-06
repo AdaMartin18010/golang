@@ -12,37 +12,37 @@ import (
 // SystemMonitor 系统监控器集合
 // 整合所有系统监控功能
 type SystemMonitor struct {
-	monitor         *Monitor
-	ioMonitor       *IOMonitor
-	networkMonitor  *NetworkMonitor
-	diskMonitor     *DiskMonitor
-	loadMonitor     *LoadMonitor
-	apmMonitor      *APMMonitor
-	rateLimiter      *RateLimiter
-	platformMonitor  *PlatformMonitor
+	monitor           *Monitor
+	ioMonitor         *IOMonitor
+	networkMonitor    *NetworkMonitor
+	diskMonitor       *DiskMonitor
+	loadMonitor       *LoadMonitor
+	apmMonitor        *APMMonitor
+	rateLimiter       *RateLimiter
+	platformMonitor   *PlatformMonitor
 	kubernetesMonitor *KubernetesMonitor
-	healthChecker    *HealthChecker
-	aggregator       *Aggregator
-	configReloader   *ConfigReloader
-	metricsExporter  *MetricsExporter
-	alertManager     *AlertManager
-	diagnostics      *Diagnostics
-	predictor        *ResourcePredictor
+	healthChecker     *HealthChecker
+	aggregator        *Aggregator
+	configReloader    *ConfigReloader
+	metricsExporter   *MetricsExporter
+	alertManager      *AlertManager
+	diagnostics       *Diagnostics
+	predictor         *ResourcePredictor
 	dashboardExporter *DashboardExporter
-	enabled          bool
+	enabled           bool
 }
 
 // SystemConfig 系统监控配置
 type SystemConfig struct {
-	Meter            metric.Meter
-	Tracer           trace.Tracer // APM 需要 Tracer
-	Enabled          bool
-	CollectInterval  time.Duration
-	EnableDiskMonitor bool // 是否启用磁盘监控
-	EnableLoadMonitor  bool // 是否启用负载监控
-	EnableAPMMonitor   bool // 是否启用 APM 监控
-	HealthThresholds HealthThresholds // 健康检查阈值
-	RateLimitConfig  *RateLimiterConfig // 限流器配置
+	Meter             metric.Meter
+	Tracer            trace.Tracer // APM 需要 Tracer
+	Enabled           bool
+	CollectInterval   time.Duration
+	EnableDiskMonitor bool               // 是否启用磁盘监控
+	EnableLoadMonitor bool               // 是否启用负载监控
+	EnableAPMMonitor  bool               // 是否启用 APM 监控
+	HealthThresholds  HealthThresholds   // 健康检查阈值
+	RateLimitConfig   *RateLimiterConfig // 限流器配置
 }
 
 // NewSystemMonitor 创建系统监控器
@@ -166,14 +166,14 @@ func NewSystemMonitor(cfg SystemConfig) (*SystemMonitor, error) {
 
 	// 创建系统监控器（先创建，稍后更新引用）
 	systemMonitor := &SystemMonitor{
-		monitor:         monitor,
-		ioMonitor:       ioMonitor,
-		networkMonitor:  networkMonitor,
-		diskMonitor:     diskMonitor,
-		loadMonitor:     loadMonitor,
-		apmMonitor:      apmMonitor,
-		rateLimiter:     rateLimiter,
-		platformMonitor: platformMonitor,
+		monitor:           monitor,
+		ioMonitor:         ioMonitor,
+		networkMonitor:    networkMonitor,
+		diskMonitor:       diskMonitor,
+		loadMonitor:       loadMonitor,
+		apmMonitor:        apmMonitor,
+		rateLimiter:       rateLimiter,
+		platformMonitor:   platformMonitor,
 		healthChecker:     healthChecker,
 		aggregator:        aggregator,
 		kubernetesMonitor: kubernetesMonitor,

@@ -10,9 +10,9 @@ package ent
 import (
 	"testing"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 // TestNewClient_Simple 测试创建 Ent 客户端

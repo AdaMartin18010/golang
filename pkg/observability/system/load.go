@@ -19,10 +19,10 @@ type LoadMonitor struct {
 	cancel          context.CancelFunc
 
 	// 指标
-	loadAverageGauge    metric.Float64ObservableGauge
-	requestRateCounter  metric.Int64Counter
+	loadAverageGauge        metric.Float64ObservableGauge
+	requestRateCounter      metric.Int64Counter
 	concurrentRequestsGauge metric.Int64ObservableGauge
-	queueLengthGauge   metric.Int64ObservableGauge
+	queueLengthGauge        metric.Int64ObservableGauge
 }
 
 // NewLoadMonitor 创建负载监控器
@@ -160,7 +160,7 @@ func (m *LoadMonitor) getLoadAverage() float64 {
 	// 当前使用基于 Goroutine 的估算
 	numGoroutines := runtime.NumGoroutine()
 	cpus := runtime.NumCPU()
-	
+
 	// 简单的负载估算：Goroutine 数量 / CPU 核心数
 	load := float64(numGoroutines) / float64(cpus)
 	return load

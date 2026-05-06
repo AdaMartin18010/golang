@@ -139,7 +139,7 @@ func TestUserClient_Update_Standalone(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建多个用户
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		_, err := client.User.Create().
 			SetID(fmt.Sprintf("user-update-bulk-%d", i)).
 			SetEmail(fmt.Sprintf("updatebulk%d@example.com", i)).
@@ -278,7 +278,7 @@ func TestUser_Delete_Standalone(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建多个用户
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		_, err := client.User.Create().
 			SetID(fmt.Sprintf("user-delete-bulk-%d", i)).
 			SetEmail(fmt.Sprintf("deletebulk%d@example.com", i)).

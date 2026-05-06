@@ -193,7 +193,7 @@ Major restructuring and completion phase. All root-level documentation brought t
 
 #### Added
 
-- Complete coverage of Go 1.24 and 1.25 features
+- Complete coverage of Go 1.24 through 1.26 features
 - New "Task Scheduling" subsection (EC-081+)
 - Database transaction isolation deep-dives
 - Redis multithreaded I/O analysis

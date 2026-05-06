@@ -229,7 +229,7 @@ func TestClient_DifferentTypes_Miniredis(t *testing.T) {
 	testCases := []struct {
 		name     string
 		key      string
-		value    interface{}
+		value    any
 		expected string // Redis 存储的都是字符串
 	}{
 		{"string", "type:string", "hello", "hello"},
@@ -260,7 +260,7 @@ func TestClient_ConcurrentOperations_Miniredis(t *testing.T) {
 	defer client.Close()
 
 	// 并发写入
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		go func(i int) {
 			key := fmt.Sprintf("concurrent:key:%d", i)
 			value := fmt.Sprintf("value:%d", i)
@@ -273,7 +273,7 @@ func TestClient_ConcurrentOperations_Miniredis(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// 验证所有键都存在
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		key := fmt.Sprintf("concurrent:key:%d", i)
 		exists, err := client.Exists(ctx, key)
 		require.NoError(t, err)

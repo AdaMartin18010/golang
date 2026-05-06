@@ -25,19 +25,20 @@ import "context"
 // - 领域服务：处理跨实体或复杂的业务逻辑
 //
 // 示例：
-//   // 领域服务接口
-//   type PricingService interface {
-//       CalculatePrice(ctx context.Context, product *Product, quantity int) (*Money, error)
-//   }
 //
-//   // 领域服务实现
-//   type pricingService struct {
-//       discountRepo DiscountRepository
-//   }
+//	// 领域服务接口
+//	type PricingService interface {
+//	    CalculatePrice(ctx context.Context, product *Product, quantity int) (*Money, error)
+//	}
 //
-//   func (s *pricingService) CalculatePrice(ctx context.Context, product *Product, quantity int) (*Money, error) {
-//       // 计算价格逻辑，可能涉及折扣、促销等
-//   }
+//	// 领域服务实现
+//	type pricingService struct {
+//	    discountRepo DiscountRepository
+//	}
+//
+//	func (s *pricingService) CalculatePrice(ctx context.Context, product *Product, quantity int) (*Money, error) {
+//	    // 计算价格逻辑，可能涉及折扣、促销等
+//	}
 //
 // 注意事项：
 // - 领域服务应该是无状态的
@@ -45,9 +46,10 @@ import "context"
 // - 只有在业务逻辑不适合放在实体中时才使用领域服务
 //
 // 用户需要根据业务需求定义具体的领域服务接口，例如：
-//   type EmailValidationService interface {
-//       ValidateEmail(ctx context.Context, email string) error
-//   }
+//
+//	type EmailValidationService interface {
+//	    ValidateEmail(ctx context.Context, email string) error
+//	}
 type DomainService interface {
 	// Validate 验证实体
 	//
@@ -67,7 +69,7 @@ type DomainService interface {
 	//   - 应该验证实体的所有业务规则
 	//   - 应该返回详细的验证错误
 	//   - 应该考虑性能，避免重复验证
-	Validate(ctx context.Context, entity interface{}) error
+	Validate(ctx context.Context, entity any) error
 
 	// Process 处理业务逻辑
 	//
@@ -87,7 +89,7 @@ type DomainService interface {
 	//   - 应该处理业务异常
 	//   - 应该考虑事务管理
 	//   - 应该考虑并发安全
-	Process(ctx context.Context, entity interface{}) error
+	Process(ctx context.Context, entity any) error
 }
 
 // Validator 验证器接口
@@ -103,28 +105,29 @@ type DomainService interface {
 // 3. 跨实体的验证（如订单金额验证需要访问产品信息）
 //
 // 示例：
-//   type EmailValidator interface {
-//       Validate(ctx context.Context, email string) error
-//   }
 //
-//   type emailValidator struct {
-//       userRepo UserRepository
-//   }
+//	type EmailValidator interface {
+//	    Validate(ctx context.Context, email string) error
+//	}
 //
-//   func (v *emailValidator) Validate(ctx context.Context, email string) error {
-//       // 验证邮箱格式
-//       if !isValidEmailFormat(email) {
-//           return ErrInvalidEmailFormat
-//       }
+//	type emailValidator struct {
+//	    userRepo UserRepository
+//	}
 //
-//       // 验证邮箱唯一性
-//       existing, err := v.userRepo.FindByEmail(ctx, email)
-//       if err == nil && existing != nil {
-//           return ErrEmailAlreadyExists
-//       }
+//	func (v *emailValidator) Validate(ctx context.Context, email string) error {
+//	    // 验证邮箱格式
+//	    if !isValidEmailFormat(email) {
+//	        return ErrInvalidEmailFormat
+//	    }
 //
-//       return nil
-//   }
+//	    // 验证邮箱唯一性
+//	    existing, err := v.userRepo.FindByEmail(ctx, email)
+//	    if err == nil && existing != nil {
+//	        return ErrEmailAlreadyExists
+//	    }
+//
+//	    return nil
+//	}
 type Validator interface {
 	// Validate 验证实体
 	//
@@ -144,7 +147,7 @@ type Validator interface {
 	//   - 应该返回详细的验证错误
 	//   - 应该考虑性能
 	//   - 应该处理验证过程中的异常
-	Validate(ctx context.Context, entity interface{}) error
+	Validate(ctx context.Context, entity any) error
 }
 
 // Processor 处理器接口
@@ -160,37 +163,38 @@ type Validator interface {
 // 3. 需要协调多个实体的操作
 //
 // 示例：
-//   type OrderProcessor interface {
-//       Process(ctx context.Context, order *Order) error
-//   }
 //
-//   type orderProcessor struct {
-//       orderRepo    OrderRepository
-//       productRepo  ProductRepository
-//       paymentService PaymentService
-//   }
+//	type OrderProcessor interface {
+//	    Process(ctx context.Context, order *Order) error
+//	}
 //
-//   func (p *orderProcessor) Process(ctx context.Context, order *Order) error {
-//       // 1. 验证订单
-//       if err := order.Validate(); err != nil {
-//           return err
-//       }
+//	type orderProcessor struct {
+//	    orderRepo    OrderRepository
+//	    productRepo  ProductRepository
+//	    paymentService PaymentService
+//	}
 //
-//       // 2. 处理支付
-//       if err := p.paymentService.ProcessPayment(ctx, order); err != nil {
-//           return err
-//       }
+//	func (p *orderProcessor) Process(ctx context.Context, order *Order) error {
+//	    // 1. 验证订单
+//	    if err := order.Validate(); err != nil {
+//	        return err
+//	    }
 //
-//       // 3. 更新库存
-//       for _, item := range order.Items {
-//           if err := p.productRepo.DecreaseStock(ctx, item.ProductID, item.Quantity); err != nil {
-//               return err
-//           }
-//       }
+//	    // 2. 处理支付
+//	    if err := p.paymentService.ProcessPayment(ctx, order); err != nil {
+//	        return err
+//	    }
 //
-//       // 4. 保存订单
-//       return p.orderRepo.Update(ctx, order)
-//   }
+//	    // 3. 更新库存
+//	    for _, item := range order.Items {
+//	        if err := p.productRepo.DecreaseStock(ctx, item.ProductID, item.Quantity); err != nil {
+//	            return err
+//	        }
+//	    }
+//
+//	    // 4. 保存订单
+//	    return p.orderRepo.Update(ctx, order)
+//	}
 type Processor interface {
 	// Process 处理业务逻辑
 	//
@@ -211,5 +215,5 @@ type Processor interface {
 	//   - 应该考虑事务管理
 	//   - 应该考虑并发安全
 	//   - 应该考虑幂等性
-	Process(ctx context.Context, entity interface{}) error
+	Process(ctx context.Context, entity any) error
 }

@@ -52,7 +52,7 @@ import (
 // mqttClient defines the interface for MQTT client operations
 // This interface allows for mocking in unit tests
 type mqttClient interface {
-	Publish(topic string, qos byte, retained bool, payload interface{}) mqtt.Token
+	Publish(topic string, qos byte, retained bool, payload any) mqtt.Token
 	Subscribe(topic string, qos byte, callback mqtt.MessageHandler) mqtt.Token
 	Unsubscribe(topics ...string) mqtt.Token
 	Disconnect(quiesce uint)
@@ -132,13 +132,13 @@ func resetMqttClientFactory() {
 // - 配置自动重连和连接保持
 //
 // 参数：
-// - broker: MQTT Broker 地址
-//   格式：tcp://host:port 或 ssl://host:port
-//   示例：tcp://localhost:1883、ssl://mqtt.example.com:8883
-// - clientID: 客户端 ID（必须唯一）
-//   用于标识客户端，相同 ID 的客户端会互相踢下线
-// - username: 用户名（可选，如果为空则不使用认证）
-// - password: 密码（可选，如果为空则不使用密码）
+//   - broker: MQTT Broker 地址
+//     格式：tcp://host:port 或 ssl://host:port
+//     示例：tcp://localhost:1883、ssl://mqtt.example.com:8883
+//   - clientID: 客户端 ID（必须唯一）
+//     用于标识客户端，相同 ID 的客户端会互相踢下线
+//   - username: 用户名（可选，如果为空则不使用认证）
+//   - password: 密码（可选，如果为空则不使用密码）
 //
 // 返回：
 // - *Client: 配置好的客户端实例
@@ -205,19 +205,19 @@ func newClientWithClient(c mqttClient) *Client {
 // - 支持 QoS 和保留消息（Retained Message）
 //
 // 参数：
-// - ctx: 上下文，用于控制请求超时和取消（当前未使用，保留用于未来扩展）
-// - topic: MQTT 主题名称
-//   支持通配符：+（单级）、#（多级）
-//   示例：sensors/temperature、sensors/+/temperature
-// - qos: 消息质量等级
+//   - ctx: 上下文，用于控制请求超时和取消（当前未使用，保留用于未来扩展）
+//   - topic: MQTT 主题名称
+//     支持通配符：+（单级）、#（多级）
+//     示例：sensors/temperature、sensors/+/temperature
+//   - qos: 消息质量等级
 //   - 0: 最多一次（At most once），不保证消息到达
 //   - 1: 至少一次（At least once），保证消息至少到达一次
 //   - 2: 恰好一次（Exactly once），保证消息恰好到达一次
-// - retained: 是否保留消息
+//   - retained: 是否保留消息
 //   - true: 保留消息，新订阅者会收到最后一条保留消息
 //   - false: 不保留消息
-// - payload: 消息负载
-//   支持类型：
+//   - payload: 消息负载
+//     支持类型：
 //   - []byte: 原始字节数组
 //   - string: 字符串（自动转换为字节数组）
 //   - 其他类型: 自动序列化为 JSON
@@ -250,7 +250,7 @@ func newClientWithClient(c mqttClient) *Client {
 // - 保留消息会占用 Broker 存储空间
 // convertPayload 将不同类型的 payload 转换为字节数组
 // 该函数提取出来以便进行单元测试
-func convertPayload(payload interface{}) ([]byte, error) {
+func convertPayload(payload any) ([]byte, error) {
 	switch v := payload.(type) {
 	case []byte:
 		// 已经是字节数组，直接使用
@@ -268,7 +268,7 @@ func convertPayload(payload interface{}) ([]byte, error) {
 	}
 }
 
-func (c *Client) Publish(ctx context.Context, topic string, qos byte, retained bool, payload interface{}) error {
+func (c *Client) Publish(ctx context.Context, topic string, qos byte, retained bool, payload any) error {
 	data, err := convertPayload(payload)
 	if err != nil {
 		return err
@@ -291,17 +291,17 @@ func (c *Client) Publish(ctx context.Context, topic string, qos byte, retained b
 // - 支持通配符订阅（+、#）
 //
 // 参数：
-// - ctx: 上下文，用于控制订阅超时和取消（当前未使用，保留用于未来扩展）
-// - topic: MQTT 主题名称或通配符
-//   支持通配符：
+//   - ctx: 上下文，用于控制订阅超时和取消（当前未使用，保留用于未来扩展）
+//   - topic: MQTT 主题名称或通配符
+//     支持通配符：
 //   - +: 单级通配符，匹配一个主题级别
 //     示例：sensors/+/temperature 匹配 sensors/room1/temperature
 //   - #: 多级通配符，匹配多个主题级别
 //     示例：sensors/# 匹配 sensors/room1/temperature、sensors/room2/humidity 等
-// - qos: 订阅的 QoS 等级（0、1、2）
-//   订阅的 QoS 不能高于发布消息的 QoS
-// - handler: 消息处理函数
-//   当收到消息时，会调用此函数处理消息
+//   - qos: 订阅的 QoS 等级（0、1、2）
+//     订阅的 QoS 不能高于发布消息的 QoS
+//   - handler: 消息处理函数
+//     当收到消息时，会调用此函数处理消息
 //
 // 返回：
 // - error: 如果订阅失败，返回错误信息
@@ -388,8 +388,8 @@ func (c *Client) Unsubscribe(ctx context.Context, topics ...string) error {
 // - 释放客户端资源
 //
 // 参数说明：
-// - Disconnect 方法的参数是断开连接的等待时间（毫秒）
-//   250 毫秒是默认值，等待未完成的消息发送完成
+//   - Disconnect 方法的参数是断开连接的等待时间（毫秒）
+//     250 毫秒是默认值，等待未完成的消息发送完成
 //
 // 使用示例：
 //

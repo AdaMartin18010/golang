@@ -10,8 +10,8 @@ import (
 
 // mockToken implements mqtt.Token interface for testing
 type mockToken struct {
-	err   error
-	done  chan struct{}
+	err  error
+	done chan struct{}
 }
 
 func newMockToken(err error) *mockToken {
@@ -47,16 +47,16 @@ func (m *mockToken) Error() error {
 
 // mockMqttClient implements mqtt.Client interface for testing
 type mockMqttClient struct {
-	connected    bool
-	publishFunc  func(topic string, qos byte, retained bool, payload interface{}) mqtt.Token
-	subscribeFunc func(topic string, qos byte, callback mqtt.MessageHandler) mqtt.Token
+	connected       bool
+	publishFunc     func(topic string, qos byte, retained bool, payload any) mqtt.Token
+	subscribeFunc   func(topic string, qos byte, callback mqtt.MessageHandler) mqtt.Token
 	unsubscribeFunc func(topics ...string) mqtt.Token
 }
 
 func newMockMqttClient() *mockMqttClient {
 	return &mockMqttClient{
 		connected: true,
-		publishFunc: func(topic string, qos byte, retained bool, payload interface{}) mqtt.Token {
+		publishFunc: func(topic string, qos byte, retained bool, payload any) mqtt.Token {
 			return newMockToken(nil)
 		},
 		subscribeFunc: func(topic string, qos byte, callback mqtt.MessageHandler) mqtt.Token {
@@ -84,7 +84,7 @@ func (m *mockMqttClient) Disconnect(quiesce uint) {
 	m.connected = false
 }
 
-func (m *mockMqttClient) Publish(topic string, qos byte, retained bool, payload interface{}) mqtt.Token {
+func (m *mockMqttClient) Publish(topic string, qos byte, retained bool, payload any) mqtt.Token {
 	if m.publishFunc != nil {
 		return m.publishFunc(topic, qos, retained, payload)
 	}
@@ -117,26 +117,26 @@ func (m *mockMqttClient) OptionsReader() mqtt.ClientOptionsReader {
 
 // mockMessage implements mqtt.Message interface for testing
 type mockMessage struct {
-	topic   string
-	payload []byte
-	qos     byte
+	topic    string
+	payload  []byte
+	qos      byte
 	retained bool
-	msgID   uint16
+	msgID    uint16
 }
 
-func (m *mockMessage) Duplicate() bool { return false }
-func (m *mockMessage) Qos() byte       { return m.qos }
-func (m *mockMessage) Retained() bool  { return m.retained }
-func (m *mockMessage) Topic() string   { return m.topic }
+func (m *mockMessage) Duplicate() bool   { return false }
+func (m *mockMessage) Qos() byte         { return m.qos }
+func (m *mockMessage) Retained() bool    { return m.retained }
+func (m *mockMessage) Topic() string     { return m.topic }
 func (m *mockMessage) MessageID() uint16 { return m.msgID }
-func (m *mockMessage) Payload() []byte { return m.payload }
-func (m *mockMessage) Ack()            {}
+func (m *mockMessage) Payload() []byte   { return m.payload }
+func (m *mockMessage) Ack()              {}
 
 // mockClientWithErrors creates a mock client that returns errors for testing error handling
 func newMockClientWithErrors(publishErr, subscribeErr, unsubscribeErr error) *mockMqttClient {
 	return &mockMqttClient{
 		connected: true,
-		publishFunc: func(topic string, qos byte, retained bool, payload interface{}) mqtt.Token {
+		publishFunc: func(topic string, qos byte, retained bool, payload any) mqtt.Token {
 			return newMockToken(publishErr)
 		},
 		subscribeFunc: func(topic string, qos byte, callback mqtt.MessageHandler) mqtt.Token {
@@ -173,7 +173,7 @@ func newMockMqttClientWithConnect(connectErr error) *mockMqttClientWithConnect {
 	return &mockMqttClientWithConnect{
 		mockMqttClient: mockMqttClient{
 			connected: true,
-			publishFunc: func(topic string, qos byte, retained bool, payload interface{}) mqtt.Token {
+			publishFunc: func(topic string, qos byte, retained bool, payload any) mqtt.Token {
 				return newMockToken(nil)
 			},
 			subscribeFunc: func(topic string, qos byte, callback mqtt.MessageHandler) mqtt.Token {

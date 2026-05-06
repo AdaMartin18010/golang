@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"sync"
 )
 
@@ -89,10 +90,8 @@ func (r *RBAC) AssignPermissionToRole(roleID, permID string) error {
 	}
 
 	// 检查是否已分配
-	for _, p := range role.Permissions {
-		if p == permID {
-			return nil // 已存在
-		}
+	if slices.Contains(role.Permissions, permID) {
+		return nil // 已存在
 	}
 
 	role.Permissions = append(role.Permissions, permID)

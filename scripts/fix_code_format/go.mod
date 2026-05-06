@@ -1,4 +1,4 @@
 module fix_code_format
 
-go 1.25
+go 1.26
 

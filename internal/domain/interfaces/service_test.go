@@ -10,10 +10,10 @@ import (
 
 // TestEntity 测试用实体
 type TestServiceEntity struct {
-	ID      string
-	Name    string
-	Valid   bool
-	Value   int
+	ID    string
+	Name  string
+	Valid bool
+	Value int
 }
 
 // mockDomainService 模拟领域服务实现
@@ -22,11 +22,11 @@ type mockDomainService struct {
 	processError  error
 }
 
-func (m *mockDomainService) Validate(ctx context.Context, entity interface{}) error {
+func (m *mockDomainService) Validate(ctx context.Context, entity any) error {
 	return m.validateError
 }
 
-func (m *mockDomainService) Process(ctx context.Context, entity interface{}) error {
+func (m *mockDomainService) Process(ctx context.Context, entity any) error {
 	return m.processError
 }
 
@@ -35,7 +35,7 @@ type mockValidator struct {
 	validateError error
 }
 
-func (m *mockValidator) Validate(ctx context.Context, entity interface{}) error {
+func (m *mockValidator) Validate(ctx context.Context, entity any) error {
 	return m.validateError
 }
 
@@ -44,7 +44,7 @@ type mockProcessor struct {
 	processError error
 }
 
-func (m *mockProcessor) Process(ctx context.Context, entity interface{}) error {
+func (m *mockProcessor) Process(ctx context.Context, entity any) error {
 	return m.processError
 }
 
@@ -55,7 +55,7 @@ func TestDomainService_Validate(t *testing.T) {
 	tests := []struct {
 		name      string
 		service   *mockDomainService
-		entity    interface{}
+		entity    any
 		wantError bool
 	}{
 		{
@@ -97,7 +97,7 @@ func TestDomainService_Process(t *testing.T) {
 	tests := []struct {
 		name      string
 		service   *mockDomainService
-		entity    interface{}
+		entity    any
 		wantError bool
 	}{
 		{
@@ -145,7 +145,7 @@ func TestValidator_Validate(t *testing.T) {
 	tests := []struct {
 		name      string
 		validator *mockValidator
-		entity    interface{}
+		entity    any
 		wantError bool
 	}{
 		{
@@ -193,7 +193,7 @@ func TestProcessor_Process(t *testing.T) {
 	tests := []struct {
 		name      string
 		processor *mockProcessor
-		entity    interface{}
+		entity    any
 		wantError bool
 	}{
 		{
@@ -252,8 +252,12 @@ func TestService_ContextHandling(t *testing.T) {
 			wantErr: false, // mock 实现不检查上下文状态
 		},
 		{
-			name:    "context with timeout",
-			ctx:     func() context.Context { ctx, cancel := context.WithTimeout(context.Background(), 0); defer cancel(); return ctx }(),
+			name: "context with timeout",
+			ctx: func() context.Context {
+				ctx, cancel := context.WithTimeout(context.Background(), 0)
+				defer cancel()
+				return ctx
+			}(),
 			wantErr: false, // mock 实现不检查上下文状态
 		},
 		{
@@ -294,28 +298,28 @@ type Product struct {
 // orderService 订单服务实现
 type orderService struct{}
 
-func (s *orderService) Validate(ctx context.Context, entity interface{}) error {
+func (s *orderService) Validate(ctx context.Context, entity any) error {
 	if _, ok := entity.(*Order); !ok {
 		return errors.New("invalid entity type")
 	}
 	return nil
 }
 
-func (s *orderService) Process(ctx context.Context, entity interface{}) error {
+func (s *orderService) Process(ctx context.Context, entity any) error {
 	return nil
 }
 
 // productService 产品服务实现
 type productService struct{}
 
-func (s *productService) Validate(ctx context.Context, entity interface{}) error {
+func (s *productService) Validate(ctx context.Context, entity any) error {
 	if _, ok := entity.(*Product); !ok {
 		return errors.New("invalid entity type")
 	}
 	return nil
 }
 
-func (s *productService) Process(ctx context.Context, entity interface{}) error {
+func (s *productService) Process(ctx context.Context, entity any) error {
 	return nil
 }
 
@@ -345,12 +349,12 @@ type workflowService struct {
 	processError     error
 }
 
-func (s *workflowService) Validate(ctx context.Context, entity interface{}) error {
+func (s *workflowService) Validate(ctx context.Context, entity any) error {
 	s.validationCalled = true
 	return s.validateError
 }
 
-func (s *workflowService) Process(ctx context.Context, entity interface{}) error {
+func (s *workflowService) Process(ctx context.Context, entity any) error {
 	s.processingCalled = true
 	return s.processError
 }

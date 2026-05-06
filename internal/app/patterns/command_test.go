@@ -45,7 +45,7 @@ func TestCommandResult(t *testing.T) {
 		expected struct {
 			success bool
 			message string
-			data    interface{}
+			data    any
 		}
 	}{
 		{
@@ -58,7 +58,7 @@ func TestCommandResult(t *testing.T) {
 			expected: struct {
 				success bool
 				message string
-				data    interface{}
+				data    any
 			}{
 				success: true,
 				message: "操作成功",
@@ -75,7 +75,7 @@ func TestCommandResult(t *testing.T) {
 			expected: struct {
 				success bool
 				message string
-				data    interface{}
+				data    any
 			}{
 				success: false,
 				message: "操作失败",
@@ -87,7 +87,7 @@ func TestCommandResult(t *testing.T) {
 			result: CommandResult{
 				Success: true,
 				Message: "批量操作完成",
-				Data: map[string]interface{}{
+				Data: map[string]any{
 					"created": 5,
 					"updated": 3,
 					"failed":  0,
@@ -96,11 +96,11 @@ func TestCommandResult(t *testing.T) {
 			expected: struct {
 				success bool
 				message string
-				data    interface{}
+				data    any
 			}{
 				success: true,
 				message: "批量操作完成",
-				data: map[string]interface{}{
+				data: map[string]any{
 					"created": 5,
 					"updated": 3,
 					"failed":  0,
@@ -117,7 +117,7 @@ func TestCommandResult(t *testing.T) {
 			expected: struct {
 				success bool
 				message string
-				data    interface{}
+				data    any
 			}{
 				success: true,
 				message: "",
@@ -140,7 +140,7 @@ func TestCommandResult(t *testing.T) {
 			expected: struct {
 				success bool
 				message string
-				data    interface{}
+				data    any
 			}{
 				success: true,
 				message: "用户创建成功",
@@ -258,8 +258,8 @@ func TestMockCommandHandler_Handle(t *testing.T) {
 
 	t.Run("多次处理", func(t *testing.T) {
 		handler := &MockCommandHandler{returnError: nil}
-		
-		for i := 0; i < 5; i++ {
+
+		for range 5 {
 			cmd := MockCommand{shouldError: false}
 			err := handler.Handle(ctx, cmd)
 			require.NoError(t, err)

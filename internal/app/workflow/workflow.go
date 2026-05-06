@@ -134,4 +134,3 @@ func SendNotificationActivity(ctx context.Context, userID, email string) error {
 	fmt.Printf("Sending notification to user %s at %s\n", userID, email)
 	return nil
 }
-

@@ -348,7 +348,7 @@ func main() {
 
 # 1.6.2.2 多阶段构建
 
-FROM golang:1.24-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
 

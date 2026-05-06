@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"sync"
 	"time"
 )
@@ -22,9 +23,9 @@ var (
 
 // KeyManager 密钥管理器
 type KeyManager struct {
-	keys      map[string]*Key
-	mu        sync.RWMutex
-	keyStore  KeyStore
+	keys     map[string]*Key
+	mu       sync.RWMutex
+	keyStore KeyStore
 }
 
 // Key 密钥
@@ -259,9 +260,7 @@ func (km *KeyManager) RotateKey(ctx context.Context, keyID string, newKeyData []
 	}
 
 	// 复制元数据
-	for k, v := range oldKey.Metadata {
-		newKey.Metadata[k] = v
-	}
+	maps.Copy(newKey.Metadata, oldKey.Metadata)
 	newKey.Metadata["previous_key_id"] = oldKey.ID
 
 	if err := km.SaveKey(ctx, newKey); err != nil {

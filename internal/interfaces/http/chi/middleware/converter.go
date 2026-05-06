@@ -83,7 +83,7 @@ func ConverterMiddleware(config ConverterConfig) func(http.Handler) http.Handler
 				contentType := r.Header.Get("Content-Type")
 				if strings.Contains(contentType, "application/json") {
 					// JSON 请求：解析 JSON 数据
-					var data map[string]interface{}
+					var data map[string]any
 					if err := json.NewDecoder(r.Body).Decode(&data); err == nil {
 						// 将解析后的数据添加到上下文
 						ctx = context.WithValue(ctx, "request.data", data)
@@ -91,7 +91,7 @@ func ConverterMiddleware(config ConverterConfig) func(http.Handler) http.Handler
 				} else if strings.Contains(contentType, "application/x-www-form-urlencoded") {
 					// Form 请求：解析 Form 数据
 					if err := r.ParseForm(); err == nil {
-						formData := make(map[string]interface{})
+						formData := make(map[string]any)
 						for k, v := range r.Form {
 							if len(v) == 1 {
 								formData[k] = v[0]
@@ -135,8 +135,8 @@ func ConverterMiddleware(config ConverterConfig) func(http.Handler) http.Handler
 //	        // 使用转换后的数据
 //	    }
 //	}
-func GetRequestData(ctx context.Context) map[string]interface{} {
-	if data, ok := ctx.Value("request.data").(map[string]interface{}); ok {
+func GetRequestData(ctx context.Context) map[string]any {
+	if data, ok := ctx.Value("request.data").(map[string]any); ok {
 		return data
 	}
 	return nil

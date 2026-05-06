@@ -259,4 +259,3 @@ func (s *Server) RegisterHealthChecker(checker handlers.HealthChecker) {
 	// 实际实现可能需要重新创建 healthHandler
 	s.logger.Warn("RegisterHealthChecker should be called before Start")
 }
-

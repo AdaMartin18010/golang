@@ -136,7 +136,7 @@ func TestTokenManager_ConcurrentGeneration(t *testing.T) {
 	tokens := make(chan string, numGoroutines)
 	errors := make(chan error, numGoroutines)
 
-	for i := 0; i < numGoroutines; i++ {
+	for i := range numGoroutines {
 		go func(id int) {
 			token, err := tm.GenerateAccessToken(
 				"user-"+string(rune(id)),
@@ -153,7 +153,7 @@ func TestTokenManager_ConcurrentGeneration(t *testing.T) {
 	}
 
 	// 收集结果
-	for i := 0; i < numGoroutines; i++ {
+	for range numGoroutines {
 		select {
 		case token := <-tokens:
 			assert.NotEmpty(t, token)

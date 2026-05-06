@@ -162,7 +162,7 @@ func TestRBAC_ConcurrentAccess(t *testing.T) {
 
 	done := make(chan bool, numGoroutines)
 
-	for i := 0; i < numGoroutines; i++ {
+	for range numGoroutines {
 		go func() {
 			_, err := rbac.CheckPermission(ctx, []string{"user"}, "user", "read")
 			assert.NoError(t, err)
@@ -171,7 +171,7 @@ func TestRBAC_ConcurrentAccess(t *testing.T) {
 	}
 
 	// 等待所有goroutine完成
-	for i := 0; i < numGoroutines; i++ {
+	for range numGoroutines {
 		<-done
 	}
 }

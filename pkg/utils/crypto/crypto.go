@@ -31,7 +31,15 @@ func CheckPassword(password, hash string) bool {
 
 // AESEncrypt AES加密
 func AESEncrypt(plaintext, key string) (string, error) {
-	block, err := aes.NewCipher([]byte(key))
+	keyBytes := []byte(key)
+	// 如果 key 长度不是合法的 AES 密钥长度，尝试 base64 解码
+	if len(keyBytes) != 16 && len(keyBytes) != 24 && len(keyBytes) != 32 {
+		decoded, err := base64.StdEncoding.DecodeString(key)
+		if err == nil && (len(decoded) == 16 || len(decoded) == 24 || len(decoded) == 32) {
+			keyBytes = decoded
+		}
+	}
+	block, err := aes.NewCipher(keyBytes)
 	if err != nil {
 		return "", err
 	}
@@ -58,7 +66,15 @@ func AESDecrypt(ciphertext, key string) (string, error) {
 		return "", err
 	}
 
-	block, err := aes.NewCipher([]byte(key))
+	keyBytes := []byte(key)
+	// 如果 key 长度不是合法的 AES 密钥长度，尝试 base64 解码
+	if len(keyBytes) != 16 && len(keyBytes) != 24 && len(keyBytes) != 32 {
+		decoded, err := base64.StdEncoding.DecodeString(key)
+		if err == nil && (len(decoded) == 16 || len(decoded) == 24 || len(decoded) == 32) {
+			keyBytes = decoded
+		}
+	}
+	block, err := aes.NewCipher(keyBytes)
 	if err != nil {
 		return "", err
 	}

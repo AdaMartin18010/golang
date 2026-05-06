@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 )
 
@@ -92,11 +93,8 @@ func (m *Middleware) RequireRoles(roles ...string) func(http.Handler) http.Handl
 			// 检查角色
 			hasRole := false
 			for _, userRole := range claims.Roles {
-				for _, requiredRole := range roles {
-					if userRole == requiredRole {
-						hasRole = true
-						break
-					}
+				if slices.Contains(roles, userRole) {
+					hasRole = true
 				}
 				if hasRole {
 					break

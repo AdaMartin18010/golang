@@ -24,10 +24,11 @@
 // - 跨语言：支持多种编程语言
 //
 // 使用方式：
-//   go run cmd/grpc-server/main.go
-//   # 或
-//   go build -o bin/grpc-server cmd/grpc-server/main.go
-//   ./bin/grpc-server
+//
+//	go run cmd/grpc-server/main.go
+//	# 或
+//	go build -o bin/grpc-server cmd/grpc-server/main.go
+//	./bin/grpc-server
 //
 // 配置：
 // - 配置文件：configs/config.yaml
@@ -47,14 +48,14 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/yourusername/golang/internal/config"
 	appuser "github.com/yourusername/golang/internal/app/user"
+	"github.com/yourusername/golang/internal/config"
 	"github.com/yourusername/golang/internal/infra/database/ent"
 	"github.com/yourusername/golang/internal/infra/repository"
 	"github.com/yourusername/golang/internal/interfaces/grpc/handlers"
 	"github.com/yourusername/golang/internal/interfaces/grpc/interceptors"
-	userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb"
 	healthpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/healthpb"
+	userpb "github.com/yourusername/golang/internal/interfaces/grpc/proto/userpb"
 )
 
 func main() {
@@ -171,5 +172,3 @@ func main() {
 		grpcServer.Stop()
 	}
 }
-
-

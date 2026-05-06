@@ -12,37 +12,37 @@ import (
 // 提供各种数据格式和类型之间的转换能力
 type Converter interface {
 	// ToString 转换为字符串
-	ToString(v interface{}) string
+	ToString(v any) string
 
 	// ToInt 转换为整数
-	ToInt(v interface{}) (int, error)
+	ToInt(v any) (int, error)
 
 	// ToInt64 转换为 int64
-	ToInt64(v interface{}) (int64, error)
+	ToInt64(v any) (int64, error)
 
 	// ToFloat64 转换为 float64
-	ToFloat64(v interface{}) (float64, error)
+	ToFloat64(v any) (float64, error)
 
 	// ToBool 转换为布尔值
-	ToBool(v interface{}) (bool, error)
+	ToBool(v any) (bool, error)
 
 	// ToTime 转换为时间
-	ToTime(v interface{}) (time.Time, error)
+	ToTime(v any) (time.Time, error)
 
 	// ToJSON 转换为 JSON 字符串
-	ToJSON(v interface{}) (string, error)
+	ToJSON(v any) (string, error)
 
 	// FromJSON 从 JSON 字符串解析
-	FromJSON(data string, v interface{}) error
+	FromJSON(data string, v any) error
 
 	// ToMap 转换为 map
-	ToMap(v interface{}) (map[string]interface{}, error)
+	ToMap(v any) (map[string]any, error)
 
 	// ToSlice 转换为切片
-	ToSlice(v interface{}) ([]interface{}, error)
+	ToSlice(v any) ([]any, error)
 
 	// Convert 通用转换方法
-	Convert(v interface{}, targetType reflect.Type) (interface{}, error)
+	Convert(v any, targetType reflect.Type) (any, error)
 }
 
 // DefaultConverter 默认转换器实现
@@ -53,7 +53,7 @@ func NewConverter() Converter {
 	return &DefaultConverter{}
 }
 
-func (c *DefaultConverter) ToString(v interface{}) string {
+func (c *DefaultConverter) ToString(v any) string {
 	if v == nil {
 		return ""
 	}
@@ -80,7 +80,7 @@ func (c *DefaultConverter) ToString(v interface{}) string {
 	}
 }
 
-func (c *DefaultConverter) ToInt(v interface{}) (int, error) {
+func (c *DefaultConverter) ToInt(v any) (int, error) {
 	switch val := v.(type) {
 	case int:
 		return val, nil
@@ -118,7 +118,7 @@ func (c *DefaultConverter) ToInt(v interface{}) (int, error) {
 	}
 }
 
-func (c *DefaultConverter) ToInt64(v interface{}) (int64, error) {
+func (c *DefaultConverter) ToInt64(v any) (int64, error) {
 	switch val := v.(type) {
 	case int64:
 		return val, nil
@@ -156,7 +156,7 @@ func (c *DefaultConverter) ToInt64(v interface{}) (int64, error) {
 	}
 }
 
-func (c *DefaultConverter) ToFloat64(v interface{}) (float64, error) {
+func (c *DefaultConverter) ToFloat64(v any) (float64, error) {
 	switch val := v.(type) {
 	case float64:
 		return val, nil
@@ -194,7 +194,7 @@ func (c *DefaultConverter) ToFloat64(v interface{}) (float64, error) {
 	}
 }
 
-func (c *DefaultConverter) ToBool(v interface{}) (bool, error) {
+func (c *DefaultConverter) ToBool(v any) (bool, error) {
 	switch val := v.(type) {
 	case bool:
 		return val, nil
@@ -211,7 +211,7 @@ func (c *DefaultConverter) ToBool(v interface{}) (bool, error) {
 	}
 }
 
-func (c *DefaultConverter) ToTime(v interface{}) (time.Time, error) {
+func (c *DefaultConverter) ToTime(v any) (time.Time, error) {
 	switch val := v.(type) {
 	case time.Time:
 		return val, nil
@@ -236,7 +236,7 @@ func (c *DefaultConverter) ToTime(v interface{}) (time.Time, error) {
 	}
 }
 
-func (c *DefaultConverter) ToJSON(v interface{}) (string, error) {
+func (c *DefaultConverter) ToJSON(v any) (string, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal to JSON: %w", err)
@@ -244,17 +244,17 @@ func (c *DefaultConverter) ToJSON(v interface{}) (string, error) {
 	return string(data), nil
 }
 
-func (c *DefaultConverter) FromJSON(data string, v interface{}) error {
+func (c *DefaultConverter) FromJSON(data string, v any) error {
 	return json.Unmarshal([]byte(data), v)
 }
 
-func (c *DefaultConverter) ToMap(v interface{}) (map[string]interface{}, error) {
+func (c *DefaultConverter) ToMap(v any) (map[string]any, error) {
 	if v == nil {
 		return nil, fmt.Errorf("cannot convert nil to map")
 	}
 
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		rv = rv.Elem()
 	}
 
@@ -262,7 +262,7 @@ func (c *DefaultConverter) ToMap(v interface{}) (map[string]interface{}, error) 
 		return nil, fmt.Errorf("cannot convert %T to map", v)
 	}
 
-	result := make(map[string]interface{})
+	result := make(map[string]any)
 
 	if rv.Kind() == reflect.Map {
 		for _, key := range rv.MapKeys() {
@@ -292,13 +292,13 @@ func (c *DefaultConverter) ToMap(v interface{}) (map[string]interface{}, error) 
 	return result, nil
 }
 
-func (c *DefaultConverter) ToSlice(v interface{}) ([]interface{}, error) {
+func (c *DefaultConverter) ToSlice(v any) ([]any, error) {
 	if v == nil {
 		return nil, fmt.Errorf("cannot convert nil to slice")
 	}
 
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		rv = rv.Elem()
 	}
 
@@ -306,7 +306,7 @@ func (c *DefaultConverter) ToSlice(v interface{}) ([]interface{}, error) {
 		return nil, fmt.Errorf("cannot convert %T to slice", v)
 	}
 
-	result := make([]interface{}, rv.Len())
+	result := make([]any, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		result[i] = rv.Index(i).Interface()
 	}
@@ -314,7 +314,7 @@ func (c *DefaultConverter) ToSlice(v interface{}) ([]interface{}, error) {
 	return result, nil
 }
 
-func (c *DefaultConverter) Convert(v interface{}, targetType reflect.Type) (interface{}, error) {
+func (c *DefaultConverter) Convert(v any, targetType reflect.Type) (any, error) {
 	if v == nil {
 		return reflect.Zero(targetType).Interface(), nil
 	}
@@ -325,7 +325,7 @@ func (c *DefaultConverter) Convert(v interface{}, targetType reflect.Type) (inte
 	}
 
 	// 处理指针类型
-	if targetType.Kind() == reflect.Ptr {
+	if targetType.Kind() == reflect.Pointer {
 		elemType := targetType.Elem()
 		converted, err := c.Convert(v, elemType)
 		if err != nil {

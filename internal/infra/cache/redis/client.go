@@ -312,7 +312,7 @@ func (c *Client) Ping(ctx context.Context) error {
 //	user := User{ID: 1, Name: "Alice"}
 //	data, _ := json.Marshal(user)
 //	err = client.Set(ctx, "user:1", data, time.Hour)
-func (c *Client) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+func (c *Client) Set(ctx context.Context, key string, value any, expiration time.Duration) error {
 	return c.client.Set(ctx, key, value, expiration).Err()
 }
 

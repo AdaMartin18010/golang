@@ -163,9 +163,9 @@ jobs:
                   </div>
                   
                   <div class="module-card">
-                      <div class="module-title">✨ Go 1.25新特性</div>
+                      <div class="module-title">✨ Go 1.26新特性</div>
                       <div class="module-desc">最新版本特性详解</div>
-                      <a href="docs/03-Go-1.25新特性/">查看文档 →</a>
+                      <a href="docs/03-Go-1.26新特性/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">

@@ -25,10 +25,10 @@ type KubernetesInfo struct {
 
 // KubernetesMonitor Kubernetes 监控器
 type KubernetesMonitor struct {
-	meter        metric.Meter
-	info         KubernetesInfo
-	attributes   []attribute.KeyValue
-	enabled      bool
+	meter      metric.Meter
+	info       KubernetesInfo
+	attributes []attribute.KeyValue
+	enabled    bool
 }
 
 // NewKubernetesMonitor 创建 Kubernetes 监控器

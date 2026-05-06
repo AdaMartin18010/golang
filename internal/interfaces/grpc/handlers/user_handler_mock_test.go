@@ -396,11 +396,11 @@ func (m *mockListUsersStream) Context() context.Context {
 }
 
 // 其他必需的方法（Protobuf 接口要求）
-func (m *mockListUsersStream) SendMsg(msg interface{}) error {
+func (m *mockListUsersStream) SendMsg(msg any) error {
 	return nil
 }
 
-func (m *mockListUsersStream) RecvMsg(msg interface{}) error {
+func (m *mockListUsersStream) RecvMsg(msg any) error {
 	return nil
 }
 

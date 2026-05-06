@@ -12,22 +12,22 @@ import (
 // CircuitState 是熔断器的状态类型。
 //
 // 熔断器有三种状态：
-// - StateClosed: 关闭状态（正常）
-//   所有请求都允许通过
-//   记录失败次数，达到阈值后切换到开启状态
-// - StateOpen: 开启状态（熔断）
-//   所有请求都被拒绝
-//   经过超时时间后切换到半开状态
-// - StateHalfOpen: 半开状态（尝试恢复）
-//   允许少量请求通过以测试服务是否恢复
-//   如果成功次数达到阈值，切换到关闭状态
-//   如果失败，重新切换到开启状态
+//   - StateClosed: 关闭状态（正常）
+//     所有请求都允许通过
+//     记录失败次数，达到阈值后切换到开启状态
+//   - StateOpen: 开启状态（熔断）
+//     所有请求都被拒绝
+//     经过超时时间后切换到半开状态
+//   - StateHalfOpen: 半开状态（尝试恢复）
+//     允许少量请求通过以测试服务是否恢复
+//     如果成功次数达到阈值，切换到关闭状态
+//     如果失败，重新切换到开启状态
 type CircuitState int
 
 const (
-	StateClosed CircuitState = iota // 关闭状态（正常）
-	StateOpen                       // 开启状态（熔断）
-	StateHalfOpen                   // 半开状态（尝试恢复）
+	StateClosed   CircuitState = iota // 关闭状态（正常）
+	StateOpen                         // 开启状态（熔断）
+	StateHalfOpen                     // 半开状态（尝试恢复）
 )
 
 // CircuitBreakerConfig 是熔断器的配置结构。
@@ -37,16 +37,16 @@ const (
 // - 支持状态变更回调
 //
 // 字段说明：
-// - FailureThreshold: 失败阈值（默认：5）
-//   关闭状态下，失败次数达到此值时切换到开启状态
-// - SuccessThreshold: 成功阈值（默认：2）
-//   半开状态下，成功次数达到此值时切换到关闭状态
-// - Timeout: 熔断持续时间（默认：60秒）
-//   开启状态下，经过此时间后切换到半开状态
-// - TimeoutWindow: 时间窗口（默认：60秒）
-//   关闭状态下，在此时间窗口内统计失败次数
-// - OnStateChange: 状态变更回调函数
-//   当熔断器状态发生变化时调用
+//   - FailureThreshold: 失败阈值（默认：5）
+//     关闭状态下，失败次数达到此值时切换到开启状态
+//   - SuccessThreshold: 成功阈值（默认：2）
+//     半开状态下，成功次数达到此值时切换到关闭状态
+//   - Timeout: 熔断持续时间（默认：60秒）
+//     开启状态下，经过此时间后切换到半开状态
+//   - TimeoutWindow: 时间窗口（默认：60秒）
+//     关闭状态下，在此时间窗口内统计失败次数
+//   - OnStateChange: 状态变更回调函数
+//     当熔断器状态发生变化时调用
 //
 // 使用示例：
 //
@@ -59,11 +59,11 @@ const (
 //	    },
 //	}
 type CircuitBreakerConfig struct {
-	FailureThreshold   int           // 失败阈值
-	SuccessThreshold   int           // 成功阈值（半开状态下）
-	Timeout            time.Duration // 熔断持续时间
-	TimeoutWindow      time.Duration // 时间窗口
-	OnStateChange      func(string, CircuitState) // 状态变更回调
+	FailureThreshold int                        // 失败阈值
+	SuccessThreshold int                        // 成功阈值（半开状态下）
+	Timeout          time.Duration              // 熔断持续时间
+	TimeoutWindow    time.Duration              // 时间窗口
+	OnStateChange    func(string, CircuitState) // 状态变更回调
 }
 
 // CircuitBreaker 是熔断器的实现。
@@ -83,14 +83,14 @@ type CircuitBreakerConfig struct {
 // - lastStateChange: 上次状态变更时间
 // - mu: 读写互斥锁（保证并发安全）
 type CircuitBreaker struct {
-	name              string
-	config            CircuitBreakerConfig
-	state             CircuitState
-	failures          int
-	successes         int
-	lastFailureTime   time.Time
-	lastStateChange   time.Time
-	mu                sync.RWMutex
+	name            string
+	config          CircuitBreakerConfig
+	state           CircuitState
+	failures        int
+	successes       int
+	lastFailureTime time.Time
+	lastStateChange time.Time
+	mu              sync.RWMutex
 }
 
 // NewCircuitBreaker 创建并初始化熔断器。
@@ -149,11 +149,11 @@ func NewCircuitBreaker(name string, config CircuitBreakerConfig) *CircuitBreaker
 // - 自动处理状态转换
 //
 // 状态行为：
-// - StateClosed: 允许所有请求
-//   如果时间窗口已过，重置失败计数
-// - StateOpen: 拒绝所有请求
-//   如果超时时间已过，切换到半开状态并允许请求
-// - StateHalfOpen: 允许请求（用于测试恢复）
+//   - StateClosed: 允许所有请求
+//     如果时间窗口已过，重置失败计数
+//   - StateOpen: 拒绝所有请求
+//     如果超时时间已过，切换到半开状态并允许请求
+//   - StateHalfOpen: 允许请求（用于测试恢复）
 //
 // 返回：
 // - bool: 如果允许请求返回 true，否则返回 false
@@ -203,9 +203,9 @@ func (cb *CircuitBreaker) Allow() bool {
 // - 根据状态更新计数器和状态
 //
 // 状态行为：
-// - StateClosed: 重置失败计数（表示服务正常）
-// - StateHalfOpen: 增加成功计数
-//   如果成功次数达到阈值，切换到关闭状态
+//   - StateClosed: 重置失败计数（表示服务正常）
+//   - StateHalfOpen: 增加成功计数
+//     如果成功次数达到阈值，切换到关闭状态
 //
 // 使用场景：
 // - 在请求成功后调用
@@ -237,10 +237,10 @@ func (cb *CircuitBreaker) OnSuccess() {
 // - 根据状态更新计数器和状态
 //
 // 状态行为：
-// - StateClosed: 增加失败计数
-//   如果失败次数达到阈值，切换到开启状态（熔断）
-// - StateHalfOpen: 切换到开启状态
-//   表示服务仍未恢复，继续熔断
+//   - StateClosed: 增加失败计数
+//     如果失败次数达到阈值，切换到开启状态（熔断）
+//   - StateHalfOpen: 切换到开启状态
+//     表示服务仍未恢复，继续熔断
 //
 // 使用场景：
 // - 在请求失败后调用
@@ -285,8 +285,8 @@ func (cb *CircuitBreaker) setState(newState CircuitState) {
 	if cb.state != newState {
 		cb.state = newState
 		cb.lastStateChange = time.Now()
-		cb.failures = 0      // 重置失败计数
-		cb.successes = 0     // 重置成功计数
+		cb.failures = 0  // 重置失败计数
+		cb.successes = 0 // 重置成功计数
 
 		// 调用状态变更回调
 		if cb.config.OnStateChange != nil {

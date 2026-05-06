@@ -16,10 +16,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/yourusername/golang/internal/domain/user"
 	"github.com/yourusername/golang/internal/infra/database/ent"
 	"github.com/yourusername/golang/internal/infra/database/ent/enttest"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 // setupEntUserRepository 创建测试用的 EntUserRepository
@@ -231,7 +231,7 @@ func TestEntUserRepository_List(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建多个测试用户
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		u := user.NewUser("list"+string(rune('0'+i))+"@example.com", "List User "+string(rune('0'+i)))
 		err := repo.Create(ctx, u)
 		require.NoError(t, err)
@@ -345,7 +345,7 @@ func TestEntUserRepository_ConcurrentAccess(t *testing.T) {
 
 	// 并发创建用户
 	done := make(chan bool, 10)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		go func(n int) {
 			u := user.NewUser("concurrent"+string(rune('0'+n))+"@example.com", "Concurrent User")
 			err := repo.Create(ctx, u)
@@ -355,7 +355,7 @@ func TestEntUserRepository_ConcurrentAccess(t *testing.T) {
 	}
 
 	// 等待所有 goroutine 完成
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		<-done
 	}
 
@@ -421,4 +421,3 @@ func BenchmarkEntUserRepository_FindByEmail(b *testing.B) {
 		repo.FindByEmail(ctx, "benchemail@example.com")
 	}
 }
-

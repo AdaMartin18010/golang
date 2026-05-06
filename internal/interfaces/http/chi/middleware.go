@@ -168,8 +168,9 @@ func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
 // - 应该根据实际需求配置允许的方法和头
 //
 // 示例（生产环境配置）：
-//   w.Header().Set("Access-Control-Allow-Origin", "https://example.com")
-//   w.Header().Set("Access-Control-Allow-Credentials", "true")
+//
+//	w.Header().Set("Access-Control-Allow-Origin", "https://example.com")
+//	w.Header().Set("Access-Control-Allow-Credentials", "true")
 func CORSMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 设置 CORS 响应头

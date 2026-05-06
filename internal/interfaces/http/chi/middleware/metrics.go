@@ -33,13 +33,13 @@ import (
 // - totalDuration: 总耗时
 // - mu: 读写互斥锁（保证并发安全）
 type Metrics struct {
-	mu                sync.RWMutex
-	requestCount      map[string]int64      // 请求计数
-	requestDuration   map[string]time.Duration // 请求耗时
-	errorCount        map[string]int64      // 错误计数
-	activeRequests    int64                 // 活跃请求数
-	totalRequests     int64                 // 总请求数
-	totalDuration     time.Duration         // 总耗时
+	mu              sync.RWMutex
+	requestCount    map[string]int64         // 请求计数
+	requestDuration map[string]time.Duration // 请求耗时
+	errorCount      map[string]int64         // 错误计数
+	activeRequests  int64                    // 活跃请求数
+	totalRequests   int64                    // 总请求数
+	totalDuration   time.Duration            // 总耗时
 }
 
 // NewMetrics 创建并初始化指标收集器。
@@ -82,7 +82,7 @@ func NewMetrics() *Metrics {
 //
 //	stats := metrics.GetStats()
 //	fmt.Printf("Total requests: %d\n", stats["total_requests"])
-func (m *Metrics) GetStats() map[string]interface{} {
+func (m *Metrics) GetStats() map[string]any {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -91,7 +91,7 @@ func (m *Metrics) GetStats() map[string]interface{} {
 		avgDuration = m.totalDuration / time.Duration(m.totalRequests)
 	}
 
-	return map[string]interface{}{
+	return map[string]any{
 		"total_requests":   m.totalRequests,
 		"active_requests":  m.activeRequests,
 		"average_duration": avgDuration.String(),

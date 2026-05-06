@@ -66,10 +66,10 @@ import (
 //	  }
 //	}
 type APIResponse struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-	Error   *APIError   `json:"error,omitempty"`
+	Code    int       `json:"code"`
+	Message string    `json:"message"`
+	Data    any       `json:"data,omitempty"`
+	Error   *APIError `json:"error,omitempty"`
 }
 
 // APIError 是 API 错误信息的结构。
@@ -118,7 +118,7 @@ type APIError struct {
 // - 状态码应使用标准 HTTP 状态码
 // - 数据会被序列化为 JSON，确保数据可序列化
 // - 响应会自动设置 Content-Type 为 application/json
-func Success(w http.ResponseWriter, code int, data interface{}) {
+func Success(w http.ResponseWriter, code int, data any) {
 	response := APIResponse{
 		Code:    code,
 		Message: "success",
@@ -135,11 +135,11 @@ func Success(w http.ResponseWriter, code int, data interface{}) {
 // - 设置适当的 HTTP 状态码
 //
 // 参数：
-// - w: HTTP 响应写入器
-// - code: HTTP 状态码（如 http.StatusBadRequest、http.StatusInternalServerError）
-// - err: 错误对象
-//   如果是 AppError，会提取错误代码和消息
-//   如果是普通错误，会使用默认错误代码
+//   - w: HTTP 响应写入器
+//   - code: HTTP 状态码（如 http.StatusBadRequest、http.StatusInternalServerError）
+//   - err: 错误对象
+//     如果是 AppError，会提取错误代码和消息
+//     如果是普通错误，会使用默认错误代码
 //
 // 使用示例：
 //
@@ -203,7 +203,7 @@ func Error(w http.ResponseWriter, code int, err error) {
 // - 数据必须是可序列化为 JSON 的类型
 // - 如果序列化失败，会返回错误（但不会处理）
 // - 应在调用此函数前确保数据有效
-func writeJSON(w http.ResponseWriter, code int, data interface{}) {
+func writeJSON(w http.ResponseWriter, code int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(data)

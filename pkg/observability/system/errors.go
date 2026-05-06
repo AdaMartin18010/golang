@@ -45,7 +45,7 @@ func NewMonitorError(component, operation, message string, retryable bool, err e
 
 // RetryConfig 重试配置
 type RetryConfig struct {
-	MaxRetries  int
+	MaxRetries   int
 	InitialDelay time.Duration
 	MaxDelay     time.Duration
 	Multiplier   float64
@@ -54,7 +54,7 @@ type RetryConfig struct {
 // DefaultRetryConfig 返回默认重试配置
 func DefaultRetryConfig() RetryConfig {
 	return RetryConfig{
-		MaxRetries:  3,
+		MaxRetries:   3,
 		InitialDelay: 1 * time.Second,
 		MaxDelay:     10 * time.Second,
 		Multiplier:   2.0,

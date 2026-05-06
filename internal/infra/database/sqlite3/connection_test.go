@@ -178,7 +178,7 @@ func TestNewConnection_Concurrent(t *testing.T) {
 
 	// 并发查询
 	done := make(chan bool, 3)
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		go func() {
 			defer func() { done <- true }()
 			err := db.Ping()
@@ -187,7 +187,7 @@ func TestNewConnection_Concurrent(t *testing.T) {
 	}
 
 	// 等待所有 goroutine 完成
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		<-done
 	}
 }

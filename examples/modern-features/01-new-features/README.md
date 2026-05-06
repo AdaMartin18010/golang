@@ -159,7 +159,7 @@ cd 06-wasm-export
 go run main.go
 ```
 
-### 1.3.7 Go 1.25 新特性
+### 1.3.7 Go 1.23 新特性（目录名已更正）
 
 **路径**: `04-go125-new-features/`
 

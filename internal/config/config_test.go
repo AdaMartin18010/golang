@@ -220,28 +220,28 @@ func TestBindEnvVars(t *testing.T) {
 		name     string
 		envKey   string
 		envValue string
-		verify   func(*Config) interface{}
-		expected interface{}
+		verify   func(*Config) any
+		expected any
 	}{
 		{
 			name:     "server host",
 			envKey:   "APP_SERVER_HOST",
 			envValue: "0.0.0.0",
-			verify:   func(c *Config) interface{} { return c.Server.Host },
+			verify:   func(c *Config) any { return c.Server.Host },
 			expected: "0.0.0.0",
 		},
 		{
 			name:     "database type",
 			envKey:   "APP_DB_TYPE",
 			envValue: "mysql",
-			verify:   func(c *Config) interface{} { return c.Database.Type },
+			verify:   func(c *Config) any { return c.Database.Type },
 			expected: "mysql",
 		},
 		{
 			name:     "log level",
 			envKey:   "APP_LOG_LEVEL",
 			envValue: "error",
-			verify:   func(c *Config) interface{} { return c.Logging.Level },
+			verify:   func(c *Config) any { return c.Logging.Level },
 			expected: "error",
 		},
 	}

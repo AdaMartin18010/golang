@@ -152,7 +152,7 @@ func TestUser_Query_All(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建多个用户
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		_, err := client.User.Create().
 			SetID(fmt.Sprintf("user-all-%d", i)).
 			SetEmail(fmt.Sprintf("all%d@example.com", i)).
@@ -181,7 +181,7 @@ func TestUser_Query_Count(t *testing.T) {
 	assert.Equal(t, 0, count)
 
 	// 创建用户
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		_, err := client.User.Create().
 			SetID(fmt.Sprintf("user-count-%d", i)).
 			SetEmail(fmt.Sprintf("count%d@example.com", i)).
@@ -234,7 +234,7 @@ func TestUser_Query_LimitOffset(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建多个用户
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		_, err := client.User.Create().
 			SetID(fmt.Sprintf("user-page-%d", i)).
 			SetEmail(fmt.Sprintf("page%d@example.com", i)).
@@ -339,4 +339,3 @@ func TestUser_Query_Select(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, len(users) > 0)
 }
-

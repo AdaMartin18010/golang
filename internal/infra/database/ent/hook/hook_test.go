@@ -14,13 +14,13 @@ func TestConditionType(t *testing.T) {
 	// Condition should be a function type: func(context.Context, ent.Mutation) bool
 	var cond Condition
 	assert.Nil(t, cond)
-	
+
 	// Test that we can create a valid Condition
 	cond = func(ctx context.Context, m ent.Mutation) bool {
 		return true
 	}
 	assert.NotNil(t, cond)
-	
+
 	// Test And function
 	cond2 := func(ctx context.Context, m ent.Mutation) bool {
 		return true
@@ -34,15 +34,15 @@ func TestAndOrNot(t *testing.T) {
 	// Create conditions
 	alwaysTrue := func(context.Context, ent.Mutation) bool { return true }
 	alwaysFalse := func(context.Context, ent.Mutation) bool { return false }
-	
+
 	// Test And with true conditions
 	andResult := And(alwaysTrue, alwaysTrue)
 	assert.NotNil(t, andResult)
-	
+
 	// Test Or with conditions
 	orResult := Or(alwaysTrue, alwaysFalse)
 	assert.NotNil(t, orResult)
-	
+
 	// Test Not
 	notResult := Not(alwaysTrue)
 	assert.NotNil(t, notResult)
@@ -53,15 +53,15 @@ func TestHasFunctions(t *testing.T) {
 	// Test HasOp
 	hasOp := HasOp(ent.OpCreate)
 	assert.NotNil(t, hasOp)
-	
+
 	// Test HasAddedFields
 	hasAddedFields := HasAddedFields("name", "email")
 	assert.NotNil(t, hasAddedFields)
-	
+
 	// Test HasClearedFields
 	hasClearedFields := HasClearedFields("name")
 	assert.NotNil(t, hasClearedFields)
-	
+
 	// Test HasFields
 	hasFields := HasFields("id")
 	assert.NotNil(t, hasFields)
@@ -71,11 +71,11 @@ func TestHasFunctions(t *testing.T) {
 func TestIf(t *testing.T) {
 	// Verify function exists and has correct signature
 	assert.NotNil(t, If)
-	
+
 	// Test creating If with a hook and condition
 	var testHook ent.Hook
 	var testCond Condition
-	
+
 	result := If(testHook, testCond)
 	assert.NotNil(t, result)
 }
@@ -84,7 +84,7 @@ func TestIf(t *testing.T) {
 func TestOn(t *testing.T) {
 	// Verify function exists
 	assert.NotNil(t, On)
-	
+
 	// Test creating On with a hook and operation
 	var testHook ent.Hook
 	result := On(testHook, ent.OpCreate)
@@ -95,7 +95,7 @@ func TestOn(t *testing.T) {
 func TestUnless(t *testing.T) {
 	// Verify function exists
 	assert.NotNil(t, Unless)
-	
+
 	// Test creating Unless with a hook and operation
 	var testHook ent.Hook
 	result := Unless(testHook, ent.OpUpdate)
@@ -106,7 +106,7 @@ func TestUnless(t *testing.T) {
 func TestFixedError(t *testing.T) {
 	// Verify function exists
 	assert.NotNil(t, FixedError)
-	
+
 	// Test creating FixedError hook
 	testErr := assert.AnError
 	hook := FixedError(testErr)
@@ -117,7 +117,7 @@ func TestFixedError(t *testing.T) {
 func TestReject(t *testing.T) {
 	// Verify function exists
 	assert.NotNil(t, Reject)
-	
+
 	// Test creating Reject hook
 	hook := Reject(ent.OpDelete)
 	assert.NotNil(t, hook)
@@ -127,7 +127,7 @@ func TestReject(t *testing.T) {
 func TestChain(t *testing.T) {
 	// Test NewChain function
 	assert.NotNil(t, NewChain)
-	
+
 	// Create empty chain
 	chain := NewChain()
 	assert.NotNil(t, chain)
@@ -136,7 +136,7 @@ func TestChain(t *testing.T) {
 // TestChain_Hook tests the Chain.Hook method
 func TestChain_Hook(t *testing.T) {
 	chain := NewChain()
-	
+
 	// Test Hook method exists
 	hook := chain.Hook()
 	assert.NotNil(t, hook)
@@ -146,7 +146,7 @@ func TestChain_Hook(t *testing.T) {
 func TestChain_Append(t *testing.T) {
 	chain1 := NewChain()
 	chain2 := chain1.Append()
-	
+
 	assert.NotNil(t, chain2)
 }
 
@@ -155,7 +155,7 @@ func TestChain_Extend(t *testing.T) {
 	chain1 := NewChain()
 	chain2 := NewChain()
 	chain3 := chain1.Extend(chain2)
-	
+
 	assert.NotNil(t, chain3)
 }
 
@@ -164,7 +164,7 @@ func TestUserFunc(t *testing.T) {
 	// Test UserFunc type exists
 	var f UserFunc
 	assert.Nil(t, f)
-	
+
 	// Test that UserFunc can be created
 	// Note: UserFunc signature is func(context.Context, *ent.UserMutation) (ent.Value, error)
 	f = func(ctx context.Context, m *ent.UserMutation) (ent.Value, error) {
@@ -177,7 +177,7 @@ func TestUserFunc(t *testing.T) {
 func TestChainStructFields(t *testing.T) {
 	chain := Chain{}
 	_ = chain
-	
+
 	// Verify Chain is a valid type
 	assert.IsType(t, Chain{}, chain)
 }
@@ -187,7 +187,7 @@ func TestAllHookFunctions(t *testing.T) {
 	// Verify all hook helper functions are exported
 	tests := []struct {
 		name string
-		fn   interface{}
+		fn   any
 	}{
 		{"And", And},
 		{"Or", Or},
@@ -230,7 +230,7 @@ func TestMutateFuncType(t *testing.T) {
 	// ent.MutateFunc should be a function type
 	var f ent.MutateFunc
 	assert.Nil(t, f)
-	
+
 	// Test that we can create a MutateFunc
 	f = func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 		return nil, nil
@@ -247,4 +247,3 @@ func TestOpType(t *testing.T) {
 	_ = ent.OpUpdateOne
 	_ = ent.OpDeleteOne
 }
-

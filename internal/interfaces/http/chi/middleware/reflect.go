@@ -33,10 +33,10 @@ import (
 //	}
 //	router.Use(middleware.ReflectMiddleware(config))
 type ReflectConfig struct {
-	EnableMetadata    bool
+	EnableMetadata     bool
 	EnableSelfDescribe bool
-	MetadataPaths     []string
-	SkipPaths         []string
+	MetadataPaths      []string
+	SkipPaths          []string
 }
 
 // ReflectMiddleware 创建反射/自解释中间件
@@ -79,7 +79,7 @@ func ReflectMiddleware(config ReflectConfig) func(http.Handler) http.Handler {
 				// 检查路径是否在元数据路径列表中
 				if len(config.MetadataPaths) == 0 || containsPath(path, config.MetadataPaths) {
 					// 添加请求元数据
-					metadata := map[string]interface{}{
+					metadata := map[string]any{
 						"method": r.Method,
 						"path":   r.URL.Path,
 						"host":   r.Host,

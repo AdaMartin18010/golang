@@ -22,24 +22,25 @@ import "context"
 // 4. 需要在内存中过滤实体的场景
 //
 // 示例：
-//   // 定义规约
-//   type ActiveUserSpec struct{}
-//   func (s ActiveUserSpec) IsSatisfiedBy(user *User) bool {
-//       return user.Status == "active"
-//   }
 //
-//   type EmailSpec struct {
-//       Email string
-//   }
-//   func (s EmailSpec) IsSatisfiedBy(user *User) bool {
-//       return user.Email == s.Email
-//   }
+//	// 定义规约
+//	type ActiveUserSpec struct{}
+//	func (s ActiveUserSpec) IsSatisfiedBy(user *User) bool {
+//	    return user.Status == "active"
+//	}
 //
-//   // 组合规约
-//   spec := And(ActiveUserSpec{}, EmailSpec{Email: "test@example.com"})
+//	type EmailSpec struct {
+//	    Email string
+//	}
+//	func (s EmailSpec) IsSatisfiedBy(user *User) bool {
+//	    return user.Email == s.Email
+//	}
 //
-//   // 使用规约查询
-//   users, err := repo.FindBySpecification(ctx, spec)
+//	// 组合规约
+//	spec := And(ActiveUserSpec{}, EmailSpec{Email: "test@example.com"})
+//
+//	// 使用规约查询
+//	users, err := repo.FindBySpecification(ctx, spec)
 //
 // 参考：
 // - Martin Fowler: Specification Pattern

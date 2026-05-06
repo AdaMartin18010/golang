@@ -75,14 +75,14 @@ func (f ConditionFunc) String() string {
 // 示例：
 //
 //	condition := abac.Eq("subject.department", "engineering")
-func Eq(attribute string, value interface{}) Condition {
+func Eq(attribute string, value any) Condition {
 	return &equalsCondition{attribute: attribute, expected: value}
 }
 
 // equalsCondition 等于条件
 type equalsCondition struct {
 	attribute string
-	expected  interface{}
+	expected  any
 }
 
 func (c *equalsCondition) Evaluate(ctx context.Context, req Request) (bool, error) {
@@ -97,7 +97,7 @@ func (c *equalsCondition) String() string {
 	return fmt.Sprintf("%s == %v", c.attribute, c.expected)
 }
 
-func (c *equalsCondition) resolveAttribute(req Request) (interface{}, error) {
+func (c *equalsCondition) resolveAttribute(req Request) (any, error) {
 	return resolveRequestAttribute(req, c.attribute)
 }
 
@@ -108,7 +108,7 @@ func (c *equalsCondition) resolveAttribute(req Request) (interface{}, error) {
 // 示例：
 //
 //	condition := abac.Ne("subject.status", "banned")
-func Ne(attribute string, value interface{}) Condition {
+func Ne(attribute string, value any) Condition {
 	return NotCondition(Eq(attribute, value))
 }
 
@@ -119,14 +119,14 @@ func Ne(attribute string, value interface{}) Condition {
 // 示例：
 //
 //	condition := abac.Gt("subject.clearance_level", 3)
-func Gt(attribute string, value interface{}) Condition {
+func Gt(attribute string, value any) Condition {
 	return &greaterThanCondition{attribute: attribute, threshold: value}
 }
 
 // greaterThanCondition 大于条件
 type greaterThanCondition struct {
 	attribute string
-	threshold interface{}
+	threshold any
 }
 
 func (c *greaterThanCondition) Evaluate(ctx context.Context, req Request) (bool, error) {
@@ -152,7 +152,7 @@ func (c *greaterThanCondition) String() string {
 // 示例：
 //
 //	condition := abac.Gte("subject.clearance_level", 3)
-func Gte(attribute string, value interface{}) Condition {
+func Gte(attribute string, value any) Condition {
 	return OrCondition(
 		Gt(attribute, value),
 		Eq(attribute, value),
@@ -166,14 +166,14 @@ func Gte(attribute string, value interface{}) Condition {
 // 示例：
 //
 //	condition := abac.Lt("subject.failed_attempts", 5)
-func Lt(attribute string, value interface{}) Condition {
+func Lt(attribute string, value any) Condition {
 	return &lessThanCondition{attribute: attribute, threshold: value}
 }
 
 // lessThanCondition 小于条件
 type lessThanCondition struct {
 	attribute string
-	threshold interface{}
+	threshold any
 }
 
 func (c *lessThanCondition) Evaluate(ctx context.Context, req Request) (bool, error) {
@@ -199,7 +199,7 @@ func (c *lessThanCondition) String() string {
 // 示例：
 //
 //	condition := abac.Lte("subject.failed_attempts", 5)
-func Lte(attribute string, value interface{}) Condition {
+func Lte(attribute string, value any) Condition {
 	return OrCondition(
 		Lt(attribute, value),
 		Eq(attribute, value),
@@ -215,14 +215,14 @@ func Lte(attribute string, value interface{}) Condition {
 // 示例：
 //
 //	condition := abac.In("action.name", []string{"read", "write"})
-func In(attribute string, values interface{}) Condition {
+func In(attribute string, values any) Condition {
 	return &inCondition{attribute: attribute, values: values}
 }
 
 // inCondition 包含于条件
 type inCondition struct {
 	attribute string
-	values    interface{}
+	values    any
 }
 
 func (c *inCondition) Evaluate(ctx context.Context, req Request) (bool, error) {
@@ -244,7 +244,7 @@ func (c *inCondition) String() string {
 // 示例：
 //
 //	condition := abac.NotIn("subject.status", []string{"banned", "suspended"})
-func NotIn(attribute string, values interface{}) Condition {
+func NotIn(attribute string, values any) Condition {
 	return NotCondition(In(attribute, values))
 }
 
@@ -255,14 +255,14 @@ func NotIn(attribute string, values interface{}) Condition {
 // 示例：
 //
 //	condition := abac.Contains("resource.tags", "confidential")
-func Contains(attribute string, value interface{}) Condition {
+func Contains(attribute string, value any) Condition {
 	return &containsCondition{attribute: attribute, searchValue: value}
 }
 
 // containsCondition 包含条件
 type containsCondition struct {
 	attribute   string
-	searchValue interface{}
+	searchValue any
 }
 
 func (c *containsCondition) Evaluate(ctx context.Context, req Request) (bool, error) {
@@ -515,7 +515,7 @@ func OrCondition(a, b Condition) Condition {
 // 示例：
 //
 //	condition := abac.Between("subject.age", 18, 65)
-func Between(attribute string, min, max interface{}) Condition {
+func Between(attribute string, min, max any) Condition {
 	return AllOf(
 		Gte(attribute, min),
 		Lte(attribute, max),
@@ -588,7 +588,7 @@ func (c *emptyCondition) String() string {
 //   - resource.id, resource.type, resource.owner, resource.attributes.xxx
 //   - action.name, action.attributes.xxx
 //   - environment.time, environment.location, environment.attributes.xxx
-func resolveRequestAttribute(req Request, path string) (interface{}, error) {
+func resolveRequestAttribute(req Request, path string) (any, error) {
 	parts := strings.SplitN(path, ".", 2)
 	if len(parts) < 1 {
 		return nil, fmt.Errorf("invalid attribute path: %s", path)

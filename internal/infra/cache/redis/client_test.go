@@ -32,7 +32,7 @@ func (m *MockRedisClient) Ping(ctx context.Context) *redis.StatusCmd {
 	return args.Get(0).(*redis.StatusCmd)
 }
 
-func (m *MockRedisClient) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
+func (m *MockRedisClient) Set(ctx context.Context, key string, value any, expiration time.Duration) *redis.StatusCmd {
 	args := m.Called(ctx, key, value, expiration)
 	return args.Get(0).(*redis.StatusCmd)
 }
@@ -363,7 +363,7 @@ func TestClient_ConcurrentAccess_Integration(t *testing.T) {
 
 	// 并发写入
 	done := make(chan bool, 10)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		go func(n int) {
 			key := "test:concurrent"
 			err := client.Set(ctx, key, n, 10*time.Second)
@@ -373,7 +373,7 @@ func TestClient_ConcurrentAccess_Integration(t *testing.T) {
 	}
 
 	// 等待所有 goroutine 完成
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		<-done
 	}
 

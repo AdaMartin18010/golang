@@ -10,7 +10,7 @@ func TestDefaultConverter_ToString(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		input    interface{}
+		input    any
 		expected string
 	}{
 		{"int", 123, "123"},
@@ -36,7 +36,7 @@ func TestDefaultConverter_ToInt(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		input    interface{}
+		input    any
 		expected int
 		wantErr  bool
 	}{
@@ -65,7 +65,7 @@ func TestDefaultConverter_ToInt(t *testing.T) {
 func TestDefaultConverter_ToJSON(t *testing.T) {
 	conv := NewConverter()
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"name": "John",
 		"age":  30,
 	}
@@ -80,7 +80,7 @@ func TestDefaultConverter_ToJSON(t *testing.T) {
 	}
 
 	// 验证可以解析回来
-	var result map[string]interface{}
+	var result map[string]any
 	if err := conv.FromJSON(jsonStr, &result); err != nil {
 		t.Fatalf("FromJSON failed: %v", err)
 	}
@@ -135,7 +135,7 @@ func TestDefaultConverter_ToSlice(t *testing.T) {
 func TestDefaultConverter_Convert(t *testing.T) {
 	conv := NewConverter()
 
-	targetType := reflect.TypeOf(int64(0))
+	targetType := reflect.TypeFor[int64]()
 	result, err := conv.Convert("123", targetType)
 	if err != nil {
 		t.Fatalf("Convert failed: %v", err)
@@ -145,4 +145,3 @@ func TestDefaultConverter_Convert(t *testing.T) {
 		t.Errorf("Expected 123, got %v", result)
 	}
 }
-

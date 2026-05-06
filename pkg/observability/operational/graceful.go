@@ -65,9 +65,9 @@ func GracefulShutdownWithCallback(
 
 // ShutdownTimeout 关闭超时配置
 type ShutdownTimeout struct {
-	Default    time.Duration
-	HTTP       time.Duration
-	Database   time.Duration
+	Default       time.Duration
+	HTTP          time.Duration
+	Database      time.Duration
 	Observability time.Duration
 }
 

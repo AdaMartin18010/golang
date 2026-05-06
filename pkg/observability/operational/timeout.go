@@ -8,21 +8,21 @@ import (
 
 // TimeoutConfig 超时配置
 type TimeoutConfig struct {
-	Default    time.Duration
-	HTTP       time.Duration
-	Database   time.Duration
-	External   time.Duration
+	Default       time.Duration
+	HTTP          time.Duration
+	Database      time.Duration
+	External      time.Duration
 	Observability time.Duration
 }
 
 // DefaultTimeoutConfig 返回默认超时配置
 func DefaultTimeoutConfig() TimeoutConfig {
 	return TimeoutConfig{
-		Default:        30 * time.Second,
-		HTTP:           10 * time.Second,
-		Database:       15 * time.Second,
-		External:       10 * time.Second,
-		Observability:  5 * time.Second,
+		Default:       30 * time.Second,
+		HTTP:          10 * time.Second,
+		Database:      15 * time.Second,
+		External:      10 * time.Second,
+		Observability: 5 * time.Second,
 	}
 }
 

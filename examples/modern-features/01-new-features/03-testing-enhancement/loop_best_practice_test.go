@@ -13,8 +13,8 @@ import (
 	"time"
 )
 
-// 注意：这个示例已更新为Go 1.25.3兼容版本
-// Go 1.25中移除了实验性的testing.Loop API
+// 注意：这个示例已更新为Go 1.24+兼容版本
+// Go 1.24中引入了testing.B.Loop API
 // 我们使用传统的基准测试模式，但展示了最佳实践
 
 // generateData 是一个模拟昂贵设置的函数。
@@ -40,7 +40,7 @@ func BenchmarkProcessData_Traditional(b *testing.B) {
 
 // --- 示例2: 改进的基准测试写法 ---
 // 优点：结构更清晰，设置代码和循环体分开。
-// 注意：Go 1.25中testing.Loop API已被移除，我们使用传统方式
+// 注意：Go 1.24中testing.B.Loop API已可用，本示例展示传统方式作为对比
 func BenchmarkProcessData_Improved(b *testing.B) {
 	data := generateData()
 	b.ResetTimer()
@@ -67,7 +67,7 @@ func BenchmarkModify_Traditional_Incorrect(b *testing.B) {
 }
 
 // 改进写法：手动处理Setup，但需要注意时间计入问题
-// 注意：在Go 1.25中，如果需要每次迭代都重置对象，
+// 注意：在Go 1.24+中，如果需要每次迭代都重置对象，
 // 可以使用sync.Pool或在循环外创建并重置
 func BenchmarkModify_WithSetup(b *testing.B) {
 	b.ResetTimer()

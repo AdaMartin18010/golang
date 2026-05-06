@@ -2,7 +2,7 @@ module example.com/golang-examples
 
 go 1.26
 
-// Go 1.25.3 推荐的模块配置
+// Go 1.26.2 推荐的模块配置
 // 使用 workspace 模式时，本模块可以直接引用其他本地模块
 
 require (
@@ -26,17 +26,20 @@ require (
 	go.opentelemetry.io/otel/metric v1.42.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.42.0 // indirect
 	go.opentelemetry.io/otel/trace v1.42.0 // indirect
-	golang.org/x/crypto v0.48.0 // indirect
-	golang.org/x/net v0.51.0 // indirect
-	golang.org/x/sys v0.41.0 // indirect
-	golang.org/x/text v0.34.0 // indirect
+	golang.org/x/crypto v0.49.0 // indirect
+	golang.org/x/net v0.52.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
+	golang.org/x/text v0.36.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
 
-
 replace github.com/yourusername/golang => ../
+
 replace github.com/yourusername/golang/pkg/observability => ../pkg/observability
+
 replace github.com/yourusername/golang/pkg/concurrency => ../pkg/concurrency
+
 replace github.com/yourusername/golang/pkg/http3 => ../pkg/http3
+
 replace github.com/yourusername/golang/pkg/memory => ../pkg/memory

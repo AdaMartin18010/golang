@@ -18,12 +18,12 @@ import (
 // - 控制堆栈信息输出
 //
 // 字段说明：
-// - Logger: 日志记录器（用于记录 Panic 信息）
-//   如果为 nil，使用默认的错误级别日志记录器
-// - StackAll: 是否在所有情况下输出堆栈（当前未使用）
-// - StackSize: 堆栈大小限制（默认：8KB）
-//   超过此大小的堆栈会被截断
-// - LogRequest: 是否记录请求信息（当前未使用）
+//   - Logger: 日志记录器（用于记录 Panic 信息）
+//     如果为 nil，使用默认的错误级别日志记录器
+//   - StackAll: 是否在所有情况下输出堆栈（当前未使用）
+//   - StackSize: 堆栈大小限制（默认：8KB）
+//     超过此大小的堆栈会被截断
+//   - LogRequest: 是否记录请求信息（当前未使用）
 //
 // 使用示例：
 //
@@ -34,9 +34,9 @@ import (
 //	router.Use(middleware.RecoveryMiddleware(config))
 type RecoveryConfig struct {
 	Logger     *logger.Logger
-	StackAll   bool   // 是否在所有情况下输出堆栈
-	StackSize  int    // 堆栈大小限制
-	LogRequest bool   // 是否记录请求信息
+	StackAll   bool // 是否在所有情况下输出堆栈
+	StackSize  int  // 堆栈大小限制
+	LogRequest bool // 是否记录请求信息
 }
 
 // RecoveryMiddleware 创建 Panic 恢复中间件。

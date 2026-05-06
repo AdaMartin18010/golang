@@ -154,13 +154,11 @@ func TestEventBus_Concurrent(t *testing.T) {
 
 	// 并发发布事件
 	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range 10 {
+		wg.Go(func() {
 			event := NewEvent("test.event", "test")
 			eb.Publish(event)
-		}()
+		})
 	}
 
 	wg.Wait()

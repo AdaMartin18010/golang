@@ -17,12 +17,12 @@ type Metadata struct {
 
 // TypeMetadata 类型元数据
 type TypeMetadata struct {
-	Name    string                 `json:"name"`
-	Kind    string                 `json:"kind"`
-	Package string                 `json:"package"`
-	Methods []MethodMetadata       `json:"methods,omitempty"`
-	Fields  []FieldMetadata        `json:"fields,omitempty"`
-	Tags    map[string]interface{} `json:"tags,omitempty"`
+	Name    string           `json:"name"`
+	Kind    string           `json:"kind"`
+	Package string           `json:"package"`
+	Methods []MethodMetadata `json:"methods,omitempty"`
+	Fields  []FieldMetadata  `json:"fields,omitempty"`
+	Tags    map[string]any   `json:"tags,omitempty"`
 }
 
 // FunctionMetadata 函数元数据
@@ -38,8 +38,8 @@ type FunctionMetadata struct {
 
 // StructMetadata 结构体元数据
 type StructMetadata struct {
-	Name   string          `json:"name"`
-	Fields []FieldMetadata `json:"fields"`
+	Name   string                       `json:"name"`
+	Fields []FieldMetadata              `json:"fields"`
 	Tags   map[string]map[string]string `json:"tags,omitempty"`
 }
 
@@ -53,11 +53,11 @@ type MethodMetadata struct {
 
 // FieldMetadata 字段元数据
 type FieldMetadata struct {
-	Name     string                 `json:"name"`
-	Type     string                 `json:"type"`
-	Tag      string                 `json:"tag,omitempty"`
-	Exported bool                   `json:"exported"`
-	Tags     map[string]interface{} `json:"tags,omitempty"`
+	Name     string         `json:"name"`
+	Type     string         `json:"type"`
+	Tag      string         `json:"tag,omitempty"`
+	Exported bool           `json:"exported"`
+	Tags     map[string]any `json:"tags,omitempty"`
 }
 
 // Inspector 反射检查器
@@ -69,14 +69,14 @@ func NewInspector() *Inspector {
 }
 
 // InspectType 检查类型
-func (i *Inspector) InspectType(v interface{}) TypeMetadata {
+func (i *Inspector) InspectType(v any) TypeMetadata {
 	rt := reflect.TypeOf(v)
 	if rt == nil {
 		return TypeMetadata{}
 	}
 
 	// 处理指针类型
-	if rt.Kind() == reflect.Ptr {
+	if rt.Kind() == reflect.Pointer {
 		rt = rt.Elem()
 	}
 
@@ -86,25 +86,24 @@ func (i *Inspector) InspectType(v interface{}) TypeMetadata {
 		Package: rt.PkgPath(),
 		Methods: make([]MethodMetadata, 0),
 		Fields:  make([]FieldMetadata, 0),
-		Tags:    make(map[string]interface{}),
+		Tags:    make(map[string]any),
 	}
 
 	// 获取方法
-	for j := 0; j < rt.NumMethod(); j++ {
-		method := rt.Method(j)
-		
+	for method := range rt.Methods() {
+
 		// 获取输入参数类型名称
 		inputTypes := make([]string, method.Type.NumIn())
 		for k := 0; k < method.Type.NumIn(); k++ {
 			inputTypes[k] = method.Type.In(k).String()
 		}
-		
+
 		// 获取输出参数类型名称
 		outputTypes := make([]string, method.Type.NumOut())
 		for k := 0; k < method.Type.NumOut(); k++ {
 			outputTypes[k] = method.Type.Out(k).String()
 		}
-		
+
 		metadata.Methods = append(metadata.Methods, MethodMetadata{
 			Name:     method.Name,
 			Inputs:   inputTypes,
@@ -115,8 +114,7 @@ func (i *Inspector) InspectType(v interface{}) TypeMetadata {
 
 	// 获取字段（仅结构体）
 	if rt.Kind() == reflect.Struct {
-		for j := 0; j < rt.NumField(); j++ {
-			field := rt.Field(j)
+		for field := range rt.Fields() {
 			fieldMeta := FieldMetadata{
 				Name:     field.Name,
 				Type:     field.Type.String(),
@@ -132,7 +130,7 @@ func (i *Inspector) InspectType(v interface{}) TypeMetadata {
 }
 
 // InspectFunction 检查函数
-func (i *Inspector) InspectFunction(fn interface{}) FunctionMetadata {
+func (i *Inspector) InspectFunction(fn any) FunctionMetadata {
 	rv := reflect.ValueOf(fn)
 	if rv.Kind() != reflect.Func {
 		return FunctionMetadata{}
@@ -168,27 +166,27 @@ func (i *Inspector) InspectFunction(fn interface{}) FunctionMetadata {
 	}
 
 	// 获取输入参数
-	for j := 0; j < rt.NumIn(); j++ {
-		metadata.Inputs = append(metadata.Inputs, rt.In(j).String())
+	for in := range rt.Ins() {
+		metadata.Inputs = append(metadata.Inputs, in.String())
 	}
 
 	// 获取输出参数
-	for j := 0; j < rt.NumOut(); j++ {
-		metadata.Outputs = append(metadata.Outputs, rt.Out(j).String())
+	for out := range rt.Outs() {
+		metadata.Outputs = append(metadata.Outputs, out.String())
 	}
 
 	return metadata
 }
 
 // InspectStruct 检查结构体
-func (i *Inspector) InspectStruct(v interface{}) StructMetadata {
+func (i *Inspector) InspectStruct(v any) StructMetadata {
 	rt := reflect.TypeOf(v)
 	if rt == nil {
 		return StructMetadata{}
 	}
 
 	// 处理指针类型
-	if rt.Kind() == reflect.Ptr {
+	if rt.Kind() == reflect.Pointer {
 		rt = rt.Elem()
 	}
 
@@ -202,8 +200,7 @@ func (i *Inspector) InspectStruct(v interface{}) StructMetadata {
 		Tags:   make(map[string]map[string]string),
 	}
 
-	for j := 0; j < rt.NumField(); j++ {
-		field := rt.Field(j)
+	for field := range rt.Fields() {
 		fieldMeta := FieldMetadata{
 			Name:     field.Name,
 			Type:     field.Type.String(),
@@ -231,13 +228,13 @@ func (i *Inspector) InspectStruct(v interface{}) StructMetadata {
 }
 
 // GetTypeName 获取类型名称
-func (i *Inspector) GetTypeName(v interface{}) string {
+func (i *Inspector) GetTypeName(v any) string {
 	rt := reflect.TypeOf(v)
 	if rt == nil {
 		return "nil"
 	}
 
-	if rt.Kind() == reflect.Ptr {
+	if rt.Kind() == reflect.Pointer {
 		rt = rt.Elem()
 	}
 
@@ -245,13 +242,13 @@ func (i *Inspector) GetTypeName(v interface{}) string {
 }
 
 // GetPackageName 获取包名
-func (i *Inspector) GetPackageName(v interface{}) string {
+func (i *Inspector) GetPackageName(v any) string {
 	rt := reflect.TypeOf(v)
 	if rt == nil {
 		return ""
 	}
 
-	if rt.Kind() == reflect.Ptr {
+	if rt.Kind() == reflect.Pointer {
 		rt = rt.Elem()
 	}
 
@@ -268,8 +265,8 @@ func (i *Inspector) getTypeNames(types []reflect.Type) []string {
 }
 
 // parseTags 解析标签
-func (i *Inspector) parseTags(tag reflect.StructTag) map[string]interface{} {
-	result := make(map[string]interface{})
+func (i *Inspector) parseTags(tag reflect.StructTag) map[string]any {
+	result := make(map[string]any)
 	for _, key := range []string{"json", "xml", "yaml", "db", "validate", "form"} {
 		if value := tag.Get(key); value != "" {
 			result[key] = value
@@ -280,7 +277,7 @@ func (i *Inspector) parseTags(tag reflect.StructTag) map[string]interface{} {
 
 // Describe 描述对象
 // 返回对象的完整描述信息
-func (i *Inspector) Describe(v interface{}) string {
+func (i *Inspector) Describe(v any) string {
 	rt := reflect.TypeOf(v)
 	if rt == nil {
 		return "nil"
@@ -296,8 +293,7 @@ func (i *Inspector) Describe(v interface{}) string {
 
 	if rt.Kind() == reflect.Struct {
 		builder.WriteString("\nFields:\n")
-		for j := 0; j < rt.NumField(); j++ {
-			field := rt.Field(j)
+		for field := range rt.Fields() {
 			builder.WriteString(fmt.Sprintf("  %s: %s\n", field.Name, field.Type.String()))
 		}
 	}

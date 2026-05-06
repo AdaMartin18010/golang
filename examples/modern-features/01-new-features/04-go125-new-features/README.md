@@ -88,7 +88,7 @@ go run main.go
 
 ### ⚠️ 重要提示
 
-**Go 1.25 中移除了实验性的 `testing.B.Loop()` API**。
+**注意**: `testing.B.Loop()` 是 Go 1.24 引入的 API，本示例仅展示传统基准测试模式作为对比。**
 
 本示例仅作为历史参考，实际开发中应使用传统的 `for i := 0; i < b.N; i++` 模式。
 
@@ -122,7 +122,7 @@ cd 03-testing-loop && go test -bench=.
 
 ## 📚 相关资源
 
-- [Go 1.25 Release Notes](https://go.dev/doc/go1.25)
+- [Go 1.23 Release Notes](https://go.dev/doc/go1.23)
 - [strings 包文档](https://pkg.go.dev/strings)
 - [unique 包文档](https://pkg.go.dev/unique) (实验性)
 

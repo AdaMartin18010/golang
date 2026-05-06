@@ -34,7 +34,7 @@ func TestFeatureController_EnableDisable(t *testing.T) {
 func TestFeatureController_Config(t *testing.T) {
 	controller := NewFeatureController().(*FeatureController)
 
-	config := map[string]interface{}{
+	config := map[string]any{
 		"max_requests": 100,
 	}
 	controller.Register("feature-a", "Feature A", true, config)
@@ -49,7 +49,7 @@ func TestFeatureController_Config(t *testing.T) {
 	}
 
 	// 更新配置
-	newConfig := map[string]interface{}{
+	newConfig := map[string]any{
 		"max_requests": 200,
 	}
 	if err := controller.SetConfig("feature-a", newConfig); err != nil {
@@ -63,12 +63,12 @@ func TestFeatureController_Watch(t *testing.T) {
 	controller.Register("feature-a", "Feature A", true, nil)
 
 	called := false
-	controller.Watch("feature-a", func(config interface{}) {
+	controller.Watch("feature-a", func(config any) {
 		called = true
 	})
 
 	// 更新配置应该触发回调
-	controller.SetConfig("feature-a", map[string]interface{}{"test": true})
+	controller.SetConfig("feature-a", map[string]any{"test": true})
 
 	// 等待异步回调
 	time.Sleep(100 * time.Millisecond)
@@ -85,7 +85,7 @@ func TestRateController_Allow(t *testing.T) {
 
 	// 应该允许前 5 次
 	allowed := 0
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		if controller.Allow("api") {
 			allowed++
 		}
@@ -126,4 +126,3 @@ func TestCircuitController(t *testing.T) {
 		t.Error("Circuit should be closed after successes")
 	}
 }
-

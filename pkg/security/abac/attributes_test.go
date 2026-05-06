@@ -25,8 +25,8 @@ func TestSubject_HasRole(t *testing.T) {
 		{"user", true},
 		{"manager", true},
 		{"superadmin", false},
-		{"ADMIN", true},    // 大小写不敏感
-		{"User", true},     // 大小写不敏感
+		{"ADMIN", true}, // 大小写不敏感
+		{"User", true},  // 大小写不敏感
 	}
 
 	for _, tt := range tests {
@@ -90,15 +90,15 @@ func TestSubject_GetAttribute(t *testing.T) {
 	subject := Subject{
 		ID:         "user1",
 		Department: "engineering",
-		Attributes: map[string]interface{}{
+		Attributes: map[string]any{
 			"clearance_level": 5,
-			"location":       "office",
+			"location":        "office",
 		},
 	}
 
 	tests := []struct {
 		key       string
-		wantValue interface{}
+		wantValue any
 		wantExist bool
 	}{
 		{"id", "user1", true},
@@ -125,14 +125,14 @@ func TestResource_GetAttribute(t *testing.T) {
 		Type:  "document",
 		Owner: "user1",
 		ID:    "doc123",
-		Attributes: map[string]interface{}{
+		Attributes: map[string]any{
 			"sensitivity": "confidential",
 		},
 	}
 
 	tests := []struct {
 		key       string
-		wantValue interface{}
+		wantValue any
 		wantExist bool
 	}{
 		{"id", "doc123", true},
@@ -168,7 +168,7 @@ func TestResource_IsOwnedBy(t *testing.T) {
 func TestAction_GetAttribute(t *testing.T) {
 	action := Action{
 		Name: "edit",
-		Attributes: map[string]interface{}{
+		Attributes: map[string]any{
 			"severity": "high",
 		},
 	}
@@ -232,14 +232,14 @@ func TestEnvironment_GetAttribute(t *testing.T) {
 		Time:       1234567890,
 		Location:   "office",
 		DeviceType: "desktop",
-		Attributes: map[string]interface{}{
+		Attributes: map[string]any{
 			"ip_address": "192.168.1.1",
 		},
 	}
 
 	tests := []struct {
 		key       string
-		wantValue interface{}
+		wantValue any
 		wantExist bool
 	}{
 		{"time", int64(1234567890), true},
@@ -264,8 +264,8 @@ func TestEnvironment_GetAttribute(t *testing.T) {
 func TestCompareValues(t *testing.T) {
 	tests := []struct {
 		name string
-		a    interface{}
-		b    interface{}
+		a    any
+		b    any
 		want bool
 	}{
 		{"same int", 5, 5, true},
@@ -293,8 +293,8 @@ func TestCompareValues(t *testing.T) {
 func TestContainsValue(t *testing.T) {
 	tests := []struct {
 		name  string
-		slice interface{}
-		value interface{}
+		slice any
+		value any
 		want  bool
 	}{
 		{"int in slice", []int{1, 2, 3, 4, 5}, 3, true},
@@ -317,8 +317,8 @@ func TestContainsValue(t *testing.T) {
 func TestGreaterThan(t *testing.T) {
 	tests := []struct {
 		name    string
-		a       interface{}
-		b       interface{}
+		a       any
+		b       any
 		want    bool
 		wantErr bool
 	}{
@@ -347,8 +347,8 @@ func TestGreaterThan(t *testing.T) {
 func TestLessThan(t *testing.T) {
 	tests := []struct {
 		name    string
-		a       interface{}
-		b       interface{}
+		a       any
+		b       any
 		want    bool
 		wantErr bool
 	}{
@@ -378,7 +378,7 @@ func TestResolveRequestAttribute(t *testing.T) {
 		Subject: Subject{
 			ID:    "user1",
 			Roles: []string{"admin"},
-			Attributes: map[string]interface{}{
+			Attributes: map[string]any{
 				"clearance": 5,
 			},
 		},
@@ -396,7 +396,7 @@ func TestResolveRequestAttribute(t *testing.T) {
 
 	tests := []struct {
 		path    string
-		want    interface{}
+		want    any
 		wantErr bool
 	}{
 		{"subject.id", "user1", false},

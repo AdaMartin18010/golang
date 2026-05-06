@@ -44,7 +44,7 @@ func TestClient_Publish_PayloadTypes(t *testing.T) {
 	// 测试 Publish 方法中的 payload 类型转换逻辑
 	testCases := []struct {
 		name     string
-		payload  interface{}
+		payload  any
 		isBytes  bool
 		isString bool
 	}{
@@ -205,7 +205,7 @@ func TestRetainedFlag(t *testing.T) {
 func TestPayloadTypes_Exhaustive(t *testing.T) {
 	testCases := []struct {
 		name    string
-		payload interface{}
+		payload any
 		expect  []byte
 	}{
 		{
@@ -279,7 +279,7 @@ func TestMessageHandler_MultipleCalls(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		err := handler(ctx, "topic", []byte("payload"))
 		require.NoError(t, err)
 	}
@@ -389,7 +389,7 @@ func TestPayloadSerialization_Struct(t *testing.T) {
 
 // TestPayloadSerialization_Complex 测试复杂类型序列化
 func TestPayloadSerialization_Complex(t *testing.T) {
-	payload := map[string]interface{}{
+	payload := map[string]any{
 		"device_id": "dev-001",
 		"metrics": map[string]float64{
 			"cpu":    45.2,
@@ -403,7 +403,7 @@ func TestPayloadSerialization_Complex(t *testing.T) {
 	data, err := json.Marshal(payload)
 	require.NoError(t, err)
 
-	var decoded map[string]interface{}
+	var decoded map[string]any
 	err = json.Unmarshal(data, &decoded)
 	require.NoError(t, err)
 
@@ -477,7 +477,7 @@ func TestClient_NilClient(t *testing.T) {
 
 // BenchmarkPayloadSerialization 性能测试 payload 序列化
 func BenchmarkPayloadSerialization(b *testing.B) {
-	payload := map[string]interface{}{
+	payload := map[string]any{
 		"sensor_id": "temp-001",
 		"value":     23.5,
 		"timestamp": time.Now().Unix(),

@@ -10,7 +10,7 @@ import (
 // DashboardData 仪表板数据
 type DashboardData struct {
 	Timestamp    time.Time              `json:"timestamp"`
-	SystemHealth HealthStatus            `json:"system_health"`
+	SystemHealth HealthStatus           `json:"system_health"`
 	Metrics      map[string]interface{} `json:"metrics"`
 	Alerts       []Alert                `json:"alerts"`
 	Predictions  []PredictionResult     `json:"predictions"`
@@ -33,9 +33,9 @@ func NewDashboardExporter(systemMonitor *SystemMonitor) *DashboardExporter {
 // Export 导出仪表板数据
 func (de *DashboardExporter) Export(ctx context.Context) (*DashboardData, error) {
 	data := &DashboardData{
-		Timestamp:  time.Now(),
-		Metrics:   make(map[string]interface{}),
-		Alerts:     make([]Alert, 0),
+		Timestamp:   time.Now(),
+		Metrics:     make(map[string]interface{}),
+		Alerts:      make([]Alert, 0),
 		Predictions: make([]PredictionResult, 0),
 	}
 

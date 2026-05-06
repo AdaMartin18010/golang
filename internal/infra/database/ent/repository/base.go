@@ -17,27 +17,28 @@
 // 3. 使用 Ent 客户端进行数据访问
 //
 // 示例：
-//   type UserRepository struct {
-//       *BaseRepository[*User, *ent.User]
-//       client *ent.Client
-//   }
 //
-//   func NewUserRepository(client *ent.Client) *UserRepository {
-//       return &UserRepository{
-//           BaseRepository: NewBaseRepository(client),
-//           client: client,
-//       }
-//   }
+//	type UserRepository struct {
+//	    *BaseRepository[*User, *ent.User]
+//	    client *ent.Client
+//	}
 //
-//   func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*User, error) {
-//       entUser, err := r.client.User.Query().
-//           Where(user.EmailEQ(email)).
-//           Only(ctx)
-//       if err != nil {
-//           return nil, err
-//       }
-//       return r.toDomain(entUser), nil
-//   }
+//	func NewUserRepository(client *ent.Client) *UserRepository {
+//	    return &UserRepository{
+//	        BaseRepository: NewBaseRepository(client),
+//	        client: client,
+//	    }
+//	}
+//
+//	func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*User, error) {
+//	    entUser, err := r.client.User.Query().
+//	        Where(user.EmailEQ(email)).
+//	        Only(ctx)
+//	    if err != nil {
+//	        return nil, err
+//	    }
+//	    return r.toDomain(entUser), nil
+//	}
 package repository
 
 import (
@@ -65,7 +66,7 @@ import (
 // - 这是一个基础实现，用户需要继承并实现业务特定的方法
 // - 用户需要实现实体转换逻辑（toDomain、toEnt）
 // - 用户需要实现 ID 获取和设置方法
-type BaseRepository[T any, E interface{}] struct {
+type BaseRepository[T any, E any] struct {
 	client *entclient.Client
 	// toDomain 将 Ent 实体转换为领域实体
 	toDomain func(E) (*T, error)
@@ -88,7 +89,7 @@ type BaseRepository[T any, E interface{}] struct {
 //
 // 返回：
 //   - *BaseRepository: 基础仓储实例
-func NewBaseRepository[T any, E interface{}](
+func NewBaseRepository[T any, E any](
 	client *entclient.Client,
 	toDomain func(E) (*T, error),
 	toEnt func(*T) (E, error),
@@ -195,10 +196,11 @@ func (r *BaseRepository[T, E]) Client() *entclient.Client {
 //   - error: 执行失败时返回错误
 //
 // 使用示例：
-//   err := repo.WithTx(ctx, func(tx *entclient.Tx) error {
-//       // 在事务中执行操作
-//       return nil
-//   })
+//
+//	err := repo.WithTx(ctx, func(tx *entclient.Tx) error {
+//	    // 在事务中执行操作
+//	    return nil
+//	})
 func (r *BaseRepository[T, E]) WithTx(ctx context.Context, fn func(*entclient.Tx) error) error {
 	tx, err := r.client.Tx(ctx)
 	if err != nil {
@@ -263,4 +265,3 @@ func contains(s, substr string) bool {
 // 导入必要的包
 // 注意：由于泛型限制，这里无法直接验证接口实现
 // 用户需要在具体的仓储实现中确保实现了 Repository 接口
-

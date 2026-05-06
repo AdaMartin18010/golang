@@ -36,6 +36,7 @@ package abac
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 )
 
@@ -43,10 +44,10 @@ import (
 //
 // 包含用户或服务的身份信息、角色、部门以及自定义属性
 type Subject struct {
-	ID         string                 `json:"id"`
-	Roles      []string               `json:"roles"`
-	Department string                 `json:"department"`
-	Attributes map[string]interface{} `json:"attributes"`
+	ID         string         `json:"id"`
+	Roles      []string       `json:"roles"`
+	Department string         `json:"department"`
+	Attributes map[string]any `json:"attributes"`
 }
 
 // GetAttribute 获取主体的属性值
@@ -57,7 +58,7 @@ type Subject struct {
 // 返回：
 //   - value: 属性值
 //   - exists: 属性是否存在
-func (s Subject) GetAttribute(key string) (interface{}, bool) {
+func (s Subject) GetAttribute(key string) (any, bool) {
 	switch key {
 	case "id":
 		return s.ID, true
@@ -98,12 +99,7 @@ func (s Subject) HasRole(role string) bool {
 // 返回：
 //   - bool: 如果拥有至少一个角色返回 true
 func (s Subject) HasAnyRole(roles ...string) bool {
-	for _, role := range roles {
-		if s.HasRole(role) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(roles, s.HasRole)
 }
 
 // HasAllRoles 检查主体是否拥有所有指定角色
@@ -126,10 +122,10 @@ func (s Subject) HasAllRoles(roles ...string) bool {
 //
 // 包含资源的类型、所有者、标识以及自定义属性
 type Resource struct {
-	Type       string                 `json:"type"`
-	Owner      string                 `json:"owner"`
-	ID         string                 `json:"id"`
-	Attributes map[string]interface{} `json:"attributes"`
+	Type       string         `json:"type"`
+	Owner      string         `json:"owner"`
+	ID         string         `json:"id"`
+	Attributes map[string]any `json:"attributes"`
 }
 
 // GetAttribute 获取资源的属性值
@@ -140,7 +136,7 @@ type Resource struct {
 // 返回：
 //   - value: 属性值
 //   - exists: 属性是否存在
-func (r Resource) GetAttribute(key string) (interface{}, bool) {
+func (r Resource) GetAttribute(key string) (any, bool) {
 	switch key {
 	case "id":
 		return r.ID, true
@@ -174,8 +170,8 @@ func (r Resource) IsOwnedBy(subjectID string) bool {
 //
 // 包含操作名称和自定义属性
 type Action struct {
-	Name       string                 `json:"name"`
-	Attributes map[string]interface{} `json:"attributes"`
+	Name       string         `json:"name"`
+	Attributes map[string]any `json:"attributes"`
 }
 
 // GetAttribute 获取操作的属性值
@@ -186,7 +182,7 @@ type Action struct {
 // 返回：
 //   - value: 属性值
 //   - exists: 属性是否存在
-func (a Action) GetAttribute(key string) (interface{}, bool) {
+func (a Action) GetAttribute(key string) (any, bool) {
 	switch key {
 	case "name":
 		return a.Name, true
@@ -238,10 +234,10 @@ func (a Action) IsWrite() bool {
 //
 // 包含时间、位置、设备信息等环境因素
 type Environment struct {
-	Time       int64                  `json:"time"`        // Unix timestamp
-	Location   string                 `json:"location"`    // e.g., "192.168.1.1", "office"
-	DeviceType string                 `json:"device_type"` // e.g., "mobile", "desktop"
-	Attributes map[string]interface{} `json:"attributes"`
+	Time       int64          `json:"time"`        // Unix timestamp
+	Location   string         `json:"location"`    // e.g., "192.168.1.1", "office"
+	DeviceType string         `json:"device_type"` // e.g., "mobile", "desktop"
+	Attributes map[string]any `json:"attributes"`
 }
 
 // GetAttribute 获取环境的属性值
@@ -252,7 +248,7 @@ type Environment struct {
 // 返回：
 //   - value: 属性值
 //   - exists: 属性是否存在
-func (e Environment) GetAttribute(key string) (interface{}, bool) {
+func (e Environment) GetAttribute(key string) (any, bool) {
 	switch key {
 	case "time":
 		return e.Time, true
@@ -273,7 +269,7 @@ func (e Environment) GetAttribute(key string) (interface{}, bool) {
 
 // AttributeAccessor 定义了获取属性的通用接口
 type AttributeAccessor interface {
-	GetAttribute(key string) (interface{}, bool)
+	GetAttribute(key string) (any, bool)
 }
 
 // AttributeResolver 用于解析和比较属性值的辅助函数集合
@@ -287,7 +283,7 @@ type AttributeAccessor interface {
 // 返回：
 //   - value: 属性值
 //   - exists: 属性是否存在
-func ResolveAttribute(accessor AttributeAccessor, key string) (interface{}, bool) {
+func ResolveAttribute(accessor AttributeAccessor, key string) (any, bool) {
 	// 处理点号表示法
 	parts := strings.Split(key, ".")
 	if len(parts) == 1 {
@@ -312,19 +308,19 @@ func ResolveAttribute(accessor AttributeAccessor, key string) (interface{}, bool
 }
 
 // resolveNestedField 解析嵌套字段
-func resolveNestedField(obj interface{}, field string) interface{} {
+func resolveNestedField(obj any, field string) any {
 	if obj == nil {
 		return nil
 	}
 
 	// 如果是 map，直接查找
-	if m, ok := obj.(map[string]interface{}); ok {
+	if m, ok := obj.(map[string]any); ok {
 		return m[field]
 	}
 
 	// 使用反射获取字段
 	val := reflect.ValueOf(obj)
-	if val.Kind() == reflect.Ptr {
+	if val.Kind() == reflect.Pointer {
 		val = val.Elem()
 	}
 
@@ -360,7 +356,7 @@ func resolveNestedField(obj interface{}, field string) interface{} {
 //   - 基本类型（int, float64, string, bool）
 //   - 切片类型
 //   - 实现了 Equal 接口的类型
-func CompareValues(a, b interface{}) bool {
+func CompareValues(a, b any) bool {
 	if a == nil && b == nil {
 		return true
 	}
@@ -389,7 +385,7 @@ func CompareValues(a, b interface{}) bool {
 }
 
 // toFloat64 尝试将值转换为 float64
-func toFloat64(v interface{}) (float64, bool) {
+func toFloat64(v any) (float64, bool) {
 	switch n := v.(type) {
 	case int:
 		return float64(n), true
@@ -428,7 +424,7 @@ func toFloat64(v interface{}) (float64, bool) {
 //
 // 返回：
 //   - bool: 如果包含返回 true
-func ContainsValue(slice interface{}, value interface{}) bool {
+func ContainsValue(slice any, value any) bool {
 	if slice == nil {
 		return false
 	}
@@ -455,7 +451,7 @@ func ContainsValue(slice interface{}, value interface{}) bool {
 // 返回：
 //   - bool: 如果 a > b 返回 true
 //   - error: 如果无法比较返回错误
-func GreaterThan(a, b interface{}) (bool, error) {
+func GreaterThan(a, b any) (bool, error) {
 	aNum, ok1 := toFloat64(a)
 	bNum, ok2 := toFloat64(b)
 
@@ -478,7 +474,7 @@ func GreaterThan(a, b interface{}) (bool, error) {
 // 返回：
 //   - bool: 如果 a < b 返回 true
 //   - error: 如果无法比较返回错误
-func LessThan(a, b interface{}) (bool, error) {
+func LessThan(a, b any) (bool, error) {
 	aNum, ok1 := toFloat64(a)
 	bNum, ok2 := toFloat64(b)
 

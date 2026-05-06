@@ -96,4 +96,3 @@ func TestInspector_Describe(t *testing.T) {
 		t.Error("Expected detailed description")
 	}
 }
-

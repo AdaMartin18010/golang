@@ -11,9 +11,9 @@ import (
 )
 
 // MockUnaryHandler is a mock gRPC unary handler
-type MockUnaryHandler func(ctx context.Context, req interface{}) (interface{}, error)
+type MockUnaryHandler func(ctx context.Context, req any) (any, error)
 
-func (m MockUnaryHandler) Handle(ctx context.Context, req interface{}) (interface{}, error) {
+func (m MockUnaryHandler) Handle(ctx context.Context, req any) (any, error) {
 	return m(ctx, req)
 }
 
@@ -21,7 +21,7 @@ func TestLoggingUnaryInterceptor_Success(t *testing.T) {
 	// This test verifies the interceptor doesn't panic and calls the handler
 	interceptor := LoggingUnaryInterceptor
 
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		return "response", nil
 	}
 
@@ -40,7 +40,7 @@ func TestLoggingUnaryInterceptor_Error(t *testing.T) {
 	interceptor := LoggingUnaryInterceptor
 
 	testErr := errors.New("handler error")
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		return nil, testErr
 	}
 
@@ -69,7 +69,7 @@ func TestLoggingUnaryInterceptor_WithRequest(t *testing.T) {
 		Name: "Test",
 	}
 
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		// Verify request is passed through
 		r, ok := req.(TestRequest)
 		assert.True(t, ok)
@@ -101,7 +101,7 @@ func TestLoggingUnaryInterceptor_DifferentMethods(t *testing.T) {
 
 	for _, method := range methods {
 		t.Run(method, func(t *testing.T) {
-			handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+			handler := func(ctx context.Context, req any) (any, error) {
 				return "success", nil
 			}
 
@@ -121,7 +121,7 @@ func TestLoggingUnaryInterceptor_DifferentMethods(t *testing.T) {
 func TestLoggingUnaryInterceptor_NilRequest(t *testing.T) {
 	interceptor := LoggingUnaryInterceptor
 
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		assert.Nil(t, req)
 		return "success", nil
 	}
@@ -144,7 +144,7 @@ func TestLoggingUnaryInterceptor_ContextPropagation(t *testing.T) {
 	key := contextKey("test-key")
 	value := "test-value"
 
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		// Verify context is propagated
 		v := ctx.Value(key)
 		assert.Equal(t, value, v)
@@ -165,7 +165,7 @@ func TestLoggingUnaryInterceptor_ContextPropagation(t *testing.T) {
 func TestLoggingUnaryInterceptor_HandlerPanic(t *testing.T) {
 	interceptor := LoggingUnaryInterceptor
 
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		panic("handler panic")
 	}
 
@@ -191,7 +191,7 @@ func TestTracingUnaryInterceptor_Success(t *testing.T) {
 
 	interceptor := TracingUnaryInterceptor
 
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		return "response", nil
 	}
 
@@ -214,7 +214,7 @@ func TestTracingUnaryInterceptor_Error(t *testing.T) {
 	interceptor := TracingUnaryInterceptor
 
 	testErr := errors.New("handler error")
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		return nil, testErr
 	}
 
@@ -237,7 +237,7 @@ func TestTracingUnaryInterceptor_WithMetadata(t *testing.T) {
 
 	interceptor := TracingUnaryInterceptor
 
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		// Handler receives context
 		return "success", nil
 	}
@@ -258,7 +258,7 @@ func TestInterceptorChain(t *testing.T) {
 	// Test that multiple interceptors can be chained
 	loggingInterceptor := LoggingUnaryInterceptor
 
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		return "final response", nil
 	}
 
@@ -278,7 +278,7 @@ func TestInterceptorChain(t *testing.T) {
 
 func BenchmarkLoggingUnaryInterceptor(b *testing.B) {
 	interceptor := LoggingUnaryInterceptor
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		return "response", nil
 	}
 	info := &grpc.UnaryServerInfo{
@@ -294,7 +294,7 @@ func BenchmarkLoggingUnaryInterceptor(b *testing.B) {
 
 func BenchmarkLoggingUnaryInterceptor_WithError(b *testing.B) {
 	interceptor := LoggingUnaryInterceptor
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, req any) (any, error) {
 		return nil, errors.New("error")
 	}
 	info := &grpc.UnaryServerInfo{
@@ -332,7 +332,7 @@ func TestLoggingUnaryInterceptor_DifferentErrorTypes(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			interceptor := LoggingUnaryInterceptor
 
-			handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+			handler := func(ctx context.Context, req any) (any, error) {
 				return nil, tc.err
 			}
 
@@ -353,7 +353,7 @@ func TestLoggingUnaryInterceptor_DifferentErrorTypes(t *testing.T) {
 func TestLoggingUnaryInterceptor_ResponseTypes(t *testing.T) {
 	testCases := []struct {
 		name     string
-		response interface{}
+		response any
 	}{
 		{"string", "success"},
 		{"int", 42},
@@ -366,7 +366,7 @@ func TestLoggingUnaryInterceptor_ResponseTypes(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			interceptor := LoggingUnaryInterceptor
 
-			handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+			handler := func(ctx context.Context, req any) (any, error) {
 				return tc.response, nil
 			}
 

@@ -23,9 +23,9 @@ type HealthChecker interface {
 // 提供服务的健康状态检查功能
 type HealthHandler struct {
 	healthpb.UnimplementedHealthServiceServer
-	logger    *slog.Logger
-	checkers  []HealthChecker
-	isReady   func() bool
+	logger   *slog.Logger
+	checkers []HealthChecker
+	isReady  func() bool
 }
 
 // NewHealthHandler 创建健康检查处理器

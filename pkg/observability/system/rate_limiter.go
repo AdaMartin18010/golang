@@ -20,7 +20,7 @@ type RateLimiter struct {
 	lastReset       time.Time
 
 	// 指标
-	rateLimitCounter    metric.Int64Counter
+	rateLimitCounter         metric.Int64Counter
 	rateLimitRejectedCounter metric.Int64Counter
 	rateLimitRemainingGauge  metric.Int64ObservableGauge
 }
@@ -45,11 +45,11 @@ func NewRateLimiter(cfg RateLimiterConfig) (*RateLimiter, error) {
 	}
 
 	limiter := &RateLimiter{
-		meter:        cfg.Meter,
-		enabled:      cfg.Enabled,
-		limit:        cfg.Limit,
-		window:       window,
-		lastReset:    time.Now(),
+		meter:     cfg.Meter,
+		enabled:   cfg.Enabled,
+		limit:     cfg.Limit,
+		window:    window,
+		lastReset: time.Now(),
 	}
 
 	// 初始化指标

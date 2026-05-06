@@ -18,13 +18,13 @@ type LogExporter interface {
 // LogRecord 日志记录
 // 定义日志记录的结构，与 OpenTelemetry 日志规范对齐
 type LogRecord struct {
-	Timestamp   int64                  // 时间戳（纳秒）
-	Severity    string                 // 严重程度（DEBUG, INFO, WARN, ERROR, FATAL）
-	Body        string                 // 日志正文
-	Attributes  map[string]interface{} // 属性
-	TraceID     string                 // 追踪ID
-	SpanID      string                 // Span ID
-	Resource    map[string]interface{} // 资源属性
+	Timestamp  int64                  // 时间戳（纳秒）
+	Severity   string                 // 严重程度（DEBUG, INFO, WARN, ERROR, FATAL）
+	Body       string                 // 日志正文
+	Attributes map[string]interface{} // 属性
+	TraceID    string                 // 追踪ID
+	SpanID     string                 // Span ID
+	Resource   map[string]interface{} // 资源属性
 }
 
 // PlaceholderLogExporter 占位日志导出器

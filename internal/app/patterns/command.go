@@ -26,41 +26,42 @@ import "context"
 // 4. 需要触发领域事件的操作
 //
 // 示例：
-//   // 定义命令
-//   type CreateUserCommand struct {
-//       Email string
-//       Name  string
-//   }
 //
-//   func (c CreateUserCommand) Execute(ctx context.Context) error {
-//       // 命令本身不包含执行逻辑，只是数据载体
-//       return nil
-//   }
+//	// 定义命令
+//	type CreateUserCommand struct {
+//	    Email string
+//	    Name  string
+//	}
 //
-//   // 定义命令处理器
-//   type CreateUserCommandHandler struct {
-//       userRepo domain.UserRepository
-//       eventBus eventbus.EventBus
-//   }
+//	func (c CreateUserCommand) Execute(ctx context.Context) error {
+//	    // 命令本身不包含执行逻辑，只是数据载体
+//	    return nil
+//	}
 //
-//   func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) error {
-//       // 1. 验证命令
-//       if err := validateCreateUserCommand(cmd); err != nil {
-//           return err
-//       }
+//	// 定义命令处理器
+//	type CreateUserCommandHandler struct {
+//	    userRepo domain.UserRepository
+//	    eventBus eventbus.EventBus
+//	}
 //
-//       // 2. 创建领域实体
-//       user := domain.NewUser(cmd.Email, cmd.Name)
+//	func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) error {
+//	    // 1. 验证命令
+//	    if err := validateCreateUserCommand(cmd); err != nil {
+//	        return err
+//	    }
 //
-//       // 3. 保存实体
-//       if err := h.userRepo.Create(ctx, user); err != nil {
-//           return err
-//       }
+//	    // 2. 创建领域实体
+//	    user := domain.NewUser(cmd.Email, cmd.Name)
 //
-//       // 4. 发布领域事件
-//       event := eventbus.NewEvent("user.created", user)
-//       return h.eventBus.Publish(ctx, event)
-//   }
+//	    // 3. 保存实体
+//	    if err := h.userRepo.Create(ctx, user); err != nil {
+//	        return err
+//	    }
+//
+//	    // 4. 发布领域事件
+//	    event := eventbus.NewEvent("user.created", user)
+//	    return h.eventBus.Publish(ctx, event)
+//	}
 //
 // 注意事项：
 // - 命令应该是不可变的（immutable）
@@ -73,14 +74,15 @@ import "context"
 // - Query：读操作，不改变状态，返回数据
 //
 // 用户需要根据业务需求定义具体的命令，例如：
-//   type UpdateUserCommand struct {
-//       ID   string
-//       Name string
-//   }
 //
-//   func (c UpdateUserCommand) Execute(ctx context.Context) error {
-//       return nil
-//   }
+//	type UpdateUserCommand struct {
+//	    ID   string
+//	    Name string
+//	}
+//
+//	func (c UpdateUserCommand) Execute(ctx context.Context) error {
+//	    return nil
+//	}
 type Command interface {
 	// Execute 执行命令
 	//
@@ -114,24 +116,25 @@ type Command interface {
 // 5. 处理错误和异常
 //
 // 示例：
-//   type CreateUserCommandHandler struct {
-//       userRepo domain.UserRepository
-//       eventBus eventbus.EventBus
-//   }
 //
-//   func NewCreateUserCommandHandler(
-//       userRepo domain.UserRepository,
-//       eventBus eventbus.EventBus,
-//   ) *CreateUserCommandHandler {
-//       return &CreateUserCommandHandler{
-//           userRepo: userRepo,
-//           eventBus: eventBus,
-//       }
-//   }
+//	type CreateUserCommandHandler struct {
+//	    userRepo domain.UserRepository
+//	    eventBus eventbus.EventBus
+//	}
 //
-//   func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) error {
-//       // 实现命令处理逻辑
-//   }
+//	func NewCreateUserCommandHandler(
+//	    userRepo domain.UserRepository,
+//	    eventBus eventbus.EventBus,
+//	) *CreateUserCommandHandler {
+//	    return &CreateUserCommandHandler{
+//	        userRepo: userRepo,
+//	        eventBus: eventBus,
+//	    }
+//	}
+//
+//	func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) error {
+//	    // 实现命令处理逻辑
+//	}
 //
 // 注意事项：
 // - 命令处理器应该是无状态的
@@ -175,18 +178,19 @@ type CommandHandler[T Command] interface {
 // 3. 需要返回操作影响的数据
 //
 // 示例：
-//   func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) (*CommandResult, error) {
-//       user := domain.NewUser(cmd.Email, cmd.Name)
-//       if err := h.userRepo.Create(ctx, user); err != nil {
-//           return nil, err
-//       }
 //
-//       return &CommandResult{
-//           Success: true,
-//           Message: "User created successfully",
-//           Data:    user.ID,
-//       }, nil
-//   }
+//	func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) (*CommandResult, error) {
+//	    user := domain.NewUser(cmd.Email, cmd.Name)
+//	    if err := h.userRepo.Create(ctx, user); err != nil {
+//	        return nil, err
+//	    }
+//
+//	    return &CommandResult{
+//	        Success: true,
+//	        Message: "User created successfully",
+//	        Data:    user.ID,
+//	    }, nil
+//	}
 //
 // 注意事项：
 // - 大多数情况下，命令不需要返回结果
@@ -201,5 +205,5 @@ type CommandResult struct {
 
 	// Data 操作返回的数据（可选）
 	// 例如：创建的实体 ID、更新的记录数等
-	Data interface{}
+	Data any
 }

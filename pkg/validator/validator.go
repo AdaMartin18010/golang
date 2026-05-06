@@ -81,13 +81,13 @@ func (ve ValidationErrors) Error() string {
 
 // Struct 对结构体进行标签验证
 // 支持的标签: `validate:"required"`, `validate:"email"`, `validate:"min=N"`, `validate:"max=N"`
-func (v *Validator) Struct(s interface{}) error {
+func (v *Validator) Struct(s any) error {
 	if s == nil {
 		return fmt.Errorf("validation target is nil")
 	}
 
 	val := reflect.ValueOf(s)
-	if val.Kind() == reflect.Ptr {
+	if val.Kind() == reflect.Pointer {
 		if val.IsNil() {
 			return fmt.Errorf("validation target is nil pointer")
 		}
@@ -128,9 +128,9 @@ func (v *Validator) Struct(s interface{}) error {
 
 func validateField(field reflect.Value, fieldName, tag string) []ValidationError {
 	var errs []ValidationError
-	rules := strings.Split(tag, ",")
+	rules := strings.SplitSeq(tag, ",")
 
-	for _, rule := range rules {
+	for rule := range rules {
 		rule = strings.TrimSpace(rule)
 		if rule == "" {
 			continue
@@ -181,7 +181,7 @@ func isZero(v reflect.Value) bool {
 		return v.Float() == 0
 	case reflect.Bool:
 		return !v.Bool()
-	case reflect.Slice, reflect.Map, reflect.Ptr, reflect.Interface:
+	case reflect.Slice, reflect.Map, reflect.Pointer, reflect.Interface:
 		return v.IsNil() || v.Len() == 0
 	case reflect.Struct:
 		return v.IsZero()

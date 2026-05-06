@@ -20,10 +20,10 @@ type Monitor struct {
 	linuxCPUMonitor interface{} // Linux 平台的精确 CPU 监控（*LinuxCPUMonitor，仅在 Linux 上可用）
 
 	// 指标
-	cpuUsageGauge      metric.Float64ObservableGauge
-	memoryUsageGauge   metric.Int64ObservableGauge
-	memoryTotalGauge   metric.Int64ObservableGauge
-	goroutineGauge     metric.Int64ObservableGauge
+	cpuUsageGauge       metric.Float64ObservableGauge
+	memoryUsageGauge    metric.Int64ObservableGauge
+	memoryTotalGauge    metric.Int64ObservableGauge
+	goroutineGauge      metric.Int64ObservableGauge
 	gcCountCounter      metric.Int64Counter
 	gcDurationHistogram metric.Float64Histogram
 }
@@ -236,7 +236,7 @@ func (m *Monitor) getCPUUsage() float64 {
 
 	// 回退到简化实现：基于 Goroutine 数量和系统负载估算
 	numGoroutines := runtime.NumGoroutine()
-	
+
 	// 简单的启发式：基于 Goroutine 数量估算 CPU 使用率
 	// 这不是精确的，但可以作为近似值
 	usage := float64(numGoroutines) * 0.1

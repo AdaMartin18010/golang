@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
+	"maps"
 	"sync"
 	"time"
 )
@@ -30,11 +31,11 @@ type SessionManager struct {
 
 // Session 会话
 type Session struct {
-	ID        string
-	UserID    string
-	Data      map[string]interface{}
-	CreatedAt time.Time
-	ExpiresAt time.Time
+	ID         string
+	UserID     string
+	Data       map[string]any
+	CreatedAt  time.Time
+	ExpiresAt  time.Time
 	LastAccess time.Time
 }
 
@@ -85,7 +86,7 @@ func NewSessionManager(config SessionConfig) *SessionManager {
 }
 
 // CreateSession 创建会话
-func (sm *SessionManager) CreateSession(userID string, data map[string]interface{}) (*Session, error) {
+func (sm *SessionManager) CreateSession(userID string, data map[string]any) (*Session, error) {
 	if userID == "" {
 		return nil, errors.New("user ID is required")
 	}
@@ -103,7 +104,7 @@ func (sm *SessionManager) CreateSession(userID string, data map[string]interface
 	}
 
 	if session.Data == nil {
-		session.Data = make(map[string]interface{})
+		session.Data = make(map[string]any)
 	}
 
 	sm.mu.Lock()
@@ -144,7 +145,7 @@ func (sm *SessionManager) GetSession(sessionID string) (*Session, error) {
 }
 
 // UpdateSession 更新会话
-func (sm *SessionManager) UpdateSession(sessionID string, data map[string]interface{}) error {
+func (sm *SessionManager) UpdateSession(sessionID string, data map[string]any) error {
 	session, err := sm.GetSession(sessionID)
 	if err != nil {
 		return err
@@ -152,9 +153,7 @@ func (sm *SessionManager) UpdateSession(sessionID string, data map[string]interf
 
 	sm.mu.Lock()
 	if data != nil {
-		for k, v := range data {
-			session.Data[k] = v
-		}
+		maps.Copy(session.Data, data)
 	}
 	session.LastAccess = time.Now()
 	sm.mu.Unlock()

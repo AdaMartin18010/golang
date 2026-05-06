@@ -9,7 +9,7 @@ func TestSessionManager_CreateSession(t *testing.T) {
 	sm := NewSessionManager(DefaultSessionConfig())
 	defer sm.Shutdown()
 
-	session, err := sm.CreateSession("user-123", map[string]interface{}{
+	session, err := sm.CreateSession("user-123", map[string]any{
 		"name": "Test User",
 	})
 	if err != nil {
@@ -69,14 +69,14 @@ func TestSessionManager_UpdateSession(t *testing.T) {
 	sm := NewSessionManager(DefaultSessionConfig())
 	defer sm.Shutdown()
 
-	session, err := sm.CreateSession("user-123", map[string]interface{}{
+	session, err := sm.CreateSession("user-123", map[string]any{
 		"key1": "value1",
 	})
 	if err != nil {
 		t.Fatalf("Failed to create session: %v", err)
 	}
 
-	err = sm.UpdateSession(session.ID, map[string]interface{}{
+	err = sm.UpdateSession(session.ID, map[string]any{
 		"key2": "value2",
 	})
 	if err != nil {

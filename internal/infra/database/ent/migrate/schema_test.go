@@ -2,6 +2,7 @@
 package migrate
 
 import (
+	"slices"
 	"testing"
 
 	"entgo.io/ent/dialect/sql/schema"
@@ -91,13 +92,7 @@ func TestSchemaColumnTypes(t *testing.T) {
 
 func TestTableReferences(t *testing.T) {
 	// Verify that Tables slice correctly references UsersTable
-	found := false
-	for _, table := range Tables {
-		if table == UsersTable {
-			found = true
-			break
-		}
-	}
+	found := slices.Contains(Tables, UsersTable)
 	assert.True(t, found, "UsersTable should be in Tables slice")
 }
 

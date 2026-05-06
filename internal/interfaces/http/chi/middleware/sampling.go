@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/yourusername/golang/pkg/sampling"
 	"go.opentelemetry.io/otel/trace"
@@ -34,8 +35,8 @@ import (
 //	}
 //	router.Use(middleware.SamplingMiddleware(config))
 type SamplingConfig struct {
-	Sampler            sampling.Sampler
-	SkipPaths          []string
+	Sampler             sampling.Sampler
+	SkipPaths           []string
 	AddSamplingDecision bool
 }
 
@@ -83,7 +84,7 @@ func SamplingMiddleware(config SamplingConfig) func(http.Handler) http.Handler {
 			}
 
 			// 构建采样元数据
-			metadata := map[string]interface{}{
+			metadata := map[string]any{
 				"http.method": r.Method,
 				"http.path":   r.URL.Path,
 				"http.host":   r.Host,
@@ -171,10 +172,5 @@ func GetSamplerName(ctx context.Context) string {
 
 // shouldSkipSampling 检查路径是否应该跳过采样
 func shouldSkipSampling(path string, skipPaths []string) bool {
-	for _, skipPath := range skipPaths {
-		if path == skipPath {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(skipPaths, path)
 }

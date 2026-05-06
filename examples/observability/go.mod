@@ -1,6 +1,6 @@
 module example.com/golang-examples/observability
 
-go 1.23.0
+go 1.26
 
 require (
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.63.0

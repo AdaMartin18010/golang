@@ -118,8 +118,9 @@ func TestFirstLower(t *testing.T) {
 
 func TestMask(t *testing.T) {
 	result := Mask("1234567890", 3, 7, '*')
-	if result != "123***7890" {
-		t.Errorf("Expected '123***7890', got %q", result)
+	// start=3, end=7: 掩码索引 3,4,5,6（4个字符），保留 0,1,2 和 7,8,9
+	if result != "123****890" {
+		t.Errorf("Expected '123****890', got %q", result)
 	}
 }
 

@@ -37,7 +37,7 @@ func TestBaseEvent(t *testing.T) {
 	})
 
 	t.Run("复杂数据事件", func(t *testing.T) {
-		data := map[string]interface{}{
+		data := map[string]any{
 			"id":     "complex-123",
 			"name":   "Complex Event",
 			"count":  42,
@@ -108,7 +108,7 @@ func TestBaseEventTimestamp(t *testing.T) {
 // TestBaseEventMultipleCreations 测试创建多个事件
 func TestBaseEventMultipleCreations(t *testing.T) {
 	events := make([]*BaseEvent, 10)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		time.Sleep(5 * time.Millisecond) // 确保时间戳不同
 		events[i] = NewBaseEvent("test.event", i)
 	}
@@ -126,7 +126,7 @@ func TestBaseEventMultipleCreations(t *testing.T) {
 // MockEvent 实现 Event 接口的测试事件
 type MockEvent struct {
 	eventType string
-	data      interface{}
+	data      any
 	timestamp time.Time
 }
 
@@ -134,7 +134,7 @@ func (m *MockEvent) Type() string {
 	return m.eventType
 }
 
-func (m *MockEvent) Data() interface{} {
+func (m *MockEvent) Data() any {
 	return m.data
 }
 
@@ -164,7 +164,7 @@ func TestMockEventWithDifferentTypes(t *testing.T) {
 	tests := []struct {
 		name      string
 		eventType string
-		data      interface{}
+		data      any
 	}{
 		{
 			name:      "用户创建事件",
@@ -174,7 +174,7 @@ func TestMockEventWithDifferentTypes(t *testing.T) {
 		{
 			name:      "订单完成事件",
 			eventType: "order.completed",
-			data:      map[string]interface{}{"orderId": "456", "amount": 99.99},
+			data:      map[string]any{"orderId": "456", "amount": 99.99},
 		},
 		{
 			name:      "支付成功事件",
@@ -258,7 +258,7 @@ func TestEventHandler(t *testing.T) {
 		handler := &MockEventHandler{returnError: nil}
 		ctx := context.Background()
 
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			event := &MockEvent{
 				eventType: "test.event",
 				data:      map[string]int{"index": i},
@@ -315,7 +315,7 @@ func TestEventTypes(t *testing.T) {
 	tests := []struct {
 		name      string
 		eventType string
-		data      interface{}
+		data      any
 	}{
 		{
 			name:      "用户创建事件",
@@ -325,7 +325,7 @@ func TestEventTypes(t *testing.T) {
 		{
 			name:      "订单完成事件",
 			eventType: "order.completed",
-			data:      map[string]interface{}{"orderId": "456", "amount": 99.99},
+			data:      map[string]any{"orderId": "456", "amount": 99.99},
 		},
 		{
 			name:      "支付成功事件",
@@ -355,7 +355,7 @@ func TestEventTimestampOrdering(t *testing.T) {
 	// 创建多个事件，验证时间戳递增
 	var timestamps []time.Time
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		event := NewBaseEvent("test.event", map[string]int{"index": i})
 		timestamps = append(timestamps, event.Timestamp())
 		time.Sleep(5 * time.Millisecond) // 确保时间戳不同
@@ -540,7 +540,7 @@ func TestEventWithSliceData(t *testing.T) {
 
 // TestEventWithMapData 测试 Map 数据的事件
 func TestEventWithMapData(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"id":       "123",
 		"name":     "Test",
 		"count":    42,
@@ -551,7 +551,7 @@ func TestEventWithMapData(t *testing.T) {
 
 	event := NewBaseEvent("complex.event", data)
 
-	result, ok := event.Data().(map[string]interface{})
+	result, ok := event.Data().(map[string]any)
 	require.True(t, ok)
 	assert.Equal(t, "123", result["id"])
 	assert.Equal(t, 42, result["count"])

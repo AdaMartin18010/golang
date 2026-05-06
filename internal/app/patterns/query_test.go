@@ -14,7 +14,7 @@ type MockQuery struct {
 	ID string
 }
 
-func (m MockQuery) Execute(ctx context.Context) (interface{}, error) {
+func (m MockQuery) Execute(ctx context.Context) (any, error) {
 	if m.ID == "" {
 		return nil, errors.New("ID不能为空")
 	}

@@ -53,7 +53,7 @@ type Config struct {
 
 // StandardProvider 标准 OAuth2 提供者实现
 type StandardProvider struct {
-	config *oauth2.Config
+	config  *oauth2.Config
 	usePKCE bool
 }
 

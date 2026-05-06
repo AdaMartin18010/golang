@@ -66,7 +66,7 @@ func TestConvertPayload_Boolean(t *testing.T) {
 
 // TestConvertPayload_Map 测试 Map 类型
 func TestConvertPayload_Map(t *testing.T) {
-	input := map[string]interface{}{
+	input := map[string]any{
 		"key1": "value1",
 		"key2": 123,
 	}
@@ -74,7 +74,7 @@ func TestConvertPayload_Map(t *testing.T) {
 	require.NoError(t, err)
 
 	// 验证结果是有效的 JSON
-	var decoded map[string]interface{}
+	var decoded map[string]any
 	err = json.Unmarshal(result, &decoded)
 	require.NoError(t, err)
 	assert.Equal(t, "value1", decoded["key1"])
@@ -142,10 +142,10 @@ func TestConvertPayload_ComplexStruct(t *testing.T) {
 	}
 
 	type ComplexData struct {
-		ID       string   `json:"id"`
-		Tags     []string `json:"tags"`
-		Nested   Nested   `json:"nested"`
-		Metadata map[string]interface{} `json:"metadata"`
+		ID       string         `json:"id"`
+		Tags     []string       `json:"tags"`
+		Nested   Nested         `json:"nested"`
+		Metadata map[string]any `json:"metadata"`
 	}
 
 	input := ComplexData{
@@ -155,7 +155,7 @@ func TestConvertPayload_ComplexStruct(t *testing.T) {
 			Name:  "nested-name",
 			Value: 100,
 		},
-		Metadata: map[string]interface{}{
+		Metadata: map[string]any{
 			"key": "value",
 		},
 	}

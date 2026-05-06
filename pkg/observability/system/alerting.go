@@ -32,15 +32,15 @@ type Alert struct {
 
 // AlertRule 告警规则
 type AlertRule struct {
-	ID          string
-	Name        string
-	MetricName  string
-	Condition   string // "gt", "lt", "eq", "gte", "lte"
-	Threshold   float64
-	Level       AlertLevel
-	Enabled     bool
-	Duration    time.Duration // 持续时间（超过此时间才触发）
-	Cooldown    time.Duration // 冷却时间（触发后多久才能再次触发）
+	ID         string
+	Name       string
+	MetricName string
+	Condition  string // "gt", "lt", "eq", "gte", "lte"
+	Threshold  float64
+	Level      AlertLevel
+	Enabled    bool
+	Duration   time.Duration // 持续时间（超过此时间才触发）
+	Cooldown   time.Duration // 冷却时间（触发后多久才能再次触发）
 }
 
 // AlertHandler 告警处理器
@@ -62,12 +62,12 @@ type AlertManager struct {
 // NewAlertManager 创建告警管理器
 func NewAlertManager(meter metric.Meter, enabled bool) *AlertManager {
 	return &AlertManager{
-		meter:      meter,
-		rules:      make([]AlertRule, 0),
-		handlers:   make([]AlertHandler, 0),
+		meter:        meter,
+		rules:        make([]AlertRule, 0),
+		handlers:     make([]AlertHandler, 0),
 		alertHistory: make([]Alert, 0),
-		lastAlerts: make(map[string]time.Time),
-		enabled:    enabled,
+		lastAlerts:   make(map[string]time.Time),
+		enabled:      enabled,
 	}
 }
 

@@ -29,7 +29,7 @@ func TestConfigStruct(t *testing.T) {
 		Timeout:               2 * time.Second,
 		EnableReflection:      false,
 	}
-	
+
 	assert.Equal(t, "127.0.0.1", config.Host)
 	assert.Equal(t, 8080, config.Port)
 	assert.Equal(t, 10*time.Minute, config.MaxConnectionIdle)
@@ -43,7 +43,7 @@ func TestConfigStruct(t *testing.T) {
 func TestConfigStructTypes(t *testing.T) {
 	// Test that Config fields have correct types
 	config := &Config{}
-	
+
 	assert.IsType(t, "", config.Host)
 	assert.IsType(t, int(0), config.Port)
 	assert.IsType(t, time.Duration(0), config.MaxConnectionIdle)
@@ -57,7 +57,7 @@ func TestConfigStructTypes(t *testing.T) {
 func TestDefaultConfig(t *testing.T) {
 	// Test DefaultConfig function
 	config := DefaultConfig()
-	
+
 	assert.NotNil(t, config)
 	assert.Equal(t, "0.0.0.0", config.Host)
 	assert.Equal(t, 50051, config.Port)
@@ -76,7 +76,7 @@ func TestConfigAddress(t *testing.T) {
 		Port: 8080,
 	}
 	assert.Equal(t, "127.0.0.1:8080", config.Address())
-	
+
 	// Test with default host
 	config2 := &Config{
 		Host: "0.0.0.0",
@@ -90,7 +90,7 @@ func TestServerOptionType(t *testing.T) {
 	var opt ServerOption = func(s *Server) {
 		s.logger = slog.Default()
 	}
-	
+
 	assert.NotNil(t, opt)
 }
 
@@ -98,9 +98,9 @@ func TestWithLogger(t *testing.T) {
 	// Test WithLogger function
 	logger := slog.Default()
 	opt := WithLogger(logger)
-	
+
 	assert.NotNil(t, opt)
-	
+
 	// Test that the option can be applied
 	s := &Server{}
 	opt(s)
@@ -114,9 +114,9 @@ func TestWithConfig(t *testing.T) {
 		Port: 9090,
 	}
 	opt := WithConfig(config)
-	
+
 	assert.NotNil(t, opt)
-	
+
 	// Test that the option can be applied
 	s := &Server{}
 	opt(s)
@@ -126,9 +126,9 @@ func TestWithConfig(t *testing.T) {
 func TestWithHealthChecker(t *testing.T) {
 	// Test WithHealthChecker function
 	opt := WithHealthChecker(nil)
-	
+
 	assert.NotNil(t, opt)
-	
+
 	// Test that the option can be applied without panic
 	s := &Server{}
 	assert.NotPanics(t, func() {
@@ -144,28 +144,28 @@ func TestNewServerFunction(t *testing.T) {
 func TestServerMethods(t *testing.T) {
 	// Test that Server has all expected methods
 	s := &Server{}
-	
+
 	// Start method
 	assert.NotNil(t, s.Start)
-	
+
 	// Stop method
 	assert.NotNil(t, s.Stop)
-	
+
 	// Shutdown method
 	assert.NotNil(t, s.Shutdown)
-	
+
 	// Addr method
 	assert.NotNil(t, s.Addr)
-	
+
 	// GetUserHandler method
 	assert.NotNil(t, s.GetUserHandler)
-	
+
 	// GetHealthHandler method
 	assert.NotNil(t, s.GetHealthHandler)
-	
+
 	// SetReadyFunc method
 	assert.NotNil(t, s.SetReadyFunc)
-	
+
 	// RegisterHealthChecker method
 	assert.NotNil(t, s.RegisterHealthChecker)
 }
@@ -173,7 +173,7 @@ func TestServerMethods(t *testing.T) {
 func TestConfigWithZeroValues(t *testing.T) {
 	// Test Config with zero values
 	config := &Config{}
-	
+
 	assert.Empty(t, config.Host)
 	assert.Equal(t, 0, config.Port)
 	assert.Equal(t, time.Duration(0), config.MaxConnectionIdle)
@@ -190,7 +190,7 @@ func TestServerWithNilFields(t *testing.T) {
 		userHandler:   nil,
 		healthHandler: nil,
 	}
-	
+
 	assert.NotNil(t, s)
 	assert.Nil(t, s.grpcServer)
 	assert.Nil(t, s.listener)
@@ -202,21 +202,21 @@ func TestServerOptionChaining(t *testing.T) {
 	// Test that multiple ServerOptions can be created
 	logger := slog.Default()
 	config := DefaultConfig()
-	
+
 	opts := []ServerOption{
 		WithLogger(logger),
 		WithConfig(config),
 		WithHealthChecker(nil),
 	}
-	
+
 	assert.Equal(t, 3, len(opts))
-	
+
 	// Test applying options in sequence
 	s := &Server{}
 	for _, opt := range opts {
 		opt(s)
 	}
-	
+
 	assert.Equal(t, logger, s.logger)
 	assert.Equal(t, config, s.config)
 }
@@ -225,11 +225,11 @@ func TestConfigImmutability(t *testing.T) {
 	// Test that DefaultConfig returns a new instance each time
 	config1 := DefaultConfig()
 	config2 := DefaultConfig()
-	
+
 	// They should be equal in value
 	assert.Equal(t, config1.Host, config2.Host)
 	assert.Equal(t, config1.Port, config2.Port)
-	
+
 	// But modifying one should not affect the other
 	config1.Port = 9999
 	assert.NotEqual(t, config1.Port, config2.Port)
@@ -241,7 +241,7 @@ func TestServerAddrWithNilListener(t *testing.T) {
 	s := &Server{
 		listener: nil,
 	}
-	
+
 	addr := s.Addr()
 	assert.Nil(t, addr)
 }
@@ -262,7 +262,7 @@ func TestServerWithListener(t *testing.T) {
 			Port: 8080,
 		},
 	}
-	
+
 	// Test that the server struct is valid
 	assert.NotNil(t, s)
 	assert.Equal(t, "localhost:8080", s.config.Address())
@@ -280,7 +280,7 @@ func TestConfigAddressWithEmptyHost(t *testing.T) {
 // TestServerFields tests that all Server fields are accessible
 func TestServerFields(t *testing.T) {
 	s := &Server{}
-	
+
 	// All fields should be accessible (even if nil)
 	_ = s.grpcServer
 	_ = s.listener

@@ -42,7 +42,7 @@ func TestClient_Publish_WithStruct_Mock(t *testing.T) {
 	client := mockClient(mock)
 	ctx := testContext()
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"sensor_id": "temp-001",
 		"value":     25.5,
 	}
@@ -63,7 +63,7 @@ func TestClient_Publish_WithRetained_Mock(t *testing.T) {
 // TestClient_Publish_DifferentQoS 测试不同QoS级别
 func TestClient_Publish_DifferentQoS_Mock(t *testing.T) {
 	qosLevels := []byte{0, 1, 2}
-	
+
 	for _, qos := range qosLevels {
 		t.Run(string(rune('0'+qos)), func(t *testing.T) {
 			mock := newMockMqttClient()
@@ -171,7 +171,7 @@ func TestClient_Subscribe_HandlerCalled_Mock(t *testing.T) {
 			return newMockToken(nil)
 		},
 	}
-	
+
 	client := mockClient(mock)
 	ctx := testContext()
 
@@ -194,7 +194,7 @@ func TestClient_Subscribe_HandlerCalled_Mock(t *testing.T) {
 		payload: []byte("test payload"),
 		qos:     1,
 	}
-	
+
 	if receivedHandler != nil {
 		receivedHandler(nil, msg)
 	}
@@ -216,7 +216,7 @@ func TestClient_Subscribe_HandlerError_Mock(t *testing.T) {
 			return newMockToken(nil)
 		},
 	}
-	
+
 	client := mockClient(mock)
 	ctx := testContext()
 
@@ -293,7 +293,7 @@ func TestClient_Close_MultipleTimes_Mock(t *testing.T) {
 	client.Close()
 	client.Close()
 	client.Close()
-	
+
 	assert.False(t, mock.connected)
 }
 
@@ -303,7 +303,7 @@ func TestClient_Close_MultipleTimes_Mock(t *testing.T) {
 func TestMessageHandler_Concurrent_Mock(t *testing.T) {
 	var mu sync.Mutex
 	count := 0
-	
+
 	handler := MessageHandler(func(ctx context.Context, topic string, payload []byte) error {
 		mu.Lock()
 		count++
@@ -312,16 +312,16 @@ func TestMessageHandler_Concurrent_Mock(t *testing.T) {
 	})
 
 	ctx := testContext()
-	
+
 	done := make(chan bool, 10)
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		go func() {
 			handler(ctx, "test/topic", []byte("payload"))
 			done <- true
 		}()
 	}
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		<-done
 	}
 
@@ -340,7 +340,7 @@ func TestMessageHandler_PanicRecovery_Mock(t *testing.T) {
 	})
 
 	ctx := testContext()
-	
+
 	// 正常消息
 	err := handler(ctx, "test/topic", []byte("normal"))
 	assert.NoError(t, err)
@@ -382,14 +382,14 @@ func TestConvertPayload_Integer_Mock(t *testing.T) {
 
 // TestConvertPayload_Struct_Mock 测试结构体转换
 func TestConvertPayload_Struct_Mock(t *testing.T) {
-	input := map[string]interface{}{
+	input := map[string]any{
 		"key": "value",
 		"num": 123,
 	}
 	result, err := convertPayload(input)
 	require.NoError(t, err)
-	
-	var decoded map[string]interface{}
+
+	var decoded map[string]any
 	err = json.Unmarshal(result, &decoded)
 	require.NoError(t, err)
 	assert.Equal(t, "value", decoded["key"])
@@ -421,7 +421,7 @@ func TestNewClientWithClient(t *testing.T) {
 	mock := newMockMqttClient()
 	client := newClientWithClient(mock)
 	assert.NotNil(t, client)
-	
+
 	// 验证客户端可以使用
 	ctx := testContext()
 	err := client.Publish(ctx, "test/topic", 1, false, "message")
@@ -530,7 +530,7 @@ func TestClient_Unsubscribe_EmptyTopics(t *testing.T) {
 func TestConvertPayload_FloatTypes(t *testing.T) {
 	tests := []struct {
 		name  string
-		input interface{}
+		input any
 	}{
 		{"float32", float32(3.14)},
 		{"float64", float64(3.14159)},
@@ -549,7 +549,7 @@ func TestConvertPayload_FloatTypes(t *testing.T) {
 func TestConvertPayload_IntTypes(t *testing.T) {
 	tests := []struct {
 		name  string
-		input interface{}
+		input any
 	}{
 		{"int", int(42)},
 		{"int8", int8(127)},
@@ -601,7 +601,7 @@ func TestConvertPayload_Array(t *testing.T) {
 
 // TestConvertPayload_InterfaceSlice 测试interface切片
 func TestConvertPayload_InterfaceSlice(t *testing.T) {
-	input := []interface{}{"string", 42, true, nil}
+	input := []any{"string", 42, true, nil}
 	result, err := convertPayload(input)
 	require.NoError(t, err)
 	assert.Equal(t, []byte(`["string",42,true,null]`), result)
@@ -720,7 +720,7 @@ func TestRetainedFlag_Mock(t *testing.T) {
 func TestPayloadTypes_Exhaustive_Mock(t *testing.T) {
 	testCases := []struct {
 		name    string
-		payload interface{}
+		payload any
 		expect  []byte
 	}{
 		{
@@ -804,7 +804,7 @@ func TestMessageHandler_MultipleCalls_Mock(t *testing.T) {
 	})
 
 	ctx := testContext()
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		err := handler(ctx, "topic", []byte("payload"))
 		require.NoError(t, err)
 	}

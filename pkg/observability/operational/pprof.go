@@ -1,8 +1,8 @@
 package operational
 
 import (
-	_ "net/http/pprof" // 导入 pprof
 	"net/http"
+	_ "net/http/pprof" // 导入 pprof
 )
 
 // EnablePprof 启用性能分析端点

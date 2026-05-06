@@ -15,12 +15,12 @@ import (
 
 // TokenManager JWT 令牌管理器
 type TokenManager struct {
-	privateKey       *rsa.PrivateKey
-	publicKey        *rsa.PublicKey
-	issuer           string
-	accessTokenTTL   time.Duration
-	refreshTokenTTL  time.Duration
-	signingMethod    jwt.SigningMethod
+	privateKey      *rsa.PrivateKey
+	publicKey       *rsa.PublicKey
+	issuer          string
+	accessTokenTTL  time.Duration
+	refreshTokenTTL time.Duration
+	signingMethod   jwt.SigningMethod
 }
 
 // Config JWT 配置
@@ -69,10 +69,10 @@ func NewTokenManager(cfg Config) (*TokenManager, error) {
 	}
 
 	tm := &TokenManager{
-		issuer:           cfg.Issuer,
-		accessTokenTTL:   cfg.AccessTokenTTL,
-		refreshTokenTTL:  cfg.RefreshTokenTTL,
-		signingMethod:    jwt.GetSigningMethod(cfg.SigningMethod),
+		issuer:          cfg.Issuer,
+		accessTokenTTL:  cfg.AccessTokenTTL,
+		refreshTokenTTL: cfg.RefreshTokenTTL,
+		signingMethod:   jwt.GetSigningMethod(cfg.SigningMethod),
 	}
 
 	// 加载密钥
@@ -152,7 +152,7 @@ func (tm *TokenManager) GenerateTokenPair(userID, username, email string, roles 
 
 // ValidateToken 验证令牌
 func (tm *TokenManager) ValidateToken(tokenString string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (any, error) {
 		// 验证签名方法
 		if token.Method != tm.signingMethod {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

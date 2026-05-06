@@ -1,8 +1,8 @@
 package temporal
 
 import (
-	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 )
 
 // Worker 是 Temporal Worker 的封装，用于执行工作流和活动（Activities）。
@@ -64,10 +64,10 @@ type Worker struct {
 // - 配置 Worker 选项（并发数、活动重试策略等）
 //
 // 参数：
-// - c: Temporal SDK 客户端实例
-// - taskQueue: 任务队列名称
-//   Worker 会监听此队列的任务
-//   必须与客户端启动工作流时指定的队列名称一致
+//   - c: Temporal SDK 客户端实例
+//   - taskQueue: 任务队列名称
+//     Worker 会监听此队列的任务
+//     必须与客户端启动工作流时指定的队列名称一致
 //
 // 返回：
 // - *Worker: 配置好的 Worker 实例
@@ -131,11 +131,11 @@ func NewWorkerFromClient(c *Client, taskQueue string) *Worker {
 // - 工作流函数必须是已定义的函数
 //
 // 参数：
-// - workflow: 工作流函数
-//   工作流函数必须满足以下要求：
-//   1. 函数签名：func(ctx workflow.Context, input InputType) (OutputType, error)
-//   2. 函数必须是确定性的（不能使用随机数、时间、网络请求等）
-//   3. 只能使用 workflow 包提供的 API
+//   - workflow: 工作流函数
+//     工作流函数必须满足以下要求：
+//     1. 函数签名：func(ctx workflow.Context, input InputType) (OutputType, error)
+//     2. 函数必须是确定性的（不能使用随机数、时间、网络请求等）
+//     3. 只能使用 workflow 包提供的 API
 //
 // 使用示例：
 //
@@ -153,7 +153,7 @@ func NewWorkerFromClient(c *Client, taskQueue string) *Worker {
 // - 不能在工作流中直接调用外部服务（应使用 Activity）
 // - 工作流函数会在 Worker 重启后继续执行
 // - 同一个工作流函数可以注册多次（使用不同的名称）
-func (w *Worker) RegisterWorkflow(workflow interface{}) {
+func (w *Worker) RegisterWorkflow(workflow any) {
 	w.worker.RegisterWorkflow(workflow)
 }
 
@@ -165,11 +165,11 @@ func (w *Worker) RegisterWorkflow(workflow interface{}) {
 // - 活动函数可以执行非确定性操作
 //
 // 参数：
-// - activity: 活动函数
-//   活动函数必须满足以下要求：
-//   1. 函数签名：func(ctx context.Context, input InputType) (OutputType, error)
-//   2. 可以使用标准库和第三方库
-//   3. 可以执行网络请求、数据库操作等
+//   - activity: 活动函数
+//     活动函数必须满足以下要求：
+//     1. 函数签名：func(ctx context.Context, input InputType) (OutputType, error)
+//     2. 可以使用标准库和第三方库
+//     3. 可以执行网络请求、数据库操作等
 //
 // 使用示例：
 //
@@ -188,7 +188,7 @@ func (w *Worker) RegisterWorkflow(workflow interface{}) {
 // - 活动支持自动重试（可配置重试策略）
 // - 活动支持超时控制（可配置超时时间）
 // - 活动支持心跳机制（用于长时间运行的活动）
-func (w *Worker) RegisterActivity(activity interface{}) {
+func (w *Worker) RegisterActivity(activity any) {
 	w.worker.RegisterActivity(activity)
 }
 

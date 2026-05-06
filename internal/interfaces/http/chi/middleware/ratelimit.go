@@ -33,7 +33,7 @@ type RedisClient interface {
 	Pipeline() RedisPipeline
 	ZRemRangeByScore(ctx context.Context, key, min, max string) *RedisIntCmd
 	ZCard(ctx context.Context, key string) *RedisIntCmd
-	ZAdd(ctx context.Context, key string, members ...interface{}) *RedisIntCmd
+	ZAdd(ctx context.Context, key string, members ...any) *RedisIntCmd
 	Expire(ctx context.Context, key string, expiration time.Duration) *RedisBoolCmd
 	Exec(ctx context.Context) ([]RedisCmder, error)
 }
@@ -42,7 +42,7 @@ type RedisClient interface {
 type RedisPipeline interface {
 	ZRemRangeByScore(ctx context.Context, key, min, max string) *RedisIntCmd
 	ZCard(ctx context.Context, key string) *RedisIntCmd
-	ZAdd(ctx context.Context, key string, members ...interface{}) *RedisIntCmd
+	ZAdd(ctx context.Context, key string, members ...any) *RedisIntCmd
 	Expire(ctx context.Context, key string, expiration time.Duration) *RedisBoolCmd
 	Exec(ctx context.Context) ([]RedisCmder, error)
 }
@@ -73,21 +73,21 @@ func (cmd *RedisBoolCmd) Err() error { return cmd.err }
 // RedisZ Redis 有序集合成员
 type RedisZ struct {
 	Score  float64
-	Member interface{}
+	Member any
 }
 
 // RateLimitAlgorithm 是限流算法的类型定义。
 //
 // 支持的算法：
-// - AlgorithmTokenBucket: 令牌桶算法
-//   特点：允许突发流量，平滑限流
-//   适用场景：需要允许突发请求的场景
-// - AlgorithmSlidingWindow: 滑动窗口算法
-//   特点：精确控制时间窗口内的请求数
-//   适用场景：需要精确限流的场景
-// - AlgorithmLeakyBucket: 漏桶算法
-//   特点：平滑输出，限制突发流量
-//   适用场景：需要平滑输出的场景
+//   - AlgorithmTokenBucket: 令牌桶算法
+//     特点：允许突发流量，平滑限流
+//     适用场景：需要允许突发请求的场景
+//   - AlgorithmSlidingWindow: 滑动窗口算法
+//     特点：精确控制时间窗口内的请求数
+//     适用场景：需要精确限流的场景
+//   - AlgorithmLeakyBucket: 漏桶算法
+//     特点：平滑输出，限制突发流量
+//     适用场景：需要平滑输出的场景
 type RateLimitAlgorithm string
 
 const (
@@ -334,12 +334,12 @@ func RateLimitMiddleware(config RateLimitConfig) func(http.Handler) http.Handler
 	}
 
 	// 内存限流器
-	var limiters map[string]interface{}
+	var limiters map[string]any
 	var mu sync.RWMutex
 
 	switch config.Algorithm {
 	case AlgorithmSlidingWindow:
-		limiters = make(map[string]interface{})
+		limiters = make(map[string]any)
 
 		return func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -374,7 +374,7 @@ func RateLimitMiddleware(config RateLimitConfig) func(http.Handler) http.Handler
 		}
 
 	case AlgorithmLeakyBucket:
-		limiters = make(map[string]interface{})
+		limiters = make(map[string]any)
 		leakRate := float64(config.RequestsPerSecond) / config.Window.Seconds()
 
 		return func(next http.Handler) http.Handler {
@@ -756,10 +756,11 @@ func NewRedisRateLimiter(client RedisClient, keyPrefix string, limit int, window
 // 1. 构建完整的 Redis 键（prefix:key）
 // 2. 计算窗口的起始时间
 // 3. 使用 Pipeline 批量执行：
-//    - 移除窗口外的记录（ZRemRangeByScore）
-//    - 统计窗口内的请求数（ZCard）
-//    - 添加当前请求（ZAdd）
-//    - 设置过期时间（Expire）
+//   - 移除窗口外的记录（ZRemRangeByScore）
+//   - 统计窗口内的请求数（ZCard）
+//   - 添加当前请求（ZAdd）
+//   - 设置过期时间（Expire）
+//
 // 4. 执行 Pipeline
 // 5. 检查请求数是否小于限制
 //

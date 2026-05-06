@@ -229,7 +229,7 @@ func TestHandler_StartUserWorkflowResponseStructure(t *testing.T) {
 	require.NoError(t, err)
 
 	// 验证 JSON 字段
-	var decoded map[string]interface{}
+	var decoded map[string]any
 	err = json.Unmarshal(data, &decoded)
 	require.NoError(t, err)
 
@@ -249,7 +249,7 @@ func TestHandler_GetWorkflowResultResponseStructure(t *testing.T) {
 	require.NoError(t, err)
 
 	// 验证 JSON 字段
-	var decoded map[string]interface{}
+	var decoded map[string]any
 	err = json.Unmarshal(data, &decoded)
 	require.NoError(t, err)
 
@@ -320,7 +320,7 @@ func TestHandler_ConcurrentAccess(t *testing.T) {
 	// 测试并发访问不会 panic
 	done := make(chan bool, 3)
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		go func() {
 			defer func() {
 				if r := recover(); r != nil {
@@ -338,7 +338,7 @@ func TestHandler_ConcurrentAccess(t *testing.T) {
 	}
 
 	// 等待所有 goroutine 完成
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		<-done
 	}
 }

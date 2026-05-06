@@ -26,36 +26,37 @@ import "time"
 // 3. 数据序列化/反序列化
 //
 // 示例：
-//   // 定义 DTO
-//   type UserDTO struct {
-//       patterns.DTO
-//       Email string `json:"email" validate:"required,email"`
-//       Name  string `json:"name" validate:"required,min=2,max=50"`
-//   }
 //
-//   // 从领域对象转换为 DTO
-//   func toUserDTO(user *domain.User) *UserDTO {
-//       return &UserDTO{
-//           DTO: patterns.DTO{
-//               ID:        user.ID,
-//               CreatedAt: user.CreatedAt,
-//               UpdatedAt: user.UpdatedAt,
-//           },
-//           Email: user.Email,
-//           Name:  user.Name,
-//       }
-//   }
+//	// 定义 DTO
+//	type UserDTO struct {
+//	    patterns.DTO
+//	    Email string `json:"email" validate:"required,email"`
+//	    Name  string `json:"name" validate:"required,min=2,max=50"`
+//	}
 //
-//   // 从 DTO 转换为领域对象
-//   func (dto *UserDTO) ToDomain() *domain.User {
-//       return &domain.User{
-//           ID:        dto.ID,
-//           Email:     dto.Email,
-//           Name:      dto.Name,
-//           CreatedAt: dto.CreatedAt,
-//           UpdatedAt: dto.UpdatedAt,
-//       }
-//   }
+//	// 从领域对象转换为 DTO
+//	func toUserDTO(user *domain.User) *UserDTO {
+//	    return &UserDTO{
+//	        DTO: patterns.DTO{
+//	            ID:        user.ID,
+//	            CreatedAt: user.CreatedAt,
+//	            UpdatedAt: user.UpdatedAt,
+//	        },
+//	        Email: user.Email,
+//	        Name:  user.Name,
+//	    }
+//	}
+//
+//	// 从 DTO 转换为领域对象
+//	func (dto *UserDTO) ToDomain() *domain.User {
+//	    return &domain.User{
+//	        ID:        dto.ID,
+//	        Email:     dto.Email,
+//	        Name:      dto.Name,
+//	        CreatedAt: dto.CreatedAt,
+//	        UpdatedAt: dto.UpdatedAt,
+//	    }
+//	}
 //
 // 注意事项：
 // - DTO 应该只包含必要的数据
@@ -89,22 +90,23 @@ type DTO struct {
 // 2. 统一转换逻辑
 //
 // 示例：
-//   // 领域对象实现接口
-//   func (u *User) ToDTO() *UserDTO {
-//       return &UserDTO{
-//           DTO: patterns.DTO{
-//               ID:        u.ID,
-//               CreatedAt: u.CreatedAt,
-//               UpdatedAt: u.UpdatedAt,
-//           },
-//           Email: u.Email,
-//           Name:  u.Name,
-//       }
-//   }
 //
-//   // 使用
-//   user := domain.NewUser("test@example.com", "Test User")
-//   dto := user.ToDTO()
+//	// 领域对象实现接口
+//	func (u *User) ToDTO() *UserDTO {
+//	    return &UserDTO{
+//	        DTO: patterns.DTO{
+//	            ID:        u.ID,
+//	            CreatedAt: u.CreatedAt,
+//	            UpdatedAt: u.UpdatedAt,
+//	        },
+//	        Email: u.Email,
+//	        Name:  u.Name,
+//	    }
+//	}
+//
+//	// 使用
+//	user := domain.NewUser("test@example.com", "Test User")
+//	dto := user.ToDTO()
 //
 // 注意事项：
 // - 转换逻辑应该简单直接
@@ -135,24 +137,25 @@ type ToDTO[T any] interface {
 // 2. 统一转换逻辑
 //
 // 示例：
-//   // 领域对象实现接口
-//   func (u *User) FromDTO(dto *UserDTO) error {
-//       u.ID = dto.ID
-//       u.Email = dto.Email
-//       u.Name = dto.Name
-//       u.CreatedAt = dto.CreatedAt
-//       u.UpdatedAt = dto.UpdatedAt
 //
-//       // 验证
-//       return u.Validate()
-//   }
+//	// 领域对象实现接口
+//	func (u *User) FromDTO(dto *UserDTO) error {
+//	    u.ID = dto.ID
+//	    u.Email = dto.Email
+//	    u.Name = dto.Name
+//	    u.CreatedAt = dto.CreatedAt
+//	    u.UpdatedAt = dto.UpdatedAt
 //
-//   // 使用
-//   dto := &UserDTO{Email: "test@example.com", Name: "Test User"}
-//   user := &domain.User{}
-//   if err := user.FromDTO(dto); err != nil {
-//       return err
-//   }
+//	    // 验证
+//	    return u.Validate()
+//	}
+//
+//	// 使用
+//	dto := &UserDTO{Email: "test@example.com", Name: "Test User"}
+//	user := &domain.User{}
+//	if err := user.FromDTO(dto); err != nil {
+//	    return err
+//	}
 //
 // 注意事项：
 // - 转换时应该验证数据
@@ -187,26 +190,27 @@ type FromDTO[T any] interface {
 // 3. 分页数据返回
 //
 // 示例：
-//   // 定义分页 DTO
-//   type UserListDTO struct {
-//       patterns.PaginatedDTO[*UserDTO]
-//   }
 //
-//   // 使用
-//   users := []*domain.User{...}
-//   dtos := make([]*UserDTO, len(users))
-//   for i, user := range users {
-//       dtos[i] = toUserDTO(user)
-//   }
+//	// 定义分页 DTO
+//	type UserListDTO struct {
+//	    patterns.PaginatedDTO[*UserDTO]
+//	}
 //
-//   result := &UserListDTO{
-//       PaginatedDTO: patterns.PaginatedDTO[*UserDTO]{
-//           Data:  dtos,
-//           Total: total,
-//           Page:  page,
-//           Size:  size,
-//       },
-//   }
+//	// 使用
+//	users := []*domain.User{...}
+//	dtos := make([]*UserDTO, len(users))
+//	for i, user := range users {
+//	    dtos[i] = toUserDTO(user)
+//	}
+//
+//	result := &UserListDTO{
+//	    PaginatedDTO: patterns.PaginatedDTO[*UserDTO]{
+//	        Data:  dtos,
+//	        Total: total,
+//	        Page:  page,
+//	        Size:  size,
+//	    },
+//	}
 //
 // 注意事项：
 // - Data 应该是切片，即使只有一条数据

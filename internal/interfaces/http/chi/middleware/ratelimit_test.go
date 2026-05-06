@@ -26,7 +26,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 	allowed := 0
 	blocked := 0
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		req := httptest.NewRequest("GET", "/test", nil)
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
@@ -87,7 +87,7 @@ func TestRateLimitMiddleware_SkipPaths(t *testing.T) {
 	})
 
 	// 发送多个请求到跳过路径
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		req := httptest.NewRequest("GET", "/public", nil)
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)

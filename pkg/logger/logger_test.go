@@ -23,6 +23,7 @@ func TestNewLoggerWithConfig(t *testing.T) {
 		Output:     &buf,
 		AddSource:  true,
 		JSONFormat: true,
+		SampleRate: 1.0,
 	}
 
 	logger := NewLoggerWithConfig(config)
@@ -158,6 +159,7 @@ func TestLogger_ServiceNameAndVersion(t *testing.T) {
 		JSONFormat:     true,
 		ServiceName:    "test-service",
 		ServiceVersion: "1.0.0",
+		SampleRate:     1.0,
 	}
 	logger := NewLoggerWithConfig(config)
 

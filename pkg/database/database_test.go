@@ -124,4 +124,3 @@ func TestDatabase_Transaction(t *testing.T) {
 		t.Error("Expected to find inserted row")
 	}
 }
-

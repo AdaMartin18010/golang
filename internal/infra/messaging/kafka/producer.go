@@ -77,9 +77,9 @@ type Producer struct {
 // - 返回配置好的生产者实例
 //
 // 参数：
-// - brokers: Kafka Broker 地址列表
-//   格式：[]string{"host1:9092", "host2:9092"}
-//   至少提供一个 Broker 地址
+//   - brokers: Kafka Broker 地址列表
+//     格式：[]string{"host1:9092", "host2:9092"}
+//     至少提供一个 Broker 地址
 //
 // 返回：
 // - *Producer: 配置好的生产者实例
@@ -91,6 +91,7 @@ type Producer struct {
 //   - WaitForAll: 等待所有副本确认（最可靠）
 //   - WaitForLocal: 等待本地副本确认
 //   - NoResponse: 不等待确认（最快但不可靠）
+//
 // - Retry.Max: 最大重试次数
 //
 // 使用示例：
@@ -112,9 +113,9 @@ type Producer struct {
 // - 退出前应调用 Close() 关闭生产者
 func NewProducer(brokers []string) (*Producer, error) {
 	config := sarama.NewConfig()
-	config.Producer.Return.Successes = true  // 返回成功发送的消息
+	config.Producer.Return.Successes = true          // 返回成功发送的消息
 	config.Producer.RequiredAcks = sarama.WaitForAll // 等待所有副本确认
-	config.Producer.Retry.Max = 5            // 最大重试 5 次
+	config.Producer.Retry.Max = 5                    // 最大重试 5 次
 	// 其他可选配置：
 	// config.Producer.Timeout = 10 * time.Second
 	// config.Producer.Compression = sarama.CompressionSnappy
@@ -177,7 +178,7 @@ func NewProducer(brokers []string) (*Producer, error) {
 // - 同步发送会阻塞直到消息发送成功或失败
 // - 如果发送失败，会自动重试（最多 5 次）
 // - 生产环境建议使用异步生产者以提高吞吐量
-func (p *Producer) SendMessage(ctx context.Context, topic string, key string, value interface{}) error {
+func (p *Producer) SendMessage(ctx context.Context, topic string, key string, value any) error {
 	data, err := json.Marshal(value)
 	if err != nil {
 		return fmt.Errorf("failed to marshal message: %w", err)

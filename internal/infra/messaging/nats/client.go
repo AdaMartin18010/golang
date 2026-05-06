@@ -112,7 +112,7 @@ func newClientWithConn(conn natsConn) *Client {
 }
 
 // marshalPayload 将数据序列化为字节数组
-func marshalPayload(data interface{}) ([]byte, error) {
+func marshalPayload(data any) ([]byte, error) {
 	switch v := data.(type) {
 	case []byte:
 		return v, nil
@@ -128,7 +128,7 @@ func marshalPayload(data interface{}) ([]byte, error) {
 }
 
 // Publish 发布消息到指定主题
-func (c *Client) Publish(subject string, data interface{}) error {
+func (c *Client) Publish(subject string, data any) error {
 	payload, err := marshalPayload(data)
 	if err != nil {
 		return err
@@ -148,7 +148,7 @@ func (c *Client) QueueSubscribe(subject, queue string, handler func(*nats.Msg)) 
 }
 
 // Request 发送请求并等待响应（Request-Reply 模式）
-func (c *Client) Request(subject string, data interface{}, timeout time.Duration) (*nats.Msg, error) {
+func (c *Client) Request(subject string, data any, timeout time.Duration) (*nats.Msg, error) {
 	payload, err := marshalPayload(data)
 	if err != nil {
 		return nil, err

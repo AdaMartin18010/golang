@@ -1,7 +1,7 @@
-# Go 1.25 容器感知调度示例 Dockerfile
+# Go 1.26 容器感知调度示例 Dockerfile
 
 # 构建阶段
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . .
 
 # 构建应用
-# Go 1.25+ 会自动启用容器感知调度，无需额外配置
+# Go 1.26+ 会自动启用容器感知调度，无需额外配置
 RUN go build -o container-aware-app main.go
 RUN go test -c -o container-test container_test.go
 
@@ -24,7 +24,7 @@ WORKDIR /root/
 COPY --from=builder /app/container-aware-app .
 COPY --from=builder /app/container-test .
 
-# Go 1.25+ 应用会自动检测容器的 CPU 限制
+# Go 1.26+ 应用会自动检测容器的 CPU 限制
 # 无需设置 GOMAXPROCS 环境变量
 # ENV GOMAXPROCS=2  # 不推荐，会覆盖自动检测
 

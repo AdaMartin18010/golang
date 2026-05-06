@@ -182,7 +182,7 @@ func TestSuccessWithComplexData(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, response.Code)
 
-	dataMap, ok := response.Data.(map[string]interface{})
+	dataMap, ok := response.Data.(map[string]any)
 	assert.True(t, ok)
 	assert.Equal(t, "123", dataMap["id"])
 	assert.Equal(t, "Test", dataMap["name"])
@@ -258,7 +258,7 @@ func TestSuccessWithSliceData(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, response.Code)
 
-	dataSlice, ok := response.Data.([]interface{})
+	dataSlice, ok := response.Data.([]any)
 	assert.True(t, ok)
 	assert.Len(t, dataSlice, 2)
 }

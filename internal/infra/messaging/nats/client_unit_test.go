@@ -60,7 +60,7 @@ func TestClient_Publish_Struct(t *testing.T) {
 	mock := newMockNatsConn()
 	client := newClientWithConn(mock)
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"user_id": 123,
 		"name":    "Alice",
 	}
@@ -104,7 +104,7 @@ func TestClient_Publish_MultipleMessages(t *testing.T) {
 	mock := newMockNatsConn()
 	client := newClientWithConn(mock)
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		err := client.Publish("test.subject", "message")
 		require.NoError(t, err)
 	}
@@ -207,7 +207,7 @@ func TestClient_Request_WithStruct(t *testing.T) {
 	mock := newMockNatsConn()
 	client := newClientWithConn(mock)
 
-	requestData := map[string]interface{}{
+	requestData := map[string]any{
 		"action": "get_user",
 		"id":     123,
 	}
@@ -273,7 +273,7 @@ func TestClient_Stats(t *testing.T) {
 	client := newClientWithConn(mock)
 
 	// 发布一些消息
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		client.Publish("test.subject", "message")
 	}
 
@@ -402,14 +402,14 @@ func TestMarshalPayload_Boolean_Unit(t *testing.T) {
 
 // TestMarshalPayload_Map 测试Map类型
 func TestMarshalPayload_Map_Unit(t *testing.T) {
-	input := map[string]interface{}{
+	input := map[string]any{
 		"event":   "user.created",
 		"user_id": 123,
 	}
 	result, err := marshalPayload(input)
 	require.NoError(t, err)
 
-	var decoded map[string]interface{}
+	var decoded map[string]any
 	err = json.Unmarshal(result, &decoded)
 	require.NoError(t, err)
 	assert.Equal(t, "user.created", decoded["event"])
@@ -468,7 +468,7 @@ func TestMarshalPayload_InvalidJSON_Unit(t *testing.T) {
 func TestMarshalPayload_AllTypes_Unit(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    interface{}
+		input    any
 		expected []byte
 	}{
 		{
@@ -609,7 +609,7 @@ func TestConfig_Complete_Unit(t *testing.T) {
 func TestMarshalPayload_IntTypes_Unit(t *testing.T) {
 	tests := []struct {
 		name  string
-		input interface{}
+		input any
 	}{
 		{"int8", int8(127)},
 		{"int16", int16(32767)},
@@ -633,7 +633,7 @@ func TestMarshalPayload_IntTypes_Unit(t *testing.T) {
 func TestMarshalPayload_FloatTypes_Unit(t *testing.T) {
 	tests := []struct {
 		name  string
-		input interface{}
+		input any
 	}{
 		{"float32", float32(3.14159)},
 		{"float64", float64(3.14159265359)},
@@ -666,7 +666,7 @@ func TestMarshalPayload_EmptySlice_Unit(t *testing.T) {
 
 // TestMarshalPayload_EmptyMap 测试空Map
 func TestMarshalPayload_EmptyMap_Unit(t *testing.T) {
-	input := map[string]interface{}{}
+	input := map[string]any{}
 	result, err := marshalPayload(input)
 	require.NoError(t, err)
 	assert.Equal(t, []byte("{}"), result)
@@ -704,14 +704,14 @@ func TestClient_ConcurrentPublish(t *testing.T) {
 
 	done := make(chan bool, 10)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		go func() {
 			client.Publish("test.subject", "message")
 			done <- true
 		}()
 	}
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		<-done
 	}
 
@@ -726,7 +726,7 @@ func TestClient_ConcurrentSubscribe(t *testing.T) {
 
 	done := make(chan bool, 10)
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		go func(i int) {
 			subject := "test.subject." + string(rune('0'+i))
 			client.Subscribe(subject, func(msg *nats.Msg) {})
@@ -734,7 +734,7 @@ func TestClient_ConcurrentSubscribe(t *testing.T) {
 		}(i)
 	}
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		<-done
 	}
 }

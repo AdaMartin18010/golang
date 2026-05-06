@@ -70,16 +70,16 @@ import (
 //	  host: localhost
 //	  port: 5432
 type Config struct {
-	Server     ServerConfig     `mapstructure:"server"`
-	Database   DatabaseConfig   `mapstructure:"database"`
-	Redis      RedisConfig      `mapstructure:"redis"`
-	Kafka      KafkaConfig      `mapstructure:"kafka"`
-	MQTT       MQTTConfig       `mapstructure:"mqtt"`
-	OTLP           OTLPConfig           `mapstructure:"otlp"`
-	Observability  ObservabilityConfig  `mapstructure:"observability"`
-	JWT            JWTConfig            `mapstructure:"jwt"`
-	Logging        LoggingConfig        `mapstructure:"logging"`
-	Temporal       TemporalConfig       `mapstructure:"temporal"`
+	Server        ServerConfig        `mapstructure:"server"`
+	Database      DatabaseConfig      `mapstructure:"database"`
+	Redis         RedisConfig         `mapstructure:"redis"`
+	Kafka         KafkaConfig         `mapstructure:"kafka"`
+	MQTT          MQTTConfig          `mapstructure:"mqtt"`
+	OTLP          OTLPConfig          `mapstructure:"otlp"`
+	Observability ObservabilityConfig `mapstructure:"observability"`
+	JWT           JWTConfig           `mapstructure:"jwt"`
+	Logging       LoggingConfig       `mapstructure:"logging"`
+	Temporal      TemporalConfig      `mapstructure:"temporal"`
 }
 
 // ServerConfig 是 HTTP/gRPC 服务器的配置。
@@ -213,11 +213,11 @@ type MQTTConfig struct {
 // - APP_OTLP_ENDPOINT: Collector 端点
 // - APP_OTLP_SERVICE_NAME: 服务名称
 type OTLPConfig struct {
-	Endpoint    string        `mapstructure:"endpoint"`
-	Insecure    bool          `mapstructure:"insecure"`
-	Timeout     time.Duration `mapstructure:"timeout"`
-	ServiceName string        `mapstructure:"service_name"`
-	ServiceVersion string     `mapstructure:"service_version"`
+	Endpoint       string        `mapstructure:"endpoint"`
+	Insecure       bool          `mapstructure:"insecure"`
+	Timeout        time.Duration `mapstructure:"timeout"`
+	ServiceName    string        `mapstructure:"service_name"`
+	ServiceVersion string        `mapstructure:"service_version"`
 }
 
 // JWTConfig 是 JWT 认证的配置。
@@ -235,9 +235,9 @@ type OTLPConfig struct {
 // - SecretKey 应该保密，不应提交到版本控制系统
 // - 生产环境应使用强随机密钥
 type JWTConfig struct {
-	SecretKey      string        `mapstructure:"secret_key"`
-	SigningMethod  string        `mapstructure:"signing_method"`
-	AccessTokenTTL time.Duration `mapstructure:"access_token_ttl"`
+	SecretKey       string        `mapstructure:"secret_key"`
+	SigningMethod   string        `mapstructure:"signing_method"`
+	AccessTokenTTL  time.Duration `mapstructure:"access_token_ttl"`
 	RefreshTokenTTL time.Duration `mapstructure:"refresh_token_ttl"`
 }
 
@@ -261,9 +261,9 @@ type JWTConfig struct {
 // - APP_LOG_ROTATION_COMPRESS: 是否压缩旧日志文件
 type LoggingConfig struct {
 	Level      string         `mapstructure:"level"`       // debug, info, warn, error
-	Format     string         `mapstructure:"format"`       // json, text
-	Output     string         `mapstructure:"output"`       // stdout, file
-	OutputPath string         `mapstructure:"output_path"`  // 日志文件路径
+	Format     string         `mapstructure:"format"`      // json, text
+	Output     string         `mapstructure:"output"`      // stdout, file
+	OutputPath string         `mapstructure:"output_path"` // 日志文件路径
 	Rotation   RotationConfig `mapstructure:"rotation"`    // 日志轮转配置
 }
 
@@ -291,7 +291,7 @@ type RotationConfig struct {
 type ObservabilityConfig struct {
 	// OTLP 配置（复用现有的 OTLPConfig）
 	OTLP OTLPConfig `mapstructure:"otlp"`
-	
+
 	// 系统监控配置
 	System SystemMonitoringConfig `mapstructure:"system"`
 }
@@ -312,14 +312,14 @@ type ObservabilityConfig struct {
 // - APP_OBSERVABILITY_SYSTEM_ENABLED: 是否启用系统监控
 // - APP_OBSERVABILITY_SYSTEM_COLLECT_INTERVAL: 收集间隔
 type SystemMonitoringConfig struct {
-	Enabled            bool              `mapstructure:"enabled"`
-	CollectInterval    string            `mapstructure:"collect_interval"` // 如 "5s"
-	EnableDiskMonitor  bool              `mapstructure:"enable_disk_monitor"`
-	EnableLoadMonitor  bool              `mapstructure:"enable_load_monitor"`
-	EnableAPMMonitor   bool              `mapstructure:"enable_apm_monitor"`
-	RateLimit          RateLimitConfig   `mapstructure:"rate_limit"`
-	HealthThresholds   HealthThresholdsConfig `mapstructure:"health_thresholds"`
-	Alerts             []AlertRuleConfig `mapstructure:"alerts"`
+	Enabled           bool                   `mapstructure:"enabled"`
+	CollectInterval   string                 `mapstructure:"collect_interval"` // 如 "5s"
+	EnableDiskMonitor bool                   `mapstructure:"enable_disk_monitor"`
+	EnableLoadMonitor bool                   `mapstructure:"enable_load_monitor"`
+	EnableAPMMonitor  bool                   `mapstructure:"enable_apm_monitor"`
+	RateLimit         RateLimitConfig        `mapstructure:"rate_limit"`
+	HealthThresholds  HealthThresholdsConfig `mapstructure:"health_thresholds"`
+	Alerts            []AlertRuleConfig      `mapstructure:"alerts"`
 }
 
 // RateLimitConfig 限流器配置
@@ -363,11 +363,11 @@ type AlertRuleConfig struct {
 // - APP_TEMPORAL_NAMESPACE: 命名空间
 // - APP_TEMPORAL_TASK_QUEUE: 任务队列
 type TemporalConfig struct {
-	Address      string        `mapstructure:"address"`
-	Namespace    string        `mapstructure:"namespace"`
-	TaskQueue    string        `mapstructure:"task_queue"`
-	Workers      int           `mapstructure:"workers"`
-	MaxConcurrent int          `mapstructure:"max_concurrent"`
+	Address       string `mapstructure:"address"`
+	Namespace     string `mapstructure:"namespace"`
+	TaskQueue     string `mapstructure:"task_queue"`
+	Workers       int    `mapstructure:"workers"`
+	MaxConcurrent int    `mapstructure:"max_concurrent"`
 }
 
 // Load 加载配置
@@ -397,8 +397,8 @@ type TemporalConfig struct {
 // 配置文件路径：
 // - 如果 configPath 不为空，使用指定路径
 // - 否则，按以下顺序查找：
-//   1. ./configs/config.yaml
-//   2. ./config.yaml
+//  1. ./configs/config.yaml
+//  2. ./config.yaml
 //
 // 环境变量：
 // - 前缀：APP_
@@ -406,16 +406,17 @@ type TemporalConfig struct {
 // - 支持嵌套配置：APP_DATABASE_HOST、APP_DATABASE_PORT
 //
 // 示例：
-//   // 使用默认路径
-//   cfg, err := config.Load("")
 //
-//   // 使用指定路径
-//   cfg, err := config.Load("/path/to/config.yaml")
+//	// 使用默认路径
+//	cfg, err := config.Load("")
 //
-//   // 使用环境变量覆盖
-//   // export APP_SERVER_PORT=8080
-//   // export APP_DATABASE_HOST=localhost
-//   cfg, err := config.Load("")
+//	// 使用指定路径
+//	cfg, err := config.Load("/path/to/config.yaml")
+//
+//	// 使用环境变量覆盖
+//	// export APP_SERVER_PORT=8080
+//	// export APP_DATABASE_HOST=localhost
+//	cfg, err := config.Load("")
 func Load(configPath string) (*Config, error) {
 	v := viper.New()
 
@@ -657,10 +658,11 @@ func setDefaults(c *Config) {
 //   - error: 加载失败时返回错误
 //
 // 使用示例：
-//   cfg, err := config.LoadConfig()
-//   if err != nil {
-//       log.Fatal(err)
-//   }
+//
+//	cfg, err := config.LoadConfig()
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
 func LoadConfig() (*Config, error) {
 	return Load("")
 }
@@ -677,10 +679,11 @@ func LoadConfig() (*Config, error) {
 //   - error: 加载失败时返回错误
 //
 // 使用示例：
-//   // 设置环境变量
-//   // export APP_SERVER_PORT=8080
-//   // export APP_DATABASE_HOST=localhost
-//   cfg, err := config.LoadFromEnv()
+//
+//	// 设置环境变量
+//	// export APP_SERVER_PORT=8080
+//	// export APP_DATABASE_HOST=localhost
+//	cfg, err := config.LoadFromEnv()
 func LoadFromEnv() (*Config, error) {
 	return Load("")
 }
@@ -700,7 +703,8 @@ func LoadFromEnv() (*Config, error) {
 //   - error: 加载失败时返回错误
 //
 // 使用示例：
-//   cfg, err := config.LoadFromFile("/path/to/config.yaml")
+//
+//	cfg, err := config.LoadFromFile("/path/to/config.yaml")
 func LoadFromFile(path string) (*Config, error) {
 	return Load(path)
 }
@@ -729,10 +733,11 @@ func LoadFromFile(path string) (*Config, error) {
 // - 建议只用于非关键配置的热重载
 //
 // 使用示例：
-//   err := config.Watch("", func(cfg *config.Config) {
-//       log.Printf("Config reloaded: %+v", cfg)
-//       // 更新应用配置
-//   })
+//
+//	err := config.Watch("", func(cfg *config.Config) {
+//	    log.Printf("Config reloaded: %+v", cfg)
+//	    // 更新应用配置
+//	})
 func Watch(configPath string, onChange func(*Config)) error {
 	v := viper.New()
 

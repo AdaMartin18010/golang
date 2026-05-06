@@ -20,8 +20,8 @@ import (
 // - value: 消息值（原始字节，需要自行反序列化）
 //
 // 返回：
-// - error: 如果处理失败，返回错误信息
-//   返回错误会导致消息处理失败，可能需要重试
+//   - error: 如果处理失败，返回错误信息
+//     返回错误会导致消息处理失败，可能需要重试
 //
 // 使用示例：
 //
@@ -80,13 +80,13 @@ type Consumer struct {
 // - 配置消费者选项（重平衡策略、初始偏移量等）
 //
 // 参数：
-// - brokers: Kafka Broker 地址列表
-//   格式：[]string{"host1:9092", "host2:9092"}
-// - groupID: 消费者组 ID
-//   相同 groupID 的消费者会组成一个消费者组
-//   用于负载均衡和消息分发
-// - handler: 消息处理函数
-//   当收到消息时，会调用此函数处理消息
+//   - brokers: Kafka Broker 地址列表
+//     格式：[]string{"host1:9092", "host2:9092"}
+//   - groupID: 消费者组 ID
+//     相同 groupID 的消费者会组成一个消费者组
+//     用于负载均衡和消息分发
+//   - handler: 消息处理函数
+//     当收到消息时，会调用此函数处理消息
 //
 // 返回：
 // - *Consumer: 配置好的消费者实例
@@ -97,6 +97,7 @@ type Consumer struct {
 //   - RoundRobin: 轮询分配（默认）
 //   - Range: 范围分配
 //   - Sticky: 粘性分配（减少重平衡）
+//
 // - Offsets.Initial: 初始偏移量
 //   - OffsetNewest: 从最新消息开始消费（默认）
 //   - OffsetOldest: 从最早消息开始消费
@@ -147,9 +148,9 @@ func NewConsumer(brokers []string, groupID string, handler MessageHandler) (*Con
 // - 方法会阻塞，直到上下文取消或发生错误
 //
 // 参数：
-// - ctx: 上下文，用于控制消费过程
-//   取消上下文会停止消费
-// - topics: 要订阅的主题列表
+//   - ctx: 上下文，用于控制消费过程
+//     取消上下文会停止消费
+//   - topics: 要订阅的主题列表
 //
 // 返回：
 // - error: 如果消费过程中发生错误，返回错误信息
@@ -278,8 +279,8 @@ func (h *consumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error {
 // - claim: 分区声明，包含分配的分区中的消息
 //
 // 返回：
-// - error: 如果处理失败，返回错误信息
-//   返回错误会导致消费者离开消费者组并触发重平衡
+//   - error: 如果处理失败，返回错误信息
+//     返回错误会导致消费者离开消费者组并触发重平衡
 //
 // 工作流程：
 // 1. 从分区声明中接收消息

@@ -39,12 +39,12 @@ import (
 //	}
 //	router.Use(middleware.TracingMiddleware(config))
 type TracingConfig struct {
-	TracerName      string
-	ServiceName     string
-	ServiceVersion  string
-	SkipPaths       []string
-	AddRequestID    bool
-	AddUserID       bool
+	TracerName     string
+	ServiceName    string
+	ServiceVersion string
+	SkipPaths      []string
+	AddRequestID   bool
+	AddUserID      bool
 }
 
 // TracingMiddleware 创建请求追踪中间件。

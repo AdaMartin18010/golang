@@ -40,22 +40,24 @@ import (
 //   - error: 连接失败时返回错误
 //
 // 连接字符串格式：
-//   host=%s port=%s user=%s password=%s dbname=%s sslmode=%s
+//
+//	host=%s port=%s user=%s password=%s dbname=%s sslmode=%s
 //
 // 使用示例：
-//   client, err := ent.NewClientFromConfig(
-//       ctx,
-//       "localhost",
-//       "5432",
-//       "postgres",
-//       "password",
-//       "mydb",
-//       "disable",
-//   )
-//   if err != nil {
-//       log.Fatal(err)
-//   }
-//   defer client.Close()
+//
+//	client, err := ent.NewClientFromConfig(
+//	    ctx,
+//	    "localhost",
+//	    "5432",
+//	    "postgres",
+//	    "password",
+//	    "mydb",
+//	    "disable",
+//	)
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//	defer client.Close()
 func NewClientFromConfig(
 	ctx context.Context,
 	host, port, user, password, dbname, sslmode string,
@@ -100,15 +102,16 @@ func NewClientFromConfig(
 // - 建议在部署前手动运行迁移
 //
 // 使用示例：
-//   client, err := ent.NewClientFromConfig(...)
-//   if err != nil {
-//       log.Fatal(err)
-//   }
 //
-//   // 运行迁移
-//   if err := client.Migrate(ctx); err != nil {
-//       log.Fatalf("Failed to run migrations: %v", err)
-//   }
+//	client, err := ent.NewClientFromConfig(...)
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//
+//	// 运行迁移
+//	if err := client.Migrate(ctx); err != nil {
+//	    log.Fatalf("Failed to run migrations: %v", err)
+//	}
 func (c *Client) Migrate(ctx context.Context) error {
 	// 运行数据库迁移
 	// WithDropIndex(true): 删除旧索引（开发环境使用）
@@ -116,4 +119,3 @@ func (c *Client) Migrate(ctx context.Context) error {
 	// 生产环境应该设置为 false，避免数据丢失
 	return c.Schema.Create(ctx, migrate.WithDropIndex(true), migrate.WithDropColumn(true))
 }
-

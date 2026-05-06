@@ -13,7 +13,7 @@ import (
 )
 
 // TracingUnaryInterceptor 追踪拦截器
-func TracingUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func TracingUnaryInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	tracer := otel.Tracer("grpc")
 	ctx, span := tracer.Start(ctx, info.FullMethod,
 		trace.WithSpanKind(trace.SpanKindServer),

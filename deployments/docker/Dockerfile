@@ -2,7 +2,7 @@
 # 用于构建和运行 Go 应用
 
 # 阶段 1: 依赖下载
-FROM golang:1.21-alpine AS deps
+FROM golang:1.26.2-alpine AS deps
 WORKDIR /app
 
 # 安装必要的工具
@@ -15,7 +15,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # 阶段 2: 代码构建
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 WORKDIR /app
 
 # 从依赖阶段复制模块缓存

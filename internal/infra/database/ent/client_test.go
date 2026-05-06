@@ -18,9 +18,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/yourusername/golang/internal/infra/database/ent/migrate"
 	"github.com/yourusername/golang/internal/infra/database/ent/user"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 // setupTestClient 创建测试用的 Ent 客户端
@@ -333,7 +333,7 @@ func TestUser_List(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建多个测试用户
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		_, err := client.User.Create().
 			SetID(fmt.Sprintf("user-list-%d", i)).
 			SetEmail(fmt.Sprintf("list%d@example.com", i)).
@@ -376,7 +376,7 @@ func TestUser_Count(t *testing.T) {
 	assert.Equal(t, 0, count)
 
 	// 创建用户
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		_, err := client.User.Create().
 			SetID(fmt.Sprintf("user-count-%d", i)).
 			SetEmail(fmt.Sprintf("count%d@example.com", i)).
@@ -594,4 +594,3 @@ func BenchmarkUser_Query(b *testing.B) {
 		client.User.Get(ctx, u.ID)
 	}
 }
-

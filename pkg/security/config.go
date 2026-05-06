@@ -48,9 +48,9 @@ type EncryptionConfig struct {
 
 // KeyManagementConfig 密钥管理配置
 type KeyManagementConfig struct {
-	Provider     string        // 密钥提供者（memory, vault）
+	Provider         string        // 密钥提供者（memory, vault）
 	RotationInterval time.Duration // 轮换间隔
-	MaxKeyAge    time.Duration // 最大密钥年龄
+	MaxKeyAge        time.Duration // 最大密钥年龄
 }
 
 // AuditLogConfig 审计日志配置
@@ -79,9 +79,9 @@ func DefaultSecurityConfig() SecurityConfig {
 			KeySize:   256,
 		},
 		KeyManagement: KeyManagementConfig{
-			Provider:        "memory",
+			Provider:         "memory",
 			RotationInterval: 30 * 24 * time.Hour,
-			MaxKeyAge:       90 * 24 * time.Hour,
+			MaxKeyAge:        90 * 24 * time.Hour,
 		},
 		Session: DefaultSessionConfig(),
 		CSRF:    DefaultCSRFConfig(),

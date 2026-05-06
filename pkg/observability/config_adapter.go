@@ -15,7 +15,7 @@ func ConfigFromAppConfig(appConfig *config.Config) Config {
 		OTLPEndpoint:      appConfig.Observability.OTLP.Endpoint,
 		OTLPInsecure:      appConfig.Observability.OTLP.Insecure,
 		SampleRate:        0.5, // 默认值
-		MetricInterval:     10 * time.Second,
+		MetricInterval:    10 * time.Second,
 		TraceBatchTimeout: 5 * time.Second,
 		TraceBatchSize:    512,
 	}
@@ -23,7 +23,7 @@ func ConfigFromAppConfig(appConfig *config.Config) Config {
 	// 系统监控配置
 	if appConfig.Observability.System.Enabled {
 		obsConfig.EnableSystemMonitoring = true
-		
+
 		// 解析收集间隔
 		if appConfig.Observability.System.CollectInterval != "" {
 			if interval, err := time.ParseDuration(appConfig.Observability.System.CollectInterval); err == nil {

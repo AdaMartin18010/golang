@@ -1,10 +1,6 @@
 // Arena Allocator示例：批量内存管理
-// 注意：arena包在Go 1.23+是实验性特性
-// 构建时需要：GOEXPERIMENT=arenas go build
-//
-// 由于arena是实验性特性且可能不可用，本示例提供两个版本：
-// 1. 使用arena的版本（需要GOEXPERIMENT=arenas）
-// 2. 模拟arena行为的传统版本（默认）
+// 注意：arena 包曾是 Go 1.20 的实验性特性（GOEXPERIMENT=arenas），在 Go 1.21+ 已移除。
+// 本文件提供 arenas 实验关闭时的传统回退实现（默认编译路径）。
 
 //go:build !arenas
 // +build !arenas

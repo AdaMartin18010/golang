@@ -24,25 +24,26 @@ import "context"
 // 3. 测试时可以使用 Mock 仓储实现
 //
 // 示例：
-//   // 领域层定义接口
-//   type UserRepository interface {
-//       Create(ctx context.Context, user *User) error
-//       FindByID(ctx context.Context, id string) (*User, error)
-//   }
 //
-//   // 基础设施层实现接口
-//   type EntUserRepository struct {
-//       client *ent.Client
-//   }
+//	// 领域层定义接口
+//	type UserRepository interface {
+//	    Create(ctx context.Context, user *User) error
+//	    FindByID(ctx context.Context, id string) (*User, error)
+//	}
 //
-//   func (r *EntUserRepository) Create(ctx context.Context, user *User) error {
-//       // 使用 Ent 实现
-//   }
+//	// 基础设施层实现接口
+//	type EntUserRepository struct {
+//	    client *ent.Client
+//	}
 //
-//   // 应用层使用接口
-//   type UserService struct {
-//       repo UserRepository  // 依赖接口，不依赖具体实现
-//   }
+//	func (r *EntUserRepository) Create(ctx context.Context, user *User) error {
+//	    // 使用 Ent 实现
+//	}
+//
+//	// 应用层使用接口
+//	type UserService struct {
+//	    repo UserRepository  // 依赖接口，不依赖具体实现
+//	}
 //
 // 注意事项：
 // - 仓储接口应该表达业务需求，而不是技术细节
@@ -50,10 +51,11 @@ import "context"
 // - 复杂查询应该通过领域服务或应用服务处理
 //
 // 用户需要根据业务需求定义具体的仓储接口，例如：
-//   type UserRepository interface {
-//       Repository[*User]  // 继承通用接口
-//       FindByEmail(ctx context.Context, email string) (*User, error)  // 业务特定方法
-//   }
+//
+//	type UserRepository interface {
+//	    Repository[*User]  // 继承通用接口
+//	    FindByEmail(ctx context.Context, email string) (*User, error)  // 业务特定方法
+//	}
 type Repository[T any] interface {
 	// Create 创建实体
 	//
@@ -173,22 +175,23 @@ type Repository[T any] interface {
 // 3. 需要动态查询的场景
 //
 // 示例：
-//   // 定义查询条件
-//   type UserQuery struct {
-//       Email    string
-//       Status   string
-//       CreatedAfter time.Time
-//   }
 //
-//   // 定义仓储接口
-//   type UserRepository interface {
-//       Repository[*User]
-//       RepositoryWithQuery[*User, UserQuery]
-//   }
+//	// 定义查询条件
+//	type UserQuery struct {
+//	    Email    string
+//	    Status   string
+//	    CreatedAfter time.Time
+//	}
 //
-//   // 使用
-//   query := UserQuery{Email: "test@example.com"}
-//   users, err := repo.FindByQuery(ctx, query)
+//	// 定义仓储接口
+//	type UserRepository interface {
+//	    Repository[*User]
+//	    RepositoryWithQuery[*User, UserQuery]
+//	}
+//
+//	// 使用
+//	query := UserQuery{Email: "test@example.com"}
+//	users, err := repo.FindByQuery(ctx, query)
 //
 // 注意事项：
 // - 查询条件应该表达业务需求，而不是 SQL 查询

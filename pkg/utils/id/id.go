@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"sync/atomic"
 	"time"
 
 	"github.com/google/uuid"
@@ -229,7 +230,7 @@ func RandomBase64WithLength(length int) string {
 
 // SequentialIDGenerator 顺序ID生成器
 type SequentialIDGenerator struct {
-	prefix string
+	prefix  string
 	counter int64
 }
 
@@ -248,7 +249,9 @@ func (g *SequentialIDGenerator) Generate() string {
 }
 
 // SequentialID 生成顺序ID（带前缀）
+// 使用全局原子计数器确保每次调用返回不同的ID
+var globalSeqCounter int64
+
 func SequentialID(prefix string) string {
-	generator := NewSequentialIDGenerator(prefix)
-	return generator.Generate()
+	return fmt.Sprintf("%s%012d", prefix, atomic.AddInt64(&globalSeqCounter, 1))
 }

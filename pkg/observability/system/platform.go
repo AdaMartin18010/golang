@@ -13,21 +13,21 @@ import (
 
 // PlatformInfo 平台信息
 type PlatformInfo struct {
-	OS              string
-	Arch            string
-	GoVersion       string
-	Hostname        string
-	ContainerID     string
-	ContainerName   string
-	KubernetesPod   string
-	KubernetesNode  string
-	KubernetesNS    string // Kubernetes Namespace
-	Virtualization  string
-	CloudProvider   string // AWS/GCP/Azure/Alibaba/Tencent
-	CloudRegion     string
-	CloudZone       string
-	CPUs            int
-	MemoryTotal     uint64 // Total memory in bytes
+	OS             string
+	Arch           string
+	GoVersion      string
+	Hostname       string
+	ContainerID    string
+	ContainerName  string
+	KubernetesPod  string
+	KubernetesNode string
+	KubernetesNS   string // Kubernetes Namespace
+	Virtualization string
+	CloudProvider  string // AWS/GCP/Azure/Alibaba/Tencent
+	CloudRegion    string
+	CloudZone      string
+	CPUs           int
+	MemoryTotal    uint64 // Total memory in bytes
 }
 
 // PlatformMonitor 平台信息监控器

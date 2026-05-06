@@ -412,7 +412,7 @@ func (oe *OperationalEndpoints) versionHandler(w http.ResponseWriter, r *http.Re
 		"version":    "1.0.0",
 		"build_time": time.Now().Format(time.RFC3339),
 		"git_commit": "unknown",
-		"go_version": "1.25.3",
+		"go_version": "1.26.2",
 	}
 
 	w.Header().Set("Content-Type", "application/json")

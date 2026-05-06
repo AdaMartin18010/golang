@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"slices"
 	"strings"
 	"unicode"
 )
@@ -141,13 +142,7 @@ func (v *URLValidator) ValidateURL(urlStr string) error {
 	}
 
 	// 检查协议
-	validScheme := false
-	for _, scheme := range v.allowedSchemes {
-		if parsedURL.Scheme == scheme {
-			validScheme = true
-			break
-		}
-	}
+	validScheme := slices.Contains(v.allowedSchemes, parsedURL.Scheme)
 
 	if !validScheme {
 		return fmt.Errorf("scheme must be one of: %v", v.allowedSchemes)
@@ -188,8 +183,8 @@ func (v *PhoneValidator) ValidatePhone(phone string) error {
 // StringSanitizer 字符串清理器
 type StringSanitizer struct {
 	trimWhitespace bool
-	removeNewlines  bool
-	removeTabs       bool
+	removeNewlines bool
+	removeTabs     bool
 }
 
 // NewStringSanitizer 创建字符串清理器

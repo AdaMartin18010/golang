@@ -9,12 +9,12 @@ import (
 
 // PredictionResult 预测结果
 type PredictionResult struct {
-	MetricName    string    `json:"metric_name"`
-	CurrentValue  float64   `json:"current_value"`
-	PredictedValue float64  `json:"predicted_value"`
-	TimeHorizon   time.Duration `json:"time_horizon"`
-	Confidence    float64   `json:"confidence"` // 0-1
-	Trend         string    `json:"trend"`      // "increasing", "decreasing", "stable"
+	MetricName     string        `json:"metric_name"`
+	CurrentValue   float64       `json:"current_value"`
+	PredictedValue float64       `json:"predicted_value"`
+	TimeHorizon    time.Duration `json:"time_horizon"`
+	Confidence     float64       `json:"confidence"` // 0-1
+	Trend          string        `json:"trend"`      // "increasing", "decreasing", "stable"
 }
 
 // ResourcePredictor 资源使用预测器

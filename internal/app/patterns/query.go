@@ -26,36 +26,37 @@ import "context"
 // 4. 统计查询
 //
 // 示例：
-//   // 定义查询
-//   type GetUserQuery struct {
-//       ID string
-//   }
 //
-//   func (q GetUserQuery) Execute(ctx context.Context) (interface{}, error) {
-//       // 查询本身不包含执行逻辑，只是数据载体
-//       return nil, nil
-//   }
+//	// 定义查询
+//	type GetUserQuery struct {
+//	    ID string
+//	}
 //
-//   // 定义查询处理器
-//   type GetUserQueryHandler struct {
-//       userRepo domain.UserRepository
-//   }
+//	func (q GetUserQuery) Execute(ctx context.Context) (interface{}, error) {
+//	    // 查询本身不包含执行逻辑，只是数据载体
+//	    return nil, nil
+//	}
 //
-//   func (h *GetUserQueryHandler) Handle(ctx context.Context, query GetUserQuery) (*UserDTO, error) {
-//       // 1. 验证查询参数
-//       if query.ID == "" {
-//           return nil, ErrInvalidQuery
-//       }
+//	// 定义查询处理器
+//	type GetUserQueryHandler struct {
+//	    userRepo domain.UserRepository
+//	}
 //
-//       // 2. 查询领域实体
-//       user, err := h.userRepo.FindByID(ctx, query.ID)
-//       if err != nil {
-//           return nil, err
-//       }
+//	func (h *GetUserQueryHandler) Handle(ctx context.Context, query GetUserQuery) (*UserDTO, error) {
+//	    // 1. 验证查询参数
+//	    if query.ID == "" {
+//	        return nil, ErrInvalidQuery
+//	    }
 //
-//       // 3. 转换为 DTO
-//       return toUserDTO(user), nil
-//   }
+//	    // 2. 查询领域实体
+//	    user, err := h.userRepo.FindByID(ctx, query.ID)
+//	    if err != nil {
+//	        return nil, err
+//	    }
+//
+//	    // 3. 转换为 DTO
+//	    return toUserDTO(user), nil
+//	}
 //
 // 注意事项：
 // - 查询应该是不可变的（immutable）
@@ -68,15 +69,16 @@ import "context"
 // - Command：写操作，改变状态，不返回数据
 //
 // 用户需要根据业务需求定义具体的查询，例如：
-//   type ListUsersQuery struct {
-//       Page  int
-//       Size  int
-//       Email string  // 可选过滤条件
-//   }
 //
-//   func (q ListUsersQuery) Execute(ctx context.Context) (interface{}, error) {
-//       return nil, nil
-//   }
+//	type ListUsersQuery struct {
+//	    Page  int
+//	    Size  int
+//	    Email string  // 可选过滤条件
+//	}
+//
+//	func (q ListUsersQuery) Execute(ctx context.Context) (interface{}, error) {
+//	    return nil, nil
+//	}
 type Query interface {
 	// Execute 执行查询
 	//
@@ -93,7 +95,7 @@ type Query interface {
 	// 实现建议：
 	//   - 可以在这里添加查询级别的验证
 	//   - 可以返回 nil, nil，实际逻辑在 Handler 中
-	Execute(ctx context.Context) (interface{}, error)
+	Execute(ctx context.Context) (any, error)
 }
 
 // QueryHandler 查询处理器接口（框架抽象）
@@ -110,41 +112,42 @@ type Query interface {
 // 4. 处理错误和异常
 //
 // 示例：
-//   type GetUserQueryHandler struct {
-//       userRepo domain.UserRepository
-//       cache    cache.Cache
-//   }
 //
-//   func NewGetUserQueryHandler(
-//       userRepo domain.UserRepository,
-//       cache cache.Cache,
-//   ) *GetUserQueryHandler {
-//       return &GetUserQueryHandler{
-//           userRepo: userRepo,
-//           cache:    cache,
-//       }
-//   }
+//	type GetUserQueryHandler struct {
+//	    userRepo domain.UserRepository
+//	    cache    cache.Cache
+//	}
 //
-//   func (h *GetUserQueryHandler) Handle(ctx context.Context, query GetUserQuery) (*UserDTO, error) {
-//       // 1. 检查缓存
-//       if cached, err := h.cache.Get(ctx, "user:"+query.ID); err == nil {
-//           return cached.(*UserDTO), nil
-//       }
+//	func NewGetUserQueryHandler(
+//	    userRepo domain.UserRepository,
+//	    cache cache.Cache,
+//	) *GetUserQueryHandler {
+//	    return &GetUserQueryHandler{
+//	        userRepo: userRepo,
+//	        cache:    cache,
+//	    }
+//	}
 //
-//       // 2. 查询数据库
-//       user, err := h.userRepo.FindByID(ctx, query.ID)
-//       if err != nil {
-//           return nil, err
-//       }
+//	func (h *GetUserQueryHandler) Handle(ctx context.Context, query GetUserQuery) (*UserDTO, error) {
+//	    // 1. 检查缓存
+//	    if cached, err := h.cache.Get(ctx, "user:"+query.ID); err == nil {
+//	        return cached.(*UserDTO), nil
+//	    }
 //
-//       // 3. 转换为 DTO
-//       dto := toUserDTO(user)
+//	    // 2. 查询数据库
+//	    user, err := h.userRepo.FindByID(ctx, query.ID)
+//	    if err != nil {
+//	        return nil, err
+//	    }
 //
-//       // 4. 更新缓存
-//       h.cache.Set(ctx, "user:"+query.ID, dto, 5*time.Minute)
+//	    // 3. 转换为 DTO
+//	    dto := toUserDTO(user)
 //
-//       return dto, nil
-//   }
+//	    // 4. 更新缓存
+//	    h.cache.Set(ctx, "user:"+query.ID, dto, 5*time.Minute)
+//
+//	    return dto, nil
+//	}
 //
 // 注意事项：
 // - 查询处理器应该是无状态的
@@ -190,37 +193,38 @@ type QueryHandler[T Query, R any] interface {
 // 3. 统计查询（返回总数）
 //
 // 示例：
-//   type ListUsersQueryHandler struct {
-//       userRepo domain.UserRepository
-//   }
 //
-//   func (h *ListUsersQueryHandler) Handle(ctx context.Context, query ListUsersQuery) (*QueryResult[*UserDTO], error) {
-//       // 1. 查询数据
-//       users, err := h.userRepo.List(ctx, query.Page, query.Size)
-//       if err != nil {
-//           return nil, err
-//       }
+//	type ListUsersQueryHandler struct {
+//	    userRepo domain.UserRepository
+//	}
 //
-//       // 2. 查询总数
-//       total, err := h.userRepo.Count(ctx)
-//       if err != nil {
-//           return nil, err
-//       }
+//	func (h *ListUsersQueryHandler) Handle(ctx context.Context, query ListUsersQuery) (*QueryResult[*UserDTO], error) {
+//	    // 1. 查询数据
+//	    users, err := h.userRepo.List(ctx, query.Page, query.Size)
+//	    if err != nil {
+//	        return nil, err
+//	    }
 //
-//       // 3. 转换为 DTO
-//       dtos := make([]*UserDTO, len(users))
-//       for i, user := range users {
-//           dtos[i] = toUserDTO(user)
-//       }
+//	    // 2. 查询总数
+//	    total, err := h.userRepo.Count(ctx)
+//	    if err != nil {
+//	        return nil, err
+//	    }
 //
-//       // 4. 返回结果
-//       return &QueryResult[*UserDTO]{
-//           Data:  dtos,
-//           Total: total,
-//           Page:  query.Page,
-//           Size:  query.Size,
-//       }, nil
-//   }
+//	    // 3. 转换为 DTO
+//	    dtos := make([]*UserDTO, len(users))
+//	    for i, user := range users {
+//	        dtos[i] = toUserDTO(user)
+//	    }
+//
+//	    // 4. 返回结果
+//	    return &QueryResult[*UserDTO]{
+//	        Data:  dtos,
+//	        Total: total,
+//	        Page:  query.Page,
+//	        Size:  query.Size,
+//	    }, nil
+//	}
 //
 // 注意事项：
 // - Data 应该是切片，即使只有一条数据

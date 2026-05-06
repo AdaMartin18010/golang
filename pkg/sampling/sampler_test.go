@@ -43,7 +43,7 @@ func TestProbabilisticSampler(t *testing.T) {
 	// 测试多次采样，应该大致符合概率
 	samples := 1000
 	trueCount := 0
-	for i := 0; i < samples; i++ {
+	for range samples {
 		if sampler.ShouldSample(context.Background()) {
 			trueCount++
 		}
@@ -85,7 +85,7 @@ func TestRateLimitingSampler(t *testing.T) {
 
 	// 在短时间内应该允许多次
 	allowed := 0
-	for i := 0; i < 15; i++ {
+	for range 15 {
 		if sampler.ShouldSample(context.Background()) {
 			allowed++
 		}
@@ -120,4 +120,3 @@ func TestAdaptiveSampler(t *testing.T) {
 		t.Errorf("Expected rate 1.0 for low load, got %f", adaptiveSampler.SampleRate())
 	}
 }
-

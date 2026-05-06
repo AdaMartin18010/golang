@@ -19,7 +19,7 @@ func TestRateLimiter_Allow(t *testing.T) {
 	key := "test-key"
 
 	// 允许 5 次请求
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		allowed, err := rl.Allow(ctx, key)
 		if err != nil {
 			t.Fatalf("Failed to allow request: %v", err)
@@ -52,7 +52,7 @@ func TestRateLimiter_Check(t *testing.T) {
 	key := "test-key"
 
 	// 记录 3 次请求
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		rl.Allow(ctx, key)
 	}
 

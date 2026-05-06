@@ -1,5 +1,5 @@
-// Go 1.25 迭代器示例
-// 注意：strings.Lines, strings.SplitSeq, strings.FieldsSeq 是 Go 1.25+ 的新特性
+// Go 1.23 迭代器示例
+// 注意：strings.Lines, strings.SplitSeq, strings.FieldsSeq 是 Go 1.23+ 的新特性
 // 如果这些 API 尚未可用，可以使用传统的 strings.Split 等方法
 package main
 
@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Go 1.25 迭代器示例 ===\n")
+	fmt.Println("=== Go 1.23 迭代器示例 ===\n")
 
-	// 1. strings.Lines - 按行迭代（Go 1.25+）
+	// 1. strings.Lines - 按行迭代（Go 1.23+）
 	// 如果 API 不可用，可以使用 strings.Split(text, "\n")
 	text := `line 1
 line 2
@@ -31,7 +31,7 @@ line 3`
 	//     fmt.Printf("  %s\n", line)
 	// }
 
-	// 2. strings.SplitSeq - 分割迭代器（Go 1.25+）
+	// 2. strings.SplitSeq - 分割迭代器（Go 1.23+）
 	data := "apple,banana,cherry,date"
 
 	fmt.Println("\n2. strings.SplitSeq (分割迭代器):")
@@ -46,7 +46,7 @@ line 3`
 	//     fmt.Printf("  %s\n", part)
 	// }
 
-	// 3. strings.FieldsSeq - 字段迭代器（Go 1.25+）
+	// 3. strings.FieldsSeq - 字段迭代器（Go 1.23+）
 	fields := "  hello   world   go   "
 
 	fmt.Println("\n3. strings.FieldsSeq (字段迭代器):")
@@ -62,6 +62,6 @@ line 3`
 	// }
 
 	fmt.Println("\n✅ 迭代器示例完成")
-	fmt.Println("\n💡 提示: 如果 Go 1.25+ 的迭代器 API 可用，")
+	fmt.Println("\n💡 提示: 如果 Go 1.23+ 的迭代器 API 可用，")
 	fmt.Println("   它们会提供更好的内存效率和延迟计算特性。")
 }

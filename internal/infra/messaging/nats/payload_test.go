@@ -66,14 +66,14 @@ func TestMarshalPayload_Boolean(t *testing.T) {
 
 // TestMarshalPayload_Map 测试 Map 类型
 func TestMarshalPayload_Map(t *testing.T) {
-	input := map[string]interface{}{
+	input := map[string]any{
 		"event":   "user.created",
 		"user_id": 123,
 	}
 	result, err := marshalPayload(input)
 	require.NoError(t, err)
 
-	var decoded map[string]interface{}
+	var decoded map[string]any
 	err = json.Unmarshal(result, &decoded)
 	require.NoError(t, err)
 	assert.Equal(t, "user.created", decoded["event"])

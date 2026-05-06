@@ -1,5 +1,5 @@
-// Go 1.25 基准测试示例
-// 注意：Go 1.25 中移除了实验性的 testing.B.Loop() API
+// Go 1.23 基准测试示例
+// 注意：testing.B.Loop() 是 Go 1.23+ 的实验性 API
 // 本示例展示传统的基准测试最佳实践
 package main
 

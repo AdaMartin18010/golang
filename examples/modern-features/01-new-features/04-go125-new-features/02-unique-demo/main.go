@@ -1,5 +1,5 @@
-// Go 1.25 unique包示例
-// 注意：unique 包是 Go 1.25+ 的实验性功能
+// Go 1.23 unique包示例
+// 注意：unique 包是 Go 1.23+ 的特性
 // 如果包不可用，本示例展示其概念和预期行为
 package main
 
@@ -46,7 +46,7 @@ func MakeUnique[T comparable](value T) T {
 }
 
 func main() {
-	fmt.Println("=== Go 1.25 unique包示例 ===\n")
+	fmt.Println("=== Go 1.23 unique包示例 ===\n")
 	fmt.Println("注意: 这是 unique 包概念的演示")
 	fmt.Println("实际使用中应使用标准库的 unique 包\n")
 

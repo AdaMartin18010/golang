@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
@@ -42,13 +43,7 @@ func NewOIDCProvider(ctx context.Context, cfg OIDCConfig) (*OIDCProvider, error)
 
 	// 确保包含 openid scope
 	scopes := cfg.Scopes
-	hasOpenID := false
-	for _, scope := range scopes {
-		if scope == oidc.ScopeOpenID {
-			hasOpenID = true
-			break
-		}
-	}
+	hasOpenID := slices.Contains(scopes, oidc.ScopeOpenID)
 	if !hasOpenID {
 		scopes = append([]string{oidc.ScopeOpenID}, scopes...)
 	}
@@ -65,9 +60,9 @@ func NewOIDCProvider(ctx context.Context, cfg OIDCConfig) (*OIDCProvider, error)
 
 	// 创建 ID Token 验证器
 	verifier := provider.Verifier(&oidc.Config{
-		ClientID:          cfg.ClientID,
-		SkipIssuerCheck:   cfg.SkipIssuerCheck,
-		SkipExpiryCheck:   cfg.SkipExpiryCheck,
+		ClientID:        cfg.ClientID,
+		SkipIssuerCheck: cfg.SkipIssuerCheck,
+		SkipExpiryCheck: cfg.SkipExpiryCheck,
 	})
 
 	return &OIDCProvider{
@@ -178,13 +173,13 @@ type OIDCToken struct {
 
 // IDTokenClaims ID Token 标准声明
 type IDTokenClaims struct {
-	Issuer    string `json:"iss"`
-	Subject   string `json:"sub"`
-	Audience  string `json:"aud"`
-	Expiry    int64  `json:"exp"`
-	IssuedAt  int64  `json:"iat"`
-	AuthTime  int64  `json:"auth_time,omitempty"`
-	Nonce     string `json:"nonce,omitempty"`
+	Issuer   string `json:"iss"`
+	Subject  string `json:"sub"`
+	Audience string `json:"aud"`
+	Expiry   int64  `json:"exp"`
+	IssuedAt int64  `json:"iat"`
+	AuthTime int64  `json:"auth_time,omitempty"`
+	Nonce    string `json:"nonce,omitempty"`
 
 	// 标准声明
 	Name              string `json:"name,omitempty"`

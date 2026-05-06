@@ -18,9 +18,9 @@ type DiskMonitor struct {
 	cancel          context.CancelFunc
 
 	// 指标
-	diskUsageGauge      metric.Int64ObservableGauge
-	diskTotalGauge      metric.Int64ObservableGauge
-	diskAvailableGauge  metric.Int64ObservableGauge
+	diskUsageGauge        metric.Int64ObservableGauge
+	diskTotalGauge        metric.Int64ObservableGauge
+	diskAvailableGauge    metric.Int64ObservableGauge
 	diskReadBytesCounter  metric.Int64Counter
 	diskWriteBytesCounter metric.Int64Counter
 }
@@ -154,7 +154,6 @@ func (m *DiskMonitor) collectMetrics(ctx context.Context, obs metric.Observer) e
 	}
 	return m.collectMetricsUnix(ctx, obs)
 }
-
 
 // RecordRead 记录磁盘读取
 func (m *DiskMonitor) RecordRead(ctx context.Context, bytes int64) {

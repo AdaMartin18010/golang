@@ -42,14 +42,14 @@ func newMockNatsConn() *mockNatsConn {
 func (m *mockNatsConn) Publish(subj string, data []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	m.lastSubject = subj
 	m.lastData = data
-	
+
 	if m.publishErr != nil {
 		return m.publishErr
 	}
-	
+
 	m.published = append(m.published, mockPublishedMsg{
 		Subject: subj,
 		Data:    data,
@@ -62,11 +62,11 @@ func (m *mockNatsConn) Publish(subj string, data []byte) error {
 func (m *mockNatsConn) Subscribe(subj string, cb nats.MsgHandler) (*nats.Subscription, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.subscribeErr != nil {
 		return nil, m.subscribeErr
 	}
-	
+
 	sub := &nats.Subscription{
 		Subject: subj,
 	}
@@ -77,11 +77,11 @@ func (m *mockNatsConn) Subscribe(subj string, cb nats.MsgHandler) (*nats.Subscri
 func (m *mockNatsConn) QueueSubscribe(subj, queue string, cb nats.MsgHandler) (*nats.Subscription, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.queueSubErr != nil {
 		return nil, m.queueSubErr
 	}
-	
+
 	sub := &nats.Subscription{
 		Subject: subj,
 		Queue:   queue,
@@ -93,15 +93,15 @@ func (m *mockNatsConn) QueueSubscribe(subj, queue string, cb nats.MsgHandler) (*
 func (m *mockNatsConn) Request(subj string, data []byte, timeout time.Duration) (*nats.Msg, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.requestErr != nil {
 		return nil, m.requestErr
 	}
-	
+
 	if m.requestResponse != nil {
 		return m.requestResponse, nil
 	}
-	
+
 	return &nats.Msg{
 		Subject: subj,
 		Data:    []byte(`{"status":"ok"}`),
@@ -192,7 +192,7 @@ func mockClientWithErrors(pubErr, subErr, reqErr error) *Client {
 
 // testErrors
 var (
-	errPublishFailed  = errors.New("publish failed")
+	errPublishFailed   = errors.New("publish failed")
 	errSubscribeFailed = errors.New("subscribe failed")
-	errRequestFailed  = errors.New("request failed")
+	errRequestFailed   = errors.New("request failed")
 )

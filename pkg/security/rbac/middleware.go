@@ -3,6 +3,7 @@ package rbac
 import (
 	"context"
 	"net/http"
+	"slices"
 )
 
 // ContextKey 上下文键类型
@@ -68,11 +69,8 @@ func (m *Middleware) RequireRole(requiredRoles ...string) func(http.Handler) htt
 			// 检查是否有任一所需角色
 			hasRole := false
 			for _, userRole := range userRoles {
-				for _, requiredRole := range requiredRoles {
-					if userRole == requiredRole {
-						hasRole = true
-						break
-					}
+				if slices.Contains(requiredRoles, userRole) {
+					hasRole = true
 				}
 				if hasRole {
 					break

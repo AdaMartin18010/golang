@@ -15,10 +15,10 @@ type MetricSnapshot struct {
 
 // MetricValue 指标值
 type MetricValue struct {
-	Type      string                 `json:"type"`      // counter, gauge, histogram
-	Value     interface{}            `json:"value"`      // 实际值
-	Unit      string                 `json:"unit"`      // 单位
-	Attributes map[string]string     `json:"attributes"` // 属性
+	Type       string            `json:"type"`       // counter, gauge, histogram
+	Value      interface{}       `json:"value"`      // 实际值
+	Unit       string            `json:"unit"`       // 单位
+	Attributes map[string]string `json:"attributes"` // 属性
 }
 
 // MetricsExporter 指标导出器

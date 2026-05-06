@@ -85,9 +85,9 @@ type Client struct {
 // - 返回配置好的客户端实例
 //
 // 参数：
-// - address: Temporal Server 的地址和端口
-//   格式：host:port（例如：localhost:7233）
-//   默认端口：7233（gRPC）
+//   - address: Temporal Server 的地址和端口
+//     格式：host:port（例如：localhost:7233）
+//     默认端口：7233（gRPC）
 //
 // 返回：
 // - *Client: 配置好的客户端实例
@@ -147,6 +147,7 @@ func NewClient(address string) (*Client, error) {
 //   - WorkflowExecutionTimeout: 工作流执行超时时间
 //   - WorkflowTaskTimeout: 工作流任务超时时间
 //   - WorkflowIDReusePolicy: 工作流 ID 重用策略
+//
 // - workflow: 工作流函数（必须是已注册的工作流）
 // - args: 传递给工作流的参数
 //
@@ -174,7 +175,7 @@ func NewClient(address string) (*Client, error) {
 // - 工作流 ID 应具有唯一性，避免冲突
 // - TaskQueue 必须与 Worker 监听的队列名称一致
 // - 工作流函数必须是确定性的（不能使用随机数、时间等）
-func (c *Client) ExecuteWorkflow(ctx context.Context, options client.StartWorkflowOptions, workflow interface{}, args ...interface{}) (client.WorkflowRun, error) {
+func (c *Client) ExecuteWorkflow(ctx context.Context, options client.StartWorkflowOptions, workflow any, args ...any) (client.WorkflowRun, error) {
 	return c.client.ExecuteWorkflow(ctx, options, workflow, args...)
 }
 
@@ -246,7 +247,7 @@ func (c *Client) GetWorkflow(ctx context.Context, workflowID, runID string) clie
 // - 信号是异步的，工作流可能不会立即处理
 // - 如果工作流不存在或已结束，信号会被忽略
 // - 信号参数会被序列化，确保类型可序列化
-func (c *Client) SignalWorkflow(ctx context.Context, workflowID, runID, signalName string, arg interface{}) error {
+func (c *Client) SignalWorkflow(ctx context.Context, workflowID, runID, signalName string, arg any) error {
 	return c.client.SignalWorkflow(ctx, workflowID, runID, signalName, arg)
 }
 
@@ -291,7 +292,7 @@ func (c *Client) SignalWorkflow(ctx context.Context, workflowID, runID, signalNa
 // - 查询是同步的，会等待工作流处理查询
 // - 工作流必须实现对应的查询处理器
 // - 查询结果需要类型断言才能使用
-func (c *Client) QueryWorkflow(ctx context.Context, workflowID, runID, queryType string, args ...interface{}) (interface{}, error) {
+func (c *Client) QueryWorkflow(ctx context.Context, workflowID, runID, queryType string, args ...any) (any, error) {
 	return c.client.QueryWorkflow(ctx, workflowID, runID, queryType, args...)
 }
 
@@ -353,7 +354,7 @@ func (c *Client) GetWorkflowResult(ctx context.Context, workflowID string) (stri
 	workflowRun := c.GetWorkflow(ctx, workflowID, "")
 	// 等待工作流完成并获取结果
 	// 这里需要根据实际的结果类型来反序列化
-	var result interface{}
+	var result any
 	if err := workflowRun.Get(ctx, &result); err != nil {
 		return "", err
 	}

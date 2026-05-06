@@ -15,7 +15,7 @@
 //	type Comparable[T any] interface {
 //	    Compare(other T) int
 //	}
-//	
+//
 //	// 可以在接口中使用自己作为约束
 //	type Ordered[T Ordered[T]] interface {
 //	    Less(other T) bool

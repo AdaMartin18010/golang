@@ -20,18 +20,18 @@ type HealthStatus struct {
 
 // HealthChecker 健康检查器
 type HealthChecker struct {
-	monitor      *Monitor
-	thresholds   HealthThresholds
-	lastCheck    time.Time
+	monitor       *Monitor
+	thresholds    HealthThresholds
+	lastCheck     time.Time
 	checkInterval time.Duration
 }
 
 // HealthThresholds 健康阈值
 type HealthThresholds struct {
-	MaxMemoryUsage float64 // 最大内存使用率（0-100）
-	MaxCPUUsage    float64 // 最大 CPU 使用率（0-100）
-	MaxGoroutines  int     // 最大 Goroutine 数量
-	MinGCInterval time.Duration // 最小 GC 间隔
+	MaxMemoryUsage float64       // 最大内存使用率（0-100）
+	MaxCPUUsage    float64       // 最大 CPU 使用率（0-100）
+	MaxGoroutines  int           // 最大 Goroutine 数量
+	MinGCInterval  time.Duration // 最小 GC 间隔
 }
 
 // DefaultHealthThresholds 返回默认健康阈值

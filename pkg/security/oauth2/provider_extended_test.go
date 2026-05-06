@@ -98,9 +98,9 @@ func TestConfig_Validation(t *testing.T) {
 			valid: true,
 		},
 		{
-			name: "empty config",
+			name:   "empty config",
 			config: Config{},
-			valid: true, // 可以创建，但可能无法正常工作
+			valid:  true, // 可以创建，但可能无法正常工作
 		},
 	}
 
@@ -204,5 +204,3 @@ func TestEndpoints_Constants(t *testing.T) {
 		})
 	}
 }
-
-

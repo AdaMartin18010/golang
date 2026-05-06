@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Go 1.25.3 泛型类型别名示例 ===\n")
+	fmt.Println("=== Go 1.24 泛型类型别名示例 ===\n")
 
 	// 运行基础示例
 	fmt.Println("1. 基础示例:")

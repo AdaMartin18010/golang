@@ -500,4 +500,3 @@ func TestUpdateUserRequestStruct(t *testing.T) {
 
 	assert.Equal(t, "Updated Name", req.Name)
 }
-

@@ -62,11 +62,11 @@ import (
 
 // Result 表示评估结果
 type Result struct {
-	Allowed     bool     `json:"allowed"`
-	Decision    Effect   `json:"decision"`
+	Allowed       bool    `json:"allowed"`
+	Decision      Effect  `json:"decision"`
 	MatchedPolicy *Policy `json:"matched_policy,omitempty"`
-	Reason      string   `json:"reason,omitempty"`
-	Errors      []error  `json:"errors,omitempty"`
+	Reason        string  `json:"reason,omitempty"`
+	Errors        []error `json:"errors,omitempty"`
 }
 
 // IsAllowed 检查是否允许访问
@@ -83,9 +83,9 @@ func (r Result) IsDenied() bool {
 //
 // 负责管理策略集合并执行访问控制评估
 type Engine struct {
-	policies     map[string]Policy
+	policies      map[string]Policy
 	defaultEffect Effect
-	mu           sync.RWMutex
+	mu            sync.RWMutex
 	// 可选：策略变更回调
 	onPolicyChange func(event PolicyChangeEvent)
 }
@@ -348,10 +348,10 @@ func (e *Engine) Evaluate(ctx context.Context, req Request) Result {
 
 	// 没有匹配的策略，返回默认效果
 	return Result{
-		Allowed:    e.defaultEffect == Allow,
-		Decision:   e.defaultEffect,
-		Reason:     "No matching policy found",
-		Errors:     errors,
+		Allowed:  e.defaultEffect == Allow,
+		Decision: e.defaultEffect,
+		Reason:   "No matching policy found",
+		Errors:   errors,
 	}
 }
 
@@ -401,10 +401,10 @@ func (e *Engine) EvaluateWithReason(ctx context.Context, req Request) (Result, m
 	}
 
 	return Result{
-		Allowed:    e.defaultEffect == Allow,
-		Decision:   e.defaultEffect,
-		Reason:     "No matching policy found",
-		Errors:     errors,
+		Allowed:  e.defaultEffect == Allow,
+		Decision: e.defaultEffect,
+		Reason:   "No matching policy found",
+		Errors:   errors,
 	}, policyResults
 }
 
@@ -427,7 +427,7 @@ func (e *Engine) GetStats() EngineStats {
 	defer e.mu.RUnlock()
 
 	stats := EngineStats{
-		TotalPolicies: len(e.policies),
+		TotalPolicies:   len(e.policies),
 		EnabledPolicies: 0,
 	}
 

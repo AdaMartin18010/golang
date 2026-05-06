@@ -109,9 +109,9 @@ func ProductionRotationConfig(filename string) RotationConfig {
 func DevelopmentRotationConfig(filename string) RotationConfig {
 	return RotationConfig{
 		Filename:   filename,
-		MaxSize:    50,   // 50MB
-		MaxBackups: 5,    // 保留5个备份
-		MaxAge:     7,    // 保留7天
+		MaxSize:    50,    // 50MB
+		MaxBackups: 5,     // 保留5个备份
+		MaxAge:     7,     // 保留7天
 		Compress:   false, // 开发环境不压缩
 		LocalTime:  true,  // 使用本地时间
 	}

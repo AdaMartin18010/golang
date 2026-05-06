@@ -10,7 +10,8 @@
 //   - 集成测试: 需要运行 docker-compose up nats
 //
 // 启动 NATS 服务器：
-//   docker run -d -p 4222:4222 nats:latest
+//
+//	docker run -d -p 4222:4222 nats:latest
 package nats
 
 import (
@@ -181,7 +182,7 @@ func TestClient_Publish_Integration(t *testing.T) {
 	require.NoError(t, err)
 
 	// 发布 JSON 消息
-	data := map[string]interface{}{"key": "value", "number": 42}
+	data := map[string]any{"key": "value", "number": 42}
 	err = client.Publish("test.publish", data)
 	require.NoError(t, err)
 }
@@ -233,9 +234,9 @@ func TestClient_SubscribeJSON_Integration(t *testing.T) {
 	defer client.Close()
 
 	// 订阅
-	received := make(chan map[string]interface{}, 1)
+	received := make(chan map[string]any, 1)
 	sub, err := client.Subscribe("test.json", func(msg *nats.Msg) {
-		var data map[string]interface{}
+		var data map[string]any
 		if err := json.Unmarshal(msg.Data, &data); err == nil {
 			received <- data
 		}
@@ -247,7 +248,7 @@ func TestClient_SubscribeJSON_Integration(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// 发布 JSON 消息
-	data := map[string]interface{}{
+	data := map[string]any{
 		"user_id": 123,
 		"name":    "Alice",
 		"active":  true,
@@ -305,7 +306,7 @@ func TestClient_QueueSubscribe_Integration(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// 发布多条消息
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		err := client1.Publish("test.queue", "message")
 		require.NoError(t, err)
 	}
@@ -333,13 +334,13 @@ func TestClient_Request_Integration(t *testing.T) {
 	// 创建响应服务
 	sub, err := client.Subscribe("test.request", func(msg *nats.Msg) {
 		// 解析请求
-		var request map[string]interface{}
+		var request map[string]any
 		json.Unmarshal(msg.Data, &request)
 
 		// 构建响应
-		response := map[string]interface{}{
-			"echo":    request["data"],
-			"status":  "ok",
+		response := map[string]any{
+			"echo":   request["data"],
+			"status": "ok",
 		}
 
 		// 发送响应
@@ -353,12 +354,12 @@ func TestClient_Request_Integration(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// 发送请求
-	request := map[string]interface{}{"data": "hello"}
+	request := map[string]any{"data": "hello"}
 	reply, err := client.Request("test.request", request, 5*time.Second)
 	require.NoError(t, err)
 
 	// 解析响应
-	var response map[string]interface{}
+	var response map[string]any
 	err = json.Unmarshal(reply.Data, &response)
 	require.NoError(t, err)
 	assert.Equal(t, "hello", response["echo"])
@@ -566,12 +567,10 @@ func TestClient_ConcurrentPublish_Integration(t *testing.T) {
 
 	// 并发发布
 	var wg sync.WaitGroup
-	for i := 0; i < 100; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range 100 {
+		wg.Go(func() {
 			client.Publish("test.concurrent", "message")
-		}()
+		})
 	}
 	wg.Wait()
 

@@ -16,6 +16,7 @@ import (
 // - AllowedOrigins: 允许的源列表（默认：["*"]）
 //   - "*": 允许所有源
 //   - 具体域名：只允许指定的源
+//
 // - AllowedMethods: 允许的 HTTP 方法（默认：GET、POST、PUT、DELETE、OPTIONS、PATCH）
 // - AllowedHeaders: 允许的请求头（默认：Content-Type、Authorization、X-Requested-With）
 // - ExposedHeaders: 暴露的响应头（客户端可以访问的响应头）
@@ -23,8 +24,8 @@ import (
 //   - true: 允许携带凭证
 //   - false: 不允许携带凭证
 //   - 注意：如果设置为 true，AllowedOrigins 不能包含 "*"
-// - MaxAge: 预检请求缓存时间（秒，默认：3600）
-//   浏览器会缓存预检请求的结果，在此时间内不会再次发送预检请求
+//   - MaxAge: 预检请求缓存时间（秒，默认：3600）
+//     浏览器会缓存预检请求的结果，在此时间内不会再次发送预检请求
 //
 // 使用示例：
 //
@@ -56,12 +57,13 @@ type CORSConfig struct {
 // 1. 检查请求的 Origin 是否在允许列表中
 // 2. 如果不在允许列表中，继续处理请求（不设置 CORS 头）
 // 3. 设置 CORS 响应头：
-//    - Access-Control-Allow-Origin: 允许的源
-//    - Access-Control-Allow-Credentials: 是否允许凭证
-//    - Access-Control-Allow-Methods: 允许的方法
-//    - Access-Control-Allow-Headers: 允许的请求头
-//    - Access-Control-Expose-Headers: 暴露的响应头
-//    - Access-Control-Max-Age: 预检请求缓存时间
+//   - Access-Control-Allow-Origin: 允许的源
+//   - Access-Control-Allow-Credentials: 是否允许凭证
+//   - Access-Control-Allow-Methods: 允许的方法
+//   - Access-Control-Allow-Headers: 允许的请求头
+//   - Access-Control-Expose-Headers: 暴露的响应头
+//   - Access-Control-Max-Age: 预检请求缓存时间
+//
 // 4. 如果是预检请求（OPTIONS），返回 204 No Content
 // 5. 否则继续处理请求
 //

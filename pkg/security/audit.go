@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -25,18 +26,18 @@ type AuditLogger struct {
 
 // AuditLog 审计日志
 type AuditLog struct {
-	ID          string
-	Timestamp   time.Time
-	UserID      string
-	Action      string
-	Resource    string
-	ResourceID  string
-	Result      AuditResult
-	IPAddress   string
-	UserAgent   string
-	RequestID   string
-	Details     map[string]interface{}
-	Metadata    map[string]string
+	ID         string
+	Timestamp  time.Time
+	UserID     string
+	Action     string
+	Resource   string
+	ResourceID string
+	Result     AuditResult
+	IPAddress  string
+	UserAgent  string
+	RequestID  string
+	Details    map[string]any
+	Metadata   map[string]string
 }
 
 // AuditResult 审计结果
@@ -61,14 +62,14 @@ type AuditLogStore interface {
 
 // AuditLogFilter 审计日志过滤器
 type AuditLogFilter struct {
-	UserID     string
-	Action     string
-	Resource   string
-	Result     AuditResult
-	StartTime  *time.Time
-	EndTime    *time.Time
-	Limit      int
-	Offset     int
+	UserID    string
+	Action    string
+	Resource  string
+	Result    AuditResult
+	StartTime *time.Time
+	EndTime   *time.Time
+	Limit     int
+	Offset    int
 }
 
 // NewAuditLogger 创建审计日志记录器
@@ -89,7 +90,7 @@ func (l *AuditLogger) Log(ctx context.Context, log *AuditLog) error {
 	}
 
 	if log.Details == nil {
-		log.Details = make(map[string]interface{})
+		log.Details = make(map[string]any)
 	}
 
 	if log.Metadata == nil {
@@ -100,7 +101,7 @@ func (l *AuditLogger) Log(ctx context.Context, log *AuditLog) error {
 }
 
 // LogAction 记录操作审计日志
-func (l *AuditLogger) LogAction(ctx context.Context, userID, action, resource, resourceID string, result AuditResult, details map[string]interface{}) error {
+func (l *AuditLogger) LogAction(ctx context.Context, userID, action, resource, resourceID string, result AuditResult, details map[string]any) error {
 	log := &AuditLog{
 		UserID:     userID,
 		Action:     action,
@@ -129,7 +130,7 @@ func (l *AuditLogger) LogAccess(ctx context.Context, userID, resource, resourceI
 }
 
 // LogSecurity 记录安全事件审计日志
-func (l *AuditLogger) LogSecurity(ctx context.Context, userID, event string, details map[string]interface{}) error {
+func (l *AuditLogger) LogSecurity(ctx context.Context, userID, event string, details map[string]any) error {
 	log := &AuditLog{
 		UserID:   userID,
 		Action:   "security",
@@ -139,7 +140,7 @@ func (l *AuditLogger) LogSecurity(ctx context.Context, userID, event string, det
 	}
 
 	if details == nil {
-		log.Details = make(map[string]interface{})
+		log.Details = make(map[string]any)
 	}
 	log.Details["event"] = event
 
@@ -290,9 +291,10 @@ func (e *AuditLogExporter) ExportCSV(ctx context.Context, filter *AuditLogFilter
 	}
 
 	// 简单的 CSV 实现
-	csv := "ID,Timestamp,UserID,Action,Resource,ResourceID,Result,IPAddress\n"
+	var csv strings.Builder
+	csv.WriteString("ID,Timestamp,UserID,Action,Resource,ResourceID,Result,IPAddress\n")
 	for _, log := range logs {
-		csv += fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",
+		csv.WriteString(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s\n",
 			log.ID,
 			log.Timestamp.Format(time.RFC3339),
 			log.UserID,
@@ -301,8 +303,8 @@ func (e *AuditLogExporter) ExportCSV(ctx context.Context, filter *AuditLogFilter
 			log.ResourceID,
 			log.Result,
 			log.IPAddress,
-		)
+		))
 	}
 
-	return []byte(csv), nil
+	return []byte(csv.String()), nil
 }

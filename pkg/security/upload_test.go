@@ -44,9 +44,9 @@ func TestFileUploadValidator_InvalidFileName(t *testing.T) {
 	config := DefaultFileUploadConfig()
 	config.ScanContent = false
 	validator := NewFileUploadValidator(config)
-	
+
 	tests := []struct {
-		filename string
+		filename   string
 		shouldFail bool
 	}{
 		{"../test.jpg", true},

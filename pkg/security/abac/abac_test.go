@@ -580,7 +580,7 @@ func BenchmarkEngine_Evaluate(b *testing.B) {
 	engine := NewEngine()
 
 	// 添加多个策略
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		require.NoError(b, engine.AddPolicy(Policy{
 			ID:       fmt.Sprintf("policy-%d", i),
 			Name:     fmt.Sprintf("Policy %d", i),
@@ -777,7 +777,7 @@ func TestEnvironmentBasedAccess(t *testing.T) {
 			name: "access during business hours",
 			request: Request{
 				Subject:     Subject{ID: "manager1", Roles: []string{"manager"}},
-				Resource:    Resource{Type: "document", Attributes: map[string]interface{}{"sensitivity": "high"}},
+				Resource:    Resource{Type: "document", Attributes: map[string]any{"sensitivity": "high"}},
 				Action:      Action{Name: "read"},
 				Environment: Environment{Time: today9AM.Add(2 * time.Hour).Unix()}, // 11:00 AM
 			},
@@ -787,7 +787,7 @@ func TestEnvironmentBasedAccess(t *testing.T) {
 			name: "access outside business hours",
 			request: Request{
 				Subject:     Subject{ID: "manager1", Roles: []string{"manager"}},
-				Resource:    Resource{Type: "document", Attributes: map[string]interface{}{"sensitivity": "high"}},
+				Resource:    Resource{Type: "document", Attributes: map[string]any{"sensitivity": "high"}},
 				Action:      Action{Name: "read"},
 				Environment: Environment{Time: today6PM.Add(2 * time.Hour).Unix()}, // 20:00 PM
 			},

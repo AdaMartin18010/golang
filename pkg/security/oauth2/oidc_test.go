@@ -268,11 +268,11 @@ func TestOIDCTokenEmpty(t *testing.T) {
 func BenchmarkIDTokenClaims_Create(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = IDTokenClaims{
-			Subject:   "user-123",
-			Email:     "test@example.com",
-			Name:      "Test User",
-			IssuedAt:  1234567890,
-			Expiry:    1234571490,
+			Subject:  "user-123",
+			Email:    "test@example.com",
+			Name:     "Test User",
+			IssuedAt: 1234567890,
+			Expiry:   1234571490,
 		}
 	}
 }
@@ -304,11 +304,11 @@ func ExampleIDTokenClaims() {
 // ExampleUserInfo UserInfo 使用示例
 func ExampleUserInfo() {
 	info := UserInfo{
-		Subject:   "user-123",
-		Name:      "John Doe",
-		Email:     "john@example.com",
-		Picture:   "https://example.com/picture.jpg",
-		Locale:    "en-US",
+		Subject: "user-123",
+		Name:    "John Doe",
+		Email:   "john@example.com",
+		Picture: "https://example.com/picture.jpg",
+		Locale:  "en-US",
 	}
 
 	_ = info

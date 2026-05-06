@@ -423,7 +423,7 @@ func TestUsers_Slice(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建多个用户
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		_, err := client.User.Create().
 			SetID(fmt.Sprintf("user-slice-%d", i)).
 			SetEmail(fmt.Sprintf("slice%d@example.com", i)).

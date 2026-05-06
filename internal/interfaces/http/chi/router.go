@@ -82,23 +82,24 @@ type Router struct {
 // - /api/v1/workflows: 工作流相关 API（如果 Temporal 客户端可用）
 //
 // 使用示例：
-//   userService := appuser.NewService(userRepo)
-//   router := chiRouter.NewRouter(userService, temporalHandler)
-//   httpServer := &http.Server{
-//       Handler: router.Handler(),
-//   }
+//
+//	userService := appuser.NewService(userRepo)
+//	router := chiRouter.NewRouter(userService, temporalHandler)
+//	httpServer := &http.Server{
+//	    Handler: router.Handler(),
+//	}
 func NewRouter(userService *appuser.Service, temporalClient *temporalhandler.Handler) *Router {
 	r := chi.NewRouter()
 
 	// 中间件配置（按顺序执行）
 	// 注意：中间件的执行顺序很重要，应该按照依赖关系排序
-	r.Use(middleware.RequestID)                    // 1. 生成请求ID（最先执行，其他中间件可以使用）
-	r.Use(middleware.RealIP)                       // 2. 获取真实IP
-	r.Use(TracingMiddleware)                       // 3. OpenTelemetry 追踪（需要 RequestID）
-	r.Use(LoggingMiddleware)                       // 4. 请求日志（需要 RequestID 和 Tracing）
-	r.Use(RecovererMiddleware)                     // 5. Panic 恢复（保护所有后续处理）
-	r.Use(TimeoutMiddleware(60 * time.Second))     // 6. 请求超时（60秒）
-	r.Use(CORSMiddleware)                          // 7. CORS 支持（最后执行，处理响应头）
+	r.Use(middleware.RequestID)                // 1. 生成请求ID（最先执行，其他中间件可以使用）
+	r.Use(middleware.RealIP)                   // 2. 获取真实IP
+	r.Use(TracingMiddleware)                   // 3. OpenTelemetry 追踪（需要 RequestID）
+	r.Use(LoggingMiddleware)                   // 4. 请求日志（需要 RequestID 和 Tracing）
+	r.Use(RecovererMiddleware)                 // 5. Panic 恢复（保护所有后续处理）
+	r.Use(TimeoutMiddleware(60 * time.Second)) // 6. 请求超时（60秒）
+	r.Use(CORSMiddleware)                      // 7. CORS 支持（最后执行，处理响应头）
 
 	// 健康检查端点
 	// 用途：用于负载均衡器、监控系统等检查服务健康状态
@@ -138,10 +139,11 @@ func NewRouter(userService *appuser.Service, temporalClient *temporalhandler.Han
 //   - http.Handler: HTTP 处理器接口
 //
 // 使用示例：
-//   router := chiRouter.NewRouter(userService, temporalHandler)
-//   httpServer := &http.Server{
-//       Handler: router.Handler(),
-//   }
+//
+//	router := chiRouter.NewRouter(userService, temporalHandler)
+//	httpServer := &http.Server{
+//	    Handler: router.Handler(),
+//	}
 func (r *Router) Handler() http.Handler {
 	return r.router
 }
@@ -172,10 +174,10 @@ func (r *Router) Handler() http.Handler {
 //   - http.Handler: 路由处理器
 func userRoutes(userHandler *handlers.UserHandler) http.Handler {
 	r := chi.NewRouter()
-	r.Post("/", userHandler.CreateUser)      // POST /api/v1/users
-	r.Get("/", userHandler.ListUsers)        // GET /api/v1/users
-	r.Get("/{id}", userHandler.GetUser)      // GET /api/v1/users/{id}
-	r.Put("/{id}", userHandler.UpdateUser)   // PUT /api/v1/users/{id}
+	r.Post("/", userHandler.CreateUser)       // POST /api/v1/users
+	r.Get("/", userHandler.ListUsers)         // GET /api/v1/users
+	r.Get("/{id}", userHandler.GetUser)       // GET /api/v1/users/{id}
+	r.Put("/{id}", userHandler.UpdateUser)    // PUT /api/v1/users/{id}
 	r.Delete("/{id}", userHandler.DeleteUser) // DELETE /api/v1/users/{id}
 	return r
 }
@@ -198,8 +200,7 @@ func userRoutes(userHandler *handlers.UserHandler) http.Handler {
 //   - http.Handler: 路由处理器
 func workflowRoutes(workflowHandler *handlers.WorkflowHandler) http.Handler {
 	r := chi.NewRouter()
-	r.Post("/user", workflowHandler.StartUserWorkflow)                    // POST /api/v1/workflows/user
+	r.Post("/user", workflowHandler.StartUserWorkflow)                     // POST /api/v1/workflows/user
 	r.Get("/user/{workflow_id}/result", workflowHandler.GetWorkflowResult) // GET /api/v1/workflows/user/{workflow_id}/result
 	return r
 }
-

@@ -14,11 +14,11 @@ var (
 
 // RateLimiter 速率限制器
 type RateLimiter struct {
-	limit     int
-	window    time.Duration
-	requests  map[string][]time.Time
-	mu        sync.RWMutex
-	cleanup   *time.Ticker
+	limit       int
+	window      time.Duration
+	requests    map[string][]time.Time
+	mu          sync.RWMutex
+	cleanup     *time.Ticker
 	stopCleanup chan struct{}
 }
 
@@ -31,9 +31,9 @@ type RateLimiterConfig struct {
 // NewRateLimiter 创建速率限制器
 func NewRateLimiter(config RateLimiterConfig) *RateLimiter {
 	rl := &RateLimiter{
-		limit:     config.Limit,
-		window:    config.Window,
-		requests:  make(map[string][]time.Time),
+		limit:       config.Limit,
+		window:      config.Window,
+		requests:    make(map[string][]time.Time),
 		stopCleanup: make(chan struct{}),
 	}
 
@@ -132,10 +132,7 @@ func (rl *RateLimiter) GetRemaining(ctx context.Context, key string) (int, error
 		}
 	}
 
-	remaining := rl.limit - count
-	if remaining < 0 {
-		remaining = 0
-	}
+	remaining := max(rl.limit-count, 0)
 
 	return remaining, nil
 }

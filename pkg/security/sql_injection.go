@@ -101,7 +101,7 @@ func (s *SQLInjectionProtection) SanitizeInput(input string) string {
 }
 
 // ValidateParameter 验证参数（用于参数化查询）
-func (s *SQLInjectionProtection) ValidateParameter(param interface{}) error {
+func (s *SQLInjectionProtection) ValidateParameter(param any) error {
 	if param == nil {
 		return nil
 	}

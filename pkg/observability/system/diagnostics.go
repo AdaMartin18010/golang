@@ -11,33 +11,33 @@ import (
 
 // DiagnosticReport 诊断报告
 type DiagnosticReport struct {
-	Timestamp    time.Time              `json:"timestamp"`
-	SystemInfo   SystemInfo             `json:"system_info"`
-	Metrics      map[string]interface{} `json:"metrics"`
-	HealthStatus HealthStatus           `json:"health_status"`
-	Issues       []DiagnosticIssue      `json:"issues"`
-	Recommendations []string            `json:"recommendations"`
+	Timestamp       time.Time              `json:"timestamp"`
+	SystemInfo      SystemInfo             `json:"system_info"`
+	Metrics         map[string]interface{} `json:"metrics"`
+	HealthStatus    HealthStatus           `json:"health_status"`
+	Issues          []DiagnosticIssue      `json:"issues"`
+	Recommendations []string               `json:"recommendations"`
 }
 
 // SystemInfo 系统信息
 type SystemInfo struct {
-	OS              string `json:"os"`
-	Arch            string `json:"arch"`
-	GoVersion       string `json:"go_version"`
-	NumCPU          int    `json:"num_cpu"`
-	NumGoroutines   int    `json:"num_goroutines"`
-	MemoryAlloc     uint64 `json:"memory_alloc"`
-	MemoryTotal     uint64 `json:"memory_total"`
-	MemorySys       uint64 `json:"memory_sys"`
-	GC              uint32 `json:"gc"`
+	OS            string `json:"os"`
+	Arch          string `json:"arch"`
+	GoVersion     string `json:"go_version"`
+	NumCPU        int    `json:"num_cpu"`
+	NumGoroutines int    `json:"num_goroutines"`
+	MemoryAlloc   uint64 `json:"memory_alloc"`
+	MemoryTotal   uint64 `json:"memory_total"`
+	MemorySys     uint64 `json:"memory_sys"`
+	GC            uint32 `json:"gc"`
 }
 
 // DiagnosticIssue 诊断问题
 type DiagnosticIssue struct {
-	Level       string `json:"level"` // info, warning, error
-	Category    string `json:"category"`
-	Description string `json:"description"`
-	Metric      string `json:"metric"`
+	Level       string      `json:"level"` // info, warning, error
+	Category    string      `json:"category"`
+	Description string      `json:"description"`
+	Metric      string      `json:"metric"`
 	Value       interface{} `json:"value"`
 	Threshold   interface{} `json:"threshold"`
 }
@@ -61,9 +61,9 @@ func NewDiagnostics(systemMonitor *SystemMonitor, meter metric.Meter, enabled bo
 // GenerateReport 生成诊断报告
 func (d *Diagnostics) GenerateReport(ctx context.Context) (*DiagnosticReport, error) {
 	report := &DiagnosticReport{
-		Timestamp:  time.Now(),
-		Metrics:    make(map[string]interface{}),
-		Issues:     make([]DiagnosticIssue, 0),
+		Timestamp:       time.Now(),
+		Metrics:         make(map[string]interface{}),
+		Issues:          make([]DiagnosticIssue, 0),
 		Recommendations: make([]string, 0),
 	}
 

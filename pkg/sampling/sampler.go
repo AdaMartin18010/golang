@@ -110,11 +110,11 @@ func (s *ProbabilisticSampler) UpdateRate(rate float64) error {
 // RateLimitingSampler 速率限制采样器
 // 在指定时间窗口内最多采样 N 次
 type RateLimitingSampler struct {
-	mu          sync.RWMutex
+	mu           sync.RWMutex
 	maxPerSecond float64
-	window      time.Duration
-	lastReset   time.Time
-	count       int64
+	window       time.Duration
+	lastReset    time.Time
+	count        int64
 }
 
 // NewRateLimitingSampler 创建速率限制采样器

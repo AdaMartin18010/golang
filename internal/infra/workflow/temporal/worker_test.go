@@ -99,7 +99,7 @@ func TestWorker_TaskQueue(t *testing.T) {
 // TestWorker_WorkflowFunction 测试工作流函数签名
 func TestWorker_WorkflowFunction(t *testing.T) {
 	// 定义一个有效的工作流函数
-	validWorkflow := func(ctx interface{}, input string) (string, error) {
+	validWorkflow := func(ctx any, input string) (string, error) {
 		return "result", nil
 	}
 
@@ -110,7 +110,7 @@ func TestWorker_WorkflowFunction(t *testing.T) {
 // TestWorker_ActivityFunction 测试活动函数签名
 func TestWorker_ActivityFunction(t *testing.T) {
 	// 定义一个有效的活动函数
-	validActivity := func(ctx interface{}, input string) (string, error) {
+	validActivity := func(ctx any, input string) (string, error) {
 		return "result", nil
 	}
 
@@ -169,13 +169,13 @@ func TestNewWorkerOptions(t *testing.T) {
 // TestWorker_ConcurrentRegistration 测试并发注册
 func TestWorker_ConcurrentRegistration(t *testing.T) {
 	// 测试工作流和活动可以被多次注册
-	workflows := []interface{}{
+	workflows := []any{
 		func() {},
 		func() string { return "" },
 		func() error { return nil },
 	}
 
-	activities := []interface{}{
+	activities := []any{
 		func() {},
 		func() string { return "" },
 		func() error { return nil },

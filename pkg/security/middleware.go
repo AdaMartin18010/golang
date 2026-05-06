@@ -3,22 +3,23 @@ package security
 import (
 	"context"
 	"net/http"
+	"slices"
 )
 
 // SecurityMiddleware 安全中间件集合
 type SecurityMiddleware struct {
-	csrfProtection *CSRFProtection
-	rateLimiter    *RateLimiter
+	csrfProtection  *CSRFProtection
+	rateLimiter     *RateLimiter
 	securityHeaders *SecurityHeaders
-	xssProtection  *XSSProtection
+	xssProtection   *XSSProtection
 }
 
 // SecurityMiddlewareConfig 安全中间件配置
 type SecurityMiddlewareConfig struct {
-	CSRF           *CSRFConfig
-	RateLimit      *RateLimiterConfig
+	CSRF            *CSRFConfig
+	RateLimit       *RateLimiterConfig
 	SecurityHeaders *SecurityHeadersConfig
-	EnableXSS      bool
+	EnableXSS       bool
 }
 
 // NewSecurityMiddleware 创建安全中间件
@@ -148,12 +149,7 @@ func (sm *SecurityMiddleware) getUserID(r *http.Request) string {
 // requiresCSRF 检查是否需要 CSRF 保护
 func (sm *SecurityMiddleware) requiresCSRF(method string) bool {
 	csrfMethods := []string{"POST", "PUT", "DELETE", "PATCH"}
-	for _, m := range csrfMethods {
-		if method == m {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(csrfMethods, method)
 }
 
 // CSRFMiddleware 仅 CSRF 中间件

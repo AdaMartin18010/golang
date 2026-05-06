@@ -285,7 +285,7 @@ func TestUser_ConcurrentUpdates(t *testing.T) {
 	}()
 
 	// 等待所有 goroutine 完成
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		<-done
 	}
 

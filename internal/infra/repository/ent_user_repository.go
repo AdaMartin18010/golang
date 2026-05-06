@@ -166,4 +166,3 @@ func (r *EntUserRepository) toDomain(entUser *ent.User) *user.User {
 		UpdatedAt: entUser.UpdatedAt,
 	}
 }
-

@@ -160,7 +160,7 @@ func (m *NetworkMonitor) getConnectionCount() int64 {
 	// 简化实现：尝试统计本地监听端口
 	// 实际应该读取 /proc/net/sockstat 或使用 netlink
 	count := int64(0)
-	
+
 	// 尝试统计常见的监听端口
 	ports := []string{"80", "443", "8080", "9090"}
 	for _, port := range ports {
@@ -169,7 +169,7 @@ func (m *NetworkMonitor) getConnectionCount() int64 {
 			count++
 		}
 	}
-	
+
 	return count
 }
 

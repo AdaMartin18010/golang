@@ -18,7 +18,7 @@ func TestAuditLogger_Log(t *testing.T) {
 		Resource:   "user",
 		ResourceID: "user-456",
 		Result:     AuditResultSuccess,
-		Details: map[string]interface{}{
+		Details: map[string]any{
 			"name": "Test User",
 		},
 	}
@@ -42,7 +42,7 @@ func TestAuditLogger_LogAction(t *testing.T) {
 
 	ctx := context.Background()
 
-	err := logger.LogAction(ctx, "user-123", "update", "user", "user-456", AuditResultSuccess, map[string]interface{}{
+	err := logger.LogAction(ctx, "user-123", "update", "user", "user-456", AuditResultSuccess, map[string]any{
 		"field": "email",
 		"value": "new@example.com",
 	})
@@ -70,7 +70,7 @@ func TestAuditLogger_LogSecurity(t *testing.T) {
 
 	ctx := context.Background()
 
-	err := logger.LogSecurity(ctx, "user-123", "failed_login", map[string]interface{}{
+	err := logger.LogSecurity(ctx, "user-123", "failed_login", map[string]any{
 		"attempts": 3,
 		"reason":   "invalid_password",
 	})

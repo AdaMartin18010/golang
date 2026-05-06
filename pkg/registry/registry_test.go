@@ -113,13 +113,15 @@ func TestInMemoryRegistry_CleanupExpiredServices(t *testing.T) {
 	registry := NewInMemoryRegistry()
 
 	service := &Service{
-		ID:      "service-1",
-		Name:    "user-service",
-		TTL:     100 * time.Millisecond,
+		ID:       "service-1",
+		Name:     "user-service",
+		TTL:      100 * time.Millisecond,
 		LastSeen: time.Now().Add(-200 * time.Millisecond),
 	}
 
 	registry.Register(context.Background(), service)
+	// Register 会更新 LastSeen，需要手动覆盖为过期时间
+	service.LastSeen = time.Now().Add(-200 * time.Millisecond)
 	registry.CleanupExpiredServices(context.Background(), 0)
 
 	// 验证服务已被清理

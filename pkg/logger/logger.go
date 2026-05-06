@@ -139,7 +139,7 @@ func NewLoggerWithConfig(config Config) *Logger {
 	}
 
 	sampleRate := config.SampleRate
-	if sampleRate <= 0 {
+	if sampleRate < 0 {
 		sampleRate = 1.0
 	} else if sampleRate > 1.0 {
 		sampleRate = 1.0

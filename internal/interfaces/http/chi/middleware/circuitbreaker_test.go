@@ -25,7 +25,7 @@ func TestCircuitBreaker_Allow(t *testing.T) {
 	}
 
 	// 触发失败
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		breaker.OnFailure()
 	}
 
@@ -65,7 +65,7 @@ func TestCircuitBreakerMiddleware(t *testing.T) {
 	})
 
 	// 发送失败请求
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		req := httptest.NewRequest("GET", "/test", nil)
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)

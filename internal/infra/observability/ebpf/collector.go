@@ -29,7 +29,7 @@ func (c *Collector) Stop() error {
 }
 
 // Collect 收集数据
-func (c *Collector) Collect() (map[string]interface{}, error) {
+func (c *Collector) Collect() (map[string]any, error) {
 	// TODO: 实现
 	return nil, fmt.Errorf("not implemented")
 }

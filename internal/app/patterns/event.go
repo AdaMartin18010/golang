@@ -19,16 +19,18 @@ import (
 //
 // 领域事件原理：
 // 1. 事件驱动架构（Event-Driven Architecture）
-//    - 业务操作产生事件
-//    - 事件被发布到事件总线
-//    - 事件处理器异步处理事件
+//   - 业务操作产生事件
+//   - 事件被发布到事件总线
+//   - 事件处理器异步处理事件
+//
 // 2. 解耦和扩展性
-//    - 业务逻辑与事件处理解耦
-//    - 可以轻松添加新的事件处理器
-//    - 支持多个处理器处理同一事件
+//   - 业务逻辑与事件处理解耦
+//   - 可以轻松添加新的事件处理器
+//   - 支持多个处理器处理同一事件
+//
 // 3. 事件溯源（Event Sourcing）
-//    - 可以记录所有业务事件
-//    - 可以通过重放事件重建状态
+//   - 可以记录所有业务事件
+//   - 可以通过重放事件重建状态
 //
 // 使用场景：
 // 1. 业务操作完成后需要通知其他模块
@@ -37,43 +39,44 @@ import (
 // 4. 需要实现最终一致性
 //
 // 示例：
-//   // 定义领域事件
-//   type UserCreatedEvent struct {
-//       patterns.BaseEvent
-//       UserID  string
-//       Email   string
-//       CreatedAt time.Time
-//   }
 //
-//   func NewUserCreatedEvent(user *domain.User) *UserCreatedEvent {
-//       return &UserCreatedEvent{
-//           BaseEvent: *patterns.NewBaseEvent("user.created", user),
-//           UserID:    user.ID,
-//           Email:     user.Email,
-//           CreatedAt: user.CreatedAt,
-//       }
-//   }
+//	// 定义领域事件
+//	type UserCreatedEvent struct {
+//	    patterns.BaseEvent
+//	    UserID  string
+//	    Email   string
+//	    CreatedAt time.Time
+//	}
 //
-//   // 在命令处理器中发布事件
-//   func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) error {
-//       user := domain.NewUser(cmd.Email, cmd.Name)
-//       if err := h.userRepo.Create(ctx, user); err != nil {
-//           return err
-//       }
+//	func NewUserCreatedEvent(user *domain.User) *UserCreatedEvent {
+//	    return &UserCreatedEvent{
+//	        BaseEvent: *patterns.NewBaseEvent("user.created", user),
+//	        UserID:    user.ID,
+//	        Email:     user.Email,
+//	        CreatedAt: user.CreatedAt,
+//	    }
+//	}
 //
-//       // 发布领域事件
-//       event := NewUserCreatedEvent(user)
-//       return h.eventBus.Publish(ctx, event)
-//   }
+//	// 在命令处理器中发布事件
+//	func (h *CreateUserCommandHandler) Handle(ctx context.Context, cmd CreateUserCommand) error {
+//	    user := domain.NewUser(cmd.Email, cmd.Name)
+//	    if err := h.userRepo.Create(ctx, user); err != nil {
+//	        return err
+//	    }
 //
-//   // 定义事件处理器
-//   type SendWelcomeEmailHandler struct {
-//       emailService EmailService
-//   }
+//	    // 发布领域事件
+//	    event := NewUserCreatedEvent(user)
+//	    return h.eventBus.Publish(ctx, event)
+//	}
 //
-//   func (h *SendWelcomeEmailHandler) Handle(ctx context.Context, event *UserCreatedEvent) error {
-//       return h.emailService.SendWelcomeEmail(ctx, event.Email)
-//   }
+//	// 定义事件处理器
+//	type SendWelcomeEmailHandler struct {
+//	    emailService EmailService
+//	}
+//
+//	func (h *SendWelcomeEmailHandler) Handle(ctx context.Context, event *UserCreatedEvent) error {
+//	    return h.emailService.SendWelcomeEmail(ctx, event.Email)
+//	}
 //
 // 注意事项：
 // - 事件应该是不可变的
@@ -82,12 +85,13 @@ import (
 // - 事件处理失败应该重试或记录
 //
 // 用户需要根据业务需求定义具体的事件，例如：
-//   type OrderPlacedEvent struct {
-//       patterns.BaseEvent
-//       OrderID string
-//       UserID  string
-//       TotalAmount float64
-//   }
+//
+//	type OrderPlacedEvent struct {
+//	    patterns.BaseEvent
+//	    OrderID string
+//	    UserID  string
+//	    TotalAmount float64
+//	}
 type Event interface {
 	// Type 返回事件类型
 	//
@@ -118,7 +122,7 @@ type Event interface {
 	// 示例：
 	//   - 用户创建事件：包含用户信息
 	//   - 订单创建事件：包含订单信息和用户信息
-	Data() interface{}
+	Data() any
 
 	// Timestamp 返回事件时间戳
 	//
@@ -146,19 +150,20 @@ type Event interface {
 // 3. 处理错误和重试
 //
 // 示例：
-//   type SendWelcomeEmailHandler struct {
-//       emailService EmailService
-//   }
 //
-//   func NewSendWelcomeEmailHandler(emailService EmailService) *SendWelcomeEmailHandler {
-//       return &SendWelcomeEmailHandler{
-//           emailService: emailService,
-//       }
-//   }
+//	type SendWelcomeEmailHandler struct {
+//	    emailService EmailService
+//	}
 //
-//   func (h *SendWelcomeEmailHandler) Handle(ctx context.Context, event *UserCreatedEvent) error {
-//       return h.emailService.SendWelcomeEmail(ctx, event.Email)
-//   }
+//	func NewSendWelcomeEmailHandler(emailService EmailService) *SendWelcomeEmailHandler {
+//	    return &SendWelcomeEmailHandler{
+//	        emailService: emailService,
+//	    }
+//	}
+//
+//	func (h *SendWelcomeEmailHandler) Handle(ctx context.Context, event *UserCreatedEvent) error {
+//	    return h.emailService.SendWelcomeEmail(ctx, event.Email)
+//	}
 //
 // 注意事项：
 // - 事件处理器应该是无状态的
@@ -201,29 +206,30 @@ type EventHandler[T Event] interface {
 // 2. 嵌入使用：适用于复杂事件（推荐）
 //
 // 示例：
-//   // 方式1：直接使用
-//   event := patterns.NewBaseEvent("user.created", user)
 //
-//   // 方式2：嵌入使用（推荐）
-//   type UserCreatedEvent struct {
-//       patterns.BaseEvent
-//       UserID string
-//       Email  string
-//   }
+//	// 方式1：直接使用
+//	event := patterns.NewBaseEvent("user.created", user)
 //
-//   func NewUserCreatedEvent(user *domain.User) *UserCreatedEvent {
-//       return &UserCreatedEvent{
-//           BaseEvent: *patterns.NewBaseEvent("user.created", user),
-//           UserID:    user.ID,
-//           Email:     user.Email,
-//       }
-//   }
+//	// 方式2：嵌入使用（推荐）
+//	type UserCreatedEvent struct {
+//	    patterns.BaseEvent
+//	    UserID string
+//	    Email  string
+//	}
+//
+//	func NewUserCreatedEvent(user *domain.User) *UserCreatedEvent {
+//	    return &UserCreatedEvent{
+//	        BaseEvent: *patterns.NewBaseEvent("user.created", user),
+//	        UserID:    user.ID,
+//	        Email:     user.Email,
+//	    }
+//	}
 type BaseEvent struct {
 	// eventType 事件类型
 	eventType string
 
 	// data 事件数据
-	data interface{}
+	data any
 
 	// timestamp 事件时间戳
 	timestamp time.Time
@@ -239,8 +245,9 @@ type BaseEvent struct {
 //   - *BaseEvent: 创建的基础事件
 //
 // 示例：
-//   event := patterns.NewBaseEvent("user.created", user)
-func NewBaseEvent(eventType string, data interface{}) *BaseEvent {
+//
+//	event := patterns.NewBaseEvent("user.created", user)
+func NewBaseEvent(eventType string, data any) *BaseEvent {
 	return &BaseEvent{
 		eventType: eventType,
 		data:      data,
@@ -254,7 +261,7 @@ func (e *BaseEvent) Type() string {
 }
 
 // Data 返回事件数据
-func (e *BaseEvent) Data() interface{} {
+func (e *BaseEvent) Data() any {
 	return e.data
 }
 

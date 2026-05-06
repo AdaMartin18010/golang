@@ -338,7 +338,7 @@ func BenchmarkRealWorldScenario(b *testing.B) {
 
 // ===== 对比测试助手 =====
 
-// CompareVersions 对比 Go 1.24 和 1.25 性能
+// CompareVersions 对比 Go 1.24 和 1.26 性能
 // 使用方法:
 //
 //	# Go 1.24

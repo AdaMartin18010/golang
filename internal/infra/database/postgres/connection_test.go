@@ -44,7 +44,7 @@ func TestConnection_Close(t *testing.T) {
 func TestConnection_Client(t *testing.T) {
 	tests := []struct {
 		name string
-		db   interface{}
+		db   any
 	}{
 		{
 			name: "nil db",

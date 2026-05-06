@@ -150,9 +150,17 @@ func (r *InMemoryRegistry) Health(ctx context.Context) error {
 }
 
 // notifyWatchers 通知监听者
+// 注意：调用者必须持有 r.mu 的 Lock
 func (r *InMemoryRegistry) notifyWatchers(name string) {
 	watchers := r.watchers[name]
-	services, _ := r.ListServices(context.Background(), name)
+
+	// 直接读取 r.services，避免在持有 Lock 时调用 ListServices（RLock 会导致死锁）
+	var services []*Service
+	for _, service := range r.services {
+		if name == "" || service.Name == name {
+			services = append(services, service)
+		}
+	}
 
 	for _, ch := range watchers {
 		select {

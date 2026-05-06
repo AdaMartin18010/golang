@@ -101,12 +101,12 @@ func TestRBAC_CheckPermission(t *testing.T) {
 	require.NoError(t, rbac.InitializeDefaultRoles())
 
 	tests := []struct {
-		name       string
-		userRoles  []string
-		resource   string
-		action     string
-		expected   bool
-		expectErr  bool
+		name      string
+		userRoles []string
+		resource  string
+		action    string
+		expected  bool
+		expectErr bool
 	}{
 		{
 			name:      "admin has all permissions",
