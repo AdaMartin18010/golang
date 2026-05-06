@@ -490,7 +490,7 @@ spec:
         slsa.dependency.direct: "true"
         sbom.generated: "true"
 
-    - uri: "docker://golang:1.24.0-alpine"
+    - uri: "docker://golang:1.26.2-alpine"
       digest:
         sha256: "ghi789..."
       annotations:

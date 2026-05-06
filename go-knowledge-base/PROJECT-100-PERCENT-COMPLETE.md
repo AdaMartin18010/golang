@@ -459,7 +459,7 @@ func BenchmarkService(b *testing.B) {
 ### 部署配置
 
 `dockerfile
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
 COPY go.mod go.sum ./

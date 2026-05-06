@@ -170,7 +170,7 @@ jobs:
 在项目根目录创建 `.gitlab-ci.yml`:
 
 ```yaml
-image: golang:1.21
+image: golang:1.26.2
 
 stages:
   - setup
@@ -374,7 +374,7 @@ pipeline {
 pipeline {
     agent {
         docker {
-            image 'golang:1.21'
+            image 'golang:1.26.2'
         }
     }
     

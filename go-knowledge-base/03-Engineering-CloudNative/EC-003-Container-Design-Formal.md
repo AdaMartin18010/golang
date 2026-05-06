@@ -106,7 +106,7 @@ $$\min |\text{Runtime Image}| = |\text{Artifacts}| + |\text{Base}|$$
 
 ```dockerfile
 # 阶段 1: 构建阶段
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 # 安装依赖
 RUN apk add --no-cache git ca-certificates tzdata
@@ -155,7 +155,7 @@ ENTRYPOINT ["/server"]
 
 ```dockerfile
 # 最小化攻击面 Dockerfile
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 # 构建参数
 ARG VERSION

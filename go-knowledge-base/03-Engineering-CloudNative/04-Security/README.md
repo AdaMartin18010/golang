@@ -70,7 +70,7 @@ $$\forall a, r: \neg \text{Trust}(a, r) \Rightarrow \text{Verify}(a, r)$$
 
 ```dockerfile
 # 安全 Dockerfile 示例
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 # 创建非 root 用户
 RUN adduser -D -u 10001 appuser

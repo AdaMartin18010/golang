@@ -577,7 +577,7 @@ func BenchmarkService_Process(b *testing.B) {
 
 # Dockerfile
 
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
 COPY go.mod go.sum ./
@@ -835,7 +835,7 @@ func TestService(t *testing.T) {
 ### 部署配置
 
 `dockerfile
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 WORKDIR /app
 COPY . .
 RUN go build -o main ./cmd/server

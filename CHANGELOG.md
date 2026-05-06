@@ -1,124 +1,69 @@
-﻿# 更新日志
+# Changelog
 
-## [1.1.0] - 2026-03-07
+All notable changes to this project's Go 1.26.2 modernization effort are documented in this file.
 
-### 升级 Go 1.26 🎉
+## [1.26.2] - 2026-05-06
 
-项目已全面升级至 Go 1.26，利用最新语言特性提升代码质量和性能：
+### Emergency Fixes (P0)
+- Removed fictional API `runtime.SetGoroutineLeakCallback` from 3 documentation files
+- Corrected `new(expr)` compiler semantics documentation and examples
+- Added working `crypto/hpke` example (RFC 9180)
+- Fixed `iter`/`unique` version attribution to Go 1.23 (was incorrectly labeled Go 1.25)
+- Added CVE-2026-27143/27144 security advisory documentation
+- Removed 3 empty `cmd/` stubs (cli, graphql-server, mqtt-client)
 
-#### 语言特性
+### Core Modernization (P1)
+- Migrated `math/rand` → `math/rand/v2` in `pkg/logger/`, `pkg/loadbalancer/`, `pkg/sampling/`
+- Realigned `pkg/memory/weak_pointer.go` from `runtime.SetFinalizer` simulation to `weak.Make[T]` API
+- Implemented `pkg/validator.Struct()` with `validate` tags
+- Completed `cmd/grpc-server/main.go` service registration (User + Health)
+- Added `go fix` CI gate
+- Added `runtime/secret`, `bytes.Buffer.Peek`, `net.Dialer.DialTCP` examples
+- Added PGO build targets to Makefile (`pgo-profile`, `pgo-build`, `pgo-auto-build`)
 
-- **泛型自引用类型** - `internal/domain/interfaces/specification_go126.go`
-  - 利用 Go 1.26 泛型自引用特性实现更强大的类型约束
-  - 为规约模式提供类型安全的组合操作
+### Knowledge Base Sync (P2)
+- Added docs for `new(expr)` compiler semantics
+- Added Green Tea GC formal model documentation
+- Added `crypto/hpke` deep dive
+- Added post-quantum TLS deployment guide
+- Added `go fix` modernization guide
+- Updated master index
 
-- **errors.AsType** - 类型安全的泛型错误断言
-  - 简化错误类型检查代码
-  - 编译期类型安全保证
+### Architecture Evolution (P3)
+- Established quarterly authority audit template (`docs/tracking/quarterly-authority-audit.md`)
+- Created `scripts/quality-check.sh`
+- Created `examples/experimental/` sandbox (simd-archsimd, goroutineleak-profile, runtime-secret)
 
-- **slog.NewMultiHandler** - 多日志处理器支持
-  - `pkg/logger/logger.go` 新增 `NewMultiOutputLogger` 函数
-  - 支持同时输出到多个目标（控制台、文件、远程等）
+### Bug Fixes
+- Fixed `pkg/registry` deadlock (`notifyWatchers` nested RLock inside Lock)
+- Fixed `pkg/registry` `CleanupExpiredServices` test (LastSeen overwrite)
+- Fixed `pkg/utils/crypto` AES key size bug (base64 decode)
+- Fixed `pkg/utils/id` `SequentialID` race (atomic counter)
+- Fixed `pkg/utils/strings` `Mask` test expectation
+- Fixed `pkg/logger` sample rate logic (0.0 should mean no logs for non-error levels)
 
-- **new() 表达式** - 简化可选字段初始化
-  - 在 `examples/go126-features/` 中提供完整示例
-  - 简化 JSON 可选字段等场景
+### Version Attribution Cleanup
+- Fixed numerous "Go 1.25" mislabels across `examples/modern-features/`, `docs/`, `go-knowledge-base/`
+- Updated all README version badges from `Go 1.25.3` → `Go 1.26.2`
+- Updated all submodule `go.mod` directives to `go 1.26` (28+ files)
+- Updated all production Dockerfiles to `golang:1.26.2-alpine`
+- Updated CI workflow Go version matrices to `['1.26.x']`
+- Updated `.golangci.yml` with `go: "1.26"`
 
-#### 性能优化
+### Code Quality
+- Formatted all Go source files with `gofmt`
+- Integrated `scripts/quality-check.sh` into CI pipeline
+- All `go build`, `go vet`, `go test` pass across `pkg/`, `internal/`, `cmd/`, `examples/`
 
-- **Green Tea GC** - 默认启用新垃圾回收器，降低 GC 开销
-- **io.ReadAll** - 性能提升 2 倍，内存分配减半
-- **cgo 开销降低** - 约 30% 的性能提升
+## [1.26.0] - 2026-04-07
 
-#### 代码现代化
+### Security
+- Upgraded Docker base image from `golang:1.21-alpine` to `golang:1.26.2-alpine`
+- Documented CVE-2026-27143 (prove/loopbce induction variable wrap bug)
+- Documented CVE-2026-27144 (SSA lowering no-op conversion bypass)
 
-- 运行 `go fix` 完成代码现代化
-- `interface{}` → `any` 类型替换
-- CI/CD 配置更新支持 Go 1.26
+## Migration Notes
 
-#### 新增示例
-
-- `examples/go126-features/` - Go 1.26 新特性完整演示
-  - new() 表达式使用
-  - errors.AsType 示例
-  - slog.NewMultiHandler 示例
-  - 泛型自引用类型示例
-
-### 依赖更新
-
-- 所有 `go.mod` 文件升级至 Go 1.26
-- 工作空间配置同步更新
-
----
-
-## [1.0.0] - 2025-01-XX
-
-### 新增
-
-#### NATS 消息队列支持
-
-- ✅ 完整的 NATS 客户端实现
-- ✅ 支持发布/订阅模式
-- ✅ 支持 Request/Reply 模式
-- ✅ 支持队列订阅（负载均衡）
-- ✅ 自动重连和连接管理
-- ✅ 完整的单元测试（7 个测试用例）
-- ✅ 使用文档和示例代码
-
-#### gRPC 框架完善
-
-- ✅ Proto 文件定义（user.proto, health.proto）
-- ✅ Handler 实现（UserHandler, HealthHandler）
-- ✅ 拦截器实现（日志、追踪）
-- ✅ 代码生成脚本
-- ✅ 服务器集成代码
-- ✅ 使用文档和示例代码
-
-#### 代码生成工具链
-
-- ✅ gRPC 代码生成脚本
-- ✅ OpenAPI 代码生成脚本（已存在，已验证）
-- ✅ AsyncAPI 代码生成脚本（已存在）
-- ✅ Makefile 集成
-
-#### 文档和示例
-
-- ✅ NATS 使用文档
-- ✅ gRPC 使用文档
-- ✅ 代码生成工具链文档
-- ✅ 4 个使用示例代码
-
-### 改进
-
-- ✅ 完善项目文档结构
-- ✅ 更新 README.md 技术栈列表
-- ✅ 完善代码注释
-
-### 技术栈完成度
-
-- **NATS**: 0% → 100% ✅
-- **gRPC**: 80% → 100% ✅
-- **总体完成度**: 95% → 98% ✅
-
----
-
-## 技术栈状态
-
-### 已完成 ✅
-
-- OpenTelemetry (OTLP)
-- PostgreSQL
-- SQLite3
-- MQTT
-- Kafka
-- **NATS** ✅ (新增)
-- **gRPC** ✅ (完善)
-- OpenAPI
-- AsyncAPI
-- GraphQL (80%)
-
----
-
-**版本**: 1.0.0
-**日期**: 2025-01-XX
-**状态**: ✅ 生产就绪
+- Go 1.26.2 is the **minimum supported version** for this codebase
+- Previous Go versions (1.21–1.25) are no longer tested in CI
+- `GOEXPERIMENT=goroutineleakprofile` replaces the fictional `runtime.SetGoroutineLeakCallback`

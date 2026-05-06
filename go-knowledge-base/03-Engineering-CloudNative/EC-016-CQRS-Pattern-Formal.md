@@ -673,7 +673,7 @@ func BenchmarkService_Process(b *testing.B) {
 
 `dockerfile
 # Dockerfile
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
 COPY go.mod go.sum ./

@@ -63,7 +63,7 @@ Go produces single static binaries with no runtime dependencies:
 
 ```dockerfile
 # Multi-stage Dockerfile for Go
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
 

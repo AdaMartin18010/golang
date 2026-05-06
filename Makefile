@@ -196,6 +196,18 @@ bench-mem: ## 运行内存性能分析
 	@echo "内存性能分析文件已生成: mem.prof"
 	@echo "查看: go tool pprof mem.prof"
 
+pgo-profile: bench-cpu ## 收集 PGO profile
+	@echo "PGO profile 已收集: cpu.prof"
+	@echo "使用 PGO 构建: make pgo-build"
+
+pgo-build: ## 使用 PGO 构建优化版本
+	go build -pgo=cpu.prof -o bin/server-pgo ./cmd/server
+	@echo "PGO 优化构建完成: bin/server-pgo"
+
+pgo-auto-build: ## 使用 auto PGO 构建（Go 1.26+）
+	go build -pgo=auto -o bin/server-pgo-auto ./cmd/server
+	@echo "Auto PGO 优化构建完成: bin/server-pgo-auto"
+
 install-tools: ## 安装开发工具
 	@echo "安装开发工具..."
 	@go install github.com/cosmtrek/air@latest || echo "Air 安装失败"

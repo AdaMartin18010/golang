@@ -533,7 +533,7 @@ networks:
 
 ```dockerfile
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 # Security: Use non-root user
 RUN adduser -D -g '' appuser
@@ -1139,7 +1139,7 @@ services:
 
 ```dockerfile
 # Base image
-FROM golang:1.21-alpine AS base
+FROM golang:1.26.2-alpine AS base
 WORKDIR /app
 RUN apk add --no-cache git ca-certificates
 
