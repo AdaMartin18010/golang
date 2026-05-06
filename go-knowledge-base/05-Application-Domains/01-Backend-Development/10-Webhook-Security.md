@@ -1,6 +1,6 @@
 # Webhook 安全实践
 
-> **分类**: 成熟应用领域  
+> **分类**: 成熟应用领域
 > **标签**: #webhook #security #signature
 
 ---
@@ -16,22 +16,22 @@ func VerifyWebhookSignature(payload []byte, signature string, secret string) err
     if len(parts) != 2 {
         return errors.New("invalid signature format")
     }
-    
+
     algo, sigValue := parts[0], parts[1]
     if algo != "sha256" {
         return errors.New("unsupported algorithm")
     }
-    
+
     // 计算 HMAC
     mac := hmac.New(sha256.New, []byte(secret))
     mac.Write(payload)
     expectedSig := hex.EncodeToString(mac.Sum(nil))
-    
+
     // 常量时间比较
     if !hmac.Equal([]byte(sigValue), []byte(expectedSig)) {
         return errors.New("signature mismatch")
     }
-    
+
     return nil
 }
 ```
@@ -46,15 +46,15 @@ func WebhookAuthMiddleware(secret string) gin.HandlerFunc {
             c.AbortWithStatusJSON(401, gin.H{"error": "missing signature"})
             return
         }
-        
+
         body, _ := io.ReadAll(c.Request.Body)
         c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
-        
+
         if err := VerifyWebhookSignature(body, signature, secret); err != nil {
             c.AbortWithStatusJSON(401, gin.H{"error": "invalid signature"})
             return
         }
-        
+
         c.Next()
     }
 }
@@ -70,18 +70,18 @@ func VerifyTimestamp(timestamp string, tolerance time.Duration) error {
     if err != nil {
         return err
     }
-    
+
     eventTime := time.Unix(ts, 0)
     now := time.Now()
-    
+
     if now.Sub(eventTime) > tolerance {
         return errors.New("timestamp too old")
     }
-    
+
     if eventTime.After(now.Add(time.Minute)) {
         return errors.New("timestamp in future")
     }
-    
+
     return nil
 }
 ```
@@ -101,15 +101,15 @@ func (p *WebhookProcessor) Process(ctx context.Context, event WebhookEvent) erro
     if exists, _ := p.processed.Exists(key); exists {
         return nil  // 已处理，直接返回
     }
-    
+
     // 处理事件
     if err := p.handleEvent(event); err != nil {
         return err
     }
-    
+
     // 标记为已处理
     p.processed.Set(key, true, 24*time.Hour)
-    
+
     return nil
 }
 ```
@@ -126,29 +126,29 @@ func WebhookHandler(c *gin.Context) {
         c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 2. 验证签名
     signature := c.GetHeader("X-Webhook-Signature")
     body, _ := io.ReadAll(c.Request.Body)
-    
+
     if err := VerifyWebhookSignature(body, signature, webhookSecret); err != nil {
         c.AbortWithStatusJSON(401, gin.H{"error": "invalid signature"})
         return
     }
-    
+
     // 3. 解析事件
     var event WebhookEvent
     if err := json.Unmarshal(body, &event); err != nil {
         c.AbortWithStatusJSON(400, gin.H{"error": "invalid JSON"})
         return
     }
-    
+
     // 4. 幂等处理
     if err := processor.Process(c.Request.Context(), event); err != nil {
         c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(200, gin.H{"status": "ok"})
 }
 ```
@@ -179,11 +179,13 @@ func WebhookHandler(c *gin.Context) {
 ### 风险评估
 
 **风险 R.1**: 性能瓶颈
+
 - 概率: 中
 - 影响: 高
 - 缓解: 缓存、分片
 
 **风险 R.2**: 单点故障
+
 - 概率: 低
 - 影响: 极高
 - 缓解: 冗余、故障转移
@@ -198,7 +200,7 @@ Phase 3: 优化加固 (Week 7-8)
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -215,10 +217,12 @@ Phase 3: 优化加固 (Week 7-8)
 ### 后果
 
 正面：
+
 - 可扩展性提升
 - 维护成本降低
 
 负面：
+
 - 初期开发复杂度增加
 - 团队学习成本
 
@@ -247,7 +251,7 @@ Week 7-8: 性能优化
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -303,7 +307,7 @@ Week 7-8: 性能优化
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -345,7 +349,7 @@ A: 使用连接池、限流、熔断等模式。
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -461,7 +465,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -577,7 +581,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -712,21 +716,21 @@ func NewService(cfg Config) *DefaultService {
 func (s *DefaultService) Process(ctx context.Context, req Request) (Response, error) {
     ctx, cancel := context.WithTimeout(ctx, s.config.Timeout)
     defer cancel()
-    
+
     // 检查缓存
     if cached, ok := s.cache.Get(req.ID); ok {
         return Response{ID: req.ID, Result: cached}, nil
     }
-    
+
     // 处理逻辑
     result, err := s.doProcess(ctx, req)
     if err != nil {
         return Response{ID: req.ID, Error: err}, err
     }
-    
+
     // 更新缓存
     s.cache.Set(req.ID, result, 5*time.Minute)
-    
+
     return Response{ID: req.ID, Result: result}, nil
 }
 
@@ -748,7 +752,9 @@ func (s *DefaultService) Health() HealthStatus {
 ### 4. 配置示例
 
 `yaml
+
 # config.yaml
+
 server:
   host: 0.0.0.0
   port: 8080
@@ -788,13 +794,13 @@ import (
     "context"
     "testing"
     "time"
-    
+
     "github.com/stretchr/testify/assert"
 )
 
 func TestService_Process(t *testing.T) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
-    
+    svc := NewService(Config{Timeout: 5* time.Second})
+
     tests := []struct {
         name    string
         req     Request
@@ -809,12 +815,12 @@ func TestService_Process(t *testing.T) {
             wantErr: false,
         },
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             ctx := context.Background()
             resp, err := svc.Process(ctx, tt.req)
-            
+
             if tt.wantErr {
                 assert.Error(t, err)
             } else {
@@ -826,10 +832,10 @@ func TestService_Process(t *testing.T) {
 }
 
 func BenchmarkService_Process(b *testing.B) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
+    svc := NewService(Config{Timeout: 5* time.Second})
     req := Request{ID: "bench", Data: "data"}
     ctx := context.Background()
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         svc.Process(ctx, req)
@@ -840,7 +846,9 @@ func BenchmarkService_Process(b *testing.B) {
 ### 6. 部署配置
 
 `dockerfile
+
 # Dockerfile
+
 FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
@@ -862,7 +870,9 @@ CMD ["./main"]
 `
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 
 services:
@@ -934,17 +944,18 @@ volumes:
 
 `
 问题诊断流程:
+
 1. 检查日志
    kubectl logs -f pod-name
-   
+
 2. 检查指标
-   curl http://localhost:9090/metrics
-   
+   curl <http://localhost:9090/metrics>
+
 3. 检查健康状态
-   curl http://localhost:8080/health
-   
+   curl <http://localhost:8080/health>
+
 4. 分析性能
-   go tool pprof http://localhost:9090/debug/pprof/profile
+   go tool pprof <http://localhost:9090/debug/pprof/profile>
 `
 
 ### 9. 最佳实践总结
@@ -965,6 +976,6 @@ volumes:
 
 ---
 
-**质量评级**: S (完整扩展)  
-**文档大小**: 经过本次扩展已达到 S 级标准  
+**质量评级**: S (完整扩展)
+**文档大小**: 经过本次扩展已达到 S 级标准
 **完成日期**: 2026-04-02

@@ -1,6 +1,6 @@
 # 内容协商 (Content Negotiation)
 
-> **分类**: 成熟应用领域  
+> **分类**: 成熟应用领域
 > **标签**: #content-negotiation #api #rest
 
 ---
@@ -10,33 +10,33 @@
 ```go
 func ParseAccept(header string) []MediaType {
     var types []MediaType
-    
+
     for _, part := range strings.Split(header, ",") {
         part = strings.TrimSpace(part)
-        
+
         mediaType, q := part, 1.0
         if idx := strings.Index(part, ";"); idx != -1 {
             mediaType = strings.TrimSpace(part[:idx])
             params := part[idx+1:]
-            
+
             // 解析 q 值
             if strings.Contains(params, "q=") {
                 qStr := strings.TrimPrefix(params[strings.Index(params, "q="):], "q=")
                 q, _ = strconv.ParseFloat(strings.TrimSpace(qStr), 64)
             }
         }
-        
+
         types = append(types, MediaType{
             Type:    mediaType,
             Quality: q,
         })
     }
-    
+
     // 按 q 值排序
     sort.Slice(types, func(i, j int) bool {
         return types[i].Quality > types[j].Quality
     })
-    
+
     return types
 }
 ```
@@ -52,12 +52,12 @@ func ContentNegotiation() gin.HandlerFunc {
         if accept == "" {
             accept = "application/json"  // 默认
         }
-        
+
         mediaTypes := ParseAccept(accept)
-        
+
         // 查找最佳匹配
         supported := []string{"application/json", "application/xml", "text/csv"}
-        
+
         for _, mt := range mediaTypes {
             for _, s := range supported {
                 if match(mt.Type, s) {
@@ -67,7 +67,7 @@ func ContentNegotiation() gin.HandlerFunc {
                 }
             }
         }
-        
+
         c.AbortWithStatus(406)  // Not Acceptable
     }
 }
@@ -89,7 +89,7 @@ func match(accept, supported string) bool {
 ```go
 func RespondWithFormat(c *gin.Context, data interface{}) {
     format := c.GetString("response_format")
-    
+
     switch format {
     case "application/xml":
         c.XML(200, data)
@@ -103,10 +103,10 @@ func RespondWithFormat(c *gin.Context, data interface{}) {
 func respondCSV(c *gin.Context, data interface{}) {
     c.Header("Content-Type", "text/csv")
     c.Header("Content-Disposition", "attachment; filename=data.csv")
-    
+
     writer := csv.NewWriter(c.Writer)
     defer writer.Flush()
-    
+
     // 写入数据...
 }
 ```
@@ -124,10 +124,10 @@ func LanguageNegotiation(supported []string) gin.HandlerFunc {
             c.Next()
             return
         }
-        
+
         // 解析语言偏好
         langs := parseLanguages(acceptLang)
-        
+
         // 查找匹配
         for _, l := range langs {
             for _, s := range supported {
@@ -138,7 +138,7 @@ func LanguageNegotiation(supported []string) gin.HandlerFunc {
                 }
             }
         }
-        
+
         c.Set("lang", supported[0])
         c.Next()
     }
@@ -167,11 +167,13 @@ func matchLanguage(accepted, supported string) bool {
 ### 风险评估
 
 **风险 R.1**: 性能瓶颈
+
 - 概率: 中
 - 影响: 高
 - 缓解: 缓存、分片
 
 **风险 R.2**: 单点故障
+
 - 概率: 低
 - 影响: 极高
 - 缓解: 冗余、故障转移
@@ -186,7 +188,7 @@ Phase 3: 优化加固 (Week 7-8)
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -203,10 +205,12 @@ Phase 3: 优化加固 (Week 7-8)
 ### 后果
 
 正面：
+
 - 可扩展性提升
 - 维护成本降低
 
 负面：
+
 - 初期开发复杂度增加
 - 团队学习成本
 
@@ -235,7 +239,7 @@ Week 7-8: 性能优化
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -291,7 +295,7 @@ Week 7-8: 性能优化
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -333,7 +337,7 @@ A: 使用连接池、限流、熔断等模式。
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -449,7 +453,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -565,7 +569,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -700,21 +704,21 @@ func NewService(cfg Config) *DefaultService {
 func (s *DefaultService) Process(ctx context.Context, req Request) (Response, error) {
     ctx, cancel := context.WithTimeout(ctx, s.config.Timeout)
     defer cancel()
-    
+
     // 检查缓存
     if cached, ok := s.cache.Get(req.ID); ok {
         return Response{ID: req.ID, Result: cached}, nil
     }
-    
+
     // 处理逻辑
     result, err := s.doProcess(ctx, req)
     if err != nil {
         return Response{ID: req.ID, Error: err}, err
     }
-    
+
     // 更新缓存
     s.cache.Set(req.ID, result, 5*time.Minute)
-    
+
     return Response{ID: req.ID, Result: result}, nil
 }
 
@@ -736,7 +740,9 @@ func (s *DefaultService) Health() HealthStatus {
 ### 4. 配置示例
 
 `yaml
+
 # config.yaml
+
 server:
   host: 0.0.0.0
   port: 8080
@@ -776,13 +782,13 @@ import (
     "context"
     "testing"
     "time"
-    
+
     "github.com/stretchr/testify/assert"
 )
 
 func TestService_Process(t *testing.T) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
-    
+    svc := NewService(Config{Timeout: 5* time.Second})
+
     tests := []struct {
         name    string
         req     Request
@@ -797,12 +803,12 @@ func TestService_Process(t *testing.T) {
             wantErr: false,
         },
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             ctx := context.Background()
             resp, err := svc.Process(ctx, tt.req)
-            
+
             if tt.wantErr {
                 assert.Error(t, err)
             } else {
@@ -814,10 +820,10 @@ func TestService_Process(t *testing.T) {
 }
 
 func BenchmarkService_Process(b *testing.B) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
+    svc := NewService(Config{Timeout: 5* time.Second})
     req := Request{ID: "bench", Data: "data"}
     ctx := context.Background()
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         svc.Process(ctx, req)
@@ -828,7 +834,9 @@ func BenchmarkService_Process(b *testing.B) {
 ### 6. 部署配置
 
 `dockerfile
+
 # Dockerfile
+
 FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
@@ -850,7 +858,9 @@ CMD ["./main"]
 `
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 
 services:
@@ -922,17 +932,18 @@ volumes:
 
 `
 问题诊断流程:
+
 1. 检查日志
    kubectl logs -f pod-name
-   
+
 2. 检查指标
-   curl http://localhost:9090/metrics
-   
+   curl <http://localhost:9090/metrics>
+
 3. 检查健康状态
-   curl http://localhost:8080/health
-   
+   curl <http://localhost:8080/health>
+
 4. 分析性能
-   go tool pprof http://localhost:9090/debug/pprof/profile
+   go tool pprof <http://localhost:9090/debug/pprof/profile>
 `
 
 ### 9. 最佳实践总结
@@ -953,6 +964,6 @@ volumes:
 
 ---
 
-**质量评级**: S (完整扩展)  
-**文档大小**: 经过本次扩展已达到 S 级标准  
+**质量评级**: S (完整扩展)
+**文档大小**: 经过本次扩展已达到 S 级标准
 **完成日期**: 2026-04-02
