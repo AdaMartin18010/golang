@@ -312,7 +312,10 @@ import (
     "context"
     "encoding/json"
     "errors"
+    "fmt"
     "time"
+
+    "github.com/shopspring/decimal"
 )
 
 // AggregateRoot base interface for event-sourced aggregates
@@ -536,8 +539,12 @@ package cqrs
 
 import (
     "context"
+    "database/sql"
     "encoding/json"
+    "fmt"
     "sync"
+
+    "github.com/shopspring/decimal"
 )
 
 // Command Side
@@ -745,6 +752,7 @@ package processing
 
 import (
     "context"
+    "fmt"
     "sync"
     "time"
 )
@@ -870,6 +878,8 @@ import (
     "context"
     "sync"
     "time"
+
+    "go.uber.org/zap"
 )
 
 // CompetingConsumers for load balancing across multiple instances
@@ -1019,6 +1029,9 @@ package schema
 import (
     "encoding/json"
     "fmt"
+    "time"
+
+    "github.com/shopspring/decimal"
 )
 
 // SchemaRegistry manages event schema versions
@@ -1173,7 +1186,10 @@ package dql
 import (
     "context"
     "encoding/json"
+    "fmt"
     "time"
+
+    "github.com/google/uuid"
 )
 
 // DeadLetterQueue handles failed message processing
@@ -1336,8 +1352,81 @@ package replay
 
 import (
     "context"
+    "fmt"
     "time"
 )
+
+// 事件、存储与投影为示意最小定义，仅用于展示事件重放结构
+
+// Event 领域事件（示意接口）
+type Event interface {
+    EventID() string
+    OccurredAt() time.Time
+}
+
+// EventStoreQuery 重放查询条件
+type EventStoreQuery struct {
+    FromTimestamp time.Time
+    ToTimestamp   time.Time
+    EventTypes    []string
+    AggregateIDs  []string
+}
+
+// EventStore 支持时间范围查询的事件存储（示意接口）
+type EventStore interface {
+    Query(ctx context.Context, q EventStoreQuery) (EventStream, error)
+}
+
+// EventStream 事件流（示意接口）
+type EventStream interface {
+    HasNext() bool
+    Next() (Event, error)
+    Close() error
+}
+
+// EventFilter 事件过滤函数
+type EventFilter func(Event) bool
+
+// Projection 读模型投影（示意接口）
+type Projection interface {
+    Handle(ctx context.Context, event Event) error
+    Reset() error
+    Name() string
+}
+
+// CheckpointStore 重放检查点存储（示意接口）
+type CheckpointStore interface {
+    SaveCheckpoint(ctx context.Context, cp Checkpoint) error
+}
+
+// Checkpoint 重放检查点
+type Checkpoint struct {
+    ReplayID      string
+    LastEventTime time.Time
+    Processed     int
+}
+
+// ReplayResult 重放结果
+type ReplayResult struct {
+    ID              string
+    Config          ReplayConfig
+    StartedAt       time.Time
+    CompletedAt     time.Time
+    StoppedAt       time.Time
+    TotalEvents     int
+    FilteredEvents  int
+    ProcessedEvents int
+    LastEventTime   time.Time
+    Errors          []ReplayError
+    WouldProcess    []string
+}
+
+// ReplayError 单事件重放错误
+type ReplayError struct {
+    EventID    string
+    Projection string
+    Error      string
+}
 
 // EventReplayer provides time-travel capabilities
 type EventReplayer struct {

@@ -1535,6 +1535,11 @@ import (
     "context"
     "sync"
     "sync/atomic"
+    "time"
+
+    "google.golang.org/grpc"
+    "google.golang.org/grpc/codes"
+    "google.golang.org/grpc/status"
 )
 
 // AdaptiveConcurrencyLimit dynamically adjusts concurrency limits
@@ -1628,10 +1633,13 @@ func NewBackpressureServer(limit *AdaptiveConcurrencyLimit) *grpc.Server {
 package circuit
 
 import (
+    "context"
     "errors"
     "sync"
     "sync/atomic"
     "time"
+
+    "google.golang.org/grpc"
 )
 
 // State represents circuit breaker state

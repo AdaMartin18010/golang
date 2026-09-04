@@ -508,7 +508,7 @@ func (s *Service) GetUser(ctx context.Context, id int) (*User, error) {
 ### 6.2 错误处理策略实现
 
 ```go
-package main
+package retry
 
 import (
     "context"
@@ -609,7 +609,7 @@ func getUser(ctx context.Context, id int) (*User, error) {
 ### 6.3 自定义错误类型与接口
 
 ```go
-package main
+package httperr
 
 import (
     "encoding/json"

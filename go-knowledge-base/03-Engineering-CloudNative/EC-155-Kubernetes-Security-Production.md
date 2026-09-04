@@ -109,6 +109,7 @@ The National Institute of Standards and Technology (NIST) released the first set
 
 ML-KEM (formerly Kyber) is a key encapsulation mechanism based on the hardness of the Module Learning With Errors (MLWE) problem.
 
+<!-- goblock-exempt: 依赖 golang.org/x/crypto/mlkem，x/crypto 不在离线 go vet/build 环境内，保留豁免 -->
 ```go
 // Go 1.24+ ML-KEM implementation example
 package main
@@ -252,6 +253,7 @@ data:
 
 Go 1.24 introduced hybrid post-quantum key exchange combining X25519 (classical ECDH) with ML-KEM-768 (post-quantum KEM) for maximum security during the transition period.
 
+<!-- goblock-exempt: 依赖 golang.org/x/crypto/curve25519 等 x/crypto 包，不在离线 go vet/build 环境内，保留豁免 -->
 ```go
 // Hybrid X25519MLKEM768 implementation for Go 1.24+
 package main

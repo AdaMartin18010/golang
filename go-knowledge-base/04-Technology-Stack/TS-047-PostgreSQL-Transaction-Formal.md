@@ -12,6 +12,7 @@
 > - [Formalizing SQL Isolation](https://dl.acm.org/doi/10.1145/114539.114542) - Adya et al. (1995)
 
 > **Go 版本**: 1.27+
+> **前置概念**: [TS-001 PostgreSQL Transaction Internals](TS-001-PostgreSQL-Transaction-Internals.md) · [TS-045 PostgreSQL Internals MVCC](TS-045-PostgreSQL-Internals-MVCC.md)
 ---
 
 ## 1. 事务的形式化定义

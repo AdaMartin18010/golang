@@ -134,17 +134,21 @@
 
 | Priority | Action | Owner | Due date |
 |----------|--------|-------|----------|
-| P0 | 批量修正 98 篇重编号页的页内 H1 编号（脚本 `id_consistency_check.py` 清单） | 内容维护 | 2026-10 月审前 |
-| P1 | GC × cgo/指针运算交叉边界权威页补建（或并入 LD-036 边界节） | 内容维护 | 2026-10 月审前 |
-| P1 | examples/go.sum 缺校验条目（grpc/nats/chi 依赖）导致 `GOWORK=off go build` 失败——`go mod tidy` 补齐 | 工程 | 2026-10 月审前 |
+| ~~P0~~ ✅ | ~~批量修正 98 篇重编号页的页内 H1 编号~~（已于 2026-09-05 完成：98 篇 H1 + 3 处正文自指，MISMATCH=0） | 内容维护 | 已完成 |
+| ~~P1~~ ✅ | ~~GC × cgo/指针运算交叉边界权威页补建~~（已完成：新建 LD-053 S 级六件套全配，含 GOEXPERIMENT=cgocheck2 实测发现） | 内容维护 | 已完成 |
+| ~~P1~~ ✅ | ~~examples/go.sum 缺校验条目~~（已完成：go.sum 补齐 + 根模块 require + jwt 传递依赖，grpc/messaging/security build/vet 通过） | 工程 | 已完成 |
 | P1 | CI 覆盖缺口：42 模块仅 8 个入 go.work，go workflow 无 GOWORK=off 矩阵 | 工程 | 2026-10 月审前 |
-| P2 | docs-deploy.yml HTML 模板 3 处死引用修正 | 工程 | 2026-10 |
+| ~~P2~~ ✅ | ~~docs-deploy.yml HTML 模板 3 处死引用修正~~（已完成，注意：首页其余 8 个模块卡链接同病，下期一并修） | 工程 | 已完成 |
 | P2 | check-unfixed-links.ps1 重写为真实死链扫描器（或 rescan_deadlinks.py 入 CI）；AGENTS.md §5 质量门描述改述"本地门" | 工程 | 2026-10 |
-| P2 | docs-check.yml 去掉 markdown-link-check 的 `\|\| true` 屏蔽 | 工程 | 2026-10 |
-| P3 | 24 组片段级豁免 go 块逐页补全为可编译示例（清单 goblock_merge_results.json） | 内容维护 | 持续 |
+| ~~P2~~ ✅ | ~~docs-check.yml 去掉 markdown-link-check 的 `\|\| true` 屏蔽~~（已完成：先修掉 5 文件 15 条真死链再解除屏蔽，aliveStatusCodes 补 202） | 工程 | 已完成 |
+| ~~P3~~ ✅ | ~~24 组片段级豁免 go 块逐页补全~~（已收敛：14 组补示意定义转 OK，10 组归 skip_dep，3 块加 `<!-- goblock-exempt -->` 标注；merge BAD 24→0，现 OK=33/skip_dep=45/exempt=3） | 内容维护 | 已完成 |
+| P3 | AD-038 block 6 片段格式损坏（`expected 'package', found 'var'`）修复 | 内容维护 | 2026-10 |
+| P3 | FT-009 ID 复用治理（FT 目录 3 文件共用 FT-009，含实质页 Distributed-Transactions） | 内容维护 | 2026-10 |
+| P3 | docs-deploy.yml 首页其余 8 个模块卡死引用（docs/01-语言基础/ 等） | 工程 | 2026-10 |
 | P3 | 下期月审：定义漂移逐页精读（本期仅机械核查）+ 边界域语义精读 + 版本特性→权威页精确映射表 | 内容维护 | 2026-10 月审 |
+| P3 | `.kimi` 可选扩展集 4 页启用/弃用决策（表征空间/思维表征/决策树/效应系统） | 内容维护 | 待用户决定 |
+| P3 | test_go_blocks 14 个 RUN-BAD 清理（多为单块 vet 模式固有，合并构建已 OK；含 FT-003/EC-061/TS-006×3/TS-049 历史项） | 内容维护 | 持续 |
 
-**Overall semantic health grade**: **78 / 100**
-（扣分项：编号漂移 98 篇系统性残留 −12；CI 覆盖缺口与失效引用 −6；examples 模块 go.sum 缺失 −4。加分项：stub 纯净度 56/56 零违规、死链 0、六件套 30/30、双向链接 102/103、编译失败反例 20/20 实测通过。）
+**Overall semantic health grade**: **78 / 100 → 94 / 100**（2026-09-05 复评：编号漂移、go.sum、豁免收敛、CI 死引用四项已解，−22 分恢复；剩余扣分：CI 覆盖缺口与质量门未挂载 −4、FT-009 ID 复用 −2）
 
 **Sign-off**: _________________（人工复核待签）

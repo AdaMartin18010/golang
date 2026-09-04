@@ -989,6 +989,17 @@ func (s *OrderSaga) compensate() error {
     return ErrSagaFailed
 }
 
+// executeWithRetry 按步骤配置重试执行动作
+func (s *OrderSaga) executeWithRetry(step SagaStep) error {
+    var err error
+    for attempt := 0; attempt <= step.MaxRetries; attempt++ {
+        if err = step.Action(); err == nil {
+            return nil
+        }
+    }
+    return err
+}
+
 // Order Creation Saga Builder
 func NewOrderCreationSaga(orderID string, deps SagaDependencies) *OrderSaga {
     saga := &OrderSaga{id: orderID, status: SagaPending}
@@ -1409,6 +1420,40 @@ func (m *BulkheadManager) GetOrCreate(name string, config BulkheadConfig) *Bulkh
 ```go
 // Advanced Load Balancer with Multiple Strategies
 package loadbalancer
+
+import (
+    "errors"
+    "math/rand"
+    "sync/atomic"
+)
+
+// 实例、请求与统计为示意最小定义，仅用于展示负载均衡策略
+
+var (
+    ErrNoInstances        = errors.New("no instances available")
+    ErrNoHealthyInstances = errors.New("no healthy instances")
+)
+
+// Instance 后端实例（示意接口）
+type Instance interface {
+    ID() string
+    IsHealthy() bool
+}
+
+// Request 入站请求（示意接口）
+type Request interface {
+    GetKey() string
+}
+
+// StatsCollector 响应时间统计（示意接口）
+type StatsCollector interface {
+    GetAverageResponseTime(instanceID string) float64
+}
+
+// ConsistentHashRing 一致性哈希环（示意定义）
+type ConsistentHashRing struct{}
+
+func (r *ConsistentHashRing) Get(key string) Instance { return nil }
 
 type Strategy interface {
     Select(instances []Instance, request Request) (Instance, error)
