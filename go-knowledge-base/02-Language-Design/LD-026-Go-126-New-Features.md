@@ -12,7 +12,10 @@
 > - [CGO Performance Improvements](https://go.dev/s/cgoimprovements) - Go Authors
 > - [HPKE Standard](https://www.rfc-editor.org/rfc/rfc9180.html) - IETF RFC 9180
 
-> **Go 版本**: 1.27+
+> **Go 版本**: 1.26+
+> **Bloom 层级**: L3   <!-- L3 分析/应用层：特性语义与工程影响 -->
+> **前置概念**: [03-Evolution/03 Go1.21~1.24](03-Evolution/03-Go121-to-Go124.md) · [LD-004 GMP 调度](LD-004-Go-Runtime-GMP-Deep-Dive.md) | **后置概念**: [03-Evolution/04](03-Evolution/04-Go125-to-Go126.md) · [LD-035 new(expr)](LD-035-Go-1.26-new-expr-Compiler-Semantics.md) · [LD-036 Green Tea GC](LD-036-Go-1.26-Green-Tea-GC-Formal-Model.md)
+> **定理链**: 语言变更提案（proposal）→ 编译器语义实现 → 运行时行为变化 → 工程迁移影响面
 ---
 
 ## 1. 概述

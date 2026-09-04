@@ -1,51 +1,12 @@
 # LD-030-Go-127-Roadmap
 
-> **Dimension**: 02-Language-Design
-> **Status**: S-Level Academic
-> **Created**: 2026-04-03
-> **Version**: Go 1.27 Roadmap
-> **Size**: >20KB
+> **维度**: Language Design | **级别**: B (stub)
+> **状态**: 占位（2026-09 合规审计）— 与 canonical 页内容重复，按 AGENTS.md §6 红线合并。
 
-> **维度**: Language Design
-> **级别**: B (1 KB)
-> **标签**: #ld
-> **Go 版本**: 1.27+
----
+**主题**: 重复页（dup 复查第二批确认），内容并入 canonical 页。
 
-## 1. Go 1.27 Overview
+**权威页（canonical）**:
 
-Expected: August 2026
+- [LD-027 Go 1.27 Roadmap 特性](LD-027-Go-1-27-Roadmap-Features.md)
 
-## 2. Planned Features
-
-### 2.1 Generic Methods
-
-```go
-func (db *DB) QueryOne[T any](query string) (*T, error)
-```
-
-### 2.2 Green Tea GC Final
-
-Only GC option, nogreenteagc removed
-
-### 2.3 json/v2
-
-GA preparation
-
----
-
-## 3. Platform Changes
-
-- macOS 12 support removed
-- PowerPC ELFv2
-
----
-
-## References
-
-1. Go Roadmap
-2. Generic Methods Proposal
-
----
-
-*Last Updated: 2026-04-03*
+另见 [complete-map](../indices/complete-map.md)。

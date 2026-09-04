@@ -1,38 +1,33 @@
-# 可复用 Prompt：Quiz 生成
+# 可复用 Prompt：Quiz 生成（可选扩展）
 
-> **用途**：为 `concept/` 权威页生成或补全 quiz，并注册到 `concept/XX_quizzes/` 与 `quiz_registry.yaml`。
-> **配套文件**：[`.kimi/templates/kimi_project_requirements.md`](../templates/kimi_project_requirements.md) §5.3、AGENTS.md §5.1 门 19。
+> **用途**：为五维权威页生成理解度自测题。
+> **⚠️ 本项目状态**：当前仓库**未启用 quiz 体系**（无 `quiz_registry.yaml`、无 `concept/XX_quizzes/`、质量门不含 quiz 检查）。本 prompt 仅作可选扩展：生成结果需人工评审后决定是否附在权威页尾部（折叠节）或 `go-knowledge-base/learning-paths/` 下，**不进阻断质量门**。
+> **配套文件**：[`.kimi/templates/kimi_project_requirements.md`](../templates/kimi_project_requirements.md)。
 
 ---
 
 ## Prompt 模板
 
 ```text
-请在 E:/_src/rust-lang 仓库中为以下概念页生成 quiz。
+请在 E:/_src/golang 仓库中为以下权威页生成理解度自测题。
 
 **目标概念页**：{{concept_path}}
 **概念名称**：{{concept_name}}
 **Bloom 层级**：{{bloom_level}}
-**目标 quiz 目录**：{{quiz_dir}}  <!-- 如 concept/05_quizzes/ -->
+**输出位置**：{{output_mode}}  <!-- 附在页尾折叠节 / learning-paths 下独立文件 -->
 
 要求：
-1. 先读取目标概念页与 `quiz_registry.yaml`，确认该主题是否已注册 quiz。
-2. 若已存在，补全题目；否则新建 quiz 文件（命名：`NN_quiz_{{topic_snake}}.md`）。
-3. 每份 quiz 必须包含 ≥3 种题型，例如：
+1. 先读取目标概念页，确保题目只考察页内已声明的内容（定义、不变式、反例）。
+2. 题型 ≥3 种：
    - 单选题（考察定义）
    - 多选题（考察边界/反例）
    - 判断题（考察反命题）
-   - 代码阅读题（给出 rust 片段，问输出/错误码）
-4. 每题必须标注：
-   - 难度（easy / medium / hard）
-   - 对应 Bloom 层级
-   - 答案解析（引用概念页具体节或定理编号）
-5. 在 quiz 文件头部添加指向概念页的链接；在概念页头部或“后置概念”中添加指向 quiz 文件的链接，形成双向链接。
-6. 更新 `quiz_registry.yaml`，确保注册表与文件一致。
-7. 运行：
-   python scripts/check_quiz_system.py --strict
-   python scripts/kb_auditor.py --link-check
-8. 不要声明“已完成”，除非命令 exit 0。
+   - 代码阅读题（给出 ```go 片段，问输出/编译错误）
+3. 每题标注：难度（easy / medium / hard）、对应 Bloom 层级、答案解析（引用页内具体节）。
+4. 在题目文件头部添加指向概念页的链接；若附在页尾，与「相关概念」节并列，不破坏六件套结构。
+5. 验证：
+   python scripts/tmp/rescan_deadlinks.py
+6. 不要声明"已完成"，除非检查通过。
 ```
 
 ---
@@ -40,8 +35,8 @@
 ## 示例填充
 
 ```text
-**concept_path**: concept/03_advanced/01_async/08_pin_unpin.md
-**concept_name**: Pin and Unpin
-**bloom_level**: L4-L5
-**quiz_dir**: concept/05_quizzes/
+**concept_path**: go-knowledge-base/02-Language-Design/LD-037-Go-1.27-Generic-Methods.md
+**concept_name**: Go 1.27 泛型方法
+**bloom_level**: L3
+**output_mode**: 附在页尾折叠节
 ```

@@ -10,6 +10,9 @@
 > **级别**: B (1 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L2   <!-- L2 理解层：roadmap 与提案状态跟踪 -->
+> **前置概念**: [LD-026 Go 1.26 特性](LD-026-Go-126-New-Features.md) · [03-Evolution/06 提案流程](03-Evolution/06-Proposal-Process.md) | **后置概念**: [LD-037 泛型方法](LD-037-Go-1.27-Generic-Methods.md) · [03-Evolution/07](03-Evolution/07-Go126-to-Go127.md)
+> **定理链**: Roadmap 提案 → Accepted 状态 → 语言/库/工具链变更清单 → 升级决策
 ---
 
 ## 1. Go 1.27 Overview
