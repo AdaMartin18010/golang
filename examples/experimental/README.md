@@ -34,7 +34,7 @@ examples/experimental/
 | 特性 | 实验标志 | Go 版本 | 预计稳定 |
 |------|---------|---------|---------|
 | `simd/archsimd` | `GOEXPERIMENT=simd` | 1.26 | 待定 |
-| `goroutineleak` profile | `GOEXPERIMENT=goroutineleakprofile` | 1.26 | **1.27 (默认启用)** |
+| `goroutineleak` profile | `GOEXPERIMENT=goroutineleakprofile` | 1.26 | **Go 1.27 已 GA（/debug/pprof/goroutineleak）** |
 | `runtime/secret` | `GOEXPERIMENT=runtimesecret` | 1.26 | 待定 |
 
 ---

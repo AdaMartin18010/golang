@@ -39,10 +39,13 @@
 ## 历史版本
 - Go 1.24: Core Types
 - Go 1.25: 移除 Core Types
-- **Go 1.26**: 指针接收器约束 ✅ 当前
+- Go 1.26: 指针接收器约束
+
+## 当前版本
+- **Go 1.27.1**: 泛型方法正式落地、encoding/json/v2 GA、goroutineleak profile GA、container-aware GOMAXPROCS 默认开启 ✅ 当前（2026-08 发布）
 
 ## 未来展望
-- Go 1.27: 预期特性...
+- Go 1.28: 预期特性...
 ```
 
 ---

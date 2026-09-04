@@ -177,7 +177,7 @@ docs/
 
 | 技术 | 当前版本 | 跟踪源 |
 |------|---------|--------|
-| Go | 1.24 | go.dev |
+| Go | 1.27 | go.dev |
 | Kubernetes | 1.32 | github.com/kubernetes |
 | Redis | 7.4 | redis.io |
 | PostgreSQL | 16 | postgresql.org |
