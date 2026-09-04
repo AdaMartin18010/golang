@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #tls #mtls #encryption
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## TLS 配置

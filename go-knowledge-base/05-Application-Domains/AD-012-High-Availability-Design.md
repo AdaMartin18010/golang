@@ -1,5 +1,9 @@
 # AD-012: High Availability Design
 
+> **维度**: Application Domains
+> **级别**: S (25 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## 1. Architecture Overview
 
 ### 1.1 Definition and Philosophy

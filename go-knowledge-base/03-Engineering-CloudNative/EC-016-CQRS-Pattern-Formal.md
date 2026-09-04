@@ -1,12 +1,14 @@
 # EC-016: CQRS 模式的形式化 (CQRS: Formalization)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (15+ KB)
+> **级别**: A (15 KB)
 > **tags**: #cqrs #read-model #write-model #separation
 > **权威来源**:
 >
 > - [CQRS](https://martinfowler.com/bliki/CQRS.html) - Martin Fowler
 
+> **标签**: #ec
+> **Go 版本**: 1.27+
 ---
 
 ## 1. CQRS 的形式化

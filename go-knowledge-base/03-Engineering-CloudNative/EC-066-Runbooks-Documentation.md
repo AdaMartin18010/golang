@@ -4,6 +4,9 @@
 > **标签**: #runbooks #documentation #procedures #operations #playbooks
 > **参考**: Google SRE, AWS Well-Architected, Azure Operations
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (63 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

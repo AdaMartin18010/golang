@@ -1,7 +1,7 @@
 # EC-014: Sidecar Pattern Formal Analysis (S-Level)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (17+ KB)
+> **级别**: S (17 KB)
 > **标签**: #sidecar #microservices #service-mesh #kubernetes #observability
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Kubernetes Patterns](https://k8spatterns.io/) - Bilgin Ibryam & Roland Huß (2019)
 > - [Istio Architecture](https://istio.io/latest/docs/ops/deployment/architecture/) - Istio Project
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Sidecar 模式的形式化定义

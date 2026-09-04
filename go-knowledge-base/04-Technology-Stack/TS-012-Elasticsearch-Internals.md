@@ -1,11 +1,12 @@
 # TS-012: Elasticsearch 内部机制 (Elasticsearch Internals)
 
 > **维度**: Technology Stack
-> **级别**: S (17+ KB)
+> **级别**: S (16 KB)
 > **标签**: #elasticsearch #search-engine #lucene #inverted-index
 > **权威来源**: [Elasticsearch Guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html), [Lucene](https://lucene.apache.org/core/documentation.html)
 > **版本**: Elasticsearch 9.0+
 
+> **Go 版本**: 1.27+
 ---
 
 ## 架构概述

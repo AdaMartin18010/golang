@@ -4,6 +4,9 @@
 > **标签**: #testing #unit-test #integration-test #mock
 > **参考**: Go Testing, Testify, Testing Patterns
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (15 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 测试策略架构

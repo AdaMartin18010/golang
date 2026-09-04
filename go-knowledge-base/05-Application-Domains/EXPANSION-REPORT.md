@@ -1,5 +1,9 @@
 # 05-Application-Domains Expansion Report
 
+> **维度**: Application Domains
+> **级别**: S (21 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 **Date**: 2026-04-02
 **Task**: Expand ALL documents in 05-Application-Domains dimension to S-level quality (>15KB each)
 
@@ -24,8 +28,8 @@
 |------|----------|
 | AD-001-DDD-Strategic-Patterns-Formal.md | 27.59 KB |
 | AD-002-Domain-Driven-Design-Strategic-Patterns.md | 22.71 KB |
-| AD-010-System-Design-Interview-Formal.md | 20.3 KB |
-| AD-009-Capacity-Planning-Formal.md | 19.72 KB |
+| AD-043-System-Design-Interview-Formal.md | 20.3 KB |
+| AD-042-Capacity-Planning-Formal.md | 19.72 KB |
 | AD-005-DDD-Tactical-Patterns.md | 17.11 KB |
 | AD-004-Event-Driven-Architecture-Formal.md | 15.5 KB |
 | AD-010-System-Design-Interview.md | 15.43 KB |
@@ -45,7 +49,7 @@
 | 01-RESTful-API.md | Backend | 11.45 KB | -3.55 KB |
 | 06-Rate-Limiting.md | Backend | 9.86 KB | -5.14 KB |
 | AD-006-API-Gateway-Design.md | Root | 14.91 KB | -0.09 KB |
-| AD-008-Performance-Optimization-Formal.md | Root | 10.95 KB | -4.05 KB |
+| AD-041-Performance-Optimization-Formal.md | Root | 10.95 KB | -4.05 KB |
 
 ---
 
@@ -55,8 +59,8 @@
 
 | File | Category | Current Size |
 |------|----------|--------------|
-| AD-003-Microservices-Decomposition-Patterns.md | Root | 5.45 KB |
-| AD-004-Event-Driven-Architecture-Patterns.md | Root | 12.65 KB |
+| AD-034-Microservices-Decomposition-Patterns.md | Root | 5.45 KB |
+| AD-036-Event-Driven-Architecture-Patterns.md | Root | 12.65 KB |
 | AD-007-Security-Patterns.md | Root | 11.48 KB |
 | AD-009-Capacity-Planning.md | Root | 11.08 KB |
 | 04-API-Gateway.md | Backend | 0.64 KB |
@@ -146,7 +150,7 @@ Files expanded to S-level include:
 
 ### Phase 1: Core AD Files (Priority 1)
 
-- [ ] AD-003-Microservices-Decomposition-Patterns.md (5.45 KB -> 18 KB)
+- [ ] AD-034-Microservices-Decomposition-Patterns.md (5.45 KB -> 18 KB)
 - [ ] AD-007-Security-Patterns.md (11.48 KB -> 16 KB)
 - [ ] AD-008-Performance-Optimization.md (9.49 KB -> 16 KB)
 
@@ -178,7 +182,7 @@ Reference files for S-level quality:
 
 - `AD-001-DDD-Strategic-Patterns-Formal.md` (27.59 KB) - Formal analysis template
 - `AD-002-Domain-Driven-Design-Strategic-Patterns.md` (22.71 KB) - Practical patterns template
-- `AD-010-System-Design-Interview-Formal.md` (20.3 KB) - Interview prep template
+- `AD-043-System-Design-Interview-Formal.md` (20.3 KB) - Interview prep template
 
 ---
 

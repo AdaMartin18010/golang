@@ -1,7 +1,7 @@
 # TS-CL-006: Go time Package - Deep Architecture and Temporal Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (18+ KB)
+> **级别**: S (19 KB)
 > **标签**: #golang #time #datetime #timezone #timer #ticker
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Time Formatting](https://go.dev/src/time/format.go) - Source code
 > - [Monotonic Clocks](https://go.googlesource.com/proposal/+/master/design/12914-monotonic.md) - Design doc
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Time Architecture Deep Dive

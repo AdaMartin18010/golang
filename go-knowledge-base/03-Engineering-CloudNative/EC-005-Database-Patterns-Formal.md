@@ -1,7 +1,7 @@
 # EC-005: 数据库访问模式的形式化 (Database Access Patterns: Formalization)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (30+ KB)
+> **级别**: S (34 KB)
 > **标签**: #database #patterns #repository #unit-of-work #caching #transaction
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Database Internals](https://www.oreilly.com/library/view/database-internals/9781492043401/) - Alex Petrov (2019)
 > - [Designing Data-Intensive Applications](https://dataintensive.net/) - Martin Kleppmann (2017)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 问题形式化

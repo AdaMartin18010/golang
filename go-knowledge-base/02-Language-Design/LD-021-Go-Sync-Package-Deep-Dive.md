@@ -1,7 +1,7 @@
 # LD-021: Go Sync 包深度剖析 (Go Sync Package Deep Dive)
 
 > **维度**: Language Design
-> **级别**: S (19+ KB)
+> **级别**: S (23 KB)
 > **标签**: #sync #concurrency #mutex #atomic #waitgroup #pool #once
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Memory Model](https://go.dev/ref/mem) - Go Authors
 > - [The Go Programming Language](https://www.gopl.io/) - Donovan & Kernighan
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Sync 包架构

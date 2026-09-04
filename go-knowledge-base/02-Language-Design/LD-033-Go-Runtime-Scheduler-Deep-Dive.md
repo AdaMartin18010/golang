@@ -7,6 +7,10 @@
 > **Size**: >25KB
 > **Source Reference**: github.com/golang/go/src/runtime
 
+> **维度**: Language Design
+> **级别**: A (14 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ---
 
 ## 1. GMP Model Formal Definition

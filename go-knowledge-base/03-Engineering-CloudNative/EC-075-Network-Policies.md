@@ -4,6 +4,9 @@
 > **标签**: #network #kubernetes #security #microsegmentation #cni
 > **参考**: Kubernetes Network Policies, Cilium, Calico, Istio
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (26 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

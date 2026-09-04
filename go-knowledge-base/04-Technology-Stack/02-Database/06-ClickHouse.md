@@ -1,9 +1,11 @@
 # ClickHouse Columnar Database
 
 > **维度**: Technology Stack / Database
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **tags**: #clickhouse #olap #columnar #analytics
 
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ---
 
 ## 1. ClickHouse 形式化架构

@@ -1,7 +1,7 @@
 # TS-NET-002: gRPC Architecture and Go Implementation
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: S (23 KB)
 > **标签**: #grpc #protobuf #rpc #microservices #streaming
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Protocol Buffers](https://developers.google.com/protocol-buffers) - Google
 > - [gRPC-Go](https://github.com/grpc/grpc-go) - Go implementation
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. gRPC Architecture

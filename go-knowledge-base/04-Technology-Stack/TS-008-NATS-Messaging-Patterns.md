@@ -1,7 +1,7 @@
 # TS-008: NATS Messaging Patterns - Architecture & Go Implementation
 
 > **维度**: Technology Stack
-> **级别**: S (16+ KB)
+> **级别**: S (32 KB)
 > **标签**: #nats #messaging #pubsub #jetstream #go
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [NATS Architecture](https://docs.nats.io/nats-concepts/architecture) - NATS.io
 > - [JetStream Documentation](https://docs.nats.io/jetstream/jetstream) - NATS.io
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. NATS Core Architecture

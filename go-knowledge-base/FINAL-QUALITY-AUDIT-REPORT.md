@@ -49,7 +49,7 @@
 - `EC-004-API-Design-Formal.md` (2.1KB) - Needs Fix
 - `EC-003-Container-Design-Formal.md` (1.9KB) - Needs Fix
 - `EC-002-Microservices-Patterns-Formal.md` (2.2KB) - Needs Fix
-- `EC-001-Architecture-Principles-Formal.md` (2.5KB) - Needs Fix
+- `EC-122-Architecture-Principles-Formal.md` (2.5KB) - Needs Fix
 - `EC-008-Saga-Pattern-Formal.md` (2.8KB) - Needs Fix
 
 **Priority 2 - Core Language Features Missing Content**:
@@ -125,7 +125,7 @@ For a document to be S-level, it must have:
 4. `EC-004-API-Design-Formal.md` - Add TLA+ for API contracts
 5. `EC-003-Container-Design-Formal.md` - Add TLA+ for container lifecycle
 6. `EC-002-Microservices-Patterns-Formal.md` - Add TLA+ for service interactions
-7. `EC-001-Architecture-Principles-Formal.md` - Add TLA+ for architectural constraints
+7. `EC-122-Architecture-Principles-Formal.md` - Add TLA+ for architectural constraints
 8. `EC-008-Saga-Pattern-Formal.md` - Add TLA+ for saga compensation
 
 #### Language Design Documents Needing Expansion

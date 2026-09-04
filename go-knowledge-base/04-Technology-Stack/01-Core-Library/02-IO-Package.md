@@ -1,7 +1,7 @@
 # TS-CL-002: Go I/O Package - Deep Architecture and Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (16+ KB)
+> **级别**: S (18 KB)
 > **标签**: #golang #io #streaming #interfaces #zero-copy #buffering
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go bufio package](https://pkg.go.dev/bufio) - Buffered I/O
 > - [Go io/ioutil](https://pkg.go.dev/io/ioutil) - I/O utilities
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. I/O Architecture Deep Dive

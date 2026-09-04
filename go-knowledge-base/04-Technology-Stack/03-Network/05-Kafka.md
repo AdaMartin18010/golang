@@ -1,7 +1,7 @@
 # TS-NET-005: Apache Kafka Architecture and Go Integration
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: S (29 KB)
 > **标签**: #kafka #streaming #messaging #distributed #event-driven
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Sarama (Go Client)](https://github.com/Shopify/sarama) - Shopify
 > - [franz-go](https://github.com/twmb/franz-go) - Modern Go client
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Kafka Architecture Overview

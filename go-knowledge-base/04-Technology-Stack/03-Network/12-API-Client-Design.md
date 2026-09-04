@@ -1,13 +1,14 @@
 # TS-NET-012: API Client Design Patterns in Go
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: A (16 KB)
 > **标签**: #api-client #http-client #golang #resilience #patterns #circuit-breaker
 > **权威来源**:
 >
 > - [Go HTTP Client Best Practices](https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779) - Medium
 > - [Resilience Patterns](https://docs.microsoft.com/en-us/azure/architecture/patterns/category/resiliency) - Microsoft Azure
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. API Client Architecture

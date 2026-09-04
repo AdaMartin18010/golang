@@ -1,13 +1,14 @@
 # TS-CL-010: Go flag Package - Deep Architecture and CLI Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **标签**: #golang #flag #cli #command-line #arguments
 > **权威来源**:
 >
 > - [Go flag package](https://pkg.go.dev/flag) - Official documentation
 > - [Command Line Arguments](https://go.dev/src/flag/flag.go) - Source code
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Flag Architecture Deep Dive

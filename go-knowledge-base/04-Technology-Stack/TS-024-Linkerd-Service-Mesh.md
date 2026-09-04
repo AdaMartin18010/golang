@@ -1,5 +1,9 @@
 # TS-024: Linkerd Service Mesh
 
+> **维度**: Technology Stack
+> **级别**: S (21 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Linkerd is an ultralight, security-first service mesh for Kubernetes. It provides runtime debugging, observability, reliability, and security without requiring any code changes. Linkerd is a CNCF graduated project and is the lightest and fastest service mesh available.

@@ -1,7 +1,7 @@
 # EC-013: Idempotency Pattern Formal Analysis (S-Level)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (17+ KB)
+> **级别**: S (18 KB)
 > **标签**: #idempotency #distributed-systems #reliability #deduplication #at-least-once
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Building Microservices](https://samnewman.io/books/building_microservices/) - Sam Newman (2021)
 > - [AWS Idempotency Best Practices](https://docs.aws.amazon.com/) - AWS (2024)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 幂等性的形式化定义

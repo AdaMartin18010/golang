@@ -1,7 +1,7 @@
 # LD-024: Go 测试高级模式 (Go Testing Advanced Patterns)
 
 > **维度**: Language Design
-> **级别**: S (18+ KB)
+> **级别**: A (16 KB)
 > **标签**: #testing #tdd #mock #benchmark #fuzzing #table-driven #testify
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Test Patterns](https://go.dev/doc/code#Testing) - Go Authors
 > - [Advanced Testing in Go](https://speakerdeck.com/campoy/advanced-testing-in-go) - Francesc Campoy
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 测试基础架构

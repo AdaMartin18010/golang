@@ -3,6 +3,9 @@
 > **分类**: 开源技术堆栈
 > **标签**: #elasticsearch #search #logging
 
+> **维度**: Technology Stack
+> **级别**: S (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 客户端

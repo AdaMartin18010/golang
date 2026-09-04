@@ -1,7 +1,7 @@
 # LD-025: Go 性能剖析与优化 (Go Profiling & Optimization)
 
 > **维度**: Language Design
-> **级别**: S (19+ KB)
+> **级别**: A (15 KB)
 > **标签**: #profiling #pprof #optimization #performance #gc #memory #cpu
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Diagnostics](https://go.dev/doc/diagnostics) - Go Authors
 > - [Go Performance Book](https://github.com/dgryski/go-perfbook) - Damian Gryski
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 性能分析工具链

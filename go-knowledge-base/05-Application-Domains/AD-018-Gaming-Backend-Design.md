@@ -1,5 +1,9 @@
 # AD-018: Gaming Backend Design
 
+> **维度**: Application Domains
+> **级别**: S (42 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Gaming backends represent one of the most technically challenging domains in software engineering, requiring ultra-low latency, massive concurrent user support, real-time state synchronization, and complex matchmaking algorithms. These systems must handle millions of concurrent players, process billions of events per day, and maintain sub-50ms response times while ensuring fair gameplay and preventing cheating.

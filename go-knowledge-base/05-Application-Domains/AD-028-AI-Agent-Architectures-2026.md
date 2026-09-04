@@ -1,10 +1,11 @@
-﻿# AD-028-AI-Agent-Architectures-2026
+# AD-028-AI-Agent-Architectures-2026
 
-> **Dimension**: 05-Application-Domains
-> **Status**: S-Level
+> **维度**: Application Domains
+> **级别**: A (14 KB)
+> **标签**: #ai-agent #architecture #llm #ad
+> **Go 版本**: 1.27+
 > **Created**: 2026-04-03
 > **Version**: AI Agents 2026
-> **Size**: >20KB
 
 ---
 

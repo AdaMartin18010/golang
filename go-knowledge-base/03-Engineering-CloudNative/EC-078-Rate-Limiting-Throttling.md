@@ -4,6 +4,9 @@
 > **标签**: #rate-limiting #throttling #token-bucket #leaky-bucket
 > **参考**: Token Bucket Algorithm, Rate Limiter Patterns
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (19 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 限流算法

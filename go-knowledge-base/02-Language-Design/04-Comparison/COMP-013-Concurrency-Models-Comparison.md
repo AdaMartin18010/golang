@@ -1,5 +1,9 @@
 # Concurrency Models Comparison
 
+> **维度**: Language Design
+> **级别**: S (17 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Concurrency models define how languages handle multiple simultaneous operations. This document compares CSP (Communicating Sequential Processes) in Go, Actor Model in Erlang/Elixir, Async/Await in JavaScript/C#, Threads in Java, and Coroutines in Kotlin/Rust.

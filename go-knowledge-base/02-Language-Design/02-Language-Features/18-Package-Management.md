@@ -3,6 +3,9 @@
 > **分类**: 语言设计
 > **标签**: #package #module #import
 
+> **维度**: Language Design
+> **级别**: S (18 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 包声明

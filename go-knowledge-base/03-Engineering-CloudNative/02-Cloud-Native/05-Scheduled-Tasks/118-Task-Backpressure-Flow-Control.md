@@ -4,6 +4,9 @@
 > **标签**: #backpressure #flow-control #rate-limiting #throttling
 > **参考**: Reactive Streams, gRPC Flow Control, TCP Congestion Control
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 背压模式

@@ -1,12 +1,13 @@
 # EC-036: Shared Database Pattern (共享数据库模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (33 KB)
 > **标签**: #shared-database #monolith #migration #intermediate
 > **权威来源**:
 >
 > - [Shared Database Pattern](https://microservices.io/patterns/data/shared-database.html) - Chris Richardson
 >
+> **Go 版本**: 1.27+
 - [Monolith to Microservices](https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/) - Sam Newman
 >
 > - [Refactoring Databases](https://www.oreilly.com/library/view/refactoring-databases/0321293533/) - Ambler & Sadalage

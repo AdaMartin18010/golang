@@ -1,7 +1,7 @@
 # EC-M03: Testing Strategies in Go (S-Level)
 
 > **维度**: Engineering-CloudNative / Methodology
-> **级别**: S (15+ KB)
+> **级别**: S (18 KB)
 > **标签**: #testing #go #unit-test #integration-test #tdd #benchmark #mock
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Unit Testing Principles, Practices, and Patterns](https://www.manning.com/books/unit-testing) - Vladimir Khorikov (2020)
 > - [Go Testing](https://go.dev/doc/testing) - The Go Authors
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 测试金字塔

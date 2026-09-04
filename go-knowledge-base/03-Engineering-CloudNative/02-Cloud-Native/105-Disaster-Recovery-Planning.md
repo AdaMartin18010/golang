@@ -4,6 +4,9 @@
 > **标签**: #disaster-recovery #business-continuity #backup
 > **参考**: AWS DR Strategies, Azure Site Recovery
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (15 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 灾难恢复架构

@@ -4,6 +4,9 @@
 > **标签**: #event-sourcing #cqrs #event-store #audit
 > **参考**: EventStoreDB, Axon Framework, Martin Fowler Event Sourcing
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (15 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 事件溯源核心概念

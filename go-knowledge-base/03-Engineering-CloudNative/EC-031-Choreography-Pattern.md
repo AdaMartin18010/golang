@@ -1,7 +1,7 @@
 # EC-031: Choreography Pattern (编舞模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (59 KB)
 > **标签**: #choreography #event-driven #decentralized #saga #microservices
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Designing Event-Driven Systems](https://www.oreilly.com/library/view/designing-event-driven-systems/9781492038252/) - Ben Stopford
 > - [Building Microservices](https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/) - Sam Newman
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

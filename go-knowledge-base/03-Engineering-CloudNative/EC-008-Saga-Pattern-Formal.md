@@ -1,7 +1,7 @@
 # EC-008: Saga 分布式事务的形式化 (Saga Pattern: Formal Analysis)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (18+ KB)
+> **级别**: S (23 KB)
 > **标签**: #saga #distributed-transactions #compensation #event-driven #consistency
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Practical Microservices Architectural Patterns](https://www.apress.com/gp/book/9781484245002) - Binildas (2019)
 > - [Distributed Transactions: The Saga Pattern](https://blog.couchbase.com/distributed-transactions-saga-pattern/) - Couchbase (2020)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Saga 的形式化定义

@@ -1,7 +1,7 @@
 # TS-NET-001: Gin Web Framework Architecture
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: S (18 KB)
 > **标签**: #gin #web-framework #golang #http #middleware
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Gin GitHub](https://github.com/gin-gonic/gin) - Source code
 > - [Go HTTP Server](https://golang.org/pkg/net/http/) - Go standard library
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Gin Architecture Overview

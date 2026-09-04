@@ -1,13 +1,14 @@
 # EC-010: 超时模式的形式化 (Timeout Pattern: Formalization)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (15+ KB)
+> **级别**: S (19 KB)
 > **标签**: #timeout #deadline #cancellation #context #circuit-breaker
 > **权威来源**:
 >
 > - [Timeout Pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/timeout) - Microsoft Azure
 > - [Go Context](https://pkg.go.dev/context) - Go Official
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化定义
@@ -703,6 +704,6 @@ stateDiagram-v2
 
 **相关文档**:
 
-- [Context 管理](EC-005-Context-Management.md)
+- [Context 管理](EC-128-Context-Management.md)
 - [重试模式](./EC-009-Retry-Pattern-Formal.md)
 - [熔断器模式](./EC-007-Circuit-Breaker-Formal.md)

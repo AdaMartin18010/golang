@@ -8,6 +8,10 @@
 > - **Last Updated:** 2026-04-03
 > - **Status:** Active
 
+> **维度**: Application Domains
+> **级别**: S (127 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Table of Contents
 
 - [AD-027: AI/ML Infrastructure Design](#ad-027-aiml-infrastructure-design)

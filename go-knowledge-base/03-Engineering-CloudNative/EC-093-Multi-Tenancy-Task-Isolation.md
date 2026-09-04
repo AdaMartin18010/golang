@@ -4,6 +4,9 @@
 > **标签**: #multi-tenancy #isolation #security
 > **参考**: SaaS Multi-Tenancy, Resource Isolation
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (15 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 多租户隔离架构

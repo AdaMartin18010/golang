@@ -1,7 +1,7 @@
 # EC-076: Kubernetes 1.34 New Features - Comprehensive Guide
 
 > **维度**: Engineering Cloud-Native
-> **级别**: S (16+ KB)
+> **级别**: S (61 KB)
 > **标签**: #kubernetes #k8s-1.34 #DRA #gpu #sidecar #oci-artifacts #pod-certificates
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [KEP-4317: Pod Certificates](https://github.com/kubernetes/enhancements/issues/4317) - Kubernetes Enhancement Proposals
 > - [CNCF Cloud Native Landscape](https://landscape.cncf.io/) - Cloud Native Computing Foundation
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Kubernetes 1.34 Overview

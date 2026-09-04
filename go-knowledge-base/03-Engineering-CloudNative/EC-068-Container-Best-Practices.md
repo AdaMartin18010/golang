@@ -4,6 +4,9 @@
 > **标签**: #containers #docker #security #optimization #production
 > **参考**: Docker Security, CIS Benchmarks, NIST SP 800-190
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (56 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

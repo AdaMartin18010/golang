@@ -4,6 +4,9 @@
 > **标签**: #crdt #conflict-free #eventual-consistency #distributed
 > **参考**: Shapiro et al. "A comprehensive study of Convergent and Commutative Replicated Data Types"
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (15 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## CRDT 理论基础

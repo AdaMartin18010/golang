@@ -6,6 +6,10 @@
 > **Version**: 2026 (Horizontal Sharding, Vertical Partitioning, Consistent Hashing)
 > **Size**: >20KB
 
+> **维度**: Technology Stack
+> **级别**: A (13 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 分片与分区概述

@@ -1,7 +1,7 @@
 # EC-006: 云原生测试策略的形式化 (Testing Strategies: Formalization)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (30+ KB)
+> **级别**: S (30 KB)
 > **标签**: #testing #tdd #integration #e2e #contract-testing #chaos-engineering
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Google Testing Blog](https://testing.googleblog.com/) - Google
 > - [Chaos Engineering](https://principlesofchaos.org/) - Netflix
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 问题形式化

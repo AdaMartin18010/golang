@@ -1,7 +1,7 @@
 # TS-CL-005: Go sync Package - Concurrency Primitives Deep Dive
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (16+ KB)
+> **级别**: S (19 KB)
 > **标签**: #golang #concurrency #mutex #waitgroup #once #pool #syncmap
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Memory Model](https://golang.org/ref/mem) - Memory model
 > - [The Go Scheduler](https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html) - Ardan Labs
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. sync.Mutex - Mutual Exclusion Lock

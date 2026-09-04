@@ -1,7 +1,7 @@
 # LD-020: Go 密码学包深度剖析 (Go Cryptography Packages)
 
 > **维度**: Language Design
-> **级别**: S (18+ KB)
+> **级别**: S (21 KB)
 > **标签**: #crypto #security #hash #cipher #tls #random
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Cryptography Principles](https://go.dev/blog/cryptography-principles) - Go Authors
 > - [NIST Cryptographic Standards](https://csrc.nist.gov/projects/cryptographic-standards-and-guidelines) - NIST
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 密码学架构概览

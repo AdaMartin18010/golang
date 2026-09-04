@@ -27,24 +27,24 @@
 | 文档 | 主题 | 大小 |
 | ------ | ------ | ------ |
 | LD-001-Go-Memory-Model-Formal.md | 内存模型 | 18KB |
-| LD-001-Go-Type-System-Formal-Semantics.md | 类型系统 | 16KB |
+| LD-038-Go-Type-System-Formal-Semantics.md | 类型系统 | 16KB |
 | LD-002-Go-Concurrency-CSP-Formal.md | CSP 并发 | 16KB |
-| LD-002-Go-Compiler-Architecture-SSA.md | 编译器架构 | 16KB |
+| LD-039-Go-Compiler-Architecture-SSA.md | 编译器架构 | 16KB |
 | LD-003-Go-Garbage-Collector-Formal.md | GC 理论 | 15KB |
-| LD-003-Go-Garbage-Collector-Tri-Color-Mark-Sweep.md | 三色 GC | 16KB |
+| LD-041-Go-Garbage-Collector-Tri-Color-Mark-Sweep.md | 三色 GC | 16KB |
 | LD-004-Go-Runtime-GMP-Deep-Dive.md | GMP 调度器 | 16KB |
-| LD-004-Go-Scheduler-Formal.md | 调度理论 | 16KB |
+| LD-043-Go-Scheduler-Formal.md | 调度理论 | 16KB |
 | LD-005-Go-126-Pointer-Receiver-Constraints.md | 指针接收器 | 15KB |
-| LD-005-Go-Reflection-Formal.md | 反射 | 16KB |
-| LD-006-Go-Error-Handling-Formal.md | 错误处理 | 16KB |
+| LD-044-Go-Reflection-Formal.md | 反射 | 16KB |
+| LD-045-Go-Error-Handling-Formal.md | 错误处理 | 16KB |
 | LD-006-Go-Memory-Allocator-Internals.md | 内存分配器 | 15KB |
 | LD-007-Go-Reflection-Interface-Internals.md | 接口内部 | 15KB |
-| LD-007-Go-Testing-Formal.md | 测试理论 | 16KB |
+| LD-046-Go-Testing-Formal.md | 测试理论 | 16KB |
 | LD-008-Go-Error-Handling-Patterns.md | 错误模式 | 15KB |
 | LD-009-Go-Testing-Patterns.md | 测试模式 | 15KB |
-| LD-010-Go-Generics-Deep-Dive.md | 泛型深入 | 12KB → 15KB |
-| LD-010-Go-Generics-Formal.md | 泛型理论 | 15KB |
-| LD-011-Go-Assembly-Internals.md | 汇编 | 15KB |
+| LD-050-Go-Generics-Deep-Dive.md | 泛型深入 | 12KB → 15KB |
+| LD-049-Go-Generics-Formal.md | 泛型理论 | 15KB |
+| LD-051-Go-Assembly-Internals.md | 汇编 | 15KB |
 | LD-012-Go-Linker-Build-Process.md | 链接器 | 15KB |
 | 29-Go-Runtime-GMP-Scheduler-Deep-Dive.md | GMP 深入 | 22KB |
 | 30-Go-sync-Package-Internals.md | sync 包 | 15KB |
@@ -65,7 +65,7 @@
 
 ### 初级
 
-1. LD-001-Go-Type-System-Formal-Semantics.md
+1. LD-038-Go-Type-System-Formal-Semantics.md
 2. LD-008-Go-Error-Handling-Patterns.md
 3. LD-009-Go-Testing-Patterns.md
 
@@ -73,14 +73,14 @@
 
 1. LD-004-Go-Runtime-GMP-Deep-Dive.md
 2. LD-007-Go-Reflection-Interface-Internals.md
-3. LD-010-Go-Generics-Formal.md
+3. LD-049-Go-Generics-Formal.md
 
 ### 高级
 
 1. LD-001-Go-Memory-Model-Formal.md
-2. LD-003-Go-Garbage-Collector-Tri-Color-Mark-Sweep.md
-3. LD-002-Go-Compiler-Architecture-SSA.md
-4. LD-011-Go-Assembly-Internals.md
+2. LD-041-Go-Garbage-Collector-Tri-Color-Mark-Sweep.md
+3. LD-039-Go-Compiler-Architecture-SSA.md
+4. LD-051-Go-Assembly-Internals.md
 
 ---
 

@@ -1,5 +1,9 @@
 # TS-020: Vault Secrets Management
 
+> **维度**: Technology Stack
+> **级别**: S (35 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 HashiCorp Vault is an identity-based secrets and encryption management system. It provides secure secret storage, dynamic secrets, data encryption, and identity-based access control for applications and infrastructure.

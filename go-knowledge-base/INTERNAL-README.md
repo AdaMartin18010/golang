@@ -115,7 +115,7 @@
 │  ├── Memory model → LD-001-Go-Memory-Model-Formal.md                        │
 │  ├── Scheduler → LD-004-Go-Runtime-GMP-Deep-Dive.md                         │
 │  ├── Garbage collector → LD-003-Go-Garbage-Collector-Formal.md              │
-│  └── Compiler → LD-002-Go-Compiler-Architecture-SSA.md                      │
+│  └── Compiler → LD-039-Go-Compiler-Architecture-SSA.md                      │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -312,7 +312,7 @@ What are you looking for?
 │  SCENARIO 2: "Implementing circuit breaker pattern"                          │
 │  ├── Start: indices/by-topic.md → "Resilience Patterns"                      │
 │  ├── Found: EC-007-Circuit-Breaker-Formal.md                                │
-│  ├── Also: EC-008-Circuit-Breaker-Advanced.md                               │
+│  ├── Also: EC-134-Circuit-Breaker-Advanced.md                               │
 │  └── Code: examples/ (check for circuit breaker example)                     │
 │                                                                              │
 │  SCENARIO 3: "Understanding Raft consensus"                                  │
@@ -327,7 +327,7 @@ What are you looking for?
 │                                                                              │
 │  SCENARIO 5: "Learning microservices architecture"                           │
 │  ├── Start: learning-paths/backend-engineer.md                              │
-│  ├── Found: AD-003-Microservices-Architecture.md                            │
+│  ├── Found: AD-033-Microservices-Architecture.md                            │
 │  ├── Also: 03-Engineering-CloudNative/EC-001-Microservices.md               │
 │  └── Deep dive: 05-Application-Domains/01-Backend-Development/              │
 │                                                                              │

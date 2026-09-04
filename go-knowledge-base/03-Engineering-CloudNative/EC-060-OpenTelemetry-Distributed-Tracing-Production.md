@@ -4,6 +4,9 @@
 > **标签**: #opentelemetry #distributed-tracing #observability #production
 > **参考**: OpenTelemetry Go SDK v1.24+, W3C Trace Context
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (18 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 生产级 SDK 配置

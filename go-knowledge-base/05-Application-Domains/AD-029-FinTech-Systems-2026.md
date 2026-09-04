@@ -6,6 +6,10 @@
 > **Version**: 2026 (Banking, Payments, Trading, Blockchain)
 > **Size**: >20KB
 
+> **维度**: Application Domains
+> **级别**: S (17 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ---
 
 ## 1. FinTech概览

@@ -1,5 +1,9 @@
 # Ecosystem and Libraries Comparison
 
+> **维度**: Language Design
+> **级别**: S (19 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 The strength of a programming language often depends on its ecosystem and available libraries. This document compares package ecosystems, library availability, and community resources across Go, Python, JavaScript, Java, Rust, C#, and other languages.

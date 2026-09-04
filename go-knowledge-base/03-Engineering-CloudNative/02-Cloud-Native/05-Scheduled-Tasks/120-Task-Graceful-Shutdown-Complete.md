@@ -4,6 +4,9 @@
 > **标签**: #graceful-shutdown #signal-handling #cleanup #zero-downtime
 > **参考**: Kubernetes Pod Lifecycle, Systemd, Go 1.8+ Shutdown Patterns
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (22 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 关闭信号流程

@@ -1,13 +1,14 @@
 # TS-DT-009: Go Build Modes and Cross-Compilation
 
 > **维度**: Technology Stack > Development Tools
-> **级别**: S (16+ KB)
+> **级别**: S (19 KB)
 > **标签**: #go-build #cross-compilation #cgo #build-tags #ldflags
 > **权威来源**:
 >
 > - [go build documentation](https://golang.org/cmd/go/#hdr-Build_modes) - Go team
 > - [Cross Compilation](https://dave.cheney.net/2015/08/22/cross-compilation-with-go) - Dave Cheney
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Build Modes

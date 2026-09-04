@@ -4,6 +4,9 @@
 > **标签**: #etcd #distributed-coordination #lease #watch
 > **参考**: etcd v3 API, Kubernetes Controller Runtime, Consul
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## etcd 核心能力

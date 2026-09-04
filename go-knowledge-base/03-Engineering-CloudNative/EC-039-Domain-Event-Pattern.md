@@ -1,7 +1,7 @@
 # EC-039: Domain Event Pattern (领域事件模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (37 KB)
 > **标签**: #domain-event #event-driven #ddd #loose-coupling
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Implementing Domain-Driven Design](https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/) - Vaughn Vernon
 > - [Domain-Driven Design](https://domainlanguage.com/ddd/) - Eric Evans
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

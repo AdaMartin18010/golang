@@ -1,7 +1,7 @@
 # LD-016: Go 标准库深度剖析 (Go Standard Library Deep Dive)
 
 > **维度**: Language Design
-> **级别**: S (18+ KB)
+> **级别**: S (22 KB)
 > **标签**: #stdlib #internals #source-analysis #performance #go-runtime
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Runtime](https://github.com/golang/go/tree/master/src/runtime) - Go Authors
 > - [Go Source Code Analysis](https://github.com/golang/go) - Open Source
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 标准库架构概览

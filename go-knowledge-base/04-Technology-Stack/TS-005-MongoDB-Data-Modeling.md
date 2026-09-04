@@ -1,7 +1,7 @@
 # TS-005: MongoDB Data Modeling - Schema Design & Go Implementation
 
 > **维度**: Technology Stack
-> **级别**: S (18+ KB)
+> **级别**: S (96 KB)
 > **标签**: #mongodb #nosql #data-modeling #document #go
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [MongoDB: The Definitive Guide](https://www.oreilly.com/library/view/mongodb-the-definitive/) - O'Reilly Media
 > - [Designing Data-Intensive Applications](https://dataintensive.net/) - Martin Kleppmann
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. MongoDB Storage Architecture

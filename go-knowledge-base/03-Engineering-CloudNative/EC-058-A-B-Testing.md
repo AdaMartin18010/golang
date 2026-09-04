@@ -9,6 +9,10 @@
 > - [Lean Analytics](https://www.oreilly.com/library/view/lean-analytics/9781449334915/) - Croll & Yoskovitz (2013)
 > - [Online Controlled Experiments at Scale](https://ai.stanford.edu/~ronnyk/2015%20Controlled%20Experiments%20on%20the%20Web%20Survey.pdf) - Kohavi et al. (2009)
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (26 KB)
+> **标签**: #ec
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Problem Formalization

@@ -4,6 +4,8 @@
 > **标签**: #distributed-systems #failure-cases #production-incidents #postmortem
 > **权威来源**: Industry Postmortems, Academic Papers, Real-world Incidents
 
+> **级别**: S (35 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Overview

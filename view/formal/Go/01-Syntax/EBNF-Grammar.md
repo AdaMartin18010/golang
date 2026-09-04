@@ -9,7 +9,7 @@
 
 # Go 语言 EBNF 语法与抽象语法的形式化对应
 
-> **范围**: Go 1.22 核心语法 | **关联文档**: Go-CSP-Formal | [VISUAL-ATLAS](../../../../../../VISUAL-ATLAS.md)
+> **范围**: Go 1.22 核心语法 | **关联文档**: Go-CSP-Formal | [VISUAL-ATLAS](../../../../VISUAL-ATLAS.md)
 
 ---
 
@@ -701,7 +701,7 @@ sequenceDiagram
 
 本文档包含的可视化资源已在项目中注册，详细信息请参阅：
 
-- **[VISUAL-ATLAS.md](../../../../../../VISUAL-ATLAS.md)** — 项目全部可视化资源的统一索引
+- **[VISUAL-ATLAS.md](../../../../VISUAL-ATLAS.md)** — 项目全部可视化资源的统一索引
 - **Go-CSP-Formal** — Go 并发子集的形式语法与语义对应
 
 ---

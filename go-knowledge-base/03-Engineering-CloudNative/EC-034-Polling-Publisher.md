@@ -1,7 +1,7 @@
 # EC-034: Polling Publisher Pattern (轮询发布者模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (44 KB)
 > **标签**: #polling-publisher #event-driven #reliability #outbox
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/) - Hohpe & Woolf
 > - [Outbox Pattern Implementation](https://debezium.io/blog/2019/02/19/reliable-microservices-integration-with-the-outbox-pattern/) - Debezium
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

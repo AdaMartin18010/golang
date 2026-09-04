@@ -1,5 +1,9 @@
 # AD-024: Video Streaming Platform Design
 
+> **维度**: Application Domains
+> **级别**: S (26 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Video streaming platforms deliver on-demand and live video content to millions of concurrent viewers across diverse devices and network conditions. These systems must handle massive storage requirements, adaptive bitrate streaming, content delivery at scale, and real-time analytics while ensuring high availability and low latency.

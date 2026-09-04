@@ -1,7 +1,7 @@
 # EC-011: Bulkhead Pattern Formal Analysis (S-Level)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (16+ KB)
+> **级别**: S (16 KB)
 > **标签**: #bulkhead #resilience #isolation #microservices #resource-management
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Microsoft Azure Bulkhead Pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/bulkhead) - Microsoft (2024)
 > - [Resilience4j Documentation](https://resilience4j.readme.io/docs/bulkhead) - Resilience4j Team
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 舱壁模式的形式化定义

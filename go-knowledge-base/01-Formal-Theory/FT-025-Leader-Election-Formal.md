@@ -10,6 +10,10 @@
 > - Chandra, T. D., & Toueg, S. (1996). "Unreliable Failure Detectors for Reliable Distributed Systems". JACM
 > - Lavallee, S., et al. (2023). "Leader Election: A Comprehensive Survey". ACM Computing Surveys
 
+> **维度**: Formal Theory
+> **级别**: S (57 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

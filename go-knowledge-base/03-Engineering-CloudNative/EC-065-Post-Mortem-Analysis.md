@@ -4,6 +4,9 @@
 > **标签**: #postmortem #blameless #sre #learning #continuous-improvement
 > **参考**: Google SRE, Etsy Blameless Post-Mortems, Etsy Morgue
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (66 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

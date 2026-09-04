@@ -1,5 +1,9 @@
 # Testing Frameworks Comparison
 
+> **维度**: Language Design
+> **级别**: S (20 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Testing frameworks vary significantly across languages in terms of features, syntax, and capabilities. This document compares testing approaches in Go, Rust, JavaScript, Java, Python, and C# with code examples and best practices.

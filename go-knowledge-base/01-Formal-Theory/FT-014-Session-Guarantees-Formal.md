@@ -1,5 +1,9 @@
 # FT-014: Session Guarantees - Formal Specification
 
+> **维度**: Formal Theory
+> **级别**: S (27 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ## Overview
 
 Session guarantees provide consistency semantics for client sessions in distributed systems, defining what a client can observe during a sequence of operations within a single session. These guarantees bridge the gap between strong consistency and high availability.

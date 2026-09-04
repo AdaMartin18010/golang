@@ -1,10 +1,11 @@
 # AD-008: 系统性能优化模式 (System Performance Optimization)
 
 > **维度**: Application Domains
-> **级别**: S (16+ KB)
+> **级别**: A (16 KB)
 > **标签**: #performance #optimization #profiling #caching #scalability
 > **权威来源**: [Systems Performance](https://www.brendangregg.com/systems-performance-2nd-edition.html) - Brendan Gregg
 
+> **Go 版本**: 1.27+
 ---
 
 ## 性能优化层次

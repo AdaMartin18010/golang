@@ -1,7 +1,7 @@
 # AD-001: DDD 战略模式的形式化分析 (DDD Strategic Patterns: Formal Analysis)
 
 > **维度**: Application Domains
-> **级别**: S (20+ KB)
+> **级别**: S (28 KB)
 > **标签**: #ddd #strategic-design #bounded-context #domain-driven-design #ubiquitous-language
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Strategic Domain-Driven Design Patterns](https://www.infoq.com/articles/ddd-contextmapping/) - InfoQ
 > - [A Formal Treatment of Domain-Driven Design](https://arxiv.org/abs/2102.00000) - arXiv (2021)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 领域驱动的形式化基础

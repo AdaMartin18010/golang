@@ -1,8 +1,9 @@
-﻿# AD-010: System Design Interview Preparation
+# AD-010: System Design Interview Preparation
 
-> **Dimension**: Application Domains
-> **Level**: S (20+ KB)
-> **Tags**: #system-design #interview #scalability #reliability #distributed-systems
+> **维度**: Application Domains
+> **级别**: S (20+ KB)
+> **标签**: #system-design #interview #scalability #reliability #distributed-systems
+> **Go 版本**: 1.27+
 
 ---
 

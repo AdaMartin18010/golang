@@ -3,6 +3,9 @@
 > **分类**: 成熟应用领域
 > **标签**: #ddd #domain-driven-design #architecture
 
+> **维度**: Application Domains
+> **级别**: S (19 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 实体 (Entity)

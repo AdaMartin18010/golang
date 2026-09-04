@@ -1,10 +1,11 @@
 # EC-100: Temporal 工作流引擎深度分析 (Temporal Workflow Engine Deep Dive)
 
 > **维度**: Engineering CloudNative
-> **级别**: S (25+ KB)
+> **级别**: S (20 KB)
 > **标签**: #temporal #workflow-engine #durable-execution #stateful
 > **相关**: EC-099, EC-112, FT-018
 
+> **Go 版本**: 1.27+
 ---
 
 ## 整合说明

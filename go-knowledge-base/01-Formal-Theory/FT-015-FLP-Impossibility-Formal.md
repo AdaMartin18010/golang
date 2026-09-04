@@ -1,5 +1,9 @@
 # FT-015: FLP Impossibility - Formal Analysis
 
+> **维度**: Formal Theory
+> **级别**: S (33 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ## Overview
 
 The Fischer, Lynch, and Paterson (FLP) impossibility result is a fundamental theorem in distributed systems theory. It proves that no deterministic consensus algorithm can guarantee termination in an asynchronous distributed system with at least one faulty process, even with reliable communication.

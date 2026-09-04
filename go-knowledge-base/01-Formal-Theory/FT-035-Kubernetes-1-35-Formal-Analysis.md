@@ -6,6 +6,10 @@
 > **Version**: Kubernetes 1.35 Formal Model
 > **Size**: >20KB
 
+> **维度**: Formal Theory
+> **级别**: B (1 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal System Model

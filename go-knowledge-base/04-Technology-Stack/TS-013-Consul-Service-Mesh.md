@@ -1,7 +1,7 @@
 # TS-013: Consul Service Mesh - Service Discovery & Connect
 
 > **维度**: Technology Stack
-> **级别**: S (16+ KB)
+> **级别**: S (28 KB)
 > **标签**: #consul #service-mesh #service-discovery #connect #go
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Consul Connect](https://developer.hashicorp.com/consul/docs/connect) - HashiCorp
 > - [Service Mesh Pattern](https://learn.hashicorp.com/collections/consul/service-mesh) - HashiCorp Learn
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Consul Architecture

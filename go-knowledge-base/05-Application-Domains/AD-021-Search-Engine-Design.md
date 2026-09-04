@@ -1,5 +1,9 @@
 # AD-021: Search Engine Design
 
+> **维度**: Application Domains
+> **级别**: S (27 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Search engines are complex distributed systems that index, store, and retrieve information from massive document collections. They must handle billions of documents, process thousands of queries per second, and return relevant results in milliseconds while continuously crawling and updating their indices.

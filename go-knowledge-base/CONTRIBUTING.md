@@ -577,7 +577,7 @@ For background on goroutines, see [Goroutines Deep Dive](
 
 Related patterns:
 - [Circuit Breaker](./EC-007-Circuit-Breaker-Formal.md)
-- [Retry Pattern](./EC-002-Retry-Pattern.md)
+- [Retry Pattern](./EC-125-Retry-Pattern.md)
 ```
 
 ### Cross-Reference Matrix

@@ -1,10 +1,11 @@
 # EC-099: Kubernetes CronJob 深度分析 (Kubernetes CronJob Deep Dive)
 
 > **维度**: Engineering CloudNative
-> **级别**: S (20+ KB)
+> **级别**: S (23 KB)
 > **标签**: #kubernetes #cronjob #controller #source-analysis
 > **相关**: EC-007, EC-008, EC-109
 
+> **Go 版本**: 1.27+
 ---
 
 ## 整合说明

@@ -10,6 +10,10 @@
 > - Das, A., et al. (2002). "SWIM: Scalable Weakly-consistent Infection-style Process Group Membership Protocol". DSN
 > - Leitão, J., et al. (2007). "Hyparview: A Membership Protocol for Reliable Gossip-Based Broadcast". Euromicro
 
+> **维度**: Formal Theory
+> **级别**: S (50 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

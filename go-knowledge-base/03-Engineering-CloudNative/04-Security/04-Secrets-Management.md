@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #security #secrets #vault
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 环境变量

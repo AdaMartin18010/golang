@@ -9,6 +9,10 @@
 > - Lamport, L. (1978). "Time, Clocks, and the Ordering of Events". CACM
 > - Ongaro, D., & Ousterhout, J. (2014). "In Search of an Understandable Consensus Algorithm". USENIX ATC
 
+> **维度**: Formal Theory
+> **级别**: S (27 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #deployment #operations #devops
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (21 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Kubernetes 部署

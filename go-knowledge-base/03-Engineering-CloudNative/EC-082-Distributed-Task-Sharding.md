@@ -4,6 +4,9 @@
 > **标签**: #sharding #distributed-tasks #consistent-hashing
 > **参考**: Elasticsearch Sharding, Kafka Partitioning
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (19 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 分片策略架构

@@ -7,6 +7,10 @@
 > **Size**: >25KB
 > **Formal Methods**: Mathematical Model Included
 
+> **维度**: Language Design
+> **级别**: A (15 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ---
 
 ## 1. GC Architecture Overview

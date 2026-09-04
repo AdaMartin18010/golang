@@ -1,7 +1,7 @@
 # LD-002: Go 并发原语的 CSP 形式化 (Go Concurrency: CSP Formalization)
 
 > **维度**: Language Design
-> **级别**: S (20+ KB)
+> **级别**: S (19 KB)
 > **标签**: #go-concurrency #csp #channel #goroutine #process-calculus
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Advanced Go Concurrency Patterns](https://talks.golang.org/2013/advconc.slide) - Sameer Ajmani (2013)
 > - [Session Types for Go](https://arxiv.org/abs/1305.6467) - Honda et al. (2025更新)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. CSP 进程代数基础

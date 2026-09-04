@@ -180,10 +180,10 @@ By the end of Week 4, you will be able to:
 **Reading Assignments:**
 
 - [Microservices Patterns](../03-Engineering-CloudNative/EC-001-Microservices.md)
-- [Circuit Breaker Pattern](../03-Engineering-CloudNative/EC-001-Circuit-Breaker-Pattern.md)
-- [Context Management](../03-Engineering-CloudNative/EC-005-Context-Management.md)
-- [Distributed Tracing](../03-Engineering-CloudNative/EC-006-Distributed-Tracing.md)
-- [Graceful Shutdown](../03-Engineering-CloudNative/EC-007-Graceful-Shutdown-Complete.md)
+- [Circuit Breaker Pattern](../03-Engineering-CloudNative/EC-123-Circuit-Breaker-Pattern.md)
+- [Context Management](../03-Engineering-CloudNative/EC-128-Context-Management.md)
+- [Distributed Tracing](../03-Engineering-CloudNative/EC-130-Distributed-Tracing.md)
+- [Graceful Shutdown](../03-Engineering-CloudNative/EC-132-Graceful-Shutdown-Complete.md)
 
 **Hands-on Exercises:**
 

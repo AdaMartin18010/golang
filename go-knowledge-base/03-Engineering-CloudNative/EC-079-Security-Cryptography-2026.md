@@ -4,6 +4,9 @@
 > **标签**: #security #cryptography #post-quantum #zerotrust #mtls #supply-chain #kubernetes
 > **参考**: NIST FIPS 203-205, CNCF Security Whitepaper, Trail of Bits Go Audit 2025
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (180 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Post-Quantum Cryptography (PQC)

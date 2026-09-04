@@ -1,7 +1,7 @@
 # LD-019: Go JSON 编码内部原理 (Go JSON Encoding Internals)
 
 > **维度**: Language Design
-> **级别**: S (17+ KB)
+> **级别**: S (22 KB)
 > **标签**: #json #encoding #reflection #performance #codegen #serialization
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [JSON and Go](https://go.dev/blog/json) - Go Authors
 > - [High Performance JSON](https://github.com/json-iterator/go-benchmark) - JSON Benchmarks
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. JSON 包架构

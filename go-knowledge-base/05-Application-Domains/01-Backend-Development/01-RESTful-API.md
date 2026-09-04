@@ -4,6 +4,10 @@
 > **Level**: S (18+ KB)
 > **Tags**: #rest #api #http #json #openapi
 
+> **维度**: Application Domains
+> **级别**: S (18 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ---
 
 ## 1. REST Principles

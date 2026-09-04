@@ -10,6 +10,10 @@
 > **Go Version Required**: 1.21+
 > **Estimated Reading Time**: 45 minutes
 
+> **维度**: Technology Stack
+> **级别**: S (55 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ---
 
 ## Table of Contents

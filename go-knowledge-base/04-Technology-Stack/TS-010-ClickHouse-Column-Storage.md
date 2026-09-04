@@ -1,7 +1,7 @@
 # TS-010: ClickHouse Column Storage - OLAP Engine Internals
 
 > **维度**: Technology Stack
-> **级别**: S (16+ KB)
+> **级别**: S (31 KB)
 > **标签**: #clickhouse #olap #column-storage #analytics #go
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [ClickHouse Source Code](https://github.com/ClickHouse/ClickHouse) - GitHub
 > - [Altinity Blog](https://altinity.com/blog/) - Altinity
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. ClickHouse Storage Architecture

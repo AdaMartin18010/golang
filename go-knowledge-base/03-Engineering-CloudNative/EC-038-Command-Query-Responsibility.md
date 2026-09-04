@@ -1,7 +1,7 @@
 # EC-038: Command Query Responsibility Segregation (CQRS)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (37 KB)
 > **标签**: #cqrs #read-model #write-model #event-sourcing
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [CQRS Documents](https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf) - Greg Young
 > - [Implementing Domain-Driven Design](https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/) - Vaughn Vernon
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

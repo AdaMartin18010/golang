@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #lock-free #atomic #performance
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (17 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Atomic 操作

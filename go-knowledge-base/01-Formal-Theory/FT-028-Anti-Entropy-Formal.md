@@ -10,6 +10,10 @@
 > - Minsky, Y., et al. (2003). "Set Reconciliation with Nearly Optimal Communication Complexity". IEEE TIT
 > - Ladin, R., et al. (1992). "Providing High Availability Using Lazy Replication". ACM TOCS
 
+> **维度**: Formal Theory
+> **级别**: S (40 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

@@ -1,7 +1,7 @@
 # LD-008: Go 错误处理模式 (Go Error Handling Patterns)
 
 > **维度**: Language Design
-> **级别**: S (40+ KB)
+> **级别**: S (27 KB)
 > **标签**: #error-handling #patterns #sentinel-errors #error-wrapping #go113
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Working with Errors in Go 1.13](https://go.dev/blog/go1.13-errors) - Damien Neil
 > - [Clean Architecture](https://blog.cleancoder.com/) - Robert C. Martin
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 错误处理基础

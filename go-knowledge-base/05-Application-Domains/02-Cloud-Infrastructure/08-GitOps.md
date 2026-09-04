@@ -3,6 +3,9 @@
 > **分类**: 成熟应用领域
 > **标签**: #gitops #argocd #flux
 
+> **维度**: Application Domains
+> **级别**: S (18 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## GitOps 原则

@@ -1,13 +1,14 @@
 # TS-DB-012: Database Replication Strategies
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: S (17 KB)
 > **标签**: #replication #postgresql #mysql #high-availability #master-slave
 > **权威来源**:
 >
 > - [PostgreSQL Streaming Replication](https://www.postgresql.org/docs/current/warm-standby.html) - PostgreSQL
 > - [MySQL Replication](https://dev.mysql.com/doc/refman/8.0/en/replication.html) - MySQL
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Replication Architecture

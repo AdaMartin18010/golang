@@ -613,7 +613,7 @@ $$
 
 ## 8. 关联可视化资源
 
-本文档涉及的可视化资源已按项目规范归档，详见项目根目录的 [VISUAL-ATLAS.md](../../../../../VISUAL-ATLAS.md)。
+本文档涉及的可视化资源已按项目规范归档，详见项目根目录的 [VISUAL-ATLAS.md](../../../../VISUAL-ATLAS.md)。
 
 - **概念依赖图**: `visualizations/mindmaps/FG-Concept-Dependency.mmd`
 - **公理-定理推理树图**: `visualizations/proof-trees/FG-Axiom-Theorem-Tree.mmd`

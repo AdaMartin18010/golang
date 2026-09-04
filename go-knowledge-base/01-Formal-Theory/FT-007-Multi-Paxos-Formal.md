@@ -1,7 +1,7 @@
 # FT-007: Multi-Paxos 的形式化理论与实践 (Multi-Paxos: Formal Theory & Practice)
 
 > **维度**: Formal Theory
-> **级别**: S (22+ KB)
+> **级别**: S (36 KB)
 > **标签**: #multi-paxos #consensus #log-replication #distributed-systems #optimization
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Raft: Understandable Consensus](https://raft.github.io/raft.pdf) - Ongaro & Ousterhout (2014)
 > - [Flexible Paxos](https://arxiv.org/abs/1608.06696) - Howard et al. (2016)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 从 Paxos 到 Multi-Paxos

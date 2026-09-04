@@ -1,7 +1,7 @@
 # TS-CL-009: Go regexp Package - Deep Architecture and Pattern Matching
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (16+ KB)
+> **级别**: A (16 KB)
 > **标签**: #golang #regexp #regex #pattern-matching #text-processing
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [RE2 Syntax](https://github.com/google/re2/wiki/Syntax) - RE2 regex syntax
 > - [Regular Expressions](https://swtch.com/~rsc/regexp/regexp1.html) - Russ Cox
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Regexp Architecture Deep Dive

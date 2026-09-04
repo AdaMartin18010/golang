@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #distributed-tracing #opentelemetry #observability #deep-dive
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (22 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 追踪模型架构

@@ -1,7 +1,7 @@
 # AD-003: 微服务拆分的形式化方法 (Microservices Decomposition: Formal Methods)
 
 > **维度**: Application Domains
-> **级别**: S (16+ KB)
+> **级别**: S (23 KB)
 > **标签**: #microservices #decomposition #ddd #bounded-context #service-boundary
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [The Art of Scalability](https://www.amazon.com/Art-Scalability-Architecture-Organizations-Enterprise/dp/0134032802) - Abbott & Fisher (2015)
 > - [Microservices AntiPatterns and Pitfalls](https://www.oreilly.com/library/view/microservices-antipatterns-and/9781492042718/) - Mark Richards (2016)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 服务拆分的形式化定义

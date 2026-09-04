@@ -4,6 +4,9 @@
 > **标签**: #observability #odd #monitoring #telemetry #sre
 > **参考**: Google SRE, OpenTelemetry, Site Reliability Engineering
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (69 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

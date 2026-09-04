@@ -1,7 +1,7 @@
 # TS-DB-001: Database Connectivity in Go
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **标签**: #golang #database #sql #connection-pool #datasource
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go database/sql tutorial](http://go-database-sql.org/) - VividCortex
 > - [SQL Injection Prevention](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html) - OWASP
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. database/sql Architecture

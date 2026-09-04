@@ -1,7 +1,7 @@
 # EC-033: Transactional Outbox Pattern (事务发件箱模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (58 KB)
 > **标签**: #transactional-outbox #event-driven #at-least-once #reliability
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Implementing the Outbox Pattern](https://debezium.io/blog/2019/02/19/reliable-microservices-integration-with-the-outbox-pattern/) - Debezium
 > - [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/) - Hohpe & Woolf
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

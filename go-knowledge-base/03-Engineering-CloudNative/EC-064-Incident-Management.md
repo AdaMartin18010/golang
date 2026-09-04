@@ -4,6 +4,9 @@
 > **标签**: #incident-management #sre #response #command #communication
 > **参考**: Google SRE, PagerDuty, NIST SP 800-61
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (61 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

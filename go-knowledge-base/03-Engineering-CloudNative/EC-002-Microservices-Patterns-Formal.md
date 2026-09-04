@@ -1,7 +1,7 @@
 # EC-002: 微服务模式的形式化 (Microservices Patterns: Formalization)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (30+ KB)
+> **级别**: S (32 KB)
 > **标签**: #microservices #patterns #api-gateway #service-discovery #load-balancing #circuit-breaker
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Designing Distributed Systems](https://www.oreilly.com/library/view/designing-distributed-systems/9781491983635/) - Brendan Burns (2018)
 > - [Building Microservices](https://samnewman.io/books/building_microservices/) - Sam Newman (2021)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 问题形式化

@@ -7,6 +7,10 @@
 > **Size**: >20KB
 > **Formal Methods**: TLA+ Specification
 
+> **维度**: Formal Theory
+> **级别**: A (12 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Paxos Problem Statement

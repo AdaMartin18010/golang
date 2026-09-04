@@ -4,6 +4,9 @@
 > **标签**: #resource-management #quota #multi-tenancy #kubernetes
 > **参考**: Kubernetes ResourceQuota, Linux Cgroups v2, Borg Quota System
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (17 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 核心问题

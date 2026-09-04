@@ -1,7 +1,7 @@
 # TS-004: Elasticsearch Query DSL - Internals & Go Implementation
 
 > **维度**: Technology Stack
-> **级别**: S (18+ KB)
+> **级别**: S (109 KB)
 > **标签**: #elasticsearch #search #lucene #query-dsl #go
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Lucene in Action](https://lucene.apache.org/core/) - Apache Lucene
 > - [Elasticsearch: The Definitive Guide](https://www.elastic.co/guide/en/elasticsearch/guide/current/index.html)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Elasticsearch Internal Architecture

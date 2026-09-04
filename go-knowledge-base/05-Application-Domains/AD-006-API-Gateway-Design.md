@@ -4,6 +4,10 @@
 > **Level**: S (17+ KB)
 > **Tags**: #api-gateway #routing #rate-limiting #authentication #load-balancing
 
+> **维度**: Application Domains
+> **级别**: A (15 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ---
 
 ## 1. API Gateway Architecture

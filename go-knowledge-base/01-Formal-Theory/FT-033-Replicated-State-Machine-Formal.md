@@ -9,6 +9,10 @@
 > - Lamport, L. (1984). "Using Time Instead of Timeout for Fault-Tolerant Distributed Systems". ACM TOPLAS
 > - Van Renesse, R., & Altinbuken, D. (2015). "Paxos Made Moderately Complex". ACM CSUR
 
+> **维度**: Formal Theory
+> **级别**: S (30 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Model

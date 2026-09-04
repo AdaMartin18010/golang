@@ -1,5 +1,9 @@
 # TS-022: Docker Container Runtime
 
+> **维度**: Technology Stack
+> **级别**: S (31 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Docker is a platform for developing, shipping, and running applications in containers. It uses OS-level virtualization to deliver software in packages called containers, which are isolated from each other and bundle their own software, libraries, and configuration files.

@@ -1,5 +1,9 @@
 # AD-017: Financial System Design
 
+> **维度**: Application Domains
+> **级别**: S (42 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Financial systems represent one of the most demanding application domains in software engineering, requiring extreme reliability, strong consistency, comprehensive audit trails, and strict regulatory compliance. These systems handle monetary transactions, securities trading, banking operations, insurance processing, and payment processing - where errors can have significant financial and legal consequences.

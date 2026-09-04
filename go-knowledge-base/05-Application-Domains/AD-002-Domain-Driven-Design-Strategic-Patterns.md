@@ -1,10 +1,11 @@
 # AD-002: 领域驱动设计战略模式 (Domain-Driven Design Strategic Patterns)
 
 > **维度**: Application Domains
-> **级别**: S (25+ KB)
+> **级别**: S (23 KB)
 > **标签**: #ddd #domain-driven-design #bounded-context #strategic-design
 > **权威来源**: [Domain-Driven Design](https://www.domainlanguage.com/ddd/) - Eric Evans, [Implementing DDD](https://www.amazon.com/Implementing-Domain-Driven-Design-Vaughn-Vernon/dp/0321834577) - Vaughn Vernon
 
+> **Go 版本**: 1.27+
 ---
 
 ## DDD 核心概念

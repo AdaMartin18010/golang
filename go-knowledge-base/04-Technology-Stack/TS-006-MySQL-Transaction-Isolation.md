@@ -1,7 +1,7 @@
 # TS-006: MySQL Transaction Isolation - InnoDB Internals & Go Implementation
 
 > **维度**: Technology Stack
-> **级别**: S (18+ KB)
+> **级别**: S (114 KB)
 > **标签**: #mysql #innodb #transactions #mvcc #isolation-levels
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [InnoDB Internals](https://dev.mysql.com/doc/dev/mysql-server/latest/) - MySQL Source
 > - [High Performance MySQL](https://www.oreilly.com/library/view/high-performance-mysql/) - O'Reilly Media
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. InnoDB Storage Architecture

@@ -1,5 +1,9 @@
 # Go vs Kotlin: Android and Server-Side Comparison
 
+> **维度**: Language Design
+> **级别**: S (20 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Go and Kotlin both target modern software development but serve different ecosystems. Kotlin excels in Android development and JVM-based server applications with null safety, while Go dominates cloud infrastructure with simplicity. This document compares Android development, server-side capabilities, and language features.

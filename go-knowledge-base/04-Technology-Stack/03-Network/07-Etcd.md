@@ -1,12 +1,13 @@
 # TS-NET-007: etcd - Distributed Key-Value Store
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: S (23 KB)
 > **标签**: #etcd #distributed-systems #key-value #consensus #raft
 > **权威来源**:
 >
 > - [etcd Documentation](https://etcd.io/docs/) - etcd project
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. etcd Architecture

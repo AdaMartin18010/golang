@@ -1,13 +1,14 @@
 # TS-CL-014: Go Channels Advanced Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (22+ KB)
+> **级别**: S (17 KB)
 > **标签**: #golang #channels #goroutines #concurrency #patterns
 > **权威来源**:
 >
 > - [Go Concurrency Patterns](https://go.dev/blog/pipelines) - Go Blog
 > - [Advanced Concurrency](https://go.dev/talks/2012/concurrency.slide) - Rob Pike
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Channel Architecture

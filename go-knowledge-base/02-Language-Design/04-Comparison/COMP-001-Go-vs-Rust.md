@@ -1,5 +1,9 @@
 # Go vs Rust: Comprehensive Language Comparison
 
+> **维度**: Language Design
+> **级别**: S (17 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Go and Rust represent two distinct philosophies in systems programming: Go prioritizes simplicity and developer productivity with a garbage collector, while Rust emphasizes memory safety without garbage collection through its ownership system. This document provides an in-depth comparison across multiple dimensions.

@@ -3,6 +3,9 @@
 > **分类**: 成熟应用领域
 > **标签**: #platform-engineering #developer-experience #internal-platform
 
+> **维度**: Application Domains
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 内部开发者平台 (IDP)

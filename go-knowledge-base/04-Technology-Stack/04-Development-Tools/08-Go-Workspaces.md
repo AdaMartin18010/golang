@@ -1,13 +1,14 @@
 # TS-DT-008: Go Workspaces (Go 1.18+)
 
 > **维度**: Technology Stack > Development Tools
-> **级别**: S (16+ KB)
+> **级别**: S (21 KB)
 > **标签**: #go-workspaces #go-modules #multi-module #development
 > **权威来源**:
 >
 > - [Go Workspaces Tutorial](https://go.dev/doc/tutorial/workspaces) - Go team
 > - [Workspace Mode](https://go.dev/ref/mod#workspaces) - Go modules reference
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Workspace Architecture

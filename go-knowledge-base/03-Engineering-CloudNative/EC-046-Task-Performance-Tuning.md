@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #performance #optimization #tuning
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 性能基准测试

@@ -4,6 +4,9 @@
 > **标签**: #alerting #monitoring #sre #oncall #incident-response
 > **参考**: Google SRE, Prometheus Alerting, PagerDuty Best Practices
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (68 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

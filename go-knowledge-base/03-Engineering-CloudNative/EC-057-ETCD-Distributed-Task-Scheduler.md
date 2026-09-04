@@ -4,6 +4,9 @@
 > **标签**: #etcd #distributed-systems #task-scheduler #raft
 > **参考**: etcd v3.5+, Kubernetes controller patterns, Raft consensus
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 架构概述

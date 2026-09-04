@@ -1,7 +1,7 @@
 # LD-011: Go 垃圾回收算法与内存管理 (Go GC Algorithm & Memory Management)
 
 > **维度**: Language Design
-> **级别**: S (25+ KB)
+> **级别**: S (54 KB)
 > **标签**: #garbage-collection #tricolor #concurrent-gc #write-barrier #memory-management #tri-color #greentea-gc #go126 #page-scanning
 > **权威来源**:
 >
@@ -13,6 +13,7 @@
 > - [Green Tea GC: Accelerating Go Garbage Collection](https://go.dev/s/greenteagc) - Go Authors (2026)
 > - [AVX-512 for Memory Intensive Workloads](https://dl.acm.org/doi/10.1145/3307650.3322228) - IEEE (2020)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化基础

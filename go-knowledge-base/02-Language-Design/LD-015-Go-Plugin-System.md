@@ -1,7 +1,7 @@
 # LD-015: Go 插件系统与动态加载 (Go Plugin System & Dynamic Loading)
 
 > **维度**: Language Design
-> **级别**: S (20+ KB)
+> **级别**: S (47 KB)
 > **标签**: #plugin #dynamic-loading #shared-library #dlopen #runtime-linking #modules
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Dynamic Linking](https://dl.acm.org/doi/10.1145/263690.263760) - Levine (2000)
 > - [Dynamic Module Loading](https://dl.acm.org/doi/10.1145/263690.263761) - Gingell et al. (1987)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化基础

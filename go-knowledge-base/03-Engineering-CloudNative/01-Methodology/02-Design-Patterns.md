@@ -1,7 +1,7 @@
 # EC-M02: Design Patterns in Go (S-Level)
 
 > **维度**: Engineering-CloudNative / Methodology
-> **级别**: S (18+ KB)
+> **级别**: S (38 KB)
 > **标签**: #design-patterns #go #creational #structural #behavioral #concurrency
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Concurrency in Go](https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/) - Katherine Cox-Buday (2017)
 > - [Cloud Native Go](https://www.oreilly.com/library/view/cloud-native-go/9781492076322/) - Matthew A. Titmus (2021)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 设计模式的形式化分类

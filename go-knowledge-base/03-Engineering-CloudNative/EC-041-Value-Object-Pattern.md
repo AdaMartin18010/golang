@@ -1,7 +1,7 @@
 # EC-041: Value Object Pattern (值对象模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (31 KB)
 > **标签**: #value-object #immutable #ddd #functional
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Domain-Driven Design](https://domainlanguage.com/ddd/) - Eric Evans
 > - [Implementing Domain-Driven Design](https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/) - Vaughn Vernon
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

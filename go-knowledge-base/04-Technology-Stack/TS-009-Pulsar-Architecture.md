@@ -1,7 +1,7 @@
 # TS-009: Apache Pulsar Architecture - Distributed Messaging
 
 > **维度**: Technology Stack
-> **级别**: S (16+ KB)
+> **级别**: S (30 KB)
 > **标签**: #pulsar #messaging #streaming #tiered-storage #go
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Pulsar Architecture](https://pulsar.apache.org/docs/concepts-architecture-overview/) - Apache Pulsar
 > - [StreamNative Blog](https://streamnative.io/blog/) - StreamNative
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Pulsar Architecture Overview

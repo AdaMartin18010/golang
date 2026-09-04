@@ -1,8 +1,9 @@
-﻿# Authentication Patterns
+# Authentication Patterns
 
-> **Dimension**: Application Domains
-> **Level**: S (18+ KB)
-> **Tags**: #authentication #jwt #oauth #session #security
+> **维度**: Application Domains
+> **级别**: S (18+ KB)
+> **标签**: #authentication #jwt #oauth #session #security
+> **Go 版本**: 1.27+
 
 ---
 

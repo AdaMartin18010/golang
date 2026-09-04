@@ -1,13 +1,14 @@
 # TS-DB-010: Database Sharding Strategies
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **标签**: #sharding #partitioning #scalability #database #distributed
 > **权威来源**:
 >
 > - [Database Sharding](https://docs.microsoft.com/en-us/azure/architecture/patterns/sharding) - Microsoft Azure
 > - [PostgreSQL Partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html) - PostgreSQL
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Sharding Architecture

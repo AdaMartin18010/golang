@@ -1,13 +1,14 @@
 # EC-012: 限流模式的形式化 (Rate Limiting: Formalization)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (15+ KB)
+> **级别**: A (15 KB)
 > **标签**: #rate-limiting #throttling #token-bucket #leaky-bucket
 > **权威来源**:
 >
 > - [Rate Limiting](https://stripe.com/blog/rate-limiters) - Stripe
 > - [Token Bucket](https://en.wikipedia.org/wiki/Token_bucket) - Wikipedia
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化定义

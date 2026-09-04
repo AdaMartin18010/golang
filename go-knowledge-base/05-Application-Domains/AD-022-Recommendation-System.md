@@ -1,5 +1,9 @@
 # AD-022: Recommendation System Design
 
+> **维度**: Application Domains
+> **级别**: S (31 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Recommendation systems power personalized content discovery across e-commerce, streaming media, social networks, and digital platforms. These systems must process massive user interaction data, build comprehensive user profiles, and generate relevant recommendations in milliseconds while handling cold-start problems and maintaining diversity in suggestions.

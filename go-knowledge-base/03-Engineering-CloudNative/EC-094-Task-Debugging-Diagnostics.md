@@ -4,6 +4,9 @@
 > **标签**: #debugging #diagnostics #profiling
 > **参考**: Go Diagnostics, Distributed Tracing
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 调试架构

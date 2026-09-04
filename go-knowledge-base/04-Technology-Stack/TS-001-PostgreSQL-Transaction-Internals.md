@@ -1,10 +1,11 @@
 # TS-001: PostgreSQL 事务内部机制 (PostgreSQL Transaction Internals)
 
 > **维度**: Technology Stack
-> **级别**: S (25+ KB)
+> **级别**: S (82 KB)
 > **标签**: #postgresql #mvcc #transaction-isolation #wal
 > **权威来源**: [PostgreSQL Docs](https://www.postgresql.org/docs/current/transaction-iso.html), [PostgreSQL Internals](https://www.interdb.jp/pg/), [The Internals of PostgreSQL](http://www.interdb.jp/pg/pgsql01.html)
 
+> **Go 版本**: 1.27+
 ---
 
 ## MVCC 核心架构

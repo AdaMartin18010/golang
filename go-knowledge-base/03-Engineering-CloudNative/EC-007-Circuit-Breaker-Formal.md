@@ -1,7 +1,7 @@
 # EC-007: 断路器模式的形式化分析 (Circuit Breaker: Formal Analysis)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (17+ KB)
+> **级别**: S (17 KB)
 > **标签**: #circuit-breaker #resilience #fault-tolerance #state-machine #microservices
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Resilience4j Documentation](https://resilience4j.readme.io/) - Resilience4j Team (2025)
 > - [The Tail at Scale](https://cacm.acm.org/magazines/2013/2/160173-the-tail-at-scale/) - Dean & Barroso (2013)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 断路器的形式化定义

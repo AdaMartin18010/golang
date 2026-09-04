@@ -4,6 +4,9 @@
 > **标签**: #async #task #patterns #event-driven
 > **参考**: CQRS, Event Sourcing, Saga Pattern
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (21 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 异步任务架构

@@ -4,6 +4,9 @@
 > **标签**: #cancellation #context #propagation #graceful-shutdown
 > **参考**: Go Context, Distributed Cancellation
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 取消传播架构

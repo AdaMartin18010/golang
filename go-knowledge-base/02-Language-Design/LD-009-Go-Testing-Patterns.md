@@ -1,7 +1,7 @@
 # LD-009: Go 测试模式 (Go Testing Patterns)
 
 > **维度**: Language Design
-> **级别**: S (35+ KB)
+> **级别**: S (30 KB)
 > **标签**: #testing #patterns #table-driven #mock #benchmark
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Table Driven Tests](https://github.com/golang/go/wiki/TableDrivenTests) - Go Wiki
 > - [Advanced Testing in Go](https://speakerdeck.com/campoy/advanced-testing-in-go) - Francesc Campoy
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 测试基础

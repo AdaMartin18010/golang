@@ -1,7 +1,7 @@
 # EC-004: API 设计原则的形式化 (API Design: Formal Principles)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (30+ KB)
+> **级别**: S (28 KB)
 > **标签**: #api #rest #grpc #design #versioning #openapi
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [OpenAPI Specification](https://swagger.io/specification/) - OpenAPI Initiative
 > - [Microsoft REST API Guidelines](https://github.com/Microsoft/api-guidelines) - Microsoft
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 问题形式化

@@ -306,7 +306,7 @@ Phase 5: Advanced Internals (Weeks 9-10)
 ```
 Phase 1: Transaction Theory (Weeks 1-3)
 ├── TS-001: PostgreSQL Transaction Internals
-├── TS-001-PostgreSQL-Transaction-Formal.md
+├── TS-047-PostgreSQL-Transaction-Formal.md
 └── EC-065: Database Transaction Isolation MVCC
     │
     ▼

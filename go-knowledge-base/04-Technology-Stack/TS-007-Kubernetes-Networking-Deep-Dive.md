@@ -1,11 +1,12 @@
 # TS-007: Kubernetes 网络深度解析 (Kubernetes Networking Deep Dive)
 
 > **维度**: Technology Stack
-> **级别**: S (18+ KB)
+> **级别**: A (15 KB)
 > **标签**: #kubernetes #networking #cni #service-mesh #iptables
 > **权威来源**: [K8s Networking](https://kubernetes.io/docs/concepts/services-networking/), [CNI Spec](https://www.cni.dev/)
 > **K8s 版本**: 1.34+
 
+> **Go 版本**: 1.27+
 ---
 
 ## K8s 网络模型

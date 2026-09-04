@@ -4,6 +4,9 @@
 > **标签**: #benchmarking #performance #testing #methodology
 > **参考**: Google Benchmark, JMH, Performance Testing Best Practices
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (17 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 性能测试框架

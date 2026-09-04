@@ -1,7 +1,7 @@
 # LD-012: Go 链接器与构建过程 (Go Linker & Build Process)
 
 > **维度**: Language Design
-> **级别**: S (16+ KB)
+> **级别**: S (20 KB)
 > **标签**: #linker #build #compiler #obj #elf
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Build Modes](https://go.dev/doc/go1.5#link) - Go Release Notes
 > - [ELF Format](https://refspecs.linuxfoundation.org/elf/elf.pdf) - System V ABI
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 构建流程

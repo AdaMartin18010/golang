@@ -1,13 +1,14 @@
 # TS-NET-003: Echo Web Framework
 
 > **维度**: Technology Stack > Network
-> **级别**: S (18+ KB)
+> **级别**: S (19 KB)
 > **标签**: #echo #web-framework #golang #middleware #routing
 > **权威来源**:
 >
 > - [Echo Documentation](https://echo.labstack.com/) - Official docs
 > - [Echo GitHub](https://github.com/labstack/echo) - Source code
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Echo Architecture Deep Dive

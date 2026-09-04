@@ -4,6 +4,9 @@
 > **标签**: #production #complete-implementation #distributed-systems
 > **参考**: Kubernetes Scheduler, HashiCorp Nomad, AWS Batch
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (28 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 目录

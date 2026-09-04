@@ -6,6 +6,10 @@
 > **Version**: 2026 (Raft, Paxos, PBFT, HotStuff, Snow)
 > **Size**: >20KB
 
+> **维度**: Formal Theory
+> **级别**: A (11 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 共识问题定义

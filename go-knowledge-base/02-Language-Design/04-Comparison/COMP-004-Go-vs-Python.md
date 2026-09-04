@@ -1,5 +1,9 @@
 # Go vs Python: Productivity and Deployment Comparison
 
+> **维度**: Language Design
+> **级别**: S (18 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Go and Python serve different but overlapping domains. Python dominates data science and scripting with its dynamic nature, while Go excels in production systems with static typing and compiled binaries. This document compares productivity, type systems, and deployment characteristics.

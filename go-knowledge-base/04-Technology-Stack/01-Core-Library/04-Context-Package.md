@@ -1,7 +1,7 @@
 # TS-CL-004: Go Context Package - Deep Architecture and Cancellation Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (20+ KB)
+> **级别**: S (20 KB)
 > **标签**: #golang #context #cancellation #deadline #timeout #tracing
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Concurrency Patterns: Context](https://go.dev/blog/context) - Go Blog
 > - [Understanding Context](https://medium.com/@cep21/go-contexts-3-examples-4e63725f31f2) - Practical examples
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Context Architecture Deep Dive

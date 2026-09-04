@@ -1,10 +1,11 @@
 # TS-003: Kafka 4.0 KRaft 内部机制 (Kafka 4.0 KRaft Internals)
 
 > **维度**: Technology Stack
-> **级别**: S (20+ KB)
+> **级别**: A (15 KB)
 > **标签**: #kafka40 #kraft #raft #consensus #zookeeper-removal
 > **权威来源**: [KIP-500](https://cwiki.apache.org/confluence/display/KAFKA/KIP-500), [Kafka 4.0 Release Notes](https://kafka.apache.org/documentation/#upgrade_4_0_0)
 
+> **Go 版本**: 1.27+
 ---
 
 ## KRaft 演进

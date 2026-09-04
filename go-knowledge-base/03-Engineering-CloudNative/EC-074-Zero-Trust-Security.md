@@ -4,6 +4,9 @@
 > **标签**: #zerotrust #security #identity #microsegmentation #mfa
 > **参考**: NIST SP 800-207, Google BeyondCorp, Microsoft Zero Trust
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (31 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

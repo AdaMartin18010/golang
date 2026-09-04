@@ -1,5 +1,9 @@
 # Error Handling Comparison: Go vs Other Languages
 
+> **维度**: Language Design
+> **级别**: S (17 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Error handling is a fundamental aspect of software reliability. Go's explicit error returns contrast with exceptions in Java/Python, Result types in Rust, and optionals in Swift. This document compares approaches across languages with code examples and best practices.

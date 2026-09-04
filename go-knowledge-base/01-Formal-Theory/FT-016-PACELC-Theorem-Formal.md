@@ -1,5 +1,9 @@
 # FT-016: PACELC Theorem - Formal Specification
 
+> **维度**: Formal Theory
+> **级别**: S (40 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ## Overview
 
 PACELC is an extension of the CAP theorem that unifies the trade-off between consistency and latency. It states that in a distributed system:

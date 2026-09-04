@@ -1,5 +1,9 @@
 # TS-023: Envoy Proxy Configuration
 
+> **维度**: Technology Stack
+> **级别**: S (35 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Envoy is a high-performance C++ distributed proxy designed for single services and applications, as well as a large communication bus and "universal data plane" designed for large microservice mesh architectures. Originally built at Lyft, Envoy is now a graduated CNCF project.

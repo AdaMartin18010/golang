@@ -197,7 +197,7 @@ Proof:
 
 | Document | Size | Depth | Visuals | Code |
 |----------|------|-------|---------|------|
-| EC-002-Retry-Pattern.md | 14KB | Algorithm analysis, backoff strategies | 3 diagrams | Full implementation |
+| EC-125-Retry-Pattern.md | 14KB | Algorithm analysis, backoff strategies | 3 diagrams | Full implementation |
 | LD-003-Go-GC-Algorithm.md | 16KB | Tri-color algorithm, tuning | 3 diagrams | Benchmark code |
 | TS-001-PostgreSQL-Transaction-Internals.md | 18KB | MVCC, isolation levels | 4 diagrams | SQL examples |
 

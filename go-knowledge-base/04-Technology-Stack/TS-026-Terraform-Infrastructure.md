@@ -1,5 +1,9 @@
 # TS-026: Terraform Infrastructure
 
+> **维度**: Technology Stack
+> **级别**: S (32 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Terraform is an open-source infrastructure as code (IaC) tool created by HashiCorp. It enables users to define and provision data center infrastructure using a declarative configuration language known as HashiCorp Configuration Language (HCL), or optionally JSON.

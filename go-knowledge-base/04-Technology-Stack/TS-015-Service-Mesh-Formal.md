@@ -1,7 +1,7 @@
 # TS-015: 服务网格的形式化架构 (Service Mesh: Formal Architecture)
 
 > **维度**: Technology Stack
-> **级别**: S (16+ KB)
+> **级别**: S (17 KB)
 > **标签**: #service-mesh #istio #envoy #sidecar #traffic-management
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [SMI (Service Mesh Interface) Spec](https://smi-spec.io/) - CNCF (2024)
 > - [Istio: Zero Trust Networking](https://istio.io/latest/docs/concepts/security/) - Istio Team (2025)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 服务网格的形式化定义

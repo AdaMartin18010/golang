@@ -9,6 +9,10 @@
 > - Jelasity, M., et al. (2005). "Gossip-based Aggregation in Large Dynamic Networks". ACM TOCS
 > - Boyd, S., et al. (2006). "Randomized Gossip Algorithms". IEEE TIT
 
+> **维度**: Formal Theory
+> **级别**: S (49 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

@@ -1,7 +1,7 @@
 # LD-022: Go 上下文传播机制 (Go Context Propagation)
 
 > **维度**: Language Design
-> **级别**: S (17+ KB)
+> **级别**: S (20 KB)
 > **标签**: #context #cancellation #timeout #deadline #propagation #request-scoped
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Concurrency Patterns: Context](https://go.dev/blog/context) - Sameer Ajmani
 > - [Context Best Practices](https://rakyll.org/context/) - rakyll
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Context 设计原理

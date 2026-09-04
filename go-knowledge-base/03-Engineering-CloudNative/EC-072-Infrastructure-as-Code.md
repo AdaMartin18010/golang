@@ -4,6 +4,9 @@
 > **标签**: #iac #terraform #pulumi #cloudformation #automation
 > **参考**: Terraform Best Practices, AWS Well-Architected, Azure CAF
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (33 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

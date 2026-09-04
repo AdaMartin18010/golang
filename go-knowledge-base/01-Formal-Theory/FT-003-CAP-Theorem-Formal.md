@@ -1,7 +1,7 @@
 # FT-003: CAP 定理的形式化理论与实践 (CAP Theorem: Formal Theory & Practice)
 
 > **维度**: Formal Theory
-> **级别**: S (20+ KB)
+> **级别**: S (36 KB)
 > **标签**: #cap-theorem #consistency #availability #partition-tolerance #trade-offs
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Perspectives on the CAP Theorem](https://ieeexplore.ieee.org/document/6133253) - Gilbert & Lynch (2012)
 > - [Consistency Tradeoffs in Modern Distributed Database Systems](https://www.comp.nus.edu.sg/~dbsystem/diesel/#/default/resources) - Abadi (2012)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. CAP 定理的形式化定义

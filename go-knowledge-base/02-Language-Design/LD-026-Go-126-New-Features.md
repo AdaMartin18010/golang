@@ -1,7 +1,7 @@
 # LD-026: Go 1.26 新特性深度解析 (Go 1.26 New Features Deep Dive)
 
 > **维度**: Language Design
-> **级别**: S (30+ KB)
+> **级别**: S (43 KB)
 > **标签**: #go126 #new-features #builtins #generics #simd #crypto #hpke #cgo
 > **权威来源**:
 >
@@ -12,6 +12,7 @@
 > - [CGO Performance Improvements](https://go.dev/s/cgoimprovements) - Go Authors
 > - [HPKE Standard](https://www.rfc-editor.org/rfc/rfc9180.html) - IETF RFC 9180
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 概述

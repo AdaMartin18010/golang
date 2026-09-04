@@ -1,11 +1,12 @@
 # TS-014: gRPC 内部机制深度解析 (gRPC Internals)
 
 > **维度**: Technology Stack
-> **级别**: S (17+ KB)
+> **级别**: S (17 KB)
 > **标签**: #grpc #protobuf #http2 #rpc #streaming
 > **权威来源**: [gRPC Documentation](https://grpc.io/docs/), [gRPC Core](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md)
 > **版本**: gRPC 1.70+
 
+> **Go 版本**: 1.27+
 ---
 
 ## gRPC 架构

@@ -4,6 +4,9 @@
 > **标签**: #raft #consensus #distributed-systems #etcd
 > **参考**: Raft Paper, etcd Raft, Consul
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (18 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 目录

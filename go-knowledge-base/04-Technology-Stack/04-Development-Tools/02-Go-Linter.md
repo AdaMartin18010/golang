@@ -1,7 +1,7 @@
 # TS-DT-002: Go Linting and Static Analysis
 
 > **维度**: Technology Stack > Development Tools
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **标签**: #golangci-lint #static-analysis #code-quality #linting
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Vet](https://golang.org/cmd/vet/) - Go standard tool
 > - [Static Analysis](https://pkg.go.dev/golang.org/x/tools/go/analysis) - Go analysis framework
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Go Linting Ecosystem

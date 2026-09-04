@@ -1,7 +1,7 @@
 # FT-004: 一致性哈希的形式化理论与实践 (Consistent Hashing: Formal Theory & Practice)
 
 > **维度**: Formal Theory
-> **级别**: S (18+ KB)
+> **级别**: S (26 KB)
 > **标签**: #consistent-hashing #distributed-systems #load-balancing #dht
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Dynamo: Amazon's Highly Available Key-Value Store](https://dl.acm.org/doi/10.1145/1323293.1294281) - SOSP 2007
 > - [Cassandra - A Decentralized Structured Storage System](https://dl.acm.org/doi/10.1145/1773912.1773922) - OSDI 2010
 
+> **Go 版本**: 1.27+
 ---
 
 ## Learning Resources

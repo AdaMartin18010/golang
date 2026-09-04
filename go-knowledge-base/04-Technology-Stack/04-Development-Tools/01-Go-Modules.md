@@ -1,7 +1,7 @@
 # TS-DT-001: Go Modules - Dependency Management
 
 > **维度**: Technology Stack > Development Tools
-> **级别**: S (16+ KB)
+> **级别**: S (17 KB)
 > **标签**: #go-modules #dependency-management #semver #vendoring
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Modules Wiki](https://github.com/golang/go/wiki/Modules) - Go Wiki
 > - [Semantic Versioning](https://semver.org/) - Semver spec
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Go Modules Architecture

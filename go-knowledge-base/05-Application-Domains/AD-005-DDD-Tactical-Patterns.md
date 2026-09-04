@@ -1,10 +1,11 @@
 # AD-005: DDD 战术设计模式 (DDD Tactical Design Patterns)
 
 > **维度**: Application Domains
-> **级别**: S (17+ KB)
+> **级别**: S (17 KB)
 > **标签**: #ddd #tactical-patterns #aggregate #entity #value-object
 > **权威来源**: [Domain-Driven Design](https://www.domainlanguage.com/ddd/) - Eric Evans, [Implementing DDD](https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/) - Vaughn Vernon
 
+> **Go 版本**: 1.27+
 ---
 
 ## 战术模式概览

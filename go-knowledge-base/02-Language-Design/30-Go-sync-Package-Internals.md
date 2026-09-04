@@ -4,6 +4,9 @@
 > **标签**: #sync #mutex #rwmutex #waitgroup #source-code
 > **参考**: Go 1.24 src/sync, src/sync/atomic, Linux futex
 
+> **维度**: Language Design
+> **级别**: A (15 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## sync.Mutex 内部实现

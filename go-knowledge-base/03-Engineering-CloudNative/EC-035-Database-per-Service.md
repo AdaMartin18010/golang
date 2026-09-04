@@ -1,7 +1,7 @@
 # EC-035: Database-per-Service Pattern (每个服务一个数据库)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (40 KB)
 > **标签**: #database-per-service #microservices #data-isolation #bounded-context
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Domain-Driven Design](https://domainlanguage.com/ddd/) - Eric Evans
 > - [Building Microservices](https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/) - Sam Newman
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

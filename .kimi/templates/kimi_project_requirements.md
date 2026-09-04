@@ -1,8 +1,7 @@
-# Kimi 项目协作要求模板（Go 版，可复用）
+# Kimi 项目协作要求模板（可复用）
 
-> **用途**：当你要用 Kimi 维护本 Go 项目（或创建类似的分层、可验证、可搜索 Go 知识体系）时，遵守本要求。
-> **来源**：从 rust-lang 项目（E:/_src/rust-lang）的 `AGENTS.md`、质量门脚本与目录治理实践提炼，并已全面适配本仓库（E:/_src/golang，Go 1.27.1）。
-> **核心原则**：**单一权威来源、机器可验证、语义可追溯**。
+> **用途**：当你要用 Kimi 创建与 `rust-lang` 知识库类似的分层、可验证、可搜索项目时，可直接复用本要求。
+> **来源**：从 `E:/_src/rust-lang` 的 `AGENTS.md`、质量门脚本与目录治理实践中提炼。
 
 ---
 
@@ -10,27 +9,24 @@
 
 ### 1.1 核心定位
 
-项目是**分层、可验证、可搜索**的 Go 知识体系 + 可编译代码库，为每个主题维护**单一、权威、可演进**的解释来源。
+项目应为**分层、可验证、可搜索**的知识体系/代码库，目标是为每个主题维护**单一、权威、可演进**的解释来源。
 
 - 不要堆叠文档，要维护权威来源。
-- 每个概念/主题只能有一个权威页（canonical page）。
-- 新增内容前先查重（搜索 `go-knowledge-base/indices/`）；发现重复时按 canonical 规则合并或 stub 化。
+- 每个概念/主题必须只有一个权威页（canonical page）。
+- 新增内容前先查重；发现重复时按 canonical 规则合并或 stub 化。
 
-### 1.2 目录职责（本仓实际）
+### 1.2 推荐目录职责
 
 | 目录 | 职责 | 是否可作为权威来源 |
-| --- | --- | --- |
-| `go-knowledge-base/01-Formal-Theory/` ~ `05-Application-Domains/` | 权威概念层（五维），每个主题的唯一深度解释（LD-NNN / FT-NNN / EC-NNN / TS-* / AD-NNN 编号体系） | ✅ 是 |
-| `go-knowledge-base/indices/` | 多维索引（by-date / by-topic / by-difficulty / complete-index 等），新增权威页必须同步登记 | ❌ 索引，不是内容 |
-| `go-knowledge-base/learning-paths/` | 学习路径编排 | ❌ 引用权威页，不替代 |
-| `go-knowledge-base/.authoritative-sources/` | 权威外部源存档（论文/课件/代码片段/TLA+） | ❌ 素材库 |
-| `docs/` | 指南、版本分析、研究报告 | ❌ 概念解释必须链接到五维权威页 |
-| `examples/` | 可运行代码示例（go125 / go126-features / go127-features 等） | ❌ 概念解释不能放在这里 |
-| `view/` | 专题视角与形式化分析 | ⚠️ 仅当五维未覆盖时，并回链 |
-| `pknowledge/` | 个人学习笔记与卡片盒 | ❌ 私有层 |
-| `pkg/` + `internal/` + `cmd/` | 生产代码与框架（42 个 go module） | ❌ 实现，不是概念权威 |
+|---|---|---|
+| `concept/` | 权威概念层，每个主题的唯一深度解释 | ✅ 是 |
+| `docs/` | 指南、参考、实践、研究报告 | ❌ 否；概念解释必须链接到 `concept/` |
+| `content/` | 专题深度内容套件 | ⚠️ 仅当 `concept/` 未覆盖时 |
+| `crates/` | 可编译代码示例与 workspace | ❌ 概念解释不能放在这里 |
+| `exercises/` | 练习题与答案 | ❌ 不能替代概念解释 |
 | `archive/` | 只读历史归档 | ❌ 不是权威来源 |
-| `.kimi/` | 协作治理模板（本目录） | ❌ 治理文件 |
+| `book/` | 构建产物输出目录 | ❌ 构建产物 |
+| `tmp/` | 临时文件与缓存 | ❌ 临时目录 |
 
 ### 1.3 认知分层（Bloom / L0–L7）
 
@@ -39,11 +35,11 @@
 - **L0**: 元层 / 框架 / 方法论
 - **L1**: 基础语法与语义
 - **L2**: 类型系统、控制流、函数
-- **L3**: 泛型、接口、类型约束
-- **L4**: 并发、channel、unsafe、CGO、运行时
+- **L3**: 泛型、trait、生命周期
+- **L4**: 异步、并发、unsafe、FFI
 - **L5**: 跨语言/范式对比、工程架构
 - **L6**: 生态、设计模式、算法、系统设计
-- **L7**: 未来特性、研究、预览（如 GOEXPERIMENT）
+- **L7**: 未来特性、研究、预览
 
 跨层引用规则：
 
@@ -54,33 +50,34 @@
 
 ## 2. 文件命名与格式
 
-### 2.1 命名规范（本仓实际约定）
+### 2.1 命名规范
 
-- 权威页命名：`{维度前缀}-NNN-{Kebab-Title}.md`，如 `LD-037-Go-1.27-Generic-Methods.md`。
-- 目录内文件使用两位连续序号 `NN-`（从 01 起）；`00_` 保留给导览/README。
-- 禁止中文文件名、空格；标题用中文 + 英文双语（见元数据模板）。
+- 使用 `snake_case` 或 `number_prefix_snake_case`。
+- 目录内文件使用两位连续序号 `NN_`（从 01 起）；`00_` 保留给导览/README。
+- 禁止中文文件名、空格、混合大小写（历史/豁免目录除外）。
 - 禁止双前缀（如 `06_20_`）与异形前缀（如 `1_2_`）。
-- 新增权威页后，必须同步更新 `go-knowledge-base/indices/` 中的 by-date / by-topic / complete-index 等索引。
+- 专题系列可集中同一目录并配 README 索引。
 
 ### 2.2 Markdown 文件元数据模板
 
-每个权威页顶部必须包含（对齐本仓 LD 实际格式）：
+每个权威页顶部必须包含：
 
 ```markdown
-# LD-NNN: 中文标题 (English Title)
+# 中文标题
 
-> **维度**: Language Design
-> **级别**: S (16+ KB) / A / B
-> **标签**: #tag1 #tag2 #go127
-> **Go 版本**: 1.27+   <!-- 或项目对应版本 -->
+**EN**: English Title
+**Summary**: One-sentence English abstract.
+
+> **Rust 版本**: 1.98.0+ (Edition 2024)   <!-- 或项目对应版本 -->
 > **Bloom 层级**: Lx
-> **权威来源**: 本文件为 `02-Language-Design/` 权威页。
-> **前置概念**: [概念A](../LD-0xx/xx.md) · [概念B](../yy.md)
-> **后置概念**: [概念C](../LD-0zz/zz.md)
+> **权威来源**: 本文件为 `concept/` 权威页。
+> **受众**: [初学者/进阶/专家/研究者]
+> **内容分级**: [入门级/进阶级/专家级/综述级]
+> **A/S/P 标记**: **S+A+P** — Structure + Application + Procedure
+> **双维定位**: C×App   <!-- Concept × Application/Analysis/... -->
+> **前置概念**: [概念A](../../xx/xx/xx.md) · [概念B](../../yy/yy/yy.md)
+> **后置概念**: [概念C](../zz/zz.md) · [概念D](NN_file.md)
 > **定理链**: Input → Operation → Output / Invariant
->
-> - [Go Spec §xxx](https://go.dev/ref/spec#xxx) - P0
-> - [相关 Proposal](https://go.googlesource.com/proposal/+/HEAD/design/xxxxx.md) - P0
 ```
 
 ### 2.3 Stub / 重定向模板
@@ -90,7 +87,10 @@
 ```markdown
 # 中文标题
 
-> **权威来源**: [LD-0xx 中文标题](../02-Language-Design/LD-0xx-Xxx.md)
+**EN**: English Title
+**Summary**: One-sentence English abstract.
+
+> **权威来源**: [concept/xxx/xxx.md](../../../concept/xxx/xxx.md)
 > 本文件为重定向 stub：完整解释请见上述权威页。
 ```
 
@@ -100,24 +100,24 @@
 
 ### 3.1 章节结构（每页必备）
 
-1. **权威定义**：一句话定义 + 核心约束（可用"定义 X.Y"编号，如 LD-010 形式化理论页）。
-2. **核心机制**：分小节讲原理，配可运行的 ```go 代码示例。
+1. **权威定义**：一句话定义 + 核心约束。
+2. **核心机制**：分小节讲原理，配代码示例。
 3. **工程实践**：使用场景、权衡、最佳实践。
-4. **反命题与边界分析**：至少一个反例（Go 无 compile_fail 属性，用标注 + 实测说明，见 3.2）。
+4. **反命题与边界分析**：至少一个 `compile_fail` 或反例。
 5. **思维导图**：Mermaid `mindmap`。
 6. **参考来源 / References**：P0 官方 + P1 学术 + P2 生态。
 
 ### 3.2 代码块规范
 
-- 可运行示例使用 ```go，且必须实际通过 `go build` / `go test` 验证（本仓 `examples/` 即此用途）。
-- 故意编译失败的反例使用 ```go 并紧跟 `// 编译失败:` 标注，说明报错原因；保持与结论一致的实测行为。
-- 需要特定 GOEXPERIMENT 的示例（如 `simd`）需注明环境要求与降级路径。
-- 伪代码/片段使用 ```text。
-- 每个新增概念页至少包含一个可运行 `go` 块和一个编译失败反例块。
+- 可运行示例使用 ```rust。
+- 故意编译失败的反例使用 ```rust,compile_fail，并确保确实失败。
+- 需要外部 crate 的示例使用 ```rust,ignore 或实现 std-only 版本。
+- 伪代码/片段使用 ```text 或```pseudo。
+- 每个新增概念页至少包含一个 `rust` 块和一个 `rust,compile_fail` 块。
 
 ### 3.3 反例要求
 
-- 每页必须包含"反命题与边界分析"节。
+- 每页必须包含“反命题与边界分析”节。
 - 反例要解释错误原因，而不是只贴代码。
 - 反例覆盖率应达到项目设定的基线（如 ≥40%）。
 
@@ -140,19 +140,19 @@
 每个内容页必须在 References 中覆盖至少一个 P0、P1、P2 来源：
 
 | 级别 | 含义 | 典型域名 |
-| --- | --- | --- |
-| **P0 官方** | Go 语言/工具链官方文档与提案 | `go.dev/ref/spec`, `go.dev/doc`, `go.dev/blog`, `pkg.go.dev`, `go.googlesource.com/proposal`, `github.com/golang/go` |
-| **P1 学术/形式化** | 论文、形式化验证、经典教材 | `arxiv.org`, `acm.org`, `dl.acm.org`, `ieee.org`, `springer.com`（如 *The Go Memory Model*、CSP 原始论文） |
-| **P2 生态/社区** | 知名 Go 项目、技术博客 | `github.com`（gin/ent/grpc-go 等）, `go.dev/wiki`, `research.swtch.com` |
+|---|---|---|
+| **P0 官方** | 官方语言/框架文档 | `doc.rust-lang.org`, `rust-lang.github.io`, `github.com/rust-lang`, `rustc-dev-guide`, `ferrocene.dev` |
+| **P1 学术/形式化** | 论文、形式化验证、经典教材 | `plv.mpi-sws.org`, `arxiv.org`, `acm.org`, `dl.acm.org`, `ieee.org`, `springer.com` |
+| **P2 生态/社区** | crate、博客、知名开源项目 | `docs.rs`, `crates.io`, `blog.rust-lang.org`, `tokio.rs`, `github.com/verus-lang`, `github.com/creusot-rs` |
 
 示例 References 节：
 
 ```markdown
 ## 参考来源 / References
 
-- **P0 官方**: [Go Spec](https://go.dev/ref/spec) · [Go 1.27 Release Notes](https://go.dev/doc/go1.27)
-- **P1 学术**: [The Go Memory Model](https://go.dev/ref/mem)
-- **P2 生态**: [research.swtch.com](https://research.swtch.com) · [Go Wiki](https://go.dev/wiki)
+- **P0 官方**: [The Rust Programming Language](https://doc.rust-lang.org/book/title-page.html) · [The Rust Reference](https://doc.rust-lang.org/reference/title-page.html)
+- **P1 学术**: [RustBelt: Securing the Foundations of the Rust Programming Language](https://plv.mpi-sws.org/rustbelt/popl18/)
+- **P2 生态**: [docs.rs](https://docs.rs) · [crates.io](https://crates.io)
 ```
 
 ---
@@ -162,7 +162,7 @@
 ### 5.1 死链检查
 
 - 所有本地 markdown 链接必须有效。
-- 新增页面前必须运行链接检查（`scripts/check-unfixed-links.ps1` 等）。
+- 新增页面前必须运行链接检查。
 - 重定向 stub 的 canonical 链接不能失效。
 
 ### 5.2 跨层引用
@@ -173,31 +173,25 @@
 
 ### 5.3 双向链接
 
-- 版本特性、示例、测验等必须与权威页形成双向链接。
-- 新增权威页后，应同步更新 `go-knowledge-base/indices/` 相关索引。
+- 版本特性、quiz、crate 示例等必须形成双向链接。
+- 新增 `concept/` 页后，应同步更新相关索引/SUMMARY。
 
 ---
 
 ## 6. 代码与构建规范
 
-### 6.1 多模块规范（本仓 42 个 go.mod）
+### 6.1 Workspace 规范（如适用）
 
-- 所有模块保持统一的 `go 1.27` 版本声明，升级时全仓批量对齐（含 CI、Dockerfile、go.work）。
-- 根 `go.work` 不覆盖全部模块；**在仓库根目录运行 go 命令必须加 `GOWORK=off`**，或进入具体模块目录操作。
-- 本地 `replace` 指向的子模块（如 `pkg/observability`），构建上下文必须包含其 go.mod/go.sum（见 `deployments/docker/Dockerfile` deps 阶段）。
+- 所有 workspace member 继承 workspace 元数据，禁止硬编码重复值。
+- 声明 `[lints] workspace = true`。
+- `rust-version` 保持项目统一 MSRV。
+- feature 名使用 `kebab-case`。
 
 ### 6.2 构建验证
 
-在每个模块内：
-
-```bash
-GOWORK=off go build ./...
-GOWORK=off go vet ./...
-GOWORK=off go test ./...
-```
-
-- `golangci-lint run`（配置见 `.golangci.yml`）必须通过。
-- 容器构建：`DOCKER_BUILDKIT=0 docker build -f deployments/docker/Dockerfile -t <tag> .`（本机网络对 buildkit 拉取 metadata 不稳，经典构建器为既定绕行方案）。
+- `cargo check --workspace` 必须通过。
+- `cargo test --workspace --quiet` 必须通过。
+- `cargo clippy --workspace -- -D warnings` 必须通过。
 
 ---
 
@@ -205,83 +199,108 @@ GOWORK=off go test ./...
 
 ### 7.1 阻断门（必须全部通过）
 
-本仓质量设施（rust-lang 项目的 23 条 Python 脚本门已映射为以下实际设施）：
+项目应至少包含以下阻断质量门：
 
-1. `gofmt -l`（无输出，见 `.githooks/pre-commit` 第 1 步）
-2. `go vet ./...`（每模块，GOWORK=off）
-3. `golangci-lint run --timeout=5m`（若已安装）
-4. `go test -short`（改动包，见 `.githooks/pre-commit` 第 4 步）
-5. `.github/workflows/go-test.yml` — CI 全量测试
-6. `.github/workflows/go-lint.yml` — CI 静态检查
-7. `.github/workflows/go-fix.yml` — go fix modernizer 检查
-8. `.github/workflows/docs-check.yml` — 文档格式与链接检查
-9. `.github/workflows/knowledge-tracker.yml` — 知识库跟踪
-10. `scripts/check-unfixed-links.ps1` — 死链检查
-11. `scripts/check-markdown-format.ps1` — Markdown 格式
-12. `scripts/check_quality.ps1` — 综合质量检查
+1. `cargo check --workspace`
+2. `cargo test --workspace --quiet`
+3. `cargo clippy --workspace -- -D warnings`
+4. `cargo audit --no-fetch`
+5. `cargo vet --locked`
+6. `mdbook build`（如使用 mdbook）
+7. 死链检查：`kb_auditor.py --link-check`
+8. 内容重叠检测：`detect_content_overlap.py`
+9. 双语标注检查：`add_bilingual_annotations.py --mode check-only`
+10. Mermaid 语法检查
+11. 拓扑质量：`check_topology_quality.py --strict`
+12. KG 形态检查：`check_kg_shapes.py --strict`
+13. 权威页唯一性：`check_canonical_uniqueness.py --strict`
+14. 概念一致性：`concept_consistency_auditor.py --strict`
+15. 段落级去重：`detect_content_overlap_v2.py` + `triage_overlap.py`
+16. 权威覆盖率：`check_concept_authority_coverage.py --strict --include-crates`
+17. 游离示例编译：`check_examples_compile.py --strict`
+18. 命名规范：`check_naming_convention.py --strict`
+19. 测验体系：`check_quiz_system.py --strict`
+20. 元数据一致性：`check_metadata_consistency.py --strict`
+21. 概念代码块实测：`check_concept_code_blocks.py --strict`
+22. 思维导图覆盖：`check_mindmap_coverage.py --strict`
+23. 综合语义健康：`semantic_health.py --strict`
 
 ### 7.2 语义观察门（达标后转阻断）
 
-- 权威页唯一性：同一主题仅一个 canonical 页（查 `go-knowledge-base/indices/` 登记）。
-- stub 纯净度：stub 正文 ≤ 25 行 / 2000 字节。
-- 交叉/边界语义覆盖：跨维度主题（如并发形式模型）必须有权威页。
-- 版本语义注入：Go 1.26/1.27 特性页必须映射回对应概念权威页（如 LD-037 ↔ examples/go127-features）。
-- 双语完整性：权威页标题与 EN/Summary 标注齐全。
+- stub 纯净度：`check_stub_purity.py --strict`
+- 交叉/边界语义覆盖：`check_cross_domain_coverage.py --strict`
+- KG 谓词精度：`check_kg_relation_precision.py --strict`
+- 决策树错误码映射：`check_decision_trees.py --strict`
+- 版本语义注入：`check_version_semantic_injection.py --strict`
+- 依赖集中化：`check_dep_centralization.py --strict`
+
+### 7.3 运行方式
+
+```bash
+# 一键运行全部门
+bash scripts/run_quality_gates.sh
+
+# 关键单项检查
+python scripts/kb_auditor.py --link-check
+python scripts/check_concept_code_blocks.py --strict
+python scripts/check_concept_authority_coverage.py --strict --include-crates
+python scripts/check_canonical_uniqueness.py --strict
+```
 
 ---
 
 ## 8. 新增内容工作流
 
-1. **查重**：搜索 `go-knowledge-base/indices/` 确认主题是否已有权威页。
-2. **定位层级**：确定 Bloom 层级与维度目录（五维之一）。
-3. **创建权威页**：按 §2.2 元数据模板、§3.1 章节结构、§3.2 代码块规范书写。
-4. **添加 References**：确保 P0/P1/P2 全覆盖（§4）。
-5. **链接前置/后置**：至少包含一个低层链接，无死链。
-6. **同步索引**：在 `go-knowledge-base/indices/` 的 by-date / by-topic / complete-index 登记新页。
-7. **跑检查**：gofmt、go vet、链接检查。
-8. **提交**：`git add -A && git commit`（本仓提交信息惯例为 `update`；push 由用户决定）。
+1. **查重**：运行重叠检测或搜索目标主题是否已存在。
+2. **定位层级**：确定 Bloom 层级与目录位置。
+3. **创建权威页**：按元数据模板、章节结构、代码块规范书写。
+4. **添加 References**：确保 P0/P1/P2 全覆盖。
+5. **链接前置/后置**：至少包含一个低层（如 L5）链接，无死链。
+6. **跑单项检查**：死链、代码块、权威覆盖率。
+7. **跑完整质量门**：`run_quality_gates.sh`。
+8. **提交并推送**：`git add -A && git commit -m "feat: ..." && git push origin main`。
 
 ---
 
 ## 9. 红线与禁止事项
 
-- 不要在 `go-knowledge-base/indices/` 中手造与权威页冲突的内容；索引只登记、不解释。
+- 不要在构建产物目录中直接修改内容。
 - 不要把临时文件提交到版本控制。
-- 不要在 `examples/` 或 `pkg/` 中复制通用概念解释；应链接到五维权威页。
-- 禁止未经验证的"完成"声明；必须通过机器可复核的检查（构建、测试、链接）。
+- 不要在 `crates/*/docs/` 中复制通用概念解释；应链接到 `concept/`。
+- 禁止未经验证的“完成”声明；必须通过机器可复核的质量门。
 - Stub/redirect 文件正文不得超过 25 行 / 2000 字节。
-- KG 关系必须使用语义谓词（`dependsOn`/`entails`/`mutexWith`/`refines`/`equivalentTo`/`counterExample`），避免通用 `Relation`。
-- 交叉/边界语义域必须有权威页。
-- 版本特性必须映射回概念权威页（如 go127 特性 → LD-037 / go-knowledge-base 相应页）。
-- 在仓库根目录禁止裸跑 go 命令（go.work 不含全部模块），必须 `GOWORK=off`。
+- KG 关系必须使用语义谓词（`dependsOn`/`entails`/`mutexWith`/`refines`/`equivalentTo`/`counterExample`），避免通用 `RelationAnnotation`。
+- 交叉/边界语义域必须有 `concept/` 权威页。
+- 版本特性必须映射回 `concept/` 权威页。
 
 ---
 
 ## 10. 推荐工具链
 
-- **构建**：go 1.27.1 toolchain、gofmt、golangci-lint（`.golangci.yml`）
-- **文档**：Mermaid（mindmap/flowchart）、`docs/templates/TECHNICAL-ARTICLE-TEMPLATE.md`
-- **审计**：`scripts/` 下 PowerShell / Python 检查脚本
-- **CI**：`.github/workflows/`（go-test / go-lint / go-fix / docs-check / knowledge-tracker）
-- **预提交**：`.githooks/pre-commit`
+- **构建**：cargo, clippy, rustfmt
+- **文档**：mdbook, mermaid-cli
+- **审计**：自定义 Python 脚本（`scripts/` 目录）
+- **安全**：cargo-audit, cargo-vet
+- **预提交**：`scripts/git_hooks/pre-commit`
 
 ---
 
 ## 11. 快速检查清单
 
-新增/修改权威页前自问：
+新增/修改 concept 页前自问：
 
-- [ ] 主题是否已存在权威页？（查 indices）
-- [ ] 双语标题与 EN/Summary 是否填写？
-- [ ] Bloom 层级与维度目录是否正确？
+- [ ] 主题是否已存在权威页？
+- [ ] EN 标题与 Summary 是否填写？
+- [ ] Bloom 层级是否正确？
 - [ ] 前置/后置概念链接是否有效且含低层链接？
-- [ ] 是否包含可运行 `go` 代码块与编译失败反例？
+- [ ] 是否包含 `rust` 代码块与 `rust,compile_fail` 反例？
 - [ ] 是否有 Mermaid mindmap？
 - [ ] References 是否覆盖 P0/P1/P2？
-- [ ] 是否已同步登记 `go-knowledge-base/indices/`？
-- [ ] `gofmt` / `go vet` 是否通过？
-- [ ] 死链检查是否通过？
+- [ ] 是否通过 `kb_auditor.py --link-check`？
+- [ ] 是否通过 `check_concept_code_blocks.py --strict`？
+- [ ] 是否通过 `check_concept_authority_coverage.py --strict --include-crates`？
+- [ ] 是否通过完整 `run_quality_gates.sh`？
 
 ---
 
-> **提示**：本模板已按本 Go 项目实际（Go 1.27.1、五维知识库、42 模块、GOWORK=off 约定）校准。后续版本升级（如 Go 1.28）时，同步更新 §2.2、§4、§6、§7 中的版本引用。
+> **提示**：本模板应根据具体项目调整（如语言版本、目录结构、特殊质量门）。核心原则是：**单一权威来源、机器可验证、语义可追溯**。

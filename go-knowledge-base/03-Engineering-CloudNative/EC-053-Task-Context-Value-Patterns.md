@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #context #values #patterns #type-safety
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (19 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 类型安全的上下文值

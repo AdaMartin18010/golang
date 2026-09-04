@@ -9,6 +9,10 @@
 > - Castro, M., & Liskov, B. (2002). "Practical Byzantine Fault Tolerance". OSDI
 > - Yin, M., et al. (2019). "HotStuff: BFT Consensus in the Lens of Blockchain". PODC
 
+> **维度**: Formal Theory
+> **级别**: S (24 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

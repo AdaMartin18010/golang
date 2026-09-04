@@ -1,7 +1,7 @@
 # LD-006: Go 内存分配器内部原理 (Go Memory Allocator Internals)
 
 > **维度**: Language Design
-> **级别**: S (40+ KB)
+> **级别**: S (28 KB)
 > **标签**: #memory-allocator #tcmalloc #heap #stack #gc #performance
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [TCMalloc](https://goog-perftools.sourceforge.net/doc/tcmalloc.html) - Google
 > - [A Fast Storage Allocator](https://dl.acm.org/doi/10.1145/363267.363275) - Knuth
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 内存分配基础

@@ -4,6 +4,9 @@
 > **标签**: #compiler-optimization #ssa #inline #escape-analysis
 > **参考**: Go Compiler, LLVM, SSA Form
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (24 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 目录

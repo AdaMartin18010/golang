@@ -1098,7 +1098,7 @@ sequenceDiagram
 
 ## 9. 关联可视化资源
 
-本文档涉及的可视化资源索引（详见 [VISUAL-ATLAS.md](../../../../../VISUAL-ATLAS.md)）：
+本文档涉及的可视化资源索引（详见 [VISUAL-ATLAS.md](../../../VISUAL-ATLAS.md)）：
 
 | 图类型 | 图名称 | VISUAL-ATLAS 引用 |
 |--------|--------|-------------------|

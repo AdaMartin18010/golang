@@ -1,5 +1,9 @@
 # AD-025: Chat Application Design
 
+> **维度**: Application Domains
+> **级别**: S (30 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Chat applications enable real-time messaging between users across various devices and network conditions. These systems must handle millions of concurrent connections, deliver messages reliably with low latency, support rich media content, and provide features like presence, typing indicators, and message history while maintaining data consistency and security.

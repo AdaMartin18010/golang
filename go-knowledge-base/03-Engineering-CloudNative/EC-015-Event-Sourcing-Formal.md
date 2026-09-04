@@ -1,12 +1,14 @@
 # EC-015: 事件溯源模式的形式化 (Event Sourcing: Formalization)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (16+ KB)
+> **级别**: S (17 KB)
 > **tags**: #event-sourcing #cqrs #append-only #immutable
 > **权威来源**:
 >
 > - [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) - Martin Fowler
 
+> **标签**: #ec
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 事件溯源的形式化

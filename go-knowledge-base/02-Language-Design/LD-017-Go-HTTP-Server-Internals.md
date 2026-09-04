@@ -1,7 +1,7 @@
 # LD-017: Go HTTP 服务器内部原理 (Go HTTP Server Internals)
 
 > **维度**: Language Design
-> **级别**: S (19+ KB)
+> **级别**: S (29 KB)
 > **标签**: #http #server #net-http #internals #performance #concurrency
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [HTTP/2 in Go](https://go.dev/blog/h2push) - Go Authors
 > - [Go HTTP Server Best Practices](https://www.ardanlabs.com/blog/) - Ardan Labs
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. HTTP 服务器架构

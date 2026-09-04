@@ -6,6 +6,10 @@
 > **Version**: E-commerce 2026 (Marketplace, OMS, Inventory, Payments)
 > **Size**: >20KB
 
+> **维度**: Application Domains
+> **级别**: S (24 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 电商系统概览

@@ -7,6 +7,10 @@
 > **Size**: >25KB
 > **Formal Methods**: TLA+ Specification Included
 
+> **维度**: Formal Theory
+> **级别**: S (23 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Raft Consensus: Formal Specification

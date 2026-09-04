@@ -1,7 +1,7 @@
 # TS-DB-002: GORM - Go ORM Architecture and Patterns
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: S (20 KB)
 > **标签**: #gorm #orm #golang #database #sql
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [GORM Source Code](https://github.com/go-gorm/gorm) - GitHub
 > - [GORM Migrations](https://gorm.io/docs/migration.html) - Schema migrations
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. GORM Architecture Overview

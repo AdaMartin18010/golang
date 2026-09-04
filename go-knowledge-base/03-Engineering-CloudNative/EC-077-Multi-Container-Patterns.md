@@ -1,7 +1,7 @@
 # EC-077: Multi-Container Patterns - Native Sidecars, Init Containers, and Complementary Patterns
 
 > **维度**: Engineering Cloud-Native
-> **级别**: S (17+ KB)
+> **级别**: S (83 KB)
 > **标签**: #kubernetes #multi-container #sidecar #init-container #ambassador #adapter #configuration
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [CNCF Cloud Native Patterns](https://www.cncf.io/phippy/) - Cloud Native Patterns
 > - [Google Cloud Blog: Multi-Container Patterns](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-organizing-containers-with-pods)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Introduction to Multi-Container Pods

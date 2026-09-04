@@ -1,57 +1,61 @@
-# Monthly Semantic Review Checklist（Go 版）
+# Monthly Semantic Review Checklist
 
 **Review period**: YYYY-MM
 **Reviewer**: @username
-**Scope**: go-knowledge-base 五维权威页定义漂移、边界语义、stub 纯净度、KG 关系质量、版本语义注入覆盖（对照当前 Go 1.27.1）。
+**Scope**: concept/ authority drift, boundary semantics, stub purity, KG relation quality, and version semantic injection coverage.
 
 ---
 
 ## 1. Core Concept Definition Drift (sample 10 pages)
 
-Sample 10 core `go-knowledge-base/` authority pages across L1–L4 and check whether definitions remain sharp, unambiguous, and aligned with current Go stable (1.27.1).
+Sample 10 core `concept/` pages across L1–L4 and check whether definitions remain sharp, unambiguous, and aligned with current Rust stable (1.97.0).
 
 | # | Page path | Definition checked | Drift found? | Action item |
 |---|-----------|--------------------|--------------|-------------|
-| 1 | `02-Language-Design/LD-0xx-*.md` |                    | [ ] Yes [ ] No |             |
-| 2 | `02-Language-Design/LD-0xx-*.md` |                    | [ ] Yes [ ] No |             |
-| 3 | `02-Language-Design/LD-0xx-*.md` |                    | [ ] Yes [ ] No |             |
-| 4 | `01-Formal-Theory/FT-0xx-*.md` |                      | [ ] Yes [ ] No |             |
-| 5 | `01-Formal-Theory/FT-0xx-*.md` |                      | [ ] Yes [ ] No |             |
-| 6 | `03-Engineering-CloudNative/EC-0xx-*.md` |            | [ ] Yes [ ] No |             |
-| 7 | `03-Engineering-CloudNative/EC-0xx-*.md` |            | [ ] Yes [ ] No |             |
-| 8 | `04-Technology-Stack/TS-*.md` |                       | [ ] Yes [ ] No |             |
-| 9 | `05-Application-Domains/AD-0xx-*.md` |                | [ ] Yes [ ] No |             |
-| 10 | `02-Language-Design/LD-0xx-*.md` |                   | [ ] Yes [ ] No |             |
+| 1 | `concept/01_foundation/xx_xx/xx_xx.md` |                    | [ ] Yes [ ] No |             |
+| 2 | `concept/01_foundation/xx_xx/xx_xx.md` |                    | [ ] Yes [ ] No |             |
+| 3 | `concept/02_intermediate/xx_xx/xx_xx.md` |                  | [ ] Yes [ ] No |             |
+| 4 | `concept/02_intermediate/xx_xx/xx_xx.md` |                  | [ ] Yes [ ] No |             |
+| 5 | `concept/03_advanced/xx_xx/xx_xx.md` |                      | [ ] Yes [ ] No |             |
+| 6 | `concept/03_advanced/xx_xx/xx_xx.md` |                      | [ ] Yes [ ] No |             |
+| 7 | `concept/04_formal/xx_xx/xx_xx.md` |                        | [ ] Yes [ ] No |             |
+| 8 | `concept/04_formal/xx_xx/xx_xx.md` |                        | [ ] Yes [ ] No |             |
+| 9 | `concept/02_intermediate/xx_xx/xx_xx.md` |                  | [ ] Yes [ ] No |             |
+| 10 | `concept/03_advanced/xx_xx/xx_xx.md` |                     | [ ] Yes [ ] No |             |
 
 **What to look for**:
 
 - Definitions are operational (can be turned into a decision procedure).
 - No circular definitions.
-- Go version annotations match current stable (1.27.1) or are explicitly marked as experimental (GOEXPERIMENT).
-- Counterexamples exist and are still valid under latest toolchain.
+- Rust version annotations match current stable or are explicitly marked as nightly/preview.
+- Counterexamples exist and are still valid under latest rustc.
 
 ---
 
 ## 2. Boundary Precision Review
 
-Check key cross-domain / boundary semantics. Each should have a non-stub authority page in the appropriate dimension.
+Check key cross-domain / boundary semantics. Each should have a non-stub `concept/` authority page.
 
-| Domain pair | Authority page exists? | Boundary clearly stated? | Action item |
-| ------------- | ------------------------ | -------------------------- | ------------- |
-| goroutine + channel 关闭语义 | [ ] Yes [ ] No | [ ] Yes [ ] No | |
-| context 取消 + 资源清理 | [ ] Yes [ ] No | [ ] Yes [ ] No | |
-| unsafe / CGO + 内存模型 | [ ] Yes [ ] No | [ ] Yes [ ] No | |
-| 泛型类型约束 + 方法集 | [ ] Yes [ ] No | [ ] Yes [ ] No | |
-| 接口嵌入 + 方法提升 | [ ] Yes [ ] No | [ ] Yes [ ] No | |
-| select + timer / ticker 泄漏 | [ ] Yes [ ] No | [ ] Yes [ ] No | |
-| sync.Pool + GC 边界 | [ ] Yes [ ] No | [ ] Yes [ ] No | |
-| error 链 + Is/As/Unwrap | [ ] Yes [ ] No | [ ] Yes [ ] No | |
+Run: `python scripts/check_cross_domain_coverage.py --strict`
+
+| Domain pair | concept/ authority page exists? | Boundary clearly stated? | Action item |
+|-------------|----------------------------------|--------------------------|-------------|
+| async + unsafe | [ ] Yes [ ] No | [ ] Yes [ ] No |             |
+| FFI + async | [ ] Yes [ ] No | [ ] Yes [ ] No |             |
+| Send / Sync boundaries | [ ] Yes [ ] No | [ ] Yes [ ] No |             |
+| let chains | [ ] Yes [ ] No | [ ] Yes [ ] No |             |
+| unsafe extern blocks | [ ] Yes [ ] No | [ ] Yes [ ] No |             |
+| Pin + lifetimes | [ ] Yes [ ] No | [ ] Yes [ ] No |             |
+| GenericAssociatedTypes + trait bounds | [ ] Yes [ ] No | [ ] Yes [ ] No |             |
+| const generics + trait specialization | [ ] Yes [ ] No | [ ] Yes [ ] No |             |
 
 **Notes / additional boundary topics**:
 
 ---
 
 ## 3. New Stub Purity Review
+
+Run: `python scripts/check_stub_purity.py --strict`
 
 - [ ] Pseudo-stub count = 0
 - [ ] Empty-shell count = 0
@@ -63,14 +67,16 @@ Check key cross-domain / boundary semantics. Each should have a non-stub authori
 |-----------|-------|-------|-------|-------------|
 |           |       |       |       |             |
 
-**Policy reminder**: Stub/redirect files must remain pure (≤25 lines / ≤2000 bytes). Content beyond a one-sentence description + canonical link must be moved to the dimension authority page.
+**Policy reminder**: Stub/redirect files must remain pure (≤25 lines / ≤2000 bytes). Content beyond a one-sentence description + canonical link must be moved to the `concept/` authority page.
 
 ---
 
 ## 4. KG Relation Quality Review
 
-- [ ] Core entity `generic_ratio` = 0%
-- [ ] No generic `Relation` predicates around core entities
+Run: `python scripts/check_kg_relation_precision.py --strict`
+
+- [ ] Core 50 entity `generic_ratio` = 0%
+- [ ] No `ex:RelationAnnotation` predicates around core entities
 
 **Generic relations found**:
 
@@ -78,38 +84,41 @@ Check key cross-domain / boundary semantics. Each should have a non-stub authori
 |---------|-----------|--------|------------------------------|
 |         |           |        |                              |
 
-**Policy reminder**: KG relations must use semantic predicates (`dependsOn`, `entails`, `mutexWith`, `refines`, `equivalentTo`, `counterExample`). Generic relations are not allowed for core entities.
+**Policy reminder**: KG relations must use semantic predicates (`dependsOn`, `entails`, `mutexWith`, `refines`, `equivalentTo`, `counterExample`). Generic `ex:RelationAnnotation` is not allowed for core entities.
 
 ---
 
 ## 5. Version Semantic Injection Coverage Review
 
-- [ ] Go 1.26/1.27 feature count mapped = _**/**_
-- [ ] Each version tracking page (e.g. `docs/01-Go-1.27-Comprehensive-Knowledge-System-2026.md`, `examples/go127-features/`) links back to its authority page (e.g. LD-037)
-- [ ] Each authority page links forward to relevant version tracking pages
+Run: `python scripts/check_version_semantic_injection.py --strict`
+
+- [ ] Rust 1.90–1.97 stable feature count mapped = _**/**_
+- [ ] Rust 1.98+ beta features mapped (non-blocking observation) = _**/**_
+- [ ] Each version tracking page links back to its `concept/` authority page
+- [ ] Each `concept/` authority page links forward to relevant version tracking pages
 
 **Unmapped or one-way-only features**:
 
-| Feature | Version page | Authority page | Issue | Action |
-|---------|--------------|----------------|-------|--------|
-|         |              |                |       |        |
+| Feature | Version page | concept/ authority page | Issue | Action |
+|---------|--------------|-------------------------|-------|--------|
+|         |              |                         |       |        |
 
-**Policy reminder**: Version features must map back to concept authority pages; isolated release notes are not sufficient.
+**Policy reminder**: Version features must map back to `concept/` authority pages; isolated release notes are not sufficient.
 
 ---
 
-## 6. Code Block Rot Check (recommended)
+## 6. Decision Tree rustc Error Code Coverage (optional but recommended)
 
-Run: `GOWORK=off go build ./... && GOWORK=off go test ./...` in affected example modules.
+Run: `python scripts/check_decision_trees.py --strict`
 
-- [ ] All ```go blocks in sampled pages still compile
-- [ ] All `// 编译失败:` counterexamples still fail as documented
+- [ ] Node-level `E\d{4}` mappings have no ambiguity
+- [ ] Top 30 rustc error code coverage ≥80%
 
 **Gaps**:
 
-| Page path | Code block | Expected behavior | Actual | Action |
-|-----------|------------|-------------------|--------|--------|
-|           |            |                   |        |        |
+| Error code | Decision tree node | Action |
+|------------|--------------------|--------|
+|            |                    |        |
 
 ---
 

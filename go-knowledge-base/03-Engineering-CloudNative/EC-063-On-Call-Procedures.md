@@ -4,6 +4,9 @@
 > **标签**: #oncall #sre #incident-response #operations #rotations
 > **参考**: Google SRE, PagerDuty, Incident Management Best Practices
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (74 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

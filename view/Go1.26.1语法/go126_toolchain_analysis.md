@@ -3894,7 +3894,7 @@ func main() {
 
 - [Go 1.26 Release Notes](https://go.dev/doc/go1.26)
 - [Go Compiler Documentation](https://go.dev/src/cmd/compile/README.md)
-- [Go Runtime Documentation](https://go.dev/src/runtime/README.md)
+- [Go Runtime Source](https://go.dev/src/runtime/)
 - [Go Test Documentation](https://pkg.go.dev/testing)
 - [Delve Debugger](https://github.com/go-delve/delve)
 - [Go pprof](https://pkg.go.dev/runtime/pprof)

@@ -1,12 +1,13 @@
 # TS-NET-013: API Documentation Best Practices
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **标签**: #api-documentation #openapi #rest #best-practices
 > **权威来源**:
 >
 > - [API Documentation Best Practices](https://swagger.io/resources/articles/best-practices-in-api-documentation/) - Swagger
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. API Documentation Structure

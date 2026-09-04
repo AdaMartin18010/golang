@@ -1,11 +1,12 @@
 # TS-040: CockroachDB 25 C-SPANN Vector Index - S-Level Technical Reference
 
 > **维度**: 04-Technology-Stack
-> **级别**: S (>15KB)
+> **级别**: S (32 KB)
 > **标签**: #ts #ts-040-cockroachdb-25-features-md
 > **权威来源**: 本文件为 `04-Technology-Stack/` 权威页（由 docs/ 深参考并入，原 docs 副本已删除）
 > **合并日期**: 2026-09-04
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Executive Summary

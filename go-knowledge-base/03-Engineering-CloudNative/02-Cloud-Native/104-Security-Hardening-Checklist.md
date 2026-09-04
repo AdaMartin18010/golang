@@ -4,6 +4,9 @@
 > **标签**: #security #hardening #checklist #compliance
 > **参考**: OWASP, CIS Benchmarks, NIST Guidelines
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 安全架构

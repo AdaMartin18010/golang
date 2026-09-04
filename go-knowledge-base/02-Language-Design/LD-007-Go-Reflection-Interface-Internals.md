@@ -1,7 +1,7 @@
 # LD-007: Go 反射与接口内部原理 (Go Reflection & Interface Internals)
 
 > **维度**: Language Design
-> **级别**: S (38+ KB)
+> **级别**: S (26 KB)
 > **标签**: #reflection #interface #type-descriptor #itab #dynamic-dispatch
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Laws of Reflection](https://go.dev/blog/laws-of-reflection) - Rob Pike
 > - [Interface Implementation](https://go.dev/doc/effective_go#interfaces) - Go Authors
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 接口内部表示

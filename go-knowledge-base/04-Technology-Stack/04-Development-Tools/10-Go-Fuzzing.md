@@ -1,13 +1,14 @@
 # TS-DT-010: Go Fuzzing
 
 > **维度**: Technology Stack > Development Tools
-> **级别**: S (16+ KB)
+> **级别**: S (23 KB)
 > **标签**: #fuzzing #testing #golang #security #fuzz-testing
 > **权威来源**:
 >
 > - [Go Fuzzing Tutorial](https://go.dev/doc/security/fuzz/) - Go team
 > - [Native Go Fuzzing](https://go.dev/doc/fuzz/) - Go documentation
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Fuzzing Overview

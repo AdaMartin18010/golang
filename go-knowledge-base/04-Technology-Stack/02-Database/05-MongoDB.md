@@ -1,7 +1,7 @@
 # TS-DB-005: MongoDB Architecture and Go Integration
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: S (26 KB)
 > **标签**: #mongodb #nosql #document #replica-set #sharding #go-mongo
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [MongoDB WiredTiger](https://docs.mongodb.com/manual/core/wiredtiger/) - Storage Engine
 > - [MongoDB Go Driver](https://github.com/mongodb/mongo-go-driver) - Official driver
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. MongoDB Architecture

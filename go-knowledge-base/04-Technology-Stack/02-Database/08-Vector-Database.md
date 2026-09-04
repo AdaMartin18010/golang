@@ -1,13 +1,14 @@
 # TS-DB-008: Vector Databases
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: A (16 KB)
 > **标签**: #vector-database #embeddings #similarity-search #pgvector #pinecone
 > **权威来源**:
 >
 > - [pgvector](https://github.com/pgvector/pgvector) - PostgreSQL vector extension
 > - [Vector Database Guide](https://www.pinecone.io/learn/vector-database/) - Pinecone
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Vector Database Architecture

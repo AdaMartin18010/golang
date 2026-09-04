@@ -1,5 +1,9 @@
 # AD-023: Ad Serving Platform Design
 
+> **维度**: Application Domains
+> **级别**: S (27 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Ad serving platforms are high-throughput, low-latency systems that match advertisements with user impressions in real-time. These systems must process billions of ad requests daily, perform complex targeting and bidding computations, and deliver ads within milliseconds while optimizing for advertiser ROI, publisher revenue, and user experience.

@@ -1,13 +1,14 @@
 # EC-009: 重试模式的形式化 (Retry Pattern: Formalization)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (15+ KB)
+> **级别**: S (18 KB)
 > **标签**: #retry #backoff #idempotency #resilience
 > **权威来源**:
 >
 > - [Retry Pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/retry) - Microsoft Azure
 > - [AWS Retry Behavior](https://docs.aws.amazon.com/general/latest/gr/api-retries.html) - AWS
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化定义

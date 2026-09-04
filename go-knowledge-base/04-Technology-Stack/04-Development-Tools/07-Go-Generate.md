@@ -1,13 +1,14 @@
 # TS-DT-007: Go Generate for Code Generation
 
 > **维度**: Technology Stack > Development Tools
-> **级别**: S (16+ KB)
+> **级别**: S (19 KB)
 > **标签**: #go-generate #code-generation #codegen #golang
 > **权威来源**:
 >
 > - [Go Generate](https://golang.org/pkg/cmd/go/internal/generate/) - Go team
 > - [Generating Code](https://go.dev/blog/generate) - Go Blog
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. go:generate Basics

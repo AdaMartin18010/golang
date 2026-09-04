@@ -4,6 +4,9 @@
 > **标签**: #compensation #saga #distributed-transactions
 > **参考**: Saga Pattern, Microservices Patterns
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Saga 架构

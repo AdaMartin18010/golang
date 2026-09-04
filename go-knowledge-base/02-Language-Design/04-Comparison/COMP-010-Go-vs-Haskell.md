@@ -1,5 +1,9 @@
 # Go vs Haskell: Functional Programming and Type System Comparison
 
+> **维度**: Language Design
+> **级别**: S (19 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Go and Haskell represent opposite ends of the programming language spectrum. Haskell offers pure functional programming with a sophisticated type system, while Go prioritizes simplicity and pragmatism. This document compares functional programming capabilities, type systems, and practical applicability.

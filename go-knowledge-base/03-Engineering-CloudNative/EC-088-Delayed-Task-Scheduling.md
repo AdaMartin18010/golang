@@ -4,6 +4,9 @@
 > **标签**: #delayed-tasks #scheduling #timing-wheel
 > **参考**: Kafka Delayed Queue, Timing Wheel Algorithm
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (17 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 延迟任务架构

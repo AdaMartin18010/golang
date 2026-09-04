@@ -4,6 +4,9 @@
 > **标签**: #event-sourcing #cqrs #persistence
 > **参考**: Event Store, CQRS Pattern
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (19 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 事件溯源架构

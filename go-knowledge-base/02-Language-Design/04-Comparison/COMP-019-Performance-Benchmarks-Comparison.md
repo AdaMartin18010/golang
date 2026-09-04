@@ -1,5 +1,9 @@
 # Performance Benchmarks: Comprehensive Language Comparison
 
+> **维度**: Language Design
+> **级别**: S (26 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Performance characteristics vary significantly across programming languages based on compilation strategy, runtime overhead, and memory management approaches. This document provides comprehensive benchmarks comparing Go, Rust, Java, C++, Python, Node.js, C#, and Swift.

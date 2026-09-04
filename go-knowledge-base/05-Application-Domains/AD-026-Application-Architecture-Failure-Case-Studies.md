@@ -4,6 +4,8 @@
 > **标签**: #architecture #microservices #failures #production-incidents #postmortem
 > **权威来源**: Industry Postmortems, Architecture Reviews, Real-world Incidents
 
+> **级别**: S (32 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Overview

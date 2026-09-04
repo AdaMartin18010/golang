@@ -1,7 +1,7 @@
 # FT-011: 顺序一致性的形式化理论 (Sequential Consistency: Formal Theory)
 
 > **维度**: Formal Theory
-> **级别**: S (20+ KB)
+> **级别**: S (24 KB)
 > **标签**: #sequential-consistency #consistency-models #memory-models #multiprocessors
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Understanding POWER Multiprocessors](https://dl.acm.org/doi/10.1145/2248487.1950392) - Sarkar et al. (2011)
 > - [Modular Relaxed Dependencies](https://arxiv.org/abs/1608.05599) - Alglave et al. (2016)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 顺序一致性的形式化定义

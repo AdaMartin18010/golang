@@ -1,5 +1,9 @@
 # Go vs Java: Enterprise Language Comparison
 
+> **维度**: Language Design
+> **级别**: S (21 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Go and Java dominate enterprise backend development but serve different needs. Java offers a mature ecosystem with 25+ years of enterprise tooling, while Go provides simplicity and cloud-native efficiency. This document compares them across ecosystems, enterprise adoption, and development tooling.

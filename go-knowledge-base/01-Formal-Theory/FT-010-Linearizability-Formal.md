@@ -1,7 +1,7 @@
 # FT-010: 线性一致性的形式化理论 (Linearizability: Formal Theory)
 
 > **维度**: Formal Theory
-> **级别**: S (21+ KB)
+> **级别**: S (32 KB)
 > **标签**: #linearizability #consistency-models #formal-methods #concurrent-programming
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Principles of Eventual Consistency](https://www.microsoft.com/en-us/research/publication/principles-of-eventual-consistency/) - Burckhardt (2014)
 > - [Consistency in Non-Transactional Distributed Storage Systems](https://dl.acm.org/doi/10.1145/2926965) - Viotti & Vukolić (2016)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 线性一致性的形式化定义

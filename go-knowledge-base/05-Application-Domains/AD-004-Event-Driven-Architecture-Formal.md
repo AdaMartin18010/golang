@@ -1,7 +1,7 @@
 # AD-004: 事件驱动架构的形式化分析 (Event-Driven Architecture: Formal Analysis)
 
 > **维度**: Application Domains
-> **级别**: S (20+ KB)
+> **级别**: A (15 KB)
 > **标签**: #event-driven #eda #event-sourcing #cqrs #saga #formal-methods
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [The Saga Pattern](https://microservices.io/patterns/data/saga.html) - Chris Richardson
 > - [Event Sourcing and CQRS with Kafka](https://www.confluent.io/blog/event-sourcing-cqrs-stream-processing-apache-kafka/) - Confluent (2024)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 事件驱动系统的形式化定义

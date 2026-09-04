@@ -4,6 +4,9 @@
 > **标签**: #temporal #workflow-engine #durable-execution #stateful
 > **参考**: Temporal SDK, Cadence Paper (Uber), Durable Functions
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (15 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Temporal 核心架构

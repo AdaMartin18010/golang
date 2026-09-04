@@ -925,12 +925,12 @@ graph TD
 
 ## 7. 关联可视化资源
 
-> **关联可视化资源**: 参见 [VISUAL-ATLAS.md](../../../../../VISUAL-ATLAS.md) 的以下章节：
+> **关联可视化资源**: 参见 [VISUAL-ATLAS.md](../../../../VISUAL-ATLAS.md) 的以下章节：
 >
-> - [§2.2 Go 完整概念图](../../../../../VISUAL-ATLAS.md#22-go-完整概念图) — 展示 Go 语言形式化分析的全链条概念依赖
-> - [§4.2 GMP 调度决策树](../../../../../VISUAL-ATLAS.md#42-gmp-调度决策树) — 展示 GMP 调度器从 `schedule()` 到 `findrunnable()` 的完整决策流程
-> - [§5.1 类型安全证明树](../../../../../VISUAL-ATLAS.md#51-类型安全证明树) — Go/FG 类型安全定理（Progress + Preservation）的 LaTeX 证明树
-> - [§6.1 GMP 无限制自旋反例](../../../../../VISUAL-ATLAS.md#61-gmp-无限制自旋反例) — 展示若 `nmspinning` 不受限制时的 CPU 浪费场景
+> - [§2.2 Go 完整概念图](../../../../VISUAL-ATLAS.md#22-go-完整概念图) — 展示 Go 语言形式化分析的全链条概念依赖
+> - [§4.2 GMP 调度决策树](../../../../VISUAL-ATLAS.md#42-gmp-调度决策树) — 展示 GMP 调度器从 `schedule()` 到 `findrunnable()` 的完整决策流程
+> - [§5.1 类型安全证明树](../../../../VISUAL-ATLAS.md#51-类型安全证明树) — Go/FG 类型安全定理（Progress + Preservation）的 LaTeX 证明树
+> - [§6.1 GMP 无限制自旋反例](../../../../VISUAL-ATLAS.md#61-gmp-无限制自旋反例) — 展示若 `nmspinning` 不受限制时的 CPU 浪费场景
 >
 > 本文档新增可视化资源：
 >

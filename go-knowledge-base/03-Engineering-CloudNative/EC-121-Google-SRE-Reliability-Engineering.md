@@ -1,10 +1,11 @@
 # EC-121: Google SRE 可靠性工程实践 (Google SRE Reliability Engineering)
 
 > **维度**: Engineering CloudNative
-> **级别**: S (30+ KB)
+> **级别**: S (18 KB)
 > **标签**: #sre #reliability #sla #error-budget #observability
 > **权威来源**: [Google SRE Book](https://sre.google/sre-book/table-of-contents/), [Site Reliability Workbook](https://sre.google/workbook/table-of-contents/), [Google Cloud Operations](https://cloud.google.com/blog/products/devops-sre)
 
+> **Go 版本**: 1.27+
 ---
 
 ## SRE 核心理念

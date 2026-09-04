@@ -1,5 +1,9 @@
 # TS-028: ArgoCD GitOps
 
+> **维度**: Technology Stack
+> **级别**: S (35 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes. It follows the GitOps pattern of using Git repositories as the source of truth for defining the desired application state, automatically synchronizing the cluster state with the repository.

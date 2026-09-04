@@ -685,7 +685,7 @@ func aliasUnsafe() {
 
 ## 7. 关联可视化资源
 
-> **关联可视化资源**: 参见 [VISUAL-ATLAS.md](../../../../../../../../VISUAL-ATLAS.md) 的
+> **关联可视化资源**: 参见 [VISUAL-ATLAS.md](../../../../VISUAL-ATLAS.md) 的
 >
-> - [证明树 §5.1](../../../../../../../../VISUAL-ATLAS.md#51-类型安全证明树)
-> - [反例场景图 §6.1–6.3](../../../../../../../../VISUAL-ATLAS.md#6-反例场景图-counter-examples)
+> - [证明树 §5.1](../../../../VISUAL-ATLAS.md#51-类型安全证明树)
+> - [反例场景图 §6.1–6.3](../../../../VISUAL-ATLAS.md#6-反例场景图-counter-examples)

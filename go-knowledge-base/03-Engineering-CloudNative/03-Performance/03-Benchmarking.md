@@ -1,13 +1,14 @@
 # 基准测试 (Benchmarking)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (15+ KB)
+> **级别**: S (18 KB)
 > **标签**: #benchmarking #performance #testing #optimization
 > **权威来源**:
 >
 > - [Package testing](https://pkg.go.dev/testing) - Go Official
 > - [benchstat](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat) - Go Perf
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化定义

@@ -1,13 +1,14 @@
 # TS-CL-012: Go File Operations - Deep Architecture and Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (18+ KB)
+> **级别**: S (16 KB)
 > **标签**: #golang #file #io #filesystem #os
 > **权威来源**:
 >
 > - [Go os package](https://pkg.go.dev/os) - Official documentation
 > - [Go io/ioutil](https://pkg.go.dev/io/ioutil) - I/O utilities
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. File System Architecture

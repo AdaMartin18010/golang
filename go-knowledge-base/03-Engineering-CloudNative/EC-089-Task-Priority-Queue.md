@@ -4,6 +4,9 @@
 > **标签**: #priority-queue #heap #scheduling
 > **参考**: Linux CFS Scheduler, Priority Queue Algorithms
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 优先级队列架构

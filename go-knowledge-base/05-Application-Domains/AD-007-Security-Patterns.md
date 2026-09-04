@@ -1,10 +1,11 @@
 # AD-007: 应用安全设计模式 (Application Security Patterns)
 
 > **维度**: Application Domains
-> **级别**: S (17+ KB)
+> **级别**: S (18 KB)
 > **标签**: #security #authentication #authorization #jwt #oauth
 > **权威来源**: [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/), [Security Patterns](https://www.oreilly.com/library/view/security-patterns-in/9780470858844/)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 安全架构

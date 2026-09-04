@@ -7,6 +7,10 @@
 > **Size**: >20KB
 > **Source Reference**: postgresql.org/docs/current/storage.html
 
+> **维度**: Technology Stack
+> **级别**: A (12 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ---
 
 ## 1. MVCC Architecture

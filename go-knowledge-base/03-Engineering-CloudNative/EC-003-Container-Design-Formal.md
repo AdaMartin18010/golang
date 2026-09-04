@@ -1,7 +1,7 @@
 # EC-003: 容器设计原则的形式化 (Container Design: Formal Principles)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (30+ KB)
+> **级别**: S (28 KB)
 > **标签**: #docker #container #image #security #best-practices #kubernetes
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [The Twelve-Factor Container](https://12factor.net/) - Heroku
 > - [Distroless Images](https://github.com/GoogleContainerTools/distroless) - Google
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 问题形式化

@@ -1,7 +1,7 @@
 # LD-018: Go 数据库/SQL 内部原理 (Go Database/SQL Internals)
 
 > **维度**: Language Design
-> **级别**: S (18+ KB)
+> **级别**: S (29 KB)
 > **标签**: #database #sql #database-sql #connection-pool #internals #performance
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Go Database Tutorial](https://go.dev/doc/tutorial/database-access) - Go Authors
 > - [SQL Injection Prevention](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html) - OWASP
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. database/sql 架构概览

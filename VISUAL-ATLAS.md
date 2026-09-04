@@ -35,7 +35,7 @@
 |------|------|
 | CSP 精化 | [CSP Refinement (FDR)](view/formal/CSP-Refinement-FDR.md) |
 | 三语言对比 | [Three Lines Comparison](view/formal/Three-Lines-Comparison.md) |
-| WebAssembly | [Go WebAssembly Integration](view/formal/Go-WebAssembly-Integration.md) |
+| WebAssembly | [Go WebAssembly Integration](view/formal/Go/Go-WebAssembly-Integration.md) |
 
 ## 4. 语法与反射专题（view/）
 

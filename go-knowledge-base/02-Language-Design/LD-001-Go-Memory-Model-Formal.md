@@ -1,7 +1,7 @@
 # LD-001: Go 内存模型的形式化语义 (Go Memory Model: Formal Semantics)
 
 > **维度**: Language Design
-> **级别**: S (25+ KB)
+> **级别**: S (40 KB)
 > **标签**: #go-memory-model #happens-before #formal-semantics #concurrency #csp #greentea-gc #go126
 > **权威来源**:
 >
@@ -13,6 +13,7 @@
 > - [Green Tea GC: Accelerating Go Garbage Collection with SIMD](https://go.dev/s/greenteagc) - Go Authors (2026)
 > - [AVX-512 Memory Operations and Consistency](https://dl.acm.org/doi/10.1145/3307650.3322228) - IEEE Micro (2019)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化基础

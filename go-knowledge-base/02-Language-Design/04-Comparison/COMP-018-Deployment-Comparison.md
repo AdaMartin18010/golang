@@ -1,5 +1,9 @@
 # Deployment and Operations Comparison
 
+> **维度**: Language Design
+> **级别**: S (17 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Deployment strategies vary significantly across programming languages, affecting operational complexity, resource usage, and scalability. This document compares deployment models for Go, Python, Java, Node.js, Rust, and C# across containerization, serverless, and traditional server deployments.

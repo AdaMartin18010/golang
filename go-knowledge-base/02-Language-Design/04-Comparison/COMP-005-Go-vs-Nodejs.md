@@ -1,5 +1,9 @@
 # Go vs Node.js: Async and Scalability Comparison
 
+> **维度**: Language Design
+> **级别**: S (21 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Go and Node.js both excel at I/O-bound concurrent workloads but with fundamentally different approaches. Node.js uses an event loop with async/await, while Go uses goroutines with CSP-style channels. This document compares async models, scalability characteristics, and ecosystem maturity.

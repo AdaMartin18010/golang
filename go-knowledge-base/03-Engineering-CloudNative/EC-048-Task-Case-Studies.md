@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #case-study #real-world #best-practices
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 案例一：电商平台订单处理

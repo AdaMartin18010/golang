@@ -1,7 +1,7 @@
 # LD-003: Go 垃圾回收器的形式化理论 (Go Garbage Collector: Formal Theory)
 
 > **维度**: Language Design
-> **级别**: S (35+ KB)
+> **级别**: S (29 KB)
 > **标签**: #garbage-collection #tricolor #concurrent-gc #memory-management #formal-semantics
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Go 1.5 GC](https://go.dev/s/go15gc) - Rick Hudson
 > - [Go 1.8 GC](https://golang.org/s/go18gcpacing) - Austin Clements
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化基础

@@ -1,10 +1,11 @@
 # AD-009: 容量规划与扩展策略 (Capacity Planning & Scaling Strategies)
 
 > **维度**: Application Domains
-> **级别**: S (16+ KB)
+> **级别**: S (17 KB)
 > **标签**: #capacity-planning #scaling #load-testing #resource-planning
 > **权威来源**: [The Art of Capacity Planning](https://www.oreilly.com/library/view/the-art-of/9780596518578/), [Google SRE Book](https://sre.google/sre-book/table-of-contents/)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 容量规划模型

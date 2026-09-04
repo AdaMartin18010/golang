@@ -1,13 +1,14 @@
 # TS-CL-013: Go Hash Maps - Deep Architecture and Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (20+ KB)
+> **级别**: A (15 KB)
 > **标签**: #golang #map #hashmap #data-structures #performance
 > **权威来源**:
 >
 > - [Go Maps Explained](https://go.dev/blog/maps) - Go Blog
 > - [Map Implementation](https://go.dev/src/runtime/map.go) - Source code
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Map Architecture Deep Dive

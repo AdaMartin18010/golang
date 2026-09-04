@@ -1,7 +1,7 @@
 # FT-013: 最终一致性的形式化理论 (Eventual Consistency: Formal Theory)
 
 > **维度**: Formal Theory
-> **级别**: S (20+ KB)
+> **级别**: S (30 KB)
 > **标签**: #eventual-consistency #gossip-protocols #anti-entropy #vector-clocks #crdts
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Eventually Consistent Transaction](https://www.vldb.org/pvldb/vol7/p181-bailis.pdf) - Bailis et al. (2013)
 > - [Optimizing Eventually Consistent Databases](https://dl.acm.org/doi/10.14778/2732951.2732953) - Li et al. (2012)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 最终一致性的形式化定义

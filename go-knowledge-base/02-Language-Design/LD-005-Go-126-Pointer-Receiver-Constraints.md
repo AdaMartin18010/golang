@@ -1,7 +1,7 @@
 # LD-005: Go 1.26 指针接收器约束 (Go 1.26 Pointer Receiver Constraints)
 
 > **维度**: Language Design
-> **级别**: S (35+ KB)
+> **级别**: S (23 KB)
 > **标签**: #go126 #pointer-receiver #method-set #type-system #breaking-change
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Method Sets](https://go.dev/ref/spec#Method_sets) - Go Language Specification
 > - [Type System Changes](https://go.dev/design/XXXX-pointer-receiver) - Go Design Docs
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 背景与动机

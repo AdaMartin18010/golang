@@ -1,7 +1,7 @@
 # EC-037: API Composition Pattern (API 组合模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (41 KB)
 > **标签**: #api-composition #query #aggregator #microservices
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Backend for Frontend Pattern](https://samnewman.io/patterns/architectural/bff/) - Sam Newman
 > - [GraphQL](https://graphql.org/) - Facebook
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

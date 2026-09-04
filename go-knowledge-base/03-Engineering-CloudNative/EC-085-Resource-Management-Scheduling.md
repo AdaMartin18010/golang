@@ -4,6 +4,9 @@
 > **标签**: #resource-management #scheduling #pool #limiting
 > **参考**: Kubernetes Scheduler, Linux Cgroups
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 资源调度架构

@@ -1,13 +1,14 @@
 # TS-DB-013: Database Connection Pooling
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: S (17 KB)
 > **标签**: #database #connection-pool #performance #golang #sql
 > **权威来源**:
 >
 > - [database/sql Connection Pool](https://go.dev/doc/database/manage-connections) - Go team
 > - [PostgreSQL Connection Pooling](https://www.postgresql.org/docs/current/runtime-config-connection.html) - PostgreSQL
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Connection Pool Architecture

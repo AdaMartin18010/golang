@@ -1,7 +1,7 @@
 # FT-006: Paxos 共识算法的形式化理论 (Paxos Consensus: Formal Theory)
 
 > **维度**: Formal Theory
-> **级别**: S (22+ KB)
+> **级别**: S (32 KB)
 > **标签**: #paxos #consensus #lamport #formal-verification #distributed-systems
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Flexible Paxos](https://arxiv.org/abs/1608.06696) - Howard et al. (2016)
 > - [Paxos vs Raft](https://www.cl.cam.ac.uk/~ms705/pub/papers/2015-paxosraft.pdf) - Cambridge (2015)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化问题定义

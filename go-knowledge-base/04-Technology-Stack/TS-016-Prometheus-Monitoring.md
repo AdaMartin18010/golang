@@ -1,7 +1,7 @@
 # TS-016: Prometheus Monitoring - Metrics Collection & Alerting
 
 > **维度**: Technology Stack
-> **级别**: S (16+ KB)
+> **级别**: S (37 KB)
 > **标签**: #prometheus #monitoring #metrics #alerting #observability
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Prometheus: Up & Running](https://www.oreilly.com/library/view/prometheus-up/9781492034148/) - O'Reilly Media
 > - [Prometheus Best Practices](https://prometheus.io/docs/practices/) - Prometheus.io
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Prometheus Architecture

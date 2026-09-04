@@ -4,6 +4,9 @@
 > **标签**: #kubernetes #cronjob #controller #v2
 > **参考**: `k8s.io/kubernetes/pkg/controller/cronjob`
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (26 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## CronJob Controller V2 架构概览

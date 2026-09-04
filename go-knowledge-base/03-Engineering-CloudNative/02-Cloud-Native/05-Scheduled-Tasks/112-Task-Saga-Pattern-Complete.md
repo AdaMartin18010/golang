@@ -4,6 +4,9 @@
 > **标签**: #saga #distributed-transactions #compensation #orchestration
 > **参考**: Saga Pattern (Hector Garcia-Molina), Temporal Saga, Axon Saga
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Saga 核心原理

@@ -3,6 +3,9 @@
 > **分类**: 语言设计
 > **标签**: #slice #runtime #internals
 
+> **维度**: Language Design
+> **级别**: S (19 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Slice 结构

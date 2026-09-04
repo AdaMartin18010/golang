@@ -1,7 +1,7 @@
 # FT-002: Raft 共识的形式化理论与实践 (Raft Consensus: Formal Theory & Practice)
 
 > **维度**: Formal Theory
-> **级别**: S (20+ KB)
+> **级别**: S (39 KB)
 > **标签**: #consensus #raft #formal-verification #distributed-systems #paxos
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Verdi: A Framework for Implementing and Formally Verifying Distributed Systems](https://verdi.uwplse.org/) - UW PLSE
 > - [Vive la Différence: Paxos vs Raft](https://www.cl.cam.ac.uk/~ms705/pub/papers/2015-paxosraft.pdf) - Cambridge, 2015
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化问题定义

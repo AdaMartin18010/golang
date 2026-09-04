@@ -1,5 +1,9 @@
 # TS-021: Kubernetes Networking
 
+> **维度**: Technology Stack
+> **级别**: S (29 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Kubernetes networking is fundamentally different from traditional Docker networking. It operates on a flat network model where every Pod gets its own IP address, enabling direct Pod-to-Pod communication without NAT across the cluster.

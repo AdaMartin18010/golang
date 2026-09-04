@@ -4,6 +4,9 @@
 > **标签**: #distributed-scheduler #production #scalability #reliability
 > **参考**: Uber Cadence, Temporal, Kubernetes Scheduler
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (29 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 生产级架构设计

@@ -102,7 +102,7 @@
 | [FT-032: State Machine Replication - Formal Theory](../01-Formal-Theory/FT-032-State-Machine-Replication-Formal.md) | S | 27 KB | 2026-04 |
 | [FT-033: Replicated State Machine - Formal Specification](../01-Formal-Theory/FT-033-Replicated-State-Machine-Formal.md) | S | 30 KB | 2026-04 |
 | [FT-034: Distributed System Failure Case Studies](../01-Formal-Theory/FT-034-Distributed-System-Failure-Case-Studies.md) | S | 35 KB | 2026-09 |
-| [Latest Distributed Systems Research 2024-2026](../01-Formal-Theory/FT-034-Latest-Distributed-Systems-Research-2024-2026.md) | S | 51 KB | 2026-04 |
+| [Latest Distributed Systems Research 2024-2026](../01-Formal-Theory/FT-041-Latest-Distributed-Systems-Research-2024-2026.md) | S | 51 KB | 2026-04 |
 | [FT-035-Kubernetes-1-35-Formal-Analysis](../01-Formal-Theory/FT-035-Kubernetes-1-35-Formal-Analysis.md) | B | 1 KB | 2026-04 |
 | [FT-036-Kubernetes-135-Formal-Model](../01-Formal-Theory/FT-036-Kubernetes-135-Formal-Model.md) | A | 10 KB | 2026-04 |
 | [FT-037-Consensus-Algorithms-2026](../01-Formal-Theory/FT-037-Consensus-Algorithms-2026.md) | A | 11 KB | 2026-04 |
@@ -171,31 +171,31 @@
 | [Go Runtime GMP 调度器深度剖析 (Go Runtime GMP Scheduler Deep Dive)](../02-Language-Design/29-Go-Runtime-GMP-Scheduler-Deep-Dive.md) | S | 22 KB | 2026-09 |
 | [Go sync 包内部实现 (Go sync Package Internals)](../02-Language-Design/30-Go-sync-Package-Internals.md) | S | 15 KB | 2026-09 |
 | [LD-001: Go 内存模型的形式化语义 (Go Memory Model: Formal Semantics)](../02-Language-Design/LD-001-Go-Memory-Model-Formal.md) | S | 40 KB | 2026-09 |
-| [LD-001: Go 类型系统的形式化语义 (Go Type System: Formal Semantics)](../02-Language-Design/LD-001-Go-Type-System-Formal-Semantics.md) | S | 25 KB | 2026-09 |
-| [LD-002: Go 编译器架构与 SSA 形式 (Go Compiler Architecture & SSA)](../02-Language-Design/LD-002-Go-Compiler-Architecture-SSA.md) | S | 18 KB | 2026-09 |
+| [LD-001: Go 类型系统的形式化语义 (Go Type System: Formal Semantics)](../02-Language-Design/LD-038-Go-Type-System-Formal-Semantics.md) | S | 25 KB | 2026-09 |
+| [LD-002: Go 编译器架构与 SSA 形式 (Go Compiler Architecture & SSA)](../02-Language-Design/LD-039-Go-Compiler-Architecture-SSA.md) | S | 18 KB | 2026-09 |
 | [LD-002: Go 并发原语的 CSP 形式化 (Go Concurrency: CSP Formalization)](../02-Language-Design/LD-002-Go-Concurrency-CSP-Formal.md) | S | 19 KB | 2026-09 |
 | [LD-003: Go 垃圾回收器的形式化理论 (Go Garbage Collector: Formal Theory)](../02-Language-Design/LD-003-Go-Garbage-Collector-Formal.md) | S | 29 KB | 2026-09 |
-| [LD-003: Go 三色标记-清除垃圾回收器详解 (Go Tri-Color Mark-Sweep GC Deep Dive)](../02-Language-Design/LD-003-Go-Garbage-Collector-Tri-Color-Mark-Sweep.md) | S | 21 KB | 2026-09 |
-| [LD-003: Go 泛型的形式化语义与类型理论 (Go Generics: Formal Semantics & Type Theory)](../02-Language-Design/LD-003-Go-Generics-Formal.md) | S | 35 KB | 2026-09 |
-| [LD-004: Go Channel 的形式化语义与并发理论 (Go Channels: Formal Semantics & Concurrency Theory)](../02-Language-Design/LD-004-Go-Channels-Formal.md) | S | 32 KB | 2026-09 |
+| [LD-003: Go 三色标记-清除垃圾回收器详解 (Go Tri-Color Mark-Sweep GC Deep Dive)](../02-Language-Design/LD-041-Go-Garbage-Collector-Tri-Color-Mark-Sweep.md) | S | 21 KB | 2026-09 |
+| [LD-003: Go 泛型的形式化语义与类型理论 (Go Generics: Formal Semantics & Type Theory)](../02-Language-Design/LD-040-Go-Generics-Formal.md) | S | 35 KB | 2026-09 |
+| [LD-004: Go Channel 的形式化语义与并发理论 (Go Channels: Formal Semantics & Concurrency Theory)](../02-Language-Design/LD-042-Go-Channels-Formal.md) | S | 32 KB | 2026-09 |
 | [LD-004: Go 运行时 GMP 调度器深度解析 (Go Runtime GMP Scheduler Deep Dive)](../02-Language-Design/LD-004-Go-Runtime-GMP-Deep-Dive.md) | S | 26 KB | 2026-09 |
-| [LD-004: Go 调度器的形式化理论 (Go Scheduler: Formal Theory)](../02-Language-Design/LD-004-Go-Scheduler-Formal.md) | S | 21 KB | 2026-09 |
+| [LD-004: Go 调度器的形式化理论 (Go Scheduler: Formal Theory)](../02-Language-Design/LD-043-Go-Scheduler-Formal.md) | S | 21 KB | 2026-09 |
 | [LD-005: Go 1.26 指针接收器约束 (Go 1.26 Pointer Receiver Constraints)](../02-Language-Design/LD-005-Go-126-Pointer-Receiver-Constraints.md) | S | 23 KB | 2026-09 |
-| [LD-005: Go 反射机制的形式化理论与实践 (Go Reflection: Formal Theory & Practice)](../02-Language-Design/LD-005-Go-Reflection-Formal.md) | S | 27 KB | 2026-09 |
-| [LD-006: Go 错误处理的形式化理论与实践 (Go Error Handling: Formal Theory & Practice)](../02-Language-Design/LD-006-Go-Error-Handling-Formal.md) | S | 28 KB | 2026-09 |
+| [LD-005: Go 反射机制的形式化理论与实践 (Go Reflection: Formal Theory & Practice)](../02-Language-Design/LD-044-Go-Reflection-Formal.md) | S | 27 KB | 2026-09 |
+| [LD-006: Go 错误处理的形式化理论与实践 (Go Error Handling: Formal Theory & Practice)](../02-Language-Design/LD-045-Go-Error-Handling-Formal.md) | S | 28 KB | 2026-09 |
 | [LD-006: Go 内存分配器内部原理 (Go Memory Allocator Internals)](../02-Language-Design/LD-006-Go-Memory-Allocator-Internals.md) | S | 28 KB | 2026-09 |
 | [LD-007: Go 反射与接口内部原理 (Go Reflection & Interface Internals)](../02-Language-Design/LD-007-Go-Reflection-Interface-Internals.md) | S | 26 KB | 2026-09 |
-| [LD-007: Go 测试的形式化理论与实践 (Go Testing: Formal Theory & Practice)](../02-Language-Design/LD-007-Go-Testing-Formal.md) | S | 29 KB | 2026-09 |
-| [LD-008: Go Context 的形式化语义与取消传播 (Go Context: Formal Semantics & Cancellation Propagation)](../02-Language-Design/LD-008-Go-Context-Formal.md) | S | 36 KB | 2026-09 |
+| [LD-007: Go 测试的形式化理论与实践 (Go Testing: Formal Theory & Practice)](../02-Language-Design/LD-046-Go-Testing-Formal.md) | S | 29 KB | 2026-09 |
+| [LD-008: Go Context 的形式化语义与取消传播 (Go Context: Formal Semantics & Cancellation Propagation)](../02-Language-Design/LD-047-Go-Context-Formal.md) | S | 36 KB | 2026-09 |
 | [LD-008: Go 错误处理模式 (Go Error Handling Patterns)](../02-Language-Design/LD-008-Go-Error-Handling-Patterns.md) | S | 27 KB | 2026-09 |
-| [LD-009: Go 接口内部原理与动态分发 (Go Interface Internals & Dynamic Dispatch)](../02-Language-Design/LD-009-Go-Interface-Internals.md) | S | 36 KB | 2026-09 |
+| [LD-009: Go 接口内部原理与动态分发 (Go Interface Internals & Dynamic Dispatch)](../02-Language-Design/LD-048-Go-Interface-Internals.md) | S | 36 KB | 2026-09 |
 | [LD-009: Go 测试模式 (Go Testing Patterns)](../02-Language-Design/LD-009-Go-Testing-Patterns.md) | S | 30 KB | 2026-09 |
-| [LD-010: Go 泛型深度解析 (Go Generics Deep Dive)](../02-Language-Design/LD-010-Go-Generics-Deep-Dive.md) | S | 28 KB | 2026-09 |
-| [LD-010: Go 泛型的形式化理论 (Go Generics: Formal Theory)](../02-Language-Design/LD-010-Go-Generics-Formal.md) | S | 20 KB | 2026-04 |
+| [LD-010: Go 泛型深度解析 (Go Generics Deep Dive)](../02-Language-Design/LD-050-Go-Generics-Deep-Dive.md) | S | 28 KB | 2026-09 |
+| [LD-010: Go 泛型的形式化理论 (Go Generics: Formal Theory)](../02-Language-Design/LD-049-Go-Generics-Formal.md) | S | 20 KB | 2026-04 |
 | [LD-010: Go GMP 调度器深入解析与形式化 (Go GMP Scheduler: Deep Dive & Formalization)](../02-Language-Design/LD-010-Go-Scheduler-GMP.md) | S | 61 KB | 2026-09 |
-| [LD-011: Go 汇编内部原理 (Go Assembly Internals)](../02-Language-Design/LD-011-Go-Assembly-Internals.md) | S | 20 KB | 2026-09 |
+| [LD-011: Go 汇编内部原理 (Go Assembly Internals)](../02-Language-Design/LD-051-Go-Assembly-Internals.md) | S | 20 KB | 2026-09 |
 | [LD-011: Go 垃圾回收算法与内存管理 (Go GC Algorithm & Memory Management)](../02-Language-Design/LD-011-Go-GC-Algorithm.md) | S | 54 KB | 2026-09 |
-| [LD-012: Go 逃逸分析与栈分配优化 (Go Escape Analysis & Stack Allocation Optimization)](../02-Language-Design/LD-012-Go-Escape-Analysis.md) | S | 31 KB | 2026-09 |
+| [LD-012: Go 逃逸分析与栈分配优化 (Go Escape Analysis & Stack Allocation Optimization)](../02-Language-Design/LD-052-Go-Escape-Analysis.md) | S | 31 KB | 2026-09 |
 | [LD-012: Go 链接器与构建过程 (Go Linker & Build Process)](../02-Language-Design/LD-012-Go-Linker-Build-Process.md) | S | 20 KB | 2026-04 |
 | [LD-013: Go 编译器阶段与优化管道 (Go Compiler Phases & Optimization Pipeline)](../02-Language-Design/LD-013-Go-Compiler-Phases.md) | S | 39 KB | 2026-09 |
 | [LD-014: Go 汇编编程与底层接口 (Go Assembly Programming & Low-Level Interface)](../02-Language-Design/LD-014-Go-Assembly-Programming.md) | S | 29 KB | 2026-09 |
@@ -283,177 +283,177 @@
 | [安全 Header 详解](../03-Engineering-CloudNative/04-Security/08-Security-Headers.md) | S | 17 KB | 2026-04 |
 | [安全通信 (Secure Communication)](../03-Engineering-CloudNative/04-Security/09-Secure-Communication.md) | S | 16 KB | 2026-04 |
 | [跨维度知识关联 v2.0 (Cross-Dimensional References)](../03-Engineering-CloudNative/CROSS-REFERENCES-v2.md) | S | 19 KB | 2026-04 |
-| [EC-001: 云原生架构原则的形式化 (Cloud Native Architecture: Formal Principles)](../03-Engineering-CloudNative/EC-001-Architecture-Principles-Formal.md) | S | 35 KB | 2026-09 |
-| [EC-001: Circuit Breaker Pattern](../03-Engineering-CloudNative/EC-001-Circuit-Breaker-Pattern.md) | S | 50 KB | 2026-09 |
-| [EC-001: 分布式系统基础 (Distributed Systems Fundamentals)](../03-Engineering-CloudNative/EC-001-Distributed-Systems-Fundamentals.md) | S | 59 KB | 2026-04 |
+| [EC-001: 云原生架构原则的形式化 (Cloud Native Architecture: Formal Principles)](../03-Engineering-CloudNative/EC-122-Architecture-Principles-Formal.md) | S | 35 KB | 2026-09 |
+| [EC-001: Circuit Breaker Pattern](../03-Engineering-CloudNative/EC-123-Circuit-Breaker-Pattern.md) | S | 50 KB | 2026-09 |
+| [EC-001: 分布式系统基础 (Distributed Systems Fundamentals)](../03-Engineering-CloudNative/EC-124-Distributed-Systems-Fundamentals.md) | S | 59 KB | 2026-04 |
 | [微服务架构 (Microservices Architecture)](../03-Engineering-CloudNative/EC-001-Microservices.md) | S | 26 KB | 2026-04 |
 | [EC-002: 微服务模式的形式化 (Microservices Patterns: Formalization)](../03-Engineering-CloudNative/EC-002-Microservices-Patterns-Formal.md) | S | 32 KB | 2026-09 |
-| [EC-002: Retry Pattern](../03-Engineering-CloudNative/EC-002-Retry-Pattern.md) | S | 41 KB | 2026-09 |
+| [EC-002: Retry Pattern](../03-Engineering-CloudNative/EC-125-Retry-Pattern.md) | S | 41 KB | 2026-09 |
 | [EC-003: 容器设计原则的形式化 (Container Design: Formal Principles)](../03-Engineering-CloudNative/EC-003-Container-Design-Formal.md) | S | 28 KB | 2026-09 |
-| [EC-003: Timeout Pattern](../03-Engineering-CloudNative/EC-003-Timeout-Pattern.md) | S | 36 KB | 2026-09 |
+| [EC-003: Timeout Pattern](../03-Engineering-CloudNative/EC-126-Timeout-Pattern.md) | S | 36 KB | 2026-09 |
 | [EC-004: API 设计原则的形式化 (API Design: Formal Principles)](../03-Engineering-CloudNative/EC-004-API-Design-Formal.md) | S | 28 KB | 2026-09 |
-| [EC-004: Bulkhead Pattern](../03-Engineering-CloudNative/EC-004-Bulkhead-Pattern.md) | S | 36 KB | 2026-09 |
-| [上下文管理 (Context Management)](../03-Engineering-CloudNative/EC-005-Context-Management.md) | S | 19 KB | 2026-09 |
+| [EC-004: Bulkhead Pattern](../03-Engineering-CloudNative/EC-127-Bulkhead-Pattern.md) | S | 36 KB | 2026-09 |
+| [上下文管理 (Context Management)](../03-Engineering-CloudNative/EC-128-Context-Management.md) | S | 19 KB | 2026-09 |
 | [EC-005: 数据库访问模式的形式化 (Database Access Patterns: Formalization)](../03-Engineering-CloudNative/EC-005-Database-Patterns-Formal.md) | S | 34 KB | 2026-09 |
-| [EC-005: Rate Limiting Pattern](../03-Engineering-CloudNative/EC-005-Rate-Limiting-Pattern.md) | S | 29 KB | 2026-09 |
-| [分布式追踪 (Distributed Tracing)](../03-Engineering-CloudNative/EC-006-Distributed-Tracing.md) | S | 17 KB | 2026-04 |
-| [EC-006: Load Balancing Algorithms](../03-Engineering-CloudNative/EC-006-Load-Balancing-Algorithms.md) | S | 37 KB | 2026-09 |
+| [EC-005: Rate Limiting Pattern](../03-Engineering-CloudNative/EC-129-Rate-Limiting-Pattern.md) | S | 29 KB | 2026-09 |
+| [分布式追踪 (Distributed Tracing)](../03-Engineering-CloudNative/EC-130-Distributed-Tracing.md) | S | 17 KB | 2026-04 |
+| [EC-006: Load Balancing Algorithms](../03-Engineering-CloudNative/EC-131-Load-Balancing-Algorithms.md) | S | 37 KB | 2026-09 |
 | [EC-006: 云原生测试策略的形式化 (Testing Strategies: Formalization)](../03-Engineering-CloudNative/EC-006-Testing-Strategies-Formal.md) | S | 30 KB | 2026-09 |
 | [EC-007: 断路器模式的形式化分析 (Circuit Breaker: Formal Analysis)](../03-Engineering-CloudNative/EC-007-Circuit-Breaker-Formal.md) | S | 17 KB | 2026-09 |
-| [EC-007: 优雅关闭完整实现 (Graceful Shutdown Complete)](../03-Engineering-CloudNative/EC-007-Graceful-Shutdown-Complete.md) | S | 16 KB | 2026-09 |
-| [EC-007: Service Discovery Patterns](../03-Engineering-CloudNative/EC-007-Service-Discovery-Patterns.md) | S | 40 KB | 2026-09 |
-| [EC-008: 熔断器高级实现 (Circuit Breaker Advanced)](../03-Engineering-CloudNative/EC-008-Circuit-Breaker-Advanced.md) | S | 21 KB | 2026-09 |
-| [EC-008: Health Check Patterns](../03-Engineering-CloudNative/EC-008-Health-Check-Patterns.md) | S | 37 KB | 2026-09 |
+| [EC-007: 优雅关闭完整实现 (Graceful Shutdown Complete)](../03-Engineering-CloudNative/EC-132-Graceful-Shutdown-Complete.md) | S | 16 KB | 2026-09 |
+| [EC-007: Service Discovery Patterns](../03-Engineering-CloudNative/EC-133-Service-Discovery-Patterns.md) | S | 40 KB | 2026-09 |
+| [EC-008: 熔断器高级实现 (Circuit Breaker Advanced)](../03-Engineering-CloudNative/EC-134-Circuit-Breaker-Advanced.md) | S | 21 KB | 2026-09 |
+| [EC-008: Health Check Patterns](../03-Engineering-CloudNative/EC-135-Health-Check-Patterns.md) | S | 37 KB | 2026-09 |
 | [EC-008: Saga 分布式事务的形式化 (Saga Pattern: Formal Analysis)](../03-Engineering-CloudNative/EC-008-Saga-Pattern-Formal.md) | S | 23 KB | 2026-09 |
-| [EC-009: Graceful Shutdown Pattern](../03-Engineering-CloudNative/EC-009-Graceful-Shutdown.md) | S | 42 KB | 2026-09 |
-| [任务调度 (Job Scheduling)](../03-Engineering-CloudNative/EC-009-Job-Scheduling.md) | S | 19 KB | 2026-09 |
+| [EC-009: Graceful Shutdown Pattern](../03-Engineering-CloudNative/EC-137-Graceful-Shutdown.md) | S | 42 KB | 2026-09 |
+| [任务调度 (Job Scheduling)](../03-Engineering-CloudNative/EC-136-Job-Scheduling.md) | S | 19 KB | 2026-09 |
 | [EC-009: 重试模式的形式化 (Retry Pattern: Formalization)](../03-Engineering-CloudNative/EC-009-Retry-Pattern-Formal.md) | S | 18 KB | 2026-09 |
-| [异步任务队列 (Async Task Queue)](../03-Engineering-CloudNative/EC-010-Async-Task-Queue.md) | S | 20 KB | 2026-09 |
-| [EC-010: Graceful Degradation Pattern](../03-Engineering-CloudNative/EC-010-Graceful-Degradation.md) | S | 30 KB | 2026-09 |
+| [异步任务队列 (Async Task Queue)](../03-Engineering-CloudNative/EC-138-Async-Task-Queue.md) | S | 20 KB | 2026-09 |
+| [EC-010: Graceful Degradation Pattern](../03-Engineering-CloudNative/EC-139-Graceful-Degradation.md) | S | 30 KB | 2026-09 |
 | [EC-010: 超时模式的形式化 (Timeout Pattern: Formalization)](../03-Engineering-CloudNative/EC-010-Timeout-Pattern-Formal.md) | S | 20 KB | 2026-09 |
 | [EC-011: Bulkhead Pattern Formal Analysis (S-Level)](../03-Engineering-CloudNative/EC-011-Bulkhead-Pattern-Formal.md) | S | 16 KB | 2026-09 |
-| [Context 取消模式 (Context Cancellation Patterns)](../03-Engineering-CloudNative/EC-011-Context-Cancellation-Patterns.md) | S | 19 KB | 2026-09 |
-| [EC-011: Idempotency Patterns](../03-Engineering-CloudNative/EC-011-Idempotency-Patterns.md) | S | 31 KB | 2026-09 |
+| [Context 取消模式 (Context Cancellation Patterns)](../03-Engineering-CloudNative/EC-140-Context-Cancellation-Patterns.md) | S | 19 KB | 2026-09 |
+| [EC-011: Idempotency Patterns](../03-Engineering-CloudNative/EC-141-Idempotency-Patterns.md) | S | 31 KB | 2026-09 |
 | [EC-012: 限流模式的形式化 (Rate Limiting: Formalization)](../03-Engineering-CloudNative/EC-012-Rate-Limiting-Formal.md) | S | 15 KB | 2026-09 |
-| [EC-012: Saga Pattern](../03-Engineering-CloudNative/EC-012-Saga-Pattern.md) | S | 16 KB | 2026-09 |
-| [状态机工作流 (State Machine Workflow)](../03-Engineering-CloudNative/EC-012-State-Machine-Workflow.md) | S | 19 KB | 2026-09 |
-| [并发模式 (Concurrent Patterns)](../03-Engineering-CloudNative/EC-013-Concurrent-Patterns.md) | S | 20 KB | 2026-09 |
+| [EC-012: Saga Pattern](../03-Engineering-CloudNative/EC-143-Saga-Pattern.md) | S | 16 KB | 2026-09 |
+| [状态机工作流 (State Machine Workflow)](../03-Engineering-CloudNative/EC-142-State-Machine-Workflow.md) | S | 19 KB | 2026-09 |
+| [并发模式 (Concurrent Patterns)](../03-Engineering-CloudNative/EC-144-Concurrent-Patterns.md) | S | 20 KB | 2026-09 |
 | [EC-013: Idempotency Pattern Formal Analysis (S-Level)](../03-Engineering-CloudNative/EC-013-Idempotency-Pattern-Formal.md) | S | 18 KB | 2026-09 |
-| [EC-013: Outbox Pattern](../03-Engineering-CloudNative/EC-013-Outbox-Pattern.md) | S | 30 KB | 2026-09 |
-| [EC-014: CQRS Pattern](../03-Engineering-CloudNative/EC-014-CQRS-Pattern.md) | S | 31 KB | 2026-09 |
-| [健康检查 (Health Checks)](../03-Engineering-CloudNative/EC-014-Health-Checks.md) | S | 19 KB | 2026-09 |
+| [EC-013: Outbox Pattern](../03-Engineering-CloudNative/EC-145-Outbox-Pattern.md) | S | 30 KB | 2026-09 |
+| [EC-014: CQRS Pattern](../03-Engineering-CloudNative/EC-147-CQRS-Pattern.md) | S | 31 KB | 2026-09 |
+| [健康检查 (Health Checks)](../03-Engineering-CloudNative/EC-146-Health-Checks.md) | S | 19 KB | 2026-09 |
 | [EC-014: Sidecar Pattern Formal Analysis (S-Level)](../03-Engineering-CloudNative/EC-014-Sidecar-Pattern-Formal.md) | S | 17 KB | 2026-09 |
 | [EC-015: 事件溯源模式的形式化 (Event Sourcing: Formalization)](../03-Engineering-CloudNative/EC-015-Event-Sourcing-Formal.md) | S | 17 KB | 2026-04 |
-| [EC-015: Event Sourcing Pattern](../03-Engineering-CloudNative/EC-015-Event-Sourcing-Pattern.md) | S | 30 KB | 2026-09 |
-| [资源限制 (Resource Limits)](../03-Engineering-CloudNative/EC-015-Resource-Limits.md) | S | 17 KB | 2026-04 |
+| [EC-015: Event Sourcing Pattern](../03-Engineering-CloudNative/EC-149-Event-Sourcing-Pattern.md) | S | 30 KB | 2026-09 |
+| [资源限制 (Resource Limits)](../03-Engineering-CloudNative/EC-148-Resource-Limits.md) | S | 17 KB | 2026-04 |
 | [EC-016: CQRS 模式的形式化 (CQRS: Formalization)](../03-Engineering-CloudNative/EC-016-CQRS-Pattern-Formal.md) | S | 15 KB | 2026-04 |
-| [EC-016: Microservices Decomposition Patterns](../03-Engineering-CloudNative/EC-016-Microservices-Decomposition.md) | S | 53 KB | 2026-09 |
-| [服务发现 (Service Discovery)](../03-Engineering-CloudNative/EC-016-Service-Discovery.md) | S | 17 KB | 2026-04 |
-| [EC-017: API Gateway Patterns](../03-Engineering-CloudNative/EC-017-API-Gateway-Patterns.md) | S | 52 KB | 2026-09 |
+| [EC-016: Microservices Decomposition Patterns](../03-Engineering-CloudNative/EC-151-Microservices-Decomposition.md) | S | 53 KB | 2026-09 |
+| [服务发现 (Service Discovery)](../03-Engineering-CloudNative/EC-150-Service-Discovery.md) | S | 17 KB | 2026-04 |
+| [EC-017: API Gateway Patterns](../03-Engineering-CloudNative/EC-152-API-Gateway-Patterns.md) | S | 52 KB | 2026-09 |
 | [计划任务框架设计 (Scheduled Task Framework)](../03-Engineering-CloudNative/EC-017-Scheduled-Task-Framework.md) | S | 16 KB | 2026-09 |
-| [EC-018: Backend-for-Frontend (BFF) Pattern](../03-Engineering-CloudNative/EC-018-BFF-Pattern.md) | S | 29 KB | 2026-09 |
+| [EC-018: Backend-for-Frontend (BFF) Pattern](../03-Engineering-CloudNative/EC-153-BFF-Pattern.md) | S | 29 KB | 2026-09 |
 | [上下文传播框架 (Context Propagation Framework)](../03-Engineering-CloudNative/EC-018-Context-Propagation-Framework.md) | S | 22 KB | 2026-09 |
-| [EC-019: Strangler Fig Pattern](../03-Engineering-CloudNative/EC-019-Strangler-Fig-Pattern.md) | S | 38 KB | 2026-09 |
+| [EC-019: Strangler Fig Pattern](../03-Engineering-CloudNative/EC-154-Strangler-Fig-Pattern.md) | S | 38 KB | 2026-09 |
 | [任务执行引擎 (Task Execution Engine)](../03-Engineering-CloudNative/EC-019-Task-Execution-Engine.md) | S | 20 KB | 2026-09 |
-| [EC-020: Anti-Corruption Layer Pattern](../03-Engineering-CloudNative/EC-020-Anti-Corruption-Layer.md) | S | 44 KB | 2026-09 |
+| [EC-020: Anti-Corruption Layer Pattern](../03-Engineering-CloudNative/EC-156-Anti-Corruption-Layer.md) | S | 44 KB | 2026-09 |
 | [分布式 Cron (Distributed Cron)](../03-Engineering-CloudNative/EC-020-Distributed-Cron.md) | S | 20 KB | 2026-09 |
-| [EC-020: Kubernetes Security in Production (2025-2026 Edition)](../03-Engineering-CloudNative/EC-020-Kubernetes-Security-Production.md) | S | 87 KB | 2026-09 |
-| [EC-021: Sidecar Pattern](../03-Engineering-CloudNative/EC-021-Sidecar-Pattern.md) | S | 37 KB | 2026-09 |
+| [EC-020: Kubernetes Security in Production (2025-2026 Edition)](../03-Engineering-CloudNative/EC-155-Kubernetes-Security-Production.md) | S | 87 KB | 2026-09 |
+| [EC-021: Sidecar Pattern](../03-Engineering-CloudNative/EC-157-Sidecar-Pattern.md) | S | 37 KB | 2026-09 |
 | [任务队列模式 (Task Queue Patterns)](../03-Engineering-CloudNative/EC-021-Task-Queue-Patterns.md) | S | 18 KB | 2026-09 |
 | [EC-022: Ambassador Pattern](../03-Engineering-CloudNative/EC-022-Ambassador-Pattern.md) | S | 36 KB | 2026-09 |
-| [EC-023: Adapter Pattern](../03-Engineering-CloudNative/EC-023-Adapter-Pattern.md) | S | 34 KB | 2026-09 |
+| [EC-023: Adapter Pattern](../03-Engineering-CloudNative/EC-158-Adapter-Pattern.md) | S | 34 KB | 2026-09 |
 | [任务依赖管理 (Task Dependency Management)](../03-Engineering-CloudNative/EC-023-Task-Dependency-Management.md) | S | 20 KB | 2026-09 |
-| [EC-024: Scatter-Gather Pattern](../03-Engineering-CloudNative/EC-024-Scatter-Gather-Pattern.md) | S | 34 KB | 2026-09 |
+| [EC-024: Scatter-Gather Pattern](../03-Engineering-CloudNative/EC-159-Scatter-Gather-Pattern.md) | S | 34 KB | 2026-09 |
 | [任务状态机 (Task State Machine)](../03-Engineering-CloudNative/EC-024-Task-State-Machine.md) | S | 20 KB | 2026-09 |
-| [EC-025: Priority Queue Pattern](../03-Engineering-CloudNative/EC-025-Priority-Queue-Pattern.md) | S | 32 KB | 2026-09 |
+| [EC-025: Priority Queue Pattern](../03-Engineering-CloudNative/EC-160-Priority-Queue-Pattern.md) | S | 32 KB | 2026-09 |
 | [任务补偿机制 (Task Compensation)](../03-Engineering-CloudNative/EC-025-Task-Compensation.md) | S | 19 KB | 2026-09 |
 | [EC-026: Competing Consumers Pattern](../03-Engineering-CloudNative/EC-026-Competing-Consumers.md) | S | 36 KB | 2026-09 |
-| [EC-027: Publisher-Subscriber Pattern](../03-Engineering-CloudNative/EC-027-Publisher-Subscriber.md) | S | 36 KB | 2026-09 |
+| [EC-027: Publisher-Subscriber Pattern](../03-Engineering-CloudNative/EC-161-Publisher-Subscriber.md) | S | 36 KB | 2026-09 |
 | [任务版本管理 (Task Versioning)](../03-Engineering-CloudNative/EC-027-Task-Versioning.md) | S | 18 KB | 2026-09 |
-| [EC-028: Claim-Check Pattern](../03-Engineering-CloudNative/EC-028-Claim-Check-Pattern.md) | S | 36 KB | 2026-09 |
+| [EC-028: Claim-Check Pattern](../03-Engineering-CloudNative/EC-162-Claim-Check-Pattern.md) | S | 36 KB | 2026-09 |
 | [任务数据一致性 (Task Data Consistency)](../03-Engineering-CloudNative/EC-028-Task-Data-Consistency.md) | S | 19 KB | 2026-09 |
-| [EC-029: Sequential Convoy Pattern](../03-Engineering-CloudNative/EC-029-Sequential-Convoy.md) | S | 39 KB | 2026-09 |
+| [EC-029: Sequential Convoy Pattern](../03-Engineering-CloudNative/EC-163-Sequential-Convoy.md) | S | 39 KB | 2026-09 |
 | [任务故障恢复 (Task Failure Recovery)](../03-Engineering-CloudNative/EC-029-Task-Failure-Recovery.md) | S | 20 KB | 2026-09 |
-| [EC-030: Asynchronous Request-Reply Pattern](../03-Engineering-CloudNative/EC-030-Asynchronous-Request-Reply.md) | S | 34 KB | 2026-09 |
+| [EC-030: Asynchronous Request-Reply Pattern](../03-Engineering-CloudNative/EC-164-Asynchronous-Request-Reply.md) | S | 34 KB | 2026-09 |
 | [任务限流与降级 (Task Rate Limiting & Degradation)](../03-Engineering-CloudNative/EC-030-Task-Rate-Limiting.md) | S | 19 KB | 2026-09 |
 | [EC-031: Choreography Pattern (编舞模式)](../03-Engineering-CloudNative/EC-031-Choreography-Pattern.md) | S | 59 KB | 2026-09 |
-| [任务调度策略 (Task Scheduling Strategies)](../03-Engineering-CloudNative/EC-031-Task-Scheduling-Strategies.md) | S | 19 KB | 2026-09 |
+| [任务调度策略 (Task Scheduling Strategies)](../03-Engineering-CloudNative/EC-165-Task-Scheduling-Strategies.md) | S | 19 KB | 2026-09 |
 | [EC-032: Orchestration Pattern (编排模式)](../03-Engineering-CloudNative/EC-032-Orchestration-Pattern.md) | S | 56 KB | 2026-09 |
-| [任务批量处理 (Task Batch Processing)](../03-Engineering-CloudNative/EC-033-Task-Batch-Processing.md) | S | 19 KB | 2026-09 |
+| [任务批量处理 (Task Batch Processing)](../03-Engineering-CloudNative/EC-166-Task-Batch-Processing.md) | S | 19 KB | 2026-09 |
 | [EC-033: Transactional Outbox Pattern (事务发件箱模式)](../03-Engineering-CloudNative/EC-033-Transactional-Outbox.md) | S | 58 KB | 2026-09 |
 | [EC-034: Polling Publisher Pattern (轮询发布者模式)](../03-Engineering-CloudNative/EC-034-Polling-Publisher.md) | S | 44 KB | 2026-09 |
-| [任务事件溯源 (Task Event Sourcing)](../03-Engineering-CloudNative/EC-034-Task-Event-Sourcing.md) | S | 20 KB | 2026-09 |
+| [任务事件溯源 (Task Event Sourcing)](../03-Engineering-CloudNative/EC-167-Task-Event-Sourcing.md) | S | 20 KB | 2026-09 |
 | [EC-035: Database-per-Service Pattern (每个服务一个数据库)](../03-Engineering-CloudNative/EC-035-Database-per-Service.md) | S | 40 KB | 2026-09 |
-| [任务多租户隔离 (Task Multi-Tenancy)](../03-Engineering-CloudNative/EC-035-Task-Multi-Tenancy.md) | S | 19 KB | 2026-09 |
-| [EC-036: Cloud-Native Observability Stack - 2025-2026 Edition](../03-Engineering-CloudNative/EC-036-Cloud-Native-Observability-Stack.md) | S | 82 KB | 2026-09 |
+| [任务多租户隔离 (Task Multi-Tenancy)](../03-Engineering-CloudNative/EC-168-Task-Multi-Tenancy.md) | S | 19 KB | 2026-09 |
+| [EC-036: Cloud-Native Observability Stack - 2025-2026 Edition](../03-Engineering-CloudNative/EC-170-Cloud-Native-Observability-Stack.md) | S | 82 KB | 2026-09 |
 | [EC-036: Shared Database Pattern (共享数据库模式)](../03-Engineering-CloudNative/EC-036-Shared-Database.md) | S | 33 KB | 2026-09 |
-| [任务调试与诊断 (Task Debugging & Diagnostics)](../03-Engineering-CloudNative/EC-036-Task-Debugging-Diagnostics.md) | S | 19 KB | 2026-09 |
+| [任务调试与诊断 (Task Debugging & Diagnostics)](../03-Engineering-CloudNative/EC-169-Task-Debugging-Diagnostics.md) | S | 19 KB | 2026-09 |
 | [EC-037: API Composition Pattern (API 组合模式)](../03-Engineering-CloudNative/EC-037-API-Composition.md) | S | 41 KB | 2026-09 |
-| [任务测试策略 (Task Testing Strategies)](../03-Engineering-CloudNative/EC-037-Task-Testing-Strategies.md) | S | 19 KB | 2026-09 |
+| [任务测试策略 (Task Testing Strategies)](../03-Engineering-CloudNative/EC-171-Task-Testing-Strategies.md) | S | 19 KB | 2026-09 |
 | [EC-038: Command Query Responsibility Segregation (CQRS)](../03-Engineering-CloudNative/EC-038-Command-Query-Responsibility.md) | S | 37 KB | 2026-09 |
-| [任务文档生成器 (Task Documentation Generator)](../03-Engineering-CloudNative/EC-038-Task-Documentation-Generator.md) | S | 19 KB | 2026-09 |
+| [任务文档生成器 (Task Documentation Generator)](../03-Engineering-CloudNative/EC-172-Task-Documentation-Generator.md) | S | 19 KB | 2026-09 |
 | [EC-039: Domain Event Pattern (领域事件模式)](../03-Engineering-CloudNative/EC-039-Domain-Event-Pattern.md) | S | 37 KB | 2026-09 |
-| [任务系统迁移指南 (Task System Migration Guide)](../03-Engineering-CloudNative/EC-039-Task-Migration-Guide.md) | S | 19 KB | 2026-09 |
+| [任务系统迁移指南 (Task System Migration Guide)](../03-Engineering-CloudNative/EC-173-Task-Migration-Guide.md) | S | 19 KB | 2026-09 |
 | [EC-040: Aggregate Pattern (聚合模式)](../03-Engineering-CloudNative/EC-040-Aggregate-Pattern.md) | S | 37 KB | 2026-09 |
-| [任务配置管理 (Task Configuration Management)](../03-Engineering-CloudNative/EC-040-Task-Configuration-Management.md) | S | 19 KB | 2026-09 |
-| [任务 CLI 工具 (Task CLI Tooling)](../03-Engineering-CloudNative/EC-041-Task-CLI-Tooling.md) | S | 19 KB | 2006-01 |
+| [任务配置管理 (Task Configuration Management)](../03-Engineering-CloudNative/EC-174-Task-Configuration-Management.md) | S | 19 KB | 2026-09 |
+| [任务 CLI 工具 (Task CLI Tooling)](../03-Engineering-CloudNative/EC-175-Task-CLI-Tooling.md) | S | 19 KB | 2006-01 |
 | [EC-041: Value Object Pattern (值对象模式)](../03-Engineering-CloudNative/EC-041-Value-Object-Pattern.md) | S | 31 KB | 2026-09 |
 | [EC-042: Entity Pattern (实体模式)](../03-Engineering-CloudNative/EC-042-Entity-Pattern.md) | S | 36 KB | 2026-09 |
-| [EC-042: 任务调度器核心架构 (Task Scheduler Core Architecture)](../03-Engineering-CloudNative/EC-042-Task-Scheduler-Core-Architecture.md) | S | 21 KB | 2026-09 |
-| [EC-043: Context 管理完整指南 (Context Management Complete)](../03-Engineering-CloudNative/EC-043-Context-Management-Complete.md) | S | 20 KB | 2026-09 |
+| [EC-042: 任务调度器核心架构 (Task Scheduler Core Architecture)](../03-Engineering-CloudNative/EC-176-Task-Scheduler-Core-Architecture.md) | S | 21 KB | 2026-09 |
+| [EC-043: Context 管理完整指南 (Context Management Complete)](../03-Engineering-CloudNative/EC-177-Context-Management-Complete.md) | S | 20 KB | 2026-09 |
 | [EC-043: Repository Pattern (仓储模式)](../03-Engineering-CloudNative/EC-043-Repository-Pattern.md) | S | 35 KB | 2026-09 |
-| [任务 API 设计 (Task API Design)](../03-Engineering-CloudNative/EC-043-Task-API-Design.md) | S | 21 KB | 2026-09 |
-| [EC-044: Factory Pattern (工厂模式)](../03-Engineering-CloudNative/EC-044-Factory-Pattern.md) | S | 36 KB | 2026-09 |
+| [任务 API 设计 (Task API Design)](../03-Engineering-CloudNative/EC-178-Task-API-Design.md) | S | 21 KB | 2026-09 |
+| [EC-044: Factory Pattern (工厂模式)](../03-Engineering-CloudNative/EC-179-Factory-Pattern.md) | S | 36 KB | 2026-09 |
 | [EC-044: 可观测性生产实践 (Observability in Production)](../03-Engineering-CloudNative/EC-044-Observability-Production.md) | S | 22 KB | 2026-09 |
-| [任务 Schema 注册中心 (Task Schema Registry)](../03-Engineering-CloudNative/EC-044-Task-Schema-Registry.md) | S | 20 KB | 2026-09 |
+| [任务 Schema 注册中心 (Task Schema Registry)](../03-Engineering-CloudNative/EC-180-Task-Schema-Registry.md) | S | 20 KB | 2026-09 |
 | [EC-045: Policy Pattern (策略/政策模式)](../03-Engineering-CloudNative/EC-045-Policy-Pattern.md) | S | 38 KB | 2026-09 |
-| [任务安全加固 (Task Security Hardening)](../03-Engineering-CloudNative/EC-045-Task-Security-Hardening.md) | S | 20 KB | 2026-09 |
-| [EC-046: Process Manager Pattern (Saga Orchestrator)](../03-Engineering-CloudNative/EC-046-Process-Manager-Pattern.md) | S | 58 KB | 2026-09 |
+| [任务安全加固 (Task Security Hardening)](../03-Engineering-CloudNative/EC-181-Task-Security-Hardening.md) | S | 20 KB | 2026-09 |
+| [EC-046: Process Manager Pattern (Saga Orchestrator)](../03-Engineering-CloudNative/EC-182-Process-Manager-Pattern.md) | S | 58 KB | 2026-09 |
 | [任务性能调优 (Task Performance Tuning)](../03-Engineering-CloudNative/EC-046-Task-Performance-Tuning.md) | S | 20 KB | 2026-09 |
-| [EC-047: Process Injector Pattern (Sidecar & DaemonSet)](../03-Engineering-CloudNative/EC-047-Process-Injector-Pattern.md) | S | 59 KB | 2026-09 |
+| [EC-047: Process Injector Pattern (Sidecar & DaemonSet)](../03-Engineering-CloudNative/EC-183-Process-Injector-Pattern.md) | S | 59 KB | 2026-09 |
 | [任务部署运维 (Task Deployment Operations)](../03-Engineering-CloudNative/EC-047-Task-Deployment-Operations.md) | S | 21 KB | 2026-09 |
-| [EC-048: Compensating Transaction Pattern](../03-Engineering-CloudNative/EC-048-Compensating-Transaction.md) | S | 41 KB | 2026-09 |
+| [EC-048: Compensating Transaction Pattern](../03-Engineering-CloudNative/EC-184-Compensating-Transaction.md) | S | 41 KB | 2026-09 |
 | [任务系统案例研究 (Task System Case Studies)](../03-Engineering-CloudNative/EC-048-Task-Case-Studies.md) | S | 20 KB | 2026-09 |
-| [EC-049: Distributed Tracing Pattern](../03-Engineering-CloudNative/EC-049-Distributed-Tracing.md) | S | 41 KB | 2026-09 |
+| [EC-049: Distributed Tracing Pattern](../03-Engineering-CloudNative/EC-185-Distributed-Tracing.md) | S | 41 KB | 2026-09 |
 | [任务系统集成模式 (Task System Integration Patterns)](../03-Engineering-CloudNative/EC-049-Task-Integration-Patterns.md) | S | 21 KB | 2026-09 |
-| [EC-050: Structured Logging Pattern](../03-Engineering-CloudNative/EC-050-Structured-Logging.md) | S | 34 KB | 2026-09 |
+| [EC-050: Structured Logging Pattern](../03-Engineering-CloudNative/EC-186-Structured-Logging.md) | S | 34 KB | 2026-09 |
 | [任务系统未来趋势 (Task System Future Trends)](../03-Engineering-CloudNative/EC-050-Task-Future-Trends.md) | S | 22 KB | 2026-09 |
-| [EC-051: Metrics Collection Pattern](../03-Engineering-CloudNative/EC-051-Metrics-Collection.md) | S | 29 KB | 2026-04 |
+| [EC-051: Metrics Collection Pattern](../03-Engineering-CloudNative/EC-187-Metrics-Collection.md) | S | 29 KB | 2026-04 |
 | [任务上下文传播高级模式 (Advanced Task Context Propagation)](../03-Engineering-CloudNative/EC-051-Task-Context-Propagation-Advanced.md) | S | 22 KB | 2026-09 |
-| [EC-052: Health Endpoint Pattern](../03-Engineering-CloudNative/EC-052-Health-Endpoint.md) | S | 32 KB | 2026-04 |
+| [EC-052: Health Endpoint Pattern](../03-Engineering-CloudNative/EC-188-Health-Endpoint.md) | S | 32 KB | 2026-04 |
 | [任务上下文取消模式 (Task Context Cancellation Patterns)](../03-Engineering-CloudNative/EC-052-Task-Context-Cancellation-Patterns.md) | S | 21 KB | 2026-09 |
-| [EC-053: Readiness and Liveness Probes Pattern](../03-Engineering-CloudNative/EC-053-Readiness-Liveness-Probes.md) | S | 29 KB | 2026-04 |
+| [EC-053: Readiness and Liveness Probes Pattern](../03-Engineering-CloudNative/EC-189-Readiness-Liveness-Probes.md) | S | 29 KB | 2026-04 |
 | [任务上下文值模式 (Task Context Value Patterns)](../03-Engineering-CloudNative/EC-053-Task-Context-Value-Patterns.md) | S | 19 KB | 2026-09 |
-| [EC-054: Distributed Configuration Pattern](../03-Engineering-CloudNative/EC-054-Distributed-Configuration.md) | S | 28 KB | 2026-04 |
+| [EC-054: Distributed Configuration Pattern](../03-Engineering-CloudNative/EC-190-Distributed-Configuration.md) | S | 28 KB | 2026-04 |
 | [任务上下文传播标准 (Task Context Propagation Standards)](../03-Engineering-CloudNative/EC-054-Task-Context-Propagation-Standards.md) | S | 21 KB | 2026-09 |
-| [EC-055: Feature Flags Pattern](../03-Engineering-CloudNative/EC-055-Feature-Flags.md) | S | 35 KB | 2026-09 |
+| [EC-055: Feature Flags Pattern](../03-Engineering-CloudNative/EC-191-Feature-Flags.md) | S | 35 KB | 2026-09 |
 | [任务上下文传播最佳实践 (Task Context Propagation Best Practices)](../03-Engineering-CloudNative/EC-055-Task-Context-Propagation-Best-Practices.md) | S | 20 KB | 2026-09 |
-| [EC-056: Canary Deployment Pattern](../03-Engineering-CloudNative/EC-056-Canary-Deployment.md) | S | 24 KB | 2026-09 |
+| [EC-056: Canary Deployment Pattern](../03-Engineering-CloudNative/EC-192-Canary-Deployment.md) | S | 24 KB | 2026-09 |
 | [任务分布式追踪深入剖析 (Task Distributed Tracing Deep Dive)](../03-Engineering-CloudNative/EC-056-Task-Distributed-Tracing-Deep-Dive.md) | S | 22 KB | 2026-09 |
-| [EC-057: Blue-Green Deployment Pattern](../03-Engineering-CloudNative/EC-057-Blue-Green-Deployment.md) | S | 18 KB | 2026-09 |
+| [EC-057: Blue-Green Deployment Pattern](../03-Engineering-CloudNative/EC-193-Blue-Green-Deployment.md) | S | 18 KB | 2026-09 |
 | [etcd 分布式任务调度器实现 (ETCD Distributed Task Scheduler)](../03-Engineering-CloudNative/EC-057-ETCD-Distributed-Task-Scheduler.md) | S | 20 KB | 2026-09 |
 | [EC-058: A/B Testing Pattern](../03-Engineering-CloudNative/EC-058-A-B-Testing.md) | S | 26 KB | 2026-09 |
 | [EC-059: Shadow Traffic Pattern](../03-Engineering-CloudNative/EC-059-Shadow-Traffic.md) | S | 23 KB | 2026-09 |
-| [EC-060: Chaos Engineering Pattern](../03-Engineering-CloudNative/EC-060-Chaos-Engineering.md) | S | 30 KB | 2026-09 |
+| [EC-060: Chaos Engineering Pattern](../03-Engineering-CloudNative/EC-194-Chaos-Engineering.md) | S | 30 KB | 2026-09 |
 | [OpenTelemetry 分布式追踪生产实践 (OpenTelemetry Distributed Tracing Production Guide)](../03-Engineering-CloudNative/EC-060-OpenTelemetry-Distributed-Tracing-Production.md) | S | 18 KB | 2026-09 |
 | [Observability-Driven Development (ODD)](../03-Engineering-CloudNative/EC-061-Observability-Driven-Development.md) | S | 69 KB | 2026-09 |
-| [任务队列实现模式 (Task Queue Implementation Patterns)](../03-Engineering-CloudNative/EC-061-Task-Queue-Implementation-Patterns.md) | S | 19 KB | 2026-09 |
+| [任务队列实现模式 (Task Queue Implementation Patterns)](../03-Engineering-CloudNative/EC-195-Task-Queue-Implementation-Patterns.md) | S | 19 KB | 2026-09 |
 | [Alerting Best Practices](../03-Engineering-CloudNative/EC-062-Alerting-Best-Practices.md) | S | 68 KB | 2026-09 |
-| [分布式任务调度器架构 (Distributed Task Scheduler Architecture)](../03-Engineering-CloudNative/EC-062-Distributed-Task-Scheduler-Architecture.md) | S | 22 KB | 2026-09 |
+| [分布式任务调度器架构 (Distributed Task Scheduler Architecture)](../03-Engineering-CloudNative/EC-196-Distributed-Task-Scheduler-Architecture.md) | S | 22 KB | 2026-09 |
 | [On-Call Procedures](../03-Engineering-CloudNative/EC-063-On-Call-Procedures.md) | S | 74 KB | 2026-09 |
-| [任务状态机实现 (Task State Machine Implementation)](../03-Engineering-CloudNative/EC-063-Task-State-Machine-Implementation.md) | S | 23 KB | 2026-09 |
-| [上下文管理生产模式 (Context Management Production Patterns)](../03-Engineering-CloudNative/EC-064-Context-Management-Production-Patterns.md) | S | 16 KB | 2026-09 |
+| [任务状态机实现 (Task State Machine Implementation)](../03-Engineering-CloudNative/EC-197-Task-State-Machine-Implementation.md) | S | 23 KB | 2026-09 |
+| [上下文管理生产模式 (Context Management Production Patterns)](../03-Engineering-CloudNative/EC-198-Context-Management-Production-Patterns.md) | S | 16 KB | 2026-09 |
 | [Incident Management](../03-Engineering-CloudNative/EC-064-Incident-Management.md) | S | 61 KB | 2026-04 |
-| [数据库事务隔离与 MVCC (Database Transaction Isolation & MVCC)](../03-Engineering-CloudNative/EC-065-Database-Transaction-Isolation-MVCC.md) | S | 23 KB | 2026-09 |
+| [数据库事务隔离与 MVCC (Database Transaction Isolation & MVCC)](../03-Engineering-CloudNative/EC-199-Database-Transaction-Isolation-MVCC.md) | S | 23 KB | 2026-09 |
 | [Post-Mortem Analysis](../03-Engineering-CloudNative/EC-065-Post-Mortem-Analysis.md) | S | 66 KB | 2026-09 |
-| [上下文传播实现机制 (Context Propagation Implementation)](../03-Engineering-CloudNative/EC-066-Context-Propagation-Implementation.md) | S | 17 KB | 2026-09 |
+| [上下文传播实现机制 (Context Propagation Implementation)](../03-Engineering-CloudNative/EC-200-Context-Propagation-Implementation.md) | S | 17 KB | 2026-09 |
 | [Runbooks Documentation](../03-Engineering-CloudNative/EC-066-Runbooks-Documentation.md) | S | 63 KB | 2026-09 |
 | [分布式任务调度器生产实践 (Distributed Task Scheduler Production)](../03-Engineering-CloudNative/EC-067-Distributed-Task-Scheduler-Production.md) | S | 29 KB | 2026-09 |
 | [Container Best Practices](../03-Engineering-CloudNative/EC-068-Container-Best-Practices.md) | S | 56 KB | 2026-09 |
 | [Kubernetes Operators](../03-Engineering-CloudNative/EC-069-Kubernetes-Operators.md) | S | 42 KB | 2026-09 |
 | [Helm Charts Design](../03-Engineering-CloudNative/EC-070-Helm-Charts-Design.md) | S | 34 KB | 2026-09 |
-| [OpenTelemetry W3C Trace Context 规范实现](../03-Engineering-CloudNative/EC-070-OpenTelemetry-W3C-Trace-Context.md) | S | 22 KB | 2026-09 |
+| [OpenTelemetry W3C Trace Context 规范实现](../03-Engineering-CloudNative/EC-201-OpenTelemetry-W3C-Trace-Context.md) | S | 22 KB | 2026-09 |
 | [GitOps Patterns](../03-Engineering-CloudNative/EC-071-GitOps-Patterns.md) | S | 33 KB | 2026-09 |
-| [etcd 分布式协调实现](../03-Engineering-CloudNative/EC-071-etcd-Distributed-Coordination.md) | S | 26 KB | 2026-09 |
+| [etcd 分布式协调实现](../03-Engineering-CloudNative/EC-202-etcd-Distributed-Coordination.md) | S | 26 KB | 2026-09 |
 | [Infrastructure as Code](../03-Engineering-CloudNative/EC-072-Infrastructure-as-Code.md) | S | 33 KB | 2026-09 |
-| [任务队列完整实现 (Task Queue Implementation)](../03-Engineering-CloudNative/EC-072-Task-Queue-Implementation.md) | S | 25 KB | 2026-09 |
+| [任务队列完整实现 (Task Queue Implementation)](../03-Engineering-CloudNative/EC-203-Task-Queue-Implementation.md) | S | 25 KB | 2026-09 |
 | [Secrets Management](../03-Engineering-CloudNative/EC-073-Secrets-Management.md) | S | 26 KB | 2026-09 |
-| [工作池动态伸缩实现 (Worker Pool Dynamic Scaling)](../03-Engineering-CloudNative/EC-073-Worker-Pool-Dynamic-Scaling.md) | S | 22 KB | 2026-09 |
-| [上下文感知日志系统 (Context-Aware Logging)](../03-Engineering-CloudNative/EC-074-Context-Aware-Logging.md) | S | 24 KB | 2026-09 |
+| [工作池动态伸缩实现 (Worker Pool Dynamic Scaling)](../03-Engineering-CloudNative/EC-204-Worker-Pool-Dynamic-Scaling.md) | S | 22 KB | 2026-09 |
+| [上下文感知日志系统 (Context-Aware Logging)](../03-Engineering-CloudNative/EC-205-Context-Aware-Logging.md) | S | 24 KB | 2026-09 |
 | [Zero Trust Security](../03-Engineering-CloudNative/EC-074-Zero-Trust-Security.md) | S | 31 KB | 2026-09 |
 | [Network Policies](../03-Engineering-CloudNative/EC-075-Network-Policies.md) | S | 26 KB | 2026-09 |
-| [重试、退避与熔断模式 (Retry, Backoff & Circuit Breaker)](../03-Engineering-CloudNative/EC-075-Retry-Backoff-Circuit-Breaker.md) | S | 18 KB | 2026-09 |
-| [DAG 任务依赖调度 (DAG Task Dependencies)](../03-Engineering-CloudNative/EC-076-DAG-Task-Dependencies.md) | S | 16 KB | 2026-09 |
+| [重试、退避与熔断模式 (Retry, Backoff & Circuit Breaker)](../03-Engineering-CloudNative/EC-206-Retry-Backoff-Circuit-Breaker.md) | S | 18 KB | 2026-09 |
+| [DAG 任务依赖调度 (DAG Task Dependencies)](../03-Engineering-CloudNative/EC-207-DAG-Task-Dependencies.md) | S | 16 KB | 2026-09 |
 | [EC-076: Kubernetes 1.34 New Features - Comprehensive Guide](../03-Engineering-CloudNative/EC-076-Kubernetes-134-New-Features.md) | S | 61 KB | 2026-09 |
 | [EC-077: Multi-Container Patterns - Native Sidecars, Init Containers, and Complementary Patterns](../03-Engineering-CloudNative/EC-077-Multi-Container-Patterns.md) | S | 83 KB | 2026-09 |
-| [状态机任务执行 (State Machine Task Execution)](../03-Engineering-CloudNative/EC-077-State-Machine-Task-Execution.md) | S | 26 KB | 2026-09 |
-| [EC-078: Microservices Patterns 2026](../03-Engineering-CloudNative/EC-078-Microservices-Patterns-2026.md) | S | 102 KB | 2026-09 |
+| [状态机任务执行 (State Machine Task Execution)](../03-Engineering-CloudNative/EC-208-State-Machine-Task-Execution.md) | S | 26 KB | 2026-09 |
+| [EC-078: Microservices Patterns 2026](../03-Engineering-CloudNative/EC-209-Microservices-Patterns-2026.md) | S | 102 KB | 2026-09 |
 | [限流与节流 (Rate Limiting & Throttling)](../03-Engineering-CloudNative/EC-078-Rate-Limiting-Throttling.md) | S | 19 KB | 2026-09 |
-| [优雅关闭实现 (Graceful Shutdown Implementation)](../03-Engineering-CloudNative/EC-079-Graceful-Shutdown-Implementation.md) | S | 16 KB | 2026-09 |
+| [优雅关闭实现 (Graceful Shutdown Implementation)](../03-Engineering-CloudNative/EC-210-Graceful-Shutdown-Implementation.md) | S | 16 KB | 2026-09 |
 | [Security and Cryptography 2026](../03-Engineering-CloudNative/EC-079-Security-Cryptography-2026.md) | S | 180 KB | 2026-09 |
 | [可观测性与指标集成 (Observability & Metrics Integration)](../03-Engineering-CloudNative/EC-080-Observability-Metrics-Integration.md) | S | 20 KB | 2026-09 |
-| [EC-080: Observability in Production - 2026 Edition](../03-Engineering-CloudNative/EC-080-Observability-Production-2026.md) | S | 87 KB | 2026-09 |
-| [EC-081-Distributed-Systems-Research-2025](../03-Engineering-CloudNative/EC-081-Distributed-Systems-Research-2025.md) | B | 2 KB | 2026-04 |
+| [EC-080: Observability in Production - 2026 Edition](../03-Engineering-CloudNative/EC-211-Observability-Production-2026.md) | S | 87 KB | 2026-09 |
+| [EC-081-Distributed-Systems-Research-2025](../03-Engineering-CloudNative/EC-212-Distributed-Systems-Research-2025.md) | B | 2 KB | 2026-04 |
 | [任务执行生命周期管理 (Task Execution Lifecycle Management)](../03-Engineering-CloudNative/EC-081-Task-Execution-Lifecycle-Management.md) | S | 24 KB | 2026-09 |
 | [分布式任务分片 (Distributed Task Sharding)](../03-Engineering-CloudNative/EC-082-Distributed-Task-Sharding.md) | S | 19 KB | 2026-09 |
 | [任务执行超时控制 (Task Execution Timeout Control)](../03-Engineering-CloudNative/EC-083-Task-Execution-Timeout-Control.md) | S | 17 KB | 2026-09 |
@@ -461,16 +461,16 @@
 | [资源管理与调度 (Resource Management & Scheduling)](../03-Engineering-CloudNative/EC-085-Resource-Management-Scheduling.md) | S | 16 KB | 2026-09 |
 | [健康检查模式 (Health Check Patterns)](../03-Engineering-CloudNative/EC-086-Health-Check-Patterns.md) | S | 18 KB | 2026-09 |
 | [异步任务模式 (Async Task Patterns)](../03-Engineering-CloudNative/EC-087-Async-Task-Patterns.md) | S | 21 KB | 2026-09 |
-| [EC-087-Serverless-Computing-2026](../03-Engineering-CloudNative/EC-087-Serverless-Computing-2026.md) | B | 1 KB | 2026-04 |
+| [EC-087-Serverless-Computing-2026](../03-Engineering-CloudNative/EC-213-Serverless-Computing-2026.md) | B | 1 KB | 2026-04 |
 | [延迟任务调度 (Delayed Task Scheduling)](../03-Engineering-CloudNative/EC-088-Delayed-Task-Scheduling.md) | S | 17 KB | 2026-09 |
-| [EC-088-Message-Queue-Streaming-2026](../03-Engineering-CloudNative/EC-088-Message-Queue-Streaming-2026.md) | S | 18 KB | 2026-04 |
-| [EC-089-Site-Reliability-Engineering-2026](../03-Engineering-CloudNative/EC-089-Site-Reliability-Engineering-2026.md) | B | 1 KB | 2026-04 |
+| [EC-088-Message-Queue-Streaming-2026](../03-Engineering-CloudNative/EC-214-Message-Queue-Streaming-2026.md) | S | 18 KB | 2026-04 |
+| [EC-089-Site-Reliability-Engineering-2026](../03-Engineering-CloudNative/EC-215-Site-Reliability-Engineering-2026.md) | B | 1 KB | 2026-04 |
 | [任务优先级队列 (Task Priority Queue)](../03-Engineering-CloudNative/EC-089-Task-Priority-Queue.md) | S | 16 KB | 2026-09 |
-| [EC-090-API-Gateway-Design](../03-Engineering-CloudNative/EC-090-API-Gateway-Design.md) | S | 18 KB | 2026-04 |
+| [EC-090-API-Gateway-Design](../03-Engineering-CloudNative/EC-216-API-Gateway-Design.md) | S | 18 KB | 2026-04 |
 | [任务补偿与 Saga 模式 (Task Compensation & Saga Pattern)](../03-Engineering-CloudNative/EC-090-Task-Compensation-Saga-Pattern.md) | S | 16 KB | 2026-09 |
-| [EC-091-Configuration-Management](../03-Engineering-CloudNative/EC-091-Configuration-Management.md) | A | 13 KB | 2026-04 |
+| [EC-091-Configuration-Management](../03-Engineering-CloudNative/EC-218-Configuration-Management.md) | A | 13 KB | 2026-04 |
 | [分布式锁实现 (Distributed Lock Implementation)](../03-Engineering-CloudNative/EC-091-Distributed-Lock-Implementation.md) | S | 18 KB | 2026-09 |
-| [EC-091-Kubernetes-Scheduler-Deep-Dive](../03-Engineering-CloudNative/EC-091-Kubernetes-Scheduler-Deep-Dive.md) | S | 16 KB | 2026-04 |
+| [EC-091-Kubernetes-Scheduler-Deep-Dive](../03-Engineering-CloudNative/EC-217-Kubernetes-Scheduler-Deep-Dive.md) | S | 16 KB | 2026-04 |
 | [任务事件溯源持久化 (Task Event Sourcing Persistence)](../03-Engineering-CloudNative/EC-092-Task-Event-Sourcing-Persistence.md) | S | 19 KB | 2026-09 |
 | [多租户任务隔离 (Multi-Tenancy Task Isolation)](../03-Engineering-CloudNative/EC-093-Multi-Tenancy-Task-Isolation.md) | S | 15 KB | 2026-09 |
 | [任务调试与诊断 (Task Debugging & Diagnostics)](../03-Engineering-CloudNative/EC-094-Task-Debugging-Diagnostics.md) | S | 16 KB | 2026-09 |
@@ -479,7 +479,7 @@
 | [任务 CLI 工具 (Task CLI Tooling)](../03-Engineering-CloudNative/EC-097-Task-CLI-Tooling.md) | S | 17 KB | 2026-09 |
 | [EC-099: Kubernetes 1.34 CronJob 深度分析 (Kubernetes 1.34 CronJob Deep Dive)](../03-Engineering-CloudNative/EC-099-Kubernetes-134-CronJob-Deep-Dive.md) | S | 21 KB | 2026-09 |
 | [EC-099: Kubernetes CronJob 深度分析 (Kubernetes CronJob Deep Dive)](../03-Engineering-CloudNative/EC-099-Kubernetes-CronJob-Deep-Dive.md) | S | 23 KB | 2026-09 |
-| [任务系统架构总览 (Task System Architecture Overview)](../03-Engineering-CloudNative/EC-099-Task-System-Architecture-Overview.md) | S | 22 KB | 2026-09 |
+| [任务系统架构总览 (Task System Architecture Overview)](../03-Engineering-CloudNative/EC-219-Task-System-Architecture-Overview.md) | S | 22 KB | 2026-09 |
 | [EC-100: Temporal 工作流引擎深度分析 (Temporal Workflow Engine Deep Dive)](../03-Engineering-CloudNative/EC-100-Temporal-Workflow-Engine.md) | S | 20 KB | 2026-09 |
 | [EC-101: Cloud-Native Incident Case Studies](../03-Engineering-CloudNative/EC-101-Cloud-Native-Incident-Case-Studies.md) | S | 39 KB | 2026-09 |
 | [EC-121: Google SRE 可靠性工程实践 (Google SRE Reliability Engineering)](../03-Engineering-CloudNative/EC-121-Google-SRE-Reliability-Engineering.md) | S | 18 KB | 2026-09 |
@@ -540,38 +540,38 @@
 | [TS-DT-009: Go Build Modes and Cross-Compilation](../04-Technology-Stack/04-Development-Tools/09-Go-Build-Modes.md) | S | 19 KB | 2026-09 |
 | [TS-DT-010: Go Fuzzing](../04-Technology-Stack/04-Development-Tools/10-Go-Fuzzing.md) | S | 23 KB | 2026-09 |
 | [TS-001: PostgreSQL 18 事务内部机制 (PostgreSQL 18 Transaction Internals)](../04-Technology-Stack/TS-001-PostgreSQL-18-Transaction-Internals.md) | S | 16 KB | 2026-09 |
-| [TS-001: PostgreSQL 事务机制的形式化分析 (PostgreSQL Transactions: Formal Analysis)](../04-Technology-Stack/TS-001-PostgreSQL-Transaction-Formal.md) | S | 23 KB | 2026-09 |
+| [TS-001: PostgreSQL 事务机制的形式化分析 (PostgreSQL Transactions: Formal Analysis)](../04-Technology-Stack/TS-047-PostgreSQL-Transaction-Formal.md) | S | 23 KB | 2026-09 |
 | [TS-001: PostgreSQL 事务内部机制 (PostgreSQL Transaction Internals)](../04-Technology-Stack/TS-001-PostgreSQL-Transaction-Internals.md) | S | 82 KB | 2026-04 |
-| [TS-002: Redis 8.2 多线程 I/O 与新特性 (Redis 8.2 Multithreaded IO & New Features)](../04-Technology-Stack/TS-002-Redis-82-Multithreaded-IO.md) | S | 22 KB | 2026-05 |
+| [TS-002: Redis 8.2 多线程 I/O 与新特性 (Redis 8.2 Multithreaded IO & New Features)](../04-Technology-Stack/TS-048-Redis-82-Multithreaded-IO.md) | S | 22 KB | 2026-05 |
 | [TS-002: Redis 数据结构内部实现 (Redis Data Structures Internals)](../04-Technology-Stack/TS-002-Redis-Data-Structures-Internals.md) | S | 18 KB | 2026-09 |
-| [TS-002: Redis Data Structures - Internal Architecture & Go Implementation](../04-Technology-Stack/TS-002-Redis-Data-Structures.md) | S | 125 KB | 2026-04 |
+| [TS-002: Redis Data Structures - Internal Architecture & Go Implementation](../04-Technology-Stack/TS-049-Redis-Data-Structures.md) | S | 125 KB | 2026-04 |
 | [TS-003: Kafka 4.0 KRaft 内部机制 (Kafka 4.0 KRaft Internals)](../04-Technology-Stack/TS-003-Kafka-40-KRaft-Internals.md) | S | 15 KB | 2026-09 |
-| [TS-003: Kafka Architecture - Internals & Go Implementation](../04-Technology-Stack/TS-003-Kafka-Architecture.md) | S | 108 KB | 2026-09 |
-| [TS-003: Kafka 内部架构与副本机制 (Kafka Internals & Replication)](../04-Technology-Stack/TS-003-Kafka-Internals-Replication.md) | S | 15 KB | 2026-09 |
-| [Redis Data Structures and Features](../04-Technology-Stack/TS-003-Redis-Data-Structures.md) | S | 33 KB | 2026-09 |
-| [TS-003: Redis 数据结构的代数与复杂度 (Redis Data Structures: Algebra & Complexity)](../04-Technology-Stack/TS-003-Redis-Internals-Formal.md) | S | 16 KB | 2026-09 |
+| [TS-003: Kafka Architecture - Internals & Go Implementation](../04-Technology-Stack/TS-050-Kafka-Architecture.md) | S | 108 KB | 2026-09 |
+| [TS-003: Kafka 内部架构与副本机制 (Kafka Internals & Replication)](../04-Technology-Stack/TS-052-Kafka-Internals-Replication.md) | S | 15 KB | 2026-09 |
+| [Redis Data Structures and Features](../04-Technology-Stack/TS-053-Redis-Data-Structures.md) | S | 33 KB | 2026-09 |
+| [TS-003: Redis 数据结构的代数与复杂度 (Redis Data Structures: Algebra & Complexity)](../04-Technology-Stack/TS-051-Redis-Internals-Formal.md) | S | 16 KB | 2026-09 |
 | [TS-004: Elasticsearch 9.0 内部机制 (Elasticsearch 9.0 Internals)](../04-Technology-Stack/TS-004-Elasticsearch-90-Internals.md) | S | 18 KB | 2026-09 |
 | [TS-004: Elasticsearch Query DSL - Internals & Go Implementation](../04-Technology-Stack/TS-004-Elasticsearch-Query-DSL.md) | S | 109 KB | 2026-09 |
-| [TS-005: Kubernetes Operator 模式 (K8s Operator Patterns)](../04-Technology-Stack/TS-005-Kubernetes-Operator-Patterns.md) | S | 21 KB | 2026-09 |
+| [TS-005: Kubernetes Operator 模式 (K8s Operator Patterns)](../04-Technology-Stack/TS-054-Kubernetes-Operator-Patterns.md) | S | 21 KB | 2026-09 |
 | [TS-005: MongoDB Data Modeling - Schema Design & Go Implementation](../04-Technology-Stack/TS-005-MongoDB-Data-Modeling.md) | S | 96 KB | 2026-09 |
-| [TS-006: Kubernetes 网络的形式化模型 (Kubernetes Networking: Formal Model)](../04-Technology-Stack/TS-006-Kubernetes-Networking-Formal.md) | S | 17 KB | 2026-09 |
+| [TS-006: Kubernetes 网络的形式化模型 (Kubernetes Networking: Formal Model)](../04-Technology-Stack/TS-055-Kubernetes-Networking-Formal.md) | S | 17 KB | 2026-09 |
 | [TS-006: MySQL Transaction Isolation - InnoDB Internals & Go Implementation](../04-Technology-Stack/TS-006-MySQL-Transaction-Isolation.md) | S | 114 KB | 2026-09 |
-| [TS-006: Redis 数据结构深度解析 (Redis Data Structures Deep Dive)](../04-Technology-Stack/TS-006-Redis-Data-Structures-Deep-Dive.md) | S | 23 KB | 2026-09 |
-| [TS-007: etcd Raft Implementation - Distributed Consensus Internals](../04-Technology-Stack/TS-007-ETCD-Raft-Implementation.md) | S | 39 KB | 2026-09 |
+| [TS-006: Redis 数据结构深度解析 (Redis Data Structures Deep Dive)](../04-Technology-Stack/TS-056-Redis-Data-Structures-Deep-Dive.md) | S | 23 KB | 2026-09 |
+| [TS-007: etcd Raft Implementation - Distributed Consensus Internals](../04-Technology-Stack/TS-057-ETCD-Raft-Implementation.md) | S | 39 KB | 2026-09 |
 | [TS-007: Kubernetes 网络深度解析 (Kubernetes Networking Deep Dive)](../04-Technology-Stack/TS-007-Kubernetes-Networking-Deep-Dive.md) | S | 15 KB | 2026-09 |
 | [TS-008: NATS Messaging Patterns - Architecture & Go Implementation](../04-Technology-Stack/TS-008-NATS-Messaging-Patterns.md) | S | 32 KB | 2026-09 |
 | [TS-009: Apache Pulsar Architecture - Distributed Messaging](../04-Technology-Stack/TS-009-Pulsar-Architecture.md) | S | 30 KB | 2026-09 |
 | [TS-010: ClickHouse Column Storage - OLAP Engine Internals](../04-Technology-Stack/TS-010-ClickHouse-Column-Storage.md) | S | 31 KB | 2026-09 |
 | [TS-011: Kafka 分布式日志的形式化分析 (Kafka Distributed Log: Formal Analysis)](../04-Technology-Stack/TS-011-Kafka-Internals-Formal.md) | S | 16 KB | 2026-09 |
-| [TS-011: Kafka 内部机制深度解析 (Apache Kafka Internals)](../04-Technology-Stack/TS-011-Kafka-Internals.md) | S | 18 KB | 2026-09 |
+| [TS-011: Kafka 内部机制深度解析 (Apache Kafka Internals)](../04-Technology-Stack/TS-058-Kafka-Internals.md) | S | 18 KB | 2026-09 |
 | [TS-012: Elasticsearch 倒排索引的形式化 (Elasticsearch Inverted Index: Formal Analysis)](../04-Technology-Stack/TS-012-Elasticsearch-Internals-Formal.md) | S | 21 KB | 2026-09 |
 | [TS-012: Elasticsearch 内部机制 (Elasticsearch Internals)](../04-Technology-Stack/TS-012-Elasticsearch-Internals.md) | S | 16 KB | 2026-09 |
 | [TS-013: Consul Service Mesh - Service Discovery & Connect](../04-Technology-Stack/TS-013-Consul-Service-Mesh.md) | S | 28 KB | 2026-09 |
-| [TS-013: Prometheus 可观测性形式化 (Prometheus Observability: Formal Model)](../04-Technology-Stack/TS-013-Prometheus-Formal.md) | S | 20 KB | 2026-09 |
-| [TS-013: Prometheus 可观测性体系 (Prometheus Observability Stack)](../04-Technology-Stack/TS-013-Prometheus-Observability.md) | S | 16 KB | 2026-09 |
+| [TS-013: Prometheus 可观测性形式化 (Prometheus Observability: Formal Model)](../04-Technology-Stack/TS-059-Prometheus-Formal.md) | S | 20 KB | 2026-09 |
+| [TS-013: Prometheus 可观测性体系 (Prometheus Observability Stack)](../04-Technology-Stack/TS-060-Prometheus-Observability.md) | S | 16 KB | 2026-09 |
 | [TS-014: gRPC 内部机制深度解析 (gRPC Internals)](../04-Technology-Stack/TS-014-gRPC-Internals.md) | S | 17 KB | 2026-09 |
 | [TS-015: 服务网格的形式化架构 (Service Mesh: Formal Architecture)](../04-Technology-Stack/TS-015-Service-Mesh-Formal.md) | S | 17 KB | 2026-09 |
-| [TS-015: Service Mesh 与 Istio (Service Mesh & Istio)](../04-Technology-Stack/TS-015-Service-Mesh-Istio.md) | S | 19 KB | 2026-09 |
+| [TS-015: Service Mesh 与 Istio (Service Mesh & Istio)](../04-Technology-Stack/TS-061-Service-Mesh-Istio.md) | S | 19 KB | 2026-09 |
 | [TS-016: Prometheus Monitoring - Metrics Collection & Alerting](../04-Technology-Stack/TS-016-Prometheus-Monitoring.md) | S | 37 KB | 2026-04 |
 | [TS-017: Grafana Dashboard Design - Visualization Best Practices](../04-Technology-Stack/TS-017-Grafana-Dashboard-Design.md) | S | 36 KB | 2026-09 |
 | [TS-018: Jaeger Distributed Tracing](../04-Technology-Stack/TS-018-Jaeger-Distributed-Tracing.md) | S | 28 KB | 2026-09 |
@@ -586,7 +586,7 @@
 | [TS-027: Ansible Configuration](../04-Technology-Stack/TS-027-Ansible-Configuration.md) | S | 30 KB | 2026-09 |
 | [TS-028: ArgoCD GitOps](../04-Technology-Stack/TS-028-ArgoCD-GitOps.md) | S | 35 KB | 2026-09 |
 | [TS-029: Distributed Storage Systems - 2025-2026 Developments](../04-Technology-Stack/TS-029-Distributed-Storage-Systems.md) | S | 53 KB | 2026-09 |
-| [TS-029: Flux CD GitOps](../04-Technology-Stack/TS-029-Flux-CD-GitOps.md) | S | 33 KB | 2026-09 |
+| [TS-029: Flux CD GitOps](../04-Technology-Stack/TS-062-Flux-CD-GitOps.md) | S | 33 KB | 2026-09 |
 | [TS-030: Networking Protocols 2026 - High-Performance Go Networking Guide](../04-Technology-Stack/TS-030-Networking-Protocols-2026.md) | S | 128 KB | 2026-04 |
 | [TS-031: Storage Systems 2026 - Comprehensive Guide](../04-Technology-Stack/TS-031-Storage-Systems-2026.md) | S | 55 KB | 2026-04 |
 | [TS-032-PostgreSQL-19-New-Features](../04-Technology-Stack/TS-032-PostgreSQL-19-New-Features.md) | B | 1 KB | 2026-04 |
@@ -649,26 +649,26 @@
 | [成本优化 (Cost Optimization)](../05-Application-Domains/03-DevOps-Tools/13-Cost-Optimization.md) | S | 19 KB | 2026-05 |
 | [备份与恢复 (Backup & Recovery)](../05-Application-Domains/03-DevOps-Tools/14-Backup-Recovery.md) | S | 19 KB | 2026-04 |
 | [AD-001: DDD 战略模式的形式化分析 (DDD Strategic Patterns: Formal Analysis)](../05-Application-Domains/AD-001-DDD-Strategic-Patterns-Formal.md) | S | 28 KB | 2026-05 |
-| [AD-001: 微服务模式：CQRS 与事件溯源 (Microservices: CQRS & Event Sourcing)](../05-Application-Domains/AD-001-Microservices-Patterns-CQRS-Event-Sourcing.md) | S | 16 KB | 2026-05 |
+| [AD-001: 微服务模式：CQRS 与事件溯源 (Microservices: CQRS & Event Sourcing)](../05-Application-Domains/AD-032-Microservices-Patterns-CQRS-Event-Sourcing.md) | S | 16 KB | 2026-05 |
 | [AD-002: 领域驱动设计战略模式 (Domain-Driven Design Strategic Patterns)](../05-Application-Domains/AD-002-Domain-Driven-Design-Strategic-Patterns.md) | S | 23 KB | 2026-05 |
-| [AD-003: Microservices Architecture Design](../05-Application-Domains/AD-003-Microservices-Architecture.md) | S | 66 KB | 2026-05 |
+| [AD-003: Microservices Architecture Design](../05-Application-Domains/AD-033-Microservices-Architecture.md) | S | 66 KB | 2026-05 |
 | [AD-003: 微服务拆分的形式化方法 (Microservices Decomposition: Formal Methods)](../05-Application-Domains/AD-003-Microservices-Decomposition-Formal.md) | S | 23 KB | 2026-05 |
-| [AD-003: Microservices Decomposition Patterns](../05-Application-Domains/AD-003-Microservices-Decomposition-Patterns.md) | S | 21 KB | 2026-05 |
-| [AD-003: gRPC Production Patterns](../05-Application-Domains/AD-003-gRPC-Production-Patterns.md) | S | 55 KB | 2026-05 |
+| [AD-003: Microservices Decomposition Patterns](../05-Application-Domains/AD-034-Microservices-Decomposition-Patterns.md) | S | 21 KB | 2026-05 |
+| [AD-003: gRPC Production Patterns](../05-Application-Domains/AD-035-gRPC-Production-Patterns.md) | S | 55 KB | 2026-05 |
 | [AD-004: 事件驱动架构的形式化分析 (Event-Driven Architecture: Formal Analysis)](../05-Application-Domains/AD-004-Event-Driven-Architecture-Formal.md) | S | 15 KB | 2026-05 |
-| [AD-004: 事件驱动架构模式 (Event-Driven Architecture Patterns)](../05-Application-Domains/AD-004-Event-Driven-Architecture-Patterns.md) | S | 15 KB | 2026-05 |
+| [AD-004: 事件驱动架构模式 (Event-Driven Architecture Patterns)](../05-Application-Domains/AD-036-Event-Driven-Architecture-Patterns.md) | S | 15 KB | 2026-05 |
 | [AD-005: DDD 战术设计模式 (DDD Tactical Design Patterns)](../05-Application-Domains/AD-005-DDD-Tactical-Patterns.md) | S | 17 KB | 2026-05 |
 | [AD-006: API Gateway Design Patterns](../05-Application-Domains/AD-006-API-Gateway-Design.md) | S | 15 KB | 2026-05 |
-| [AD-006: Event-Driven Architecture Design](../05-Application-Domains/AD-006-Event-Driven-Architecture.md) | S | 62 KB | 2026-05 |
-| [AD-007: Security Architecture Patterns](../05-Application-Domains/AD-007-Security-Patterns-Formal.md) | S | 15 KB | 2026-05 |
+| [AD-006: Event-Driven Architecture Design](../05-Application-Domains/AD-037-Event-Driven-Architecture.md) | S | 62 KB | 2026-05 |
+| [AD-007: Security Architecture Patterns](../05-Application-Domains/AD-039-Security-Patterns-Formal.md) | S | 15 KB | 2026-05 |
 | [AD-007: 应用安全设计模式 (Application Security Patterns)](../05-Application-Domains/AD-007-Security-Patterns.md) | S | 18 KB | 2026-05 |
-| [AD-007: Serverless Architecture Design](../05-Application-Domains/AD-007-Serverless-Architecture.md) | S | 55 KB | 2026-05 |
-| [AD-008: Data-Intensive Architecture Design](../05-Application-Domains/AD-008-Data-Intensive-Architecture.md) | S | 35 KB | 2026-05 |
-| [AD-008: Performance Optimization Patterns](../05-Application-Domains/AD-008-Performance-Optimization-Formal.md) | S | 17 KB | 2026-05 |
+| [AD-007: Serverless Architecture Design](../05-Application-Domains/AD-038-Serverless-Architecture.md) | S | 55 KB | 2026-05 |
+| [AD-008: Data-Intensive Architecture Design](../05-Application-Domains/AD-040-Data-Intensive-Architecture.md) | S | 35 KB | 2026-05 |
+| [AD-008: Performance Optimization Patterns](../05-Application-Domains/AD-041-Performance-Optimization-Formal.md) | S | 17 KB | 2026-05 |
 | [AD-008: 系统性能优化模式 (System Performance Optimization)](../05-Application-Domains/AD-008-Performance-Optimization.md) | S | 16 KB | 2026-05 |
-| [AD-009: 容量规划的形式化理论与实践 (Capacity Planning: Formal Theory & Practice)](../05-Application-Domains/AD-009-Capacity-Planning-Formal.md) | S | 20 KB | 2026-05 |
+| [AD-009: 容量规划的形式化理论与实践 (Capacity Planning: Formal Theory & Practice)](../05-Application-Domains/AD-042-Capacity-Planning-Formal.md) | S | 20 KB | 2026-05 |
 | [AD-009: 容量规划与扩展策略 (Capacity Planning & Scaling Strategies)](../05-Application-Domains/AD-009-Capacity-Planning.md) | S | 17 KB | 2026-05 |
-| [AD-010: 系统设计面试的形式化理论与实践 (System Design Interview: Formal Theory & Practice)](../05-Application-Domains/AD-010-System-Design-Interview-Formal.md) | S | 20 KB | 2026-05 |
+| [AD-010: 系统设计面试的形式化理论与实践 (System Design Interview: Formal Theory & Practice)](../05-Application-Domains/AD-043-System-Design-Interview-Formal.md) | S | 20 KB | 2026-05 |
 | [AD-010-System-Design-Interview](../05-Application-Domains/AD-010-System-Design-Interview.md) | S | 15 KB | 2026-04 |
 | [AD-011: Real-Time System Design](../05-Application-Domains/AD-011-Real-Time-System-Design.md) | S | 23 KB | 2026-04 |
 | [AD-012: High Availability Design](../05-Application-Domains/AD-012-High-Availability-Design.md) | S | 25 KB | 2026-04 |
@@ -686,7 +686,7 @@
 | [AD-024: Video Streaming Platform Design](../05-Application-Domains/AD-024-Video-Streaming-Platform.md) | S | 26 KB | 2026-04 |
 | [AD-025: Chat Application Design](../05-Application-Domains/AD-025-Chat-Application-Design.md) | S | 30 KB | 2026-04 |
 | [AD-026: Application Architecture Failure Case Studies](../05-Application-Domains/AD-026-Application-Architecture-Failure-Case-Studies.md) | S | 32 KB | 2026-04 |
-| [AD-026: Collaborative Editing System Design](../05-Application-Domains/AD-026-Collaborative-Editing-System.md) | S | 31 KB | 2026-04 |
+| [AD-026: Collaborative Editing System Design](../05-Application-Domains/AD-044-Collaborative-Editing-System.md) | S | 31 KB | 2026-04 |
 | [AD-027: AI/ML Infrastructure Design](../05-Application-Domains/AD-027-AI-ML-Infrastructure-Design.md) | S | 127 KB | 2026-04 |
 | [AD-028-AI-Agent-Architectures-2026](../05-Application-Domains/AD-028-AI-Agent-Architectures-2026.md) | A | 14 KB | 2026-04 |
 | [AD-029-FinTech-Systems-2026](../05-Application-Domains/AD-029-FinTech-Systems-2026.md) | S | 17 KB | 2026-04 |

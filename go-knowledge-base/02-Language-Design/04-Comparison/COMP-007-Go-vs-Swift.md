@@ -1,5 +1,9 @@
 # Go vs Swift: Apple Ecosystem and Performance Comparison
 
+> **维度**: Language Design
+> **级别**: S (19 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Go and Swift both emphasize performance and safety but target different domains. Swift dominates Apple ecosystem development (iOS, macOS) with modern language features, while Go excels in cross-platform backend development. This document compares Apple ecosystem integration, performance characteristics, and language design.

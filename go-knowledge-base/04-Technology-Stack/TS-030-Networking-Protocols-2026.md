@@ -1,5 +1,9 @@
 # TS-030: Networking Protocols 2026 - High-Performance Go Networking Guide
 
+> **维度**: Technology Stack
+> **级别**: S (128 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 **Version:** 2026 Edition
 **Category:** Technology Stack - Network Protocols
 **Prerequisites:** [TS-021-Kubernetes-Networking](./TS-021-Kubernetes-Networking.md), [TS-014-gRPC-Internals](./TS-014-gRPC-Internals.md)

@@ -1,7 +1,7 @@
 # TS-CL-001: Go Standard Library Architecture and Design Philosophy
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (18+ KB)
+> **级别**: S (24 KB)
 > **标签**: #golang #standard-library #architecture #interfaces #design-patterns
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [The Go Programming Language Specification](https://go.dev/ref/spec) - Go Team
 > - [Go 1.18+ Generics Implementation](https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md) - Type Parameters Design
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Standard Library Architecture Overview

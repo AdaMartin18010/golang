@@ -1,13 +1,14 @@
 # TS-NET-004: WebSocket in Go - Deep Architecture and Patterns
 
 > **维度**: Technology Stack > Network
-> **级别**: S (20+ KB)
+> **级别**: A (16 KB)
 > **标签**: #websocket #realtime #gorilla #golang #bidirectional
 > **权威来源**:
 >
 > - [Gorilla WebSocket](https://github.com/gorilla/websocket) - Popular library
 > - [WebSocket RFC](https://tools.ietf.org/html/rfc6455) - Specification
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. WebSocket Architecture

@@ -1,7 +1,7 @@
 # FT-001: 分布式系统基础的形式化理论 (Distributed Systems Foundation: Formal Theory)
 
 > **维度**: Formal Theory
-> **级别**: S (25+ KB)
+> **级别**: S (37 KB)
 > **标签**: #distributed-systems #formal-methods #system-models #fault-tolerance #consensus-theory
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Unreliable Failure Detectors](https://dl.acm.org/doi/10.1145/226643.226647) - Chandra & Toueg (1996)
 > - [Impossibility of Distributed Consensus](https://dl.acm.org/doi/10.1145/3149.214121) - Fischer, Lynch, Paterson (1985)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化问题定义

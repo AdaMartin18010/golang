@@ -4,6 +4,9 @@
 > **标签**: #health-check #probes #kubernetes #monitoring
 > **参考**: Kubernetes Liveness/Readiness Probes, Google SRE
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (18 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 健康检查架构

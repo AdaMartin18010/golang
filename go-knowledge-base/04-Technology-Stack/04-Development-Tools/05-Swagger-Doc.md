@@ -1,13 +1,14 @@
 # TS-DT-005: API Documentation with Swagger/OpenAPI
 
 > **维度**: Technology Stack > Development Tools
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **标签**: #swagger #openapi #documentation #api #go-swagger
 > **权威来源**:
 >
 > - [OpenAPI Specification](https://swagger.io/specification/) - Swagger
 > - [go-swagger](https://goswagger.io/) - Go implementation
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. OpenAPI Overview

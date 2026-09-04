@@ -4,6 +4,9 @@
 > **标签**: #runtime #scheduler #GMP #goroutine
 > **参考**: Go 1.21-1.24 Runtime, src/runtime/proc.go, src/runtime/runtime2.go
 
+> **维度**: Language Design
+> **级别**: S (22 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## GMP 模型架构

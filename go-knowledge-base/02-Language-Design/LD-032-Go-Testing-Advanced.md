@@ -6,6 +6,10 @@
 > **Version**: Go 1.26 Testing Patterns
 > **Size**: >20KB
 
+> **维度**: Language Design
+> **级别**: A (12 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Go测试基础

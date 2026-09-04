@@ -4,6 +4,9 @@
 > **标签**: #temporal #workflow #cadence #state-machine
 > **参考**: Temporal SDK, Cadence Architecture Papers
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (24 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Temporal 架构概览

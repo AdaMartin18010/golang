@@ -4,6 +4,9 @@
 > **标签**: #observability #metrics #prometheus #grafana
 > **参考**: OpenTelemetry Metrics, Prometheus Best Practices
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 指标架构

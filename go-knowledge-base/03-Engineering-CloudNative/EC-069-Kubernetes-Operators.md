@@ -4,6 +4,9 @@
 > **标签**: #kubernetes #operators #crd #controller #automation
 > **参考**: Kubernetes Operator Pattern, Operator SDK, CoreOS Operators
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (42 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

@@ -4,6 +4,9 @@
 > **标签**: #case-study #production #lessons-learned
 > **参考**: Uber Cadence, Netflix Conductor, Airbnb Chronos
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (21 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 案例1: Uber Cadence 工作流引擎

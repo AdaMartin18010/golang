@@ -10,6 +10,10 @@
 > - Redlock Algorithm. Redis Documentation (2016)
 > - Chandra, T. D., et al. (2007). "Paxos Made Live". ACM SIGOPS
 
+> **维度**: Formal Theory
+> **级别**: S (39 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

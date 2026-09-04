@@ -1,7 +1,7 @@
 # EC-045: Policy Pattern (策略/政策模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (38 KB)
 > **标签**: #policy #strategy #rules-engine #business-logic
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Policy Pattern in DDD](https://domainlanguage.com/ddd/) - Eric Evans
 > - [Specification Pattern](https://en.wikipedia.org/wiki/Specification_pattern) - Evans/Fowler
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

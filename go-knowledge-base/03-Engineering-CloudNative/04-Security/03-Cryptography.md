@@ -1,13 +1,14 @@
 # Go 加密库与安全实践 (Cryptography)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (15+ KB)
+> **级别**: S (18 KB)
 > **标签**: #cryptography #security #encryption #hashing
 > **权威来源**:
 >
 > - [crypto](https://pkg.go.dev/crypto) - Go Standard Library
 > - [Go Cryptography Principles](https://go.dev/blog/cryptography-principles) - Go Blog
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化定义

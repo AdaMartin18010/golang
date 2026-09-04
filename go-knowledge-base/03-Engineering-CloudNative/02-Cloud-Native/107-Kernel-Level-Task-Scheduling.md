@@ -4,6 +4,9 @@
 > **标签**: #kernel #syscall #epoll #io-uring
 > **参考**: Linux Kernel, epoll, io_uring
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 目录

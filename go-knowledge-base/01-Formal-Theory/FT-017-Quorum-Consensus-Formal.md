@@ -1,5 +1,9 @@
 # FT-017: Quorum Consensus - Formal Specification
 
+> **维度**: Formal Theory
+> **级别**: S (36 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ## Overview
 
 Quorum consensus is a fundamental mechanism in distributed systems for achieving agreement among replicas without requiring all nodes to participate. A quorum is a minimum number of votes required to perform an operation, ensuring that any two operations on the same data item overlap in at least one replica.

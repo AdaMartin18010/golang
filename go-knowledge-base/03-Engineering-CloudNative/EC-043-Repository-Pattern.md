@@ -1,7 +1,7 @@
 # EC-043: Repository Pattern (仓储模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (35 KB)
 > **标签**: #repository #data-access #ddd #abstraction
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Domain-Driven Design](https://domainlanguage.com/ddd/) - Eric Evans
 > - [Patterns of Enterprise Application Architecture](https://www.martinfowler.com/books/eaa.html) - Martin Fowler
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

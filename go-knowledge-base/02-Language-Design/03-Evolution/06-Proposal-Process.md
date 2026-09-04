@@ -1,13 +1,14 @@
 # Go 提案流程 (Proposal Process)
 
 > **维度**: Language-Design
-> **级别**: S (15+ KB)
+> **级别**: S (17 KB)
 > **标签**: #proposal #governance #evolution #community
 > **权威来源**:
 >
 > - [Go Proposal Process](https://github.com/golang/proposal) - Official Go Project
 > - [Go2 Draft Designs](https://go.googlesource.com/proposal/+/refs/heads/master/design/) - Go Team
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化定义

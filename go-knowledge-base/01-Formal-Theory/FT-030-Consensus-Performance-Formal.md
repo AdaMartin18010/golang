@@ -9,6 +9,10 @@
 > - Moraru, I., et al. (2013). "There Is More Consensus in Egalitarian Parliaments". SOSP
 > - Poke, M., & Schiavoni, V. (2015). "Dare: High-Performance State Machine Replication". DSN
 
+> **维度**: Formal Theory
+> **级别**: S (26 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

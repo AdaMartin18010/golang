@@ -1,6 +1,9 @@
-# 死链清单（基线 2026-09-04）
+# 死链清单（基线 2026-09-04）［已于 2026-09-05 全部修复：活跃区复扫 0 死链］
 >
-> 全仓相对 md 链接扫描：5981 条引用，**326 个死链目标**。按引用次数降序。
+> **结论（2026-09-05 复扫）**：活跃区（排除 archive/）死链 **0**。修复手段分布：689 重定向修复 / 275 去链接 / 37 占位符代码化 / VISUAL-ATLAS 导航页创建（view/ 34 处深度修正）。不可达外链 2 处已改有效地址（go.dev/src/runtime/、teh-cmc/go-internals）。archive/ 内死链为只读历史，不修。修复日志见 `deadlink-fix-log-2026-09.md`。
+> 扫描口径：仅相对路径 `.md` 链接；http(s) 外链不计入本地死链（go.googlesource.com 在本环境不可达，未做外链存活校验）；跳过代码围栏与 archive/。
+>
+> 历史基线（修复前）：全仓相对 md 链接扫描：5981 条引用，**326 个死链目标**。按引用次数降序。
 | 死链目标 | 引用次数 | 来源文件 |
 |---|---|---|
 | `../../docs/00-框架拓展计划.md` | 7 | pkg\eventbus\README.md<br>pkg\http\response\README.md<br>pkg\loadbalancer\README.md<br>pkg\logger\README.md<br>pkg\registry\README.md |
@@ -128,11 +131,11 @@
 | `03-Engineering-CloudNative/02-Cloud-Native/09-Job-Scheduling.md` | 1 | go-knowledge-base\COMPLETE-INDEX.md |
 | `03-Engineering-CloudNative/02-Cloud-Native/10-Async-Task-Queue.md` | 1 | go-knowledge-base\COMPLETE-INDEX.md |
 | `03-Engineering-CloudNative/02-Cloud-Native/01-Microservices.md` | 1 | go-knowledge-base\COMPLETE-INDEX.md |
-| `./EC-002-Retry-Pattern.md` | 1 | go-knowledge-base\CONTRIBUTING.md |
+| `./EC-125-Retry-Pattern.md` | 1 | go-knowledge-base\CONTRIBUTING.md |
 | `../02-Language-Design/LD-001-Go-Memory-Model-Formal.md` | 1 | go-knowledge-base\FAQ.md |
 | `../02-Language-Features/04-Channels.md` | 1 | go-knowledge-base\FAQ.md |
 | `../02-Language-Features/12-Select-Statement.md` | 1 | go-knowledge-base\FAQ.md |
-| `../EC-013-Concurrent-Patterns.md` | 1 | go-knowledge-base\FAQ.md |
+| `../EC-144-Concurrent-Patterns.md` | 1 | go-knowledge-base\FAQ.md |
 | `./03-Engineering-CloudNative/EC-013-Idempotency-Patterns.md` | 1 | go-knowledge-base\GLOSSARY.md |
 | `./LD-001-Go-Memory-Model-Formal.md` | 1 | go-knowledge-base\INTERNAL-README.md |
 | `../01-Formal-Theory/FT-001.md` | 1 | go-knowledge-base\INTERNAL-README.md |
@@ -143,7 +146,7 @@
 | `../03-Evolution/07-Go126-to-Go127.md` | 1 | go-knowledge-base\02-Language-Design\LD-037-Go-1.27-Generic-Methods.md |
 | `./LD-016-Interface-Internals.md` | 1 | go-knowledge-base\02-Language-Design\02-Language-Features\02-Interfaces.md |
 | `../../01-Formal-Theory/02-Type-Theory/03-Generics-Theory/03-F-Bounded-Polymorphism.md` | 1 | go-knowledge-base\02-Language-Design\03-Evolution\04-Go125-to-Go126.md |
-| `../EC-005-Context-Management.md` | 1 | go-knowledge-base\03-Engineering-CloudNative\EC-010-Timeout-Pattern-Formal.md |
+| `../EC-128-Context-Management.md` | 1 | go-knowledge-base\03-Engineering-CloudNative\EC-010-Timeout-Pattern-Formal.md |
 | `../../04-Technology-Stack/03-Network/08-Load-Balancing.md` | 1 | go-knowledge-base\03-Engineering-CloudNative\EC-012-Rate-Limiting-Formal.md |
 | `01-Task-Scheduler-Framework.md` | 1 | go-knowledge-base\03-Engineering-CloudNative\02-Cloud-Native\00-Scheduled-Tasks-Context-Management-Index.md |
 | `02-Context-Propagation-Framework.md` | 1 | go-knowledge-base\03-Engineering-CloudNative\02-Cloud-Native\00-Scheduled-Tasks-Context-Management-Index.md |

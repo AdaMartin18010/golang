@@ -1,5 +1,9 @@
 # AD-020: Blockchain System Design
 
+> **维度**: Application Domains
+> **级别**: S (29 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Blockchain systems provide decentralized, immutable, and trustless distributed ledgers that enable peer-to-peer value transfer, smart contract execution, and decentralized application (dApp) platforms. These systems must achieve consensus among distributed nodes, maintain data consistency, ensure Byzantine fault tolerance, and provide cryptographic security guarantees.

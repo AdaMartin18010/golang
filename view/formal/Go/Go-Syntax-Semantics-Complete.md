@@ -736,7 +736,7 @@ mindmap
 
 本文档包含的可视化资源已在项目中注册，详细信息请参阅：
 
-- **[VISUAL-ATLAS.md](../../../../../../VISUAL-ATLAS.md)** — 项目全部可视化资源的统一索引
+- **[VISUAL-ATLAS.md](../../../VISUAL-ATLAS.md)** — 项目全部可视化资源的统一索引
 - **[00-Overview.md](00-Overview.md)** — Go 语言形式化分析总览
 - **[EBNF-Grammar](01-Syntax/EBNF-Grammar.md)** — Go 1.22 核心 EBNF 语法
 - **[FG-Calculus](02-Static-Semantics/FG-Calculus.md)** — Featherweight Go 形式化演算

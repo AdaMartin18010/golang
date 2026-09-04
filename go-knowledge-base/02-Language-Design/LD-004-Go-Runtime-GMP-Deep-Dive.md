@@ -1,7 +1,7 @@
 # LD-004: Go 运行时 GMP 调度器深度解析 (Go Runtime GMP Scheduler Deep Dive)
 
 > **维度**: Language Design
-> **级别**: S (16+ KB)
+> **级别**: S (26 KB)
 > **标签**: #scheduler #gmp #goroutine #runtime #concurrency #os-thread
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Analysis of Go Scheduler](https://rakyll.org/scheduler/) - rakyll
 > - [Go Scheduling Design](https://go.dev/s/go11sched) - Dmitry Vyukov
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. GMP 模型基础

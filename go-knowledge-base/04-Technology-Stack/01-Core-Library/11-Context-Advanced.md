@@ -1,13 +1,14 @@
 # TS-CL-011: Go Context Advanced Patterns - Deep Dive
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (18+ KB)
+> **级别**: S (16 KB)
 > **标签**: #golang #context #advanced #propagation #values #cancellation
 > **权威来源**:
 >
 > - [Go context package](https://pkg.go.dev/context) - Official documentation
 > - [Context and structs](https://go.dev/blog/context-and-structs) - Go Blog
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Advanced Context Patterns

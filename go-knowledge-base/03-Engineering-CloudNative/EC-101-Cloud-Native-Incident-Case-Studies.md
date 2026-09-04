@@ -4,6 +4,8 @@
 > **标签**: #kubernetes #containers #cloud-native #production-incidents #postmortem
 > **权威来源**: Industry Postmortems, CNCF Case Studies, Real-world Incidents
 
+> **级别**: S (39 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Overview

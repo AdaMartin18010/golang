@@ -1,7 +1,7 @@
 # FT-012: 因果一致性的形式化理论 (Causal Consistency: Formal Theory)
 
 > **维度**: Formal Theory
-> **级别**: S (21+ KB)
+> **级别**: S (30 KB)
 > **标签**: #causal-consistency #vector-clocks #happens-before #eventual-consistency
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Bolt-on Causal Consistency](https://www.cs.cmu.edu/~pavlo/courses/fall2013/static/papers/bailis2013bolton.pdf) - Bailis et al. (2013)
 > - [The Complexity of Transactional Causal Consistency](https://arxiv.org/abs/1503.07687) - Brutschy et al. (2017)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 因果一致性的形式化定义

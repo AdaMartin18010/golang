@@ -4,6 +4,9 @@
 > **标签**: #task-lifecycle #state-management #execution-flow
 > **参考**: AWS Step Functions, Temporal Workflow Engine
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (24 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 任务生命周期状态机（生产级实现）

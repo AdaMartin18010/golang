@@ -6,6 +6,10 @@
 > **Version**: Go 1.26 Performance Analysis
 > **Size**: >20KB
 
+> **维度**: Language Design
+> **级别**: B (1 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Green Tea GC Performance

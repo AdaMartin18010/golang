@@ -1,12 +1,13 @@
 # TS-DT-004: Air - Hot Reload for Go
 
 > **维度**: Technology Stack > Development Tools
-> **级别**: S (16+ KB)
+> **级别**: S (21 KB)
 > **标签**: #air #hot-reload #development #golang #live-reload
 > **权威来源**:
 >
 > - [Air Documentation](https://github.com/cosmtrek/air) - GitHub
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Air Overview

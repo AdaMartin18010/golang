@@ -1,7 +1,7 @@
 # FT-005: 向量时钟的形式化理论与实践 (Vector Clocks: Formal Theory & Practice)
 
 > **维度**: Formal Theory
-> **级别**: S (16+ KB)
+> **级别**: S (27 KB)
 > **标签**: #vector-clocks #causality #distributed-systems #logical-time #lamport
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Dynamo: Amazon's Highly Available Key-Value Store](https://dl.acm.org/doi/10.1145/1323293.1294281) - SOSP 2007
 > - [Why Vector Clocks Are Easy](https://riak.com/posts/technical/why-vector-clocks-are-easy/) - Basho Technologies
 
+> **Go 版本**: 1.27+
 ---
 
 ## Learning Resources

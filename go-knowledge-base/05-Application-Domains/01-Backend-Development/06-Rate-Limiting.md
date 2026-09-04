@@ -4,6 +4,10 @@
 > **Level**: S (17+ KB)
 > **Tags**: #rate-limiting #throttling #token-bucket #leaky-bucket
 
+> **维度**: Application Domains
+> **级别**: S (16 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Rate Limiting Fundamentals

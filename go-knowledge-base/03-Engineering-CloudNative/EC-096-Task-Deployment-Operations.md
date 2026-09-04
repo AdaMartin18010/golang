@@ -4,6 +4,9 @@
 > **标签**: #deployment #operations #kubernetes #docker
 > **参考**: Kubernetes Deployment, Helm, GitOps
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (18 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 部署架构

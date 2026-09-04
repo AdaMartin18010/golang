@@ -1,7 +1,7 @@
 # TS-CL-003: Go net/http Package Architecture
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **标签**: #golang #http #web-server #client #middleware
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [HTTP Server Source](https://golang.org/src/net/http/server.go) - Go source code
 > - [HTTP/2 in Go](https://godoc.org/golang.org/x/net/http2) - HTTP/2 implementation
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. HTTP Server Architecture

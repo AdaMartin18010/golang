@@ -59,7 +59,7 @@ By the end of this week, you will be able to:
    - Learn: Work stealing algorithm
    - Study: Scheduler optimizations
 
-4. **[Go Channels Deep Dive](../02-Language-Design/LD-004-Go-Channels-Formal.md)**
+4. **[Go Channels Deep Dive](../02-Language-Design/LD-042-Go-Channels-Formal.md)**
    - Master: Buffered vs unbuffered channels
    - Learn: Channel implementation internals
    - Study: Select statement mechanics

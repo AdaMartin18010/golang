@@ -1,13 +1,14 @@
 # TS-NET-010: DNS Resolution in Go
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: S (17 KB)
 > **标签**: #dns #resolution #go #net #service-discovery
 > **权威来源**:
 >
 > - [Go net Package](https://golang.org/pkg/net/) - Go standard library
 > - [DNS RFC 1035](https://tools.ietf.org/html/rfc1035) - IETF
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. DNS Architecture

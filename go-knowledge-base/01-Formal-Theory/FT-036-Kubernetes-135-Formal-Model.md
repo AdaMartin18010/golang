@@ -6,6 +6,10 @@
 > **Version**: Kubernetes 1.35 "Timbernetes" (Released: December 17, 2025)
 > **Size**: >20KB
 
+> **维度**: Formal Theory
+> **级别**: A (10 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Kubernetes 1.35 概览

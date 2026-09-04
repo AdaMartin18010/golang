@@ -195,7 +195,7 @@ Every document includes:
 - [Select Statement](../02-Language-Features/12-Select-Statement.md)
 
 ### Next Steps
-- [Advanced Concurrency Patterns](../EC-013-Concurrent-Patterns.md)
+- [Advanced Concurrency Patterns](../EC-144-Concurrent-Patterns.md)
 ```
 
 ### What's the difference between dimensions?

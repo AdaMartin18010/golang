@@ -1,7 +1,7 @@
 # EC-042: Entity Pattern (实体模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (36 KB)
 > **标签**: #entity #identity #ddd #lifecycle
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Domain-Driven Design](https://domainlanguage.com/ddd/) - Eric Evans
 > - [Implementing Domain-Driven Design](https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/) - Vaughn Vernon
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

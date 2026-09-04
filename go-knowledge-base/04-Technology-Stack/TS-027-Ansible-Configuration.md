@@ -1,5 +1,9 @@
 # TS-027: Ansible Configuration
 
+> **维度**: Technology Stack
+> **级别**: S (30 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Ansible is an open-source automation tool for configuration management, application deployment, and task automation. It uses a simple, human-readable YAML syntax and operates agentlessly over SSH, making it easy to deploy and manage infrastructure at scale.

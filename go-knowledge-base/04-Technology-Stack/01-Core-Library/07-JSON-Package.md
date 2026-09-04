@@ -1,7 +1,7 @@
 # TS-CL-007: Go encoding/json Package - Deep Architecture and Serialization Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (18+ KB)
+> **级别**: A (15 KB)
 > **标签**: #golang #json #serialization #marshaling #encoding
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [JSON and Go](https://go.dev/blog/json) - Go Blog
 > - [JSON Stream Processing](https://go.dev/src/encoding/json/stream.go) - Source code
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. JSON Architecture Deep Dive

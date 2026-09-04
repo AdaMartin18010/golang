@@ -1,7 +1,7 @@
 # EC-032: Orchestration Pattern (编排模式)
 
 > **维度**: Engineering-CloudNative
-> **级别**: S (>15KB)
+> **级别**: S (56 KB)
 > **标签**: #orchestration #saga #centralized #workflow #state-machine
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [Netflix Conductor](https://netflix.github.io/conductor/)
 > - [AWS Step Functions](https://aws.amazon.com/step-functions/)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 模式形式化定义

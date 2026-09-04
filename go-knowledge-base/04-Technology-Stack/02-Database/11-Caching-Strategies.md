@@ -1,13 +1,14 @@
 # TS-DB-011: Caching Strategies and Patterns
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: S (17 KB)
 > **标签**: #caching #redis #cache-strategy #cache-aside #write-through
 > **权威来源**:
 >
 > - [Redis Caching Strategies](https://redis.io/docs/manual/client-side-caching/) - Redis
 > - [Cache Patterns](https://docs.microsoft.com/en-us/azure/architecture/patterns/cache-aside) - Microsoft Azure
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Cache Architecture Patterns

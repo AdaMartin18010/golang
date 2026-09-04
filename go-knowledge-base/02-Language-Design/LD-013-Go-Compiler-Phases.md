@@ -1,7 +1,7 @@
 # LD-013: Go 编译器阶段与优化管道 (Go Compiler Phases & Optimization Pipeline)
 
 > **维度**: Language Design
-> **级别**: S (20+ KB)
+> **级别**: S (39 KB)
 > **标签**: #compiler #phases #ssa #optimization #codegen #frontend #backend
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Compilers: Principles, Techniques, and Tools](https://en.wikipedia.org/wiki/Compilers:_Principles,_Techniques,_and_Tools) - Aho et al. (2006)
 > - [LLVM Compiler Infrastructure](https://llvm.org/pubs/2008-10-04-ACAT-LLVM-Intro.pdf) - Lattner & Adve (2004)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化基础

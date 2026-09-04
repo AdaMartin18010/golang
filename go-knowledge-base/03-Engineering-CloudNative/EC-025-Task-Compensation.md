@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #compensation #saga #distributed-transaction
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (19 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## Saga 补偿模式

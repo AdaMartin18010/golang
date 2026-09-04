@@ -1,9 +1,11 @@
 # Build Automation
 
 > **维度**: Application Domains / DevOps Tools
-> **级别**: S (17+ KB)
+> **级别**: A (16 KB)
 > **tags**: #build-automation #ci-cd #makefile #bazel #github-actions
 
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 构建自动化的形式化

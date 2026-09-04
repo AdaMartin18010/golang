@@ -1,7 +1,7 @@
 # TS-DB-004: Redis Internals and Go Integration
 
 > **维度**: Technology Stack > Database
-> **级别**: S (16+ KB)
+> **级别**: S (28 KB)
 > **标签**: #redis #cache #data-structures #performance #go-redis
 > **权威来源**:
 >
@@ -10,6 +10,7 @@
 > - [go-redis Documentation](https://redis.uptrace.dev/) - Go client
 > - [Redis Cluster Specification](https://redis.io/topics/cluster-spec) - Distributed mode
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Redis Architecture Overview

@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #context #propagation #distributed-tracing #advanced-patterns
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (22 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 上下文链与延续

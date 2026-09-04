@@ -1,7 +1,7 @@
 # TS-017: Grafana Dashboard Design - Visualization Best Practices
 
 > **维度**: Technology Stack
-> **级别**: S (16+ KB)
+> **级别**: S (36 KB)
 > **标签**: #grafana #dashboard #visualization #observability #monitoring
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Dashboard Best Practices](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/best-practices/) - Grafana Docs
 > - [Grafana Academy](https://grafana.com/academy/) - Grafana Labs
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Grafana Architecture

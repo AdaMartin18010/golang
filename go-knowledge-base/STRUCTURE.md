@@ -264,7 +264,7 @@ Root Level Organization:
 │
 └── EC-001 to EC-121               # Individual pattern files
     ├── EC-001-Microservices.md
-    ├── EC-002-Retry-Pattern.md
+    ├── EC-125-Retry-Pattern.md
     └── ... (121 files total)
 ```
 
@@ -473,7 +473,7 @@ scripts/
 │     ✗ go-routine, channels, interfaces (plural inconsistency)   │
 │                                                                  │
 │  4. Include category prefix for flat files                      │
-│     ✓ EC-001-Circuit-Breaker-Pattern.md                         │
+│     ✓ EC-123-Circuit-Breaker-Pattern.md                         │
 │     ✗ Circuit-Breaker-Pattern.md                                │
 │                                                                  │
 │  5. Use numbered prefixes for ordering                          │

@@ -6,6 +6,10 @@
 > **Authoritative Sources**:
 >
 > - [Production Testing](https://landing.google.com/sre/book/chapters/testing-reliability.html) - Google SRE (2017)
+> **维度**: Engineering & CloudNative
+> **级别**: S (23 KB)
+> **标签**: #ec
+> **Go 版本**: 1.27+
 | **Request Mirroring** | Mirror 100% traffic | Real load testing | Infrastructure cost |
 
 ---

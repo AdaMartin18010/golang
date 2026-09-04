@@ -1,5 +1,9 @@
 # TS-018: Jaeger Distributed Tracing
 
+> **维度**: Technology Stack
+> **级别**: S (28 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Jaeger is an open-source distributed tracing system originally developed by Uber Technologies. It enables monitoring and troubleshooting microservices-based distributed systems by tracing requests as they propagate through various services.

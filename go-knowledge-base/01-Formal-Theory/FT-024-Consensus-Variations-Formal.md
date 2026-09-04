@@ -10,6 +10,10 @@
 > - Howard, H., et al. (2016). "Flexible Paxos: Quorum Intersection Revisited". OPODIS
 > - Van Renesse, R., et al. (2015). "Paxos Made Moderately Complex". ACM CSUR
 
+> **维度**: Formal Theory
+> **级别**: S (51 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Theoretical Foundations

@@ -1,5 +1,9 @@
 # FT-023: SAGA Pattern - Formal Specification
 
+> **维度**: Formal Theory
+> **级别**: S (26 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ## Overview
 
 The SAGA pattern is a design pattern for managing distributed transactions across multiple services. Unlike ACID transactions, SAGAs split a long-running transaction into a sequence of local transactions, each with a corresponding compensating action to undo its effects if needed.

@@ -1,13 +1,14 @@
 # TS-CL-015: Go text/template - Deep Architecture and Patterns
 
 > **维度**: Technology Stack > Core Library
-> **级别**: S (16+ KB)
+> **级别**: S (23 KB)
 > **标签**: #golang #template #text #html #templating
 > **权威来源**:
 >
 > - [Go text/template](https://pkg.go.dev/text/template) - Official documentation
 > - [Go html/template](https://pkg.go.dev/html/template) - HTML template
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Template Architecture

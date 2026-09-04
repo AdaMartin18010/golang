@@ -1,7 +1,7 @@
 # FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)
 
 > **维度**: Formal Theory
-> **级别**: S (23+ KB)
+> **级别**: S (37 KB)
 > **标签**: #distributed-transactions #2pc #3pc #saga #acid #consensus
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Sagas](https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf) - Garcia-Molina & Salem (1987)
 > - [Calm Theorem](https://rise.cs.berkeley.edu/wp-content/uploads/2019/06/calm-conjecture.pdf) - Ameloot et al. (2013)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 分布式事务基础

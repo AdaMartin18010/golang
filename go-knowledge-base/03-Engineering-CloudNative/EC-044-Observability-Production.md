@@ -1,10 +1,11 @@
 # EC-044: 可观测性生产实践 (Observability in Production)
 
 > **维度**: Engineering CloudNative
-> **级别**: S (20+ KB)
+> **级别**: S (22 KB)
 > **标签**: #observability #metrics #logging #tracing #monitoring
 > **相关**: EC-006, EC-032, EC-080
 
+> **Go 版本**: 1.27+
 ---
 
 ## 整合说明

@@ -1,5 +1,9 @@
 # AD-019: IoT Platform Design
 
+> **维度**: Application Domains
+> **级别**: S (33 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## Overview
 
 Internet of Things (IoT) platforms enable the connection, management, and data processing of billions of physical devices worldwide. These platforms must handle massive-scale device connectivity, process high-velocity telemetry streams, and support diverse device capabilities while maintaining security, reliability, and real-time responsiveness.

@@ -1,7 +1,7 @@
 # EC-M01: Clean Code Principles in Go (S-Level)
 
 > **维度**: Engineering-CloudNative / Methodology
-> **级别**: S (15+ KB)
+> **级别**: S (28 KB)
 > **标签**: #clean-code #go-idioms #code-quality #readability #maintainability #refactoring
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [The Go Programming Language](https://www.gopl.io/) - Donovan & Kernighan (2015)
 > - [Google Go Style Guide](https://google.github.io/styleguide/go/) - Google
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化定义与理论基础

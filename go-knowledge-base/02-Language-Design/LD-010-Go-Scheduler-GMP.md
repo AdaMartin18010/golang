@@ -1,7 +1,7 @@
 # LD-010: Go GMP 调度器深入解析与形式化 (Go GMP Scheduler: Deep Dive & Formalization)
 
 > **维度**: Language Design
-> **级别**: S (25+ KB)
+> **级别**: S (61 KB)
 > **标签**: #scheduler #gmp #work-stealing #m-n-threading #preemption #runtime #go126
 > **权威来源**:
 >
@@ -13,6 +13,7 @@
 > - [Go 1.26 Scheduler Improvements](https://go.dev/s/go126scheduler) - Go Authors (2026)
 > - [Real-Time Scheduling for Multicore Systems](https://dl.acm.org/doi/10.1145/293108.293156) - Brandenburg et al. (2021)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化基础

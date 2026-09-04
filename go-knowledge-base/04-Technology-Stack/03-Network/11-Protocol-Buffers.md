@@ -1,13 +1,14 @@
 # TS-NET-011: Protocol Buffers in Go
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: S (23 KB)
 > **标签**: #protobuf #serialization #grpc #golang #protocol-buffers
 > **权威来源**:
 >
 > - [Protocol Buffers Documentation](https://developers.google.com/protocol-buffers) - Google
 > - [Go Protocol Buffers](https://pkg.go.dev/google.golang.org/protobuf) - Go package
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Protocol Buffers Overview

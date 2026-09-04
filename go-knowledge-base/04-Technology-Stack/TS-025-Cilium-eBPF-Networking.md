@@ -1,5 +1,9 @@
 # TS-025: Cilium eBPF Networking
 
+> **维度**: Technology Stack
+> **级别**: S (22 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 Cilium is an open-source software for providing, securing, and observing network connectivity between container workloads. It leverages eBPF (Extended Berkeley Packet Filter) to provide high-performance networking, security, and observability for cloud-native environments.

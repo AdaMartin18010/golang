@@ -4,6 +4,9 @@
 > **标签**: #secrets #vault #security #encryption #rotation
 > **参考**: HashiCorp Vault, AWS Secrets Manager, Kubernetes Secrets
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (26 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

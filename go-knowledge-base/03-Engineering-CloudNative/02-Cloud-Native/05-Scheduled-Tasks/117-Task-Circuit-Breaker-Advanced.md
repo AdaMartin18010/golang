@@ -4,6 +4,9 @@
 > **标签**: #circuit-breaker #resilience #failure-handling
 > **参考**: Netflix Hystrix, Google SRE Book, Microsoft Polly
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (22 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 熔断器状态机

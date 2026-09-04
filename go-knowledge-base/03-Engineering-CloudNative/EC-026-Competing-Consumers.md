@@ -1,5 +1,9 @@
 # EC-026: Competing Consumers Pattern
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (36 KB)
+> **标签**: #ec
+> **Go 版本**: 1.27+
 ## Problem Formalization
 
 ### The Load Distribution Challenge

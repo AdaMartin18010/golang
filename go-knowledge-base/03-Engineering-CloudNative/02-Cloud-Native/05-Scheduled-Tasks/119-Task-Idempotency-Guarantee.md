@@ -4,6 +4,9 @@
 > **标签**: #idempotency #exactly-once #deduplication
 > **参考**: Stripe Idempotency Keys, AWS Lambda, Kafka Idempotent Producer
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 幂等性核心问题

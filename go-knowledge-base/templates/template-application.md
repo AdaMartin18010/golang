@@ -797,7 +797,7 @@ spec:
 
 - [TODO: [Microservices](../03-Engineering-CloudNative/EC-001-Microservices.md)]
 - `TODO: [DDD`]
-- [TODO: [CQRS](../03-Engineering-CloudNative/EC-014-CQRS-Pattern.md)]
+- [TODO: [CQRS](../03-Engineering-CloudNative/EC-147-CQRS-Pattern.md)]
 
 ### Related Application Documents
 

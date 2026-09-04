@@ -4,6 +4,9 @@
 > **标签**: #timeout #context #deadline #cancellation
 > **参考**: Go Context, Circuit Breaker, Distributed Timeout
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (17 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 超时控制架构

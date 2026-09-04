@@ -1,7 +1,7 @@
 # TS-011: Kafka 分布式日志的形式化分析 (Kafka Distributed Log: Formal Analysis)
 
 > **维度**: Technology Stack
-> **级别**: S (17+ KB)
+> **级别**: A (16 KB)
 > **标签**: #kafka #distributed-log #consensus #replication #streaming
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Exactly-Once Semantics in Kafka](https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/) - Confluent (2017)
 > - [KIP-500: Replace ZooKeeper with KRaft](https://cwiki.apache.org/confluence/display/KAFKA/KIP-500) - Kafka Team (2020-2025)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Kafka 日志的形式化定义

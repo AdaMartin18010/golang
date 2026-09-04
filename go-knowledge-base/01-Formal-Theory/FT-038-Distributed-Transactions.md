@@ -6,6 +6,10 @@
 > **Version**: 2026 (2PC, 3PC, Saga, TCC)
 > **Size**: >20KB
 
+> **维度**: Formal Theory
+> **级别**: A (16 KB)
+> **标签**: #ft
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 分布式事务问题

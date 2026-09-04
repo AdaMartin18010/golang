@@ -4,6 +4,9 @@
 > **标签**: #gitops #argocd #flux #cicd #declarative
 > **参考**: GitOps Principles, ArgoCD, Flux CD, Weaveworks
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (33 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Formal Definition

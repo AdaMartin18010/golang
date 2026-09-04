@@ -1,7 +1,7 @@
 # TS-NET-009: Service Mesh Architecture (Istio/Linkerd)
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: S (29 KB)
 > **标签**: #service-mesh #istio #linkerd #microservices #sidecar
 > **权威来源**:
 >
@@ -9,6 +9,7 @@
 > - [Linkerd Documentation](https://linkerd.io/2/overview/) - Linkerd
 > - [Service Mesh Interface](https://smi-spec.io/) - SMI Spec
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Service Mesh Architecture

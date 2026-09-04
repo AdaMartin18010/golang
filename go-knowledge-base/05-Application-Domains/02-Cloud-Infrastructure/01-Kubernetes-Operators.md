@@ -4,6 +4,10 @@
 > **Level**: S (18+ KB)
 > **Tags**: #kubernetes #operator #controller #crd #kubebuilder
 
+> **维度**: Application Domains
+> **级别**: S (61 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Domain Requirements Analysis

@@ -1,10 +1,11 @@
 # TS-002: Redis 数据结构内部实现 (Redis Data Structures Internals)
 
 > **维度**: Technology Stack
-> **级别**: S (25+ KB)
+> **级别**: S (18 KB)
 > **标签**: #redis #data-structures #skip-list #ziplist
 > **权威来源**: [Redis Documentation](https://redis.io/docs/), [Redis Design](http://redis.io/topics/internals), [Redis Source Code](https://github.com/redis/redis)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 架构概览

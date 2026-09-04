@@ -4,6 +4,9 @@
 > **标签**: #cadence #temporal #workflow-engine #saga-pattern
 > **参考**: Uber Cadence, Temporal.io, AWS SWF
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (19 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 架构核心概念

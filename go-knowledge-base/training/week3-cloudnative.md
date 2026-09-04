@@ -51,34 +51,34 @@ By the end of this week, you will be able to:
    - Learn: API Gateway and BFF patterns
    - Understand: Database per service pattern
 
-2. **[Circuit Breaker Pattern](../03-Engineering-CloudNative/EC-001-Circuit-Breaker-Pattern.md)**
+2. **[Circuit Breaker Pattern](../03-Engineering-CloudNative/EC-123-Circuit-Breaker-Pattern.md)**
    - Master: Circuit breaker states and transitions
    - Learn: Half-open state testing
    - Study: Integration with observability
 
-3. **[Context Management](../03-Engineering-CloudNative/EC-005-Context-Management.md)**
+3. **[Context Management](../03-Engineering-CloudNative/EC-128-Context-Management.md)**
    - Understand: Request-scoped values
    - Learn: Cancellation propagation
    - Study: Context with timeout/deadline
 
-4. **[Distributed Tracing](../03-Engineering-CloudNative/EC-006-Distributed-Tracing.md)**
+4. **[Distributed Tracing](../03-Engineering-CloudNative/EC-130-Distributed-Tracing.md)**
    - Learn: Trace and span concepts
    - Study: Trace context propagation
    - Understand: Sampling strategies
 
-5. **[Graceful Shutdown](../03-Engineering-CloudNative/EC-007-Graceful-Shutdown-Complete.md)**
+5. **[Graceful Shutdown](../03-Engineering-CloudNative/EC-132-Graceful-Shutdown-Complete.md)**
    - Master: Signal handling
    - Learn: Drain in-flight requests
    - Study: Connection closure order
 
 ### Supplementary Reading (Complete by Day 5)
 
-1. **[Retry Pattern](../03-Engineering-CloudNative/EC-002-Retry-Pattern.md)**
+1. **[Retry Pattern](../03-Engineering-CloudNative/EC-125-Retry-Pattern.md)**
    - Understand: Exponential backoff
    - Learn: Jitter strategies
    - Study: Idempotency requirements
 
-2. **[Rate Limiting Pattern](../03-Engineering-CloudNative/EC-005-Rate-Limiting-Pattern.md)**
+2. **[Rate Limiting Pattern](../03-Engineering-CloudNative/EC-129-Rate-Limiting-Pattern.md)**
    - Learn: Token bucket and leaky bucket
    - Study: Distributed rate limiting
    - Understand: Rate limit headers

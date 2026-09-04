@@ -1,9 +1,10 @@
 # EC-M04: Code Review Guidelines (S-Level)
 
 > **维度**: Engineering-CloudNative / Methodology
-> **级别**: S (15+ KB)
+> **级别**: A (16 KB)
 > **标签**: #code-review #quality #collaboration #best-practices
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 代码审查的目的

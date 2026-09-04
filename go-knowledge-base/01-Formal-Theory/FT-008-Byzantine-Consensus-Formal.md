@@ -1,7 +1,7 @@
 # FT-008: 拜占庭共识的形式化理论 (Byzantine Consensus: Formal Theory)
 
 > **维度**: Formal Theory
-> **级别**: S (24+ KB)
+> **级别**: S (36 KB)
 > **标签**: #byzantine-fault-tolerance #pbft #consensus #blockchain #formal-verification
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [Tendermint: Byzantine Fault Tolerance](https://tendermint.com/static/docs/tendermint.pdf) - Kwon (2014)
 > - [The Latest Gossip on BFT Consensus](https://arxiv.org/abs/1807.04938) - Buchman et al. (2018)
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 拜占庭故障模型

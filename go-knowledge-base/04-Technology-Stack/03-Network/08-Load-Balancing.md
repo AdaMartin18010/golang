@@ -1,13 +1,14 @@
 # TS-NET-008: Load Balancing Strategies
 
 > **维度**: Technology Stack > Network
-> **级别**: S (16+ KB)
+> **级别**: A (15 KB)
 > **标签**: #load-balancing #ha-proxy #nginx #round-robin #least-connections
 > **权威来源**:
 >
 > - [Load Balancing Algorithms](https://www.nginx.com/resources/glossary/load-balancing/) - NGINX
 > - [HAProxy Documentation](http://cbonte.github.io/haproxy-dconv/) - HAProxy
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. Load Balancer Architecture

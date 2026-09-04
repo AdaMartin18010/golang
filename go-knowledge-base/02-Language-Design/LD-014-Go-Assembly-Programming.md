@@ -1,7 +1,7 @@
 # LD-014: Go 汇编编程与底层接口 (Go Assembly Programming & Low-Level Interface)
 
 > **维度**: Language Design
-> **级别**: S (20+ KB)
+> **级别**: S (29 KB)
 > **标签**: #assembly #plan9-asm #runtime #syscall #inline-asm #low-level
 > **权威来源**:
 >
@@ -11,6 +11,7 @@
 > - [x86-64 ABI](https://github.com/hjl-tools/x86-psABI/wiki/X86-psABI) - System V AMD64 ABI
 > - [ARM64 ABI](https://developer.arm.com/documentation/ihi0055/b/) - ARM Architecture
 
+> **Go 版本**: 1.27+
 ---
 
 ## 1. 形式化基础

@@ -4,6 +4,9 @@
 > **标签**: #formal-verification #tlaplus #coq #correctness
 > **参考**: TLA+, Coq, Distributed System Verification
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 形式化规范 (TLA+)

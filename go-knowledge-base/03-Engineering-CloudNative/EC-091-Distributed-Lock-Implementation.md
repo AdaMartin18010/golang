@@ -4,6 +4,9 @@
 > **标签**: #distributed-lock #redis #etcd #zookeeper
 > **参考**: Redlock Algorithm, etcd Lease
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (18 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 分布式锁架构

@@ -358,7 +358,7 @@ Week 5-6: First Project
 Deep Dive Topics:
 
 1. Concurrency Patterns
-   └── 03-Engineering-CloudNative/EC-013-Concurrent-Patterns.md
+   └── 03-Engineering-CloudNative/EC-144-Concurrent-Patterns.md
 
 2. Error Handling
    └── 02-Language-Design/02-Language-Features/05-Error-Handling.md
@@ -383,7 +383,7 @@ Advanced Topics:
    └── 02-Language-Design/LD-001-Go-Memory-Model-Formal.md
 
 3. Microservices Architecture
-   └── 05-Application-Domains/AD-003-Microservices-Architecture.md
+   └── 05-Application-Domains/AD-033-Microservices-Architecture.md
 
 4. Performance Optimization
    └── 03-Engineering-CloudNative/03-Performance/02-Optimization.md

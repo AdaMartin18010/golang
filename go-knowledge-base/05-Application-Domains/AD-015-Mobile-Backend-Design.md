@@ -1,5 +1,9 @@
 # AD-015: Mobile Backend Design
 
+> **维度**: Application Domains
+> **级别**: S (37 KB)
+> **标签**: #ad
+> **Go 版本**: 1.27+
 ## 1. Architecture Overview
 
 ### 1.1 Definition and Philosophy

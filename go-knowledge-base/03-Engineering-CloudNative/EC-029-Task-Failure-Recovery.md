@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #failure-recovery #disaster-recovery #resilience
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (20 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 故障检测

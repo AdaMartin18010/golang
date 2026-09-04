@@ -149,7 +149,7 @@ ch := make(chan int, 5) // Buffered
 ### Circuit Breaker
 **Category**: Resilience Pattern  
 **Related**: Retry, Timeout, Bulkhead  
-**See**: [EC-001-Circuit-Breaker-Pattern.md](./03-Engineering-CloudNative/EC-001-Circuit-Breaker-Pattern.md)
+**See**: [EC-123-Circuit-Breaker-Pattern.md](./03-Engineering-CloudNative/EC-123-Circuit-Breaker-Pattern.md)
 
 Pattern preventing cascade failures by stopping requests to failing services.
 
@@ -245,7 +245,7 @@ Temporary storage that exists only for container lifetime; destroyed when contai
 ### Event Sourcing
 **Category**: Architecture Pattern  
 **Related**: CQRS, Event-Driven, Audit Trail  
-**See**: [EC-015-Event-Sourcing-Pattern.md](./03-Engineering-CloudNative/EC-015-Event-Sourcing-Pattern.md)
+**See**: [EC-149-Event-Sourcing-Pattern.md](./03-Engineering-CloudNative/EC-149-Event-Sourcing-Pattern.md)
 
 Pattern storing application state as a sequence of events rather than current state.
 
@@ -320,7 +320,7 @@ Probabilistic communication protocol where nodes randomly exchange state, propag
 ### Graceful Shutdown
 **Category**: Operations  
 **Related**: Signal Handling, Cleanup, Zero-Downtime  
-**See**: [EC-009-Graceful-Shutdown.md](./03-Engineering-CloudNative/EC-009-Graceful-Shutdown.md)
+**See**: [EC-137-Graceful-Shutdown.md](./03-Engineering-CloudNative/EC-137-Graceful-Shutdown.md)
 
 Process of shutting down application allowing in-flight requests to complete before exiting.
 
@@ -410,14 +410,14 @@ Strongest consistency model where operations appear to occur instantaneously at 
 ### Liveness Probe
 **Category**: Cloud-Native  
 **Related**: Readiness, Health Check, Self-Healing  
-**See**: [EC-014-Health-Checks.md](./03-Engineering-CloudNative/EC-014-Health-Checks.md)
+**See**: [EC-146-Health-Checks.md](./03-Engineering-CloudNative/EC-146-Health-Checks.md)
 
 Kubernetes check determining if container is running (not deadlocked); failure triggers restart.
 
 ### Load Balancing
 **Category**: Architecture  
 **Related**: Horizontal Scaling, Health Checks, Proxies  
-**See**: [EC-006-Load-Balancing-Algorithms.md](./03-Engineering-CloudNative/EC-006-Load-Balancing-Algorithms.md)
+**See**: [EC-131-Load-Balancing-Algorithms.md](./03-Engineering-CloudNative/EC-131-Load-Balancing-Algorithms.md)
 
 Distribution of traffic across multiple servers for availability and scalability.
 
@@ -510,7 +510,7 @@ Approach defining program meaning through execution rules specifying how program
 ### Outbox Pattern
 **Category**: Architecture  
 **Related**: Saga, Event Sourcing, Transaction  
-**See**: [EC-013-Outbox-Pattern.md](./03-Engineering-CloudNative/EC-013-Outbox-Pattern.md)
+**See**: [EC-145-Outbox-Pattern.md](./03-Engineering-CloudNative/EC-145-Outbox-Pattern.md)
 
 Pattern ensuring reliable message publishing by storing messages in database table within same transaction as business update.
 
@@ -589,7 +589,7 @@ Controlling request rate to prevent overload; algorithms include token bucket, l
 ### Retry Pattern
 **Category**: Resilience  
 **Related**: Backoff, Circuit Breaker, Idempotency  
-**See**: [EC-002-Retry-Pattern.md](./03-Engineering-CloudNative/EC-002-Retry-Pattern.md)
+**See**: [EC-125-Retry-Pattern.md](./03-Engineering-CloudNative/EC-125-Retry-Pattern.md)
 
 Pattern for transient failure handling with exponential backoff and jitter.
 
@@ -676,7 +676,7 @@ Durable execution platform for reliable workflow orchestration.
 ### Timeout
 **Category**: Resilience  
 **Related**: Cancellation, Context, Retry  
-**See**: [EC-003-Timeout-Pattern.md](./03-Engineering-CloudNative/EC-003-Timeout-Pattern.md)
+**See**: [EC-126-Timeout-Pattern.md](./03-Engineering-CloudNative/EC-126-Timeout-Pattern.md)
 
 Pattern preventing indefinite waiting by specifying maximum wait time.
 
@@ -749,14 +749,14 @@ Guarantee that memory write becomes visible to other threads/processors.
 ### Worker Pool
 **Category**: Concurrency Pattern  
 **Related**: Goroutine, Channel, Fan-Out  
-**See**: [EC-013-Concurrent-Patterns.md](./03-Engineering-CloudNative/EC-013-Concurrent-Patterns.md)
+**See**: [EC-144-Concurrent-Patterns.md](./03-Engineering-CloudNative/EC-144-Concurrent-Patterns.md)
 
 Pattern using fixed set of workers processing jobs from shared queue; controls concurrency level.
 
 ### W3C Trace Context
 **Category**: Observability  
 **Related**: OpenTelemetry, Distributed Tracing, Headers  
-**See**: [EC-070-OpenTelemetry-W3C-Trace-Context.md](./03-Engineering-CloudNative/EC-070-OpenTelemetry-W3C-Trace-Context.md)
+**See**: [EC-201-OpenTelemetry-W3C-Trace-Context.md](./03-Engineering-CloudNative/EC-201-OpenTelemetry-W3C-Trace-Context.md)
 
 Standard for propagating trace context across service boundaries using HTTP headers.
 

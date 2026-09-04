@@ -1,5 +1,9 @@
 # Go vs C#: .NET Ecosystem and Enterprise Comparison
 
+> **维度**: Language Design
+> **级别**: S (28 KB)
+> **标签**: #ld
+> **Go 版本**: 1.27+
 ## Executive Summary
 
 Go and C# both target enterprise development with different philosophies. C# offers a mature ecosystem with LINQ, async/await, and comprehensive tooling within the .NET ecosystem, while Go provides simplicity, fast compilation, and cloud-native efficiency. This document compares enterprise capabilities, ecosystem maturity, and development workflows.

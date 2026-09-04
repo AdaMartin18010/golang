@@ -4,6 +4,9 @@
 > **标签**: #kubernetes #cronjob #controller #source-analysis
 > **参考**: Kubernetes v1.28 pkg/controller/cronjob/
 
+> **维度**: Engineering & CloudNative
+> **级别**: A (16 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 架构概览

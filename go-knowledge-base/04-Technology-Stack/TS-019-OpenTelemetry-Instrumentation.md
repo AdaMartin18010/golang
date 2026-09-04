@@ -1,5 +1,9 @@
 # TS-019: OpenTelemetry Instrumentation
 
+> **维度**: Technology Stack
+> **级别**: S (32 KB)
+> **标签**: #ts
+> **Go 版本**: 1.27+
 ## 1. Overview
 
 OpenTelemetry is a vendor-neutral, open-source observability framework for instrumenting, generating, collecting, and exporting telemetry data (traces, metrics, and logs). It is a CNCF incubating project that merged OpenTracing and OpenCensus.

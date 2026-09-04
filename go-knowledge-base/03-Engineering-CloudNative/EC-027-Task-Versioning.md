@@ -3,6 +3,9 @@
 > **分类**: 工程与云原生
 > **标签**: #versioning #migration #compatibility
 
+> **维度**: Engineering & CloudNative
+> **级别**: S (18 KB)
+> **Go 版本**: 1.27+
 ---
 
 ## 任务版本控制
