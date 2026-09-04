@@ -1,6 +1,7 @@
 package patterns
 
 import (
+	"sync"
 	"testing"
 	"time"
 )
@@ -174,24 +175,19 @@ func TestFanOutFanIn(t *testing.T) {
 	merge := func(cs ...<-chan int) <-chan int {
 		out := make(chan int)
 
-		done := make(chan struct{})
-		defer close(done)
-
+		var wg sync.WaitGroup
+		wg.Add(len(cs))
 		for _, c := range cs {
 			go func(ch <-chan int) {
+				defer wg.Done()
 				for n := range ch {
-					select {
-					case out <- n:
-					case <-done:
-						return
-					}
+					out <- n
 				}
 			}(c)
 		}
 
 		go func() {
-			// 简化版：等待一段时间后关闭
-			time.Sleep(200 * time.Millisecond)
+			wg.Wait()
 			close(out)
 		}()
 

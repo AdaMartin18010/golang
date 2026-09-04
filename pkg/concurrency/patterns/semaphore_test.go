@@ -140,9 +140,11 @@ func TestWeightedSemaphore(t *testing.T) {
 
 	// 尝试获取权重3，总共11，应该阻塞
 	acquired := false
+	done := make(chan struct{})
 	go func() {
 		ws.Acquire(3)
 		acquired = true
+		close(done)
 	}()
 
 	time.Sleep(50 * time.Millisecond)
@@ -152,7 +154,7 @@ func TestWeightedSemaphore(t *testing.T) {
 
 	// 释放5，现在应该能获取
 	ws.Release(5)
-	time.Sleep(50 * time.Millisecond)
+	<-done
 
 	if !acquired {
 		t.Error("Acquire should succeed after release")

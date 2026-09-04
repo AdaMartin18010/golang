@@ -109,7 +109,7 @@ docs/
 - 查看 [开发环境搭建](development/setup.md)
 - 阅读 [API 文档](api/README.md)
 - 参考 [部署指南](deployment/README.md)
-- 创建 [GitHub Issue](../issues)
+- 创建 [GitHub Issue](https://github.com/AdaMartin18010/golang/issues)
 
 ---
 

@@ -75,33 +75,8 @@ jobs:
             CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges -20 || echo "- See commit history for changes")
           fi
           
-          # Create release notes
-          NOTES=$(cat <<EOF
-## What's Changed
-
-$CHANGELOG
-
-## Binaries
-
-| Platform | Architecture | Binary |
-|----------|--------------|--------|
-| Linux | amd64 | \`${VERSION}-linux-amd64\` |
-| Linux | arm64 | \`${VERSION}-linux-arm64\` |
-| macOS | amd64 | \`${VERSION}-darwin-amd64\` |
-| macOS | arm64 | \`${VERSION}-darwin-arm64\` |
-| Windows | amd64 | \`${VERSION}-windows-amd64.exe\` |
-
-## Docker Images
-
-\`\`\`bash
-docker pull ghcr.io/${{ github.repository }}:${VERSION}
-\`\`\`
-
-## Checksums
-
-See \`checksums.txt\` for SHA256 checksums of all binaries.
-EOF
-)
+          # Create release notes (use $'\n' concatenation to keep the string single-line for YAML)
+          NOTES="## What's Changed"$'\n\n'"$CHANGELOG"$'\n\n'"## Binaries"$'\n\n'"| Platform | Architecture | Binary |"$'\n'"|----------|--------------|--------|"$'\n'"| Linux | amd64 | \`${VERSION}-linux-amd64\` |"$'\n'"| Linux | arm64 | \`${VERSION}-linux-arm64\` |"$'\n'"| macOS | amd64 | \`${VERSION}-darwin-amd64\` |"$'\n'"| macOS | arm64 | \`${VERSION}-darwin-arm64\` |"$'\n'"| Windows | amd64 | \`${VERSION}-windows-amd64.exe\` |"$'\n\n'"## Docker Images"$'\n\n'"\`\`\`bash"$'\n'"docker pull ghcr.io/${{ github.repository }}:${VERSION}"$'\n'"\`\`\`"$'\n\n'"## Checksums"$'\n\n'"See \`checksums.txt\` for SHA256 checksums of all binaries."
           
           # Write to output (handle multiline)
           echo "NOTES<<EOF" >> $GITHUB_OUTPUT

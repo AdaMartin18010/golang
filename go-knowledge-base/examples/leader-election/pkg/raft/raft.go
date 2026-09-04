@@ -84,6 +84,10 @@ type Raft struct {
 	applyCh    chan ApplyMsg
 	shutdownCh chan struct{}
 
+	// electionResetCh 由 RPC handler 通知 run 循环重置选举定时器；
+	// 定时器指针只在 run goroutine 内访问，避免数据竞争。
+	electionResetCh chan struct{}
+
 	electionTimer  *time.Timer
 	heartbeatTimer *time.Timer
 }
@@ -95,32 +99,40 @@ func New(id string, peers []string, config *Config) *Raft {
 	}
 
 	r := &Raft{
-		id:         id,
-		peers:      peers,
-		config:     config,
-		state:      Follower,
-		log:        make([]LogEntry, 0),
-		nextIndex:  make(map[string]int),
-		matchIndex: make(map[string]int),
-		applyCh:    make(chan ApplyMsg, 100),
-		shutdownCh: make(chan struct{}),
+		id:              id,
+		peers:           peers,
+		config:          config,
+		state:           Follower,
+		log:             make([]LogEntry, 0),
+		nextIndex:       make(map[string]int),
+		matchIndex:      make(map[string]int),
+		applyCh:         make(chan ApplyMsg, 100),
+		shutdownCh:      make(chan struct{}),
+		electionResetCh: make(chan struct{}, 1),
 	}
 
 	// Add dummy entry at index 0
 	r.log = append(r.log, LogEntry{Term: 0})
 
+	r.heartbeatTimer = time.NewTimer(r.config.HeartbeatInterval)
 	r.resetElectionTimer()
+
 	go r.run()
 
 	return r
 }
 
-// run is the main event loop
+// run is the main event loop. It is the only goroutine allowed to touch
+// electionTimer/heartbeatTimer; RPC handlers request timer resets via
+// electionResetCh.
 func (r *Raft) run() {
 	for {
 		select {
 		case <-r.shutdownCh:
 			return
+
+		case <-r.electionResetCh:
+			r.resetElectionTimer()
 
 		case <-r.electionTimer.C:
 			r.handleElectionTimeout()
@@ -128,8 +140,8 @@ func (r *Raft) run() {
 		case <-r.heartbeatTimer.C:
 			if r.State() == Leader {
 				r.broadcastHeartbeat()
-				r.resetHeartbeatTimer()
 			}
+			r.resetHeartbeatTimer()
 		}
 	}
 }
@@ -149,8 +161,18 @@ func (r *Raft) IsLeader() bool {
 // GetState returns current term and whether this node is leader
 func (r *Raft) GetState() (int, bool) {
 	r.persistMu.Lock()
-	defer r.persistMu.Unlock()
-	return r.currentTerm, r.state == Leader
+	currentTerm := r.currentTerm
+	r.persistMu.Unlock()
+	return currentTerm, r.State() == Leader
+}
+
+// setState transitions the server to a new role (Follower/Candidate/Leader).
+// Per the Raft paper, role transitions must be atomic with respect to
+// concurrent readers such as State() and the heartbeat loop in run().
+func (r *Raft) setState(s State) {
+	r.stateMu.Lock()
+	defer r.stateMu.Unlock()
+	r.state = s
 }
 
 // lastLogIndex returns the index of the last log entry
@@ -166,7 +188,17 @@ func (r *Raft) lastLogTerm() int {
 	return r.log[len(r.log)-1].Term
 }
 
-// resetElectionTimer resets the election timer with random timeout
+// requestElectionReset asks the run loop to reset the election timer.
+// Called from RPC handlers; safe for concurrent use.
+func (r *Raft) requestElectionReset() {
+	select {
+	case r.electionResetCh <- struct{}{}:
+	default:
+	}
+}
+
+// resetElectionTimer resets the election timer with random timeout.
+// Must only be called from the run goroutine.
 func (r *Raft) resetElectionTimer() {
 	if r.electionTimer != nil {
 		r.electionTimer.Stop()
@@ -178,7 +210,8 @@ func (r *Raft) resetElectionTimer() {
 	r.electionTimer = time.NewTimer(timeout)
 }
 
-// resetHeartbeatTimer resets the heartbeat timer
+// resetHeartbeatTimer resets the heartbeat timer.
+// Must only be called from the run goroutine.
 func (r *Raft) resetHeartbeatTimer() {
 	if r.heartbeatTimer != nil {
 		r.heartbeatTimer.Stop()
@@ -188,13 +221,15 @@ func (r *Raft) resetHeartbeatTimer() {
 
 // handleElectionTimeout handles election timeout
 func (r *Raft) handleElectionTimeout() {
+	// Become candidate: bump term and vote for self (persistent state),
+	// then transition role (volatile state). The term/vote update and the
+	// role transition are covered by separate locks to avoid nesting.
 	r.persistMu.Lock()
-	defer r.persistMu.Unlock()
-
-	// Become candidate
-	r.state = Candidate
 	r.currentTerm++
 	r.votedFor = r.id
+	r.persistMu.Unlock()
+
+	r.setState(Candidate)
 
 	// Reset election timer
 	r.resetElectionTimer()
@@ -263,9 +298,10 @@ func (r *Raft) HandleRequestVote(args *RequestVoteArgs) *RequestVoteReply {
 	// If term > currentTerm, update and convert to follower
 	if args.Term > r.currentTerm {
 		r.currentTerm = args.Term
-		r.state = Follower
 		r.votedFor = ""
+		r.setState(Follower)
 	}
+	reply.Term = r.currentTerm
 
 	// Check if we can vote for this candidate
 	if r.votedFor == "" || r.votedFor == args.CandidateId {
@@ -273,7 +309,7 @@ func (r *Raft) HandleRequestVote(args *RequestVoteArgs) *RequestVoteReply {
 		if r.isLogUpToDate(args.LastLogIndex, args.LastLogTerm) {
 			r.votedFor = args.CandidateId
 			reply.VoteGranted = true
-			r.resetElectionTimer()
+			r.requestElectionReset()
 		}
 	}
 
@@ -308,9 +344,9 @@ func (r *Raft) HandleAppendEntries(args *AppendEntriesArgs) *AppendEntriesReply 
 		r.currentTerm = args.Term
 		r.votedFor = ""
 	}
-
-	r.state = Follower
-	r.resetElectionTimer()
+	r.setState(Follower)
+	r.requestElectionReset()
+	reply.Term = r.currentTerm
 
 	// Check log consistency
 	if args.PrevLogIndex >= len(r.log) {

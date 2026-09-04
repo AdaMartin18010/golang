@@ -7,6 +7,7 @@
 > **Bloom 层级**: L3
 > **前置概念**: [AD-036: Event-Driven Architecture Patterns](AD-036-Event-Driven-Architecture-Patterns.md) · **后置概念**: [AD-038: Serverless Architecture](AD-038-Serverless-Architecture.md)
 > **定理链**: Domain State Change → Event Persistence → Projections & Reactions / Invariant: per-aggregate ordering & at-least-once delivery
+>
 ## 1. Architecture Overview
 
 ### 1.1 Definition and Philosophy
@@ -921,6 +922,44 @@ import (
     "go.uber.org/zap"
 )
 
+// ---- 示意类型定义（生产实现由基础设施层提供） ----
+
+// Message 消息队列中的一条消息
+type Message struct {
+    Offset  int64
+    Payload []byte
+}
+
+// Offset 消费起始位移
+type Offset int64
+
+// OffsetLatest 从最新位移开始消费
+const OffsetLatest Offset = -1
+
+// Coordinator 消费组协调者（示意接口）
+type Coordinator interface {
+    JoinGroup(ctx context.Context, group, instanceID string) error
+    GetPartitionAssignment(ctx context.Context, group, instanceID string) ([]int, error)
+    Heartbeat(ctx context.Context, group, instanceID string) error
+}
+
+// MessageHandler 消息处理器
+type MessageHandler interface {
+    Handle(ctx context.Context, msg Message) error
+}
+
+// PartitionConsumer 单个分区的消费者
+type PartitionConsumer interface {
+    Messages() <-chan Message
+    CommitOffset(offset int64) error
+    Close() error
+}
+
+// MessageBroker 消息代理
+type MessageBroker interface {
+    ConsumePartition(group string, partition int, from Offset) (PartitionConsumer, error)
+}
+
 // CompetingConsumers for load balancing across multiple instances
 type CompetingConsumers struct {
     consumerGroup    string
@@ -930,6 +969,7 @@ type CompetingConsumers struct {
     coordinator      Coordinator
     messageBroker    MessageBroker
     handler          MessageHandler
+    logger           *zap.Logger
 
     assignedPartitions []int
     stopChan         chan struct{}
@@ -1053,6 +1093,16 @@ func (cc *CompetingConsumers) handleRebalance(ctx context.Context) {
         cc.wg.Add(1)
         go cc.consumePartition(ctx, partition)
     }
+}
+
+// sendToDeadLetter 发送死信（示意实现；生产可写入死信主题）
+func (cc *CompetingConsumers) sendToDeadLetter(msg Message, err error) {
+    // 示意实现：记录日志，生产接入死信队列
+}
+
+// isRetryable 判断错误是否可重试（示意实现）
+func isRetryable(err error) bool {
+    return true
 }
 ```
 
@@ -1661,7 +1711,7 @@ func (r *PointInTimeRecovery) Recover(ctx context.Context, targetTime time.Time,
 ### 4.2 Performance Characteristics
 
 | Metric | Target | Optimization Strategy |
-|--------|--------|----------------------|
+| -------- | -------- | ---------------------- |
 | **Event Ingestion** | 1M+ events/second | Batch writes, partition scaling |
 | **Event Propagation** | < 100ms end-to-end | In-memory buffers, direct routing |
 | **Projection Latency** | < 500ms | Async processing, read replicas |
@@ -1676,7 +1726,7 @@ func (r *PointInTimeRecovery) Recover(ctx context.Context, targetTime time.Time,
 ### 5.1 Event Streaming Platforms
 
 | Platform | Best For | Throughput | Ordering | Cloud Native |
-|----------|----------|------------|----------|--------------|
+| ---------- | ---------- | ------------ | ---------- | -------------- |
 | **Apache Kafka** | High throughput, log storage | 1M+ msg/s | Partition-level | Yes |
 | **NATS JetStream** | Simplicity, low latency | 100K+ msg/s | Stream-level | Yes |
 | **Redis Streams** | Simple use cases, caching | 50K+ msg/s | Stream-level | Partial |
@@ -1688,7 +1738,7 @@ func (r *PointInTimeRecovery) Recover(ctx context.Context, targetTime time.Time,
 ### 5.2 Event Store Solutions
 
 | Solution | Type | Best For |
-|----------|------|----------|
+| ---------- | ------ | ---------- |
 | **EventStoreDB** | Specialized | Full event sourcing, projections |
 | **Axon Server** | Specialized | CQRS/ES with Axon Framework |
 | **PostgreSQL** | Relational | Simple event sourcing, existing infrastructure |
@@ -1974,7 +2024,7 @@ graph TB
 ### 8.1 Common Anti-Patterns
 
 | Anti-Pattern | Problem | Solution |
-|--------------|---------|----------|
+| -------------- | --------- | ---------- |
 | **Distributed Monolith** | Services not truly decoupled | Proper bounded contexts |
 | **CRUD Events** | Events just mirror state changes | Domain events with intent |
 | **Event Hell** | Too many event types | Event granularity guidelines |
@@ -2014,15 +2064,15 @@ Brokers guarantee at-least-once delivery: an event is redelivered whenever a con
 ```go
 // ANTI-PATTERN: handler mutates external state without an idempotency key
 func (h *PaymentHandler) Handle(ctx context.Context, e OrderConfirmedEvent) error {
-	// If this event is redelivered (side effect done, ack lost),
-	// the customer is charged twice.
-	return h.gateway.Charge(e.CustomerID, e.Total)
+ // If this event is redelivered (side effect done, ack lost),
+ // the customer is charged twice.
+ return h.gateway.Charge(e.CustomerID, e.Total)
 }
 
 // Correct: idempotency key derived from the event identity
 func (h *PaymentHandler) Handle(ctx context.Context, e OrderConfirmedEvent) error {
-	key := fmt.Sprintf("charge:%s:v%d", e.AggregateID(), e.EventVersion())
-	return h.gateway.ChargeIdempotent(e.CustomerID, e.Total, key)
+ key := fmt.Sprintf("charge:%s:v%d", e.AggregateID(), e.EventVersion())
+ return h.gateway.ChargeIdempotent(e.CustomerID, e.Total, key)
 }
 ```
 

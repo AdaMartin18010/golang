@@ -14,12 +14,11 @@ package types
 import (
 	"fmt"
 	"go/ast"
+	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
 	"strings"
-
-	"golang.org/x/tools/go/packages"
 )
 
 // ====================================================================================
@@ -98,7 +97,6 @@ type GenericConstraintError struct {
 // TypeVerifier 类型系统验证器
 type TypeVerifier struct {
 	fset               *token.FileSet
-	pkg                *packages.Package
 	typeInfo           *types.Info
 	progressErrors     []ProgressError
 	preservationErrors []PreservationError
@@ -117,16 +115,12 @@ func NewVerifier() *TypeVerifier {
 }
 
 // VerifyFile 验证文件的类型安全性
+//
+// 注意：这里用 go/types 直接对单个文件做类型检查，而不是 go/packages 加载整个目录。
+// testdata 夹具目录中的文件均为独立的 package main（彼此存在重复的 main 声明、
+// 部分文件故意非法），目录级包加载必然失败；单文件语义才是本验证器的正确边界。
 func (tv *TypeVerifier) VerifyFile(filename string) error {
 	tv.fset = token.NewFileSet()
-
-	// 使用go/packages加载完整的类型信息
-	cfg := &packages.Config{
-		Mode: packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles |
-			packages.NeedImports | packages.NeedTypes | packages.NeedTypesSizes |
-			packages.NeedSyntax | packages.NeedTypesInfo,
-		Fset: tv.fset,
-	}
 
 	// 解析文件
 	file, err := parser.ParseFile(tv.fset, filename, nil, parser.ParseComments)
@@ -134,28 +128,20 @@ func (tv *TypeVerifier) VerifyFile(filename string) error {
 		return fmt.Errorf("parse file: %w", err)
 	}
 
-	// 加载包信息
-	pkgs, err := packages.Load(cfg, "file="+filename)
-	if err != nil {
-		return fmt.Errorf("load package: %w", err)
+	info := &types.Info{
+		Types:      make(map[ast.Expr]types.TypeAndValue),
+		Defs:       make(map[*ast.Ident]types.Object),
+		Uses:       make(map[*ast.Ident]types.Object),
+		Implicits:  make(map[ast.Node]types.Object),
+		Selections: make(map[*ast.SelectorExpr]*types.Selection),
+		Scopes:     make(map[ast.Node]*types.Scope),
 	}
 
-	if len(pkgs) == 0 {
-		return fmt.Errorf("no packages found")
+	conf := types.Config{Importer: importer.Default(), GoVersion: "go1.27"}
+	if _, err := conf.Check(file.Name.Name, tv.fset, []*ast.File{file}, info); err != nil {
+		return fmt.Errorf("type check: %w", err)
 	}
-
-	tv.pkg = pkgs[0]
-	if tv.pkg.TypesInfo == nil {
-		tv.pkg.TypesInfo = &types.Info{
-			Types:      make(map[ast.Expr]types.TypeAndValue),
-			Defs:       make(map[*ast.Ident]types.Object),
-			Uses:       make(map[*ast.Ident]types.Object),
-			Implicits:  make(map[ast.Node]types.Object),
-			Selections: make(map[*ast.SelectorExpr]*types.Selection),
-			Scopes:     make(map[ast.Node]*types.Scope),
-		}
-	}
-	tv.typeInfo = tv.pkg.TypesInfo
+	tv.typeInfo = info
 
 	// 执行各种验证
 	tv.verifyProgress(file)

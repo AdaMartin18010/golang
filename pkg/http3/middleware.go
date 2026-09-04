@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -124,9 +125,10 @@ func TimeoutMiddleware(timeout time.Duration) Middleware {
 
 			r = r.WithContext(ctx)
 
+			tw := &timeoutWriter{w: w, hdr: make(http.Header)}
 			done := make(chan struct{})
 			go func() {
-				next.ServeHTTP(w, r)
+				next.ServeHTTP(tw, r)
 				close(done)
 			}()
 
@@ -134,10 +136,66 @@ func TimeoutMiddleware(timeout time.Duration) Middleware {
 			case <-done:
 				// 请求完成
 			case <-ctx.Done():
-				// 超时
-				http.Error(w, "Request Timeout", http.StatusRequestTimeout)
+				// 超时，禁止处理器继续写入响应，并直接写入408
+				tw.mu.Lock()
+				defer tw.mu.Unlock()
+				tw.timedOut = true
+				tw.w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+				tw.w.Header().Set("X-Content-Type-Options", "nosniff")
+				tw.w.WriteHeader(http.StatusRequestTimeout)
+				fmt.Fprintln(tw.w, "Request Timeout")
 			}
 		})
+	}
+}
+
+// timeoutWriter 超时保护写入器
+// 超时后与处理器goroutine并发写ResponseWriter会产生DATA RACE，
+// 这里通过互斥锁+超时标志保证同一时刻只有一个写入方，且超时后丢弃处理器的写入
+type timeoutWriter struct {
+	mu          sync.Mutex
+	w           http.ResponseWriter
+	hdr         http.Header
+	timedOut    bool
+	wroteHeader bool
+}
+
+func (tw *timeoutWriter) Header() http.Header {
+	if tw.hdr == nil {
+		tw.hdr = make(http.Header)
+	}
+	return tw.hdr
+}
+
+func (tw *timeoutWriter) WriteHeader(statusCode int) {
+	tw.mu.Lock()
+	defer tw.mu.Unlock()
+	if tw.timedOut || tw.wroteHeader {
+		return
+	}
+	tw.wroteHeader = true
+	tw.syncHeaderLocked()
+	tw.w.WriteHeader(statusCode)
+}
+
+func (tw *timeoutWriter) Write(b []byte) (int, error) {
+	tw.mu.Lock()
+	defer tw.mu.Unlock()
+	if tw.timedOut {
+		return 0, http.ErrHandlerTimeout
+	}
+	if !tw.wroteHeader {
+		tw.wroteHeader = true
+		tw.syncHeaderLocked()
+		tw.w.WriteHeader(http.StatusOK)
+	}
+	return tw.w.Write(b)
+}
+
+// syncHeaderLocked 将快照头同步到底层writer（调用方必须持有锁）
+func (tw *timeoutWriter) syncHeaderLocked() {
+	for k, vv := range tw.hdr {
+		tw.w.Header()[k] = vv
 	}
 }
 

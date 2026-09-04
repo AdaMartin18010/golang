@@ -88,11 +88,15 @@ func Map[T any, U any](slice []T, fn func(T) U) []U {
 	return result
 }
 
-// 示例8：泛型类型别名 (Go 1.25.3+)
-type MyInt[T ~int] T
+// 示例8：泛型类型（包装底层类型）
+// 注意：类型参数不能作为类型声明的 RHS（裸 T 或别名 = T 均非法），
+// 合法写法是包装在复合类型中
+type MyInt[T ~int] struct {
+	Value T
+}
 
 func (m MyInt[T]) Double() T {
-	return T(m) * 2
+	return m.Value * 2
 }
 
 // 示例9：约束中的方法集
@@ -157,7 +161,7 @@ func main() {
 	fmt.Println(squared)
 
 	// 使用MyInt
-	var mi MyInt[int] = 21
+	var mi = MyInt[int]{Value: 21}
 	fmt.Println(mi.Double())
 
 	// 使用Abs

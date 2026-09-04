@@ -3,6 +3,7 @@ package eventbus
 import (
 	"context"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -12,9 +13,9 @@ func TestEventBus_Subscribe(t *testing.T) {
 	eb.Start()
 	defer eb.Stop()
 
-	var received bool
+	var received atomic.Bool
 	handler := func(ctx context.Context, event Event) error {
-		received = true
+		received.Store(true)
 		return nil
 	}
 
@@ -32,7 +33,7 @@ func TestEventBus_Subscribe(t *testing.T) {
 	// 等待处理
 	time.Sleep(100 * time.Millisecond)
 
-	if !received {
+	if !received.Load() {
 		t.Error("Expected event to be received")
 	}
 }
@@ -68,9 +69,9 @@ func TestEventBus_WithFilter(t *testing.T) {
 	eb.Start()
 	defer eb.Stop()
 
-	var received bool
+	var received atomic.Bool
 	handler := func(ctx context.Context, event Event) error {
-		received = true
+		received.Store(true)
 		return nil
 	}
 
@@ -91,7 +92,7 @@ func TestEventBus_WithFilter(t *testing.T) {
 	eb.Publish(event1)
 	time.Sleep(50 * time.Millisecond)
 
-	if received {
+	if received.Load() {
 		t.Error("Expected event to be filtered")
 	}
 
@@ -100,7 +101,7 @@ func TestEventBus_WithFilter(t *testing.T) {
 	eb.Publish(event2)
 	time.Sleep(50 * time.Millisecond)
 
-	if !received {
+	if !received.Load() {
 		t.Error("Expected event to pass filter")
 	}
 }

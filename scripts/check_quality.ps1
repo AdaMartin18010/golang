@@ -4,7 +4,8 @@
 
 param(
     [string]$DocsDir = "docs",
-    [string]$OutputFile = "reports/quality-check-$(Get-Date -Format 'yyyyMMdd-HHmmss').md"
+    [string]$OutputFile = "reports/quality-check-$(Get-Date -Format 'yyyyMMdd-HHmmss').md",
+    [switch]$FailOnHigh
 )
 
 Write-Host "========================================" -ForegroundColor Cyan
@@ -232,4 +233,11 @@ if ($issues.Count -eq 0) {
 Write-Host ""
 Write-Host "📄 详细报告: $OutputFile" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
+
+# -FailOnHigh: 存在高严重性问题时以 Exit 1 失败（用于 CI 强制门）
+$highCount = ($issues | Where-Object Severity -eq '高').Count
+if ($FailOnHigh -and $highCount -gt 0) {
+    Write-Host "❌ -FailOnHigh: 存在 $highCount 个高严重性问题，检查失败" -ForegroundColor Red
+    exit 1
+}
 

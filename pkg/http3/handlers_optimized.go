@@ -48,27 +48,30 @@ func handleRootOptimized(w http.ResponseWriter, r *http.Request) {
 	w.Write(buf.Bytes())
 
 	// 更新统计
-	stats.Requests++
-	duration := time.Since(start)
-	stats.AvgDuration = (stats.AvgDuration*time.Duration(stats.Requests-1) + duration) / time.Duration(stats.Requests)
+	recordRequest(time.Since(start))
 }
 
 // handleStatsOptimized 优化后的统计信息处理（减少分配）
 func handleStatsOptimized(w http.ResponseWriter, r *http.Request) {
-	uptime := time.Since(stats.StartTime)
+	requests, startTime, avgDuration := statsSnapshot()
+	uptime := time.Since(startTime)
+	reqPerSec := 0.0
+	if uptime > 0 {
+		reqPerSec = float64(requests) / uptime.Seconds()
+	}
 
 	// 使用buffer直接构建JSON，避免map分配
 	buf := GetBuffer()
 	defer PutBuffer(buf)
 
 	buf.WriteString(`{"requests":`)
-	buf.WriteString(strconv.FormatInt(stats.Requests, 10))
+	buf.WriteString(strconv.FormatInt(requests, 10))
 	buf.WriteString(`,"uptime":"`)
 	buf.WriteString(uptime.String())
 	buf.WriteString(`","avg_duration":"`)
-	buf.WriteString(stats.AvgDuration.String())
+	buf.WriteString(avgDuration.String())
 	buf.WriteString(`","req_per_sec":`)
-	buf.WriteString(strconv.FormatFloat(float64(stats.Requests)/uptime.Seconds(), 'f', 2, 64))
+	buf.WriteString(strconv.FormatFloat(reqPerSec, 'f', 2, 64))
 	buf.WriteString(`}`)
 
 	w.Header().Set("Content-Type", "application/json")

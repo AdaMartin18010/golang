@@ -230,6 +230,10 @@ func TestPoolStats(t *testing.T) {
 	pool.Put(obj1)
 	pool.Put(obj2)
 
+	// 再次获取，应命中池中的两个对象（Reused 统计的是 Get 命中池的次数）
+	reused1 := pool.Get()
+	reused2 := pool.Get()
+
 	// 检查统计信息
 	stats := pool.Stats()
 	if stats.Created != 3 {
@@ -238,9 +242,13 @@ func TestPoolStats(t *testing.T) {
 	if stats.Reused != 2 {
 		t.Errorf("Expected 2 reused objects, got %d", stats.Reused)
 	}
-	if stats.PoolSize != 2 {
-		t.Errorf("Expected pool size 2, got %d", stats.PoolSize)
+	if stats.PoolSize != 0 {
+		t.Errorf("Expected pool size 0, got %d", stats.PoolSize)
 	}
+
+	// 归还，避免干扰其他断言
+	pool.Put(reused1)
+	pool.Put(reused2)
 }
 
 // TestPoolConcurrency 测试池的并发安全性

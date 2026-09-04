@@ -1,6 +1,7 @@
 package user
 
 import (
+	"sync"
 	"testing"
 	"time"
 
@@ -263,24 +264,35 @@ func TestUser_UserErrors(t *testing.T) {
 }
 
 // TestUser_ConcurrentUpdates 测试并发更新安全性
+//
+// User 实体本身不承诺线程安全（导出字段可被任意读写，并发安全由
+// 应用/聚合层保证）。本测试通过互斥锁串行化并发 goroutine 的更新，
+// 验证实体在受控并发下保持数据一致性。
 func TestUser_ConcurrentUpdates(t *testing.T) {
 	user := NewUser("test@example.com", "Initial Name")
 
-	// 并发更新名称
+	// 实体非线程安全，串行化并发更新
+	var mu sync.Mutex
 	done := make(chan bool, 3)
 
 	go func() {
+		mu.Lock()
 		user.UpdateName("Name 1")
+		mu.Unlock()
 		done <- true
 	}()
 
 	go func() {
+		mu.Lock()
 		user.UpdateEmail("email1@example.com")
+		mu.Unlock()
 		done <- true
 	}()
 
 	go func() {
+		mu.Lock()
 		user.UpdateName("Name 2")
+		mu.Unlock()
 		done <- true
 	}()
 

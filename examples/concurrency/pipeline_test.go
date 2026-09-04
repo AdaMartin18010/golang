@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"testing"
 	"time"
 )
@@ -174,24 +175,22 @@ func TestFanOutFanIn(t *testing.T) {
 	merge := func(cs ...<-chan int) <-chan int {
 		out := make(chan int)
 
-		done := make(chan struct{})
-		defer close(done)
+		var wg sync.WaitGroup
+		wg.Add(len(cs))
 
 		for _, c := range cs {
 			go func(ch <-chan int) {
+				defer wg.Done()
 				for n := range ch {
-					select {
-					case out <- n:
-					case <-done:
-						return
-					}
+					out <- n
 				}
 			}(c)
 		}
 
+		// 等所有输入 channel 排空后再关闭 out，
+		// 避免 fan-in goroutine 仍在发送时 close(out) 触发 data race
 		go func() {
-			// 简化版：等待一段时间后关闭
-			time.Sleep(200 * time.Millisecond)
+			wg.Wait()
 			close(out)
 		}()
 

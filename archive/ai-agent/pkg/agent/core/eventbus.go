@@ -132,7 +132,9 @@ func (eb *EventBus) SubscribeWithFilter(eventType EventType, handler EventHandle
 
 	eb.subscriptions[eventType] = append(eb.subscriptions[eventType], sub)
 	eb.subIndex[sub.ID] = sub
+	eb.metrics.mu.Lock()
 	eb.metrics.ActiveSubscriptions++
+	eb.metrics.mu.Unlock()
 
 	return sub.ID, nil
 }
@@ -157,7 +159,9 @@ func (eb *EventBus) Unsubscribe(subscriptionID string) error {
 	}
 
 	delete(eb.subIndex, subscriptionID)
+	eb.metrics.mu.Lock()
 	eb.metrics.ActiveSubscriptions--
+	eb.metrics.mu.Unlock()
 
 	return nil
 }
@@ -228,8 +232,8 @@ func (eb *EventBus) handleEvent(event Event) {
 				eb.metrics.FailedEvents++
 				eb.metrics.mu.Unlock()
 			} else {
-				subscription.handledCount++
 				eb.metrics.mu.Lock()
+				subscription.handledCount++
 				eb.metrics.HandledEvents++
 				eb.metrics.mu.Unlock()
 			}
@@ -271,5 +275,7 @@ func (eb *EventBus) Clear() {
 
 	eb.subscriptions = make(map[EventType][]*EventSubscription)
 	eb.subIndex = make(map[string]*EventSubscription)
+	eb.metrics.mu.Lock()
 	eb.metrics.ActiveSubscriptions = 0
+	eb.metrics.mu.Unlock()
 }

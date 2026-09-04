@@ -45,8 +45,9 @@ func NewWeakCache() *WeakCache {
 // Get 获取缓存值
 // 如果值已被 GC 回收，返回 (nil, false)
 func (c *WeakCache) Get(key string) (*Value, bool) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
+	// Get 会更新统计信息，属于写操作，必须使用写锁
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	wp, ok := c.items[key]
 	if !ok {

@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -32,10 +33,30 @@ type Stats struct {
 	AvgDuration time.Duration
 }
 
-var stats Stats
+var (
+	stats   Stats
+	statsMu sync.RWMutex
+)
 
 func init() {
 	stats.StartTime = time.Now()
+}
+
+// recordRequest 记录一次请求的处理耗时（并发安全）
+func recordRequest(duration time.Duration) {
+	statsMu.Lock()
+	defer statsMu.Unlock()
+
+	stats.Requests++
+	stats.AvgDuration = (stats.AvgDuration*time.Duration(stats.Requests-1) + duration) / time.Duration(stats.Requests)
+}
+
+// statsSnapshot 返回当前统计信息的副本（并发安全）
+func statsSnapshot() (requests int64, startTime time.Time, avgDuration time.Duration) {
+	statsMu.RLock()
+	defer statsMu.RUnlock()
+
+	return stats.Requests, stats.StartTime, stats.AvgDuration
 }
 
 // handleRoot 根路径处理
@@ -61,22 +82,26 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 
 	// 更新统计
-	stats.Requests++
 	duration := time.Since(start)
-	stats.AvgDuration = (stats.AvgDuration*time.Duration(stats.Requests-1) + duration) / time.Duration(stats.Requests)
+	recordRequest(duration)
 
 	log.Printf("%s %s - %v - %s", r.Method, r.URL.Path, duration, protocol)
 }
 
 // handleStats 统计信息处理
 func handleStats(w http.ResponseWriter, r *http.Request) {
-	uptime := time.Since(stats.StartTime)
+	requests, startTime, avgDuration := statsSnapshot()
+	uptime := time.Since(startTime)
+	reqPerSec := 0.0
+	if uptime > 0 {
+		reqPerSec = float64(requests) / uptime.Seconds()
+	}
 
 	data := map[string]any{
-		"requests":     stats.Requests,
+		"requests":     requests,
 		"uptime":       uptime.String(),
-		"avg_duration": stats.AvgDuration.String(),
-		"req_per_sec":  float64(stats.Requests) / uptime.Seconds(),
+		"avg_duration": avgDuration.String(),
+		"req_per_sec":  reqPerSec,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

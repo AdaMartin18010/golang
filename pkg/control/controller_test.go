@@ -1,6 +1,7 @@
 package control
 
 import (
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -62,9 +63,9 @@ func TestFeatureController_Watch(t *testing.T) {
 
 	controller.Register("feature-a", "Feature A", true, nil)
 
-	called := false
+	var called atomic.Bool
 	controller.Watch("feature-a", func(config any) {
-		called = true
+		called.Store(true)
 	})
 
 	// 更新配置应该触发回调
@@ -73,7 +74,7 @@ func TestFeatureController_Watch(t *testing.T) {
 	// 等待异步回调
 	time.Sleep(100 * time.Millisecond)
 
-	if !called {
+	if !called.Load() {
 		t.Error("Watch callback should be called")
 	}
 }

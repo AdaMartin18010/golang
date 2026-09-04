@@ -2,6 +2,7 @@ package core
 
 import (
 	"os"
+	"sync"
 	"testing"
 	"time"
 )
@@ -345,17 +346,20 @@ func TestConfigManagerOnChange(t *testing.T) {
 	changed := false
 	var changedKey string
 	var newValue interface{}
+	var wg sync.WaitGroup
+	wg.Add(1)
 
 	cm.OnChange(func(key string, oldValue, newVal interface{}) {
 		changed = true
 		changedKey = key
 		newValue = newVal
+		wg.Done()
 	})
 
 	cm.Set("key1", "value1")
 
 	// 等待异步处理器执行
-	time.Sleep(100 * time.Millisecond)
+	wg.Wait()
 
 	if !changed {
 		t.Error("Change handler should be called")
@@ -484,19 +488,23 @@ func TestConfigManagerMultipleChangeListeners(t *testing.T) {
 
 	count1 := 0
 	count2 := 0
+	var wg sync.WaitGroup
+	wg.Add(2)
 
 	cm.OnChange(func(key string, oldValue, newValue interface{}) {
 		count1++
+		wg.Done()
 	})
 
 	cm.OnChange(func(key string, oldValue, newValue interface{}) {
 		count2++
+		wg.Done()
 	})
 
 	cm.Set("key1", "value1")
 
 	// 等待异步处理器执行
-	time.Sleep(100 * time.Millisecond)
+	wg.Wait()
 
 	if count1 == 0 || count2 == 0 {
 		t.Error("All change handlers should be called")

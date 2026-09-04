@@ -189,24 +189,28 @@ func TestVectorOperationsCorrectness(t *testing.T) {
 	}
 
 	// 测试向量点积
+	// 注意：SIMD 实现按 4/8 个元素分组累加，与测试中的逐个 float32 累加
+	// 顺序不同。float32 加法不满足结合律，累加顺序差异会导致最后几个 ULP
+	// 的偏差（此处量级 ~2.5e5，1 ULP ≈ 0.015625）。实现本身无误，
+	// 因此采用相对容差而非绝对相等进行断言。
 	dotProduct := vector_operations.VectorDotProductFloat32(a, b_data)
 	var expected float32
 	for i := 0; i < size; i++ {
 		expected += a[i] * b_data[i]
 	}
-	if math.Abs(float64(dotProduct-expected)) > 1e-6 {
-		t.Errorf("Vector dot product failed: got %f, expected %f", dotProduct, expected)
+	if relDiff := math.Abs(float64(dotProduct-expected)) / math.Max(math.Abs(float64(expected)), 1); relDiff > 1e-4 {
+		t.Errorf("Vector dot product failed: got %f, expected %f (relative diff %g)", dotProduct, expected, relDiff)
 	}
 
-	// 测试向量范数
+	// 测试向量范数（与点积同理，SIMD 分组累加顺序差异属 float32 精度损失）
 	norm := vector_operations.VectorNormFloat32(a)
 	var sum float32
 	for _, v := range a {
 		sum += v * v
 	}
 	expected = float32(math.Sqrt(float64(sum)))
-	if math.Abs(float64(norm-expected)) > 1e-6 {
-		t.Errorf("Vector norm failed: got %f, expected %f", norm, expected)
+	if relDiff := math.Abs(float64(norm-expected)) / math.Max(math.Abs(float64(expected)), 1); relDiff > 1e-4 {
+		t.Errorf("Vector norm failed: got %f, expected %f (relative diff %g)", norm, expected, relDiff)
 	}
 }
 
