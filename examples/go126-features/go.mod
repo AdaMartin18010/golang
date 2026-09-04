@@ -1,3 +1,3 @@
 module example.com/go126-features
 
-go 1.26
+go 1.27

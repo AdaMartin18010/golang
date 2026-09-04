@@ -1,3 +1,3 @@
 module github.com/your-org/concurrency-pattern-generator
 
-go 1.26
+go 1.27

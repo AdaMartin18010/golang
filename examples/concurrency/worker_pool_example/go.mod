@@ -1,4 +1,3 @@
 module worker_pool_example
 
-go 1.26
-
+go 1.27

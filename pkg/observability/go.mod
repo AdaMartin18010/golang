@@ -1,6 +1,6 @@
 module github.com/yourusername/golang/pkg/observability
 
-go 1.26
+go 1.27
 
 require (
 	github.com/cilium/ebpf v0.20.0

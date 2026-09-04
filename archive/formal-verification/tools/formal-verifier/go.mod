@@ -1,6 +1,6 @@
 module github.com/your-org/formal-verifier
 
-go 1.26
+go 1.27
 
 require golang.org/x/tools v0.38.0
 

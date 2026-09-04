@@ -1,4 +1,4 @@
-go 1.26
+go 1.27
 
 // Go Workspace 配置
 // 使用 workspace 模式统一管理多个模块

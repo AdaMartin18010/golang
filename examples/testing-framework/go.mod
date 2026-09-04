@@ -1,3 +1,3 @@
 module github.com/your-org/go-modernization/testing_system
 
-go 1.26
+go 1.27

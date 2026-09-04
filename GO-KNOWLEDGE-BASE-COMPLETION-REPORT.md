@@ -65,7 +65,7 @@ go-knowledge-base/                 ✅ 根目录
 已创建的启动文档：
 
 | 文档 | 位置 | 内容 |
-|------|------|------|
+| ------ | ------ | ------ |
 | README.md | 根目录 | 知识体系总览 |
 | README.md | 01-Formal-Theory/ | 形式理论概述 |
 | README.md | 01-Semantics/ | 形式语义学导论 |
@@ -80,7 +80,7 @@ go-knowledge-base/                 ✅ 根目录
 已制定详细执行计划：
 
 | Phase | 时间 | 内容 | 文档数 |
-|-------|------|------|--------|
+| ------- | ------ | ------ | -------- |
 | Phase 1 | Month 1-3 | 形式理论模型 | 13 |
 | Phase 2 | Month 4-5 | 语言模型与设计 | 19 |
 | Phase 3 | Month 6-7 | 工程与云原生 | 16 |
@@ -295,7 +295,7 @@ cat go-knowledge-base/SUSTAINABLE-EXECUTION-PLAN.md
 ## 五、确认清单
 
 | # | 确认项 | 状态 |
-|---|--------|------|
+| --- | -------- | ------ |
 | 1 | 5维度知识架构 | ✅ 完成 |
 | 2 | 103篇文档规划 | ✅ 完成 |
 | 3 | 12个月执行计划 | ✅ 完成 |
@@ -325,7 +325,7 @@ cat go-knowledge-base/SUSTAINABLE-EXECUTION-PLAN.md
 ## 七、项目文件清单
 
 | 文件 | 说明 | 大小 |
-|------|------|------|
+| ------ | ------ | ------ |
 | `go-knowledge-base/README.md` | 知识体系总览 | 2.5KB |
 | `go-knowledge-base/SUSTAINABLE-EXECUTION-PLAN.md` | 12个月执行计划 | 11.7KB |
 | `go-knowledge-base/QUICK-START.md` | 快速开始指南 | 1KB |
