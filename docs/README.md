@@ -33,7 +33,7 @@
 
 | 文档 | 说明 | 优先级 |
 |------|------|--------|
-| [00-Go-1.26完整知识体系总览-2026.md](00-Go-1.26完整知识体系总览-2026.md) | 知识总览 | ⭐⭐⭐⭐ |
+| [00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md](00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md) | 知识总览 | ⭐⭐⭐⭐ |
 | [go126-package-management.md](go126-package-management.md) | 包管理 | ⭐⭐⭐ |
 
 ### 🚀 操作文档 (4篇)
@@ -68,7 +68,7 @@
 ```
 docs/
 ├── README.md                                    # 本文档
-├── 00-Go-1.26完整知识体系总览-2026.md          # 知识总览
+├── 00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md          # 知识总览
 ├── go126-package-management.md                  # 包管理
 ├── architecture/                                # 架构文档
 │   ├── clean-architecture.md                   # 整洁架构

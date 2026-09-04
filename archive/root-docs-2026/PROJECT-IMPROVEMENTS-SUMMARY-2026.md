@@ -85,7 +85,7 @@ golang/
 ├── PROJECT-IMPROVEMENTS-SUMMARY-2026.md # 本报告
 ├── docs/                               # 文档 (18篇)
 │   ├── README.md                       # 文档索引
-│   ├── 00-Go-1.26完整知识体系总览-2026.md
+│   ├── 00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md
 │   ├── go126-package-management.md
 │   ├── architecture/                   # 架构文档 (6篇)
 │   │   ├── clean-architecture.md
@@ -199,7 +199,7 @@ go: ['1.26.x']
 
 #### 参考文档 (3篇)
 
-1. `00-Go-1.26完整知识体系总览-2026.md` - 知识总览
+1. `00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md` - 知识总览
 2. `go126-package-management.md` - 包管理
 3. `README.md` - 文档索引
 

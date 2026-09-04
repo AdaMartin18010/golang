@@ -164,7 +164,7 @@
 ```
 docs/
 ├── README.md                           # 文档索引 (已更新)
-├── 00-Go-1.26完整知识体系总览-2026.md  # 知识总览
+├── 00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md  # 知识总览
 ├── go126-package-management.md          # 包管理
 ├── architecture/                        # 架构 (6篇)
 ├── go126-comprehensive-guide/           # Go核心 (5篇)

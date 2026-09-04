@@ -84,7 +84,7 @@ Go 工具链升级至 1.27.1。全部 39 个 go.mod 升至 `go 1.27`；CI workfl
 
 #### Added
 
-- `docs/01-Go-1.27完整知识体系-2026.md` — Go 1.27 完整知识体系（629 行）
+- `docs/01-Go-1.27-Comprehensive-Knowledge-System-2026.md` — Go 1.27 完整知识体系（629 行）
 - `view/formal/Go/Go-1.27-Release.md` — 1.27 发布形式化分析（L5，泛型方法 BNF/类型规则）
 - `go-knowledge-base/02-Language-Design/03-Evolution/07-Go126-to-Go127.md` — 1.26→1.27 演进史
 - `go-knowledge-base/02-Language-Design/LD-037-Go-1.27-Generic-Methods.md` — 泛型方法专深文档

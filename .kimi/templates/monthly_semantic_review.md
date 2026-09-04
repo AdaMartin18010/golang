@@ -85,7 +85,7 @@ Check key cross-domain / boundary semantics. Each should have a non-stub authori
 ## 5. Version Semantic Injection Coverage Review
 
 - [ ] Go 1.26/1.27 feature count mapped = _**/**_
-- [ ] Each version tracking page (e.g. `docs/01-Go-1.27完整知识体系-2026.md`, `examples/go127-features/`) links back to its authority page (e.g. LD-037)
+- [ ] Each version tracking page (e.g. `docs/01-Go-1.27-Comprehensive-Knowledge-System-2026.md`, `examples/go127-features/`) links back to its authority page (e.g. LD-037)
 - [ ] Each authority page links forward to relevant version tracking pages
 
 **Unmapped or one-way-only features**:
