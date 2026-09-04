@@ -10,6 +10,8 @@
 > **级别**: B (1 KB)
 > **标签**: #ec
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-155](EC-155-Kubernetes-Security-Production.md)
+> **相关概念**: [EC-211](EC-211-Observability-Production-2026.md)
 ---
 
 ## 1. SLI/SLO/SLA

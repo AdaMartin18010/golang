@@ -6,6 +6,8 @@
 > **相关**: EC-006, EC-032, EC-080
 
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-061](EC-061-Observability-Driven-Development.md)
+> **相关概念**: [EC-211](EC-211-Observability-Production-2026.md)
 ---
 
 ## 整合说明

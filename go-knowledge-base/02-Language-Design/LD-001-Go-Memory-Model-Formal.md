@@ -15,7 +15,7 @@
 
 > **Go 版本**: 1.27+
 > **Bloom 层级**: L4
-> **前置概念**: [LD-002: Go 并发原语 CSP 形式化](LD-002-Go-Concurrency-CSP-Formal.md) · [LD-003: Go 垃圾回收形式化](LD-003-Go-Garbage-Collector-Formal.md) · **后置概念**: [LD-004: GMP 调度器](LD-004-Go-Runtime-GMP-Deep-Dive.md) · [LD-042: Channel 形式化](LD-042-Go-Channels-Formal.md)
+> **前置概念**: [LD-002: Go 并发原语 CSP 形式化](LD-002-Go-Concurrency-CSP-Formal.md) · [LD-003: Go 垃圾回收形式化](LD-003-Go-Garbage-Collector-Formal.md) · **后置概念**: [LD-004: GMP 调度器](LD-004-Go-Runtime-GMP-Deep-Dive.md) · [LD-042: Channel 形式化](LD-042-Go-Channels-Formal.md) · [LD-010](LD-010-Go-Scheduler-GMP.md)
 > **定理链**: Input(内存读写事件 + 同步操作) → Operation(happens-before 最小传递闭包) → Output(数据竞争判定 / 可见性保证) / Invariant: 无 happens-before 排序的冲突访问即为数据竞争
 ---
 
@@ -648,6 +648,10 @@ import (
     "runtime/debug"
 )
 
+// Node / Cache 为示意类型：本块聚焦 GC 友好的内存布局，不涉及具体实现
+type Node struct{ val int }
+type Cache struct{ m map[int]int }
+
 // GC 友好型数据结构
 // 利用页级局部性优化 Green Tea GC 扫描
 
@@ -698,6 +702,7 @@ func TuneGCParallelism() {
 
     // 对于计算密集型，可减少 GC 线程
     // runtime.GOMAXPROCS(procs / 2)
+    _ = procs // 示例中仅查询；实际调参时使用上一行的返回值
 }
 ```
 
@@ -734,10 +739,6 @@ package main
 
 func main() {
 	done := make(chan bool)
-	go func() {
-		// do work
-		done <- true
-	}()
 	// 编译失败: done 已声明但未被使用 —— 缺少接收方
 }
 ```
@@ -748,7 +749,7 @@ func main() {
 declared and not used: done
 ```
 
-**解释**：Go 的"声明必须使用"规则同样适用于 channel 变量。这个编译错误恰好挡下了一个真实的内存模型隐患：若 `main` 不接收 `done`，工作 goroutine 的 `done <- true` 将永远阻塞（goroutine 泄漏），且该 goroutine 中的任何写操作对 `main` 都没有 happens-before 关系。修复方式不是丢弃变量，而是补上 `<-done` 接收。
+**解释**：Go 的"声明必须使用"规则同样适用于 channel 变量。这个编译错误恰好挡下了一个真实的内存模型隐患：若 `main` 不接收 `done`，工作 goroutine 的 `done <- true` 将永远阻塞（goroutine 泄漏），且该 goroutine 中的任何写操作对 `main` 都没有 happens-before 关系。修复方式不是丢弃变量，而是补上工作 goroutine 与 `<-done` 接收。
 
 ### 8.3 边界命题
 

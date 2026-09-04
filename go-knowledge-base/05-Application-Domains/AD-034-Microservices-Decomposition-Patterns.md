@@ -8,6 +8,8 @@
 > **级别**: S (21 KB)
 > **标签**: #ad
 > **Go 版本**: 1.27+
+> **相关概念**: [AD-033](AD-033-Microservices-Architecture.md)
+> **相关概念**: [AD-035](AD-035-gRPC-Production-Patterns.md)
 ---
 
 ## 1. Formal Definition

@@ -14,6 +14,7 @@
 > **级别**: S (40 KB)
 > **标签**: #ft
 > **Go 版本**: 1.27+
+> **相关概念**: [FT-027](FT-027-Gossip-Protocol-Formal.md)
 ---
 
 ## 1. Theoretical Foundations

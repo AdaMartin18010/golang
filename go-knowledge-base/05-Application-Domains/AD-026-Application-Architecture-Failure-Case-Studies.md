@@ -6,6 +6,7 @@
 
 > **级别**: S (32 KB)
 > **Go 版本**: 1.27+
+> **相关概念**: [AD-027](AD-027-AI-ML-Infrastructure-Design.md)
 ---
 
 ## Overview

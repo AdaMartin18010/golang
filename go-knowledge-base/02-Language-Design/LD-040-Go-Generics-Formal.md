@@ -12,6 +12,7 @@
 > - [GC-Safe Code Generation](https://www.cs.tufts.edu/~nr/pubs/gcshape.pdf) - Shao & Appel (1995)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-037](LD-037-Go-1.27-Generic-Methods.md)
 ---
 
 ## 1. 形式化基础

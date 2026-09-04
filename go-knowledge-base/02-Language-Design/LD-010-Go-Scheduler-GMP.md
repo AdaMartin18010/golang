@@ -15,7 +15,7 @@
 
 > **Go 版本**: 1.27+
 > **Bloom 层级**: L4   <!-- L4 形式化层：调度理论 + 定理证明 -->
-> **前置概念**: [LD-002 Go 并发 CSP 形式化](LD-002-Go-Concurrency-CSP-Formal.md) · [LD-001 Go 内存模型形式化](LD-001-Go-Memory-Model-Formal.md) · **后置概念**: [LD-003 Go GC 形式化](LD-003-Go-Garbage-Collector-Formal.md)
+> **前置概念**: [LD-002 Go 并发 CSP 形式化](LD-002-Go-Concurrency-CSP-Formal.md) · [LD-001 Go 内存模型形式化](LD-001-Go-Memory-Model-Formal.md) · **后置概念**: [LD-003 Go GC 形式化](LD-003-Go-Garbage-Collector-Formal.md) · [LD-011](LD-011-Go-GC-Algorithm.md)
 > **定理链**: Goroutine 创建（go 语句）→ M/P 绑定 + 工作窃取 + 抢占 → 公平调度 / 本地队列优先不变式（定理 3.2）
 ---
 
@@ -808,7 +808,6 @@ package scheduler
 import (
     "fmt"
     "runtime"
-    "runtime/debug"
     "sync"
     "time"
 )

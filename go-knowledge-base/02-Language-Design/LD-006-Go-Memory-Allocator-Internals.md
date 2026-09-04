@@ -10,6 +10,8 @@
 > - [A Fast Storage Allocator](https://dl.acm.org/doi/10.1145/363267.363275) - Knuth
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-004](LD-004-Go-Runtime-GMP-Deep-Dive.md)
+> **相关概念**: [LD-011](LD-011-Go-GC-Algorithm.md)
 ---
 
 ## 1. 内存分配基础

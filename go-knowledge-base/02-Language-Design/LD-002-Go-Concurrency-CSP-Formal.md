@@ -13,7 +13,7 @@
 
 > **Go 版本**: 1.27+
 > **Bloom 层级**: L4
-> **前置概念**: [LD-001: Go 内存模型](LD-001-Go-Memory-Model-Formal.md) · [LD-038: Go 类型系统形式化语义](LD-038-Go-Type-System-Formal-Semantics.md) · **后置概念**: [LD-004: GMP 调度器](LD-004-Go-Runtime-GMP-Deep-Dive.md) · [LD-042: Channel 形式化](LD-042-Go-Channels-Formal.md)
+> **前置概念**: [LD-001: Go 内存模型](LD-001-Go-Memory-Model-Formal.md) · [LD-038: Go 类型系统形式化语义](LD-038-Go-Type-System-Formal-Semantics.md) · **后置概念**: [LD-004: GMP 调度器](LD-004-Go-Runtime-GMP-Deep-Dive.md) · [LD-042: Channel 形式化](LD-042-Go-Channels-Formal.md) · [LD-010](LD-010-Go-Scheduler-GMP.md)
 > **定理链**: Input(进程表达式 P + 环境事件序列) → Operation(迹语义 / 失败语义求值) → Output(精化关系 P ⊑ Q 与死锁检测) / Invariant: channel 通信天然同步，select 是环境决定的外部选择
 ---
 

@@ -12,6 +12,7 @@
 > - [CNCF Cloud Native Landscape](https://landscape.cncf.io/) - Cloud Native Computing Foundation
 
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-077](EC-077-Multi-Container-Patterns.md)
 ---
 
 ## 1. Kubernetes 1.34 Overview

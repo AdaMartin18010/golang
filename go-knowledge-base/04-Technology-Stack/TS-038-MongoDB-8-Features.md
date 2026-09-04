@@ -7,6 +7,7 @@
 > **合并日期**: 2026-09-04
 
 > **Go 版本**: 1.27+
+> **相关概念**: [TS-005](TS-005-MongoDB-Data-Modeling.md)
 ---
 
 ## 1. Executive Summary

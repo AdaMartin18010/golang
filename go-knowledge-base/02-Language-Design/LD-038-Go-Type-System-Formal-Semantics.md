@@ -11,6 +11,9 @@
 > - [Go Generics Proposal](https://go.googlesource.com/proposal/) - Ian Lance Taylor
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-002](LD-002-Go-Concurrency-CSP-Formal.md)
+> **相关概念**: [LD-008](LD-008-Go-Error-Handling-Patterns.md)
+> **相关概念**: [LD-048](LD-048-Go-Interface-Internals.md)
 ---
 
 ## 1. 形式化基础

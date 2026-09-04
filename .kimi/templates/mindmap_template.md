@@ -2,7 +2,7 @@
 
 > **配套要求**：[`.kimi/kimi_thinking_representation_requirements.md`](../kimi_thinking_representation_requirements.md) §2
 
-将以下内容嵌入 `concept/` 权威页，通常放在第 1.5 节或第 5 节。
+将以下内容嵌入五维权威页，通常放在第 1.5 节或第 5 节（对应章节六件套中的「Mermaid mindmap」件）。
 
 ```mermaid
 mindmap
@@ -37,3 +37,4 @@ mindmap
 - [ ] 每个一级分支下至少 2 个二级节点
 - [ ] 节点为名词/短语，非完整句子
 - [ ] 与正文章节结构一致
+- [ ] 覆盖章节六件套中的「反命题与边界」反例（含 `// 编译失败:` 注释的 Go 反例）

@@ -7,7 +7,7 @@
 
 > **Go 版本**: 1.27+
 > **Bloom 层级**: L4
-> **前置概念**: [TS-045 PostgreSQL Internals MVCC](TS-045-PostgreSQL-Internals-MVCC.md) · **后置概念**: [TS-047 PostgreSQL Transaction Formal](TS-047-PostgreSQL-Transaction-Formal.md)
+> **前置概念**: [TS-045 PostgreSQL Internals MVCC](TS-045-PostgreSQL-Internals-MVCC.md) · **后置概念**: [TS-047 PostgreSQL Transaction Formal](TS-047-PostgreSQL-Transaction-Formal.md) · [TS-006](TS-006-MySQL-Transaction-Isolation.md)
 > **定理链**: 并发事务集合 + 快照(xmin/xmax/xip) → MVCC 可见性判定 → 一致读视图 / Invariant: 事务只读到其快照建立时已提交的数据
 ---
 

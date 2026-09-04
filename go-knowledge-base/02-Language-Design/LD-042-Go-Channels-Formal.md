@@ -12,6 +12,8 @@
 > - [The Go Memory Model](https://go.dev/ref/mem) - Go Authors
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-001](LD-001-Go-Memory-Model-Formal.md)
+> **相关概念**: [LD-002](LD-002-Go-Concurrency-CSP-Formal.md)
 ---
 
 ## 1. 形式化基础

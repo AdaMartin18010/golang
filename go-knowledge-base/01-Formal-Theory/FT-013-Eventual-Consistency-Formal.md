@@ -12,6 +12,8 @@
 > - [Optimizing Eventually Consistent Databases](https://dl.acm.org/doi/10.14778/2732951.2732953) - Li et al. (2012)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [FT-003](FT-003-CAP-Theorem-Formal.md)
+> **相关概念**: [FT-016](FT-016-PACELC-Theorem-Formal.md)
 ---
 
 ## 1. 最终一致性的形式化定义

@@ -7,6 +7,9 @@
 > **维度**: Engineering & CloudNative
 > **级别**: S (68 KB)
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-061](EC-061-Observability-Driven-Development.md)
+> **相关概念**: [EC-063](EC-063-On-Call-Procedures.md)
+> **相关概念**: [EC-211](EC-211-Observability-Production-2026.md)
 ---
 
 ## 1. Formal Definition

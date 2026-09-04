@@ -4,6 +4,7 @@
 > **级别**: S (53 KB)
 > **标签**: #ts
 > **Go 版本**: 1.27+
+> **相关概念**: [TS-005](TS-005-MongoDB-Data-Modeling.md)
 ## Table of Contents
 
 - [TS-029: Distributed Storage Systems - 2025-2026 Developments](#ts-029-distributed-storage-systems---2025-2026-developments)

@@ -4,6 +4,7 @@
 > **级别**: S (37 KB)
 > **标签**: #ec
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-077](EC-077-Multi-Container-Patterns.md)
 ## Problem Formalization
 
 ### The Cross-Cutting Concern Challenge

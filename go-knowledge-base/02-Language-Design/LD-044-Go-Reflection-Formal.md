@@ -11,6 +11,7 @@
 > - [Effective Go](https://go.dev/doc/effective_go) - Go Authors
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-048](LD-048-Go-Interface-Internals.md)
 ---
 
 ## 1. 形式化基础

@@ -7,6 +7,7 @@
 > **合并日期**: 2026-09-04
 
 > **Go 版本**: 1.27+
+> **相关概念**: [TS-049](TS-049-Redis-Data-Structures.md)
 ---
 
 ## 1. Executive Summary

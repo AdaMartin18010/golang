@@ -12,6 +12,7 @@
 > - [Flexible Paxos](https://arxiv.org/abs/1608.06696) - Howard et al. (2016)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [FT-006](FT-006-Paxos-Formal.md)
 ---
 
 ## 1. 从 Paxos 到 Multi-Paxos

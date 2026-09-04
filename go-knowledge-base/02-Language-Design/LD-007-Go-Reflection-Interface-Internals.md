@@ -10,6 +10,7 @@
 > - [Interface Implementation](https://go.dev/doc/effective_go#interfaces) - Go Authors
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-008](LD-008-Go-Error-Handling-Patterns.md)
 ---
 
 ## 1. 接口内部表示

@@ -6,6 +6,8 @@
 > **权威来源**: [Building Event-Driven Microservices](https://www.oreilly.com/library/view/building-event-driven-microservices/9781492057888/), [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [AD-035](AD-035-gRPC-Production-Patterns.md)
+> **相关概念**: [AD-037](AD-037-Event-Driven-Architecture.md)
 ---
 
 ## 事件驱动架构

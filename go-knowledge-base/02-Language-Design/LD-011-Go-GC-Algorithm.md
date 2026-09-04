@@ -615,7 +615,6 @@ $$\text{Target CPU} = \frac{GOGC}{GOGC + 100}$$
 package gc
 
 import (
-    "runtime"
     "runtime/debug"
 )
 
@@ -841,7 +840,7 @@ func GCTuningExample() {
 
     // GC 暂停时间
     fmt.Printf("PauseNs (last 5): ")
-    for i := 0; i < 5 && i < m.NumGC; i++ {
+    for i := 0; i < 5 && uint32(i) < m.NumGC; i++ {
         idx := (m.NumGC - uint32(i) + 255) % 256
         fmt.Printf("%d ", m.PauseNs[idx]/1000)
     }
@@ -914,7 +913,6 @@ package gc_test
 
 import (
     "runtime"
-    "sync"
     "testing"
 )
 

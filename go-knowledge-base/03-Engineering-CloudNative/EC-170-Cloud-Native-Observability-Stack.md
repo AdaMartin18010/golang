@@ -7,6 +7,7 @@
 > **级别**: S (82 KB)
 > **标签**: #ec
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-211](EC-211-Observability-Production-2026.md)
 ---
 
 ## Executive Summary

@@ -8,6 +8,7 @@
 > **级别**: A (15 KB)
 > **标签**: #ad
 > **Go 版本**: 1.27+
+> **相关概念**: [AD-038](AD-038-Serverless-Architecture.md)
 ---
 
 ## 1. Security Architecture Fundamentals

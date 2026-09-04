@@ -8,7 +8,7 @@
 > **标签**: #ec
 > **Go 版本**: 1.27+
 > **Bloom 层级**: L3
-> **前置概念**: [EC-044: Observability in Production](./EC-044-Observability-Production.md) · [EC-060: OpenTelemetry Distributed Tracing in Production](./EC-060-OpenTelemetry-Distributed-Tracing-Production.md) · [EC-170: Cloud-Native Observability Stack](./EC-170-Cloud-Native-Observability-Stack.md) · **后置概念**: [EC-062: Alerting Best Practices](./EC-062-Alerting-Best-Practices.md) · [EC-215: Site Reliability Engineering 2026](./EC-215-Site-Reliability-Engineering-2026.md)
+> **前置概念**: [EC-044: Observability in Production](./EC-044-Observability-Production.md) · [EC-060: OpenTelemetry Distributed Tracing in Production](./EC-060-OpenTelemetry-Distributed-Tracing-Production.md) · [EC-170: Cloud-Native Observability Stack](./EC-170-Cloud-Native-Observability-Stack.md) · **后置概念**: [EC-062: Alerting Best Practices](./EC-062-Alerting-Best-Practices.md) · [EC-215: Site Reliability Engineering 2026](./EC-215-Site-Reliability-Engineering-2026.md) · [EC-061](EC-061-Observability-Driven-Development.md)
 > **定理链**: Telemetry Signals (Metrics/Logs/Traces/Profiles) → Collection, Sampling, Correlation → Actionable Insight / Invariant: 数据必须能回答未知的未知 (data must answer unknown-unknown questions)
 ---
 

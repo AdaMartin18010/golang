@@ -457,7 +457,6 @@ Convergence ==
 package gossip
 
 import (
- "context"
  "crypto/sha256"
  "encoding/binary"
  "fmt"

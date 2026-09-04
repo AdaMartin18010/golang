@@ -6,6 +6,7 @@
 > **权威来源**: [KIP-500](https://cwiki.apache.org/confluence/display/KAFKA/KIP-500), [Kafka 4.0 Release Notes](https://kafka.apache.org/documentation/#upgrade_4_0_0)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [TS-050](TS-050-Kafka-Architecture.md)
 ---
 
 ## KRaft 演进

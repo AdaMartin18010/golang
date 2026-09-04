@@ -430,7 +430,6 @@ package paxos
 
 import (
     "context"
-    "errors"
     "fmt"
     "sync"
     "sync/atomic"

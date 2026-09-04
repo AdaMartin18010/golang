@@ -6,6 +6,7 @@
 > **权威来源**: [Microsoft CQRS Journey](https://msdn.microsoft.com/en-us/library/jj554200.aspx), [Event Sourcing by Martin Fowler](https://martinfowler.com/eaaDev/EventSourcing.html), [DDD Reference](https://www.domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [AD-033](AD-033-Microservices-Architecture.md)
 ---
 
 ## 架构概览

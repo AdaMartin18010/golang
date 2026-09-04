@@ -11,6 +11,7 @@
 > - [Clean Code](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350884) - Robert C. Martin
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-008](LD-008-Go-Error-Handling-Patterns.md)
 ---
 
 ## 1. 形式化基础

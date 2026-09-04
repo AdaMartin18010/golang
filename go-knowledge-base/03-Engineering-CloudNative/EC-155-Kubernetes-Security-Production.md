@@ -5,7 +5,7 @@
 > **标签**: #ec
 > **Go 版本**: 1.27+
 > **Bloom 层级**: L3
-> **前置概念**: [EC-074: Zero-Trust Security](./EC-074-Zero-Trust-Security.md) · [EC-079: Security & Cryptography 2026](./EC-079-Security-Cryptography-2026.md) · **后置概念**: [EC-215: Site Reliability Engineering 2026](./EC-215-Site-Reliability-Engineering-2026.md) · [EC-194: Chaos Engineering](./EC-194-Chaos-Engineering.md)
+> **前置概念**: [EC-074: Zero-Trust Security](./EC-074-Zero-Trust-Security.md) · [EC-079: Security & Cryptography 2026](./EC-079-Security-Cryptography-2026.md) · **后置概念**: [EC-215: Site Reliability Engineering 2026](./EC-215-Site-Reliability-Engineering-2026.md) · [EC-194: Chaos Engineering](./EC-194-Chaos-Engineering.md) · [EC-077](EC-077-Multi-Container-Patterns.md)
 > **定理链**: Artifact/Workload Input → Signing Verification + Policy Admission + Runtime Isolation → Verifiable Workload / Invariant: 默认拒绝，最小权限 (default-deny, least privilege)
 
 ## Table of Contents
@@ -1106,10 +1106,8 @@ package sbom
 
 import (
     "debug/buildinfo"
-    "encoding/json"
     "fmt"
     "os"
-    "runtime/debug"
     "time"
 )
 

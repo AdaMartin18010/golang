@@ -7,6 +7,7 @@
 > **维度**: Engineering & CloudNative
 > **级别**: S (56 KB)
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-077](EC-077-Multi-Container-Patterns.md)
 ---
 
 ## 1. Formal Definition

@@ -11,6 +11,7 @@
 > **级别**: A (12 KB)
 > **标签**: #ts
 > **Go 版本**: 1.27+
+> **相关概念**: [TS-001](TS-001-PostgreSQL-Transaction-Internals.md)
 ---
 
 ## 1. MVCC Architecture

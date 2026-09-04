@@ -10,6 +10,7 @@
 > - [Context Best Practices](https://rakyll.org/context/) - rakyll
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-008](LD-008-Go-Error-Handling-Patterns.md)
 ---
 
 ## 1. Context 设计原理

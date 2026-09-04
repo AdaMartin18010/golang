@@ -12,6 +12,8 @@
 > - [Go 1.8 GC](https://golang.org/s/go18gcpacing) - Austin Clements
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-001](LD-001-Go-Memory-Model-Formal.md)
+> **相关概念**: [LD-010](LD-010-Go-Scheduler-GMP.md)
 ---
 
 ## 1. 形式化基础

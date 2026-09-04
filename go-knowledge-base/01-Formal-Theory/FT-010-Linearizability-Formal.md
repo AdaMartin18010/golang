@@ -12,6 +12,8 @@
 > - [Consistency in Non-Transactional Distributed Storage Systems](https://dl.acm.org/doi/10.1145/2926965) - Viotti & Vukolić (2016)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [FT-003](FT-003-CAP-Theorem-Formal.md)
+> **相关概念**: [FT-016](FT-016-PACELC-Theorem-Formal.md)
 ---
 
 ## 1. 线性一致性的形式化定义

@@ -13,7 +13,7 @@
 
 > **Go 版本**: 1.27+
 > **Bloom 层级**: L4
-> **前置概念**: [FT-001 分布式系统基础](FT-001-Distributed-Systems-Foundation-Formal.md) · [FT-010 线性一致性](FT-010-Linearizability-Formal.md) · **后置概念**: [FT-016 PACELC 定理](FT-016-PACELC-Theorem-Formal.md) · [FT-013 最终一致性](FT-013-Eventual-Consistency-Formal.md)
+> **前置概念**: [FT-001 分布式系统基础](FT-001-Distributed-Systems-Foundation-Formal.md) · [FT-010 线性一致性](FT-010-Linearizability-Formal.md) · **后置概念**: [FT-016 PACELC 定理](FT-016-PACELC-Theorem-Formal.md) · [FT-013 最终一致性](FT-013-Eventual-Consistency-Formal.md) · [FT-002](FT-002-Raft-Consensus-Formal.md)
 > **定理链**: 网络分区 π 发生 → 在一致性 C 与可用性 A 之间二选一 → 三者不可同时满足 / Invariant: P 为分布式系统必选项
 ---
 
@@ -544,7 +544,6 @@ import (
     "context"
     "errors"
     "sync"
-    "time"
 )
 
 // SystemType 定义系统在 CAP 中的选择

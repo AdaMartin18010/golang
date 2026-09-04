@@ -12,6 +12,7 @@
 > - [KIP-500: Replace ZooKeeper with KRaft](https://cwiki.apache.org/confluence/display/KAFKA/KIP-500) - Kafka Team (2020-2025)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [TS-050](TS-050-Kafka-Architecture.md)
 ---
 
 ## 1. Kafka 日志的形式化定义

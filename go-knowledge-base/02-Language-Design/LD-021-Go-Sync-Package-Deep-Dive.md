@@ -10,6 +10,7 @@
 > - [The Go Programming Language](https://www.gopl.io/) - Donovan & Kernighan
 
 > **Go 版本**: 1.27+
+> **相关概念**: [LD-004](LD-004-Go-Runtime-GMP-Deep-Dive.md)
 ---
 
 ## 1. Sync 包架构

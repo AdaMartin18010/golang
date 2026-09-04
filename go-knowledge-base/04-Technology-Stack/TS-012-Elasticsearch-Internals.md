@@ -7,6 +7,7 @@
 > **版本**: Elasticsearch 9.0+
 
 > **Go 版本**: 1.27+
+> **相关概念**: [TS-004](TS-004-Elasticsearch-Query-DSL.md)
 ---
 
 ## 架构概述

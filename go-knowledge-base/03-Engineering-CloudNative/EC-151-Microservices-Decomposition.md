@@ -4,6 +4,7 @@
 > **级别**: S (53 KB)
 > **标签**: #ec
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-209](EC-209-Microservices-Patterns-2026.md)
 ## Problem Formalization
 
 ### The Monolithic Decomposition Dilemma

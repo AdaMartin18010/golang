@@ -6,6 +6,7 @@
 > **Go 版本**: 1.27+
 > **Created**: 2026-04-03
 > **Version**: AI Agents 2026
+> **相关概念**: [AD-027](AD-027-AI-ML-Infrastructure-Design.md)
 
 ---
 

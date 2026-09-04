@@ -14,6 +14,7 @@
 > **级别**: S (30 KB)
 > **标签**: #ec
 > **Go 版本**: 1.27+
+> **相关概念**: [EC-155](EC-155-Kubernetes-Security-Production.md)
 ---
 
 ## 1. Problem Formalization

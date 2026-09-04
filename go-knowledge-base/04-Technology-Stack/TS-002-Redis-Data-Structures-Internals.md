@@ -6,6 +6,7 @@
 > **权威来源**: [Redis Documentation](https://redis.io/docs/), [Redis Design](http://redis.io/topics/internals), [Redis Source Code](https://github.com/redis/redis)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [TS-049](TS-049-Redis-Data-Structures.md)
 ---
 
 ## 架构概览

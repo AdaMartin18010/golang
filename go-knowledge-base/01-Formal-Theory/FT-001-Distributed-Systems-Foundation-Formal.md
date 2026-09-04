@@ -12,6 +12,10 @@
 > - [Impossibility of Distributed Consensus](https://dl.acm.org/doi/10.1145/3149.214121) - Fischer, Lynch, Paterson (1985)
 
 > **Go 版本**: 1.27+
+> **相关概念**: [FT-002](FT-002-Raft-Consensus-Formal.md)
+> **相关概念**: [FT-003](FT-003-CAP-Theorem-Formal.md)
+> **相关概念**: [FT-006](FT-006-Paxos-Formal.md)
+> **相关概念**: [FT-027](FT-027-Gossip-Protocol-Formal.md)
 ---
 
 ## 1. 形式化问题定义
