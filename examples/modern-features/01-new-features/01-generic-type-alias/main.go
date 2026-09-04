@@ -49,9 +49,8 @@ func runBasicExamples() {
 	// 4. 为泛型函数类型创建别名
 	type Calculator[T Number] func(T, T) T
 
-	Add := func[T Number](a, b T) T {
-		return a + b
-	}
+	// 注：匿名函数字面量不允许类型参数（Go 1.27 仍如此），
+	// 泛型函数必须声明为具名函数（见文件底部包级 Add 定义）。
 
 	// 使用 StringMap 别名
 	strToIntMap := StringMap[int]{"one": 1, "two": 2}
@@ -72,4 +71,14 @@ func runBasicExamples() {
 	var intCalculator Calculator[int] = Add[int]
 	sum := intCalculator(intPair.First, intPair.Second)
 	fmt.Printf("Sum of intPair using Calculator: %d\n", sum)
+}
+
+// Number 是包级数值约束（runBasicExamples 内有局部同名约束，按作用域遮蔽规则互不冲突）。
+type Number interface {
+	int | int64 | float32 | float64
+}
+
+// Add 泛型具名函数：匿名函数字面量不允许类型参数，泛型函数必须具名。
+func Add[T Number](a, b T) T {
+	return a + b
 }

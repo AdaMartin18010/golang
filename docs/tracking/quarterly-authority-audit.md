@@ -34,11 +34,13 @@
 
 ### 2.2 实验性特性状态追踪
 
-| 特性 | Go 1.26 状态 | Go 1.27 预期 | 行动 |
+| 特性 | Go 1.26 状态 | Go 1.27 实际 | 行动 |
 |------|-------------|-------------|------|
-| `runtime/secret` | `GOEXPERIMENT=runtimesecret` | 可能稳定 | 追踪 release notes |
-| `simd/archsimd` | `GOEXPERIMENT=simd` | 可能扩展架构 | 追踪 release notes |
-| `goroutineleak` profile | `GOEXPERIMENT=goroutineleakprofile` | 默认启用 | 准备文档更新 |
+| `runtime/secret` | `GOEXPERIMENT=runtimesecret` | 仍为实验 | 追踪 release notes |
+| `simd/archsimd` | `GOEXPERIMENT=simd` | 仍为实验 | 追踪 release notes |
+| `goroutineleak` profile | `GOEXPERIMENT=goroutineleakprofile` | 已 GA（新增 `/debug/pprof/goroutineleak` 端点） | 文档已更新 |
+
+**Go 1.27 实际发布结论**（2026-08，当前版本 1.27.1）：泛型方法 ✅ 正式落地（如 `math/rand/v2.Rand.N[Int intType]`）、`encoding/json/v2` ✅ GA（v1 改由 v2 实现）、`goroutineleak` profile ✅ GA、container-aware GOMAXPROCS ✅ 默认开启；Green Tea GC ❌ 仍为 `GOEXPERIMENT=greenteagc` 实验，未默认启用。
 
 ---
 
@@ -82,7 +84,7 @@ echo "Audit completed. See docs/tracking/quarterly-audit-$(date +%Y-%m).md"
 
 **审计日期**: 2026-05-06  
 **执行人**: Kimi Code CLI  
-**Go 版本**: go1.26.2 windows/amd64
+**Go 版本**: go1.27.1 windows/amd64（2026-08 自 go1.26.2 升级）
 
 ### 发现与修正
 
@@ -100,7 +102,7 @@ echo "Audit completed. See docs/tracking/quarterly-audit-$(date +%Y-%m).md"
 
 ## 五、下季度（2026-Q3）待追踪事项
 
-1. Go 1.27 开发分支特性冻结（预计 2026-07）
-2. `goroutineleak` profile 可能默认启用
+1. Go 1.27 已发布（2026-08，当前 1.27.1）✅
+2. `goroutineleak` profile 已 GA（新增 `/debug/pprof/goroutineleak` 端点）✅
 3. `runtime/secret` 可能进入稳定阶段
-4. Go 1.26.3/1.26.4 安全补丁追踪
+4. Go 1.26.3/1.26.4 安全补丁追踪（注：建议直接升级至 1.27.1）

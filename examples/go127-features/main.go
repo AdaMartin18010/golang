@@ -13,7 +13,8 @@ package main
 
 import (
 	"bytes"
-	"encoding/json/v2"
+	"encoding/json/jsontext"
+	jsonv2 "encoding/json/v2"
 	"fmt"
 	"math/rand/v2"
 	"net/http"
@@ -23,7 +24,6 @@ import (
 	"runtime/pprof"
 	"strings"
 	"sync"
-	"time"
 	"uuid"
 )
 
@@ -89,11 +89,11 @@ func demonstrateUUID() {
 
 	// UUID v7：时间戳 + 随机数，适合数据库主键（大致单调）
 	id7 := uuid.NewV7()
-	fmt.Printf("NewV7: %s (version %d)\n", id7, id7.Version())
+	fmt.Printf("NewV7: %s (version %d)\n", id7, id7[6]>>4)
 
 	// UUID v4：纯随机
 	id4 := uuid.NewV4()
-	fmt.Printf("NewV4: %s (version %d)\n", id4, id4.Version())
+	fmt.Printf("NewV4: %s (version %d)\n", id4, id4[6]>>4)
 
 	// Parse：解析标准字符串形式
 	parsed, err := uuid.Parse(id7.String())
@@ -185,37 +185,37 @@ func demonstrateJSONv2() {
 	p := Product{Name: "keyboard", Price: 299, Stock: 42}
 
 	// 基本 Marshal / Unmarshal（import 路径为 encoding/json/v2）
-	data, err := json.Marshal(p)
+	data, err := jsonv2.Marshal(p)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("Marshal: %s\n", data)
 
 	var back Product
-	if err := json.Unmarshal(data, &back); err != nil {
+	if err := jsonv2.Unmarshal(data, &back); err != nil {
 		panic(err)
 	}
 	fmt.Printf("Unmarshal round-trip equal: %t\n", back == p)
 
 	// Options：jsonv2 通过 Option 参数配置语义行为。
-	// v2 默认拒绝对象中的重复字段名（返回 json.ErrDuplicateName），
-	// 可用 json.AllowDuplicateNames(true) 放宽（对应旧 v1 的宽松行为）。
+	// 重复字段名属于语法层行为，由 jsontext 包提供：默认拒绝重复名（返回错误），
+	// 可用 jsontext.AllowDuplicateNames(true) 放宽（对应旧 v1 的宽松行为）。
 	dup := []byte(`{"name":"a","name":"b"}`)
 	var m map[string]string
-	if err := json.Unmarshal(dup, &m); err != nil {
+	if err := jsonv2.Unmarshal(dup, &m); err != nil {
 		fmt.Printf("duplicate names rejected by default: %v\n", err)
 	}
-	if err := json.Unmarshal(dup, &m, json.AllowDuplicateNames(true)); err != nil {
+	if err := jsonv2.Unmarshal(dup, &m, jsontext.AllowDuplicateNames(true)); err != nil {
 		panic(err)
 	}
-	fmt.Printf("with AllowDuplicateNames(true): %v\n", m)
+	fmt.Printf("with jsontext.AllowDuplicateNames(true): %v\n", m)
 
 	// RejectUnknownMembers：严格模式，拒绝未知字段
 	type Strict struct {
 		Name string `json:"name"`
 	}
-	if err := json.Unmarshal([]byte(`{"name":"x","extra":1}`), &Strict{},
-		json.RejectUnknownMembers(true)); err != nil {
+	if err := jsonv2.Unmarshal([]byte(`{"name":"x","extra":1}`), &Strict{},
+		jsonv2.RejectUnknownMembers(true)); err != nil {
 		fmt.Printf("unknown members rejected: %v\n", err)
 	}
 	fmt.Println()
@@ -305,7 +305,6 @@ func main() {
 
 	// synctest.Sleep / synctest.Wait 只能在 synctest 测试气泡内使用，
 	// 完整示例见同目录 synctest_test.go（httptest.NewTestServer + synctest.Wait）。
-	_ = time.Second
 
 	fmt.Println("All demonstrations completed!")
 }

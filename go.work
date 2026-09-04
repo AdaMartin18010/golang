@@ -13,6 +13,9 @@ use (
 	// Go 1.26 特性演示模块
 	./examples/go126-features
 
+	// Go 1.27 特性演示模块
+	./examples/go127-features
+
 	// 并发模块（已迁移）
 	./pkg/concurrency
 

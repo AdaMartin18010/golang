@@ -202,8 +202,8 @@
 
 **学习内容**:
 
-- [ ] Go 1.27 Preview
-- [ ] 泛型方法
+- [x] Go 1.27 发布 ✅（2026-08，当前 1.27.1；见 docs/ 下 Go 1.27 发布分析）
+- [x] 泛型方法 ✅（Go 1.27 正式落地，如 `math/rand/v2.Rand.N[Int intType]`）
 - [ ] WebAssembly
 - [ ] AI/ML 基础设施
 

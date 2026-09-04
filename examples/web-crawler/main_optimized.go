@@ -1,3 +1,8 @@
+//go:build ignore
+
+// main_optimized.go 是 main.go 的优化变体，作为独立程序维护。
+// 通过 `go run main_optimized.go` 单独运行；//go:build ignore 使其不参与包构建，
+// 避免与 main.go 中的 URL 类型和 main 函数重复声明。
 package main
 
 import (
