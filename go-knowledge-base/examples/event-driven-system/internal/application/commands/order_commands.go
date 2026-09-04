@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/google/uuid"
 	"event-driven-system/internal/domain/order"
 	"event-driven-system/pkg/cqrs"
 	"event-driven-system/pkg/event"
+	"github.com/google/uuid"
 )
 
 // Command definitions

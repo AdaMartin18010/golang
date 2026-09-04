@@ -13,7 +13,7 @@ func MapReduce(data []interface{}, mapper MapFunc, reducer ReduceFunc, initial i
 	// Map phase
 	mapped := make([]interface{}, len(data))
 	var wg sync.WaitGroup
-	
+
 	for i, item := range data {
 		wg.Add(1)
 		go func(idx int, val interface{}) {
@@ -22,12 +22,12 @@ func MapReduce(data []interface{}, mapper MapFunc, reducer ReduceFunc, initial i
 		}(i, item)
 	}
 	wg.Wait()
-	
+
 	// Reduce phase
 	result := initial
 	for _, item := range mapped {
 		result = reducer(result, item)
 	}
-	
+
 	return result
 }

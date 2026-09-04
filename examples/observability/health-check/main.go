@@ -36,14 +36,14 @@ func main() {
 
 	// 2. 创建系统监控器（带健康检查）
 	systemMonitor, err := system.NewSystemMonitor(system.SystemConfig{
-		Meter:            otlpClient.Meter("system"),
-		Enabled:          true,
-		CollectInterval:  5 * time.Second,
+		Meter:             otlpClient.Meter("system"),
+		Enabled:           true,
+		CollectInterval:   5 * time.Second,
 		EnableDiskMonitor: true,
 		HealthThresholds: system.HealthThresholds{
-			MaxMemoryUsage: 85.0,  // 85% 内存使用率
-			MaxCPUUsage:    90.0,   // 90% CPU 使用率
-			MaxGoroutines:  5000,   // 5000 个 Goroutine
+			MaxMemoryUsage: 85.0, // 85% 内存使用率
+			MaxCPUUsage:    90.0, // 90% CPU 使用率
+			MaxGoroutines:  5000, // 5000 个 Goroutine
 			MinGCInterval:  500 * time.Millisecond,
 		},
 	})

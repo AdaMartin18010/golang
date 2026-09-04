@@ -9,7 +9,7 @@ import (
 func WithCancel() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	
+
 	go func() {
 		for {
 			select {
@@ -20,7 +20,7 @@ func WithCancel() {
 			}
 		}
 	}()
-	
+
 	time.Sleep(time.Second)
 	cancel() // 取消所有goroutine
 }

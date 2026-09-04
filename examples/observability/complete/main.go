@@ -85,12 +85,12 @@ func main() {
 	// 5. 初始化 eBPF 收集器（框架）
 	log.Println("Initializing eBPF collector...")
 	ebpfCollector, err := ebpf.NewCollector(ebpf.Config{
-		Tracer:                    tracer,
-		Meter:                     meter,
-		Enabled:                   false, // 设置为 true 需要实际的 eBPF 程序
-		CollectInterval:          5 * time.Second,
-		EnableSyscallTracking:     true,
-		EnableNetworkMonitoring:   true,
+		Tracer:                     tracer,
+		Meter:                      meter,
+		Enabled:                    false, // 设置为 true 需要实际的 eBPF 程序
+		CollectInterval:            5 * time.Second,
+		EnableSyscallTracking:      true,
+		EnableNetworkMonitoring:    true,
 		EnablePerformanceProfiling: false,
 	})
 	if err != nil {

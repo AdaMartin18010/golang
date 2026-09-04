@@ -14,8 +14,8 @@ import (
 	"github.com/yourusername/golang/pkg/control"
 	"github.com/yourusername/golang/pkg/database"
 	"github.com/yourusername/golang/pkg/observability/otlp"
-	"github.com/yourusername/golang/pkg/sampling"
 	"github.com/yourusername/golang/pkg/observability/tracing"
+	"github.com/yourusername/golang/pkg/sampling"
 )
 
 func main() {
@@ -184,4 +184,3 @@ func setupRoutes(
 		})
 	})
 }
-

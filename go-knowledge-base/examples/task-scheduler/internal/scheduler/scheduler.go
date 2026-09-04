@@ -70,23 +70,23 @@ func New(config *Config, storage Storage) *Scheduler {
 // Start 启动调度器
 func (s *Scheduler) Start(ctx context.Context) error {
 	s.ctx, s.cancel = context.WithCancel(ctx)
-	
+
 	// 1. 领导选举
 	s.wg.Add(1)
 	go s.leaderElection()
-	
+
 	// 2. 任务调度
 	s.wg.Add(1)
 	go s.taskScheduler()
-	
+
 	// 3. 工作节点监控
 	s.wg.Add(1)
 	go s.workerMonitor()
-	
+
 	// 4. 指标收集
 	s.wg.Add(1)
 	go s.metricsCollector()
-	
+
 	s.wg.Wait()
 	return nil
 }
@@ -94,13 +94,13 @@ func (s *Scheduler) Start(ctx context.Context) error {
 // Shutdown 优雅关闭
 func (s *Scheduler) Shutdown(ctx context.Context) error {
 	s.cancel()
-	
+
 	done := make(chan struct{})
 	go func() {
 		s.wg.Wait()
 		close(done)
 	}()
-	
+
 	select {
 	case <-done:
 		return nil
@@ -119,12 +119,12 @@ func (s *Scheduler) IsLeader() bool {
 // leaderElection 领导选举
 func (s *Scheduler) leaderElection() {
 	defer s.wg.Done()
-	
+
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
-	
+
 	nodeID := fmt.Sprintf("scheduler-%d", time.Now().UnixNano())
-	
+
 	for {
 		select {
 		case <-s.ctx.Done():
@@ -138,11 +138,11 @@ func (s *Scheduler) leaderElection() {
 				log.Printf("Leadership acquisition failed: %v", err)
 				continue
 			}
-			
+
 			s.leaderMu.Lock()
 			s.isLeader = isLeader
 			s.leaderMu.Unlock()
-			
+
 			if isLeader {
 				log.Println("Became leader")
 			}
@@ -153,10 +153,10 @@ func (s *Scheduler) leaderElection() {
 // taskScheduler 任务调度
 func (s *Scheduler) taskScheduler() {
 	defer s.wg.Done()
-	
+
 	ticker := time.NewTicker(s.config.CheckInterval)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-s.ctx.Done():
@@ -177,25 +177,25 @@ func (s *Scheduler) distributeTasks() {
 		log.Printf("Failed to get tasks: %v", err)
 		return
 	}
-	
+
 	workers, err := s.storage.GetWorkers(s.ctx)
 	if err != nil {
 		log.Printf("Failed to get workers: %v", err)
 		return
 	}
-	
+
 	for _, task := range tasks {
 		worker := s.selectWorker(workers, task)
 		if worker == nil {
 			continue
 		}
-		
+
 		// 分发任务到工作节点
 		if err := s.dispatchToWorker(task, worker); err != nil {
 			log.Printf("Failed to dispatch task %s: %v", task.ID, err)
 			continue
 		}
-		
+
 		// 更新任务状态
 		if err := s.storage.UpdateTaskStatus(s.ctx, task.ID, "assigned"); err != nil {
 			log.Printf("Failed to update task status: %v", err)
@@ -208,7 +208,7 @@ func (s *Scheduler) selectWorker(workers []Worker, task Task) *Worker {
 	if len(workers) == 0 {
 		return nil
 	}
-	
+
 	switch s.config.Strategy {
 	case "least-tasks":
 		// 最少任务优先
@@ -221,7 +221,7 @@ func (s *Scheduler) selectWorker(workers []Worker, task Task) *Worker {
 			}
 		}
 		return selected
-		
+
 	case "priority":
 		// 高优先级任务分配到最强节点
 		var selected *Worker
@@ -233,7 +233,7 @@ func (s *Scheduler) selectWorker(workers []Worker, task Task) *Worker {
 			}
 		}
 		return selected
-		
+
 	default: // round-robin
 		// 轮询
 		for i := range workers {
@@ -255,10 +255,10 @@ func (s *Scheduler) dispatchToWorker(task Task, worker *Worker) error {
 // workerMonitor 工作节点监控
 func (s *Scheduler) workerMonitor() {
 	defer s.wg.Done()
-	
+
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-s.ctx.Done():
@@ -279,7 +279,7 @@ func (s *Scheduler) checkWorkerHealth() {
 		log.Printf("Failed to get workers: %v", err)
 		return
 	}
-	
+
 	for _, worker := range workers {
 		if time.Since(worker.LastSeen) > 30*time.Second {
 			log.Printf("Worker %s is unhealthy, last seen %v ago", worker.ID, time.Since(worker.LastSeen))
@@ -298,10 +298,10 @@ func (s *Scheduler) reassignWorkerTasks(workerID string) {
 // metricsCollector 指标收集
 func (s *Scheduler) metricsCollector() {
 	defer s.wg.Done()
-	
+
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-s.ctx.Done():

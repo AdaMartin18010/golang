@@ -58,11 +58,11 @@ func (m *MockRepository) List(ctx context.Context, limit, offset int) ([]*domain
 // TestService_CreateUser 测试创建用户（成功场景）
 func TestService_CreateUser(t *testing.T) {
 	tests := []struct {
-		name    string
-		email   string
+		name     string
+		email    string
 		userName string
-		setup   func(*MockRepository)
-		wantErr error
+		setup    func(*MockRepository)
+		wantErr  error
 	}{
 		{
 			name:     "success",
@@ -268,4 +268,3 @@ func TestService_NewService(t *testing.T) {
 
 	assert.NotNil(t, service)
 }
-

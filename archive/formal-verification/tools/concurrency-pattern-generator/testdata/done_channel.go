@@ -3,7 +3,7 @@ package main
 // DoneChannel done channel模式
 func DoneChannel() {
 	done := make(chan struct{})
-	
+
 	go func() {
 		// Do work
 		for {
@@ -15,7 +15,7 @@ func DoneChannel() {
 			}
 		}
 	}()
-	
+
 	// Signal done
 	close(done)
 }

@@ -6,7 +6,8 @@
 // Supports 128-bit, 256-bit, and 512-bit vector operations.
 //
 // Note: This is an experimental feature. API may change.
-//       Currently only amd64 is supported.
+//
+//	Currently only amd64 is supported.
 package main
 
 import (

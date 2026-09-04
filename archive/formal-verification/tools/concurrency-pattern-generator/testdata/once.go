@@ -4,7 +4,7 @@ import "sync"
 
 var (
 	instance *Singleton
-	once sync.Once
+	once     sync.Once
 )
 
 type Singleton struct{}

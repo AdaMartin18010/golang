@@ -27,8 +27,8 @@ func main() {
 		EnableSystemMonitoring: true,
 		SystemCollectInterval:  5 * time.Second,
 		EnableDiskMonitor:      true,
-		EnableLoadMonitor:       true,
-		EnableAPMMonitor:        true,
+		EnableLoadMonitor:      true,
+		EnableAPMMonitor:       true,
 		RateLimitConfig: &system.RateLimiterConfig{
 			Meter:   nil, // 将在内部设置
 			Enabled: true,

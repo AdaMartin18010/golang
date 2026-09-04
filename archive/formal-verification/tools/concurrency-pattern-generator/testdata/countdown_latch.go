@@ -4,8 +4,8 @@ import "sync"
 
 type CountDownLatch struct {
 	count int
-	mu sync.Mutex
-	cond *sync.Cond
+	mu    sync.Mutex
+	cond  *sync.Cond
 }
 
 func NewCountDownLatch(n int) *CountDownLatch {

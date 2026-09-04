@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
+	"event-driven-system/pkg/event"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"event-driven-system/pkg/event"
 )
 
 // PostgresEventStore implements EventStore using PostgreSQL
@@ -72,12 +72,12 @@ func (s *PostgresEventStore) Append(ctx context.Context, events ...*event.Event)
 	for _, evt := range events {
 		// Insert event
 		metadataJSON, _ := json.Marshal(evt.Metadata)
-		
+
 		_, err := tx.ExecContext(ctx, `
 			INSERT INTO events (id, aggregate_id, aggregate_type, type, version, data, metadata, timestamp)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		`, evt.ID, evt.AggregateID, evt.AggregateType, evt.Type, evt.Version, evt.Data, metadataJSON, evt.Timestamp)
-		
+
 		if err != nil {
 			if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
 				return fmt.Errorf("concurrency conflict: %w", err)
@@ -93,7 +93,7 @@ func (s *PostgresEventStore) Append(ctx context.Context, events ...*event.Event)
 				version = EXCLUDED.version,
 				updated_at = EXCLUDED.updated_at
 		`, evt.AggregateID, evt.AggregateType, evt.Version, time.Now())
-		
+
 		if err != nil {
 			return err
 		}
@@ -110,7 +110,7 @@ func (s *PostgresEventStore) GetEvents(ctx context.Context, aggregateID uuid.UUI
 		WHERE aggregate_id = $1 AND version > $2
 		ORDER BY version ASC
 	`, aggregateID, fromVersion)
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (s *PostgresEventStore) GetAllEvents(ctx context.Context, afterPosition int
 		ORDER BY position ASC
 		LIMIT $2
 	`, afterPosition, batchSize)
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -147,11 +147,11 @@ func (s *PostgresEventStore) GetAggregateVersion(ctx context.Context, aggregateI
 	err := s.db.QueryRowContext(ctx, `
 		SELECT version FROM aggregates WHERE id = $1
 	`, aggregateID).Scan(&version)
-	
+
 	if err == sql.ErrNoRows {
 		return 0, nil
 	}
-	
+
 	return version, err
 }
 

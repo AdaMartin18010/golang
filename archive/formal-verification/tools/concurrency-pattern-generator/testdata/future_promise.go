@@ -12,7 +12,7 @@ func NewFuture(fn func() (interface{}, error)) *Future {
 		result: make(chan interface{}, 1),
 		err:    make(chan error, 1),
 	}
-	
+
 	go func() {
 		res, err := fn()
 		if err != nil {
@@ -21,7 +21,7 @@ func NewFuture(fn func() (interface{}, error)) *Future {
 			f.result <- res
 		}
 	}()
-	
+
 	return f
 }
 

@@ -13,17 +13,17 @@ import (
 
 // TestFramework 集成测试框架
 type TestFramework struct {
-	db        *sql.DB
-	dbURL     string
-	cleanup   []func() error
-	ctx       context.Context
-	cancel    context.CancelFunc
+	db      *sql.DB
+	dbURL   string
+	cleanup []func() error
+	ctx     context.Context
+	cancel  context.CancelFunc
 }
 
 // TestFrameworkConfig 集成测试框架配置
 type TestFrameworkConfig struct {
-	DatabaseURL string
-	SetupTimeout time.Duration
+	DatabaseURL     string
+	SetupTimeout    time.Duration
 	TeardownTimeout time.Duration
 }
 
@@ -41,9 +41,9 @@ func NewTestFramework(config TestFrameworkConfig) (*TestFramework, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	tf := &TestFramework{
-		dbURL:  config.DatabaseURL,
-		ctx:    ctx,
-		cancel: cancel,
+		dbURL:   config.DatabaseURL,
+		ctx:     ctx,
+		cancel:  cancel,
 		cleanup: make([]func() error, 0),
 	}
 

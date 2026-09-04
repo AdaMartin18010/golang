@@ -73,8 +73,8 @@ func demonstrateGenericMethods() {
 
 	// 标准库 math/rand/v2 新增泛型方法 Rand.N[Int]：随机 [0, n) 的任意整数类型
 	r := rand.New(rand.NewPCG(42, 1024))
-	n32 := r.N(uint32(100))       // 返回 uint32
-	n64 := r.N(int64(1_000_000))  // 返回 int64
+	n32 := r.N(uint32(100))      // 返回 uint32
+	n64 := r.N(int64(1_000_000)) // 返回 int64
 	fmt.Printf("rand.N[uint32](100) = %d, rand.N[int64](1000000) = %d\n", n32, n64)
 	fmt.Println()
 }

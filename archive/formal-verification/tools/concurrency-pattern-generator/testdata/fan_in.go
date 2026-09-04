@@ -25,16 +25,17 @@ import (
 //   - <-chan T: 合并后的输出channel
 //
 // 使用示例:
-//   input1 := make(chan int)
-//   input2 := make(chan int)
-//   output := FanIn(input1, input2)
 //
-//   go func() { input1 <- 1; close(input1) }()
-//   go func() { input2 <- 2; close(input2) }()
+//	input1 := make(chan int)
+//	input2 := make(chan int)
+//	output := FanIn(input1, input2)
 //
-//   for val := range output {
-//       fmt.Println(val)
-//   }
+//	go func() { input1 <- 1; close(input1) }()
+//	go func() { input2 <- 2; close(input2) }()
+//
+//	for val := range output {
+//	    fmt.Println(val)
+//	}
 func FanIn[T any](inputs ...<-chan T) <-chan T {
 	output := make(chan T)
 	var wg sync.WaitGroup
@@ -62,10 +63,10 @@ func FanIn[T any](inputs ...<-chan T) <-chan T {
 // FanInSelect 使用select实现的Fan-In（非阻塞版本）
 func FanInSelect[T any](input1, input2 <-chan T) <-chan T {
 	output := make(chan T)
-	
+
 	go func() {
 		defer close(output)
-		
+
 		for {
 			select {
 			case val, ok := <-input1:
@@ -74,7 +75,7 @@ func FanInSelect[T any](input1, input2 <-chan T) <-chan T {
 					continue
 				}
 				output <- val
-				
+
 			case val, ok := <-input2:
 				if !ok {
 					input2 = nil
@@ -82,14 +83,14 @@ func FanInSelect[T any](input1, input2 <-chan T) <-chan T {
 				}
 				output <- val
 			}
-			
+
 			// 两个输入都关闭时退出
 			if input1 == nil && input2 == nil {
 				return
 			}
 		}
 	}()
-	
+
 	return output
 }
 

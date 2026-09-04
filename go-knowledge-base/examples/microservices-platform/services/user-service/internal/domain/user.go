@@ -9,25 +9,25 @@ import (
 )
 
 var (
-	ErrInvalidEmail    = errors.New("invalid email address")
-	ErrInvalidPassword = errors.New("password must be at least 8 characters")
-	ErrUserNotFound    = errors.New("user not found")
-	ErrEmailExists     = errors.New("email already exists")
+	ErrInvalidEmail       = errors.New("invalid email address")
+	ErrInvalidPassword    = errors.New("password must be at least 8 characters")
+	ErrUserNotFound       = errors.New("user not found")
+	ErrEmailExists        = errors.New("email already exists")
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
 type User struct {
-	ID             uuid.UUID `json:"id" db:"id"`
-	Email          string    `json:"email" db:"email"`
-	PasswordHash   string    `json:"-" db:"password_hash"`
-	FirstName      string    `json:"first_name" db:"first_name"`
-	LastName       string    `json:"last_name" db:"last_name"`
-	Phone          string    `json:"phone" db:"phone"`
-	EmailVerified  bool      `json:"email_verified" db:"email_verified"`
-	AvatarURL      string    `json:"avatar_url,omitempty" db:"avatar_url"`
-	LastLoginAt    *time.Time `json:"last_login_at,omitempty" db:"last_login_at"`
-	CreatedAt      time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at" db:"updated_at"`
+	ID            uuid.UUID  `json:"id" db:"id"`
+	Email         string     `json:"email" db:"email"`
+	PasswordHash  string     `json:"-" db:"password_hash"`
+	FirstName     string     `json:"first_name" db:"first_name"`
+	LastName      string     `json:"last_name" db:"last_name"`
+	Phone         string     `json:"phone" db:"phone"`
+	EmailVerified bool       `json:"email_verified" db:"email_verified"`
+	AvatarURL     string     `json:"avatar_url,omitempty" db:"avatar_url"`
+	LastLoginAt   *time.Time `json:"last_login_at,omitempty" db:"last_login_at"`
+	CreatedAt     time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at" db:"updated_at"`
 }
 
 type CreateUserRequest struct {
@@ -51,10 +51,10 @@ type LoginRequest struct {
 }
 
 type AuthResponse struct {
-	AccessToken  string    `json:"access_token"`
-	RefreshToken string    `json:"refresh_token"`
-	ExpiresIn    int64     `json:"expires_in"`
-	User         *User     `json:"user"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    int64  `json:"expires_in"`
+	User         *User  `json:"user"`
 }
 
 func (u *User) SetPassword(password string) error {

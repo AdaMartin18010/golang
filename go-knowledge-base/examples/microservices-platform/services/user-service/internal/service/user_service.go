@@ -21,9 +21,9 @@ type UserService interface {
 }
 
 type userService struct {
-	repo       domain.UserRepository
-	jwtSecret  string
-	jwtExpiry  time.Duration
+	repo      domain.UserRepository
+	jwtSecret string
+	jwtExpiry time.Duration
 }
 
 func NewUserService(repo domain.UserRepository, jwtSecret string, jwtExpiry time.Duration) UserService {

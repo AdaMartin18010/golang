@@ -5,6 +5,8 @@ on:
     branches: [ main ]
     paths:
       - 'docs/**'
+      - 'go-knowledge-base/**'
+      - 'AGENTS.md'
       - 'README*.md'
   workflow_dispatch:
 
@@ -47,6 +49,8 @@ jobs:
           # 复制文档
           cp -r docs _site/
           cp README*.md _site/
+          cp AGENTS.md _site/
+          cp -r go-knowledge-base _site/
           
           # 生成首页
           cat > _site/index.html << 'EOF'

@@ -30,13 +30,13 @@ func FanOut[In any, Out any](
 	n int,
 ) <-chan Out {
 	outputs := make([]chan Out, n)
-	
+
 	// 创建n个processor
 	for i := 0; i < n; i++ {
 		outputs[i] = make(chan Out)
 		go processor(ctx, input, outputs[i], fn)
 	}
-	
+
 	// 合并所有输出
 	return merge(ctx, outputs...)
 }
@@ -49,7 +49,7 @@ func processor[In any, Out any](
 	fn func(In) Out,
 ) {
 	defer close(output)
-	
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -71,7 +71,7 @@ func processor[In any, Out any](
 // merge 合并多个输出channels
 func merge[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 	output := make(chan T)
-	
+
 	go func() {
 		defer close(output)
 		for _, ch := range channels {
@@ -86,6 +86,6 @@ func merge[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 			}(ch)
 		}
 	}()
-	
+
 	return output
 }

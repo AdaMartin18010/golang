@@ -24,21 +24,21 @@ type CoverageReport struct {
 
 // PackageCoverage 包覆盖率
 type PackageCoverage struct {
-	Package     string
-	Coverage    float64
-	Statements  int
-	Covered     int
-	Uncovered   int
-	Files       []FileCoverage
+	Package    string
+	Coverage   float64
+	Statements int
+	Covered    int
+	Uncovered  int
+	Files      []FileCoverage
 }
 
 // FileCoverage 文件覆盖率
 type FileCoverage struct {
-	File      string
-	Coverage  float64
+	File       string
+	Coverage   float64
 	Statements int
-	Covered   int
-	Uncovered int
+	Covered    int
+	Uncovered  int
 }
 
 // CoverageSummary 覆盖率摘要

@@ -31,11 +31,12 @@ package main
    > warning: using experimental feature: `wasi:cli/run`
 */
 
-//go:wasmexport add
 // `//go:wasmexport` 是一个编译器指令，它告诉 Go 编译器：
-// 1. 将紧随其后的 `add` 函数标记为可导出的。
-// 2. 在生成的 `.wasm` 模块的导出节（Export Section）中，
-//    创建一个名为 "add" 的条目指向这个函数。
+//  1. 将紧随其后的 `add` 函数标记为可导出的。
+//  2. 在生成的 `.wasm` 模块的导出节（Export Section）中，
+//     创建一个名为 "add" 的条目指向这个函数。
+//
+//go:wasmexport add
 func add(a, b int) int {
 	return a + b
 }

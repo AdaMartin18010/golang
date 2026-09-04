@@ -38,15 +38,16 @@ import (
 // 5. App：组装所有组件
 //
 // 依赖关系图：
-//   Config
-//     ↓
-//   Infrastructure (数据库、消息队列等)
-//     ↓
-//   Application (应用服务)
-//     ↓
-//   Interfaces (HTTP 路由、gRPC 服务等)
-//     ↓
-//   App
+//
+//	Config
+//	  ↓
+//	Infrastructure (数据库、消息队列等)
+//	  ↓
+//	Application (应用服务)
+//	  ↓
+//	Interfaces (HTTP 路由、gRPC 服务等)
+//	  ↓
+//	App
 //
 // 使用步骤：
 // 1. 定义 Provider 函数（在各个包中）
@@ -55,35 +56,36 @@ import (
 // 4. 在 main.go 中调用 InitializeApp
 //
 // 示例：
-//   // 1. 定义 Provider 函数
-//   func NewUserRepository(client *ent.Client) domain.UserRepository {
-//       return entrepo.NewUserRepository(client)
-//   }
 //
-//   func NewUserService(repo domain.UserRepository) *appuser.Service {
-//       return appuser.NewService(repo)
-//   }
+//	// 1. 定义 Provider 函数
+//	func NewUserRepository(client *ent.Client) domain.UserRepository {
+//	    return entrepo.NewUserRepository(client)
+//	}
 //
-//   // 2. 在 wire.go 中声明依赖
-//   func InitializeApp(cfg *config.Config) (*App, error) {
-//       wire.Build(
-//           NewEntClient,
-//           NewUserRepository,
-//           NewUserService,
-//           NewRouter,
-//           NewApp,
-//       )
-//       return &App{}, nil
-//   }
+//	func NewUserService(repo domain.UserRepository) *appuser.Service {
+//	    return appuser.NewService(repo)
+//	}
 //
-//   // 3. 运行生成命令
-//   // go generate ./scripts/wire
+//	// 2. 在 wire.go 中声明依赖
+//	func InitializeApp(cfg *config.Config) (*App, error) {
+//	    wire.Build(
+//	        NewEntClient,
+//	        NewUserRepository,
+//	        NewUserService,
+//	        NewRouter,
+//	        NewApp,
+//	    )
+//	    return &App{}, nil
+//	}
 //
-//   // 4. 在 main.go 中使用
-//   app, err := wire.InitializeApp(cfg)
-//   if err != nil {
-//       log.Fatal(err)
-//   }
+//	// 3. 运行生成命令
+//	// go generate ./scripts/wire
+//
+//	// 4. 在 main.go 中使用
+//	app, err := wire.InitializeApp(cfg)
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
 //
 // 优势：
 // 1. 编译时检查：依赖关系在编译时检查，避免运行时错误
@@ -140,18 +142,19 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 // 3. 管理应用生命周期
 //
 // 示例：
-//   app, err := wire.InitializeApp(cfg)
-//   if err != nil {
-//       log.Fatal(err)
-//   }
 //
-//   // 启动应用
-//   if err := app.Start(); err != nil {
-//       log.Fatal(err)
-//   }
+//	app, err := wire.InitializeApp(cfg)
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
 //
-//   // 关闭应用
-//   defer app.Close()
+//	// 启动应用
+//	if err := app.Start(); err != nil {
+//	    log.Fatal(err)
+//	}
+//
+//	// 关闭应用
+//	defer app.Close()
 type App struct {
 	// Router HTTP 路由
 	// 注意：根据实际需求添加更多字段
@@ -172,11 +175,12 @@ type App struct {
 //   - *App: 创建的应用实例
 //
 // 示例：
-//   func NewApp(router *chirouter.Router) *App {
-//       return &App{
-//           Router: router,
-//       }
-//   }
+//
+//	func NewApp(router *chirouter.Router) *App {
+//	    return &App{
+//	        Router: router,
+//	    }
+//	}
 //
 // 注意事项：
 // - 可以添加更多参数，Wire 会自动注入
@@ -185,5 +189,3 @@ type App struct {
 func NewApp(router *chirouter.Router) *App {
 	return &App{Router: router}
 }
-
-

@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
-	
+
 	"distributed-cache/internal/ring"
 )
 
@@ -48,14 +48,14 @@ func New(config *Config) (*Client, error) {
 	if config.MaxRetries <= 0 {
 		config.MaxRetries = 3
 	}
-	
+
 	client := &Client{
 		config: config,
 		httpClient: &http.Client{
 			Timeout: config.Timeout,
 		},
 	}
-	
+
 	if config.ConsistentHash {
 		client.ring = ring.New(150)
 		for _, server := range config.Servers {
@@ -69,7 +69,7 @@ func New(config *Config) (*Client, error) {
 			}
 		}
 	}
-	
+
 	return client, nil
 }
 
@@ -79,20 +79,20 @@ func (c *Client) Get(ctx context.Context, key string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	url := fmt.Sprintf("http://%s/cache/%s", server, key)
-	
+
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	switch resp.StatusCode {
 	case http.StatusOK:
 		return io.ReadAll(resp.Body)
@@ -110,29 +110,29 @@ func (c *Client) Set(ctx context.Context, key string, value []byte, ttl time.Dur
 	if err != nil {
 		return err
 	}
-	
+
 	url := fmt.Sprintf("http://%s/cache/%s", server, key)
 	if ttl > 0 {
 		url = fmt.Sprintf("%s?ttl=%d", url, int(ttl.Seconds()))
 	}
-	
+
 	req, err := http.NewRequestWithContext(ctx, "PUT", url, bytes.NewReader(value))
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/octet-stream")
-	
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("%w: %s", ErrServerError, string(body))
 	}
-	
+
 	return nil
 }
 
@@ -142,25 +142,25 @@ func (c *Client) Delete(ctx context.Context, key string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	url := fmt.Sprintf("http://%s/cache/%s", server, key)
-	
+
 	req, err := http.NewRequestWithContext(ctx, "DELETE", url, nil)
 	if err != nil {
 		return err
 	}
-	
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("%w: %s", ErrServerError, string(body))
 	}
-	
+
 	return nil
 }
 
@@ -169,23 +169,23 @@ func (c *Client) MGet(ctx context.Context, keys []string) (map[string][]byte, er
 	result := make(map[string][]byte)
 	var mu sync.Mutex
 	var wg sync.WaitGroup
-	
+
 	for _, key := range keys {
 		wg.Add(1)
 		go func(k string) {
 			defer wg.Done()
-			
+
 			value, err := c.Get(ctx, k)
 			if err != nil {
 				return
 			}
-			
+
 			mu.Lock()
 			result[k] = value
 			mu.Unlock()
 		}(key)
 	}
-	
+
 	wg.Wait()
 	return result, nil
 }
@@ -194,7 +194,7 @@ func (c *Client) MGet(ctx context.Context, keys []string) (map[string][]byte, er
 func (c *Client) MSet(ctx context.Context, items map[string][]byte, ttl time.Duration) error {
 	var wg sync.WaitGroup
 	errChan := make(chan error, len(items))
-	
+
 	for key, value := range items {
 		wg.Add(1)
 		go func(k string, v []byte) {
@@ -204,16 +204,16 @@ func (c *Client) MSet(ctx context.Context, items map[string][]byte, ttl time.Dur
 			}
 		}(key, value)
 	}
-	
+
 	wg.Wait()
 	close(errChan)
-	
+
 	for err := range errChan {
 		if err != nil {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 
@@ -222,29 +222,29 @@ func (c *Client) Stats(ctx context.Context) (*Stats, error) {
 	if len(c.config.Servers) == 0 {
 		return nil, errors.New("no servers configured")
 	}
-	
+
 	url := fmt.Sprintf("http://%s/stats", c.config.Servers[0])
-	
+
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, ErrServerError
 	}
-	
+
 	var stats Stats
 	if err := json.NewDecoder(resp.Body).Decode(&stats); err != nil {
 		return nil, err
 	}
-	
+
 	return &stats, nil
 }
 
@@ -262,17 +262,17 @@ func (c *Client) getServer(key string) (string, error) {
 		}
 		return node.Address, nil
 	}
-	
+
 	// Simple round-robin if consistent hashing is disabled
 	return c.config.Servers[0], nil
 }
 
 // Stats holds cache statistics
 type Stats struct {
-	Size      int64   `json:"size"`
-	MaxSize   int64   `json:"max_size"`
-	Items     int64   `json:"items"`
-	Hits      int64   `json:"hits"`
-	Misses    int64   `json:"misses"`
-	HitRatio  float64 `json:"hit_ratio"`
+	Size     int64   `json:"size"`
+	MaxSize  int64   `json:"max_size"`
+	Items    int64   `json:"items"`
+	Hits     int64   `json:"hits"`
+	Misses   int64   `json:"misses"`
+	HitRatio float64 `json:"hit_ratio"`
 }

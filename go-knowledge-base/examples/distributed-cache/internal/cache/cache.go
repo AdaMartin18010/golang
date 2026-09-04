@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	ErrKeyNotFound = errors.New("key not found")
-	ErrKeyTooLarge = errors.New("key size exceeds maximum")
+	ErrKeyNotFound   = errors.New("key not found")
+	ErrKeyTooLarge   = errors.New("key size exceeds maximum")
 	ErrValueTooLarge = errors.New("value size exceeds maximum")
 )
 
@@ -58,7 +58,7 @@ type Cache struct {
 	maxSize     int64
 	currentSize int64
 	config      *Config
-	
+
 	// Stats
 	hits   int64
 	misses int64
@@ -75,7 +75,7 @@ func New(config *Config) *Cache {
 	if config.MaxValueSize <= 0 {
 		config.MaxValueSize = 1024 * 1024 // 1MB
 	}
-	
+
 	return &Cache{
 		data:    make(map[string]*Item),
 		lruList: list.New(),
@@ -89,27 +89,27 @@ func (c *Cache) Get(key string) ([]byte, error) {
 	c.mu.RLock()
 	item, exists := c.data[key]
 	c.mu.RUnlock()
-	
+
 	if !exists {
 		atomic.AddInt64(&c.misses, 1)
 		return nil, ErrKeyNotFound
 	}
-	
+
 	if item.IsExpired() {
 		c.Delete(key)
 		atomic.AddInt64(&c.misses, 1)
 		return nil, ErrKeyNotFound
 	}
-	
+
 	// Update access patterns
 	atomic.StoreInt64(&item.LastAccess, time.Now().UnixNano())
 	atomic.AddInt64(&item.Frequency, 1)
-	
+
 	// Update LRU list
 	c.mu.Lock()
 	c.lruList.MoveToFront(item.element)
 	c.mu.Unlock()
-	
+
 	atomic.AddInt64(&c.hits, 1)
 	return item.Value, nil
 }
@@ -122,10 +122,10 @@ func (c *Cache) Set(key string, value []byte, ttl time.Duration) error {
 	if len(value) > c.config.MaxValueSize {
 		return ErrValueTooLarge
 	}
-	
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	// Check if key already exists
 	if existing, ok := c.data[key]; ok {
 		c.currentSize -= int64(len(existing.Key) + len(existing.Value))
@@ -135,14 +135,14 @@ func (c *Cache) Set(key string, value []byte, ttl time.Duration) error {
 		c.lruList.MoveToFront(existing.element)
 		return nil
 	}
-	
+
 	// Evict if necessary
 	for c.currentSize+int64(len(key)+len(value)) > c.maxSize {
 		if !c.evict() {
 			break
 		}
 	}
-	
+
 	// Create new item
 	item := &Item{
 		Key:        key,
@@ -151,14 +151,14 @@ func (c *Cache) Set(key string, value []byte, ttl time.Duration) error {
 		Frequency:  1,
 		LastAccess: time.Now().UnixNano(),
 	}
-	
+
 	// Add to LRU list
 	elem := c.lruList.PushFront(item)
 	item.element = elem
-	
+
 	c.data[key] = item
 	c.currentSize += int64(len(key) + len(value))
-	
+
 	return nil
 }
 
@@ -166,14 +166,14 @@ func (c *Cache) Set(key string, value []byte, ttl time.Duration) error {
 func (c *Cache) Delete(key string) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	if item, exists := c.data[key]; exists {
 		c.lruList.Remove(item.element)
 		c.currentSize -= int64(len(item.Key) + len(item.Value))
 		delete(c.data, key)
 		return true
 	}
-	
+
 	return false
 }
 
@@ -182,16 +182,16 @@ func (c *Cache) Exists(key string) bool {
 	c.mu.RLock()
 	item, exists := c.data[key]
 	c.mu.RUnlock()
-	
+
 	if !exists {
 		return false
 	}
-	
+
 	if item.IsExpired() {
 		c.Delete(key)
 		return false
 	}
-	
+
 	return true
 }
 
@@ -199,7 +199,7 @@ func (c *Cache) Exists(key string) bool {
 func (c *Cache) Flush() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	c.data = make(map[string]*Item)
 	c.lruList = list.New()
 	c.currentSize = 0
@@ -208,11 +208,11 @@ func (c *Cache) Flush() {
 // Stats returns cache statistics
 func (c *Cache) Stats() Stats {
 	return Stats{
-		Size:      c.currentSize,
-		MaxSize:   c.maxSize,
-		Items:     int64(len(c.data)),
-		Hits:      atomic.LoadInt64(&c.hits),
-		Misses:    atomic.LoadInt64(&c.misses),
+		Size:    c.currentSize,
+		MaxSize: c.maxSize,
+		Items:   int64(len(c.data)),
+		Hits:    atomic.LoadInt64(&c.hits),
+		Misses:  atomic.LoadInt64(&c.misses),
 	}
 }
 
@@ -240,12 +240,12 @@ func (c *Cache) evict() bool {
 	if elem == nil {
 		return false
 	}
-	
+
 	item := elem.Value.(*Item)
 	c.lruList.Remove(elem)
 	c.currentSize -= int64(len(item.Key) + len(item.Value))
 	delete(c.data, item.Key)
-	
+
 	return true
 }
 
@@ -265,15 +265,15 @@ func (c *Cache) expirationFromTTL(ttl time.Duration) int64 {
 func (c *Cache) Keys() []string {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	
+
 	keys := make([]string, 0, len(c.data))
 	now := time.Now().UnixNano()
-	
+
 	for key, item := range c.data {
 		if item.Expiration == 0 || item.Expiration > now {
 			keys = append(keys, key)
 		}
 	}
-	
+
 	return keys
 }

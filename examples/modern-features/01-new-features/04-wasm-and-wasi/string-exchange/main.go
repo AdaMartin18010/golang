@@ -34,9 +34,10 @@ func greet(ptr, size uint32) uint64 {
 	return (uint64(uintptr(unsafe.Pointer(buffer))) << 32) | uint64(len(resultBytes))
 }
 
-//go:wasmexport malloc
 // 导出一个内存分配函数，供宿主环境使用。
 // 它分配指定大小的字节数组，并返回指向其起始地址的指针。
+//
+//go:wasmexport malloc
 func malloc(size uint32) *byte {
 	// 创建一个足够大的字节切片
 	buf := make([]byte, size)
@@ -44,12 +45,13 @@ func malloc(size uint32) *byte {
 	return &buf[0]
 }
 
-//go:wasmexport free
 // 导出一个内存释放函数。
 // 注意：在 Go 的垃圾回收机制下，这个函数实际上不是必需的，
 // 因为只要没有指针引用 `buf`，它最终会被回收。
 // 但导出它是一种好的实践，可以与 C/Rust 等需要手动内存管理的语言保持一致，
 // 并明确地表达内存所有权的转移。
+//
+//go:wasmexport free
 func free(ptr *byte, size uint32) {
 	// 在 Go 中，我们实际上不需要做任何事。
 	// 这个函数的存在主要是为了 API 的完整性。

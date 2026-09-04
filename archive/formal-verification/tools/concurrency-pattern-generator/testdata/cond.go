@@ -3,10 +3,10 @@ package main
 import "sync"
 
 type BoundedQueue struct {
-	mu sync.Mutex
-	cond *sync.Cond
+	mu    sync.Mutex
+	cond  *sync.Cond
 	items []interface{}
-	max int
+	max   int
 }
 
 func NewBoundedQueue(n int) *BoundedQueue {

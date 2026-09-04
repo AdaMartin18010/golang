@@ -31,7 +31,7 @@ func RateLimiterMiddleware(limiters map[string]Limiter, keyFunc KeyFunc) mux.Mid
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			key := keyFunc(r)
-			
+
 			limiter, ok := limiters[key]
 			if !ok {
 				// Try default limiter
@@ -41,19 +41,19 @@ func RateLimiterMiddleware(limiters map[string]Limiter, keyFunc KeyFunc) mux.Mid
 					return
 				}
 			}
-			
+
 			allowed := limiter.Allow()
-			
+
 			// Add rate limit headers
 			headers := w.Header()
 			headers.Set("X-RateLimit-Limit", "100")
-			
+
 			if !allowed {
 				headers.Set("Retry-After", "60")
 				http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 				return
 			}
-			
+
 			next.ServeHTTP(w, r)
 		})
 	}
@@ -90,10 +90,10 @@ func KeyByAPIKey(r *http.Request) string {
 
 // AdaptiveRateLimiter adapts rate limits based on behavior
 type AdaptiveRateLimiter struct {
-	baseLimiter *limiter.TokenBucket
-	violations  int
+	baseLimiter   *limiter.TokenBucket
+	violations    int
 	lastViolation time.Time
-	mu          sync.Mutex
+	mu            sync.Mutex
 }
 
 // NewAdaptiveRateLimiter creates an adaptive rate limiter
@@ -107,18 +107,18 @@ func NewAdaptiveRateLimiter(capacity, refillRate float64) *AdaptiveRateLimiter {
 func (a *AdaptiveRateLimiter) Allow() bool {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	
+
 	// Reduce limit if too many violations
 	if a.violations > 10 && time.Since(a.lastViolation) < time.Hour {
 		// Temporary reduction - implement with a reduced limiter
 		return a.baseLimiter.Allow()
 	}
-	
+
 	allowed := a.baseLimiter.Allow()
 	if !allowed {
 		a.violations++
 		a.lastViolation = time.Now()
 	}
-	
+
 	return allowed
 }

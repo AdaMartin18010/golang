@@ -7,24 +7,24 @@ import (
 )
 
 type Config struct {
-	Port       string
-	GinMode    string
-	LogLevel   string
+	Port        string
+	GinMode     string
+	LogLevel    string
 	DatabaseURL string
-	RedisURL   string
-	JWTSecret  string
-	JWTExpiry  time.Duration
+	RedisURL    string
+	JWTSecret   string
+	JWTExpiry   time.Duration
 }
 
 func Load() *Config {
 	return &Config{
-		Port:       getEnv("PORT", "8081"),
-		GinMode:    getEnv("GIN_MODE", "release"),
-		LogLevel:   getEnv("LOG_LEVEL", "info"),
+		Port:        getEnv("PORT", "8081"),
+		GinMode:     getEnv("GIN_MODE", "release"),
+		LogLevel:    getEnv("LOG_LEVEL", "info"),
 		DatabaseURL: getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/users?sslmode=disable"),
-		RedisURL:   getEnv("REDIS_URL", "localhost:6379"),
-		JWTSecret:  getEnv("JWT_SECRET", "your-secret-key-change-in-production"),
-		JWTExpiry:  getDurationEnv("JWT_EXPIRY", 24*time.Hour),
+		RedisURL:    getEnv("REDIS_URL", "localhost:6379"),
+		JWTSecret:   getEnv("JWT_SECRET", "your-secret-key-change-in-production"),
+		JWTExpiry:   getDurationEnv("JWT_EXPIRY", 24*time.Hour),
 	}
 }
 

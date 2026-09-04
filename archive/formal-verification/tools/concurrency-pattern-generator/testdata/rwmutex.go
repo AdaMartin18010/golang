@@ -3,7 +3,7 @@ package main
 import "sync"
 
 type Cache struct {
-	mu sync.RWMutex
+	mu   sync.RWMutex
 	data map[string]interface{}
 }
 

@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	
+
 	"distributed-cache/internal/cache"
 	"distributed-cache/internal/ring"
 	"distributed-cache/internal/server"
@@ -17,22 +17,22 @@ import (
 
 func main() {
 	var (
-		nodeID   = flag.String("node-id", "", "Unique node ID")
-		addr     = flag.String("addr", ":8080", "HTTP server address")
-		maxSize  = flag.String("max-size", "1GB", "Maximum cache size")
-		vnodes   = flag.Int("vnodes", 150, "Virtual nodes per physical node")
+		nodeID  = flag.String("node-id", "", "Unique node ID")
+		addr    = flag.String("addr", ":8080", "HTTP server address")
+		maxSize = flag.String("max-size", "1GB", "Maximum cache size")
+		vnodes  = flag.Int("vnodes", 150, "Virtual nodes per physical node")
 	)
 	flag.Parse()
-	
+
 	if *nodeID == "" {
 		*nodeID = generateNodeID()
 	}
-	
+
 	log.Printf("Starting cache node %s on %s", *nodeID, *addr)
-	
+
 	// Parse max size
 	maxBytes := parseSize(*maxSize)
-	
+
 	// Create cache
 	cacheConfig := &cache.Config{
 		MaxSize:        maxBytes,
@@ -40,13 +40,13 @@ func main() {
 		DefaultTTL:     time.Hour,
 	}
 	cacheInstance := cache.New(cacheConfig)
-	
+
 	// Create ring for cluster awareness
 	ringInstance := ring.New(*vnodes)
-	
+
 	// Create and start server
 	srv := server.New(cacheInstance, ringInstance, *nodeID)
-	
+
 	httpServer := &http.Server{
 		Addr:         *addr,
 		Handler:      srv.Router(),
@@ -54,7 +54,7 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
 	}
-	
+
 	// Start server in goroutine
 	go func() {
 		log.Printf("HTTP server listening on %s", *addr)
@@ -62,22 +62,22 @@ func main() {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()
-	
+
 	// Wait for interrupt signal
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	
+
 	log.Println("Shutting down server...")
-	
+
 	// Graceful shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	
+
 	if err := httpServer.Shutdown(ctx); err != nil {
 		log.Fatalf("Server forced to shutdown: %v", err)
 	}
-	
+
 	log.Println("Server exited")
 }
 
@@ -108,7 +108,7 @@ func parseSize(s string) int64 {
 			s = s[:len(s)-2]
 		}
 	}
-	
+
 	var size int64
 	if _, err := log.Writer().Write([]byte(s)); err == nil {
 		// Try to parse
@@ -117,9 +117,9 @@ func parseSize(s string) int64 {
 			_ = n
 		}
 	}
-	
+
 	// Default to 1GB if parsing fails
 	size = 1024 * 1024 * 1024
-	
+
 	return size * multiplier
 }

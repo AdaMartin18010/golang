@@ -132,4 +132,3 @@ func TestUserService_GetUser(t *testing.T) {
 
 	mockRepo.AssertExpectations(t)
 }
-

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/google/uuid"
 	"event-driven-system/pkg/event"
+	"github.com/google/uuid"
 )
 
 var (

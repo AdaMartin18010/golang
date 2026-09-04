@@ -77,9 +77,9 @@ func TestUserHandler_CreateUser(t *testing.T) {
 			expectedError:  false,
 		},
 		{
-			name:        "invalid json",
-			requestBody: "invalid json",
-			mockSetup:   func(m *MockUserService) {},
+			name:           "invalid json",
+			requestBody:    "invalid json",
+			mockSetup:      func(m *MockUserService) {},
 			expectedStatus: http.StatusBadRequest,
 			expectedError:  true,
 		},

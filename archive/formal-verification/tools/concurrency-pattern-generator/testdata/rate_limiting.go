@@ -42,12 +42,12 @@ func NewTokenBucket(capacity int, rate time.Duration) *TokenBucket {
 	tb := &TokenBucket{
 		tokens: make(chan struct{}, capacity),
 	}
-	
+
 	// 填充初始令牌
 	for i := 0; i < capacity; i++ {
 		tb.tokens <- struct{}{}
 	}
-	
+
 	// 定期补充令牌
 	go func() {
 		ticker := time.NewTicker(rate)
@@ -59,7 +59,7 @@ func NewTokenBucket(capacity int, rate time.Duration) *TokenBucket {
 			}
 		}
 	}()
-	
+
 	return tb
 }
 

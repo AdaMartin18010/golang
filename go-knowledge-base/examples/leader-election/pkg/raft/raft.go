@@ -63,12 +63,12 @@ func DefaultConfig() *Config {
 
 // Raft represents a Raft consensus node
 type Raft struct {
-	id      string
-	peers   []string
-	config  *Config
+	id     string
+	peers  []string
+	config *Config
 
-	state    State
-	stateMu  sync.RWMutex
+	state   State
+	stateMu sync.RWMutex
 
 	currentTerm int
 	votedFor    string

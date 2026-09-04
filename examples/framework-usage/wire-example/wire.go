@@ -17,18 +17,18 @@ import (
 	"github.com/yourusername/golang/pkg/control"
 	"github.com/yourusername/golang/pkg/database"
 	"github.com/yourusername/golang/pkg/observability/otlp"
-	"github.com/yourusername/golang/pkg/sampling"
 	"github.com/yourusername/golang/pkg/observability/tracing"
+	"github.com/yourusername/golang/pkg/sampling"
 )
 
 // App 应用程序结构
 type App struct {
-	DB                  database.Database
-	Tracer              tracing.Tracer
-	OTLP                *otlp.EnhancedOTLP
-	FeatureController   control.Controller
-	RateController      *control.RateController
-	CircuitController   *control.CircuitController
+	DB                database.Database
+	Tracer            tracing.Tracer
+	OTLP              *otlp.EnhancedOTLP
+	FeatureController control.Controller
+	RateController    *control.RateController
+	CircuitController *control.CircuitController
 }
 
 // NewApp 创建应用程序实例
@@ -130,4 +130,3 @@ func provideCircuitController() *control.CircuitController {
 	controller.RegisterCircuit("external-api", 10, 5, 30*time.Second)
 	return controller
 }
-

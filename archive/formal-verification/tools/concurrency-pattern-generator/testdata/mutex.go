@@ -3,7 +3,7 @@ package main
 import "sync"
 
 type SafeCounter struct {
-	mu sync.Mutex
+	mu    sync.Mutex
 	value int
 }
 

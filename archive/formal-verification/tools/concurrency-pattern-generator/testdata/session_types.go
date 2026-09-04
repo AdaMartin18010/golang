@@ -10,10 +10,10 @@ type Session struct {
 func NewSession() (*Session, *Session) {
 	ch1 := make(chan interface{})
 	ch2 := make(chan interface{})
-	
+
 	s1 := &Session{send: ch1, receive: ch2}
 	s2 := &Session{send: ch2, receive: ch1}
-	
+
 	return s1, s2
 }
 

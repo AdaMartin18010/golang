@@ -60,16 +60,16 @@ func (e *Event) UnmarshalData(v interface{}) error {
 type EventStore interface {
 	// Append persists events to the store
 	Append(ctx context.Context, events ...*Event) error
-	
+
 	// GetEvents retrieves events for a specific aggregate
 	GetEvents(ctx context.Context, aggregateID uuid.UUID, fromVersion int) ([]*Event, error)
-	
+
 	// GetAllEvents retrieves all events after a specific position (for projections)
 	GetAllEvents(ctx context.Context, afterPosition int64, batchSize int) ([]*Event, error)
-	
+
 	// GetAggregateVersion returns the current version of an aggregate
 	GetAggregateVersion(ctx context.Context, aggregateID uuid.UUID) (int, error)
-	
+
 	// Subscribe subscribes to events of specific types
 	Subscribe(ctx context.Context, eventTypes []string) (<-chan *Event, error)
 }
@@ -78,10 +78,10 @@ type EventStore interface {
 type EventBus interface {
 	// Publish publishes an event to the bus
 	Publish(ctx context.Context, event *Event) error
-	
+
 	// Subscribe subscribes to events matching the filter
 	Subscribe(ctx context.Context, filter EventFilter) (<-chan *Event, error)
-	
+
 	// Close closes the event bus connection
 	Close() error
 }

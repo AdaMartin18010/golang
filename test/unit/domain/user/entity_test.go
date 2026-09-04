@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	domain "github.com/yourusername/golang/internal/domain/user"
 	"github.com/stretchr/testify/assert"
+	domain "github.com/yourusername/golang/internal/domain/user"
 )
 
 // TestNewUser 测试创建新用户
@@ -51,11 +51,11 @@ func TestNewUser(t *testing.T) {
 // TestUser_UpdateName 测试更新用户名称
 func TestUser_UpdateName(t *testing.T) {
 	tests := []struct {
-		name         string
-		initialName  string
-		newName      string
-		wantName     string
-		wantUpdated  bool
+		name        string
+		initialName string
+		newName     string
+		wantName    string
+		wantUpdated bool
 	}{
 		{
 			name:        "update name",
@@ -138,8 +138,8 @@ func TestUser_IsValid(t *testing.T) {
 		wantErr error
 	}{
 		{
-			name: "valid user",
-			user: domain.NewUser("test@example.com", "Test User"),
+			name:    "valid user",
+			user:    domain.NewUser("test@example.com", "Test User"),
 			wantErr: nil,
 		},
 		{

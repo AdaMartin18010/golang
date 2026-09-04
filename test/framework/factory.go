@@ -201,13 +201,13 @@ func NewUserFactory() *UserFactory {
 // User 生成用户数据
 func (f *UserFactory) User() map[string]interface{} {
 	return map[string]interface{}{
-		"id":        f.UUID(),
-		"email":     f.Email(),
-		"phone":     f.Phone(),
-		"name":      f.String(10),
+		"id":         f.UUID(),
+		"email":      f.Email(),
+		"phone":      f.Phone(),
+		"name":       f.String(10),
 		"created_at": f.Date(),
 		"updated_at": f.Date(),
-		"active":    f.Bool(),
+		"active":     f.Bool(),
 	}
 }
 
@@ -226,12 +226,12 @@ func NewOAuth2ClientFactory() *OAuth2ClientFactory {
 // Client 生成 OAuth2 客户端数据
 func (f *OAuth2ClientFactory) Client() map[string]interface{} {
 	return map[string]interface{}{
-		"id":           f.UUID(),
-		"secret":       f.String(32),
+		"id":            f.UUID(),
+		"secret":        f.String(32),
 		"redirect_uris": f.StringSlice(f.Int(1, 5)),
-		"grant_types":  f.StringSlice(f.Int(1, 3)),
-		"scopes":       f.StringSlice(f.Int(1, 5)),
-		"created_at":   f.Date(),
+		"grant_types":   f.StringSlice(f.Int(1, 3)),
+		"scopes":        f.StringSlice(f.Int(1, 5)),
+		"created_at":    f.Date(),
 	}
 }
 

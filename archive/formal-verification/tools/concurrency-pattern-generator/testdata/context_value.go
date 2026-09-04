@@ -5,7 +5,7 @@ import "context"
 type contextKey string
 
 const (
-	userIDKey contextKey = "userID"
+	userIDKey    contextKey = "userID"
 	requestIDKey contextKey = "requestID"
 )
 

@@ -76,7 +76,8 @@ jobs:
           fi
           
           # Create release notes
-          NOTES="## What's Changed
+          NOTES=$(cat <<EOF
+## What's Changed
 
 $CHANGELOG
 
@@ -98,7 +99,9 @@ docker pull ghcr.io/${{ github.repository }}:${VERSION}
 
 ## Checksums
 
-See \`checksums.txt\` for SHA256 checksums of all binaries."
+See \`checksums.txt\` for SHA256 checksums of all binaries.
+EOF
+)
           
           # Write to output (handle multiline)
           echo "NOTES<<EOF" >> $GITHUB_OUTPUT

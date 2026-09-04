@@ -25,7 +25,7 @@ func NewEtcdClient(endpoints []string) (*EtcdClient, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create etcd client: %w", err)
 	}
-	
+
 	return &EtcdClient{client: cli}, nil
 }
 
@@ -41,37 +41,37 @@ func (e *EtcdClient) AcquireLeadership(ctx context.Context, nodeID string, ttl t
 	if err != nil {
 		return false, err
 	}
-	
+
 	// 尝试获取锁 (使用事务)
 	key := "/scheduler/leader"
-	
+
 	txn := e.client.Txn(ctx).
 		If(clientv3.Compare(clientv3.CreateRevision(key), "=", 0)).
 		Then(clientv3.OpPut(key, nodeID, clientv3.WithLease(lease.ID))).
 		Else(clientv3.OpGet(key))
-	
+
 	txnResp, err := txn.Commit()
 	if err != nil {
 		return false, err
 	}
-	
+
 	if txnResp.Succeeded {
 		// 自动续租
 		keepAliveCh, err := e.client.KeepAlive(ctx, lease.ID)
 		if err != nil {
 			return false, err
 		}
-		
+
 		// 启动续租 goroutine
 		go func() {
 			for range keepAliveCh {
 				// 续租成功
 			}
 		}()
-		
+
 		return true, nil
 	}
-	
+
 	return false, nil
 }
 
@@ -89,12 +89,12 @@ func (e *EtcdClient) RegisterWorker(ctx context.Context, worker *scheduler.Worke
 	if err != nil {
 		return err
 	}
-	
+
 	lease, err := e.client.Grant(ctx, 30) // 30秒 TTL
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = e.client.Put(ctx, key, string(data), clientv3.WithLease(lease.ID))
 	return err
 }
@@ -105,7 +105,7 @@ func (e *EtcdClient) GetWorkers(ctx context.Context) ([]scheduler.Worker, error)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var workers []scheduler.Worker
 	for _, kv := range resp.Kvs {
 		var worker scheduler.Worker
@@ -114,7 +114,7 @@ func (e *EtcdClient) GetWorkers(ctx context.Context) ([]scheduler.Worker, error)
 		}
 		workers = append(workers, worker)
 	}
-	
+
 	return workers, nil
 }
 
@@ -125,7 +125,7 @@ func (e *EtcdClient) SaveTask(ctx context.Context, task scheduler.Task) error {
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = e.client.Put(ctx, key, string(data))
 	return err
 }
@@ -136,7 +136,7 @@ func (e *EtcdClient) GetTasks(ctx context.Context, status string, limit int) ([]
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var tasks []scheduler.Task
 	for _, kv := range resp.Kvs {
 		var task scheduler.Task
@@ -145,6 +145,6 @@ func (e *EtcdClient) GetTasks(ctx context.Context, status string, limit int) ([]
 		}
 		tasks = append(tasks, task)
 	}
-	
+
 	return tasks, nil
 }

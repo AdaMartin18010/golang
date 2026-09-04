@@ -83,19 +83,19 @@ func (tc *TestContext) AssertFalse(condition bool, msgAndArgs ...interface{}) {
 
 // DatabaseHelper 数据库测试辅助工具
 type DatabaseHelper struct {
-	DB       *sql.DB
-	Driver   string
-	DSN      string
-	TestDB   string
+	DB         *sql.DB
+	Driver     string
+	DSN        string
+	TestDB     string
 	OriginalDB string
 }
 
 // NewDatabaseHelper 创建数据库辅助工具
 func NewDatabaseHelper(driver, dsn, testDB string) *DatabaseHelper {
 	return &DatabaseHelper{
-		Driver:   driver,
-		DSN:      dsn,
-		TestDB:   testDB,
+		Driver: driver,
+		DSN:    dsn,
+		TestDB: testDB,
 	}
 }
 

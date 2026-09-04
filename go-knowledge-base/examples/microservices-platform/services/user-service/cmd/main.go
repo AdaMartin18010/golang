@@ -23,7 +23,7 @@ func main() {
 
 	// Initialize logger
 	logger := setupLogger(cfg.LogLevel)
-	
+
 	// Initialize database
 	db, err := repository.NewPostgresDB(cfg.DatabaseURL)
 	if err != nil {

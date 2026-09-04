@@ -9,7 +9,7 @@ import (
 func WithTimeout() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -23,7 +23,7 @@ func WithDeadline() error {
 	deadline := time.Now().Add(5 * time.Second)
 	ctx, cancel := context.WithDeadline(context.Background(), deadline)
 	defer cancel()
-	
+
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
