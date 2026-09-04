@@ -62,7 +62,7 @@
 ### Quality Level Summary
 
 | Level | Name | Size | Depth | Target % | Use Case |
-|-------|------|------|-------|----------|----------|
+| ------- | ------ | ------ | ------- | ---------- | ---------- |
 | **S** | Supreme | >15KB | Formal, proven | 15% | Reference, research |
 | **A** | Advanced | >10KB | Deep analysis | 25% | Professional learning |
 | **B** | Basic | >5KB | Solid coverage | 35% | Practical guidance |
@@ -135,7 +135,7 @@ Proof:
 **Visual Requirements**:
 
 | Visualization | Purpose | Required? |
-|--------------|---------|-----------|
+| -------------- | --------- | ----------- |
 | **Concept Map** | Show relationships | Required (1) |
 | **Decision Tree** | Guide choices | Recommended |
 | **Comparison Matrix** | Contrast alternatives | Recommended |
@@ -146,7 +146,7 @@ Proof:
 ### S-Level Examples
 
 | Document | Size | Formal Content | Visuals | Code |
-|----------|------|----------------|---------|------|
+| ---------- | ------ | ---------------- | --------- | ------ |
 | FT-002-Raft-Consensus-Formal.md | 28KB | TLA+ spec, proof sketch | 4 diagrams | Full implementation |
 | LD-001-Go-Memory-Model-Formal.md | 25KB | Happens-Before rules | 5 diagrams | Test cases |
 | EC-007-Circuit-Breaker-Formal.md | 22KB | State machine, invariants | 4 diagrams | Production code |
@@ -196,7 +196,7 @@ Proof:
 ### A-Level Examples
 
 | Document | Size | Depth | Visuals | Code |
-|----------|------|-------|---------|------|
+| ---------- | ------ | ------- | --------- | ------ |
 | EC-125-Retry-Pattern.md | 14KB | Algorithm analysis, backoff strategies | 3 diagrams | Full implementation |
 | LD-003-Go-GC-Algorithm.md | 16KB | Tri-color algorithm, tuning | 3 diagrams | Benchmark code |
 | TS-001-PostgreSQL-Transaction-Internals.md | 18KB | MVCC, isolation levels | 4 diagrams | SQL examples |
@@ -240,7 +240,7 @@ Proof:
 ### B-Level Examples
 
 | Document | Size | Coverage | Visuals | Code |
-|----------|------|----------|---------|------|
+| ---------- | ------ | ---------- | --------- | ------ |
 | 02-Language-Design/02-Language-Features/01-Type-System.md | 8KB | Type system overview | 1 diagram | Basic examples |
 | 04-Technology-Stack/01-Core-Library/04-Context-Package.md | 9KB | Context usage patterns | 2 diagrams | Usage examples |
 | 03-Engineering-CloudNative/01-Methodology/01-Clean-Code.md | 10KB | Clean code principles | 2 diagrams | Code samples |
@@ -285,7 +285,7 @@ Proof:
 ### C-Level Examples
 
 | Document | Size | Purpose |
-|----------|------|---------|
+| ---------- | ------ | --------- |
 | Category READMEs | 3-4KB | Overview of category contents |
 | Quick reference | 2-3KB | Command syntax, quick tips |
 | Placeholder docs | 2-4KB | Reserved for future content |
@@ -320,7 +320,7 @@ Technical Quality (30%):
 ### Quality Indicators
 
 | Indicator | S-Level | A-Level | B-Level | C-Level |
-|-----------|---------|---------|---------|---------|
+| ----------- | --------- | --------- | --------- | --------- |
 | **Size** | >15KB | >10KB | >5KB | >2KB |
 | **Visuals** | 3+ | 2+ | 1+ | 0+ |
 | **Cross-refs** | 5+ | 3+ | 1+ | 0+ |
@@ -376,7 +376,7 @@ visual_check:
 ### Assessment Criteria
 
 | Criteria | Weight | S | A | B | C |
-|----------|--------|---|---|---|---|
+| ---------- | -------- | --- | --- | --- | --- |
 | **Size** | 15% | >15KB | >10KB | >5KB | >2KB |
 | **Formal Content** | 15% | Required | Preferred | Optional | N/A |
 | **Visuals** | 15% | 3+ types | 2+ types | 1+ type | Optional |
@@ -440,7 +440,7 @@ A → S: 2-3 months
 ### Upgrade Triggers
 
 | Trigger | Action | Priority |
-|---------|--------|----------|
+| --------- | -------- | ---------- |
 | High traffic C-level | Upgrade to B | High |
 | Outdated A-level | Refresh content | High |
 | Missing formal content in S-level | Add formal content | Medium |

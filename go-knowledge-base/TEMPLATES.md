@@ -49,7 +49,7 @@ What type of content are you creating?
 ### Template Structure Overview
 
 | Template | Best For | Target Level | Min Size |
-|----------|----------|--------------|----------|
+| ---------- | ---------- | -------------- | ---------- |
 | Theory | Formal concepts, proofs | S | 15KB |
 | Pattern | Design patterns, practices | A | 10KB |
 | Technology | Tools, libraries | A | 10KB |
