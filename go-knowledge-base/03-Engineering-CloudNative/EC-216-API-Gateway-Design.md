@@ -1,4 +1,4 @@
-# EC-090-API-Gateway-Design
+# EC-216-API-Gateway-Design
 
 > **Dimension**: 03-Engineering-CloudNative
 > **Status**: S-Level

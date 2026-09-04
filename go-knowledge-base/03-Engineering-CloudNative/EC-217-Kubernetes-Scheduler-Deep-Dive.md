@@ -1,4 +1,4 @@
-# EC-091-Kubernetes-Scheduler-Deep-Dive
+# EC-217-Kubernetes-Scheduler-Deep-Dive
 
 > **Dimension**: 03-Engineering-CloudNative
 > **Status**: S-Level Academic

@@ -1,4 +1,4 @@
-# EC-010: Graceful Degradation Pattern
+# EC-139: Graceful Degradation Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

@@ -1,4 +1,4 @@
-# LD-003: Go 泛型的形式化语义与类型理论 (Go Generics: Formal Semantics & Type Theory)
+# LD-040: Go 泛型的形式化语义与类型理论 (Go Generics: Formal Semantics & Type Theory)
 
 > **维度**: Language Design
 > **级别**: S (35 KB)

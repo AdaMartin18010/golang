@@ -1,4 +1,4 @@
-# EC-027: Publisher-Subscriber Pattern
+# EC-161: Publisher-Subscriber Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (36 KB)

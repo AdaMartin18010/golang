@@ -1,4 +1,4 @@
-# AD-007: Security Architecture Patterns
+# AD-039: Security Architecture Patterns
 
 > **Dimension**: Application Domains
 > **Level**: S (16+ KB)

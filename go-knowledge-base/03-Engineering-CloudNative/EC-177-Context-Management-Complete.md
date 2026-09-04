@@ -1,4 +1,4 @@
-# EC-043: Context 管理完整指南 (Context Management Complete)
+# EC-177: Context 管理完整指南 (Context Management Complete)
 
 > **维度**: Engineering CloudNative
 > **级别**: S (20 KB)

@@ -1,4 +1,4 @@
-# EC-013: Outbox Pattern
+# EC-145: Outbox Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

@@ -9,6 +9,7 @@ require (
 	entgo.io/ent v0.14.6
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/nats-io/nats.go v1.49.0
+	github.com/yourusername/golang v0.0.0-00010101000000-000000000000
 	go.opentelemetry.io/otel v1.42.0
 	google.golang.org/grpc v1.79.3
 )
@@ -18,6 +19,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/nats-io/nkeys v0.4.12 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect

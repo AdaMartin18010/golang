@@ -1,4 +1,4 @@
-# LD-001: Go 类型系统的形式化语义 (Go Type System: Formal Semantics)
+# LD-038: Go 类型系统的形式化语义 (Go Type System: Formal Semantics)
 
 > **维度**: Language Design
 > **级别**: S (25 KB)

@@ -1,4 +1,4 @@
-# EC-052: Health Endpoint Pattern
+# EC-188: Health Endpoint Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

@@ -1,4 +1,4 @@
-# EC-009: Graceful Shutdown Pattern
+# EC-137: Graceful Shutdown Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

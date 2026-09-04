@@ -1,4 +1,4 @@
-# EC-030: Asynchronous Request-Reply Pattern
+# EC-164: Asynchronous Request-Reply Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (34 KB)

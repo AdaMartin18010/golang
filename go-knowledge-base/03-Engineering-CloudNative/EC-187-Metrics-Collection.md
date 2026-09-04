@@ -1,4 +1,4 @@
-# EC-051: Metrics Collection Pattern
+# EC-187: Metrics Collection Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

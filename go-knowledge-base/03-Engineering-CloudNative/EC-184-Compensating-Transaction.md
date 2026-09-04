@@ -1,4 +1,4 @@
-# EC-048: Compensating Transaction Pattern
+# EC-184: Compensating Transaction Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

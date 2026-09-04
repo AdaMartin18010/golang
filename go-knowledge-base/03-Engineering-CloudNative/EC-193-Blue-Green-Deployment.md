@@ -1,4 +1,4 @@
-# EC-057: Blue-Green Deployment Pattern
+# EC-193: Blue-Green Deployment Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

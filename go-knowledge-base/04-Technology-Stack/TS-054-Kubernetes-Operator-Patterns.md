@@ -1,4 +1,4 @@
-# TS-005: Kubernetes Operator 模式 (K8s Operator Patterns)
+# TS-054: Kubernetes Operator 模式 (K8s Operator Patterns)
 
 > **维度**: Technology Stack
 > **级别**: S (21 KB)

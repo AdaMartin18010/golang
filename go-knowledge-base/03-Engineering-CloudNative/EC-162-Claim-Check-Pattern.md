@@ -1,4 +1,4 @@
-# EC-028: Claim-Check Pattern
+# EC-162: Claim-Check Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (36 KB)

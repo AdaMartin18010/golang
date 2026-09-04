@@ -158,4 +158,19 @@
 | P3 | 双向链接 | 试点页头部链接 102/103 双向可达（1 为 stub 豁免）（§5d） | ✅ |
 | P4 | 外围治理 | examples/view/docs/pknowledge 合规 | ✅ |
 | P5 | 持续机制 | 首期月审记录 + CI 对齐 | ✅ |
-| P6 | 终验 | 死链 0、索引一致、vet 抽样过、分阶段提交 | ⬜ |
+| P6 | 终验 | 死链 0、索引一致、vet 抽样过、分阶段提交 | ✅ |
+
+## 5h. P6 终验结果（2026-09-05）
+
+- **死链复扫**：`python scripts/tmp/rescan_deadlinks.py` → `TOTAL_DEAD = 0`。
+- **六件套复验**：`python scripts/tmp/verify_sixpiece.py` → `OK=30 MISS=0 / 30`。
+- **索引一致性复核**（修正口径后重跑）：`scripts/tmp/diff_map_actual.py` 以 basename 集合比对五维目录实际 md 与 `indices/complete-map.md` 登记——641 篇编号文档双向一致，唯一差异为各维度 `README.md`（目录导览，非编号文档，不入清单）。首轮报告 LD-035/036/037「未登记」为脚本正则不含点号的假阳性，该三页实际已登记于 complete-map 第 222–224 行。
+- **vet 抽样**：`cd examples/go127-features && GOWORK=off go vet ./...` 通过。
+- **提交策略**：全程不 commit/push，由用户 IDE 惯例处理（提交惯例 `update`）。
+
+**遗留事项**（移交下期，详见月审 §8）：
+1. 24 组片段级代码块豁免（示意类型/外部依赖，清单 `scripts/tmp/goblock_merge_results.json`）。
+2. FT-009 为 stub，canonical 待定（双向链接 102/103 的唯一豁免）。
+3. 98 篇页内 H1 编号 ≠ 文件名编号（§4b 重编号残留，P0 行动项，`scripts/tmp/id_consistency_check.py` 可复扫）。
+4. GC × cgo 交叉边界专页缺失；examples/go.sum 缺 grpc/nats/chi 校验条目；CI 5 项缺口（月审 §7）。
+5. `.kimi` 可选扩展集（表征空间/思维表征/决策树/效应系统 4 页）已 Go 化但默认未启用。

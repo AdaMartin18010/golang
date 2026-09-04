@@ -1,4 +1,4 @@
-# TS-002: Redis 8.2 多线程 I/O 与新特性 (Redis 8.2 Multithreaded IO & New Features)
+# TS-048: Redis 8.2 多线程 I/O 与新特性 (Redis 8.2 Multithreaded IO & New Features)
 
 > **维度**: Technology Stack
 > **级别**: S (22 KB)

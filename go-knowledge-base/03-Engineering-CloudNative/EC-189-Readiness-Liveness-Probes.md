@@ -1,4 +1,4 @@
-# EC-053: Readiness and Liveness Probes Pattern
+# EC-189: Readiness and Liveness Probes Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

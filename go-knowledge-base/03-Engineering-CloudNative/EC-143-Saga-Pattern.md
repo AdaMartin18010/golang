@@ -1,4 +1,4 @@
-# EC-012: Saga Pattern
+# EC-143: Saga Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

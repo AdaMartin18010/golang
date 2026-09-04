@@ -1,4 +1,4 @@
-# EC-055: Feature Flags Pattern
+# EC-191: Feature Flags Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

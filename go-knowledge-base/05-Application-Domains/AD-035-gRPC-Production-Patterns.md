@@ -1,4 +1,4 @@
-# AD-003: gRPC Production Patterns
+# AD-035: gRPC Production Patterns
 
 > **维度**: Application Domains
 > **级别**: S (55 KB)
@@ -9,7 +9,7 @@
 > **定理链**: RPC Request → Channel Reuse + Timeout + Backpressure → Bounded Latency, No Cascade Failure / Invariant: fail-fast with circuit isolation
 ## Table of Contents
 
-- [AD-003: gRPC Production Patterns](#ad-003-grpc-production-patterns)
+- [AD-035: gRPC Production Patterns](#ad-035-grpc-production-patterns)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [HTTP/3 and QUIC](#http3-and-quic)
@@ -1973,7 +1973,7 @@ mindmap
 
 ## Document Metadata
 
-- **Document ID**: AD-003
+- **Document ID**: AD-035
 - **Category**: Application Domains
 - **Subcategory**: gRPC Production Patterns
 - **Last Updated**: 2026-04-03

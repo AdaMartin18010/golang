@@ -1,4 +1,4 @@
-# AD-004: 事件驱动架构模式 (Event-Driven Architecture Patterns)
+# AD-036: 事件驱动架构模式 (Event-Driven Architecture Patterns)
 
 > **维度**: Application Domains
 > **级别**: A (15 KB)

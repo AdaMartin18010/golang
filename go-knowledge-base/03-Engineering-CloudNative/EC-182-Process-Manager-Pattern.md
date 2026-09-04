@@ -1,4 +1,4 @@
-# EC-046: Process Manager Pattern (Saga Orchestrator)
+# EC-182: Process Manager Pattern (Saga Orchestrator)
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

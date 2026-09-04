@@ -1,4 +1,4 @@
-# EC-087-Serverless-Computing-2026
+# EC-213-Serverless-Computing-2026
 
 > **Dimension**: 03-Engineering-CloudNative
 > **Status**: S-Level Academic

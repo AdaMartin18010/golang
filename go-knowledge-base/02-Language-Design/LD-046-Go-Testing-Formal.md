@@ -1,4 +1,4 @@
-# LD-007: Go 测试的形式化理论与实践 (Go Testing: Formal Theory & Practice)
+# LD-046: Go 测试的形式化理论与实践 (Go Testing: Formal Theory & Practice)
 
 > **维度**: Language Design
 > **级别**: S (29 KB)

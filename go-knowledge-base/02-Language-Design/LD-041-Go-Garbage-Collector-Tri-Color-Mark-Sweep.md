@@ -1,4 +1,4 @@
-# LD-003: Go 三色标记-清除垃圾回收器详解 (Go Tri-Color Mark-Sweep GC Deep Dive)
+# LD-041: Go 三色标记-清除垃圾回收器详解 (Go Tri-Color Mark-Sweep GC Deep Dive)
 
 > **维度**: Language Design
 > **级别**: S (21 KB)

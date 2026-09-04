@@ -1,4 +1,4 @@
-# LD-006: Go 错误处理的形式化理论与实践 (Go Error Handling: Formal Theory & Practice)
+# LD-045: Go 错误处理的形式化理论与实践 (Go Error Handling: Formal Theory & Practice)
 
 > **维度**: Language Design
 > **级别**: S (28 KB)

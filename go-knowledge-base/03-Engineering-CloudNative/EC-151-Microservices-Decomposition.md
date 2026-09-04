@@ -1,4 +1,4 @@
-# EC-016: Microservices Decomposition Patterns
+# EC-151: Microservices Decomposition Patterns
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (53 KB)

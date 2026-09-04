@@ -1,4 +1,4 @@
-# LD-011: Go 汇编内部原理 (Go Assembly Internals)
+# LD-051: Go 汇编内部原理 (Go Assembly Internals)
 
 > **维度**: Language Design
 > **级别**: S (20 KB)

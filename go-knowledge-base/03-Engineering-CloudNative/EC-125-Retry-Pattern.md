@@ -1,4 +1,4 @@
-# EC-002: Retry Pattern
+# EC-125: Retry Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

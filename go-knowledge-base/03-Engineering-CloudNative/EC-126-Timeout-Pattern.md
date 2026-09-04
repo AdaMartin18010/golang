@@ -1,4 +1,4 @@
-# EC-003: Timeout Pattern
+# EC-126: Timeout Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

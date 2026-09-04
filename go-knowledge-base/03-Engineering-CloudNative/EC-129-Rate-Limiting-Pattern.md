@@ -1,4 +1,4 @@
-# EC-005: Rate Limiting Pattern
+# EC-129: Rate Limiting Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

@@ -1,4 +1,4 @@
-# EC-021: Sidecar Pattern
+# EC-157: Sidecar Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (37 KB)

@@ -1,4 +1,4 @@
-# EC-036: Cloud-Native Observability Stack - 2025-2026 Edition
+# EC-170: Cloud-Native Observability Stack - 2025-2026 Edition
 
 > **Status**: Production-Ready | **Last Updated**: April 2026
 > **Estimated Read Time**: 50 minutes | **Prerequisites**: EC-080 (Observability Production)

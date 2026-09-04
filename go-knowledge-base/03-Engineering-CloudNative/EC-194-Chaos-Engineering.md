@@ -1,4 +1,4 @@
-# EC-060: Chaos Engineering Pattern
+# EC-194: Chaos Engineering Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

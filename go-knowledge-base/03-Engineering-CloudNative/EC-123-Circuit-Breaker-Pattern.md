@@ -1,4 +1,4 @@
-# EC-001: Circuit Breaker Pattern
+# EC-123: Circuit Breaker Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

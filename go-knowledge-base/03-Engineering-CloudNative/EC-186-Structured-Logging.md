@@ -1,4 +1,4 @@
-# EC-050: Structured Logging Pattern
+# EC-186: Structured Logging Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

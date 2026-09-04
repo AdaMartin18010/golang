@@ -1,4 +1,4 @@
-# TS-006: Kubernetes 网络的形式化模型 (Kubernetes Networking: Formal Model)
+# TS-055: Kubernetes 网络的形式化模型 (Kubernetes Networking: Formal Model)
 
 > **维度**: Technology Stack
 > **级别**: S (17 KB)

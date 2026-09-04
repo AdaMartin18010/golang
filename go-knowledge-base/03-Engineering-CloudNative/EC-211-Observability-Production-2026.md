@@ -1,4 +1,4 @@
-# EC-080: Observability in Production - 2026 Edition
+# EC-211: Observability in Production - 2026 Edition
 
 > **Status**: Production-Ready | **Last Updated**: April 2026
 > **Estimated Read Time**: 45 minutes | **Prerequisites**: EC-075 (Monitoring Fundamentals)

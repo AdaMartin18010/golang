@@ -1,4 +1,4 @@
-# LD-008: Go Context 的形式化语义与取消传播 (Go Context: Formal Semantics & Cancellation Propagation)
+# LD-047: Go Context 的形式化语义与取消传播 (Go Context: Formal Semantics & Cancellation Propagation)
 
 > **维度**: Language Design
 > **级别**: S (36 KB)

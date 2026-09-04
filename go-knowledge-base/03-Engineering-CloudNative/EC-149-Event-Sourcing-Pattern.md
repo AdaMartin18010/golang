@@ -1,4 +1,4 @@
-# EC-015: Event Sourcing Pattern
+# EC-149: Event Sourcing Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

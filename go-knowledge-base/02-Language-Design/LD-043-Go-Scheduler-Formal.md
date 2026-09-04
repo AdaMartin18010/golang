@@ -1,4 +1,4 @@
-# LD-004: Go 调度器的形式化理论 (Go Scheduler: Formal Theory)
+# LD-043: Go 调度器的形式化理论 (Go Scheduler: Formal Theory)
 
 > **维度**: Language Design
 > **级别**: S (21 KB)

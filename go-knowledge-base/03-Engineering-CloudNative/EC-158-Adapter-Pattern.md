@@ -1,4 +1,4 @@
-# EC-023: Adapter Pattern
+# EC-158: Adapter Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (34 KB)

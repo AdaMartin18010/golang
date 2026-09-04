@@ -1,4 +1,4 @@
-# EC-008: Health Check Patterns
+# EC-135: Health Check Patterns
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

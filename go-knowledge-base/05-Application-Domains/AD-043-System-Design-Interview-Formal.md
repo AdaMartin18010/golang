@@ -1,4 +1,4 @@
-# AD-010: 系统设计面试的形式化理论与实践 (System Design Interview: Formal Theory & Practice)
+# AD-043: 系统设计面试的形式化理论与实践 (System Design Interview: Formal Theory & Practice)
 
 > **维度**: Application Domains
 > **级别**: S (20 KB)

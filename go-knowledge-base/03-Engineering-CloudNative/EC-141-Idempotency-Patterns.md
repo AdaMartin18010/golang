@@ -1,4 +1,4 @@
-# EC-011: Idempotency Patterns
+# EC-141: Idempotency Patterns
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

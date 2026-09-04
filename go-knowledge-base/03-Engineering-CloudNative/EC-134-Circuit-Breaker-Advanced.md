@@ -1,4 +1,4 @@
-# EC-008: 熔断器高级实现 (Circuit Breaker Advanced)
+# EC-134: 熔断器高级实现 (Circuit Breaker Advanced)
 
 > **维度**: Engineering CloudNative
 > **级别**: S (21 KB)

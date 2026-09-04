@@ -1,4 +1,4 @@
-# TS-001: PostgreSQL 事务机制的形式化分析 (PostgreSQL Transactions: Formal Analysis)
+# TS-047: PostgreSQL 事务机制的形式化分析 (PostgreSQL Transactions: Formal Analysis)
 
 > **维度**: Technology Stack
 > **级别**: S (23 KB)

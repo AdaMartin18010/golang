@@ -1,4 +1,4 @@
-# TS-013: Prometheus 可观测性形式化 (Prometheus Observability: Formal Model)
+# TS-059: Prometheus 可观测性形式化 (Prometheus Observability: Formal Model)
 
 > **维度**: Technology Stack
 > **级别**: S (20 KB)

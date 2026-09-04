@@ -1,4 +1,4 @@
-# EC-054: Distributed Configuration Pattern
+# EC-190: Distributed Configuration Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

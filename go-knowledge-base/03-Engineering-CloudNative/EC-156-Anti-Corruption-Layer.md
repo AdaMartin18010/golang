@@ -1,4 +1,4 @@
-# EC-020: Anti-Corruption Layer Pattern
+# EC-156: Anti-Corruption Layer Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (44 KB)

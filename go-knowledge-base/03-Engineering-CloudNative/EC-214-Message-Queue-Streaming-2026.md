@@ -1,4 +1,4 @@
-# EC-088-Message-Queue-Streaming-2026
+# EC-214-Message-Queue-Streaming-2026
 
 > **Dimension**: 03-Engineering-CloudNative
 > **Status**: S-Level

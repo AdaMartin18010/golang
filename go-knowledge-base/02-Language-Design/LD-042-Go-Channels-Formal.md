@@ -1,4 +1,4 @@
-# LD-004: Go Channel 的形式化语义与并发理论 (Go Channels: Formal Semantics & Concurrency Theory)
+# LD-042: Go Channel 的形式化语义与并发理论 (Go Channels: Formal Semantics & Concurrency Theory)
 
 > **维度**: Language Design
 > **级别**: S (32 KB)

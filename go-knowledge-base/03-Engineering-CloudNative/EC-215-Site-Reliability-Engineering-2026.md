@@ -1,4 +1,4 @@
-# EC-089-Site-Reliability-Engineering-2026
+# EC-215-Site-Reliability-Engineering-2026
 
 > **Dimension**: 03-Engineering-CloudNative
 > **Status**: S-Level Academic

@@ -1,4 +1,4 @@
-# EC-017: API Gateway Patterns
+# EC-152: API Gateway Patterns
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (52 KB)

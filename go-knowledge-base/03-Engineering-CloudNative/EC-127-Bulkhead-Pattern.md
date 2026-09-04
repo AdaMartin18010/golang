@@ -1,4 +1,4 @@
-# EC-004: Bulkhead Pattern
+# EC-127: Bulkhead Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

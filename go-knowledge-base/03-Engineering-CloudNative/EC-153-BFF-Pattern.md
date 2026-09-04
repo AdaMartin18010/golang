@@ -1,4 +1,4 @@
-# EC-018: Backend-for-Frontend (BFF) Pattern
+# EC-153: Backend-for-Frontend (BFF) Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (29 KB)

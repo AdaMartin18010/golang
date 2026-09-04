@@ -1,4 +1,4 @@
-# EC-007: 优雅关闭完整实现 (Graceful Shutdown Complete)
+# EC-132: 优雅关闭完整实现 (Graceful Shutdown Complete)
 
 > **维度**: Engineering CloudNative
 > **级别**: S (16 KB)

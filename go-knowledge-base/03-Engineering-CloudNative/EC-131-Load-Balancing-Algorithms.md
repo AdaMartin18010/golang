@@ -1,4 +1,4 @@
-# EC-006: Load Balancing Algorithms
+# EC-131: Load Balancing Algorithms
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

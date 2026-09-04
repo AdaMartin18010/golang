@@ -1,4 +1,4 @@
-# EC-056: Canary Deployment Pattern
+# EC-192: Canary Deployment Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

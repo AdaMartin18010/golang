@@ -201,13 +201,13 @@ jobs:
                   <div class="module-card">
                       <div class="module-title">🚀 进阶专题</div>
                       <div class="module-desc">深入专题与实战</div>
-                      <a href="docs/10-进阶专题/">查看文档 →</a>
+                      <a href="docs/go126-comprehensive-guide/">查看文档 →</a>
                   </div>
               </div>
               
               <div style="margin-top: 50px; text-align: center; color: #666;">
-                  <p>💡 <a href="docs/LEARNING_PATHS.md">学习路径</a> | 
-                     📖 <a href="docs/INDEX.md">完整索引</a> | 
+                  <p>💡 <a href="go-knowledge-base/learning-paths/go-specialist.md">学习路径</a> | 
+                     📖 <a href="go-knowledge-base/indices/complete-index.md">完整索引</a> | 
                      📋 <a href="AGENTS.md">文档规范</a></p>
                   <p style="margin-top: 20px;">
                       <a href="https://github.com/AdaMartin18010/golang">⭐ GitHub仓库</a>

@@ -1,8 +1,8 @@
 # FT-009-State-Machine-Replication
 
 > **维度**: Formal Theory | **级别**: B (stub)
-> **状态**: 占位（2026-09 合规审计）— 原自动生成的占位内容不符合 AGENTS.md §3 质量标准，已移除。
+> **状态**: canonical 归属（2026-09 合规审计 Q2b）— 本页为纯 stub，仅保留指向权威页的链接。
 
 **主题**: 状态机复制（SMR）。
 
-**权威页（canonical）**: 暂无 — 主题待编写。参见 [complete-map](../indices/complete-map.md)。
+**权威页（canonical）**: [FT-032: State Machine Replication - Formal Theory](FT-032-State-Machine-Replication-Formal.md)。

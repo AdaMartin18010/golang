@@ -1,4 +1,4 @@
-# TS-003: Kafka 内部架构与副本机制 (Kafka Internals & Replication)
+# TS-052: Kafka 内部架构与副本机制 (Kafka Internals & Replication)
 
 > **维度**: Technology Stack
 > **级别**: A (15 KB)

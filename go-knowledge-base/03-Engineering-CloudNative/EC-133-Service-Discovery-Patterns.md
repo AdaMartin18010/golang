@@ -1,4 +1,4 @@
-# EC-007: Service Discovery Patterns
+# EC-133: Service Discovery Patterns
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

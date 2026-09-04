@@ -1,4 +1,4 @@
-# LD-012: Go 逃逸分析与栈分配优化 (Go Escape Analysis & Stack Allocation Optimization)
+# LD-052: Go 逃逸分析与栈分配优化 (Go Escape Analysis & Stack Allocation Optimization)
 
 > **维度**: Language Design
 > **级别**: S (31 KB)

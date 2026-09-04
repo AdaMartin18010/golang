@@ -1,4 +1,4 @@
-# LD-010: Go 泛型深度解析 (Go Generics Deep Dive)
+# LD-050: Go 泛型深度解析 (Go Generics Deep Dive)
 
 > **维度**: Language Design
 > **级别**: S (28 KB)

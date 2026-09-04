@@ -1,4 +1,4 @@
-# TS-011: Kafka 内部机制深度解析 (Apache Kafka Internals)
+# TS-058: Kafka 内部机制深度解析 (Apache Kafka Internals)
 
 > **维度**: Technology Stack
 > **级别**: S (18 KB)

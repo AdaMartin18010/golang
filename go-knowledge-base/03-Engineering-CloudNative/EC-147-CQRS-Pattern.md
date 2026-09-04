@@ -1,4 +1,4 @@
-# EC-014: CQRS Pattern
+# EC-147: CQRS Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (18+ KB)

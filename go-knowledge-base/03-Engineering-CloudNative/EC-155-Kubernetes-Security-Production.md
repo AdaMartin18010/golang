@@ -1,4 +1,4 @@
-# EC-020: Kubernetes Security in Production (2025-2026 Edition)
+# EC-155: Kubernetes Security in Production (2025-2026 Edition)
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (87 KB)
@@ -10,7 +10,7 @@
 
 ## Table of Contents
 
-- [EC-020: Kubernetes Security in Production (2025-2026 Edition)](#ec-020-kubernetes-security-in-production-2025-2026-edition)
+- [EC-155: Kubernetes Security in Production (2025-2026 Edition)](#ec-155-kubernetes-security-in-production-2025-2026-edition)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
     - [Security Threat Model](#security-threat-model)

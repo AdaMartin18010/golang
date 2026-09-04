@@ -1,4 +1,4 @@
-# LD-002: Go 编译器架构与 SSA 形式 (Go Compiler Architecture & SSA)
+# LD-039: Go 编译器架构与 SSA 形式 (Go Compiler Architecture & SSA)
 
 > **维度**: Language Design
 > **级别**: S (18 KB)

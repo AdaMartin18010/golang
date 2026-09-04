@@ -1,4 +1,4 @@
-# EC-049: Distributed Tracing Pattern
+# EC-185: Distributed Tracing Pattern
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)

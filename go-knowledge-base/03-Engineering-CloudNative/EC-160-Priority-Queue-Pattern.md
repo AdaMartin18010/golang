@@ -1,4 +1,4 @@
-# EC-025: Priority Queue Pattern
+# EC-160: Priority Queue Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (32 KB)

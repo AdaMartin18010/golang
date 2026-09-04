@@ -1,4 +1,4 @@
-# EC-024: Scatter-Gather Pattern
+# EC-159: Scatter-Gather Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (34 KB)

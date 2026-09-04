@@ -1,4 +1,4 @@
-# EC-042: 任务调度器核心架构 (Task Scheduler Core Architecture)
+# EC-176: 任务调度器核心架构 (Task Scheduler Core Architecture)
 
 > **维度**: Engineering CloudNative
 > **级别**: S (21 KB)

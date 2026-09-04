@@ -1,4 +1,4 @@
-# TS-003: Redis 数据结构的代数与复杂度 (Redis Data Structures: Algebra & Complexity)
+# TS-051: Redis 数据结构的代数与复杂度 (Redis Data Structures: Algebra & Complexity)
 
 > **维度**: Technology Stack
 > **级别**: A (16 KB)

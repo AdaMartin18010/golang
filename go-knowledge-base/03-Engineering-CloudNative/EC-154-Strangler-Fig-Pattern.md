@@ -1,4 +1,4 @@
-# EC-019: Strangler Fig Pattern
+# EC-154: Strangler Fig Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (38 KB)

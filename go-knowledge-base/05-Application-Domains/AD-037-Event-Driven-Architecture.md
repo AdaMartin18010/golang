@@ -1,4 +1,4 @@
-# AD-006: Event-Driven Architecture Design
+# AD-037: Event-Driven Architecture Design
 
 > **维度**: Application Domains
 > **级别**: S (62 KB)

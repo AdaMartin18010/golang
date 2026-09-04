@@ -1,4 +1,4 @@
-# EC-001: 分布式系统基础 (Distributed Systems Fundamentals)
+# EC-124: 分布式系统基础 (Distributed Systems Fundamentals)
 
 > **维度**: Engineering-CloudNative
 > **级别**: S (59 KB)

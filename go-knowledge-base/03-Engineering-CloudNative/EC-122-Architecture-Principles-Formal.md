@@ -1,4 +1,4 @@
-# EC-001: 云原生架构原则的形式化 (Cloud Native Architecture: Formal Principles)
+# EC-122: 云原生架构原则的形式化 (Cloud Native Architecture: Formal Principles)
 
 > **维度**: Engineering-CloudNative
 > **级别**: S (35 KB)

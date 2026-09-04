@@ -1,4 +1,4 @@
-# TS-006: Redis 数据结构深度解析 (Redis Data Structures Deep Dive)
+# TS-056: Redis 数据结构深度解析 (Redis Data Structures Deep Dive)
 
 > **维度**: Technology Stack
 > **级别**: S (23 KB)

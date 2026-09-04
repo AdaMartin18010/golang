@@ -1,4 +1,4 @@
-# EC-029: Sequential Convoy Pattern
+# EC-163: Sequential Convoy Pattern
 
 > **维度**: Engineering & CloudNative
 > **级别**: S (39 KB)

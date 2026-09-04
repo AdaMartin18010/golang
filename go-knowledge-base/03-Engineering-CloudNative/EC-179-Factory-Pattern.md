@@ -1,4 +1,4 @@
-# EC-044: Factory Pattern (工厂模式)
+# EC-179: Factory Pattern (工厂模式)
 
 > **维度**: Engineering-CloudNative
 > **级别**: S (36 KB)

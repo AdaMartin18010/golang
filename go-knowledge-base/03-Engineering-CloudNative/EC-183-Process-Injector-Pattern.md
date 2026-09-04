@@ -1,4 +1,4 @@
-# EC-047: Process Injector Pattern (Sidecar & DaemonSet)
+# EC-183: Process Injector Pattern (Sidecar & DaemonSet)
 
 > **Dimension**: Engineering-CloudNative
 > **Level**: S (>15KB)
