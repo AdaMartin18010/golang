@@ -10,7 +10,7 @@
 ## 2. 目录职责
 
 | 目录 | 职责 | 权威来源？ |
-|---|---|---|
+| --- | --- | --- |
 | `go-knowledge-base/01..05-*` | 权威概念层（五维：Formal-Theory / Language-Design / Engineering-CloudNative / Technology-Stack / Application-Domains），LD/FT/EC/TS/AD 编号 | ✅ 唯一权威层 |
 | `go-knowledge-base/indices/` | 多维索引（by-date / by-topic / complete-index 等） | ❌ 新增权威页必须同步登记 |
 | `go-knowledge-base/learning-paths/` | 学习路径 | ❌ 引用权威页 |

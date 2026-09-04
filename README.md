@@ -15,10 +15,12 @@
 
 | 文档 | 说明 |
 | ------ | ------ |
-| `GO-126-COMPREHENSIVE-TECHNICAL-ANALYSIS-2026.md` | 全面技术分析 (14KB) |
-| `GO-126-SUSTAINABLE-ROADMAP-2026.md` | 持续跟踪路线图 (9KB) |
-| `PERSONAL-KNOWLEDGE-BASE-SETUP.md` | 知识库配置指南 |
-| `PERSONAL-LEARNING-PATH.md` | 12个月学习路径 |
+| [`AGENTS.md`](AGENTS.md) | 项目协作约定（权威入口：结构/规范/质量门/红线） |
+| [`go-knowledge-base/indices/`](go-knowledge-base/indices/) | 知识库多维索引（by-date / by-topic / complete-index） |
+| [`docs/tracking/content-compliance-audit-2026-09.md`](docs/tracking/content-compliance-audit-2026-09.md) | 内容合规审计基线与阶段验收 |
+| [`.kimi/templates/`](.kimi/templates/) | 协作治理模板（要求/月度审查/季度审计） |
+
+> 历史项目状态/计划文档（2026 年中快照）已归档至 [`archive/root-docs-2026/`](archive/root-docs-2026/)。
 
 ### 个人知识库
 
