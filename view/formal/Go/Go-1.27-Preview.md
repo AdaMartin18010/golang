@@ -3,6 +3,19 @@
 > **版本**: 2026.04.01 | **预测基准**: Go 1.26.1 | **置信度**: 中-高
 > **关联**: [Go 1.26.1 分析](./Go-1.26.1-Comprehensive.md)
 
+> **📋 预测复盘（2026-08，Go 1.27.1 已发布）**：
+> | 预测 | 结论 |
+> |------|------|
+> | 泛型方法（85%，1.27-1.28） | ✅ **命中**——1.27 正式落地，预测语法与实际一致（proposal #77273），见 [Go-1.27-Release.md](./Go-1.27-Release.md) §1.1 与 [LD-037](../../go-knowledge-base/02-Language-Design/LD-037-Go-1.27-Generic-Methods.md) |
+> | json/v2 GA | ✅ **命中**——1.27 GA，且 v1 改由 v2 实现，见 [go127-json-v2-migration.md](../../docs/go127-json-v2-migration.md) |
+> | goroutineleak 转正 | ✅ **命中**——1.27 GA（/debug/pprof/goroutineleak） |
+> | container-aware GOMAXPROCS | ✅ **命中**——1.27 默认开启 |
+> | Green Tea GC 1.27 finalize | ❌ **未命中**——1.27 仍为 GOEXPERIMENT=greenteagc 实验，nogreenteagc 开关仍在（LD-036 已修正） |
+> | 结构化并发（70%，1.28-1.29） | ⏳ 未进 1.27，待 1.28 验证 |
+> | 轻量级线程 / 改进错误处理 | ⏳ 未进 1.27 |
+> 
+> 本文为历史预测文档，保留原样作为复盘基线；1.27 事实以 [Go-1.27-Release.md](./Go-1.27-Release.md) 为准。
+
 ---
 
 ## 目录

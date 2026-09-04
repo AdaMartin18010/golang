@@ -8,6 +8,8 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+
+	"task-scheduler/internal/scheduler"
 )
 
 // PostgresClient PostgreSQL 客户端
@@ -66,7 +68,7 @@ func (p *PostgresClient) InitSchema(ctx context.Context) error {
 }
 
 // SaveTask 保存任务
-func (p *PostgresClient) SaveTask(ctx context.Context, task Task) error {
+func (p *PostgresClient) SaveTask(ctx context.Context, task scheduler.Task) error {
 	payload, err := json.Marshal(task.Payload)
 	if err != nil {
 		return err
@@ -87,7 +89,7 @@ func (p *PostgresClient) SaveTask(ctx context.Context, task Task) error {
 }
 
 // GetTasks 获取待执行任务
-func (p *PostgresClient) GetTasks(ctx context.Context, status string, limit int) ([]Task, error) {
+func (p *PostgresClient) GetTasks(ctx context.Context, status string, limit int) ([]scheduler.Task, error) {
 	query := `
 		SELECT id, type, payload, priority, scheduled_at
 		FROM tasks
@@ -102,9 +104,9 @@ func (p *PostgresClient) GetTasks(ctx context.Context, status string, limit int)
 	}
 	defer rows.Close()
 
-	var tasks []Task
+	var tasks []scheduler.Task
 	for rows.Next() {
-		var task Task
+		var task scheduler.Task
 		var payload []byte
 		err := rows.Scan(&task.ID, &task.Type, &payload, &task.Priority, &task.Scheduled)
 		if err != nil {
@@ -139,10 +141,10 @@ func (p *PostgresClient) ReleaseLeadership(ctx context.Context, nodeID string) e
 	return nil
 }
 
-func (p *PostgresClient) RegisterWorker(ctx context.Context, worker *Worker) error {
+func (p *PostgresClient) RegisterWorker(ctx context.Context, worker *scheduler.Worker) error {
 	return nil
 }
 
-func (p *PostgresClient) GetWorkers(ctx context.Context) ([]Worker, error) {
+func (p *PostgresClient) GetWorkers(ctx context.Context) ([]scheduler.Worker, error) {
 	return nil, nil
 }

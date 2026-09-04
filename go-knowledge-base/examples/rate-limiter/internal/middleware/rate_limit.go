@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"net/http"
-	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gorilla/mux"

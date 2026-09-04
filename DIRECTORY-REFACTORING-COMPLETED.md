@@ -22,7 +22,7 @@
 ### ✅ Phase 2: 合并重复的安全包
 
 | 原位置 | 新位置 | 操作 |
-|--------|--------|------|
+| -------- | -------- | ------ |
 | pkg/auth/jwt | pkg/security/jwt | 删除（保留 security 版本） |
 | pkg/auth/oauth2 | pkg/security/oauth2 | 删除（保留 security 版本） |
 | pkg/rbac | pkg/security/rbac | 合并测试文件 |
@@ -57,7 +57,7 @@
 ### ✅ Phase 5: 重组 internal/ 目录
 
 | 原目录 | 新目录 | 操作 |
-|--------|--------|------|
+| -------- | -------- | ------ |
 | internal/application | internal/app | 重命名 |
 | internal/infrastructure | internal/infra | 重命名 |
 | internal/security | - | 删除（已移到 pkg） |
@@ -88,7 +88,7 @@ go vet ./...
 ### 目录统计
 
 | 目录 | 之前 | 之后 | 改善 |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | pkg/utils | 47 | 5 | -89% |
 | pkg 顶级包 | 40+ | 35 | -12% |
 | internal 子目录 | 9 | 6 | -33% |

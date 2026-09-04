@@ -1,7 +1,7 @@
 # Changelog
 
-> **Version**: 2.0
-> **Last Updated**: 2026-04-02
+> **Version**: 2.2.0
+> **Last Updated**: 2026-09-04
 > **Scope**: Go Knowledge Base Version History
 > **Format**: Keep a Changelog (<https://keepachangelog.com/>)
 
@@ -71,6 +71,58 @@ Timeline of Major Releases:
 ---
 
 ## Version History
+
+### [2.2.0] - 2026-09-04
+
+**Status**: 🎯 Current
+**Codename**: "Go 1.27 Alignment"
+**Trigger**: Go 1.27 / 1.27.1 发布（2026-08），全仓库工具链与内容对齐
+
+#### Overview
+
+Go 工具链升级至 1.27.1。全部 39 个 go.mod 升至 `go 1.27`；CI workflows 与 Dockerfile 对齐 1.27.x；新增 Go 1.27 文档体系与可运行示例；对 1.27-Preview 的预测完成复盘。
+
+#### Added
+
+- `docs/01-Go-1.27完整知识体系-2026.md` — Go 1.27 完整知识体系（629 行）
+- `view/formal/Go/Go-1.27-Release.md` — 1.27 发布形式化分析（L5，泛型方法 BNF/类型规则）
+- `go-knowledge-base/02-Language-Design/03-Evolution/07-Go126-to-Go127.md` — 1.26→1.27 演进史
+- `go-knowledge-base/02-Language-Design/LD-037-Go-1.27-Generic-Methods.md` — 泛型方法专深文档
+- `docs/go127-json-v2-migration.md` — json/v2 迁移指南
+- `examples/go127-features/` — 1.27 特性可运行示例（泛型方法、uuid、json/v2、synctest 等，build/vet/test/run 全部通过）
+- `docs/tracking/go-releases.md` — 自动跟踪报告确认 go1.27.1
+
+#### Changed
+
+- 39 个 `go.mod`：`go 1.26` → `go 1.27`
+- `.github/workflows/`：GO_VERSION 1.26→1.27，矩阵 1.26.x→1.27.x，go-fix.yml 钉版 1.26.2→1.27.1
+- `deployments/docker/Dockerfile`：golang:1.26.2-alpine → golang:1.27.1-alpine
+- `go.work`：纳入 examples/go127-features
+- "当前版本"声明全量更新至 1.27.1（README、VERSION-UPDATE-SUMMARY、季度审计、FINAL-COMPLETION-REPORT、DEPENDENCY_VERSIONS_ANALYSIS 等）
+- LD-036 Green Tea GC 预测修正：1.27 未移除 nogreenteagc（仍实验）
+- examples/experimental：goroutineleak 标注为 1.27 GA
+- go126-security-advisory 增补 1.27.1 supersede 说明
+- ROADMAP.md 版本矩阵修正（原误写 Go 1.24）
+- Feature-Interactions "1.26.1 不支持泛型方法"补注 1.27 已落地
+- Go-1.27-Preview.md 增加预测复盘块（命中 4 项 / 未命中 1 项 / 待验 2 项）
+
+#### Fixed
+
+- `track_go_releases.py`：go.dev/dl JSON 无 `date` 字段导致 KeyError
+- `pkg/observability`：移除指向不存在模块的 stale replace（`../sampling`），go.sum 重建
+- `examples/web-crawler`：main_optimized.go 加 `//go:build ignore` 解决 URL/main 重复声明
+- `examples/modern-features/01-generic-type-alias`：匿名泛型函数字面量（非法）改为具名泛型函数
+- `examples/go127-features`：uuid API 误用（`UUID.Version()` 不存在，版本号取 `u[6]>>4`）、`jsonv2.AllowDuplicateNames` → `jsontext.AllowDuplicateNames`
+
+#### 预测复盘（v2.1 计划 "Complete Go 1.27 preview coverage"）
+
+| 预测 | 结论 |
+|------|------|
+| 泛型方法 / json/v2 GA / goroutineleak / 容器 GOMAXPROCS | ✅ 命中 |
+| Green Tea GC 1.27 finalize | ❌ 未命中（仍实验） |
+| 结构化并发、轻量级线程、改进错误处理 | ⏳ 未进 1.27，转入 1.28 追踪 |
+
+---
 
 ### [2.0.0] - 2026-04-02
 

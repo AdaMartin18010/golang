@@ -34,7 +34,8 @@ def generate_report():
     
     latest = releases[0]
     version = latest['version']
-    date = latest['date']
+    # go.dev/dl/?mode=json 的条目不保证包含 date 字段（KeyError: 'date' 修复）
+    date = latest.get('date', '未知（见 https://go.dev/dl/?mode=json）')
     
     report = f"""# Go 版本跟踪报告
 

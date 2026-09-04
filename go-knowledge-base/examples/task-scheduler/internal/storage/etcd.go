@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"go.etcd.io/etcd/client/v3"
+
+	"task-scheduler/internal/scheduler"
 )
 
 // EtcdClient etcd 存储客户端
