@@ -2,14 +2,14 @@
 >
 > 本文档作为 **Scala Actor / Flink** 核心内容的对比参照系，
 > 展示 CSP 模型的简化实现。如需系统学习核心计算模型，
-> 请参考 [Scala 类型系统](../../Scala-3.6-3.7-Type-System-Complete.md) 或
-> [Flink Dataflow 形式化](../../../Flink/Flink-Dataflow-Formal.md)。
+> 请参考 Scala 类型系统 或
+> Flink Dataflow 形式化。
 >
 > ---
 
 # Featherweight Go (FG) 演算
 
-> **文档定位**: 本文档定义 Featherweight Go (FG) 的形式化语法与静态语义（对比参考），为 Go 核心类型系统提供严格的数学基础。详见 [Go-CSP-Formal](../../../../../../formal/Go-CSP-Formal.md) 与 [FGG-Calculus](../../Go/05-Extension-Generics/FGG-Calculus.md)。
+> **文档定位**: 本文档定义 Featherweight Go (FG) 的形式化语法与静态语义（对比参考），为 Go 核心类型系统提供严格的数学基础。详见 Go-CSP-Formal 与 [FGG-Calculus](../../Go/05-Extension-Generics/FGG-Calculus.md)。
 
 ---
 

@@ -150,5 +150,5 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 ## 🔗 相关文档
 
-- [pkg/logger](../pkg/logger/README.md) - 底层日志实现
-- [OpenTelemetry 集成](../../infrastructure/observability/otlp/README.md) - 追踪集成
+- pkg/logger - 底层日志实现
+- OpenTelemetry 集成 - 追踪集成

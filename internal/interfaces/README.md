@@ -300,8 +300,8 @@ func (s *UserServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) 
 ## 📚 相关资源
 
 - [Clean Architecture 详解](../../docs/architecture/clean-architecture.md)
-- [架构模型与依赖注入完整说明](../../docs/architecture/00-架构模型与依赖注入完整说明.md)
-- [Chi Router 文档](../../docs/architecture/tech-stack/web/chi-router.md)
+- 架构模型与依赖注入完整说明
+- Chi Router 文档
 - [HTTP 接口实现示例](../../examples/framework-usage/)
 
 ---

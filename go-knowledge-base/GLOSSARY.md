@@ -349,7 +349,7 @@ Scaling by adding more machines rather than increasing resources on existing mac
 ### Idempotency
 **Category**: API Design  
 **Related**: Retry, Safety, HTTP Methods  
-**See**: [EC-013-Idempotency-Patterns.md](./03-Engineering-CloudNative/EC-013-Idempotency-Patterns.md)
+**See**: EC-013-Idempotency-Patterns.md
 
 Property where operation produces the same result whether executed once or multiple times.
 

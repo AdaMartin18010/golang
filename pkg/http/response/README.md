@@ -195,8 +195,8 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 ## 5. 相关资源
 
-- [统一错误处理框架](../errors/README.md)
-- [框架拓展计划](../../docs/00-框架拓展计划.md)
+- 统一错误处理框架
+- 框架拓展计划
 
 ---
 

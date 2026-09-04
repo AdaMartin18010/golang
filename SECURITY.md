@@ -240,7 +240,7 @@ for {
 
 ## 📝 安全公告
 
-历史安全公告：[SECURITY_ADVISORIES.md](SECURITY_ADVISORIES.md)
+历史安全公告：SECURITY_ADVISORIES.md
 
 ---
 
@@ -248,7 +248,7 @@ for {
 
 感谢所有负责任地报告安全问题的研究人员。
 
-安全研究人员名单：[SECURITY_RESEARCHERS.md](SECURITY_RESEARCHERS.md)
+安全研究人员名单：SECURITY_RESEARCHERS.md
 
 ---
 

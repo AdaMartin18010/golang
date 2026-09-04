@@ -973,8 +973,8 @@ heatmap
 ## 关联文档
 
 - [Go 1.26.1 完整形式化分析](./Go-1.26.1-Comprehensive.md)
-- [Go 内存模型形式化](./Go-Memory-Model-Formalization.md)
-- [FGG 演算](./Go/05-Extension-Generics/FGG-Calculus.md)
+- [Go 内存模型形式化](../Go-Memory-Model-Formalization.md)
+- [FGG 演算](05-Extension-Generics/FGG-Calculus.md)
 - [GMP 调度器](./04-Runtime-System/GMP-Scheduler.md)
 
 ---

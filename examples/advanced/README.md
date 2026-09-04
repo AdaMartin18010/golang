@@ -290,9 +290,9 @@ cd ../http3-server && go run main.go
 
 阅读对应的技术文档：
 
-- [WaitGroup.Go()](../../docs/02-Go语言现代化/14-Go-1.23并发和网络/01-WaitGroup-Go方法.md)
-- [weak.Pointer](../../docs/02-Go语言现代化/12-Go-1.23运行时优化/03-内存分配器优化.md)
-- [Arena](../../docs/02-Go语言现代化/12-Go-1.23运行时优化/03-内存分配器优化.md)
+- WaitGroup.Go()
+- weak.Pointer
+- Arena
 
 ### 步骤2: 运行示例
 
@@ -329,8 +329,8 @@ go run main.go
 ### 文档
 
 - [Go 1.23+ 新特性](../../docs/02-Go语言现代化/)
-- [性能优化指南](../../docs/02-Go语言现代化/性能优化实战指南.md)
-- [FAQ](../../docs/02-Go语言现代化/12-Go-1.23运行时优化/FAQ.md)
+- 性能优化指南
+- [FAQ](../../go-knowledge-base/FAQ.md)
 
 ### 其他示例1
 

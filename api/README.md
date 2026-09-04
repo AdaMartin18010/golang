@@ -38,7 +38,7 @@ api/
 - ✅ 健康检查端点
 - ✅ 示例和描述
 
-**相关文档**: [`docs/architecture/tech-stack/api/openapi.md`](../../docs/architecture/tech-stack/api/openapi.md)
+**相关文档**: `docs/architecture/tech-stack/api/openapi.md`
 
 **代码生成示例**:
 
@@ -72,7 +72,7 @@ oapi-codegen -generate types,server -package api api/openapi/openapi.yaml > pkg/
 - ✅ 分层通道命名
 - ✅ 示例和描述
 
-**相关文档**: [`docs/architecture/tech-stack/api/asyncapi.md`](../../docs/architecture/tech-stack/api/asyncapi.md)
+**相关文档**: `docs/architecture/tech-stack/api/asyncapi.md`
 
 **代码生成示例**:
 
@@ -101,7 +101,7 @@ docker run --rm -v ${PWD}:/local asyncapi/generator-cli \
 - ✅ 订阅支持
 - ✅ 指令和标量类型
 
-**相关文档**: [`docs/architecture/tech-stack/api/graphql.md`](../../docs/architecture/tech-stack/api/graphql.md)
+**相关文档**: `docs/architecture/tech-stack/api/graphql.md`
 
 **代码生成示例**:
 

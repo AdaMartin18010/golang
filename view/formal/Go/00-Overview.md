@@ -2,8 +2,8 @@
 >
 > 本文档作为 **Scala Actor / Flink** 核心内容的对比参照系，
 > 展示 CSP 模型的简化实现。如需系统学习核心计算模型，
-> 请参考 [Scala 类型系统](./Scala-3.6-3.7-Type-System-Complete.md) 或
-> [Flink Dataflow 形式化](../Flink/Flink-Dataflow-Formal.md)。
+> 请参考 Scala 类型系统 或
+> Flink Dataflow 形式化。
 >
 > ---
 
@@ -985,7 +985,7 @@ graph TB
 **图说明**：
 - 本图展示了 Go 并发特性的理论基础、核心抽象、实现机制和语义保证之间的依赖关系
 - 箭头 `-->` 表示直接依赖，`-.->` 表示间接支持
-- 详见 [Go-CSP-Formal](../../../../../../formal/Go-CSP-Formal.md)
+- 详见 Go-CSP-Formal
 
 ---
 
@@ -1028,7 +1028,7 @@ graph TD
 **图说明**：
 - 本决策树帮助选择适当的 Go 同步原语
 - 菱形节点表示判断条件，椭圆形表示最终选择
-- 详见 [Go-Sync-Patterns](./Go-Sync-Patterns.md)
+- 详见 Go-Sync-Patterns
 
 ---
 
@@ -1060,7 +1060,7 @@ sequenceDiagram
 **图说明**：
 - 本图展示了反例 6.1 中数据竞态的具体执行时序
 - 两个 Goroutine 的读-改-写操作交错，导致更新丢失
-- 详见 [Go-Data-Race-Patterns](./Go-Data-Race-Patterns.md)
+- 详见 Go-Data-Race-Patterns
 
 ---
 
@@ -1124,4 +1124,4 @@ sequenceDiagram
 
 ---
 
-*本文档遵循 [Document-Standard](../../../templates/Document-Standard.md)、[Visualization-Standard](../../../templates/Visualization-Standard.md) 和 [Cross-Level-Inference-Framework](../../../templates/Cross-Level-Inference-Framework.md) 规范。*
+*本文档遵循 Document-Standard、Visualization-Standard 和 Cross-Level-Inference-Framework 规范。*

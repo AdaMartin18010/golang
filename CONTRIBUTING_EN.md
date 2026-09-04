@@ -22,7 +22,7 @@
 
 ## 📜 Code of Conduct
 
-This project adheres to a Code of Conduct. By participating, you are expected to uphold this code. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
+This project adheres to a Code of Conduct. By participating, you are expected to uphold this code. Please read CODE_OF_CONDUCT.md before contributing.
 
 **Core Principles**:
 
@@ -60,7 +60,7 @@ This project adheres to a Code of Conduct. By participating, you are expected to
 
 **Before suggesting**:
 
-- Check [existing features](README_EN.md)
+- Check existing features
 - Review [open issues](https://github.com/AdaMartin18010/golang/issues)
 - Consider if it fits project scope
 
@@ -626,8 +626,8 @@ func main() {
 **Before asking**:
 
 1. Search [existing issues](https://github.com/AdaMartin18010/golang/issues)
-2. Read [FAQ](FAQ.md)
-3. Check [documentation](docs/INDEX.md)
+2. Read [FAQ](go-knowledge-base/FAQ.md)
+3. Check [documentation](go-knowledge-base/INDEX.md)
 
 **When asking**:
 
@@ -651,9 +651,9 @@ func main() {
 
 **Start here**:
 
-1. [Quick Start Guide](QUICK_START_EN.md)
-2. [Examples Showcase](EXAMPLES_EN.md)
-3. [Documentation Index](docs/INDEX.md)
+1. Quick Start Guide
+2. Examples Showcase
+3. [Documentation Index](go-knowledge-base/INDEX.md)
 
 **Good first issues**:
 

@@ -528,7 +528,7 @@ flowchart TD
 **相关文档**:
 
 - [熔断器模式](./EC-007-Circuit-Breaker-Formal.md)
-- [负载均衡](../../04-Technology-Stack/03-Network/08-Load-Balancing.md)
+- [负载均衡](../04-Technology-Stack/03-Network/08-Load-Balancing.md)
 
 ---
 

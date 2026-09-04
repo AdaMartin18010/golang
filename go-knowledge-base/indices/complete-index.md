@@ -1,8 +1,8 @@
 # Go Knowledge Base - Complete Master Index
 
 > **Version**: 2.0.0
-> **Last Updated**: 2026-04-02
-> **Total Documents**: 654
+> **Last Updated**: 2026-09-04（统计已刷新；策展条目为 2026-04 快照）
+> **Total Documents**: 641（2026-09 实际）
 > **Total Size**: ~11.9 MB
 > **Dimensions**: 5 + Infrastructure
 > **Quality Rating**: ⭐⭐⭐⭐⭐ (5/5)
@@ -665,3 +665,9 @@ LD-001 → LD-004 → FT-002 → LD-003 → LD-013 → LD-015
 **Maintained by**: Go Knowledge Base Team
 **Last Updated**: 2026-04-02
 **Version**: 2.0.0
+
+---
+
+## 📥 Appendix: 2026-09 Supplement (auto-registered)
+
+> Pages added after the 2026-04 curated snapshot. See `complete-map.md` for the full inventory.

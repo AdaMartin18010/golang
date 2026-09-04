@@ -208,7 +208,7 @@ jobs:
               <div style="margin-top: 50px; text-align: center; color: #666;">
                   <p>💡 <a href="docs/LEARNING_PATHS.md">学习路径</a> | 
                      📖 <a href="docs/INDEX.md">完整索引</a> | 
-                     📋 <a href="docs/DOCUMENT_STANDARD.md">文档规范</a></p>
+                     📋 <a href="AGENTS.md">文档规范</a></p>
                   <p style="margin-top: 20px;">
                       <a href="https://github.com/AdaMartin18010/golang">⭐ GitHub仓库</a>
                   </p>

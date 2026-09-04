@@ -265,7 +265,7 @@ typos docs/
 
 ### 项目文档
 
-- [文档规范](../docs/DOCUMENT_STANDARD.md)
+- 文档规范
 - [维护指南](../CONTRIBUTING.md)
 
 ---

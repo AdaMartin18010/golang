@@ -127,9 +127,9 @@ docker-compose down -v
 
 ## 📚 相关文档
 
-- [Docker 部署指南](../../docs/deployment/01-Docker部署指南.md)
-- [部署架构与策略](../../docs/deployment/00-部署架构与策略.md)
-- [Kubernetes 部署指南](../../docs/deployment/02-Kubernetes部署指南.md)
+- Docker 部署指南
+- 部署架构与策略
+- Kubernetes 部署指南
 
 ---
 

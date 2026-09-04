@@ -51,7 +51,7 @@
 ### Prerequisites
 
 - [TODO: [Go Basics](../02-Language-Design/02-Language-Features/01-Type-System.md)]
-- [TODO: [Related Feature](../02-Language-Design/02-Language-Features/XX-Feature.md)]
+- TODO: [Related Feature]
 
 ---
 
@@ -646,24 +646,24 @@ func BenchmarkComponent(b *testing.B) {
 ### Prerequisites
 
 - [TODO: [Go Type System](../02-Language-Design/02-Language-Features/01-Type-System.md)]
-- [TODO: [Related Feature](../02-Language-Design/02-Language-Features/XX-Feature.md)]
+- TODO: [Related Feature]
 
 ### Related Language Design Documents
 
-- [TODO: [LD-XXX: Related Topic](../02-Language-Design/LD-XXX-Related.md)]
-- [TODO: [LD-XXX: Related Topic](../02-Language-Design/LD-XXX-Related.md)]
+- `TODO: [LD-XXX: Related Topic`]
+- `TODO: [LD-XXX: Related Topic`]
 
 ### Other Dimensions
 
-- **Formal Theory**: [TODO: [FT-XXX](../01-Formal-Theory/FT-XXX-Name.md)]
-- **Engineering**: [TODO: [EC-XXX](../03-Engineering-CloudNative/EC-XXX-Name.md)]
-- **Technology**: [TODO: [TS-XXX](../04-Technology-Stack/TS-XXX-Name.md)]
-- **Application**: [TODO: [AD-XXX](../05-Application-Domains/AD-XXX-Name.md)]
+- **Formal Theory**: `TODO: [FT-XXX`]
+- **Engineering**: `TODO: [EC-XXX`]
+- **Technology**: `TODO: [TS-XXX`]
+- **Application**: `TODO: [AD-XXX`]
 
 ### Next Steps
 
-- [TODO: [Advanced Topic](../02-Language-Design/LD-XXX-Advanced.md)]
-- [TODO: [Best Practices Guide](../03-Engineering-CloudNative/EC-XXX-Best-Practices.md)]
+- `TODO: [Advanced Topic`]
+- `TODO: [Best Practices Guide`]
 
 ---
 

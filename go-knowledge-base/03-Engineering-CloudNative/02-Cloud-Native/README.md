@@ -6,10 +6,10 @@
 
 | 文档 | 内容 |
 | ------ | ------ |
-| [01-Microservices.md](01-Microservices.md) | 微服务架构 |
-| [02-Containers.md](02-Containers.md) | 容器化 |
-| [03-Kubernetes.md](03-Kubernetes.md) | Kubernetes |
-| [04-Observability.md](04-Observability.md) | 可观测性 |
+| 01-Microservices.md | 微服务架构 |
+| 02-Containers.md | 容器化 |
+| 03-Kubernetes.md | Kubernetes |
+| 04-Observability.md | 可观测性 |
 
 ## 核心技术
 

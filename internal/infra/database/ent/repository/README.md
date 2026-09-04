@@ -221,7 +221,7 @@ err := userRepo.WithTx(ctx, func(tx *ent.Tx) error {
 
 ## 📚 相关文档
 
-- [Ent ORM 文档](../../ent/README.md)
+- Ent ORM 文档
 - [仓储接口定义](../../../../internal/domain/interfaces/repository.go)
 - [框架数据库抽象](../../../../../pkg/database/README.md)
 

@@ -198,7 +198,7 @@ func (s *Service) CreateUserWithOrders(ctx context.Context, user *User, orders [
 
 ## 5. 相关资源
 
-- [框架拓展计划](../../docs/00-框架拓展计划.md)
+- 框架拓展计划
 
 ---
 

@@ -102,4 +102,4 @@ type Controller interface {
 ## 🔗 相关文档
 
 - [采样机制](../sampling/README.md)
-- [追踪和定位](../tracing/README.md)
+- 追踪和定位

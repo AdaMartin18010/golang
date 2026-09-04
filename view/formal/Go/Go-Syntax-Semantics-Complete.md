@@ -2,8 +2,8 @@
 >
 > 本文档作为 **Scala Actor / Flink** 核心内容的对比参照系，
 > 展示 CSP 模型的简化实现。如需系统学习核心计算模型，
-> 请参考 [Scala 类型系统](./Scala-3.6-3.7-Type-System-Complete.md) 或
-> [Flink Dataflow 形式化](../Flink/Flink-Dataflow-Formal.md)。
+> 请参考 Scala 类型系统 或
+> Flink Dataflow 形式化。
 >
 > ---
 
@@ -35,7 +35,7 @@ $$
 - $G_{FG}$: Featherweight Go 抽象语法，覆盖结构体、接口、方法、字段访问、类型断言、方法调用。详见 [FG-Calculus](02-Static-Semantics/FG-Calculus.md)。
 - $G_{CS}$: Go 并发子集（Go-CS）抽象语法，覆盖 `go`、`chan`、`<-`、`select`、顺序组合、条件、循环。详见 [Small-Step-Semantics](03-Dynamic-Semantics/Small-Step-Semantics.md)。
 - $G_{GMP}$: GMP 调度器的运行时结构语法，覆盖 Goroutine G、OS 线程 M、逻辑处理器 P、Scheduler 全局状态、Work Stealing 算法。详见 [GMP-Scheduler](04-Runtime-System/GMP-Scheduler.md)。
-- $G_{mem}$: 内存模型的操作事件语法，覆盖 `read`/`write`/`atomic`/`chan_send`/`chan_recv`/`mutex_lock`/`mutex_unlock` 等带线程标签的内存操作。详见 [Go-Memory-Model-Formalization](../02-language-analysis/Go-Memory-Model-Complete-Formalization.md)。
+- $G_{mem}$: 内存模型的操作事件语法，覆盖 `read`/`write`/`atomic`/`chan_send`/`chan_recv`/`mutex_lock`/`mutex_unlock` 等带线程标签的内存操作。详见 [Go-Memory-Model-Formalization](Go-Memory-Model-Complete-Formalization.md)。
 
 **直观解释**：$G_{complete}$ 不是单一的上下文无关文法，而是一个**分层形式化体系**——从源代码字符（EBNF）到编译期类型结构（FG），再到并发计算模型（Go-CS），最后到运行时状态机（GMP）和内存事件图（MemModel）。
 
@@ -139,7 +139,7 @@ $$
 
 **推导**:
 
-1. 由 [Go-Memory-Model-Formalization](../02-language-analysis/Go-Memory-Model-Complete-Formalization.md) 定义 1.7，无缓冲 channel 的配对发送与接收之间建立 synchronizes-with 关系。
+1. 由 [Go-Memory-Model-Formalization](Go-Memory-Model-Complete-Formalization.md) 定义 1.7，无缓冲 channel 的配对发送与接收之间建立 synchronizes-with 关系。
 2. 由 happens-before 定义，$\rightarrow_{hb}$ 是 $(\rightarrow_{sb} \cup \rightarrow_{sw})^+$ 的传递闭包。
 3. 因此 $send(ch, v) \rightarrow_{sw} recv(ch, x)$ 蕴含 $send(ch, v) \rightarrow_{hb} recv(ch, x)$。
 4. 进一步，若 $G_1$ 在发送前写共享变量 $x$（$write(x) \rightarrow_{sb} send$），且 $G_2$ 在接收后读 $x$（$recv \rightarrow_{sb} read(x)$），则由传递性可得 $write(x) \rightarrow_{hb} read(x)$。
@@ -187,7 +187,7 @@ Go-EBNF 中由 `Expression` 非终结符生成的任何终结符串都有唯一�
 
 **推导**:
 
-1. 由 [Go-Memory-Model-Formalization](../02-language-analysis/Go-Memory-Model-Complete-Formalization.md) 定义 1.6，数据竞争要求两个操作在同一位置、至少一写、非原子、且无 happens-before 关系。
+1. 由 [Go-Memory-Model-Formalization](Go-Memory-Model-Complete-Formalization.md) 定义 1.6，数据竞争要求两个操作在同一位置、至少一写、非原子、且无 happens-before 关系。
 2. 若程序不存在数据竞争，则任意两个冲突访问（至少一写）之间必然存在 $\rightarrow_{hb}$ 关系。
 3. 由于 $\rightarrow_{hb}$ 是严格偏序（反自反、传递、无环），可以将其扩展为一个与程序序和同步边一致的全序。
 4. 在这个全序下，所有内存操作的可见性都与串行执行一致，因此程序行为是顺序一致的。
@@ -406,7 +406,7 @@ graph TB
 
 **步骤 2: 内存安全（DRF-SC）**
 
-- 由 [Go-Memory-Model-Formalization](../02-language-analysis/Go-Memory-Model-Complete-Formalization.md) 定义 1.6，数据竞争要求两个冲突访问之间无 happens-before 关系。
+- 由 [Go-Memory-Model-Formalization](Go-Memory-Model-Complete-Formalization.md) 定义 1.6，数据竞争要求两个冲突访问之间无 happens-before 关系。
 - 由性质 2，channel 的每次成功配对都建立 $send \rightarrow_{hb} recv$。
 - 由定义 1.10，mutex 的每次 Unlock→Lock 都建立 $unlock \rightarrow_{hb} lock$。
 - 若 $P$ 的所有共享访问都通过上述原语同步，则任意冲突访问之间都存在 $\rightarrow_{hb}$，因此不存在数据竞争。

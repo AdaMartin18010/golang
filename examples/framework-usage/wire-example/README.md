@@ -41,7 +41,7 @@ go run .
 ## 📚 相关文档
 
 - [Wire 官方文档](https://github.com/google/wire)
-- [框架架构文档](../../../docs/architecture/00-架构模型与依赖注入完整说明.md)
+- 框架架构文档
 
 ---
 

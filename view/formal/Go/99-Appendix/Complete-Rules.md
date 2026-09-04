@@ -309,7 +309,7 @@ $$
 
 - **编码存在性**: 将 FGG 中所有类型参数实例化为具体类型后，FGG 的每条规则都退化为 FG 的对应规则，因此 FG 可编码为 FGG 的特例。
 - **分离结果**: FGG 支持类型参数和约束，FG 不支持，因此 FGG 表达能力严格强于 FG。
-- **引用链接**: 详见 [FGG-Calculus](../Go/05-Extension-Generics/FGG-Calculus.md)
+- **引用链接**: 详见 [FGG-Calculus](../05-Extension-Generics/FGG-Calculus.md)
 
 **关系 3**: Go-CS SOS `≈` [Small-Step-Semantics](../03-Dynamic-Semantics/Small-Step-Semantics.md) 中的规则集合
 
@@ -663,4 +663,4 @@ graph BT
 
 ---
 
-*本文档为 Go 语言形式化分析的完整规则参考附录，所有规则表述均与正文章节保持严格一致。建议结合 [FG-Calculus](../02-Static-Semantics/FG-Calculus.md)、[FGG-Calculus](../Go/05-Extension-Generics/FGG-Calculus.md)、[Small-Step-Semantics](../03-Dynamic-Semantics/Small-Step-Semantics.md) 和 [Type-Safety-Proof](../06-Verification/Type-Safety-Proof.md) 阅读。*
+*本文档为 Go 语言形式化分析的完整规则参考附录，所有规则表述均与正文章节保持严格一致。建议结合 [FG-Calculus](../02-Static-Semantics/FG-Calculus.md)、[FGG-Calculus](../05-Extension-Generics/FGG-Calculus.md)、[Small-Step-Semantics](../03-Dynamic-Semantics/Small-Step-Semantics.md) 和 [Type-Safety-Proof](../06-Verification/Type-Safety-Proof.md) 阅读。*

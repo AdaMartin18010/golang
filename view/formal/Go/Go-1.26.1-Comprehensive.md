@@ -1362,8 +1362,8 @@ large := make([]byte, 1024)  // >512字节，通用分配
 | 文档 | 路径 | 说明 |
 | ------ | ------ | ------ |
 | Go 1.25规范变更 | [Go-1.25-Spec-Changes.md](./Go-1.25-Spec-Changes.md) | Core Types移除基础 |
-| FGG演算 | [05-Extension-Generics/FGG-Calculus.md](./Go/05-Extension-Generics/FGG-Calculus.md) | 泛型理论基础 |
-| Go内存模型 | [Go-Memory-Model-Formalization.md](./Go-Memory-Model-Formalization.md) | 内存语义基础 |
+| FGG演算 | [05-Extension-Generics/FGG-Calculus.md](05-Extension-Generics/FGG-Calculus.md) | 泛型理论基础 |
+| Go内存模型 | [Go-Memory-Model-Formalization.md](../Go-Memory-Model-Formalization.md) | 内存语义基础 |
 | Go泛型方法 | [Go-Generic-Methods.md](./Go-Generic-Methods.md) | 泛型演进前瞻 |
 
 ### 10.2 下游应用文档
@@ -1506,4 +1506,4 @@ timeline
 - **审核状态**: 待审核
 - **质量检查**: 六段式模板 ✅ | Mermaid图 6个 ✅ | 跨层推断 3处 ✅
 
-*本文档遵循项目[Document-Standard](../../../templates/Document-Standard.md)规范编写*
+*本文档遵循项目Document-Standard规范编写*

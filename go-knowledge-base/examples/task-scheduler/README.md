@@ -906,8 +906,8 @@ var (
 
 ### 8.1 内部文档
 
-- [EC-017-Scheduled-Task-Framework.md](../../../03-Engineering-CloudNative/EC-017-Scheduled-Task-Framework.md)
-- [EC-019-Task-Execution-Engine.md](../../../03-Engineering-CloudNative/EC-019-Task-Execution-Engine.md)
+- [EC-017-Scheduled-Task-Framework.md](../../03-Engineering-CloudNative/EC-017-Scheduled-Task-Framework.md)
+- [EC-019-Task-Execution-Engine.md](../../03-Engineering-CloudNative/EC-019-Task-Execution-Engine.md)
 
 ### 8.2 外部参考
 

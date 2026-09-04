@@ -167,7 +167,7 @@ go run server.go
 
 ## 🔗 相关文档
 
-- [主文档](../../docs/02-Go语言现代化/README.md) - 详细理论文档
+- 主文档 - 详细理论文档
 - [示例索引](../README.md) - 所有示例总览
 - [项目README](../../README.md) - 项目主页
 

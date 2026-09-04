@@ -161,7 +161,7 @@ selected, err := lb.Select(context.Background(), services)
 ## 5. 相关资源
 
 - [服务注册中心](../registry/README.md)
-- [框架拓展计划](../../docs/00-框架拓展计划.md)
+- 框架拓展计划
 
 ---
 

@@ -751,7 +751,7 @@ func (hc *HealthChecker) checkAll() {
 
 ### 8.1 内部文档
 
-- [EC-004-API-Design-Formal.md](../../../03-Engineering-CloudNative/EC-004-API-Design-Formal.md)
+- [EC-004-API-Design-Formal.md](../../03-Engineering-CloudNative/EC-004-API-Design-Formal.md)
 - [AD-006-API-Gateway-Design.md](../AD-006-API-Gateway-Design.md)
 
 ### 8.2 外部参考

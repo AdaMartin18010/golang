@@ -381,7 +381,7 @@ if err != nil {
 2. 运行 `go generate ./scripts/wire` 生成代码
 3. 在 `main.go` 中使用生成的 `InitializeApp` 函数
 
-详细说明请参考：[架构模型与依赖注入完整说明](../../docs/architecture/00-架构模型与依赖注入完整说明.md)
+详细说明请参考：架构模型与依赖注入完整说明
 
 ---
 
@@ -437,10 +437,10 @@ eventBus.Stop()
 
 ## 📚 相关资源
 
-- [架构模型与依赖注入完整说明](../../docs/architecture/00-架构模型与依赖注入完整说明.md)
-- [Wire 依赖注入文档](../../docs/architecture/tech-stack/config/wire.md)
-- [配置管理文档](../../internal/config/README.md)
-- [框架使用指南](../../docs/00-框架使用指南.md)
+- 架构模型与依赖注入完整说明
+- Wire 依赖注入文档
+- 配置管理文档
+- 框架使用指南
 
 ---
 

@@ -2,8 +2,8 @@
 >
 > 本文档作为 **Scala Actor / Flink** 核心内容的对比参照系，
 > 展示 CSP 模型的简化实现。如需系统学习核心计算模型，
-> 请参考 [Scala 类型系统](../../Scala-3.6-3.7-Type-System-Complete.md) 或
-> [Flink Dataflow 形式化](../../../Flink/Flink-Dataflow-Formal.md)。
+> 请参考 Scala 类型系统 或
+> Flink Dataflow 形式化。
 >
 > ---
 

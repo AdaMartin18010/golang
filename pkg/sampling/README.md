@@ -93,4 +93,4 @@ type Sampler interface {
 ## 🔗 相关文档
 
 - [OTLP 集成](../observability/README.md)
-- [追踪和定位](../tracing/README.md)
+- 追踪和定位

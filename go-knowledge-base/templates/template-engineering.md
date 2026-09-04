@@ -719,15 +719,15 @@ func TestIntegration(t *testing.T) {
 
 | Pattern | Relationship | When to Use |
 |---------|--------------|-------------|
-| [Pattern A](../03-Engineering-CloudNative/EC-XXX-A.md) | Alternative | [TODO] |
-| [Pattern B](../03-Engineering-CloudNative/EC-XXX-B.md) | Complementary | [TODO] |
+| `Pattern A` | Alternative | [TODO] |
+| `Pattern B` | Complementary | [TODO] |
 
 ### Other Dimensions
 
-- **Formal Theory**: [TODO: [FT-XXX](../01-Formal-Theory/FT-XXX-Name.md)]
-- **Language Design**: [TODO: [LD-XXX](../02-Language-Design/LD-XXX-Name.md)]
-- **Technology**: [TODO: [TS-XXX](../04-Technology-Stack/TS-XXX-Name.md)]
-- **Application**: [TODO: [AD-XXX](../05-Application-Domains/AD-XXX-Name.md)]
+- **Formal Theory**: `TODO: [FT-XXX`]
+- **Language Design**: `TODO: [LD-XXX`]
+- **Technology**: `TODO: [TS-XXX`]
+- **Application**: `TODO: [AD-XXX`]
 
 ---
 

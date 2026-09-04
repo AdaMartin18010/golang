@@ -24,13 +24,13 @@
 
 | 文档 | 大小 | 内容 | 路径 |
 | ------ | ------ | ------ | ------ |
-| **Go 1.26.1完整形式化分析** | 39KB | 三大特性完整形式化 | [Go-1.26.1-Comprehensive.md](../Go-1.26.1-Comprehensive.md) |
-| **特性交互分析** | 22KB | 6种特性组合分析 | [Go-1.26.1-Feature-Interactions.md](../Go-1.26.1-Feature-Interactions.md) |
-| **精简版规范变更** | 26KB | 快速参考版本 | [Go-1.26.1-Spec-Changes.md](../Go-1.26.1-Spec-Changes.md) |
-| **类型推断完整形式化** | 11KB | FGG扩展 | [Go-Generics-Type-Inference-Complete.md](../Go-Generics-Type-Inference-Complete.md) |
-| **GC运行时形式化** | 10KB | GC完整分析 | [Go-Runtime-GC-Complete.md](../Go-Runtime-GC-Complete.md) |
-| **1.27前瞻** | 10KB | 未来版本预测 | [Go-1.27-Preview.md](../Go-1.27-Preview.md) |
-| **内存模型形式化** | 13KB | TD-001解决 | [Go-Memory-Model-Complete-Formalization.md](../Go-Memory-Model-Complete-Formalization.md) |
+| **Go 1.26.1完整形式化分析** | 39KB | 三大特性完整形式化 | [Go-1.26.1-Comprehensive.md](Go-1.26.1-Comprehensive.md) |
+| **特性交互分析** | 22KB | 6种特性组合分析 | [Go-1.26.1-Feature-Interactions.md](Go-1.26.1-Feature-Interactions.md) |
+| **精简版规范变更** | 26KB | 快速参考版本 | [Go-1.26.1-Spec-Changes.md](Go-1.26.1-Spec-Changes.md) |
+| **类型推断完整形式化** | 11KB | FGG扩展 | [Go-Generics-Type-Inference-Complete.md](Go-Generics-Type-Inference-Complete.md) |
+| **GC运行时形式化** | 10KB | GC完整分析 | [Go-Runtime-GC-Complete.md](Go-Runtime-GC-Complete.md) |
+| **1.27前瞻** | 10KB | 未来版本预测 | [Go-1.27-Preview.md](Go-1.27-Preview.md) |
+| **内存模型形式化** | 13KB | TD-001解决 | [Go-Memory-Model-Complete-Formalization.md](Go-Memory-Model-Complete-Formalization.md) |
 
 ### 可视化资源
 
@@ -91,7 +91,7 @@ $$
 |--------|------|------|
 | **TD-001** | Go内存模型完整形式化 | ✅ 已解决 |
 
-**解决文档**: [Go-Memory-Model-Complete-Formalization.md](../Go-Memory-Model-Complete-Formalization.md)
+**解决文档**: [Go-Memory-Model-Complete-Formalization.md](Go-Memory-Model-Complete-Formalization.md)
 
 ---
 

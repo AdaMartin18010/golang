@@ -16,9 +16,9 @@
 
 | 主题 | 文档 |
 |------|------|
-| Context | [Context-Package](04-Technology-Stack/01-Core-Library/04-Context-Package.md), [Context-Advanced](04-Technology-Stack/01-Core-Library/04-Context-Advanced.md), [Context-Cancellation](03-Engineering-CloudNative/02-Cloud-Native/11-Context-Cancellation-Patterns.md) |
-| 任务调度 | [Job-Scheduling](03-Engineering-CloudNative/02-Cloud-Native/09-Job-Scheduling.md), [Async-Task-Queue](03-Engineering-CloudNative/02-Cloud-Native/10-Async-Task-Queue.md) |
-| 微服务 | [Microservices](03-Engineering-CloudNative/02-Cloud-Native/01-Microservices.md), [API-Gateway](05-Application-Domains/01-Backend-Development/04-API-Gateway.md) |
+| Context | [Context-Package](04-Technology-Stack/01-Core-Library/04-Context-Package.md), Context-Advanced, Context-Cancellation |
+| 任务调度 | Job-Scheduling, Async-Task-Queue |
+| 微服务 | Microservices, [API-Gateway](05-Application-Domains/01-Backend-Development/04-API-Gateway.md) |
 | 性能优化 | [Optimization](03-Engineering-CloudNative/03-Performance/02-Optimization.md), [Profiling](03-Engineering-CloudNative/03-Performance/01-Profiling.md), [Escape-Analysis](03-Engineering-CloudNative/03-Performance/07-Escape-Analysis.md) |
 
 ### 标签索引

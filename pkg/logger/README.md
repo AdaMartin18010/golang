@@ -171,7 +171,7 @@ log.SetLevel(slog.LevelWarn)
 ## 5. 相关资源
 
 - [Go slog 文档](https://pkg.go.dev/log/slog)
-- [框架拓展计划](../../docs/00-框架拓展计划.md)
+- 框架拓展计划
 
 ---
 

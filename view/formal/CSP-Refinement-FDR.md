@@ -960,9 +960,9 @@ sequenceDiagram
 
 **规范引用**：
 
-> 本文档遵循 [Document-Standard.md](../../templates/Document-Standard.md) 六段式模板，
-> 可视化遵循 [Visualization-Standard.md](../../templates/Visualization-Standard.md) 五种图类型规范，
-> 跨层推断遵循 [Cross-Level-Inference-Framework.md](../../templates/Cross-Level-Inference-Framework.md) 标记规范。
+> 本文档遵循 Document-Standard.md 六段式模板，
+> 可视化遵循 Visualization-Standard.md 五种图类型规范，
+> 跨层推断遵循 Cross-Level-Inference-Framework.md 标记规范。
 
 ---
 

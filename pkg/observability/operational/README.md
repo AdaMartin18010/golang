@@ -237,8 +237,8 @@ err := circuitBreaker.Execute(ctx, func() error {
 
 ## 📚 更多文档
 
-- [完整使用指南](../docs/OBSERVABILITY-COMPLETE-GUIDE.md)
-- [配置集成指南](../docs/CONFIG-INTEGRATION.md)
+- 完整使用指南
+- 配置集成指南
 
 ---
 

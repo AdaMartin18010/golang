@@ -93,7 +93,7 @@ OpenTelemetry 是一个厂商中立的开源可观测性框架，提供统一的
    - ❌ 只支持追踪，功能有限
    - ❌ 与 OpenTelemetry 集成不如 Jaeger
 
-**详细论证请参考**: [技术对比矩阵](../../00-对比矩阵.md#44-选型决策论证)
+**详细论证请参考**: 技术对比矩阵
 
 ---
 
@@ -1321,9 +1321,9 @@ func (sl *SampledLogger) Error(ctx context.Context, msg string, attrs ...slog.At
 ## 📚 扩展阅读
 
 - [OpenTelemetry 官方文档](https://opentelemetry.io/)
-- [技术栈概览](../00-技术栈概览.md)
-- [技术栈集成](../01-技术栈集成.md)
-- [技术栈选型决策树](../02-技术栈选型决策树.md)
+- 技术栈概览
+- 技术栈集成
+- 技术栈选型决策树
 
 ---
 

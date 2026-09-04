@@ -54,7 +54,7 @@ By the end of this week, you will be able to:
    - Learn: Memory visibility guarantees
    - Study: Channel synchronization semantics
 
-3. **[GMP Scheduler Deep Dive](../02-Language-Design/FT-002-GMP-Scheduler-Deep-Dive.md)**
+3. **[GMP Scheduler Deep Dive](../01-Formal-Theory/FT-002-GMP-Scheduler-Deep-Dive.md)**
    - Understand: Goroutines, Machine threads, Processors
    - Learn: Work stealing algorithm
    - Study: Scheduler optimizations

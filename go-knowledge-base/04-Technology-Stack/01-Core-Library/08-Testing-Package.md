@@ -614,7 +614,7 @@ tests := []struct {
 ### 8.1 内部文档
 
 - [LD-009-Go-Testing-Patterns.md](../../02-Language-Design/LD-009-Go-Testing-Patterns.md)
-- [03-Testing-Strategies.md](../../../03-Engineering-CloudNative/01-Methodology/03-Testing-Strategies.md)
+- [03-Testing-Strategies.md](../../03-Engineering-CloudNative/01-Methodology/03-Testing-Strategies.md)
 
 ### 8.2 外部参考
 

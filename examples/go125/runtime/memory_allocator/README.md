@@ -249,7 +249,7 @@ go tool pprof mem.prof
 
 ## 📚 参考资料
 
-- [内存分配器优化文档](../../03-内存分配器优化.md)
+- 内存分配器优化文档
 - [Go 1.23+ Release Notes](https://golang.org/doc/go1.23)
 - [Swiss Tables Paper](https://abseil.io/blog/20180927-swisstables)
 

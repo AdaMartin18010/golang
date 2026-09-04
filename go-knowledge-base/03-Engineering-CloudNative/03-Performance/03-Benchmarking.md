@@ -556,8 +556,8 @@ jobs:
 **相关文档**:
 
 - [性能优化](./02-Optimization.md)
-- [内存分析](../05-Memory-Leak-Detection.md)
-- [逃逸分析](../07-Escape-Analysis.md)
+- [内存分析](05-Memory-Leak-Detection.md)
+- [逃逸分析](07-Escape-Analysis.md)
 
 ---
 

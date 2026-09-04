@@ -454,7 +454,7 @@ go tool trace trace.out
 
 ## 📚 相关资源
 
-- [容器感知调度文档](../../02-容器感知调度.md)
+- 容器感知调度文档
 - [Go 1.23+ Release Notes](https://golang.org/doc/go1.23)
 - [Docker CPU 限制](https://docs.docker.com/config/containers/resource_constraints/)
 - [Kubernetes CPU 管理](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/)

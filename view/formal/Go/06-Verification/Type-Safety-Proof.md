@@ -367,7 +367,7 @@ graph TB
 - 顶层绿色节点是主要定理；蓝色节点是辅助引理；紫色节点是基础定义。
 - Type Safety 直接依赖 Progress 和 Preservation；两者共同依赖反演引理。
 - 替换引理进一步依赖弱化、交换引理和类型规则定义。
-- 详见 [Go-CSP-Formal](../../../../../../../../../formal/Go-CSP-Formal.md) 对 FG 语义的进一步形式化。
+- 详见 Go-CSP-Formal 对 FG 语义的进一步形式化。
 
 ### 5.2 公理-定理推理树图
 

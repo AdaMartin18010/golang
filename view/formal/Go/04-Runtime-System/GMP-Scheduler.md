@@ -2,8 +2,8 @@
 >
 > 本文档作为 **Scala Actor / Flink** 核心内容的对比参照系，
 > 展示 CSP 模型的简化实现。如需系统学习核心计算模型，
-> 请参考 [Scala 类型系统](../../Scala-3.6-3.7-Type-System-Complete.md) 或
-> [Flink Dataflow 形式化](../../../Flink/Flink-Dataflow-Formal.md)。
+> 请参考 Scala 类型系统 或
+> Flink Dataflow 形式化。
 >
 > ---
 
@@ -11,7 +11,7 @@
 
 > **文档定位**: Go 主线实现层深度标杆（对比参考） | **版本**: 2026.03
 >
-> **前置依赖**: [Go-CSP-Formal](../../../../../../formal/Go-CSP-Formal.md) | [Go-Memory-Model](../../../../formal/README-Formal.md)
+> **前置依赖**: Go-CSP-Formal | Go-Memory-Model
 
 ---
 
@@ -1245,9 +1245,9 @@ visualizations/
 
 ### 9.3 跨文档引用
 
-- 形式化语义基础: [Go-CSP-Formal](../../../../../../formal/Go-CSP-Formal.md)
-- 内存模型保证: [Go-Memory-Model](../../../../formal/README-Formal.md)
-- Channel 实现细节: [Go-Channel-Implementation](./Go-Memory-Model-Complete-Formalization.md)
+- 形式化语义基础: Go-CSP-Formal
+- 内存模型保证: Go-Memory-Model
+- Channel 实现细节: [Go-Channel-Implementation](../Go-Memory-Model-Complete-Formalization.md)
 
 ---
 

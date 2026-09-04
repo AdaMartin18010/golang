@@ -360,7 +360,7 @@ go run kb-linkcheck.go -external
 ```
 
 **Link Types Checked**:
-- Internal document references (`[text](./file.md)`)
+- Internal document references (`text`)
 - Document code references (`[EC-007]`)
 - Anchor links (`#section-name`)
 - External URLs (`https://...`)

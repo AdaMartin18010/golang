@@ -182,9 +182,9 @@ promData, _ := dashboardExporter.ExportForPrometheus(ctx)
 
 ## 📖 更多文档
 
-- [系统监控实现报告](../../../docs/system-monitoring-implementation.md)
-- [高级功能实现报告](../../../docs/ULTIMATE-ADVANCED-FEATURES.md)
-- [最终完整实现报告](../../../docs/ULTIMATE-COMPLETE-IMPLEMENTATION-FINAL.md)
+- 系统监控实现报告
+- 高级功能实现报告
+- 最终完整实现报告
 
 ## 🔧 配置
 

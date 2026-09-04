@@ -1,7 +1,7 @@
 # Go Knowledge Base - Learning Dependency Graph
 
 > **Version**: 2.0.0
-> **Last Updated**: 2026-04-02
+> **Last Updated**: 2026-04-02（2026-04 策展快照；登记以 complete-map.md 2026-09 全量重建为准）
 > **Purpose**: Visualize learning paths and prerequisite relationships
 > **Total Dependencies**: 500+ connections
 > **Learning Paths**: 10+ complete curricula

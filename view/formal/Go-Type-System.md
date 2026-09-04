@@ -1,7 +1,7 @@
 # Go 类型系统完整形式化
 
 > **文档定位**: `deep/04-type-systems/Go-Type-System.md`
-> **前置知识**: [FG-Calculus](../02-language-analysis/Go/02-Static-Semantics/FG-Calculus.md), [FGG-Calculus](../02-language-analysis/Go/05-Extension-Generics/FGG-Calculus.md), [Go-Generics-Type-Inference](../02-language-analysis/Go-Generics-Type-Inference.md)
+> **前置知识**: [FG-Calculus](Go/02-Static-Semantics/FG-Calculus.md), [FGG-Calculus](Go/05-Extension-Generics/FGG-Calculus.md), [Go-Generics-Type-Inference](Go-Generics-Type-Inference.md)
 > **关联可视化**: 详见本文末尾"关联可视化资源"
 
 ---
@@ -425,7 +425,7 @@ graph TB
 - 本图展示了 Go 类型系统形式化文档在知识体系中的位置：上游依赖 FG/FGG 演算和 CSP 理论，下游支撑并发类型安全和泛型实现理论。
 - 核心定义（黄色节点）是后续所有性质和定理的基础。
 - 性质推导（蓝色节点）连接定义与主要定理（绿色节点）。
-- 详见 [FG-Calculus](../02-language-analysis/Go/02-Static-Semantics/FG-Calculus.md) 和 [FGG-Calculus](../02-language-analysis/Go/05-Extension-Generics/FGG-Calculus.md)。
+- 详见 [FG-Calculus](Go/02-Static-Semantics/FG-Calculus.md) 和 [FGG-Calculus](Go/05-Extension-Generics/FGG-Calculus.md)。
 
 ---
 
@@ -772,7 +772,7 @@ func main() {
 
 - **违反的前提**: Go 的两阶段类型推断（定义 1.4）假设类型参数可以从实参类型或约束的核心类型推断。但在嵌套类型参数场景中，`C Container[T]` 使得 `T` 的推断依赖于 `C` 的推断，而 `C` 的推断又依赖于 `T`。
 - **导致的异常**: 阶段 1 从实参 `box`（类型 `Box`）推断 `C = Box`。然后编译器尝试检查 `Box` 是否满足 `Container[T]`，发现 `Box.Get()` 返回 `int`，因此 `T` 应该是 `int`。但 Go 的类型推断算法不会执行这种"约束反向传播"——它不会在推断 `C` 后重新求解 `T`。
-- **结论**: 这是 Go 泛型类型推断的已知局限性。Go 编译器采用保守策略，避免复杂的约束求解和回溯。嵌套类型参数（`C Container[T]`）导致的信息依赖循环超出了两阶段推断的处理能力，程序员必须显式提供类型参数。详见 [Go-Generics-Type-Inference](../02-language-analysis/Go-Generics-Type-Inference.md) 反例 6.3。
+- **结论**: 这是 Go 泛型类型推断的已知局限性。Go 编译器采用保守策略，避免复杂的约束求解和回溯。嵌套类型参数（`C Container[T]`）导致的信息依赖循环超出了两阶段推断的处理能力，程序员必须显式提供类型参数。详见 [Go-Generics-Type-Inference](Go-Generics-Type-Inference.md) 反例 6.3。
 
 ---
 

@@ -578,7 +578,7 @@ func (t *T) Method() {} // 只有 *T 有
 
 ## 8. 相关资源
 
-- [LD-016-Interface-Internals.md](./LD-016-Interface-Internals.md) - 接口内部实现
+- LD-016-Interface-Internals.md - 接口内部实现
 - [LD-007-Go-Reflection-Interface-Internals.md](../LD-007-Go-Reflection-Interface-Internals.md)
 - [io 包文档](https://pkg.go.dev/io)
 

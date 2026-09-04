@@ -144,4 +144,4 @@ type Config struct {
 
 ## 🔗 相关文档
 
-- [数据库基础设施说明](../../internal/infrastructure/README.md#数据库实现)
+- 数据库基础设施说明

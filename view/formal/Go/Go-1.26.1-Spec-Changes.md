@@ -891,8 +891,8 @@ graph TD
 ### 上游依赖
 
 - [Go 1.25 规范变更](./Go-1.25-Spec-Changes.md)
-- [FGG 演算形式化](./Go/05-Extension-Generics/FGG-Calculus.md)
-- [Go 内存模型](./Go-Memory-Model-Formalization.md)
+- [FGG 演算形式化](05-Extension-Generics/FGG-Calculus.md)
+- [Go 内存模型](../Go-Memory-Model-Formalization.md)
 
 ### 下游应用
 

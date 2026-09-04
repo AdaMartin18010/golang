@@ -1,7 +1,7 @@
 # Go Knowledge Base - Difficulty-Based Learning Index
 
 > **Version**: 1.0.0
-> **Last Updated**: 2026-04-02
+> **Last Updated**: 2026-04-02（2026-04 策展快照；登记以 complete-map.md 2026-09 全量重建为准）
 > **Purpose**: Curated paths by experience level
 
 ---

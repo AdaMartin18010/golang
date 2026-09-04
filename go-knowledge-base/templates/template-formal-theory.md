@@ -57,7 +57,7 @@
 
 ### Prerequisites
 
-- [TODO: Required knowledge with links - e.g., [Consensus Basics](../01-Formal-Theory/FT-XXX-Consensus-Basics.md)]
+- `TODO: Required knowledge with links - e.g., [Consensus Basics`]
 - [TODO: Required mathematical background]
 
 ---
@@ -507,24 +507,24 @@ func BenchmarkComponent(b *testing.B) {
 
 ### Prerequisites
 
-- [TODO: [Prerequisite 1](../01-Formal-Theory/FT-XXX-Name.md) - Description]
-- [TODO: [Prerequisite 2](../01-Formal-Theory/FT-XXX-Name.md) - Description]
+- `TODO: [Prerequisite 1` - Description]
+- `TODO: [Prerequisite 2` - Description]
 
 ### Related Topics (Same Dimension)
 
-- [TODO: [Related FT Doc](../01-Formal-Theory/FT-XXX-Name.md) - Description]
-- [TODO: [Related FT Doc](../01-Formal-Theory/FT-XXX-Name.md) - Description]
+- `TODO: [Related FT Doc` - Description]
+- `TODO: [Related FT Doc` - Description]
 
 ### Related Dimensions
 
-- **Language Design**: [TODO: [LD Document](../02-Language-Design/LD-XXX-Name.md)]
-- **Engineering**: [TODO: [EC Document](../03-Engineering-CloudNative/EC-XXX-Name.md)]
-- **Technology Stack**: [TODO: [TS Document](../04-Technology-Stack/TS-XXX-Name.md)]
+- **Language Design**: `TODO: [LD Document`]
+- **Engineering**: `TODO: [EC Document`]
+- **Technology Stack**: `TODO: [TS Document`]
 
 ### Next Steps
 
-- [TODO: [Advanced Topic](../01-Formal-Theory/FT-XXX-Advanced.md)]
-- [TODO: [Implementation Guide](../03-Engineering-CloudNative/EC-XXX-Implementation.md)]
+- `TODO: [Advanced Topic`]
+- `TODO: [Implementation Guide`]
 
 ---
 

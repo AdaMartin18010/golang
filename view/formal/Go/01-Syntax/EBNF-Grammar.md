@@ -2,14 +2,14 @@
 >
 > 本文档作为 **Scala Actor / Flink** 核心内容的对比参照系，
 > 展示 CSP 模型的简化实现。如需系统学习核心计算模型，
-> 请参考 [Scala 类型系统](../Scala-3.6-3.7-Type-System-Complete.md) 或
-> [Flink Dataflow 形式化](../../Flink/Flink-Dataflow-Formal.md)。
+> 请参考 Scala 类型系统 或
+> Flink Dataflow 形式化。
 >
 > ---
 
 # Go 语言 EBNF 语法与抽象语法的形式化对应
 
-> **范围**: Go 1.22 核心语法 | **关联文档**: [Go-CSP-Formal](../../../../../../formal/Go-CSP-Formal.md) | [VISUAL-ATLAS](../../../../../../VISUAL-ATLAS.md)
+> **范围**: Go 1.22 核心语法 | **关联文档**: Go-CSP-Formal | [VISUAL-ATLAS](../../../../../../VISUAL-ATLAS.md)
 
 ---
 
@@ -290,7 +290,7 @@ Go 的自动分号插入规则（Automatic Semicolon Insertion, ASI）对于任�
 
 **关系 1**: Go-EBNF `↦` Go-CS (FG 抽象语法)
 
-Go-EBNF 是 Go 语言的**具体语法**（concrete syntax），描述了源代码的字符级合法形式；Go-CS（定义于 [Go-CSP-Formal](../../../../../../formal/Go-CSP-Formal.md)）是 Go 并发子集的**抽象语法**（abstract syntax），剥离了具体表示细节，保留计算结构。两者之间存在一个结构保持的编码映射 `⟦·⟧_EBNF→FG`。
+Go-EBNF 是 Go 语言的**具体语法**（concrete syntax），描述了源代码的字符级合法形式；Go-CS（定义于 Go-CSP-Formal）是 Go 并发子集的**抽象语法**（abstract syntax），剥离了具体表示细节，保留计算结构。两者之间存在一个结构保持的编码映射 `⟦·⟧_EBNF→FG`。
 
 **论证**:
 
@@ -639,7 +639,7 @@ graph TB
 - 本图展示了从 Go 语言规范（上游）到 EBNF、AST、FG 抽象语法的层次依赖关系。
 - 关键节点 `B3`（AST）是编译器前端的中间表示，`B4`（Go-CS）是形式化分析使用的抽象语法。
 - 从 `B1` 到 `B4` 的虚线表示存在直接的编码映射（跳过 AST 中间层），详见关系 1。
-- 详见 [Go-CSP-Formal](../../../../../../formal/Go-CSP-Formal.md)。
+- 详见 Go-CSP-Formal。
 
 ---
 
@@ -702,7 +702,7 @@ sequenceDiagram
 本文档包含的可视化资源已在项目中注册，详细信息请参阅：
 
 - **[VISUAL-ATLAS.md](../../../../../../VISUAL-ATLAS.md)** — 项目全部可视化资源的统一索引
-- **[Go-CSP-Formal](../../../../../../formal/Go-CSP-Formal.md)** — Go 并发子集的形式语法与语义对应
+- **Go-CSP-Formal** — Go 并发子集的形式语法与语义对应
 
 ---
 

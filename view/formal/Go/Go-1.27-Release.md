@@ -151,7 +151,7 @@ go≥1.27 模块的 go.mod 中若声明已移除 GODEBUG 的旧值，**构建报
 
 | 包 | 状态 | 说明 |
 | ---- | ------ | ------ |
-| `encoding/json/v2` | **GA** | Marshal/Unmarshal + Options 体系；见 [Go-1.27-JSON-v2](../../docs/go127-json-v2-migration.md) |
+| `encoding/json/v2` | **GA** | Marshal/Unmarshal + Options 体系；见 [Go-1.27-JSON-v2](../../../docs/go127-json-v2-migration.md) |
 | `encoding/json/jsontext` | GA | Token/Value 底层流式处理；语法层 Options（如 `AllowDuplicateNames`） |
 | `uuid` | GA | `New/NewV4/NewV7/Parse/MustParse/Max/Nil`；`type UUID [16]byte`（版本号取 `u[6]>>4`） |
 | `crypto/mldsa` | GA | FIPS 204 后量子签名；x509/tls 同步（tls 常量 `MLDSA44/65/87`） |

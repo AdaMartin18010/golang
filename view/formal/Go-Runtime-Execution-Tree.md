@@ -470,5 +470,5 @@ work stealing        ⟷  任务窃取调度               负载均衡策略
 
 **关联文档**:
 
-- [formal/Go-CSP-Formal](../formal/Go-CSP-Formal.md)
-- [TH1-Process-Calculi-MindMap](../01-core-theory/TH1-Process-Calculi-MindMap.md)
+- formal/Go-CSP-Formal
+- TH1-Process-Calculi-MindMap

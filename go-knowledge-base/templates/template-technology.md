@@ -834,19 +834,19 @@ go func() {
 ### Prerequisites
 
 - [TODO: [Go Context](../04-Technology-Stack/01-Core-Library/04-Context-Package.md)]
-- [TODO: [Go Testing](../02-Language-Design/02-Language-Features/09-Testing-Patterns.md)]
+- TODO: [Go Testing]
 
 ### Related Technologies
 
-- [TODO: [Related Tech](../04-Technology-Stack/TS-XXX-Related.md)]
-- [TODO: [Related Tech](../04-Technology-Stack/TS-XXX-Related.md)]
+- `TODO: [Related Tech`]
+- `TODO: [Related Tech`]
 
 ### Other Dimensions
 
-- **Formal Theory**: [TODO: [FT-XXX](../01-Formal-Theory/FT-XXX-Name.md)]
-- **Language Design**: [TODO: [LD-XXX](../02-Language-Design/LD-XXX-Name.md)]
-- **Engineering**: [TODO: [EC-XXX](../03-Engineering-CloudNative/EC-XXX-Name.md)]
-- **Application**: [TODO: [AD-XXX](../05-Application-Domains/AD-XXX-Name.md)]
+- **Formal Theory**: `TODO: [FT-XXX`]
+- **Language Design**: `TODO: [LD-XXX`]
+- **Engineering**: `TODO: [EC-XXX`]
+- **Application**: `TODO: [AD-XXX`]
 
 ---
 

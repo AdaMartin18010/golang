@@ -1,7 +1,7 @@
 # Go Knowledge Base - Keyword Search Index
 
 > **Version**: 2.0.0
-> **Last Updated**: 2026-04-02
+> **Last Updated**: 2026-04-02（2026-04 策展快照；登记以 complete-map.md 2026-09 全量重建为准）
 > **Purpose**: Find documents by keywords, terms, and concepts
 > **Total Keywords**: 1000+
 > **Indexed Documents**: 654

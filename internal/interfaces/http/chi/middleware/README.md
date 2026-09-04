@@ -180,10 +180,10 @@ r.Use(middleware.AuthMiddleware(middleware.AuthConfig{
 
 ## 5. 相关资源
 
-- [JWT 认证框架](../../../../pkg/auth/jwt/README.md)
-- [统一错误处理框架](../../../../pkg/errors/README.md)
-- [统一响应格式框架](../../../../pkg/http/response/README.md)
-- [框架拓展计划](../../../../docs/00-框架拓展计划.md)
+- JWT 认证框架
+- 统一错误处理框架
+- 统一响应格式框架
+- 框架拓展计划
 
 ---
 

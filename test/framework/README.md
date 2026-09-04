@@ -208,8 +208,8 @@ func TestCompleteExample(t *testing.T) {
 
 ## 🔗 相关文档
 
-- [改进任务看板](../../docs/IMPROVEMENT-TASK-BOARD.md)
-- [改进路线图](../../docs/IMPROVEMENT-ROADMAP-EXECUTABLE.md)
+- 改进任务看板
+- 改进路线图
 
 ---
 

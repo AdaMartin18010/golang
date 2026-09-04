@@ -67,7 +67,7 @@
 ### Prerequisites
 
 - [TODO: [Microservices Patterns](../03-Engineering-CloudNative/EC-001-Microservices.md)]
-- [TODO: [Domain-Driven Design](../03-Engineering-CloudNative/EC-XXX-DDD.md)]
+- `TODO: [Domain-Driven Design`]
 
 ---
 
@@ -796,19 +796,19 @@ spec:
 ### Prerequisites
 
 - [TODO: [Microservices](../03-Engineering-CloudNative/EC-001-Microservices.md)]
-- [TODO: [DDD](../03-Engineering-CloudNative/EC-XXX-DDD.md)]
+- `TODO: [DDD`]
 - [TODO: [CQRS](../03-Engineering-CloudNative/EC-014-CQRS-Pattern.md)]
 
 ### Related Application Documents
 
-- [TODO: [AD-XXX: Related](../05-Application-Domains/AD-XXX-Related.md)]
+- `TODO: [AD-XXX: Related`]
 
 ### Other Dimensions
 
-- **Formal Theory**: [TODO: [FT-XXX](../01-Formal-Theory/FT-XXX-Name.md)]
-- **Language Design**: [TODO: [LD-XXX](../02-Language-Design/LD-XXX-Name.md)]
-- **Engineering**: [TODO: [EC-XXX](../03-Engineering-CloudNative/EC-XXX-Name.md)]
-- **Technology**: [TODO: [TS-XXX](../04-Technology-Stack/TS-XXX-Name.md)]
+- **Formal Theory**: `TODO: [FT-XXX`]
+- **Language Design**: `TODO: [LD-XXX`]
+- **Engineering**: `TODO: [EC-XXX`]
+- **Technology**: `TODO: [TS-XXX`]
 
 ---
 

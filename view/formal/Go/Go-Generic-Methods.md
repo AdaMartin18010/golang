@@ -1,7 +1,7 @@
 # Go 泛型方法 (Generic Methods)
 
 > **位置**: `deep/02-language-analysis/Go/Go-Generic-Methods.md`
-> **前置知识**: [Featherweight Generic Go (FGG)](./Go/05-Extension-Generics/FGG-Calculus.md)
+> **前置知识**: [Featherweight Generic Go (FGG)](05-Extension-Generics/FGG-Calculus.md)
 > **关联可视化**: 详见本文末尾"关联可视化资源"
 
 ---
@@ -263,7 +263,7 @@ graph TB
 
 - 本图展示了 Go 泛型方法在知识体系中的位置：上游依赖 FGG 的形式化基础和类型系统理论，下游与 C++、Java 的泛型方法形成对比关系。
 - 核心定理（单态化保持语义等价）是连接理论与实现的桥梁。
-- 详见 [FGG-Calculus](./Go/05-Extension-Generics/FGG-Calculus.md)
+- 详见 [FGG-Calculus](05-Extension-Generics/FGG-Calculus.md)
 
 ---
 
@@ -616,7 +616,7 @@ graph TD
 - 本图展示了 Go 编译器对泛型方法调用进行类型推断的决策流程。
 - 菱形节点表示判断条件，椭圆形节点表示最终结论。
 - 优先从函数参数推断，若失败则尝试从返回类型上下文推断，最后才报告失败。
-- 详见 [FGG-Calculus](./Go/05-Extension-Generics/FGG-Calculus.md)
+- 详见 [FGG-Calculus](05-Extension-Generics/FGG-Calculus.md)
 
 ---
 

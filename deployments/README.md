@@ -50,9 +50,9 @@ kubectl apply -f .
 
 ## 📚 相关文档
 
-- [部署架构与策略](../docs/deployment/00-部署架构与策略.md)
-- [Docker 部署指南](../docs/deployment/01-Docker部署指南.md)
-- [Kubernetes 部署指南](../docs/deployment/02-Kubernetes部署指南.md)
+- 部署架构与策略
+- Docker 部署指南
+- Kubernetes 部署指南
 - [部署文档索引](../docs/deployment/README.md)
 
 ---

@@ -1,7 +1,7 @@
 # Featherweight Generic Go (FGG) 演算
 
 > **位置**: `deep/02-language-analysis/Go/05-Extension-Generics/`
-> **前置知识**: [Featherweight Go (FG)](../../02-Static-Semantics/FG-Calculus.md)
+> **前置知识**: [Featherweight Go (FG)](../02-Static-Semantics/FG-Calculus.md)
 > **关联可视化**: 详见本文末尾"关联可视化资源"
 
 ---

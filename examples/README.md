@@ -155,8 +155,8 @@ go run main.go
 
 ### 核心文档
 - [项目 README](../README.md)
-- [架构状态](../README-ARCHITECTURE-STATUS.md)
-- [最终报告](../FINAL-REPORT-2025-12-03.md)
+- 架构状态
+- 最终报告
 
 ### 技术文档
 - [eBPF 实现](../pkg/observability/ebpf/README.md)

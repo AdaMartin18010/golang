@@ -703,6 +703,6 @@ stateDiagram-v2
 
 **相关文档**:
 
-- [Context 管理](../EC-005-Context-Management.md)
+- [Context 管理](EC-005-Context-Management.md)
 - [重试模式](./EC-009-Retry-Pattern-Formal.md)
 - [熔断器模式](./EC-007-Circuit-Breaker-Formal.md)

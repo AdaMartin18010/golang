@@ -238,8 +238,8 @@ users, err := repo.List(ctx, 10, 0)
 
 ## 📚 相关文档
 
-- [架构状态报告](../../README-ARCHITECTURE-STATUS.md)
-- [最终报告](../../FINAL-REPORT-2025-12-03.md)
+- 架构状态报告
+- 最终报告
 - [eBPF 实现](../../pkg/observability/ebpf/README.md)
 - [安全模块](../../pkg/security/README.md)
 - [测试框架](../../test/README.md)

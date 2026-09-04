@@ -185,8 +185,8 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 ## 7. 相关资源
 
-- [错误处理最佳实践](../docs/practices/engineering/05-错误处理最佳实践.md)
-- [框架拓展计划](../docs/00-框架拓展计划.md)
+- 错误处理最佳实践
+- 框架拓展计划
 
 ---
 

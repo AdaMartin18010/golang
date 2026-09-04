@@ -260,4 +260,4 @@ spec:
 ## 🔗 相关文档
 
 - [Kubernetes 健康探针](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
-- [框架基础设施说明](../docs/framework/00-框架基础设施说明.md)
+- 框架基础设施说明
