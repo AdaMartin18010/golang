@@ -74,7 +74,7 @@ func demonstrateBufferOverflow() {
 	fmt.Printf("✅ [ASan模拟] 分配内存: %#x (10 字节)\n", ptr)
 
 	// 正常访问
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		block.data[i] = byte(i)
 	}
 	fmt.Println("✅ [ASan模拟] 正常访问: block[0-9] = OK")

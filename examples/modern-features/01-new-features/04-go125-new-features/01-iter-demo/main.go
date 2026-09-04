@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Go 1.23 迭代器示例 ===\n")
+	fmt.Print("=== Go 1.23 迭代器示例 ===\n")
 
 	// 1. strings.Lines - 按行迭代（Go 1.23+）
 	// 如果 API 不可用，可以使用 strings.Split(text, "\n")
@@ -19,8 +19,8 @@ line 3`
 
 	fmt.Println("1. strings.Lines (按行迭代):")
 	// 使用传统方式作为备选
-	lines := strings.Split(text, "\n")
-	for _, line := range lines {
+	lines := strings.SplitSeq(text, "\n")
+	for line := range lines {
 		if line != "" { // 过滤空行
 			fmt.Printf("  %s\n", line)
 		}
@@ -36,8 +36,8 @@ line 3`
 
 	fmt.Println("\n2. strings.SplitSeq (分割迭代器):")
 	// 使用传统方式作为备选
-	parts := strings.Split(data, ",")
-	for _, part := range parts {
+	parts := strings.SplitSeq(data, ",")
+	for part := range parts {
 		fmt.Printf("  %s\n", part)
 	}
 
@@ -51,8 +51,8 @@ line 3`
 
 	fmt.Println("\n3. strings.FieldsSeq (字段迭代器):")
 	// 使用传统方式作为备选
-	fieldList := strings.Fields(fields)
-	for _, field := range fieldList {
+	fieldList := strings.FieldsSeq(fields)
+	for field := range fieldList {
 		fmt.Printf("  [%s]\n", field)
 	}
 

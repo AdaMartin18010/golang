@@ -174,7 +174,7 @@ func TestDataSlicePool(t *testing.T) {
 		t.Fatal("GetDataSlice returned nil")
 	}
 
-	slice = append(slice, map[string]interface{}{"test": "value"})
+	slice = append(slice, map[string]any{"test": "value"})
 	if len(slice) == 0 {
 		t.Error("Slice append failed")
 	}

@@ -23,8 +23,8 @@ type PoolStats struct {
 
 // ObjectPool 对象池接口
 type ObjectPool interface {
-	Get() interface{}
-	Put(interface{})
+	Get() any
+	Put(any)
 	Stats() PoolStats
 	Clear()
 	Size() int
@@ -37,26 +37,26 @@ type ObjectPool interface {
 // GenericPool 通用对象池（支持统计）
 type GenericPool struct {
 	pool    sync.Pool
-	new     func() interface{}
-	reset   func(interface{})
+	new     func() any
+	reset   func(any)
 	stats   *poolStatsTracker
 	maxSize int32
-	size    int32
+	size    atomic.Int32
 }
 
 // poolStatsTracker 统计跟踪器
 type poolStatsTracker struct {
-	gets      uint64
-	puts      uint64
-	hits      uint64
-	misses    uint64
+	gets      atomic.Uint64
+	puts      atomic.Uint64
+	hits      atomic.Uint64
+	misses    atomic.Uint64
 	totalAge  uint64
 	ageCount  uint64
 	startTime time.Time
 }
 
 // NewGenericPool 创建通用对象池
-func NewGenericPool(new func() interface{}, reset func(interface{}), maxSize int) *GenericPool {
+func NewGenericPool(new func() any, reset func(any), maxSize int) *GenericPool {
 	p := &GenericPool{
 		new:     new,
 		reset:   reset,
@@ -66,8 +66,8 @@ func NewGenericPool(new func() interface{}, reset func(interface{}), maxSize int
 		},
 	}
 
-	p.pool.New = func() interface{} {
-		atomic.AddUint64(&p.stats.misses, 1)
+	p.pool.New = func() any {
+		p.stats.misses.Add(1)
 		return p.new()
 	}
 
@@ -75,27 +75,27 @@ func NewGenericPool(new func() interface{}, reset func(interface{}), maxSize int
 }
 
 // Get 获取对象
-func (p *GenericPool) Get() interface{} {
-	atomic.AddUint64(&p.stats.gets, 1)
+func (p *GenericPool) Get() any {
+	p.stats.gets.Add(1)
 
 	obj := p.pool.Get()
 
 	// 如果从池中获取到对象，记录命中
 	if obj != nil {
-		atomic.AddUint64(&p.stats.hits, 1)
+		p.stats.hits.Add(1)
 	}
 
 	return obj
 }
 
 // Put 归还对象
-func (p *GenericPool) Put(obj interface{}) {
+func (p *GenericPool) Put(obj any) {
 	if obj == nil {
 		return
 	}
 
 	// 检查池大小限制
-	currentSize := atomic.LoadInt32(&p.size)
+	currentSize := p.size.Load()
 	if p.maxSize > 0 && currentSize >= p.maxSize {
 		// 池已满，丢弃对象
 		return
@@ -106,18 +106,18 @@ func (p *GenericPool) Put(obj interface{}) {
 		p.reset(obj)
 	}
 
-	atomic.AddUint64(&p.stats.puts, 1)
-	atomic.AddInt32(&p.size, 1)
+	p.stats.puts.Add(1)
+	p.size.Add(1)
 
 	p.pool.Put(obj)
 }
 
 // Stats 获取统计信息
 func (p *GenericPool) Stats() PoolStats {
-	gets := atomic.LoadUint64(&p.stats.gets)
-	puts := atomic.LoadUint64(&p.stats.puts)
-	hits := atomic.LoadUint64(&p.stats.hits)
-	misses := atomic.LoadUint64(&p.stats.misses)
+	gets := p.stats.gets.Load()
+	puts := p.stats.puts.Load()
+	hits := p.stats.hits.Load()
+	misses := p.stats.misses.Load()
 
 	var avgAge uint64
 	if p.stats.ageCount > 0 {
@@ -129,7 +129,7 @@ func (p *GenericPool) Stats() PoolStats {
 		Puts:      puts,
 		Hits:      hits,
 		Misses:    misses,
-		Size:      int(atomic.LoadInt32(&p.size)),
+		Size:      int(p.size.Load()),
 		MaxSize:   int(p.maxSize),
 		ObjectAge: avgAge,
 	}
@@ -146,16 +146,16 @@ func (p *GenericPool) HitRate() float64 {
 
 // Clear 清空池
 func (p *GenericPool) Clear() {
-	atomic.StoreInt32(&p.size, 0)
-	p.pool = sync.Pool{New: func() interface{} {
-		atomic.AddUint64(&p.stats.misses, 1)
+	p.size.Store(0)
+	p.pool = sync.Pool{New: func() any {
+		p.stats.misses.Add(1)
 		return p.new()
 	}}
 }
 
 // Size 当前池大小
 func (p *GenericPool) Size() int {
-	return int(atomic.LoadInt32(&p.size))
+	return int(p.size.Load())
 }
 
 // =============================================================================
@@ -179,7 +179,7 @@ func NewBytePool(sizes []int) *BytePool {
 	for i, size := range sizes {
 		bufSize := size
 		bp.pools[i] = &sync.Pool{
-			New: func() interface{} {
+			New: func() any {
 				buf := make([]byte, bufSize)
 				return &buf
 			},

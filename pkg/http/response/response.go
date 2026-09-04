@@ -1,7 +1,7 @@
 package response
 
 import (
-	"encoding/json"
+	json "encoding/json/v2"
 	"net/http"
 	"time"
 
@@ -158,14 +158,21 @@ func ErrorWithTraceID(w http.ResponseWriter, code int, err error, traceID string
 }
 
 // writeJSON 写入 JSON 响应
+//
+// 迁移说明（Go 1.27 json/v2 试点）：由 v1 json.NewEncoder(w).Encode 迁移为
+// json/v2 的 MarshalWrite。为保持与 v1 Encode 完全一致的线格式（末尾换行），
+// 显式追加 '\n'。若未来不需要逐字节兼容，可去掉该换行。
 func writeJSON(w http.ResponseWriter, code int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
-	if err := json.NewEncoder(w).Encode(data); err != nil {
+	if err := json.MarshalWrite(w, data); err != nil {
 		// 如果编码失败，记录错误但不返回错误响应（避免循环）
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
+	// 对齐 v1 Encoder.Encode 的末尾换行行为
+	_, _ = w.Write([]byte("\n"))
 }
 
 // NewMeta 创建元数据

@@ -909,6 +909,16 @@ go tool trace trace.out
 4. **Formal verification of Go code**
 5. **Design high-performance library**
 
+#### 拓展: 跟踪最新 Go 版本 (Go 1.26 / 1.27)
+
+| Document | Time | Key Takeaways |
+|----------|------|---------------|
+| 02-Language-Design/LD-035-Go-1.26-new-expr-Compiler-Semantics.md | 2h | new(expr) SSA lowering |
+| 02-Language-Design/LD-036-Go-1.26-Green-Tea-GC-Formal-Model.md | 3h | Generational GC model |
+| 02-Language-Design/LD-037-Go-1.27-Generic-Methods.md | 3h | 泛型方法类型规则 |
+| 仓库根 examples/go127-features/ | 4h | 12 个 1.27 特性可运行示例 |
+| 仓库根 view/Go1.27语法/ | 4h | 1.27 语法/语义/工具链分析 |
+
 ---
 
 ## 🎓 Capstone Project: High-Performance Go Library

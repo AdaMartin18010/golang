@@ -31,13 +31,11 @@ func NewResourceManager(client client.Client) *ResourceManager {
 func (rm *ResourceManager) createPersistentVolumeClaims(ctx context.Context, app *Application) error {
 	for _, pvcSpec := range app.Spec.Storage.PersistentVolumeClaims {
 		pvc := &corev1.PersistentVolumeClaim{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      pvcSpec.Name,
-				Namespace: app.ObjectMeta.Namespace,
-				Labels:    getLabels(app),
-				OwnerReferences: []metav1.OwnerReference{
-					*metav1.NewControllerRef(app, app.GroupVersionKind()),
-				},
+			Name:      pvcSpec.Name,
+			Namespace: app.ObjectMeta.Namespace,
+			Labels:    getLabels(app),
+			OwnerReferences: []metav1.OwnerReference{
+				*metav1.NewControllerRef(app, app.GroupVersionKind()),
 			},
 			Spec: corev1.PersistentVolumeClaimSpec{
 				AccessModes:      pvcSpec.AccessModes,
@@ -60,13 +58,11 @@ func (rm *ResourceManager) createPersistentVolumeClaims(ctx context.Context, app
 // createOrUpdateDeployment 创建或更新Deployment
 func (rm *ResourceManager) createOrUpdateDeployment(ctx context.Context, app *Application) error {
 	deployment := &appsv1.Deployment{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      app.ObjectMeta.Name,
-			Namespace: app.ObjectMeta.Namespace,
-			Labels:    getLabels(app),
-			OwnerReferences: []metav1.OwnerReference{
-				*metav1.NewControllerRef(app, app.GroupVersionKind()),
-			},
+		Name:      app.ObjectMeta.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Labels:    getLabels(app),
+		OwnerReferences: []metav1.OwnerReference{
+			*metav1.NewControllerRef(app, app.GroupVersionKind()),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: pointer.Int32(app.Spec.Replicas),
@@ -112,10 +108,8 @@ func (rm *ResourceManager) createOrUpdateDeployment(ctx context.Context, app *Ap
 			volumeName := fmt.Sprintf("storage-%d", i)
 			volumes = append(volumes, corev1.Volume{
 				Name: volumeName,
-				VolumeSource: corev1.VolumeSource{
-					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-						ClaimName: pvcSpec.Name,
-					},
+				PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+					ClaimName: pvcSpec.Name,
 				},
 			})
 			volumeMounts = append(volumeMounts, corev1.VolumeMount{
@@ -149,13 +143,11 @@ func (rm *ResourceManager) createOrUpdateDeployment(ctx context.Context, app *Ap
 // createOrUpdateService 创建或更新Service
 func (rm *ResourceManager) createOrUpdateService(ctx context.Context, app *Application) error {
 	service := &corev1.Service{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      app.ObjectMeta.Name,
-			Namespace: app.ObjectMeta.Namespace,
-			Labels:    getLabels(app),
-			OwnerReferences: []metav1.OwnerReference{
-				*metav1.NewControllerRef(app, app.GroupVersionKind()),
-			},
+		Name:      app.ObjectMeta.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Labels:    getLabels(app),
+		OwnerReferences: []metav1.OwnerReference{
+			*metav1.NewControllerRef(app, app.GroupVersionKind()),
 		},
 		Spec: corev1.ServiceSpec{
 			Type: app.Spec.Network.ServiceType,
@@ -199,13 +191,11 @@ func (rm *ResourceManager) createOrUpdateService(ctx context.Context, app *Appli
 // createOrUpdateHPA 创建或更新HPA
 func (rm *ResourceManager) createOrUpdateHPA(ctx context.Context, app *Application) error {
 	hpa := &autoscalingv2.HorizontalPodAutoscaler{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      app.ObjectMeta.Name,
-			Namespace: app.ObjectMeta.Namespace,
-			Labels:    getLabels(app),
-			OwnerReferences: []metav1.OwnerReference{
-				*metav1.NewControllerRef(app, app.GroupVersionKind()),
-			},
+		Name:      app.ObjectMeta.Name,
+		Namespace: app.ObjectMeta.Namespace,
+		Labels:    getLabels(app),
+		OwnerReferences: []metav1.OwnerReference{
+			*metav1.NewControllerRef(app, app.GroupVersionKind()),
 		},
 		Spec: autoscalingv2.HorizontalPodAutoscalerSpec{
 			ScaleTargetRef: autoscalingv2.CrossVersionObjectReference{

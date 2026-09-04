@@ -63,8 +63,8 @@ type MetricsCollector struct {
 	mu                sync.RWMutex
 	startTime         time.Time
 	lastReconcileTime time.Time
-	reconcileCount    int64
-	errorCount        int64
+	reconcileCount    atomic.Int64
+	errorCount        atomic.Int64
 }
 
 // NewMetricsCollector 创建新的指标收集器
@@ -254,7 +254,7 @@ func (mc *MetricsCollector) initializeMetrics() {
 
 // RecordReconcileStart 记录调和开始
 func (mc *MetricsCollector) RecordReconcileStart(applicationName string) {
-	atomic.AddInt64(&mc.reconcileCount, 1)
+	mc.reconcileCount.Add(1)
 	mc.reconcileTotal.Inc()
 	mc.mu.Lock()
 	mc.lastReconcileTime = time.Now()
@@ -269,7 +269,7 @@ func (mc *MetricsCollector) RecordReconcileSuccess(applicationName string) {
 
 // RecordReconcileError 记录调和错误
 func (mc *MetricsCollector) RecordReconcileError(applicationName string) {
-	atomic.AddInt64(&mc.errorCount, 1)
+	mc.errorCount.Add(1)
 	mc.reconcileErrors.Inc()
 }
 
@@ -394,14 +394,14 @@ func (mc *MetricsCollector) SetReconcileQueueLength(length int) {
 }
 
 // GetStats 获取统计信息
-func (mc *MetricsCollector) GetStats() map[string]interface{} {
+func (mc *MetricsCollector) GetStats() map[string]any {
 	mc.mu.RLock()
 	defer mc.mu.RUnlock()
 
-	return map[string]interface{}{
+	return map[string]any{
 		"uptime_seconds":      time.Since(mc.startTime).Seconds(),
-		"reconcile_count":     atomic.LoadInt64(&mc.reconcileCount),
-		"error_count":         atomic.LoadInt64(&mc.errorCount),
+		"reconcile_count":     mc.reconcileCount.Load(),
+		"error_count":         mc.errorCount.Load(),
 		"last_reconcile_time": mc.lastReconcileTime,
 		"start_time":          mc.startTime,
 	}
@@ -413,8 +413,8 @@ func (mc *MetricsCollector) Reset() {
 	defer mc.mu.Unlock()
 
 	// 重置计数器
-	atomic.StoreInt64(&mc.reconcileCount, 0)
-	atomic.StoreInt64(&mc.errorCount, 0)
+	mc.reconcileCount.Store(0)
+	mc.errorCount.Store(0)
 
 	// 重置时间
 	mc.startTime = time.Now()

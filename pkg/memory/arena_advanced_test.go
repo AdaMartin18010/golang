@@ -1,5 +1,4 @@
 //go:build !arenas
-// +build !arenas
 
 package memory
 
@@ -19,7 +18,7 @@ func TestArenaMemoryLeak(t *testing.T) {
 	runtime.ReadMemStats(&m1)
 
 	// 执行多次处理
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		records := make([]Record, 100)
 		for j := range records {
 			records[j] = Record{
@@ -55,7 +54,7 @@ func TestArenaConcurrentSafety(t *testing.T) {
 	var wg sync.WaitGroup
 	errors := make(chan error, numGoroutines)
 
-	for i := 0; i < numGoroutines; i++ {
+	for i := range numGoroutines {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
@@ -373,7 +372,7 @@ func TestMemoryUsageComparison(t *testing.T) {
 	var m1 runtime.MemStats
 	runtime.ReadMemStats(&m1)
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		_ = processWithArena(records)
 	}
 
@@ -388,7 +387,7 @@ func TestMemoryUsageComparison(t *testing.T) {
 	var m3 runtime.MemStats
 	runtime.ReadMemStats(&m3)
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		_ = processTraditional(records)
 	}
 

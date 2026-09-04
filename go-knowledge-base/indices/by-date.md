@@ -1,13 +1,26 @@
 # Go Knowledge Base - Chronological Index
 
-> **Version**: Auto-generated
-> **Last Updated**: 2026-04-03
+> **Version**: Auto-generated (2026-09-04 手动补充 1.26/1.27 新增文档)
+> **Last Updated**: 2026-09-04
 > **Purpose**: Find documents by creation/update date
 
 ---
 
 ## 📅 Documents by Date
 
+
+### 2026-08
+
+| Date | Document | Dimension | Level |
+|------|----------|-----------|-------|
+| 2026-08 | [LD-037: Go 1.27 泛型方法 (Generic Methods)](../02-Language-Design/LD-037-Go-1.27-Generic-Methods.md) | 02-Language-Design | B |
+
+### 2026-05
+
+| Date | Document | Dimension | Level |
+|------|----------|-----------|-------|
+| 2026-05-06 | [LD-035: Go 1.26 new(expr) 编译器语义与 SSA Lowering](../02-Language-Design/LD-035-Go-1.26-new-expr-Compiler-Semantics.md) | 02-Language-Design | B |
+| 2026-05-06 | [LD-036: Go 1.26 Green Tea GC 形式模型与性能分析](../02-Language-Design/LD-036-Go-1.26-Green-Tea-GC-Formal-Model.md) | 02-Language-Design | B |
 
 ### 2026-04
 

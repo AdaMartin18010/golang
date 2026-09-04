@@ -26,12 +26,12 @@ func (er *EventRecorder) Event(object runtime.Object, eventType, reason, message
 }
 
 // Eventf 格式化记录事件
-func (er *EventRecorder) Eventf(object runtime.Object, eventType, reason, messageFmt string, args ...interface{}) {
+func (er *EventRecorder) Eventf(object runtime.Object, eventType, reason, messageFmt string, args ...any) {
 	er.recorder.Eventf(object, eventType, reason, messageFmt, args...)
 }
 
 // AnnotatedEventf 带注解的事件记录
-func (er *EventRecorder) AnnotatedEventf(object runtime.Object, annotations map[string]string, eventType, reason, messageFmt string, args ...interface{}) {
+func (er *EventRecorder) AnnotatedEventf(object runtime.Object, annotations map[string]string, eventType, reason, messageFmt string, args ...any) {
 	er.recorder.AnnotatedEventf(object, annotations, eventType, reason, messageFmt, args...)
 }
 

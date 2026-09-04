@@ -61,11 +61,11 @@ func BenchmarkMixedSizeAllocation(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		// 90% 小对象，10% 中等对象
-		for j := 0; j < 900; j++ {
+		for j := range 900 {
 			obj := &SmallObject{ID: int64(j)}
 			runtime.KeepAlive(obj)
 		}
-		for j := 0; j < 100; j++ {
+		for j := range 100 {
 			obj := &MediumObject{ID: int64(j), Valid: true}
 			runtime.KeepAlive(obj)
 		}
@@ -135,10 +135,8 @@ func BenchmarkHighConcurrency(b *testing.B) {
 		work := make(chan int, b.N)
 
 		// 启动工作器
-		for i := 0; i < numWorkers; i++ {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
+		for range numWorkers {
+			wg.Go(func() {
 				for range work {
 					objects := make([]*SmallObject, 1000)
 					for j := range objects {
@@ -146,7 +144,7 @@ func BenchmarkHighConcurrency(b *testing.B) {
 					}
 					runtime.KeepAlive(objects)
 				}
-			}()
+			})
 		}
 
 		b.ResetTimer()
@@ -170,7 +168,7 @@ func BenchmarkLongRunning(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		// 模拟持续的小对象分配
-		for j := 0; j < 1000; j++ {
+		for j := range 1000 {
 			obj := &SmallObject{ID: int64(j)}
 			// 一些简单计算
 			obj.Data[0] = byte(j % 256)
@@ -290,10 +288,8 @@ func TestStressGC(t *testing.T) {
 	done := make(chan struct{})
 
 	// 启动多个 goroutine 持续分配
-	for i := 0; i < goroutines; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range goroutines {
+		wg.Go(func() {
 			for {
 				select {
 				case <-done:
@@ -306,7 +302,7 @@ func TestStressGC(t *testing.T) {
 					runtime.KeepAlive(objects)
 				}
 			}
-		}()
+		})
 	}
 
 	// 运行指定时间

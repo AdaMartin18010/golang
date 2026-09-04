@@ -46,8 +46,8 @@ func demonstrateNewExpression() {
 	fmt.Printf("Person: Name=%s, Age=%d\n", person.Name, *person.Age)
 
 	// 更简洁的用法：不再需要临时变量
-	enabled := new(true)  // *bool pointing to true
-	count := new(42)      // *int pointing to 42
+	enabled := new(true)    // *bool pointing to true
+	count := new(42)        // *int pointing to 42
 	message := new("hello") // *string pointing to "hello"
 
 	fmt.Printf("new(true) = %t\n", *enabled)
@@ -77,8 +77,7 @@ func demonstrateErrorsAsType() {
 	var err error = &CustomError{Code: 404, Message: "not found"}
 
 	// Before Go 1.26: need var declaration and pointer-to-pointer
-	var customErr1 *CustomError
-	if errors.As(err, &customErr1) {
+	if customErr1, ok := errors.AsType[*CustomError](err); ok {
 		fmt.Printf("Old way - Code: %d, Message: %s\n", customErr1.Code, customErr1.Message)
 	}
 

@@ -31,7 +31,7 @@ func NewConnectionPool(maxConn int) *ConnectionPool {
 	}
 
 	// 预创建连接
-	for i := 0; i < maxConn; i++ {
+	for range maxConn {
 		client := &http.Client{
 			Timeout: 30 * time.Second,
 			Transport: &http.Transport{
@@ -79,11 +79,11 @@ func (p *ConnectionPool) Put(client *http.Client) {
 }
 
 // Stats 获取连接池统计
-func (p *ConnectionPool) Stats() map[string]interface{} {
+func (p *ConnectionPool) Stats() map[string]any {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 
-	return map[string]interface{}{
+	return map[string]any{
 		"max_connections": p.maxConnections,
 		"active_count":    p.activeCount,
 		"idle_count":      len(p.connections),
@@ -168,7 +168,7 @@ func (cm *ConnectionManager) Remove(connID string) {
 }
 
 // GetStats 获取统计信息
-func (cm *ConnectionManager) GetStats() map[string]interface{} {
+func (cm *ConnectionManager) GetStats() map[string]any {
 	cm.mu.RLock()
 	defer cm.mu.RUnlock()
 
@@ -179,7 +179,7 @@ func (cm *ConnectionManager) GetStats() map[string]interface{} {
 		totalBytesRecv += conn.BytesRecv
 	}
 
-	return map[string]interface{}{
+	return map[string]any{
 		"active_connections": len(cm.connections),
 		"total_requests":     totalRequests,
 		"total_bytes_sent":   totalBytesSent,

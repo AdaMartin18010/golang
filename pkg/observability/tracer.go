@@ -267,26 +267,27 @@ func (s *ProbabilitySampler) ShouldSample(name string) bool {
 
 // InMemoryRecorder 内存记录器（用于测试）
 type InMemoryRecorder struct {
-	spans []Span
+	spans []*Span
 	mu    sync.Mutex
 }
 
 func NewInMemoryRecorder() *InMemoryRecorder {
 	return &InMemoryRecorder{
-		spans: make([]Span, 0),
+		spans: make([]*Span, 0),
 	}
 }
 
 func (r *InMemoryRecorder) RecordSpan(span *Span) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.spans = append(r.spans, *span)
+	// 存储指针而非值副本，避免拷贝 Span 内的 sync.RWMutex（copylocks）
+	r.spans = append(r.spans, span)
 }
 
-func (r *InMemoryRecorder) GetSpans() []Span {
+func (r *InMemoryRecorder) GetSpans() []*Span {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	spans := make([]Span, len(r.spans))
+	spans := make([]*Span, len(r.spans))
 	copy(spans, r.spans)
 	return spans
 }

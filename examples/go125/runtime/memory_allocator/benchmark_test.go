@@ -15,7 +15,7 @@ func BenchmarkMapLarge(b *testing.B) {
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("Size%d", size), func(b *testing.B) {
 			m := make(map[int]int, size)
-			for i := 0; i < size; i++ {
+			for i := range size {
 				m[i] = i
 			}
 
@@ -39,7 +39,7 @@ func BenchmarkMapInsert(b *testing.B) {
 
 			for i := 0; i < b.N; i++ {
 				m := make(map[int]int, size)
-				for j := 0; j < size; j++ {
+				for j := range size {
 					m[j] = j
 				}
 				runtime.KeepAlive(m)
@@ -54,7 +54,7 @@ func BenchmarkMapIteration(b *testing.B) {
 
 	for _, size := range sizes {
 		m := make(map[int]int, size)
-		for i := 0; i < size; i++ {
+		for i := range size {
 			m[i] = i
 		}
 
@@ -78,7 +78,7 @@ func BenchmarkMapStringKey(b *testing.B) {
 	m := make(map[string]int, size)
 	keys := make([]string, size)
 
-	for i := 0; i < size; i++ {
+	for i := range size {
 		key := fmt.Sprintf("key_%d", i)
 		keys[i] = key
 		m[key] = i
@@ -147,7 +147,7 @@ func BenchmarkAllocationPatterns(b *testing.B) {
 		b.ReportAllocs()
 
 		for i := 0; i < b.N; i++ {
-			for j := 0; j < 100; j++ {
+			for j := range 100 {
 				obj := &SmallObject{ID: int64(j)}
 				runtime.KeepAlive(obj)
 			}
@@ -197,7 +197,7 @@ func BenchmarkGCPressure(b *testing.B) {
 
 		for i := 0; i < b.N; i++ {
 			// 大量临时对象
-			for j := 0; j < 1000; j++ {
+			for j := range 1000 {
 				obj := &SmallObject{ID: int64(j)}
 				runtime.KeepAlive(obj)
 			}
@@ -245,7 +245,7 @@ func BenchmarkMemoryUsage(b *testing.B) {
 			before := m.HeapAlloc
 
 			data := make(map[int]int, size)
-			for i := 0; i < size; i++ {
+			for i := range size {
 				data[i] = i
 			}
 
@@ -281,7 +281,7 @@ type User struct {
 	ID       int64
 	Name     string
 	Email    string
-	Metadata map[string]interface{}
+	Metadata map[string]any
 }
 
 // BenchmarkRealWorldScenario 模拟实际应用场景
@@ -303,7 +303,7 @@ func BenchmarkRealWorldScenario(b *testing.B) {
 					ID:       userID,
 					Name:     fmt.Sprintf("User%d", userID),
 					Email:    fmt.Sprintf("user%d@example.com", userID),
-					Metadata: make(map[string]interface{}),
+					Metadata: make(map[string]any),
 				}
 			}
 
@@ -320,7 +320,7 @@ func BenchmarkRealWorldScenario(b *testing.B) {
 			data := make(map[string]int, 1000)
 
 			// 读取和处理
-			for j := 0; j < 1000; j++ {
+			for j := range 1000 {
 				key := fmt.Sprintf("metric_%d", j%100)
 				data[key]++
 			}
@@ -360,7 +360,7 @@ func TestMapBasic(t *testing.T) {
 	m := make(map[int]int, 1000)
 
 	// 插入
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		m[i] = i * 2
 	}
 

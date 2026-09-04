@@ -1,10 +1,10 @@
-﻿# 容器感知调度示例
+# 容器感知调度示例
 
-> **Go 版本**: 1.26+  
+> **Go 版本**: 1.27+（1.27 起 container-aware GOMAXPROCS **默认开启**，无需 GODEBUG；1.26 及更早需 `GODEBUG=containermaxprocs=1`）  
 > **示例类型**: 容器环境优化  
-> **最后更新**: 2025-10-18
+> **最后更新**: 2026-09-04（对齐 Go 1.27.1）
 
-本目录包含 Go 1.23+ 容器感知调度的测试和示例代码。
+本目录包含容器感知调度的测试和示例代码。**重要**：自 Go 1.27 起，运行时默认按 cgroup CPU 配额设置 GOMAXPROCS（`min(宿主机核数, 容器配额)`），不再需要实验开关或 automaxprocs 类库；如需恢复旧行为，使用 `GODEBUG=containermaxprocs=0`。
 
 ---
 
@@ -54,7 +54,7 @@
 go test -v -run=TestContainerAwareScheduling
 
 # Docker 容器中运行
-docker run --cpus=2 -v $(pwd):/app -w /app golang:1.26.2 \
+docker run --cpus=2 -v $(pwd):/app -w /app golang:1.27.1 \
   go test -v -run=TestContainerAwareScheduling
 ```
 
@@ -77,7 +77,7 @@ PASS
 go test -v -run=TestCgroupDetection
 
 # Docker 中运行
-docker run --cpus=4 -v $(pwd):/app -w /app golang:1.26.2 \
+docker run --cpus=4 -v $(pwd):/app -w /app golang:1.27.1 \
   go test -v -run=TestCgroupDetection
 ```
 
@@ -88,7 +88,7 @@ docker run --cpus=4 -v $(pwd):/app -w /app golang:1.26.2 \
 go test -v -run=TestRuntimeDiagnostics
 
 # Docker 中诊断
-docker run --cpus=2 --memory=2g -v $(pwd):/app -w /app golang:1.26.2 \
+docker run --cpus=2 --memory=2g -v $(pwd):/app -w /app golang:1.27.1 \
   go test -v -run=TestRuntimeDiagnostics
 ```
 
@@ -111,7 +111,7 @@ docker run --cpus=2 --memory=2g -v $(pwd):/app -w /app golang:1.26.2 \
 go test -v
 
 # Docker 中运行
-docker run --cpus=2 -v $(pwd):/app -w /app golang:1.26.2 \
+docker run --cpus=2 -v $(pwd):/app -w /app golang:1.27.1 \
   go test -v
 ```
 
@@ -131,7 +131,7 @@ docker run --cpus=2 -v $(pwd):/app -w /app golang:1.26.2 \
 go test -bench=. -benchmem
 
 # Docker 中运行（4 核限制）
-docker run --cpus=4 -v $(pwd):/app -w /app golang:1.26.2 \
+docker run --cpus=4 -v $(pwd):/app -w /app golang:1.27.1 \
   go test -bench=. -benchmem -benchtime=10s
 ```
 
@@ -179,7 +179,7 @@ docker run --cpus=4 test-container-scheduling
 ### Dockerfile 示例
 
 ```dockerfile
-FROM golang:1.26.2-alpine AS builder
+FROM golang:1.27.1-alpine AS builder
 
 WORKDIR /app
 COPY . .
@@ -234,7 +234,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: go-app:1.26.2
+        image: go-app:1.27.1
         resources:
           limits:
             cpu: "2"        # Go 1.23++ 自动设置 GOMAXPROCS=2
@@ -257,7 +257,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: go-app:1.26.2
+        image: go-app:1.27.1
         resources:
           limits:
             cpu: "4"
@@ -267,7 +267,7 @@ spec:
             memory: "2Gi"
         env:
         - name: GO_VERSION
-          value: "1.26.2"
+          value: "1.27.1"
         # 可选：手动覆盖（仅特殊场景）
         # - name: GOMAXPROCS
         #   value: "8"
@@ -309,12 +309,12 @@ CPU Limit: 2.00 cores
 
 ```bash
 # 1. 在容器中测试（自动检测）
-docker run --cpus=4 -v $(pwd):/app -w /app golang:1.26.2 \
+docker run --cpus=4 -v $(pwd):/app -w /app golang:1.27.1 \
   go test -bench=BenchmarkCorrectGOMAXPROCS -benchmem -count=5 \
   > auto-detected.txt
 
 # 2. 模拟 Go 1.24（使用 NumCPU）
-docker run --cpus=4 -v $(pwd):/app -w /app golang:1.26.2 \
+docker run --cpus=4 -v $(pwd):/app -w /app golang:1.27.1 \
   go test -bench=BenchmarkOversubscribedGOMAXPROCS -benchmem -count=5 \
   > oversubscribed.txt
 
@@ -356,7 +356,7 @@ done
 **A**: 运行测试程序检查 GOMAXPROCS：
 
 ```bash
-docker run --cpus=2 -v $(pwd):/app -w /app golang:1.26.2 \
+docker run --cpus=2 -v $(pwd):/app -w /app golang:1.27.1 \
   go test -v -run=TestContainerAwareScheduling
 ```
 

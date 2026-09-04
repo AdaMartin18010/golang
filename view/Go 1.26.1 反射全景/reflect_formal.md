@@ -215,7 +215,7 @@ $$\text{RO}(v) \iff v.\phi \land flagRO \neq 0$$
 **定义 4.1（类型可比较性）**：类型 $T$ 是可比较的，当且仅当满足以下条件：
 
 | 类型 | 可比较性条件 |
-|------|-------------|
+| ------ | ------------- |
 | Bool, Numeric, String, Pointer, Chan, Func, Interface | 总是可比较 |
 | Array | 元素类型可比较 |
 | Struct | 所有字段可比较 |

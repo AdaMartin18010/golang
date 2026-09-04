@@ -1,10 +1,10 @@
 > **📌 文档角色**: 对比参考材料 (Comparative Reference)
-> 
+>
 > 本文档作为 **Scala Actor / Flink** 核心内容的对比参照系，
 > 展示 CSP 模型的简化实现。如需系统学习核心计算模型，
-> 请参考 [Scala 类型系统](./Scala-3.6-3.7-Type-System-Complete.md) 或 
+> 请参考 [Scala 类型系统](./Scala-3.6-3.7-Type-System-Complete.md) 或
 > [Flink Dataflow 形式化](../Flink/Flink-Dataflow-Formal.md)。
-> 
+>
 > ---
 
 # Go 操作语义：大步语义、小步语义与并发执行模型

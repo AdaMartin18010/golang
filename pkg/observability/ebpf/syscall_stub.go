@@ -15,10 +15,15 @@ import (
 )
 
 // SyscallTracerConfig 系统调用追踪器配置
+// 字段集与 linux 版 syscall_tracer.go 保持一致，保证跨平台编译一致
 type SyscallTracerConfig struct {
 	Tracer  trace.Tracer
 	Meter   metric.Meter
 	Enabled bool
+	// TargetPID 目标进程ID（0表示所有进程）
+	TargetPID uint32
+	// BufferSize perf buffer 大小
+	BufferSize int
 }
 
 // SyscallTracer 系统调用追踪器（非 Linux 系统的 stub 实现）

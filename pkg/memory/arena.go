@@ -3,7 +3,6 @@
 // 本文件提供 arenas 实验关闭时的传统回退实现（默认编译路径）。
 
 //go:build !arenas
-// +build !arenas
 
 package memory
 
@@ -73,7 +72,7 @@ func benchmark(name string, fn func([]Record) []Result, records []Record, rounds
 	runtime.ReadMemStats(&m)
 	startGC := m.NumGC
 
-	for i := 0; i < rounds; i++ {
+	for i := range rounds {
 		start := time.Now()
 		_ = fn(records)
 		totalDuration += time.Since(start)
@@ -115,10 +114,7 @@ func (p *BatchProcessor) ProcessBatch(records []Record) []Result {
 
 	// 分批处理
 	for i := 0; i < len(records); i += p.batchSize {
-		end := i + p.batchSize
-		if end > len(records) {
-			end = len(records)
-		}
+		end := min(i+p.batchSize, len(records))
 
 		batch := records[i:end]
 		batchResults := p.processBatch(batch)
@@ -153,7 +149,7 @@ func RunDemo() {
 	// 准备测试数据
 	const numRecords = 10000
 	records := make([]Record, numRecords)
-	for i := 0; i < numRecords; i++ {
+	for i := range numRecords {
 		records[i] = Record{
 			ID:        i,
 			Name:      fmt.Sprintf("Record-%d", i),
@@ -214,7 +210,7 @@ func RunDemo() {
 	var m1 runtime.MemStats
 	runtime.ReadMemStats(&m1)
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		_ = processWithArena(records)
 	}
 
@@ -236,7 +232,7 @@ func RunDemo() {
 	var m3 runtime.MemStats
 	runtime.ReadMemStats(&m3)
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		_ = processTraditional(records)
 	}
 

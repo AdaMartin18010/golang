@@ -3,6 +3,7 @@ package kubernetes_operator
 import (
 	"context"
 	"fmt"
+	"slices"
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -24,10 +25,10 @@ import (
 // Application 自定义资源定义
 type Application struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
-	Spec   ApplicationSpec   `json:"spec,omitempty"`
-	Status ApplicationStatus `json:"status,omitempty"`
+	Spec   ApplicationSpec   `json:"spec"`
+	Status ApplicationStatus `json:"status"`
 }
 
 // ApplicationSpec 应用规格
@@ -41,17 +42,17 @@ type ApplicationSpec struct {
 	// 环境变量
 	Environment []corev1.EnvVar `json:"environment,omitempty"`
 	// 资源限制
-	Resources corev1.ResourceRequirements `json:"resources,omitempty"`
+	Resources corev1.ResourceRequirements `json:"resources"`
 	// 健康检查
-	HealthCheck HealthCheckSpec `json:"healthCheck,omitempty"`
+	HealthCheck HealthCheckSpec `json:"healthCheck"`
 	// 自动扩缩容配置
-	Scaling ScalingSpec `json:"scaling,omitempty"`
+	Scaling ScalingSpec `json:"scaling"`
 	// 存储配置
-	Storage StorageSpec `json:"storage,omitempty"`
+	Storage StorageSpec `json:"storage"`
 	// 网络配置
-	Network NetworkSpec `json:"network,omitempty"`
+	Network NetworkSpec `json:"network"`
 	// 安全配置
-	Security SecuritySpec `json:"security,omitempty"`
+	Security SecuritySpec `json:"security"`
 }
 
 // HealthCheckSpec 健康检查规格
@@ -140,7 +141,7 @@ type ApplicationStatus struct {
 	// 服务端点
 	ServiceEndpoints []string `json:"serviceEndpoints,omitempty"`
 	// 最后更新时间
-	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
+	LastUpdateTime metav1.Time `json:"lastUpdateTime"`
 }
 
 // ApplicationCondition 应用条件
@@ -280,7 +281,7 @@ func NewApplicationController(mgr manager.Manager) (*ApplicationController, erro
 }
 
 // enqueueApplication 将应用加入队列
-func (ac *ApplicationController) enqueueApplication(obj interface{}) {
+func (ac *ApplicationController) enqueueApplication(obj any) {
 	key, err := cache.MetaNamespaceKeyFunc(obj)
 	if err != nil {
 		return
@@ -289,7 +290,7 @@ func (ac *ApplicationController) enqueueApplication(obj interface{}) {
 }
 
 // updateApplication 更新应用
-func (ac *ApplicationController) updateApplication(old, new interface{}) {
+func (ac *ApplicationController) updateApplication(old, new any) {
 	oldApp := old.(*Application)
 	newApp := new.(*Application)
 
@@ -302,7 +303,7 @@ func (ac *ApplicationController) updateApplication(old, new interface{}) {
 }
 
 // deleteApplication 删除应用
-func (ac *ApplicationController) deleteApplication(obj interface{}) {
+func (ac *ApplicationController) deleteApplication(obj any) {
 	key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
 	if err != nil {
 		return
@@ -586,12 +587,7 @@ func (ac *ApplicationController) getLabels(app *Application) map[string]string {
 }
 
 func containsString(slice []string, s string) bool {
-	for _, item := range slice {
-		if item == s {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, s)
 }
 
 func removeString(slice []string, s string) []string {

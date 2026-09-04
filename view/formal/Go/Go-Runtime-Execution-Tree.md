@@ -40,7 +40,7 @@ state   ∈ Gstatus × Pstatus × Mstatus
 **节点类型解释**：
 
 | 类型 | 含义 | 典型实体 |
-|------|------|----------|
+| ------ | ------ | ---------- |
 | `CALL` | 函数调用/返回 | `main.main`, `fmt.Println` |
 | `SCHED` | Goroutine 调度点 | `runtime·schedule`, `runtime·gogo` |
 | `SYSCALL` | 系统调用边界 | `runtime·entersyscall`, `runtime·exitsyscall` |

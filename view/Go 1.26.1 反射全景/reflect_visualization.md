@@ -1040,7 +1040,7 @@ func ToMap(obj interface{}) map[string]interface{} {
 **主要方法分类：**
 
 | 分类 | 方法 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 基础信息 | `Name()`, `PkgPath()` | 类型名称和包路径 |
 | 类型分类 | `Kind()` | 返回 Kind 枚举值 |
 | 内存信息 | `Size()`, `Align()` | 内存大小和对齐 |
@@ -1070,7 +1070,7 @@ func ToMap(obj interface{}) map[string]interface{} {
 **主要方法分类：**
 
 | 分类 | 方法 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 类型信息 | `Type()`, `Kind()`, `IsValid()` | 基础信息 |
 | 基本类型获取 | `Bool()`, `Int()`, `Float()`, `String()` | 获取具体值 |
 | 基本类型设置 | `SetBool()`, `SetInt()`, `SetFloat()` | 设置具体值 |

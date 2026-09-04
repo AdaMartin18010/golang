@@ -15,7 +15,7 @@ func generator(n int) <-chan int {
 	out := make(chan int)
 	go func() {
 		defer close(out)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			out <- i
 		}
 	}()
@@ -95,7 +95,7 @@ func merge(channels ...<-chan int) <-chan int {
 func fanOut(in <-chan int, numWorkers int) []<-chan int {
 	channels := make([]<-chan int, numWorkers)
 
-	for i := 0; i < numWorkers; i++ {
+	for i := range numWorkers {
 		ch := make(chan int)
 		channels[i] = ch
 

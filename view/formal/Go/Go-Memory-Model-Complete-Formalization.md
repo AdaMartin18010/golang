@@ -82,7 +82,7 @@
 ### 1.2 关键结论
 
 | 结论 | 形式化陈述 | 影响 |
-|------|-----------|------|
+| ------ | ----------- | ------ |
 | Channel提供FIFO保证 | $send_i \xrightarrow{hb} send_j \Rightarrow recv_i \xrightarrow{hb} recv_j$ | 消息顺序可靠 |
 | Mutex保证互斥 | $\neg(G_1 \in CS \land G_2 \in CS)$ | 临界区安全 |
 | 无数据竞争=顺序一致 | $DRF(P) \Rightarrow SC(P)$ | 程序可推断 |
@@ -527,7 +527,7 @@ go run -race program.go  # 启用竞争检测
 **定义 10.1 (内存一致性)**:
 
 | 架构 | 模型 | 重排允许 |
-|------|------|---------|
+| ------ | ------ | --------- |
 | x86 | TSO | Store-Load |
 | ARM | Weak | 任意 |
 | RISC-V | Weak | 任意 |
@@ -588,7 +588,7 @@ $$
 ### 12.1 静态分析工具
 
 | 工具 | 功能 | 精度 |
-|------|------|------|
+| ------ | ------ | ------ |
 | Go Race Detector | 动态竞争检测 | 高 |
 | Staticcheck | 静态分析 | 中 |
 | Infer | 形式化验证 | 高 |

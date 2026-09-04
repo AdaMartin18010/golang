@@ -100,7 +100,7 @@ var f Op[int] = Add   // Go 1.27：从 Op[int] 推断 T=int（此前仅调用时
 ### 2.4 GODEBUG 生命周期
 
 | 设置 | 1.26 | 1.27 |
-|------|------|------|
+| ------ | ------ | ------ |
 | `asynctimerchan` | 可设旧值 | **永久移除**（time 通道恒无缓冲） |
 | `containermaxprocs` | 实验开关 | 默认 on，`=0` 关闭 |
 | `tracebacklabels` | — | go≥1.27 模块 traceback 头部含 pprof labels，`=0` 关闭 |
@@ -127,7 +127,7 @@ go≥1.27 模块的 go.mod 中若声明已移除 GODEBUG 的旧值，**构建报
 ### 3.2 `go fix` modernizer 增量
 
 | modernizer | 作用 | 备注 |
-|-----------|------|------|
+| ----------- | ------ | ------ |
 | `atomictypes` | 旧 atomic 函数调用 → `atomic.Int64` 等类型 | 新增 |
 | `embedlit` | 嵌入字段字面量补全（`T{Field: v}` → `T{Embedded.Field: v}`） | 新增；1.27.1 修复两个 bug（#81059、#81101） |
 | `slicesbackward` | 反向遍历惯用法现代化 | 新增 |
@@ -150,7 +150,7 @@ go≥1.27 模块的 go.mod 中若声明已移除 GODEBUG 的旧值，**构建报
 ### 4.1 新包（本机 `go doc` 全部验证）
 
 | 包 | 状态 | 说明 |
-|----|------|------|
+| ---- | ------ | ------ |
 | `encoding/json/v2` | **GA** | Marshal/Unmarshal + Options 体系；见 [Go-1.27-JSON-v2](../../docs/go127-json-v2-migration.md) |
 | `encoding/json/jsontext` | GA | Token/Value 底层流式处理；语法层 Options（如 `AllowDuplicateNames`） |
 | `uuid` | GA | `New/NewV4/NewV7/Parse/MustParse/Max/Nil`；`type UUID [16]byte`（版本号取 `u[6]>>4`） |
@@ -175,7 +175,7 @@ go≥1.27 模块的 go.mod 中若声明已移除 GODEBUG 的旧值，**构建报
 ### 4.3 行为性变化（迁移敏感）
 
 | 变化 | 影响面 |
-|------|--------|
+| ------ | -------- |
 | v1 `encoding/json` 改由 v2 实现 | 错误文本可能不同；`,string` 拒绝 quoted null（1.27.1 已修 #81083）；可用 `GOEXPERIMENT=nojsonv2` 回退（后续版本移除） |
 | HTTP/1 `Response.Body` 关闭自动 drain | 连接复用提升；依赖旧行为的测试需回归（1.27.1 修复未读完 body 时 Close 返回 EOF #81027） |
 | HTTP/2 默认尊重客户端优先级（RFC 9218） | 可用 `DisableClientPriority` 关闭 |
@@ -197,7 +197,7 @@ go≥1.27 模块的 go.mod 中若声明已移除 GODEBUG 的旧值，**构建报
 ## 6. 1.27.1 补丁要点（2026-08）
 
 | Issue | 组件 | 修复 |
-|-------|------|------|
+| ------- | ------ | ------ |
 | #81195 | 编译器 | 泛型方法指针别名接收者链接符号错误 |
 | #81151 | database/sql | closingMutex 丢失唤醒导致 Next/Close 死锁 |
 | #81083 | encoding/json | `,string` 拒绝 quoted null（v2 回归） |
@@ -212,7 +212,7 @@ go≥1.27 模块的 go.mod 中若声明已移除 GODEBUG 的旧值，**构建报
 ## 7. 与预测的差集（对 Go-1.27-Preview.md 的复盘摘要）
 
 | 预测 | 结论 |
-|------|------|
+| ------ | ------ |
 | 泛型方法 1.27-1.28（85%） | ✅ 命中（1.27 落地，语法一致） |
 | json/v2 GA（1.27 或 1.28） | ✅ 命中（1.27 GA 且 v1 切换为 v2 实现） |
 | goroutineleak 转正 | ✅ 命中 |

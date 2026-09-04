@@ -1,7 +1,7 @@
 # Go Knowledge Base - Topic-Based Cross Reference
 
-> **Version**: Auto-generated
-> **Last Updated**: 2026-04-03
+> **Version**: Auto-generated (2026-09-04 手动补充 go126/go127/generics 条目)
+> **Last Updated**: 2026-09-04
 > **Purpose**: Find documents by topic, concept, or technology
 
 ---
@@ -1154,6 +1154,7 @@
   - [LD-001: Go 类型系统的形式化语义 (Go Type System: Formal Semantics)](../02-Language-Design/LD-001-Go-Type-System-Formal-Semantics.md)
   - [LD-003: Go 泛型的形式化语义与类型理论 (Go Generics: Formal Semantics & Type Theory)](../02-Language-Design/LD-003-Go-Generics-Formal.md)
   - [LD-010: Go 泛型的形式化理论 (Go Generics: Formal Theory)](../02-Language-Design/LD-010-Go-Generics-Formal.md)
+  - [LD-037: Go 1.27 泛型方法 (Go 1.27 Generic Methods)](../02-Language-Design/LD-037-Go-1.27-Generic-Methods.md)
 
 - **gin**
   - [TS-NET-001: Gin Web Framework Architecture](../04-Technology-Stack/03-Network/01-Gin-Framework.md)
@@ -1216,6 +1217,11 @@
 
 - **go126**
   - [LD-005: Go 1.26 指针接收器约束 (Go 1.26 Pointer Receiver Constraints)](../02-Language-Design/LD-005-Go-126-Pointer-Receiver-Constraints.md)
+  - [LD-035: Go 1.26 new(expr) 编译器语义与 SSA Lowering](../02-Language-Design/LD-035-Go-1.26-new-expr-Compiler-Semantics.md)
+  - [LD-036: Go 1.26 Green Tea GC 形式模型与性能分析](../02-Language-Design/LD-036-Go-1.26-Green-Tea-GC-Formal-Model.md)
+
+- **go127**
+  - [LD-037: Go 1.27 泛型方法 (Go 1.27 Generic Methods)](../02-Language-Design/LD-037-Go-1.27-Generic-Methods.md)
 
 - **golang**
   - [TS-CL-001: Go Standard Library Architecture and Design Philosophy](../04-Technology-Stack/01-Core-Library/01-Standard-Library-Overview.md)

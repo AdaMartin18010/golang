@@ -204,6 +204,13 @@
 
 - [x] Go 1.27 发布 ✅（2026-08，当前 1.27.1；见 docs/ 下 Go 1.27 发布分析）
 - [x] 泛型方法 ✅（Go 1.27 正式落地，如 `math/rand/v2.Rand.N[Int intType]`）
+
+**1.27 产出（2026-09-04 完成）**:
+
+- 语法/语义/工具链三篇分析：[`view/Go1.27语法/`](view/Go1.27语法/README.md)
+- 可运行示例（12 特性全部验证通过）：[`examples/go127-features/`](examples/go127-features/README.md)
+- 知识卡片：[LD-037 泛型方法](go-knowledge-base/02-Language-Design/LD-037-Go-1.27-Generic-Methods.md)（LD-035/036 补登索引）
+- 生产试点：pkg/http/response 迁移 encoding/json/v2（见 `docs/go127-json-v2-migration.md`）
 - [ ] WebAssembly
 - [ ] AI/ML 基础设施
 

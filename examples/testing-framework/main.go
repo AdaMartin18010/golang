@@ -194,7 +194,7 @@ func demoPerformanceTesting(ctx context.Context) {
 					99: duration,
 				},
 				Timestamp: time.Now(),
-				Metadata:  make(map[string]interface{}),
+				Metadata:  make(map[string]any),
 			}, nil
 		},
 	)

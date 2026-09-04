@@ -100,7 +100,7 @@ func handleDataOptimized(w http.ResponseWriter, r *http.Request) {
 	defer PutDataSlice(data)
 
 	// 预分配所有数据项
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		item := GetDataItem()
 		item["id"] = i
 		item["value"] = float64(i) * 1.5
@@ -138,7 +138,7 @@ func handleDataOptimizedV2(w http.ResponseWriter, r *http.Request) {
 	defer PutBuffer(buf)
 
 	buf.WriteString(`[`)
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		if i > 0 {
 			buf.WriteString(`,`)
 		}

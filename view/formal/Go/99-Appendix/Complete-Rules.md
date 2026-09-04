@@ -635,7 +635,7 @@ graph BT
 ## 8. 符号对照表
 
 | 符号 | 含义 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | $\mathcal{R}_{FG}$ | FG 规则集合 | Featherweight Go 的完整类型规则 |
 | $\mathcal{R}_{FGG}$ | FGG 规则集合 | Featherweight Generic Go 的完整类型规则 |
 | $\mathcal{R}_{SOS}$ | SOS 规则集合 | Go-CS 的小步操作语义规则 |

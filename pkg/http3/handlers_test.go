@@ -72,7 +72,7 @@ func TestHandleStats(t *testing.T) {
 	stats = Stats{StartTime: time.Now()}
 
 	// 发送几个请求以生成统计数据
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		req := httptest.NewRequest("GET", "/", nil)
 		w := httptest.NewRecorder()
 		handleRoot(w, req)
@@ -91,7 +91,7 @@ func TestHandleStats(t *testing.T) {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode)
 	}
 
-	var statsData map[string]interface{}
+	var statsData map[string]any
 	if err := json.NewDecoder(resp.Body).Decode(&statsData); err != nil {
 		t.Fatalf("Failed to decode stats: %v", err)
 	}
@@ -156,7 +156,7 @@ func TestHandleData(t *testing.T) {
 		t.Errorf("Expected status 200, got %d", resp.StatusCode)
 	}
 
-	var data []map[string]interface{}
+	var data []map[string]any
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		t.Fatalf("Failed to decode data response: %v", err)
 	}
@@ -185,7 +185,7 @@ func TestMultipleRequests(t *testing.T) {
 	const numRequests = 20
 	results := make(chan int, numRequests)
 
-	for i := 0; i < numRequests; i++ {
+	for range numRequests {
 		go func() {
 			req := httptest.NewRequest("GET", "/", nil)
 			w := httptest.NewRecorder()
@@ -195,7 +195,7 @@ func TestMultipleRequests(t *testing.T) {
 	}
 
 	// 收集结果
-	for i := 0; i < numRequests; i++ {
+	for i := range numRequests {
 		statusCode := <-results
 		if statusCode != http.StatusOK {
 			t.Errorf("Request %d failed with status %d", i, statusCode)

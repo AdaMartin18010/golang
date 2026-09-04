@@ -49,6 +49,16 @@
 | 29-Go-Runtime-GMP-Scheduler-Deep-Dive.md | GMP 深入 | 22KB |
 | 30-Go-sync-Package-Internals.md | sync 包 | 15KB |
 
+### 版本演进专题 (Go 1.26 / 1.27, 2026-05 后新增)
+
+| 文档 | 主题 | Go 版本 |
+| ------ | ------ | ------ |
+| LD-035-Go-1.26-new-expr-Compiler-Semantics.md | new(expr) 编译器语义 | 1.26+ |
+| LD-036-Go-1.26-Green-Tea-GC-Formal-Model.md | Green Tea GC 形式模型 | 1.26 |
+| LD-037-Go-1.27-Generic-Methods.md | 泛型方法 | 1.27/1.27.1 |
+
+相关：可运行示例见仓库根 `examples/go126-features/`、`examples/go127-features/`；1.27 语法/语义/工具链分析见 `view/Go1.27语法/`。
+
 ---
 
 ## 学习路径

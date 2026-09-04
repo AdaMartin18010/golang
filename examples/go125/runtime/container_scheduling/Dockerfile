@@ -1,7 +1,7 @@
 # Go 1.26 容器感知调度示例 Dockerfile
 
 # 构建阶段
-FROM golang:1.26.2-alpine AS builder
+FROM golang:1.27.1-alpine AS builder
 
 WORKDIR /app
 

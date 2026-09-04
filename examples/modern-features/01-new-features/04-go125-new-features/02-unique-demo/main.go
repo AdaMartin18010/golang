@@ -20,7 +20,7 @@ type UniqueHandle[T comparable] struct {
 }
 
 var (
-	uniquePool = make(map[interface{}]interface{})
+	uniquePool = make(map[any]any)
 	poolMu     sync.RWMutex
 )
 
@@ -46,9 +46,9 @@ func MakeUnique[T comparable](value T) T {
 }
 
 func main() {
-	fmt.Println("=== Go 1.23 unique包示例 ===\n")
+	fmt.Print("=== Go 1.23 unique包示例 ===\n")
 	fmt.Println("注意: 这是 unique 包概念的演示")
-	fmt.Println("实际使用中应使用标准库的 unique 包\n")
+	fmt.Print("实际使用中应使用标准库的 unique 包\n")
 
 	// 1. 字符串规范化
 	s1 := MakeUnique("hello world")
@@ -57,7 +57,7 @@ func main() {
 
 	fmt.Println("1. 字符串规范化:")
 	fmt.Printf("  s1 == s2: %v (相同值应该共享)\n", s1 == s2) // true
-	fmt.Printf("  s1 == s3: %v (不同值)\n", s1 == s3)         // false
+	fmt.Printf("  s1 == s3: %v (不同值)\n", s1 == s3)     // false
 	fmt.Printf("  s1: %s\n", s1)
 
 	// 2. 结构体规范化
@@ -71,7 +71,7 @@ func main() {
 
 	fmt.Println("\n2. 结构体规范化:")
 	fmt.Printf("  p1 == p2: %v (相同值应该共享)\n", p1 == p2) // true
-	fmt.Printf("  p1 == p3: %v (不同值)\n", p1 == p3)         // false
+	fmt.Printf("  p1 == p3: %v (不同值)\n", p1 == p3)     // false
 	fmt.Printf("  p1: %+v\n", p1)
 
 	// 3. 内存对比

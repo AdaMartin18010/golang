@@ -9,6 +9,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -75,7 +76,7 @@ func ExampleSyscallTracer() {
 	}
 
 	// 启动追踪器
-	if err := syscallTracer.Start(); err != nil {
+	if err := syscallTracer.Start(context.Background()); err != nil {
 		log.Printf("Failed to start syscall tracer: %v", err)
 		return
 	}
@@ -119,7 +120,7 @@ func ExampleNetworkTracer() {
 	}
 
 	// 启动追踪器
-	if err := networkTracer.Start(); err != nil {
+	if err := networkTracer.Start(context.Background()); err != nil {
 		log.Printf("Failed to start network tracer: %v", err)
 		return
 	}
@@ -203,7 +204,7 @@ func printStats(ctx context.Context, collector *Collector) {
 }
 
 // setupOTel 设置 OpenTelemetry
-func setupOTel() (trace.Tracer, metric.Meter, func()) {
+func setupOTel() (trace.Tracer, otelmetric.Meter, func()) {
 	ctx := context.Background()
 
 	// 创建资源

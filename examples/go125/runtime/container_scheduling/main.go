@@ -10,8 +10,10 @@ import (
 
 func main() {
 	fmt.Println("===================================")
-	fmt.Println("  Go 1.23+ 容器感知调度验证工具")
+	fmt.Println("  容器感知调度验证工具 (Go 1.27+)")
 	fmt.Println("===================================")
+	fmt.Println("提示: Go 1.27 起 container-aware GOMAXPROCS 默认开启")
+	fmt.Println("      (GODEBUG=containermaxprocs=0 可恢复旧行为)")
 
 	// 基本运行时信息
 	fmt.Printf("Go 版本:        %s\n", runtime.Version())
@@ -87,10 +89,7 @@ func main() {
 	if runtime.GOOS == "linux" {
 		if quota, period := readCgroupCPU(); quota > 0 && period > 0 {
 			cpuLimit := float64(quota) / float64(period)
-			recommendedGOMAXPROCS := int(cpuLimit)
-			if recommendedGOMAXPROCS < 1 {
-				recommendedGOMAXPROCS = 1
-			}
+			recommendedGOMAXPROCS := max(int(cpuLimit), 1)
 
 			if gomaxprocs == recommendedGOMAXPROCS || gomaxprocs == recommendedGOMAXPROCS+1 || gomaxprocs == recommendedGOMAXPROCS-1 {
 				fmt.Println("✅ GOMAXPROCS 设置合理，无需调整")

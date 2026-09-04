@@ -24,6 +24,11 @@ go test ./...   # 运行测试（含 synctest 气泡演示）
 | `httptest.NewTestServer` + `testing/synctest` | `synctest_test.go` | 内存网络测试服务器 + 测试气泡，无需真实端口与 sleep |
 | container-aware GOMAXPROCS | `main.go` Feature 7 | Go 1.27 起默认感知 cgroup 配额（`GODEBUG=containermaxprocs=0` 关闭） |
 | goroutineleak profile | `main.go` Feature 8 | Go 1.27 GA，端点 `/debug/pprof/goroutineleak` |
+| `crypto/mldsa` | `advanced.go` Feature 9 | FIPS 204 后量子签名（ML-DSA-44/65/87） |
+| `math/big.Int.Divide` | `advanced.go` Feature 10 | 四种舍入模式（EUCLID/_floor/_ceil/_trunc）的整数除法 |
+| `hash/maphash.Hasher[T]` | `advanced.go` Feature 11 | 类型化哈希器 / `ComparableHasher[T]` |
+| `simd` / `archsimd` | `advanced.go` Feature 12 | 实验性 SIMD（需 `GOEXPERIMENT=simd`，无实验环境时优雅降级） |
+| `testing/cryptotest` | `cryptotest_test.go` | 标准库提供的加密实现正确性测试框架（以 AES-GCM 为例） |
 
 ## 其他 1.27 重要变更（未在 demo 中展开）
 

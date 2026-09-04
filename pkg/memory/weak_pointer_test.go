@@ -88,7 +88,7 @@ func TestWeakCacheCleanup(t *testing.T) {
 	cache := NewWeakCache()
 
 	// 添加多个项目
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		v := &Value{
 			Data:      "test",
 			Size:      1024,
@@ -119,7 +119,7 @@ func TestWeakCacheConcurrency(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// 并发写入
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
@@ -133,7 +133,7 @@ func TestWeakCacheConcurrency(t *testing.T) {
 	}
 
 	// 并发读取
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
@@ -254,7 +254,7 @@ func BenchmarkCacheGet(b *testing.B) {
 	cache := NewWeakCache()
 
 	// 预先填充
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		v := &Value{
 			Data:      "test",
 			Size:      1024,

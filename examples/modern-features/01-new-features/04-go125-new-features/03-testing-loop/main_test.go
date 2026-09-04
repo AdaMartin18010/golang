@@ -10,7 +10,7 @@ import (
 
 func expensiveOperation() {
 	var sb strings.Builder
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		sb.WriteString("test")
 	}
 	_ = sb.String()

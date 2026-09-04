@@ -72,7 +72,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 func handleStats(w http.ResponseWriter, r *http.Request) {
 	uptime := time.Since(stats.StartTime)
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"requests":     stats.Requests,
 		"uptime":       uptime.String(),
 		"avg_duration": stats.AvgDuration.String(),
@@ -97,9 +97,9 @@ func handleData(w http.ResponseWriter, r *http.Request) {
 	// 模拟数据处理
 	time.Sleep(10 * time.Millisecond)
 
-	data := make([]map[string]interface{}, 100)
-	for i := 0; i < 100; i++ {
-		data[i] = map[string]interface{}{
+	data := make([]map[string]any, 100)
+	for i := range 100 {
+		data[i] = map[string]any{
 			"id":    i,
 			"value": float64(i) * 1.5,
 			"name":  fmt.Sprintf("Item-%d", i),

@@ -768,7 +768,7 @@ graph BT
 ## 8. 多维属性矩阵
 
 | 特性 | Goroutine | Channel (无缓冲) | Channel (缓冲) | Mutex | Atomic | Once |
-|------|-----------|------------------|----------------|-------|--------|------|
+| ------ | ----------- | ------------------ | ---------------- | ------- | -------- | ------ |
 | 同步强度 | 弱（仅 spawn） | 强（send→recv） | 中（send→recv, recv→send+C） | 强（Unlock→Lock） | 强（全局全序） | 强（complete→return） |
 | 适用场景 | 并发执行 | 同步通信 | 异步通信/缓冲 | 临界区保护 | 无锁计数/标志 | 一次性初始化 |
 | Happens-Before | go→G 内所有操作 | send→recv | send_k→recv_k, recv_k→send_{k+C} | Unlock→Lock | 同一变量全序 | f() 完成→Do() 返回 |

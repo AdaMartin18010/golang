@@ -42,9 +42,7 @@ func NewWorker(id int, jobChan <-chan Job, resultChan chan<- Result) *Worker {
 
 // Start 启动工作协程
 func (w *Worker) Start(wg *sync.WaitGroup) {
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		for {
 			select {
 			case job := <-w.JobChan:
@@ -56,7 +54,7 @@ func (w *Worker) Start(wg *sync.WaitGroup) {
 				return
 			}
 		}
-	}()
+	})
 }
 
 // Stop 停止工作协程
@@ -97,7 +95,7 @@ func NewWorkerPool(numWorkers int) *WorkerPool {
 	resultChan := make(chan Result, 100)
 
 	workers := make([]*Worker, numWorkers)
-	for i := 0; i < numWorkers; i++ {
+	for i := range numWorkers {
 		workers[i] = NewWorker(i+1, jobChan, resultChan)
 	}
 

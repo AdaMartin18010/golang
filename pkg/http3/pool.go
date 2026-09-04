@@ -11,7 +11,7 @@ import (
 
 // ResponsePool Response对象池
 var ResponsePool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return &Response{}
 	},
 }
@@ -32,7 +32,7 @@ func PutResponse(resp *Response) {
 
 // BufferPool JSON编码buffer池
 var BufferPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return new(bytes.Buffer)
 	},
 }
@@ -50,18 +50,18 @@ func PutBuffer(buf *bytes.Buffer) {
 
 // DataItemPool 数据项对象池
 var DataItemPool = sync.Pool{
-	New: func() interface{} {
-		return make(map[string]interface{})
+	New: func() any {
+		return make(map[string]any)
 	},
 }
 
 // GetDataItem 从池中获取数据项
-func GetDataItem() map[string]interface{} {
-	return DataItemPool.Get().(map[string]interface{})
+func GetDataItem() map[string]any {
+	return DataItemPool.Get().(map[string]any)
 }
 
 // PutDataItem 将数据项放回池中
-func PutDataItem(item map[string]interface{}) {
+func PutDataItem(item map[string]any) {
 	// 清空map
 	for k := range item {
 		delete(item, k)
@@ -71,19 +71,19 @@ func PutDataItem(item map[string]interface{}) {
 
 // DataSlicePool 数据切片对象池
 var DataSlicePool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		// 预分配100个元素的切片
-		return make([]map[string]interface{}, 0, 100)
+		return make([]map[string]any, 0, 100)
 	},
 }
 
 // GetDataSlice 从池中获取数据切片
-func GetDataSlice() []map[string]interface{} {
-	return DataSlicePool.Get().([]map[string]interface{})
+func GetDataSlice() []map[string]any {
+	return DataSlicePool.Get().([]map[string]any)
 }
 
 // PutDataSlice 将数据切片放回池中
-func PutDataSlice(slice []map[string]interface{}) {
+func PutDataSlice(slice []map[string]any) {
 	// 清空切片但保留容量
 	slice = slice[:0]
 	DataSlicePool.Put(slice)

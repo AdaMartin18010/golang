@@ -3,6 +3,8 @@ package kubernetes_operator
 import (
 	"context"
 	"fmt"
+	"maps"
+	"slices"
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -23,9 +25,9 @@ import (
 // Application 自定义资源定义
 type Application struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ApplicationSpec   `json:"spec,omitempty"`
-	Status            ApplicationStatus `json:"status,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
+	Spec              ApplicationSpec   `json:"spec"`
+	Status            ApplicationStatus `json:"status"`
 }
 
 // ApplicationSpec 应用规格
@@ -34,9 +36,9 @@ type ApplicationSpec struct {
 	Image       string               `json:"image"`
 	Port        int32                `json:"port"`
 	Environment map[string]string    `json:"environment,omitempty"`
-	Resources   ResourceRequirements `json:"resources,omitempty"`
-	HealthCheck HealthCheck          `json:"healthCheck,omitempty"`
-	Scaling     ScalingPolicy        `json:"scaling,omitempty"`
+	Resources   ResourceRequirements `json:"resources"`
+	HealthCheck HealthCheck          `json:"healthCheck"`
+	Scaling     ScalingPolicy        `json:"scaling"`
 }
 
 // ApplicationStatus 应用状态
@@ -50,8 +52,8 @@ type ApplicationStatus struct {
 
 // ResourceRequirements 资源需求
 type ResourceRequirements struct {
-	Requests ResourceList `json:"requests,omitempty"`
-	Limits   ResourceList `json:"limits,omitempty"`
+	Requests ResourceList `json:"requests"`
+	Limits   ResourceList `json:"limits"`
 }
 
 // ResourceList 资源列表
@@ -81,7 +83,7 @@ type ScalingPolicy struct {
 // ApplicationList 应用列表
 type ApplicationList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata"`
 	Items           []Application `json:"items"`
 }
 
@@ -94,9 +96,7 @@ func (in *Application) DeepCopyInto(out *Application) {
 	if in.Spec.Environment != nil {
 		in, out := &in.Spec.Environment, &out.Spec.Environment
 		*out = make(map[string]string, len(*in))
-		for key, val := range *in {
-			(*out)[key] = val
-		}
+		maps.Copy((*out), *in)
 	}
 	if in.Status.Conditions != nil {
 		in, out := &in.Status.Conditions, &out.Status.Conditions
@@ -546,12 +546,7 @@ func (ac *ApplicationController) deleteResources(ctx context.Context, app *Appli
 
 // 工具函数
 func containsString(slice []string, s string) bool {
-	for _, item := range slice {
-		if item == s {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, s)
 }
 
 func removeString(slice []string, s string) []string {

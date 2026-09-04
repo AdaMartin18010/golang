@@ -98,7 +98,7 @@ func parallelWork(id int) {
 	defer pool.Put(builder)
 	builder.Reset()
 
-	for i := 0; i < workload; i++ {
+	for i := range workload {
 		builder.WriteString(strconv.Itoa(id + i))
 	}
 	_ = builder.String()
@@ -170,7 +170,6 @@ func BenchmarkProcessData_SubBenchmarks(b *testing.B) {
 	sizes := []int{100, 1000, 10000, 100000}
 
 	for _, size := range sizes {
-		size := size // 避免闭包问题
 		b.Run(fmt.Sprintf("size_%d", size), func(b *testing.B) {
 			data := make([]byte, size)
 			rand.Read(data)
@@ -186,7 +185,7 @@ func BenchmarkProcessData_SubBenchmarks(b *testing.B) {
 // --- 示例7: 使用 sync.Pool 优化对象分配 ---
 
 var bufferPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return new(bytes.Buffer)
 	},
 }

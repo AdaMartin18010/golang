@@ -16,23 +16,30 @@ import (
 )
 
 // NetworkTracerConfig 网络追踪器配置
+// 字段集与 linux 版 network_tracer.go 保持一致，保证跨平台编译一致
 type NetworkTracerConfig struct {
 	Tracer        trace.Tracer
 	Meter         metric.Meter
 	Enabled       bool
 	TrackInbound  bool
 	TrackOutbound bool
+	// TargetPID 目标进程ID（0表示所有进程）
+	TargetPID uint32
+	// BufferSize perf buffer 大小
+	BufferSize int
 }
 
 // ConnectionDetail 连接详情
+// 字段集与 linux 版 network_tracer.go 保持一致，保证跨平台编译一致
 type ConnectionDetail struct {
-	SourceIP      net.IP
-	SourcePort    uint16
-	DestIP        net.IP
-	DestPort      uint16
-	State         string
-	BytesSent     uint64
-	BytesReceived uint64
+	SocketFD  uint64
+	StartTime uint64
+	BytesSent uint64
+	BytesRecv uint64
+	SrcIP     net.IP
+	DstIP     net.IP
+	SrcPort   uint16
+	DstPort   uint16
 }
 
 // NetworkTracer 网络追踪器（非 Linux 系统的 stub 实现）

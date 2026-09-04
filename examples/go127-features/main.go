@@ -302,9 +302,15 @@ func main() {
 	demonstrateHTTPServer()
 	demonstrateGOMAXPROCS()
 	demonstrateGoroutineLeak()
+	demonstrateMLDSA()
+	demonstrateBigDivide()
+	demonstrateMaphash()
+	demonstrateSIMD()
 
 	// synctest.Sleep / synctest.Wait 只能在 synctest 测试气泡内使用，
 	// 完整示例见同目录 synctest_test.go（httptest.NewTestServer + synctest.Wait）。
+	// testing/cryptotest.SetGlobalRandom 只能用于 *testing.T，
+	// 完整示例见同目录 cryptotest_test.go。
 
 	fmt.Println("All demonstrations completed!")
 }

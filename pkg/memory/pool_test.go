@@ -13,10 +13,10 @@ import (
 func TestGenericPool(t *testing.T) {
 	// 创建字符串池
 	pool := NewGenericPool(
-		func() interface{} {
+		func() any {
 			return new(string)
 		},
-		func(obj interface{}) {
+		func(obj any) {
 			s := obj.(*string)
 			*s = ""
 		},
@@ -52,7 +52,7 @@ func TestGenericPool(t *testing.T) {
 // TestGenericPoolHitRate 测试命中率
 func TestGenericPoolHitRate(t *testing.T) {
 	pool := NewGenericPool(
-		func() interface{} {
+		func() any {
 			return new(int)
 		},
 		nil,
@@ -60,12 +60,12 @@ func TestGenericPoolHitRate(t *testing.T) {
 	)
 
 	// 先Put一些对象
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		pool.Put(new(int))
 	}
 
 	// 然后Get
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		pool.Get()
 	}
 
@@ -79,7 +79,7 @@ func TestGenericPoolHitRate(t *testing.T) {
 func TestGenericPoolMaxSize(t *testing.T) {
 	maxSize := 5
 	pool := NewGenericPool(
-		func() interface{} {
+		func() any {
 			return new(int)
 		},
 		nil,
@@ -87,7 +87,7 @@ func TestGenericPoolMaxSize(t *testing.T) {
 	)
 
 	// Put超过maxSize的对象
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		pool.Put(new(int))
 	}
 
@@ -100,7 +100,7 @@ func TestGenericPoolMaxSize(t *testing.T) {
 // TestGenericPoolClear 测试清空池
 func TestGenericPoolClear(t *testing.T) {
 	pool := NewGenericPool(
-		func() interface{} {
+		func() any {
 			return new(int)
 		},
 		nil,
@@ -108,7 +108,7 @@ func TestGenericPoolClear(t *testing.T) {
 	)
 
 	// Put一些对象
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		pool.Put(new(int))
 	}
 
@@ -160,8 +160,8 @@ func TestPoolManager(t *testing.T) {
 	manager := NewPoolManager()
 
 	// 注册池
-	pool1 := NewGenericPool(func() interface{} { return new(int) }, nil, 10)
-	pool2 := NewGenericPool(func() interface{} { return new(string) }, nil, 10)
+	pool1 := NewGenericPool(func() any { return new(int) }, nil, 10)
+	pool2 := NewGenericPool(func() any { return new(string) }, nil, 10)
 
 	manager.Register("int_pool", pool1)
 	manager.Register("string_pool", pool2)
@@ -200,10 +200,10 @@ func TestDefaultBytePool(t *testing.T) {
 // TestGenericPoolConcurrent 并发测试
 func TestGenericPoolConcurrent(t *testing.T) {
 	pool := NewGenericPool(
-		func() interface{} {
+		func() any {
 			return new(int)
 		},
-		func(obj interface{}) {
+		func(obj any) {
 			i := obj.(*int)
 			*i = 0
 		},
@@ -214,16 +214,14 @@ func TestGenericPoolConcurrent(t *testing.T) {
 	concurrency := 10
 	iterations := 1000
 
-	for i := 0; i < concurrency; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for j := 0; j < iterations; j++ {
+	for range concurrency {
+		wg.Go(func() {
+			for j := range iterations {
 				obj := pool.Get().(*int)
 				*obj = j
 				pool.Put(obj)
 			}
-		}()
+		})
 	}
 
 	wg.Wait()
@@ -241,18 +239,16 @@ func TestBytePoolConcurrent(t *testing.T) {
 	concurrency := 10
 	iterations := 1000
 
-	for i := 0; i < concurrency; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for j := 0; j < iterations; j++ {
+	for range concurrency {
+		wg.Go(func() {
+			for j := range iterations {
 				size := 256 + (j%3)*768 // 256, 1024, 4096
 				buf := pool.Get(size)
 				// 使用缓冲区
 				(*buf)[0] = byte(j)
 				pool.Put(buf)
 			}
-		}()
+		})
 	}
 
 	wg.Wait()
@@ -265,10 +261,10 @@ func TestBytePoolConcurrent(t *testing.T) {
 // BenchmarkGenericPool 对象池基准测试
 func BenchmarkGenericPool(b *testing.B) {
 	pool := NewGenericPool(
-		func() interface{} {
+		func() any {
 			return make([]byte, 1024)
 		},
-		func(obj interface{}) {
+		func(obj any) {
 			// Reset
 		},
 		100,

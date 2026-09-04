@@ -69,7 +69,7 @@ func TestCgroupDetection(t *testing.T) {
 // cpuIntensiveTask 模拟 CPU 密集型任务
 func cpuIntensiveTask(iterations int) int {
 	sum := 0
-	for i := 0; i < iterations; i++ {
+	for i := range iterations {
 		sum += i * i
 	}
 	return sum
@@ -124,11 +124,9 @@ func BenchmarkSchedulingOverhead(b *testing.B) {
 
 			var wg sync.WaitGroup
 			for i := 0; i < b.N; i++ {
-				wg.Add(1)
-				go func() {
-					defer wg.Done()
+				wg.Go(func() {
 					cpuIntensiveTask(1000)
-				}()
+				})
 			}
 			wg.Wait()
 		})
@@ -142,7 +140,7 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 		b.SetParallelism(runtime.GOMAXPROCS(0))
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				for i := 0; i < 100; i++ {
+				for range 100 {
 					cpuIntensiveTask(100)
 				}
 			}
@@ -157,7 +155,7 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 		b.SetParallelism(runtime.NumCPU())
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
-				for i := 0; i < 100; i++ {
+				for range 100 {
 					cpuIntensiveTask(100)
 				}
 			}
@@ -189,10 +187,8 @@ func TestHighConcurrency(t *testing.T) {
 	)
 
 	// 启动多个 goroutine
-	for i := 0; i < goroutines; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range goroutines {
+		wg.Go(func() {
 			for {
 				select {
 				case <-done:
@@ -202,7 +198,7 @@ func TestHighConcurrency(t *testing.T) {
 					ops.Add(1)
 				}
 			}
-		}()
+		})
 	}
 
 	// 运行指定时间

@@ -18,26 +18,26 @@ type PerformanceBenchmark struct {
 	Warmup      int
 	Threshold   float64
 	Baseline    *BenchmarkResult
-	Metadata    map[string]interface{}
+	Metadata    map[string]any
 	mu          sync.RWMutex
 }
 
 // BenchmarkResult 基准测试结果
 type BenchmarkResult struct {
-	Name        string                 `json:"name"`
-	Duration    time.Duration          `json:"duration"`
-	Operations  int64                  `json:"operations"`
-	Throughput  float64                `json:"throughput"`
-	MemoryUsage MemoryUsage            `json:"memory_usage"`
-	CPUUsage    CPUUsage               `json:"cpu_usage"`
-	Iterations  int                    `json:"iterations"`
-	MinDuration time.Duration          `json:"min_duration"`
-	MaxDuration time.Duration          `json:"max_duration"`
-	AvgDuration time.Duration          `json:"avg_duration"`
-	StdDev      float64                `json:"std_dev"`
-	Percentiles map[int]time.Duration  `json:"percentiles"`
-	Timestamp   time.Time              `json:"timestamp"`
-	Metadata    map[string]interface{} `json:"metadata"`
+	Name        string                `json:"name"`
+	Duration    time.Duration         `json:"duration"`
+	Operations  int64                 `json:"operations"`
+	Throughput  float64               `json:"throughput"`
+	MemoryUsage MemoryUsage           `json:"memory_usage"`
+	CPUUsage    CPUUsage              `json:"cpu_usage"`
+	Iterations  int                   `json:"iterations"`
+	MinDuration time.Duration         `json:"min_duration"`
+	MaxDuration time.Duration         `json:"max_duration"`
+	AvgDuration time.Duration         `json:"avg_duration"`
+	StdDev      float64               `json:"std_dev"`
+	Percentiles map[int]time.Duration `json:"percentiles"`
+	Timestamp   time.Time             `json:"timestamp"`
+	Metadata    map[string]any        `json:"metadata"`
 }
 
 // MemoryUsage 内存使用情况
@@ -108,7 +108,7 @@ func NewPerformanceBenchmark(name, description string, run func(ctx context.Cont
 		Iterations:  100,
 		Warmup:      10,
 		Threshold:   0.1, // 10%性能下降阈值
-		Metadata:    make(map[string]interface{}),
+		Metadata:    make(map[string]any),
 	}
 }
 

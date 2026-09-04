@@ -7,7 +7,7 @@
 ## 📚 文档列表
 
 | 文档 | 内容 | 行数 |
-|------|------|------|
+| ------ | ------ | ------ |
 | [go126_complete_analysis.md](./go126_complete_analysis.md) | **完整整合版** - 所有分析的汇总 | ~800 |
 | [go126_syntax_analysis.md](./go126_syntax_analysis.md) | 语法特性全面分析 | ~3000+ |
 | [go126_semantic_analysis.md](./go126_semantic_analysis.md) | 语义特性全面分析 | ~5000+ |
@@ -146,7 +146,7 @@ func algo[A Adder[A]](x, y A) A {
 ## 📊 图表清单
 
 | 图表 | 类型 | 描述 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 语法结构思维导图 | Mermaid Mindmap | Go 1.26.1 完整语法结构 |
 | 类型系统决策树 | Flowchart | 类型分类和选择路径 |
 | 控制流程图 | Flowchart | 控制语句执行流程 |

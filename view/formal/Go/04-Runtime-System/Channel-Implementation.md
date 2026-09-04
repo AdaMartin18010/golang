@@ -29,7 +29,7 @@ Hchan ::= ⟨qcount, dataqsiz, buf, elemsize, closed, elemtype, sendx, recvx, re
 其中各分量的数学表示为：
 
 | 字段 | 数学表示 | 定义域 | 语义解释 |
-|------|----------|--------|----------|
+| ------ | ---------- | -------- | ---------- |
 | `qcount` | $q_c \in \mathbb{N}$ | $[0, \text{dataqsiz}]$ | 当前缓冲区中有效元素数量 |
 | `dataqsiz` | $n \in \mathbb{N}$ | 固定分配容量 | 环形缓冲区容量，$n = 0$ 表示无缓冲 channel |
 | `buf` | $b \in \text{Addr} \cup \{\text{nil}\}$ | 指针或空 | 缓冲区起始地址，$n = 0 \Rightarrow b = \text{nil}$ |

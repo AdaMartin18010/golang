@@ -38,7 +38,7 @@ type TestResult struct {
 	Duration  time.Duration
 	Retries   int
 	Timestamp time.Time
-	Metadata  map[string]interface{}
+	Metadata  map[string]any
 }
 
 // TestStatus 测试状态
@@ -54,8 +54,8 @@ const (
 // TestEnvironment 测试环境
 type TestEnvironment struct {
 	Name         string
-	Config       map[string]interface{}
-	Resources    map[string]interface{}
+	Config       map[string]any
+	Resources    map[string]any
 	CleanupFuncs []func() error
 	mu           sync.RWMutex
 }
@@ -261,7 +261,7 @@ func (te *TestExecutor) runTest(ctx context.Context, test *Test) TestResult {
 		Test:      test,
 		Status:    TestStatusFailed,
 		Timestamp: time.Now(),
-		Metadata:  make(map[string]interface{}),
+		Metadata:  make(map[string]any),
 	}
 
 	// 设置超时
@@ -373,21 +373,21 @@ type TestSummary struct {
 func NewTestEnvironment(name string) *TestEnvironment {
 	return &TestEnvironment{
 		Name:         name,
-		Config:       make(map[string]interface{}),
-		Resources:    make(map[string]interface{}),
+		Config:       make(map[string]any),
+		Resources:    make(map[string]any),
 		CleanupFuncs: make([]func() error, 0),
 	}
 }
 
 // SetConfig 设置环境配置
-func (te *TestEnvironment) SetConfig(key string, value interface{}) {
+func (te *TestEnvironment) SetConfig(key string, value any) {
 	te.mu.Lock()
 	defer te.mu.Unlock()
 	te.Config[key] = value
 }
 
 // GetConfig 获取环境配置
-func (te *TestEnvironment) GetConfig(key string) (interface{}, bool) {
+func (te *TestEnvironment) GetConfig(key string) (any, bool) {
 	te.mu.RLock()
 	defer te.mu.RUnlock()
 	value, exists := te.Config[key]
@@ -395,14 +395,14 @@ func (te *TestEnvironment) GetConfig(key string) (interface{}, bool) {
 }
 
 // AddResource 添加资源
-func (te *TestEnvironment) AddResource(name string, resource interface{}) {
+func (te *TestEnvironment) AddResource(name string, resource any) {
 	te.mu.Lock()
 	defer te.mu.Unlock()
 	te.Resources[name] = resource
 }
 
 // GetResource 获取资源
-func (te *TestEnvironment) GetResource(name string) (interface{}, bool) {
+func (te *TestEnvironment) GetResource(name string) (any, bool) {
 	te.mu.RLock()
 	defer te.mu.RUnlock()
 	resource, exists := te.Resources[name]

@@ -1,5 +1,4 @@
 //go:build !arenas
-// +build !arenas
 
 package memory
 

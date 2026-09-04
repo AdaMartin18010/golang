@@ -8,8 +8,9 @@ WORKDIR /app
 # 安装必要的工具
 RUN apk add --no-cache git ca-certificates tzdata
 
-# 复制 go mod 文件
+# 复制 go mod 文件（含 replace 指向的本地子模块，go mod download 需要其 go.mod）
 COPY go.mod go.sum ./
+COPY pkg/observability/go.mod pkg/observability/go.sum ./pkg/observability/
 
 # 下载依赖
 RUN go mod download
@@ -27,7 +28,8 @@ COPY . .
 # 构建应用
 # -ldflags='-w -s': 去除调试信息，减小二进制大小
 # -a -installsuffix cgo: 静态链接，不依赖 CGO
-RUN CGO_ENABLED=0 GOOS=linux go build \
+# GOWORK=off: .dockerignore 排除了 examples/ 等 go.work 引用的模块，构建时关闭 workspace
+RUN GOWORK=off CGO_ENABLED=0 GOOS=linux go build \
     -ldflags='-w -s -extldflags "-static"' \
     -a -installsuffix cgo \
     -o app ./cmd/server

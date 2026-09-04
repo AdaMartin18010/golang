@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -38,8 +39,8 @@ func (mc *MiddlewareChain) Use(m Middleware) *MiddlewareChain {
 // Then 应用中间件链到处理器
 func (mc *MiddlewareChain) Then(h http.Handler) http.Handler {
 	// 从后向前应用中间件
-	for i := len(mc.middlewares) - 1; i >= 0; i-- {
-		h = mc.middlewares[i](h)
+	for _, v := range slices.Backward(mc.middlewares) {
+		h = v(h)
 	}
 	return h
 }
@@ -142,10 +143,10 @@ func TimeoutMiddleware(timeout time.Duration) Middleware {
 
 // RequestIDMiddleware 请求ID中间件
 func RequestIDMiddleware(next http.Handler) http.Handler {
-	var requestID uint64
+	var requestID atomic.Uint64
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := atomic.AddUint64(&requestID, 1)
+		id := requestID.Add(1)
 		ctx := context.WithValue(r.Context(), "request_id", id)
 		r = r.WithContext(ctx)
 

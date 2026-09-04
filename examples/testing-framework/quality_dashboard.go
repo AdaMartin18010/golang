@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"maps"
 	"sync"
 	"time"
 )
@@ -160,13 +161,13 @@ type VisualizerConfig struct {
 
 // Chart 图表
 type Chart struct {
-	ID        string                 `json:"id"`
-	Name      string                 `json:"name"`
-	Type      ChartType              `json:"type"`
-	Data      []ChartDataPoint       `json:"data"`
-	Config    map[string]interface{} `json:"config"`
-	CreatedAt time.Time              `json:"created_at"`
-	UpdatedAt time.Time              `json:"updated_at"`
+	ID        string           `json:"id"`
+	Name      string           `json:"name"`
+	Type      ChartType        `json:"type"`
+	Data      []ChartDataPoint `json:"data"`
+	Config    map[string]any   `json:"config"`
+	CreatedAt time.Time        `json:"created_at"`
+	UpdatedAt time.Time        `json:"updated_at"`
 }
 
 // ChartType 图表类型
@@ -182,18 +183,18 @@ const (
 
 // ChartDataPoint 图表数据点
 type ChartDataPoint struct {
-	Label string                 `json:"label"`
-	Value float64                `json:"value"`
-	Color string                 `json:"color"`
-	Tags  map[string]interface{} `json:"tags"`
+	Label string         `json:"label"`
+	Value float64        `json:"value"`
+	Color string         `json:"color"`
+	Tags  map[string]any `json:"tags"`
 }
 
 // ChartTemplate 图表模板
 type ChartTemplate struct {
-	Name        string                 `json:"name"`
-	Type        ChartType              `json:"type"`
-	Config      map[string]interface{} `json:"config"`
-	Description string                 `json:"description"`
+	Name        string         `json:"name"`
+	Type        ChartType      `json:"type"`
+	Config      map[string]any `json:"config"`
+	Description string         `json:"description"`
 }
 
 // DashboardAPI 仪表板API
@@ -217,7 +218,7 @@ type APIConfig struct {
 type APIHandler struct {
 	Method  string
 	Path    string
-	Handler func(ctx context.Context, req interface{}) (interface{}, error)
+	Handler func(ctx context.Context, req any) (any, error)
 }
 
 // HTTPServer HTTP服务器
@@ -427,9 +428,7 @@ func (mc *MetricsCollector) GetMetrics() map[string]*Metric {
 	defer mc.mu.RUnlock()
 
 	metrics := make(map[string]*Metric)
-	for k, v := range mc.metrics {
-		metrics[k] = v
-	}
+	maps.Copy(metrics, mc.metrics)
 	return metrics
 }
 
@@ -575,9 +574,7 @@ func (am *AlertManager) GetAlerts() map[string]*Alert {
 	defer am.mu.RUnlock()
 
 	alerts := make(map[string]*Alert)
-	for k, v := range am.alerts {
-		alerts[k] = v
-	}
+	maps.Copy(alerts, am.alerts)
 	return alerts
 }
 
@@ -612,7 +609,7 @@ func (dv *DataVisualizer) CreateChart(id, name string, chartType ChartType, data
 		Name:      name,
 		Type:      chartType,
 		Data:      data,
-		Config:    make(map[string]interface{}),
+		Config:    make(map[string]any),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -627,9 +624,7 @@ func (dv *DataVisualizer) GetCharts() map[string]*Chart {
 	defer dv.mu.RUnlock()
 
 	charts := make(map[string]*Chart)
-	for k, v := range dv.charts {
-		charts[k] = v
-	}
+	maps.Copy(charts, dv.charts)
 	return charts
 }
 
@@ -694,27 +689,27 @@ func (da *DashboardAPI) registerHandlers() {
 }
 
 // getMetricsHandler 获取指标处理器
-func (da *DashboardAPI) getMetricsHandler(ctx context.Context, req interface{}) (interface{}, error) {
+func (da *DashboardAPI) getMetricsHandler(ctx context.Context, req any) (any, error) {
 	// 返回指标数据
-	return map[string]interface{}{
+	return map[string]any{
 		"metrics":   []string{},
 		"timestamp": time.Now(),
 	}, nil
 }
 
 // getAlertsHandler 获取告警处理器
-func (da *DashboardAPI) getAlertsHandler(ctx context.Context, req interface{}) (interface{}, error) {
+func (da *DashboardAPI) getAlertsHandler(ctx context.Context, req any) (any, error) {
 	// 返回告警数据
-	return map[string]interface{}{
+	return map[string]any{
 		"alerts":    []string{},
 		"timestamp": time.Now(),
 	}, nil
 }
 
 // getChartsHandler 获取图表处理器
-func (da *DashboardAPI) getChartsHandler(ctx context.Context, req interface{}) (interface{}, error) {
+func (da *DashboardAPI) getChartsHandler(ctx context.Context, req any) (any, error) {
 	// 返回图表数据
-	return map[string]interface{}{
+	return map[string]any{
 		"charts":    []string{},
 		"timestamp": time.Now(),
 	}, nil

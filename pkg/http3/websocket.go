@@ -17,9 +17,9 @@ import (
 
 // WSMessage WebSocket消息结构
 type WSMessage struct {
-	Type      string      `json:"type"`
-	Data      interface{} `json:"data"`
-	Timestamp time.Time   `json:"timestamp"`
+	Type      string    `json:"type"`
+	Data      any       `json:"data"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 // WSClient WebSocket客户端
@@ -103,7 +103,7 @@ func (h *WSHub) ClientCount() int {
 }
 
 // Broadcast 广播消息到所有客户端
-func (h *WSHub) Broadcast(msgType string, data interface{}) error {
+func (h *WSHub) Broadcast(msgType string, data any) error {
 	msg := WSMessage{
 		Type:      msgType,
 		Data:      data,
@@ -186,7 +186,7 @@ func (c *WSClient) writePump() {
 
 			// 批量发送队列中的消息
 			n := len(c.send)
-			for i := 0; i < n; i++ {
+			for range n {
 				w.Write([]byte{'\n'})
 				w.Write(<-c.send)
 			}
@@ -237,7 +237,7 @@ func generateClientID() string {
 // handleWSStats WebSocket统计信息
 func handleWSStats(hub *WSHub) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		stats := map[string]interface{}{
+		stats := map[string]any{
 			"connected_clients": hub.ClientCount(),
 			"timestamp":         time.Now(),
 			"status":            "active",
