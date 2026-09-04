@@ -205,3 +205,21 @@ P6 验收后随即执行月审 §8 行动项收口（用户已确认：并行推
 **回归终态**：死链 0 · 六件套 30/30 · 编号 MISMATCH=0 · 双向 103/103 · stub 56/56 · compile_fail 20/20 · runnable BAD=0 · merge BAD=0（OK=33/skip_dep=45/exempt=3/known-sibling=11）。
 
 **移交下期**：release.yml YAML 修复；docs-deploy 复制逻辑（页脚链接站点不可达）；AD-037 block 5 领域符号；check_quality.ps1 -FailOnHigh 升级；gofmt 存量 289 个（趋势监控即可）；CI 首跑 38 模块矩阵的 -race 测试未本地全量验证（首跑 CI 见真章，asan 模块可能需关 race）。
+
+
+## 5k. S 批 + race 首跑暴露修复（2026-09-05，三次确认：gofmt 全量、race 后台验证）
+
+- **S1 release.yml**：第 81-83 行多行字符串 YAML 错误修复（`$'\n'` 拼接保持缩进），16 个 workflow 全量 yaml.safe_load 校验 OK。
+- **S2 docs-deploy 复制逻辑**：纳入整个 go-knowledge-base（22M）+ AGENTS.md，页脚 3 链接站点内可达；触发 paths 补 `go-knowledge-base/**`。
+- **S3**：AD-037 block 5 领域符号补齐（zap 组带依赖合并 build 过）；check_quality.ps1 加 `-FailOnHigh`（2 个高危死链修复后高=0），quality-gates.yml 升强制门；AGENTS.md §5 同步。
+- **gofmt 全量**：296 个未格式化文件清零（含 testdata 4 个需显式指定，gofmt 目录遍历跳过 testdata）；CI 强制范围 cmd/internal/pkg 始终为 0。
+- **race 矩阵首跑 29/38**，暴露 12 项真实缺陷全部根治：
+  - 测试级竞争 6 处（sleep 等待改 channel/WaitGroup/atomic：semaphore/fan-out×2/eventbus 2 处/configmanager 2 处/domain user 串行化）；
+  - 生产代码竞争 5 处（WeakCache.Get RLock→Lock、http3 stats 加锁+timeoutWriter、ai-agent eventbus metrics 锁统一、raft 双锁职责拆分+setState+timer 经 channel 重置）；
+  - 实现 bug 5 处（raft nil timer panic、reply.Term 回填、handleStats 除零、formal-verifier 三层：packages.Load→go/types 单文件+domTree 赋值+testdata 非法泛型、SIMD 测试改相对容差 1e-4 并注释累加顺序差异）；
+  - 环境适配 1 处（observability OTLP 集成测试加 4317 探测 t.Skip）；TestPoolStats 确定性失败修复。
+- **构建产物清理**：examples/archive 下 14 个未跟踪 .exe 删除（git 无跟踪 .exe，此前误判已澄清）。
+
+**回归终态**（复跑确认）：race 矩阵 38/38 · 死链 0 · 六件套 30/30 · 编号 0 · 双向 103/103 · merge BAD=0。
+
+**移交下期**：race 矩阵 38/38 以最终复跑日志为准（scripts/tmp/race_matrix_final.log）；http3 测试若未来加 t.Parallel 需经锁重置 stats；formal-verifier go.mod 中 x/tools 依赖待 tidy 决策；AD-038 blocks 3/7 库式 package main 片段（页内惯例非缺陷）；docs/tracking 更新后由父代理复核。

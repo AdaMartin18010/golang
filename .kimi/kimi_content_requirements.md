@@ -1,9 +1,13 @@
 # Kimi 内容生成要求：Go 分层概念知识体系
 
-> **EN**: Kimi Content Generation Requirements for the Go Layered Concept Knowledge Base
-> **Summary**: Reusable content-creation contract for Kimi when editing `go-knowledge-base/`, `docs/`, `view/`, or `examples/` in this repository.
-> **Scope**: `E:/_src/golang` and all subdirectories.
-> **Canonical companion**: [`.kimi/templates/kimi_project_requirements.md`](templates/kimi_project_requirements.md) (project-level governance) and [`AGENTS.md`](../AGENTS.md) (repository rules).
+> **EN**:
+> Kimi Content Generation Requirements for the Go Layered Concept Knowledge Base
+> **Summary**:
+> Reusable content-creation contract for Kimi when editing `go-knowledge-base/`, `docs/`, `view/`, or `examples/` in this repository.
+> **Scope**:
+> `E:/_src/golang` and all subdirectories.
+> **Canonical companion**:
+> [`.kimi/templates/kimi_project_requirements.md`](templates/kimi_project_requirements.md) (project-level governance) and [`AGENTS.md`](../AGENTS.md) (repository rules).
 
 ---
 

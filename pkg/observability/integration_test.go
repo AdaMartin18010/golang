@@ -2,9 +2,21 @@ package observability
 
 import (
 	"context"
+	"net"
 	"testing"
 	"time"
 )
+
+// otlpCollectorAvailable 探测本地 OTLP collector（gRPC 4317）是否可达；
+// 不可达时跳过依赖外部服务的集成测试
+func otlpCollectorAvailable(t *testing.T) {
+	t.Helper()
+	conn, err := net.DialTimeout("tcp", "localhost:4317", 200*time.Millisecond)
+	if err != nil {
+		t.Skip("OTLP collector not available")
+	}
+	_ = conn.Close()
+}
 
 func TestNewObservability(t *testing.T) {
 	obs, err := NewObservability(Config{
@@ -25,6 +37,8 @@ func TestNewObservability(t *testing.T) {
 }
 
 func TestObservability_StartStop(t *testing.T) {
+	otlpCollectorAvailable(t)
+
 	ctx := context.Background()
 
 	obs, err := NewObservability(Config{

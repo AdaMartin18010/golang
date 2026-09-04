@@ -99,7 +99,7 @@ func TestPhiFunctionPlacement(t *testing.T) {
 	}
 
 	converter := NewSSAConverter(cfg)
-	_, err = converter.computeDominatorTree()
+	converter.domTree, err = converter.computeDominatorTree()
 	if err != nil {
 		t.Fatalf("Failed to compute dominator tree: %v", err)
 	}

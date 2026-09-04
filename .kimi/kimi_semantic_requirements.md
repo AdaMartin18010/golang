@@ -16,7 +16,9 @@
 3. Go 前沿提案跟踪页专用模板（含 GOEXPERIMENT 机制）。
 4. 语义健康与语义观察门纪律。
 
-> 形式与结构要求见 [`.kimi/kimi_content_requirements.md`](kimi_content_requirements.md)；思维表征格式见 [`.kimi/kimi_thinking_representation_requirements.md`](kimi_thinking_representation_requirements.md)；KG/拓扑技术要求见 [`.kimi/kimi_kg_topology_requirements.md`](kimi_kg_topology_requirements.md)。
+> 形式与结构要求见 [`.kimi/kimi_content_requirements.md`](kimi_content_requirements.md)；
+> 思维表征格式见 [`.kimi/kimi_thinking_representation_requirements.md`](kimi_thinking_representation_requirements.md)；
+> KG/拓扑技术要求见 [`.kimi/kimi_kg_topology_requirements.md`](kimi_kg_topology_requirements.md)。
 
 ---
 

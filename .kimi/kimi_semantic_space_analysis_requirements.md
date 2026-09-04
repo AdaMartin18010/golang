@@ -2,10 +2,19 @@
 
 > **状态**: 可选扩展 — 本仓库 AGENTS.md 体系尚未启用该机制，从 rust-lang 项目适配保留以便未来复用；不进入质量门。
 >
-> **EN**: Kimi Semantic Space Analysis Requirements for Go Expressiveness and Boundaries
-> **Summary**: Reusable contract for Kimi when creating or auditing `go-knowledge-base/learning-paths/` 风格的表征空间总论页与跨页映射标注。
-> **Scope**: `E:/_src/golang` 及其子目录（五维权威层 `go-knowledge-base/01..05-*`、索引层 `go-knowledge-base/indices/`、路径层 `go-knowledge-base/learning-paths/`）。
-> **Companion**: [`.kimi/kimi_content_requirements.md`](kimi_content_requirements.md)（页级格式）、[`.kimi/kimi_thinking_representation_requirements.md`](kimi_thinking_representation_requirements.md)（表征形式）、[`.kimi/kimi_kg_topology_requirements.md`](kimi_kg_topology_requirements.md)（KG/图谱）。
+> **EN**:
+> Kimi Semantic Space Analysis Requirements for Go Expressiveness and Boundaries
+> **Summary**:
+>
+> Reusable contract for Kimi when creating or auditing `go-knowledge-base/learning-paths/` 风格的表征空间总论页与跨页映射标注。
+> **Scope**:
+>
+> `E:/_src/golang` 及其子目录（五维权威层 `go-knowledge-base/01..05-*`、索引层 `go-knowledge-base/indices/`、路径层 `go-knowledge-base/learning-paths/`）。
+> **Companion**:
+>
+> [`.kimi/kimi_content_requirements.md`](kimi_content_requirements.md)（页级格式）、
+> [`.kimi/kimi_thinking_representation_requirements.md`](kimi_thinking_representation_requirements.md)（表征形式）、
+> [`.kimi/kimi_kg_topology_requirements.md`](kimi_kg_topology_requirements.md)（KG/图谱）。
 
 ---
 
