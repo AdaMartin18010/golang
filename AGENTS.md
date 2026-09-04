@@ -49,9 +49,10 @@
 
 ## 5. 质量门
 
-- 本地：`.githooks/pre-commit`（gofmt → go vet → golangci-lint → 相关包测试）。
-- CI：`.github/workflows/` 中 go-test / go-lint / go-fix / docs-check / knowledge-tracker 等。
-- 文档：`scripts/check-unfixed-links.ps1`（死链）、`scripts/check-markdown-format.ps1`、`scripts/check_quality.ps1`。
+- 本地门：`.githooks/pre-commit`（gofmt → go vet → golangci-lint → 相关包测试）。
+- CI 门：`.github/workflows/quality-gates.yml`（死链检查 `scripts/check-unfixed-links.ps1`（Exit 1 强制）+ 文档质量报告 `scripts/check_quality.ps1`（仅报告）+ gofmt（强制，范围 `cmd/` `internal/` `pkg/`））；其余 workflow 见 go-test / go-lint / go-fix / docs-check / knowledge-tracker 等。
+- 文档辅助（本地手动跑）：`scripts/check-markdown-format.ps1`（依赖 markdownlint-cli，未装则回退内置基础检查）。
+- gofmt 存量：`archive/` `examples/` `scripts/` `go-knowledge-base/` `test/` 尚有历史未格式化文件（289 个，其中 archive 占 105），不纳入 CI 强制门，存量清理另行安排。
 - 周期性审查模板：`.kimi/templates/monthly_semantic_review.md`（月度）、`quarterly_international_source_audit.md`（季度，对照 Go Spec / Effective Go / Go Blog / pkg.go.dev / Proposals）。
 
 ## 6. 红线

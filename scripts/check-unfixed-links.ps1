@@ -1,68 +1,95 @@
-# 检查未修复的链接问题
+# 检查仓库内失效的相对 Markdown 链接
+# 扫描逻辑对齐 scripts/tmp/rescan_deadlinks.py：
+#   - 链接正则: [锚文本](目标.md)（目标中不含空白与 # 之前的部分，含 URL 解码）
+#   - 跳过 http/https 外链
+#   - 跳过代码围栏 ``` 内的链接
+#   - 跳过顶层目录 .git / node_modules / archive 下的所有 .md
+# 退出码: 存在死链时 Exit 1，否则 Exit 0
+
+param(
+    [string]$Root = (Split-Path -Parent $PSScriptRoot)
+)
 
 $ErrorActionPreference = "Stop"
 
-$problematicFiles = @(
-    "docs\advanced\reference\99-完整术语表与索引.md",
-    "docs\fundamentals\README.md",
-    "docs\advanced\concurrency\07-并发模式实战深度指南.md",
-    "docs\reference\DOCUMENT_STANDARD.md",
-    "docs\reference\versions\01-Go-1.21特性\00-知识图谱.md",
-    "docs\reference\versions\02-Go-1.22特性\00-知识图谱.md",
-    "docs\reference\versions\03-Go-1.23特性\00-知识图谱.md",
-    "docs\reference\versions\05-实践应用\00-知识图谱.md",
-    "docs\projects\templates\00-项目模板说明.md",
-    "docs\projects\templates\01-项目结构模板.md",
-    "docs\projects\templates\03-Web应用模板.md",
-    "docs\projects\templates\04-CLI工具模板.md",
-    "docs\projects\templates\05-库项目模板.md",
-    "docs\projects\templates\06-快速开始指南.md",
-    "docs\reference\GO-ECOSYSTEM-2025.md"
-)
+$linkRe = [regex]'\[([^\]]*)\]\(([^)#\s]+\.md)'
+$skipTopDirs = @('.git', 'node_modules', 'archive')
 
-foreach ($file in $problematicFiles) {
-    if (Test-Path $file) {
-        Write-Host "`n=====================================" -ForegroundColor Cyan
-        Write-Host "📄 $file" -ForegroundColor Yellow
-        Write-Host "=====================================" -ForegroundColor Cyan
-        
-        $content = Get-Content -Path $file -Raw -Encoding UTF8
-        $lines = $content -split "`r?`n"
-        
-        # 查找目录部分
-        $inTOC = $false
-        $tocStart = -1
-        $tocEnd = -1
-        
-        for ($i = 0; $i -lt $lines.Count; $i++) {
-            if ($lines[$i] -match '^##\s+(📋\s*)?目录$') {
-                $inTOC = $true
-                $tocStart = $i
-            }
-            elseif ($inTOC -and $lines[$i] -match '^##\s+') {
-                $tocEnd = $i
-                break
-            }
-        }
-        
-        if ($tocStart -ge 0) {
-            Write-Host "目录部分 (行 $($tocStart+1) 到 $($tocEnd+1)):" -ForegroundColor Green
-            
-            $endIdx = if ($tocEnd -gt 0) { $tocEnd } else { [Math]::Min($tocStart + 50, $lines.Count) }
-            
-            for ($i = $tocStart; $i -lt $endIdx -and $i -lt $lines.Count; $i++) {
-                $line = $lines[$i]
-                if ($line -match '\[([^\]]+)\]\(#([^\)]+)\)') {
-                    Write-Host "  $($i+1): $line" -ForegroundColor Gray
-                }
-            }
-        }
-        else {
-            Write-Host "⚠️  未找到目录部分" -ForegroundColor Red
-        }
+function Test-InFence([string]$text, [int]$pos) {
+    $count = 0
+    $idx = 0
+    while (($idx = $text.IndexOf('```', $idx)) -ge 0 -and $idx -lt $pos) {
+        $count++
+        $idx += 3
     }
-    else {
-        Write-Host "❌ 文件不存在: $file" -ForegroundColor Red
+    return ($count % 2 -eq 1)
+}
+
+# 收集 .md 文件（在根目录层剪枝 skipTopDirs，与 rescan 脚本一致）
+$mdFiles = New-Object System.Collections.Generic.List[string]
+$dirQueue = New-Object System.Collections.Generic.Queue[string]
+$dirQueue.Enqueue($Root)
+while ($dirQueue.Count -gt 0) {
+    $dir = $dirQueue.Dequeue()
+    foreach ($sub in [System.IO.Directory]::EnumerateDirectories($dir)) {
+        $relTop = $sub.Substring($Root.Length).TrimStart('\','/').Split([char[]]@('\','/'))[0]
+        if ($skipTopDirs -contains $relTop) { continue }
+        $dirQueue.Enqueue($sub)
+    }
+    foreach ($f in [System.IO.Directory]::EnumerateFiles($dir, '*.md')) {
+        $mdFiles.Add($f)
     }
 }
 
+Write-Host "扫描 $($mdFiles.Count) 个 Markdown 文件（跳过 $($skipTopDirs -join ', ')）..." -ForegroundColor Cyan
+
+$dead = @{}      # target -> [ "file:line  锚文本" ]
+$scanned = 0
+
+foreach ($path in $mdFiles) {
+    $rel = $path.Substring($Root.Length).TrimStart('\','/').Replace('\','/')
+    $text = [System.IO.File]::ReadAllText($path)
+    $scanned++
+
+    foreach ($m in $linkRe.Matches($text)) {
+        $url = $m.Groups[2].Value
+        if ($url -match '^(https?://)') { continue }
+        if (Test-InFence $text $m.Index) { continue }
+
+        $dec = [System.Uri]::UnescapeDataString($url)
+        $target = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($path), $dec))
+        if (-not (Test-Path -LiteralPath $target)) {
+            $line = ($text.Substring(0, $m.Index) -split "`n").Count
+            $snippet = $m.Groups[1].Value
+            if ($snippet.Length -gt 40) { $snippet = $snippet.Substring(0, 40) + '…' }
+            if (-not $dead.ContainsKey($dec)) { $dead[$dec] = @() }
+            $dead[$dec] += "$rel`:$line  [$snippet]"
+        }
+    }
+}
+
+$linksTotalDead = 0
+foreach ($v in $dead.Values) { $linksTotalDead += $v.Count }
+
+Write-Host ""
+Write-Host "TOTAL_DEAD = $($dead.Count)"
+Write-Host "LINKS_TOTAL_DEAD = $linksTotalDead"
+
+if ($dead.Count -gt 0) {
+    Write-Host ""
+    Write-Host "死链明细（目标 <- 来源）:" -ForegroundColor Red
+    foreach ($tgt in ($dead.Keys | Sort-Object)) {
+        Write-Host ""
+        Write-Host "  → $tgt" -ForegroundColor Yellow
+        foreach ($src in $dead[$tgt]) {
+            Write-Host "    $src" -ForegroundColor Gray
+        }
+    }
+    Write-Host ""
+    Write-Host "❌ 发现 $($dead.Count) 个死链目标 / $linksTotalDead 条死链" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host ""
+Write-Host "✅ 未发现死链（扫描 $scanned 个文件）" -ForegroundColor Green
+exit 0

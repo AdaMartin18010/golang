@@ -13,7 +13,7 @@
 抽样方式（首期）：以 P3 六件套试点 30 页 + 边界域候选页为抽样框，做机械级核查（页内 H1 编号 vs 文件名编号、定理链存在性、关键词命中），**逐页精读定义留待下期**——首期无既有漂移基线，机械核查优先于主观判读。
 
 | # | Page path | Definition checked | Drift found? | Action item |
-|---|-----------|--------------------|--------------|-------------|
+| --- | ----------- | -------------------- | -------------- | ------------- |
 | 1 | `02-Language-Design/LD-052-Go-Escape-Analysis.md` | 逃逸分析×栈/堆分配 | [x] Yes [ ] No | **H1 编号漂移**：页内写 `LD-012`，文件名 LD-052（§4b 重编号残留，全仓 98 篇同类，见下） |
 | 2 | `02-Language-Design/LD-008-Go-Error-Handling-Patterns.md` | errors.Is/As 包装链定理链 | [ ] Yes [x] No | — |
 | 3 | `02-Language-Design/LD-045-Go-Error-Handling-Formal.md` | errors.Is/As 语义表 | [ ] Yes [x] No | — |
@@ -120,7 +120,7 @@
 **失效/存疑引用（仅记录，不改 workflow——超出本期范围）**：
 
 | 位置 | 引用 | 问题 | 建议 |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | docs-deploy.yml 生成的站点 HTML | `docs/10-进阶专题/`、`docs/LEARNING_PATHS.md`、`docs/INDEX.md` | 三者均不存在（死引用嵌在生成的 index.html 内容里，CI 不校验） | 改写 HTML 模板或补建目标页 |
 | AGENTS.md §5 宣称的 CI 质量门 | `scripts/check-unfixed-links.ps1`、`check-markdown-format.ps1`、`check_quality.ps1` | 三个脚本磁盘上存在，但 **无任何 workflow 引用**——实为本地门，AGENTS.md 描述易误导为 CI 门；且 `check-unfixed-links.ps1` 被审计 §3 记录为"硬编码旧 docs 路径的静态检查器（非死链扫描器），需重写" | 重写 check-unfixed-links 为真实扫描器（或直接用 scripts/tmp/rescan_deadlinks.py 入 CI）；AGENTS.md 改述为"本地质量门"；可考虑把 check-markdown-format/check_quality 接入 docs-check.yml |
 | 全部 go workflow（go-test/test/ci/ci-enhanced 等） | `go test/build/vet ./...` | 无任何 `GOWORK` 环境设置；go.work 仅覆盖 8 个 use 条目，42 模块中多数不在 workspace 内 → **CI 实际只测 workspace 覆盖的模块**，与 AGENTS.md "每模块 GOWORK=off 验证"的口径存在覆盖缺口 | 增加逐模块矩阵 job 或在 workflow 中显式 `GOWORK=off` + 模块清单遍历 |
@@ -133,7 +133,7 @@
 ## 8. Summary and Action Items
 
 | Priority | Action | Owner | Due date |
-|----------|--------|-------|----------|
+| ---------- | -------- | ------- | ---------- |
 | ~~P0~~ ✅ | ~~批量修正 98 篇重编号页的页内 H1 编号~~（已于 2026-09-05 完成：98 篇 H1 + 3 处正文自指，MISMATCH=0） | 内容维护 | 已完成 |
 | ~~P1~~ ✅ | ~~GC × cgo/指针运算交叉边界权威页补建~~（已完成：新建 LD-053 S 级六件套全配，含 GOEXPERIMENT=cgocheck2 实测发现） | 内容维护 | 已完成 |
 | ~~P1~~ ✅ | ~~examples/go.sum 缺校验条目~~（已完成：go.sum 补齐 + 根模块 require + jwt 传递依赖，grpc/messaging/security build/vet 通过） | 工程 | 已完成 |

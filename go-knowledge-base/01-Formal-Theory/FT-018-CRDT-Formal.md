@@ -6,6 +6,7 @@
 > **Go 版本**: 1.27+
 > **相关概念**: [FT-016](FT-016-PACELC-Theorem-Formal.md)
 > **相关概念**: [FT-027](FT-027-Gossip-Protocol-Formal.md)
+>
 ## Overview
 
 Conflict-Free Replicated Data Types (CRDTs) are data structures that can be replicated across multiple nodes in a distributed system and updated concurrently without coordination. They guarantee strong eventual consistency: all replicas that have received the same set of updates will converge to the same state.

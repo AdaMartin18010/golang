@@ -7,6 +7,7 @@
 > **Bloom 层级**: L4
 > **前置概念**: [FT-003 CAP 定理](FT-003-CAP-Theorem-Formal.md) · [FT-013 最终一致性](FT-013-Eventual-Consistency-Formal.md) · **后置概念**: [FT-018 CRDT](FT-018-CRDT-Formal.md) · [FT-010 线性一致性](FT-010-Linearizability-Formal.md)
 > **定理链**: 分区检测 → PAC 分支选择（A xor C）；正常运行 → ELC 分支选择（L xor C） / Invariant: 强一致性需要协调，协调必然增加延迟
+>
 ## Overview
 
 PACELC is an extension of the CAP theorem that unifies the trade-off between consistency and latency. It states that in a distributed system:

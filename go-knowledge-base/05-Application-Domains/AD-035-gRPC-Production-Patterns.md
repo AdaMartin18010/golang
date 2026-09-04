@@ -395,6 +395,18 @@ type ManagedChannel struct {
     State        connectivity.State
 }
 
+// isHealthy reports whether the channel is in a usable state
+func (mc *ManagedChannel) isHealthy() bool {
+    s := mc.State
+    return s == connectivity.Ready || s == connectivity.Idle
+}
+
+// markUsed records channel usage for lifecycle management
+func (mc *ManagedChannel) markUsed() {
+    mc.LastUsed = time.Now()
+    mc.RequestCount++
+}
+
 // GetChannel retrieves or creates a channel for the target
 func (p *ChannelPool) GetChannel(ctx context.Context, target string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
     p.mu.RLock()
@@ -481,6 +493,22 @@ func GoodExample(pool *ChannelPool) {
     }
     // Channel returned to pool, not closed
 }
+
+// ---- 示意定义：生产代码由 protobuf 生成 ----
+// pb 模拟 protobuf 生成的客户端包；Request/Response 为示意消息。
+
+type Request struct{ Payload string }
+type Response struct{ Result string }
+
+type serviceClient interface {
+    Call(ctx context.Context, req *Request) (*Response, error)
+}
+
+var pb = struct {
+    NewServiceClient func(*grpc.ClientConn) serviceClient
+}{}
+
+var req = &Request{Payload: "ping"}
 ```
 
 **Channel Lifecycle Best Practices:**
@@ -548,6 +576,9 @@ import (
     "sync"
     "sync/atomic"
     "time"
+
+    "google.golang.org/grpc"
+    "google.golang.org/grpc/connectivity"
 )
 
 var (
@@ -567,7 +598,7 @@ type PooledConnection struct {
 
 func (c *PooledConnection) Release() {
     atomic.StoreInt32(&c.inUse, 0)
-    atomic.StoreInt64((*int64)(&c.lastUsedAt), time.Now().UnixNano())
+    c.lastUsedAt = time.Now()
 }
 
 func (c *PooledConnection) IsUnhealthy() bool {
@@ -771,6 +802,60 @@ func (p *AdvancedChannelPool) Close() error {
 
     close(p.available)
     return nil
+}
+
+// createConnection establishes a new pooled connection
+func (p *AdvancedChannelPool) createConnection(dialOpts ...grpc.DialOption) (*PooledConnection, error) {
+    conn, err := grpc.DialContext(p.ctx, p.target, dialOpts...)
+    if err != nil {
+        return nil, err
+    }
+    return &PooledConnection{
+        ClientConn: conn,
+        pool:       p,
+        createdAt:  time.Now(),
+        lastUsedAt: time.Now(),
+    }, nil
+}
+
+// removeConnection closes and evicts a connection from the pool
+func (p *AdvancedChannelPool) removeConnection(conn *PooledConnection) {
+    conn.ClientConn.Close()
+
+    p.mu.Lock()
+    defer p.mu.Unlock()
+    for i, c := range p.connections {
+        if c == conn {
+            p.connections = append(p.connections[:i], p.connections[i+1:]...)
+            break
+        }
+    }
+}
+
+// statsCollector periodically refreshes pool statistics
+func (p *AdvancedChannelPool) statsCollector() {
+    ticker := time.NewTicker(p.config.HealthCheckInterval)
+    defer ticker.Stop()
+
+    for {
+        select {
+        case <-p.ctx.Done():
+            return
+        case <-ticker.C:
+            var active, idle int64
+            p.mu.RLock()
+            for _, c := range p.connections {
+                if atomic.LoadInt32(&c.inUse) == 1 {
+                    active++
+                } else {
+                    idle++
+                }
+            }
+            p.mu.RUnlock()
+            atomic.StoreInt64(&p.stats.ActiveConnections, active)
+            atomic.StoreInt64(&p.stats.IdleConnections, idle)
+        }
+    }
 }
 ```
 

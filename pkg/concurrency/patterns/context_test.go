@@ -88,6 +88,7 @@ func TestContextAwarePipeline(t *testing.T) {
 
 func TestContextAwarePipelineCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	source := make(chan int)
 	go func() {

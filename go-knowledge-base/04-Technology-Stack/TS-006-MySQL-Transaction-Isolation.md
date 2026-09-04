@@ -997,7 +997,6 @@ package mysql
 
 import (
     "context"
-    "database/sql"
     "strings"
 )
 

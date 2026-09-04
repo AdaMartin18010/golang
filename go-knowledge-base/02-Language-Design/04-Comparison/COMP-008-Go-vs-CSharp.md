@@ -4,6 +4,7 @@
 > **级别**: S (28 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Go and C# both target enterprise development with different philosophies. C# offers a mature ecosystem with LINQ, async/await, and comprehensive tooling within the .NET ecosystem, while Go provides simplicity, fast compilation, and cloud-native efficiency. This document compares enterprise capabilities, ecosystem maturity, and development workflows.
@@ -50,13 +51,13 @@ Go and C# both target enterprise development with different philosophies. C# off
     - [完整代码实现](#完整代码实现)
     - [配置示例](#配置示例)
 - [生产环境配置](#生产环境配置)
-  - [测试用例](#测试用例)
-  - [部署指南](#部署指南)
-  - [性能调优](#性能调优)
-  - [故障处理](#故障处理)
-  - [安全建议](#安全建议)
-  - [运维手册](#运维手册)
-  - [参考链接](#参考链接)
+    - [测试用例](#测试用例)
+    - [部署指南](#部署指南)
+    - [性能调优](#性能调优)
+    - [故障处理](#故障处理)
+    - [安全建议](#安全建议)
+    - [运维手册](#运维手册)
+    - [参考链接](#参考链接)
   - [附录A: 详细数据](#附录a-详细数据)
     - [数据表格](#数据表格)
     - [代码示例](#代码示例)

@@ -171,7 +171,7 @@ func Print(v interface{}) { fmt.Println(v) }
 ### 性能特征
 
 | 维度 | 复杂度 | 空间开销 | 优化策略 |
-|------|--------|----------|----------|
+| ------ | -------- | ---------- | ---------- |
 | 时间 | (n)$ | - | 缓存、并行 |
 | 空间 | (n)$ | 中等 | 对象池 |
 | 通信 | (1)$ | 低 | 批处理 |
@@ -230,7 +230,7 @@ func Print(v interface{}) { fmt.Println(v) }
 ### 并发模式
 
 | 模式 | 适用场景 | 性能 | 复杂度 |
-|------|----------|------|--------|
+| ------ | ---------- | ------ | -------- |
 | Channel | 数据流 | 高 | 低 |
 | Mutex | 共享状态 | 高 | 中 |
 | Atomic | 简单计数 | 极高 | 高 |
@@ -689,7 +689,9 @@ func (s *DefaultService) Health() HealthStatus {
 ### 4. 配置示例
 
 `yaml
+
 # config.yaml
+
 server:
   host: 0.0.0.0
   port: 8080
@@ -734,7 +736,7 @@ import (
 )
 
 func TestService_Process(t *testing.T) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
+    svc := NewService(Config{Timeout: 5* time.Second})
 
     tests := []struct {
         name    string
@@ -767,7 +769,7 @@ func TestService_Process(t *testing.T) {
 }
 
 func BenchmarkService_Process(b *testing.B) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
+    svc := NewService(Config{Timeout: 5* time.Second})
     req := Request{ID: "bench", Data: "data"}
     ctx := context.Background()
 
@@ -781,7 +783,9 @@ func BenchmarkService_Process(b *testing.B) {
 ### 6. 部署配置
 
 `dockerfile
+
 # Dockerfile
+
 FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
@@ -803,7 +807,9 @@ CMD ["./main"]
 `
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 
 services:
@@ -864,7 +870,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |
@@ -875,17 +881,18 @@ volumes:
 
 `
 问题诊断流程:
+
 1. 检查日志
    kubectl logs -f pod-name
 
 2. 检查指标
-   curl http://localhost:9090/metrics
+   curl <http://localhost:9090/metrics>
 
 3. 检查健康状态
-   curl http://localhost:8080/health
+   curl <http://localhost:8080/health>
 
 4. 分析性能
-   go tool pprof http://localhost:9090/debug/pprof/profile
+   go tool pprof <http://localhost:9090/debug/pprof/profile>
 `
 
 ### 9. 最佳实践总结

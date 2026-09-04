@@ -52,7 +52,7 @@ func (b *Buffer) Reset() {
 }
 
 // ReadFrom 从Reader读取数据
-func (b *Buffer) ReadFrom(r io.Reader) (int, error) {
+func (b *Buffer) ReadFrom(r io.Reader) (int64, error) {
 	if b.Available() == 0 {
 		return 0, io.ErrShortBuffer
 	}
@@ -61,11 +61,11 @@ func (b *Buffer) ReadFrom(r io.Reader) (int, error) {
 	if n > 0 {
 		b.length += n
 	}
-	return n, err
+	return int64(n), err
 }
 
 // WriteTo 写入到Writer
-func (b *Buffer) WriteTo(w io.Writer) (int, error) {
+func (b *Buffer) WriteTo(w io.Writer) (int64, error) {
 	if b.length == 0 {
 		return 0, nil
 	}
@@ -75,7 +75,7 @@ func (b *Buffer) WriteTo(w io.Writer) (int, error) {
 		b.offset += n
 		b.length -= n
 	}
-	return n, err
+	return int64(n), err
 }
 
 // Consume 消费数据
@@ -228,14 +228,14 @@ func (bc *BufferChain) Clear() {
 	atomic.StoreInt64(&bc.size, 0)
 }
 
-// ReadFrom 从Reader读取数据到缓冲区链
-func (bc *BufferChain) ReadFrom(r io.Reader, pool *BufferPool) (int64, error) {
+// FillFrom 从Reader读取数据到缓冲区链
+func (bc *BufferChain) FillFrom(r io.Reader, pool *BufferPool) (int64, error) {
 	var total int64
 
 	for {
 		buffer := pool.Get()
 		n, err := buffer.ReadFrom(r)
-		total += int64(n)
+		total += n
 
 		if n > 0 {
 			bc.Append(buffer)

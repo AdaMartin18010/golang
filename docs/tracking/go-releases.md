@@ -5,8 +5,8 @@
 ## 最新版本
 
 - **版本**: go1.27.1
-- **发布日期**: 未知（见 https://go.dev/dl/?mode=json）
-- **下载页**: https://go.dev/dl/go1.27.1
+- **发布日期**: 未知（见 <https://go.dev/dl/?mode=json）>
+- **下载页**: <https://go.dev/dl/go1.27.1>
 
 ## 可用文件
 

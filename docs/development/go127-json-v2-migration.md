@@ -22,7 +22,7 @@ Go 1.27 中 `encoding/json/v2` 正式 GA，**且 v1 `encoding/json` 已改由 v2
 ## 1. 包结构
 
 | 包 | 角色 | 关键类型 |
-|----|------|---------|
+| ---- | ------ | --------- |
 | `encoding/json`（v1） | 兼容门面，v2 实现 | 不变（`Marshal`、`Decoder`...） |
 | `encoding/json/v2` | 语义层：Go 值 ↔ JSON 数据 | `Marshal/Unmarshal`、`Options`、`Marshaler` |
 | `encoding/json/jsontext` | 语法层：JSON 文本流 | `Encoder/Decoder`、`Token`、`Value`、`Options` |
@@ -67,7 +67,7 @@ json.Marshal(v, jsontext.WithIndent("  "))                   // 缩进
 ## 3. 行为差异清单
 
 | 行为 | v1 | v2（默认） | 处置 |
-|------|----|-----------|------|
+| ------ | ---- | ----------- | ------ |
 | 对象重复 key | 静默取最后值 | **拒绝**（错误） | `jsontext.AllowDuplicateNames(true)` 恢复宽松 |
 | 未知字段 | 忽略 | 忽略（`RejectUnknownMembers(true)` 可拒绝） | 严格模式可选开启 |
 | 大小写匹配 | 优先精确，后 fold | 精确匹配 | fold 行为变化，相关测试需回归 |

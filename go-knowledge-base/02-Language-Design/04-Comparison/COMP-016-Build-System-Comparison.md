@@ -4,6 +4,7 @@
 > **级别**: A (16 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Build systems and package managers are critical for software development workflow. This document compares Go Modules, Cargo, npm, Maven/Gradle, pip, and other build tools across features, performance, and developer experience.

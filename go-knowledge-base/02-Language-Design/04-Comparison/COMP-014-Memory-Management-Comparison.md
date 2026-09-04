@@ -4,6 +4,7 @@
 > **级别**: S (21 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Memory management approaches vary significantly across programming languages, from manual management in C/C++ to garbage collection in Java/Go to ownership systems in Rust. This document compares memory allocation strategies, garbage collection techniques, and performance characteristics.

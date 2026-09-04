@@ -1098,6 +1098,17 @@ func WithCircuitBreaker(name string, next LambdaHandler) LambdaHandler {
 
 ```go
 // Cold start optimization techniques
+package main
+
+import (
+    "database/sql"
+    "log"
+    "sync"
+    "time"
+
+    awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
+    "github.com/redis/go-redis/v9"
+)
 
 // 1. Provisioned Concurrency (AWS Lambda)
 // Keeps specified number of instances warm
@@ -1109,7 +1120,7 @@ func WithCircuitBreaker(name string, next LambdaHandler) LambdaHandler {
 var (
     db     *sql.DB
     cache  *redis.Client
-    s3     *s3.Client
+    s3     *awss3.Client
 )
 
 func init() {
@@ -1148,6 +1159,17 @@ func initDatabase() *sql.DB {
 
     return db
 }
+
+// Helper stubs — in production these build real clients from environment config
+const connectionString = "postgres://user:pass@db-host:5432/app"
+
+type HeavyService struct{}
+
+func initCache() *redis.Client       { return nil }
+func initS3() *awss3.Client           { return nil }
+func initHeavyService() HeavyService { return HeavyService{} }
+
+func main() {}
 ```
 
 ---

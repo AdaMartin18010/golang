@@ -6,3 +6,5 @@
 **主题**: 状态机复制（SMR）。
 
 **权威页（canonical）**: [FT-032: State Machine Replication - Formal Theory](FT-032-State-Machine-Replication-Formal.md)。
+
+**编号说明**: FT-009 原为三页共用（2026-09 治理前）；实质页 Distributed Transactions 已重编号为 [FT-044](FT-044-Distributed-Transactions-Formal.md)，本 stub 保留 FT-009-C 别名入口。

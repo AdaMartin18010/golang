@@ -4,6 +4,7 @@
 > **级别**: S (17 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Deployment strategies vary significantly across programming languages, affecting operational complexity, resource usage, and scalability. This document compares deployment models for Go, Python, Java, Node.js, Rust, and C# across containerization, serverless, and traditional server deployments.
@@ -49,13 +50,13 @@ Deployment strategies vary significantly across programming languages, affecting
     - [完整代码实现](#完整代码实现)
     - [配置示例](#配置示例)
 - [生产环境配置](#生产环境配置)
-  - [测试用例](#测试用例)
-  - [部署指南](#部署指南)
-  - [性能调优](#性能调优)
-  - [故障处理](#故障处理)
-  - [安全建议](#安全建议)
-  - [运维手册](#运维手册)
-  - [参考链接](#参考链接)
+    - [测试用例](#测试用例)
+    - [部署指南](#部署指南)
+    - [性能调优](#性能调优)
+    - [故障处理](#故障处理)
+    - [安全建议](#安全建议)
+    - [运维手册](#运维手册)
+    - [参考链接](#参考链接)
 
 ---
 

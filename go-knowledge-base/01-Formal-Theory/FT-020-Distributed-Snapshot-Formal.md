@@ -4,6 +4,7 @@
 > **级别**: S (24 KB)
 > **标签**: #ft
 > **Go 版本**: 1.27+
+>
 ## Overview
 
 A distributed snapshot captures the global state of a distributed system at a particular point in time. The Chandy-Lamport algorithm provides an efficient method for recording consistent global states without stopping the system. This is fundamental for checkpointing, deadlock detection, and debugging distributed systems.

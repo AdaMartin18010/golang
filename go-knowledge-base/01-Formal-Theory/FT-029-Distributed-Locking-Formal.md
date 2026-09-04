@@ -55,7 +55,7 @@ where:
 **Properties**:
 
 | Property | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | Fairness | Requests granted in order |
 | Deadlock-free | No infinite waiting |
 | Starvation-free | Every request eventually granted |
@@ -83,7 +83,7 @@ where:
 **State Variables**:
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | $RN$ | $\mathbb{N}^n$ | Request numbers from all processes |
 | $LN$ | $\mathbb{N}^n$ | Last request numbers executed |
 | $Q$ | Queue | Pending requests |

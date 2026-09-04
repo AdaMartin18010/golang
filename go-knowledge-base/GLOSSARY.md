@@ -69,7 +69,7 @@ Term
 ### ACID
 **Category**: Database  
 **Related**: BASE, Transaction, Consistency  
-**See**: [FT-009-Distributed-Transactions-Formal.md](./01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md)
+**See**: [FT-044-Distributed-Transactions-Formal.md](./01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md)
 
 Atomicity, Consistency, Isolation, Durability — properties guaranteeing reliable database transactions.
 - **Atomicity**: All operations succeed or all fail

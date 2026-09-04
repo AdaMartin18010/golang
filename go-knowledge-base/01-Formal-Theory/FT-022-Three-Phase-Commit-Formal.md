@@ -4,6 +4,7 @@
 > **级别**: S (28 KB)
 > **标签**: #ft
 > **Go 版本**: 1.27+
+>
 ## Overview
 
 Three-Phase Commit (3PC) is a distributed consensus protocol that extends Two-Phase Commit (2PC) to handle coordinator failure without blocking. It adds an additional pre-commit phase, allowing participants to make progress even if the coordinator fails after making a decision.

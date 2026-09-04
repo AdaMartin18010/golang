@@ -4,6 +4,7 @@
 > **级别**: S (16 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Go and Erlang/Elixir both prioritize concurrency but with fundamentally different models. Erlang/Elixir offers the OTP platform with unparalleled fault tolerance and hot code reloading, while Go provides CSP-style concurrency with superior performance and ease of deployment. This document compares fault tolerance mechanisms, concurrency models, and distributed systems capabilities.

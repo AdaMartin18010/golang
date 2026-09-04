@@ -68,7 +68,7 @@
 | [FT-008: 拜占庭共识的形式化理论 (Byzantine Consensus: Formal Theory)](../01-Formal-Theory/FT-008-Byzantine-Consensus-Formal.md) | S | 36 KB | 2026-09 |
 | [FT-008-B: Network Partition Brain Split](../01-Formal-Theory/FT-008-Network-Partition-Brain-Split.md) | S | 38 KB | 2026-09 |
 | [FT-008-C: Probabilistic Data Structures](../01-Formal-Theory/FT-008-Probabilistic-Data-Structures.md) | S | 35 KB | 2026-09 |
-| [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md) | S | 37 KB | 2026-09 |
+| [FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md) | S | 37 KB | 2026-09 |
 | [FT-009-B: Quorum Consensus Theory](../01-Formal-Theory/FT-009-Quorum-Consensus-Theory.md) | B (stub → FT-017) | — | 2026-09 |
 | [FT-009-C: State Machine Replication](../01-Formal-Theory/FT-009-State-Machine-Replication.md) | B (stub → FT-032) | — | 2026-09 |
 | [FT-010: 线性一致性的形式化理论 (Linearizability: Formal Theory)](../01-Formal-Theory/FT-010-Linearizability-Formal.md) | S | 32 KB | 2026-09 |

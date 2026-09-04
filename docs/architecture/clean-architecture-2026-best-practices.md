@@ -82,7 +82,7 @@ type RedisCachedUserRepository struct{}
 ### 2.1 测试比例目标
 
 | 测试层级 | 覆盖率目标 | 执行时间 | 工具推荐 |
-|----------|-----------|----------|----------|
+| ---------- | ----------- | ---------- | ---------- |
 | **单元测试** | 70% | < 1秒 | 标准 `testing` 包 |
 | **集成测试** | 20% | < 30秒 | Testcontainers |
 | **E2E 测试** | 10% | 分钟级 | Playwright / 自定义 |
@@ -143,7 +143,7 @@ func TestPostgresUserRepository_Create(t *testing.T) {
 ### 2.3 本项目测试优化成果
 
 | 模块 | 优化前 | 优化后 | 方法 |
-|------|--------|--------|------|
+| ------ | -------- | -------- | ------ |
 | Redis 缓存 | 62s (外部依赖) | 1.2s | miniredis |
 | MQTT | 0% | 17.5% | 提取可测试函数 |
 | NATS | 16.7% | 35.9% | 提取 marshalPayload |
@@ -297,7 +297,7 @@ func (r *PostgresRepository[T]) Create(ctx context.Context, entity T) error {
 ## 5. 常见反模式 checklist
 
 | 反模式 | 检测方法 | 修复建议 |
-|--------|----------|----------|
+| -------- | ---------- | ---------- |
 | 贫血模型 | Domain 只有 getter/setter | 添加业务方法到 Entity |
 | 循环依赖 | 包互相导入 | 提取共享类型到独立包 |
 | 基础设施泄漏 | Handler 直接使用 DB | 通过 Use Case 中转 |

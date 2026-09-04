@@ -121,7 +121,7 @@ SSA lowering 的预期行为:
 ### 2.3 其他 CVE 速览（标准库与工具链）
 
 | CVE | 组件 | 影响 | 攻击场景 |
-|-----|------|------|---------|
+| ----- | ------ | ------ | --------- |
 | CVE-2026-32280 | crypto/x509 | 证书验证绕过 | TLS 握手中间人攻击 |
 | CVE-2026-32281 | crypto/x509 | 证书路径构造错误 | 伪造证书信任链 |
 | CVE-2026-32282 | go command | 模块缓存污染 | 供应链攻击 |
@@ -272,7 +272,7 @@ func safeCopy(dst, src *T) {
 ## 五、知识库交叉引用
 
 | 相关主题 | 文档位置 |
-|---------|---------|
+| --------- | --------- |
 | Go 内存模型 | `go-knowledge-base/02-Language-Design/LD-001~010` |
 | 编译器架构 | `go-knowledge-base/02-Language-Design/LD-020-Compiler-Architecture.md` |
 | 边界检查消除 | `go-knowledge-base/02-Language-Design/LD-028-Escape-Analysis.md` |

@@ -86,7 +86,7 @@ fmt.Printf("TLS Version: %s\n", versionName(state.Version))
 ## 五、兼容性矩阵
 
 | 客户端 | 服务器 | 结果 |
-|--------|--------|------|
+| -------- | -------- | ------ |
 | Go 1.26 | Go 1.26 | ✅ 后量子 + 经典混合 |
 | Go 1.26 | Go 1.25 | ✅ 经典 ECDHE（回退） |
 | Go 1.25 | Go 1.26 | ✅ 经典 ECDHE（回退） |
@@ -97,7 +97,7 @@ fmt.Printf("TLS Version: %s\n", versionName(state.Version))
 ## 六、性能影响
 
 | 指标 | 经典 TLS | 后量子 TLS | 变化 |
-|------|---------|-----------|------|
+| ------ | --------- | ----------- | ------ |
 | 握手延迟 | 1 RTT | 1 RTT | 无变化 |
 | 公钥操作 | ECDHE | ECDHE + ML-KEM | +~20% CPU |
 | 密钥大小 | ~32 bytes | ~1184 bytes (MLKEM768) | 增大 |

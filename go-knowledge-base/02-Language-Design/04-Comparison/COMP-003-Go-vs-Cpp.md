@@ -4,6 +4,7 @@
 > **级别**: S (18 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Go and C++ serve systems programming but with fundamentally different trade-offs. C++ offers zero-cost abstractions and complete control, while Go provides memory safety through GC and superior developer productivity. This document compares performance characteristics, systems programming capabilities, and use case suitability.

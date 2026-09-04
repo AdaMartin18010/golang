@@ -4,6 +4,7 @@
 > **级别**: S (25 KB)
 > **标签**: #ft
 > **Go 版本**: 1.27+
+>
 ## Overview
 
 Two-Phase Commit (2PC) is a distributed algorithm that ensures all nodes in a distributed system agree to commit or abort a transaction. It is a blocking consensus protocol that guarantees atomicity across multiple nodes but is vulnerable to coordinator failure.

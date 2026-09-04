@@ -4,6 +4,7 @@
 > **级别**: S (19 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 The strength of a programming language often depends on its ecosystem and available libraries. This document compares package ecosystems, library availability, and community resources across Go, Python, JavaScript, Java, Rust, C#, and other languages.
@@ -67,13 +68,13 @@ The strength of a programming language often depends on its ecosystem and availa
     - [完整代码实现](#完整代码实现)
     - [配置示例](#配置示例)
 - [生产环境配置](#生产环境配置)
-  - [测试用例](#测试用例)
-  - [部署指南](#部署指南)
-  - [性能调优](#性能调优)
-  - [故障处理](#故障处理)
-  - [安全建议](#安全建议)
-  - [运维手册](#运维手册)
-  - [参考链接](#参考链接)
+    - [测试用例](#测试用例)
+    - [部署指南](#部署指南)
+    - [性能调优](#性能调优)
+    - [故障处理](#故障处理)
+    - [安全建议](#安全建议)
+    - [运维手册](#运维手册)
+    - [参考链接](#参考链接)
 
 ---
 

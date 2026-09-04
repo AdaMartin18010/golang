@@ -4,6 +4,7 @@
 > **级别**: S (25 KB)
 > **标签**: #ft
 > **Go 版本**: 1.27+
+>
 ## Overview
 
 Operational Transformation (OT) is a technology for supporting collaborative editing of shared documents. It allows multiple users to concurrently edit a document and synchronizes their changes while maintaining consistency. Unlike CRDTs, OT requires a central server or coordination point to transform operations before applying them.

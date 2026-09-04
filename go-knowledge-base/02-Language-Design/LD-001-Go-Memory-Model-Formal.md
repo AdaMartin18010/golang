@@ -718,9 +718,9 @@ package main
 import "sync/atomic"
 
 func main() {
-	var count int // 共享计数器，想替代 mutex 做无锁计数
-	// 编译失败: atomic.AddInt64 的第一个参数类型必须是 *int64，而 &count 的类型是 *int
-	atomic.AddInt64(&count, 1)
+ var count int // 共享计数器，想替代 mutex 做无锁计数
+ // 编译失败: atomic.AddInt64 的第一个参数类型必须是 *int64，而 &count 的类型是 *int
+ atomic.AddInt64(&count, 1)
 }
 ```
 
@@ -738,8 +738,8 @@ cannot use &count (value of type *int) as *int64 value in argument to atomic.Add
 package main
 
 func main() {
-	done := make(chan bool)
-	// 编译失败: done 已声明但未被使用 —— 缺少接收方
+ done := make(chan bool)
+ // 编译失败: done 已声明但未被使用 —— 缺少接收方
 }
 ```
 

@@ -10,34 +10,99 @@ on:
       - main
       - develop
 
+env:
+  # 根 go.work 用途是本地开发；CI 逐模块独立构建/测试，必须关闭 workspace 模式
+  GOWORK: "off"
+
 jobs:
   test:
-    name: Test and Benchmark
+    name: test (${{ matrix.module }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         go-version: ['1.27.x']
+        # 模块清单来源：go.work 全量 42 模块 - CI 排除清单 4 模块
+        # 排除清单见 docs/tracking/ci-module-coverage.md
+        module:
+          - .
+          - archive/ai-agent/examples/ai-agent
+          - archive/ai-agent/pkg/agent
+          - archive/formal-verification/tools/concurrency-pattern-generator
+          - archive/formal-verification/tools/formal-verifier
+          - examples
+          - examples/concurrency/pipeline_example
+          - examples/concurrency/worker_pool_example
+          - examples/go125/runtime/container_scheduling
+          - examples/go125/runtime/gc_optimization
+          - examples/go125/runtime/memory_allocator
+          - examples/go125/toolchain/asan_memory_leak
+          - examples/go126-features
+          - examples/go127-features
+          - examples/modern-features/01-new-features/01-generic-type-alias
+          - examples/modern-features/01-new-features/03-testing-enhancement
+          - examples/modern-features/01-new-features/04-go125-new-features/01-iter-demo
+          - examples/modern-features/01-new-features/04-go125-new-features/02-unique-demo
+          - examples/modern-features/01-new-features/04-go125-new-features/03-testing-loop
+          - examples/modern-features/06-architecture-patterns/01-Clean-Architecture
+          - examples/modern-features/07-performance-optimization
+          - examples/modern-features/08-cloud-native/kubernetes-operator
+          - examples/modern-features/09-cloud-native-2.0/01-Kubernetes-Operator
+          - examples/testing-framework
+          - examples/web-crawler
+          - go-knowledge-base/examples/distributed-cache
+          - go-knowledge-base/examples/event-driven-system
+          - go-knowledge-base/examples/microservices-platform/services/user-service
+          - go-knowledge-base/examples/rate-limiter
+          - go-knowledge-base/examples/task-scheduler
+          - pkg/concurrency
+          - pkg/http3
+          - pkg/memory
+          - pkg/observability
+          - scripts/fix_code_format
+          - scripts/format_docs
+          - scripts/gen_changelog
+          - scripts/project_stats
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.module }}
 
     steps:
-    - name: Set up Go ${{ matrix.go-version }}
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ matrix.go-version }}
-
     - name: Check out code
       uses: actions/checkout@v4
+
+    - name: Set up Go ${{ matrix.go-version }}
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+        cache: true
+        cache-dependency-path: ${{ matrix.module }}/go.sum
+
+    - name: Build
+      shell: bash
+      run: |
+        if [ "$(go list -f '{{len .GoFiles}}' ./... 2>/dev/null | awk '{s+=$1} END {print s+0}')" -eq 0 ]; then
+          echo "module has no non-test packages; skipping go build"
+        else
+          go build ./...
+        fi
+
+    - name: Vet
+      run: go vet ./...
 
     - name: Run tests with race condition detection
       run: go test -v -race -coverprofile=coverage.out ./...
 
     - name: Run benchmarks
       run: go test -bench=. -benchmem ./...
-      
+
     - name: Upload coverage reports to Codecov
+      if: ${{ matrix.module == '.' }}
       uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # 需要在GitHub仓库设置中配置CODECOV_TOKEN
         files: ./coverage.out
         flags: unittests
         name: codecov-umbrella
-        fail_ci_if_error: true 
+        fail_ci_if_error: true

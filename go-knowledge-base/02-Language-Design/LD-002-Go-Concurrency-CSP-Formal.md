@@ -384,7 +384,7 @@ package main
 
 // 编译失败: 不能向 receive-only channel (<-chan int) 发送数据
 func emit(ch <-chan int) {
-	ch <- 42
+ ch <- 42
 }
 ```
 
@@ -403,7 +403,7 @@ package main
 
 // 编译失败: close 不能用于 send-only channel (chan<- int)
 func produce(out chan<- int) {
-	close(out)
+ close(out)
 }
 ```
 

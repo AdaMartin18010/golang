@@ -1,7 +1,7 @@
 # 死链修复日志（2026-09-04 P1-B1.5）
 
 | 动作 | 次数 |
-|---|---|
+| --- | --- |
 | delink | 275 |
 | repoint | 689 |
 | placeholder | 37 |
@@ -1044,6 +1044,7 @@
 - view\formal\Go\99-Appendix\Complete-Rules.md: VISUAL-ATLAS 待创建后生效 ../../../../../VISUAL-ATLAS.md
 - view\formal\Go\99-Appendix\Complete-Rules.md: VISUAL-ATLAS 待创建后生效 ../../../../../VISUAL-ATLAS.md
 - view\formal\Go\99-Appendix\Complete-Rules.md: ../Go/05-Extension-Generics/FGG-Calculus.md -> ../05-Extension-Generics/FGG-Calculus.md
+
 ---
 
 ## 终验轮（2026-09-05，修正扫描口径后）

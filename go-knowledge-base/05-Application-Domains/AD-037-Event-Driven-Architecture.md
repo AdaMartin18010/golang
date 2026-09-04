@@ -754,8 +754,41 @@ import (
     "context"
     "fmt"
     "sync"
-    "time"
 )
+
+// ---- 示意类型定义（生产实现由领域层提供） ----
+
+// Event 领域事件
+type Event interface {
+    AggregateID() string
+    Version() int
+}
+
+// PartitionFunction 事件分区函数
+type PartitionFunction func(Event) string
+
+// EventHandler 事件处理器
+type EventHandler interface {
+    Handle(ctx context.Context, event Event) error
+}
+
+// CheckpointStore 处理检查点存储
+type CheckpointStore interface {
+    GetLastProcessedVersion(aggregateID string) int
+    Save(aggregateID string, version int) error
+}
+
+// EventStore 事件存储
+type EventStore interface {
+    ReadStream(ctx context.Context, aggregateID string, from int) (EventStream, error)
+}
+
+// EventStream 事件流
+type EventStream interface {
+    Close() error
+    HasNext() bool
+    Next() (Event, error)
+}
 
 // OrderedEventProcessor ensures events are processed in order per aggregate
 type OrderedEventProcessor struct {
@@ -774,6 +807,7 @@ type partitionWorker struct {
     id          int
     partitions  []string
     eventChan   chan Event
+    eventStore  EventStore
     handler     EventHandler
     checkpoint  CheckpointStore
 }
@@ -866,6 +900,11 @@ func (w *partitionWorker) waitForMissingEvents(ctx context.Context, aggregateID 
     }
 
     return nil
+}
+
+// handleError 处理处理失败的事件（生产实现：重试 / 死信队列）
+func (w *partitionWorker) handleError(ctx context.Context, event Event, err error) {
+    // 示意实现：记录并跳过；生产可接入重试与死信
 }
 ```
 

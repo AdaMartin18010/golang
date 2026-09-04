@@ -1,8 +1,8 @@
 # 季度权威对齐审计机制
 
-> **文档编号**: TRACK-AUDIT-001  
-> **频率**: 每季度（3月、6月、9月、12月）  
-> **负责人**: 技术委员会 / 知识库维护者  
+> **文档编号**: TRACK-AUDIT-001
+> **频率**: 每季度（3月、6月、9月、12月）
+> **负责人**: 技术委员会 / 知识库维护者
 > **最后更新**: 2026-05-06
 
 ---
@@ -10,6 +10,7 @@
 ## 一、审计目标
 
 确保本项目所有 Go 特性描述与 **go.dev 官方文档** 保持同步，消除：
+
 1. 虚构 API（如 `runtime.SetGoroutineLeakCallback`）
 2. 版本归属错误（如 Go 1.23 特性标注为 1.25）
 3. 过时的实验性/稳定状态描述
@@ -22,7 +23,7 @@
 ### 2.1 语言特性核对
 
 | 特性 | 本项目描述 | 官方来源 | 状态 |
-|------|-----------|---------|------|
+| ------ | ----------- | --------- | ------ |
 | `new(expr)` | | go.dev/doc/go1.26 | |
 | 自引用泛型 | | go.dev/doc/go1.26 | |
 | `errors.AsType` | | go.dev/doc/go1.26 | |
@@ -35,7 +36,7 @@
 ### 2.2 实验性特性状态追踪
 
 | 特性 | Go 1.26 状态 | Go 1.27 实际 | 行动 |
-|------|-------------|-------------|------|
+| ------ | ------------- | ------------- | ------ |
 | `runtime/secret` | `GOEXPERIMENT=runtimesecret` | 仍为实验 | 追踪 release notes |
 | `simd/archsimd` | `GOEXPERIMENT=simd` | 仍为实验 | 追踪 release notes |
 | `goroutineleak` profile | `GOEXPERIMENT=goroutineleakprofile` | 已 GA（新增 `/debug/pprof/goroutineleak` 端点） | 文档已更新 |
@@ -82,14 +83,14 @@ echo "Audit completed. See docs/tracking/quarterly-audit-$(date +%Y-%m).md"
 
 ## 四、2026-Q2 审计记录（示例）
 
-**审计日期**: 2026-05-06  
-**执行人**: Kimi Code CLI  
+**审计日期**: 2026-05-06
+**执行人**: Kimi Code CLI
 **Go 版本**: go1.27.1 windows/amd64（2026-08 自 go1.26.2 升级）
 
 ### 发现与修正
 
 | 发现 | 严重性 | 修正措施 | 状态 |
-|------|--------|---------|------|
+| ------ | -------- | --------- | ------ |
 | `runtime.SetGoroutineLeakCallback` 虚构 API | 🔴 Critical | 删除并替换为 `goroutineleak` profile | ✅ 已修正 |
 | `new(expr)` 被错误否定 | 🔴 Critical | 重写示例和文档 | ✅ 已修正 |
 | `iter`/`unique` 版本误标为 1.25 | 🟠 High | 更正为 Go 1.23 | ✅ 已修正 |

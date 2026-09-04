@@ -152,56 +152,56 @@ jobs:
               <div class="modules">
                   <div class="module-card">
                       <div class="module-title">🔤 语言基础</div>
-                      <div class="module-desc">语法、并发、模块管理</div>
-                      <a href="docs/01-语言基础/">查看文档 →</a>
+                      <div class="module-desc">语言特性、类型系统、并发、包管理</div>
+                      <a href="docs/go126-comprehensive-guide/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">
-                      <div class="module-title">🌐 Web开发</div>
-                      <div class="module-desc">HTTP、框架、数据库、监控</div>
-                      <a href="docs/02-Web开发/">查看文档 →</a>
+                      <div class="module-title">🔌 API 文档</div>
+                      <div class="module-desc">API 设计规范与文档</div>
+                      <a href="docs/api/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">
-                      <div class="module-title">✨ Go 1.26新特性</div>
-                      <div class="module-desc">最新版本特性详解</div>
-                      <a href="docs/03-Go-1.26新特性/">查看文档 →</a>
+                      <div class="module-title">📐 形式化规范</div>
+                      <div class="module-desc">TLA+ 规约与验证</div>
+                      <a href="docs/formal-specs/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">
-                      <div class="module-title">🏗️ 微服务</div>
-                      <div class="module-desc">微服务架构与实践</div>
-                      <a href="docs/05-微服务/">查看文档 →</a>
+                      <div class="module-title">🏗️ 架构设计</div>
+                      <div class="module-desc">架构模式与最佳实践</div>
+                      <a href="docs/architecture/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">
-                      <div class="module-title">☁️ 云原生</div>
-                      <div class="module-desc">Kubernetes、容器化部署</div>
-                      <a href="docs/06-云原生/">查看文档 →</a>
+                      <div class="module-title">☁️ 部署</div>
+                      <div class="module-desc">部署指南与实践</div>
+                      <a href="docs/deployment/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">
-                      <div class="module-title">⚡ 性能优化</div>
-                      <div class="module-desc">性能分析与优化实践</div>
-                      <a href="docs/07-性能优化/">查看文档 →</a>
+                      <div class="module-title">📈 可观测性</div>
+                      <div class="module-desc">OpenTelemetry、监控与追踪</div>
+                      <a href="docs/architecture/tech-stack/observability/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">
-                      <div class="module-title">🎨 架构设计</div>
-                      <div class="module-desc">设计模式与最佳实践</div>
-                      <a href="docs/08-架构设计/">查看文档 →</a>
+                      <div class="module-title">🎨 架构决策</div>
+                      <div class="module-desc">架构决策记录（ADR）</div>
+                      <a href="docs/architecture-decisions/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">
                       <div class="module-title">🔧 工程实践</div>
-                      <div class="module-desc">测试、可观测性</div>
-                      <a href="docs/09-工程实践/">查看文档 →</a>
+                      <div class="module-desc">开发环境、工具链与现代化</div>
+                      <a href="docs/development/">查看文档 →</a>
                   </div>
                   
                   <div class="module-card">
                       <div class="module-title">🚀 进阶专题</div>
-                      <div class="module-desc">深入专题与实战</div>
-                      <a href="docs/go126-comprehensive-guide/">查看文档 →</a>
+                      <div class="module-desc">Go 1.27 深入专题与实战</div>
+                      <a href="docs/go127-comprehensive-guide/">查看文档 →</a>
                   </div>
               </div>
               

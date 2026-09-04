@@ -29,7 +29,7 @@ Let $\mathcal{M}$ be the set of observable measurements from system $S$ over tim
 **Metric Types:**
 
 | Type | Mathematical Definition | Use Case |
-|------|------------------------|----------|
+| ------ | ------------------------ | ---------- |
 | **Counter** | $C: T \to \mathbb{N}$, monotonic increasing | Requests served, errors |
 | **Gauge** | $G: T \to \mathbb{R}$, arbitrary | Temperature, queue depth |
 | **Histogram** | $H: T \to \mathcal{P}(\mathbb{R})$ | Request latency distribution |
@@ -38,11 +38,11 @@ Let $\mathcal{M}$ be the set of observable measurements from system $S$ over tim
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
-| **Cardinality Explosion** | $\prod_{i=1}^{k} |label_i| \to \infty$ | Storage and query degradation |
+| ------------ | ------------------- | -------- |
+| **Cardinality Explosion** | $\prod_{i=1}^{k} | label_i | \to \infty$ | Storage and query degradation |
 | **Time Resolution** | $\Delta t_{sample} < \Delta t_{event}$ | Events may be missed |
 | **Resource Overhead** | $overhead(collection) < \theta_{budget}$ | Trade-off with granularity |
-| **Retention Limits** | $|\mathcal{M}_{stored}| \leq capacity$ | Aggregation and downsampling |
+| **Retention Limits** | $ | \mathcal{M}_{stored} | \leq capacity$ | Aggregation and downsampling |
 
 ### 1.2 Problem Statement
 
@@ -546,7 +546,7 @@ func (pm *PrometheusMetrics) RecordOrder(status, region string, value float64) {
 ### 5.1 Failure Taxonomy
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Cardinality Explosion** | Memory exhaustion | Series count alert | Label limits + Cardinality enforcement |
 | **Metric Loss** | Blind spots | Scrape failure | Queue buffering + Retries |
 | **Timestamp Drift** | Query anomalies | Clock skew | NTP + Monotonic clocks |

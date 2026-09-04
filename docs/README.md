@@ -1,8 +1,8 @@
 # Go 1.26 Clean Architecture 项目文档
 
-> **版本**: v2.1  
-> **更新日期**: 2026-04-02  
-> **Go版本**: 1.26.1  
+> **版本**: v2.1
+> **更新日期**: 2026-04-02
+> **Go版本**: 1.26.1
 > **文档数**: 18篇核心文档
 
 ---
@@ -12,7 +12,7 @@
 ### 🏗️ 架构设计 (6篇)
 
 | 文档 | 说明 | 优先级 |
-|------|------|--------|
+| ------ | ------ | -------- |
 | [clean-architecture.md](architecture/clean-architecture.md) | 整洁架构设计 | ⭐⭐⭐⭐⭐ |
 | [clean-architecture-2026-best-practices.md](architecture/clean-architecture-2026-best-practices.md) | 2026最佳实践 | ⭐⭐⭐⭐ |
 | [opentelemetry.md](architecture/tech-stack/observability/opentelemetry.md) | 可观测性架构 | ⭐⭐⭐⭐ |
@@ -22,7 +22,7 @@
 ### 📖 Go 1.26 核心知识 (5篇)
 
 | 文档 | 说明 | 优先级 |
-|------|------|--------|
+| ------ | ------ | -------- |
 | [05-csp-formal-model.md](go126-comprehensive-guide/05-csp-formal-model.md) | CSP形式化模型 | ⭐⭐⭐⭐⭐ |
 | [01-language-features.md](go126-comprehensive-guide/01-language-features.md) | 语言特性 | ⭐⭐⭐⭐ |
 | [03-type-system.md](go126-comprehensive-guide/03-type-system.md) | 类型系统 | ⭐⭐⭐⭐ |
@@ -39,7 +39,7 @@
 ### 🚀 操作文档 (4篇)
 
 | 文档 | 说明 | 优先级 |
-|------|------|--------|
+| ------ | ------ | -------- |
 | [API 文档](api/README.md) | HTTP/gRPC/GraphQL | ⭐⭐⭐⭐ |
 | [部署指南](deployment/README.md) | Docker/K8s 部署 | ⭐⭐⭐⭐ |
 | [开发环境搭建](development/setup.md) | 本地开发 | ⭐⭐⭐⭐ |
@@ -50,14 +50,17 @@
 ## 🎯 快速导航
 
 ### 新用户
+
 1. [开发环境搭建](development/setup.md) - 30分钟上手
 2. [clean-architecture.md](architecture/clean-architecture.md) - 了解架构
 
 ### 开发者
+
 1. [API 文档](api/README.md) - 接口参考
 2. [部署指南](deployment/README.md) - 部署应用
 
 ### 架构师
+
 1. [05-csp-formal-model.md](go126-comprehensive-guide/05-csp-formal-model.md) - 并发理论
 2. [clean-architecture-2026-best-practices.md](architecture/clean-architecture-2026-best-practices.md) - 最佳实践
 
@@ -116,5 +119,5 @@ docs/
 
 ---
 
-*最后更新: 2026-04-02*  
+*最后更新: 2026-04-02*
 *文档清理与优化完成 ✅*

@@ -4,6 +4,7 @@
 > **级别**: A (15 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Generics (parametric polymorphism) allow writing reusable code that works with multiple types. This document compares Go's generics (introduced in 1.18) with implementations in Rust, Java, C++, TypeScript, and C#, analyzing syntax, constraints, type inference, and performance characteristics.

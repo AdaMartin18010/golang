@@ -95,7 +95,7 @@
 | FT-007-Byzantine-Fault-Tolerance.md | 35 KB | BFT overview |
 | FT-008-Network-Partition-Brain-Split.md | 35 KB | Partition handling |
 | FT-008-Probabilistic-Data-Structures.md | 35 KB | Probabilistic DS |
-| FT-009-Distributed-Transactions-Formal.md | 34 KB | Transaction theory |
+| FT-044-Distributed-Transactions-Formal.md | 34 KB | Transaction theory |
 | FT-009-State-Machine-Replication.md (stub → canonical: FT-032) | — | SMR overview |
 | FT-010-Time-Clocks-Ordering.md | 35 KB | Clock synchronization |
 | FT-011-Gossip-Protocols.md | 35 KB | Gossip overview |

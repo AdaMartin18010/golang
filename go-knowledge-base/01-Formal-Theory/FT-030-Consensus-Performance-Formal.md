@@ -42,7 +42,7 @@ $$
 **Network Model**:
 
 | Model | Latency | Bandwidth | Description |
-|-------|---------|-----------|-------------|
+| ------- | --------- | ----------- | ------------- |
 | LAN | $\delta \approx 0.1$ms | 1-10 Gbps | Datacenter |
 | WAN | $\delta \approx 50-200$ms | 10-100 Mbps | Cross-region |
 | Geo | $\delta \approx 100-300$ms | Variable | Global |

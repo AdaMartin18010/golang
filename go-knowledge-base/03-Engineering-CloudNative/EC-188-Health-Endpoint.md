@@ -29,7 +29,7 @@ Let $S$ be a service with state space $\Sigma = \{\sigma_1, \sigma_2, ..., \sigm
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **Availability Requirement** | $P(H(S) = healthy) \geq 99.99\%$ | Health checks must be accurate |
 | **Response Time SLA** | $T_{health\_check} < 100ms$ | Cannot impact normal operations |
 | **Resource Isolation** | $resources(check) \cap resources(S) = \emptyset$ | Check must not affect service |
@@ -70,7 +70,7 @@ $$failure(health\_check) \nRightarrow failure(S)$$
 ### 2.1 Health Check Taxonomy
 
 | Check Type | Purpose | Kubernetes Mapping | Frequency |
-|------------|---------|-------------------|-----------|
+| ------------ | --------- | ------------------- | ----------- |
 | **Liveness** | Detect deadlock/stuck state | livenessProbe | Every 10s |
 | **Readiness** | Determine traffic eligibility | readinessProbe | Every 5s |
 | **Startup** | Detect initialization complete | startupProbe | During startup |
@@ -647,7 +647,7 @@ func ExternalDependencyCheck(name string, checkFunc func(ctx context.Context) er
 ### 5.1 Failure Taxonomy
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **False Positive** | Unnecessary restart | Alert on restart rate | Threshold tuning |
 | **False Negative** | Delayed failure detection | Outage duration | Multiple check types |
 | **Check Storm** | Resource exhaustion | CPU/memory spikes | Check caching + Rate limiting |

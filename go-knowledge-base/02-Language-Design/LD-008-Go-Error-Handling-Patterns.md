@@ -767,9 +767,9 @@ var _ error = StatusError{}
 
 ```
 cannot use StatusError{} (value of type StatusError) as error value in variable declaration:
-	StatusError does not implement error (wrong type for method Error)
-		have Error() int
-		want Error() string
+ StatusError does not implement error (wrong type for method Error)
+  have Error() int
+  want Error() string
 ```
 
 **解释**：error 是仅含一个方法的常规接口，但方法签名必须**逐字匹配** `Error() string`。返回类型是方法签名的一部分，返回 `int` 的 `Error` 是一个全新的方法，不覆盖接口要求。`var _ error = T{}` 这种"接口满足断言"能让此类错误在编译期暴露，应作为自定义错误类型的标配写法。
@@ -784,10 +784,10 @@ import "fmt"
 func query() error { return nil }
 
 func main() {
-	if err := query(); err != nil {
-		detail := fmt.Sprintf("query failed: %v", err)
-		// 编译失败: detail 已声明但未被使用 —— 记录了错误既未处理也未传播
-	}
+ if err := query(); err != nil {
+  detail := fmt.Sprintf("query failed: %v", err)
+  // 编译失败: detail 已声明但未被使用 —— 记录了错误既未处理也未传播
+ }
 }
 ```
 

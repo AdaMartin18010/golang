@@ -817,8 +817,8 @@ package main
 func worker(id int) {}
 
 func main() {
-	// 编译失败: worker 需要 1 个参数 (id int)，go 语句调用时未提供
-	go worker()
+ // 编译失败: worker 需要 1 个参数 (id int)，go 语句调用时未提供
+ go worker()
 }
 ```
 
@@ -826,8 +826,8 @@ func main() {
 
 ```
 not enough arguments in call to worker
-	have ()
-	want (int)
+ have ()
+ want (int)
 ```
 
 **解释**：`go f(args)` 的参数检查与普通调用完全一致，编译器在编译期就验证参数个数与类型。这与运行时调度形成对照——一旦通过编译，参数在**当前 goroutine** 中求值，函数体在新 goroutine 执行（参数求值 happens-before 新 goroutine 开始，对应 LD-001 公理 2.1）。

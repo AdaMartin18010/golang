@@ -68,24 +68,24 @@ package main
 import "C"
 
 import (
-	"fmt"
-	"unsafe"
+ "fmt"
+ "unsafe"
 )
 
 func main() {
-	s := "hello gc/cgo boundary"
+ s := "hello gc/cgo boundary"
 
-	// Go string → C 堆：C.CString 在 C 堆分配，Go GC 不扫描、不回收
-	cs := C.CString(s)
-	defer C.free(unsafe.Pointer(cs)) // 必须由 Go 侧显式释放
+ // Go string → C 堆：C.CString 在 C 堆分配，Go GC 不扫描、不回收
+ cs := C.CString(s)
+ defer C.free(unsafe.Pointer(cs)) // 必须由 Go 侧显式释放
 
-	// 边界另一侧调用 C 函数（此时发生 goroutine → OS 线程的上下文切换）
-	n := C.strlen(cs)
+ // 边界另一侧调用 C 函数（此时发生 goroutine → OS 线程的上下文切换）
+ n := C.strlen(cs)
 
-	// C 内存 → Go 内存：C.GoString 把 C 堆字节拷回 Go 堆
-	back := C.GoString(cs)
-	fmt.Println(n, back)
-	// 输出: 21 hello gc/cgo boundary
+ // C 内存 → Go 内存：C.GoString 把 C 堆字节拷回 Go 堆
+ back := C.GoString(cs)
+ fmt.Println(n, back)
+ // 输出: 21 hello gc/cgo boundary
 }
 ```
 
@@ -111,22 +111,22 @@ static void fill(char *p, int n) { memset(p, 'A', (size_t)n); }
 import "C"
 
 import (
-	"fmt"
-	"runtime"
-	"unsafe"
+ "fmt"
+ "runtime"
+ "unsafe"
 )
 
 func main() {
-	// Go 堆缓冲：把地址借给 C，仅在本调用期间合法
-	buf := make([]byte, 8)
+ // Go 堆缓冲：把地址借给 C，仅在本调用期间合法
+ buf := make([]byte, 8)
 
-	C.fill((*C.char)(unsafe.Pointer(&buf[0])), C.int(len(buf)))
+ C.fill((*C.char)(unsafe.Pointer(&buf[0])), C.int(len(buf)))
 
-	// KeepAlive：防止编译器在 C 调用返回前把 buf 判定为死对象而被 GC 回收
-	runtime.KeepAlive(buf)
+ // KeepAlive：防止编译器在 C 调用返回前把 buf 判定为死对象而被 GC 回收
+ runtime.KeepAlive(buf)
 
-	fmt.Println(string(buf))
-	// 输出: AAAAAAAA
+ fmt.Println(string(buf))
+ // 输出: AAAAAAAA
 }
 ```
 
@@ -140,24 +140,24 @@ C 需要跨多次调用引用 Go 值时，指针规则禁止直接传指针。�
 package main
 
 import (
-	"fmt"
-	"runtime/cgo"
+ "fmt"
+ "runtime/cgo"
 )
 
 type config struct{ retries int }
 
 func main() {
-	// 跨边界通行证：把任意 Go 值编码为不透明的整数 token，
-	// C 侧只持有 int64，永远不接触 Go 堆
-	h := cgo.NewHandle(&config{retries: 3})
-	defer h.Delete() // token 生命周期必须显式关闭，否则泄漏 Go 堆对象
+ // 跨边界通行证：把任意 Go 值编码为不透明的整数 token，
+ // C 侧只持有 int64，永远不接触 Go 堆
+ h := cgo.NewHandle(&config{retries: 3})
+ defer h.Delete() // token 生命周期必须显式关闭，否则泄漏 Go 堆对象
 
-	// 模拟 C 侧回传 token：整数穿过边界回到 Go 侧再解码
-	var token int64 = int64(h)
+ // 模拟 C 侧回传 token：整数穿过边界回到 Go 侧再解码
+ var token int64 = int64(h)
 
-	restored := cgo.Handle(token).Value().(*config)
-	fmt.Println(restored.retries)
-	// 输出: 3
+ restored := cgo.Handle(token).Value().(*config)
+ fmt.Println(restored.retries)
+ // 输出: 3
 }
 ```
 
@@ -175,24 +175,24 @@ static long load_handle(void) { return stored_handle; }
 import "C"
 
 import (
-	"fmt"
-	"runtime/cgo"
+ "fmt"
+ "runtime/cgo"
 )
 
 func main() {
-	h := cgo.NewHandle([]byte("secret"))
-	defer h.Delete()
+ h := cgo.NewHandle([]byte("secret"))
+ defer h.Delete()
 
-	// 第一次调用：把 token 交给 C，C 把它存进自己的存储
-	C.save_handle(C.long(h))
+ // 第一次调用：把 token 交给 C，C 把它存进自己的存储
+ C.save_handle(C.long(h))
 
-	// …… 中间隔了任意多次 C 调用、甚至 GC 已经历多个周期 ……
+ // …… 中间隔了任意多次 C 调用、甚至 GC 已经历多个周期 ……
 
-	// 第二次调用：取回 token 并还原 Go 值。
-	// 关键不变量：token 存活期间对应 Go 值永远不会被 GC 回收。
-	v := cgo.Handle(C.load_handle()).Value().([]byte)
-	fmt.Println(string(v))
-	// 输出: secret
+ // 第二次调用：取回 token 并还原 Go 值。
+ // 关键不变量：token 存活期间对应 Go 值永远不会被 GC 回收。
+ v := cgo.Handle(C.load_handle()).Value().([]byte)
+ fmt.Println(string(v))
+ // 输出: secret
 }
 ```
 
@@ -236,33 +236,33 @@ static int add_one(int x) { return x + 1; }
 import "C"
 
 import (
-	"fmt"
-	"time"
+ "fmt"
+ "time"
 )
 
 func goAdd(x int) int { return x + 1 }
 
 func main() {
-	const N = 1_000_000
+ const N = 1_000_000
 
-	start := time.Now()
-	s := 0
-	for i := 0; i < N; i++ {
-		s += goAdd(i)
-	}
-	goDur := time.Since(start)
+ start := time.Now()
+ s := 0
+ for i := 0; i < N; i++ {
+  s += goAdd(i)
+ }
+ goDur := time.Since(start)
 
-	start = time.Now()
-	c := 0
-	for i := 0; i < N; i++ {
-		// 每次 cgo 调用都伴随 entersyscall/exitsyscall 与跨线程交接
-		c += int(C.add_one(C.int(i)))
-	}
-	cgoDur := time.Since(start)
+ start = time.Now()
+ c := 0
+ for i := 0; i < N; i++ {
+  // 每次 cgo 调用都伴随 entersyscall/exitsyscall 与跨线程交接
+  c += int(C.add_one(C.int(i)))
+ }
+ cgoDur := time.Since(start)
 
-	fmt.Printf("go: %v | cgo: %v | ratio: %.0fx (s=%d c=%d)\n",
-		goDur, cgoDur, float64(cgoDur)/float64(goDur), s, c)
-	// 输出（数量级）: cgo 单次调用开销约为纯 Go 调用的数十倍
+ fmt.Printf("go: %v | cgo: %v | ratio: %.0fx (s=%d c=%d)\n",
+  goDur, cgoDur, float64(cgoDur)/float64(goDur), s, c)
+ // 输出（数量级）: cgo 单次调用开销约为纯 Go 调用的数十倍
 }
 ```
 
@@ -327,10 +327,10 @@ package main
 import "C"
 
 func main() {
-	s := "not a C string"
-	// 编译失败: Go string 与 C char* 是两个不相交的类型域，cgo 不会自动转换
-	n := C.strlen(s)
-	_ = n
+ s := "not a C string"
+ // 编译失败: Go string 与 C char* 是两个不相交的类型域，cgo 不会自动转换
+ n := C.strlen(s)
+ _ = n
 }
 ```
 
@@ -347,11 +347,11 @@ import "C"
 import "unsafe"
 
 func main() {
-	cs := C.CString("x")
-	defer C.free(unsafe.Pointer(cs))
-	// 编译失败: C 指针不能直接用下标访问 C 堆内存
-	first := cs[0]
-	_ = first
+ cs := C.CString("x")
+ defer C.free(unsafe.Pointer(cs))
+ // 编译失败: C 指针不能直接用下标访问 C 堆内存
+ first := cs[0]
+ _ = first
 }
 ```
 
@@ -370,12 +370,12 @@ import "C"
 import "unsafe"
 
 func main() {
-	// 违反指针规则：这个 Go 内存块的第一个字是 Go 指针（指向 x），
-	// 把整个块的起始地址交给 C 就是在把 Go 指针暴露给 C。
-	x := 42
-	buf := make([]*int, 1)
-	buf[0] = &x
-	C.read_head(unsafe.Pointer(&buf[0])) // GOEXPERIMENT=cgocheck2 构建下必然 panic
+ // 违反指针规则：这个 Go 内存块的第一个字是 Go 指针（指向 x），
+ // 把整个块的起始地址交给 C 就是在把 Go 指针暴露给 C。
+ x := 42
+ buf := make([]*int, 1)
+ buf[0] = &x
+ C.read_head(unsafe.Pointer(&buf[0])) // GOEXPERIMENT=cgocheck2 构建下必然 panic
 }
 ```
 

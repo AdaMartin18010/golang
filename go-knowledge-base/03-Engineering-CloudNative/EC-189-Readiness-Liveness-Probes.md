@@ -25,7 +25,7 @@ Let $C$ be a container with lifecycle states $\Sigma = \{Pending, Running, Succe
 **Probe Types:**
 
 | Probe | Purpose | Action on Failure | Timing |
-|-------|---------|-------------------|--------|
+| ------- | --------- | ------------------- | -------- |
 | **Startup** | Detect initialization complete | N/A (blocks others) | Until success |
 | **Liveness** | Detect dead/stuck state | Restart container | Continuous |
 | **Readiness** | Determine traffic eligibility | Remove from service | Continuous |
@@ -33,7 +33,7 @@ Let $C$ be a container with lifecycle states $\Sigma = \{Pending, Running, Succe
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **Startup Time Variance** | $\sigma_{startup} > \mu_{startup}$ | Fixed delays are suboptimal |
 | **False Positive Cost** | $cost(restart) \gg cost(check)$ | Incorrect restarts hurt availability |
 | **Resource Competition** | $resources(check) \cap resources(app) \neq \emptyset$ | Health checks affect performance |
@@ -570,7 +570,7 @@ func ConfigureProbes(container *corev1.Container, cfg ProbeConfig) {
 ### 5.1 Probe Failure Taxonomy
 
 | Scenario | Symptoms | Root Cause | Mitigation |
-|----------|----------|------------|------------|
+| ---------- | ---------- | ------------ | ------------ |
 | **Probe Timeout** | Container restarting | Check too slow | Increase timeout, simplify check |
 | **Premature Restart** | Startup loop | Low threshold | Increase failureThreshold |
 | **Traffic to Unready** | 500 errors | Missing readiness check | Add readiness probe |

@@ -4,6 +4,7 @@
 > **级别**: S (51 KB)
 > **标签**: #ft
 > **Go 版本**: 1.27+
+>
 ## Comprehensive Survey of Breakthrough Papers, New Algorithms, and Industry Adoption
 
 ---
@@ -152,7 +153,7 @@ Traditional Approach:                    Mako Approach:
 Mako achieves unprecedented performance metrics:
 
 | Metric | Mako | Calvin | Improvement |
-|--------|------|--------|-------------|
+| -------- | ------ | -------- | ------------- |
 | **TPC-C Throughput (10 shards)** | 3.66M TPS | 425K TPS | **8.6×** |
 | **Single-Shard Throughput** | 960K TPS | 42.7K TPS | **22.5×** |
 | **Microbenchmark (10 shards)** | 16.7M TPS | 518K TPS | **32.2×** |
@@ -200,7 +201,7 @@ func (s *Shard) ExecuteSpeculative(txn *MakoTransaction) error {
 #### 1.1.5 Ablation Study Results
 
 | Configuration | Throughput (M TPS) | Overhead |
-|--------------|-------------------|----------|
+| -------------- | ------------------- | ---------- |
 | Silo (baseline) | 1.66 | - |
 | + Multi-Version | 1.48 | 11.1% |
 | + Distributed Txn | 0.47 | 68.1% |
@@ -229,7 +230,7 @@ Eg-walker (Event Graph Walker) is a revolutionary algorithm for collaborative te
 Existing collaborative editing algorithms fall into two categories with significant limitations:
 
 | Algorithm Class | Strengths | Weaknesses |
-|----------------|-----------|------------|
+| ---------------- | ----------- | ------------ |
 | **OT** | Fast sequential editing, small memory | Quadratic complexity for divergent branches |
 | **CRDTs** | Always consistent, P2P capable | High memory, slow loading, large file sizes |
 
@@ -260,7 +261,7 @@ The performance improvements are dramatic across all measured dimensions:
 **Merge Performance (Time to merge remote changes):**
 
 | Trace Type | Description | Eg-walker | OT | Improvement |
-|------------|-------------|-----------|-----|-------------|
+| ------------ | ------------- | ----------- | ----- | ------------- |
 | S1 | Sequential | 1.8ms | 2.4ms | Similar |
 | S2 | Sequential | 2.7ms | 2.8ms | Similar |
 | S3 | Sequential | 3.6ms | 3.8ms | Similar |
@@ -272,7 +273,7 @@ The performance improvements are dramatic across all measured dimensions:
 **Memory Consumption:**
 
 | Algorithm | Steady-State Memory | Peak During Merge |
-|-----------|--------------------:|------------------:|
+| ----------- | --------------------: | ------------------: |
 | Eg-walker | ~1× (baseline) | ~1× |
 | Reference CRDT | ~10× | ~10× |
 | Automerge | ~15-20× | ~15-20× |
@@ -372,7 +373,7 @@ Baxos Message Flow:
 #### 1.3.4 Performance Under Attack
 
 | Scenario | Baxos | Multi-Paxos | Raft | Improvement |
-|----------|-------|-------------|------|-------------|
+| ---------- | ------- | ------------- | ------ | ------------- |
 | **Normal Case Throughput** | 17,500 req/s | 26,000 req/s | 26,000 req/s | -32% |
 | **Under DDoS Attack** | 8,000 req/s | 3,500 req/s | 3,500 req/s | **+128%** |
 | **Attack Median Latency** | 320ms | 1,250ms | 1,250ms | **3.9×** |
@@ -388,7 +389,7 @@ Baxos solves three key challenges of applying REB to consensus:
 #### 1.3.6 Trade-offs
 
 | Aspect | Leader-Based | Baxos |
-|--------|--------------|-------|
+| -------- | -------------- | ------- |
 | **Best-case throughput** | Higher | Lower (-32%) |
 | **Attack resilience** | Poor | Excellent (+128%) |
 | **Tail latency (99%)** | 238ms | 354ms (+48%) |
@@ -445,7 +446,7 @@ For delayed transactions, Tiga falls back to a slow path (1.5-2 WRTTs).
 #### 1.4.4 Performance Results
 
 | Protocol | Throughput (Relative) | Latency (Relative) | 1-WRTT Coverage |
-|----------|----------------------:|-------------------:|:---------------:|
+| ---------- | ----------------------: | -------------------: | :---------------: |
 | Tiga | 1.0 (baseline) | 1.0 (baseline) | **>95%** |
 | 2PL/OCC+Paxos | 0.14-0.77× | 2.1-4.6× | <30% |
 | Tapir | 0.23-0.45× | 1.8-3.2× | <40% |
@@ -462,7 +463,7 @@ For delayed transactions, Tiga falls back to a slow path (1.5-2 WRTTs).
 #### 1.4.5 Tiga vs. Mako
 
 | Aspect | Tiga | Mako |
-|--------|------|------|
+| -------- | ------ | ------ |
 | **Primary Goal** | Latency optimization | Throughput optimization |
 | **Design** | Consolidated | Decoupled |
 | **Typical Latency** | 1 WRTT | 2+ WRTTs (non-co-located) |
@@ -542,7 +543,7 @@ func (afd *AdaptiveFailureDetector) Update(latency time.Duration) {
 Research demonstrates significant improvements:
 
 | Metric | Static Timeout | Dynamic Tuning | Improvement |
-|--------|---------------|----------------|-------------|
+| -------- | --------------- | ---------------- | ------------- |
 | Failure Detection Time | 5-10s | 1-2s | **80% faster** |
 | Out-of-Service Window | 10-15s | 5-8s | **~45% reduction** |
 | False Positive Rate | 5-10% | 1-2% | **80% reduction** |
@@ -577,7 +578,7 @@ Copilot Architecture:
 Directed Acyclic Graph (DAG)-based Byzantine Fault Tolerant (BFT) consensus protocols have evolved rapidly, offering high throughput by separating data dissemination from ordering.
 
 | Protocol | Year | Commit Latency (LV) | Commit Latency (NLV) | Network Model |
-|----------|------|--------------------:|---------------------:|:-------------:|
+| ---------- | ------ | --------------------: | ---------------------: | :-------------: |
 | DAG-Rider | 2021 | 18δ (6 RBCs) | +7.5δ | Async |
 | Tusk | 2022 | 13.5δ (4.5 RBCs) | +4.5δ | Async |
 | Bullshark | 2022 | 6δ (2 RBCs) | +4.5-7.5δ | Async + Partial Sync |
@@ -663,7 +664,7 @@ Latency Comparison (message delays):
 **Key Improvement:** Rust core with WebAssembly bindings
 
 | Metric | Automerge 0.14 | Automerge 1.0 | Automerge 2.0 | Yjs (Ref) |
-|--------|---------------|---------------|---------------|-----------|
+| -------- | --------------- | --------------- | --------------- | ----------- |
 | Insert 260K ops | 500,000ms | 13,052ms | **1,816ms** | 1,074ms |
 | Memory | ~1.1GB | 184MB | **44MB** | 10MB |
 | Disk Size (full history) | 146MB | - | **129KB** | N/A |
@@ -702,7 +703,7 @@ Automerge 2.0 Stack:
 **Performance Benchmarks (Native Rust):**
 
 | Task | automerge | loro | diamond-type | yrs |
-|------|-----------|------|--------------|-----|
+| ------ | ----------- | ------ | -------------- | ----- |
 | automerge paper - apply | 450.91ms | **88.19ms** | 15.63ms | 4238.8ms |
 | automerge paper - decode | 506.30ms | **0.189ms** | 2.19ms | 3.82ms |
 | automerge paper - encode | 17.65ms | 0.416ms | 1.15ms | **0.759ms** |
@@ -719,7 +720,7 @@ Automerge 2.0 Stack:
 #### 2.3.3 Comparison Matrix
 
 | Feature | Yjs | Automerge 2.0 | Loro |
-|---------|-----|---------------|------|
+| --------- | ----- | --------------- | ------ |
 | **Language** | JS/TS | Rust + WASM | Rust + WASM |
 | **Text Algorithm** | YATA | RGA | Fugue |
 | **Rich Text** | Basic | Basic | **Advanced** |
@@ -768,7 +769,7 @@ Latency (ms)
 #### 3.1.2 Detailed Comparison Table
 
 | Protocol | Peak TPS | Median Latency | Fault Tolerance | Best Use Case |
-|----------|----------|----------------|-----------------|---------------|
+| ---------- | ---------- | ---------------- | ----------------- | --------------- |
 | **PBFT** | ~10K | ~100ms | f < n/3 | Permissioned blockchain |
 | **HotStuff** | ~50K | ~300ms | f < n/3 | High-throughput BFT |
 | **Jolteon** | ~100K | ~400ms | f < n/3 | Low-latency BFT |
@@ -784,7 +785,7 @@ Latency (ms)
 #### 3.1.3 WAN vs. LAN Performance
 
 | Protocol | LAN Latency | WAN Latency (50ms RTT) | Throughput Drop (WAN) |
-|----------|-------------|------------------------|-----------------------|
+| ---------- | ------------- | ------------------------ | ----------------------- |
 | Raft | 2ms | 50-100ms | ~20% |
 | Multi-Paxos | 2ms | 50-100ms | ~20% |
 | Tiga | N/A | **50ms (1-WRTT)** | **0%** |
@@ -799,7 +800,7 @@ Latency (ms)
 Benchmarks use traces derived from real document editing sessions:
 
 | Trace | Description | Operations | Characteristics |
-|-------|-------------|------------|-----------------|
+| ------- | ------------- | ------------ | ----------------- |
 | S1 | Sequential editing | ~10K | Single author, no concurrency |
 | S2 | Sequential editing | ~100K | Single author, no concurrency |
 | S3 | Sequential editing | ~1M | Single author, no concurrency |
@@ -813,7 +814,7 @@ Benchmarks use traces derived from real document editing sessions:
 **Merge Time (milliseconds):**
 
 | Algorithm | S1 | S2 | S3 | C1 | C2 | A1 | A2 |
-|-----------|----:|----:|----:|----:|----:|----:|----:|
+| ----------- | ----: | ----: | ----: | ----: | ----: | ----: | ----: |
 | **Eg-walker** | **1.8** | **2.7** | **3.6** | 56.1 | 82.6 | **8.9** | **23.5** |
 | OT | 2.4 | 2.8 | 3.8 | 365 | 378 | 6,300 | 3,666,000 |
 | Reference CRDT | 17.9 | 19.1 | 26.9 | 52.5 | 64.2 | 42.7 | 26.2 |
@@ -829,7 +830,7 @@ Benchmarks use traces derived from real document editing sessions:
 #### 3.2.3 Memory Usage
 
 | Algorithm | Steady State | Peak During Merge | File Size (Full History) |
-|-----------|--------------|-------------------|-------------------------|
+| ----------- | -------------- | ------------------- | ------------------------- |
 | Eg-walker | ~1× | ~1× | ~1× (text only) |
 | OT | ~1× | ~100× (A2) | ~1× (text only) |
 | Reference CRDT | ~10× | ~10× | ~50× |
@@ -850,7 +851,7 @@ TPC-C simulates a wholesale supplier with:
 #### 3.3.2 Results by System
 
 | System | Throughput (10 warehouses) | Latency (p50) | Latency (p99) | Scalability |
-|--------|---------------------------|---------------|---------------|-------------|
+| -------- | --------------------------- | --------------- | --------------- | ------------- |
 | **Mako** | **3.66M TPS** | 121ms | 130ms | Linear |
 | Calvin | 425K TPS | 166ms | 212ms | Limited |
 | Janus | 640K TPS | 50ms | 51ms | Limited |
@@ -865,7 +866,7 @@ TPC-C simulates a wholesale supplier with:
 Mako's performance degradation with increasing cross-shard ratio:
 
 | Cross-Shard Ratio | Throughput | Degradation |
-|-------------------|-----------:|-------------|
+| ------------------- | -----------: | ------------- |
 | 0% | 60.3M TPS | - |
 | 5% | 16.7M TPS | -72% |
 | 10% | 3.66M TPS | -94% |
@@ -900,7 +901,7 @@ Raft dominates new deployments due to:
 #### 4.1.2 Adoption by Industry
 
 | Industry | Primary Protocol | Key Systems |
-|----------|-----------------|-------------|
+| ---------- | ----------------- | ------------- |
 | Cloud Infrastructure | **Raft** | etcd (Kubernetes), Consul |
 | Financial Services | **Paxos/Raft** | CockroachDB, YugabyteDB |
 | Blockchain/Web3 | **BFT variants** | Tendermint, HotStuff |
@@ -911,7 +912,7 @@ Raft dominates new deployments due to:
 #### 4.1.3 Technical Comparison in Practice
 
 | Aspect | Paxos | Raft |
-|--------|-------|------|
+| -------- | ------- | ------ |
 | **Lines of Code** | ~3,000-5,000 | ~1,500-2,500 |
 | **Bug Density** | Higher | Lower |
 | **Time to Production** | Longer | Shorter |
@@ -965,7 +966,7 @@ This approach trades some collaborative guarantees for simplicity and performanc
 #### 4.2.3 CRDT Adoption Patterns
 
 | Company | Use Case | CRDT Type | Scale |
-|---------|----------|-----------|-------|
+| --------- | ---------- | ----------- | ------- |
 | **Figma** | Design tool | Registers, Maps, Text | Millions of users |
 | **Hex** | Data notebooks | Registers | Enterprise |
 | **Linear** | Issue tracking | Custom | Startup/SMB |
@@ -1013,7 +1014,7 @@ The distributed SQL database market:
 #### 4.3.2 Major Players Comparison
 
 | Database | Consensus | SQL Compatibility | Best For |
-|----------|-----------|-------------------|----------|
+| ---------- | ----------- | ------------------- | ---------- |
 | **Google Spanner** | Paxos | PostgreSQL-like | Global consistency |
 | **CockroachDB** | Multi-raft | PostgreSQL | Multi-region OLTP |
 | **YugabyteDB** | Raft | PostgreSQL | Flexible deployments |
@@ -1024,7 +1025,7 @@ The distributed SQL database market:
 #### 4.3.3 TPC-C Performance (2025)
 
 | Database | TPS | Latency (p99) | Consistency |
-|----------|-----|---------------|-------------|
+| ---------- | ----- | --------------- | ------------- |
 | CockroachDB | 45K | 50-100ms | Serializable |
 | YugabyteDB | 48K | 40-90ms | Serializable |
 | TiDB | 52K | 30-80ms | Snapshot |
@@ -1036,7 +1037,7 @@ The distributed SQL database market:
 **2024-2025 Key Developments:**
 
 | Database | New Feature | Significance |
-|----------|-------------|--------------|
+| ---------- | ------------- | -------------- |
 | Google Spanner | Graph queries (GQL) | Multi-model capability |
 | CockroachDB | AI-powered optimization | Self-tuning databases |
 | YugabyteDB | Vector search (pgvector) | AI/ML workloads |
@@ -1099,7 +1100,7 @@ The distributed SQL database market:
 ## Appendix A: Glossary
 
 | Term | Definition |
-|------|------------|
+| ------ | ------------ |
 | **ACID** | Atomicity, Consistency, Isolation, Durability |
 | **BFT** | Byzantine Fault Tolerance |
 | **CRDT** | Conflict-free Replicated Data Type |

@@ -4,6 +4,7 @@
 > **级别**: S (26 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Performance characteristics vary significantly across programming languages based on compilation strategy, runtime overhead, and memory management approaches. This document provides comprehensive benchmarks comparing Go, Rust, Java, C++, Python, Node.js, C#, and Swift.
@@ -57,13 +58,13 @@ Performance characteristics vary significantly across programming languages base
     - [完整代码实现](#完整代码实现)
     - [配置示例](#配置示例)
 - [生产环境配置](#生产环境配置)
-  - [测试用例](#测试用例)
-  - [部署指南](#部署指南)
-  - [性能调优](#性能调优)
-  - [故障处理](#故障处理)
-  - [安全建议](#安全建议)
-  - [运维手册](#运维手册)
-  - [参考链接](#参考链接)
+    - [测试用例](#测试用例)
+    - [部署指南](#部署指南)
+    - [性能调优](#性能调优)
+    - [故障处理](#故障处理)
+    - [安全建议](#安全建议)
+    - [运维手册](#运维手册)
+    - [参考链接](#参考链接)
   - [完整扩展内容](#完整扩展内容)
     - [理论分析](#理论分析)
     - [实践指南](#实践指南)

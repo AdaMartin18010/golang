@@ -26,7 +26,7 @@ Let $\mathcal{C}$ be the configuration space for application $A$ deployed across
 **Configuration Types:**
 
 | Type | Sensitivity | Volatility | Example |
-|------|-------------|------------|---------|
+| ------ | ------------- | ------------ | --------- |
 | **Static** | Low | Rarely changes | Feature flags |
 | **Dynamic** | Medium | Changes at runtime | Rate limits |
 | **Secret** | High | Rotates regularly | API keys |
@@ -34,7 +34,7 @@ Let $\mathcal{C}$ be the configuration space for application $A$ deployed across
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **Consistency** | $\forall i, j \in \mathcal{I}: config(i) = config(j)$ | Requires atomic distribution |
 | **Latency Bound** | $T_{propagate} < T_{acceptable}$ | Changes must propagate quickly |
 | **Security** | $\forall c \in secrets: encrypted(c)$ | Secrets must be protected |
@@ -62,7 +62,7 @@ $$\forall i \in \mathcal{I}: apply(i, c) \land verify(i, c) \land consistent(c)$
 ### 2.1 Configuration Store Types
 
 | Store | Use Case | Consistency | Latency |
-|-------|----------|-------------|---------|
+| ------- | ---------- | ------------- | --------- |
 | **etcd** | Kubernetes, service discovery | Strong | Low |
 | **Consul** | Service mesh, KV store | Eventual | Low |
 | **Vault** | Secrets management | Strong | Medium |
@@ -613,7 +613,7 @@ func getEnvDuration(key string, defaultValue time.Duration) time.Duration {
 ### 5.1 Configuration Failure Taxonomy
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Config Server Down** | Cannot update config | Connection timeout | Local cache + Fallback values |
 | **Invalid Config** | Application crash | Validation error | Schema validation + Rejection |
 | **Secret Leak** | Security breach | Audit scan | Encryption + Access control |
@@ -625,7 +625,7 @@ func getEnvDuration(key string, defaultValue time.Duration) time.Duration {
 ## 6. Semantic Trade-off Analysis
 
 | Aspect | Push Model | Pull Model | Hybrid |
-|--------|------------|------------|--------|
+| -------- | ------------ | ------------ | -------- |
 | **Latency** | Low | Higher | Configurable |
 | **Scalability** | Moderate | High | High |
 | **Complexity** | High | Low | Medium |

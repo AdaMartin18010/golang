@@ -14,7 +14,7 @@
 **关键发现**: 截至 2026 年 4 月，OpenTelemetry Go SDK 的 **Logs 信号仍处于 Beta 阶段**，尚未达到 Stable。
 
 | 信号 (Signal) | 状态 (Status) | 说明 |
-|--------------|---------------|------|
+| -------------- | --------------- | ------ |
 | Traces | ✅ Stable | 生产就绪，API 稳定 |
 | Metrics | ✅ Stable | 生产就绪，API 稳定 |
 | **Logs** | 🟡 **Beta** | **尚未稳定，API 可能变化** |
@@ -147,7 +147,7 @@ exp, err := autoexport.NewTraceExporter(context.Background())
 ## 5. 与项目代码对齐说明
 
 | 项目代码 | 当前状态 | 建议 |
-|----------|----------|------|
+| ---------- | ---------- | ------ |
 | `pkg/observability/otlp/logexporter.go` | 占位实现 | 保持现状，等待 Logs SDK Stable |
 | `pkg/observability/ebpf/` | 基础集成 | 关注 OBI 1.0 发布 |
 | `pkg/observability/tracing/` | 完整实现 | 建议使用 autoexport 简化配置 |

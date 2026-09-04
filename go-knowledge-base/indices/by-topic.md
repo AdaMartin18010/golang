@@ -12,13 +12,13 @@
 ### 2
 
 - **2pc**
-  - [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md)
+  - [FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md)
 
 
 ### 3
 
 - **3pc**
-  - [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md)
+  - [FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md)
 
 
 ### A
@@ -27,7 +27,7 @@
   - [EC-043: Repository Pattern (仓储模式)](../03-Engineering-CloudNative/EC-043-Repository-Pattern.md)
 
 - **acid**
-  - [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md)
+  - [FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md)
   - [数据库事务隔离与 MVCC (Database Transaction Isolation & MVCC)](../03-Engineering-CloudNative/EC-199-Database-Transaction-Isolation-MVCC.md)
   - [TS-001: PostgreSQL 事务机制的形式化分析 (PostgreSQL Transactions: Formal Analysis)](../04-Technology-Stack/TS-047-PostgreSQL-Transaction-Formal.md)
 
@@ -490,7 +490,7 @@
   - [FT-006: Paxos 共识算法的形式化理论 (Paxos Consensus: Formal Theory)](../01-Formal-Theory/FT-006-Paxos-Formal.md)
   - [FT-007: Multi-Paxos 的形式化理论与实践 (Multi-Paxos: Formal Theory & Practice)](../01-Formal-Theory/FT-007-Multi-Paxos-Formal.md)
   - [FT-008: 拜占庭共识的形式化理论 (Byzantine Consensus: Formal Theory)](../01-Formal-Theory/FT-008-Byzantine-Consensus-Formal.md)
-  - [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md)
+  - [FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md)
   - *(and 7 more...)*
 
 - **consensus-theory**
@@ -820,7 +820,7 @@
   - [任务补偿机制 (Task Compensation)](../03-Engineering-CloudNative/EC-025-Task-Compensation.md)
 
 - **distributed-transactions**
-  - [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md)
+  - [FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md)
   - [EC-008: Saga 分布式事务的形式化 (Saga Pattern: Formal Analysis)](../03-Engineering-CloudNative/EC-008-Saga-Pattern-Formal.md)
   - [任务补偿与 Saga 模式 (Task Compensation & Saga Pattern)](../03-Engineering-CloudNative/EC-090-Task-Compensation-Saga-Pattern.md)
   - [Saga 模式完整实现 (Saga Pattern Complete Implementation)](../03-Engineering-CloudNative/02-Cloud-Native/05-Scheduled-Tasks/112-Task-Saga-Pattern-Complete.md)
@@ -2288,7 +2288,7 @@
 ### S
 
 - **saga**
-  - [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md)
+  - [FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md)
   - [EC-008: Saga 分布式事务的形式化 (Saga Pattern: Formal Analysis)](../03-Engineering-CloudNative/EC-008-Saga-Pattern-Formal.md)
   - [状态机工作流 (State Machine Workflow)](../03-Engineering-CloudNative/EC-142-State-Machine-Workflow.md)
   - [任务补偿机制 (Task Compensation)](../03-Engineering-CloudNative/EC-025-Task-Compensation.md)
@@ -3120,7 +3120,7 @@
 - [FT-008: 拜占庭共识的形式化理论 (Byzantine Consensus: Formal Theory)](../01-Formal-Theory/FT-008-Byzantine-Consensus-Formal.md) #ft
 - [FT-008-B: Network Partition Brain Split](../01-Formal-Theory/FT-008-Network-Partition-Brain-Split.md) #ft
 - [FT-008-C: Probabilistic Data Structures](../01-Formal-Theory/FT-008-Probabilistic-Data-Structures.md) #ft
-- [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md) #ft
+- [FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-044-Distributed-Transactions-Formal.md) #ft
 - [FT-009-B: Quorum Consensus Theory](../01-Formal-Theory/FT-009-Quorum-Consensus-Theory.md) #ft
 - [FT-009-C: State Machine Replication](../01-Formal-Theory/FT-009-State-Machine-Replication.md) #ft
 - [FT-010: 线性一致性的形式化理论 (Linearizability: Formal Theory)](../01-Formal-Theory/FT-010-Linearizability-Formal.md) #ft

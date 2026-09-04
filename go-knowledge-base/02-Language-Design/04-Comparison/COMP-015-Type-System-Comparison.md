@@ -4,6 +4,7 @@
 > **级别**: S (17 KB)
 > **标签**: #ld
 > **Go 版本**: 1.27+
+>
 ## Executive Summary
 
 Type systems define how languages categorize and check data types, affecting safety, expressiveness, and performance. This document compares Go's simple static typing with advanced systems in Haskell, TypeScript, Rust, and others.

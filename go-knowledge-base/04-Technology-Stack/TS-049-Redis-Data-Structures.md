@@ -1234,8 +1234,6 @@ package redisclient
 
 import (
     "context"
-    "encoding/json"
-    "fmt"
     "time"
 
     "github.com/redis/go-redis/v9"
@@ -1298,8 +1296,6 @@ import (
     "encoding/base64"
     "fmt"
     "time"
-
-    "github.com/redis/go-redis/v9"
 )
 
 // DistributedLock Redis 分布式锁
@@ -1431,6 +1427,8 @@ import (
     "encoding/json"
     "fmt"
     "time"
+
+    "github.com/redis/go-redis/v9"
 )
 
 // Cache Cache-Aside 模式实现

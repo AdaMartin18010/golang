@@ -841,7 +841,7 @@ import "io"
 
 // 编译失败: io.Reader 不可能持有 string 动态类型，断言在类型检查期即被拒绝
 func BadAssert(r io.Reader) string {
-	return r.(string)
+ return r.(string)
 }
 ```
 
@@ -859,8 +859,8 @@ type StrM interface{ M() string }
 
 // 编译失败: 内嵌合并后 M 重复且签名不一致
 type Conflicted interface {
-	IntM
-	StrM
+ IntM
+ StrM
 }
 ```
 

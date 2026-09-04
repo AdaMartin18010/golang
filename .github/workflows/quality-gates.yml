@@ -1,0 +1,78 @@
+name: Quality Gates
+
+# 质量门 CI：死链检查 + 文档质量报告 + gofmt
+# - scripts/check-unfixed-links.ps1 : 死链即 Exit 1（强制门）
+# - scripts/check_quality.ps1       : 生成报告（当前存量问题较多，仅报告不阻断）
+# - gofmt                            : 强制门，范围限定生产代码目录（cmd/internal/pkg）
+#   （archive/、examples/、scripts/ 等存在历史未格式化文件，存量清理见 AGENTS.md §5）
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - '**.md'
+      - '**.go'
+      - 'scripts/check-unfixed-links.ps1'
+      - 'scripts/check_quality.ps1'
+      - '.github/workflows/quality-gates.yml'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - '**.md'
+      - '**.go'
+      - 'scripts/check-unfixed-links.ps1'
+      - 'scripts/check_quality.ps1'
+      - '.github/workflows/quality-gates.yml'
+  workflow_dispatch:
+
+jobs:
+  dead-links:
+    name: 死链检查 (check-unfixed-links.ps1)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: 运行死链检查
+        shell: pwsh
+        run: ./scripts/check-unfixed-links.ps1
+
+  docs-quality:
+    name: 文档质量报告 (check_quality.ps1)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: 运行文档质量检查
+        shell: pwsh
+        run: ./scripts/check_quality.ps1 -DocsDir docs
+
+      - name: 上传质量报告
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-quality-report
+          path: reports/
+          retention-days: 14
+
+  gofmt:
+    name: gofmt 检查 (cmd/internal/pkg)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.27'
+
+      - name: Check formatting
+        run: |
+          unformatted=$(gofmt -l cmd/ internal/ pkg/)
+          if [ -n "$unformatted" ]; then
+            echo "以下文件未通过 gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
+          echo "✅ gofmt 检查通过"

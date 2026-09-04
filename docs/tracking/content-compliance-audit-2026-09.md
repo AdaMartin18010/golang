@@ -113,7 +113,7 @@
 ## 5e. .kimi 治理文件全面 Go 化（2026-09-05，用户追加批次）
 
 - 背景：`.kimi/` 新增 21 个从 rust-lang 项目复制的文件（根目录要求 6 + 模板 7 + prompts 8，约 3100 行）。
-- 处置：7 路并行全量重写。映射口径：concept/ → 五维 FT/LD/EC/TS/AD 编号页；```rust,compile_fail → ```go + `// 编译失败:`（Go 无 E0xxx 错误码体系）；MSRV/Cargo.toml → go.mod go 1.27 指令；cargo workspace 命令 → `GOWORK=off go build/vet/test ./...`；权威源 → go.dev/ref/spec、pkg.go.dev、go.googlesource.com/proposal、go.dev/blog；所有权/借用/生命周期 → GC/cgo/happens-before/channel；rustc 决策树 → Go 编译失败类别映射。
+- 处置：7 路并行全量重写。映射口径：concept/ → 五维 FT/LD/EC/TS/AD 编号页；```rust,compile_fail →```go + `// 编译失败:`（Go 无 E0xxx 错误码体系）；MSRV/Cargo.toml → go.mod go 1.27 指令；cargo workspace 命令 → `GOWORK=off go build/vet/test ./...`；权威源 → go.dev/ref/spec、pkg.go.dev、go.googlesource.com/proposal、go.dev/blog；所有权/借用/生命周期 → GC/cgo/happens-before/channel；rustc 决策树 → Go 编译失败类别映射。
 - 精简策略（用户确认）：内容生成/语义要求/质量门/KG 拓扑/语义审计/mindmap/交叉域/属性矩阵为核心启用集；表征空间/思维表征/决策树/效应系统页标为可选扩展（文件头降级标注，不进入质量门）。
 - 终验：全目录 Rust 术语 grep 残留 0（仅余跨语言对比矩阵的 Rust 列等允许项）；subagent 引入的 30 处占位/深度错误链接已修复（占位符改行内代码、kimi_* 兄弟文件相对路径修正），死链复扫 0；README 全量登记 32 个文件并标注启用状态。
 
@@ -169,12 +169,12 @@
 - **提交策略**：全程不 commit/push，由用户 IDE 惯例处理（提交惯例 `update`）。
 
 **遗留事项**（移交下期，详见月审 §8）：
+
 1. 24 组片段级代码块豁免（示意类型/外部依赖，清单 `scripts/tmp/goblock_merge_results.json`）。
 2. FT-009 为 stub，canonical 待定（双向链接 102/103 的唯一豁免）。
 3. 98 篇页内 H1 编号 ≠ 文件名编号（§4b 重编号残留，P0 行动项，`scripts/tmp/id_consistency_check.py` 可复扫）。
 4. GC × cgo 交叉边界专页缺失；examples/go.sum 缺 grpc/nats/chi 校验条目；CI 5 项缺口（月审 §7）。
 5. `.kimi` 可选扩展集（表征空间/思维表征/决策树/效应系统 4 页）已 Go 化但默认未启用。
-
 
 ## 5i. 遗留项收口批结果（2026-09-05，Q0→Q3）
 

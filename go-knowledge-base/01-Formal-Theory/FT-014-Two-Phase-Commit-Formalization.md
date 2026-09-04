@@ -7,4 +7,4 @@
 
 **权威页（canonical）**:
 
-- [FT-009 分布式事务形式化](FT-009-Distributed-Transactions-Formal.md)
+- [FT-044 分布式事务形式化](FT-044-Distributed-Transactions-Formal.md)

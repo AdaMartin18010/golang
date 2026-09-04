@@ -6,6 +6,7 @@
 > **Go 版本**: 1.27+
 > **相关概念**: [FT-006](FT-006-Paxos-Formal.md) · [FT-002 Raft 共识](FT-002-Raft-Consensus-Formal.md) · [FT-032 状态机复制](FT-032-State-Machine-Replication-Formal.md)
 > **别名 stub**: [FT-009-Quorum-Consensus-Theory](FT-009-Quorum-Consensus-Theory.md)（纯 stub，指向本页）
+>
 ## Overview
 
 Quorum consensus is a fundamental mechanism in distributed systems for achieving agreement among replicas without requiring all nodes to participate. A quorum is a minimum number of votes required to perform an operation, ensuring that any two operations on the same data item overlap in at least one replica.

@@ -1,4 +1,4 @@
-# FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)
+# FT-044: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)
 
 > **维度**: Formal Theory
 > **级别**: S (37 KB)
