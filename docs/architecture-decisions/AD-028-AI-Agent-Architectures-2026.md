@@ -1691,7 +1691,7 @@ func (cb *CircuitBreaker) recordSuccess() {
 ## 10. References
 
 1. [Model Context Protocol Specification](https://modelcontextprotocol.io/)
-2. [Agent-to-Agent Protocol (A2A) Whitepaper](https://google.github.io/A2A/)
+2. [Agent-to-Agent Protocol (A2A)](https://github.com/a2aproject/A2A)
 3. [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629)
 4. [Chain-of-Thought Prompting Elicits Reasoning in LLMs](https://arxiv.org/abs/2201.11903)
 

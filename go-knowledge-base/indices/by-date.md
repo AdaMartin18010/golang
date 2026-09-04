@@ -1,6 +1,6 @@
 # Go Knowledge Base - Chronological Index
 
-> **Version**: Auto-generated（2026-09-04 全量重建：641 篇按头部日期/mtime 归组）
+> **Version**: Auto-generated（2026-09-04 全量重建：642 篇按头部日期/mtime 归组）
 > **Last Updated**: 2026-09-04
 > **Purpose**: Find documents by creation/update date
 
@@ -49,8 +49,8 @@
 | [FT-008-B: Network Partition Brain Split](../01-Formal-Theory/FT-008-Network-Partition-Brain-Split.md) | Formal Theory | S |
 | [FT-008-C: Probabilistic Data Structures](../01-Formal-Theory/FT-008-Probabilistic-Data-Structures.md) | Formal Theory | S |
 | [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md) | Formal Theory | S |
-| [FT-009-B: Quorum Consensus Theory](../01-Formal-Theory/FT-009-Quorum-Consensus-Theory.md) | Formal Theory | S |
-| [FT-009-C: State Machine Replication](../01-Formal-Theory/FT-009-State-Machine-Replication.md) | Formal Theory | S |
+| [FT-009-B: Quorum Consensus Theory](../01-Formal-Theory/FT-009-Quorum-Consensus-Theory.md) | Formal Theory | B (stub → FT-017) |
+| [FT-009-C: State Machine Replication](../01-Formal-Theory/FT-009-State-Machine-Replication.md) | Formal Theory | B (stub → FT-032) |
 | [FT-010: 线性一致性的形式化理论 (Linearizability: Formal Theory)](../01-Formal-Theory/FT-010-Linearizability-Formal.md) | Formal Theory | S |
 | [FT-010-B: Time Clocks Ordering](../01-Formal-Theory/FT-010-Time-Clocks-Ordering.md) | Formal Theory | S |
 | [FT-011-B: Gossip Protocols](../01-Formal-Theory/FT-011-Gossip-Protocols.md) | Formal Theory | S |
@@ -120,6 +120,7 @@
 | [LD-011: Go 汇编内部原理 (Go Assembly Internals)](../02-Language-Design/LD-051-Go-Assembly-Internals.md) | Language Design | S |
 | [LD-011: Go 垃圾回收算法与内存管理 (Go GC Algorithm & Memory Management)](../02-Language-Design/LD-011-Go-GC-Algorithm.md) | Language Design | S |
 | [LD-012: Go 逃逸分析与栈分配优化 (Go Escape Analysis & Stack Allocation Optimization)](../02-Language-Design/LD-052-Go-Escape-Analysis.md) | Language Design | S |
+| [LD-053: Go cgo 与垃圾回收器的交互边界 (GC × cgo Interaction Boundary)](../02-Language-Design/LD-053-Go-CGO-GC-Interaction-Boundary.md) | Language Design | S |
 | [LD-013: Go 编译器阶段与优化管道 (Go Compiler Phases & Optimization Pipeline)](../02-Language-Design/LD-013-Go-Compiler-Phases.md) | Language Design | S |
 | [LD-014: Go 汇编编程与底层接口 (Go Assembly Programming & Low-Level Interface)](../02-Language-Design/LD-014-Go-Assembly-Programming.md) | Language Design | S |
 | [LD-015: Go 插件系统与动态加载 (Go Plugin System & Dynamic Loading)](../02-Language-Design/LD-015-Go-Plugin-System.md) | Language Design | S |

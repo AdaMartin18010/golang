@@ -289,6 +289,121 @@ func (g *apiGateway) Route(ctx context.Context, req Request) (Response, error) {
 // BFF Pattern for Mobile vs Web
 package bff
 
+import (
+    "context"
+    "sync"
+    "time"
+)
+
+// 下游客户端与模型为示意最小定义，仅用于展示 BFF 聚合模式
+
+// ImageMode 图片压缩模式
+type ImageMode int
+
+const (
+    Compressed ImageMode = iota + 1
+)
+
+// ResponseAggregator 响应聚合器（示意定义）
+type ResponseAggregator interface{}
+
+type OrderClient interface {
+    GetRecentOrdersSummary(ctx context.Context, userID string, limit int) (*OrderSummary, error)
+    GetOrders(ctx context.Context, userID string, req GetOrdersRequest) ([]Order, error)
+}
+
+type UserClient interface {
+    GetProfileEssentials(ctx context.Context, userID string) (*UserProfile, error)
+    GetFullProfile(ctx context.Context, userID string) (*UserProfile, error)
+}
+
+type ProductClient interface {
+    GetPersonalizedRecommendations(ctx context.Context, userID string, limit int, mode ImageMode) (*ProductRecommendations, error)
+}
+
+type AnalyticsClient interface {
+    GetUserMetrics(ctx context.Context, userID string) (*UserAnalytics, error)
+}
+
+type GetOrdersRequest struct {
+    Limit          int
+    Offset         int
+    IncludeDetails bool
+    IncludeInvoice bool
+}
+
+type Order struct {
+    ID     string
+    Items  []Item
+    Total  float64
+    Status string
+}
+
+type Item struct {
+    ProductID string
+    Quantity  int
+    Price     float64
+}
+
+type OrderSummary struct {
+    TotalCount   int
+    PendingCount int
+    TotalSpent   float64
+}
+
+type UserProfile struct {
+    ID    string
+    Name  string
+    Email string
+}
+
+type ProductRecommendations struct {
+    Products []Product
+}
+
+type Product struct {
+    ID   string
+    Name string
+}
+
+type UserAnalytics struct {
+    LastLogin time.Time
+}
+
+type MobileDashboard struct {
+    RecentOrders    *OrderSummary
+    Profile         *UserProfile
+    Recommendations *ProductRecommendations
+    Timestamp       time.Time
+}
+
+type WebDashboard struct {
+    Orders    []Order
+    Profile   *UserProfile
+    Analytics *UserAnalytics
+    FullWidth bool
+}
+
+type WebOrder struct {
+    ID          string    `json:"id"`
+    Date        time.Time `json:"date"`
+    Items       []Item    `json:"items"`
+    Total       float64   `json:"total"`
+    Status      string    `json:"status"`
+    TrackingURL string    `json:"trackingUrl"`
+}
+
+type Address struct {
+    Street  string
+    City    string
+    Country string
+}
+
+type Settings struct {
+    Language string
+    Currency string
+}
+
 // MobileBFF optimized for mobile constraints
 type MobileBFF struct {
     orderService    OrderClient
@@ -397,6 +512,63 @@ func (b *WebBFF) GetDashboard(ctx context.Context, userID string) (*WebDashboard
 // Strangler Fig Pattern for Migration
 package strangler
 
+import (
+    "context"
+    "time"
+)
+
+// 协作者与模型为示意最小定义，仅用于展示绞杀者模式的路由结构
+
+// Route 路由决策
+type Route int
+
+const (
+    RouteLegacy Route = iota
+    RouteNew
+    RouteBoth
+)
+
+// Order 订单（示意定义）
+type Order struct {
+    ID           string
+    CustomerTier string
+}
+
+// OrderResult 订单处理结果
+type OrderResult struct {
+    OrderID string
+    Success bool
+}
+
+// LegacyService 旧系统接口（示意定义）
+type LegacyService interface {
+    ProcessOrder(ctx context.Context, order Order) (*OrderResult, error)
+}
+
+// ModernService 新系统接口（示意定义）
+type ModernService interface {
+    ProcessOrder(ctx context.Context, order Order) (*OrderResult, error)
+}
+
+// FeatureFlagClient 特性开关客户端（示意定义）
+type FeatureFlagClient interface {
+    IsEnabled(ctx context.Context, flag string) bool
+}
+
+// TrafficSplitter 流量切分器（示意定义）
+type TrafficSplitter interface {
+    ShouldRoute(key string, percent int) bool
+}
+
+// MetricsCollector 指标采集器（示意定义）
+type MetricsCollector interface {
+    RecordLatency(route string, d time.Duration)
+}
+
+func (s *StranglerProxy) compareAndLog(orderID string, legacy, modern *OrderResult, legacyErr, modernErr error) {
+    // 影子流量对比：记录新旧系统结果差异，供迁移验证
+}
+
 type StranglerProxy struct {
     legacyService   LegacyService
     newService      ModernService
@@ -463,6 +635,20 @@ func (s *StranglerProxy) determineRoute(ctx context.Context, order Order) Route 
 ```go
 // Database Per Service Implementation
 package persistence
+
+import (
+    "context"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "time"
+
+    "github.com/go-redis/redis/v8"
+    "github.com/olivere/elastic/v7"
+    "github.com/shopspring/decimal"
+    "go.mongodb.org/mongo-driver/mongo"
+    "go.uber.org/zap"
+)
 
 // OrderService owns its database
 type OrderRepository struct {
@@ -557,6 +743,14 @@ func (r *ProductRepository) Search(ctx context.Context, query SearchQuery) (*Sea
 ```go
 // CQRS Implementation
 package cqrs
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+
+    "go.uber.org/zap"
+)
 
 // Command Side - Optimized for writes
 type OrderCommandHandler struct {
@@ -670,6 +864,69 @@ func (p *OrderProjection) HandleOrderCreated(ctx context.Context, event OrderCre
 ```go
 // Saga Pattern Implementation
 package saga
+
+import "errors"
+
+// 状态、日志与依赖服务为示意最小定义，仅用于展示 Saga 编排结构
+
+// SagaStatus 表示 Saga 执行状态
+type SagaStatus int
+
+const (
+    SagaPending SagaStatus = iota
+    SagaRunning
+    SagaCompleted
+    SagaCompensating
+    SagaCompensated
+)
+
+// ErrSagaFailed 表示 Saga 执行失败且已完成补偿
+var ErrSagaFailed = errors.New("saga failed, compensation executed")
+
+// SagaLog 记录 Saga 执行日志（示意接口）
+type SagaLog interface {
+    LogStepStarted(sagaID, step string)
+    LogStepFailed(sagaID, step string, err error)
+    LogStepCompleted(sagaID, step string)
+    LogCompensationFailed(sagaID string, step int, err error)
+}
+
+// SagaDependencies 注入 Saga 步骤所需的服务（示意定义）
+type SagaDependencies struct {
+    Items           []string
+    CustomerID      string
+    TotalAmount     float64
+    ShippingAddress string
+    CustomerEmail   string
+
+    InventoryService    InventoryService
+    PaymentService      PaymentService
+    ShippingService     ShippingService
+    NotificationService NotificationService
+}
+
+// InventoryService 库存服务（示意接口）
+type InventoryService interface {
+    Reserve(orderID string, items []string) error
+    ReleaseReservation(orderID string) error
+}
+
+// PaymentService 支付服务（示意接口）
+type PaymentService interface {
+    Charge(customerID string, amount float64, orderID string) error
+    Refund(orderID string) error
+}
+
+// ShippingService 物流服务（示意接口）
+type ShippingService interface {
+    CreateShipment(orderID, address string, items []string) (string, error)
+    CancelShipment(orderID string) error
+}
+
+// NotificationService 通知服务（示意接口）
+type NotificationService interface {
+    SendOrderConfirmation(email, orderID string) error
+}
 
 // Saga Orchestrator
 type OrderSaga struct {
@@ -795,12 +1052,74 @@ func NewOrderCreationSaga(orderID string, deps SagaDependencies) *OrderSaga {
 // Advanced Circuit Breaker Implementation
 package resilience
 
+import (
+    "context"
+    "errors"
+    "sync"
+    "time"
+)
+
+// 指标采集器、执行池与配置为示意最小定义，仅用于展示熔断/舱壁结构
+
+// MetricsCollector 指标采集接口（示意定义）
+type MetricsCollector interface {
+    RecordRejection(name string)
+    RecordSuccess(name string)
+    RecordFailure(name string)
+    RecordStateChange(name string, from, to State)
+    RecordQueued(name string)
+    RecordTimeout(name string)
+}
+
+// GetMetricsCollector 返回全局指标采集器（示意实现）
+func GetMetricsCollector() MetricsCollector { return noopMetrics{} }
+
+type noopMetrics struct{}
+
+func (noopMetrics) RecordRejection(string)                {}
+func (noopMetrics) RecordSuccess(string)                   {}
+func (noopMetrics) RecordFailure(string)                   {}
+func (noopMetrics) RecordStateChange(string, State, State) {}
+func (noopMetrics) RecordQueued(string)                    {}
+func (noopMetrics) RecordTimeout(string)                   {}
+
+// WorkerPool 固定大小的任务执行池（示意定义）
+type WorkerPool struct {
+    sem chan struct{}
+}
+
+func NewWorkerPool(n int) *WorkerPool {
+    return &WorkerPool{sem: make(chan struct{}, n)}
+}
+
+func (p *WorkerPool) Submit(fn func()) {
+    p.sem <- struct{}{}
+    go func() {
+        defer func() { <-p.sem }()
+        fn()
+    }()
+}
+
+// BulkheadConfig 舱壁配置
+type BulkheadConfig struct {
+    MaxConcurrent int
+    QueueSize     int
+    MaxWait       time.Duration
+}
+
+var (
+    ErrCircuitOpen     = errors.New("circuit breaker open")
+    ErrBulkheadFull    = errors.New("bulkhead queue full")
+    ErrBulkheadTimeout = errors.New("bulkhead task timeout")
+)
+
 type CircuitBreaker struct {
     name           string
     maxFailures    int
     timeout        time.Duration
     resetTimeout   time.Duration
 
+    mutex          sync.Mutex
     state          State
     failures       int
     lastFailureTime time.Time
@@ -905,6 +1224,12 @@ func (cb *CircuitBreaker) transitionTo(newState State) {
 ```go
 // Bulkhead Pattern for Resource Isolation
 package resilience
+
+import (
+    "context"
+    "sync"
+    "time"
+)
 
 type Bulkhead struct {
     name           string

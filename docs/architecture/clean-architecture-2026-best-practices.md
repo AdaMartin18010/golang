@@ -309,7 +309,7 @@ func (r *PostgresRepository[T]) Create(ctx context.Context, entity T) error {
 
 ## 6. 参考资料
 
-1. [Clean Architecture in Go 2026 - Reintech](https://reintech.io/blog/go-clean-architecture-2026)
-2. [Practical Guide to Clean Architecture - CyberAgent](https://developers.cyberagent.co.jp/blog/practical-clean-architecture-go/)
+1. [Go Project Structure 2026: Clean Architecture & Best Practices - Reintech](https://reintech.io/blog/go-project-structure-2026-clean-architecture-best-practices)
+2. [Practical Guide to Clean Architecture - CyberAgent](https://developers.cyberagent.co.jp/blog/archives/59647/)
 3. [Go Project Structure 2026 - Dasroot](https://dasroot.net/go-project-structure-2026/)
-4. [Is Clean Architecture Overengineering? - Three Dots Tech](https://threedots.tech/post/is-clean-architecture-overengineering/)
+4. [Is Clean Architecture Overengineering? - Three Dots Tech](https://threedots.tech/episode/is-clean-architecture-overengineering/)

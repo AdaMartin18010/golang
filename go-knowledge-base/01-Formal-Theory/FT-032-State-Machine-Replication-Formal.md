@@ -12,6 +12,8 @@
 > **维度**: Formal Theory
 > **级别**: S (27 KB)
 > **标签**: #ft
+> **相关概念**: [FT-017 Quorum 共识](FT-017-Quorum-Consensus-Formal.md) · [FT-002 Raft 共识](FT-002-Raft-Consensus-Formal.md)
+> **别名 stub**: [FT-009-State-Machine-Replication](FT-009-State-Machine-Replication.md)（纯 stub，指向本页）
 > **Go 版本**: 1.27+
 ---
 

@@ -427,6 +427,7 @@ import (
     "database/sql"
     "errors"
     "fmt"
+    "strings"
 )
 
 var (
@@ -482,6 +483,11 @@ func (r *Repository) Create(ctx context.Context, user *User) error {
     return nil
 }
 
+// isValidEmail 校验邮箱格式（示意最小实现）
+func isValidEmail(email string) bool {
+    return strings.Contains(email, "@") && strings.Contains(email, ".")
+}
+
 // 服务层
 type Service struct {
     repo *Repository
@@ -505,12 +511,47 @@ func (s *Service) GetUser(ctx context.Context, id int) (*User, error) {
 package main
 
 import (
+    "context"
     "errors"
     "fmt"
     "time"
 )
 
 var ErrTemporary = errors.New("temporary error")
+
+// User 用户实体（示意定义）
+type User struct {
+    ID   int
+    Name string
+}
+
+// 缓存与数据库的最小示意抽象
+type userCache struct {
+    m map[int]*User
+}
+
+func (c *userCache) Get(ctx context.Context, id int) (*User, error) {
+    return c.m[id], nil
+}
+
+func (c *userCache) Set(ctx context.Context, id int, u *User) {
+    c.m[id] = u
+}
+
+type userDB struct{}
+
+func (userDB) GetUser(ctx context.Context, id int) (*User, error) {
+    return nil, errors.New("db unavailable")
+}
+
+var (
+    cache = &userCache{m: make(map[int]*User)}
+    db    = userDB{}
+)
+
+func defaultUser() *User {
+    return &User{Name: "anonymous"}
+}
 
 // 重试策略
 func fetchWithRetry(url string, maxRetries int) ([]byte, error) {

@@ -203,6 +203,15 @@ type EscalationLevel struct {
     ContactMethods []string      `json:"contact_methods"` // push, sms, phone
 }
 
+// Alert represents a monitoring alert (示意最小定义)
+type Alert struct {
+    ID        string    `json:"id"`
+    Title     string    `json:"title"`
+    Severity  string    `json:"severity"`
+    Status    string    `json:"status"`
+    CreatedAt time.Time `json:"created_at"`
+}
+
 // ScheduleManager manages on-call schedules
 type ScheduleManager struct {
     schedules map[string]*Schedule

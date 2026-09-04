@@ -160,6 +160,7 @@ func MLKEM768KeyExchange() error {
 
 ML-DSA (formerly Dilithium) provides digital signatures based on lattice cryptography.
 
+<!-- goblock-exempt: 依赖 golang.org/x/crypto/mldsa，x/crypto 不在离线 go vet/build 环境内，保留豁免 -->
 ```go
 // ML-DSA signature example with Go 1.24+
 package crypto
@@ -552,6 +553,45 @@ const (
 type BuildProvenance struct {
     BuildDefinition `json:"buildDefinition"`
     RunDetails      `json:"runDetails"`
+
+    // InternalParameters 为示意最小定义，真实结构见 SLSA provenance 规范
+    InternalParameters InternalParameters `json:"internalParameters"`
+}
+
+// BuildDefinition describes build inputs (SLSA provenance, 示意最小定义)
+type BuildDefinition struct {
+    BuildType            string               `json:"buildType"`
+    ResolvedDependencies []ResolvedDependency `json:"resolvedDependencies"`
+}
+
+// RunDetails describes the build executor
+type RunDetails struct {
+    Builder Builder `json:"builder"`
+}
+
+// Builder identifies the build service
+type Builder struct {
+    ID string `json:"id"`
+}
+
+// ResolvedDependency pins one dependency
+type ResolvedDependency struct {
+    Digest Digest `json:"digest"`
+}
+
+// Digest holds content hashes
+type Digest struct {
+    SHA256 string `json:"sha256"`
+}
+
+// InternalParameters captures builder runtime parameters
+type InternalParameters struct {
+    Runner Runner `json:"runner"`
+}
+
+// Runner describes the build runner
+type Runner struct {
+    Labels []string `json:"labels"`
 }
 
 // BuilderRequirements defines requirements for each SLSA level

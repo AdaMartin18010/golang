@@ -9,8 +9,8 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Documents** | 641 |
-| **S-Level (>15KB)** | 613 |
+| **Total Documents** | 642 |
+| **S-Level (>15KB)** | 614 |
 | **With Tags** | 400 |
 | **Last Updated** | 2026-09-04 |
 
@@ -19,7 +19,7 @@
 | Dimension | Code | Count | S-Level |
 |-----------|------|-------|---------|
 | Formal Theory | FT | 77 | 73 |
-| Language Design | LD | 108 | 96 |
+| Language Design | LD | 109 | 97 |
 | Engineering CloudNative | EC | 256 | 252 |
 | Technology Stack | TS | 116 | 109 |
 | Application Domains | AD | 84 | 83 |
@@ -69,8 +69,8 @@
 | [FT-008-B: Network Partition Brain Split](../01-Formal-Theory/FT-008-Network-Partition-Brain-Split.md) | S | 38 KB | 2026-09 |
 | [FT-008-C: Probabilistic Data Structures](../01-Formal-Theory/FT-008-Probabilistic-Data-Structures.md) | S | 35 KB | 2026-09 |
 | [FT-009: 分布式事务的形式化理论 (Distributed Transactions: Formal Theory)](../01-Formal-Theory/FT-009-Distributed-Transactions-Formal.md) | S | 37 KB | 2026-09 |
-| [FT-009-B: Quorum Consensus Theory](../01-Formal-Theory/FT-009-Quorum-Consensus-Theory.md) | S | 35 KB | 2026-09 |
-| [FT-009-C: State Machine Replication](../01-Formal-Theory/FT-009-State-Machine-Replication.md) | S | 35 KB | 2026-09 |
+| [FT-009-B: Quorum Consensus Theory](../01-Formal-Theory/FT-009-Quorum-Consensus-Theory.md) | B (stub → FT-017) | — | 2026-09 |
+| [FT-009-C: State Machine Replication](../01-Formal-Theory/FT-009-State-Machine-Replication.md) | B (stub → FT-032) | — | 2026-09 |
 | [FT-010: 线性一致性的形式化理论 (Linearizability: Formal Theory)](../01-Formal-Theory/FT-010-Linearizability-Formal.md) | S | 32 KB | 2026-09 |
 | [FT-010-B: Time Clocks Ordering](../01-Formal-Theory/FT-010-Time-Clocks-Ordering.md) | S | 35 KB | 2026-09 |
 | [FT-011-B: Gossip Protocols](../01-Formal-Theory/FT-011-Gossip-Protocols.md) | S | 35 KB | 2026-09 |
@@ -110,7 +110,7 @@
 | [FT-039-Raft-Consensus-Formal-Specification](../01-Formal-Theory/FT-039-Raft-Consensus-Formal-Specification.md) | S | 23 KB | 2026-04 |
 | [FT-040-Paxos-Consensus-Formal](../01-Formal-Theory/FT-040-Paxos-Consensus-Formal.md) | A | 12 KB | 2026-04 |
 
-### Language Design (LD) — 108 documents
+### Language Design (LD) — 109 documents
 
 | Document | Level | Size | Date |
 |----------|-------|------|------|
@@ -196,6 +196,7 @@
 | [LD-011: Go 汇编内部原理 (Go Assembly Internals)](../02-Language-Design/LD-051-Go-Assembly-Internals.md) | S | 20 KB | 2026-09 |
 | [LD-011: Go 垃圾回收算法与内存管理 (Go GC Algorithm & Memory Management)](../02-Language-Design/LD-011-Go-GC-Algorithm.md) | S | 54 KB | 2026-09 |
 | [LD-012: Go 逃逸分析与栈分配优化 (Go Escape Analysis & Stack Allocation Optimization)](../02-Language-Design/LD-052-Go-Escape-Analysis.md) | S | 31 KB | 2026-09 |
+| [LD-053: Go cgo 与垃圾回收器的交互边界 (GC × cgo Interaction Boundary)](../02-Language-Design/LD-053-Go-CGO-GC-Interaction-Boundary.md) | S | 19 KB | 2026-09 |
 | [LD-012: Go 链接器与构建过程 (Go Linker & Build Process)](../02-Language-Design/LD-012-Go-Linker-Build-Process.md) | S | 20 KB | 2026-04 |
 | [LD-013: Go 编译器阶段与优化管道 (Go Compiler Phases & Optimization Pipeline)](../02-Language-Design/LD-013-Go-Compiler-Phases.md) | S | 39 KB | 2026-09 |
 | [LD-014: Go 汇编编程与底层接口 (Go Assembly Programming & Low-Level Interface)](../02-Language-Design/LD-014-Go-Assembly-Programming.md) | S | 29 KB | 2026-09 |

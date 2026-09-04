@@ -1239,6 +1239,98 @@ Dedicated API layer optimized for specific frontend needs.
 ```go
 package bff
 
+import (
+ "context"
+ "encoding/json"
+ "sync"
+ "time"
+)
+
+// 下游服务客户端、缓存与模型为示意最小定义，仅用于展示 BFF 聚合模式
+
+// Cache 缓存抽象（示意定义）
+type Cache interface {
+ Get(ctx context.Context, key string) ([]byte, error)
+ Set(ctx context.Context, key string, value []byte, ttl time.Duration) error
+}
+
+// UserServiceClient 用户服务客户端（示意定义）
+type UserServiceClient struct{}
+
+func (c *UserServiceClient) GetUser(ctx context.Context, userID string) (*User, error) {
+ return nil, nil
+}
+
+// OrderServiceClient 订单服务客户端（示意定义）
+type OrderServiceClient struct{}
+
+func (c *OrderServiceClient) GetSummary(ctx context.Context, userID string) (*OrderSummary, error) {
+ return nil, nil
+}
+
+func (c *OrderServiceClient) GetOrders(ctx context.Context, userID string, limit int) ([]Order, error) {
+ return nil, nil
+}
+
+// ProductServiceClient 商品服务客户端（示意定义）
+type ProductServiceClient struct{}
+
+func (c *ProductServiceClient) GetWishlist(ctx context.Context, userID string) ([]Product, error) {
+ return nil, nil
+}
+
+type User struct {
+ ID        string
+ Name      string
+ Email     string
+ AvatarURL string
+ Address   Address
+ Settings  Settings
+}
+
+type OrderSummary struct {
+ TotalCount   int
+ PendingCount int
+ TotalSpent   float64
+}
+
+type Order struct {
+ ID     string    `json:"id"`
+ Date   time.Time `json:"date"`
+ Items  []Item    `json:"items"`
+ Total  float64   `json:"total"`
+ Status string    `json:"status"`
+}
+
+type Item struct {
+ ProductID string
+ Quantity  int
+ Price     float64
+}
+
+type Product struct {
+ ID   string `json:"id"`
+ Name string `json:"name"`
+}
+
+type Address struct{ City string }
+
+type Settings struct{ Currency string }
+
+func convertToWebOrders(orders []Order) []WebOrder {
+ web := make([]WebOrder, 0, len(orders))
+ for _, o := range orders {
+  web = append(web, WebOrder{
+   ID:     o.ID,
+   Date:   o.Date,
+   Items:  o.Items,
+   Total:  o.Total,
+   Status: o.Status,
+  })
+ }
+ return web
+}
+
 // MobileBFF optimized for mobile clients (minimal payload)
 type MobileBFF struct {
  userService  *UserServiceClient

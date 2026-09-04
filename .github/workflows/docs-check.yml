@@ -69,7 +69,7 @@ jobs:
             "retryOn429": true,
             "retryCount": 3,
             "fallbackRetryDelay": "30s",
-            "aliveStatusCodes": [200, 206, 301, 302, 307, 308, 400, 401, 403, 405, 999]
+            "aliveStatusCodes": [200, 202, 206, 301, 302, 307, 308, 400, 401, 403, 405, 999]
           }
           EOF
           
@@ -77,7 +77,7 @@ jobs:
           find docs -name "*.md" -not -path "*/archive/*" -not -path "*/00-备份/*" | \
             while read file; do
               echo "检查: $file"
-              markdown-link-check "$file" --config .markdown-link-check.json || true
+              markdown-link-check "$file" --config .markdown-link-check.json
             done
           
           echo "✅ 链接验证完成"

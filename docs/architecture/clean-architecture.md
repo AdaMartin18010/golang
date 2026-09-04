@@ -1495,7 +1495,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 ### 外部资源
 
 - [Clean Architecture 原理解析](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) - Robert C. Martin 原文
-- [Go Clean Architecture 实践](https://medium.com/@eminetto/clean-architecture-in-go-a-simple-explanation-432f0c02217b) - Go 实践指南
+- [Go Clean Architecture 实践](https://github.com/eminetto/clean-architecture-go) - Go 实践指南（示例仓库）
 
 ---
 

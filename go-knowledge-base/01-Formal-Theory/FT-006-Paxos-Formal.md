@@ -458,6 +458,12 @@ type Acceptor struct {
     messenger Messenger
 }
 
+// NetworkEndpoint 表示一个 Acceptor 节点的网络端点（示意最小定义）
+type NetworkEndpoint struct {
+    ID      string
+    Address string
+}
+
 // Messenger 接口定义消息传递
 type Messenger interface {
     Send(to string, msg Message) error

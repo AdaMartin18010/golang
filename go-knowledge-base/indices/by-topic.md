@@ -1146,6 +1146,7 @@
 - **garbage-collection**
   - [LD-003: Go 垃圾回收器的形式化理论 (Go Garbage Collector: Formal Theory)](../02-Language-Design/LD-003-Go-Garbage-Collector-Formal.md)
   - [LD-011: Go 垃圾回收算法与内存管理 (Go GC Algorithm & Memory Management)](../02-Language-Design/LD-011-Go-GC-Algorithm.md)
+  - [LD-053: Go cgo 与垃圾回收器的交互边界 (GC × cgo Interaction Boundary)](../02-Language-Design/LD-053-Go-CGO-GC-Interaction-Boundary.md)
 
 - **gcshape**
   - [LD-003: Go 泛型的形式化语义与类型理论 (Go Generics: Formal Semantics & Type Theory)](../02-Language-Design/LD-040-Go-Generics-Formal.md)
@@ -3161,7 +3162,7 @@
 - [FT-039-Raft-Consensus-Formal-Specification](../01-Formal-Theory/FT-039-Raft-Consensus-Formal-Specification.md) #ft
 - [FT-040-Paxos-Consensus-Formal](../01-Formal-Theory/FT-040-Paxos-Consensus-Formal.md) #ft
 
-### Language Design (LD) — 108 篇
+### Language Design (LD) — 109 篇
 
 - [简洁性原则 (Simplicity)](../02-Language-Design/01-Design-Philosophy/01-Simplicity.md) #ld
 - [组合优于继承 (Composition)](../02-Language-Design/01-Design-Philosophy/02-Composition.md) #ld
@@ -3271,6 +3272,7 @@
 - [Go 1.26 new(expr) 编译器语义与 SSA Lowering](../02-Language-Design/LD-035-Go-1.26-new-expr-Compiler-Semantics.md) #ld
 - [Go 1.26 Green Tea GC 形式模型与性能分析](../02-Language-Design/LD-036-Go-1.26-Green-Tea-GC-Formal-Model.md) #ld
 - [LD-037: Go 1.27 泛型方法（Generic Methods）](../02-Language-Design/LD-037-Go-1.27-Generic-Methods.md) #ld
+- [LD-053: Go cgo 与垃圾回收器的交互边界（GC × cgo Interaction Boundary）](../02-Language-Design/LD-053-Go-CGO-GC-Interaction-Boundary.md) #ld
 
 ### Engineering CloudNative (EC) — 256 篇
 

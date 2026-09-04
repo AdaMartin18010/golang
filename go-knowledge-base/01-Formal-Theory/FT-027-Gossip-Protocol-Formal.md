@@ -748,6 +748,12 @@ func (g *PullGossip) Start() error {
  return nil
 }
 
+// Stop stops the pull gossip protocol
+func (g *PullGossip) Stop() {
+ close(g.stopCh)
+ g.wg.Wait()
+}
+
 func (g *PullGossip) pullLoop() {
  defer g.wg.Done()
 

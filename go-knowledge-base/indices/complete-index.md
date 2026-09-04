@@ -27,7 +27,7 @@
 | Dimension | Code | Documents | S-Level | Avg Size | Path |
 |-----------|------|-----------|---------|----------|------|
 | **Formal Theory** | FT | 54 | 48 | 32 KB | `01-Formal-Theory/` |
-| **Language Design** | LD | 72 | 45 | 18 KB | `02-Language-Design/` |
+| **Language Design** | LD | 73 | 46 | 18 KB | `02-Language-Design/` |
 | **Engineering CloudNative** | EC | 380+ | 180+ | 22 KB | `03-Engineering-CloudNative/` |
 | **Technology Stack** | TS | 97 | 67 | 28 KB | `04-Technology-Stack/` |
 | **Application Domains** | AD | 53 | 35 | 25 KB | `05-Application-Domains/` |
@@ -53,7 +53,7 @@
 | FT-006 | Paxos Formal | 29 KB | ⭐⭐⭐⭐⭐ | Classic consensus |
 | FT-007 | Multi-Paxos Formal | 36 KB | ⭐⭐⭐⭐⭐ | Leader-based consensus |
 | FT-008 | Byzantine Consensus Formal | 36 KB | ⭐⭐⭐⭐⭐ | BFT theory |
-| FT-009 | Quorum Consensus Theory | 35 KB | ⭐⭐⭐⭐⭐ | Voting protocols |
+| FT-009 (stub) | Quorum Consensus Theory → canonical: FT-017 | — | — | Voting protocols |
 | FT-010 | Linearizability Formal | 30 KB | ⭐⭐⭐⭐⭐ | Strong consistency |
 | FT-011 | Gossip Protocols | 35 KB | ⭐⭐⭐⭐⭐ | Epidemic algorithms |
 | FT-012 | CRDT Formal | 31 KB | ⭐⭐⭐⭐⭐ | Conflict-free types |
@@ -96,7 +96,7 @@
 | FT-008-Network-Partition-Brain-Split.md | 35 KB | Partition handling |
 | FT-008-Probabilistic-Data-Structures.md | 35 KB | Probabilistic DS |
 | FT-009-Distributed-Transactions-Formal.md | 34 KB | Transaction theory |
-| FT-009-State-Machine-Replication.md | 35 KB | SMR overview |
+| FT-009-State-Machine-Replication.md (stub → canonical: FT-032) | — | SMR overview |
 | FT-010-Time-Clocks-Ordering.md | 35 KB | Clock synchronization |
 | FT-011-Gossip-Protocols.md | 35 KB | Gossip overview |
 | FT-011-Sequential-Consistency-Formal.md | 24 KB | Sequential consistency |
@@ -114,7 +114,7 @@
 
 > **Location**: `02-Language-Design/`
 > **Focus**: Go internals, compiler, runtime, type system
-> **Documents**: 72 | **S-Level**: 45 (63%)
+> **Documents**: 73 | **S-Level**: 46 (63%)
 
 ### Core Language Documents
 
@@ -145,6 +145,7 @@
 | LD-023 | Go Error Handling Patterns | 17 KB | ⭐⭐⭐⭐⭐ | Error patterns |
 | LD-024 | Go Testing Advanced Patterns | 16 KB | ⭐⭐⭐⭐⭐ | Advanced testing |
 | LD-025 | Go Profiling Optimization | 15 KB | ⭐⭐⭐⭐⭐ | Performance tools |
+| LD-053 | Go cgo & GC Interaction Boundary | 19 KB | ⭐⭐⭐⭐⭐ | cgo pointer rules, cross-heap ownership |
 
 ### Language Features Subdirectory
 

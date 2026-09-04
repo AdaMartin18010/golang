@@ -909,7 +909,7 @@ type LargeObject struct {
 ### 7.2 性能基准测试
 
 ```go
-package gc_test
+package gc
 
 import (
     "runtime"
@@ -932,7 +932,7 @@ func BenchmarkAllocationLarge(b *testing.B) {
 // 基准测试: 对象池
 func BenchmarkWithPool(b *testing.B) {
     for i := 0; i < b.N; i++ {
-        gc.ProcessWithPool()
+        ProcessWithPool()
     }
 }
 
