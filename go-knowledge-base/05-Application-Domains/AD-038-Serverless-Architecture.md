@@ -1030,6 +1030,55 @@ func WithCircuitBreaker(name string, next LambdaHandler) LambdaHandler {
         return result, nil
     }
 }
+
+// CircuitStateRecord 是 DynamoDB 中持久化的熔断器状态
+type CircuitStateRecord struct {
+    Name                 string       `dynamodbav:"name"`
+    CurrentState         CircuitState `dynamodbav:"current_state"`
+    FailureCount         int          `dynamodbav:"failure_count"`
+    ConsecutiveSuccesses int          `dynamodbav:"consecutive_successes"`
+    LastFailureTime      time.Time    `dynamodbav:"last_failure_time"`
+    TTL                  int64        `dynamodbav:"ttl"`
+}
+
+// LambdaHandler 是无服务器函数的统一处理签名
+type LambdaHandler func(ctx context.Context, event interface{}) (interface{}, error)
+
+func (cb *CircuitBreaker) getState(ctx context.Context) (*CircuitStateRecord, error) {
+    key, _ := attributevalue.MarshalMap(map[string]string{"name": cb.name})
+    out, err := cb.dbClient.GetItem(ctx, &dynamodb.GetItemInput{
+        TableName: aws.String(cb.tableName),
+        Key:       key,
+    })
+    if err != nil {
+        return nil, err
+    }
+    if out.Item == nil {
+        // 无记录视为初始 CLOSED 状态
+        return &CircuitStateRecord{
+            Name:         cb.name,
+            CurrentState: StateClosed,
+        }, nil
+    }
+
+    var state CircuitStateRecord
+    if err := attributevalue.UnmarshalMap(out.Item, &state); err != nil {
+        return nil, err
+    }
+    return &state, nil
+}
+
+func (cb *CircuitBreaker) updateState(ctx context.Context, state *CircuitStateRecord) error {
+    state.TTL = time.Now().Add(24 * time.Hour).Unix()
+    av, _ := attributevalue.MarshalMap(*state)
+    _, err := cb.dbClient.PutItem(ctx, &dynamodb.PutItemInput{
+        TableName: aws.String(cb.tableName),
+        Item:      av,
+    })
+    return err
+}
+
+func main() {}
 ```
 
 ---

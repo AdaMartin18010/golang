@@ -42,7 +42,7 @@
 
 ## 4. 构建与验证
 
-- **必须 `GOWORK=off`**：根 `go.work` 不覆盖全部 42 个模块，在仓库根跑 go 命令一律加 `GOWORK=off`（或进入具体模块目录）。
+- **必须 `GOWORK=off`**：CI 与发布流程一律 `GOWORK=off` 逐模块构建（go-test.yml 已矩阵化 38 模块，排除清单见 `docs/tracking/ci-module-coverage.md`）；本地根 `go.work` 已覆盖全部 42 个已跟踪模块，根 workspace 命令可不带，但进入具体模块目录 standalone 构建仍建议显式 `GOWORK=off`。
 - 每模块：`GOWORK=off go build ./... && go vet ./... && go test ./...`；`golangci-lint run`（配置 `.golangci.yml`）。
 - Docker：`DOCKER_BUILDKIT=0 docker build -f deployments/docker/Dockerfile -t <tag> .`（本机 buildkit 拉取 metadata 网络不稳，经典构建器为既定方案；builder 阶段已内置 `GOWORK=off`）。
 - 版本升级（如 1.28）时全仓批量对齐：所有 `go.mod`、`go.work`、CI（`.github/workflows/`）、`deployments/docker/Dockerfile`。

@@ -190,3 +190,18 @@ P6 验收后随即执行月审 §8 行动项收口（用户已确认：并行推
 **回归终态**：死链 0 · 六件套 30/30 · 编号 MISMATCH=0 · 双向链接 103/103 · stub 纯净度 56/56 · merge BAD=0。
 
 **剩余移交项**（详见月审 §8 更新表）：CI 覆盖矩阵/质量门挂载（P1）、docs-deploy 其余 8 个模块卡死引用、check-unfixed-links.ps1 重写、AD-038 block 6 格式损坏、FT-009 ID 复用治理（3 文件共号）、test_go_blocks 14 个 RUN-BAD、`.kimi` 扩展集启用决策（待用户）。
+
+
+## 5j. R1→R4 批结果（2026-09-05，用户确认：并行推进、扩展集保持未启用）
+
+- **R1a go.work/CI 矩阵**：go.work 从 8 扩至全部 42 个已跟踪模块（零版本冲突回退）；go-test.yml 矩阵化 38 模块（GOWORK=off、fail-fast: false），4 模块入排除清单（`docs/tracking/ci-module-coverage.md` 新建）；顺带修复 4 处预存编译/vet 缺陷（user-service fmt 导入、network_buffer 标准签名、context_test lostcancel、examples go.mod tidy）。
+- **R1b 质量门**：check-unfixed-links.ps1 按 rescan 逻辑重写（真实仓库 0 死链 Exit 0，合成死链 Exit 1）；新建 quality-gates.yml（死链强制门 + check_quality 报告门 + gofmt 强制门限 cmd/internal/pkg）；AGENTS.md §5 改为本地门/CI 门真实描述。
+- **R2 docs-deploy/setup-go**：首页 9 卡全部改指真实目录（原 8 个 docs/0N-* 路径均不存在）；全仓 setup-go 统一 v5。release.yml 第 81 行既有 YAML 语法错误未动（移交）。
+- **R3a/R3c AD-038**：block 6 补 package/imports/stub（带依赖 build 通过）；父代理复核确认 block 5 真缺陷（getState/updateState/CircuitStateRecord/LambdaHandler 4 符号未定义）并修复，带依赖 tidy+vet+build 全过。
+- **R3b FT-009 治理**：实质页重编号 FT-044（git mv + 19 处引用 + 5 个 indices 文件同步）；两 stub 保留 FT-009 别名入口并加注说明。
+- **R3c RUN-BAD**：14 项清零——11 项伪失败入 test_go_blocks.py 按页豁免表（仍单块 vet 防烂尾），TS-049/AD-035/AD-037/TS-006 四处真缺陷修复（补 import/示意类型/缺失方法）。
+- **R4 机制**：`docs/tracking/monthly-review-2026-10-runbook.md` 新建（月审全量复跑手册 + Q4 季度审计三批排期）。
+
+**回归终态**：死链 0 · 六件套 30/30 · 编号 MISMATCH=0 · 双向 103/103 · stub 56/56 · compile_fail 20/20 · runnable BAD=0 · merge BAD=0（OK=33/skip_dep=45/exempt=3/known-sibling=11）。
+
+**移交下期**：release.yml YAML 修复；docs-deploy 复制逻辑（页脚链接站点不可达）；AD-037 block 5 领域符号；check_quality.ps1 -FailOnHigh 升级；gofmt 存量 289 个（趋势监控即可）；CI 首跑 38 模块矩阵的 -race 测试未本地全量验证（首跑 CI 见真章，asan 模块可能需关 race）。
